@@ -1,0 +1,29 @@
+#!/bin/bash
+ 
+ if [ "$1" == "install" ] ; then
+	cp -vf  zuluCrypt-cli/zuluCrypt-cli /usr/bin
+	chmod u+s -v /usr/bin/zuluCrypt-cli
+	
+	cp -vf zuluCrypt /usr/bin
+	
+else
+	cd zuluCrypt-cli
+	
+	gcc -c -Wall -o String.o String.c
+ 
+	ar  rcs libString.a String.o
+  
+	gcc  -D_FILE_OFFSET_BITS=64 -Wall -c libzuluCrypt.c -o libzuluCrypt.o  -L. -lString 
+ 
+	ar  rcs  libzuluCrypt.a libzuluCrypt.o  
+ 
+	gcc -o zuluCrypt-cli zuluCrypt.c -static  -L. -lzuluCrypt -lString -Wall
+
+	cd ..
+	
+	qmake zuluCrypt.pro
+
+	make
+fi
+
+

@@ -1,0 +1,14 @@
+#!/bin/bash
+ 
+
+	gcc -c -Wall -o  String.o String.c
+ 
+	ar  rcs libString.a String.o
+  
+	gcc  -D_FILE_OFFSET_BITS=64 -Wall -c libzuluCrypt.c -o libzuluCrypt.o  -L. -lString 
+ 
+	ar  rcs libzuluCrypt.a libzuluCrypt.o
+	
+	gcc -o zuluCrypt-cli zuluCrypt.c -Wall -static  -L. -lzuluCrypt -lString 
+
+
