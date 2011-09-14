@@ -1,0 +1,13 @@
+
+version 1.0.1
+fix bug:
+- On interactive mode, checking if the two passphrases are the same fails something when stdin buffer isnt emptied before reading the first password.
+
+","(comma) is not a valid mount point path. the cli prevents this but the GUI just fails without informing a user why. Added a dialog to inform a user
+when they select comma as a mount point.
+
+comma as a mount point is disallowed because it sits right next to "dot" button and most people(ie. me) usually press "."(dot) key to mean "present working directory" 
+but will miss the key and press comma key and start wondering why things arent they way they are supposed to be.
+The comma key should have been on the other side of the keyboard!!!
+
+

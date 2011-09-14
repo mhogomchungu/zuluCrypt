@@ -1,0 +1,67 @@
+
+build against: cryptsetup version 1.3.0
+Qt version:    4.7.4
+
+zuluCrypt is a front end to cryptsetup. It aims to simplify using cryptsetup volumes by creating a simple to use
+command line interface and a Qt based GUI front end to the command line.
+
+The command line program is called "zuluCrypt-cli", the Qt based GUI is called "zuluCrypt".
+The cli part of the program is an suid program to allow management of the volumes without 
+setting up sudo with appropriate permissions first or requiring root's password.
+
+The GUI part of the program calls the cli part for its operations.
+
+How to build:
+Run the "build" script.
+If you are already in the directory with the source code, just type "./build" to build it.
+
+How to install:
+Run "./build install" when in the source code folder after you have run "./build"
+
+How to use the GUI part of the program.
+It GUI should be obvious enough to figure it out without instructions. 
+
+How to use the cli part of the suite.
+
+1. How to open a volumes.
+
+zuluCrypt-cli open <path to volume> <mount point path> <mode>
+
+<path to volume>      is a path to an encrypted file or partition.
+<path to mount point> is a path to a folder zuluCrypt will create a mount point to the volume in.
+<mode>                is opening mode, two options are allowed "ro" for read only and "rw" for read and write.
+
+The above usage is appropriate when using the program interactively because the user will be asked for a password and it wont be displayed.
+
+
+Another way to open a volume is with this format. This format is more convenient when the cli is used by another application.
+
+zuluCrypt-cli <path to volume> <mount point path> <mode> <passphrase> 
+
+2. How to check the status of an opened volume
+
+zuluCrypt-cli status <path to volume>
+
+The last part of the address should be suffient.
+ie. if a volume is at "/dev/sda4", zuluCrypt-cli status sda4 will work, so will zuluCrypt-cli status /dev/sda4
+
+3. How to close an opened volume
+zuluCrypt-cli close <path to volume>
+The last part of the address should be suffient/
+ie. If a volume is at "/dev/sda4", zuluCrypt-cli close sda4 will work, so will zuluCrypt-cli close /dev/sda4
+
+4. How to create new volumes
+zuluCrypt-cli create <path to volume> <file system type> <encryption type>
+
+<encryption type> is either "plain" or "luks"
+
+example usage
+zuluCrypt-cli create /home/mhogomchungu/BankDocuments ext4 plain
+zuluCrypt-cli create /mnt/mhogomchungu/ConfidentialBusinessRecords ext4 luks
+
+Note:
+Creation of volumes on hard drives(addresses starting with "/dev") is currently disabled. Hence this tool can currently
+only create new volumes in files.
+
+This tool is an suid program and allowing it to work on hard drives located in "/dev/" could allow a normal user to effectively destroy
+root partition if they wish to.
