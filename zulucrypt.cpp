@@ -275,8 +275,6 @@ void zuluCrypt::open()
 		return ;
 	}
 
-	std::cout << openFileUI.mount_point_path.toStdString() ;
-
 	openFileUI.passphraseDialogUI.MountPointPath->setText(w);
 	QString program = zuluCryptExe + " open " + openFileUI.volume_path + " " + openFileUI.mount_point_path + " " + openFileUI.mode + " " + openFileUI.passphrase ;
 
@@ -286,9 +284,39 @@ void zuluCrypt::open()
 	process.waitForFinished() ;
 
 	int i = process.exitCode() ;
-	std::cout << i << std::endl ;
+
+	char *c ;
+
+	/*
+	  There are possible names zuluCrypt-cli will use for mount point and predicting it before hand may
+	  cause unnecessary code bloat. If the opening succeed, just go read the output of "mount"
+	  and use whatever you will find.
+	  */
+	if ( i == 0 ){
+		char *d ;
+		int k ;
+		QString N ;
+		QProcess Z ;
+		Z.start(QString("mount"));
+
+		Z.waitForFinished() ;
+
+		c = Z.readAllStandardOutput().data() ;
+
+		N = "/dev/mapper/zuluCrypt-" + openFileUI.volume_path.split("/").last() ;
+
+		d = N.toAscii().data() ;
+
+		k = strlen( d ) ;
+
+		d = c = strstr( c , d )  + k + 4 ;
+
+		while (*++d != ' ') { ; }
+
+		*d = '\0' ;
+	}
 	switch ( i ){
-	case 0 : addItemToTable(openFileUI.volume_path,w);
+	case 0 : addItemToTable(openFileUI.volume_path,QString( c ));
 		 break ;
 
 	case 1 : UIMessage("ERROR: No free loop device to use") ;
