@@ -8,11 +8,12 @@ zuluCrypt
 --open and close volumes and and check for info of opened ones.
 
 version 2.0
+-- add support to managing luks keys in the cli and GUI.
+
+version 3.0
 zuluCrypt
 -- add support for creation of volumes 
 
 zuluCrypt-cli
 -- see if it is possible to safely create volumes resising in "/dev"
 
-version 3.0
--- add support to managing luks keys in the cli and GUI.
