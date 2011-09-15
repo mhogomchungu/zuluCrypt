@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'openartition.ui'
 **
-** Created: Mon Sep 12 22:49:17 2011
+** Created: Wed Sep 14 18:11:44 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -49,7 +49,7 @@ public:
 
     void retranslateUi(QDialog *PartitionView)
     {
-        PartitionView->setWindowTitle(QApplication::translate("PartitionView", "Dialog", 0, QApplication::UnicodeUTF8));
+        PartitionView->setWindowTitle(QApplication::translate("PartitionView", "select a partition to open", 0, QApplication::UnicodeUTF8));
         QTableWidgetItem *___qtablewidgetitem = tableWidgetPartitionView->horizontalHeaderItem(0);
         ___qtablewidgetitem->setText(QApplication::translate("PartitionView", "List of partitions", 0, QApplication::UnicodeUTF8));
     } // retranslateUi

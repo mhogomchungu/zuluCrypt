@@ -43,8 +43,10 @@ public:
 	
 	QString passphrase ;
 	
-	QString mode ;	
-	
+	QString mode ;		
+
+	bool boolPassphraseFromFile ;
+
 	void clearAllFields(void) ;
 
 	Ui::PasswordDialog passphraseDialogUI;
@@ -56,6 +58,9 @@ public slots :
 	void mount_point(void);
 	void file_path(void);
 	void clickedPartitionOption(QString);
+	void clickedPassPhraseFromFileButton(void) ;
+	void passphraseFromFileOption(void) ;
+	void passphraseOption(void) ;
 	
 private :
 	openpartition p ;

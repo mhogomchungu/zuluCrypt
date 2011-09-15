@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>select a partition to open</string>
   </property>
   <widget class="QTableWidget" name="tableWidgetPartitionView">
    <property name="geometry">

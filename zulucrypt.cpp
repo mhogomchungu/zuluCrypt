@@ -195,7 +195,6 @@ void zuluCrypt::volume_property()
 	p.waitForFinished() ;
 	QString M = p.readAllStandardOutput() ;
 
-
 	char *c = M.toAscii().data() ;
 
 	int i = 0 ;
@@ -251,12 +250,12 @@ void zuluCrypt::open()
 
 	QString w = openFileUI.mount_point_path + "/" + f ;
 
-	if ( QFile(w).exists() == true )
-		w = w + ".zc" ;
+	openFileUI.passphraseDialogUI.MountPointPath->setText(w);
 
 	if (openFileUI.volume_path.isEmpty() == true){
 
 		UIMessage(QString("ERROR: The volume path field is empty"));
+		openFileUI.passphraseDialogUI.OpenVolumePath->setFocus();
 		openFileUI.show();
 		return ;
 	}
@@ -264,6 +263,7 @@ void zuluCrypt::open()
 	if (openFileUI.mount_point_path.isEmpty() == true){
 
 		UIMessage(QString("ERROR: The mount point path field is empty"));
+		openFileUI.passphraseDialogUI.MountPointPath->setFocus();
 		openFileUI.show();
 		return ;
 	}
@@ -271,12 +271,20 @@ void zuluCrypt::open()
 	if (openFileUI.passphrase.isEmpty() == true){
 
 		UIMessage(QString("ERROR: The passphrase field is empty"));
+		openFileUI.passphraseDialogUI.PassPhraseField->setFocus();
 		openFileUI.show();
 		return ;
 	}
 
-	openFileUI.passphraseDialogUI.MountPointPath->setText(w);
-	QString program = zuluCryptExe + " open " + openFileUI.volume_path + " " + openFileUI.mount_point_path + " " + openFileUI.mode + " " + openFileUI.passphrase ;
+	QString program ;
+	if ( openFileUI.boolPassphraseFromFile == true)	{
+
+		program = zuluCryptExe + " open " + openFileUI.volume_path + " " + openFileUI.mount_point_path + " " + openFileUI.mode + " -f " + openFileUI.passphrase ;
+
+	}else{
+		program = zuluCryptExe + " open " + openFileUI.volume_path + " " + openFileUI.mount_point_path + " " + openFileUI.mode + " -p " + openFileUI.passphrase ;
+	}
+std::cout << program.toStdString() ;
 
 	QProcess process ;
 
@@ -285,15 +293,15 @@ void zuluCrypt::open()
 
 	int i = process.exitCode() ;
 
-	char *c ;
-
 	/*
 	  There are possible names zuluCrypt-cli will use for mount point and predicting it before hand may
 	  cause unnecessary code bloat. If the opening succeed, just go read the output of "mount"
 	  and use whatever you will find.
 	  */
+	char * c = 0 ;
+
 	if ( i == 0 ){
-		char *d ;
+		char *d = 0 ;
 		int k ;
 		QString N ;
 		QProcess Z ;
@@ -319,21 +327,23 @@ void zuluCrypt::open()
 	case 0 : addItemToTable(openFileUI.volume_path,QString( c ));
 		 break ;
 
-	case 1 : UIMessage("ERROR: No free loop device to use") ;
+	case 1 : UIMessage("ERROR: No free loop device to use.") ;
 		break ;
 
-	case 2 : UIMessage("ERROR: There seem to be an open volume accociated with given path");
+	case 2 : UIMessage("ERROR: There seem to be an open volume accociated with given path.");
 		break ;
 
-	case 3 : UIMessage("ERROR: No file exist on given path") ;
+	case 3 : UIMessage("ERROR: No file or device on a given address.") ;
 		break ;
 
-	case 4 : UIMessage("ERROR: Wrong passphrase\n");
+	case 4 : UIMessage("ERROR: Wrong passphrase.");
 		break ;
 
-	case 5 : UIMessage("ERROR: mount point address is already taken by a file or folder\n") ;
+	case 5 : UIMessage("ERROR: mount point address is already taken by a file or folder") ;
 		break ;
-	case 6 : UIMessage("ERROR: \",\" (comma) is not a valid mount point");
+	case 6 : UIMessage("ERROR: passphrase file does not exist");
+
+	case 9 : UIMessage("ERROR: \",\" (comma) is not a valid mount point");
 		break ;
 	default :
 		;

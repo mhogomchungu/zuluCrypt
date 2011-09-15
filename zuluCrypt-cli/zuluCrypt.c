@@ -25,6 +25,7 @@
 #include "zuluCrypt.h"
 #include <unistd.h>
 #include "String.h"
+#include <fcntl.h>
 
 StrHandle * get_passphrase( void )
 {	
@@ -106,48 +107,77 @@ int close_opened_volume( char * mapping_name )
 	return st ;	
 }
 
-int open_volumes(int argn, char * device, char * mapping_name,int id, char * mount_point, char * mode, char * pass)
+int open_volumes(int argn, char * device, char * mapping_name,int id, char * mount_point, char * mode,char *source, char * pass)
 {
 	StrHandle * p ;
 	int st ;
-	if ( argn == 5 ){
-		printf( "Enter passphrase: " ) ;
+	int f ;
+	struct stat Q ;
+	char *c ;
 
-		p = get_passphrase();				
-		
-		printf("\n") ;			
-	}else if ( argn == 6 ){
-
-		p = StringCpy( pass ) ;
-			
-	}
-	else{
-		printf("ERROR: Wrong number of arguments, run zuluCrypt with \"-h\" for help\n");
-		return 5 ;			
-	}	
-		
 	if (strncmp(mount_point,",\0",2)==0){
 			
 		printf("ERROR, \",\"(comma) is not a valid mount point\n") ;
-		return 6 ;			
+		return 9 ;			
 	}		
-		
+
 	if (strncmp(mode,"ro",2) != 0){
 		if (strncmp(mode,"rw",2) != 0){
 			printf("ERROR: Wrong mode, run zuluCrypt with \"-h\" for help\n");;
 			return 1 ;	
 		}
 	}		
-	
-	if (strncmp(mount_point,"-\0",2)==0){
-							
-	st = open_volume(device, mapping_name,NULL,id,mode,StringCont( p )) ;
-		
-	}else {
-			
-		st = open_volume(device, mapping_name,mount_point,id,mode,StringCont( p )) ;									
+
+	if (strncmp(mount_point,"-\0",2) ==0 ){
+		mount_point = NULL ;
 	}
+	
+	if ( argn == 5 ){
+		printf( "Enter passphrase: " ) ;
+
+		p = get_passphrase();				
 		
+		printf("\n") ;	
+		
+		st = open_volume(device, mapping_name,mount_point,id,mode,StringCont( p )) ;
+		StringDelete( p ) ;
+		
+	}else if ( argn == 7 ){
+
+		if( strcmp(source,"-p") == 0 ){
+			
+			p = StringCpy( pass ) ;
+			st = open_volume(device, mapping_name,mount_point,id,mode,StringCont( p )) ;
+			StringDelete( p ) ;
+		
+		}else if ( strcmp(source,"-f") == 0 ){
+			
+			if ( stat(pass,&Q) == 0 ){			
+				
+				c = ( char * ) malloc( sizeof(char) *  Q.st_size  ) ;
+			
+				f = open( pass,O_RDONLY ) ;
+			
+				read(f,c,Q.st_size) ;
+				close(f);
+				st = open_volume(device, mapping_name,mount_point,id,mode,c) ;
+				free( c ) ;
+			}else{
+				printf("ERROR: passphrase file does not exist\n");
+
+				return 6 ;
+			}
+		}else{
+			printf("ERROR: Wrong option, run zuluCrypt with \"-h\" for help\n");
+			return 7 ;
+		}
+	}
+	else{
+		printf("ERROR: Wrong number of arguments, run zuluCrypt with \"-h\" for help\n");
+		printf("%d\n",argn) ;
+		return 8 ;			
+	}
+
 	switch ( st ){
 			
 	case 0 : printf("SUCCESS: Volume opened successfully\n");
@@ -169,9 +199,7 @@ int open_volumes(int argn, char * device, char * mapping_name,int id, char * mou
 		break ;
 	default :
 		;			
-	}
-		
-	StringDelete( p ) ;
+	}	
 	return st ;
 }
 
@@ -290,7 +318,7 @@ int main( int argc , char *argv[])
 		
 	}else if ( strcmp( action, "open" ) == 0 ){
 		
-		return open_volumes(argc,argv[2],mapping_name,id,argv[3],argv[4],argv[5] ) ;		
+		return open_volumes(argc,argv[2],mapping_name,id,argv[3],argv[4],argv[5],argv[6] ) ;		
 		
 	}else if(strcmp(action,"create") == 0 ){
 
