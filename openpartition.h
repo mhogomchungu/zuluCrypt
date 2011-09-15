@@ -32,6 +32,11 @@ class openpartition :  public QDialog
 public:
 
 	openpartition(QWidget *parent = 0);
+
+	void showPartitionsUI(void);
+
+	void hidePartitionsUI(void);
+
 	virtual ~openpartition();
 
 signals :
@@ -43,9 +48,7 @@ void tableEntryDoubleClicked(int row, int column) ;
 
 private:
 	Ui::PartitionView partitionView ;
-
-
-
+	int count ;
 };
 
 #endif

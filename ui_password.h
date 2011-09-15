@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'password.ui'
 **
-** Created: Wed Sep 14 18:11:44 2011
+** Created: Thu Sep 15 11:36:53 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -34,9 +34,9 @@ public:
     QPushButton *PushButtonMountPointPath;
     QPushButton *PushButtonVolumePath;
     QLineEdit *PassPhraseField;
-    QLabel *label;
-    QLabel *label_2;
-    QLabel *label_3;
+    QLabel *labelVolumePath;
+    QLabel *labelMoutPointPath;
+    QLabel *labelPassphrase;
     QGroupBox *groupBox;
     QRadioButton *radioButtonPassPhrase;
     QRadioButton *radioButtonPassPhraseFromFile;
@@ -50,6 +50,10 @@ public:
             PasswordDialog->setObjectName(QString::fromUtf8("PasswordDialog"));
         PasswordDialog->setWindowModality(Qt::WindowModal);
         PasswordDialog->resize(459, 198);
+        QFont font;
+        font.setBold(false);
+        font.setWeight(50);
+        PasswordDialog->setFont(font);
         PasswordDialog->setFocusPolicy(Qt::TabFocus);
         PasswordDialog->setModal(true);
         PushButtonOpen = new QPushButton(PasswordDialog);
@@ -69,33 +73,38 @@ public:
         PushButtonVolumePath = new QPushButton(PasswordDialog);
         PushButtonVolumePath->setObjectName(QString::fromUtf8("PushButtonVolumePath"));
         PushButtonVolumePath->setGeometry(QRect(420, 10, 31, 31));
+        PushButtonVolumePath->setFlat(false);
         PassPhraseField = new QLineEdit(PasswordDialog);
         PassPhraseField->setObjectName(QString::fromUtf8("PassPhraseField"));
         PassPhraseField->setGeometry(QRect(100, 100, 321, 31));
         PassPhraseField->setMaxLength(100);
         PassPhraseField->setEchoMode(QLineEdit::Password);
-        label = new QLabel(PasswordDialog);
-        label->setObjectName(QString::fromUtf8("label"));
-        label->setGeometry(QRect(10, 10, 81, 31));
-        QFont font;
-        font.setPointSize(9);
-        label->setFont(font);
-        label->setLayoutDirection(Qt::RightToLeft);
-        label->setFrameShadow(QFrame::Raised);
-        label->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
-        label->setIndent(-1);
-        label_2 = new QLabel(PasswordDialog);
-        label_2->setObjectName(QString::fromUtf8("label_2"));
-        label_2->setGeometry(QRect(10, 40, 81, 41));
-        label_2->setFont(font);
-        label_2->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
-        label_3 = new QLabel(PasswordDialog);
-        label_3->setObjectName(QString::fromUtf8("label_3"));
-        label_3->setGeometry(QRect(10, 100, 81, 31));
-        label_3->setFont(font);
-        label_3->setLayoutDirection(Qt::LeftToRight);
-        label_3->setFrameShape(QFrame::NoFrame);
-        label_3->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
+        labelVolumePath = new QLabel(PasswordDialog);
+        labelVolumePath->setObjectName(QString::fromUtf8("labelVolumePath"));
+        labelVolumePath->setGeometry(QRect(10, 10, 81, 31));
+        QFont font1;
+        font1.setPointSize(9);
+        labelVolumePath->setFont(font1);
+        labelVolumePath->setLayoutDirection(Qt::RightToLeft);
+        labelVolumePath->setFrameShadow(QFrame::Raised);
+        labelVolumePath->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
+        labelVolumePath->setIndent(-1);
+        labelMoutPointPath = new QLabel(PasswordDialog);
+        labelMoutPointPath->setObjectName(QString::fromUtf8("labelMoutPointPath"));
+        labelMoutPointPath->setGeometry(QRect(10, 40, 81, 31));
+        QFont font2;
+        font2.setPointSize(9);
+        font2.setBold(false);
+        font2.setWeight(50);
+        labelMoutPointPath->setFont(font2);
+        labelMoutPointPath->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
+        labelPassphrase = new QLabel(PasswordDialog);
+        labelPassphrase->setObjectName(QString::fromUtf8("labelPassphrase"));
+        labelPassphrase->setGeometry(QRect(10, 100, 81, 31));
+        labelPassphrase->setFont(font1);
+        labelPassphrase->setLayoutDirection(Qt::LeftToRight);
+        labelPassphrase->setFrameShape(QFrame::NoFrame);
+        labelPassphrase->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         groupBox = new QGroupBox(PasswordDialog);
         groupBox->setObjectName(QString::fromUtf8("groupBox"));
         groupBox->setGeometry(QRect(100, 70, 321, 31));
@@ -105,7 +114,7 @@ public:
         radioButtonPassPhrase->setChecked(true);
         radioButtonPassPhraseFromFile = new QRadioButton(groupBox);
         radioButtonPassPhraseFromFile->setObjectName(QString::fromUtf8("radioButtonPassPhraseFromFile"));
-        radioButtonPassPhraseFromFile->setGeometry(QRect(130, 10, 151, 21));
+        radioButtonPassPhraseFromFile->setGeometry(QRect(130, 10, 181, 21));
         radioButtonPassPhraseFromFile->setChecked(false);
         pushButtonPassPhraseFromFile = new QPushButton(PasswordDialog);
         pushButtonPassPhraseFromFile->setObjectName(QString::fromUtf8("pushButtonPassPhraseFromFile"));
@@ -135,12 +144,12 @@ public:
         checkBoxReadOnly->setText(QApplication::translate("PasswordDialog", "open in read only mode", 0, QApplication::UnicodeUTF8));
         PushButtonMountPointPath->setText(QString());
         PushButtonVolumePath->setText(QString());
-        label->setText(QApplication::translate("PasswordDialog", "Volume path", 0, QApplication::UnicodeUTF8));
-        label_2->setText(QApplication::translate("PasswordDialog", "Mount Point", 0, QApplication::UnicodeUTF8));
-        label_3->setText(QApplication::translate("PasswordDialog", "Passphrase", 0, QApplication::UnicodeUTF8));
+        labelVolumePath->setText(QApplication::translate("PasswordDialog", "Volume path", 0, QApplication::UnicodeUTF8));
+        labelMoutPointPath->setText(QApplication::translate("PasswordDialog", "Mount Point", 0, QApplication::UnicodeUTF8));
+        labelPassphrase->setText(QApplication::translate("PasswordDialog", "Passphrase", 0, QApplication::UnicodeUTF8));
         groupBox->setTitle(QString());
         radioButtonPassPhrase->setText(QApplication::translate("PasswordDialog", "passphrase", 0, QApplication::UnicodeUTF8));
-        radioButtonPassPhraseFromFile->setText(QApplication::translate("PasswordDialog", "passphrase from file", 0, QApplication::UnicodeUTF8));
+        radioButtonPassPhraseFromFile->setText(QApplication::translate("PasswordDialog", "passphrase from key file", 0, QApplication::UnicodeUTF8));
         pushButtonPassPhraseFromFile->setText(QString());
     } // retranslateUi
 

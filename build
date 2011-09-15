@@ -2,11 +2,29 @@
  
  if [ "$1" == "install" ] ; then
 	cp -vf  zuluCrypt-cli/zuluCrypt-cli /usr/bin
+	
 	chmod u+s -v /usr/bin/zuluCrypt-cli
 	
 	cp -vf zuluCrypt /usr/bin
 	
-else
+	cp -vf zuluCrypt.desktop /usr/share/applications
+	
+	chmod 755 /usr/share/applications/zuluCrypt.desktop
+	chown root:root /usr/share/applications/zuluCrypt.desktop
+	
+	cp -fv zuluCrypt.png /usr/share/icons
+	
+elif [ "$1" == "uninstall" ] ; then
+	
+	rm -rfv /usr/share/icons/zuluCrypt.png
+	
+	rm -rfv /usr/bin/zuluCrypt
+	
+	rm -rfv /usr/bin/zuluCrypt-cli
+	
+	rm -rfv /usr/share/applications/zuluCrypt.desktop
+	
+else	
 	cd zuluCrypt-cli
 	
 	gcc -c -Wall -o String.o String.c

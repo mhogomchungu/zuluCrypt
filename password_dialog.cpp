@@ -89,6 +89,8 @@ void password_Dialog::clearAllFields()
 void password_Dialog::clickedPartitionOption(QString option)
 {
 	passphraseDialogUI.OpenVolumePath->setText(option);
+	passphraseDialogUI.MountPointPath->clear();
+	passphraseDialogUI.PassPhraseField->clear();
 
 	if( this->isHidden() )
 		this->show();

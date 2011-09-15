@@ -30,41 +30,54 @@ using namespace std ;
 openpartition::openpartition(QWidget *parent ) : QDialog(parent)
 {
 	partitionView.setupUi(this);
+
 	this->setFixedSize(this->size());
 
+	connect(partitionView.tableWidgetPartitionView,SIGNAL(cellDoubleClicked(int,int)),this,SLOT(tableEntryDoubleClicked(int,int))) ;	
+}
 
-	connect(partitionView.tableWidgetPartitionView,SIGNAL(cellDoubleClicked(int,int)),this,SLOT(tableEntryDoubleClicked(int,int))) ;
+void openpartition::showPartitionsUI()
+{
+	int y = partitionView.tableWidgetPartitionView->rowCount() ;
+
+	for( int i = 0 ; i < y  ; i++ )
+	{
+		partitionView.tableWidgetPartitionView->removeRow(0);
+	}
 
 	partitionView.tableWidgetPartitionView->setColumnWidth(0,540);
+
 	QProcess p ;
+
 	p.start(QString("blkid"));
 	p.waitForFinished() ;
+
 	QStringList List = QString(p.readAllStandardOutput()).split("\n") ;
 
-	for( int i = 0 ; i < List.size()  ; i++ )
+	for( int i = 0 ; i < List.size() - 1  ; i++ )
 	{
 		partitionView.tableWidgetPartitionView->insertRow(i);
 		partitionView.tableWidgetPartitionView->setItem(i,0,new QTableWidgetItem(List.at(i)));
-
-		//partitionView.tableWidgetPartitionView->item(i,0)->setTextAlignment(Qt::AlignJustify);
 	}
+	this->show();
+}
+
+void openpartition::hidePartitionsUI()
+{
+	this->hide();
 }
 
 void openpartition::tableEntryDoubleClicked(int row, int column)
 {
-	this->hide();
+	hidePartitionsUI();
 
 	QString i = partitionView.tableWidgetPartitionView->item(row,column)->text().split(":").at(0) ;
 
 	emit clickedPartition(i);
-
-	//std::cout << i.toStdString() ;
-
+	this->hide();
 }
 
 openpartition::~openpartition()
 {
 
 }
-
-//#include "moc_openpartition.cpp"

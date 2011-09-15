@@ -49,6 +49,7 @@ public:
 private slots :
 
 	void aboutMenuOption(void) ;
+
 	void showOpenFileDialogClear(void);
 
 	void showOpenPartitionDialog(void) ;
@@ -66,9 +67,6 @@ private slots :
 	void UIMessage(QString message) ;
 
 private:
-
-
-
 	QString zuluCryptExe ;
 
 	Ui::zuluCrypt *ui;

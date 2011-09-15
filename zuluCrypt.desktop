@@ -1,0 +1,20 @@
+[Desktop Entry]
+Comment[en_US]=
+Comment=
+Exec=zuluCrypt
+GenericName[en_US]=manage encypted volumes
+GenericName=manage encypted volumes
+Icon=/usr/share/icons/zuluCrypt.png
+MimeType=
+Name[en_US]=zuluCrypt
+Name=zuluCrypt
+NoDisplay=false
+Path=
+StartupNotify=true
+Terminal=false
+TerminalOptions=
+Type=Application
+X-DBUS-ServiceName=
+X-DBUS-StartupType=
+X-KDE-SubstituteUID=false
+X-KDE-Username=

@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
+#include "version.h"
 #include "zulucrypt.h"
 #include "ui_zulucrypt.h"
 #include <QProcess>
@@ -80,14 +80,14 @@ void zuluCrypt::aboutMenuOption(void)
 
 	m.addButton(QMessageBox::Ok);
 
-	m.setText(QString(" version 1.0 of zuluCrypt, a front end to cryptsetup"));
+	m.setText(QString( VERSION_STRING )) ;
 
 	m.exec() ;
 }
 
 void zuluCrypt::showOpenPartitionDialog(void)
 {
-	openPartitionUI.show();
+	openPartitionUI.showPartitionsUI();
 }
 
 void zuluCrypt::setUpOpenedVolumes(void)
