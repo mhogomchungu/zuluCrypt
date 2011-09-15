@@ -146,9 +146,7 @@ int open_volumes(int argn, char * device, char * mapping_name,int id, char * mou
 
 		if( strcmp(source,"-p") == 0 ){
 			
-			p = StringCpy( pass ) ;
-			st = open_volume(device, mapping_name,mount_point,id,mode,StringCont( p )) ;
-			StringDelete( p ) ;
+			st = open_volume(device, mapping_name,mount_point,id,mode, pass) ;
 		
 		}else if ( strcmp(source,"-f") == 0 ){
 			

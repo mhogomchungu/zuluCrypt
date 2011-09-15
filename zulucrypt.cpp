@@ -70,10 +70,8 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 
 
 	connect(ui->actionAbout,SIGNAL(triggered()),this,SLOT(aboutMenuOption())) ;
-	//connect(this->ui->menuAbout->,SIGNAL(triggered(QAction*)),this,SLOT(aboutMenuOption())) ;
 
 	setUpOpenedVolumes() ;
-
 }
 
 void zuluCrypt::aboutMenuOption(void)
@@ -85,8 +83,6 @@ void zuluCrypt::aboutMenuOption(void)
 	m.setText(QString(" version 1.0 of zuluCrypt, a front end to cryptsetup"));
 
 	m.exec() ;
-
-
 }
 
 void zuluCrypt::showOpenPartitionDialog(void)
@@ -244,14 +240,6 @@ void zuluCrypt::close(void)
 
 void zuluCrypt::open()
 {
-	QStringList q = openFileUI.volume_path.split('/') ;
-
-	QString f = q.last() ;
-
-	QString w = openFileUI.mount_point_path + "/" + f ;
-
-	openFileUI.passphraseDialogUI.MountPointPath->setText(w);
-
 	if (openFileUI.volume_path.isEmpty() == true){
 
 		UIMessage(QString("ERROR: The volume path field is empty"));
@@ -284,7 +272,6 @@ void zuluCrypt::open()
 	}else{
 		program = zuluCryptExe + " open " + openFileUI.volume_path + " " + openFileUI.mount_point_path + " " + openFileUI.mode + " -p " + openFileUI.passphrase ;
 	}
-std::cout << program.toStdString() ;
 
 	QProcess process ;
 
@@ -293,14 +280,15 @@ std::cout << program.toStdString() ;
 
 	int i = process.exitCode() ;
 
-	/*
-	  There are possible names zuluCrypt-cli will use for mount point and predicting it before hand may
-	  cause unnecessary code bloat. If the opening succeed, just go read the output of "mount"
-	  and use whatever you will find.
-	  */
-	char * c = 0 ;
+	switch ( i ){
+	case 0 : {
+		/*
+		  There are possible names zuluCrypt-cli will use for mount point and predicting it before hand may
+		  cause unnecessary code bloat. If the opening succeed, just go read the output of "mount"
+		  and use whatever you will find.
+		  */
+		char * c = 0 ;
 
-	if ( i == 0 ){
 		char *d = 0 ;
 		int k ;
 		QString N ;
@@ -322,10 +310,9 @@ std::cout << program.toStdString() ;
 		while (*++d != ' ') { ; }
 
 		*d = '\0' ;
-	}
-	switch ( i ){
-	case 0 : addItemToTable(openFileUI.volume_path,QString( c ));
-		 break ;
+
+		addItemToTable(openFileUI.volume_path,QString( c ));
+		} break ;
 
 	case 1 : UIMessage("ERROR: No free loop device to use.") ;
 		break ;
