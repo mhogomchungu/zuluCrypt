@@ -95,7 +95,7 @@ void zuluCrypt::setUpOpenedVolumes(void)
 
 	QStringList Z =  QDir(QString("/dev/mapper")).entryList().filter("zuluCrypt-") ;
 
-	char *c, *d, *v,*volume ;
+	char *c, *d, *v,*volume,*N ;
 	QProcess * p ;
 	for ( int i = 0 ; i < Z.size() ; i++){
 
@@ -133,7 +133,7 @@ void zuluCrypt::setUpOpenedVolumes(void)
 
 		*d = '\0' ;
 
-		d = volume = new char[ strlen( v ) + 1 ] ;
+		N = d = volume = new char[ strlen( v ) + 1 ] ;
 
 		while ( ( *d++ = *v++ ) != '\0') { ; }
 
@@ -147,7 +147,12 @@ void zuluCrypt::setUpOpenedVolumes(void)
 
 		v = strrchr(volume,'/') + 1 ;
 
-		v = d = strstr(c,v ) + strlen(v) + 4 ;
+		if( ( d = strstr(c,v ) ) == NULL ){
+			UIMessage(QString("WARNING: An inconsitency is detected, " + QString(N) + QString(" is opened but not mounted")));
+			continue ;
+		}
+
+		v = d = d + strlen(v) + 4 ;
 
 		while ( *++v != ' ') { ; }
 
