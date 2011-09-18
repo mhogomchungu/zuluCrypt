@@ -97,6 +97,8 @@ void status(  char * mapping_name , char * output, int size);
  */
 int create_volume(char * device, char * fs,char * type, char * passphrase);  
 
+int add_key(char * device, char * existingkey, char * newkey) ;
+
 
 #ifdef __cplusplus
 }

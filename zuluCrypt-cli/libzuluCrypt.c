@@ -39,6 +39,7 @@ int open_volume(char *device, char * mapping_name, char *m_point, uid_t id,char 
 int close_volume(char * mapping_name) ;
 void status(  char * mapping_name , char * output, int size);
 int create_volume(char * device, char * fs,char * type, char * passphrase);
+int add_key(char * device, char * existingkey, char * newkey);
 
 #define cryptsetup "/sbin/cryptsetup "
 #define mount      "/bin/mount " 
@@ -48,6 +49,26 @@ int create_volume(char * device, char * fs,char * type, char * passphrase);
 #define e2label    "/sbin/e2label "
 #define rm         "/bin/rm "
 #define echo       "/bin/echo "
+
+int add_key(char * device, char * existingkey, char * newkey)
+{
+	StrHandle * p ;
+	char s[2] ;
+	
+	p = StringCpy( echo ) ;
+	
+	StringCat( p , existingkey ) ;
+	StringCat( p , " | " ) ;
+	StringCat( p , cryptsetup "luksAddKey ") ;
+	StringCat( p , device ) ;
+	StringCat( p , " " ) ;
+	StringCat( p , newkey ) ;
+	StringCat( p , " 2>/dev/null 1>&2 ; echo $?") ;
+	
+	execute(StringCont( p ), s, 2 ) ;	
+	
+	return s[0] - '0' ;
+}
 
 
 void status( char * mapping_name , char * output, int size )

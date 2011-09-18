@@ -275,6 +275,138 @@ int create_volumes(int argn ,char *device, char *fs, char * mode, char * pass )
 	return st ;
 }
 
+void delete_file( char * file )
+{
+	int i, j  ;
+	struct stat st ;	
+	char X = 'X' ;
+	
+	stat(file, &st) ;
+
+	i = open( file, O_WRONLY ) ;
+	
+	for( j = 0 ; j < st.st_size ; j ++ )
+		write( i , &X, 1 ) ;				
+	
+	close( i ) ;
+	
+	remove( file ) ;	
+}
+
+int addkey(int argn,char * device, char *keyType1, char * existingKey, char * keyType2, char * newKey)
+{
+	StrHandle * p ;
+	StrHandle * q ;
+	StrHandle * n ;
+	
+	struct stat st1 ;
+	int status = 0 ;
+	int z ;
+	char * c ;
+	
+	if ( argn == 3 ){		
+		
+		printf("Enter an existing passphrase: ") ;
+		
+		p = get_passphrase() ;
+		
+		printf("\n") ;				
+			
+		printf("Enter the new passphrase: ") ;
+		
+		q = get_passphrase() ;
+		
+		printf("\n") ;	
+			
+		printf("Re enter the new passphrase: ") ;
+		
+		n = get_passphrase() ;
+		
+		printf("\n") ;
+		
+		if (strcmp( StringCont( q ), StringCont( n ) ) != 0){
+			printf("ERROR: new passphrases do not match\n") ;
+			return 5 ;
+		}
+		
+		z = open("/tmp/zuluCrypt-tmp",O_WRONLY | O_CREAT | O_TRUNC ) ;
+
+		chmod("/tmp/zuluCrypt-tmp",0700) ;
+		
+		write(z,StringCont( q ),strlen(StringCont( q ))) ;
+		
+		close( z ) ;
+			
+		status = add_key( device,StringCont( p ), "/tmp/zuluCrypt-tmp" ) ;
+			
+		delete_file("/tmp/zuluCrypt-tmp") ;				
+
+		StringDelete( p ) ;			
+		StringDelete( q ) ;	
+		
+	}else if( argn == 7 ){			
+		
+		if ( strcmp( keyType1, "-f" ) == 0 ){			
+
+			stat( existingKey, &st1) ;
+			
+			c = ( char *) malloc ( sizeof(char) * st1.st_size ) ;
+			
+			z = open(existingKey, O_RDONLY ) ;
+			
+			read( z, c, st1.st_size ) ;
+			
+			close( z ) ;		
+		}
+		
+		if ( strcmp( keyType2, "-p" ) == 0){			
+			
+			z = open("/tmp/zuluCrypt-tmp",O_WRONLY | O_CREAT | O_TRUNC ) ;
+			
+			chmod("/tmp/zuluCrypt-tmp",0700) ;
+
+			write( z,newKey,strlen(newKey)) ;
+		
+			close( z ) ;		
+		}
+		
+		if ( strcmp(keyType1,"-f") == 0 && strcmp(keyType2,"-f") == 0 ){
+			
+			status = add_key( device, c, newKey) ;
+			
+			free( c ) ;
+			
+		}else if (strcmp(keyType1,"-p") == 0 && strcmp(keyType2,"-p") == 0 ){
+			
+			status = add_key(device, existingKey, "/tmp/zuluCrypt-tmp" ) ;
+			
+			delete_file("/tmp/zuluCrypt-tmp") ;	
+			
+		}else if (strcmp(keyType1,"-p") == 0 && strcmp(keyType2,"-f") == 0 ){
+			
+			status = add_key( device, existingKey, newKey) ;	
+			
+		}else if (strcmp(keyType1,"-f") == 0 && strcmp(keyType2,"-p") == 0 ){			
+		
+			status = add_key( device, c, "/tmp/zuluCrypt-tmp") ;	
+			
+			delete_file("/tmp/zuluCrypt-tmp") ;	
+	
+			free( c ) ;
+		}else{
+			
+			printf("ERROR: Wrong option\n") ;
+			status = 6 ;
+		}
+	}else{
+		printf("ERROR: Wrong number of arguments\n") ;
+		status = 7 ;		
+	}	
+
+	return status ;
+}
+
+
 int main( int argc , char *argv[])
 {
 	char * action = argv[1] ;
@@ -321,8 +453,12 @@ int main( int argc , char *argv[])
 	}else if(strcmp(action,"create") == 0 ){
 
 		return create_volumes(argc ,argv[2],argv[3],argv[4],argv[5] ) ;
-	}	
 	
-	return 0 ; //shouldnt get here
 		
+	}else if(strcmp(action,"addkey") == 0 ){
+		
+		return addkey(argc,argv[2],argv[3],argv[4],argv[5],argv[6]) ;
+	}
+	
+	return 0 ; //shouldnt get here		
 }
