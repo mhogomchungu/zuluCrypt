@@ -118,13 +118,13 @@ int open_volumes(int argn, char * device, char * mapping_name,int id, char * mou
 	if (strncmp(mount_point,",\0",2)==0){
 			
 		printf("ERROR, \",\"(comma) is not a valid mount point\n") ;
-		return 9 ;			
+		return 6 ;			
 	}		
 
 	if (strncmp(mode,"ro",2) != 0){
 		if (strncmp(mode,"rw",2) != 0){
 			printf("ERROR: Wrong mode, run zuluCrypt with \"-h\" for help\n");;
-			return 1 ;	
+			return 7 ;	
 		}
 	}		
 
@@ -157,46 +157,48 @@ int open_volumes(int argn, char * device, char * mapping_name,int id, char * mou
 				f = open( pass,O_RDONLY ) ;
 			
 				read(f,c,Q.st_size) ;
+				
 				close(f);
+				
 				st = open_volume(device, mapping_name,mount_point,id,mode,c) ;
+				
 				free( c ) ;
 			}else{
-				printf("ERROR: passphrase file does not exist\n");
 
-				return 6 ;
+				st = 6 ;
 			}
 		}else{
-			printf("ERROR: Wrong option, run zuluCrypt with \"-h\" for help\n");
-			return 7 ;
+			
+			st = 7 ;
 		}
 	}
 	else{
-		printf("ERROR: Wrong number of arguments, run zuluCrypt with \"-h\" for help\n");
-		printf("%d\n",argn) ;
-		return 8 ;			
+		
+		st =  8 ;			
 	}
 
 	switch ( st ){
 			
-	case 0 : printf("SUCCESS: Volume opened successfully\n");
-		break ;
-			
-	case 1 : printf("ERROR: No free loop device to use\n") ; 
-		break ;			
-			
-	case 2 : printf("ERROR: There seem to be an open volume accociated with given address\n");
-		break ;			
-			
-	case 3 : printf("ERROR: No file exist on given path\n") ; 
-		break ;
-			
-	case 4 : printf("ERROR: Wrong passphrase\n");
-		break ;
-			
-	case 5 : printf("ERROR: a file or folder already exist at mount point\n") ;
-		break ;
-	default :
-		;			
+		case 0 : printf("SUCCESS: Volume opened successfully\n");
+			break ;			
+		case 1 : printf("ERROR: No free loop device to use\n") ; 
+			break ;					
+		case 2 : printf("ERROR: There seem to be an open volume accociated with given address\n");
+			break ;				
+		case 3 : printf("ERROR: No file exist on given path\n") ; 
+			break ;		
+		case 4 : printf("ERROR: Wrong passphrase\n");
+			break ;			
+		case 5 : printf("ERROR: a file or folder already exist at mount point\n") ;
+			break ;		
+		case 6 : printf("ERROR: passphrase file does not exist\n");
+			break ;		
+		case 7 : printf("ERROR: Wrong option, run zuluCrypt with \"-h\" for help\n");
+			break ;
+		case 8 : printf("ERROR: Wrong number of arguments, run zuluCrypt with \"-h\" for help\n");
+			break ;
+		default :
+			;			
 	}	
 	return st ;
 }
@@ -204,7 +206,6 @@ int open_volumes(int argn, char * device, char * mapping_name,int id, char * mou
 
 int create_volumes(int argn ,char *device, char *fs, char * mode, char * pass )
 {
-	int flush_the_stdin_buffer ;
 	StrHandle * p ;
 	StrHandle * q ;
 	char x[512] ;
@@ -224,54 +225,58 @@ int create_volumes(int argn ,char *device, char *fs, char * mode, char * pass )
 			 
 	if( argn == 5 ){
 		printf("ARE YOU SURE YOU WANT TO CREATE/OVERWRITE: \"%s\" ? Type \"Y\" if you are\n",device);
+		
 		scanf("%c",&Y);
 		
 		if ( Y != 'Y')
-			return 3 ;
+			st = 5 ;
+		else{			
+			getchar();    //get rid of "\n" still in stdin buffer	
 			
-		//flush the buffer stdin buffer	
-		while ((flush_the_stdin_buffer = getchar()) != '\n' && flush_the_stdin_buffer != EOF);
-			
-		printf("Enter passphrase: ") ;
+			printf("Enter passphrase: ") ;
 
-		p = get_passphrase();
+			p = get_passphrase();
 			
-		printf("\nRe enter passphrase: ") ;
+			printf("\nRe enter passphrase: ") ;
 
-		q = get_passphrase();	
+			q = get_passphrase();	
 			
-		printf("\n") ;
+			printf("\n") ;
 			
-		if(strcmp(StringCont( p ),StringCont( q )) != 0){
-			printf("\nERROR: passphrases do not match\n") ;
-			printf("%s %d\n",StringCont( p ),StringLength( p ));
-			printf("%s %d\n",StringCont( q ),StringLength( q ));
-				
-			StringDelete( q ) ;
-			StringDelete( p ) ;
-			return 3 ;
-		}		
+			if(strcmp(StringCont( p ),StringCont( q )) != 0){
+
+				st = 3 ;
+			}else{
+				st = create_volume(device,fs,mode,StringCont( p )) ;
+				StringDelete( q ) ;
+				StringDelete( p ) ;			
+			}
+		}
 			
 	}else if ( argn == 6 ){
-		p = StringCpy( pass ) ;								
-	}else{
-		printf("ERROR: Wrong number of arguments, run zuluCrypt with \"-h\" for help\n");
-		return 4 ;
-	}		
-	st = create_volume(device,fs,mode,StringCont( p )) ;;
 		
-	if ( st == 1 ){
-		printf("ERROR: File path given does not point to a file or partition\n") ;
-	}else if ( st == 2 ){	
-		printf("ERROR: Unrecognized volume type.\n");
+		st = create_volume(device,fs,mode,pass) ;
+		
+	}else{
+		st = 4 ;			
+	}
+	
+	switch ( st ){
+		case 0 : printf("SUCCESS: volume successfully created\n") ;
+			break  ;
+		case 1 : printf("ERROR: File path given does not point to a file or partition\n") ;
+			break  ;
+		case 2 : printf("ERROR: Unrecognized volume type.\n");
+			break  ;
+		case 3 : printf("ERROR: passphrases do not match\n") ;
+			break  ;
+		case 4 : printf("ERROR: Wrong number of arguments\n");
+			break  ;	
+		case 5 : printf("ERROR: Wrong choice, exiting\n");
+			break  ;
+		default:
+			;
 	}	
-	
-	if ( argn == 5 ){
-		StringDelete( p ) ;	
-		StringDelete( q ) ;	
-	}else
-		StringDelete( p ) ;	
-	
 	return st ;
 }
 
@@ -325,38 +330,43 @@ int addkey(int argn,char * device, char *keyType1, char * existingKey, char * ke
 		printf("\n") ;
 		
 		if (strcmp( StringCont( q ), StringCont( n ) ) != 0){
-			printf("ERROR: new passphrases do not match\n") ;
-			return 5 ;
+			
+			status = 1 ;
+		}else{
+		
+			z = open("/tmp/zuluCrypt-tmp",O_WRONLY | O_CREAT | O_TRUNC ) ;
+
+			chmod("/tmp/zuluCrypt-tmp",0700) ;
+		
+			write(z,StringCont( q ),strlen(StringCont( q ))) ;
+		
+			close( z ) ;
+			
+			status = add_key( device,StringCont( p ), "/tmp/zuluCrypt-tmp" ) ;
+			
+			delete_file("/tmp/zuluCrypt-tmp") ;				
+
+			StringDelete( p ) ;			
+			StringDelete( q ) ;	
+			StringDelete( n ) ;	
 		}
-		
-		z = open("/tmp/zuluCrypt-tmp",O_WRONLY | O_CREAT | O_TRUNC ) ;
-
-		chmod("/tmp/zuluCrypt-tmp",0700) ;
-		
-		write(z,StringCont( q ),strlen(StringCont( q ))) ;
-		
-		close( z ) ;
-			
-		status = add_key( device,StringCont( p ), "/tmp/zuluCrypt-tmp" ) ;
-			
-		delete_file("/tmp/zuluCrypt-tmp") ;				
-
-		StringDelete( p ) ;			
-		StringDelete( q ) ;	
-		
 	}else if( argn == 7 ){			
 		
 		if ( strcmp( keyType1, "-f" ) == 0 ){			
 
-			stat( existingKey, &st1) ;
+			if( stat( existingKey, &st1) == 0 ) {
 			
-			c = ( char *) malloc ( sizeof(char) * st1.st_size ) ;
+				c = ( char *) malloc ( sizeof(char) * st1.st_size ) ;
 			
-			z = open(existingKey, O_RDONLY ) ;
+				z = open(existingKey, O_RDONLY ) ;
 			
-			read( z, c, st1.st_size ) ;
+				read( z, c, st1.st_size ) ;
 			
-			close( z ) ;		
+				close( z ) ;
+			}else{
+				status = 3 ;
+				goto ouch ;
+			}
 		}
 		
 		if ( strcmp( keyType2, "-p" ) == 0){			
@@ -393,19 +403,182 @@ int addkey(int argn,char * device, char *keyType1, char * existingKey, char * ke
 			delete_file("/tmp/zuluCrypt-tmp") ;	
 	
 			free( c ) ;
-		}else{
-			
-			printf("ERROR: Wrong option\n") ;
-			status = 6 ;
+		}else{			
+			status = 5 ;
 		}
 	}else{
-		printf("ERROR: Wrong number of arguments\n") ;
-		status = 7 ;		
-	}	
-
+		status = 6 ;		
+	}
+	
+	ouch:
+	
+	switch ( status ){
+		case 0 : printf("SUCCESS: key added successfully\n");
+		break ;
+		case 1 : printf("ERROR: new passphrases do not match\n") ;
+		break ;
+		case 2 : printf("ERROR: presented key does not match any key in the volume\n") ;
+		break ;
+		case 3 : printf("ERROR: key file containing a key in the volume does not exist\n") ;
+		break ;  
+		case 4 : printf("ERROR: device does not exist\n");
+		break ;
+		case 5 : printf("ERROR: Wrong arguments\n") ;
+		break ;
+		case 6 : printf("ERROR: Wrong number of arguments\n") ;
+		break ;
+	
+		default :
+			;		
+	}
 	return status ;
 }
 
+int killslot(int argn, char * device, char * keyType, char * existingkey, char * s)
+{
+	int status, i, d ;
+	char * c ;
+	struct stat st ;
+	StrHandle * p ;
+	
+	int slotNumber = s[0]  ;
+	
+	if ( argn == 3 ){
+		
+		printf("Enter an existing passphrase: ") ;
+		
+		p = get_passphrase() ;
+		
+		printf("\n") ;
+		
+		printf("Enter a slot number to remove a key on: ") ;
+		
+		d = ( char ) getchar() ;
+		
+		getchar() ; //remove the new line character from stdin buffer
+		
+		status = kill_slot( device, StringCont( p ), d ) ;
+		
+		StringDelete( p ) ;
+		
+	}else if ( argn == 6 ){
+	
+		if( strcmp( keyType, "-p" ) == 0 ){
+		
+			status =  kill_slot(device, existingkey, slotNumber ) ;
+	
+		}else if ( strcmp( keyType, "-f" ) == 0 ){
+		
+			if ( stat( existingkey,&st ) != 0 ){
+				return 4 ;
+			}
+		
+			c = ( char * ) malloc ( sizeof( char ) * st.st_size ) ;
+		
+			i = open( existingkey, O_RDONLY ) ;
+		
+			write( i , c , st.st_size ) ;
+		
+			close( i ) ;
+		
+			status = kill_slot( device, c , slotNumber ) ;
+		
+			free( c ) ;				
+			
+		}else{
+			status = 5 ;		
+		}
+	}else{		
+		status = 6 ;		
+	}	
+	switch ( status ){
+		case 0 : printf("SUCCESS: slot successfully killed\n");
+		break ;
+		case 1 : printf("ERROR: slot to be killed is inactive/empty\n") ;
+		break ;
+		case 2 : printf("ERROR: the device does not exist\n") ;
+		break ;
+		case 3 : printf("ERROR: presented key does not match any key in the volume\n") ;
+		break ;  
+		case 4 : printf("ERROR: key file does not exist\n");
+		break ;
+		case 5 : printf("ERROR: Wrong arguments\n") ;
+		break ;
+		case 6 : printf("ERROR: Wrong number of arguments\n") ;
+		break ;
+		default :
+			;		
+	}	
+	return status ;
+}
+
+int removekey( int argn , char * device, char * keyType, char * keytoremove )
+{
+	StrHandle *p;
+	int status, z ;
+	
+	if ( argn == 3 ){
+		
+		printf("Enter the passphrase of the key you want to delete: ") ;
+		
+		p = get_passphrase() ;
+		
+		printf("\n") ;
+		
+		z = open("/tmp/zuluCrypt-tmp",O_WRONLY | O_CREAT | O_TRUNC ) ;
+			
+		chmod("/tmp/zuluCrypt-tmp",0700) ;
+
+		write( z, StringCont( p ) ,StringLength( p )) ;
+		
+		close( z ) ;
+		
+		status = remove_key( device,"/tmp/zuluCrypt-tmp" ) ;
+		
+		StringDelete( p ) ;
+			
+		delete_file("/tmp/zuluCrypt-tmp");
+		
+	}else if ( argn == 5 ){
+		
+		if( strcmp(keyType, "-f") == 0 ){
+			
+			status = remove_key(device, keytoremove );
+			
+		}else if( strcmp(keyType, "-p") == 0 ) {
+			
+			z = open("/tmp/zuluCrypt-tmp",O_WRONLY | O_CREAT | O_TRUNC ) ;
+			
+			chmod("/tmp/zuluCrypt-tmp",0700) ;
+
+			write( z, keytoremove ,strlen(keytoremove)) ;
+		
+			close( z ) ;
+		
+			status = remove_key( device,"/tmp/zuluCrypt-tmp" ) ;
+		
+			delete_file("/tmp/zuluCrypt-tmp");			
+		}else
+			status = 5 ;
+	}
+	switch ( status ){
+		case 0 : printf("SUCCESS: key successfully removed\n");
+		break ;
+		//case 1 : printf("") ;
+		//break ;
+		case 2 : printf("ERROR: there is no key in the volume that match the presented key\n") ;
+		break ;
+		//case 3 : printf("") ;
+		//break ;  
+		case 4 : printf("ERROR: device does not exist\n");
+		break ;
+		case 5 : printf("ERROR: Wrong number of arguments\n") ;
+		break ;
+		default :
+			;		
+	}		
+	return status ;	
+}
 
 int main( int argc , char *argv[])
 {
@@ -416,6 +589,8 @@ int main( int argc , char *argv[])
 	
 	char *  mapping_name ;
 	char * c ;
+	
+	char slots[7] = {'0','0','0','0','0','0','0'};;
 	
 	id = getuid();	
 	
@@ -452,12 +627,33 @@ int main( int argc , char *argv[])
 		
 	}else if(strcmp(action,"create") == 0 ){
 
-		return create_volumes(argc ,argv[2],argv[3],argv[4],argv[5] ) ;
-	
+		return create_volumes(argc ,argv[2],argv[3],argv[4],argv[5] ) ;	
 		
 	}else if(strcmp(action,"addkey") == 0 ){
 		
 		return addkey(argc,argv[2],argv[3],argv[4],argv[5],argv[6]) ;
+		
+	}else if(strcmp(action,"killslot") == 0 ){
+		
+		return killslot(argc, argv[2],argv[3],argv[4],argv[5] ) ;
+	
+	}else if(strcmp(action,"removekey") == 0 ){
+				
+		return removekey(argc, argv[2], argv[3],argv[4] );
+		
+	}else if(strcmp(action,"emptyslots") == 0 ){
+		
+		if ( empty_slots( slots , argv[2] ) == 0 ){			
+			printf("%s\n",slots ) ;
+			return 0 ;
+		}else{
+			printf("ERROR: given device does not exist\n") ;
+			return 1 ;
+		}
+			
+	}else{
+		printf("ERROR: Wrong argument\n") ;
+		return 10 ;
 	}
 	
 	return 0 ; //shouldnt get here		

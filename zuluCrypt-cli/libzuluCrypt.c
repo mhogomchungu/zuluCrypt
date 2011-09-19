@@ -29,17 +29,7 @@
 #include <fcntl.h>
 #include <termios.h>
 
-#include "String.h"
-
-//function prototypes
-
-int is_luks(char * device) ;
-void execute( char *command , char *output, int size) ;
-int open_volume(char *device, char * mapping_name, char *m_point, uid_t id,char * mode, char *passphrase) ;
-int close_volume(char * mapping_name) ;
-void status(  char * mapping_name , char * output, int size);
-int create_volume(char * device, char * fs,char * type, char * passphrase);
-int add_key(char * device, char * existingkey, char * newkey);
+#include "String.h"   
 
 #define cryptsetup "/sbin/cryptsetup "
 #define mount      "/bin/mount " 
@@ -50,7 +40,13 @@ int add_key(char * device, char * existingkey, char * newkey);
 #define rm         "/bin/rm "
 #define echo       "/bin/echo "
 
-int add_key(char * device, char * existingkey, char * newkey)
+
+//function prototypes
+
+int is_luks(char * device) ;
+void execute( char *command , char *output, int size) ;
+
+int add_key(char * device, char * existingkey, char * keyfile)
 {
 	StrHandle * p ;
 	char s[2] ;
@@ -62,14 +58,116 @@ int add_key(char * device, char * existingkey, char * newkey)
 	StringCat( p , cryptsetup "luksAddKey ") ;
 	StringCat( p , device ) ;
 	StringCat( p , " " ) ;
-	StringCat( p , newkey ) ;
+	StringCat( p , keyfile ) ;
 	StringCat( p , " 2>/dev/null 1>&2 ; echo $?") ;
 	
-	execute(StringCont( p ), s, 2 ) ;	
+	execute(StringCont( p ), s, 1 ) ;	
 	
 	return s[0] - '0' ;
 }
 
+int kill_slot( char * device,char * existingkey, int slotNumber)
+{	
+	char s[2] ;
+	
+	StrHandle * p = StringCpy( echo ) ;
+	StringCat( p , existingkey ) ;
+	StringCat( p , " | " cryptsetup "luksKillSlot ") ;
+	StringCat( p , device ) ;
+	StringCat( p , " " ) ;
+	
+	s[0] = ( char ) slotNumber ; 
+	s[1] = '\0' ;
+	
+	StringCat( p , s ) ;
+	StringCat( p , " 2>&1") ;
+	
+	execute( StringCont( p ), s , 1 ) ;
+	StringDelete( p ) ;
+
+	//cryptsetup 1.3.1 and 1.3.0 has a bug and returns "0" when trying to kill an inactive slot, working around it
+	
+	if ( s[0] == '0' )      // success
+		return 0 ;
+	else if ( s[0] == 'K' ) // trying to kill an inactive slot
+		return 1 ;
+	else if ( s[0] == 'D' ) // device doesnt exist
+		return 2 ;
+	else if ( s[0] == 'N' )
+		return 3 ;      // no key available that matched presented key
+	
+	return 0 ; //shouldnt get here
+}
+
+int remove_key( char * device , char * keyfile )
+{
+	char s[2] ;
+	StrHandle * p = StringCpy(cryptsetup "luksRemoveKey ") ;
+	StringCat( p , device ) ;
+	StringCat( p , " " ) ;
+	StringCat( p , keyfile ) ;
+	StringCat( p , " 2>/dev/null 1>&2 ; echo $?") ;
+
+	execute( StringCont( p ), s, 1 ) ;
+	
+	return s[0] - '0' ;	
+}
+
+int empty_slots( char * slots ,char * device )
+{
+	struct stat st ;
+	
+	int i ;
+	
+	char *c ;	
+	
+	StrHandle * p = StringCpy( cryptsetup "luksDump ") ;
+	StringCat( p , device ) ;
+	StringCat( p , " 1> /tmp/zuluCrypt-dump 2>&1") ;
+	
+	execute( StringCont( p ), NULL, 0 ) ;
+	
+	stat("/tmp/zuluCrypt-dump",&st) ;
+	
+	c = ( char * ) malloc ( sizeof(char) * st.st_size) ;
+	
+	i = open("/tmp/zuluCrypt-dump",O_RDONLY) ;
+	
+	read ( i , c , st.st_size ) ;
+	
+	close( i ) ;	
+	
+	if ( c[0] == 'D' )
+		return 1 ;
+	
+	if ( strstr( c, "Key Slot 0: DISABLED") == NULL )
+		slots[0] = '1' ;
+	
+	if ( strstr( c, "Key Slot 1: DISABLED") == NULL )
+		slots[1] = '1' ;
+		
+	if ( strstr( c, "Key Slot 2: DISABLED") == NULL )
+		slots[2] = '1' ;
+
+	if ( strstr( c, "Key Slot 3: DISABLED") == NULL )
+		slots[3] = '1' ;
+					
+	if ( strstr( c, "Key Slot 4: DISABLED") == NULL )
+		slots[4] = '1' ;
+							
+	if ( strstr( c, "Key Slot 5: DISABLED") == NULL )
+		slots[5] = '1' ;
+									
+	if ( strstr( c, "Key Slot 6: DISABLED") == NULL )
+		slots[6] = '1' ;
+
+	if ( strstr( c, "Key Slot 7: DISABLED") == NULL )
+		slots[7] = '1' ;
+	
+	remove("/tmp/zuluCrypt-dump") ;
+	
+	return 0 ;
+}
 
 void status( char * mapping_name , char * output, int size )
 {		
@@ -391,16 +489,19 @@ int open_volume(char *device, char * mapping_name, char *m_point, uid_t id,char 
 			return 5 ;		
 		}
 	}
-
-	chown( StringCont( p ), id, id ) ;
 	
 	z = StringCpy("/dev/mapper/zuluCrypt-") ;
+	
 	StringCat( z , mapping_name ) ;
 	
 	if ( strncmp( mode, "ro",2 ) == 0 )
 		q = StringCpy(mount " -r ") ;
 	else
 		q = StringCpy(mount " -w ") ;
+	
+	sleep(2) ;
+	
+	chown( StringCont( p ), id, id ) ;
 	
 	StringCat( q , StringCont( z ) ) ;
 

@@ -97,7 +97,61 @@ void status(  char * mapping_name , char * output, int size);
  */
 int create_volume(char * device, char * fs,char * type, char * passphrase);  
 
+
+
+/*
+ * INPUT: 
+ * 	device      - path to an encrypted file or mass storage device
+ * 	existingkey - a key that already exist in the encrypted volume
+ * 	new key     - path to a file with a key that is to be added to the volume
+ * 
+ * return value:
+ * 	0 - success, the new key was added successfully
+ *      2 - ERROR: The presented key does not exist in the volume
+ *      4 - ERROR: device does not exist
+ */
 int add_key(char * device, char * existingkey, char * newkey) ;
+
+
+
+/*
+ * INPUT: device:      path to an encrypted device
+ *        existingkey: path to a file with a passphrase already in the volume
+ * 
+ * OUTPUT: 
+ * 0 - success - a key is successfully removed
+ * 2 - ERROR: The presented key does not exist in the volume
+ * 4 - ERROR: device does not exist
+ */
+int remove_key( char * device , char * keyfile ) ;
+
+
+
+/*
+ * INPUT: device:      path to an encrypted device
+ * 	  existingkey: path to a file with a passphrase already in the volume
+ * 	  slotNumber : a number of a slot to delete/kill
+ * OUTPUT:
+ * 0 - success, a slot is successfully deleted
+ * 1 - ERROR: trying to delete an empty slot
+ * 2 - ERROR:  device does not exist
+ * 3 - ERROR: The presented key does not exist in the volume
+ */
+int kill_slot( char * device,char * existingkey, int slotNumber) ;
+
+
+/*
+ * INPUT: device - path to encrypted volume
+ * 
+ * OUTPUT:
+ * slots: array of 8 digits representing empty slots, 1 is for enabled, 0 for disabled
+ *        example 00100000 means, slot number 2 is occupied/enabled, the rest are not(emply/disabled).
+ * 
+ * return value:
+ * 1 - device does not exist
+ * 0 - successfully read the device
+ */
+int empty_slots( char * slots , char * device ) ;
 
 
 #ifdef __cplusplus

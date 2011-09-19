@@ -16,12 +16,14 @@ SOURCES += main.cpp\
     openpartition.cpp
 
 HEADERS  += zulucrypt.h password_dialog.h \
-    openpartition.h
+    openpartition.h \
+    version.h
 
 FORMS    += zulucrypt.ui password.ui \
     openartition.ui
 
 OTHER_FILES +=
+
 
 
 

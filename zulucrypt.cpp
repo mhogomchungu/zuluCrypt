@@ -96,20 +96,18 @@ void zuluCrypt::setUpOpenedVolumes(void)
 	QStringList Z =  QDir(QString("/dev/mapper")).entryList().filter("zuluCrypt-") ;
 
 	char *c, *d, *v,*volume,*N ;
+
 	QProcess * p ;
+
 	for ( int i = 0 ; i < Z.size() ; i++){
 
-		c = Z.at(i).toAscii().data() ;
+		QString C = Z.at(i) ;
 
-		d = c + strlen( c )  ;
-
-		while( *--d != '-') { ; }
-
-		d++ ;
+		C = C.right( C.length() - 10 ) ; //10 is the length of "zuluCrypt-
 
 		p = new QProcess() ;
 
-		p->start(zuluCryptExe + " status " + QString(d)) ;
+		p->start(zuluCryptExe + " status " + C ) ;
 
 		p->waitForReadyRead() ;
 
