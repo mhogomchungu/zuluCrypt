@@ -481,10 +481,10 @@ int open_volume(char *device, char * mapping_name, char *m_point, uid_t id,char 
 		StringCat(p,label) ;		
 	}
 	
-	if ( mkdir( StringCont( p ), 0700 ) != 0 ){
+	if ( mkdir( StringCont( p ), S_IRWXU  ) != 0 ){
 		StringCat( p, ".zc") ;
 		
-		if ( mkdir( StringCont( p ),0700 ) != 0 ){
+		if ( mkdir( StringCont( p ),S_IRWXU  ) != 0 ){
 			StringDelete( p ) ;
 			return 5 ;		
 		}
@@ -499,10 +499,6 @@ int open_volume(char *device, char * mapping_name, char *m_point, uid_t id,char 
 	else
 		q = StringCpy(mount " -w ") ;
 	
-	sleep(2) ;
-	
-	chown( StringCont( p ), id, id ) ;
-	
 	StringCat( q , StringCont( z ) ) ;
 
 	StringCat( q , " ");
@@ -510,6 +506,12 @@ int open_volume(char *device, char * mapping_name, char *m_point, uid_t id,char 
 	StringCat( q , StringCont( p ) ) ;
 	
 	execute(StringCont( q ),NULL,0) ;
+	
+	sleep(2) ;
+	
+	chown( StringCont( p ), id, id ) ;
+	
+	chmod( StringCont( p ), S_IRWXU ) ;
 	
 	StringDelete( q ) ;
 	StringDelete( p ) ;
