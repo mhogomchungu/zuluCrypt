@@ -36,6 +36,11 @@ openpartition::openpartition(QWidget *parent ) : QDialog(parent)
 	connect(partitionView.tableWidgetPartitionView,SIGNAL(cellDoubleClicked(int,int)),this,SLOT(tableEntryDoubleClicked(int,int))) ;	
 }
 
+void openpartition::showUI()
+{
+	showPartitionsUI();
+}
+
 void openpartition::showPartitionsUI()
 {
 	int y = partitionView.tableWidgetPartitionView->rowCount() ;

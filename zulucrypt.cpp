@@ -43,20 +43,24 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 	openPartitionUI.setParent(this);
 	openPartitionUI.setWindowFlags(Qt::Window | Qt::Dialog);
 
+	luksopenPartitionUI.setParent(this);
+	luksopenPartitionUI.setWindowFlags(Qt::Window | Qt::Dialog);
+
+	addKeyUI.setParent(this);
+	addKeyUI.setWindowFlags(Qt::Window | Qt::Dialog);
+
 	item_count = 0 ;
 
 	ui->setupUi(this);
 	this->setFixedSize(this->size());
 
-	ui->tableWidget->setColumnWidth(0,246);
+	ui->tableWidget->setColumnWidth(0,230);
 
-	ui->tableWidget->setColumnWidth(1,356);
+	ui->tableWidget->setColumnWidth(1,290);
 
-	m = new QMenu ;
+	ui->tableWidget->setColumnWidth(2,90);
 
-	connect(m->addAction("close"),SIGNAL(triggered()),this,SLOT(close())) ;
-
-	connect(m->addAction("properties"),SIGNAL(triggered()),this,SLOT(volume_property())) ;
+	connect(this,SIGNAL(luksAddKeyUI(QString)),(QObject *)&addKeyUI,SLOT(partitionEntry(QString))) ;
 
 	connect(ui->actionFileOpen,SIGNAL(triggered()),this,SLOT(showOpenFileDialogClear())) ;
 
@@ -68,10 +72,81 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 
 	connect((QObject *)&openPartitionUI,SIGNAL(clickedPartition(QString)),(QObject *)&openFileUI,SLOT(clickedPartitionOption(QString)));
 
-
 	connect(ui->actionAbout,SIGNAL(triggered()),this,SLOT(aboutMenuOption())) ;
 
+	connect(ui->actionLuksVolumesConfigure,SIGNAL(triggered()), (QObject *)&addKeyUI,SLOT(ShowUI()) ) ;
+
+	connect((QObject *)&addKeyUI,SIGNAL(clickedpbAdd(QString,bool,QString,bool,QString)), this,SLOT(luksAddKey(QString,bool,QString,bool,QString))) ;
+
+	connect((QObject *)&addKeyUI,SIGNAL(pbOpenPartitionClicked()),(QObject *)&luksopenPartitionUI,SLOT(showUI())) ;
+
+	connect((QObject *)&luksopenPartitionUI,SIGNAL(clickedPartition(QString)),&addKeyUI,SLOT(partitionEntry(QString))) ;
+
 	setUpOpenedVolumes() ;
+}
+
+void zuluCrypt::luksAddKey(QString volumePath, bool keyfile,QString ExistingKey,bool newkeyfile, QString NewKey)
+{
+	QString existingPassType ;
+	QString newPassType ;
+
+	if ( keyfile == true)
+		existingPassType = QString(" -f ") ;
+	else
+		existingPassType = QString(" -p ") ;
+
+	if ( newkeyfile == true)
+		newPassType = QString(" -f ") ;
+	else
+		newPassType = QString(" -p ") ;
+
+	QString exe = zuluCryptExe + QString(" addkey ") + volumePath + existingPassType + ExistingKey + newPassType + NewKey ;
+
+	QProcess Z ;
+
+	Z.start(exe);
+
+	Z.waitForFinished() ;
+
+	switch( Z.exitCode() ){
+
+	case 0 : UIMessage(QString("SUCCESS: key added successfully\n") + luksEmptySlots(volumePath) + QString(" / 8 slots are now in use")) ;
+		break ;
+	case 2 : UIMessage(QString("ERROR: presented key does not match any key in the volume"));
+		break ;
+	case 3 : UIMessage(QString("ERROR: keyfile with the new passphrase does not exist"));
+		break ;
+	case 4 : UIMessage(QString("ERROR: luks volume does not exist"));
+		break ;
+	default :
+		UIMessage(QString("ERROR: un unrecognized error has occured, key not added"));
+	}
+}
+
+char zuluCrypt::luksEmptySlots(QString volumePath)
+{
+	QProcess N ;
+	N.start(QString(zuluCryptExe + QString(" emptyslots ")) + volumePath);
+	N.waitForFinished() ;
+	char *s = N.readAllStandardOutput().data() ;
+	int i = 0 ;
+	for ( int j = 0 ; j < 8 ; j++){
+		if( s[j] == '1' )
+			i++ ;
+	}
+	return i + '0' ;
+}
+
+bool zuluCrypt::isLuks(QString volumePath)
+{
+	QProcess N ;
+	N.start(QString(zuluCryptExe + QString(" isLuks ")) + volumePath);
+	N.waitForFinished() ;
+
+	if ( N.exitCode() == 0 )
+		return true ;
+	else
+		return false ;
 }
 
 void zuluCrypt::aboutMenuOption(void)
@@ -92,7 +167,6 @@ void zuluCrypt::showOpenPartitionDialog(void)
 
 void zuluCrypt::setUpOpenedVolumes(void)
 {
-
 	QStringList Z =  QDir(QString("/dev/mapper")).entryList().filter("zuluCrypt-") ;
 
 	char *c, *d, *v,*volume,*N ;
@@ -171,11 +245,16 @@ void zuluCrypt::addItemToTable(QString x,QString y)
 	ui->tableWidget->insertRow(item_count);
 	ui->tableWidget->setItem(item_count,0,new QTableWidgetItem(x)) ;
 	ui->tableWidget->setItem(item_count,1,new QTableWidgetItem(y)) ;
+	if ( isLuks( ui->tableWidget->item(item_count,0)->text()) == true )
+		ui->tableWidget->setItem(item_count,2,new QTableWidgetItem(QString("luks"))) ;
+	else
+		ui->tableWidget->setItem(item_count,2,new QTableWidgetItem(QString("plain"))) ;
 
 	ui->tableWidget->item(item_count,0)->setTextAlignment(Qt::AlignCenter);
 	ui->tableWidget->item(item_count,1)->setTextAlignment(Qt::AlignCenter);
+	ui->tableWidget->item(item_count,2)->setTextAlignment(Qt::AlignCenter);
 
-	item_count++ ;
+	item_count++ ;	
 }
 
 void zuluCrypt::removeRowFromTable( int x )
@@ -188,10 +267,13 @@ void zuluCrypt::volume_property()
 {
 	QProcess p ;
 
-	QString z = zuluCryptExe + " status " + item->tableWidget()->item(item->row(),0)->text() ;
+	QString path = item->tableWidget()->item(item->row(),0)->text() ;
+
+	QString z = zuluCryptExe + " status " +  path ;
 
 	p.start( z ) ;
 	p.waitForFinished() ;
+
 	QString M = p.readAllStandardOutput() ;
 
 	char *c = M.toAscii().data() ;
@@ -201,7 +283,12 @@ void zuluCrypt::volume_property()
 	while ( *c++ != '\n') { i++ ; }
 
 	QMessageBox m ;
-	m.setText( M.right( M.size() - i) ) ;
+
+	if ( isLuks(path) == true)
+		m.setText( M.right( M.size() - i) + QString("  occupied key slots: ") + luksEmptySlots(path) + QString(" / 8")) ;
+	else
+		m.setText( M.right( M.size() - i) ) ;
+
 	m.addButton(QMessageBox::Ok);
 	m.exec() ;
 }
@@ -209,7 +296,37 @@ void zuluCrypt::volume_property()
 void zuluCrypt::options(QTableWidgetItem* t)
 {
 	item = t ;
-	m->exec(QCursor::pos()) ;
+
+	QMenu m ;
+
+	connect(m.addAction("close"),SIGNAL(triggered()),this,SLOT(close())) ;
+
+	m.addSeparator() ;
+
+	connect(m.addAction("properties"),SIGNAL(triggered()),this,SLOT(volume_property())) ;
+
+	QProcess Z ;
+
+	Z.start( zuluCryptExe + QString(" isLuks ") + ui->tableWidget->item(item->row(),0)->text());
+
+	Z.waitForFinished() ;
+
+	if( Z.exitCode() == 0 ){
+		m.addSeparator() ;
+		connect(m.addAction("add key"),SIGNAL(triggered()),this,SLOT(luksAddKeyContextMenu())) ;
+		connect(m.addAction("remove key"),SIGNAL(triggered()),this,SLOT(luksDeleteKeyContextMenu())) ;
+	}
+	m.exec(QCursor::pos()) ;
+}
+
+void zuluCrypt::luksAddKeyContextMenu(void)
+{
+	emit luksAddKeyUI(ui->tableWidget->item(item->row(),0)->text() ) ;
+}
+
+void zuluCrypt::luksDeleteKeyContextMenu(void)
+{
+
 }
 
 void zuluCrypt::UIMessage(QString message)
@@ -350,5 +467,4 @@ void zuluCrypt::showOpenFileDialogClear(void)
 zuluCrypt::~zuluCrypt()
 {
 	delete ui;
-	delete m ;
 }

@@ -63,7 +63,7 @@ public slots :
 	void passphraseOption(void) ;
 	
 private :
-	openpartition p ;
+
 };
 
 #endif // PASSWORD_DIALOG_H

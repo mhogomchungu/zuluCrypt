@@ -612,8 +612,12 @@ int main( int argc , char *argv[])
 	}else{
 		mapping_name =  device  ;			
 	}		
-
-	if ( strcmp( action, "status" ) == 0 ){			
+	
+	if( strcmp( action, "isLuks" ) == 0 ){
+	
+		return is_luks( device ) ;
+		
+	}else if ( strcmp( action, "status" ) == 0 ){			
 
 		return volume_info( mapping_name ) ;
 		

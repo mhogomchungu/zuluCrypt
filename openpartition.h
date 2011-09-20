@@ -44,7 +44,9 @@ signals :
 
 public slots:
 
-void tableEntryDoubleClicked(int row, int column) ;
+	void tableEntryDoubleClicked(int row, int column) ;
+
+	void showUI(void) ;
 
 private:
 	Ui::PartitionView partitionView ;
