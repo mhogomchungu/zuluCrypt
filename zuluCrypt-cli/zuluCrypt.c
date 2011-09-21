@@ -336,7 +336,8 @@ int addkey(int argn,char * device, char *keyType1, char * existingKey, char * ke
 		
 			z = open("/tmp/zuluCrypt-tmp",O_WRONLY | O_CREAT | O_TRUNC ) ;
 
-			chmod("/tmp/zuluCrypt-tmp",0700) ;
+			chown("/tmp/zuluCrypt-tmp",0,0) ;
+			chmod("/tmp/zuluCrypt-tmp",S_IRWXU) ;
 		
 			write(z,StringCont( q ),strlen(StringCont( q ))) ;
 		
@@ -373,7 +374,8 @@ int addkey(int argn,char * device, char *keyType1, char * existingKey, char * ke
 			
 			z = open("/tmp/zuluCrypt-tmp",O_WRONLY | O_CREAT | O_TRUNC ) ;
 			
-			chmod("/tmp/zuluCrypt-tmp",0700) ;
+			chown("/tmp/zuluCrypt-tmp",0,0) ;
+			chmod("/tmp/zuluCrypt-tmp",S_IRWXU) ;
 
 			write( z,newKey,strlen(newKey)) ;
 		
@@ -516,6 +518,7 @@ int removekey( int argn , char * device, char * keyType, char * keytoremove )
 {
 	StrHandle *p;
 	int status, z ;
+	struct stat st ;
 	
 	if ( argn == 3 ){
 		
@@ -527,7 +530,8 @@ int removekey( int argn , char * device, char * keyType, char * keytoremove )
 		
 		z = open("/tmp/zuluCrypt-tmp",O_WRONLY | O_CREAT | O_TRUNC ) ;
 			
-		chmod("/tmp/zuluCrypt-tmp",0700) ;
+		chown("/tmp/zuluCrypt-tmp",0,0) ;
+		chmod("/tmp/zuluCrypt-tmp",S_IRWXU) ;
 
 		write( z, StringCont( p ) ,StringLength( p )) ;
 		
@@ -543,13 +547,17 @@ int removekey( int argn , char * device, char * keyType, char * keytoremove )
 		
 		if( strcmp(keyType, "-f") == 0 ){
 			
-			status = remove_key(device, keytoremove );
+			if ( stat(keytoremove,&st) == 0 )
+				status = remove_key(device, keytoremove );
+			else
+				status = 5 ;
 			
 		}else if( strcmp(keyType, "-p") == 0 ) {
 			
 			z = open("/tmp/zuluCrypt-tmp",O_WRONLY | O_CREAT | O_TRUNC ) ;
 			
-			chmod("/tmp/zuluCrypt-tmp",0700) ;
+			chown("/tmp/zuluCrypt-tmp",0,0) ;
+			chmod("/tmp/zuluCrypt-tmp",S_IRWXU) ;
 
 			write( z, keytoremove ,strlen(keytoremove)) ;
 		
@@ -559,7 +567,7 @@ int removekey( int argn , char * device, char * keyType, char * keytoremove )
 		
 			delete_file("/tmp/zuluCrypt-tmp");			
 		}else
-			status = 5 ;
+			status = 6 ;
 	}
 	switch ( status ){
 		case 0 : printf("SUCCESS: key successfully removed\n");
@@ -572,7 +580,9 @@ int removekey( int argn , char * device, char * keyType, char * keytoremove )
 		//break ;  
 		case 4 : printf("ERROR: device does not exist\n");
 		break ;
-		case 5 : printf("ERROR: Wrong number of arguments\n") ;
+		case 5 : printf("ERROR: keyfile does not exist\n") ;
+		break ;
+		case 6 : printf("ERROR: Wrong number of arguments\n") ;
 		break ;
 		default :
 			;		
