@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>luksdeletekey</class>
  <widget class="QDialog" name="luksdeletekey">
+  <property name="windowModality">
+   <enum>Qt::WindowModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>delete a key slot</string>
+   <string>remove a key from a volume</string>
   </property>
   <property name="modal">
    <bool>true</bool>

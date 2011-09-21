@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'password.ui'
 **
-** Created: Wed Sep 21 13:27:41 2011
+** Created: Wed Sep 21 15:10:35 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -101,13 +101,16 @@ public:
         MountPointPath->setGeometry(QRect(100, 40, 321, 31));
         labelPassphrase = new QLabel(PasswordDialog);
         labelPassphrase->setObjectName(QString::fromUtf8("labelPassphrase"));
-        labelPassphrase->setGeometry(QRect(10, 105, 91, 21));
+        labelPassphrase->setGeometry(QRect(10, 105, 81, 21));
+        labelPassphrase->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         labelMoutPointPath = new QLabel(PasswordDialog);
         labelMoutPointPath->setObjectName(QString::fromUtf8("labelMoutPointPath"));
         labelMoutPointPath->setGeometry(QRect(10, 39, 81, 31));
+        labelMoutPointPath->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         labelVolumePath = new QLabel(PasswordDialog);
         labelVolumePath->setObjectName(QString::fromUtf8("labelVolumePath"));
         labelVolumePath->setGeometry(QRect(10, 10, 81, 31));
+        labelVolumePath->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         QWidget::setTabOrder(PushButtonVolumePath, PushButtonMountPointPath);
         QWidget::setTabOrder(PushButtonMountPointPath, PassPhraseField);
         QWidget::setTabOrder(PassPhraseField, checkBoxReadOnly);

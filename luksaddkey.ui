@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>luksaddkeyUI</class>
  <widget class="QDialog" name="luksaddkeyUI">
+  <property name="windowModality">
+   <enum>Qt::WindowModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -19,7 +22,7 @@
   <widget class="QLabel" name="labelLuksVolume">
    <property name="geometry">
     <rect>
-     <x>10</x>
+     <x>20</x>
      <y>10</y>
      <width>121</width>
      <height>31</height>
@@ -27,6 +30,9 @@
    </property>
    <property name="text">
     <string>path to luks volume</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
    </property>
   </widget>
   <widget class="QPushButton" name="pushButtonOpenFile">
@@ -102,14 +108,17 @@
    <widget class="QLabel" name="labelExistingPassphrase">
     <property name="geometry">
      <rect>
-      <x>50</x>
+      <x>10</x>
       <y>60</y>
-      <width>71</width>
+      <width>121</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
      <string>passphrase</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButtonOpenExistingKeyFile">
@@ -232,14 +241,17 @@
    <widget class="QLabel" name="labelNewPassphrase">
     <property name="geometry">
      <rect>
-      <x>50</x>
+      <x>10</x>
       <y>60</y>
-      <width>71</width>
+      <width>121</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
      <string>passphrase</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
    </widget>
    <widget class="QLineEdit" name="textEditPassphraseToAdd">
@@ -273,6 +285,9 @@
     </property>
     <property name="text">
      <string>reenter passphrase</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
    </widget>
   </widget>

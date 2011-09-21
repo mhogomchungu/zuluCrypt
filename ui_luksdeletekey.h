@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'luksdeletekey.ui'
 **
-** Created: Tue Sep 20 21:29:05 2011
+** Created: Wed Sep 21 13:48:59 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -43,6 +43,7 @@ public:
     {
         if (luksdeletekey->objectName().isEmpty())
             luksdeletekey->setObjectName(QString::fromUtf8("luksdeletekey"));
+        luksdeletekey->setWindowModality(Qt::WindowModal);
         luksdeletekey->resize(452, 167);
         luksdeletekey->setModal(true);
         lineEditPassphrase = new QLineEdit(luksdeletekey);
@@ -86,7 +87,7 @@ public:
 
     void retranslateUi(QDialog *luksdeletekey)
     {
-        luksdeletekey->setWindowTitle(QApplication::translate("luksdeletekey", "delete a key slot", 0, QApplication::UnicodeUTF8));
+        luksdeletekey->setWindowTitle(QApplication::translate("luksdeletekey", "remove a key from a volume", 0, QApplication::UnicodeUTF8));
         labelPassphrase->setText(QApplication::translate("luksdeletekey", "passphrase", 0, QApplication::UnicodeUTF8));
         groupBox->setTitle(QString());
         rbPassphrase->setText(QApplication::translate("luksdeletekey", "existing passphrase in a volume to delete", 0, QApplication::UnicodeUTF8));

@@ -17,6 +17,10 @@ If you are already in the directory with the source code, just type "./build" to
 
 How to install:
 Run "./build install" when in the source code folder after you have run "./build"
+The "zuluCrypt" program should appear on your menu list, if not log out and back in.
+
+How to uninstall:
+Run "./build uninstall" when in the source code folder after you have run "./build"
 
 How to use the GUI part of the program.
 It GUI should be obvious enough to figure it out without instructions. 
@@ -36,7 +40,9 @@ The above usage is appropriate when using the program interactively because the 
 
 Another way to open a volume is with this format. This format is more convenient when the cli is used by another application.
 
-zuluCrypt-cli <path to volume> <mount point path> <mode> <passphrase> 
+zuluCrypt-cli <path to volume> <mount point path> <mode> <pass type > <passphrase> 
+
+<pass type> is either "-f" for a passphrase in a key file or "-p" for typed in passphrase.
 
 2. How to check the status of an opened volume
 
@@ -58,6 +64,12 @@ zuluCrypt-cli create <path to volume> <file system type> <encryption type>
 example usage
 zuluCrypt-cli create /home/mhogomchungu/BankDocuments ext4 plain
 zuluCrypt-cli create /mnt/mhogomchungu/ConfidentialBusinessRecords ext4 luks
+
+another alternative suitable when called from another program:
+
+zuluCrypt-cli create /mnt/mhogomchungu/ConfidentialBusinessRecords ext4 luks -f file-to-keyfile
+
+zuluCrypt-cli create /mnt/mhogomchungu/ConfidentialBusinessRecords ext4 luks -p typing-in-passphrase
 
 Note:
 Creation of volumes on hard drives(addresses starting with "/dev") is currently disabled. Hence this tool can currently

@@ -10,4 +10,5 @@ comma as a mount point is disallowed because it sits right next to "dot" button 
 but will miss the key and press comma key and start wondering why things arent they way they are supposed to be.
 The comma key should have been on the other side of the keyboard!!!
 
-
+version 2.0
+add support for adding and deleting keys in luks based volumes in the cli and gui.
