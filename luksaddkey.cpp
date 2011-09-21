@@ -176,14 +176,14 @@ void luksaddkeyUI::pbAdd(void)
 		m.exec() ;
 		return ;
 	}
-	if ( c != d ){
-		m.setText(QString("ERROR: passphrases do not match"));
-		m.addButton(QMessageBox::Ok);
-		m.exec() ;
-		return ;
-
+	if ( ui.radioButtonNewPassphraseFromFile->isChecked() == false){
+		if ( c != d ){
+			m.setText(QString("ERROR: passphrases do not match"));
+			m.addButton(QMessageBox::Ok);
+			m.exec() ;
+			return ;
+		}
 	}
-
 	HideUI() ;
 	emit clickedpbAdd(a , x , b , y , c  ) ;
 }

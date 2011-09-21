@@ -228,7 +228,14 @@ void zuluCrypt::setUpOpenedVolumes(void)
 
 		p->deleteLater();
 
-		d = strstr(c,"device:") + 9 ;
+		d = strstr(c,"device:") ;
+
+		if ( d == NULL){
+			UIMessage(QString("WARNING: An inconsitency is detected, " + QString(C) + QString(" does not look like a cryptsetp volume")));
+			continue ;
+		}
+
+		d = d + 9 ;
 
 		if (strncmp(d ,"/dev/loop",9) != 0 ){
 			v = d ;
