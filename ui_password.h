@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'password.ui'
 **
-** Created: Thu Sep 15 11:36:53 2011
+** Created: Tue Sep 20 20:54:44 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -142,7 +142,13 @@ public:
         PushButtonOpen->setText(QApplication::translate("PasswordDialog", "open", 0, QApplication::UnicodeUTF8));
         PushButtonCancel->setText(QApplication::translate("PasswordDialog", "cancel", 0, QApplication::UnicodeUTF8));
         checkBoxReadOnly->setText(QApplication::translate("PasswordDialog", "open in read only mode", 0, QApplication::UnicodeUTF8));
+#ifndef QT_NO_TOOLTIP
+        PushButtonMountPointPath->setToolTip(QApplication::translate("PasswordDialog", "select mount point path", 0, QApplication::UnicodeUTF8));
+#endif // QT_NO_TOOLTIP
         PushButtonMountPointPath->setText(QString());
+#ifndef QT_NO_TOOLTIP
+        PushButtonVolumePath->setToolTip(QApplication::translate("PasswordDialog", "open volume path", 0, QApplication::UnicodeUTF8));
+#endif // QT_NO_TOOLTIP
         PushButtonVolumePath->setText(QString());
         labelVolumePath->setText(QApplication::translate("PasswordDialog", "Volume path", 0, QApplication::UnicodeUTF8));
         labelMoutPointPath->setText(QApplication::translate("PasswordDialog", "Mount Point", 0, QApplication::UnicodeUTF8));
@@ -150,6 +156,9 @@ public:
         groupBox->setTitle(QString());
         radioButtonPassPhrase->setText(QApplication::translate("PasswordDialog", "passphrase", 0, QApplication::UnicodeUTF8));
         radioButtonPassPhraseFromFile->setText(QApplication::translate("PasswordDialog", "passphrase from key file", 0, QApplication::UnicodeUTF8));
+#ifndef QT_NO_TOOLTIP
+        pushButtonPassPhraseFromFile->setToolTip(QApplication::translate("PasswordDialog", "open key file", 0, QApplication::UnicodeUTF8));
+#endif // QT_NO_TOOLTIP
         pushButtonPassPhraseFromFile->setText(QString());
     } // retranslateUi
 

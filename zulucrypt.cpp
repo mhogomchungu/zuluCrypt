@@ -26,6 +26,7 @@
 #include <QCursor>
 #include <QByteArray>
 #include <QColor>
+#include <QBrush>
 #include <iostream>
 #include <QMessageBox>
 
@@ -49,6 +50,9 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 	addKeyUI.setParent(this);
 	addKeyUI.setWindowFlags(Qt::Window | Qt::Dialog);
 
+	deleteKeyUI.setParent(this);
+	deleteKeyUI.setWindowFlags(Qt::Window | Qt::Dialog);
+
 	item_count = 0 ;
 
 	ui->setupUi(this);
@@ -59,6 +63,8 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 	ui->tableWidget->setColumnWidth(1,290);
 
 	ui->tableWidget->setColumnWidth(2,90);
+
+	connect(this, SIGNAL(luksDeleteKeyUI(QString)),(QObject *)&deleteKeyUI,SLOT(deleteKey(QString))) ;
 
 	connect(this,SIGNAL(luksAddKeyUI(QString)),(QObject *)&addKeyUI,SLOT(partitionEntry(QString))) ;
 
@@ -74,7 +80,9 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 
 	connect(ui->actionAbout,SIGNAL(triggered()),this,SLOT(aboutMenuOption())) ;
 
-	connect(ui->actionLuksVolumesConfigure,SIGNAL(triggered()), (QObject *)&addKeyUI,SLOT(ShowUI()) ) ;
+	connect(ui->actionAddKey,SIGNAL(triggered()), (QObject *)&addKeyUI,SLOT(ShowUI()) ) ;
+
+	connect(ui->actionDeleteKey,SIGNAL(triggered()),(QObject *)&deleteKeyUI,SLOT(ShowUI()) ) ;
 
 	connect((QObject *)&addKeyUI,SIGNAL(clickedpbAdd(QString,bool,QString,bool,QString)), this,SLOT(luksAddKey(QString,bool,QString,bool,QString))) ;
 
@@ -82,7 +90,35 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 
 	connect((QObject *)&luksopenPartitionUI,SIGNAL(clickedPartition(QString)),&addKeyUI,SLOT(partitionEntry(QString))) ;
 
+	connect((QObject *)&deleteKeyUI,SIGNAL(pbDeleteClicked(QString,bool,QString)),this, SLOT(luksDeleteKey(QString,bool,QString))) ;
+
 	setUpOpenedVolumes() ;
+}
+
+void zuluCrypt::luksDeleteKey(QString volumePath,bool passPhraseIsFile, QString p)
+{
+	QString passtype ;
+	QString exe = zuluCryptExe + QString(" removekey ") + volumePath ;
+
+	if ( passPhraseIsFile == true )
+		exe = exe + QString(" -f ") ;
+	else
+		exe = exe + QString(" -p ") ;
+
+	exe = exe + p ;
+
+	QProcess Z ;
+	Z.start( exe );
+	Z.waitForFinished() ;
+
+	switch( Z.exitCode() ){
+	case 0 : UIMessage(QString("SUCCESS: key successfully removed\n") + luksEmptySlots(volumePath) + QString(" / 8 slots are now in use"));
+		break ;
+	case 2 : UIMessage(QString("ERROR: there is no key in the volume that match entered key"));
+		break ;
+	case 4 : UIMessage(QString("ERROR: device does not exist"));
+		break ;
+	}
 }
 
 void zuluCrypt::luksAddKey(QString volumePath, bool keyfile,QString ExistingKey,bool newkeyfile, QString NewKey)
@@ -326,7 +362,7 @@ void zuluCrypt::luksAddKeyContextMenu(void)
 
 void zuluCrypt::luksDeleteKeyContextMenu(void)
 {
-
+	emit luksDeleteKeyUI(ui->tableWidget->item(item->row(),0)->text()) ;
 }
 
 void zuluCrypt::UIMessage(QString message)

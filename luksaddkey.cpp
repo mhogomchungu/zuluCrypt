@@ -147,7 +147,6 @@ void luksaddkeyUI::pbAdd(void)
 		m.exec() ;
 		return ;
 	}
-
 	HideUI() ;
 	emit clickedpbAdd(a , x , b , y , c  ) ;
 }

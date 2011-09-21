@@ -7,11 +7,14 @@
     <x>0</x>
     <y>0</y>
     <width>528</width>
-    <height>321</height>
+    <height>313</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>add a key to a luks volume</string>
+  </property>
+  <property name="modal">
+   <bool>true</bool>
   </property>
   <widget class="QLabel" name="labelLuksVolume">
    <property name="geometry">
@@ -35,6 +38,9 @@
      <height>31</height>
     </rect>
    </property>
+   <property name="toolTip">
+    <string>open file</string>
+   </property>
    <property name="text">
     <string/>
    </property>
@@ -47,6 +53,9 @@
      <width>31</width>
      <height>31</height>
     </rect>
+   </property>
+   <property name="toolTip">
+    <string>open partition</string>
    </property>
    <property name="text">
     <string/>
@@ -62,7 +71,7 @@
     </rect>
    </property>
    <property name="title">
-    <string>a passphrase already in the volume</string>
+    <string>passphrase already in the volume</string>
    </property>
    <widget class="QRadioButton" name="radioButtonPassphraseinVolume">
     <property name="geometry">
@@ -112,6 +121,9 @@
       <height>31</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>open keyfile</string>
+    </property>
     <property name="text">
      <string/>
     </property>
@@ -137,7 +149,7 @@
     </rect>
    </property>
    <property name="title">
-    <string>passphrase to be added to the volume</string>
+    <string>        passphrase to be added to the volume</string>
    </property>
    <widget class="QRadioButton" name="radioButtonNewPassphrase">
     <property name="geometry">
@@ -173,6 +185,9 @@
       <width>31</width>
       <height>31</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>open keyfile</string>
     </property>
     <property name="text">
      <string/>

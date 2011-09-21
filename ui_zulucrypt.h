@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'zulucrypt.ui'
 **
-** Created: Tue Sep 20 17:41:08 2011
+** Created: Tue Sep 20 20:30:06 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -32,7 +32,8 @@ public:
     QAction *actionFileCreate;
     QAction *actionPartitionCreate;
     QAction *actionAbout;
-    QAction *actionLuksVolumesConfigure;
+    QAction *actionAddKey;
+    QAction *actionDeleteKey;
     QWidget *centralWidget;
     QTableWidget *tableWidget;
     QMenuBar *menuBar;
@@ -63,8 +64,10 @@ public:
         actionPartitionCreate->setVisible(true);
         actionAbout = new QAction(zuluCrypt);
         actionAbout->setObjectName(QString::fromUtf8("actionAbout"));
-        actionLuksVolumesConfigure = new QAction(zuluCrypt);
-        actionLuksVolumesConfigure->setObjectName(QString::fromUtf8("actionLuksVolumesConfigure"));
+        actionAddKey = new QAction(zuluCrypt);
+        actionAddKey->setObjectName(QString::fromUtf8("actionAddKey"));
+        actionDeleteKey = new QAction(zuluCrypt);
+        actionDeleteKey->setObjectName(QString::fromUtf8("actionDeleteKey"));
         centralWidget = new QWidget(zuluCrypt);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         centralWidget->setContextMenuPolicy(Qt::ActionsContextMenu);
@@ -112,7 +115,8 @@ public:
         menuCreate->addAction(actionFileCreate);
         menuCreate->addAction(actionPartitionCreate);
         menuHelp->addAction(actionAbout);
-        menuConfigure->addAction(actionLuksVolumesConfigure);
+        menuConfigure->addAction(actionAddKey);
+        menuConfigure->addAction(actionDeleteKey);
 
         retranslateUi(zuluCrypt);
 
@@ -127,17 +131,18 @@ public:
         actionFileCreate->setText(QApplication::translate("zuluCrypt", "encrypted file", 0, QApplication::UnicodeUTF8));
         actionPartitionCreate->setText(QApplication::translate("zuluCrypt", "encrypted partition", 0, QApplication::UnicodeUTF8));
         actionAbout->setText(QApplication::translate("zuluCrypt", "about", 0, QApplication::UnicodeUTF8));
-        actionLuksVolumesConfigure->setText(QApplication::translate("zuluCrypt", "luks volumes", 0, QApplication::UnicodeUTF8));
+        actionAddKey->setText(QApplication::translate("zuluCrypt", "add key", 0, QApplication::UnicodeUTF8));
+        actionDeleteKey->setText(QApplication::translate("zuluCrypt", "delete key", 0, QApplication::UnicodeUTF8));
         QTableWidgetItem *___qtablewidgetitem = tableWidget->horizontalHeaderItem(0);
         ___qtablewidgetitem->setText(QApplication::translate("zuluCrypt", "Encrypted volume path", 0, QApplication::UnicodeUTF8));
         QTableWidgetItem *___qtablewidgetitem1 = tableWidget->horizontalHeaderItem(1);
         ___qtablewidgetitem1->setText(QApplication::translate("zuluCrypt", "Encrypted volume mount point path", 0, QApplication::UnicodeUTF8));
         QTableWidgetItem *___qtablewidgetitem2 = tableWidget->horizontalHeaderItem(2);
-        ___qtablewidgetitem2->setText(QApplication::translate("zuluCrypt", "type", 0, QApplication::UnicodeUTF8));
+        ___qtablewidgetitem2->setText(QApplication::translate("zuluCrypt", "Type", 0, QApplication::UnicodeUTF8));
         menuOpen->setTitle(QApplication::translate("zuluCrypt", "open", 0, QApplication::UnicodeUTF8));
         menuCreate->setTitle(QApplication::translate("zuluCrypt", "create", 0, QApplication::UnicodeUTF8));
         menuHelp->setTitle(QApplication::translate("zuluCrypt", "help", 0, QApplication::UnicodeUTF8));
-        menuConfigure->setTitle(QApplication::translate("zuluCrypt", "configure", 0, QApplication::UnicodeUTF8));
+        menuConfigure->setTitle(QApplication::translate("zuluCrypt", "luks", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };

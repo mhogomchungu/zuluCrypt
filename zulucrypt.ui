@@ -101,9 +101,10 @@
    </widget>
    <widget class="QMenu" name="menuConfigure">
     <property name="title">
-     <string>configure</string>
+     <string>luks</string>
     </property>
-    <addaction name="actionLuksVolumesConfigure"/>
+    <addaction name="actionAddKey"/>
+    <addaction name="actionDeleteKey"/>
    </widget>
    <addaction name="menuOpen"/>
    <addaction name="menuCreate"/>
@@ -148,9 +149,14 @@
     <string>about</string>
    </property>
   </action>
-  <action name="actionLuksVolumesConfigure">
+  <action name="actionAddKey">
    <property name="text">
-    <string>luks volumes</string>
+    <string>add key</string>
+   </property>
+  </action>
+  <action name="actionDeleteKey">
+   <property name="text">
+    <string>delete key</string>
    </property>
   </action>
  </widget>

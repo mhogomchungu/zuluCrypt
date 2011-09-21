@@ -28,6 +28,7 @@
 #include "password_dialog.h"
 #include "openpartition.h"
 #include "luksaddkey.h"
+#include "luksdeletekey.h"
 
 namespace Ui {
     class zuluCrypt;
@@ -49,6 +50,7 @@ public:
 signals:
 
 	void  luksAddKeyUI(QString volumePath) ;
+	void  luksDeleteKeyUI(QString passphrase) ;
 
 private slots :
 
@@ -76,6 +78,7 @@ private slots :
 
 	void luksAddKey(QString volumePath,bool keyfile, QString ExistingKey,bool newkeyfile, QString NewKey) ;
 
+	void luksDeleteKey(QString volumePath,bool passPhraseIsFile,QString passPhrase) ;
 private:
 
 	char luksEmptySlots(QString volumePath) ;
@@ -92,6 +95,7 @@ private:
 	openpartition luksopenPartitionUI ;
 
 	luksaddkeyUI addKeyUI ;
+	luksdeletekey deleteKeyUI ;
 
 	QString volume_path,mount_point_path, pass_phrase,mode ;
 	QMenu *m  ;
