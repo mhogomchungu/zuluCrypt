@@ -54,17 +54,13 @@ signals:
 
 private slots :
 
+	void openEncryptedVolume(bool boolOpenReadOnly,bool boolKeyFromFile,QString volumePath, QString mountPointPath,QString passPhraseField) ;
+
 	void luksAddKeyContextMenu(void) ;
 
 	void luksDeleteKeyContextMenu() ;
 
 	void aboutMenuOption(void) ;
-
-	void showOpenFileDialogClear(void);
-
-	void showOpenPartitionDialog(void) ;
-
-	void open(void) ;
 
 	void close(void) ;
 

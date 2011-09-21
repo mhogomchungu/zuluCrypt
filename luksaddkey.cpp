@@ -35,12 +35,6 @@ luksaddkeyUI::luksaddkeyUI(QWidget *parent) :   QDialog(parent)
 	connect(ui.radioButtonPassphraseinVolume,SIGNAL(toggled(bool)),SLOT(rbExistingPassphrase())) ;
 
 	connect(ui.radioButtonPassphraseInVolumeFromFile,SIGNAL(toggled(bool)),SLOT(rbExistingPassphraseFromFile())) ;
-
-	ui.textEditExistingPassphrase->clear();
-	ui.textEditPassphraseToAdd->clear();
-	ui.textEditPathToVolume->clear();
-	ui.radioButtonNewPassphrase->setChecked(true);
-	ui.radioButtonPassphraseinVolume->setChecked(true);
 }
 
 void luksaddkeyUI::partitionEntry(QString partition)
@@ -57,10 +51,17 @@ void luksaddkeyUI::HideUI()
 	ui.textEditPathToVolume->clear();
 	ui.radioButtonNewPassphrase->setChecked(true);
 	ui.radioButtonPassphraseinVolume->setChecked(true);
+	ui.textEditPathToVolume->setFocus();
 }
 
 void luksaddkeyUI::ShowUI()
 {
+	ui.textEditExistingPassphrase->clear();
+	ui.textEditPassphraseToAdd->clear();
+	ui.textEditPathToVolume->clear();
+	ui.radioButtonNewPassphrase->setChecked(true);
+	ui.radioButtonPassphraseinVolume->setChecked(true);
+	ui.textEditPathToVolume->setFocus();
 	this->show();
 }
 

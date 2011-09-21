@@ -30,18 +30,11 @@ using namespace std ;
 openpartition::openpartition(QWidget *parent ) : QDialog(parent)
 {
 	partitionView.setupUi(this);
-
 	this->setFixedSize(this->size());
-
 	connect(partitionView.tableWidgetPartitionView,SIGNAL(cellDoubleClicked(int,int)),this,SLOT(tableEntryDoubleClicked(int,int))) ;	
 }
 
-void openpartition::showUI()
-{
-	showPartitionsUI();
-}
-
-void openpartition::showPartitionsUI()
+void openpartition::ShowUI()
 {
 	int y = partitionView.tableWidgetPartitionView->rowCount() ;
 
@@ -67,19 +60,16 @@ void openpartition::showPartitionsUI()
 	this->show();
 }
 
-void openpartition::hidePartitionsUI()
+void openpartition::HideUI()
 {
 	this->hide();
 }
 
 void openpartition::tableEntryDoubleClicked(int row, int column)
 {
-	hidePartitionsUI();
-
 	QString i = partitionView.tableWidgetPartitionView->item(row,column)->text().split(":").at(0) ;
-
-	emit clickedPartition(i);
-	this->hide();
+	HideUI() ;
+	emit clickedPartition(i);	
 }
 
 openpartition::~openpartition()

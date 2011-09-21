@@ -30,105 +30,87 @@
 
 password_Dialog::password_Dialog(QWidget *parent ) : QDialog(parent)
 {
-	passphraseDialogUI.setupUi(this);
+	ui.setupUi(this);
 	this->setFixedSize(this->size());
 
 	passphraseOption() ;
 
-	connect(passphraseDialogUI.PushButtonCancel,SIGNAL(clicked()),this,SLOT(hideDialog())) ;
-	connect(passphraseDialogUI.PushButtonOpen,SIGNAL(clicked()),this,SLOT(buttomOpenClicked())) ;
-	connect(passphraseDialogUI.PushButtonMountPointPath,SIGNAL(clicked()),this,SLOT(mount_point()));
-	connect(passphraseDialogUI.PushButtonVolumePath,SIGNAL(clicked()),this,SLOT(file_path())) ;
-	connect(passphraseDialogUI.pushButtonPassPhraseFromFile,SIGNAL(clicked()),this,SLOT(clickedPassPhraseFromFileButton()));
-	connect(passphraseDialogUI.radioButtonPassPhraseFromFile,SIGNAL(clicked()),this,SLOT(passphraseFromFileOption())) ;
-	connect(passphraseDialogUI.radioButtonPassPhrase,SIGNAL(clicked()),this,SLOT(passphraseOption())) ;
+	connect(ui.PushButtonCancel,SIGNAL(clicked()),this,SLOT(HideUI())) ;
+	connect(ui.PushButtonOpen,SIGNAL(clicked()),this,SLOT(buttonOpenClicked())) ;
+	connect(ui.PushButtonMountPointPath,SIGNAL(clicked()),this,SLOT(mount_point()));
+	connect(ui.PushButtonVolumePath,SIGNAL(clicked()),this,SLOT(file_path())) ;
+	connect(ui.pushButtonPassPhraseFromFile,SIGNAL(clicked()),this,SLOT(clickedPassPhraseFromFileButton()));
+	connect(ui.radioButtonPassPhraseFromFile,SIGNAL(clicked()),this,SLOT(passphraseFromFileOption())) ;
+	connect(ui.radioButtonPassPhrase,SIGNAL(clicked()),this,SLOT(passphraseOption())) ;
 }
 
 void password_Dialog::passphraseOption()
 {
-	passphraseDialogUI.PassPhraseField->setEchoMode(QLineEdit::Password);
-	passphraseDialogUI.PassPhraseField->clear();
-	passphraseDialogUI.pushButtonPassPhraseFromFile->setEnabled(false) ;
-	boolPassphraseFromFile = false ;
+	ui.PassPhraseField->setEchoMode(QLineEdit::Password);
+	ui.PassPhraseField->clear();
+	ui.pushButtonPassPhraseFromFile->setEnabled(false) ;
 }
 
 void password_Dialog::passphraseFromFileOption()
 {
-	passphraseDialogUI.PassPhraseField->setEchoMode(QLineEdit::Normal);
-	passphraseDialogUI.PassPhraseField->clear();
-	passphraseDialogUI.pushButtonPassPhraseFromFile->setEnabled(true) ;
-	boolPassphraseFromFile = true ;
+	ui.PassPhraseField->setEchoMode(QLineEdit::Normal);
+	ui.PassPhraseField->clear();
+	ui.pushButtonPassPhraseFromFile->setEnabled(true) ;
 }
 
 void password_Dialog::clickedPassPhraseFromFileButton()
 {
-	passphrase = QFileDialog::getOpenFileName((QWidget *) this,QString("Select passphrase file"),QDir::homePath(),0);
-	passphraseDialogUI.PassPhraseField->setText(passphrase);
-}
-
-void password_Dialog::hideDialog(void )
-{
-	passphraseDialogUI.MountPointPath->setText(mount_point_path);
-	passphraseDialogUI.OpenVolumePath->setText(volume_path);
-	passphraseDialogUI.PassPhraseField->setText(passphrase);
-	this->hide() ;
-}
-
-void password_Dialog::clearAllFields()
-{
-	passphraseDialogUI.MountPointPath->clear();
-	passphraseDialogUI.OpenVolumePath->clear();
-	passphraseDialogUI.PassPhraseField->clear();
-	mount_point_path.clear();
-	volume_path.clear();
-	passphrase.clear();
-	passphraseDialogUI.PushButtonOpen->setDefault(true);
-	passphraseDialogUI.OpenVolumePath->setFocus();
+	QString Z = QFileDialog::getOpenFileName((QWidget *) this,QString("Select passphrase file"),QDir::homePath(),0);
+	ui.PassPhraseField->setText( Z );
 }
 
 void password_Dialog::clickedPartitionOption(QString option)
 {
-	passphraseDialogUI.OpenVolumePath->setText(option);
-	passphraseDialogUI.MountPointPath->clear();
-	passphraseDialogUI.PassPhraseField->clear();
+	ui.OpenVolumePath->setText(option);
+	ui.MountPointPath->clear();
+	ui.PassPhraseField->clear();
 
 	if( this->isHidden() )
 		this->show();
 }
 
-void password_Dialog::showDialog()
-{
-    if(this->isHidden())
-	this->show();
-}
-
 void password_Dialog::mount_point(void )
 {	
-	mount_point_path = QFileDialog::getExistingDirectory((QWidget *) this,QString("Select Path to mount point folder"),QDir::homePath(),QFileDialog::ShowDirsOnly) ;
-	passphraseDialogUI.MountPointPath->setText(mount_point_path);
+	QString Z = QFileDialog::getExistingDirectory((QWidget *) this,QString("Select Path to mount point folder"),QDir::homePath(),QFileDialog::ShowDirsOnly) ;
+	ui.MountPointPath->setText( Z );
 }
 
 void password_Dialog::file_path(void )
 {	
-	volume_path = QFileDialog::getOpenFileName((QWidget *) this,QString("Select encrypted volume"),QDir::homePath(),0);
-	passphraseDialogUI.OpenVolumePath->setText(volume_path);
+	QString Z = QFileDialog::getOpenFileName((QWidget *) this,QString("Select encrypted volume"),QDir::homePath(),0);
+	ui.OpenVolumePath->setText( Z );
 }
 
-void password_Dialog::buttomOpenClicked(void )
+void password_Dialog::ShowUI()
 {
-	volume_path = passphraseDialogUI.OpenVolumePath->text() ;
-	passphrase = passphraseDialogUI.PassPhraseField->text();
-	mount_point_path = passphraseDialogUI.MountPointPath->text() ;
+	this->show();
+}
 
-	if ( ( QString::compare(mount_point_path,QString("."))) == 0 ) {
-		mount_point_path = QDir::currentPath() ;
-	}
-	if ( passphraseDialogUI.checkBoxReadOnly->isChecked() )
-		mode = "ro" ;
-	else
-		mode = "rw" ;
+void password_Dialog::HideUI()
+{
+	ui.MountPointPath->clear();
+	ui.OpenVolumePath->clear();
+	ui.PassPhraseField->clear();
+	ui.radioButtonPassPhrase->setChecked(true);
+	ui.checkBoxReadOnly->setChecked(false);
+	this->hide();
+}
 
-	hideDialog();
+void password_Dialog::buttonOpenClicked(void )
+{	
+	bool A = ui.checkBoxReadOnly->isChecked() ;
+	bool B = ui.radioButtonPassPhraseFromFile->isChecked() ;
+	QString C = ui.OpenVolumePath->text() ;
+	QString D = ui.MountPointPath->text() ;
+	QString E = ui.PassPhraseField->text() ;
+
+	HideUI() ;
+	emit pbOpenClicked(A,B,C,D,E);
 }
 
 password_Dialog::~password_Dialog()

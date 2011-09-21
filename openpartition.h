@@ -33,23 +33,24 @@ public:
 
 	openpartition(QWidget *parent = 0);
 
-	void showPartitionsUI(void);
-
-	void hidePartitionsUI(void);
-
 	virtual ~openpartition();
 
 signals :
+
 	void clickedPartition(QString) ;
 
 public slots:
 
 	void tableEntryDoubleClicked(int row, int column) ;
 
-	void showUI(void) ;
+	void ShowUI(void);
 
 private:
+
+	void HideUI(void);
+
 	Ui::PartitionView partitionView ;
+
 	int count ;
 };
 

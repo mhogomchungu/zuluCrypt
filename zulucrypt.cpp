@@ -68,11 +68,11 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 
 	connect(this,SIGNAL(luksAddKeyUI(QString)),(QObject *)&addKeyUI,SLOT(partitionEntry(QString))) ;
 
-	connect(ui->actionFileOpen,SIGNAL(triggered()),this,SLOT(showOpenFileDialogClear())) ;
+	connect((QObject *)&openFileUI,SIGNAL(pbOpenClicked(bool,bool,QString,QString,QString)),this,SLOT(openEncryptedVolume(bool,bool,QString,QString,QString))) ;
 
-	connect(ui->actionPartitionOpen,SIGNAL(triggered()),this,SLOT(showOpenPartitionDialog()));
+	connect(ui->actionFileOpen,SIGNAL(triggered()),(QObject *)&openFileUI,SLOT(ShowUI())) ;
 
-	connect(openFileUI.passphraseDialogUI.PushButtonOpen,SIGNAL(clicked()),this,SLOT(open()));
+	connect(ui->actionPartitionOpen,SIGNAL(triggered()),(QObject *)&openPartitionUI,SLOT(ShowUI()));
 
 	connect(ui->tableWidget,SIGNAL(itemClicked(QTableWidgetItem*)),this,SLOT(options(QTableWidgetItem*))) ;
 
@@ -86,7 +86,7 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 
 	connect((QObject *)&addKeyUI,SIGNAL(clickedpbAdd(QString,bool,QString,bool,QString)), this,SLOT(luksAddKey(QString,bool,QString,bool,QString))) ;
 
-	connect((QObject *)&addKeyUI,SIGNAL(pbOpenPartitionClicked()),(QObject *)&luksopenPartitionUI,SLOT(showUI())) ;
+	connect((QObject *)&addKeyUI,SIGNAL(pbOpenPartitionClicked()),(QObject *)&luksopenPartitionUI,SLOT(ShowUI())) ;
 
 	connect((QObject *)&luksopenPartitionUI,SIGNAL(clickedPartition(QString)),&addKeyUI,SLOT(partitionEntry(QString))) ;
 
@@ -118,6 +118,10 @@ void zuluCrypt::luksDeleteKey(QString volumePath,bool passPhraseIsFile, QString 
 		break ;
 	case 4 : UIMessage(QString("ERROR: device does not exist"));
 		break ;
+	case 5 : UIMessage(QString("ERROR: key file does not exist"));
+		break ;
+	default: UIMessage(QString("ERROR: an unknown error has occured, key not deleted"));
+
 	}
 }
 
@@ -194,11 +198,6 @@ void zuluCrypt::aboutMenuOption(void)
 	m.setText(QString( VERSION_STRING )) ;
 
 	m.exec() ;
-}
-
-void zuluCrypt::showOpenPartitionDialog(void)
-{
-	openPartitionUI.showPartitionsUI();
 }
 
 void zuluCrypt::setUpOpenedVolumes(void)
@@ -394,49 +393,29 @@ void zuluCrypt::close(void)
 	}
 }
 
-void zuluCrypt::open()
+void zuluCrypt::openEncryptedVolume(bool boolOpenReadOnly,bool boolKeyFromFile,QString volumePath, QString mountPointPath,QString passPhraseField)
 {
-	if (openFileUI.volume_path.isEmpty() == true){
+	QString exe ;
+	QString mode ;
+	QString passtype ;
 
-		UIMessage(QString("ERROR: The volume path field is empty"));
-		openFileUI.passphraseDialogUI.OpenVolumePath->setFocus();
-		openFileUI.show();
-		return ;
-	}
+	if ( boolOpenReadOnly == true )
+		mode = "ro" ;
+	else
+		mode = "rw" ;
 
-	if (openFileUI.mount_point_path.isEmpty() == true){
+	if ( boolKeyFromFile == true )
+		passtype = " -f " ;
+	else
+		passtype = " -p " ;
 
-		UIMessage(QString("ERROR: The mount point path field is empty"));
-		openFileUI.passphraseDialogUI.MountPointPath->setFocus();
-		openFileUI.show();
-		return ;
-	}
-
-	if (openFileUI.passphrase.isEmpty() == true){
-
-		UIMessage(QString("ERROR: The passphrase field is empty"));
-		openFileUI.passphraseDialogUI.PassPhraseField->setFocus();
-		openFileUI.show();
-		return ;
-	}
-
-	QString program ;
-	if ( openFileUI.boolPassphraseFromFile == true)	{
-
-		program = zuluCryptExe + " open " + openFileUI.volume_path + " " + openFileUI.mount_point_path + " " + openFileUI.mode + " -f " + openFileUI.passphrase ;
-
-	}else{
-		program = zuluCryptExe + " open " + openFileUI.volume_path + " " + openFileUI.mount_point_path + " " + openFileUI.mode + " -p " + openFileUI.passphrase ;
-	}
+	exe = zuluCryptExe + " open " + volumePath + " " + mountPointPath + " " + mode + " " + passtype + " " + passPhraseField ;
 
 	QProcess process ;
-
-	process.start(program) ;
+	process.start(exe) ;
 	process.waitForFinished() ;
 
-	int i = process.exitCode() ;
-
-	switch ( i ){
+	switch ( process.exitCode() ){
 	case 0 : {
 		/*
 		  There are possible names zuluCrypt-cli will use for mount point and predicting it before hand may
@@ -455,7 +434,7 @@ void zuluCrypt::open()
 
 		c = Z.readAllStandardOutput().data() ;
 
-		N = "/dev/mapper/zuluCrypt-" + openFileUI.volume_path.split("/").last() ;
+		N = "/dev/mapper/zuluCrypt-" + volumePath.split("/").last() ;
 
 		d = N.toAscii().data() ;
 
@@ -467,37 +446,30 @@ void zuluCrypt::open()
 
 		*d = '\0' ;
 
-		addItemToTable(openFileUI.volume_path,QString( c ));
+		addItemToTable(volumePath,QString( c ));
 		} break ;
 
-	case 1 : UIMessage("ERROR: No free loop device to use.") ;
+	case 1 : UIMessage(QString("ERROR: No free loop device to use.")) ;
 		break ;
 
-	case 2 : UIMessage("ERROR: There seem to be an open volume accociated with given path.");
+	case 2 : UIMessage(QString("ERROR: There seem to be an open volume accociated with given path."));
 		break ;
 
-	case 3 : UIMessage("ERROR: No file or device on a given address.") ;
+	case 3 : UIMessage(QString("ERROR: No file or device on a given address.")) ;
 		break ;
 
-	case 4 : UIMessage("ERROR: Wrong passphrase.");
+	case 4 : UIMessage(QString("ERROR: Wrong passphrase."));
 		break ;
 
-	case 5 : UIMessage("ERROR: mount point address is already taken by a file or folder") ;
+	case 5 : UIMessage(QString("ERROR: mount point address is already taken by a file or folder")) ;
 		break ;
-	case 6 : UIMessage("ERROR: passphrase file does not exist");
+	case 6 : UIMessage(QString("ERROR: passphrase file does not exist"));
 
-	case 9 : UIMessage("ERROR: \",\" (comma) is not a valid mount point");
+	case 9 : UIMessage(QString("ERROR: \",\" (comma) is not a valid mount point"));
 		break ;
-	default :
-		;
+	default :UIMessage(QString("ERROR: un unknown error has occured, volume not opened"));
+
 	}
-}
-
-
-void zuluCrypt::showOpenFileDialogClear(void)
-{
-	openFileUI.clearAllFields();
-	openFileUI.showDialog();
 }
 
 zuluCrypt::~zuluCrypt()

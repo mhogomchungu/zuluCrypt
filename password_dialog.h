@@ -35,35 +35,25 @@ class password_Dialog :  public QDialog
 public:	
 	
 	password_Dialog(QWidget *parent = 0);
-	virtual ~password_Dialog();    
-	
-	QString volume_path ;
-	
-	QString mount_point_path ;
-	
-	QString passphrase ;
-	
-	QString mode ;		
+	virtual ~password_Dialog();
 
-	bool boolPassphraseFromFile ;
+signals :
+	void pbOpenClicked(bool boolOpenReadOnly,bool boolKeyFromFile,QString volumePath, QString mountPointPath,QString passPhraseField) ;
 
-	void clearAllFields(void) ;
+private slots :
 
-	Ui::PasswordDialog passphraseDialogUI;
-
-public slots :
-	void buttomOpenClicked(void) ;
-	void showDialog(void);
-	void hideDialog(void) ;
+	void buttonOpenClicked(void) ;
 	void mount_point(void);
-	void file_path(void);
 	void clickedPartitionOption(QString);
 	void clickedPassPhraseFromFileButton(void) ;
 	void passphraseFromFileOption(void) ;
 	void passphraseOption(void) ;
-	
-private :
+	void ShowUI(void);
+	void file_path(void ) ;
+	void HideUI(void);
 
+private :
+	Ui::PasswordDialog ui;
 };
 
 #endif // PASSWORD_DIALOG_H
