@@ -112,16 +112,17 @@ void zuluCrypt::luksDeleteKey(QString volumePath,bool passPhraseIsFile, QString 
 	Z.waitForFinished() ;
 
 	switch( Z.exitCode() ){
-	case 0 : UIMessage(QString("SUCCESS: key successfully removed\n") + luksEmptySlots(volumePath) + QString(" / 8 slots are now in use"));
-		break ;
-	case 2 : UIMessage(QString("ERROR: there is no key in the volume that match entered key"));
-		break ;
-	case 4 : UIMessage(QString("ERROR: device does not exist"));
-		break ;
-	case 5 : UIMessage(QString("ERROR: key file does not exist"));
-		break ;
-	default: UIMessage(QString("ERROR: an unknown error has occured, key not deleted"));
-
+		case 0 :	UIMessage(QString("SUCCESS: key successfully removed\n") + luksEmptySlots(volumePath) + QString(" / 8 slots are now in use"));
+			break ;
+		case 2 :{
+				emit luksDeleteKeyUI(volumePath) ;
+				UIMessage(QString("ERROR: there is no key in the volume that match entered key"));
+			}break ;
+		case 4 :	UIMessage(QString("ERROR: device does not exist"));
+			break ;
+		case 5 :	UIMessage(QString("ERROR: key file does not exist"));
+			break ;
+		default:	UIMessage(QString("ERROR: an unknown error has occured, key not deleted"));
 	}
 }
 
@@ -149,17 +150,18 @@ void zuluCrypt::luksAddKey(QString volumePath, bool keyfile,QString ExistingKey,
 	Z.waitForFinished() ;
 
 	switch( Z.exitCode() ){
+		case 0 :	UIMessage(QString("SUCCESS: key added successfully\n") + luksEmptySlots(volumePath) + QString(" / 8 slots are now in use")) ;
+			break ;
+		case 2 :{
+				UIMessage(QString("ERROR: presented key does not match any key in the volume"));
+				emit luksAddKeyUI(volumePath) ;
+			}break ;
+		case 3 :	UIMessage(QString("ERROR: keyfile with the new passphrase does not exist"));
+			break ;
+		case 4 :	UIMessage(QString("ERROR: luks volume does not exist"));
+			break ;
+		default:	UIMessage(QString("ERROR: un unrecognized error has occured, key not added"));
 
-	case 0 : UIMessage(QString("SUCCESS: key added successfully\n") + luksEmptySlots(volumePath) + QString(" / 8 slots are now in use")) ;
-		break ;
-	case 2 : UIMessage(QString("ERROR: presented key does not match any key in the volume"));
-		break ;
-	case 3 : UIMessage(QString("ERROR: keyfile with the new passphrase does not exist"));
-		break ;
-	case 4 : UIMessage(QString("ERROR: luks volume does not exist"));
-		break ;
-	default :
-		UIMessage(QString("ERROR: un unrecognized error has occured, key not added"));
 	}
 }
 
@@ -380,16 +382,14 @@ void zuluCrypt::close(void)
 	p.waitForFinished() ;
 
 	switch ( p.exitCode() ) {
-	case 0 : removeRowFromTable(item->row()) ;
+	case 0 :	removeRowFromTable(item->row()) ;
+		break ;
+	case 1 :	UIMessage(QString("ERROR: close failed, encrypted volume with that name does not exist")) ;
 		break ;
 
-	case 1 : UIMessage("ERROR: close failed, encrypted volume with that name does not exist") ;
+	case 2 :	UIMessage(QString("ERROR: close failed, the mount point and/or one or more files are in use"));
 		break ;
-
-	case 2 : UIMessage("ERROR: close failed, the mount point and/or one or more files are in use");
-		break ;
-	default :
-		;
+	default :	UIMessage(QString("ERROR: an unknown error has occured, volume not closed"));
 	}
 }
 

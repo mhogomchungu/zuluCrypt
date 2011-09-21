@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>528</width>
-    <height>313</height>
+    <height>295</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,7 +26,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Path to luks volume</string>
+    <string>path to luks volume</string>
    </property>
   </widget>
   <widget class="QPushButton" name="pushButtonOpenFile">
@@ -67,17 +67,17 @@
      <x>10</x>
      <y>40</y>
      <width>511</width>
-     <height>131</height>
+     <height>101</height>
     </rect>
    </property>
    <property name="title">
-    <string>passphrase already in the volume</string>
+    <string>key already in the encrypted volume</string>
    </property>
    <widget class="QRadioButton" name="radioButtonPassphraseinVolume">
     <property name="geometry">
      <rect>
-      <x>130</x>
-      <y>30</y>
+      <x>150</x>
+      <y>20</y>
       <width>181</width>
       <height>21</height>
      </rect>
@@ -89,8 +89,8 @@
    <widget class="QRadioButton" name="radioButtonPassphraseInVolumeFromFile">
     <property name="geometry">
      <rect>
-      <x>130</x>
-      <y>50</y>
+      <x>150</x>
+      <y>40</y>
       <width>221</width>
       <height>21</height>
      </rect>
@@ -103,20 +103,20 @@
     <property name="geometry">
      <rect>
       <x>50</x>
-      <y>80</y>
+      <y>60</y>
       <width>71</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>Passphrase</string>
+     <string>passphrase</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButtonOpenExistingKeyFile">
     <property name="geometry">
      <rect>
       <x>450</x>
-      <y>80</y>
+      <y>60</y>
       <width>31</width>
       <height>31</height>
      </rect>
@@ -131,57 +131,93 @@
    <widget class="QLineEdit" name="textEditExistingPassphrase">
     <property name="geometry">
      <rect>
-      <x>120</x>
-      <y>80</y>
-      <width>331</width>
+      <x>130</x>
+      <y>60</y>
+      <width>321</width>
       <height>31</height>
      </rect>
     </property>
    </widget>
   </widget>
+  <widget class="QPushButton" name="pushButtonAdd">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>260</y>
+     <width>91</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Add</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonCancel">
+   <property name="geometry">
+    <rect>
+     <x>260</x>
+     <y>260</y>
+     <width>91</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Cancel</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="textEditPathToVolume">
+   <property name="geometry">
+    <rect>
+     <x>140</x>
+     <y>10</y>
+     <width>321</width>
+     <height>31</height>
+    </rect>
+   </property>
+  </widget>
   <widget class="QGroupBox" name="groupBox_2">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>160</y>
+     <y>140</y>
      <width>511</width>
      <height>131</height>
     </rect>
    </property>
    <property name="title">
-    <string>        passphrase to be added to the volume</string>
+    <string>         key to be added to the encrypted volume</string>
    </property>
    <widget class="QRadioButton" name="radioButtonNewPassphrase">
     <property name="geometry">
      <rect>
-      <x>130</x>
-      <y>30</y>
+      <x>150</x>
+      <y>20</y>
       <width>321</width>
       <height>21</height>
      </rect>
     </property>
     <property name="text">
-     <string>new passphrase</string>
+     <string>passphrase</string>
     </property>
    </widget>
    <widget class="QRadioButton" name="radioButtonNewPassphraseFromFile">
     <property name="geometry">
      <rect>
-      <x>130</x>
-      <y>50</y>
+      <x>150</x>
+      <y>40</y>
       <width>361</width>
       <height>21</height>
      </rect>
     </property>
     <property name="text">
-     <string>new passphrase from a key file</string>
+     <string>passphrase from a key file</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButtonOpenNewKeyFile">
     <property name="geometry">
      <rect>
       <x>450</x>
-      <y>80</y>
+      <y>60</y>
       <width>31</width>
       <height>31</height>
      </rect>
@@ -197,61 +233,48 @@
     <property name="geometry">
      <rect>
       <x>50</x>
-      <y>80</y>
+      <y>60</y>
       <width>71</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>Passphrase</string>
+     <string>passphrase</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="textEditPassphraseToAdd">
     <property name="geometry">
      <rect>
-      <x>120</x>
-      <y>80</y>
-      <width>331</width>
+      <x>130</x>
+      <y>60</y>
+      <width>321</width>
       <height>31</height>
      </rect>
     </property>
    </widget>
-  </widget>
-  <widget class="QPushButton" name="pushButtonAdd">
-   <property name="geometry">
-    <rect>
-     <x>170</x>
-     <y>280</y>
-     <width>91</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Add</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButtonCancel">
-   <property name="geometry">
-    <rect>
-     <x>270</x>
-     <y>280</y>
-     <width>91</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Cancel</string>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="textEditPathToVolume">
-   <property name="geometry">
-    <rect>
-     <x>130</x>
-     <y>10</y>
-     <width>331</width>
-     <height>31</height>
-    </rect>
-   </property>
+   <widget class="QLineEdit" name="lineEditReEnterPassphrase">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>90</y>
+      <width>321</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>90</y>
+      <width>121</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>reenter passphrase</string>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources/>

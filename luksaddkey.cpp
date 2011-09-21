@@ -35,23 +35,25 @@ luksaddkeyUI::luksaddkeyUI(QWidget *parent) :   QDialog(parent)
 	connect(ui.radioButtonPassphraseinVolume,SIGNAL(toggled(bool)),SLOT(rbExistingPassphrase())) ;
 
 	connect(ui.radioButtonPassphraseInVolumeFromFile,SIGNAL(toggled(bool)),SLOT(rbExistingPassphraseFromFile())) ;
+
+	ui.lineEditReEnterPassphrase->setEchoMode(QLineEdit::Password);
 }
 
 void luksaddkeyUI::partitionEntry(QString partition)
 {
 	ui.textEditPathToVolume->setText(partition);
+	ui.textEditExistingPassphrase->clear();
+	ui.textEditPassphraseToAdd->clear();
+	ui.radioButtonNewPassphrase->setChecked(true);
+	ui.radioButtonPassphraseinVolume->setChecked(true);
+	ui.textEditPathToVolume->setFocus();
+	ui.lineEditReEnterPassphrase->clear() ;
 	this->show(); ;
 }
 
 void luksaddkeyUI::HideUI()
 {
 	this->hide();
-	ui.textEditExistingPassphrase->clear();
-	ui.textEditPassphraseToAdd->clear();
-	ui.textEditPathToVolume->clear();
-	ui.radioButtonNewPassphrase->setChecked(true);
-	ui.radioButtonPassphraseinVolume->setChecked(true);
-	ui.textEditPathToVolume->setFocus();
 }
 
 void luksaddkeyUI::ShowUI()
@@ -85,7 +87,7 @@ void luksaddkeyUI::pbOpenFile(void)
 
 void luksaddkeyUI::pbOpenPartition(void)
 {
-	this->hide();
+	HideUI() ;
 	emit pbOpenPartitionClicked() ;
 }
 
@@ -103,6 +105,7 @@ void luksaddkeyUI::rbExistingPassphraseFromFile(void)
 	ui.pushButtonOpenExistingKeyFile->setEnabled(true);
 	ui.labelExistingPassphrase->setText(QString("key file")) ;
 	ui.textEditExistingPassphrase->clear();
+
 }
 
 void luksaddkeyUI::rbNewPassphrase(void)
@@ -111,6 +114,7 @@ void luksaddkeyUI::rbNewPassphrase(void)
 	ui.pushButtonOpenNewKeyFile->setEnabled(false);
 	ui.labelNewPassphrase->setText(QString("passphrase")) ;
 	ui.textEditPassphraseToAdd->clear();
+	ui.lineEditReEnterPassphrase->setEnabled(true) ;
 }
 
 void luksaddkeyUI::rbNewPassphraseFromFile()
@@ -118,6 +122,8 @@ void luksaddkeyUI::rbNewPassphraseFromFile()
 	ui.textEditPassphraseToAdd->setEchoMode(QLineEdit::Normal);
 	ui.pushButtonOpenNewKeyFile->setEnabled(true);
 	ui.labelNewPassphrase->setText(QString("key file")) ;
+	ui.lineEditReEnterPassphrase->setEnabled(false) ;
+	ui.lineEditReEnterPassphrase->clear() ;
 }
 
 void luksaddkeyUI::pbAdd(void)
@@ -125,6 +131,7 @@ void luksaddkeyUI::pbAdd(void)
 	QString a = ui.textEditPathToVolume->text() ;
 	QString b = ui.textEditExistingPassphrase->text() ;
 	QString c = ui.textEditPassphraseToAdd->text() ;
+	QString d = ui.lineEditReEnterPassphrase->text() ;
 
 	bool x = ui.radioButtonPassphraseInVolumeFromFile->isChecked() ;
 	bool y = ui.radioButtonNewPassphraseFromFile->isChecked() ;
@@ -149,6 +156,14 @@ void luksaddkeyUI::pbAdd(void)
 		m.exec() ;
 		return ;
 	}
+	if ( c != d ){
+		m.setText(QString("ERROR: passphrases do not match"));
+		m.addButton(QMessageBox::Ok);
+		m.exec() ;
+		return ;
+
+	}
+
 	HideUI() ;
 	emit clickedpbAdd(a , x , b , y , c  ) ;
 }

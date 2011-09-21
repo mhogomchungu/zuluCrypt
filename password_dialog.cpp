@@ -49,6 +49,7 @@ void password_Dialog::passphraseOption()
 	ui.PassPhraseField->setEchoMode(QLineEdit::Password);
 	ui.PassPhraseField->clear();
 	ui.pushButtonPassPhraseFromFile->setEnabled(false) ;
+	ui.labelPassphrase->setText(QString("passphrase"));
 }
 
 void password_Dialog::passphraseFromFileOption()
@@ -56,6 +57,7 @@ void password_Dialog::passphraseFromFileOption()
 	ui.PassPhraseField->setEchoMode(QLineEdit::Normal);
 	ui.PassPhraseField->clear();
 	ui.pushButtonPassPhraseFromFile->setEnabled(true) ;
+	ui.labelPassphrase->setText(QString("key file"));
 }
 
 void password_Dialog::clickedPassPhraseFromFileButton()
