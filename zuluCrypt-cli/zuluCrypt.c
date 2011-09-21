@@ -27,6 +27,8 @@
 #include "String.h"
 #include <fcntl.h>
 
+#include "../version.h"
+
 StrHandle * get_passphrase( void )
 {	
 	
@@ -611,6 +613,12 @@ int main( int argc , char *argv[])
 		return 10 ;
 	}
 	
+	if ( strcmp( action, "-v" ) == 0 || strcmp( action, "-version" ) == 0 || strcmp( action, "--version" ) == 0 ){		
+		printf(VERSION_STRING) ;
+		printf("\n");
+		return 10 ;
+	}		
+		
 	if ( argc < 3 ){
 		help();
 		return 10 ;

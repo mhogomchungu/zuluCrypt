@@ -40,7 +40,7 @@ luksaddkeyUI::luksaddkeyUI(QWidget *parent) :   QDialog(parent)
 void luksaddkeyUI::partitionEntry(QString partition)
 {
 	ui.textEditPathToVolume->setText(partition);
-	ShowUI() ;
+	this->show(); ;
 }
 
 void luksaddkeyUI::HideUI()
@@ -85,6 +85,7 @@ void luksaddkeyUI::pbOpenFile(void)
 
 void luksaddkeyUI::pbOpenPartition(void)
 {
+	this->hide();
 	emit pbOpenPartitionClicked() ;
 }
 
