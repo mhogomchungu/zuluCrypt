@@ -418,9 +418,9 @@ int open_volume(char *device, char * mapping_name, char *m_point, uid_t id,char 
 		
 	}else{
 		if ( strncmp( mode, "ro",2 ) == 0 )		
-			StringCat( p ,"cryptsetup -r create zuluCrypt-");
+			StringCat( p ,cryptsetup " -r create zuluCrypt-");
 		else
-			StringCat( p ,"cryptsetup  create zuluCrypt-");
+			StringCat( p ,cryptsetup "  create zuluCrypt-");
 		
 		StringCat( p, mapping_name ) ;
 		StringCat( p, " " ) ;
@@ -449,26 +449,63 @@ int open_volume(char *device, char * mapping_name, char *m_point, uid_t id,char 
 	if( label[0] == '1' ) {
 		
 		if ( luks == 0 ){
-			z = StringCpy( "cryptsetup luksClose zuluCrypt-") ;
+			z = StringCpy( cryptsetup " luksClose zuluCrypt-") ;
 			StringCat( z , mapping_name ) ;
 			StringCat( z , "  2>/dev/null 1>&2");
-			execute( StringCont( z ),NULL,0 ) ;			
-		}else{
-			z = StringCpy( "cryptsetup remove zuluCrypt-") ;
+			execute( StringCont( z ),NULL,0 ) ;
+			StringDelete( z ) ;
+			
+			return 4 ;
+		}else{			
+			z = StringCpy( cryptsetup " remove zuluCrypt-") ;
 			StringCat( z , mapping_name ) ;
 			StringCat( z , " 2>/dev/null 1>&2");			
 			execute( StringCont( z ),NULL,0 ) ;			
-		}
-		StringDelete( z ) ;
-		
-		return 4 ;	
-	}	
+			StringDelete( z ) ;
+			
+			//plain volume open failed, lets try to reopen the plain volume using legacy option.
+			//legacy mode is with option -c aes-cbc-plain
+			
+			z = StringCpy( echo );
+			StringCat( z , passphrase ) ;
+			StringCat( z , " | " ) ;
+			
+			if ( strncmp( mode, "ro",2 ) == 0 )		
+				StringCat( z ,cryptsetup " -r -c aes-cbc-plain create zuluCrypt-");
+			else
+				StringCat( z ,cryptsetup " -c aes-cbc-plain  zuluCrypt-");
+			
+			StringCat( z, mapping_name ) ;
+			StringCat( z, " " ) ;
+			StringCat( z, device ) ;
+			StringCat( z , " 1>/dev/null 2>&1") ;
+			
+			execute( StringCont( z ), NULL, 0 ) ;			
+
+			StringDelete( z ) ;
+			
+			z = StringCpy(e2label " /dev/mapper/zuluCrypt-") ;
+			StringCat( z , mapping_name ) ;
+			StringCat( z , " 1>/dev/null 2>&1 ; " echo " $?" ) ;
 	
+			execute( StringCont( z ), label, 1 ) ;	
 	
+			StringDelete( z ) ;
+			
+			if( label[0] == '1' ){
+				z = StringCpy( cryptsetup " remove zuluCrypt-") ;
+				StringCat( z , mapping_name ) ;
+				StringCat( z , " 2>/dev/null 1>&2");			
+				execute( StringCont( z ),NULL,0 ) ;			
+				StringDelete( z ) ;				
+				return 4 ;
+			}
+		}	
+	}		
+
 	z = StringCpy(e2label " /dev/mapper/zuluCrypt-") ;
 	
-	StringCat( z , mapping_name ) ;
-		
+	StringCat( z , mapping_name ) ;		
 
 	execute( StringCont( z ), label, 20 ) ;
 	StringDelete( z ) ;
