@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'password.ui'
 **
-** Created: Wed Sep 21 20:09:57 2011
+** Created: Thu Sep 22 16:56:30 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -48,7 +48,7 @@ public:
     {
         if (PasswordDialog->objectName().isEmpty())
             PasswordDialog->setObjectName(QString::fromUtf8("PasswordDialog"));
-        PasswordDialog->setWindowModality(Qt::WindowModal);
+        PasswordDialog->setWindowModality(Qt::ApplicationModal);
         PasswordDialog->resize(459, 198);
         QFont font;
         font.setBold(false);

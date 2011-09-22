@@ -36,6 +36,11 @@ luksaddkeyUI::luksaddkeyUI(QWidget *parent) :   QDialog(parent)
 
 	this->setFixedSize(this->size());
 
+	pUI.setParent(this);
+	pUI.setWindowFlags(Qt::Window | Qt::Dialog);
+
+	connect((QObject *)&pUI,SIGNAL(clickedPartition(QString)),this,SLOT(partitionEntry(QString)));
+	connect(this,SIGNAL(pbOpenPartitionClicked()),(QObject *)&pUI,SLOT(ShowUI()));
 	connect(ui.pushButtonOpenFile,SIGNAL(clicked()), this,SLOT(pbOpenFile())) ;
 
 	connect(ui.pushButtonOpenExistingKeyFile,SIGNAL(clicked()),this, SLOT(pbOpenExisitingKeyFile())) ;

@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'luksaddkey.ui'
 **
-** Created: Wed Sep 21 18:41:34 2011
+** Created: Thu Sep 22 16:56:30 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -52,7 +52,7 @@ public:
     {
         if (luksaddkeyUI->objectName().isEmpty())
             luksaddkeyUI->setObjectName(QString::fromUtf8("luksaddkeyUI"));
-        luksaddkeyUI->setWindowModality(Qt::WindowModal);
+        luksaddkeyUI->setWindowModality(Qt::ApplicationModal);
         luksaddkeyUI->resize(528, 295);
         luksaddkeyUI->setModal(true);
         labelLuksVolume = new QLabel(luksaddkeyUI);

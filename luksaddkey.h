@@ -23,6 +23,7 @@
 #include <QDialog>
 
 #include "ui_luksaddkey.h"
+#include "openpartition.h"
 
 class luksaddkeyUI : public QDialog
 {
@@ -71,6 +72,8 @@ private slots:
 private:
 
 	Ui::luksaddkeyUI ui;
+	openpartition pUI ;
+
 };
 
 #endif // luksaddkeySUI_H

@@ -3,13 +3,13 @@
  <class>luksdeletekey</class>
  <widget class="QDialog" name="luksdeletekey">
   <property name="windowModality">
-   <enum>Qt::WindowModal</enum>
+   <enum>Qt::ApplicationModal</enum>
   </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>452</width>
+    <width>487</width>
     <height>167</height>
    </rect>
   </property>
@@ -47,7 +47,7 @@
     <rect>
      <x>20</x>
      <y>70</y>
-     <width>411</width>
+     <width>451</width>
      <height>61</height>
     </rect>
    </property>
@@ -100,7 +100,7 @@
   <widget class="QPushButton" name="pushButtonDelete">
    <property name="geometry">
     <rect>
-     <x>130</x>
+     <x>160</x>
      <y>130</y>
      <width>91</width>
      <height>31</height>
@@ -113,7 +113,7 @@
   <widget class="QPushButton" name="pushButtonCancel">
    <property name="geometry">
     <rect>
-     <x>230</x>
+     <x>260</x>
      <y>130</y>
      <width>91</width>
      <height>31</height>
@@ -156,7 +156,23 @@
     </rect>
    </property>
    <property name="toolTip">
-    <string>open an encrypted volume</string>
+    <string>open an encrypted file</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonOpenPartition">
+   <property name="geometry">
+    <rect>
+     <x>430</x>
+     <y>10</y>
+     <width>41</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>open an encrypted partition</string>
    </property>
    <property name="text">
     <string/>

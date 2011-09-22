@@ -88,10 +88,6 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 
 	connect((QObject *)&addKeyUI,SIGNAL(clickedpbAdd(QString,bool,QString,bool,QString)), this,SLOT(luksAddKey(QString,bool,QString,bool,QString))) ;
 
-	connect((QObject *)&addKeyUI,SIGNAL(pbOpenPartitionClicked()),(QObject *)&luksopenPartitionUI,SLOT(ShowUI())) ;
-
-	connect((QObject *)&luksopenPartitionUI,SIGNAL(clickedPartition(QString)),&addKeyUI,SLOT(partitionEntry(QString))) ;
-
 	connect((QObject *)&deleteKeyUI,SIGNAL(pbDeleteClicked(QString,bool,QString)),this, SLOT(luksDeleteKey(QString,bool,QString))) ;
 
 	connect(this,SIGNAL(redoOpen(bool,bool,QString,QString)),(QObject *)&openFileUI,SLOT(ShowUI(bool,bool,QString,QString)));

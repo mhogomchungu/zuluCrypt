@@ -3,7 +3,7 @@
  <class>luksaddkeyUI</class>
  <widget class="QDialog" name="luksaddkeyUI">
   <property name="windowModality">
-   <enum>Qt::WindowModal</enum>
+   <enum>Qt::ApplicationModal</enum>
   </property>
   <property name="geometry">
    <rect>

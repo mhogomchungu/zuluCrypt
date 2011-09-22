@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'openartition.ui'
 **
-** Created: Wed Sep 21 18:41:34 2011
+** Created: Thu Sep 22 16:56:30 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -29,6 +29,7 @@ public:
     {
         if (PartitionView->objectName().isEmpty())
             PartitionView->setObjectName(QString::fromUtf8("PartitionView"));
+        PartitionView->setWindowModality(Qt::ApplicationModal);
         PartitionView->resize(560, 264);
         tableWidgetPartitionView = new QTableWidget(PartitionView);
         if (tableWidgetPartitionView->columnCount() < 2)

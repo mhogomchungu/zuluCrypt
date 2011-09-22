@@ -23,6 +23,7 @@
 #include <QDialog>
 
 #include "ui_luksdeletekey.h"
+#include "openpartition.h"
 
 class luksdeletekey : public QDialog
 {
@@ -35,6 +36,8 @@ signals:
 
 	void pbDeleteClicked(QString volumePath,bool passPhraseIsFile,QString passPhrase) ;
 
+	void pbOpenPartitionClicked(void) ;
+
 public slots:
 
 	void ShowUI(void) ;
@@ -46,6 +49,8 @@ public slots :
 	void deleteKey(QString) ;
 
 private slots:
+
+	void pbOpenPartition(void);
 
 	void pbDelete(void) ;
 
@@ -61,6 +66,8 @@ private slots:
 
 private:
     Ui::luksdeletekey ui;
+    openpartition pUI ;
+
 };
 
 #endif // LUKSDELETEKEY_H

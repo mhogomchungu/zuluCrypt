@@ -31,12 +31,19 @@ luksdeletekey::luksdeletekey(QWidget *parent) :  QDialog(parent)
 {
 	ui.setupUi(this);
 	this->setFixedSize(this->size());
+
+	pUI.setParent(this);
+	pUI.setWindowFlags(Qt::Window | Qt::Dialog);
+
+	connect((QObject *)&pUI,SIGNAL(clickedPartition(QString)),this,SLOT(deleteKey(QString)));
+	connect(this,SIGNAL(pbOpenPartitionClicked()),(QObject *)&pUI,SLOT(ShowUI()));
 	connect(ui.pushButtonDelete,SIGNAL(clicked()),this,SLOT(pbDelete())) ;
 	connect(ui.pushButtonCancel,SIGNAL(clicked()),this,SLOT(pbCancel())) ;
 	connect(ui.rbPassphrase,SIGNAL(toggled(bool)),this,SLOT(rbPassphrase())) ;
 	connect(ui.rbPassphraseFromFile,SIGNAL(toggled(bool)),this, SLOT(rbPassphraseFromFile())) ;
 	connect(ui.pushButtonOpenKeyFile,SIGNAL(clicked()),this,SLOT(pbOpenKeyFile())) ;
 	connect(ui.pushButtonOpenVolume,SIGNAL(clicked()),this,SLOT(pbOpenVolume()));
+	connect(ui.pushButtonOpenPartition,SIGNAL(clicked()),this,SLOT(pbOpenPartition())) ;
 }
 
 void luksdeletekey::rbPassphrase()
@@ -74,6 +81,12 @@ void luksdeletekey::ShowUI()
 void luksdeletekey::pbCancel()
 {
 	HideUI() ;
+}
+
+void luksdeletekey::pbOpenPartition()
+{
+	HideUI();
+	emit pbOpenPartitionClicked();
 }
 
 void luksdeletekey::pbDelete()
