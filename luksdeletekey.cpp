@@ -85,9 +85,20 @@ void luksdeletekey::pbDelete()
 		m.exec() ;
 		return ;
 	}
+	if ( ui.lineEditVolumePath->text().isEmpty() == true ){
+		m.setText(QString("ERROR: the path to encrypted volume field is empty"));
+		m.addButton(QMessageBox::Ok);
+		m.exec() ;
+		return ;
+	}
 	QString Z = ui.lineEditPassphrase->text() ;
 	QString N = ui.lineEditVolumePath->text() ;
 	bool P = ui.rbPassphraseFromFile->isChecked() ;
+
+	//add quotation marks to prevent zuluCrypt-cli from getting confused
+	Z = "\"" + Z + "\"" ;
+	N = "\"" + N + "\"" ;
+
 	HideUI() ;
 	emit pbDeleteClicked( N, P, Z );
 }

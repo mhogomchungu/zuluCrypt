@@ -449,13 +449,23 @@ void zuluCrypt::openEncryptedVolume(bool boolOpenReadOnly,bool boolKeyFromFile,Q
 
 		k = strlen( d ) ;
 
+		d[k - 1] = '\0' ;
+
 		d = c = strstr( c , d )  + k + 4 ;
 
 		while (*++d != ' ') { ; }
 
 		*d = '\0' ;
 
-		addItemToTable(volumePath,QString( c ));
+		/*
+		  remove quotation marks around the volume path added to protect spaces in path names
+		  */
+		char *X = volumePath.toAscii().data() ;
+		X[volumePath.length() - 1 ] = '\0' ;
+		X = X + 1 ;
+
+		addItemToTable(QString( X ),QString( c ));
+
 		} break ;
 
 	case 1 : UIMessage(QString("ERROR: No free loop device to use.")) ;
@@ -477,7 +487,6 @@ void zuluCrypt::openEncryptedVolume(bool boolOpenReadOnly,bool boolKeyFromFile,Q
 	case 9 : UIMessage(QString("ERROR: \",\" (comma) is not a valid mount point"));
 		break ;
 	default :UIMessage(QString("ERROR: un unknown error has occured, volume not opened"));
-
 	}
 }
 

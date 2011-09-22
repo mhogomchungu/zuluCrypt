@@ -112,6 +112,11 @@ void password_Dialog::buttonOpenClicked(void )
 	QString D = ui.MountPointPath->text() ;
 	QString E = ui.PassPhraseField->text() ;
 
+	//add quotation marks to prevent zuluCrypt-cli from getting confused
+	C = "\"" + C + "\"" ;
+	D = "\"" + D + "\"" ;
+	E = "\"" + E + "\"" ;
+
 	HideUI() ;
 	emit pbOpenClicked(A,B,C,D,E);
 }
