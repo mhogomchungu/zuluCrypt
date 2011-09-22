@@ -94,20 +94,22 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 
 	connect((QObject *)&deleteKeyUI,SIGNAL(pbDeleteClicked(QString,bool,QString)),this, SLOT(luksDeleteKey(QString,bool,QString))) ;
 
+	connect(this,SIGNAL(redoOpen(bool,bool,QString,QString)),(QObject *)&openFileUI,SLOT(ShowUI(bool,bool,QString,QString)));
+
 	setUpOpenedVolumes() ;
 }
 
 void zuluCrypt::luksDeleteKey(QString volumePath,bool passPhraseIsFile, QString p)
 {
 	QString passtype ;
-	QString exe = zuluCryptExe + QString(" removekey ") + volumePath ;
+	QString exe = zuluCryptExe + QString(" removekey ")  + "\"" +volumePath + "\"" ;
 
 	if ( passPhraseIsFile == true )
 		exe = exe + QString(" -f ") ;
 	else
 		exe = exe + QString(" -p ") ;
 
-	exe = exe + p ;
+	exe = exe + "\"" + p + "\"" ;
 
 	QProcess Z ;
 	Z.start( exe );
@@ -143,7 +145,7 @@ void zuluCrypt::luksAddKey(QString volumePath, bool keyfile,QString ExistingKey,
 	else
 		newPassType = QString(" -p ") ;
 
-	QString exe = zuluCryptExe + QString(" addkey ") + volumePath + existingPassType + ExistingKey + newPassType + NewKey ;
+	QString exe = zuluCryptExe + QString(" addkey ") + "\"" + volumePath + "\"" + existingPassType + "\"" + ExistingKey + "\"" + newPassType + "\"" + NewKey + "\"" ;
 
 	QProcess Z ;
 
@@ -418,7 +420,7 @@ void zuluCrypt::openEncryptedVolume(bool boolOpenReadOnly,bool boolKeyFromFile,Q
 	else
 		passtype = " -p " ;
 
-	exe = zuluCryptExe + " open " + volumePath + " " + mountPointPath + " " + mode + " " + passtype + " " + passPhraseField ;
+	exe = zuluCryptExe + " open \"" + volumePath + "\" \"" + mountPointPath + "\" " + mode + " " + passtype + "\"" + passPhraseField +"\"";
 
 	QProcess process ;
 	process.start(exe) ;
@@ -449,22 +451,13 @@ void zuluCrypt::openEncryptedVolume(bool boolOpenReadOnly,bool boolKeyFromFile,Q
 
 		k = strlen( d ) ;
 
-		d[k - 1] = '\0' ;
-
 		d = c = strstr( c , d )  + k + 4 ;
 
 		while (*++d != ' ') { ; }
 
 		*d = '\0' ;
 
-		/*
-		  remove quotation marks around the volume path added to protect spaces in path names
-		  */
-		char *X = volumePath.toAscii().data() ;
-		X[volumePath.length() - 1 ] = '\0' ;
-		X = X + 1 ;
-
-		addItemToTable(QString( X ),QString( c ));
+		addItemToTable(volumePath,QString( c ));
 
 		} break ;
 
@@ -477,8 +470,10 @@ void zuluCrypt::openEncryptedVolume(bool boolOpenReadOnly,bool boolKeyFromFile,Q
 	case 3 : UIMessage(QString("ERROR: No file or device on a given address.")) ;
 		break ;
 
-	case 4 : UIMessage(QString("ERROR: Wrong passphrase."));
-		break ;
+	case 4 :{
+			UIMessage(QString("ERROR: Wrong passphrase."));
+			emit redoOpen(boolOpenReadOnly,boolKeyFromFile,volumePath, mountPointPath);
+		}break ;
 
 	case 5 : UIMessage(QString("ERROR: mount point address is already taken by a file or folder")) ;
 		break ;

@@ -96,8 +96,8 @@ void luksdeletekey::pbDelete()
 	bool P = ui.rbPassphraseFromFile->isChecked() ;
 
 	//add quotation marks to prevent zuluCrypt-cli from getting confused
-	Z = "\"" + Z + "\"" ;
-	N = "\"" + N + "\"" ;
+	//Z = "\"" + Z + "\"" ;
+	//N = "\"" + N + "\"" ;
 
 	HideUI() ;
 	emit pbDeleteClicked( N, P, Z );

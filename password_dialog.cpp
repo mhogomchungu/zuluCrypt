@@ -45,6 +45,15 @@ password_Dialog::password_Dialog(QWidget *parent ) : QDialog(parent)
 	connect(ui.radioButtonPassPhrase,SIGNAL(clicked()),this,SLOT(passphraseOption())) ;
 }
 
+void password_Dialog::ShowUI(bool A,bool B,QString C,QString D)
+{
+	ui.checkBoxReadOnly->setChecked( A );
+	ui.radioButtonPassPhraseFromFile->setChecked( B );
+	ui.OpenVolumePath->setText( C );
+	ui.MountPointPath->setText( D );
+	ShowUI();
+}
+
 void password_Dialog::passphraseOption()
 {
 	ui.PassPhraseField->setEchoMode(QLineEdit::Password);
@@ -113,9 +122,9 @@ void password_Dialog::buttonOpenClicked(void )
 	QString E = ui.PassPhraseField->text() ;
 
 	//add quotation marks to prevent zuluCrypt-cli from getting confused
-	C = "\"" + C + "\"" ;
-	D = "\"" + D + "\"" ;
-	E = "\"" + E + "\"" ;
+	//C = "\"" + C + "\"" ;
+	//D = "\"" + D + "\"" ;
+	//E = "\"" + E + "\"" ;
 
 	HideUI() ;
 	emit pbOpenClicked(A,B,C,D,E);

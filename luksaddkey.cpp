@@ -186,10 +186,10 @@ void luksaddkeyUI::pbAdd(void)
 	}
 
 	//add quotation marks to prevent zuluCrypt-cli from getting confused
-	a = "\"" + a + "\"" ;
-	b = "\"" + b + "\"" ;
-	c = "\"" + c + "\"" ;
-	d = "\"" + d + "\"" ;
+	//a = "\"" + a + "\"" ;
+	//b = "\"" + b + "\"" ;
+	//c = "\"" + c + "\"" ;
+	//d = "\"" + d + "\"" ;
 
 	HideUI() ;
 	emit clickedpbAdd(a , x , b , y , c  ) ;

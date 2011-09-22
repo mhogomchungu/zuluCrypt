@@ -51,6 +51,7 @@ signals:
 
 	void  luksAddKeyUI(QString volumePath) ;
 	void  luksDeleteKeyUI(QString passphrase) ;
+	void  redoOpen(bool boolOpenReadOnly,bool boolKeyFromFile,QString volumePath, QString mountPointPath) ;
 
 private slots :
 
