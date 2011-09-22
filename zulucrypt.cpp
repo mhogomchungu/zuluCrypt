@@ -118,6 +118,8 @@ void zuluCrypt::luksDeleteKey(QString volumePath,bool passPhraseIsFile, QString 
 	switch( Z.exitCode() ){
 		case 0 :	UIMessage(QString("SUCCESS: key successfully removed\n") + luksEmptySlots(volumePath) + QString(" / 8 slots are now in use"));
 			break ;
+		case 1 :	UIMessage(QString("ERROR: one or more paths has an empty space in them, the back end doesnt like it"));
+			break ;
 		case 2 :{
 				emit luksDeleteKeyUI(volumePath) ;
 				UIMessage(QString("ERROR: there is no key in the volume that match entered key"));
@@ -155,6 +157,8 @@ void zuluCrypt::luksAddKey(QString volumePath, bool keyfile,QString ExistingKey,
 
 	switch( Z.exitCode() ){
 		case 0 :	UIMessage(QString("SUCCESS: key added successfully\n") + luksEmptySlots(volumePath) + QString(" / 8 slots are now in use")) ;
+			break ;
+		case 1 :	UIMessage(QString("ERROR: one or more paths has an empty space in them, the back end doesnt like it"));
 			break ;
 		case 2 :{
 				UIMessage(QString("ERROR: presented key does not match any key in the volume"));
