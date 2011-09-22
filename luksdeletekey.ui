@@ -77,7 +77,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>existing passphrase from key file to delete</string>
+     <string>existing passphrase from a key file to delete</string>
     </property>
    </widget>
   </widget>

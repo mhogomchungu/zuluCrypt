@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'zulucrypt.ui'
 **
-** Created: Wed Sep 21 13:48:59 2011
+** Created: Wed Sep 21 18:41:33 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -50,6 +50,9 @@ public:
         zuluCrypt->setWindowModality(Qt::ApplicationModal);
         zuluCrypt->setEnabled(true);
         zuluCrypt->resize(659, 375);
+        QIcon icon;
+        icon.addFile(QString::fromUtf8("zuluCrypt.png"), QSize(), QIcon::Normal, QIcon::Off);
+        zuluCrypt->setWindowIcon(icon);
         actionFileOpen = new QAction(zuluCrypt);
         actionFileOpen->setObjectName(QString::fromUtf8("actionFileOpen"));
         actionPartitionOpen = new QAction(zuluCrypt);

@@ -448,16 +448,18 @@ int open_volume(char *device, char * mapping_name, char *m_point, uid_t id,char 
 	StringDelete( z ) ;
 	if( label[0] == '1' ) {
 		
-		//if ( luks == 0 ){
-		//	z = StringCpy( "cryptsetup luksClose zuluCrypt-") ;
-		//	StringCat( z , mapping_name ) ;
-		//	execute( StringCont( z ),NULL,0 ) ;			
-		//}else{
-		//	z = StringCpy( "cryptsetup remove zuluCrypt-") ;
-		//	StringCat( z , mapping_name ) ;
-		//	execute( StringCont( z ),NULL,0 ) ;			
-		//}
-		//StringDelete( z ) ;
+		if ( luks == 0 ){
+			z = StringCpy( "cryptsetup luksClose zuluCrypt-") ;
+			StringCat( z , mapping_name ) ;
+			StringCat( z , "  2>/dev/null 1>&2");
+			execute( StringCont( z ),NULL,0 ) ;			
+		}else{
+			z = StringCpy( "cryptsetup remove zuluCrypt-") ;
+			StringCat( z , mapping_name ) ;
+			StringCat( z , " 2>/dev/null 1>&2");			
+			execute( StringCont( z ),NULL,0 ) ;			
+		}
+		StringDelete( z ) ;
 		
 		return 4 ;	
 	}	

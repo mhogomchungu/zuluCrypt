@@ -18,13 +18,14 @@
  */
 
 
-
+ #include <QIcon>
 #include <QtGui/QApplication>
 #include "zulucrypt.h"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+   // a.setWindowIcon(QIcon(QString("/usr/share/icons/zuluCrypt.png")));
     zuluCrypt w;
     w.show();
 

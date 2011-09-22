@@ -58,6 +58,8 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 	ui->setupUi(this);
 	this->setFixedSize(this->size());
 
+	this->setWindowIcon(QIcon(QString("/usr/share/icons/zuluCrypt.png")));
+
 	ui->tableWidget->setColumnWidth(0,230);
 
 	ui->tableWidget->setColumnWidth(1,290);

@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'password.ui'
 **
-** Created: Wed Sep 21 15:10:35 2011
+** Created: Wed Sep 21 20:09:57 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -88,7 +88,7 @@ public:
         radioButtonPassPhrase->setChecked(true);
         radioButtonPassPhraseFromFile = new QRadioButton(groupBox);
         radioButtonPassPhraseFromFile->setObjectName(QString::fromUtf8("radioButtonPassPhraseFromFile"));
-        radioButtonPassPhraseFromFile->setGeometry(QRect(130, 10, 181, 21));
+        radioButtonPassPhraseFromFile->setGeometry(QRect(130, 10, 191, 21));
         radioButtonPassPhraseFromFile->setChecked(false);
         pushButtonPassPhraseFromFile = new QPushButton(PasswordDialog);
         pushButtonPassPhraseFromFile->setObjectName(QString::fromUtf8("pushButtonPassPhraseFromFile"));
@@ -138,7 +138,7 @@ public:
         PushButtonVolumePath->setText(QString());
         groupBox->setTitle(QString());
         radioButtonPassPhrase->setText(QApplication::translate("PasswordDialog", "passphrase", 0, QApplication::UnicodeUTF8));
-        radioButtonPassPhraseFromFile->setText(QApplication::translate("PasswordDialog", "passphrase from key file", 0, QApplication::UnicodeUTF8));
+        radioButtonPassPhraseFromFile->setText(QApplication::translate("PasswordDialog", "passphrase from a key file", 0, QApplication::UnicodeUTF8));
 #ifndef QT_NO_TOOLTIP
         pushButtonPassPhraseFromFile->setToolTip(QApplication::translate("PasswordDialog", "open key file", 0, QApplication::UnicodeUTF8));
 #endif // QT_NO_TOOLTIP

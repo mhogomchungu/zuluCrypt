@@ -19,6 +19,10 @@
   <property name="windowTitle">
    <string>zuluCrypt</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>zuluCrypt.png</normaloff>zuluCrypt.png</iconset>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <property name="contextMenuPolicy">
     <enum>Qt::ActionsContextMenu</enum>

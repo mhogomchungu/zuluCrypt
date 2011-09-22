@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'luksdeletekey.ui'
 **
-** Created: Wed Sep 21 13:48:59 2011
+** Created: Wed Sep 21 20:06:27 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -91,7 +91,7 @@ public:
         labelPassphrase->setText(QApplication::translate("luksdeletekey", "passphrase", 0, QApplication::UnicodeUTF8));
         groupBox->setTitle(QString());
         rbPassphrase->setText(QApplication::translate("luksdeletekey", "existing passphrase in a volume to delete", 0, QApplication::UnicodeUTF8));
-        rbPassphraseFromFile->setText(QApplication::translate("luksdeletekey", "existing passphrase from key file to delete", 0, QApplication::UnicodeUTF8));
+        rbPassphraseFromFile->setText(QApplication::translate("luksdeletekey", "existing passphrase from a key file to delete", 0, QApplication::UnicodeUTF8));
 #ifndef QT_NO_TOOLTIP
         pushButtonOpenKeyFile->setToolTip(QApplication::translate("luksdeletekey", "open a keyfile", 0, QApplication::UnicodeUTF8));
 #endif // QT_NO_TOOLTIP
