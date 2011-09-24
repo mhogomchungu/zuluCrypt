@@ -206,13 +206,17 @@ int open_volumes(int argn, char * device, char * mapping_name,int id, char * mou
 }
 
 
-int create_volumes(int argn ,char *device, char *fs, char * mode, char * pass )
+int create_volumes(int argn ,char *device, char *fs, char * mode, char * keyType, char * pass )
 {
 	StrHandle * p ;
 	StrHandle * q ;
 	char x[512] ;
 	char Y ;
 	int st ;
+	struct stat xt ;
+	char *c ;
+	int z ;
+	
 	
 	if( realpath(device, x ) == NULL )
 		return 4 ;		
@@ -255,10 +259,33 @@ int create_volumes(int argn ,char *device, char *fs, char * mode, char * pass )
 			}
 		}
 			
-	}else if ( argn == 6 ){
+	}else if ( argn == 7 ){
 		
-		st = create_volume(device,fs,mode,pass) ;
-		
+		if( strcmp( keyType, "-p" ) == 0 ) {
+			
+			st = create_volume(device,fs,mode,pass) ;
+			
+		}else if( strcmp( keyType, "-f" ) == 0 ) {
+			
+			if( stat( pass, &xt) == 0 ) {
+			
+				c = ( char *) malloc ( sizeof(char) * xt.st_size ) ;
+			
+				z = open(pass , O_RDONLY ) ;
+			
+				read( z, c, xt.st_size ) ;
+			
+				close( z ) ;
+				
+				st = create_volume(device,fs,mode,c) ;
+				
+				free( c ) ;
+			}else{
+				st = 1 ;
+			}				
+		}else{
+			st = 6 ;			
+		}
 	}else{
 		st = 4 ;			
 	}
@@ -276,6 +303,8 @@ int create_volumes(int argn ,char *device, char *fs, char * mode, char * pass )
 			break  ;	
 		case 5 : printf("ERROR: Wrong choice, exiting\n");
 			break  ;
+		case 6 : printf("ERROR: Wrong option type\n");
+			break  ;
 		default:
 			;
 	}	
@@ -284,19 +313,21 @@ int create_volumes(int argn ,char *device, char *fs, char * mode, char * pass )
 
 void delete_file( char * file )
 {
-	int i, j  ;
+	int i, j, k  ;
 	struct stat st ;	
 	char X = 'X' ;
 	
 	stat(file, &st) ;
 
+	k = open("/dev/urandom",O_RDONLY);
 	i = open( file, O_WRONLY ) ;
 	
-	for( j = 0 ; j < st.st_size ; j ++ )
-		write( i , &X, 1 ) ;				
-	
+	for( j = 0 ; j < st.st_size ; j ++ ){
+		read(  k , &X, 1 ) ;
+		write( i , &X, 1 ) ;	
+	}
 	close( i ) ;
-	
+	close( k ) ;
 	remove( file ) ;	
 }
 
@@ -649,7 +680,7 @@ int main( int argc , char *argv[])
 		
 	}else if(strcmp(action,"create") == 0 ){
 
-		return create_volumes(argc ,argv[2],argv[3],argv[4],argv[5] ) ;	
+		return create_volumes(argc ,argv[2],argv[3],argv[4],argv[5],argv[6] ) ;	
 		
 	}else if(strcmp(action,"addkey") == 0 ){
 		
