@@ -29,6 +29,7 @@
 #include <sys/wait.h>
 
 #include "../version.h"
+#include "zuluCrypt.h"
 
 #define dd "/bin/dd" 
 
@@ -229,33 +230,33 @@ int create_file(char * name, char *random_device , char * size,uid_t id )
 	char Z[3] ={ '0','0','0'} ;
 	
 	StrHandle * p ;
-	StrHandle * q ;
-	StrHandle * z ;
 	
-	p = StringCpy("if=") ;
-	StringCat( p , random_device) ;
-	
-	q = StringCpy("of=") ;
-	StringCat( q , name) ;
-	
-	z = StringCpy("count=") ;
-	StringCat( z , size) ;
-	
-	c = size[strlen(size)-1] ;
-	size[strlen(size)-1] = '\0' ;
-	n = atoll(size) ;	
-
-	switch( c ){
-		case 'K' : n = n * 1024 * 1024 ; break;
-		case 'M' : n = n * 1024 * 1024 * 1024 ; break ;
-		case 'G' : n = n * 1024 * 1024 * 1024 * 1024  ; break ;
-		default: ;
-	}
-	
-	if ( fork() == 0){		
-		execl(dd,"dd",StringCont( p ),StringCont( q ),"bs=1024",StringCont( z ),(char *)0 );
+	if ( fork() == 0 ){		
+		p = StringCpy(dd " if=");
+		StringCat( p , random_device ) ;
+		StringCat( p , " of=") ;
+		StringCat( p , name ) ;
+		StringCat( p , " bs=1024 count=");
+		StringCat( p , size) ;
+		StringCat( p , " 2>/dev/null 1>&2") ;
+		
+		popen( StringCont( p ),"r") ;
+		
+		StringDelete( p ) ;
+		
+		chown(name,id,id);
+		chmod(name,S_IRWXU);
 	}else{	
+		c = size[strlen(size)-1] ;
+		size[strlen(size)-1] = '\0' ;
+		n = atoll(size) ;	
 
+		switch( c ){
+			case 'K' : n = n * 1024 * 1024 ; break;
+			case 'M' : n = n * 1024 * 1024 * 1024 ; break ;
+			case 'G' : n = n * 1024 * 1024 * 1024 * 1024  ; break ;
+			default: ;
+		}
 		do{			
 			stat(name,&st);			
 			k = st.st_size;
@@ -273,8 +274,7 @@ int create_file(char * name, char *random_device , char * size,uid_t id )
 			write( 1, "%",1) ;
 			
 		}while( k != j );
-		chown(name,id,id);
-		chmod(name,S_IRWXU);
+
 		printf("\n") ;
 	}
 	
