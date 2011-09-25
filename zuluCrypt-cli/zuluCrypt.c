@@ -26,8 +26,11 @@
 #include <unistd.h>
 #include "String.h"
 #include <fcntl.h>
+#include <sys/wait.h>
 
 #include "../version.h"
+
+#define dd "/bin/dd" 
 
 StrHandle * get_passphrase( void )
 {	
@@ -205,6 +208,78 @@ int open_volumes(int argn, char * device, char * mapping_name,int id, char * mou
 	return st ;
 }
 
+void char_from_numbers( char * buffer,int size,  __off_t k )
+{
+	char *c ;
+	
+	c = &buffer[ size - 1 ] ;
+	
+	do{		
+		*c =  k % 10 + '0' ;
+		c-- ;			
+	}while( ( k = k / 10 ) != 0 )	;
+}
+
+int create_file(char * name, char *random_device , char * size,uid_t id )
+{
+	struct stat st;
+	long long k,j,l,n ; ;
+
+	char c ;
+	char Z[3] ={ '0','0','0'} ;
+	
+	StrHandle * p ;
+	StrHandle * q ;
+	StrHandle * z ;
+	
+	p = StringCpy("if=") ;
+	StringCat( p , random_device) ;
+	
+	q = StringCpy("of=") ;
+	StringCat( q , name) ;
+	
+	z = StringCpy("count=") ;
+	StringCat( z , size) ;
+	
+	c = size[strlen(size)-1] ;
+	size[strlen(size)-1] = '\0' ;
+	n = atoll(size) ;	
+
+	switch( c ){
+		case 'K' : n = n * 1024 * 1024 ; break;
+		case 'M' : n = n * 1024 * 1024 * 1024 ; break ;
+		case 'G' : n = n * 1024 * 1024 * 1024 * 1024  ; break ;
+		default: ;
+	}
+	
+	if ( fork() == 0){		
+		execl(dd,"dd",StringCont( p ),StringCont( q ),"bs=1024",StringCont( z ),(char *)0 );
+	}else{	
+
+		do{			
+			stat(name,&st);			
+			k = st.st_size;
+			sleep(2);
+			stat(name,&st);			
+			j = st.st_size;
+			
+			l = j * 100 /  n  ;
+			
+			write( 1 , "\rpercentage complete: ",22);
+			
+			char_from_numbers(Z,3,l) ;
+			
+			write( 1, Z ,3 ) ;
+			write( 1, "%",1) ;
+			
+		}while( k != j );
+		chown(name,id,id);
+		chmod(name,S_IRWXU);
+		printf("\n") ;
+	}
+	
+	return 0 ;
+}
 
 int create_volumes(int argn ,char *device, char *fs, char * mode, char * keyType, char * pass )
 {
@@ -693,6 +768,10 @@ int main( int argc , char *argv[])
 	}else if(strcmp(action,"removekey") == 0 ){
 				
 		return removekey(argc, argv[2], argv[3],argv[4] );
+	
+	}else if (strcmp(action,"createfile") == 0 ){
+		
+		return create_file(argv[2],argv[3],argv[4],id) ; 
 		
 	}else if(strcmp(action,"emptyslots") == 0 ){
 		
