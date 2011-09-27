@@ -32,6 +32,7 @@
 #include "zuluCrypt.h"
 
 #define dd "/bin/dd" 
+#define blkid "/sbin/blkid"
 
 StrHandle * get_passphrase( void )
 {	
@@ -209,7 +210,7 @@ int open_volumes(int argn, char * device, char * mapping_name,int id, char * mou
 	return st ;
 }
 
-void char_from_numbers( char * buffer,int size,  __off_t k )
+void char_from_numbers( char * buffer,int size, int k )
 {
 	char *c ;
 	
@@ -224,12 +225,15 @@ void char_from_numbers( char * buffer,int size,  __off_t k )
 int create_file(char * name, char *random_device , char * size,uid_t id )
 {
 	struct stat st;
-	long long k,j,l,n ; ;
-
+	double k,j,l,n ; ;
+	//int  r ;
 	char c ;
 	char Z[3] ={ '0','0','0'} ;
 	
 	StrHandle * p ;
+	
+	if( random_device == NULL )
+		return 10 ;
 	
 	if ( fork() == 0 ){		
 		p = StringCpy(dd " if=");
@@ -257,18 +261,18 @@ int create_file(char * name, char *random_device , char * size,uid_t id )
 			case 'G' : n = n * 1024 * 1024 * 1024 * 1024  ; break ;
 			default: ;
 		}
+		
 		do{			
 			stat(name,&st);			
-			k = st.st_size;
+			k =(double) st.st_size;
 			sleep(2);
 			stat(name,&st);			
-			j = st.st_size;
-			
-			l = j * 100 /  n  ;
-			
+			j = (double) st.st_size;
+			l =  ( (  j  /  n ) * 100 )   ;
+
 			write( 1 , "\rpercentage complete: ",22);
 			
-			char_from_numbers(Z,3,l) ;
+			char_from_numbers(Z,3,(int)l) ;
 			
 			write( 1, Z ,3 ) ;
 			write( 1, "%",1) ;
@@ -281,28 +285,155 @@ int create_file(char * name, char *random_device , char * size,uid_t id )
 	return 0 ;
 }
 
+void partitions(StrHandle *p, StrHandle * q)
+{
+	struct stat st;
+	char *c,*fstab ;
+	char *pchar1,*pchar2 ;
+	char buffer[512];
+	char tmp[40];
+	int i ;
+
+	StrHandle * r ;
+	
+	FILE *f = popen(blkid,"r") ;
+	FILE * ff ;
+	
+	stat("/etc/fstab",&st);
+	
+	c  = fstab = ( char *) malloc(sizeof(char) *( st.st_size + 1)) ;
+	
+	*( c + st.st_size + 1 ) = '\0' ;
+	
+	i = open("/etc/fstab",O_RDONLY);
+	
+	read(i, c, st.st_size);
+	
+	close(i);		
+
+	while(fgets(buffer,512,f) != NULL){
+	
+		c = fstab ;
+	
+		while( *c != '\0' ){	
+			pchar1 = buffer ;	
+			if( strncmp(c,"/dev/",5) == 0){				
+				pchar2 = tmp ;
+				while( ( *pchar2++ = *pchar1++ ) != ':') { ; } 	
+	
+				*( pchar2 - 1 ) = '\0' ;
+	
+				if ( strncmp( c , tmp,strlen(tmp) ) == 0 ){
+			
+					StringCat( p , tmp) ;
+					StringCat( p , "\n") ;
+				}
+			}else if ( strncmp(c,"UUID",4) == 0){					
+				pchar2 = buffer ;
+				while ( *pchar2 != '\n' ) {
+					
+					if ( strncmp( pchar2++ , "UUID",4 ) != 0)
+						continue ;
+						
+					pchar2 = pchar2 + 5 ;
+						
+					i = 0 ;
+						
+					while ( *( pchar2 + i ) != '"' ) { i++ ; }
+						
+					*( pchar2 + i - 1 ) = '\0' ;
+
+					if( strncmp(&c[5],pchar2,strlen(pchar2)) == 0){
+	
+						r = StringCpy(blkid " -U ");
+						StringCat(r , pchar2);
+						ff = popen( StringCont( r ),"r") ;
+						fgets(tmp,40,ff);
+						fclose(ff) ;
+						StringDelete( r );
+						StringCat( p , tmp) ;
+						StringCat( p , "\n") ;
+
+					}						
+				}
+			}else if ( strncmp(c,"LABEL",5) == 0){
+				pchar2 = buffer ;
+				while ( *pchar2 != '\n' ) {
+
+					if ( strncmp( pchar2++ , "LABEL",5 ) != 0)
+						continue ;
+						
+					pchar2 = pchar2 + 6 ;
+						
+					i = 0 ;
+						
+					while ( *( pchar2 + i ) != '"' ) { i++ ; }
+						
+					*( pchar2 + i - 1 ) = '\0' ;
+
+					if( strncmp(&c[6],pchar2,strlen(pchar2)) == 0){
+	
+						r = StringCpy(blkid " -L ");
+						StringCat(r , tmp);
+						ff = popen( StringCont( r ),"r") ;
+						fgets(tmp,40,ff);
+						fclose(ff) ;
+						StringDelete( r );
+						StringCat( p , tmp) ;
+						StringCat( p , "\n") ;
+
+					}						
+				}				
+			}	
+			while ( *c++ != '\n' ) { ; }
+		}
+	}
+	
+	fclose(f) ;
+	
+	f = popen(blkid,"r") ;
+	
+	while(fgets(buffer,512,f) != NULL){
+	
+		c = buffer ;
+		
+		while( *++c != ':' ) { ; }
+		
+		*c = '\0' ;
+		
+		if ( strstr( StringCont( p ),buffer) == NULL ){
+			
+			StringCat( q, buffer ) ;		
+			StringCat( q, "\n" ) ;
+		}
+	}
+	fclose(f) ;
+	
+	free( fstab ) ;
+}
+
 int create_volumes(int argn ,char *device, char *fs, char * mode, char * keyType, char * pass )
 {
 	StrHandle * p ;
 	StrHandle * q ;
-	char x[512] ;
 	char Y ;
 	int st ;
 	struct stat xt ;
 	char *c ;
 	int z ;
 	
-	
-	if( realpath(device, x ) == NULL )
-		return 4 ;		
+	p = StringCpy("");
+	q = StringCpy("");
 		
-	if(strncmp(x,"/dev/",5) == 0 ){
-		printf("currently not supporting creating volumes on hard drives.\n") ;
-		printf("This is an suid program and without any checks,this functionality\nwill enable ");
-		printf("normal users to effectively delete a partition like roots.\n");
-			
-		return 6 ;
-	}
+	partitions( p, q ) ;
+	
+	if ( strstr( StringCont( p ) , device ) != NULL ){
+		
+		printf("ERROR: creating volumes on system partitions is not allowed.\n");
+		printf("System partitions have active entries in /etc/fstab") ;
+		
+		return 7 ;
+	}		
 			 
 	if( argn == 5 ){
 		printf("ARE YOU SURE YOU WANT TO CREATE/OVERWRITE: \"%s\" ? Type \"Y\" if you are\n",device);
@@ -703,6 +834,7 @@ int main( int argc , char *argv[])
 	char * action = argv[1] ;
 	char * device = argv[2] ;
 
+	StrHandle *p,*q ;
 	uid_t id ;
 	
 	char *  mapping_name ;
@@ -772,6 +904,22 @@ int main( int argc , char *argv[])
 	}else if (strcmp(action,"createfile") == 0 ){
 		
 		return create_file(argv[2],argv[3],argv[4],id) ; 
+		
+	}else if (strcmp(action,"partitions") == 0 ){
+		
+		p = StringCpy("");
+		q = StringCpy("");
+		
+		partitions( p, q ) ;
+		
+		printf("system partitions\n");
+		printf("%s",StringCont( p )) ;
+	
+		printf("non system partitions\n");
+		printf("%s",StringCont( q )) ;
+		
+		StringDelete( p ) ;
+		StringDelete( q ) ;
 		
 	}else if(strcmp(action,"emptyslots") == 0 ){
 		
