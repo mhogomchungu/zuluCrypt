@@ -15,20 +15,26 @@ SOURCES += main.cpp\
         password_dialog.cpp \
     openpartition.cpp \
     luksaddkey.cpp \
-    luksdeletekey.cpp
+    luksdeletekey.cpp \
+    createpartition.cpp
 
 HEADERS  += zulucrypt.h password_dialog.h \
     openpartition.h \
     version.h \
     luksaddkey.h \
-    luksdeletekey.h
+    luksdeletekey.h \
+    createpartition.h
 
 FORMS    += zulucrypt.ui password.ui \
     openartition.ui \
     luksaddkey.ui \
-    luksdeletekey.ui
+    luksdeletekey.ui \
+    createpartition.ui
 
 OTHER_FILES +=
+
+
+
 
 
 

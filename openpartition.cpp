@@ -24,7 +24,7 @@
 #include <QTableWidget>
 #include <QTableWidgetItem>
 #include <QObject>
-
+#include <QHeaderView>
 using namespace std ;
 
 openpartition::openpartition(QWidget *parent ) : QDialog(parent)
@@ -32,6 +32,34 @@ openpartition::openpartition(QWidget *parent ) : QDialog(parent)
 	partitionView.setupUi(this);
 	this->setFixedSize(this->size());
 	connect(partitionView.tableWidgetPartitionView,SIGNAL(cellDoubleClicked(int,int)),this,SLOT(tableEntryDoubleClicked(int,int))) ;	
+}
+
+void openpartition::ShowNonSystemPartitions(QStringList l)
+{
+	int i ;
+	int y = partitionView.tableWidgetPartitionView->rowCount() ;
+
+	for( int i = 0 ; i < y  ; i++ )
+	{
+		partitionView.tableWidgetPartitionView->removeRow(0);
+	}
+
+	partitionView.tableWidgetPartitionView->setHorizontalHeaderItem(0, new QTableWidgetItem(QString("non system partitions")));
+	partitionView.tableWidgetPartitionView->removeColumn(1);
+
+	partitionView.tableWidgetPartitionView->setColumnWidth(0,540);
+
+	QTableWidgetItem * t ;
+
+	for ( i = 0 ; i < l.size() - 1 ; i++){
+
+		t = new QTableWidgetItem(l.at(i)) ;
+		t->setTextAlignment(Qt::AlignCenter);
+
+		partitionView.tableWidgetPartitionView->insertRow(i);
+		partitionView.tableWidgetPartitionView->setItem(i,0,t);
+	}
+	this->show();
 }
 
 void openpartition::ShowUI()

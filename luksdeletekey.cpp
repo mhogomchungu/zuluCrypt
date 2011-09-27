@@ -85,7 +85,7 @@ void luksdeletekey::pbCancel()
 
 void luksdeletekey::pbOpenPartition()
 {
-	HideUI();
+	//HideUI();
 	emit pbOpenPartitionClicked();
 }
 

@@ -856,7 +856,25 @@ int main( int argc , char *argv[])
 		printf("\n");
 		return 10 ;
 	}		
+	if (strcmp(action,"partitions") == 0 ){
 		
+		p = StringCpy("");
+		q = StringCpy("");
+		
+		partitions( p, q ) ;
+		
+		//printf("system partitions not shown)\n");
+		printf("%s",StringCont( q )) ;	
+		
+		//printf("system partitions(can not create volumes in these)\n");
+		//printf("%s",StringCont( p )) ;
+		
+		StringDelete( p ) ;
+		StringDelete( q ) ;
+		
+		return 0 ;
+	}
+	
 	if ( argc < 3 ){
 		help();
 		return 10 ;
@@ -904,22 +922,6 @@ int main( int argc , char *argv[])
 	}else if (strcmp(action,"createfile") == 0 ){
 		
 		return create_file(argv[2],argv[3],argv[4],id) ; 
-		
-	}else if (strcmp(action,"partitions") == 0 ){
-		
-		p = StringCpy("");
-		q = StringCpy("");
-		
-		partitions( p, q ) ;
-		
-		printf("system partitions\n");
-		printf("%s",StringCont( p )) ;
-	
-		printf("non system partitions\n");
-		printf("%s",StringCont( q )) ;
-		
-		StringDelete( p ) ;
-		StringDelete( q ) ;
 		
 	}else if(strcmp(action,"emptyslots") == 0 ){
 		

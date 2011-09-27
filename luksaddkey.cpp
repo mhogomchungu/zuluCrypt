@@ -112,7 +112,7 @@ void luksaddkeyUI::pbOpenFile(void)
 
 void luksaddkeyUI::pbOpenPartition(void)
 {
-	HideUI() ;
+	//HideUI() ;
 	emit pbOpenPartitionClicked() ;
 }
 

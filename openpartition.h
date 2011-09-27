@@ -45,6 +45,8 @@ public slots:
 
 	void ShowUI(void);
 
+	void ShowNonSystemPartitions(QStringList) ;
+
 private:
 
 	void HideUI(void);

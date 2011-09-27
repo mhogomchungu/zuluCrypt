@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'zulucrypt.ui'
 **
-** Created: Wed Sep 21 18:41:33 2011
+** Created: Tue Sep 27 13:16:42 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -63,7 +63,7 @@ public:
         actionFileCreate->setVisible(true);
         actionPartitionCreate = new QAction(zuluCrypt);
         actionPartitionCreate->setObjectName(QString::fromUtf8("actionPartitionCreate"));
-        actionPartitionCreate->setEnabled(false);
+        actionPartitionCreate->setEnabled(true);
         actionPartitionCreate->setVisible(true);
         actionAbout = new QAction(zuluCrypt);
         actionAbout->setObjectName(QString::fromUtf8("actionAbout"));

@@ -29,6 +29,7 @@
 #include "openpartition.h"
 #include "luksaddkey.h"
 #include "luksdeletekey.h"
+#include "createpartition.h"
 
 namespace Ui {
     class zuluCrypt;
@@ -48,12 +49,16 @@ public:
 	~zuluCrypt();
 
 signals:
-
+	void  showNonSystemPartitions(QStringList);
 	void  luksAddKeyUI(QString volumePath) ;
 	void  luksDeleteKeyUI(QString passphrase) ;
 	void  redoOpen(bool boolOpenReadOnly,bool boolKeyFromFile,QString volumePath, QString mountPointPath) ;
 
 private slots :
+
+	void createEncryptedpartitionUI(void) ;
+
+	void createEncryptedVolume(QString fileSystem,QString containterType,QString volumePath,QString passphrase,bool passphraseFromFile) ;
 
 	void openEncryptedVolume(bool boolOpenReadOnly,bool boolKeyFromFile,QString volumePath, QString mountPointPath,QString passPhraseField) ;
 
@@ -89,7 +94,11 @@ private:
 
 	openpartition openPartitionUI ;
 
+	openpartition NonSystemPartitions ;
+
 	openpartition luksopenPartitionUI ;
+
+	createpartition createpartitionUI ;
 
 	luksaddkeyUI addKeyUI ;
 	luksdeletekey deleteKeyUI ;

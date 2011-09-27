@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'luksdeletekey.ui'
 **
-** Created: Thu Sep 22 16:56:30 2011
+** Created: Tue Sep 27 13:16:42 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -53,6 +53,7 @@ public:
         labelPassphrase = new QLabel(luksdeletekey);
         labelPassphrase->setObjectName(QString::fromUtf8("labelPassphrase"));
         labelPassphrase->setGeometry(QRect(20, 40, 81, 31));
+        labelPassphrase->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         groupBox = new QGroupBox(luksdeletekey);
         groupBox->setObjectName(QString::fromUtf8("groupBox"));
         groupBox->setGeometry(QRect(20, 70, 451, 61));
@@ -77,6 +78,7 @@ public:
         label = new QLabel(luksdeletekey);
         label->setObjectName(QString::fromUtf8("label"));
         label->setGeometry(QRect(20, 15, 81, 21));
+        label->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         pushButtonOpenVolume = new QPushButton(luksdeletekey);
         pushButtonOpenVolume->setObjectName(QString::fromUtf8("pushButtonOpenVolume"));
         pushButtonOpenVolume->setGeometry(QRect(390, 10, 41, 31));

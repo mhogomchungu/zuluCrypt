@@ -44,6 +44,9 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 	openPartitionUI.setParent(this);
 	openPartitionUI.setWindowFlags(Qt::Window | Qt::Dialog);
 
+	NonSystemPartitions.setParent(this);
+	NonSystemPartitions.setWindowFlags(Qt::Window | Qt::Dialog);
+
 	luksopenPartitionUI.setParent(this);
 	luksopenPartitionUI.setWindowFlags(Qt::Window | Qt::Dialog);
 
@@ -52,6 +55,10 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 
 	deleteKeyUI.setParent(this);
 	deleteKeyUI.setWindowFlags(Qt::Window | Qt::Dialog);
+
+	createpartitionUI.setParent(this);
+	createpartitionUI.setWindowFlags(Qt::Window | Qt::Dialog);
+
 
 	item_count = 0 ;
 
@@ -65,6 +72,12 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 	ui->tableWidget->setColumnWidth(1,290);
 
 	ui->tableWidget->setColumnWidth(2,90);
+
+	connect((QObject *)&createpartitionUI,SIGNAL(CreateVolume(QString,QString,QString,QString,bool)),this,SLOT(createEncryptedVolume(QString,QString,QString,QString,bool)));
+
+	connect((QObject *)&NonSystemPartitions,SIGNAL(clickedPartition(QString)),(QObject *)&createpartitionUI,SLOT(ShowPartitionUI(QString)));
+
+	connect(this,SIGNAL(showNonSystemPartitions(QStringList)),(QObject *)&NonSystemPartitions,SLOT(ShowNonSystemPartitions(QStringList)));
 
 	connect(this, SIGNAL(luksDeleteKeyUI(QString)),(QObject *)&deleteKeyUI,SLOT(deleteKey(QString))) ;
 
@@ -92,12 +105,51 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 
 	connect(this,SIGNAL(redoOpen(bool,bool,QString,QString)),(QObject *)&openFileUI,SLOT(ShowUI(bool,bool,QString,QString)));
 
+	connect(ui->actionPartitionCreate,SIGNAL(triggered()),this,SLOT(createEncryptedpartitionUI())) ;
+
 	setUpOpenedVolumes() ;
+}
+
+void zuluCrypt::createEncryptedVolume(QString fileSystem, QString containterType, QString volumePath, QString passphrase,bool passphraseFromFile)
+{
+	QString N ;
+
+	if (passphraseFromFile == true)
+		N = QString("-f") ;
+	else
+		N = QString("-p") ;
+
+	QString exe = zuluCryptExe + " create \"" + volumePath + "\" " + fileSystem + " " + containterType + " " +  N + " \"" + passphrase + "\"" ;
+
+	std::cout << exe.toStdString() << std::endl ;
+
+	QProcess p ;
+
+	p.start(exe);
+	p.waitForFinished();
+
+	switch( p.exitCode() ) {
+		case 0 : UIMessage(QString("SUCCESS: volume successfully created"));
+			break;
+		case 1 : UIMessage(QString("ERROR: volume path does not exist"));
+			break;
+		default: UIMessage((QString("ERROR: unrecognized error has occured,volume not created")));
+	}
+}
+
+void zuluCrypt::createEncryptedpartitionUI()
+{
+	QProcess p ;
+	p.start(zuluCryptExe + QString(" partitions"));
+	p.waitForFinished() ;
+
+	QStringList l = QString( p.readAllStandardOutput()).split("\n") ;
+
+	emit showNonSystemPartitions( l ) ;
 }
 
 void zuluCrypt::luksDeleteKey(QString volumePath,bool passPhraseIsFile, QString p)
 {
-	QString passtype ;
 	QString exe = zuluCryptExe + QString(" removekey ")  + "\"" +volumePath + "\"" ;
 
 	if ( passPhraseIsFile == true )
@@ -123,6 +175,8 @@ void zuluCrypt::luksDeleteKey(QString volumePath,bool passPhraseIsFile, QString 
 		case 4 :	UIMessage(QString("ERROR: device does not exist"));
 			break ;
 		case 5 :	UIMessage(QString("ERROR: key file does not exist"));
+			break ;
+		case 7 : UIMessage(QString("ERROR: creating volumes on system partitions is not supported"));
 			break ;
 		default:	UIMessage(QString("ERROR: an unknown error has occured, key not deleted"));
 	}
