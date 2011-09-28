@@ -121,8 +121,6 @@ void zuluCrypt::createEncryptedVolume(QString fileSystem, QString containterType
 
 	QString exe = zuluCryptExe + " create \"" + volumePath + "\" " + fileSystem + " " + containterType + " " +  N + " \"" + passphrase + "\"" ;
 
-	std::cout << exe.toStdString() << std::endl ;
-
 	QProcess p ;
 
 	p.start(exe);
@@ -252,7 +250,8 @@ bool zuluCrypt::isLuks(QString volumePath)
 void zuluCrypt::aboutMenuOption(void)
 {
 	QMessageBox m ;
-
+	m.setParent(this);
+	m.setWindowFlags(Qt::Window | Qt::Dialog);
 	m.addButton(QMessageBox::Ok);
 
 	m.setText(QString( VERSION_STRING )) ;
@@ -385,6 +384,8 @@ void zuluCrypt::volume_property()
 	while ( *c++ != '\n') { i++ ; }
 
 	QMessageBox m ;
+	m.setParent(this);
+	m.setWindowFlags(Qt::Window | Qt::Dialog);
 
 	if ( isLuks(path) == true)
 		m.setText( M.right( M.size() - i) + QString("  occupied key slots: ") + luksEmptySlots(path) + QString(" / 8")) ;
@@ -434,6 +435,8 @@ void zuluCrypt::luksDeleteKeyContextMenu(void)
 void zuluCrypt::UIMessage(QString message)
 {
 	QMessageBox m ;
+	m.setParent(this);
+	m.setWindowFlags(Qt::Window | Qt::Dialog);
 	m.setText(message);
 	m.addButton(QMessageBox::Ok);
 	m.exec() ;

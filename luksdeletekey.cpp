@@ -92,6 +92,9 @@ void luksdeletekey::pbOpenPartition()
 void luksdeletekey::pbDelete()
 {
 	QMessageBox m ;
+	m.setParent(this);
+	m.setWindowFlags(Qt::Window | Qt::Dialog);
+
 	if ( ui.lineEditPassphrase->text().isEmpty() == true ){
 		m.setText(QString("ERROR: the passphrase field is empty"));
 		m.addButton(QMessageBox::Ok);

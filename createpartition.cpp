@@ -2,6 +2,8 @@
 #include "ui_createpartition.h"
 #include <QMessageBox>
 #include <QFileDialog>
+#include <iostream>
+#include <QAbstractButton>
 
 createpartition::createpartition(QWidget *parent) :
     QWidget(parent),
@@ -67,10 +69,11 @@ void createpartition::rbPasssphraseFromFileClicked()
 void createpartition::pbCreateClicked()
 {
 	QMessageBox m ;
-
-	m.addButton(QMessageBox::Ok);
+	m.setParent(this);
+	m.setWindowFlags(Qt::Window | Qt::Dialog);
 
 	if( ui->lineEditVolumePath->text().isEmpty() == true )	{
+		m.addButton(QMessageBox::Ok);
 		m.setText(QString("ERROR: volume path field is empty"));
 		m.exec() ;
 		return ;
@@ -93,7 +96,12 @@ void createpartition::pbCreateClicked()
 		ct = QString("luks");
 
 	if( ui ->lineEditPassphrase1->text().isEmpty() == true){
-		m.setText(QString("ERROR: passphrases field is empty"));
+		m.addButton(QMessageBox::Ok);
+		if( ui->rbPassphrase->isChecked() == true)
+			m.setText(QString("ERROR: passphrases field is empty"));
+		else
+			m.setText(QString("ERROR: key file field is empty"));
+
 		m.exec();
 		return ;
 	}
@@ -101,12 +109,26 @@ void createpartition::pbCreateClicked()
 	if(ui->rbPassphrase->isChecked() == true){
 
 		if( QString::compare(ui->lineEditPassphrase1->text(),ui->lineEditPassPhrase2->text()) != 0 ){
-
+			m.addButton(QMessageBox::Ok);
 			m.setText(QString("ERROR: passphrases do not match"));
 			m.exec();
 			return ;
 		}
 	}
+
+	QString r("This operation will delete all data in partition: " + ui->lineEditVolumePath->text()) ;
+	r = r + QString("\nAre you sure you want to proceed?") ;
+
+	m.addButton(QMessageBox::Yes);
+	m.addButton(QMessageBox::No);
+	m.setDefaultButton(QMessageBox::No);
+
+	QString wr = QString("WARNING: all contents of ") + ui->lineEditVolumePath->text() + QString(" will be deleted");
+	wr = wr + QString("\nAre you sure you want to proceed?") ;
+	m.setText(wr);
+
+	if ( m.exec() != QMessageBox::Yes )
+		return ;
 
 	this->hide();
 	emit CreateVolume(fs,ct,ui->lineEditVolumePath->text(),ui->lineEditPassphrase1->text(),ui->rbPassphraseFromFile->isChecked()) ;

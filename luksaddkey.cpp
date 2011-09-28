@@ -162,6 +162,8 @@ void luksaddkeyUI::pbAdd(void)
 	bool y = ui.radioButtonNewPassphraseFromFile->isChecked() ;
 
 	QMessageBox m ;
+	m.setParent(this);
+	m.setWindowFlags(Qt::Window | Qt::Dialog);
 
 	if ( a.isEmpty() == true ){
 		m.setText(QString("ERROR: the encrypted volume path field is empty"));

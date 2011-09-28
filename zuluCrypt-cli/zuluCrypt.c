@@ -288,7 +288,7 @@ int create_file(char * name, char *random_device , char * size,uid_t id )
 void partitions(StrHandle *p, StrHandle * q)
 {
 	struct stat st;
-	char *c,*fstab ;
+	char *c,*fstab,*d ;
 	char *pchar1,*pchar2 ;
 	char buffer[512];
 	char tmp[40];
@@ -391,20 +391,34 @@ void partitions(StrHandle *p, StrHandle * q)
 	
 	fclose(f) ;
 	
-	f = popen(blkid,"r") ;
+	f = fopen("/proc/partitions","r");
 	
 	while(fgets(buffer,512,f) != NULL){
 	
 		c = buffer ;
 		
-		while( *++c != ':' ) { ; }
-		
+		while( *++c != '\n' ) { ; }
+	
 		*c = '\0' ;
 		
-		if ( strstr( StringCont( p ),buffer) == NULL ){
+		d = c ;
+		
+		while( *--d != ' ' ) { ; }
+		
+		d++ ;
+		
+		if( strlen( d ) == 3 )
+			continue ;
 			
-			StringCat( q, buffer ) ;		
-			StringCat( q, "\n" ) ;
+		strcpy(buffer,"/dev/");
+		strcat(buffer, d ) ;
+		
+		if ( strstr( StringCont( p ),buffer) == NULL ){			
+			
+			if( strncmp( buffer, "/dev/sd",7) == 0 || strncmp( buffer, "/dev/hd",7) == 0 ){
+				StringCat( q, buffer ) ;
+				StringCat( q, "\n") ;
+			}			
 		}
 	}
 	fclose(f) ;
@@ -434,7 +448,10 @@ int create_volumes(int argn ,char *device, char *fs, char * mode, char * keyType
 		
 		return 7 ;
 	}		
-			 
+		
+	StringDelete( p ) ;
+	StringDelete( q ) ;
+	
 	if( argn == 5 ){
 		printf("ARE YOU SURE YOU WANT TO CREATE/OVERWRITE: \"%s\" ? Type \"Y\" if you are\n",device);
 		

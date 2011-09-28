@@ -97,7 +97,7 @@ void openpartition::tableEntryDoubleClicked(int row, int column)
 {
 	QString i = partitionView.tableWidgetPartitionView->item(row,column)->text().split(":").at(0) ;
 	HideUI() ;
-	emit clickedPartition(i);	
+	emit clickedPartition(i.split(":").at(0));
 }
 
 openpartition::~openpartition()
