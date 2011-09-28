@@ -26,7 +26,7 @@ HEADERS  += zulucrypt.h password_dialog.h \
     createpartition.h
 
 FORMS    += zulucrypt.ui password.ui \
-    openartition.ui \
+    openpartition.ui \
     luksaddkey.ui \
     luksdeletekey.ui \
     createpartition.ui

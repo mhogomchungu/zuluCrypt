@@ -25,6 +25,8 @@
 #include <QTableWidgetItem>
 #include <QObject>
 #include <QHeaderView>
+#include <stdio.h>
+
 using namespace std ;
 
 openpartition::openpartition(QWidget *parent ) : QDialog(parent)
@@ -72,18 +74,66 @@ void openpartition::ShowUI()
 	}
 
 	partitionView.tableWidgetPartitionView->setColumnWidth(0,540);
+	partitionView.tableWidgetPartitionView->removeColumn(1);
 
+	FILE *f = fopen("/proc/partitions","r");
+	char buffer[256];
+	char *c,*d ;
+	int i = 0 ;
+
+	QTableWidgetItem * t ;
+
+	fgets(buffer,256,f) ;
+	fgets(buffer,256,f) ;
+
+	QString partition ;
 	QProcess p ;
+	QByteArray b ;
 
-	p.start(QString("blkid"));
-	p.waitForFinished() ;
+	while(fgets(buffer,256,f) != NULL){
 
-	QStringList List = QString(p.readAllStandardOutput()).split("\n") ;
+		c = buffer ;
 
-	for( int i = 0 ; i < List.size() - 1  ; i++ )
-	{
+		while( *++c != '\n' ) { ; }
+
+		*c = '\0' ;
+
+		d = c ;
+
+		while( *--d != ' ' ) { ; }
+
+		d++ ;
+
+		if( strlen( d ) == 3 )
+			continue ;
+
+		strcpy(buffer,"/dev/");
+		strcat(buffer, d ) ;
+
+		partition = QString(buffer) ;
+
+		p.start(QString("e2label ") + partition);
+		p.waitForFinished() ;
+
+		b = p.readAllStandardOutput().data() ;
+
+		b.chop(1);
+
+		if ( b.at(0) == '\n')
+			;
+		else if ( b.at(0) == '\0')
+			;
+		else
+			partition = partition + QString(" : LABEL=\"") + QString(b) + QString("\"");
+
+		p.close();
+
+		t = new QTableWidgetItem(partition) ;
+		t->setTextAlignment(Qt::AlignCenter);
+
 		partitionView.tableWidgetPartitionView->insertRow(i);
-		partitionView.tableWidgetPartitionView->setItem(i,0,new QTableWidgetItem(List.at(i)));
+		partitionView.tableWidgetPartitionView->setItem(i,0,t);
+		i++ ;
 	}
 	this->show();
 }

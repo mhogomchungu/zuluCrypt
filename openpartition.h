@@ -22,7 +22,7 @@
 #define OPEN_PARTITION_H
 
 
-#include "ui_openartition.h"
+#include "ui_openpartition.h"
 
 
 class openpartition :  public QDialog
