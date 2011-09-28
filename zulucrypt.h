@@ -24,6 +24,8 @@
 #include <QMainWindow>
 #include <QString>
 #include <QTableWidgetItem>
+#include <QSystemTrayIcon>
+
 
 #include "password_dialog.h"
 #include "openpartition.h"
@@ -55,6 +57,8 @@ signals:
 	void  redoOpen(bool boolOpenReadOnly,bool boolKeyFromFile,QString volumePath, QString mountPointPath) ;
 
 private slots :
+
+	void trayIconAction(QSystemTrayIcon::ActivationReason) ;
 
 	void createEncryptedpartitionUI(void) ;
 
@@ -108,6 +112,7 @@ private:
 	QTableWidgetItem* item ;
 	int item_count ;
 
+	QSystemTrayIcon trayIcon ;
 };
 
 #endif // ZULUCRYPT_H

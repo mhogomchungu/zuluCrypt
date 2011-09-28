@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'zulucrypt.ui'
 **
-** Created: Tue Sep 27 13:16:42 2011
+** Created: Wed Sep 28 02:55:32 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -41,6 +41,7 @@ public:
     QMenu *menuCreate;
     QMenu *menuHelp;
     QMenu *menuConfigure;
+    QMenu *menuConfigure_2;
     QStatusBar *statusBar;
 
     void setupUi(QMainWindow *zuluCrypt)
@@ -104,6 +105,8 @@ public:
         menuHelp->setObjectName(QString::fromUtf8("menuHelp"));
         menuConfigure = new QMenu(menuBar);
         menuConfigure->setObjectName(QString::fromUtf8("menuConfigure"));
+        menuConfigure_2 = new QMenu(menuBar);
+        menuConfigure_2->setObjectName(QString::fromUtf8("menuConfigure_2"));
         zuluCrypt->setMenuBar(menuBar);
         statusBar = new QStatusBar(zuluCrypt);
         statusBar->setObjectName(QString::fromUtf8("statusBar"));
@@ -112,6 +115,7 @@ public:
         menuBar->addAction(menuOpen->menuAction());
         menuBar->addAction(menuCreate->menuAction());
         menuBar->addAction(menuConfigure->menuAction());
+        menuBar->addAction(menuConfigure_2->menuAction());
         menuBar->addAction(menuHelp->menuAction());
         menuOpen->addAction(actionFileOpen);
         menuOpen->addAction(actionPartitionOpen);
@@ -146,6 +150,7 @@ public:
         menuCreate->setTitle(QApplication::translate("zuluCrypt", "create", 0, QApplication::UnicodeUTF8));
         menuHelp->setTitle(QApplication::translate("zuluCrypt", "help", 0, QApplication::UnicodeUTF8));
         menuConfigure->setTitle(QApplication::translate("zuluCrypt", "luks", 0, QApplication::UnicodeUTF8));
+        menuConfigure_2->setTitle(QApplication::translate("zuluCrypt", "configure", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };

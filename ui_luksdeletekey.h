@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'luksdeletekey.ui'
 **
-** Created: Tue Sep 27 13:16:42 2011
+** Created: Wed Sep 28 02:55:33 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -49,7 +49,7 @@ public:
         luksdeletekey->setModal(true);
         lineEditPassphrase = new QLineEdit(luksdeletekey);
         lineEditPassphrase->setObjectName(QString::fromUtf8("lineEditPassphrase"));
-        lineEditPassphrase->setGeometry(QRect(100, 40, 291, 31));
+        lineEditPassphrase->setGeometry(QRect(100, 40, 311, 31));
         labelPassphrase = new QLabel(luksdeletekey);
         labelPassphrase->setObjectName(QString::fromUtf8("labelPassphrase"));
         labelPassphrase->setGeometry(QRect(20, 40, 81, 31));
@@ -65,7 +65,7 @@ public:
         rbPassphraseFromFile->setGeometry(QRect(70, 30, 301, 21));
         pushButtonOpenKeyFile = new QPushButton(luksdeletekey);
         pushButtonOpenKeyFile->setObjectName(QString::fromUtf8("pushButtonOpenKeyFile"));
-        pushButtonOpenKeyFile->setGeometry(QRect(390, 40, 41, 31));
+        pushButtonOpenKeyFile->setGeometry(QRect(410, 40, 31, 31));
         pushButtonDelete = new QPushButton(luksdeletekey);
         pushButtonDelete->setObjectName(QString::fromUtf8("pushButtonDelete"));
         pushButtonDelete->setGeometry(QRect(160, 130, 91, 31));
@@ -74,17 +74,17 @@ public:
         pushButtonCancel->setGeometry(QRect(260, 130, 91, 31));
         lineEditVolumePath = new QLineEdit(luksdeletekey);
         lineEditVolumePath->setObjectName(QString::fromUtf8("lineEditVolumePath"));
-        lineEditVolumePath->setGeometry(QRect(100, 10, 291, 31));
+        lineEditVolumePath->setGeometry(QRect(100, 10, 311, 31));
         label = new QLabel(luksdeletekey);
         label->setObjectName(QString::fromUtf8("label"));
         label->setGeometry(QRect(20, 15, 81, 21));
         label->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         pushButtonOpenVolume = new QPushButton(luksdeletekey);
         pushButtonOpenVolume->setObjectName(QString::fromUtf8("pushButtonOpenVolume"));
-        pushButtonOpenVolume->setGeometry(QRect(390, 10, 41, 31));
+        pushButtonOpenVolume->setGeometry(QRect(410, 10, 31, 31));
         pushButtonOpenPartition = new QPushButton(luksdeletekey);
         pushButtonOpenPartition->setObjectName(QString::fromUtf8("pushButtonOpenPartition"));
-        pushButtonOpenPartition->setGeometry(QRect(430, 10, 41, 31));
+        pushButtonOpenPartition->setGeometry(QRect(440, 10, 31, 31));
 
         retranslateUi(luksdeletekey);
 

@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'luksaddkey.ui'
 **
-** Created: Thu Sep 22 16:56:30 2011
+** Created: Wed Sep 28 02:55:33 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -139,7 +139,7 @@ public:
         pushButtonOpenPartition->setText(QString());
         groupBox->setTitle(QApplication::translate("luksaddkeyUI", "key already in the encrypted volume", 0, QApplication::UnicodeUTF8));
         radioButtonPassphraseinVolume->setText(QApplication::translate("luksaddkeyUI", "passphrase", 0, QApplication::UnicodeUTF8));
-        radioButtonPassphraseInVolumeFromFile->setText(QApplication::translate("luksaddkeyUI", "passphrase from a keyfile", 0, QApplication::UnicodeUTF8));
+        radioButtonPassphraseInVolumeFromFile->setText(QApplication::translate("luksaddkeyUI", "passphrase from a key file", 0, QApplication::UnicodeUTF8));
         labelExistingPassphrase->setText(QApplication::translate("luksaddkeyUI", "passphrase", 0, QApplication::UnicodeUTF8));
 #ifndef QT_NO_TOOLTIP
         pushButtonOpenExistingKeyFile->setToolTip(QApplication::translate("luksaddkeyUI", "open keyfile", 0, QApplication::UnicodeUTF8));

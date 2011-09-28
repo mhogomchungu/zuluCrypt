@@ -24,7 +24,7 @@
     <rect>
      <x>100</x>
      <y>40</y>
-     <width>291</width>
+     <width>311</width>
      <height>31</height>
     </rect>
    </property>
@@ -87,9 +87,9 @@
   <widget class="QPushButton" name="pushButtonOpenKeyFile">
    <property name="geometry">
     <rect>
-     <x>390</x>
+     <x>410</x>
      <y>40</y>
-     <width>41</width>
+     <width>31</width>
      <height>31</height>
     </rect>
    </property>
@@ -131,7 +131,7 @@
     <rect>
      <x>100</x>
      <y>10</y>
-     <width>291</width>
+     <width>311</width>
      <height>31</height>
     </rect>
    </property>
@@ -155,9 +155,9 @@
   <widget class="QPushButton" name="pushButtonOpenVolume">
    <property name="geometry">
     <rect>
-     <x>390</x>
+     <x>410</x>
      <y>10</y>
-     <width>41</width>
+     <width>31</width>
      <height>31</height>
     </rect>
    </property>
@@ -171,9 +171,9 @@
   <widget class="QPushButton" name="pushButtonOpenPartition">
    <property name="geometry">
     <rect>
-     <x>430</x>
+     <x>440</x>
      <y>10</y>
-     <width>41</width>
+     <width>31</width>
      <height>31</height>
     </rect>
    </property>

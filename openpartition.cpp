@@ -107,6 +107,9 @@ void openpartition::ShowUI()
 		if( strlen( d ) == 3 )
 			continue ;
 
+		if( strncmp( d,"sd",2) != 0 && strncmp( d,"hd",2) != 0 )
+			continue ;
+
 		strcpy(buffer,"/dev/");
 		strcat(buffer, d ) ;
 

@@ -59,6 +59,9 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 	createpartitionUI.setParent(this);
 	createpartitionUI.setWindowFlags(Qt::Window | Qt::Dialog);
 
+	trayIcon.setParent(this);
+	trayIcon.setIcon(QIcon(QString("/usr/share/icons/zuluCrypt.png")));
+	connect((QObject *)&trayIcon,SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this,SLOT(trayIconAction(QSystemTrayIcon::ActivationReason)));
 
 	item_count = 0 ;
 
@@ -108,6 +111,21 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 	connect(ui->actionPartitionCreate,SIGNAL(triggered()),this,SLOT(createEncryptedpartitionUI())) ;
 
 	setUpOpenedVolumes() ;
+
+	//trayIcon.show();
+
+}
+
+void zuluCrypt::trayIconAction(QSystemTrayIcon::ActivationReason e)
+{
+	std::cout << QString("dd").toStdString() << std::endl ;
+	if ( e == QSystemTrayIcon::Trigger){
+
+		if( this->isHidden() == true)
+			this->show();
+		else
+			this->hide();
+	}
 }
 
 void zuluCrypt::createEncryptedVolume(QString fileSystem, QString containterType, QString volumePath, QString passphrase,bool passphraseFromFile)

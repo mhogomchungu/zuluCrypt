@@ -49,7 +49,7 @@
     </rect>
    </property>
    <property name="title">
-    <string>encrypted volume type</string>
+    <string>container type</string>
    </property>
    <widget class="QRadioButton" name="rbPlain">
     <property name="geometry">
@@ -88,7 +88,7 @@
     </rect>
    </property>
    <property name="title">
-    <string>file system type to use</string>
+    <string>file system type</string>
    </property>
    <widget class="QRadioButton" name="rbext3">
     <property name="geometry">
@@ -161,7 +161,7 @@
     <rect>
      <x>120</x>
      <y>80</y>
-     <width>271</width>
+     <width>281</width>
      <height>31</height>
     </rect>
    </property>
@@ -187,7 +187,7 @@
     <rect>
      <x>120</x>
      <y>110</y>
-     <width>271</width>
+     <width>281</width>
      <height>31</height>
     </rect>
    </property>
@@ -211,9 +211,9 @@
   <widget class="QPushButton" name="pbOpenKeyFile">
    <property name="geometry">
     <rect>
-     <x>390</x>
+     <x>400</x>
      <y>80</y>
-     <width>41</width>
+     <width>31</width>
      <height>31</height>
     </rect>
    </property>

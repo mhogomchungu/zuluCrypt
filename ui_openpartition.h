@@ -1,14 +1,14 @@
 /********************************************************************************
-** Form generated from reading UI file 'openartition.ui'
+** Form generated from reading UI file 'openpartition.ui'
 **
-** Created: Wed Sep 28 00:56:56 2011
+** Created: Wed Sep 28 02:55:33 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef UI_OPENARTITION_H
-#define UI_OPENARTITION_H
+#ifndef UI_OPENPARTITION_H
+#define UI_OPENPARTITION_H
 
 #include <QtCore/QVariant>
 #include <QtGui/QAction>
@@ -63,4 +63,4 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // UI_OPENARTITION_H
+#endif // UI_OPENPARTITION_H

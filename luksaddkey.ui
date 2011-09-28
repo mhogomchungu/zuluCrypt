@@ -102,7 +102,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>passphrase from a keyfile</string>
+     <string>passphrase from a key file</string>
     </property>
    </widget>
    <widget class="QLabel" name="labelExistingPassphrase">
