@@ -271,6 +271,7 @@ void zuluCrypt::aboutMenuOption(void)
 	m.setParent(this);
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 	m.addButton(QMessageBox::Ok);
+	m.setWindowTitle(QString("about zuluCrypt"));
 
 	m.setText(QString( VERSION_STRING )) ;
 
@@ -456,6 +457,7 @@ void zuluCrypt::UIMessage(QString message)
 	m.setParent(this);
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 	m.setText(message);
+	m.setWindowTitle(QString("ERROR!"));
 	m.addButton(QMessageBox::Ok);
 	m.exec() ;
 }

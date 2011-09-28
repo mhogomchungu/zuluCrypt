@@ -69,6 +69,7 @@ void createpartition::rbPasssphraseFromFileClicked()
 void createpartition::pbCreateClicked()
 {
 	QMessageBox m ;
+	m.setWindowTitle(QString("ERROR!"));
 	m.setParent(this);
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 

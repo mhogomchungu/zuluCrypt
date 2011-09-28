@@ -162,6 +162,7 @@ void luksaddkeyUI::pbAdd(void)
 	bool y = ui.radioButtonNewPassphraseFromFile->isChecked() ;
 
 	QMessageBox m ;
+	m.setWindowTitle(QString("ERROR!"));
 	m.setParent(this);
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 

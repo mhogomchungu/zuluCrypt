@@ -92,6 +92,7 @@ void luksdeletekey::pbOpenPartition()
 void luksdeletekey::pbDelete()
 {
 	QMessageBox m ;
+	m.setWindowTitle(QString("ERROR!"));
 	m.setParent(this);
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 
