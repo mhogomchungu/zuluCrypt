@@ -185,8 +185,8 @@ void zuluCrypt::luksDeleteKey(QString volumePath,bool passPhraseIsFile, QString 
 		case 1 :	UIMessage(QString("ERROR: one or more paths has an empty space in them, the back end doesnt like it"));
 			break ;
 		case 2 :{
-				emit luksDeleteKeyUI(volumePath) ;
 				UIMessage(QString("ERROR: there is no key in the volume that match entered key"));
+				emit luksDeleteKeyUI(volumePath) ;				
 			}break ;
 		case 4 :	UIMessage(QString("ERROR: device does not exist"));
 			break ;

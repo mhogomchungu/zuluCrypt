@@ -25,9 +25,7 @@
 #include <QTableWidgetItem>
 #include <QObject>
 #include <QHeaderView>
-#include <stdio.h>
-
-using namespace std ;
+#include <QFile>
 
 openpartition::openpartition(QWidget *parent ) : QDialog(parent)
 {
@@ -46,7 +44,7 @@ void openpartition::ShowNonSystemPartitions(QStringList l)
 		partitionView.tableWidgetPartitionView->removeRow(0);
 	}
 
-	partitionView.tableWidgetPartitionView->setHorizontalHeaderItem(0, new QTableWidgetItem(QString("non system partitions")));
+	partitionView.tableWidgetPartitionView->setHorizontalHeaderItem(0, new QTableWidgetItem(QString("non system partitions(no active entries in fstab)")));
 	partitionView.tableWidgetPartitionView->removeColumn(1);
 
 	partitionView.tableWidgetPartitionView->setColumnWidth(0,540);
@@ -76,22 +74,41 @@ void openpartition::ShowUI()
 	partitionView.tableWidgetPartitionView->setColumnWidth(0,540);
 	partitionView.tableWidgetPartitionView->removeColumn(1);
 
-	FILE *f = fopen("/proc/partitions","r");
-	char buffer[256];
+	char buffer[64];
 	char *c,*d ;
 	int i = 0 ;
 
-	QTableWidgetItem * t ;
+	QFile f("/proc/partitions");
+	f.open(QIODevice::ReadOnly);
+	f.readLine(buffer,64 ) ;
+	f.readLine(buffer,64 ) ;
 
-	fgets(buffer,256,f) ;
-	fgets(buffer,256,f) ;
+	QTableWidgetItem * t ;
 
 	QString partition ;
 	QProcess p ;
 	QByteArray b ;
 
-	while(fgets(buffer,256,f) != NULL){
+/*
+  output of "cat /proc/partitions" that produced below code
 
+major minor  #blocks  name
+
+   8        0   78150744 sda
+   8        1   11566768 sda1
+   8        2          1 sda2 <--- no idea why this entry is here, it doesnt show up anywhere else,skip it
+   8        5   66581361 sda5
+   8       16  312571224 sdb
+   8       17    1044193 sdb1
+   8       18          1 sdb2 <---- no idea why this entry is here,it doesnt show up anywhere else,skit it
+   8       21  311524416 sdb5
+   8       32     250879 sdc
+   8       33     250608 sdc1
+
+   only take partitions(sdX,hdY), skip everything else like /dev/loopX
+  */
+	while( f.atEnd() != true ){
+		f.readLine(buffer,64) ;
 		c = buffer ;
 
 		while( *++c != '\n' ) { ; }
@@ -105,6 +122,9 @@ void openpartition::ShowUI()
 		d++ ;
 
 		if( strlen( d ) == 3 )
+			continue ;
+
+		if ( *( d - 3 ) == ' ') // skip sda2 and sdb2 above
 			continue ;
 
 		if( strncmp( d,"sd",2) != 0 && strncmp( d,"hd",2) != 0 )
@@ -138,6 +158,7 @@ void openpartition::ShowUI()
 		partitionView.tableWidgetPartitionView->setItem(i,0,t);
 		i++ ;
 	}
+	f.close();
 	this->show();
 }
 
