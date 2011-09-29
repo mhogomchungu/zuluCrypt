@@ -36,8 +36,6 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::zuluCrypt)
 {
-	zuluCryptExe =  ZULUCRYPTzuluCrypt;
-
 	openFileUI.setParent(this);
 	openFileUI.setWindowFlags(Qt::Window | Qt::Dialog);
 
@@ -129,22 +127,51 @@ void zuluCrypt::info()
 {
 	QProcess exe ;
 
-	exe.start(QString(" /sbin/--help")) ;
+	QString t = ZULUCRYPTcryptsetup + QString("--help") ;
+
+	exe.start(t) ;
+
 	exe.waitForFinished() ;
 
+	char *d ;
 	char *c = exe.readAllStandardOutput().data() ;
 
-	//c = strstr( c , "plain: ") ;
+	c = strstr( c , "plain: ") ;
 
-	std::cout << c << std::endl ;
+	d = c ;
+
+	while (*++d !=',') { ; }
+	*d = '\0' ;
+
+	QString info = QString("cryptographic options used in volume management\n") ;
+	info = info + QString("type:     PLAIN") ;
+	info = info + QString("cypher:   ") ;
+	info = info + QString(c + 7) ;
+	info = info + QString("\n") ;
+	info = info + QString("keysize:  ") ;
+
+	c = strstr( c , "Key: ") ;
+	while (*++d !=',') { ; }
+	*d = '\0' ;
+
+	info = info + QString(c + 5) ;
+	info = info + QString("\n") ;
+
+	info = info + QString("hash:     ") ;
+
+	c = strstr( c , "Password") ;
+	while (*++d !='\n') { ; }
+	*d = '\0' ;
+	info = info + QString(c + 18) ;
+	info = info + QString("\n") ;
 
 	QMessageBox m ;
 	m.setParent(this);
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 	m.addButton(QMessageBox::Ok);
-	m.setWindowTitle(QString("info"));
+	m.setWindowTitle(QString("cryptographic info"));
 
-	m.setText(QString( c )) ;
+	m.setText(info) ;
 
 	m.exec() ;
 
@@ -171,7 +198,7 @@ void zuluCrypt::createEncryptedVolume(QString fileSystem, QString containterType
 	else
 		N = QString("-p") ;
 
-	QString exe = zuluCryptExe + " create \"" + volumePath + "\" " + fileSystem + " " + containterType + " " +  N + " \"" + passphrase + "\"" ;
+	QString exe = QString(ZULUCRYPTzuluCrypt) + " create \"" + volumePath + "\" " + fileSystem + " " + containterType + " " +  N + " \"" + passphrase + "\"" ;
 
 	QProcess p ;
 
@@ -190,7 +217,7 @@ void zuluCrypt::createEncryptedVolume(QString fileSystem, QString containterType
 void zuluCrypt::createEncryptedpartitionUI()
 {
 	QProcess p ;
-	p.start(zuluCryptExe + QString(" partitions"));
+	p.start(QString(ZULUCRYPTzuluCrypt) + QString(" partitions"));
 	p.waitForFinished() ;
 
 	QStringList l = QString( p.readAllStandardOutput()).split("\n") ;
@@ -200,7 +227,7 @@ void zuluCrypt::createEncryptedpartitionUI()
 
 void zuluCrypt::luksDeleteKey(QString volumePath,bool passPhraseIsFile, QString p)
 {
-	QString exe = zuluCryptExe + QString(" removekey ")  + "\"" +volumePath + "\"" ;
+	QString exe = QString(ZULUCRYPTzuluCrypt) + QString(" removekey ")  + "\"" +volumePath + "\"" ;
 
 	if ( passPhraseIsFile == true )
 		exe = exe + QString(" -f ") ;
@@ -247,7 +274,7 @@ void zuluCrypt::luksAddKey(QString volumePath, bool keyfile,QString ExistingKey,
 	else
 		newPassType = QString(" -p ") ;
 
-	QString exe = zuluCryptExe + QString(" addkey ") + "\"" + volumePath + "\"" + existingPassType + "\"" + ExistingKey + "\"" + newPassType + "\"" + NewKey + "\"" ;
+	QString exe = ZULUCRYPTcryptsetup + QString(" addkey ") + "\"" + volumePath + "\"" + existingPassType + "\"" + ExistingKey + "\"" + newPassType + "\"" + NewKey + "\"" ;
 
 	QProcess Z ;
 
@@ -276,7 +303,7 @@ void zuluCrypt::luksAddKey(QString volumePath, bool keyfile,QString ExistingKey,
 char zuluCrypt::luksEmptySlots(QString volumePath)
 {
 	QProcess N ;
-	N.start(QString(zuluCryptExe + QString(" emptyslots ")) + volumePath);
+	N.start(QString(ZULUCRYPTzuluCrypt) + QString(" emptyslots ") + volumePath);
 	N.waitForFinished() ;
 	char *s = N.readAllStandardOutput().data() ;
 	int i = 0 ;
@@ -290,7 +317,7 @@ char zuluCrypt::luksEmptySlots(QString volumePath)
 bool zuluCrypt::isLuks(QString volumePath)
 {
 	QProcess N ;
-	N.start(QString(zuluCryptExe + QString(" isLuks ")) + volumePath);
+	N.start(QString(ZULUCRYPTzuluCrypt) + QString(" isLuks ") + volumePath);
 	N.waitForFinished() ;
 
 	if ( N.exitCode() == 0 )
@@ -330,7 +357,7 @@ void zuluCrypt::setUpOpenedVolumes(void)
 
 		p = new QProcess() ;
 
-		p->start(zuluCryptExe + " status " + C ) ;
+		p->start(QString(ZULUCRYPTzuluCrypt) + QString(" status ") + C ) ;
 
 		p->waitForReadyRead() ;
 
@@ -343,6 +370,7 @@ void zuluCrypt::setUpOpenedVolumes(void)
 		d = strstr(c,"device:") ;
 
 		if ( d == NULL){
+			std::cout << c << std::endl ;
 			UIMessage(QString("WARNING: An inconsitency is detected, " + QString(C) + QString(" does not look like a cryptsetp volume")));
 			continue ;
 		}
@@ -367,7 +395,7 @@ void zuluCrypt::setUpOpenedVolumes(void)
 
 		p = new QProcess() ;
 
-		p->start("mount");
+		p->start(QString(ZULUCRYPTmount));
 
 		p->waitForReadyRead() ;
 
@@ -425,7 +453,7 @@ void zuluCrypt::volume_property()
 
 	QString path = item->tableWidget()->item(item->row(),0)->text() ;
 
-	QString z = zuluCryptExe + " status " +  path ;
+	QString z = QString(ZULUCRYPTzuluCrypt) + QString(" status ") +  path ;
 
 	p.start( z ) ;
 	p.waitForFinished() ;
@@ -465,7 +493,7 @@ void zuluCrypt::options(QTableWidgetItem* t)
 
 	QProcess Z ;
 
-	Z.start( zuluCryptExe + QString(" isLuks ") + ui->tableWidget->item(item->row(),0)->text());
+	Z.start( QString(ZULUCRYPTzuluCrypt) + QString(" isLuks ") + ui->tableWidget->item(item->row(),0)->text());
 
 	Z.waitForFinished() ;
 
@@ -502,7 +530,7 @@ void zuluCrypt::close(void)
 {
 	QProcess p ;
 
-	p.start(zuluCryptExe + " close " + ui->tableWidget->item(item->row(),0)->text() ) ;
+	p.start(QString(ZULUCRYPTzuluCrypt) + QString(" close ") + ui->tableWidget->item(item->row(),0)->text() ) ;
 	p.waitForFinished() ;
 
 	switch ( p.exitCode() ) {
@@ -533,7 +561,7 @@ void zuluCrypt::openEncryptedVolume(bool boolOpenReadOnly,bool boolKeyFromFile,Q
 	else
 		passtype = " -p " ;
 
-	exe = zuluCryptExe + " open \"" + volumePath + "\" \"" + mountPointPath + "\" " + mode + " " + passtype + "\"" + passPhraseField +"\"";
+	exe = QString(ZULUCRYPTzuluCrypt) + " open \"" + volumePath + "\" \"" + mountPointPath + "\" " + mode + " " + passtype + "\"" + passPhraseField +"\"";
 
 	QProcess process ;
 	process.start(exe) ;
@@ -552,7 +580,7 @@ void zuluCrypt::openEncryptedVolume(bool boolOpenReadOnly,bool boolKeyFromFile,Q
 		int k ;
 		QString N ;
 		QProcess Z ;
-		Z.start(QString("mount"));
+		Z.start(QString(ZULUCRYPTmount));
 
 		Z.waitForFinished() ;
 

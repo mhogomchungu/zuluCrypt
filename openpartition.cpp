@@ -27,6 +27,8 @@
 #include <QHeaderView>
 #include <QFile>
 
+#include "executables.h"
+
 openpartition::openpartition(QWidget *parent ) : QDialog(parent)
 {
 	partitionView.setupUi(this);
@@ -135,7 +137,7 @@ major minor  #blocks  name
 
 		partition = QString(buffer) ;
 
-		p.start(QString("e2label ") + partition);
+		p.start(QString(ZULUCRYPTe2label) + partition);
 		p.waitForFinished() ;
 
 		b = p.readAllStandardOutput().data() ;

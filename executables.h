@@ -27,7 +27,7 @@
 #define ZULUCRYPTe2label     	"/sbin/e2label " 
 #define ZULUCRYPTrm          	"/bin/rm " 
 #define ZULUCRYPTecho        	"/bin/echo -n " 
-#define ZULUCRYPTzuluCrypt       "/usr/bin/zuluCrypt"  
+#define ZULUCRYPTzuluCrypt       "/usr/bin/zuluCrypt-cli"  
 #define ZULUCRYPTdd  		"/bin/dd"  
 #define ZULUCRYPTblkid  	"/sbin/blkid" 
 

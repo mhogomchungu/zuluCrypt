@@ -94,8 +94,6 @@ private:
 
 	bool isLuks(QString volumePath) ;
 
-	QString zuluCryptExe ;
-
 	Ui::zuluCrypt *ui;
 	password_Dialog openFileUI ;
 
