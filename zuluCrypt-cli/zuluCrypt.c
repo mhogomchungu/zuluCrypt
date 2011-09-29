@@ -32,6 +32,8 @@
 #include "../version.h"
 #include "zuluCrypt.h"
 
+#define MAX 512 
+
 StrHandle * get_passphrase( void )
 {	
 	
@@ -119,7 +121,8 @@ int open_volumes(int argn, char * device, char * mapping_name,int id, char * mou
 	int f ;
 	struct stat Q ;
 	char *c ;
-
+	off_t fsize ;
+	
 	if (strncmp(mount_point,",\0",2)==0){
 			
 		printf("ERROR, \",\"(comma) is not a valid mount point\n") ;
@@ -157,13 +160,18 @@ int open_volumes(int argn, char * device, char * mapping_name,int id, char * mou
 			
 			if ( stat(pass,&Q) == 0 ){			
 				
-				c = ( char * ) malloc( sizeof(char) * ( Q.st_size + 1 )  ) ;
+				if( Q.st_size < MAX )
+					fsize = Q.st_size ;
+				else
+					fsize = MAX ;
+				
+				c = ( char * ) malloc( sizeof(char) * ( fsize + 1 )  ) ;
 
-				*( c + Q.st_size ) = '\0' ;
+				*( c + fsize ) = '\0' ;
 
 				f = open( pass,O_RDONLY ) ;
 			
-				read(f,c,Q.st_size) ;
+				read(f,c,fsize) ;
 				
 				close(f);
 				st = open_volume(device, mapping_name,mount_point,id,mode,c) ;
@@ -434,6 +442,7 @@ int create_volumes(int argn ,char *device, char *fs, char * mode, char * keyType
 	struct stat xt ;
 	char *c ;
 	int z ;
+	off_t fsize ;
 	
 	p = StringCpy("");
 	q = StringCpy("");
@@ -491,17 +500,21 @@ int create_volumes(int argn ,char *device, char *fs, char * mode, char * keyType
 			
 			if( stat( pass, &xt) == 0 ) {
 			
-				c = ( char *) malloc ( sizeof(char) * ( xt.st_size + 1 ) ) ;
+				if( xt.st_size < MAX )
+					fsize = xt.st_size ;
+				else
+					fsize = MAX ;
 				
-				*( c + xt.st_size  ) = '\0' ;
+				c = ( char *) malloc ( sizeof(char) * ( fsize + 1 ) ) ;
+				
+				*( c + fsize  ) = '\0' ;
 			
 				z = open(pass , O_RDONLY ) ;
 			
-				read( z, c, xt.st_size ) ;
+				read( z, c, fsize ) ;
 			
 				close( z ) ;
-				printf("%s\n",c) ;
-				return 3 ;
+				
 				st = create_volume(device,fs,mode,c) ;
 				
 				free( c ) ;
@@ -567,6 +580,8 @@ int addkey(int argn,char * device, char *keyType1, char * existingKey, char * ke
 	int z ;
 	char * c ;
 	
+	off_t fsize ;
+	
 	if ( argn == 3 ){		
 		
 		printf("Enter an existing passphrase: ") ;
@@ -615,13 +630,18 @@ int addkey(int argn,char * device, char *keyType1, char * existingKey, char * ke
 
 			if( stat( existingKey, &st1) == 0 ) {
 			
-				c = ( char *) malloc ( sizeof(char) * ( st1.st_size + 1 )) ;
+				if( st1.st_size < MAX )
+					fsize = st1.st_size ;
+				else
+					fsize = MAX ;
 				
-				*( c + st1.st_size ) = '\0' ;
+				c = ( char *) malloc ( sizeof(char) * ( fsize + 1 )) ;
+				
+				*( c + fsize ) = '\0' ;
 			
 				z = open(existingKey, O_RDONLY ) ;
 			
-				read( z, c, st1.st_size ) ;
+				read( z, c, fsize ) ;
 			
 				close( z ) ;
 			}else{
@@ -702,6 +722,7 @@ int killslot(int argn, char * device, char * keyType, char * existingkey, char *
 	char * c ;
 	struct stat st ;
 	StrHandle * p ;
+	off_t fsize ;
 	
 	int slotNumber = s[0]  ;
 	
@@ -734,14 +755,18 @@ int killslot(int argn, char * device, char * keyType, char * existingkey, char *
 			if ( stat( existingkey,&st ) != 0 ){
 				return 4 ;
 			}
+			if( st.st_size < MAX )
+				fsize = st.st_size ;
+			else
+				fsize = MAX ;
+			
+			c = ( char * ) malloc ( sizeof( char ) * ( fsize + 1 ) ) ;
 		
-			c = ( char * ) malloc ( sizeof( char ) * st.st_size ) ;
-		
-			*( c + st.st_size ) = '\0' ;
+			*( c + fsize ) = '\0' ;
 			
 			i = open( existingkey, O_RDONLY ) ;
 		
-			write( i , c , st.st_size ) ;
+			write( i , c , fsize ) ;
 		
 			close( i ) ;
 		
