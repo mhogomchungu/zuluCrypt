@@ -28,11 +28,9 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 
+#include "../executables.h"
 #include "../version.h"
 #include "zuluCrypt.h"
-
-#define dd "/bin/dd" 
-#define blkid "/sbin/blkid"
 
 StrHandle * get_passphrase( void )
 {	
@@ -238,7 +236,7 @@ int create_file(char * name, char *random_device , char * size,uid_t id )
 		return 10 ;
 	
 	if ( fork() == 0 ){		
-		p = StringCpy(dd " if=");
+		p = StringCpy(ZULUCRYPTdd " if=");
 		StringCat( p , random_device ) ;
 		StringCat( p , " of=") ;
 		StringCat( p , name ) ;
@@ -298,7 +296,7 @@ void partitions(StrHandle *p, StrHandle * q)
 
 	StrHandle * r ;
 	
-	FILE *f = popen(blkid,"r") ;
+	FILE *f = popen(ZULUCRYPTblkid,"r") ;
 	FILE * ff ;
 	
 	stat("/etc/fstab",&st);
@@ -347,7 +345,7 @@ void partitions(StrHandle *p, StrHandle * q)
 
 					if( strncmp(&c[5],pchar2,strlen(pchar2)) == 0){
 	
-						r = StringCpy(blkid " -U ");
+						r = StringCpy(ZULUCRYPTblkid " -U ");
 						StringCat(r , pchar2);
 						ff = popen( StringCont( r ),"r") ;
 						fgets(tmp,40,ff);
@@ -375,7 +373,7 @@ void partitions(StrHandle *p, StrHandle * q)
 
 					if( strncmp(&c[6],pchar2,strlen(pchar2)) == 0){
 	
-						r = StringCpy(blkid " -L ");
+						r = StringCpy(ZULUCRYPTblkid " -L ");
 						StringCat(r , tmp);
 						ff = popen( StringCont( r ),"r") ;
 						fgets(tmp,40,ff);

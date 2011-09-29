@@ -102,6 +102,7 @@
      <string>help</string>
     </property>
     <addaction name="actionAbout"/>
+    <addaction name="actionInfo"/>
    </widget>
    <widget class="QMenu" name="menuConfigure">
     <property name="title">
@@ -161,6 +162,11 @@
   <action name="actionDeleteKey">
    <property name="text">
     <string>delete key</string>
+   </property>
+  </action>
+  <action name="actionInfo">
+   <property name="text">
+    <string>info</string>
    </property>
   </action>
  </widget>

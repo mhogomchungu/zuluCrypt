@@ -36,7 +36,7 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::zuluCrypt)
 {
-	zuluCryptExe = "/usr/bin/zuluCrypt-cli" ;
+	zuluCryptExe =  ZULUCRYPTzuluCrypt;
 
 	openFileUI.setParent(this);
 	openFileUI.setWindowFlags(Qt::Window | Qt::Dialog);
@@ -117,9 +117,36 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 
 	connect(ui->actionPartitionCreate,SIGNAL(triggered()),this,SLOT(createEncryptedpartitionUI())) ;
 
+	connect(ui->actionInfo,SIGNAL(triggered()),this,SLOT(info())) ;
+
 	setUpOpenedVolumes() ;
 
 	//trayIcon.show();
+
+}
+
+void zuluCrypt::info()
+{
+	QProcess exe ;
+
+	exe.start(QString(" /sbin/--help")) ;
+	exe.waitForFinished() ;
+
+	char *c = exe.readAllStandardOutput().data() ;
+
+	//c = strstr( c , "plain: ") ;
+
+	std::cout << c << std::endl ;
+
+	QMessageBox m ;
+	m.setParent(this);
+	m.setWindowFlags(Qt::Window | Qt::Dialog);
+	m.addButton(QMessageBox::Ok);
+	m.setWindowTitle(QString("info"));
+
+	m.setText(QString( c )) ;
+
+	m.exec() ;
 
 }
 

@@ -26,7 +26,7 @@
 #include <QTableWidgetItem>
 #include <QSystemTrayIcon>
 
-
+#include "executables.h"
 #include "password_dialog.h"
 #include "openpartition.h"
 #include "luksaddkey.h"
@@ -58,6 +58,8 @@ signals:
 	void  redoOpen(bool boolOpenReadOnly,bool boolKeyFromFile,QString volumePath, QString mountPointPath) ;
 
 private slots :
+
+	void info(void) ;
 
 	void trayIconAction(QSystemTrayIcon::ActivationReason) ;
 
