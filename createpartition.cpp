@@ -1,3 +1,22 @@
+/*
+ * 
+ *  Copyright (c) 2011
+ *  name : mhogo mchungu 
+ *  email: mhogomchungu@gmail.com
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ * 
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "createpartition.h"
 #include "ui_createpartition.h"
 #include <QMessageBox>
@@ -87,7 +106,7 @@ void createpartition::pbCreateClicked()
 	else if( ui->rbext4->isChecked() == true)
 		fs = QString("ext4") ;
 	else
-		fs = QString("fat") ;
+		fs = QString("vfat") ;
 
 	QString ct ;
 
@@ -124,7 +143,7 @@ void createpartition::pbCreateClicked()
 	m.addButton(QMessageBox::No);
 	m.setDefaultButton(QMessageBox::No);
 
-	QString wr = QString("WARNING: all contents of ") + ui->lineEditVolumePath->text() + QString(" will be deleted");
+	QString wr = QString("WARNING: all contents of ") + ui->lineEditVolumePath->text() + QString(" will be deleted!.");
 	wr = wr + QString("\nAre you sure you want to proceed?") ;
 	m.setText(wr);
 
@@ -144,6 +163,7 @@ void createpartition::ShowFileUI(QString volume)
 	ui->pbOpenKeyFile->setEnabled(false);
 	ui->pbCancel->setFocus();
 	ui->labelVolumePath->setText(QString("path to file"));
+	this->rbPassphraseClicked() ;
 	this->show();
 }
 

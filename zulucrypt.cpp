@@ -59,6 +59,9 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 	createpartitionUI.setParent(this);
 	createpartitionUI.setWindowFlags(Qt::Window | Qt::Dialog);
 
+	createFile.setParent(this);
+	createFile.setWindowFlags(Qt::Window | Qt::Dialog);
+
 	trayIcon.setParent(this);
 	trayIcon.setIcon(QIcon(QString("/usr/share/icons/zuluCrypt.png")));
 	connect((QObject *)&trayIcon,SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this,SLOT(trayIconAction(QSystemTrayIcon::ActivationReason)));
@@ -75,6 +78,10 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 	ui->tableWidget->setColumnWidth(1,290);
 
 	ui->tableWidget->setColumnWidth(2,90);
+
+	connect((QObject *)&createFile,SIGNAL(fileCreated(QString)),(QObject *)&createpartitionUI,SLOT(ShowFileUI(QString)));
+
+	connect(ui->actionFileCreate,SIGNAL(triggered()),(QObject *)&createFile,SLOT(showUI()));
 
 	connect((QObject *)&createpartitionUI,SIGNAL(CreateVolume(QString,QString,QString,QString,bool)),this,SLOT(createEncryptedVolume(QString,QString,QString,QString,bool)));
 
@@ -267,15 +274,17 @@ bool zuluCrypt::isLuks(QString volumePath)
 
 void zuluCrypt::aboutMenuOption(void)
 {
-	QMessageBox m ;
-	m.setParent(this);
-	m.setWindowFlags(Qt::Window | Qt::Dialog);
-	m.addButton(QMessageBox::Ok);
-	m.setWindowTitle(QString("about zuluCrypt"));
+	//QMessageBox m ;
+	//m.setParent(this);
+	//m.setWindowFlags(Qt::Window | Qt::Dialog);
+	//m.addButton(QMessageBox::Ok);
+	//m.setWindowTitle(QString("about zuluCrypt"));
 
-	m.setText(QString( VERSION_STRING )) ;
+	//m.setText(QString( VERSION_STRING )) ;
 
-	m.exec() ;
+	//m.exec() ;
+
+	QMessageBox::about(this,QString("About zuluCrypt"),QString( VERSION_STRING ));
 }
 
 void zuluCrypt::setUpOpenedVolumes(void)

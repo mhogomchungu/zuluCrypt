@@ -32,6 +32,7 @@
 #include "luksaddkey.h"
 #include "luksdeletekey.h"
 #include "createpartition.h"
+#include "createfile.h"
 
 namespace Ui {
     class zuluCrypt;
@@ -106,6 +107,8 @@ private:
 
 	luksaddkeyUI addKeyUI ;
 	luksdeletekey deleteKeyUI ;
+
+	createfile createFile ;
 
 	QString volume_path,mount_point_path, pass_phrase,mode ;
 	QMenu *m  ;

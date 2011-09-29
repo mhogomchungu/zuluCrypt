@@ -28,7 +28,7 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>101</width>
+     <width>111</width>
      <height>31</height>
     </rect>
    </property>
@@ -49,7 +49,7 @@
     </rect>
    </property>
    <property name="title">
-    <string>container type</string>
+    <string>volume type</string>
    </property>
    <widget class="QRadioButton" name="rbPlain">
     <property name="geometry">

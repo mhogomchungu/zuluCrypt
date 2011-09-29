@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'createpartition.ui'
 **
-** Created: Wed Sep 28 04:05:28 2011
+** Created: Thu Sep 29 03:08:19 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -57,7 +57,7 @@ public:
         lineEditVolumePath->setGeometry(QRect(120, 10, 311, 31));
         labelVolumePath = new QLabel(createpartition);
         labelVolumePath->setObjectName(QString::fromUtf8("labelVolumePath"));
-        labelVolumePath->setGeometry(QRect(10, 10, 101, 31));
+        labelVolumePath->setGeometry(QRect(10, 10, 111, 31));
         labelVolumePath->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         groupBox = new QGroupBox(createpartition);
         groupBox->setObjectName(QString::fromUtf8("groupBox"));
@@ -122,7 +122,7 @@ public:
     {
         createpartition->setWindowTitle(QApplication::translate("createpartition", "create a new volume", 0, QApplication::UnicodeUTF8));
         labelVolumePath->setText(QApplication::translate("createpartition", "path to volume", 0, QApplication::UnicodeUTF8));
-        groupBox->setTitle(QApplication::translate("createpartition", "container type", 0, QApplication::UnicodeUTF8));
+        groupBox->setTitle(QApplication::translate("createpartition", "volume type", 0, QApplication::UnicodeUTF8));
         rbPlain->setText(QApplication::translate("createpartition", "plain", 0, QApplication::UnicodeUTF8));
         rbLuks->setText(QApplication::translate("createpartition", "luks", 0, QApplication::UnicodeUTF8));
         groupBox_2->setTitle(QApplication::translate("createpartition", "file system type", 0, QApplication::UnicodeUTF8));

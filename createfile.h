@@ -17,10 +17,52 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ZULUCRYPT_VERSION
+#ifndef CREATEFILE_H
+#define CREATEFILE_H
 
-#define ZULUCRYPT_VERSION
+#include <QWidget>
+#include <QProcess>
+#include <QTimer>
 
-#define VERSION_STRING "version 3.0 of zuluCrypt, a front end to cryptsetup\n(c),mhogo mchungu\nmhogomchungu@gmail.com"
+namespace Ui {
+    class createfile;
+}
 
-#endif
+class createfile : public QWidget
+{
+	Q_OBJECT
+
+public:
+	explicit createfile(QWidget *parent = 0);
+	~createfile();
+
+signals :
+
+	void fileCreated(QString) ;
+
+public slots:
+
+	void showUI(void) ;
+
+	void pbOpenFolder(void) ;
+
+	void pbCancel(void) ;
+
+	void pbCreate(void) ;
+
+private slots:
+
+	void monitorFileGrowth(void);
+
+	void ddFinished(int, QProcess::ExitStatus) ;
+
+private:
+	Ui::createfile *ui;
+	QProcess dd ;
+	QTimer time ;
+	double max ;
+	double ratio ;
+	double fileSize ;
+};
+
+#endif // CREATEFILE_H

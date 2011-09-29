@@ -44,7 +44,7 @@ void openpartition::ShowNonSystemPartitions(QStringList l)
 		partitionView.tableWidgetPartitionView->removeRow(0);
 	}
 
-	partitionView.tableWidgetPartitionView->setHorizontalHeaderItem(0, new QTableWidgetItem(QString("non system partitions(no active entries in fstab)")));
+	partitionView.tableWidgetPartitionView->setHorizontalHeaderItem(0, new QTableWidgetItem(QString("non system partitions( no active entries in fstab )")));
 	partitionView.tableWidgetPartitionView->removeColumn(1);
 
 	partitionView.tableWidgetPartitionView->setColumnWidth(0,540);
