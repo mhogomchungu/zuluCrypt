@@ -30,8 +30,10 @@ createfile::createfile(QWidget *parent) :
     ui(new Ui::createfile)
 {
 	ui->setupUi(this);
+	this->setFixedSize(this->size());
 
 	max = 2147483647 ;
+
 	ui->progressBar->setMinimum(0);
 	ui->progressBar->setMaximum(max);
 	ui->progressBar->setValue(0);

@@ -30,6 +30,8 @@ createpartition::createpartition(QWidget *parent) :
 {
 	ui->setupUi(this);
 
+	this->setFixedSize(this->size());
+
 	ui->lineEditVolumePath->setEnabled(false);
 
 	connect(ui->pbOpenKeyFile,SIGNAL(clicked()),this,SLOT(pbOpenKeyFile()));

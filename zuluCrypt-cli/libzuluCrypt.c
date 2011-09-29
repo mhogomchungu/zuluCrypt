@@ -38,7 +38,7 @@
 #define losetup    "/sbin/losetup "
 #define e2label    "/sbin/e2label "
 #define rm         "/bin/rm "
-#define echo       "/bin/echo "
+#define echo       "/bin/echo -n "
 
 
 //function prototypes
@@ -52,8 +52,9 @@ int add_key(char * device, char * existingkey, char * keyfile)
 	char s[2] ;
 	
 	p = StringCpy( echo ) ;
-	
+	StringCat( p , "\"");
 	StringCat( p , existingkey ) ;
+	StringCat( p , "\"");
 	StringCat( p , " | " ) ;
 	StringCat( p , cryptsetup "luksAddKey ") ;
 	StringCat( p , device ) ;
@@ -71,7 +72,9 @@ int kill_slot( char * device,char * existingkey, int slotNumber)
 	char s[2] ;
 	
 	StrHandle * p = StringCpy( echo ) ;
+	StringCat( p , "\"");
 	StringCat( p , existingkey ) ;
+	StringCat( p , "\"");
 	StringCat( p , " | " cryptsetup "luksKillSlot ") ;
 	StringCat( p , device ) ;
 	StringCat( p , " " ) ;
@@ -232,7 +235,10 @@ int create_volume(char * device, char * fs,char * type, char * passphrase)
 	if  (strcmp(type,"luks")  == 0 ){	
 		
 		p = StringCpy( echo );
+		StringCat( p , "\"");
 		StringCat( p , passphrase ) ;
+		StringCat( p , "\"");
+		
 		StringCat( p , " | " cryptsetup " -q luksFormat " ) ;		
 		
 		StringCat( p , device ) ;
@@ -242,7 +248,9 @@ int create_volume(char * device, char * fs,char * type, char * passphrase)
 		StringDelete( p ) ;	
 		
 		p = StringCpy( echo );
+		StringCat( p , "\"");
 		StringCat( p , passphrase ) ;
+		StringCat( p , "\"");
 		StringCat( p , " | " cryptsetup " luksOpen ") ;
 
 		StringCat( p , device ) ;
@@ -261,7 +269,9 @@ int create_volume(char * device, char * fs,char * type, char * passphrase)
 	}else if ( strcmp(type,"plain")  == 0 ){
 		
 		p = StringCpy( echo );
+		StringCat( p , "\"");
 		StringCat( p , passphrase ) ;
+		StringCat( p , "\"");
 		StringCat( p , " | cryptsetup create zuluCrypt-create-new " ) ;		
 
 		StringCat( p , device ) ;
@@ -401,7 +411,9 @@ int open_volume(char *device, char * mapping_name, char *m_point, uid_t id,char 
 	}
 	
 	p = StringCpy( echo );
+	StringCat( p , "\"");
 	StringCat( p , passphrase ) ;
+	StringCat( p , "\"");
 	StringCat( p , " | " ) ;
 		
 	if ( luks == 0 ){	

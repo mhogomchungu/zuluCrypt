@@ -21,6 +21,6 @@
 
 #define ZULUCRYPT_VERSION
 
-#define VERSION_STRING "version 3.0 of zuluCrypt, a front end to cryptsetup\n(c),mhogo mchungu\nmhogomchungu@gmail.com"
+#define VERSION_STRING "version 3.0 of zuluCrypt, a front end to cryptsetup.\n(c) 2011 mhogo mchungu\nmhogomchungu@gmail.com"
 
 #endif

@@ -159,14 +159,16 @@ int open_volumes(int argn, char * device, char * mapping_name,int id, char * mou
 			
 			if ( stat(pass,&Q) == 0 ){			
 				
-				c = ( char * ) malloc( sizeof(char) *  Q.st_size  ) ;
-			
+				c = ( char * ) malloc( sizeof(char) * ( Q.st_size + 1 )  ) ;
+
+				*( c + Q.st_size ) = '\0' ;
+
 				f = open( pass,O_RDONLY ) ;
 			
 				read(f,c,Q.st_size) ;
 				
 				close(f);
-				
+				printf("%s\n",c);
 				st = open_volume(device, mapping_name,mount_point,id,mode,c) ;
 				
 				free( c ) ;
@@ -492,14 +494,17 @@ int create_volumes(int argn ,char *device, char *fs, char * mode, char * keyType
 			
 			if( stat( pass, &xt) == 0 ) {
 			
-				c = ( char *) malloc ( sizeof(char) * xt.st_size ) ;
+				c = ( char *) malloc ( sizeof(char) * ( xt.st_size + 1 ) ) ;
+				
+				*( c + xt.st_size  ) = '\0' ;
 			
 				z = open(pass , O_RDONLY ) ;
 			
 				read( z, c, xt.st_size ) ;
 			
 				close( z ) ;
-				
+				printf("%s\n",c) ;
+				return 3 ;
 				st = create_volume(device,fs,mode,c) ;
 				
 				free( c ) ;
