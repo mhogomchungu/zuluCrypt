@@ -166,7 +166,6 @@ int open_volumes(int argn, char * device, char * mapping_name,int id, char * mou
 				read(f,c,Q.st_size) ;
 				
 				close(f);
-				printf("%s\n",c);
 				st = open_volume(device, mapping_name,mount_point,id,mode,c) ;
 				
 				free( c ) ;
@@ -256,9 +255,9 @@ int create_file(char * name, char *random_device , char * size,uid_t id )
 		n = atoll(size) ;	
 
 		switch( c ){
-			case 'K' : n = n * 1024 * 1024 ; break;
-			case 'M' : n = n * 1024 * 1024 * 1024 ; break ;
-			case 'G' : n = n * 1024 * 1024 * 1024 * 1024  ; break ;
+			case 'K' : n = n * 1024 ; break;
+			case 'M' : n = n * 1024 * 1024  ; break ;
+			case 'G' : n = n * 1024 * 1024 * 1024   ; break ;
 			default: ;
 		}
 		
@@ -303,14 +302,14 @@ void partitions(StrHandle *p, StrHandle * q)
 	
 	c  = fstab = ( char *) malloc(sizeof(char) *( st.st_size + 1)) ;
 	
-	*( c + st.st_size + 1 ) = '\0' ;
+	*( c + st.st_size  ) = '\0' ;
 	
 	i = open("/etc/fstab",O_RDONLY);
 	
 	read(i, c, st.st_size);
 	
-	close(i);		
-
+	close(i);	
+	
 	while(fgets(buffer,512,f) != NULL){
 	
 		c = fstab ;
@@ -616,7 +615,9 @@ int addkey(int argn,char * device, char *keyType1, char * existingKey, char * ke
 
 			if( stat( existingKey, &st1) == 0 ) {
 			
-				c = ( char *) malloc ( sizeof(char) * st1.st_size ) ;
+				c = ( char *) malloc ( sizeof(char) * ( st1.st_size + 1 )) ;
+				
+				*( c + st1.st_size ) = '\0' ;
 			
 				z = open(existingKey, O_RDONLY ) ;
 			
@@ -736,6 +737,8 @@ int killslot(int argn, char * device, char * keyType, char * existingkey, char *
 		
 			c = ( char * ) malloc ( sizeof( char ) * st.st_size ) ;
 		
+			*( c + st.st_size ) = '\0' ;
+			
 			i = open( existingkey, O_RDONLY ) ;
 		
 			write( i , c , st.st_size ) ;

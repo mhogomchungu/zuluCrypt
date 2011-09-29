@@ -19,6 +19,7 @@
 
 #include "createfile.h"
 #include "ui_createfile.h"
+#include "executables.h"
 
 #include <QFileDialog>
 #include <QFileInfo>
@@ -32,10 +33,8 @@ createfile::createfile(QWidget *parent) :
 	ui->setupUi(this);
 	this->setFixedSize(this->size());
 
-	max = 2147483647 ;
-
 	ui->progressBar->setMinimum(0);
-	ui->progressBar->setMaximum(max);
+	ui->progressBar->setMaximum(100);
 	ui->progressBar->setValue(0);
 
 	time.setInterval(250);
@@ -69,8 +68,7 @@ void createfile::ddFinished(int exitCode, QProcess::ExitStatus st)
 		m.exec() ;
 		return ;
 	}
-
-	sleep(2) ;
+	//sleep(2) ;
 	time.stop();
 	this->hide();
 	emit fileCreated(ui->lineEditFilePath->text() + "/" + ui->lineEditFileName->text()) ;
@@ -145,9 +143,7 @@ void createfile::pbCreate()
 			break ;
 	}
 
-	ratio = max / fileSize ;
-
-	QString ddExe = "dd if=/dev/urandom of=" + ui->lineEditFilePath->text() + "/" + ui->lineEditFileName->text() + " bs=1024 " + "count=" + ui->lineEditFileSize->text() + size;
+	QString ddExe = QString(ZULUCRYPTdd) + QString("if=/dev/urandom of=") + ui->lineEditFilePath->text() + "/" + ui->lineEditFileName->text() + " bs=1024 " + "count=" + ui->lineEditFileSize->text() + size;
 
 	dd.start( ddExe ) ;
 }
@@ -160,9 +156,9 @@ void createfile::monitorFileGrowth()
 	  the QProgressBar uses signed interger for max, min and setValue.
 	  This means it can not work with files greater than 2GB.
 
-	  Rescalling min and max and current values to within 0 and 2GB
+	  Rescalling min and max and current values to within 0 and 100
 	  */
-	ui->progressBar->setValue(f.size() * ratio);
+	ui->progressBar->setValue(f.size() * 100 / fileSize);
 }
 
 void createfile::pbOpenFolder()

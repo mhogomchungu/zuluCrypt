@@ -60,8 +60,6 @@ private:
 	Ui::createfile *ui;
 	QProcess dd ;
 	QTimer time ;
-	double max ;
-	double ratio ;
 	double fileSize ;
 };
 

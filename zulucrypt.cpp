@@ -20,6 +20,7 @@
 #include "version.h"
 #include "zulucrypt.h"
 #include "ui_zulucrypt.h"
+
 #include <QProcess>
 #include <QStringList>
 #include <QMenu>
@@ -29,8 +30,6 @@
 #include <QBrush>
 #include <iostream>
 #include <QMessageBox>
-
-#include <stdio.h>
 
 zuluCrypt::zuluCrypt(QWidget *parent) :
     QMainWindow(parent),
@@ -147,6 +146,7 @@ void zuluCrypt::info()
 	*d = '\0' ;
 
 	QString info = QString("cryptographic options used in volume management\n\n") ;
+
 	info = info + QString("type:      PLAIN\n") ;
 	info = info + QString("cypher:   ") ;
 	info = info + QString(c + 7) ;
@@ -185,13 +185,18 @@ void zuluCrypt::info()
 	while (*++d !=',') { ; }
 	*d = '\0' ;
 
-	info = info + QString("key:       ") ;
+	info = info + QString("keysize: ") ;
 	info = info + QString(c + 5) ;
 	info = info + QString("\n") ;
 
 	c = strstr( d + 2 , "LUKS") ;
 	info = info + QString(c) ;
 	info = info + QString("\n") ;
+
+	info = info + QString("maximum passphrase length: 512 characters\n") ;
+	info = info + QString("maximum key file size:           512 bytes\n\n") ;
+
+	info = info +QString("device used for creating encrypted files: /dev/urandom") ;
 
 	QMessageBox m ;
 	m.setParent(this);
