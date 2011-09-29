@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'zulucrypt.ui'
 **
-** Created: Thu Sep 29 11:39:03 2011
+** Created: Thu Sep 29 13:55:59 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -120,8 +120,8 @@ public:
         menuOpen->addAction(actionPartitionOpen);
         menuCreate->addAction(actionFileCreate);
         menuCreate->addAction(actionPartitionCreate);
-        menuHelp->addAction(actionAbout);
         menuHelp->addAction(actionInfo);
+        menuHelp->addAction(actionAbout);
         menuConfigure->addAction(actionAddKey);
         menuConfigure->addAction(actionDeleteKey);
 
@@ -140,7 +140,7 @@ public:
         actionAbout->setText(QApplication::translate("zuluCrypt", "about", 0, QApplication::UnicodeUTF8));
         actionAddKey->setText(QApplication::translate("zuluCrypt", "add key", 0, QApplication::UnicodeUTF8));
         actionDeleteKey->setText(QApplication::translate("zuluCrypt", "delete key", 0, QApplication::UnicodeUTF8));
-        actionInfo->setText(QApplication::translate("zuluCrypt", "info", 0, QApplication::UnicodeUTF8));
+        actionInfo->setText(QApplication::translate("zuluCrypt", "crypto info", 0, QApplication::UnicodeUTF8));
         QTableWidgetItem *___qtablewidgetitem = tableWidget->horizontalHeaderItem(0);
         ___qtablewidgetitem->setText(QApplication::translate("zuluCrypt", "Encrypted volume path", 0, QApplication::UnicodeUTF8));
         QTableWidgetItem *___qtablewidgetitem1 = tableWidget->horizontalHeaderItem(1);

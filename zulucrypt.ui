@@ -101,8 +101,8 @@
     <property name="title">
      <string>help</string>
     </property>
-    <addaction name="actionAbout"/>
     <addaction name="actionInfo"/>
+    <addaction name="actionAbout"/>
    </widget>
    <widget class="QMenu" name="menuConfigure">
     <property name="title">
@@ -166,7 +166,7 @@
   </action>
   <action name="actionInfo">
    <property name="text">
-    <string>info</string>
+    <string>crypto info</string>
    </property>
   </action>
  </widget>

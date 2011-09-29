@@ -137,32 +137,60 @@ void zuluCrypt::info()
 	char *c = exe.readAllStandardOutput().data() ;
 
 	c = strstr( c , "plain: ") ;
-
+	if( c == NULL){
+		std::cout << "1" << std::endl ;
+		return ;
+	}
 	d = c ;
 
 	while (*++d !=',') { ; }
 	*d = '\0' ;
 
-	QString info = QString("cryptographic options used in volume management\n") ;
-	info = info + QString("type:     PLAIN") ;
+	QString info = QString("cryptographic options used in volume management\n\n") ;
+	info = info + QString("type:      PLAIN\n") ;
 	info = info + QString("cypher:   ") ;
 	info = info + QString(c + 7) ;
 	info = info + QString("\n") ;
-	info = info + QString("keysize:  ") ;
+	info = info + QString("keysize: ") ;
 
-	c = strstr( c , "Key: ") ;
+	c = strstr( d + 1 , "Key: ") ;
+	d = c ;
 	while (*++d !=',') { ; }
 	*d = '\0' ;
 
 	info = info + QString(c + 5) ;
 	info = info + QString("\n") ;
 
-	info = info + QString("hash:     ") ;
+	info = info + QString("hash:      ") ;
 
-	c = strstr( c , "Password") ;
+	c = strstr( d + 1 , "Password") ;
+	d = c ;
 	while (*++d !='\n') { ; }
 	*d = '\0' ;
+
 	info = info + QString(c + 18) ;
+	info = info + QString("\n\n") ;
+
+	c = strstr( d + 1 , "LUKS") ;
+	d = c ;
+	while (*++d !=':') { ; }
+	*d = '\0' ;
+
+	info = info + QString("type:      ") ;
+	info = info + QString(c) ;
+	info = info + QString("\n") ;
+
+	c = strstr( d + 1 , "Key") ;
+	d = c ;
+	while (*++d !=',') { ; }
+	*d = '\0' ;
+
+	info = info + QString("key:       ") ;
+	info = info + QString(c + 5) ;
+	info = info + QString("\n") ;
+
+	c = strstr( d + 2 , "LUKS") ;
+	info = info + QString(c) ;
 	info = info + QString("\n") ;
 
 	QMessageBox m ;
@@ -370,7 +398,6 @@ void zuluCrypt::setUpOpenedVolumes(void)
 		d = strstr(c,"device:") ;
 
 		if ( d == NULL){
-			std::cout << c << std::endl ;
 			UIMessage(QString("WARNING: An inconsitency is detected, " + QString(C) + QString(" does not look like a cryptsetp volume")));
 			continue ;
 		}
