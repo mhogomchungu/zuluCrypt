@@ -376,7 +376,8 @@ void zuluCrypt::aboutMenuOption(void)
 
 	//m.exec() ;
 
-	QMessageBox::about(this,QString("About zuluCrypt"),QString( VERSION_STRING ));
+QString a = QString( VERSION_STRING ) + QString("\nThis program is distributed in the hope that it will be useful,but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\nSee the GNU General Public License for more details.") ;
+	QMessageBox::about(this,QString("About zuluCrypt"), a );
 }
 
 void zuluCrypt::setUpOpenedVolumes(void)

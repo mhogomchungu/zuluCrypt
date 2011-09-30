@@ -2,18 +2,20 @@
 version 1.0
 
 zuluCrypt-cli
---open, close, create volumes and check for info of opened ones.
+--open, close, create volumes and check for info of opened ones. - DONE
 
 zuluCrypt
---open and close volumes and and check for info of opened ones.
+--open and close volumes and and check for info of opened ones.  - DONE
 
 version 2.0
--- add support to managing luks keys in the cli and GUI.
+-- add support to managing luks keys in the cli and GUI.         - DONE
 
 version 3.0
 zuluCrypt
--- add support for creation of volumes 
+-- add support for creation of volumes                           - DONE
 
 zuluCrypt-cli
--- see if it is possible to safely create volumes resising in "/dev"
+-- see if it is possible to safely create volumes resising in "/dev" - DONE
 
+version 4.0
+-- add support for font size and type confuguration and storing locations to volumes as favorites.
