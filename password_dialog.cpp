@@ -28,6 +28,7 @@
 #include <iostream>
 #include <QRadioButton>
 #include <QPushButton>
+#include <QMessageBox>
 
 password_Dialog::password_Dialog(QWidget *parent ) : QDialog(parent)
 {
@@ -122,11 +123,35 @@ void password_Dialog::buttonOpenClicked(void )
 	QString D = ui.MountPointPath->text() ;
 	QString E = ui.PassPhraseField->text() ;
 
-	//add quotation marks to prevent zuluCrypt-cli from getting confused
-	//C = "\"" + C + "\"" ;
-	//D = "\"" + D + "\"" ;
-	//E = "\"" + E + "\"" ;
+	QMessageBox m ;
+	m.addButton(QMessageBox::Ok);
+	m.setParent(this);
+	m.setWindowFlags(Qt::Window | Qt::Dialog);
 
+	if(C.isEmpty()){
+		m.setWindowTitle(QString("ERROR!"));
+		m.setText(QString("ERROR: volume path field is empty"));
+		m.exec() ;
+		return ;
+	}
+	if(D.isEmpty()){
+		m.setWindowTitle(QString("ERROR!"));
+		m.setText(QString("ERROR: mount point path field is empty"));
+		m.exec() ;
+		return ;
+	}
+	if(E.isEmpty()){
+		m.setWindowTitle(QString("ERROR!"));
+		m.setText(QString("ERROR:"));
+
+		if( B == true )
+			m.setText(QString("ERROR: key file field is empty"));
+		else
+			m.setText(QString("ERROR: passphrase field is empty"));
+
+		m.exec() ;
+		return ;
+	}
 	HideUI() ;
 	emit pbOpenClicked(A,B,C,D,E);
 }
