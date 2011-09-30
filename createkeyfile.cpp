@@ -6,6 +6,7 @@
 #include <QProcess>
 #include <QMessageBox>
 #include <iostream>
+#include <QFile>
 
 createkeyfile::createkeyfile(QWidget *parent) :
     QWidget(parent),
@@ -58,24 +59,51 @@ void createkeyfile::pbCreate()
 		return ;
 	}
 
-	QString dd = QString(ZULUCRYPTdd) + QString(" if=/dev/urandom of=") + QString("\"") + ui->lineEditPath->text() + QString("\"") + QString("/") + QString("\"") + ui->lineEditFileName->text() + QString("\"") + QString(" bs=512 count=1") ;
+	QString keyfile = ui->lineEditPath->text() + QString("/") + ui->lineEditFileName->text() ;
 
-	QProcess p ;
-	p.start( dd ) ;
-	p.waitForFinished() ;
+	QFile out( keyfile) ;
 
-	if( p.exitCode() == 0 ){
-
-		m.setWindowTitle(QString("SUCCESS"));
-		m.setText(QString("key file successfully created"));
-		m.exec();
-		this->HideUI();
-
-	}else{
-		m.setWindowTitle(QString("ERROR"));
-		m.setText(QString("could not create the key file.\nDo you have writing access to destination folder? "));
+	if( out.exists() == true){
+		m.setWindowTitle(QString("ERROR!"));
+		m.setText(QString("file with the same name and at the destination folder already exist"));
 		m.exec() ;
+		return ;
 	}
+
+	out.open(QIODevice::WriteOnly) ;
+
+	if( out.putChar('X') == false ){
+		m.setWindowTitle(QString("ERROR!"));
+		m.setText(QString("you dont seem to have writing access to the destination folder"));
+		m.exec() ;
+		return ;
+	}
+
+	out.seek(0) ;
+
+	QFile in(QString("/dev/urandom")) ;
+
+	in.open(QIODevice::ReadOnly) ;
+
+	char data ;
+
+	for( int i = 0 ; i < 512 ; i++){
+
+		do{
+			in.getChar(&data) ;
+		}while( data < 31 || data > 126) ;
+
+		out.putChar(data) ;
+	}
+
+	in.close();
+	out.close();
+
+	m.setWindowTitle(QString("SUCCESS!"));
+	m.setText(QString("key file successfully created"));
+	m.exec() ;
+
+	this->HideUI();
 }
 
 void createkeyfile::pbOpenFolder()
