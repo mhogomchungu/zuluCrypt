@@ -44,6 +44,7 @@ password_Dialog::password_Dialog(QWidget *parent ) : QDialog(parent)
 	connect(ui.pushButtonPassPhraseFromFile,SIGNAL(clicked()),this,SLOT(clickedPassPhraseFromFileButton()));
 	connect(ui.radioButtonPassPhraseFromFile,SIGNAL(clicked()),this,SLOT(passphraseFromFileOption())) ;
 	connect(ui.radioButtonPassPhrase,SIGNAL(clicked()),this,SLOT(passphraseOption())) ;
+
 }
 
 void password_Dialog::ShowUI(bool A,bool B,QString C,QString D)
@@ -82,6 +83,7 @@ void password_Dialog::clickedPartitionOption(QString option)
 	ui.OpenVolumePath->setText(option);
 	ui.MountPointPath->clear();
 	ui.PassPhraseField->clear();
+	ui.MountPointPath->setFocus();
 
 	if( this->isHidden() )
 		this->show();
@@ -101,6 +103,7 @@ void password_Dialog::file_path(void )
 
 void password_Dialog::ShowUI()
 {
+	ui.OpenVolumePath->setFocus();
 	this->show();
 }
 
