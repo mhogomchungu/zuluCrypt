@@ -109,6 +109,7 @@ void password_Dialog::HideUI()
 	ui.OpenVolumePath->clear();
 	ui.PassPhraseField->clear();
 	ui.radioButtonPassPhrase->setChecked(true);
+	ui.PassPhraseField->setEchoMode(QLineEdit::Password);
 	ui.checkBoxReadOnly->setChecked(false);
 	this->hide();
 }

@@ -40,7 +40,7 @@ StrHandle * get_passphrase( void )
 	//I got the big chunk of this code from: http://www.gnu.org/s/hello/manual/libc/getpass.html
 	char c[2] ;
 	StrHandle * p ;
-	
+	int i = 0 ;
 	struct termios old, new;
 			
        /* Turn echoing off and fail if we can't. */
@@ -58,9 +58,10 @@ StrHandle * get_passphrase( void )
 	
 	p = StringCpy( c ) ;
 	
-	while( ( c[0] = getchar() ) != '\n' ){
+	while( ( c[0] = getchar() ) != '\n' && i < MAX ){
 		
 		StringCat( p, c ) ;
+		i++ ;
 	}
 	
 	(void) tcsetattr (1, TCSAFLUSH, &old);	
