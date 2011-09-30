@@ -58,9 +58,7 @@ void createkeyfile::pbCreate()
 		return ;
 	}
 
-	QString dd = QString(ZULUCRYPTdd) + QString(" if=/dev/urandom of=") + ui->lineEditPath->text() + QString("/") + ui->lineEditFileName->text() + QString(" bs=512 count=1") ;
-
-	std::cout << dd.toStdString() << std::endl ;
+	QString dd = QString(ZULUCRYPTdd) + QString(" if=/dev/urandom of=") + QString("\"") + ui->lineEditPath->text() + QString("\"") + QString("/") + QString("\"") + ui->lineEditFileName->text() + QString("\"") + QString(" bs=512 count=1") ;
 
 	QProcess p ;
 	p.start( dd ) ;

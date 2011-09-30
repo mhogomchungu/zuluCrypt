@@ -64,8 +64,12 @@ void createfile::ddFinished(int exitCode, QProcess::ExitStatus st)
 		return ;
 	}
 	if( exitCode != 0 ){
-		m.setText(QString("A problem occured and creation process is terminated.\nMake sure file path field points to a folder that exists and you have writing access"));
+		m.setText(QString("you dont seem to have writing access to the destination folder"));
 		m.exec() ;
+		ui->pbCreate->setEnabled(true);
+		ui->lineEditFileName->setEnabled(true);
+		ui->lineEditFilePath->setEnabled(true);
+		ui->lineEditFileSize->setEnabled(true);
 		return ;
 	}
 	sleep(3) ;

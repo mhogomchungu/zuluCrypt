@@ -152,11 +152,11 @@ void zuluCrypt::info()
 
 	QString info = QString("cryptographic options used in volume management\n\n") ;
 
-	info = info + QString("type:      PLAIN\n") ;
-	info = info + QString("cypher:   ") ;
+	info = info + QString("type:	PLAIN\n") ;
+	info = info + QString("cypher:	") ;
 	info = info + QString(c + 7) ;
 	info = info + QString("\n") ;
-	info = info + QString("keysize: ") ;
+	info = info + QString("keysize:	") ;
 
 	c = strstr( d + 1 , "Key: ") ;
 	d = c ;
@@ -166,7 +166,7 @@ void zuluCrypt::info()
 	info = info + QString(c + 5) ;
 	info = info + QString("\n") ;
 
-	info = info + QString("hash:      ") ;
+	info = info + QString("hash:	") ;
 
 	c = strstr( d + 1 , "Password") ;
 	d = c ;
@@ -181,7 +181,7 @@ void zuluCrypt::info()
 	while (*++d !=':') { ; }
 	*d = '\0' ;
 
-	info = info + QString("type:      ") ;
+	info = info + QString("type:	") ;
 	info = info + QString(c) ;
 	info = info + QString("\n") ;
 
@@ -190,7 +190,7 @@ void zuluCrypt::info()
 	while (*++d !=',') { ; }
 	*d = '\0' ;
 
-	info = info + QString("keysize: ") ;
+	info = info + QString("keysize:	") ;
 	info = info + QString(c + 5) ;
 	info = info + QString("\n") ;
 
@@ -198,10 +198,11 @@ void zuluCrypt::info()
 	info = info + QString(c) ;
 	info = info + QString("\n") ;
 
-	info = info + QString("maximum passphrase length: 512 characters\n") ;
-	info = info + QString("maximum key file size:           512 bytes\n\n") ;
+	info = info + QString("maximum passphrase length:	512 characters\n") ;
+	info = info + QString("maximum key file size:		512 bytes\n\n") ;
 
-	info = info +QString("device used for creating encrypted files: /dev/urandom") ;
+	info = info +QString("device used for creating encrypted files:	/dev/urandom\n") ;
+	info = info +QString("device used for creating key files:	/dev/urandom\n") ;
 
 	QMessageBox m ;
 	m.setParent(this);
@@ -212,7 +213,6 @@ void zuluCrypt::info()
 	m.setText(info) ;
 
 	m.exec() ;
-
 }
 
 void zuluCrypt::trayIconAction(QSystemTrayIcon::ActivationReason e)
