@@ -68,7 +68,7 @@ void createfile::ddFinished(int exitCode, QProcess::ExitStatus st)
 		m.exec() ;
 		return ;
 	}
-	//sleep(2) ;
+	sleep(3) ;
 	time.stop();
 	this->hide();
 	emit fileCreated(ui->lineEditFilePath->text() + "/" + ui->lineEditFileName->text()) ;
@@ -143,7 +143,7 @@ void createfile::pbCreate()
 			break ;
 	}
 
-	QString ddExe = QString(ZULUCRYPTdd) + QString("if=/dev/urandom of=") + ui->lineEditFilePath->text() + "/" + ui->lineEditFileName->text() + " bs=1024 " + "count=" + ui->lineEditFileSize->text() + size;
+	QString ddExe = QString(ZULUCRYPTdd) + QString(" if=/dev/urandom of=") + ui->lineEditFilePath->text() + "/" + ui->lineEditFileName->text() + " bs=1024 " + "count=" + ui->lineEditFileSize->text() + size;
 
 	dd.start( ddExe ) ;
 }
