@@ -96,6 +96,7 @@
     </property>
     <addaction name="actionFileCreate"/>
     <addaction name="actionPartitionCreate"/>
+    <addaction name="actionCreatekeyFile"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -167,6 +168,11 @@
   <action name="actionInfo">
    <property name="text">
     <string>crypto info</string>
+   </property>
+  </action>
+  <action name="actionCreatekeyFile">
+   <property name="text">
+    <string>key file</string>
    </property>
   </action>
  </widget>

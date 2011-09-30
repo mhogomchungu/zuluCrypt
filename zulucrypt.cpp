@@ -59,6 +59,9 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 	createFile.setParent(this);
 	createFile.setWindowFlags(Qt::Window | Qt::Dialog);
 
+	createkeyFile.setParent(this);
+	createkeyFile.setWindowFlags(Qt::Window | Qt::Dialog);
+
 	trayIcon.setParent(this);
 	trayIcon.setIcon(QIcon(QString("/usr/share/icons/zuluCrypt.png")));
 	connect((QObject *)&trayIcon,SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this,SLOT(trayIconAction(QSystemTrayIcon::ActivationReason)));
@@ -75,6 +78,8 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 	ui->tableWidget->setColumnWidth(1,290);
 
 	ui->tableWidget->setColumnWidth(2,90);
+
+	connect(ui->actionCreatekeyFile,SIGNAL(triggered()),(QObject *)&createkeyFile,SLOT(ShowUI()));
 
 	connect((QObject *)&createFile,SIGNAL(fileCreated(QString)),(QObject *)&createpartitionUI,SLOT(ShowFileUI(QString)));
 
