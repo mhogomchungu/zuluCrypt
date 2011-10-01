@@ -66,12 +66,62 @@ StrHandle * get_passphrase( void )
 	
 	(void) tcsetattr (1, TCSAFLUSH, &old);	
 	
+	StringCharAddInfront(p,'\\', '"') ;
+	
 	return p ;
 }
 
 void help( void )
 {
 	printf("will write docs at some point\n");	
+}
+
+/*
+ *The back end uses popen to call cryptsetup. 
+ *popen open the shell, pass the command to it and the shell execute it,
+ *Problem is,passphrases can have quote character and the shell gets confused when it sees them.
+ *This function add an escape character infront of all quotes to protext them the shell
+ * 
+ */
+char * sanitize_input(char *c ,int Z )
+{
+	char *e = c ;
+	
+	char *d ;	
+	
+	char *f ;
+	
+	int count = 0 ;
+	
+	int i ;
+	
+	int z = strlen( c ) ;
+	
+	for ( i = 0 ; i < z ; i++ )
+	{
+		if( e[i] =='"' )
+			count++ ;
+	}		
+	
+	f = d = (char * ) malloc(sizeof(char) * ( z + count + 1 ) ) ;
+	
+	e = e - 1 ;	
+	
+	while( *++e != '\0' )
+	{
+		if ( *e == '"' )
+		{
+			*d++ = '\\' ;			
+			*d++ = *e ;
+		}else{
+			*d++ = *e ;
+		}	
+	}
+	
+	if( Z == 0 )
+		free( c ) ;
+	
+	return  f ;	
 }
 
 int volume_info( char * mapping_name )
@@ -149,13 +199,18 @@ int open_volumes(int argn, char * device, char * mapping_name,int id, char * mou
 		printf("\n") ;	
 		
 		st = open_volume(device, mapping_name,mount_point,id,mode,StringCont( p )) ;
+		
 		StringDelete( p ) ;
 		
 	}else if ( argn == 7 ){
 
 		if( strcmp(source,"-p") == 0 ){
 			
-			st = open_volume(device, mapping_name,mount_point,id,mode, pass) ;
+			c = sanitize_input(pass,1) ;
+			
+			st = open_volume(device, mapping_name,mount_point,id,mode, c) ;
+			
+			free( c ) ;
 		
 		}else if ( strcmp(source,"-f") == 0 ){
 			
@@ -175,6 +230,9 @@ int open_volumes(int argn, char * device, char * mapping_name,int id, char * mou
 				read(f,c,fsize) ;
 				
 				close(f);
+				
+				c = sanitize_input( c , 0 ) ;
+				
 				st = open_volume(device, mapping_name,mount_point,id,mode,c) ;
 				
 				free( c ) ;
@@ -495,7 +553,11 @@ int create_volumes(int argn ,char *device, char *fs, char * mode, char * keyType
 		
 		if( strcmp( keyType, "-p" ) == 0 ) {
 			
-			st = create_volume(device,fs,mode,pass) ;
+			c = sanitize_input(pass,1) ;
+
+			st = create_volume(device,fs,mode,c) ;
+			
+			free(c);
 			
 		}else if( strcmp( keyType, "-f" ) == 0 ) {
 			
@@ -515,6 +577,8 @@ int create_volumes(int argn ,char *device, char *fs, char * mode, char * keyType
 				read( z, c, fsize ) ;
 			
 				close( z ) ;
+				
+				c = sanitize_input( c , 0 ) ;
 				
 				st = create_volume(device,fs,mode,c) ;
 				
@@ -645,6 +709,9 @@ int addkey(int argn,char * device, char *keyType1, char * existingKey, char * ke
 				read( z, c, fsize ) ;
 			
 				close( z ) ;
+				
+				c = sanitize_input( c , 0 ) ;
+				
 			}else{
 				status = 3 ;
 				goto ouch ;
@@ -749,8 +816,12 @@ int killslot(int argn, char * device, char * keyType, char * existingkey, char *
 	
 		if( strcmp( keyType, "-p" ) == 0 ){
 		
+			c = sanitize_input(existingkey,1) ;
+
 			status =  kill_slot(device, existingkey, slotNumber ) ;
 	
+			free( c ) ;
+			
 		}else if ( strcmp( keyType, "-f" ) == 0 ){
 		
 			if ( stat( existingkey,&st ) != 0 ){
@@ -771,6 +842,8 @@ int killslot(int argn, char * device, char * keyType, char * existingkey, char *
 		
 			close( i ) ;
 		
+			c = sanitize_input( c , 0 ) ;
+			
 			status = kill_slot( device, c , slotNumber ) ;
 		
 			free( c ) ;				
@@ -807,6 +880,7 @@ int removekey( int argn , char * device, char * keyType, char * keytoremove )
 	StrHandle *p;
 	int status, z ;
 	struct stat st ;
+	char *c ;
 	
 	if ( argn == 3 ){
 		
@@ -847,8 +921,12 @@ int removekey( int argn , char * device, char * keyType, char * keytoremove )
 			chown("/tmp/zuluCrypt-tmp",0,0) ;
 			chmod("/tmp/zuluCrypt-tmp",S_IRWXU) ;
 
+			c = sanitize_input(keytoremove,1) ;
+			
 			write( z, keytoremove ,strlen(keytoremove)) ;
-		
+			
+			free( c ) ;
+			
 			close( z ) ;
 		
 			status = remove_key( device,"/tmp/zuluCrypt-tmp" ) ;

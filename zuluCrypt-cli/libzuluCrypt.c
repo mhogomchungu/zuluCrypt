@@ -198,6 +198,7 @@ void execute( char *command , char *output, int size)
 		output[i] = '\0' ;
 	}	
 	pclose(f);
+	printf("%s\n",command);
 }
 
 int is_luks(char * device)

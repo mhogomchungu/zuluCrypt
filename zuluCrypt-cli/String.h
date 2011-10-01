@@ -114,6 +114,14 @@ char StringCharAt( StrHandle * st, int p) ;
  */
 char * StringAt( StrHandle * st , int p) ;
 
+/*
+ * Add character x infront of all occurances of character y
+ * 
+ */
+
+void StringCharAddInfront(StrHandle *st, char x, char y) ;
+
+
 #ifdef __cplusplus
 }
 #endif

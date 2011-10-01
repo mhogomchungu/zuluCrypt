@@ -141,4 +141,43 @@ void StringDelete(StrHandle * st)
 	free(st);
 }
 
+void StringCharAddInfront(StrHandle *st, char x, char y)
+{
+	char *d ;
+	
+	char *e = st->first->data  ;
+	
+	char *f ;
+	
+	int count = 0 ;
+	
+	int i ;
+	
+	for ( i = 0 ; i < st->size ; i++ )
+	{
+		if( e[i] =='"' )
+			count++ ;
+	}	
+	
+	st->size = st->size + count ;
+	
+	f = d = (char * ) malloc(sizeof(char) * st->size) ;
+	
+	e = e - 1 ;	
+	
+	while( *++e != '\0' )
+	{
+		if ( *e == '"' )
+		{
+			*d++ = '\\' ;			
+			*d++ = *e ;
+		}else{
+			*d++ = *e ;
+		}	
+	}
+	
+	free( st->first->data ) ;
+	
+	st->first->data = f ;
+}
 

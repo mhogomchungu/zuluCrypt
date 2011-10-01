@@ -112,7 +112,7 @@ void createkeyfile::pbCreate()
 
 		do{
 			in.getChar(&data) ;
-		}while( data < 31 || data > 126) ;
+		}while( data < 32 || data > 126) ;
 
 		out.putChar(data) ;
 	}

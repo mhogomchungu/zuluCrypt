@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>createkeyfile</class>
  <widget class="QWidget" name="createkeyfile">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>create a key file</string>
   </property>
   <widget class="QLineEdit" name="lineEditFileName">
    <property name="geometry">
