@@ -157,6 +157,8 @@ void StringCharAddInfront(StrHandle *st, char x, char y)
 	{
 		if( e[i] =='"' )
 			count++ ;
+		if( e[i] =='\\' )
+			count++ ;
 	}	
 	
 	st->size = st->size + count ;
@@ -171,10 +173,15 @@ void StringCharAddInfront(StrHandle *st, char x, char y)
 		{
 			*d++ = '\\' ;			
 			*d++ = *e ;
+		}else if( *e == '\\' ){
+			*d++ = '\\' ;			
+			*d++ = *e ;	
 		}else{
 			*d++ = *e ;
 		}	
 	}
+	
+	*d = '\0' ;
 	
 	free( st->first->data ) ;
 	

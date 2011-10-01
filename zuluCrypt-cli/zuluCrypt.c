@@ -101,6 +101,8 @@ char * sanitize_input(char *c ,int Z )
 	{
 		if( e[i] =='"' )
 			count++ ;
+		if( e[i] =='\\' )
+			count++ ;
 	}		
 	
 	f = d = (char * ) malloc(sizeof(char) * ( z + count + 1 ) ) ;
@@ -113,10 +115,15 @@ char * sanitize_input(char *c ,int Z )
 		{
 			*d++ = '\\' ;			
 			*d++ = *e ;
+		}else if( *e == '\\' ){
+			*d++ = '\\' ;			
+			*d++ = *e ;	
 		}else{
 			*d++ = *e ;
 		}	
 	}
+	
+	*d = '\0' ;
 	
 	if( Z == 0 )
 		free( c ) ;
@@ -512,7 +519,8 @@ int create_volumes(int argn ,char *device, char *fs, char * mode, char * keyType
 		
 		printf("ERROR: creating volumes on system partitions is not allowed.\n");
 		printf("System partitions have active entries in /etc/fstab") ;
-		
+		StringDelete( p ) ;
+		StringDelete( q ) ;
 		return 7 ;
 	}		
 		
