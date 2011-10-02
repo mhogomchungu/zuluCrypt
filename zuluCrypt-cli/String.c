@@ -141,7 +141,7 @@ void StringDelete(StrHandle * st)
 	free(st);
 }
 
-void StringCharAddInfront(StrHandle *st, char x, char y)
+void StringSanitize(StrHandle *st)
 {
 	char *d ;
 	
@@ -155,15 +155,21 @@ void StringCharAddInfront(StrHandle *st, char x, char y)
 	
 	for ( i = 0 ; i < st->size ; i++ )
 	{
-		if( e[i] =='"' )
+		if( e[i] == '"' )
 			count++ ;
-		if( e[i] =='\\' )
+		else if( e[i] == '\\' )
 			count++ ;
+		else if( e[i] == '`' )
+			count++ ;
+		else if( e[i] == '(' )
+			count++ ;
+		//else if( e[i] == ' ' )
+		//	count++ ;
 	}	
 	
 	st->size = st->size + count ;
 	
-	f = d = (char * ) malloc(sizeof(char) * st->size) ;
+	f = d = (char * ) malloc(sizeof(char) * ( st->size + 1 ) ) ;
 	
 	e = e - 1 ;	
 	
@@ -173,12 +179,29 @@ void StringCharAddInfront(StrHandle *st, char x, char y)
 		{
 			*d++ = '\\' ;			
 			*d++ = *e ;
+			
+		//}else if( *e == ' ' ){
+			
+		//	*d++ = '\\' ;			
+		//	*d++ = *e ;
+			
 		}else if( *e == '\\' ){
+			
 			*d++ = '\\' ;			
-			*d++ = *e ;	
-		}else{
 			*d++ = *e ;
-		}	
+			
+		}else if( *e == '`' ){
+			
+			*d++ = '\\' ;			
+			*d++ = *e ;
+		
+		}else if( *e == '(' ){
+			*d++ = '\\' ;			
+			*d++ = *e ;
+		}else{
+			
+			*d++ = *e ;
+		}
 	}
 	
 	*d = '\0' ;

@@ -64,9 +64,7 @@ StrHandle * get_passphrase( void )
 		i++ ;
 	}
 	
-	(void) tcsetattr (1, TCSAFLUSH, &old);	
-	
-	StringCharAddInfront(p,'\\', '"') ;
+	(void) tcsetattr (1, TCSAFLUSH, &old);		
 	
 	return p ;
 }
@@ -74,61 +72,6 @@ StrHandle * get_passphrase( void )
 void help( void )
 {
 	printf("will write docs at some point\n");	
-}
-
-/*
- *The back end uses popen to call cryptsetup. 
- *popen open the shell, pass the command to it and the shell execute it,
- *Problem is,passphrases can have quote character and the shell gets confused when it sees them.
- *This function add an escape character infront of all quotes to protext them the shell
- * 
- */
-char * sanitize_input(char *c ,int Z )
-{
-	char *e = c ;
-	
-	char *d ;	
-	
-	char *f ;
-	
-	int count = 0 ;
-	
-	int i ;
-	
-	int z = strlen( c ) ;
-	
-	for ( i = 0 ; i < z ; i++ )
-	{
-		if( e[i] =='"' )
-			count++ ;
-		if( e[i] =='\\' )
-			count++ ;
-	}		
-	
-	f = d = (char * ) malloc(sizeof(char) * ( z + count + 1 ) ) ;
-	
-	e = e - 1 ;	
-	
-	while( *++e != '\0' )
-	{
-		if ( *e == '"' )
-		{
-			*d++ = '\\' ;			
-			*d++ = *e ;
-		}else if( *e == '\\' ){
-			*d++ = '\\' ;			
-			*d++ = *e ;	
-		}else{
-			*d++ = *e ;
-		}	
-	}
-	
-	*d = '\0' ;
-	
-	if( Z == 0 )
-		free( c ) ;
-	
-	return  f ;	
 }
 
 int volume_info( char * mapping_name )
@@ -155,7 +98,7 @@ int volume_info( char * mapping_name )
 }
 
 int close_opened_volume( char * mapping_name )
-{	
+{
 	int st = close_volume( mapping_name ) ;
 	switch( st ) {
 	case 0 : printf("SUCCESS: volume successfully closed\n");
@@ -178,31 +121,36 @@ int open_volumes(int argn, char * device, char * mapping_name,int id, char * mou
 	int st ;
 	int f ;
 	struct stat Q ;
-	char *c ;
+	char *c;
 	off_t fsize ;
+	
+	if (argn < 5 ){
+		st = 8 ;
+		goto eerr ;
+	}	
 	
 	if (strncmp(mount_point,",\0",2)==0){
 			
-		printf("ERROR, \",\"(comma) is not a valid mount point\n") ;
-		return 6 ;			
+		st = 7 ;
+		goto eerr ;			
 	}		
 
 	if (strncmp(mode,"ro",2) != 0){
 		if (strncmp(mode,"rw",2) != 0){
-			printf("ERROR: Wrong mode, run zuluCrypt with \"-h\" for help\n");;
-			return 7 ;	
+			st = 7 ;
+			goto eerr ;	
 		}
 	}		
 
 	if (strncmp(mount_point,"-\0",2) ==0 ){
 		mount_point = NULL ;
-	}
+	}	
 	
 	if ( argn == 5 ){
 		printf( "Enter passphrase: " ) ;
 
 		p = get_passphrase();				
-		
+
 		printf("\n") ;	
 		
 		st = open_volume(device, mapping_name,mount_point,id,mode,StringCont( p )) ;
@@ -211,13 +159,9 @@ int open_volumes(int argn, char * device, char * mapping_name,int id, char * mou
 		
 	}else if ( argn == 7 ){
 
-		if( strcmp(source,"-p") == 0 ){
+		if( strcmp(source,"-p") == 0 ){			
 			
-			c = sanitize_input(pass,1) ;
-			
-			st = open_volume(device, mapping_name,mount_point,id,mode, c) ;
-			
-			free( c ) ;
+			st = open_volume(device, mapping_name,mount_point,id,mode, pass) ;			
 		
 		}else if ( strcmp(source,"-f") == 0 ){
 			
@@ -236,9 +180,7 @@ int open_volumes(int argn, char * device, char * mapping_name,int id, char * mou
 			
 				read(f,c,fsize) ;
 				
-				close(f);
-				
-				c = sanitize_input( c , 0 ) ;
+				close(f);				
 				
 				st = open_volume(device, mapping_name,mount_point,id,mode,c) ;
 				
@@ -257,6 +199,8 @@ int open_volumes(int argn, char * device, char * mapping_name,int id, char * mou
 		st =  8 ;			
 	}
 
+	eerr:
+	
 	switch ( st ){
 			
 		case 0 : printf("SUCCESS: Volume opened successfully\n");
@@ -551,6 +495,7 @@ int create_volumes(int argn ,char *device, char *fs, char * mode, char * keyType
 
 				st = 3 ;
 			}else{
+				StringSanitize(p) ;
 				st = create_volume(device,fs,mode,StringCont( p )) ;
 				StringDelete( q ) ;
 				StringDelete( p ) ;			
@@ -559,13 +504,9 @@ int create_volumes(int argn ,char *device, char *fs, char * mode, char * keyType
 			
 	}else if ( argn == 7 ){
 		
-		if( strcmp( keyType, "-p" ) == 0 ) {
-			
-			c = sanitize_input(pass,1) ;
+		if( strcmp( keyType, "-p" ) == 0 ) {			
 
-			st = create_volume(device,fs,mode,c) ;
-			
-			free(c);
+			st = create_volume(device,fs,mode,pass) ;			
 			
 		}else if( strcmp( keyType, "-f" ) == 0 ) {
 			
@@ -584,9 +525,7 @@ int create_volumes(int argn ,char *device, char *fs, char * mode, char * keyType
 			
 				read( z, c, fsize ) ;
 			
-				close( z ) ;
-				
-				c = sanitize_input( c , 0 ) ;
+				close( z ) ;				
 				
 				st = create_volume(device,fs,mode,c) ;
 				
@@ -689,6 +628,7 @@ int addkey(int argn,char * device, char *keyType1, char * existingKey, char * ke
 		
 			close( z ) ;
 			
+			StringSanitize(p) ;
 			status = add_key( device,StringCont( p ), "/tmp/zuluCrypt-tmp" ) ;
 			
 			delete_file("/tmp/zuluCrypt-tmp") ;				
@@ -716,9 +656,7 @@ int addkey(int argn,char * device, char *keyType1, char * existingKey, char * ke
 			
 				read( z, c, fsize ) ;
 			
-				close( z ) ;
-				
-				c = sanitize_input( c , 0 ) ;
+				close( z ) ;				
 				
 			}else{
 				status = 3 ;
@@ -747,15 +685,15 @@ int addkey(int argn,char * device, char *keyType1, char * existingKey, char * ke
 		}else if (strcmp(keyType1,"-p") == 0 && strcmp(keyType2,"-p") == 0 ){
 			
 			status = add_key(device, existingKey, "/tmp/zuluCrypt-tmp" ) ;
-			
+						
 			delete_file("/tmp/zuluCrypt-tmp") ;	
 			
 		}else if (strcmp(keyType1,"-p") == 0 && strcmp(keyType2,"-f") == 0 ){
-			
-			status = add_key( device, existingKey, newKey) ;	
-			
+						
+			status = add_key( device, existingKey, newKey) ;
+						
 		}else if (strcmp(keyType1,"-f") == 0 && strcmp(keyType2,"-p") == 0 ){			
-		
+					
 			status = add_key( device, c, "/tmp/zuluCrypt-tmp") ;	
 			
 			delete_file("/tmp/zuluCrypt-tmp") ;	
@@ -816,19 +754,17 @@ int killslot(int argn, char * device, char * keyType, char * existingkey, char *
 		
 		getchar() ; //remove the new line character from stdin buffer
 		
+		StringSanitize(p) ;
+
 		status = kill_slot( device, StringCont( p ), d ) ;
 		
 		StringDelete( p ) ;
 		
 	}else if ( argn == 6 ){
 	
-		if( strcmp( keyType, "-p" ) == 0 ){
-		
-			c = sanitize_input(existingkey,1) ;
+		if( strcmp( keyType, "-p" ) == 0 ){		
 
-			status =  kill_slot(device, existingkey, slotNumber ) ;
-	
-			free( c ) ;
+			status =  kill_slot(device, existingkey , slotNumber ) ;	
 			
 		}else if ( strcmp( keyType, "-f" ) == 0 ){
 		
@@ -848,9 +784,7 @@ int killslot(int argn, char * device, char * keyType, char * existingkey, char *
 		
 			write( i , c , fsize ) ;
 		
-			close( i ) ;
-		
-			c = sanitize_input( c , 0 ) ;
+			close( i ) ;		
 			
 			status = kill_slot( device, c , slotNumber ) ;
 		
@@ -888,7 +822,6 @@ int removekey( int argn , char * device, char * keyType, char * keytoremove )
 	StrHandle *p;
 	int status, z ;
 	struct stat st ;
-	char *c ;
 	
 	if ( argn == 3 ){
 		
@@ -928,12 +861,8 @@ int removekey( int argn , char * device, char * keyType, char * keytoremove )
 			
 			chown("/tmp/zuluCrypt-tmp",0,0) ;
 			chmod("/tmp/zuluCrypt-tmp",S_IRWXU) ;
-
-			c = sanitize_input(keytoremove,1) ;
 			
-			write( z, keytoremove ,strlen(keytoremove)) ;
-			
-			free( c ) ;
+			write( z, keytoremove ,strlen(keytoremove)) ;			
 			
 			close( z ) ;
 		
@@ -967,10 +896,13 @@ int removekey( int argn , char * device, char * keyType, char * keytoremove )
 int main( int argc , char *argv[])
 {
 	char * action = argv[1] ;
+	
 	char * device = argv[2] ;
 
 	StrHandle *p,*q ;
 	uid_t id ;
+	
+	int status ;
 	
 	char *  mapping_name ;
 	char * c ;
@@ -1024,54 +956,54 @@ int main( int argc , char *argv[])
 	
 	if( strcmp( action, "isLuks" ) == 0 ){
 	
-		return is_luks( device ) ;
+		status =  is_luks( device ) ;
 		
 	}else if ( strcmp( action, "status" ) == 0 ){			
 
-		return volume_info( mapping_name ) ;
+		status = volume_info( mapping_name ) ;
 		
 	}else if ( strcmp( action, "close" ) == 0 ){			
 
-		return close_opened_volume( mapping_name ) ;
+		status =  close_opened_volume( mapping_name ) ;
 		
 	}else if ( strcmp( action, "open" ) == 0 ){
 		
-		return open_volumes(argc,argv[2],mapping_name,id,argv[3],argv[4],argv[5],argv[6] ) ;		
+		status =  open_volumes(argc,device,mapping_name,id,argv[3],argv[4],argv[5],argv[6] ) ;		
 		
 	}else if(strcmp(action,"create") == 0 ){
 
-		return create_volumes(argc ,argv[2],argv[3],argv[4],argv[5],argv[6] ) ;	
+		status =  create_volumes(argc ,device,argv[3],argv[4],argv[5],argv[6] ) ;	
 		
 	}else if(strcmp(action,"addkey") == 0 ){
 		
-		return addkey(argc,argv[2],argv[3],argv[4],argv[5],argv[6]) ;
+		status =  addkey(argc,device,argv[3],argv[4],argv[5],argv[6]) ;
 		
 	}else if(strcmp(action,"killslot") == 0 ){
 		
-		return killslot(argc, argv[2],argv[3],argv[4],argv[5] ) ;
+		status =  killslot(argc, device,argv[3],argv[4],argv[5] ) ;
 	
 	}else if(strcmp(action,"removekey") == 0 ){
 				
-		return removekey(argc, argv[2], argv[3],argv[4] );
+		status =  removekey(argc, device, argv[3],argv[4] );
 	
 	}else if (strcmp(action,"createfile") == 0 ){
 		
-		return create_file(argv[2],argv[3],argv[4],id) ; 
+		status =  create_file(device,argv[3],argv[4],id) ; 
 		
 	}else if(strcmp(action,"emptyslots") == 0 ){
 		
-		if ( empty_slots( slots , argv[2] ) == 0 ){			
+		if ( empty_slots( slots , device ) == 0 ){			
 			printf("%s\n",slots ) ;
-			return 0 ;
+			status =  0 ;
 		}else{
 			printf("ERROR: given device does not exist\n") ;
-			return 1 ;
+			status =  1 ;
 		}
 			
 	}else{
 		printf("ERROR: Wrong argument\n") ;
-		return 10 ;
+		status =  10 ;
 	}
 	
-	return 0 ; //shouldnt get here		
+	return status ; 		
 }

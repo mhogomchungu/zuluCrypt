@@ -114,12 +114,12 @@ char StringCharAt( StrHandle * st, int p) ;
  */
 char * StringAt( StrHandle * st , int p) ;
 
+
 /*
- * Add character x infront of all occurances of character y
+ * add backslash to following characters: backslash,dolla sign, open bracket and double quotes.
  * 
  */
-
-void StringCharAddInfront(StrHandle *st, char x, char y) ;
+void StringSanitize(StrHandle *st) ;
 
 
 #ifdef __cplusplus
