@@ -143,7 +143,7 @@ void StringDelete(StrHandle * st)
 
 void StringSanitize(StrHandle *st)
 {
-	char *n="#;\"',\\`:!*?&$@(){}[]><|-=+%~^ \n" ;
+	char *n="#;\"',\\`:!*?&$@(){}[]><|%~^ \n" ;
 	
 	char *d ;	
 	

@@ -220,7 +220,7 @@ void status( char * map , char * output, int size )
 
 char * sanitize(char *c )
 {
-	char *n="#;\"',\\`:!*?&$@(){}[]><|-=+%~^ \n" ;	
+	char *n="#;\"',\\`:!*?&$@(){}[]><|%~^ \n" ;	
 	
 	char *d ;	
 	
