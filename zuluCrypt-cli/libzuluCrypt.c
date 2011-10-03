@@ -216,7 +216,7 @@ void status( char * map , char * output, int size )
 
 char * sanitize(char *c )
 {
-	char *n="#;.\"',\\`:!*?&$@(){}[]><|-=+%~^ " ;	
+	char *n="#;\"',\\`:!*?&$@(){}[]><|-=+%~^ \n" ;	
 	
 	char *d ;	
 	
@@ -510,7 +510,7 @@ int mount_volume(char *mapping_name,char *m_point,char * mode,uid_t id)
 	
 	StringCat( p , mapping_name ) ;
 	
-	StringSanitize( p ) ;
+	StringSanitize( p ) ;	
 	
 	if ( mkdir( StringCont( p ), S_IRWXU  ) != 0 ){
 		StringCat( p, ".zc") ;
