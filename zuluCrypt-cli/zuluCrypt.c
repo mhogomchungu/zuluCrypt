@@ -174,6 +174,11 @@ int open_volumes(int argn, char * device, char * mapping_name,int id, char * mou
 				
 				c = ( char * ) malloc( sizeof(char) * ( fsize + 1 )  ) ;
 
+				if( c == NULL ){
+					st = 9 ;
+					goto eerr ;
+				}
+					
 				*( c + fsize ) = '\0' ;
 
 				f = open( pass,O_RDONLY ) ;
@@ -221,6 +226,9 @@ int open_volumes(int argn, char * device, char * mapping_name,int id, char * mou
 			break ;
 		case 8 : printf("ERROR: Wrong number of arguments, run zuluCrypt with \"-h\" for help\n");
 			break ;
+		case 9 : printf("ERROR: operation failed, insuffucient system memory\n");
+			break ;	
+			
 		default :
 			;			
 	}	
@@ -239,6 +247,7 @@ void char_from_numbers( char * buffer,int size, int k )
 	}while( ( k = k / 10 ) != 0 )	;
 }
 
+//doesnt work,dont think its necessary
 int create_file(char * name, char *random_device , char * size,uid_t id )
 {
 	struct stat st;

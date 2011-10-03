@@ -17,8 +17,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -32,7 +30,6 @@
 #include "String.h"   
 
 #include "../executables.h"
-
 
 //function prototypes
 
@@ -50,9 +47,9 @@ int add_key(char * dev, char * ek, char * keyfile)
 	char * existingkey = sanitize( ek ) ;
 	
 	p = StringCpy( ZULUCRYPTecho ) ;
-	StringCat( p , "\"");
+	//StringCat( p , "\"");
 	StringCat( p , existingkey ) ;
-	StringCat( p , "\"");
+	//StringCat( p , "\"");
 	StringCat( p , " | " ) ;
 	StringCat( p , ZULUCRYPTcryptsetup) ;
 	StringCat( p , " luksAddKey ") ;
@@ -77,9 +74,9 @@ int kill_slot( char * dev,char * ek, int slotNumber)
 	char * existingkey = sanitize( ek ) ;
 	
 	StrHandle * p = StringCpy( ZULUCRYPTecho ) ;
-	StringCat( p , "\"");
+	//StringCat( p , "\"");
 	StringCat( p , existingkey ) ;
-	StringCat( p , "\"");
+	//StringCat( p , "\"");
 	StringCat( p , " | " ) ;
 	StringCat( p , ZULUCRYPTcryptsetup ) ;
 	StringCat( p , " luksKillSlot ") ;
@@ -205,6 +202,18 @@ void status( char * map , char * output, int size )
 	StringDelete(str);
 }
 
+/*
+ * execute function here uses popen, popen opens bash and pass the command to it and bash execute it.
+ * 
+ * This function escapes all characters that triggers bash intelligence.  
+ * 
+ * Without this function, a passphrase with a single quote for example will cause bash to expect a 
+ * second one and will error out.
+ * 
+ * Without this function, a passphrase with an interesting character sequence will cause bash to run
+ * a command.
+ */
+
 char * sanitize(char *c )
 {
 	char *e = c ;
@@ -231,9 +240,12 @@ char * sanitize(char *c )
 			count++ ;
 		else if( e[i] == ')' )
 			count++ ;
-		//else if( e[i] == ' ' )
-		//	count++ ;
-		
+		else if( e[i] == '\n' )
+			count++ ;
+		else if( e[i] == '$' )
+			count++ ;
+		else if( e[i] == '\'' )
+			count++ ;
 	}		
 	
 	f = d = (char * ) malloc(sizeof(char) * ( z + count + 1 ) ) ;
@@ -247,10 +259,15 @@ char * sanitize(char *c )
 			*d++ = '\\' ;			
 			*d++ = *e ;
 			
-		//}//else if( *e == ' ' ){
+		}else if( *e == '\n' ){
 			
-		//	*d++ = '\\' ;			
-		//	*d++ = *e ;
+			*d++ = '\\' ;			
+			*d++ = *e ;
+			
+		}else if( *e == '\'' ){
+			
+			*d++ = '\\' ;			
+			*d++ = *e ;
 			
 		}else if( *e == '\\' ){
 			
@@ -263,9 +280,17 @@ char * sanitize(char *c )
 			*d++ = *e ;
 		
 		}else if( *e == '(' ){
+			
 			*d++ = '\\' ;			
 			*d++ = *e ;
+			
 		}else if( *e == ')' ){
+			
+			*d++ = '\\' ;			
+			*d++ = *e ;
+			
+		}else if( *e == '$' ){
+			
 			*d++ = '\\' ;			
 			*d++ = *e ;
 		}else{
@@ -282,6 +307,7 @@ char * sanitize(char *c )
 void execute( char *command , char *output, int size)
 {		
 	FILE *f ;
+//	printf("%s\n",command);
 	f = popen(command, "r") ;
 	int i,c  ;
 	if ( output != NULL  ){
@@ -294,8 +320,7 @@ void execute( char *command , char *output, int size)
 		}
 		output[i] = '\0' ;
 	}	
-	pclose(f);
-	printf("%s\n",command);
+	pclose(f);	
 }
 
 int is_luks(char * dev)
@@ -346,14 +371,14 @@ int create_volume(char * dev, char * fs,char * type, char * pass)
 	StringCat( q , " -t ") ;
 	StringCat( q , fs ) ;
 	StringCat( q , " " ) ;
-	StringCat( q , "/dev/mapper/zuluCrypt-create-new 1>/dev/null 2>&1  ; sleep 3 ; ") ;
+	StringCat( q , "/dev/mapper/zuluCrypt-create-new 1>/dev/null 2>&1  ; ") ;
 	
 	if  (strcmp(type,"luks")  == 0 ){	
 		
 		p = StringCpy( ZULUCRYPTecho );
-		StringCat( p , "\"");
+		//StringCat( p , "\"");
 		StringCat( p , passphrase ) ;
-		StringCat( p , "\"");
+		//StringCat( p , "\"");
 		
 		StringCat( p , " | " ) ;
 		StringCat( p , ZULUCRYPTcryptsetup ) ;
@@ -366,9 +391,9 @@ int create_volume(char * dev, char * fs,char * type, char * pass)
 		StringDelete( p ) ;	
 		
 		p = StringCpy( ZULUCRYPTecho );
-		StringCat( p , "\"");
+		//StringCat( p , "\"");
 		StringCat( p , passphrase ) ;
-		StringCat( p , "\"");
+		//StringCat( p , "\"");
 		StringCat( p , " | " ) ;
 		StringCat( p , ZULUCRYPTcryptsetup ) ;
 		StringCat( p , " luksOpen ") ;
@@ -390,9 +415,9 @@ int create_volume(char * dev, char * fs,char * type, char * pass)
 	}else if ( strcmp(type,"plain")  == 0 ){
 		
 		p = StringCpy( ZULUCRYPTecho );
-		StringCat( p , "\"");
+		//StringCat( p , "\"");
 		StringCat( p , passphrase ) ;
-		StringCat( p , "\"");
+		//StringCat( p , "\"");
 		StringCat( p , " | " ) ;
 		StringCat( p , ZULUCRYPTcryptsetup ) ;
 		StringCat( p , " create zuluCrypt-create-new " ) ;		
@@ -628,9 +653,9 @@ int open_volume(char *dev, char * map, char *m_point, uid_t id,char * mode, char
 	passphrase = sanitize( pass ) ;
 	
 	p = StringCpy( ZULUCRYPTecho );
-	StringCat( p , "\"");
+	//StringCat( p , "\"");
 	StringCat( p , passphrase ) ;
-	StringCat( p , "\"");
+	//StringCat( p , "\"");
 	StringCat( p , " | " ) ;
 		
 	if ( luks == 0 ){	
@@ -662,9 +687,16 @@ int open_volume(char *dev, char * map, char *m_point, uid_t id,char * mode, char
 		StringCat( p , " 1>/dev/null 2>&1") ;				
 	}	
 
-	execute( StringCont( p ), NULL, 0 ) ;			
+	execute( StringCont( p ), status, 2 ) ;			
 
-	StringDelete( p ) ;	
+	StringDelete( p ) ;
+	
+	if( status[0] == '3' ){
+		free( device );
+		free( mapping_name );
+		free( passphrase );	
+		return 9 ;
+	}
 	
 	h = mount_volume(mapping_name,m_point,mode,id ) ;	
 	
@@ -691,9 +723,9 @@ int open_volume(char *dev, char * map, char *m_point, uid_t id,char * mode, char
 				//legacy mode is with option -c aes-cbc-plain
 				//sleep( 2 ) ;
 				z = StringCpy( ZULUCRYPTecho );
-				StringCat( z , "\"");
+				//StringCat( z , "\"");
 				StringCat( z , passphrase ) ;
-				StringCat( z , "\"");
+				//StringCat( z , "\"");
 				StringCat( z , " | " ) ;
 			
 				if ( strncmp( mode, "ro",2 ) == 0 ){

@@ -163,8 +163,15 @@ void StringSanitize(StrHandle *st)
 			count++ ;
 		else if( e[i] == '(' )
 			count++ ;
-		//else if( e[i] == ' ' )
-		//	count++ ;
+		else if( e[i] == ')' )
+			count++ ;
+		else if( e[i] == '\n' )
+			count++ ;
+		else if( e[i] == '$' )
+			count++ ;
+		else if( e[i] == '\'' )
+			count++ ;
+		
 	}	
 	
 	st->size = st->size + count ;
@@ -180,10 +187,15 @@ void StringSanitize(StrHandle *st)
 			*d++ = '\\' ;			
 			*d++ = *e ;
 			
-		//}else if( *e == ' ' ){
+		}else if( *e == '\n' ){
 			
-		//	*d++ = '\\' ;			
-		//	*d++ = *e ;
+			*d++ = '\\' ;			
+			*d++ = *e ;
+			
+		}else if( *e == '\'' ){
+			
+			*d++ = '\\' ;			
+			*d++ = *e ;
 			
 		}else if( *e == '\\' ){
 			
@@ -194,14 +206,20 @@ void StringSanitize(StrHandle *st)
 			
 			*d++ = '\\' ;			
 			*d++ = *e ;
-		
+			
 		}else if( *e == '(' ){
+			*d++ = '\\' ;			
+			*d++ = *e ;
+		}else if( *e == ')' ){
+			*d++ = '\\' ;			
+			*d++ = *e ;
+		}else if( *e == '$' ){
 			*d++ = '\\' ;			
 			*d++ = *e ;
 		}else{
 			
 			*d++ = *e ;
-		}
+		}	
 	}
 	
 	*d = '\0' ;
