@@ -216,7 +216,7 @@ void status( char * map , char * output, int size )
 
 char * sanitize(char *c )
 {
-	char *e = c ;
+	char *n="#;.\"',\\`:!*?&$@(){}[]><|-=+%~^ " ;	
 	
 	char *d ;	
 	
@@ -224,90 +224,46 @@ char * sanitize(char *c )
 	
 	int count = 0 ;
 	
-	int i ;
+	int i,j ;
 	
 	int z = strlen( c ) ;
+	int k = strlen( n ) ;
 	
-	for ( i = 0 ; i < z ; i++ )
-	{
-		if( e[i] == '"' )
-			count++ ;
-		else if( e[i] == '\\' )
-			count++ ;
-		else if( e[i] == '`' )
-			count++ ;
-		else if( e[i] == '(' )
-			count++ ;
-		else if( e[i] == ')' )
-			count++ ;
-		else if( e[i] == '\n' )
-			count++ ;
-		else if( e[i] == '$' )
-			count++ ;
-		else if( e[i] == '\'' )
-			count++ ;
-	}		
-	
-	f = d = (char * ) malloc(sizeof(char) * ( z + count + 1 ) ) ;
-	
-	e = e - 1 ;	
-	
-	while( *++e != '\0' )
-	{
-		if ( *e == '"' )
-		{
-			*d++ = '\\' ;			
-			*d++ = *e ;
-			
-		}else if( *e == '\n' ){
-			
-			*d++ = '\\' ;			
-			*d++ = *e ;
-			
-		}else if( *e == '\'' ){
-			
-			*d++ = '\\' ;			
-			*d++ = *e ;
-			
-		}else if( *e == '\\' ){
-			
-			*d++ = '\\' ;			
-			*d++ = *e ;
-			
-		}else if( *e == '`' ){
-			
-			*d++ = '\\' ;			
-			*d++ = *e ;
+	for ( i = 0 ; i < z ; i++ ){
 		
-		}else if( *e == '(' ){
+		for( j = 0 ; j < k ; j++ ){
 			
-			*d++ = '\\' ;			
-			*d++ = *e ;
-			
-		}else if( *e == ')' ){
-			
-			*d++ = '\\' ;			
-			*d++ = *e ;
-			
-		}else if( *e == '$' ){
-			
-			*d++ = '\\' ;			
-			*d++ = *e ;
-		}else{
-			
-			*d++ = *e ;
-		}	
+			if( c[i] == n[j] ){
+				count++ ;
+				break ;
+			}
+		}		
 	}
 	
-	*d = '\0' ;
-	
-	return  f ;	
+	f = d = (char * ) malloc(sizeof(char) * ( z + count + 1 ) ) ;	
+
+	for ( i = 0 ; i < z ; i++ ){
+		
+		for( j = 0 ; j < k ; j++ ){
+			
+			if( c[i] == n[j] ){
+				*f++ = '\\' ;
+				//*f++ = n[j] ;
+				break ;
+			}
+		}
+		
+		*f++ = c[i] ;
+	}
+	*f = '\0' ;
+
+	return d ;
 }
 
 void execute( char *command , char *output, int size)
 {		
 	FILE *f ;
-//	printf("%s\n",command);
+	printf("%s\n",command);
 	f = popen(command, "r") ;
 	int i,c  ;
 	if ( output != NULL  ){

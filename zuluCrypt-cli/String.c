@@ -143,89 +143,54 @@ void StringDelete(StrHandle * st)
 
 void StringSanitize(StrHandle *st)
 {
-	char *d ;
+	char *n="#;.\"',\\`:!*?&$@(){}[]><|-=+%~^ " ;
 	
-	char *e = st->first->data  ;
+	char *d ;	
 	
 	char *f ;
 	
-	int count = 0 ;
+	char *c = st->first->data ;
 	
-	int i ;
+	int count = 0 ;	
 	
-	for ( i = 0 ; i < st->size ; i++ )
-	{
-		if( e[i] == '"' )
-			count++ ;
-		else if( e[i] == '\\' )
-			count++ ;
-		else if( e[i] == '`' )
-			count++ ;
-		else if( e[i] == '(' )
-			count++ ;
-		else if( e[i] == ')' )
-			count++ ;
-		else if( e[i] == '\n' )
-			count++ ;
-		else if( e[i] == '$' )
-			count++ ;
-		else if( e[i] == '\'' )
-			count++ ;
+	int i,j ;
+	
+	int z = st->size ;
+	
+	int k = strlen( n ) ;
+	
+	for ( i = 0 ; i < z ; i++ ){
 		
+		for( j = 0 ; j < k ; j++ ){
+			
+			if( c[i] == n[j] ){
+				count++ ;
+				break ;
+			}
+		}		
 	}	
 	
 	st->size = st->size + count ;
 	
-	f = d = (char * ) malloc(sizeof(char) * ( st->size + 1 ) ) ;
+	f = d = (char * ) malloc(sizeof(char) * ( st->size + 1 ) ) ;	
 	
-	e = e - 1 ;	
-	
-	while( *++e != '\0' )
-	{
-		if ( *e == '"' )
-		{
-			*d++ = '\\' ;			
-			*d++ = *e ;
+	for ( i = 0 ; i < z ; i++ ){
+		
+		for( j = 0 ; j < k ; j++ ){
 			
-		}else if( *e == '\n' ){
-			
-			*d++ = '\\' ;			
-			*d++ = *e ;
-			
-		}else if( *e == '\'' ){
-			
-			*d++ = '\\' ;			
-			*d++ = *e ;
-			
-		}else if( *e == '\\' ){
-			
-			*d++ = '\\' ;			
-			*d++ = *e ;
-			
-		}else if( *e == '`' ){
-			
-			*d++ = '\\' ;			
-			*d++ = *e ;
-			
-		}else if( *e == '(' ){
-			*d++ = '\\' ;			
-			*d++ = *e ;
-		}else if( *e == ')' ){
-			*d++ = '\\' ;			
-			*d++ = *e ;
-		}else if( *e == '$' ){
-			*d++ = '\\' ;			
-			*d++ = *e ;
-		}else{
-			
-			*d++ = *e ;
-		}	
+			if( c[i] == n[j] ){
+				*f++ = '\\' ;
+				break ;
+			}
+		}
+		
+		*f++ = c[i] ;
 	}
 	
-	*d = '\0' ;
+	*f = '\0' ;
 	
 	free( st->first->data ) ;
 	
-	st->first->data = f ;
+	st->first->data = d ;
 }
 
