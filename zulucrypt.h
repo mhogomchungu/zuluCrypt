@@ -84,7 +84,7 @@ private slots :
 
 	void setUpOpenedVolumes(void) ;
 
-	void UIMessage(QString message) ;
+	void UIMessage(QString title,QString message) ;
 
 	void luksAddKey(QString volumePath,bool keyfile, QString ExistingKey,bool newkeyfile, QString NewKey) ;
 

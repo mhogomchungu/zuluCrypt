@@ -244,11 +244,11 @@ void zuluCrypt::createEncryptedVolume(QString fileSystem, QString containterType
 	p.waitForFinished();
 
 	switch( p.exitCode() ) {
-		case 0 : UIMessage(QString("SUCCESS: volume successfully created"));
+		case 0 : UIMessage(QString("SUCCESS"),QString("volume successfully created"));
 			break;
-		case 1 : UIMessage(QString("ERROR: volume path does not exist"));
+		case 1 : UIMessage(QString("ERROR"),QString("volume path does not exist"));
 			break;
-		default: UIMessage((QString("ERROR: unrecognized error has occured,volume not created")));
+		default: UIMessage(QString("ERROR"),(QString("unrecognized error has occured,volume not created")));
 	}
 }
 
@@ -279,22 +279,25 @@ void zuluCrypt::luksDeleteKey(QString volumePath,bool passPhraseIsFile, QString 
 	Z.waitForFinished() ;
 
 	switch( Z.exitCode() ){
-		case 0 :	UIMessage(QString("SUCCESS: key successfully removed\n") + luksEmptySlots(volumePath) + QString(" / 8 slots are now in use"));
-			break ;
-		case 1 :	UIMessage(QString("ERROR: one or more paths has an empty space in them, the back end doesnt like it"));
+		case 0 :{
+				UIMessage(QString("SUCCESS"),QString("key successfully removed\n") + luksEmptySlots(volumePath) + QString(" / 8 slots are now in use"));
+				return ;
+			}break ;
+		case 1 :	UIMessage(QString("ERROR"),QString("one or more paths has an empty space in them, the back end doesnt like it"));
 			break ;
 		case 2 :{
-				UIMessage(QString("ERROR: there is no key in the volume that match entered key"));
-				emit luksDeleteKeyUI(volumePath) ;				
+				UIMessage(QString("ERROR"),QString("there is no key in the volume that match entered key"));
+
 			}break ;
-		case 4 :	UIMessage(QString("ERROR: device does not exist"));
+		case 4 :	UIMessage(QString("ERROR"),QString("device does not exist"));
 			break ;
-		case 5 :	UIMessage(QString("ERROR: key file does not exist"));
+		case 5 :	UIMessage(QString("ERROR"),QString("key file does not exist"));
 			break ;
-		case 7 : UIMessage(QString("ERROR: creating volumes on system partitions is not supported"));
-			break ;
-		default:	UIMessage(QString("ERROR: an unknown error has occured, key not deleted"));
+
+		default:	UIMessage(QString("ERROR"),QString("an unknown error has occured, key not deleted"));
 	}
+
+	emit luksDeleteKeyUI(volumePath) ;
 }
 
 void zuluCrypt::luksAddKey(QString volumePath, bool keyfile,QString ExistingKey,bool newkeyfile, QString NewKey)
@@ -312,7 +315,7 @@ void zuluCrypt::luksAddKey(QString volumePath, bool keyfile,QString ExistingKey,
 	else
 		newPassType = QString(" -p ") ;
 
-	QString exe = ZULUCRYPTcryptsetup + QString(" addkey ") + "\"" + volumePath + "\"" + existingPassType + "\"" + ExistingKey + "\"" + newPassType + "\"" + NewKey + "\"" ;
+	QString exe = QString(ZULUCRYPTzuluCrypt) + QString(" addkey ") + "\"" + volumePath + "\"" + existingPassType + "\"" + ExistingKey + "\"" + newPassType + "\"" + NewKey + "\"" ;
 
 	QProcess Z ;
 
@@ -321,21 +324,22 @@ void zuluCrypt::luksAddKey(QString volumePath, bool keyfile,QString ExistingKey,
 	Z.waitForFinished() ;
 
 	switch( Z.exitCode() ){
-		case 0 :	UIMessage(QString("SUCCESS: key added successfully\n") + luksEmptySlots(volumePath) + QString(" / 8 slots are now in use")) ;
-			break ;
-		case 1 :	UIMessage(QString("ERROR: one or more paths has an empty space in them, the back end doesnt like it"));
-			break ;
-		case 2 :{
-				UIMessage(QString("ERROR: presented key does not match any key in the volume"));
-				emit luksAddKeyUI(volumePath) ;
+		case 0 :{
+				UIMessage(QString("SUCCESS"),QString("key added successfully\n") + luksEmptySlots(volumePath) + QString(" / 8 slots are now in use")) ;
+				return ;
 			}break ;
-		case 3 :	UIMessage(QString("ERROR: keyfile with the new passphrase does not exist"));
+		case 1 :	UIMessage(QString("ERROR"),QString("presented key does not match any key in the volume"));
 			break ;
-		case 4 :	UIMessage(QString("ERROR: luks volume does not exist"));
+		case 2 :	UIMessage(QString("ERROR"),QString("new passphrases do not match"));
 			break ;
-		default:	UIMessage(QString("ERROR: un unrecognized error has occured, key not added"));
+		case 3 :	UIMessage(QString("ERROR"),QString("keyfile with the new passphrase does not exist"));
+			break ;
+		case 4 :	UIMessage(QString("ERROR"),QString("luks volume does not exist"));
+			break ;
+		default:	UIMessage(QString("ERROR"),QString("un unrecognized error has occured, key not added"));
 
 	}
+	emit luksAddKeyUI(volumePath) ;
 }
 
 char zuluCrypt::luksEmptySlots(QString volumePath)
@@ -409,7 +413,7 @@ void zuluCrypt::setUpOpenedVolumes(void)
 		d = strstr(c,"device:") ;
 
 		if ( d == NULL){
-			UIMessage(QString("WARNING: An inconsitency is detected, " + QString(C) + QString(" does not look like a cryptsetp volume")));
+			UIMessage(QString("WARNING"),QString("An inconsitency is detected, " + QString(C) + QString(" does not look like a cryptsetp volume")));
 			continue ;
 		}
 
@@ -442,7 +446,7 @@ void zuluCrypt::setUpOpenedVolumes(void)
 		v = strrchr(volume,'/') + 1 ;
 
 		if( ( d = strstr(c,v ) ) == NULL ){
-			UIMessage(QString("WARNING: An inconsitency is detected, " + QString(N) + QString(" is opened but not mounted")));
+			UIMessage(QString("WARNING"),QString("An inconsitency is detected, " + QString(N) + QString(" is opened but not mounted")));
 			continue ;
 		}
 
@@ -552,13 +556,13 @@ void zuluCrypt::luksDeleteKeyContextMenu(void)
 	emit luksDeleteKeyUI(ui->tableWidget->item(item->row(),0)->text()) ;
 }
 
-void zuluCrypt::UIMessage(QString message)
+void zuluCrypt::UIMessage(QString title, QString message)
 {
 	QMessageBox m ;
 	m.setParent(this);
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 	m.setText(message);
-	m.setWindowTitle(QString("ERROR!"));
+	m.setWindowTitle(title);
 	m.addButton(QMessageBox::Ok);
 	m.exec() ;
 }
@@ -573,14 +577,14 @@ void zuluCrypt::close(void)
 	switch ( p.exitCode() ) {
 	case 0 :	removeRowFromTable(item->row()) ;
 		break ;
-	case 1 :	UIMessage(QString("ERROR: close failed, encrypted volume with that name does not exist")) ;
+	case 1 :	UIMessage(QString("ERROR"),QString("close failed, encrypted volume with that name does not exist")) ;
 		break ;
 
-	case 2 :	UIMessage(QString("ERROR: close failed, the mount point and/or one or more files are in use"));
+	case 2 :	UIMessage(QString("ERROR"),QString("close failed, the mount point and/or one or more files are in use"));
 		break ;
-	case 3 :	UIMessage(QString("ERROR: close failed, path given does not point to a file"));
+	case 3 :	UIMessage(QString("ERROR"),QString("close failed, path given does not point to a file"));
 		break ;
-	default :	UIMessage(QString("ERROR: an unknown error has occured, volume not closed"));
+	default :	UIMessage(QString("ERROR"),QString("an unknown error has occured, volume not closed"));
 	}
 }
 
@@ -684,27 +688,27 @@ void zuluCrypt::openEncryptedVolume(bool boolOpenReadOnly,bool boolKeyFromFile,Q
 
 		} break ;
 
-	case 1 : UIMessage(QString("ERROR: No free loop device to use.")) ;
+	case 1 : UIMessage(QString("ERROR"),QString("No free loop device to use.")) ;
 		break ;
 
-	case 2 : UIMessage(QString("ERROR: There seem to be an open volume accociated with given path."));
+	case 2 : UIMessage(QString("ERROR"),QString("there seem to be an open volume accociated with given path."));
 		break ;
 
-	case 3 : UIMessage(QString("ERROR: No file or device on a given address.")) ;
+	case 3 : UIMessage(QString("ERROR"),QString("no file or device on a given address.")) ;
 		break ;
 
 	case 4 :{
-			UIMessage(QString("ERROR: Wrong passphrase."));
+			UIMessage(QString("ERROR"),QString("wrong passphrase."));
 			emit redoOpen(boolOpenReadOnly,boolKeyFromFile,volumePath, mountPointPath);
 		}break ;
 
-	case 5 : UIMessage(QString("ERROR: mount point address is already taken by a file or folder")) ;
+	case 5 : UIMessage(QString("ERROR"),QString("mount point address is already taken by a file or folder")) ;
 		break ;
-	case 6 : UIMessage(QString("ERROR: passphrase file does not exist"));
+	case 6 : UIMessage(QString("ERROR"),QString("passphrase file does not exist"));
 		break ;
-	case 9 : UIMessage(QString("ERROR: \",\" (comma) is not a valid mount point"));
+	case 9 : UIMessage(QString("ERROR"),QString("\",\" (comma) is not a valid mount point"));
 		break ;
-	default :UIMessage(QString("ERROR: un unknown error has occured, volume not opened"));
+	default :UIMessage(QString("ERROR"),QString("un unknown error has occured, volume not opened"));
 	}
 }
 

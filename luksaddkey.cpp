@@ -167,26 +167,26 @@ void luksaddkeyUI::pbAdd(void)
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 
 	if ( a.isEmpty() == true ){
-		m.setText(QString("ERROR: the encrypted volume path field is empty"));
+		m.setText(QString("the encrypted volume path field is empty"));
 		m.addButton(QMessageBox::Ok);
 		m.exec() ;
 		return ;
 	}
 	if ( b.isEmpty() == true ){
-		m.setText(QString("ERROR: existing passphrase field is empth"));
+		m.setText(QString("existing passphrase field is empth"));
 		m.addButton(QMessageBox::Ok);
 		m.exec() ;
 		return ;
 	}
 	if ( c.isEmpty() == true ){
-		m.setText(QString("ERROR: new passphrase field is empty"));
+		m.setText(QString("new passphrase field is empty"));
 		m.addButton(QMessageBox::Ok);
 		m.exec() ;
 		return ;
 	}
 	if ( ui.radioButtonNewPassphraseFromFile->isChecked() == false){
 		if ( c != d ){
-			m.setText(QString("ERROR: passphrases do not match"));
+			m.setText(QString("passphrases do not match"));
 			m.addButton(QMessageBox::Ok);
 			m.exec() ;
 			return ;

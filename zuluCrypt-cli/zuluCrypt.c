@@ -633,7 +633,7 @@ int addkey(int argn,char * device, char *keyType1, char * existingKey, char * ke
 		
 		if (strcmp( StringCont( q ), StringCont( n ) ) != 0){
 			
-			status = 1 ;
+			status = 2 ;
 		}else{
 		
 			z = open("/tmp/zuluCrypt-tmp",O_WRONLY | O_CREAT | O_TRUNC ) ;
@@ -727,10 +727,10 @@ int addkey(int argn,char * device, char *keyType1, char * existingKey, char * ke
 	
 	switch ( status ){
 		case 0 : printf("SUCCESS: key added successfully\n");
+		break ;		
+		case 1 : printf("ERROR: presented key does not match any key in the volume\n") ;
 		break ;
-		case 1 : printf("ERROR: new passphrases do not match\n") ;
-		break ;
-		case 2 : printf("ERROR: presented key does not match any key in the volume\n") ;
+		case 2 : printf("ERROR: new passphrases do not match\n") ;
 		break ;
 		case 3 : printf("ERROR: key file containing a key in the volume does not exist\n") ;
 		break ;  

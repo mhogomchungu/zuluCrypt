@@ -56,15 +56,24 @@ int add_key(char * dev, char * ek, char * keyfile)
 	StringCat( p , device ) ;
 	StringCat( p , " " ) ;
 	StringCat( p , keyfile ) ;
-	StringCat( p , " 2>/dev/null 1>&2 ; echo $?") ;
+	StringCat( p , " 2>&1 ") ;
 	
 	execute(StringCont( p ), s, 1 ) ;	
 	
 	StringDelete( p ) ;
 	free( device ) ;
 	free( existingkey ) ;
+	//printf("%c",s[0]);
+	if ( s[0] == ' ' )      // success
+		return 0 ;
+	else if ( s[0] == 'N' ) // 
+		return 1 ;
+	else if ( s[0] == 'D' ) // device doesnt exist
+		return 4 ;
+	else if ( s[0] == 'F' )
+		return 3 ; 
 	
-	return s[0] - '0' ;
+	return 0 ; //shouldnt get here
 }
 
 int kill_slot( char * dev,char * ek, int slotNumber)
@@ -97,7 +106,7 @@ int kill_slot( char * dev,char * ek, int slotNumber)
 	free( existingkey ) ;
 	
 	//cryptsetup return not very informative error numbers, stderr is more useful
-	if ( s[0] == '0' )      // success
+	if ( s[0] == ' ' )      // success
 		return 0 ;
 	else if ( s[0] == 'K' ) // trying to kill an inactive slot
 		return 1 ;
@@ -120,14 +129,24 @@ int remove_key( char * dev , char * keyfile )
 	StringCat( p , device ) ;
 	StringCat( p , " " ) ;
 	StringCat( p , keyfile ) ;
-	StringCat( p , " 2>/dev/null 1>&2 ; echo $?") ;
+	StringCat( p , " 2>&1 ") ;
 
 	execute( StringCont( p ), s, 1 ) ;
 	
 	free( device ) ;
 	StringDelete( p ) ;
 	
-	return s[0] - '0' ;	
+	//cryptsetup return not very informative error numbers, stderr is more useful
+	if ( s[0] == ' ' )      // success
+		return 0 ;
+	else if ( s[0] == 'F' ) // trying to kill an inactive slot
+		return 5 ;
+	else if ( s[0] == 'D' ) // device doesnt exist
+		return 4 ;
+	else if ( s[0] == 'N' )
+		return 2 ;      // no key available that matched presented key
+	
+	return 0 ; //shouldnt get here	
 }
 
 int empty_slots( char * slots ,char * dev )
