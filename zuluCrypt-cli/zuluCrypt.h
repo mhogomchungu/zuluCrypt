@@ -79,7 +79,7 @@ int open_volume(char *device, char * mapping_name, char *m_point, uid_t id,char 
  * 	1 - unmounting the mount point failed,mount point or one or more files are in use.
  * 	0 - success
   */
-int close_volume(char * mapping_name) ;
+int close_volume(char * mapping_name, char * device) ;
 
 
 

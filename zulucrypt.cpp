@@ -494,13 +494,14 @@ void zuluCrypt::volume_property()
 	QString z = QString(ZULUCRYPTzuluCrypt) + QString(" status ") +  path ;
 
 	p.start( z ) ;
-	p.waitForFinished() ;
+	p.waitForFinished(-1) ;
 
 	char *c = p.readAllStandardOutput().data() ;
 
 	while ( *c++ != '\n') { ; }
 
 	QMessageBox m ;
+	m.setWindowTitle(QString("volume properties"));
 	m.setParent(this);
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 
@@ -575,6 +576,8 @@ void zuluCrypt::close(void)
 
 	case 2 :	UIMessage(QString("ERROR: close failed, the mount point and/or one or more files are in use"));
 		break ;
+	case 3 :	UIMessage(QString("ERROR: close failed, path given does not point to a file"));
+		break ;
 	default :	UIMessage(QString("ERROR: an unknown error has occured, volume not closed"));
 	}
 }
@@ -590,16 +593,59 @@ void zuluCrypt::openEncryptedVolume(bool boolOpenReadOnly,bool boolKeyFromFile,Q
 	else
 		mode = "rw" ;
 
-	if ( boolKeyFromFile == true )
-		passtype = " -f " ;
-	else
-		passtype = " -p " ;
-
-	exe = QString(ZULUCRYPTzuluCrypt) + " open \"" + volumePath + "\" \"" + mountPointPath + "\" " + mode + " " + passtype + "\"" + passPhraseField +"\"";
-
+	int size ;
 	QProcess process ;
-	process.start(exe) ;
-	process.waitForFinished() ;
+
+	passtype = " -f " ;
+
+	if ( boolKeyFromFile == true ){
+
+		exe = QString(ZULUCRYPTzuluCrypt) + " open \"" + volumePath + "\" \"" + mountPointPath + "\" " + mode + " " + passtype + "\"" + passPhraseField +"\"";
+
+		process.start(exe) ;
+
+		process.waitForFinished() ;
+
+	}else{
+		//qprocess silently drops characters like a double quote and hence cant be trusted with passphrases, write them to a file
+		size = passPhraseField.length() ;
+
+		QString temp = QDir::homePath() + QString("/tmp/zuluCryptGUI-tmp") ;
+
+		QFile g( temp ) ;
+
+		g.open(QIODevice::WriteOnly) ;
+
+		g.write(passPhraseField.toAscii().data(),passPhraseField.length()) ;
+
+		g.close();
+
+		passPhraseField = temp ;
+
+		exe = QString(ZULUCRYPTzuluCrypt) + " open \"" + volumePath + "\" \"" + mountPointPath + "\" " + mode + " " + passtype + "\"" + passPhraseField +"\"";
+
+		process.start(exe) ;
+
+		process.waitForFinished() ;
+
+		QFile in(QString("/dev/urandom")) ;
+
+		QFile out(passPhraseField) ;
+
+		in.open(QIODevice::ReadOnly) ;
+
+		out.open(QIODevice::WriteOnly);
+
+		//hopefully secure delete,write random data to a file and then delete it
+		char z ;
+		for(int i = 0 ; i < size ; i++){
+			in.getChar(&z) ;
+			out.putChar(z) ;
+		}
+		in.close();
+		out.close();
+		QFile::remove(passPhraseField);
+	}
 
 	switch ( process.exitCode() ){
 	case 0 : {
@@ -653,7 +699,7 @@ void zuluCrypt::openEncryptedVolume(bool boolOpenReadOnly,bool boolKeyFromFile,Q
 	case 5 : UIMessage(QString("ERROR: mount point address is already taken by a file or folder")) ;
 		break ;
 	case 6 : UIMessage(QString("ERROR: passphrase file does not exist"));
-
+		break ;
 	case 9 : UIMessage(QString("ERROR: \",\" (comma) is not a valid mount point"));
 		break ;
 	default :UIMessage(QString("ERROR: un unknown error has occured, volume not opened"));

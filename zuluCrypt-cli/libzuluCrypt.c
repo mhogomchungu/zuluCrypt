@@ -268,7 +268,15 @@ char * sanitize(char *c )
 void execute( char *command , char *output, int size)
 {		
 	FILE *f ;
-	printf("%s\n",command);
+	
+	//log outputs of command
+	//printf("%s\n",command);
+	
+	//i = open("/home/ink/zzz",O_WRONLY | O_APPEND | O_CREAT ) ;
+	//write(i,command,strlen(command)) ;
+	//write(i,"\n",1) ;
+	//close(i);
+	
 	f = popen(command, "r") ;
 	int i,c  ;
 	if ( output != NULL  ){
@@ -281,7 +289,9 @@ void execute( char *command , char *output, int size)
 		}
 		output[i] = '\0' ;
 	}	
-	pclose(f);	
+	pclose(f);
+	
+
 }
 
 int is_luks(char * dev)
@@ -405,7 +415,7 @@ int create_volume(char * dev, char * fs,char * type, char * pass)
 	return 0 ;
 }
 
-int close_volume(char * mapping_name) 
+int close_volume(char * mapping_name,char * device) 
 {
 	StrHandle * q ;
 	StrHandle * a ;		
@@ -472,8 +482,8 @@ int close_volume(char * mapping_name)
 		StringDelete( q ) ;
 		return 2 ;	
 	}	
-	
-	if ( is_luks( StringCont( q ) ) == 0 ){
+
+	if ( is_luks( device ) == 0 ){
 		a = StringCpy(ZULUCRYPTcryptsetup ) ;
 		StringCat( a ," luksClose ") ;
 		StringCat( a , StringCont( q ) ) ;
@@ -597,7 +607,7 @@ int open_volume(char *dev, char * map, char *m_point, uid_t id,char * mode, char
 	}
 	
 	int luks = is_luks( dev ) ;	
-	
+
 	device = sanitize( dev ) ;	
 	
 	z = StringCpy("/dev/mapper/zuluCrypt-");
@@ -621,11 +631,13 @@ int open_volume(char *dev, char * map, char *m_point, uid_t id,char * mode, char
 		
 	if ( luks == 0 ){	
 		
-		if ( strncmp( mode, "ro",2 ) == 0 )		
-			StringCat( p ,"cryptsetup -r luksOpen ") ;
-		else
-			StringCat( p ,"cryptsetup luksOpen ") ;
-		
+		if ( strncmp( mode, "ro",2 ) == 0 ){		
+			StringCat( p ,ZULUCRYPTcryptsetup ) ;		
+			StringCat( p ," -r luksOpen ") ;
+		}else{		
+			StringCat( p ,ZULUCRYPTcryptsetup ) ;
+			StringCat( p ," luksOpen ") ;
+		}
 		StringCat( p , device ) ;
 		StringCat( p , " zuluCrypt-" ) ;
 		StringCat( p , mapping_name ) ;

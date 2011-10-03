@@ -97,9 +97,16 @@ int volume_info( char * mapping_name )
 	return Z ;	
 }
 
-int close_opened_volume( char * mapping_name )
+int close_opened_volume( char * mapping_name,char * device )
 {
-	int st = close_volume( mapping_name ) ;
+	struct stat xt ;
+	int st ;
+	
+	if( stat( device, &xt) == 0)
+		st = close_volume( mapping_name, device ) ;
+	else
+		st = 3 ;
+	
 	switch( st ) {
 	case 0 : printf("SUCCESS: volume successfully closed\n");
 		break ;
@@ -108,7 +115,8 @@ int close_opened_volume( char * mapping_name )
 			
 	case 2 : printf("ERROR: close failed, the mount point and/or one or more files are in use\n");
 		break ;
-			
+	case 3 : printf("ERROR: close failed, path given does not point to a file\n") ;
+		break ;
 	default :
 		; //shouldnt get here			
 	}	
@@ -973,7 +981,7 @@ int main( int argc , char *argv[])
 		
 	}else if ( strcmp( action, "close" ) == 0 ){			
 
-		status =  close_opened_volume( mapping_name ) ;
+		status =  close_opened_volume( mapping_name,device ) ;
 		
 	}else if ( strcmp( action, "open" ) == 0 ){
 		
