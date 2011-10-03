@@ -494,11 +494,13 @@ void zuluCrypt::volume_property()
 	QString z = QString(ZULUCRYPTzuluCrypt) + QString(" status ") +  path ;
 
 	p.start( z ) ;
-	p.waitForFinished(-1) ;
+	p.waitForFinished() ;
 
-	char *c = p.readAllStandardOutput().data() ;
+	QByteArray t("\n") ;
 
-	while ( *c++ != '\n') { ; }
+	QByteArray r = p.readAllStandardOutput() ;
+
+	int start = r.length() - r.indexOf(t) - 2 ;
 
 	QMessageBox m ;
 	m.setWindowTitle(QString("volume properties"));
@@ -506,9 +508,9 @@ void zuluCrypt::volume_property()
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 
 	if ( isLuks(path) == true)
-		m.setText( QString( c + 1 )  + QString("  occupied key slots: ") + luksEmptySlots(path) + QString(" / 8")) ;
+		m.setText( QString( r.right(start) )   + QString("  occupied key slots: ") + luksEmptySlots(path) + QString(" / 8")) ;
 	else
-		m.setText( QString( c + 1 ) ) ;
+		m.setText( QString( r.right(start) ) ) ;
 
 	m.addButton(QMessageBox::Ok);
 	m.exec() ;

@@ -290,8 +290,6 @@ void execute( char *command , char *output, int size)
 		output[i] = '\0' ;
 	}	
 	pclose(f);
-	
-
 }
 
 int is_luks(char * dev)
