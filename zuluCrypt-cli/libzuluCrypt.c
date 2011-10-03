@@ -60,6 +60,7 @@ int add_key(char * dev, char * ek, char * keyfile)
 	
 	execute(StringCont( p ), s, 1 ) ;	
 	
+	StringDelete( p ) ;
 	free( device ) ;
 	free( existingkey ) ;
 	
