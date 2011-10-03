@@ -95,7 +95,7 @@ int kill_slot( char * dev,char * ek, int slotNumber)
 	free( device ) ;
 	free( existingkey ) ;
 	
-	//cryptsetup returnn not very informative error numbers, stderr is more useful
+	//cryptsetup return not very informative error numbers, stderr is more useful
 	if ( s[0] == '0' )      // success
 		return 0 ;
 	else if ( s[0] == 'K' ) // trying to kill an inactive slot
@@ -124,6 +124,8 @@ int remove_key( char * dev , char * keyfile )
 	execute( StringCont( p ), s, 1 ) ;
 	
 	free( device ) ;
+	StringDelete( p ) ;
+	
 	return s[0] - '0' ;	
 }
 
@@ -143,6 +145,8 @@ int empty_slots( char * slots ,char * dev )
 	StringCat( p , " 1> /tmp/zuluCrypt-dump 2>&1") ;
 	
 	execute( StringCont( p ), NULL, 0 ) ;
+	
+	StringDelete( p ) ;
 	
 	free( device ) ;
 	
@@ -643,7 +647,7 @@ int open_volume(char *dev, char * map, char *m_point, uid_t id,char * mode, char
 		StringCat( p , " 1>/dev/null 2>&1") ;				
 	}	
 
-	execute( StringCont( p ), status, 2 ) ;			
+	execute( StringCont( p ), status, 1 ) ;			
 
 	StringDelete( p ) ;
 	
