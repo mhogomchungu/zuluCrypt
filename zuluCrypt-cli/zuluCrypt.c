@@ -71,7 +71,7 @@ StrHandle * get_passphrase( void )
 
 void help( void )
 {
-	printf("will write docs at some point\n");	
+	printf("this tool should come with a documentation file, read it for more info\n");	
 }
 
 int volume_info( char * mapping_name )
@@ -910,6 +910,47 @@ int removekey( int argn , char * device, char * keyType, char * keytoremove )
 	return status ;	
 }
 
+int check_system_tools(void)
+{	
+	struct stat st ;
+	StrHandle * p ;
+	
+	if( stat(ZULUCRYPTblkid,&st) == 0 && stat(ZULUCRYPTcryptsetup,&st) == 0 \
+		&& stat(ZULUCRYPTdd,&st) == 0 && stat(ZULUCRYPTe2label,&st) ==0 \
+		&& stat(ZULUCRYPTecho,&st) ==0 && stat(ZULUCRYPTlosetup,&st) ==0 \
+		&& stat(ZULUCRYPTmkfs,&st) ==0 && stat(ZULUCRYPTmount,&st) ==0 \
+		&& stat(ZULUCRYPTrm,&st) ==0 && stat(ZULUCRYPTumount,&st) ==0 ){
+		
+		return 0 ;
+	}	
+	p = StringCpy(ZULUCRYPTcryptsetup) ;
+	StringCat( p , "\n" ) ;
+	StringCat( p , ZULUCRYPTblkid) ;
+	StringCat( p , "\n" ) ;	
+	StringCat( p , ZULUCRYPTdd) ;
+	StringCat( p , "\n" ) ;
+	StringCat( p , ZULUCRYPTe2label) ;
+	StringCat( p , "\n" ) ;
+	StringCat( p , ZULUCRYPTecho) ;
+	StringCat( p , "\n" ) ;
+	StringCat( p , ZULUCRYPTlosetup) ;
+	StringCat( p , "\n" ) ;
+	StringCat( p , ZULUCRYPTmkfs) ;
+	StringCat( p , "\n" ) ;
+	StringCat( p , ZULUCRYPTmount) ;
+	StringCat( p , "\n" ) ;
+	StringCat( p , ZULUCRYPTrm) ;
+	StringCat( p , "\n" ) ;
+	StringCat( p , ZULUCRYPTumount) ;
+
+	printf("this program can not work as expected on your system ");
+	printf("because one or more of the following tools are either not present ") ;
+	printf("or not where they are expected to be.\n%s\n",StringCont( p ));
+	
+	StringDelete( p ) ;
+	
+	return 1 ;
+}
 int main( int argc , char *argv[])
 {
 	char * action = argv[1] ;
@@ -930,6 +971,13 @@ int main( int argc , char *argv[])
 	
 	setuid(0);
 	
+	if( check_system_tools() == 1 )
+		return 100 ;
+	
+	if ( argc < 2 ){
+		help();
+		return 10 ;
+	}
 	if ( strcmp( action, "-h" ) == 0 || strcmp( action, "--help" ) == 0 || strcmp( action, "-help" ) == 0 ){			
 		help();	
 		return 10 ;
@@ -939,8 +987,9 @@ int main( int argc , char *argv[])
 		printf(VERSION_STRING) ;
 		printf("\n");
 		return 10 ;
-	}		
-	if (strcmp(action,"partitions") == 0 ){
+	}
+	
+	if ( strcmp(action,"partitions") == 0 ){
 		
 		p = StringCpy("");
 		q = StringCpy("");

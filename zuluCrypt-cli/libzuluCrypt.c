@@ -64,16 +64,16 @@ int add_key(char * dev, char * ek, char * keyfile)
 	free( device ) ;
 	free( existingkey ) ;
 	//printf("%c",s[0]);
-	if ( s[0] == ' ' )      // success
-		return 0 ;
-	else if ( s[0] == 'N' ) // 
+	//if ( s[0] == '\n' )      // success
+	//	return 0 ;
+	if ( s[0] == 'N' ) // 
 		return 1 ;
 	else if ( s[0] == 'D' ) // device doesnt exist
 		return 4 ;
 	else if ( s[0] == 'F' )
 		return 3 ; 
 	
-	return 0 ; //shouldnt get here
+	return 0 ; //success
 }
 
 int kill_slot( char * dev,char * ek, int slotNumber)
@@ -84,9 +84,8 @@ int kill_slot( char * dev,char * ek, int slotNumber)
 	char * existingkey = sanitize( ek ) ;
 	
 	StrHandle * p = StringCpy( ZULUCRYPTecho ) ;
-	//StringCat( p , "\"");
+	StringCat( p , " ");
 	StringCat( p , existingkey ) ;
-	//StringCat( p , "\"");
 	StringCat( p , " | " ) ;
 	StringCat( p , ZULUCRYPTcryptsetup ) ;
 	StringCat( p , " luksKillSlot ") ;
@@ -106,16 +105,16 @@ int kill_slot( char * dev,char * ek, int slotNumber)
 	free( existingkey ) ;
 	
 	//cryptsetup return not very informative error numbers, stderr is more useful
-	if ( s[0] == ' ' )      // success
-		return 0 ;
-	else if ( s[0] == 'K' ) // trying to kill an inactive slot
+	//if ( s[0] == '\n' )      // success
+	//	return 0 ;
+	if ( s[0] == 'K' ) // trying to kill an inactive slot
 		return 1 ;
 	else if ( s[0] == 'D' ) // device doesnt exist
 		return 2 ;
 	else if ( s[0] == 'N' )
 		return 3 ;      // no key available that matched presented key
 	
-	return 0 ; //shouldnt get here
+	return 0 ; //success
 }
 
 int remove_key( char * dev , char * keyfile )
@@ -137,16 +136,16 @@ int remove_key( char * dev , char * keyfile )
 	StringDelete( p ) ;
 	
 	//cryptsetup return not very informative error numbers, stderr is more useful
-	if ( s[0] == ' ' )      // success
-		return 0 ;
-	else if ( s[0] == 'F' ) // trying to kill an inactive slot
+	//if ( s[0] == '\n' )      // success
+	//	return 0 ;
+	if ( s[0] == 'F' ) // trying to kill an inactive slot
 		return 5 ;
 	else if ( s[0] == 'D' ) // device doesnt exist
 		return 4 ;
 	else if ( s[0] == 'N' )
 		return 2 ;      // no key available that matched presented key
 	
-	return 0 ; //shouldnt get here	
+	return 0 ; //success	
 }
 
 int empty_slots( char * slots ,char * dev )
@@ -364,10 +363,8 @@ int create_volume(char * dev, char * fs,char * type, char * pass)
 	if  (strcmp(type,"luks")  == 0 ){	
 		
 		p = StringCpy( ZULUCRYPTecho );
-		//StringCat( p , "\"");
+		StringCat( p , " ");
 		StringCat( p , passphrase ) ;
-		//StringCat( p , "\"");
-		
 		StringCat( p , " | " ) ;
 		StringCat( p , ZULUCRYPTcryptsetup ) ;
 		StringCat( p , " -q luksFormat " ) ;		
@@ -379,9 +376,8 @@ int create_volume(char * dev, char * fs,char * type, char * pass)
 		StringDelete( p ) ;	
 		
 		p = StringCpy( ZULUCRYPTecho );
-		//StringCat( p , "\"");
+		StringCat( p , " ");
 		StringCat( p , passphrase ) ;
-		//StringCat( p , "\"");
 		StringCat( p , " | " ) ;
 		StringCat( p , ZULUCRYPTcryptsetup ) ;
 		StringCat( p , " luksOpen ") ;
@@ -403,9 +399,8 @@ int create_volume(char * dev, char * fs,char * type, char * pass)
 	}else if ( strcmp(type,"plain")  == 0 ){
 		
 		p = StringCpy( ZULUCRYPTecho );
-		//StringCat( p , "\"");
+		StringCat( p , " ");
 		StringCat( p , passphrase ) ;
-		//StringCat( p , "\"");
 		StringCat( p , " | " ) ;
 		StringCat( p , ZULUCRYPTcryptsetup ) ;
 		StringCat( p , " create zuluCrypt-create-new " ) ;		
@@ -570,7 +565,7 @@ int mount_volume(char *mapping_name,char *m_point,char * mode,uid_t id)
 	
 	StringCat( q , "  2>/dev/null 1>&2 ; ") ;
 	StringCat( q , ZULUCRYPTecho ) ;
-	StringCat( q , "$?");
+	StringCat( q , " $?");
 	
 	execute(StringCont( q ),s,1) ;	
 	
@@ -641,9 +636,8 @@ int open_volume(char *dev, char * map, char *m_point, uid_t id,char * mode, char
 	passphrase = sanitize( pass ) ;
 	
 	p = StringCpy( ZULUCRYPTecho );
-	//StringCat( p , "\"");
+	StringCat( p , " ");
 	StringCat( p , passphrase ) ;
-	//StringCat( p , "\"");
 	StringCat( p , " | " ) ;
 		
 	if ( luks == 0 ){	
@@ -713,9 +707,8 @@ int open_volume(char *dev, char * map, char *m_point, uid_t id,char * mode, char
 				//legacy mode is with option -c aes-cbc-plain
 				//sleep( 2 ) ;
 				z = StringCpy( ZULUCRYPTecho );
-				//StringCat( z , "\"");
+				StringCat( z , " ");
 				StringCat( z , passphrase ) ;
-				//StringCat( z , "\"");
 				StringCat( z , " | " ) ;
 			
 				if ( strncmp( mode, "ro",2 ) == 0 ){

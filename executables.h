@@ -19,14 +19,14 @@
 #ifndef EXECUTABLES_H
 #define EXECUTABLES_H
 
-#define ZULUCRYPTcryptsetup  	"/sbin/cryptsetup " 
-#define ZULUCRYPTmount       	"/bin/mount "  
-#define ZULUCRYPTumount      	"/bin/umount " 
-#define ZULUCRYPTmkfs        	"/sbin/mkfs " 
-#define ZULUCRYPTlosetup     	"/sbin/losetup " 
-#define ZULUCRYPTe2label     	"/sbin/e2label " 
-#define ZULUCRYPTrm          	"/bin/rm " 
-#define ZULUCRYPTecho        	"/bin/echo " 
+#define ZULUCRYPTcryptsetup  	"/sbin/cryptsetup" 
+#define ZULUCRYPTmount       	"/bin/mount"  
+#define ZULUCRYPTumount      	"/bin/umount" 
+#define ZULUCRYPTmkfs        	"/sbin/mkfs" 
+#define ZULUCRYPTlosetup     	"/sbin/losetup" 
+#define ZULUCRYPTe2label     	"/sbin/e2label" 
+#define ZULUCRYPTrm          	"/bin/rm" 
+#define ZULUCRYPTecho        	"/bin/echo" 
 #define ZULUCRYPTzuluCrypt       "/usr/bin/zuluCrypt-cli"  
 #define ZULUCRYPTdd  		"/bin/dd"  
 #define ZULUCRYPTblkid  	"/sbin/blkid" 

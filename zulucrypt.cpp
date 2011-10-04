@@ -125,6 +125,18 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 
 	//trayIcon.show();
 
+	QProcess p ;
+
+	p.start(ZULUCRYPTzuluCrypt);
+
+	p.waitForFinished() ;
+
+	if(  p.exitCode() == 100 ){
+
+		QByteArray T = p.readAllStandardOutput() ;
+		UIMessage(QString("WARNING"),QString(T));
+	}
+	p.close();
 }
 
 void zuluCrypt::info()
@@ -213,6 +225,7 @@ void zuluCrypt::info()
 	m.setText(info) ;
 
 	m.exec() ;
+	exe.close();
 }
 
 void zuluCrypt::trayIconAction(QSystemTrayIcon::ActivationReason e)
@@ -250,6 +263,7 @@ void zuluCrypt::createEncryptedVolume(QString fileSystem, QString containterType
 			break;
 		default: UIMessage(QString("ERROR"),(QString("unrecognized error has occured,volume not created")));
 	}
+	p.close();
 }
 
 void zuluCrypt::createEncryptedpartitionUI()
@@ -260,6 +274,7 @@ void zuluCrypt::createEncryptedpartitionUI()
 
 	QStringList l = QString( p.readAllStandardOutput()).split("\n") ;
 
+	p.close();
 	emit showNonSystemPartitions( l ) ;
 }
 
@@ -296,7 +311,7 @@ void zuluCrypt::luksDeleteKey(QString volumePath,bool passPhraseIsFile, QString 
 
 		default:	UIMessage(QString("ERROR"),QString("an unknown error has occured, key not deleted"));
 	}
-
+	Z.close();
 	emit luksDeleteKeyUI(volumePath) ;
 }
 
@@ -339,6 +354,7 @@ void zuluCrypt::luksAddKey(QString volumePath, bool keyfile,QString ExistingKey,
 		default:	UIMessage(QString("ERROR"),QString("un unrecognized error has occured, key not added"));
 
 	}
+	Z.close();
 	emit luksAddKeyUI(volumePath) ;
 }
 
@@ -353,6 +369,7 @@ char zuluCrypt::luksEmptySlots(QString volumePath)
 		if( s[j] == '1' )
 			i++ ;
 	}
+	N.close();
 	return i + '0' ;
 }
 
@@ -362,7 +379,11 @@ bool zuluCrypt::isLuks(QString volumePath)
 	N.start(QString(ZULUCRYPTzuluCrypt) + QString(" isLuks ") + volumePath);
 	N.waitForFinished() ;
 
-	if ( N.exitCode() == 0 )
+	int i = N.exitCode() ;
+
+	N.close();
+
+	if ( i == 0 )
 		return true ;
 	else
 		return false ;
@@ -506,6 +527,8 @@ void zuluCrypt::volume_property()
 
 	int start = r.length() - r.indexOf(t) - 2 ;
 
+	p.close();
+
 	QMessageBox m ;
 	m.setWindowTitle(QString("volume properties"));
 	m.setParent(this);
@@ -543,6 +566,7 @@ void zuluCrypt::options(QTableWidgetItem* t)
 		connect(m.addAction("add key"),SIGNAL(triggered()),this,SLOT(luksAddKeyContextMenu())) ;
 		connect(m.addAction("remove key"),SIGNAL(triggered()),this,SLOT(luksDeleteKeyContextMenu())) ;
 	}
+	Z.close();
 	m.exec(QCursor::pos()) ;
 }
 
@@ -586,6 +610,7 @@ void zuluCrypt::close(void)
 		break ;
 	default :	UIMessage(QString("ERROR"),QString("an unknown error has occured, volume not closed"));
 	}
+	p.close();
 }
 
 void zuluCrypt::openEncryptedVolume(bool boolOpenReadOnly,bool boolKeyFromFile,QString volumePath, QString mountPointPath,QString passPhraseField)
@@ -653,8 +678,12 @@ void zuluCrypt::openEncryptedVolume(bool boolOpenReadOnly,bool boolKeyFromFile,Q
 		QFile::remove(passPhraseField);
 	}
 
-	switch ( process.exitCode() ){
-	case 0 : {
+	int T = process.exitCode() ;
+
+	process.close();
+
+	switch ( T ){
+	case 0 :{
 		/*
 		  There are possible names zuluCrypt-cli will use for mount point and predicting it before hand may
 		  cause unnecessary code bloat. If the opening succeed, just go read the output of "mount"
@@ -686,9 +715,13 @@ void zuluCrypt::openEncryptedVolume(bool boolOpenReadOnly,bool boolKeyFromFile,Q
 
 		addItemToTable(volumePath,QString( c ));
 
-		} break ;
+		Z.close();
+
+		return ;
+		}break ;
 
 	case 1 : UIMessage(QString("ERROR"),QString("No free loop device to use.")) ;
+		return ;
 		break ;
 
 	case 2 : UIMessage(QString("ERROR"),QString("there seem to be an open volume accociated with given path."));
@@ -697,10 +730,9 @@ void zuluCrypt::openEncryptedVolume(bool boolOpenReadOnly,bool boolKeyFromFile,Q
 	case 3 : UIMessage(QString("ERROR"),QString("no file or device on a given address.")) ;
 		break ;
 
-	case 4 :{
-			UIMessage(QString("ERROR"),QString("wrong passphrase."));
-			emit redoOpen(boolOpenReadOnly,boolKeyFromFile,volumePath, mountPointPath);
-		}break ;
+	case 4 :
+		UIMessage(QString("ERROR"),QString("wrong passphrase."));
+		break ;
 
 	case 5 : UIMessage(QString("ERROR"),QString("mount point address is already taken by a file or folder")) ;
 		break ;
@@ -710,6 +742,8 @@ void zuluCrypt::openEncryptedVolume(bool boolOpenReadOnly,bool boolKeyFromFile,Q
 		break ;
 	default :UIMessage(QString("ERROR"),QString("un unknown error has occured, volume not opened"));
 	}
+
+	emit redoOpen(boolOpenReadOnly,boolKeyFromFile,volumePath, mountPointPath);
 }
 
 zuluCrypt::~zuluCrypt()
