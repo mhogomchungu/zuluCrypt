@@ -18,4 +18,4 @@ zuluCrypt-cli
 -- see if it is possible to safely create volumes resising in "/dev" - DONE
 
 version 4.0
--- add support for font size and type confuguration and storing locations to volumes as favorites.
+-- add support user configuration options like font size and type,favorites volumes and if a user want a tray icon or not.
