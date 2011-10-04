@@ -153,7 +153,7 @@ QString openpartition::deviceProperties(const char *device)
 {
 	QProcess p ;
 
-	QString output = QString(device) + QString(" :") ;
+	QString output = QString(device) + QString(":") ;
 
 	p.start(QString(ZULUCRYPTblkid));
 
@@ -164,7 +164,7 @@ QString openpartition::deviceProperties(const char *device)
 	char * d = strstr( c , device) ;
 
 	if( d == NULL)
-		return QString(device) ;
+		return QString(device) + QString(":");
 
 	char *cN = d ;
 
