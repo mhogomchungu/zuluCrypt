@@ -143,7 +143,7 @@ void zuluCrypt::info()
 {
 	QProcess exe ;
 
-	QString t = ZULUCRYPTcryptsetup + QString("--help") ;
+	QString t = ZULUCRYPTcryptsetup + QString(" --help") ;
 
 	exe.start(t) ;
 
@@ -153,10 +153,7 @@ void zuluCrypt::info()
 	char *c = exe.readAllStandardOutput().data() ;
 
 	c = strstr( c , "plain: ") ;
-	if( c == NULL){
-		std::cout << "1" << std::endl ;
-		return ;
-	}
+
 	d = c ;
 
 	while (*++d !=',') { ; }
@@ -230,7 +227,7 @@ void zuluCrypt::info()
 
 void zuluCrypt::trayIconAction(QSystemTrayIcon::ActivationReason e)
 {
-	std::cout << QString("dd").toStdString() << std::endl ;
+	//std::cout << QString("dd").toStdString() << std::endl ;
 	if ( e == QSystemTrayIcon::Trigger){
 
 		if( this->isHidden() == true)
@@ -278,38 +275,56 @@ void zuluCrypt::createEncryptedpartitionUI()
 	emit showNonSystemPartitions( l ) ;
 }
 
-void zuluCrypt::luksDeleteKey(QString volumePath,bool passPhraseIsFile, QString p)
+void zuluCrypt::luksDeleteKey(QString volumePath,bool passPhraseIsFile, QString pass)
 {
+	if ( isLuks(volumePath) == false ){
+
+		UIMessage(QString("ERROR"),QString("given path does not point to a luks volume"));
+		emit luksDeleteKeyUI(volumePath) ;
+		return ;
+	}
+
 	QString exe = QString(ZULUCRYPTzuluCrypt) + QString(" removekey ")  + "\"" +volumePath + "\"" ;
 
-	if ( passPhraseIsFile == true )
+	if ( passPhraseIsFile == true ){
+
 		exe = exe + QString(" -f ") ;
-	else
+
+	}else{
+
 		exe = exe + QString(" -p ") ;
 
-	exe = exe + "\"" + p + "\"" ;
+		for( int i = 0 ; i < pass.size() ; i++){
 
+			if( pass.at(i).toAscii() == '\"'){
+				pass.insert(i,QString("\"\""));
+				i = i + 2 ;
+			}
+		}
+	}
+
+	exe = exe + QString(" \"") + pass + QString("\"") ;
 	QProcess Z ;
 	Z.start( exe );
 	Z.waitForFinished() ;
 
-	switch( Z.exitCode() ){
+	switch( Z.exitCode()  ){
 		case 0 :{
 				UIMessage(QString("SUCCESS"),QString("key successfully removed\n") + luksEmptySlots(volumePath) + QString(" / 8 slots are now in use"));
+				Z.close();
 				return ;
 			}break ;
 		case 1 :	UIMessage(QString("ERROR"),QString("one or more paths has an empty space in them, the back end doesnt like it"));
 			break ;
-		case 2 :{
+		case 2 :
 				UIMessage(QString("ERROR"),QString("there is no key in the volume that match entered key"));
-
-			}break ;
+			break ;
 		case 4 :	UIMessage(QString("ERROR"),QString("device does not exist"));
 			break ;
 		case 5 :	UIMessage(QString("ERROR"),QString("key file does not exist"));
 			break ;
 
-		default:	UIMessage(QString("ERROR"),QString("an unknown error has occured, key not deleted"));
+		default:	UIMessage(QString("ERROR"),QString( "un unexpected error has occured, key not removed "));
 	}
 	Z.close();
 	emit luksDeleteKeyUI(volumePath) ;
@@ -317,18 +332,44 @@ void zuluCrypt::luksDeleteKey(QString volumePath,bool passPhraseIsFile, QString 
 
 void zuluCrypt::luksAddKey(QString volumePath, bool keyfile,QString ExistingKey,bool newkeyfile, QString NewKey)
 {
+
+	if ( isLuks(volumePath) == false ){
+
+		UIMessage(QString("ERROR"),QString("given path does not point to a luks volume"));
+		emit luksAddKeyUI(volumePath) ;
+		return ;
+	}
+
 	QString existingPassType ;
 	QString newPassType ;
 
 	if ( keyfile == true)
 		existingPassType = QString(" -f ") ;
-	else
+	else{
 		existingPassType = QString(" -p ") ;
+
+		for( int i = 0 ; i < ExistingKey.size() ; i++){
+
+			if( ExistingKey.at(i).toAscii() == '\"'){
+				ExistingKey.insert(i,QString("\"\""));
+				i = i + 2 ;
+			}
+		}
+	}
 
 	if ( newkeyfile == true)
 		newPassType = QString(" -f ") ;
-	else
+	else{
 		newPassType = QString(" -p ") ;
+
+		for( int i = 0 ; i < NewKey.size() ; i++){
+
+			if( NewKey.at(i).toAscii() == '\"'){
+				NewKey.insert(i,QString("\"\""));
+				i = i + 2 ;
+			}
+		}
+	}
 
 	QString exe = QString(ZULUCRYPTzuluCrypt) + QString(" addkey ") + "\"" + volumePath + "\"" + existingPassType + "\"" + ExistingKey + "\"" + newPassType + "\"" + NewKey + "\"" ;
 
@@ -341,6 +382,7 @@ void zuluCrypt::luksAddKey(QString volumePath, bool keyfile,QString ExistingKey,
 	switch( Z.exitCode() ){
 		case 0 :{
 				UIMessage(QString("SUCCESS"),QString("key added successfully\n") + luksEmptySlots(volumePath) + QString(" / 8 slots are now in use")) ;
+				Z.close();
 				return ;
 			}break ;
 		case 1 :	UIMessage(QString("ERROR"),QString("presented key does not match any key in the volume"));
@@ -613,6 +655,29 @@ void zuluCrypt::close(void)
 	p.close();
 }
 
+//hopefully secure delete,write random data to a file and then delete it
+void zuluCrypt::deleteFile( QFile *f)
+{
+	if ( f == NULL)
+		return ;
+
+	QFile in(QString("/dev/urandom")) ;
+
+	in.open(QIODevice::ReadOnly) ;
+
+	f->seek(0) ;
+
+	char z ;
+
+	for(int i = 0 ; i < f->size() ; i++){
+		in.getChar(&z) ;
+		f->putChar(z) ;
+	}
+	in.close();
+	f->close();
+	f->remove() ;
+}
+
 void zuluCrypt::openEncryptedVolume(bool boolOpenReadOnly,bool boolKeyFromFile,QString volumePath, QString mountPointPath,QString passPhraseField)
 {
 	QString exe ;
@@ -624,60 +689,33 @@ void zuluCrypt::openEncryptedVolume(bool boolOpenReadOnly,bool boolKeyFromFile,Q
 	else
 		mode = "rw" ;
 
-	int size ;
 	QProcess process ;
-
-	passtype = " -f " ;
 
 	if ( boolKeyFromFile == true ){
 
-		exe = QString(ZULUCRYPTzuluCrypt) + " open \"" + volumePath + "\" \"" + mountPointPath + "\" " + mode + " " + passtype + "\"" + passPhraseField +"\"";
-
-		process.start(exe) ;
-
-		process.waitForFinished() ;
+		passtype = " -f " ;
 
 	}else{
-		//qprocess silently drops characters like a double quote and hence cant be trusted with passphrases, write them to a file
-		size = passPhraseField.length() ;
+		passtype = " -p " ;
 
-		QString temp = QDir::homePath() + QString("/tmp/zuluCryptGUI-tmp") ;
+		for( int i = 0 ; i < passPhraseField.size() ; i++){
 
-		QFile g( temp ) ;
-
-		g.open(QIODevice::WriteOnly) ;
-
-		g.write(passPhraseField.toAscii().data(),passPhraseField.length()) ;
-
-		g.close();
-
-		passPhraseField = temp ;
-
-		exe = QString(ZULUCRYPTzuluCrypt) + " open \"" + volumePath + "\" \"" + mountPointPath + "\" " + mode + " " + passtype + "\"" + passPhraseField +"\"";
-
-		process.start(exe) ;
-
-		process.waitForFinished() ;
-
-		QFile in(QString("/dev/urandom")) ;
-
-		QFile out(passPhraseField) ;
-
-		in.open(QIODevice::ReadOnly) ;
-
-		out.open(QIODevice::WriteOnly);
-
-		//hopefully secure delete,write random data to a file and then delete it
-		char z ;
-		for(int i = 0 ; i < size ; i++){
-			in.getChar(&z) ;
-			out.putChar(z) ;
+			if( passPhraseField.at(i).toAscii() == '\"'){
+				passPhraseField.insert(i,QString("\"\""));
+				i = i + 2 ;
+			}
 		}
-		in.close();
-		out.close();
-		QFile::remove(passPhraseField);
 	}
 
+	process.start(exe) ;
+
+	process.waitForFinished() ;
+
+	exe = QString(ZULUCRYPTzuluCrypt) + " open \"" + volumePath + "\" \"" + mountPointPath + "\" " + mode + " " + passtype + "\"" + passPhraseField +"\"";
+
+	process.start(exe) ;
+
+	process.waitForFinished() ;
 	int T = process.exitCode() ;
 
 	process.close();

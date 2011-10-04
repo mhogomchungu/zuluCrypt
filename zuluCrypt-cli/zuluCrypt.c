@@ -115,7 +115,7 @@ int close_opened_volume( char * mapping_name,char * device )
 			
 	case 2 : printf("ERROR: close failed, the mount point and/or one or more files are in use\n");
 		break ;
-	case 3 : printf("ERROR: close failed, path given does not point to a file\n") ;
+	case 3 : printf("ERROR: close failed, path given does not point to an encrypted device\n") ;
 		break ;
 	default :
 		; //shouldnt get here			
@@ -512,7 +512,6 @@ int create_volumes(int argn ,char *device, char *fs, char * mode, char * keyType
 
 				st = 3 ;
 			}else{
-				StringSanitize(p) ;
 				st = create_volume(device,fs,mode,StringCont( p )) ;
 				StringDelete( q ) ;
 				StringDelete( p ) ;			
@@ -636,19 +635,18 @@ int addkey(int argn,char * device, char *keyType1, char * existingKey, char * ke
 			status = 2 ;
 		}else{
 		
-			z = open("/tmp/zuluCrypt-tmp",O_WRONLY | O_CREAT | O_TRUNC ) ;
+			z = open("/tmp/.zuluCrypt-tmp",O_WRONLY | O_CREAT | O_TRUNC ) ;
 
-			chown("/tmp/zuluCrypt-tmp",0,0) ;
-			chmod("/tmp/zuluCrypt-tmp",S_IRWXU) ;
+			chown("/tmp/.zuluCrypt-tmp",0,0) ;
+			chmod("/tmp/.zuluCrypt-tmp",S_IRWXU) ;
 		
 			write(z,StringCont( q ),strlen(StringCont( q ))) ;
 		
 			close( z ) ;
 			
-			StringSanitize(p) ;
-			status = add_key( device,StringCont( p ), "/tmp/zuluCrypt-tmp" ) ;
+			status = add_key( device,StringCont( p ), "/tmp/.zuluCrypt-tmp" ) ;
 			
-			delete_file("/tmp/zuluCrypt-tmp") ;				
+			delete_file("/tmp/.zuluCrypt-tmp") ;				
 
 			StringDelete( p ) ;			
 			StringDelete( q ) ;	
@@ -683,10 +681,10 @@ int addkey(int argn,char * device, char *keyType1, char * existingKey, char * ke
 		
 		if ( strcmp( keyType2, "-p" ) == 0){			
 			
-			z = open("/tmp/zuluCrypt-tmp",O_WRONLY | O_CREAT | O_TRUNC ) ;
+			z = open("/tmp/.zuluCrypt-tmp",O_WRONLY | O_CREAT | O_TRUNC ) ;
 			
-			chown("/tmp/zuluCrypt-tmp",0,0) ;
-			chmod("/tmp/zuluCrypt-tmp",S_IRWXU) ;
+			chown("/tmp/.zuluCrypt-tmp",0,0) ;
+			chmod("/tmp/.zuluCrypt-tmp",S_IRWXU) ;
 
 			write( z,newKey,strlen(newKey)) ;
 		
@@ -701,9 +699,9 @@ int addkey(int argn,char * device, char *keyType1, char * existingKey, char * ke
 			
 		}else if (strcmp(keyType1,"-p") == 0 && strcmp(keyType2,"-p") == 0 ){
 			
-			status = add_key(device, existingKey, "/tmp/zuluCrypt-tmp" ) ;
+			status = add_key(device, existingKey, "/tmp/.zuluCrypt-tmp" ) ;
 						
-			delete_file("/tmp/zuluCrypt-tmp") ;	
+			delete_file("/tmp/.zuluCrypt-tmp") ;	
 			
 		}else if (strcmp(keyType1,"-p") == 0 && strcmp(keyType2,"-f") == 0 ){
 						
@@ -711,9 +709,9 @@ int addkey(int argn,char * device, char *keyType1, char * existingKey, char * ke
 						
 		}else if (strcmp(keyType1,"-f") == 0 && strcmp(keyType2,"-p") == 0 ){			
 					
-			status = add_key( device, c, "/tmp/zuluCrypt-tmp") ;	
+			status = add_key( device, c, "/tmp/.zuluCrypt-tmp") ;	
 			
-			delete_file("/tmp/zuluCrypt-tmp") ;	
+			delete_file("/tmp/.zuluCrypt-tmp") ;	
 	
 			free( c ) ;
 		}else{			
@@ -769,9 +767,7 @@ int killslot(int argn, char * device, char * keyType, char * existingkey, char *
 		
 		d = ( char ) getchar() ;
 		
-		getchar() ; //remove the new line character from stdin buffer
-		
-		StringSanitize(p) ;
+		getchar() ; //remove the new line character from stdin buffer		
 
 		status = kill_slot( device, StringCont( p ), d ) ;
 		
@@ -848,20 +844,20 @@ int removekey( int argn , char * device, char * keyType, char * keytoremove )
 		
 		printf("\n") ;
 		
-		z = open("/tmp/zuluCrypt-tmp",O_WRONLY | O_CREAT | O_TRUNC ) ;
+		z = open("/tmp/.zuluCrypt-tmp",O_WRONLY | O_CREAT | O_TRUNC ) ;
 			
-		chown("/tmp/zuluCrypt-tmp",0,0) ;
-		chmod("/tmp/zuluCrypt-tmp",S_IRWXU) ;
+		chown("/tmp/.zuluCrypt-tmp",0,0) ;
+		chmod("/tmp/.zuluCrypt-tmp",S_IRWXU) ;
 
 		write( z, StringCont( p ) ,StringLength( p )) ;
 		
 		close( z ) ;
 		
-		status = remove_key( device,"/tmp/zuluCrypt-tmp" ) ;
+		status = remove_key( device,"/tmp/.zuluCrypt-tmp" ) ;
 		
 		StringDelete( p ) ;
 			
-		delete_file("/tmp/zuluCrypt-tmp");
+		delete_file("/tmp/.zuluCrypt-tmp");
 		
 	}else if ( argn == 5 ){
 		
@@ -874,18 +870,18 @@ int removekey( int argn , char * device, char * keyType, char * keytoremove )
 			
 		}else if( strcmp(keyType, "-p") == 0 ) {
 			
-			z = open("/tmp/zuluCrypt-tmp",O_WRONLY | O_CREAT | O_TRUNC ) ;
+			z = open("/tmp/.zuluCrypt-tmp",O_WRONLY | O_CREAT | O_TRUNC ) ;
 			
-			chown("/tmp/zuluCrypt-tmp",0,0) ;
-			chmod("/tmp/zuluCrypt-tmp",S_IRWXU) ;
+			chown("/tmp/.zuluCrypt-tmp",0,0) ;
+			chmod("/tmp/.zuluCrypt-tmp",S_IRWXU) ;
 			
 			write( z, keytoremove ,strlen(keytoremove)) ;			
 			
 			close( z ) ;
 		
-			status = remove_key( device,"/tmp/zuluCrypt-tmp" ) ;
+			status = remove_key( device,"/tmp/.zuluCrypt-tmp" ) ;
 		
-			delete_file("/tmp/zuluCrypt-tmp");			
+			delete_file("/tmp/.zuluCrypt-tmp");			
 		}else
 			status = 6 ;
 	}

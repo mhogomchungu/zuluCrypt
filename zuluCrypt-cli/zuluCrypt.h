@@ -49,7 +49,7 @@ extern "C" {
  *	 0 - the device is a cryptsetup device of type "luks"
  * 	 1 - the device is not a crptsetup device of type "luks", it could be of type "plain" though
  */
-int is_luks(char * device) ;
+int is_luks(const char * device) ;
 
 
 
@@ -65,7 +65,7 @@ int is_luks(char * device) ;
  * 	5 - ERROR: Cant create a mount point because a file/folder with the same exist at the mount point
  *	6 - ERROR: encrypted volume has an unrecognized file system type,supported file systems are : ext4,ext3,ext2,vfat,reiserfs
  */
-int open_volume(char *device, char * mapping_name, char *m_point, uid_t id,char * mode, char * passphrase) ;
+int open_volume(const char *device,const  char * mapping_name,const  char *m_point, uid_t id,const char * mode, const char * passphrase) ;
 
 
 
@@ -79,12 +79,12 @@ int open_volume(char *device, char * mapping_name, char *m_point, uid_t id,char 
  * 	1 - unmounting the mount point failed,mount point or one or more files are in use.
  * 	0 - success
   */
-int close_volume(char * mapping_name, char * device) ;
+int close_volume(const char * mapping_name,const  char * device) ;
 
 
 
 
-void status(  char * mapping_name , char * output, int size);
+void status( const  char * mapping_name , char * output, int size);
 
 
 
@@ -95,7 +95,7 @@ void status(  char * mapping_name , char * output, int size);
  * 	1 - ERROR: device argument does not point to a file or partition
  * 	2 - ERROR: A volume associated with the same device address is already opened.
  */
-int create_volume(char * device, char * fs,char * type, char * passphrase);  
+int create_volume(const char * device,const  char * fs,const char * type, const char * passphrase);  
 
 
 
@@ -110,7 +110,7 @@ int create_volume(char * device, char * fs,char * type, char * passphrase);
  *      2 - ERROR: The presented key does not exist in the volume
  *      4 - ERROR: device does not exist
  */
-int add_key(char * device, char * existingkey, char * newkey) ;
+int add_key(const char * device, const char * existingkey,const  char * newkey) ;
 
 
 
@@ -123,7 +123,7 @@ int add_key(char * device, char * existingkey, char * newkey) ;
  * 2 - ERROR: The presented key does not exist in the volume
  * 4 - ERROR: device does not exist
  */
-int remove_key( char * device , char * keyfile ) ;
+int remove_key(const  char * device , const char * keyfile ) ;
 
 
 
@@ -137,7 +137,7 @@ int remove_key( char * device , char * keyfile ) ;
  * 2 - ERROR:  device does not exist
  * 3 - ERROR: The presented key does not exist in the volume
  */
-int kill_slot( char * device,char * existingkey, int slotNumber) ;
+int kill_slot(const  char * device,const char * existingkey, int slotNumber) ;
 
 
 /*
@@ -151,7 +151,7 @@ int kill_slot( char * device,char * existingkey, int slotNumber) ;
  * 1 - device does not exist
  * 0 - successfully read the device
  */
-int empty_slots( char * slots , char * device ) ;
+int empty_slots(const  char * slots , const char * device ) ;
 
 
 #ifdef __cplusplus

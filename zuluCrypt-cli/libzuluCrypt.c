@@ -33,29 +33,29 @@
 
 //function prototypes
 
-int is_luks(char * device) ;
-void execute( char *command , char *output, int size) ;
-int mount_volume(char *mapping_name,char *m_point,char * mode,uid_t id) ;
-char * sanitize(char *c ) ;
+int is_luks(const char * device) ;
+void execute( const char *command ,char *output, int size) ;
+int mount_volume(const char *mapping_name,const char *m_point,const char * mode,uid_t id) ;
+char * sanitize(const char *c ) ;
 
-int add_key(char * dev, char * ek, char * keyfile)
+int add_key(const char * dev, const char * ek,const  const char * keyfile)
 {
 	StrHandle * p ;
 	char s[2] ;
 	
 	char * device = sanitize( dev ) ;
 	char * existingkey = sanitize( ek ) ;
+	char * key = sanitize( keyfile ) ;
 	
 	p = StringCpy( ZULUCRYPTecho ) ;
-	//StringCat( p , "\"");
+	StringCat( p , " ");
 	StringCat( p , existingkey ) ;
-	//StringCat( p , "\"");
 	StringCat( p , " | " ) ;
 	StringCat( p , ZULUCRYPTcryptsetup) ;
 	StringCat( p , " luksAddKey ") ;
 	StringCat( p , device ) ;
 	StringCat( p , " " ) ;
-	StringCat( p , keyfile ) ;
+	StringCat( p , key ) ;
 	StringCat( p , " 2>&1 ") ;
 	
 	execute(StringCont( p ), s, 1 ) ;	
@@ -63,6 +63,7 @@ int add_key(char * dev, char * ek, char * keyfile)
 	StringDelete( p ) ;
 	free( device ) ;
 	free( existingkey ) ;
+	free( key ) ;
 	//printf("%c",s[0]);
 	//if ( s[0] == '\n' )      // success
 	//	return 0 ;
@@ -76,7 +77,7 @@ int add_key(char * dev, char * ek, char * keyfile)
 	return 0 ; //success
 }
 
-int kill_slot( char * dev,char * ek, int slotNumber)
+int kill_slot( const char * dev,const char * ek, int slotNumber)
 {	
 	char s[2] ;
 		
@@ -117,22 +118,25 @@ int kill_slot( char * dev,char * ek, int slotNumber)
 	return 0 ; //success
 }
 
-int remove_key( char * dev , char * keyfile )
+int remove_key( const char * dev , const char * keyfile )
 {
 	char s[2] ;
 	
 	char * device = sanitize( dev ) ;
 
+	char * key = sanitize( keyfile ) ;
+	
 	StrHandle * p = StringCpy(ZULUCRYPTcryptsetup ) ;
 	StringCat( p , " luksRemoveKey ") ;
 	StringCat( p , device ) ;
 	StringCat( p , " " ) ;
-	StringCat( p , keyfile ) ;
+	StringCat( p , key ) ;
 	StringCat( p , " 2>&1 ") ;
 
 	execute( StringCont( p ), s, 1 ) ;
 	
 	free( device ) ;
+	free( key ) ;
 	StringDelete( p ) ;
 	
 	//cryptsetup return not very informative error numbers, stderr is more useful
@@ -148,7 +152,7 @@ int remove_key( char * dev , char * keyfile )
 	return 0 ; //success	
 }
 
-int empty_slots( char * slots ,char * dev )
+int empty_slots( char * slots ,const char * dev )
 {
 	struct stat st ;
 	
@@ -206,12 +210,12 @@ int empty_slots( char * slots ,char * dev )
 	if ( strstr( c, "Key Slot 7: DISABLED") == NULL )
 		slots[7] = '1' ;
 	
-	remove("/tmp/zuluCrypt-dump") ;
+	remove("/tmp/.zuluCrypt-dump") ;
 	
 	return 0 ;
 }
 
-void status( char * map , char * output, int size )
+void status( const char * map , char * output, int size )
 {		
 	char * mapping_name = sanitize( map ) ;
 	
@@ -237,7 +241,7 @@ void status( char * map , char * output, int size )
  * a command.
  */
 
-char * sanitize(char *c )
+char * sanitize(const char *c )
 {
 	char *n="#;\"',\\`:!*?&$@(){}[]><|%~^ \n" ;	
 	
@@ -283,20 +287,20 @@ char * sanitize(char *c )
 	return d ;
 }
 
-void execute( char *command , char *output, int size)
+void execute( const char *command , char *output, int size)
 {		
 	FILE *f ;
-	
+	int i,c  ;
 	//log outputs of command
 	//printf("%s\n",command);
-	
-	//i = open("/home/ink/zzz",O_WRONLY | O_APPEND | O_CREAT ) ;
-	//write(i,command,strlen(command)) ;
-	//write(i,"\n",1) ;
-	//close(i);
+	//int d ;
+	//d = open("/home/ink/zzz",O_WRONLY | O_APPEND | O_CREAT ) ;
+	//write(d,command,strlen(command)) ;
+	//write(d,"\n",1) ;
+	//close(d);
 	
 	f = popen(command, "r") ;
-	int i,c  ;
+	
 	if ( output != NULL  ){
 		for ( i = 0 ; i < size ; i++ ){
 			if (  ( c = getc(f) ) != EOF ) 
@@ -310,7 +314,7 @@ void execute( char *command , char *output, int size)
 	pclose(f);
 }
 
-int is_luks(char * dev)
+int is_luks(const char * dev)
 {	
 	char s[2] ;		
 
@@ -332,7 +336,7 @@ int is_luks(char * dev)
 	return s[0] - '0' ;	
 }
 
-int create_volume(char * dev, char * fs,char * type, char * pass)
+int create_volume(const char * dev, const char * fs,const char * type, const char * pass)
 {
 	StrHandle * p ;
 	StrHandle * q ;
@@ -427,7 +431,7 @@ int create_volume(char * dev, char * fs,char * type, char * pass)
 	return 0 ;
 }
 
-int close_volume(char * mapping_name,char * device) 
+int close_volume(const char * mapping_name,const char * device) 
 {
 	StrHandle * q ;
 	StrHandle * a ;		
@@ -520,7 +524,7 @@ int close_volume(char * mapping_name,char * device)
 	return 0 ;
 }
 
-int mount_volume(char *mapping_name,char *m_point,char * mode,uid_t id)
+int mount_volume(const char *mapping_name,const char *m_point,const char * mode,uid_t id)
 {
 	StrHandle *p ;
 	StrHandle *z ;
@@ -588,7 +592,7 @@ int mount_volume(char *mapping_name,char *m_point,char * mode,uid_t id)
 	
 	return 0 ;		
 }
-int open_volume(char *dev, char * map, char *m_point, uid_t id,char * mode, char *pass) 
+int open_volume(const char *dev, const char * map, const char *m_point, uid_t id,const char * mode, const char *pass) 
 {
 	char status[2] ;	
 	StrHandle * p ;	
@@ -652,7 +656,7 @@ int open_volume(char *dev, char * map, char *m_point, uid_t id,char * mode, char
 		StringCat( p , device ) ;
 		StringCat( p , " zuluCrypt-" ) ;
 		StringCat( p , mapping_name ) ;
-		StringCat( p , " ") ;		
+		StringCat( p , " 1>/dev/null 2>&1") ;		
 		
 	}else{
 		if ( strncmp( mode, "ro",2 ) == 0 ){		

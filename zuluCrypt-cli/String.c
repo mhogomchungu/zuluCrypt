@@ -22,7 +22,7 @@
 #include "String.h"
 
 
-StrHandle * StringCpy(char * data)
+StrHandle * StringCpy(const char * data)
 {
 	StrHandle *str = (StrHandle* )malloc(sizeof(StrHandle));
 	
@@ -40,7 +40,7 @@ StrHandle * StringCpy(char * data)
 	return str ;	
 }
 
-void StringCat(StrHandle * st , char * data) 
+void StringCat(StrHandle * st ,const  char * data) 
 {
 	int size = strlen(data) ;	
 	
@@ -63,7 +63,7 @@ int StringLength(StrHandle * st)
 	return st->size ;	
 }
 
-void StringListCat( StrHandle * st, char * data )
+void StringListCat( StrHandle * st,const  char * data )
 {
 	int size = strlen(data) ;
 	st->size = st->size + size ;

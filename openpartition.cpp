@@ -46,6 +46,8 @@ void openpartition::ShowNonSystemPartitions(QStringList l)
 		partitionView.tableWidgetPartitionView->removeRow(0);
 	}
 
+	delete partitionView.tableWidgetPartitionView->horizontalHeaderItem(0);
+
 	partitionView.tableWidgetPartitionView->setHorizontalHeaderItem(0, new QTableWidgetItem(QString("non system partitions( no active entries in fstab )")));
 	partitionView.tableWidgetPartitionView->removeColumn(1);
 
@@ -55,7 +57,7 @@ void openpartition::ShowNonSystemPartitions(QStringList l)
 
 	for ( i = 0 ; i < l.size() - 1 ; i++){
 
-		t = new QTableWidgetItem(l.at(i)) ;
+		t = new QTableWidgetItem(deviceProperties(l.at(i).toAscii().data())) ;
 		t->setTextAlignment(Qt::AlignCenter);
 
 		partitionView.tableWidgetPartitionView->insertRow(i);
@@ -126,8 +128,8 @@ major minor  #blocks  name
 		if( strlen( d ) == 3 )
 			continue ;
 
-		if ( *( d - 3 ) == ' ') // skip sda2 and sdb2 above
-			continue ;
+		//if ( *( d - 3 ) == ' ') // skip sda2 and sdb2 above
+		//	continue ;
 
 		if( strncmp( d,"sd",2) != 0 && strncmp( d,"hd",2) != 0 )
 			continue ;
@@ -135,25 +137,8 @@ major minor  #blocks  name
 		strcpy(buffer,"/dev/");
 		strcat(buffer, d ) ;
 
-		partition = QString(buffer) ;
+		t = new QTableWidgetItem( deviceProperties( buffer )) ;
 
-		p.start(QString(ZULUCRYPTe2label) + partition);
-		p.waitForFinished() ;
-
-		b = p.readAllStandardOutput().data() ;
-
-		b.chop(1);
-
-		if ( b.at(0) == '\n')
-			;
-		else if ( b.at(0) == '\0')
-			;
-		else
-			partition = partition + QString(" : LABEL=\"") + QString(b) + QString("\"");
-
-		p.close();
-
-		t = new QTableWidgetItem(partition) ;
 		t->setTextAlignment(Qt::AlignCenter);
 
 		partitionView.tableWidgetPartitionView->insertRow(i);
@@ -162,6 +147,94 @@ major minor  #blocks  name
 	}
 	f.close();
 	this->show();
+}
+
+QString openpartition::deviceProperties(const char *device)
+{
+	QProcess p ;
+
+	QString output = QString(device) + QString(" :") ;
+
+	p.start(QString(ZULUCRYPTblkid));
+
+	p.waitForFinished() ;
+
+	char *c  = p.readAllStandardOutput().data() ;
+
+	char * d = strstr( c , device) ;
+
+	if( d == NULL)
+		return QString(device) ;
+
+	char *cN = d ;
+
+	while (*cN++ != '\n') { ; }
+
+	*cN = '\0';
+
+	char *e = strstr( d , "LABEL") ;
+
+	if( e == NULL)
+		output = output + QString("  LABEL=\"\"") ;
+	else{
+
+		char *f = e + 7;
+
+		char Z ;
+
+		while( *f++ != '"') { ; }
+
+		Z = *f ;
+
+		*f = '\0' ;
+
+		output = output + QString("  LABEL=") + QString( e + 6 ) + QString("") ;
+
+		*f = Z ;
+	}
+
+	e = strstr( d , "TYPE") ;
+
+	if( e == NULL )
+		output = output + QString("  TYPE=\"\"");
+	else{
+		char *f = e + 6 ;
+
+		char Z ;
+
+		while( *f++ != '"') { ; }
+
+		Z = *f ;
+
+		*f = '\0' ;
+
+		output = output + QString("  TYPE=") + QString( e + 5 ) + QString("") ;
+
+		*f = Z ;
+	}
+
+//	e = strstr( d , "UUID") ;
+
+//	if( e == NULL )
+//		output = output + QString("  UUID=\"\"");
+//	else{
+//		char *f = e ;
+
+//		char Z ;
+
+//		while( *f++ != '"') { ; }
+
+//		Z = *f ;
+
+//		*f = '\0' ;
+
+//		output = output + QString("  UUID=") + QString( e + 5 ) + QString("") ;
+
+//		*f = Z ;
+//	}
+	p.close();
+
+	return output ;
 }
 
 void openpartition::HideUI()

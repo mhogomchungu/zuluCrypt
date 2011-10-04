@@ -47,9 +47,11 @@ public slots:
 
 	void ShowNonSystemPartitions(QStringList) ;
 
+	QString deviceProperties(const char *device) ;
 private:
 
 	void HideUI(void);
+
 
 	Ui::PartitionView partitionView ;
 

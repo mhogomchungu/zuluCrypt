@@ -86,6 +86,7 @@ void luksaddkeyUI::ShowUI()
 	ui.textEditExistingPassphrase->clear();
 	ui.textEditPassphraseToAdd->clear();
 	ui.textEditPathToVolume->clear();
+	ui.lineEditReEnterPassphrase->clear();
 	ui.radioButtonNewPassphrase->setChecked(true);
 	ui.radioButtonPassphraseinVolume->setChecked(true);
 	ui.textEditPathToVolume->setFocus();

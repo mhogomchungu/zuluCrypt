@@ -95,6 +95,8 @@ private:
 
 	bool isLuks(QString volumePath) ;
 
+	void deleteFile(QFile *) ;
+
 	Ui::zuluCrypt *ui;
 	password_Dialog openFileUI ;
 

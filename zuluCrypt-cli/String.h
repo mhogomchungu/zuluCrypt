@@ -45,7 +45,7 @@ typedef struct {
  * Argument:      A character array to be stored
  * Return value:  A handle to use for subsequent access to the array, NULL is returned on fail.
  */
-StrHandle * StringCpy(char * data) ;
+StrHandle * StringCpy(const char * data) ;
 
 
 
@@ -60,7 +60,7 @@ StrHandle * StringCpy(char * data) ;
  *       and compare the string lengths, If they are equal, the operation failed.
  * 
  */
-void StringCat(StrHandle * st , char * data)  ;
+void StringCat(StrHandle * st ,const  char * data)  ;
 
 
 /*
@@ -78,7 +78,7 @@ char * StringCont( StrHandle * st) ;
  * Interesting usage can be gained with this function. 
  * 
  */
-void StringListCat( StrHandle * st, char * data ) ;
+void StringListCat( StrHandle * st, const char * data ) ;
 
 
 /*
