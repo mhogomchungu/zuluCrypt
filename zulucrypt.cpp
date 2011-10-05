@@ -637,7 +637,8 @@ void zuluCrypt::close(void)
 {
 	QProcess p ;
 
-	p.start(QString(ZULUCRYPTzuluCrypt) + QString(" close ") + ui->tableWidget->item(item->row(),0)->text() ) ;
+	p.start(QString(ZULUCRYPTzuluCrypt) + QString(" close ") + ui->tableWidget->item(item->row(),1)->text() ) ;
+
 	p.waitForFinished() ;
 
 	switch ( p.exitCode() ) {
