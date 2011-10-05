@@ -100,18 +100,25 @@ char StringCharAt( StrHandle * st, int p) ;
 
 
 /*
- * Return a string starting at position p. First position is at "1". Put "0" or a number greater than StringLength and your program will 
- *  most likely segfault.
+ * Return a string starting at position p. First position is at 0 
+ *  
  */
 const char * StringFrom( StrHandle * st , int p) ;
 
-
 /*
- * add backslash to following characters: backslash,dolla sign, open bracket and double quotes.
+ * Insert a string s from position x and returns a pointer to the new string
+ * 
+ * on error returns NULL and the original string remains intact
  * 
  */
-void StringSanitize(StrHandle *st) ;
+const char * StringInsert(StrHandle * st, int x, const char * s ) ;
 
+
+/*
+ * Cut the string from position x and discard all elements to the right of x. 
+ * Returns a const pointer to the result, NULL on error and the original string remain intact
+ */
+const char * StringChop(StrHandle * st, int x) ;
 
 #ifdef __cplusplus
 }

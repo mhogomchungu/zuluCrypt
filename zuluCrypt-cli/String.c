@@ -20,7 +20,7 @@
 
 
 #include "String.h"
-
+#include <stdio.h>
 
 StrHandle * StringCpy(const char * data)
 {
@@ -43,6 +43,13 @@ StrHandle * StringCpy(const char * data)
 	while( ( *d++ = *c++ ) != '\0' ) { ; }	
 	
 	return str ;	
+}
+
+void StringReadToBuffer( StrHandle * st,char *buffer, int size)
+{
+	int i  ;	
+	for ( i = 0 ; i < size ; i++ )
+		buffer[i] = st->string[i] ;	
 }
 
 const char * StringCat(StrHandle * st ,const char * data) 
@@ -119,4 +126,77 @@ void StringDelete(StrHandle * st)
 {	
 	free( st->string ) ;
 	free( st ) ;
+}
+
+const char * StringInsert(StrHandle * st, int x, const char * s )
+{	
+
+	int i  ;
+
+	st->size = st->size + strlen( s ) ;
+
+	char * c ;
+	
+	char * d ;
+	
+	const char * f ;
+	
+	char * e = st->string;
+	
+	c = d = ( char * ) malloc ( sizeof( char ) * ( st->size + 1 ) ) ;
+	
+	if( c == NULL )
+		return NULL ;
+	
+	i = 0 ;
+	
+	while( i++ < x )
+		*c++ = *e++ ;	
+
+	f = s ;
+	
+	while ( ( *c++ = *f++ ) != '\0' ) { ; }
+	
+	c-- ;	
+	
+	while ( ( *c++ = *e++ ) != '\0' ) { ; }
+	
+	free( st->string ) ;
+	
+	f = st->string = d ;
+	
+	return f ;
+}
+
+const char * StringChop(StrHandle * st, int x) 
+{
+	char * c ;
+	
+	char * d ;
+	
+	const char * f ;
+	
+	int i ;
+	
+	st->size = st->size - x ;
+	
+	c = d = ( char * ) malloc ( sizeof (char ) * ( st->size + 1 ) ) ;
+	
+	if ( c == NULL )
+		return NULL ;
+	
+	f = st->string ;
+	
+	i = 0 ;
+	
+	while( i++ < x )
+		*c++ = *f++ ;
+	
+	*c = '\0' ;
+	
+	free( st->string ) ;
+	
+	f = st->string = d ;
+	
+	return f ;
 }
