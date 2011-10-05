@@ -12,3 +12,6 @@ The comma key should have been on the other side of the keyboard!!!
 
 version 2.0
 add support for adding and deleting keys in luks based volumes in the cli and gui.
+
+version 3.0
+add support for creating both plain and luks based volumes in both files and partitions.
