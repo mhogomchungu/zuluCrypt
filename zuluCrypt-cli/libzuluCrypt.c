@@ -67,7 +67,7 @@ int add_key(const char * dev, const char * ek,const  const char * keyfile)
 	//printf("%c",s[0]);
 	//if ( s[0] == '\n' )      // success
 	//	return 0 ;
-	if ( s[0] == 'N' ) // 
+	if ( s[0] == 'N' ) // presented key doesnt exist in the volume
 		return 1 ;
 	else if ( s[0] == 'D' ) // device doesnt exist
 		return 4 ;
@@ -212,6 +212,8 @@ int empty_slots( char * slots ,const char * dev )
 	
 	remove("/tmp/.zuluCrypt-dump") ;
 	
+	free( c ) ;
+	
 	return 0 ;
 }
 
@@ -220,6 +222,7 @@ void status( const char * map , char * output, int size )
 	char * mapping_name = sanitize( map ) ;
 	
 	StrHandle * str = StringCpy(ZULUCRYPTcryptsetup ) ;
+	
 	StringCat(str," status zuluCrypt-") ;
 
 	StringCat(str,mapping_name);
@@ -227,6 +230,8 @@ void status( const char * map , char * output, int size )
 	execute(StringCont(str),output,size);
 	
 	StringDelete(str);
+	
+	free( mapping_name ) ;
 }
 
 /*
@@ -431,7 +436,7 @@ int create_volume(const char * dev, const char * fs,const char * type, const cha
 	return 0 ;
 }
 
-int close_volume(const char * mapping_name,const char * device) 
+int close_volume(const char * map,const char * device) 
 {
 	StrHandle * q ;
 	StrHandle * a ;		
@@ -442,17 +447,24 @@ int close_volume(const char * mapping_name,const char * device)
 	char * c ;
 	char * x ;
 	char * p ;
-	char * z ;
+	const char * z ;
 	char u[2] ;
 	
+	char * mount_point ;
+	char * mapping_name ;
+	
 	q = StringCpy("/dev/mapper/zuluCrypt-") ;
-	StringCat( q , mapping_name ) ;
+	
+	StringCat( q , map ) ;
 	
 	if ( stat( StringCont( q ), &st ) != 0 ){
 		
 		StringDelete( q ) ;
+		
 		return 1 ;
 	}
+	
+	mapping_name = sanitize( StringCont( q ) ) ;	
 	
 	stat("/etc/mtab",&st);
 	
@@ -483,43 +495,50 @@ int close_volume(const char * mapping_name,const char * device)
 		}
 	}		
 	
-	StringSanitize( q ) ;
+	StringDelete( q ) ;
+	
+	free(c) ;
+	
+	mount_point = sanitize( x ) ;
 
+	
+	
 	a = StringCpy(ZULUCRYPTumount) ;
 	StringCat( a , " ") ;
-	StringCat( a , StringCont( q ) ) ;
+	StringCat( a , mount_point ) ;
 	StringCat( a , " 2>/dev/null 1>&2 ; "ZULUCRYPTecho " $? ") ;	
 	
 	execute( StringCont( a ), u,1 ) ;	
 	
-	StringDelete( a ) ;
+	StringDelete( a ) ;	
 	
-	if( u[0] != '0' ){		
-		StringDelete( q ) ;
+	if( u[0] != '0' ){
+		free(mapping_name);
+		mount_point = sanitize( x ) ;
 		return 2 ;	
 	}	
 
 	if ( is_luks( device ) == 0 ){
 		a = StringCpy(ZULUCRYPTcryptsetup ) ;
 		StringCat( a ," luksClose ") ;
-		StringCat( a , StringCont( q ) ) ;
+		StringCat( a , mapping_name ) ;
 	}else{
 		a = StringCpy(ZULUCRYPTcryptsetup ) ;
 		StringCat( a ," remove ") ;
-		StringCat( a , StringCont( q ) ) ;		
+		StringCat( a , mapping_name ) ;		
 	}
 	
 	StringCat( a, " ; ") ;
 	StringCat( a, ZULUCRYPTrm ) ;
 	StringCat( a," -rf ") ;
-	StringCat( a, x) ;
+	StringCat( a, mount_point) ;
 	
 	execute( StringCont( a ),NULL,0) ;
 	
 	StringDelete( a ) ;
-	StringDelete( q ) ;
-	
-	free(c) ;	
+		
+	free(mapping_name);
+	free(mount_point);		
 	
 	return 0 ;
 }
@@ -530,8 +549,10 @@ int mount_volume(const char *mapping_name,const char *m_point,const char * mode,
 	StrHandle *z ;
 	StrHandle *q ;
 	
-	char s[2] ;
+	char *mount_point ;
 	
+	char s[2] ;
+	//return 4 ;
 	if ( m_point == NULL )	
 		p = StringCpy( "/mnt/" ) ;
 	else{
@@ -540,8 +561,6 @@ int mount_volume(const char *mapping_name,const char *m_point,const char * mode,
 	}
 	
 	StringCat( p , mapping_name ) ;
-	
-	StringSanitize( p ) ;	
 	
 	if ( mkdir( StringCont( p ), S_IRWXU  ) != 0 ){
 		StringCat( p, ".zc") ;
@@ -565,7 +584,9 @@ int mount_volume(const char *mapping_name,const char *m_point,const char * mode,
 
 	StringCat( q , " ");
 
-	StringCat( q , StringCont( p ) ) ;
+	mount_point = sanitize( StringCont( p ) ) ;
+	
+	StringCat( q , mount_point ) ;
 	
 	StringCat( q , "  2>/dev/null 1>&2 ; ") ;
 	StringCat( q , ZULUCRYPTecho ) ;
@@ -589,6 +610,7 @@ int mount_volume(const char *mapping_name,const char *m_point,const char * mode,
 	StringDelete( q ) ;
 	StringDelete( p ) ;
 	StringDelete( z ) ;
+	free(mount_point ) ;
 	
 	return 0 ;		
 }
@@ -643,9 +665,9 @@ int open_volume(const char *dev, const char * map, const char *m_point, uid_t id
 	StringCat( p , " ");
 	StringCat( p , passphrase ) ;
 	StringCat( p , " | " ) ;
-		
+	
 	if ( luks == 0 ){	
-		
+
 		if ( strncmp( mode, "ro",2 ) == 0 ){		
 			StringCat( p ,ZULUCRYPTcryptsetup ) ;		
 			StringCat( p ," -r luksOpen ") ;
@@ -653,12 +675,18 @@ int open_volume(const char *dev, const char * map, const char *m_point, uid_t id
 			StringCat( p ,ZULUCRYPTcryptsetup ) ;
 			StringCat( p ," luksOpen ") ;
 		}
-		StringCat( p , device ) ;
-		StringCat( p , " zuluCrypt-" ) ;
-		StringCat( p , mapping_name ) ;
-		StringCat( p , " 1>/dev/null 2>&1") ;		
+
 		
+		StringCat( p , device ) ;
+		
+		StringCat( p , " zuluCrypt-" ) ;
+		
+		StringCat( p , mapping_name ) ;
+		
+		StringCat( p , " 1>/dev/null 2>&1 ") ;	
+	
 	}else{
+
 		if ( strncmp( mode, "ro",2 ) == 0 ){		
 			StringCat( p ,ZULUCRYPTcryptsetup ) ;
 			StringCat( p ," -r create zuluCrypt-");
@@ -668,7 +696,7 @@ int open_volume(const char *dev, const char * map, const char *m_point, uid_t id
 			StringCat( p ,"  create zuluCrypt-");
 			
 		}
-		
+
 		StringCat( p, mapping_name ) ;
 		StringCat( p, " " ) ;
 		StringCat( p, device ) ;

@@ -28,15 +28,9 @@ extern "C" {
 #include <string.h>
 #include <stdlib.h>
 
-typedef struct StringBuffer{
-	char * data ;
-	int size ;
-	struct StringBuffer * next ;		
-}StringBuffer;
-
 typedef struct {
 	int size ;
-	StringBuffer * first,*current ; 
+	char *string ; 
 }StrHandle;
 
 
@@ -60,25 +54,22 @@ StrHandle * StringCpy(const char * data) ;
  *       and compare the string lengths, If they are equal, the operation failed.
  * 
  */
-void StringCat(StrHandle * st ,const  char * data)  ;
+const char * StringCat(StrHandle * st ,const  char * data)  ;
 
 
 /*
  * "cont" is a short form of "content"
- * Returns a string. Interesting chunks can be returned when a string was appended with StringLCat function
+ * Returns a const string
  * 
  */
-char * StringCont( StrHandle * st) ;
+const char * StringCont( StrHandle * st) ;
 
 /*
- * Implements a linked list.
- * The string can not be accessed as if it is a normal/simple character array.The only way to 
- * access the string when this function is used is by using StringReadtoBuffer function
- * 
- * Interesting usage can be gained with this function. 
+ * "cont" is a short form of "content"
+ * Returns an editable string. Remember to free it when you are done using it.
  * 
  */
-void StringListCat( StrHandle * st, const char * data ) ;
+char * StringContCopy( StrHandle *st ) ;
 
 
 /*
@@ -112,7 +103,7 @@ char StringCharAt( StrHandle * st, int p) ;
  * Return a string starting at position p. First position is at "1". Put "0" or a number greater than StringLength and your program will 
  *  most likely segfault.
  */
-char * StringAt( StrHandle * st , int p) ;
+const char * StringFrom( StrHandle * st , int p) ;
 
 
 /*

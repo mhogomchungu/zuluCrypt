@@ -24,38 +24,59 @@
 
 StrHandle * StringCpy(const char * data)
 {
-	StrHandle *str = (StrHandle* )malloc(sizeof(StrHandle));
+	const char *c = data ;
 	
-	str->size = strlen(data) ;
-	str->first = ( StringBuffer * ) malloc(sizeof(StringBuffer)) ;
+	char *d ;
 	
-	str->first->data = (char *) malloc(sizeof(char) * (str->size + 1));
-	str->first->size = str->size ;
+	StrHandle *str = ( StrHandle * ) malloc ( sizeof( StrHandle ) ) ;
 	
-	strcpy(str->first->data,data);
+	if( str == NULL )
+		return NULL ;
 	
-	str->current = str->first ;
-	str->current->next = NULL ;
+	str->size = strlen( data ) ;
+	
+	d = str-> string = ( char * ) malloc ( sizeof ( char ) * ( str->size + 1 ) ) ;
+	
+	if ( str->string == NULL )
+		return NULL ;
+	
+	while( ( *d++ = *c++ ) != '\0' ) { ; }	
 	
 	return str ;	
 }
 
-void StringCat(StrHandle * st ,const  char * data) 
-{
-	int size = strlen(data) ;	
+const char * StringCat(StrHandle * st ,const char * data) 
+{	
+	st->size = st->size + strlen(data) ;
 	
-	char * b = ( char * ) malloc ( sizeof(char) * ( st->size + size + 1 ) ) ;
+	char * a = ( char * ) malloc ( sizeof(char) * ( st->size + 1 ) ) ;
 	
-	if ( b == NULL )
-		return ;
+	if ( a == NULL )
+		return NULL ;
 	
-	st->size = st->size + size ;
+	char * b ;
 	
-	strcpy(b,st->first->data);
-	strcat(b,data) ;	
-	free(st->first->data);
+	char * c ;
 	
-	st->first-> data = b ;	
+	const char * d ;
+	
+	b = st->string ;
+	
+	c = a ;
+	
+	while( ( *c++ = *b++ ) != '\0' ) { ; } 
+	
+	d = data ;
+	
+	c-- ;
+	
+	while( ( *c++ = *d++ ) != '\0' ) { ; } 	
+	
+	free( st->string ) ;
+	
+	st->string = a ;
+	
+	return a ;	
 }
 
 int StringLength(StrHandle * st)
@@ -63,134 +84,39 @@ int StringLength(StrHandle * st)
 	return st->size ;	
 }
 
-void StringListCat( StrHandle * st,const  char * data )
+const char * StringCont( StrHandle * st)
 {
-	int size = strlen(data) ;
-	st->size = st->size + size ;
-
-	st->current = st->current->next = ( StringBuffer * ) malloc(sizeof(StringBuffer)) ;
-	
-	st->current->data = (char *) malloc(sizeof(char) * ( size + 1 ));
-	st->current->size = size ;
-	
-	strcpy(st->current->data,data);
-	st->current->next = NULL;	
+	const char *c = st->string ;
+	return  c ;
 }
 
-char * StringCont( StrHandle * st)
+char * StringContCopy( StrHandle *st )
 {
-	return st->first->data ;
-}
-
-void StringReadToBuffer( StrHandle * st,char *buffer, int size)
-{	
-	StringBuffer *b = st -> first ;
+	char *c ;
+	char *d = st->string;
+	char *e ;
 	
-	int i,j,k ;
+	e =  c = ( char * )malloc( sizeof( char ) * st->size ) ;
 	
-	for ( i = 0,j=0,k=0 ; i < size ; i++,j++,k++){
-		
-		if( b->data[j] == '\0'){
-			b = b->next ;
-			j = 0 ;			
-		}			
-		buffer[k] = b->data[j] ;		
-	}
+	while( ( *c++ = *d++ ) != '\0' ) { ; }
+	
+	return e ;	
 }
 
 char StringCharAt( StrHandle * st, int p)
 {
-	StringBuffer *b = st -> first ;
-	
-	int i,j ;
-	
-	for ( i = 0,j=0 ; i < p ; i++,j++){
-		
-		if( b->data[j] == '\0'){
-			b = b->next ;
-			j = 0 ;			
-		}			
-	}
-	return b -> data[j-1] ;	
+	return st->string[p] ;
 }
 
-char * StringAt( StrHandle * st , int p)
+const char * StringFrom( StrHandle * st , int p)
 {
-	StringBuffer *b = st -> first ;
-	
-	int i,j ;
-	
-	for ( i = 0,j=0 ; i < p ; i++,j++){
-		
-		if( b->data[j] == '\0'){
-			b = b->next ;
-			j = 0 ;			
-		}		
-	}	
-	return &(b->data[j-1]) ;	
+	const char *c ;
+	c = &(st->string[p]) ;
+	return c ;
 }
 
 void StringDelete(StrHandle * st)
 {	
-	StringBuffer *x = st->first ;
-	
-	while ( x != NULL ){
-		free( x -> data);
-		x = x->next ;
-	}	
-	free(st);
+	free( st->string ) ;
+	free( st ) ;
 }
-
-void StringSanitize(StrHandle *st)
-{
-	char *n="#;\"',\\`:!*?&$@(){}[]><|%~^ \n" ;
-	
-	char *d ;	
-	
-	char *f ;
-	
-	char *c = st->first->data ;
-	
-	int count = 0 ;	
-	
-	int i,j ;
-	
-	int z = st->size ;
-	
-	int k = strlen( n ) ;
-	
-	for ( i = 0 ; i < z ; i++ ){
-		
-		for( j = 0 ; j < k ; j++ ){
-			
-			if( c[i] == n[j] ){
-				count++ ;
-				break ;
-			}
-		}		
-	}	
-	
-	st->size = st->size + count ;
-	
-	f = d = (char * ) malloc(sizeof(char) * ( st->size + 1 ) ) ;	
-	
-	for ( i = 0 ; i < z ; i++ ){
-		
-		for( j = 0 ; j < k ; j++ ){
-			
-			if( c[i] == n[j] ){
-				*f++ = '\\' ;
-				break ;
-			}
-		}
-		
-		*f++ = c[i] ;
-	}
-	
-	*f = '\0' ;
-	
-	free( st->first->data ) ;
-	
-	st->first->data = d ;
-}
-

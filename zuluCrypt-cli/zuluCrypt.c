@@ -882,9 +882,10 @@ int removekey( int argn , char * device, char * keyType, char * keytoremove )
 			status = remove_key( device,"/tmp/.zuluCrypt-tmp" ) ;
 		
 			delete_file("/tmp/.zuluCrypt-tmp");			
-		}else
-			status = 6 ;
-	}
+		}
+	}else
+		status = 6 ;
+	
 	switch ( status ){
 		case 0 : printf("SUCCESS: key successfully removed\n");
 		break ;
