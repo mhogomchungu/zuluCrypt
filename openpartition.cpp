@@ -38,6 +38,8 @@ openpartition::openpartition(QWidget *parent ) : QDialog(parent)
 
 void openpartition::ShowNonSystemPartitions(QStringList l)
 {
+	this->setWindowTitle(QString("select a partition to create an encrypted volume in"));
+
 	int i ;
 	int y = partitionView.tableWidgetPartitionView->rowCount() ;
 
@@ -68,6 +70,8 @@ void openpartition::ShowNonSystemPartitions(QStringList l)
 
 void openpartition::ShowUI()
 {
+	this->setWindowTitle(QString("select an encrypted partition to open"));
+
 	int y = partitionView.tableWidgetPartitionView->rowCount() ;
 
 	for( int i = 0 ; i < y  ; i++ )

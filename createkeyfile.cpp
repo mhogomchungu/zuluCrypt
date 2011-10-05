@@ -49,7 +49,7 @@ void createkeyfile::HideUI()
 void createkeyfile::ShowUI()
 {
 	ui->lineEditFileName->clear();
-	ui->lineEditPath->clear();
+	ui->lineEditPath->setText(QDir::homePath());
 	this->show();
 }
 

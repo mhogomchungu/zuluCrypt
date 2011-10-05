@@ -82,14 +82,15 @@ void createfile::showUI()
 {
 	ui->comboBox->setCurrentIndex(0) ;
 	ui->lineEditFileName->clear();
-	ui->lineEditFilePath->clear();
+	ui->lineEditFilePath->setText(QDir::homePath());
 	ui->lineEditFileSize->clear();
 	ui->pbCreate->setEnabled(true);
 	ui->lineEditFileName->setEnabled(true);
 	ui->lineEditFilePath->setEnabled(true);
 	ui->lineEditFileSize->setEnabled(true);
 	ui->progressBar->setValue(0);
-
+	ui->comboBox->setEnabled(true);
+	ui->pbOpenFolder->setEnabled(true);
 	this->show();
 }
 
@@ -133,6 +134,8 @@ void createfile::pbCreate()
 	ui->lineEditFileName->setEnabled(false);
 	ui->lineEditFilePath->setEnabled(false);
 	ui->lineEditFileSize->setEnabled(false);
+	ui->comboBox->setEnabled(false);
+	ui->pbOpenFolder->setEnabled(false);
 
 	time.start();
 

@@ -104,6 +104,7 @@ void password_Dialog::file_path(void )
 void password_Dialog::ShowUI()
 {
 	ui.OpenVolumePath->setFocus();
+	ui.MountPointPath->setText(QDir::homePath());
 	this->show();
 }
 
