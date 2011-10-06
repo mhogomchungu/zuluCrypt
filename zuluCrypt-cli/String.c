@@ -38,7 +38,10 @@ StrHandle * StringCpy(const char * data)
 	d = str-> string = ( char * ) malloc ( sizeof ( char ) * ( str->size + 1 ) ) ;
 	
 	if ( str->string == NULL )
+	{
+		free( str ) ;
 		return NULL ;
+	}
 	
 	while( ( *d++ = *c++ ) != '\0' ) { ; }	
 	
@@ -54,12 +57,7 @@ void StringReadToBuffer( StrHandle * st,char *buffer, int size)
 
 const char * StringCat(StrHandle * st ,const char * data) 
 {	
-	st->size = st->size + strlen(data) ;
-	
-	char * a = ( char * ) malloc ( sizeof(char) * ( st->size + 1 ) ) ;
-	
-	if ( a == NULL )
-		return NULL ;
+	char * a ;
 	
 	char * b ;
 	
@@ -67,9 +65,14 @@ const char * StringCat(StrHandle * st ,const char * data)
 	
 	const char * d ;
 	
-	b = st->string ;
+	st->size = st->size + strlen(data) ;
 	
-	c = a ;
+	c = a = ( char * ) malloc ( sizeof(char) * ( st->size + 1 ) ) ;
+	
+	if ( a == NULL )
+		return NULL ;
+	
+	b = st->string ;
 	
 	while( ( *c++ = *b++ ) != '\0' ) { ; } 
 	
@@ -81,9 +84,8 @@ const char * StringCat(StrHandle * st ,const char * data)
 	
 	free( st->string ) ;
 	
-	st->string = a ;
+	return st->string = a ;
 	
-	return a ;	
 }
 
 int StringLength(StrHandle * st)
@@ -93,19 +95,33 @@ int StringLength(StrHandle * st)
 
 const char * StringCont( StrHandle * st)
 {
-	const char *c = st->string ;
-	return  c ;
+	return st->string ;
 }
 
 char * StringContCopy( StrHandle *st )
 {
+	return StringContCopyLength( st,StringLength( st ) ) ;	
+}
+
+char * StringContCopyLength( StrHandle *st,int l )
+{
+	int i = 0 ;
+	
 	char *c ;
+	
 	char *d = st->string;
+	
 	char *e ;
 	
-	e =  c = ( char * )malloc( sizeof( char ) * st->size ) ;
+	e =  c = ( char * )malloc( sizeof( char ) * ( l + 1 ) ) ;
 	
-	while( ( *c++ = *d++ ) != '\0' ) { ; }
+	if( e == NULL )
+		return NULL ;
+	
+	while( i++ < l )
+		*c++ = *d++ ;
+	
+	*c = '\0' ;
 	
 	return e ;	
 }
@@ -117,15 +133,25 @@ char StringCharAt( StrHandle * st, int p)
 
 const char * StringFrom( StrHandle * st , int p)
 {
-	const char *c ;
-	c = &(st->string[p]) ;
-	return c ;
+	return &(st->string[p]) ;
+	
 }
 
 void StringDelete(StrHandle * st)
 {	
 	free( st->string ) ;
 	free( st ) ;
+}
+
+const char * StringCharInsert(StrHandle * st, int x,char s ) 
+{
+	char c[2] ;
+	
+	c[0] = s ;
+	
+	c[1] = '\0' ;
+	
+	return StringInsert(st, x, c ) ;
 }
 
 const char * StringInsert(StrHandle * st, int x, const char * s )
@@ -163,9 +189,7 @@ const char * StringInsert(StrHandle * st, int x, const char * s )
 	
 	free( st->string ) ;
 	
-	f = st->string = d ;
-	
-	return f ;
+	return  st->string = d ;
 }
 
 const char * StringChop(StrHandle * st, int x) 
@@ -196,7 +220,6 @@ const char * StringChop(StrHandle * st, int x)
 	
 	free( st->string ) ;
 	
-	f = st->string = d ;
-	
-	return f ;
+	return st->string = d ;
 }
+

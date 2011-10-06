@@ -66,7 +66,8 @@ const char * StringCont( StrHandle * st) ;
 
 /*
  * "cont" is a short form of "content"
- * Returns an editable string. Remember to free it when you are done using it.
+ * Returns an editable string.
+ * Remember to free it when you are done using it.
  * 
  */
 char * StringContCopy( StrHandle *st ) ;
@@ -92,8 +93,7 @@ int StringLength(StrHandle * st) ;
 
 
 /*
- * Return a character at position p.First position is at "1". Put "0" or a number greater than StringLength and your program will 
- *  most likely segfault.
+ * Return a character at position p.First position is at "0".
  */
 
 char StringCharAt( StrHandle * st, int p) ;
@@ -113,12 +113,28 @@ const char * StringFrom( StrHandle * st , int p) ;
  */
 const char * StringInsert(StrHandle * st, int x, const char * s ) ;
 
+/*
+ * Insert a char s from position x and returns a pointer to the new string
+ * 
+ * on error returns NULL and the original string remains intact
+ * 
+ */
+const char * StringCharInsert(StrHandle * st, int x, char s ) ;
+
 
 /*
  * Cut the string from position x and discard all elements to the right of x. 
  * Returns a const pointer to the result, NULL on error and the original string remain intact
  */
 const char * StringChop(StrHandle * st, int x) ;
+
+/*
+ * Returns a copy of a string made up of upto x characters
+ * Remember to free string when you are done with it.
+ * 
+ */
+char * StringContCopyLength( StrHandle *st,int x ) ;
+
 
 #ifdef __cplusplus
 }
