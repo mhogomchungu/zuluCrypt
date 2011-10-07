@@ -25,6 +25,8 @@
 #include <QString>
 #include <QTableWidgetItem>
 #include <QSystemTrayIcon>
+#include <QFont>
+
 
 #include "executables.h"
 #include "password_dialog.h"
@@ -89,6 +91,8 @@ private slots :
 	void luksAddKey(QString volumePath,bool keyfile, QString ExistingKey,bool newkeyfile, QString NewKey) ;
 
 	void luksDeleteKey(QString volumePath,bool passPhraseIsFile,QString passPhrase) ;
+
+	void fonts(void) ;
 private:
 
 	char luksEmptySlots(QString volumePath) ;
@@ -96,6 +100,10 @@ private:
 	bool isLuks(QString volumePath) ;
 
 	void deleteFile(QFile *) ;
+
+	void setUserFont(void) ;
+
+	void setupUserOptions(void) ;
 
 	Ui::zuluCrypt *ui;
 	password_Dialog openFileUI ;
@@ -122,6 +130,8 @@ private:
 	int item_count ;
 
 	QSystemTrayIcon trayIcon ;
+
+	QFont Font ;
 };
 
 #endif // ZULUCRYPT_H

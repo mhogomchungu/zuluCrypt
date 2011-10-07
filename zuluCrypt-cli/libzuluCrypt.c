@@ -500,13 +500,13 @@ int close_volume(const char * map,const char * device)
 	free(c) ;
 	
 	mount_point = sanitize( x ) ;
-
-	
 	
 	a = StringCpy(ZULUCRYPTumount) ;
 	StringCat( a , " ") ;
 	StringCat( a , mount_point ) ;
-	StringCat( a , " 2>/dev/null 1>&2 ; "ZULUCRYPTecho " $? ") ;	
+	StringCat( a , " 2>/dev/null 1>&2 ; ") ;
+	StringCat( a , ZULUCRYPTecho) ;
+	StringCat( a , " $? ") ;	
 	
 	execute( StringCont( a ), u,1 ) ;	
 	
@@ -514,7 +514,7 @@ int close_volume(const char * map,const char * device)
 	
 	if( u[0] != '0' ){
 		free(mapping_name);
-		mount_point = sanitize( x ) ;
+		free(mount_point) ;
 		return 2 ;	
 	}	
 
@@ -552,7 +552,7 @@ int mount_volume(const char *mapping_name,const char *m_point,const char * mode,
 	char *mount_point ;
 	
 	char s[2] ;
-	//return 4 ;
+
 	if ( m_point == NULL )	
 		p = StringCpy( "/mnt/" ) ;
 	else{
@@ -600,6 +600,7 @@ int mount_volume(const char *mapping_name,const char *m_point,const char * mode,
 		StringDelete( q ) ;
 		StringDelete( p ) ;
 		StringDelete( z ) ;
+		free(mount_point ) ;
 		return 4 ;
 	}
 		
@@ -621,7 +622,7 @@ int open_volume(const char *dev, const char * map, const char *m_point, uid_t id
 	StrHandle * z ;
 	struct stat st ;
 	int h ;
-	
+	int luks;
 	char *device ;
 	char *mapping_name ;
 	char *passphrase ;
@@ -644,7 +645,7 @@ int open_volume(const char *dev, const char * map, const char *m_point, uid_t id
 		}
 	}
 	
-	int luks = is_luks( dev ) ;	
+	luks = is_luks( dev ) ;	
 
 	device = sanitize( dev ) ;	
 	

@@ -30,11 +30,17 @@
 #include <QBrush>
 #include <iostream>
 #include <QMessageBox>
+#include <QFontDialog>
+
+#include <QHeaderView>
+ #include <QAbstractItemModel>
 
 zuluCrypt::zuluCrypt(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::zuluCrypt)
 {
+
+
 	openFileUI.setParent(this);
 	openFileUI.setWindowFlags(Qt::Window | Qt::Dialog);
 
@@ -121,6 +127,8 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 
 	connect(ui->actionInfo,SIGNAL(triggered()),this,SLOT(info())) ;
 
+	connect(ui->actionFonts,SIGNAL(triggered()),this,SLOT(fonts())) ;
+
 	setUpOpenedVolumes() ;
 
 	//trayIcon.show();
@@ -137,6 +145,53 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 		UIMessage(QString("WARNING"),QString(T));
 	}
 	p.close();
+}
+
+void zuluCrypt::fonts()
+{
+
+
+}
+
+void zuluCrypt::setupUserOptions()
+{
+	//QDir::mkdir(QDir::homePath() + QString(".zuluCrypt")) ;
+
+	//QFile f(QDir::homePath() + QString(".zuluCrypt")) ;
+
+	//f.open(QIODevice::ReadOnly) ;
+
+	//QStringList content = QString(f.readAll()).split("\n") ;
+
+	//f.close();
+
+	//f.open(QIODevice::WriteOnly || QIODevice::Truncate) ;
+}
+
+void zuluCrypt::setUserFont()
+{
+
+	this->setFont(Font);
+
+	this->menuBar()->setFont(Font);
+
+	openFileUI.setFont(Font);
+
+	openPartitionUI.setFont(Font);
+
+	NonSystemPartitions.setFont(Font);
+
+	luksopenPartitionUI.setFont(Font);
+
+	addKeyUI.setFont(Font);
+
+	deleteKeyUI.setFont(Font);
+
+	createpartitionUI.setFont(Font);
+
+	createFile.setFont(Font);
+
+	createkeyFile.setFont(Font);
 }
 
 void zuluCrypt::info()

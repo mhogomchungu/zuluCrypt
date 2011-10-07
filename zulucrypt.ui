@@ -112,9 +112,23 @@
     <addaction name="actionAddKey"/>
     <addaction name="actionDeleteKey"/>
    </widget>
+   <widget class="QMenu" name="menuOptions">
+    <property name="title">
+     <string>options</string>
+    </property>
+    <addaction name="actionTray_icon"/>
+    <addaction name="actionFonts"/>
+   </widget>
+   <widget class="QMenu" name="menuFavorites">
+    <property name="title">
+     <string>favorites</string>
+    </property>
+   </widget>
    <addaction name="menuOpen"/>
    <addaction name="menuCreate"/>
    <addaction name="menuConfigure"/>
+   <addaction name="menuFavorites"/>
+   <addaction name="menuOptions"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -200,6 +214,21 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+D</string>
+   </property>
+  </action>
+  <action name="actionTray_icon">
+   <property name="text">
+    <string>tray icon</string>
+   </property>
+  </action>
+  <action name="actionFonts">
+   <property name="text">
+    <string>select font</string>
+   </property>
+  </action>
+  <action name="actionFavorite_volumes">
+   <property name="text">
+    <string>favorite volumes</string>
    </property>
   </action>
  </widget>

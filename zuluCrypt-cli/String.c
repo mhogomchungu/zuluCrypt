@@ -88,6 +88,40 @@ const char * StringCat(StrHandle * st ,const char * data)
 	
 }
 
+const char * StringStringRemove(StrHandle *st,int x , int y) 
+{
+	char *c = st->string  ;
+	
+	char *d ;
+	
+	char * e ;
+	
+	int i ;
+	
+	st->size = st->size - y ;
+		
+	e = d = ( char * ) malloc( sizeof(char) * ( st->size + 1  ) ) ;
+
+	if( d == NULL )
+	{
+		st->size = st->size + y ;
+		return NULL ;
+	}
+	
+	i = 0 ;
+	
+	while( i++ < x )
+		*e++ = *c++ ;
+	
+	c = c + y  ;
+	
+	while( ( *e++ = *c++ ) != '\0' ) { ; }
+	
+	free( st->string ) ;
+	
+	return st->string = d ;
+}
+
 int StringLength(StrHandle * st)
 {
 	return st->size ;	
@@ -133,14 +167,30 @@ char StringCharAt( StrHandle * st, int p)
 
 const char * StringFrom( StrHandle * st , int p)
 {
-	return &(st->string[p]) ;
-	
+	return &(st->string[p]) ;	
 }
 
 void StringDelete(StrHandle * st)
 {	
 	free( st->string ) ;
 	free( st ) ;
+}
+
+const char * StringCharSub(StrHandle * st, int x, char s )
+{	
+	* ( st->string + x ) = s ;
+	return st->string ; 	
+}
+
+const char * StringStringSub(StrHandle * st, int x, const char * s ) 
+{
+	const char * c = s - 1  ;
+	char *d = st->string + x  ;
+	
+	while( *++c  != '\0' ) 
+		*d++ = *c ;
+	
+	return st->string ;
 }
 
 const char * StringCharInsert(StrHandle * st, int x,char s ) 
@@ -172,8 +222,10 @@ const char * StringInsert(StrHandle * st, int x, const char * s )
 	c = d = ( char * ) malloc ( sizeof( char ) * ( st->size + 1 ) ) ;
 	
 	if( c == NULL )
+	{
+		st->size = st->size - strlen( s ) ;
 		return NULL ;
-	
+	}
 	i = 0 ;
 	
 	while( i++ < x )
@@ -207,8 +259,10 @@ const char * StringChop(StrHandle * st, int x)
 	c = d = ( char * ) malloc ( sizeof (char ) * ( st->size + 1 ) ) ;
 	
 	if ( c == NULL )
+	{
+		st->size = st->size + x ;
 		return NULL ;
-	
+	}
 	f = st->string ;
 	
 	i = 0 ;
