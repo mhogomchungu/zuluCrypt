@@ -612,6 +612,8 @@ int addkey(int argn,char * device, char *keyType1, char * existingKey, char * ke
 	int z ;
 	char * c ;
 	
+	char * tmp_file = "/tmp/.zuluCrypt-tmp" ;
+	
 	off_t fsize ;
 	
 	if ( argn == 3 ){		
@@ -639,18 +641,18 @@ int addkey(int argn,char * device, char *keyType1, char * existingKey, char * ke
 			status = 2 ;
 		}else{
 		
-			z = open("/tmp/.zuluCrypt-tmp",O_WRONLY | O_CREAT | O_TRUNC ) ;
+			z = open(tmp_file ,O_WRONLY | O_CREAT | O_TRUNC ) ;
 
-			chown("/tmp/.zuluCrypt-tmp",0,0) ;
-			chmod("/tmp/.zuluCrypt-tmp",S_IRWXU) ;
+			chown(tmp_file,0,0) ;
+			chmod(tmp_file,S_IRWXU) ;
 		
 			write(z,StringCont( q ),strlen(StringCont( q ))) ;
 		
 			close( z ) ;
 			
-			status = add_key( device,StringCont( p ), "/tmp/.zuluCrypt-tmp" ) ;
+			status = add_key( device,StringCont( p ), tmp_file ) ;
 			
-			delete_file("/tmp/.zuluCrypt-tmp") ;				
+			delete_file(tmp_file) ;				
 
 			StringDelete( p ) ;			
 			StringDelete( q ) ;	
@@ -685,10 +687,10 @@ int addkey(int argn,char * device, char *keyType1, char * existingKey, char * ke
 		
 		if ( strcmp( keyType2, "-p" ) == 0){			
 			
-			z = open("/tmp/.zuluCrypt-tmp",O_WRONLY | O_CREAT | O_TRUNC ) ;
+			z = open(tmp_file,O_WRONLY | O_CREAT | O_TRUNC ) ;
 			
-			chown("/tmp/.zuluCrypt-tmp",0,0) ;
-			chmod("/tmp/.zuluCrypt-tmp",S_IRWXU) ;
+			chown(tmp_file,0,0) ;
+			chmod(tmp_file,S_IRWXU) ;
 
 			write( z,newKey,strlen(newKey)) ;
 		
@@ -703,9 +705,9 @@ int addkey(int argn,char * device, char *keyType1, char * existingKey, char * ke
 			
 		}else if (strcmp(keyType1,"-p") == 0 && strcmp(keyType2,"-p") == 0 ){
 			
-			status = add_key(device, existingKey, "/tmp/.zuluCrypt-tmp" ) ;
+			status = add_key(device, existingKey, tmp_file ) ;
 						
-			delete_file("/tmp/.zuluCrypt-tmp") ;	
+			delete_file(tmp_file) ;	
 			
 		}else if (strcmp(keyType1,"-p") == 0 && strcmp(keyType2,"-f") == 0 ){
 						
@@ -713,9 +715,9 @@ int addkey(int argn,char * device, char *keyType1, char * existingKey, char * ke
 						
 		}else if (strcmp(keyType1,"-f") == 0 && strcmp(keyType2,"-p") == 0 ){			
 					
-			status = add_key( device, c, "/tmp/.zuluCrypt-tmp") ;	
+			status = add_key( device, c, tmp_file) ;	
 			
-			delete_file("/tmp/.zuluCrypt-tmp") ;	
+			delete_file(tmp_file) ;	
 	
 			free( c ) ;
 		}else{			
@@ -840,6 +842,8 @@ int removekey( int argn , char * device, char * keyType, char * keytoremove )
 	int status, z ;
 	struct stat st ;
 	
+	char * tmp_file = "/tmp/.zuluCrypt-tmp" ;
+	
 	if ( argn == 3 ){
 		
 		printf("Enter the passphrase of the key you want to delete: ") ;
@@ -848,20 +852,20 @@ int removekey( int argn , char * device, char * keyType, char * keytoremove )
 		
 		printf("\n") ;
 		
-		z = open("/tmp/.zuluCrypt-tmp",O_WRONLY | O_CREAT | O_TRUNC ) ;
+		z = open(tmp_file,O_WRONLY | O_CREAT | O_TRUNC ) ;
 			
-		chown("/tmp/.zuluCrypt-tmp",0,0) ;
-		chmod("/tmp/.zuluCrypt-tmp",S_IRWXU) ;
+		chown(tmp_file,0,0) ;
+		chmod(tmp_file,S_IRWXU) ;
 
 		write( z, StringCont( p ) ,StringLength( p )) ;
 		
 		close( z ) ;
 		
-		status = remove_key( device,"/tmp/.zuluCrypt-tmp" ) ;
+		status = remove_key( device,tmp_file ) ;
 		
 		StringDelete( p ) ;
 			
-		delete_file("/tmp/.zuluCrypt-tmp");
+		delete_file(tmp_file);
 		
 	}else if ( argn == 5 ){
 		
@@ -874,18 +878,18 @@ int removekey( int argn , char * device, char * keyType, char * keytoremove )
 			
 		}else if( strcmp(keyType, "-p") == 0 ) {
 			
-			z = open("/tmp/.zuluCrypt-tmp",O_WRONLY | O_CREAT | O_TRUNC ) ;
+			z = open(tmp_file,O_WRONLY | O_CREAT | O_TRUNC ) ;
 			
-			chown("/tmp/.zuluCrypt-tmp",0,0) ;
-			chmod("/tmp/.zuluCrypt-tmp",S_IRWXU) ;
+			chown(tmp_file,0,0) ;
+			chmod(tmp_file,S_IRWXU) ;
 			
 			write( z, keytoremove ,strlen(keytoremove)) ;			
 			
 			close( z ) ;
 		
-			status = remove_key( device,"/tmp/.zuluCrypt-tmp" ) ;
+			status = remove_key( device,tmp_file ) ;
 		
-			delete_file("/tmp/.zuluCrypt-tmp");			
+			delete_file(tmp_file);			
 		}
 	}else
 		status = 6 ;
