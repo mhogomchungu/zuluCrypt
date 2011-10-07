@@ -319,116 +319,27 @@ int create_file(char * name, char *random_device , char * size,uid_t id )
 	return 0 ;
 }
 
-void partitions(StrHandle *p, StrHandle * q)
+void partitions(StrHandle *partitions, StrHandle * fstab_partitions, StrHandle * non_system_partitions)
 {
-	struct stat st;
-	char *c,*fstab,*d ;
-	char *pchar1,*pchar2 ;
+	char *c,*d ;
 	char buffer[512];
-	char tmp[40];
+	char uuid[64];
+	char label[64];
+	
 	int i ;
-
-	StrHandle * r ;
 	
-	FILE *f = popen(ZULUCRYPTblkid,"r") ;
-	FILE * ff ;
+	StrHandle * command ;
+		
+	FILE *f ;
+	FILE *z ;
 	
-	stat("/etc/fstab",&st);
+	f = fopen("/proc/partitions","r") ;
 	
-	c  = fstab = ( char *) malloc(sizeof(char) *( st.st_size + 1)) ;
+	fgets(buffer,512,f ) ;
+	fgets(buffer,512,f ) ;
 	
-	*( c + st.st_size  ) = '\0' ;
-	
-	i = open("/etc/fstab",O_RDONLY);
-	
-	read(i, c, st.st_size);
-	
-	close(i);	
-	
-	while(fgets(buffer,512,f) != NULL){
-	
-		c = fstab ;
-	
-		while( *c != '\0' ){	
-			pchar1 = buffer ;	
-			if( strncmp(c,"/dev/",5) == 0){				
-				pchar2 = tmp ;
-				while( ( *pchar2++ = *pchar1++ ) != ':') { ; } 	
-	
-				*( pchar2 - 1 ) = '\0' ;
-	
-				if ( strncmp( c , tmp,strlen(tmp) ) == 0 ){
-			
-					StringCat( p , tmp) ;
-					StringCat( p , "\n") ;
-				}
-			}else if ( strncmp(c,"UUID",4) == 0){					
-				pchar2 = buffer ;
-				while ( *pchar2 != '\n' ) {
-					
-					if ( strncmp( pchar2++ , "UUID",4 ) != 0)
-						continue ;
-						
-					pchar2 = pchar2 + 5 ;
-						
-					i = 0 ;
-						
-					while ( *( pchar2 + i ) != '"' ) { i++ ; }
-						
-					*( pchar2 + i - 1 ) = '\0' ;
-
-					if( strncmp(&c[5],pchar2,strlen(pchar2)) == 0){
-	
-						r = StringCpy(ZULUCRYPTblkid " -U ");
-						StringCat(r , pchar2);
-						ff = popen( StringCont( r ),"r") ;
-						fgets(tmp,40,ff);
-						fclose(ff) ;
-						StringDelete( r );
-						StringCat( p , tmp) ;
-						StringCat( p , "\n") ;
-
-					}						
-				}
-			}else if ( strncmp(c,"LABEL",5) == 0){
-				pchar2 = buffer ;
-				while ( *pchar2 != '\n' ) {
-
-					if ( strncmp( pchar2++ , "LABEL",5 ) != 0)
-						continue ;
-						
-					pchar2 = pchar2 + 6 ;
-						
-					i = 0 ;
-						
-					while ( *( pchar2 + i ) != '"' ) { i++ ; }
-						
-					*( pchar2 + i - 1 ) = '\0' ;
-
-					if( strncmp(&c[6],pchar2,strlen(pchar2)) == 0){
-	
-						r = StringCpy(ZULUCRYPTblkid " -L ");
-						StringCat(r , tmp);
-						ff = popen( StringCont( r ),"r") ;
-						fgets(tmp,40,ff);
-						fclose(ff) ;
-						StringDelete( r );
-						StringCat( p , tmp) ;
-						StringCat( p , "\n") ;
-
-					}						
-				}				
-			}	
-			while ( *c++ != '\n' ) { ; }
-		}
-	}
-	
-	fclose(f) ;
-	
-	f = fopen("/proc/partitions","r");
-	
-	while(fgets(buffer,512,f) != NULL){
-	
+	while ( fgets(buffer,512,f ) != NULL ){
+		
 		c = buffer ;
 		
 		while( *++c != '\n' ) { ; }
@@ -439,31 +350,122 @@ void partitions(StrHandle *p, StrHandle * q)
 		
 		while( *--d != ' ' ) { ; }
 		
-		d++ ;
+		d++ ;		
 		
-		if( strlen( d ) == 3 )
+		if(strlen( d ) == 3 )
 			continue ;
-			
-		strcpy(buffer,"/dev/");
-		strcat(buffer, d ) ;
-		
-		if ( strstr( StringCont( p ),buffer) == NULL ){			
-			
-			if( strncmp( buffer, "/dev/sd",7) == 0 || strncmp( buffer, "/dev/hd",7) == 0 ){
-				StringCat( q, buffer ) ;
-				StringCat( q, "\n") ;
-			}			
-		}
+		StringCat( partitions, "/dev/");
+		StringCat( partitions, d ) ;
+		StringCat( partitions, "\n" ) ;
 	}
-	fclose(f) ;
+		
+	StringDelete( non_system_partitions ) ;
 	
-	free( fstab ) ;
+	non_system_partitions = StringCpy( StringCont( partitions ) ) ;
+	
+	fclose(f);
+	
+	f = fopen("/etc/fstab","r");
+	
+	while ( fgets(buffer,512,f ) != NULL ){	
+		
+		if( strncmp( buffer , "/dev/", 5 ) == 0 ){
+			
+			c = buffer ;
+			
+			while ( *++c != ' ' ) { ; }
+			
+			*c = '\0' ;
+			
+			StringCat( fstab_partitions, buffer ) ;		
+			StringCat( fstab_partitions, "\n");	
+			
+			i = StringPosString( non_system_partitions,buffer) ;
+			
+			StringStringRemove( non_system_partitions, i , strlen(buffer) + 1 ) ;
+			
+		}else if ( strncmp(buffer ,"UUID",4) == 0 ){
+			
+			c = buffer + 5 ;
+			d = uuid ;
+			
+			while ( ( *d++ = *c++ ) != ' ' ) { ; }
+			
+			*--d = '\0' ;
+			
+			command = StringCpy(ZULUCRYPTblkid) ;
+			StringCat( command , " -U " ) ;
+			StringCat( command , uuid);
+			
+			z = popen( StringCont( command ), "r" ) ;
+			
+			fgets( buffer, 512, z ) ;
+			
+			pclose( z ) ;
+			
+			c = buffer ;
+			
+			while ( *++c != '\n' ) { ; }
+			
+			*c = '\0' ;
+			
+			StringCat( fstab_partitions, buffer ) ;	
+			
+			StringCat( fstab_partitions, "\n");
+			
+			StringDelete( command ) ;	
+			
+			i = StringPosString( non_system_partitions,buffer) ;
+			
+			StringStringRemove( non_system_partitions, i , strlen(buffer) + 1) ;
+			
+		}else if ( strncmp(buffer ,"LABEL",5) == 0 ){
+			
+			c = buffer + 6 ;
+			d = label ;
+			
+			if ( *c == '\"'){
+				c++ ;
+				while ( ( *d++ = *c++ ) != '\"' ) { ; } 
+			}else
+				while ( ( *d++ = *c++ ) != ' ' ) { ; }
+			
+			*--d = '\0' ;
+
+			command = StringCpy(ZULUCRYPTblkid) ;
+			StringCat( command , " -L " ) ;
+			StringCat( command , label);
+			
+			z = popen( StringCont( command ), "r" ) ;
+			
+			fgets( buffer, 512, z ) ;
+			
+			pclose( z ) ;
+			
+			c = buffer ;
+			
+			while ( *++c != '\n' ) { ; }
+			
+			*c = '\0' ;
+			
+			StringCat( fstab_partitions, buffer ) ;	
+			
+			StringCat( fstab_partitions, "\n");
+			
+			StringDelete( command ) ;
+			
+			i = StringPosString( non_system_partitions,buffer) ;
+			
+			StringStringRemove( non_system_partitions, i , strlen(buffer) + 1) ;
+		}		
+	}
 }
 
 int create_volumes(int argn ,char *device, char *fs, char * mode, char * keyType, char * pass )
 {
 	StrHandle * p ;
 	StrHandle * q ;
+	StrHandle * k ;
 	char Y ;
 	int st ;
 	struct stat xt ;
@@ -473,8 +475,9 @@ int create_volumes(int argn ,char *device, char *fs, char * mode, char * keyType
 	
 	p = StringCpy("");
 	q = StringCpy("");
-		
-	partitions( p, q ) ;
+	k = StringCpy("");	
+	
+	partitions( p, q, k ) ;
 	
 	if ( strstr( StringCont( p ) , device ) != NULL ){
 		
@@ -482,9 +485,10 @@ int create_volumes(int argn ,char *device, char *fs, char * mode, char * keyType
 		printf("System partitions have active entries in /etc/fstab") ;
 		StringDelete( p ) ;
 		StringDelete( q ) ;
+		StringDelete( k ) ;
 		return 7 ;
 	}		
-		
+	StringDelete( k ) ;
 	StringDelete( p ) ;
 	StringDelete( q ) ;
 	
@@ -954,7 +958,7 @@ int main( int argc , char *argv[])
 	
 	char * device = argv[2] ;
 
-	StrHandle *p,*q ;
+	StrHandle *p,*q,*z ;
 	uid_t id ;
 	
 	int status ;
@@ -984,25 +988,6 @@ int main( int argc , char *argv[])
 		printf(VERSION_STRING) ;
 		printf("\n");
 		return 10 ;
-	}
-	
-	if ( strcmp(action,"partitions") == 0 ){
-		
-		p = StringCpy("");
-		q = StringCpy("");
-		
-		partitions( p, q ) ;
-		
-		//printf("system partitions not shown)\n");
-		printf("%s",StringCont( q )) ;	
-		
-		//printf("system partitions(can not create volumes in these)\n");
-		//printf("%s",StringCont( p )) ;
-		
-		StringDelete( p ) ;
-		StringDelete( q ) ;
-		
-		return 0 ;
 	}
 	
 	if ( argc < 3 ){
@@ -1053,6 +1038,33 @@ int main( int argc , char *argv[])
 		
 		status =  create_file(device,argv[3],argv[4],id) ; 
 		
+	}else if ( strcmp(action,"partitions") == 0 ){
+		
+		p = StringCpy("");
+		q = StringCpy("");
+		z = StringCpy("");
+		
+		partitions( p, q ,z ) ;
+		
+		if( argv[2][0] == '1' ) {
+			status = 0 ;
+			printf("%s",StringCont(p)) ;
+		}else if ( argv[2][0] == '2' ){
+			status = 0 ;
+			printf("%s",StringCont(q)) ;
+		}else if ( argv[2][0] == '3' ){
+			status = 0 ;
+			printf("%s",StringCont(z)) ;
+		}else{
+			printf("wrong argument\n");
+			status = 1 ;
+		}
+		
+		StringDelete( p ) ;
+		StringDelete( q ) ;
+		StringDelete( z ) ;	
+		
+		return status ;
 	}else if(strcmp(action,"emptyslots") == 0 ){
 		
 		if ( empty_slots( slots , device ) == 0 ){			

@@ -321,7 +321,7 @@ void zuluCrypt::createEncryptedVolume(QString fileSystem, QString containterType
 void zuluCrypt::createEncryptedpartitionUI()
 {
 	QProcess p ;
-	p.start(QString(ZULUCRYPTzuluCrypt) + QString(" partitions"));
+	p.start(QString(ZULUCRYPTzuluCrypt) + QString(" partitions 3"));
 	p.waitForFinished() ;
 
 	QStringList l = QString( p.readAllStandardOutput()).split("\n") ;

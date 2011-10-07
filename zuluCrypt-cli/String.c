@@ -88,6 +88,13 @@ const char * StringCat(StrHandle * st ,const char * data)
 	
 }
 
+int StringPosString( StrHandle * st, const char * s )
+{
+	char *c = strstr(st->string,s) ;
+	return  c - st->string;
+	
+}
+
 const char * StringStringRemove(StrHandle *st,int x , int y) 
 {
 	char *c = st->string  ;
@@ -130,6 +137,18 @@ int StringLength(StrHandle * st)
 const char * StringCont( StrHandle * st)
 {
 	return st->string ;
+}
+
+int StringPosChar( StrHandle * st , char s ) 
+{
+	int i = 0 ;
+	
+	char * c = st->string  - 1 ;
+	
+	while ( *++c != s )
+		i++ ;
+	
+	return i ;	
 }
 
 char * StringContCopy( StrHandle *st )

@@ -98,6 +98,17 @@ int StringLength(StrHandle * st) ;
 
 char StringCharAt( StrHandle * st, int p) ;
 
+/*
+ * return the position of the first occurance of character s
+ */
+
+int StringPosChar( StrHandle * st , char s ) ;
+
+/*
+ * return the position of the first occurance of string s
+ * NULL is returned when s isnt in the string
+ */
+int StringPosString( StrHandle * st, const char * s ) ;
 
 /*
  * Return a string starting at position p. First position is at 0 
@@ -138,7 +149,7 @@ const char * StringStringSub(StrHandle * st, int x, const char * s ) ;
 
 
 /*
- * start at position x and remove y character going right and returns a pointer
+ * start at position x and remove y character(s) going right and returns a pointer
  * to the new string or NULL on error.
  * Careful though, make sure you dont delete past the string length * 
  */
