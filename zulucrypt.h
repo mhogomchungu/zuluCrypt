@@ -26,7 +26,7 @@
 #include <QTableWidgetItem>
 #include <QSystemTrayIcon>
 #include <QFont>
-
+#include <QWidget>
 
 #include "executables.h"
 #include "password_dialog.h"
@@ -36,6 +36,7 @@
 #include "createpartition.h"
 #include "createfile.h"
 #include "createkeyfile.h"
+#include "managefavoritelist.h"
 
 namespace Ui {
     class zuluCrypt;
@@ -64,8 +65,6 @@ private slots :
 
 	void info(void) ;
 
-	void trayIconAction(QSystemTrayIcon::ActivationReason) ;
-
 	void createEncryptedpartitionUI(void) ;
 
 	void createEncryptedVolume(QString fileSystem,QString containterType,QString volumePath,QString passphrase,bool passphraseFromFile) ;
@@ -93,6 +92,15 @@ private slots :
 	void luksDeleteKey(QString volumePath,bool passPhraseIsFile,QString passPhrase) ;
 
 	void fonts(void) ;
+
+	void addToFavorite(void) ;
+
+	void readFavorites(void) ;
+
+	void trayClicked(QSystemTrayIcon::ActivationReason e) ;
+
+	void trayProperty(void) ;
+
 private:
 
 	char luksEmptySlots(QString volumePath) ;
@@ -104,6 +112,8 @@ private:
 	void setUserFont(void) ;
 
 	void setupUserOptions(void) ;
+
+
 
 	Ui::zuluCrypt *ui;
 	password_Dialog openFileUI ;
@@ -124,6 +134,8 @@ private:
 
 	createkeyfile createkeyFile ;
 
+	managefavoritelist favlist ;
+
 	QString volume_path,mount_point_path, pass_phrase,mode ;
 	QMenu *m  ;
 	QTableWidgetItem* item ;
@@ -132,6 +144,7 @@ private:
 	QSystemTrayIcon trayIcon ;
 
 	QFont Font ;
+
 };
 
 #endif // ZULUCRYPT_H

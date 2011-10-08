@@ -32,9 +32,6 @@
 #include <QMessageBox>
 #include <QFontDialog>
 
-#include <QHeaderView>
- #include <QAbstractItemModel>
-
 zuluCrypt::zuluCrypt(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::zuluCrypt)
@@ -68,9 +65,11 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 	createkeyFile.setParent(this);
 	createkeyFile.setWindowFlags(Qt::Window | Qt::Dialog);
 
+	favlist.setParent(this);
+	favlist.setWindowFlags(Qt::Window | Qt::Dialog);
+
 	trayIcon.setParent(this);
 	trayIcon.setIcon(QIcon(QString("/usr/share/icons/zuluCrypt.png")));
-	connect((QObject *)&trayIcon,SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this,SLOT(trayIconAction(QSystemTrayIcon::ActivationReason)));
 
 	item_count = 0 ;
 
@@ -84,6 +83,8 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 	ui->tableWidget->setColumnWidth(1,290);
 
 	ui->tableWidget->setColumnWidth(2,90);
+
+	connect(ui->actionManage_favorites,SIGNAL(triggered()),(QObject *)&favlist,SLOT(ShowUI())) ;
 
 	connect(ui->actionCreatekeyFile,SIGNAL(triggered()),(QObject *)&createkeyFile,SLOT(ShowUI()));
 
@@ -125,13 +126,21 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 
 	connect(ui->actionPartitionCreate,SIGNAL(triggered()),this,SLOT(createEncryptedpartitionUI())) ;
 
+	connect(ui->actionFavorite_volumes,SIGNAL(triggered()),this,SLOT(readFavorites())) ;
+
 	connect(ui->actionInfo,SIGNAL(triggered()),this,SLOT(info())) ;
 
 	connect(ui->actionFonts,SIGNAL(triggered()),this,SLOT(fonts())) ;
 
+	connect(ui->actionFavorite_volumes,SIGNAL(triggered()),this,SLOT(readFavorites())) ;
+
+	connect(ui->actionTray_icon,SIGNAL(triggered()),this,SLOT(trayProperty())) ;
+
+	connect((QObject *)&trayIcon,SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this,SLOT(trayClicked(QSystemTrayIcon::ActivationReason)));
+
 	setUpOpenedVolumes() ;
 
-	//trayIcon.show();
+	readFavorites();
 
 	QProcess p ;
 
@@ -145,6 +154,81 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 		UIMessage(QString("WARNING"),QString(T));
 	}
 	p.close();
+
+	QFile f(QDir::homePath() + QString("/.zuluCrypt/tray")) ;
+
+	if(f.exists() == false){
+
+		f.open(QIODevice::WriteOnly | QIODevice::Truncate) ;
+		f.write("1") ;
+		f.close();
+	}
+
+	f.open(QIODevice::ReadOnly) ;
+
+	QByteArray t = f.readAll() ;
+
+	f.close() ;
+
+	char *c = t.data() ;
+
+	ui->actionTray_icon->setCheckable(true);
+
+	if( c[0] == '1'){
+		ui->actionTray_icon->setChecked(true);
+		trayIcon.show();
+	}else{
+		ui->actionTray_icon->setChecked(false);
+		trayIcon.hide();
+	}
+}
+
+void zuluCrypt::trayClicked(QSystemTrayIcon::ActivationReason e)
+{
+	std::cout << "ds" << std::endl ;
+	if( e == QSystemTrayIcon::Trigger){
+
+		if(this->isVisible() == true)
+			this->hide();
+		else
+			this->show();
+	}
+}
+
+void zuluCrypt::trayProperty()
+{
+	QFile f(QDir::homePath() + QString("/.zuluCrypt/tray")) ;
+
+	//if(in.exists() == true)
+	//	std::cout << "blah" << std::endl ;
+
+	f.open(QIODevice::ReadOnly) ;
+
+	QByteArray t = f.readAll() ;
+
+	f.close();
+
+	f.open(QIODevice::WriteOnly | QIODevice::Truncate) ;
+
+	char *c = t.data() ;
+
+	char data[2] ;
+
+	data[1] = '\0' ;
+
+	//std::cout << t.data() << std::endl ;
+
+	if(c[0] == '1'){
+		data[0] = '0' ;
+		f.write(data) ;
+		trayIcon.hide();
+	}else{
+		data[0] = '1' ;
+		f.write(data) ;
+		trayIcon.show();
+	}
+
+	f.close();
 }
 
 void zuluCrypt::fonts()
@@ -278,18 +362,6 @@ void zuluCrypt::info()
 
 	m.exec() ;
 	exe.close();
-}
-
-void zuluCrypt::trayIconAction(QSystemTrayIcon::ActivationReason e)
-{
-	//std::cout << QString("dd").toStdString() << std::endl ;
-	if ( e == QSystemTrayIcon::Trigger){
-
-		if( this->isHidden() == true)
-			this->show();
-		else
-			this->hide();
-	}
 }
 
 void zuluCrypt::createEncryptedVolume(QString fileSystem, QString containterType, QString volumePath, QString passphrase,bool passphraseFromFile)
@@ -473,7 +545,7 @@ char zuluCrypt::luksEmptySlots(QString volumePath)
 bool zuluCrypt::isLuks(QString volumePath)
 {
 	QProcess N ;
-	N.start(QString(ZULUCRYPTzuluCrypt) + QString(" isLuks ") + volumePath);
+	N.start(QString(ZULUCRYPTzuluCrypt) + QString(" isLuks ") + QString("\"") + volumePath + QString("\"") );
 	N.waitForFinished() ;
 
 	int i = N.exitCode() ;
@@ -613,7 +685,7 @@ void zuluCrypt::volume_property()
 
 	QString path = item->tableWidget()->item(item->row(),0)->text() ;
 
-	QString z = QString(ZULUCRYPTzuluCrypt) + QString(" status ") +  path ;
+	QString z = QString(ZULUCRYPTzuluCrypt) + QString(" status ") + QString("\"") + path + QString("\"");
 
 	p.start( z ) ;
 	p.waitForFinished() ;
@@ -632,12 +704,56 @@ void zuluCrypt::volume_property()
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 
 	if ( isLuks(path) == true)
-		m.setText( QString( r.right(start) )   + QString("  occupied key slots: ") + luksEmptySlots(path) + QString(" / 8")) ;
+		m.setText( QString(" ") + QString( r.right(start) )   + QString("  occupied key slots: ") + luksEmptySlots(path) + QString(" / 8")) ;
 	else
-		m.setText( QString( r.right(start) ) ) ;
+		m.setText( QString(" ") + QString( r.right(start) ) ) ;
 
 	m.addButton(QMessageBox::Ok);
 	m.exec() ;
+}
+
+void zuluCrypt::readFavorites()
+{
+	ui->menuFavorites->addSeparator() ;
+
+	QFile f(QDir::homePath() + QString("/.zuluCrypt/favorites")) ;
+
+	f.open(QIODevice::ReadOnly) ;
+
+	QByteArray b = f.readAll() ;
+
+	f.close();
+
+	QStringList l = QString( b ).split("\n") ;
+
+//	ui->menuFavorites->addAction(&a) ;
+
+	for(int i = 0 ; i < l.size() ; i++){
+
+		ui->menuFavorites->addAction(l.at(i)) ;
+		std::cout << b.data() << std::endl ;
+
+	}
+}
+
+void zuluCrypt::addToFavorite()
+{
+
+	QString volume_path = ui->tableWidget->item(item->row(),0)->text() ;
+	QString mount_point_path = ui->tableWidget->item(item->row(),1)->text();
+
+	QString fav = volume_path + ":" + mount_point_path ;
+
+	QFile f(QDir::homePath() + QString("/.zuluCrypt/favorites")) ;
+
+	f.open(QIODevice::WriteOnly | QIODevice::Append ) ;
+
+	f.write(fav.toAscii()) ;
+
+	f.close();
+
+	//std::cout << volume_path.toStdString() << "\n" << mount_point_path.toStdString() << std::endl ;
+
 }
 
 void zuluCrypt::options(QTableWidgetItem* t)
@@ -663,6 +779,37 @@ void zuluCrypt::options(QTableWidgetItem* t)
 		connect(m.addAction("add key"),SIGNAL(triggered()),this,SLOT(luksAddKeyContextMenu())) ;
 		connect(m.addAction("remove key"),SIGNAL(triggered()),this,SLOT(luksDeleteKeyContextMenu())) ;
 	}
+	
+	m.addSeparator() ;
+	
+	QString x = ui->tableWidget->item(item->row(),0)->text() ;
+	QString y = ui->tableWidget->item(item->row(),1)->text() ;
+
+	QString volume_path = ui->tableWidget->item(item->row(),0)->text() ;
+	QString mount_point_path = ui->tableWidget->item(item->row(),1)->text();
+
+	QString fav = volume_path + ":" + mount_point_path ;
+
+	QFile f(QDir::homePath() + QString("/.zuluCrypt/favorites")) ;
+
+	f.open(QIODevice::ReadOnly) ;
+
+	QByteArray data = f.readAll() ;
+
+	QAction a(QString("add to favorite"),(QObject *)&m) ;
+
+	//std::cout << data.data() << "\n" << fav.toAscii().data() << std::endl ;
+
+	if( strstr( data.data() , fav.toAscii().data() ) == NULL )
+		a.setEnabled(true);
+	else
+		a.setEnabled(false);
+
+	a.connect((QObject *)&a,SIGNAL(triggered()),this,SLOT(addToFavorite())) ;
+
+	m.addAction(&a);
+	//connect(m.addAction(&a),SIGNAL(triggered()),this,SLOT(addToFavorite())) ;
+	
 	Z.close();
 	m.exec(QCursor::pos()) ;
 }

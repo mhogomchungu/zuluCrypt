@@ -123,6 +123,7 @@
     <property name="title">
      <string>favorites</string>
     </property>
+    <addaction name="actionManage_favorites"/>
    </widget>
    <addaction name="menuOpen"/>
    <addaction name="menuCreate"/>
@@ -229,6 +230,11 @@
   <action name="actionFavorite_volumes">
    <property name="text">
     <string>favorite volumes</string>
+   </property>
+  </action>
+  <action name="actionManage_favorites">
+   <property name="text">
+    <string>manage favorites</string>
    </property>
   </action>
  </widget>

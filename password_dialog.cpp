@@ -47,6 +47,15 @@ password_Dialog::password_Dialog(QWidget *parent ) : QDialog(parent)
 
 }
 
+void password_Dialog::ShowUI(QString volumePath, QString mount_point)
+{
+	ui.OpenVolumePath->setText(volumePath);
+	ui.MountPointPath->setText(mount_point);
+	ui.checkBoxReadOnly->setChecked( false );
+	ui.radioButtonPassPhraseFromFile->setChecked( false );
+	ShowUI();
+}
+
 void password_Dialog::ShowUI(bool A,bool B,QString C,QString D)
 {
 	ui.checkBoxReadOnly->setChecked( A );
@@ -81,10 +90,8 @@ void password_Dialog::clickedPassPhraseFromFileButton()
 void password_Dialog::clickedPartitionOption(QString option)
 {
 	ui.OpenVolumePath->setText(option);
-	ui.MountPointPath->clear();
 	ui.PassPhraseField->clear();
-	ui.MountPointPath->setFocus();
-
+	ui.MountPointPath->setText(QDir::homePath());
 	if( this->isHidden() )
 		this->show();
 }

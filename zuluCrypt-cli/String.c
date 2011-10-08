@@ -70,7 +70,10 @@ const char * StringCat(StrHandle * st ,const char * data)
 	c = a = ( char * ) malloc ( sizeof(char) * ( st->size + 1 ) ) ;
 	
 	if ( a == NULL )
+	{	
+		st->size = st->size - strlen(data)
 		return NULL ;
+	}
 	
 	b = st->string ;
 	
