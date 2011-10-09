@@ -22,7 +22,7 @@
 #include "executables.h"
 
 #include <QFileDialog>
-#include <QFileInfo>
+#include <QFile>
 #include <QMessageBox>
 #include <iostream>
 
@@ -150,7 +150,15 @@ void createfile::pbCreate()
 			break ;
 	}
 
-	QString ddExe = QString(ZULUCRYPTdd) + QString(" if=/dev/urandom of=") + ui->lineEditFilePath->text() + "/" + ui->lineEditFileName->text() + " bs=1024 " + "count=" + ui->lineEditFileSize->text() + size;
+	QFile f(QDir::homePath() + QString("/.zuluCrypt/rng")) ;
+
+	f.open(QIODevice::ReadOnly) ;
+
+	QByteArray b = f.readAll() ;
+
+	f.close();
+
+	QString ddExe = QString(ZULUCRYPTdd) + QString(" if=") + QString( b ) + QString(" of=") + ui->lineEditFilePath->text() + "/" + ui->lineEditFileName->text() + " bs=1024 " + "count=" + ui->lineEditFileSize->text() + size;
 
 	dd.start( ddExe ) ;
 }

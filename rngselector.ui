@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>rngselector</class>
+ <widget class="QWidget" name="rngselector">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>494</width>
+    <height>158</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>random number generator option</string>
+  </property>
+  <widget class="QGroupBox" name="groupBox">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>20</y>
+     <width>411</width>
+     <height>101</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>select a device to use to generate random data</string>
+   </property>
+   <widget class="QRadioButton" name="rbUrandom">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>20</y>
+      <width>381</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>/dev/urandom : good enough and faster</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="rbRandom">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>40</y>
+      <width>321</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>/dev/random   :  more secure but (very) slow.
+( move your mouse around to speed things up)</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QPushButton" name="pbOk">
+   <property name="geometry">
+    <rect>
+     <x>200</x>
+     <y>120</y>
+     <width>91</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>ok</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -37,6 +37,8 @@
 #include "createpartition.h"
 #include "createfile.h"
 #include "createkeyfile.h"
+#include "rngselector.h"
+
 
 namespace Ui {
     class zuluCrypt;
@@ -148,7 +150,9 @@ private:
 
 	QFont Font ;
 
-	 QList<QMenu *> menulist ;
+	QList<QMenu *> menulist ;
+
+	rngselector rng ;
 };
 
 #endif // ZULUCRYPT_H

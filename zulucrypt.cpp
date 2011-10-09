@@ -63,6 +63,9 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 	createkeyFile.setParent(this);
 	createkeyFile.setWindowFlags(Qt::Window | Qt::Dialog);
 
+	rng.setParent(this);
+	rng.setWindowFlags(Qt::Window | Qt::Dialog);
+
 	trayIcon.setParent(this);
 	trayIcon.setIcon(QIcon(QString("/usr/share/icons/zuluCrypt.png")));
 
@@ -135,7 +138,7 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 
 	connect(ui->menuFavorites,SIGNAL(triggered(QAction*)),this,SLOT(favClicked(QAction*))) ;
 
-
+	connect(ui->actionSelect_random_number_generator,SIGNAL(triggered()),(QObject *)&rng,SLOT(ShowUI())) ;
 	setUpOpenedVolumes() ;
 
 	QProcess p ;
@@ -150,6 +153,13 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 		UIMessage(QString("WARNING"),QString(T));
 	}
 	p.close();
+
+	QString home = QDir::homePath() + QString("/.zuluCrypt/") ;
+
+	QDir d(home) ;
+
+	if(d.exists() == false)
+		d.mkdir(home) ;
 
 	QFile f(QDir::homePath() + QString("/.zuluCrypt/tray")) ;
 
@@ -177,6 +187,16 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 		ui->actionTray_icon->setChecked(false);
 		trayIcon.hide();
 	}
+
+	QFile g(QDir::homePath() + QString("/.zuluCrypt/rng")) ;
+
+	if(g.exists() == false){
+
+		g.open(QIODevice::WriteOnly | QIODevice::Truncate) ;
+		g.write("/dev/urandom") ;
+		g.close();
+	}
+
 }
 
 void zuluCrypt::trayClicked(QSystemTrayIcon::ActivationReason e)

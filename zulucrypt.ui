@@ -118,6 +118,7 @@
     </property>
     <addaction name="actionTray_icon"/>
     <addaction name="actionFonts"/>
+    <addaction name="actionSelect_random_number_generator"/>
    </widget>
    <widget class="QMenu" name="menuFavorites">
     <property name="title">
@@ -234,6 +235,11 @@
   <action name="actionManage_favorites">
    <property name="text">
     <string>manage favorites</string>
+   </property>
+  </action>
+  <action name="actionSelect_random_number_generator">
+   <property name="text">
+    <string>select random number generator</string>
    </property>
   </action>
  </widget>

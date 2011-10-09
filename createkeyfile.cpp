@@ -38,7 +38,6 @@ createkeyfile::createkeyfile(QWidget *parent) :
 	connect(ui->pbCreate,SIGNAL(clicked()),this,SLOT(pbCreate())) ;
 	connect(ui->pbOpenFolder,SIGNAL(clicked()),this,SLOT(pbOpenFolder())) ;
 	connect(ui->pbCancel,SIGNAL(clicked()),this,SLOT(pbCancel())) ;
-
 }
 
 void createkeyfile::HideUI()
@@ -102,7 +101,17 @@ void createkeyfile::pbCreate()
 
 	out.seek(0) ;
 
-	QFile in(QString("/dev/urandom")) ;
+	QFile f(QDir::homePath() + QString("/.zuluCrypt/rng")) ;
+
+	f.open(QIODevice::ReadOnly) ;
+
+	QByteArray b = f.readAll() ;
+
+	f.close();
+
+	QFile in(QString( b.data() )) ;
+
+	std::cout << in.fileName().toStdString() << std::endl ;
 
 	in.open(QIODevice::ReadOnly) ;
 

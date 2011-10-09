@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'zulucrypt.ui'
 **
-** Created: Sun Oct 9 02:31:07 2011
+** Created: Sun Oct 9 03:26:49 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -40,6 +40,7 @@ public:
     QAction *actionFonts;
     QAction *actionFavorite_volumes;
     QAction *actionManage_favorites;
+    QAction *actionSelect_random_number_generator;
     QWidget *centralWidget;
     QTableWidget *tableWidget;
     QMenuBar *menuBar;
@@ -91,6 +92,8 @@ public:
         actionFavorite_volumes->setObjectName(QString::fromUtf8("actionFavorite_volumes"));
         actionManage_favorites = new QAction(zuluCrypt);
         actionManage_favorites->setObjectName(QString::fromUtf8("actionManage_favorites"));
+        actionSelect_random_number_generator = new QAction(zuluCrypt);
+        actionSelect_random_number_generator->setObjectName(QString::fromUtf8("actionSelect_random_number_generator"));
         centralWidget = new QWidget(zuluCrypt);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         centralWidget->setContextMenuPolicy(Qt::ActionsContextMenu);
@@ -150,6 +153,7 @@ public:
         menuConfigure->addAction(actionDeleteKey);
         menuOptions->addAction(actionTray_icon);
         menuOptions->addAction(actionFonts);
+        menuOptions->addAction(actionSelect_random_number_generator);
 
         retranslateUi(zuluCrypt);
 
@@ -181,6 +185,7 @@ public:
         actionFonts->setText(QApplication::translate("zuluCrypt", "select font", 0, QApplication::UnicodeUTF8));
         actionFavorite_volumes->setText(QApplication::translate("zuluCrypt", "favorite volumes", 0, QApplication::UnicodeUTF8));
         actionManage_favorites->setText(QApplication::translate("zuluCrypt", "manage favorites", 0, QApplication::UnicodeUTF8));
+        actionSelect_random_number_generator->setText(QApplication::translate("zuluCrypt", "select random number generator", 0, QApplication::UnicodeUTF8));
         QTableWidgetItem *___qtablewidgetitem = tableWidget->horizontalHeaderItem(0);
         ___qtablewidgetitem->setText(QApplication::translate("zuluCrypt", "Encrypted volume path", 0, QApplication::UnicodeUTF8));
         QTableWidgetItem *___qtablewidgetitem1 = tableWidget->horizontalHeaderItem(1);
