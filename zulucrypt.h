@@ -56,6 +56,8 @@ public:
 	~zuluCrypt();
 
 signals:
+	void  showManageFavorites(void) ;
+	void  favClickedVolume(QString volume_path,QString mount_point_path);
 	void  showNonSystemPartitions(QStringList);
 	void  luksAddKeyUI(QString volumePath) ;
 	void  luksDeleteKeyUI(QString passphrase) ;
@@ -97,6 +99,8 @@ private slots :
 
 	void readFavorites(void) ;
 
+	void favClicked(QAction *e) ;
+
 	void trayClicked(QSystemTrayIcon::ActivationReason e) ;
 
 	void trayProperty(void) ;
@@ -113,9 +117,8 @@ private:
 
 	void setupUserOptions(void) ;
 
-
-
 	Ui::zuluCrypt *ui;
+
 	password_Dialog openFileUI ;
 
 	openpartition openPartitionUI ;

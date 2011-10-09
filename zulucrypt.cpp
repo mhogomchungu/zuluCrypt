@@ -84,8 +84,6 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 
 	ui->tableWidget->setColumnWidth(2,90);
 
-	connect(ui->actionManage_favorites,SIGNAL(triggered()),(QObject *)&favlist,SLOT(ShowUI())) ;
-
 	connect(ui->actionCreatekeyFile,SIGNAL(triggered()),(QObject *)&createkeyFile,SLOT(ShowUI()));
 
 	connect((QObject *)&createFile,SIGNAL(fileCreated(QString)),(QObject *)&createpartitionUI,SLOT(ShowFileUI(QString)));
@@ -126,21 +124,23 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 
 	connect(ui->actionPartitionCreate,SIGNAL(triggered()),this,SLOT(createEncryptedpartitionUI())) ;
 
-	connect(ui->actionFavorite_volumes,SIGNAL(triggered()),this,SLOT(readFavorites())) ;
+	connect(this,SIGNAL(showManageFavorites()),(QObject *)&favlist,SLOT(ShowUI())) ;
 
 	connect(ui->actionInfo,SIGNAL(triggered()),this,SLOT(info())) ;
 
 	connect(ui->actionFonts,SIGNAL(triggered()),this,SLOT(fonts())) ;
 
-	connect(ui->actionFavorite_volumes,SIGNAL(triggered()),this,SLOT(readFavorites())) ;
+	connect(ui->menuFavorites,SIGNAL(aboutToShow()),this,SLOT(readFavorites())) ;
 
 	connect(ui->actionTray_icon,SIGNAL(triggered()),this,SLOT(trayProperty())) ;
+
+	connect(this,SIGNAL(favClickedVolume(QString,QString)),(QObject *)&openFileUI,SLOT(ShowUI(QString,QString))) ;
 
 	connect((QObject *)&trayIcon,SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this,SLOT(trayClicked(QSystemTrayIcon::ActivationReason)));
 
 	setUpOpenedVolumes() ;
 
-	readFavorites();
+	//readFavorites();
 
 	QProcess p ;
 
@@ -712,8 +712,24 @@ void zuluCrypt::volume_property()
 	m.exec() ;
 }
 
+void zuluCrypt::favClicked(QAction *e)
+{
+	if( e->text() == QString("manage volumes") ){
+		emit showManageFavorites() ;
+	}else{
+		QStringList l = e->text().split("\t") ;
+		emit favClickedVolume(l.at(0),l.at(1));
+	}
+}
+
 void zuluCrypt::readFavorites()
 {
+	ui->menuFavorites->clear();
+
+	ui->menuFavorites->addAction("manage volumes") ;
+
+	connect(ui->menuFavorites,SIGNAL(triggered(QAction*)),this,SLOT(favClicked(QAction*))) ;
+
 	ui->menuFavorites->addSeparator() ;
 
 	QFile f(QDir::homePath() + QString("/.zuluCrypt/favorites")) ;
@@ -726,23 +742,23 @@ void zuluCrypt::readFavorites()
 
 	QStringList l = QString( b ).split("\n") ;
 
-//	ui->menuFavorites->addAction(&a) ;
-
-	for(int i = 0 ; i < l.size() ; i++){
+	for(int i = 0 ; i < l.size() - 1 ; i++){
 
 		ui->menuFavorites->addAction(l.at(i)) ;
-		std::cout << b.data() << std::endl ;
-
 	}
 }
 
 void zuluCrypt::addToFavorite()
 {
-
 	QString volume_path = ui->tableWidget->item(item->row(),0)->text() ;
+
 	QString mount_point_path = ui->tableWidget->item(item->row(),1)->text();
 
-	QString fav = volume_path + ":" + mount_point_path ;
+	int i = mount_point_path.lastIndexOf("/") ;
+
+	mount_point_path = mount_point_path.left( i ) ;
+
+	QString fav = volume_path + QString("\t") + mount_point_path + QString("\n") ;
 
 	QFile f(QDir::homePath() + QString("/.zuluCrypt/favorites")) ;
 
@@ -751,9 +767,6 @@ void zuluCrypt::addToFavorite()
 	f.write(fav.toAscii()) ;
 
 	f.close();
-
-	//std::cout << volume_path.toStdString() << "\n" << mount_point_path.toStdString() << std::endl ;
-
 }
 
 void zuluCrypt::options(QTableWidgetItem* t)
@@ -788,7 +801,11 @@ void zuluCrypt::options(QTableWidgetItem* t)
 	QString volume_path = ui->tableWidget->item(item->row(),0)->text() ;
 	QString mount_point_path = ui->tableWidget->item(item->row(),1)->text();
 
-	QString fav = volume_path + ":" + mount_point_path ;
+	int i = mount_point_path.lastIndexOf("/") ;
+
+	mount_point_path = mount_point_path.left( i ) ;
+
+	QString fav = volume_path + QString("\t") + mount_point_path ;
 
 	QFile f(QDir::homePath() + QString("/.zuluCrypt/favorites")) ;
 
@@ -798,8 +815,6 @@ void zuluCrypt::options(QTableWidgetItem* t)
 
 	QAction a(QString("add to favorite"),(QObject *)&m) ;
 
-	//std::cout << data.data() << "\n" << fav.toAscii().data() << std::endl ;
-
 	if( strstr( data.data() , fav.toAscii().data() ) == NULL )
 		a.setEnabled(true);
 	else
@@ -808,7 +823,6 @@ void zuluCrypt::options(QTableWidgetItem* t)
 	a.connect((QObject *)&a,SIGNAL(triggered()),this,SLOT(addToFavorite())) ;
 
 	m.addAction(&a);
-	//connect(m.addAction(&a),SIGNAL(triggered()),this,SLOT(addToFavorite())) ;
 	
 	Z.close();
 	m.exec(QCursor::pos()) ;

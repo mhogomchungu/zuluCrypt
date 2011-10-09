@@ -71,7 +71,7 @@ const char * StringCat(StrHandle * st ,const char * data)
 	
 	if ( a == NULL )
 	{	
-		st->size = st->size - strlen(data)
+		st->size = st->size - strlen(data) ;
 		return NULL ;
 	}
 	

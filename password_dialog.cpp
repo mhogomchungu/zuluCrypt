@@ -49,11 +49,13 @@ password_Dialog::password_Dialog(QWidget *parent ) : QDialog(parent)
 
 void password_Dialog::ShowUI(QString volumePath, QString mount_point)
 {
+	ShowUI();
 	ui.OpenVolumePath->setText(volumePath);
 	ui.MountPointPath->setText(mount_point);
 	ui.checkBoxReadOnly->setChecked( false );
+	ui.PassPhraseField->setFocus();
 	ui.radioButtonPassPhraseFromFile->setChecked( false );
-	ShowUI();
+
 }
 
 void password_Dialog::ShowUI(bool A,bool B,QString C,QString D)
