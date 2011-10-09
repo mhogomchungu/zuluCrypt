@@ -352,8 +352,9 @@ void partitions(StrHandle *partitions, StrHandle * fstab_partitions, StrHandle *
 		
 		d++ ;		
 		
-		if(strlen( d ) == 3 )
+		if(strlen( d ) == 3 || ( strncmp( d, "hd", 2 ) != 0 && strncmp( d, "sd", 2) != 0 ) )
 			continue ;
+		
 		StringCat( partitions, "/dev/");
 		StringCat( partitions, d ) ;
 		StringCat( partitions, "\n" ) ;
