@@ -29,11 +29,16 @@
 
 #include "executables.h"
 
-openpartition::openpartition(QWidget *parent ) : QDialog(parent)
+openpartition::openpartition(QWidget *parent ) :
+	QDialog(parent)
 {
-	partitionView.setupUi(this);
+	partitionView = new Ui::PartitionView() ;
+
+	partitionView->setupUi(this);
+
 	this->setFixedSize(this->size());
-	connect(partitionView.tableWidgetPartitionView,SIGNAL(cellDoubleClicked(int,int)),this,SLOT(tableEntryDoubleClicked(int,int))) ;	
+
+	connect(partitionView->tableWidgetPartitionView,SIGNAL(cellDoubleClicked(int,int)),this,SLOT(tableEntryDoubleClicked(int,int))) ;
 }
 
 void openpartition::ShowNonSystemPartitions(QStringList l)
@@ -41,19 +46,19 @@ void openpartition::ShowNonSystemPartitions(QStringList l)
 	this->setWindowTitle(QString("select a partition to create an encrypted volume in"));
 
 	int i ;
-	int y = partitionView.tableWidgetPartitionView->rowCount() ;
+	int y = partitionView->tableWidgetPartitionView->rowCount() ;
 
 	for( int i = 0 ; i < y  ; i++ )
 	{
-		partitionView.tableWidgetPartitionView->removeRow(0);
+		partitionView->tableWidgetPartitionView->removeRow(0);
 	}
 
-	delete partitionView.tableWidgetPartitionView->horizontalHeaderItem(0);
+	delete partitionView->tableWidgetPartitionView->horizontalHeaderItem(0);
 
-	partitionView.tableWidgetPartitionView->setHorizontalHeaderItem(0, new QTableWidgetItem(QString("non system partitions( no active entries in fstab )")));
-	partitionView.tableWidgetPartitionView->removeColumn(1);
+	partitionView->tableWidgetPartitionView->setHorizontalHeaderItem(0, new QTableWidgetItem(QString("non system partitions( no active entries in fstab )")));
+	partitionView->tableWidgetPartitionView->removeColumn(1);
 
-	partitionView.tableWidgetPartitionView->setColumnWidth(0,540);
+	partitionView->tableWidgetPartitionView->setColumnWidth(0,540);
 
 	QTableWidgetItem * t ;
 
@@ -62,8 +67,8 @@ void openpartition::ShowNonSystemPartitions(QStringList l)
 		t = new QTableWidgetItem(deviceProperties(l.at(i).toAscii().data())) ;
 		t->setTextAlignment(Qt::AlignCenter);
 
-		partitionView.tableWidgetPartitionView->insertRow(i);
-		partitionView.tableWidgetPartitionView->setItem(i,0,t);
+		partitionView->tableWidgetPartitionView->insertRow(i);
+		partitionView->tableWidgetPartitionView->setItem(i,0,t);
 	}
 	this->show();
 }
@@ -72,15 +77,15 @@ void openpartition::ShowUI()
 {
 	this->setWindowTitle(QString("select an encrypted partition to open"));
 
-	int y = partitionView.tableWidgetPartitionView->rowCount() ;
+	int y = partitionView->tableWidgetPartitionView->rowCount() ;
 
 	for( int i = 0 ; i < y  ; i++ )
 	{
-		partitionView.tableWidgetPartitionView->removeRow(0);
+		partitionView->tableWidgetPartitionView->removeRow(0);
 	}
 
-	partitionView.tableWidgetPartitionView->setColumnWidth(0,540);
-	partitionView.tableWidgetPartitionView->removeColumn(1);
+	partitionView->tableWidgetPartitionView->setColumnWidth(0,540);
+	partitionView->tableWidgetPartitionView->removeColumn(1);
 
 	char buffer[64];
 	char *c,*d ;
@@ -145,8 +150,8 @@ major minor  #blocks  name
 
 		t->setTextAlignment(Qt::AlignCenter);
 
-		partitionView.tableWidgetPartitionView->insertRow(i);
-		partitionView.tableWidgetPartitionView->setItem(i,0,t);
+		partitionView->tableWidgetPartitionView->insertRow(i);
+		partitionView->tableWidgetPartitionView->setItem(i,0,t);
 		i++ ;
 	}
 	f.close();
@@ -248,12 +253,12 @@ void openpartition::HideUI()
 
 void openpartition::tableEntryDoubleClicked(int row, int column)
 {
-	QString i = partitionView.tableWidgetPartitionView->item(row,column)->text().split(":").at(0) ;
+	QString i = partitionView->tableWidgetPartitionView->item(row,column)->text().split(":").at(0) ;
 	HideUI() ;
 	emit clickedPartition(i.split(":").at(0));
 }
 
 openpartition::~openpartition()
 {
-
+	delete partitionView ;
 }

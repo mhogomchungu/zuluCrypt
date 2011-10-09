@@ -65,8 +65,8 @@ private slots:
 	void pbOpenVolume(void) ;
 
 private:
-    Ui::luksdeletekey ui;
-    openpartition pUI ;
+    Ui::luksdeletekey *ui;
+    openpartition *pUI ;
 
 };
 

@@ -54,7 +54,7 @@ private slots :
 	void ShowUI(bool boolOpenReadOnly,bool boolKeyFromFile,QString volumePath, QString mountPointPath) ;
 	void ShowUI(QString volumePath,QString mount_point) ;
 private :
-	Ui::PasswordDialog ui;
+	Ui::PasswordDialog *ui;
 };
 
 #endif // PASSWORD_DIALOG_H

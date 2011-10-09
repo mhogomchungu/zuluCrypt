@@ -71,8 +71,8 @@ private slots:
 
 private:
 
-	Ui::luksaddkeyUI ui;
-	openpartition pUI ;
+	Ui::luksaddkeyUI *ui;
+	openpartition *pUI ;
 
 };
 

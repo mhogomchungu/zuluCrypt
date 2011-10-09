@@ -123,36 +123,36 @@ private:
 
 	Ui::zuluCrypt *ui;
 
-	password_Dialog openFileUI ;
+	password_Dialog *openFileUI ;
 
-	openpartition openPartitionUI ;
+	openpartition *openPartitionUI ;
 
-	openpartition NonSystemPartitions ;
+	openpartition *NonSystemPartitions ;
 
-	openpartition luksopenPartitionUI ;
+	openpartition *luksopenPartitionUI ;
 
-	createpartition createpartitionUI ;
+	createpartition *createpartitionUI ;
 
-	luksaddkeyUI addKeyUI ;
+	luksaddkeyUI *addKeyUI ;
 
-	luksdeletekey deleteKeyUI ;
+	luksdeletekey *deleteKeyUI ;
 
-	createfile createFile ;
+	createfile *createFile ;
 
-	createkeyfile createkeyFile ;
+	createkeyfile *createkeyFile ;
 
 	QString volume_path,mount_point_path, pass_phrase,mode ;
 	QMenu *m  ;
 	QTableWidgetItem* item ;
 	int item_count ;
 
-	QSystemTrayIcon trayIcon ;
+	QSystemTrayIcon *trayIcon ;
 
 	QFont Font ;
 
 	QList<QMenu *> menulist ;
 
-	rngselector rng ;
+	rngselector *rng ;
 };
 
 #endif // ZULUCRYPT_H
