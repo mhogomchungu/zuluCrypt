@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'zulucrypt.ui'
 **
-** Created: Sat Oct 8 16:24:14 2011
+** Created: Sun Oct 9 02:31:07 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -150,7 +150,6 @@ public:
         menuConfigure->addAction(actionDeleteKey);
         menuOptions->addAction(actionTray_icon);
         menuOptions->addAction(actionFonts);
-        menuFavorites->addAction(actionManage_favorites);
 
         retranslateUi(zuluCrypt);
 

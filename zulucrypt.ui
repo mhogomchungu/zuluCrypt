@@ -123,7 +123,6 @@
     <property name="title">
      <string>favorites</string>
     </property>
-    <addaction name="actionManage_favorites"/>
    </widget>
    <addaction name="menuOpen"/>
    <addaction name="menuCreate"/>

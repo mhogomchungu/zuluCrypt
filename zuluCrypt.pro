@@ -18,8 +18,7 @@ SOURCES += main.cpp\
     luksdeletekey.cpp \
     createpartition.cpp \
     createfile.cpp \
-    createkeyfile.cpp \
-    managefavoritelist.cpp
+    createkeyfile.cpp
 
 HEADERS  += zulucrypt.h password_dialog.h \
     openpartition.h \
@@ -29,7 +28,6 @@ HEADERS  += zulucrypt.h password_dialog.h \
     createpartition.h \
     createfile.h \
     createkeyfile.h \
-    managefavoritelist.h
 
 FORMS    += zulucrypt.ui password.ui \
     openpartition.ui \
@@ -37,10 +35,11 @@ FORMS    += zulucrypt.ui password.ui \
     luksdeletekey.ui \
     createpartition.ui \
     createfile.ui \
-    createkeyfile.ui \
-    managefavoritelist.ui
+    createkeyfile.ui
 
 OTHER_FILES +=
+
+
 
 
 

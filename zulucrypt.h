@@ -27,6 +27,7 @@
 #include <QSystemTrayIcon>
 #include <QFont>
 #include <QWidget>
+#include <QList>
 
 #include "executables.h"
 #include "password_dialog.h"
@@ -36,7 +37,6 @@
 #include "createpartition.h"
 #include "createfile.h"
 #include "createkeyfile.h"
-#include "managefavoritelist.h"
 
 namespace Ui {
     class zuluCrypt;
@@ -101,6 +101,8 @@ private slots :
 
 	void favClicked(QAction *e) ;
 
+	void favAboutToHide(void) ;
+
 	void trayClicked(QSystemTrayIcon::ActivationReason e) ;
 
 	void trayProperty(void) ;
@@ -137,8 +139,6 @@ private:
 
 	createkeyfile createkeyFile ;
 
-	managefavoritelist favlist ;
-
 	QString volume_path,mount_point_path, pass_phrase,mode ;
 	QMenu *m  ;
 	QTableWidgetItem* item ;
@@ -148,6 +148,7 @@ private:
 
 	QFont Font ;
 
+	 QList<QMenu *> menulist ;
 };
 
 #endif // ZULUCRYPT_H

@@ -36,8 +36,6 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::zuluCrypt)
 {
-
-
 	openFileUI.setParent(this);
 	openFileUI.setWindowFlags(Qt::Window | Qt::Dialog);
 
@@ -64,9 +62,6 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 
 	createkeyFile.setParent(this);
 	createkeyFile.setWindowFlags(Qt::Window | Qt::Dialog);
-
-	favlist.setParent(this);
-	favlist.setWindowFlags(Qt::Window | Qt::Dialog);
 
 	trayIcon.setParent(this);
 	trayIcon.setIcon(QIcon(QString("/usr/share/icons/zuluCrypt.png")));
@@ -124,13 +119,13 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 
 	connect(ui->actionPartitionCreate,SIGNAL(triggered()),this,SLOT(createEncryptedpartitionUI())) ;
 
-	connect(this,SIGNAL(showManageFavorites()),(QObject *)&favlist,SLOT(ShowUI())) ;
-
 	connect(ui->actionInfo,SIGNAL(triggered()),this,SLOT(info())) ;
 
 	connect(ui->actionFonts,SIGNAL(triggered()),this,SLOT(fonts())) ;
 
 	connect(ui->menuFavorites,SIGNAL(aboutToShow()),this,SLOT(readFavorites())) ;
+
+	connect(ui->menuFavorites,SIGNAL(aboutToHide()),this,SLOT(favAboutToHide())) ;
 
 	connect(ui->actionTray_icon,SIGNAL(triggered()),this,SLOT(trayProperty())) ;
 
@@ -138,9 +133,10 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 
 	connect((QObject *)&trayIcon,SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this,SLOT(trayClicked(QSystemTrayIcon::ActivationReason)));
 
-	setUpOpenedVolumes() ;
+	connect(ui->menuFavorites,SIGNAL(triggered(QAction*)),this,SLOT(favClicked(QAction*))) ;
 
-	//readFavorites();
+
+	setUpOpenedVolumes() ;
 
 	QProcess p ;
 
@@ -712,26 +708,43 @@ void zuluCrypt::volume_property()
 	m.exec() ;
 }
 
+void zuluCrypt::favAboutToHide()
+{
+	ui->menuFavorites->clear();
+}
+
 void zuluCrypt::favClicked(QAction *e)
 {
-	if( e->text() == QString("manage volumes") ){
-		emit showManageFavorites() ;
-	}else{
-		QStringList l = e->text().split("\t") ;
+	QMenu *m = (QMenu *) e->parentWidget() ;
+
+	if( e->text() == QString("open") ){
+
+		QStringList l =  m->title().split("\t") ;
+
 		emit favClickedVolume(l.at(0),l.at(1));
+
+	}else if( e->text() == QString("remove from favorite") ){
+
+		QFile f(QDir::homePath() + QString("/.zuluCrypt/favorites")) ;
+
+		f.open(QIODevice::ReadOnly) ;
+
+		QByteArray b = f.readAll() ;
+
+		f.close();
+
+		QByteArray c = b.remove(b.indexOf(m->title()),m->title().length() + 1) ;
+
+		f.open(QIODevice::WriteOnly | QIODevice::Truncate) ;
+
+		f.write( c ) ;
+
+		f.close() ;
 	}
 }
 
 void zuluCrypt::readFavorites()
 {
-	ui->menuFavorites->clear();
-
-	ui->menuFavorites->addAction("manage volumes") ;
-
-	connect(ui->menuFavorites,SIGNAL(triggered(QAction*)),this,SLOT(favClicked(QAction*))) ;
-
-	ui->menuFavorites->addSeparator() ;
-
 	QFile f(QDir::homePath() + QString("/.zuluCrypt/favorites")) ;
 
 	f.open(QIODevice::ReadOnly) ;
@@ -744,7 +757,15 @@ void zuluCrypt::readFavorites()
 
 	for(int i = 0 ; i < l.size() - 1 ; i++){
 
-		ui->menuFavorites->addAction(l.at(i)) ;
+		QMenu *m = new QMenu(l.at(i)) ;
+
+		m->addAction("open")->setParent(m);
+
+		m->addAction("remove from favorite") ;
+
+		ui->menuFavorites->addMenu(m) ;
+
+		menulist.append(m);
 	}
 }
 
@@ -1002,6 +1023,13 @@ void zuluCrypt::openEncryptedVolume(bool boolOpenReadOnly,bool boolKeyFromFile,Q
 }
 
 zuluCrypt::~zuluCrypt()
-{
+{	
+	for( int i = 0 ; i < menulist.size() ; i++){
+
+		delete menulist.at(i) ;
+	}
+
+	menulist.clear();
+
 	delete ui;
 }
