@@ -341,7 +341,7 @@ int is_luks(const char * dev)
 	return s[0] - '0' ;	
 }
 
-int create_volume(const char * dev, const char * fs,const char * type, const char * pass)
+int create_volume(const char * dev, const char * fs,const char * type, const char * pass, const char *rng)
 {
 	StrHandle * p ;
 	StrHandle * q ;
@@ -375,7 +375,14 @@ int create_volume(const char * dev, const char * fs,const char * type, const cha
 		StringCat( p , " ");
 		StringCat( p , passphrase ) ;
 		StringCat( p , " | " ) ;
+		
 		StringCat( p , ZULUCRYPTcryptsetup ) ;
+		
+		if(strcmp(rng,"/dev/random") == 0)
+			StringCat( p , " --use-random " ) ;
+		else
+			StringCat( p , " --use-urandom " ) ;
+		
 		StringCat( p , " -q luksFormat " ) ;		
 		
 		StringCat( p , device ) ;

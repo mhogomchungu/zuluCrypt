@@ -462,7 +462,7 @@ void partitions(StrHandle *partitions, StrHandle * fstab_partitions, StrHandle *
 	}
 }
 
-int create_volumes(int argn ,char *device, char *fs, char * mode, char * keyType, char * pass )
+int create_volumes(int argn ,char *device, char *fs, char * mode, char * keyType, char * pass, char *rng )
 {
 	StrHandle * p ;
 	StrHandle * q ;
@@ -496,7 +496,7 @@ int create_volumes(int argn ,char *device, char *fs, char * mode, char * keyType
 	if( argn == 5 ){
 		printf("ARE YOU SURE YOU WANT TO CREATE/OVERWRITE: \"%s\" ? Type \"Y\" if you are\n",device);
 		
-		scanf("%c",&Y);
+		Y = getchar() ;
 		
 		if ( Y != 'Y')
 			st = 5 ;
@@ -511,23 +511,42 @@ int create_volumes(int argn ,char *device, char *fs, char * mode, char * keyType
 
 			q = get_passphrase();	
 			
-			printf("\n") ;
+			printf("\n") ;			
 			
 			if(strcmp(StringCont( p ),StringCont( q )) != 0){
 
 				st = 3 ;
 			}else{
-				st = create_volume(device,fs,mode,StringCont( p )) ;
-				StringDelete( q ) ;
-				StringDelete( p ) ;			
+				
+				if(strcmp(mode,"luks") == 0 ){
+					
+					printf("enter 1 to use \"/dev/random\" device when generating the key  ( more secure but slow )\n") ;
+					printf("enter 2 to use \"/dev/urandom\" device when generating the key ( secure enought and faster )\n") ;
+					
+					Y = getchar() ;
+					getchar() ;
+					
+					if( Y == '1')
+						st = create_volume(device,fs,mode,StringCont( p ),"/dev/random");
+					else if ( Y == '2' )
+						st = create_volume(device,fs,mode,StringCont( p ),"/dev/urandom");
+					else{
+						st = 5 ;
+						goto out ;
+					}
+				}else{
+					st = create_volume(device,fs,mode,StringCont( p ),"NULL") ;						
+				}		
 			}
+			StringDelete( p ) ;
+			StringDelete( q ) ;				
 		}
 			
-	}else if ( argn == 7 ){
+	}else if ( argn == 8 ){
 		
 		if( strcmp( keyType, "-p" ) == 0 ) {			
 
-			st = create_volume(device,fs,mode,pass) ;			
+			st = create_volume(device,fs,mode,pass,rng) ;			
 			
 		}else if( strcmp( keyType, "-f" ) == 0 ) {
 			
@@ -548,7 +567,7 @@ int create_volumes(int argn ,char *device, char *fs, char * mode, char * keyType
 			
 				close( z ) ;				
 				
-				st = create_volume(device,fs,mode,c) ;
+				st = create_volume(device,fs,mode,c,rng) ;
 				
 				free( c ) ;
 			}else{
@@ -560,6 +579,8 @@ int create_volumes(int argn ,char *device, char *fs, char * mode, char * keyType
 	}else{
 		st = 4 ;			
 	}
+	
+	out:
 	
 	switch ( st ){
 		case 0 : printf("SUCCESS: volume successfully created\n") ;
@@ -1025,7 +1046,7 @@ int main( int argc , char *argv[])
 		
 	}else if(strcmp(action,"create") == 0 ){
 
-		status =  create_volumes(argc ,device,argv[3],argv[4],argv[5],argv[6] ) ;	
+		status =  create_volumes(argc ,device,argv[3],argv[4],argv[5],argv[6],argv[7] ) ;	
 		
 	}else if(strcmp(action,"addkey") == 0 ){
 		

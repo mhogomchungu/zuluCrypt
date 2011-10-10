@@ -7,6 +7,7 @@
 #include <QFile>
 #include <QMessageBox>
 #include <QTableWidgetItem>
+#include <iostream>
 
 zuluCryptThreads::zuluCryptThreads(QObject *parent) :
     QThread(parent)
@@ -184,8 +185,17 @@ void createvolumeThread::run()
 		}
 	}
 
-	QString exe = QString(ZULUCRYPTzuluCrypt) + " create \"" + ui->lineEditVolumePath->text() + "\" " + fs + " " + ct + " " +  N + " \"" + passphrase + "\"" ;
+	QFile f(QDir::homePath() + QString("/.zuluCrypt/rng")) ;
 
+	f.open(QIODevice::ReadOnly) ;
+
+	QByteArray q = f.readAll() ;
+
+	f.close();
+
+	QString exe = QString(ZULUCRYPTzuluCrypt) + " create \"" + ui->lineEditVolumePath->text() + "\" " + fs + " " + ct + " " +  N + " \"" + passphrase + "\" " + QString( q );
+
+	std::cout << exe.toStdString() << std::endl ;
 	QProcess p ;
 
 	p.start(exe);

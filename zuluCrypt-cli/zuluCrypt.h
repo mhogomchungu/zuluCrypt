@@ -95,7 +95,7 @@ void status( const  char * mapping_name , char * output, int size);
  * 	1 - ERROR: device argument does not point to a file or partition
  * 	2 - ERROR: A volume associated with the same device address is already opened.
  */
-int create_volume(const char * device,const  char * fs,const char * type, const char * passphrase);  
+int create_volume(const char * device,const  char * fs,const char * type, const char * passphrase,const char *rng);  
 
 
 
