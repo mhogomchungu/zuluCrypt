@@ -69,11 +69,20 @@ private slots:
 
 	void HideUI(void) ;
 
-private:
+	void threadfinished(void) ;
 
-	Ui::luksaddkeyUI *ui;
+private:
+	void disableAll(void) ;
+
+	void enableAll(void) ;
+
+	Ui::luksaddkeyUI *ui ;
+
 	openpartition *pUI ;
 
+	int status ;
+
+	luksAddKeyThread *lakt ;
 };
 
 #endif // luksaddkeySUI_H

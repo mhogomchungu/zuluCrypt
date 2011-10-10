@@ -132,30 +132,30 @@ void password_Dialog::buttonOpenClicked(void )
 {	
 	bool A = ui->checkBoxReadOnly->isChecked() ;
 	bool B = ui->radioButtonPassPhraseFromFile->isChecked() ;
-	QString C = ui->OpenVolumePath->text() ;
-	QString D = ui->MountPointPath->text() ;
-	QString E = ui->PassPhraseField->text() ;
+	volumePath = ui->OpenVolumePath->text() ;
+	QString mountPointPath = ui->MountPointPath->text() ;
+	QString passPhraseField = ui->PassPhraseField->text() ;
 
 	QMessageBox m ;
 	m.addButton(QMessageBox::Ok);
 	m.setParent(this);
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 
-	if(C.isEmpty()){
+	if(volumePath.isEmpty()){
 		m.setWindowTitle(QString("ERROR!"));
 		m.setText(QString("ERROR: volume path field is empty"));
 		m.exec() ;
 		return ;
 	}
-	if(D.isEmpty()){
+	if(mountPointPath.isEmpty()){
 		m.setWindowTitle(QString("ERROR!"));
 		m.setText(QString("ERROR: mount point path field is empty"));
 		m.exec() ;
 		return ;
 	}
-	if(E.isEmpty()){
+	if(passPhraseField.isEmpty()){
 		m.setWindowTitle(QString("ERROR!"));
-		m.setText(QString("ERROR:"));
+		m.setText(QString("passphrase field is empty"));
 
 		if( B == true )
 			m.setText(QString("ERROR: key file field is empty"));
@@ -164,9 +164,160 @@ void password_Dialog::buttonOpenClicked(void )
 
 		m.exec() ;
 		return ;
+	}	
+
+	QString mode ;
+
+	if ( A == true )
+		mode = "ro" ;
+	else
+		mode = "rw" ;
+
+	QString passtype ;
+
+	if ( B == true ){
+
+		passtype = " -f " ;
+
+	}else{
+		passtype = " -p " ;
+
+		for( int i = 0 ; i < passPhraseField.size() ; i++){
+
+			if( passPhraseField.at(i).toAscii() == '\"'){
+				passPhraseField.insert(i,QString("\"\""));
+				i = i + 2 ;
+			}
+		}
 	}
-	HideUI() ;
-	emit pbOpenClicked(A,B,C,D,E);
+
+	QString exe = QString(ZULUCRYPTzuluCrypt) + " open \"" + volumePath + "\" \"" + mountPointPath + "\" " + mode + " " + passtype + "\"" + passPhraseField +"\"";
+
+	ovt = new openVolumeThread(exe,&status) ;
+
+	connect(ovt,SIGNAL(finished()),this,SLOT(threadfinished())) ;
+
+	disableAll();
+
+	ovt->start();
+}
+
+void password_Dialog::disableAll()
+{
+	ui->checkBoxReadOnly->setEnabled(false);
+	ui->groupBox->setEnabled(false);
+	ui->labelMoutPointPath->setEnabled(false);
+	ui->labelPassphrase->setEnabled(false);
+	ui->labelVolumePath->setEnabled(false);
+	ui->MountPointPath->setEnabled(false);
+	ui->OpenVolumePath->setEnabled(false);
+	ui->PassPhraseField->setEnabled(false);
+	ui->PushButtonCancel->setEnabled(false);
+	ui->PushButtonMountPointPath->setEnabled(false);
+	ui->PushButtonOpen->setEnabled(false);
+	ui->pushButtonPassPhraseFromFile->setEnabled(false);
+	ui->PushButtonVolumePath->setEnabled(false);
+	ui->radioButtonPassPhrase->setEnabled(false);
+	ui->radioButtonPassPhraseFromFile->setEnabled(false);
+	ui->radioButtonPassPhrase->setEnabled(false);
+}
+
+void password_Dialog::enableAll()
+{
+	ui->checkBoxReadOnly->setEnabled(true);
+	ui->groupBox->setEnabled(true);
+	ui->labelMoutPointPath->setEnabled(true);
+	ui->labelPassphrase->setEnabled(true);
+	ui->labelVolumePath->setEnabled(true);
+	ui->MountPointPath->setEnabled(true);
+	ui->OpenVolumePath->setEnabled(true);
+	ui->PassPhraseField->setEnabled(true);
+	ui->PushButtonCancel->setEnabled(true);
+	ui->PushButtonMountPointPath->setEnabled(true);
+	ui->PushButtonOpen->setEnabled(true);
+	ui->pushButtonPassPhraseFromFile->setEnabled(true);
+	ui->PushButtonVolumePath->setEnabled(true);
+	ui->radioButtonPassPhrase->setEnabled(true);
+	ui->radioButtonPassPhraseFromFile->setEnabled(true);
+	ui->radioButtonPassPhrase->setEnabled(true);
+}
+void password_Dialog::UIMessage(QString title, QString message)
+{
+	QMessageBox m ;
+	m.setParent(this);
+	m.setWindowFlags(Qt::Window | Qt::Dialog);
+	m.setText(message);
+	m.setWindowTitle(title);
+	m.addButton(QMessageBox::Ok);
+	m.exec() ;
+}
+void password_Dialog::threadfinished()
+{
+	delete ovt ;
+
+	enableAll();
+
+	switch ( status ){
+		case 0 :{
+			/*
+			  There are possible names zuluCrypt-cli will use for mount point and predicting it before hand may
+			  cause unnecessary code bloat. If the opening succeed, just go read the output of "mount"
+			  and use whatever you will find.
+			  */
+			char * c = 0 ;
+
+			char *d = 0 ;
+			int k ;
+			QString N ;
+			QProcess Z ;
+			Z.start(QString(ZULUCRYPTmount));
+
+			Z.waitForFinished() ;
+
+			c = Z.readAllStandardOutput().data() ;
+
+			N = "/dev/mapper/zuluCrypt-" + volumePath.split("/").last() ;
+
+			d = N.toAscii().data() ;
+
+			k = strlen( d ) ;
+
+			d = c = strstr( c , d )  + k + 4 ;
+
+			while (*++d != ' ') { ; }
+
+			*d = '\0' ;
+
+			Z.close();
+
+			emit addItemToTable(volumePath,QString( c ));
+
+			}break ;
+
+		case 1 : UIMessage(QString("ERROR"),QString("No free loop device to use.")) ;
+			HideUI();
+			return ;
+			break ;
+
+		case 2 : UIMessage(QString("ERROR"),QString("there seem to be an open volume accociated with given path."));
+			break ;
+
+		case 3 : UIMessage(QString("ERROR"),QString("no file or device on a given address.")) ;
+			break ;
+
+		case 4 :
+			UIMessage(QString("ERROR"),QString("wrong passphrase."));
+			break ;
+
+		case 5 : UIMessage(QString("ERROR"),QString("mount point address is already taken by a file or folder")) ;
+			break ;
+		case 6 : UIMessage(QString("ERROR"),QString("passphrase file does not exist"));
+			break ;
+		case 9 : UIMessage(QString("ERROR"),QString("\",\" (comma) is not a valid mount point"));
+			break ;
+		default :UIMessage(QString("ERROR"),QString("un unknown error has occured, volume not opened"));
+		}
+
 }
 
 password_Dialog::~password_Dialog()

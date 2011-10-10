@@ -23,6 +23,10 @@
 #include <QFileDialog>
 #include <iostream>
 #include <QAbstractButton>
+#include <QProcess>
+#include <QThread>
+
+#include "executables.h"
 
 createpartition::createpartition(QWidget *parent) :
     QWidget(parent),
@@ -62,7 +66,44 @@ void createpartition::pbOpenKeyFile()
 
 void createpartition::pbCancelClicked()
 {
+	HideUI() ;
+}
+
+void createpartition::HideUI()
+{
 	this->hide();
+}
+
+void createpartition::enableAll()
+{
+	ui->groupBox->setEnabled(true);
+	ui->groupBox_2->setEnabled(true);
+	ui->groupBox_3->setEnabled(true);
+	ui->labelPassPhrase->setEnabled(true);
+	ui->labelVolumePath->setEnabled(true);
+	ui->label_3->setEnabled(true);
+	ui->lineEditPassphrase1->setEnabled(true);
+	ui->lineEditPassPhrase2->setEnabled(true);
+	ui->lineEditVolumePath->setEnabled(true);
+	ui->pbCancel->setEnabled(true);
+	ui->pbCreate->setEnabled(true);
+	ui->pbOpenKeyFile->setEnabled(true);
+}
+
+void createpartition::disableAll()
+{
+	ui->groupBox->setEnabled(false);
+	ui->groupBox_2->setEnabled(false);
+	ui->groupBox_3->setEnabled(false);
+	ui->labelPassPhrase->setEnabled(false);
+	ui->labelVolumePath->setEnabled(false);
+	ui->label_3->setEnabled(false);
+	ui->lineEditPassphrase1->setEnabled(false);
+	ui->lineEditPassPhrase2->setEnabled(false);
+	ui->lineEditVolumePath->setEnabled(false);
+	ui->pbCancel->setEnabled(false);
+	ui->pbCreate->setEnabled(false);
+	ui->pbOpenKeyFile->setEnabled(false);
 }
 
 void createpartition::rbPassphraseClicked()
@@ -87,60 +128,48 @@ void createpartition::rbPasssphraseFromFileClicked()
 	ui->labelPassPhrase->setText(QString("key file"));
 }
 
-void createpartition::pbCreateClicked()
+void createpartition::UIMessage(QString title, QString message)
 {
 	QMessageBox m ;
 	m.setParent(this);
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
+	m.setText(message);
+	m.setWindowTitle(title);
+	m.addButton(QMessageBox::Ok);
+	m.exec() ;
+}
 
+void createpartition::pbCreateClicked()
+{
 	if( ui->lineEditVolumePath->text().isEmpty() == true )	{
-		m.setWindowTitle(QString("ERROR!"));
-		m.addButton(QMessageBox::Ok);
-		m.setText(QString("volume path field is empty"));
-		m.exec() ;
+
+		UIMessage(QString("ERROR!"),QString("volume path field is empty"));
 		return ;
 	}
 
-	QString fs ;
-
-	if( ui->rbext3->isChecked() == true)
-		fs = QString("ext3") ;
-	else if( ui->rbext4->isChecked() == true)
-		fs = QString("ext4") ;
-	else
-		fs = QString("vfat") ;
-
-	QString ct ;
-
-	if(ui->rbPlain->isChecked() == true)
-		ct = QString("plain");
-	else
-		ct = QString("luks");
-
 	if( ui ->lineEditPassphrase1->text().isEmpty() == true){
-		m.setWindowTitle(QString("ERROR!"));
-		m.addButton(QMessageBox::Ok);
-		if( ui->rbPassphrase->isChecked() == true)
-			m.setText(QString("passphrases field is empty"));
-		else
-			m.setText(QString("key file field is empty"));
 
-		m.exec();
+		if( ui->rbPassphrase->isChecked() == true)
+			UIMessage(QString("ERROR"),QString("passphrases field is empty"));
+		else
+			UIMessage(QString("ERROR"),QString("key file field is empty"));
+
 		return ;
 	}
 
 	if(ui->rbPassphrase->isChecked() == true){
 
 		if( QString::compare(ui->lineEditPassphrase1->text(),ui->lineEditPassPhrase2->text()) != 0 ){
-			m.setWindowTitle(QString("ERROR!"));
-			m.addButton(QMessageBox::Ok);
-			m.setText(QString("passphrases do not match"));
-			m.exec();
+			UIMessage(QString("ERROR"),QString("passphrases do not match"));
 			return ;
 		}
 	}
 
+	QMessageBox m ;
+	m.setParent(this);
+	m.setWindowFlags(Qt::Window | Qt::Dialog);
 	m.setWindowTitle(QString("WARNING"));
+
 	QString r("This operation will delete all data in partition: " + ui->lineEditVolumePath->text()) ;
 	r = r + QString("\nAre you sure you want to proceed?") ;
 
@@ -155,12 +184,32 @@ void createpartition::pbCreateClicked()
 	if ( m.exec() != QMessageBox::Yes )
 		return ;
 
-	this->hide();
-	emit CreateVolume(fs,ct,ui->lineEditVolumePath->text(),ui->lineEditPassphrase1->text(),ui->rbPassphraseFromFile->isChecked()) ;
+	cvt = new createvolumeThread(ui,&status) ;
+
+	connect(cvt,SIGNAL(finished()),this,SLOT(threadfinished())) ;
+
+	disableAll();
+
+	cvt->start();
+}
+
+void createpartition::threadfinished()
+{
+	delete cvt ;
+
+	switch( status ) {
+		case 0 : UIMessage(QString("SUCCESS"),QString("volume successfully created"));
+			break;
+		case 1 : UIMessage(QString("ERROR"),QString("volume path does not exist"));
+			break;
+		default: UIMessage(QString("ERROR"),(QString("unrecognized error has occured,volume not created")));
+	}
+	enableAll();
 }
 
 void createpartition::ShowFileUI(QString volume)
 {
+	enableAll();
 	ui->lineEditVolumePath->setText(volume);
 	ui->rbLuks->setChecked(true);
 	ui->rbext4->setChecked(true);

@@ -23,6 +23,8 @@
 #include <QWidget>
 #include <QString>
 
+#include "zulucryptthreads.h"
+
 namespace Ui {
     class createpartition;
 }
@@ -48,9 +50,20 @@ private slots:
 	void rbPassphraseClicked(void);
 	void rbPasssphraseFromFileClicked(void);
 	void pbOpenKeyFile(void);
-
+	void threadfinished(void);
+	void HideUI(void);
 private:
+
+	void enableAll(void) ;
+	void disableAll(void);
+
+	int status ;
+
 	Ui::createpartition *ui;
+
+	createvolumeThread *cvt ;
+
+	void UIMessage(QString title,QString message) ;
 };
 
 #endif // CREATEPARTITION_H

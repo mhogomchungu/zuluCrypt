@@ -18,6 +18,7 @@
  */
 
 #include "luksdeletekey.h"
+#include "zulucrypt.h"
 
 #include <QObject>
 #include <Qt>
@@ -26,6 +27,10 @@
 #include <QRadioButton>
 #include <QPushButton>
 #include <QMessageBox>
+
+namespace Ui {
+    class luksdeletekey;
+}
 
 luksdeletekey::luksdeletekey(QWidget *parent) :
 	QDialog(parent),
@@ -72,12 +77,45 @@ void luksdeletekey::pbOpenKeyFile()
 
 void luksdeletekey::ShowUI()
 {
+	enableAll();
 	ui->rbPassphrase->setEnabled(true);
 	ui->labelPassphrase->setText(QString("passphrase"));
 	ui->rbPassphrase->setChecked(true);
 	ui->lineEditVolumePath->setFocus();
 	ui->pushButtonCancel->setDefault(true);
 	this->show();
+}
+
+void luksdeletekey::disableAll()
+{
+	ui->groupBox->setEnabled(false);
+	ui->label->setEnabled(false);
+	ui->labelPassphrase->setEnabled(false);
+	ui->lineEditPassphrase->setEnabled(false);
+	ui->lineEditVolumePath->setEnabled(false);
+	ui->pushButtonCancel->setEnabled(false);
+	ui->pushButtonDelete->setEnabled(false);
+	ui->pushButtonOpenKeyFile->setEnabled(false);
+	ui->pushButtonOpenPartition->setEnabled(false);
+	ui->pushButtonOpenVolume->setEnabled(false);
+	ui->rbPassphrase->setEnabled(false);
+	ui->rbPassphraseFromFile->setEnabled(false);
+}
+
+void luksdeletekey::enableAll()
+{
+	ui->groupBox->setEnabled(true);
+	ui->label->setEnabled(true);
+	ui->labelPassphrase->setEnabled(true);
+	ui->lineEditPassphrase->setEnabled(true);
+	ui->lineEditVolumePath->setEnabled(true);
+	ui->pushButtonCancel->setEnabled(true);
+	ui->pushButtonDelete->setEnabled(true);
+	ui->pushButtonOpenKeyFile->setEnabled(true);
+	ui->pushButtonOpenPartition->setEnabled(true);
+	ui->pushButtonOpenVolume->setEnabled(true);
+	ui->rbPassphrase->setEnabled(true);
+	ui->rbPassphraseFromFile->setEnabled(true);
 }
 
 void luksdeletekey::pbCancel()
@@ -90,36 +128,77 @@ void luksdeletekey::pbOpenPartition()
 	//HideUI();
 	emit pbOpenPartitionClicked();
 }
-
+void luksdeletekey::UIMessage(QString title, QString message)
+{
+	QMessageBox m ;
+	m.setParent(this);
+	m.setWindowFlags(Qt::Window | Qt::Dialog);
+	m.setText(message);
+	m.setWindowTitle(title);
+	m.addButton(QMessageBox::Ok);
+	m.exec() ;
+}
 void luksdeletekey::pbDelete()
 {
 	QMessageBox m ;
-	m.setWindowTitle(QString("ERROR!"));
 	m.setParent(this);
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 
 	if ( ui->lineEditPassphrase->text().isEmpty() == true ){
+		m.setWindowTitle(QString("ERROR!"));
 		m.setText(QString("ERROR: the passphrase field is empty"));
 		m.addButton(QMessageBox::Ok);
 		m.exec() ;
 		return ;
 	}
 	if ( ui->lineEditVolumePath->text().isEmpty() == true ){
+		m.setWindowTitle(QString("ERROR!"));
 		m.setText(QString("ERROR: the path to encrypted volume field is empty"));
 		m.addButton(QMessageBox::Ok);
 		m.exec() ;
 		return ;
 	}
-	QString Z = ui->lineEditPassphrase->text() ;
-	QString N = ui->lineEditVolumePath->text() ;
-	bool P = ui->rbPassphraseFromFile->isChecked() ;
 
-	//add quotation marks to prevent zuluCrypt-cli from getting confused
-	//Z = "\"" + Z + "\"" ;
-	//N = "\"" + N + "\"" ;
+	if ( zuluCrypt::isLuks(ui->lineEditVolumePath->text()) == false ){
 
-	HideUI() ;
-	emit pbDeleteClicked( N, P, Z );
+		m.setWindowTitle(QString("ERROR!"));
+		m.setText(QString("given path does not point to a luks volume"));
+		m.addButton(QMessageBox::Ok);
+		m.exec() ;
+		return ;
+	}
+
+	disableAll();
+
+	ldk = new luksdeleteKeyThread(ui,&status) ;
+
+	connect(ldk,SIGNAL(finished()),this,SLOT(threadfinished())) ;
+
+	ldk->start();
+}
+
+void luksdeletekey::threadfinished()
+{
+	delete ldk ;
+
+	switch( status ){
+		case 0 :{
+			UIMessage(QString("SUCCESS"),QString("key successfully removed\n") + zuluCrypt::luksEmptySlots(ui->lineEditVolumePath->text()) + QString(" / 8 slots are now in use"));
+			HideUI() ;
+			return ;
+			}break ;
+		case 1 :UIMessage(QString("ERROR"),QString("one or more paths has an empty space in them, the back end doesnt like it"));
+			break ;
+		case 2 :UIMessage(QString("ERROR"),QString("there is no key in the volume that match entered key"));
+			break ;
+		case 4 :UIMessage(QString("ERROR"),QString("device does not exist"));
+			break ;
+		case 5 :UIMessage(QString("ERROR"),QString("key file does not exist"));
+			break ;
+
+		default:UIMessage(QString("ERROR"),QString( "un unexpected error has occured, key not removed "));
+	}
+	enableAll();
 }
 
 void luksdeletekey::pbOpenVolume()
@@ -130,6 +209,7 @@ void luksdeletekey::pbOpenVolume()
 
 void luksdeletekey::deleteKey(QString passphrase)
 {
+	enableAll();
 	ui->lineEditVolumePath->setText(passphrase);
 	ShowUI() ;
 }

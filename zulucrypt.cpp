@@ -88,17 +88,9 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 
 	connect(ui->actionFileCreate,SIGNAL(triggered()),createFile,SLOT(showUI()));
 
-	connect(createpartitionUI,SIGNAL(CreateVolume(QString,QString,QString,QString,bool)),this,SLOT(createEncryptedVolume(QString,QString,QString,QString,bool)));
-
 	connect(NonSystemPartitions,SIGNAL(clickedPartition(QString)),createpartitionUI,SLOT(ShowPartitionUI(QString)));
 
-	connect(this,SIGNAL(showNonSystemPartitions(QStringList)),NonSystemPartitions,SLOT(ShowNonSystemPartitions(QStringList)));
-
-	connect(this, SIGNAL(luksDeleteKeyUI(QString)),deleteKeyUI,SLOT(deleteKey(QString))) ;
-
-	connect(this,SIGNAL(luksAddKeyUI(QString)),addKeyUI,SLOT(partitionEntry(QString))) ;
-
-	connect(openFileUI,SIGNAL(pbOpenClicked(bool,bool,QString,QString,QString)),this,SLOT(openEncryptedVolume(bool,bool,QString,QString,QString))) ;
+	connect(this,SIGNAL(showNonSystemPartitions()),NonSystemPartitions,SLOT(ShowNonSystemPartitions()));
 
 	connect(ui->actionFileOpen,SIGNAL(triggered()),openFileUI,SLOT(ShowUI())) ;
 
@@ -113,10 +105,6 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 	connect(ui->actionAddKey,SIGNAL(triggered()), addKeyUI,SLOT(ShowUI()) ) ;
 
 	connect(ui->actionDeleteKey,SIGNAL(triggered()),deleteKeyUI,SLOT(ShowUI()) ) ;
-
-	connect(addKeyUI,SIGNAL(clickedpbAdd(QString,bool,QString,bool,QString)), this,SLOT(luksAddKey(QString,bool,QString,bool,QString))) ;
-
-	connect(deleteKeyUI,SIGNAL(pbDeleteClicked(QString,bool,QString)),this, SLOT(luksDeleteKey(QString,bool,QString))) ;
 
 	connect(this,SIGNAL(redoOpen(bool,bool,QString,QString)),openFileUI,SLOT(ShowUI(bool,bool,QString,QString)));
 
@@ -139,6 +127,8 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 	connect(ui->menuFavorites,SIGNAL(triggered(QAction*)),this,SLOT(favClicked(QAction*))) ;
 
 	connect(ui->actionSelect_random_number_generator,SIGNAL(triggered()),rng,SLOT(ShowUI())) ;
+
+	connect(openFileUI,SIGNAL(addItemToTable(QString,QString)),this,SLOT(addItemToTable(QString,QString))) ;
 	setUpOpenedVolumes() ;
 
 	QProcess p ;
@@ -380,167 +370,9 @@ void zuluCrypt::info()
 	exe.close();
 }
 
-void zuluCrypt::createEncryptedVolume(QString fileSystem, QString containterType, QString volumePath, QString passphrase,bool passphraseFromFile)
-{
-	QString N ;
-
-	if (passphraseFromFile == true)
-		N = QString("-f") ;
-	else
-		N = QString("-p") ;
-
-	QString exe = QString(ZULUCRYPTzuluCrypt) + " create \"" + volumePath + "\" " + fileSystem + " " + containterType + " " +  N + " \"" + passphrase + "\"" ;
-
-	QProcess p ;
-
-	p.start(exe);
-	p.waitForFinished();
-
-	switch( p.exitCode() ) {
-		case 0 : UIMessage(QString("SUCCESS"),QString("volume successfully created"));
-			break;
-		case 1 : UIMessage(QString("ERROR"),QString("volume path does not exist"));
-			break;
-		default: UIMessage(QString("ERROR"),(QString("unrecognized error has occured,volume not created")));
-	}
-	p.close();
-}
-
 void zuluCrypt::createEncryptedpartitionUI()
 {
-	QProcess p ;
-	p.start(QString(ZULUCRYPTzuluCrypt) + QString(" partitions 3"));
-	p.waitForFinished() ;
-
-	QStringList l = QString( p.readAllStandardOutput()).split("\n") ;
-
-	p.close();
-	emit showNonSystemPartitions( l ) ;
-}
-
-void zuluCrypt::luksDeleteKey(QString volumePath,bool passPhraseIsFile, QString pass)
-{
-	if ( isLuks(volumePath) == false ){
-
-		UIMessage(QString("ERROR"),QString("given path does not point to a luks volume"));
-		emit luksDeleteKeyUI(volumePath) ;
-		return ;
-	}
-
-	QString exe = QString(ZULUCRYPTzuluCrypt) + QString(" removekey ")  + "\"" +volumePath + "\"" ;
-
-	if ( passPhraseIsFile == true ){
-
-		exe = exe + QString(" -f ") ;
-
-	}else{
-
-		exe = exe + QString(" -p ") ;
-
-		for( int i = 0 ; i < pass.size() ; i++){
-
-			if( pass.at(i).toAscii() == '\"'){
-				pass.insert(i,QString("\"\""));
-				i = i + 2 ;
-			}
-		}
-	}
-
-	exe = exe + QString(" \"") + pass + QString("\"") ;
-	QProcess Z ;
-	Z.start( exe );
-	Z.waitForFinished() ;
-
-	switch( Z.exitCode()  ){
-		case 0 :{
-				UIMessage(QString("SUCCESS"),QString("key successfully removed\n") + luksEmptySlots(volumePath) + QString(" / 8 slots are now in use"));
-				Z.close();
-				return ;
-			}break ;
-		case 1 :	UIMessage(QString("ERROR"),QString("one or more paths has an empty space in them, the back end doesnt like it"));
-			break ;
-		case 2 :
-				UIMessage(QString("ERROR"),QString("there is no key in the volume that match entered key"));
-			break ;
-		case 4 :	UIMessage(QString("ERROR"),QString("device does not exist"));
-			break ;
-		case 5 :	UIMessage(QString("ERROR"),QString("key file does not exist"));
-			break ;
-
-		default:	UIMessage(QString("ERROR"),QString( "un unexpected error has occured, key not removed "));
-	}
-	Z.close();
-	emit luksDeleteKeyUI(volumePath) ;
-}
-
-void zuluCrypt::luksAddKey(QString volumePath, bool keyfile,QString ExistingKey,bool newkeyfile, QString NewKey)
-{
-
-	if ( isLuks(volumePath) == false ){
-
-		UIMessage(QString("ERROR"),QString("given path does not point to a luks volume"));
-		emit luksAddKeyUI(volumePath) ;
-		return ;
-	}
-
-	QString existingPassType ;
-	QString newPassType ;
-
-	if ( keyfile == true)
-		existingPassType = QString(" -f ") ;
-	else{
-		existingPassType = QString(" -p ") ;
-
-		for( int i = 0 ; i < ExistingKey.size() ; i++){
-
-			if( ExistingKey.at(i).toAscii() == '\"'){
-				ExistingKey.insert(i,QString("\"\""));
-				i = i + 2 ;
-			}
-		}
-	}
-
-	if ( newkeyfile == true)
-		newPassType = QString(" -f ") ;
-	else{
-		newPassType = QString(" -p ") ;
-
-		for( int i = 0 ; i < NewKey.size() ; i++){
-
-			if( NewKey.at(i).toAscii() == '\"'){
-				NewKey.insert(i,QString("\"\""));
-				i = i + 2 ;
-			}
-		}
-	}
-
-	QString exe = QString(ZULUCRYPTzuluCrypt) + QString(" addkey ") + "\"" + volumePath + "\"" + existingPassType + "\"" + ExistingKey + "\"" + newPassType + "\"" + NewKey + "\"" ;
-
-	QProcess Z ;
-
-	Z.start(exe);
-
-	Z.waitForFinished() ;
-
-	switch( Z.exitCode() ){
-		case 0 :{
-				UIMessage(QString("SUCCESS"),QString("key added successfully\n") + luksEmptySlots(volumePath) + QString(" / 8 slots are now in use")) ;
-				Z.close();
-				return ;
-			}break ;
-		case 1 :	UIMessage(QString("ERROR"),QString("presented key does not match any key in the volume"));
-			break ;
-		case 2 :	UIMessage(QString("ERROR"),QString("new passphrases do not match"));
-			break ;
-		case 3 :	UIMessage(QString("ERROR"),QString("keyfile with the new passphrase does not exist"));
-			break ;
-		case 4 :	UIMessage(QString("ERROR"),QString("luks volume does not exist"));
-			break ;
-		default:	UIMessage(QString("ERROR"),QString("un unrecognized error has occured, key not added"));
-
-	}
-	Z.close();
-	emit luksAddKeyUI(volumePath) ;
+	emit showNonSystemPartitions( ) ;
 }
 
 char zuluCrypt::luksEmptySlots(QString volumePath)
@@ -934,112 +766,6 @@ void zuluCrypt::deleteFile( QFile *f)
 	in.close();
 	f->close();
 	f->remove() ;
-}
-
-void zuluCrypt::openEncryptedVolume(bool boolOpenReadOnly,bool boolKeyFromFile,QString volumePath, QString mountPointPath,QString passPhraseField)
-{
-	QString exe ;
-	QString mode ;
-	QString passtype ;
-
-	if ( boolOpenReadOnly == true )
-		mode = "ro" ;
-	else
-		mode = "rw" ;
-
-	QProcess process ;
-
-	if ( boolKeyFromFile == true ){
-
-		passtype = " -f " ;
-
-	}else{
-		passtype = " -p " ;
-
-		for( int i = 0 ; i < passPhraseField.size() ; i++){
-
-			if( passPhraseField.at(i).toAscii() == '\"'){
-				passPhraseField.insert(i,QString("\"\""));
-				i = i + 2 ;
-			}
-		}
-	}
-
-	process.start(exe) ;
-
-	process.waitForFinished() ;
-
-	exe = QString(ZULUCRYPTzuluCrypt) + " open \"" + volumePath + "\" \"" + mountPointPath + "\" " + mode + " " + passtype + "\"" + passPhraseField +"\"";
-
-	process.start(exe) ;
-
-	process.waitForFinished() ;
-	int T = process.exitCode() ;
-
-	process.close();
-
-	switch ( T ){
-	case 0 :{
-		/*
-		  There are possible names zuluCrypt-cli will use for mount point and predicting it before hand may
-		  cause unnecessary code bloat. If the opening succeed, just go read the output of "mount"
-		  and use whatever you will find.
-		  */
-		char * c = 0 ;
-
-		char *d = 0 ;
-		int k ;
-		QString N ;
-		QProcess Z ;
-		Z.start(QString(ZULUCRYPTmount));
-
-		Z.waitForFinished() ;
-
-		c = Z.readAllStandardOutput().data() ;
-
-		N = "/dev/mapper/zuluCrypt-" + volumePath.split("/").last() ;
-
-		d = N.toAscii().data() ;
-
-		k = strlen( d ) ;
-
-		d = c = strstr( c , d )  + k + 4 ;
-
-		while (*++d != ' ') { ; }
-
-		*d = '\0' ;
-
-		addItemToTable(volumePath,QString( c ));
-
-		Z.close();
-
-		return ;
-		}break ;
-
-	case 1 : UIMessage(QString("ERROR"),QString("No free loop device to use.")) ;
-		return ;
-		break ;
-
-	case 2 : UIMessage(QString("ERROR"),QString("there seem to be an open volume accociated with given path."));
-		break ;
-
-	case 3 : UIMessage(QString("ERROR"),QString("no file or device on a given address.")) ;
-		break ;
-
-	case 4 :
-		UIMessage(QString("ERROR"),QString("wrong passphrase."));
-		break ;
-
-	case 5 : UIMessage(QString("ERROR"),QString("mount point address is already taken by a file or folder")) ;
-		break ;
-	case 6 : UIMessage(QString("ERROR"),QString("passphrase file does not exist"));
-		break ;
-	case 9 : UIMessage(QString("ERROR"),QString("\",\" (comma) is not a valid mount point"));
-		break ;
-	default :UIMessage(QString("ERROR"),QString("un unknown error has occured, volume not opened"));
-	}
-
-	emit redoOpen(boolOpenReadOnly,boolKeyFromFile,volumePath, mountPointPath);
 }
 
 zuluCrypt::~zuluCrypt()

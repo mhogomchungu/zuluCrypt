@@ -51,16 +51,18 @@ class zuluCrypt : public QMainWindow
 public:
 	explicit zuluCrypt(QWidget *parent = 0);
 
-	void addItemToTable(QString pathToVolume, QString pathToMountPoint) ;
-
 	void removeRowFromTable(int row) ;
+
+	static char luksEmptySlots(QString volumePath) ;
+
+	static bool isLuks(QString volumePath) ;
 
 	~zuluCrypt();
 
 signals:
 	void  showManageFavorites(void) ;
 	void  favClickedVolume(QString volume_path,QString mount_point_path);
-	void  showNonSystemPartitions(QStringList);
+	void  showNonSystemPartitions(void);
 	void  luksAddKeyUI(QString volumePath) ;
 	void  luksDeleteKeyUI(QString passphrase) ;
 	void  redoOpen(bool boolOpenReadOnly,bool boolKeyFromFile,QString volumePath, QString mountPointPath) ;
@@ -70,10 +72,6 @@ private slots :
 	void info(void) ;
 
 	void createEncryptedpartitionUI(void) ;
-
-	void createEncryptedVolume(QString fileSystem,QString containterType,QString volumePath,QString passphrase,bool passphraseFromFile) ;
-
-	void openEncryptedVolume(bool boolOpenReadOnly,bool boolKeyFromFile,QString volumePath, QString mountPointPath,QString passPhraseField) ;
 
 	void luksAddKeyContextMenu(void) ;
 
@@ -91,10 +89,6 @@ private slots :
 
 	void UIMessage(QString title,QString message) ;
 
-	void luksAddKey(QString volumePath,bool keyfile, QString ExistingKey,bool newkeyfile, QString NewKey) ;
-
-	void luksDeleteKey(QString volumePath,bool passPhraseIsFile,QString passPhrase) ;
-
 	void fonts(void) ;
 
 	void addToFavorite(void) ;
@@ -109,11 +103,9 @@ private slots :
 
 	void trayProperty(void) ;
 
-private:
+	void addItemToTable(QString pathToVolume, QString pathToMountPoint);
 
-	char luksEmptySlots(QString volumePath) ;
-
-	bool isLuks(QString volumePath) ;
+private:	
 
 	void deleteFile(QFile *) ;
 

@@ -54,7 +54,30 @@ void createkeyfile::ShowUI()
 
 void createkeyfile::pbCancel()
 {
-	this->HideUI();
+	if( rng == NULL )
+		HideUI();
+	else
+		rng->terminate();
+}
+
+void createkeyfile::enableAll()
+{
+	ui->label->setEnabled(true);
+	ui->label_2->setEnabled(true);
+	ui->lineEditFileName->setEnabled(true);
+	ui->lineEditPath->setEnabled(true);
+	ui->pbCreate->setEnabled(true);
+	ui->pbOpenFolder->setEnabled(true);
+}
+
+void createkeyfile::disableAll()
+{
+	ui->label->setEnabled(false);
+	ui->label_2->setEnabled(false);
+	ui->lineEditFileName->setEnabled(false);
+	ui->lineEditPath->setEnabled(false);
+	ui->pbCreate->setEnabled(false);
+	ui->pbOpenFolder->setEnabled(false);
 }
 
 void createkeyfile::pbCreate()
@@ -81,25 +104,25 @@ void createkeyfile::pbCreate()
 
 	QString keyfile = ui->lineEditPath->text() + QString("/") + ui->lineEditFileName->text() ;
 
-	QFile out( keyfile) ;
+	out = new QFile( keyfile) ;
 
-	if( out.exists() == true){
+	if( out->exists() == true){
 		m.setWindowTitle(QString("ERROR!"));
 		m.setText(QString("file with the same name and at the destination folder already exist"));
 		m.exec() ;
 		return ;
 	}
 
-	out.open(QIODevice::WriteOnly) ;
+	out->open(QIODevice::WriteOnly) ;
 
-	if( out.putChar('X') == false ){
+	if( out->putChar('X') == false ){
 		m.setWindowTitle(QString("ERROR!"));
 		m.setText(QString("you dont seem to have writing access to the destination folder"));
 		m.exec() ;
 		return ;
 	}
 
-	out.seek(0) ;
+	out->seek(0) ;
 
 	QFile f(QDir::homePath() + QString("/.zuluCrypt/rng")) ;
 
@@ -109,31 +132,53 @@ void createkeyfile::pbCreate()
 
 	f.close();
 
-	QFile in(QString( b.data() )) ;
+	in = new QFile(QString( b.data() )) ;
 
-	std::cout << in.fileName().toStdString() << std::endl ;
+	in->open(QIODevice::ReadOnly) ;
 
-	in.open(QIODevice::ReadOnly) ;
+	rng = new rngThread(in,out) ;
 
-	char data ;
+	connect(rng,SIGNAL(finished()),this,SLOT(threadfinished()));
 
-	for( int i = 0 ; i < 512 ; i++){
+	//connect(rng,SIGNAL(terminated()),this,SLOT(threadterminated())) ;
 
-		do{
-			in.getChar(&data) ;
-		}while( data < 32 || data > 126) ;
+	disableAll() ;
 
-		out.putChar(data) ;
+	rng->start();
+}
+
+void createkeyfile::threadterminated()
+{
+	enableAll();
+}
+
+void createkeyfile::threadfinished()
+{
+	delete rng ;
+
+	rng = NULL ;
+
+	enableAll();
+	in->close();
+	out->close();
+
+	QFile f(ui->lineEditPath->text() + QString("/") + ui->lineEditFileName->text()) ;
+
+	QMessageBox m ;
+	m.addButton(QMessageBox::Ok);
+	m.setParent(this);
+	m.setWindowFlags(Qt::Window | Qt::Dialog);
+
+	if( f.size() == 32){
+		m.setWindowTitle(QString("SUCCESS!"));
+		m.setText(QString("key file successfully created"));
+		m.exec() ;
+	}else{
+		m.setWindowTitle(QString("WARNING!"));
+		m.setText(QString("process interrupted, key not fully generated"));
+		m.exec() ;
 	}
-
-	in.close();
-	out.close();
-
-	m.setWindowTitle(QString("SUCCESS!"));
-	m.setText(QString("key file successfully created"));
-	m.exec() ;
-
-	this->HideUI();
+	//this->HideUI();
 }
 
 void createkeyfile::pbOpenFolder()
@@ -142,6 +187,7 @@ void createkeyfile::pbOpenFolder()
 
 	ui->lineEditPath->setText( Z );
 }
+
 
 createkeyfile::~createkeyfile()
 {

@@ -23,6 +23,8 @@
 
 #include <QWidget>
 
+#include "zulucryptthreads.h"
+
 namespace Ui {
     class createkeyfile;
 }
@@ -45,10 +47,21 @@ private slots:
 	void pbCancel(void) ;
 	void pbCreate(void) ;
 	void pbOpenFolder(void) ;
+	void threadfinished(void);
+	void threadterminated(void);
 
 private:
 
+	void disableAll(void);
+
+	void enableAll(void) ;
+
 	Ui::createkeyfile *ui;
+
+	rngThread *rng ;
+
+	QFile *in ;
+	QFile *out ;
 };
 
 #endif // CREATEKEYFILE_H

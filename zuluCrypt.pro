@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     createpartition.cpp \
     createfile.cpp \
     createkeyfile.cpp \
-    rngselector.cpp
+    rngselector.cpp \
+    zulucryptthreads.cpp
 
 HEADERS  += zulucrypt.h password_dialog.h \
     openpartition.h \
@@ -29,7 +30,8 @@ HEADERS  += zulucrypt.h password_dialog.h \
     createpartition.h \
     createfile.h \
     createkeyfile.h \
-    rngselector.h
+    rngselector.h \
+    zulucryptthreads.h
 
 FORMS    += zulucrypt.ui password.ui \
     openpartition.ui \
@@ -41,6 +43,8 @@ FORMS    += zulucrypt.ui password.ui \
     rngselector.ui
 
 OTHER_FILES +=
+
+
 
 
 

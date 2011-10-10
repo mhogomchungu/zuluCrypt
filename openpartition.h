@@ -22,15 +22,14 @@
 #define OPEN_PARTITION_H
 
 
+#include "zulucryptthreads.h"
 #include "ui_openpartition.h"
-
 
 class openpartition :  public QDialog
 {
 	Q_OBJECT
 
 public:
-
 	openpartition(QWidget *parent = 0);
 
 	virtual ~openpartition();
@@ -45,9 +44,9 @@ public slots:
 
 	void ShowUI(void);
 
-	void ShowNonSystemPartitions(QStringList) ;
+	void ShowNonSystemPartitions(void) ;
 
-	QString deviceProperties(const char *device) ;
+	static QString deviceProperties(const char *device) ;
 
 private:
 
@@ -55,7 +54,11 @@ private:
 
 	Ui::PartitionView *partitionView ;
 
-	int count ;
+	ShowNonSystemPartitionsThread *nonsystempartitionlist ;
+
+	partitionlistThread *partitionlist ;
+
+	int status ;
 };
 
 #endif

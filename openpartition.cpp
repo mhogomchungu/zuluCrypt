@@ -26,8 +26,10 @@
 #include <QObject>
 #include <QHeaderView>
 #include <QFile>
+#include <QThread>
 
 #include "executables.h"
+
 
 openpartition::openpartition(QWidget *parent ) :
 	QDialog(parent)
@@ -41,120 +43,28 @@ openpartition::openpartition(QWidget *parent ) :
 	connect(partitionView->tableWidgetPartitionView,SIGNAL(cellDoubleClicked(int,int)),this,SLOT(tableEntryDoubleClicked(int,int))) ;
 }
 
-void openpartition::ShowNonSystemPartitions(QStringList l)
+void openpartition::ShowNonSystemPartitions()
 {
 	this->setWindowTitle(QString("select a partition to create an encrypted volume in"));
 
-	int i ;
-	int y = partitionView->tableWidgetPartitionView->rowCount() ;
+	partitionlist = NULL ;
 
-	for( int i = 0 ; i < y  ; i++ )
-	{
-		partitionView->tableWidgetPartitionView->removeRow(0);
-	}
+	nonsystempartitionlist  = new ShowNonSystemPartitionsThread(partitionView);
+	nonsystempartitionlist->start();
 
-	delete partitionView->tableWidgetPartitionView->horizontalHeaderItem(0);
-
-	partitionView->tableWidgetPartitionView->setHorizontalHeaderItem(0, new QTableWidgetItem(QString("non system partitions( no active entries in fstab )")));
-	partitionView->tableWidgetPartitionView->removeColumn(1);
-
-	partitionView->tableWidgetPartitionView->setColumnWidth(0,540);
-
-	QTableWidgetItem * t ;
-
-	for ( i = 0 ; i < l.size() - 1 ; i++){
-
-		t = new QTableWidgetItem(deviceProperties(l.at(i).toAscii().data())) ;
-		t->setTextAlignment(Qt::AlignCenter);
-
-		partitionView->tableWidgetPartitionView->insertRow(i);
-		partitionView->tableWidgetPartitionView->setItem(i,0,t);
-	}
 	this->show();
 }
 
 void openpartition::ShowUI()
-{
+{	
 	this->setWindowTitle(QString("select an encrypted partition to open"));
 
-	int y = partitionView->tableWidgetPartitionView->rowCount() ;
+	nonsystempartitionlist = NULL ;
 
-	for( int i = 0 ; i < y  ; i++ )
-	{
-		partitionView->tableWidgetPartitionView->removeRow(0);
-	}
+	partitionlist = new partitionlistThread(partitionView) ;
 
-	partitionView->tableWidgetPartitionView->setColumnWidth(0,540);
-	partitionView->tableWidgetPartitionView->removeColumn(1);
+	partitionlist->start();
 
-	char buffer[64];
-	char *c,*d ;
-	int i = 0 ;
-
-	QFile f("/proc/partitions");
-	f.open(QIODevice::ReadOnly);
-	f.readLine(buffer,64 ) ;
-	f.readLine(buffer,64 ) ;
-
-	QTableWidgetItem * t ;
-
-	QString partition ;
-	QProcess p ;
-	QByteArray b ;
-
-/*
-  output of "cat /proc/partitions" that produced below code
-
-major minor  #blocks  name
-
-   8        0   78150744 sda
-   8        1   11566768 sda1
-   8        2          1 sda2 <--- no idea why this entry is here, it doesnt show up anywhere else,skip it
-   8        5   66581361 sda5
-   8       16  312571224 sdb
-   8       17    1044193 sdb1
-   8       18          1 sdb2 <---- no idea why this entry is here,it doesnt show up anywhere else,skit it
-   8       21  311524416 sdb5
-   8       32     250879 sdc
-   8       33     250608 sdc1
-
-   only take partitions(sdX,hdY), skip everything else like /dev/loopX
-  */
-	while( f.atEnd() != true ){
-		f.readLine(buffer,64) ;
-		c = buffer ;
-
-		while( *++c != '\n' ) { ; }
-
-		*c = '\0' ;
-
-		d = c ;
-
-		while( *--d != ' ' ) { ; }
-
-		d++ ;
-
-		if( strlen( d ) == 3 )
-			continue ;
-
-		//if ( *( d - 3 ) == ' ') // skip sda2 and sdb2 above
-		//	continue ;
-
-		if( strncmp( d,"sd",2) != 0 && strncmp( d,"hd",2) != 0 )
-			continue ;
-
-		strcpy(buffer,"/dev/");
-		strcat(buffer, d ) ;
-
-		t = new QTableWidgetItem( deviceProperties( buffer )) ;
-
-		t->setTextAlignment(Qt::AlignCenter);
-
-		partitionView->tableWidgetPartitionView->insertRow(i);
-		partitionView->tableWidgetPartitionView->setItem(i,0,t);
-		i++ ;
-	}
-	f.close();
 	this->show();
 }
 
@@ -249,13 +159,21 @@ QString openpartition::deviceProperties(const char *device)
 void openpartition::HideUI()
 {
 	this->hide();
+
+	if( partitionlist != NULL )
+		delete partitionlist ;
+
+	if( nonsystempartitionlist != NULL )
+		delete nonsystempartitionlist ;
 }
 
 void openpartition::tableEntryDoubleClicked(int row, int column)
 {
 	QString i = partitionView->tableWidgetPartitionView->item(row,column)->text().split(":").at(0) ;
-	HideUI() ;
+
 	emit clickedPartition(i.split(":").at(0));
+
+	HideUI() ;
 }
 
 openpartition::~openpartition()

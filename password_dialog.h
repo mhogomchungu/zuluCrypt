@@ -28,6 +28,7 @@
 
 #include "ui_password.h"
 #include "openpartition.h"
+#include "zulucryptthreads.h"
 
 class password_Dialog :  public QDialog
 {	
@@ -38,7 +39,7 @@ public:
 	virtual ~password_Dialog();
 
 signals :
-	void pbOpenClicked(bool boolOpenReadOnly,bool boolKeyFromFile,QString volumePath, QString mountPointPath,QString passPhraseField) ;
+	void addItemToTable(QString,QString) ;
 
 private slots :
 
@@ -53,8 +54,21 @@ private slots :
 	void HideUI(void);
 	void ShowUI(bool boolOpenReadOnly,bool boolKeyFromFile,QString volumePath, QString mountPointPath) ;
 	void ShowUI(QString volumePath,QString mount_point) ;
-private :
+	void threadfinished() ;
+private :	
+	void UIMessage(QString title, QString message) ;
+
+	void disableAll(void);
+
+	void enableAll(void) ;
+
 	Ui::PasswordDialog *ui;
+
+	openVolumeThread *ovt ;
+
+	int status ;
+
+	QString volumePath ;
 };
 
 #endif // PASSWORD_DIALOG_H

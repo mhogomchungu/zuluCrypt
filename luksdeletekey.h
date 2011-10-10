@@ -21,8 +21,8 @@
 #define LUKSDELETEKEY_H
 
 #include <QDialog>
-
-#include "ui_luksdeletekey.h"
+#include "zulucryptthreads.h"
+#include "ui_openpartition.h"
 #include "openpartition.h"
 
 class luksdeletekey : public QDialog
@@ -64,10 +64,22 @@ private slots:
 
 	void pbOpenVolume(void) ;
 
-private:
-    Ui::luksdeletekey *ui;
-    openpartition *pUI ;
+	void threadfinished(void) ;
 
+private:
+	void disableAll(void) ;
+
+	void enableAll(void) ;
+
+	void UIMessage(QString title, QString message) ;
+
+	Ui::luksdeletekey *ui;
+
+	openpartition *pUI ;
+
+	luksdeleteKeyThread *ldk ;
+
+	int status ;
 };
 
 #endif // LUKSDELETEKEY_H
