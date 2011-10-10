@@ -281,7 +281,7 @@ void rngThread::run()
 {
 	char data ;
 
-	for( int i = 0 ; i < 512 ; i++){
+	for( int i = 0 ; i < 32 ; i++){
 
 		do{
 			in->getChar(&data) ;

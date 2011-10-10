@@ -353,10 +353,12 @@ void zuluCrypt::info()
 	info = info + QString("\n") ;
 
 	info = info + QString("maximum passphrase length:	512 characters\n") ;
-	info = info + QString("maximum key file size:		512 bytes\n\n") ;
+	//info = info + QString("maximum key file size:		512 bytes\n\n") ;
 
-	info = info +QString("device used for creating encrypted files:	/dev/urandom\n") ;
-	info = info +QString("device used for creating key files:	/dev/urandom\n") ;
+	info = info + QString("generated key file size:		32 characters\n") ;
+
+	//info = info +QString("device used for creating encrypted files:	/dev/urandom\n") ;
+	//info = info +QString("device used for creating key files:	/dev/urandom\n") ;
 
 	QMessageBox m ;
 	m.setParent(this);
