@@ -1,6 +1,7 @@
 
 #include "zulucryptthreads.h"
 #include "openpartition.h"
+#include "zulucrypt.h"
 
 #include <QProcess>
 #include <QFile>
@@ -292,3 +293,35 @@ void rngThread::run()
 	in->close();
 	out->close();
 }
+
+volumePropertiesThread::volumePropertiesThread(QString p,QString *q)
+{
+	path = p ;
+	volProperty = q ;
+}
+
+void volumePropertiesThread::run()
+{
+	QString z = QString(ZULUCRYPTzuluCrypt) + QString(" status ") + QString("\"") + path + QString("\"");
+
+	QProcess p ;
+
+	p.start( z ) ;
+
+	p.waitForFinished() ;
+
+	QByteArray t("\n") ;
+
+	QByteArray r = p.readAllStandardOutput() ;
+
+	int start = r.length() - r.indexOf(t) - 2 ;
+
+	p.close();
+
+	if ( zuluCrypt::isLuks(path) == true)
+		*volProperty = ( QString(" ") + QString( r.right(start) )   + QString("  occupied key slots: ") + zuluCrypt::luksEmptySlots(path) + QString(" / 8")) ;
+	else
+		*volProperty = ( QString(" ") + QString( r.right(start) ) ) ;
+}
+
+

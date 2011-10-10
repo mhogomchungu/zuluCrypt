@@ -86,5 +86,16 @@ private:
 
 };
 
+class volumePropertiesThread : public QThread
+{
+public :
+	void run() ;
+	volumePropertiesThread(QString,QString *) ;
+private:
+	QString path ;
+	QString *volProperty ;
+
+};
+
 Q_DECLARE_METATYPE(Qt::Orientation) ;
 #endif // ZULUCRYPTTHREADS_H

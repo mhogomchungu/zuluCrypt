@@ -529,35 +529,27 @@ void zuluCrypt::removeRowFromTable( int x )
 
 void zuluCrypt::volume_property()
 {
-	QProcess p ;
+	mp = new QMessageBox(this) ;
+	mp->setWindowTitle(QString("volume properties"));
+	mp->setParent(this);
+	mp->setWindowFlags(Qt::Window | Qt::Dialog);
+	mp->addButton(QMessageBox::Ok);
 
 	QString path = item->tableWidget()->item(item->row(),0)->text() ;
 
-	QString z = QString(ZULUCRYPTzuluCrypt) + QString(" status ") + QString("\"") + path + QString("\"");
+	vpt = new volumePropertiesThread(path,&volumeProperty) ;
 
-	p.start( z ) ;
-	p.waitForFinished() ;
+	connect(vpt,SIGNAL(finished()),this,SLOT(volumePropertyThreadFinished())) ;
 
-	QByteArray t("\n") ;
+	vpt->start();
+}
 
-	QByteArray r = p.readAllStandardOutput() ;
-
-	int start = r.length() - r.indexOf(t) - 2 ;
-
-	p.close();
-
-	QMessageBox m ;
-	m.setWindowTitle(QString("volume properties"));
-	m.setParent(this);
-	m.setWindowFlags(Qt::Window | Qt::Dialog);
-
-	if ( isLuks(path) == true)
-		m.setText( QString(" ") + QString( r.right(start) )   + QString("  occupied key slots: ") + luksEmptySlots(path) + QString(" / 8")) ;
-	else
-		m.setText( QString(" ") + QString( r.right(start) ) ) ;
-
-	m.addButton(QMessageBox::Ok);
-	m.exec() ;
+void zuluCrypt::volumePropertyThreadFinished()
+{
+	delete vpt ;
+	mp->setText(volumeProperty);
+	mp->exec() ;
+	delete mp ;
 }
 
 void zuluCrypt::favAboutToHide()

@@ -28,6 +28,7 @@
 #include <QFont>
 #include <QWidget>
 #include <QList>
+#include <QMessageBox>
 
 #include "executables.h"
 #include "password_dialog.h"
@@ -105,6 +106,8 @@ private slots :
 
 	void addItemToTable(QString pathToVolume, QString pathToMountPoint);
 
+	void volumePropertyThreadFinished(void) ;
+
 private:	
 
 	void deleteFile(QFile *) ;
@@ -134,8 +137,11 @@ private:
 	createkeyfile *createkeyFile ;
 
 	QString volume_path,mount_point_path, pass_phrase,mode ;
+
 	QMenu *m  ;
+
 	QTableWidgetItem* item ;
+
 	int item_count ;
 
 	QSystemTrayIcon *trayIcon ;
@@ -145,6 +151,12 @@ private:
 	QList<QMenu *> menulist ;
 
 	rngselector *rng ;
+
+	volumePropertiesThread *vpt ;
+
+	QString volumeProperty ;
+
+	QMessageBox *mp ;
 };
 
 #endif // ZULUCRYPT_H
