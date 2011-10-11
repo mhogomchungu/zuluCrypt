@@ -292,7 +292,7 @@ void password_Dialog::threadfinished()
 
 			emit addItemToTable(volumePath,QString( c ));
 
-			this->hide() ;
+			HideUI() ;
 
 			}break ;
 
