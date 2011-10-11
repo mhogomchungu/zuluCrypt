@@ -32,6 +32,7 @@
 #include <QMessageBox>
 #include <QFontDialog>
 
+
 zuluCrypt::zuluCrypt(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::zuluCrypt)

@@ -60,8 +60,8 @@ private:
 
 	rngThread *rng ;
 
-	QFile *in ;
-	QFile *out ;
+	QString in ;
+	QString out ;
 };
 
 #endif // CREATEKEYFILE_H

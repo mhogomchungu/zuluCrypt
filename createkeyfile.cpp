@@ -109,25 +109,25 @@ void createkeyfile::pbCreate()
 
 	QString keyfile = ui->lineEditPath->text() + QString("/") + ui->lineEditFileName->text() ;
 
-	out = new QFile( keyfile) ;
+	QFile o( keyfile ) ;
 
-	if( out->exists() == true){
+	if( o.exists() == true){
 		m.setWindowTitle(QString("ERROR!"));
 		m.setText(QString("file with the same name and at the destination folder already exist"));
 		m.exec() ;
 		return ;
 	}
 
-	out->open(QIODevice::WriteOnly) ;
+	o.open(QIODevice::WriteOnly) ;
 
-	if( out->putChar('X') == false ){
+	if( o.putChar('X') == false ){
 		m.setWindowTitle(QString("ERROR!"));
 		m.setText(QString("you dont seem to have writing access to the destination folder"));
 		m.exec() ;
 		return ;
 	}
 
-	out->seek(0) ;
+	o.close();
 
 	QFile f(QDir::homePath() + QString("/.zuluCrypt/rng")) ;
 
@@ -137,11 +137,7 @@ void createkeyfile::pbCreate()
 
 	f.close();
 
-	in = new QFile(QString( b.data() )) ;
-
-	in->open(QIODevice::ReadOnly) ;
-
-	rng = new rngThread(in,out) ;
+	rng = new rngThread(QString( b.data() ),keyfile) ;
 
 	connect(rng,SIGNAL(finished()),this,SLOT(threadfinished()));
 
@@ -164,8 +160,6 @@ void createkeyfile::threadfinished()
 	rng = NULL ;
 
 	enableAll();
-	in->close();
-	out->close();
 
 	QFile f(ui->lineEditPath->text() + QString("/") + ui->lineEditFileName->text()) ;
 
@@ -183,7 +177,7 @@ void createkeyfile::threadfinished()
 		m.setText(QString("process interrupted, key not fully generated"));
 		m.exec() ;
 	}
-	//this->HideUI();
+	this->HideUI();
 }
 
 void createkeyfile::pbOpenFolder()

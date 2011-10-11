@@ -30,6 +30,7 @@
 #include <QList>
 #include <QMessageBox>
 
+
 #include "executables.h"
 #include "password_dialog.h"
 #include "openpartition.h"
@@ -107,7 +108,8 @@ private slots :
 
 	void volumePropertyThreadFinished(void) ;
 
-private:	
+
+private:
 
 	void deleteFile(QFile *) ;
 

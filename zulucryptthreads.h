@@ -79,10 +79,10 @@ class rngThread : public QThread
 {
 public :
 	void run() ;
-	rngThread(QFile *in,QFile *out) ;
+	rngThread(QString,QString) ;
 private:
-	QFile *in ;
-	QFile *out ;
+	QString rng ;
+	QString keyfile ;
 
 };
 

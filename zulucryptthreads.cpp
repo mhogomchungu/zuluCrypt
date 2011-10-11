@@ -9,6 +9,8 @@
 #include <QTableWidgetItem>
 #include <iostream>
 
+#include <cstdio>
+
 zuluCryptThreads::zuluCryptThreads(QObject *parent) :
     QThread(parent)
 {
@@ -280,27 +282,33 @@ void openVolumeThread::run()
 	p.close();
 }
 
-rngThread::rngThread(QFile *i, QFile *o)
+rngThread::rngThread(QString rn,QString key)
 {
-	in = i ;
-	out = o ;
+	rng = rn ;
+	keyfile = key ;
 }
 
 void rngThread::run()
 {
 	char data ;
 
+	//QFile blocked when reading from /dev/random for some reason,
+	//going back to C API for file access
+
+	FILE * in = fopen( rng.toAscii().data(),"r") ;
+
+	FILE * out = fopen( keyfile.toAscii().data(),"w") ;
+
 	for( int i = 0 ; i < 32 ; i++){
 
 		do{
-			in->getChar(&data) ;
+			data = fgetc(in) ;
 		}while( data < 32 || data > 126) ;
 
-		out->putChar(data) ;
+		fputc(data,out) ;
 	}
-
-	in->close();
-	out->close();
+	fclose(in) ;
+	fclose(out) ;
 }
 
 volumePropertiesThread::volumePropertiesThread(QString p,QString *q)
