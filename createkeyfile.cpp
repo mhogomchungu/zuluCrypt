@@ -38,6 +38,8 @@ createkeyfile::createkeyfile(QWidget *parent) :
 	connect(ui->pbCreate,SIGNAL(clicked()),this,SLOT(pbCreate())) ;
 	connect(ui->pbOpenFolder,SIGNAL(clicked()),this,SLOT(pbOpenFolder())) ;
 	connect(ui->pbCancel,SIGNAL(clicked()),this,SLOT(pbCancel())) ;
+
+	rng = NULL ;
 }
 
 void createkeyfile::HideUI()
@@ -54,10 +56,13 @@ void createkeyfile::ShowUI()
 
 void createkeyfile::pbCancel()
 {
-	if( rng == NULL )
-		HideUI();
-	else
-		rng->terminate();
+	if( rng == NULL){
+		HideUI() ;
+		return ;
+	}
+
+	rng->terminate();  ;
+	rng = NULL ;
 }
 
 void createkeyfile::enableAll()

@@ -36,6 +36,8 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::zuluCrypt)
 {
+	item_count = 0 ;
+
 	openFileUI = new password_Dialog(this) ;
 	openFileUI->setWindowFlags(Qt::Window | Qt::Dialog);
 
@@ -68,8 +70,6 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 
 	trayIcon = new QSystemTrayIcon(this);
 	trayIcon->setIcon(QIcon(QString("/usr/share/icons/zuluCrypt.png")));
-
-	item_count = 0 ;
 
 	ui->setupUi(this);
 	this->setFixedSize(this->size());
@@ -186,7 +186,6 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 		g.write("/dev/urandom") ;
 		g.close();
 	}
-
 }
 
 void zuluCrypt::trayClicked(QSystemTrayIcon::ActivationReason e)

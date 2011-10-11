@@ -288,9 +288,11 @@ void password_Dialog::threadfinished()
 
 			*d = '\0' ;
 
-			Z.close();
+			Z.close();			
 
 			emit addItemToTable(volumePath,QString( c ));
+
+			this->hide() ;
 
 			}break ;
 
@@ -305,9 +307,11 @@ void password_Dialog::threadfinished()
 		case 3 : UIMessage(QString("ERROR"),QString("no file or device on a given address.")) ;
 			break ;
 
-		case 4 :
+		case 4 :{
 			UIMessage(QString("ERROR"),QString("wrong passphrase."));
-			break ;
+			ui->PassPhraseField->clear();
+			ui->PassPhraseField->setFocus();
+			}break ;
 
 		case 5 : UIMessage(QString("ERROR"),QString("mount point address is already taken by a file or folder")) ;
 			break ;

@@ -195,7 +195,6 @@ void createvolumeThread::run()
 
 	QString exe = QString(ZULUCRYPTzuluCrypt) + " create \"" + ui->lineEditVolumePath->text() + "\" " + fs + " " + ct + " " +  N + " \"" + passphrase + "\" " + QString( q );
 
-	std::cout << exe.toStdString() << std::endl ;
 	QProcess p ;
 
 	p.start(exe);

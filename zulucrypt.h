@@ -40,7 +40,6 @@
 #include "createkeyfile.h"
 #include "rngselector.h"
 
-
 namespace Ui {
     class zuluCrypt;
 }
@@ -157,6 +156,7 @@ private:
 	QString volumeProperty ;
 
 	QMessageBox *mp ;
+
 };
 
 #endif // ZULUCRYPT_H
