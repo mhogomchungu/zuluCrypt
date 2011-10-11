@@ -520,7 +520,7 @@ int create_volumes(int argn ,char *device, char *fs, char * mode, char * keyType
 				
 				if(strcmp(mode,"luks") == 0 ){
 					
-					printf("enter 1 to use \"/dev/random\" device when generating the key  ( more secure but slow )\n") ;
+					printf("enter 1 to use \"/dev/random\" device when generating the key  ( more secure but slower )\n") ;
 					printf("enter 2 to use \"/dev/urandom\" device when generating the key ( secure enought and faster )\n") ;
 					
 					Y = getchar() ;
