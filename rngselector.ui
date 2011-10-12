@@ -43,13 +43,12 @@
      <rect>
       <x>50</x>
       <y>40</y>
-      <width>321</width>
+      <width>361</width>
       <height>51</height>
      </rect>
     </property>
     <property name="text">
-     <string>/dev/random   :  more secure but  could get really
- slow.
+     <string>/dev/random   :  more secure but  could get really slow.
 ( move your mouse around to speed things up.)</string>
     </property>
    </widget>
