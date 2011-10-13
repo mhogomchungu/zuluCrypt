@@ -10,11 +10,10 @@ else
  
 	ar  rcs libString.a String.o
   
-	gcc  -D_FILE_OFFSET_BITS=64 -Wall -c libzuluCrypt.c -o libzuluCrypt.o  -L. -lString 
+	gcc   -D_FILE_OFFSET_BITS=64 -Wall -c libzuluCrypt.c   -o libzuluCrypt.o   
  
 	ar  rcs libzuluCrypt.a libzuluCrypt.o
 	
-	gcc -o zuluCrypt-cli zuluCrypt.c -Wall -static -D_FILE_OFFSET_BITS=64 -L. -lzuluCrypt -lString 
+	gcc  -o zuluCrypt-cli zuluCrypt.c -Wall  -D_FILE_OFFSET_BITS=64 -L. -L/usr/local/lib -L/lib -lzuluCrypt -lString  -lcryptsetup
+	
 fi
-
-

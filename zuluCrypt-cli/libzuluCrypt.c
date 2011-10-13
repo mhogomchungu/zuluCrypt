@@ -26,6 +26,7 @@
 #include <sys/mount.h>
 #include <fcntl.h>
 #include <termios.h>
+#include <libcryptsetup.h>
 
 #include "String.h"   
 
@@ -37,6 +38,7 @@ int is_luks(const char * device) ;
 void execute( const char *command ,char *output, int size) ;
 int mount_volume(const char *mapping_name,const char *m_point,const char * mode,uid_t id) ;
 char * sanitize(const char *c ) ;
+char * intToChar(char * x, int y,int z) ;
 
 int add_key(const char * dev, const char * ek,const  const char * keyfile)
 {
@@ -217,21 +219,111 @@ int empty_slots( char * slots ,const char * dev )
 	return 0 ;
 }
 
-void status( const char * map , char * output, int size )
-{		
-	char * mapping_name = sanitize( map ) ;
+char * intToChar(char * x, int y,int z)
+{
+	char *c =  x + y  ;
 	
-	StrHandle * str = StringCpy(ZULUCRYPTcryptsetup ) ;
+	*c = '\0' ;
 	
-	StringCat(str," status zuluCrypt-") ;
+	c-- ;
+	
+	do{
+		*c-- = z % 10 + '0' ;
+		
+		z = z / 10 ;		
+		
+	}while( z != 0 ) ;
+	
+	return ++c ;
+}
 
-	StringCat(str,mapping_name);
+char * status( const char * device )
+{		
+	#define SIZE 31
+	char keysize[ SIZE + 1 ] ;
+	char loop[512] ;
+	char *c ;
+	char *d ;
+	//crypt_status_info csi ;
+	struct crypt_device *cd = NULL;
+	struct crypt_device *cd1 = NULL;
+	struct crypt_active_device cad ;
 	
-	execute(StringCont(str),output,size);
+	StrHandle * p ;
+	StrHandle * q ;
 	
-	StringDelete(str);
+	const char *type ;
+	int i ;
+
+	i = crypt_init_by_name(&cd,device);
 	
-	free( mapping_name ) ;
+	if( i != 0 )
+		return NULL ;
+	
+	i = crypt_get_active_device(cd1,device,&cad) ;
+	
+	if( i != 0 )
+		return NULL ;
+	
+	type = crypt_get_type(cd) ;	
+	
+	p = StringCpy("type:\t\t");
+	
+	StringCat(p,type) ;
+
+	StringCat(p,"\ncipher:\t\t");
+	StringCat(p,crypt_get_cipher_mode(cd)) ;
+	
+	StringCat(p,"\nkeysize:\t");
+	StringCat(p,intToChar(keysize,SIZE,8 *crypt_get_volume_key_size(cd))) ;
+	StringCat(p," bits");
+	
+	StringCat(p,"\ndevice:\t\t");
+	StringCat(p,crypt_get_device_name(cd)) ;
+	
+	if( strncmp(crypt_get_device_name(cd),"/dev/loop",9 ) == 0){
+		
+		q = StringCpy(ZULUCRYPTlosetup) ;
+		StringCat(q," ");
+		StringCat(q,crypt_get_device_name(cd)) ;
+		execute(StringCont(q),loop,511) ;
+		StringDelete( q ) ;
+		
+		c = loop ;
+		
+		while( *c++ != '(') { ; }
+			
+		d = c ;
+		
+		while( *++d != ')') { ; }
+		
+		*d = '\0' ;
+		
+		StringCat(p,"\nloop:\t\t");
+		StringCat(p,c);
+	}
+	
+	StringCat(p,"\noffset:\t\t");
+	StringCat(p,intToChar(keysize,SIZE,crypt_get_data_offset(cd))) ;	
+	StringCat(p," sectors");	
+	
+	StringCat(p,"\nsize:\t\t");
+	StringCat(p,intToChar(keysize,SIZE,cad.size)) ;	
+	StringCat(p," sectors");
+	
+	StringCat(p,"\nmode:\t\t");
+	
+	if( cad.flags == 1 )
+		StringCat(p,"readonly");
+	else
+		StringCat(p,"read/write");
+	
+	//StringCat(p,intToChar(keysize,SIZE,cad.flags)) ;	
+		
+	c = StringContCopy(p) ;	
+	crypt_free(cd);
+	StringDelete(p) ;
+	return c ;
 }
 
 /*
@@ -320,25 +412,19 @@ void execute( const char *command , char *output, int size)
 }
 
 int is_luks(const char * dev)
-{	
-	char s[2] ;		
+{		
+	struct crypt_device *cd = NULL;
+	int r;
 
-	char * device = sanitize( dev ) ;
-
-	StrHandle * str = StringCpy(ZULUCRYPTcryptsetup ) ;
-	StringCat(str," isLuks ");
-	StringCat(str,device);	
-	StringCat(str," 2>/dev/null 1>&2 ; ") ;
-	StringCat(str,ZULUCRYPTecho) ;
-	StringCat(str," $?") ;
+	r = crypt_init(&cd, dev) ;	
 	
-	execute( StringCont( str ),s,1 );
-		
-	StringDelete( str );
-		
-	free( device ) ;
+	if( r == 0 )
+		r = crypt_load(cd, CRYPT_LUKS1, NULL);
 	
-	return s[0] - '0' ;	
+	if( r == 0 )
+		return 0 ;
+	else 
+		return 1 ;
 }
 
 int create_volume(const char * dev, const char * fs,const char * type, const char * pass, const char *rng)

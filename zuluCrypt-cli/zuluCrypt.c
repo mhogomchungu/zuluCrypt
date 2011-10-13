@@ -74,27 +74,24 @@ void help( void )
 	printf("this tool should come with a documentation file, read it for more info\n");	
 }
 
-int volume_info( char * mapping_name )
+int volume_info( const char * mapper,const char *device )
 {
-	struct stat st ;
-	char x[512] ;
-	int Z ;
+	char * output = NULL ;
+	StrHandle *p = StringCpy("/dev/mapper/zuluCrypt-");
+	StringCat(p,mapper);	
 	
-	StrHandle *s = StringCpy("/dev/mapper/zuluCrypt-") ;
-	StringCat( s, mapping_name ) ;
+	output = status( StringCont(p) ) ;
 	
-	if( stat( StringCont( s ),&st) == 0 ){			
-		status(mapping_name,x ,512 ) ;
-		printf("%s",x);
-		Z = 0 ;
-	}else{
-		printf("No opened volume associated with provided name\n") ;
-		Z = 1 ;
+	if( output == NULL ){
+		printf("device \"%s\" is not open\n",device) ;
+		return 1 ;
 	}
 	
-	StringDelete( s ) ;
+	printf("device \"%s\" is open\n",device) ;
+	printf("%s\n",output);
 	
-	return Z ;	
+	StringDelete(p);
+	return 0 ;
 }
 
 int close_opened_volume( char * mapping_name,char * device )
@@ -1066,7 +1063,7 @@ int main( int argc , char *argv[])
 		
 	}else if ( strcmp( action, "status" ) == 0 ){			
 
-		status = volume_info( mapping_name ) ;
+		status = volume_info( mapping_name,device ) ;
 		
 	}else if ( strcmp( action, "close" ) == 0 ){			
 

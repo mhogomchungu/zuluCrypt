@@ -84,7 +84,7 @@ int close_volume(const char * mapping_name,const  char * device) ;
 
 
 
-void status( const  char * mapping_name , char * output, int size);
+char *status( const  char * mapper );
 
 
 
