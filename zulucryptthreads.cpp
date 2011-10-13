@@ -305,7 +305,7 @@ void rngThread::run()
 
 	FILE * out = fopen( keyfile.toAscii().data(),"w") ;
 
-	for( int i = 0 ; i < 32 ; i++){
+	for( int i = 0 ; i < 64 ; i++){
 
 		do{
 			data = fgetc(in) ;

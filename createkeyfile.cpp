@@ -170,7 +170,7 @@ void createkeyfile::threadfinished()
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 	m.setFont(this->font());
 
-	if( f.size() == 32){
+	if( f.size() == 64){
 		m.setWindowTitle(QString("SUCCESS!"));
 		m.setText(QString("key file successfully created"));
 		m.exec() ;

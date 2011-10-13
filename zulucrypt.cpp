@@ -436,19 +436,24 @@ void zuluCrypt::info()
 
 	info = info + QString("keysize:	") ;
 	info = info + QString(c + 5) ;
-	info = info + QString("\n") ;
+	info = info + QString("\n\n") ;
 
 	c = strstr( d + 2 , "LUKS") ;
+	d = c ;
+	while (*++d !=',') { ; }
+	*d = '\0' ;
+
 	info = info + QString(c) ;
-	info = info + QString("\n") ;
+	info = info + QString("\n\n") ;
 
 	info = info + QString("maximum passphrase length:	512 characters\n") ;
-	//info = info + QString("maximum key file size:		512 bytes\n\n") ;
+	info = info + QString("maximum key file size:		512 bytes\n\n") ;
 
-	info = info + QString("key files are generated with:	32 characters(256bits)\n\n") ;
+	info = info + QString("key files are generated with:	64 characters( 512bits )\n\n") ;
 
-	info = info +QString("device used for creating encrypted files:	( user specified )\n") ;
-	info = info +QString("device used for creating key files:	( user specified )\n") ;
+	info = info + QString("NOTE: passphrases with newline characters are not supported\n\n") ;
+
+	info = info +QString("random number generator device:	( user specified )\n") ;
 
 	QMessageBox m ;
 	m.setParent(this);
