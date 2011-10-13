@@ -113,9 +113,7 @@ private:
 
 	void deleteFile(QFile *) ;
 
-	void setUserFont(void) ;
-
-	void setupUserOptions(void) ;
+	void setUserFont(QFont) ;
 
 	Ui::zuluCrypt *ui;
 
@@ -147,7 +145,7 @@ private:
 
 	QSystemTrayIcon *trayIcon ;
 
-	QFont Font ;
+	//QFont Font ;
 
 	QList<QMenu *> menulist ;
 

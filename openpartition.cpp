@@ -49,7 +49,8 @@ void openpartition::ShowNonSystemPartitions()
 
 	partitionlist = NULL ;
 
-	nonsystempartitionlist  = new ShowNonSystemPartitionsThread(partitionView);
+	nonsystempartitionlist  = new ShowNonSystemPartitionsThread(partitionView,this->font());
+
 	nonsystempartitionlist->start();
 
 	this->show();
@@ -61,7 +62,7 @@ void openpartition::ShowUI()
 
 	nonsystempartitionlist = NULL ;
 
-	partitionlist = new partitionlistThread(partitionView) ;
+	partitionlist = new partitionlistThread(partitionView,this->font()) ;
 
 	partitionlist->start();
 

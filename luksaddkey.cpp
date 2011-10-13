@@ -175,6 +175,7 @@ void luksaddkeyUI::pbAdd(void)
 	bool y = ui->radioButtonNewPassphraseFromFile->isChecked() ;
 
 	QMessageBox m ;	
+	m.setFont(this->font());
 	m.setParent(this);
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 
@@ -183,6 +184,7 @@ void luksaddkeyUI::pbAdd(void)
 		m.setText(QString("the encrypted volume path field is empty"));
 		m.addButton(QMessageBox::Ok);
 		m.exec() ;
+		enableAll();
 		return ;
 	}
 	if ( ExistingKey.isEmpty() == true ){
@@ -190,6 +192,7 @@ void luksaddkeyUI::pbAdd(void)
 		m.setText(QString("existing passphrase field is empth"));
 		m.addButton(QMessageBox::Ok);
 		m.exec() ;
+		enableAll();
 		return ;
 	}
 	if ( NewKey.isEmpty() == true ){
@@ -197,6 +200,7 @@ void luksaddkeyUI::pbAdd(void)
 		m.setText(QString("new passphrase field is empty"));
 		m.addButton(QMessageBox::Ok);
 		m.exec() ;
+		enableAll();
 		return ;
 	}
 	if ( ui->radioButtonNewPassphraseFromFile->isChecked() == false){
@@ -205,6 +209,7 @@ void luksaddkeyUI::pbAdd(void)
 			m.setText(QString("passphrases do not match"));
 			m.addButton(QMessageBox::Ok);
 			m.exec() ;
+			enableAll();
 			return ;
 		}
 	}
@@ -263,6 +268,7 @@ void luksaddkeyUI::threadfinished()
 	delete lakt ;
 
 	QMessageBox m ;
+	m.setFont(this->font());
 	m.setParent(this);
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 
@@ -277,44 +283,44 @@ void luksaddkeyUI::threadfinished()
 			this->hide();
 			return ;
 			}break ;
-		case 1 :{
+		case 1 :
 			m.setWindowTitle(QString("ERROR!"));
 			m.setText(QString("presented key does not match any key in the volume"));
 			m.addButton(QMessageBox::Ok);
 			m.exec() ;
 			enableAll();
-			}break ;
-		case 2 :{
+			break ;
+		case 2 :
 			m.setWindowTitle(QString("ERROR!"));
 			m.setText(QString("new passphrases do not match"));
 			m.addButton(QMessageBox::Ok);
 			m.exec() ;
 			enableAll();
-			}break ;
+			break ;
 
-		case 3 :{
+		case 3 :
 			m.setWindowTitle(QString("ERROR!"));
 			m.setText(QString("keyfile with the new passphrase does not exist"));
 			m.addButton(QMessageBox::Ok);
 			m.exec() ;
 			enableAll();
-			}break ;
+			break ;
 
-		case 4 :{
+		case 4 :
 			m.setWindowTitle(QString("ERROR!"));
 			m.setText(QString("luks volume does not exist"));
 			m.addButton(QMessageBox::Ok);
 			m.exec() ;
 			enableAll();
-			}break ;
+			break ;
 
-		default:{
+		default:
 			m.setWindowTitle(QString("ERROR!"));
 			m.setText(QString("un unrecognized error has occured, key not added"));
 			m.addButton(QMessageBox::Ok);
 			m.exec() ;
 			enableAll();
-			}
+
 	}
 }
 

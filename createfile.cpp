@@ -57,6 +57,7 @@ void createfile::ddFinished(int exitCode, QProcess::ExitStatus st)
 	m.setParent(this);
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 	m.addButton(QMessageBox::Ok);
+	m.setFont(this->font());
 
 	if( st == QProcess::CrashExit){
 	//	m.setText(QString("A problem occured and creation process is terminated.\nMake sure file path field points to a folder that exists and you have writing access"));
@@ -101,6 +102,7 @@ void createfile::pbCreate()
 	m.setParent(this);
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 	m.addButton(QMessageBox::Ok);
+	m.setFont(this->font());
 
 	if(ui->lineEditFileName->text().isEmpty()){
 		m.setText(QString("ERROR: the file name field is empty"));
@@ -193,6 +195,7 @@ void createfile::pbCancel()
 	m.addButton(QMessageBox::No);
 	m.setDefaultButton(QMessageBox::No);
 	m.setText(QString("sure you want to stop file creation process?"));
+	m.setFont(this->font());
 
 	if(m.exec() == QMessageBox::No)
 		return ;

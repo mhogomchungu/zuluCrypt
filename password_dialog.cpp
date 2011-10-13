@@ -137,6 +137,7 @@ void password_Dialog::buttonOpenClicked(void )
 	QString passPhraseField = ui->PassPhraseField->text() ;
 
 	QMessageBox m ;
+	m.setFont(this->font());
 	m.addButton(QMessageBox::Ok);
 	m.setParent(this);
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
@@ -244,6 +245,7 @@ void password_Dialog::enableAll()
 void password_Dialog::UIMessage(QString title, QString message)
 {
 	QMessageBox m ;
+	m.setFont(this->font());
 	m.setParent(this);
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 	m.setText(message);

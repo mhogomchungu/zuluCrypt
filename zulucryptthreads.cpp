@@ -16,9 +16,10 @@ zuluCryptThreads::zuluCryptThreads(QObject *parent) :
 {
 }
 
-ShowNonSystemPartitionsThread::ShowNonSystemPartitionsThread(Ui::PartitionView * p)
+ShowNonSystemPartitionsThread::ShowNonSystemPartitionsThread(Ui::PartitionView * p,QFont f)
 {
 	partitionView = p ;
+	font = f ;
 }
 
 void ShowNonSystemPartitionsThread::run()
@@ -44,6 +45,8 @@ void ShowNonSystemPartitionsThread::run()
 	partitionView->tableWidgetPartitionView->setHorizontalHeaderItem(0, new QTableWidgetItem(QString("non system partitions( no active entries in fstab )")));
 	partitionView->tableWidgetPartitionView->removeColumn(1);
 
+	partitionView->tableWidgetPartitionView->horizontalHeaderItem(0)->setFont(font);
+
 	partitionView->tableWidgetPartitionView->setColumnWidth(0,540);
 
 	QTableWidgetItem * t ;
@@ -58,9 +61,10 @@ void ShowNonSystemPartitionsThread::run()
 	}
 }
 
-partitionlistThread::partitionlistThread(Ui::PartitionView * p)
+partitionlistThread::partitionlistThread(Ui::PartitionView * p,QFont f)
 {
 	partitionView = p ;
+	font = f ;
 }
 
 void partitionlistThread::run()
@@ -74,6 +78,8 @@ void partitionlistThread::run()
 
 	partitionView->tableWidgetPartitionView->setColumnWidth(0,540);
 	partitionView->tableWidgetPartitionView->removeColumn(1);
+
+	partitionView->tableWidgetPartitionView->horizontalHeaderItem(0)->setFont(font);
 
 	char buffer[64];
 	char *c,*d ;

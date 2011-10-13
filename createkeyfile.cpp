@@ -91,6 +91,7 @@ void createkeyfile::pbCreate()
 	m.addButton(QMessageBox::Ok);
 	m.setParent(this);
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
+	m.setFont(this->font());
 
 	if( ui->lineEditFileName->text().isEmpty() == true ){
 
@@ -167,6 +168,7 @@ void createkeyfile::threadfinished()
 	m.addButton(QMessageBox::Ok);
 	m.setParent(this);
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
+	m.setFont(this->font());
 
 	if( f.size() == 32){
 		m.setWindowTitle(QString("SUCCESS!"));

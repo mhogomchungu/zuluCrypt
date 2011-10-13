@@ -31,13 +31,17 @@
 #include <iostream>
 #include <QMessageBox>
 #include <QFontDialog>
+#include <QMetaType>
 
+Q_DECLARE_METATYPE(Qt::Orientation) ;
 
 zuluCrypt::zuluCrypt(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::zuluCrypt)
 {
 	item_count = 0 ;
+
+	qRegisterMetaType<Qt::Orientation>("Qt::Orientation") ;
 
 	openFileUI = new password_Dialog(this) ;
 	openFileUI->setWindowFlags(Qt::Window | Qt::Dialog);
@@ -187,6 +191,48 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 		g.write("/dev/urandom") ;
 		g.close();
 	}
+
+	QFile z(QDir::homePath() + QString("/.zuluCrypt/font")) ;
+
+	if(z.exists() == false){
+
+		z.open(QIODevice::WriteOnly | QIODevice::Truncate) ;
+
+		QString s = QString("Sans Serif\n9\nnormal\nnormal") ;
+
+		z.write( s.toAscii() ) ;
+
+		z.close();
+	}
+
+	QFile x(QDir::homePath() + QString("/.zuluCrypt/font"));
+
+	x.open(QIODevice::ReadOnly) ;
+
+	QStringList xs = QString( x.readAll() ).split("\n") ;
+
+	x.close();
+
+	QFont F ;
+
+	F.setFamily(xs.at(0));
+	F.setPointSize(xs.at(1).toInt());
+
+	if(xs.at(2) == QString("normal"))
+		F.setStyle(QFont::StyleNormal);
+	else if(xs.at(2) == QString("italic"))
+		F.setStyle(QFont::StyleItalic);
+	else
+		F.setStyle(QFont::StyleOblique);
+
+	if(xs.at(3) == QString("normal"))
+		F.setWeight(QFont::Normal);
+	else
+		F.setWeight(QFont::Bold);
+
+	setUserFont(F);
+
+	setUserFont(F);
 }
 
 void zuluCrypt::trayClicked(QSystemTrayIcon::ActivationReason e)
@@ -239,31 +285,75 @@ void zuluCrypt::trayProperty()
 
 void zuluCrypt::fonts()
 {
+	bool ok ;
+	QFont Font = QFontDialog::getFont(&ok,this->font(),this) ;
 
+	if( ok == true ){
 
+		QByteArray ba ;
+
+		int k = Font.pointSize() ;
+
+		do{
+			ba.push_front( k % 10 + '0' ) ;
+			k = k / 10 ;
+
+		}while( k != 0 ) ;
+
+		setUserFont(Font);
+
+		QString s = Font.family()+ QString("\n");
+
+		s = s + QString( ba )  + QString("\n") ;
+
+		if(Font.style() == QFont::StyleNormal)
+
+			s = s + QString("normal\n") ;
+
+		else if(Font.style() == QFont::StyleItalic)
+
+			s = s + QString("italic\n") ;
+		else
+
+			s = s + QString("oblique\n") ;
+
+		if(Font.weight() == QFont::Normal)
+
+			s = s + QString("normal\n") ;
+		else
+			s = s + QString("bold") ;
+
+		QFile f(QDir::homePath() + QString("/.zuluCrypt/font")) ;
+
+		f.open(QIODevice::WriteOnly | QIODevice::Truncate ) ;
+		f.write(s.toAscii()) ;
+		f.close();
+	}
 }
 
-void zuluCrypt::setupUserOptions()
+void zuluCrypt::setUserFont(QFont Font)
 {
-	//QDir::mkdir(QDir::homePath() + QString(".zuluCrypt")) ;
-
-	//QFile f(QDir::homePath() + QString(".zuluCrypt")) ;
-
-	//f.open(QIODevice::ReadOnly) ;
-
-	//QStringList content = QString(f.readAll()).split("\n") ;
-
-	//f.close();
-
-	//f.open(QIODevice::WriteOnly || QIODevice::Truncate) ;
-}
-
-void zuluCrypt::setUserFont()
-{
-
 	this->setFont(Font);
 
-	this->menuBar()->setFont(Font);
+	ui->tableWidget->horizontalHeaderItem(0)->setFont(Font);
+	ui->tableWidget->horizontalHeaderItem(1)->setFont(Font);
+	ui->tableWidget->horizontalHeaderItem(2)->setFont(Font);
+
+	ui->actionAbout->setFont(this->font());
+	ui->actionAddKey->setFont(this->font());
+	ui->actionCreatekeyFile->setFont(this->font());
+	ui->actionDeleteKey->setFont(this->font());
+	ui->actionFavorite_volumes->setFont(this->font());
+	ui->actionFileCreate->setFont(this->font());
+	ui->actionFileOpen->setFont(this->font());
+	ui->actionFonts->setFont(this->font());
+	ui->actionInfo->setFont(this->font());
+	ui->actionManage_favorites->setFont(this->font());
+	ui->actionPartitionCreate->setFont(this->font());
+	ui->actionPartitionOpen->setFont(this->font());
+	ui->actionSelect_random_number_generator->setFont(this->font());
+	ui->actionTray_icon->setFont(this->font());
+	ui->menuFavorites->setFont(this->font());
 
 	openFileUI->setFont(Font);
 
@@ -365,7 +455,7 @@ void zuluCrypt::info()
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 	m.addButton(QMessageBox::Ok);
 	m.setWindowTitle(QString("cryptographic info"));
-
+	m.setFont(this->font());
 	m.setText(info) ;
 
 	m.exec() ;
@@ -410,18 +500,15 @@ bool zuluCrypt::isLuks(QString volumePath)
 
 void zuluCrypt::aboutMenuOption(void)
 {
-	//QMessageBox m ;
-	//m.setParent(this);
-	//m.setWindowFlags(Qt::Window | Qt::Dialog);
-	//m.addButton(QMessageBox::Ok);
-	//m.setWindowTitle(QString("about zuluCrypt"));
-
-	//m.setText(QString( VERSION_STRING )) ;
-
-	//m.exec() ;
-
-QString a = QString( VERSION_STRING ) + QString("\nThis program is distributed in the hope that it will be useful,but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\nSee the GNU General Public License for more details.") ;
-	QMessageBox::about(this,QString("About zuluCrypt"), a );
+	QMessageBox m ;
+	m.setParent(this);
+	m.setWindowFlags(Qt::Window | Qt::Dialog);
+	m.addButton(QMessageBox::Ok);
+	m.setWindowTitle(QString("about zuluCrypt"));
+	m.setFont(this->font());
+	QString a = QString( VERSION_STRING ) + QString("\nThis program is distributed in the hope that it will be useful,but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\nSee the GNU General Public License for more details.") ;
+	m.setText( a ) ;
+	m.exec() ;
 }
 
 void zuluCrypt::setUpOpenedVolumes(void)
@@ -536,6 +623,7 @@ void zuluCrypt::volume_property()
 	mp->setParent(this);
 	mp->setWindowFlags(Qt::Window | Qt::Dialog);
 	mp->addButton(QMessageBox::Ok);
+	mp->setFont(this->font());
 
 	QString path = item->tableWidget()->item(item->row(),0)->text() ;
 
@@ -604,10 +692,10 @@ void zuluCrypt::readFavorites()
 	for(int i = 0 ; i < l.size() - 1 ; i++){
 
 		QMenu *m = new QMenu(l.at(i)) ;
-
+		m->setFont(this->font());
 		m->addAction("open")->setParent(m);
 
-		m->addAction("remove from favorite") ;
+		m->addAction("remove from favorite")->setParent(m); ;
 
 		ui->menuFavorites->addMenu(m) ;
 
@@ -641,7 +729,7 @@ void zuluCrypt::options(QTableWidgetItem* t)
 	item = t ;
 
 	QMenu m ;
-
+	m.setFont(this->font());
 	connect(m.addAction("close"),SIGNAL(triggered()),this,SLOT(close())) ;
 
 	m.addSeparator() ;
@@ -692,6 +780,7 @@ void zuluCrypt::options(QTableWidgetItem* t)
 	m.addAction(&a);
 	
 	Z.close();
+	m.setFont(this->font());
 	m.exec(QCursor::pos()) ;
 }
 

@@ -10,6 +10,11 @@
 
 #include <QThread>
 #include <QFile>
+#include <QMetaType>
+
+
+
+//qRegisterMetaType(Qt::Orientation);
 
 class zuluCryptThreads : public QThread
 {
@@ -21,18 +26,20 @@ class ShowNonSystemPartitionsThread : public QThread
 {
 public :
 	void run() ;
-	ShowNonSystemPartitionsThread(Ui::PartitionView *) ;
+	ShowNonSystemPartitionsThread(Ui::PartitionView *,QFont) ;
 private:
 	Ui::PartitionView * partitionView ;
+	QFont font ;
 };
 
 class partitionlistThread : public QThread
 {
 public :
 	void run() ;
-	partitionlistThread(Ui::PartitionView *) ;
+	partitionlistThread(Ui::PartitionView *,QFont) ;
 private:
 	Ui::PartitionView * partitionView ;
+	QFont font ;
 };
 
 class createvolumeThread : public QThread
@@ -97,5 +104,6 @@ private:
 
 };
 
-Q_DECLARE_METATYPE(Qt::Orientation) ;
+
+
 #endif // ZULUCRYPTTHREADS_H

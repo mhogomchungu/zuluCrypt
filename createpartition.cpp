@@ -136,6 +136,7 @@ void createpartition::UIMessage(QString title, QString message)
 	m.setText(message);
 	m.setWindowTitle(title);
 	m.addButton(QMessageBox::Ok);
+	m.setFont(this->font());
 	m.exec() ;
 }
 
@@ -166,6 +167,7 @@ void createpartition::pbCreateClicked()
 	}
 
 	QMessageBox m ;
+	m.setFont(this->font());
 	m.setParent(this);
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 	m.setWindowTitle(QString("WARNING"));

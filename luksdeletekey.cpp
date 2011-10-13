@@ -131,6 +131,7 @@ void luksdeletekey::pbOpenPartition()
 void luksdeletekey::UIMessage(QString title, QString message)
 {
 	QMessageBox m ;
+	m.setFont(this->font());
 	m.setParent(this);
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 	m.setText(message);
@@ -141,6 +142,7 @@ void luksdeletekey::UIMessage(QString title, QString message)
 void luksdeletekey::pbDelete()
 {
 	QMessageBox m ;
+	m.setFont(this->font());
 	m.setParent(this);
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 
@@ -182,11 +184,11 @@ void luksdeletekey::threadfinished()
 	delete ldk ;
 
 	switch( status ){
-		case 0 :{
+		case 0 :
 			UIMessage(QString("SUCCESS"),QString("key successfully removed\n") + zuluCrypt::luksEmptySlots(ui->lineEditVolumePath->text()) + QString(" / 8 slots are now in use"));
 			HideUI() ;
 			return ;
-			}break ;
+			break ;
 		case 1 :UIMessage(QString("ERROR"),QString("one or more paths has an empty space in them, the back end doesnt like it"));
 			break ;
 		case 2 :UIMessage(QString("ERROR"),QString("there is no key in the volume that match entered key"));
