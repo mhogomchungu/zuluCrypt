@@ -94,8 +94,11 @@ const char * StringCat(StrHandle * st ,const char * data)
 int StringPosString( StrHandle * st, const char * s )
 {
 	char *c = strstr(st->string,s) ;
-	return  c - st->string;
 	
+	if( c == NULL )
+		return -1 ;
+	else
+		return  c - st->string;	
 }
 
 const char * StringStringRemove(StrHandle *st,int x , int y) 

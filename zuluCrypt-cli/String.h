@@ -106,7 +106,7 @@ int StringPosChar( StrHandle * st , char s ) ;
 
 /*
  * return the position of the first occurance of string s
- * NULL is returned when s isnt in the string
+ * -1 is returned when s isnt in the string
  */
 int StringPosString( StrHandle * st, const char * s ) ;
 

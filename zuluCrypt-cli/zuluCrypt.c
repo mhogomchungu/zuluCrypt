@@ -460,6 +460,38 @@ void partitions(StrHandle *partitions, StrHandle * fstab_partitions, StrHandle *
 			StringStringRemove( non_system_partitions, i , strlen(buffer) + 1) ;
 		}		
 	}
+	
+	fclose(f) ;	
+	
+	f = fopen("/etc/crypttab","r");
+	
+	if( f == NULL )
+		return ;
+	
+	while ( fgets(buffer,512,f ) != NULL ){	
+		
+		if(buffer[0] == '#')
+			continue ;
+	
+		if(buffer[0] == '\n')
+			continue ;
+		
+		c = buffer ;
+		
+		while( *++c != '/' ) { ; }
+		
+		d = c ;
+		
+		while( *++d != ' ' ) { ; }
+		
+		*d = '\0' ;
+		
+		i = StringPosString( non_system_partitions,c) ;
+		
+		if( i != -1 )
+			StringStringRemove( non_system_partitions, i , strlen(c) + 1) ;
+	}	
+	fclose(f) ;
 }
 
 int create_volumes(int argn ,char *device, char *fs, char * mode, char * keyType, char * pass, char *rng )
