@@ -662,11 +662,14 @@ int addkey(int argn,char * device, char *keyType1, char * existingKey, char * ke
 	int status = 0 ;
 	int z ;
 	char * c ;
-	
-	char * tmp_file = "/tmp/.zuluCrypt-tmp" ;
-	
-	off_t fsize ;
-	
+	char * d ;
+		
+	if( stat(device,&st1) != 0 ){
+		
+		status = 4 ;
+		goto out ;
+	}
+		
 	if ( argn == 3 ){		
 		
 		printf("Enter an existing passphrase: ") ;
@@ -690,20 +693,11 @@ int addkey(int argn,char * device, char *keyType1, char * existingKey, char * ke
 		if (strcmp( StringCont( q ), StringCont( n ) ) != 0){
 			
 			status = 2 ;
-		}else{
-		
-			z = open(tmp_file ,O_WRONLY | O_CREAT | O_TRUNC ) ;
-
-			chown(tmp_file,0,0) ;
-			chmod(tmp_file,S_IRWXU) ;
-		
-			write(z,StringCont( q ),strlen(StringCont( q ))) ;
-		
-			close( z ) ;
-			
-			status = add_key( device,StringCont( p ), tmp_file ) ;
-			
-			delete_file(tmp_file) ;				
+			StringDelete( p ) ;			
+			StringDelete( q ) ;	
+			StringDelete( n ) ;
+		}else{			
+			status = add_key( device,StringCont( p ), StringCont( q )) ;			
 
 			StringDelete( p ) ;			
 			StringDelete( q ) ;	
@@ -715,61 +709,72 @@ int addkey(int argn,char * device, char *keyType1, char * existingKey, char * ke
 
 			if( stat( existingKey, &st1) == 0 ) {
 			
-				if( st1.st_size < MAX )
-					fsize = st1.st_size ;
-				else
-					fsize = MAX ;
+				c = ( char *) malloc ( sizeof(char) * (st1.st_size + 1 )) ;
 				
-				c = ( char *) malloc ( sizeof(char) * ( fsize + 1 )) ;
-				
-				*( c + fsize ) = '\0' ;
+				if( c == NULL ){
+					status = 9 ;
+					goto out ;
+				}
+				*( c + st1.st_size ) = '\0' ;
 			
 				z = open(existingKey, O_RDONLY ) ;
 			
-				read( z, c, fsize ) ;
+				read( z, c, st1.st_size ) ;
 			
 				close( z ) ;				
 				
 			}else{
 				status = 3 ;
-				goto ouch ;
+				goto out ;
 			}
 		}
 		
-		if ( strcmp( keyType2, "-p" ) == 0){			
+		if ( strcmp( keyType2, "-f" ) == 0){			
 			
-			z = open(tmp_file,O_WRONLY | O_CREAT | O_TRUNC ) ;
+			if( stat( existingKey, &st1) == 0 ) {
 			
-			chown(tmp_file,0,0) ;
-			chmod(tmp_file,S_IRWXU) ;
-
-			write( z,newKey,strlen(newKey)) ;
-		
-			close( z ) ;		
+				d = ( char *) malloc ( sizeof(char) * ( st1.st_size + 1 )) ;
+				
+				if( d == NULL ){
+					status = 9 ;
+					goto out ;
+				}
+				
+				*( d + st1.st_size ) = '\0' ;
+			
+				z = open(newKey, O_RDONLY ) ;
+			
+				read( z, d, st1.st_size ) ;
+			
+				close( z ) ;				
+				
+			}else{
+				status = 3 ;
+				goto out ;
+			}			
 		}
 		
 		if ( strcmp(keyType1,"-f") == 0 && strcmp(keyType2,"-f") == 0 ){
 			
-			status = add_key( device, c, newKey) ;
+			status = add_key( device, c, d) ;
 			
 			free( c ) ;
+			free( d ) ;
 			
 		}else if (strcmp(keyType1,"-p") == 0 && strcmp(keyType2,"-p") == 0 ){
 			
-			status = add_key(device, existingKey, tmp_file ) ;
+			status = add_key(device, existingKey, newKey ) ;
 						
-			delete_file(tmp_file) ;	
-			
 		}else if (strcmp(keyType1,"-p") == 0 && strcmp(keyType2,"-f") == 0 ){
 						
-			status = add_key( device, existingKey, newKey) ;
+			status = add_key( device, existingKey, d) ;
+			
+			free( d ) ;
 						
 		}else if (strcmp(keyType1,"-f") == 0 && strcmp(keyType2,"-p") == 0 ){			
 					
-			status = add_key( device, c, tmp_file) ;	
+			status = add_key( device, c, newKey) ;	
 			
-			delete_file(tmp_file) ;	
-	
 			free( c ) ;
 		}else{			
 			status = 5 ;
@@ -778,7 +783,7 @@ int addkey(int argn,char * device, char *keyType1, char * existingKey, char * ke
 		status = 6 ;		
 	}
 	
-	ouch:
+	out:
 	
 	switch ( status ){
 		case 0 : printf("SUCCESS: key added successfully\n");
@@ -787,7 +792,7 @@ int addkey(int argn,char * device, char *keyType1, char * existingKey, char * ke
 		break ;
 		case 2 : printf("ERROR: new passphrases do not match\n") ;
 		break ;
-		case 3 : printf("ERROR: key file containing a key in the volume does not exist\n") ;
+		case 3 : printf("ERROR: one or both keyfile(s) does not exist\n") ;
 		break ;  
 		case 4 : printf("ERROR: device does not exist\n");
 		break ;
@@ -795,7 +800,12 @@ int addkey(int argn,char * device, char *keyType1, char * existingKey, char * ke
 		break ;
 		case 6 : printf("ERROR: Wrong number of arguments\n") ;
 		break ;
-	
+		case 7 : printf("ERROR: could not open luks device, quiting\n") ;
+		break ;
+		case 8 : printf("ERROR: device \"%s\" is not a luks device\n",device) ;
+		break ;
+		case 9 : printf("ERROR: Run out of memory\n") ;
+		break ;
 		default :
 			;		
 	}

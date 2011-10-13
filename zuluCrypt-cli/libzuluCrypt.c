@@ -40,43 +40,31 @@ int mount_volume(const char *mapping_name,const char *m_point,const char * mode,
 char * sanitize(const char *c ) ;
 char * intToChar(char * x, int y,int z) ;
 
-int add_key(const char * dev, const char * ek,const  const char * keyfile)
+int add_key(const char * device, const char * existingkey,const  const char * newkey)
 {
-	StrHandle * p ;
-	char s[2] ;
+	struct crypt_device *cd = NULL;
+
+	int i ;
 	
-	char * device = sanitize( dev ) ;
-	char * existingkey = sanitize( ek ) ;
-	char * key = sanitize( keyfile ) ;
+	if( is_luks(device) == 1)
+		return 8 ;
+		
+	i = crypt_init(&cd,device) ;
 	
-	p = StringCpy( ZULUCRYPTecho ) ;
-	StringCat( p , " ");
-	StringCat( p , existingkey ) ;
-	StringCat( p , " | " ) ;
-	StringCat( p , ZULUCRYPTcryptsetup) ;
-	StringCat( p , " luksAddKey ") ;
-	StringCat( p , device ) ;
-	StringCat( p , " " ) ;
-	StringCat( p , key ) ;
-	StringCat( p , " 2>&1 ") ;
+	if( i != 0 )
+		return 7 ;
 	
-	execute(StringCont( p ), s, 1 ) ;	
+	i = crypt_load(cd, CRYPT_LUKS1, NULL) ;
 	
-	StringDelete( p ) ;
-	free( device ) ;
-	free( existingkey ) ;
-	free( key ) ;
-	//printf("%c",s[0]);
-	//if ( s[0] == '\n' )      // success
-	//	return 0 ;
-	if ( s[0] == 'N' ) // presented key doesnt exist in the volume
-		return 1 ;
-	else if ( s[0] == 'D' ) // device doesnt exist
-		return 4 ;
-	else if ( s[0] == 'F' )
-		return 3 ; 
+	if( i != 0 )
+		return 7 ;
 	
-	return 0 ; //success
+	i = crypt_keyslot_add_by_passphrase(cd,CRYPT_ANY_SLOT,existingkey,strlen(existingkey),newkey,strlen(newkey)) ;
+	
+	if ( i < 0 )
+		return 3 ;
+	else
+		return 0 ;	
 }
 
 int kill_slot( const char * dev,const char * ek, int slotNumber)
