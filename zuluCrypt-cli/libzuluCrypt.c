@@ -314,7 +314,7 @@ void execute( const char *command , char *output, int size)
 	FILE *f ;
 	int i,c  ;
 	//log outputs of command
-	//printf("%s\n",command);
+	printf("%s\n",command);
 	//int d ;
 	//d = open("/home/ink/zzz",O_WRONLY | O_APPEND | O_CREAT ) ;
 	//write(d,command,strlen(command)) ;
@@ -457,106 +457,83 @@ int create_volume(const char * dev, const char * fs,const char * type, const cha
 int close_volume(const char * map,const char * device) 
 {
 	StrHandle * q ;
-	StrHandle * a ;		
-
+	StrHandle * p ;
+	
 	struct stat st ;		
 
-	int i ;
-	char * c ;
-	char * x ;
-	char * p ;
-	const char * z ;
-	char u[2] ;
-	
 	char * mount_point ;
-	char * mapping_name ;
+	char * c ;
+	
+	FILE *f ;
+	
+	char buffer[256] ;
 	
 	q = StringCpy("/dev/mapper/zuluCrypt-") ;
 	
 	StringCat( q , map ) ;
+	
+	p = StringCpy( StringCont( q ) ) ;
 	
 	if ( stat( StringCont( q ), &st ) != 0 ){
 		
 		StringDelete( q ) ;
 		
 		return 1 ;
+	}	
+	
+	f = fopen("/etc/mtab","r") ;
+	
+	while( fgets(buffer,256,f) != NULL ){
+		
+		if( strncmp(buffer,StringCont( q ),StringLength( q ) )  == 0 ){
+			
+			mount_point = c = buffer + StringLength( q ) + 1  ;
+			
+			while ( *++c != ' ' ) { ; }
+			
+			*c = '\0' ;	
+			
+			break ;
+		}		
 	}
 	
-	mapping_name = sanitize( StringCont( q ) ) ;	
+	mount_point = sanitize(mount_point) ;
 	
-	stat("/etc/mtab",&st);
+	fclose(f);
 	
-	p = c = ( char * ) malloc(sizeof(char) * st.st_size) ;
+	StringDelete( q ) ;
+
+	/*
+	 * mount/umount system calls do not add entries in mtab and tools like kdiskfree do not see the volumes.
+	 * workaround is to use the mount/umount executables to mount/unmount volumes.	 * 
+	 */
 	
-	i = open("/etc/mtab",O_RDONLY) ;
-	
-	read( i,c,st.st_size) ;
-	
-	close(i) ;
-	
-	i = StringLength( q ) ;
-	
-	z = StringCont( q ) ;
-	
-	while ( 1 ){
+	q = StringCpy(ZULUCRYPTumount) ;
+	StringCat(q, " ");
+	StringCat(q, mount_point) ;
+	StringCat(q, "  ; ") ;
+	StringCat(q,ZULUCRYPTecho) ;
+	StringCat(q, " $?") ;
 		
-		if ( strncmp(p,z,i) != 0 ){
-			
-			while ( *p++ != '\n' ) { ; }
-			 
-		}else{
-			x = p = p + i + 1  ;
-			while ( *++p != ' ' ) { ; }
-			
-			*p = '\0' ;			
-			break ;						
-		}
-	}		
+	execute(StringCont(q),buffer,1) ;
+	
+	if(buffer[0] != '0'){
+		StringDelete( q ) ;
+		return 2 ;
+	}
 	
 	StringDelete( q ) ;
 	
-	free(c) ;
-	
-	mount_point = sanitize( x ) ;
-	
-	a = StringCpy(ZULUCRYPTumount) ;
-	StringCat( a , " ") ;
-	StringCat( a , mount_point ) ;
-	StringCat( a , " 2>/dev/null 1>&2 ; ") ;
-	StringCat( a , ZULUCRYPTecho) ;
-	StringCat( a , " $? ") ;	
-	
-	execute( StringCont( a ), u,1 ) ;	
-	
-	StringDelete( a ) ;	
-	
-	if( u[0] != '0' ){
-		free(mapping_name);
-		free(mount_point) ;
-		return 2 ;	
-	}	
+	q = StringCpy(ZULUCRYPTrm) ;
+	StringCat(q, " -rf ");
+	StringCat(q, mount_point) ;
 
-	if ( is_luks( device ) == 0 ){
-		a = StringCpy(ZULUCRYPTcryptsetup ) ;
-		StringCat( a ," luksClose ") ;
-		StringCat( a , mapping_name ) ;
-	}else{
-		a = StringCpy(ZULUCRYPTcryptsetup ) ;
-		StringCat( a ," remove ") ;
-		StringCat( a , mapping_name ) ;		
-	}
+	StringDelete( q ) ;
 	
-	StringCat( a, " ; ") ;
-	StringCat( a, ZULUCRYPTrm ) ;
-	StringCat( a," -rf ") ;
-	StringCat( a, mount_point) ;
+	crypt_deactivate(NULL, StringCont(p));
 	
-	execute( StringCont( a ),NULL,0) ;
-	
-	StringDelete( a ) ;
-		
-	free(mapping_name);
-	free(mount_point);		
+	free(mount_point);
+	StringDelete( p ) ;
 	
 	return 0 ;
 }
