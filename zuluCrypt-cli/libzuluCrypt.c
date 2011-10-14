@@ -65,81 +65,43 @@ int add_key(const char * device, const char * existingkey,const  const char * ne
 		return 3 ;
 	else
 		return 0 ;	
+	
+	crypt_free(cd);	
 }
 
-int kill_slot( const char * dev,const char * ek, int slotNumber)
-{	
-	char s[2] ;
-		
-	char * device = sanitize( dev ) ;
-	char * existingkey = sanitize( ek ) ;
-	
-	StrHandle * p = StringCpy( ZULUCRYPTecho ) ;
-	StringCat( p , " ");
-	StringCat( p , existingkey ) ;
-	StringCat( p , " | " ) ;
-	StringCat( p , ZULUCRYPTcryptsetup ) ;
-	StringCat( p , " luksKillSlot ") ;
-	StringCat( p , device ) ;
-	StringCat( p , " " ) ;
-	
-	s[0] = ( char ) slotNumber ; 
-	s[1] = '\0' ;
-	
-	StringCat( p , s ) ;
-	StringCat( p , " 2>&1") ;        //< -------- read error values from stderr
-	
-	execute( StringCont( p ), s , 1 ) ;
-	StringDelete( p ) ;
-
-	free( device ) ;
-	free( existingkey ) ;
-	
-	//cryptsetup return not very informative error numbers, stderr is more useful
-	//if ( s[0] == '\n' )      // success
-	//	return 0 ;
-	if ( s[0] == 'K' ) // trying to kill an inactive slot
-		return 1 ;
-	else if ( s[0] == 'D' ) // device doesnt exist
-		return 2 ;
-	else if ( s[0] == 'N' )
-		return 3 ;      // no key available that matched presented key
-	
-	return 0 ; //success
-}
-
-int remove_key( const char * dev , const char * keyfile )
+int remove_key( const char * device , const char * pass )
 {
-	char s[2] ;
-	
-	char * device = sanitize( dev ) ;
+	struct crypt_device *cd = NULL;
 
-	char * key = sanitize( keyfile ) ;
+	int i ;
 	
-	StrHandle * p = StringCpy(ZULUCRYPTcryptsetup ) ;
-	StringCat( p , " luksRemoveKey ") ;
-	StringCat( p , device ) ;
-	StringCat( p , " " ) ;
-	StringCat( p , key ) ;
-	StringCat( p , " 2>&1 ") ;
+	if( is_luks(device) == 1)
+		return 1 ;
+		
+	i = crypt_init(&cd,device) ;
+	
+	if( i != 0 )
+		return 3 ;
+	
+	i = crypt_load(cd, CRYPT_LUKS1, NULL) ;
+	
+	if( i != 0 )
+		return 3 ;
 
-	execute( StringCont( p ), s, 1 ) ;
+	i =  crypt_activate_by_passphrase(cd,"zuluCrypt-deleteKey",CRYPT_ANY_SLOT,pass,strlen(pass), 0);
+
+	crypt_deactivate(cd,"zuluCrypt-deleteKey");
 	
-	free( device ) ;
-	free( key ) ;
-	StringDelete( p ) ;
+	if ( i < 0 ){
+		crypt_free(cd);
+		return 2 ;
+	}
 	
-	//cryptsetup return not very informative error numbers, stderr is more useful
-	//if ( s[0] == '\n' )      // success
-	//	return 0 ;
-	if ( s[0] == 'F' ) // trying to kill an inactive slot
-		return 5 ;
-	else if ( s[0] == 'D' ) // device doesnt exist
-		return 4 ;
-	else if ( s[0] == 'N' )
-		return 2 ;      // no key available that matched presented key
+	i = crypt_keyslot_destroy(cd,i) ;
 	
-	return 0 ; //success	
+	crypt_free(cd);		
+	
+	return i ;
 }
 
 int empty_slots( char * slots ,const char * dev )

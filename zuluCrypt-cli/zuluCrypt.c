@@ -812,98 +812,17 @@ int addkey(int argn,char * device, char *keyType1, char * existingKey, char * ke
 	return status ;
 }
 
-int killslot(int argn, char * device, char * keyType, char * existingkey, char * s)
-{
-	int status, i, d ;
-	char * c ;
-	struct stat st ;
-	StrHandle * p ;
-	off_t fsize ;
-	
-	int slotNumber = s[0]  ;
-	
-	if ( argn == 3 ){
-		
-		printf("Enter an existing passphrase: ") ;
-		
-		p = get_passphrase() ;
-		
-		printf("\n") ;
-		
-		printf("Enter a slot number to remove a key on: ") ;
-		
-		d = ( char ) getchar() ;
-		
-		getchar() ; //remove the new line character from stdin buffer		
-
-		status = kill_slot( device, StringCont( p ), d ) ;
-		
-		StringDelete( p ) ;
-		
-	}else if ( argn == 6 ){
-	
-		if( strcmp( keyType, "-p" ) == 0 ){		
-
-			status =  kill_slot(device, existingkey , slotNumber ) ;	
-			
-		}else if ( strcmp( keyType, "-f" ) == 0 ){
-		
-			if ( stat( existingkey,&st ) != 0 ){
-				return 4 ;
-			}
-			if( st.st_size < MAX )
-				fsize = st.st_size ;
-			else
-				fsize = MAX ;
-			
-			c = ( char * ) malloc ( sizeof( char ) * ( fsize + 1 ) ) ;
-		
-			*( c + fsize ) = '\0' ;
-			
-			i = open( existingkey, O_RDONLY ) ;
-		
-			write( i , c , fsize ) ;
-		
-			close( i ) ;		
-			
-			status = kill_slot( device, c , slotNumber ) ;
-		
-			free( c ) ;				
-			
-		}else{
-			status = 5 ;		
-		}
-	}else{		
-		status = 6 ;		
-	}	
-	switch ( status ){
-		case 0 : printf("SUCCESS: slot successfully killed\n");
-		break ;
-		case 1 : printf("ERROR: slot to be killed is inactive/empty\n") ;
-		break ;
-		case 2 : printf("ERROR: the device does not exist\n") ;
-		break ;
-		case 3 : printf("ERROR: presented key does not match any key in the volume\n") ;
-		break ;  
-		case 4 : printf("ERROR: key file does not exist\n");
-		break ;
-		case 5 : printf("ERROR: Wrong arguments\n") ;
-		break ;
-		case 6 : printf("ERROR: Wrong number of arguments\n") ;
-		break ;
-		default :
-			;		
-	}	
-	return status ;
-}
-
 int removekey( int argn , char * device, char * keyType, char * keytoremove )
 {
 	StrHandle *p;
 	int status, z ;
-	struct stat st ;
+	struct stat st ;	
+	char *c ;
 	
-	char * tmp_file = "/tmp/.zuluCrypt-tmp" ;
+	if ( stat( device,&st ) != 0 ){
+		status = 4 ;
+		goto out ;
+	}
 	
 	if ( argn == 3 ){
 		
@@ -911,64 +830,64 @@ int removekey( int argn , char * device, char * keyType, char * keytoremove )
 		
 		p = get_passphrase() ;
 		
-		printf("\n") ;
+		printf("\n") ;		
 		
-		z = open(tmp_file,O_WRONLY | O_CREAT | O_TRUNC ) ;
-			
-		chown(tmp_file,0,0) ;
-		chmod(tmp_file,S_IRWXU) ;
-
-		write( z, StringCont( p ) ,StringLength( p )) ;
-		
-		close( z ) ;
-		
-		status = remove_key( device,tmp_file ) ;
+		status = remove_key( device,StringCont(p)) ;
 		
 		StringDelete( p ) ;
-			
-		delete_file(tmp_file);
 		
 	}else if ( argn == 5 ){
 		
 		if( strcmp(keyType, "-f") == 0 ){
 			
-			if ( stat(keytoremove,&st) == 0 )
-				status = remove_key(device, keytoremove );
-			else
-				status = 5 ;
+			if ( stat( keytoremove,&st ) != 0 ){
+				status =  5 ;
+				goto out;
+			}
+			
+			c = ( char * ) malloc ( sizeof( char ) * ( st.st_size + 1 ) ) ;
+			
+			if( c == NULL ){
+				status = 7 ;
+				goto out ;
+			}
+			
+			*( c + st.st_size  ) = '\0' ;
+			
+			z = open( c, O_RDONLY ) ;
+		
+			read( z , c , st.st_size ) ;
+		
+			close( z ) ;		
+			
+			status = remove_key( device,c ) ;
+		
+			free( c ) ;
 			
 		}else if( strcmp(keyType, "-p") == 0 ) {
 			
-			z = open(tmp_file,O_WRONLY | O_CREAT | O_TRUNC ) ;
-			
-			chown(tmp_file,0,0) ;
-			chmod(tmp_file,S_IRWXU) ;
-			
-			write( z, keytoremove ,strlen(keytoremove)) ;			
-			
-			close( z ) ;
-		
-			status = remove_key( device,tmp_file ) ;
-		
-			delete_file(tmp_file);			
+			status = remove_key( device,keytoremove ) ;		
 		}
 	}else
 		status = 6 ;
 	
+	out:
 	switch ( status ){
 		case 0 : printf("SUCCESS: key successfully removed\n");
 		break ;
-		//case 1 : printf("") ;
-		//break ;
+		case 1 : printf("device \"%s\" is not a luks device",device) ;
+		break ;
 		case 2 : printf("ERROR: there is no key in the volume that match the presented key\n") ;
 		break ;
-		//case 3 : printf("") ;
-		//break ;  
+		case 3 : printf("ERROR: could not open device\n") ;
+		break ;  
 		case 4 : printf("ERROR: device does not exist\n");
 		break ;
 		case 5 : printf("ERROR: keyfile does not exist\n") ;
 		break ;
 		case 6 : printf("ERROR: Wrong number of arguments\n") ;
+		break ;
+		case 7 : printf("ERROR: insuffucient system memory, quiting\n") ;
 		break ;
 		default :
 			;		
@@ -1091,10 +1010,6 @@ int main( int argc , char *argv[])
 		
 		status =  addkey(argc,device,argv[3],argv[4],argv[5],argv[6]) ;
 		
-	}else if(strcmp(action,"killslot") == 0 ){
-		
-		status =  killslot(argc, device,argv[3],argv[4],argv[5] ) ;
-	
 	}else if(strcmp(action,"removekey") == 0 ){
 				
 		status =  removekey(argc, device, argv[3],argv[4] );
