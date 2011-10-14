@@ -91,6 +91,7 @@ int volume_info( const char * mapper,const char *device )
 	printf("%s\n",output);
 	
 	StringDelete(p);
+	free(output) ;
 	return 0 ;
 }
 

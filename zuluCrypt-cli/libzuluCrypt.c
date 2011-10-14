@@ -243,9 +243,7 @@ char * status( const char * device )
 	if( cad.flags == 1 )
 		StringCat(p,"readonly");
 	else
-		StringCat(p,"read/write");
-	
-	//StringCat(p,intToChar(keysize,SIZE,cad.flags)) ;	
+		StringCat(p,"read/write");	
 		
 	c = StringContCopy(p) ;	
 	crypt_free(cd);
