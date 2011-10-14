@@ -357,15 +357,37 @@ int is_luks(const char * dev)
 		return 1 ;
 }
 
+int create_luks(const char * dev,const char * pass, const char *rng)
+{
+	int i ;
+	struct crypt_device *cd = NULL;
+	
+	struct crypt_params_luks1 params = {
+		.hash = "sha1",
+		.data_alignment = 4096,
+	};
+	
+	i =  crypt_init(&cd,dev) ;
+	
+	if( strcmp(rng,"/dev/random" ) == 0 )
+		crypt_set_rng_type(cd, CRYPT_RNG_RANDOM);
+	else 
+		crypt_set_rng_type(cd, CRYPT_RNG_URANDOM);
+	
+	i = crypt_format(cd, CRYPT_LUKS1,"aes","cbc-essiv:sha256",NULL, NULL, 32, &params);	
+	
+	i = crypt_keyslot_add_by_volume_key(cd,CRYPT_ANY_SLOT ,NULL,32,pass,strlen(pass));
+	
+	return i ;
+}
+
 int create_volume(const char * dev, const char * fs,const char * type, const char * pass, const char *rng)
 {
-	StrHandle * p ;
 	StrHandle * q ;
 	
-	char *device ;
-	char * passphrase ;
-	
 	struct stat st ;
+	
+	int k ;
 	
 	if ( stat( dev, &st ) != 0 ){
 		return 1 ;
@@ -374,89 +396,32 @@ int create_volume(const char * dev, const char * fs,const char * type, const cha
 	if( strncmp(fs,"ext3",4) != 0)
 		if( strncmp(fs,"ext4",4) != 0)
 			if( strncmp(fs,"vfat",4) != 0)
-				return 6 ;
-			
-	device = sanitize( dev ) ;
-	passphrase = sanitize( pass ) ;
+				return 6 ;				
 	
+	if(  strcmp(type,"luks")  == 0){
+	
+		k = create_luks(dev,pass,rng) ;
+		
+		k = open_luks(dev,"create-new","rw","-p",pass ) ;
+		
+	}else{
+		printf("plain\n") ;
+		k =  open_plain(dev,"create-new","rw","-p",pass,"cbc-essiv:sha256" ) ;		
+	}		
+		
 	q = StringCpy(ZULUCRYPTmkfs );
 	StringCat( q , " -t ") ;
 	StringCat( q , fs ) ;
 	StringCat( q , " " ) ;
-	StringCat( q , "/dev/mapper/zuluCrypt-create-new 1>/dev/null 2>&1  ; ") ;
+	StringCat( q , "/dev/mapper/zuluCrypt-create-new 1>/dev/null 2>&1 ") ;
 	
-	if  (strcmp(type,"luks")  == 0 ){	
-		
-		p = StringCpy( ZULUCRYPTecho );
-		StringCat( p , " ");
-		StringCat( p , passphrase ) ;
-		StringCat( p , " | " ) ;
-		
-		StringCat( p , ZULUCRYPTcryptsetup ) ;
-		
-		if(strcmp(rng,"/dev/random") == 0)
-			StringCat( p , " --use-random " ) ;
-		else
-			StringCat( p , " --use-urandom " ) ;
-		
-		StringCat( p , " -q luksFormat " ) ;		
-		
-		StringCat( p , device ) ;
-		
-		execute( StringCont( p ), NULL, 0 ) ;
-		
-		StringDelete( p ) ;	
-		
-		p = StringCpy( ZULUCRYPTecho );
-		StringCat( p , " ");
-		StringCat( p , passphrase ) ;
-		StringCat( p , " | " ) ;
-		StringCat( p , ZULUCRYPTcryptsetup ) ;
-		StringCat( p , " luksOpen ") ;
-
-		StringCat( p , device ) ;
-		StringCat( p , " zuluCrypt-create-new");
-		
-		execute( StringCont( p ), NULL, 0 ) ;
-		
-		StringDelete( p ) ;
-		
-		StringCat( q , ZULUCRYPTcryptsetup ) ;
-		StringCat( q , " luksClose zuluCrypt-create-new  2>/dev/null 1>&2 ") ;		
-		
-		execute( StringCont( q ), NULL, 0 ) ;	
-		
-		StringDelete( q ) ;
-		
-	}else if ( strcmp(type,"plain")  == 0 ){
-		
-		p = StringCpy( ZULUCRYPTecho );
-		StringCat( p , " ");
-		StringCat( p , passphrase ) ;
-		StringCat( p , " | " ) ;
-		StringCat( p , ZULUCRYPTcryptsetup ) ;
-		StringCat( p , " create zuluCrypt-create-new " ) ;		
-
-		StringCat( p , device ) ;
-		StringCat( p, " ") ;
-				
-		execute( StringCont( p ), NULL, 0) ;	
-		
-		StringDelete( p ) ;
-		
-		StringCat( q , "cryptsetup remove zuluCrypt-create-new  ") ;
-		
-		execute( StringCont( q ), NULL, 0 ) ;	
-		
-		StringDelete( q ) ;
-		
-	}else
-		return 2 ;
+	execute(StringCont(q),NULL,0) ;
 	
-	free( device ) ;
-	free( passphrase );
+	StringDelete( q ) ;
 	
-	return 0 ;
+	crypt_deactivate(NULL,"zuluCrypt-create-new");
+		
+	return 0 ;	
 }
 
 int close_volume(const char * map,const char * device) 

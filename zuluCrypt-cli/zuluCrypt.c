@@ -531,6 +531,12 @@ int create_volumes(int argn ,char *device, char *fs, char * mode, char * keyType
 			
 	}else if ( argn == 8 ){
 		
+		if( strcmp(rng,"/dev/random") != 0)
+			if( strcmp(rng,"/dev/urandom") != 0){
+				st = 6 ;
+				goto out:
+			}
+				
 		if( strcmp( keyType, "-p" ) == 0 ) {			
 
 			st = create_volume(device,fs,mode,pass,rng) ;			
@@ -546,6 +552,10 @@ int create_volumes(int argn ,char *device, char *fs, char * mode, char * keyType
 				
 				c = ( char *) malloc ( sizeof(char) * ( fsize + 1 ) ) ;
 				
+				if( c == NULL ){
+					st = 2
+					goto out:
+				}
 				*( c + fsize  ) = '\0' ;
 			
 				z = open(pass , O_RDONLY ) ;
@@ -570,11 +580,11 @@ int create_volumes(int argn ,char *device, char *fs, char * mode, char * keyType
 	out:
 	
 	switch ( st ){
-		case 0 : printf("SUCCESS: volume successfully created\n") ;
+		case 0 : printf("SUCCESS: volume created successfully\n") ;
 			break  ;
 		case 1 : printf("ERROR: File path given does not point to a file or partition\n") ;
 			break  ;
-		case 2 : printf("ERROR: Unrecognized volume type.\n");
+		case 2 : printf("ERROR: couldnt get requested memory to open the key file.\n");
 			break  ;
 		case 3 : printf("ERROR: passphrases do not match\n") ;
 			break  ;
