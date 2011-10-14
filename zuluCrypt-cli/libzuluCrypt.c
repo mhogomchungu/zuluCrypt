@@ -223,18 +223,18 @@ char * status( const char * mapper )
 		
 	type = crypt_get_type(cd) ;	
 	
-	StringCat(p," type:\t\t");
+	StringCat(p," type:      ");
 	
 	StringCat(p,type) ;
 
-	StringCat(p,"\n cipher:\t");
+	StringCat(p,"\n cipher:    ");
 	StringCat(p,crypt_get_cipher_mode(cd)) ;
 	
-	StringCat(p,"\n keysize:\t");
+	StringCat(p,"\n keysize:   ");
 	StringCat(p,intToChar(keysize,SIZE,8 *crypt_get_volume_key_size(cd))) ;
 	StringCat(p," bits");
 	
-	StringCat(p,"\n device:\t");
+	StringCat(p,"\n device:    ");
 	StringCat(p,crypt_get_device_name(cd)) ;
 	
 	if( strncmp(crypt_get_device_name(cd),"/dev/loop",9 ) == 0){
@@ -258,19 +258,19 @@ char * status( const char * mapper )
 		i = 0 ;
 	
 		realpath(c,path) ;
-		StringCat(p,"\n loop:\t\t");
+		StringCat(p,"\n loop:      ");
 		StringCat(p,path);
 	}
 	
-	StringCat(p,"\n offset:\t");
+	StringCat(p,"\n offset:    ");
 	StringCat(p,intToChar(keysize,SIZE,crypt_get_data_offset(cd))) ;	
 	StringCat(p," sectors");	
 	
-	StringCat(p,"\n size:\t\t");
+	StringCat(p,"\n size:      ");
 	StringCat(p,intToChar(keysize,SIZE,cad.size)) ;	
 	StringCat(p," sectors");
 	
-	StringCat(p,"\n mode:\t\t");
+	StringCat(p,"\n mode:      ");
 	
 	if( cad.flags == 1 )
 		StringCat(p,"readonly");
@@ -407,6 +407,8 @@ int create_luks(const char * dev,const char * pass, const char *rng)
 	
 	i = crypt_keyslot_add_by_volume_key(cd,CRYPT_ANY_SLOT ,NULL,32,pass,strlen(pass));
 	
+	crypt_free(cd);
+	
 	return i ;
 }
 
@@ -434,7 +436,6 @@ int create_volume(const char * dev, const char * fs,const char * type, const cha
 		k = open_luks(dev,"create-new","rw","-p",pass ) ;
 		
 	}else{
-		printf("plain\n") ;
 		k =  open_plain(dev,"create-new","rw","-p",pass,"cbc-essiv:sha256" ) ;		
 	}		
 		

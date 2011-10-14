@@ -15,3 +15,12 @@ add support for adding and deleting keys in luks based volumes in the cli and gu
 
 version 3.0
 add support for creating both plain and luks based volumes in both files and partitions.
+
+version 4.0
+Transition away from cryptsetup exe from the cli to using the library
+Add support for favorite volumes
+Add support for user configurable random number generator
+Use threads to host GUI blocking code to remove/reduce ui freezes.
+
+version 5.0
+translations support of people are interested in the tool in different languages.

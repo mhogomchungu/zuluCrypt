@@ -549,7 +549,6 @@ void zuluCrypt::setUpOpenedVolumes(void)
 			continue ;
 		}
 
-		//d = d + 9 ;
 		while ( *++d != '/') { ; }
 
 		if (strncmp(d ,"/dev/loop",9) != 0 ){
@@ -569,8 +568,6 @@ void zuluCrypt::setUpOpenedVolumes(void)
 		N = d = volume = new char[ strlen( v ) + 1 ] ;
 
 		while ( ( *d++ = *v++ ) != '\0') { ; }
-
-		std::cout << volume << std::endl ;
 
 		p = new QProcess() ;
 
@@ -819,7 +816,9 @@ void zuluCrypt::close(void)
 {
 	QProcess p ;
 
-	p.start(QString(ZULUCRYPTzuluCrypt) + QString(" close ") + ui->tableWidget->item(item->row(),1)->text() ) ;
+	QString exe = QString(ZULUCRYPTzuluCrypt) + QString(" close ") + ui->tableWidget->item(item->row(),0)->text() ;
+
+	p.start( exe ) ;
 
 	p.waitForFinished() ;
 

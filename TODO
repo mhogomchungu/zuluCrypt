@@ -18,4 +18,8 @@ zuluCrypt-cli
 -- see if it is possible to safely create volumes resising in "/dev" - DONE
 
 version 4.0
--- add support user configuration options like font size and type,favorites volumes and if a user want a tray icon or not.
+-- host UI blocking code to threads to remove/minimize UI freezes - DONE
+-- allow a user to select what random number generator to use       - DONE
+-- transition away from using cryptsetup on the cli to using the library - DONE
+-- Allow a user to select what font size and type to use             - DONE
+-- add support for favorite volumes	           		- DONE
