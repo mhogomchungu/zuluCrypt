@@ -396,64 +396,73 @@ void zuluCrypt::info()
 
 	QString info = QString("cryptographic options used in volume management\n\n") ;
 
-	info = info + QString("type:	PLAIN\n") ;
-	info = info + QString("cypher:	") ;
-	info = info + QString(c + 7) ;
+	//info = info + QString("type:	PLAIN\n") ;
+	//info = info + QString("cypher:	") ;
+	//info = info + QString(c + 7) ;
+	//info = info + QString("\n") ;
+	//info = info + QString("keysize:	") ;
+
+	//c = strstr( d + 1 , "Key: ") ;
+	//d = c ;
+	//while (*++d !=',') { ; }
+	//*d = '\0' ;
+
+	//info = info + QString(c + 5) ;
+	//info = info + QString("\n") ;
+
+	//info = info + QString("hash:	") ;
+
+	//c = strstr( d + 1 , "Password") ;
+	//d = c ;
+	//while (*++d !='\n') { ; }
+	//*d = '\0' ;
+
+	//info = info + QString(c + 18) ;
+	//info = info + QString("\n\n") ;
+
+	//c = strstr( d + 1 , "LUKS") ;
+	//d = c ;
+	//while (*++d !=':') { ; }
+	//*d = '\0' ;
+
+	//info = info + QString("type:	") ;
+	//info = info + QString(c) ;
+	//info = info + QString("\n") ;
+
+	//c = strstr( d + 1 , "Key") ;
+	//d = c ;
+	//while (*++d !=',') { ; }
+	//*d = '\0' ;
+
+	//info = info + QString("keysize:	") ;
+	//info = info + QString(c + 5) ;
+	//info = info + QString("\n\n") ;
+
+	//c = strstr( d + 2 , "LUKS") ;
+	//d = c ;
+	//while (*++d !=',') { ; }
+	//*d = '\0' ;
+
+	//info = info + QString(c) ;
+	//info = info + QString("\n\n") ;
+
+	//info = info + QString("maximum passphrase length:	512 characters\n") ;
+	//info = info + QString("maximum key file size:		512 bytes\n\n") ;
+
+	info = info + QString("type:\t\tplain\n") ;
+	info = info + QString("cipher:\t\taes-cbc-essiv:sha256\n") ;
+	info = info + QString("keysize:\t\t256bits ( 32 bytes )\n") ;
+	info = info + QString("hash:\t\tripemd160\n") ;
+
 	info = info + QString("\n") ;
-	info = info + QString("keysize:	") ;
 
-	c = strstr( d + 1 , "Key: ") ;
-	d = c ;
-	while (*++d !=',') { ; }
-	*d = '\0' ;
+	info = info + QString("type:\t\tluks\n") ;
+	info = info + QString("keysize:\t\t256bits ( 32 bytes )\n\n") ;
+	info = info + QString("luks header hashing: sha1\n\n") ;
 
-	info = info + QString(c + 5) ;
-	info = info + QString("\n") ;
+	info = info + QString("key files are generated with:\t\t64 characters( 512bits )\n\n") ;
 
-	info = info + QString("hash:	") ;
-
-	c = strstr( d + 1 , "Password") ;
-	d = c ;
-	while (*++d !='\n') { ; }
-	*d = '\0' ;
-
-	info = info + QString(c + 18) ;
-	info = info + QString("\n\n") ;
-
-	c = strstr( d + 1 , "LUKS") ;
-	d = c ;
-	while (*++d !=':') { ; }
-	*d = '\0' ;
-
-	info = info + QString("type:	") ;
-	info = info + QString(c) ;
-	info = info + QString("\n") ;
-
-	c = strstr( d + 1 , "Key") ;
-	d = c ;
-	while (*++d !=',') { ; }
-	*d = '\0' ;
-
-	info = info + QString("keysize:	") ;
-	info = info + QString(c + 5) ;
-	info = info + QString("\n\n") ;
-
-	c = strstr( d + 2 , "LUKS") ;
-	d = c ;
-	while (*++d !=',') { ; }
-	*d = '\0' ;
-
-	info = info + QString(c) ;
-	info = info + QString("\n\n") ;
-
-	info = info + QString("maximum passphrase length:	512 characters\n") ;
-	info = info + QString("maximum key file size:		512 bytes\n\n") ;
-
-	info = info + QString("key files are generated with:	64 characters( 512bits )\n\n") ;
-
-	info = info + QString("NOTE: passphrases with newline characters are not supported\n\n") ;
-
-	info = info +QString("random number generator device:	( user specified )\n") ;
+	info = info +QString("random number generator device:\t( user specified )\n") ;
 
 	QMessageBox m ;
 	m.setParent(this);
