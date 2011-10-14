@@ -950,7 +950,7 @@ int main( int argc , char *argv[])
 	char *  mapping_name ;
 	char * c ;
 	
-	char slots[7] = {'0','0','0','0','0','0','0'};;
+	char slots[12] ; 
 	
 	id = getuid();	
 	
@@ -1047,14 +1047,15 @@ int main( int argc , char *argv[])
 		return status ;
 	}else if(strcmp(action,"emptyslots") == 0 ){
 		
-		if ( empty_slots( slots , device ) == 0 ){			
-			printf("%s\n",slots ) ;
-			status =  0 ;
-		}else{
-			printf("ERROR: given device does not exist\n") ;
-			status =  1 ;
+		status = empty_slots( slots , device ) ;
+		
+		switch( status ){
+			case 0 :printf("%s\n",slots ) ;
+				break ;
+			case 1 :printf("device \"%s\" is not a luks device\n",device) ;
+				break ;
+			case 2 :printf("ERROR: could not open device\n") ;
 		}
-			
 	}else{
 		printf("ERROR: Wrong argument\n") ;
 		status =  10 ;

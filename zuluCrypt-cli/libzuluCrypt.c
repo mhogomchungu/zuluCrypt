@@ -99,73 +99,50 @@ int remove_key( const char * device , const char * pass )
 	
 	i = crypt_keyslot_destroy(cd,i) ;
 	
-	crypt_free(cd);		
+	crypt_free(cd);	
 	
-	return i ;
+	if ( i < 0 )
+		return 3 ;	
+	else
+		return i ;
 }
 
-int empty_slots( char * slots ,const char * dev )
+int empty_slots( char * slots ,const char * device )
 {
-	struct stat st ;
+	struct crypt_device *cd = NULL;
+	crypt_keyslot_info cki ;
 	
 	int i ;
+	int j ;
+	int k ;
 	
-	char *c ;	
-	
-	char * device = sanitize( dev ) ;
-	
-	StrHandle * p = StringCpy( ZULUCRYPTcryptsetup) ;
-	StringCat( p , " luksDump ") ;
-	StringCat( p , device ) ;
-	StringCat( p , " 1> /tmp/zuluCrypt-dump 2>&1") ;
-	
-	execute( StringCont( p ), NULL, 0 ) ;
-	
-	StringDelete( p ) ;
-	
-	free( device ) ;
-	
-	stat("/tmp/zuluCrypt-dump",&st) ;
-	
-	c = ( char * ) malloc ( sizeof(char) * st.st_size) ;
-	
-	i = open("/tmp/zuluCrypt-dump",O_RDONLY) ;
-	
-	read ( i , c , st.st_size ) ;
-	
-	close( i ) ;	
-	
-	if ( c[0] == 'D' )
+	if( is_luks(device) == 1)
 		return 1 ;
-	
-	if ( strstr( c, "Key Slot 0: DISABLED") == NULL )
-		slots[0] = '1' ;
-	
-	if ( strstr( c, "Key Slot 1: DISABLED") == NULL )
-		slots[1] = '1' ;
 		
-	if ( strstr( c, "Key Slot 2: DISABLED") == NULL )
-		slots[2] = '1' ;
-
-	if ( strstr( c, "Key Slot 3: DISABLED") == NULL )
-		slots[3] = '1' ;
-					
-	if ( strstr( c, "Key Slot 4: DISABLED") == NULL )
-		slots[4] = '1' ;
-							
-	if ( strstr( c, "Key Slot 5: DISABLED") == NULL )
-		slots[5] = '1' ;
-									
-	if ( strstr( c, "Key Slot 6: DISABLED") == NULL )
-		slots[6] = '1' ;
-
-	if ( strstr( c, "Key Slot 7: DISABLED") == NULL )
-		slots[7] = '1' ;
+	i = crypt_init(&cd,device) ;
 	
-	remove("/tmp/.zuluCrypt-dump") ;
+	if( i != 0 )
+		return 2 ;
 	
-	free( c ) ;
+	i = crypt_load(cd, CRYPT_LUKS1, NULL) ;
 	
+	if( i != 0 )
+		return 2 ;
+	
+	k = crypt_keyslot_max(CRYPT_LUKS1) ;
+	
+	for( j = 0 ; j < k ; j++){
+		
+		cki = crypt_keyslot_status(cd, j);
+		
+		switch ( cki ){
+			case CRYPT_SLOT_INACTIVE :   slots[j] = '0' ; break ;
+			case CRYPT_SLOT_ACTIVE :     slots[j] = '1' ; break ;
+			case CRYPT_SLOT_INVALID :    slots[j] = '2' ; break ;
+			case CRYPT_SLOT_ACTIVE_LAST: slots[j] = '3' ; break ;			
+		}		
+	}
+	slots[j] = '\0' ;
 	return 0 ;
 }
 
