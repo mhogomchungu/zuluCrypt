@@ -82,13 +82,10 @@ int volume_info( const char * mapper,const char *device )
 	
 	output = status( StringCont(p) ) ;
 	
-	if( output == NULL ){
-		printf("device \"%s\" is not open\n",device) ;
-		return 1 ;
-	}
-	
-	printf("device \"%s\" is open\n",device) ;
-	printf("%s\n",output);
+	if( output == NULL )
+		printf("%s is inactive.\n",StringCont(p));
+	else
+		printf("%s\n",output);
 	
 	StringDelete(p);
 	free(output) ;
@@ -534,7 +531,7 @@ int create_volumes(int argn ,char *device, char *fs, char * mode, char * keyType
 		if( strcmp(rng,"/dev/random") != 0)
 			if( strcmp(rng,"/dev/urandom") != 0){
 				st = 6 ;
-				goto out:
+				goto out ;
 			}
 				
 		if( strcmp( keyType, "-p" ) == 0 ) {			
@@ -553,8 +550,8 @@ int create_volumes(int argn ,char *device, char *fs, char * mode, char * keyType
 				c = ( char *) malloc ( sizeof(char) * ( fsize + 1 ) ) ;
 				
 				if( c == NULL ){
-					st = 2
-					goto out:
+					st = 2 ;
+					goto out ;
 				}
 				*( c + fsize  ) = '\0' ;
 			

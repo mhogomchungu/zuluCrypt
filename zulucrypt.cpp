@@ -549,12 +549,15 @@ void zuluCrypt::setUpOpenedVolumes(void)
 			continue ;
 		}
 
-		d = d + 9 ;
+		//d = d + 9 ;
+		while ( *++d != '/') { ; }
 
 		if (strncmp(d ,"/dev/loop",9) != 0 ){
 			v = d ;
 		}else{
-			v = strstr(c,"loop:") + 9 ;
+			v = strstr(c,"loop:")  ;
+
+			while(*++v != '/') { ; }
 		}
 
 		d = v ;
@@ -566,6 +569,8 @@ void zuluCrypt::setUpOpenedVolumes(void)
 		N = d = volume = new char[ strlen( v ) + 1 ] ;
 
 		while ( ( *d++ = *v++ ) != '\0') { ; }
+
+		std::cout << volume << std::endl ;
 
 		p = new QProcess() ;
 

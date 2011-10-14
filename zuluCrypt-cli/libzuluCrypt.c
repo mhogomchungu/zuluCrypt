@@ -167,48 +167,74 @@ char * intToChar(char * x, int y,int z)
 	return ++c ;
 }
 
-char * status( const char * device )
+char * status( const char * mapper )
 {		
 	#define SIZE 31
 	char keysize[ SIZE + 1 ] ;
 	char loop[512] ;
+	char path[512];
 	char *c ;
 	char *d ;
-	//crypt_status_info csi ;
+	
+	crypt_status_info csi ;
+	
 	struct crypt_device *cd = NULL;
 	struct crypt_device *cd1 = NULL;
 	struct crypt_active_device cad ;
-	
+		
 	StrHandle * p ;
 	StrHandle * q ;
 	
 	const char *type ;
 	int i ;
 
-	i = crypt_init_by_name(&cd,device);
+	i = crypt_init_by_name(&cd,mapper);
 	
 	if( i != 0 )
 		return NULL ;
 	
-	i = crypt_get_active_device(cd1,device,&cad) ;
+	i = crypt_get_active_device(cd1,mapper,&cad) ;
 	
 	if( i != 0 )
 		return NULL ;
+
+	csi = crypt_status(cd, mapper);
 	
+	p = StringCpy(mapper) ;
+	
+	switch( csi){
+		case CRYPT_INACTIVE : 	StringCat(p," is inactive.\n") ;
+					c = StringContCopy(p) ;	
+					crypt_free(cd);
+					StringDelete(p) ;
+					return c ;
+					break ;
+		case CRYPT_ACTIVE   : 	StringCat(p," is active.\n") ;
+					break ;
+		case CRYPT_BUSY     : 	StringCat(p," is active and is in use.\n") ;
+					break ;
+		case CRYPT_INVALID  : 	StringCat(p," is invalid.\n") ;
+					c = StringContCopy(p) ;	
+					crypt_free(cd);
+					StringDelete(p) ;
+					return c ;		
+					break ;
+	}	
+		
 	type = crypt_get_type(cd) ;	
 	
-	p = StringCpy("type:\t\t");
+	StringCat(p," type:\t\t");
 	
 	StringCat(p,type) ;
 
-	StringCat(p,"\ncipher:\t\t");
+	StringCat(p,"\n cipher:\t");
 	StringCat(p,crypt_get_cipher_mode(cd)) ;
 	
-	StringCat(p,"\nkeysize:\t");
+	StringCat(p,"\n keysize:\t");
 	StringCat(p,intToChar(keysize,SIZE,8 *crypt_get_volume_key_size(cd))) ;
 	StringCat(p," bits");
 	
-	StringCat(p,"\ndevice:\t\t");
+	StringCat(p,"\n device:\t");
 	StringCat(p,crypt_get_device_name(cd)) ;
 	
 	if( strncmp(crypt_get_device_name(cd),"/dev/loop",9 ) == 0){
@@ -216,7 +242,7 @@ char * status( const char * device )
 		q = StringCpy(ZULUCRYPTlosetup) ;
 		StringCat(q," ");
 		StringCat(q,crypt_get_device_name(cd)) ;
-		execute(StringCont(q),loop,511) ;
+		execute(StringCont(q),loop,510) ;
 		StringDelete( q ) ;
 		
 		c = loop ;
@@ -229,19 +255,22 @@ char * status( const char * device )
 		
 		*d = '\0' ;
 		
-		StringCat(p,"\nloop:\t\t");
-		StringCat(p,c);
+		i = 0 ;
+	
+		realpath(c,path) ;
+		StringCat(p,"\n loop:\t\t");
+		StringCat(p,path);
 	}
 	
-	StringCat(p,"\noffset:\t\t");
+	StringCat(p,"\n offset:\t");
 	StringCat(p,intToChar(keysize,SIZE,crypt_get_data_offset(cd))) ;	
 	StringCat(p," sectors");	
 	
-	StringCat(p,"\nsize:\t\t");
+	StringCat(p,"\n size:\t\t");
 	StringCat(p,intToChar(keysize,SIZE,cad.size)) ;	
 	StringCat(p," sectors");
 	
-	StringCat(p,"\nmode:\t\t");
+	StringCat(p,"\n mode:\t\t");
 	
 	if( cad.flags == 1 )
 		StringCat(p,"readonly");
