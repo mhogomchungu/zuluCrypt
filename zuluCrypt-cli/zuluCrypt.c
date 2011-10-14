@@ -125,10 +125,6 @@ int open_volumes(int argn, char * device, char * mapping_name,int id, char * mou
 {
 	StrHandle * p ;
 	int st ;
-	int f ;
-	struct stat Q ;
-	char *c;
-	off_t fsize ;
 	
 	if (argn < 5 ){
 		st = 8 ;
@@ -159,53 +155,14 @@ int open_volumes(int argn, char * device, char * mapping_name,int id, char * mou
 
 		printf("\n") ;	
 		
-		st = open_volume(device, mapping_name,mount_point,id,mode,StringCont( p )) ;
-		
+		st = open_volume(device, mapping_name,mount_point,id,mode,StringCont( p ),"-p") ;
 		StringDelete( p ) ;
 		
 	}else if ( argn == 7 ){
 
-		if( strcmp(source,"-p") == 0 ){			
-			
-			st = open_volume(device, mapping_name,mount_point,id,mode, pass) ;			
+		st = open_volume(device, mapping_name,mount_point,id,mode, pass,source) ;			
 		
-		}else if ( strcmp(source,"-f") == 0 ){
-			
-			if ( stat(pass,&Q) == 0 ){			
-				
-				if( Q.st_size < MAX )
-					fsize = Q.st_size ;
-				else
-					fsize = MAX ;
-				
-				c = ( char * ) malloc( sizeof(char) * ( fsize + 1 )  ) ;
-
-				if( c == NULL ){
-					st = 9 ;
-					goto eerr ;
-				}
-					
-				*( c + fsize ) = '\0' ;
-
-				f = open( pass,O_RDONLY ) ;
-			
-				read(f,c,fsize) ;
-				
-				close(f);				
-				
-				st = open_volume(device, mapping_name,mount_point,id,mode,c) ;
-				
-				free( c ) ;
-			}else{
-
-				st = 6 ;
-			}
-		}else{
-			
-			st = 7 ;
-		}
-	}
-	else{
+	}else{
 		
 		st =  8 ;			
 	}
@@ -232,7 +189,7 @@ int open_volumes(int argn, char * device, char * mapping_name,int id, char * mou
 			break ;
 		case 8 : printf("ERROR: Wrong number of arguments, run zuluCrypt with \"-h\" for help\n");
 			break ;
-		case 9 : printf("ERROR: operation failed, insuffucient system memory\n");
+		case 9 : printf("ERROR: failed to open volume\n");
 			break ;	
 			
 		default :

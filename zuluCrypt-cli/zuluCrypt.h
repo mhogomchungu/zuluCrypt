@@ -65,7 +65,8 @@ int is_luks(const char * device) ;
  * 	5 - ERROR: Cant create a mount point because a file/folder with the same exist at the mount point
  *	6 - ERROR: encrypted volume has an unrecognized file system type,supported file systems are : ext4,ext3,ext2,vfat,reiserfs
  */
-int open_volume(const char *device,const  char * mapping_name,const  char *m_point, uid_t id,const char * mode, const char * passphrase) ;
+
+int open_volume(const char *dev, const char * map, const char *m_point, uid_t id,const char * mode, const char *pass,const char * source) ;
 
 
 
