@@ -3,7 +3,7 @@
  <class>zuluCrypt</class>
  <widget class="QMainWindow" name="zuluCrypt">
   <property name="windowModality">
-   <enum>Qt::ApplicationModal</enum>
+   <enum>Qt::WindowModal</enum>
   </property>
   <property name="enabled">
    <bool>true</bool>

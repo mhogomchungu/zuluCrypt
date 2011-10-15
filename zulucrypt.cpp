@@ -242,7 +242,6 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 
 void zuluCrypt::trayClicked(QSystemTrayIcon::ActivationReason e)
 {
-	std::cout << "ds" << std::endl ;
 	if( e == QSystemTrayIcon::Trigger){
 
 		if(this->isVisible() == true)
@@ -255,9 +254,6 @@ void zuluCrypt::trayClicked(QSystemTrayIcon::ActivationReason e)
 void zuluCrypt::trayProperty()
 {
 	QFile f(QDir::homePath() + QString("/.zuluCrypt/tray")) ;
-
-	//if(in.exists() == true)
-	//	std::cout << "blah" << std::endl ;
 
 	f.open(QIODevice::ReadOnly) ;
 
@@ -272,8 +268,6 @@ void zuluCrypt::trayProperty()
 	char data[2] ;
 
 	data[1] = '\0' ;
-
-	//std::cout << t.data() << std::endl ;
 
 	if(c[0] == '1'){
 		data[0] = '0' ;

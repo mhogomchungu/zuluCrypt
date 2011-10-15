@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'zulucrypt.ui'
 **
-** Created: Fri Oct 14 23:12:31 2011
+** Created: Sat Oct 15 17:41:41 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -56,7 +56,7 @@ public:
     {
         if (zuluCrypt->objectName().isEmpty())
             zuluCrypt->setObjectName(QString::fromUtf8("zuluCrypt"));
-        zuluCrypt->setWindowModality(Qt::ApplicationModal);
+        zuluCrypt->setWindowModality(Qt::WindowModal);
         zuluCrypt->setEnabled(true);
         zuluCrypt->resize(659, 375);
         QIcon icon;
