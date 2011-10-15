@@ -50,22 +50,22 @@ int add_key(const char * device, const char * existingkey,const  const char * ne
 	int i ;
 	
 	if( is_luks(device) == 1)
-		return 8 ;
+		return 3 ;
 		
 	i = crypt_init(&cd,device) ;
 	
 	if( i != 0 )
-		return 7 ;
+		return 2 ;
 	
 	i = crypt_load(cd, CRYPT_LUKS1, NULL) ;
 	
 	if( i != 0 )
-		return 7 ;
+		return 2 ;
 	
 	i = crypt_keyslot_add_by_passphrase(cd,CRYPT_ANY_SLOT,existingkey,strlen(existingkey),newkey,strlen(newkey)) ;
 	
 	if ( i < 0 )
-		return 3 ;
+		return 1 ;
 	else
 		return 0 ;	
 	
@@ -426,6 +426,10 @@ int create_volume(const char * dev, const char * fs,const char * type, const cha
 		return 1 ;
 	}
 	
+	if( strcmp(rng,"/dev/random") != 0)
+		if( strcmp(rng,"/dev/urandom") != 0)
+			return 6 ;
+	
 	if( strncmp(fs,"ext3",4) != 0)
 		if( strncmp(fs,"ext4",4) != 0)
 			if( strncmp(fs,"vfat",4) != 0)
@@ -437,9 +441,10 @@ int create_volume(const char * dev, const char * fs,const char * type, const cha
 		
 		k = open_luks(dev,"create-new","rw","-p",pass ) ;
 		
-	}else{
+	}else if( strcmp(type,"luks") == 0 ){
 		k =  open_plain(dev,"create-new","rw","-p",pass,"cbc-essiv:sha256" ) ;		
-	}		
+	}else
+		return 6 ;
 		
 	q = StringCpy(ZULUCRYPTmkfs );
 	StringCat( q , " -t ") ;
@@ -458,7 +463,7 @@ int create_volume(const char * dev, const char * fs,const char * type, const cha
 	return 0 ;	
 }
 
-int close_volume(const char * map,const char * device) 
+int close_volume(const char * map) 
 {
 	StrHandle * q ;
 	StrHandle * p ;

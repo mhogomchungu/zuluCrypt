@@ -25,91 +25,79 @@ extern "C" {
 #endif	
 
 /*
- *  Arguments to different functions:
- * 
- * device        - path to a encrypted device to work with eg. /dev/sda5, /dev/loop5
- * 
- * mapping_name  - a name to use to map the device(name will show up at /dev/mapper). All access to
- *                 the device will happen through this mapping_name
- * 
- * output        - a buffer to hold command output. 
- * 
- * size          - size of the output buffer 
- * 
- * fs            - file system type to use when creating an encrypted volume
- * 
- * type          - type of encrypted volume to create, options are "plain" and "luks"
- * 
- * passphrase    - passphrase to open an encrypted volume
- */
-
-
-/*
- * outputs:
+ * input : path to a partition/file to be checked if it is a luks device
+ * return values:
  *	 0 - the device is a cryptsetup device of type "luks"
  * 	 1 - the device is not a crptsetup device of type "luks", it could be of type "plain" though
  */
 int is_luks(const char * device) ;
 
 
-
-
-
 /*
- * outputs:
+ * return values:
  *	0 - success, the encrypted volume was opened and mounted successfully
  * 	1 - ERROR: open failed, given path does not point to a file or partition
  * 	2 - ERROR: There seem to already be an opened volume associated with "mapping_name" argument
  * 	3 - ERROR: Can not open and encrypted file. No free loop device to use.
  * 	4 - ERROR: wrong passphrase
  * 	5 - ERROR: Cant create a mount point because a file/folder with the same exist at the mount point
- *	6 - ERROR: encrypted volume has an unrecognized file system type,supported file systems are : ext4,ext3,ext2,vfat,reiserfs
+ *	6 - ERROR: encrypted volume has an unrecognized file system type,supported file systems are : ext4,ext3,ext2,vfat
  */
-
-int open_volume(const char *dev, const char * map, const char *m_point, uid_t id,const char * mode, const char *pass,const char * source) ;
-
-
-
-
-
-
-
+int open_volume(const char *device, // path to a file/partition to be opened
+		const char * mapper,// mapper name( will show up in /dev/mapper/map )
+		const char *m_point,// mount point path, opened volume will be mounted on this path
+		uid_t id,           // owner of the mount point will have this id with rwx------ permissions 
+		const char * mode,  // "ro" or "rw",the former means open volume in read only mode,
+				    // the latter means open in read/write mode
+		const char *pass,   // encrypted volume passphrase to be used to open the volume
+		const char * source // "-p" or "-f",the latter means pass is a keyfile, the former means 
+		                    // pass is "naked" i.e already exist in memory 
+	       ) ;	       
+	       
 /*
- * outputs:
+ * input :  mapper name used when the volume was opened
+ * return values:
  * 	2 - close failed, encrypted volume associated with mapping_name argument is not opened
  * 	1 - unmounting the mount point failed,mount point or one or more files are in use.
  * 	0 - success
   */
-int close_volume(const char * mapping_name,const  char * device) ;
+int close_volume(const char * mapper) ; 
 
 
-
-
+/*
+ * input :  mapper name used when the volume was opened
+ * 
+ * output is a pointer to a string with volume info.
+ * remember to free the pointer when done with the output.
+ */
 char *status( const  char * mapper );
 
 
-
-
-
 /*
- * outputs:
+ * return values:
+ *      0 - success
  * 	1 - ERROR: device argument does not point to a file or partition
- * 	2 - ERROR: A volume associated with the same device address is already opened.
+ * 	6 - ERROR: wrong argument.
  */
-int create_volume(const char * device,const  char * fs,const char * type, const char * passphrase,const char *rng);  
-
-
+int create_volume(const char * device,    // path to a file or partition
+		  const  char * fs,       //file system to use in the volume(ext2,ext3.ext4,vfat)
+		  const char * type,      //type of volume to create( luks or plain )
+		  const char * passphrase,//passphrase to use to create the volume
+		  const char *rng);       //random number generator to use ( /dev/random or /dev/urandom )
+		                          //required when creating luks volume, just pick one if you
+		                          //creating a plain device, it will be ignored		                        
 
 /*
  * INPUT: 
- * 	device      - path to an encrypted file or mass storage device
+ * 	device      - path to an encrypted file or partition
  * 	existingkey - a key that already exist in the encrypted volume
- * 	new key     - path to a file with a key that is to be added to the volume
+ * 	new key     - new key to be added to the volume
  * 
  * return value:
  * 	0 - success, the new key was added successfully
- *      2 - ERROR: The presented key does not exist in the volume
- *      4 - ERROR: device does not exist
+ *      1 - ERROR: The presented key does not exist in the volume
+ *      2 - ERROR: could not open encrypted volume
+ *      3 - ERROR: device either doesnt exist or not a luks device
  */
 int add_key(const char * device, const char * existingkey,const  char * newkey) ;
 
@@ -117,42 +105,35 @@ int add_key(const char * device, const char * existingkey,const  char * newkey) 
 
 /*
  * INPUT: device:      path to an encrypted device
- *        existingkey: path to a file with a passphrase already in the volume
+ *        passphrase: a key already in the volume to be removed
  * 
- * OUTPUT: 
+ * return value: 
  * 0 - success - a key is successfully removed
- * 2 - ERROR: The presented key does not exist in the volume
- * 4 - ERROR: device does not exist
+ * 1 - ERROR: device is not a luks device or does not exist
+ * 2 - ERROR: passphrase is not present in the volume
+ * 3 - ERROR: could not open luks device
  */
-int remove_key(const  char * device , const char * keyfile ) ;
-
-
-
-/*
- * INPUT: device:      path to an encrypted device
- * 	  existingkey: path to a file with a passphrase already in the volume
- * 	  slotNumber : a number of a slot to delete/kill
- * OUTPUT:
- * 0 - success, a slot is successfully deleted
- * 1 - ERROR: trying to delete an empty slot
- * 2 - ERROR:  device does not exist
- * 3 - ERROR: The presented key does not exist in the volume
- */
-int kill_slot(const  char * device,const char * existingkey, int slotNumber) ;
-
+int remove_key(const  char * device , const char * passphrase ) ;
 
 /*
  * INPUT: device - path to encrypted volume
  * 
  * OUTPUT:
- * slots: array of 8 digits representing empty slots, 1 is for enabled, 0 for disabled
- *        example 00100000 means, slot number 2 is occupied/enabled, the rest are not(emply/disabled).
+ * slots: array of 8 digits representing empty slots,
+ * 	0 is for disabled/unoccupied/inactive
+ * 	1 is for enabled/occupied/active 	
+ *      2 is for invalid
+ * 	3 is for last active key
+ * 
+ *       example:
+ *	00100000 means, slot number 3 is occupied/enabled, the rest are not(emply/disabled).
  * 
  * return value:
- * 1 - device does not exist
- * 0 - successfully read the device
+ * 0 - success  
+ * 1 - ERROR: device does not exist or is not a luks device
+ * 2 - ERROR: could not open luks device  
  */
-int empty_slots(const  char * slots , const char * device ) ;
+int empty_slots(char * slots , const char * device ) ;
 
 
 #ifdef __cplusplus

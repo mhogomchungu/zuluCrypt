@@ -23,3 +23,6 @@ version 4.0
 -- transition away from using cryptsetup on the cli to using the library - DONE
 -- Allow a user to select what font size and type to use             - DONE
 -- add support for favorite volumes	           		- DONE
+-- warn on attempt to delete a key when there is only one key left - DONE
+-- refuse to add more keys when key slots are full.		- DONE
+-- implement tray icon to minimize to tray 		- WORKINPROGRESS

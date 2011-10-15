@@ -74,7 +74,7 @@ void help( void )
 	printf("this tool should come with a documentation file, read it for more info\n");	
 }
 
-int volume_info( const char * mapper,const char *device )
+int volume_info( const char * mapper )
 {
 	char * output = NULL ;
 	StrHandle *p = StringCpy("/dev/mapper/zuluCrypt-");
@@ -92,15 +92,10 @@ int volume_info( const char * mapper,const char *device )
 	return 0 ;
 }
 
-int close_opened_volume( char * mapping_name,char * device )
+int close_opened_volume( char * mapping_name )
 {
-	struct stat xt ;
-	int st ;
-	
-	if( stat( device, &xt) == 0)
-		st = close_volume( mapping_name, device ) ;
-	else
-		st = 3 ;
+
+	int st = close_volume( mapping_name ) ;
 	
 	switch( st ) {
 	case 0 : printf("SUCCESS: volume successfully closed\n");
@@ -657,7 +652,7 @@ int addkey(int argn,char * device, char *keyType1, char * existingKey, char * ke
 		
 		if (strcmp( StringCont( q ), StringCont( n ) ) != 0){
 			
-			status = 2 ;
+			status = 7 ;
 			StringDelete( p ) ;			
 			StringDelete( q ) ;	
 			StringDelete( n ) ;
@@ -689,7 +684,7 @@ int addkey(int argn,char * device, char *keyType1, char * existingKey, char * ke
 				close( z ) ;				
 				
 			}else{
-				status = 3 ;
+				status = 8 ;
 				goto out ;
 			}
 		}
@@ -714,7 +709,7 @@ int addkey(int argn,char * device, char *keyType1, char * existingKey, char * ke
 				close( z ) ;				
 				
 			}else{
-				status = 3 ;
+				status = 8 ;
 				goto out ;
 			}			
 		}
@@ -755,20 +750,20 @@ int addkey(int argn,char * device, char *keyType1, char * existingKey, char * ke
 		break ;		
 		case 1 : printf("ERROR: presented key does not match any key in the volume\n") ;
 		break ;
-		case 2 : printf("ERROR: new passphrases do not match\n") ;
+		case 2 : printf("ERROR: could not open luks device, quiting\n") ;
 		break ;
-		case 3 : printf("ERROR: one or both keyfile(s) does not exist\n") ;
-		break ;  
+		case 3 : printf("ERROR: device \"%s\" is not a luks device\n",device) ;
+		break ;
 		case 4 : printf("ERROR: device does not exist\n");
 		break ;
 		case 5 : printf("ERROR: Wrong arguments\n") ;
 		break ;
 		case 6 : printf("ERROR: Wrong number of arguments\n") ;
+		break ;			
+		case 7 : printf("ERROR: new passphrases do not match\n") ;
 		break ;
-		case 7 : printf("ERROR: could not open luks device, quiting\n") ;
-		break ;
-		case 8 : printf("ERROR: device \"%s\" is not a luks device\n",device) ;
-		break ;
+		case 8 : printf("ERROR: one or both keyfile(s) does not exist\n") ;
+		break ;  
 		case 9 : printf("ERROR: Run out of memory\n") ;
 		break ;
 		default :
@@ -957,11 +952,11 @@ int main( int argc , char *argv[])
 		
 	}else if ( strcmp( action, "status" ) == 0 ){			
 
-		status = volume_info( mapping_name,device ) ;
+		status = volume_info( mapping_name ) ;
 		
 	}else if ( strcmp( action, "close" ) == 0 ){			
 
-		status =  close_opened_volume( mapping_name,device ) ;
+		status =  close_opened_volume( mapping_name ) ;
 		
 	}else if ( strcmp( action, "open" ) == 0 ){
 		
