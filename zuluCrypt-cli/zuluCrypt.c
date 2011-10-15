@@ -819,7 +819,7 @@ int removekey( int argn , char * device, char * keyType, char * keytoremove )
 			
 			*( c + st.st_size  ) = '\0' ;
 			
-			z = open( c, O_RDONLY ) ;
+			z = open( keytoremove, O_RDONLY ) ;
 		
 			read( z , c , st.st_size ) ;
 		
@@ -840,7 +840,7 @@ int removekey( int argn , char * device, char * keyType, char * keytoremove )
 	switch ( status ){
 		case 0 : printf("SUCCESS: key successfully removed\n");
 		break ;
-		case 1 : printf("device \"%s\" is not a luks device",device) ;
+		case 1 : printf("ERROR: device \"%s\" is not a luks device",device) ;
 		break ;
 		case 2 : printf("ERROR: there is no key in the volume that match the presented key\n") ;
 		break ;

@@ -170,6 +170,23 @@ void luksdeletekey::pbDelete()
 		return ;
 	}
 
+	QProcess N ;
+	N.start(QString(ZULUCRYPTzuluCrypt) + QString(" emptyslots ") + ui->lineEditVolumePath->text());
+	N.waitForFinished() ;
+
+	QByteArray b = N.readAllStandardOutput() ;
+
+	if(b.at(0) == '3'){
+		m.setWindowTitle(QString("WARNING!"));
+		m.setText(QString("There is only one last key in the volume.\nDeleting it will make the volume unopenable and lost forever.\nAre you sure you want to delete this key?"));
+
+		m.addButton(QMessageBox::Yes);
+		m.addButton(QMessageBox::No);
+
+		if( m.exec() == QMessageBox::No )
+			return ;
+	}
+
 	disableAll();
 
 	ldk = new luksdeleteKeyThread(ui,&status) ;

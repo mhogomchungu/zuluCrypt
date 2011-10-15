@@ -18,7 +18,7 @@
  */
 
 
- #include <QIcon>
+#include <QIcon>
 #include <QtGui/QApplication>
 #include "zulucrypt.h"
 

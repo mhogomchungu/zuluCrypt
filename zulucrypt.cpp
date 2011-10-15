@@ -489,7 +489,7 @@ char zuluCrypt::luksEmptySlots(QString volumePath)
 	char *s = N.readAllStandardOutput().data() ;
 	int i = 0 ;
 	for ( int j = 0 ; j < 8 ; j++){
-		if( s[j] == '1' )
+		if( s[j] == '1' || s[j] == '3' )
 			i++ ;
 	}
 	N.close();

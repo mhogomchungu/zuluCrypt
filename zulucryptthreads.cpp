@@ -342,7 +342,7 @@ void volumePropertiesThread::run()
 	p.close();
 
 	if ( zuluCrypt::isLuks(path) == true)
-		*volProperty = ( QString(" ") + QString( r.right(start) )   + QString("  occupied key slots: ") + zuluCrypt::luksEmptySlots(path) + QString(" / 8")) ;
+		*volProperty = ( QString(" ") + QString( r.right(start) )   + QString(" occupied key slots: ") + zuluCrypt::luksEmptySlots(path) + QString(" / 8")) ;
 	else
 		*volProperty = ( QString(" ") + QString( r.right(start) ) ) ;
 }
