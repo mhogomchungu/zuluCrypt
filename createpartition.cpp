@@ -204,6 +204,8 @@ void createpartition::threadfinished()
 			break;
 		case 1 : UIMessage(QString("ERROR"),QString("volume path does not exist"));
 			break;
+		case 2 : UIMessage(QString("ERROR"),QString("couldnt get requested memory to open the key file"));
+			break ;
 		default: UIMessage(QString("ERROR"),(QString("unrecognized error has occured,volume not created")));
 	}
 	enableAll();

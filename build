@@ -1,41 +1,70 @@
 #!/bin/bash
  
- if [ "$1" == "install" ] ; then
+path=$2
+ 
+if [ "$path" == "" ] ; then
+	 path="/usr"
+fi
+
+if [ "$1" == "install" ] ; then
 	cp -vf  zuluCrypt-cli/zuluCrypt-cli /usr/bin
 	
-	chmod u+s -v /usr/bin/zuluCrypt-cli
+	cp -vf zuluCrypt-cli/zuluCrypt.h $path/include
 	
-	cp -vf zuluCrypt /usr/bin
+	chmod u+s -v $path/bin/zuluCrypt-cli
 	
-	cp -vf zuluCrypt.desktop /usr/share/applications
+	cp -vf zuluCrypt $path/bin
 	
-	chmod 755 /usr/share/applications/zuluCrypt.desktop
-	chown root:root /usr/share/applications/zuluCrypt.desktop
+	cp -vf zuluCrypt.desktop $path/share/applications
+	
+	chmod 755 $path/share/applications/zuluCrypt.desktop
+	
+	chown root:root $path/share/applications/zuluCrypt.desktop
 	
 	cp -fv zuluCrypt.png /usr/share/icons
 	
+	cp -vf libzuluCrypt.so $path/lib
+	
+	cp -vf libzuluCrypt.so.1.0 $path/lib
+	
+	cp -vf libzuluCrypt.a $path/libpaths
+	
+	ldconfig
+	
 elif [ "$1" == "uninstall" ] ; then
 	
-	rm -rfv /usr/share/icons/zuluCrypt.png
+	rm -rfv $path/share/icons/zuluCrypt.png
 	
-	rm -rfv /usr/bin/zuluCrypt
+	rm -rfv $path/bin/zuluCrypt
 	
-	rm -rfv /usr/bin/zuluCrypt-cli
+	rm -rfv $path/bin/zuluCrypt-cli
 	
-	rm -rfv /usr/share/applications/zuluCrypt.desktop
+	rm -rfv $path/share/applications/zuluCrypt.desktop
 	
-else	
+	rm -rfv $path/include/zuluCrypt.h
+	
+	rm -rfv $path/lib/libzuluCrypt.so.1
+	
+	rm -rfv $path/lib/libzuluCrypt.so
+	
+	rm -rfv $path/lib/libzuluCrypt.a
+	
+else		
 	cd zuluCrypt-cli
 	
 	gcc -c -Wall -o String.o String.c
  
-	ar  rcs libString.a String.o
-  
-	gcc  -D_FILE_OFFSET_BITS=64 -Wall -c libzuluCrypt.c -o libzuluCrypt.o  -L. -lString 
+	gcc  -D_FILE_OFFSET_BITS=64 -Wall -c libzuluCrypt.c -o libzuluCrypt.o String.o
+	
+	ar  rcs  libzuluCrypt.a libzuluCrypt.o
+	
+	gcc -shared -Wl,-soname,libzuluCrypt.so.1 -o libzuluCrypt.so.1.0 libzuluCrypt.o  -lc
  
-	ar  rcs  libzuluCrypt.a libzuluCrypt.o  
- 
-	gcc -o zuluCrypt-cli zuluCrypt.c -static  -L. -lzuluCrypt -lString -Wall
+	ln -sf libzuluCrypt.so.1.0 libzuluCrypt.so
+	
+	libpaths="-L. -L/lib -L/usr/lib -L/usr/local/lib"
+	
+	gcc -D_FILE_OFFSET_BITS=64 -Wall $libpaths -lzuluCrypt -lcryptsetup zuluCrypt.c -o zuluCrypt-cli
 
 	cd ..
 	

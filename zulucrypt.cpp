@@ -844,7 +844,7 @@ void zuluCrypt::close(void)
 
 	case 2 :	UIMessage(QString("ERROR"),QString("close failed, the mount point and/or one or more files are in use"));
 		break ;
-	case 3 :	UIMessage(QString("ERROR"),QString("close failed, path given does not point to a file"));
+	case 3 :	UIMessage(QString("ERROR"),QString("close failed, path given does not point to an encrypted device"));
 		break ;
 	default :	UIMessage(QString("ERROR"),QString("an unknown error has occured, volume not closed"));
 	}

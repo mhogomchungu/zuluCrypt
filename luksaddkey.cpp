@@ -315,14 +315,6 @@ void luksaddkeyUI::threadfinished()
 			enableAll();
 			break ;
 
-		case 4 :
-			m.setWindowTitle(QString("ERROR!"));
-			m.setText(QString("device does not exist"));
-			m.addButton(QMessageBox::Ok);
-			m.exec() ;
-			enableAll();
-			break ;
-
 		default:
 			m.setWindowTitle(QString("ERROR!"));
 			m.setText(QString("un unrecognized error has occured, key not added"));

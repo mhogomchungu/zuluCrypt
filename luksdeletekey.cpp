@@ -200,8 +200,8 @@ void luksdeletekey::threadfinished()
 			HideUI() ;
 			return ;
 			break ;
-		case 1 :UIMessage(QString("ERROR"),QString("one or more paths has an empty space in them, the back end doesnt like it"));
-			break ;
+		//case 1 :UIMessage(QString("ERROR"),QString("one or more paths has an empty space in them, the back end doesnt like it"));
+		//	break ;
 		case 2 :UIMessage(QString("ERROR"),QString("there is no key in the volume that match entered key"));
 			break ;
 		case 4 :UIMessage(QString("ERROR"),QString("device does not exist"));

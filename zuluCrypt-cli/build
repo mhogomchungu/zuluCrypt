@@ -1,19 +1,38 @@
 #!/bin/bash
  
+path=$2
+ 
+if [ "$path" == "" ] ; then
+	 path="/usr"
+fi
+
 if [ "$1" == "install" ] ; then
 	
 	cp -vf zuluCrypt-cli /usr/bin
 
 	chmod -v u+s /usr/bin/zuluCrypt-cli
-else	
-	gcc -c -Wall -o  String.o String.c
- 
-	ar  rcs libString.a String.o
-  
-	gcc   -D_FILE_OFFSET_BITS=64 -Wall -c libzuluCrypt.c   -o libzuluCrypt.o   
- 
-	ar  rcs libzuluCrypt.a libzuluCrypt.o
 	
-	gcc  -o zuluCrypt-cli zuluCrypt.c -Wall  -D_FILE_OFFSET_BITS=64 -L. -L/usr/local/lib -L/lib -lzuluCrypt -lString  -lcryptsetup
+	cp -vf libzuluCrypt.so $path/lib
+	
+	cp -vf libzuluCrypt.so.1.0 $path/lib
+	
+	cp -vf libzuluCrypt.a $path/lib
+	
+	ldconfig
+	
+else	
+	gcc -c -Wall -o String.o String.c
+ 
+	gcc  -D_FILE_OFFSET_BITS=64 -Wall -c libzuluCrypt.c -o libzuluCrypt.o 
+	
+	ar  rcs  libzuluCrypt.a libzuluCrypt.o 
+	
+	gcc -shared -Wl,-soname,libzuluCrypt.so.1 -o libzuluCrypt.so.1.0 libzuluCrypt.o String.o -lc
+ 
+	ln -sf libzuluCrypt.so.1.0 libzuluCrypt.so
+	
+	libpaths="-L. -L/lib -L/usr/lib -L/usr/local/lib"
+	
+	gcc -D_FILE_OFFSET_BITS=64 -Wall $libpaths -lzuluCrypt -lcryptsetup zuluCrypt.c -o zuluCrypt-cli
 	
 fi
