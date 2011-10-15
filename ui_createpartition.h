@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'createpartition.ui'
 **
-** Created: Sat Oct 1 01:22:44 2011
+** Created: Fri Oct 14 23:07:27 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -86,6 +86,7 @@ public:
         pbCancel = new QPushButton(createpartition);
         pbCancel->setObjectName(QString::fromUtf8("pbCancel"));
         pbCancel->setGeometry(QRect(220, 190, 91, 31));
+        pbCancel->setDefault(true);
         lineEditPassphrase1 = new QLineEdit(createpartition);
         lineEditPassphrase1->setObjectName(QString::fromUtf8("lineEditPassphrase1"));
         lineEditPassphrase1->setGeometry(QRect(120, 80, 281, 31));

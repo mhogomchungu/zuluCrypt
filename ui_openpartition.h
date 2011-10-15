@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'openpartition.ui'
 **
-** Created: Sat Oct 1 01:22:44 2011
+** Created: Fri Oct 14 23:07:27 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -32,14 +32,14 @@ public:
         PartitionView->setWindowModality(Qt::ApplicationModal);
         PartitionView->resize(560, 264);
         tableWidgetPartitionView = new QTableWidget(PartitionView);
-        if (tableWidgetPartitionView->columnCount() < 2)
-            tableWidgetPartitionView->setColumnCount(2);
+        if (tableWidgetPartitionView->columnCount() < 1)
+            tableWidgetPartitionView->setColumnCount(1);
         QTableWidgetItem *__qtablewidgetitem = new QTableWidgetItem();
         tableWidgetPartitionView->setHorizontalHeaderItem(0, __qtablewidgetitem);
         tableWidgetPartitionView->setObjectName(QString::fromUtf8("tableWidgetPartitionView"));
         tableWidgetPartitionView->setGeometry(QRect(10, 10, 541, 241));
         tableWidgetPartitionView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-        tableWidgetPartitionView->setColumnCount(2);
+        tableWidgetPartitionView->setColumnCount(1);
         tableWidgetPartitionView->horizontalHeader()->setVisible(true);
         tableWidgetPartitionView->verticalHeader()->setVisible(false);
 

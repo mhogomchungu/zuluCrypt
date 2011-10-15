@@ -134,6 +134,11 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 	connect(ui->actionSelect_random_number_generator,SIGNAL(triggered()),rng,SLOT(ShowUI())) ;
 
 	connect(openFileUI,SIGNAL(addItemToTable(QString,QString)),this,SLOT(addItemToTable(QString,QString))) ;
+
+	connect(this,SIGNAL(luksAddKeyUI(QString)),addKeyUI,SLOT(partitionEntry(QString))) ;
+
+	connect(this,SIGNAL(luksDeleteKeyUI(QString)),deleteKeyUI,SLOT(deleteKey(QString)));
+
 	setUpOpenedVolumes() ;
 
 	QProcess p ;

@@ -79,7 +79,7 @@ void luksaddkeyUI::partitionEntry(QString partition)
 	ui->textEditPassphraseToAdd->clear();
 	ui->radioButtonNewPassphrase->setChecked(true);
 	ui->radioButtonPassphraseinVolume->setChecked(true);
-	ui->textEditPathToVolume->setFocus();
+	ui->textEditExistingPassphrase->setFocus();
 	ui->lineEditReEnterPassphrase->clear() ;
 	this->show(); ;
 }

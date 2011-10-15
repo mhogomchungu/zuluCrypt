@@ -28,6 +28,7 @@
 #include <QMessageBox>
 #include <iostream>
 #include <QFile>
+#include <QKeyEvent>
 
 createkeyfile::createkeyfile(QWidget *parent) :
     QWidget(parent),

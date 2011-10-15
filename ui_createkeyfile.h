@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'createkeyfile.ui'
 **
-** Created: Sat Oct 1 01:22:18 2011
+** Created: Fri Oct 14 23:07:27 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -55,9 +55,12 @@ public:
         pbCreate = new QPushButton(createkeyfile);
         pbCreate->setObjectName(QString::fromUtf8("pbCreate"));
         pbCreate->setGeometry(QRect(150, 80, 91, 31));
+        pbCreate->setAutoDefault(false);
         pbCancel = new QPushButton(createkeyfile);
         pbCancel->setObjectName(QString::fromUtf8("pbCancel"));
         pbCancel->setGeometry(QRect(250, 80, 81, 31));
+        pbCancel->setAutoDefault(true);
+        pbCancel->setDefault(true);
         label_2 = new QLabel(createkeyfile);
         label_2->setObjectName(QString::fromUtf8("label_2"));
         label_2->setGeometry(QRect(0, 40, 111, 31));

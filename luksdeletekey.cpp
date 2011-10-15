@@ -170,13 +170,7 @@ void luksdeletekey::pbDelete()
 		return ;
 	}
 
-	QProcess N ;
-	N.start(QString(ZULUCRYPTzuluCrypt) + QString(" emptyslots ") + ui->lineEditVolumePath->text());
-	N.waitForFinished() ;
-
-	QByteArray b = N.readAllStandardOutput() ;
-
-	if(b.at(0) == '3'){
+	if(zuluCrypt::luksEmptySlots(ui->lineEditVolumePath->text()) == '1'){
 		m.setWindowTitle(QString("WARNING!"));
 		m.setText(QString("There is only one last key in the volume.\nDeleting it will make the volume unopenable and lost forever.\nAre you sure you want to delete this key?"));
 
@@ -226,10 +220,11 @@ void luksdeletekey::pbOpenVolume()
 	ui->lineEditVolumePath->setText( Z );
 }
 
-void luksdeletekey::deleteKey(QString passphrase)
+void luksdeletekey::deleteKey(QString path)
 {
 	enableAll();
-	ui->lineEditVolumePath->setText(passphrase);
+	ui->lineEditVolumePath->setText(path);
+	ui->lineEditPassphrase->setFocus();
 	ShowUI() ;
 }
 

@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'zulucrypt.ui'
 **
-** Created: Sun Oct 9 03:26:49 2011
+** Created: Fri Oct 14 23:07:27 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -192,12 +192,12 @@ public:
         ___qtablewidgetitem1->setText(QApplication::translate("zuluCrypt", "Encrypted volume mount point path", 0, QApplication::UnicodeUTF8));
         QTableWidgetItem *___qtablewidgetitem2 = tableWidget->horizontalHeaderItem(2);
         ___qtablewidgetitem2->setText(QApplication::translate("zuluCrypt", "Type", 0, QApplication::UnicodeUTF8));
-        menuOpen->setTitle(QApplication::translate("zuluCrypt", "open", 0, QApplication::UnicodeUTF8));
-        menuCreate->setTitle(QApplication::translate("zuluCrypt", "create", 0, QApplication::UnicodeUTF8));
-        menuHelp->setTitle(QApplication::translate("zuluCrypt", "help", 0, QApplication::UnicodeUTF8));
-        menuConfigure->setTitle(QApplication::translate("zuluCrypt", "luks", 0, QApplication::UnicodeUTF8));
-        menuOptions->setTitle(QApplication::translate("zuluCrypt", "options", 0, QApplication::UnicodeUTF8));
-        menuFavorites->setTitle(QApplication::translate("zuluCrypt", "favorites", 0, QApplication::UnicodeUTF8));
+        menuOpen->setTitle(QApplication::translate("zuluCrypt", "&open", 0, QApplication::UnicodeUTF8));
+        menuCreate->setTitle(QApplication::translate("zuluCrypt", "&create", 0, QApplication::UnicodeUTF8));
+        menuHelp->setTitle(QApplication::translate("zuluCrypt", "&help", 0, QApplication::UnicodeUTF8));
+        menuConfigure->setTitle(QApplication::translate("zuluCrypt", "&luks", 0, QApplication::UnicodeUTF8));
+        menuOptions->setTitle(QApplication::translate("zuluCrypt", "&options", 0, QApplication::UnicodeUTF8));
+        menuFavorites->setTitle(QApplication::translate("zuluCrypt", "&favorites", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };

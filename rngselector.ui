@@ -48,8 +48,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>/dev/random   :  more secure but  could get really slow.
-( move your mouse around to speed things up.)</string>
+     <string>/dev/random   :  more secure but  slower</string>
     </property>
    </widget>
   </widget>
@@ -64,6 +63,12 @@
    </property>
    <property name="text">
     <string>ok</string>
+   </property>
+   <property name="autoDefault">
+    <bool>true</bool>
+   </property>
+   <property name="default">
+    <bool>true</bool>
    </property>
   </widget>
  </widget>

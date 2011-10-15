@@ -420,6 +420,8 @@ int create_volume(const char * dev, const char * fs,const char * type, const cha
 	
 	int k ;
 	
+	char * fsys = sanitize( fs ) ;
+	
 	if ( stat( dev, &st ) != 0 ){
 		return 1 ;
 	}
@@ -441,7 +443,7 @@ int create_volume(const char * dev, const char * fs,const char * type, const cha
 		
 	q = StringCpy(ZULUCRYPTmkfs );
 	StringCat( q , " -t ") ;
-	StringCat( q , fs ) ;
+	StringCat( q , fsys ) ;
 	StringCat( q , " " ) ;
 	StringCat( q , "/dev/mapper/zuluCrypt-create-new 1>/dev/null 2>&1 ") ;
 	
@@ -451,6 +453,8 @@ int create_volume(const char * dev, const char * fs,const char * type, const cha
 	
 	crypt_deactivate(NULL,"zuluCrypt-create-new");
 		
+	free( fsys ) ;
+	
 	return 0 ;	
 }
 

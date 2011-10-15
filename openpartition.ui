@@ -29,7 +29,7 @@
     <set>QAbstractItemView::NoEditTriggers</set>
    </property>
    <property name="columnCount">
-    <number>2</number>
+    <number>1</number>
    </property>
    <attribute name="horizontalHeaderVisible">
     <bool>true</bool>
@@ -42,7 +42,6 @@
      <string>partition list</string>
     </property>
    </column>
-   <column/>
   </widget>
  </widget>
  <resources/>

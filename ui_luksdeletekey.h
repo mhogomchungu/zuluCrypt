@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'luksdeletekey.ui'
 **
-** Created: Sat Oct 1 01:22:44 2011
+** Created: Fri Oct 14 23:07:27 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -72,6 +72,8 @@ public:
         pushButtonCancel = new QPushButton(luksdeletekey);
         pushButtonCancel->setObjectName(QString::fromUtf8("pushButtonCancel"));
         pushButtonCancel->setGeometry(QRect(260, 130, 91, 31));
+        pushButtonCancel->setAutoDefault(true);
+        pushButtonCancel->setDefault(true);
         lineEditVolumePath = new QLineEdit(luksdeletekey);
         lineEditVolumePath->setObjectName(QString::fromUtf8("lineEditVolumePath"));
         lineEditVolumePath->setGeometry(QRect(100, 10, 311, 31));

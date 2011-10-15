@@ -83,6 +83,9 @@
    <property name="text">
     <string>create</string>
    </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
   </widget>
   <widget class="QPushButton" name="pbCancel">
    <property name="geometry">
@@ -95,6 +98,12 @@
    </property>
    <property name="text">
     <string>cancel</string>
+   </property>
+   <property name="autoDefault">
+    <bool>true</bool>
+   </property>
+   <property name="default">
+    <bool>true</bool>
    </property>
   </widget>
   <widget class="QLabel" name="label_2">

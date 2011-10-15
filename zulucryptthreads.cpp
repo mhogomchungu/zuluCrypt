@@ -43,7 +43,6 @@ void ShowNonSystemPartitionsThread::run()
 	delete partitionView->tableWidgetPartitionView->horizontalHeaderItem(0);
 
 	partitionView->tableWidgetPartitionView->setHorizontalHeaderItem(0, new QTableWidgetItem(QString("non system partitions( no active entries in fstab )")));
-	partitionView->tableWidgetPartitionView->removeColumn(1);
 
 	partitionView->tableWidgetPartitionView->horizontalHeaderItem(0)->setFont(font);
 
