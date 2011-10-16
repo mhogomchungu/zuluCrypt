@@ -306,7 +306,7 @@ void password_Dialog::threadfinished()
 		case 2 : UIMessage(QString("ERROR"),QString("there seem to be an open volume accociated with given path."));
 			break ;
 
-		case 3 : UIMessage(QString("ERROR"),QString("no file or device on a given address.")) ;
+		case 3 : UIMessage(QString("ERROR"),QString("No file exist on given path")) ;
 			break ;
 
 		case 4 :{
@@ -317,8 +317,8 @@ void password_Dialog::threadfinished()
 
 		case 5 : UIMessage(QString("ERROR"),QString("mount point address is already taken by a file or folder")) ;
 			break ;
-		case 6 : UIMessage(QString("ERROR"),QString("passphrase file does not exist"));
-			break ;
+		//case 6 : UIMessage(QString("ERROR"),QString("passphrase file does not exist"));
+//			break ;
 		case 9 : UIMessage(QString("ERROR"),QString("\",\" (comma) is not a valid mount point"));
 			break ;
 		default :UIMessage(QString("ERROR"),QString("un unknown error has occured, volume not opened"));

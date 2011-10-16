@@ -37,13 +37,12 @@ int is_luks(const char * device) ;
 /*
  * return values:
  *	0 - success, the encrypted volume was opened and mounted successfully
- * 	1 - ERROR: open failed, given path does not point to a file or partition
+ * 	1 - ERROR: No free loop device to use
  * 	2 - ERROR: There seem to already be an opened volume associated with "mapping_name" argument
- * 	3 - ERROR: Can not open and encrypted file. No free loop device to use.
+ * 	3 - ERROR: device does not exist.
  * 	4 - ERROR: wrong passphrase
  * 	5 - ERROR: Cant create a mount point because a file/folder with the same exist at the mount point
- *	6 - ERROR: encrypted volume has an unrecognized file system type,supported file systems are :
- * ext4,ext3,ext2,vfat
+ *	6 - ERROR: key file does not exist :
  *      7 - ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib
  */
 int open_volume(const char *device, // path to a file/partition to be opened

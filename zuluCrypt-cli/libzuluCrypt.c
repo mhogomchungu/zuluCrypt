@@ -1111,6 +1111,10 @@ int open_volume(const char * dev,
 		return 3 ;
 	}
 	
+	if( strcmp( source,"-f") == 0 )
+		if( stat( pass, &st ) != 0 )
+			return 6 ;
+		
 	p = StringCpy("/dev/mapper/zuluCrypt-");
 	StringCat(p,map);	
 	
