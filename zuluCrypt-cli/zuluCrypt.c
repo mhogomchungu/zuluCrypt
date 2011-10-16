@@ -71,7 +71,8 @@ StrHandle * get_passphrase( void )
 
 void help( void )
 {
-	printf("this tool should come with a documentation file, read it for more info\n");	
+	printf("you are here, you probably run the tool with wrong number of arguments.\n") ;
+	printf("documentation on proper use of the tool are at http://code.google.com/p/zulucrypt\n");	
 }
 
 int volume_info( const char * mapper )
@@ -83,9 +84,7 @@ int volume_info( const char * mapper )
 	output = status( StringCont(p) ) ;
 	
 	if( output == NULL )
-		printf("ERROR: couldnt find cryptsetup.so library in \
-		/usr/local/lib,/usr/lib and /lib   \
- * or couldnt open volume");
+		printf("ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib or couldnt open volume");
 	else
 		printf("%s\n",output);
 	
@@ -476,7 +475,13 @@ void partitions(StrHandle *partitions, StrHandle * fstab_partitions, StrHandle *
 	fclose(f) ;
 }
 
-int create_volumes(int argn ,char *device, char *fs, char * mode, char * keyType, char * pass, char *rng )
+int create_volumes(int    argn ,
+		   char * device,
+		   char * fs,
+		   char * mode,
+		   char * keyType,
+		   char * pass,
+		   char * rng )
 {
 	StrHandle * p ;
 	StrHandle * q ;
@@ -613,8 +618,7 @@ int create_volumes(int argn ,char *device, char *fs, char * mode, char * keyType
 			break  ;
 		case 2 : printf("ERROR: Wrong option type\n");
 			break  ;
-		case 3 : printf("ERROR: couldnt find cryptsetup.so library in \
-			/usr/local/lib,/usr/lib and /lib\n");
+		case 3 : printf("ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib\n");
 			break  ;
 		case 4 : printf("ERROR: Wrong number of arguments\n");
 			break  ;
@@ -652,7 +656,7 @@ void delete_file( char * file )
 
 int addkey(int argn,
 	   char * device,
-	   char *keyType1,
+	   char * keyType1,
 	   char * existingKey,
 	   char * keyType2,
 	   char * newKey)

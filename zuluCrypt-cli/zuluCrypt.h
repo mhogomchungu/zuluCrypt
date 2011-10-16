@@ -48,7 +48,7 @@ int is_luks(const char * device) ;
  * 	5 - ERROR: Cant create a mount point because a file/folder with the same exist at the mount point
  *	6 - ERROR: key file does not exist :
  *      7 - ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib
- * 	8 - ERROR: failed to open device
+ *	8 - ERROR: failed to open device
  */
 int open_volume(const char *device, // path to a file/partition to be opened
 		const char * mapper,// mapper name( will show up in /dev/mapper/ )
