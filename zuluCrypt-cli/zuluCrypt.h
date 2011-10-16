@@ -48,6 +48,7 @@ int is_luks(const char * device) ;
  * 	5 - ERROR: Cant create a mount point because a file/folder with the same exist at the mount point
  *	6 - ERROR: key file does not exist :
  *      7 - ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib
+ * 	8 - ERROR: failed to open device
  */
 int open_volume(const char *device, // path to a file/partition to be opened
 		const char * mapper,// mapper name( will show up in /dev/mapper/ )
@@ -198,24 +199,37 @@ int empty_slots(char * slots ,   // output argument, explanation above
  * 
  *return values:
  * 0 - success 
- * 1 - ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /library
+ * 3 - ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /library
  * 2 - ERROR: failed to open device
- * 3 - ERROR: key file does not exist
- * 4 - ERROR: presented key does not exist in the volume
+ * 4 - ERROR: key file does not exist
+ * 1 - ERROR: presented key does not exist in the volume
  * 5 - ERROR: device does not exist
  */
-
 int open_luks( const char * device,      // path to encrypted file or partition
 	       const char * mapping_name,// mapper name to use
 	       const char * mode,        // "ro" or "rw" for opening in read only or read and write
 	       const char * source,      // "-f" or "-p" for passphrase is a path to a key file or a 					  // "naked" passphrase already in memory respectively 
 	       const char * passphrase ) ;// passphrase to use to open the volume
-	       
+	
+/**
+ * This function creates a luks volume
+ * 
+ * return values:
+ * 0 - success 
+ * 3 - ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /library
+ * 5 - ERROR: probably because the device address does not exist 
+ * 
+ */
+int create_luks(const char * device,    // path to a file or partition to create a volume in
+		const char * passphrase,// passphrase to use to create a volume
+		const char * rng) ;	//random number generator( /dev/random or /dev/urandom)
+		
+		
 /**
  * This function just opens a plain volume, it doesnt create a mount point and it doesnt mount it.
  * return values:
  * 0 - success
- * 1 - ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /library
+ * 3 - ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /library
  * 2 - ERROR: failed to open the volume.
  */
 int open_plain( const char * device,      // path to encrypted file or partition

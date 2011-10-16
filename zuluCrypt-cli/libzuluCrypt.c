@@ -685,7 +685,7 @@ int create_luks(const char * dev,
 	};	
 	
 	if(  handle_init()  == NULL )
-		return 4 ;
+		return 3 ;
 	
 	i =  (*ptr_crypt_init)(&cd,dev) ;
 	
@@ -700,7 +700,11 @@ int create_luks(const char * dev,
 	
 	(*ptr_crypt_free)(cd);
 	dlclose(handle) ;
-	return i ;
+	
+	if( i == 0 )
+		return 0 ;
+	else	
+		return 1 ;
 }
 
 int create_volume(const char * dev,
@@ -721,25 +725,26 @@ int create_volume(const char * dev,
 		return 1 ;
 	}
 	
-	if( strcmp(rng,"/dev/random") != 0)
-		if( strcmp(rng,"/dev/urandom") != 0)
-			return 6 ;
+	if( strcmp(type,"luks") == 0 )
+		if( strcmp(rng,"/dev/random") != 0)
+			if( strcmp(rng,"/dev/urandom") != 0)
+				return 2 ;
 	
 	if( strncmp(fs,"ext3",4) != 0)
 		if( strncmp(fs,"ext4",4) != 0)
 			if( strncmp(fs,"vfat",4) != 0)
-				return 6 ;
+				return 2 ;
 	
 	if(  strcmp(type,"luks")  == 0){
 	
 		k = create_luks(dev,pass,rng) ;
 		
-		k = open_luks(dev,"create-new","rw","-p",pass ) ;
+		k = open_luks(dev,"zuluCrypt-create-new","rw","-p",pass ) ;
 		
-	}else if( strcmp(type,"luks") == 0 ){
-		k =  open_plain(dev,"create-new","rw","-p",pass,"cbc-essiv:sha256" ) ;		
+	}else if( strcmp(type,"plain") == 0 ){
+		k =  open_plain(dev,"zuluCrypt-create-new","rw","-p",pass,"cbc-essiv:sha256" ) ;		
 	}else{
-		return 6 ;
+		return 2 ;
 	}
 		
 	q = StringCpy(ZULUCRYPTmkfs );
@@ -761,7 +766,7 @@ int create_volume(const char * dev,
 
 int close_mapper( const char * mapper )
 {
-	int i ;	
+	int i ;		
 	
 	if( handle_init() == NULL )		
 		return 4 ;
@@ -935,7 +940,7 @@ int open_luks( const char * device,
 		return 5 ;
 	
 	if( handle_init() == NULL )
-		return 1 ;
+		return 3 ;
 
 	c = strrchr(mapper,'/');
 	
@@ -987,7 +992,7 @@ int open_luks( const char * device,
 		if ( stat(pass,&st) != 0 ){
 			(*ptr_crypt_free)(cd);
 			dlclose(handle);
-			return 3 ;			
+			return 1 ;			
 		}			
 		
 		i = (*ptr_crypt_activate_by_keyfile)(cd,
@@ -1005,7 +1010,7 @@ int open_luks( const char * device,
 	if( i == 0 )
 		return 0 ;
 	else
-		return 4 ;
+		return 1 ;
 }
 
 int open_plain( const char * device,
@@ -1030,7 +1035,7 @@ int open_plain( const char * device,
 	struct stat st;
 	
 	if( handle_init() == NULL )
-		return 1 ;
+		return 3 ;
 	
 	c = strrchr(mapper,'/');
 	
@@ -1129,8 +1134,7 @@ int open_volume(const char * dev,
 		StringDelete( p ) ;
 		
 		if ( status[0] != '0' )
-			return 1 ;	
-		
+			return 1 ;			
 	}
 	
 	luks = is_luks( dev ) ;	
@@ -1140,8 +1144,10 @@ int open_volume(const char * dev,
 	else
 		h = open_plain( dev,map,mode,source,pass,"cbc-essiv:sha256" ) ;
 
-	//if(h != 0 )	
-	//	return 9 ;
+	switch ( h ){
+		case 3 : return 3 ; break ;
+		case 2 : return 8 ; break ;
+	}
 	
 	h = mount_volume(map,m_point,mode,id ) ;	
 	

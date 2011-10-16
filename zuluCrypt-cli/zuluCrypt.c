@@ -132,7 +132,7 @@ int open_volumes(int argn, char * device, char * mapping_name,int id, char * mou
 	int st ;	
 	
 	if (argn < 5 ){
-		st = 8 ;
+		st = 11 ;
 		goto eerr ;
 	}	
 	
@@ -185,7 +185,7 @@ int open_volumes(int argn, char * device, char * mapping_name,int id, char * mou
 		
 	}else{
 		
-		st =  8 ;			
+		st =  11 ;			
 	}
 	
 	StringDelete( q ) ;
@@ -210,12 +210,14 @@ int open_volumes(int argn, char * device, char * mapping_name,int id, char * mou
 		case 6 : printf("ERROR: passphrase file does not exist\n");
 			break ;		
 		case 7 : printf("ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib\n");
-		case 8 : printf("ERROR: Wrong number of arguments, run zuluCrypt with \"-h\" for help\n");
+		case 11 : printf("ERROR: Wrong number of arguments, run zuluCrypt with \"-h\" for help\n");
 			break ;
 		case 9 : printf("ERROR: failed to open volume\n");
 			break ;	
 		case 10 : printf("ERROR: Wrong option, run zuluCrypt with \"-h\" for help\n");
 			break ;
+		case 8 : printf("ERROR: Wrong option, run zuluCrypt with \"-h\" for help\n");
+			break ;	
 			
 		default :
 			;			
@@ -558,7 +560,7 @@ int create_volumes(int argn ,char *device, char *fs, char * mode, char * keyType
 		
 		if( strcmp(rng,"/dev/random") != 0)
 			if( strcmp(rng,"/dev/urandom") != 0){
-				st = 6 ;
+				st = 2 ;
 				goto out ;
 			}
 				
