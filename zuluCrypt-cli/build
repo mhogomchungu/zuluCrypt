@@ -33,6 +33,6 @@ else
 	
 	libpaths="-L. -L/lib -L/usr/lib -L/usr/local/lib"
 	
-	gcc -D_FILE_OFFSET_BITS=64 -Wall $libpaths -lzuluCrypt -lcryptsetup zuluCrypt.c -o zuluCrypt-cli
+	gcc -D_FILE_OFFSET_BITS=64 -Wall libzuluCrypt.o String.o zuluCrypt.c -o zuluCrypt-cli -ldl
 	
 fi

@@ -83,7 +83,9 @@ int volume_info( const char * mapper )
 	output = status( StringCont(p) ) ;
 	
 	if( output == NULL )
-		printf("%s is inactive.\n",StringCont(p));
+		printf("ERROR: couldnt find cryptsetup.so library in \
+		/usr/local/lib,/usr/lib and /lib   \
+ * or couldnt open volume");
 	else
 		printf("%s\n",output);
 	
@@ -100,12 +102,15 @@ int close_opened_volume( char * mapping_name )
 	switch( st ) {
 	case 0 : printf("SUCCESS: volume successfully closed\n");
 		break ;
-	case 1 : printf("ERROR: close failed, encrypted volume with that name does not exist\n");
+	case 1 : printf("ERROR: close failed, encrypted volume with \
+		that name does not exist\n");
 		break ;
 			
-	case 2 : printf("ERROR: close failed, the mount point and/or one or more files are in use\n");
+	case 2 : printf("ERROR: close failed, the mount point and/or one or \
+		more files are in use\n");
 		break ;
-	case 3 : printf("ERROR: close failed, path given does not point to an encrypted device\n") ;
+	case 3 : printf("ERROR: close failed, path given does not point to \
+		an encrypted device\n") ;
 		break ;
 	default :
 		; //shouldnt get here			
@@ -125,13 +130,13 @@ int open_volumes(int argn, char * device, char * mapping_name,int id, char * mou
 	
 	if (strncmp(mount_point,",\0",2)==0){
 			
-		st = 7 ;
+		st = 10 ;
 		goto eerr ;			
 	}		
 
 	if (strncmp(mode,"ro",2) != 0){
 		if (strncmp(mode,"rw",2) != 0){
-			st = 7 ;
+			st = 10 ;
 			goto eerr ;	
 		}
 	}		
@@ -177,12 +182,13 @@ int open_volumes(int argn, char * device, char * mapping_name,int id, char * mou
 			break ;		
 		case 6 : printf("ERROR: passphrase file does not exist\n");
 			break ;		
-		case 7 : printf("ERROR: Wrong option, run zuluCrypt with \"-h\" for help\n");
-			break ;
+		case 7 :printf("ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib\n");
 		case 8 : printf("ERROR: Wrong number of arguments, run zuluCrypt with \"-h\" for help\n");
 			break ;
 		case 9 : printf("ERROR: failed to open volume\n");
 			break ;	
+		case 10 : printf("ERROR: Wrong option, run zuluCrypt with \"-h\" for help\n");
+			break ;
 			
 		default :
 			;			
@@ -494,7 +500,7 @@ int create_volumes(int argn ,char *device, char *fs, char * mode, char * keyType
 			
 			if(strcmp(StringCont( p ),StringCont( q )) != 0){
 
-				st = 3 ;
+				st = 7 ;
 			}else{
 				
 				if(strcmp(mode,"luks") == 0 ){
@@ -545,7 +551,7 @@ int create_volumes(int argn ,char *device, char *fs, char * mode, char * keyType
 				c = ( char *) malloc ( sizeof(char) * ( fsize + 1 ) ) ;
 				
 				if( c == NULL ){
-					st = 2 ;
+					st = 6 ;
 					goto out ;
 				}
 				*( c + fsize  ) = '\0' ;
@@ -563,7 +569,7 @@ int create_volumes(int argn ,char *device, char *fs, char * mode, char * keyType
 				st = 1 ;
 			}				
 		}else{
-			st = 6 ;			
+			st = 2 ;			
 		}
 	}else{
 		st = 4 ;			
@@ -576,16 +582,19 @@ int create_volumes(int argn ,char *device, char *fs, char * mode, char * keyType
 			break  ;
 		case 1 : printf("ERROR: File path given does not point to a file or partition\n") ;
 			break  ;
-		case 2 : printf("ERROR: couldnt get requested memory to open the key file.\n");
+		case 2 : printf("ERROR: Wrong option type\n");
 			break  ;
-		case 3 : printf("ERROR: passphrases do not match\n") ;
+		case 3 : printf("ERROR: couldnt find cryptsetup.so library in \
+			/usr/local/lib,/usr/lib and /lib\n");
 			break  ;
 		case 4 : printf("ERROR: Wrong number of arguments\n");
-			break  ;	
+			break  ;
 		case 5 : printf("ERROR: Wrong choice, exiting\n");
+			break  ;	
+		case 6 : printf("ERROR: couldnt get requested memory to open the key file.\n");
 			break  ;
-		case 6 : printf("ERROR: Wrong option type\n");
-			break  ;
+		case 7 : printf("ERROR: passphrases do not match\n") ;
+			break  ;				
 		default:
 			;
 	}	
@@ -612,7 +621,12 @@ void delete_file( char * file )
 	remove( file ) ;	
 }
 
-int addkey(int argn,char * device, char *keyType1, char * existingKey, char * keyType2, char * newKey)
+int addkey(int argn,
+	   char * device,
+	   char *keyType1,
+	   char * existingKey,
+	   char * keyType2,
+	   char * newKey)
 {
 	StrHandle * p ;
 	StrHandle * q ;
@@ -754,7 +768,7 @@ int addkey(int argn,char * device, char *keyType1, char * existingKey, char * ke
 		break ;
 		case 3 : printf("ERROR: device \"%s\" is not a luks device\n",device) ;
 		break ;
-		case 4 : printf("ERROR: device does not exist\n");
+		case 4 : printf("ERROR: ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib\n");
 		break ;
 		case 5 : printf("ERROR: Wrong arguments\n") ;
 		break ;
@@ -765,6 +779,8 @@ int addkey(int argn,char * device, char *keyType1, char * existingKey, char * ke
 		case 8 : printf("ERROR: one or both keyfile(s) does not exist\n") ;
 		break ;  
 		case 9 : printf("ERROR: Run out of memory\n") ;
+		break ;
+		case 10 : printf("device does not exist\n") ;
 		break ;
 		default :
 			;		
@@ -780,7 +796,7 @@ int removekey( int argn , char * device, char * keyType, char * keytoremove )
 	char *c ;
 	
 	if ( stat( device,&st ) != 0 ){
-		status = 4 ;
+		status = 10 ;
 		goto out ;
 	}
 	
@@ -837,18 +853,20 @@ int removekey( int argn , char * device, char * keyType, char * keytoremove )
 		break ;
 		case 1 : printf("ERROR: device \"%s\" is not a luks device",device) ;
 		break ;
-		case 2 : printf("ERROR: there is no key in the volume that match the presented key\n") ;
+		case 2 : printf("ERROR: there is no key in the volume that \
+			match the presented key\n") ;
 		break ;
 		case 3 : printf("ERROR: could not open device\n") ;
 		break ;  
-		case 4 : printf("ERROR: device does not exist\n");
-		break ;
+		case 4 : printf("ERROR: ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib\n");
 		case 5 : printf("ERROR: keyfile does not exist\n") ;
 		break ;
 		case 6 : printf("ERROR: Wrong number of arguments\n") ;
 		break ;
 		case 7 : printf("ERROR: insuffucient system memory, quiting\n") ;
 		break ;
+		case 10 : printf("ERROR: device does not exist\n");
+		break ;		
 		default :
 			;		
 	}		
@@ -1015,6 +1033,8 @@ int main( int argc , char *argv[])
 			case 1 :printf("device \"%s\" is not a luks device\n",device) ;
 				break ;
 			case 2 :printf("ERROR: could not open device\n") ;
+				break ;
+			case 3 :printf("ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib\n") ;
 		}
 	}else{
 		printf("ERROR: Wrong argument\n") ;

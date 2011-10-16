@@ -29,6 +29,7 @@ extern "C" {
  * return values:
  *	 0 - the device is a cryptsetup device of type "luks"
  * 	 1 - the device is not a crptsetup device of type "luks", it could be of type "plain" though
+ * *     2 - ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib
  */
 int is_luks(const char * device) ;
 
@@ -41,7 +42,9 @@ int is_luks(const char * device) ;
  * 	3 - ERROR: Can not open and encrypted file. No free loop device to use.
  * 	4 - ERROR: wrong passphrase
  * 	5 - ERROR: Cant create a mount point because a file/folder with the same exist at the mount point
- *	6 - ERROR: encrypted volume has an unrecognized file system type,supported file systems are : ext4,ext3,ext2,vfat
+ *	6 - ERROR: encrypted volume has an unrecognized file system type,supported file systems are :
+ * ext4,ext3,ext2,vfat
+ *      7 - ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib
  */
 int open_volume(const char *device, // path to a file/partition to be opened
 		const char * mapper,// mapper name( will show up in /dev/mapper/map )
@@ -57,9 +60,10 @@ int open_volume(const char *device, // path to a file/partition to be opened
 /*
  * input :  mapper name used when the volume was opened
  * return values:
- * 	2 - close failed, encrypted volume associated with mapping_name argument is not opened
- * 	1 - unmounting the mount point failed,mount point or one or more files are in use.
  * 	0 - success
+ * 	1 - unmounting the mount point failed,mount point or one or more files are in use
+ * 	2 - close failed, encrypted volume associated with mapping_name argument is not opened * 	
+ * 	3 - ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib
   */
 int close_volume(const char * mapper) ; 
 
@@ -69,6 +73,9 @@ int close_volume(const char * mapper) ;
  * 
  * output is a pointer to a string with volume info.
  * remember to free the pointer when done with the output.
+ * 
+ * NULL output means: ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib
+ * or couldnt open volume
  */
 char *status( const  char * mapper );
 
@@ -77,7 +84,8 @@ char *status( const  char * mapper );
  * return values:
  *      0 - success
  * 	1 - ERROR: device argument does not point to a file or partition
- * 	6 - ERROR: wrong argument.
+ * 	2 - ERROR: wrong argument. (probably mistyped fs and rng arguments
+ * * 	3 - ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib
  */
 int create_volume(const char * device,    // path to a file or partition
 		  const  char * fs,       //file system to use in the volume(ext2,ext3.ext4,vfat)
@@ -98,6 +106,7 @@ int create_volume(const char * device,    // path to a file or partition
  *      1 - ERROR: The presented key does not exist in the volume
  *      2 - ERROR: could not open encrypted volume
  *      3 - ERROR: device either doesnt exist or not a luks device
+ * 	4 - ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib
  */
 int add_key(const char * device, const char * existingkey,const  char * newkey) ;
 
@@ -112,6 +121,7 @@ int add_key(const char * device, const char * existingkey,const  char * newkey) 
  * 1 - ERROR: device is not a luks device or does not exist
  * 2 - ERROR: passphrase is not present in the volume
  * 3 - ERROR: could not open luks device
+ * 4 - ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib
  */
 int remove_key(const  char * device , const char * passphrase ) ;
 
@@ -132,6 +142,7 @@ int remove_key(const  char * device , const char * passphrase ) ;
  * 0 - success  
  * 1 - ERROR: device does not exist or is not a luks device
  * 2 - ERROR: could not open luks device  
+ * 3 - ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib
  */
 int empty_slots(char * slots , const char * device ) ;
 

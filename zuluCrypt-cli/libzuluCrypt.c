@@ -17,6 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <dlfcn.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -25,8 +26,9 @@
 #include <unistd.h>
 #include <sys/mount.h>
 #include <fcntl.h>
-#include <termios.h>
-#include <libcryptsetup.h>
+//#include <termios.h>
+//#include <libcryptsetup.h>
+#include <stdint.h>
 
 #include "String.h"   
 
@@ -34,80 +36,344 @@
 
 //function prototypes
 
-int is_luks(const char * device) ;
-void execute( const char *command ,char *output, int size) ;
-int mount_volume(const char *mapping_name,const char *m_point,const char * mode,uid_t id) ;
+int add_key(const char * device,
+	    const char * existingkey,
+	    const char * newkey) ;
+
+int remove_key( const char * device ,
+		const char * pass ) ;
+
+int empty_slots( char * slots ,
+		 const char * device ) ;
+
+char * intToChar(char * x,
+		 int y,
+		 int z) ;
+
+char * status( const char * mapper ) ;
+
+
 char * sanitize(const char *c ) ;
-char * intToChar(char * x, int y,int z) ;
-int open_luks( const char * device,const char * mapping_name, const char *mode,const char *source,const char * pass ) ;
-int open_plain( const char * device,const char * mapping_name, const char *mode,const char *source,const char * pass,const char * cipher ) ;
+
+void execute( const char *command ,
+	      char *output,
+	      int size) ;
+
+int is_luks(const char * dev) ;
+
+
+int create_luks(const char * dev,
+		const char * pass,
+		const char *rng) ;
+
+
+int create_volume(const char * dev,
+		  const char * fs,
+		  const char * type,
+		  const char * pass,
+		  const char *rng) ;
+
+
+int close_volume(const char * map) ;
+
+
+int mount_volume(const char * mapping_name,
+		 const char * m_point,
+		 const char * mode,uid_t id) ;
+
+int open_luks( const char * device,
+	       const char * mapping_name,
+	       const char * mode,
+	       const char * source,
+	       const char * pass ) ;
+
+int open_plain( const char * device,
+		const char * mapping_name,
+		const char * mode,
+		const char * source,
+		const char * pass,
+		const char * cipher ) ;
+
+int open_volume(const char * dev,
+		const char * map,
+		const char * m_point,
+		uid_t id,
+		const char * mode,
+		const char * pass,
+		const char * source) ;		
+		
+		
+#define CRYPT_PLAIN "PLAIN" 
+#define CRYPT_LUKS1 "LUKS1" 		
+#define CRYPT_ANY_SLOT -1
+#define CRYPT_RNG_URANDOM 0
+#define CRYPT_RNG_RANDOM  1
+		
+struct crypt_device *cd ;
+
+struct crypt_active_device {
+	uint64_t offset;	/* offset in sectors */
+	uint64_t iv_offset;	/* IV initilisation sector */
+	uint64_t size;		/* active device size */
+	uint32_t flags;		/* activation flags */
+};
+
+struct crypt_params_plain {
+	const char *hash; /* password hash function */
+	uint64_t offset;  /* offset in sectors */
+	uint64_t skip;    /* IV initilisation sector */
+};
+
+struct crypt_params_luks1 {
+	const char *hash;      /* hash used in LUKS header */
+	size_t data_alignment; /* in sectors, data offset is multiple of this */
+};
+
+void * handle = NULL ;
+
+int ( * ptr_crypt_init ) ( struct crypt_device **, const char * ) ;
+	
+int ( * ptr_crypt_load ) ( struct crypt_device *, const char *, void * ) ;
+	
+int ( * ptr_crypt_keyslot_add_by_passphrase ) ( struct crypt_device *,
+						int,const char *, 
+						size_t, const char *,
+						size_t ) ;
+	
+void ( *ptr_crypt_free ) ( struct crypt_device * ) ;
+	
+
+
+	
+int ( * ptr_crypt_activate_by_passphrase) ( struct crypt_device * ,
+						    const char *,
+					            int,const char *,
+						    size_t,uint32_t) ;
+	
+int ( * ptr_crypt_deactivate ) ( struct crypt_device * ,
+				    const char * ) ;			    				    
+	 
+int ( * ptr_crypt_keyslot_destroy ) ( struct crypt_device *, int ) ;
+		
+int ( * ptr_crypt_keyslot_max ) ( const char * ) ;	
+
+typedef enum {
+	CRYPT_SLOT_INVALID,
+	CRYPT_SLOT_INACTIVE,
+	CRYPT_SLOT_ACTIVE,
+	CRYPT_SLOT_ACTIVE_LAST
+} crypt_keyslot_info;
+
+crypt_keyslot_info ( * ptr_crypt_keyslot_status ) ( struct crypt_device *, int ) ;
+
+typedef enum {
+	CRYPT_INVALID,
+	CRYPT_INACTIVE,
+	CRYPT_ACTIVE,
+	CRYPT_BUSY
+} crypt_status_info;
+crypt_status_info ( * ptr_crypt_status) (struct crypt_device *, const char *);
+
+int ( * ptr_crypt_init_by_name ) ( struct crypt_device **, const char *) ;
+	
+int ( * ptr_crypt_get_active_device ) ( struct crypt_device *,
+						const char *,
+						struct crypt_active_device * ) ;
+						
+const char * ( * ptr_crypt_get_type ) ( struct crypt_device * ) ;
+	
+const char * ( * ptr_crypt_get_cipher_mode ) ( struct crypt_device * ) ;
+	
+int ( * ptr_crypt_get_volume_key_size ) ( struct crypt_device * ) ;
+	
+	
+const char * ( * ptr_crypt_get_device_name ) ( struct crypt_device * ) ;
+	
+uint64_t  ( * ptr_crypt_get_data_offset ) ( struct crypt_device * ) ;
+	
+void ( * ptr_crypt_free ) ( struct crypt_device * ) ;
+
+void ( * ptr_crypt_set_rng_type ) (struct crypt_device *, int ) ;
+
+int ( * ptr_crypt_activate_by_keyfile )(struct crypt_device *,
+				        const char *,
+				        int,const char *,
+				        size_t,
+				        uint32_t );
+
+int ( * ptr_crypt_format)(struct crypt_device *,
+			 const char *,
+			 const char *,
+			 const char *,
+			 const char *,
+			 const char *,
+			 size_t,
+			 void *);
+
+int ( * ptr_crypt_keyslot_add_by_volume_key)(struct crypt_device *,
+					    int,
+					    const char *,
+					    size_t,
+					    const char *,
+					    size_t);
+
+void handle_init(void)
+{
+
+	if( ( handle = dlopen("/usr/local/lib/libcryptsetup.so",RTLD_LAZY | RTLD_LOCAL ) ) == NULL )
+		if( ( handle = dlopen("/usr/lib/libcryptsetup.so",RTLD_LAZY | RTLD_LOCAL ) ) == NULL )
+			if( ( handle = dlopen("/lib/libcryptsetup.so",RTLD_LAZY | RTLD_LOCAL ) ) == NULL )
+				return ;
+				  
+	ptr_crypt_init = dlsym( handle , "crypt_init" ) ;
+	
+	ptr_crypt_load = dlsym( handle , "crypt_load" ) ;	
+	
+	ptr_crypt_keyslot_add_by_passphrase = dlsym( handle, "crypt_keyslot_add_by_passphrase" ) ;
+	
+	ptr_crypt_free = dlsym( handle , "crypt_free" ) ;
+	
+	ptr_crypt_deactivate = dlsym( handle , "crypt_deactivate" ) ;
+	
+	ptr_crypt_keyslot_destroy = dlsym( handle , "crypt_keyslot_destroy" ) ;
+	
+	ptr_crypt_keyslot_max = dlsym( handle , "crypt_keyslot_max" ) ;
+	
+	ptr_crypt_keyslot_status = dlsym( handle , "crypt_keyslot_status" ) ; 
+	
+	ptr_crypt_init_by_name = dlsym( handle , "crypt_init_by_name" ) ;
+	
+	ptr_crypt_get_active_device = dlsym( handle , "crypt_get_active_device" ) ;
+		
+	ptr_crypt_status = dlsym( handle , "crypt_status" ) ;
+
+	ptr_crypt_get_type = dlsym( handle , "crypt_get_type" ) ;
+
+	ptr_crypt_get_cipher_mode = dlsym( handle , "crypt_get_cipher_mode" ) ;
+
+	ptr_crypt_get_volume_key_size = dlsym( handle , "crypt_get_volume_key_size" ) ;
+	
+	ptr_crypt_get_device_name = dlsym( handle , "crypt_get_device_name" ) ;
+	
+	ptr_crypt_get_data_offset = dlsym( handle , "crypt_get_data_offset" ) ;
+	
+	ptr_crypt_free = dlsym( handle , "crypt_free" ) ;
+	
+	ptr_crypt_set_rng_type = dlsym( handle , "crypt_set_rng_type" ) ;
+	
+	ptr_crypt_format = dlsym( handle , "crypt_format" );
+	
+	ptr_crypt_keyslot_add_by_volume_key = dlsym( handle , "crypt_keyslot_add_by_volume_key" );
+	
+	ptr_crypt_activate_by_keyfile = dlsym( handle, "crypt_activate_by_keyfile") ;
+	
+	ptr_crypt_activate_by_passphrase = dlsym( handle, "crypt_activate_by_passphrase");
+}
 
 
 int add_key(const char * device, const char * existingkey,const  const char * newkey)
 {
-	struct crypt_device *cd = NULL;
-
+	int status ;
+	
 	int i ;
 	
-	if( is_luks(device) == 1)
-		return 3 ;
+	handle_init() ;
+	
+	if( handle == NULL )		
+		return 40 ;
+	
+	
+	if( is_luks(device) == 1){		
+		status =  3 ;
+		goto out ;
+	}
 		
-	i = crypt_init(&cd,device) ;
+	i = (*ptr_crypt_init)(&cd,device) ;
 	
-	if( i != 0 )
-		return 2 ;
+	if( i != 0 ){		
+		status =  2 ;
+		goto out ;
+	}
+	i = (*ptr_crypt_load)(cd, CRYPT_LUKS1, NULL) ;
 	
-	i = crypt_load(cd, CRYPT_LUKS1, NULL) ;
-	
-	if( i != 0 )
-		return 2 ;
-	
-	i = crypt_keyslot_add_by_passphrase(cd,CRYPT_ANY_SLOT,existingkey,strlen(existingkey),newkey,strlen(newkey)) ;
-	
+	if( i != 0 ){		
+		status =  2 ;
+		goto out ;
+	}
+	i = (*ptr_crypt_keyslot_add_by_passphrase)(cd,CRYPT_ANY_SLOT,
+						   existingkey,
+						   strlen(existingkey),
+						   newkey,strlen(newkey)) ;
+						   
 	if ( i < 0 )
-		return 1 ;
+		status =  1 ;
 	else
-		return 0 ;	
+		status = 0 ;	
 	
-	crypt_free(cd);	
+	out:
+	
+	(*ptr_crypt_free)(cd);
+	dlclose(handle);	
+	
+	return status ;
 }
 
 int remove_key( const char * device , const char * pass )
 {
-	struct crypt_device *cd = NULL;
-
-	int i ;
+	int i ;	
+	int status ;
 	
 	if( is_luks(device) == 1)
-		return 1 ;
-		
-	i = crypt_init(&cd,device) ;
+		return 1 ;	
 	
-	if( i != 0 )
-		return 3 ;
+	handle_init() ;
 	
-	i = crypt_load(cd, CRYPT_LUKS1, NULL) ;
+	if(  handle  == NULL )
+		return 40 ;
 	
-	if( i != 0 )
-		return 3 ;
-
-	i =  crypt_activate_by_passphrase(cd,"zuluCrypt-deleteKey",CRYPT_ANY_SLOT,pass,strlen(pass), 0);
-
-	crypt_deactivate(cd,"zuluCrypt-deleteKey");
+	i = (*ptr_crypt_init)(&cd,device) ;
 	
-	if ( i < 0 ){
-		crypt_free(cd);
-		return 2 ;
+	if( i != 0 ){
+		status =  3 ;
+		goto out ;
 	}
 	
-	i = crypt_keyslot_destroy(cd,i) ;
+	i = (*ptr_crypt_load)(cd, CRYPT_LUKS1, NULL) ;
 	
-	crypt_free(cd);	
+	if( i != 0 ){
+		status =  3 ;
+		goto out ;
+	}
+
+	i =  (*ptr_crypt_activate_by_passphrase)(cd,
+						 "zuluCrypt-deleteKey",
+						 CRYPT_ANY_SLOT,
+						 pass,
+					         strlen(pass),
+						 0);
+
+	(*ptr_crypt_deactivate)(cd,"zuluCrypt-deleteKey");
+	
+	if ( i < 0 ){
+		status = 2 ;
+		goto out ;
+	}
+	
+	i = (*ptr_crypt_keyslot_destroy)(cd,i) ;
+	
+
 	
 	if ( i < 0 )
-		return 3 ;	
+		status = 3 ;	
 	else
-		return i ;
+		status = 0 ;
+	
+	out:
+	(*ptr_crypt_free)(cd);	
+	
+	dlclose(handle);
+	
+	return status ;
 }
 
 int empty_slots( char * slots ,const char * device )
@@ -118,25 +384,35 @@ int empty_slots( char * slots ,const char * device )
 	int i ;
 	int j ;
 	int k ;
+	int status ;
+	
+	handle_init() ;
 	
 	if( is_luks(device) == 1)
 		return 1 ;
-		
-	i = crypt_init(&cd,device) ;
 	
-	if( i != 0 )
-		return 2 ;
+	if(  handle  == NULL )
+		return 40 ;
+
+	i = (*ptr_crypt_init)(&cd,device) ;
 	
-	i = crypt_load(cd, CRYPT_LUKS1, NULL) ;
+	if( i != 0 ){
+		status = 2 ;
+		goto out ;
+	}
 	
-	if( i != 0 )
-		return 2 ;
+	i = (*ptr_crypt_load)(cd, CRYPT_LUKS1, NULL) ;
 	
-	k = crypt_keyslot_max(CRYPT_LUKS1) ;
+	if( i != 0 ){
+		status = 2 ;
+		goto out ;
+	}
+	
+	k = (*ptr_crypt_keyslot_max)(CRYPT_LUKS1) ;
 	
 	for( j = 0 ; j < k ; j++){
 		
-		cki = crypt_keyslot_status(cd, j);
+		cki = (*ptr_crypt_keyslot_status)(cd, j);
 		
 		switch ( cki ){
 			case CRYPT_SLOT_INACTIVE :   slots[j] = '0' ; break ;
@@ -146,6 +422,10 @@ int empty_slots( char * slots ,const char * device )
 		}		
 	}
 	slots[j] = '\0' ;
+	
+	out:
+	(*ptr_crypt_free)(cd);
+	dlclose(handle);
 	return 0 ;
 }
 
@@ -173,75 +453,71 @@ char * status( const char * mapper )
 	char keysize[ SIZE + 1 ] ;
 	char loop[512] ;
 	char path[512];
-	char *c ;
-	char *d ;
+	char *c = NULL ;
+	char *d = NULL ;
 	
 	crypt_status_info csi ;
 	
-	struct crypt_device *cd = NULL;
 	struct crypt_device *cd1 = NULL;
-	struct crypt_active_device cad ;
-		
+	struct crypt_active_device cad ;	
+	
 	StrHandle * p ;
 	StrHandle * q ;
 	
 	const char *type ;
 	int i ;
+	
+	handle_init() ;
+	
+	if( handle  == NULL )
+		return NULL ;		
 
-	i = crypt_init_by_name(&cd,mapper);
-	
-	if( i != 0 )
-		return NULL ;
-	
-	i = crypt_get_active_device(cd1,mapper,&cad) ;
-	
-	if( i != 0 )
-		return NULL ;
+	i = (*ptr_crypt_init_by_name)(&cd,mapper);
 
-	csi = crypt_status(cd, mapper);
+	//if( i != 0 ){
+	//	c = NULL ;
+	//	goto out ;
+	//}
+	
+	i = (*ptr_crypt_get_active_device)(cd1,mapper,&cad) ;
+	
+	//if( i != 0 ){
+	//	c = NULL ;
+	//	goto out ;
+	//}
+
+	csi = (*ptr_crypt_status)(cd, mapper);
 	
 	p = StringCpy(mapper) ;
 	
 	switch( csi){
-		case CRYPT_INACTIVE : 	StringCat(p," is inactive.\n") ;
-					c = StringContCopy(p) ;	
-					crypt_free(cd);
-					StringDelete(p) ;
-					return c ;
-					break ;
-		case CRYPT_ACTIVE   : 	StringCat(p," is active.\n") ;
-					break ;
-		case CRYPT_BUSY     : 	StringCat(p," is active and is in use.\n") ;
-					break ;
-		case CRYPT_INVALID  : 	StringCat(p," is invalid.\n") ;
-					c = StringContCopy(p) ;	
-					crypt_free(cd);
-					StringDelete(p) ;
-					return c ;		
-					break ;
+		case CRYPT_INACTIVE : 	StringCat(p," is inactive.\n") ; goto out ;	break ;
+		case CRYPT_ACTIVE   : 	StringCat(p," is active.\n") ;			break ;
+		case CRYPT_BUSY     : 	StringCat(p," is active and is in use.\n") ;	break ;
+		case CRYPT_INVALID  : 	StringCat(p," is invalid.\n") ;	 goto out ;	break ;
 	}	
 		
-	type = crypt_get_type(cd) ;	
+	type = (*ptr_crypt_get_type)(cd) ;	
 	
 	StringCat(p," type:      ");
 	
 	StringCat(p,type) ;
 
 	StringCat(p,"\n cipher:    ");
-	StringCat(p,crypt_get_cipher_mode(cd)) ;
+	StringCat(p,(*ptr_crypt_get_cipher_mode)(cd)) ;
 	
 	StringCat(p,"\n keysize:   ");
-	StringCat(p,intToChar(keysize,SIZE,8 *crypt_get_volume_key_size(cd))) ;
+	StringCat(p,intToChar(keysize,SIZE,8 * (*ptr_crypt_get_volume_key_size)(cd))) ;
 	StringCat(p," bits");
 	
 	StringCat(p,"\n device:    ");
-	StringCat(p,crypt_get_device_name(cd)) ;
+	StringCat(p,(*ptr_crypt_get_device_name)(cd)) ;
 	
-	if( strncmp(crypt_get_device_name(cd),"/dev/loop",9 ) == 0){
+	if( strncmp((*ptr_crypt_get_device_name)(cd),"/dev/loop",9 ) == 0){
 		
 		q = StringCpy(ZULUCRYPTlosetup) ;
 		StringCat(q," ");
-		StringCat(q,crypt_get_device_name(cd)) ;
+		StringCat(q,(*ptr_crypt_get_device_name)(cd)) ;
 		execute(StringCont(q),loop,510) ;
 		StringDelete( q ) ;
 		
@@ -263,7 +539,7 @@ char * status( const char * mapper )
 	}
 	
 	StringCat(p,"\n offset:    ");
-	StringCat(p,intToChar(keysize,SIZE,crypt_get_data_offset(cd))) ;	
+	StringCat(p,intToChar(keysize,SIZE,(*ptr_crypt_get_data_offset)(cd))) ;	
 	StringCat(p," sectors");	
 	
 	StringCat(p,"\n size:      ");
@@ -277,9 +553,14 @@ char * status( const char * mapper )
 	else
 		StringCat(p,"read/write");	
 		
+	
 	c = StringContCopy(p) ;	
-	crypt_free(cd);
 	StringDelete(p) ;
+	
+	out:
+	
+	(*ptr_crypt_free)(cd);	
+	dlclose(handle) ;
 	return c ;
 }
 
@@ -373,12 +654,19 @@ int is_luks(const char * dev)
 	struct crypt_device *cd = NULL;
 	int r;
 
-	r = crypt_init(&cd, dev) ;	
+	handle_init() ;
+	
+	if(  handle  == NULL )
+		return 3 ;
+	
+	r = (*ptr_crypt_init)(&cd, dev) ;	
 	
 	if( r == 0 )
-		r = crypt_load(cd, CRYPT_LUKS1, NULL);
+		r = (*ptr_crypt_load)(cd, CRYPT_LUKS1, NULL);	
 	
-	crypt_free(cd);
+	(*ptr_crypt_free)(cd);
+	
+	dlclose(handle) ;
 	
 	if( r == 0 )
 		return 0 ;
@@ -396,19 +684,24 @@ int create_luks(const char * dev,const char * pass, const char *rng)
 		.data_alignment = 4096,
 	};
 	
-	i =  crypt_init(&cd,dev) ;
+	handle_init() ;
+	
+	if(  handle  == NULL )
+		return 40 ;
+	
+	i =  (*ptr_crypt_init)(&cd,dev) ;
 	
 	if( strcmp(rng,"/dev/random" ) == 0 )
-		crypt_set_rng_type(cd, CRYPT_RNG_RANDOM);
+		(*ptr_crypt_set_rng_type)(cd, CRYPT_RNG_RANDOM);
 	else 
-		crypt_set_rng_type(cd, CRYPT_RNG_URANDOM);
+		(*ptr_crypt_set_rng_type)(cd, CRYPT_RNG_URANDOM);
 	
-	i = crypt_format(cd, CRYPT_LUKS1,"aes","cbc-essiv:sha256",NULL, NULL, 32, &params);	
+	i = (*ptr_crypt_format)(cd, CRYPT_LUKS1,"aes","cbc-essiv:sha256",NULL, NULL, 32, &params);	
 	
-	i = crypt_keyslot_add_by_volume_key(cd,CRYPT_ANY_SLOT ,NULL,32,pass,strlen(pass));
+	i = (*ptr_crypt_keyslot_add_by_volume_key)(cd,CRYPT_ANY_SLOT ,NULL,32,pass,strlen(pass));
 	
-	crypt_free(cd);
-	
+	(*ptr_crypt_free)(cd);
+	dlclose(handle) ;
 	return i ;
 }
 
@@ -433,7 +726,7 @@ int create_volume(const char * dev, const char * fs,const char * type, const cha
 	if( strncmp(fs,"ext3",4) != 0)
 		if( strncmp(fs,"ext4",4) != 0)
 			if( strncmp(fs,"vfat",4) != 0)
-				return 6 ;				
+				return 6 ;
 	
 	if(  strcmp(type,"luks")  == 0){
 	
@@ -443,8 +736,9 @@ int create_volume(const char * dev, const char * fs,const char * type, const cha
 		
 	}else if( strcmp(type,"luks") == 0 ){
 		k =  open_plain(dev,"create-new","rw","-p",pass,"cbc-essiv:sha256" ) ;		
-	}else
+	}else{
 		return 6 ;
+	}
 		
 	q = StringCpy(ZULUCRYPTmkfs );
 	StringCat( q , " -t ") ;
@@ -455,10 +749,14 @@ int create_volume(const char * dev, const char * fs,const char * type, const cha
 	execute(StringCont(q),NULL,0) ;
 	
 	StringDelete( q ) ;
-	
-	crypt_deactivate(NULL,"zuluCrypt-create-new");
 		
-	free( fsys ) ;
+	free( fsys ) ;	
+	
+	handle_init() ;	
+	
+	(*ptr_crypt_deactivate)(NULL,"zuluCrypt-create-new");
+
+	dlclose(handle) ;
 	
 	return 0 ;	
 }
@@ -470,12 +768,17 @@ int close_volume(const char * map)
 	
 	struct stat st ;		
 
-	char * mount_point ;
+	char * mount_point = NULL ;
 	char * c ;
 	
 	FILE *f ;
 	
 	char buffer[256] ;
+	
+	handle_init() ;
+	
+	if( handle == NULL )		
+		return 3 ;	
 	
 	q = StringCpy("/dev/mapper/zuluCrypt-") ;
 	
@@ -506,6 +809,10 @@ int close_volume(const char * map)
 		}		
 	}
 	
+	if ( mount_point == NULL ){
+		StringDelete(q) ;
+		return 10 ;
+	}
 	mount_point = sanitize(mount_point) ;
 	
 	fclose(f);
@@ -513,8 +820,11 @@ int close_volume(const char * map)
 	StringDelete( q ) ;
 
 	/*
-	 * mount/umount system calls do not add entries in mtab and tools like kdiskfree do not see the volumes.
-	 * workaround is to use the mount/umount executables to mount/unmount volumes.	 * 
+	 * mount/umount system calls do not add entries in mtab and 
+	 * tools like kdiskfree do not see the volumes when they dont have
+	 * entries in /etc/mtab and manually adding/removing entries 
+	 * in /etc/mtab corrupts the file.
+	 * workaround is to use the mount/umount executables to mount/unmount volumes. 
 	 */
 	
 	q = StringCpy(ZULUCRYPTumount) ;
@@ -537,17 +847,24 @@ int close_volume(const char * map)
 	StringCat(q, " -rf ");
 	StringCat(q, mount_point) ;
 
-	execute(StringCont(q),NULL,0) ;
+	execute(StringCont(q),NULL,0) ;	
+
+	(*ptr_crypt_deactivate)(NULL, StringCont(p));
 	
-	crypt_deactivate(NULL, StringCont(p));
+	dlclose(handle);	
 	
-	free(mount_point);
 	StringDelete( p ) ;
+	
+	free(mount_point);	
+	
 	StringDelete( q ) ;
+	
 	return 0 ;
 }
 
-int mount_volume(const char *mapping_name,const char *m_point,const char * mode,uid_t id)
+int mount_volume(const char * mapping_name,
+		 const char * m_point,
+		 const char * mode,uid_t id)
 {
 	StrHandle *p ;
 	StrHandle *z ;
@@ -609,8 +926,9 @@ int mount_volume(const char *mapping_name,const char *m_point,const char * mode,
 		p = StringCpy("zuluCrypt-");
 		StringCat(p,mapping_name) ;
 		
-		crypt_deactivate(NULL,StringCont(p)) ;
-		
+		handle_init();
+		(*ptr_crypt_deactivate)(NULL,StringCont(p)) ;
+		dlclose(handle);
 		StringDelete( p ) ;
 		
 		return 4 ;
@@ -628,27 +946,40 @@ int mount_volume(const char *mapping_name,const char *m_point,const char * mode,
 	return 0 ;		
 }
 
-int open_luks( const char * device,const char * mapping_name, const char *mode,const char *source,const char *pass )
+int open_luks( const char * device,
+	       const char * mapping_name,
+	       const char * mode,
+	       const char * source,
+	       const char * pass )
 {
 	struct stat st ;
-	struct crypt_device *cd = NULL;
 	uint32_t flags = 0;
 	int i;
 	
-	StrHandle *p = StringCpy("zuluCrypt-") ;
+	StrHandle *p ;
+	
+	handle_init() ;
+	
+	if( handle == NULL )
+		return 40 ;
+
+	p = StringCpy("zuluCrypt-") ;
+	
 	StringCat(p,mapping_name) ;
 	
-	i = crypt_init(&cd, device) ;
+	i = (*ptr_crypt_init)(&cd, device) ;
 	
 	if ( i != 0 ){
-		crypt_free(cd);	
+		(*ptr_crypt_free)(cd);	
+		dlclose(handle) ;
 		return 10 ;
 	}
-	
-	i = crypt_load(cd, CRYPT_LUKS1, NULL) ;
+
+	i = (*ptr_crypt_load)(cd, CRYPT_LUKS1, NULL) ;
 	
 	if ( i != 0 ){
-		crypt_free(cd);	
+		(*ptr_crypt_free)(cd);
+		dlclose(handle);
 		return 10 ;
 	}
 	
@@ -659,35 +990,47 @@ int open_luks( const char * device,const char * mapping_name, const char *mode,c
 	
 	if(strcmp(source,"-p")==0){
 		
-		i = crypt_activate_by_passphrase(cd, StringCont(p),CRYPT_ANY_SLOT, pass, strlen(pass), flags);
+		i = (*ptr_crypt_activate_by_passphrase)(cd,
+							StringCont(p),
+							CRYPT_ANY_SLOT,
+							pass,
+							strlen(pass),
+							flags);
 
 	}else{
 		if ( stat(pass,&st) != 0 ){
-			crypt_free(cd);
+			(*ptr_crypt_free)(cd);
+			dlclose(handle);
 			StringDelete(p);
 			return 6 ;			
 		}			
 		
-		i = crypt_activate_by_keyfile(cd,StringCont(p),CRYPT_ANY_SLOT,pass,st.st_size,flags) ;
+		i = (*ptr_crypt_activate_by_keyfile)(cd,
+						     StringCont(p),
+						     CRYPT_ANY_SLOT,
+						     pass,
+						     st.
+						     st_size,
+						     flags) ;
 	}
-		
-	crypt_free(cd);
+	
+	(*ptr_crypt_free)(cd);
+	dlclose(handle) ;
 	StringDelete(p);
-
+	
 	return i ;
 }
 
-int open_plain( const char * device,const char * mapping_name, const char *mode,const char *source,const char *pass, const char *cipher )
+int open_plain( const char * device,
+		const char * mapping_name,
+		const char * mode,
+		const char * source,
+		const char * pass,
+		const char * cipher )
 {
 	int i ;
+	
 	int flags ;
-	
-	struct stat st;
-	
-	StrHandle *p = StringCpy("zuluCrypt-") ;
-	StringCat(p,mapping_name) ;
-	
-	struct crypt_device *cd = NULL;
 	
 	struct crypt_params_plain params = {
 		.hash = "ripemd160",
@@ -695,32 +1038,68 @@ int open_plain( const char * device,const char * mapping_name, const char *mode,
 		.offset = 0,
 	};
 	
+	struct stat st;
+	
+	StrHandle *p ;
+	
+	handle_init() ;
+	
+	if( handle == NULL )
+		return 40 ;
+	
+	p = StringCpy("zuluCrypt-") ;
+	StringCat(p,mapping_name) ;
+	
 	if(strcmp(mode,"ro") == 0 )
 		flags = 1 ;
 	else
 		flags = 0 ;
 
-	i = crypt_init(&cd, device) ;
+	i = (*ptr_crypt_init)(&cd, device) ;
 	
-	i = crypt_format(cd, CRYPT_PLAIN,"aes",cipher,NULL, NULL,32,&params);
+	i = (*ptr_crypt_format)(cd,
+				CRYPT_PLAIN,
+				"aes"
+				,cipher,
+				NULL,
+				NULL,
+				32,
+				&params);
 	
 	if(strcmp(source,"-p")==0){
 		
-		i = crypt_activate_by_passphrase(cd,StringCont(p),CRYPT_ANY_SLOT,pass,strlen(pass),flags);
+		i = (*ptr_crypt_activate_by_passphrase)(cd,
+							StringCont(p),
+							CRYPT_ANY_SLOT,
+							pass,
+							strlen(pass),
+							flags);
 	}else{
 			
 		stat(pass,&st) ;
 		
-		i = crypt_activate_by_keyfile(cd,StringCont(p),CRYPT_ANY_SLOT,pass,st.st_size,flags) ;
+		i = (*ptr_crypt_activate_by_keyfile)(cd,
+						     StringCont(p),
+						     CRYPT_ANY_SLOT,
+						     pass,
+						     st.st_size,
+						     flags) ;
 	}
 	
-	crypt_free(cd);
-	StringDelete(p);
 	
+	(*ptr_crypt_free)(cd);
+	StringDelete(p);
+	dlclose(handle) ;
 	return i ;
 }
 
-int open_volume(const char *dev, const char * map, const char *m_point, uid_t id,const char * mode, const char *pass,const char * source) 
+int open_volume(const char * dev,
+		const char * map,
+		const char * m_point,
+		uid_t id,
+		const char * mode,
+		const char * pass,
+		const char * source) 
 {
 	char status[2] ;	
 	StrHandle * p ;	
@@ -733,8 +1112,7 @@ int open_volume(const char *dev, const char * map, const char *m_point, uid_t id
 	}
 	
 	p = StringCpy("/dev/mapper/zuluCrypt-");
-	StringCat(p,map);
-	
+	StringCat(p,map);	
 	
 	if(stat(StringCont(p),&st) == 0 ){
 		StringDelete(p) ;
@@ -772,13 +1150,18 @@ int open_volume(const char *dev, const char * map, const char *m_point, uid_t id
 	if( h == 4 ){
 		
 		p = StringCpy("zuluCrypt-");
+		
 		StringCat(p,map);
 	
-		crypt_deactivate(NULL,StringCont(p));
-	
-		StringDelete(p);	
+		handle_init();
 		
-		open_plain( dev,map,mode,source,pass,"cbc-plain" ) ;
+		(*ptr_crypt_deactivate)(NULL,StringCont(p));
+	
+		dlclose(handle);
+		
+		StringDelete(p);		
+
+		open_plain( dev,map,mode,source,pass,"cbc-plain" ) ;		
 		
 		h = mount_volume(map,m_point,mode,id ) ;	
 	}
