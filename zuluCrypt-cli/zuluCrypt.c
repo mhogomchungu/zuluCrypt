@@ -96,8 +96,10 @@ int volume_info( const char * mapper )
 
 int close_opened_volume( char * mapping_name )
 {
-
-	int st = close_volume( mapping_name ) ;
+	StrHandle * p = StringCpy("/dev/mapper/zuluCrypt-");
+	StringCat( p , mapping_name ) ;
+	
+	int st = close_volume( StringCont( p ) ) ;
 	
 	switch( st ) {
 	case 0 : printf("SUCCESS: volume successfully closed\n");
@@ -106,22 +108,28 @@ int close_opened_volume( char * mapping_name )
 		that name does not exist\n");
 		break ;
 			
-	case 2 : printf("ERROR: close failed, the mount point and/or one or \
-		more files are in use\n");
+	case 2 : printf("ERROR: close failed, the mount point and/or one or more files are in use\n");
 		break ;
-	case 3 : printf("ERROR: close failed, path given does not point to \
-		an encrypted device\n") ;
+	case 3 : printf("ERROR: close failed, volume does not have an entry in /etc/mtab\n") ;
 		break ;
 	default :
 		; //shouldnt get here			
 	}	
+	
+	StringDelete( p ) ;
+	
 	return st ;	
 }
 
 int open_volumes(int argn, char * device, char * mapping_name,int id, char * mount_point, char * mode,char *source, char * pass)
 {
 	StrHandle * p ;
-	int st ;
+	
+	StrHandle * q ;
+	
+	StrHandle * z ;
+	
+	int st ;	
 	
 	if (argn < 5 ){
 		st = 8 ;
@@ -139,11 +147,14 @@ int open_volumes(int argn, char * device, char * mapping_name,int id, char * mou
 			st = 10 ;
 			goto eerr ;	
 		}
-	}		
-
-	if (strncmp(mount_point,"-\0",2) ==0 ){
-		mount_point = NULL ;
 	}	
+	
+	q = StringCpy("/dev/mapper/zuluCrypt-") ;
+	StringCat( q , mapping_name ) ;
+	
+	z = StringCpy(mount_point);
+	StringCat(z,"/");
+	StringCat(z,mapping_name);
 	
 	if ( argn == 5 ){
 		printf( "Enter passphrase: " ) ;
@@ -152,18 +163,34 @@ int open_volumes(int argn, char * device, char * mapping_name,int id, char * mou
 
 		printf("\n") ;	
 		
-		st = open_volume(device, mapping_name,mount_point,id,mode,StringCont( p ),"-p") ;
+		st = open_volume(device,
+				 StringCont(q),
+				 StringCont(z),
+				 id,
+				 mode,
+				 StringCont( p ),
+				 "-p") ;
+				 
 		StringDelete( p ) ;
 		
 	}else if ( argn == 7 ){
 
-		st = open_volume(device, mapping_name,mount_point,id,mode, pass,source) ;			
+		st = open_volume(device,
+				 StringCont(q),
+				 StringCont(z),
+				 id,
+				 mode,
+				 pass,
+				 source) ;			
 		
 	}else{
 		
 		st =  8 ;			
 	}
-
+	
+	StringDelete( q ) ;
+	StringDelete( z ) ;
+	
 	eerr:
 	
 	switch ( st ){
@@ -182,7 +209,7 @@ int open_volumes(int argn, char * device, char * mapping_name,int id, char * mou
 			break ;		
 		case 6 : printf("ERROR: passphrase file does not exist\n");
 			break ;		
-		case 7 :printf("ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib\n");
+		case 7 : printf("ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib\n");
 		case 8 : printf("ERROR: Wrong number of arguments, run zuluCrypt with \"-h\" for help\n");
 			break ;
 		case 9 : printf("ERROR: failed to open volume\n");
