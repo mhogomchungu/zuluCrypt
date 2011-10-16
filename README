@@ -1,6 +1,4 @@
 
-build against: cryptsetup version 1.3.0
-Qt version:    4.7.4
 
 zuluCrypt is a front end to cryptsetup. It aims to simplify using cryptsetup volumes by creating a simple to use
 command line interface and a Qt based GUI front end to the command line.
@@ -20,7 +18,7 @@ Run "./build install" when in the source code folder after you have run "./build
 The "zuluCrypt" program should appear on your menu list, if not log out and back in.
 
 How to uninstall:
-Run "./build uninstall" when in the source code folder after you have run "./build"
+Run "./build uninstall" when in the source code folder.
 
 How to use the GUI part of the program.
 It GUI should be obvious enough to figure it out without instructions. 
@@ -92,5 +90,16 @@ zuluCrypt-cli emptyslots <path to volume>
 "0" represent an empty slots
 
 8.
+How to get a list of all partitions
+zuluCrypt-cli partitions 1
+
+How to get a list of system partitions
+zuluCrypt-cli partitions 2
+
 How to get a list of non system partitions
-zuluCrypt-cli partitions
+zuluCrypt-cli partitions 3
+
+This tool will create volumes only in non system partitions. This will allow a normal user to create volumes
+in external hard drives but not on a root's partition effectively distroying a system.
+
+System partition is a partition with an active entry in /etc/fstab and /etc/crypttab
