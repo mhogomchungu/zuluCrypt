@@ -136,6 +136,9 @@
     <property name="text">
      <string/>
     </property>
+    <property name="autoDefault">
+     <bool>false</bool>
+    </property>
    </widget>
    <widget class="QLineEdit" name="textEditExistingPassphrase">
     <property name="geometry">
@@ -158,7 +161,13 @@
     </rect>
    </property>
    <property name="text">
-    <string>Add</string>
+    <string>&amp;add</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+   <property name="default">
+    <bool>true</bool>
    </property>
   </widget>
   <widget class="QPushButton" name="pushButtonCancel">
@@ -171,13 +180,13 @@
     </rect>
    </property>
    <property name="text">
-    <string>Cancel</string>
+    <string>&amp;cancel</string>
    </property>
    <property name="autoDefault">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="default">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
   </widget>
   <widget class="QLineEdit" name="textEditPathToVolume">
@@ -242,6 +251,9 @@
     </property>
     <property name="text">
      <string/>
+    </property>
+    <property name="autoDefault">
+     <bool>false</bool>
     </property>
    </widget>
    <widget class="QLabel" name="labelNewPassphrase">

@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'createfile.ui'
 **
-** Created: Fri Oct 14 23:12:31 2011
+** Created: Sun Oct 16 13:56:21 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -76,8 +76,8 @@ public:
         pbCancel = new QPushButton(createfile);
         pbCancel->setObjectName(QString::fromUtf8("pbCancel"));
         pbCancel->setGeometry(QRect(260, 140, 91, 31));
-        pbCancel->setAutoDefault(true);
-        pbCancel->setDefault(true);
+        pbCancel->setAutoDefault(false);
+        pbCancel->setDefault(false);
         label_4 = new QLabel(createfile);
         label_4->setObjectName(QString::fromUtf8("label_4"));
         label_4->setGeometry(QRect(10, 110, 101, 21));
@@ -85,6 +85,8 @@ public:
         pbCreate = new QPushButton(createfile);
         pbCreate->setObjectName(QString::fromUtf8("pbCreate"));
         pbCreate->setGeometry(QRect(160, 140, 91, 31));
+        pbCreate->setAutoDefault(false);
+        pbCreate->setDefault(true);
         comboBox = new QComboBox(createfile);
         comboBox->setObjectName(QString::fromUtf8("comboBox"));
         comboBox->setGeometry(QRect(230, 70, 51, 31));
@@ -105,9 +107,9 @@ public:
         pbOpenFolder->setToolTip(QApplication::translate("createfile", "open a folder dialog box", 0, QApplication::UnicodeUTF8));
 #endif // QT_NO_TOOLTIP
         pbOpenFolder->setText(QString());
-        pbCancel->setText(QApplication::translate("createfile", "cancel", 0, QApplication::UnicodeUTF8));
+        pbCancel->setText(QApplication::translate("createfile", "&cancel", 0, QApplication::UnicodeUTF8));
         label_4->setText(QApplication::translate("createfile", "% complete", 0, QApplication::UnicodeUTF8));
-        pbCreate->setText(QApplication::translate("createfile", "create", 0, QApplication::UnicodeUTF8));
+        pbCreate->setText(QApplication::translate("createfile", "c&reate", 0, QApplication::UnicodeUTF8));
         comboBox->clear();
         comboBox->insertItems(0, QStringList()
          << QApplication::translate("createfile", "KB", 0, QApplication::UnicodeUTF8)

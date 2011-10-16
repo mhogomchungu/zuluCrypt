@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'createpartition.ui'
 **
-** Created: Fri Oct 14 23:12:31 2011
+** Created: Sun Oct 16 13:56:21 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -83,10 +83,12 @@ public:
         pbCreate = new QPushButton(createpartition);
         pbCreate->setObjectName(QString::fromUtf8("pbCreate"));
         pbCreate->setGeometry(QRect(130, 190, 91, 31));
+        pbCreate->setAutoDefault(false);
+        pbCreate->setDefault(true);
         pbCancel = new QPushButton(createpartition);
         pbCancel->setObjectName(QString::fromUtf8("pbCancel"));
         pbCancel->setGeometry(QRect(220, 190, 91, 31));
-        pbCancel->setDefault(true);
+        pbCancel->setDefault(false);
         lineEditPassphrase1 = new QLineEdit(createpartition);
         lineEditPassphrase1->setObjectName(QString::fromUtf8("lineEditPassphrase1"));
         lineEditPassphrase1->setGeometry(QRect(120, 80, 281, 31));
@@ -130,8 +132,8 @@ public:
         rbext3->setText(QApplication::translate("createpartition", "ext3", 0, QApplication::UnicodeUTF8));
         rbext4->setText(QApplication::translate("createpartition", "ext4", 0, QApplication::UnicodeUTF8));
         rbfat->setText(QApplication::translate("createpartition", "fat", 0, QApplication::UnicodeUTF8));
-        pbCreate->setText(QApplication::translate("createpartition", "create", 0, QApplication::UnicodeUTF8));
-        pbCancel->setText(QApplication::translate("createpartition", "cancel", 0, QApplication::UnicodeUTF8));
+        pbCreate->setText(QApplication::translate("createpartition", "c&reate", 0, QApplication::UnicodeUTF8));
+        pbCancel->setText(QApplication::translate("createpartition", "&cancel", 0, QApplication::UnicodeUTF8));
         labelPassPhrase->setText(QApplication::translate("createpartition", "passphrase", 0, QApplication::UnicodeUTF8));
         label_3->setText(QApplication::translate("createpartition", "repeat passphrase", 0, QApplication::UnicodeUTF8));
 #ifndef QT_NO_TOOLTIP

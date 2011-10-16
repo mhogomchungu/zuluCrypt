@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'createkeyfile.ui'
 **
-** Created: Fri Oct 14 23:12:31 2011
+** Created: Sun Oct 16 13:56:21 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -56,11 +56,12 @@ public:
         pbCreate->setObjectName(QString::fromUtf8("pbCreate"));
         pbCreate->setGeometry(QRect(150, 80, 91, 31));
         pbCreate->setAutoDefault(false);
+        pbCreate->setDefault(true);
         pbCancel = new QPushButton(createkeyfile);
         pbCancel->setObjectName(QString::fromUtf8("pbCancel"));
         pbCancel->setGeometry(QRect(250, 80, 81, 31));
-        pbCancel->setAutoDefault(true);
-        pbCancel->setDefault(true);
+        pbCancel->setAutoDefault(false);
+        pbCancel->setDefault(false);
         label_2 = new QLabel(createkeyfile);
         label_2->setObjectName(QString::fromUtf8("label_2"));
         label_2->setGeometry(QRect(0, 40, 111, 31));
@@ -82,8 +83,8 @@ public:
         pbOpenFolder->setToolTip(QApplication::translate("createkeyfile", "open a folder a key file will be created in", 0, QApplication::UnicodeUTF8));
 #endif // QT_NO_TOOLTIP
         pbOpenFolder->setText(QString());
-        pbCreate->setText(QApplication::translate("createkeyfile", "create", 0, QApplication::UnicodeUTF8));
-        pbCancel->setText(QApplication::translate("createkeyfile", "cancel", 0, QApplication::UnicodeUTF8));
+        pbCreate->setText(QApplication::translate("createkeyfile", "c&reate", 0, QApplication::UnicodeUTF8));
+        pbCancel->setText(QApplication::translate("createkeyfile", "&cancel", 0, QApplication::UnicodeUTF8));
         label_2->setText(QApplication::translate("createkeyfile", "destination folder", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 

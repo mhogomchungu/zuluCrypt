@@ -140,7 +140,13 @@
     </rect>
    </property>
    <property name="text">
-    <string>create</string>
+    <string>c&amp;reate</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+   <property name="default">
+    <bool>true</bool>
    </property>
   </widget>
   <widget class="QPushButton" name="pbCancel">
@@ -153,10 +159,10 @@
     </rect>
    </property>
    <property name="text">
-    <string>cancel</string>
+    <string>&amp;cancel</string>
    </property>
    <property name="default">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
   </widget>
   <widget class="QLineEdit" name="lineEditPassphrase1">

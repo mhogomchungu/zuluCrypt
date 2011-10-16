@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'luksdeletekey.ui'
 **
-** Created: Fri Oct 14 23:12:31 2011
+** Created: Sun Oct 16 13:56:21 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -66,13 +66,15 @@ public:
         pushButtonOpenKeyFile = new QPushButton(luksdeletekey);
         pushButtonOpenKeyFile->setObjectName(QString::fromUtf8("pushButtonOpenKeyFile"));
         pushButtonOpenKeyFile->setGeometry(QRect(410, 40, 31, 31));
+        pushButtonOpenKeyFile->setAutoDefault(false);
         pushButtonDelete = new QPushButton(luksdeletekey);
         pushButtonDelete->setObjectName(QString::fromUtf8("pushButtonDelete"));
         pushButtonDelete->setGeometry(QRect(160, 130, 91, 31));
+        pushButtonDelete->setAutoDefault(false);
         pushButtonCancel = new QPushButton(luksdeletekey);
         pushButtonCancel->setObjectName(QString::fromUtf8("pushButtonCancel"));
         pushButtonCancel->setGeometry(QRect(260, 130, 91, 31));
-        pushButtonCancel->setAutoDefault(true);
+        pushButtonCancel->setAutoDefault(false);
         pushButtonCancel->setDefault(true);
         lineEditVolumePath = new QLineEdit(luksdeletekey);
         lineEditVolumePath->setObjectName(QString::fromUtf8("lineEditVolumePath"));
@@ -84,9 +86,11 @@ public:
         pushButtonOpenVolume = new QPushButton(luksdeletekey);
         pushButtonOpenVolume->setObjectName(QString::fromUtf8("pushButtonOpenVolume"));
         pushButtonOpenVolume->setGeometry(QRect(410, 10, 31, 31));
+        pushButtonOpenVolume->setAutoDefault(false);
         pushButtonOpenPartition = new QPushButton(luksdeletekey);
         pushButtonOpenPartition->setObjectName(QString::fromUtf8("pushButtonOpenPartition"));
         pushButtonOpenPartition->setGeometry(QRect(440, 10, 31, 31));
+        pushButtonOpenPartition->setAutoDefault(false);
 
         retranslateUi(luksdeletekey);
 
@@ -104,8 +108,8 @@ public:
         pushButtonOpenKeyFile->setToolTip(QApplication::translate("luksdeletekey", "open a keyfile", 0, QApplication::UnicodeUTF8));
 #endif // QT_NO_TOOLTIP
         pushButtonOpenKeyFile->setText(QString());
-        pushButtonDelete->setText(QApplication::translate("luksdeletekey", "delete", 0, QApplication::UnicodeUTF8));
-        pushButtonCancel->setText(QApplication::translate("luksdeletekey", "cancel", 0, QApplication::UnicodeUTF8));
+        pushButtonDelete->setText(QApplication::translate("luksdeletekey", "&delete", 0, QApplication::UnicodeUTF8));
+        pushButtonCancel->setText(QApplication::translate("luksdeletekey", "&cancel", 0, QApplication::UnicodeUTF8));
         label->setText(QApplication::translate("luksdeletekey", "volume path", 0, QApplication::UnicodeUTF8));
 #ifndef QT_NO_TOOLTIP
         pushButtonOpenVolume->setToolTip(QApplication::translate("luksdeletekey", "open an encrypted file", 0, QApplication::UnicodeUTF8));

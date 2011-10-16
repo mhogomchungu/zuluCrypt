@@ -143,8 +143,6 @@ void createkeyfile::pbCreate()
 
 	connect(rng,SIGNAL(finished()),this,SLOT(threadfinished()));
 
-	//connect(rng,SIGNAL(terminated()),this,SLOT(threadterminated())) ;
-
 	disableAll() ;
 
 	rng->start();

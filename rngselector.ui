@@ -62,10 +62,10 @@
     </rect>
    </property>
    <property name="text">
-    <string>ok</string>
+    <string>&amp;ok</string>
    </property>
    <property name="autoDefault">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="default">
     <bool>true</bool>

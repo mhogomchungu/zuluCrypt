@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'luksaddkey.ui'
 **
-** Created: Fri Oct 14 23:12:31 2011
+** Created: Sun Oct 16 13:56:21 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -81,17 +81,20 @@ public:
         pushButtonOpenExistingKeyFile = new QPushButton(groupBox);
         pushButtonOpenExistingKeyFile->setObjectName(QString::fromUtf8("pushButtonOpenExistingKeyFile"));
         pushButtonOpenExistingKeyFile->setGeometry(QRect(450, 60, 31, 31));
+        pushButtonOpenExistingKeyFile->setAutoDefault(false);
         textEditExistingPassphrase = new QLineEdit(groupBox);
         textEditExistingPassphrase->setObjectName(QString::fromUtf8("textEditExistingPassphrase"));
         textEditExistingPassphrase->setGeometry(QRect(130, 60, 321, 31));
         pushButtonAdd = new QPushButton(luksaddkeyUI);
         pushButtonAdd->setObjectName(QString::fromUtf8("pushButtonAdd"));
         pushButtonAdd->setGeometry(QRect(170, 260, 91, 31));
+        pushButtonAdd->setAutoDefault(false);
+        pushButtonAdd->setDefault(true);
         pushButtonCancel = new QPushButton(luksaddkeyUI);
         pushButtonCancel->setObjectName(QString::fromUtf8("pushButtonCancel"));
         pushButtonCancel->setGeometry(QRect(260, 260, 91, 31));
-        pushButtonCancel->setAutoDefault(true);
-        pushButtonCancel->setDefault(true);
+        pushButtonCancel->setAutoDefault(false);
+        pushButtonCancel->setDefault(false);
         textEditPathToVolume = new QLineEdit(luksaddkeyUI);
         textEditPathToVolume->setObjectName(QString::fromUtf8("textEditPathToVolume"));
         textEditPathToVolume->setGeometry(QRect(140, 10, 321, 31));
@@ -107,6 +110,7 @@ public:
         pushButtonOpenNewKeyFile = new QPushButton(groupBox_2);
         pushButtonOpenNewKeyFile->setObjectName(QString::fromUtf8("pushButtonOpenNewKeyFile"));
         pushButtonOpenNewKeyFile->setGeometry(QRect(450, 60, 31, 31));
+        pushButtonOpenNewKeyFile->setAutoDefault(false);
         labelNewPassphrase = new QLabel(groupBox_2);
         labelNewPassphrase->setObjectName(QString::fromUtf8("labelNewPassphrase"));
         labelNewPassphrase->setGeometry(QRect(10, 60, 121, 31));
@@ -147,8 +151,8 @@ public:
         pushButtonOpenExistingKeyFile->setToolTip(QApplication::translate("luksaddkeyUI", "open keyfile", 0, QApplication::UnicodeUTF8));
 #endif // QT_NO_TOOLTIP
         pushButtonOpenExistingKeyFile->setText(QString());
-        pushButtonAdd->setText(QApplication::translate("luksaddkeyUI", "Add", 0, QApplication::UnicodeUTF8));
-        pushButtonCancel->setText(QApplication::translate("luksaddkeyUI", "Cancel", 0, QApplication::UnicodeUTF8));
+        pushButtonAdd->setText(QApplication::translate("luksaddkeyUI", "&add", 0, QApplication::UnicodeUTF8));
+        pushButtonCancel->setText(QApplication::translate("luksaddkeyUI", "&cancel", 0, QApplication::UnicodeUTF8));
         groupBox_2->setTitle(QApplication::translate("luksaddkeyUI", "         key to be added to the encrypted volume", 0, QApplication::UnicodeUTF8));
         radioButtonNewPassphrase->setText(QApplication::translate("luksaddkeyUI", "passphrase", 0, QApplication::UnicodeUTF8));
         radioButtonNewPassphraseFromFile->setText(QApplication::translate("luksaddkeyUI", "passphrase from a key file", 0, QApplication::UnicodeUTF8));

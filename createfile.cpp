@@ -73,7 +73,6 @@ void createfile::ddFinished(int exitCode, QProcess::ExitStatus st)
 		ui->lineEditFileSize->setEnabled(true);
 		return ;
 	}
-	//sleep(3) ;
 	time.stop();
 	this->hide();
 	emit fileCreated(ui->lineEditFilePath->text() + "/" + ui->lineEditFileName->text()) ;

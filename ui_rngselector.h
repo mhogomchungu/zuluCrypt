@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'rngselector.ui'
 **
-** Created: Fri Oct 14 23:12:31 2011
+** Created: Sun Oct 16 13:56:21 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -47,7 +47,7 @@ public:
         pbOk = new QPushButton(rngselector);
         pbOk->setObjectName(QString::fromUtf8("pbOk"));
         pbOk->setGeometry(QRect(200, 120, 91, 31));
-        pbOk->setAutoDefault(true);
+        pbOk->setAutoDefault(false);
         pbOk->setDefault(true);
 
         retranslateUi(rngselector);
@@ -61,7 +61,7 @@ public:
         groupBox->setTitle(QString());
         rbUrandom->setText(QApplication::translate("rngselector", "/dev/urandom : secure enough and faster", 0, QApplication::UnicodeUTF8));
         rbRandom->setText(QApplication::translate("rngselector", "/dev/random   :  more secure but  slower", 0, QApplication::UnicodeUTF8));
-        pbOk->setText(QApplication::translate("rngselector", "ok", 0, QApplication::UnicodeUTF8));
+        pbOk->setText(QApplication::translate("rngselector", "&ok", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };

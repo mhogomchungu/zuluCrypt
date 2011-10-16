@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'zulucrypt.ui'
 **
-** Created: Sun Oct 16 12:17:40 2011
+** Created: Sun Oct 16 13:19:41 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -192,6 +192,7 @@ public:
         actionManage_favorites->setText(QApplication::translate("zuluCrypt", "manage favorites", 0, QApplication::UnicodeUTF8));
         actionSelect_random_number_generator->setText(QApplication::translate("zuluCrypt", "select random number generator", 0, QApplication::UnicodeUTF8));
         actionClose_application->setText(QApplication::translate("zuluCrypt", "close application", 0, QApplication::UnicodeUTF8));
+        actionClose_application->setShortcut(QApplication::translate("zuluCrypt", "Ctrl+C", 0, QApplication::UnicodeUTF8));
         QTableWidgetItem *___qtablewidgetitem = tableWidget->horizontalHeaderItem(0);
         ___qtablewidgetitem->setText(QApplication::translate("zuluCrypt", "Encrypted volume path", 0, QApplication::UnicodeUTF8));
         QTableWidgetItem *___qtablewidgetitem1 = tableWidget->horizontalHeaderItem(1);

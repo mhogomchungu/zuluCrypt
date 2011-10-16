@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'password.ui'
 **
-** Created: Fri Oct 14 23:12:31 2011
+** Created: Sun Oct 16 13:56:21 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -59,11 +59,13 @@ public:
         PushButtonOpen = new QPushButton(PasswordDialog);
         PushButtonOpen->setObjectName(QString::fromUtf8("PushButtonOpen"));
         PushButtonOpen->setGeometry(QRect(130, 160, 111, 31));
+        PushButtonOpen->setAutoDefault(false);
         PushButtonOpen->setDefault(true);
         PushButtonCancel = new QPushButton(PasswordDialog);
         PushButtonCancel->setObjectName(QString::fromUtf8("PushButtonCancel"));
         PushButtonCancel->setGeometry(QRect(240, 160, 101, 31));
-        PushButtonCancel->setDefault(true);
+        PushButtonCancel->setAutoDefault(false);
+        PushButtonCancel->setDefault(false);
         checkBoxReadOnly = new QCheckBox(PasswordDialog);
         checkBoxReadOnly->setObjectName(QString::fromUtf8("checkBoxReadOnly"));
         checkBoxReadOnly->setGeometry(QRect(150, 120, 231, 41));
@@ -71,9 +73,11 @@ public:
         PushButtonMountPointPath = new QPushButton(PasswordDialog);
         PushButtonMountPointPath->setObjectName(QString::fromUtf8("PushButtonMountPointPath"));
         PushButtonMountPointPath->setGeometry(QRect(420, 40, 31, 31));
+        PushButtonMountPointPath->setAutoDefault(false);
         PushButtonVolumePath = new QPushButton(PasswordDialog);
         PushButtonVolumePath->setObjectName(QString::fromUtf8("PushButtonVolumePath"));
         PushButtonVolumePath->setGeometry(QRect(420, 10, 31, 31));
+        PushButtonVolumePath->setAutoDefault(false);
         PushButtonVolumePath->setFlat(false);
         PassPhraseField = new QLineEdit(PasswordDialog);
         PassPhraseField->setObjectName(QString::fromUtf8("PassPhraseField"));
@@ -94,6 +98,7 @@ public:
         pushButtonPassPhraseFromFile = new QPushButton(PasswordDialog);
         pushButtonPassPhraseFromFile->setObjectName(QString::fromUtf8("pushButtonPassPhraseFromFile"));
         pushButtonPassPhraseFromFile->setGeometry(QRect(420, 100, 31, 31));
+        pushButtonPassPhraseFromFile->setAutoDefault(false);
         OpenVolumePath = new QLineEdit(PasswordDialog);
         OpenVolumePath->setObjectName(QString::fromUtf8("OpenVolumePath"));
         OpenVolumePath->setGeometry(QRect(100, 10, 321, 31));
@@ -126,8 +131,8 @@ public:
     void retranslateUi(QDialog *PasswordDialog)
     {
         PasswordDialog->setWindowTitle(QApplication::translate("PasswordDialog", "open encrypted volume", 0, QApplication::UnicodeUTF8));
-        PushButtonOpen->setText(QApplication::translate("PasswordDialog", "open", 0, QApplication::UnicodeUTF8));
-        PushButtonCancel->setText(QApplication::translate("PasswordDialog", "cancel", 0, QApplication::UnicodeUTF8));
+        PushButtonOpen->setText(QApplication::translate("PasswordDialog", "&open", 0, QApplication::UnicodeUTF8));
+        PushButtonCancel->setText(QApplication::translate("PasswordDialog", "&cancel", 0, QApplication::UnicodeUTF8));
         checkBoxReadOnly->setText(QApplication::translate("PasswordDialog", "open in read only mode", 0, QApplication::UnicodeUTF8));
 #ifndef QT_NO_TOOLTIP
         PushButtonMountPointPath->setToolTip(QApplication::translate("PasswordDialog", "select mount point path", 0, QApplication::UnicodeUTF8));
