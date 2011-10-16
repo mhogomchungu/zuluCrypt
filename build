@@ -23,11 +23,11 @@ if [ "$1" == "install" ] ; then
 	
 	cp -fv zuluCrypt.png /usr/share/icons
 	
-	cp -vf libzuluCrypt.so $path/lib
+	cp -vf zuluCrypt-cli/libzuluCrypt.so $path/lib
 	
-	cp -vf libzuluCrypt.so.1.0 $path/lib
+	cp -vf zuluCrypt-cli/libzuluCrypt.so.1.0 $path/lib
 	
-	cp -vf libzuluCrypt.a $path/libpaths
+	cp -vf zuluCrypt-cli/libzuluCrypt.a $path/lib
 	
 	ldconfig
 	
@@ -53,18 +53,16 @@ else
 	cd zuluCrypt-cli
 	
 	gcc -c -Wall -o String.o String.c
- 
-	gcc  -D_FILE_OFFSET_BITS=64 -Wall -c libzuluCrypt.c -o libzuluCrypt.o String.o
 	
-	ar  rcs  libzuluCrypt.a libzuluCrypt.o
+	gcc  -D_FILE_OFFSET_BITS=64 -Wall -c libzuluCrypt.c -o libzuluCrypt.o 
 	
-	gcc -shared -Wl,-soname,libzuluCrypt.so.1 -o libzuluCrypt.so.1.0 libzuluCrypt.o  -lc
- 
-	ln -sf libzuluCrypt.so.1.0 libzuluCrypt.so
+	ar  rcs  libzuluCrypt.a libzuluCrypt.o 
 	
-	libpaths="-L. -L/lib -L/usr/lib -L/usr/local/lib"
+	gcc -shared -Wl,-soname,libzuluCrypt.so.1 -o libzuluCrypt.so.1.0 libzuluCrypt.o String.o -lc
 	
-	gcc -D_FILE_OFFSET_BITS=64 -Wall $libpaths -lzuluCrypt -lcryptsetup zuluCrypt.c -o zuluCrypt-cli
+	ln -sf libzuluCrypt.so.1.0 libzuluCrypt.so	
+	
+	gcc -D_FILE_OFFSET_BITS=64 -Wall libzuluCrypt.o String.o zuluCrypt.c -o zuluCrypt-cli -ldl
 
 	cd ..
 	
