@@ -24,5 +24,8 @@ version 4.0
 -- Allow a user to select what font size and type to use             - DONE
 -- add support for favorite volumes	           		- DONE
 -- warn on attempt to delete a key when there is only one key left - DONE
--- refuse to add more keys when key slots are full.		- DONE
--- implement tray icon to minimize to tray 		- WORKINPROGRESS
+-- refuse to attemp tp add more keys when key slots are full.	- DONE
+-- implement tray icon to minimize to tray 		- DONE
+-- provide a complete docs in a header file and associated shared and static library
+   for others to use                                      - DONE
+-- include partitions in /etc/crypttab in a list of system partitions. - DONE	   
