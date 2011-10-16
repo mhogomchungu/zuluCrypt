@@ -29,7 +29,7 @@
 #include <QWidget>
 #include <QList>
 #include <QMessageBox>
-
+#include <QCloseEvent>
 
 #include "executables.h"
 #include "password_dialog.h"
@@ -108,8 +108,11 @@ private slots :
 
 	void volumePropertyThreadFinished(void) ;
 
+	void closeApplication(void) ;
 
 private:
+
+	void closeEvent(QCloseEvent *) ;
 
 	void deleteFile(QFile *) ;
 

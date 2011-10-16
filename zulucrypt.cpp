@@ -139,6 +139,8 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 
 	connect(this,SIGNAL(luksDeleteKeyUI(QString)),deleteKeyUI,SLOT(deleteKey(QString)));
 
+	connect(ui->actionClose_application,SIGNAL(triggered()),this,SLOT(closeApplication())) ;
+
 	setUpOpenedVolumes() ;
 
 	QProcess p ;
@@ -238,6 +240,20 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 	setUserFont(F);
 
 	setUserFont(F);
+}
+
+void zuluCrypt::closeEvent(QCloseEvent *e)
+{
+	if(trayIcon->isVisible() == true){
+		this->hide();
+		e->ignore();
+	}else
+		e->accept();
+}
+
+void zuluCrypt::closeApplication()
+{
+	QCoreApplication::quit();
 }
 
 void zuluCrypt::trayClicked(QSystemTrayIcon::ActivationReason e)

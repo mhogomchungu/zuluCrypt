@@ -89,6 +89,8 @@
     </property>
     <addaction name="actionFileOpen"/>
     <addaction name="actionPartitionOpen"/>
+    <addaction name="separator"/>
+    <addaction name="actionClose_application"/>
    </widget>
    <widget class="QMenu" name="menuCreate">
     <property name="title">
@@ -240,6 +242,11 @@
   <action name="actionSelect_random_number_generator">
    <property name="text">
     <string>select random number generator</string>
+   </property>
+  </action>
+  <action name="actionClose_application">
+   <property name="text">
+    <string>close application</string>
    </property>
   </action>
  </widget>
