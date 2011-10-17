@@ -309,21 +309,20 @@ void password_Dialog::threadfinished()
 		case 3 : UIMessage(QString("ERROR"),QString("No file exist on given path")) ;
 			break ;
 
-		case 4 :{
+		case 4 :
 			UIMessage(QString("ERROR"),QString("wrong passphrase."));
 			ui->PassPhraseField->clear();
 			ui->PassPhraseField->setFocus();
-			}break ;
+			break ;
 
 		case 5 : UIMessage(QString("ERROR"),QString("mount point address is already taken by a file or folder")) ;
 			break ;
-		//case 6 : UIMessage(QString("ERROR"),QString("passphrase file does not exist"));
-//			break ;
+		case 7 : UIMessage(QString("ERROR"),QString("couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib"));
+			break ;
 		case 9 : UIMessage(QString("ERROR"),QString("\",\" (comma) is not a valid mount point"));
 			break ;
 		default :UIMessage(QString("ERROR"),QString("un unknown error has occured, volume not opened"));
 		}
-
 }
 
 password_Dialog::~password_Dialog()

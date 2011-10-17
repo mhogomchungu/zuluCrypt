@@ -208,7 +208,7 @@ void luksdeletekey::threadfinished()
 			break ;
 		case 4 :UIMessage(QString("ERROR"),QString("couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib"));
 			break ;
-		case 5 :UIMessage(QString("ERROR"),QString("key file does not exist"));
+		case 7 :UIMessage(QString("ERROR"),QString("could not get enough memory to open the key file"));
 			break ;
 
 		default:UIMessage(QString("ERROR"),QString( "un unexpected error has occured, key not removed "));

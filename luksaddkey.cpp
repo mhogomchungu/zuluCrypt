@@ -306,7 +306,7 @@ void luksaddkeyUI::threadfinished()
 			m.exec() ;
 			enableAll();
 			break ;
-		case 3 :
+		case 4 :
 			m.setWindowTitle(QString("ERROR!"));
 			m.setText(QString("couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib"));
 			m.addButton(QMessageBox::Ok);

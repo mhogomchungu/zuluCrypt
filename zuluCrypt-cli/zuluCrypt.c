@@ -103,13 +103,13 @@ int close_opened_volume( char * mapping_name )
 	switch( st ) {
 	case 0 : printf("SUCCESS: volume successfully closed\n");
 		break ;
-	case 1 : printf("ERROR: close failed, encrypted volume with \
-		that name does not exist\n");
-		break ;
-			
+	case 1 : printf("ERROR: close failed, encrypted volume with that name does not exist\n");
+		break ;			
 	case 2 : printf("ERROR: close failed, the mount point and/or one or more files are in use\n");
 		break ;
 	case 3 : printf("ERROR: close failed, volume does not have an entry in /etc/mtab\n") ;
+		break ;
+	case 4 : printf("ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /library\n") ;
 		break ;
 	default :
 		; //shouldnt get here			
@@ -886,8 +886,7 @@ int removekey( int argn , char * device, char * keyType, char * keytoremove )
 		break ;
 		case 1 : printf("ERROR: device \"%s\" is not a luks device",device) ;
 		break ;
-		case 2 : printf("ERROR: there is no key in the volume that \
-			match the presented key\n") ;
+		case 2 : printf("ERROR: there is no key in the volume that match the presented key\n") ;
 		break ;
 		case 3 : printf("ERROR: could not open device\n") ;
 		break ;  
@@ -939,8 +938,8 @@ int check_system_tools(void)
 	StringCat( p , "\n" ) ;
 	StringCat( p , ZULUCRYPTumount) ;
 
-	printf("this program can not work as expected on your system ");
-	printf("because one or more of the following tools are either not present ") ;
+	printf("this program will not work as expected on your system\n");
+	printf("because one or more of the following tools are either not present\n") ;
 	printf("or not where they are expected to be.\n%s\n",StringCont( p ));
 	
 	StringDelete( p ) ;

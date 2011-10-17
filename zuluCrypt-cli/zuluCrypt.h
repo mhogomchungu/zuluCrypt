@@ -69,7 +69,8 @@ int open_volume(const char *device, // path to a file/partition to be opened
  * 	0 - success
  * 	1 - ERROR: unmounting the mount point failed,mount point or one or more files are in use
  * 	2 - ERROR: close failed, encrypted volume associated with mapping_name argument is not opened  	
- * 	3 - ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib
+ * 	3 - ERROR: close failed, volume does not have an entry in /etc/mtab
+ *      4 - ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /library
   */
 int close_volume(const char * mapper) ; //mapper is the full address of the volume as it
 					//appears at /dev/mapper

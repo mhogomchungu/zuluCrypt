@@ -26,8 +26,6 @@
 #include <unistd.h>
 #include <sys/mount.h>
 #include <fcntl.h>
-//#include <termios.h>
-//#include <libcryptsetup.h>
 #include <stdint.h>
 
 #include "String.h"   
@@ -67,16 +65,13 @@ int create_luks(const char * dev,
 		const char * pass,
 		const char * rng) ;
 
-
 int create_volume(const char * dev,
 		  const char * fs,
 		  const char * type,
 		  const char * pass,
 		  const char * rng) ;
 
-
 int close_volume(const char * map) ;
-
 
 int mount_volume(const char * mapping_name,
 		 const char * m_point,
@@ -101,8 +96,7 @@ int open_volume(const char * dev,
 		uid_t id,
 		const char * mode,
 		const char * pass,
-		const char * source) ;		
-		
+		const char * source) ;			
 		
 #define CRYPT_PLAIN "PLAIN" 
 #define CRYPT_LUKS1 "LUKS1" 		
@@ -110,8 +104,6 @@ int open_volume(const char * dev,
 #define CRYPT_RNG_URANDOM 0
 #define CRYPT_RNG_RANDOM  1
 		
-
-
 struct crypt_active_device {
 	uint64_t offset;	/* offset in sectors */
 	uint64_t iv_offset;	/* IV initilisation sector */
@@ -139,19 +131,22 @@ int ( * ptr_crypt_init ) ( struct crypt_device **, const char * ) ;
 int ( * ptr_crypt_load ) ( struct crypt_device *, const char *, void * ) ;
 	
 int ( * ptr_crypt_keyslot_add_by_passphrase ) ( struct crypt_device *,
-						int,const char *, 
-						size_t, const char *,
+						int,
+						const char *, 
+						size_t,
+						const char *,
 						size_t ) ;
 	
 void ( *ptr_crypt_free ) ( struct crypt_device * ) ;
 	
 int ( * ptr_crypt_activate_by_passphrase) ( struct crypt_device * ,
 						    const char *,
-					            int,const char *,
-						    size_t,uint32_t) ;
+					            int,
+						    const char *,
+						    size_t,
+					            uint32_t) ;
 	
-int ( * ptr_crypt_deactivate ) ( struct crypt_device * ,
-				    const char * ) ;			    				    
+int ( * ptr_crypt_deactivate ) ( struct crypt_device * , const char * ) ;			    				    
 	 
 int ( * ptr_crypt_keyslot_destroy ) ( struct crypt_device *, int ) ;
 		
@@ -172,6 +167,7 @@ typedef enum {
 	CRYPT_ACTIVE,
 	CRYPT_BUSY
 } crypt_status_info;
+
 crypt_status_info ( * ptr_crypt_status) (struct crypt_device *, const char *);
 
 int ( * ptr_crypt_init_by_name ) ( struct crypt_device **, const char *) ;
@@ -184,8 +180,7 @@ const char * ( * ptr_crypt_get_type ) ( struct crypt_device * ) ;
 	
 const char * ( * ptr_crypt_get_cipher_mode ) ( struct crypt_device * ) ;
 	
-int ( * ptr_crypt_get_volume_key_size ) ( struct crypt_device * ) ;
-	
+int ( * ptr_crypt_get_volume_key_size ) ( struct crypt_device * ) ;	
 	
 const char * ( * ptr_crypt_get_device_name ) ( struct crypt_device * ) ;
 	
@@ -197,7 +192,8 @@ void ( * ptr_crypt_set_rng_type ) (struct crypt_device *, int ) ;
 
 int ( * ptr_crypt_activate_by_keyfile )(struct crypt_device *,
 				        const char *,
-				        int,const char *,
+				        int,
+					const char *,
 				        size_t,
 				        uint32_t );
 
@@ -271,7 +267,6 @@ void * handle_init(void)
 	return handle ;
 }
 
-
 int add_key(const char * device,
 	    const char * existingkey,
 	    const char * newkey)
@@ -302,10 +297,12 @@ int add_key(const char * device,
 		goto out ;
 	}
 	
-	i = (*ptr_crypt_keyslot_add_by_passphrase)(cd,CRYPT_ANY_SLOT,
+	i = (*ptr_crypt_keyslot_add_by_passphrase)(cd,
+						   CRYPT_ANY_SLOT,
 						   existingkey,
 						   strlen(existingkey),
-						   newkey,strlen(newkey)) ;
+						   newkey,
+					           strlen(newkey)) ;
 						   
 	if ( i < 0 )
 		status =  1 ;
@@ -377,7 +374,7 @@ int remove_key( const char * device ,
 	return status ;
 }
 
-int empty_slots( char * slots ,
+int empty_slots( char * slot ,
 		 const char * device )
 {
 	struct crypt_device *cd = NULL;
@@ -415,13 +412,13 @@ int empty_slots( char * slots ,
 		cki = (*ptr_crypt_keyslot_status)(cd, j);
 		
 		switch ( cki ){
-			case CRYPT_SLOT_INACTIVE :   slots[j] = '0' ; break ;
-			case CRYPT_SLOT_ACTIVE :     slots[j] = '1' ; break ;
-			case CRYPT_SLOT_INVALID :    slots[j] = '2' ; break ;
-			case CRYPT_SLOT_ACTIVE_LAST: slots[j] = '3' ; break ;			
+			case CRYPT_SLOT_INACTIVE :   slot[j] = '0' ; break ;
+			case CRYPT_SLOT_ACTIVE :     slot[j] = '1' ; break ;
+			case CRYPT_SLOT_INVALID :    slot[j] = '2' ; break ;
+			case CRYPT_SLOT_ACTIVE_LAST: slot[j] = '3' ; break ;			
 		}		
 	}
-	slots[j] = '\0' ;
+	slot[j] = '\0' ;
 	
 	out:
 	(*ptr_crypt_free)(cd);
@@ -715,15 +712,18 @@ int create_volume(const char * dev,
 {
 	StrHandle * q ;
 	
-	struct stat st ;
-	
-	int k ;
+	struct stat st ;	
 	
 	char * fsys = sanitize( fs ) ;
 	
 	if ( stat( dev, &st ) != 0 ){
 		return 1 ;
 	}
+	
+	if( handle_init() == NULL )		
+		return 3 ;
+	
+	dlclose(handle);
 	
 	if( strcmp(type,"luks") == 0 )
 		if( strcmp(rng,"/dev/random") != 0)
@@ -737,12 +737,14 @@ int create_volume(const char * dev,
 	
 	if(  strcmp(type,"luks")  == 0){
 	
-		k = create_luks(dev,pass,rng) ;
-		
-		k = open_luks(dev,"zuluCrypt-create-new","rw","-p",pass ) ;
+		create_luks(dev,pass,rng) ;		
+
+		open_luks(dev,"zuluCrypt-create-new","rw","-p",pass ) ;
 		
 	}else if( strcmp(type,"plain") == 0 ){
-		k =  open_plain(dev,"zuluCrypt-create-new","rw","-p",pass,"cbc-essiv:sha256" ) ;		
+		
+		open_plain(dev,"zuluCrypt-create-new","rw","-p",pass,"cbc-essiv:sha256" ) ;
+		
 	}else{
 		return 2 ;
 	}
@@ -857,7 +859,12 @@ int close_volume(const char * map)
 	if( i != 0 )
 		return i ;
 	
-	return close_mapper( map ) ;		
+	i = close_mapper( map ) ;		
+	
+	if( i == 1 )
+		return 4 ;
+	else
+		return 0 ;
 }
 
 int mount_volume(const char * mapper,

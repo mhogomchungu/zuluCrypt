@@ -202,12 +202,12 @@ void createpartition::threadfinished()
 	switch( status ) {
 		case 0 : UIMessage(QString("SUCCESS"),QString("volume successfully created"));
 			break;
-		case 1 : UIMessage(QString("ERROR"),QString("volume path does not exist"));
-			break;
-		case 2 : UIMessage(QString("ERROR"),QString("couldnt get requested memory to open the key file"));
-			break ;
 		case 3 : UIMessage(QString("ERROR"),QString("couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib"));
+			break;
+		case 6 : UIMessage(QString("ERROR"),QString("couldnt get requested memory to open the key file"));
 			break ;
+		//case 3 : UIMessage(QString("ERROR"),QString("couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib"));
+		//	break ;
 		default: UIMessage(QString("ERROR"),(QString("unrecognized error has occured,volume not created")));
 	}
 	enableAll();
