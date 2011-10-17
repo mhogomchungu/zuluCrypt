@@ -44,7 +44,7 @@ FORMS    += zulucrypt.ui password.ui \
 
 OTHER_FILES +=
 
-
+subdirs zuluCrypt-cli
 
 
 

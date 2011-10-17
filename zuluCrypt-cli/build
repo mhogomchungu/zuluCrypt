@@ -21,18 +21,18 @@ if [ "$1" == "install" ] ; then
 	ldconfig
 	
 else	
-	gcc -c -Wall -o String.o String.c
- 
-	gcc  -D_FILE_OFFSET_BITS=64 -Wall -c libzuluCrypt.c -o libzuluCrypt.o 
-	
-	ar  rcs  libzuluCrypt.a libzuluCrypt.o 
-	
-	gcc -shared -Wl,-soname,libzuluCrypt.so.1 -o libzuluCrypt.so.1.0 libzuluCrypt.o String.o -lc
- 
-	ln -sf libzuluCrypt.so.1.0 libzuluCrypt.so
-	
 	libpaths="-L. -L/lib -L/usr/lib -L/usr/local/lib"
 	
-	gcc -D_FILE_OFFSET_BITS=64 -Wall libzuluCrypt.o String.o zuluCrypt.c -o zuluCrypt-cli -ldl
+	gcc -c -Wall -o String.o String.c
+ 
+	gcc  -D_FILE_OFFSET_BITS=64 -Wall $libpaths -lcryptsetup -c libzuluCrypt.c -o libzuluCrypt.o 
+	
+	ar  rcs  libzuluCrypt.a String.o libzuluCrypt.o 
+	
+	gcc -shared -Wl,-soname,libzuluCrypt.so.1 $libpaths -lcryptsetup -o libzuluCrypt.so.1.0 libzuluCrypt.o String.o -lc
+ 
+	ln -sf libzuluCrypt.so.1.0 libzuluCrypt.so	
+	
+	gcc -D_FILE_OFFSET_BITS=64 -Wall $libpaths -lcryptsetup libzuluCrypt.o String.o zuluCrypt.c -o zuluCrypt-cli -ldl
 	
 fi
