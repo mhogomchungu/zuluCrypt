@@ -9,16 +9,13 @@ setting up sudo with appropriate permissions first or requiring root's password.
 
 The GUI part of the program calls the cli part for its operations.
 
-How to build:
-Run the "build" script.
-If you are already in the directory with the source code, just type "./build" to build it.
-
-How to install:
-Run "./build install" when in the source code folder after you have run "./build"
-The "zuluCrypt" program should appear on your menu list, if not log out and back in.
+How to build and install:
+./configure
+make
+make install (require root's privileges)
 
 How to uninstall:
-Run "./build uninstall" when in the source code folder.
+make uninstall
 
 How to use the GUI part of the program.
 It GUI should be obvious enough to figure it out without instructions. 
