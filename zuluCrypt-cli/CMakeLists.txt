@@ -1,5 +1,7 @@
  cmake_minimum_required(VERSION 2.6)
 
+ add_definitions( -D_FILE_OFFSET_BITS=64 -Wall ) 
+ 
  add_executable( zuluCrypt-cli zuluCrypt.c String.c )
  
  add_library( zuluCrypt SHARED libzuluCrypt.c String.c )
