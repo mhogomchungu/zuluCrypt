@@ -29,3 +29,4 @@ version 4.0
 -- provide a complete docs in a header file and associated shared and static library
    for others to use                                      - DONE
 -- include partitions in /etc/crypttab in a list of system partitions. - DONE	   
+-- use cmake for building and installation.             - DONE

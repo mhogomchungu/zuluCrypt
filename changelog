@@ -17,10 +17,17 @@ version 3.0
 add support for creating both plain and luks based volumes in both files and partitions.
 
 version 4.0
-Transition away from cryptsetup exe from the cli to using the library
-Add support for favorite volumes
-Add support for user configurable random number generator
-Use threads to host GUI blocking code to remove/reduce ui freezes.
+-- host UI blocking code in a different threads to remove/minimize UI freezes 
+-- use only cryptsetup.so library to interface with cryptsetup
+-- allow a user to select what random number generator to use  
+-- add the ability to create key files
+-- Font size and type are now configurable             
+-- add support for favorite volumes	           		
+-- warn in the UI on attempt to delete a key when there is only one key left 
+-- refuse to attemp to add more keys when key slots are full.	
+-- implement tray icon to minimize to tray 		
+-- provide a complete docs in a header file on how to interface with libzuluCrypt.so
+-- include partitions in /etc/crypttab in a list of system partitions. 	
 
 version 5.0
 translations support of people are interested in the tool in different languages.
