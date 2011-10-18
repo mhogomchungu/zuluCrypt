@@ -30,7 +30,7 @@
 #include <libcryptsetup.h>
 #include "String.h"   
 
-#include "../executables.h"
+#include "../zuluCrypt-gui/executables.h"
 
 //function prototypes
 

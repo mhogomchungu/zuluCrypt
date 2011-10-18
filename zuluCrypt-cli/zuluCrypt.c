@@ -28,8 +28,8 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 
-#include "../executables.h"
-#include "../version.h"
+#include "../zuluCrypt-gui/executables.h"
+#include "../zuluCrypt-gui/version.h"
 #include "zuluCrypt.h"
 
 #define MAX 512 
@@ -668,8 +668,8 @@ int addkey(int argn,
 	struct stat st1 ;
 	int status = 0 ;
 	int z ;
-	char * c ;
-	char * d ;
+	char * c = NULL ;
+	char * d = NULL ;
 		
 	if( stat(device,&st1) != 0 ){
 		
@@ -824,7 +824,7 @@ int addkey(int argn,
 int removekey( int argn , char * device, char * keyType, char * keytoremove )
 {
 	StrHandle *p;
-	int status, z ;
+	int status = 0 , z = 0 ;
 	struct stat st ;	
 	char *c ;
 	
