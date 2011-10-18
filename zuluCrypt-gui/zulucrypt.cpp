@@ -74,12 +74,12 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 	rng->setWindowFlags(Qt::Window | Qt::Dialog);
 
 	trayIcon = new QSystemTrayIcon(this);
-	trayIcon->setIcon(QIcon(QString("/usr/share/icons/zuluCrypt.png")));
+	trayIcon->setIcon(QIcon(QString("zuluCrypt.png")));
 
 	ui->setupUi(this);
 	this->setFixedSize(this->size());
 
-	this->setWindowIcon(QIcon(QString("/usr/share/icons/zuluCrypt.png")));
+	this->setWindowIcon(QIcon(QString("zuluCrypt.png")));
 
 	ui->tableWidget->setColumnWidth(0,230);
 

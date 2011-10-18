@@ -4,7 +4,9 @@
  
  add_library( zuluCrypt SHARED libzuluCrypt.c String.c )
  
- TARGET_LINK_LIBRARIES( zuluCrypt-cli zuluCrypt cryptsetup) 
+ TARGET_LINK_LIBRARIES( zuluCrypt cryptsetup ) 
+ 
+ TARGET_LINK_LIBRARIES( zuluCrypt-cli zuluCrypt ) 
  
  install(TARGETS zuluCrypt-cli 
             RUNTIME DESTINATION bin
