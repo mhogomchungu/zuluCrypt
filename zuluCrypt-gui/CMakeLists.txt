@@ -15,7 +15,6 @@ set (UI_FILES createfile.ui
 set( MOC_FILES createfile.h
 		luksaddkey.h
 		rngselector.h
-		zulucryptthreads.h
 		createkeyfile.h
 		luksdeletekey.h 
 		createpartition.h
@@ -37,7 +36,7 @@ set (SRC createfile.cpp
 			zulucrypt.cpp
 )
 
-add_definitions( -Wall )
+add_definitions( -D_FILE_OFFSET_BITS=64 -Wall ) 
 
 find_package( Qt4 REQUIRED )
 
