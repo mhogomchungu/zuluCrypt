@@ -47,10 +47,22 @@ QT4_WRAP_UI( UI ${UI_FILES})
 
 QT4_WRAP_CPP(MOC ${MOC_FILES})
 
+QT4_ADD_RESOURCES( TRAY_RC_SRCS icon.qrc)
+
 INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
 
-add_executable( zuluCrypt-gui ${MOC} ${UI} ${SRC})			
+add_executable( zuluCrypt-gui ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS})			
 
 TARGET_LINK_LIBRARIES( zuluCrypt-gui ${QT_LIBRARIES} )
 
 install( TARGETS zuluCrypt-gui RUNTIME DESTINATION bin )
+
+install (FILES zuluCrypt.desktop 
+DESTINATION share/applications
+
+#PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE 
+)
+
+install (FILES zuluCrypt.png DESTINATION share/icons)
+
+
