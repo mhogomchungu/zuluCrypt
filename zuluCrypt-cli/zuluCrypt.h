@@ -31,7 +31,6 @@ extern "C" {
  * return values:
  *	 0 - the device is a cryptsetup device of type "luks"
  * 	 1 - the device is not a crptsetup device of type "luks".
- * *     2 - ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib
  */
 int is_luks(const char * device) ;
 
@@ -47,7 +46,6 @@ int is_luks(const char * device) ;
  * 	4 - ERROR: wrong passphrase
  * 	5 - ERROR: Cant create a mount point because a file/folder with the same exist at the mount point
  *	6 - ERROR: key file does not exist :
- *      7 - ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib
  *	8 - ERROR: failed to open device
  */
 int open_volume(const char *device, // path to a file/partition to be opened
@@ -80,7 +78,6 @@ int close_volume(const char * mapper) ; //mapper is the full address of the volu
  * 
  * return values:
  * 0 - success
- * 1 - ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /library
  * 2 - ERROR: could not close the volume, probably because the volume is still mounted.
  * 
  */
@@ -133,7 +130,6 @@ char *status( const  char * mapper );//mapper is the full address of the volume 
  *      0 - success
  * 	1 - ERROR: device argument does not point to a file or partition
  * 	2 - ERROR: wrong argument. (probably mistyped fs and rng arguments
- * * 	3 - ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib
  */
 int create_volume(const char * device,    // path to a file or partition
 		  const char * fs,       //file system to use in the volume(ext2,ext3.ext4,vfat)
@@ -151,7 +147,6 @@ int create_volume(const char * device,    // path to a file or partition
  *      1 - ERROR: The presented key does not exist in the volume
  *      2 - ERROR: could not open encrypted volume
  *      3 - ERROR: device either doesnt exist or not a luks device
- * 	4 - ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib
  */
 int add_key(const char * device,     //path to an encrypted file or partition
 	    const char * existingkey,//a key that already exist in the encrypted volume
@@ -165,7 +160,6 @@ int add_key(const char * device,     //path to an encrypted file or partition
  * 1 - ERROR: device is not a luks device or does not exist
  * 2 - ERROR: passphrase is not present in the volume
  * 3 - ERROR: could not open luks device
- * 4 - ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib
  */
 int remove_key(const char * device ,      //path to an encrypted device
 	       const char * passphrase ) ;//a key already in the volume to be removed
@@ -190,7 +184,6 @@ int remove_key(const char * device ,      //path to an encrypted device
  * 0 - success  
  * 1 - ERROR: device does not exist or is not a luks device
  * 2 - ERROR: could not open luks device  
- * 3 - ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib
  */
 int empty_slots(char * slots ,   // output argument, explanation above
 		const char * device ) ; //path to encrypted volume
@@ -200,7 +193,6 @@ int empty_slots(char * slots ,   // output argument, explanation above
  * 
  *return values:
  * 0 - success 
- * 3 - ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /library
  * 2 - ERROR: failed to open device
  * 4 - ERROR: key file does not exist
  * 1 - ERROR: presented key does not exist in the volume
@@ -217,7 +209,6 @@ int open_luks( const char * device,      // path to encrypted file or partition
  * 
  * return values:
  * 0 - success 
- * 3 - ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /library
  * 5 - ERROR: probably because the device address does not exist 
  * 
  */
@@ -230,7 +221,6 @@ int create_luks(const char * device,    // path to a file or partition to create
  * This function just opens a plain volume, it doesnt create a mount point and it doesnt mount it.
  * return values:
  * 0 - success
- * 3 - ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /library
  * 2 - ERROR: failed to open the volume.
  */
 int open_plain( const char * device,      // path to encrypted file or partition
