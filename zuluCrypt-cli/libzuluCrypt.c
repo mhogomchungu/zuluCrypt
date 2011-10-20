@@ -176,18 +176,17 @@ int remove_key( const char * device ,
 					 pass,
 					 strlen(pass),
 					 0);
-
-	crypt_deactivate(cd,"/dev/mapper/zuluCrypt-deleteKey");
-	
 	if ( i < 0 ){
 		status = 2 ;
 		goto out ;
 	}
 	
+	crypt_deactivate(cd,"/dev/mapper/zuluCrypt-deleteKey");
+	
 	i = crypt_keyslot_destroy(cd,i) ;
 	
 	if ( i < 0 )
-		status = 3 ;	
+		status = 2 ;	
 	else
 		status = 0 ;
 	
