@@ -2,6 +2,12 @@
 
  add_definitions( -D_FILE_OFFSET_BITS=64 -Wall ) 
  
+ find_library( libcryptsetup.so libcryptsetup.so)
+ 
+ if(NOT libcryptsetup.so)
+	 message (FATAL_ERROR "ERROR: could not find libcryptsetup.so library, is cryptsetup package installed?")
+ endif(NOT libcryptsetup.so)
+	 
  add_executable( zuluCrypt-cli zuluCrypt.c String.c )
  
  add_library( zuluCrypt SHARED libzuluCrypt.c String.c )
