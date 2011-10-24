@@ -40,6 +40,7 @@
 #include "createfile.h"
 #include "createkeyfile.h"
 #include "rngselector.h"
+#include "startupupdateopenedvolumes.h"
 
 namespace Ui {
     class zuluCrypt;
@@ -110,6 +111,8 @@ private slots :
 
 	void closeApplication(void) ;
 
+	void sovfinished(void) ;
+
 private:
 
 	void closeEvent(QCloseEvent *) ;
@@ -160,6 +163,7 @@ private:
 
 	QMessageBox *mp ;
 
+	startupupdateopenedvolumes *sov ;
 };
 
 #endif // ZULUCRYPT_H

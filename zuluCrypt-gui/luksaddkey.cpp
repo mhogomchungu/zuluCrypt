@@ -45,27 +45,63 @@ luksaddkeyUI::luksaddkeyUI(QWidget *parent) :
 	pUI = new openpartition(this);
 	pUI->setWindowFlags(Qt::Window | Qt::Dialog);
 
-	connect(pUI,SIGNAL(clickedPartition(QString)),this,SLOT(partitionEntry(QString)));
-	connect(this,SIGNAL(pbOpenPartitionClicked()),pUI,SLOT(ShowUI()));
-	connect(ui->pushButtonOpenFile,SIGNAL(clicked()), this,SLOT(pbOpenFile())) ;
+	connect(pUI,
+		SIGNAL(clickedPartition(QString)),
+		this,
+		SLOT(partitionEntry(QString)));
+	connect(this,
+		SIGNAL(pbOpenPartitionClicked()),
+		pUI,
+		SLOT(ShowUI()));
+	connect(ui->pushButtonOpenFile,
+		SIGNAL(clicked()),
+		this,
+		SLOT(pbOpenFile())) ;
 
-	connect(ui->pushButtonOpenExistingKeyFile,SIGNAL(clicked()),this, SLOT(pbOpenExisitingKeyFile())) ;
+	connect(ui->pushButtonOpenExistingKeyFile,
+		SIGNAL(clicked()),
+		this,
+		SLOT(pbOpenExisitingKeyFile())) ;
 
-	connect(ui->pushButtonOpenNewKeyFile,(SIGNAL(clicked())),this, SLOT(pbOpenNewKeyFile())) ;
+	connect(ui->pushButtonOpenNewKeyFile,
+		(SIGNAL(clicked())),
+		this,
+		SLOT(pbOpenNewKeyFile())) ;
 
-	connect(ui->pushButtonOpenPartition,SIGNAL(clicked()),this,SLOT(pbOpenPartition(void))) ;
+	connect(ui->pushButtonOpenPartition,
+		SIGNAL(clicked()),
+		this,
+		SLOT(pbOpenPartition(void))) ;
 
-	connect(ui->pushButtonAdd,SIGNAL(clicked()), this, SLOT(pbAdd())) ;
+	connect(ui->pushButtonAdd,
+		SIGNAL(clicked()),
+		this,
+		SLOT(pbAdd())) ;
 
-	connect(ui->pushButtonCancel,SIGNAL(clicked()),SLOT(pbCancel())) ;
+	connect(ui->pushButtonCancel,
+		SIGNAL(clicked()),
+		this,
+		SLOT(pbCancel())) ;
 
-	connect(ui->radioButtonNewPassphrase,SIGNAL(toggled(bool)),SLOT(rbNewPassphrase())) ;
+	connect(ui->radioButtonNewPassphrase,
+		SIGNAL(toggled(bool)),
+		this,
+		SLOT(rbNewPassphrase())) ;
 
-	connect(ui->radioButtonNewPassphraseFromFile,SIGNAL(toggled(bool)),SLOT(rbNewPassphraseFromFile())) ;
+	connect(ui->radioButtonNewPassphraseFromFile,
+		SIGNAL(toggled(bool)),
+		this,
+		SLOT(rbNewPassphraseFromFile())) ;
 
-	connect(ui->radioButtonPassphraseinVolume,SIGNAL(toggled(bool)),SLOT(rbExistingPassphrase())) ;
+	connect(ui->radioButtonPassphraseinVolume,
+		SIGNAL(toggled(bool)),
+		this,
+		SLOT(rbExistingPassphrase())) ;
 
-	connect(ui->radioButtonPassphraseInVolumeFromFile,SIGNAL(toggled(bool)),SLOT(rbExistingPassphraseFromFile())) ;
+	connect(ui->radioButtonPassphraseInVolumeFromFile,
+		SIGNAL(toggled(bool)),
+		this,
+		SLOT(rbExistingPassphraseFromFile())) ;
 
 	ui->lineEditReEnterPassphrase->setEchoMode(QLineEdit::Password);
 }
@@ -105,19 +141,28 @@ void luksaddkeyUI::ShowUI()
 
 void luksaddkeyUI::pbOpenExisitingKeyFile(void)
 {	
-	QString Z = QFileDialog::getOpenFileName((QWidget *) this,QString("existing key file"),QDir::homePath(),0);
+	QString Z = QFileDialog::getOpenFileName(this,
+						 QString("existing key file"),
+						 QDir::homePath(),
+						 0);
 	ui->textEditExistingPassphrase->setText( Z ) ;
 }
 
 void luksaddkeyUI::pbOpenNewKeyFile(void)
 {
-	QString Z = QFileDialog::getOpenFileName((QWidget *) this,QString("new key file"),QDir::homePath(),0);
+	QString Z = QFileDialog::getOpenFileName(this,
+						 QString("new key file"),
+						 QDir::homePath(),
+						 0);
 	ui->textEditPassphraseToAdd->setText( Z ) ;
 }
 
 void luksaddkeyUI::pbOpenFile(void)
 {
-	QString Z = QFileDialog::getOpenFileName((QWidget *) this,QString("encrypted volume path"),QDir::homePath(),0);
+	QString Z = QFileDialog::getOpenFileName(this,
+						 QString("encrypted volume path"),
+						 QDir::homePath(),
+						 0);
 	ui->textEditPathToVolume->setText( Z ) ;
 }
 
@@ -263,7 +308,10 @@ void luksaddkeyUI::pbAdd(void)
 		}
 	}
 
-	QString exe = QString(ZULUCRYPTzuluCrypt) + QString(" addkey ") + "\"" + volumePath + "\"" + existingPassType + "\"" + ExistingKey + "\"" + newPassType + "\"" + NewKey + "\"" ;
+	QString exe = QString(ZULUCRYPTzuluCrypt) ;
+	exe = exe + QString(" addkey ") ;
+	exe = exe + "\"" + volumePath + "\"" + existingPassType + "\"" + ExistingKey ;
+	exe = exe + "\"" + newPassType + "\"" + NewKey + "\"" ;
 
 	lakt = new luksAddKeyThread(exe,&status);
 
@@ -281,17 +329,21 @@ void luksaddkeyUI::threadfinished()
 	m.setParent(this);
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 
+	QString ss ;
+
 	switch( status ){
-		case 0 :{
+		case 0 :
 			m.setWindowTitle(QString("SUCCESS"));
-			QString ss = QString("key added successfully\n") + QString(zuluCrypt::luksEmptySlots(ui->textEditPathToVolume->text())) + QString(" / 8 slots are now in use") ;
+			ss = QString("key added successfully\n") ;
+			ss = ss + QString(zuluCrypt::luksEmptySlots(ui->textEditPathToVolume->text())) ;
+			ss = ss + QString(" / 8 slots are now in use") ;
 			m.setText(ss);
 			m.addButton(QMessageBox::Ok);
 			m.exec() ;
 			enableAll();
 			this->hide();
 			return ;
-			}break ;
+			break ;
 		case 1 :
 			m.setWindowTitle(QString("ERROR!"));
 			m.setText(QString("presented key does not match any key in the volume"));
@@ -306,13 +358,7 @@ void luksaddkeyUI::threadfinished()
 			m.exec() ;
 			enableAll();
 			break ;
-		case 4 :
-			m.setWindowTitle(QString("ERROR!"));
-			m.setText(QString("couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib"));
-			m.addButton(QMessageBox::Ok);
-			m.exec() ;
-			enableAll();
-			break ;
+
 		case 9 :
 			m.setWindowTitle(QString("ERROR!"));
 			m.setText(QString("could not open key file for reading, run out of memory"));

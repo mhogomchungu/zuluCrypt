@@ -29,6 +29,10 @@
 #include <stdint.h>
 #include <libcryptsetup.h>
 #include "String.h"   
+#include <sys/types.h>
+#include <errno.h>
+#include <blkid.h>
+
 
 #include "../zuluCrypt-gui/executables.h"
 
@@ -668,7 +672,11 @@ int mount_volume(const char * mapper,
 	
 	char *mount_point ;
 	
-	char s[2] ;
+	struct stat st ;
+	
+	char s[5] ;
+	
+	unsigned long mountflags = 0 ;
 	
 	p = StringCpy(m_point) ;		
 	
@@ -680,7 +688,7 @@ int mount_volume(const char * mapper,
 			return 5 ;		
 		}
 	}
-	
+
 	if ( strncmp( mode, "ro",2 ) == 0 )
 		q = StringCpy(ZULUCRYPTmount " -r ") ;
 	else

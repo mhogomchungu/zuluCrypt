@@ -1,22 +1,23 @@
 
 #include "zulucryptthreads.h"
 #include "openpartition.h"
-#include "zulucrypt.h"
 
 #include <QProcess>
 #include <QFile>
 #include <QMessageBox>
 #include <QTableWidgetItem>
 #include <iostream>
-
+#include <QDir>
 #include <cstdio>
+#include "zulucrypt.h"
 
 zuluCryptThreads::zuluCryptThreads(QObject *parent) :
     QThread(parent)
 {
 }
 
-ShowNonSystemPartitionsThread::ShowNonSystemPartitionsThread(Ui::PartitionView * p,QFont f)
+ShowNonSystemPartitionsThread::ShowNonSystemPartitionsThread(
+		Ui::PartitionView * p,QFont f)
 {
 	partitionView = p ;
 	font = f ;
@@ -33,20 +34,25 @@ void ShowNonSystemPartitionsThread::run()
 	p.close();
 
 	int i ;
-	int y = partitionView->tableWidgetPartitionView->rowCount() ;
+
+	QTableWidget *tw = partitionView->tableWidgetPartitionView ;
+
+	int y = tw->rowCount() ;
 
 	for( int i = 0 ; i < y  ; i++ )
 	{
-		partitionView->tableWidgetPartitionView->removeRow(0);
+		tw->removeRow(0);
 	}
 
-	delete partitionView->tableWidgetPartitionView->horizontalHeaderItem(0);
+	delete tw->horizontalHeaderItem(0);
 
-	partitionView->tableWidgetPartitionView->setHorizontalHeaderItem(0, new QTableWidgetItem(QString("non system partitions( no active entries in fstab )")));
+	QString q("non system partitions( no active entries in fstab )") ;
 
-	partitionView->tableWidgetPartitionView->horizontalHeaderItem(0)->setFont(font);
+	tw->setHorizontalHeaderItem(0,new QTableWidgetItem(q));
 
-	partitionView->tableWidgetPartitionView->setColumnWidth(0,540);
+	tw->horizontalHeaderItem(0)->setFont(font);
+
+	tw->setColumnWidth(0,540);
 
 	QTableWidgetItem * t ;
 
@@ -55,8 +61,8 @@ void ShowNonSystemPartitionsThread::run()
 		t = new QTableWidgetItem(openpartition::deviceProperties(l.at(i).toAscii().data())) ;
 		t->setTextAlignment(Qt::AlignCenter);
 
-		partitionView->tableWidgetPartitionView->insertRow(i);
-		partitionView->tableWidgetPartitionView->setItem(i,0,t);
+		tw->insertRow(i);
+		tw->setItem(i,0,t);
 	}
 }
 
@@ -68,17 +74,19 @@ partitionlistThread::partitionlistThread(Ui::PartitionView * p,QFont f)
 
 void partitionlistThread::run()
 {
-	int y = partitionView->tableWidgetPartitionView->rowCount() ;
+	QTableWidget *tw = partitionView->tableWidgetPartitionView ;
+
+	int y = tw->rowCount() ;
 
 	for( int i = 0 ; i < y  ; i++ )
 	{
-		partitionView->tableWidgetPartitionView->removeRow(0);
+		tw->removeRow(0);
 	}
 
-	partitionView->tableWidgetPartitionView->setColumnWidth(0,540);
-	partitionView->tableWidgetPartitionView->removeColumn(1);
+	tw->setColumnWidth(0,540);
+	tw->removeColumn(1);
 
-	partitionView->tableWidgetPartitionView->horizontalHeaderItem(0)->setFont(font);
+	tw->horizontalHeaderItem(0)->setFont(font);
 
 	char buffer[64];
 	char *c,*d ;
@@ -102,11 +110,11 @@ major minor  #blocks  name
 
    8        0   78150744 sda
    8        1   11566768 sda1
-   8        2          1 sda2 <--- no idea why this entry is here, it doesnt show up anywhere else,skip it
+   8        2          1 sda2
    8        5   66581361 sda5
    8       16  312571224 sdb
    8       17    1044193 sdb1
-   8       18          1 sdb2 <---- no idea why this entry is here,it doesnt show up anywhere else,skit it
+   8       18          1 sdb2
    8       21  311524416 sdb5
    8       32     250879 sdc
    8       33     250608 sdc1
@@ -143,8 +151,8 @@ major minor  #blocks  name
 
 		t->setTextAlignment(Qt::AlignCenter);
 
-		partitionView->tableWidgetPartitionView->insertRow(i);
-		partitionView->tableWidgetPartitionView->setItem(i,0,t);
+		tw->insertRow(i);
+		tw->setItem(i,0,t);
 		i++ ;
 	}
 	f.close();
@@ -200,7 +208,14 @@ void createvolumeThread::run()
 
 	f.close();
 
-	QString exe = QString(ZULUCRYPTzuluCrypt) + " create \"" + ui->lineEditVolumePath->text() + "\" " + fs + " " + ct + " " +  N + " \"" + passphrase + "\" " + QString( q );
+	QString exe = QString(ZULUCRYPTzuluCrypt) ;
+	exe = exe + QString(" create \"") ;
+	exe = exe + ui->lineEditVolumePath->text() + QString("\" ") ;
+	exe = exe + fs + QString(" ") ;
+	exe = exe + ct + QString(" ") ;
+	exe = exe +  N + QString(" \"") ;;
+	exe = exe + passphrase + QString("\" ") ;;
+	exe = exe + QString( q );
 
 	QProcess p ;
 
@@ -218,7 +233,9 @@ luksdeleteKeyThread::luksdeleteKeyThread(Ui::luksdeletekey *UI, int *s)
 
 void luksdeleteKeyThread::run()
 {
-	QString exe = QString(ZULUCRYPTzuluCrypt) + QString(" removekey ")  + "\"" +  ui->lineEditVolumePath->text()+ "\"" ;
+	QString exe = QString(ZULUCRYPTzuluCrypt) ;
+	exe = exe + QString(" removekey ")  ;
+	exe = exe + QString("\"") +  ui->lineEditVolumePath->text() + QString("\"") ;
 
 	QString pass = ui->lineEditPassphrase->text() ;
 
@@ -324,7 +341,10 @@ volumePropertiesThread::volumePropertiesThread(QString p,QString *q)
 
 void volumePropertiesThread::run()
 {
-	QString z = QString(ZULUCRYPTzuluCrypt) + QString(" status ") + QString("\"") + path + QString("\"");
+	QString z = QString(ZULUCRYPTzuluCrypt) ;
+	z = z + QString(" status ") ;
+	z = z + QString("\"") ;
+	z = z + path + QString("\"");
 
 	QProcess p ;
 
@@ -340,10 +360,15 @@ void volumePropertiesThread::run()
 
 	p.close();
 
-	if ( zuluCrypt::isLuks(path) == true)
-		*volProperty = ( QString(" ") + QString( r.right(start) )   + QString(" occupied key slots: ") + zuluCrypt::luksEmptySlots(path) + QString(" / 8")) ;
-	else
+	if ( zuluCrypt::isLuks(path) == true){
+		QString x =  QString(" ") ;
+		x = x + QString( r.right(start) ) ;
+		x = x + QString(" occupied key slots: ") ;
+		x = x + zuluCrypt::luksEmptySlots(path) ;
+		x = x + QString(" / 8") ;
+
+		*volProperty = x ;
+	}else
 		*volProperty = ( QString(" ") + QString( r.right(start) ) ) ;
 }
-
 

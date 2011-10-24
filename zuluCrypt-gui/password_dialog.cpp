@@ -38,13 +38,40 @@ password_Dialog::password_Dialog(QWidget *parent ) : QDialog(parent)
 
 	passphraseOption() ;
 
-	connect(ui->PushButtonCancel,SIGNAL(clicked()),this,SLOT(HideUI())) ;
-	connect(ui->PushButtonOpen,SIGNAL(clicked()),this,SLOT(buttonOpenClicked())) ;
-	connect(ui->PushButtonMountPointPath,SIGNAL(clicked()),this,SLOT(mount_point()));
-	connect(ui->PushButtonVolumePath,SIGNAL(clicked()),this,SLOT(file_path())) ;
-	connect(ui->pushButtonPassPhraseFromFile,SIGNAL(clicked()),this,SLOT(clickedPassPhraseFromFileButton()));
-	connect(ui->radioButtonPassPhraseFromFile,SIGNAL(clicked()),this,SLOT(passphraseFromFileOption())) ;
-	connect(ui->radioButtonPassPhrase,SIGNAL(clicked()),this,SLOT(passphraseOption())) ;
+	connect(ui->PushButtonCancel,
+		SIGNAL(clicked()),
+		this,
+		SLOT(HideUI())) ;
+
+	connect(ui->PushButtonOpen,
+		SIGNAL(clicked()),
+		this,
+		SLOT(buttonOpenClicked())) ;
+
+	connect(ui->PushButtonMountPointPath,
+		SIGNAL(clicked()),
+		this,
+		SLOT(mount_point()));
+
+	connect(ui->PushButtonVolumePath,
+		SIGNAL(clicked()),
+		this,
+		SLOT(file_path())) ;
+
+	connect(ui->pushButtonPassPhraseFromFile,
+		SIGNAL(clicked()),
+		this,
+		SLOT(clickedPassPhraseFromFileButton()));
+
+	connect(ui->radioButtonPassPhraseFromFile,
+		SIGNAL(clicked()),
+		this,
+		SLOT(passphraseFromFileOption())) ;
+
+	connect(ui->radioButtonPassPhrase,
+		SIGNAL(clicked()),
+		this,
+		SLOT(passphraseOption())) ;
 }
 
 void password_Dialog::ShowUI(QString volumePath, QString mount_point)
@@ -85,7 +112,10 @@ void password_Dialog::passphraseFromFileOption()
 
 void password_Dialog::clickedPassPhraseFromFileButton()
 {
-	QString Z = QFileDialog::getOpenFileName((QWidget *) this,QString("Select passphrase file"),QDir::homePath(),0);
+	QString Z = QFileDialog::getOpenFileName(this,
+						 QString("Select passphrase file"),
+						 QDir::homePath(),
+						 0);
 	ui->PassPhraseField->setText( Z );
 }
 
@@ -100,13 +130,19 @@ void password_Dialog::clickedPartitionOption(QString option)
 
 void password_Dialog::mount_point(void )
 {	
-	QString Z = QFileDialog::getExistingDirectory((QWidget *) this,QString("Select Path to mount point folder"),QDir::homePath(),QFileDialog::ShowDirsOnly) ;
+	QString Z = QFileDialog::getExistingDirectory(this,
+						      QString("Select Path to mount point folder"),
+						      QDir::homePath(),
+						      QFileDialog::ShowDirsOnly) ;
 	ui->MountPointPath->setText( Z );
 }
 
 void password_Dialog::file_path(void )
 {	
-	QString Z = QFileDialog::getOpenFileName((QWidget *) this,QString("Select encrypted volume"),QDir::homePath(),0);
+	QString Z = QFileDialog::getOpenFileName(this,
+						 QString("Select encrypted volume"),
+						 QDir::homePath(),
+						 0);
 	ui->OpenVolumePath->setText( Z );
 }
 
@@ -192,7 +228,10 @@ void password_Dialog::buttonOpenClicked(void )
 		}
 	}
 
-	QString exe = QString(ZULUCRYPTzuluCrypt) + " open \"" + volumePath + "\" \"" + mountPointPath + "\" " + mode + " " + passtype + "\"" + passPhraseField +"\"";
+	QString exe = QString(ZULUCRYPTzuluCrypt) + " open \"" + \
+			volumePath + "\" \"" + \
+			mountPointPath + "\" " + \
+			mode + " " + passtype + "\"" + passPhraseField +"\"";
 
 	ovt = new openVolumeThread(exe,&status) ;
 
@@ -261,11 +300,6 @@ void password_Dialog::threadfinished()
 
 	switch ( status ){
 		case 0 :{
-			/*
-			  There are possible names zuluCrypt-cli will use for mount point and predicting it before hand may
-			  cause unnecessary code bloat. If the opening succeed, just go read the output of "mount"
-			  and use whatever you will find.
-			  */
 			char * c = 0 ;
 
 			char *d = 0 ;
@@ -317,8 +351,7 @@ void password_Dialog::threadfinished()
 
 		case 5 : UIMessage(QString("ERROR"),QString("mount point address is already taken by a file or folder")) ;
 			break ;
-		case 7 : UIMessage(QString("ERROR"),QString("couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib"));
-			break ;
+
 		case 9 : UIMessage(QString("ERROR"),QString("\",\" (comma) is not a valid mount point"));
 			break ;
 		default :UIMessage(QString("ERROR"),QString("un unknown error has occured, volume not opened"));

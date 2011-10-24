@@ -40,7 +40,10 @@ openpartition::openpartition(QWidget *parent ) :
 
 	this->setFixedSize(this->size());
 
-	connect(partitionView->tableWidgetPartitionView,SIGNAL(cellDoubleClicked(int,int)),this,SLOT(tableEntryDoubleClicked(int,int))) ;
+	connect(partitionView->tableWidgetPartitionView,
+		SIGNAL(cellDoubleClicked(int,int)),
+		this,
+		SLOT(tableEntryDoubleClicked(int,int))) ;
 }
 
 void openpartition::ShowNonSystemPartitions()

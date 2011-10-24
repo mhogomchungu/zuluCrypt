@@ -21,6 +21,7 @@ set( MOC_FILES createfile.h
 		openpartition.h
 		password_dialog.h
 		zulucrypt.h
+		startupupdateopenedvolumes.h
  )
 	
 set (SRC createfile.cpp
@@ -33,6 +34,7 @@ set (SRC createfile.cpp
 			luksaddkey.cpp
 			main.cpp
 			password_dialog.cpp
+			startupupdateopenedvolumes.cpp
 			zulucrypt.cpp
 )
 

@@ -42,15 +42,49 @@ luksdeletekey::luksdeletekey(QWidget *parent) :
 	pUI = new openpartition(this);
 	pUI->setWindowFlags(Qt::Window | Qt::Dialog);
 
-	connect(pUI,SIGNAL(clickedPartition(QString)),this,SLOT(deleteKey(QString)));
-	connect(this,SIGNAL(pbOpenPartitionClicked()),pUI,SLOT(ShowUI()));
-	connect(ui->pushButtonDelete,SIGNAL(clicked()),this,SLOT(pbDelete())) ;
-	connect(ui->pushButtonCancel,SIGNAL(clicked()),this,SLOT(pbCancel())) ;
-	connect(ui->rbPassphrase,SIGNAL(toggled(bool)),this,SLOT(rbPassphrase())) ;
-	connect(ui->rbPassphraseFromFile,SIGNAL(toggled(bool)),this, SLOT(rbPassphraseFromFile())) ;
-	connect(ui->pushButtonOpenKeyFile,SIGNAL(clicked()),this,SLOT(pbOpenKeyFile())) ;
-	connect(ui->pushButtonOpenVolume,SIGNAL(clicked()),this,SLOT(pbOpenVolume()));
-	connect(ui->pushButtonOpenPartition,SIGNAL(clicked()),this,SLOT(pbOpenPartition())) ;
+	connect(pUI,
+		SIGNAL(clickedPartition(QString)),
+		this,
+		SLOT(deleteKey(QString)));
+
+	connect(this,
+		SIGNAL(pbOpenPartitionClicked()),
+		pUI,
+		SLOT(ShowUI()));
+
+	connect(ui->pushButtonDelete,
+		SIGNAL(clicked()),
+		this,
+		SLOT(pbDelete())) ;
+
+	connect(ui->pushButtonCancel,
+		SIGNAL(clicked()),
+		this,
+		SLOT(pbCancel())) ;
+
+	connect(ui->rbPassphrase,
+		SIGNAL(toggled(bool)),
+		this,
+		SLOT(rbPassphrase())) ;
+
+	connect(ui->rbPassphraseFromFile,
+		SIGNAL(toggled(bool)),
+		this,
+		SLOT(rbPassphraseFromFile())) ;
+
+	connect(ui->pushButtonOpenKeyFile,
+		SIGNAL(clicked()),
+		this,
+		SLOT(pbOpenKeyFile())) ;
+	connect(ui->pushButtonOpenVolume,
+		SIGNAL(clicked()),
+		this,
+		SLOT(pbOpenVolume()));
+
+	connect(ui->pushButtonOpenPartition,
+		SIGNAL(clicked()),
+		this,
+		SLOT(pbOpenPartition())) ;
 }
 
 void luksdeletekey::rbPassphrase()
@@ -71,7 +105,10 @@ void luksdeletekey::rbPassphraseFromFile()
 
 void luksdeletekey::pbOpenKeyFile()
 {
-	QString Z = QFileDialog::getOpenFileName((QWidget *) this,QString("key file with a passphrase to delete"),QDir::homePath(),0);
+	QString Z = QFileDialog::getOpenFileName(this,
+						 QString("key file with a passphrase to delete"),
+						 QDir::homePath(),
+						 0);
 	ui->lineEditPassphrase->setText( Z );
 }
 
@@ -171,8 +208,12 @@ void luksdeletekey::pbDelete()
 	}
 
 	if(zuluCrypt::luksEmptySlots(ui->lineEditVolumePath->text()) == '1'){
+		QString s = QString("There is only one last key in the volume.");
+		s = s + QString("\nDeleting it will make the volume unopenable and lost forever.") ;
+		s = s + QString("\nAre you sure you want to delete this key?");
+
 		m.setWindowTitle(QString("WARNING!"));
-		m.setText(QString("There is only one last key in the volume.\nDeleting it will make the volume unopenable and lost forever.\nAre you sure you want to delete this key?"));
+		m.setText(s) ;
 
 		m.addButton(QMessageBox::Yes);
 		m.addButton(QMessageBox::No);
@@ -185,7 +226,10 @@ void luksdeletekey::pbDelete()
 
 	ldk = new luksdeleteKeyThread(ui,&status) ;
 
-	connect(ldk,SIGNAL(finished()),this,SLOT(threadfinished())) ;
+	connect(ldk,
+		SIGNAL(finished()),
+		this,
+		SLOT(threadfinished())) ;
 
 	ldk->start();
 }
@@ -196,7 +240,10 @@ void luksdeletekey::threadfinished()
 
 	switch( status ){
 		case 0 :
-			UIMessage(QString("SUCCESS"),QString("key successfully removed\n") + zuluCrypt::luksEmptySlots(ui->lineEditVolumePath->text()) + QString(" / 8 slots are now in use"));
+			UIMessage(QString("SUCCESS"),
+				  QString("key successfully removed\n") + \
+				  zuluCrypt::luksEmptySlots(ui->lineEditVolumePath->text()) + \
+				  QString(" / 8 slots are now in use"));
 			HideUI() ;
 			return ;
 			break ;
@@ -205,8 +252,6 @@ void luksdeletekey::threadfinished()
 		case 2 :UIMessage(QString("ERROR"),QString("there is no key in the volume that match entered key"));
 			break ;
 		case 3 :UIMessage(QString("ERROR"),QString("could not open luks device"));
-			break ;
-		case 4 :UIMessage(QString("ERROR"),QString("couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib"));
 			break ;
 		case 7 :UIMessage(QString("ERROR"),QString("could not get enough memory to open the key file"));
 			break ;
@@ -218,7 +263,10 @@ void luksdeletekey::threadfinished()
 
 void luksdeletekey::pbOpenVolume()
 {
-	QString Z = QFileDialog::getOpenFileName((QWidget *) this,QString("volume path"),QDir::homePath(),0);
+	QString Z = QFileDialog::getOpenFileName(this,
+						 QString("volume path"),
+						 QDir::homePath(),
+						 0);
 	ui->lineEditVolumePath->setText( Z );
 }
 

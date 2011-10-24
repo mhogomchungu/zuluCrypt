@@ -47,7 +47,8 @@ createfile::createfile(QWidget *parent) :
 
 	connect(ui->pbCreate,SIGNAL(clicked()),this,SLOT(pbCreate())) ;
 
-	connect((QObject *)&dd,SIGNAL(finished(int, QProcess::ExitStatus)),this,SLOT(ddFinished(int,QProcess::ExitStatus)));
+	connect((QObject *)&dd,SIGNAL(finished(int,QProcess::ExitStatus)),
+		this,SLOT(ddFinished(int,QProcess::ExitStatus)));
 }
 
 void createfile::ddFinished(int exitCode, QProcess::ExitStatus st)
@@ -60,7 +61,8 @@ void createfile::ddFinished(int exitCode, QProcess::ExitStatus st)
 	m.setFont(this->font());
 
 	if( st == QProcess::CrashExit){
-	//	m.setText(QString("A problem occured and creation process is terminated.\nMake sure file path field points to a folder that exists and you have writing access"));
+	//	m.setText(QString("A problem occured and creation process is terminated.
+	//	\nMake sure file path field points to a folder that exists and you have writing access"));
 	//	m.exec() ;
 		return ;
 	}
@@ -159,7 +161,12 @@ void createfile::pbCreate()
 
 	f.close();
 
-	QString ddExe = QString(ZULUCRYPTdd) + QString(" if=") + QString( b ) + QString(" of=") + ui->lineEditFilePath->text() + "/" + ui->lineEditFileName->text() + " bs=1024 " + "count=" + ui->lineEditFileSize->text() + size;
+	QString ddExe = QString(ZULUCRYPTdd) ;
+	ddExe = ddExe + QString(" if=") ;
+	ddExe = ddExe + QString( b ) ;
+	ddExe = ddExe + QString(" of=") ;
+	ddExe = ddExe + ui->lineEditFilePath->text() + QString("/") + ui->lineEditFileName->text();
+	ddExe = ddExe + QString(" bs=1024 count=") + ui->lineEditFileSize->text() + size;
 
 	dd.start( ddExe ) ;
 }
@@ -179,7 +186,9 @@ void createfile::monitorFileGrowth()
 
 void createfile::pbOpenFolder()
 {
-	QString Z = QFileDialog::getExistingDirectory((QWidget *) this,QString("Select Path to where the file will be created"),QDir::homePath(),QFileDialog::ShowDirsOnly) ;
+	QString Z = QFileDialog::getExistingDirectory(this,
+						      QString("Select Path to where the file will be created"),
+						      QDir::homePath(),QFileDialog::ShowDirsOnly) ;
 
 	ui->lineEditFilePath->setText( Z );
 }

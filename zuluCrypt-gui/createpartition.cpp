@@ -38,11 +38,26 @@ createpartition::createpartition(QWidget *parent) :
 
 	ui->lineEditVolumePath->setEnabled(false);
 
-	connect(ui->pbOpenKeyFile,SIGNAL(clicked()),this,SLOT(pbOpenKeyFile()));
-	connect(ui->pbCreate,SIGNAL(clicked()),this,SLOT(pbCreateClicked()));
-	connect(ui->pbCancel,SIGNAL(clicked()),this,SLOT(pbCancelClicked()));
-	connect(ui->rbPassphrase,SIGNAL(clicked()),this,SLOT(rbPassphraseClicked()));
-	connect(ui->rbPassphraseFromFile,SIGNAL(clicked()),this,SLOT(rbPasssphraseFromFileClicked()));
+	connect(ui->pbOpenKeyFile,
+		SIGNAL(clicked()),
+		this,
+		SLOT(pbOpenKeyFile()));
+	connect(ui->pbCreate,
+		SIGNAL(clicked()),
+		this,
+		SLOT(pbCreateClicked()));
+	connect(ui->pbCancel,
+		SIGNAL(clicked()),
+		this,
+		SLOT(pbCancelClicked()));
+	connect(ui->rbPassphrase,
+		SIGNAL(clicked()),
+		this,
+		SLOT(rbPassphraseClicked()));
+	connect(ui->rbPassphraseFromFile,
+		SIGNAL(clicked()),
+		this,
+		SLOT(rbPasssphraseFromFileClicked()));
 }
 
 void createpartition::ShowPartitionUI(QString volume)
@@ -60,7 +75,10 @@ void createpartition::ShowPartitionUI(QString volume)
 
 void createpartition::pbOpenKeyFile()
 {
-	QString Z = QFileDialog::getOpenFileName((QWidget *) this,QString("key file path"),QDir::homePath(),0);
+	QString Z = QFileDialog::getOpenFileName(this,
+						 QString("key file path"),
+						 QDir::homePath(),
+						 0);
 	ui->lineEditPassphrase1->setText(Z);
 }
 
@@ -160,7 +178,8 @@ void createpartition::pbCreateClicked()
 
 	if(ui->rbPassphrase->isChecked() == true){
 
-		if( QString::compare(ui->lineEditPassphrase1->text(),ui->lineEditPassPhrase2->text()) != 0 ){
+		if( QString::compare(ui->lineEditPassphrase1->text(),
+				     ui->lineEditPassPhrase2->text()) != 0 ){
 			UIMessage(QString("ERROR"),QString("passphrases do not match"));
 			return ;
 		}
@@ -172,14 +191,12 @@ void createpartition::pbCreateClicked()
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 	m.setWindowTitle(QString("WARNING"));
 
-	QString r("This operation will delete all data in partition: " + ui->lineEditVolumePath->text()) ;
-	r = r + QString("\nAre you sure you want to proceed?") ;
-
 	m.addButton(QMessageBox::Yes);
 	m.addButton(QMessageBox::No);
 	m.setDefaultButton(QMessageBox::No);
 
-	QString wr = QString("all contents of ") + ui->lineEditVolumePath->text() + QString(" will be deleted!.");
+	QString wr = QString("all contents of ") ;
+	wr = wr + ui->lineEditVolumePath->text() + QString(" will be deleted!.");
 	wr = wr + QString("\nAre you sure you want to proceed?") ;
 	m.setText(wr);
 
@@ -200,15 +217,14 @@ void createpartition::threadfinished()
 	delete cvt ;
 
 	switch( status ) {
-		case 0 : UIMessage(QString("SUCCESS"),QString("volume successfully created"));
+		case 0 : UIMessage(QString("SUCCESS"),
+				   QString("volume successfully created"));
 			break;
-		case 3 : UIMessage(QString("ERROR"),QString("couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib"));
-			break;
-		case 6 : UIMessage(QString("ERROR"),QString("couldnt get requested memory to open the key file"));
+		case 6 : UIMessage(QString("ERROR"),
+				   QString("couldnt get requested memory to open the key file"));
 			break ;
-		//case 3 : UIMessage(QString("ERROR"),QString("couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib"));
-		//	break ;
-		default: UIMessage(QString("ERROR"),(QString("unrecognized error has occured,volume not created")));
+		default: UIMessage(QString("ERROR"),
+				   (QString("unrecognized error has occured,volume not created")));
 	}
 	enableAll();
 }

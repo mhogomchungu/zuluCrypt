@@ -183,7 +183,9 @@ void createkeyfile::threadfinished()
 
 void createkeyfile::pbOpenFolder()
 {
-	QString Z = QFileDialog::getExistingDirectory((QWidget *) this,QString("Select a folder to create a key file in"),QDir::homePath(),QFileDialog::ShowDirsOnly) ;
+	QString Z = QFileDialog::getExistingDirectory(this,
+						      QString("Select a folder to create a key file in"),
+						      QDir::homePath(),QFileDialog::ShowDirsOnly) ;
 
 	ui->lineEditPath->setText( Z );
 }

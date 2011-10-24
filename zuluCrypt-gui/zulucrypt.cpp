@@ -87,61 +87,140 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 
 	ui->tableWidget->setColumnWidth(2,90);
 
-	connect(ui->actionCreatekeyFile,SIGNAL(triggered()),createkeyFile,SLOT(ShowUI()));
+	connect(ui->actionCreatekeyFile,
+		SIGNAL(triggered()),
+		createkeyFile,
+		SLOT(ShowUI()));
 
-	connect(createFile,SIGNAL(fileCreated(QString)),createpartitionUI,SLOT(ShowFileUI(QString)));
+	connect(createFile,
+		SIGNAL(fileCreated(QString)),
+		createpartitionUI,
+		SLOT(ShowFileUI(QString)));
 
-	connect(ui->actionFileCreate,SIGNAL(triggered()),createFile,SLOT(showUI()));
+	connect(ui->actionFileCreate,
+		SIGNAL(triggered()),
+		createFile,
+		SLOT(showUI()));
 
-	connect(NonSystemPartitions,SIGNAL(clickedPartition(QString)),createpartitionUI,SLOT(ShowPartitionUI(QString)));
+	connect(NonSystemPartitions,
+		SIGNAL(clickedPartition(QString)),
+		createpartitionUI,
+		SLOT(ShowPartitionUI(QString)));
 
-	connect(this,SIGNAL(showNonSystemPartitions()),NonSystemPartitions,SLOT(ShowNonSystemPartitions()));
+	connect(this,
+		SIGNAL(showNonSystemPartitions()),
+		NonSystemPartitions,
+		SLOT(ShowNonSystemPartitions()));
 
-	connect(ui->actionFileOpen,SIGNAL(triggered()),openFileUI,SLOT(ShowUI())) ;
+	connect(ui->actionFileOpen,
+		SIGNAL(triggered()),
+		openFileUI,
+		SLOT(ShowUI())) ;
 
-	connect(ui->actionPartitionOpen,SIGNAL(triggered()),openPartitionUI,SLOT(ShowUI()));
+	connect(ui->actionPartitionOpen,
+		SIGNAL(triggered()),
+		openPartitionUI,
+		SLOT(ShowUI()));
 
-	connect(ui->tableWidget,SIGNAL(itemClicked(QTableWidgetItem*)),this,SLOT(options(QTableWidgetItem*))) ;
+	connect(ui->tableWidget,
+		SIGNAL(itemClicked(QTableWidgetItem*)),
+		this,
+		SLOT(options(QTableWidgetItem*))) ;
 
-	connect(openPartitionUI,SIGNAL(clickedPartition(QString)),openFileUI,SLOT(clickedPartitionOption(QString)));
+	connect(openPartitionUI,
+		SIGNAL(clickedPartition(QString)),
+		openFileUI,
+		SLOT(clickedPartitionOption(QString)));
 
-	connect(ui->actionAbout,SIGNAL(triggered()),this,SLOT(aboutMenuOption())) ;
+	connect(ui->actionAbout,
+		SIGNAL(triggered()),
+		this,
+		SLOT(aboutMenuOption())) ;
 
-	connect(ui->actionAddKey,SIGNAL(triggered()), addKeyUI,SLOT(ShowUI()) ) ;
+	connect(ui->actionAddKey,
+		SIGNAL(triggered()),
+		addKeyUI,
+		SLOT(ShowUI()) ) ;
 
-	connect(ui->actionDeleteKey,SIGNAL(triggered()),deleteKeyUI,SLOT(ShowUI()) ) ;
+	connect(ui->actionDeleteKey,
+		SIGNAL(triggered()),
+		deleteKeyUI,
+		SLOT(ShowUI()) ) ;
 
-	connect(this,SIGNAL(redoOpen(bool,bool,QString,QString)),openFileUI,SLOT(ShowUI(bool,bool,QString,QString)));
+	connect(this,
+		SIGNAL(redoOpen(bool,bool,QString,QString)),
+		openFileUI,
+		SLOT(ShowUI(bool,bool,QString,QString)));
 
-	connect(ui->actionPartitionCreate,SIGNAL(triggered()),this,SLOT(createEncryptedpartitionUI())) ;
+	connect(ui->actionPartitionCreate,
+		SIGNAL(triggered()),
+		this,
+		SLOT(createEncryptedpartitionUI())) ;
 
-	connect(ui->actionInfo,SIGNAL(triggered()),this,SLOT(info())) ;
+	connect(ui->actionInfo,
+		SIGNAL(triggered()),
+		this,
+		SLOT(info())) ;
 
-	connect(ui->actionFonts,SIGNAL(triggered()),this,SLOT(fonts())) ;
+	connect(ui->actionFonts,
+		SIGNAL(triggered()),
+		this,
+		SLOT(fonts())) ;
 
-	connect(ui->menuFavorites,SIGNAL(aboutToShow()),this,SLOT(readFavorites())) ;
+	connect(ui->menuFavorites,
+		SIGNAL(aboutToShow()),
+		this,
+		SLOT(readFavorites())) ;
 
-	connect(ui->menuFavorites,SIGNAL(aboutToHide()),this,SLOT(favAboutToHide())) ;
+	connect(ui->menuFavorites,
+		SIGNAL(aboutToHide()),
+		this,
+		SLOT(favAboutToHide())) ;
 
-	connect(ui->actionTray_icon,SIGNAL(triggered()),this,SLOT(trayProperty())) ;
+	connect(ui->actionTray_icon,
+		SIGNAL(triggered()),
+		this,
+		SLOT(trayProperty())) ;
 
-	connect(this,SIGNAL(favClickedVolume(QString,QString)),openFileUI,SLOT(ShowUI(QString,QString))) ;
+	connect(this,
+		SIGNAL(favClickedVolume(QString,QString)),
+		openFileUI,
+		SLOT(ShowUI(QString,QString))) ;
 
-	connect(trayIcon,SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this,SLOT(trayClicked(QSystemTrayIcon::ActivationReason)));
+	connect(trayIcon,
+		SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
+		this,
+		SLOT(trayClicked(QSystemTrayIcon::ActivationReason)));
 
-	connect(ui->menuFavorites,SIGNAL(triggered(QAction*)),this,SLOT(favClicked(QAction*))) ;
+	connect(ui->menuFavorites,
+		SIGNAL(triggered(QAction*)),
+		this,
+		SLOT(favClicked(QAction*))) ;
 
-	connect(ui->actionSelect_random_number_generator,SIGNAL(triggered()),rng,SLOT(ShowUI())) ;
+	connect(ui->actionSelect_random_number_generator,
+		SIGNAL(triggered()),
+		rng,
+		SLOT(ShowUI())) ;
 
-	connect(openFileUI,SIGNAL(addItemToTable(QString,QString)),this,SLOT(addItemToTable(QString,QString))) ;
+	connect(openFileUI,
+		SIGNAL(addItemToTable(QString,QString)),
+		this,
+		SLOT(addItemToTable(QString,QString))) ;
 
-	connect(this,SIGNAL(luksAddKeyUI(QString)),addKeyUI,SLOT(partitionEntry(QString))) ;
+	connect(this,
+		SIGNAL(luksAddKeyUI(QString)),
+		addKeyUI,
+		SLOT(partitionEntry(QString))) ;
 
-	connect(this,SIGNAL(luksDeleteKeyUI(QString)),deleteKeyUI,SLOT(deleteKey(QString)));
+	connect(this,
+		SIGNAL(luksDeleteKeyUI(QString)),
+		deleteKeyUI,
+		SLOT(deleteKey(QString)));
 
-	connect(ui->actionClose_application,SIGNAL(triggered()),this,SLOT(closeApplication())) ;
-
-	setUpOpenedVolumes() ;
+	connect(ui->actionClose_application,
+		SIGNAL(triggered()),
+		this,
+		SLOT(closeApplication())) ;
 
 	QProcess p ;
 
@@ -239,7 +318,31 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 
 	setUserFont(F);
 
-	setUserFont(F);
+	sov = new startupupdateopenedvolumes(this);
+
+	connect(sov,
+		SIGNAL(addItemToTable(QString,QString)),
+		this,
+		SLOT(addItemToTable(QString,QString))) ;
+
+	connect(sov,
+		SIGNAL(finished()),
+		this,
+		SLOT(sovfinished())) ;
+
+	connect(sov,
+		SIGNAL(UIMessage(QString,QString)),
+		this,
+		SLOT(UIMessage(QString,QString))) ;
+
+	sov->start();
+
+}
+
+
+void zuluCrypt::sovfinished()
+{
+	delete sov ;
 }
 
 void zuluCrypt::closeEvent(QCloseEvent *e)
@@ -514,7 +617,8 @@ char zuluCrypt::luksEmptySlots(QString volumePath)
 bool zuluCrypt::isLuks(QString volumePath)
 {
 	QProcess N ;
-	N.start(QString(ZULUCRYPTzuluCrypt) + QString(" isLuks ") + QString("\"") + volumePath + QString("\"") );
+	N.start(QString(ZULUCRYPTzuluCrypt) + QString(" isLuks ") + \
+		QString("\"") + volumePath + QString("\"") );
 	N.waitForFinished() ;
 
 	int i = N.exitCode() ;
@@ -535,93 +639,19 @@ void zuluCrypt::aboutMenuOption(void)
 	m.addButton(QMessageBox::Ok);
 	m.setWindowTitle(QString("about zuluCrypt"));
 	m.setFont(this->font());
-	QString a = QString( VERSION_STRING ) + QString("\nThis program is distributed in the hope that it will be useful,but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\nSee the GNU General Public License for more details.") ;
-	m.setText( a ) ;
+
+	QString b = QString("\nThis program is distributed in the hope that it will be useful,") ;
+	b = b + QString("but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY");
+	b = b + QString("or FITNESS FOR A PARTICULAR PURPOSE.\n");
+	b = b + QString("See the GNU General Public License for more details.") ;
+
+	m.setText( QString( VERSION_STRING ) + b ) ;
 	m.exec() ;
 }
 
 void zuluCrypt::setUpOpenedVolumes(void)
 {
-	QStringList Z =  QDir(QString("/dev/mapper")).entryList().filter("zuluCrypt-") ;
 
-	char *c, *d, *v,*volume,*N ;
-
-	QProcess * p ;
-
-	for ( int i = 0 ; i < Z.size() ; i++){
-
-		QString C = Z.at(i) ;
-
-		C = C.right( C.length() - 10 ) ; //10 is the length of "zuluCrypt-
-
-		p = new QProcess() ;
-
-		p->start(QString(ZULUCRYPTzuluCrypt) + QString(" status ") + C ) ;
-
-		p->waitForReadyRead() ;
-
-		c = p->readAllStandardOutput().data() ;
-
-		p->close();
-
-		p->deleteLater();
-
-		d = strstr(c,"device:") ;
-
-		if ( d == NULL){
-			UIMessage(QString("WARNING"),QString("An inconsitency is detected, " + QString(C) + QString(" does not look like a cryptsetp volume")));
-			continue ;
-		}
-
-		while ( *++d != '/') { ; }
-
-		if (strncmp(d ,"/dev/loop",9) != 0 ){
-			v = d ;
-		}else{
-			v = strstr(c,"loop:")  ;
-
-			while(*++v != '/') { ; }
-		}
-
-		d = v ;
-
-		while ( *++d != '\n') { ; }
-
-		*d = '\0' ;
-
-		N = d = volume = new char[ strlen( v ) + 1 ] ;
-
-		while ( ( *d++ = *v++ ) != '\0') { ; }
-
-		p = new QProcess() ;
-
-		p->start(QString(ZULUCRYPTmount));
-
-		p->waitForReadyRead() ;
-
-		c = p->readAllStandardOutput().data() ;
-
-		v = strrchr(volume,'/') + 1 ;
-
-		if( ( d = strstr(c,v ) ) == NULL ){
-			UIMessage(QString("WARNING"),QString("An inconsitency is detected, " + QString(N) + QString(" is opened but not mounted")));
-			continue ;
-		}
-
-		v = d = d + strlen(v) + 4 ;
-
-		while ( *++v != ' ') { ; }
-
-		*v = '\0' ;
-
-		addItemToTable(QString(volume),QString(d)) ;
-
-		delete [] volume ;
-
-		p->close();
-
-		p->deleteLater();
-	}
 }
 
 void zuluCrypt::addItemToTable(QString x,QString y)
@@ -775,8 +805,14 @@ void zuluCrypt::options(QTableWidgetItem* t)
 
 	if( Z.exitCode() == 0 ){
 		m.addSeparator() ;
-		connect(m.addAction("add key"),SIGNAL(triggered()),this,SLOT(luksAddKeyContextMenu())) ;
-		connect(m.addAction("remove key"),SIGNAL(triggered()),this,SLOT(luksDeleteKeyContextMenu())) ;
+		connect(m.addAction("add key"),
+			SIGNAL(triggered()),
+			this,
+			SLOT(luksAddKeyContextMenu())) ;
+		connect(m.addAction("remove key"),
+			SIGNAL(triggered()),
+			this,
+			SLOT(luksDeleteKeyContextMenu())) ;
 	}
 	
 	m.addSeparator() ;
@@ -806,7 +842,10 @@ void zuluCrypt::options(QTableWidgetItem* t)
 	else
 		a.setEnabled(false);
 
-	a.connect((QObject *)&a,SIGNAL(triggered()),this,SLOT(addToFavorite())) ;
+	a.connect((QObject *)&a,
+		  SIGNAL(triggered()),
+		  this,
+		  SLOT(addToFavorite())) ;
 
 	m.addAction(&a);
 	
@@ -840,7 +879,8 @@ void zuluCrypt::close(void)
 {
 	QProcess p ;
 
-	QString exe = QString(ZULUCRYPTzuluCrypt) + QString(" close ") + ui->tableWidget->item(item->row(),0)->text() ;
+	QString exe = QString(ZULUCRYPTzuluCrypt) + QString(" close ") + \
+			ui->tableWidget->item(item->row(),0)->text() ;
 
 	p.start( exe ) ;
 
@@ -849,14 +889,18 @@ void zuluCrypt::close(void)
 	switch ( p.exitCode() ) {
 	case 0 :	removeRowFromTable(item->row()) ;
 		break ;
-	case 1 :	UIMessage(QString("ERROR"),QString("close failed, encrypted volume with that name does not exist")) ;
+	case 1 :	UIMessage(QString("ERROR"),
+				  QString("close failed, encrypted volume with that name does not exist")) ;
 		break ;
 
-	case 2 :	UIMessage(QString("ERROR"),QString("close failed, the mount point and/or one or more files are in use"));
+	case 2 :	UIMessage(QString("ERROR"),
+				  QString("close failed, the mount point and/or one or more files are in use"));
 		break ;
-	case 3 :	UIMessage(QString("ERROR"),QString("close failed, path given does not point to an encrypted device"));
+	case 3 :	UIMessage(QString("ERROR"),
+				  QString("close failed, path given does not point to an encrypted device"));
 		break ;
-	default :	UIMessage(QString("ERROR"),QString("an unknown error has occured, volume not closed"));
+	default :	UIMessage(QString("ERROR"),
+				  QString("an unknown error has occured, volume not closed"));
 	}
 	p.close();
 }
