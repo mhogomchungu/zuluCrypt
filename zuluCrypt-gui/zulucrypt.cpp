@@ -356,6 +356,8 @@ void zuluCrypt::closeEvent(QCloseEvent *e)
 
 void zuluCrypt::closeApplication()
 {
+	trayIcon->hide();
+	this->hide() ;
 	QCoreApplication::quit();
 }
 
