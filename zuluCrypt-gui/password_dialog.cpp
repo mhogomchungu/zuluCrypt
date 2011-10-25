@@ -302,43 +302,13 @@ void password_Dialog::threadfinished()
 
 	switch ( status ){
 		case 0 :{
-			char * c = 0 ;
-
-			char *d = 0 ;
-			int k ;
-			QString N ;
-			QProcess Z ;
-			Z.start(QString(ZULUCRYPTmount));
-
-			Z.waitForFinished() ;
-
-			c = Z.readAllStandardOutput().data() ;
-
 			QString x = volumePath.split("/").last() ;
 
-			for( int i = 0 ; i < x.size() ; i ++){
+			x.replace(" ","_") ;
 
-				if(x.at(i).toAscii() == ' '){
-					x.remove(i,1);
-					x.insert(i,QChar('_'));
-				}
-			}
+			QString mp = zuluCrypt::mtab(QString("/dev/mapper/zuluCrypt-") + x ) ;
 
-			N = "/dev/mapper/zuluCrypt-" + x ;
-
-			d = N.toAscii().data() ;
-
-			k = strlen( d ) ;
-
-			c = strstr( c , d )  + k + 4 ;
-
-			d = strstr( c , " type " ) ;
-
-			*d = '\0' ;
-
-			Z.close();			
-
-			emit addItemToTable(volumePath,QString( c ));
+			emit addItemToTable(volumePath,mp);
 
 			HideUI() ;
 

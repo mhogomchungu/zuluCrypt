@@ -59,6 +59,8 @@ public:
 
 	static bool isLuks(QString volumePath) ;
 
+	static QString mtab(QString) ;
+
 	~zuluCrypt();
 
 signals:
@@ -112,6 +114,7 @@ private slots :
 	void closeApplication(void) ;
 
 	void sovfinished(void) ;
+
 
 private:
 

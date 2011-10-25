@@ -17,7 +17,7 @@ void startupupdateopenedvolumes::run()
 {
 	QStringList Z =  QDir(QString("/dev/mapper")).entryList().filter("zuluCrypt-") ;
 
-	char *c, *d, *v,*volume,*N ;
+	char *c, *d, *v ;
 
 	QProcess * p ;
 
@@ -31,7 +31,7 @@ void startupupdateopenedvolumes::run()
 
 		p->start(QString(ZULUCRYPTzuluCrypt) + QString(" status ") + C ) ;
 
-		p->waitForReadyRead() ;
+		p->waitForFinished() ;
 
 		c = p->readAllStandardOutput().data() ;
 
@@ -62,21 +62,16 @@ void startupupdateopenedvolumes::run()
 		}
 
 		d = v ;
+		
 		while ( *++d != '\n') { ; }
 
 		*d = '\0' ;
 
-		N = d = volume = new char[ strlen( v ) + 1 ] ;
+		char volume[ strlen( v ) + 1 ] ;
+
+		d = volume ;
 
 		while ( ( *d++ = *v++ ) != '\0') { ; }
-
-		p = new QProcess() ;
-
-		p->start(QString(ZULUCRYPTmount));
-
-		p->waitForFinished() ;
-
-		c = p->readAllStandardOutput().data() ;
 
 		v = strrchr(volume,'/') + 1 ;
 
@@ -84,7 +79,7 @@ void startupupdateopenedvolumes::run()
 
 		while( *( volume + j++) != '\0') { ; }
 
-		char bff[j--] ;
+		char bff[j] ;
 
 		strcpy(bff,v) ;
 
@@ -94,26 +89,16 @@ void startupupdateopenedvolumes::run()
 				bff[n] = '_' ;
 		}
 
-		if( ( d = strstr(c,bff ) ) == NULL ){
+		QString mp = zuluCrypt::mtab(QString(bff)) ;
+
+		if( mp == QString("") ){
 			emit UIMessage(QString("WARNING"),
-				  QString("An inconsitency is detected," + \
-					  QString(N) + QString(" is opened but not mounted")));
+					  QString("An inconsitency is detected. Skipping \"" + \
+					  QString(volume) + \
+					  QString("\" because its opened but not mounted")));
 			continue ;
 		}
-
-		v = d = d + strlen(v) + 4 ;
-
-		v = strstr(d," type ");
-
-		*v = '\0' ;
-
-		emit addItemToTable(QString(volume),QString(d)) ;
-
-		delete [] volume ;
-
-		p->close();
-
-		p->deleteLater();
+		emit addItemToTable(QString(volume),mp) ;
 	}
 }
 

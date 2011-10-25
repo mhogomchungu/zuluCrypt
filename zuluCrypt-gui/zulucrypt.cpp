@@ -336,9 +336,35 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 		SLOT(UIMessage(QString,QString))) ;
 
 	sov->start();
-
 }
 
+QString zuluCrypt::mtab(QString entry)
+{
+	QFile mt(QString("/etc/mtab")) ;
+
+	mt.open(QIODevice::ReadOnly) ;
+
+	QByteArray data = mt.readAll() ;
+
+	mt.close();
+
+	int i = data.indexOf(entry) ;
+
+	if( i == -1 )
+		return QString("") ;
+
+	while(data.at(i++) != ' ') { ; }
+
+	int j = i - 1 ;
+
+	while(data.at(i++) != ' ') { ; }
+
+	QByteArray mount_point = data.mid(j, i - j) ;
+
+	mount_point.replace("\\040"," ") ;
+
+	return QString(mount_point.data()) ;
+}
 
 void zuluCrypt::sovfinished()
 {
@@ -910,6 +936,8 @@ void zuluCrypt::close(void)
 	}
 	p.close();
 }
+
+
 
 //hopefully secure delete,write random data to a file and then delete it
 void zuluCrypt::deleteFile( QFile *f)

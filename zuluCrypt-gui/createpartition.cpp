@@ -219,6 +219,7 @@ void createpartition::threadfinished()
 	switch( status ) {
 		case 0 : UIMessage(QString("SUCCESS"),
 				   QString("volume successfully created"));
+			HideUI();
 			break;
 		case 6 : UIMessage(QString("ERROR"),
 				   QString("couldnt get requested memory to open the key file"));
