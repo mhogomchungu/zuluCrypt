@@ -31,8 +31,6 @@
 #include "String.h"   
 #include <sys/types.h>
 #include <errno.h>
-#include <blkid.h>
-
 
 #include "../zuluCrypt-gui/executables.h"
 
@@ -275,9 +273,10 @@ char * status( const char * mapper )
 	char *c = NULL ;
 	char *d = NULL ;
 	
+	struct crypt_device *cd1 = NULL;
+	
 	crypt_status_info csi ;
 	
-	struct crypt_device *cd1 = NULL;
 	struct crypt_active_device cad ;	
 	
 	StrHandle * p ;
@@ -371,6 +370,7 @@ char * status( const char * mapper )
 	c = StringContCopy(p) ;	
 	StringDelete(p) ;
 	crypt_free(cd);	
+	crypt_free(cd1);	
 	return c ;
 }
 
@@ -590,19 +590,19 @@ int unmount_volume( const char * map )
 	
 	FILE *f ;	
 	
-	char buffer[256] ;	
+	char buffer[256] ;
+	
+	int i ;
 	
 	if ( stat( map , &st ) != 0 )
 		return 1 ;		
 	
 	f = fopen("/etc/mtab","r") ;
-	
 	while( fgets(buffer,256,f) != NULL ){
 		
 		if( strncmp(buffer,map,strlen(map) )  == 0 ){
 			
 			mount_point = c = buffer + strlen(map) + 1  ;
-			
 			while ( *++c != ' ' ) { ; }
 			
 			*c = '\0' ;	
@@ -613,8 +613,22 @@ int unmount_volume( const char * map )
 	
 	if ( mount_point == NULL )
 		return 3 ;	
+		
+	/*
+	 * space character in /etc/mtab file is stored as \040
+	 * replace these characters with space again	 * 
+	 */	
+	q = StringCpy(mount_point) ;	
+
+	while( ( i = StringPosString(q,"\\040") ) != -1 ){
+		
+		StringStringRemove(q,i,4);
+		StringCharInsert(q,i,' ') ;		
+	}	
 	
-	mount_point = sanitize(mount_point) ;
+	mount_point = sanitize(StringCont(q)) ;
+	c = StringContCopy(q) ;
+	StringDelete(q);
 	
 	fclose(f);	
 
@@ -632,28 +646,31 @@ int unmount_volume( const char * map )
 	StringCat(q, "  ; ") ;
 	StringCat(q,ZULUCRYPTecho) ;
 	StringCat(q, " $?") ;
-		
 	execute(StringCont(q),buffer,1) ;
-	
 	StringDelete( q ) ;
 	
-	if(buffer[0] != '0')		
-		return 2 ;
+	if(buffer[0] != '0'){		
+		free(mount_point);
+		return 2 ;		
+	}
+	rmdir( c ) ;
 	
-	rmdir( mount_point ) ;
-	
-	free(mount_point);	
+	free(mount_point);
+	free( c ) ;
 	
 	return 0 ;
 }
 
 int close_volume(const char * map) 
-{	
+{		
 	int i ;
+	
+	i = 0 ;
+	
 	i = unmount_volume( map ) ;
 	
 	if( i != 0 )
-		return i ;
+		return i ;	
 	
 	i = close_mapper( map ) ;		
 	
@@ -671,12 +688,9 @@ int mount_volume(const char * mapper,
 	StrHandle *q ;
 	
 	char *mount_point ;
+	char *sane_mapper ;
 	
-	struct stat st ;
-	
-	char s[5] ;
-	
-	unsigned long mountflags = 0 ;
+	char s[5] ;	
 	
 	p = StringCpy(m_point) ;		
 	
@@ -694,7 +708,11 @@ int mount_volume(const char * mapper,
 	else
 		q = StringCpy(ZULUCRYPTmount " -w ") ;
 	
-	StringCat( q , mapper ) ;
+	sane_mapper = sanitize( mapper ) ;
+	
+	StringCat( q , sane_mapper ) ;
+	
+	free( sane_mapper ) ;
 
 	StringCat( q , " ");
 
@@ -758,6 +776,7 @@ int open_luks( const char * device,
 	 *first part of the address.
 	 * 
 	 */	
+	
 	if( c == NULL )
 		c = mapper ;
 	else
@@ -904,7 +923,7 @@ int open_volume(const char * dev,
 		const char * source) 
 {
 	char status[2] ;	
-	StrHandle * p ;	
+	StrHandle * p = NULL ;
 	struct stat st ;
 	int h ;
 	int luks;
@@ -933,16 +952,16 @@ int open_volume(const char * dev,
 			return 1 ;			
 	}
 	
-	luks = is_luks( dev ) ;	
-
+	luks = is_luks( dev ) ;		
+	
 	if( luks == 0 )
 		h = open_luks( dev,map,mode,source,pass ) ;
 	else
 		h = open_plain( dev,map,mode,source,pass,"cbc-essiv:sha256" ) ;
-
+	
 	switch ( h ){
-		case 3 : return 3 ; break ;
-		case 2 : return 8 ; break ;
+		case 3 : goto out ; break ;
+		case 2 : h = 8 ; goto out ;break ;
 	}
 	
 	h = mount_volume(map,m_point,mode,id ) ;	
@@ -953,7 +972,7 @@ int open_volume(const char * dev,
 		
 		h = mount_volume(map,m_point,mode,id ) ;
 	}
-	
+	out:
 	return h ;	
 }
 

@@ -78,15 +78,22 @@ void help( void )
 int volume_info( const char * mapper )
 {
 	char * output = NULL ;
+	
+	int k = 0 ;
+	
 	StrHandle *p = StringCpy("/dev/mapper/zuluCrypt-");
 	StringCat(p,mapper);	
 	
+	while( k++ < StringLength(p)){
+		
+		if ( StringCharAt(p,k) == ' ' ){
+			StringCharSub(p,k,'_') ;			
+		}		
+	}			
+	
 	output = status( StringCont(p) ) ;
 	
-	if( output == NULL )
-		printf("ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib or couldnt open volume");
-	else
-		printf("%s\n",output);
+	printf("%s\n",output);
 	
 	StringDelete(p);
 	free(output) ;
@@ -95,8 +102,17 @@ int volume_info( const char * mapper )
 
 int close_opened_volume( char * mapping_name )
 {
+	int k = 0 ;
+	
 	StrHandle * p = StringCpy("/dev/mapper/zuluCrypt-");
 	StringCat( p , mapping_name ) ;
+	
+	while( k++ < StringLength(p)){
+		
+		if ( StringCharAt(p,k) == ' ' ){
+			StringCharSub(p,k,'_') ;			
+		}		
+	}			
 	
 	int st = close_volume( StringCont( p ) ) ;
 	
@@ -130,6 +146,8 @@ int open_volumes(int argn, char * device, char * mapping_name,int id, char * mou
 	
 	int st ;	
 	
+	int k = 0 ;
+	
 	if (argn < 5 ){
 		st = 11 ;
 		goto eerr ;
@@ -150,6 +168,13 @@ int open_volumes(int argn, char * device, char * mapping_name,int id, char * mou
 	
 	q = StringCpy("/dev/mapper/zuluCrypt-") ;
 	StringCat( q , mapping_name ) ;
+	
+	while( k++ < StringLength(q)){
+		
+		if ( StringCharAt(q,k) == ' ' ){
+			StringCharSub(q,k,'_') ;			
+		}		
+	}
 	
 	z = StringCpy(mount_point);
 	StringCat(z,"/");

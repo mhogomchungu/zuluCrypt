@@ -165,8 +165,8 @@ void createfile::pbCreate()
 	ddExe = ddExe + QString(" if=") ;
 	ddExe = ddExe + QString( b ) ;
 	ddExe = ddExe + QString(" of=") ;
-	ddExe = ddExe + ui->lineEditFilePath->text() + QString("/") + ui->lineEditFileName->text();
-	ddExe = ddExe + QString(" bs=1024 count=") + ui->lineEditFileSize->text() + size;
+	ddExe = ddExe + QString("\"") + ui->lineEditFilePath->text() + QString("/") + ui->lineEditFileName->text();
+	ddExe = ddExe + QString("\" bs=1024 count=") + ui->lineEditFileSize->text() + size;
 
 	dd.start( ddExe ) ;
 }

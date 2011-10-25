@@ -4,7 +4,7 @@
 #include <QString>
 #include <QStringList>
 #include <QMessageBox>
-
+#include <iostream>
 #include "startupupdateopenedvolumes.h"
 #include "zulucrypt.h"
 
@@ -62,7 +62,6 @@ void startupupdateopenedvolumes::run()
 		}
 
 		d = v ;
-
 		while ( *++d != '\n') { ; }
 
 		*d = '\0' ;
@@ -75,22 +74,36 @@ void startupupdateopenedvolumes::run()
 
 		p->start(QString(ZULUCRYPTmount));
 
-		p->waitForReadyRead() ;
+		p->waitForFinished() ;
 
 		c = p->readAllStandardOutput().data() ;
 
 		v = strrchr(volume,'/') + 1 ;
 
-		if( ( d = strstr(c,v ) ) == NULL ){
+		int j = 0 ;
+
+		while( *( volume + j++) != '\0') { ; }
+
+		char bff[j--] ;
+
+		strcpy(bff,v) ;
+
+		for( int n = 0 ; n < j ; n++){
+
+			if( bff[n] == ' ')
+				bff[n] = '_' ;
+		}
+
+		if( ( d = strstr(c,bff ) ) == NULL ){
 			emit UIMessage(QString("WARNING"),
-				  QString("An inconsitency is detected, /dev/mapper/zuluCrypt-" + \
+				  QString("An inconsitency is detected," + \
 					  QString(N) + QString(" is opened but not mounted")));
 			continue ;
 		}
 
 		v = d = d + strlen(v) + 4 ;
 
-		while ( *++v != ' ') { ; }
+		v = strstr(d," type ");
 
 		*v = '\0' ;
 

@@ -350,8 +350,10 @@ void zuluCrypt::closeEvent(QCloseEvent *e)
 	if(trayIcon->isVisible() == true){
 		this->hide();
 		e->ignore();
-	}else
+	}else{
+		this->hide();
 		e->accept();
+	}
 }
 
 void zuluCrypt::closeApplication()
@@ -604,7 +606,8 @@ void zuluCrypt::createEncryptedpartitionUI()
 char zuluCrypt::luksEmptySlots(QString volumePath)
 {
 	QProcess N ;
-	N.start(QString(ZULUCRYPTzuluCrypt) + QString(" emptyslots ") + volumePath);
+	N.start(QString(ZULUCRYPTzuluCrypt) + \
+		QString(" emptyslots \"") + volumePath + QString("\""));
 	N.waitForFinished() ;
 	char *s = N.readAllStandardOutput().data() ;
 	int i = 0 ;
@@ -619,8 +622,8 @@ char zuluCrypt::luksEmptySlots(QString volumePath)
 bool zuluCrypt::isLuks(QString volumePath)
 {
 	QProcess N ;
-	N.start(QString(ZULUCRYPTzuluCrypt) + QString(" isLuks ") + \
-		QString("\"") + volumePath + QString("\"") );
+	N.start(QString(ZULUCRYPTzuluCrypt) + \
+		QString(" isLuks ") + QString("\"") + volumePath + QString("\"") );
 	N.waitForFinished() ;
 
 	int i = N.exitCode() ;
@@ -801,7 +804,8 @@ void zuluCrypt::options(QTableWidgetItem* t)
 
 	QProcess Z ;
 
-	Z.start( QString(ZULUCRYPTzuluCrypt) + QString(" isLuks ") + ui->tableWidget->item(item->row(),0)->text());
+	Z.start( QString(ZULUCRYPTzuluCrypt) + QString(" isLuks ") + QString("\"") + \
+		 ui->tableWidget->item(item->row(),0)->text() + QString("\""));
 
 	Z.waitForFinished() ;
 
@@ -881,8 +885,8 @@ void zuluCrypt::close(void)
 {
 	QProcess p ;
 
-	QString exe = QString(ZULUCRYPTzuluCrypt) + QString(" close ") + \
-			ui->tableWidget->item(item->row(),0)->text() ;
+	QString exe = QString(ZULUCRYPTzuluCrypt) + QString(" close ") + QString("\"") + \
+			ui->tableWidget->item(item->row(),0)->text() + QString("\"") ;
 
 	p.start( exe ) ;
 

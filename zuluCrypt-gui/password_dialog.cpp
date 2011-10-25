@@ -228,10 +228,12 @@ void password_Dialog::buttonOpenClicked(void )
 		}
 	}
 
-	QString exe = QString(ZULUCRYPTzuluCrypt) + " open \"" + \
-			volumePath + "\" \"" + \
-			mountPointPath + "\" " + \
-			mode + " " + passtype + "\"" + passPhraseField +"\"";
+	QString exe = QString(ZULUCRYPTzuluCrypt) + \
+			QString(" open ") + \
+			QString(" \"") + volumePath + QString("\" ") + \
+			QString(" \"") + mountPointPath + QString("\" ") + \
+			mode + QString(" ") + passtype + \
+			QString(" \"") + passPhraseField + QString("\"");
 
 	ovt = new openVolumeThread(exe,&status) ;
 
@@ -312,15 +314,25 @@ void password_Dialog::threadfinished()
 
 			c = Z.readAllStandardOutput().data() ;
 
-			N = "/dev/mapper/zuluCrypt-" + volumePath.split("/").last() ;
+			QString x = volumePath.split("/").last() ;
+
+			for( int i = 0 ; i < x.size() ; i ++){
+
+				if(x.at(i).toAscii() == ' '){
+					x.remove(i,1);
+					x.insert(i,QChar('_'));
+				}
+			}
+
+			N = "/dev/mapper/zuluCrypt-" + x ;
 
 			d = N.toAscii().data() ;
 
 			k = strlen( d ) ;
 
-			d = c = strstr( c , d )  + k + 4 ;
+			c = strstr( c , d )  + k + 4 ;
 
-			while (*++d != ' ') { ; }
+			d = strstr( c , " type " ) ;
 
 			*d = '\0' ;
 
