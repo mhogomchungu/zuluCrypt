@@ -650,6 +650,7 @@ int unmount_volume( const char * map )
 	StringDelete( q ) ;
 	
 	if(buffer[0] != '0'){		
+		free( c ) ;
 		free(mount_point);
 		return 2 ;		
 	}
