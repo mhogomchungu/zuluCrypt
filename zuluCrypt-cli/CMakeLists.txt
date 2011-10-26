@@ -1,5 +1,7 @@
  cmake_minimum_required(VERSION 2.6)   
  
+ add_definitions( -D_FILE_OFFSET_BITS=64 -Wall )
+ 
  message( STATUS "Checking for libcryptsetup.h" )
  
  find_file ( libcryptsetup.h libcryptsetup.h ) 
@@ -8,9 +10,7 @@
 	 message (FATAL_ERROR "ERROR: could not find libcryptsetup.h header file, is the development package of cryptsetup installed?")
  endif(NOT libcryptsetup.h)
 	 
- message( STATUS ${libcryptsetup.h} " - found" )
- 
- add_definitions( ${libcryptsetup.h} -D_FILE_OFFSET_BITS=64 -Wall )
+ message( STATUS ${libcryptsetup.h} " - found" ) 
  
  message( STATUS "Checking for libcryptsetup.so" )
  

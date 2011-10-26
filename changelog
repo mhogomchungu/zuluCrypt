@@ -29,5 +29,8 @@ version 4.0
 -- provide a complete docs in a header file on how to interface with libzuluCrypt.so
 -- include partitions in /etc/crypttab in a list of system partitions. 	
 
+version 4.1.0
+-- minor update, fix bugs comming from mishandling of files and paths with empty spaces in them.
+
 version 5.0
 translations support of people are interested in the tool in different languages.
