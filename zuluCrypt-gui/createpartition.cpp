@@ -195,8 +195,8 @@ void createpartition::pbCreateClicked()
 	m.addButton(QMessageBox::No);
 	m.setDefaultButton(QMessageBox::No);
 
-	QString wr = QString("all contents of ") ;
-	wr = wr + ui->lineEditVolumePath->text() + QString(" will be deleted!.");
+	QString wr = QString("all contents of \"") ;
+	wr = wr + ui->lineEditVolumePath->text() + QString("\" will be deleted!.");
 	wr = wr + QString("\nAre you sure you want to proceed?") ;
 	m.setText(wr);
 
