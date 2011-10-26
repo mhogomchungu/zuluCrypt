@@ -1,6 +1,4 @@
- cmake_minimum_required(VERSION 2.6)
-
- add_definitions( -D_FILE_OFFSET_BITS=64 -Wall )  
+ cmake_minimum_required(VERSION 2.6)   
  
  message( STATUS "Checking for libcryptsetup.h" )
  
@@ -11,6 +9,8 @@
  endif(NOT libcryptsetup.h)
 	 
  message( STATUS ${libcryptsetup.h} " - found" )
+ 
+ add_definitions( ${libcryptsetup.h} -D_FILE_OFFSET_BITS=64 -Wall )
  
  message( STATUS "Checking for libcryptsetup.so" )
  
