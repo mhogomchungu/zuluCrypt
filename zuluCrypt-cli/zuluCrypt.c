@@ -81,6 +81,8 @@ int volume_info( const char * mapper )
 	
 	int k = 0 ;
 	
+	struct stat st;
+	
 	StrHandle *p = StringCpy("/dev/mapper/zuluCrypt-");
 	StringCat(p,mapper);	
 	
@@ -90,6 +92,12 @@ int volume_info( const char * mapper )
 			StringCharSub(p,k,'_') ;			
 		}		
 	}			
+	
+	if( stat( StringCont(p),&st) != 0 ) {
+		printf("%s is inactive\n",StringCont(p)) ;
+		StringDelete(p);
+		return 0 ;
+	}
 	
 	output = status( StringCont(p) ) ;
 	
