@@ -261,70 +261,6 @@ void char_from_numbers( char * buffer,int size, int k )
 	}while( ( k = k / 10 ) != 0 )	;
 }
 
-//doesnt work,dont think its necessary
-int create_file(char * name, char *random_device , char * size,uid_t id )
-{
-	struct stat st;
-	double k,j,l,n ; ;
-	//int  r ;
-	char c ;
-	char Z[3] ={ '0','0','0'} ;
-	
-	StrHandle * p ;
-	
-	if( random_device == NULL )
-		return 10 ;
-	
-	if ( fork() == 0 ){		
-		p = StringCpy(ZULUCRYPTdd " if=");
-		StringCat( p , random_device ) ;
-		StringCat( p , " of=") ;
-		StringCat( p , name ) ;
-		StringCat( p , " bs=1024 count=");
-		StringCat( p , size) ;
-		StringCat( p , " 2>/dev/null 1>&2") ;
-		
-		popen( StringCont( p ),"r") ;
-		
-		StringDelete( p ) ;
-		
-		chown(name,id,id);
-		chmod(name,S_IRWXU);
-	}else{	
-		c = size[strlen(size)-1] ;
-		size[strlen(size)-1] = '\0' ;
-		n = atoll(size) ;	
-
-		switch( c ){
-			case 'K' : n = n * 1024 ; break;
-			case 'M' : n = n * 1024 * 1024  ; break ;
-			case 'G' : n = n * 1024 * 1024 * 1024   ; break ;
-			default: ;
-		}
-		
-		do{			
-			stat(name,&st);			
-			k =(double) st.st_size;
-			sleep(2);
-			stat(name,&st);			
-			j = (double) st.st_size;
-			l =  ( (  j  /  n ) * 100 )   ;
-
-			write( 1 , "\rpercentage complete: ",22);
-			
-			char_from_numbers(Z,3,(int)l) ;
-			
-			write( 1, Z ,3 ) ;
-			write( 1, "%",1) ;
-			
-		}while( k != j );
-
-		printf("\n") ;
-	}
-	
-	return 0 ;
-}
-
 void partitions(StrHandle *partitions, StrHandle * fstab_partitions, StrHandle * non_system_partitions)
 {
 	char *c,*d ;
@@ -936,10 +872,9 @@ int check_system_tools(void)
 	StrHandle * p ;
 	
 	if( stat(ZULUCRYPTblkid,&st) == 0 && stat(ZULUCRYPTcryptsetup,&st) == 0 \
-		&& stat(ZULUCRYPTdd,&st) == 0 && stat(ZULUCRYPTe2label,&st) ==0 \
 		&& stat(ZULUCRYPTecho,&st) ==0 && stat(ZULUCRYPTlosetup,&st) ==0 \
 		&& stat(ZULUCRYPTmkfs,&st) ==0 && stat(ZULUCRYPTmount,&st) ==0 \
-		&& stat(ZULUCRYPTrm,&st) ==0 && stat(ZULUCRYPTumount,&st) ==0 ){
+		&& stat(ZULUCRYPTumount,&st) ==0 && stat(ZULUCRYPTdd,&st)==0){
 		
 		return 0 ;
 	}	
@@ -947,10 +882,6 @@ int check_system_tools(void)
 	StringCat( p , "\n" ) ;
 	StringCat( p , ZULUCRYPTblkid) ;
 	StringCat( p , "\n" ) ;	
-	StringCat( p , ZULUCRYPTdd) ;
-	StringCat( p , "\n" ) ;
-	StringCat( p , ZULUCRYPTe2label) ;
-	StringCat( p , "\n" ) ;
 	StringCat( p , ZULUCRYPTecho) ;
 	StringCat( p , "\n" ) ;
 	StringCat( p , ZULUCRYPTlosetup) ;
@@ -959,10 +890,10 @@ int check_system_tools(void)
 	StringCat( p , "\n" ) ;
 	StringCat( p , ZULUCRYPTmount) ;
 	StringCat( p , "\n" ) ;
-	StringCat( p , ZULUCRYPTrm) ;
-	StringCat( p , "\n" ) ;
 	StringCat( p , ZULUCRYPTumount) ;
-
+	StringCat( p , "\n" ) ;
+	StringCat( p , ZULUCRYPTdd) ;
+	
 	printf("this program will not work as expected on your system\n");
 	printf("because one or more of the following tools are either not present\n") ;
 	printf("or not where they are expected to be.\n%s\n",StringCont( p ));
@@ -1047,12 +978,8 @@ int main( int argc , char *argv[])
 		
 	}else if(strcmp(action,"removekey") == 0 ){
 				
-		status =  removekey(argc, device, argv[3],argv[4] );
+		status =  removekey(argc, device, argv[3],argv[4] );	
 	
-	}else if (strcmp(action,"createfile") == 0 ){
-		
-		status =  create_file(device,argv[3],argv[4],id) ; 
-		
 	}else if ( strcmp(action,"partitions") == 0 ){
 		
 		p = StringCpy("");
