@@ -5,6 +5,10 @@ ADD_SUBDIRECTORY( zuluCrypt-cli )
 
 ADD_SUBDIRECTORY( zuluCrypt-gui )
 
+install (FILES zuluCrypt-cli.1.bz2 
+DESTINATION share/man/man1
+)
+
 # uninstall target
 configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"

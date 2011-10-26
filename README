@@ -1,26 +1,28 @@
 
+how to build and install
 
+run the following commands:
+
+./configure
+make
+make install (must run this one with root's privileges)
+
+how to uninstall
+
+./make uninstall (must run this one with root's privileges
+	
 zuluCrypt is a front end to cryptsetup. It aims to simplify using cryptsetup volumes by creating a simple to use
 command line interface and a Qt based GUI front end to the command line.
 
-The command line program is called "zuluCrypt-cli", the Qt based GUI is called "zuluCrypt".
+The command line program is called "zuluCrypt-cli", the Qt based GUI is called "zuluCrypt-gui".
 The cli part of the program is an suid program to allow management of the volumes without 
 setting up sudo with appropriate permissions first or requiring root's password.
 
 The GUI part of the program calls the cli part for its operations.
 
-How to build and install:
-./configure
-make
-make install (require root's privileges)
+USAGE
 
-How to uninstall:
-make uninstall
-
-How to use the GUI part of the program.
-It GUI should be obvious enough to figure it out without instructions. 
-
-How to use the cli part of the suite.
+how to use zuluCrypt-cli
 
 1. How to open a volumes.
 
@@ -32,8 +34,7 @@ zuluCrypt-cli open <path to volume> <mount point path> <mode>
 
 The above usage is appropriate when using the program interactively because the user will be asked for a password and it wont be displayed.
 
-
-Another way to open a volume is with this format. This format is more convenient when the cli is used by another application.
+Another way to open a volume is with below format. This format is more convenient when the cli is used by another application.
 
 zuluCrypt-cli <path to volume> <mount point path> <mode> <pass type > <passphrase> 
 
@@ -43,29 +44,27 @@ zuluCrypt-cli <path to volume> <mount point path> <mode> <pass type > <passphras
 
 zuluCrypt-cli status <path to volume>
 
-The last part of the address should be suffient.
-ie. if a volume is at "/dev/sda4", zuluCrypt-cli status sda4 will work, so will zuluCrypt-cli status /dev/sda4
-
 3. How to close an opened volume
 zuluCrypt-cli close <path to volume>
 
 4. How to create new volumes
-zuluCrypt-cli create <path to volume> <file system type> <encryption type>
+zuluCrypt-cli create <path to volume> <file system type> <encryption type> <random number generator>
 
 <encryption type> is either "plain" or "luks"
 
+<<random number generator> is either "/dev/random" or "/dev/urandom"
+
+plain volumes do not use random number generator and hence the option is ignored but it must be presented.
+
 example usage
-zuluCrypt-cli create /home/mhogomchungu/BankDocuments ext4 plain
-zuluCrypt-cli create /mnt/mhogomchungu/ConfidentialBusinessRecords ext4 luks
+zuluCrypt-cli create /home/mhogomchungu/BankDocuments ext4 plain /dev/urandom
+zuluCrypt-cli create /mnt/mhogomchungu/ConfidentialBusinessRecords ext4 luks /dev/urandom
 
 another alternative suitable when called from another program:
 
-zuluCrypt-cli create /mnt/mhogomchungu/ConfidentialBusinessRecords ext4 luks -f path-to-keyfile
+zuluCrypt-cli create /mnt/mhogomchungu/ConfidentialBusinessRecords ext4 luks -f path-to-keyfile /dev/urandom
 
-zuluCrypt-cli create /mnt/mhogomchungu/ConfidentialBusinessRecords ext4 luks -p typing-in-passphrase
-
-Note:
-Only non system partitions can be created. Non system partitions are partitions that do not have active entries in fstab.
+zuluCrypt-cli create /mnt/mhogomchungu/ConfidentialBusinessRecords ext4 luks -p typing-in-passphrase /dev/urandom
 
 5. How to add a key to a luks volume
 zuluCrypt-cli addkey <path to luks volume> < source > < passphrase > < source > < passphrase1 >
@@ -83,8 +82,10 @@ for interactive use, run zuluCrypt-cli removekey < path to volume > and follow i
 	
 7. How to see which ones and how many slots are empty is a luks volume
 zuluCrypt-cli emptyslots <path to volume>
-"1" represent an accupied slots
-"0" represent an empty slots
+"0" represent an inactive slot/empty slots
+"1" represent an active slot/accupied slots
+"2" represent an invalid slot
+"3" represent a last active slot
 
 8.
 How to get a list of all partitions
@@ -100,3 +101,8 @@ This tool will create volumes only in non system partitions. This will allow a n
 in external hard drives but not on a root's partition effectively distroying a system.
 
 System partition is a partition with an active entry in /etc/fstab and /etc/crypttab
+
+AUTHOR
+mhogo mchungu
+
+Last change: Wed Oct 26 17:46:57 EDT 2011

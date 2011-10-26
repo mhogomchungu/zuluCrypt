@@ -71,8 +71,8 @@ StrHandle * get_passphrase( void )
 
 void help( void )
 {
-	printf("you are here, you probably run the tool with wrong number of arguments.\n") ;
-	printf("documentation on proper use of the tool are at http://code.google.com/p/zulucrypt\n");	
+	printf("run \"man zuluCrypt-cli\" for documentation on how to run this tool.\n") ;
+	printf("The same documentation can be found at http://code.google.com/p/zulucrypt\n");	
 }
 
 int volume_info( const char * mapper )
