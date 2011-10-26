@@ -964,6 +964,11 @@ int main( int argc , char *argv[])
 	
 		status =  is_luks( device ) ;
 		
+		if( status == 0 )
+			printf("\"%s\" is a luks device\n",device) ;
+		else
+			printf("\"%s\" is not a luks device\n",device) ;
+		
 	}else if ( strcmp( action, "status" ) == 0 ){			
 
 		status = volume_info( mapping_name ) ;
