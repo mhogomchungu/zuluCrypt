@@ -133,8 +133,6 @@ int close_opened_volume( char * mapping_name )
 		break ;
 	case 3 : printf("ERROR: close failed, volume does not have an entry in /etc/mtab\n") ;
 		break ;
-	case 4 : printf("ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /library\n") ;
-		break ;
 	default :
 		; //shouldnt get here			
 	}	
@@ -144,7 +142,14 @@ int close_opened_volume( char * mapping_name )
 	return st ;	
 }
 
-int open_volumes(int argn, char * device, char * mapping_name,int id, char * mount_point, char * mode,char *source, char * pass)
+int open_volumes(int    argn,
+		 char * device,
+		 char * mapping_name,
+		 int    id,
+		 char * mount_point,
+		 char * mode,
+		 char * source,
+		 char * pass)
 {
 	StrHandle * p ;
 	
@@ -240,8 +245,7 @@ int open_volumes(int argn, char * device, char * mapping_name,int id, char * mou
 		case 5 : printf("ERROR: a file or folder already exist at mount point\n") ;
 			break ;		
 		case 6 : printf("ERROR: passphrase file does not exist\n");
-			break ;		
-		case 7 : printf("ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib\n");
+			break ;	
 		case 11 : printf("ERROR: Wrong number of arguments, run zuluCrypt with \"-h\" for help\n");
 			break ;
 		case 9 : printf("ERROR: failed to open volume\n");
@@ -255,18 +259,6 @@ int open_volumes(int argn, char * device, char * mapping_name,int id, char * mou
 			;			
 	}	
 	return st ;
-}
-
-void char_from_numbers( char * buffer,int size, int k )
-{
-	char *c ;
-	
-	c = &buffer[ size - 1 ] ;
-	
-	do{		
-		*c =  k % 10 + '0' ;
-		c-- ;			
-	}while( ( k = k / 10 ) != 0 )	;
 }
 
 void partitions(StrHandle *partitions, StrHandle * fstab_partitions, StrHandle * non_system_partitions)
@@ -587,8 +579,6 @@ int create_volumes(int    argn ,
 			break  ;
 		case 2 : printf("ERROR: Wrong option type\n");
 			break  ;
-		case 3 : printf("ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib\n");
-			break  ;
 		case 4 : printf("ERROR: Wrong number of arguments\n");
 			break  ;
 		case 5 : printf("ERROR: Wrong choice, exiting\n");
@@ -603,27 +593,7 @@ int create_volumes(int    argn ,
 	return st ;
 }
 
-void delete_file( char * file )
-{
-	int i, j, k  ;
-	struct stat st ;	
-	char X = 'X' ;
-	
-	stat(file, &st) ;
-
-	k = open("/dev/urandom",O_RDONLY);
-	i = open( file, O_WRONLY ) ;
-	
-	for( j = 0 ; j < st.st_size ; j ++ ){
-		read(  k , &X, 1 ) ;
-		write( i , &X, 1 ) ;	
-	}
-	close( i ) ;
-	close( k ) ;
-	remove( file ) ;	
-}
-
-int addkey(int argn,
+int addkey(int    argn,
 	   char * device,
 	   char * keyType1,
 	   char * existingKey,
@@ -770,8 +740,6 @@ int addkey(int argn,
 		break ;
 		case 3 : printf("ERROR: device \"%s\" is not a luks device\n",device) ;
 		break ;
-		case 4 : printf("ERROR: ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib\n");
-		break ;
 		case 5 : printf("ERROR: Wrong arguments\n") ;
 		break ;
 		case 6 : printf("ERROR: Wrong number of arguments\n") ;
@@ -859,7 +827,6 @@ int removekey( int argn , char * device, char * keyType, char * keytoremove )
 		break ;
 		case 3 : printf("ERROR: could not open device\n") ;
 		break ;  
-		case 4 : printf("ERROR: ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib\n");
 		case 5 : printf("ERROR: keyfile does not exist\n") ;
 		break ;
 		case 6 : printf("ERROR: Wrong number of arguments\n") ;
@@ -1031,7 +998,6 @@ int main( int argc , char *argv[])
 				break ;
 			case 2 :printf("ERROR: could not open device\n") ;
 				break ;
-			case 3 :printf("ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib\n") ;
 		}
 	}else{
 		printf("ERROR: Wrong argument\n") ;
