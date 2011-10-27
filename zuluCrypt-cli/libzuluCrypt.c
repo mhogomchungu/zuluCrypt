@@ -301,37 +301,37 @@ char * status( const char * mapper )
 
 	csi = crypt_status(cd, mapper);
 	
-	p = StringCpy(mapper) ;
+	p = String(mapper) ;
 	
 	switch( csi){
-		case CRYPT_INACTIVE : 	StringCat(p," is inactive.\n") ; goto out ;	break ;
-		case CRYPT_ACTIVE   : 	StringCat(p," is active.\n") ;			break ;
-		case CRYPT_BUSY     : 	StringCat(p," is active and is in use.\n") ;	break ;
-		case CRYPT_INVALID  : 	StringCat(p," is invalid.\n") ;	 goto out ;	break ;
+		case CRYPT_INACTIVE : 	StringAppend(p," is inactive.\n") ; goto out ;	break ;
+		case CRYPT_ACTIVE   : 	StringAppend(p," is active.\n") ;			break ;
+		case CRYPT_BUSY     : 	StringAppend(p," is active and is in use.\n") ;	break ;
+		case CRYPT_INVALID  : 	StringAppend(p," is invalid.\n") ;	 goto out ;	break ;
 	}	
 		
 	type = crypt_get_type(cd) ;	
 	
-	StringCat(p," type:      ");
+	StringAppend(p," type:      ");
 	
-	StringCat(p,type) ;
+	StringAppend(p,type) ;
 
-	StringCat(p,"\n cipher:    ");
-	StringCat(p,crypt_get_cipher_mode(cd)) ;
+	StringAppend(p,"\n cipher:    ");
+	StringAppend(p,crypt_get_cipher_mode(cd)) ;
 	
-	StringCat(p,"\n keysize:   ");
-	StringCat(p,intToChar(keysize,SIZE,8 * crypt_get_volume_key_size(cd))) ;
-	StringCat(p," bits");
+	StringAppend(p,"\n keysize:   ");
+	StringAppend(p,intToChar(keysize,SIZE,8 * crypt_get_volume_key_size(cd))) ;
+	StringAppend(p," bits");
 	
-	StringCat(p,"\n device:    ");
-	StringCat(p,crypt_get_device_name(cd)) ;
+	StringAppend(p,"\n device:    ");
+	StringAppend(p,crypt_get_device_name(cd)) ;
 	
 	if( strncmp(crypt_get_device_name(cd),"/dev/loop",9 ) == 0){
 		
-		q = StringCpy(ZULUCRYPTlosetup) ;
-		StringCat(q," ");
-		StringCat(q,crypt_get_device_name(cd)) ;
-		execute(StringCont(q),loop,510) ;
+		q = String(ZULUCRYPTlosetup) ;
+		StringAppend(q," ");
+		StringAppend(q,crypt_get_device_name(cd)) ;
+		execute(StringContent(q),loop,510) ;
 		StringDelete( q ) ;
 		
 		c = loop ;
@@ -347,27 +347,27 @@ char * status( const char * mapper )
 		i = 0 ;
 	
 		realpath(c,path) ;
-		StringCat(p,"\n loop:      ");
-		StringCat(p,path);
+		StringAppend(p,"\n loop:      ");
+		StringAppend(p,path);
 	}
 	
-	StringCat(p,"\n offset:    ");
-	StringCat(p,intToChar(keysize,SIZE,crypt_get_data_offset(cd))) ;	
-	StringCat(p," sectors");	
+	StringAppend(p,"\n offset:    ");
+	StringAppend(p,intToChar(keysize,SIZE,crypt_get_data_offset(cd))) ;	
+	StringAppend(p," sectors");	
 	
-	StringCat(p,"\n size:      ");
-	StringCat(p,intToChar(keysize,SIZE,cad.size)) ;	
-	StringCat(p," sectors");
+	StringAppend(p,"\n size:      ");
+	StringAppend(p,intToChar(keysize,SIZE,cad.size)) ;	
+	StringAppend(p," sectors");
 	
-	StringCat(p,"\n mode:      ");
+	StringAppend(p,"\n mode:      ");
 	
 	if( cad.flags == 1 )
-		StringCat(p,"readonly");
+		StringAppend(p,"readonly");
 	else
-		StringCat(p,"read/write");			
+		StringAppend(p,"read/write");			
 	
 	out:
-	c = StringContCopy(p) ;	
+	c = StringCopy(p) ;	
 	StringDelete(p) ;
 	crypt_free(cd);	
 	crypt_free(cd1);	
@@ -550,13 +550,13 @@ int create_volume(const char * dev,
 		return 2 ;
 	}
 		
-	q = StringCpy(ZULUCRYPTmkfs );
-	StringCat( q , " -t ") ;
-	StringCat( q , fsys ) ;
-	StringCat( q , " " ) ;
-	StringCat( q , "/dev/mapper/zuluCrypt-create-new 1>/dev/null 2>&1 ") ;
+	q = String(ZULUCRYPTmkfs );
+	StringAppend( q , " -t ") ;
+	StringAppend( q , fsys ) ;
+	StringAppend( q , " " ) ;
+	StringAppend( q , "/dev/mapper/zuluCrypt-create-new 1>/dev/null 2>&1 ") ;
 	
-	execute(StringCont(q),NULL,0) ;
+	execute(StringContent(q),NULL,0) ;
 	
 	StringDelete( q ) ;
 		
@@ -592,8 +592,6 @@ int unmount_volume( const char * map )
 	
 	char buffer[256] ;
 	
-	int i ;
-	
 	if ( stat( map , &st ) != 0 )
 		return 1 ;		
 	
@@ -610,27 +608,24 @@ int unmount_volume( const char * map )
 			break ;
 		}		
 	}
+	fclose(f);
 	
 	if ( mount_point == NULL )
-		return 3 ;	
-		
+		return 3 ;			
+
+	q = String(mount_point) ;	
+	
 	/*
 	 * space character in /etc/mtab file is stored as \040
 	 * replace these characters with space again	 * 
 	 */	
-	q = StringCpy(mount_point) ;	
-
-	while( ( i = StringPosString(q,"\\040") ) != -1 ){
-		
-		StringStringRemove(q,i,4);
-		StringCharInsert(q,i,' ') ;		
-	}	
+	StringReplaceString(q,"\\040"," ") ;	
 	
-	mount_point = sanitize(StringCont(q)) ;
-	c = StringContCopy(q) ;
-	StringDelete(q);
+	mount_point = sanitize(StringContent(q)) ;
 	
-	fclose(f);	
+	c = StringCopy(q) ;
+	
+	StringDelete(q);		
 
 	/*
 	 * mount/umount system calls do not add entries in mtab and 
@@ -640,13 +635,13 @@ int unmount_volume( const char * map )
 	 * workaround is to use the mount/umount executables to mount/unmount volumes. 
 	 */
 	
-	q = StringCpy(ZULUCRYPTumount) ;
-	StringCat(q, " ");
-	StringCat(q, mount_point) ;
-	StringCat(q, "  ; ") ;
-	StringCat(q,ZULUCRYPTecho) ;
-	StringCat(q, " $?") ;
-	execute(StringCont(q),buffer,1) ;
+	q = String(ZULUCRYPTumount) ;
+	StringAppend(q, " ");
+	StringAppend(q, mount_point) ;
+	StringAppend(q, "  1>/dev/null 2>&1 ; ") ;
+	StringAppend(q,ZULUCRYPTecho) ;
+	StringAppend(q, " $?") ;
+	execute(StringContent(q),buffer,1) ;
 	StringDelete( q ) ;
 	
 	if(buffer[0] != '0'){		
@@ -654,9 +649,11 @@ int unmount_volume( const char * map )
 		free(mount_point);
 		return 2 ;		
 	}
+	
 	rmdir( c ) ;
 	
 	free(mount_point);
+	
 	free( c ) ;
 	
 	return 0 ;
@@ -693,43 +690,43 @@ int mount_volume(const char * mapper,
 	
 	char s[5] ;	
 	
-	p = StringCpy(m_point) ;		
+	p = String(m_point) ;		
 	
-	if ( mkdir( StringCont( p ), S_IRWXU  ) != 0 ){
-		StringCat( p, ".zc") ;
+	if ( mkdir( StringContent( p ), S_IRWXU  ) != 0 ){
+		StringAppend( p, ".zc") ;
 		
-		if ( mkdir( StringCont( p ),S_IRWXU  ) != 0 ){
+		if ( mkdir( StringContent( p ),S_IRWXU  ) != 0 ){
 			StringDelete( p ) ;
 			return 5 ;		
 		}
 	}
 
 	if ( strncmp( mode, "ro",2 ) == 0 )
-		q = StringCpy(ZULUCRYPTmount " -r ") ;
+		q = String(ZULUCRYPTmount " -r ") ;
 	else
-		q = StringCpy(ZULUCRYPTmount " -w ") ;
+		q = String(ZULUCRYPTmount " -w ") ;
 	
 	sane_mapper = sanitize( mapper ) ;
 	
-	StringCat( q , sane_mapper ) ;
+	StringAppend( q , sane_mapper ) ;
 	
 	free( sane_mapper ) ;
 
-	StringCat( q , " ");
+	StringAppend( q , " ");
 
-	mount_point = sanitize( StringCont( p ) ) ;
+	mount_point = sanitize( StringContent( p ) ) ;
 	
-	StringCat( q , mount_point ) ;
+	StringAppend( q , mount_point ) ;
 	
-	StringCat( q , "  2>/dev/null 1>&2 ; ") ;
-	StringCat( q , ZULUCRYPTecho ) ;
-	StringCat( q , " $?");
+	StringAppend( q , "  2>/dev/null 1>&2 ; ") ;
+	StringAppend( q , ZULUCRYPTecho ) ;
+	StringAppend( q , " $?");
 	
-	execute(StringCont( q ),s,1) ;	
+	execute(StringContent( q ),s,1) ;	
 	
 	if( s[0] != '0' ){
 		
-		remove( StringCont( p ) ) ;
+		remove( StringContent( p ) ) ;
 		StringDelete( q ) ;
 		StringDelete( p ) ;
 		free(mount_point ) ;	
@@ -739,9 +736,9 @@ int mount_volume(const char * mapper,
 		return 4 ;
 	}
 		
-	chown( StringCont( p ), id, id ) ;
+	chown( StringContent( p ), id, id ) ;
 	
-	chmod( StringCont( p ), S_IRWXU ) ;
+	chmod( StringContent( p ), S_IRWXU ) ;
 	
 	StringDelete( q ) ;
 	StringDelete( p ) ;
@@ -942,11 +939,11 @@ int open_volume(const char * dev,
 
 	if ( strncmp(dev,"/dev/",5) != 0 ){
 	
-		p = StringCpy( ZULUCRYPTlosetup  ) ;
-		StringCat(p ," -f 2>/dev/null 1>&2 ;" );
-		StringCat(p , ZULUCRYPTecho ) ;
-		StringCat(p , "  $? " ) ;
-		execute(StringCont( p ),status,1) ;
+		p = String( ZULUCRYPTlosetup  ) ;
+		StringAppend(p ," -f 2>/dev/null 1>&2 ;" );
+		StringAppend(p , ZULUCRYPTecho ) ;
+		StringAppend(p , "  $? " ) ;
+		execute(StringContent( p ),status,1) ;
 		StringDelete( p ) ;
 		
 		if ( status[0] != '0' )

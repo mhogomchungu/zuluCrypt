@@ -39,137 +39,211 @@ typedef struct {
  * Argument:      A character array to be stored
  * Return value:  A handle to use for subsequent access to the array, NULL is returned on fail.
  */
-StrHandle * StringCpy(const char * data) ;
-
-
-
-/*
- * A string is a character array, this functions appends a string by doing the following: 
- * 1. Request enough memory to hold the old array and the new array  
- * 2. Copy the old array to the newly requested memory.
- * 3. Concatenate the new array at the end of the old one on the newly requested memory
- * 4. Delete old array
- *  
- * Note: Nothing happens when step 1 fails. A way to check if the operation passed or not is to call StringLength function before and after
- *       and compare the string lengths, If they are equal, the operation failed.
- * 
- */
-const char * StringCat(StrHandle * st ,const  char * data)  ;
+StrHandle * String(const char * data) ;
 
 
 /*
- * "cont" is a short form of "content"
- * Returns a const string
- * 
- */
-const char * StringCont( StrHandle * st) ;
-
-/*
- * "cont" is a short form of "content"
- * Returns an editable string.
- * Remember to free it when you are done using it.
- * 
- */
-char * StringContCopy( StrHandle *st ) ;
-
-
-/*
- * Write to content of a string handled by "st" to a buffer pointed by "buffer" 
+ * Append a string contained in the structure handled by st with "data" string 
  *
+ *On success, a concatenated string is returned.
+ *On error, the original string is returned. * 
+ */
+const char * StringAppend(StrHandle * st ,const  char * data)  ;
+
+
+/* 
+ * Returns a const pointer to a string handled by handle st. 
+ */
+const char * StringContent( StrHandle * st) ;
+
+/* 
+ * Returns an editable string of a string handled by handle st. 
+ * Remember to free it when you are done using it. * 
+ */
+char * StringCopy( StrHandle *st ) ;
+
+
+/*
+ * Write "size" amount of content of a string handled by "st" to a buffer pointed by "buffer"  *
  */
 void StringReadToBuffer( StrHandle * st,char *buffer, int size) ;
 
 
 /*
  * Remember to clean after yourself.
+ * Always call this function when you are done with the string handled by handle st.
  */
 void StringDelete(StrHandle * st);
 
 
 /*
- * Return the length of the string
+ * Return the length of the string handled by handle st.
  */
 int StringLength(StrHandle * st) ;
 
 
 /*
  * Return a character at position p.First position is at "0".
+ * 
+ * NOTE: it is your responsibility to make sure p is within range
  */
-
 char StringCharAt( StrHandle * st, int p) ;
 
 /*
- * return the position of the first occurance of character s
+ * return the position of the first occurance of character s starting from position p.
+ * 
+ * -1 is returned if the character is not in the string.
+ * 
+ * NOTE: first character in the string is at position 0
  */
+int StringIndexOfChar( StrHandle * st, int p , char s ) ;
 
-int StringPosChar( StrHandle * st , char s ) ;
 
 /*
- * return the position of the first occurance of string s
- * -1 is returned when s isnt in the string
- */
-int StringPosString( StrHandle * st, const char * s ) ;
-
-/*
- * Return a string starting at position p. First position is at 0 
+ * return the position of the first occurance of string s starting from position p.
  *  
+ * -1 is returned if s isnt in the string
+ * 
+ * NOTE: first character in the string is at position 0
  */
-const char * StringFrom( StrHandle * st , int p) ;
+int StringIndexOfString( StrHandle * st,int p, const char * s ) ;
+
+
+/*
+ * Return the position of the last occurance of character s
+ * 
+ * -1 is returned if the character isnt in the string
+ */
+int StringLastIndexOfChar(StrHandle * st , char s) ;
+
+
+/*
+ * Returns the last occurance of a string pointed by s
+ * 
+ * -1 is returned of the string is not found.
+ * 
+ * NOTE: first character in the string is at position 0
+ * 
+ */
+int StringLastIndexOfString(StrHandle * st , const char *s) ;
+
+
+/*
+ * Return a const string starting at position p. First position is at 0 
+ *  
+ * NOTE: it is your responsibility to make sure p is within range.
+ */
+const char * StringStringAt( StrHandle * st , int p) ;
+
+
+/*
+ *Check to see if the string pointer by st ends with string s. 
+ * 
+ * return 0 is it does
+ * 
+ * return -1 if it doesnt
+ * 
+ */
+int StringEndsWithString(StrHandle * st , const char *s) ;
+
+
+/*
+ *Check to see if the string pointer by st ends with char s. 
+ * 
+ * return 0 is it does
+ * 
+ * return -1 if it doesnt
+ * 
+ */
+int StringEndsWithChar(StrHandle * st ,char s) ;
+
 
 /*
  * Insert a string s from position x and returns a pointer to the new string
  * 
- * on error returns NULL and the original string remains intact
- * 
+ * on error returns NULL and the original string remains intact * 
  */
-const char * StringInsert(StrHandle * st, int x, const char * s ) ;
+const char * StringInsertStringAt(StrHandle * st, int x, const char * s ) ;
+
 
 /*
  * Insert a char s at position x and returns a pointer to the new string
  * 
- * on error returns NULL and the original string remains intact
- * 
+ * on error returns NULL and the original string remains intact * 
  */
-const char * StringCharInsert(StrHandle * st, int x, char s ) ;
+const char * StringInsertCharAt(StrHandle * st, int x, char s ) ;
 
 
 /*
  * subsititue whatever character is at position x by character s
  * returns a pointer to the string containing the subsititue
  */
-const char * StringCharSub(StrHandle * st, int x, char s ) ;
+const char * StringSubChar(StrHandle * st, int x, char s ) ;
+
 
 /*
  * start from position x and subsititue all characters in the string by string s.
- * Careful though, make sure the substitution string is not long enough to overflow
- * the length of the original string.
  * returns a pointer with the substitution.  
  */
-const char * StringStringSub(StrHandle * st, int x, const char * s ) ;
+const char * StringSubString(StrHandle * st, int x, const char * s ) ;
 
 
 /*
  * start at position x and remove y character(s) going right and returns a pointer
- * to the new string or NULL on error.
+ * to the new string or NULL on error. The original string remain intact on error.
  * Careful though, make sure you dont delete past the string length * 
  */
-const char * StringStringRemove(StrHandle *st,int x , int y) ;
+const char * StringRemoveString(StrHandle *st,int x , int y) ;
 
 
 /*
  * Cut the string from position x and discard all elements to the right of x. 
  * Returns a pointer to the result, NULL on error and the original string remain intact
  */
-const char * StringChop(StrHandle * st, int x) ;
+const char * StringRemoveRight(StrHandle * st, int x) ;
+
 
 /*
- * Returns a copy of a string made up of upto x characters
- * Remember to free string when you are done with it.
- * returns NULL on error.
- * 
+ * Cut the string from position x and discard all elements to the left of x. 
+ * Returns a pointer to the result, NULL on error and the original string remain intact
  */
-char * StringContCopyLength( StrHandle *st,int x ) ;
+const char * StringRemoveLeft(StrHandle * st, int x) ;
 
+
+/*
+ * Returns an editable copy of a string made up of upto x characters
+ * Remember to free string when you are done with it.
+ * returns NULL on error. * 
+ */
+char * StringLengthCopy( StrHandle *st,int x ) ;
+
+
+/*
+ * Return an editable string starting at position x and made up of y characters
+ *
+ * NULL is returned if the operation fail.
+ * 
+ * Remember to free the returned string when done with it. * 
+ */
+char * StringMidString( StrHandle *st , int x, int y ) ;
+
+
+/*
+ * replace all occurance of string x by string y
+ * 
+ * Return a const pointer to a modified string. The string is returned
+ * unmodified if sting x could not be found. *
+ * 
+ * Return NULL on error. 
+ */
+const char * StringReplaceString( StrHandle *st, const char *x, const char *y) ;
+
+
+/*
+ * replace all occurance of char x by char y * 
+ * Return a const pointer to a modified string *  
+ */
+const char * StringReplaceChar( StrHandle *st,char x, char y) ;
 
 #ifdef __cplusplus
 }

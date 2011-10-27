@@ -56,11 +56,11 @@ StrHandle * get_passphrase( void )
 	c[1] = '\0' ;
 	c[0] = getchar() ;
 	
-	p = StringCpy( c ) ;
+	p = String( c ) ;
 	
 	while( ( c[0] = getchar() ) != '\n' && i < MAX ){
 		
-		StringCat( p, c ) ;
+		StringAppend( p, c ) ;
 		i++ ;
 	}
 	
@@ -77,29 +77,22 @@ void help( void )
 
 int volume_info( const char * mapper )
 {
-	char * output = NULL ;
-	
-	int k = 0 ;
+	char * output = NULL ;	
 	
 	struct stat st;
 	
-	StrHandle *p = StringCpy("/dev/mapper/zuluCrypt-");
-	StringCat(p,mapper);	
+	StrHandle *p = String("/dev/mapper/zuluCrypt-");
+	StringAppend(p,mapper);	
+
+	StringReplaceChar(p,' ','_') ;				
 	
-	while( k++ < StringLength(p)){
-		
-		if ( StringCharAt(p,k) == ' ' ){
-			StringCharSub(p,k,'_') ;			
-		}		
-	}			
-	
-	if( stat( StringCont(p),&st) != 0 ) {
-		printf("%s is inactive\n",StringCont(p)) ;
+	if( stat( StringContent(p),&st) != 0 ) {
+		printf("%s is inactive\n",StringContent(p)) ;
 		StringDelete(p);
 		return 0 ;
 	}
 	
-	output = status( StringCont(p) ) ;
+	output = status( StringContent(p) ) ;
 	
 	printf("%s\n",output);
 	
@@ -109,20 +102,13 @@ int volume_info( const char * mapper )
 }
 
 int close_opened_volume( char * mapping_name )
-{
-	int k = 0 ;
+{	
+	StrHandle * p = String("/dev/mapper/zuluCrypt-");
+	StringAppend( p , mapping_name ) ;
 	
-	StrHandle * p = StringCpy("/dev/mapper/zuluCrypt-");
-	StringCat( p , mapping_name ) ;
+	StringReplaceChar(p,' ','_') ;		
 	
-	while( k++ < StringLength(p)){
-		
-		if ( StringCharAt(p,k) == ' ' ){
-			StringCharSub(p,k,'_') ;			
-		}		
-	}			
-	
-	int st = close_volume( StringCont( p ) ) ;
+	int st = close_volume( StringContent( p ) ) ;
 	
 	switch( st ) {
 	case 0 : printf("SUCCESS: volume successfully closed\n");
@@ -159,8 +145,6 @@ int open_volumes(int    argn,
 	
 	int st ;	
 	
-	int k = 0 ;
-	
 	if (argn < 5 ){
 		st = 11 ;
 		goto eerr ;
@@ -179,19 +163,14 @@ int open_volumes(int    argn,
 		}
 	}	
 	
-	q = StringCpy("/dev/mapper/zuluCrypt-") ;
-	StringCat( q , mapping_name ) ;
+	q = String("/dev/mapper/zuluCrypt-") ;
+	StringAppend( q , mapping_name ) ;
 	
-	while( k++ < StringLength(q)){
-		
-		if ( StringCharAt(q,k) == ' ' ){
-			StringCharSub(q,k,'_') ;			
-		}		
-	}
+	StringReplaceChar(q,' ','_') ;
 	
-	z = StringCpy(mount_point);
-	StringCat(z,"/");
-	StringCat(z,mapping_name);
+	z = String(mount_point);
+	StringAppend(z,"/");
+	StringAppend(z,mapping_name);
 	
 	if ( argn == 5 ){
 		printf( "Enter passphrase: " ) ;
@@ -201,11 +180,11 @@ int open_volumes(int    argn,
 		printf("\n") ;	
 		
 		st = open_volume(device,
-				 StringCont(q),
-				 StringCont(z),
+				 StringContent(q),
+				 StringContent(z),
 				 id,
 				 mode,
-				 StringCont( p ),
+				 StringContent( p ),
 				 "-p") ;
 				 
 		StringDelete( p ) ;
@@ -213,8 +192,8 @@ int open_volumes(int    argn,
 	}else if ( argn == 7 ){
 
 		st = open_volume(device,
-				 StringCont(q),
-				 StringCont(z),
+				 StringContent(q),
+				 StringContent(z),
 				 id,
 				 mode,
 				 pass,
@@ -297,14 +276,14 @@ void partitions(StrHandle *partitions, StrHandle * fstab_partitions, StrHandle *
 		if(strlen( d ) == 3 || ( strncmp( d, "hd", 2 ) != 0 && strncmp( d, "sd", 2) != 0 ) )
 			continue ;
 		
-		StringCat( partitions, "/dev/");
-		StringCat( partitions, d ) ;
-		StringCat( partitions, "\n" ) ;
+		StringAppend( partitions, "/dev/");
+		StringAppend( partitions, d ) ;
+		StringAppend( partitions, "\n" ) ;
 	}
 		
 	StringDelete( non_system_partitions ) ;
 	
-	non_system_partitions = StringCpy( StringCont( partitions ) ) ;
+	non_system_partitions = String( StringContent( partitions ) ) ;
 	
 	fclose(f);
 	
@@ -320,12 +299,12 @@ void partitions(StrHandle *partitions, StrHandle * fstab_partitions, StrHandle *
 			
 			*c = '\0' ;
 			
-			StringCat( fstab_partitions, buffer ) ;		
-			StringCat( fstab_partitions, "\n");	
+			StringAppend( fstab_partitions, buffer ) ;		
+			StringAppend( fstab_partitions, "\n");	
 			
-			i = StringPosString( non_system_partitions,buffer) ;
+			i = StringIndexOfString( non_system_partitions, 0 , buffer ) ;			
 			
-			StringStringRemove( non_system_partitions, i , strlen(buffer) + 1 ) ;
+			StringRemoveString(non_system_partitions,i,strlen(buffer) + 1 ) ;
 			
 		}else if ( strncmp(buffer ,"UUID",4) == 0 ){
 			
@@ -336,11 +315,11 @@ void partitions(StrHandle *partitions, StrHandle * fstab_partitions, StrHandle *
 			
 			*--d = '\0' ;
 			
-			command = StringCpy(ZULUCRYPTblkid) ;
-			StringCat( command , " -U " ) ;
-			StringCat( command , uuid);
+			command = String(ZULUCRYPTblkid) ;
+			StringAppend( command , " -U " ) ;
+			StringAppend( command , uuid);
 			
-			z = popen( StringCont( command ), "r" ) ;
+			z = popen( StringContent( command ), "r" ) ;
 			
 			fgets( buffer, 512, z ) ;
 			
@@ -352,15 +331,15 @@ void partitions(StrHandle *partitions, StrHandle * fstab_partitions, StrHandle *
 			
 			*c = '\0' ;
 			
-			StringCat( fstab_partitions, buffer ) ;	
+			StringAppend( fstab_partitions, buffer ) ;	
 			
-			StringCat( fstab_partitions, "\n");
+			StringAppend( fstab_partitions, "\n");
 			
 			StringDelete( command ) ;	
 			
-			i = StringPosString( non_system_partitions,buffer) ;
+			i = StringIndexOfString( non_system_partitions,0,buffer) ;
 			
-			StringStringRemove( non_system_partitions, i , strlen(buffer) + 1) ;
+			StringRemoveString( non_system_partitions, i , strlen(buffer) + 1) ;
 			
 		}else if ( strncmp(buffer ,"LABEL",5) == 0 ){
 			
@@ -375,11 +354,11 @@ void partitions(StrHandle *partitions, StrHandle * fstab_partitions, StrHandle *
 			
 			*--d = '\0' ;
 
-			command = StringCpy(ZULUCRYPTblkid) ;
-			StringCat( command , " -L " ) ;
-			StringCat( command , label);
+			command = String(ZULUCRYPTblkid) ;
+			StringAppend( command , " -L " ) ;
+			StringAppend( command , label);
 			
-			z = popen( StringCont( command ), "r" ) ;
+			z = popen( StringContent( command ), "r" ) ;
 			
 			fgets( buffer, 512, z ) ;
 			
@@ -391,15 +370,15 @@ void partitions(StrHandle *partitions, StrHandle * fstab_partitions, StrHandle *
 			
 			*c = '\0' ;
 			
-			StringCat( fstab_partitions, buffer ) ;	
+			StringAppend( fstab_partitions, buffer ) ;	
 			
-			StringCat( fstab_partitions, "\n");
+			StringAppend( fstab_partitions, "\n");
 			
 			StringDelete( command ) ;
 			
-			i = StringPosString( non_system_partitions,buffer) ;
+			i = StringIndexOfString( non_system_partitions,0,buffer) ;
 			
-			StringStringRemove( non_system_partitions, i , strlen(buffer) + 1) ;
+			StringRemoveString( non_system_partitions, i , strlen(buffer) + 1) ;
 		}		
 	}
 	
@@ -428,10 +407,10 @@ void partitions(StrHandle *partitions, StrHandle * fstab_partitions, StrHandle *
 		
 		*d = '\0' ;
 		
-		i = StringPosString( non_system_partitions,c) ;
+		i = StringIndexOfString( non_system_partitions,0,c) ;
 		
 		if( i != -1 )
-			StringStringRemove( non_system_partitions, i , strlen(c) + 1) ;
+			StringRemoveString( non_system_partitions, i , strlen(c) + 1) ;
 	}	
 	fclose(f) ;
 }
@@ -454,13 +433,13 @@ int create_volumes(int    argn ,
 	int z ;
 	off_t fsize ;
 	
-	p = StringCpy("");
-	q = StringCpy("");
-	k = StringCpy("");	
+	p = String("");
+	q = String("");
+	k = String("");	
 	
 	partitions( p, q, k ) ;
 	
-	if ( strstr( StringCont( p ) , device ) != NULL ){
+	if ( strstr( StringContent( p ) , device ) != NULL ){
 		
 		printf("ERROR: creating volumes on system partitions is not allowed.\n");
 		printf("System partitions have active entries in /etc/fstab") ;
@@ -493,7 +472,7 @@ int create_volumes(int    argn ,
 			
 			printf("\n") ;			
 			
-			if(strcmp(StringCont( p ),StringCont( q )) != 0){
+			if(strcmp(StringContent( p ),StringContent( q )) != 0){
 
 				st = 7 ;
 			}else{
@@ -507,15 +486,15 @@ int create_volumes(int    argn ,
 					getchar() ;
 					
 					if( Y == '1')
-						st = create_volume(device,fs,mode,StringCont( p ),"/dev/random");
+						st = create_volume(device,fs,mode,StringContent( p ),"/dev/random");
 					else if ( Y == '2' )
-						st = create_volume(device,fs,mode,StringCont( p ),"/dev/urandom");
+						st = create_volume(device,fs,mode,StringContent( p ),"/dev/urandom");
 					else{
 						st = 5 ;
 						goto out ;
 					}
 				}else{
-					st = create_volume(device,fs,mode,StringCont( p ),"NULL") ;						
+					st = create_volume(device,fs,mode,StringContent( p ),"NULL") ;						
 				}		
 			}
 			StringDelete( p ) ;
@@ -636,14 +615,14 @@ int addkey(int    argn,
 		
 		printf("\n") ;
 		
-		if (strcmp( StringCont( q ), StringCont( n ) ) != 0){
+		if (strcmp( StringContent( q ), StringContent( n ) ) != 0){
 			
 			status = 7 ;
 			StringDelete( p ) ;			
 			StringDelete( q ) ;	
 			StringDelete( n ) ;
 		}else{			
-			status = add_key( device,StringCont( p ), StringCont( q )) ;			
+			status = add_key( device,StringContent( p ), StringContent( q )) ;			
 
 			StringDelete( p ) ;			
 			StringDelete( q ) ;	
@@ -778,7 +757,7 @@ int removekey( int argn , char * device, char * keyType, char * keytoremove )
 		
 		printf("\n") ;		
 		
-		status = remove_key( device,StringCont(p)) ;
+		status = remove_key( device,StringContent(p)) ;
 		
 		StringDelete( p ) ;
 		
@@ -853,25 +832,25 @@ int check_system_tools(void)
 		
 		return 0 ;
 	}	
-	p = StringCpy(ZULUCRYPTcryptsetup) ;
-	StringCat( p , "\n" ) ;
-	StringCat( p , ZULUCRYPTblkid) ;
-	StringCat( p , "\n" ) ;	
-	StringCat( p , ZULUCRYPTecho) ;
-	StringCat( p , "\n" ) ;
-	StringCat( p , ZULUCRYPTlosetup) ;
-	StringCat( p , "\n" ) ;
-	StringCat( p , ZULUCRYPTmkfs) ;
-	StringCat( p , "\n" ) ;
-	StringCat( p , ZULUCRYPTmount) ;
-	StringCat( p , "\n" ) ;
-	StringCat( p , ZULUCRYPTumount) ;
-	StringCat( p , "\n" ) ;
-	StringCat( p , ZULUCRYPTdd) ;
+	p = String(ZULUCRYPTcryptsetup) ;
+	StringAppend( p , "\n" ) ;
+	StringAppend( p , ZULUCRYPTblkid) ;
+	StringAppend( p , "\n" ) ;	
+	StringAppend( p , ZULUCRYPTecho) ;
+	StringAppend( p , "\n" ) ;
+	StringAppend( p , ZULUCRYPTlosetup) ;
+	StringAppend( p , "\n" ) ;
+	StringAppend( p , ZULUCRYPTmkfs) ;
+	StringAppend( p , "\n" ) ;
+	StringAppend( p , ZULUCRYPTmount) ;
+	StringAppend( p , "\n" ) ;
+	StringAppend( p , ZULUCRYPTumount) ;
+	StringAppend( p , "\n" ) ;
+	StringAppend( p , ZULUCRYPTdd) ;
 	
 	printf("this program will not work as expected on your system\n");
 	printf("because one or more of the following tools are either not present\n") ;
-	printf("or not where they are expected to be.\n%s\n",StringCont( p ));
+	printf("or not where they are expected to be.\n%s\n",StringContent( p ));
 	
 	StringDelete( p ) ;
 	
@@ -962,21 +941,21 @@ int main( int argc , char *argv[])
 	
 	}else if ( strcmp(action,"partitions") == 0 ){
 		
-		p = StringCpy("");
-		q = StringCpy("");
-		z = StringCpy("");
+		p = String("");
+		q = String("");
+		z = String("");
 		
 		partitions( p, q ,z ) ;
 		
 		if( argv[2][0] == '1' ) {
 			status = 0 ;
-			printf("%s",StringCont(p)) ;
+			printf("%s",StringContent(p)) ;
 		}else if ( argv[2][0] == '2' ){
 			status = 0 ;
-			printf("%s",StringCont(q)) ;
+			printf("%s",StringContent(q)) ;
 		}else if ( argv[2][0] == '3' ){
 			status = 0 ;
-			printf("%s",StringCont(z)) ;
+			printf("%s",StringContent(z)) ;
 		}else{
 			printf("wrong argument\n");
 			status = 1 ;
