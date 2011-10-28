@@ -93,9 +93,9 @@ void startupupdateopenedvolumes::run()
 
 		if( mp == QString("") ){
 			emit UIMessage(tr("WARNING"),
-					  tr("An inconsitency is detected. Skipping \"" + \
+					  tr("An inconsitency is detected. Skipping \"") + \
 					  QString(volume) + \
-					  tr("\" because its opened but not mounted")));
+					  tr("\" because its opened but not mounted"));
 			continue ;
 		}
 		emit addItemToTable(QString(volume),mp) ;
