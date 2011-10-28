@@ -67,8 +67,8 @@ void createpartition::ShowPartitionUI(QString volume)
 	ui->rbLuks->setChecked(true);
 	ui->rbext4->setChecked(true);
 	ui->pbCancel->setFocus();
-	ui->labelVolumePath->setText(QString("path to partition"));
-	ui->labelPassPhrase->setText(QString("passphrase"));
+	ui->labelVolumePath->setText(tr("path to partition"));
+	ui->labelPassPhrase->setText(tr("passphrase"));
 	this->rbPassphraseClicked() ;
 	this->show();
 }
@@ -76,7 +76,7 @@ void createpartition::ShowPartitionUI(QString volume)
 void createpartition::pbOpenKeyFile()
 {
 	QString Z = QFileDialog::getOpenFileName(this,
-						 QString("key file path"),
+						 tr("key file path"),
 						 QDir::homePath(),
 						 0);
 	ui->lineEditPassphrase1->setText(Z);
@@ -132,7 +132,7 @@ void createpartition::rbPassphraseClicked()
 	ui->lineEditPassPhrase2->clear();
 	ui->lineEditPassphrase1->setEchoMode(QLineEdit::Password);
 	ui->lineEditPassPhrase2->setEchoMode(QLineEdit::Password);
-	ui->labelPassPhrase->setText(QString("passphrase"));
+	ui->labelPassPhrase->setText(tr("passphrase"));
 
 }
 
@@ -143,7 +143,7 @@ void createpartition::rbPasssphraseFromFileClicked()
 	ui->lineEditPassPhrase2->clear();
 	ui->lineEditPassphrase1->setEchoMode(QLineEdit::Normal);
 	ui->lineEditPassPhrase2->setEnabled(false);
-	ui->labelPassPhrase->setText(QString("key file"));
+	ui->labelPassPhrase->setText(tr("key file"));
 }
 
 void createpartition::UIMessage(QString title, QString message)
@@ -162,16 +162,16 @@ void createpartition::pbCreateClicked()
 {
 	if( ui->lineEditVolumePath->text().isEmpty() == true )	{
 
-		UIMessage(QString("ERROR!"),QString("volume path field is empty"));
+		UIMessage(tr("ERROR!"),tr("volume path field is empty"));
 		return ;
 	}
 
 	if( ui ->lineEditPassphrase1->text().isEmpty() == true){
 
 		if( ui->rbPassphrase->isChecked() == true)
-			UIMessage(QString("ERROR"),QString("passphrases field is empty"));
+			UIMessage(tr("ERROR"),tr("passphrases field is empty"));
 		else
-			UIMessage(QString("ERROR"),QString("key file field is empty"));
+			UIMessage(tr("ERROR"),tr("key file field is empty"));
 
 		return ;
 	}
@@ -180,7 +180,7 @@ void createpartition::pbCreateClicked()
 
 		if( QString::compare(ui->lineEditPassphrase1->text(),
 				     ui->lineEditPassPhrase2->text()) != 0 ){
-			UIMessage(QString("ERROR"),QString("passphrases do not match"));
+			UIMessage(tr("ERROR"),tr("passphrases do not match"));
 			return ;
 		}
 	}
@@ -189,15 +189,15 @@ void createpartition::pbCreateClicked()
 	m.setFont(this->font());
 	m.setParent(this);
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
-	m.setWindowTitle(QString("WARNING"));
+	m.setWindowTitle(tr("WARNING"));
 
 	m.addButton(QMessageBox::Yes);
 	m.addButton(QMessageBox::No);
 	m.setDefaultButton(QMessageBox::No);
 
-	QString wr = QString("all contents of \"") ;
-	wr = wr + ui->lineEditVolumePath->text() + QString("\" will be deleted!.");
-	wr = wr + QString("\nAre you sure you want to proceed?") ;
+	QString wr = tr("all contents of \"") ;
+	wr = wr + ui->lineEditVolumePath->text() + tr("\" will be deleted!.");
+	wr = wr + tr("\nAre you sure you want to proceed?") ;
 	m.setText(wr);
 
 	if ( m.exec() != QMessageBox::Yes )
@@ -217,15 +217,15 @@ void createpartition::threadfinished()
 	delete cvt ;
 
 	switch( status ) {
-		case 0 : UIMessage(QString("SUCCESS"),
-				   QString("volume successfully created"));
+		case 0 : UIMessage(tr("SUCCESS"),
+				   tr("volume successfully created"));
 			HideUI();
 			break;
-		case 6 : UIMessage(QString("ERROR"),
-				   QString("couldnt get requested memory to open the key file"));
+		case 6 : UIMessage(tr("ERROR"),
+				   tr("couldnt get requested memory to open the key file"));
 			break ;
-		default: UIMessage(QString("ERROR"),
-				   (QString("unrecognized error has occured,volume not created")));
+		default: UIMessage(tr("ERROR"),
+				   (tr("unrecognized error has occured,volume not created")));
 	}
 	enableAll();
 }
@@ -239,7 +239,7 @@ void createpartition::ShowFileUI(QString volume)
 	ui->rbPassphrase->setChecked(true);
 	ui->pbOpenKeyFile->setEnabled(false);
 	ui->pbCancel->setFocus();
-	ui->labelVolumePath->setText(QString("path to file"));
+	ui->labelVolumePath->setText(tr("path to file"));
 	this->rbPassphraseClicked() ;
 	this->show();
 }

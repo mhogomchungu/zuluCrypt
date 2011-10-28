@@ -96,15 +96,15 @@ void createkeyfile::pbCreate()
 
 	if( ui->lineEditFileName->text().isEmpty() == true ){
 
-		m.setWindowTitle(QString("ERROR!"));
-		m.setText(QString("the key name field is empth"));
+		m.setWindowTitle(tr("ERROR!"));
+		m.setText(tr("the key name field is empth"));
 		m.exec() ;
 		return ;
 	}
 	if( ui->lineEditPath->text().isEmpty() == true ){
 
-		m.setWindowTitle(QString("ERROR!"));
-		m.setText(QString("folder path to where the key will be created is empty"));
+		m.setWindowTitle(tr("ERROR!"));
+		m.setText(tr("folder path to where the key will be created is empty"));
 		m.exec() ;
 		return ;
 	}
@@ -114,8 +114,8 @@ void createkeyfile::pbCreate()
 	QFile o( keyfile ) ;
 
 	if( o.exists() == true){
-		m.setWindowTitle(QString("ERROR!"));
-		m.setText(QString("file with the same name and at the destination folder already exist"));
+		m.setWindowTitle(tr("ERROR!"));
+		m.setText(tr("file with the same name and at the destination folder already exist"));
 		m.exec() ;
 		return ;
 	}
@@ -123,8 +123,8 @@ void createkeyfile::pbCreate()
 	o.open(QIODevice::WriteOnly) ;
 
 	if( o.putChar('X') == false ){
-		m.setWindowTitle(QString("ERROR!"));
-		m.setText(QString("you dont seem to have writing access to the destination folder"));
+		m.setWindowTitle(tr("ERROR!"));
+		m.setText(tr("you dont seem to have writing access to the destination folder"));
 		m.exec() ;
 		return ;
 	}
@@ -170,12 +170,12 @@ void createkeyfile::threadfinished()
 	m.setFont(this->font());
 
 	if( f.size() == 64){
-		m.setWindowTitle(QString("SUCCESS!"));
-		m.setText(QString("key file successfully created"));
+		m.setWindowTitle(tr("SUCCESS!"));
+		m.setText(tr("key file successfully created"));
 		m.exec() ;
 	}else{
-		m.setWindowTitle(QString("WARNING!"));
-		m.setText(QString("process interrupted, key not fully generated"));
+		m.setWindowTitle(tr("WARNING!"));
+		m.setText(tr("process interrupted, key not fully generated"));
 		m.exec() ;
 	}
 	this->HideUI();

@@ -89,7 +89,7 @@ luksdeletekey::luksdeletekey(QWidget *parent) :
 
 void luksdeletekey::rbPassphrase()
 {
-	ui->labelPassphrase->setText(QString("passphrase"));
+	ui->labelPassphrase->setText(tr("passphrase"));
 	ui->lineEditPassphrase->setEchoMode(QLineEdit::Password);
 	ui->lineEditPassphrase->clear();
 	ui->pushButtonOpenKeyFile->setEnabled(false);
@@ -97,7 +97,7 @@ void luksdeletekey::rbPassphrase()
 
 void luksdeletekey::rbPassphraseFromFile()
 {
-	ui->labelPassphrase->setText(QString("keyfile"));
+	ui->labelPassphrase->setText(tr("keyfile"));
 	ui->lineEditPassphrase->setEchoMode(QLineEdit::Normal);
 	ui->lineEditPassphrase->clear();
 	ui->pushButtonOpenKeyFile->setEnabled(true);
@@ -106,7 +106,7 @@ void luksdeletekey::rbPassphraseFromFile()
 void luksdeletekey::pbOpenKeyFile()
 {
 	QString Z = QFileDialog::getOpenFileName(this,
-						 QString("key file with a passphrase to delete"),
+						 tr("key file with a passphrase to delete"),
 						 QDir::homePath(),
 						 0);
 	ui->lineEditPassphrase->setText( Z );
@@ -116,7 +116,7 @@ void luksdeletekey::ShowUI()
 {
 	enableAll();
 	ui->rbPassphrase->setEnabled(true);
-	ui->labelPassphrase->setText(QString("passphrase"));
+	ui->labelPassphrase->setText(tr("passphrase"));
 	ui->rbPassphrase->setChecked(true);
 	ui->lineEditVolumePath->setFocus();
 	ui->pushButtonCancel->setDefault(true);
@@ -184,15 +184,15 @@ void luksdeletekey::pbDelete()
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 
 	if ( ui->lineEditPassphrase->text().isEmpty() == true ){
-		m.setWindowTitle(QString("ERROR!"));
-		m.setText(QString("ERROR: the passphrase field is empty"));
+		m.setWindowTitle(tr("ERROR!"));
+		m.setText(tr("ERROR: the passphrase field is empty"));
 		m.addButton(QMessageBox::Ok);
 		m.exec() ;
 		return ;
 	}
 	if ( ui->lineEditVolumePath->text().isEmpty() == true ){
-		m.setWindowTitle(QString("ERROR!"));
-		m.setText(QString("ERROR: the path to encrypted volume field is empty"));
+		m.setWindowTitle(tr("ERROR!"));
+		m.setText(tr("ERROR: the path to encrypted volume field is empty"));
 		m.addButton(QMessageBox::Ok);
 		m.exec() ;
 		return ;
@@ -200,19 +200,19 @@ void luksdeletekey::pbDelete()
 
 	if ( zuluCrypt::isLuks(ui->lineEditVolumePath->text()) == false ){
 
-		m.setWindowTitle(QString("ERROR!"));
-		m.setText(QString("given path does not point to a luks volume"));
+		m.setWindowTitle(tr("ERROR!"));
+		m.setText(tr("given path does not point to a luks volume"));
 		m.addButton(QMessageBox::Ok);
 		m.exec() ;
 		return ;
 	}
 
 	if(zuluCrypt::luksEmptySlots(ui->lineEditVolumePath->text()) == '1'){
-		QString s = QString("There is only one last key in the volume.");
-		s = s + QString("\nDeleting it will make the volume unopenable and lost forever.") ;
-		s = s + QString("\nAre you sure you want to delete this key?");
+		QString s = tr("There is only one last key in the volume.");
+		s = s + tr("\nDeleting it will make the volume unopenable and lost forever.") ;
+		s = s + tr("\nAre you sure you want to delete this key?");
 
-		m.setWindowTitle(QString("WARNING!"));
+		m.setWindowTitle(tr("WARNING!"));
 		m.setText(s) ;
 
 		m.addButton(QMessageBox::Yes);
@@ -240,23 +240,23 @@ void luksdeletekey::threadfinished()
 
 	switch( status ){
 		case 0 :
-			UIMessage(QString("SUCCESS"),
-				  QString("key successfully removed\n") + \
+			UIMessage(tr("SUCCESS"),
+				  tr("key successfully removed\n") + \
 				  zuluCrypt::luksEmptySlots(ui->lineEditVolumePath->text()) + \
-				  QString(" / 8 slots are now in use"));
+				  tr(" / 8 slots are now in use"));
 			HideUI() ;
 			return ;
 			break ;
-		case 1 :UIMessage(QString("ERROR"),QString("device is not a luks device or does not exist"));
+		case 1 :UIMessage(tr("ERROR"),tr("device is not a luks device or does not exist"));
 			break ;
-		case 2 :UIMessage(QString("ERROR"),QString("there is no key in the volume that match entered key"));
+		case 2 :UIMessage(tr("ERROR"),tr("there is no key in the volume that match entered key"));
 			break ;
-		case 3 :UIMessage(QString("ERROR"),QString("could not open luks device"));
+		case 3 :UIMessage(tr("ERROR"),tr("could not open luks device"));
 			break ;
-		case 7 :UIMessage(QString("ERROR"),QString("could not get enough memory to open the key file"));
+		case 7 :UIMessage(tr("ERROR"),tr("could not get enough memory to open the key file"));
 			break ;
 
-		default:UIMessage(QString("ERROR"),QString( "un unexpected error has occured, key not removed "));
+		default:UIMessage(tr("ERROR"),tr( "un unexpected error has occured, key not removed "));
 	}
 	enableAll();
 }
@@ -264,7 +264,7 @@ void luksdeletekey::threadfinished()
 void luksdeletekey::pbOpenVolume()
 {
 	QString Z = QFileDialog::getOpenFileName(this,
-						 QString("volume path"),
+						 tr("volume path"),
 						 QDir::homePath(),
 						 0);
 	ui->lineEditVolumePath->setText( Z );

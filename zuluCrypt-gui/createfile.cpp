@@ -54,7 +54,7 @@ createfile::createfile(QWidget *parent) :
 void createfile::ddFinished(int exitCode, QProcess::ExitStatus st)
 {
 	QMessageBox m ;
-	m.setWindowTitle(QString("ERROR!"));
+	m.setWindowTitle(tr("ERROR!"));
 	m.setParent(this);
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 	m.addButton(QMessageBox::Ok);
@@ -67,7 +67,7 @@ void createfile::ddFinished(int exitCode, QProcess::ExitStatus st)
 		return ;
 	}
 	if( exitCode != 0 ){
-		m.setText(QString("you dont seem to have writing access to the destination folder"));
+		m.setText(tr("you dont seem to have writing access to the destination folder"));
 		m.exec() ;
 		ui->pbCreate->setEnabled(true);
 		ui->lineEditFileName->setEnabled(true);
@@ -99,26 +99,26 @@ void createfile::showUI()
 void createfile::pbCreate()
 {
 	QMessageBox m ;
-	m.setWindowTitle(QString("ERROR!"));
+	m.setWindowTitle(tr("ERROR!"));
 	m.setParent(this);
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 	m.addButton(QMessageBox::Ok);
 	m.setFont(this->font());
 
 	if(ui->lineEditFileName->text().isEmpty()){
-		m.setText(QString("ERROR: the file name field is empty"));
+		m.setText(tr("ERROR: the file name field is empty"));
 		m.exec() ;
 		return ;
 	}
 
 	if(ui->lineEditFilePath->text().isEmpty()){
-		m.setText(QString("ERROR: the file path field is empty"));
+		m.setText(tr("ERROR: the file path field is empty"));
 		m.exec() ;
 		return ;
 	}
 
 	if(ui->lineEditFileSize->text().isEmpty()){
-		m.setText(QString("ERROR: the file size field is empty"));
+		m.setText(tr("ERROR: the file size field is empty"));
 		m.exec() ;
 		return ;
 	}
@@ -128,7 +128,7 @@ void createfile::pbCreate()
 	ui->lineEditFileSize->text().toInt(&test) ;
 
 	if( test == false ){
-		m.setText(QString("ERROR:Illegal character in the file size field.\nOnly digits are allowed"));
+		m.setText(tr("ERROR:Illegal character in the file size field.\nOnly digits are allowed"));
 		m.exec() ;
 		return ;
 	}
@@ -187,7 +187,7 @@ void createfile::monitorFileGrowth()
 void createfile::pbOpenFolder()
 {
 	QString Z = QFileDialog::getExistingDirectory(this,
-						      QString("Select Path to where the file will be created"),
+						      tr("Select Path to where the file will be created"),
 						      QDir::homePath(),QFileDialog::ShowDirsOnly) ;
 
 	ui->lineEditFilePath->setText( Z );
@@ -196,13 +196,13 @@ void createfile::pbOpenFolder()
 void createfile::pbCancel()
 {
 	QMessageBox m ;
-	m.setWindowTitle(QString("terminating file creation process"));
+	m.setWindowTitle(tr("terminating file creation process"));
 	m.setParent(this);
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 	m.addButton(QMessageBox::Yes);
 	m.addButton(QMessageBox::No);
 	m.setDefaultButton(QMessageBox::No);
-	m.setText(QString("sure you want to stop file creation process?"));
+	m.setText(tr("sure you want to stop file creation process?"));
 	m.setFont(this->font());
 
 	if(m.exec() == QMessageBox::No)

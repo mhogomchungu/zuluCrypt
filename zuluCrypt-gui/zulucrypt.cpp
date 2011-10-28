@@ -231,7 +231,7 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 	if(  p.exitCode() == 100 ){
 
 		QByteArray T = p.readAllStandardOutput() ;
-		UIMessage(QString("WARNING"),QString(T));
+		UIMessage(tr("WARNING"),QString(T));
 	}
 	p.close();
 
@@ -542,7 +542,7 @@ void zuluCrypt::info()
 	while (*++d !=',') { ; }
 	*d = '\0' ;
 
-	QString info = QString("cryptographic options used in volume management\n\n") ;
+	QString info = tr("cryptographic options used in volume management\n\n") ;
 
 	//info = info + QString("type:	PLAIN\n") ;
 	//info = info + QString("cypher:	") ;
@@ -597,26 +597,26 @@ void zuluCrypt::info()
 	//info = info + QString("maximum passphrase length:	512 characters\n") ;
 	//info = info + QString("maximum key file size:		512 bytes\n\n") ;
 
-	info = info + QString("type:\t\tplain\n") ;
-	info = info + QString("cipher:\t\taes-cbc-essiv:sha256\n") ;
-	info = info + QString("keysize:\t\t256bits ( 32 bytes )\n") ;
-	info = info + QString("hash:\t\tripemd160\n") ;
+	info = info + tr("type:\t\tplain\n") ;
+	info = info + tr("cipher:\t\taes-cbc-essiv:sha256\n") ;
+	info = info + tr("keysize:\t\t256bits ( 32 bytes )\n") ;
+	info = info + tr("hash:\t\tripemd160\n") ;
 
 	info = info + QString("\n") ;
 
-	info = info + QString("type:\t\tluks\n") ;
-	info = info + QString("keysize:\t\t256bits ( 32 bytes )\n\n") ;
-	info = info + QString("luks header hashing: sha1\n\n") ;
+	info = info + tr("type:\t\tluks\n") ;
+	info = info + tr("keysize:\t\t256bits ( 32 bytes )\n\n") ;
+	info = info + tr("luks header hashing: sha1\n\n") ;
 
-	info = info + QString("key files are generated with:\t\t64 characters( 512bits )\n\n") ;
+	info = info + tr("key files are generated with:\t\t64 characters( 512bits )\n\n") ;
 
-	info = info +QString("random number generator device:\t( user specified )\n") ;
+	info = info +tr("random number generator device:\t( user specified )\n") ;
 
 	QMessageBox m ;
 	m.setParent(this);
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 	m.addButton(QMessageBox::Ok);
-	m.setWindowTitle(QString("cryptographic info"));
+	m.setWindowTitle(tr("cryptographic info"));
 	m.setFont(this->font());
 	m.setText(info) ;
 
@@ -633,7 +633,7 @@ char zuluCrypt::luksEmptySlots(QString volumePath)
 {
 	QProcess N ;
 	N.start(QString(ZULUCRYPTzuluCrypt) + \
-		QString(" emptyslots \"") + volumePath + QString("\""));
+		tr(" emptyslots \"") + volumePath + QString("\""));
 	N.waitForFinished() ;
 	char *s = N.readAllStandardOutput().data() ;
 	int i = 0 ;
@@ -668,13 +668,13 @@ void zuluCrypt::aboutMenuOption(void)
 	m.setParent(this);
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 	m.addButton(QMessageBox::Ok);
-	m.setWindowTitle(QString("about zuluCrypt"));
+	m.setWindowTitle(tr("about zuluCrypt"));
 	m.setFont(this->font());
 
-	QString b = QString("\nThis program is distributed in the hope that it will be useful,") ;
-	b = b + QString("but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY");
-	b = b + QString("or FITNESS FOR A PARTICULAR PURPOSE.\n");
-	b = b + QString("See the GNU General Public License for more details.") ;
+	QString b = tr("\nThis program is distributed in the hope that it will be useful,") ;
+	b = b + tr("but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY");
+	b = b + tr("or FITNESS FOR A PARTICULAR PURPOSE.\n");
+	b = b + tr("See the GNU General Public License for more details.") ;
 
 	m.setText( QString( VERSION_STRING ) + b ) ;
 	m.exec() ;
@@ -711,7 +711,7 @@ void zuluCrypt::removeRowFromTable( int x )
 void zuluCrypt::volume_property()
 {
 	mp = new QMessageBox(this) ;
-	mp->setWindowTitle(QString("volume properties"));
+	mp->setWindowTitle(tr("volume properties"));
 	mp->setParent(this);
 	mp->setWindowFlags(Qt::Window | Qt::Dialog);
 	mp->addButton(QMessageBox::Ok);
@@ -867,7 +867,7 @@ void zuluCrypt::options(QTableWidgetItem* t)
 
 	QByteArray data = f.readAll() ;
 
-	QAction a(QString("add to favorite"),(QObject *)&m) ;
+	QAction a(tr("add to favorite"),(QObject *)&m) ;
 
 	if( strstr( data.data() , fav.toAscii().data() ) == NULL )
 		a.setEnabled(true);
@@ -921,18 +921,18 @@ void zuluCrypt::close(void)
 	switch ( p.exitCode() ) {
 	case 0 :	removeRowFromTable(item->row()) ;
 		break ;
-	case 1 :	UIMessage(QString("ERROR"),
-				  QString("close failed, encrypted volume with that name does not exist")) ;
+	case 1 :	UIMessage(tr("ERROR"),
+				  tr("close failed, encrypted volume with that name does not exist")) ;
 		break ;
 
-	case 2 :	UIMessage(QString("ERROR"),
-				  QString("close failed, the mount point and/or one or more files are in use"));
+	case 2 :	UIMessage(tr("ERROR"),
+				  tr("close failed, the mount point and/or one or more files are in use"));
 		break ;
-	case 3 :	UIMessage(QString("ERROR"),
-				  QString("close failed, path given does not point to an encrypted device"));
+	case 3 :	UIMessage(tr("ERROR"),
+				  tr("close failed, path given does not point to an encrypted device"));
 		break ;
-	default :	UIMessage(QString("ERROR"),
-				  QString("an unknown error has occured, volume not closed"));
+	default :	UIMessage(tr("ERROR"),
+				  tr("an unknown error has occured, volume not closed"));
 	}
 	p.close();
 }

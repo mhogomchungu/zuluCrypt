@@ -21,11 +21,15 @@
 #include <QIcon>
 #include <QtGui/QApplication>
 #include "zulucrypt.h"
+#include <QTranslator>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-   // a.setWindowIcon(QIcon(QString("/usr/share/icons/zuluCrypt.png")));
+
+    QTranslator translator;
+    translator.load("test_la") ;
+    a.installTranslator(&translator);
     zuluCrypt w;
     w.show();
 

@@ -99,7 +99,7 @@ void password_Dialog::passphraseOption()
 	ui->PassPhraseField->setEchoMode(QLineEdit::Password);
 	ui->PassPhraseField->clear();
 	ui->pushButtonPassPhraseFromFile->setEnabled(false) ;
-	ui->labelPassphrase->setText(QString("passphrase"));
+	ui->labelPassphrase->setText(tr("passphrase"));
 }
 
 void password_Dialog::passphraseFromFileOption()
@@ -107,13 +107,13 @@ void password_Dialog::passphraseFromFileOption()
 	ui->PassPhraseField->setEchoMode(QLineEdit::Normal);
 	ui->PassPhraseField->clear();
 	ui->pushButtonPassPhraseFromFile->setEnabled(true) ;
-	ui->labelPassphrase->setText(QString("key file"));
+	ui->labelPassphrase->setText(tr("key file"));
 }
 
 void password_Dialog::clickedPassPhraseFromFileButton()
 {
 	QString Z = QFileDialog::getOpenFileName(this,
-						 QString("Select passphrase file"),
+						 tr("Select passphrase file"),
 						 QDir::homePath(),
 						 0);
 	ui->PassPhraseField->setText( Z );
@@ -131,7 +131,7 @@ void password_Dialog::clickedPartitionOption(QString option)
 void password_Dialog::mount_point(void )
 {	
 	QString Z = QFileDialog::getExistingDirectory(this,
-						      QString("Select Path to mount point folder"),
+						      tr("Select Path to mount point folder"),
 						      QDir::homePath(),
 						      QFileDialog::ShowDirsOnly) ;
 	ui->MountPointPath->setText( Z );
@@ -140,7 +140,7 @@ void password_Dialog::mount_point(void )
 void password_Dialog::file_path(void )
 {	
 	QString Z = QFileDialog::getOpenFileName(this,
-						 QString("Select encrypted volume"),
+						 tr("Select encrypted volume"),
 						 QDir::homePath(),
 						 0);
 	ui->OpenVolumePath->setText( Z );
@@ -179,25 +179,25 @@ void password_Dialog::buttonOpenClicked(void )
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 
 	if(volumePath.isEmpty()){
-		m.setWindowTitle(QString("ERROR!"));
-		m.setText(QString("ERROR: volume path field is empty"));
+		m.setWindowTitle(tr("ERROR!"));
+		m.setText(tr("ERROR: volume path field is empty"));
 		m.exec() ;
 		return ;
 	}
 	if(mountPointPath.isEmpty()){
-		m.setWindowTitle(QString("ERROR!"));
-		m.setText(QString("ERROR: mount point path field is empty"));
+		m.setWindowTitle(tr("ERROR!"));
+		m.setText(tr("ERROR: mount point path field is empty"));
 		m.exec() ;
 		return ;
 	}
 	if(passPhraseField.isEmpty()){
-		m.setWindowTitle(QString("ERROR!"));
-		m.setText(QString("passphrase field is empty"));
+		m.setWindowTitle(tr("ERROR!"));
+		m.setText(tr("passphrase field is empty"));
 
 		if( B == true )
-			m.setText(QString("ERROR: key file field is empty"));
+			m.setText(tr("ERROR: key file field is empty"));
 		else
-			m.setText(QString("ERROR: passphrase field is empty"));
+			m.setText(tr("ERROR: passphrase field is empty"));
 
 		m.exec() ;
 		return ;
@@ -314,29 +314,29 @@ void password_Dialog::threadfinished()
 
 			}break ;
 
-		case 1 : UIMessage(QString("ERROR"),QString("No free loop device to use.")) ;
+		case 1 : UIMessage(tr("ERROR"),tr("No free loop device to use.")) ;
 			HideUI();
 			return ;
 			break ;
 
-		case 2 : UIMessage(QString("ERROR"),QString("there seem to be an open volume accociated with given path."));
+		case 2 : UIMessage(tr("ERROR"),tr("there seem to be an open volume accociated with given path."));
 			break ;
 
-		case 3 : UIMessage(QString("ERROR"),QString("No file exist on given path")) ;
+		case 3 : UIMessage(tr("ERROR"),tr("No file exist on given path")) ;
 			break ;
 
 		case 4 :
-			UIMessage(QString("ERROR"),QString("wrong passphrase."));
+			UIMessage(tr("ERROR"),tr("wrong passphrase."));
 			ui->PassPhraseField->clear();
 			ui->PassPhraseField->setFocus();
 			break ;
 
-		case 5 : UIMessage(QString("ERROR"),QString("mount point address is already taken by a file or folder")) ;
+		case 5 : UIMessage(tr("ERROR"),tr("mount point address is already taken by a file or folder")) ;
 			break ;
 
-		case 9 : UIMessage(QString("ERROR"),QString("\",\" (comma) is not a valid mount point"));
+		case 9 : UIMessage(tr("ERROR"),tr("\",\" (comma) is not a valid mount point"));
 			break ;
-		default :UIMessage(QString("ERROR"),QString("un unknown error has occured, volume not opened"));
+		default :UIMessage(tr("ERROR"),tr("un unknown error has occured, volume not opened"));
 		}
 }
 

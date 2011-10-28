@@ -142,7 +142,7 @@ void luksaddkeyUI::ShowUI()
 void luksaddkeyUI::pbOpenExisitingKeyFile(void)
 {	
 	QString Z = QFileDialog::getOpenFileName(this,
-						 QString("existing key file"),
+						 tr("existing key file"),
 						 QDir::homePath(),
 						 0);
 	ui->textEditExistingPassphrase->setText( Z ) ;
@@ -151,7 +151,7 @@ void luksaddkeyUI::pbOpenExisitingKeyFile(void)
 void luksaddkeyUI::pbOpenNewKeyFile(void)
 {
 	QString Z = QFileDialog::getOpenFileName(this,
-						 QString("new key file"),
+						 tr("new key file"),
 						 QDir::homePath(),
 						 0);
 	ui->textEditPassphraseToAdd->setText( Z ) ;
@@ -160,7 +160,7 @@ void luksaddkeyUI::pbOpenNewKeyFile(void)
 void luksaddkeyUI::pbOpenFile(void)
 {
 	QString Z = QFileDialog::getOpenFileName(this,
-						 QString("encrypted volume path"),
+						 tr("encrypted volume path"),
 						 QDir::homePath(),
 						 0);
 	ui->textEditPathToVolume->setText( Z ) ;
@@ -176,7 +176,7 @@ void luksaddkeyUI::rbExistingPassphrase(void)
 {
 	ui->textEditExistingPassphrase->setEchoMode(QLineEdit::Password);
 	ui->pushButtonOpenExistingKeyFile->setEnabled(false);
-	ui->labelExistingPassphrase->setText(QString("passphrase")) ;
+	ui->labelExistingPassphrase->setText(tr("passphrase")) ;
 	ui->textEditExistingPassphrase->clear();
 }
 
@@ -184,7 +184,7 @@ void luksaddkeyUI::rbExistingPassphraseFromFile(void)
 {
 	ui->textEditExistingPassphrase->setEchoMode(QLineEdit::Normal);
 	ui->pushButtonOpenExistingKeyFile->setEnabled(true);
-	ui->labelExistingPassphrase->setText(QString("key file")) ;
+	ui->labelExistingPassphrase->setText(tr("key file")) ;
 	ui->textEditExistingPassphrase->clear();
 
 }
@@ -193,7 +193,7 @@ void luksaddkeyUI::rbNewPassphrase(void)
 {
 	ui->textEditPassphraseToAdd->setEchoMode(QLineEdit::Password);
 	ui->pushButtonOpenNewKeyFile->setEnabled(false);
-	ui->labelNewPassphrase->setText(QString("passphrase")) ;
+	ui->labelNewPassphrase->setText(tr("passphrase")) ;
 	ui->textEditPassphraseToAdd->clear();
 	ui->lineEditReEnterPassphrase->setEnabled(true) ;
 }
@@ -202,7 +202,7 @@ void luksaddkeyUI::rbNewPassphraseFromFile()
 {
 	ui->textEditPassphraseToAdd->setEchoMode(QLineEdit::Normal);
 	ui->pushButtonOpenNewKeyFile->setEnabled(true);
-	ui->labelNewPassphrase->setText(QString("key file")) ;
+	ui->labelNewPassphrase->setText(tr("key file")) ;
 	ui->lineEditReEnterPassphrase->setEnabled(false) ;
 	ui->lineEditReEnterPassphrase->clear() ;
 }
@@ -225,33 +225,33 @@ void luksaddkeyUI::pbAdd(void)
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 
 	if ( volumePath.isEmpty() == true ){
-		m.setWindowTitle(QString("ERROR!"));
-		m.setText(QString("the encrypted volume path field is empty"));
+		m.setWindowTitle(tr("ERROR!"));
+		m.setText(tr("the encrypted volume path field is empty"));
 		m.addButton(QMessageBox::Ok);
 		m.exec() ;
 		enableAll();
 		return ;
 	}
 	if ( ExistingKey.isEmpty() == true ){
-		m.setWindowTitle(QString("ERROR!"));
-		m.setText(QString("existing passphrase field is empth"));
+		m.setWindowTitle(tr("ERROR!"));
+		m.setText(tr("existing passphrase field is empth"));
 		m.addButton(QMessageBox::Ok);
 		m.exec() ;
 		enableAll();
 		return ;
 	}
 	if ( NewKey.isEmpty() == true ){
-		m.setWindowTitle(QString("ERROR!"));
-		m.setText(QString("new passphrase field is empty"));
+		m.setWindowTitle(tr("ERROR!"));
+		m.setText(tr("new passphrase field is empty"));
 		m.addButton(QMessageBox::Ok);
 		m.exec() ;
 		enableAll();
 		return ;
 	}
 	if ( ui->radioButtonNewPassphraseFromFile->isChecked() == false){
-		m.setWindowTitle(QString("ERROR!"));
+		m.setWindowTitle(tr("ERROR!"));
 		if ( NewKey != d ){
-			m.setText(QString("passphrases do not match"));
+			m.setText(tr("passphrases do not match"));
 			m.addButton(QMessageBox::Ok);
 			m.exec() ;
 			enableAll();
@@ -260,8 +260,8 @@ void luksaddkeyUI::pbAdd(void)
 	}
 
 	if ( zuluCrypt::isLuks(volumePath) == false ){
-		m.setWindowTitle(QString("ERROR!"));
-		m.setText(QString("volume path does not point to a luks volume"));
+		m.setWindowTitle(tr("ERROR!"));
+		m.setText(tr("volume path does not point to a luks volume"));
 		m.addButton(QMessageBox::Ok);
 		m.exec() ;
 		enableAll();
@@ -269,8 +269,8 @@ void luksaddkeyUI::pbAdd(void)
 	}
 
 	if( zuluCrypt::luksEmptySlots(volumePath) == '8'){
-		m.setWindowTitle(QString("ERROR!"));
-		m.setText(QString("can not add any more keys, all slots are occupied"));
+		m.setWindowTitle(tr("ERROR!"));
+		m.setText(tr("can not add any more keys, all slots are occupied"));
 		m.addButton(QMessageBox::Ok);
 		m.exec() ;
 		enableAll();
@@ -333,10 +333,10 @@ void luksaddkeyUI::threadfinished()
 
 	switch( status ){
 		case 0 :
-			m.setWindowTitle(QString("SUCCESS"));
-			ss = QString("key added successfully\n") ;
+			m.setWindowTitle(tr("SUCCESS"));
+			ss = tr("key added successfully\n") ;
 			ss = ss + QString(zuluCrypt::luksEmptySlots(ui->textEditPathToVolume->text())) ;
-			ss = ss + QString(" / 8 slots are now in use") ;
+			ss = ss + tr(" / 8 slots are now in use") ;
 			m.setText(ss);
 			m.addButton(QMessageBox::Ok);
 			m.exec() ;
@@ -345,31 +345,31 @@ void luksaddkeyUI::threadfinished()
 			return ;
 			break ;
 		case 1 :
-			m.setWindowTitle(QString("ERROR!"));
-			m.setText(QString("presented key does not match any key in the volume"));
+			m.setWindowTitle(tr("ERROR!"));
+			m.setText(tr("presented key does not match any key in the volume"));
 			m.addButton(QMessageBox::Ok);
 			m.exec() ;
 			enableAll();
 			break ;
 		case 2 :
-			m.setWindowTitle(QString("ERROR!"));
-			m.setText(QString("could not open luks device"));
+			m.setWindowTitle(tr("ERROR!"));
+			m.setText(tr("could not open luks device"));
 			m.addButton(QMessageBox::Ok);
 			m.exec() ;
 			enableAll();
 			break ;
 
 		case 9 :
-			m.setWindowTitle(QString("ERROR!"));
-			m.setText(QString("could not open key file for reading, run out of memory"));
+			m.setWindowTitle(tr("ERROR!"));
+			m.setText(tr("could not open key file for reading, run out of memory"));
 			m.addButton(QMessageBox::Ok);
 			m.exec() ;
 			enableAll();
 			break ;
 
 		default:
-			m.setWindowTitle(QString("ERROR!"));
-			m.setText(QString("un unrecognized error has occured, key not added"));
+			m.setWindowTitle(tr("ERROR!"));
+			m.setText(tr("un unrecognized error has occured, key not added"));
 			m.addButton(QMessageBox::Ok);
 			m.exec() ;
 			enableAll();

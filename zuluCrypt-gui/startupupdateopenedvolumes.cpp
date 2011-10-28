@@ -42,11 +42,11 @@ void startupupdateopenedvolumes::run()
 		d = strstr(c,"device:") ;
 
 		if ( d == NULL){
-			QString s = QString("An inconsitency is detected, skipping /dev/mapper/zuluCrypt-") ;
+			QString s = tr("An inconsitency is detected, skipping /dev/mapper/zuluCrypt-") ;
 			s = s + QString(C) ;
-			s = s + QString(" because it does not look like a cryptsetup volume") ;
+			s = s + tr(" because it does not look like a cryptsetup volume") ;
 
-			emit UIMessage(QString("WARNING"), s ) ;
+			emit UIMessage(tr("WARNING"), s ) ;
 
 			continue ;
 		}
@@ -92,10 +92,10 @@ void startupupdateopenedvolumes::run()
 		QString mp = zuluCrypt::mtab(QString(bff)) ;
 
 		if( mp == QString("") ){
-			emit UIMessage(QString("WARNING"),
-					  QString("An inconsitency is detected. Skipping \"" + \
+			emit UIMessage(tr("WARNING"),
+					  tr("An inconsitency is detected. Skipping \"" + \
 					  QString(volume) + \
-					  QString("\" because its opened but not mounted")));
+					  tr("\" because its opened but not mounted")));
 			continue ;
 		}
 		emit addItemToTable(QString(volume),mp) ;

@@ -44,6 +44,6 @@ FORMS    += zulucrypt.ui password.ui \
     createkeyfile.ui \
     rngselector.ui
 
-OTHER_FILES +=
+TRANSLATIONS = ../translations/swahili_la.ts
 
 

@@ -48,7 +48,7 @@ openpartition::openpartition(QWidget *parent ) :
 
 void openpartition::ShowNonSystemPartitions()
 {
-	this->setWindowTitle(QString("select a partition to create an encrypted volume in"));
+	this->setWindowTitle(tr("select a partition to create an encrypted volume in"));
 
 	partitionlist = NULL ;
 
@@ -61,7 +61,7 @@ void openpartition::ShowNonSystemPartitions()
 
 void openpartition::ShowUI()
 {	
-	this->setWindowTitle(QString("select an encrypted partition to open"));
+	this->setWindowTitle(tr("select an encrypted partition to open"));
 
 	nonsystempartitionlist = NULL ;
 

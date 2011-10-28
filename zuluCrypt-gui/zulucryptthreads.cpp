@@ -46,7 +46,7 @@ void ShowNonSystemPartitionsThread::run()
 
 	delete tw->horizontalHeaderItem(0);
 
-	QString q("non system partitions( no active entries in fstab )") ;
+	QString q(tr("non system partitions( no active entries in fstab )")) ;
 
 	tw->setHorizontalHeaderItem(0,new QTableWidgetItem(q));
 
