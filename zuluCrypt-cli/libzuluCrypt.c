@@ -562,6 +562,11 @@ int create_volume(const char * dev,
 		
 	free( fsys ) ;		
 	
+	/*
+	 * I have on occassion seen this not being closed, assuming its due to my slow
+	 * computer and hence putting a few seconds pause just in case
+	 */
+	sleep( 2 ) ;
 	close_mapper("/dev/mapper/zuluCrypt-create-new");
 	
 	return 0 ;	
