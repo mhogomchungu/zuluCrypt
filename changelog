@@ -32,5 +32,8 @@ version 4.0
 version 4.1.0
 -- minor update, fix bugs comming from mishandling of files and paths with empty spaces in them.
 
+version 4.2.0
+-- minor update, volume in the favorite list could not be mounted, this version fix it.
+
 version 5.0
 translations support of people are interested in the tool in different languages.

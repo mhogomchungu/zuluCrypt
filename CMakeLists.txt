@@ -5,6 +5,8 @@ ADD_SUBDIRECTORY( zuluCrypt-cli )
 
 ADD_SUBDIRECTORY( zuluCrypt-gui )
 
+ADD_SUBDIRECTORY( test )
+
 install (FILES zuluCrypt-cli.1.bz2 
 DESTINATION share/man/man1
 )

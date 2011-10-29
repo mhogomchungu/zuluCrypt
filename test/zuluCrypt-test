@@ -1,0 +1,126 @@
+#!/bin/bash
+
+plain="/tmp/testing plain"
+
+luks="/tmp/testing luks"
+
+mount_point="/tmp/testing of volumes"
+
+mkdir /tmp/ 1>/dev/null 2>&1
+
+echo ""
+echo "creating mount point \"$mount_point\""
+mkdir "$mount_point"
+
+echo ""
+
+echo "creating a plain file \"testing plain\""
+
+dd if=/dev/zero of="$plain" bs=1024 count=10K 2>/dev/null 1>&2
+
+echo "creating a luks file \"testing luks\""
+
+dd if=/dev/zero of="$luks" bs=1024 count=10K 2>/dev/null 1>&2
+
+echo ""
+
+echo "creating a plain volume"
+
+zuluCrypt-cli create "$plain" ext4 plain -p "pinguins are fun to watch" /dev/urandom
+
+sleep 1
+echo ""
+echo "opening \"testing plain\" volume"
+
+zuluCrypt-cli open "$plain" "$mount_point" rw -p "pinguins are fun to watch"
+
+sleep 1
+echo ""
+echo "closing \"testing plain\" volume"
+
+zuluCrypt-cli close "$plain"
+
+sleep 1
+echo ""
+echo "creating a luks volume"
+
+zuluCrypt-cli create "$luks" ext4  luks -p "pinguins are fun to watch" /dev/urandom
+
+sleep 1
+echo ""
+echo "opening \"testing luks\" volume"
+
+zuluCrypt-cli open "$luks" "$mount_point" rw -p "pinguins are fun to watch"
+
+sleep 1
+echo ""
+echo "closing \"testing luks\" volume"
+
+zuluCrypt-cli close "$luks"
+
+sleep 1
+echo ""
+echo "check keys slots in use"
+
+zuluCrypt-cli emptyslots "$luks"
+
+sleep 1
+echo ""
+echo "add key to luks volume"
+
+zuluCrypt-cli addkey "$luks" -p "pinguins are fun to watch" -p "pinguins are not fun to watch"
+
+sleep 1
+echo ""
+echo "check keys slots in use"
+
+zuluCrypt-cli emptyslots "$luks"
+
+sleep 1
+echo ""
+echo "open the volume with the new key"
+
+zuluCrypt-cli open "$luks" "$mount_point" rw -p "pinguins are not fun to watch"
+
+sleep 1
+echo ""
+echo "close the volume"
+
+zuluCrypt-cli close "$luks"
+
+sleep 1
+echo ""
+echo "remove newly added key"
+
+zuluCrypt-cli removekey "$luks" -p "pinguins are not fun to watch"
+
+sleep 1
+echo ""
+echo "check keys slots in use"
+
+zuluCrypt-cli emptyslots "$luks"
+
+sleep 1
+echo "deleting testing files"
+rm -rf "$plain"
+rm -rf "$luks"
+
+echo "deleting mount point \"$mount_point\""
+rmdir "$mount_point"
+
+echo ""
+echo "check to see if there are any undeleted zuluCrypt-xxx mappers"
+
+t=`ls /dev/mapper/* | grep zuluCrypt`
+
+if [ "$t" == "" ] ; then
+	echo "all mappers are deleted, good"
+else
+	echo "some mappers remain, bad"
+	echo "remaining mappers are:"
+	echo "$t"
+fi
+	
+	
+
+
