@@ -27,9 +27,9 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    QTranslator translator;
-    translator.load("test_la") ;
-    a.installTranslator(&translator);
+    //QTranslator translator;
+    //translator.load("test_la") ;
+   //a.installTranslator(&translator);
     zuluCrypt w;
     w.show();
 

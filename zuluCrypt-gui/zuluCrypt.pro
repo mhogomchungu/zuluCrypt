@@ -46,4 +46,4 @@ FORMS    += zulucrypt.ui password.ui \
 
 TRANSLATIONS = ../translations/swahili_la.ts
 
-
+RESOURCES = icon.qrc

@@ -315,8 +315,6 @@ void password_Dialog::threadfinished()
 			}break ;
 
 		case 1 : UIMessage(tr("ERROR"),tr("No free loop device to use.")) ;
-			HideUI();
-			return ;
 			break ;
 
 		case 2 : UIMessage(tr("ERROR"),tr("there seem to be an open volume accociated with given path."));
@@ -333,8 +331,10 @@ void password_Dialog::threadfinished()
 
 		case 5 : UIMessage(tr("ERROR"),tr("mount point address is already taken by a file or folder")) ;
 			break ;
-
-		case 9 : UIMessage(tr("ERROR"),tr("\",\" (comma) is not a valid mount point"));
+		case 8 : UIMessage(tr("ERROR"),tr("ERROR: failed to open volume")) ;
+			break ;
+		
+		case 10 : UIMessage(tr("ERROR"),tr("\",\" (comma) is not a valid mount point"));
 			break ;
 		default :UIMessage(tr("ERROR"),tr("un unknown error has occured, volume not opened"));
 		}

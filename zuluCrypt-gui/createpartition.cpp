@@ -218,9 +218,12 @@ void createpartition::threadfinished()
 
 	switch( status ) {
 		case 0 : UIMessage(tr("SUCCESS"),
-				   tr("volume successfully created"));
+				   tr("volume created successfully"));
 			HideUI();
 			break;
+		case 1 : UIMessage(tr("ERROR"),
+			tr("File path given does not point to a file or partition"));
+			break ;			
 		case 6 : UIMessage(tr("ERROR"),
 				   tr("couldnt get requested memory to open the key file"));
 			break ;

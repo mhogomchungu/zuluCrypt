@@ -693,7 +693,7 @@ int mount_volume(const char * mapper,
 	char *mount_point ;
 	char *sane_mapper ;
 	
-	char s[5] ;	
+	char s[2] ;
 	
 	p = String(m_point) ;		
 	
@@ -701,6 +701,7 @@ int mount_volume(const char * mapper,
 		StringAppend( p, ".zc") ;
 		
 		if ( mkdir( StringContent( p ),S_IRWXU  ) != 0 ){
+			close_mapper(mapper);
 			StringDelete( p ) ;
 			return 5 ;		
 		}
@@ -963,7 +964,7 @@ int open_volume(const char * dev,
 		h = open_plain( dev,map,mode,source,pass,"cbc-essiv:sha256" ) ;
 	
 	switch ( h ){
-		case 3 : goto out ; break ;
+		case 3 : 	 goto out ; break ;
 		case 2 : h = 8 ; goto out ;break ;
 	}
 	

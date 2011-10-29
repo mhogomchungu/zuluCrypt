@@ -111,7 +111,7 @@ int close_opened_volume( char * mapping_name )
 	int st = close_volume( StringContent( p ) ) ;
 	
 	switch( st ) {
-	case 0 : printf("SUCCESS: volume successfully closed\n");
+	case 0 : printf("SUCCESS: volume closed successfully \n");
 		break ;
 	case 1 : printf("ERROR: close failed, encrypted volume with that name does not exist\n");
 		break ;			
@@ -143,7 +143,9 @@ int open_volumes(int    argn,
 	
 	StrHandle * z ;
 	
-	int st ;	
+	int st ;
+		
+	struct stat xt ;
 	
 	if (argn < 5 ){
 		st = 11 ;
@@ -154,8 +156,14 @@ int open_volumes(int    argn,
 			
 		st = 10 ;
 		goto eerr ;			
-	}		
+	}			
 
+	if( stat ( mount_point,&xt) != 0){
+		
+		st = 9 ;
+		goto eerr ;
+	}
+	
 	if (strncmp(mode,"ro",2) != 0){
 		if (strncmp(mode,"rw",2) != 0){
 			st = 10 ;
@@ -227,11 +235,11 @@ int open_volumes(int    argn,
 			break ;	
 		case 11 : printf("ERROR: Wrong number of arguments, run zuluCrypt with \"-h\" for help\n");
 			break ;
-		case 9 : printf("ERROR: failed to open volume\n");
+		case 8 : printf("ERROR: failed to open volume\n");
 			break ;	
-		case 10 : printf("ERROR: Wrong option, run zuluCrypt with \"-h\" for help\n");
+		case 10 : printf("ERROR: \",\" (comma) is not a valid mount point\n");
 			break ;
-		case 8 : printf("ERROR: Wrong option, run zuluCrypt with \"-h\" for help\n");
+		case 9 :  printf("ERROR: mount point path does not exist\n");
 			break ;	
 			
 		default :
@@ -798,7 +806,7 @@ int removekey( int argn , char * device, char * keyType, char * keytoremove )
 	
 	out:
 	switch ( status ){
-		case 0 : printf("SUCCESS: key successfully removed\n");
+		case 0 : printf("SUCCESS: key removed successfully\n");
 		break ;
 		case 1 : printf("ERROR: device \"%s\" is not a luks device",device) ;
 		break ;

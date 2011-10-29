@@ -32,6 +32,7 @@
 #include <QMessageBox>
 #include <QFontDialog>
 #include <QMetaType>
+#include <QDebug>
 
 Q_DECLARE_METATYPE(Qt::Orientation) ;
 
@@ -355,11 +356,11 @@ QString zuluCrypt::mtab(QString entry)
 
 	while(data.at(i++) != ' ') { ; }
 
-	int j = i - 1 ;
+	int j = i ;
 
 	while(data.at(i++) != ' ') { ; }
 
-	QByteArray mount_point = data.mid(j, i - j) ;
+	QByteArray mount_point = data.mid(j, i - j - 1) ;
 
 	mount_point.replace("\\040"," ") ;
 
@@ -633,7 +634,7 @@ char zuluCrypt::luksEmptySlots(QString volumePath)
 {
 	QProcess N ;
 	N.start(QString(ZULUCRYPTzuluCrypt) + \
-		tr(" emptyslots \"") + volumePath + QString("\""));
+		QString(" emptyslots \"") + volumePath + QString("\""));
 	N.waitForFinished() ;
 	char *s = N.readAllStandardOutput().data() ;
 	int i = 0 ;
@@ -929,7 +930,7 @@ void zuluCrypt::close(void)
 				  tr("close failed, the mount point and/or one or more files are in use"));
 		break ;
 	case 3 :	UIMessage(tr("ERROR"),
-				  tr("close failed, path given does not point to an encrypted device"));
+				  tr("close failed, given path does not point to an encrypted device"));
 		break ;
 	default :	UIMessage(tr("ERROR"),
 				  tr("an unknown error has occured, volume not closed"));
