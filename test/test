@@ -1,0 +1,97 @@
+#!/bin/bash
+
+echo "creating a plain file \"testing plain\""
+
+dd if=/dev/zero of="testing plain" bs=1024 count=10K 2>/dev/null 1>&2
+
+echo "creating a luks file \"testing luks\""
+
+dd if=/dev/zero of="testing luks" bs=1024 count=10K 2>/dev/null 1>&2
+
+echo "creating a plain volume"
+
+zuluCrypt-cli create "testing plain" ext4 plain -p "pinguins are fun to watch" /dev/urandom
+
+sleep 1
+echo ""
+echo "opening \"testing plain\" volume"
+
+zuluCrypt-cli open "testing plain" . rw -p "pinguins are fun to watch"
+
+sleep 1
+echo ""
+echo "closing \"testing plain\" volume"
+
+zuluCrypt-cli close "testing plain"
+
+sleep 1
+echo ""
+echo "creating a luks volume"
+
+zuluCrypt-cli create "testing luks" ext4  luks -p "pinguins are fun to watch" /dev/urandom
+
+sleep 1
+echo ""
+echo "opening \"testing luks\" volume"
+
+zuluCrypt-cli open "testing luks" . rw -p "pinguins are fun to watch"
+
+sleep 1
+echo ""
+echo "closing \"testing luks\" volume"
+
+zuluCrypt-cli close "testing luks"
+
+sleep 1
+echo ""
+echo "check keys slots in use"
+
+zuluCrypt-cli emptyslots "testing luks"
+
+sleep 1
+echo ""
+echo "add key to luks volume"
+
+zuluCrypt-cli addkey "testing luks" -p "pinguins are fun to watch" -p "pinguins are not fun to watch"
+
+sleep 1
+echo ""
+echo "check keys slots in use"
+
+zuluCrypt-cli emptyslots "testing luks"
+
+sleep 1
+echo ""
+echo "open the volume with the new key"
+
+zuluCrypt-cli open "testing luks" . rw -p "pinguins are not fun to watch"
+
+sleep 1
+echo ""
+echo "close the volume"
+
+zuluCrypt-cli close "testing luks"
+
+sleep 1
+echo ""
+echo "remove newly added key"
+
+zuluCrypt-cli removekey "testing luks" -p "pinguins are not fun to watch"
+
+sleep 1
+echo ""
+echo "check keys slots in use"
+
+zuluCrypt-cli emptyslots "testing luks"
+
+sleep 1
+echo "delete testing files"
+rm -rf "testing plain"
+rm -rf "testing luks"
+
+echo ""
+echo "check to see if there are any undeleted zuluCrypt-xxx mappers"
+
+ls /dev/mapper/*
+
+
