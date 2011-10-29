@@ -1,5 +1,9 @@
 #!/bin/bash
 
+echo "****************************"
+echo "starting test"
+echo "****************************"
+
 plain="/tmp/testing plain"
 
 luks="/tmp/testing luks"
@@ -121,6 +125,8 @@ else
 	echo "$t"
 fi
 	
-	
+echo "****************************"
+echo "ending test"
+echo "****************************"	
 
 

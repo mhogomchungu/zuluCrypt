@@ -80,7 +80,8 @@ void password_Dialog::ShowUI(QString volumePath, QString mount_point)
 	ui->MountPointPath->setText(mount_point);
 	ui->checkBoxReadOnly->setChecked( true );
 	ui->PassPhraseField->setFocus();
-	ui->radioButtonPassPhraseFromFile->setChecked( false );
+	ui->PassPhraseField->clear();
+	ui->radioButtonPassPhrase->setChecked( true );
 	ui->pushButtonPassPhraseFromFile->setEnabled( false );
 	this->show();
 }
@@ -92,6 +93,7 @@ void password_Dialog::ShowUI(bool A,bool B,QString C,QString D)
 	ui->pushButtonPassPhraseFromFile->setEnabled( B ) ;
 	ui->OpenVolumePath->setText( C );
 	ui->MountPointPath->setText( D );
+	ui->PassPhraseField->clear();
 	ui->PassPhraseField->setFocus();
 	this->show();
 }
