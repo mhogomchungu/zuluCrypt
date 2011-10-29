@@ -677,7 +677,8 @@ void zuluCrypt::aboutMenuOption(void)
 	b = b + tr("or FITNESS FOR A PARTICULAR PURPOSE.\n");
 	b = b + tr("See the GNU General Public License for more details.") ;
 
-	m.setText( QString( VERSION_STRING ) + b ) ;
+	m.setText( tr("version") + QString( VERSION_STRING ) + \
+		tr(" of zuluCrypt, a front end to cryptsetup.\n\n(c) 2011 mhogo mchungu\nmhogomchungu@gmail.com\n") + b ) ;
 	m.exec() ;
 }
 
