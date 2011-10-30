@@ -201,7 +201,6 @@ int remove_key( const char * device ,
 int empty_slots( char * slot ,
 		 const char * device )
 {
-	struct crypt_device *cd = NULL;
 	crypt_keyslot_info cki ;
 	
 	int i ;
@@ -304,10 +303,18 @@ char * status( const char * mapper )
 	p = String(mapper) ;
 	
 	switch( csi){
-		case CRYPT_INACTIVE : 	StringAppend(p," is inactive.\n") ; goto out ;	break ;
-		case CRYPT_ACTIVE   : 	StringAppend(p," is active.\n") ;			break ;
-		case CRYPT_BUSY     : 	StringAppend(p," is active and is in use.\n") ;	break ;
-		case CRYPT_INVALID  : 	StringAppend(p," is invalid.\n") ;	 goto out ;	break ;
+		case CRYPT_INACTIVE :
+			StringAppend(p," is inactive.\n") ; 	
+			goto out ;
+		case CRYPT_ACTIVE   : 
+			StringAppend(p," is active.\n") ;
+			break ;
+		case CRYPT_BUSY     : 	
+			StringAppend(p," is active and is in use.\n") ;
+			break ;
+		case CRYPT_INVALID  : 
+			StringAppend(p," is invalid.\n") ;	
+			goto out ;
 	}	
 		
 	type = crypt_get_type(cd) ;	
@@ -463,7 +470,6 @@ void execute( const char *command ,
 
 int is_luks(const char * dev)
 {		
-	struct crypt_device *cd = NULL;
 	int r;
 	
 	r = crypt_init(&cd, dev) ;	
@@ -484,7 +490,6 @@ int create_luks(const char * dev,
 		const char * rng)
 {
 	int i ;
-	struct crypt_device *cd = NULL;
 	
 	struct crypt_params_luks1 params = {
 		.hash = "sha1",
@@ -964,14 +969,20 @@ int open_volume(const char * dev,
 		h = open_plain( dev,map,mode,source,pass,"cbc-essiv:sha256" ) ;
 	
 	switch ( h ){
-		case 3 : 	 goto out ; break ;
-		case 2 : h = 8 ; goto out ;break ;
+		case 3 : 
+			goto out ;
+		case 2 : 
+			h = 8 ; 
+			goto out ;
 	}
 	
 	h = mount_volume(map,m_point,mode,id ) ;	
 	
 	if( h == 4 ){
-		
+		/*
+		 * udisk seem to crash when mount/unmount happen too quickly, give it room to breath.
+		 */
+		sleep(2) ;
 		open_plain( dev,map,mode,source,pass,"cbc-plain" ) ;		
 		
 		h = mount_volume(map,m_point,mode,id ) ;
