@@ -238,20 +238,22 @@ int empty_slots( char * slot ,
 			case CRYPT_SLOT_ACTIVE_LAST: slot[j] = '3' ; break ;			
 		}		
 	}
+	
 	slot[j] = '\0' ;
+	
+	status = 0 ;
 	
 	out:
 	crypt_free(cd);
-	return 0 ;
+	
+	return status ;
 }
 
 char * intToChar(char * x, int y,int z)
 {
 	char *c =  x + y  ;
 	
-	*c = '\0' ;
-	
-	c-- ;
+	*c-- = '\0' ;	
 	
 	do{
 		*c-- = z % 10 + '0' ;
@@ -302,7 +304,7 @@ char * status( const char * mapper )
 	
 	p = String(mapper) ;
 	
-	switch( csi){
+	switch( csi ){
 		case CRYPT_INACTIVE :
 			StringAppend(p," is inactive.\n") ; 	
 			goto out ;
@@ -349,9 +351,7 @@ char * status( const char * mapper )
 		
 		while( *++d != ')') { ; }
 		
-		*d = '\0' ;
-		
-		i = 0 ;
+		*d = '\0' ;		
 	
 		realpath(c,path) ;
 		StringAppend(p,"\n loop:      ");
@@ -491,12 +491,19 @@ int create_luks(const char * dev,
 {
 	int i ;
 	
+	int status ;
+	
 	struct crypt_params_luks1 params = {
 		.hash = "sha1",
 		.data_alignment = 4096,
 	};	
 	
 	i =  crypt_init(&cd,dev) ;
+	
+	if ( i != 0 ){
+		status = 1 ;
+		goto out ;
+	}
 	
 	if( strcmp(rng,"/dev/random" ) == 0 )
 		crypt_set_rng_type(cd, CRYPT_RNG_RANDOM);
@@ -505,14 +512,25 @@ int create_luks(const char * dev,
 	
 	i = crypt_format(cd, CRYPT_LUKS1,"aes","cbc-essiv:sha256",NULL, NULL, 32, &params);	
 	
+	if ( i != 0 ){
+		status = 1 ;
+		goto out ;
+	}
+	
 	i = crypt_keyslot_add_by_volume_key(cd,CRYPT_ANY_SLOT ,NULL,32,pass,strlen(pass));
+	
+	if ( i != 0 ){
+		status = 1 ;
+		goto out ;
+	}
+	
+	status = 0 ;
+	
+	out:
 	
 	crypt_free(cd);
 	
-	if( i == 0 )
-		return 0 ;
-	else	
-		return 1 ;
+	return status ;
 }
 
 int create_volume(const char * dev,
@@ -591,12 +609,15 @@ int close_mapper( const char * mapper )
 
 int unmount_volume( const char * map )
 {
+	StrHandle * p ;
+	
 	StrHandle * q ;
 	
 	struct stat st ;		
 
 	char * mount_point = NULL ;
-	char * c ;
+	
+	char *c ;
 	
 	FILE *f ;	
 	
@@ -623,19 +644,15 @@ int unmount_volume( const char * map )
 	if ( mount_point == NULL )
 		return 3 ;			
 
-	q = String(mount_point) ;	
+	p = String(mount_point) ;	
 	
 	/*
 	 * space character in /etc/mtab file is stored as \040
 	 * replace these characters with space again	 * 
 	 */	
-	StringReplaceString(q,"\\040"," ") ;	
+	StringReplaceString(p,"\\040"," ") ;	
 	
-	mount_point = sanitize(StringContent(q)) ;
-	
-	c = StringCopy(q) ;
-	
-	StringDelete(q);		
+	mount_point = sanitize(StringContent(p)) ;		
 
 	/*
 	 * mount/umount system calls do not add entries in mtab and 
@@ -655,17 +672,14 @@ int unmount_volume( const char * map )
 	StringDelete( q ) ;
 	
 	if(buffer[0] != '0'){		
-		free( c ) ;
+		StringDelete( p ) ;
 		free(mount_point);
 		return 2 ;		
 	}
 	
-	rmdir( c ) ;
-	
-	free(mount_point);
-	
-	free( c ) ;
-	
+	rmdir( StringContent(p) ) ;	
+	free(mount_point);	
+	StringDelete( p ) ;	
 	return 0 ;
 }
 
@@ -969,11 +983,9 @@ int open_volume(const char * dev,
 		h = open_plain( dev,map,mode,source,pass,"cbc-essiv:sha256" ) ;
 	
 	switch ( h ){
-		case 3 : 
-			goto out ;
-		case 2 : 
-			h = 8 ; 
-			goto out ;
+		case 3 : goto out ;
+		case 2 : h = 8 ; 
+			 goto out ;
 	}
 	
 	h = mount_volume(map,m_point,mode,id ) ;	
