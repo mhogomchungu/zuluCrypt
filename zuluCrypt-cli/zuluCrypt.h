@@ -130,6 +130,7 @@ char *status( const  char * mapper );//mapper is the full address of the volume 
  *      0 - success
  * 	1 - ERROR: device argument does not point to a file or partition
  * 	2 - ERROR: wrong argument. (probably mistyped fs and rng arguments
+ * 	3 - ERROR: could not create the volume
  */
 int create_volume(const char * device,    // path to a file or partition
 		  const char * fs,       //file system to use in the volume(ext2,ext3.ext4,vfat)

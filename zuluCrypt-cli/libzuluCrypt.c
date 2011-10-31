@@ -541,7 +541,9 @@ int create_volume(const char * dev,
 {
 	StrHandle * q ;
 	
-	struct stat st ;	
+	struct stat st ;
+	
+	int status ;
 	
 	char * fsys = sanitize( fs ) ;
 	
@@ -561,14 +563,22 @@ int create_volume(const char * dev,
 	
 	if(  strcmp(type,"luks")  == 0){
 	
-		create_luks(dev,pass,rng) ;		
+		status = create_luks(dev,pass,rng) ;		
 
-		open_luks(dev,"zuluCrypt-create-new","rw","-p",pass ) ;
+		if( status != 0 )
+			return 3 ;
+		
+		status = open_luks(dev,"zuluCrypt-create-new","rw","-p",pass ) ;
+		
+		if( status != 0 )
+			return 3 ;
 		
 	}else if( strcmp(type,"plain") == 0 ){
 		
-		open_plain(dev,"zuluCrypt-create-new","rw","-p",pass,"cbc-essiv:sha256" ) ;
+		status = open_plain(dev,"zuluCrypt-create-new","rw","-p",pass,"cbc-essiv:sha256" ) ;
 		
+		if( status !=0 )
+			return 3 ;		
 	}else{
 		return 2 ;
 	}
