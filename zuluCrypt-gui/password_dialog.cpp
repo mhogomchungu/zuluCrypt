@@ -36,8 +36,6 @@ password_Dialog::password_Dialog(QWidget *parent ) : QDialog(parent)
 	ui->setupUi(this);
 	this->setFixedSize(this->size());
 
-	passphraseOption() ;
-
 	connect(ui->PushButtonCancel,
 		SIGNAL(clicked()),
 		this,
@@ -82,6 +80,8 @@ void password_Dialog::ShowUI(QString volumePath, QString mount_point)
 	ui->PassPhraseField->setFocus();
 	ui->PassPhraseField->clear();
 	ui->radioButtonPassPhrase->setChecked( true );
+	ui->labelPassphrase->setText(tr("passphrase"));
+	ui->PassPhraseField->setEchoMode(QLineEdit::Password);
 	ui->pushButtonPassPhraseFromFile->setEnabled( false );
 	this->show();
 }
@@ -91,6 +91,13 @@ void password_Dialog::ShowUI(bool A,bool B,QString C,QString D)
 	ui->checkBoxReadOnly->setChecked( A );
 	ui->radioButtonPassPhraseFromFile->setChecked( B );
 	ui->pushButtonPassPhraseFromFile->setEnabled( B ) ;
+	if( B == true ){
+		ui->labelPassphrase->setText(tr("key file"));
+		ui->PassPhraseField->setEchoMode(QLineEdit::Normal);
+	}else{
+		ui->labelPassphrase->setText(tr("passphrase"));
+		ui->PassPhraseField->setEchoMode(QLineEdit::Password);
+	}
 	ui->OpenVolumePath->setText( C );
 	ui->MountPointPath->setText( D );
 	ui->PassPhraseField->clear();
@@ -125,9 +132,7 @@ void password_Dialog::clickedPassPhraseFromFileButton()
 
 void password_Dialog::clickedPartitionOption(QString option)
 {
-	ui->OpenVolumePath->setText(option);
-	if( this->isHidden() )
-		this->show();
+	ShowUI(option,QDir::homePath()) ;
 }
 
 void password_Dialog::mount_point(void )
@@ -154,6 +159,7 @@ void password_Dialog::ShowUI()
 	ui->MountPointPath->setText(QDir::homePath());	
 	ui->PassPhraseField->clear();
 	ui->radioButtonPassPhrase->setChecked(true);
+	ui->labelPassphrase->setText(tr("passphrase"));
 	ui->pushButtonPassPhraseFromFile->setEnabled(false);
 	ui->PassPhraseField->setEchoMode(QLineEdit::Password);
 	ui->checkBoxReadOnly->setChecked(true);
