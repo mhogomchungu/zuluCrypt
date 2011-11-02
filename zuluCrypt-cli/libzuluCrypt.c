@@ -43,8 +43,7 @@ int add_key(const char * device,
 int remove_key( const char * device ,
 		const char * pass ) ;
 
-int empty_slots( char * slots ,
-		 const char * device ) ;
+char * empty_slots( const char * device ) ;
 
 char * intToChar(char * x,
 		 int y,
@@ -198,34 +197,32 @@ int remove_key( const char * device ,
 	return status ;
 }
 
-int empty_slots( char * slot ,
-		 const char * device )
+char * empty_slots( const char * device )
 {
 	crypt_keyslot_info cki ;
 	
 	int i ;
 	int j ;
 	int k ;
-	int status ;
+	
+	char *slot ;
 	
 	if( is_luks(device) == 1)
-		return 1 ;
+		return NULL ;
 	
 	i = crypt_init(&cd,device) ;
 	
-	if( i != 0 ){
-		status = 2 ;
-		goto out ;
-	}
+	if( i != 0 )
+		return NULL ;
 	
 	i = crypt_load(cd, CRYPT_LUKS1, NULL) ;
 	
-	if( i != 0 ){
-		status = 2 ;
-		goto out ;
-	}
+	if( i != 0 )
+		return NULL ;
 	
 	k = crypt_keyslot_max(CRYPT_LUKS1) ;
+	
+	slot = ( char * ) malloc( sizeof( char ) * ( k + 1 ) ) ;
 	
 	for( j = 0 ; j < k ; j++){
 		
@@ -239,14 +236,11 @@ int empty_slots( char * slot ,
 		}		
 	}
 	
-	slot[j] = '\0' ;
-	
-	status = 0 ;
-	
-	out:
+	slot[j] = '\0' ;	
+
 	crypt_free(cd);
 	
-	return status ;
+	return slot ;
 }
 
 char * intToChar(char * x, int y,int z)

@@ -871,14 +871,15 @@ int main( int argc , char *argv[])
 	char * device = argv[2] ;
 
 	StrHandle *p,*q,*z ;
+	
+	struct stat st ;
+	
 	uid_t id ;
 	
 	int status ;
 	
 	char *  mapping_name ;
 	char * c ;
-	
-	char slots[12] ; 
 	
 	id = getuid();	
 	
@@ -976,18 +977,24 @@ int main( int argc , char *argv[])
 		return status ;
 	}else if(strcmp(action,"emptyslots") == 0 ){
 		
-		status = empty_slots( slots , device ) ;
-		
-		switch( status ){
-			case 0 :printf("%s\n",slots ) ;
-				break ;
-			case 1 :printf("device \"%s\" is not a luks device\n",device) ;
-				break ;
-			case 2 :printf("ERROR: could not open device\n") ;
-				break ;
+		if( stat(device,&st) != 0 ){
+			printf("path \"%s\" does not point to a device\n",device) ;
+			status = 1 ;			
+		}else{
+			c = empty_slots( device ) ;
+			
+			if( c == NULL ){
+				printf("device \"%s\" is not a luks device\n",device) ;
+				status = 2 ;
+			}else{
+				printf("%s\n",c ) ;
+				status = 0 ;
+				free( c ) ;
+			}		
 		}
 	}else{
 		printf("ERROR: Wrong argument\n") ;
+		help();
 		status =  10 ;
 	}
 	

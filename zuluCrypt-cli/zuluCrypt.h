@@ -168,10 +168,10 @@ int remove_key(const char * device ,      //path to an encrypted device
 /**
  *This function gives information about slots in a luks volume. 
  * 
- * OUTPUT:
- * slots: array of digits representing empty slots, how many digits will depend on 
- * 	how many are in the volume. current volumes have a maximum of 8. Create an array 
- * 	with plenty of space to be safe from overflowing it when the maximum changes.
+ * return value: 
+ * NULL if an error occurs(if the device path is invalid or does not point to luks device.
+ * 
+ * If no error occur a sting made up of 0,1,2 and 3 is returned. Make sure to free it when you are done.
  * 
  * 	0 is for disabled/unoccupied/inactive
  * 	1 is for enabled/occupied/active 	
@@ -179,15 +179,9 @@ int remove_key(const char * device ,      //path to an encrypted device
  * 	3 is for last active key
  * 
  *       example:
- *	00100000 means, slot number 3 is occupied/enabled, the rest are not(emply/disabled).
- * 
- * return value:
- * 0 - success  
- * 1 - ERROR: device does not exist or is not a luks device
- * 2 - ERROR: could not open luks device  
+ *	00100000 means, slot number 3 is occupied/enabled, the rest are not(emply/disabled).  
  */
-int empty_slots(char * slots ,   // output argument, explanation above
-		const char * device ) ; //path to encrypted volume
+char * empty_slots(const char * device ) ; 
 
 /**
  * This function just opens a luks volume, doesnt create a mount point and doesnt mount it.
