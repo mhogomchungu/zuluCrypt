@@ -254,6 +254,13 @@ void StringDelete(StrHandle * st)
 	free( st ) ;
 }
 
+char * StringDeleteHandle( StrHandle *st)
+{
+	char * c = st->string ;
+	free( st ) ;
+	return c ;	
+}
+
 const char * StringSubChar(StrHandle * st, int x, char s )
 {	
 	* ( st->string + x ) = s ;

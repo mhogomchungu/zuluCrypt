@@ -75,6 +75,19 @@ void StringReadToBuffer( StrHandle * st,char *buffer, int size) ;
  */
 void StringDelete(StrHandle * st);
 
+/*
+ * input argument: String handle
+ * return value: a pointer to the string managed by the handle.
+ * 
+ * This function deletes the handle presented through argument st and returns 
+ * a pointer to the string handled by the st and therefore you will 
+ * have to free the returned pointer when done with it.
+ * 
+ * Use this function when you no longer need the handle i.e dont want to do string
+ * manipulation through the handle but want the pointer to the string it managed.
+ */
+char * StringDeleteHandle( StrHandle *st) ;
+
 
 /*
  * Return the length of the string handled by handle st.

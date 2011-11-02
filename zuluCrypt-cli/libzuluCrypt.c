@@ -374,11 +374,9 @@ char * status( const char * mapper )
 		StringAppend(p,"read/write");			
 	
 	out:
-	c = StringCopy(p) ;	
-	StringDelete(p) ;
 	crypt_free(cd);	
 	crypt_free(cd1);	
-	return c ;
+	return StringDeleteHandle(p) ;
 }
 
 /*
