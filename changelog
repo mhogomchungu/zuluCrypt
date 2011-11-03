@@ -35,5 +35,8 @@ version 4.1.0
 version 4.2.0
 -- minor update, volume in the favorite list could not be mounted, this version fix it.
 
+version 4.3.0
+-- minor update. The password dialog had a bug and did not reset properly when the previous operation involved opening a keyfile.
+
 version 5.0
 translations support of people are interested in the tool in different languages.
