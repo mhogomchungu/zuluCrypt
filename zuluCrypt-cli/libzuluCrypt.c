@@ -523,7 +523,7 @@ int create_luks(const char * dev,
 						pass,
 						strlen(pass));
 	
-	if ( status != 0 ){
+	if ( status < 0 ){
 		status = 3 ;
 		goto out ;
 	}
@@ -854,10 +854,10 @@ int open_luks( const char * device,
 	
 	crypt_free(cd);
 	
-	if( i == 0 )
-		return 0 ;
-	else
+	if( i < 0 )
 		return 1 ;
+	else
+		return 0 ;
 }
 
 int open_plain( const char * device,
@@ -929,10 +929,10 @@ int open_plain( const char * device,
 	}
 	crypt_free(cd);
 	
-	if ( i == 0 )
-		return 0 ;
-	else
+	if ( i < 0 )
 		return 2 ;
+	else
+		return 0 ;
 }
 
 
