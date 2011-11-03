@@ -700,21 +700,14 @@ int unmount_volume( const char * map )
 
 int close_volume(const char * map) 
 {		
-	int i ;
-	
-	i = 0 ;
-	
-	i = unmount_volume( map ) ;
+	int i = unmount_volume( map ) ;
 	
 	if( i != 0 )
 		return i ;	
 	
-	i = close_mapper( map ) ;		
+	close_mapper( map ) ;		
 	
-	if( i == 1 )
-		return 4 ;
-	else
-		return 0 ;
+	return 0 ;
 }
 
 int mount_volume(const char * mapper,
