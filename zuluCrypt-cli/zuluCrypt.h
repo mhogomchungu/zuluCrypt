@@ -25,6 +25,11 @@ extern "C" {
 #endif	
 
 /**
+ * Return the version string of the library * 
+ */
+char * version(void) ;
+
+/**
  * This function checks to see if a volume is a luks volume or not.
  * 
  * input : path to a partition/file to be checked if it is a luks device

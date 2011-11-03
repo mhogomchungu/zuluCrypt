@@ -17,22 +17,17 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <dlfcn.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <sys/mount.h>
-#include <fcntl.h>
-#include <stdint.h>
-#include <libcryptsetup.h>
-#include "String.h"   
-#include <sys/types.h>
-#include <errno.h>
+#include <libcryptsetup.h>   
 
+#include "String.h"
 #include "../zuluCrypt-gui/executables.h"
+#include "../zuluCrypt-gui/version.h"
 
 //function prototypes
 
@@ -99,8 +94,14 @@ int open_volume(const char * dev,
 		const char * pass,
 		const char * source) ;			
 
-		
+char * version(void) ;
+
 struct crypt_device *cd;
+
+char * version(void)
+{
+	return VERSION_STRING ;
+}
 
 int add_key(const char * device,
 	    const char * existingkey,
