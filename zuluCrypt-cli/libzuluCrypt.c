@@ -481,18 +481,21 @@ int create_luks(const char * dev,
 		const char * pass,
 		const char * rng)
 {
-	int i ;
-	
 	int status ;
+	
+	struct stat st;
 	
 	struct crypt_params_luks1 params = {
 		.hash = "sha1",
 		.data_alignment = 4096,
 	};	
 	
-	i =  crypt_init(&cd,dev) ;
+	if( stat(dev,&st) != 0 )
+		return 4 ;
 	
-	if ( i != 0 ){
+	status =  crypt_init(&cd,dev) ;
+	
+	if ( status != 0 ){
 		status = 1 ;
 		goto out ;
 	}
@@ -502,17 +505,29 @@ int create_luks(const char * dev,
 	else 
 		crypt_set_rng_type(cd, CRYPT_RNG_URANDOM);
 	
-	i = crypt_format(cd, CRYPT_LUKS1,"aes","cbc-essiv:sha256",NULL, NULL, 32, &params);	
+	status = crypt_format(cd,
+			      CRYPT_LUKS1,
+			      "aes",
+			      "cbc-essiv:sha256",
+			       NULL,
+			       NULL,
+		               32,
+		               &params);	
 	
-	if ( i != 0 ){
-		status = 1 ;
+	if ( status != 0 ){
+		status = 2 ;
 		goto out ;
 	}
 	
-	i = crypt_keyslot_add_by_volume_key(cd,CRYPT_ANY_SLOT ,NULL,32,pass,strlen(pass));
+	status = crypt_keyslot_add_by_volume_key(cd,
+						CRYPT_ANY_SLOT ,
+						NULL,
+						32,
+						pass,
+						strlen(pass));
 	
-	if ( i != 0 ){
-		status = 1 ;
+	if ( status != 0 ){
+		status = 3 ;
 		goto out ;
 	}
 	
@@ -569,7 +584,7 @@ int create_volume(const char * dev,
 		
 		status = open_plain(dev,"zuluCrypt-create-new","rw","-p",pass,"cbc-essiv:sha256" ) ;
 		
-		if( status !=0 )
+		if( status != 0 )
 			return 3 ;		
 	}else{
 		return 2 ;
@@ -599,9 +614,7 @@ int create_volume(const char * dev,
 
 int close_mapper( const char * mapper )
 {
-	int i ;		
-
-	i = crypt_deactivate(NULL, mapper);
+	int i = crypt_deactivate(NULL, mapper);
 
 	if(i == 0)
 		return 0;
@@ -787,7 +800,7 @@ int open_luks( const char * device,
 	const char * c ;	
 	
 	if( stat( device, &st) != 0 )
-		return 5 ;
+		return 3 ;
 	
 	c = strrchr(mapper,'/');
 	
@@ -878,6 +891,9 @@ int open_plain( const char * device,
 	
 	struct stat st;
 	
+	if( stat(device,&st) != 0 )
+		return 3 ;
+
 	c = strrchr(mapper,'/');
 	
 	if( c == NULL )
@@ -890,24 +906,17 @@ int open_plain( const char * device,
 	else
 		flags = 0 ;
 
-	i = crypt_init(&cd, device) ;
-	
-	if ( i != 0 )
-		goto out ;
+	i = crypt_init(&cd, device) ;	
 	
 	i = crypt_format(cd,
 			CRYPT_PLAIN,
-			"aes"
-			,cipher,
+			"aes",
+			cipher,
 			NULL,
 			NULL,
 			32,
 			&params);
-	
-	if ( i != 0 )
-		goto out ;
-	
-	
+
 	if(strcmp(source,"-p")==0){
 		
 		i = crypt_activate_by_passphrase(cd,
@@ -916,10 +925,11 @@ int open_plain( const char * device,
 						pass,
 						strlen(pass),
 						flags);
-	}else{
-			
-		stat(pass,&st) ;
-		
+	}else{			
+		if( stat(pass,&st) != 0){
+			crypt_free(cd);
+			return 4 ;
+		}		
 		i = crypt_activate_by_keyfile(cd,
 					     c,
 					     CRYPT_ANY_SLOT,
@@ -927,9 +937,6 @@ int open_plain( const char * device,
 					     st.st_size,
 					     flags) ;
 	}
-	
-	out:
-	
 	crypt_free(cd);
 	
 	if ( i == 0 )

@@ -115,10 +115,8 @@ int unmount_volume( const char * mapper ) ;//mapper is the full address of the v
  * input :  mapper name used when the volume was opened. Mapper name is the name that shows up in /dev/mapper
  * 
  * output is a pointer to a string with volume info.
- * remember to free the pointer when done with the output.
  * 
- * NULL output means: ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /lib
- * or couldnt open volume
+ * remember to free the returned pointer when done with the output. 
  */
 char *status( const  char * mapper );//mapper is the full address of the volume as it
 					//appears at /dev/mapper
@@ -188,10 +186,9 @@ char * empty_slots(const char * device ) ;
  * 
  *return values:
  * 0 - success 
- * 2 - ERROR: failed to open device
- * 4 - ERROR: key file does not exist
  * 1 - ERROR: presented key does not exist in the volume
- * 5 - ERROR: device does not exist
+ * 2 - ERROR: failed to open device
+ * 3 - ERROR: device path does not point to a device
  */
 int open_luks( const char * device,      // path to encrypted file or partition
 	       const char * mapping_name,// mapper name to use
@@ -204,7 +201,10 @@ int open_luks( const char * device,      // path to encrypted file or partition
  * 
  * return values:
  * 0 - success 
- * 5 - ERROR: probably because the device address does not exist 
+ * 1 - ERROR: could not initialize the device
+ * 2 - ERROR: could not format the device
+ * 3 - ERROR: could not add passphrase to the device
+ * 4 - ERROR: device path does not point to a device 
  * 
  */
 int create_luks(const char * device,    // path to a file or partition to create a volume in
@@ -216,7 +216,9 @@ int create_luks(const char * device,    // path to a file or partition to create
  * This function just opens a plain volume, it doesnt create a mount point and it doesnt mount it.
  * return values:
  * 0 - success
+ * 3 - ERROR: device path does not point to a device
  * 2 - ERROR: failed to open the volume.
+ * 4 - ERROR: passphrase path does not point to a key file
  */
 int open_plain( const char * device,      // path to encrypted file or partition
 		const char * mapping_name,// mapper name to use

@@ -1,6 +1,6 @@
  cmake_minimum_required(VERSION 2.6)  
  
- message( STATUS "Looking for libcryptsetup.h" )
+ #message( STATUS "Looking for libcryptsetup.h" )
  
  find_file ( libcryptsetup.h libcryptsetup.h ) 
  
@@ -8,13 +8,13 @@
 	 message (FATAL_ERROR "ERROR: could not find libcryptsetup.h header file, is the development package of cryptsetup installed?")
  endif(NOT libcryptsetup.h)
 	 
- message( STATUS ${libcryptsetup.h} " - found" )   
+ message( STATUS "Found libcryptsetup.h  : " ${libcryptsetup.h} )   
  
  find_path ( path_to_libcryptsetup.h libcryptsetup.h )
  
  add_definitions( -I${path_to_libcryptsetup.h} -D_FILE_OFFSET_BITS=64 -Wall ) 
  
- message( STATUS "Looking for libcryptsetup.so" )
+ #message( STATUS "Looking for libcryptsetup.so" )
  
  find_library( libcryptsetup.so libcryptsetup.so) 
  
@@ -22,7 +22,7 @@
 	 message (FATAL_ERROR "ERROR: could not find libcryptsetup.so library, is cryptsetup package installed?")
  endif(NOT libcryptsetup.so)	 
  
- message( STATUS ${libcryptsetup.so} " - found" ) 
+ message( STATUS "Found libcryptsetup.so : " ${libcryptsetup.so} ) 
  
  add_executable( zuluCrypt-cli zuluCrypt.c String.c )
  
