@@ -778,13 +778,13 @@ void zuluCrypt::favClicked(QAction *e)
 {
 	QMenu *m = (QMenu *) e->parentWidget() ;
 
-	if( e->text() == QString("open") ){
+	if( e->text() == tr("open") ){
 
 		QStringList l =  m->title().split("\t") ;
 
 		emit favClickedVolume(l.at(0),l.at(1));
 
-	}else if( e->text() == QString("remove from favorite") ){
+	}else if( e->text() == tr("remove from favorite") ){
 
 		QFile f(QDir::homePath() + QString("/.zuluCrypt/favorites")) ;
 
