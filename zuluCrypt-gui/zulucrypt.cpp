@@ -79,7 +79,7 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 
 	trayMenu = new QMenu(this) ;
 
-	trayMenu->addAction(tr("close application"),
+	trayMenu->addAction(tr("quit"),
 			    this,SLOT(closeApplication()));
 
 	trayIcon->setContextMenu(trayMenu);

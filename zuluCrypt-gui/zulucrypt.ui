@@ -48,6 +48,24 @@
     <property name="editTriggers">
      <set>QAbstractItemView::NoEditTriggers</set>
     </property>
+    <property name="tabKeyNavigation">
+     <bool>false</bool>
+    </property>
+    <property name="showDropIndicator" stdset="0">
+     <bool>false</bool>
+    </property>
+    <property name="dragDropOverwriteMode">
+     <bool>false</bool>
+    </property>
+    <property name="selectionMode">
+     <enum>QAbstractItemView::SingleSelection</enum>
+    </property>
+    <property name="selectionBehavior">
+     <enum>QAbstractItemView::SelectRows</enum>
+    </property>
+    <property name="verticalScrollMode">
+     <enum>QAbstractItemView::ScrollPerItem</enum>
+    </property>
     <property name="gridStyle">
      <enum>Qt::NoPen</enum>
     </property>
@@ -287,10 +305,10 @@
   </action>
   <action name="action_close">
    <property name="text">
-    <string>close application</string>
+    <string>quit</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+U</string>
+    <string>Ctrl+Q</string>
    </property>
   </action>
  </widget>
