@@ -38,6 +38,8 @@ createpartition::createpartition(QWidget *parent) :
 
 	ui->lineEditVolumePath->setEnabled(false);
 
+	ui->lineEditPassphrase1->setFocus();
+
 	connect(ui->pbOpenKeyFile,
 		SIGNAL(clicked()),
 		this,
@@ -65,11 +67,11 @@ void createpartition::ShowPartitionUI(QString volume)
 	ui->rbPassphrase->setChecked(true);
 	ui->lineEditVolumePath->setText(volume);
 	ui->rbLuks->setChecked(true);
-	ui->rbext4->setChecked(true);
-	ui->pbCancel->setFocus();
+	ui->rbext4->setChecked(true);	
 	ui->labelVolumePath->setText(tr("path to partition"));
 	ui->labelPassPhrase->setText(tr("passphrase"));
 	this->rbPassphraseClicked() ;
+	ui->lineEditPassphrase1->setFocus();
 	this->show();
 }
 
@@ -84,6 +86,22 @@ void createpartition::pbOpenKeyFile()
 
 void createpartition::pbCancelClicked()
 {
+	QMessageBox m ;
+	m.setParent(this);
+	m.setWindowFlags(Qt::Window | Qt::Dialog);
+	m.setText(tr("Are you sure you want to cancel this operation?"));
+	m.setWindowTitle(tr("WARNING"));
+	m.addButton(QMessageBox::Yes);
+	m.addButton(QMessageBox::No);
+	m.setFont(this->font());
+
+	if( m.exec() == QMessageBox::No )
+		return ;
+
+	if( file.isEmpty() == false ){
+		QFile::remove(file) ;
+		file.clear();
+	}
 	HideUI() ;
 }
 
@@ -133,7 +151,6 @@ void createpartition::rbPassphraseClicked()
 	ui->lineEditPassphrase1->setEchoMode(QLineEdit::Password);
 	ui->lineEditPassPhrase2->setEchoMode(QLineEdit::Password);
 	ui->labelPassPhrase->setText(tr("passphrase"));
-
 }
 
 void createpartition::rbPasssphraseFromFileClicked()
@@ -240,10 +257,12 @@ void createpartition::ShowFileUI(QString volume)
 	ui->rbLuks->setChecked(true);
 	ui->rbext4->setChecked(true);
 	ui->rbPassphrase->setChecked(true);
-	ui->pbOpenKeyFile->setEnabled(false);
-	ui->pbCancel->setFocus();
+	ui->pbOpenKeyFile->setEnabled(false);	
 	ui->labelVolumePath->setText(tr("path to file"));
+	ui->lineEditVolumePath->setEnabled(false);
+	file = ui->lineEditVolumePath->text() ;
 	this->rbPassphraseClicked() ;
+	ui->lineEditPassphrase1->setFocus();
 	this->show();
 }
 

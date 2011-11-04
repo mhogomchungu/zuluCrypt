@@ -64,6 +64,8 @@ private:
 	createvolumeThread *cvt ;
 
 	void UIMessage(QString title,QString message) ;
+
+	QString file ;
 };
 
 #endif // CREATEPARTITION_H

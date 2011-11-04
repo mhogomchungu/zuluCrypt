@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'createpartition.ui'
 **
-** Created: Sun Oct 16 13:56:21 2011
+** Created: Thu Nov 3 20:04:23 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -84,7 +84,7 @@ public:
         pbCreate->setObjectName(QString::fromUtf8("pbCreate"));
         pbCreate->setGeometry(QRect(130, 190, 91, 31));
         pbCreate->setAutoDefault(false);
-        pbCreate->setDefault(true);
+        pbCreate->setDefault(false);
         pbCancel = new QPushButton(createpartition);
         pbCancel->setObjectName(QString::fromUtf8("pbCancel"));
         pbCancel->setGeometry(QRect(220, 190, 91, 31));

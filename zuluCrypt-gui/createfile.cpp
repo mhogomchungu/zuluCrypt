@@ -93,6 +93,11 @@ void createfile::showUI()
 	ui->progressBar->setValue(0);
 	ui->comboBox->setEnabled(true);
 	ui->pbOpenFolder->setEnabled(true);
+	ui->label->setEnabled(true);
+	ui->label_2->setEnabled(true);
+	ui->label_3->setEnabled(true);
+	ui->label_4->setEnabled(true);
+	ui->lineEditFileName->setFocus();
 	this->show();
 }
 
@@ -139,6 +144,10 @@ void createfile::pbCreate()
 	ui->lineEditFileSize->setEnabled(false);
 	ui->comboBox->setEnabled(false);
 	ui->pbOpenFolder->setEnabled(false);
+	ui->label->setEnabled(false);
+	ui->label_2->setEnabled(false);
+	ui->label_3->setEnabled(false);
+	ui->label_4->setEnabled(false);
 
 	time.start();
 
