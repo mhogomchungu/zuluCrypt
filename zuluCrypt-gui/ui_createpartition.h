@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'createpartition.ui'
 **
-** Created: Thu Nov 3 20:04:23 2011
+** Created: Thu Nov 3 23:50:20 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -51,6 +51,7 @@ public:
     {
         if (createpartition->objectName().isEmpty())
             createpartition->setObjectName(QString::fromUtf8("createpartition"));
+        createpartition->setWindowModality(Qt::ApplicationModal);
         createpartition->resize(441, 227);
         lineEditVolumePath = new QLineEdit(createpartition);
         lineEditVolumePath->setObjectName(QString::fromUtf8("lineEditVolumePath"));

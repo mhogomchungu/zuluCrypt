@@ -90,7 +90,6 @@
     <addaction name="actionFileOpen"/>
     <addaction name="actionPartitionOpen"/>
     <addaction name="separator"/>
-    <addaction name="actionClose_application"/>
    </widget>
    <widget class="QMenu" name="menuCreate">
     <property name="title">
@@ -127,6 +126,15 @@
      <string>&amp;favorites</string>
     </property>
    </widget>
+   <widget class="QMenu" name="menu_zc">
+    <property name="title">
+     <string>&amp;zC</string>
+    </property>
+    <addaction name="action_minimize"/>
+    <addaction name="actionMinimize_to_tray"/>
+    <addaction name="action_close"/>
+   </widget>
+   <addaction name="menu_zc"/>
    <addaction name="menuOpen"/>
    <addaction name="menuCreate"/>
    <addaction name="menuConfigure"/>
@@ -223,10 +231,16 @@
    <property name="text">
     <string>tray icon</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+K</string>
+   </property>
   </action>
   <action name="actionFonts">
    <property name="text">
     <string>select font</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+L</string>
    </property>
   </action>
   <action name="actionFavorite_volumes">
@@ -243,6 +257,9 @@
    <property name="text">
     <string>select random number generator</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
+   </property>
   </action>
   <action name="actionClose_application">
    <property name="text">
@@ -250,6 +267,30 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+C</string>
+   </property>
+  </action>
+  <action name="action_minimize">
+   <property name="text">
+    <string>minimize</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+T</string>
+   </property>
+  </action>
+  <action name="actionMinimize_to_tray">
+   <property name="text">
+    <string>minimize to tray</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Y</string>
+   </property>
+  </action>
+  <action name="action_close">
+   <property name="text">
+    <string>close application</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+U</string>
    </property>
   </action>
  </widget>

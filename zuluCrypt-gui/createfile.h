@@ -23,6 +23,7 @@
 #include <QWidget>
 #include <QProcess>
 #include <QTimer>
+#include <QCloseEvent>
 
 namespace Ui {
     class createfile;
@@ -61,6 +62,7 @@ private:
 	QProcess dd ;
 	QTimer time ;
 	double fileSize ;
+	void closeEvent(QCloseEvent *) ;
 };
 
 #endif // CREATEFILE_H

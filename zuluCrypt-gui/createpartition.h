@@ -22,6 +22,7 @@
 
 #include <QWidget>
 #include <QString>
+#include <QCloseEvent>
 
 #include "zulucryptthreads.h"
 
@@ -56,7 +57,7 @@ private:
 
 	void enableAll(void) ;
 	void disableAll(void);
-
+	void closeEvent(QCloseEvent *) ;
 	int status ;
 
 	Ui::createpartition *ui;

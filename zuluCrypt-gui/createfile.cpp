@@ -51,6 +51,12 @@ createfile::createfile(QWidget *parent) :
 		this,SLOT(ddFinished(int,QProcess::ExitStatus)));
 }
 
+void createfile::closeEvent(QCloseEvent *e)
+{
+	e->ignore();
+	pbCancel() ;
+}
+
 void createfile::ddFinished(int exitCode, QProcess::ExitStatus st)
 {
 	QMessageBox m ;

@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'zulucrypt.ui'
 **
-** Created: Sun Oct 16 13:19:41 2011
+** Created: Fri Nov 4 00:31:34 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -42,6 +42,9 @@ public:
     QAction *actionManage_favorites;
     QAction *actionSelect_random_number_generator;
     QAction *actionClose_application;
+    QAction *action_minimize;
+    QAction *actionMinimize_to_tray;
+    QAction *action_close;
     QWidget *centralWidget;
     QTableWidget *tableWidget;
     QMenuBar *menuBar;
@@ -51,6 +54,7 @@ public:
     QMenu *menuConfigure;
     QMenu *menuOptions;
     QMenu *menuFavorites;
+    QMenu *menu_zc;
     QStatusBar *statusBar;
 
     void setupUi(QMainWindow *zuluCrypt)
@@ -97,6 +101,12 @@ public:
         actionSelect_random_number_generator->setObjectName(QString::fromUtf8("actionSelect_random_number_generator"));
         actionClose_application = new QAction(zuluCrypt);
         actionClose_application->setObjectName(QString::fromUtf8("actionClose_application"));
+        action_minimize = new QAction(zuluCrypt);
+        action_minimize->setObjectName(QString::fromUtf8("action_minimize"));
+        actionMinimize_to_tray = new QAction(zuluCrypt);
+        actionMinimize_to_tray->setObjectName(QString::fromUtf8("actionMinimize_to_tray"));
+        action_close = new QAction(zuluCrypt);
+        action_close->setObjectName(QString::fromUtf8("action_close"));
         centralWidget = new QWidget(zuluCrypt);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         centralWidget->setContextMenuPolicy(Qt::ActionsContextMenu);
@@ -134,11 +144,14 @@ public:
         menuOptions->setObjectName(QString::fromUtf8("menuOptions"));
         menuFavorites = new QMenu(menuBar);
         menuFavorites->setObjectName(QString::fromUtf8("menuFavorites"));
+        menu_zc = new QMenu(menuBar);
+        menu_zc->setObjectName(QString::fromUtf8("menu_zc"));
         zuluCrypt->setMenuBar(menuBar);
         statusBar = new QStatusBar(zuluCrypt);
         statusBar->setObjectName(QString::fromUtf8("statusBar"));
         zuluCrypt->setStatusBar(statusBar);
 
+        menuBar->addAction(menu_zc->menuAction());
         menuBar->addAction(menuOpen->menuAction());
         menuBar->addAction(menuCreate->menuAction());
         menuBar->addAction(menuConfigure->menuAction());
@@ -148,7 +161,6 @@ public:
         menuOpen->addAction(actionFileOpen);
         menuOpen->addAction(actionPartitionOpen);
         menuOpen->addSeparator();
-        menuOpen->addAction(actionClose_application);
         menuCreate->addAction(actionFileCreate);
         menuCreate->addAction(actionPartitionCreate);
         menuCreate->addAction(actionCreatekeyFile);
@@ -159,6 +171,9 @@ public:
         menuOptions->addAction(actionTray_icon);
         menuOptions->addAction(actionFonts);
         menuOptions->addAction(actionSelect_random_number_generator);
+        menu_zc->addAction(action_minimize);
+        menu_zc->addAction(actionMinimize_to_tray);
+        menu_zc->addAction(action_close);
 
         retranslateUi(zuluCrypt);
 
@@ -187,12 +202,21 @@ public:
         actionCreatekeyFile->setText(QApplication::translate("zuluCrypt", "key file", 0, QApplication::UnicodeUTF8));
         actionCreatekeyFile->setShortcut(QApplication::translate("zuluCrypt", "Ctrl+D", 0, QApplication::UnicodeUTF8));
         actionTray_icon->setText(QApplication::translate("zuluCrypt", "tray icon", 0, QApplication::UnicodeUTF8));
+        actionTray_icon->setShortcut(QApplication::translate("zuluCrypt", "Ctrl+K", 0, QApplication::UnicodeUTF8));
         actionFonts->setText(QApplication::translate("zuluCrypt", "select font", 0, QApplication::UnicodeUTF8));
+        actionFonts->setShortcut(QApplication::translate("zuluCrypt", "Ctrl+L", 0, QApplication::UnicodeUTF8));
         actionFavorite_volumes->setText(QApplication::translate("zuluCrypt", "favorite volumes", 0, QApplication::UnicodeUTF8));
         actionManage_favorites->setText(QApplication::translate("zuluCrypt", "manage favorites", 0, QApplication::UnicodeUTF8));
         actionSelect_random_number_generator->setText(QApplication::translate("zuluCrypt", "select random number generator", 0, QApplication::UnicodeUTF8));
+        actionSelect_random_number_generator->setShortcut(QApplication::translate("zuluCrypt", "Ctrl+P", 0, QApplication::UnicodeUTF8));
         actionClose_application->setText(QApplication::translate("zuluCrypt", "close application", 0, QApplication::UnicodeUTF8));
         actionClose_application->setShortcut(QApplication::translate("zuluCrypt", "Ctrl+C", 0, QApplication::UnicodeUTF8));
+        action_minimize->setText(QApplication::translate("zuluCrypt", "minimize", 0, QApplication::UnicodeUTF8));
+        action_minimize->setShortcut(QApplication::translate("zuluCrypt", "Ctrl+T", 0, QApplication::UnicodeUTF8));
+        actionMinimize_to_tray->setText(QApplication::translate("zuluCrypt", "minimize to tray", 0, QApplication::UnicodeUTF8));
+        actionMinimize_to_tray->setShortcut(QApplication::translate("zuluCrypt", "Ctrl+Y", 0, QApplication::UnicodeUTF8));
+        action_close->setText(QApplication::translate("zuluCrypt", "close application", 0, QApplication::UnicodeUTF8));
+        action_close->setShortcut(QApplication::translate("zuluCrypt", "Ctrl+U", 0, QApplication::UnicodeUTF8));
         QTableWidgetItem *___qtablewidgetitem = tableWidget->horizontalHeaderItem(0);
         ___qtablewidgetitem->setText(QApplication::translate("zuluCrypt", "Encrypted volume path", 0, QApplication::UnicodeUTF8));
         QTableWidgetItem *___qtablewidgetitem1 = tableWidget->horizontalHeaderItem(1);
@@ -205,6 +229,7 @@ public:
         menuConfigure->setTitle(QApplication::translate("zuluCrypt", "&luks", 0, QApplication::UnicodeUTF8));
         menuOptions->setTitle(QApplication::translate("zuluCrypt", "&options", 0, QApplication::UnicodeUTF8));
         menuFavorites->setTitle(QApplication::translate("zuluCrypt", "&favorites", 0, QApplication::UnicodeUTF8));
+        menu_zc->setTitle(QApplication::translate("zuluCrypt", "&zC", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };

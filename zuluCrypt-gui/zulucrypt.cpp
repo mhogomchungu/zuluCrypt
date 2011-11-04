@@ -218,10 +218,20 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 		deleteKeyUI,
 		SLOT(deleteKey(QString)));
 
-	connect(ui->actionClose_application,
+	connect(ui->action_close,
 		SIGNAL(triggered()),
 		this,
 		SLOT(closeApplication())) ;
+
+	connect(ui->action_minimize,
+		SIGNAL(triggered()),
+		this,
+		SLOT(minimize()));
+
+	connect(ui->actionMinimize_to_tray,
+		SIGNAL(triggered()),
+		this,
+		SLOT(minimizeToTray())) ;
 
 	QProcess p ;
 
@@ -337,6 +347,22 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 		SLOT(UIMessage(QString,QString))) ;
 
 	sov->start();
+}
+
+void zuluCrypt::minimize()
+{
+	zuluCrypt::setWindowState(Qt::WindowMinimized) ;
+}
+
+void zuluCrypt::minimizeToTray()
+{
+	if( ui->actionTray_icon->isChecked() == true ){
+		this->hide();
+	}else{
+		ui->actionTray_icon->setChecked(true);
+		trayProperty() ;
+		this->hide();
+	}
 }
 
 QString zuluCrypt::mtab(QString entry)

@@ -62,6 +62,12 @@ createpartition::createpartition(QWidget *parent) :
 		SLOT(rbPasssphraseFromFileClicked()));
 }
 
+void createpartition::closeEvent(QCloseEvent *e)
+{
+	e->ignore();
+	pbCancelClicked() ;
+}
+
 void createpartition::ShowPartitionUI(QString volume)
 {
 	ui->rbPassphrase->setChecked(true);

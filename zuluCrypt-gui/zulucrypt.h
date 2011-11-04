@@ -115,6 +115,9 @@ private slots :
 
 	void sovfinished(void) ;
 
+	void minimize(void) ;
+
+	void minimizeToTray(void);
 
 private:
 
