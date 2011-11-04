@@ -819,14 +819,16 @@ void zuluCrypt::readFavorites()
 	for(int i = 0 ; i < l.size() - 1 ; i++){
 
 		QMenu *m = new QMenu(l.at(i)) ;
+
 		m->setFont(this->font());
+
 		m->addAction("open")->setParent(m);
 
 		m->addAction("remove from favorite")->setParent(m); ;
 
 		ui->menuFavorites->addMenu(m) ;
 
-		menulist.append(m);
+		//menulist.append(m);
 	}
 }
 
@@ -999,12 +1001,12 @@ void zuluCrypt::deleteFile( QFile *f)
 
 zuluCrypt::~zuluCrypt()
 {	
-	for( int i = 0 ; i < menulist.size() ; i++){
+	//for( int i = 0 ; i < menulist.size() ; i++){
 
-		delete menulist.at(i) ;
-	}
+	//	delete menulist.at(i) ;
+	//}
 
-	menulist.clear();
+	//menulist.clear();
 
 	delete openFileUI ;
 
