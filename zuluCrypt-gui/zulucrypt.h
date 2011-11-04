@@ -151,6 +151,8 @@ private:
 
 	QMenu *m  ;
 
+	QMenu *trayMenu ;
+
 	QTableWidgetItem* item ;
 
 	int item_count ;

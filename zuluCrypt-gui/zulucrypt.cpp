@@ -77,6 +77,13 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 	trayIcon = new QSystemTrayIcon(this);
 	trayIcon->setIcon(QIcon(QString(":/zuluCrypt.png")));
 
+	trayMenu = new QMenu(this) ;
+
+	trayMenu->addAction(tr("close application"),
+			    this,SLOT(closeApplication()));
+
+	trayIcon->setContextMenu(trayMenu);
+
 	ui->setupUi(this);
 	this->setFixedSize(this->size());
 
@@ -1016,6 +1023,8 @@ zuluCrypt::~zuluCrypt()
 	delete createFile ;
 
 	delete createkeyFile ;
+
+	delete trayMenu ;
 
 	delete ui;
 }
