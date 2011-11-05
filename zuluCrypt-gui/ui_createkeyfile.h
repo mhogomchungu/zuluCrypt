@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'createkeyfile.ui'
 **
-** Created: Thu Nov 3 20:05:23 2011
+** Created: Sat Nov 5 02:49:56 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -14,6 +14,7 @@
 #include <QtGui/QAction>
 #include <QtGui/QApplication>
 #include <QtGui/QButtonGroup>
+#include <QtGui/QComboBox>
 #include <QtGui/QHeaderView>
 #include <QtGui/QLabel>
 #include <QtGui/QLineEdit>
@@ -32,13 +33,15 @@ public:
     QPushButton *pbCreate;
     QPushButton *pbCancel;
     QLabel *label_2;
+    QLabel *labelRNG;
+    QComboBox *comboBoxRNG;
 
     void setupUi(QWidget *createkeyfile)
     {
         if (createkeyfile->objectName().isEmpty())
             createkeyfile->setObjectName(QString::fromUtf8("createkeyfile"));
         createkeyfile->setWindowModality(Qt::ApplicationModal);
-        createkeyfile->resize(473, 122);
+        createkeyfile->resize(473, 138);
         lineEditFileName = new QLineEdit(createkeyfile);
         lineEditFileName->setObjectName(QString::fromUtf8("lineEditFileName"));
         lineEditFileName->setGeometry(QRect(110, 10, 321, 31));
@@ -54,18 +57,25 @@ public:
         pbOpenFolder->setGeometry(QRect(430, 40, 31, 31));
         pbCreate = new QPushButton(createkeyfile);
         pbCreate->setObjectName(QString::fromUtf8("pbCreate"));
-        pbCreate->setGeometry(QRect(150, 80, 91, 31));
+        pbCreate->setGeometry(QRect(150, 100, 91, 31));
         pbCreate->setAutoDefault(false);
         pbCreate->setDefault(true);
         pbCancel = new QPushButton(createkeyfile);
         pbCancel->setObjectName(QString::fromUtf8("pbCancel"));
-        pbCancel->setGeometry(QRect(250, 80, 81, 31));
+        pbCancel->setGeometry(QRect(240, 100, 81, 31));
         pbCancel->setAutoDefault(false);
         pbCancel->setDefault(false);
         label_2 = new QLabel(createkeyfile);
         label_2->setObjectName(QString::fromUtf8("label_2"));
         label_2->setGeometry(QRect(0, 40, 111, 31));
         label_2->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
+        labelRNG = new QLabel(createkeyfile);
+        labelRNG->setObjectName(QString::fromUtf8("labelRNG"));
+        labelRNG->setGeometry(QRect(10, 70, 101, 31));
+        labelRNG->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
+        comboBoxRNG = new QComboBox(createkeyfile);
+        comboBoxRNG->setObjectName(QString::fromUtf8("comboBoxRNG"));
+        comboBoxRNG->setGeometry(QRect(110, 70, 111, 31));
 
         retranslateUi(createkeyfile);
 
@@ -86,6 +96,12 @@ public:
         pbCreate->setText(QApplication::translate("createkeyfile", "c&reate", 0, QApplication::UnicodeUTF8));
         pbCancel->setText(QApplication::translate("createkeyfile", "&cancel", 0, QApplication::UnicodeUTF8));
         label_2->setText(QApplication::translate("createkeyfile", "destination folder", 0, QApplication::UnicodeUTF8));
+        labelRNG->setText(QApplication::translate("createkeyfile", "rng", 0, QApplication::UnicodeUTF8));
+        comboBoxRNG->clear();
+        comboBoxRNG->insertItems(0, QStringList()
+         << QApplication::translate("createkeyfile", "/dev/random", 0, QApplication::UnicodeUTF8)
+         << QApplication::translate("createkeyfile", "/dev/urandom", 0, QApplication::UnicodeUTF8)
+        );
     } // retranslateUi
 
 };

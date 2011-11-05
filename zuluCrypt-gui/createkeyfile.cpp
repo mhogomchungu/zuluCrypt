@@ -53,6 +53,7 @@ void createkeyfile::ShowUI()
 	ui->lineEditFileName->clear();
 	ui->lineEditPath->setText(QDir::homePath());
 	this->show();
+	ui->comboBoxRNG->setCurrentIndex(0);
 }
 
 void createkeyfile::pbCancel()
@@ -74,6 +75,8 @@ void createkeyfile::enableAll()
 	ui->lineEditPath->setEnabled(true);
 	ui->pbCreate->setEnabled(true);
 	ui->pbOpenFolder->setEnabled(true);
+	ui->labelRNG->setEnabled(true);
+	ui->comboBoxRNG->setEnabled(true);
 }
 
 void createkeyfile::disableAll()
@@ -84,6 +87,8 @@ void createkeyfile::disableAll()
 	ui->lineEditPath->setEnabled(false);
 	ui->pbCreate->setEnabled(false);
 	ui->pbOpenFolder->setEnabled(false);
+	ui->labelRNG->setEnabled(false);
+	ui->comboBoxRNG->setEnabled(false);
 }
 
 void createkeyfile::pbCreate()
@@ -131,15 +136,7 @@ void createkeyfile::pbCreate()
 
 	o.close();
 
-	QFile f(QDir::homePath() + QString("/.zuluCrypt/rng")) ;
-
-	f.open(QIODevice::ReadOnly) ;
-
-	QByteArray b = f.readAll() ;
-
-	f.close();
-
-	rng = new rngThread(QString( b.data() ),keyfile) ;
+	rng = new rngThread(ui->comboBoxRNG->currentText(),keyfile) ;
 
 	connect(rng,SIGNAL(finished()),this,SLOT(threadfinished()));
 
