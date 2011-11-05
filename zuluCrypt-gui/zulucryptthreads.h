@@ -97,9 +97,10 @@ class volumePropertiesThread : public QThread
 {
 public :
 	void run() ;
-	volumePropertiesThread(QString,QString *) ;
+	volumePropertiesThread(QString,QString,QString *) ;
 private:
 	QString path ;
+	QString mpoint ;
 	QString *volProperty ;
 
 };

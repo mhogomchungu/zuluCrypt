@@ -744,8 +744,8 @@ void zuluCrypt::volume_property()
 	mp->setFont(this->font());
 
 	QString path = item->tableWidget()->item(item->row(),0)->text() ;
-
-	vpt = new volumePropertiesThread(path,&volumeProperty) ;
+	QString mpoint = item->tableWidget()->item(item->row(),1)->text() ;
+	vpt = new volumePropertiesThread(path,mpoint,&volumeProperty) ;
 
 	connect(vpt,SIGNAL(finished()),this,SLOT(volumePropertyThreadFinished())) ;
 

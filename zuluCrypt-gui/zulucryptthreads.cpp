@@ -309,9 +309,10 @@ void rngThread::run()
 	fclose(out) ;
 }
 
-volumePropertiesThread::volumePropertiesThread(QString p,QString *q)
+volumePropertiesThread::volumePropertiesThread(QString p,QString z,QString *q)
 {
 	path = p ;
+	mpoint = z ;
 	volProperty = q ;
 }
 
@@ -336,6 +337,59 @@ void volumePropertiesThread::run()
 
 	p.close();
 
+	QString exe = QString("df -PTh ")  ;
+
+	p.start(exe);
+
+	p.waitForFinished() ;
+
+	QStringList df = QString(p.readAllStandardOutput()).split("\n").filter(mpoint) ;
+
+	p.close();
+
+	QByteArray c ;
+
+	c = df.at(0).toAscii() ;
+	/*
+	  Below code will attemp to walk through a line like below without
+	  caring how many space characters are involved in separating items:
+
+	  /dev/mapper/zuluCrypt-image-02.img ext4   99G   96G  1.9G  99% /home/ink/image-02.img
+
+	*/
+	int i = 0 ;
+	int j ;
+	while ( c.at(i++) != ' ') { ; }
+	while ( c.at(i++) == ' ') { ; }
+	j = i - 1 ;
+	while ( c.at(i++) != ' ') { ; }
+
+	QString y = QString(" fs:  ") + QString(c.mid(j,i - j)) ;
+
+	while ( c.at(i++) == ' ') { ; }
+	j = i - 1 ;
+	while ( c.at(i++) != ' ') { ; }
+
+	y = y + QString("\n size:  ") + QString(c.mid(j,i - j)) ;
+
+	while ( c.at(i++) == ' ') { ; }
+	j = i - 1 ;
+	while ( c.at(i++) != ' ') { ; }
+
+	y = y + QString("\n used:  ") + QString(c.mid(j,i - j)) ;
+
+	while ( c.at(i++) == ' ') { ; }
+	j = i - 1 ;
+	while ( c.at(i++) != ' ') { ; }
+
+	y = y + QString("\n available:  ") + QString(c.mid(j,i - j)) ;
+
+	while ( c.at(i++) == ' ') { ; }
+	j = i - 1 ;
+	while ( c.at(i++) != ' ') { ; }
+
+	y = y + QString("\n used%:  ") + QString(c.mid(j,i - j)) ;
+
 	if ( zuluCrypt::isLuks(path) == true){
 		QString x =  QString(" ") ;
 		x = x + QString( r.right(start) ) ;
@@ -343,8 +397,8 @@ void volumePropertiesThread::run()
 		x = x + zuluCrypt::luksEmptySlots(path) ;
 		x = x + QString(" / 8") ;
 
-		*volProperty = x ;
+		*volProperty = x + y;
 	}else
-		*volProperty = ( QString(" ") + QString( r.right(start) ) ) ;
+		*volProperty = QString(" ") + QString( r.right(start) ) + y;
 }
 
