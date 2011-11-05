@@ -92,6 +92,7 @@ void createpartition::ShowPartitionUI(QString volume)
 	ui->comboBoxFS->setCurrentIndex(0);
 	ui->comboBoxRNG->setCurrentIndex(0);
 	ui->comboBoxVolumeType->setCurrentIndex(0);
+	created = false ;
 	this->show();
 }
 
@@ -119,6 +120,12 @@ void createpartition::pbCancelClicked()
 	if( m.exec() == QMessageBox::No )
 		return ;
 */
+	if( created == false ){
+		QString s = ui->lineEditVolumePath->text() ;
+		if(s.left(5) != QString("/dev/"))
+			QFile::remove(s) ;
+	}
+
 	HideUI() ;
 }
 
@@ -258,7 +265,9 @@ void createpartition::pbCreateClicked()
 }
 
 void createpartition::threadfinished()
-{
+{	
+	created = true ;
+
 	delete cvt ;
 
 	switch( status ) {
@@ -286,12 +295,12 @@ void createpartition::ShowFileUI(QString volume)
 	ui->pbOpenKeyFile->setEnabled(false);	
 	ui->labelVolumePath->setText(tr("path to file"));
 	ui->lineEditVolumePath->setEnabled(false);
-//	file = ui->lineEditVolumePath->text() ;
 	this->rbPassphraseClicked() ;
 	ui->lineEditPassphrase1->setFocus();
 	ui->comboBoxFS->setCurrentIndex(0);
 	ui->comboBoxRNG->setCurrentIndex(0);
 	ui->comboBoxVolumeType->setCurrentIndex(0);
+	created = false ;
 	this->show();
 }
 
