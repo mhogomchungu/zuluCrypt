@@ -185,7 +185,6 @@ void createfile::pbCreate()
 	ddExe = ddExe + QString(" of=") ;
 	ddExe = ddExe + QString("\"") + ui->lineEditFilePath->text() + QString("/") + ui->lineEditFileName->text();
 	ddExe = ddExe + QString("\" bs=1024 count=") + ui->lineEditFileSize->text() + size;
-	std::cout << ddExe.toStdString() << std::endl ;
 	dd.start( ddExe ) ;
 }
 
