@@ -60,6 +60,19 @@ createpartition::createpartition(QWidget *parent) :
 		SIGNAL(clicked()),
 		this,
 		SLOT(rbPasssphraseFromFileClicked()));
+
+	connect(ui->comboBoxVolumeType,
+		SIGNAL(currentIndexChanged(int)),
+		this,
+		SLOT(rng(int))) ;
+}
+
+void createpartition::rng(int s)
+{
+	if( s == 1)
+		ui->comboBoxRNG->setEnabled(false);
+	else
+		ui->comboBoxRNG->setEnabled(true);
 }
 
 void createpartition::closeEvent(QCloseEvent *e)
@@ -72,12 +85,13 @@ void createpartition::ShowPartitionUI(QString volume)
 {
 	ui->rbPassphrase->setChecked(true);
 	ui->lineEditVolumePath->setText(volume);
-	ui->rbLuks->setChecked(true);
-	ui->rbext4->setChecked(true);	
 	ui->labelVolumePath->setText(tr("path to partition"));
 	ui->labelPassPhrase->setText(tr("passphrase"));
 	this->rbPassphraseClicked() ;
 	ui->lineEditPassphrase1->setFocus();
+	ui->comboBoxFS->setCurrentIndex(0);
+	ui->comboBoxRNG->setCurrentIndex(0);
+	ui->comboBoxVolumeType->setCurrentIndex(0);
 	this->show();
 }
 
@@ -118,9 +132,6 @@ void createpartition::HideUI()
 
 void createpartition::enableAll()
 {
-	ui->groupBox->setEnabled(true);
-	ui->groupBox_2->setEnabled(true);
-	ui->groupBox_3->setEnabled(true);
 	ui->labelPassPhrase->setEnabled(true);
 	ui->labelVolumePath->setEnabled(true);
 	ui->label_3->setEnabled(true);
@@ -130,13 +141,17 @@ void createpartition::enableAll()
 	ui->pbCancel->setEnabled(true);
 	ui->pbCreate->setEnabled(true);
 	ui->pbOpenKeyFile->setEnabled(true);
+	ui->labelfs->setEnabled(true);
+	ui->labelvolumetype->setEnabled(true);
+	ui->labelrng->setEnabled(true);
+	ui->comboBoxFS->setEnabled(true);
+	ui->comboBoxVolumeType->setEnabled(true);
+	if(ui->comboBoxVolumeType->currentIndex() == 0)
+		ui->comboBoxRNG->setEnabled(true);
 }
 
 void createpartition::disableAll()
 {
-	ui->groupBox->setEnabled(false);
-	ui->groupBox_2->setEnabled(false);
-	ui->groupBox_3->setEnabled(false);
 	ui->labelPassPhrase->setEnabled(false);
 	ui->labelVolumePath->setEnabled(false);
 	ui->label_3->setEnabled(false);
@@ -146,6 +161,12 @@ void createpartition::disableAll()
 	ui->pbCancel->setEnabled(false);
 	ui->pbCreate->setEnabled(false);
 	ui->pbOpenKeyFile->setEnabled(false);
+	ui->labelfs->setEnabled(false);
+	ui->labelrng->setEnabled(false);
+	ui->labelvolumetype->setEnabled(false);
+	ui->comboBoxFS->setEnabled(false);
+	ui->comboBoxVolumeType->setEnabled(false);
+	ui->comboBoxRNG->setEnabled(false);
 }
 
 void createpartition::rbPassphraseClicked()
@@ -260,8 +281,6 @@ void createpartition::ShowFileUI(QString volume)
 {
 	enableAll();
 	ui->lineEditVolumePath->setText(volume);
-	ui->rbLuks->setChecked(true);
-	ui->rbext4->setChecked(true);
 	ui->rbPassphrase->setChecked(true);
 	ui->pbOpenKeyFile->setEnabled(false);	
 	ui->labelVolumePath->setText(tr("path to file"));
@@ -269,6 +288,9 @@ void createpartition::ShowFileUI(QString volume)
 	file = ui->lineEditVolumePath->text() ;
 	this->rbPassphraseClicked() ;
 	ui->lineEditPassphrase1->setFocus();
+	ui->comboBoxFS->setCurrentIndex(0);
+	ui->comboBoxRNG->setCurrentIndex(0);
+	ui->comboBoxVolumeType->setCurrentIndex(0);
 	this->show();
 }
 

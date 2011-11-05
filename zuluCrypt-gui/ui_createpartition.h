@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'createpartition.ui'
 **
-** Created: Thu Nov 3 23:50:20 2011
+** Created: Sat Nov 5 01:42:04 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -14,6 +14,7 @@
 #include <QtGui/QAction>
 #include <QtGui/QApplication>
 #include <QtGui/QButtonGroup>
+#include <QtGui/QComboBox>
 #include <QtGui/QGroupBox>
 #include <QtGui/QHeaderView>
 #include <QtGui/QLabel>
@@ -29,13 +30,6 @@ class Ui_createpartition
 public:
     QLineEdit *lineEditVolumePath;
     QLabel *labelVolumePath;
-    QGroupBox *groupBox;
-    QRadioButton *rbPlain;
-    QRadioButton *rbLuks;
-    QGroupBox *groupBox_2;
-    QRadioButton *rbext3;
-    QRadioButton *rbext4;
-    QRadioButton *rbfat;
     QPushButton *pbCreate;
     QPushButton *pbCancel;
     QLineEdit *lineEditPassphrase1;
@@ -46,13 +40,19 @@ public:
     QGroupBox *groupBox_3;
     QRadioButton *rbPassphrase;
     QRadioButton *rbPassphraseFromFile;
+    QLabel *labelfs;
+    QComboBox *comboBoxFS;
+    QLabel *labelvolumetype;
+    QComboBox *comboBoxVolumeType;
+    QLabel *labelrng;
+    QComboBox *comboBoxRNG;
 
     void setupUi(QWidget *createpartition)
     {
         if (createpartition->objectName().isEmpty())
             createpartition->setObjectName(QString::fromUtf8("createpartition"));
         createpartition->setWindowModality(Qt::ApplicationModal);
-        createpartition->resize(441, 227);
+        createpartition->resize(441, 226);
         lineEditVolumePath = new QLineEdit(createpartition);
         lineEditVolumePath->setObjectName(QString::fromUtf8("lineEditVolumePath"));
         lineEditVolumePath->setGeometry(QRect(120, 10, 311, 31));
@@ -60,27 +60,6 @@ public:
         labelVolumePath->setObjectName(QString::fromUtf8("labelVolumePath"));
         labelVolumePath->setGeometry(QRect(10, 10, 111, 31));
         labelVolumePath->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
-        groupBox = new QGroupBox(createpartition);
-        groupBox->setObjectName(QString::fromUtf8("groupBox"));
-        groupBox->setGeometry(QRect(10, 140, 211, 61));
-        rbPlain = new QRadioButton(groupBox);
-        rbPlain->setObjectName(QString::fromUtf8("rbPlain"));
-        rbPlain->setGeometry(QRect(40, 30, 61, 21));
-        rbLuks = new QRadioButton(groupBox);
-        rbLuks->setObjectName(QString::fromUtf8("rbLuks"));
-        rbLuks->setGeometry(QRect(100, 30, 71, 21));
-        groupBox_2 = new QGroupBox(createpartition);
-        groupBox_2->setObjectName(QString::fromUtf8("groupBox_2"));
-        groupBox_2->setGeometry(QRect(220, 140, 211, 51));
-        rbext3 = new QRadioButton(groupBox_2);
-        rbext3->setObjectName(QString::fromUtf8("rbext3"));
-        rbext3->setGeometry(QRect(10, 30, 95, 21));
-        rbext4 = new QRadioButton(groupBox_2);
-        rbext4->setObjectName(QString::fromUtf8("rbext4"));
-        rbext4->setGeometry(QRect(70, 30, 61, 21));
-        rbfat = new QRadioButton(groupBox_2);
-        rbfat->setObjectName(QString::fromUtf8("rbfat"));
-        rbfat->setGeometry(QRect(130, 30, 61, 21));
         pbCreate = new QPushButton(createpartition);
         pbCreate->setObjectName(QString::fromUtf8("pbCreate"));
         pbCreate->setGeometry(QRect(130, 190, 91, 31));
@@ -116,6 +95,28 @@ public:
         rbPassphraseFromFile = new QRadioButton(groupBox_3);
         rbPassphraseFromFile->setObjectName(QString::fromUtf8("rbPassphraseFromFile"));
         rbPassphraseFromFile->setGeometry(QRect(170, 10, 211, 21));
+        labelfs = new QLabel(createpartition);
+        labelfs->setObjectName(QString::fromUtf8("labelfs"));
+        labelfs->setGeometry(QRect(50, 140, 111, 21));
+        labelfs->setAlignment(Qt::AlignCenter);
+        comboBoxFS = new QComboBox(createpartition);
+        comboBoxFS->setObjectName(QString::fromUtf8("comboBoxFS"));
+        comboBoxFS->setGeometry(QRect(40, 160, 121, 31));
+        labelvolumetype = new QLabel(createpartition);
+        labelvolumetype->setObjectName(QString::fromUtf8("labelvolumetype"));
+        labelvolumetype->setGeometry(QRect(160, 140, 121, 21));
+        labelvolumetype->setAlignment(Qt::AlignCenter);
+        comboBoxVolumeType = new QComboBox(createpartition);
+        comboBoxVolumeType->setObjectName(QString::fromUtf8("comboBoxVolumeType"));
+        comboBoxVolumeType->setGeometry(QRect(160, 160, 121, 31));
+        comboBoxVolumeType->setLayoutDirection(Qt::LeftToRight);
+        labelrng = new QLabel(createpartition);
+        labelrng->setObjectName(QString::fromUtf8("labelrng"));
+        labelrng->setGeometry(QRect(280, 140, 111, 21));
+        labelrng->setAlignment(Qt::AlignCenter);
+        comboBoxRNG = new QComboBox(createpartition);
+        comboBoxRNG->setObjectName(QString::fromUtf8("comboBoxRNG"));
+        comboBoxRNG->setGeometry(QRect(280, 160, 121, 31));
 
         retranslateUi(createpartition);
 
@@ -126,13 +127,6 @@ public:
     {
         createpartition->setWindowTitle(QApplication::translate("createpartition", "create a new volume", 0, QApplication::UnicodeUTF8));
         labelVolumePath->setText(QApplication::translate("createpartition", "path to volume", 0, QApplication::UnicodeUTF8));
-        groupBox->setTitle(QApplication::translate("createpartition", "volume type", 0, QApplication::UnicodeUTF8));
-        rbPlain->setText(QApplication::translate("createpartition", "plain", 0, QApplication::UnicodeUTF8));
-        rbLuks->setText(QApplication::translate("createpartition", "luks", 0, QApplication::UnicodeUTF8));
-        groupBox_2->setTitle(QApplication::translate("createpartition", "file system type", 0, QApplication::UnicodeUTF8));
-        rbext3->setText(QApplication::translate("createpartition", "ext3", 0, QApplication::UnicodeUTF8));
-        rbext4->setText(QApplication::translate("createpartition", "ext4", 0, QApplication::UnicodeUTF8));
-        rbfat->setText(QApplication::translate("createpartition", "fat", 0, QApplication::UnicodeUTF8));
         pbCreate->setText(QApplication::translate("createpartition", "c&reate", 0, QApplication::UnicodeUTF8));
         pbCancel->setText(QApplication::translate("createpartition", "&cancel", 0, QApplication::UnicodeUTF8));
         labelPassPhrase->setText(QApplication::translate("createpartition", "passphrase", 0, QApplication::UnicodeUTF8));
@@ -144,6 +138,25 @@ public:
         groupBox_3->setTitle(QString());
         rbPassphrase->setText(QApplication::translate("createpartition", "passphrase", 0, QApplication::UnicodeUTF8));
         rbPassphraseFromFile->setText(QApplication::translate("createpartition", "passphrase from a key file", 0, QApplication::UnicodeUTF8));
+        labelfs->setText(QApplication::translate("createpartition", "file system", 0, QApplication::UnicodeUTF8));
+        comboBoxFS->clear();
+        comboBoxFS->insertItems(0, QStringList()
+         << QApplication::translate("createpartition", "ext4", 0, QApplication::UnicodeUTF8)
+         << QApplication::translate("createpartition", "ext3", 0, QApplication::UnicodeUTF8)
+         << QApplication::translate("createpartition", "fat", 0, QApplication::UnicodeUTF8)
+        );
+        labelvolumetype->setText(QApplication::translate("createpartition", "volume type", 0, QApplication::UnicodeUTF8));
+        comboBoxVolumeType->clear();
+        comboBoxVolumeType->insertItems(0, QStringList()
+         << QApplication::translate("createpartition", "luks", 0, QApplication::UnicodeUTF8)
+         << QApplication::translate("createpartition", "plain", 0, QApplication::UnicodeUTF8)
+        );
+        labelrng->setText(QApplication::translate("createpartition", "rng", 0, QApplication::UnicodeUTF8));
+        comboBoxRNG->clear();
+        comboBoxRNG->insertItems(0, QStringList()
+         << QApplication::translate("createpartition", "/dev/urandom", 0, QApplication::UnicodeUTF8)
+         << QApplication::translate("createpartition", "/dev/random", 0, QApplication::UnicodeUTF8)
+        );
     } // retranslateUi
 
 };

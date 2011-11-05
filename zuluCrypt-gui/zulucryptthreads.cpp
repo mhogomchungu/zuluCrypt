@@ -166,22 +166,6 @@ createvolumeThread::createvolumeThread(Ui::createpartition * p,int *s)
 
 void createvolumeThread::run()
 {
-	QString fs ;
-
-	if( ui->rbext3->isChecked() == true)
-		fs = QString("ext3") ;
-	else if( ui->rbext4->isChecked() == true)
-		fs = QString("ext4") ;
-	else
-		fs = QString("vfat") ;
-
-	QString ct ;
-
-	if(ui->rbPlain->isChecked() == true)
-		ct = QString("plain");
-	else
-		ct = QString("luks");
-
 	QString N ;
 
 	QString passphrase = ui->lineEditPassphrase1->text() ;
@@ -200,22 +184,14 @@ void createvolumeThread::run()
 		}
 	}
 
-	QFile f(QDir::homePath() + QString("/.zuluCrypt/rng")) ;
-
-	f.open(QIODevice::ReadOnly) ;
-
-	QByteArray q = f.readAll() ;
-
-	f.close();
-
 	QString exe = QString(ZULUCRYPTzuluCrypt) ;
 	exe = exe + QString(" create \"") ;
 	exe = exe + ui->lineEditVolumePath->text() + QString("\" ") ;
-	exe = exe + fs + QString(" ") ;
-	exe = exe + ct + QString(" ") ;
+	exe = exe + ui->comboBoxFS->currentText() + QString(" ") ;
+	exe = exe + ui->comboBoxVolumeType->currentText() + QString(" ") ;
 	exe = exe +  N + QString(" \"") ;;
 	exe = exe + passphrase + QString("\" ") ;;
-	exe = exe + QString( q );
+	exe = exe + ui->comboBoxRNG->currentText();
 
 	QProcess p ;
 

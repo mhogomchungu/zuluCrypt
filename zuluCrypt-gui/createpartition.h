@@ -53,6 +53,7 @@ private slots:
 	void pbOpenKeyFile(void);
 	void threadfinished(void);
 	void HideUI(void);
+	void rng(int) ;
 private:
 
 	void enableAll(void) ;
@@ -64,7 +65,7 @@ private:
 
 	createvolumeThread *cvt ;
 
-	void UIMessage(QString title,QString message) ;
+	void UIMessage(QString title,QString message) ;	
 
 	QString file ;
 };
