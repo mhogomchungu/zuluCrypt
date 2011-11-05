@@ -98,11 +98,13 @@ void createfile::showUI()
 	ui->lineEditFileSize->setEnabled(true);
 	ui->progressBar->setValue(0);
 	ui->comboBox->setEnabled(true);
+	ui->comboBoxRNG->setEnabled(true);
 	ui->pbOpenFolder->setEnabled(true);
 	ui->label->setEnabled(true);
 	ui->label_2->setEnabled(true);
 	ui->label_3->setEnabled(true);
 	ui->label_4->setEnabled(true);
+	ui->label_5->setEnabled(true);
 	ui->lineEditFileName->setFocus();
 	creating = false ;
 	this->show();
@@ -155,12 +157,13 @@ void createfile::pbCreate()
 	ui->lineEditFilePath->setEnabled(false);
 	ui->lineEditFileSize->setEnabled(false);
 	ui->comboBox->setEnabled(false);
+	ui->comboBoxRNG->setEnabled(false);
 	ui->pbOpenFolder->setEnabled(false);
 	ui->label->setEnabled(false);
 	ui->label_2->setEnabled(false);
 	ui->label_3->setEnabled(false);
 	ui->label_4->setEnabled(false);
-
+	ui->label_5->setEnabled(false);
 	creating = true ;
 
 	time.start();
@@ -176,21 +179,13 @@ void createfile::pbCreate()
 			break ;
 	}
 
-	QFile f(QDir::homePath() + QString("/.zuluCrypt/rng")) ;
-
-	f.open(QIODevice::ReadOnly) ;
-
-	QByteArray b = f.readAll() ;
-
-	f.close();
-
 	QString ddExe = QString(ZULUCRYPTdd) ;
 	ddExe = ddExe + QString(" if=") ;
-	ddExe = ddExe + QString( b ) ;
+	ddExe = ddExe + ui->comboBoxRNG->currentText() ;
 	ddExe = ddExe + QString(" of=") ;
 	ddExe = ddExe + QString("\"") + ui->lineEditFilePath->text() + QString("/") + ui->lineEditFileName->text();
 	ddExe = ddExe + QString("\" bs=1024 count=") + ui->lineEditFileSize->text() + size;
-
+	std::cout << ddExe.toStdString() << std::endl ;
 	dd.start( ddExe ) ;
 }
 

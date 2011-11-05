@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>475</width>
-    <height>174</height>
+    <height>196</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -95,7 +95,7 @@
    <property name="geometry">
     <rect>
      <x>120</x>
-     <y>110</y>
+     <y>130</y>
      <width>271</width>
      <height>23</height>
     </rect>
@@ -124,7 +124,7 @@
    <property name="geometry">
     <rect>
      <x>260</x>
-     <y>140</y>
+     <y>160</y>
      <width>91</width>
      <height>31</height>
     </rect>
@@ -143,7 +143,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>110</y>
+     <y>130</y>
      <width>101</width>
      <height>21</height>
     </rect>
@@ -159,7 +159,7 @@
    <property name="geometry">
     <rect>
      <x>160</x>
-     <y>140</y>
+     <y>160</y>
      <width>91</width>
      <height>31</height>
     </rect>
@@ -201,6 +201,47 @@
      <string>GB</string>
     </property>
    </item>
+  </widget>
+  <widget class="QComboBox" name="comboBoxRNG">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>100</y>
+     <width>161</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <item>
+    <property name="text">
+     <string>/dev/urandom</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>/dev/zero</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>/dev/random</string>
+    </property>
+   </item>
+  </widget>
+  <widget class="QLabel" name="label_5">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>110</y>
+     <width>55</width>
+     <height>14</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>rng</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
   </widget>
  </widget>
  <resources/>
