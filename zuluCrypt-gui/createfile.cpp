@@ -117,23 +117,28 @@ void createfile::pbCreate()
 	m.setFont(this->font());
 
 	if(ui->lineEditFileName->text().isEmpty()){
-		m.setText(tr("ERROR: the file name field is empty"));
+		m.setText(tr("the file name field is empty"));
 		m.exec() ;
 		return ;
 	}
 
 	if(ui->lineEditFilePath->text().isEmpty()){
-		m.setText(tr("ERROR: the file path field is empty"));
+		m.setText(tr("the file path field is empty"));
 		m.exec() ;
 		return ;
 	}
 
 	if(ui->lineEditFileSize->text().isEmpty()){
-		m.setText(tr("ERROR: the file size field is empty"));
+		m.setText(tr("the file size field is empty"));
 		m.exec() ;
 		return ;
 	}
 
+	if(QFile::exists(ui->lineEditFilePath->text() + QString("/") + ui->lineEditFileName->text())){
+		m.setText(tr("a file or folder with the same name already exist at destination address"));
+		m.exec() ;
+		return ;		
+	}
 	bool test ;
 
 	ui->lineEditFileSize->text().toInt(&test) ;
