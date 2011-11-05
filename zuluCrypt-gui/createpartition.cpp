@@ -106,6 +106,7 @@ void createpartition::pbOpenKeyFile()
 
 void createpartition::pbCancelClicked()
 {
+	/*
 	QMessageBox m ;
 	m.setParent(this);
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
@@ -117,11 +118,7 @@ void createpartition::pbCancelClicked()
 
 	if( m.exec() == QMessageBox::No )
 		return ;
-
-	if( file.isEmpty() == false ){
-		QFile::remove(file) ;
-		file.clear();
-	}
+*/
 	HideUI() ;
 }
 
@@ -285,7 +282,7 @@ void createpartition::ShowFileUI(QString volume)
 	ui->pbOpenKeyFile->setEnabled(false);	
 	ui->labelVolumePath->setText(tr("path to file"));
 	ui->lineEditVolumePath->setEnabled(false);
-	file = ui->lineEditVolumePath->text() ;
+//	file = ui->lineEditVolumePath->text() ;
 	this->rbPassphraseClicked() ;
 	ui->lineEditPassphrase1->setFocus();
 	ui->comboBoxFS->setCurrentIndex(0);

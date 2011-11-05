@@ -67,7 +67,7 @@ private:
 
 	void UIMessage(QString title,QString message) ;	
 
-	QString file ;
+	//QString file ;
 };
 
 #endif // CREATEPARTITION_H
