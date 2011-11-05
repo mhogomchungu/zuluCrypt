@@ -137,7 +137,6 @@
     </property>
     <addaction name="actionTray_icon"/>
     <addaction name="actionFonts"/>
-    <addaction name="actionSelect_random_number_generator"/>
    </widget>
    <widget class="QMenu" name="menuFavorites">
     <property name="title">

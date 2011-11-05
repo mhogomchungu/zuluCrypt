@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'zulucrypt.ui'
 **
-** Created: Fri Nov 4 12:38:06 2011
+** Created: Sat Nov 5 02:20:28 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -176,7 +176,6 @@ public:
         menuConfigure->addAction(actionDeleteKey);
         menuOptions->addAction(actionTray_icon);
         menuOptions->addAction(actionFonts);
-        menuOptions->addAction(actionSelect_random_number_generator);
         menu_zc->addAction(action_minimize);
         menu_zc->addAction(actionMinimize_to_tray);
         menu_zc->addAction(action_close);

@@ -163,7 +163,7 @@ private:
 
 	QList<QMenu *> menulist ;
 
-	rngselector *rng ;
+	//rngselector *rng ;
 
 	volumePropertiesThread *vpt ;
 

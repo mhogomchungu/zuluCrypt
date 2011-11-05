@@ -71,8 +71,8 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 	createkeyFile = new createkeyfile(this);
 	createkeyFile->setWindowFlags(Qt::Window | Qt::Dialog);
 
-	rng = new rngselector(this);
-	rng->setWindowFlags(Qt::Window | Qt::Dialog);
+//	rng = new rngselector(this);
+//	rng->setWindowFlags(Qt::Window | Qt::Dialog);
 
 	trayIcon = new QSystemTrayIcon(this);
 	trayIcon->setIcon(QIcon(QString(":/zuluCrypt.png")));
@@ -205,10 +205,10 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 		this,
 		SLOT(favClicked(QAction*))) ;
 
-	connect(ui->actionSelect_random_number_generator,
-		SIGNAL(triggered()),
-		rng,
-		SLOT(ShowUI())) ;
+//	connect(ui->actionSelect_random_number_generator,
+//		SIGNAL(triggered()),
+//		rng,
+//		SLOT(ShowUI())) ;
 
 	connect(openFileUI,
 		SIGNAL(addItemToTable(QString,QString)),
@@ -285,15 +285,6 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 	}else{
 		ui->actionTray_icon->setChecked(false);
 		trayIcon->hide();
-	}
-
-	QFile g(QDir::homePath() + QString("/.zuluCrypt/rng")) ;
-
-	if(g.exists() == false){
-
-		g.open(QIODevice::WriteOnly | QIODevice::Truncate) ;
-		g.write("/dev/urandom") ;
-		g.close();
 	}
 
 	QFile z(QDir::homePath() + QString("/.zuluCrypt/font")) ;
