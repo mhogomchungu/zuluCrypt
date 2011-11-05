@@ -82,8 +82,10 @@ void createfile::ddFinished(int exitCode, QProcess::ExitStatus st)
 		return ;
 	}
 	time.stop();
-	this->hide();
+
 	emit fileCreated(ui->lineEditFilePath->text() + "/" + ui->lineEditFileName->text()) ;
+
+	this->hide();
 }
 
 void createfile::showUI()

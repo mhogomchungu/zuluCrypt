@@ -83,10 +83,22 @@ void createpartition::closeEvent(QCloseEvent *e)
 
 void createpartition::ShowPartitionUI(QString volume)
 {
+	ShowUI(tr("path to partition"),volume);
+}
+
+void createpartition::ShowFileUI(QString volume)
+{
+	ShowUI(tr("path to file"),volume);
+}
+
+void::createpartition::ShowUI(QString l,QString v)
+{
+	enableAll();
+	ui->labelVolumePath->setText(l);
+	ui->lineEditVolumePath->setText(v);
 	ui->rbPassphrase->setChecked(true);
-	ui->lineEditVolumePath->setText(volume);
-	ui->labelVolumePath->setText(tr("path to partition"));
-	ui->labelPassPhrase->setText(tr("passphrase"));
+	ui->pbOpenKeyFile->setEnabled(false);
+	ui->lineEditVolumePath->setEnabled(false);
 	this->rbPassphraseClicked() ;
 	ui->lineEditPassphrase1->setFocus();
 	ui->comboBoxFS->setCurrentIndex(0);
@@ -285,23 +297,6 @@ void createpartition::threadfinished()
 				   (tr("unrecognized error has occured,volume not created")));
 	}
 	enableAll();
-}
-
-void createpartition::ShowFileUI(QString volume)
-{
-	enableAll();
-	ui->lineEditVolumePath->setText(volume);
-	ui->rbPassphrase->setChecked(true);
-	ui->pbOpenKeyFile->setEnabled(false);	
-	ui->labelVolumePath->setText(tr("path to file"));
-	ui->lineEditVolumePath->setEnabled(false);
-	this->rbPassphraseClicked() ;
-	ui->lineEditPassphrase1->setFocus();
-	ui->comboBoxFS->setCurrentIndex(0);
-	ui->comboBoxRNG->setCurrentIndex(0);
-	ui->comboBoxVolumeType->setCurrentIndex(0);
-	created = false ;
-	this->show();
 }
 
 createpartition::~createpartition()

@@ -68,6 +68,7 @@ private:
 	void UIMessage(QString title,QString message) ;	
 
 	bool created ;
+	void ShowUI(QString,QString);
 };
 
 #endif // CREATEPARTITION_H
