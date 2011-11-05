@@ -104,6 +104,7 @@ void createfile::showUI()
 	ui->label_3->setEnabled(true);
 	ui->label_4->setEnabled(true);
 	ui->lineEditFileName->setFocus();
+	creating = false ;
 	this->show();
 }
 
@@ -160,6 +161,8 @@ void createfile::pbCreate()
 	ui->label_3->setEnabled(false);
 	ui->label_4->setEnabled(false);
 
+	creating = true ;
+
 	time.start();
 
 	QString size ;
@@ -215,6 +218,11 @@ void createfile::pbOpenFolder()
 
 void createfile::pbCancel()
 {
+	if( creating == false ){
+		this->hide();
+		return ;
+	}
+
 	QMessageBox m ;
 	m.setWindowTitle(tr("terminating file creation process"));
 	m.setParent(this);
@@ -229,6 +237,8 @@ void createfile::pbCancel()
 		return ;
 
 	dd.close();
+
+	creating = false ;
 
 	time.stop();
 

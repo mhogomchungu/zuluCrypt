@@ -63,6 +63,7 @@ private:
 	QTimer time ;
 	double fileSize ;
 	void closeEvent(QCloseEvent *) ;
+	bool creating ;
 };
 
 #endif // CREATEFILE_H
