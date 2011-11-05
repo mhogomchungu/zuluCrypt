@@ -145,6 +145,8 @@ void createpartition::enableAll()
 	ui->comboBoxVolumeType->setEnabled(true);
 	if(ui->comboBoxVolumeType->currentIndex() == 0)
 		ui->comboBoxRNG->setEnabled(true);
+	ui->rbPassphrase->setEnabled(true);
+	ui->rbPassphraseFromFile->setEnabled(true);
 }
 
 void createpartition::disableAll()
@@ -164,6 +166,8 @@ void createpartition::disableAll()
 	ui->comboBoxFS->setEnabled(false);
 	ui->comboBoxVolumeType->setEnabled(false);
 	ui->comboBoxRNG->setEnabled(false);
+	ui->rbPassphrase->setEnabled(false);
+	ui->rbPassphraseFromFile->setEnabled(false);
 }
 
 void createpartition::rbPassphraseClicked()

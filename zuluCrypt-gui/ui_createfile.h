@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'createfile.ui'
 **
-** Created: Sat Nov 5 00:28:32 2011
+** Created: Sat Nov 5 02:13:43 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -98,7 +98,7 @@ public:
         comboBoxRNG->setGeometry(QRect(120, 100, 161, 31));
         label_5 = new QLabel(createfile);
         label_5->setObjectName(QString::fromUtf8("label_5"));
-        label_5->setGeometry(QRect(50, 110, 55, 14));
+        label_5->setGeometry(QRect(50, 104, 55, 20));
         label_5->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
         retranslateUi(createfile);
