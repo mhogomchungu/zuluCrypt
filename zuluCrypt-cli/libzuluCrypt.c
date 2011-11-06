@@ -990,7 +990,7 @@ int open_volume(const char * dev,
 	
 	h = mount_volume(map,m_point,mode,id ) ;	
 	
-	if( h == 4 ){
+	if( h == 4 && luks != 0 ){
 		/*
 		 * udisk seem to crash when mount/unmount happen too quickly, give it room to breath.
 		 */
