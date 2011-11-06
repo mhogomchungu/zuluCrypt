@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'createpartition.ui'
 **
-** Created: Sat Nov 5 01:42:04 2011
+** Created: Sat Nov 5 22:53:20 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -35,7 +35,7 @@ public:
     QLineEdit *lineEditPassphrase1;
     QLabel *labelPassPhrase;
     QLineEdit *lineEditPassPhrase2;
-    QLabel *label_3;
+    QLabel *labelRepeatPassPhrase;
     QPushButton *pbOpenKeyFile;
     QGroupBox *groupBox_3;
     QRadioButton *rbPassphrase;
@@ -79,10 +79,10 @@ public:
         lineEditPassPhrase2 = new QLineEdit(createpartition);
         lineEditPassPhrase2->setObjectName(QString::fromUtf8("lineEditPassPhrase2"));
         lineEditPassPhrase2->setGeometry(QRect(120, 110, 281, 31));
-        label_3 = new QLabel(createpartition);
-        label_3->setObjectName(QString::fromUtf8("label_3"));
-        label_3->setGeometry(QRect(10, 110, 111, 31));
-        label_3->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
+        labelRepeatPassPhrase = new QLabel(createpartition);
+        labelRepeatPassPhrase->setObjectName(QString::fromUtf8("labelRepeatPassPhrase"));
+        labelRepeatPassPhrase->setGeometry(QRect(10, 110, 111, 31));
+        labelRepeatPassPhrase->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         pbOpenKeyFile = new QPushButton(createpartition);
         pbOpenKeyFile->setObjectName(QString::fromUtf8("pbOpenKeyFile"));
         pbOpenKeyFile->setGeometry(QRect(400, 80, 31, 31));
@@ -97,7 +97,7 @@ public:
         rbPassphraseFromFile->setGeometry(QRect(170, 10, 211, 21));
         labelfs = new QLabel(createpartition);
         labelfs->setObjectName(QString::fromUtf8("labelfs"));
-        labelfs->setGeometry(QRect(50, 140, 111, 21));
+        labelfs->setGeometry(QRect(40, 140, 121, 21));
         labelfs->setAlignment(Qt::AlignCenter);
         comboBoxFS = new QComboBox(createpartition);
         comboBoxFS->setObjectName(QString::fromUtf8("comboBoxFS"));
@@ -112,7 +112,7 @@ public:
         comboBoxVolumeType->setLayoutDirection(Qt::LeftToRight);
         labelrng = new QLabel(createpartition);
         labelrng->setObjectName(QString::fromUtf8("labelrng"));
-        labelrng->setGeometry(QRect(280, 140, 111, 21));
+        labelrng->setGeometry(QRect(280, 140, 121, 21));
         labelrng->setAlignment(Qt::AlignCenter);
         comboBoxRNG = new QComboBox(createpartition);
         comboBoxRNG->setObjectName(QString::fromUtf8("comboBoxRNG"));
@@ -130,7 +130,7 @@ public:
         pbCreate->setText(QApplication::translate("createpartition", "c&reate", 0, QApplication::UnicodeUTF8));
         pbCancel->setText(QApplication::translate("createpartition", "&cancel", 0, QApplication::UnicodeUTF8));
         labelPassPhrase->setText(QApplication::translate("createpartition", "passphrase", 0, QApplication::UnicodeUTF8));
-        label_3->setText(QApplication::translate("createpartition", "repeat passphrase", 0, QApplication::UnicodeUTF8));
+        labelRepeatPassPhrase->setText(QApplication::translate("createpartition", "repeat passphrase", 0, QApplication::UnicodeUTF8));
 #ifndef QT_NO_TOOLTIP
         pbOpenKeyFile->setToolTip(QApplication::translate("createpartition", "open a key file", 0, QApplication::UnicodeUTF8));
 #endif // QT_NO_TOOLTIP
@@ -138,7 +138,7 @@ public:
         groupBox_3->setTitle(QString());
         rbPassphrase->setText(QApplication::translate("createpartition", "passphrase", 0, QApplication::UnicodeUTF8));
         rbPassphraseFromFile->setText(QApplication::translate("createpartition", "passphrase from a key file", 0, QApplication::UnicodeUTF8));
-        labelfs->setText(QApplication::translate("createpartition", "file system", 0, QApplication::UnicodeUTF8));
+        labelfs->setText(QApplication::translate("createpartition", "file system type", 0, QApplication::UnicodeUTF8));
         comboBoxFS->clear();
         comboBoxFS->insertItems(0, QStringList()
          << QApplication::translate("createpartition", "ext4", 0, QApplication::UnicodeUTF8)

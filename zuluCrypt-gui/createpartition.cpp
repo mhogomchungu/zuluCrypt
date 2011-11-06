@@ -104,6 +104,7 @@ void::createpartition::ShowUI(QString l,QString v)
 	ui->comboBoxFS->setCurrentIndex(0);
 	ui->comboBoxRNG->setCurrentIndex(0);
 	ui->comboBoxVolumeType->setCurrentIndex(0);
+	ui->labelRepeatPassPhrase->setEnabled(true);
 	created = false ;
 	this->show();
 }
@@ -150,7 +151,7 @@ void createpartition::enableAll()
 {
 	ui->labelPassPhrase->setEnabled(true);
 	ui->labelVolumePath->setEnabled(true);
-	ui->label_3->setEnabled(true);
+	ui->labelRepeatPassPhrase->setEnabled(true);
 	ui->lineEditPassphrase1->setEnabled(true);
 	ui->lineEditPassPhrase2->setEnabled(true);
 	ui->lineEditVolumePath->setEnabled(true);
@@ -172,7 +173,7 @@ void createpartition::disableAll()
 {
 	ui->labelPassPhrase->setEnabled(false);
 	ui->labelVolumePath->setEnabled(false);
-	ui->label_3->setEnabled(false);
+	ui->labelRepeatPassPhrase->setEnabled(false);
 	ui->lineEditPassphrase1->setEnabled(false);
 	ui->lineEditPassPhrase2->setEnabled(false);
 	ui->lineEditVolumePath->setEnabled(false);
@@ -198,6 +199,7 @@ void createpartition::rbPassphraseClicked()
 	ui->lineEditPassphrase1->setEchoMode(QLineEdit::Password);
 	ui->lineEditPassPhrase2->setEchoMode(QLineEdit::Password);
 	ui->labelPassPhrase->setText(tr("passphrase"));
+	ui->labelRepeatPassPhrase->setEnabled(true);
 }
 
 void createpartition::rbPasssphraseFromFileClicked()
@@ -208,6 +210,7 @@ void createpartition::rbPasssphraseFromFileClicked()
 	ui->lineEditPassphrase1->setEchoMode(QLineEdit::Normal);
 	ui->lineEditPassPhrase2->setEnabled(false);
 	ui->labelPassPhrase->setText(tr("key file"));
+	ui->labelRepeatPassPhrase->setEnabled(false);
 }
 
 void createpartition::UIMessage(QString title, QString message)

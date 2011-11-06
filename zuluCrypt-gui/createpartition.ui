@@ -113,7 +113,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QLabel" name="label_3">
+  <widget class="QLabel" name="labelRepeatPassPhrase">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -187,14 +187,14 @@
   <widget class="QLabel" name="labelfs">
    <property name="geometry">
     <rect>
-     <x>50</x>
+     <x>40</x>
      <y>140</y>
-     <width>111</width>
+     <width>121</width>
      <height>21</height>
     </rect>
    </property>
    <property name="text">
-    <string>file system</string>
+    <string>file system type</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
@@ -269,7 +269,7 @@
     <rect>
      <x>280</x>
      <y>140</y>
-     <width>111</width>
+     <width>121</width>
      <height>21</height>
     </rect>
    </property>
