@@ -983,6 +983,8 @@ int open_volume(const char * dev,
 		h = open_plain( dev,map,mode,source,pass,"cbc-essiv:sha256" ) ;
 	
 	switch ( h ){
+		case 1 : h = 4 ;
+			 goto out ;
 		case 3 : goto out ;
 		case 2 : h = 8 ; 
 			 goto out ;
