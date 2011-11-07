@@ -220,7 +220,7 @@
     <string>add key</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Q</string>
+    <string>Ctrl+U</string>
    </property>
   </action>
   <action name="actionDeleteKey">
@@ -316,6 +316,9 @@
   <action name="actionClose_all_opened_volumes">
    <property name="text">
     <string>close all opened volumes</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+G</string>
    </property>
   </action>
  </widget>
