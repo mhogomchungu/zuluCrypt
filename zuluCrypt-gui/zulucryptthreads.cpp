@@ -37,10 +37,7 @@ void ShowNonSystemPartitionsThread::run()
 
 	QTableWidget *tw = partitionView->tableWidgetPartitionView ;
 
-	int y = tw->rowCount() ;
-
-	for( int i = 0 ; i < y  ; i++ )
-	{
+	while ( tw->rowCount() > 0 ){
 		tw->removeRow(0);
 	}
 
@@ -76,10 +73,7 @@ void partitionlistThread::run()
 {
 	QTableWidget *tw = partitionView->tableWidgetPartitionView ;
 
-	int y = tw->rowCount() ;
-
-	for( int i = 0 ; i < y  ; i++ )
-	{
+	while ( tw->rowCount() > 0 ){
 		tw->removeRow(0);
 	}
 
