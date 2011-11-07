@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'zulucrypt.ui'
 **
-** Created: Sat Nov 5 02:20:28 2011
+** Created: Sun Nov 6 15:29:10 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -45,6 +45,7 @@ public:
     QAction *action_minimize;
     QAction *actionMinimize_to_tray;
     QAction *action_close;
+    QAction *actionClose_all_opened_volumes;
     QWidget *centralWidget;
     QTableWidget *tableWidget;
     QMenuBar *menuBar;
@@ -107,6 +108,8 @@ public:
         actionMinimize_to_tray->setObjectName(QString::fromUtf8("actionMinimize_to_tray"));
         action_close = new QAction(zuluCrypt);
         action_close->setObjectName(QString::fromUtf8("action_close"));
+        actionClose_all_opened_volumes = new QAction(zuluCrypt);
+        actionClose_all_opened_volumes->setObjectName(QString::fromUtf8("actionClose_all_opened_volumes"));
         centralWidget = new QWidget(zuluCrypt);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         centralWidget->setContextMenuPolicy(Qt::ActionsContextMenu);
@@ -178,6 +181,9 @@ public:
         menuOptions->addAction(actionFonts);
         menu_zc->addAction(action_minimize);
         menu_zc->addAction(actionMinimize_to_tray);
+        menu_zc->addSeparator();
+        menu_zc->addAction(actionClose_all_opened_volumes);
+        menu_zc->addSeparator();
         menu_zc->addAction(action_close);
 
         retranslateUi(zuluCrypt);
@@ -222,6 +228,7 @@ public:
         actionMinimize_to_tray->setShortcut(QApplication::translate("zuluCrypt", "Ctrl+Y", 0, QApplication::UnicodeUTF8));
         action_close->setText(QApplication::translate("zuluCrypt", "quit", 0, QApplication::UnicodeUTF8));
         action_close->setShortcut(QApplication::translate("zuluCrypt", "Ctrl+Q", 0, QApplication::UnicodeUTF8));
+        actionClose_all_opened_volumes->setText(QApplication::translate("zuluCrypt", "close all opened volumes", 0, QApplication::UnicodeUTF8));
         QTableWidgetItem *___qtablewidgetitem = tableWidget->horizontalHeaderItem(0);
         ___qtablewidgetitem->setText(QApplication::translate("zuluCrypt", "Encrypted volume path", 0, QApplication::UnicodeUTF8));
         QTableWidgetItem *___qtablewidgetitem1 = tableWidget->horizontalHeaderItem(1);

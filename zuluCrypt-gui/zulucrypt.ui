@@ -149,6 +149,9 @@
     </property>
     <addaction name="action_minimize"/>
     <addaction name="actionMinimize_to_tray"/>
+    <addaction name="separator"/>
+    <addaction name="actionClose_all_opened_volumes"/>
+    <addaction name="separator"/>
     <addaction name="action_close"/>
    </widget>
    <addaction name="menu_zc"/>
@@ -308,6 +311,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionClose_all_opened_volumes">
+   <property name="text">
+    <string>close all opened volumes</string>
    </property>
   </action>
  </widget>

@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     createkeyfile.cpp \
     rngselector.cpp \
     zulucryptthreads.cpp \
-    startupupdateopenedvolumes.cpp
+    startupupdateopenedvolumes.cpp \
+    closeallvolumesthread.cpp
 
 HEADERS  += zulucrypt.h password_dialog.h \
     openpartition.h \
@@ -33,7 +34,8 @@ HEADERS  += zulucrypt.h password_dialog.h \
     createkeyfile.h \
     rngselector.h \
     zulucryptthreads.h \
-    startupupdateopenedvolumes.h
+    startupupdateopenedvolumes.h \
+    closeallvolumesthread.h
 
 FORMS    += zulucrypt.ui password.ui \
     openpartition.ui \
@@ -47,3 +49,5 @@ FORMS    += zulucrypt.ui password.ui \
 TRANSLATIONS = ../translations/swahili_la.ts
 
 RESOURCES = icon.qrc
+
+

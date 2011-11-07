@@ -240,6 +240,11 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 		this,
 		SLOT(minimizeToTray())) ;
 
+	connect(ui->actionClose_all_opened_volumes,
+		SIGNAL(triggered()),
+		this,
+		SLOT(closeAllVolumes())) ;
+
 	QProcess p ;
 
 	p.start(ZULUCRYPTzuluCrypt);
@@ -345,6 +350,28 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 		SLOT(UIMessage(QString,QString))) ;
 
 	sov->start();
+}
+
+void zuluCrypt::closeAllVolumes()
+{
+	t = new closeAllVolumesThread(ui->tableWidget) ;
+
+	connect(t,SIGNAL(close(QTableWidgetItem *)),this,SLOT(closeAll(QTableWidgetItem *))) ;
+
+	connect(t,SIGNAL(finished()),this,SLOT(deleteThread())) ;
+
+	t->start();
+}
+
+void zuluCrypt::deleteThread()
+{
+	delete t ;
+}
+
+void zuluCrypt::closeAll(QTableWidgetItem * i)
+{
+	item = i ;
+	close() ;
 }
 
 void zuluCrypt::minimize()
@@ -844,7 +871,7 @@ void zuluCrypt::addToFavorite()
 	f.close();
 }
 
-void zuluCrypt::options(QTableWidgetItem* t)
+void zuluCrypt::options(QTableWidgetItem * t)
 {
 	item = t ;
 
@@ -935,7 +962,7 @@ void zuluCrypt::UIMessage(QString title, QString message)
 	m.exec() ;
 }
 
-void zuluCrypt::close(void)
+void zuluCrypt::close()
 {
 	QProcess p ;
 

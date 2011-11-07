@@ -41,6 +41,7 @@
 #include "createkeyfile.h"
 #include "rngselector.h"
 #include "startupupdateopenedvolumes.h"
+#include "closeallvolumesthread.h"
 
 namespace Ui {
     class zuluCrypt;
@@ -83,7 +84,9 @@ private slots :
 
 	void aboutMenuOption(void) ;
 
-	void close(void) ;
+	void close() ;
+
+	void closeAll(QTableWidgetItem *) ;
 
 	void options( QTableWidgetItem * item) ;
 
@@ -118,6 +121,10 @@ private slots :
 	void minimize(void) ;
 
 	void minimizeToTray(void);
+
+	void closeAllVolumes(void) ;
+
+	void deleteThread() ;
 
 private:
 
@@ -172,6 +179,8 @@ private:
 	QMessageBox *mp ;
 
 	startupupdateopenedvolumes *sov ;
+
+	closeAllVolumesThread *t ;
 };
 
 #endif // ZULUCRYPT_H
