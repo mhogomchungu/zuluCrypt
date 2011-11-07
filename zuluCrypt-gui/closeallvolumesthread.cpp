@@ -25,10 +25,15 @@ closeAllVolumesThread::closeAllVolumesThread(QTableWidget *t)
 	table = t ;
 }
 void closeAllVolumesThread::run()
-{
+{		
 	table->setEnabled(false);
 
 	sleep(1) ;
+
+	if( table->rowCount() == 0 ){
+		table->setEnabled(true);
+		return ;
+	}
 
 	int i = table->rowCount() ;
 
