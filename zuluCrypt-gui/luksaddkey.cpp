@@ -334,7 +334,7 @@ void luksaddkeyUI::threadfinished()
 	switch( status ){
 		case 0 :
 			m.setWindowTitle(tr("SUCCESS"));
-			ss = tr("key added successfully\n") ;
+			ss = tr("key added successfully.\n") ;
 			ss = ss + QString(zuluCrypt::luksEmptySlots(ui->textEditPathToVolume->text())) ;
 			ss = ss + tr(" / 8 slots are now in use") ;
 			m.setText(ss);

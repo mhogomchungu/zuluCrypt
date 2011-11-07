@@ -855,6 +855,8 @@ int check_system_tools(void)
 	StringAppend( p , ZULUCRYPTumount) ;
 	StringAppend( p , "\n" ) ;
 	StringAppend( p , ZULUCRYPTdd) ;
+	StringAppend( p , "\n" ) ;
+	StringAppend( p , ZULUCRYPTzuluCrypt) ;
 	
 	printf("this program will not work as expected on your system\n");
 	printf("because one or more of the following tools are either not present\n") ;

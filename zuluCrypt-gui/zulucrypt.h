@@ -92,8 +92,6 @@ private slots :
 
 	void volume_property(void) ;
 
-	void setUpOpenedVolumes(void) ;
-
 	void UIMessage(QString title,QString message) ;
 
 	void fonts(void) ;
@@ -126,11 +124,15 @@ private slots :
 
 	void deleteThread() ;
 
+	void cstFinished(void) ;
+
 private:
 
-	void closeEvent(QCloseEvent *) ;
+	void setupConnections(void) ;
 
-	void deleteFile(QFile *) ;
+	void setupUIElements(void) ;
+
+	void closeEvent(QCloseEvent *) ;
 
 	void setUserFont(QFont) ;
 
@@ -181,6 +183,10 @@ private:
 	startupupdateopenedvolumes *sov ;
 
 	closeAllVolumesThread *t ;
+
+	checkSystemTools *cst ;
+
+	QString cstString ;
 };
 
 #endif // ZULUCRYPT_H

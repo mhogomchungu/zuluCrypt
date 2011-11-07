@@ -105,6 +105,13 @@ private:
 
 };
 
-
+class checkSystemTools : public QThread
+{
+public:
+	checkSystemTools(QString *) ;
+private:
+	void run() ;
+	QString *output ;
+};
 
 #endif // ZULUCRYPTTHREADS_H

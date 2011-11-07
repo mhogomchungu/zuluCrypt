@@ -44,219 +44,9 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 
 	qRegisterMetaType<Qt::Orientation>("Qt::Orientation") ;
 
-	openFileUI = new password_Dialog(this) ;
-	openFileUI->setWindowFlags(Qt::Window | Qt::Dialog);
+	setupUIElements();
 
-	openPartitionUI = new openpartition(this);
-	openPartitionUI->setWindowFlags(Qt::Window | Qt::Dialog);
-
-	NonSystemPartitions = new openpartition(this);
-	NonSystemPartitions->setWindowFlags(Qt::Window | Qt::Dialog);
-
-	luksopenPartitionUI = new openpartition(this);
-	luksopenPartitionUI->setWindowFlags(Qt::Window | Qt::Dialog);
-
-	addKeyUI = new luksaddkeyUI(this);
-	addKeyUI->setWindowFlags(Qt::Window | Qt::Dialog);
-
-	deleteKeyUI = new luksdeletekey(this);
-	deleteKeyUI->setWindowFlags(Qt::Window | Qt::Dialog);
-
-	createpartitionUI = new createpartition(this);
-	createpartitionUI->setWindowFlags(Qt::Window | Qt::Dialog);
-
-	createFile = new createfile(this);
-	createFile->setWindowFlags(Qt::Window | Qt::Dialog);
-
-	createkeyFile = new createkeyfile(this);
-	createkeyFile->setWindowFlags(Qt::Window | Qt::Dialog);
-
-//	rng = new rngselector(this);
-//	rng->setWindowFlags(Qt::Window | Qt::Dialog);
-
-	trayIcon = new QSystemTrayIcon(this);
-	trayIcon->setIcon(QIcon(QString(":/zuluCrypt.png")));
-
-	trayMenu = new QMenu(this) ;
-
-	trayMenu->addAction(tr("quit"),
-			    this,SLOT(closeApplication()));
-
-	trayIcon->setContextMenu(trayMenu);
-
-	ui->setupUi(this);
-	this->setFixedSize(this->size());
-
-	this->setWindowIcon(QIcon(QString(":/zuluCrypt.png")));
-
-	ui->tableWidget->setColumnWidth(0,230);
-
-	ui->tableWidget->setColumnWidth(1,290);
-
-	ui->tableWidget->setColumnWidth(2,90);
-
-	connect(ui->actionCreatekeyFile,
-		SIGNAL(triggered()),
-		createkeyFile,
-		SLOT(ShowUI()));
-
-	connect(createFile,
-		SIGNAL(fileCreated(QString)),
-		createpartitionUI,
-		SLOT(ShowFileUI(QString)));
-
-	connect(ui->actionFileCreate,
-		SIGNAL(triggered()),
-		createFile,
-		SLOT(showUI()));
-
-	connect(NonSystemPartitions,
-		SIGNAL(clickedPartition(QString)),
-		createpartitionUI,
-		SLOT(ShowPartitionUI(QString)));
-
-	connect(this,
-		SIGNAL(showNonSystemPartitions()),
-		NonSystemPartitions,
-		SLOT(ShowNonSystemPartitions()));
-
-	connect(ui->actionFileOpen,
-		SIGNAL(triggered()),
-		openFileUI,
-		SLOT(ShowUI())) ;
-
-	connect(ui->actionPartitionOpen,
-		SIGNAL(triggered()),
-		openPartitionUI,
-		SLOT(ShowUI()));
-
-	connect(ui->tableWidget,
-		SIGNAL(itemClicked(QTableWidgetItem*)),
-		this,
-		SLOT(options(QTableWidgetItem*))) ;
-
-	connect(openPartitionUI,
-		SIGNAL(clickedPartition(QString)),
-		openFileUI,
-		SLOT(clickedPartitionOption(QString)));
-
-	connect(ui->actionAbout,
-		SIGNAL(triggered()),
-		this,
-		SLOT(aboutMenuOption())) ;
-
-	connect(ui->actionAddKey,
-		SIGNAL(triggered()),
-		addKeyUI,
-		SLOT(ShowUI()) ) ;
-
-	connect(ui->actionDeleteKey,
-		SIGNAL(triggered()),
-		deleteKeyUI,
-		SLOT(ShowUI()) ) ;
-
-	connect(this,
-		SIGNAL(redoOpen(bool,bool,QString,QString)),
-		openFileUI,
-		SLOT(ShowUI(bool,bool,QString,QString)));
-
-	connect(ui->actionPartitionCreate,
-		SIGNAL(triggered()),
-		this,
-		SLOT(createEncryptedpartitionUI())) ;
-
-	connect(ui->actionInfo,
-		SIGNAL(triggered()),
-		this,
-		SLOT(info())) ;
-
-	connect(ui->actionFonts,
-		SIGNAL(triggered()),
-		this,
-		SLOT(fonts())) ;
-
-	connect(ui->menuFavorites,
-		SIGNAL(aboutToShow()),
-		this,
-		SLOT(readFavorites())) ;
-
-	connect(ui->menuFavorites,
-		SIGNAL(aboutToHide()),
-		this,
-		SLOT(favAboutToHide())) ;
-
-	connect(ui->actionTray_icon,
-		SIGNAL(triggered()),
-		this,
-		SLOT(trayProperty())) ;
-
-	connect(this,
-		SIGNAL(favClickedVolume(QString,QString)),
-		openFileUI,
-		SLOT(ShowUI(QString,QString))) ;
-
-	connect(trayIcon,
-		SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
-		this,
-		SLOT(trayClicked(QSystemTrayIcon::ActivationReason)));
-
-	connect(ui->menuFavorites,
-		SIGNAL(triggered(QAction*)),
-		this,
-		SLOT(favClicked(QAction*))) ;
-
-//	connect(ui->actionSelect_random_number_generator,
-//		SIGNAL(triggered()),
-//		rng,
-//		SLOT(ShowUI())) ;
-
-	connect(openFileUI,
-		SIGNAL(addItemToTable(QString,QString)),
-		this,
-		SLOT(addItemToTable(QString,QString))) ;
-
-	connect(this,
-		SIGNAL(luksAddKeyUI(QString)),
-		addKeyUI,
-		SLOT(partitionEntry(QString))) ;
-
-	connect(this,
-		SIGNAL(luksDeleteKeyUI(QString)),
-		deleteKeyUI,
-		SLOT(deleteKey(QString)));
-
-	connect(ui->action_close,
-		SIGNAL(triggered()),
-		this,
-		SLOT(closeApplication())) ;
-
-	connect(ui->action_minimize,
-		SIGNAL(triggered()),
-		this,
-		SLOT(minimize()));
-
-	connect(ui->actionMinimize_to_tray,
-		SIGNAL(triggered()),
-		this,
-		SLOT(minimizeToTray())) ;
-
-	connect(ui->actionClose_all_opened_volumes,
-		SIGNAL(triggered()),
-		this,
-		SLOT(closeAllVolumes())) ;
-
-	QProcess p ;
-
-	p.start(ZULUCRYPTzuluCrypt);
-
-	p.waitForFinished() ;
-
-	if(  p.exitCode() == 100 ){
-
-		QByteArray T = p.readAllStandardOutput() ;
-		UIMessage(tr("WARNING"),QString(T));
-	}
-	p.close();
+	setupConnections();
 
 	QString home = QDir::homePath() + QString("/.zuluCrypt/") ;
 
@@ -292,7 +82,9 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 		trayIcon->hide();
 	}
 
-	QFile z(QDir::homePath() + QString("/.zuluCrypt/font")) ;
+	QString fontPath = QDir::homePath() + QString("/.zuluCrypt/font") ;
+
+	QFile z( fontPath ) ;
 
 	if(z.exists() == false){
 
@@ -305,7 +97,7 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 		z.close();
 	}
 
-	QFile x(QDir::homePath() + QString("/.zuluCrypt/font"));
+	QFile x( fontPath );
 
 	x.open(QIODevice::ReadOnly) ;
 
@@ -350,6 +142,23 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 		SLOT(UIMessage(QString,QString))) ;
 
 	sov->start();
+
+	cst = new checkSystemTools(&cstString) ;
+
+	connect(cst,
+		SIGNAL(finished()),
+		this,
+		SLOT(cstFinished()));
+
+	cst->start();
+}
+
+void zuluCrypt::cstFinished()
+{
+	if ( cstString != QString("") )
+		UIMessage(tr("WARNING"),cstString);
+
+	delete cst ;
 }
 
 void zuluCrypt::closeAllVolumes()
@@ -576,78 +385,7 @@ void zuluCrypt::setUserFont(QFont Font)
 
 void zuluCrypt::info()
 {
-	QProcess exe ;
-
-	QString t = ZULUCRYPTcryptsetup + QString(" --help") ;
-
-	exe.start(t) ;
-
-	exe.waitForFinished() ;
-
-	char *d ;
-	char *c = exe.readAllStandardOutput().data() ;
-
-	c = strstr( c , "plain: ") ;
-
-	d = c ;
-
-	while (*++d !=',') { ; }
-	*d = '\0' ;
-
 	QString info = tr("cryptographic options used in volume management\n\n") ;
-
-	//info = info + QString("type:	PLAIN\n") ;
-	//info = info + QString("cypher:	") ;
-	//info = info + QString(c + 7) ;
-	//info = info + QString("\n") ;
-	//info = info + QString("keysize:	") ;
-
-	//c = strstr( d + 1 , "Key: ") ;
-	//d = c ;
-	//while (*++d !=',') { ; }
-	//*d = '\0' ;
-
-	//info = info + QString(c + 5) ;
-	//info = info + QString("\n") ;
-
-	//info = info + QString("hash:	") ;
-
-	//c = strstr( d + 1 , "Password") ;
-	//d = c ;
-	//while (*++d !='\n') { ; }
-	//*d = '\0' ;
-
-	//info = info + QString(c + 18) ;
-	//info = info + QString("\n\n") ;
-
-	//c = strstr( d + 1 , "LUKS") ;
-	//d = c ;
-	//while (*++d !=':') { ; }
-	//*d = '\0' ;
-
-	//info = info + QString("type:	") ;
-	//info = info + QString(c) ;
-	//info = info + QString("\n") ;
-
-	//c = strstr( d + 1 , "Key") ;
-	//d = c ;
-	//while (*++d !=',') { ; }
-	//*d = '\0' ;
-
-	//info = info + QString("keysize:	") ;
-	//info = info + QString(c + 5) ;
-	//info = info + QString("\n\n") ;
-
-	//c = strstr( d + 2 , "LUKS") ;
-	//d = c ;
-	//while (*++d !=',') { ; }
-	//*d = '\0' ;
-
-	//info = info + QString(c) ;
-	//info = info + QString("\n\n") ;
-
-	//info = info + QString("maximum passphrase length:	512 characters\n") ;
-	//info = info + QString("maximum key file size:		512 bytes\n\n") ;
 
 	info = info + tr("type:\t\tplain\n") ;
 	info = info + tr("cipher:\t\taes-cbc-essiv:sha256\n") ;
@@ -673,7 +411,6 @@ void zuluCrypt::info()
 	m.setText(info) ;
 
 	m.exec() ;
-	exe.close();
 }
 
 void zuluCrypt::createEncryptedpartitionUI()
@@ -684,24 +421,33 @@ void zuluCrypt::createEncryptedpartitionUI()
 char zuluCrypt::luksEmptySlots(QString volumePath)
 {
 	QProcess N ;
+
 	N.start(QString(ZULUCRYPTzuluCrypt) + \
 		QString(" emptyslots \"") + volumePath + QString("\""));
+
 	N.waitForFinished() ;
-	char *s = N.readAllStandardOutput().data() ;
+
+	QByteArray s = N.readAllStandardOutput() ;
+
 	int i = 0 ;
-	for ( int j = 0 ; j < 8 ; j++){
-		if( s[j] == '1' || s[j] == '3' )
+
+	for ( int j = 0 ; j < s.size() ; j++){
+		if( s.at(j) == '1' || s.at(j) == '3' )
 			i++ ;
 	}
+
 	N.close();
+
 	return i + '0' ;
 }
 
 bool zuluCrypt::isLuks(QString volumePath)
 {
 	QProcess N ;
+
 	N.start(QString(ZULUCRYPTzuluCrypt) + \
 		QString(" isLuks ") + QString("\"") + volumePath + QString("\"") );
+
 	N.waitForFinished() ;
 
 	int i = N.exitCode() ;
@@ -733,11 +479,6 @@ void zuluCrypt::aboutMenuOption(void)
 	m.exec() ;
 }
 
-void zuluCrypt::setUpOpenedVolumes(void)
-{
-
-}
-
 void zuluCrypt::addItemToTable(QString x,QString y)
 {
 	ui->tableWidget->insertRow(item_count);
@@ -758,6 +499,7 @@ void zuluCrypt::addItemToTable(QString x,QString y)
 void zuluCrypt::removeRowFromTable( int x )
 {
 	ui->tableWidget->removeRow( x ) ;
+
 	item_count-- ;
 }
 
@@ -992,29 +734,205 @@ void zuluCrypt::close()
 	p.close();
 }
 
-
-
-//hopefully secure delete,write random data to a file and then delete it
-void zuluCrypt::deleteFile( QFile *f)
+void zuluCrypt::setupUIElements()
 {
-	if ( f == NULL)
-		return ;
+	trayIcon = new QSystemTrayIcon(this);
 
-	QFile in(QString("/dev/urandom")) ;
+	trayIcon->setIcon(QIcon(QString(":/zuluCrypt.png")));
 
-	in.open(QIODevice::ReadOnly) ;
+	trayMenu = new QMenu(this) ;
 
-	f->seek(0) ;
+	trayMenu->addAction(tr("quit"),
+			    this,SLOT(closeApplication()));
 
-	char z ;
+	trayIcon->setContextMenu(trayMenu);
 
-	for(int i = 0 ; i < f->size() ; i++){
-		in.getChar(&z) ;
-		f->putChar(z) ;
-	}
-	in.close();
-	f->close();
-	f->remove() ;
+	ui->setupUi(this);
+
+	this->setFixedSize(this->size());
+
+	this->setWindowIcon(QIcon(QString(":/zuluCrypt.png")));
+
+	ui->tableWidget->setColumnWidth(0,230);
+
+	ui->tableWidget->setColumnWidth(1,290);
+
+	ui->tableWidget->setColumnWidth(2,90);
+
+	openFileUI = new password_Dialog(this) ;
+	openFileUI->setWindowFlags(Qt::Window | Qt::Dialog);
+
+	openPartitionUI = new openpartition(this);
+	openPartitionUI->setWindowFlags(Qt::Window | Qt::Dialog);
+
+	NonSystemPartitions = new openpartition(this);
+	NonSystemPartitions->setWindowFlags(Qt::Window | Qt::Dialog);
+
+	luksopenPartitionUI = new openpartition(this);
+	luksopenPartitionUI->setWindowFlags(Qt::Window | Qt::Dialog);
+
+	addKeyUI = new luksaddkeyUI(this);
+	addKeyUI->setWindowFlags(Qt::Window | Qt::Dialog);
+
+	deleteKeyUI = new luksdeletekey(this);
+	deleteKeyUI->setWindowFlags(Qt::Window | Qt::Dialog);
+
+	createpartitionUI = new createpartition(this);
+	createpartitionUI->setWindowFlags(Qt::Window | Qt::Dialog);
+
+	createFile = new createfile(this);
+	createFile->setWindowFlags(Qt::Window | Qt::Dialog);
+
+	createkeyFile = new createkeyfile(this);
+	createkeyFile->setWindowFlags(Qt::Window | Qt::Dialog);
+}
+
+void zuluCrypt::setupConnections()
+{
+	connect(ui->actionCreatekeyFile,
+		SIGNAL(triggered()),
+		createkeyFile,
+		SLOT(ShowUI()));
+
+	connect(createFile,
+		SIGNAL(fileCreated(QString)),
+		createpartitionUI,
+		SLOT(ShowFileUI(QString)));
+
+	connect(ui->actionFileCreate,
+		SIGNAL(triggered()),
+		createFile,
+		SLOT(showUI()));
+
+	connect(NonSystemPartitions,
+		SIGNAL(clickedPartition(QString)),
+		createpartitionUI,
+		SLOT(ShowPartitionUI(QString)));
+
+	connect(this,
+		SIGNAL(showNonSystemPartitions()),
+		NonSystemPartitions,
+		SLOT(ShowNonSystemPartitions()));
+
+	connect(ui->actionFileOpen,
+		SIGNAL(triggered()),
+		openFileUI,
+		SLOT(ShowUI())) ;
+
+	connect(ui->actionPartitionOpen,
+		SIGNAL(triggered()),
+		openPartitionUI,
+		SLOT(ShowUI()));
+
+	connect(ui->tableWidget,
+		SIGNAL(itemClicked(QTableWidgetItem*)),
+		this,
+		SLOT(options(QTableWidgetItem*))) ;
+
+	connect(openPartitionUI,
+		SIGNAL(clickedPartition(QString)),
+		openFileUI,
+		SLOT(clickedPartitionOption(QString)));
+
+	connect(ui->actionAbout,
+		SIGNAL(triggered()),
+		this,
+		SLOT(aboutMenuOption())) ;
+
+	connect(ui->actionAddKey,
+		SIGNAL(triggered()),
+		addKeyUI,
+		SLOT(ShowUI()) ) ;
+
+	connect(ui->actionDeleteKey,
+		SIGNAL(triggered()),
+		deleteKeyUI,
+		SLOT(ShowUI()) ) ;
+
+	connect(this,
+		SIGNAL(redoOpen(bool,bool,QString,QString)),
+		openFileUI,
+		SLOT(ShowUI(bool,bool,QString,QString)));
+
+	connect(ui->actionPartitionCreate,
+		SIGNAL(triggered()),
+		this,
+		SLOT(createEncryptedpartitionUI())) ;
+
+	connect(ui->actionInfo,
+		SIGNAL(triggered()),
+		this,
+		SLOT(info())) ;
+
+	connect(ui->actionFonts,
+		SIGNAL(triggered()),
+		this,
+		SLOT(fonts())) ;
+
+	connect(ui->menuFavorites,
+		SIGNAL(aboutToShow()),
+		this,
+		SLOT(readFavorites())) ;
+
+	connect(ui->menuFavorites,
+		SIGNAL(aboutToHide()),
+		this,
+		SLOT(favAboutToHide())) ;
+
+	connect(ui->actionTray_icon,
+		SIGNAL(triggered()),
+		this,
+		SLOT(trayProperty())) ;
+
+	connect(this,
+		SIGNAL(favClickedVolume(QString,QString)),
+		openFileUI,
+		SLOT(ShowUI(QString,QString))) ;
+
+	connect(trayIcon,
+		SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
+		this,
+		SLOT(trayClicked(QSystemTrayIcon::ActivationReason)));
+
+	connect(ui->menuFavorites,
+		SIGNAL(triggered(QAction*)),
+		this,
+		SLOT(favClicked(QAction*))) ;
+
+	connect(openFileUI,
+		SIGNAL(addItemToTable(QString,QString)),
+		this,
+		SLOT(addItemToTable(QString,QString))) ;
+
+	connect(this,
+		SIGNAL(luksAddKeyUI(QString)),
+		addKeyUI,
+		SLOT(partitionEntry(QString))) ;
+
+	connect(this,
+		SIGNAL(luksDeleteKeyUI(QString)),
+		deleteKeyUI,
+		SLOT(deleteKey(QString)));
+
+	connect(ui->action_close,
+		SIGNAL(triggered()),
+		this,
+		SLOT(closeApplication())) ;
+
+	connect(ui->action_minimize,
+		SIGNAL(triggered()),
+		this,
+		SLOT(minimize()));
+
+	connect(ui->actionMinimize_to_tray,
+		SIGNAL(triggered()),
+		this,
+		SLOT(minimizeToTray())) ;
+
+	connect(ui->actionClose_all_opened_volumes,
+		SIGNAL(triggered()),
+		this,
+		SLOT(closeAllVolumes())) ;
 }
 
 zuluCrypt::~zuluCrypt()

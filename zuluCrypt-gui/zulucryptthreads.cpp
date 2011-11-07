@@ -402,3 +402,37 @@ void volumePropertiesThread::run()
 		*volProperty = QString(" ") + QString( r.right(start) ) + y;
 }
 
+checkSystemTools::checkSystemTools(QString *s)
+{
+	output = s ;
+}
+
+void checkSystemTools::run()
+{
+	QProcess p ;
+
+	p.start(ZULUCRYPTzuluCrypt);
+
+	p.waitForFinished() ;
+
+	if(  p.exitCode() == 100 ){
+
+		QString warning = tr("this program will not work as expected on your system ");
+		warning = warning + tr("because one or more of the following tools are either not present ") ;
+		warning = warning + tr("or not where they are expected to be.\n") ;
+
+		warning = warning + QString(ZULUCRYPTcryptsetup) + QString("\n") ;
+		warning = warning + QString(ZULUCRYPTblkid) + QString("\n") ;
+		warning = warning + QString(ZULUCRYPTecho) + QString("\n") ;
+		warning = warning + QString(ZULUCRYPTlosetup) + QString("\n") ;
+		warning = warning + QString(ZULUCRYPTmkfs) + QString("\n") ;
+		warning = warning + QString(ZULUCRYPTmount) + QString("\n") ;
+		warning = warning + QString(ZULUCRYPTumount) + QString("\n") ;
+		warning = warning + QString(ZULUCRYPTdd) + QString("\n") ;
+		warning = warning + QString(ZULUCRYPTzuluCrypt) + QString("\n") ;
+
+		*output = warning ;
+	}else
+		*output = QString("") ;
+	p.close();
+}
