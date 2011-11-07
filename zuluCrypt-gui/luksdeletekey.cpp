@@ -207,6 +207,15 @@ void luksdeletekey::pbDelete()
 		return ;
 	}
 
+	if(ui->rbPassphraseFromFile->isChecked())
+		if(QFile::exists(ui->lineEditPassphrase->text()) == false){
+			m.setWindowTitle(tr("ERROR!"));
+			m.setText(tr("invalid path to a key file with a key to be deleted"));
+			m.addButton(QMessageBox::Ok);
+			m.exec() ;
+			return ;
+		}
+
 	if(zuluCrypt::luksEmptySlots(ui->lineEditVolumePath->text()) == '1'){
 		QString s = tr("There is only one last key in the volume.");
 		s = s + tr("\nDeleting it will make the volume unopenable and lost forever.") ;

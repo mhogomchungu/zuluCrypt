@@ -279,6 +279,25 @@ void luksaddkeyUI::pbAdd(void)
 		return ;
 	}
 
+	if(ui->radioButtonNewPassphraseFromFile->isChecked())
+		if(QFile::exists(ui->textEditPassphraseToAdd->text()) == false){
+			m.setWindowTitle(tr("ERROR!"));
+			m.setText(tr("invalid path to a key file with a key to be added"));
+			m.addButton(QMessageBox::Ok);
+			m.exec() ;
+			enableAll();
+			return ;
+		}
+	if(ui->radioButtonPassphraseInVolumeFromFile->isChecked())
+		if(QFile::exists(ui->textEditExistingPassphrase->text()) == false){
+			m.setWindowTitle(tr("ERROR!"));
+			m.setText(tr("invalid path to a key file with an existing key"));
+			m.addButton(QMessageBox::Ok);
+			m.exec() ;
+			enableAll();
+			return ;
+		}
+
 	QString existingPassType ;
 	QString newPassType ;
 
@@ -425,9 +444,9 @@ void luksaddkeyUI::enableAll()
 	ui->radioButtonNewPassphraseFromFile->setEnabled(true);
 	ui->radioButtonPassphraseinVolume->setEnabled(true);
 	ui->radioButtonPassphraseInVolumeFromFile->setEnabled(true);
-	if(ui->radioButtonNewPassphrase->isChecked())
+	if(ui->radioButtonNewPassphrase->isChecked() == true)
 		ui->labelReEnterPassphrase->setEnabled(true) ;
-	if(ui->radioButtonNewPassphraseFromFile->isChecked())
+	if(ui->radioButtonNewPassphraseFromFile->isChecked() == true)
 		;
 	else
 		ui->lineEditReEnterPassphrase->setEnabled(true);
