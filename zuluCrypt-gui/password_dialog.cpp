@@ -188,13 +188,13 @@ void password_Dialog::buttonOpenClicked(void )
 
 	if(volumePath.isEmpty()){
 		m.setWindowTitle(tr("ERROR!"));
-		m.setText(tr("ERROR: volume path field is empty"));
+		m.setText(tr("volume path field is empty"));
 		m.exec() ;
 		return ;
 	}
 	if(mountPointPath.isEmpty()){
 		m.setWindowTitle(tr("ERROR!"));
-		m.setText(tr("ERROR: mount point path field is empty"));
+		m.setText(tr("mount point path field is empty"));
 		m.exec() ;
 		return ;
 	}
@@ -203,14 +203,22 @@ void password_Dialog::buttonOpenClicked(void )
 		m.setText(tr("passphrase field is empty"));
 
 		if( B == true )
-			m.setText(tr("ERROR: key file field is empty"));
+			m.setText(tr("key file field is empty"));
 		else
-			m.setText(tr("ERROR: passphrase field is empty"));
+			m.setText(tr("passphrase field is empty"));
 
 		m.exec() ;
 		return ;
 	}	
 
+	if(ui->radioButtonPassPhraseFromFile->isChecked() == true)
+		if(QFile::exists(passPhraseField) == false){
+			m.setWindowTitle(tr("ERROR!"));
+			m.setText(tr("invalid path to a key file"));
+			m.exec() ;
+			return ;
+
+		}
 	QString mode ;
 
 	if ( A == true )

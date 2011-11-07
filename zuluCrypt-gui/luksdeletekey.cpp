@@ -185,14 +185,14 @@ void luksdeletekey::pbDelete()
 
 	if ( ui->lineEditPassphrase->text().isEmpty() == true ){
 		m.setWindowTitle(tr("ERROR!"));
-		m.setText(tr("ERROR: the passphrase field is empty"));
+		m.setText(tr("the passphrase field is empty"));
 		m.addButton(QMessageBox::Ok);
 		m.exec() ;
 		return ;
 	}
 	if ( ui->lineEditVolumePath->text().isEmpty() == true ){
 		m.setWindowTitle(tr("ERROR!"));
-		m.setText(tr("ERROR: the path to encrypted volume field is empty"));
+		m.setText(tr("the path to encrypted volume field is empty"));
 		m.addButton(QMessageBox::Ok);
 		m.exec() ;
 		return ;
