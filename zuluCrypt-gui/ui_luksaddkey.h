@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'luksaddkey.ui'
 **
-** Created: Sun Oct 16 13:56:21 2011
+** Created: Sun Nov 6 22:24:21 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -46,7 +46,7 @@ public:
     QLabel *labelNewPassphrase;
     QLineEdit *textEditPassphraseToAdd;
     QLineEdit *lineEditReEnterPassphrase;
-    QLabel *label;
+    QLabel *labelReEnterPassphrase;
 
     void setupUi(QDialog *luksaddkeyUI)
     {
@@ -121,10 +121,10 @@ public:
         lineEditReEnterPassphrase = new QLineEdit(groupBox_2);
         lineEditReEnterPassphrase->setObjectName(QString::fromUtf8("lineEditReEnterPassphrase"));
         lineEditReEnterPassphrase->setGeometry(QRect(130, 90, 321, 31));
-        label = new QLabel(groupBox_2);
-        label->setObjectName(QString::fromUtf8("label"));
-        label->setGeometry(QRect(10, 90, 121, 31));
-        label->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
+        labelReEnterPassphrase = new QLabel(groupBox_2);
+        labelReEnterPassphrase->setObjectName(QString::fromUtf8("labelReEnterPassphrase"));
+        labelReEnterPassphrase->setGeometry(QRect(10, 90, 121, 31));
+        labelReEnterPassphrase->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
         retranslateUi(luksaddkeyUI);
 
@@ -161,7 +161,7 @@ public:
 #endif // QT_NO_TOOLTIP
         pushButtonOpenNewKeyFile->setText(QString());
         labelNewPassphrase->setText(QApplication::translate("luksaddkeyUI", "passphrase", 0, QApplication::UnicodeUTF8));
-        label->setText(QApplication::translate("luksaddkeyUI", "reenter passphrase", 0, QApplication::UnicodeUTF8));
+        labelReEnterPassphrase->setText(QApplication::translate("luksaddkeyUI", "reenter passphrase", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };

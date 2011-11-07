@@ -196,6 +196,7 @@ void luksaddkeyUI::rbNewPassphrase(void)
 	ui->labelNewPassphrase->setText(tr("passphrase")) ;
 	ui->textEditPassphraseToAdd->clear();
 	ui->lineEditReEnterPassphrase->setEnabled(true) ;
+	ui->labelReEnterPassphrase->setEnabled(true);
 }
 
 void luksaddkeyUI::rbNewPassphraseFromFile()
@@ -205,6 +206,7 @@ void luksaddkeyUI::rbNewPassphraseFromFile()
 	ui->labelNewPassphrase->setText(tr("key file")) ;
 	ui->lineEditReEnterPassphrase->setEnabled(false) ;
 	ui->lineEditReEnterPassphrase->clear() ;
+	ui->labelReEnterPassphrase->setEnabled(false);
 }
 
 void luksaddkeyUI::pbAdd(void)
@@ -373,14 +375,12 @@ void luksaddkeyUI::threadfinished()
 			m.addButton(QMessageBox::Ok);
 			m.exec() ;
 			enableAll();
-
 	}
 }
 
 void luksaddkeyUI::disableAll()
 {
 	ui->labelExistingPassphrase->setEnabled(false);
-	ui->label->setEnabled(false);
 	ui->labelLuksVolume->setEnabled(false);
 	ui->labelNewPassphrase->setEnabled(false);
 	ui->groupBox->setEnabled(false);
@@ -401,12 +401,12 @@ void luksaddkeyUI::disableAll()
 	ui->radioButtonNewPassphraseFromFile->setEnabled(false);
 	ui->radioButtonPassphraseinVolume->setEnabled(false);
 	ui->radioButtonPassphraseInVolumeFromFile->setEnabled(false);
+	ui->labelReEnterPassphrase->setEnabled(false) ;
 }
 
 void luksaddkeyUI::enableAll()
 {
 	ui->labelExistingPassphrase->setEnabled(true);
-	ui->label->setEnabled(true);
 	ui->labelLuksVolume->setEnabled(true);
 	ui->labelNewPassphrase->setEnabled(true);
 	ui->groupBox->setEnabled(true);
@@ -414,9 +414,7 @@ void luksaddkeyUI::enableAll()
 	ui->textEditExistingPassphrase->setEnabled(true);
 	ui->textEditPassphraseToAdd->setEnabled(true);
 	ui->textEditPathToVolume->setEnabled(true);
-	ui->lineEditReEnterPassphrase->setEnabled(true);
 	ui->labelNewPassphrase->setEnabled(true);
-	ui->lineEditReEnterPassphrase->setEnabled(true);
 	ui->pushButtonAdd->setEnabled(true);
 	ui->pushButtonCancel->setEnabled(true);
 	ui->pushButtonOpenExistingKeyFile->setEnabled(true);
@@ -427,6 +425,13 @@ void luksaddkeyUI::enableAll()
 	ui->radioButtonNewPassphraseFromFile->setEnabled(true);
 	ui->radioButtonPassphraseinVolume->setEnabled(true);
 	ui->radioButtonPassphraseInVolumeFromFile->setEnabled(true);
+	if(ui->radioButtonNewPassphrase->isChecked())
+		ui->labelReEnterPassphrase->setEnabled(true) ;
+	if(ui->radioButtonNewPassphraseFromFile->isChecked())
+		;
+	else
+		ui->lineEditReEnterPassphrase->setEnabled(true);
+
 }
 
 void luksaddkeyUI::pbCancel(void)

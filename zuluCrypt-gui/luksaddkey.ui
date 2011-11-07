@@ -292,7 +292,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QLabel" name="label">
+   <widget class="QLabel" name="labelReEnterPassphrase">
     <property name="geometry">
      <rect>
       <x>10</x>
