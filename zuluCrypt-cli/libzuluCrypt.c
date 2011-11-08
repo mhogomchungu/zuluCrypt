@@ -591,7 +591,10 @@ int create_volume(const char * dev,
 	q = String(ZULUCRYPTmkfs );
 	StringAppend( q , " -t ") ;
 	StringAppend( q , fsys ) ;
-	StringAppend( q , " " ) ;
+	if( strcmp(fsys,"vfat") == 0 )
+		StringAppend( q , " " ) ;
+	else
+		StringAppend( q , " -m 1 " ) ;
 	StringAppend( q , "/dev/mapper/zuluCrypt-create-new 1>/dev/null 2>&1 ") ;
 	
 	execute(StringContent(q),NULL,0) ;
