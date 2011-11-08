@@ -56,7 +56,7 @@ public:
 
 	void removeRowFromTable(int row) ;
 
-	static char luksEmptySlots(QString volumePath) ;
+	static QStringList luksEmptySlots(QString volumePath) ;
 
 	static bool isLuks(QString volumePath) ;
 

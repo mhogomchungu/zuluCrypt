@@ -418,7 +418,7 @@ void zuluCrypt::createEncryptedpartitionUI()
 	emit showNonSystemPartitions( ) ;
 }
 
-char zuluCrypt::luksEmptySlots(QString volumePath)
+QStringList zuluCrypt::luksEmptySlots(QString volumePath)
 {
 	QProcess N ;
 
@@ -438,7 +438,32 @@ char zuluCrypt::luksEmptySlots(QString volumePath)
 
 	N.close();
 
-	return i + '0' ;
+	QString y ;
+	y.clear();
+	//converts an integer into a QString because QStringList does not take intergers.
+	do{
+		y.insert(0,QChar( i % 10 + '0')) ;
+		i = i / 10 ;
+
+	}while( i > 0) ;
+
+	QStringList l ;
+
+	l << y ;
+
+	y.clear();
+
+	i = s.size() - 1 ;
+
+	do{
+		y.insert(0,QChar( i % 10 + '0')) ;
+		i = i / 10 ;
+
+	}while( i > 0) ;
+
+	l << y ;
+
+	return l ;
 }
 
 bool zuluCrypt::isLuks(QString volumePath)

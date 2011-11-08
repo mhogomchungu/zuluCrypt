@@ -216,7 +216,7 @@ void luksdeletekey::pbDelete()
 			return ;
 		}
 
-	if(zuluCrypt::luksEmptySlots(ui->lineEditVolumePath->text()) == '1'){
+	if(zuluCrypt::luksEmptySlots(ui->lineEditVolumePath->text()).at(0) == QString("1")){
 		QString s = tr("There is only one last key in the volume.");
 		s = s + tr("\nDeleting it will make the volume unopenable and lost forever.") ;
 		s = s + tr("\nAre you sure you want to delete this key?");
@@ -246,13 +246,14 @@ void luksdeletekey::pbDelete()
 void luksdeletekey::threadfinished()
 {
 	delete ldk ;
+	QStringList l = zuluCrypt::luksEmptySlots(ui->lineEditVolumePath->text()) ;
 
 	switch( status ){
 		case 0 :
 			UIMessage(tr("SUCCESS"),
-				  tr("key successfully removed\n") + \
-				  zuluCrypt::luksEmptySlots(ui->lineEditVolumePath->text()) + \
-				  tr(" / 8 slots are now in use"));
+				  tr("key removed successfully.\n") + \
+				  l.at(0) + QString(" / ") + l.at(1) + \
+				  tr(" slots are now in use"));
 			HideUI() ;
 			return ;
 			break ;

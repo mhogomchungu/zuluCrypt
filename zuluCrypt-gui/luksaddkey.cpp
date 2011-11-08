@@ -270,7 +270,8 @@ void luksaddkeyUI::pbAdd(void)
 		return ;
 	}
 
-	if( zuluCrypt::luksEmptySlots(volumePath) == '8'){
+	QStringList l = zuluCrypt::luksEmptySlots(volumePath) ;
+	if( l.at(0) == l.at(1)){
 		m.setWindowTitle(tr("ERROR!"));
 		m.setText(tr("can not add any more keys, all slots are occupied"));
 		m.addButton(QMessageBox::Ok);
@@ -351,13 +352,14 @@ void luksaddkeyUI::threadfinished()
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 
 	QString ss ;
+	QStringList x ;
 
 	switch( status ){
 		case 0 :
+			x = zuluCrypt::luksEmptySlots(ui->textEditPathToVolume->text());
 			m.setWindowTitle(tr("SUCCESS"));
 			ss = tr("key added successfully.\n") ;
-			ss = ss + QString(zuluCrypt::luksEmptySlots(ui->textEditPathToVolume->text())) ;
-			ss = ss + tr(" / 8 slots are now in use") ;
+			ss = ss + x.at(0) + QString(" / ") + x.at(1) + tr(" slots are now in use") ;
 			m.setText(ss);
 			m.addButton(QMessageBox::Ok);
 			m.exec() ;

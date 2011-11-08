@@ -384,12 +384,13 @@ void volumePropertiesThread::run()
 
 	y = y + QString("\n used%:  ") + QString(c.mid(j,i - j)) ;
 
+	QStringList l = zuluCrypt::luksEmptySlots(path) ;
+
 	if ( zuluCrypt::isLuks(path) == true){
 		QString x =  QString(" ") ;
 		x = x + QString( r.right(start) ) ;
 		x = x + QString(" occupied key slots: ") ;
-		x = x + zuluCrypt::luksEmptySlots(path) ;
-		x = x + QString(" / 8") ;
+		x = x + l.at(0) + QString(" / ") + l.at(1) + QString("\n");
 
 		*volProperty = x + y;
 	}else
