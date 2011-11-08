@@ -91,6 +91,7 @@ void createfile::ddFinished(int exitCode, QProcess::ExitStatus st)
 void createfile::showUI()
 {
 	ui->comboBox->setCurrentIndex(0) ;
+	ui->comboBoxRNG->setCurrentIndex(0);
 	ui->lineEditFileName->clear();
 	ui->lineEditFilePath->setText(QDir::homePath());
 	ui->lineEditFileSize->clear();
