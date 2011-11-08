@@ -36,7 +36,13 @@ version 4.2.0
 -- minor update, volume in the favorite list could not be mounted, this version fix it.
 
 version 4.3.0
--- minor update. The password dialog had a bug and did not reset properly when the previous operation involved opening a keyfile.
+-- The password dialog had a bug and did not reset properly when the previous operation involved opening a keyfile.
+-- Add an option to close all opened volumes with a single click.
+-- Created volumes with extX file systems now use 1% reserved space instead of the default 5%.
+-- Encrypted files can now be created using "/dev/random","/dev/urandom" or "/dev/zero"
+-- Add a UI option to select a random number generator to use to all dialogs that deals with features that need it.
+-- Add option to just minimize or minimize to tray the main window.
+-- various other UI and functionality fixes.
 
 version 5.0
 translations support of people are interested in the tool in different languages.
