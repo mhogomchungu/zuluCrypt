@@ -182,6 +182,8 @@ void password_Dialog::buttonOpenClicked(void )
 
 	mountPointPath.replace("~",QDir::homePath()) ;
 
+	volumePath.replace("~",QDir::homePath()) ;
+
 	QMessageBox m ;
 	m.setFont(this->font());
 	m.addButton(QMessageBox::Ok);
