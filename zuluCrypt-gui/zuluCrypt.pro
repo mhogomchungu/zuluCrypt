@@ -51,3 +51,7 @@ TRANSLATIONS = ../translations/swahili_la.ts
 RESOURCES = icon.qrc
 
 
+
+
+
+

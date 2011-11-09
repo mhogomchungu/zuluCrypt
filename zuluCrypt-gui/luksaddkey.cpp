@@ -280,7 +280,10 @@ void luksaddkeyUI::pbAdd(void)
 		return ;
 	}
 
-	if(ui->radioButtonNewPassphraseFromFile->isChecked())
+	if(ui->radioButtonNewPassphraseFromFile->isChecked() == true){
+
+		NewKey.replace("~",QDir::homePath()) ;
+
 		if(QFile::exists(ui->textEditPassphraseToAdd->text()) == false){
 			m.setWindowTitle(tr("ERROR!"));
 			m.setText(tr("invalid path to a key file with a key to be added"));
@@ -289,7 +292,12 @@ void luksaddkeyUI::pbAdd(void)
 			enableAll();
 			return ;
 		}
-	if(ui->radioButtonPassphraseInVolumeFromFile->isChecked())
+	}
+
+	if(ui->radioButtonPassphraseInVolumeFromFile->isChecked() == true){
+
+		ExistingKey.replace("~",QDir::homePath()) ;
+
 		if(QFile::exists(ui->textEditExistingPassphrase->text()) == false){
 			m.setWindowTitle(tr("ERROR!"));
 			m.setText(tr("invalid path to a key file with an existing key"));
@@ -298,6 +306,9 @@ void luksaddkeyUI::pbAdd(void)
 			enableAll();
 			return ;
 		}
+	}
+
+	volumePath.replace("~",QDir::homePath()) ;
 
 	QString existingPassType ;
 	QString newPassType ;

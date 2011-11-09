@@ -180,6 +180,8 @@ void password_Dialog::buttonOpenClicked(void )
 	QString mountPointPath = ui->MountPointPath->text() ;
 	QString passPhraseField = ui->PassPhraseField->text() ;
 
+	mountPointPath.replace("~",QDir::homePath()) ;
+
 	QMessageBox m ;
 	m.setFont(this->font());
 	m.addButton(QMessageBox::Ok);
@@ -211,7 +213,10 @@ void password_Dialog::buttonOpenClicked(void )
 		return ;
 	}	
 
-	if(ui->radioButtonPassPhraseFromFile->isChecked() == true)
+	if(ui->radioButtonPassPhraseFromFile->isChecked() == true){
+
+		passPhraseField.replace("~",QDir::homePath()) ;
+
 		if(QFile::exists(passPhraseField) == false){
 			m.setWindowTitle(tr("ERROR!"));
 			m.setText(tr("invalid path to a key file"));
@@ -219,6 +224,7 @@ void password_Dialog::buttonOpenClicked(void )
 			return ;
 
 		}
+	}
 	QString mode ;
 
 	if ( A == true )

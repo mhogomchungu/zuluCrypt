@@ -155,6 +155,8 @@ void createfile::pbCreate()
 		return ;
 	}
 
+	ui->lineEditFilePath->text().replace("~",QDir::homePath()) ;
+
 	ui->pbCreate->setEnabled(false);
 	ui->lineEditFileName->setEnabled(false);
 	ui->lineEditFilePath->setEnabled(false);
