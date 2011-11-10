@@ -40,7 +40,7 @@ int remove_key( const char * device ,
 
 char * empty_slots( const char * device ) ;
 
-char * intToChar(char * x,
+char * intToString(char * x,
 		 int y,
 		 int z) ;
 
@@ -245,7 +245,7 @@ char * empty_slots( const char * device )
 	return slot ;
 }
 
-char * intToChar(char * x, int y,int z)
+char * intToString(char * x, int y,int z)
 {
 	char *c =  x + y  ;
 	
@@ -264,7 +264,7 @@ char * intToChar(char * x, int y,int z)
 char * status( const char * mapper )
 {		
 	#define SIZE 31
-	char keysize[ SIZE + 1 ] ;
+	char buffer[ SIZE + 1 ] ;
 	char loop[512] ;
 	char path[512];
 	char *c = NULL ;
@@ -327,7 +327,7 @@ char * status( const char * mapper )
 	StringAppend(p,crypt_get_cipher_mode(cd)) ;
 	
 	StringAppend(p,"\n keysize:   ");
-	StringAppend(p,intToChar(keysize,SIZE,8 * crypt_get_volume_key_size(cd))) ;
+	StringAppend(p,intToString(buffer,SIZE,8 * crypt_get_volume_key_size(cd))) ;
 	StringAppend(p," bits");
 	
 	StringAppend(p,"\n device:    ");
@@ -357,11 +357,11 @@ char * status( const char * mapper )
 	}
 	
 	StringAppend(p,"\n offset:    ");
-	StringAppend(p,intToChar(keysize,SIZE,crypt_get_data_offset(cd))) ;	
+	StringAppend(p,intToString(buffer,SIZE,crypt_get_data_offset(cd))) ;	
 	StringAppend(p," sectors");	
 	
 	StringAppend(p,"\n size:      ");
-	StringAppend(p,intToChar(keysize,SIZE,cad.size)) ;	
+	StringAppend(p,intToString(buffer,SIZE,cad.size)) ;	
 	StringAppend(p," sectors");
 	
 	StringAppend(p,"\n mode:      ");
