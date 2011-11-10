@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'zulucrypt.ui'
 **
-** Created: Mon Nov 7 10:24:51 2011
+** Created: Thu Nov 10 13:35:58 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -240,7 +240,7 @@ public:
         menuCreate->setTitle(QApplication::translate("zuluCrypt", "&create", 0, QApplication::UnicodeUTF8));
         menuHelp->setTitle(QApplication::translate("zuluCrypt", "&help", 0, QApplication::UnicodeUTF8));
         menuConfigure->setTitle(QApplication::translate("zuluCrypt", "&luks", 0, QApplication::UnicodeUTF8));
-        menuOptions->setTitle(QApplication::translate("zuluCrypt", "&options", 0, QApplication::UnicodeUTF8));
+        menuOptions->setTitle(QApplication::translate("zuluCrypt", "o&ptions", 0, QApplication::UnicodeUTF8));
         menuFavorites->setTitle(QApplication::translate("zuluCrypt", "&favorites", 0, QApplication::UnicodeUTF8));
         menu_zc->setTitle(QApplication::translate("zuluCrypt", "&zC", 0, QApplication::UnicodeUTF8));
     } // retranslateUi

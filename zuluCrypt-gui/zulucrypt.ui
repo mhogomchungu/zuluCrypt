@@ -133,7 +133,7 @@
    </widget>
    <widget class="QMenu" name="menuOptions">
     <property name="title">
-     <string>&amp;options</string>
+     <string>o&amp;ptions</string>
     </property>
     <addaction name="actionTray_icon"/>
     <addaction name="actionFonts"/>

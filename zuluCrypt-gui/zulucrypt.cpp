@@ -90,7 +90,7 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 
 		z.open(QIODevice::WriteOnly | QIODevice::Truncate) ;
 
-		QString s = QString("Sans Serif\n9\nnormal\nnormal") ;
+		QString s = QString("Sans Serif\n9\nnormal\nnormal\n") ;
 
 		z.write( s.toAscii() ) ;
 
