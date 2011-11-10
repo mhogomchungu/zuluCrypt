@@ -96,8 +96,6 @@ int open_volume(const char * dev,
 
 char * version(void) ;
 
-struct crypt_device *cd;
-
 char * version(void)
 {
 	return VERSION_STRING ;
@@ -108,6 +106,8 @@ int add_key(const char * device,
 	    const char * newkey)
 {
 	int status ;
+	
+	struct crypt_device *cd;
 	
 	if( is_luks(device) == 1){		
 		status =  3 ;
@@ -151,6 +151,8 @@ int remove_key( const char * device ,
 		const char * pass )
 {	
 	int status ;
+	
+	struct crypt_device *cd;
 	
 	if( is_luks(device) == 1)
 		return 1 ;	
@@ -198,6 +200,8 @@ int remove_key( const char * device ,
 char * empty_slots( const char * device )
 {
 	crypt_keyslot_info cki ;
+	
+	struct crypt_device *cd;
 	
 	int i ;
 	int j ;
@@ -267,6 +271,8 @@ char * status( const char * mapper )
 	char *d = NULL ;
 	
 	struct crypt_device *cd1 = NULL;
+	
+	struct crypt_device *cd;
 	
 	crypt_status_info csi ;
 	
@@ -462,6 +468,8 @@ int is_luks(const char * dev)
 {		
 	int r;
 	
+	struct crypt_device *cd;
+	
 	r = crypt_init(&cd, dev) ;	
 	
 	if( r == 0 )
@@ -480,6 +488,8 @@ int create_luks(const char * dev,
 		const char * rng)
 {
 	int status ;
+	
+	struct crypt_device *cd;
 	
 	struct stat st;
 	
@@ -790,6 +800,9 @@ int open_luks( const char * device,
 	       const char * pass )
 {
 	struct stat st ;
+	
+	struct crypt_device *cd;
+	
 	uint32_t flags = 0;
 	int i;
 	
@@ -877,6 +890,8 @@ int open_plain( const char * device,
 	int flags ;
 	
 	const char *c ;
+	
+	struct crypt_device *cd;
 	
 	struct crypt_params_plain params = {
 		.hash = "ripemd160",
