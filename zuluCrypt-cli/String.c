@@ -434,3 +434,19 @@ const char * StringReplaceChar( StrHandle *st, char x, char y)
 
 	return st->string ;	
 }
+
+char * intToString(char * x, int y,int z)
+{
+	char *c =  x + y  ;
+	
+	*c-- = '\0' ;	
+	
+	do{
+		*c-- = z % 10 + '0' ;
+		
+		z = z / 10 ;		
+		
+	}while( z != 0 ) ;
+	
+	return ++c ;
+}

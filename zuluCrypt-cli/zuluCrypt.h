@@ -194,6 +194,7 @@ char * empty_slots(const char * device ) ;
  * 1 - ERROR: presented key does not exist in the volume
  * 2 - ERROR: failed to open device
  * 3 - ERROR: device path does not point to a device
+ * 4 - ERROR: key file does not exist
  */
 int open_luks( const char * device,      // path to encrypted file or partition
 	       const char * mapping_name,// mapper name to use
@@ -220,10 +221,10 @@ int create_luks(const char * device,    // path to a file or partition to create
 /**
  * This function just opens a plain volume, it doesnt create a mount point and it doesnt mount it.
  * return values:
- * 0 - success
- * 3 - ERROR: device path does not point to a device
+ * 0 - success 
  * 2 - ERROR: failed to open the volume.
- * 4 - ERROR: passphrase path does not point to a key file
+ * 3 - ERROR: device path does not point to a device
+ * 4 - ERROR: key file does not exist
  */
 int open_plain( const char * device,      // path to encrypted file or partition
 		const char * mapping_name,// mapper name to use

@@ -258,6 +258,17 @@ const char * StringReplaceString( StrHandle *st, const char *x, const char *y) ;
  */
 const char * StringReplaceChar( StrHandle *st,char x, char y) ;
 
+/*
+ * convert an integer z into a string of size y pointer to by x.
+ * 
+ * return value: a pointer to the beginning of the result(use this pointer and not x).
+ * 
+ * NOTE: Its your responsibility to make sure the resulting string fit into a buffer x* 
+ * 
+ */
+
+char * intToString(char * x, int y, int z) ;
+
 #ifdef __cplusplus
 }
 #endif
