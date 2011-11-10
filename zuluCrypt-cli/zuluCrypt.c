@@ -89,7 +89,7 @@ int volume_info( const char * mapper )
 	if( stat( StringContent(p),&st) != 0 ) {
 		printf("%s is inactive\n",StringContent(p)) ;
 		StringDelete(p);
-		return 0 ;
+		return 1 ;
 	}
 	
 	output = status( StringContent(p) ) ;
@@ -103,12 +103,15 @@ int volume_info( const char * mapper )
 
 int close_opened_volume( char * mapping_name )
 {	
+	int st ;
+	
 	StrHandle * p = String("/dev/mapper/zuluCrypt-");
+	
 	StringAppend( p , mapping_name ) ;
 	
 	StringReplaceChar(p,' ','_') ;		
 	
-	int st = close_volume( StringContent( p ) ) ;
+	st = close_volume( StringContent( p ) ) ;
 	
 	switch( st ) {
 	case 0 : printf("SUCCESS: volume closed successfully \n");
