@@ -265,24 +265,20 @@ void zuluCrypt::trayProperty()
 
 	f.open(QIODevice::ReadOnly) ;
 
-	QByteArray t = f.readAll() ;
+	QByteArray c = f.readAll() ;
 
 	f.close();
 
 	f.open(QIODevice::WriteOnly | QIODevice::Truncate) ;
 
-	char *c = t.data() ;
-
-	char data[2] ;
-
-	data[1] = '\0' ;
-
-	if(c[0] == '1'){
-		data[0] = '0' ;
+	QByteArray data ;
+	
+	if(c.at(0) == '1'){
+		data.append('0') ;
 		f.write(data) ;
 		trayIcon->hide();
 	}else{
-		data[0] = '1' ;
+		data.append('1') ;
 		f.write(data) ;
 		trayIcon->show();
 	}
