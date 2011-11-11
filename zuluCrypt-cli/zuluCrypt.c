@@ -667,7 +667,7 @@ int addkey(int    argn,
 		
 		if ( strcmp( keyType2, "-f" ) == 0){			
 			
-			if( stat( existingKey, &st1) == 0 ) {
+			if( stat( newKey, &st1) == 0 ) {
 			
 				d = ( char *) malloc ( sizeof(char) * ( st1.st_size + 1 )) ;
 				
