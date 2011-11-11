@@ -114,6 +114,14 @@ void createkeyfile::pbCreate()
 		return ;
 	}
 
+	QDir dir(ui->lineEditPath->text()) ;
+	if(dir.exists() == false){
+		m.setWindowTitle(tr("ERROR!"));
+		m.setText(tr("destination folder does not exist"));
+		m.exec() ;
+		return ;
+	}
+
 	QString keyfile = ui->lineEditPath->text() + QString("/") + ui->lineEditFileName->text() ;
 
 	QFile o( keyfile ) ;

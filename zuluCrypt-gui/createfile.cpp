@@ -66,12 +66,12 @@ void createfile::ddFinished(int exitCode, QProcess::ExitStatus st)
 	m.addButton(QMessageBox::Ok);
 	m.setFont(this->font());
 
-	if( st == QProcess::CrashExit){
+	//if( st == QProcess::CrashExit){
 	//	m.setText(QString("A problem occured and creation process is terminated.
 	//	\nMake sure file path field points to a folder that exists and you have writing access"));
 	//	m.exec() ;
-		return ;
-	}
+	//	return ;
+	//}
 	if( exitCode != 0 ){
 		m.setText(tr("you dont seem to have writing access to the destination folder"));
 		m.exec() ;
@@ -123,19 +123,19 @@ void createfile::pbCreate()
 	m.setFont(this->font());
 
 	if(ui->lineEditFileName->text().isEmpty()){
-		m.setText(tr("the file name field is empty"));
+		m.setText(tr("file name field is empty"));
 		m.exec() ;
 		return ;
 	}
 
 	if(ui->lineEditFilePath->text().isEmpty()){
-		m.setText(tr("the file path field is empty"));
+		m.setText(tr("file path field is empty"));
 		m.exec() ;
 		return ;
 	}
 
 	if(ui->lineEditFileSize->text().isEmpty()){
-		m.setText(tr("the file size field is empty"));
+		m.setText(tr("file size field is empty"));
 		m.exec() ;
 		return ;
 	}
@@ -144,6 +144,13 @@ void createfile::pbCreate()
 		m.setText(tr("a file or folder with the same name already exist at destination address"));
 		m.exec() ;
 		return ;		
+	}
+
+	QDir dir(ui->lineEditFilePath->text()) ;
+	if(dir.exists() == false ){
+		m.setText(tr("destination folder does not exist"));
+		m.exec() ;
+		return ;
 	}
 	bool test ;
 

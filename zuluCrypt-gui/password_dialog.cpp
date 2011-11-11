@@ -196,6 +196,15 @@ void password_Dialog::buttonOpenClicked(void )
 		m.exec() ;
 		return ;
 	}
+
+	QDir dir(volumePath) ;
+	if(dir.exists() == false){
+		m.setWindowTitle(tr("ERROR!"));
+		m.setText(tr("mount point folder does not exist"));
+		m.exec() ;
+		return ;
+	}
+
 	if(mountPointPath.isEmpty()){
 		m.setWindowTitle(tr("ERROR!"));
 		m.setText(tr("mount point path field is empty"));
