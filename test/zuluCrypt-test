@@ -1,7 +1,26 @@
 #!/bin/bash
 
+#
+ # 
+ #  Copyright (c) 2011
+ #  name : mhogo mchungu
+ #  email: mhogomchungu@gmail.com
+ #  This program is free software: you can redistribute it and/or modify
+ #  it under the terms of the GNU General Public License as published by
+ #  the Free Software Foundation, either version 3 of the License, or
+ #  (at your option) any later version.
+ #
+ #  This program is distributed in the hope that it will be useful,
+ #  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ #  GNU General Public License for more details.
+ #
+ #  You should have received a copy of the GNU General Public License
+ #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ #
+
 echo "****************************"
-echo "starting test"
+echo "start test"
 echo "****************************"
 
 plain="/tmp/testing plain"
@@ -9,6 +28,14 @@ plain="/tmp/testing plain"
 luks="/tmp/testing luks"
 
 mount_point="/tmp/testing of volumes"
+
+passphrase="all your pinguins are belong to us"
+
+passphrase1="all your pinguin's pinguins are belong to us"
+
+passfile="/tmp/passfile"
+
+echo -n $passphrase > $passfile
 
 mkdir /tmp/ 1>/dev/null 2>&1
 
@@ -18,11 +45,11 @@ mkdir "$mount_point"
 
 echo ""
 
-echo "creating a plain file \"testing plain\""
+echo "creating a plain file \"$plain\""
 
 dd if=/dev/zero of="$plain" bs=1024 count=10K 2>/dev/null 1>&2
 
-echo "creating a luks file \"testing luks\""
+echo "creating a luks file \"$luks\""
 
 dd if=/dev/zero of="$luks" bs=1024 count=10K 2>/dev/null 1>&2
 
@@ -30,36 +57,58 @@ echo ""
 
 echo "creating a plain volume"
 
-zuluCrypt-cli create "$plain" ext4 plain -p "pinguins are fun to watch" /dev/urandom
+zuluCrypt-cli create "$plain" ext4 plain -p "$passphrase" /dev/urandom
 
 sleep 1
 echo ""
-echo "opening \"testing plain\" volume"
+echo "opening \"$plain\" volume using passphrase"
 
-zuluCrypt-cli open "$plain" "$mount_point" rw -p "pinguins are fun to watch"
+zuluCrypt-cli open "$plain" "$mount_point" rw -p "$passphrase"
 
 sleep 1
 echo ""
-echo "closing \"testing plain\" volume"
+echo "closing \"$plain\" volume"
 
 zuluCrypt-cli close "$plain"
 
 sleep 1
 echo ""
+echo "opening \"$plain\" volume using keyfile"
+
+zuluCrypt-cli open "$plain" "$mount_point" rw -f "$passfile"
+
+sleep 1
+echo ""
+echo "closing \"$plain\" volume"
+
+zuluCrypt-cli close "$plain"
+sleep 1
+echo ""
 echo "creating a luks volume"
 
-zuluCrypt-cli create "$luks" ext4  luks -p "pinguins are fun to watch" /dev/urandom
+zuluCrypt-cli create "$luks" ext4  luks -p "$passphrase" /dev/urandom
 
 sleep 1
 echo ""
-echo "opening \"testing luks\" volume"
+echo "opening \"$luks\" volume using passphrase"
 
-zuluCrypt-cli open "$luks" "$mount_point" rw -p "pinguins are fun to watch"
+zuluCrypt-cli open "$luks" "$mount_point" rw -p "$passphrase"
 
 sleep 1
 echo ""
-echo "closing \"testing luks\" volume"
+echo "closing \"$luks\" volume"
 
+zuluCrypt-cli close "$luks"
+
+sleep 1
+echo ""
+echo "opening \"$luks\" volume using keyfile"
+
+zuluCrypt-cli open "$luks" "$mount_point" rw -f "$passfile"
+
+sleep 1
+echo ""
+echo "closing \"$luks\""
 zuluCrypt-cli close "$luks"
 
 sleep 1
@@ -70,9 +119,27 @@ zuluCrypt-cli emptyslots "$luks"
 
 sleep 1
 echo ""
-echo "add key to luks volume"
+echo "add key to luks volume using passphrase and passphrase"
 
-zuluCrypt-cli addkey "$luks" -p "pinguins are fun to watch" -p "pinguins are not fun to watch"
+zuluCrypt-cli addkey "$luks" -p "$passphrase" -p "$passphrase1"
+
+sleep 1
+echo ""
+echo "add key to luks volume using keyfile and keyfile"
+
+zuluCrypt-cli addkey "$luks" -f "$passfile" -f "$passfile"
+
+sleep 1
+echo ""
+echo "add key to luks volume using passphrase and keyfile"
+
+zuluCrypt-cli addkey "$luks" -p "$passphrase" -f "$passfile"
+
+sleep 1
+echo ""
+echo "add key to luks volume using keyfile and passphrase"
+
+zuluCrypt-cli addkey "$luks" -f "$passfile" -p "$passphrase1"
 
 sleep 1
 echo ""
@@ -82,21 +149,15 @@ zuluCrypt-cli emptyslots "$luks"
 
 sleep 1
 echo ""
-echo "open the volume with the new key"
+echo "remove added key using a passphrase"
 
-zuluCrypt-cli open "$luks" "$mount_point" rw -p "pinguins are not fun to watch"
-
-sleep 1
-echo ""
-echo "close the volume"
-
-zuluCrypt-cli close "$luks"
+zuluCrypt-cli removekey "$luks" -p "$passphrase"
 
 sleep 1
 echo ""
-echo "remove newly added key"
+echo "remove added key using a keyfile"
 
-zuluCrypt-cli removekey "$luks" -p "pinguins are not fun to watch"
+zuluCrypt-cli removekey "$luks" -f "$passfile"
 
 sleep 1
 echo ""
@@ -108,6 +169,7 @@ sleep 1
 echo "deleting testing files"
 rm -rf "$plain"
 rm -rf "$luks"
+rm -rf "$passfile"
 
 echo "deleting mount point \"$mount_point\""
 rmdir "$mount_point"
@@ -126,7 +188,7 @@ else
 fi
 	
 echo "****************************"
-echo "ending test"
+echo "end test"
 echo "****************************"	
 
 
