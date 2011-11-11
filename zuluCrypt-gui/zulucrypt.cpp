@@ -66,15 +66,13 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 
 	f.open(QIODevice::ReadOnly) ;
 
-	QByteArray t = f.readAll() ;
+	QByteArray c = f.readAll() ;
 
 	f.close() ;
 
-	char *c = t.data() ;
-
 	ui->actionTray_icon->setCheckable(true);
 
-	if( c[0] == '1'){
+	if( c.at(0) == '1'){
 		ui->actionTray_icon->setChecked(true);
 		trayIcon->show();
 	}else{
