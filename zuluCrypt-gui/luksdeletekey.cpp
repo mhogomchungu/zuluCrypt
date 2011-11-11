@@ -183,16 +183,20 @@ void luksdeletekey::pbDelete()
 	m.setParent(this);
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 
-	ui->lineEditVolumePath->text().replace("~",QDir::homePath()) ;
+	QString volumePath = ui->lineEditVolumePath->text() ;
 
-	if ( ui->lineEditPassphrase->text().isEmpty() == true ){
+	QString passphrase = ui->lineEditPassphrase->text() ;
+
+	volumePath = volumePath.replace("~",QDir::homePath()) ;
+
+	if ( passphrase.isEmpty() == true ){
 		m.setWindowTitle(tr("ERROR!"));
 		m.setText(tr("the passphrase field is empty"));
 		m.addButton(QMessageBox::Ok);
 		m.exec() ;
 		return ;
 	}
-	if ( ui->lineEditVolumePath->text().isEmpty() == true ){
+	if ( volumePath.isEmpty() == true ){
 		m.setWindowTitle(tr("ERROR!"));
 		m.setText(tr("the path to encrypted volume field is empty"));
 		m.addButton(QMessageBox::Ok);
@@ -200,7 +204,14 @@ void luksdeletekey::pbDelete()
 		return ;
 	}
 
-	if ( zuluCrypt::isLuks(ui->lineEditVolumePath->text()) == false ){
+	if(QFile::exists(volumePath) == false){
+		m.setWindowTitle(tr("ERROR!"));
+		m.setText(tr("volume path field does not point to a file or device"));
+		m.addButton(QMessageBox::Ok);
+		m.exec() ;
+		return ;
+	}
+	if ( zuluCrypt::isLuks(volumePath) == false ){
 
 		m.setWindowTitle(tr("ERROR!"));
 		m.setText(tr("given path does not point to a luks volume"));
@@ -211,18 +222,18 @@ void luksdeletekey::pbDelete()
 
 	if(ui->rbPassphraseFromFile->isChecked() == true){
 
-		ui->lineEditPassphrase->text().replace("~",QDir::homePath()) ;
+		passphrase = passphrase.replace("~",QDir::homePath()) ;
 
-		if(QFile::exists(ui->lineEditPassphrase->text()) == false){
+		if(QFile::exists(passphrase) == false){
 			m.setWindowTitle(tr("ERROR!"));
-			m.setText(tr("invalid path to a key file with a key to be deleted"));
+			m.setText(tr("key file field does not point to a file"));
 			m.addButton(QMessageBox::Ok);
 			m.exec() ;
 			return ;
 		}
 	}
 
-	if(zuluCrypt::luksEmptySlots(ui->lineEditVolumePath->text()).at(0) == QString("1")){
+	if(zuluCrypt::luksEmptySlots(volumePath).at(0) == QString("1")){
 		QString s = tr("There is only one last key in the volume.");
 		s = s + tr("\nDeleting it will make the volume unopenable and lost forever.") ;
 		s = s + tr("\nAre you sure you want to delete this key?");
@@ -235,11 +246,27 @@ void luksdeletekey::pbDelete()
 
 		if( m.exec() == QMessageBox::No )
 			return ;
-	}	
+	}
+
+	QString exe = QString(ZULUCRYPTzuluCrypt) ;
+	exe = exe + QString(" removekey ")  ;
+	exe = exe + QString("\"") +  volumePath + QString("\"") ;
+
+	if ( ui->rbPassphraseFromFile->isChecked() == true ){
+
+		exe = exe + QString(" -f ") ;
+
+	}else{
+		exe = exe + QString(" -p ") ;
+
+		passphrase = passphrase.replace("\"","\"\"\"") ;
+	}
+
+	exe = exe + QString(" \"") + passphrase + QString("\"") ;
 
 	disableAll();
 
-	ldk = new luksdeleteKeyThread(ui,&status) ;
+	ldk = new luksdeleteKeyThread(exe,&status) ;
 
 	connect(ldk,
 		SIGNAL(finished()),

@@ -152,90 +152,42 @@ major minor  #blocks  name
 	f.close();
 }
 
-createvolumeThread::createvolumeThread(Ui::createpartition * p,int *s)
+createvolumeThread::createvolumeThread(QString e,int *s)
 {
-	ui = p ;
+	exe = e ;
 	status = s ;
 }
 
 void createvolumeThread::run()
 {
-	QString N ;
-
-	QString passphrase = ui->lineEditPassphrase1->text() ;
-
-	if (ui->rbPassphraseFromFile->isChecked() == true)
-		N = QString("-f") ;
-	else{
-		N = QString("-p") ;
-
-		for( int i = 0 ; i < passphrase.size() ; i++){
-
-			if( passphrase.at(i).toAscii() == '\"'){
-				passphrase.insert(i,QString("\"\""));
-				i = i + 2 ;
-			}
-		}
-	}
-
-	QString exe = QString(ZULUCRYPTzuluCrypt) ;
-	exe = exe + QString(" create \"") ;
-	exe = exe + ui->lineEditVolumePath->text() + QString("\" ") ;
-	exe = exe + ui->comboBoxFS->currentText() + QString(" ") ;
-	exe = exe + ui->comboBoxVolumeType->currentText() + QString(" ") ;
-	exe = exe +  N + QString(" \"") ;;
-	exe = exe + passphrase + QString("\" ") ;;
-	exe = exe + ui->comboBoxRNG->currentText();
-
 	QProcess p ;
 
 	p.start(exe);
+
 	p.waitForFinished();
+
 	*status = p.exitCode() ;
+
 	p.close();
 }
 
-luksdeleteKeyThread::luksdeleteKeyThread(Ui::luksdeletekey *UI, int *s)
+luksdeleteKeyThread::luksdeleteKeyThread(QString e, int *s)
 {
-	ui = UI ;
+	exe = e ;
 	status = s ;
 }
 
 void luksdeleteKeyThread::run()
 {
-	QString exe = QString(ZULUCRYPTzuluCrypt) ;
-	exe = exe + QString(" removekey ")  ;
-	exe = exe + QString("\"") +  ui->lineEditVolumePath->text() + QString("\"") ;
+	QProcess p ;
 
-	QString pass = ui->lineEditPassphrase->text() ;
+	p.start( exe );
 
-	if ( ui->rbPassphraseFromFile->isChecked() == true ){
+	p.waitForFinished() ;
 
-		exe = exe + QString(" -f ") ;
+	*status = p.exitCode() ;
 
-	}else{
-		exe = exe + QString(" -p ") ;
-
-		for( int i = 0 ; i < pass.size() ; i++){
-
-			if( pass.at(i).toAscii() == '\"'){
-				pass.insert(i,QString("\"\""));
-				i = i + 2 ;
-			}
-		}
-	}
-
-	exe = exe + QString(" \"") + pass + QString("\"") ;
-
-	QProcess Z ;
-
-	Z.start( exe );
-
-	Z.waitForFinished() ;
-
-	*status = Z.exitCode() ;
-
-	Z.close();
+	p.close();
 }
 
 luksAddKeyThread::luksAddKeyThread(QString e, int *s)
@@ -246,13 +198,15 @@ luksAddKeyThread::luksAddKeyThread(QString e, int *s)
 
 void luksAddKeyThread::run()
 {
-	QProcess Z ;
+	QProcess p ;
 
-	Z.start(exe);
+	p.start(exe);
 
-	Z.waitForFinished() ;
+	p.waitForFinished() ;
 
-	*status = Z.exitCode() ;
+	*status = p.exitCode() ;
+
+	p.close();
 }
 
 openVolumeThread::openVolumeThread(QString e, int *s)

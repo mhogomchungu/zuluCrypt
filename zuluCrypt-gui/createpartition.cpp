@@ -270,7 +270,28 @@ void createpartition::pbCreateClicked()
 	if ( m.exec() != QMessageBox::Yes )
 		return ;
 
-	cvt = new createvolumeThread(ui,&status) ;
+	QString source ;
+
+	QString passphrase = ui->lineEditPassphrase1->text() ;
+
+	if (ui->rbPassphraseFromFile->isChecked() == true)
+		source = QString("-f") ;
+	else{
+		source = QString("-p") ;
+
+		passphrase.replace("\"","\"\"\"") ;
+	}
+
+	QString exe = QString(ZULUCRYPTzuluCrypt) ;
+	exe = exe + QString(" create \"") ;
+	exe = exe + ui->lineEditVolumePath->text() + QString("\" ") ;
+	exe = exe + ui->comboBoxFS->currentText() + QString(" ") ;
+	exe = exe + ui->comboBoxVolumeType->currentText() + QString(" ") ;
+	exe = exe +  source + QString(" \"") ;;
+	exe = exe + passphrase + QString("\" ") ;;
+	exe = exe + ui->comboBoxRNG->currentText();
+
+	cvt = new createvolumeThread(exe,&status) ;
 
 	connect(cvt,SIGNAL(finished()),this,SLOT(threadfinished())) ;
 

@@ -213,7 +213,7 @@ void luksaddkeyUI::pbAdd(void)
 {
 	disableAll();
 
-	QString volumePath = ui->textEditPathToVolume->text() ;
+	volumePath = ui->textEditPathToVolume->text() ;
 	QString ExistingKey = ui->textEditExistingPassphrase->text() ;
 	QString NewKey = ui->textEditPassphraseToAdd->text() ;
 	QString d = ui->lineEditReEnterPassphrase->text() ;
@@ -226,6 +226,8 @@ void luksaddkeyUI::pbAdd(void)
 	m.setParent(this);
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 
+	volumePath = volumePath.replace("~",QDir::homePath()) ;
+
 	if ( volumePath.isEmpty() == true ){
 		m.setWindowTitle(tr("ERROR!"));
 		m.setText(tr("the encrypted volume path field is empty"));
@@ -234,6 +236,16 @@ void luksaddkeyUI::pbAdd(void)
 		enableAll();
 		return ;
 	}
+
+	if ( QFile::exists(volumePath) == false ){
+		m.setWindowTitle(tr("ERROR!"));
+		m.setText(tr("volume path field does not point to a file or device"));
+		m.addButton(QMessageBox::Ok);
+		m.exec() ;
+		enableAll();
+		return ;
+	}
+
 	if ( ExistingKey.isEmpty() == true ){
 		m.setWindowTitle(tr("ERROR!"));
 		m.setText(tr("existing passphrase field is empth"));
@@ -282,9 +294,9 @@ void luksaddkeyUI::pbAdd(void)
 
 	if(ui->radioButtonNewPassphraseFromFile->isChecked() == true){
 
-		NewKey.replace("~",QDir::homePath()) ;
+		NewKey = NewKey.replace("~",QDir::homePath()) ;
 
-		if(QFile::exists(ui->textEditPassphraseToAdd->text()) == false){
+		if(QFile::exists(NewKey) == false){
 			m.setWindowTitle(tr("ERROR!"));
 			m.setText(tr("invalid path to a key file with a key to be added"));
 			m.addButton(QMessageBox::Ok);
@@ -296,9 +308,9 @@ void luksaddkeyUI::pbAdd(void)
 
 	if(ui->radioButtonPassphraseInVolumeFromFile->isChecked() == true){
 
-		ExistingKey.replace("~",QDir::homePath()) ;
+		ExistingKey = ExistingKey.replace("~",QDir::homePath()) ;
 
-		if(QFile::exists(ui->textEditExistingPassphrase->text()) == false){
+		if(QFile::exists(ExistingKey) == false){
 			m.setWindowTitle(tr("ERROR!"));
 			m.setText(tr("invalid path to a key file with an existing key"));
 			m.addButton(QMessageBox::Ok);
@@ -308,8 +320,6 @@ void luksaddkeyUI::pbAdd(void)
 		}
 	}
 
-	volumePath.replace("~",QDir::homePath()) ;
-
 	QString existingPassType ;
 	QString newPassType ;
 
@@ -318,13 +328,7 @@ void luksaddkeyUI::pbAdd(void)
 	else{
 		existingPassType = QString(" -p ") ;
 
-		for( int i = 0 ; i < ExistingKey.size() ; i++){
-
-			if( ExistingKey.at(i).toAscii() == '\"'){
-				ExistingKey.insert(i,QString("\"\""));
-				i = i + 2 ;
-			}
-		}
+		ExistingKey = ExistingKey.replace("\"","\"\"\"") ;
 	}
 
 	if ( y == true)
@@ -332,13 +336,7 @@ void luksaddkeyUI::pbAdd(void)
 	else{
 		newPassType = QString(" -p ") ;
 
-		for( int i = 0 ; i < NewKey.size() ; i++){
-
-			if( NewKey.at(i).toAscii() == '\"'){
-				NewKey.insert(i,QString("\"\""));
-				i = i + 2 ;
-			}
-		}
+		NewKey = NewKey.replace("\"","\"\"\"") ;
 	}
 
 	QString exe = QString(ZULUCRYPTzuluCrypt) ;
@@ -367,7 +365,7 @@ void luksaddkeyUI::threadfinished()
 
 	switch( status ){
 		case 0 :
-			x = zuluCrypt::luksEmptySlots(ui->textEditPathToVolume->text());
+			x = zuluCrypt::luksEmptySlots(volumePath);
 			m.setWindowTitle(tr("SUCCESS"));
 			ss = tr("key added successfully.\n") ;
 			ss = ss + x.at(0) + QString(" / ") + x.at(1) + tr(" slots are now in use") ;

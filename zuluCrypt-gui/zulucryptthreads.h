@@ -44,30 +44,30 @@ private:
 
 class createvolumeThread : public QThread
 {
-public :
-	void run() ;
-	createvolumeThread(Ui::createpartition *,int *) ;
+public :	
+	createvolumeThread(QString,int *) ;
 private:
-	Ui::createpartition *ui;
+	void run() ;
+	QString exe;
 	int * status ;
 };
 
 class luksdeleteKeyThread : public QThread
 {
-public :
-	void run() ;
-	luksdeleteKeyThread(Ui::luksdeletekey *,int *) ;
+public :	
+	luksdeleteKeyThread(QString,int *) ;
 private:
-	Ui::luksdeletekey *ui;
+	void run() ;
+	QString exe;
 	int * status ;
 };
 
 class luksAddKeyThread : public QThread
 {
-public :
-	void run() ;
+public :	
 	luksAddKeyThread(QString,int *) ;
 private:
+	void run() ;
 	QString exe ;
 	int * status ;
 };
@@ -75,9 +75,9 @@ private:
 class openVolumeThread : public QThread
 {
 public :
-	void run() ;
 	openVolumeThread(QString,int *) ;
 private:
+	void run() ;
 	QString exe ;
 	int * status ;
 };
@@ -85,9 +85,9 @@ private:
 class rngThread : public QThread
 {
 public :
-	void run() ;
 	rngThread(QString,QString) ;
 private:
+	void run() ;
 	QString rng ;
 	QString keyfile ;
 
@@ -96,9 +96,9 @@ private:
 class volumePropertiesThread : public QThread
 {
 public :
-	void run() ;
 	volumePropertiesThread(QString,QString,QString *) ;
 private:
+	void run() ;
 	QString path ;
 	QString mpoint ;
 	QString *volProperty ;

@@ -83,6 +83,8 @@ private:
 	int status ;
 
 	luksAddKeyThread *lakt ;
+
+	QString volumePath ;
 };
 
 #endif // luksaddkeySUI_H

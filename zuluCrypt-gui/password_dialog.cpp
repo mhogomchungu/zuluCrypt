@@ -180,9 +180,9 @@ void password_Dialog::buttonOpenClicked(void )
 	QString mountPointPath = ui->MountPointPath->text() ;
 	QString passPhraseField = ui->PassPhraseField->text() ;
 
-	mountPointPath.replace("~",QDir::homePath()) ;
+	mountPointPath = mountPointPath.replace("~",QDir::homePath()) ;
 
-	volumePath.replace("~",QDir::homePath()) ;
+	volumePath = volumePath.replace("~",QDir::homePath()) ;
 
 	QMessageBox m ;
 	m.setFont(this->font());
@@ -217,7 +217,7 @@ void password_Dialog::buttonOpenClicked(void )
 
 	if(ui->radioButtonPassPhraseFromFile->isChecked() == true){
 
-		passPhraseField.replace("~",QDir::homePath()) ;
+		passPhraseField = passPhraseField.replace("~",QDir::homePath()) ;
 
 		if(QFile::exists(passPhraseField) == false){
 			m.setWindowTitle(tr("ERROR!"));
@@ -243,13 +243,7 @@ void password_Dialog::buttonOpenClicked(void )
 	}else{
 		passtype = " -p " ;
 
-		for( int i = 0 ; i < passPhraseField.size() ; i++){
-
-			if( passPhraseField.at(i).toAscii() == '\"'){
-				passPhraseField.insert(i,QString("\"\""));
-				i = i + 2 ;
-			}
-		}
+		passPhraseField = passPhraseField.replace("\"","\"\"\"") ;
 	}
 
 	QString exe = QString(ZULUCRYPTzuluCrypt) + \
