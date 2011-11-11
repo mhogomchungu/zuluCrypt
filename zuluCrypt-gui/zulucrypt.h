@@ -186,6 +186,8 @@ private:
 	checkSystemTools *cst ;
 
 	QString cstString ;
+
+	int row ;
 };
 
 #endif // ZULUCRYPT_H

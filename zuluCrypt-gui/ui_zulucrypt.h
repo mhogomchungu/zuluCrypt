@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'zulucrypt.ui'
 **
-** Created: Thu Nov 10 13:35:58 2011
+** Created: Fri Nov 11 17:10:58 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -131,7 +131,7 @@ public:
         tableWidget->setTabKeyNavigation(false);
         tableWidget->setProperty("showDropIndicator", QVariant(false));
         tableWidget->setDragDropOverwriteMode(false);
-        tableWidget->setSelectionMode(QAbstractItemView::SingleSelection);
+        tableWidget->setSelectionMode(QAbstractItemView::NoSelection);
         tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
         tableWidget->setVerticalScrollMode(QAbstractItemView::ScrollPerItem);
         tableWidget->setGridStyle(Qt::NoPen);

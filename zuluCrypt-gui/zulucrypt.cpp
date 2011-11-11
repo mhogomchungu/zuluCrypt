@@ -42,6 +42,8 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 {
 	item_count = 0 ;
 
+	row = 0 ;
+
 	qRegisterMetaType<Qt::Orientation>("Qt::Orientation") ;
 
 	setupUIElements();
@@ -635,6 +637,16 @@ void zuluCrypt::addToFavorite()
 void zuluCrypt::options(QTableWidgetItem * t)
 {
 	item = t ;
+
+	ui->tableWidget->item(row,0)->setSelected(false);
+	ui->tableWidget->item(row,1)->setSelected(false);
+	ui->tableWidget->item(row,2)->setSelected(false);
+
+	row = item->row() ;
+
+	ui->tableWidget->item(row,0)->setSelected(true);
+	ui->tableWidget->item(row,1)->setSelected(true);
+	ui->tableWidget->item(row,2)->setSelected(true);
 
 	QMenu m ;
 	m.setFont(this->font());
