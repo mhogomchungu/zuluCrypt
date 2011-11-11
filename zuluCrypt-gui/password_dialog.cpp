@@ -197,7 +197,7 @@ void password_Dialog::buttonOpenClicked(void )
 		return ;
 	}
 
-	QDir dir(volumePath) ;
+	QDir dir(mountPointPath) ;
 	if(dir.exists() == false){
 		m.setWindowTitle(tr("ERROR!"));
 		m.setText(tr("mount point folder does not exist"));
@@ -205,13 +205,13 @@ void password_Dialog::buttonOpenClicked(void )
 		return ;
 	}
 
-	if(mountPointPath.isEmpty()){
+	if(mountPointPath.isEmpty() == true){
 		m.setWindowTitle(tr("ERROR!"));
 		m.setText(tr("mount point path field is empty"));
 		m.exec() ;
 		return ;
 	}
-	if(passPhraseField.isEmpty()){
+	if(passPhraseField.isEmpty() == true){
 		m.setWindowTitle(tr("ERROR!"));
 		m.setText(tr("passphrase field is empty"));
 
