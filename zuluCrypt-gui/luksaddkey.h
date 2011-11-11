@@ -82,7 +82,7 @@ private:
 
 	int status ;
 
-	luksAddKeyThread *lakt ;
+	runInThread *lakt ;
 
 	QString volumePath ;
 };

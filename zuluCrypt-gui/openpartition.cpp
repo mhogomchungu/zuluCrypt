@@ -46,13 +46,27 @@ openpartition::openpartition(QWidget *parent ) :
 		SLOT(tableEntryDoubleClicked(int,int))) ;
 }
 
+void openpartition::ShowNonSystemPartitionsFinished()
+{
+	delete nonsystempartitionlist ;
+}
+
+void openpartition::ShowSystemPartitionsFinished()
+{
+	delete partitionlist ;
+}
+
 void openpartition::ShowNonSystemPartitions()
 {
 	this->setWindowTitle(tr("select a partition to create an encrypted volume in"));
 
-	partitionlist = NULL ;
+	nonsystempartitionlist  = new
+			ShowNonSystemPartitionsThread(partitionView,this->font());
 
-	nonsystempartitionlist  = new ShowNonSystemPartitionsThread(partitionView,this->font());
+	connect(nonsystempartitionlist,
+		SIGNAL(finished()),
+		this,
+		SLOT(ShowNonSystemPartitionsFinished())) ;
 
 	nonsystempartitionlist->start();
 
@@ -63,9 +77,12 @@ void openpartition::ShowUI()
 {	
 	this->setWindowTitle(tr("select an encrypted partition to open"));
 
-	nonsystempartitionlist = NULL ;
-
 	partitionlist = new partitionlistThread(partitionView,this->font()) ;
+
+	connect(partitionlist,
+		SIGNAL(finished()),
+		this,
+		SLOT(ShowSystemPartitionsFinished()));
 
 	partitionlist->start();
 
@@ -163,12 +180,6 @@ QString openpartition::deviceProperties(const char *device)
 void openpartition::HideUI()
 {
 	this->hide();
-
-	if( partitionlist != NULL )
-		delete partitionlist ;
-
-	if( nonsystempartitionlist != NULL )
-		delete nonsystempartitionlist ;
 }
 
 void openpartition::tableEntryDoubleClicked(int row, int column)

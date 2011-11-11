@@ -39,7 +39,6 @@
 #include "createpartition.h"
 #include "createfile.h"
 #include "createkeyfile.h"
-#include "rngselector.h"
 #include "startupupdateopenedvolumes.h"
 #include "closeallvolumesthread.h"
 

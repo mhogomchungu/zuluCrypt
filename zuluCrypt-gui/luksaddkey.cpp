@@ -344,7 +344,7 @@ void luksaddkeyUI::pbAdd(void)
 	exe = exe + "\"" + volumePath + "\"" + existingPassType + "\"" + ExistingKey ;
 	exe = exe + "\"" + newPassType + "\"" + NewKey + "\"" ;
 
-	lakt = new luksAddKeyThread(exe,&status);
+	lakt = new runInThread(exe,&status);
 
 	connect(lakt,SIGNAL(finished()),this,SLOT(threadfinished())) ;
 

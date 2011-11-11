@@ -291,7 +291,7 @@ void createpartition::pbCreateClicked()
 	exe = exe + passphrase + QString("\" ") ;;
 	exe = exe + ui->comboBoxRNG->currentText();
 
-	cvt = new createvolumeThread(exe,&status) ;
+	cvt = new runInThread(exe,&status) ;
 
 	connect(cvt,SIGNAL(finished()),this,SLOT(threadfinished())) ;
 

@@ -3,18 +3,10 @@
 
 #include "executables.h"
 #include "ui_openpartition.h"
-#include "ui_createpartition.h"
-#include "ui_luksdeletekey.h"
-#include "ui_luksaddkey.h"
-#include "ui_password.h"
 
 #include <QThread>
 #include <QFile>
 #include <QMetaType>
-
-
-
-//qRegisterMetaType(Qt::Orientation);
 
 class zuluCryptThreads : public QThread
 {
@@ -40,46 +32,6 @@ public :
 private:
 	Ui::PartitionView * partitionView ;
 	QFont font ;
-};
-
-class createvolumeThread : public QThread
-{
-public :	
-	createvolumeThread(QString,int *) ;
-private:
-	void run() ;
-	QString exe;
-	int * status ;
-};
-
-class luksdeleteKeyThread : public QThread
-{
-public :	
-	luksdeleteKeyThread(QString,int *) ;
-private:
-	void run() ;
-	QString exe;
-	int * status ;
-};
-
-class luksAddKeyThread : public QThread
-{
-public :	
-	luksAddKeyThread(QString,int *) ;
-private:
-	void run() ;
-	QString exe ;
-	int * status ;
-};
-
-class openVolumeThread : public QThread
-{
-public :
-	openVolumeThread(QString,int *) ;
-private:
-	void run() ;
-	QString exe ;
-	int * status ;
 };
 
 class rngThread : public QThread
@@ -112,6 +64,16 @@ public:
 private:
 	void run() ;
 	QString *output ;
+};
+
+class runInThread : public QThread
+{
+public:
+	runInThread(QString,int *) ;
+private:
+	void run(void) ;
+	int * status ;
+	QString EXE ;
 };
 
 #endif // ZULUCRYPTTHREADS_H

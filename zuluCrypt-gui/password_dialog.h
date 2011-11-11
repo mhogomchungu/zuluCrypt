@@ -64,7 +64,7 @@ private :
 
 	Ui::PasswordDialog *ui;
 
-	openVolumeThread *ovt ;
+	runInThread *ovt ;
 
 	int status ;
 

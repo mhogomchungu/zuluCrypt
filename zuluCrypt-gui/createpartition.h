@@ -63,7 +63,7 @@ private:
 
 	Ui::createpartition *ui;
 
-	createvolumeThread *cvt ;
+	runInThread *cvt ;
 
 	void UIMessage(QString title,QString message) ;	
 

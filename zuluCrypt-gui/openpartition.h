@@ -48,6 +48,12 @@ public slots:
 
 	static QString deviceProperties(const char *device) ;
 
+private slots:
+
+	void ShowNonSystemPartitionsFinished(void) ;
+
+	void ShowSystemPartitionsFinished(void) ;
+
 private:
 
 	void HideUI(void);

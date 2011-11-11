@@ -14,7 +14,6 @@ set (UI_FILES createfile.ui
 
 set( MOC_FILES createfile.h
 		luksaddkey.h
-		rngselector.h
 		createkeyfile.h
 		luksdeletekey.h 
 		createpartition.h
@@ -29,7 +28,6 @@ set (SRC createfile.cpp
 			createpartition.cpp
 			luksdeletekey.cpp
 			openpartition.cpp
-			rngselector.cpp
 			zulucryptthreads.cpp
 			createkeyfile.cpp
 			luksaddkey.cpp

@@ -24,6 +24,7 @@
 #include "zulucryptthreads.h"
 #include "ui_openpartition.h"
 #include "openpartition.h"
+#include "ui_luksdeletekey.h"
 
 class luksdeletekey : public QDialog
 {
@@ -77,7 +78,7 @@ private:
 
 	openpartition *pUI ;
 
-	luksdeleteKeyThread *ldk ;
+	runInThread *ldk ;
 
 	int status ;
 };

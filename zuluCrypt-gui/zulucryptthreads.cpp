@@ -1,6 +1,5 @@
 
 #include "zulucryptthreads.h"
-#include "openpartition.h"
 
 #include <QProcess>
 #include <QFile>
@@ -152,36 +151,17 @@ major minor  #blocks  name
 	f.close();
 }
 
-createvolumeThread::createvolumeThread(QString e,int *s)
+runInThread::runInThread(QString exe, int * st)
 {
-	exe = e ;
-	status = s ;
+	EXE = exe ;
+	status = st ;
 }
 
-void createvolumeThread::run()
+void runInThread::run()
 {
 	QProcess p ;
 
-	p.start(exe);
-
-	p.waitForFinished();
-
-	*status = p.exitCode() ;
-
-	p.close();
-}
-
-luksdeleteKeyThread::luksdeleteKeyThread(QString e, int *s)
-{
-	exe = e ;
-	status = s ;
-}
-
-void luksdeleteKeyThread::run()
-{
-	QProcess p ;
-
-	p.start( exe );
+	p.start(EXE);
 
 	p.waitForFinished() ;
 
@@ -190,43 +170,6 @@ void luksdeleteKeyThread::run()
 	p.close();
 }
 
-luksAddKeyThread::luksAddKeyThread(QString e, int *s)
-{
-	exe = e ;
-	status = s ;
-}
-
-void luksAddKeyThread::run()
-{
-	QProcess p ;
-
-	p.start(exe);
-
-	p.waitForFinished() ;
-
-	*status = p.exitCode() ;
-
-	p.close();
-}
-
-openVolumeThread::openVolumeThread(QString e, int *s)
-{
-	exe = e ;
-	status = s ;
-}
-
-void openVolumeThread::run()
-{
-	QProcess p ;
-
-	p.start(exe) ;
-
-	p.waitForFinished() ;
-
-	*status= p.exitCode() ;
-
-	p.close();
-}
 
 rngThread::rngThread(QString rn,QString key)
 {
