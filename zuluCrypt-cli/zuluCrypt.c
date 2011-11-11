@@ -22,7 +22,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <termios.h>
-#include "zuluCrypt.h"
 #include <unistd.h>
 #include "String.h"
 #include <fcntl.h>
@@ -31,8 +30,6 @@
 #include "../zuluCrypt-gui/executables.h"
 #include "../zuluCrypt-gui/version.h"
 #include "zuluCrypt.h"
-
-#define MAX 512 
 
 StrHandle * get_passphrase( void )
 {	
@@ -58,7 +55,7 @@ StrHandle * get_passphrase( void )
 	
 	p = String( c ) ;
 	
-	while( ( c[0] = getchar() ) != '\n' && i < MAX ){
+	while( ( c[0] = getchar() ) != '\n' ){
 		
 		StringAppend( p, c ) ;
 		i++ ;
@@ -82,13 +79,17 @@ int volume_info( const char * mapper )
 	struct stat st;
 	
 	StrHandle *p = String("/dev/mapper/zuluCrypt-");
+	
 	StringAppend(p,mapper);	
 
 	StringReplaceChar(p,' ','_') ;				
 	
 	if( stat( StringContent(p),&st) != 0 ) {
+		
 		printf("%s is inactive\n",StringContent(p)) ;
+		
 		StringDelete(p);
+		
 		return 1 ;
 	}
 	
@@ -97,7 +98,9 @@ int volume_info( const char * mapper )
 	printf("%s\n",output);
 	
 	StringDelete(p);
+	
 	free(output) ;
+	
 	return 0 ;
 }
 
@@ -175,12 +178,15 @@ int open_volumes(int    argn,
 	}	
 	
 	q = String("/dev/mapper/zuluCrypt-") ;
+	
 	StringAppend( q , mapping_name ) ;
 	
 	StringReplaceChar(q,' ','_') ;
 	
 	z = String(mount_point);
+	
 	StringAppend(z,"/");
+	
 	StringAppend(z,mapping_name);
 	
 	if ( argn == 5 ){
@@ -216,6 +222,7 @@ int open_volumes(int    argn,
 	}
 	
 	StringDelete( q ) ;
+	
 	StringDelete( z ) ;
 	
 	eerr:
@@ -442,7 +449,6 @@ int create_volumes(int    argn ,
 	struct stat xt ;
 	char *c ;
 	int z ;
-	off_t fsize ;
 	
 	p = String("");
 	q = String("");
@@ -527,23 +533,19 @@ int create_volumes(int    argn ,
 		}else if( strcmp( keyType, "-f" ) == 0 ) {
 			
 			if( stat( pass, &xt) == 0 ) {
-			
-				if( xt.st_size < MAX )
-					fsize = xt.st_size ;
-				else
-					fsize = MAX ;
 				
-				c = ( char *) malloc ( sizeof(char) * ( fsize + 1 ) ) ;
+				c = ( char *) malloc ( sizeof(char) * ( xt.st_size + 1 ) ) ;
 				
 				if( c == NULL ){
 					st = 6 ;
 					goto out ;
 				}
-				*( c + fsize  ) = '\0' ;
+				
+				*( c + xt.st_size  ) = '\0' ;
 			
 				z = open(pass , O_RDONLY ) ;
 			
-				read( z, c, fsize ) ;
+				read( z, c, xt.st_size ) ;
 			
 				close( z ) ;				
 				
