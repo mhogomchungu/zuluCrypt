@@ -36,6 +36,7 @@ version 4.2.0
 -- minor update, volume in the favorite list could not be mounted, this version fix it.
 
 version 4.3.0
+-- Fix a bug that prevented adding a new key from key file to a luks volume when the existing key was from a passphrase.
 -- The password dialog had a bug and did not reset properly when the previous operation involved opening a keyfile.
 -- Add an option to close all opened volumes with a single click.
 -- Created volumes with extX file systems now use 1% reserved space instead of the default 5%.
