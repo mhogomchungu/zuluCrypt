@@ -125,6 +125,8 @@ private slots :
 
 	void cstFinished(void) ;
 
+	void cellEntered(QTableWidgetItem *) ;
+
 private:
 
 	void setupConnections(void) ;
@@ -185,9 +187,7 @@ private:
 
 	checkSystemTools *cst ;
 
-	QString cstString ;
-
-	int row ;
+	QString cstString ;	
 };
 
 #endif // ZULUCRYPT_H

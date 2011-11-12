@@ -42,8 +42,6 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 {
 	item_count = 0 ;
 
-	row = 0 ;
-
 	qRegisterMetaType<Qt::Orientation>("Qt::Orientation") ;
 
 	setupUIElements();
@@ -634,19 +632,22 @@ void zuluCrypt::addToFavorite()
 	f.close();
 }
 
+void zuluCrypt::cellEntered(QTableWidgetItem *itemRow)
+{
+	for( int i = 0 ; i < ui->tableWidget->rowCount() ; i++){
+		ui->tableWidget->item(i,0)->setSelected(false);
+		ui->tableWidget->item(i,1)->setSelected(false);
+		ui->tableWidget->item(i,2)->setSelected(false);
+	}
+
+	ui->tableWidget->item(itemRow->row(),0)->setSelected(true);
+	ui->tableWidget->item(itemRow->row(),1)->setSelected(true);
+	ui->tableWidget->item(itemRow->row(),2)->setSelected(true);
+}
+
 void zuluCrypt::options(QTableWidgetItem * t)
 {
 	item = t ;
-
-	ui->tableWidget->item(row,0)->setSelected(false);
-	ui->tableWidget->item(row,1)->setSelected(false);
-	ui->tableWidget->item(row,2)->setSelected(false);
-
-	row = item->row() ;
-
-	ui->tableWidget->item(row,0)->setSelected(true);
-	ui->tableWidget->item(row,1)->setSelected(true);
-	ui->tableWidget->item(row,2)->setSelected(true);
 
 	QMenu m ;
 	m.setFont(this->font());
@@ -779,6 +780,8 @@ void zuluCrypt::setupUIElements()
 	trayIcon->setContextMenu(trayMenu);
 
 	ui->setupUi(this);
+
+	ui->tableWidget->setMouseTracking(true);
 
 	this->setFixedSize(this->size());
 
@@ -964,6 +967,11 @@ void zuluCrypt::setupConnections()
 		SIGNAL(triggered()),
 		this,
 		SLOT(closeAllVolumes())) ;
+
+	connect(ui->tableWidget,
+		SIGNAL(itemEntered(QTableWidgetItem*)),
+		this,
+		SLOT(cellEntered(QTableWidgetItem*))) ;
 }
 
 zuluCrypt::~zuluCrypt()
