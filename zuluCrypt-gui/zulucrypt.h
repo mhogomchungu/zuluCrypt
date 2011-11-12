@@ -87,7 +87,7 @@ private slots :
 
 	void closeAll(QTableWidgetItem *) ;
 
-	void options( QTableWidgetItem * item) ;
+	void cellClicked( QTableWidgetItem * item) ;
 
 	void volume_property(void) ;
 

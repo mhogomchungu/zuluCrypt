@@ -645,7 +645,7 @@ void zuluCrypt::cellEntered(QTableWidgetItem *itemRow)
 	ui->tableWidget->item(itemRow->row(),2)->setSelected(true);
 }
 
-void zuluCrypt::options(QTableWidgetItem * t)
+void zuluCrypt::cellClicked(QTableWidgetItem * t)
 {
 	item = t ;
 
@@ -861,7 +861,7 @@ void zuluCrypt::setupConnections()
 	connect(ui->tableWidget,
 		SIGNAL(itemClicked(QTableWidgetItem*)),
 		this,
-		SLOT(options(QTableWidgetItem*))) ;
+		SLOT(cellClicked(QTableWidgetItem*))) ;
 
 	connect(openPartitionUI,
 		SIGNAL(clickedPartition(QString)),
