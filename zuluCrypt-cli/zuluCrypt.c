@@ -567,7 +567,7 @@ int create_volumes(int    argn ,
 	switch ( st ){
 		case 0 : printf("SUCCESS: volume created successfully\n") ;
 			break  ;
-		case 1 : printf("ERROR: File path given does not point to a file or partition\n") ;
+		case 1 : printf("ERROR: keyfile path does not point to a file\n") ;
 			break  ;
 		case 2 : printf("ERROR: Wrong option type\n");
 			break  ;
