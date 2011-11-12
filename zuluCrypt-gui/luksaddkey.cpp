@@ -226,8 +226,6 @@ void luksaddkeyUI::pbAdd(void)
 	m.setParent(this);
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 
-	volumePath = volumePath.replace("~",QDir::homePath()) ;
-
 	if ( volumePath.isEmpty() == true ){
 		m.setWindowTitle(tr("ERROR!"));
 		m.setText(tr("the encrypted volume path field is empty"));
@@ -236,6 +234,9 @@ void luksaddkeyUI::pbAdd(void)
 		enableAll();
 		return ;
 	}
+
+	if( volumePath.mid(0,2) == QString("~/"))
+		volumePath = QDir::homePath() + QString("/") + volumePath.mid(2) ;
 
 	if ( QFile::exists(volumePath) == false ){
 		m.setWindowTitle(tr("ERROR!"));
@@ -294,7 +295,8 @@ void luksaddkeyUI::pbAdd(void)
 
 	if(ui->radioButtonNewPassphraseFromFile->isChecked() == true){
 
-		NewKey = NewKey.replace("~",QDir::homePath()) ;
+		if( NewKey.mid(0,2) == QString("~/"))
+			NewKey = QDir::homePath() + QString("/") + NewKey.mid(2) ;
 
 		if(QFile::exists(NewKey) == false){
 			m.setWindowTitle(tr("ERROR!"));
@@ -308,7 +310,8 @@ void luksaddkeyUI::pbAdd(void)
 
 	if(ui->radioButtonPassphraseInVolumeFromFile->isChecked() == true){
 
-		ExistingKey = ExistingKey.replace("~",QDir::homePath()) ;
+		if( ExistingKey.mid(0,2) == QString("~/"))
+			ExistingKey = QDir::homePath() + QString("/") + ExistingKey.mid(2) ;
 
 		if(QFile::exists(ExistingKey) == false){
 			m.setWindowTitle(tr("ERROR!"));

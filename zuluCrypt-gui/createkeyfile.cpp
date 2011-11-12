@@ -114,7 +114,13 @@ void createkeyfile::pbCreate()
 		return ;
 	}
 
-	QDir dir(ui->lineEditPath->text()) ;
+	path = ui->lineEditPath->text() ;
+
+	if(path.mid(0,2) == QString("~/"))
+		path = QDir::homePath() + QString("/") + path.mid(2) ;
+
+	QDir dir(path) ;
+
 	if(dir.exists() == false){
 		m.setWindowTitle(tr("ERROR!"));
 		m.setText(tr("destination folder does not exist"));
@@ -122,7 +128,7 @@ void createkeyfile::pbCreate()
 		return ;
 	}
 
-	QString keyfile = ui->lineEditPath->text() + QString("/") + ui->lineEditFileName->text() ;
+	QString keyfile = path + QString("/") + ui->lineEditFileName->text() ;
 
 	QFile o( keyfile ) ;
 
@@ -166,7 +172,7 @@ void createkeyfile::threadfinished()
 
 	enableAll();
 
-	QFile f(ui->lineEditPath->text() + QString("/") + ui->lineEditFileName->text()) ;
+	QFile f(path + QString("/") + ui->lineEditFileName->text()) ;
 
 	QMessageBox m ;
 	m.addButton(QMessageBox::Ok);

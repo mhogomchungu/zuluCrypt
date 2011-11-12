@@ -140,18 +140,24 @@ void createfile::pbCreate()
 		return ;
 	}
 
-	if(QFile::exists(ui->lineEditFilePath->text() + QString("/") + ui->lineEditFileName->text())){
-		m.setText(tr("a file or folder with the same name already exist at destination address"));
-		m.exec() ;
-		return ;		
-	}
+	path = ui->lineEditFilePath->text() ;
 
-	QDir dir(ui->lineEditFilePath->text()) ;
+	if ( path.mid(0,2) == QString("~/"))
+		path = QDir::homePath() + QString("/") + path.mid(2) ;
+
+	QDir dir(path) ;
 	if(dir.exists() == false ){
 		m.setText(tr("destination folder does not exist"));
 		m.exec() ;
 		return ;
 	}
+
+	if(QFile::exists(path + QString("/") + ui->lineEditFileName->text())){
+		m.setText(tr("a file or folder with the same name already exist at destination address"));
+		m.exec() ;
+		return ;
+	}
+
 	bool test ;
 
 	ui->lineEditFileSize->text().toInt(&test) ;
@@ -161,8 +167,6 @@ void createfile::pbCreate()
 		m.exec() ;
 		return ;
 	}
-
-	ui->lineEditFilePath->text().replace("~",QDir::homePath()) ;
 
 	ui->pbCreate->setEnabled(false);
 	ui->lineEditFileName->setEnabled(false);
@@ -195,14 +199,14 @@ void createfile::pbCreate()
 	ddExe = ddExe + QString(" if=") ;
 	ddExe = ddExe + ui->comboBoxRNG->currentText() ;
 	ddExe = ddExe + QString(" of=") ;
-	ddExe = ddExe + QString("\"") + ui->lineEditFilePath->text() + QString("/") + ui->lineEditFileName->text();
+	ddExe = ddExe + QString("\"") + path + QString("/") + ui->lineEditFileName->text();
 	ddExe = ddExe + QString("\" bs=1024 count=") + ui->lineEditFileSize->text() + size;
 	dd.start( ddExe ) ;
 }
 
 void createfile::monitorFileGrowth()
 {
-	QFileInfo f(ui->lineEditFilePath->text() + "/" + ui->lineEditFileName->text()) ;
+	QFileInfo f(path + "/" + ui->lineEditFileName->text()) ;
 
 	/*
 	  the QProgressBar uses signed interger for max, min and setValue.
@@ -248,7 +252,7 @@ void createfile::pbCancel()
 
 	time.stop();
 
-	QFile::remove(ui->lineEditFilePath->text() + "/" +ui->lineEditFileName->text()) ;
+	QFile::remove(path + "/" +ui->lineEditFileName->text()) ;
 
 	this->hide();
 }

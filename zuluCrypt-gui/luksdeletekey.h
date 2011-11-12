@@ -81,6 +81,8 @@ private:
 	runInThread *ldk ;
 
 	int status ;
+
+	QString volumePath ;
 };
 
 #endif // LUKSDELETEKEY_H

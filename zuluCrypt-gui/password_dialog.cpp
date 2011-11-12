@@ -180,10 +180,6 @@ void password_Dialog::buttonOpenClicked(void )
 	QString mountPointPath = ui->MountPointPath->text() ;
 	QString passPhraseField = ui->PassPhraseField->text() ;
 
-	mountPointPath = mountPointPath.replace("~",QDir::homePath()) ;
-
-	volumePath = volumePath.replace("~",QDir::homePath()) ;
-
 	QMessageBox m ;
 	m.setFont(this->font());
 	m.addButton(QMessageBox::Ok);
@@ -197,17 +193,23 @@ void password_Dialog::buttonOpenClicked(void )
 		return ;
 	}
 
-	QDir dir(mountPointPath) ;
-	if(dir.exists() == false){
-		m.setWindowTitle(tr("ERROR!"));
-		m.setText(tr("mount point folder does not exist"));
-		m.exec() ;
-		return ;
-	}
+	if( volumePath.mid(0,2) == QString("~/"))
+		volumePath = QDir::homePath() + QString("/") + volumePath.mid(2) ;
 
 	if(mountPointPath.isEmpty() == true){
 		m.setWindowTitle(tr("ERROR!"));
 		m.setText(tr("mount point path field is empty"));
+		m.exec() ;
+		return ;
+	}
+
+	if( mountPointPath.mid(0,2) == QString("~/"))
+		mountPointPath = QDir::homePath() + QString("/") + mountPointPath.mid(2) ;
+
+	QDir dir(mountPointPath) ;
+	if(dir.exists() == false){
+		m.setWindowTitle(tr("ERROR!"));
+		m.setText(tr("mount point folder does not exist"));
 		m.exec() ;
 		return ;
 	}
@@ -226,7 +228,10 @@ void password_Dialog::buttonOpenClicked(void )
 
 	if(ui->radioButtonPassPhraseFromFile->isChecked() == true){
 
-		passPhraseField = passPhraseField.replace("~",QDir::homePath()) ;
+		if( passPhraseField.mid(0,2) == QString("~/"))
+			passPhraseField = QDir::homePath() +  \
+					QString("/") + \
+					passPhraseField.mid(2);
 
 		if(QFile::exists(passPhraseField) == false){
 			m.setWindowTitle(tr("ERROR!"));

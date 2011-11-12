@@ -62,6 +62,7 @@ private:
 
 	QString in ;
 	QString out ;
+	QString path ;
 };
 
 #endif // CREATEKEYFILE_H

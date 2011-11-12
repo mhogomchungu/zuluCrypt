@@ -64,6 +64,7 @@ private:
 	double fileSize ;
 	void closeEvent(QCloseEvent *) ;
 	bool creating ;
+	QString path ;
 };
 
 #endif // CREATEFILE_H
