@@ -250,6 +250,33 @@ void createpartition::pbCreateClicked()
 			UIMessage(tr("ERROR"),tr("passphrases do not match"));
 			return ;
 		}
+	}	
+
+	QString source ;
+
+	QString passphrase = ui->lineEditPassphrase1->text() ;
+
+	if (ui->rbPassphraseFromFile->isChecked() == true){
+
+		if( passphrase.mid(0,2) == QString("~/"))
+			passphrase = QDir::homePath() + QString("/") + passphrase.mid(2) ;
+
+		if(QFile::exists(passphrase) == false){
+			QMessageBox m ;
+			m.setFont(this->font());
+			m.setParent(this);
+			m.setWindowFlags(Qt::Window | Qt::Dialog);
+			m.setWindowTitle(tr("ERROR"));
+			m.addButton(QMessageBox::Ok);
+			m.setText(tr("invalid path to key file"));
+			m.exec() ;
+			return ;
+		}
+		source = QString("-f") ;
+	}else{
+		source = QString("-p") ;
+
+		passphrase.replace("\"","\"\"\"") ;
 	}
 
 	QMessageBox m ;
@@ -269,18 +296,6 @@ void createpartition::pbCreateClicked()
 
 	if ( m.exec() != QMessageBox::Yes )
 		return ;
-
-	QString source ;
-
-	QString passphrase = ui->lineEditPassphrase1->text() ;
-
-	if (ui->rbPassphraseFromFile->isChecked() == true)
-		source = QString("-f") ;
-	else{
-		source = QString("-p") ;
-
-		passphrase.replace("\"","\"\"\"") ;
-	}
 
 	QString exe = QString(ZULUCRYPTzuluCrypt) ;
 	exe = exe + QString(" create \"") ;
@@ -312,7 +327,7 @@ void createpartition::threadfinished()
 			HideUI();
 			break;
 		case 1 : UIMessage(tr("ERROR"),
-			tr("File path given does not point to a file or partition"));
+			tr("invalid path to key file"));
 			break ;			
 		case 6 : UIMessage(tr("ERROR"),
 				   tr("couldnt get requested memory to open the key file"));
