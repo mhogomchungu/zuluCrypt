@@ -196,8 +196,9 @@ void password_Dialog::buttonOpenClicked(void )
 	if( volumePath.mid(0,2) == QString("~/"))
 		volumePath = QDir::homePath() + QString("/") + volumePath.mid(2) ;
 
-	if( volumePath.mid(0,1) != QString("/"))
-		volumePath = QDir::currentPath() + QString("/") + volumePath ;
+	QDir d(volumePath) ;
+
+	volumePath = d.canonicalPath() ;
 
 	if(mountPointPath.isEmpty() == true){
 		m.setWindowTitle(tr("ERROR!"));
@@ -206,13 +207,13 @@ void password_Dialog::buttonOpenClicked(void )
 		return ;
 	}
 
-	if( mountPointPath.mid(0,1) != QString("/"))
-		mountPointPath = QDir::currentPath() + QString("/") + mountPointPath ;
-
 	if( mountPointPath.mid(0,2) == QString("~/"))
 		mountPointPath = QDir::homePath() + QString("/") + mountPointPath.mid(2) ;
 
 	QDir dir(mountPointPath) ;
+
+	mountPointPath = dir.canonicalPath() ;
+
 	if(dir.exists() == false){
 		m.setWindowTitle(tr("ERROR!"));
 		m.setText(tr("mount point folder does not exist"));
