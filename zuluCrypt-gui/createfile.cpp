@@ -19,7 +19,7 @@
 
 #include "createfile.h"
 #include "ui_createfile.h"
-#include "executables.h"
+#include "../zuluCrypt-cli/executables.h"
 
 #include <QFileDialog>
 #include <QFile>

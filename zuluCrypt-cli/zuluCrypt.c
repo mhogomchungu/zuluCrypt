@@ -27,8 +27,8 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 
-#include "../zuluCrypt-gui/executables.h"
-#include "../zuluCrypt-gui/version.h"
+#include "executables.h"
+#include "version.h"
 #include "zuluCrypt.h"
 
 StrHandle * get_passphrase( void )

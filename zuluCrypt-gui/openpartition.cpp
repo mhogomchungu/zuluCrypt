@@ -28,7 +28,7 @@
 #include <QFile>
 #include <QThread>
 
-#include "executables.h"
+#include "../zuluCrypt-cli/executables.h"
 
 
 openpartition::openpartition(QWidget *parent ) :

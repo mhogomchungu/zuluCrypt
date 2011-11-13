@@ -26,7 +26,7 @@
 #include <QProcess>
 #include <QThread>
 
-#include "executables.h"
+#include "../zuluCrypt-cli/executables.h"
 
 createpartition::createpartition(QWidget *parent) :
     QWidget(parent),

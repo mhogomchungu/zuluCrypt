@@ -20,7 +20,7 @@
 
 #include "ui_luksaddkey.h"
 #include "luksaddkey.h"
-#include "executables.h"
+#include "../zuluCrypt-cli/executables.h"
 #include "zulucrypt.h"
 
 #include <Qt>

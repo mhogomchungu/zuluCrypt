@@ -26,8 +26,8 @@
 #include <libcryptsetup.h>   
 
 #include "String.h"
-#include "../zuluCrypt-gui/executables.h"
-#include "../zuluCrypt-gui/version.h"
+#include "executables.h"
+#include "version.h"
 
 //function prototypes
 

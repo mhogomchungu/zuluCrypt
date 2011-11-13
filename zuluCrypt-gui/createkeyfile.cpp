@@ -21,7 +21,7 @@
 
 #include "createkeyfile.h"
 #include "ui_createkeyfile.h"
-#include "executables.h"
+#include "../zuluCrypt-cli/executables.h"
 
 #include <QFileDialog>
 #include <QProcess>

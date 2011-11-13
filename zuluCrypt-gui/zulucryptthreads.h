@@ -1,7 +1,7 @@
 #ifndef ZULUCRYPTTHREADS_H
 #define ZULUCRYPTTHREADS_H
 
-#include "executables.h"
+#include "../zuluCrypt-cli/executables.h"
 #include "ui_openpartition.h"
 
 #include <QThread>

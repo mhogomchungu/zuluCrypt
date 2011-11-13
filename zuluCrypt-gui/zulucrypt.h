@@ -31,7 +31,8 @@
 #include <QMessageBox>
 #include <QCloseEvent>
 
-#include "executables.h"
+#include "../zuluCrypt-cli/executables.h"
+#include "../zuluCrypt-cli/version.h"
 #include "password_dialog.h"
 #include "openpartition.h"
 #include "luksaddkey.h"
