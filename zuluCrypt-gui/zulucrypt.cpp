@@ -432,30 +432,11 @@ QStringList zuluCrypt::luksEmptySlots(QString volumePath)
 
 	N.close();
 
-	QString y ;
-	y.clear();
-	//converts an integer into a QString because QStringList does not take intergers.
-	do{
-		y.insert(0,QChar( i % 10 + '0')) ;
-		i = i / 10 ;
-
-	}while( i > 0) ;
-
 	QStringList l ;
 
-	l << y ;
+	l << QString::number( i ) ;
 
-	y.clear();
-
-	i = s.size() - 1 ;
-
-	do{
-		y.insert(0,QChar( i % 10 + '0')) ;
-		i = i / 10 ;
-
-	}while( i > 0) ;
-
-	l << y ;
+	l << QString::number(  s.size() - 1 ) ;
 
 	return l ;
 }
