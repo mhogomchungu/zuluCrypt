@@ -56,7 +56,7 @@ void closeAllVolumesThread::run()
 
 		emit close(rowEntries[j]) ;
 
-		sleep(2) ;
+		sleep(1) ;
 	}
 
 	table->setEnabled(true);
