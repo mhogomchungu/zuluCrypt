@@ -571,6 +571,8 @@ int create_volumes(int    argn ,
 			break  ;
 		case 2 : printf("ERROR: Wrong option type\n");
 			break  ;
+		case 3 : printf("ERROR: could not create an encrypted volume in a file or device\n");
+			break  ;	
 		case 4 : printf("ERROR: Wrong number of arguments\n");
 			break  ;
 		case 5 : printf("ERROR: Wrong choice, exiting\n");
