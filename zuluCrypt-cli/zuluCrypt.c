@@ -553,7 +553,7 @@ int create_volumes(int    argn ,
 				
 				free( c ) ;
 			}else{
-				st = 1 ;
+				st = 8 ;
 			}				
 		}else{
 			st = 2 ;			
@@ -567,7 +567,7 @@ int create_volumes(int    argn ,
 	switch ( st ){
 		case 0 : printf("SUCCESS: volume created successfully\n") ;
 			break  ;
-		case 1 : printf("ERROR: keyfile path does not point to a file\n") ;
+		case 1 : printf("ERROR: invalid path to a file or device\n") ;
 			break  ;
 		case 2 : printf("ERROR: Wrong option type\n");
 			break  ;
@@ -578,7 +578,9 @@ int create_volumes(int    argn ,
 		case 6 : printf("ERROR: couldnt get requested memory to open the key file.\n");
 			break  ;
 		case 7 : printf("ERROR: passphrases do not match\n") ;
-			break  ;				
+			break  ;	
+		case 8 : printf("ERROR: invalid path to key file\n") ;
+				break  ;
 		default:
 			;
 	}	
