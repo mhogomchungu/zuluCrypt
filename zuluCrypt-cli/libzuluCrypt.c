@@ -254,6 +254,8 @@ char * status( const char * mapper )
 	
 	char *d = NULL ;
 	
+	const char * e ;
+	
 	struct crypt_device *cd1 = NULL;
 	
 	struct crypt_device *cd;
@@ -303,7 +305,12 @@ char * status( const char * mapper )
 
 	StringAppend(p," type:      ");
 	
-	StringAppend(p, crypt_get_type(cd)) ;
+	e = crypt_get_type(cd) ;
+	
+	if( strcmp(e,"LUKS1") == 0 )
+		StringAppend(p,"luks1") ;
+	else
+		StringAppend(p,"plain") ;
 
 	StringAppend(p,"\n cipher:    ");
 	
