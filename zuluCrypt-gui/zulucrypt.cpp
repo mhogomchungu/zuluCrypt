@@ -649,6 +649,8 @@ void zuluCrypt::cellClicked(QTableWidgetItem * t)
 {
 	item = t ;
 
+	cellEntered(t) ;
+
 	QMenu m ;
 	m.setFont(this->font());
 	connect(m.addAction("close"),SIGNAL(triggered()),this,SLOT(close())) ;
@@ -781,7 +783,7 @@ void zuluCrypt::setupUIElements()
 
 	ui->setupUi(this);
 
-	ui->tableWidget->setMouseTracking(true);
+	//ui->tableWidget->setMouseTracking(true);
 
 	this->setFixedSize(this->size());
 
@@ -968,10 +970,10 @@ void zuluCrypt::setupConnections()
 		this,
 		SLOT(closeAllVolumes())) ;
 
-	connect(ui->tableWidget,
-		SIGNAL(itemEntered(QTableWidgetItem*)),
-		this,
-		SLOT(cellEntered(QTableWidgetItem*))) ;
+	//connect(ui->tableWidget,
+	//	SIGNAL(itemClicked(QTableWidgetItem*)),
+	//	this,
+	//	SLOT(cellEntered(QTableWidgetItem*))) ;
 }
 
 zuluCrypt::~zuluCrypt()
