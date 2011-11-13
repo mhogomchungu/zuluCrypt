@@ -233,6 +233,11 @@ void createpartition::pbCreateClicked()
 		return ;
 	}
 
+	QString volumePath = ui->lineEditVolumePath->text() ;
+
+	if( volumePath.mid(0,2) == QString("~/"))
+		volumePath = QDir::homePath() + QString("/") + volumePath.mid(2) ;
+
 	if( ui ->lineEditPassphrase1->text().isEmpty() == true){
 
 		if( ui->rbPassphrase->isChecked() == true)
@@ -299,7 +304,7 @@ void createpartition::pbCreateClicked()
 
 	QString exe = QString(ZULUCRYPTzuluCrypt) ;
 	exe = exe + QString(" create \"") ;
-	exe = exe + ui->lineEditVolumePath->text() + QString("\" ") ;
+	exe = exe + volumePath + QString("\" ") ;
 	exe = exe + ui->comboBoxFS->currentText() + QString(" ") ;
 	exe = exe + ui->comboBoxVolumeType->currentText() + QString(" ") ;
 	exe = exe +  source + QString(" \"") ;;
@@ -326,8 +331,8 @@ void createpartition::threadfinished()
 				   tr("volume created successfully"));
 			HideUI();
 			break;
-		case 1 : UIMessage(tr("ERROR"),
-			tr("invalid path to key file"));
+		case 3 : UIMessage(tr("ERROR"),
+			tr("could not create an encrypted volume in a file or device"));
 			break ;			
 		case 6 : UIMessage(tr("ERROR"),
 				   tr("couldnt get requested memory to open the key file"));

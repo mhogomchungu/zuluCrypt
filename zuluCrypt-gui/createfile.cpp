@@ -240,7 +240,7 @@ void createfile::pbCancel()
 	m.addButton(QMessageBox::Yes);
 	m.addButton(QMessageBox::No);
 	m.setDefaultButton(QMessageBox::No);
-	m.setText(tr("sure you want to stop file creation process?"));
+	m.setText(tr("are you sure you want to stop file creation process?"));
 	m.setFont(this->font());
 
 	if(m.exec() == QMessageBox::No)
