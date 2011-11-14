@@ -28,7 +28,6 @@
 #include <sys/wait.h>
 
 #include "executables.h"
-#include "version.h"
 #include "zuluCrypt.h"
 
 StrHandle * get_passphrase( void )
@@ -909,8 +908,7 @@ int main( int argc , char *argv[])
 	}
 	
 	if ( strcmp( action, "-v" ) == 0 || strcmp( action, "-version" ) == 0 || strcmp( action, "--version" ) == 0 ){		
-		printf(VERSION_STRING) ;
-		printf("\n");
+		printf("%s\n",version());
 		return 10 ;
 	}
 	
