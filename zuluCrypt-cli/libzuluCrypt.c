@@ -1055,9 +1055,9 @@ int open_volume(const char * dev,
 		h = open_plain( dev,map,mode,source,pass,"cbc-essiv:sha256" ) ;
 	
 	switch ( h ){
-		case 1 : h = 4 ; goto out ;
-		case 2 : h = 8 ; goto out ;
-		case 3 : goto out ;	 
+		case 1 : return 4 ;
+		case 2 : return 8 ; 
+		case 3 : return 3 ;	 
 	}
 	
 	h = mount_volume(map,m_point,mode,id ) ;	
@@ -1072,7 +1072,6 @@ int open_volume(const char * dev,
 		
 		h = mount_volume(map,m_point,mode,id ) ;
 	}
-	out:
 	return h ;	
 }
 
