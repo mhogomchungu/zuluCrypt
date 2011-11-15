@@ -40,6 +40,8 @@ createpartition::createpartition(QWidget *parent) :
 
 	ui->lineEditPassphrase1->setFocus();
 
+	cvt = NULL ;
+
 	connect(ui->pbOpenKeyFile,
 		SIGNAL(clicked()),
 		this,
@@ -78,7 +80,9 @@ void createpartition::rng(int s)
 void createpartition::closeEvent(QCloseEvent *e)
 {
 	e->ignore();
-	pbCancelClicked() ;
+
+	if(cvt == NULL )
+		pbCancelClicked() ;
 }
 
 void createpartition::ShowPartitionUI(QString volume)
@@ -325,6 +329,8 @@ void createpartition::threadfinished()
 	created = true ;
 
 	delete cvt ;
+
+	cvt = NULL ;
 
 	switch( status ) {
 		case 0 : UIMessage(tr("SUCCESS"),

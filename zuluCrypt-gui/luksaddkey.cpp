@@ -113,7 +113,7 @@ void luksaddkeyUI::closeEvent(QCloseEvent *e)
 	e->ignore();
 
 	if( lakt == NULL )
-		HideUI() ;
+		pbCancel();
 }
 
 void luksaddkeyUI::partitionEntry(QString partition)

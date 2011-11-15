@@ -96,7 +96,7 @@ void luksdeletekey::closeEvent(QCloseEvent *e)
 	e->ignore();
 
 	if( ldk == NULL )
-		HideUI() ;
+		pbCancel();
 }
 
 void luksdeletekey::rbPassphrase()
