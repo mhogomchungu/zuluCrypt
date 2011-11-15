@@ -152,12 +152,12 @@
    </property>
    <item>
     <property name="text">
-     <string>/dev/random</string>
+     <string notr="true">/dev/random</string>
     </property>
    </item>
    <item>
     <property name="text">
-     <string>/dev/urandom</string>
+     <string notr="true">/dev/urandom</string>
     </property>
    </item>
   </widget>

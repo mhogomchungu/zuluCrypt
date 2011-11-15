@@ -19,6 +19,7 @@
 
 #include "luksdeletekey.h"
 #include "zulucrypt.h"
+#include "../zuluCrypt-cli/executables.h"
 
 #include <QObject>
 #include <Qt>

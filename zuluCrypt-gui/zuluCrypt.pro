@@ -25,7 +25,6 @@ SOURCES += main.cpp\
 
 HEADERS  += zulucrypt.h password_dialog.h \
     openpartition.h \
-    version.h \
     luksaddkey.h \
     luksdeletekey.h \
     createpartition.h \

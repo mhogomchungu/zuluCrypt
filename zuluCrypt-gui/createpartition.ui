@@ -211,17 +211,17 @@
    </property>
    <item>
     <property name="text">
-     <string>ext4</string>
+     <string notr="true">ext4</string>
     </property>
    </item>
    <item>
     <property name="text">
-     <string>ext3</string>
+     <string notr="true">ext3</string>
     </property>
    </item>
    <item>
     <property name="text">
-     <string>fat</string>
+     <string notr="true">fat</string>
     </property>
    </item>
   </widget>
@@ -255,12 +255,12 @@
    </property>
    <item>
     <property name="text">
-     <string>luks</string>
+     <string notr="true">luks</string>
     </property>
    </item>
    <item>
     <property name="text">
-     <string>plain</string>
+     <string notr="true">plain</string>
     </property>
    </item>
   </widget>
@@ -291,12 +291,12 @@
    </property>
    <item>
     <property name="text">
-     <string>/dev/urandom</string>
+     <string notr="true">/dev/urandom</string>
     </property>
    </item>
    <item>
     <property name="text">
-     <string>/dev/random</string>
+     <string notr="true">/dev/random</string>
     </property>
    </item>
   </widget>
