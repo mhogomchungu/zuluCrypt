@@ -258,6 +258,7 @@ void luksdeletekey::pbDelete()
 
 		m.addButton(QMessageBox::Yes);
 		m.addButton(QMessageBox::No);
+		m.setDefaultButton(QMessageBox::No);
 
 		if( m.exec() == QMessageBox::No )
 			return ;
