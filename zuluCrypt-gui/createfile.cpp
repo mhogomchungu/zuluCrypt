@@ -163,7 +163,7 @@ void createfile::pbCreate()
 	ui->lineEditFileSize->text().toInt(&test) ;
 
 	if( test == false ){
-		m.setText(tr("ERROR:Illegal character in the file size field.\nOnly digits are allowed"));
+		m.setText(tr("Illegal character in the file size field.Only digits are allowed"));
 		m.exec() ;
 		return ;
 	}
