@@ -28,6 +28,7 @@
 #include <QRadioButton>
 #include <QPushButton>
 #include <QMessageBox>
+#include <QCloseEvent>
 
 namespace Ui {
     class luksdeletekey;
@@ -42,6 +43,8 @@ luksdeletekey::luksdeletekey(QWidget *parent) :
 
 	pUI = new openpartition(this);
 	pUI->setWindowFlags(Qt::Window | Qt::Dialog);
+
+	ldk = NULL ;
 
 	connect(pUI,
 		SIGNAL(clickedPartition(QString)),
@@ -86,6 +89,14 @@ luksdeletekey::luksdeletekey(QWidget *parent) :
 		SIGNAL(clicked()),
 		this,
 		SLOT(pbOpenPartition())) ;
+}
+
+void luksdeletekey::closeEvent(QCloseEvent *e)
+{
+	e->ignore();
+
+	if( ldk == NULL )
+		HideUI() ;
 }
 
 void luksdeletekey::rbPassphrase()
@@ -283,6 +294,9 @@ void luksdeletekey::pbDelete()
 void luksdeletekey::threadfinished()
 {
 	delete ldk ;
+
+	ldk = NULL ;
+
 	QStringList l = zuluCrypt::luksEmptySlots(volumePath) ;
 
 	switch( status ){

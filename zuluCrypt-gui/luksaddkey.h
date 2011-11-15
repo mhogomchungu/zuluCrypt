@@ -21,6 +21,7 @@
 #define luksaddkeySUI_H
 
 #include <QDialog>
+#include <QCloseEvent>
 
 #include "ui_luksaddkey.h"
 #include "openpartition.h"
@@ -75,6 +76,8 @@ private:
 	void disableAll(void) ;
 
 	void enableAll(void) ;
+
+	void closeEvent(QCloseEvent *) ;
 
 	Ui::luksaddkeyUI *ui ;
 

@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'createfile.ui'
 **
-** Created: Sat Nov 5 02:13:43 2011
+** Created: Tue Nov 15 10:16:41 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -94,6 +94,11 @@ public:
         comboBox->setGeometry(QRect(230, 70, 51, 31));
         comboBox->setFrame(true);
         comboBoxRNG = new QComboBox(createfile);
+        comboBoxRNG->insertItems(0, QStringList()
+         << QString::fromUtf8("/dev/urandom")
+         << QString::fromUtf8("/dev/zero")
+         << QString::fromUtf8("/dev/random")
+        );
         comboBoxRNG->setObjectName(QString::fromUtf8("comboBoxRNG"));
         comboBoxRNG->setGeometry(QRect(120, 100, 161, 31));
         label_5 = new QLabel(createfile);
@@ -124,12 +129,6 @@ public:
          << QApplication::translate("createfile", "KB", 0, QApplication::UnicodeUTF8)
          << QApplication::translate("createfile", "MB", 0, QApplication::UnicodeUTF8)
          << QApplication::translate("createfile", "GB", 0, QApplication::UnicodeUTF8)
-        );
-        comboBoxRNG->clear();
-        comboBoxRNG->insertItems(0, QStringList()
-         << QApplication::translate("createfile", "/dev/urandom", 0, QApplication::UnicodeUTF8)
-         << QApplication::translate("createfile", "/dev/zero", 0, QApplication::UnicodeUTF8)
-         << QApplication::translate("createfile", "/dev/random", 0, QApplication::UnicodeUTF8)
         );
         label_5->setText(QApplication::translate("createfile", "rng", 0, QApplication::UnicodeUTF8));
     } // retranslateUi

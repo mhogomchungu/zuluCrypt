@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'createpartition.ui'
 **
-** Created: Sat Nov 5 22:53:20 2011
+** Created: Tue Nov 15 10:16:41 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -100,6 +100,11 @@ public:
         labelfs->setGeometry(QRect(40, 140, 121, 21));
         labelfs->setAlignment(Qt::AlignCenter);
         comboBoxFS = new QComboBox(createpartition);
+        comboBoxFS->insertItems(0, QStringList()
+         << QString::fromUtf8("ext4")
+         << QString::fromUtf8("ext3")
+         << QString::fromUtf8("fat")
+        );
         comboBoxFS->setObjectName(QString::fromUtf8("comboBoxFS"));
         comboBoxFS->setGeometry(QRect(40, 160, 121, 31));
         labelvolumetype = new QLabel(createpartition);
@@ -107,6 +112,10 @@ public:
         labelvolumetype->setGeometry(QRect(160, 140, 121, 21));
         labelvolumetype->setAlignment(Qt::AlignCenter);
         comboBoxVolumeType = new QComboBox(createpartition);
+        comboBoxVolumeType->insertItems(0, QStringList()
+         << QString::fromUtf8("luks")
+         << QString::fromUtf8("plain")
+        );
         comboBoxVolumeType->setObjectName(QString::fromUtf8("comboBoxVolumeType"));
         comboBoxVolumeType->setGeometry(QRect(160, 160, 121, 31));
         comboBoxVolumeType->setLayoutDirection(Qt::LeftToRight);
@@ -115,6 +124,10 @@ public:
         labelrng->setGeometry(QRect(280, 140, 121, 21));
         labelrng->setAlignment(Qt::AlignCenter);
         comboBoxRNG = new QComboBox(createpartition);
+        comboBoxRNG->insertItems(0, QStringList()
+         << QString::fromUtf8("/dev/urandom")
+         << QString::fromUtf8("/dev/random")
+        );
         comboBoxRNG->setObjectName(QString::fromUtf8("comboBoxRNG"));
         comboBoxRNG->setGeometry(QRect(280, 160, 121, 31));
 
@@ -139,24 +152,8 @@ public:
         rbPassphrase->setText(QApplication::translate("createpartition", "passphrase", 0, QApplication::UnicodeUTF8));
         rbPassphraseFromFile->setText(QApplication::translate("createpartition", "passphrase from a key file", 0, QApplication::UnicodeUTF8));
         labelfs->setText(QApplication::translate("createpartition", "file system type", 0, QApplication::UnicodeUTF8));
-        comboBoxFS->clear();
-        comboBoxFS->insertItems(0, QStringList()
-         << QApplication::translate("createpartition", "ext4", 0, QApplication::UnicodeUTF8)
-         << QApplication::translate("createpartition", "ext3", 0, QApplication::UnicodeUTF8)
-         << QApplication::translate("createpartition", "fat", 0, QApplication::UnicodeUTF8)
-        );
         labelvolumetype->setText(QApplication::translate("createpartition", "volume type", 0, QApplication::UnicodeUTF8));
-        comboBoxVolumeType->clear();
-        comboBoxVolumeType->insertItems(0, QStringList()
-         << QApplication::translate("createpartition", "luks", 0, QApplication::UnicodeUTF8)
-         << QApplication::translate("createpartition", "plain", 0, QApplication::UnicodeUTF8)
-        );
         labelrng->setText(QApplication::translate("createpartition", "rng", 0, QApplication::UnicodeUTF8));
-        comboBoxRNG->clear();
-        comboBoxRNG->insertItems(0, QStringList()
-         << QApplication::translate("createpartition", "/dev/urandom", 0, QApplication::UnicodeUTF8)
-         << QApplication::translate("createpartition", "/dev/random", 0, QApplication::UnicodeUTF8)
-        );
     } // retranslateUi
 
 };

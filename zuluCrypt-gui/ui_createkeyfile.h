@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'createkeyfile.ui'
 **
-** Created: Sat Nov 5 02:49:56 2011
+** Created: Tue Nov 15 10:16:41 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -74,6 +74,10 @@ public:
         labelRNG->setGeometry(QRect(10, 70, 101, 31));
         labelRNG->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         comboBoxRNG = new QComboBox(createkeyfile);
+        comboBoxRNG->insertItems(0, QStringList()
+         << QString::fromUtf8("/dev/random")
+         << QString::fromUtf8("/dev/urandom")
+        );
         comboBoxRNG->setObjectName(QString::fromUtf8("comboBoxRNG"));
         comboBoxRNG->setGeometry(QRect(110, 70, 111, 31));
 
@@ -97,11 +101,6 @@ public:
         pbCancel->setText(QApplication::translate("createkeyfile", "&cancel", 0, QApplication::UnicodeUTF8));
         label_2->setText(QApplication::translate("createkeyfile", "destination folder", 0, QApplication::UnicodeUTF8));
         labelRNG->setText(QApplication::translate("createkeyfile", "rng", 0, QApplication::UnicodeUTF8));
-        comboBoxRNG->clear();
-        comboBoxRNG->insertItems(0, QStringList()
-         << QApplication::translate("createkeyfile", "/dev/random", 0, QApplication::UnicodeUTF8)
-         << QApplication::translate("createkeyfile", "/dev/urandom", 0, QApplication::UnicodeUTF8)
-        );
     } // retranslateUi
 
 };

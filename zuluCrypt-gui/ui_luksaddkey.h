@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'luksaddkey.ui'
 **
-** Created: Sun Nov 6 22:24:21 2011
+** Created: Tue Nov 15 10:16:41 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!

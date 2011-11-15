@@ -74,6 +74,8 @@ private:
 
 	void UIMessage(QString title, QString message) ;
 
+	void closeEvent(QCloseEvent *) ;
+
 	Ui::luksdeletekey *ui;
 
 	openpartition *pUI ;

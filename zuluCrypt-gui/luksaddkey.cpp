@@ -40,6 +40,8 @@ luksaddkeyUI::luksaddkeyUI(QWidget *parent) :
 
 	ui->setupUi(this);
 
+	lakt = NULL ;
+
 	this->setFixedSize(this->size());
 
 	pUI = new openpartition(this);
@@ -104,6 +106,14 @@ luksaddkeyUI::luksaddkeyUI(QWidget *parent) :
 		SLOT(rbExistingPassphraseFromFile())) ;
 
 	ui->lineEditReEnterPassphrase->setEchoMode(QLineEdit::Password);
+}
+
+void luksaddkeyUI::closeEvent(QCloseEvent *e)
+{
+	e->ignore();
+
+	if( lakt == NULL )
+		HideUI() ;
 }
 
 void luksaddkeyUI::partitionEntry(QString partition)
@@ -357,6 +367,8 @@ void luksaddkeyUI::pbAdd(void)
 void luksaddkeyUI::threadfinished()
 {
 	delete lakt ;
+
+	lakt = NULL ;
 
 	QMessageBox m ;
 	m.setFont(this->font());

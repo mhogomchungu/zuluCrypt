@@ -25,6 +25,7 @@
 #include <QString>
 #include <QFileDialog>
 #include <QStringList>
+#include <QCloseEvent>
 
 #include "ui_password.h"
 #include "openpartition.h"
@@ -61,6 +62,8 @@ private :
 	void disableAll(void);
 
 	void enableAll(void) ;
+
+	void closeEvent(QCloseEvent *) ;
 
 	Ui::PasswordDialog *ui;
 

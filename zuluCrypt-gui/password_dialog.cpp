@@ -36,6 +36,8 @@ password_Dialog::password_Dialog(QWidget *parent ) : QDialog(parent)
 	ui->setupUi(this);
 	this->setFixedSize(this->size());
 
+	ovt = NULL ;
+
 	connect(ui->PushButtonCancel,
 		SIGNAL(clicked()),
 		this,
@@ -70,6 +72,14 @@ password_Dialog::password_Dialog(QWidget *parent ) : QDialog(parent)
 		SIGNAL(clicked()),
 		this,
 		SLOT(passphraseOption())) ;
+}
+
+void password_Dialog::closeEvent(QCloseEvent *e)
+{
+	e->ignore();
+
+	if( ovt == NULL )
+		HideUI() ;
 }
 
 void password_Dialog::ShowUI(QString volumePath, QString mount_point)
@@ -336,6 +346,8 @@ void password_Dialog::UIMessage(QString title, QString message)
 void password_Dialog::threadfinished()
 {
 	delete ovt ;
+
+	ovt = NULL ;
 
 	enableAll();
 
