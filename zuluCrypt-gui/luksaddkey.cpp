@@ -150,6 +150,8 @@ void luksaddkeyUI::ShowUI()
 	ui->lineEditReEnterPassphrase->clear();
 	ui->radioButtonNewPassphrase->setChecked(true);
 	ui->radioButtonPassphraseinVolume->setChecked(true);
+	ui->pushButtonOpenExistingKeyFile->setEnabled(false);
+	ui->pushButtonOpenNewKeyFile->setEnabled(false);
 	ui->textEditPathToVolume->setFocus();
 	this->show();
 }
