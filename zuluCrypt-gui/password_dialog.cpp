@@ -95,10 +95,15 @@ void password_Dialog::ShowUI(QString volumePath, QString mount_point)
 	ui->labelPassphrase->setText(tr("passphrase"));
 	ui->PassPhraseField->setEchoMode(QLineEdit::Password);
 	ui->pushButtonPassPhraseFromFile->setEnabled( false );
-	ui->PushButtonVolumePath->setIcon(QIcon(QString(":/partition.png")));
 	ui->pushButtonPassPhraseFromFile->setIcon(QIcon(QString(":/passphrase.png")));
 	ui->OpenVolumePath->setEnabled(false);
 	ui->PushButtonVolumePath->setEnabled(false);
+
+	if( volumePath.left(5) == QString("/dev/") )
+		ui->PushButtonVolumePath->setIcon(QIcon(QString(":/partition.png")));
+	else
+		ui->PushButtonVolumePath->setIcon(QIcon(QString(":/file.png")));
+
 	this->show();
 }
 
