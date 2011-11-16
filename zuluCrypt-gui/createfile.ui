@@ -211,6 +211,11 @@
      <height>31</height>
     </rect>
    </property>
+   <property name="toolTip">
+    <string>/dev/random slowest but most secure.
+/dev/zero is fastest but least secure.
+/dev/urandom is in the middle and secure enough.</string>
+   </property>
    <item>
     <property name="text">
      <string notr="true">/dev/urandom</string>
