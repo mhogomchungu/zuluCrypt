@@ -100,28 +100,6 @@ void password_Dialog::ShowUI(QString volumePath, QString mount_point)
 	this->show();
 }
 
-void password_Dialog::ShowUI(bool A,bool B,QString C,QString D)
-{
-	ui->checkBoxReadOnly->setChecked( A );
-	ui->radioButtonPassPhraseFromFile->setChecked( B );
-	ui->pushButtonPassPhraseFromFile->setEnabled( B ) ;
-	if( B == true ){
-		ui->labelPassphrase->setText(tr("key file"));
-		ui->PassPhraseField->setEchoMode(QLineEdit::Normal);
-	}else{
-		ui->labelPassphrase->setText(tr("passphrase"));
-		ui->PassPhraseField->setEchoMode(QLineEdit::Password);
-	}
-	ui->OpenVolumePath->setText( C );
-	ui->MountPointPath->setText( D );
-	ui->PassPhraseField->clear();
-	ui->PassPhraseField->setFocus();
-	ui->PushButtonVolumePath->setIcon(QIcon(QString(":/file.png")));
-	ui->PushButtonVolumePath->setIcon(QIcon(QString(":/partition.png")));
-	ui->pushButtonPassPhraseFromFile->setIcon(QIcon(QString(":/passphrase.png")));
-	this->show();
-}
-
 void password_Dialog::passphraseOption()
 {
 	ui->PassPhraseField->setEchoMode(QLineEdit::Password);

@@ -865,11 +865,6 @@ void zuluCrypt::setupConnections()
 		deleteKeyUI,
 		SLOT(ShowUI()) ) ;
 
-	connect(this,
-		SIGNAL(redoOpen(bool,bool,QString,QString)),
-		openFileUI,
-		SLOT(ShowUI(bool,bool,QString,QString)));
-
 	connect(ui->actionPartitionCreate,
 		SIGNAL(triggered()),
 		this,
