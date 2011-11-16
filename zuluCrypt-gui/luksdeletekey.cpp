@@ -29,6 +29,7 @@
 #include <QPushButton>
 #include <QMessageBox>
 #include <QCloseEvent>
+#include <QIcon>
 
 namespace Ui {
     class luksdeletekey;
@@ -43,6 +44,10 @@ luksdeletekey::luksdeletekey(QWidget *parent) :
 
 	pUI = new openpartition(this);
 	pUI->setWindowFlags(Qt::Window | Qt::Dialog);
+
+	ui->pushButtonOpenPartition->setIcon(QIcon(QString(":/partition.png")));
+
+	ui->pushButtonOpenVolume->setIcon(QIcon(QString(":/file.png")));
 
 	ldk = NULL ;
 
@@ -105,6 +110,8 @@ void luksdeletekey::rbPassphrase()
 	ui->lineEditPassphrase->setEchoMode(QLineEdit::Password);
 	ui->lineEditPassphrase->clear();
 	ui->pushButtonOpenKeyFile->setEnabled(false);
+	ui->pushButtonOpenKeyFile->setIcon(QIcon(QString(":/passphrase.png")));
+
 }
 
 void luksdeletekey::rbPassphraseFromFile()
@@ -113,6 +120,7 @@ void luksdeletekey::rbPassphraseFromFile()
 	ui->lineEditPassphrase->setEchoMode(QLineEdit::Normal);
 	ui->lineEditPassphrase->clear();
 	ui->pushButtonOpenKeyFile->setEnabled(true);
+	ui->pushButtonOpenKeyFile->setIcon(QIcon(QString(":/keyfile.png")));
 }
 
 void luksdeletekey::pbOpenKeyFile()

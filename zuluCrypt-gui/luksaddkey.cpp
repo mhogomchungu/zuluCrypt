@@ -32,6 +32,7 @@
 #include <QPushButton>
 #include <QMessageBox>
 #include <QProcess>
+#include <QIcon>
 
 luksaddkeyUI::luksaddkeyUI(QWidget *parent) :
 	QDialog(parent)
@@ -39,6 +40,10 @@ luksaddkeyUI::luksaddkeyUI(QWidget *parent) :
 	ui = new Ui::luksaddkeyUI() ;
 
 	ui->setupUi(this);
+
+	ui->pushButtonOpenPartition->setIcon(QIcon(QString(":/partition.png")));
+
+	ui->pushButtonOpenFile->setIcon(QIcon(QString(":/file.png")));
 
 	lakt = NULL ;
 
@@ -188,6 +193,7 @@ void luksaddkeyUI::rbExistingPassphrase(void)
 	ui->pushButtonOpenExistingKeyFile->setEnabled(false);
 	ui->labelExistingPassphrase->setText(tr("passphrase")) ;
 	ui->textEditExistingPassphrase->clear();
+	ui->pushButtonOpenExistingKeyFile->setIcon(QIcon(QString(":/passphrase.png")));
 }
 
 void luksaddkeyUI::rbExistingPassphraseFromFile(void)
@@ -196,7 +202,7 @@ void luksaddkeyUI::rbExistingPassphraseFromFile(void)
 	ui->pushButtonOpenExistingKeyFile->setEnabled(true);
 	ui->labelExistingPassphrase->setText(tr("key file")) ;
 	ui->textEditExistingPassphrase->clear();
-
+	ui->pushButtonOpenExistingKeyFile->setIcon(QIcon(QString(":/keyfile.png")));
 }
 
 void luksaddkeyUI::rbNewPassphrase(void)
@@ -207,6 +213,7 @@ void luksaddkeyUI::rbNewPassphrase(void)
 	ui->textEditPassphraseToAdd->clear();
 	ui->lineEditReEnterPassphrase->setEnabled(true) ;
 	ui->labelReEnterPassphrase->setEnabled(true);
+	ui->pushButtonOpenNewKeyFile->setIcon(QIcon(QString(":/passphrase.png")));
 }
 
 void luksaddkeyUI::rbNewPassphraseFromFile()
@@ -217,6 +224,7 @@ void luksaddkeyUI::rbNewPassphraseFromFile()
 	ui->lineEditReEnterPassphrase->setEnabled(false) ;
 	ui->lineEditReEnterPassphrase->clear() ;
 	ui->labelReEnterPassphrase->setEnabled(false);
+	ui->pushButtonOpenNewKeyFile->setIcon(QIcon(QString(":/keyfile.png")));
 }
 
 void luksaddkeyUI::pbAdd(void)

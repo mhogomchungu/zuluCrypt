@@ -36,6 +36,8 @@ createkeyfile::createkeyfile(QWidget *parent) :
 {
 	ui->setupUi(this);
 
+	ui->pbOpenFolder->setIcon(QIcon(QString(":/folder.png")));
+
 	connect(ui->pbCreate,SIGNAL(clicked()),this,SLOT(pbCreate())) ;
 	connect(ui->pbOpenFolder,SIGNAL(clicked()),this,SLOT(pbOpenFolder())) ;
 	connect(ui->pbCancel,SIGNAL(clicked()),this,SLOT(pbCancel())) ;

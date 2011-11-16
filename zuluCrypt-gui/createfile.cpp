@@ -37,6 +37,8 @@ createfile::createfile(QWidget *parent) :
 	ui->progressBar->setMaximum(100);
 	ui->progressBar->setValue(0);
 
+	ui->pbOpenFolder->setIcon(QIcon(QString(":/folder.png")));
+
 	time.setInterval(250);
 
 	connect((QObject *)&time,SIGNAL(timeout()),this,SLOT(monitorFileGrowth()));

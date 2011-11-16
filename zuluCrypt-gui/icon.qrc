@@ -3,5 +3,10 @@
  <RCC version="1.0">
 	 <qresource>
 		 <file>zuluCrypt.png</file>
+		 <file>keyfile.png</file>
+		 <file>folder.png</file>
+		 <file>partition.png</file>
+		 <file>file.png</file>
+		 <file>passphrase.png</file>
 	 </qresource>
  </RCC>

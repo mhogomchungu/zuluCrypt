@@ -36,6 +36,10 @@ password_Dialog::password_Dialog(QWidget *parent ) : QDialog(parent)
 	ui->setupUi(this);
 	this->setFixedSize(this->size());
 
+	ui->PushButtonMountPointPath->setIcon(QIcon(QString(":/folder.png")));
+
+	ui->pushButtonPassPhraseFromFile->setIcon(QIcon(QString(":/passphrase.png")));
+
 	ovt = NULL ;
 
 	connect(ui->PushButtonCancel,
@@ -93,6 +97,9 @@ void password_Dialog::ShowUI(QString volumePath, QString mount_point)
 	ui->labelPassphrase->setText(tr("passphrase"));
 	ui->PassPhraseField->setEchoMode(QLineEdit::Password);
 	ui->pushButtonPassPhraseFromFile->setEnabled( false );
+	ui->PushButtonVolumePath->setIcon(QIcon(QString(":/partition.png")));
+	ui->OpenVolumePath->setEnabled(false);
+	ui->PushButtonVolumePath->setEnabled(false);
 	this->show();
 }
 
@@ -121,6 +128,7 @@ void password_Dialog::passphraseOption()
 	ui->PassPhraseField->clear();
 	ui->pushButtonPassPhraseFromFile->setEnabled(false) ;
 	ui->labelPassphrase->setText(tr("passphrase"));
+	ui->pushButtonPassPhraseFromFile->setIcon(QIcon(QString(":/passphrase.png")));
 }
 
 void password_Dialog::passphraseFromFileOption()
@@ -129,6 +137,7 @@ void password_Dialog::passphraseFromFileOption()
 	ui->PassPhraseField->clear();
 	ui->pushButtonPassPhraseFromFile->setEnabled(true) ;
 	ui->labelPassphrase->setText(tr("key file"));
+	ui->pushButtonPassPhraseFromFile->setIcon(QIcon(QString(":/keyfile.png")));
 }
 
 void password_Dialog::clickedPassPhraseFromFileButton()
@@ -173,6 +182,9 @@ void password_Dialog::ShowUI()
 	ui->pushButtonPassPhraseFromFile->setEnabled(false);
 	ui->PassPhraseField->setEchoMode(QLineEdit::Password);
 	ui->checkBoxReadOnly->setChecked(true);
+	ui->OpenVolumePath->setEnabled(true);
+	ui->PushButtonVolumePath->setEnabled(true);
+	ui->PushButtonVolumePath->setIcon(QIcon(QString(":/file.png")));
 	this->show();
 }
 
