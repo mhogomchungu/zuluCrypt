@@ -45,10 +45,6 @@ luksdeletekey::luksdeletekey(QWidget *parent) :
 	pUI = new openpartition(this);
 	pUI->setWindowFlags(Qt::Window | Qt::Dialog);
 
-	ui->pushButtonOpenPartition->setIcon(QIcon(QString(":/partition.png")));
-
-	ui->pushButtonOpenVolume->setIcon(QIcon(QString(":/file.png")));
-
 	ldk = NULL ;
 
 	connect(pUI,
@@ -140,6 +136,8 @@ void luksdeletekey::ShowUI()
 	ui->rbPassphrase->setChecked(true);
 	ui->lineEditVolumePath->setFocus();
 	ui->pushButtonCancel->setDefault(true);
+	ui->pushButtonOpenPartition->setIcon(QIcon(QString(":/partition.png")));
+	ui->pushButtonOpenVolume->setIcon(QIcon(QString(":/file.png")));
 	this->show();
 }
 
