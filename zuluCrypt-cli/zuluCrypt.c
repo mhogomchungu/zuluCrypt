@@ -298,8 +298,6 @@ void partitions(StrHandle *partitions, StrHandle * fstab_partitions, StrHandle *
 		StringAppend( partitions, "\n" ) ;
 	}
 		
-	StringDelete( non_system_partitions ) ;
-	
 	non_system_partitions = String( StringContent( partitions ) ) ;
 	
 	fclose(f);
@@ -457,9 +455,9 @@ int create_volumes(int    argn ,
 		goto out ;		
 	}	
 	
-	p = String("");
-	q = String("");
-	k = String("");	
+	p = NULL;
+	q = NULL;
+	k = NULL;	
 	
 	partitions( p, q, k ) ;
 	
@@ -972,9 +970,9 @@ int main( int argc , char *argv[])
 	
 	}else if ( strcmp(action,"partitions") == 0 ){
 		
-		p = String("");
-		q = String("");
-		z = String("");
+		p = NULL;
+		q = NULL;
+		z = NULL;
 		
 		partitions( p, q ,z ) ;
 		
