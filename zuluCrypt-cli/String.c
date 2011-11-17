@@ -250,8 +250,12 @@ const char * StringStringAt( StrHandle * st , int p)
 
 void StringDelete(StrHandle * st)
 {	
-	free( st->string ) ;
-	free( st ) ;
+	if( st != NULL ) 
+	{
+		free( st->string ) ;
+		free( st ) ;
+		st = NULL ;
+	}
 }
 
 char * StringDeleteHandle( StrHandle *st)
