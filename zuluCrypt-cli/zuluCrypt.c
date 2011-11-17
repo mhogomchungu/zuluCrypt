@@ -593,7 +593,7 @@ int create_volumes(int    argn ,
 		case 9 : printf("ERROR: container file must be bigger than 3MB\n") ;
 			break  ;
 		case 10: printf("ERROR: creating volumes on system partitions is not allowed.\n");
-			 printf("System partitions have active entries in /etc/fstab and /etc/crypttab") ;
+			 printf("System partitions have active entries in /etc/fstab and /etc/crypttab\n") ;
 			break  ;			
 		default:
 			;
