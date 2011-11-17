@@ -463,14 +463,14 @@ int create_volumes(int    argn ,
 	
 	partitions( p, q, k ) ;
 	
-	if ( strstr( StringContent( p ) , device ) != NULL ){
-		
-		printf("ERROR: creating volumes on system partitions is not allowed.\n");
-		printf("System partitions have active entries in /etc/fstab") ;
+	if ( strstr( StringContent( p ) , device ) != NULL ){		
+
 		StringDelete( p ) ;
 		StringDelete( q ) ;
 		StringDelete( k ) ;
-		return 7 ;
+		
+		st = 10 ;
+		goto out ;		
 	}		
 	StringDelete( k ) ;
 	StringDelete( p ) ;
@@ -589,9 +589,12 @@ int create_volumes(int    argn ,
 		case 7 : printf("ERROR: passphrases do not match\n") ;
 			break  ;	
 		case 8 : printf("ERROR: invalid path to key file\n") ;
-				break  ;
+			break  ;
 		case 9 : printf("ERROR: container file must be bigger than 3MB\n") ;
-		break  ;				
+			break  ;
+		case 10: printf("ERROR: creating volumes on system partitions is not allowed.\n");
+			 printf("System partitions have active entries in /etc/fstab and /etc/crypttab") ;
+			break  ;			
 		default:
 			;
 	}	
