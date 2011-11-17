@@ -170,6 +170,24 @@ void createfile::pbCreate()
 		return ;
 	}
 
+	QString size ;
+
+	switch( ui ->comboBox->currentIndex()){
+		case 0 : { size = ""   ;  fileSize = ui->lineEditFileSize->text().toDouble() * 1024 ; }
+			break ;
+		case 1 : { size = "K"  ;  fileSize = ui->lineEditFileSize->text().toDouble() * 1024 * 1024 ; }
+			break ;
+		case 2 : { size = "M"  ;  fileSize = ui->lineEditFileSize->text().toDouble() * 1024 * 1024  * 1024 ; }
+			break ;
+	}
+
+	if( fileSize < 3145728 ){
+
+		m.setText(tr("container file must be bigger than 3MB"));
+		m.exec() ;
+		return ;
+	}
+
 	ui->pbCreate->setEnabled(false);
 	ui->lineEditFileName->setEnabled(false);
 	ui->lineEditFilePath->setEnabled(false);
@@ -182,20 +200,10 @@ void createfile::pbCreate()
 	ui->label_3->setEnabled(false);
 	ui->label_4->setEnabled(false);
 	ui->label_5->setEnabled(false);
-	creating = true ;
 
 	time.start();
 
-	QString size ;
-
-	switch( ui ->comboBox->currentIndex()){
-		case 0 : { size = ""   ;  fileSize = ui->lineEditFileSize->text().toDouble() * 1024 ; }
-			break ;
-		case 1 : { size = "K"  ;  fileSize = ui->lineEditFileSize->text().toDouble() * 1024 * 1024 ; }
-			break ;
-		case 2 : { size = "M"  ;  fileSize = ui->lineEditFileSize->text().toDouble() * 1024 * 1024  * 1024 ; }
-			break ;
-	}
+	creating = true ;
 
 	QString ddExe = QString(ZULUCRYPTdd) ;
 	ddExe = ddExe + QString(" if=") ;

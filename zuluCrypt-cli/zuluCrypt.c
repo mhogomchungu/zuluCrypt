@@ -449,6 +449,14 @@ int create_volumes(int    argn ,
 	char *c ;
 	int z ;
 	
+	if( stat( device, &xt ) != 0 ){
+		st = 1 ;
+		goto out ;
+	}else if( xt.st_size < 3145728 ){
+		st = 9 ;
+		goto out ;		
+	}	
+	
 	p = String("");
 	q = String("");
 	k = String("");	
@@ -582,6 +590,8 @@ int create_volumes(int    argn ,
 			break  ;	
 		case 8 : printf("ERROR: invalid path to key file\n") ;
 				break  ;
+		case 9 : printf("ERROR: container file must be bigger than 3MB\n") ;
+		break  ;				
 		default:
 			;
 	}	
