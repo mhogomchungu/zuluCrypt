@@ -196,16 +196,17 @@ int open_volumes(int    argn,
 		
 	struct stat xt ;
 	
-	if (argn < 5 ){
+	if (argn != 5 && argn != 7 ){
 		st = 11 ;
 		goto eerr ;
 	}	
 	
-	if (strncmp(mount_point,",\0",2)==0){
-			
-		st = 10 ;
-		goto eerr ;			
-	}			
+	if(strlen(mount_point) == 1){
+		if ( strcmp(mount_point,",") == 0){
+			st = 10 ;
+			goto eerr ;			
+		}
+	}
 
 	if( stat ( mount_point,&xt) != 0){
 		
