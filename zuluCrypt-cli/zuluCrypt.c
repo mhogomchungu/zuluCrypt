@@ -180,14 +180,7 @@ int close_opened_volume( char * mapping_name )
 	return st ;	
 }
 
-int open_volumes(int    argn,
-		 char * device,
-		 char * mapping_name,
-		 int    id,
-		 char * mount_point,
-		 char * mode,
-		 char * source,
-		 char * pass)
+int open_volumes(int argn,char * device,char * mapping_name,int id,char * mount_point,char * mode,char * source,char * pass)
 {
 	StrHandle * p ;
 	
@@ -243,25 +236,13 @@ int open_volumes(int    argn,
 
 		printf("\n") ;	
 		
-		st = open_volume(device,
-				 StringContent(q),
-				 StringContent(z),
-				 id,
-				 mode,
-				 StringContent( p ),
-				 "-p") ;
+		st = open_volume(device,StringContent(q),StringContent(z),id,mode,StringContent( p ),"-p") ;
 				 
 		StringDelete( p ) ;
 		
 	}else if ( argn == 7 ){
 
-		st = open_volume(device,
-				 StringContent(q),
-				 StringContent(z),
-				 id,
-				 mode,
-				 pass,
-				 source) ;			
+		st = open_volume(device,StringContent(q),StringContent(z),id,mode,pass,source) ;			
 		
 	}else{
 		
@@ -499,13 +480,7 @@ char * partitions(int option)
 	}
 }
 
-int create_volumes(int    argn ,
-		   char * device,
-		   char * fs,
-		   char * mode,
-		   char * keyType,
-		   char * pass,
-		   char * rng )
+int create_volumes(int argn,char * device,char * fs,char * mode,char * keyType,char * pass,char * rng )
 {
 	StrHandle * p ;
 	StrHandle * q ;
@@ -659,12 +634,7 @@ int create_volumes(int    argn ,
 	return st ;
 }
 
-int addkey(int    argn,
-	   char * device,
-	   char * keyType1,
-	   char * existingKey,
-	   char * keyType2,
-	   char * newKey)
+int addkey(int argn,char * device,char * keyType1,char * existingKey,char * keyType2,char * newKey)
 {
 	StrHandle * p ;
 	StrHandle * q ;

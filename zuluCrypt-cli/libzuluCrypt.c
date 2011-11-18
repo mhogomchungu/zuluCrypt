@@ -123,12 +123,7 @@ int add_key(const char * device,
 		goto out ;
 	}
 	
-	status = crypt_keyslot_add_by_passphrase(cd,
-					   CRYPT_ANY_SLOT,
-					   existingkey,
-					   strlen(existingkey),
-					   newkey,
-					   strlen(newkey)) ;
+	status = crypt_keyslot_add_by_passphrase(cd,CRYPT_ANY_SLOT,existingkey,strlen(existingkey),newkey,strlen(newkey)) ;
 						   
 	if ( status < 0 )
 		status =  1 ;
@@ -142,8 +137,7 @@ int add_key(const char * device,
 	return status ;
 }
 
-int remove_key( const char * device ,
-		const char * pass )
+int remove_key( const char * device ,const char * pass )
 {	
 	int status ;
 	
@@ -166,12 +160,8 @@ int remove_key( const char * device ,
 		goto out ;
 	}
 
-	status =  crypt_activate_by_passphrase(cd,
-					 "zuluCrypt-deleteKey",
-					 CRYPT_ANY_SLOT,
-					 pass,
-					 strlen(pass),
-					 0);
+	status =  crypt_activate_by_passphrase(cd,"zuluCrypt-deleteKey",CRYPT_ANY_SLOT,pass,strlen(pass),0);
+	
 	if ( status < 0 ){
 		status = 2 ;
 		goto out ;
@@ -439,9 +429,7 @@ char * sanitize(const char *c )
 	return d ;
 }
 
-void execute( const char *command ,
-	      char *output,
-	      int size)
+void execute( const char *command,char *output,int size)
 {		
 	FILE *f ;
 	
@@ -481,9 +469,7 @@ int is_luks(const char * dev)
 		return 1 ;
 }
 
-int create_luks(const char * dev,
-		const char * pass,
-		const char * rng)
+int create_luks(const char * dev,const char * pass,const char * rng)
 {
 	int status ;
 	
@@ -525,12 +511,7 @@ int create_luks(const char * dev,
 		goto out ;
 	}
 	
-	status = crypt_keyslot_add_by_volume_key(cd,
-						CRYPT_ANY_SLOT ,
-						NULL,
-						32,
-						pass,
-						strlen(pass));
+	status = crypt_keyslot_add_by_volume_key(cd,CRYPT_ANY_SLOT,NULL,32,pass,strlen(pass));
 	
 	if ( status < 0 )
 		status = 3 ;
@@ -544,11 +525,7 @@ int create_luks(const char * dev,
 	return status ;
 }
 
-int create_volume(const char * dev,
-		  const char * fs,
-		  const char * type,
-		  const char * pass,
-		  const char * rng)
+int create_volume(const char * dev,const char * fs,const char * type,const char * pass,const char * rng)
 {
 	StrHandle * q ;
 	
@@ -735,9 +712,7 @@ int close_volume(const char * map)
 	return 0 ;
 }
 
-int mount_volume(const char * mapper,
-		 const char * m_point,
-		 const char * mode,uid_t id)
+int mount_volume(const char * mapper,const char * m_point,const char * mode,uid_t id)
 {
 	StrHandle *p ;
 	
@@ -818,11 +793,7 @@ int mount_volume(const char * mapper,
 	return h ;		
 }
 
-int open_luks( const char * device,
-	       const char * mapper,
-	       const char * mode,
-	       const char * source,
-	       const char * pass )
+int open_luks( const char * device,const char * mapper,const char * mode,const char * source,const char * pass )
 {
 	struct stat st ;
 	
@@ -876,24 +847,14 @@ int open_luks( const char * device,
 	
 	if(strcmp(source,"-p")==0){
 		
-		status = crypt_activate_by_passphrase(cd,
-							c,
-							CRYPT_ANY_SLOT,
-							pass,
-							strlen(pass),
-							flags);
+		status = crypt_activate_by_passphrase(cd,c,CRYPT_ANY_SLOT,pass,strlen(pass),flags);
 	}else{
 		if ( stat(pass,&st) != 0 ){
 			status = 4;	
 			goto out ;			
 		}			
 		
-		status = crypt_activate_by_keyfile(cd,
-						c,
-						CRYPT_ANY_SLOT,
-						pass,
-						st.st_size,
-						flags) ;
+		status = crypt_activate_by_keyfile(cd,c,CRYPT_ANY_SLOT,pass,st.st_size,flags) ;
 	}
 		
 	if( status < 0 )
@@ -908,12 +869,7 @@ int open_luks( const char * device,
 	return status ;
 }
 
-int open_plain( const char * device,
-		const char * mapper,
-		const char * mode,
-		const char * source,
-		const char * pass,
-		const char * cipher )
+int open_plain( const char * device,const char * mapper,const char * mode,const char * source,const char * pass,const char * cipher )
 {
 	int status ;
 	
@@ -953,14 +909,7 @@ int open_plain( const char * device,
 		goto out ;
 	}
 	
-	status = crypt_format(cd,
-				CRYPT_PLAIN,
-				"aes",
-				cipher,
-				NULL,
-				NULL,
-				32,
-				&params);
+	status = crypt_format(cd,CRYPT_PLAIN,"aes",cipher,NULL,NULL,32,&params);
 	
 	if( status != 0){
 		status = 2 ;
@@ -969,23 +918,13 @@ int open_plain( const char * device,
 	
 	if(strcmp(source,"-p")==0){
 		
-		status = crypt_activate_by_passphrase(cd,
-							c,
-							CRYPT_ANY_SLOT,
-							pass,
-							strlen(pass),
-							flags);
+		status = crypt_activate_by_passphrase(cd,c,CRYPT_ANY_SLOT,pass,strlen(pass),flags);
 	}else{			
 		if( stat(pass,&st) != 0){
 			status = 4;
 			goto out ;
 		}		
-		status = crypt_activate_by_keyfile(cd,
-					     c,
-					     CRYPT_ANY_SLOT,
-					     pass,
-					     st.st_size,
-					     flags) ;
+		status = crypt_activate_by_keyfile(cd,c,CRYPT_ANY_SLOT,pass,st.st_size,flags) ;
 	}
 	
 	if ( status < 0 )
@@ -1000,13 +939,7 @@ int open_plain( const char * device,
 }
 
 
-int open_volume(const char * dev,
-		const char * map,
-		const char * m_point,
-		uid_t id,
-		const char * mode,
-		const char * pass,
-		const char * source) 
+int open_volume(const char * dev,const char * map,const char * m_point,uid_t id,const char * mode,const char * pass,const char * source) 
 {
 	char status[2] ;
 	
