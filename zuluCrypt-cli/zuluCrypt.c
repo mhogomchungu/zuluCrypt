@@ -524,10 +524,15 @@ int create_volumes(int    argn ,
 		goto out ;		
 	}	
 
-	if ( strstr( partitions( SYSTEM_PARTITIONS ) , device ) != NULL ){		
+	c = partitions( SYSTEM_PARTITIONS ) ;
+	
+	if ( strstr( c , device ) != NULL ){		
 		st = 10 ;
+		free ( c ) ;
 		goto out ;		
 	}	
+	
+	free ( c ) ;
 	
 	if( argn == 5 ){
 		printf("ARE YOU SURE YOU WANT TO CREATE/OVERWRITE: \"%s\" ? Type \"Y\" if you are\n",device);
@@ -1023,23 +1028,22 @@ int main( int argc , char *argv[])
 	
 	}else if ( strcmp(action,"partitions") == 0 ){
 
-		switch( argv[2][0] ){
+		switch( argv[2][0] ){			
 			
-			case '1' : status = 0 ;
-				   printf("%s",partitions( ALL_PARTITIONS ) ) ;
+			case '1' : c = partitions( ALL_PARTITIONS ) ;
 				   break ;
-			case '2' : status = 0 ;
-				   printf("%s",partitions( SYSTEM_PARTITIONS ) ) ;
+			case '2' : c = partitions( SYSTEM_PARTITIONS ) ;
 				   break ;
-			case '3' : status = 0 ;
-				   printf("%s",partitions( NON_SYSTEM_PARTITIONS ) ) ;
+			case '3' : c = partitions( NON_SYSTEM_PARTITIONS ) ;
 				   break ;
 			default:
 				   printf("wrong argument\n");
-				   status = 1 ;
-		}
-
-		return status ;
+				   return 1 ;
+		}		
+		printf("%s", c ) ;
+		free( c ) ;
+		return 0 ;
+		
 	}else if(strcmp(action,"emptyslots") == 0 ){
 		
 		if( stat(device,&st) != 0 ){
