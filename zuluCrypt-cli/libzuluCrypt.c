@@ -256,6 +256,8 @@ char * status( const char * mapper )
 	
 	const char * e ;
 	
+	int i ;
+	
 	struct crypt_device *cd1 = NULL;
 	
 	struct crypt_device *cd;
@@ -267,9 +269,7 @@ char * status( const char * mapper )
 	StrHandle * p ;
 	
 	StrHandle * q ;
-	
-	int i ;
-	
+		
 	i = crypt_init_by_name(&cd,mapper);
 
 	//if( i != 0 ){
