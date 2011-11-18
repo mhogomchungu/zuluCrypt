@@ -524,7 +524,7 @@ int create_volumes(int    argn ,
 		goto out ;		
 	}	
 
-	if ( strstr( partitions(2) , device ) != NULL ){		
+	if ( strstr( partitions( SYSTEM_PARTITIONS ) , device ) != NULL ){		
 		st = 10 ;
 		goto out ;		
 	}	
