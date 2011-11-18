@@ -24,13 +24,15 @@
  
  message( STATUS "Found libcryptsetup.so : " ${libcryptsetup.so} ) 
  
- add_executable( zuluCrypt-cli zuluCrypt.c String.c )
+ add_library( String STATIC String.c )
  
- add_library( zuluCrypt SHARED libzuluCrypt.c String.c )
+ add_library( zuluCrypt SHARED libzuluCrypt.c )
  
- TARGET_LINK_LIBRARIES( zuluCrypt ${libcryptsetup.so} ) 
+ add_executable( zuluCrypt-cli zuluCrypt.c ) 
  
- TARGET_LINK_LIBRARIES( zuluCrypt-cli zuluCrypt ) 
+ TARGET_LINK_LIBRARIES( zuluCrypt ${libcryptsetup.so} String ) 
+ 
+ TARGET_LINK_LIBRARIES( zuluCrypt-cli zuluCrypt String ) 
  
  install(TARGETS zuluCrypt-cli 
             RUNTIME DESTINATION bin
