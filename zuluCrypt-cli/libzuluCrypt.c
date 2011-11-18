@@ -96,9 +96,7 @@ char * version(void)
 	return VERSION_STRING ;
 }
 
-int add_key(const char * device,
-	    const char * existingkey,
-	    const char * newkey)
+int add_key(const char * device,const char * existingkey,const char * newkey)
 {
 	int status ;
 	
@@ -497,14 +495,7 @@ int create_luks(const char * dev,const char * pass,const char * rng)
 	else 
 		crypt_set_rng_type(cd, CRYPT_RNG_URANDOM);
 	
-	status = crypt_format(cd,
-			      CRYPT_LUKS1,
-			      "aes",
-			      "cbc-essiv:sha256",
-			       NULL,
-			       NULL,
-		               32,
-		               &params);	
+	status = crypt_format(cd,CRYPT_LUKS1,"aes","cbc-essiv:sha256",NULL,NULL,32,&params);	
 	
 	if ( status != 0 ){
 		status = 2 ;
