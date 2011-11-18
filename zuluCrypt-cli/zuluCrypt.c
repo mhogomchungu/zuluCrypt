@@ -73,6 +73,9 @@ int removekey( int argn ,
 		 
 int check_system_tools(void) ;
 
+#define ALL_PARTITIONS        1
+#define SYSTEM_PARTITIONS     2
+#define NON_SYSTEM_PARTITIONS 3
 
 StrHandle * get_passphrase( void )
 {	
@@ -350,7 +353,7 @@ char * partitions(int option)
 	
 	fclose(f);	
 	
-	if( option == 1 )
+	if( option == ALL_PARTITIONS )
 		return StringDeleteHandle( all ) ;
 			
 	non_system = String( StringContent( all ) ) ;
@@ -487,7 +490,7 @@ char * partitions(int option)
 	
 	StringDelete( all ) ;
 	
-	if( option == 2 ){
+	if( option == SYSTEM_PARTITIONS ){
 		StringDelete( non_system ) ;
 		return StringDeleteHandle( system ) ;
 	}else{
@@ -1023,13 +1026,13 @@ int main( int argc , char *argv[])
 		switch( argv[2][0] ){
 			
 			case '1' : status = 0 ;
-				   printf("%s",partitions(1)) ;
+				   printf("%s",partitions( ALL_PARTITIONS ) ) ;
 				   break ;
 			case '2' : status = 0 ;
-				   printf("%s",partitions(2)) ;
+				   printf("%s",partitions( SYSTEM_PARTITIONS ) ) ;
 				   break ;
 			case '3' : status = 0 ;
-				   printf("%s",partitions(3)) ;
+				   printf("%s",partitions( NON_SYSTEM_PARTITIONS ) ) ;
 				   break ;
 			default:
 				   printf("wrong argument\n");
