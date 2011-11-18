@@ -297,7 +297,7 @@ char * status( const char * mapper )
 	
 	if( strcmp(e,"LUKS1") == 0 )
 		StringAppend(p,"luks1") ;
-	else
+	else if(strcmp(e,"plain"))
 		StringAppend(p,"plain") ;
 
 	StringAppend(p,"\n cipher:    ");
