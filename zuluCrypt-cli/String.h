@@ -50,6 +50,10 @@ StrHandle * String(const char * data) ;
  */
 const char * StringAppend(StrHandle * st ,const  char * data)  ;
 
+/*
+ * Inherit a string pointed to by data and return a string handle to the string on success or NULL on error.  
+ */
+StrHandle * StringInherit( char * data ) ;
 
 /* 
  * Returns a const pointer to a string handled by handle st. 

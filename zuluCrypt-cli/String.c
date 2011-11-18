@@ -90,6 +90,20 @@ const char * StringAppend(StrHandle * st ,const char * data)
 	return st->string = a ;	
 }
 
+StrHandle * StringInherit( char * data )
+{
+	StrHandle *str = ( StrHandle * ) malloc ( sizeof( StrHandle ) ) ;
+	
+	if( str == NULL )
+		return NULL ;
+	
+	str->size = strlen( data ) ;
+	
+	str->string = data ;
+	
+	return str ;	
+}
+
 int StringIndexOfString( StrHandle * st,int p, const char * s )
 {
 	char *c = strstr(st->string + p,s) ;
