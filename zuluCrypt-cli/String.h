@@ -273,6 +273,16 @@ const char * StringReplaceChar( StrHandle *st,char x, char y) ;
 
 char * intToString(char * x, int y, int z) ;
 
+/*
+ * Compare a string handled by handle x to a string handled by handle y and return 0 if they are equal and 1 if they are not  
+ */
+int StringCompare( StrHandle * x , StrHandle * y ) ;
+
+/*
+ * Compare a string handled by handle x to a string pointer to by y and return 0 if they are equal and 1 if they are not  
+ */
+int StringCompareString( StrHandle * x, const char *y ) ;
+
 #ifdef __cplusplus
 }
 #endif

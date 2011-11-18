@@ -468,3 +468,21 @@ char * intToString(char * x, int y,int z)
 	
 	return ++c ;
 }
+
+int StringCompare( StrHandle * x , StrHandle * y ) 
+{
+	if( x->size != y->size )
+		return 1 ;
+	else if( strcmp( x->string, y->string ) != 0 )
+		return 1 ;
+	else
+		return 0 ;	
+}
+
+int StringCompareString( StrHandle * x, const char *y )
+{
+	if( strcmp( x->string, y ) == 0 )
+		return 0 ;
+	else
+		return 1 ;	
+}

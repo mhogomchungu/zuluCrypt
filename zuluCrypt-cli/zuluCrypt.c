@@ -529,7 +529,7 @@ int create_volumes(int argn,char * device,char * fs,char * mode,char * keyType,c
 			
 			printf("\n") ;			
 			
-			if(strcmp(StringContent( p ),StringContent( q )) != 0){
+			if( StringCompare( p , q ) != 0 ){
 
 				st = 7 ;
 			}else{
@@ -672,19 +672,15 @@ int addkey(int argn,char * device,char * keyType1,char * existingKey,char * keyT
 		
 		printf("\n") ;
 		
-		if (strcmp( StringContent( q ), StringContent( n ) ) != 0){
-			
+		if( StringCompare( q , n ) != 0 )			
 			status = 7 ;
-			StringDelete( p ) ;			
-			StringDelete( q ) ;	
-			StringDelete( n ) ;
-		}else{			
+		else			
 			status = add_key( device,StringContent( p ), StringContent( q )) ;			
 
-			StringDelete( p ) ;			
-			StringDelete( q ) ;	
-			StringDelete( n ) ;	
-		}
+		StringDelete( p ) ;			
+		StringDelete( q ) ;	
+		StringDelete( n ) ;
+		
 	}else if( argn == 7 ){			
 		
 		if ( strcmp( keyType1, "-f" ) == 0 ){			
