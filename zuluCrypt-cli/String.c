@@ -116,11 +116,10 @@ int StringIndexOfString( StrHandle * st,int p, const char * s )
 
 int StringLastIndexOfChar(StrHandle * st , char s) 
 {
-	char *c = st->string + st->size ;
+	char *c = st->string + st->size - 1 ;
 	
 	while( 1 )
-	{
-		
+	{		
 		if( st->string == c )
 			return -1 ;
 		else if ( *c == s )
@@ -296,7 +295,7 @@ const char * StringSubString(StrHandle * st, int x, const char * s )
 	return st->string ;
 }
 
-const char * StringInsertCharAt(StrHandle * st, int x,char s ) 
+const char * StringInsertChar(StrHandle * st, int x,char s ) 
 {
 	char c[2] ;
 	
@@ -304,10 +303,10 @@ const char * StringInsertCharAt(StrHandle * st, int x,char s )
 	
 	c[1] = '\0' ;
 	
-	return StringInsertStringAt(st, x, c ) ;
+	return StringInsertString(st, x, c ) ;
 }
 
-const char * StringInsertStringAt(StrHandle * st, int x, const char * s )
+const char * StringInsertString(StrHandle * st, int x, const char * s )
 {	
 
 	int i  ;
@@ -437,7 +436,7 @@ const char * StringReplaceString( StrHandle *st, const char *x, const char *y)
 	while( ( i = StringIndexOfString(st,i,x) ) != -1 )
 	{		
 		StringRemoveString(st,i,strlen(x));
-		StringInsertStringAt(st,i,y) ;		
+		StringInsertString(st,i,y) ;		
 	}	
 	return st->string ;	
 }

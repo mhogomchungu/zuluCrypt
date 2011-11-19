@@ -180,7 +180,7 @@ int StringEndsWithChar(StrHandle * st ,char s) ;
  * 
  * on error returns NULL and the original string remains intact * 
  */
-const char * StringInsertStringAt(StrHandle * st, int x, const char * s ) ;
+const char * StringInsertString(StrHandle * st, int x, const char * s ) ;
 
 
 /*
@@ -188,7 +188,7 @@ const char * StringInsertStringAt(StrHandle * st, int x, const char * s ) ;
  * 
  * on error returns NULL and the original string remains intact * 
  */
-const char * StringInsertCharAt(StrHandle * st, int x, char s ) ;
+const char * StringInsertChar(StrHandle * st, int x, char s ) ;
 
 
 /*

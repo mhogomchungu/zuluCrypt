@@ -120,11 +120,11 @@ int volume_info( const char * mapper )
 	
 	struct stat st;
 	
-	StrHandle *p = String("/dev/mapper/zuluCrypt-");
+	StrHandle * p = String( mapper ) ;
 	
-	StringAppend(p,mapper);	
-
 	StringReplaceChar(p,' ','_') ;				
+	
+	StringInsertString(p,0,"/dev/mapper/zuluCrypt-") ;
 	
 	if( stat( StringContent(p),&st) != 0 ) {
 		
@@ -150,11 +150,11 @@ int close_opened_volume( char * mapping_name )
 {	
 	int st ;
 	
-	StrHandle * p = String("/dev/mapper/zuluCrypt-");
+	StrHandle * p = String( mapping_name ) ;
 	
-	StringAppend( p , mapping_name ) ;
+	StringReplaceChar(p,' ','_') ;				
 	
-	StringReplaceChar(p,' ','_') ;		
+	StringInsertString(p,0,"/dev/mapper/zuluCrypt-") ;	
 	
 	st = close_volume( StringContent( p ) ) ;
 	
@@ -213,11 +213,11 @@ int open_volumes(int argn,char * device,char * mapping_name,int id,char * mount_
 		}
 	}	
 	
-	q = String("/dev/mapper/zuluCrypt-") ;
+	q = String( mapping_name ) ;
 	
-	StringAppend( q , mapping_name ) ;
+	StringReplaceChar(q,' ','_') ;				
 	
-	StringReplaceChar(q,' ','_') ;
+	StringInsertString(q,0,"/dev/mapper/zuluCrypt-") ;
 	
 	z = String(mount_point);
 	
