@@ -116,7 +116,9 @@ void help( void )
 
 int volume_info( const char * mapper )
 {
-	char * output = NULL ;	
+	char * output ;	
+	
+	int xt ;
 	
 	struct stat st;
 	
@@ -130,20 +132,21 @@ int volume_info( const char * mapper )
 		
 		printf("%s is inactive\n",StringContent(p)) ;
 		
-		StringDelete(p);
+		xt =  1 ;
+	}else{
+	
+		output = status( StringContent(p) ) ;
+	
+		printf("%s\n",output);
+
+		free(output) ;
 		
-		return 1 ;
+		xt = 0 ;
 	}
-	
-	output = status( StringContent(p) ) ;
-	
-	printf("%s\n",output);
 	
 	StringDelete(p);
 	
-	free(output) ;
-	
-	return 0 ;
+	return xt ;
 }
 
 int close_opened_volume( char * mapping_name )
@@ -484,7 +487,7 @@ int create_volumes(int argn,char * device,char * fs,char * mode,char * keyType,c
 	char Y ;
 	int st ;
 	struct stat xt ;
-	char *c ;
+	char * c ;
 	int z ;
 	
 	if( stat( device, &xt ) != 0 ){
