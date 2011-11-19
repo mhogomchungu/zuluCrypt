@@ -485,3 +485,66 @@ int StringCompareString( StrHandle * x, const char *y )
 	else
 		return 1 ;	
 }
+
+const char * StringInsertCharString( StrHandle *st, char x, const char *n ) 
+{	
+	char * d ;	
+	
+	char * f ;
+	
+	int count = 0 ;
+	
+	int i,j ;
+	
+	int z = st->size ;
+	
+	char * c = st->string ;
+	
+	int k = strlen( n ) ;
+	
+	for ( i = 0 ; i < z ; i++ ){
+		
+		for( j = 0 ; j < k ; j++ ){
+			
+			if( c[i] == n[j] ){
+				count++ ;
+				break ;
+			}
+		}		
+	}
+	
+	f = d = (char * ) malloc(sizeof(char) * ( z + count + 1 ) ) ;	
+	
+	if( f == NULL )
+		return NULL ;
+	
+	st->size = z + count ;
+	
+	for ( i = 0 ; i < z ; i++ ){
+		
+		for( j = 0 ; j < k ; j++ ){
+			
+			if( c[i] == n[j] ){
+				*f++ = x ;
+				break ;
+			}
+		}
+		
+		*f++ = c[i] ;
+	}
+	*f = '\0' ;
+	
+	free( st->string ) ;
+	
+	return st->string = d ;
+}
+
+const char * StringInsertCharChar( StrHandle *st, char x, char y )
+{
+	char c[2] ;
+	
+	c[0] = y ;
+	c[1] = '\0' ;
+	
+	return StringInsertCharString( st, x, c ) ;
+}

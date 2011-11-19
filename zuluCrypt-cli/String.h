@@ -283,6 +283,18 @@ int StringCompare( StrHandle * x , StrHandle * y ) ;
  */
 int StringCompareString( StrHandle * x, const char *y ) ;
 
+/*
+ * Insert character x infront of every character that appear in string y in a string handled by handle st.
+ * Retun a poiter to the final string on success and NULL on error
+ */
+const char * StringInsertCharString( StrHandle *st, char x, const char *y ) ;
+
+/*
+ * Insert character x infront of every character y in a string handled by handle st.
+ * Retun a poiter to the final string on success and NULL on error
+ */
+const char * StringInsertCharChar( StrHandle *st, char x, char y ) ;
+
 #ifdef __cplusplus
 }
 #endif
