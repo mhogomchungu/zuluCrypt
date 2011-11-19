@@ -30,6 +30,7 @@
 #include <QMessageBox>
 #include <QCloseEvent>
 #include <QIcon>
+#include <QKeyEvent>
 
 namespace Ui {
     class luksdeletekey;
@@ -340,10 +341,8 @@ void luksdeletekey::pbOpenVolume()
 
 void luksdeletekey::deleteKey(QString path)
 {
-	enableAll();
-	ui->lineEditVolumePath->setText(path);
-	ui->lineEditPassphrase->setFocus();
 	ShowUI() ;
+	ui->lineEditVolumePath->setText(path);
 }
 
 void luksdeletekey::HideUI()
