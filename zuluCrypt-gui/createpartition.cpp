@@ -288,23 +288,25 @@ void createpartition::pbCreateClicked()
 		passphrase.replace("\"","\"\"\"") ;
 	}
 
-	QMessageBox m ;
-	m.setFont(this->font());
-	m.setParent(this);
-	m.setWindowFlags(Qt::Window | Qt::Dialog);
-	m.setWindowTitle(tr("WARNING"));
+	if( ui->lineEditVolumePath->text().left(5) == QString("/dev/")){
+		QMessageBox m ;
+		m.setFont(this->font());
+		m.setParent(this);
+		m.setWindowFlags(Qt::Window | Qt::Dialog);
+		m.setWindowTitle(tr("WARNING"));
 
-	m.addButton(QMessageBox::Yes);
-	m.addButton(QMessageBox::No);
-	m.setDefaultButton(QMessageBox::No);
+		m.addButton(QMessageBox::Yes);
+		m.addButton(QMessageBox::No);
+		m.setDefaultButton(QMessageBox::No);
 
-	QString wr = tr("all contents of \"") ;
-	wr = wr + ui->lineEditVolumePath->text() + tr("\" will be deleted!.");
-	wr = wr + tr("\nAre you sure you want to proceed?") ;
-	m.setText(wr);
+		QString wr = tr("all contents of \"") ;
+		wr = wr + ui->lineEditVolumePath->text() + tr("\" will be deleted!.");
+		wr = wr + tr("\nAre you sure you want to proceed?") ;
+		m.setText(wr);
 
-	if ( m.exec() != QMessageBox::Yes )
-		return ;
+		if ( m.exec() != QMessageBox::Yes )
+			return ;
+	}
 
 	QString exe = QString(ZULUCRYPTzuluCrypt) ;
 	exe = exe + QString(" create \"") ;
