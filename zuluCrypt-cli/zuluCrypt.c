@@ -490,7 +490,7 @@ int create_volumes(int argn,char * device,char * fs,char * mode,char * keyType,c
 	if( stat( device, &xt ) != 0 ){
 		st = 1 ;
 		goto out ;
-	}else if( xt.st_size < 3145728 ){
+	}else if( strncmp( device,"/dev/",5) != 0 && xt.st_size < 3145728 ){
 		st = 9 ;
 		goto out ;		
 	}	
