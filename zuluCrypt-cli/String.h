@@ -263,6 +263,11 @@ const char * StringReplaceString( StrHandle * st, const char * x, const char * y
 const char * StringReplaceChar( StrHandle * st,char x, char y) ;
 
 /*
+ *  Replace all characters in y by x in a string handled by st
+ */
+const char * StringReplaceCharString( StrHandle * st, char x, const char * y ) ;
+
+/*
  * convert an integer z into a string of size y pointer to by x.
  * 
  * return value: a pointer to the beginning of the result(use this pointer and not x).

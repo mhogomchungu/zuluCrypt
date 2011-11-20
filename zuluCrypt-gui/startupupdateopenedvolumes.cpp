@@ -83,10 +83,24 @@ void startupupdateopenedvolumes::run()
 
 		strcpy(bff,v) ;
 
+		/*
+		 * It appears that cryptsetup creates two mappers when a volume name has bash special characters in them.
+		 * One mapper will have the special character(bogus mapper) and another with '_'(the one in use)
+		 * making it hard to predict what mapper will be created and used.
+		 * 
+		 * Manual substitution will give us a better control of cryptsetup behavior.	 * 
+		 */
+		char sc[] = "#;\"',\\`:!*?&$@(){}[]><|%~^ \n" ;
+		
 		for( int n = 0 ; n < j ; n++){
 
-			if( bff[n] == ' ')
-				bff[n] = '_' ;
+			for( int k = 0 ; k < (int) strlen( sc ) ; k++ )
+			{
+				if( bff[n] == sc[k] ){
+					bff[n] = '_' ;
+					break ;					
+				}				
+			}
 		}
 
 		QString mp = zuluCrypt::mtab(QString(bff)) ;

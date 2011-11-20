@@ -124,7 +124,14 @@ int volume_info(  const char * mapper  )
 	
 	StrHandle * p = String(  mapper  ) ;
 	
-	StringReplaceChar( p,' ','_' ) ;				
+	/*
+	 * It appears that cryptsetup creates two mappers when a volume name has bash special characters in them.
+	 * One mapper will have the special character(bogus mapper) and another with '_'(the one in use)
+	 * making it hard to predict what mapper will be created and used.
+	 * 
+	 * Manual substitution before cryptsetup does it will give us a better control of cryptsetup behavior. 
+	 */
+	StringReplaceCharString( p,'_',"#;\"',\\`:!*?&$@(){}[]><|%~^ \n" ) ;
 	
 	StringInsertString( p,0,"/dev/mapper/zuluCrypt-" ) ;
 	
@@ -155,7 +162,7 @@ int close_opened_volume(  char * mapping_name  )
 	
 	StrHandle * p = String(  mapping_name  ) ;
 	
-	StringReplaceChar( p,' ','_' ) ;				
+	StringReplaceCharString( p,'_',"#;\"',\\`:!*?&$@(){}[]><|%~^ \n" ) ;
 	
 	StringInsertString( p,0,"/dev/mapper/zuluCrypt-" ) ;	
 	
@@ -218,7 +225,7 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 	
 	q = String(  mapping_name  ) ;
 	
-	StringReplaceChar( q,' ','_' ) ;				
+	StringReplaceCharString( q,'_',"#;\"',\\`:!*?&$@(){}[]><|%~^ \n" ) ;
 	
 	StringInsertString( q,0,"/dev/mapper/zuluCrypt-" ) ;
 	

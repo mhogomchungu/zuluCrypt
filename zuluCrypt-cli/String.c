@@ -283,6 +283,28 @@ const char * StringSubChar(StrHandle * st, int x, char s )
 	return st->string ; 	
 }
 
+const char * StringReplaceCharString( StrHandle * st, char x, const char * y ) 
+{
+	int i ;
+	
+	int j ;
+	
+	for( j = 0 ; j < st->size ; j++ ){
+		
+		for( i = 0 ; i < strlen( y ) ; i++ ){
+		
+			if( * ( st->string + j ) == * ( y + i ) ){
+				
+				* ( st->string + j ) = x ;		
+						
+				break ;
+			}
+		}	
+	}
+	
+	return st->string ;
+}
+
 const char * StringSubString(StrHandle * st, int x, const char * s ) 
 {
 	const char * c = s - 1  ;
