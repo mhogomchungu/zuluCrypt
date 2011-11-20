@@ -270,9 +270,9 @@ char * status( const char * mapper )
 	//	goto out ;
 	//}
 
-	csi = crypt_status( cd, mapper );
-	
 	p = String( mapper ) ;
+	
+	csi = crypt_status( cd, mapper );	
 	
 	switch( csi ){
 		case CRYPT_INACTIVE :
@@ -310,17 +310,19 @@ char * status( const char * mapper )
 	
 	StringAppend( p,"\n device:    " );
 	
-	StringAppend( p,crypt_get_device_name( cd ) ) ;
+	e = crypt_get_device_name( cd ) ;
 	
-	if( strncmp( crypt_get_device_name( cd ),"/dev/loop",9 ) == 0 ){
+	StringAppend( p, e ) ;
+	
+	if( strncmp( e ,"/dev/loop",9 ) == 0 ){
 		
 		q = String( ZULUCRYPTlosetup ) ;
 	
 		StringAppend( q," " );
 		
-		StringAppend( q,crypt_get_device_name( cd ) ) ;
+		StringAppend( q, e ) ;
 		
-		execute( StringContent( q ),loop,510 ) ;
+		execute( StringContent( q ),loop,511 ) ;
 		
 		StringDelete( q ) ;
 		
@@ -366,7 +368,10 @@ char * status( const char * mapper )
 	return StringDeleteHandle( p ) ;
 }
 
-void execute( const char *command,char *output,int size )
+/*
+ * If output is of size N, size must be at most N-1,null is stored in the last slot
+ */
+void execute( const char * command,char * output,int size )
 {		
 	FILE *f ;
 	
@@ -561,7 +566,7 @@ int unmount_volume( const char * map )
 		return 1 ;		
 	
 	/*
-	 * Go through /mtab to found out mount point so that we can delete the folder
+	 * Go through /etc/mtab to found out mount point so that we can delete the mount point folder
 	 * when unmounting succeed 
 	 */
 	f = fopen( "/etc/mtab","r" ) ;
