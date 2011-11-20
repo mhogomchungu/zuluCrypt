@@ -1,12 +1,12 @@
 /*
  * 
- *  Copyright (c) 2011
+ *  Copyright ( c ) 2011
  *  name : mhogo mchungu 
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ *  ( at your option ) any later version.
  * 
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -32,52 +32,52 @@
 
 //function prototypes
 
-char * partitions( int option ) ;
+char * partitions(  int option  ) ;
 
-StrHandle * get_passphrase( void ) ;
+StrHandle * get_passphrase(  void  ) ;
 
-void help( void ) ;
+void help(  void  ) ;
 
-int volume_info( const char * mapper ) ;
+int volume_info(  const char * mapper  ) ;
 
-int close_opened_volume( char * mapping_name ) ;
+int close_opened_volume(  char * mapping_name  ) ;
 
-int open_volumes(int    argn,
+int open_volumes( int    argn,
 		 char * device,
 		 char * mapping_name,
 		 int    id,
 		 char * mount_point,
 		 char * mode,
 		 char * source,
-		 char * pass) ;
+		 char * pass ) ;
 		 
-int create_volumes(int argn ,
+int create_volumes( int argn ,
 		   char * device,
 		   char * fs,
 		   char * mode,
 		   char * keyType,
 		   char * pass,
-		   char * rng ) ;
+		   char * rng  ) ;
 		 
-int addkey(int argn,
+int addkey( int argn,
 	   char * device,
 	   char * keyType1,
 	   char * existingKey,
 	   char * keyType2,
-	   char * newKey) ;
+	   char * newKey ) ;
 		 
-int removekey( int argn ,
+int removekey(  int argn ,
 	       char * device,
 	       char * keyType,
-	       char * keytoremove ) ;
+	       char * keytoremove  ) ;
 		 
-int check_system_tools(void) ;
+int check_system_tools( void ) ;
 
 #define ALL_PARTITIONS        1
 #define SYSTEM_PARTITIONS     2
 #define NON_SYSTEM_PARTITIONS 3
 
-StrHandle * get_passphrase( void )
+StrHandle * get_passphrase(  void  )
 {	
 	
 	//I got the big chunk of this code from: http://www.gnu.org/s/hello/manual/libc/getpass.html
@@ -86,35 +86,35 @@ StrHandle * get_passphrase( void )
 	struct termios old, new;
 			
        /* Turn echoing off and fail if we can't. */
-	if (tcgetattr (1, &old) != 0)
-		exit(-1);
+	if ( tcgetattr ( 1, &old ) != 0 )
+		exit( -1 );
 
 	new = old;
 	new.c_lflag &= ~ECHO;
 			
-	if (tcsetattr (1, TCSAFLUSH, &new) != 0)
-		exit(-1);
+	if ( tcsetattr ( 1, TCSAFLUSH, &new ) != 0 )
+		exit( -1 );
 		
 	c[1] = '\0' ;
-	c[0] = getchar() ;
+	c[0] = getchar(  ) ;
 	
-	p = String( c ) ;
+	p = String(  c  ) ;
 	
-	while( ( c[0] = getchar() ) != '\n' )		
-		StringAppend( p, c ) ;
+	while(  (  c[0] = getchar(  )  ) != '\n'  )		
+		StringAppend(  p, c  ) ;
 	
-	(void) tcsetattr (1, TCSAFLUSH, &old);		
+	( void ) tcsetattr ( 1, TCSAFLUSH, &old );		
 	
 	return p ;
 }
 
-void help( void )
+void help(  void  )
 {
-	printf("run \"man zuluCrypt-cli\" for documentation on how to run this tool.\n") ;
-	printf("The same documentation can be found at http://code.google.com/p/zulucrypt\n");	
+	printf( "run \"man zuluCrypt-cli\" for documentation on how to run this tool.\n" ) ;
+	printf( "The same documentation can be found at http://code.google.com/p/zulucrypt\n" );	
 }
 
-int volume_info( const char * mapper )
+int volume_info(  const char * mapper  )
 {
 	char * output ;	
 	
@@ -122,64 +122,64 @@ int volume_info( const char * mapper )
 	
 	struct stat st;
 	
-	StrHandle * p = String( mapper ) ;
+	StrHandle * p = String(  mapper  ) ;
 	
-	StringReplaceChar(p,' ','_') ;				
+	StringReplaceChar( p,' ','_' ) ;				
 	
-	StringInsertString(p,0,"/dev/mapper/zuluCrypt-") ;
+	StringInsertString( p,0,"/dev/mapper/zuluCrypt-" ) ;
 	
-	if( stat( StringContent(p),&st) != 0 ) {
+	if(  stat(  StringContent( p ),&st ) != 0  ) {
 		
-		printf("%s is inactive\n",StringContent(p)) ;
+		printf( "%s is inactive\n",StringContent( p ) ) ;
 		
 		xt =  1 ;
 	}else{
 	
-		output = status( StringContent(p) ) ;
+		output = status(  StringContent( p )  ) ;
 	
-		printf("%s\n",output);
+		printf( "%s\n",output );
 
-		free(output) ;
+		free( output ) ;
 		
 		xt = 0 ;
 	}
 	
-	StringDelete(p);
+	StringDelete( p );
 	
 	return xt ;
 }
 
-int close_opened_volume( char * mapping_name )
+int close_opened_volume(  char * mapping_name  )
 {	
 	int st ;
 	
-	StrHandle * p = String( mapping_name ) ;
+	StrHandle * p = String(  mapping_name  ) ;
 	
-	StringReplaceChar(p,' ','_') ;				
+	StringReplaceChar( p,' ','_' ) ;				
 	
-	StringInsertString(p,0,"/dev/mapper/zuluCrypt-") ;	
+	StringInsertString( p,0,"/dev/mapper/zuluCrypt-" ) ;	
 	
-	st = close_volume( StringContent( p ) ) ;
+	st = close_volume(  StringContent(  p  )  ) ;
 	
-	switch( st ) {
-	case 0 : printf("SUCCESS: volume closed successfully \n");
+	switch(  st  ) {
+	case 0 : printf( "SUCCESS: volume closed successfully \n" );
 		break ;
-	case 1 : printf("ERROR: close failed, encrypted volume with that name does not exist\n");
+	case 1 : printf( "ERROR: close failed, encrypted volume with that name does not exist\n" );
 		break ;			
-	case 2 : printf("ERROR: close failed, the mount point and/or one or more files are in use\n");
+	case 2 : printf( "ERROR: close failed, the mount point and/or one or more files are in use\n" );
 		break ;
-	case 3 : printf("ERROR: close failed, volume does not have an entry in /etc/mtab\n") ;
+	case 3 : printf( "ERROR: close failed, volume does not have an entry in /etc/mtab\n" ) ;
 		break ;
 	default :
 		; //shouldnt get here			
 	}	
 	
-	StringDelete( p ) ;
+	StringDelete(  p  ) ;
 	
 	return st ;	
 }
 
-int open_volumes(int argn,char * device,char * mapping_name,int id,char * mount_point,char * mode,char * source,char * pass)
+int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount_point,char * mode,char * source,char * pass )
 {
 	StrHandle * p ;
 	
@@ -191,92 +191,92 @@ int open_volumes(int argn,char * device,char * mapping_name,int id,char * mount_
 		
 	struct stat xt ;
 	
-	if (argn != 5 && argn != 7 ){
+	if ( argn != 5 && argn != 7  ){
 		st = 11 ;
 		goto eerr ;
 	}	
 	
-	if(strlen(mount_point) == 1){
-		if ( strcmp(mount_point,",") == 0){
+	if( strlen( mount_point ) == 1 ){
+		if (  strcmp( mount_point,"," ) == 0 ){
 			st = 10 ;
 			goto eerr ;			
 		}
 	}
 
-	if( stat ( mount_point,&xt) != 0){
+	if(  stat (  mount_point,&xt ) != 0 ){
 		
 		st = 9 ;
 		goto eerr ;
 	}
 	
-	if (strncmp(mode,"ro",2) != 0){
-		if (strncmp(mode,"rw",2) != 0){
+	if ( strncmp( mode,"ro",2 ) != 0 ){
+		if ( strncmp( mode,"rw",2 ) != 0 ){
 			st = 10 ;
 			goto eerr ;	
 		}
 	}	
 	
-	q = String( mapping_name ) ;
+	q = String(  mapping_name  ) ;
 	
-	StringReplaceChar(q,' ','_') ;				
+	StringReplaceChar( q,' ','_' ) ;				
 	
-	StringInsertString(q,0,"/dev/mapper/zuluCrypt-") ;
+	StringInsertString( q,0,"/dev/mapper/zuluCrypt-" ) ;
 	
-	z = String(mount_point);
+	z = String( mount_point );
 	
-	StringAppend(z,"/");
+	StringAppend( z,"/" );
 	
-	StringAppend(z,mapping_name);
+	StringAppend( z,mapping_name );
 	
-	if ( argn == 5 ){
-		printf( "Enter passphrase: " ) ;
+	if (  argn == 5  ){
+		printf(  "Enter passphrase: "  ) ;
 
-		p = get_passphrase();				
+		p = get_passphrase(  );				
 
-		printf("\n") ;	
+		printf( "\n" ) ;	
 		
-		st = open_volume(device,StringContent(q),StringContent(z),id,mode,StringContent( p ),"-p") ;
+		st = open_volume( device,StringContent( q ),StringContent( z ),id,mode,StringContent(  p  ),"-p" ) ;
 				 
-		StringDelete( p ) ;
+		StringDelete(  p  ) ;
 		
-	}else if ( argn == 7 ){
+	}else if (  argn == 7  ){
 
-		st = open_volume(device,StringContent(q),StringContent(z),id,mode,pass,source) ;			
+		st = open_volume( device,StringContent( q ),StringContent( z ),id,mode,pass,source ) ;			
 		
 	}else{
 		
 		st =  11 ;			
 	}
 	
-	StringDelete( q ) ;
+	StringDelete(  q  ) ;
 	
-	StringDelete( z ) ;
+	StringDelete(  z  ) ;
 	
 	eerr:
 	
-	switch ( st ){
+	switch (  st  ){
 			
-		case 0 : printf("SUCCESS: Volume opened successfully\n");
+		case 0 : printf( "SUCCESS: Volume opened successfully\n" );
 			break ;			
-		case 1 : printf("ERROR: No free loop device to use\n") ; 
+		case 1 : printf( "ERROR: No free loop device to use\n" ) ; 
 			break ;					
-		case 2 : printf("ERROR: There seem to be an open volume accociated with given address\n");
+		case 2 : printf( "ERROR: There seem to be an open volume accociated with given address\n" );
 			break ;				
-		case 3 : printf("ERROR: No file exist on given path\n") ; 
+		case 3 : printf( "ERROR: No file exist on given path\n" ) ; 
 			break ;		
-		case 4 : printf("ERROR: Wrong passphrase\n");
+		case 4 : printf( "ERROR: Wrong passphrase\n" );
 			break ;			
-		case 5 : printf("ERROR: a file or folder already exist at mount point\n") ;
+		case 5 : printf( "ERROR: a file or folder already exist at mount point\n" ) ;
 			break ;		
-		case 6 : printf("ERROR: passphrase file does not exist\n");
+		case 6 : printf( "ERROR: passphrase file does not exist\n" );
 			break ;	
-		case 11 : printf("ERROR: Wrong number of arguments, run zuluCrypt with \"-h\" for help\n");
+		case 11 : printf( "ERROR: Wrong number of arguments, run zuluCrypt with \"-h\" for help\n" );
 			break ;
-		case 8 : printf("ERROR: failed to open volume\n");
+		case 8 : printf( "ERROR: failed to open volume\n" );
 			break ;	
-		case 10 : printf("ERROR: \",\" (comma) is not a valid mount point\n");
+		case 10 : printf( "ERROR: \",\" ( comma ) is not a valid mount point\n" );
 			break ;
-		case 9 :  printf("ERROR: mount point path does not exist\n");
+		case 9 :  printf( "ERROR: mount point path does not exist\n" );
 			break ;	
 			
 		default :
@@ -285,7 +285,7 @@ int open_volumes(int argn,char * device,char * mapping_name,int id,char * mount_
 	return st ;
 }
 
-char * partitions(int option)
+char * partitions( int option )
 {
 	char *c,*d ;
 	char buffer[512];
@@ -302,184 +302,184 @@ char * partitions(int option)
 	FILE *f ;
 	FILE *z ;
 	
-	f = fopen("/proc/partitions","r") ;
+	f = fopen( "/proc/partitions","r" ) ;
 	
-	fgets(buffer,512,f ) ;
-	fgets(buffer,512,f ) ;
+	fgets( buffer,512,f  ) ;
+	fgets( buffer,512,f  ) ;
 	
-	all = String("");
+	all = String( "" );
 	
-	while ( fgets(buffer,512,f ) != NULL ){
+	while (  fgets( buffer,512,f  ) != NULL  ){
 		
 		c = buffer ;
 		
-		while( *++c != '\n' ) { ; }
+		while(  *++c != '\n'  ) { ; }
 	
 		*c = '\0' ;
 		
 		d = c ;
 		
-		while( *--d != ' ' ) { ; }
+		while(  *--d != ' '  ) { ; }
 		
 		d++ ;		
 		
-		if(strlen( d ) == 3 || ( strncmp( d, "hd", 2 ) != 0 && strncmp( d, "sd", 2) != 0 ) )
+		if( strlen(  d  ) == 3 || (  strncmp(  d, "hd", 2  ) != 0 && strncmp(  d, "sd", 2 ) != 0  )  )
 			continue ;
 		
-		StringAppend( all, "/dev/");
-		StringAppend( all, d ) ;
-		StringAppend( all, "\n" ) ;
+		StringAppend(  all, "/dev/" );
+		StringAppend(  all, d  ) ;
+		StringAppend(  all, "\n"  ) ;
 	}
 	
-	fclose(f);	
+	fclose( f );	
 	
-	if( option == ALL_PARTITIONS )
-		return StringDeleteHandle( all ) ;
+	if(  option == ALL_PARTITIONS  )
+		return StringDeleteHandle(  all  ) ;
 			
-	non_system = String( StringContent( all ) ) ;
+	non_system = String(  StringContent(  all  )  ) ;
 	
-	system = String("");
+	system = String( "" );
 		
-	f = fopen("/etc/fstab","r");
+	f = fopen( "/etc/fstab","r" );
 	
-	while ( fgets(buffer,512,f ) != NULL ){	
+	while (  fgets( buffer,512,f  ) != NULL  ){	
 		
-		if( strncmp( buffer , "/dev/", 5 ) == 0 ){
+		if(  strncmp(  buffer , "/dev/", 5  ) == 0  ){
 			
 			c = buffer ;
 			
-			while ( *++c != ' ' ) { ; }
+			while (  *++c != ' '  ) { ; }
 			
 			*c = '\0' ;
 			
-			StringAppend( system, buffer ) ;		
-			StringAppend( system, "\n");	
+			StringAppend(  system, buffer  ) ;		
+			StringAppend(  system, "\n" );	
 			
-			i = StringIndexOfString( non_system, 0 , buffer ) ;			
+			i = StringIndexOfString(  non_system, 0 , buffer  ) ;			
 			
-			StringRemoveString(non_system,i,strlen(buffer) + 1 ) ;
+			StringRemoveString( non_system,i,strlen( buffer ) + 1  ) ;
 			
-		}else if ( strncmp(buffer ,"UUID",4) == 0 ){
+		}else if (  strncmp( buffer ,"UUID",4 ) == 0  ){
 			
 			c = buffer + 5 ;
 			d = uuid ;
 			
-			while ( ( *d++ = *c++ ) != ' ' ) { ; }
+			while (  (  *d++ = *c++  ) != ' '  ) { ; }
 			
 			*--d = '\0' ;
 			
-			command = String(ZULUCRYPTblkid) ;
-			StringAppend( command , " -U " ) ;
-			StringAppend( command , uuid);
+			command = String( ZULUCRYPTblkid ) ;
+			StringAppend(  command , " -U "  ) ;
+			StringAppend(  command , uuid );
 			
-			z = popen( StringContent( command ), "r" ) ;
+			z = popen(  StringContent(  command  ), "r"  ) ;
 			
-			fgets( buffer, 512, z ) ;
+			fgets(  buffer, 512, z  ) ;
 			
-			pclose( z ) ;
+			pclose(  z  ) ;
 			
 			c = buffer ;
 			
-			while ( *++c != '\n' ) { ; }
+			while (  *++c != '\n'  ) { ; }
 			
 			*c = '\0' ;
 			
-			StringAppend( system, buffer ) ;	
+			StringAppend(  system, buffer  ) ;	
 			
-			StringAppend( system, "\n");
+			StringAppend(  system, "\n" );
 			
-			StringDelete( command ) ;	
+			StringDelete(  command  ) ;	
 			
-			i = StringIndexOfString( non_system,0,buffer) ;
+			i = StringIndexOfString(  non_system,0,buffer ) ;
 			
-			StringRemoveString( non_system, i , strlen(buffer) + 1) ;
+			StringRemoveString(  non_system, i , strlen( buffer ) + 1 ) ;
 			
-		}else if ( strncmp(buffer ,"LABEL",5) == 0 ){
+		}else if (  strncmp( buffer ,"LABEL",5 ) == 0  ){
 			
 			c = buffer + 6 ;
 			d = label ;
 			
-			if ( *c == '\"'){
+			if (  *c == '\"' ){
 				c++ ;
-				while ( ( *d++ = *c++ ) != '\"' ) { ; } 
+				while (  (  *d++ = *c++  ) != '\"'  ) { ; } 
 			}else
-				while ( ( *d++ = *c++ ) != ' ' ) { ; }
+				while (  (  *d++ = *c++  ) != ' '  ) { ; }
 			
 			*--d = '\0' ;
 
-			command = String(ZULUCRYPTblkid) ;
-			StringAppend( command , " -L " ) ;
-			StringAppend( command , label);
+			command = String( ZULUCRYPTblkid ) ;
+			StringAppend(  command , " -L "  ) ;
+			StringAppend(  command , label );
 			
-			z = popen( StringContent( command ), "r" ) ;
+			z = popen(  StringContent(  command  ), "r"  ) ;
 			
-			fgets( buffer, 512, z ) ;
+			fgets(  buffer, 512, z  ) ;
 			
-			pclose( z ) ;
+			pclose(  z  ) ;
 			
 			c = buffer ;
 			
-			while ( *++c != '\n' ) { ; }
+			while (  *++c != '\n'  ) { ; }
 			
 			*c = '\0' ;
 			
-			StringAppend( system, buffer ) ;	
+			StringAppend(  system, buffer  ) ;	
 			
-			StringAppend( system, "\n");
+			StringAppend(  system, "\n" );
 			
-			StringDelete( command ) ;
+			StringDelete(  command  ) ;
 			
-			i = StringIndexOfString( non_system,0,buffer) ;
+			i = StringIndexOfString(  non_system,0,buffer ) ;
 			
-			StringRemoveString( non_system, i , strlen(buffer) + 1) ;
+			StringRemoveString(  non_system, i , strlen( buffer ) + 1 ) ;
 		}		
 	}
 	
-	fclose(f) ;	
+	fclose( f ) ;	
 
-	f = fopen("/etc/crypttab","r");
+	f = fopen( "/etc/crypttab","r" );
 	
-	if( f != NULL ){
+	if(  f != NULL  ){
 		
-		while ( fgets(buffer,512,f ) != NULL ){	
+		while (  fgets( buffer,512,f  ) != NULL  ){	
 		
-			if(buffer[0] == '#')
+			if( buffer[0] == '#' )
 				continue ;
 	
-			if(buffer[0] == '\n')
+			if( buffer[0] == '\n' )
 				continue ;
 		
 			c = buffer ;
 		
-			while( *++c != '/' ) { ; }
+			while(  *++c != '/'  ) { ; }
 		
 			d = c ;
 		
-			while( *++d != ' ' ) { ; }
+			while(  *++d != ' '  ) { ; }
 		
 			*d = '\0' ;
 		
-			i = StringIndexOfString( non_system,0,c) ;
+			i = StringIndexOfString(  non_system,0,c ) ;
 		
-			if( i != -1 )
-				StringRemoveString( non_system, i , strlen(c) + 1) ;
+			if(  i != -1  )
+				StringRemoveString(  non_system, i , strlen( c ) + 1 ) ;
 		}
 		
-		fclose(f) ;
+		fclose( f ) ;
 	}	
 	
-	StringDelete( all ) ;
+	StringDelete(  all  ) ;
 	
-	if( option == SYSTEM_PARTITIONS ){
-		StringDelete( non_system ) ;
-		return StringDeleteHandle( system ) ;
+	if(  option == SYSTEM_PARTITIONS  ){
+		StringDelete(  non_system  ) ;
+		return StringDeleteHandle(  system  ) ;
 	}else{
-		StringDelete( system ) ;
-		return StringDeleteHandle( non_system ) ;		
+		StringDelete(  system  ) ;
+		return StringDeleteHandle(  non_system  ) ;		
 	}
 }
 
-int create_volumes(int argn,char * device,char * fs,char * mode,char * keyType,char * pass,char * rng )
+int create_volumes( int argn,char * device,char * fs,char * mode,char * keyType,char * pass,char * rng  )
 {
 	StrHandle * p ;
 	StrHandle * q ;
@@ -490,107 +490,107 @@ int create_volumes(int argn,char * device,char * fs,char * mode,char * keyType,c
 	char * c ;
 	int z ;
 	
-	if( stat( device, &xt ) != 0 ){
+	if(  stat(  device, &xt  ) != 0  ){
 		st = 1 ;
 		goto out ;
-	}else if( strncmp( device,"/dev/",5) != 0 && xt.st_size < 3145728 ){
+	}else if(  strncmp(  device,"/dev/",5 ) != 0 && xt.st_size < 3145728  ){
 		st = 9 ;
 		goto out ;		
 	}	
 
-	c = partitions( SYSTEM_PARTITIONS ) ;
+	c = partitions(  SYSTEM_PARTITIONS  ) ;
 	
-	if ( strstr( c , device ) != NULL ){		
+	if (  strstr(  c , device  ) != NULL  ){		
 		st = 10 ;
-		free ( c ) ;
+		free (  c  ) ;
 		goto out ;		
 	}	
 	
-	free ( c ) ;
+	free (  c  ) ;
 	
-	if( argn == 5 ){
-		printf("ARE YOU SURE YOU WANT TO CREATE/OVERWRITE: \"%s\" ? Type \"Y\" if you are\n",device);
+	if(  argn == 5  ){
+		printf( "ARE YOU SURE YOU WANT TO CREATE/OVERWRITE: \"%s\" ? Type \"Y\" if you are\n",device );
 		
-		Y = getchar() ;
+		Y = getchar(  ) ;
 		
-		if ( Y != 'Y')
+		if (  Y != 'Y' )
 			st = 5 ;
 		else{			
-			getchar();    //get rid of "\n" still in stdin buffer	
+			getchar(  );    //get rid of "\n" still in stdin buffer	
 			
-			printf("Enter passphrase: ") ;
+			printf( "Enter passphrase: " ) ;
 
-			p = get_passphrase();
+			p = get_passphrase(  );
 			
-			printf("\nRe enter passphrase: ") ;
+			printf( "\nRe enter passphrase: " ) ;
 
-			q = get_passphrase();	
+			q = get_passphrase(  );	
 			
-			printf("\n") ;			
+			printf( "\n" ) ;			
 			
-			if( StringCompare( p , q ) != 0 ){
+			if(  StringCompare(  p , q  ) != 0  ){
 
 				st = 7 ;
 			}else{
 				
-				if(strcmp(mode,"luks") == 0 ){
+				if( strcmp( mode,"luks" ) == 0  ){
 					
-					printf("enter 1 to use \"/dev/random\" device when generating the key  ( more secure but slower )\n") ;
-					printf("enter 2 to use \"/dev/urandom\" device when generating the key ( secure enought and faster )\n") ;
+					printf( "enter 1 to use \"/dev/random\" device when generating the key  (  more secure but slower  )\n" ) ;
+					printf( "enter 2 to use \"/dev/urandom\" device when generating the key (  secure enought and faster  )\n" ) ;
 					
-					Y = getchar() ;
-					getchar() ;
+					Y = getchar(  ) ;
+					getchar(  ) ;
 					
-					if( Y == '1')
-						st = create_volume(device,fs,mode,StringContent( p ),"/dev/random");
-					else if ( Y == '2' )
-						st = create_volume(device,fs,mode,StringContent( p ),"/dev/urandom");
+					if(  Y == '1' )
+						st = create_volume( device,fs,mode,StringContent(  p  ),"/dev/random" );
+					else if (  Y == '2'  )
+						st = create_volume( device,fs,mode,StringContent(  p  ),"/dev/urandom" );
 					else{
 						st = 5 ;
 						goto out ;
 					}
 				}else{
-					st = create_volume(device,fs,mode,StringContent( p ),"NULL") ;						
+					st = create_volume( device,fs,mode,StringContent(  p  ),"NULL" ) ;						
 				}		
 			}
-			StringDelete( p ) ;
-			StringDelete( q ) ;				
+			StringDelete(  p  ) ;
+			StringDelete(  q  ) ;				
 		}
 			
-	}else if ( argn == 8 ){
+	}else if (  argn == 8  ){
 		
-		if( strcmp(rng,"/dev/random") != 0)
-			if( strcmp(rng,"/dev/urandom") != 0){
+		if(  strcmp( rng,"/dev/random" ) != 0 )
+			if(  strcmp( rng,"/dev/urandom" ) != 0 ){
 				st = 2 ;
 				goto out ;
 			}
 				
-		if( strcmp( keyType, "-p" ) == 0 ) {			
+		if(  strcmp(  keyType, "-p"  ) == 0  ) {			
 
-			st = create_volume(device,fs,mode,pass,rng) ;			
+			st = create_volume( device,fs,mode,pass,rng ) ;			
 			
-		}else if( strcmp( keyType, "-f" ) == 0 ) {
+		}else if(  strcmp(  keyType, "-f"  ) == 0  ) {
 			
-			if( stat( pass, &xt) == 0 ) {
+			if(  stat(  pass, &xt ) == 0  ) {
 				
-				c = ( char *) malloc ( sizeof(char) * ( xt.st_size + 1 ) ) ;
+				c = (  char * ) malloc (  sizeof( char ) * (  xt.st_size + 1  )  ) ;
 				
-				if( c == NULL ){
+				if(  c == NULL  ){
 					st = 6 ;
 					goto out ;
 				}
 				
-				*( c + xt.st_size  ) = '\0' ;
+				*(  c + xt.st_size   ) = '\0' ;
 			
-				z = open(pass , O_RDONLY ) ;
+				z = open( pass , O_RDONLY  ) ;
 			
-				read( z, c, xt.st_size ) ;
+				read(  z, c, xt.st_size  ) ;
 			
-				close( z ) ;				
+				close(  z  ) ;				
 				
-				st = create_volume(device,fs,mode,c,rng) ;
+				st = create_volume( device,fs,mode,c,rng ) ;
 				
-				free( c ) ;
+				free(  c  ) ;
 			}else{
 				st = 8 ;
 			}				
@@ -603,29 +603,29 @@ int create_volumes(int argn,char * device,char * fs,char * mode,char * keyType,c
 	
 	out:
 	
-	switch ( st ){
-		case 0 : printf("SUCCESS: volume created successfully\n") ;
+	switch (  st  ){
+		case 0 : printf( "SUCCESS: volume created successfully\n" ) ;
 			break  ;
-		case 1 : printf("ERROR: invalid path to a file or device\n") ;
+		case 1 : printf( "ERROR: invalid path to a file or device\n" ) ;
 			break  ;
-		case 2 : printf("ERROR: Wrong option type\n");
+		case 2 : printf( "ERROR: Wrong option type\n" );
 			break  ;
-		case 3 : printf("ERROR: could not create an encrypted volume in a file or device\n");
+		case 3 : printf( "ERROR: could not create an encrypted volume in a file or device\n" );
 			break  ;	
-		case 4 : printf("ERROR: Wrong number of arguments\n");
+		case 4 : printf( "ERROR: Wrong number of arguments\n" );
 			break  ;
-		case 5 : printf("ERROR: Wrong choice, exiting\n");
+		case 5 : printf( "ERROR: Wrong choice, exiting\n" );
 			break  ;	
-		case 6 : printf("ERROR: couldnt get requested memory to open the key file.\n");
+		case 6 : printf( "ERROR: couldnt get requested memory to open the key file.\n" );
 			break  ;
-		case 7 : printf("ERROR: passphrases do not match\n") ;
+		case 7 : printf( "ERROR: passphrases do not match\n" ) ;
 			break  ;	
-		case 8 : printf("ERROR: invalid path to key file\n") ;
+		case 8 : printf( "ERROR: invalid path to key file\n" ) ;
 			break  ;
-		case 9 : printf("ERROR: container file must be bigger than 3MB\n") ;
+		case 9 : printf( "ERROR: container file must be bigger than 3MB\n" ) ;
 			break  ;
-		case 10: printf("ERROR: creating volumes on system partitions is not allowed.\n");
-			 printf("System partitions have active entries in /etc/fstab and /etc/crypttab\n") ;
+		case 10: printf( "ERROR: creating volumes on system partitions is not allowed.\n" );
+			 printf( "System partitions have active entries in /etc/fstab and /etc/crypttab\n" ) ;
 			break  ;			
 		default:
 			;
@@ -633,7 +633,7 @@ int create_volumes(int argn,char * device,char * fs,char * mode,char * keyType,c
 	return st ;
 }
 
-int addkey(int argn,char * device,char * keyType1,char * existingKey,char * keyType2,char * newKey)
+int addkey( int argn,char * device,char * keyType1,char * existingKey,char * keyType2,char * newKey )
 {
 	StrHandle * p ;
 	StrHandle * q ;
@@ -645,60 +645,60 @@ int addkey(int argn,char * device,char * keyType1,char * existingKey,char * keyT
 	char * c = NULL ;
 	char * d = NULL ;
 		
-	if( stat(device,&st1) != 0 ){
+	if(  stat( device,&st1 ) != 0  ){
 		
 		status = 4 ;
 		goto out ;
 	}
 		
-	if ( argn == 3 ){		
+	if (  argn == 3  ){		
 		
-		printf("Enter an existing passphrase: ") ;
+		printf( "Enter an existing passphrase: " ) ;
 		
-		p = get_passphrase() ;
+		p = get_passphrase(  ) ;
 		
-		printf("\n") ;				
+		printf( "\n" ) ;				
 			
-		printf("Enter the new passphrase: ") ;
+		printf( "Enter the new passphrase: " ) ;
 		
-		q = get_passphrase() ;
+		q = get_passphrase(  ) ;
 		
-		printf("\n") ;	
+		printf( "\n" ) ;	
 			
-		printf("Re enter the new passphrase: ") ;
+		printf( "Re enter the new passphrase: " ) ;
 		
-		n = get_passphrase() ;
+		n = get_passphrase(  ) ;
 		
-		printf("\n") ;
+		printf( "\n" ) ;
 		
-		if( StringCompare( q , n ) != 0 )			
+		if(  StringCompare(  q , n  ) != 0  )			
 			status = 7 ;
 		else			
-			status = add_key( device,StringContent( p ), StringContent( q )) ;			
+			status = add_key(  device,StringContent(  p  ), StringContent(  q  ) ) ;			
 
-		StringDelete( p ) ;			
-		StringDelete( q ) ;	
-		StringDelete( n ) ;
+		StringDelete(  p  ) ;			
+		StringDelete(  q  ) ;	
+		StringDelete(  n  ) ;
 		
-	}else if( argn == 7 ){			
+	}else if(  argn == 7  ){			
 		
-		if ( strcmp( keyType1, "-f" ) == 0 ){			
+		if (  strcmp(  keyType1, "-f"  ) == 0  ){			
 
-			if( stat( existingKey, &st1) == 0 ) {
+			if(  stat(  existingKey, &st1 ) == 0  ) {
 			
-				c = ( char *) malloc ( sizeof(char) * (st1.st_size + 1 )) ;
+				c = (  char * ) malloc (  sizeof( char ) * ( st1.st_size + 1  ) ) ;
 				
-				if( c == NULL ){
+				if(  c == NULL  ){
 					status = 9 ;
 					goto out ;
 				}
-				*( c + st1.st_size ) = '\0' ;
+				*(  c + st1.st_size  ) = '\0' ;
 			
-				z = open(existingKey, O_RDONLY ) ;
+				z = open( existingKey, O_RDONLY  ) ;
 			
-				read( z, c, st1.st_size ) ;
+				read(  z, c, st1.st_size  ) ;
 			
-				close( z ) ;				
+				close(  z  ) ;				
 				
 			}else{
 				status = 8 ;
@@ -706,24 +706,24 @@ int addkey(int argn,char * device,char * keyType1,char * existingKey,char * keyT
 			}
 		}
 		
-		if ( strcmp( keyType2, "-f" ) == 0){			
+		if (  strcmp(  keyType2, "-f"  ) == 0 ){			
 			
-			if( stat( newKey, &st1) == 0 ) {
+			if(  stat(  newKey, &st1 ) == 0  ) {
 			
-				d = ( char *) malloc ( sizeof(char) * ( st1.st_size + 1 )) ;
+				d = (  char * ) malloc (  sizeof( char ) * (  st1.st_size + 1  ) ) ;
 				
-				if( d == NULL ){
+				if(  d == NULL  ){
 					status = 9 ;
 					goto out ;
 				}
 				
-				*( d + st1.st_size ) = '\0' ;
+				*(  d + st1.st_size  ) = '\0' ;
 			
-				z = open(newKey, O_RDONLY ) ;
+				z = open( newKey, O_RDONLY  ) ;
 			
-				read( z, d, st1.st_size ) ;
+				read(  z, d, st1.st_size  ) ;
 			
-				close( z ) ;				
+				close(  z  ) ;				
 				
 			}else{
 				status = 8 ;
@@ -731,28 +731,28 @@ int addkey(int argn,char * device,char * keyType1,char * existingKey,char * keyT
 			}			
 		}
 		
-		if ( strcmp(keyType1,"-f") == 0 && strcmp(keyType2,"-f") == 0 ){
+		if (  strcmp( keyType1,"-f" ) == 0 && strcmp( keyType2,"-f" ) == 0  ){
 			
-			status = add_key( device, c, d) ;
+			status = add_key(  device, c, d ) ;
 			
-			free( c ) ;
-			free( d ) ;
+			free(  c  ) ;
+			free(  d  ) ;
 			
-		}else if (strcmp(keyType1,"-p") == 0 && strcmp(keyType2,"-p") == 0 ){
+		}else if ( strcmp( keyType1,"-p" ) == 0 && strcmp( keyType2,"-p" ) == 0  ){
 			
-			status = add_key(device, existingKey, newKey ) ;
+			status = add_key( device, existingKey, newKey  ) ;
 						
-		}else if (strcmp(keyType1,"-p") == 0 && strcmp(keyType2,"-f") == 0 ){
+		}else if ( strcmp( keyType1,"-p" ) == 0 && strcmp( keyType2,"-f" ) == 0  ){
 						
-			status = add_key( device, existingKey, d) ;
+			status = add_key(  device, existingKey, d ) ;
 			
-			free( d ) ;
+			free(  d  ) ;
 						
-		}else if (strcmp(keyType1,"-f") == 0 && strcmp(keyType2,"-p") == 0 ){			
+		}else if ( strcmp( keyType1,"-f" ) == 0 && strcmp( keyType2,"-p" ) == 0  ){			
 					
-			status = add_key( device, c, newKey) ;	
+			status = add_key(  device, c, newKey ) ;	
 			
-			free( c ) ;
+			free(  c  ) ;
 		}else{			
 			status = 5 ;
 		}
@@ -762,26 +762,26 @@ int addkey(int argn,char * device,char * keyType1,char * existingKey,char * keyT
 	
 	out:
 	
-	switch ( status ){
-		case 0 : printf("SUCCESS: key added successfully\n");
+	switch (  status  ){
+		case 0 : printf( "SUCCESS: key added successfully\n" );
 		break ;		
-		case 1 : printf("ERROR: presented key does not match any key in the volume\n") ;
+		case 1 : printf( "ERROR: presented key does not match any key in the volume\n" ) ;
 		break ;
-		case 2 : printf("ERROR: could not open luks device, quiting\n") ;
+		case 2 : printf( "ERROR: could not open luks device, quiting\n" ) ;
 		break ;
-		case 3 : printf("ERROR: device \"%s\" is not a luks device\n",device) ;
+		case 3 : printf( "ERROR: device \"%s\" is not a luks device\n",device ) ;
 		break ;
-		case 5 : printf("ERROR: Wrong arguments\n") ;
+		case 5 : printf( "ERROR: Wrong arguments\n" ) ;
 		break ;
-		case 6 : printf("ERROR: Wrong number of arguments\n") ;
+		case 6 : printf( "ERROR: Wrong number of arguments\n" ) ;
 		break ;			
-		case 7 : printf("ERROR: new passphrases do not match\n") ;
+		case 7 : printf( "ERROR: new passphrases do not match\n" ) ;
 		break ;
-		case 8 : printf("ERROR: one or both keyfile(s) does not exist\n") ;
+		case 8 : printf( "ERROR: one or both keyfile( s ) does not exist\n" ) ;
 		break ;  
-		case 9 : printf("ERROR: Run out of memory\n") ;
+		case 9 : printf( "ERROR: Run out of memory\n" ) ;
 		break ;
-		case 10 : printf("device does not exist\n") ;
+		case 10 : printf( "device does not exist\n" ) ;
 		break ;
 		default :
 			;		
@@ -789,82 +789,82 @@ int addkey(int argn,char * device,char * keyType1,char * existingKey,char * keyT
 	return status ;
 }
 
-int removekey( int argn , char * device, char * keyType, char * keytoremove )
+int removekey(  int argn , char * device, char * keyType, char * keytoremove  )
 {
 	StrHandle *p;
 	int status = 0 , z = 0 ;
 	struct stat st ;	
 	char *c ;
 	
-	if ( stat( device,&st ) != 0 ){
+	if (  stat(  device,&st  ) != 0  ){
 		status = 10 ;
 		goto out ;
 	}
 	
-	if ( argn == 3 ){
+	if (  argn == 3  ){
 		
-		printf("Enter the passphrase of the key you want to delete: ") ;
+		printf( "Enter the passphrase of the key you want to delete: " ) ;
 		
-		p = get_passphrase() ;
+		p = get_passphrase(  ) ;
 		
-		printf("\n") ;		
+		printf( "\n" ) ;		
 		
-		status = remove_key( device,StringContent(p)) ;
+		status = remove_key(  device,StringContent( p ) ) ;
 		
-		StringDelete( p ) ;
+		StringDelete(  p  ) ;
 		
-	}else if ( argn == 5 ){
+	}else if (  argn == 5  ){
 		
-		if( strcmp(keyType, "-f") == 0 ){
+		if(  strcmp( keyType, "-f" ) == 0  ){
 			
-			if ( stat( keytoremove,&st ) != 0 ){
+			if (  stat(  keytoremove,&st  ) != 0  ){
 				status =  5 ;
 				goto out;
 			}
 			
-			c = ( char * ) malloc ( sizeof( char ) * ( st.st_size + 1 ) ) ;
+			c = (  char *  ) malloc (  sizeof(  char  ) * (  st.st_size + 1  )  ) ;
 			
-			if( c == NULL ){
+			if(  c == NULL  ){
 				status = 7 ;
 				goto out ;
 			}
 			
-			*( c + st.st_size  ) = '\0' ;
+			*(  c + st.st_size   ) = '\0' ;
 			
-			z = open( keytoremove, O_RDONLY ) ;
+			z = open(  keytoremove, O_RDONLY  ) ;
 		
-			read( z , c , st.st_size ) ;
+			read(  z , c , st.st_size  ) ;
 		
-			close( z ) ;		
+			close(  z  ) ;		
 			
-			status = remove_key( device,c ) ;
+			status = remove_key(  device,c  ) ;
 		
-			free( c ) ;
+			free(  c  ) ;
 			
-		}else if( strcmp(keyType, "-p") == 0 ) {
+		}else if(  strcmp( keyType, "-p" ) == 0  ) {
 			
-			status = remove_key( device,keytoremove ) ;		
+			status = remove_key(  device,keytoremove  ) ;		
 		}
 	}else
 		status = 6 ;
 	
 	out:
-	switch ( status ){
-		case 0 : printf("SUCCESS: key removed successfully\n");
+	switch (  status  ){
+		case 0 : printf( "SUCCESS: key removed successfully\n" );
 		break ;
-		case 1 : printf("ERROR: device \"%s\" is not a luks device",device) ;
+		case 1 : printf( "ERROR: device \"%s\" is not a luks device",device ) ;
 		break ;
-		case 2 : printf("ERROR: there is no key in the volume that match the presented key\n") ;
+		case 2 : printf( "ERROR: there is no key in the volume that match the presented key\n" ) ;
 		break ;
-		case 3 : printf("ERROR: could not open device\n") ;
+		case 3 : printf( "ERROR: could not open device\n" ) ;
 		break ;  
-		case 5 : printf("ERROR: keyfile does not exist\n") ;
+		case 5 : printf( "ERROR: keyfile does not exist\n" ) ;
 		break ;
-		case 6 : printf("ERROR: Wrong number of arguments\n") ;
+		case 6 : printf( "ERROR: Wrong number of arguments\n" ) ;
 		break ;
-		case 7 : printf("ERROR: insuffucient system memory, quiting\n") ;
+		case 7 : printf( "ERROR: insuffucient system memory, quiting\n" ) ;
 		break ;
-		case 10 : printf("ERROR: device does not exist\n");
+		case 10 : printf( "ERROR: device does not exist\n" );
 		break ;		
 		default :
 			;		
@@ -872,45 +872,45 @@ int removekey( int argn , char * device, char * keyType, char * keytoremove )
 	return status ;	
 }
 
-int check_system_tools(void)
+int check_system_tools( void )
 {	
 	struct stat st ;
 	StrHandle * p ;
 	
-	if( stat(ZULUCRYPTblkid,&st) == 0 && stat(ZULUCRYPTcryptsetup,&st) == 0 \
-		&& stat(ZULUCRYPTecho,&st) ==0 && stat(ZULUCRYPTlosetup,&st) ==0 \
-		&& stat(ZULUCRYPTmkfs,&st) ==0 && stat(ZULUCRYPTmount,&st) ==0 \
-		&& stat(ZULUCRYPTumount,&st) ==0 && stat(ZULUCRYPTdd,&st)==0){
+	if(  stat( ZULUCRYPTblkid,&st ) == 0 && stat( ZULUCRYPTcryptsetup,&st ) == 0 \
+		&& stat( ZULUCRYPTecho,&st ) ==0 && stat( ZULUCRYPTlosetup,&st ) ==0 \
+		&& stat( ZULUCRYPTmkfs,&st ) ==0 && stat( ZULUCRYPTmount,&st ) ==0 \
+		&& stat( ZULUCRYPTumount,&st ) ==0 && stat( ZULUCRYPTdd,&st )==0 ){
 		
 		return 0 ;
 	}	
-	p = String(ZULUCRYPTcryptsetup) ;
-	StringAppend( p , "\n" ) ;
-	StringAppend( p , ZULUCRYPTblkid) ;
-	StringAppend( p , "\n" ) ;	
-	StringAppend( p , ZULUCRYPTecho) ;
-	StringAppend( p , "\n" ) ;
-	StringAppend( p , ZULUCRYPTlosetup) ;
-	StringAppend( p , "\n" ) ;
-	StringAppend( p , ZULUCRYPTmkfs) ;
-	StringAppend( p , "\n" ) ;
-	StringAppend( p , ZULUCRYPTmount) ;
-	StringAppend( p , "\n" ) ;
-	StringAppend( p , ZULUCRYPTumount) ;
-	StringAppend( p , "\n" ) ;
-	StringAppend( p , ZULUCRYPTdd) ;
-	StringAppend( p , "\n" ) ;
-	StringAppend( p , ZULUCRYPTzuluCrypt) ;
+	p = String( ZULUCRYPTcryptsetup ) ;
+	StringAppend(  p , "\n"  ) ;
+	StringAppend(  p , ZULUCRYPTblkid ) ;
+	StringAppend(  p , "\n"  ) ;	
+	StringAppend(  p , ZULUCRYPTecho ) ;
+	StringAppend(  p , "\n"  ) ;
+	StringAppend(  p , ZULUCRYPTlosetup ) ;
+	StringAppend(  p , "\n"  ) ;
+	StringAppend(  p , ZULUCRYPTmkfs ) ;
+	StringAppend(  p , "\n"  ) ;
+	StringAppend(  p , ZULUCRYPTmount ) ;
+	StringAppend(  p , "\n"  ) ;
+	StringAppend(  p , ZULUCRYPTumount ) ;
+	StringAppend(  p , "\n"  ) ;
+	StringAppend(  p , ZULUCRYPTdd ) ;
+	StringAppend(  p , "\n"  ) ;
+	StringAppend(  p , ZULUCRYPTzuluCrypt ) ;
 	
-	printf("this program will not work as expected on your system\n");
-	printf("because one or more of the following tools are either not present\n") ;
-	printf("or not where they are expected to be.\n%s\n",StringContent( p ));
+	printf( "this program will not work as expected on your system\n" );
+	printf( "because one or more of the following tools are either not present\n" ) ;
+	printf( "or not where they are expected to be.\n%s\n",StringContent(  p  ) );
 	
-	StringDelete( p ) ;
+	StringDelete(  p  ) ;
 	
 	return 1 ;
 }
-int main( int argc , char *argv[])
+int main(  int argc , char *argv[] )
 {
 	char * action = argv[1] ;
 	
@@ -925,110 +925,110 @@ int main( int argc , char *argv[])
 	char *  mapping_name ;
 	char * c ;
 	
-	id = getuid();	
+	id = getuid(  );	
 	
-	setuid(0);
+	setuid( 0 );
 	
-	if( check_system_tools() == 1 )
+	if(  check_system_tools(  ) == 1  )
 		return 100 ;
 	
-	if ( argc < 2 ){
-		help();
+	if (  argc < 2  ){
+		help(  );
 		return 10 ;
 	}
-	if ( strcmp( action, "-h" ) == 0 || strcmp( action, "--help" ) == 0 || strcmp( action, "-help" ) == 0 ){			
-		help();	
-		return 10 ;
-	}
-	
-	if ( strcmp( action, "-v" ) == 0 || strcmp( action, "-version" ) == 0 || strcmp( action, "--version" ) == 0 ){		
-		printf("%s\n",version());
+	if (  strcmp(  action, "-h"  ) == 0 || strcmp(  action, "--help"  ) == 0 || strcmp(  action, "-help"  ) == 0  ){			
+		help(  );	
 		return 10 ;
 	}
 	
-	if ( argc < 3 ){
-		help();
+	if (  strcmp(  action, "-v"  ) == 0 || strcmp(  action, "-version"  ) == 0 || strcmp(  action, "--version"  ) == 0  ){		
+		printf( "%s\n",version(  ) );
+		return 10 ;
+	}
+	
+	if (  argc < 3  ){
+		help(  );
 		return 10 ;
 	}
 		
-	if ( (c = strrchr(device,'/')) != NULL) {
+	if (  ( c = strrchr( device,'/' ) ) != NULL ) {
 		mapping_name =  c + 1  ;	
 		
 	}else{
 		mapping_name =  device  ;			
 	}		
 	
-	if( strcmp( action, "isLuks" ) == 0 ){
+	if(  strcmp(  action, "isLuks"  ) == 0  ){
 	
-		status =  is_luks( device ) ;
+		status =  is_luks(  device  ) ;
 		
-		if( status == 0 )
-			printf("\"%s\" is a luks device\n",device) ;
+		if(  status == 0  )
+			printf( "\"%s\" is a luks device\n",device ) ;
 		else
-			printf("\"%s\" is not a luks device\n",device) ;
+			printf( "\"%s\" is not a luks device\n",device ) ;
 		
-	}else if ( strcmp( action, "status" ) == 0 ){			
+	}else if (  strcmp(  action, "status"  ) == 0  ){			
 
-		status = volume_info( mapping_name ) ;
+		status = volume_info(  mapping_name  ) ;
 		
-	}else if ( strcmp( action, "close" ) == 0 ){			
+	}else if (  strcmp(  action, "close"  ) == 0  ){			
 
-		status =  close_opened_volume( mapping_name ) ;
+		status =  close_opened_volume(  mapping_name  ) ;
 		
-	}else if ( strcmp( action, "open" ) == 0 ){
+	}else if (  strcmp(  action, "open"  ) == 0  ){
 		
-		status =  open_volumes(argc,device,mapping_name,id,argv[3],argv[4],argv[5],argv[6] ) ;		
+		status =  open_volumes( argc,device,mapping_name,id,argv[3],argv[4],argv[5],argv[6]  ) ;		
 		
-	}else if(strcmp(action,"create") == 0 ){
+	}else if( strcmp( action,"create" ) == 0  ){
 
-		status =  create_volumes(argc ,device,argv[3],argv[4],argv[5],argv[6],argv[7] ) ;	
+		status =  create_volumes( argc ,device,argv[3],argv[4],argv[5],argv[6],argv[7]  ) ;	
 		
-	}else if(strcmp(action,"addkey") == 0 ){
+	}else if( strcmp( action,"addkey" ) == 0  ){
 		
-		status =  addkey(argc,device,argv[3],argv[4],argv[5],argv[6]) ;
+		status =  addkey( argc,device,argv[3],argv[4],argv[5],argv[6] ) ;
 		
-	}else if(strcmp(action,"removekey") == 0 ){
+	}else if( strcmp( action,"removekey" ) == 0  ){
 				
-		status =  removekey(argc, device, argv[3],argv[4] );	
+		status =  removekey( argc, device, argv[3],argv[4]  );	
 	
-	}else if ( strcmp(action,"partitions") == 0 ){
+	}else if (  strcmp( action,"partitions" ) == 0  ){
 
-		switch( argv[2][0] ){			
+		switch(  argv[2][0]  ){			
 			
-			case '1' : c = partitions( ALL_PARTITIONS ) ;
+			case '1' : c = partitions(  ALL_PARTITIONS  ) ;
 				   break ;
-			case '2' : c = partitions( SYSTEM_PARTITIONS ) ;
+			case '2' : c = partitions(  SYSTEM_PARTITIONS  ) ;
 				   break ;
-			case '3' : c = partitions( NON_SYSTEM_PARTITIONS ) ;
+			case '3' : c = partitions(  NON_SYSTEM_PARTITIONS  ) ;
 				   break ;
 			default:
-				   printf("wrong argument\n");
+				   printf( "wrong argument\n" );
 				   return 1 ;
 		}		
-		printf("%s", c ) ;
-		free( c ) ;
+		printf( "%s", c  ) ;
+		free(  c  ) ;
 		return 0 ;
 		
-	}else if(strcmp(action,"emptyslots") == 0 ){
+	}else if( strcmp( action,"emptyslots" ) == 0  ){
 		
-		if( stat(device,&st) != 0 ){
-			printf("path \"%s\" does not point to a device\n",device) ;
+		if(  stat( device,&st ) != 0  ){
+			printf( "path \"%s\" does not point to a device\n",device ) ;
 			status = 1 ;			
 		}else{
-			c = empty_slots( device ) ;
+			c = empty_slots(  device  ) ;
 			
-			if( c == NULL ){
-				printf("device \"%s\" is not a luks device\n",device) ;
+			if(  c == NULL  ){
+				printf( "device \"%s\" is not a luks device\n",device ) ;
 				status = 2 ;
 			}else{
-				printf("%s\n",c ) ;
+				printf( "%s\n",c  ) ;
 				status = 0 ;
-				free( c ) ;
+				free(  c  ) ;
 			}		
 		}
 	}else{
-		printf("ERROR: Wrong argument\n") ;
-		help();
+		printf( "ERROR: Wrong argument\n" ) ;
+		help(  );
 		status =  10 ;
 	}
 	
