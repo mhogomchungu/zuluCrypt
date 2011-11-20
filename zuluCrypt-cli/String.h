@@ -46,7 +46,7 @@ StrHandle * String(const char * data) ;
  * Append a string contained in the structure handled by st with "data" string 
  *
  *On success, a concatenated string is returned.
- *On error, the original string is returned. * 
+ *On error, NULL is returned and the original string remain intact. 
  */
 const char * StringAppend(StrHandle * st ,const  char * data)  ;
 
@@ -61,16 +61,17 @@ StrHandle * StringInherit( char * data ) ;
 const char * StringContent( StrHandle * st) ;
 
 /* 
- * Returns an editable string of a string handled by handle st. 
- * Remember to free it when you are done using it. * 
+ * Returns an editable string copy of a string handled by handle st. 
+ * Remember to free it when you are done using it.
+ * NULL is returned when the copy can not be made. 
  */
-char * StringCopy( StrHandle *st ) ;
+char * StringCopy( StrHandle * st ) ;
 
 
 /*
  * Write "size" amount of content of a string handled by "st" to a buffer pointed by "buffer"  *
  */
-void StringReadToBuffer( StrHandle * st,char *buffer, int size) ;
+void StringReadToBuffer( StrHandle * st,char * buffer, int size) ;
 
 
 /*
@@ -84,13 +85,14 @@ void StringDelete(StrHandle * st);
  * return value: a pointer to the string managed by the handle.
  * 
  * This function deletes the handle presented through argument st and returns 
- * a pointer to the string handled by the st and therefore you will 
- * have to free the returned pointer when done with it.
+ * a pointer to the string handled by st.
+ * 
+ * Remember to free the pointer( using free() ) when you are done with it
  * 
  * Use this function when you no longer need the handle i.e dont want to do string
  * manipulation through the handle but want the pointer to the string it managed.
  */
-char * StringDeleteHandle( StrHandle *st) ;
+char * StringDeleteHandle( StrHandle * st) ;
 
 
 /*
@@ -142,7 +144,7 @@ int StringLastIndexOfChar(StrHandle * st , char s) ;
  * NOTE: first character in the string is at position 0
  * 
  */
-int StringLastIndexOfString(StrHandle * st , const char *s) ;
+int StringLastIndexOfString(StrHandle * st , const char * s) ;
 
 
 /*
@@ -158,10 +160,9 @@ const char * StringStringAt( StrHandle * st , int p) ;
  * 
  * return 0 is it does
  * 
- * return -1 if it doesnt
- * 
+ * return -1 if it doesnt * 
  */
-int StringEndsWithString(StrHandle * st , const char *s) ;
+int StringEndsWithString(StrHandle * st , const char * s) ;
 
 
 /*
@@ -169,8 +170,7 @@ int StringEndsWithString(StrHandle * st , const char *s) ;
  * 
  * return 0 is it does
  * 
- * return -1 if it doesnt
- * 
+ * return -1 if it doesnt * 
  */
 int StringEndsWithChar(StrHandle * st ,char s) ;
 
@@ -178,7 +178,7 @@ int StringEndsWithChar(StrHandle * st ,char s) ;
 /*
  * Insert a string s from position x and returns a pointer to the new string
  * 
- * on error returns NULL and the original string remains intact * 
+ * on error returns NULL and the original string remains intact  
  */
 const char * StringInsertString(StrHandle * st, int x, const char * s ) ;
 
@@ -186,7 +186,7 @@ const char * StringInsertString(StrHandle * st, int x, const char * s ) ;
 /*
  * Insert a char s at position x and returns a pointer to the new string
  * 
- * on error returns NULL and the original string remains intact * 
+ * on error returns NULL and the original string remains intact  
  */
 const char * StringInsertChar(StrHandle * st, int x, char s ) ;
 
@@ -208,9 +208,9 @@ const char * StringSubString(StrHandle * st, int x, const char * s ) ;
 /*
  * start at position x and remove y character(s) going right and returns a pointer
  * to the new string or NULL on error. The original string remain intact on error.
- * Careful though, make sure you dont delete past the string length * 
+ * Careful though, make sure you dont delete past the string length  
  */
-const char * StringRemoveString(StrHandle *st,int x , int y) ;
+const char * StringRemoveString(StrHandle * st,int x , int y) ;
 
 
 /*
@@ -232,7 +232,7 @@ const char * StringRemoveLeft(StrHandle * st, int x) ;
  * Remember to free string when you are done with it.
  * returns NULL on error. * 
  */
-char * StringLengthCopy( StrHandle *st,int x ) ;
+char * StringLengthCopy( StrHandle * st,int x ) ;
 
 
 /*
@@ -242,7 +242,7 @@ char * StringLengthCopy( StrHandle *st,int x ) ;
  * 
  * Remember to free the returned string when done with it. * 
  */
-char * StringMidString( StrHandle *st , int x, int y ) ;
+char * StringMidString( StrHandle * st , int x, int y ) ;
 
 
 /*
@@ -253,14 +253,14 @@ char * StringMidString( StrHandle *st , int x, int y ) ;
  * 
  * Return NULL on error. 
  */
-const char * StringReplaceString( StrHandle *st, const char *x, const char *y) ;
+const char * StringReplaceString( StrHandle * st, const char * x, const char * y) ;
 
 
 /*
  * replace all occurance of char x by char y * 
  * Return a const pointer to a modified string *  
  */
-const char * StringReplaceChar( StrHandle *st,char x, char y) ;
+const char * StringReplaceChar( StrHandle * st,char x, char y) ;
 
 /*
  * convert an integer z into a string of size y pointer to by x.
@@ -281,19 +281,19 @@ int StringCompare( StrHandle * x , StrHandle * y ) ;
 /*
  * Compare a string handled by handle x to a string pointer to by y and return 0 if they are equal and 1 if they are not  
  */
-int StringCompareString( StrHandle * x, const char *y ) ;
+int StringCompareString( StrHandle * x, const char * y ) ;
 
 /*
  * Insert character x infront of every character that appear in string y in a string handled by handle st.
  * Retun a poiter to the final string on success and NULL on error
  */
-const char * StringInsertCharString( StrHandle *st, char x, const char *y ) ;
+const char * StringInsertCharString( StrHandle * st, char x, const char * y ) ;
 
 /*
  * Insert character x infront of every character y in a string handled by handle st.
  * Retun a poiter to the final string on success and NULL on error
  */
-const char * StringInsertCharChar( StrHandle *st, char x, char y ) ;
+const char * StringInsertCharChar( StrHandle * st, char x, char y ) ;
 
 #ifdef __cplusplus
 }
