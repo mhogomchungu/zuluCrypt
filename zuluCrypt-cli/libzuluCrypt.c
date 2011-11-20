@@ -663,8 +663,6 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 	
 	StrHandle * q ;
 	
-	StrHandle * z ;
-	
 	StrHandle * x ;
 	
 	char s[2] ;
@@ -692,11 +690,7 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 	else
 		q = String( ZULUCRYPTmount " -w " ) ;
 	
-	z = String( mapper ) ;
-	
-	StringInsertCharString( z,'\\',"#;\"',\\`:!*?&$@(){}[]><|%~^ \n" ) ;
-	
-	StringAppend( q , StringContent( z ) ) ;
+	StringAppend( q , mapper ) ;
 
 	StringAppend( q , " " );
 
@@ -734,8 +728,6 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 	StringDelete( p ) ;
 	
 	StringDelete( q ) ;
-	
-	StringDelete( z ) ;
 	
 	StringDelete( x ) ;
 	
