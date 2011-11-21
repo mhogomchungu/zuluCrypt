@@ -156,14 +156,12 @@ int remove_key( const char * device ,const char * pass )
 		goto out ;
 	}
 
-	status =  crypt_activate_by_passphrase( cd,"zuluCrypt-deleteKey",CRYPT_ANY_SLOT,pass,strlen( pass ),0 );
+	status =  crypt_activate_by_passphrase( cd,NULL,CRYPT_ANY_SLOT,pass,strlen( pass ),0 );
 	
 	if ( status < 0 ){
 		status = 2 ;
 		goto out ;
 	}
-	
-	crypt_deactivate( cd,"/dev/mapper/zuluCrypt-deleteKey" );
 	
 	status = crypt_keyslot_destroy( cd,status ) ;
 	
@@ -520,12 +518,6 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 	execute( StringContent( q ),NULL,0 ) ;
 	
 	StringDelete( q ) ;
-		
-	/*
-	 * I have on occassion seen this not being closed, assuming its due to my slow
-	 * computer and hence putting a few seconds pause just in case
-	 */
-	sleep( 2 ) ;
 	
 	close_mapper( "/dev/mapper/zuluCrypt-create-new" );
 	
