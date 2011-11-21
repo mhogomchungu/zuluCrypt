@@ -308,6 +308,14 @@ const char * StringInsertCharString( StrHandle * st, char x, const char * y ) ;
  */
 const char * StringInsertCharChar( StrHandle * st, char x, char y ) ;
 
+/*
+ * Crop off the first x elements and the last y elements from the string handled by handle st
+ * 
+ * Return a pointer to the cropped string on success and NULL on error. 
+ * NULL is also returned if cropping will result in less that zero characters in the string 
+ */
+const char * StringCrop( StrHandle * st, int x, int y ) ;
+
 #ifdef __cplusplus
 }
 #endif
