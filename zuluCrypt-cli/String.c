@@ -328,6 +328,11 @@ const char * StringInsertChar(StrHandle * st, int x,char s )
 	return StringInsertString(st, x, c ) ;
 }
 
+const char * StringPrepend(StrHandle * st ,const  char * s)
+{
+	return StringInsertString( st,0,s ) ;
+}
+
 const char * StringInsertString(StrHandle * st, int x, const char * s )
 {	
 

@@ -43,12 +43,20 @@ StrHandle * String(const char * data) ;
 
 
 /*
- * Append a string contained in the structure handled by st with "data" string 
+ * Append a string pointer to by s into a string handled by handle st 
  *
- *On success, a concatenated string is returned.
- *On error, NULL is returned and the original string remain intact. 
+ * On success, a concatenated string is returned.
+ * On error, NULL is returned and the original string remain intact. 
  */
-const char * StringAppend(StrHandle * st ,const  char * data)  ;
+const char * StringAppend(StrHandle * st ,const  char * s)  ;
+
+/*
+ * Prepend a string pointed to by s into a string handled by handle st
+ * 
+ * On success, a concatenated string is returned
+ * On error, NULL is returned and the original string remain intact *  
+ */
+const char * StringPrepend(StrHandle * st ,const  char * s)  ;
 
 /*
  * Inherit a string pointed to by data and return a string handle to the string on success or NULL on error.  
