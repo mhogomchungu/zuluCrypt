@@ -133,7 +133,7 @@ int volume_info(  const char * mapper  )
 	 */
 	StringReplaceCharString( p,'_',"#;\"',\\`:!*?&$@(){}[]><|%~^ \n" ) ;
 	
-	StringInsertString( p,0,"/dev/mapper/zuluCrypt-" ) ;
+	StringPrepend( p,"/dev/mapper/zuluCrypt-" ) ;
 	
 	if(  stat(  StringContent( p ),&st ) != 0  ) {
 		
@@ -164,7 +164,7 @@ int close_opened_volume(  char * mapping_name  )
 	
 	StringReplaceCharString( p,'_',"#;\"',\\`:!*?&$@(){}[]><|%~^ \n" ) ;
 	
-	StringInsertString( p,0,"/dev/mapper/zuluCrypt-" ) ;	
+	StringPrepend( p,"/dev/mapper/zuluCrypt-" ) ;	
 	
 	st = close_volume(  StringContent(  p  )  ) ;
 	
@@ -227,7 +227,7 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 	
 	StringReplaceCharString( q,'_',"#;\"',\\`:!*?&$@(){}[]><|%~^ \n" ) ;
 	
-	StringInsertString( q,0,"/dev/mapper/zuluCrypt-" ) ;
+	StringPrepend( q,"/dev/mapper/zuluCrypt-" ) ;
 	
 	z = String( mount_point );
 	
@@ -299,8 +299,6 @@ char * partitions( int option )
 	char uuid[64];
 	char label[64];
 	
-	int i ;
-	
 	StrHandle * command ;
 	StrHandle * all ;
 	StrHandle * system ;
@@ -357,14 +355,12 @@ char * partitions( int option )
 			
 			while (  *++c != ' '  ) { ; }
 			
+			*c++ = '\n' ;
 			*c = '\0' ;
 			
 			StringAppend(  system, buffer  ) ;		
-			StringAppend(  system, "\n" );	
 			
-			i = StringIndexOfString(  non_system, 0 , buffer  ) ;			
-			
-			StringRemoveString( non_system,i,strlen( buffer ) + 1  ) ;
+			StringRemoveStringString( non_system, buffer ) ;
 			
 		}else if (  strncmp( buffer ,"UUID",4 ) == 0  ){
 			
@@ -379,27 +375,24 @@ char * partitions( int option )
 			StringAppend(  command , " -U "  ) ;
 			StringAppend(  command , uuid );
 			
-			z = popen(  StringContent(  command  ), "r"  ) ;
+			z = popen(  StringContent(  command  ), "r"  ) ;			
 			
 			fgets(  buffer, 512, z  ) ;
 			
 			pclose(  z  ) ;
 			
+			StringDelete(  command  ) ;
+			
 			c = buffer ;
 			
 			while (  *++c != '\n'  ) { ; }
 			
+			*c++ = '\n' ;
 			*c = '\0' ;
 			
 			StringAppend(  system, buffer  ) ;	
 			
-			StringAppend(  system, "\n" );
-			
-			StringDelete(  command  ) ;	
-			
-			i = StringIndexOfString(  non_system,0,buffer ) ;
-			
-			StringRemoveString(  non_system, i , strlen( buffer ) + 1 ) ;
+			StringRemoveStringString( non_system, buffer ) ;			
 			
 		}else if (  strncmp( buffer ,"LABEL",5 ) == 0  ){
 			
@@ -424,21 +417,18 @@ char * partitions( int option )
 			
 			pclose(  z  ) ;
 			
+			StringDelete(  command  ) ;
+			
 			c = buffer ;
 			
 			while (  *++c != '\n'  ) { ; }
 			
+			*c++ = '\n' ;
 			*c = '\0' ;
 			
 			StringAppend(  system, buffer  ) ;	
 			
-			StringAppend(  system, "\n" );
-			
-			StringDelete(  command  ) ;
-			
-			i = StringIndexOfString(  non_system,0,buffer ) ;
-			
-			StringRemoveString(  non_system, i , strlen( buffer ) + 1 ) ;
+			StringRemoveStringString( non_system, buffer ) ;
 		}		
 	}
 	
@@ -464,12 +454,12 @@ char * partitions( int option )
 		
 			while(  *++d != ' '  ) { ; }
 		
+			*d++ = '\n' ;
 			*d = '\0' ;
 		
-			i = StringIndexOfString(  non_system,0,c ) ;
-		
-			if(  i != -1  )
-				StringRemoveString(  non_system, i , strlen( c ) + 1 ) ;
+			StringAppend(  system, buffer  ) ;	
+			
+			StringRemoveStringString( non_system, buffer ) ;
 		}
 		
 		fclose( f ) ;

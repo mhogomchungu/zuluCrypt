@@ -411,18 +411,61 @@ const char * StringCrop( StrHandle *st, int x, int y )
 	return st->string = d ;	
 }
 
-const char * StringReplaceString( StrHandle * st, const char *x, const char * y) 
+const char * StringRemoveStringString(StrHandle * st, const char * s ) 
 {
+	return StringReplaceString( st,s,"" ) ;
+}
+
+const char * StringReplaceString( StrHandle * st, const char * x, const char * s ) 
+{
+	char * c ;
+	
+	char * d ;
+	
+	char * e = st->string  ;
+	
+	char * f ;
+	
+	const char * g ;
+	
 	int i = 0 ;
 	
-	while( ( i = StringIndexOfString(st,i,x) ) != -1 )
-	{		
-		StringRemoveString(st,i,strlen(x));
-		
-		StringInsertString(st,i,y) ;		
-	}	
+	int j = strlen( s ) ;
 	
-	return st->string ;	
+	int k = strlen( x ) ;
+	
+	while( ( c = strstr( e, x ) ) != NULL ){
+		i++ ;
+		e = c + k ;		
+	}
+	
+	i = st->size - i * ( k - j ) ;
+	
+	d = f = ( char * ) malloc( sizeof( char ) * ( i + 1 ) ) ;
+	
+	if ( d == NULL )
+		return NULL ;
+	
+	st->size = i ;
+	
+	e = st->string  ;
+	
+	while( ( c = strstr( e, x ) ) != NULL ){
+		
+		while( e != c ) { *d++ = *e++ ; }			
+				
+		g = s - 1 ;
+		
+		while ( *++g != '\0' ) { *d++ = *g ; }
+		
+		e = c + k ;
+	}
+	
+	while ( ( *d++ = *e++ ) != '\0' ) { ; }
+	
+	free( st->string ) ;
+	
+	return st->string = f ;	
 }
 
 const char * StringReplaceChar( StrHandle * st, char x, char y)

@@ -54,7 +54,7 @@ const char * StringAppend(StrHandle * st ,const  char * s)  ;
  * Prepend a string pointed to by s into a string handled by handle st
  * 
  * On success, a concatenated string is returned
- * On error, NULL is returned and the original string remain intact *  
+ * On error, NULL is returned and the original string remain intact   
  */
 const char * StringPrepend(StrHandle * st ,const  char * s)  ;
 
@@ -215,11 +215,18 @@ const char * StringSubString(StrHandle * st, int x, const char * s ) ;
 
 /*
  * start at position x and remove y character(s) going right and returns a pointer
- * to the new string or NULL on error. The original string remain intact on error.
+ * to the new string or NULL on error and the original string remain intact.
  * Careful though, make sure you dont delete past the string length  
  */
 const char * StringRemoveString(StrHandle * st,int x , int y) ;
 
+/*
+ * remove all occurances of string s in a string handled by handle st.
+ * return a pointer to the resulting string on success and NULL on error and the original string
+ * remain intact
+ * 
+ */
+const char * StringRemoveStringString(StrHandle * st, const char * s ) ;
 
 /*
  * Cut the string from position x and discard all elements to the right of x. 
@@ -254,19 +261,16 @@ char * StringMidString( StrHandle * st , int x, int y ) ;
 
 
 /*
- * replace all occurance of string x by string y
- * 
- * Return a const pointer to a modified string. The string is returned
- * unmodified if sting x could not be found. *
- * 
- * Return NULL on error. 
+ * replace all occurance of string x by string y 
+ * return a pointer to the resulting string on success or NULL on error and the original string
+ * remain intact.
  */
 const char * StringReplaceString( StrHandle * st, const char * x, const char * y) ;
 
 
 /*
- * replace all occurance of char x by char y * 
- * Return a const pointer to a modified string *  
+ * replace all occurance of char x by char y  
+ * Return a const pointer to a modified string   
  */
 const char * StringReplaceChar( StrHandle * st,char x, char y) ;
 
@@ -298,20 +302,20 @@ int StringCompareString( StrHandle * x, const char * y ) ;
 
 /*
  * Insert character x infront of every character that appear in string y in a string handled by handle st.
- * Retun a poiter to the final string on success and NULL on error
+ * Retun a poiter to the final string on success and NULL on error and the original string remain intact
  */
 const char * StringInsertCharString( StrHandle * st, char x, const char * y ) ;
 
 /*
  * Insert character x infront of every character y in a string handled by handle st.
- * Retun a poiter to the final string on success and NULL on error
+ * Retun a poiter to the final string on success and NULL on error and the original string remain intact
  */
 const char * StringInsertCharChar( StrHandle * st, char x, char y ) ;
 
 /*
  * Crop off the first x elements and the last y elements from the string handled by handle st
  * 
- * Return a pointer to the cropped string on success and NULL on error. 
+ * Return a pointer to the cropped string on success and NULL on error and the original string remain intact. 
  * NULL is also returned if cropping will result in less that zero characters in the string 
  */
 const char * StringCrop( StrHandle * st, int x, int y ) ;
