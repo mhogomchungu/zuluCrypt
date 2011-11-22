@@ -318,7 +318,7 @@ char * partitions( int option )
 		
 		c = buffer ;
 		
-		while(  *++c != '\n'  ) { ; }
+		while(  *c++ != '\n'  ) { ; }
 	
 		*c = '\0' ;
 		
@@ -328,12 +328,11 @@ char * partitions( int option )
 		
 		d++ ;		
 		
-		if( strlen(  d  ) == 3 || (  strncmp(  d, "hd", 2  ) != 0 && strncmp(  d, "sd", 2 ) != 0  )  )
+		if( strlen(  d  ) == 4 || (  strncmp(  d, "hd", 2  ) != 0 && strncmp(  d, "sd", 2 ) != 0  )  )
 			continue ;
 		
 		StringAppend(  all, "/dev/" );
 		StringAppend(  all, d  ) ;
-		StringAppend(  all, "\n"  ) ;
 	}
 	
 	fclose( f );	
@@ -354,9 +353,10 @@ char * partitions( int option )
 			c = buffer ;
 			
 			while (  *++c != ' '  ) { ; }
-			
+
 			*c++ = '\n' ;
-			*c = '\0' ;
+			
+			*c = '\0' ;			
 			
 			StringAppend(  system, buffer  ) ;		
 			
@@ -385,9 +385,8 @@ char * partitions( int option )
 			
 			c = buffer ;
 			
-			while (  *++c != '\n'  ) { ; }
-			
-			*c++ = '\n' ;
+			while (  *c++ != '\n'  ) { ; }
+
 			*c = '\0' ;
 			
 			StringAppend(  system, buffer  ) ;	
@@ -421,9 +420,8 @@ char * partitions( int option )
 			
 			c = buffer ;
 			
-			while (  *++c != '\n'  ) { ; }
-			
-			*c++ = '\n' ;
+			while (  *c++ != '\n'  ) { ; }
+
 			*c = '\0' ;
 			
 			StringAppend(  system, buffer  ) ;	
@@ -453,8 +451,9 @@ char * partitions( int option )
 			d = c ;
 		
 			while(  *++d != ' '  ) { ; }
-		
+
 			*d++ = '\n' ;
+			
 			*d = '\0' ;
 		
 			StringAppend(  system, buffer  ) ;	
