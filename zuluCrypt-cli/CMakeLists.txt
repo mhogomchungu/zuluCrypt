@@ -28,7 +28,7 @@
  
  add_library( zuluCrypt SHARED libzuluCrypt.c )
  
- add_executable( zuluCrypt-cli zuluCrypt.c ) 
+ add_executable( zuluCrypt-cli zuluCrypt.c close_volume.c add_key.c volume_info.c open_volume.c partitions.c create_volumes.c remove_key.c) 
  
  TARGET_LINK_LIBRARIES( zuluCrypt ${libcryptsetup.so} String ) 
  
