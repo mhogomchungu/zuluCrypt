@@ -318,6 +318,8 @@ char * partitions( int option )
 	
 	all = String( "" );	
 	
+	strcpy( device, "/dev/" ) ;
+	
 	while (  fgets( buffer,512,f  ) != NULL  ){
 		
 		c = buffer ;
@@ -335,9 +337,7 @@ char * partitions( int option )
 		if( strlen(  d  ) == 4 || (  strncmp(  d, "hd", 2  ) != 0 && strncmp(  d, "sd", 2 ) != 0  )  )
 			continue ;
 		
-		strcpy( device, "/dev/" ) ;
-
-		strcat( device, d ) ;
+		strcpy( device + 5 , d ) ;
 		
 		StringAppend(  all, device );
 	}
