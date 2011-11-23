@@ -77,10 +77,7 @@ void createfile::ddFinished(int exitCode)
 	if( exitCode != 0 ){
 		m.setText(tr("you dont seem to have writing access to the destination folder"));
 		m.exec() ;
-		ui->pbCreate->setEnabled(true);
-		ui->lineEditFileName->setEnabled(true);
-		ui->lineEditFilePath->setEnabled(true);
-		ui->lineEditFileSize->setEnabled(true);
+		enableAll();
 		return ;
 	}
 	time.stop();
@@ -90,18 +87,11 @@ void createfile::ddFinished(int exitCode)
 	this->hide();
 }
 
-void createfile::showUI()
+void createfile::enableAll()
 {
-	ui->comboBox->setCurrentIndex(1) ;
-	ui->comboBoxRNG->setCurrentIndex(0);
-	ui->lineEditFileName->clear();
-	ui->lineEditFilePath->setText(QDir::homePath());
-	ui->lineEditFileSize->clear();
-	ui->pbCreate->setEnabled(true);
 	ui->lineEditFileName->setEnabled(true);
 	ui->lineEditFilePath->setEnabled(true);
 	ui->lineEditFileSize->setEnabled(true);
-	ui->progressBar->setValue(0);
 	ui->comboBox->setEnabled(true);
 	ui->comboBoxRNG->setEnabled(true);
 	ui->pbOpenFolder->setEnabled(true);
@@ -110,6 +100,34 @@ void createfile::showUI()
 	ui->label_3->setEnabled(true);
 	ui->label_4->setEnabled(true);
 	ui->label_5->setEnabled(true);
+	ui->pbCreate->setEnabled(true);
+}
+
+void createfile::disableAll()
+{
+	ui->pbCreate->setEnabled(false);
+	ui->lineEditFileName->setEnabled(false);
+	ui->lineEditFilePath->setEnabled(false);
+	ui->lineEditFileSize->setEnabled(false);
+	ui->comboBox->setEnabled(false);
+	ui->comboBoxRNG->setEnabled(false);
+	ui->pbOpenFolder->setEnabled(false);
+	ui->label->setEnabled(false);
+	ui->label_2->setEnabled(false);
+	ui->label_3->setEnabled(false);
+	ui->label_4->setEnabled(false);
+	ui->label_5->setEnabled(false);
+}
+
+void createfile::showUI()
+{
+	enableAll();
+	ui->comboBox->setCurrentIndex(1) ;
+	ui->comboBoxRNG->setCurrentIndex(0);
+	ui->lineEditFileName->clear();
+	ui->lineEditFilePath->setText(QDir::homePath());
+	ui->lineEditFileSize->clear();
+	ui->progressBar->setValue(0);
 	ui->lineEditFileName->setFocus();
 	creating = false ;
 	this->show();
@@ -188,18 +206,7 @@ void createfile::pbCreate()
 		return ;
 	}
 
-	ui->pbCreate->setEnabled(false);
-	ui->lineEditFileName->setEnabled(false);
-	ui->lineEditFilePath->setEnabled(false);
-	ui->lineEditFileSize->setEnabled(false);
-	ui->comboBox->setEnabled(false);
-	ui->comboBoxRNG->setEnabled(false);
-	ui->pbOpenFolder->setEnabled(false);
-	ui->label->setEnabled(false);
-	ui->label_2->setEnabled(false);
-	ui->label_3->setEnabled(false);
-	ui->label_4->setEnabled(false);
-	ui->label_5->setEnabled(false);
+	disableAll();
 
 	time.start();
 

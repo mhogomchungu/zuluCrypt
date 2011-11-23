@@ -58,6 +58,8 @@ private slots:
 	void ddFinished(int) ;
 
 private:
+	void enableAll(void) ;
+	void disableAll(void) ;
 	Ui::createfile *ui;
 	QProcess dd ;
 	QTimer time ;

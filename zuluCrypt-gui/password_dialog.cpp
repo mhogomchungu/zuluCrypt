@@ -208,6 +208,12 @@ void password_Dialog::buttonOpenClicked(void )
 
 	volumePath = d.canonicalPath() ;
 
+	if( QFile::exists( volumePath ) == false ){
+		m.setWindowTitle(tr("ERROR!"));
+		m.setText(tr("volume path field does not point to a file or partition"));
+		m.exec() ;
+		return ;
+	}
 	if(mountPointPath.isEmpty() == true){
 		m.setWindowTitle(tr("ERROR!"));
 		m.setText(tr("mount point path field is empty"));
