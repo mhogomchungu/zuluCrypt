@@ -24,6 +24,7 @@
 #include <QProcess>
 #include <QTimer>
 #include <QCloseEvent>
+#include <QMessageBox>
 
 namespace Ui {
     class createfile;
@@ -55,7 +56,7 @@ private slots:
 
 	void monitorFileGrowth(void);
 
-	void ddFinished(int) ;
+	void ddFinished(int, QProcess::ExitStatus) ;
 
 private:
 	void enableAll(void) ;
@@ -67,6 +68,7 @@ private:
 	void closeEvent(QCloseEvent *) ;
 	bool creating ;
 	QString path ;
+	QMessageBox mb ;
 };
 
 #endif // CREATEFILE_H

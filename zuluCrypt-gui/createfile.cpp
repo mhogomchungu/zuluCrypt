@@ -23,7 +23,7 @@
 
 #include <QFileDialog>
 #include <QFile>
-#include <QMessageBox>
+
 #include <iostream>
 
 createfile::createfile(QWidget *parent) :
@@ -32,6 +32,10 @@ createfile::createfile(QWidget *parent) :
 {
 	ui->setupUi(this);
 	this->setFixedSize(this->size());
+
+	mb.addButton(QMessageBox::Yes);
+	mb.addButton(QMessageBox::No);
+	mb.setDefaultButton(QMessageBox::No);
 
 	ui->progressBar->setMinimum(0);
 	ui->progressBar->setMaximum(100);
@@ -49,8 +53,8 @@ createfile::createfile(QWidget *parent) :
 
 	connect(ui->pbCreate,SIGNAL(clicked()),this,SLOT(pbCreate())) ;
 
-	connect((QObject *)&dd,SIGNAL(finished(int)),
-		this,SLOT(ddFinished(int)));
+	connect((QObject *)&dd,SIGNAL(finished(int, QProcess::ExitStatus)),
+		this,SLOT(ddFinished(int, QProcess::ExitStatus)));
 }
 
 void createfile::closeEvent(QCloseEvent *e)
@@ -59,7 +63,7 @@ void createfile::closeEvent(QCloseEvent *e)
 	pbCancel() ;
 }
 
-void createfile::ddFinished(int exitCode)
+void createfile::ddFinished(int exitCode, QProcess::ExitStatus st)
 {
 	QMessageBox m ;
 	m.setWindowTitle(tr("ERROR!"));
@@ -68,12 +72,14 @@ void createfile::ddFinished(int exitCode)
 	m.addButton(QMessageBox::Ok);
 	m.setFont(this->font());
 
-	//if( st == QProcess::CrashExit){
-	//	m.setText(QString("A problem occured and creation process is terminated.
-	//	\nMake sure file path field points to a folder that exists and you have writing access"));
-	//	m.exec() ;
-	//	return ;
-	//}
+	if( mb.isVisible() == true ){
+		mb.hide();
+		return ;
+	}
+
+	if( st == QProcess::CrashExit)
+		return ;
+
 	if( exitCode != 0 ){
 		m.setText(tr("you dont seem to have writing access to the destination folder"));
 		m.exec() ;
@@ -250,17 +256,13 @@ void createfile::pbCancel()
 		return ;
 	}
 
-	QMessageBox m ;
-	m.setWindowTitle(tr("terminating file creation process"));
-	m.setParent(this);
-	m.setWindowFlags(Qt::Window | Qt::Dialog);
-	m.addButton(QMessageBox::Yes);
-	m.addButton(QMessageBox::No);
-	m.setDefaultButton(QMessageBox::No);
-	m.setText(tr("are you sure you want to stop file creation process?"));
-	m.setFont(this->font());
+	mb.setWindowTitle(tr("terminating file creation process"));
+	mb.setParent(this);
+	mb.setWindowFlags(Qt::Window | Qt::Dialog);
+	mb.setText(tr("are you sure you want to stop file creation process?"));
+	mb.setFont(this->font());
 
-	if(m.exec() == QMessageBox::No)
+	if(mb.exec() == QMessageBox::No)
 		return ;
 
 	dd.close();
