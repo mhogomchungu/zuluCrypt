@@ -359,8 +359,6 @@ void password_Dialog::threadfinished()
 		case 0 :{
 			QString x = volumePath.split("/").last() ;
 
-			x.replace(" ","_") ;
-
 			QString mp = zuluCrypt::mtab(QString("/dev/mapper/zuluCrypt-") + x ) ;
 
 			emit addItemToTable(volumePath,mp);
