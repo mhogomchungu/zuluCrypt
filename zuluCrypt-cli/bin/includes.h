@@ -26,9 +26,9 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 
-#include "String.h" 
-#include "executables.h"
-#include "zuluCrypt.h"
+#include "../String.h" 
+#include "../executables.h"
+#include "../zuluCrypt.h"
  
 #define ALL_PARTITIONS        1
 #define SYSTEM_PARTITIONS     2

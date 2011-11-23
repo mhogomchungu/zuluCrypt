@@ -26,9 +26,9 @@
  
  add_library( String STATIC String.c )
  
- add_library( zuluCrypt SHARED libzuluCrypt.c )
+ add_library( zuluCrypt SHARED lib/libzuluCrypt.c lib/add_key.c lib/remove_key.c lib/empty_slots.c lib/status.c lib/create_luks.c lib/is_luks.c lib/create_volume.c lib/close_mapper.c lib/open_luks.c lib/open_plain.c lib/open_volume.c lib/mount_volume.c lib/unmount_volumes.c)
  
- add_executable( zuluCrypt-cli zuluCrypt.c close_volume.c add_key.c volume_info.c open_volume.c partitions.c create_volumes.c remove_key.c) 
+ add_executable( zuluCrypt-cli bin/zuluCrypt.c bin/close_volume.c bin/add_key.c bin/volume_info.c bin/open_volume.c bin/partitions.c bin/create_volumes.c bin/remove_key.c) 
  
  TARGET_LINK_LIBRARIES( zuluCrypt ${libcryptsetup.so} String ) 
  
