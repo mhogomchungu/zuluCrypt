@@ -469,7 +469,7 @@ void zuluCrypt::aboutMenuOption(void)
 	m.setFont(this->font());
 
 	QString b = tr("\nThis program is distributed in the hope that it will be useful,") ;
-	b = b + tr("but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY");
+	b = b + tr("but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY ");
 	b = b + tr("or FITNESS FOR A PARTICULAR PURPOSE.\n");
 	b = b + tr("See the GNU General Public License for more details.") ;
 
