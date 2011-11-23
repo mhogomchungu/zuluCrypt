@@ -200,6 +200,13 @@ QString zuluCrypt::mtab(QString entry)
 {
 	QFile mt(QString("/etc/mtab")) ;
 
+	QByteArray sc = "#;\"',\\`:!*?&$@(){}[]><|%~^ \n" ;
+	
+	for( int n = 0 ; n < sc.size() ; n++){
+		
+		entry.replace(QChar(sc.at(n)),QChar('_')) ;
+	}	
+	
 	mt.open(QIODevice::ReadOnly) ;
 
 	QByteArray data = mt.readAll() ;
