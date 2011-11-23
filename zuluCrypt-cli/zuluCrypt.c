@@ -294,10 +294,14 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 
 char * partitions( int option )
 {
-	char *c,*d ;
+	char * c ;
+	
+	char * d ;
+	
 	char buffer[512];
-	char uuid[64];
-	char label[64];
+	char uuid[36];
+	char label[16];
+	char device[12] ;
 	
 	StrHandle * command ;
 	StrHandle * all ;
@@ -309,10 +313,10 @@ char * partitions( int option )
 	
 	f = fopen( "/proc/partitions","r" ) ;
 	
-	fgets( buffer,512,f  ) ;
-	fgets( buffer,512,f  ) ;
+	fgets( buffer,1,f  ) ;
+	fgets( buffer,1,f  ) ;
 	
-	all = String( "" );
+	all = String( "" );	
 	
 	while (  fgets( buffer,512,f  ) != NULL  ){
 		
@@ -331,8 +335,11 @@ char * partitions( int option )
 		if( strlen(  d  ) == 4 || (  strncmp(  d, "hd", 2  ) != 0 && strncmp(  d, "sd", 2 ) != 0  )  )
 			continue ;
 		
-		StringAppend(  all, "/dev/" );
-		StringAppend(  all, d  ) ;
+		strcpy( device, "/dev/" ) ;
+
+		strcat( device, d ) ;
+		
+		StringAppend(  all, device );
 	}
 	
 	fclose( f );	
