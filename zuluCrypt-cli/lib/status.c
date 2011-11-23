@@ -125,9 +125,9 @@ char * status( const char * mapper )
 		
 		d = c ;
 		
-		while( *++d != ')' ) { ; }
+		while( *++d != '\0' ) { ; }
 		
-		*d = '\0' ;		
+		* ( d - 2 ) = '\0' ;		
 		
 		realpath( c,path ) ;
 		
