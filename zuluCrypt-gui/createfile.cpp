@@ -49,8 +49,8 @@ createfile::createfile(QWidget *parent) :
 
 	connect(ui->pbCreate,SIGNAL(clicked()),this,SLOT(pbCreate())) ;
 
-	connect((QObject *)&dd,SIGNAL(finished(int,QProcess::ExitStatus)),
-		this,SLOT(ddFinished(int,QProcess::ExitStatus)));
+	connect((QObject *)&dd,SIGNAL(finished(int)),
+		this,SLOT(ddFinished(int)));
 }
 
 void createfile::closeEvent(QCloseEvent *e)
@@ -59,7 +59,7 @@ void createfile::closeEvent(QCloseEvent *e)
 	pbCancel() ;
 }
 
-void createfile::ddFinished(int exitCode, QProcess::ExitStatus st)
+void createfile::ddFinished(int exitCode)
 {
 	QMessageBox m ;
 	m.setWindowTitle(tr("ERROR!"));

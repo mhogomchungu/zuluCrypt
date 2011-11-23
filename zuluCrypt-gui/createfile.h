@@ -55,7 +55,7 @@ private slots:
 
 	void monitorFileGrowth(void);
 
-	void ddFinished(int, QProcess::ExitStatus) ;
+	void ddFinished(int) ;
 
 private:
 	Ui::createfile *ui;
