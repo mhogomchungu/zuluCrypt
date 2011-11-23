@@ -221,7 +221,7 @@
    </item>
    <item>
     <property name="text">
-     <string notr="true">fat</string>
+     <string notr="true">vfat</string>
     </property>
    </item>
   </widget>
