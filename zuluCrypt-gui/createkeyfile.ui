@@ -162,6 +162,14 @@
    </item>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>lineEditFileName</tabstop>
+  <tabstop>lineEditPath</tabstop>
+  <tabstop>pbOpenFolder</tabstop>
+  <tabstop>comboBoxRNG</tabstop>
+  <tabstop>pbCreate</tabstop>
+  <tabstop>pbCancel</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

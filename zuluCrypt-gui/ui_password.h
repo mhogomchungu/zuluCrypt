@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'password.ui'
 **
-** Created: Tue Nov 15 10:16:40 2011
+** Created: Wed Nov 23 13:04:53 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -117,9 +117,14 @@ public:
         labelVolumePath->setObjectName(QString::fromUtf8("labelVolumePath"));
         labelVolumePath->setGeometry(QRect(10, 10, 81, 31));
         labelVolumePath->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
-        QWidget::setTabOrder(PushButtonVolumePath, PushButtonMountPointPath);
-        QWidget::setTabOrder(PushButtonMountPointPath, PassPhraseField);
-        QWidget::setTabOrder(PassPhraseField, checkBoxReadOnly);
+        QWidget::setTabOrder(OpenVolumePath, PushButtonVolumePath);
+        QWidget::setTabOrder(PushButtonVolumePath, MountPointPath);
+        QWidget::setTabOrder(MountPointPath, PushButtonMountPointPath);
+        QWidget::setTabOrder(PushButtonMountPointPath, radioButtonPassPhrase);
+        QWidget::setTabOrder(radioButtonPassPhrase, radioButtonPassPhraseFromFile);
+        QWidget::setTabOrder(radioButtonPassPhraseFromFile, PassPhraseField);
+        QWidget::setTabOrder(PassPhraseField, pushButtonPassPhraseFromFile);
+        QWidget::setTabOrder(pushButtonPassPhraseFromFile, checkBoxReadOnly);
         QWidget::setTabOrder(checkBoxReadOnly, PushButtonOpen);
         QWidget::setTabOrder(PushButtonOpen, PushButtonCancel);
 

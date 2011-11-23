@@ -203,6 +203,17 @@
    </property>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>lineEditVolumePath</tabstop>
+  <tabstop>pushButtonOpenVolume</tabstop>
+  <tabstop>pushButtonOpenPartition</tabstop>
+  <tabstop>lineEditPassphrase</tabstop>
+  <tabstop>pushButtonOpenKeyFile</tabstop>
+  <tabstop>rbPassphrase</tabstop>
+  <tabstop>rbPassphraseFromFile</tabstop>
+  <tabstop>pushButtonDelete</tabstop>
+  <tabstop>pushButtonCancel</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

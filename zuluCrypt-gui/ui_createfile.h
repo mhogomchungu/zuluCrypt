@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'createfile.ui'
 **
-** Created: Wed Nov 16 22:39:42 2011
+** Created: Wed Nov 23 13:04:53 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -105,6 +105,13 @@ public:
         label_5->setObjectName(QString::fromUtf8("label_5"));
         label_5->setGeometry(QRect(50, 104, 55, 20));
         label_5->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
+        QWidget::setTabOrder(lineEditFileName, lineEditFilePath);
+        QWidget::setTabOrder(lineEditFilePath, pbOpenFolder);
+        QWidget::setTabOrder(pbOpenFolder, lineEditFileSize);
+        QWidget::setTabOrder(lineEditFileSize, comboBox);
+        QWidget::setTabOrder(comboBox, comboBoxRNG);
+        QWidget::setTabOrder(comboBoxRNG, pbCreate);
+        QWidget::setTabOrder(pbCreate, pbCancel);
 
         retranslateUi(createfile);
 

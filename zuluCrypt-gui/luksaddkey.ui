@@ -310,6 +310,22 @@
    </widget>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>textEditPathToVolume</tabstop>
+  <tabstop>pushButtonOpenFile</tabstop>
+  <tabstop>pushButtonOpenPartition</tabstop>
+  <tabstop>radioButtonPassphraseinVolume</tabstop>
+  <tabstop>radioButtonPassphraseInVolumeFromFile</tabstop>
+  <tabstop>textEditExistingPassphrase</tabstop>
+  <tabstop>pushButtonOpenExistingKeyFile</tabstop>
+  <tabstop>radioButtonNewPassphrase</tabstop>
+  <tabstop>radioButtonNewPassphraseFromFile</tabstop>
+  <tabstop>textEditPassphraseToAdd</tabstop>
+  <tabstop>pushButtonOpenNewKeyFile</tabstop>
+  <tabstop>lineEditReEnterPassphrase</tabstop>
+  <tabstop>pushButtonAdd</tabstop>
+  <tabstop>pushButtonCancel</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

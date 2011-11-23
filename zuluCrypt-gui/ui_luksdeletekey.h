@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'luksdeletekey.ui'
 **
-** Created: Tue Nov 15 10:16:41 2011
+** Created: Wed Nov 23 13:04:53 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -91,6 +91,14 @@ public:
         pushButtonOpenPartition->setObjectName(QString::fromUtf8("pushButtonOpenPartition"));
         pushButtonOpenPartition->setGeometry(QRect(440, 10, 31, 31));
         pushButtonOpenPartition->setAutoDefault(false);
+        QWidget::setTabOrder(lineEditVolumePath, pushButtonOpenVolume);
+        QWidget::setTabOrder(pushButtonOpenVolume, pushButtonOpenPartition);
+        QWidget::setTabOrder(pushButtonOpenPartition, lineEditPassphrase);
+        QWidget::setTabOrder(lineEditPassphrase, pushButtonOpenKeyFile);
+        QWidget::setTabOrder(pushButtonOpenKeyFile, rbPassphrase);
+        QWidget::setTabOrder(rbPassphrase, rbPassphraseFromFile);
+        QWidget::setTabOrder(rbPassphraseFromFile, pushButtonDelete);
+        QWidget::setTabOrder(pushButtonDelete, pushButtonCancel);
 
         retranslateUi(luksdeletekey);
 

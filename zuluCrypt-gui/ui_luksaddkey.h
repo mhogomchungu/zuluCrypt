@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'luksaddkey.ui'
 **
-** Created: Tue Nov 15 10:16:41 2011
+** Created: Wed Nov 23 13:04:53 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -125,6 +125,19 @@ public:
         labelReEnterPassphrase->setObjectName(QString::fromUtf8("labelReEnterPassphrase"));
         labelReEnterPassphrase->setGeometry(QRect(10, 90, 121, 31));
         labelReEnterPassphrase->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
+        QWidget::setTabOrder(textEditPathToVolume, pushButtonOpenFile);
+        QWidget::setTabOrder(pushButtonOpenFile, pushButtonOpenPartition);
+        QWidget::setTabOrder(pushButtonOpenPartition, radioButtonPassphraseinVolume);
+        QWidget::setTabOrder(radioButtonPassphraseinVolume, radioButtonPassphraseInVolumeFromFile);
+        QWidget::setTabOrder(radioButtonPassphraseInVolumeFromFile, textEditExistingPassphrase);
+        QWidget::setTabOrder(textEditExistingPassphrase, pushButtonOpenExistingKeyFile);
+        QWidget::setTabOrder(pushButtonOpenExistingKeyFile, radioButtonNewPassphrase);
+        QWidget::setTabOrder(radioButtonNewPassphrase, radioButtonNewPassphraseFromFile);
+        QWidget::setTabOrder(radioButtonNewPassphraseFromFile, textEditPassphraseToAdd);
+        QWidget::setTabOrder(textEditPassphraseToAdd, pushButtonOpenNewKeyFile);
+        QWidget::setTabOrder(pushButtonOpenNewKeyFile, lineEditReEnterPassphrase);
+        QWidget::setTabOrder(lineEditReEnterPassphrase, pushButtonAdd);
+        QWidget::setTabOrder(pushButtonAdd, pushButtonCancel);
 
         retranslateUi(luksaddkeyUI);
 

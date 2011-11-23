@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'createkeyfile.ui'
 **
-** Created: Tue Nov 15 10:16:41 2011
+** Created: Wed Nov 23 13:04:53 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -80,6 +80,11 @@ public:
         );
         comboBoxRNG->setObjectName(QString::fromUtf8("comboBoxRNG"));
         comboBoxRNG->setGeometry(QRect(110, 70, 111, 31));
+        QWidget::setTabOrder(lineEditFileName, lineEditPath);
+        QWidget::setTabOrder(lineEditPath, pbOpenFolder);
+        QWidget::setTabOrder(pbOpenFolder, comboBoxRNG);
+        QWidget::setTabOrder(comboBoxRNG, pbCreate);
+        QWidget::setTabOrder(pbCreate, pbCancel);
 
         retranslateUi(createkeyfile);
 

@@ -301,6 +301,19 @@
    </item>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>lineEditVolumePath</tabstop>
+  <tabstop>rbPassphrase</tabstop>
+  <tabstop>rbPassphraseFromFile</tabstop>
+  <tabstop>lineEditPassphrase1</tabstop>
+  <tabstop>pbOpenKeyFile</tabstop>
+  <tabstop>lineEditPassPhrase2</tabstop>
+  <tabstop>comboBoxFS</tabstop>
+  <tabstop>comboBoxVolumeType</tabstop>
+  <tabstop>comboBoxRNG</tabstop>
+  <tabstop>pbCreate</tabstop>
+  <tabstop>pbCancel</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
