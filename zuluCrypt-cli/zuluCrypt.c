@@ -294,6 +294,8 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 
 char * partitions( int option )
 {
+	char * b ;
+	
 	char * c ;
 	
 	char * d ;
@@ -320,6 +322,8 @@ char * partitions( int option )
 	
 	strcpy( device, "/dev/" ) ;
 	
+	b = device + 5 ;
+	
 	while (  fgets( buffer,512,f  ) != NULL  ){
 		
 		c = buffer ;
@@ -337,7 +341,7 @@ char * partitions( int option )
 		if( strlen(  d  ) == 4 || (  strncmp(  d, "hd", 2  ) != 0 && strncmp(  d, "sd", 2 ) != 0  )  )
 			continue ;
 		
-		strcpy( device + 5 , d ) ;
+		strcpy( b , d ) ;
 		
 		StringAppend(  all, device );
 	}
@@ -347,7 +351,7 @@ char * partitions( int option )
 	if(  option == ALL_PARTITIONS  )
 		return StringDeleteHandle(  all  ) ;
 			
-	non_system = String(  StringContent(  all  )  ) ;
+	non_system = all ;
 	
 	system = String( "" );
 		
@@ -470,8 +474,6 @@ char * partitions( int option )
 		
 		fclose( f ) ;
 	}	
-	
-	StringDelete(  all  ) ;
 	
 	if(  option == SYSTEM_PARTITIONS  ){
 		StringDelete(  non_system  ) ;
