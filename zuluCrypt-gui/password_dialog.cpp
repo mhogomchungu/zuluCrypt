@@ -214,6 +214,7 @@ void password_Dialog::buttonOpenClicked(void )
 		m.exec() ;
 		return ;
 	}
+
 	if(mountPointPath.isEmpty() == true){
 		m.setWindowTitle(tr("ERROR!"));
 		m.setText(tr("mount point path field is empty"));
@@ -281,9 +282,11 @@ void password_Dialog::buttonOpenClicked(void )
 		passPhraseField = passPhraseField.replace("\"","\"\"\"") ;
 	}
 
+	QString vp = volumePath.replace("\"","\"\"\"") ;
+
 	QString exe = QString(ZULUCRYPTzuluCrypt) + \
 			QString(" open ") + \
-			QString(" \"") + volumePath + QString("\" ") + \
+			QString(" \"") + vp + QString("\" ") + \
 			QString(" \"") + mountPointPath + QString("\" ") + \
 			mode + QString(" ") + passtype + \
 			QString(" \"") + passPhraseField + QString("\"");
@@ -357,7 +360,7 @@ void password_Dialog::threadfinished()
 
 	switch ( status ){
 		case 0 :{
-			QString x = volumePath.split("/").last() ;
+			QString x = volumePath.replace("\"\"\"","\"").split("/").last() ;
 
 			QString mp = zuluCrypt::mtab(QString("/dev/mapper/zuluCrypt-") + x ) ;
 

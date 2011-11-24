@@ -729,8 +729,10 @@ void zuluCrypt::close()
 {
 	QProcess p ;
 
+	QString vol = ui->tableWidget->item(item->row(),0)->text().replace("\"","\"\"\"") ;
+
 	QString exe = QString(ZULUCRYPTzuluCrypt) + QString(" close ") + QString("\"") + \
-			ui->tableWidget->item(item->row(),0)->text() + QString("\"") ;
+			vol + QString("\"") ;
 
 	p.start( exe ) ;
 

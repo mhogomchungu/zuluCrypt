@@ -237,7 +237,7 @@ void createpartition::pbCreateClicked()
 		return ;
 	}
 
-	QString volumePath = ui->lineEditVolumePath->text() ;
+	QString volumePath = ui->lineEditVolumePath->text().replace("\"","\"\"\"") ; ;
 
 	if( volumePath.mid(0,2) == QString("~/"))
 		volumePath = QDir::homePath() + QString("/") + volumePath.mid(2) ;
