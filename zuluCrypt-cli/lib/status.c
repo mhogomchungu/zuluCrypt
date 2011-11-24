@@ -25,17 +25,15 @@ char * status( const char * mapper )
 	
 	char buffer[ SIZE + 1 ] ;
 	
-	char loop[512] ;
+	char loop[64] ;
 	
-	char path[512];
+	char path[64];
 	
 	char * c = NULL ;
 	
 	char * d = NULL ;
 	
 	const char * e ;
-	
-	int i ;
 	
 	struct crypt_device * cd1 = NULL;
 	
@@ -49,19 +47,9 @@ char * status( const char * mapper )
 	
 	StrHandle * q ;
 	
-	i = crypt_init_by_name( &cd,mapper );
-	
-	//if( i != 0 ){
-		//	c = NULL ;
-	//	goto out ;
-	//}
-	
-	i = crypt_get_active_device( cd1,mapper,&cad ) ;
-	
-	//if( i != 0 ){
-		//	c = NULL ;
-	//	goto out ;
-	//}
+	crypt_init_by_name( &cd,mapper );
+
+	crypt_get_active_device( cd1,mapper,&cad ) ;
 	
 	p = String( mapper ) ;
 	
@@ -115,7 +103,7 @@ char * status( const char * mapper )
 		
 		StringAppend( q, e ) ;
 		
-		execute( StringContent( q ),loop,511 ) ;
+		execute( StringContent( q ),loop,63 ) ;
 		
 		StringDelete( q ) ;
 		
