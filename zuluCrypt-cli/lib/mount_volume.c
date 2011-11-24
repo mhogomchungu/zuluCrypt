@@ -19,6 +19,71 @@
 
 #include "includes.h"
 
+/*
+ * vfat volumes are mounted with root:user ownership and with 755 permissions and they cant be changed.
+ * 
+ * remounting the partition doesnt seem to work so, the partition is first unmounted and then remounted
+ * with proper permissions.
+ * 
+ */
+void vfat( StrHandle * q , const char * map, uid_t id, const char *  mode )
+{	
+	StrHandle * p ;
+	
+	FILE * f ;	
+	
+	char buffer[256] ;	
+	
+	int k = strlen( map ) ;
+	
+	char * c ;
+	
+	f = fopen( "/etc/mtab","r" ) ;
+	
+	while( fgets( buffer,256,f ) != NULL ){
+		
+		if( strncmp( buffer,map, k )  == 0 ){
+			
+			c = buffer + k + 1 ;
+			
+			while( *c++ != ' ' ) { ; }
+			
+			if( strncmp( c ,"vfat", 4 ) == 0 ){
+				
+				p = String( ZULUCRYPTumount ) ;
+				
+				StringAppend( p, " " ) ;
+				
+				StringAppend( p , map ) ;
+				
+				execute( StringContent( p ),NULL,0 ) ;
+				
+				StringDelete( p ) ;
+				
+				p = String( ZULUCRYPTmount ) ;
+				
+				StringAppend( p , " -o dmask=007,uid=" ) ;
+				
+				StringAppend( p , intToString(buffer, 10, id )) ;
+				
+				StringAppend( p , ",gid=" ) ;
+				
+				StringAppend( p , intToString(buffer, 10, id )) ;
+				
+				StringAppend( p , " " ) ;
+				
+				StringReplaceString( q ,ZULUCRYPTmount, StringContent( p ) ) ;
+				
+				execute( StringContent( q ),NULL,0 ) ;
+				
+				StringDelete( p ) ;
+			}			
+			break ;
+		}		
+	}
+	fclose( f );
+}
+
 int mount_volume( const char * mapper,const char * m_point,const char * mode,uid_t id )
 {
 	StrHandle * p ;
@@ -83,6 +148,8 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 		chown( StringContent( p ), id, id ) ;
 		
 		chmod( StringContent( p ), S_IRWXU ) ;
+		
+		vfat( q ,mapper,id,mode ) ; 
 		
 		h = 0 ;
 	}
