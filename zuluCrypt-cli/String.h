@@ -28,11 +28,10 @@ extern "C" {
 #include <string.h>
 #include <stdlib.h>
 
-typedef struct {
-	int size ;
-	char *string ; 
-}StrHandle;
-
+/*
+ * String handle, all string operation should happen through this handle.
+ */
+typedef struct StringHandle StrHandle ;
 
 /*
  * Initializes the string.

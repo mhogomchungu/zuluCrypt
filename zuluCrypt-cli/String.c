@@ -22,6 +22,12 @@
 #include "String.h"
 #include <stdio.h>
 
+struct StringHandle
+{
+	size_t size ;
+	char * string ; 
+};
+
 StrHandle * String( const char * data )
 {
 	const char * c = data ;
@@ -261,12 +267,12 @@ const char * StringReplaceCharString( StrHandle * st, char x, const char * y )
 	
 	int l = st->size ;
 	
-	for( j = 0 ; j < l ; j++ ){
-		
-		for( i = 0 ; i < k ; i++ ){
-		
-			if( * ( st->string + j ) == * ( y + i ) ){
-				
+	for( j = 0 ; j < l ; j++ )
+	{		
+		for( i = 0 ; i < k ; i++ )
+		{		
+			if( * ( st->string + j ) == * ( y + i ) )
+			{				
 				* ( st->string + j ) = x ;		
 						
 				break ;
@@ -438,7 +444,8 @@ const char * StringReplaceString( StrHandle * st, const char * x, const char * s
 	
 	int k = strlen( x ) ;
 	
-	while( ( c = strstr( e, x ) ) != NULL ){
+	while( ( c = strstr( e, x ) ) != NULL )
+	{
 		i++ ;
 		e = c + k ;		
 	}
@@ -533,11 +540,12 @@ const char * StringInsertCharString( StrHandle * st, char x, const char * n )
 	
 	int k = strlen( n ) ;
 	
-	for ( i = 0 ; i < z ; i++ ){
-		
-		for( j = 0 ; j < k ; j++ ){
-			
-			if( c[i] == n[j] ){
+	for ( i = 0 ; i < z ; i++ )
+	{		
+		for( j = 0 ; j < k ; j++ )
+		{			
+			if( c[i] == n[j] )
+			{
 				count++ ;
 				break ;
 			}
