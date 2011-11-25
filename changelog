@@ -36,6 +36,7 @@ version 4.2.0
 -- minor update, volume in the favorite list could not be mounted, this version fix it.
 
 version 4.3.0
+-- fix bugs in zulucrypt-gui triggered by use of double quotes in file and path names
 -- fix a bug. fat based volumes mounted with wrong permissions and only root user could write to the opened volume
 -- volumw property now displays file system type, volume size, volume size used, volume size available and percentage used.
 -- Fix a bug that prevented adding a new key from key file to a luks volume when the existing key was from a passphrase.
