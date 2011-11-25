@@ -202,7 +202,7 @@ void rngThread::run()
 
 volumePropertiesThread::volumePropertiesThread(QString p,QString z,QString *q)
 {
-	path = p ;
+	path = p.replace("\"","\"\"\"") ; ;
 	mpoint = z ;
 	volProperty = q ;
 }

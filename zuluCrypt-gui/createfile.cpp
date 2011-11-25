@@ -216,6 +216,10 @@ void createfile::pbCreate()
 
 	QString filename = ui->lineEditFileName->text().replace("\"","\"\"\"") ;
 
+	QString p = path ;
+
+	p = p.replace("\"","\"\"\"") ;
+
 	time.start();
 
 	creating = true ;
@@ -224,7 +228,7 @@ void createfile::pbCreate()
 	ddExe = ddExe + QString(" if=") ;
 	ddExe = ddExe + ui->comboBoxRNG->currentText() ;
 	ddExe = ddExe + QString(" of=") ;
-	ddExe = ddExe + QString("\"") + path + QString("/") + filename ;
+	ddExe = ddExe + QString("\"") + p + QString("/") + filename ;
 	ddExe = ddExe + QString("\" bs=1024 count=") + ui->lineEditFileSize->text() + size;
 	dd.start( ddExe ) ;
 }

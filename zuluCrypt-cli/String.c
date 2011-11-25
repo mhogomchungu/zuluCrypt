@@ -257,9 +257,13 @@ const char * StringReplaceCharString( StrHandle * st, char x, const char * y )
 	
 	int j ;
 	
-	for( j = 0 ; j < st->size ; j++ ){
+	int k = strlen( y ) ;
+	
+	int l = st->size ;
+	
+	for( j = 0 ; j < l ; j++ ){
 		
-		for( i = 0 ; i < strlen( y ) ; i++ ){
+		for( i = 0 ; i < k ; i++ ){
 		
 			if( * ( st->string + j ) == * ( y + i ) ){
 				

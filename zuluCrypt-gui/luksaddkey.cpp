@@ -348,19 +348,20 @@ void luksaddkeyUI::pbAdd(void)
 
 	if ( x == true)
 		existingPassType = QString(" -f ") ;
-	else{
+	else
 		existingPassType = QString(" -p ") ;
 
-		ExistingKey = ExistingKey.replace("\"","\"\"\"") ;
-	}
+	ExistingKey = ExistingKey.replace("\"","\"\"\"") ;
+
 
 	if ( y == true)
 		newPassType = QString(" -f ") ;
-	else{
+	else
 		newPassType = QString(" -p ") ;
 
-		NewKey = NewKey.replace("\"","\"\"\"") ;
-	}
+	NewKey = NewKey.replace("\"","\"\"\"") ;
+
+	volumePath = volumePath.replace("\"","\"\"\"") ;
 
 	QString exe = QString(ZULUCRYPTzuluCrypt) ;
 	exe = exe + QString(" addkey ") ;

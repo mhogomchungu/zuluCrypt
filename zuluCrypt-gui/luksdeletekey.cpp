@@ -271,19 +271,18 @@ void luksdeletekey::pbDelete()
 			return ;
 	}
 
+	volumePath = volumePath.replace("\"","\"\"\"") ;
+
 	QString exe = QString(ZULUCRYPTzuluCrypt) ;
 	exe = exe + QString(" removekey ")  ;
 	exe = exe + QString("\"") +  volumePath + QString("\"") ;
 
-	if ( ui->rbPassphraseFromFile->isChecked() == true ){
-
+	if ( ui->rbPassphraseFromFile->isChecked() == true )
 		exe = exe + QString(" -f ") ;
-
-	}else{
+	else
 		exe = exe + QString(" -p ") ;
 
-		passphrase = passphrase.replace("\"","\"\"\"") ;
-	}
+	passphrase = passphrase.replace("\"","\"\"\"") ;
 
 	exe = exe + QString(" \"") + passphrase + QString("\"") ;
 

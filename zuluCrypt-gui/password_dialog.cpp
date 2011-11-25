@@ -272,17 +272,16 @@ void password_Dialog::buttonOpenClicked(void )
 
 	QString passtype ;
 
-	if ( B == true ){
-
+	if ( B == true )
 		passtype = " -f " ;
-
-	}else{
+	else
 		passtype = " -p " ;
 
-		passPhraseField = passPhraseField.replace("\"","\"\"\"") ;
-	}
+	passPhraseField = passPhraseField.replace("\"","\"\"\"") ;
 
 	QString vp = volumePath.replace("\"","\"\"\"") ;
+
+	mountPointPath = mountPointPath.replace("\"","\"\"\"") ;
 
 	QString exe = QString(ZULUCRYPTzuluCrypt) + \
 			QString(" open ") + \
