@@ -50,7 +50,11 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 	h = blkid_probe_lookup_value( blkid , "TYPE", &fs, NULL ) ;		
 	
 	if( h != 0 ){
-		
+		/*you will land here if:
+		 * 
+		 *1. you attempt to open a plain volume with a wrong passphrase
+		 *2. you attempt to open a volume without a file system,or unrecognized file system  
+		 */
 		blkid_free_probe( blkid );		
 		
 		close_mapper( mapper ) ; 

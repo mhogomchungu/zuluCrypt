@@ -22,6 +22,56 @@
 #include <mntent.h>
 #include <blkid/blkid.h>
 
+void blkid( const char * all, const char * type,const char * entry, int size, StrHandle * system, StrHandle * non_system )
+{	
+	char device[12] ;
+	
+	const char * e = all ;
+	
+	const char * f ;
+	
+	int j ;
+	
+	int k ;
+	
+	blkid_probe bp ;
+	
+	while( *e != '\0' ){
+		
+		f = e ;
+		
+		while ( *e++ != '\n' ) { ; }
+		
+		j = e - f - 1 ;
+		
+		strncpy( device, f, j ) ; 
+		
+		device[ j ] = '\0' ;	
+		
+		bp = blkid_new_probe_from_filename( device ) ;
+		
+		blkid_do_probe( bp );
+		
+		k = blkid_probe_lookup_value( bp, type, &f, NULL );
+		
+		if( k == 0 ){
+			if( strcmp( f, entry + size ) == 0 ){					
+				
+				device[ j ] = '\n' ;
+				
+				device[ j + 1 ] = '\0' ;
+				
+				StringAppend(  system, device ) ;
+				
+				StringRemoveStringString( non_system , device ) ;					
+				
+				break ;
+			}	
+		}
+		blkid_free_probe( bp );
+	}	
+}
+
 char * partitions( int option )
 {
 	char * b ;
@@ -30,24 +80,11 @@ char * partitions( int option )
 	
 	char * d ;
 	
-	const char * e ;
-	
-	const char * f ;
-	
-	const char * uuid ;
-	
-	int j ;
-	
-	int k ;
-	
 	char buffer[512];
 	
-	//char label[16];
 	char device[12] ;
 	
 	struct mntent * mt ;
-	
-	blkid_probe bp ;
 	
 	StrHandle * all ;
 	StrHandle * system ;
@@ -110,81 +147,12 @@ char * partitions( int option )
 				       
 		}else if ( strncmp( mt->mnt_fsname, "UUID",4 ) == 0 ){
 
-			e = StringContent( all ) ;
+			blkid( StringContent( all ) ,"UUID",mt->mnt_fsname, 5, system, non_system ) ;  				
 			
-			while( 1 ){
-			
-				f = e ;
-						
-				while ( *e++ != '\n' ) { ; }
-				
-				j = e - f - 1 ;
-			
-				strncpy( device, f, j ) ; 
-				
-				device[ j ] = '\0' ;	
-				
-				bp = blkid_new_probe_from_filename( device ) ;
-
-				blkid_do_probe( bp );
-
-				k = blkid_probe_lookup_value( bp, "UUID", &uuid, NULL );
-				
-				if( k == 0 ){
-					if( strcmp( uuid, mt->mnt_fsname + 5 ) == 0 ){					
-
-						device[ j ] = '\n' ;
-					
-						device[ j + 1 ] = '\0' ;
-
-						StringAppend(  system, device ) ;
-
-						StringRemoveStringString( non_system , device ) ;					
-
-						break ;
-					}	
-				}
-				blkid_free_probe( bp );
-			}
 		}else if ( strncmp( mt->mnt_fsname, "LABEL",5 ) == 0 ){
 			
-			e = StringContent( all ) ;
-			
-			while( 1 ){
-				
-				f = e ;
-				
-				while ( *e++ != '\n' ) { ; }
-				
-				j = e - f - 1 ;
-				
-				strncpy( device, f, j ) ; 
-				
-				device[ j ] = '\0' ;				
-				
-				bp = blkid_new_probe_from_filename( device ) ;
-				
-				blkid_do_probe( bp );
-				
-				k = blkid_probe_lookup_value( bp, "LABEL", &uuid, NULL );
-				
-				if( k == 0 ){
-					if( strcmp( uuid, mt->mnt_fsname + 6 ) == 0 ){					
-					
-						device[ j ] = '\n' ;
-					
-						device[ j + 1 ] = '\0' ;
-					
-						StringAppend(  system, device ) ;
-					
-						StringRemoveStringString( non_system , device ) ;					
-					
-						break ;
-					}
-				}				
-				blkid_free_probe( bp );
-			}
-		}
+			blkid( StringContent( all ) ,"LABEL",mt->mnt_fsname, 6, system, non_system ) ;
+		}		
 	}
 
 	endmntent( fd ) ;
