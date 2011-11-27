@@ -171,30 +171,43 @@ void runInThread::run()
 }
 
 
-rngThread::rngThread(QString rn,QString key)
+createFileThread::createFileThread(QString s,QString f,double l,int t)
 {
-	rng = rn ;
-	keyfile = key ;
+	source = s ;
+	file = f ;
+	size = l ;
+	type = t ;
 }
 
-void rngThread::run()
+void createFileThread::run()
 {
 	char data ;
 
 	//QFile blocked when reading from /dev/random for some reason,
 	//going back to C API for file access
 
-	FILE * in = fopen( rng.toAscii().data(),"r") ;
+	FILE * in = fopen( source.toAscii().data(),"r") ;
 
-	FILE * out = fopen( keyfile.toAscii().data(),"w") ;
+	FILE * out = fopen( file.toAscii().data(),"w") ;
 
-	for( int i = 0 ; i < 64 ; i++){
+	double i ;
 
-		do{
+	if( type == 0 ){
+		for( i = 0 ; i < size ; i++){
+
+			do{
+				data = fgetc(in) ;
+			}while( data < 32 || data > 126) ;
+
+			fputc(data,out) ;
+		}
+	}else{
+		for( i = 0 ; i < size ; i++){
+
 			data = fgetc(in) ;
-		}while( data < 32 || data > 126) ;
 
-		fputc(data,out) ;
+			fputc(data,out) ;
+		}
 	}
 	fclose(in) ;
 	fclose(out) ;
@@ -228,7 +241,7 @@ void volumePropertiesThread::run()
 
 	p.close();
 
-	QString exe = QString("df -PTh ")  ;
+	QString exe = QString("df -Ph ")  ;
 
 	p.start(exe);
 
@@ -255,13 +268,7 @@ void volumePropertiesThread::run()
 	j = i - 1 ;
 	while ( c.at(i++) != ' ') { ; }
 
-	QString y = QString(" fs:  ") + QString(c.mid(j,i - j)) ;
-
-	while ( c.at(i++) == ' ') { ; }
-	j = i - 1 ;
-	while ( c.at(i++) != ' ') { ; }
-
-	y = y + QString("\n size:  ") + QString(c.mid(j,i - j)) ;
+	QString y = QString(" size:  ") + QString(c.mid(j,i - j)) ;
 
 	while ( c.at(i++) == ' ') { ; }
 	j = i - 1 ;
@@ -281,6 +288,12 @@ void volumePropertiesThread::run()
 
 	y = y + QString("\n used%:  ") + QString(c.mid(j,i - j)) ;
 
+	//while ( c.at(i++) == ' ') { ; }
+	//j = i - 1 ;
+	//while ( c.at(i++) != ' ') { ; }
+
+	//y = y + QString("\n used%:  ") + QString(c.mid(j,i - j)) ;
+
 	QStringList l = zuluCrypt::luksEmptySlots(path) ;
 
 	if ( zuluCrypt::isLuks(path) == true){
@@ -292,39 +305,4 @@ void volumePropertiesThread::run()
 		*volProperty = x + y;
 	}else
 		*volProperty = QString(" ") + QString( r.right(start) ) + y;
-}
-
-checkSystemTools::checkSystemTools(QString *s)
-{
-	output = s ;
-}
-
-void checkSystemTools::run()
-{
-	QProcess p ;
-
-	p.start(ZULUCRYPTzuluCrypt);
-
-	p.waitForFinished() ;
-
-	if(  p.exitCode() == 100 ){
-
-		QString warning = tr("this program will not work as expected on your system ");
-		warning = warning + tr("because one or more of the following tools are either not present ") ;
-		warning = warning + tr("or not where they are expected to be.\n") ;
-
-		warning = warning + QString(ZULUCRYPTcryptsetup) + QString("\n") ;
-		warning = warning + QString(ZULUCRYPTblkid) + QString("\n") ;
-		warning = warning + QString(ZULUCRYPTecho) + QString("\n") ;
-		warning = warning + QString(ZULUCRYPTlosetup) + QString("\n") ;
-		warning = warning + QString(ZULUCRYPTmkfs) + QString("\n") ;
-		warning = warning + QString(ZULUCRYPTmount) + QString("\n") ;
-		warning = warning + QString(ZULUCRYPTumount) + QString("\n") ;
-		warning = warning + QString(ZULUCRYPTdd) + QString("\n") ;
-		warning = warning + QString(ZULUCRYPTzuluCrypt) + QString("\n") ;
-
-		*output = warning ;
-	}else
-		*output = QString("") ;
-	p.close();
 }

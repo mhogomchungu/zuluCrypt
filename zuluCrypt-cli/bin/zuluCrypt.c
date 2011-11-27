@@ -78,29 +78,11 @@ int check_system_tools( void )
 	struct stat st ;
 	StrHandle * p ;
 	
-	if(  stat( ZULUCRYPTblkid,&st ) == 0 && stat( ZULUCRYPTcryptsetup,&st ) == 0 \
-		&& stat( ZULUCRYPTecho,&st ) ==0 && stat( ZULUCRYPTlosetup,&st ) ==0 \
-		&& stat( ZULUCRYPTmkfs,&st ) ==0 && stat( ZULUCRYPTmount,&st ) ==0 \
-		&& stat( ZULUCRYPTumount,&st ) ==0 && stat( ZULUCRYPTdd,&st )==0 ){
+	if( stat( ZULUCRYPTmkfs,&st ) == 0  ){
 		
 		return 0 ;
 	}	
-	p = String( ZULUCRYPTcryptsetup ) ;
-	StringAppend(  p , "\n"  ) ;
-	StringAppend(  p , ZULUCRYPTblkid ) ;
-	StringAppend(  p , "\n"  ) ;	
-	StringAppend(  p , ZULUCRYPTecho ) ;
-	StringAppend(  p , "\n"  ) ;
-	StringAppend(  p , ZULUCRYPTlosetup ) ;
-	StringAppend(  p , "\n"  ) ;
-	StringAppend(  p , ZULUCRYPTmkfs ) ;
-	StringAppend(  p , "\n"  ) ;
-	StringAppend(  p , ZULUCRYPTmount ) ;
-	StringAppend(  p , "\n"  ) ;
-	StringAppend(  p , ZULUCRYPTumount ) ;
-	StringAppend(  p , "\n"  ) ;
-	StringAppend(  p , ZULUCRYPTdd ) ;
-	StringAppend(  p , "\n"  ) ;
+	p = String(  ZULUCRYPTmkfs ) ;
 	StringAppend(  p , ZULUCRYPTzuluCrypt ) ;
 	
 	printf( "this program will not work as expected on your system\n" );

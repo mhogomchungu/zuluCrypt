@@ -19,6 +19,9 @@
 
 #include "includes.h"
 
+#include <mntent.h>
+#include <blkid/blkid.h>
+
 char * partitions( int option )
 {
 	char * b ;
@@ -27,23 +30,35 @@ char * partitions( int option )
 	
 	char * d ;
 	
+	const char * e ;
+	
+	const char * f ;
+	
+	const char * uuid ;
+	
+	int j ;
+	
+	int k ;
+	
 	char buffer[512];
-	char uuid[36];
-	char label[16];
+	
+	//char label[16];
 	char device[12] ;
 	
-	StrHandle * command ;
+	struct mntent * mt ;
+	
+	blkid_probe bp ;
+	
 	StrHandle * all ;
 	StrHandle * system ;
 	StrHandle * non_system ;
 	
-	FILE *f ;
-	FILE *z ;
+	FILE * fd ;
 	
-	f = fopen( "/proc/partitions","r" ) ;
+	fd = fopen( "/proc/partitions","r" ) ;
 	
-	fgets( buffer,1,f  ) ;
-	fgets( buffer,1,f  ) ;
+	fgets( buffer,1,fd  ) ;
+	fgets( buffer,1,fd  ) ;
 	
 	all = String( "" );	
 	
@@ -51,13 +66,11 @@ char * partitions( int option )
 	
 	b = device + 5 ;
 	
-	while (  fgets( buffer,512,f  ) != NULL  ){
+	while (  fgets( buffer,512,fd  ) != NULL  ){
 		
 		c = buffer ;
 		
 		while(  *c++ != '\n'  ) { ; }
-		
-		*c = '\0' ;
 		
 		d = c ;
 		
@@ -73,7 +86,7 @@ char * partitions( int option )
 		StringAppend(  all, device );
 	}
 	
-	fclose( f );	
+	fclose( fd );	
 	
 	if(  option == ALL_PARTITIONS  )
 		return StringDeleteHandle(  all  ) ;
@@ -81,100 +94,106 @@ char * partitions( int option )
 	non_system = all ;
 	
 	system = String( "" );
+
+	fd = setmntent("/etc/fstab", "r");
 	
-	f = fopen( "/etc/fstab","r" );
-	
-	while (  fgets( buffer,512,f  ) != NULL  ){	
-		
-		if(  strncmp(  buffer , "/dev/", 5  ) == 0  ){
+	while( ( mt = getmntent( fd ) ) != NULL ){
+		if ( strncmp( mt->mnt_fsname, "/dev/",5 ) == 0 ){
+
+			strcpy( device,mt->mnt_fsname ) ;
 			
-			c = buffer ;
+			strcat( device, "\n" ) ;
 			
-			while (  *++c != ' '  ) { ; }
+			StringAppend( system,device ) ;
 			
-			*c++ = '\n' ;
+			StringRemoveStringString( non_system , device ) ;
+				       
+		}else if ( strncmp( mt->mnt_fsname, "UUID",4 ) == 0 ){
+
+			e = StringContent( all ) ;
 			
-			*c = '\0' ;			
+			while( 1 ){
 			
-			StringAppend(  system, buffer  ) ;		
-			
-			StringRemoveStringString( non_system, buffer ) ;
-			
-		}else if (  strncmp( buffer ,"UUID",4 ) == 0  ){
-			
-			c = buffer + 5 ;
-			d = uuid ;
-			
-			while (  (  *d++ = *c++  ) != ' '  ) { ; }
-			
-			*--d = '\0' ;
-			
-			command = String( ZULUCRYPTblkid ) ;
-			StringAppend(  command , " -U "  ) ;
-			StringAppend(  command , uuid );
-			
-			z = popen(  StringContent(  command  ), "r"  ) ;			
-			
-			fgets(  buffer, 512, z  ) ;
-			
-			pclose(  z  ) ;
-			
-			StringDelete(  command  ) ;
-			
-			c = buffer ;
-			
-			while (  *c++ != '\n'  ) { ; }
-			
-			*c = '\0' ;
-			
-			StringAppend(  system, buffer  ) ;	
-			
-			StringRemoveStringString( non_system, buffer ) ;			
-			
-		}else if (  strncmp( buffer ,"LABEL",5 ) == 0  ){
-			
-			c = buffer + 6 ;
-			d = label ;
-			
-			if (  *c == '\"' ){
-				c++ ;
-				while (  (  *d++ = *c++  ) != '\"'  ) { ; } 
-			}else
-				while (  (  *d++ = *c++  ) != ' '  ) { ; }
+				f = e ;
+						
+				while ( *e++ != '\n' ) { ; }
 				
-				*--d = '\0' ;
+				j = e - f - 1 ;
 			
-			command = String( ZULUCRYPTblkid ) ;
-			StringAppend(  command , " -L "  ) ;
-			StringAppend(  command , label );
+				strncpy( device, f, j ) ; 
+				
+				device[ j ] = '\0' ;	
+				
+				bp = blkid_new_probe_from_filename( device ) ;
+
+				blkid_do_probe( bp );
+
+				k = blkid_probe_lookup_value( bp, "UUID", &uuid, NULL );
+				
+				if( k == 0 ){
+					if( strcmp( uuid, mt->mnt_fsname + 5 ) == 0 ){					
+
+						device[ j ] = '\n' ;
+					
+						device[ j + 1 ] = '\0' ;
+
+						StringAppend(  system, device ) ;
+
+						StringRemoveStringString( non_system , device ) ;					
+
+						break ;
+					}	
+				}
+				blkid_free_probe( bp );
+			}
+		}else if ( strncmp( mt->mnt_fsname, "LABEL",5 ) == 0 ){
 			
-			z = popen(  StringContent(  command  ), "r"  ) ;
+			e = StringContent( all ) ;
 			
-			fgets(  buffer, 512, z  ) ;
-			
-			pclose(  z  ) ;
-			
-			StringDelete(  command  ) ;
-			
-			c = buffer ;
-			
-			while (  *c++ != '\n'  ) { ; }
-			
-			*c = '\0' ;
-			
-			StringAppend(  system, buffer  ) ;	
-			
-			StringRemoveStringString( non_system, buffer ) ;
-		}		
+			while( 1 ){
+				
+				f = e ;
+				
+				while ( *e++ != '\n' ) { ; }
+				
+				j = e - f - 1 ;
+				
+				strncpy( device, f, j ) ; 
+				
+				device[ j ] = '\0' ;				
+				
+				bp = blkid_new_probe_from_filename( device ) ;
+				
+				blkid_do_probe( bp );
+				
+				k = blkid_probe_lookup_value( bp, "LABEL", &uuid, NULL );
+				
+				if( k == 0 ){
+					if( strcmp( uuid, mt->mnt_fsname + 6 ) == 0 ){					
+					
+						device[ j ] = '\n' ;
+					
+						device[ j + 1 ] = '\0' ;
+					
+						StringAppend(  system, device ) ;
+					
+						StringRemoveStringString( non_system , device ) ;					
+					
+						break ;
+					}
+				}				
+				blkid_free_probe( bp );
+			}
+		}
 	}
+
+	endmntent( fd ) ;
 	
-	fclose( f ) ;	
+	fd = fopen( "/etc/crypttab","r" );
 	
-	f = fopen( "/etc/crypttab","r" );
-	
-	if(  f != NULL  ){
+	if(  fd != NULL  ){
 		
-		while (  fgets( buffer,512,f  ) != NULL  ){	
+		while (  fgets( buffer,512,fd  ) != NULL  ){	
 			
 			if( buffer[0] == '#' )
 				continue ;
@@ -199,9 +218,9 @@ char * partitions( int option )
 			StringRemoveStringString( non_system, buffer ) ;
 		}
 		
-		fclose( f ) ;
+		fclose( fd ) ;
 	}	
-	
+
 	if(  option == SYSTEM_PARTITIONS  ){
 		StringDelete(  non_system  ) ;
 		return StringDeleteHandle(  system  ) ;

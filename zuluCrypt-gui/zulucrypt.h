@@ -42,6 +42,7 @@
 #include "createkeyfile.h"
 #include "startupupdateopenedvolumes.h"
 #include "closeallvolumesthread.h"
+#include "zulucryptthreads.h"
 
 namespace Ui {
     class zuluCrypt;
@@ -86,7 +87,7 @@ private slots :
 
 	void close() ;
 
-	void closeAll(QTableWidgetItem *) ;
+	void closeAll(QTableWidgetItem *,int) ;
 
 	void cellClicked( QTableWidgetItem * item) ;
 
@@ -124,9 +125,9 @@ private slots :
 
 	void deleteThread() ;
 
-	void cstFinished(void) ;
-
 	void cellEntered(QTableWidgetItem *) ;
+
+	void closeThreadFinished(void) ;
 
 private:
 
@@ -170,11 +171,7 @@ private:
 
 	QSystemTrayIcon *trayIcon ;
 
-	//QFont Font ;
-
 	QList<QMenu *> menulist ;
-
-	//rngselector *rng ;
 
 	volumePropertiesThread *vpt ;
 
@@ -186,9 +183,11 @@ private:
 
 	closeAllVolumesThread *t ;
 
-	checkSystemTools *cst ;
+	QString cstString ;
 
-	QString cstString ;	
+	runInThread *vct ;
+
+	int status ;
 };
 
 #endif // ZULUCRYPT_H

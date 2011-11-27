@@ -152,7 +152,7 @@ void createkeyfile::pbCreate()
 
 	o.close();
 
-	rng = new rngThread(ui->comboBoxRNG->currentText(),keyfile) ;
+	rng = new createFileThread(ui->comboBoxRNG->currentText(),keyfile,64,0) ;
 
 	connect(rng,SIGNAL(finished()),this,SLOT(threadfinished()));
 

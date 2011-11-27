@@ -21,10 +21,6 @@
 
 int open_volume( const char * dev,const char * map,const char * m_point,uid_t id,const char * mode,const char * pass,const char * source ) 
 {
-	char status[2] ;
-	
-	StrHandle * p = NULL ;
-	
 	struct stat st ;
 	
 	int h ;
@@ -41,24 +37,6 @@ int open_volume( const char * dev,const char * map,const char * m_point,uid_t id
 		
 		if( stat( map,&st ) == 0 )
 			return 2 ;	
-		
-		if ( strncmp( dev,"/dev/",5 ) != 0 ){
-			
-			p = String( ZULUCRYPTlosetup  ) ;
-			
-			StringAppend( p ," -f 2>/dev/null 1>&2 ;" );
-			
-			StringAppend( p , ZULUCRYPTecho ) ;
-			
-			StringAppend( p , "  $? " ) ;
-			
-			execute( StringContent( p ),status,1 ) ;
-			
-			StringDelete( p ) ;
-			
-			if ( status[0] != '0' )
-				return 1 ;			
-		}
 		
 		luks = is_luks( dev ) ;		
 		
@@ -85,6 +63,7 @@ int open_volume( const char * dev,const char * map,const char * m_point,uid_t id
 			
 			h = mount_volume( map,m_point,mode,id ) ;
 		}
-		return h ;	
+		
+	return h ;		
 }
 

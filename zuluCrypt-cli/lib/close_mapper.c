@@ -23,7 +23,7 @@ int close_mapper( const char * mapper )
 {
 	int i = crypt_deactivate( NULL, mapper );
 	
-	if ( i != 0 ){
+	if ( i != 0 ){		
 		/*
 		 * I have on occassion seen a mapper not getting closed when running zuluCrypt-test
 		 * Assuming its due to slow computers like mine and hence adding two seconds delay

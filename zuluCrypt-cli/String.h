@@ -279,7 +279,7 @@ const char * StringReplaceChar( StrHandle * st,char x, char y) ;
 const char * StringReplaceCharString( StrHandle * st, char x, const char * y ) ;
 
 /*
- * convert an integer z into a string of size y pointer to by x.
+ * convert a number z into a string of size y pointer to by x.
  * 
  * return value: a pointer to the beginning of the result(use this pointer and not x).
  * 
@@ -287,7 +287,7 @@ const char * StringReplaceCharString( StrHandle * st, char x, const char * y ) ;
  * 
  */
 
-char * intToString(char * x, int y, int z) ;
+char * intToString( char * x, int y, int z ) ;
 
 /*
  * Compare a string handled by handle x to a string handled by handle y and return 0 if they are equal and 1 if they are not  

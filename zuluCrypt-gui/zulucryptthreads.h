@@ -34,14 +34,16 @@ private:
 	QFont font ;
 };
 
-class rngThread : public QThread
+class createFileThread : public QThread
 {
 public :
-	rngThread(QString,QString) ;
+	createFileThread(QString source,QString destination,double size,int type) ;
 private:
 	void run() ;
-	QString rng ;
-	QString keyfile ;
+	QString source ;
+	QString file ;
+	double size ;
+	int type ;
 
 };
 
@@ -55,15 +57,6 @@ private:
 	QString mpoint ;
 	QString *volProperty ;
 
-};
-
-class checkSystemTools : public QThread
-{
-public:
-	checkSystemTools(QString *) ;
-private:
-	void run() ;
-	QString *output ;
 };
 
 class runInThread : public QThread

@@ -38,6 +38,11 @@ int create_volumes( int argn,char * device,char * fs,char * mode,char * keyType,
 		goto out ;		
 	}	
 	
+	if( stat( ZULUCRYPTmkfs, &xt ) != 0  ){		
+		st = 11 ;
+		goto out ;		
+	}
+	
 	c = partitions(  SYSTEM_PARTITIONS  ) ;
 	
 	if (  strstr(  c , device  ) != NULL  ){		
@@ -166,7 +171,9 @@ int create_volumes( int argn,char * device,char * fs,char * mode,char * keyType,
 		break  ;
 		case 10: printf( "ERROR: creating volumes on system partitions is not allowed.\n" );
 		printf( "System partitions have active entries in /etc/fstab and /etc/crypttab\n" ) ;
-		break  ;			
+		break  ;
+		case 11 : printf( "ERROR: %s not found \n",ZULUCRYPTmkfs ) ;
+				break  ;
 		default:
 			;
 	}

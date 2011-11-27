@@ -43,11 +43,11 @@ FORMS    += zulucrypt.ui password.ui \
     createkeyfile.ui \
     rngselector.ui
 
-TRANSLATIONS = ../translations/swahili_la.ts
+TRANSLATIONS = 
 
 RESOURCES = icon.qrc
 
-
+LIBS += -lblkid
 
 
 

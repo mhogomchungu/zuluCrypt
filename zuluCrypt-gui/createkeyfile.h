@@ -58,7 +58,7 @@ private:
 
 	Ui::createkeyfile *ui;
 
-	rngThread *rng ;
+	createFileThread *rng ;
 
 	QString in ;
 	QString out ;

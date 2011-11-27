@@ -23,10 +23,6 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 {
 	StrHandle * q ;
 	
-	StrHandle * p ;
-	
-	const char * c ;
-	
 	struct stat st ;
 	
 	int status ;
@@ -40,67 +36,54 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 			if( strcmp( rng,"/dev/urandom" ) != 0 )
 				return 2 ;
 			
-			if( strncmp( fs,"ext3",4 ) != 0 )
-				if( strncmp( fs,"ext4",4 ) != 0 )
-					if( strncmp( fs,"vfat",4 ) != 0 )
-						return 2 ;
+	if( strncmp( fs,"ext3",4 ) != 0 )
+		if( strncmp( fs,"ext4",4 ) != 0 )
+			if( strncmp( fs,"vfat",4 ) != 0 )
+				return 2 ;
+				
+	if( strcmp( type,"luks" )  == 0 ){
 					
-					c = strrchr( dev,'/') ;
-				
-				if( c == NULL )
-					p = String( dev ) ;
-				else
-					p = String( ++c ) ;
-				
-				StringReplaceCharString( p,'_',"#;\"',\\`:!*?&$@(){}[]><|%~^ \n" ) ;
-				
-				StringPrepend( p,"/dev/mapper/zuluCrypt-create-" ) ;
-				
-				if( strcmp( type,"luks" )  == 0 ){
+	status = create_luks( dev,pass,rng ) ;		
 					
-					status = create_luks( dev,pass,rng ) ;		
+	if( status != 0 )
+		return 3 ;
 					
-					if( status != 0 )
-						return 3 ;
+	status = open_luks( dev,"/dev/mapper/zuluCrypt-create-new","rw","-p",pass ) ;
 					
-					status = open_luks( dev,StringContent( p ),"rw","-p",pass ) ;
+	if( status != 0 )
+		return 3 ;
 					
-					if( status != 0 )
-						return 3 ;
+	}else if( strcmp( type,"plain") == 0 ){
 					
-				}else if( strcmp( type,"plain") == 0 ){
+		status = open_plain( dev,"/dev/mapper/zuluCrypt-create-new","rw","-p",pass,"cbc-essiv:sha256" ) ;
 					
-					status = open_plain( dev,StringContent( p ),"rw","-p",pass,"cbc-essiv:sha256" ) ;
-					
-					if( status != 0 )
-						return 3 ;		
-				}else{
-					return 2 ;
-				}
+	if( status != 0 )
+		return 3 ;		
+	}else{
+		return 2 ;
+	}
 				
-				q = String( ZULUCRYPTmkfs );
+	q = String( ZULUCRYPTmkfs );
 				
-				StringAppend( q , " -t ") ;
+	StringAppend( q , " -t ") ;
 				
-				StringAppend( q , fs ) ;
+	StringAppend( q , fs ) ;
 				
-				if( strcmp( fs,"vfat") == 0 )
-					StringAppend( q , " " ) ;
-				else
-					StringAppend( q , " -m 1 " ) ;
+	if( strcmp( fs,"vfat") == 0 )
+		StringAppend( q , " " ) ;
+	else
+		StringAppend( q , " -m 1 " ) ;
 				
-				StringAppend( q , StringContent( p ) ) ;
+	StringAppend( q , "/dev/mapper/zuluCrypt-create-new" ) ;
+			
+	StringAppend( q , " 1>/dev/null 2>&1" ) ;
 				
-				StringAppend( q , " 1>/dev/null 2>&1" ) ;
+	execute( StringContent( q ),NULL,0 ) ;
 				
-				execute( StringContent( q ),NULL,0 ) ;
+	close_mapper( "/dev/mapper/zuluCrypt-create-new" );				
 				
-				close_mapper( StringContent( p ) );
+	StringDelete( q ) ;
 				
-				StringDelete( p ) ;
-				
-				StringDelete( q ) ;
-				
-				return 0 ;	
+	return 0 ;	
 }
 

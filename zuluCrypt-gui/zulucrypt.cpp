@@ -139,30 +139,13 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 		SLOT(UIMessage(QString,QString))) ;
 
 	sov->start();
-
-	cst = new checkSystemTools(&cstString) ;
-
-	connect(cst,
-		SIGNAL(finished()),
-		this,
-		SLOT(cstFinished()));
-
-	cst->start();
-}
-
-void zuluCrypt::cstFinished()
-{
-	if ( cstString != QString("") )
-		UIMessage(tr("WARNING"),cstString);
-
-	delete cst ;
 }
 
 void zuluCrypt::closeAllVolumes()
 {
 	t = new closeAllVolumesThread(ui->tableWidget) ;
 
-	connect(t,SIGNAL(close(QTableWidgetItem *)),this,SLOT(closeAll(QTableWidgetItem *))) ;
+	connect(t,SIGNAL(close(QTableWidgetItem *,int)),this,SLOT(closeAll(QTableWidgetItem *,int))) ;
 
 	connect(t,SIGNAL(finished()),this,SLOT(deleteThread())) ;
 
@@ -174,10 +157,16 @@ void zuluCrypt::deleteThread()
 	delete t ;
 }
 
-void zuluCrypt::closeAll(QTableWidgetItem * i)
+void zuluCrypt::closeAll(QTableWidgetItem * i,int st)
 {
-	item = i ;
-	close() ;
+	if( st == 0 )
+		removeRowFromTable(i->row());
+	else{
+		QString msg = tr("Could not close \"") + \
+			      ui->tableWidget->item(i->row(),1)->text() + \
+				tr("\"because the mount point and/or one or more files are in use") ;
+		UIMessage(QString("ERROR!"),msg);
+	}
 }
 
 void zuluCrypt::minimize()
@@ -725,20 +714,13 @@ void zuluCrypt::UIMessage(QString title, QString message)
 	m.exec() ;
 }
 
-void zuluCrypt::close()
+void zuluCrypt::closeThreadFinished()
 {
-	QProcess p ;
+	ui->tableWidget->setEnabled( true );
 
-	QString vol = ui->tableWidget->item(item->row(),0)->text().replace("\"","\"\"\"") ;
+	delete vct ;
 
-	QString exe = QString(ZULUCRYPTzuluCrypt) + QString(" close ") + QString("\"") + \
-			vol + QString("\"") ;
-
-	p.start( exe ) ;
-
-	p.waitForFinished() ;
-
-	switch ( p.exitCode() ) {
+	switch ( status ) {
 	case 0 :	removeRowFromTable(item->row()) ;
 		break ;
 	case 1 :	UIMessage(tr("ERROR"),
@@ -754,7 +736,26 @@ void zuluCrypt::close()
 	default :	UIMessage(tr("ERROR"),
 				  tr("an unknown error has occured, volume not closed"));
 	}
-	p.close();
+}
+
+void zuluCrypt::close()
+{
+	QProcess p ;
+
+	QString vol = ui->tableWidget->item(item->row(),0)->text().replace("\"","\"\"\"") ;
+
+	QString exe = QString(ZULUCRYPTzuluCrypt) + QString(" close ") + QString("\"") + \
+			vol + QString("\"") ;
+
+	vct = new runInThread( exe, &status) ;
+
+	connect(vct,
+		SIGNAL(finished()),
+		this,
+		SLOT(closeThreadFinished())) ;
+
+	ui->tableWidget->setEnabled( false );
+	vct->start();
 }
 
 void zuluCrypt::setupUIElements()

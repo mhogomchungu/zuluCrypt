@@ -30,9 +30,9 @@
  
  add_executable( zuluCrypt-cli bin/zuluCrypt.c bin/close_volume.c bin/add_key.c bin/volume_info.c bin/open_volume.c bin/partitions.c bin/create_volumes.c bin/remove_key.c) 
  
- TARGET_LINK_LIBRARIES( zuluCrypt ${libcryptsetup.so} String ) 
+ TARGET_LINK_LIBRARIES( zuluCrypt ${libcryptsetup.so} String ${blkid} ) 
  
- TARGET_LINK_LIBRARIES( zuluCrypt-cli zuluCrypt String ) 
+ TARGET_LINK_LIBRARIES( zuluCrypt-cli zuluCrypt String ${blkid} ) 
  
  install(TARGETS zuluCrypt-cli 
             RUNTIME DESTINATION bin

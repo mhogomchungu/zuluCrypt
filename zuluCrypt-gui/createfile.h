@@ -26,6 +26,8 @@
 #include <QCloseEvent>
 #include <QMessageBox>
 
+#include "zulucryptthreads.h"
+
 namespace Ui {
     class createfile;
 }
@@ -56,19 +58,21 @@ private slots:
 
 	void monitorFileGrowth(void);
 
-	void ddFinished(int, QProcess::ExitStatus) ;
+	void createFileThreadFinished(void) ;
 
 private:
 	void enableAll(void) ;
 	void disableAll(void) ;
 	Ui::createfile *ui;
-	QProcess dd ;
 	QTimer time ;
 	double fileSize ;
 	void closeEvent(QCloseEvent *) ;
 	bool creating ;
+	bool terminated ;
+	bool Return ;
 	QString path ;
 	QMessageBox mb ;
+	createFileThread *cft ;
 };
 
 #endif // CREATEFILE_H

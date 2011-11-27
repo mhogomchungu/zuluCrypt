@@ -53,44 +53,12 @@ createfile::createfile(QWidget *parent) :
 
 	connect(ui->pbCreate,SIGNAL(clicked()),this,SLOT(pbCreate())) ;
 
-	connect((QObject *)&dd,SIGNAL(finished(int, QProcess::ExitStatus)),
-		this,SLOT(ddFinished(int, QProcess::ExitStatus)));
 }
 
 void createfile::closeEvent(QCloseEvent *e)
 {
 	e->ignore();
 	pbCancel() ;
-}
-
-void createfile::ddFinished(int exitCode, QProcess::ExitStatus st)
-{
-	QMessageBox m ;
-	m.setWindowTitle(tr("ERROR!"));
-	m.setParent(this);
-	m.setWindowFlags(Qt::Window | Qt::Dialog);
-	m.addButton(QMessageBox::Ok);
-	m.setFont(this->font());
-
-	if( mb.isVisible() == true ){
-		mb.hide();
-		return ;
-	}
-
-	if( st == QProcess::CrashExit)
-		return ;
-
-	if( exitCode != 0 ){
-		m.setText(tr("you dont seem to have writing access to the destination folder"));
-		m.exec() ;
-		enableAll();
-		return ;
-	}
-	time.stop();
-
-	emit fileCreated(ui->lineEditFilePath->text() + "/" + ui->lineEditFileName->text()) ;
-
-	this->hide();
 }
 
 void createfile::enableAll()
@@ -194,14 +162,38 @@ void createfile::pbCreate()
 		return ;
 	}
 
+	QString source = ui->comboBoxRNG->currentText() ;
+
+	path = path + QString("/") +ui->lineEditFileName->text();
+
+	QFile f( path ) ;
+
+	if( f.exists() == true){
+		m.setText(tr("file with the same name and at the destination folder already exist"));
+		m.exec() ;
+		return ;
+	}
+
+	f.open(QIODevice::WriteOnly) ;
+
+	if( f.putChar('X') == false ){
+		f.close();
+		m.setText(tr("you dont seem to have writing access to the destination folder"));
+		m.exec() ;
+		return ;
+	}
+
+	f.close();
+	f.remove() ;
+
 	QString size ;
 
 	switch( ui ->comboBox->currentIndex()){
-		case 0 : { size = ""   ;  fileSize = ui->lineEditFileSize->text().toDouble() * 1024 ; }
+		case 0 :fileSize = ui->lineEditFileSize->text().toDouble() * 1024 ;
 			break ;
-		case 1 : { size = "K"  ;  fileSize = ui->lineEditFileSize->text().toDouble() * 1024 * 1024 ; }
+		case 1 :fileSize = ui->lineEditFileSize->text().toDouble() * 1024 * 1024 ;
 			break ;
-		case 2 : { size = "M"  ;  fileSize = ui->lineEditFileSize->text().toDouble() * 1024 * 1024  * 1024 ; }
+		case 2 :fileSize = ui->lineEditFileSize->text().toDouble() * 1024 * 1024  * 1024;
 			break ;
 	}
 
@@ -214,28 +206,45 @@ void createfile::pbCreate()
 
 	disableAll();
 
-	QString filename = ui->lineEditFileName->text().replace("\"","\"\"\"") ;
-
-	QString p = path ;
-
-	p = p.replace("\"","\"\"\"") ;
-
 	time.start();
 
 	creating = true ;
 
-	QString ddExe = QString(ZULUCRYPTdd) ;
-	ddExe = ddExe + QString(" if=") ;
-	ddExe = ddExe + ui->comboBoxRNG->currentText() ;
-	ddExe = ddExe + QString(" of=") ;
-	ddExe = ddExe + QString("\"") + p + QString("/") + filename ;
-	ddExe = ddExe + QString("\" bs=1024 count=") + ui->lineEditFileSize->text() + size;
-	dd.start( ddExe ) ;
+	terminated = false ;
+
+	cft = new createFileThread( source, path,fileSize,1 ) ;
+
+	connect(cft,SIGNAL(finished()),
+		this,SLOT(createFileThreadFinished()));
+
+	cft->start();
+}
+
+void createfile::createFileThreadFinished()
+{
+	time.stop();
+
+	delete cft ;
+
+	if( mb.isVisible() == true ){
+		this->hide();
+		mb.hide();
+		QFile::remove( path ) ;
+		Return = true ;
+		return ;
+	}
+
+	if( terminated == true )
+		return ;
+
+	emit fileCreated( path ) ;
+
+	this->hide();
 }
 
 void createfile::monitorFileGrowth()
 {
-	QFileInfo f(path + "/" + ui->lineEditFileName->text()) ;
+	QFileInfo f( path ) ;
 
 	/*
 	  the QProgressBar uses signed interger for max, min and setValue.
@@ -268,16 +277,23 @@ void createfile::pbCancel()
 	mb.setText(tr("are you sure you want to stop file creation process?"));
 	mb.setFont(this->font());
 
+	Return = false ;
+
 	if(mb.exec() == QMessageBox::No)
 		return ;
 
-	dd.close();
+	if( Return == true )
+		return ;
+
+	cft->terminate();
+
+	terminated = true ;
 
 	creating = false ;
 
 	time.stop();
 
-	QFile::remove(path + "/" +ui->lineEditFileName->text()) ;
+	QFile::remove( path ) ;
 
 	this->hide();
 }

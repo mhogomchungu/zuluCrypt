@@ -18,7 +18,11 @@
  */
 
 #include "closeallvolumesthread.h"
+#include "../zuluCrypt-cli/executables.h"
+
 #include <iostream>
+#include <QProcess>
+#include <QStringList>
 
 closeAllVolumesThread::closeAllVolumesThread(QTableWidget *t)
 {
@@ -37,27 +41,39 @@ void closeAllVolumesThread::run()
 
 	int i = table->rowCount() ;
 
-	int j ;
+	int j = -1 ;
 
-	/*
-	  the table changed its dimensions everytime a row is deleted and
-	  hence deleting items by row number is difficult.
-	  The below will read all entries in the table and then attempt to
-	  close each entry making table changes in row numbers not important.
-	  */
-	QTableWidgetItem *rowEntries[ i ] ;
+	QTableWidgetItem * tableItems[ i ] ;
+
+	QTableWidgetItem * deviceItem ;
+
+	while( ++j < i )
+		tableItems[ j ] = table->item(j,0) ;
+
+	QProcess p ;
+
+	QString exe ;
+
+	QString device ;
 
 	for( j = 0 ; j < i ; j++ ){
 
-		rowEntries[j] = table->item(j,0) ;
-	}
+		deviceItem = tableItems[ j ] ;
 
-	for( j = 0 ; j < i ; j ++ ){
+		device = deviceItem->text() ;
 
-		emit close(rowEntries[j]) ;
+		exe = QString(ZULUCRYPTzuluCrypt) + QString(" close ") + QString("\"") + \
+			       device  + QString("\"") ;
+
+		p.start( exe );
+
+		p.waitForFinished() ;
+
+		emit close(deviceItem,p.exitCode()) ;
+
+		p.close();
 
 		sleep(1) ;
 	}
-
 	table->setEnabled(true);
 }

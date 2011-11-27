@@ -28,6 +28,8 @@
 #include <QFile>
 #include <QThread>
 
+#include <blkid/blkid.h>
+
 #include "../zuluCrypt-cli/executables.h"
 
 
@@ -91,88 +93,31 @@ void openpartition::ShowUI()
 
 QString openpartition::deviceProperties(const char *device)
 {
-	QProcess p ;
+	int i ;
+
+	const char * buffer ;
 
 	QString output = QString(device) + QString(":") ;
 
-	p.start(QString(ZULUCRYPTblkid));
+	blkid_probe dp = blkid_new_probe_from_filename( device ) ;
 
-	p.waitForFinished() ;
+	blkid_do_probe( dp ) ;
 
-	char *c  = p.readAllStandardOutput().data() ;
+	i = blkid_probe_lookup_value( dp, "LABEL", &buffer, NULL);
 
-	char * d = strstr( c , device) ;
+	if( i == 0 )
+		output = output + QString(" LABEL=\"") + QString( buffer ) + QString("\"    ") ;
+	else
+		output = output + QString(" LABEL=\"\"    ") ;
 
-	if( d == NULL)
-		return QString(device) + QString(":");
+	i = blkid_probe_lookup_value( dp, "TYPE", &buffer, NULL);
 
-	char *cN = d ;
+	if( i == 0 )
+		output = output + QString(" TYPE=\"") + QString( buffer ) + QString("\"") ;
+	else
+		output = output + QString(" TYPE=\"\"") ;
 
-	while (*cN++ != '\n') { ; }
-
-	*cN = '\0';
-
-	char *e = strstr( d , "LABEL") ;
-
-	if( e == NULL)
-		output = output + QString("  LABEL=\"\"") ;
-	else{
-
-		char *f = e + 7;
-
-		char Z ;
-
-		while( *f++ != '"') { ; }
-
-		Z = *f ;
-
-		*f = '\0' ;
-
-		output = output + QString("  LABEL=") + QString( e + 6 ) + QString("") ;
-
-		*f = Z ;
-	}
-
-	e = strstr( d , "TYPE") ;
-
-	if( e == NULL )
-		output = output + QString("  TYPE=\"\"");
-	else{
-		char *f = e + 6 ;
-
-		char Z ;
-
-		while( *f++ != '"') { ; }
-
-		Z = *f ;
-
-		*f = '\0' ;
-
-		output = output + QString("  TYPE=") + QString( e + 5 ) + QString("") ;
-
-		*f = Z ;
-	}
-
-//	e = strstr( d , "UUID") ;
-
-//	if( e == NULL )
-//		output = output + QString("  UUID=\"\"");
-//	else{
-//		char *f = e ;
-
-//		char Z ;
-
-//		while( *f++ != '"') { ; }
-
-//		Z = *f ;
-
-//		*f = '\0' ;
-
-//		output = output + QString("  UUID=") + QString( e + 5 ) + QString("") ;
-
-//		*f = Z ;
-//	}
-	p.close();
+	blkid_free_probe( dp ) ;
 
 	return output ;
 }

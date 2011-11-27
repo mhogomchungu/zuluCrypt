@@ -1,12 +1,28 @@
 
 cmake_minimum_required(VERSION 2.6)
 
+find_file( blkid.h blkid/blkid.h )
+ 
+if(NOT blkid.h)
+	message (FATAL_ERROR "ERROR: could not find blkid.h header file?")
+endif(NOT blkid.h)
+
+message( STATUS "Found blkid.h  : " ${blkid.h} )
+ 
+find_library( blkid libblkid.so) 
+ 
+if(NOT blkid)	 
+	message (FATAL_ERROR "ERROR: could not find libblkid.so library")
+endif(NOT blkid)
+ 
+message( STATUS "Found libblkid.so  : " ${blkid} )
+ 
 ADD_SUBDIRECTORY( zuluCrypt-cli )
 
 ADD_SUBDIRECTORY( zuluCrypt-gui )
 
 ADD_SUBDIRECTORY( test )
-
+	 
 install (FILES zuluCrypt-cli.1.bz2 
 DESTINATION share/man/man1
 )

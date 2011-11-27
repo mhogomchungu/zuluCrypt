@@ -19,147 +19,111 @@
 
 #include "includes.h"
 
-/*
- * vfat volumes are mounted with root:user ownership and with 755 permissions and they cant be changed.
- * 
- * remounting the partition doesnt seem to work so, the partition is first unmounted and then remounted
- * with proper permissions.
- * 
- */
-void vfat( StrHandle * q , const char * map, uid_t id, const char *  mode )
-{	
-	StrHandle * p ;
-	
-	FILE * f ;	
-	
-	char buffer[256] ;	
-	
-	int k = strlen( map ) ;
-	
-	char * c ;
-	
-	f = fopen( "/etc/mtab","r" ) ;
-	
-	while( fgets( buffer,256,f ) != NULL ){
-		
-		if( strncmp( buffer,map, k )  == 0 ){
-			
-			c = buffer + k + 1 ;
-			
-			while( *c++ != ' ' ) { ; }
-			
-			if( strncmp( c ,"vfat", 4 ) == 0 ){
-				
-				p = String( ZULUCRYPTumount ) ;
-				
-				StringAppend( p, " " ) ;
-				
-				StringAppend( p , map ) ;
-				
-				execute( StringContent( p ),NULL,0 ) ;
-				
-				StringDelete( p ) ;
-				
-				p = String( ZULUCRYPTmount ) ;
-				
-				StringAppend( p , " -o dmask=007,uid=" ) ;
-				
-				StringAppend( p , intToString(buffer, 10, id )) ;
-				
-				StringAppend( p , ",gid=" ) ;
-				
-				StringAppend( p , intToString(buffer, 10, id )) ;
-				
-				StringAppend( p , " " ) ;
-				
-				StringReplaceString( q ,ZULUCRYPTmount, StringContent( p ) ) ;
-				
-				execute( StringContent( q ),NULL,0 ) ;
-				
-				StringDelete( p ) ;
-			}			
-			break ;
-		}		
-	}
-	fclose( f );
-}
+#include <sys/mount.h>
+#include <mntent.h>
+#include <blkid/blkid.h>
 
 int mount_volume( const char * mapper,const char * m_point,const char * mode,uid_t id )
 {
-	StrHandle * p ;
+	StrHandle * p = NULL ;
 	
 	StrHandle * q ;
 	
-	StrHandle * x ;
+	unsigned long mountflags = 0 ;
 	
-	char s[2] ;
+	struct mntent mt  ;
 	
-	p = String( m_point ) ;		
+	blkid_probe blkid ;
+	
+	char s[4] ;
 	
 	int h ;
 	
-	if ( mkdir( StringContent( p ), S_IRWXU  ) != 0 ){
+	const char * fs ;	
+	
+	FILE * f ;
+	
+	blkid = blkid_new_probe_from_filename( mapper ) ;
+	
+	blkid_do_probe( blkid );
+	
+	h = blkid_probe_lookup_value( blkid , "TYPE", &fs, NULL ) ;		
+	
+	if( h != 0 ){
 		
-		StringAppend( p, ".zc") ;
+		blkid_free_probe( blkid );		
 		
-		if ( mkdir( StringContent( p ),S_IRWXU  ) != 0 ){
-			
-			close_mapper( mapper );
-			
-			StringDelete( p ) ;
-			
-			return 5 ;		
-		}
+		close_mapper( mapper ) ; 
+		
+		return 4 ;
 	}
 	
-	if ( strncmp( mode, "ro",2 ) == 0 )
-		q = String( ZULUCRYPTmount " -r " ) ;
-	else
-		q = String( ZULUCRYPTmount " -w " ) ;
+	q = String( fs ) ;
 	
-	StringAppend( q , mapper ) ;
+	blkid_free_probe( blkid );
 	
-	StringAppend( q , " " );
-	
-	x = String( StringContent( p ) ) ;
-	
-	StringInsertCharString( x,'\\',"#;\"',\\`:!*?&$@(){}[]><|%~^ \n" ) ;
-	
-	StringAppend( q , StringContent( x ) ) ;
-	
-	StringAppend( q , "  2>/dev/null 1>&2 ; " ) ;
-	
-	StringAppend( q , ZULUCRYPTecho ) ;
-	
-	StringAppend( q , " $?" );
-	
-	execute( StringContent( q ),s,1 ) ;	
-	
-	if( s[0] != '0' ){
+	fs = StringContent( q ) ;
 		
-		remove( StringContent( p ) ) ;
+	mt.mnt_freq = 0 ;
+	
+	mt.mnt_passno = 0 ;
+	
+	mt.mnt_fsname = ( char * ) mapper ;
+	
+	mt.mnt_dir =  ( char * ) m_point ;	
+	
+	if ( strcmp( mode, "ro" ) == 0 )
+		mountflags = MS_RDONLY ;
 		
-		close_mapper( mapper );
+	if( strcmp( fs, "vfat" ) == 0 ){
+		
+		p = String( "dmask=007,uid=" ) ;
+
+		StringAppend( p ,intToString( s, 10, id ) ) ;
+		
+		StringAppend( p , ",gid=" ) ;
+		
+		StringAppend( p ,intToString( s, 10, id ) );		
+				
+		h = mount( mapper, m_point,fs,mountflags,StringContent( p ) ) ;	
+		
+		StringPrepend( p ,"," ) ;
+		
+		StringPrepend( p , mode ) ;
+	}else{		
+		p = String( mode ) ;
+		
+		h = mount( mapper, m_point,fs,mountflags,NULL) ;		
+		
+		chown( m_point, id, id ) ;
+		
+		chmod( m_point, S_IRWXU ) ;		
+	}
+	
+	if( h == 0 ){
+				
+		StringPrepend( p , " " ) ;
+		
+		StringPrepend( p , fs ) ;
+		
+		mt.mnt_opts = ( char * ) StringContent( p ) ;
+		
+		f = setmntent( "/etc/mtab","a" ) ;
+		
+		addmntent( f, &mt ) ;		
+			
+		endmntent( f ) ;
+
+	}else{		
+		close_mapper( mapper ) ; 
 		
 		h = 4 ;
-		
-	}else{
-		
-		chown( StringContent( p ), id, id ) ;
-		
-		chmod( StringContent( p ), S_IRWXU ) ;
-		
-		vfat( q ,mapper,id,mode ) ; 
-		
-		h = 0 ;
-	}
+	}	
 	
 	StringDelete( p ) ;
 	
 	StringDelete( q ) ;
 	
-	StringDelete( x ) ;
-	
-	return h ;		
+	return h ;
 }
 

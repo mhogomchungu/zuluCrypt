@@ -19,21 +19,28 @@
 
 #include "includes.h"
 
+#include <sys/ioctl.h>
+#include <linux/loop.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <blkid/blkid.h>
+
 char * status( const char * mapper )
 {		
 	#define SIZE 31
 	
+	blkid_probe bp ;
+	
 	char buffer[ SIZE + 1 ] ;
-	
-	char loop[64] ;
-	
-	char path[64];
-	
-	char * c = NULL ;
-	
-	char * d = NULL ;
-	
+
 	const char * e ;
+	
+	char path[ 512 ] ;
+	
+	int fd ;
+	
+	struct loop_info64 l_info ;
 	
 	struct crypt_device * cd1 = NULL;
 	
@@ -44,8 +51,6 @@ char * status( const char * mapper )
 	struct crypt_active_device cad ;	
 	
 	StrHandle * p ;
-	
-	StrHandle * q ;
 	
 	crypt_init_by_name( &cd,mapper );
 
@@ -96,32 +101,18 @@ char * status( const char * mapper )
 	StringAppend( p, e ) ;
 	
 	if( strncmp( e ,"/dev/loop",9 ) == 0 ){
-		
-		q = String( ZULUCRYPTlosetup ) ;
-		
-		StringAppend( q," " );
-		
-		StringAppend( q, e ) ;
-		
-		execute( StringContent( q ),loop,63 ) ;
-		
-		StringDelete( q ) ;
-		
-		c = loop ;
-		
-		while( *c++ != '(' ) { ; }
-		
-		d = c ;
-		
-		while( *++d != '\0' ) { ; }
-		
-		* ( d - 2 ) = '\0' ;		
-		
-		realpath( c,path ) ;
+
+		fd = open( e , O_RDONLY ) ;
+
+		ioctl( fd, LOOP_GET_STATUS64, &l_info ) ;
 		
 		StringAppend( p,"\n loop:      " );
 		
-		StringAppend( p,path );
+		realpath( ( char * ) l_info.lo_file_name, path ) ;
+		
+		StringAppend( p, path ) ;
+		
+		close( fd ) ;
 	}
 	
 	StringAppend( p,"\n offset:    ");
@@ -143,9 +134,24 @@ char * status( const char * mapper )
 	else
 		StringAppend( p,"read/write" );			
 	
+	bp = blkid_new_probe_from_filename( mapper ) ;
+	
+	blkid_do_probe( bp );
+	
+	blkid_probe_lookup_value( bp, "TYPE", &e, NULL );
+	
+	StringAppend( p,"\n fs:        " );
+	
+	StringAppend( p, e ) ;
+		
+	blkid_free_probe( bp );
+	
 	out:
-	crypt_free( cd );	
-	crypt_free( cd1 );	
+	
+	crypt_free( cd );
+	
+	crypt_free( cd1 );
+	
 	return StringDeleteHandle( p ) ;
 }
 

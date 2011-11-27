@@ -21,11 +21,11 @@
 
 int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount_point,char * mode,char * source,char * pass )
 {
-	StrHandle * p ;
+	StrHandle * p = NULL ;
 	
-	StrHandle * q ;
+	StrHandle * q = NULL ;
 	
-	StrHandle * z ;
+	StrHandle * z = NULL ;
 	
 	int st ;
 	
@@ -54,19 +54,32 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 			st = 10 ;
 			goto eerr ;	
 		}
-	}	
+	}
 	
 	q = String(  mapping_name  ) ;
 	
 	StringReplaceCharString( q,'_',"#;\"',\\`:!*?&$@(){}[]><|%~^ \n" ) ;
 	
-	StringPrepend( q,"/dev/mapper/zuluCrypt-" ) ;
-	
+	StringPrepend( q,"/dev/mapper/zuluCrypt-" ) ;	
+
 	z = String( mount_point );
 	
-	StringAppend( z,"/" );
+	if( StringEndsWithChar( z , '/' ) == -1 )
+		StringAppend( z,"/" );
 	
 	StringAppend( z,mapping_name );
+	
+	if ( mkdir( StringContent( z ), S_IRWXU  ) != 0 ){
+		
+		StringAppend( z, ".zc") ;
+		
+		if ( mkdir( StringContent( z ),S_IRWXU  ) != 0 ){
+			
+			st = 5 ;
+			
+			goto eerr ;
+		}
+	}
 	
 	if (  argn == 5  ){
 		printf(  "Enter passphrase: "  ) ;
@@ -87,11 +100,7 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 		
 		st =  11 ;			
 	}
-	
-	StringDelete(  q  ) ;
-	
-	StringDelete(  z  ) ;
-	
+
 	eerr:
 	
 	switch (  st  ){
@@ -105,6 +114,7 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 		case 3 : printf( "ERROR: No file exist on given path\n" ) ; 
 		break ;		
 		case 4 : printf( "ERROR: Wrong passphrase\n" );
+		remove( StringContent( z ) ) ;
 		break ;			
 		case 5 : printf( "ERROR: a file or folder already exist at mount point\n" ) ;
 		break ;		
@@ -122,5 +132,10 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 		default :
 			;			
 	}	
+	
+	StringDelete(  q  ) ;
+	
+	StringDelete(  z  ) ;
+	
 	return st ;
 }
