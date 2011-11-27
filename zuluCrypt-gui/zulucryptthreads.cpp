@@ -241,7 +241,7 @@ void volumePropertiesThread::run()
 
 	p.close();
 
-	QString exe = QString("df -Ph ")  ;
+	QString exe = QString("df -PTh ")  ;
 
 	p.start(exe);
 
@@ -268,7 +268,13 @@ void volumePropertiesThread::run()
 	j = i - 1 ;
 	while ( c.at(i++) != ' ') { ; }
 
-	QString y = QString(" size:  ") + QString(c.mid(j,i - j)) ;
+	QString y = QString(" fs:  ") + QString(c.mid(j,i - j)) ;
+
+	while ( c.at(i++) == ' ') { ; }
+	j = i - 1 ;
+	while ( c.at(i++) != ' ') { ; }
+
+	y = y + QString("\n size:  ") + QString(c.mid(j,i - j)) ;
 
 	while ( c.at(i++) == ' ') { ; }
 	j = i - 1 ;
@@ -287,12 +293,6 @@ void volumePropertiesThread::run()
 	while ( c.at(i++) != ' ') { ; }
 
 	y = y + QString("\n used%:  ") + QString(c.mid(j,i - j)) ;
-
-	//while ( c.at(i++) == ' ') { ; }
-	//j = i - 1 ;
-	//while ( c.at(i++) != ' ') { ; }
-
-	//y = y + QString("\n used%:  ") + QString(c.mid(j,i - j)) ;
 
 	QStringList l = zuluCrypt::luksEmptySlots(path) ;
 

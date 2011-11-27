@@ -30,8 +30,6 @@ char * status( const char * mapper )
 {		
 	#define SIZE 31
 	
-	blkid_probe bp ;
-	
 	char buffer[ SIZE + 1 ] ;
 
 	const char * e ;
@@ -132,20 +130,8 @@ char * status( const char * mapper )
 	if( cad.flags == 1 )
 		StringAppend( p,"readonly" );
 	else
-		StringAppend( p,"read/write" );			
-	
-	bp = blkid_new_probe_from_filename( mapper ) ;
-	
-	blkid_do_probe( bp );
-	
-	blkid_probe_lookup_value( bp, "TYPE", &e, NULL );
-	
-	StringAppend( p,"\n fs:        " );
-	
-	StringAppend( p, e ) ;
-		
-	blkid_free_probe( bp );
-	
+		StringAppend( p,"read/write" );		
+
 	out:
 	
 	crypt_free( cd );
