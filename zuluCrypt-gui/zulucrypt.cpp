@@ -164,7 +164,7 @@ void zuluCrypt::closeAll(QTableWidgetItem * i,int st)
 	else{
 		QString msg = tr("Could not close \"") + \
 			      ui->tableWidget->item(i->row(),1)->text() + \
-				tr("\"because the mount point and/or one or more files are in use") ;
+				tr("\" because the mount point and/or one or more files are in use") ;
 		UIMessage(QString("ERROR!"),msg);
 	}
 }

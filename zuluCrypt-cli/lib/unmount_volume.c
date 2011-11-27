@@ -24,8 +24,6 @@
 
 int unmount_volume( const char * map )
 {
-	StrHandle * p = NULL ;
-	
 	struct stat st ;		
 	
 	FILE * f ;	
@@ -54,38 +52,29 @@ int unmount_volume( const char * map )
 			
 			h = umount( mt->mnt_dir ) ;
 		
-			p = String( mt->mnt_dir ) ;
-		}else{
-			
+			if( h == 0 )
+				remove( mt->mnt_dir ) ;
+		}else			
 			addmntent( g, mt ) ;			
-		}
+		
 	}
 
 	endmntent( f ) ;
 	
 	endmntent( g ) ;
 	
-	switch( h ){
-		case 0:	close_mapper( map ) ;
+	if( h == 0 ){
 		
-			remove( StringContent( p ) ) ;
-
-			rename( "/etc/mtab-zC", "/etc/mtab" ) ;
-
-			remove( "/etc/mtab-zC" ) ;
-
-			StringDelete( p ) ;
-			
-			break ;
+		close_mapper( map ) ;
 		
-		case 3: break ;
-			
-		default:StringDelete( p ) ;
+		rename( "/etc/mtab-zC", "/etc/mtab" ) ;
+
+		remove( "/etc/mtab-zC" ) ;
 		
-			h = 2 ;
-			
-			break ;
-	}
+	}else if( h == 3 )
+		;
+	else
+		h = 2 ;
 	
 	return h ;
 }

@@ -72,6 +72,8 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 	
 	mt.mnt_dir =  ( char * ) m_point ;	
 	
+	mt.mnt_type = ( char * ) fs ;
+	
 	if ( strcmp( mode, "ro" ) == 0 )
 		mountflags = MS_RDONLY ;
 		
@@ -101,10 +103,6 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 	}
 	
 	if( h == 0 ){
-				
-		StringPrepend( p , " " ) ;
-		
-		StringPrepend( p , fs ) ;
 		
 		mt.mnt_opts = ( char * ) StringContent( p ) ;
 		
