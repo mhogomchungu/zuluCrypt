@@ -227,11 +227,8 @@ void createfile::createFileThreadFinished()
 	delete cft ;
 
 	if( mb.isVisible() == true ){
-		this->hide();
 		mb.hide();
-		QFile::remove( path ) ;
 		Return = true ;
-		return ;
 	}
 
 	if( terminated == true )
