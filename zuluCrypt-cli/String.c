@@ -490,9 +490,9 @@ const char * StringReplaceChar( StrHandle * st, char x, char y)
 	return st->string ;	
 }
 
-char * intToString( char * x, int y,int z )
+char * intToString( char * x, int y,uint64_t z )
 {
-	char *c =  x + y  ;
+	char *c =  x + y - 1  ;
 	
 	*c-- = '\0' ;	
 	

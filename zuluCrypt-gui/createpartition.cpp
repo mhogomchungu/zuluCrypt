@@ -284,9 +284,9 @@ void createpartition::pbCreateClicked()
 		source = QString("-f") ;
 	}else{
 		source = QString("-p") ;
-
-		passphrase.replace("\"","\"\"\"") ;
 	}
+	
+	passphrase.replace("\"","\"\"\"") ;	
 
 	if( ui->lineEditVolumePath->text().left(5) == QString("/dev/")){
 		QMessageBox m ;
@@ -345,6 +345,8 @@ void createpartition::threadfinished()
 		case 6 : UIMessage(tr("ERROR"),
 				   tr("couldnt get requested memory to open the key file"));
 			break ;
+		case 11: UIMessage(tr("ERROR"),
+			tr("can not create the volume,\"") + QString(ZULUCRYPTmkfs) + tr("\" not found."));	
 		default: UIMessage(tr("ERROR"),
 				   (tr("unrecognized error has occured,volume not created")));
 	}

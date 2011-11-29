@@ -7,6 +7,20 @@
 #include <QThread>
 #include <QFile>
 #include <QMetaType>
+#include <QTableWidget>
+#include <QTableWidgetItem>
+
+class ClickedRowHighlight : public QThread
+{
+public :
+	ClickedRowHighlight(int,QTableWidget*, int *,int) ;
+private:
+	void run() ;
+	int row ;
+	QTableWidget *tableWidget ;
+	int *selectedRow ;
+	int item_count ;
+};
 
 class zuluCryptThreads : public QThread
 {

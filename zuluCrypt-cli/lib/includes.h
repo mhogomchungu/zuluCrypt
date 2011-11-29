@@ -49,7 +49,7 @@ int create_luks(const char * dev,const char * pass,const char * rng) ;
 		       
 int create_volume(const char * dev,const char * fs,const char * type,const char * pass,const char * rng) ;
 			   
-int close_volume(const char * map) ;
+int close_volume(const char * map, char ** mount_point) ;
 			   
 int mount_volume(const char * mapping_name,const char * m_point,const char * mode,uid_t id) ;
 		       
@@ -61,4 +61,4 @@ int open_volume(const char * dev,const char * map,const char * m_point,uid_t id,
 		     
 char * version(void) ; 
 
-int unmount_volume( const char * map ) ;
+int unmount_volume( const char * map, char ** mount_point ) ;

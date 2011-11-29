@@ -27,6 +27,7 @@ extern "C" {
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 /*
  * String handle, all string operation should happen through this handle.
@@ -283,11 +284,12 @@ const char * StringReplaceCharString( StrHandle * st, char x, const char * y ) ;
  * 
  * return value: a pointer to the beginning of the result(use this pointer and not x).
  * 
- * NOTE: Its your responsibility to make sure the resulting string fit into a buffer x* 
- * 
+ * NOTE: Its your responsibility to make sure the resulting string fit into a buffer x.
+ * If the number has N digits, then the string must be atleast N+1 in size, null character
+ * takes the last spot.  
  */
 
-char * intToString( char * x, int y, int z ) ;
+char * intToString( char * x, int y, uint64_t z ) ;
 
 /*
  * Compare a string handled by handle x to a string handled by handle y and return 0 if they are equal and 1 if they are not  

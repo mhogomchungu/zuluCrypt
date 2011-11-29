@@ -188,6 +188,8 @@ private:
 	runInThread *vct ;
 
 	int status ;
+
+	int selectedRow ;
 };
 
 #endif // ZULUCRYPT_H

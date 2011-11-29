@@ -65,7 +65,9 @@ void blkid( const char * all, const char * type,const char * entry, int size, St
 				
 				StringRemoveStringString( non_system , device ) ;					
 				
-				break ;
+				blkid_free_probe( bp );
+				
+				return ;
 			}	
 		}
 		blkid_free_probe( bp );

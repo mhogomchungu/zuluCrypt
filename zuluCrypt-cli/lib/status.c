@@ -28,7 +28,7 @@
 
 char * status( const char * mapper )
 {		
-	#define SIZE 31
+	#define SIZE 32
 	
 	char buffer[ SIZE + 1 ] ;
 

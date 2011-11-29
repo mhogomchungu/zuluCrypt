@@ -22,6 +22,7 @@
 #include <sys/mount.h>
 #include <mntent.h>
 #include <blkid/blkid.h>
+#include <stdlib.h>
 
 int mount_volume( const char * mapper,const char * m_point,const char * mode,uid_t id )
 {
@@ -35,7 +36,9 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 	
 	blkid_probe blkid ;
 	
-	char s[4] ;
+	char uid[ 5 ] ;
+
+	char path[ 16 ] ;
 	
 	int h ;
 	
@@ -50,11 +53,7 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 	h = blkid_probe_lookup_value( blkid , "TYPE", &fs, NULL ) ;		
 	
 	if( h != 0 ){
-		/*you will land here if:
-		 * 
-		 *1. you attempt to open a plain volume with a wrong passphrase
-		 *2. you attempt to open a volume without a file system,or unrecognized file system  
-		 */
+
 		blkid_free_probe( blkid );		
 		
 		close_mapper( mapper ) ; 
@@ -85,11 +84,11 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 		
 		p = String( "dmask=007,uid=" ) ;
 
-		StringAppend( p ,intToString( s, 10, id ) ) ;
+		StringAppend( p ,intToString( uid, 5, id ) ) ;
 		
 		StringAppend( p , ",gid=" ) ;
 		
-		StringAppend( p ,intToString( s, 10, id ) );		
+		StringAppend( p ,intToString( uid, 5, id ) );		
 				
 		h = mount( mapper, m_point,fs,mountflags,StringContent( p ) ) ;	
 		
@@ -110,11 +109,19 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 		
 		mt.mnt_opts = ( char * ) StringContent( p ) ;
 		
-		f = setmntent( "/etc/mtab","a" ) ;
+		realpath( "/etc/mtab", path ) ;
 		
-		addmntent( f, &mt ) ;		
+		if( strncmp( path, "/etc/",5 ) == 0 ){
+		
+			/* "/etc/mtab" is not a symbolic link to /proc/mounts, add an entry to it since 
+			 * mount command doesnt
+			 */
+			f = setmntent( "/etc/mtab","a" ) ;
+		
+			addmntent( f, &mt ) ;		
 			
-		endmntent( f ) ;
+			endmntent( f ) ;
+		}
 
 	}else{		
 		close_mapper( mapper ) ; 

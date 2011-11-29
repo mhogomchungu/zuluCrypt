@@ -21,59 +21,93 @@
 
 #include <mntent.h>
 #include <sys/mount.h>
+#include <stdlib.h>
 
-int unmount_volume( const char * map )
+int entry_found( const char * map, const char * map_m_point, char ** m_point )
+{
+	StrHandle * p ;
+	
+	int h = umount( map_m_point ) ;
+	
+	if( h == 0 ){
+		
+		close_mapper( map ) ;
+		
+		p = String( map_m_point ) ;
+		
+		*m_point = StringDeleteHandle( p ) ;				
+	}		
+	return h ;
+}
+
+int unmount_volume( const char * map, char ** m_point )
 {
 	struct stat st ;		
 	
 	FILE * f ;	
 	
-	FILE * g ;
+	FILE * g ;	
 	
 	int h = 3 ;
+	
+	int map_len = strlen( map ) ;
+	
+	char path[ 16 ] ;
 	
 	struct mntent * mt ;
 	
 	if ( stat( map , &st ) != 0 )
 		return 1 ;		
 	
+	realpath( "/etc/mtab", path ) ;
+	
 	/*
-	 * Go through /etc/mtab to found out mount point so that we can delete the mount point folder
-	 * when unmounting succeed 
+	 *go theough /etc/mtab to find out the mount point,umount works with mount points, not device addresses. 
 	*/
+	f = setmntent( path ,"r" ) ;
 	
-	f = setmntent( "/etc/mtab","r" ) ;
-	
-	g = setmntent( "/etc/mtab-zC","w" ) ;
-	
-	while( ( mt = getmntent( f ) ) != NULL ){
-		
-		if( strncmp( mt->mnt_fsname,map, strlen( map ) ) == 0 ){
+	if( strncmp( path, "/proc/",6 ) == 0 ){
+		/*
+		 *.  /etc/mtab is a symbolic link to /proc/mounts, dont modify it to remove the entry since
+		 *   umount command does it.
+		 */
+		while( ( mt = getmntent( f ) ) != NULL ){
 			
-			h = umount( mt->mnt_dir ) ;
-		
-			if( h == 0 )
-				remove( mt->mnt_dir ) ;
-		}else			
-			addmntent( g, mt ) ;			
-		
-	}
-
-	endmntent( f ) ;
+			if( strncmp( mt->mnt_fsname,map, map_len ) == 0 ){
+				
+				h = entry_found( mt->mnt_fsname, mt->mnt_dir, m_point ) ;
+				
+				endmntent( f ) ;
+				
+				break ;
+			}		
+		}			
+	}else if ( strncmp( path, "/etc/",5 ) == 0 ) {
+		/*
+		 * . /etc/mtab is the actual /etc/mtab file, modify it to remove an entry when unmount succeed.
+		 */
+		g = setmntent( "/etc/mtab-zC","w" ) ;
 	
-	endmntent( g ) ;
+		while( ( mt = getmntent( f ) ) != NULL ){
+		
+			if( strncmp( mt->mnt_fsname,map, map_len ) == 0 ){
+			
+				h = entry_found( mt->mnt_fsname, mt->mnt_dir, m_point ) ;				
+			}else			
+				addmntent( g, mt ) ;			
+		}
+		
+		endmntent( f ) ;
+		
+		endmntent( g ) ;		
+		
+		if( h == 0 )			
+			rename( "/etc/mtab-zC", "/etc/mtab" ) ;
+		else
+			remove( "/etc/mtab-zC" ) ;
+	}	
 	
-	if( h == 0 ){
-		
-		close_mapper( map ) ;
-		
-		rename( "/etc/mtab-zC", "/etc/mtab" ) ;
-
-		remove( "/etc/mtab-zC" ) ;
-		
-	}else if( h == 3 )
-		;
-	else
+	if( h != 0 && h != 3 )
 		h = 2 ;
 	
 	return h ;

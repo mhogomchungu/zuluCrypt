@@ -73,26 +73,6 @@ void help(  void  )
 	printf( "The same documentation can be found at http://code.google.com/p/zulucrypt\n" );	
 }
 
-int check_system_tools( void )
-{	
-	struct stat st ;
-	StrHandle * p ;
-	
-	if( stat( ZULUCRYPTmkfs,&st ) == 0  ){
-		
-		return 0 ;
-	}	
-	p = String(  ZULUCRYPTmkfs ) ;
-	StringAppend(  p , ZULUCRYPTzuluCrypt ) ;
-	
-	printf( "this program will not work as expected on your system\n" );
-	printf( "because one or more of the following tools are either not present\n" ) ;
-	printf( "or not where they are expected to be.\n%s\n",StringContent(  p  ) );
-	
-	StringDelete(  p  ) ;
-	
-	return 1 ;
-}
 int main(  int argc , char *argv[] )
 {
 	char * action = argv[1] ;
@@ -111,10 +91,7 @@ int main(  int argc , char *argv[] )
 	id = getuid(  );	
 	
 	setuid( 0 );
-	
-	if(  check_system_tools(  ) == 1  )
-		return 100 ;
-	
+
 	if (  argc < 2  ){
 		help(  );
 		return 10 ;
@@ -152,7 +129,7 @@ int main(  int argc , char *argv[] )
 		
 	}else if (  strcmp(  action, "status"  ) == 0  ){			
 
-		status = volume_info(  mapping_name  ) ;
+		status = volume_info(  mapping_name, device  ) ;
 		
 	}else if (  strcmp(  action, "close"  ) == 0  ){			
 

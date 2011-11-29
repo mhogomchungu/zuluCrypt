@@ -19,7 +19,7 @@
 
 #include "includes.h"
 
-int volume_info(  const char * mapper  )
+int volume_info(  const char * mapper, const char * device  )
 {
 	char * output ;	
 	
@@ -42,7 +42,7 @@ int volume_info(  const char * mapper  )
 	
 	if(  stat(  StringContent( p ),&st ) != 0  ) {
 		
-		printf( "%s is inactive\n",StringContent( p ) ) ;
+		printf( "\"%s\" is inactive\n",device ) ;
 		
 		xt =  1 ;
 	}else{

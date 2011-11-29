@@ -19,25 +19,29 @@
 
 #include "includes.h"
 
-/*
- * If output is of size N, size must be at most N-1,null is stored in the last slot
- */
 void execute( const char * command,char * output,int size )
 {		
 	FILE *f ;
 	
-	int i,c  ;
+	int i ;
+	
+	int c ;
+	
+	int z = size - 1 ;
 	
 	f = popen( command, "r" ) ;
 	
 	if ( output != NULL  ){
-		for ( i = 0 ; i < size ; i++ ){
+		
+		for ( i = 0 ; i < z ; i++ ){
+			
 			if (  ( c = getc(f) ) != EOF ) 
 				output[i] = ( char ) c ;
-			else{
+			else
 				break ;
-			}			
+						
 		}
+		
 		output[i] = '\0' ;
 	}	
 	pclose( f );

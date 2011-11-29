@@ -68,6 +68,11 @@ int open_volume(const char *device, // path to a file/partition to be opened
  * This function unmount the mounted opened volume,delete the mount point and then close the volume.
  * 
  * input :  mapper name used when the volume was opened
+ * output:  mount point path, just incase you need it if you dont keep track of mount points
+ * 
+ *  path to mount point will be allocated dynamically on success and hence you should free it ONLY when 
+ *  the function return with a success.
+ * 
  * return values:
  * 	0 - success
  * 	1 - ERROR: unmounting the mount point failed,mount point or one or more files are in use
@@ -75,8 +80,9 @@ int open_volume(const char *device, // path to a file/partition to be opened
  * 	3 - ERROR: close failed, volume does not have an entry in /etc/mtab
  *      4 - ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /library
   */
-int close_volume(const char * mapper) ; //mapper is the full address of the volume as it
-					//appears at /dev/mapper
+int close_volume(const char * mapper,//mapper is the full address of the volume as it appears at /dev/mapper
+		 char ** mount_point ) ; //returned pointer to mount point
+					
 
 /**
  * This function closes a mapper

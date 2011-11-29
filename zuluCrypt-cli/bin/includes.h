@@ -38,7 +38,7 @@ StrHandle * get_passphrase(  void  ) ;
  
 char * partitions(  int option  ) ;
  
-int volume_info(  const char * mapper  ) ;
+int volume_info(  const char * mapper, const char * device  ) ;
  
 int close_opened_volume(  char * mapping_name  ) ;
  

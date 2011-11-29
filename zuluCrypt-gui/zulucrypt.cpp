@@ -34,6 +34,7 @@
 #include <QDebug>
 
 Q_DECLARE_METATYPE(Qt::Orientation) ;
+Q_DECLARE_METATYPE(QItemSelection) ;
 
 zuluCrypt::zuluCrypt(QWidget *parent) :
     QMainWindow(parent),
@@ -41,7 +42,11 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 {
 	item_count = 0 ;
 
+	selectedRow = -1 ;
+
 	qRegisterMetaType<Qt::Orientation>("Qt::Orientation") ;
+
+	qRegisterMetaType<QItemSelection>("QItemSelection") ;
 
 	setupUIElements();
 
@@ -480,9 +485,9 @@ void zuluCrypt::addItemToTable(QString x,QString y)
 	ui->tableWidget->setItem(item_count,0,new QTableWidgetItem(x)) ;
 	ui->tableWidget->setItem(item_count,1,new QTableWidgetItem(y)) ;
 	if ( isLuks( ui->tableWidget->item(item_count,0)->text()) == true )
-		ui->tableWidget->setItem(item_count,2,new QTableWidgetItem(QString("luks"))) ;
+		ui->tableWidget->setItem(item_count,2,new QTableWidgetItem(tr("luks"))) ;
 	else
-		ui->tableWidget->setItem(item_count,2,new QTableWidgetItem(QString("plain"))) ;
+		ui->tableWidget->setItem(item_count,2,new QTableWidgetItem(tr("plain"))) ;
 
 	ui->tableWidget->item(item_count,0)->setTextAlignment(Qt::AlignCenter);
 	ui->tableWidget->item(item_count,1)->setTextAlignment(Qt::AlignCenter);
@@ -608,24 +613,34 @@ void zuluCrypt::addToFavorite()
 	f.close();
 }
 
-void zuluCrypt::cellEntered(QTableWidgetItem *itemRow)
+void zuluCrypt::cellEntered(QTableWidgetItem *item)
 {
-	for( int i = 0 ; i < ui->tableWidget->rowCount() ; i++){
-		ui->tableWidget->item(i,0)->setSelected(false);
-		ui->tableWidget->item(i,1)->setSelected(false);
-		ui->tableWidget->item(i,2)->setSelected(false);
-	}
+	int row = item->row() ;
 
-	ui->tableWidget->item(itemRow->row(),0)->setSelected(true);
-	ui->tableWidget->item(itemRow->row(),1)->setSelected(true);
-	ui->tableWidget->item(itemRow->row(),2)->setSelected(true);
+	if( row == selectedRow )
+		return ;
+
+	ui->tableWidget->item(row,0)->setSelected(true);
+	ui->tableWidget->item(row,1)->setSelected(true);
+	ui->tableWidget->item(row,2)->setSelected(true);
+
+	if( selectedRow != - 1 && item_count > 1 ){
+
+		ui->tableWidget->item(selectedRow,0)->setSelected(false);
+		ui->tableWidget->item(selectedRow,1)->setSelected(false);
+		ui->tableWidget->item(selectedRow,2)->setSelected(false);
+
+	}
+		selectedRow = row ;
 }
 
 void zuluCrypt::cellClicked(QTableWidgetItem * t)
 {
-	item = t ;
+	item = t ;	
 
-	cellEntered(t) ;
+	ClickedRowHighlight u( item->row(),ui->tableWidget,&selectedRow,item_count ) ;
+
+	u.start();
 
 	QMenu m ;
 	m.setFont(this->font());
@@ -655,9 +670,6 @@ void zuluCrypt::cellClicked(QTableWidgetItem * t)
 	}
 	
 	m.addSeparator() ;
-	
-	QString x = ui->tableWidget->item(item->row(),0)->text() ;
-	QString y = ui->tableWidget->item(item->row(),1)->text() ;
 
 	QString volume_path = ui->tableWidget->item(item->row(),0)->text() ;
 	QString mount_point_path = ui->tableWidget->item(item->row(),1)->text();
@@ -690,7 +702,7 @@ void zuluCrypt::cellClicked(QTableWidgetItem * t)
 	
 	Z.close();
 	m.setFont(this->font());
-	m.exec(QCursor::pos()) ;
+	m.exec(QCursor::pos()) ;	
 }
 
 void zuluCrypt::luksAddKeyContextMenu(void)
@@ -721,20 +733,30 @@ void zuluCrypt::closeThreadFinished()
 	delete vct ;
 
 	switch ( status ) {
-	case 0 :	removeRowFromTable(item->row()) ;
-		break ;
-	case 1 :	UIMessage(tr("ERROR"),
-				  tr("close failed, encrypted volume with that name does not exist")) ;
-		break ;
+	case 0 :removeRowFromTable(item->row()) ;
 
-	case 2 :	UIMessage(tr("ERROR"),
-				  tr("close failed, the mount point and/or one or more files are in use"));
+		if( item_count > 0 ){
+
+			selectedRow = 0 ;
+
+			ui->tableWidget->item(0,0)->setSelected(true);
+			ui->tableWidget->item(0,1)->setSelected(true);
+			ui->tableWidget->item(0,2)->setSelected(true);
+		}else
+			selectedRow = -1 ;
+
 		break ;
-	case 3 :	UIMessage(tr("ERROR"),
-				  tr("close failed, given path does not point to an encrypted device"));
+	case 1 :UIMessage(tr("ERROR"),
+			  tr("close failed, encrypted volume with that name does not exist")) ;
 		break ;
-	default :	UIMessage(tr("ERROR"),
-				  tr("an unknown error has occured, volume not closed"));
+	case 2 :UIMessage(tr("ERROR"),
+			  tr("close failed, the mount point and/or one or more files are in use"));
+		break ;
+	case 3 :UIMessage(tr("ERROR"),
+			  tr("close failed, given path does not point to an encrypted device"));
+		break ;
+	default :UIMessage(tr("ERROR"),
+			  tr("an unknown error has occured, volume not closed"));
 	}
 }
 

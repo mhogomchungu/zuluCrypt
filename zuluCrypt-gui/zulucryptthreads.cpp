@@ -22,6 +22,36 @@ ShowNonSystemPartitionsThread::ShowNonSystemPartitionsThread(
 	font = f ;
 }
 
+ClickedRowHighlight::ClickedRowHighlight(int it, QTableWidget *t, int *r, int c)
+{
+	row = it ;
+	tableWidget = t ;
+	selectedRow = r ;
+	item_count = c ;
+}
+
+void ClickedRowHighlight::run()
+{
+	int srow = *selectedRow ;
+
+	if( row == srow )
+		return ;
+
+	tableWidget->item(row,0)->setSelected(true);
+	tableWidget->item(row,1)->setSelected(true);
+	tableWidget->item(row,2)->setSelected(true);
+
+	if( srow != - 1 && item_count > 1 ){
+
+		tableWidget->item(srow,0)->setSelected(false);
+		tableWidget->item(srow,1)->setSelected(false);
+		tableWidget->item(srow,2)->setSelected(false);
+
+	}
+
+	*selectedRow = row ;
+}
+
 void ShowNonSystemPartitionsThread::run()
 {
 	QProcess p ;
