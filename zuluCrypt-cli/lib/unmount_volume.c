@@ -103,9 +103,7 @@ int unmount_volume( const char * map, char ** m_point )
 			endmntent( f ) ;
 			
 			h = 4 ;
-
-		}else{
-		
+		}else{		
 			g = setmntent( "/etc/mtab-zC","w" ) ;
 	
 			while( ( mt = getmntent( f ) ) != NULL ){
@@ -116,9 +114,9 @@ int unmount_volume( const char * map, char ** m_point )
 				}else			
 					addmntent( g, mt ) ;			
 			}
-		
+
 			endmntent( f ) ;
-		
+			
 			endmntent( g ) ;		
 		
 			if( h == 0 ){			
@@ -128,9 +126,9 @@ int unmount_volume( const char * map, char ** m_point )
 				remove( "/etc/mtab-zC" ) ;		
 		
 			mnt_unlock_file( lock ) ;
+		}		
 		
-			mnt_free_lock( lock ) ;
-		}
+		mnt_free_lock( lock ) ;
 	}	
 	
 	if( h != 0 && h != 3 && h != 4 )

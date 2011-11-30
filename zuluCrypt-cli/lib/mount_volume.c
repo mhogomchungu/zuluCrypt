@@ -103,9 +103,11 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 		chmod( m_point, S_IRWXU ) ;		
 	}
 	
-	if( h == 0 ){realpath( "/etc/mtab", path ) ;
+	if( h == 0 ){
 		
-	if( strncmp( path, "/etc/",5 ) == 0 ){
+		realpath( "/etc/mtab", path ) ;
+		
+		if( strncmp( path, "/etc/",5 ) == 0 ){
 		
 			/* "/etc/mtab" is not a symbolic link to /proc/mounts, add an entry to it since 
 			 * mount command doesnt

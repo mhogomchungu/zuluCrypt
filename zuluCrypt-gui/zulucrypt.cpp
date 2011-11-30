@@ -753,7 +753,7 @@ void zuluCrypt::closeThreadFinished()
 			  tr("close failed, the mount point and/or one or more files are in use"));
 		break ;
 	case 3 :UIMessage(tr("ERROR"),
-			  tr("close failed, given path does not point to an encrypted device"));
+			  tr("close failed, volume does not have an entry in /etc/mtab"));
 		break ;
 	case 4 :UIMessage(tr("ERROR"),
 		tr("close failed, could not get a lock on /etc/mtab~"));
