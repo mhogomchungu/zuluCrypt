@@ -59,7 +59,8 @@ const char * StringAppend(StrHandle * st ,const  char * s)  ;
 const char * StringPrepend(StrHandle * st ,const  char * s)  ;
 
 /*
- * Inherit a string pointed to by data and return a string handle to the string on success or NULL on error.  
+ * Inherit a string pointed to by data and return a string handle to the string on success or NULL on error. 
+ * This function should inherit strings only from a dynamically created memory.  
  */
 StrHandle * StringInherit( char * data ) ;
 

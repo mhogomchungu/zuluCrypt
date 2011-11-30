@@ -2,6 +2,22 @@
  
  #message( STATUS "Looking for libcryptsetup.h" )
  
+ find_file ( mount-header mount/mount.h )
+ 
+ if(NOT mount-header)
+	 message (FATAL_ERROR "ERROR: could not find mount/mount.h header file")
+ endif(NOT mount-header)
+ 
+ message( STATUS "Found mount.h  : " ${mount-header} )
+ 
+ find_library( mountLibrary libmount.so )
+ 
+ if(NOT mountLibrary)	 
+	 message (FATAL_ERROR "ERROR: could not find libmount.so library")
+ endif(NOT mountLibrary)
+	 
+ message( STATUS "Found libmount.so  : " ${mountLibrary} ) 
+ 
  find_file ( libcryptsetup.h libcryptsetup.h ) 
  
  if(NOT libcryptsetup.h)
@@ -16,13 +32,13 @@
  
  #message( STATUS "Looking for libcryptsetup.so" )
  
- find_library( libcryptsetup.so libcryptsetup.so) 
+ find_library( libcryptsetup libcryptsetup.so) 
  
- if(NOT libcryptsetup.so)	 
+ if(NOT libcryptsetup)	 
 	 message (FATAL_ERROR "ERROR: could not find libcryptsetup.so library, is cryptsetup package installed?")
- endif(NOT libcryptsetup.so)	 
+ endif(NOT libcryptsetup)	 
  
- message( STATUS "Found libcryptsetup.so : " ${libcryptsetup.so} ) 
+ message( STATUS "Found libcryptsetup.so : " ${libcryptsetup} ) 
  
  add_library( String STATIC String.c )
  
@@ -30,7 +46,7 @@
  
  add_executable( zuluCrypt-cli bin/zuluCrypt.c bin/close_volume.c bin/add_key.c bin/volume_info.c bin/open_volume.c bin/partitions.c bin/create_volumes.c bin/remove_key.c) 
  
- TARGET_LINK_LIBRARIES( zuluCrypt ${libcryptsetup.so} String ${blkid} ) 
+ TARGET_LINK_LIBRARIES( zuluCrypt ${libcryptsetup} String ${blkid} ${mountLibrary} ) 
  
  TARGET_LINK_LIBRARIES( zuluCrypt-cli zuluCrypt String ${blkid} ) 
  

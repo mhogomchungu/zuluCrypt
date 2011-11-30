@@ -23,6 +23,9 @@
 #include <sys/mount.h>
 #include <stdlib.h>
 
+#define USE_UNSTABLE_LIBMOUNT_API 1
+#include <mount/mount.h>
+
 int entry_found( const char * map, const char * map_m_point, char ** m_point )
 {
 	StrHandle * p ;
@@ -33,9 +36,12 @@ int entry_found( const char * map, const char * map_m_point, char ** m_point )
 		
 		close_mapper( map ) ;
 		
-		p = String( map_m_point ) ;
+		if( m_point != NULL ){
 		
-		*m_point = StringDeleteHandle( p ) ;				
+			p = String( map_m_point ) ;
+				
+			*m_point = StringDeleteHandle( p ) ;				
+		}
 	}		
 	return h ;
 }
@@ -50,9 +56,13 @@ int unmount_volume( const char * map, char ** m_point )
 	
 	int h = 3 ;
 	
+	int status ;
+	
 	int map_len = strlen( map ) ;
 	
 	char path[ 16 ] ;
+	
+	mnt_lock * lock ;
 	
 	struct mntent * mt ;
 	
@@ -70,7 +80,7 @@ int unmount_volume( const char * map, char ** m_point )
 		/*
 		 *.  /etc/mtab is a symbolic link to /proc/mounts, dont modify it to remove the entry since
 		 *   umount command does it.
-		 */
+		 */		
 		while( ( mt = getmntent( f ) ) != NULL ){
 			
 			if( strncmp( mt->mnt_fsname,map, map_len ) == 0 ){
@@ -82,33 +92,49 @@ int unmount_volume( const char * map, char ** m_point )
 				break ;
 			}		
 		}			
-	}else if ( strncmp( path, "/etc/",5 ) == 0 ) {
-		/*
-		 * . /etc/mtab is the actual /etc/mtab file, modify it to remove an entry when unmount succeed.
-		 */
-		g = setmntent( "/etc/mtab-zC","w" ) ;
-	
-		while( ( mt = getmntent( f ) ) != NULL ){
+	}else if ( strncmp( path, "/etc/",5 ) == 0 ) {		
 		
-			if( strncmp( mt->mnt_fsname,map, map_len ) == 0 ){
+		lock = mnt_new_lock( "/etc/mtab~", getpid() ) ;
+		
+		status = mnt_lock_file( lock ) ;	
+		
+		if( status != 0 ){
 			
-				h = entry_found( mt->mnt_fsname, mt->mnt_dir, m_point ) ;				
-			}else			
-				addmntent( g, mt ) ;			
+			endmntent( f ) ;
+			
+			h = 4 ;
+
+		}else{
+		
+			g = setmntent( "/etc/mtab-zC","w" ) ;
+	
+			while( ( mt = getmntent( f ) ) != NULL ){
+		
+				if( strncmp( mt->mnt_fsname,map, map_len ) == 0 ){
+			
+					h = entry_found( mt->mnt_fsname, mt->mnt_dir, m_point ) ;				
+				}else			
+					addmntent( g, mt ) ;			
+			}
+		
+			endmntent( f ) ;
+		
+			endmntent( g ) ;		
+		
+			if( h == 0 ){			
+				rename( "/etc/mtab-zC", "/etc/mtab" ) ;
+				chown( "/etc/mtab", 0,0 ) ;
+			}else
+				remove( "/etc/mtab-zC" ) ;		
+		
+			mnt_unlock_file( lock ) ;
+		
+			mnt_free_lock( lock ) ;
 		}
-		
-		endmntent( f ) ;
-		
-		endmntent( g ) ;		
-		
-		if( h == 0 )			
-			rename( "/etc/mtab-zC", "/etc/mtab" ) ;
-		else
-			remove( "/etc/mtab-zC" ) ;
 	}	
 	
-	if( h != 0 && h != 3 )
+	if( h != 0 && h != 3 && h != 4 )
 		h = 2 ;
-	
+
 	return h ;
 }

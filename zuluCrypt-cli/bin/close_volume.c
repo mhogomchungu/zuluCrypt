@@ -44,6 +44,8 @@ int close_opened_volume(  char * mapping_name  )
 			  break ;
 		 case 3 : printf( "ERROR: close failed, volume does not have an entry in /etc/mtab\n" ) ;
 			  break ;
+		 case 4 : printf( "ERROR: close failed, could not get a lock on /etc/mtab~\n" ) ;
+				 break ;
 		 default :
 			 ; //shouldnt get here			
 	 }	

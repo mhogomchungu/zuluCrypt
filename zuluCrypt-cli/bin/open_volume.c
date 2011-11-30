@@ -103,34 +103,36 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 
 	eerr:
 	
-	switch (  st  ){
-		
-		case 0 : printf( "SUCCESS: Volume opened successfully\n" );
-		break ;			
-		case 1 : printf( "ERROR: No free loop device to use\n" ) ; 
-		break ;					
-		case 2 : printf( "ERROR: There seem to be an open volume accociated with given address\n" );
-		break ;				
-		case 3 : printf( "ERROR: No file exist on given path\n" ) ; 
-		break ;		
-		case 4 : printf( "ERROR: Wrong passphrase\n" );
+	if( st == 0 )
+		 printf( "SUCCESS: Volume opened successfully\n" );
+	else{		
 		remove( StringContent( z ) ) ;
-		break ;			
-		case 5 : printf( "ERROR: a file or folder already exist at mount point\n" ) ;
-		break ;		
-		case 6 : printf( "ERROR: passphrase file does not exist\n" );
-		break ;	
-		case 11 : printf( "ERROR: Wrong number of arguments, run zuluCrypt with \"-h\" for help\n" );
-		break ;
-		case 8 : printf( "ERROR: failed to open volume\n" );
-		break ;	
-		case 10 : printf( "ERROR: \",\" ( comma ) is not a valid mount point\n" );
-		break ;
-		case 9 :  printf( "ERROR: mount point path does not exist\n" );
-		break ;	
-		
-		default :
-			;			
+		switch (  st  ){
+			case 1 : printf( "ERROR: No free loop device to use\n" ) ; 
+				break ;					
+			case 2 : printf( "ERROR: There seem to be an open volume accociated with given address\n" );
+				break ;				
+			case 3 : printf( "ERROR: No file exist on given path\n" ) ; 
+				break ;		
+			case 4 : printf( "ERROR: Wrong passphrase\n" );		
+				break ;			
+			case 5 : printf( "ERROR: a file or folder already exist at mount point\n" ) ;
+				break ;		
+			case 6 : printf( "ERROR: passphrase file does not exist\n" );
+				break ;	
+			case 11 : printf( "ERROR: Wrong number of arguments, run zuluCrypt with \"-h\" for help\n" );
+				break ;
+			case 8 : printf( "ERROR: failed to open volume\n" );
+				break ;	
+			case 10 : printf( "ERROR: \",\" ( comma ) is not a valid mount point\n" );
+				break ;
+			case 9 :  printf( "ERROR: mount point path does not exist\n" );		
+				break ;	
+			case 12 :  printf( "ERROR: could not get a lock on /etc/mtab~\n" );		
+				 break ;	
+			default :
+				;
+		}
 	}	
 	
 	StringDelete(  q  ) ;

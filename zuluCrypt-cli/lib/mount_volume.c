@@ -23,6 +23,10 @@
 #include <mntent.h>
 #include <blkid/blkid.h>
 #include <stdlib.h>
+#include <unistd.h>
+
+#define USE_UNSTABLE_LIBMOUNT_API 1
+#include <mount/mount.h>
 
 int mount_volume( const char * mapper,const char * m_point,const char * mode,uid_t id )
 {
@@ -42,9 +46,13 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 	
 	int h ;
 	
+	int status ;
+	
 	const char * fs ;	
 	
 	FILE * f ;
+
+	mnt_lock * m_lock ;
 	
 	blkid = blkid_new_probe_from_filename( mapper ) ;
 	
@@ -66,16 +74,6 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 	blkid_free_probe( blkid );
 	
 	fs = StringContent( q ) ;
-		
-	mt.mnt_freq = 0 ;
-	
-	mt.mnt_passno = 0 ;
-	
-	mt.mnt_fsname = ( char * ) mapper ;
-	
-	mt.mnt_dir =  ( char * ) m_point ;	
-	
-	mt.mnt_type = ( char * ) fs ;
 	
 	if ( strcmp( mode, "ro" ) == 0 )
 		mountflags = MS_RDONLY ;
@@ -105,22 +103,47 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 		chmod( m_point, S_IRWXU ) ;		
 	}
 	
-	if( h == 0 ){
+	if( h == 0 ){realpath( "/etc/mtab", path ) ;
 		
-		mt.mnt_opts = ( char * ) StringContent( p ) ;
-		
-		realpath( "/etc/mtab", path ) ;
-		
-		if( strncmp( path, "/etc/",5 ) == 0 ){
+	if( strncmp( path, "/etc/",5 ) == 0 ){
 		
 			/* "/etc/mtab" is not a symbolic link to /proc/mounts, add an entry to it since 
 			 * mount command doesnt
-			 */
-			f = setmntent( "/etc/mtab","a" ) ;
-		
-			addmntent( f, &mt ) ;		
+			 */		
+			m_lock = mnt_new_lock( "/etc/mtab~", getpid() ) ;
 			
-			endmntent( f ) ;
+			status = mnt_lock_file( m_lock ) ;						
+				
+			if( status != 0 ){
+				
+				umount( m_point ) ;	
+				
+				close_mapper( mapper ) ;
+				
+				h = 12 ;
+			}else{			
+				f = setmntent( "/etc/mtab","a" ) ;	
+
+				mt.mnt_fsname = ( char * ) mapper ;
+				
+				mt.mnt_dir =  ( char * ) m_point ;	
+				
+				mt.mnt_type = ( char * ) fs ;	
+				
+				mt.mnt_opts = ( char * ) StringContent( p ) ;
+								
+				mt.mnt_freq = 0 ;
+				
+				mt.mnt_passno = 0 ;
+				
+				addmntent( f, &mt ) ;		
+			
+				endmntent( f ) ;
+			
+				mnt_unlock_file( m_lock ) ;
+			
+				mnt_free_lock( m_lock ) ;
+			}
 		}
 
 	}else{		
@@ -128,7 +151,7 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 		
 		h = 4 ;
 	}	
-	
+
 	StringDelete( p ) ;
 	
 	StringDelete( q ) ;

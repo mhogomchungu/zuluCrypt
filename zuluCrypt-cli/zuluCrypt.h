@@ -52,6 +52,7 @@ int is_luks(const char * device) ;
  * 	5 - ERROR: Cant create a mount point because a file/folder with the same exist at the mount point
  *	6 - ERROR: key file does not exist :
  *	8 - ERROR: failed to open device
+ *      12 - ERROR: could not get a lock on /etc/mtab~
  */
 int open_volume(const char *device, // path to a file/partition to be opened
 		const char * mapper,// mapper name( will show up in /dev/mapper/ )
@@ -68,7 +69,7 @@ int open_volume(const char *device, // path to a file/partition to be opened
  * This function unmount the mounted opened volume,delete the mount point and then close the volume.
  * 
  * input :  mapper name used when the volume was opened
- * output:  mount point path, just incase you need it if you dont keep track of mount points
+ * output:  mount point path, just incase you need it. You can pass NULL if you dont.
  * 
  *  path to mount point will be allocated dynamically on success and hence you should free it ONLY when 
  *  the function return with a success.
@@ -78,7 +79,7 @@ int open_volume(const char *device, // path to a file/partition to be opened
  * 	1 - ERROR: unmounting the mount point failed,mount point or one or more files are in use
  * 	2 - ERROR: close failed, encrypted volume associated with mapping_name argument is not opened  	
  * 	3 - ERROR: close failed, volume does not have an entry in /etc/mtab
- *      4 - ERROR: couldnt find cryptsetup.so library in /usr/local/lib,/usr/lib and /library
+ *      
   */
 int close_volume(const char * mapper,//mapper is the full address of the volume as it appears at /dev/mapper
 		 char ** mount_point ) ; //returned pointer to mount point
@@ -96,18 +97,30 @@ int close_mapper( const char * mapper ) ;//mapper is the full address of the vol
 					//appears at /dev/mapper
 
 /**
- * This function unmounts a volume and delete the mount point folder
- * 
+ * This function unmounts a volume* 
  * 
  * return values
  * 0 - success
  * 1 - ERROR: mapper does not have an entry in fstab
  * 2 - ERROR: the mount point and/or one or more files are in use
  * 3 - ERROR: volume does not have an entry in /etc/mtab
+ * 4 - ERROR: could not get a lock on /etc/mtab~
   */
-int unmount_volume( const char * mapper ) ;//mapper is the full address of the volume as it
-					//appears at /dev/mapper
-
+int unmount_volume( const char * mapper, //mapper is the full address of the volume as it appears at /dev/mapper
+		    char * m_point ) ;  // read close volume docs for more info on this argument
+					
+/**
+ * This function mounts a volume
+ * 
+ * return values:
+ * 0 -  sucess
+ * 4 -  ERROR: mount failed, couldnt find valid file system in the volume
+ * 12 - ERROR: could not get a lock on /etc/mtab~ * 
+ */
+int mount_volume( const char * mapper, // path to a file or partition to mount
+		  const char * m_point,// mount point
+		  const char * mode,   // mode, options are "ro" and "rw" for read only and read/write respectively
+		  uid_t id ) ;         // user id the mount point should use
 
 /**
  * This function returns a pointer to string with volume status information.
@@ -235,9 +248,9 @@ int create_luks(const char * device,    // path to a file or partition to create
 int open_plain( const char * device,      // path to encrypted file or partition
 		const char * mapping_name,// mapper name to use
 		const char * mode,        // "ro" or "rw" for opening in read only or read and write
-		const char * source,      // "-f" or "-p" for passphrase is a path to a key file or a 					  // "naked" passphrase already in memory respectively
+		const char * source,      // "-f" or "-p" for passphrase is a path to a key file or a "naked" passphrase already in memory respectively
 		const char * passphrase,  // passphrase to use to open the volume
-		const char * cipher );	  // cipher to use, default is "cbc-essiv:sha256" for current 					  // cryptsetup default option.  
+		const char * cipher );	  // cipher to use, default is "cbc-essiv:sha256" for current cryptsetup default option.  
 
 
 #ifdef __cplusplus

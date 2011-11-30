@@ -755,6 +755,9 @@ void zuluCrypt::closeThreadFinished()
 	case 3 :UIMessage(tr("ERROR"),
 			  tr("close failed, given path does not point to an encrypted device"));
 		break ;
+	case 4 :UIMessage(tr("ERROR"),
+		tr("close failed, could not get a lock on /etc/mtab~"));
+		break ;
 	default :UIMessage(tr("ERROR"),
 			  tr("an unknown error has occured, volume not closed"));
 	}
