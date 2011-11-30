@@ -22,13 +22,13 @@
 #include <mntent.h>
 #include <blkid/blkid.h>
 
-void blkid( const char * all, const char * type,const char * entry, int size, StrHandle * system, StrHandle * non_system )
+void blkid( const char * type,const char * entry, int size, StrHandle * system, StrHandle * non_system )
 {	
 	char device[12] ;
 	
-	const char * e = all ;
-	
 	const char * f ;
+	
+	const char * e = StringContent( non_system ) ;
 	
 	int j ;
 	
@@ -149,11 +149,11 @@ char * partitions( int option )
 				       
 		}else if ( strncmp( mt->mnt_fsname, "UUID",4 ) == 0 ){
 
-			blkid( StringContent( all ) ,"UUID",mt->mnt_fsname, 5, system, non_system ) ;  				
+			blkid( "UUID",mt->mnt_fsname, 5, system, non_system ) ;  				
 			
 		}else if ( strncmp( mt->mnt_fsname, "LABEL",5 ) == 0 ){
 			
-			blkid( StringContent( all ) ,"LABEL",mt->mnt_fsname, 6, system, non_system ) ;
+			blkid( "LABEL",mt->mnt_fsname, 6, system, non_system ) ;
 		}		
 	}
 

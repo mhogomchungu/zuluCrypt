@@ -153,6 +153,8 @@ char *status( const  char * mapper );//mapper is the full address of the volume 
  * 	1 - ERROR: device argument does not point to a file or partition
  * 	2 - ERROR: wrong argument. (probably mistyped fs and rng arguments
  * 	3 - ERROR: could not create the volume
+ * 
+ * NOTE: This function expected mkfs executable to be present and its full path to be /sbin/mkfs
  */
 int create_volume(const char * device,    // path to a file or partition
 		  const char * fs,       //file system to use in the volume(ext2,ext3.ext4,vfat)
