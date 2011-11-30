@@ -35,34 +35,34 @@ int open_volume( const char * dev,const char * map,const char * m_point,uid_t id
 		if( stat( pass, &st ) != 0 )
 			return 6 ;
 		
-		if( stat( map,&st ) == 0 )
-			return 2 ;	
+	if( stat( map,&st ) == 0 )
+		return 2 ;	
 		
-		luks = is_luks( dev ) ;		
+	luks = is_luks( dev ) ;		
 		
-		if( luks == 0 )
-			h = open_luks( dev,map,mode,source,pass ) ;
-		else
-			h = open_plain( dev,map,mode,source,pass,"cbc-essiv:sha256" ) ;
+	if( luks == 0 )
+		h = open_luks( dev,map,mode,source,pass ) ;
+	else
+		h = open_plain( dev,map,mode,source,pass,"cbc-essiv:sha256" ) ;
 		
-		switch ( h ){
-			case 1 : return 4 ;
-			case 2 : return 8 ; 
-			case 3 : return 3 ;	 
-		}
+	switch ( h ){
+		case 1 : return 4 ;
+		case 2 : return 8 ; 
+		case 3 : return 3 ;	 
+	}
 		
-		h = mount_volume( map,m_point,mode,id ) ;	
+	h = mount_volume( map,m_point,mode,id ) ;	
 		
-		if( h == 4 && luks != 0 ){
-			/*
-			 * udisk/kde device manager seem to crash when mount/unmount happen too quickly, give it room to breath.
-			 */
-			sleep( 2 ) ;
+	if( h == 4 && luks != 0 ){
+		/*
+		 * udisk/kde device manager seem to crash when mount/unmount happen too quickly, give it room to breath.
+		 */
+		sleep( 2 ) ;
 			
-			open_plain( dev,map,mode,source,pass,"cbc-plain" ) ;		
+		open_plain( dev,map,mode,source,pass,"cbc-plain" ) ;		
 			
-			h = mount_volume( map,m_point,mode,id ) ;
-		}
+		h = mount_volume( map,m_point,mode,id ) ;
+	}
 		
 	return h ;		
 }

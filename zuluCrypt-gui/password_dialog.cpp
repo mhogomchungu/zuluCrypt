@@ -358,14 +358,14 @@ void password_Dialog::threadfinished()
 	enableAll();
 
 	switch ( status ){
-		case 0 :{
+		case 0 :{			
+			HideUI() ;
+			
 			QString x = volumePath.replace("\"\"\"","\"").split("/").last() ;
 
 			QString mp = zuluCrypt::mtab(QString("/dev/mapper/zuluCrypt-") + x ) ;
 
-			emit addItemToTable(volumePath,mp);
-
-			HideUI() ;
+			emit addItemToTable(volumePath,mp);			
 
 			}break ;
 

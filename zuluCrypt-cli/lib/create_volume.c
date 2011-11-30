@@ -43,22 +43,22 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 				
 	if( strcmp( type,"luks" )  == 0 ){
 					
-	status = create_luks( dev,pass,rng ) ;		
+		status = create_luks( dev,pass,rng ) ;		
 					
-	if( status != 0 )
-		return 3 ;
+		if( status != 0 )
+			return 3 ;
 					
-	status = open_luks( dev,"/dev/mapper/zuluCrypt-create-new","rw","-p",pass ) ;
+		status = open_luks( dev,"/dev/mapper/zuluCrypt-create-new","rw","-p",pass ) ;
 					
-	if( status != 0 )
-		return 3 ;
+		if( status != 0 )
+			return 3 ;
 					
 	}else if( strcmp( type,"plain") == 0 ){
 					
 		status = open_plain( dev,"/dev/mapper/zuluCrypt-create-new","rw","-p",pass,"cbc-essiv:sha256" ) ;
 					
-	if( status != 0 )
-		return 3 ;		
+		if( status != 0 )
+			return 3 ;		
 	}else{
 		return 2 ;
 	}
