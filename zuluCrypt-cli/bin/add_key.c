@@ -37,6 +37,22 @@ int addkey( int argn,char * device,char * keyType1,char * existingKey,char * key
 		goto out ;
 	}
 	
+	c = empty_slots( device ) ;
+	
+	if( c == NULL ){
+		
+		status = 2 ;
+		goto out ;		
+	}
+	
+	c = strchr( c, '0' ) ;
+	
+	if( c == NULL ){
+		
+		status = 10 ;
+		goto out ;		
+	}
+	
 	if (  argn == 3  ){		
 		
 		printf( "Enter an existing passphrase: " ) ;
@@ -157,6 +173,8 @@ int addkey( int argn,char * device,char * keyType1,char * existingKey,char * key
 		break ;
 		case 3 : printf( "ERROR: device \"%s\" is not a luks device\n",device ) ;
 		break ;
+		case 4 : printf( "ERROR: device does not exist\n" ) ;
+		break ;
 		case 5 : printf( "ERROR: Wrong arguments\n" ) ;
 		break ;
 		case 6 : printf( "ERROR: Wrong number of arguments\n" ) ;
@@ -167,7 +185,7 @@ int addkey( int argn,char * device,char * keyType1,char * existingKey,char * key
 		break ;  
 		case 9 : printf( "ERROR: Run out of memory\n" ) ;
 		break ;
-		case 10 : printf( "device does not exist\n" ) ;
+		case 10 : printf( "ERROR: all key slots are occupied, can not add any more keys\n" ) ;
 		break ;
 		default :
 			;		
