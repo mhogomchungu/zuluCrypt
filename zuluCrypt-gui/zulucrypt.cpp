@@ -493,6 +493,21 @@ void zuluCrypt::addItemToTable(QString x,QString y)
 	ui->tableWidget->item(item_count,1)->setTextAlignment(Qt::AlignCenter);
 	ui->tableWidget->item(item_count,2)->setTextAlignment(Qt::AlignCenter);
 
+	if( item_count == 0 ){
+		ui->tableWidget->item(0,0)->setSelected(true);
+		ui->tableWidget->item(0,1)->setSelected(true);
+		ui->tableWidget->item(0,2)->setSelected(true);
+		selectedRow = 0 ;
+	}else{
+		ui->tableWidget->item(item_count,0)->setSelected(true);
+		ui->tableWidget->item(item_count,1)->setSelected(true);
+		ui->tableWidget->item(item_count,2)->setSelected(true);
+		ui->tableWidget->item(selectedRow,0)->setSelected(false);
+		ui->tableWidget->item(selectedRow,1)->setSelected(false);
+		ui->tableWidget->item(selectedRow,2)->setSelected(false);
+		selectedRow = item_count ;
+	}
+	
 	item_count++ ;	
 }
 
@@ -756,7 +771,7 @@ void zuluCrypt::closeThreadFinished()
 			  tr("close failed, volume does not have an entry in /etc/mtab"));
 		break ;
 	case 4 :UIMessage(tr("ERROR"),
-		tr("close failed, could not get a lock on /etc/mtab~"));
+			  tr("close failed, could not get a lock on /etc/mtab~"));
 		break ;
 	default :UIMessage(tr("ERROR"),
 			  tr("an unknown error has occured, volume not closed"));

@@ -32,7 +32,7 @@ void closeAllVolumesThread::run()
 {		
 	table->setEnabled(false);
 
-	sleep(1) ;
+	//sleep(1) ;
 
 	if( table->rowCount() == 0 ){
 		table->setEnabled(true);
@@ -73,7 +73,7 @@ void closeAllVolumesThread::run()
 
 		p.close();
 
-		sleep(1) ;
+		//sleep(1) ;
 	}
 	table->setEnabled(true);
 }

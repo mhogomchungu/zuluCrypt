@@ -30,6 +30,7 @@ int addkey( int argn,char * device,char * keyType1,char * existingKey,char * key
 	int z ;
 	char * c = NULL ;
 	char * d = NULL ;
+	char * e = NULL ;
 	
 	if(  stat( device,&st1 ) != 0  ){
 		
@@ -37,17 +38,17 @@ int addkey( int argn,char * device,char * keyType1,char * existingKey,char * key
 		goto out ;
 	}
 	
-	c = empty_slots( device ) ;
+	e = empty_slots( device ) ;
 	
-	if( c == NULL ){
+	if( e == NULL ){
 		
 		status = 2 ;
 		goto out ;		
 	}
 	
-	c = strchr( c, '0' ) ;
+	d = strchr( e, '0' ) ;
 	
-	if( c == NULL ){
+	if( d == NULL ){
 		
 		status = 10 ;
 		goto out ;		
@@ -163,6 +164,8 @@ int addkey( int argn,char * device,char * keyType1,char * existingKey,char * key
 	}
 	
 	out:
+	
+	free( e ) ;
 	
 	switch (  status  ){
 		case 0 : printf( "SUCCESS: key added successfully\n" );

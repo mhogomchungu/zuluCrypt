@@ -28,30 +28,28 @@ struct StringHandle
 	char * string ; 
 };
 
-StrHandle * String( const char * data )
+StrHandle * String( const char * c )
 {
-	const char * c = data ;
-	
 	char * d ;
 	
-	StrHandle * str = ( StrHandle * ) malloc ( sizeof( StrHandle ) ) ;
+	StrHandle * st = ( StrHandle * ) malloc ( sizeof( StrHandle ) ) ;
 	
-	if( str == NULL )
+	if( st == NULL )
 		return NULL ;
 	
-	str->size = strlen( data ) ;
+	st->size = strlen( c ) ;
 	
-	d = str->string = ( char * ) malloc ( sizeof ( char ) * ( str->size + 1 ) ) ;
+	d = st->string = ( char * ) malloc ( sizeof ( char ) * ( st->size + 1 ) ) ;
 	
-	if ( str->string == NULL )
+	if ( d == NULL )
 	{
-		free( str ) ;
+		free( st ) ;
 		return NULL ;
 	}
 	
-	while( ( *d++ = *c++ ) != '\0' ) { ; }	
+	while( ( *d++ = *c++ ) ) { ; }	
 	
-	return str ;	
+	return st ;	
 }
 
 void StringReadToBuffer( StrHandle * st,char * buffer, int size )
@@ -63,21 +61,21 @@ void StringReadToBuffer( StrHandle * st,char * buffer, int size )
 
 StrHandle * StringInherit( char * data )
 {
-	StrHandle * str = ( StrHandle * ) malloc ( sizeof( StrHandle ) ) ;
+	StrHandle * st = ( StrHandle * ) malloc ( sizeof( StrHandle ) ) ;
 	
-	if( str == NULL )
+	if( st == NULL )
 		return NULL ;
 	
-	str->size = strlen( data ) ;
+	st->size = strlen( data ) ;
 	
-	str->string = data ;
+	st->string = data ;
 	
-	return str ;	
+	return st ;	
 }
 
 int StringIndexOfString( StrHandle * st,int p, const char * s )
 {
-	char * c = strstr(st->string + p,s) ;
+	char * c = strstr( st->string + p,s ) ;
 	
 	if( c == NULL )
 		return -1 ;
@@ -87,17 +85,15 @@ int StringIndexOfString( StrHandle * st,int p, const char * s )
 
 int StringLastIndexOfChar( StrHandle * st , char s ) 
 {
-	char * c = st->string + st->size - 1 ;
+	char * c = st->string + st->size  ;
 	
-	while( 1 )
-	{		
+	char * d = st->string ;
+	
+	while( --c != d )
 		if ( *c == s )
 			return c - st->string ;
-		else if( st->string == c )
-			return -1 ;
-	
-		c-- ;		
-	}	
+		
+	return -1 ;	
 }
 
 int StringLastIndexOfString( StrHandle * st ,const char * s ) 
@@ -120,27 +116,24 @@ int StringIndexOfChar( StrHandle * st, int p , char s )
 {	
 	char * c = st->string  + p - 1 ;	
 	
-	while ( 1 )
-	{
-		++c ;
-		if( *c == '\0') 
-			return -1 ;
-		else if( *c == s ) 
+	while ( *++c )
+		if( *c == s ) 
 			return c - st->string ;		
-	}	
+			
+	return -1 ;
 }
 
 const char * StringRemoveString( StrHandle * st,int x , int y ) 
-{
-	char * c = st->string  ;
+{	
+	char * b = st->string + x ;
+	
+	char * c = st->string - 1  ;
 	
 	char * d ;
 	
 	char * e ;
 	
 	int f = st->size - y ;
-	
-	int i = 0 ;
 	
 	e = d = ( char * ) malloc( sizeof(char) * ( f + 1  ) ) ;
 
@@ -149,12 +142,11 @@ const char * StringRemoveString( StrHandle * st,int x , int y )
 	
 	st->size = f ;
 	
-	while( i++ < x )
-		*e++ = *c++ ;
+	while( ++c < b ) { *e++ = *c ; }
 	
 	c = c + y  ;
 	
-	while( ( *e++ = *c++ ) != '\0' ) { ; }
+	while( ( *e++ = *c++ ) ) { ; }
 	
 	free( st->string ) ;
 	
@@ -178,21 +170,20 @@ char * StringCopy( StrHandle * st )
 
 char * StringLengthCopy( StrHandle * st,int l )
 {
-	int i = 0 ;
-	
 	char * c ;
 	
-	char * d = st->string;
+	char * d = st->string - 1 ;
 	
 	char * e ;
+	
+	char * f = st->string + l ;
 	
 	e =  c = ( char * )malloc( sizeof( char ) * ( l + 1 ) ) ;
 	
 	if( e == NULL )
 		return NULL ;
 	
-	while( i++ < l )
-		*c++ = *d++ ;
+	while( ++d < f ) { *c++ = *d  ; }
 	
 	*c = '\0' ;
 	
@@ -289,8 +280,7 @@ const char * StringSubString( StrHandle * st, int x, const char * s )
 	
 	char * d = st->string + x  ;
 	
-	while( *++c  != '\0' ) 
-		*d++ = *c ;
+	while( *++c ) { *d++ = *c ; }
 	
 	return st->string ;
 }
@@ -317,35 +307,31 @@ const char * StringAppend( StrHandle * st ,const char * s )
 }
 
 const char * StringInsertString( StrHandle * st, int x, const char * s )
-{	
-
-	int i = 0  ;
-
+{
 	int k = st->size + strlen( s ) ;
 
 	char * c ;
 	
 	char * d ;
 	
-	const char * f = s ;
+	char * f = st->string + x ;
 	
-	char * e = st->string;
+	char * e = st->string - 1 ;
 	
 	c = d = ( char * ) malloc ( sizeof( char ) * ( k + 1 ) ) ;
 	
-	if( c == NULL )
+	if( d == NULL )
 		return NULL ;
 		
 	st->size = k ;
 	
-	while( i++ < x )
-		*c++ = *e++ ;	
-
-	while ( ( *c++ = *f++ ) != '\0' ) { ; }
+	s = s - 1 ;
 	
-	c-- ;	
+	while( ++e < f ) { *c++ = *e ; }	
 	
-	while ( ( *c++ = *e++ ) != '\0' ) { ; }
+	while( *++s ) { *c++ = *s ; }	
+	
+	while( ( *c++ = *e++ ) ) { ; }
 	
 	free( st->string ) ;
 	
@@ -354,23 +340,20 @@ const char * StringInsertString( StrHandle * st, int x, const char * s )
 
 char * StringMidString( StrHandle * st , int x, int y ) 
 {
-	int i = 0 ;
+	char * c ;
 	
 	char * d ;
 	
-	char * f ;
+	char * e = st->string + x + y ;
 	
-	char * c = ( char * ) malloc ( sizeof( char ) * ( y + 1 ) ) ;
+	char * f = st->string + x - 1 ;		
+	
+	c = d = ( char * ) malloc ( sizeof( char ) * ( y + 1 ) ) ;
 	
 	if( c == NULL )
 		return NULL ;
 	
-	d = c ;
-	
-	f = st->string + x;
-	
-	while ( i++ < y )
-		*d++ = *f++ ;
+	while ( ++f < e ) { *d++ = *f ; }
 	
 	*d = '\0' ;
 	
@@ -411,8 +394,7 @@ const char * StringCrop( StrHandle *st, int x, int y )
 	
 	e = st->string + x ;
 	
-	while( j++ < k )
-		*c++ = *e++ ;
+	while( j++ < k ) { *c++ = *e++ ; }
 	
 	*c = '\0' ;
 	
@@ -467,12 +449,12 @@ const char * StringReplaceString( StrHandle * st, const char * x, const char * s
 				
 		g = s - 1 ;
 		
-		while ( *++g != '\0' ) { *d++ = *g ; }
+		while ( *++g  ) { *d++ = *g ; }
 		
 		e = c + k ;
 	}
 	
-	while ( ( *d++ = *e++ ) != '\0' ) { ; }
+	while ( ( *d++ = *e++ ) ) { ; }
 	
 	free( st->string ) ;
 	
@@ -483,7 +465,7 @@ const char * StringReplaceChar( StrHandle * st, char x, char y)
 {
 	char * c = st->string - 1;
 	
-	while ( *++c != '\0' )
+	while ( *++c  )
 		if( *c == x )
 			*c = y ;
 
