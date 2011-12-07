@@ -30,6 +30,7 @@
 #include <QList>
 #include <QMessageBox>
 #include <QCloseEvent>
+#include <QMutex>
 
 #include "../zuluCrypt-cli/executables.h"
 #include "../zuluCrypt-cli/version.h"
@@ -43,6 +44,7 @@
 #include "startupupdateopenedvolumes.h"
 #include "closeallvolumesthread.h"
 #include "zulucryptthreads.h"
+#include "additemtotablethread.h"
 
 namespace Ui {
     class zuluCrypt;
@@ -129,6 +131,8 @@ private slots :
 
 	void closeThreadFinished(void) ;
 
+	void deleteAddItemToTableThread(addItemToTableThread *);
+
 private:
 
 	void setupConnections(void) ;
@@ -183,6 +187,8 @@ private:
 
 	closeAllVolumesThread *t ;
 
+	addItemToTableThread * addThread ;
+
 	QString cstString ;
 
 	runInThread *vct ;
@@ -190,6 +196,8 @@ private:
 	int status ;
 
 	int selectedRow ;
+
+	QMutex mutex ;
 };
 
 #endif // ZULUCRYPT_H

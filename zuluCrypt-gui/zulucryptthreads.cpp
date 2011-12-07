@@ -52,6 +52,7 @@ void ClickedRowHighlight::run()
 	*selectedRow = row ;
 }
 
+
 void ShowNonSystemPartitionsThread::run()
 {
 	QProcess p ;

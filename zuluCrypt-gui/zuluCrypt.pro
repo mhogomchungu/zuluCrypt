@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     createkeyfile.cpp \
     zulucryptthreads.cpp \
     startupupdateopenedvolumes.cpp \
-    closeallvolumesthread.cpp
+    closeallvolumesthread.cpp \
+    additemtotablethread.cpp
 
 HEADERS  += zulucrypt.h password_dialog.h \
     openpartition.h \
@@ -32,7 +33,8 @@ HEADERS  += zulucrypt.h password_dialog.h \
     createkeyfile.h \
     zulucryptthreads.h \
     startupupdateopenedvolumes.h \
-    closeallvolumesthread.h
+    closeallvolumesthread.h \
+    additemtotablethread.h
 
 FORMS    += zulucrypt.ui password.ui \
     openpartition.ui \
@@ -48,6 +50,8 @@ TRANSLATIONS =
 RESOURCES = icon.qrc
 
 LIBS += -lblkid
+
+
 
 
 

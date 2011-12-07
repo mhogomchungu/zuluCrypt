@@ -294,6 +294,8 @@ void luksaddkeyUI::pbAdd(void)
 		}
 	}
 
+	volumePath = volumePath.replace("\"","\"\"\"") ;
+
 	if ( zuluCrypt::isLuks(volumePath) == false ){
 		m.setWindowTitle(tr("ERROR!"));
 		m.setText(tr("volume path does not point to a luks volume"));
@@ -359,9 +361,7 @@ void luksaddkeyUI::pbAdd(void)
 	else
 		newPassType = QString(" -p ") ;
 
-	NewKey = NewKey.replace("\"","\"\"\"") ;
-
-	volumePath = volumePath.replace("\"","\"\"\"") ;
+	NewKey = NewKey.replace("\"","\"\"\"") ;	
 
 	QString exe = QString(ZULUCRYPTzuluCrypt) ;
 	exe = exe + QString(" addkey ") ;

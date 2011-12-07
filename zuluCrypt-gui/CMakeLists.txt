@@ -22,6 +22,7 @@ set( MOC_FILES createfile.h
 		zulucrypt.h
 		startupupdateopenedvolumes.h
 		closeallvolumesthread.h
+		additemtotablethread.h
  )
 	
 set (SRC createfile.cpp
@@ -36,6 +37,7 @@ set (SRC createfile.cpp
 			startupupdateopenedvolumes.cpp
 			zulucrypt.cpp
 			closeallvolumesthread.cpp
+			additemtotablethread.cpp
 )
 
 add_definitions( -D_FILE_OFFSET_BITS=64 -Wall ) 

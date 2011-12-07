@@ -232,14 +232,6 @@ void luksdeletekey::pbDelete()
 		m.exec() ;
 		return ;
 	}
-	if ( zuluCrypt::isLuks(volumePath) == false ){
-
-		m.setWindowTitle(tr("ERROR!"));
-		m.setText(tr("given path does not point to a luks volume"));
-		m.addButton(QMessageBox::Ok);
-		m.exec() ;
-		return ;
-	}
 
 	if(ui->rbPassphraseFromFile->isChecked() == true){
 
@@ -253,6 +245,17 @@ void luksdeletekey::pbDelete()
 			m.exec() ;
 			return ;
 		}
+	}
+
+	volumePath = volumePath.replace("\"","\"\"\"") ;
+
+	if ( zuluCrypt::isLuks(volumePath) == false ){
+
+		m.setWindowTitle(tr("ERROR!"));
+		m.setText(tr("given path does not point to a luks volume"));
+		m.addButton(QMessageBox::Ok);
+		m.exec() ;
+		return ;
 	}
 
 	if(zuluCrypt::luksEmptySlots(volumePath).at(0) == QString("1")){
@@ -269,9 +272,7 @@ void luksdeletekey::pbDelete()
 
 		if( m.exec() == QMessageBox::No )
 			return ;
-	}
-
-	volumePath = volumePath.replace("\"","\"\"\"") ;
+	}	
 
 	QString exe = QString(ZULUCRYPTzuluCrypt) ;
 	exe = exe + QString(" removekey ")  ;

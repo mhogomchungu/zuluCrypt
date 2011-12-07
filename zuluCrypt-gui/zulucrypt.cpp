@@ -481,34 +481,20 @@ void zuluCrypt::aboutMenuOption(void)
 
 void zuluCrypt::addItemToTable(QString x,QString y)
 {
-	ui->tableWidget->insertRow(item_count);
-	ui->tableWidget->setItem(item_count,0,new QTableWidgetItem(x)) ;
-	ui->tableWidget->setItem(item_count,1,new QTableWidgetItem(y)) ;
-	if ( isLuks( ui->tableWidget->item(item_count,0)->text()) == true )
-		ui->tableWidget->setItem(item_count,2,new QTableWidgetItem(tr("luks"))) ;
-	else
-		ui->tableWidget->setItem(item_count,2,new QTableWidgetItem(tr("plain"))) ;
+	addThread = new addItemToTableThread(&mutex,ui->tableWidget,x,y,&item_count,&selectedRow) ;
 
-	ui->tableWidget->item(item_count,0)->setTextAlignment(Qt::AlignCenter);
-	ui->tableWidget->item(item_count,1)->setTextAlignment(Qt::AlignCenter);
-	ui->tableWidget->item(item_count,2)->setTextAlignment(Qt::AlignCenter);
+	connect(addThread,
+		SIGNAL(threadFinished(addItemToTableThread*)),
+		this,
+		SLOT(deleteAddItemToTableThread(addItemToTableThread *))) ;
 
-	if( item_count == 0 ){
-		ui->tableWidget->item(0,0)->setSelected(true);
-		ui->tableWidget->item(0,1)->setSelected(true);
-		ui->tableWidget->item(0,2)->setSelected(true);
-		selectedRow = 0 ;
-	}else{
-		ui->tableWidget->item(item_count,0)->setSelected(true);
-		ui->tableWidget->item(item_count,1)->setSelected(true);
-		ui->tableWidget->item(item_count,2)->setSelected(true);
-		ui->tableWidget->item(selectedRow,0)->setSelected(false);
-		ui->tableWidget->item(selectedRow,1)->setSelected(false);
-		ui->tableWidget->item(selectedRow,2)->setSelected(false);
-		selectedRow = item_count ;
-	}
-	
-	item_count++ ;	
+	addThread->start();
+}
+
+void zuluCrypt::deleteAddItemToTableThread(addItemToTableThread *c)
+{
+	//sleep(3) ;
+	delete c ;
 }
 
 void zuluCrypt::removeRowFromTable( int x )
