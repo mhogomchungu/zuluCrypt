@@ -773,7 +773,7 @@ void zuluCrypt::close()
 	QString exe = QString(ZULUCRYPTzuluCrypt) + QString(" close ") + QString("\"") + \
 			vol + QString("\"") ;
 
-	vct = new runInThread( exe, &status) ;
+	vct = new runInThread( exe, &status,NULL) ;
 
 	connect(vct,
 		SIGNAL(finished()),

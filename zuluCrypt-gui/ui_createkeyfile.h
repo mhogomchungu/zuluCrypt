@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'createkeyfile.ui'
 **
-** Created: Wed Nov 23 13:04:53 2011
+** Created: Tue Dec 6 22:41:24 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -44,14 +44,14 @@ public:
         createkeyfile->resize(473, 138);
         lineEditFileName = new QLineEdit(createkeyfile);
         lineEditFileName->setObjectName(QString::fromUtf8("lineEditFileName"));
-        lineEditFileName->setGeometry(QRect(110, 10, 321, 31));
+        lineEditFileName->setGeometry(QRect(120, 10, 311, 31));
         label = new QLabel(createkeyfile);
         label->setObjectName(QString::fromUtf8("label"));
         label->setGeometry(QRect(20, 10, 91, 31));
         label->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         lineEditPath = new QLineEdit(createkeyfile);
         lineEditPath->setObjectName(QString::fromUtf8("lineEditPath"));
-        lineEditPath->setGeometry(QRect(110, 40, 321, 31));
+        lineEditPath->setGeometry(QRect(120, 40, 311, 31));
         pbOpenFolder = new QPushButton(createkeyfile);
         pbOpenFolder->setObjectName(QString::fromUtf8("pbOpenFolder"));
         pbOpenFolder->setGeometry(QRect(430, 40, 31, 31));
@@ -79,7 +79,7 @@ public:
          << QString::fromUtf8("/dev/urandom")
         );
         comboBoxRNG->setObjectName(QString::fromUtf8("comboBoxRNG"));
-        comboBoxRNG->setGeometry(QRect(110, 70, 111, 31));
+        comboBoxRNG->setGeometry(QRect(120, 70, 101, 31));
         QWidget::setTabOrder(lineEditFileName, lineEditPath);
         QWidget::setTabOrder(lineEditPath, pbOpenFolder);
         QWidget::setTabOrder(pbOpenFolder, comboBoxRNG);

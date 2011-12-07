@@ -182,10 +182,11 @@ major minor  #blocks  name
 	f.close();
 }
 
-runInThread::runInThread(QString exe, int * st)
+runInThread::runInThread(QString exe, int * st, QString *m)
 {
 	EXE = exe ;
 	status = st ;
+	m_point = m ;
 }
 
 void runInThread::run()
@@ -199,6 +200,9 @@ void runInThread::run()
 	*status = p.exitCode() ;
 
 	p.close();
+
+	if( m_point != NULL)
+		*m_point = zuluCrypt::mtab(QString("/dev/mapper/zuluCrypt-") + *m_point ) ;
 }
 
 

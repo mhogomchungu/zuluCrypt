@@ -279,6 +279,8 @@ void password_Dialog::buttonOpenClicked(void )
 
 	passPhraseField = passPhraseField.replace("\"","\"\"\"") ;
 
+	m_point = volumePath.split("/").last() ;
+
 	QString vp = volumePath.replace("\"","\"\"\"") ;
 
 	mountPointPath = mountPointPath.replace("\"","\"\"\"") ;
@@ -290,7 +292,7 @@ void password_Dialog::buttonOpenClicked(void )
 			mode + QString(" ") + passtype + \
 			QString(" \"") + passPhraseField + QString("\"");
 
-	ovt = new runInThread(exe,&status) ;
+	ovt = new runInThread(exe,&status,&m_point) ;
 
 	connect(ovt,SIGNAL(finished()),this,SLOT(threadfinished())) ;
 
@@ -358,41 +360,29 @@ void password_Dialog::threadfinished()
 	enableAll();
 
 	switch ( status ){
-		case 0 :{			
+		case 0 :
+			emit addItemToTable(volumePath,m_point);
 			HideUI() ;
-			
-			QString x = volumePath.replace("\"\"\"","\"").split("/").last() ;
-
-			QString mp = zuluCrypt::mtab(QString("/dev/mapper/zuluCrypt-") + x ) ;
-
-			emit addItemToTable(volumePath,mp);			
-
-			}break ;
-
+			break ;			
 		case 1 : UIMessage(tr("ERROR"),tr("No free loop device to use.")) ;
 			break ;
-
 		case 2 : UIMessage(tr("ERROR"),tr("there seem to be an open volume accociated with given path."));
 			break ;
-
 		case 3 : UIMessage(tr("ERROR"),tr("No file exist on given path")) ;
 			break ;
-
 		case 4 :
 			UIMessage(tr("ERROR"),tr("wrong passphrase."));
 			ui->PassPhraseField->clear();
 			ui->PassPhraseField->setFocus();
 			break ;
-
 		case 5 : UIMessage(tr("ERROR"),tr("mount point address is already taken by a file or folder")) ;
 			break ;
 		case 8 : UIMessage(tr("ERROR"),tr("ERROR: failed to open volume")) ;
-			break ;
-		
+			break ;		
 		case 10 : UIMessage(tr("ERROR"),tr("\",\" (comma) is not a valid mount point"));
 			break ;
 		default :UIMessage(tr("ERROR"),tr("un unknown error has occured, volume not opened"));
-		}
+	}		
 }
 
 password_Dialog::~password_Dialog()

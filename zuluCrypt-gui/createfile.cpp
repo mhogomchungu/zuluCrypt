@@ -243,12 +243,6 @@ void createfile::monitorFileGrowth()
 {
 	QFileInfo f( path ) ;
 
-	/*
-	  the QProgressBar uses signed interger for max, min and setValue.
-	  This means it can not work with files greater than 2GB.
-
-	  Rescalling min and max and current values to within 0 and 100
-	  */
 	ui->progressBar->setValue(f.size() * 100 / fileSize);
 }
 
@@ -278,7 +272,15 @@ void createfile::pbCancel()
 
 	if(mb.exec() == QMessageBox::No)
 		return ;
+	/*
+	  Below check is necessary because a user may cancel a file
+	  creation operation but fail to confirm in time. This will
+	  lead to a situation where one line of execution will be here and another
+	  will be in "createFileThreadFinished()" function above.
 
+	  The value set in that function will have an end result of autoselecting "no"
+	  to the user.
+	  */
 	if( Return == true )
 		return ;
 

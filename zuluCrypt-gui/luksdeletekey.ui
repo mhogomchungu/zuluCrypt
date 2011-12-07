@@ -32,7 +32,7 @@
   <widget class="QLabel" name="labelPassphrase">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>10</x>
      <y>40</y>
      <width>81</width>
      <height>31</height>
@@ -151,10 +151,10 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>15</y>
+     <x>10</x>
+     <y>10</y>
      <width>81</width>
-     <height>21</height>
+     <height>31</height>
     </rect>
    </property>
    <property name="text">

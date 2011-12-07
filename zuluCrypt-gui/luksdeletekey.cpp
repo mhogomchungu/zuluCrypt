@@ -289,7 +289,7 @@ void luksdeletekey::pbDelete()
 
 	disableAll();
 
-	ldk = new runInThread(exe,&status) ;
+	ldk = new runInThread(exe,&status,NULL) ;
 
 	connect(ldk,
 		SIGNAL(finished()),

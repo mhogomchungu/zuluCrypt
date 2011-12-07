@@ -19,9 +19,9 @@
   <widget class="QLineEdit" name="lineEditFileName">
    <property name="geometry">
     <rect>
-     <x>110</x>
+     <x>120</x>
      <y>10</y>
-     <width>321</width>
+     <width>311</width>
      <height>31</height>
     </rect>
    </property>
@@ -45,9 +45,9 @@
   <widget class="QLineEdit" name="lineEditPath">
    <property name="geometry">
     <rect>
-     <x>110</x>
+     <x>120</x>
      <y>40</y>
-     <width>321</width>
+     <width>311</width>
      <height>31</height>
     </rect>
    </property>
@@ -144,9 +144,9 @@
   <widget class="QComboBox" name="comboBoxRNG">
    <property name="geometry">
     <rect>
-     <x>110</x>
+     <x>120</x>
      <y>70</y>
-     <width>111</width>
+     <width>101</width>
      <height>31</height>
     </rect>
    </property>

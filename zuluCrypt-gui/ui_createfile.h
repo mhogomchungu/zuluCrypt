@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'createfile.ui'
 **
-** Created: Wed Nov 23 14:42:19 2011
+** Created: Tue Dec 6 22:41:24 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -77,7 +77,7 @@ public:
         pbOpenFolder->setGeometry(QRect(390, 40, 31, 31));
         pbCancel = new QPushButton(createfile);
         pbCancel->setObjectName(QString::fromUtf8("pbCancel"));
-        pbCancel->setGeometry(QRect(260, 160, 91, 31));
+        pbCancel->setGeometry(QRect(240, 160, 91, 31));
         pbCancel->setAutoDefault(false);
         pbCancel->setDefault(false);
         label_4 = new QLabel(createfile);
@@ -86,7 +86,7 @@ public:
         label_4->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         pbCreate = new QPushButton(createfile);
         pbCreate->setObjectName(QString::fromUtf8("pbCreate"));
-        pbCreate->setGeometry(QRect(160, 160, 91, 31));
+        pbCreate->setGeometry(QRect(150, 160, 91, 31));
         pbCreate->setAutoDefault(false);
         pbCreate->setDefault(true);
         comboBox = new QComboBox(createfile);
@@ -103,7 +103,7 @@ public:
         comboBoxRNG->setGeometry(QRect(120, 100, 161, 31));
         label_5 = new QLabel(createfile);
         label_5->setObjectName(QString::fromUtf8("label_5"));
-        label_5->setGeometry(QRect(50, 104, 55, 20));
+        label_5->setGeometry(QRect(50, 104, 61, 20));
         label_5->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         QWidget::setTabOrder(lineEditFileName, lineEditFilePath);
         QWidget::setTabOrder(lineEditFilePath, pbOpenFolder);

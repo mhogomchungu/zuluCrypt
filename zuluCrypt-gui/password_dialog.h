@@ -71,6 +71,8 @@ private :
 	int status ;
 
 	QString volumePath ;
+
+	QString m_point ;
 };
 
 #endif // PASSWORD_DIALOG_H

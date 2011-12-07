@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'luksaddkey.ui'
 **
-** Created: Wed Nov 23 13:04:53 2011
+** Created: Tue Dec 6 22:41:23 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -57,7 +57,7 @@ public:
         luksaddkeyUI->setModal(true);
         labelLuksVolume = new QLabel(luksaddkeyUI);
         labelLuksVolume->setObjectName(QString::fromUtf8("labelLuksVolume"));
-        labelLuksVolume->setGeometry(QRect(20, 10, 121, 31));
+        labelLuksVolume->setGeometry(QRect(10, 10, 121, 31));
         labelLuksVolume->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         pushButtonOpenFile = new QPushButton(luksaddkeyUI);
         pushButtonOpenFile->setObjectName(QString::fromUtf8("pushButtonOpenFile"));
@@ -76,7 +76,7 @@ public:
         radioButtonPassphraseInVolumeFromFile->setGeometry(QRect(150, 40, 221, 21));
         labelExistingPassphrase = new QLabel(groupBox);
         labelExistingPassphrase->setObjectName(QString::fromUtf8("labelExistingPassphrase"));
-        labelExistingPassphrase->setGeometry(QRect(10, 60, 121, 31));
+        labelExistingPassphrase->setGeometry(QRect(0, 60, 121, 31));
         labelExistingPassphrase->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         pushButtonOpenExistingKeyFile = new QPushButton(groupBox);
         pushButtonOpenExistingKeyFile->setObjectName(QString::fromUtf8("pushButtonOpenExistingKeyFile"));
@@ -113,7 +113,7 @@ public:
         pushButtonOpenNewKeyFile->setAutoDefault(false);
         labelNewPassphrase = new QLabel(groupBox_2);
         labelNewPassphrase->setObjectName(QString::fromUtf8("labelNewPassphrase"));
-        labelNewPassphrase->setGeometry(QRect(10, 60, 121, 31));
+        labelNewPassphrase->setGeometry(QRect(0, 60, 121, 31));
         labelNewPassphrase->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         textEditPassphraseToAdd = new QLineEdit(groupBox_2);
         textEditPassphraseToAdd->setObjectName(QString::fromUtf8("textEditPassphraseToAdd"));
@@ -123,7 +123,7 @@ public:
         lineEditReEnterPassphrase->setGeometry(QRect(130, 90, 321, 31));
         labelReEnterPassphrase = new QLabel(groupBox_2);
         labelReEnterPassphrase->setObjectName(QString::fromUtf8("labelReEnterPassphrase"));
-        labelReEnterPassphrase->setGeometry(QRect(10, 90, 121, 31));
+        labelReEnterPassphrase->setGeometry(QRect(0, 90, 121, 31));
         labelReEnterPassphrase->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         QWidget::setTabOrder(textEditPathToVolume, pushButtonOpenFile);
         QWidget::setTabOrder(pushButtonOpenFile, pushButtonOpenPartition);
