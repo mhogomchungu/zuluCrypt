@@ -103,8 +103,11 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 		chmod( m_point, S_IRWXU ) ;		
 	}
 	
-	if( h == 0 ){
+	if( h != 0 ){
+		close_mapper( mapper ) ; 
 		
+		h = 4 ;		
+	}else{		
 		realpath( "/etc/mtab", path ) ;
 		
 		if( strncmp( path, "/etc/",5 ) == 0 ){
@@ -147,12 +150,7 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 				mnt_free_lock( m_lock ) ;
 			}
 		}
-
-	}else{		
-		close_mapper( mapper ) ; 
-		
-		h = 4 ;
-	}	
+	}
 
 	StringDelete( p ) ;
 	
