@@ -126,6 +126,15 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 
 	setUserFont(F);
 
+	crh = new ClickedRowHighlight() ;
+
+	vpt = new volumePropertiesThread() ;
+
+	connect(vpt,
+		SIGNAL(finished()),
+		this,
+		SLOT(volumePropertyThreadFinished())) ;
+
 	sov = new startupupdateopenedvolumes(this);
 
 	connect(sov,
@@ -506,28 +515,17 @@ void zuluCrypt::removeRowFromTable( int x )
 
 void zuluCrypt::volume_property()
 {
-	mp = new QMessageBox(this) ;
-	mp->setWindowTitle(tr("volume properties"));
-	mp->setParent(this);
-	mp->setWindowFlags(Qt::Window | Qt::Dialog);
-	mp->addButton(QMessageBox::Ok);
-	mp->setFont(this->font());
-
-	QString path = item->tableWidget()->item(item->row(),0)->text() ;
-	QString mpoint = item->tableWidget()->item(item->row(),1)->text() ;
-	vpt = new volumePropertiesThread(path,mpoint,&volumeProperty) ;
-
-	connect(vpt,SIGNAL(finished()),this,SLOT(volumePropertyThreadFinished())) ;
+	vpt->update(item->tableWidget()->item(item->row(),0)->text(),
+		    item->tableWidget()->item(item->row(),1)->text(),
+		    &volumeProperty);
 
 	vpt->start();
 }
 
 void zuluCrypt::volumePropertyThreadFinished()
 {
-	delete vpt ;
-	mp->setText(volumeProperty);
-	mp->exec() ;
-	delete mp ;
+	mpv.setText(volumeProperty);
+	mpv.exec() ;
 }
 
 void zuluCrypt::favAboutToHide()
@@ -614,34 +612,13 @@ void zuluCrypt::addToFavorite()
 	f.close();
 }
 
-void zuluCrypt::cellEntered(QTableWidgetItem *item)
-{
-	int row = item->row() ;
-
-	if( row == selectedRow )
-		return ;
-
-	ui->tableWidget->item(row,0)->setSelected(true);
-	ui->tableWidget->item(row,1)->setSelected(true);
-	ui->tableWidget->item(row,2)->setSelected(true);
-
-	if( selectedRow != - 1 && item_count > 1 ){
-
-		ui->tableWidget->item(selectedRow,0)->setSelected(false);
-		ui->tableWidget->item(selectedRow,1)->setSelected(false);
-		ui->tableWidget->item(selectedRow,2)->setSelected(false);
-
-	}
-		selectedRow = row ;
-}
-
 void zuluCrypt::cellClicked(QTableWidgetItem * t)
 {
 	item = t ;	
 
-	ClickedRowHighlight u( item->row(),ui->tableWidget,&selectedRow,item_count ) ;
+	crh->update( item->row(),ui->tableWidget,&selectedRow,item_count );
 
-	u.start();
+	crh->start();
 
 	QMenu m ;
 	m.setFont(this->font());
@@ -651,14 +628,7 @@ void zuluCrypt::cellClicked(QTableWidgetItem * t)
 
 	connect(m.addAction("properties"),SIGNAL(triggered()),this,SLOT(volume_property())) ;
 
-	QProcess Z ;
-
-	Z.start( QString(ZULUCRYPTzuluCrypt) + QString(" isLuks ") + QString("\"") + \
-		 ui->tableWidget->item(item->row(),0)->text() + QString("\""));
-
-	Z.waitForFinished() ;
-
-	if( Z.exitCode() == 0 ){
+	if( ui->tableWidget->item(item->row(),2)->text() == QString("luks") ){
 		m.addSeparator() ;
 		connect(m.addAction("add key"),
 			SIGNAL(triggered()),
@@ -701,7 +671,6 @@ void zuluCrypt::cellClicked(QTableWidgetItem * t)
 
 	m.addAction(&a);
 	
-	Z.close();
 	m.setFont(this->font());
 	m.exec(QCursor::pos()) ;	
 }
@@ -786,6 +755,12 @@ void zuluCrypt::close()
 
 void zuluCrypt::setupUIElements()
 {
+	mpv.setWindowTitle(tr("volume properties"));
+	mpv.setParent(this);
+	mpv.setWindowFlags(Qt::Window | Qt::Dialog);
+	mpv.addButton(QMessageBox::Ok);
+	mpv.setFont(this->font());
+
 	trayIcon = new QSystemTrayIcon(this);
 
 	trayIcon->setIcon(QIcon(QString(":/zuluCrypt.png")));
@@ -1015,6 +990,10 @@ zuluCrypt::~zuluCrypt()
 	delete createkeyFile ;
 
 	delete trayMenu ;
+
+	delete  crh ;
+
+	delete vpt ;
 
 	delete ui;
 }

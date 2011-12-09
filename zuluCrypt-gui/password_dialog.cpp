@@ -281,7 +281,9 @@ void password_Dialog::buttonOpenClicked(void )
 
 	m_point = volumePath.split("/").last() ;
 
-	QString vp = volumePath.replace("\"","\"\"\"") ;
+	QString vp = volumePath ;
+
+	vp = vp.replace("\"","\"\"\"") ;
 
 	mountPointPath = mountPointPath.replace("\"","\"\"\"") ;
 

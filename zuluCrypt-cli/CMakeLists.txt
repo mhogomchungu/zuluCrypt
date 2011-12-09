@@ -1,14 +1,28 @@
  cmake_minimum_required(VERSION 2.6)  
  
- #message( STATUS "Looking for libcryptsetup.h" )
+ find_file ( mntent mntent.h )
  
- find_file ( mount-header mount/mount.h )
+ if(NOT mntent)
+	 message (FATAL_ERROR "ERROR: could not find mntent.h header file")
+ endif(NOT mntent)
+	 
+ message( STATUS "Found mntent.h  : " ${mntent} )
  
- if(NOT mount-header)
+ find_file ( mount_sys sys/mount.h )
+ 
+ if(NOT mount_sys)
+	 message (FATAL_ERROR "ERROR: could not find sys/mount.h header file")
+ endif(NOT mount_sys)
+	 
+ message( STATUS "Found mount/mount.h  : " ${mount} )
+	 
+ find_file ( mount mount/mount.h )
+ 
+ if(NOT mount)
 	 message (FATAL_ERROR "ERROR: could not find mount/mount.h header file")
- endif(NOT mount-header)
+ endif(NOT mount)
  
- message( STATUS "Found mount.h  : " ${mount-header} )
+ message( STATUS "Found mount/mount.h  : " ${mount} )
  
  find_library( mountLibrary libmount.so )
  

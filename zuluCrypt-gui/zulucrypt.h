@@ -127,8 +127,6 @@ private slots :
 
 	void deleteThread() ;
 
-	void cellEntered(QTableWidgetItem *) ;
-
 	void closeThreadFinished(void) ;
 
 	void deleteAddItemToTableThread(addItemToTableThread *);
@@ -189,6 +187,8 @@ private:
 
 	addItemToTableThread * addThread ;
 
+	ClickedRowHighlight * crh ;
+
 	QString cstString ;
 
 	runInThread *vct ;
@@ -198,6 +198,8 @@ private:
 	int selectedRow ;
 
 	QMutex mutex ;
+
+	QMessageBox mpv ;
 };
 
 #endif // ZULUCRYPT_H
