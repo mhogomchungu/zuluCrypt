@@ -157,18 +157,18 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 
 void zuluCrypt::closeAllVolumes()
 {
-	t = new closeAllVolumesThread(ui->tableWidget) ;
+	cavt = new closeAllVolumesThread(ui->tableWidget) ;
 
-	connect(t,SIGNAL(close(QTableWidgetItem *,int)),this,SLOT(closeAll(QTableWidgetItem *,int))) ;
+	connect(cavt,SIGNAL(close(QTableWidgetItem *,int)),this,SLOT(closeAll(QTableWidgetItem *,int))) ;
 
-	connect(t,SIGNAL(finished()),this,SLOT(deleteThread())) ;
+	connect(cavt,SIGNAL(finished()),this,SLOT(deleteThread())) ;
 
-	t->start();
+	cavt->start();
 }
 
 void zuluCrypt::deleteThread()
 {
-	delete t ;
+	delete cavt ;
 }
 
 void zuluCrypt::closeAll(QTableWidgetItem * i,int st)

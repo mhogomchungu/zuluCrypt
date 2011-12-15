@@ -183,7 +183,7 @@ private:
 
 	startupupdateopenedvolumes *sov ;
 
-	closeAllVolumesThread *t ;
+	closeAllVolumesThread *cavt ;
 
 	addItemToTableThread * addThread ;
 
