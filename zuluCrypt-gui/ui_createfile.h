@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'createfile.ui'
 **
-** Created: Tue Dec 6 22:41:24 2011
+** Created: Wed Dec 14 22:42:08 2011
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -138,9 +138,13 @@ public:
          << QApplication::translate("createfile", "GB", 0, QApplication::UnicodeUTF8)
         );
 #ifndef QT_NO_TOOLTIP
-        comboBoxRNG->setToolTip(QApplication::translate("createfile", "/dev/random is slowest but most secure.\n"
+        comboBoxRNG->setToolTip(QApplication::translate("createfile", "/dev/random is too slow to be practical but its most secure\n"
+"( move your mouse around to speed things up ).\n"
+"\n"
 "/dev/zero is fastest but least secure.\n"
-"/dev/urandom is in the middle and secure enough.", 0, QApplication::UnicodeUTF8));
+"\n"
+"/dev/urandom is in the middle and secure enough.\n"
+"", 0, QApplication::UnicodeUTF8));
 #endif // QT_NO_TOOLTIP
         label_5->setText(QApplication::translate("createfile", "rng", 0, QApplication::UnicodeUTF8));
     } // retranslateUi

@@ -212,9 +212,13 @@
     </rect>
    </property>
    <property name="toolTip">
-    <string>/dev/random is slowest but most secure.
+    <string>/dev/random is too slow to be practical but its most secure
+( move your mouse around to speed things up ).
+
 /dev/zero is fastest but least secure.
-/dev/urandom is in the middle and secure enough.</string>
+
+/dev/urandom is in the middle and secure enough.
+</string>
    </property>
    <item>
     <property name="text">
