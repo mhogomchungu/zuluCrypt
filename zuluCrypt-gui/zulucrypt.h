@@ -131,6 +131,8 @@ private slots :
 
 	void deleteAddItemToTableThread(addItemToTableThread *);
 
+	void menuKeyPressed(void) ;
+
 private:
 
 	void setupConnections(void) ;
@@ -200,6 +202,10 @@ private:
 	QMutex mutex ;
 
 	QMessageBox mpv ;
+
+	QAction * rca ;
+
+	bool keyPressed ;
 };
 
 #endif // ZULUCRYPT_H

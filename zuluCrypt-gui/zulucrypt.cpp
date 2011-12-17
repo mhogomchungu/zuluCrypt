@@ -32,6 +32,7 @@
 #include <QFontDialog>
 #include <QMetaType>
 #include <QDebug>
+#include <QKeySequence>
 
 Q_DECLARE_METATYPE(Qt::Orientation) ;
 Q_DECLARE_METATYPE(QItemSelection) ;
@@ -43,6 +44,8 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 	item_count = 0 ;
 
 	selectedRow = -1 ;
+
+	keyPressed = false ;
 
 	qRegisterMetaType<Qt::Orientation>("Qt::Orientation") ;
 
@@ -153,6 +156,32 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 		SLOT(UIMessage(QString,QString))) ;
 
 	sov->start();
+
+	rca = new QAction( this ) ;
+
+	QList<QKeySequence> keys ;
+
+	keys.append( Qt::Key_Menu );
+
+	keys.append( Qt::CTRL + Qt::Key_M );
+
+	rca->setShortcuts(keys) ;
+
+	connect(rca,SIGNAL(triggered()),this,SLOT(menuKeyPressed())) ;
+
+	this->addAction( rca );
+}
+
+void zuluCrypt::menuKeyPressed()
+{
+	QTableWidgetItem *it = ui->tableWidget->currentItem() ;
+
+	if( it != NULL ){
+
+		keyPressed = true ;
+
+		cellClicked( it );
+	}
 }
 
 void zuluCrypt::closeAllVolumes()
@@ -672,7 +701,23 @@ void zuluCrypt::cellClicked(QTableWidgetItem * t)
 	m.addAction(&a);
 	
 	m.setFont(this->font());
-	m.exec(QCursor::pos()) ;	
+
+	if( keyPressed == false )
+		m.exec(QCursor::pos()) ;
+	else{
+		int x = ui->tableWidget->columnWidth(1) ;
+
+		int y = ui->tableWidget->rowHeight(item->row()) * item->row() + 20 ;
+
+		QPoint p = ui->tableWidget->mapToGlobal(QPoint(x,y)) ;
+
+		m.addSeparator() ;
+
+		m.addAction("cancel") ;
+
+		m.exec(p) ;
+	}
+	keyPressed = false ;
 }
 
 void zuluCrypt::luksAddKeyContextMenu(void)
@@ -994,6 +1039,8 @@ zuluCrypt::~zuluCrypt()
 	delete  crh ;
 
 	delete vpt ;
+
+	delete rca ;
 
 	delete ui;
 }

@@ -48,5 +48,5 @@ version 4.3.0
 -- Add option to just minimize or minimize to tray the main window.
 -- various other UI and functionality fixes.
 
-version 5.0
-translations support of people are interested in the tool in different languages.
+version 4.3.1
+-- Minor UI effects
