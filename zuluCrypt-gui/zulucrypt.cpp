@@ -176,12 +176,19 @@ void zuluCrypt::menuKeyPressed()
 {
 	QTableWidgetItem *it = ui->tableWidget->currentItem() ;
 
-	if( it != NULL ){
+	if( it == NULL ){
+		
+		int rowcount = ui->tableWidget->rowCount() ;
 
-		keyPressed = true ;
+		if( rowcount > 0 ){
+			
+			it = ui->tableWidget->item(rowcount - 1 ,0) ;
+		}else
+			return ;
+	}	
+	keyPressed = true ;
 
-		cellClicked( it );
-	}
+	cellClicked( it );	
 }
 
 void zuluCrypt::closeAllVolumes()
@@ -688,24 +695,24 @@ void zuluCrypt::cellClicked(QTableWidgetItem * t)
 
 	QAction a(tr("add to favorite"),(QObject *)&m) ;
 
-	if( strstr( data.data() , fav.toAscii().data() ) == NULL )
+	if( strstr( data.data() , fav.toAscii().data() ) == NULL ){
+		
 		a.setEnabled(true);
-	else
-		a.setEnabled(false);
-
-	a.connect((QObject *)&a,
-		  SIGNAL(triggered()),
-		  this,
-		  SLOT(addToFavorite())) ;
-
-	m.addAction(&a);
 	
-	m.setFont(this->font());
+		a.connect((QObject *)&a,
+			  SIGNAL(triggered()),
+			  this,
+			  SLOT(addToFavorite())) ;
+	    
+		m.addAction(&a);
+		
+	}else
+		a.setEnabled(false);	
 
 	if( keyPressed == false )
 		m.exec(QCursor::pos()) ;
 	else{
-		int x = ui->tableWidget->columnWidth(1) ;
+		int x = ui->tableWidget->columnWidth(0) ;
 
 		int y = ui->tableWidget->rowHeight(item->row()) * item->row() + 20 ;
 

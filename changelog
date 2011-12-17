@@ -49,4 +49,5 @@ version 4.3.0
 -- various other UI and functionality fixes.
 
 version 4.3.1
--- Minor UI effects
+-- A bit more UI effects when opening and closing of volumes.
+-- Context menu on opened volumes can now be triggered with CTRL+M or or menu key for better keyboard only management of the tool
