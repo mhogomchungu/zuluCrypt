@@ -94,15 +94,4 @@ private:
 
 };
 
-class runInThread : public QThread
-{
-public:
-	runInThread(QString,int *,QString *) ;
-private:
-	void run(void) ;
-	int * status ;
-	QString EXE ;
-	QString *m_point ;
-};
-
 #endif // ZULUCRYPTTHREADS_H

@@ -35,33 +35,24 @@ void startupupdateopenedvolumes::run()
 {
 	QStringList Z =  QDir(QString("/dev/mapper")).entryList().filter("zuluCrypt-") ;
 
-	char *c, *d, *v ;
+	QProcess p ;
 
-	QProcess * p ;
+	QString device ;
+
+	QString dv = QString(ZULUCRYPTzuluCrypt) + QString(" device ") ;
+
+	QString mp ;
 
 	for ( int i = 0 ; i < Z.size() ; i++){
 
-		QString C = Z.at(i) ;
+		p.start( dv + Z.at(i) ) ;
 
-		C = C.right( C.length() - 10 ) ; //10 is the length of "zuluCrypt-
+		p.waitForFinished() ;
 
-		p = new QProcess() ;
+		if( p.exitCode() == 1 ){
 
-		p->start(QString(ZULUCRYPTzuluCrypt) + QString(" status ") + C ) ;
-
-		p->waitForFinished() ;
-
-		c = p->readAllStandardOutput().data() ;
-
-		p->close();
-
-		p->deleteLater();
-
-		d = strstr(c,"device:") ;
-
-		if ( d == NULL){
 			QString s = tr("An inconsitency is detected, skipping /dev/mapper/zuluCrypt-") ;
-			s = s + QString(C) ;
+			s = s + Z.at(i) ;
 			s = s + tr(" because it does not look like a cryptsetup volume") ;
 
 			emit UIMessage(tr("WARNING"), s ) ;
@@ -69,48 +60,20 @@ void startupupdateopenedvolumes::run()
 			continue ;
 		}
 
-		while ( *++d != '/') { ; }
+		device = QString(p.readAllStandardOutput()).remove('\n')  ;
 
-		if (strncmp(d ,"/dev/loop",9) != 0 ){
-			v = d ;
-		}else{
-			v = strstr(c,"loop:")  ;
+		p.close();
 
-			while(*++v != '/') { ; }
-		}
-
-		d = v ;
-		
-		while ( *++d != '\n') { ; }
-
-		*d = '\0' ;
-
-		char volume[ strlen( v ) + 1 ] ;
-
-		d = volume ;
-
-		while ( ( *d++ = *v++ ) != '\0') { ; }
-
-		v = strrchr(volume,'/') + 1 ;
-
-		int j = 0 ;
-
-		while( *( volume + j++) != '\0') { ; }
-
-		char bff[j] ;
-
-		strcpy(bff,v) ;
-
-		QString mp = zuluCrypt::mtab(QString(bff)) ;
+		mp = zuluCrypt::mtab(Z.at(i)) ;
 
 		if( mp == QString("") ){
 			emit UIMessage(tr("WARNING"),
 					  tr("An inconsitency is detected. Skipping \"") + \
-					  QString(volume) + \
+					  device + \
 					  tr("\" because its opened but not mounted"));
 			continue ;
 		}
-		emit addItemToTable(QString(volume),mp) ;
+		emit addItemToTable(device,mp) ;
 	}
 }
 

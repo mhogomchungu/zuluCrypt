@@ -317,18 +317,23 @@ void createpartition::pbCreateClicked()
 	exe = exe + passphrase + QString("\" ") ;;
 	exe = exe + ui->comboBoxRNG->currentText();
 
-	cvt = new runInThread(exe,&status,NULL) ;
+	cvt = new runInThread(exe) ;
 
-	connect(cvt,SIGNAL(finished()),this,SLOT(threadfinished())) ;
+	connect(cvt,
+		SIGNAL(finished(runInThread *,int)),
+		this,
+		SLOT(threadfinished(runInThread *,int))) ;
 
 	disableAll();
 
 	cvt->start();
 }
 
-void createpartition::threadfinished()
+void createpartition::threadfinished(runInThread *cvt,int status)
 {	
 	created = true ;
+
+	cvt->wait() ;
 
 	delete cvt ;
 

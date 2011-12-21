@@ -26,11 +26,12 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 
-
 #include "includes.h"
 
 //function prototypes
 StrHandle * get_passphrase(  void  ) ;
+
+char * volume_device_name( const char * ) ;
 
 void help(  void  ) ;
 		 
@@ -130,6 +131,17 @@ int main(  int argc , char *argv[] )
 	}else if (  strcmp(  action, "status"  ) == 0  ){			
 
 		status = volume_info(  mapping_name, device  ) ;
+		
+	}else if (  strcmp(  action, "device"  ) == 0  ){			
+		
+		c = volume_device_name( device ) ;
+		
+		if( c == NULL )
+			return 1 ;
+		
+		printf("%s\n",c) ;		
+		free(c) ;
+		return 0 ;
 		
 	}else if (  strcmp(  action, "close"  ) == 0  ){			
 

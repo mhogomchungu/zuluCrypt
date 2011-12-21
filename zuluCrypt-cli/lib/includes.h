@@ -62,3 +62,5 @@ int open_volume(const char * dev,const char * map,const char * m_point,uid_t id,
 char * version(void) ; 
 
 int unmount_volume( const char * map, char ** mount_point ) ;
+
+char * volume_device_name( const char * mapper ) ;

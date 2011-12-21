@@ -25,6 +25,7 @@
 
 #include "ui_luksaddkey.h"
 #include "openpartition.h"
+#include "runinthread.h"
 
 class luksaddkeyUI : public QDialog
 {
@@ -70,7 +71,7 @@ private slots:
 
 	void HideUI(void) ;
 
-	void threadfinished(void) ;
+	void threadfinished(runInThread *,int) ;
 
 private:
 	void disableAll(void) ;
@@ -83,11 +84,9 @@ private:
 
 	openpartition *pUI ;
 
-	int status ;
+	QString volumePath ;
 
 	runInThread *lakt ;
-
-	QString volumePath ;
 };
 
 #endif // luksaddkeySUI_H

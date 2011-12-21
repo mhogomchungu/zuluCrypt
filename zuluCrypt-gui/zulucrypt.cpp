@@ -183,6 +183,8 @@ void zuluCrypt::menuKeyPressed()
 		if( rowcount > 0 ){
 			
 			it = ui->tableWidget->item(rowcount - 1 ,0) ;
+
+			ui->tableWidget->setCurrentItem( it );
 		}else
 			return ;
 	}	
@@ -191,8 +193,29 @@ void zuluCrypt::menuKeyPressed()
 	cellClicked( it );	
 }
 
+void zuluCrypt::selectRow(int r, bool x )
+{
+	ui->tableWidget->item(r,0)->setSelected(x);
+	ui->tableWidget->item(r,1)->setSelected(x);
+	ui->tableWidget->item(r,2)->setSelected(x);
+
+	if( x == true ){
+		selectedRow = r;
+		ui->tableWidget->setCurrentItem(ui->tableWidget->item(r,1));
+	}
+}
+
 void zuluCrypt::closeAllVolumes()
 {
+	if( ui->tableWidget->rowCount() < 1 )
+		return ;
+
+	int lastRow = ui->tableWidget->rowCount() - 1 ;
+
+	selectRow(selectedRow,false) ;
+
+	selectRow(lastRow,true) ;
+
 	cavt = new closeAllVolumesThread(ui->tableWidget) ;
 
 	connect(cavt,SIGNAL(close(QTableWidgetItem *,int)),this,SLOT(closeAll(QTableWidgetItem *,int))) ;
@@ -205,6 +228,15 @@ void zuluCrypt::closeAllVolumes()
 void zuluCrypt::deleteThread()
 {
 	delete cavt ;
+
+	if(item_count  == 0 )
+		return ;
+
+	for( int i = 0 ; i < item_count ; i++)
+		if(ui->tableWidget->item(i,0)->isSelected() == true)
+			selectRow(i,false) ;
+
+	selectRow(0,true) ;
 }
 
 void zuluCrypt::closeAll(QTableWidgetItem * i,int st)
@@ -213,8 +245,8 @@ void zuluCrypt::closeAll(QTableWidgetItem * i,int st)
 		removeRowFromTable(i->row());
 	else{
 		QString msg = tr("Could not close \"") + \
-			      ui->tableWidget->item(i->row(),1)->text() + \
-				tr("\" because the mount point and/or one or more files are in use") ;
+			      ui->tableWidget->item(i->row(),0)->text() + \
+				tr("\" because the mount point and/or one or more files from the volume are in use.") ;
 		UIMessage(QString("ERROR!"),msg);
 	}
 }
@@ -477,27 +509,27 @@ QStringList zuluCrypt::luksEmptySlots(QString volumePath)
 
 	N.close();
 
-	QStringList l ;
+	QStringList list ;
 
-	l << QString::number( i ) ;
+	list << QString::number( i ) ;
 
-	l << QString::number(  s.size() - 1 ) ;
+	list << QString::number(  s.size() - 1 ) ;
 
-	return l ;
+	return list ;
 }
 
 bool zuluCrypt::isLuks(QString volumePath)
 {
-	QProcess N ;
+	QProcess p ;
 
-	N.start(QString(ZULUCRYPTzuluCrypt) + \
+	p.start(QString(ZULUCRYPTzuluCrypt) + \
 		QString(" isLuks ") + QString("\"") + volumePath + QString("\"") );
 
-	N.waitForFinished() ;
+	p.waitForFinished() ;
 
-	int i = N.exitCode() ;
+	int i = p.exitCode() ;
 
-	N.close();
+	p.close();
 
 	if ( i == 0 )
 		return true ;
@@ -524,9 +556,16 @@ void zuluCrypt::aboutMenuOption(void)
 	m.exec() ;
 }
 
+void zuluCrypt::addItemToTableByVolume(QString vp)
+{
+	QString zvp = QString("/dev/mapper/zuluCrypt-") + vp.split("/").last() ;
+
+	addItemToTable(vp, mtab(zvp));
+}
+
 void zuluCrypt::addItemToTable(QString x,QString y)
 {
-	addThread = new addItemToTableThread(&mutex,ui->tableWidget,x,y,&item_count,&selectedRow) ;
+	addItemToTableThread * addThread  = new addItemToTableThread(&mutex,ui->tableWidget,x,y,&item_count,&selectedRow) ;
 
 	connect(addThread,
 		SIGNAL(threadFinished(addItemToTableThread*)),
@@ -536,10 +575,19 @@ void zuluCrypt::addItemToTable(QString x,QString y)
 	addThread->start();
 }
 
-void zuluCrypt::deleteAddItemToTableThread(addItemToTableThread *c)
+void zuluCrypt::deleteAddItemToTableThread(addItemToTableThread *Thread)
 {
-	//sleep(3) ;
-	delete c ;
+	Thread->wait() ;
+
+	delete Thread ;
+
+	/*
+	  "openFileUI->HideUI()" should ideally be in the case 0 of "threadfinished" member of
+	  "password_Dialog" class. It is here because the UI freezes for bit
+	  while it disaapears when placed there.
+	  */
+	if(openFileUI->isVisible() == true)
+		openFileUI->HideUI() ;
 }
 
 void zuluCrypt::removeRowFromTable( int x )
@@ -723,8 +771,9 @@ void zuluCrypt::cellClicked(QTableWidgetItem * t)
 		m.addAction("cancel") ;
 
 		m.exec(p) ;
+		
+		keyPressed = false ;
 	}
-	keyPressed = false ;
 }
 
 void zuluCrypt::luksAddKeyContextMenu(void)
@@ -748,31 +797,23 @@ void zuluCrypt::UIMessage(QString title, QString message)
 	m.exec() ;
 }
 
-void zuluCrypt::closeThreadFinished()
+void zuluCrypt::closeThreadFinished(runInThread * vct,int st)
 {
 	ui->tableWidget->setEnabled( true );
 
-	delete vct ;
-
-	switch ( status ) {
+	switch ( st ) {
 	case 0 :removeRowFromTable(item->row()) ;
 
-		if( item_count > 0 ){
-
-			selectedRow = 0 ;
-
-			ui->tableWidget->item(0,0)->setSelected(true);
-			ui->tableWidget->item(0,1)->setSelected(true);
-			ui->tableWidget->item(0,2)->setSelected(true);
-		}else
+		if( ui->tableWidget->rowCount() > 0 )
+			selectRow(0,true) ;
+		else
 			selectedRow = -1 ;
-
 		break ;
 	case 1 :UIMessage(tr("ERROR"),
 			  tr("close failed, encrypted volume with that name does not exist")) ;
 		break ;
 	case 2 :UIMessage(tr("ERROR"),
-			  tr("close failed, the mount point and/or one or more files are in use"));
+			  tr("close failed, the mount point and/or one or more files from the volume are in use."));
 		break ;
 	case 3 :UIMessage(tr("ERROR"),
 			  tr("close failed, volume does not have an entry in /etc/mtab"));
@@ -783,23 +824,25 @@ void zuluCrypt::closeThreadFinished()
 	default :UIMessage(tr("ERROR"),
 			  tr("an unknown error has occured, volume not closed"));
 	}
+
+	vct->wait() ;
+
+	delete vct ;
 }
 
 void zuluCrypt::close()
 {
-	QProcess p ;
-
 	QString vol = ui->tableWidget->item(item->row(),0)->text().replace("\"","\"\"\"") ;
 
 	QString exe = QString(ZULUCRYPTzuluCrypt) + QString(" close ") + QString("\"") + \
 			vol + QString("\"") ;
 
-	vct = new runInThread( exe, &status,NULL) ;
+	runInThread * vct = new runInThread( exe ) ;
 
 	connect(vct,
-		SIGNAL(finished()),
+		SIGNAL(finished(runInThread *,int)),
 		this,
-		SLOT(closeThreadFinished())) ;
+		SLOT(closeThreadFinished(runInThread *,int))) ;
 
 	ui->tableWidget->setEnabled( false );
 	vct->start();
@@ -974,9 +1017,9 @@ void zuluCrypt::setupConnections()
 		SLOT(favClicked(QAction*))) ;
 
 	connect(openFileUI,
-		SIGNAL(addItemToTable(QString,QString)),
+		SIGNAL(addItemToTable(QString)),
 		this,
-		SLOT(addItemToTable(QString,QString))) ;
+		SLOT(addItemToTableByVolume(QString))) ;
 
 	connect(this,
 		SIGNAL(luksAddKeyUI(QString)),

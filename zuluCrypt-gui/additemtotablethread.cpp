@@ -57,6 +57,7 @@ void addItemToTableThread::run()
 		tableWidget->item(0,0)->setSelected(true);
 		tableWidget->item(0,1)->setSelected(true);
 		tableWidget->item(0,2)->setSelected(true);
+		tableWidget->setCurrentItem(tableWidget->item(0,1));
 		*selectedRow = 0 ;
 	}else{
 		tableWidget->item(tc,0)->setSelected(true);
@@ -65,6 +66,7 @@ void addItemToTableThread::run()
 		tableWidget->item(sr,0)->setSelected(false);
 		tableWidget->item(sr,1)->setSelected(false);
 		tableWidget->item(sr,2)->setSelected(false);
+		tableWidget->setCurrentItem(tableWidget->item(tc + 1,1));
 		*selectedRow = *item_count ;
 	}
 

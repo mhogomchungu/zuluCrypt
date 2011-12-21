@@ -159,6 +159,7 @@ void password_Dialog::file_path(void )
 
 void password_Dialog::ShowUI()
 {
+	ui->OpenVolumePath->clear();
 	ui->OpenVolumePath->setFocus();
 	ui->MountPointPath->setText(QDir::homePath());	
 	ui->PassPhraseField->clear();
@@ -175,8 +176,7 @@ void password_Dialog::ShowUI()
 }
 
 void password_Dialog::HideUI()
-{
-	ui->OpenVolumePath->clear();
+{	
 	this->hide();
 }
 
@@ -279,8 +279,6 @@ void password_Dialog::buttonOpenClicked(void )
 
 	passPhraseField = passPhraseField.replace("\"","\"\"\"") ;
 
-	m_point = volumePath.split("/").last() ;
-
 	QString vp = volumePath ;
 
 	vp = vp.replace("\"","\"\"\"") ;
@@ -294,9 +292,12 @@ void password_Dialog::buttonOpenClicked(void )
 			mode + QString(" ") + passtype + \
 			QString(" \"") + passPhraseField + QString("\"");
 
-	ovt = new runInThread(exe,&status,&m_point) ;
+	ovt = new runInThread(exe) ;
 
-	connect(ovt,SIGNAL(finished()),this,SLOT(threadfinished())) ;
+	connect(ovt,
+		SIGNAL(finished(runInThread *,int)),
+		this,
+		SLOT(threadfinished(runInThread *,int))) ;
 
 	disableAll();
 
@@ -353,19 +354,21 @@ void password_Dialog::UIMessage(QString title, QString message)
 	m.addButton(QMessageBox::Ok);
 	m.exec() ;
 }
-void password_Dialog::threadfinished()
+void password_Dialog::threadfinished(runInThread *,int status)
 {
+	enableAll();
+
+	ovt->wait() ;
+
 	delete ovt ;
 
 	ovt = NULL ;
 
-	enableAll();
-
 	switch ( status ){
-		case 0 :
-			emit addItemToTable(volumePath,m_point);
-			HideUI() ;
-			break ;			
+		case 0 :			
+			emit addItemToTable(volumePath);
+			//HideUI() ;
+			break ;
 		case 1 : UIMessage(tr("ERROR"),tr("No free loop device to use.")) ;
 			break ;
 		case 2 : UIMessage(tr("ERROR"),tr("there seem to be an open volume accociated with given path."));
@@ -384,7 +387,7 @@ void password_Dialog::threadfinished()
 		case 10 : UIMessage(tr("ERROR"),tr("\",\" (comma) is not a valid mount point"));
 			break ;
 		default :UIMessage(tr("ERROR"),tr("un unknown error has occured, volume not opened"));
-	}		
+	}
 }
 
 password_Dialog::~password_Dialog()

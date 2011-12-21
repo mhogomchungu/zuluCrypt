@@ -55,22 +55,25 @@ void ClickedRowHighlight::update(int it, QTableWidget *t, int *r, int c)
 
 void ClickedRowHighlight::run()
 {
-	int srow = *selectedRow ;
-
-	if( row == srow )
+	if(item_count == 0)
 		return ;
 
 	tableWidget->item(row,0)->setSelected(true);
 	tableWidget->item(row,1)->setSelected(true);
 	tableWidget->item(row,2)->setSelected(true);
+	tableWidget->setCurrentItem(tableWidget->item(row,1));
 
-	if( srow != - 1 && item_count > 1 ){
+	if(item_count == 1)
+		return ;
 
-		tableWidget->item(srow,0)->setSelected(false);
-		tableWidget->item(srow,1)->setSelected(false);
-		tableWidget->item(srow,2)->setSelected(false);
+	int x = *selectedRow ;
 
-	}
+	if( row == x )
+		return ;
+
+	tableWidget->item(x,0)->setSelected(false);
+	tableWidget->item(x,1)->setSelected(false);
+	tableWidget->item(x,2)->setSelected(false);
 
 	*selectedRow = row ;
 }
@@ -204,30 +207,6 @@ major minor  #blocks  name
 	}
 	f.close();
 }
-
-runInThread::runInThread(QString exe, int * st, QString *m)
-{
-	EXE = exe ;
-	status = st ;
-	m_point = m ;
-}
-
-void runInThread::run()
-{
-	QProcess p ;
-
-	p.start(EXE);
-
-	p.waitForFinished() ;
-
-	*status = p.exitCode() ;
-
-	p.close();
-
-	if( m_point != NULL)
-		*m_point = zuluCrypt::mtab(QString("/dev/mapper/zuluCrypt-") + *m_point ) ;
-}
-
 
 createFileThread::createFileThread(QString s,QString f,double l,int t)
 {

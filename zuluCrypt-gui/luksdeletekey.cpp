@@ -289,18 +289,20 @@ void luksdeletekey::pbDelete()
 
 	disableAll();
 
-	ldk = new runInThread(exe,&status,NULL) ;
+	ldk = new runInThread(exe) ;
 
 	connect(ldk,
-		SIGNAL(finished()),
+		SIGNAL(finished(runInThread *,int)),
 		this,
-		SLOT(threadfinished())) ;
+		SLOT(threadfinished(runInThread *,int))) ;
 
 	ldk->start();
 }
 
-void luksdeletekey::threadfinished()
+void luksdeletekey::threadfinished(runInThread * ldk,int status)
 {
+	ldk->wait() ;
+
 	delete ldk ;
 
 	ldk = NULL ;

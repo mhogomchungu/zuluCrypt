@@ -25,6 +25,7 @@
 #include <QCloseEvent>
 
 #include "zulucryptthreads.h"
+#include "runinthread.h"
 
 namespace Ui {
     class createpartition;
@@ -51,7 +52,7 @@ private slots:
 	void rbPassphraseClicked(void);
 	void rbPasssphraseFromFileClicked(void);
 	void pbOpenKeyFile(void);
-	void threadfinished(void);
+	void threadfinished(runInThread *,int);
 	void HideUI(void);
 	void rng(int) ;
 private:
@@ -59,7 +60,6 @@ private:
 	void enableAll(void) ;
 	void disableAll(void);
 	void closeEvent(QCloseEvent *) ;
-	int status ;
 
 	Ui::createpartition *ui;
 

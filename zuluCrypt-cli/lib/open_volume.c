@@ -53,11 +53,12 @@ int open_volume( const char * dev,const char * map,const char * m_point,uid_t id
 		
 	h = mount_volume( map,m_point,mode,id ) ;	
 		
-	if( h == 4 && luks != 0 ){
+	if( h == 4 && luks == 1 ){
 		/*
 		 * udisk/kde device manager seem to crash when mount/unmount happen too quickly, give it room to breath.
+		 * 
+		 * sleep( 2 ) ;
 		 */
-		sleep( 2 ) ;
 			
 		open_plain( dev,map,mode,source,pass,"cbc-plain" ) ;		
 			

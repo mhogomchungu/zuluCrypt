@@ -82,11 +82,11 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 		
 		p = String( "dmask=007,uid=" ) ;
 
-		StringAppend( p ,intToString( uid, 5, id ) ) ;
+		StringAppend( p ,StringIntToString( uid, 5, id ) ) ;
 		
 		StringAppend( p , ",gid=" ) ;
 		
-		StringAppend( p ,intToString( uid, 5, id ) );		
+		StringAppend( p ,StringIntToString( uid, 5, id ) );		
 				
 		h = mount( mapper, m_point,fs,mountflags,StringContent( p ) ) ;	
 		

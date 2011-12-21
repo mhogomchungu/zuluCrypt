@@ -14,7 +14,7 @@
 	 message (FATAL_ERROR "ERROR: could not find sys/mount.h header file")
  endif(NOT mount_sys)
 	 
- message( STATUS "Found mount/mount.h  : " ${mount} )
+ message( STATUS "Found sys/mount.h  : " ${mount_sys} )
 	 
  find_file ( mount mount/mount.h )
  
@@ -60,7 +60,9 @@
  
  add_executable( zuluCrypt-cli bin/zuluCrypt.c bin/close_volume.c bin/add_key.c bin/volume_info.c bin/open_volume.c bin/partitions.c bin/create_volumes.c bin/remove_key.c) 
  
- TARGET_LINK_LIBRARIES( zuluCrypt ${libcryptsetup} String ${blkid} ${mountLibrary} ) 
+ TARGET_LINK_LIBRARIES( zuluCrypt ${libcryptsetup} String ${blkid} ${mountLibrary} )
+ 
+ set_target_properties( zuluCrypt PROPERTIES SOVERSION "1.0.0" )
  
  TARGET_LINK_LIBRARIES( zuluCrypt-cli zuluCrypt String ${blkid} ) 
  

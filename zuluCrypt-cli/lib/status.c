@@ -88,7 +88,7 @@ char * status( const char * mapper )
 	
 	StringAppend( p,"\n keysize:   " );
 	
-	StringAppend( p,intToString( buffer,SIZE,8 * crypt_get_volume_key_size( cd ) ) ) ;
+	StringAppend( p,StringIntToString( buffer,SIZE,8 * crypt_get_volume_key_size( cd ) ) ) ;
 	
 	StringAppend( p," bits" );
 	
@@ -115,13 +115,13 @@ char * status( const char * mapper )
 	
 	StringAppend( p,"\n offset:    ");
 	
-	StringAppend( p,intToString( buffer,SIZE,crypt_get_data_offset( cd ) ) )  ;	
+	StringAppend( p,StringIntToString( buffer,SIZE,crypt_get_data_offset( cd ) ) )  ;	
 	
 	StringAppend( p," sectors" ) ;	
 	
 	StringAppend( p,"\n size:      " );
 	
-	StringAppend( p,intToString( buffer,SIZE,cad.size ) ) ;	
+	StringAppend( p,StringIntToString( buffer,SIZE,cad.size ) ) ;	
 	
 	StringAppend( p," sectors" );
 	
@@ -141,3 +141,40 @@ char * status( const char * mapper )
 	return StringDeleteHandle( p ) ;
 }
 
+char * volume_device_name( const char * mapper )
+{
+	struct crypt_device * cd;
+	
+	char path[ 512 ] ;
+	
+	int i ;
+	
+	StrHandle * p ;
+	
+	const char * e ;
+	
+	struct loop_info64 l_info ;
+	
+	i = crypt_init_by_name( &cd,mapper );
+	
+	if( i < 0 )
+		return NULL ;
+	
+	e = crypt_get_device_name( cd ) ;	
+	
+	if( strncmp( e ,"/dev/loop",9 ) == 0 ){
+		
+		i = open( e , O_RDONLY ) ;
+		
+		ioctl( i, LOOP_GET_STATUS64, &l_info ) ;
+		
+		close( i ) ;
+		
+		realpath( ( char * ) l_info.lo_file_name, path ) ;
+		
+		p = String( path ) ;		
+	}else
+		p = String( e ) ;
+	
+	return StringDeleteHandle( p ) ;
+}

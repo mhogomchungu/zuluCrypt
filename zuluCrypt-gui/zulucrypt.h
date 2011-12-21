@@ -45,6 +45,7 @@
 #include "closeallvolumesthread.h"
 #include "zulucryptthreads.h"
 #include "additemtotablethread.h"
+#include "runinthread.h"
 
 namespace Ui {
     class zuluCrypt;
@@ -87,7 +88,7 @@ private slots :
 
 	void aboutMenuOption(void) ;
 
-	void close() ;
+	void close( void ) ;
 
 	void closeAll(QTableWidgetItem *,int) ;
 
@@ -127,11 +128,13 @@ private slots :
 
 	void deleteThread() ;
 
-	void closeThreadFinished(void) ;
+	void closeThreadFinished(runInThread *,int) ;
 
 	void deleteAddItemToTableThread(addItemToTableThread *);
 
 	void menuKeyPressed(void) ;
+
+	void addItemToTableByVolume(QString volume_path);
 
 private:
 
@@ -142,6 +145,8 @@ private:
 	void closeEvent(QCloseEvent *) ;
 
 	void setUserFont(QFont) ;
+
+	void selectRow(int,bool) ;
 
 	Ui::zuluCrypt *ui;
 
@@ -187,13 +192,9 @@ private:
 
 	closeAllVolumesThread *cavt ;
 
-	addItemToTableThread * addThread ;
-
 	ClickedRowHighlight * crh ;
 
 	QString cstString ;
-
-	runInThread *vct ;
 
 	int status ;
 

@@ -25,6 +25,7 @@
 #include "ui_openpartition.h"
 #include "openpartition.h"
 #include "ui_luksdeletekey.h"
+#include "runinthread.h"
 
 class luksdeletekey : public QDialog
 {
@@ -65,7 +66,7 @@ private slots:
 
 	void pbOpenVolume(void) ;
 
-	void threadfinished(void) ;
+	void threadfinished(runInThread *,int) ;
 
 private:
 	void disableAll(void) ;
@@ -80,11 +81,9 @@ private:
 
 	openpartition *pUI ;
 
-	runInThread *ldk ;
-
-	int status ;
-
 	QString volumePath ;
+
+	runInThread *ldk ;
 };
 
 #endif // LUKSDELETEKEY_H

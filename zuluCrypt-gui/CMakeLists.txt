@@ -23,21 +23,23 @@ set( MOC_FILES createfile.h
 		startupupdateopenedvolumes.h
 		closeallvolumesthread.h
 		additemtotablethread.h
+		runinthread.h
  )
 	
 set (SRC createfile.cpp
-			createpartition.cpp
-			luksdeletekey.cpp
-			openpartition.cpp
-			zulucryptthreads.cpp
-			createkeyfile.cpp
-			luksaddkey.cpp
-			main.cpp
-			password_dialog.cpp
-			startupupdateopenedvolumes.cpp
-			zulucrypt.cpp
-			closeallvolumesthread.cpp
-			additemtotablethread.cpp
+	createpartition.cpp
+	luksdeletekey.cpp
+	openpartition.cpp
+	zulucryptthreads.cpp
+	createkeyfile.cpp
+	luksaddkey.cpp
+	main.cpp
+	password_dialog.cpp
+	startupupdateopenedvolumes.cpp
+	zulucrypt.cpp
+	closeallvolumesthread.cpp
+	additemtotablethread.cpp
+	runinthread.cpp
 )
 
 add_definitions( -D_FILE_OFFSET_BITS=64 -Wall ) 

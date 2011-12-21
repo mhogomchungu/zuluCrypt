@@ -91,7 +91,7 @@ int StringLastIndexOfChar( StrHandle * st , char s )
 	
 	while( --c != d )
 		if ( *c == s )
-			return c - st->string ;
+			return c - d ;
 		
 	return -1 ;	
 }
@@ -472,7 +472,7 @@ const char * StringReplaceChar( StrHandle * st, char x, char y)
 	return st->string ;	
 }
 
-char * intToString( char * x, int y,uint64_t z )
+char * StringIntToString( char * x, int y,uint64_t z )
 {
 	char *c =  x + y - 1  ;
 	

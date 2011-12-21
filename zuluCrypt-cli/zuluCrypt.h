@@ -255,6 +255,20 @@ int open_plain( const char * device,      // path to encrypted file or partition
 		const char * cipher );	  // cipher to use, default is "cbc-essiv:sha256" for current cryptsetup default option.  
 
 
+/**
+ * This function returns a device address given a mapper address.
+ * Ex. IF a mapper address exists named "/dev/mapper/XYZ" and this mapper opens a volume
+ * in /dev/sdc1, then calling this function wih the mentioned mapper address will return "/dev/sdc1".
+ *
+ * If the mapper open a regular file, the full path to the file is returned and not its loop back device.
+ * 
+ * NOTE: The address is stored in memory created by "malloc" command and hence you must free it with "free" command
+ * when done with it 
+ * 
+ *  NULl is returned if the mapper device can not be opened for the reasons that include the mapper not being cryptsetup mapper.
+ */
+char * volume_device_name( const char * mapper ) ;
+
 #ifdef __cplusplus
 }
 #endif

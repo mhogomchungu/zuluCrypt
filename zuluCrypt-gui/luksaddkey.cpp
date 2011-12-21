@@ -368,19 +368,18 @@ void luksaddkeyUI::pbAdd(void)
 	exe = exe + "\"" + volumePath + "\"" + existingPassType + "\"" + ExistingKey ;
 	exe = exe + "\"" + newPassType + "\"" + NewKey + "\"" ;
 
-	lakt = new runInThread(exe,&status,NULL);
+	lakt = new runInThread(exe);
 
-	connect(lakt,SIGNAL(finished()),this,SLOT(threadfinished())) ;
+	connect(lakt,
+		SIGNAL(finished(runInThread *,int)),
+		this,
+		SLOT(threadfinished(runInThread *,int))) ;
 
 	lakt->start();
 }
 
-void luksaddkeyUI::threadfinished()
+void luksaddkeyUI::threadfinished(runInThread * lakt,int status)
 {
-	delete lakt ;
-
-	lakt = NULL ;
-
 	QMessageBox m ;
 	m.setFont(this->font());
 	m.setParent(this);
@@ -388,6 +387,12 @@ void luksaddkeyUI::threadfinished()
 
 	QString ss ;
 	QStringList x ;
+
+	lakt->wait() ;
+
+	delete lakt ;
+
+	lakt = NULL ;
 
 	switch( status ){
 		case 0 :
