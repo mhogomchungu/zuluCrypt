@@ -435,7 +435,7 @@ void zuluCrypt::setUserFont(QFont Font)
 	ui->actionTray_icon->setFont(this->font());
 	ui->menuFavorites->setFont(this->font());
 
-	openFileUI->setFont(Font);
+	passwordDialogUI->setFont(Font);
 
 	openPartitionUI->setFont(Font);
 
@@ -502,10 +502,9 @@ QStringList zuluCrypt::luksEmptySlots(QString volumePath)
 
 	int i = 0 ;
 
-	for ( int j = 0 ; j < s.size() ; j++){
+	for ( int j = 0 ; j < s.size() ; j++)
 		if( s.at(j) == '1' || s.at(j) == '3' )
 			i++ ;
-	}
 
 	N.close();
 
@@ -582,12 +581,12 @@ void zuluCrypt::deleteAddItemToTableThread(addItemToTableThread *Thread)
 	delete Thread ;
 
 	/*
-	  "openFileUI->HideUI()" should ideally be in the case 0 of "threadfinished" member of
-	  "password_Dialog" class. It is here because the UI freezes for bit
+	  "passwordDialogUI->HideUI()" should ideally be in the case 0 of "threadfinished" member of
+	  "password_Dialog" class. It is here because the UI freezes for a bit
 	  while it disaapears when placed there.
 	  */
-	if(openFileUI->isVisible() == true)
-		openFileUI->HideUI() ;
+	if(passwordDialogUI->isVisible() == true)
+		passwordDialogUI->HideUI() ;
 }
 
 void zuluCrypt::removeRowFromTable( int x )
@@ -881,8 +880,8 @@ void zuluCrypt::setupUIElements()
 
 	ui->tableWidget->setColumnWidth(2,90);
 
-	openFileUI = new password_Dialog(this) ;
-	openFileUI->setWindowFlags(Qt::Window | Qt::Dialog);
+	passwordDialogUI = new password_Dialog(this) ;
+	passwordDialogUI->setWindowFlags(Qt::Window | Qt::Dialog);
 
 	openPartitionUI = new openpartition(this);
 	openPartitionUI->setWindowFlags(Qt::Window | Qt::Dialog);
@@ -938,12 +937,12 @@ void zuluCrypt::setupConnections()
 
 	connect(ui->actionFileOpen,
 		SIGNAL(triggered()),
-		openFileUI,
+		passwordDialogUI,
 		SLOT(ShowUI())) ;
 
 	connect(ui->actionPartitionOpen,
 		SIGNAL(triggered()),
-		openPartitionUI,
+		passwordDialogUI,
 		SLOT(ShowUI()));
 
 	connect(ui->tableWidget,
@@ -953,7 +952,7 @@ void zuluCrypt::setupConnections()
 
 	connect(openPartitionUI,
 		SIGNAL(clickedPartition(QString)),
-		openFileUI,
+		passwordDialogUI,
 		SLOT(clickedPartitionOption(QString)));
 
 	connect(ui->actionAbout,
@@ -1003,7 +1002,7 @@ void zuluCrypt::setupConnections()
 
 	connect(this,
 		SIGNAL(favClickedVolume(QString,QString)),
-		openFileUI,
+		passwordDialogUI,
 		SLOT(ShowUI(QString,QString))) ;
 
 	connect(trayIcon,
@@ -1016,7 +1015,7 @@ void zuluCrypt::setupConnections()
 		this,
 		SLOT(favClicked(QAction*))) ;
 
-	connect(openFileUI,
+	connect(passwordDialogUI,
 		SIGNAL(addItemToTable(QString)),
 		this,
 		SLOT(addItemToTableByVolume(QString))) ;
@@ -1050,23 +1049,11 @@ void zuluCrypt::setupConnections()
 		SIGNAL(triggered()),
 		this,
 		SLOT(closeAllVolumes())) ;
-
-	//connect(ui->tableWidget,
-	//	SIGNAL(itemClicked(QTableWidgetItem*)),
-	//	this,
-	//	SLOT(cellEntered(QTableWidgetItem*))) ;
 }
 
 zuluCrypt::~zuluCrypt()
 {	
-	//for( int i = 0 ; i < menulist.size() ; i++){
-
-	//	delete menulist.at(i) ;
-	//}
-
-	//menulist.clear();
-
-	delete openFileUI ;
+	delete passwordDialogUI ;
 
 	delete openPartitionUI ;
 

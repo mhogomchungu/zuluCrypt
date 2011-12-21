@@ -23,12 +23,30 @@
 #include <QStringList>
 #include <QMessageBox>
 #include <iostream>
+#include <QFile>
+#include <QByteArray>
 #include "startupupdateopenedvolumes.h"
 #include "zulucrypt.h"
 
 startupupdateopenedvolumes::startupupdateopenedvolumes(QObject *parent) :
     QThread(parent)
 {
+}
+
+QString startupupdateopenedvolumes::readMtab(QByteArray * mtab,QString entry)
+{
+	int i = mtab->indexOf(entry) ;
+
+	if( i == -1 )
+		return QString("") ;
+
+	while(mtab->at(i++) != ' ') { ; }
+
+	int j = i ;
+
+	while(mtab->at(i++) != ' ') { ; }
+
+	return QString(mtab->mid(j, i - j - 1)) ;
 }
 
 void startupupdateopenedvolumes::run()
@@ -42,6 +60,14 @@ void startupupdateopenedvolumes::run()
 	QString dv = QString(ZULUCRYPTzuluCrypt) + QString(" device ") ;
 
 	QString mp ;
+
+	QFile mt(QString("/etc/mtab")) ;
+
+	mt.open(QIODevice::ReadOnly) ;
+
+	QByteArray mtab = mt.readAll() ;
+
+	mt.close();
 
 	for ( int i = 0 ; i < Z.size() ; i++){
 
@@ -64,7 +90,7 @@ void startupupdateopenedvolumes::run()
 
 		p.close();
 
-		mp = zuluCrypt::mtab(Z.at(i)) ;
+		mp = readMtab(&mtab,Z.at(i)) ;
 
 		if( mp == QString("") ){
 			emit UIMessage(tr("WARNING"),

@@ -35,6 +35,7 @@ public slots:
 
 private:
 	void run() ;
+	QString readMtab(QByteArray *,QString) ;
 };
 
 #endif // STARTUPUPDATEOPENEDVOLUMES_H

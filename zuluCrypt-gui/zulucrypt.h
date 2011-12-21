@@ -150,7 +150,7 @@ private:
 
 	Ui::zuluCrypt *ui;
 
-	password_Dialog *openFileUI ;
+	password_Dialog *passwordDialogUI ;
 
 	openpartition *openPartitionUI ;
 
