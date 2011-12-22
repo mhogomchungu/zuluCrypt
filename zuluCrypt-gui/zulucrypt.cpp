@@ -742,6 +742,8 @@ void zuluCrypt::cellClicked(QTableWidgetItem * t)
 
 	QAction a(tr("add to favorite"),(QObject *)&m) ;
 
+	m.addAction(&a);
+
 	if( strstr( data.data() , fav.toAscii().data() ) == NULL ){
 		
 		a.setEnabled(true);
@@ -750,9 +752,7 @@ void zuluCrypt::cellClicked(QTableWidgetItem * t)
 			  SIGNAL(triggered()),
 			  this,
 			  SLOT(addToFavorite())) ;
-	    
-		m.addAction(&a);
-		
+
 	}else
 		a.setEnabled(false);	
 
@@ -763,13 +763,11 @@ void zuluCrypt::cellClicked(QTableWidgetItem * t)
 
 		int y = ui->tableWidget->rowHeight(item->row()) * item->row() + 20 ;
 
-		QPoint p = ui->tableWidget->mapToGlobal(QPoint(x,y)) ;
-
 		m.addSeparator() ;
 
 		m.addAction("cancel") ;
 
-		m.exec(p) ;
+		m.exec(ui->tableWidget->mapToGlobal(QPoint(x,y))) ;
 		
 		keyPressed = false ;
 	}
@@ -942,7 +940,7 @@ void zuluCrypt::setupConnections()
 
 	connect(ui->actionPartitionOpen,
 		SIGNAL(triggered()),
-		passwordDialogUI,
+		openPartitionUI,
 		SLOT(ShowUI()));
 
 	connect(ui->tableWidget,
