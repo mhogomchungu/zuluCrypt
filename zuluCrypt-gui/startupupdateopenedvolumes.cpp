@@ -1,11 +1,11 @@
 /*
- *
+ * 
  *  Copyright (c) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
+ *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
@@ -36,60 +36,40 @@ startupupdateopenedvolumes::startupupdateopenedvolumes(QObject *parent) :
 QString startupupdateopenedvolumes::readMtab(QByteArray * mtab,QString entry)
 {
 	int i = mtab->indexOf(entry) ;
-
 	if( i == -1 )
 		return QString("") ;
-
 	while(mtab->at(i++) != ' ') { ; }
-
 	int j = i ;
-
 	while(mtab->at(i++) != ' ') { ; }
-
 	return QString(mtab->mid(j, i - j - 1)) ;
 }
 
 void startupupdateopenedvolumes::run()
 {
 	QStringList Z =  QDir(QString("/dev/mapper")).entryList().filter("zuluCrypt-") ;
-
 	QProcess p ;
-
 	QString device ;
-
 	QString dv = QString(ZULUCRYPTzuluCrypt) + QString(" device ") ;
-
 	QString mp ;
 
 	QFile mt(QString("/etc/mtab")) ;
-
 	mt.open(QIODevice::ReadOnly) ;
-
 	QByteArray mtab = mt.readAll() ;
-
 	mt.close();
 
 	for ( int i = 0 ; i < Z.size() ; i++){
-
 		p.start( dv + Z.at(i) ) ;
-
 		p.waitForFinished() ;
-
 		if( p.exitCode() == 1 ){
-
 			QString s = tr("An inconsitency is detected, skipping /dev/mapper/zuluCrypt-") ;
 			s = s + Z.at(i) ;
 			s = s + tr(" because it does not look like a cryptsetup volume") ;
 
 			emit UIMessage(tr("WARNING"), s ) ;
-
 			continue ;
 		}
-
 		device = QString(p.readAllStandardOutput()).remove('\n')  ;
-
 		p.close();
-
 		mp = readMtab(&mtab,Z.at(i)) ;
 
 		if( mp == QString("") ){

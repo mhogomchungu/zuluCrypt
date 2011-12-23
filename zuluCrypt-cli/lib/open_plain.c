@@ -5,7 +5,7 @@
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
+ *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
  * 
  *  This program is distributed in the hope that it will be useful,
@@ -22,11 +22,8 @@
 int open_plain( const char * device,const char * mapper,const char * mode,const char * source,const char * pass,const char * cipher )
 {
 	int status ;
-	
 	int flags ;
-	
 	const char * c ;
-	
 	struct crypt_device * cd;
 	
 	struct crypt_params_plain params = {
@@ -58,14 +55,12 @@ int open_plain( const char * device,const char * mapper,const char * mode,const 
 		status = 2 ;
 		goto out ;
 	}
-	
 	status = crypt_format( cd,CRYPT_PLAIN,"aes",cipher,NULL,NULL,32,&params );
 	
 	if( status != 0 ){
 		status = 2 ;
 		goto out ;
 	}
-	
 	if( strcmp( source,"-p" ) == 0 ){
 		
 		status = crypt_activate_by_passphrase( cd,c,CRYPT_ANY_SLOT,pass,strlen( pass ),flags );
@@ -76,15 +71,12 @@ int open_plain( const char * device,const char * mapper,const char * mode,const 
 		}		
 		status = crypt_activate_by_keyfile( cd,c,CRYPT_ANY_SLOT,pass,st.st_size,flags ) ;
 	}
-	
 	if ( status < 0 )
 		status = 2 ;
 	else
 		status = 0 ;
-	
 	out:
 	crypt_free( cd );
-	
 	return status ;
 }
 

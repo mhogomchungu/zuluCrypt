@@ -5,7 +5,7 @@
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
+ *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
  * 
  *  This program is distributed in the hope that it will be useful,
@@ -22,13 +22,10 @@
 char * empty_slots( const char * device )
 {
 	crypt_keyslot_info cki ;
-	
 	struct crypt_device * cd;
-	
 	int i ;
 	int j ;
 	int k ;
-	
 	char * slot ;
 	
 	if( is_luks( device ) == 1 )
@@ -49,9 +46,7 @@ char * empty_slots( const char * device )
 	slot = ( char * ) malloc( sizeof( char ) * ( k + 1 ) ) ;
 	
 	for( j = 0 ; j < k ; j++){
-		
 		cki = crypt_keyslot_status(cd, j);
-		
 		switch ( cki ){
 			case CRYPT_SLOT_INACTIVE :   slot[j] = '0' ; break ;
 			case CRYPT_SLOT_ACTIVE :     slot[j] = '1' ; break ;
@@ -59,11 +54,8 @@ char * empty_slots( const char * device )
 			case CRYPT_SLOT_ACTIVE_LAST: slot[j] = '3' ; break ;			
 		}		
 	}
-	
 	slot[j] = '\0' ;	
-	
 	crypt_free( cd );
-	
 	return slot ;
 }
 

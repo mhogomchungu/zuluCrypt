@@ -9,7 +9,7 @@ make install (must run this one with root's privileges)
 
 The above will install it at "/usr". 
 
-If you want to install it someplace else, modify paths in the configure script and "ZULUCRYPTzuluCrypt" variable in zuluCrypt-cli/executables.h
+If you want to install it someplace else, modify paths in the configure script in this folder and "ZULUCRYPTzuluCrypt" variable in zuluCrypt-cli/executables.h
 to where you want it to be installed.
 
 how to uninstall

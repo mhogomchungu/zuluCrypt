@@ -1,18 +1,18 @@
 /*
  * 
  *  Copyright (c) 2011
- *  name : mhogo mchungu 
+ *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
+ *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -33,13 +33,9 @@ createpartition::createpartition(QWidget *parent) :
     ui(new Ui::createpartition)
 {
 	ui->setupUi(this);
-
 	this->setFixedSize(this->size());
-
 	ui->lineEditVolumePath->setEnabled(false);
-
 	ui->lineEditPassphrase1->setFocus();
-
 	cvt = NULL ;
 
 	connect(ui->pbOpenKeyFile,
@@ -62,7 +58,6 @@ createpartition::createpartition(QWidget *parent) :
 		SIGNAL(clicked()),
 		this,
 		SLOT(rbPasssphraseFromFileClicked()));
-
 	connect(ui->comboBoxVolumeType,
 		SIGNAL(currentIndexChanged(int)),
 		this,
@@ -80,7 +75,6 @@ void createpartition::rng(int s)
 void createpartition::closeEvent(QCloseEvent *e)
 {
 	e->ignore();
-
 	if(cvt == NULL )
 		pbCancelClicked() ;
 }
@@ -124,25 +118,11 @@ void createpartition::pbOpenKeyFile()
 
 void createpartition::pbCancelClicked()
 {
-	/*
-	QMessageBox m ;
-	m.setParent(this);
-	m.setWindowFlags(Qt::Window | Qt::Dialog);
-	m.setText(tr("Are you sure you want to cancel this operation?"));
-	m.setWindowTitle(tr("WARNING"));
-	m.addButton(QMessageBox::Yes);
-	m.addButton(QMessageBox::No);
-	m.setFont(this->font());
-
-	if( m.exec() == QMessageBox::No )
-		return ;
-*/
 	if( created == false ){
 		QString s = ui->lineEditVolumePath->text() ;
 		if(s.left(5) != QString("/dev/"))
 			QFile::remove(s) ;
 	}
-
 	HideUI() ;
 }
 
@@ -232,11 +212,9 @@ void createpartition::UIMessage(QString title, QString message)
 void createpartition::pbCreateClicked()
 {
 	if( ui->lineEditVolumePath->text().isEmpty() == true )	{
-
 		UIMessage(tr("ERROR!"),tr("volume path field is empty"));
 		return ;
 	}
-
 	QString volumePath = ui->lineEditVolumePath->text().replace("\"","\"\"\"") ; ;
 
 	if( volumePath.mid(0,2) == QString("~/"))
@@ -251,7 +229,6 @@ void createpartition::pbCreateClicked()
 
 		return ;
 	}
-
 	if(ui->rbPassphrase->isChecked() == true){
 
 		if( QString::compare(ui->lineEditPassphrase1->text(),
@@ -260,16 +237,13 @@ void createpartition::pbCreateClicked()
 			return ;
 		}
 	}	
-
 	QString source ;
 
 	QString passphrase = ui->lineEditPassphrase1->text() ;
 
 	if (ui->rbPassphraseFromFile->isChecked() == true){
-
 		if( passphrase.mid(0,2) == QString("~/"))
 			passphrase = QDir::homePath() + QString("/") + passphrase.mid(2) ;
-
 		if(QFile::exists(passphrase) == false){
 			QMessageBox m ;
 			m.setFont(this->font());
@@ -285,7 +259,6 @@ void createpartition::pbCreateClicked()
 	}else{
 		source = QString("-p") ;
 	}
-	
 	passphrase.replace("\"","\"\"\"") ;	
 
 	if( ui->lineEditVolumePath->text().left(5) == QString("/dev/")){
@@ -307,7 +280,6 @@ void createpartition::pbCreateClicked()
 		if ( m.exec() != QMessageBox::Yes )
 			return ;
 	}
-
 	QString exe = QString(ZULUCRYPTzuluCrypt) ;
 	exe = exe + QString(" create \"") ;
 	exe = exe + volumePath + QString("\" ") ;
@@ -323,22 +295,16 @@ void createpartition::pbCreateClicked()
 		SIGNAL(finished(runInThread *,int)),
 		this,
 		SLOT(threadfinished(runInThread *,int))) ;
-
 	disableAll();
-
 	cvt->start();
 }
 
 void createpartition::threadfinished(runInThread *cvt,int status)
 {	
 	created = true ;
-
 	cvt->wait() ;
-
 	delete cvt ;
-
 	cvt = NULL ;
-
 	switch( status ) {
 		case 0 : UIMessage(tr("SUCCESS"),
 				   tr("volume created successfully"));

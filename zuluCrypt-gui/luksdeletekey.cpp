@@ -1,18 +1,18 @@
 /*
  * 
  *  Copyright (c) 2011
- *  name : mhogo mchungu 
+ *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
+ *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -47,37 +47,30 @@ luksdeletekey::luksdeletekey(QWidget *parent) :
 	pUI->setWindowFlags(Qt::Window | Qt::Dialog);
 
 	ldk = NULL ;
-
 	connect(pUI,
 		SIGNAL(clickedPartition(QString)),
 		this,
 		SLOT(deleteKey(QString)));
-
 	connect(this,
 		SIGNAL(pbOpenPartitionClicked()),
 		pUI,
 		SLOT(ShowUI()));
-
 	connect(ui->pushButtonDelete,
 		SIGNAL(clicked()),
 		this,
 		SLOT(pbDelete())) ;
-
 	connect(ui->pushButtonCancel,
 		SIGNAL(clicked()),
 		this,
 		SLOT(pbCancel())) ;
-
 	connect(ui->rbPassphrase,
 		SIGNAL(toggled(bool)),
 		this,
 		SLOT(rbPassphrase())) ;
-
 	connect(ui->rbPassphraseFromFile,
 		SIGNAL(toggled(bool)),
 		this,
 		SLOT(rbPassphraseFromFile())) ;
-
 	connect(ui->pushButtonOpenKeyFile,
 		SIGNAL(clicked()),
 		this,
@@ -86,7 +79,6 @@ luksdeletekey::luksdeletekey(QWidget *parent) :
 		SIGNAL(clicked()),
 		this,
 		SLOT(pbOpenVolume()));
-
 	connect(ui->pushButtonOpenPartition,
 		SIGNAL(clicked()),
 		this,
@@ -96,7 +88,6 @@ luksdeletekey::luksdeletekey(QWidget *parent) :
 void luksdeletekey::closeEvent(QCloseEvent *e)
 {
 	e->ignore();
-
 	if( ldk == NULL )
 		pbCancel();
 }
@@ -108,7 +99,6 @@ void luksdeletekey::rbPassphrase()
 	ui->lineEditPassphrase->clear();
 	ui->pushButtonOpenKeyFile->setEnabled(false);
 	ui->pushButtonOpenKeyFile->setIcon(QIcon(QString(":/passphrase.png")));
-
 }
 
 void luksdeletekey::rbPassphraseFromFile()
@@ -181,7 +171,6 @@ void luksdeletekey::pbCancel()
 
 void luksdeletekey::pbOpenPartition()
 {
-	//HideUI();
 	emit pbOpenPartitionClicked();
 }
 void luksdeletekey::UIMessage(QString title, QString message)
@@ -213,7 +202,6 @@ void luksdeletekey::pbDelete()
 		m.exec() ;
 		return ;
 	}
-
 	if( volumePath.mid(0,2) == QString("~/"))
 		volumePath = QDir::homePath() + QString("/") + volumePath.mid(2) ;
 
@@ -224,7 +212,6 @@ void luksdeletekey::pbDelete()
 		m.exec() ;
 		return ;
 	}
-
 	if(QFile::exists(volumePath) == false){
 		m.setWindowTitle(tr("ERROR!"));
 		m.setText(tr("volume path field does not point to a file or device"));
@@ -232,7 +219,6 @@ void luksdeletekey::pbDelete()
 		m.exec() ;
 		return ;
 	}
-
 	if(ui->rbPassphraseFromFile->isChecked() == true){
 
 		if( passphrase.mid(0,2) == QString("~/"))
@@ -246,7 +232,6 @@ void luksdeletekey::pbDelete()
 			return ;
 		}
 	}
-
 	volumePath = volumePath.replace("\"","\"\"\"") ;
 
 	if ( zuluCrypt::isLuks(volumePath) == false ){
@@ -257,7 +242,6 @@ void luksdeletekey::pbDelete()
 		m.exec() ;
 		return ;
 	}
-
 	if(zuluCrypt::luksEmptySlots(volumePath).at(0) == QString("1")){
 		QString s = tr("There is only one last key in the volume.");
 		s = s + tr("\nDeleting it will make the volume unopenable and lost forever.") ;
@@ -273,7 +257,6 @@ void luksdeletekey::pbDelete()
 		if( m.exec() == QMessageBox::No )
 			return ;
 	}	
-
 	QString exe = QString(ZULUCRYPTzuluCrypt) ;
 	exe = exe + QString(" removekey ")  ;
 	exe = exe + QString("\"") +  volumePath + QString("\"") ;
@@ -290,23 +273,18 @@ void luksdeletekey::pbDelete()
 	disableAll();
 
 	ldk = new runInThread(exe) ;
-
 	connect(ldk,
 		SIGNAL(finished(runInThread *,int)),
 		this,
 		SLOT(threadfinished(runInThread *,int))) ;
-
 	ldk->start();
 }
 
 void luksdeletekey::threadfinished(runInThread * ldk,int status)
 {
 	ldk->wait() ;
-
 	delete ldk ;
-
 	ldk = NULL ;
-
 	QStringList l = zuluCrypt::luksEmptySlots(volumePath) ;
 
 	switch( status ){
@@ -326,7 +304,6 @@ void luksdeletekey::threadfinished(runInThread * ldk,int status)
 			break ;
 		case 7 :UIMessage(tr("ERROR"),tr("could not get enough memory to open the key file"));
 			break ;
-
 		default:UIMessage(tr("ERROR"),tr( "un unexpected error has occured, key not removed "));
 	}
 	enableAll();
@@ -357,6 +334,5 @@ void luksdeletekey::HideUI()
 luksdeletekey::~luksdeletekey()
 {
 	delete pUI ;
-
 	delete ui ;
 }

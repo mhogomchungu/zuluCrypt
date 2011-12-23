@@ -6,7 +6,7 @@
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
+ *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
  * 
  *  This program is distributed in the hope that it will be useful,
@@ -17,7 +17,6 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 
 #include "String.h"
 #include <stdio.h>
@@ -86,7 +85,6 @@ int StringIndexOfString( StrHandle * st,int p, const char * s )
 int StringLastIndexOfChar( StrHandle * st , char s ) 
 {
 	char * c = st->string + st->size  ;
-	
 	char * d = st->string ;
 	
 	while( --c != d )
@@ -126,13 +124,9 @@ int StringIndexOfChar( StrHandle * st, int p , char s )
 const char * StringRemoveString( StrHandle * st,int x , int y ) 
 {	
 	char * b = st->string + x ;
-	
 	char * c = st->string - 1  ;
-	
 	char * d ;
-	
 	char * e ;
-	
 	int f = st->size - y ;
 	
 	e = d = ( char * ) malloc( sizeof(char) * ( f + 1  ) ) ;
@@ -171,11 +165,8 @@ char * StringCopy( StrHandle * st )
 char * StringLengthCopy( StrHandle * st,int l )
 {
 	char * c ;
-	
 	char * d = st->string - 1 ;
-	
 	char * e ;
-	
 	char * f = st->string + l ;
 	
 	e =  c = ( char * )malloc( sizeof( char ) * ( l + 1 ) ) ;
@@ -193,7 +184,6 @@ char * StringLengthCopy( StrHandle * st,int l )
 int StringEndsWithString( StrHandle * st , const char *s ) 
 {
 	int j = strlen(s) ;
-	
 	int i = strncmp(st->string + st->size - j, s, j ) ;
 	
 	if( i == 0 )
@@ -225,9 +215,7 @@ void StringDelete( StrHandle * st)
 	if( st != NULL ) 
 	{
 		free( st->string ) ;
-		
 		free( st ) ;
-		
 		st = NULL ;
 	}
 }
@@ -235,27 +223,21 @@ void StringDelete( StrHandle * st)
 char * StringDeleteHandle( StrHandle * st)
 {
 	char * c = st->string ;
-	
 	free( st ) ;
-	
 	return c ;	
 }
 
 const char * StringSubChar( StrHandle * st, int x, char s )
 {	
 	* ( st->string + x ) = s ;
-	 
 	return st->string ; 	
 }
 
 const char * StringReplaceCharString( StrHandle * st, char x, const char * y ) 
 {
 	int i ;
-	
 	int j ;
-	
 	int k = strlen( y ) ;
-	
 	int l = st->size ;
 	
 	for( j = 0 ; j < l ; j++ )
@@ -264,20 +246,17 @@ const char * StringReplaceCharString( StrHandle * st, char x, const char * y )
 		{		
 			if( * ( st->string + j ) == * ( y + i ) )
 			{				
-				* ( st->string + j ) = x ;		
-						
+				* ( st->string + j ) = x ;
 				break ;
 			}
 		}	
 	}
-	
 	return st->string ;
 }
 
 const char * StringSubString( StrHandle * st, int x, const char * s ) 
 {
 	const char * c = s - 1  ;
-	
 	char * d = st->string + x  ;
 	
 	while( *++c ) { *d++ = *c ; }
@@ -288,11 +267,8 @@ const char * StringSubString( StrHandle * st, int x, const char * s )
 const char * StringInsertChar( StrHandle * st, int x,char s ) 
 {
 	char c[2] ;
-	
 	c[0] = s ;
-	
 	c[1] = '\0' ;
-	
 	return StringInsertString( st, x, c ) ;
 }
 
@@ -309,13 +285,9 @@ const char * StringAppend( StrHandle * st ,const char * s )
 const char * StringInsertString( StrHandle * st, int x, const char * s )
 {
 	int k = st->size + strlen( s ) ;
-
 	char * c ;
-	
 	char * d ;
-	
 	char * f = st->string + x ;
-	
 	char * e = st->string - 1 ;
 	
 	c = d = ( char * ) malloc ( sizeof( char ) * ( k + 1 ) ) ;
@@ -341,11 +313,8 @@ const char * StringInsertString( StrHandle * st, int x, const char * s )
 char * StringMidString( StrHandle * st , int x, int y ) 
 {
 	char * c ;
-	
 	char * d ;
-	
 	char * e = st->string + x + y ;
-	
 	char * f = st->string + x - 1 ;		
 	
 	c = d = ( char * ) malloc ( sizeof( char ) * ( y + 1 ) ) ;
@@ -373,13 +342,9 @@ const char * StringRemoveLeft(StrHandle * st, int x )
 const char * StringCrop( StrHandle *st, int x, int y ) 
 {
 	char * c ;
-	
 	char * d ;
-	
 	char * e ;
-	
 	int j = 0 ;
-	
 	int k = st->size - y - x ;
 	
 	if( k < 0 )
@@ -411,19 +376,12 @@ const char * StringRemoveStringString(StrHandle * st, const char * s )
 const char * StringReplaceString( StrHandle * st, const char * x, const char * s ) 
 {
 	char * c ;
-	
 	char * d ;
-	
 	char * e = st->string  ;
-	
 	char * f ;
-	
 	const char * g ;
-	
 	int i = 0 ;
-	
 	int j = strlen( s ) ;
-	
 	int k = strlen( x ) ;
 	
 	while( ( c = strstr( e, x ) ) != NULL )
@@ -480,7 +438,6 @@ char * StringIntToString( char * x, int y,uint64_t z )
 	
 	do{
 		*c-- = z % 10 + '0' ;
-		
 		z = z / 10 ;		
 		
 	}while( z != 0 ) ;
@@ -508,18 +465,12 @@ int StringCompareString( StrHandle * x, const char * y )
 
 const char * StringInsertCharString( StrHandle * st, char x, const char * n ) 
 {	
-	char * d ;	
-	
+	char * d ;
 	char * f ;
-	
 	int count = 0 ;
-	
 	int i,j ;
-	
 	int z = st->size ;
-	
 	char * c = st->string ;
-	
 	int k = strlen( n ) ;
 	
 	for ( i = 0 ; i < z ; i++ )
@@ -563,10 +514,7 @@ const char * StringInsertCharString( StrHandle * st, char x, const char * n )
 const char * StringInsertCharChar( StrHandle * st, char x, char y )
 {
 	char c[2] ;
-	
 	c[0] = y ;
-	
 	c[1] = '\0' ;
-	
 	return StringInsertCharString( st, x, c ) ;
 }

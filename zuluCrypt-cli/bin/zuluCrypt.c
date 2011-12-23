@@ -5,7 +5,7 @@
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
+ *  the Free Software Foundation, either version 2 of the License, or
  *  ( at your option ) any later version.
  * 
  *  This program is distributed in the hope that it will be useful,
@@ -29,7 +29,7 @@
 #include "includes.h"
 
 //function prototypes
-StrHandle * get_passphrase(  void  ) ;
+StrHandle * get_passphrase( void ) ;
 
 char * volume_device_name( const char * ) ;
 
@@ -39,7 +39,6 @@ int check_system_tools( void ) ;
 
 StrHandle * get_passphrase(  void  )
 {	
-	
 	//I got the big chunk of this code from: http://www.gnu.org/s/hello/manual/libc/getpass.html
 	char c[2] ;
 	StrHandle * p ;
@@ -54,17 +53,12 @@ StrHandle * get_passphrase(  void  )
 			
 	if ( tcsetattr ( 1, TCSAFLUSH, &new ) != 0 )
 		exit( -1 );
-		
 	c[1] = '\0' ;
 	c[0] = getchar(  ) ;
-	
 	p = String(  c  ) ;
-	
 	while(  (  c[0] = getchar(  )  ) != '\n'  )		
 		StringAppend(  p, c  ) ;
-	
-	( void ) tcsetattr ( 1, TCSAFLUSH, &old );		
-	
+	( void ) tcsetattr ( 1, TCSAFLUSH, &old );	
 	return p ;
 }
 
@@ -77,19 +71,14 @@ void help(  void  )
 int main(  int argc , char *argv[] )
 {
 	char * action = argv[1] ;
-	
 	char * device = argv[2] ;
-	
 	struct stat st ;
-	
 	uid_t id ;
-	
 	int status ;
-	
 	char *  mapping_name ;
 	char * c ;
 	
-	id = getuid(  );	
+	id = getuid();	
 	
 	setuid( 0 );
 
@@ -101,47 +90,40 @@ int main(  int argc , char *argv[] )
 		help(  );	
 		return 10 ;
 	}
-	
 	if (  strcmp(  action, "-v"  ) == 0 || strcmp(  action, "-version"  ) == 0 || strcmp(  action, "--version"  ) == 0  ){		
 		printf( "%s\n",version(  ) );
 		return 10 ;
 	}
-	
 	if (  argc < 3  ){
 		help(  );
 		return 10 ;
 	}
-		
 	if (  ( c = strrchr( device,'/' ) ) != NULL ) {
-		mapping_name =  c + 1  ;	
-		
+		mapping_name =  c + 1  ;
 	}else{
 		mapping_name =  device  ;			
-	}		
-	
+	}	
 	if(  strcmp(  action, "isLuks"  ) == 0  ){
-	
 		status =  is_luks(  device  ) ;
-		
 		if(  status == 0  )
 			printf( "\"%s\" is a luks device\n",device ) ;
 		else
 			printf( "\"%s\" is not a luks device\n",device ) ;
 		
-	}else if (  strcmp(  action, "status"  ) == 0  ){			
-
+	}else if (  strcmp(  action, "status"  ) == 0  ){
+		
 		status = volume_info(  mapping_name, device  ) ;
 		
-	}else if (  strcmp(  action, "device"  ) == 0  ){			
+	}else if (  strcmp(  action, "device"  ) == 0  ){
 		
 		c = volume_device_name( device ) ;
-		
 		if( c == NULL )
-			return 1 ;
-		
-		printf("%s\n",c) ;		
-		free(c) ;
-		return 0 ;
+			status = 1 ;
+		else{
+			printf("%s\n",c) ;		
+			free(c) ;
+			status = 0 ;
+		}
 		
 	}else if (  strcmp(  action, "close"  ) == 0  ){			
 
@@ -165,8 +147,7 @@ int main(  int argc , char *argv[] )
 	
 	}else if (  strcmp( action,"partitions" ) == 0  ){
 
-		switch(  argv[2][0]  ){			
-			
+		switch(  argv[2][0]  ){	
 			case '1' : c = partitions(  ALL_PARTITIONS  ) ;
 				   break ;
 			case '2' : c = partitions(  SYSTEM_PARTITIONS  ) ;
@@ -179,7 +160,7 @@ int main(  int argc , char *argv[] )
 		}		
 		printf( "%s", c  ) ;
 		free(  c  ) ;
-		return 0 ;
+		status = 0 ;
 		
 	}else if( strcmp( action,"emptyslots" ) == 0  ){
 		
@@ -188,7 +169,6 @@ int main(  int argc , char *argv[] )
 			status = 1 ;			
 		}else{
 			c = empty_slots(  device  ) ;
-			
 			if(  c == NULL  ){
 				printf( "device \"%s\" is not a luks device\n",device ) ;
 				status = 2 ;
@@ -203,6 +183,5 @@ int main(  int argc , char *argv[] )
 		help(  );
 		status =  10 ;
 	}
-	
 	return status ; 		
 }

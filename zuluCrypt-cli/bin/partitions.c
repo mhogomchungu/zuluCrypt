@@ -5,7 +5,7 @@
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
+ *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
  * 
  *  This program is distributed in the hope that it will be useful,
@@ -25,19 +25,12 @@
 void blkid( const char * type,const char * entry, int size, StrHandle * system, StrHandle * non_system )
 {	
 	char device[12] ;
-	
 	const char * f ;
-	
 	const char * e = StringContent( non_system ) ;
-	
 	int j ;
-	
 	int k ;
-	
 	blkid_probe bp ;
-	
-	while( *e != '\0' ){
-		
+	while( *e ){
 		f = e ;
 		
 		while ( *e++ != '\n' ) { ; }
@@ -45,28 +38,19 @@ void blkid( const char * type,const char * entry, int size, StrHandle * system, 
 		j = e - f - 1 ;
 		
 		strncpy( device, f, j ) ; 
-		
 		device[ j ] = '\0' ;	
 		
 		bp = blkid_new_probe_from_filename( device ) ;
-		
 		blkid_do_probe( bp );
-		
 		k = blkid_probe_lookup_value( bp, type, &f, NULL );
 		
 		if( k == 0 ){
-			if( strcmp( f, entry + size ) == 0 ){					
-				
+			if( strcmp( f, entry + size ) == 0 ){	
 				device[ j ] = '\n' ;
-				
 				device[ j + 1 ] = '\0' ;
-				
 				StringAppend(  system, device ) ;
-				
-				StringRemoveStringString( non_system , device ) ;					
-				
+				StringRemoveStringString( non_system , device ) ;
 				blkid_free_probe( bp );
-				
 				return ;
 			}	
 		}
@@ -77,13 +61,9 @@ void blkid( const char * type,const char * entry, int size, StrHandle * system, 
 char * partitions( int option )
 {
 	char * b ;
-	
 	char * c ;
-	
 	char * d ;
-	
 	char buffer[512];
-	
 	char device[12] ;
 	
 	struct mntent * mt ;
@@ -102,51 +82,37 @@ char * partitions( int option )
 	all = String( "" );	
 	
 	strcpy( device, "/dev/" ) ;
-	
 	b = device + 5 ;
 	
-	while (  fgets( buffer,512,fd  ) != NULL  ){
-		
+	while ( fgets( buffer,512,fd  ) != NULL ){
 		c = buffer ;
-		
 		while(  *c++ != '\n'  ) { ; }
-		
 		d = c ;
-		
 		while(  *--d != ' '  ) { ; }
-		
 		d++ ;		
-		
 		if( strlen(  d  ) == 4 || (  strncmp(  d, "hd", 2  ) != 0 && strncmp(  d, "sd", 2 ) != 0  )  )
 			continue ;
-		
 		strcpy( b , d ) ;
-		
 		StringAppend(  all, device );
 	}
 	
 	fclose( fd );	
 	
-	if(  option == ALL_PARTITIONS  )
-		return StringDeleteHandle(  all  ) ;
+	if( option == ALL_PARTITIONS )
+		return StringDeleteHandle( all ) ;
 	
 	non_system = all ;
-	
 	system = String( "" );
-
+	
 	fd = setmntent("/etc/fstab", "r");
 	
 	while( ( mt = getmntent( fd ) ) != NULL ){
 		if ( strncmp( mt->mnt_fsname, "/dev/",5 ) == 0 ){
-
 			strcpy( device,mt->mnt_fsname ) ;
-			
 			strcat( device, "\n" ) ;
-			
 			StringAppend( system,device ) ;
-			
 			StringRemoveStringString( non_system , device ) ;
-				       
+			
 		}else if ( strncmp( mt->mnt_fsname, "UUID",4 ) == 0 ){
 
 			blkid( "UUID",mt->mnt_fsname, 5, system, non_system ) ;  				
@@ -162,32 +128,20 @@ char * partitions( int option )
 	fd = fopen( "/etc/crypttab","r" );
 	
 	if(  fd != NULL  ){
-		
 		while (  fgets( buffer,512,fd  ) != NULL  ){	
-			
 			if( buffer[0] == '#' )
 				continue ;
-			
 			if( buffer[0] == '\n' )
 				continue ;
-			
 			c = buffer ;
-			
 			while(  *++c != '/'  ) { ; }
-			
 			d = c ;
-			
 			while(  *++d != ' '  ) { ; }
-			
 			*d++ = '\n' ;
-			
 			*d = '\0' ;
-			
 			StringAppend(  system, buffer  ) ;	
-			
 			StringRemoveStringString( non_system, buffer ) ;
 		}
-		
 		fclose( fd ) ;
 	}	
 

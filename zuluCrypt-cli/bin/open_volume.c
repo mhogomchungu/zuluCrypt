@@ -5,7 +5,7 @@
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
+ *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
  * 
  *  This program is distributed in the hope that it will be useful,
@@ -21,10 +21,8 @@
 
 int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount_point,char * mode,char * source,char * pass )
 {
-	StrHandle * p = NULL ;
-	
-	StrHandle * q = NULL ;
-	
+	StrHandle * p = NULL ;	
+	StrHandle * q = NULL ;	
 	StrHandle * z = NULL ;
 	
 	int st ;
@@ -35,27 +33,22 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 		st = 11 ;
 		goto eerr ;
 	}	
-	
 	if( strlen( mount_point ) == 1 ){
 		if (  strcmp( mount_point,"," ) == 0 ){
 			st = 10 ;
 			goto eerr ;			
 		}
-	}
-	
-	if(  stat (  mount_point,&xt ) != 0 ){
-		
+	}	
+	if(  stat (  mount_point,&xt ) != 0 ){		
 		st = 9 ;
 		goto eerr ;
-	}
-	
+	}	
 	if ( strncmp( mode,"ro",2 ) != 0 ){
 		if ( strncmp( mode,"rw",2 ) != 0 ){
 			st = 10 ;
 			goto eerr ;	
 		}
-	}
-	
+	}	
 	q = String(  mapping_name  ) ;
 	
 	StringReplaceCharString( q,'_',"#;\"',\\`:!*?&$@(){}[]><|%~^ \n" ) ;
@@ -69,40 +62,25 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 	
 	StringAppend( z,mapping_name );
 	
-	if ( mkdir( StringContent( z ), S_IRWXU  ) != 0 ){
-		
-		StringAppend( z, ".zc") ;
-		
-		if ( mkdir( StringContent( z ),S_IRWXU  ) != 0 ){
-			
-			st = 5 ;
-			
+	if ( mkdir( StringContent( z ), S_IRWXU  ) != 0 ){		
+		StringAppend( z, ".zc") ;		
+		if ( mkdir( StringContent( z ),S_IRWXU  ) != 0 ){			
+			st = 5 ;			
 			goto eerr ;
 		}
-	}
-	
+	}	
 	if (  argn == 5  ){
-		printf(  "Enter passphrase: "  ) ;
-		
-		p = get_passphrase(  );				
-		
+		printf(  "Enter passphrase: "  ) ;		
+		p = get_passphrase(  );	
 		printf( "\n" ) ;	
-		
 		st = open_volume( device,StringContent( q ),StringContent( z ),id,mode,StringContent(  p  ),"-p" ) ;
-		
 		StringDelete(  p  ) ;
-		
 	}else if (  argn == 7  ){
-		
-		st = open_volume( device,StringContent( q ),StringContent( z ),id,mode,pass,source ) ;			
-		
+		st = open_volume( device,StringContent( q ),StringContent( z ),id,mode,pass,source ) ;	
 	}else{
-		
 		st =  11 ;			
 	}
-
 	eerr:
-	
 	if( st == 0 )
 		 printf( "SUCCESS: Volume opened successfully\n" );
 	else{		
@@ -134,10 +112,7 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 				;
 		}
 	}	
-	
 	StringDelete(  q  ) ;
-	
 	StringDelete(  z  ) ;
-	
 	return st ;
 }

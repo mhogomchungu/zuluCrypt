@@ -1,18 +1,18 @@
 /*
  * 
  *  Copyright (c) 2011
- *  name : mhogo mchungu 
+ *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
+ *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -42,21 +42,16 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
     ui(new Ui::zuluCrypt)
 {
 	item_count = 0 ;
-
 	selectedRow = -1 ;
-
 	keyPressed = false ;
 
 	qRegisterMetaType<Qt::Orientation>("Qt::Orientation") ;
-
 	qRegisterMetaType<QItemSelection>("QItemSelection") ;
 
 	setupUIElements();
-
 	setupConnections();
 
 	QString home = QDir::homePath() + QString("/.zuluCrypt/") ;
-
 	QDir d(home) ;
 
 	if(d.exists() == false)
@@ -65,12 +60,11 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 	QFile f(QDir::homePath() + QString("/.zuluCrypt/tray")) ;
 
 	if(f.exists() == false){
-
 		f.open(QIODevice::WriteOnly | QIODevice::Truncate) ;
 		f.write("1") ;
 		f.close();
 	}
-
+	
 	f.open(QIODevice::ReadOnly) ;
 
 	QByteArray c = f.readAll() ;
@@ -92,24 +86,17 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 	QFile z( fontPath ) ;
 
 	if(z.exists() == false){
-
 		z.open(QIODevice::WriteOnly | QIODevice::Truncate) ;
-
-		QString s = QString("Sans Serif\n9\nnormal\nnormal\n") ;
-
+		QString s = QString("Sans Serif\n8\nnormal\nnormal\n") ;
 		z.write( s.toAscii() ) ;
-
 		z.close();
 	}
 
 	QFile x( fontPath );
-
 	x.open(QIODevice::ReadOnly) ;
-
 	QStringList xs = QString( x.readAll() ).split("\n") ;
-
 	x.close();
-
+	
 	QFont F ;
 
 	F.setFamily(xs.at(0));
@@ -130,31 +117,27 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 	setUserFont(F);
 
 	crh = new ClickedRowHighlight() ;
-
+	
 	vpt = new volumePropertiesThread() ;
 
 	connect(vpt,
 		SIGNAL(finished()),
 		this,
-		SLOT(volumePropertyThreadFinished())) ;
-
+	 SLOT(volumePropertyThreadFinished())) ;
+	 
 	sov = new startupupdateopenedvolumes(this);
-
 	connect(sov,
 		SIGNAL(addItemToTable(QString,QString)),
 		this,
 		SLOT(addItemToTable(QString,QString))) ;
-
 	connect(sov,
 		SIGNAL(finished()),
 		this,
 		SLOT(sovfinished())) ;
-
 	connect(sov,
 		SIGNAL(UIMessage(QString,QString)),
 		this,
 		SLOT(UIMessage(QString,QString))) ;
-
 	sov->start();
 
 	rca = new QAction( this ) ;
@@ -162,11 +145,9 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 	QList<QKeySequence> keys ;
 
 	keys.append( Qt::Key_Menu );
-
 	keys.append( Qt::CTRL + Qt::Key_M );
 
 	rca->setShortcuts(keys) ;
-
 	connect(rca,SIGNAL(triggered()),this,SLOT(menuKeyPressed())) ;
 
 	this->addAction( rca );
@@ -177,19 +158,14 @@ void zuluCrypt::menuKeyPressed()
 	QTableWidgetItem *it = ui->tableWidget->currentItem() ;
 
 	if( it == NULL ){
-		
 		int rowcount = ui->tableWidget->rowCount() ;
-
 		if( rowcount > 0 ){
-			
 			it = ui->tableWidget->item(rowcount - 1 ,0) ;
-
 			ui->tableWidget->setCurrentItem( it );
 		}else
 			return ;
 	}	
 	keyPressed = true ;
-
 	cellClicked( it );	
 }
 
@@ -213,29 +189,22 @@ void zuluCrypt::closeAllVolumes()
 	int lastRow = ui->tableWidget->rowCount() - 1 ;
 
 	selectRow(selectedRow,false) ;
-
 	selectRow(lastRow,true) ;
 
 	cavt = new closeAllVolumesThread(ui->tableWidget) ;
-
 	connect(cavt,SIGNAL(close(QTableWidgetItem *,int)),this,SLOT(closeAll(QTableWidgetItem *,int))) ;
-
 	connect(cavt,SIGNAL(finished()),this,SLOT(deleteThread())) ;
-
 	cavt->start();
 }
 
 void zuluCrypt::deleteThread()
 {
 	delete cavt ;
-
 	if(item_count  == 0 )
 		return ;
-
 	for( int i = 0 ; i < item_count ; i++)
 		if(ui->tableWidget->item(i,0)->isSelected() == true)
 			selectRow(i,false) ;
-
 	selectRow(0,true) ;
 }
 
@@ -270,7 +239,6 @@ void zuluCrypt::minimizeToTray()
 QString zuluCrypt::mtab(QString entry)
 {
 	QFile mt(QString("/etc/mtab")) ;
-
 	QByteArray sc = "#;\"',\\`:!*?&$@(){}[]><|%~^ \n" ;
 	
 	for( int n = 0 ; n < sc.size() ; n++){
@@ -279,13 +247,11 @@ QString zuluCrypt::mtab(QString entry)
 	}	
 	
 	mt.open(QIODevice::ReadOnly) ;
-
 	QByteArray data = mt.readAll() ;
 
 	mt.close();
 
 	int i = data.indexOf(entry) ;
-
 	if( i == -1 )
 		return QString("") ;
 
@@ -296,8 +262,10 @@ QString zuluCrypt::mtab(QString entry)
 	while(data.at(i++) != ' ') { ; }
 
 	QByteArray mount_point = data.mid(j, i - j - 1) ;
-
 	mount_point.replace("\\040"," ") ;
+	mount_point.replace("\\011","\t") ;
+	mount_point.replace("\\012","\n") ;
+	mount_point.replace("\\134","\\") ;
 
 	return QString(mount_point.data()) ;
 }
@@ -328,7 +296,6 @@ void zuluCrypt::closeApplication()
 void zuluCrypt::trayClicked(QSystemTrayIcon::ActivationReason e)
 {
 	if( e == QSystemTrayIcon::Trigger){
-
 		if(this->isVisible() == true)
 			this->hide();
 		else
@@ -369,11 +336,8 @@ void zuluCrypt::fonts()
 	QFont Font = QFontDialog::getFont(&ok,this->font(),this) ;
 
 	if( ok == true ){
-
 		QByteArray ba ;
-
 		int k = Font.pointSize() ;
-
 		do{
 			ba.push_front( k % 10 + '0' ) ;
 			k = k / 10 ;
@@ -436,21 +400,13 @@ void zuluCrypt::setUserFont(QFont Font)
 	ui->menuFavorites->setFont(this->font());
 
 	passwordDialogUI->setFont(Font);
-
 	openPartitionUI->setFont(Font);
-
 	NonSystemPartitions->setFont(Font);
-
 	luksopenPartitionUI->setFont(Font);
-
 	addKeyUI->setFont(Font);
-
 	deleteKeyUI->setFont(Font);
-
 	createpartitionUI->setFont(Font);
-
 	createFile->setFont(Font);
-
 	createkeyFile->setFont(Font);
 }
 
@@ -509,11 +465,8 @@ QStringList zuluCrypt::luksEmptySlots(QString volumePath)
 	N.close();
 
 	QStringList list ;
-
 	list << QString::number( i ) ;
-
 	list << QString::number(  s.size() - 1 ) ;
-
 	return list ;
 }
 
@@ -558,28 +511,23 @@ void zuluCrypt::aboutMenuOption(void)
 void zuluCrypt::addItemToTableByVolume(QString vp)
 {
 	QString zvp = QString("/dev/mapper/zuluCrypt-") + vp.split("/").last() ;
-
 	addItemToTable(vp, mtab(zvp));
 }
 
 void zuluCrypt::addItemToTable(QString x,QString y)
 {
 	addItemToTableThread * addThread  = new addItemToTableThread(&mutex,ui->tableWidget,x,y,&item_count,&selectedRow) ;
-
 	connect(addThread,
 		SIGNAL(threadFinished(addItemToTableThread*)),
 		this,
 		SLOT(deleteAddItemToTableThread(addItemToTableThread *))) ;
-
 	addThread->start();
 }
 
 void zuluCrypt::deleteAddItemToTableThread(addItemToTableThread *Thread)
 {
 	Thread->wait() ;
-
 	delete Thread ;
-
 	/*
 	  "passwordDialogUI->HideUI()" should ideally be in the case 0 of "threadfinished" member of
 	  "password_Dialog" class. It is here because the UI freezes for a bit
@@ -592,7 +540,6 @@ void zuluCrypt::deleteAddItemToTableThread(addItemToTableThread *Thread)
 void zuluCrypt::removeRowFromTable( int x )
 {
 	ui->tableWidget->removeRow( x ) ;
-
 	item_count-- ;
 }
 
@@ -601,7 +548,6 @@ void zuluCrypt::volume_property()
 	vpt->update(item->tableWidget()->item(item->row(),0)->text(),
 		    item->tableWidget()->item(item->row(),1)->text(),
 		    &volumeProperty);
-
 	vpt->start();
 }
 
@@ -621,27 +567,16 @@ void zuluCrypt::favClicked(QAction *e)
 	QMenu *m = (QMenu *) e->parentWidget() ;
 
 	if( e->text() == tr("open") ){
-
 		QStringList l =  m->title().split("\t") ;
-
 		emit favClickedVolume(l.at(0),l.at(1));
-
 	}else if( e->text() == tr("remove from favorite") ){
-
 		QFile f(QDir::homePath() + QString("/.zuluCrypt/favorites")) ;
-
 		f.open(QIODevice::ReadOnly) ;
-
 		QByteArray b = f.readAll() ;
-
 		f.close();
-
 		QByteArray c = b.remove(b.indexOf(m->title()),m->title().length() + 1) ;
-
 		f.open(QIODevice::WriteOnly | QIODevice::Truncate) ;
-
 		f.write( c ) ;
-
 		f.close() ;
 	}
 }
@@ -659,31 +594,21 @@ void zuluCrypt::readFavorites()
 	QStringList l = QString( b ).split("\n") ;
 
 	for(int i = 0 ; i < l.size() - 1 ; i++){
-
 		QMenu *m = new QMenu(l.at(i)) ;
-
 		m->setFont(this->font());
-
 		m->addAction("open")->setParent(m);
-
 		m->addAction("remove from favorite")->setParent(m); ;
-
 		ui->menuFavorites->addMenu(m) ;
-
-		//menulist.append(m);
 	}
 }
 
 void zuluCrypt::addToFavorite()
 {
 	QString volume_path = ui->tableWidget->item(item->row(),0)->text() ;
-
 	QString mount_point_path = ui->tableWidget->item(item->row(),1)->text();
-
 	int i = mount_point_path.lastIndexOf("/") ;
-
+	
 	mount_point_path = mount_point_path.left( i ) ;
-
 	QString fav = volume_path + QString("\t") + mount_point_path + QString("\n") ;
 
 	QFile f(QDir::homePath() + QString("/.zuluCrypt/favorites")) ;
@@ -698,11 +623,9 @@ void zuluCrypt::addToFavorite()
 void zuluCrypt::cellClicked(QTableWidgetItem * t)
 {
 	item = t ;	
-
 	crh->update( item->row(),ui->tableWidget,&selectedRow,item_count );
-
 	crh->start();
-
+	
 	QMenu m ;
 	m.setFont(this->font());
 	connect(m.addAction("close"),SIGNAL(triggered()),this,SLOT(close())) ;
@@ -745,9 +668,7 @@ void zuluCrypt::cellClicked(QTableWidgetItem * t)
 	m.addAction(&a);
 
 	if( strstr( data.data() , fav.toAscii().data() ) == NULL ){
-		
 		a.setEnabled(true);
-	
 		a.connect((QObject *)&a,
 			  SIGNAL(triggered()),
 			  this,
@@ -760,15 +681,11 @@ void zuluCrypt::cellClicked(QTableWidgetItem * t)
 		m.exec(QCursor::pos()) ;
 	else{
 		int x = ui->tableWidget->columnWidth(0) ;
-
 		int y = ui->tableWidget->rowHeight(item->row()) * item->row() + 20 ;
 
 		m.addSeparator() ;
-
 		m.addAction("cancel") ;
-
 		m.exec(ui->tableWidget->mapToGlobal(QPoint(x,y))) ;
-		
 		keyPressed = false ;
 	}
 }
@@ -800,7 +717,6 @@ void zuluCrypt::closeThreadFinished(runInThread * vct,int st)
 
 	switch ( st ) {
 	case 0 :removeRowFromTable(item->row()) ;
-
 		if( ui->tableWidget->rowCount() > 0 )
 			selectRow(0,true) ;
 		else
@@ -821,16 +737,13 @@ void zuluCrypt::closeThreadFinished(runInThread * vct,int st)
 	default :UIMessage(tr("ERROR"),
 			  tr("an unknown error has occured, volume not closed"));
 	}
-
 	vct->wait() ;
-
 	delete vct ;
 }
 
 void zuluCrypt::close()
 {
 	QString vol = ui->tableWidget->item(item->row(),0)->text().replace("\"","\"\"\"") ;
-
 	QString exe = QString(ZULUCRYPTzuluCrypt) + QString(" close ") + QString("\"") + \
 			vol + QString("\"") ;
 
@@ -840,7 +753,6 @@ void zuluCrypt::close()
 		SIGNAL(finished(runInThread *,int)),
 		this,
 		SLOT(closeThreadFinished(runInThread *,int))) ;
-
 	ui->tableWidget->setEnabled( false );
 	vct->start();
 }
@@ -854,28 +766,20 @@ void zuluCrypt::setupUIElements()
 	mpv.setFont(this->font());
 
 	trayIcon = new QSystemTrayIcon(this);
-
 	trayIcon->setIcon(QIcon(QString(":/zuluCrypt.png")));
 
 	trayMenu = new QMenu(this) ;
-
 	trayMenu->addAction(tr("quit"),
 			    this,SLOT(closeApplication()));
-
 	trayIcon->setContextMenu(trayMenu);
 
 	ui->setupUi(this);
 
-	//ui->tableWidget->setMouseTracking(true);
-
 	this->setFixedSize(this->size());
-
 	this->setWindowIcon(QIcon(QString(":/zuluCrypt.png")));
 
 	ui->tableWidget->setColumnWidth(0,230);
-
 	ui->tableWidget->setColumnWidth(1,290);
-
 	ui->tableWidget->setColumnWidth(2,90);
 
 	passwordDialogUI = new password_Dialog(this) ;
@@ -1052,30 +956,17 @@ void zuluCrypt::setupConnections()
 zuluCrypt::~zuluCrypt()
 {	
 	delete passwordDialogUI ;
-
 	delete openPartitionUI ;
-
 	delete NonSystemPartitions ;
-
 	delete luksopenPartitionUI ;
-
 	delete createpartitionUI ;
-
 	delete addKeyUI ;
-
 	delete deleteKeyUI ;
-
 	delete createFile ;
-
 	delete createkeyFile ;
-
 	delete trayMenu ;
-
 	delete  crh ;
-
 	delete vpt ;
-
 	delete rca ;
-
 	delete ui;
 }

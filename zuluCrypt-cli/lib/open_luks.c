@@ -5,7 +5,7 @@
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
+ *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
  * 
  *  This program is distributed in the hope that it will be useful,
@@ -22,13 +22,9 @@
 int open_luks( const char * device,const char * mapper,const char * mode,const char * source,const char * pass )
 {
 	struct stat st ;
-	
 	struct crypt_device *cd;
-	
 	uint32_t flags = 0;
-	
 	int status;
-	
 	const char * c ;	
 	
 	if( stat( device, &st ) != 0 )
@@ -46,7 +42,6 @@ int open_luks( const char * device,const char * mapper,const char * mode,const c
 	 *first part of the address.
 	 * 
 	 */	
-	
 	if( c == NULL )
 		c = mapper ;
 	else
@@ -58,14 +53,12 @@ int open_luks( const char * device,const char * mapper,const char * mode,const c
 		status = 2;	
 		goto out ;
 	}
-	
 	status = crypt_load( cd, CRYPT_LUKS1, NULL ) ;
 	
 	if ( status != 0 ){
 		status = 2;	
 		goto out ;
 	}
-	
 	if( strcmp( mode,"ro" ) == 0 )
 		flags = 1 ;
 	else
@@ -78,8 +71,7 @@ int open_luks( const char * device,const char * mapper,const char * mode,const c
 		if ( stat( pass,&st ) != 0 ){
 			status = 4;	
 			goto out ;			
-		}			
-		
+		}	
 		status = crypt_activate_by_keyfile( cd,c,CRYPT_ANY_SLOT,pass,st.st_size,flags ) ;
 	}
 	
@@ -87,11 +79,8 @@ int open_luks( const char * device,const char * mapper,const char * mode,const c
 		status = 1 ;
 	else
 		status = 0 ;
-	
 	out:
-	
 	crypt_free( cd );
-	
 	return status ;
 }
 

@@ -1,18 +1,18 @@
 /*
  * 
  *  Copyright (c) 2011
- *  name : mhogo mchungu 
+ *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
+ *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -46,13 +46,9 @@ createfile::createfile(QWidget *parent) :
 	time.setInterval(250);
 
 	connect((QObject *)&time,SIGNAL(timeout()),this,SLOT(monitorFileGrowth()));
-
 	connect(ui->pbCancel,SIGNAL(clicked()),this,SLOT(pbCancel())) ;
-
 	connect(ui->pbOpenFolder,SIGNAL(clicked()),this,SLOT(pbOpenFolder())) ;
-
 	connect(ui->pbCreate,SIGNAL(clicked()),this,SLOT(pbCreate())) ;
-
 }
 
 void createfile::closeEvent(QCloseEvent *e)
@@ -121,19 +117,16 @@ void createfile::pbCreate()
 		m.exec() ;
 		return ;
 	}
-
 	if(ui->lineEditFilePath->text().isEmpty()){
 		m.setText(tr("file path field is empty"));
 		m.exec() ;
 		return ;
 	}
-
 	if(ui->lineEditFileSize->text().isEmpty()){
 		m.setText(tr("file size field is empty"));
 		m.exec() ;
 		return ;
 	}
-
 	path = ui->lineEditFilePath->text() ;
 
 	if ( path.mid(0,2) == QString("~/"))
@@ -145,13 +138,11 @@ void createfile::pbCreate()
 		m.exec() ;
 		return ;
 	}
-
 	if(QFile::exists(path + QString("/") + ui->lineEditFileName->text())){
 		m.setText(tr("a file or folder with the same name already exist at destination address"));
 		m.exec() ;
 		return ;
 	}
-
 	bool test ;
 
 	ui->lineEditFileSize->text().toInt(&test) ;
@@ -161,7 +152,6 @@ void createfile::pbCreate()
 		m.exec() ;
 		return ;
 	}
-
 	QString source = ui->comboBoxRNG->currentText() ;
 
 	path = path + QString("/") +ui->lineEditFileName->text();
@@ -173,7 +163,6 @@ void createfile::pbCreate()
 		m.exec() ;
 		return ;
 	}
-
 	f.open(QIODevice::WriteOnly) ;
 
 	if( f.putChar('X') == false ){
@@ -182,7 +171,6 @@ void createfile::pbCreate()
 		m.exec() ;
 		return ;
 	}
-
 	f.close();
 	f.remove() ;
 
@@ -196,53 +184,42 @@ void createfile::pbCreate()
 		case 2 :fileSize = ui->lineEditFileSize->text().toDouble() * 1024 * 1024  * 1024;
 			break ;
 	}
-
 	if( fileSize < 3145728 ){
-
 		m.setText(tr("container file must be bigger than 3MB"));
 		m.exec() ;
 		return ;
 	}
-
 	disableAll();
-
 	time.start();
-
 	creating = true ;
-
 	terminated = false ;
-
+	
 	cft = new createFileThread( source, path,fileSize,1 ) ;
 
 	connect(cft,SIGNAL(finished()),
 		this,SLOT(createFileThreadFinished()));
-
 	cft->start();
 }
 
 void createfile::createFileThreadFinished()
 {
 	time.stop();
-
 	delete cft ;
 
 	if( mb.isVisible() == true ){
 		mb.hide();
 		Return = true ;
 	}
-
 	if( terminated == true )
 		return ;
 
 	emit fileCreated( path ) ;
-
 	this->hide();
 }
 
 void createfile::monitorFileGrowth()
 {
 	QFileInfo f( path ) ;
-
 	ui->progressBar->setValue(f.size() * 100 / fileSize);
 }
 
@@ -261,7 +238,6 @@ void createfile::pbCancel()
 		this->hide();
 		return ;
 	}
-
 	mb.setWindowTitle(tr("terminating file creation process"));
 	mb.setParent(this);
 	mb.setWindowFlags(Qt::Window | Qt::Dialog);
@@ -285,15 +261,10 @@ void createfile::pbCancel()
 		return ;
 
 	cft->terminate();
-
 	terminated = true ;
-
 	creating = false ;
-
 	time.stop();
-
 	QFile::remove( path ) ;
-
 	this->hide();
 }
 

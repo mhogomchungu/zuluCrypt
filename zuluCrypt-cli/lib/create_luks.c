@@ -5,7 +5,7 @@
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
+ *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
  * 
  *  This program is distributed in the hope that it will be useful,
@@ -30,8 +30,7 @@ int create_luks( const char * dev,const char * pass,const char * rng )
 	struct crypt_params_luks1 params = {
 		.hash = "sha1",
 		.data_alignment = 4096,
-	};	
-	
+	};
 	if( stat( dev,&st ) != 0 )
 		return 4 ;
 	
@@ -41,7 +40,6 @@ int create_luks( const char * dev,const char * pass,const char * rng )
 		status = 1 ;
 		goto out ;
 	}
-	
 	if( strcmp( rng,"/dev/random" ) == 0 )
 		crypt_set_rng_type( cd, CRYPT_RNG_RANDOM );
 	else 
@@ -53,18 +51,14 @@ int create_luks( const char * dev,const char * pass,const char * rng )
 		status = 2 ;
 		goto out ;
 	}
-	
 	status = crypt_keyslot_add_by_volume_key( cd,CRYPT_ANY_SLOT,NULL,32,pass,strlen( pass ) );
 	
 	if ( status < 0 )
 		status = 3 ;
 	else	
 		status = 0 ;
-	
 	out:
-	
 	crypt_free( cd );
-	
 	return status ;
 }
 

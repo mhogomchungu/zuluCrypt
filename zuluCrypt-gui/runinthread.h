@@ -1,11 +1,11 @@
 /*
- *
+ * 
  *  Copyright (c) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
+ *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
@@ -27,7 +27,6 @@ class runInThread : public QThread
 	Q_OBJECT
 public:
 	explicit runInThread(QString) ;
-
 signals:
 	void finished( runInThread *,int) ;
 private:

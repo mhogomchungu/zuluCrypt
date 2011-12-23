@@ -1,11 +1,11 @@
 /*
- *
+ * 
  *  Copyright (c) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
+ *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
@@ -102,9 +102,7 @@ void ShowNonSystemPartitionsThread::run()
 	QString q(tr("non system partitions( no active entries in fstab )")) ;
 
 	tw->setHorizontalHeaderItem(0,new QTableWidgetItem(q));
-
 	tw->horizontalHeaderItem(0)->setFont(font);
-
 	tw->setColumnWidth(0,540);
 
 	QTableWidgetItem * t ;
@@ -113,7 +111,6 @@ void ShowNonSystemPartitionsThread::run()
 
 		t = new QTableWidgetItem(openpartition::deviceProperties(l.at(i).toAscii().data())) ;
 		t->setTextAlignment(Qt::AlignCenter);
-
 		tw->insertRow(i);
 		tw->setItem(i,0,t);
 	}
@@ -224,14 +221,11 @@ void createFileThread::run()
 	//going back to C API for file access
 
 	FILE * in = fopen( source.toAscii().data(),"r") ;
-
 	FILE * out = fopen( file.toAscii().data(),"w") ;
-
 	double i ;
 
 	if( type == 0 ){
 		for( i = 0 ; i < size ; i++){
-
 			do{
 				data = fgetc(in) ;
 			}while( data < 32 || data > 126) ;
@@ -240,9 +234,7 @@ void createFileThread::run()
 		}
 	}else{
 		for( i = 0 ; i < size ; i++){
-
 			data = fgetc(in) ;
-
 			fputc(data,out) ;
 		}
 	}
@@ -270,23 +262,18 @@ void volumePropertiesThread::run()
 	z = z + path + QString("\"");
 
 	QProcess p ;
-
 	p.start( z ) ;
-
 	p.waitForFinished() ;
-
+	
 	QByteArray t("\n") ;
-
 	QByteArray r = p.readAllStandardOutput() ;
 
 	int start = r.length() - r.indexOf(t) - 2 ;
 
 	p.close();
 
-	QString exe = QString("df -PTh ")  ;
-
-	p.start(exe);
-
+	p.start("df -PTh ");
+	
 	p.waitForFinished() ;
 
 	QStringList df = QString(p.readAllStandardOutput()).split("\n").filter(mpoint) ;

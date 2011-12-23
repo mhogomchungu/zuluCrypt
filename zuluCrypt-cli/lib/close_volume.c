@@ -5,7 +5,7 @@
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
+ *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
  * 
  *  This program is distributed in the hope that it will be useful,
@@ -22,11 +22,8 @@
 int close_volume( const char * map, char ** mount_point ) 
 {		
 	int i = unmount_volume( map, mount_point ) ;
-	
 	if( i != 0 )
-		return i ;	
-	
-	close_mapper( map ) ;		
-	
+		return i ;
+	close_mapper( map ) ;
 	return 0 ;
 }

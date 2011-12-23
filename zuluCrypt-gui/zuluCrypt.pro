@@ -44,8 +44,7 @@ FORMS    += zulucrypt.ui password.ui \
     luksdeletekey.ui \
     createpartition.ui \
     createfile.ui \
-    createkeyfile.ui \
-    rngselector.ui
+    createkeyfile.ui
 
 TRANSLATIONS = 
 

@@ -9,7 +9,6 @@ set (UI_FILES createfile.ui
 		createkeyfile.ui
 		luksaddkey.ui
 		openpartition.ui
-		rngselector.ui
 )
 
 set( MOC_FILES createfile.h

@@ -5,7 +5,7 @@
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
+ *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
  * 
  *  This program is distributed in the hope that it will be useful,
@@ -32,46 +32,34 @@ int addkey( int argn,char * device,char * keyType1,char * existingKey,char * key
 	char * d = NULL ;
 	char * e = NULL ;
 	
-	if(  stat( device,&st1 ) != 0  ){
-		
+	if(  stat( device,&st1 ) != 0  ){		
 		status = 4 ;
 		goto out ;
 	}
 	
 	e = empty_slots( device ) ;
 	
-	if( e == NULL ){
-		
+	if( e == NULL ){		
 		status = 2 ;
 		goto out ;		
 	}
 	
 	d = strchr( e, '0' ) ;
 	
-	if( d == NULL ){
-		
+	if( d == NULL ){		
 		status = 10 ;
 		goto out ;		
 	}
 	
 	if (  argn == 3  ){		
-		
-		printf( "Enter an existing passphrase: " ) ;
-		
-		p = get_passphrase(  ) ;
-		
-		printf( "\n" ) ;				
-		
-		printf( "Enter the new passphrase: " ) ;
-		
-		q = get_passphrase(  ) ;
-		
-		printf( "\n" ) ;	
-		
-		printf( "Re enter the new passphrase: " ) ;
-		
-		n = get_passphrase(  ) ;
-		
+		printf( "Enter an existing passphrase: " ) ;		
+		p = get_passphrase(  ) ;		
+		printf( "\n" ) ;		
+		printf( "Enter the new passphrase: " ) ;		
+		q = get_passphrase(  ) ;		
+		printf( "\n" ) ;		
+		printf( "Re enter the new passphrase: " ) ;		
+		n = get_passphrase(  ) ;		
 		printf( "\n" ) ;
 		
 		if(  StringCompare(  q , n  ) != 0  )			
@@ -83,26 +71,18 @@ int addkey( int argn,char * device,char * keyType1,char * existingKey,char * key
 		StringDelete(  q  ) ;	
 		StringDelete(  n  ) ;
 		
-	}else if(  argn == 7  ){			
-		
+	}else if(  argn == 7  ){		
 		if (  strcmp(  keyType1, "-f"  ) == 0  ){			
-			
-			if(  stat(  existingKey, &st1 ) == 0  ) {
-				
-				c = (  char * ) malloc (  sizeof( char ) * ( st1.st_size + 1  ) ) ;
-				
+			if(  stat(  existingKey, &st1 ) == 0  ) {				
+				c = (  char * ) malloc (  sizeof( char ) * ( st1.st_size + 1  ) ) ;				
 				if(  c == NULL  ){
 					status = 9 ;
 					goto out ;
 				}
-				*(  c + st1.st_size  ) = '\0' ;
-				
-				z = open( existingKey, O_RDONLY  ) ;
-				
-				read(  z, c, st1.st_size  ) ;
-				
+				*(  c + st1.st_size  ) = '\0' ;				
+				z = open( existingKey, O_RDONLY  ) ;				
+				read(  z, c, st1.st_size  ) ;				
 				close(  z  ) ;				
-				
 			}else{
 				status = 8 ;
 				goto out ;
@@ -110,24 +90,16 @@ int addkey( int argn,char * device,char * keyType1,char * existingKey,char * key
 		}
 		
 		if (  strcmp(  keyType2, "-f"  ) == 0 ){			
-			
-			if(  stat(  newKey, &st1 ) == 0  ) {
-				
-				d = (  char * ) malloc (  sizeof( char ) * (  st1.st_size + 1  ) ) ;
-				
+			if(  stat(  newKey, &st1 ) == 0  ) {				
+				d = (  char * ) malloc (  sizeof( char ) * (  st1.st_size + 1  ) ) ;				
 				if(  d == NULL  ){
 					status = 9 ;
 					goto out ;
-				}
-				
-				*(  d + st1.st_size  ) = '\0' ;
-				
-				z = open( newKey, O_RDONLY  ) ;
-				
-				read(  z, d, st1.st_size  ) ;
-				
+				}				
+				*(  d + st1.st_size  ) = '\0' ;				
+				z = open( newKey, O_RDONLY  ) ;				
+				read(  z, d, st1.st_size  ) ;				
 				close(  z  ) ;				
-				
 			}else{
 				status = 8 ;
 				goto out ;
@@ -135,21 +107,17 @@ int addkey( int argn,char * device,char * keyType1,char * existingKey,char * key
 		}
 		
 		if (  strcmp( keyType1,"-f" ) == 0 && strcmp( keyType2,"-f" ) == 0  ){
-			
-			status = add_key(  device, c, d ) ;
-			
+			status = add_key(  device, c, d ) ;			
 			free(  c  ) ;
-			free(  d  ) ;
-			
+			free(  d  ) ;			
 		}else if ( strcmp( keyType1,"-p" ) == 0 && strcmp( keyType2,"-p" ) == 0  ){
 			
-			status = add_key( device, existingKey, newKey  ) ;
+			status = add_key( device, existingKey, newKey  ) ;	
 			
 		}else if ( strcmp( keyType1,"-p" ) == 0 && strcmp( keyType2,"-f" ) == 0  ){
 			
-			status = add_key(  device, existingKey, d ) ;
-			
-			free(  d  ) ;
+			status = add_key(  device, existingKey, d ) ;			
+			free(  d  ) ;	
 			
 		}else if ( strcmp( keyType1,"-f" ) == 0 && strcmp( keyType2,"-p" ) == 0  ){			
 			
@@ -161,12 +129,9 @@ int addkey( int argn,char * device,char * keyType1,char * existingKey,char * key
 		}
 	}else{
 		status = 6 ;		
-	}
-	
-	out:
-	
-	free( e ) ;
-	
+	}	
+	out:	
+	free( e ) ;	
 	switch (  status  ){
 		case 0 : printf( "SUCCESS: key added successfully\n" );
 		break ;		

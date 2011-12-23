@@ -1,23 +1,21 @@
 /*
  * 
  *  Copyright (c) 2011
- *  name : mhogo mchungu 
+ *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
+ *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-
 
 #include "createkeyfile.h"
 #include "ui_createkeyfile.h"
@@ -35,13 +33,10 @@ createkeyfile::createkeyfile(QWidget *parent) :
     ui(new Ui::createkeyfile)
 {
 	ui->setupUi(this);
-
 	ui->pbOpenFolder->setIcon(QIcon(QString(":/folder.png")));
-
 	connect(ui->pbCreate,SIGNAL(clicked()),this,SLOT(pbCreate())) ;
 	connect(ui->pbOpenFolder,SIGNAL(clicked()),this,SLOT(pbOpenFolder())) ;
 	connect(ui->pbCancel,SIGNAL(clicked()),this,SLOT(pbCancel())) ;
-
 	rng = NULL ;
 }
 
@@ -64,7 +59,6 @@ void createkeyfile::pbCancel()
 		HideUI() ;
 		return ;
 	}
-
 	rng->terminate();  ;
 	rng = NULL ;
 }
@@ -115,7 +109,6 @@ void createkeyfile::pbCreate()
 		m.exec() ;
 		return ;
 	}
-
 	path = ui->lineEditPath->text() ;
 
 	if(path.mid(0,2) == QString("~/"))
@@ -129,7 +122,6 @@ void createkeyfile::pbCreate()
 		m.exec() ;
 		return ;
 	}
-
 	QString keyfile = path + QString("/") + ui->lineEditFileName->text() ;
 
 	QFile o( keyfile ) ;
@@ -140,7 +132,6 @@ void createkeyfile::pbCreate()
 		m.exec() ;
 		return ;
 	}
-
 	o.open(QIODevice::WriteOnly) ;
 
 	if( o.putChar('X') == false ){
@@ -149,15 +140,11 @@ void createkeyfile::pbCreate()
 		m.exec() ;
 		return ;
 	}
-
 	o.close();
-
+	
 	rng = new createFileThread(ui->comboBoxRNG->currentText(),keyfile,64,0) ;
-
 	connect(rng,SIGNAL(finished()),this,SLOT(threadfinished()));
-
 	disableAll() ;
-
 	rng->start();
 }
 

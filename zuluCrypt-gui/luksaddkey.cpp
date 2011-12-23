@@ -1,22 +1,21 @@
 /*
  * 
  *  Copyright (c) 2011
- *  name : mhogo mchungu 
+ *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
+ *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 
 #include "ui_luksaddkey.h"
 #include "luksaddkey.h"
@@ -38,11 +37,8 @@ luksaddkeyUI::luksaddkeyUI(QWidget *parent) :
 	QDialog(parent)
 {
 	ui = new Ui::luksaddkeyUI() ;
-
 	ui->setupUi(this);
-
 	ui->pushButtonOpenPartition->setIcon(QIcon(QString(":/partition.png")));
-
 	ui->pushButtonOpenFile->setIcon(QIcon(QString(":/file.png")));
 
 	lakt = NULL ;
@@ -64,47 +60,38 @@ luksaddkeyUI::luksaddkeyUI(QWidget *parent) :
 		SIGNAL(clicked()),
 		this,
 		SLOT(pbOpenFile())) ;
-
 	connect(ui->pushButtonOpenExistingKeyFile,
 		SIGNAL(clicked()),
 		this,
 		SLOT(pbOpenExisitingKeyFile())) ;
-
 	connect(ui->pushButtonOpenNewKeyFile,
 		(SIGNAL(clicked())),
 		this,
 		SLOT(pbOpenNewKeyFile())) ;
-
 	connect(ui->pushButtonOpenPartition,
 		SIGNAL(clicked()),
 		this,
 		SLOT(pbOpenPartition(void))) ;
-
 	connect(ui->pushButtonAdd,
 		SIGNAL(clicked()),
 		this,
 		SLOT(pbAdd())) ;
-
 	connect(ui->pushButtonCancel,
 		SIGNAL(clicked()),
 		this,
 		SLOT(pbCancel())) ;
-
 	connect(ui->radioButtonNewPassphrase,
 		SIGNAL(toggled(bool)),
 		this,
 		SLOT(rbNewPassphrase())) ;
-
 	connect(ui->radioButtonNewPassphraseFromFile,
 		SIGNAL(toggled(bool)),
 		this,
 		SLOT(rbNewPassphraseFromFile())) ;
-
 	connect(ui->radioButtonPassphraseinVolume,
 		SIGNAL(toggled(bool)),
 		this,
 		SLOT(rbExistingPassphrase())) ;
-
 	connect(ui->radioButtonPassphraseInVolumeFromFile,
 		SIGNAL(toggled(bool)),
 		this,
@@ -116,7 +103,6 @@ luksaddkeyUI::luksaddkeyUI(QWidget *parent) :
 void luksaddkeyUI::closeEvent(QCloseEvent *e)
 {
 	e->ignore();
-
 	if( lakt == NULL )
 		pbCancel();
 }
@@ -124,7 +110,6 @@ void luksaddkeyUI::closeEvent(QCloseEvent *e)
 void luksaddkeyUI::partitionEntry(QString partition)
 {
 	enableAll();
-
 	ui->textEditPathToVolume->setText(partition);
 	ui->textEditExistingPassphrase->clear();
 	ui->textEditPassphraseToAdd->clear();
@@ -143,7 +128,6 @@ void luksaddkeyUI::HideUI()
 void luksaddkeyUI::ShowUI()
 {
 	enableAll();
-
 	ui->textEditExistingPassphrase->clear();
 	ui->textEditPassphraseToAdd->clear();
 	ui->textEditPathToVolume->clear();
@@ -185,7 +169,6 @@ void luksaddkeyUI::pbOpenFile(void)
 
 void luksaddkeyUI::pbOpenPartition(void)
 {
-	//HideUI() ;
 	emit pbOpenPartitionClicked() ;
 }
 
@@ -232,7 +215,6 @@ void luksaddkeyUI::rbNewPassphraseFromFile()
 void luksaddkeyUI::pbAdd(void)
 {
 	disableAll();
-
 	volumePath = ui->textEditPathToVolume->text() ;
 	QString ExistingKey = ui->textEditExistingPassphrase->text() ;
 	QString NewKey = ui->textEditPassphraseToAdd->text() ;
@@ -254,7 +236,6 @@ void luksaddkeyUI::pbAdd(void)
 		enableAll();
 		return ;
 	}
-
 	if( volumePath.mid(0,2) == QString("~/"))
 		volumePath = QDir::homePath() + QString("/") + volumePath.mid(2) ;
 
@@ -266,7 +247,6 @@ void luksaddkeyUI::pbAdd(void)
 		enableAll();
 		return ;
 	}
-
 	if ( ExistingKey.isEmpty() == true ){
 		m.setWindowTitle(tr("ERROR!"));
 		m.setText(tr("existing passphrase field is empth"));
@@ -293,7 +273,6 @@ void luksaddkeyUI::pbAdd(void)
 			return ;
 		}
 	}
-
 	volumePath = volumePath.replace("\"","\"\"\"") ;
 
 	if ( zuluCrypt::isLuks(volumePath) == false ){
@@ -304,8 +283,8 @@ void luksaddkeyUI::pbAdd(void)
 		enableAll();
 		return ;
 	}
-
 	QStringList l = zuluCrypt::luksEmptySlots(volumePath) ;
+	
 	if( l.at(0) == l.at(1)){
 		m.setWindowTitle(tr("ERROR!"));
 		m.setText(tr("can not add any more keys, all slots are occupied"));
@@ -314,7 +293,6 @@ void luksaddkeyUI::pbAdd(void)
 		enableAll();
 		return ;
 	}
-
 	if(ui->radioButtonNewPassphraseFromFile->isChecked() == true){
 
 		if( NewKey.mid(0,2) == QString("~/"))
@@ -329,7 +307,6 @@ void luksaddkeyUI::pbAdd(void)
 			return ;
 		}
 	}
-
 	if(ui->radioButtonPassphraseInVolumeFromFile->isChecked() == true){
 
 		if( ExistingKey.mid(0,2) == QString("~/"))
@@ -344,7 +321,6 @@ void luksaddkeyUI::pbAdd(void)
 			return ;
 		}
 	}
-
 	QString existingPassType ;
 	QString newPassType ;
 
@@ -354,8 +330,7 @@ void luksaddkeyUI::pbAdd(void)
 		existingPassType = QString(" -p ") ;
 
 	ExistingKey = ExistingKey.replace("\"","\"\"\"") ;
-
-
+	
 	if ( y == true)
 		newPassType = QString(" -f ") ;
 	else
@@ -374,7 +349,6 @@ void luksaddkeyUI::pbAdd(void)
 		SIGNAL(finished(runInThread *,int)),
 		this,
 		SLOT(threadfinished(runInThread *,int))) ;
-
 	lakt->start();
 }
 
@@ -389,9 +363,7 @@ void luksaddkeyUI::threadfinished(runInThread * lakt,int status)
 	QStringList x ;
 
 	lakt->wait() ;
-
 	delete lakt ;
-
 	lakt = NULL ;
 
 	switch( status ){
@@ -403,7 +375,6 @@ void luksaddkeyUI::threadfinished(runInThread * lakt,int status)
 			m.setText(ss);
 			m.addButton(QMessageBox::Ok);
 			m.exec() ;
-			enableAll();
 			this->hide();
 			return ;
 			break ;
@@ -412,31 +383,26 @@ void luksaddkeyUI::threadfinished(runInThread * lakt,int status)
 			m.setText(tr("presented key does not match any key in the volume"));
 			m.addButton(QMessageBox::Ok);
 			m.exec() ;
-			enableAll();
 			break ;
 		case 2 :
 			m.setWindowTitle(tr("ERROR!"));
 			m.setText(tr("could not open luks device"));
 			m.addButton(QMessageBox::Ok);
 			m.exec() ;
-			enableAll();
 			break ;
-
 		case 9 :
 			m.setWindowTitle(tr("ERROR!"));
 			m.setText(tr("could not open key file for reading, run out of memory"));
 			m.addButton(QMessageBox::Ok);
 			m.exec() ;
-			enableAll();
 			break ;
-
 		default:
 			m.setWindowTitle(tr("ERROR!"));
 			m.setText(tr("un unrecognized error has occured, key not added"));
 			m.addButton(QMessageBox::Ok);
 			m.exec() ;
-			enableAll();
 	}
+	enableAll();
 }
 
 void luksaddkeyUI::disableAll()

@@ -1,22 +1,21 @@
 /*
  * 
  *  Copyright (c) 2011
- *  name : mhogo mchungu 
+ *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
+ *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 
 #ifndef ZULUCRYPT_H
 #define ZULUCRYPT_H
@@ -54,20 +53,13 @@ namespace Ui {
 class zuluCrypt : public QMainWindow
 {
 	Q_OBJECT
-
 public:
 	explicit zuluCrypt(QWidget *parent = 0);
-
 	void removeRowFromTable(int row) ;
-
 	static QStringList luksEmptySlots(QString volumePath) ;
-
 	static bool isLuks(QString volumePath) ;
-
 	static QString mtab(QString) ;
-
 	~zuluCrypt();
-
 signals:
 	void  showManageFavorites(void) ;
 	void  favClickedVolume(QString volume_path,QString mount_point_path);
@@ -75,137 +67,71 @@ signals:
 	void  luksAddKeyUI(QString volumePath) ;
 	void  luksDeleteKeyUI(QString passphrase) ;
 	void  redoOpen(bool boolOpenReadOnly,bool boolKeyFromFile,QString volumePath, QString mountPointPath) ;
-
 private slots :
-
 	void info(void) ;
-
 	void createEncryptedpartitionUI(void) ;
-
 	void luksAddKeyContextMenu(void) ;
-
 	void luksDeleteKeyContextMenu() ;
-
 	void aboutMenuOption(void) ;
-
 	void close( void ) ;
-
 	void closeAll(QTableWidgetItem *,int) ;
-
 	void cellClicked( QTableWidgetItem * item) ;
-
 	void volume_property(void) ;
-
 	void UIMessage(QString title,QString message) ;
-
 	void fonts(void) ;
-
 	void addToFavorite(void) ;
-
 	void readFavorites(void) ;
-
 	void favClicked(QAction *e) ;
-
 	void favAboutToHide(void) ;
-
 	void trayClicked(QSystemTrayIcon::ActivationReason e) ;
-
 	void trayProperty(void) ;
-
 	void addItemToTable(QString pathToVolume, QString pathToMountPoint);
-
 	void volumePropertyThreadFinished(void) ;
-
 	void closeApplication(void) ;
-
 	void sovfinished(void) ;
-
 	void minimize(void) ;
-
 	void minimizeToTray(void);
-
 	void closeAllVolumes(void) ;
-
 	void deleteThread() ;
-
 	void closeThreadFinished(runInThread *,int) ;
-
 	void deleteAddItemToTableThread(addItemToTableThread *);
-
 	void menuKeyPressed(void) ;
-
 	void addItemToTableByVolume(QString volume_path);
-
 private:
-
 	void setupConnections(void) ;
-
 	void setupUIElements(void) ;
-
 	void closeEvent(QCloseEvent *) ;
-
 	void setUserFont(QFont) ;
-
 	void selectRow(int,bool) ;
-
 	Ui::zuluCrypt *ui;
-
 	password_Dialog *passwordDialogUI ;
-
 	openpartition *openPartitionUI ;
-
 	openpartition *NonSystemPartitions ;
-
 	openpartition *luksopenPartitionUI ;
-
 	createpartition *createpartitionUI ;
-
 	luksaddkeyUI *addKeyUI ;
-
 	luksdeletekey *deleteKeyUI ;
-
 	createfile *createFile ;
-
 	createkeyfile *createkeyFile ;
-
 	QString volume_path,mount_point_path, pass_phrase,mode ;
-
 	QMenu *m  ;
-
 	QMenu *trayMenu ;
-
 	QTableWidgetItem* item ;
-
 	int item_count ;
-
 	QSystemTrayIcon *trayIcon ;
-
 	QList<QMenu *> menulist ;
-
 	volumePropertiesThread *vpt ;
-
 	QString volumeProperty ;
-
 	QMessageBox *mp ;
-
 	startupupdateopenedvolumes *sov ;
-
 	closeAllVolumesThread *cavt ;
-
 	ClickedRowHighlight * crh ;
-
 	QString cstString ;
-
 	int status ;
-
 	int selectedRow ;
-
 	QMutex mutex ;
-
 	QMessageBox mpv ;
-
 	QAction * rca ;
-
 	bool keyPressed ;
 };
 

@@ -5,7 +5,7 @@
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
+ *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
  * 
  *  This program is distributed in the hope that it will be useful,
@@ -36,8 +36,7 @@ int create_volumes( int argn,char * device,char * fs,char * mode,char * keyType,
 	}else if(  strncmp(  device,"/dev/",5 ) != 0 && xt.st_size < 3145728  ){
 		st = 9 ;
 		goto out ;		
-	}	
-	
+	}		
 	if( stat( ZULUCRYPTmkfs, &xt ) != 0  ){		
 		st = 11 ;
 		goto out ;		
@@ -54,38 +53,25 @@ int create_volumes( int argn,char * device,char * fs,char * mode,char * keyType,
 	free (  c  ) ;
 	
 	if(  argn == 5  ){
-		printf( "ARE YOU SURE YOU WANT TO CREATE/OVERWRITE: \"%s\" ? Type \"Y\" if you are\n",device );
-		
-		Y = getchar(  ) ;
-		
+		printf( "ARE YOU SURE YOU WANT TO CREATE/OVERWRITE: \"%s\" ? Type \"Y\" if you are\n",device );		
+		Y = getchar() ;		
 		if (  Y != 'Y' )
 			st = 5 ;
 		else{			
-			getchar(  );    //get rid of "\n" still in stdin buffer	
-			
-			printf( "Enter passphrase: " ) ;
-			
-			p = get_passphrase(  );
-			
-			printf( "\nRe enter passphrase: " ) ;
-			
-			q = get_passphrase(  );	
-			
+			getchar();    //get rid of "\n" still in stdin buffer				
+			printf( "Enter passphrase: " ) ;			
+			p = get_passphrase(  );			
+			printf( "\nRe enter passphrase: " ) ;			
+			q = get_passphrase(  );				
 			printf( "\n" ) ;			
-			
-			if(  StringCompare(  p , q  ) != 0  ){
-				
+			if(  StringCompare(  p , q  ) != 0  ){				
 				st = 7 ;
-			}else{
-				
-				if( strcmp( mode,"luks" ) == 0  ){
-					
+			}else{				
+				if( strcmp( mode,"luks" ) == 0  ){					
 					printf( "enter 1 to use \"/dev/random\" device when generating the key  (  more secure but slower  )\n" ) ;
 					printf( "enter 2 to use \"/dev/urandom\" device when generating the key (  secure enought and faster  )\n" ) ;
-					
-					Y = getchar(  ) ;
-					getchar(  ) ;
-					
+					Y = getchar() ;
+					getchar() ;					
 					if(  Y == '1' )
 						st = create_volume( device,fs,mode,StringContent(  p  ),"/dev/random" );
 					else if (  Y == '2'  )
@@ -100,41 +86,29 @@ int create_volumes( int argn,char * device,char * fs,char * mode,char * keyType,
 			}
 			StringDelete(  p  ) ;
 			StringDelete(  q  ) ;				
-		}
-		
-	}else if (  argn == 8  ){
-		
+		}		
+	}else if (  argn == 8  ){		
 		if(  strcmp( rng,"/dev/random" ) != 0 )
 			if(  strcmp( rng,"/dev/urandom" ) != 0 ){
 				st = 2 ;
 				goto out ;
-			}
-			
+			}			
 			if(  strcmp(  keyType, "-p"  ) == 0  ) {			
 				
 				st = create_volume( device,fs,mode,pass,rng ) ;			
 				
-			}else if(  strcmp(  keyType, "-f"  ) == 0  ) {
-				
-				if(  stat(  pass, &xt ) == 0  ) {
-					
-					c = (  char * ) malloc (  sizeof( char ) * (  xt.st_size + 1  )  ) ;
-					
+			}else if(  strcmp(  keyType, "-f"  ) == 0  ) {				
+				if(  stat(  pass, &xt ) == 0  ) {					
+					c = (  char * ) malloc (  sizeof( char ) * (  xt.st_size + 1  )  ) ;					
 					if(  c == NULL  ){
 						st = 6 ;
 						goto out ;
-					}
-					
-					*(  c + xt.st_size   ) = '\0' ;
-					
-					z = open( pass , O_RDONLY  ) ;
-					
-					read(  z, c, xt.st_size  ) ;
-					
-					close(  z  ) ;				
-					
-					st = create_volume( device,fs,mode,c,rng ) ;
-					
+					}					
+					*(  c + xt.st_size   ) = '\0' ;					
+					z = open( pass , O_RDONLY  ) ;					
+					read(  z, c, xt.st_size  ) ;					
+					close(  z  ) ;	
+					st = create_volume( device,fs,mode,c,rng ) ;					
 					free(  c  ) ;
 				}else{
 					st = 8 ;
@@ -144,10 +118,8 @@ int create_volumes( int argn,char * device,char * fs,char * mode,char * keyType,
 			}
 	}else{
 		st = 4 ;			
-	}
-	
-	out:
-	
+	}	
+	out:	
 	switch (  st  ){
 		case 0 : printf( "SUCCESS: volume created successfully\n" ) ;
 		break  ;

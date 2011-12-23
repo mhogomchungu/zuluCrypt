@@ -5,7 +5,7 @@
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
+ *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
  * 
  *  This program is distributed in the hope that it will be useful,
@@ -22,15 +22,12 @@
 int open_volume( const char * dev,const char * map,const char * m_point,uid_t id,const char * mode,const char * pass,const char * source ) 
 {
 	struct stat st ;
-	
 	int h ;
-	
 	int luks;
 	
 	if( stat( dev , &st ) != 0 ){		 
 		return 3 ;
 	}
-	
 	if( strcmp( source,"-f" ) == 0 )
 		if( stat( pass, &st ) != 0 )
 			return 6 ;
@@ -55,16 +52,11 @@ int open_volume( const char * dev,const char * map,const char * m_point,uid_t id
 		
 	if( h == 4 && luks == 1 ){
 		/*
-		 * udisk/kde device manager seem to crash when mount/unmount happen too quickly, give it room to breath.
-		 * 
-		 * sleep( 2 ) ;
+		 * try to reopen a plain volume in legacy/compatibility mode
 		 */
-			
-		open_plain( dev,map,mode,source,pass,"cbc-plain" ) ;		
-			
+		open_plain( dev,map,mode,source,pass,"cbc-plain" ) ;
 		h = mount_volume( map,m_point,mode,id ) ;
 	}
-		
 	return h ;		
 }
 

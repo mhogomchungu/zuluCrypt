@@ -1,22 +1,21 @@
 /*
  * 
  *  Copyright (c) 2011
- *  name : mhogo mchungu 
+ *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
+ *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 
 #include "password_dialog.h"
 #include "zulucrypt.h"
@@ -35,41 +34,33 @@ password_Dialog::password_Dialog(QWidget *parent ) : QDialog(parent)
 	ui = new Ui::PasswordDialog() ;
 	ui->setupUi(this);
 	this->setFixedSize(this->size());
-
 	ui->PushButtonMountPointPath->setIcon(QIcon(QString(":/folder.png")));
-
 	ovt = NULL ;
 
 	connect(ui->PushButtonCancel,
 		SIGNAL(clicked()),
 		this,
 		SLOT(HideUI())) ;
-
 	connect(ui->PushButtonOpen,
 		SIGNAL(clicked()),
 		this,
 		SLOT(buttonOpenClicked())) ;
-
 	connect(ui->PushButtonMountPointPath,
 		SIGNAL(clicked()),
 		this,
 		SLOT(mount_point()));
-
 	connect(ui->PushButtonVolumePath,
 		SIGNAL(clicked()),
 		this,
 		SLOT(file_path())) ;
-
 	connect(ui->pushButtonPassPhraseFromFile,
 		SIGNAL(clicked()),
 		this,
 		SLOT(clickedPassPhraseFromFileButton()));
-
 	connect(ui->radioButtonPassPhraseFromFile,
 		SIGNAL(clicked()),
 		this,
 		SLOT(passphraseFromFileOption())) ;
-
 	connect(ui->radioButtonPassPhrase,
 		SIGNAL(clicked()),
 		this,
@@ -79,7 +70,6 @@ password_Dialog::password_Dialog(QWidget *parent ) : QDialog(parent)
 void password_Dialog::closeEvent(QCloseEvent *e)
 {
 	e->ignore();
-
 	if( ovt == NULL )
 		HideUI() ;
 }
@@ -178,6 +168,7 @@ void password_Dialog::ShowUI()
 void password_Dialog::HideUI()
 {	
 	this->hide();
+	enableAll();
 }
 
 void password_Dialog::buttonOpenClicked(void )
@@ -243,11 +234,9 @@ void password_Dialog::buttonOpenClicked(void )
 			m.setText(tr("key file field is empty"));
 		else
 			m.setText(tr("passphrase field is empty"));
-
 		m.exec() ;
 		return ;
 	}	
-
 	if(ui->radioButtonPassPhraseFromFile->isChecked() == true){
 
 		if( passPhraseField.mid(0,2) == QString("~/"))
@@ -293,14 +282,11 @@ void password_Dialog::buttonOpenClicked(void )
 			QString(" \"") + passPhraseField + QString("\"");
 
 	ovt = new runInThread(exe) ;
-
 	connect(ovt,
 		SIGNAL(finished(runInThread *,int)),
 		this,
 		SLOT(threadfinished(runInThread *,int))) ;
-
 	disableAll();
-
 	ovt->start();
 }
 
@@ -356,19 +342,15 @@ void password_Dialog::UIMessage(QString title, QString message)
 }
 void password_Dialog::threadfinished(runInThread *,int status)
 {
-	enableAll();
-
 	ovt->wait() ;
-
 	delete ovt ;
-
 	ovt = NULL ;
 
+	if( status == 0 ){
+		emit addItemToTable(volumePath);
+		return ;
+	}	
 	switch ( status ){
-		case 0 :			
-			emit addItemToTable(volumePath);
-			//HideUI() ;
-			break ;
 		case 1 : UIMessage(tr("ERROR"),tr("No free loop device to use.")) ;
 			break ;
 		case 2 : UIMessage(tr("ERROR"),tr("there seem to be an open volume accociated with given path."));
@@ -377,8 +359,6 @@ void password_Dialog::threadfinished(runInThread *,int status)
 			break ;
 		case 4 :
 			UIMessage(tr("ERROR"),tr("wrong passphrase."));
-			ui->PassPhraseField->clear();
-			ui->PassPhraseField->setFocus();
 			break ;
 		case 5 : UIMessage(tr("ERROR"),tr("mount point address is already taken by a file or folder")) ;
 			break ;
@@ -386,7 +366,12 @@ void password_Dialog::threadfinished(runInThread *,int status)
 			break ;		
 		case 10 : UIMessage(tr("ERROR"),tr("\",\" (comma) is not a valid mount point"));
 			break ;
-		default :UIMessage(tr("ERROR"),tr("un unknown error has occured, volume not opened"));
+		default :UIMessage(tr("ERROR"),tr("un unknown error has occured, volume not opened"));		
+	}
+	enableAll();
+	if( status == 4 ){
+		ui->PassPhraseField->clear();
+		ui->PassPhraseField->setFocus();
 	}
 }
 

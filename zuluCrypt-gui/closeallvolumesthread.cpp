@@ -1,11 +1,11 @@
 /*
- *
+ * 
  *  Copyright (c) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
+ *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
@@ -31,42 +31,27 @@ closeAllVolumesThread::closeAllVolumesThread(QTableWidget *t)
 void closeAllVolumesThread::run()
 {		
 	table->setEnabled(false);
-
 	int i = table->rowCount() ;
-
 	int j = -1 ;
-
 	QTableWidgetItem * tableItems[ i ] ;
-
 	QTableWidgetItem * deviceItem ;
 
 	while( ++j < i )
 		tableItems[ j ] = table->item(j,0) ;
 
 	QProcess p ;
-
 	QString exe ;
-
 	QString device ;
 
 	for( j = 0 ; j < i ; j++ ){
-
 		deviceItem = tableItems[ j ] ;
-
 		device = deviceItem->text().replace("\"","\"\"\"") ;
-
 		exe = QString(ZULUCRYPTzuluCrypt) + QString(" close ") + QString("\"") + \
 			       device  + QString("\"") ;
-
 		p.start( exe );
-
 		p.waitForFinished() ;
-
 		emit close(deviceItem,p.exitCode()) ;
-
 		p.close();
-
-		//sleep(1) ;
 	}
 	table->setEnabled(true);
 }
