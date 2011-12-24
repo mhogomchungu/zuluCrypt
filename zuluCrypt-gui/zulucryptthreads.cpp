@@ -297,39 +297,39 @@ void volumePropertiesThread::run()
 	j = i - 1 ;
 	while ( c.at(i++) != ' ') { ; }
 
-	QString y = QString(" fs:  ") + QString(c.mid(j,i - j)) ;
+	QString y = QString(" fs=\"") + QString(c.mid(j,i - j)) ;
 
 	while ( c.at(i++) == ' ') { ; }
 	j = i - 1 ;
 	while ( c.at(i++) != ' ') { ; }
 
-	y = y + QString("\n size:  ") + QString(c.mid(j,i - j)) ;
+	y = y + QString("\"\n size=\"") + QString(c.mid(j,i - j)) ;
 
 	while ( c.at(i++) == ' ') { ; }
 	j = i - 1 ;
 	while ( c.at(i++) != ' ') { ; }
 
-	y = y + QString("\n used:  ") + QString(c.mid(j,i - j)) ;
+	y = y + QString("\"\n used=\"") + QString(c.mid(j,i - j)) ;
 
 	while ( c.at(i++) == ' ') { ; }
 	j = i - 1 ;
 	while ( c.at(i++) != ' ') { ; }
 
-	y = y + QString("\n available:  ") + QString(c.mid(j,i - j)) ;
+	y = y + QString("\"\n available=\"") + QString(c.mid(j,i - j)) ;
 
 	while ( c.at(i++) == ' ') { ; }
 	j = i - 1 ;
 	while ( c.at(i++) != ' ') { ; }
 
-	y = y + QString("\n used%:  ") + QString(c.mid(j,i - j)) ;
+	y = y + QString("\"\n used%=\"") + QString(c.mid(j,i - j)) ;
 
 	QStringList l = zuluCrypt::luksEmptySlots(path) ;
 
 	if ( zuluCrypt::isLuks(path) == true){
 		QString x =  QString(" ") ;
 		x = x + QString( r.right(start) ) ;
-		x = x + QString(" occupied key slots: ") ;
-		x = x + l.at(0) + QString(" / ") + l.at(1) + QString("\n");
+		x = x + QString(" occupied key slots=\"") ;
+		x = x + l.at(0) + QString(" / ") + l.at(1) + QString("\"\n");
 
 		*volProperty = x + y;
 	}else

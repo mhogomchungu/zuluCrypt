@@ -28,7 +28,10 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 	int st ;
 	
 	struct stat xt ;
-	
+
+	q = String( mapping_name ) ;
+	z = String( mount_point );
+
 	if ( argn != 5 && argn != 7  ){
 		st = 11 ;
 		goto eerr ;
@@ -39,7 +42,7 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 			goto eerr ;			
 		}
 	}	
-	if(  stat (  mount_point,&xt ) != 0 ){		
+	if( stat( mount_point,&xt ) == 0 ){		
 		st = 9 ;
 		goto eerr ;
 	}	
@@ -48,26 +51,18 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 			st = 10 ;
 			goto eerr ;	
 		}
-	}	
-	q = String(  mapping_name  ) ;
-	
+	}		
 	StringReplaceCharString( q,'_',"#;\"',\\`:!*?&$@(){}[]><|%~^ \n" ) ;
 	
-	StringPrepend( q,"/dev/mapper/zuluCrypt-" ) ;	
+	StringPrepend( q,"/dev/mapper/zuluCrypt-" ) ;
 
-	z = String( mount_point );
-	
-	if( StringEndsWithChar( z , '/' ) == -1 )
-		StringAppend( z,"/" );
-	
-	StringAppend( z,mapping_name );
-	
+	while( StringEndsWithChar( z , '/' ) == 0 )
+		StringRemoveRight( z,1 );
+		
 	if ( mkdir( StringContent( z ), S_IRWXU  ) != 0 ){		
-		StringAppend( z, ".zc") ;		
-		if ( mkdir( StringContent( z ),S_IRWXU  ) != 0 ){			
-			st = 5 ;			
-			goto eerr ;
-		}
+		st = 5 ;			
+		goto eerr ;
+	
 	}	
 	if (  argn == 5  ){
 		printf(  "Enter passphrase: "  ) ;		
@@ -90,7 +85,7 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 				break ;					
 			case 2 : printf( "ERROR: There seem to be an open volume accociated with given address\n" );
 				break ;				
-			case 3 : printf( "ERROR: No file exist on given path\n" ) ; 
+			case 3 : printf( "ERROR: No file or device exist on given path\n" ) ; 
 				break ;		
 			case 4 : printf( "ERROR: Wrong passphrase\n" );		
 				break ;			
@@ -104,7 +99,7 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 				break ;	
 			case 10 : printf( "ERROR: \",\" ( comma ) is not a valid mount point\n" );
 				break ;
-			case 9 :  printf( "ERROR: mount point path does not exist\n" );		
+			case 9 :  printf( "ERROR: mount point path is already taken\n" );		
 				break ;	
 			case 12 :  printf( "ERROR: could not get a lock on /etc/mtab~\n" );		
 				 break ;	
@@ -112,7 +107,7 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 				;
 		}
 	}	
-	StringDelete(  q  ) ;
-	StringDelete(  z  ) ;
+	StringDelete( q ) ;
+	StringDelete( z ) ;
 	return st ;
 }

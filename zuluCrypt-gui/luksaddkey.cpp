@@ -239,7 +239,7 @@ void luksaddkeyUI::pbAdd(void)
 	if( volumePath.mid(0,2) == QString("~/"))
 		volumePath = QDir::homePath() + QString("/") + volumePath.mid(2) ;
 
-	if ( QFile::exists(volumePath) == false ){
+	if ( QFile::exists(volumePath) == false && volumePath.mid(0,5) != QString("UUID=")){
 		m.setWindowTitle(tr("ERROR!"));
 		m.setText(tr("volume path field does not point to a file or device"));
 		m.addButton(QMessageBox::Ok);
@@ -396,6 +396,12 @@ void luksaddkeyUI::threadfinished(runInThread * lakt,int status)
 			m.addButton(QMessageBox::Ok);
 			m.exec() ;
 			break ;
+		case 11 :
+			m.setWindowTitle(tr("ERROR!"));
+			m.setText(tr("Could not find any partition with the presented UUID"));
+			m.addButton(QMessageBox::Ok);
+			m.exec() ;
+			break ;	
 		default:
 			m.setWindowTitle(tr("ERROR!"));
 			m.setText(tr("un unrecognized error has occured, key not added"));

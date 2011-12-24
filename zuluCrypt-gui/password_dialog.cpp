@@ -65,6 +65,10 @@ password_Dialog::password_Dialog(QWidget *parent ) : QDialog(parent)
 		SIGNAL(clicked()),
 		this,
 		SLOT(passphraseOption())) ;
+	connect(ui->OpenVolumePath,
+		SIGNAL(textChanged(QString)),
+		this,
+		SLOT(mountPointPath(QString)));
 }
 
 void password_Dialog::closeEvent(QCloseEvent *e)
@@ -77,7 +81,6 @@ void password_Dialog::closeEvent(QCloseEvent *e)
 void password_Dialog::ShowUI(QString volumePath, QString mount_point)
 {
 	ui->OpenVolumePath->setText(volumePath);
-	ui->MountPointPath->setText(mount_point);
 	ui->checkBoxReadOnly->setChecked( true );
 	ui->PassPhraseField->setFocus();
 	ui->PassPhraseField->clear();
@@ -88,13 +91,37 @@ void password_Dialog::ShowUI(QString volumePath, QString mount_point)
 	ui->pushButtonPassPhraseFromFile->setIcon(QIcon(QString(":/passphrase.png")));
 	ui->OpenVolumePath->setEnabled(false);
 	ui->PushButtonVolumePath->setEnabled(false);
-
+	ui->MountPointPath->setText(mount_point);
 	if( volumePath.left(5) == QString("/dev/") )
 		ui->PushButtonVolumePath->setIcon(QIcon(QString(":/partition.png")));
 	else
 		ui->PushButtonVolumePath->setIcon(QIcon(QString(":/file.png")));
 
 	this->show();
+}
+
+void password_Dialog::ShowUI()
+{
+	ui->OpenVolumePath->clear();
+	ui->OpenVolumePath->setFocus();
+	//ui->MountPointPath->setText(QDir::homePath());
+	ui->PassPhraseField->clear();
+	ui->radioButtonPassPhrase->setChecked(true);
+	ui->labelPassphrase->setText(tr("passphrase"));
+	ui->pushButtonPassPhraseFromFile->setEnabled(false);
+	ui->PassPhraseField->setEchoMode(QLineEdit::Password);
+	ui->checkBoxReadOnly->setChecked(true);
+	ui->OpenVolumePath->setEnabled(true);
+	ui->PushButtonVolumePath->setEnabled(true);
+	ui->PushButtonVolumePath->setIcon(QIcon(QString(":/file.png")));
+	ui->pushButtonPassPhraseFromFile->setIcon(QIcon(QString(":/passphrase.png")));
+	this->show();
+}
+
+void password_Dialog::mountPointPath(QString path)
+{
+	QString p = QDir::homePath() + QString("/") + path.split("/").last() ;
+	ui->MountPointPath->setText(p) ;
 }
 
 void password_Dialog::passphraseOption()
@@ -124,9 +151,10 @@ void password_Dialog::clickedPassPhraseFromFileButton()
 	ui->PassPhraseField->setText( Z );
 }
 
-void password_Dialog::clickedPartitionOption(QString option)
+void password_Dialog::clickedPartitionOption(QString dev)
 {
-	ShowUI(option,QDir::homePath()) ;
+	QString m_point = QDir::homePath() + QString("/") + dev.split("/").last();
+	ShowUI(dev,m_point) ;
 }
 
 void password_Dialog::mount_point(void )
@@ -145,24 +173,6 @@ void password_Dialog::file_path(void )
 						 QDir::homePath(),
 						 0);
 	ui->OpenVolumePath->setText( Z );
-}
-
-void password_Dialog::ShowUI()
-{
-	ui->OpenVolumePath->clear();
-	ui->OpenVolumePath->setFocus();
-	ui->MountPointPath->setText(QDir::homePath());	
-	ui->PassPhraseField->clear();
-	ui->radioButtonPassPhrase->setChecked(true);
-	ui->labelPassphrase->setText(tr("passphrase"));
-	ui->pushButtonPassPhraseFromFile->setEnabled(false);
-	ui->PassPhraseField->setEchoMode(QLineEdit::Password);
-	ui->checkBoxReadOnly->setChecked(true);
-	ui->OpenVolumePath->setEnabled(true);
-	ui->PushButtonVolumePath->setEnabled(true);
-	ui->PushButtonVolumePath->setIcon(QIcon(QString(":/file.png")));
-	ui->pushButtonPassPhraseFromFile->setIcon(QIcon(QString(":/passphrase.png")));
-	this->show();
 }
 
 void password_Dialog::HideUI()
@@ -192,37 +202,37 @@ void password_Dialog::buttonOpenClicked(void )
 		return ;
 	}
 
-	if( volumePath.mid(0,2) == QString("~/"))
-		volumePath = QDir::homePath() + QString("/") + volumePath.mid(2) ;
+	if( volumePath.mid(0,5) != QString("UUID=")){
+		if( volumePath.mid(0,2) == QString("~/"))
+			volumePath = QDir::homePath() + QString("/") + volumePath.mid(2) ;
 
-	QDir d(volumePath) ;
+		QDir d(volumePath) ;
 
-	volumePath = d.canonicalPath() ;
+		volumePath = d.canonicalPath() ;
 
-	if( QFile::exists( volumePath ) == false ){
-		m.setWindowTitle(tr("ERROR!"));
-		m.setText(tr("volume path field does not point to a file or partition"));
-		m.exec() ;
-		return ;
+		if( QFile::exists( volumePath ) == false ){
+			m.setWindowTitle(tr("ERROR!"));
+			m.setText(tr("No file or device exist on given path"));
+			m.exec() ;
+			return ;
+		}
 	}
-
 	if(mountPointPath.isEmpty() == true){
 		m.setWindowTitle(tr("ERROR!"));
 		m.setText(tr("mount point path field is empty"));
 		m.exec() ;
 		return ;
 	}
-
 	if( mountPointPath.mid(0,2) == QString("~/"))
 		mountPointPath = QDir::homePath() + QString("/") + mountPointPath.mid(2) ;
 
 	QDir dir(mountPointPath) ;
 
-	mountPointPath = dir.canonicalPath() ;
+	//mountPointPath = dir.canonicalPath() ;
 
-	if(dir.exists() == false){
+	if(dir.exists() == true){
 		m.setWindowTitle(tr("ERROR!"));
-		m.setText(tr("mount point folder does not exist"));
+		m.setText(tr("mount point path is already taken"));
 		m.exec() ;
 		return ;
 	}
@@ -347,7 +357,7 @@ void password_Dialog::threadfinished(runInThread *,int status)
 	ovt = NULL ;
 
 	if( status == 0 ){
-		emit addItemToTable(volumePath);
+		emit addItemToTable(volumePath,ui->MountPointPath->text());
 		return ;
 	}	
 	switch ( status ){
@@ -355,16 +365,20 @@ void password_Dialog::threadfinished(runInThread *,int status)
 			break ;
 		case 2 : UIMessage(tr("ERROR"),tr("there seem to be an open volume accociated with given path."));
 			break ;
-		case 3 : UIMessage(tr("ERROR"),tr("No file exist on given path")) ;
+		case 3 : UIMessage(tr("ERROR"),tr("No file or device exist on given path")) ;
 			break ;
 		case 4 :
 			UIMessage(tr("ERROR"),tr("wrong passphrase."));
 			break ;
 		case 5 : UIMessage(tr("ERROR"),tr("mount point address is already taken by a file or folder")) ;
 			break ;
-		case 8 : UIMessage(tr("ERROR"),tr("ERROR: failed to open volume")) ;
-			break ;		
+		case 8 : UIMessage(tr("ERROR"),tr("failed to open volume")) ;
+			break ;
+		case 9 : UIMessage(tr("ERROR"),tr("mount point path already exist")) ;
+			break ;	
 		case 10 : UIMessage(tr("ERROR"),tr("\",\" (comma) is not a valid mount point"));
+			break ;
+		case 11 : UIMessage(tr("ERROR"),tr("Could not find any partition with the presented UUID"));
 			break ;
 		default :UIMessage(tr("ERROR"),tr("un unknown error has occured, volume not opened"));		
 	}

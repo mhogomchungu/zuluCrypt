@@ -51,4 +51,5 @@ version 4.3.0
 version 4.3.1
 -- A bit more UI effects when opening and closing of volumes.
 -- Context menu on opened volumes can now be triggered with CTRL+M or or menu key for better keyboard only management of the tool
+-- Device addresses can be given in a form of "/dev/XYZN" or "UUID=bla-bla-bla".
 -- various fixes

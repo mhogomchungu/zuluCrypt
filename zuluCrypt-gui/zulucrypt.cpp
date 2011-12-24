@@ -267,7 +267,7 @@ QString zuluCrypt::mtab(QString entry)
 	mount_point.replace("\\012","\n") ;
 	mount_point.replace("\\134","\\") ;
 
-	return QString(mount_point.data()) ;
+	return QString(mount_point) ;
 }
 
 void zuluCrypt::sovfinished()
@@ -606,9 +606,7 @@ void zuluCrypt::addToFavorite()
 {
 	QString volume_path = ui->tableWidget->item(item->row(),0)->text() ;
 	QString mount_point_path = ui->tableWidget->item(item->row(),1)->text();
-	int i = mount_point_path.lastIndexOf("/") ;
-	
-	mount_point_path = mount_point_path.left( i ) ;
+
 	QString fav = volume_path + QString("\t") + mount_point_path + QString("\n") ;
 
 	QFile f(QDir::homePath() + QString("/.zuluCrypt/favorites")) ;
@@ -714,7 +712,6 @@ void zuluCrypt::UIMessage(QString title, QString message)
 void zuluCrypt::closeThreadFinished(runInThread * vct,int st)
 {
 	ui->tableWidget->setEnabled( true );
-
 	switch ( st ) {
 	case 0 :removeRowFromTable(item->row()) ;
 		if( ui->tableWidget->rowCount() > 0 )
@@ -733,6 +730,9 @@ void zuluCrypt::closeThreadFinished(runInThread * vct,int st)
 		break ;
 	case 4 :UIMessage(tr("ERROR"),
 			  tr("close failed, could not get a lock on /etc/mtab~"));
+		break ;	
+	case 11 :UIMessage(tr("ERROR"),
+		tr("Could not find any partition with the presented UUID"));
 		break ;
 	default :UIMessage(tr("ERROR"),
 			  tr("an unknown error has occured, volume not closed"));
@@ -918,9 +918,9 @@ void zuluCrypt::setupConnections()
 		SLOT(favClicked(QAction*))) ;
 
 	connect(passwordDialogUI,
-		SIGNAL(addItemToTable(QString)),
+		SIGNAL(addItemToTable(QString,QString)),
 		this,
-		SLOT(addItemToTableByVolume(QString))) ;
+		SLOT(addItemToTable(QString,QString))) ;
 
 	connect(this,
 		SIGNAL(luksAddKeyUI(QString)),

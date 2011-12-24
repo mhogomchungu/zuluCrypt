@@ -25,8 +25,10 @@ int volume_info(  const char * mapper, const char * device  )
 	int xt ;
 	struct stat st;
 	
-	StrHandle * p = String(  mapper  ) ;
-
+	StrHandle * p ;
+	
+	p = String( mapper ) ;		
+	
 	StringReplaceCharString( p,'_',"#;\"',\\`:!*?&$@(){}[]><|%~^ \n" ) ;
 	
 	StringPrepend( p,"/dev/mapper/zuluCrypt-" ) ;

@@ -40,12 +40,14 @@ public slots:
 private slots:
 	void ShowNonSystemPartitionsFinished(void) ;
 	void ShowSystemPartitionsFinished(void) ;
+	void EnterKeyPressed(void);
 private:
 	void HideUI(void);
 	Ui::PartitionView *partitionView ;
 	ShowNonSystemPartitionsThread *nonsystempartitionlist ;
 	partitionlistThread *partitionlist ;
 	int status ;
+	QAction *action ;
 };
 
 #endif

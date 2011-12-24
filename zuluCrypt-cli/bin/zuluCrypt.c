@@ -37,6 +37,8 @@ void help(  void  ) ;
 		 
 int check_system_tools( void ) ;
 
+int device_from_uuid(char * dev, char * uuid ) ;
+
 StrHandle * get_passphrase(  void  )
 {	
 	//I got the big chunk of this code from: http://www.gnu.org/s/hello/manual/libc/getpass.html
@@ -77,7 +79,9 @@ int main(  int argc , char *argv[] )
 	int status ;
 	char *  mapping_name ;
 	char * c ;
-	
+	char dev[12];
+	char m_name[37] ;
+
 	id = getuid();	
 	
 	setuid( 0 );
@@ -98,11 +102,27 @@ int main(  int argc , char *argv[] )
 		help(  );
 		return 10 ;
 	}
-	if (  ( c = strrchr( device,'/' ) ) != NULL ) {
-		mapping_name =  c + 1  ;
+	if( strncmp( device, "UUID=", 5 ) == 0 ){
+		if( device_from_uuid( dev,device ) == 0 ) {
+			if( *( device + 5 ) == '\"')
+				strncpy( m_name,device + 6,36 ) ;
+			else
+				strncpy( m_name,device + 5,36 ) ;
+			m_name[36] = '\0' ;
+			mapping_name = m_name ;
+			device = dev ;
+		}else{
+			printf("ERROR: Could not find any partition with the presented UUID\n") ;
+			return 11 ;			
+		}	
 	}else{
-		mapping_name =  device  ;			
-	}	
+		if (  ( c = strrchr( device,'/' ) ) != NULL ) {
+			mapping_name =  c + 1  ;
+		}else{
+			mapping_name =  device  ;			
+		}
+	}
+
 	if(  strcmp(  action, "isLuks"  ) == 0  ){
 		status =  is_luks(  device  ) ;
 		if(  status == 0  )
@@ -112,7 +132,7 @@ int main(  int argc , char *argv[] )
 		
 	}else if (  strcmp(  action, "status"  ) == 0  ){
 		
-		status = volume_info(  mapping_name, device  ) ;
+		status = volume_info(  mapping_name, argv[2]  ) ;
 		
 	}else if (  strcmp(  action, "device"  ) == 0  ){
 		

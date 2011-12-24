@@ -19,12 +19,12 @@
 
 #include "includes.h"
 
-int close_opened_volume(  char * mapping_name  )
+int close_opened_volume( char * mapping_name )
 {	
 	 int st ;	 
 	 char * m_point = NULL ;
 	 
-	 StrHandle * p = String(  mapping_name  ) ;
+	 StrHandle * p = String( mapping_name ) ;
 	 
 	 StringReplaceCharString( p,'_',"#;\"',\\`:!*?&$@(){}[]><|%~^ \n" ) ;
 	 

@@ -212,7 +212,7 @@ void luksdeletekey::pbDelete()
 		m.exec() ;
 		return ;
 	}
-	if(QFile::exists(volumePath) == false){
+	if(QFile::exists(volumePath) == false && volumePath.mid(0,5) != QString("UUID=")){
 		m.setWindowTitle(tr("ERROR!"));
 		m.setText(tr("volume path field does not point to a file or device"));
 		m.addButton(QMessageBox::Ok);
@@ -303,6 +303,9 @@ void luksdeletekey::threadfinished(runInThread * ldk,int status)
 		case 3 :UIMessage(tr("ERROR"),tr("could not open luks device"));
 			break ;
 		case 7 :UIMessage(tr("ERROR"),tr("could not get enough memory to open the key file"));
+			break ;
+		case 11 :UIMessage(tr("ERROR"),
+			tr("Could not find any partition with the presented UUID"));
 			break ;
 		default:UIMessage(tr("ERROR"),tr( "un unexpected error has occured, key not removed "));
 	}

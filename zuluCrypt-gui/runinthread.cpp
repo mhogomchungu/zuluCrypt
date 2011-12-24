@@ -19,7 +19,7 @@
 
 #include "runinthread.h"
 #include <QProcess>
-
+#include <iostream>
 runInThread::runInThread(QString exe)
 {
 	EXE = exe ;

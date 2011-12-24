@@ -22,6 +22,92 @@
 #include <mntent.h>
 #include <blkid/blkid.h>
 
+StrHandle * partitionList(void)
+{
+	StrHandle * all ;
+	FILE * fd ;
+	
+	char buffer[512];
+	char device[12] ;
+	char * b ;
+	char * c ;
+	char * d ;
+	
+	fd = fopen( "/proc/partitions","r" ) ;
+	
+	fgets( buffer,1,fd  ) ;
+	fgets( buffer,1,fd  ) ;
+	
+	all = String( "" );	
+	
+	strcpy( device, "/dev/" ) ;
+	b = device + 5 ;
+	
+	while ( fgets( buffer,512,fd  ) != NULL ){
+		c = buffer ;
+		while(  *c++ != '\n'  ) { ; }
+		d = c ;
+		while(  *--d != ' '  ) { ; }
+		d++ ;		
+		if( strlen(  d  ) == 4 || (  strncmp(  d, "hd", 2  ) != 0 && strncmp(  d, "sd", 2 ) != 0  )  )
+			continue ;
+		strcpy( b , d ) ;
+		StringAppend(  all, device );
+	}	
+	fclose( fd );
+	return all ;
+}
+
+int device_from_uuid(char * dev, char * uuid )
+{
+	char device[12] ;
+	const char * d ;
+	const char * e ;
+	const char * f ;
+	
+	int j ;
+	int k ;
+	
+	blkid_probe bp ;
+	StrHandle * all = partitionList() ;
+	e = StringContent( all ) ;
+	/*
+	 * Below code will take into account UUID given within quotation marks ie:
+	 * UUID="2468d6a7-9a71-4312-8bd9-662f982fade5"	 * 
+	 */
+	if( *( uuid + 5 ) == '\"' )
+		uuid = uuid + 6 ;
+	else
+		uuid = uuid + 5 ;
+	
+	while( *e ){
+		d = e ;
+		
+		while ( *e++ != '\n' ) { ; }
+		
+		j = e - d - 1 ;
+		
+		strncpy( device, d, j ) ; 
+		device[ j ] = '\0' ;
+		
+		bp = blkid_new_probe_from_filename( device ) ;
+		blkid_do_probe( bp );
+		k = blkid_probe_lookup_value( bp, "UUID", &f, NULL );
+		
+		if( k == 0){
+			if( strncmp( uuid,f,36  ) == 0 ){
+				strcpy( dev,device ) ;
+				StringDelete( all ) ;
+				blkid_free_probe( bp );
+				return 0 ;
+			}			
+		}
+		blkid_free_probe( bp );
+	}
+	StringDelete( all ) ;
+	return -1 ;	
+}
+
 void blkid( const char * type,const char * entry, int size, StrHandle * system, StrHandle * non_system )
 {	
 	char device[12] ;
@@ -60,11 +146,12 @@ void blkid( const char * type,const char * entry, int size, StrHandle * system, 
 
 char * partitions( int option )
 {
-	char * b ;
-	char * c ;
-	char * d ;
 	char buffer[512];
 	char device[12] ;
+	char * c ;
+	char * d ;
+	
+	FILE * fd ;
 	
 	struct mntent * mt ;
 	
@@ -72,31 +159,7 @@ char * partitions( int option )
 	StrHandle * system ;
 	StrHandle * non_system ;
 	
-	FILE * fd ;
-	
-	fd = fopen( "/proc/partitions","r" ) ;
-	
-	fgets( buffer,1,fd  ) ;
-	fgets( buffer,1,fd  ) ;
-	
-	all = String( "" );	
-	
-	strcpy( device, "/dev/" ) ;
-	b = device + 5 ;
-	
-	while ( fgets( buffer,512,fd  ) != NULL ){
-		c = buffer ;
-		while(  *c++ != '\n'  ) { ; }
-		d = c ;
-		while(  *--d != ' '  ) { ; }
-		d++ ;		
-		if( strlen(  d  ) == 4 || (  strncmp(  d, "hd", 2  ) != 0 && strncmp(  d, "sd", 2 ) != 0  )  )
-			continue ;
-		strcpy( b , d ) ;
-		StringAppend(  all, device );
-	}
-	
-	fclose( fd );	
+	all = partitionList() ;
 	
 	if( option == ALL_PARTITIONS )
 		return StringDeleteHandle( all ) ;

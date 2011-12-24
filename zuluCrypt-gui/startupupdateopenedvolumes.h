@@ -33,6 +33,7 @@ signals:
 private:
 	void run() ;
 	QString readMtab(QByteArray *,QString) ;
+	bool checkUUID(QString *,QString ) ;
 };
 
 #endif // STARTUPUPDATEOPENEDVOLUMES_H

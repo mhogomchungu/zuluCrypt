@@ -38,7 +38,7 @@ public:
 	password_Dialog(QWidget *parent = 0);
 	virtual ~password_Dialog();
 signals :
-	void addItemToTable(QString) ;
+	void addItemToTable(QString,QString) ;
 public slots:
 	void HideUI(void);
 private slots :
@@ -52,6 +52,7 @@ private slots :
 	void file_path(void ) ;
 	void ShowUI(QString volumePath,QString mount_point) ;
 	void threadfinished(runInThread *,int) ;
+	void mountPointPath(QString);
 private :	
 	void UIMessage(QString title, QString message) ;
 	void disableAll(void);

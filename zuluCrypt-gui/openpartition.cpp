@@ -26,7 +26,7 @@
 #include <QHeaderView>
 #include <QFile>
 #include <QThread>
-
+#include <QKeySequence>
 #include <blkid/blkid.h>
 
 #include "../zuluCrypt-cli/executables.h"
@@ -42,6 +42,29 @@ openpartition::openpartition(QWidget *parent ) :
 		SIGNAL(cellDoubleClicked(int,int)),
 		this,
 		SLOT(tableEntryDoubleClicked(int,int))) ;
+
+	action = new QAction( this ) ;
+	QList<QKeySequence> keys ;
+	keys.append( Qt::Key_Enter );
+	keys.append( Qt::Key_Return );
+	action->setShortcuts( keys ) ;
+	connect(action,
+		SIGNAL(triggered()),
+		this,
+		SLOT(EnterKeyPressed()));
+	this->addAction( action );
+}
+
+void openpartition::EnterKeyPressed()
+{
+	QTableWidget *tw = partitionView->tableWidgetPartitionView ;
+
+	for( int i = 0 ; i < tw->rowCount() ; i++){
+		if(tw->item(i,0)->isSelected()==true){
+			tableEntryDoubleClicked(i,0) ;
+			break ;
+		}
+	}
 }
 
 void openpartition::ShowNonSystemPartitionsFinished()
@@ -99,10 +122,16 @@ QString openpartition::deviceProperties(const char *device)
 	i = blkid_probe_lookup_value( dp, "TYPE", &buffer, NULL);
 
 	if( i == 0 )
-		output = output + QString(" TYPE=\"") + QString( buffer ) + QString("\"") ;
+		output = output + QString(" TYPE=\"") + QString( buffer ) + QString("\"    ") ;
 	else
-		output = output + QString(" TYPE=\"\"") ;
+		output = output + QString(" TYPE=\"\"    ") ;
 
+	i = blkid_probe_lookup_value( dp, "UUID", &buffer, NULL);
+
+	if( i == 0 )
+		output = output + QString(" UUID=\"") + QString( buffer ) + QString("\"    ") ;
+	else
+		output = output + QString(" UUID=\"\"    ") ;
 	blkid_free_probe( dp ) ;
 	return output ;
 }
@@ -122,4 +151,5 @@ void openpartition::tableEntryDoubleClicked(int row, int column)
 openpartition::~openpartition()
 {
 	delete partitionView ;
+	delete action ;
 }

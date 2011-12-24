@@ -29,6 +29,10 @@ USAGE
 
 how to use zuluCrypt-cli
 
+NOTE: <path to volume> can be given in two forms
+1. As paths ie: "/dev/sdc1"
+2. As UUID  ie UUID="2468d6a7-9a71-4312-8bd9-662f982fade5"
+
 1. How to open a volumes.
 
 zuluCrypt-cli open <path to volume> <mount point path> <mode>
@@ -62,14 +66,15 @@ zuluCrypt-cli create <path to volume> <file system type> <encryption type> <rand
 plain volumes do not use random number generator and hence the option is ignored but it must be presented.
 
 example usage
-zuluCrypt-cli create /home/mhogomchungu/BankDocuments ext4 plain /dev/urandom
-zuluCrypt-cli create /mnt/mhogomchungu/ConfidentialBusinessRecords ext4 luks /dev/urandom
+zuluCrypt-cli create /dev/sdc1 ext4 plain /dev/urandom
+zuluCrypt-cli create UUID="2468d6a7-9a71-4312-8bd9-662f982fade5" ext4 plain /dev/urandom
+zuluCrypt-cli create /dev/sdc1 ext4 luks /dev/urandom
 
 another alternative suitable when called from another program:
 
-zuluCrypt-cli create /mnt/mhogomchungu/ConfidentialBusinessRecords ext4 luks -f path-to-keyfile /dev/urandom
+zuluCrypt-cli create UUID="2468d6a7-9a71-4312-8bd9-662f982fade5" ext4 luks -f path-to-keyfile /dev/urandom
 
-zuluCrypt-cli create /mnt/mhogomchungu/ConfidentialBusinessRecords ext4 luks -p typing-in-passphrase /dev/urandom
+zuluCrypt-cli create UUID="2468d6a7-9a71-4312-8bd9-662f982fade5" ext4 luks -p typing-in-passphrase /dev/urandom
 
 5. How to add a key to a luks volume
 zuluCrypt-cli addkey <path to luks volume> < source > < passphrase > < source > < passphrase1 >
