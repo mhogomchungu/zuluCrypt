@@ -18,6 +18,7 @@
  */
 
 #include "zulucryptthreads.h"
+#include "miscfunctions.h"
 
 #include <QProcess>
 #include <QFile>
@@ -42,42 +43,37 @@ ShowNonSystemPartitionsThread::ShowNonSystemPartitionsThread(
 
 ClickedRowHighlight::ClickedRowHighlight()
 {
-
 }
 
-void ClickedRowHighlight::update(int it, QTableWidget *t, int *r, int c)
+ClickedRowHighlight::~ClickedRowHighlight()
 {
-	row = it ;
+}
+
+void ClickedRowHighlight::update(int c,int p, QTableWidget *t)
+{
+	currentRow = c ;
 	tableWidget = t ;
-	selectedRow = r ;
-	item_count = c ;
+	previousRow = p ;
 }
 
 void ClickedRowHighlight::run()
-{
-	if(item_count == 0)
-		return ;
-
-	tableWidget->item(row,0)->setSelected(true);
-	tableWidget->item(row,1)->setSelected(true);
-	tableWidget->item(row,2)->setSelected(true);
-	tableWidget->setCurrentItem(tableWidget->item(row,1));
-
-	if(item_count == 1)
-		return ;
-
-	int x = *selectedRow ;
-
-	if( row == x )
-		return ;
-
-	tableWidget->item(x,0)->setSelected(false);
-	tableWidget->item(x,1)->setSelected(false);
-	tableWidget->item(x,2)->setSelected(false);
-
-	*selectedRow = row ;
+{	
+	mutex.lock();
+	int count = tableWidget->rowCount() ;
+	std::cout << currentRow << ":" << previousRow << std::endl ;
+	if(count > 0 && currentRow != -1){
+		tableWidget->item(currentRow,0)->setSelected(true);
+		tableWidget->item(currentRow,1)->setSelected(true);
+		tableWidget->item(currentRow,2)->setSelected(true);
+		tableWidget->setCurrentItem(tableWidget->item(currentRow,1));
+	}
+	if(count > 1 && currentRow != previousRow && previousRow != -1){
+		tableWidget->item(previousRow,0)->setSelected(false);
+		tableWidget->item(previousRow,1)->setSelected(false);
+		tableWidget->item(previousRow,2)->setSelected(false);
+	}
+	mutex.unlock();
 }
-
 
 void ShowNonSystemPartitionsThread::run()
 {
@@ -97,22 +93,27 @@ void ShowNonSystemPartitionsThread::run()
 		tw->removeRow(0);
 	}
 
-	delete tw->horizontalHeaderItem(0);
-
-	QString q(tr("non system partitions( no active entries in fstab )")) ;
-
-	tw->setHorizontalHeaderItem(0,new QTableWidgetItem(q));
-	tw->horizontalHeaderItem(0)->setFont(font);
-	tw->setColumnWidth(0,540);
-
 	QTableWidgetItem * t ;
+	QStringList prp ;
 
 	for ( i = 0 ; i < l.size() - 1 ; i++){
-
-		t = new QTableWidgetItem(openpartition::deviceProperties(l.at(i).toAscii().data())) ;
-		t->setTextAlignment(Qt::AlignCenter);
+		prp = miscfunctions::deviceProperties(l.at(i)) ;
 		tw->insertRow(i);
+		t = new QTableWidgetItem( prp.at(0) ) ;
+		t->setTextAlignment(Qt::AlignCenter);
 		tw->setItem(i,0,t);
+		t = new QTableWidgetItem( prp.at(1) ) ;
+		t->setTextAlignment(Qt::AlignCenter);
+		tw->setItem(i,1,t);
+		t = new QTableWidgetItem( prp.at(2) ) ;
+		t->setTextAlignment(Qt::AlignCenter);
+		tw->setItem(i,2,t);
+		t = new QTableWidgetItem( prp.at(3) ) ;
+		t->setTextAlignment(Qt::AlignCenter);
+		tw->setItem(i,3,t);
+		t = new QTableWidgetItem( prp.at(4) ) ;
+		t->setTextAlignment(Qt::AlignCenter);
+		tw->setItem(i,4,t);
 	}
 }
 
@@ -129,45 +130,40 @@ void partitionlistThread::run()
 	while ( tw->rowCount() > 0 ){
 		tw->removeRow(0);
 	}
-
-	tw->setColumnWidth(0,540);
-	tw->removeColumn(1);
-
-	tw->horizontalHeaderItem(0)->setFont(font);
-
 	char buffer[64];
-	char *c,*d ;
-	int i = 0 ;
-
 	QFile f("/proc/partitions");
 	f.open(QIODevice::ReadOnly);
 	f.readLine(buffer,64 ) ;
 	f.readLine(buffer,64 ) ;
-
-	QTableWidgetItem * t ;
-
-	QString partition ;
-	QProcess p ;
-	QByteArray b ;
-
 /*
   output of "cat /proc/partitions" that produced below code
 
 major minor  #blocks  name
 
-   8        0   78150744 sda
-   8        1   11566768 sda1
-   8        2          1 sda2
-   8        5   66581361 sda5
+   8\t0   78150744 sda
+   8\t1   11566768 sda1
+   8\t2\t  1 sda2
+   8\t5   66581361 sda5
    8       16  312571224 sdb
    8       17    1044193 sdb1
-   8       18          1 sdb2
+   8       18\t  1 sdb2
    8       21  311524416 sdb5
    8       32     250879 sdc
    8       33     250608 sdc1
 
    only take partitions(sdX,hdY), skip everything else like /dev/loopX
   */
+
+
+	QTableWidgetItem * t ;
+
+	QString partition ;
+	QProcess p ;
+	QByteArray b ;
+	QStringList prp ;
+	char * c,* d ;
+	int i = 0 ;
+	strcpy(buffer,"/dev/");
 	while( f.atEnd() != true ){
 		f.readLine(buffer,64) ;
 		c = buffer ;
@@ -185,21 +181,29 @@ major minor  #blocks  name
 		if( strlen( d ) == 3 )
 			continue ;
 
-		//if ( *( d - 3 ) == ' ') // skip sda2 and sdb2 above
-		//	continue ;
-
 		if( strncmp( d,"sd",2) != 0 && strncmp( d,"hd",2) != 0 )
 			continue ;
 
 		strcpy(buffer,"/dev/");
-		strcat(buffer, d ) ;
+		strcat( buffer, d ) ;
 
-		t = new QTableWidgetItem( openpartition::deviceProperties( buffer )) ;
-
-		t->setTextAlignment(Qt::AlignCenter);
-
+		prp = miscfunctions::deviceProperties( QString( buffer ) ) ;
 		tw->insertRow(i);
+		t = new QTableWidgetItem( prp.at(0) ) ;
+		t->setTextAlignment(Qt::AlignCenter);
 		tw->setItem(i,0,t);
+		t = new QTableWidgetItem( prp.at(1) ) ;
+		t->setTextAlignment(Qt::AlignCenter);
+		tw->setItem(i,1,t);
+		t = new QTableWidgetItem( prp.at(2) ) ;
+		t->setTextAlignment(Qt::AlignCenter);
+		tw->setItem(i,2,t);
+		t = new QTableWidgetItem( prp.at(3) ) ;
+		t->setTextAlignment(Qt::AlignCenter);
+		tw->setItem(i,3,t);
+		t = new QTableWidgetItem( prp.at(4) ) ;
+		t->setTextAlignment(Qt::AlignCenter);
+		tw->setItem(i,4,t);
 		i++ ;
 	}
 	f.close();
@@ -297,39 +301,39 @@ void volumePropertiesThread::run()
 	j = i - 1 ;
 	while ( c.at(i++) != ' ') { ; }
 
-	QString y = QString(" fs=\"") + QString(c.mid(j,i - j)) ;
+	QString y = QString(" fs:\t") + QString(c.mid(j,i - j - 1)) ;
 
 	while ( c.at(i++) == ' ') { ; }
 	j = i - 1 ;
 	while ( c.at(i++) != ' ') { ; }
 
-	y = y + QString("\"\n size=\"") + QString(c.mid(j,i - j)) ;
+	y = y + QString("\n size:\t") + QString(c.mid(j,i - j - 1)) ;
 
 	while ( c.at(i++) == ' ') { ; }
 	j = i - 1 ;
 	while ( c.at(i++) != ' ') { ; }
 
-	y = y + QString("\"\n used=\"") + QString(c.mid(j,i - j)) ;
+	y = y + QString("\n used:\t") + QString(c.mid(j,i - j - 1)) ;
 
 	while ( c.at(i++) == ' ') { ; }
 	j = i - 1 ;
 	while ( c.at(i++) != ' ') { ; }
 
-	y = y + QString("\"\n available=\"") + QString(c.mid(j,i - j)) ;
+	y = y + QString("\n available:\t") + QString(c.mid(j,i - j - 1)) ;
 
 	while ( c.at(i++) == ' ') { ; }
 	j = i - 1 ;
 	while ( c.at(i++) != ' ') { ; }
 
-	y = y + QString("\"\n used%=\"") + QString(c.mid(j,i - j)) ;
+	y = y + QString("\n used%:\t") + QString(c.mid(j,i - j - 1));
 
-	QStringList l = zuluCrypt::luksEmptySlots(path) ;
+	QStringList l = miscfunctions::luksEmptySlots(path) ;
 
-	if ( zuluCrypt::isLuks(path) == true){
+	if ( miscfunctions::isLuks(path) == true){
 		QString x =  QString(" ") ;
 		x = x + QString( r.right(start) ) ;
-		x = x + QString(" occupied key slots=\"") ;
-		x = x + l.at(0) + QString(" / ") + l.at(1) + QString("\"\n");
+		x = x + QString(" used slots:\t") ;
+		x = x + l.at(0) + QString(" / ") + l.at(1) + QString("\n");
 
 		*volProperty = x + y;
 	}else

@@ -21,13 +21,12 @@
 #include <QMutexLocker>
 
 #include "zulucrypt.h"
+#include "miscfunctions.h"
 
-addItemToTableThread::addItemToTableThread(QMutex *mt,QTableWidget *tw, QString d, QString m, int * i, int * s)
+addItemToTableThread::addItemToTableThread(QMutex *mt,QTableWidget *tw, QString d, QString m)
 {
 	device = d;
 	m_point = m;
-	item_count = i ;
-	selectedRow = s ;
 	tableWidget = tw ;
 	mutex = mt ;
 }
@@ -35,40 +34,21 @@ addItemToTableThread::addItemToTableThread(QMutex *mt,QTableWidget *tw, QString 
 void addItemToTableThread::run()
 {
 	mutex->lock();
+	int row = tableWidget->rowCount() ;
+	tableWidget->insertRow(row);
+	tableWidget->setItem(row,0,new QTableWidgetItem(device)) ;
+	tableWidget->setItem(row,1,new QTableWidgetItem(m_point)) ;
 
-	int tc = *item_count ;
-	int sr = *selectedRow ;
-
-	tableWidget->insertRow(tc);
-	tableWidget->setItem(tc,0,new QTableWidgetItem(device)) ;
-	tableWidget->setItem(tc,1,new QTableWidgetItem(m_point)) ;
-
-	if ( zuluCrypt::isLuks( device.replace("\"","\"\"\"") ) == true )
-		tableWidget->setItem(tc,2,new QTableWidgetItem(tr("luks"))) ;
+	if ( miscfunctions::isLuks( device.replace("\"","\"\"\"") ) == true )
+		tableWidget->setItem(row,2,new QTableWidgetItem(tr("luks"))) ;
 	else
-		tableWidget->setItem(tc,2,new QTableWidgetItem(tr("plain"))) ;
+		tableWidget->setItem(row,2,new QTableWidgetItem(tr("plain"))) ;
 
-	tableWidget->item(tc,0)->setTextAlignment(Qt::AlignCenter);
-	tableWidget->item(tc,1)->setTextAlignment(Qt::AlignCenter);
-	tableWidget->item(tc,2)->setTextAlignment(Qt::AlignCenter);
+	tableWidget->item(row,0)->setTextAlignment(Qt::AlignCenter);
+	tableWidget->item(row,1)->setTextAlignment(Qt::AlignCenter);
+	tableWidget->item(row,2)->setTextAlignment(Qt::AlignCenter);
 
-	if( tc == 0 ){
-		tableWidget->item(0,0)->setSelected(true);
-		tableWidget->item(0,1)->setSelected(true);
-		tableWidget->item(0,2)->setSelected(true);
-		tableWidget->setCurrentItem(tableWidget->item(0,1));
-		*selectedRow = 0 ;
-	}else{
-		tableWidget->item(tc,0)->setSelected(true);
-		tableWidget->item(tc,1)->setSelected(true);
-		tableWidget->item(tc,2)->setSelected(true);
-		tableWidget->item(sr,0)->setSelected(false);
-		tableWidget->item(sr,1)->setSelected(false);
-		tableWidget->item(sr,2)->setSelected(false);
-		tableWidget->setCurrentItem(tableWidget->item(tc + 1,1));
-		*selectedRow = *item_count ;
-	}
-	*item_count = *item_count + 1 ;
+	tableWidget->setCurrentCell(row,1);
 	mutex->unlock();
 	emit threadFinished(this) ;
 }

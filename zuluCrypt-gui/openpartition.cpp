@@ -27,7 +27,6 @@
 #include <QFile>
 #include <QThread>
 #include <QKeySequence>
-#include <blkid/blkid.h>
 
 #include "../zuluCrypt-cli/executables.h"
 
@@ -37,11 +36,17 @@ openpartition::openpartition(QWidget *parent ) :
 {
 	partitionView = new Ui::PartitionView() ;
 	partitionView->setupUi(this);
+	row = -1 ;
 	this->setFixedSize(this->size());
 	connect(partitionView->tableWidgetPartitionView,
-		SIGNAL(cellDoubleClicked(int,int)),
+		SIGNAL(itemDoubleClicked(QTableWidgetItem *)),
 		this,
-		SLOT(tableEntryDoubleClicked(int,int))) ;
+		SLOT(tableEntryDoubleClicked(QTableWidgetItem *))) ;
+
+	connect(partitionView->tableWidgetPartitionView,
+		SIGNAL(currentItemChanged( QTableWidgetItem * , QTableWidgetItem * )),
+		this,
+		SLOT(currentItemChanged( QTableWidgetItem * , QTableWidgetItem * ))) ;
 
 	action = new QAction( this ) ;
 	QList<QKeySequence> keys ;
@@ -53,28 +58,69 @@ openpartition::openpartition(QWidget *parent ) :
 		this,
 		SLOT(EnterKeyPressed()));
 	this->addAction( action );
+
+	QTableWidget *tw = partitionView->tableWidgetPartitionView ;
+	tw->setColumnWidth(0,90);
+	tw->setColumnWidth(1,90);
+	tw->setColumnWidth(2,90);
+	tw->setColumnWidth(3,90);
+	tw->setColumnWidth(4,250);
+
+	tw->horizontalHeaderItem(0)->setFont(this->font());
+	tw->horizontalHeaderItem(1)->setFont(this->font());
+	tw->horizontalHeaderItem(2)->setFont(this->font());
+	tw->horizontalHeaderItem(3)->setFont(this->font());
+	tw->horizontalHeaderItem(4)->setFont(this->font());
+
+	tw->horizontalHeader()->setVisible(true);
+
+	partitionView->checkBoxUUID->setFont(this->font());
 }
 
 void openpartition::EnterKeyPressed()
-{
+{	
 	QTableWidget *tw = partitionView->tableWidgetPartitionView ;
-
-	for( int i = 0 ; i < tw->rowCount() ; i++){
-		if(tw->item(i,0)->isSelected()==true){
-			tableEntryDoubleClicked(i,0) ;
-			break ;
-		}
-	}
+	QTableWidgetItem *it = tw->currentItem() ;
+	if( it == NULL )
+		return ;
+	tableEntryDoubleClicked(tw->item(it->row(),0));
 }
 
 void openpartition::ShowNonSystemPartitionsFinished()
 {
 	delete nonsystempartitionlist ;
+	if(partitionView->tableWidgetPartitionView->rowCount() > 0){
+		HighlightRow(0,true) ;
+		partitionView->tableWidgetPartitionView->setCurrentCell(0,2);
+	}
 }
 
 void openpartition::ShowSystemPartitionsFinished()
 {
 	delete partitionlist ;
+	if(partitionView->tableWidgetPartitionView->rowCount() > 0){
+		HighlightRow(0,true) ;
+		partitionView->tableWidgetPartitionView->setCurrentCell(0,2);
+	}
+}
+
+void openpartition::currentItemChanged(QTableWidgetItem *current, QTableWidgetItem *previous)
+{
+	HighlightRow(current->row(), true) ;
+	if(previous != NULL)
+		if(previous->row() != current->row())
+			HighlightRow(previous->row(), false) ;
+}
+
+void openpartition::HighlightRow(int r, bool b)
+{
+	partitionView->tableWidgetPartitionView->item(r,0)->setSelected(b);
+	partitionView->tableWidgetPartitionView->item(r,1)->setSelected(b);
+	partitionView->tableWidgetPartitionView->item(r,2)->setSelected(b);
+	partitionView->tableWidgetPartitionView->item(r,3)->setSelected(b);
+	partitionView->tableWidgetPartitionView->item(r,4)->setSelected(b);
+	if(b==true)
+		partitionView->tableWidgetPartitionView->setCurrentCell(r,4);
 }
 
 void openpartition::ShowNonSystemPartitions()
@@ -103,49 +149,24 @@ void openpartition::ShowUI()
 	this->show();
 }
 
-QString openpartition::deviceProperties(const char *device)
-{
-	int i ;
-	const char * buffer ;
-	QString output = QString(device) + QString(":") ;
-
-	blkid_probe dp = blkid_new_probe_from_filename( device ) ;
-	blkid_do_probe( dp ) ;
-
-	i = blkid_probe_lookup_value( dp, "LABEL", &buffer, NULL);
-
-	if( i == 0 )
-		output = output + QString(" LABEL=\"") + QString( buffer ) + QString("\"    ") ;
-	else
-		output = output + QString(" LABEL=\"\"    ") ;
-
-	i = blkid_probe_lookup_value( dp, "TYPE", &buffer, NULL);
-
-	if( i == 0 )
-		output = output + QString(" TYPE=\"") + QString( buffer ) + QString("\"    ") ;
-	else
-		output = output + QString(" TYPE=\"\"    ") ;
-
-	i = blkid_probe_lookup_value( dp, "UUID", &buffer, NULL);
-
-	if( i == 0 )
-		output = output + QString(" UUID=\"") + QString( buffer ) + QString("\"    ") ;
-	else
-		output = output + QString(" UUID=\"\"    ") ;
-	blkid_free_probe( dp ) ;
-	return output ;
-}
-
 void openpartition::HideUI()
 {
 	this->hide();
+	emit HideUISignal(this);
 }
 
-void openpartition::tableEntryDoubleClicked(int row, int column)
+void openpartition::tableEntryDoubleClicked(QTableWidgetItem * item)
 {
-	QString i = partitionView->tableWidgetPartitionView->item(row,column)->text().split(":").at(0) ;
-	emit clickedPartition(i.split(":").at(0));
-	HideUI() ;
+	QString dev ;
+	QTableWidget *tw = partitionView->tableWidgetPartitionView ;
+
+	if(partitionView->checkBoxUUID->isChecked() == true)
+		dev = QString("UUID=\"") + tw->item(item->row(),4)->text() + QString("\"") ;
+	else
+		dev = tw->item(item->row(),0)->text() ;
+
+	emit clickedPartition( dev ) ;
+	HideUI();
 }
 
 openpartition::~openpartition()

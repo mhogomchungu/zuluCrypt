@@ -16,7 +16,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+#include "miscfunctions.h"
 #include "createpartition.h"
 #include "ui_createpartition.h"
 #include <QMessageBox>
@@ -129,6 +129,7 @@ void createpartition::pbCancelClicked()
 void createpartition::HideUI()
 {
 	this->hide();
+	emit HideUISignal(this);
 }
 
 void createpartition::enableAll()
@@ -215,6 +216,12 @@ void createpartition::pbCreateClicked()
 		UIMessage(tr("ERROR!"),tr("volume path field is empty"));
 		return ;
 	}
+	if( ui->lineEditVolumePath->text().mid(0,5) == QString("UUID=")){
+		if( miscfunctions::isUUIDvalid(ui->lineEditVolumePath->text()) == false ){
+			UIMessage(tr("ERROR"),tr("could not find any partition with the presented UUID"));
+			return ;
+		}
+	}
 	QString volumePath = ui->lineEditVolumePath->text().replace("\"","\"\"\"") ; ;
 
 	if( volumePath.mid(0,2) == QString("~/"))
@@ -226,7 +233,6 @@ void createpartition::pbCreateClicked()
 			UIMessage(tr("ERROR"),tr("passphrases field is empty"));
 		else
 			UIMessage(tr("ERROR"),tr("key file field is empty"));
-
 		return ;
 	}
 	if(ui->rbPassphrase->isChecked() == true){

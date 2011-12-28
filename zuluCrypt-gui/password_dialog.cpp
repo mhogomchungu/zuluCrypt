@@ -29,6 +29,10 @@
 #include <QPushButton>
 #include <QMessageBox>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 password_Dialog::password_Dialog(QWidget *parent ) : QDialog(parent)
 {
 	ui = new Ui::PasswordDialog() ;
@@ -178,7 +182,8 @@ void password_Dialog::file_path(void )
 void password_Dialog::HideUI()
 {	
 	this->hide();
-	enableAll();
+	//enableAll();
+	emit HideUISignal(this);
 }
 
 void password_Dialog::buttonOpenClicked(void )
@@ -226,11 +231,22 @@ void password_Dialog::buttonOpenClicked(void )
 	if( mountPointPath.mid(0,2) == QString("~/"))
 		mountPointPath = QDir::homePath() + QString("/") + mountPointPath.mid(2) ;
 
-	QDir dir(mountPointPath) ;
+	/*
+	  for some reason qt 4.8.0 deletes "mountPointPath" if it points to a file and
+	  not a directory.
+	  Going to use good old fashion C stat command in its place.
 
-	//mountPointPath = dir.canonicalPath() ;
-
+	QDir dir(mountPointPath) ;	
 	if(dir.exists() == true){
+		m.setWindowTitle(tr("ERROR!"));
+		m.setText(tr("mount point path is already taken"));
+		m.exec() ;
+		return ;
+	}
+	*/
+	struct stat st ;
+	if( stat(mountPointPath.toAscii().data(),&st) == 0 )
+	{
 		m.setWindowTitle(tr("ERROR!"));
 		m.setText(tr("mount point path is already taken"));
 		m.exec() ;
@@ -352,14 +368,16 @@ void password_Dialog::UIMessage(QString title, QString message)
 }
 void password_Dialog::threadfinished(runInThread *,int status)
 {
-	ovt->wait() ;
-	delete ovt ;
+	ovt->deleteLater(); ;
 	ovt = NULL ;
 
 	if( status == 0 ){
-		emit addItemToTable(volumePath,ui->MountPointPath->text());
+		//emit addItemToTable(volumePath,ui->MountPointPath->text());
+		emit volumeOpened(volumePath,ui->MountPointPath->text(),this);
+		//HideUI();
 		return ;
-	}	
+	}
+	enableAll();
 	switch ( status ){
 		case 1 : UIMessage(tr("ERROR"),tr("No free loop device to use.")) ;
 			break ;
@@ -367,7 +385,8 @@ void password_Dialog::threadfinished(runInThread *,int status)
 			break ;
 		case 3 : UIMessage(tr("ERROR"),tr("No file or device exist on given path")) ;
 			break ;
-		case 4 :
+		case 4 :ui->PassPhraseField->clear();
+			ui->PassPhraseField->setFocus();
 			UIMessage(tr("ERROR"),tr("wrong passphrase."));
 			break ;
 		case 5 : UIMessage(tr("ERROR"),tr("mount point address is already taken by a file or folder")) ;
@@ -381,11 +400,6 @@ void password_Dialog::threadfinished(runInThread *,int status)
 		case 11 : UIMessage(tr("ERROR"),tr("Could not find any partition with the presented UUID"));
 			break ;
 		default :UIMessage(tr("ERROR"),tr("un unknown error has occured, volume not opened"));		
-	}
-	enableAll();
-	if( status == 4 ){
-		ui->PassPhraseField->clear();
-		ui->PassPhraseField->setFocus();
 	}
 }
 

@@ -39,7 +39,6 @@ char * status( const char * mapper )
 	crypt_status_info csi ;
 	struct crypt_active_device cad ;
 	StrHandle * p ;
-	blkid_probe bp ;
 	
 	crypt_init_by_name( &cd,mapper );
 	crypt_get_active_device( cd1,mapper,&cad ) ;
@@ -62,7 +61,7 @@ char * status( const char * mapper )
 			goto out ;
 	}	
 	
-	StringAppend( p," type=\"" );
+	StringAppend( p," type:\t" );
 	e = crypt_get_type( cd ) ;
 	
 	if( strcmp( e,"LUKS1" ) == 0 )
@@ -70,46 +69,35 @@ char * status( const char * mapper )
 	else if( strcmp( e,"plain") )
 		StringAppend( p,"plain" ) ;
 	
-	StringAppend( p,"\"\n cipher=\"" );
+	StringAppend( p,"\n cipher:\t" );
 	StringAppend( p,crypt_get_cipher_mode( cd ) ) ;
-	StringAppend( p,"\"\n keysize=\"" );
+	StringAppend( p,"\n keysize:\t" );
 	StringAppend( p,StringIntToString( buffer,SIZE,8 * crypt_get_volume_key_size( cd ) ) ) ;
 	StringAppend( p," bits" );
-	StringAppend( p,"\"\n device=\"" );
+	StringAppend( p,"\n device:\t" );
 	e = crypt_get_device_name( cd ) ;
 	StringAppend( p, e ) ;
 	
 	if( strncmp( e ,"/dev/loop",9 ) == 0 ){
 		fd = open( e , O_RDONLY ) ;
 		ioctl( fd, LOOP_GET_STATUS64, &l_info ) ;
-		StringAppend( p,"\"\n loop=\"" );
+		StringAppend( p,"\n loop:\t" );
 		realpath( ( char * ) l_info.lo_file_name, path ) ;
 		StringAppend( p, path ) ;
 		close( fd ) ;
 	}
-	StringAppend( p,"\"\n UUID=\"");
-	
-	bp = blkid_new_probe_from_filename( e ) ;
-	blkid_do_probe( bp );
-	
-	if( blkid_probe_lookup_value( bp, "UUID", &e, NULL ) == 0 )
-		StringAppend( p,e ) ;
-			
-	blkid_free_probe( bp );		
-	
-	StringAppend( p,"\"\n offset=\"");
+	StringAppend( p,"\n offset:\t");
 	StringAppend( p,StringIntToString( buffer,SIZE,crypt_get_data_offset( cd ) ) )  ;
 	StringAppend( p," sectors" ) ;	
-	StringAppend( p,"\"\n size\"" );
+	StringAppend( p,"\n size:\t" );
 	StringAppend( p,StringIntToString( buffer,SIZE,cad.size ) ) ;	
 	StringAppend( p," sectors" );
-	StringAppend( p,"\"\n mode=\"");
+	StringAppend( p,"\n mode:\t");
 	
 	if( cad.flags == 1 )
-		StringAppend( p,"readonly" );
+		StringAppend( p,"read only" );
 	else
-		StringAppend( p,"read/write" );	
-	StringAppend( p,"\"");
+		StringAppend( p,"read and write" );	
 	
 	out:
 	crypt_free( cd );

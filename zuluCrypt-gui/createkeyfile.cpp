@@ -43,6 +43,7 @@ createkeyfile::createkeyfile(QWidget *parent) :
 void createkeyfile::HideUI()
 {
 	this->hide();
+	emit HideUISignal(this);
 }
 
 void createkeyfile::ShowUI()

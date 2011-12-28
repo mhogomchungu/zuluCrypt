@@ -31,6 +31,7 @@ public:
 	explicit closeAllVolumesThread(QTableWidget*);
 signals:
 	void close(QTableWidgetItem *,int) ;
+	void finished(closeAllVolumesThread*);
 private:
 	void run(void) ;
 	QTableWidget * table ;

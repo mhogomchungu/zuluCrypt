@@ -39,18 +39,20 @@ public:
 	virtual ~password_Dialog();
 signals :
 	void addItemToTable(QString,QString) ;
+	void HideUISignal(password_Dialog *);
+	void volumeOpened(QString,QString,password_Dialog *);
 public slots:
 	void HideUI(void);
+	void ShowUI(void);
+	void ShowUI(QString volumePath,QString mount_point) ;
 private slots :
 	void buttonOpenClicked(void) ;
 	void mount_point(void);
 	void clickedPartitionOption(QString);
 	void clickedPassPhraseFromFileButton(void) ;
 	void passphraseFromFileOption(void) ;
-	void passphraseOption(void) ;
-	void ShowUI(void);
-	void file_path(void ) ;
-	void ShowUI(QString volumePath,QString mount_point) ;
+	void passphraseOption(void) ;	
+	void file_path(void ) ;	
 	void threadfinished(runInThread *,int) ;
 	void mountPointPath(QString);
 private :	

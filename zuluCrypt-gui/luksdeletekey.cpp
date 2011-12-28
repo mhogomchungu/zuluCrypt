@@ -20,6 +20,7 @@
 #include "luksdeletekey.h"
 #include "zulucrypt.h"
 #include "../zuluCrypt-cli/executables.h"
+#include "miscfunctions.h"
 
 #include <QObject>
 #include <Qt>
@@ -212,6 +213,15 @@ void luksdeletekey::pbDelete()
 		m.exec() ;
 		return ;
 	}
+	if( volumePath.mid(0,5) == QString("UUID=")){
+		if( miscfunctions::isUUIDvalid(volumePath) == false ){
+			m.setWindowTitle(tr("ERROR!"));
+			m.setText(tr("could not find any partition with the presented UUID"));
+			m.addButton(QMessageBox::Ok);
+			m.exec() ;
+			return ;
+		}
+	}
 	if(QFile::exists(volumePath) == false && volumePath.mid(0,5) != QString("UUID=")){
 		m.setWindowTitle(tr("ERROR!"));
 		m.setText(tr("volume path field does not point to a file or device"));
@@ -234,7 +244,7 @@ void luksdeletekey::pbDelete()
 	}
 	volumePath = volumePath.replace("\"","\"\"\"") ;
 
-	if ( zuluCrypt::isLuks(volumePath) == false ){
+	if ( miscfunctions::isLuks(volumePath) == false ){
 
 		m.setWindowTitle(tr("ERROR!"));
 		m.setText(tr("given path does not point to a luks volume"));
@@ -242,7 +252,7 @@ void luksdeletekey::pbDelete()
 		m.exec() ;
 		return ;
 	}
-	if(zuluCrypt::luksEmptySlots(volumePath).at(0) == QString("1")){
+	if(miscfunctions::luksEmptySlots(volumePath).at(0) == QString("1")){
 		QString s = tr("There is only one last key in the volume.");
 		s = s + tr("\nDeleting it will make the volume unopenable and lost forever.") ;
 		s = s + tr("\nAre you sure you want to delete this key?");
@@ -285,7 +295,7 @@ void luksdeletekey::threadfinished(runInThread * ldk,int status)
 	ldk->wait() ;
 	delete ldk ;
 	ldk = NULL ;
-	QStringList l = zuluCrypt::luksEmptySlots(volumePath) ;
+	QStringList l = miscfunctions::luksEmptySlots(volumePath) ;
 
 	switch( status ){
 		case 0 :
@@ -305,7 +315,7 @@ void luksdeletekey::threadfinished(runInThread * ldk,int status)
 		case 7 :UIMessage(tr("ERROR"),tr("could not get enough memory to open the key file"));
 			break ;
 		case 11 :UIMessage(tr("ERROR"),
-			tr("Could not find any partition with the presented UUID"));
+			tr("could not find any partition with the presented UUID"));
 			break ;
 		default:UIMessage(tr("ERROR"),tr( "un unexpected error has occured, key not removed "));
 	}
@@ -331,6 +341,7 @@ void luksdeletekey::HideUI()
 {
 	ui->lineEditPassphrase->clear();
 	ui->lineEditVolumePath->clear();
+	emit HideUISignal(this);
 	this->hide();
 }
 

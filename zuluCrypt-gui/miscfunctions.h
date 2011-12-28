@@ -17,26 +17,32 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ADDITEMTOTABLETHREAD_H
-#define ADDITEMTOTABLETHREAD_H
+#ifndef MISCFUNCTIONS_H
+#define MISCFUNCTIONS_H
 
-#include <QThread>
-#include <QMutex>
-#include <QTableWidget>
+#include <QString>
+#include <QStringList>
+#include <blkid/blkid.h>
+#include <QProcess>
+#include <QFile>
+#include <QFile>
+#include <QDir>
 
-class addItemToTableThread : public QThread
+#include "../zuluCrypt-cli/executables.h"
+
+class miscfunctions
 {
-	Q_OBJECT
 public:
-	addItemToTableThread(QMutex *,QTableWidget *, QString, QString) ;
-signals:
-	void threadFinished(addItemToTableThread *) ;
-private:
-	void run(void) ;
-	QString device ;
-	QString m_point ;
-	QTableWidget * tableWidget ;
-	QMutex *mutex ;
+	miscfunctions();
+	static QStringList luksEmptySlots(QString volumePath) ;
+	static bool isLuks(QString volumePath) ;
+	static QString mtab(QString) ;
+	static QString readMtab(QByteArray * mtab,QString entry);
+	static bool isUUIDvalid(QString);
+	static QStringList deviceProperties(QString device) ;
+	static void addToFavorite(QString dev, QString m_point);
+	static QStringList readFavorites(void);
+	static void removeFavoriteEntry(QString);
 };
 
-#endif // ADDITEMTOTABLETHREAD_H
+#endif // MISCFUNCTIONS_H

@@ -31,12 +31,14 @@
 //function prototypes
 StrHandle * get_passphrase( void ) ;
 
+//defined in lib/status.c
 char * volume_device_name( const char * ) ;
 
 void help(  void  ) ;
 		 
 int check_system_tools( void ) ;
 
+//defined in lib/partitions.c
 int device_from_uuid(char * dev, char * uuid ) ;
 
 StrHandle * get_passphrase(  void  )
@@ -80,39 +82,49 @@ int main(  int argc , char *argv[] )
 	char *  mapping_name ;
 	char * c ;
 	char dev[12];
-	char m_name[37] ;
+	char m_name[42] ;
 
-	id = getuid();	
-	
-	setuid( 0 );
+	id = getuid();		
 
 	if (  argc < 2  ){
-		help(  );
-		return 10 ;
+		help();
+		return 1 ;
 	}
 	if (  strcmp(  action, "-h"  ) == 0 || strcmp(  action, "--help"  ) == 0 || strcmp(  action, "-help"  ) == 0  ){			
-		help(  );	
-		return 10 ;
+		help();	
+		return 0 ;
 	}
 	if (  strcmp(  action, "-v"  ) == 0 || strcmp(  action, "-version"  ) == 0 || strcmp(  action, "--version"  ) == 0  ){		
 		printf( "%s\n",version(  ) );
-		return 10 ;
+		return 0 ;
 	}
 	if (  argc < 3  ){
-		help(  );
-		return 10 ;
+		help();
+		return 1 ;
+	}
+	if( strcmp( action,"checkUUID") == 0 ){		
+		if( device_from_uuid( dev,device ) == 0 ){
+			printf( "%s\n",dev ) ;
+			return 0 ;
+		}else{
+			printf("ERROR: could not find any partition with the presented UUID\n") ;
+			return 1 ;
+		}	
 	}
 	if( strncmp( device, "UUID=", 5 ) == 0 ){
+		strcpy(m_name,"UUID-");
 		if( device_from_uuid( dev,device ) == 0 ) {
-			if( *( device + 5 ) == '\"')
-				strncpy( m_name,device + 6,36 ) ;
+			if( *( device + 5 ) == '\"'){
+				strncpy( m_name + 5,device + 6,36 ) ;
+				m_name[ strlen( m_name ) ] = '\0' ;
+			}
 			else
-				strncpy( m_name,device + 5,36 ) ;
-			m_name[36] = '\0' ;
+				strncpy( m_name + 5,device + 5,36 ) ;
+			m_name[41] = '\0' ;
 			mapping_name = m_name ;
 			device = dev ;
 		}else{
-			printf("ERROR: Could not find any partition with the presented UUID\n") ;
+			printf("ERROR: could not find any partition with the presented UUID\n") ;
 			return 11 ;			
 		}	
 	}else{
@@ -122,7 +134,9 @@ int main(  int argc , char *argv[] )
 			mapping_name =  device  ;			
 		}
 	}
-
+	
+	setuid( 0 );
+	
 	if(  strcmp(  action, "isLuks"  ) == 0  ){
 		status =  is_luks(  device  ) ;
 		if(  status == 0  )
@@ -135,7 +149,6 @@ int main(  int argc , char *argv[] )
 		status = volume_info(  mapping_name, argv[2]  ) ;
 		
 	}else if (  strcmp(  action, "device"  ) == 0  ){
-		
 		c = volume_device_name( device ) ;
 		if( c == NULL )
 			status = 1 ;
@@ -144,7 +157,6 @@ int main(  int argc , char *argv[] )
 			free(c) ;
 			status = 0 ;
 		}
-		
 	}else if (  strcmp(  action, "close"  ) == 0  ){			
 
 		status =  close_opened_volume(  mapping_name  ) ;
@@ -166,7 +178,6 @@ int main(  int argc , char *argv[] )
 		status =  removekey( argc, device, argv[3],argv[4]  );	
 	
 	}else if (  strcmp( action,"partitions" ) == 0  ){
-
 		switch(  argv[2][0]  ){	
 			case '1' : c = partitions(  ALL_PARTITIONS  ) ;
 				   break ;
@@ -181,9 +192,7 @@ int main(  int argc , char *argv[] )
 		printf( "%s", c  ) ;
 		free(  c  ) ;
 		status = 0 ;
-		
 	}else if( strcmp( action,"emptyslots" ) == 0  ){
-		
 		if(  stat( device,&st ) != 0  ){
 			printf( "path \"%s\" does not point to a device\n",device ) ;
 			status = 1 ;			

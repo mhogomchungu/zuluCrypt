@@ -45,6 +45,7 @@
 #include "zulucryptthreads.h"
 #include "additemtotablethread.h"
 #include "runinthread.h"
+#include "managedevicenames.h"
 
 namespace Ui {
     class zuluCrypt;
@@ -56,18 +57,16 @@ class zuluCrypt : public QMainWindow
 public:
 	explicit zuluCrypt(QWidget *parent = 0);
 	void removeRowFromTable(int row) ;
-	static QStringList luksEmptySlots(QString volumePath) ;
-	static bool isLuks(QString volumePath) ;
-	static QString mtab(QString) ;
 	~zuluCrypt();
 signals:
 	void  showManageFavorites(void) ;
 	void  favClickedVolume(QString volume_path,QString mount_point_path);
-	void  showNonSystemPartitions(void);
+	void  SignalShowNonSystemPartitions(void);
 	void  luksAddKeyUI(QString volumePath) ;
 	void  luksDeleteKeyUI(QString passphrase) ;
 	void  redoOpen(bool boolOpenReadOnly,bool boolKeyFromFile,QString volumePath, QString mountPointPath) ;
 private slots :
+	void currentItemChanged( QTableWidgetItem * current, QTableWidgetItem * previous );
 	void info(void) ;
 	void createEncryptedpartitionUI(void) ;
 	void luksAddKeyContextMenu(void) ;
@@ -75,7 +74,8 @@ private slots :
 	void aboutMenuOption(void) ;
 	void close( void ) ;
 	void closeAll(QTableWidgetItem *,int) ;
-	void cellClicked( QTableWidgetItem * item) ;
+	void itemClicked( QTableWidgetItem * item) ;
+	void itemClicked(QTableWidgetItem *item,bool);
 	void volume_property(void) ;
 	void UIMessage(QString title,QString message) ;
 	void fonts(void) ;
@@ -92,47 +92,47 @@ private slots :
 	void minimize(void) ;
 	void minimizeToTray(void);
 	void closeAllVolumes(void) ;
-	void deleteThread() ;
+	void deleteThread(closeAllVolumesThread*) ;
 	void closeThreadFinished(runInThread *,int) ;
 	void deleteAddItemToTableThread(addItemToTableThread *);
 	void menuKeyPressed(void) ;
 	void addItemToTableByVolume(QString volume_path);
+	void ShowCreateFileUI(void);
+	void HideCreateFileUI(createfile *);
+	void showManageFavoritesUI(void);
+	void HideManageFavoritesUI(managedevicenames * );
+	void ShowCreateKeyFileUI(void);
+	void HideCreateKeyFileUI(createkeyfile *);
+	void ShowDeleteKeyContextMenu(QString);
+	void ShowDeleteKeyUI(void);
+	void HideDeleteKeyUI(luksdeletekey *);
+	void ShowAddKeyContextMenu(QString);
+	void ShowAddKeyUI(void);
+	void HideAddKeyUI(luksaddkeyUI *);
+	void HideCreatePartitionUI(createpartition *);
+	void ShowNonSystemPartitions(void);
+	void HideNonSystemPartitionUI(openpartition * );
+	void ShowPasswordDialogUI(void);
+	void HidePasswordDialogUI(password_Dialog *);
+	void ShowOpenPartitionUI(void);
+	void HideOpenPartitionUI(openpartition *);
+	void ShowPasswordDialogUIFromFavorite(QString,QString);
+	void volumeOpened(QString,QString,password_Dialog *);
 private:
+	void passwordDialogAndPartition(password_Dialog **,openpartition **);
 	void setupConnections(void) ;
 	void setupUIElements(void) ;
 	void closeEvent(QCloseEvent *) ;
 	void setUserFont(QFont) ;
-	void selectRow(int,bool) ;
+	void HighlightRow(int,int) ;
+	void StartUpAddOpenedVolumesToTable(void);
+	bool checkUUID(QString *uuid,QString entry);
+
 	Ui::zuluCrypt *ui;
-	password_Dialog *passwordDialogUI ;
-	openpartition *openPartitionUI ;
-	openpartition *NonSystemPartitions ;
-	openpartition *luksopenPartitionUI ;
-	createpartition *createpartitionUI ;
-	luksaddkeyUI *addKeyUI ;
-	luksdeletekey *deleteKeyUI ;
-	createfile *createFile ;
-	createkeyfile *createkeyFile ;
-	QString volume_path,mount_point_path, pass_phrase,mode ;
-	QMenu *m  ;
-	QMenu *trayMenu ;
-	QTableWidgetItem* item ;
-	int item_count ;
-	QSystemTrayIcon *trayIcon ;
-	QList<QMenu *> menulist ;
+	QTableWidgetItem* current_table_item ;
 	volumePropertiesThread *vpt ;
-	QString volumeProperty ;
-	QMessageBox *mp ;
-	startupupdateopenedvolumes *sov ;
-	closeAllVolumesThread *cavt ;
-	ClickedRowHighlight * crh ;
-	QString cstString ;
-	int status ;
-	int selectedRow ;
-	QMutex mutex ;
-	QMessageBox mpv ;
-	QAction * rca ;
-	bool keyPressed ;
+	QString volumeProperty ;	
+	QSystemTrayIcon *trayIcon ;
 };
 
 #endif // ZULUCRYPT_H

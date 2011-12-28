@@ -1,8 +1,8 @@
 /********************************************************************************
 ** Form generated from reading UI file 'luksdeletekey.ui'
 **
-** Created: Tue Dec 6 22:41:23 2011
-**      by: Qt User Interface Compiler version 4.7.4
+** Created: Sun Dec 25 02:06:49 2011
+**      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -59,10 +59,10 @@ public:
         groupBox->setGeometry(QRect(20, 70, 451, 61));
         rbPassphrase = new QRadioButton(groupBox);
         rbPassphrase->setObjectName(QString::fromUtf8("rbPassphrase"));
-        rbPassphrase->setGeometry(QRect(70, 10, 311, 21));
+        rbPassphrase->setGeometry(QRect(90, 10, 311, 21));
         rbPassphraseFromFile = new QRadioButton(groupBox);
         rbPassphraseFromFile->setObjectName(QString::fromUtf8("rbPassphraseFromFile"));
-        rbPassphraseFromFile->setGeometry(QRect(70, 30, 301, 21));
+        rbPassphraseFromFile->setGeometry(QRect(90, 30, 301, 21));
         pushButtonOpenKeyFile = new QPushButton(luksdeletekey);
         pushButtonOpenKeyFile->setObjectName(QString::fromUtf8("pushButtonOpenKeyFile"));
         pushButtonOpenKeyFile->setGeometry(QRect(410, 40, 31, 31));

@@ -17,41 +17,56 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef OPEN_PARTITION_H
-#define OPEN_PARTITION_H
+#ifndef MANAGEDEVICENAMES_H
+#define MANAGEDEVICENAMES_H
 
+#include <QWidget>
+#include <QString>
+#include <QTableWidgetItem>
 #include <QCloseEvent>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QAction>
 
-#include "zulucryptthreads.h"
-#include "ui_openpartition.h"
+#include "openpartition.h"
+#include "miscfunctions.h"
 
-class openpartition :  public QDialog
+namespace Ui {
+class managedevicenames;
+}
+
+class managedevicenames : public QWidget
 {
 	Q_OBJECT
+	
 public:
-	openpartition(QWidget *parent = 0);
-	virtual ~openpartition();
-signals :
-	void HideUISignal(openpartition *);
-	void clickedPartition(QString) ;
+	explicit managedevicenames(QWidget *parent = 0);
+	~managedevicenames();
+signals:
+	void ShowPartitionUI(void);
+	void HideUISignal(managedevicenames *);
 public slots:
-	void tableEntryDoubleClicked(QTableWidgetItem *) ;
 	void ShowUI(void);
 	void HideUI(void);
-	void ShowNonSystemPartitions(void) ;	
+	void PartitionEntry(QString);
 private slots:
-	void ShowNonSystemPartitionsFinished(void) ;
-	void ShowSystemPartitionsFinished(void) ;
-	void EnterKeyPressed(void);
+	void Add(void);
+	void Cancel(void);
+	void DeviceAddress(void);
+	void FileAddress(void);
 	void currentItemChanged( QTableWidgetItem * current, QTableWidgetItem * previous );
+	void itemClicked(QTableWidgetItem * current);
+	void shortcutPressed(void);
+	void devicePathTextChange(QString);
+	void deletePartitionUI(void);
+
 private:
-	void HighlightRow(int, bool);	
-	Ui::PartitionView *partitionView ;
-	ShowNonSystemPartitionsThread *nonsystempartitionlist ;
-	partitionlistThread *partitionlist ;
-	int status ;
-	QAction *action ;
-	int row ;
+	void HighlightRow(int,int) ;
+	void closeEvent(QCloseEvent *) ;
+	void addEntries(QString,QString) ;
+	Ui::managedevicenames *ui;
+	openpartition *openPartitionUI ;
+	QAction * ac ;
 };
 
-#endif
+#endif // MANAGEDEVICENAMES_H

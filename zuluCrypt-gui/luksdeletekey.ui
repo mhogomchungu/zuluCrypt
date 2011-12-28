@@ -60,7 +60,7 @@
    <widget class="QRadioButton" name="rbPassphrase">
     <property name="geometry">
      <rect>
-      <x>70</x>
+      <x>90</x>
       <y>10</y>
       <width>311</width>
       <height>21</height>
@@ -73,7 +73,7 @@
    <widget class="QRadioButton" name="rbPassphraseFromFile">
     <property name="geometry">
      <rect>
-      <x>70</x>
+      <x>90</x>
       <y>30</y>
       <width>301</width>
       <height>21</height>

@@ -12,8 +12,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>659</width>
-    <height>375</height>
+    <width>722</width>
+    <height>419</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -32,8 +32,8 @@
      <rect>
       <x>10</x>
       <y>0</y>
-      <width>641</width>
-      <height>331</height>
+      <width>701</width>
+      <height>381</height>
      </rect>
     </property>
     <property name="contextMenuPolicy">
@@ -97,8 +97,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>659</width>
-     <height>20</height>
+     <width>722</width>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuOpen">
@@ -137,6 +137,7 @@
     </property>
     <addaction name="actionTray_icon"/>
     <addaction name="actionFonts"/>
+    <addaction name="actionManage_names"/>
    </widget>
    <widget class="QMenu" name="menuFavorites">
     <property name="title">
@@ -319,6 +320,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+G</string>
+   </property>
+  </action>
+  <action name="actionManage_names">
+   <property name="text">
+    <string>manage favorites</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F</string>
    </property>
   </action>
  </widget>

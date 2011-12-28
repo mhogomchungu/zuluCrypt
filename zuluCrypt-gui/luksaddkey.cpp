@@ -21,6 +21,7 @@
 #include "luksaddkey.h"
 #include "../zuluCrypt-cli/executables.h"
 #include "zulucrypt.h"
+#include "miscfunctions.h"
 
 #include <Qt>
 #include <QObject>
@@ -123,6 +124,7 @@ void luksaddkeyUI::partitionEntry(QString partition)
 void luksaddkeyUI::HideUI()
 {
 	this->hide();
+	emit HideUISignal(this);
 }
 
 void luksaddkeyUI::ShowUI()
@@ -239,6 +241,16 @@ void luksaddkeyUI::pbAdd(void)
 	if( volumePath.mid(0,2) == QString("~/"))
 		volumePath = QDir::homePath() + QString("/") + volumePath.mid(2) ;
 
+	if( volumePath.mid(0,5) == QString("UUID=")){
+		if( miscfunctions::isUUIDvalid(volumePath) == false ){
+			m.setWindowTitle(tr("ERROR!"));
+			m.setText(tr("could not find any partition with the presented UUID"));
+			m.addButton(QMessageBox::Ok);
+			m.exec() ;
+			enableAll();
+			return ;
+		}
+	}
 	if ( QFile::exists(volumePath) == false && volumePath.mid(0,5) != QString("UUID=")){
 		m.setWindowTitle(tr("ERROR!"));
 		m.setText(tr("volume path field does not point to a file or device"));
@@ -275,7 +287,7 @@ void luksaddkeyUI::pbAdd(void)
 	}
 	volumePath = volumePath.replace("\"","\"\"\"") ;
 
-	if ( zuluCrypt::isLuks(volumePath) == false ){
+	if ( miscfunctions::isLuks(volumePath) == false ){
 		m.setWindowTitle(tr("ERROR!"));
 		m.setText(tr("volume path does not point to a luks volume"));
 		m.addButton(QMessageBox::Ok);
@@ -283,7 +295,7 @@ void luksaddkeyUI::pbAdd(void)
 		enableAll();
 		return ;
 	}
-	QStringList l = zuluCrypt::luksEmptySlots(volumePath) ;
+	QStringList l = miscfunctions::luksEmptySlots(volumePath) ;
 	
 	if( l.at(0) == l.at(1)){
 		m.setWindowTitle(tr("ERROR!"));
@@ -368,7 +380,7 @@ void luksaddkeyUI::threadfinished(runInThread * lakt,int status)
 
 	switch( status ){
 		case 0 :
-			x = zuluCrypt::luksEmptySlots(volumePath);
+			x = miscfunctions::luksEmptySlots(volumePath);
 			m.setWindowTitle(tr("SUCCESS"));
 			ss = tr("key added successfully.\n") ;
 			ss = ss + x.at(0) + QString(" / ") + x.at(1) + tr(" slots are now in use") ;
@@ -398,7 +410,7 @@ void luksaddkeyUI::threadfinished(runInThread * lakt,int status)
 			break ;
 		case 11 :
 			m.setWindowTitle(tr("ERROR!"));
-			m.setText(tr("Could not find any partition with the presented UUID"));
+			m.setText(tr("could not find any partition with the presented UUID"));
 			m.addButton(QMessageBox::Ok);
 			m.exec() ;
 			break ;	

@@ -23,7 +23,9 @@ SOURCES += main.cpp\
     startupupdateopenedvolumes.cpp \
     closeallvolumesthread.cpp \
     additemtotablethread.cpp \
-    runinthread.cpp
+    runinthread.cpp \
+    miscfunctions.cpp \
+    managedevicenames.cpp
 
 HEADERS  += zulucrypt.h password_dialog.h \
     openpartition.h \
@@ -36,7 +38,9 @@ HEADERS  += zulucrypt.h password_dialog.h \
     startupupdateopenedvolumes.h \
     closeallvolumesthread.h \
     additemtotablethread.h \
-    runinthread.h
+    runinthread.h \
+    miscfunctions.h \
+    managedevicenames.h
 
 FORMS    += zulucrypt.ui password.ui \
     openpartition.ui \
@@ -44,7 +48,8 @@ FORMS    += zulucrypt.ui password.ui \
     luksdeletekey.ui \
     createpartition.ui \
     createfile.ui \
-    createkeyfile.ui
+    createkeyfile.ui \
+    managedevicenames.ui
 
 TRANSLATIONS = 
 

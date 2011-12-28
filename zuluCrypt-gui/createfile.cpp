@@ -214,7 +214,13 @@ void createfile::createFileThreadFinished()
 		return ;
 
 	emit fileCreated( path ) ;
+	HideUI();
+}
+
+void createfile::HideUI()
+{
 	this->hide();
+	emit HideUISignal(this);
 }
 
 void createfile::monitorFileGrowth()
@@ -265,7 +271,7 @@ void createfile::pbCancel()
 	creating = false ;
 	time.stop();
 	QFile::remove( path ) ;
-	this->hide();
+	HideUI();
 }
 
 createfile::~createfile()

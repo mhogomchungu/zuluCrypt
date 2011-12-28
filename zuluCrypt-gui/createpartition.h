@@ -39,17 +39,18 @@ public:
 	~createpartition();
 signals:
 	void CreateVolume(QString fileSystem,QString containterType,QString volumePath,QString passphrase,bool passphraseFromFile) ;
+	void HideUISignal(createpartition *);
 public slots:
 	void ShowPartitionUI(QString volume) ;
 	void ShowFileUI(QString volume) ;
+	void HideUI(void);
 private slots:
 	void pbCreateClicked(void) ;
 	void pbCancelClicked(void) ;
 	void rbPassphraseClicked(void);
 	void rbPasssphraseFromFileClicked(void);
 	void pbOpenKeyFile(void);
-	void threadfinished(runInThread *,int);
-	void HideUI(void);
+	void threadfinished(runInThread *,int);	
 	void rng(int) ;
 private:
 	void enableAll(void) ;

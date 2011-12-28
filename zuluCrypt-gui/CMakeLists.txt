@@ -23,6 +23,7 @@ set( MOC_FILES createfile.h
 		closeallvolumesthread.h
 		additemtotablethread.h
 		runinthread.h
+		managedevicenames.h
  )
 	
 set (SRC createfile.cpp
@@ -39,6 +40,8 @@ set (SRC createfile.cpp
 	closeallvolumesthread.cpp
 	additemtotablethread.cpp
 	runinthread.cpp
+	miscfunctions.cpp
+	managedevicenames.cpp
 )
 
 add_definitions( -D_FILE_OFFSET_BITS=64 -Wall ) 

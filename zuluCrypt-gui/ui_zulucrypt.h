@@ -1,8 +1,8 @@
 /********************************************************************************
 ** Form generated from reading UI file 'zulucrypt.ui'
 **
-** Created: Tue Dec 6 22:41:23 2011
-**      by: Qt User Interface Compiler version 4.7.4
+** Created: Mon Dec 26 18:07:51 2011
+**      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -46,6 +46,7 @@ public:
     QAction *actionMinimize_to_tray;
     QAction *action_close;
     QAction *actionClose_all_opened_volumes;
+    QAction *actionManage_names;
     QWidget *centralWidget;
     QTableWidget *tableWidget;
     QMenuBar *menuBar;
@@ -64,7 +65,7 @@ public:
             zuluCrypt->setObjectName(QString::fromUtf8("zuluCrypt"));
         zuluCrypt->setWindowModality(Qt::WindowModal);
         zuluCrypt->setEnabled(true);
-        zuluCrypt->resize(659, 375);
+        zuluCrypt->resize(722, 419);
         QIcon icon;
         icon.addFile(QString::fromUtf8("zuluCrypt.png"), QSize(), QIcon::Normal, QIcon::Off);
         zuluCrypt->setWindowIcon(icon);
@@ -110,6 +111,8 @@ public:
         action_close->setObjectName(QString::fromUtf8("action_close"));
         actionClose_all_opened_volumes = new QAction(zuluCrypt);
         actionClose_all_opened_volumes->setObjectName(QString::fromUtf8("actionClose_all_opened_volumes"));
+        actionManage_names = new QAction(zuluCrypt);
+        actionManage_names->setObjectName(QString::fromUtf8("actionManage_names"));
         centralWidget = new QWidget(zuluCrypt);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         centralWidget->setContextMenuPolicy(Qt::ActionsContextMenu);
@@ -123,7 +126,7 @@ public:
         QTableWidgetItem *__qtablewidgetitem2 = new QTableWidgetItem();
         tableWidget->setHorizontalHeaderItem(2, __qtablewidgetitem2);
         tableWidget->setObjectName(QString::fromUtf8("tableWidget"));
-        tableWidget->setGeometry(QRect(10, 0, 641, 331));
+        tableWidget->setGeometry(QRect(10, 0, 701, 381));
         tableWidget->setContextMenuPolicy(Qt::ActionsContextMenu);
         tableWidget->setFrameShadow(QFrame::Raised);
         tableWidget->setMidLineWidth(1);
@@ -140,7 +143,7 @@ public:
         zuluCrypt->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(zuluCrypt);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 659, 20));
+        menuBar->setGeometry(QRect(0, 0, 722, 22));
         menuOpen = new QMenu(menuBar);
         menuOpen->setObjectName(QString::fromUtf8("menuOpen"));
         menuCreate = new QMenu(menuBar);
@@ -179,6 +182,7 @@ public:
         menuConfigure->addAction(actionDeleteKey);
         menuOptions->addAction(actionTray_icon);
         menuOptions->addAction(actionFonts);
+        menuOptions->addAction(actionManage_names);
         menu_zc->addAction(action_minimize);
         menu_zc->addAction(actionMinimize_to_tray);
         menu_zc->addSeparator();
@@ -230,6 +234,8 @@ public:
         action_close->setShortcut(QApplication::translate("zuluCrypt", "Ctrl+Q", 0, QApplication::UnicodeUTF8));
         actionClose_all_opened_volumes->setText(QApplication::translate("zuluCrypt", "close all opened volumes", 0, QApplication::UnicodeUTF8));
         actionClose_all_opened_volumes->setShortcut(QApplication::translate("zuluCrypt", "Ctrl+G", 0, QApplication::UnicodeUTF8));
+        actionManage_names->setText(QApplication::translate("zuluCrypt", "manage favorites", 0, QApplication::UnicodeUTF8));
+        actionManage_names->setShortcut(QApplication::translate("zuluCrypt", "Ctrl+F", 0, QApplication::UnicodeUTF8));
         QTableWidgetItem *___qtablewidgetitem = tableWidget->horizontalHeaderItem(0);
         ___qtablewidgetitem->setText(QApplication::translate("zuluCrypt", "Encrypted volume path", 0, QApplication::UnicodeUTF8));
         QTableWidgetItem *___qtablewidgetitem1 = tableWidget->horizontalHeaderItem(1);

@@ -28,18 +28,20 @@
 #include <QMetaType>
 #include <QTableWidget>
 #include <QTableWidgetItem>
+#include <QMutex>
 
 class ClickedRowHighlight : public QThread
 {
 public :
-	ClickedRowHighlight(void) ;
-	void update(int,QTableWidget*, int *,int) ;
+	ClickedRowHighlight() ;
+	void update(int previous,int current,QTableWidget*) ;
+	~ClickedRowHighlight();
 private:
 	void run() ;
-	int row ;
+	int currentRow ;
+	int previousRow ;
 	QTableWidget *tableWidget ;
-	int *selectedRow ;
-	int item_count ;
+	QMutex mutex ;
 };
 
 class zuluCryptThreads : public QThread

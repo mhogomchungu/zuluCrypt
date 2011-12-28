@@ -40,7 +40,10 @@ public:
 	~createfile();
 signals :
 	void fileCreated(QString) ;
+	void HideUISignal(createfile *);
+
 public slots:
+	void HideUI();
 	void showUI(void) ;
 	void pbOpenFolder(void) ;
 	void pbCancel(void) ;

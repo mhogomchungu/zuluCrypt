@@ -36,10 +36,12 @@ public:
 signals :
 	void clickedpbAdd(QString PathToVolume, bool keyfile, QString ExistingKey,bool newkeyfile, QString NewKey ) ;
 	void pbOpenPartitionClicked(void) ;
+	void HideUISignal(luksaddkeyUI *);
 public slots:
 	void partitionEntry(QString) ;
-private slots:
 	void ShowUI(void) ;
+	void HideUI(void) ;
+private slots:	
 	void pbOpenExisitingKeyFile(void) ;
 	void pbOpenNewKeyFile(void) ;
 	void pbOpenFile(void) ;
@@ -49,8 +51,7 @@ private slots:
 	void rbNewPassphrase(void) ;
 	void rbNewPassphraseFromFile(void);
 	void pbAdd(void) ;
-	void pbCancel(void) ;
-	void HideUI(void) ;
+	void pbCancel(void) ;	
 	void threadfinished(runInThread *,int) ;
 private:
 	void disableAll(void) ;
