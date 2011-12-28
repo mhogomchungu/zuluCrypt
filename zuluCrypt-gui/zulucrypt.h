@@ -98,6 +98,7 @@ private slots :
 	void menuKeyPressed(void) ;
 	void addItemToTableByVolume(QString volume_path);
 	void ShowCreateFileUI(void);
+	void FileCreated(QString);
 	void HideCreateFileUI(createfile *);
 	void showManageFavoritesUI(void);
 	void HideManageFavoritesUI(managedevicenames * );
@@ -118,8 +119,9 @@ private slots :
 	void HideOpenPartitionUI(openpartition *);
 	void ShowPasswordDialogUIFromFavorite(QString,QString);
 	void volumeOpened(QString,QString,password_Dialog *);
+	void partitionClicked(QString);
 private:
-	void passwordDialogAndPartition(password_Dialog **,openpartition **);
+	password_Dialog *setUpPasswordDialog(void);
 	void setupConnections(void) ;
 	void setupUIElements(void) ;
 	void closeEvent(QCloseEvent *) ;
@@ -133,6 +135,7 @@ private:
 	volumePropertiesThread *vpt ;
 	QString volumeProperty ;	
 	QSystemTrayIcon *trayIcon ;
+	QAction * rca;
 };
 
 #endif // ZULUCRYPT_H

@@ -135,7 +135,7 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 		SLOT(UIMessage(QString,QString))) ;
 	sov->start();
 */
-	QAction * rca = new QAction( this ) ;
+	rca = new QAction( this ) ;
 
 	QList<QKeySequence> keys ;
 
@@ -392,7 +392,6 @@ void zuluCrypt::trayProperty()
 		f.write(data) ;
 		trayIcon->show();
 	}
-
 	f.close();
 }
 
@@ -406,34 +405,21 @@ void zuluCrypt::fonts()
 		do{
 			ba.push_front( k % 10 + '0' ) ;
 			k = k / 10 ;
-
 		}while( k != 0 ) ;
-
 		setUserFont(Font);
-
 		QString s = Font.family()+ QString("\n");
-
 		s = s + QString( ba )  + QString("\n") ;
-
 		if(Font.style() == QFont::StyleNormal)
-
 			s = s + QString("normal\n") ;
-
 		else if(Font.style() == QFont::StyleItalic)
-
 			s = s + QString("italic\n") ;
-		else
-
+			else
 			s = s + QString("oblique\n") ;
-
 		if(Font.weight() == QFont::Normal)
-
 			s = s + QString("normal\n") ;
 		else
 			s = s + QString("bold") ;
-
 		QFile f(QDir::homePath() + QString("/.zuluCrypt/font")) ;
-
 		f.open(QIODevice::WriteOnly | QIODevice::Truncate ) ;
 		f.write(s.toAscii()) ;
 		f.close();
@@ -805,11 +791,6 @@ void zuluCrypt::ShowAddKeyUI()
 	addKeyUI->ShowUI();
 }
 
-void zuluCrypt::HideAddKeyUI(luksaddkeyUI *obj)
-{
-	obj->deleteLater();
-}
-
 void zuluCrypt::ShowDeleteKeyContextMenu(QString key)
 {
 	luksdeletekey *deleteKeyUI = new luksdeletekey(this);
@@ -834,11 +815,6 @@ void zuluCrypt::ShowDeleteKeyUI()
 	deleteKeyUI->ShowUI();
 }
 
-void zuluCrypt::HideDeleteKeyUI(luksdeletekey *obj)
-{
-	obj->deleteLater();
-}
-
 void zuluCrypt::ShowCreateKeyFileUI()
 {
 	createkeyfile *createkeyFile = new createkeyfile(this);
@@ -849,11 +825,6 @@ void zuluCrypt::ShowCreateKeyFileUI()
 		this,
 		SLOT(HideCreateKeyFileUI(createkeyfile *)));
 	createkeyFile->ShowUI();
-}
-
-void zuluCrypt::HideCreateKeyFileUI(createkeyfile *obj)
-{
-	obj->deleteLater();
 }
 
 void zuluCrypt::showManageFavoritesUI()
@@ -868,22 +839,25 @@ void zuluCrypt::showManageFavoritesUI()
 	managedevicenamesUI->ShowUI();
 }
 
-void zuluCrypt::HideManageFavoritesUI(managedevicenames * obj)
-{
-	obj->deleteLater();
-}
-
-void zuluCrypt::HideCreatePartitionUI(createpartition *obj)
-{
-	obj->deleteLater();
-}
-
 void zuluCrypt::ShowCreateFileUI()
 {
 	createfile *createFile = new createfile(this);
 	createFile->setWindowFlags(Qt::Window | Qt::Dialog);
 	createFile->setFont(this->font());
 
+	connect(createFile,
+		SIGNAL(HideUISignal(createfile *)),
+		this,
+		SLOT(HideCreateFileUI(createfile *)));
+	connect(createFile,
+		SIGNAL(fileCreated(QString)),
+		this,
+		SLOT(FileCreated(QString)));
+	createFile->showUI();
+}
+
+void zuluCrypt::FileCreated(QString file)
+{
 	createpartition *createpartitionUI = new createpartition(this);
 	createpartitionUI->setWindowFlags(Qt::Window | Qt::Dialog);
 	createpartitionUI->setFont(this->font());
@@ -893,20 +867,7 @@ void zuluCrypt::ShowCreateFileUI()
 		this,
 		SLOT(HideCreatePartitionUI(createpartition *)));
 
-	connect(createFile,
-		SIGNAL(fileCreated(QString)),
-		createpartitionUI,
-		SLOT(ShowFileUI(QString)));
-	connect(createFile,
-		SIGNAL(HideUISignal(createfile *)),
-		this,
-		SLOT(HideCreateFileUI(createfile *)));
-	createFile->showUI();
-}
-
-void zuluCrypt::HideCreateFileUI(createfile *obj)
-{
-	obj->deleteLater();
+	createpartitionUI->ShowFileUI(file);
 }
 
 void zuluCrypt::ShowNonSystemPartitions()
@@ -937,50 +898,6 @@ void zuluCrypt::ShowNonSystemPartitions()
 	NonSystemPartitions->ShowNonSystemPartitions();
 }
 
-void zuluCrypt::HideNonSystemPartitionUI(openpartition * obj)
-{
-	obj->deleteLater();
-}
-
-void zuluCrypt::passwordDialogAndPartition(password_Dialog **pd,openpartition **op)
-{
-	password_Dialog *passwordDialogUI  = new password_Dialog(this) ;
-	passwordDialogUI->setWindowFlags(Qt::Window | Qt::Dialog);
-	passwordDialogUI->setFont(this->font());
-
-	*pd = passwordDialogUI ;
-
-	openpartition *openPartitionUI = new openpartition(this);
-	openPartitionUI->setWindowFlags(Qt::Window | Qt::Dialog);
-	openPartitionUI->setFont(this->font());
-
-	*op = openPartitionUI ;
-	connect(passwordDialogUI,
-		SIGNAL(addItemToTable(QString,QString)),
-		this,
-		SLOT(addItemToTable(QString,QString))) ;
-
-	connect(passwordDialogUI,
-		SIGNAL(volumeOpened(QString,QString,password_Dialog *)),
-		this,
-		SLOT(volumeOpened(QString,QString,password_Dialog *))) ;
-
-	connect(openPartitionUI,
-		SIGNAL(clickedPartition(QString)),
-		passwordDialogUI,
-		SLOT(clickedPartitionOption(QString)));
-
-	connect(passwordDialogUI,
-		SIGNAL(HideUISignal(password_Dialog *)),
-		this,
-		SLOT(HidePasswordDialogUI(password_Dialog *)));
-
-	connect(openPartitionUI,
-		SIGNAL(HideUISignal(openpartition *)),
-		this,
-		SLOT(HideOpenPartitionUI(openpartition *)));
-}
-
 void zuluCrypt::volumeOpened(QString dev,QString m_point,password_Dialog *pd)
 {
 	addItemToTable(dev,m_point);
@@ -988,28 +905,60 @@ void zuluCrypt::volumeOpened(QString dev,QString m_point,password_Dialog *pd)
 	pd->deleteLater();
 }
 
+password_Dialog * zuluCrypt::setUpPasswordDialog()
+{
+	password_Dialog *passwordDialogUI  = new password_Dialog(this) ;
+	passwordDialogUI->setWindowFlags(Qt::Window | Qt::Dialog);
+	passwordDialogUI->setFont(this->font());
+
+	connect(passwordDialogUI,
+		SIGNAL(HideUISignal(password_Dialog *)),
+		this,
+		SLOT(HidePasswordDialogUI(password_Dialog *)));
+
+	connect(passwordDialogUI,
+		SIGNAL(volumeOpened(QString,QString,password_Dialog *)),
+		this,
+		SLOT(volumeOpened(QString,QString,password_Dialog *))) ;
+
+	connect(passwordDialogUI,
+		SIGNAL(addItemToTable(QString,QString)),
+		this,
+		SLOT(addItemToTable(QString,QString))) ;
+
+	return passwordDialogUI ;
+}
+
 void zuluCrypt::ShowPasswordDialogUI()
 {
-	password_Dialog *pd = NULL;
-	openpartition * op = NULL;
-	passwordDialogAndPartition(&pd,&op);
-	pd->ShowUI();
+	setUpPasswordDialog()->ShowUI();
 }
 
 void zuluCrypt::ShowPasswordDialogUIFromFavorite(QString x, QString y)
 {
-	password_Dialog *pd = NULL;
-	openpartition * op = NULL;
-	passwordDialogAndPartition(&pd,&op);
-	pd->ShowUI(x,y);
+	setUpPasswordDialog()->ShowUI(x,y);
+}
+
+void zuluCrypt::partitionClicked(QString partition)
+{
+	setUpPasswordDialog()->clickedPartitionOption(partition);
 }
 
 void zuluCrypt::ShowOpenPartitionUI()
 {
-	password_Dialog *pd = NULL;
-	openpartition * op = NULL;
-	passwordDialogAndPartition(&pd,&op);
-	op->ShowUI();
+	openpartition *openPartitionUI = new openpartition(this);
+	openPartitionUI->setWindowFlags(Qt::Window | Qt::Dialog);
+	openPartitionUI->setFont(this->font());
+
+	connect(openPartitionUI,
+		SIGNAL(clickedPartition(QString)),
+		this,
+		SLOT(partitionClicked(QString)));
+
+	connect(openPartitionUI,
+		SIGNAL(HideUISignal(openpartition *)),
+		this,
+		SLOT(HideOpenPartitionUI(openpartition *)));
 }
 
 void zuluCrypt::HideOpenPartitionUI(openpartition *obj)
@@ -1022,7 +971,45 @@ void zuluCrypt::HidePasswordDialogUI(password_Dialog *obj)
 	obj->deleteLater();
 }
 
+void zuluCrypt::HideAddKeyUI(luksaddkeyUI *obj)
+{
+	obj->deleteLater();
+}
+
+void zuluCrypt::HideDeleteKeyUI(luksdeletekey *obj)
+{
+	obj->deleteLater();
+}
+
+void zuluCrypt::HideCreateKeyFileUI(createkeyfile *obj)
+{
+	obj->deleteLater();
+}
+
+void zuluCrypt::HideManageFavoritesUI(managedevicenames * obj)
+{
+	obj->deleteLater();
+}
+
+void zuluCrypt::HideCreatePartitionUI(createpartition *obj)
+{
+	obj->deleteLater();
+}
+
+void zuluCrypt::HideCreateFileUI(createfile *obj)
+{
+	obj->deleteLater();
+}
+
+void zuluCrypt::HideNonSystemPartitionUI(openpartition * obj)
+{
+	obj->deleteLater();
+}
+
 zuluCrypt::~zuluCrypt()
 {
+	delete rca ;
 	delete ui;
+	delete trayIcon;
+	delete vpt ;
 }

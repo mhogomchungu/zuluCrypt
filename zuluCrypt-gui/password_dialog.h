@@ -45,10 +45,10 @@ public slots:
 	void HideUI(void);
 	void ShowUI(void);
 	void ShowUI(QString volumePath,QString mount_point) ;
+	void clickedPartitionOption(QString);
 private slots :
 	void buttonOpenClicked(void) ;
-	void mount_point(void);
-	void clickedPartitionOption(QString);
+	void mount_point(void);	
 	void clickedPassPhraseFromFileButton(void) ;
 	void passphraseFromFileOption(void) ;
 	void passphraseOption(void) ;	

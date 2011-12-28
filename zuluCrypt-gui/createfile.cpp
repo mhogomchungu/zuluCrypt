@@ -241,7 +241,7 @@ void createfile::pbOpenFolder()
 void createfile::pbCancel()
 {
 	if( creating == false ){
-		this->hide();
+		HideUI();
 		return ;
 	}
 	mb.setWindowTitle(tr("terminating file creation process"));
