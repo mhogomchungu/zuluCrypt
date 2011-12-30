@@ -17,8 +17,9 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "createfile.h"
 #include "ui_createfile.h"
+#include "createfile.h"
+#include "miscfunctions.h"
 #include "../zuluCrypt-cli/executables.h"
 
 #include <QFileDialog>
@@ -28,27 +29,27 @@
 
 createfile::createfile(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::createfile)
+    m_ui(new Ui::createfile)
 {
-	ui->setupUi(this);
+	m_ui->setupUi(this);
 	this->setFixedSize(this->size());
 
-	mb.addButton(QMessageBox::Yes);
-	mb.addButton(QMessageBox::No);
-	mb.setDefaultButton(QMessageBox::No);
+	m_mb.addButton(QMessageBox::Yes);
+	m_mb.addButton(QMessageBox::No);
+	m_mb.setDefaultButton(QMessageBox::No);
 
-	ui->progressBar->setMinimum(0);
-	ui->progressBar->setMaximum(100);
-	ui->progressBar->setValue(0);
+	m_ui->progressBar->setMinimum(0);
+	m_ui->progressBar->setMaximum(100);
+	m_ui->progressBar->setValue(0);
 
-	ui->pbOpenFolder->setIcon(QIcon(QString(":/folder.png")));
+	m_ui->pbOpenFolder->setIcon(QIcon(QString(":/folder.png")));
 
-	time.setInterval(250);
+	m_time.setInterval(250);
 
-	connect((QObject *)&time,SIGNAL(timeout()),this,SLOT(monitorFileGrowth()));
-	connect(ui->pbCancel,SIGNAL(clicked()),this,SLOT(pbCancel())) ;
-	connect(ui->pbOpenFolder,SIGNAL(clicked()),this,SLOT(pbOpenFolder())) ;
-	connect(ui->pbCreate,SIGNAL(clicked()),this,SLOT(pbCreate())) ;
+	connect((QObject *)&m_time,SIGNAL(timeout()),this,SLOT(monitorFileGrowth()));
+	connect(m_ui->pbCancel,SIGNAL(clicked()),this,SLOT(pbCancel())) ;
+	connect(m_ui->pbOpenFolder,SIGNAL(clicked()),this,SLOT(pbOpenFolder())) ;
+	connect(m_ui->pbCreate,SIGNAL(clicked()),this,SLOT(pbCreate())) ;
 }
 
 void createfile::closeEvent(QCloseEvent *e)
@@ -59,161 +60,156 @@ void createfile::closeEvent(QCloseEvent *e)
 
 void createfile::enableAll()
 {
-	ui->lineEditFileName->setEnabled(true);
-	ui->lineEditFilePath->setEnabled(true);
-	ui->lineEditFileSize->setEnabled(true);
-	ui->comboBox->setEnabled(true);
-	ui->comboBoxRNG->setEnabled(true);
-	ui->pbOpenFolder->setEnabled(true);
-	ui->label->setEnabled(true);
-	ui->label_2->setEnabled(true);
-	ui->label_3->setEnabled(true);
-	ui->label_4->setEnabled(true);
-	ui->label_5->setEnabled(true);
-	ui->pbCreate->setEnabled(true);
+	m_ui->lineEditFileName->setEnabled(true);
+	m_ui->lineEditFilePath->setEnabled(true);
+	m_ui->lineEditFileSize->setEnabled(true);
+	m_ui->comboBox->setEnabled(true);
+	m_ui->comboBoxRNG->setEnabled(true);
+	m_ui->pbOpenFolder->setEnabled(true);
+	m_ui->label->setEnabled(true);
+	m_ui->label_2->setEnabled(true);
+	m_ui->label_3->setEnabled(true);
+	m_ui->label_4->setEnabled(true);
+	m_ui->label_5->setEnabled(true);
+	m_ui->pbCreate->setEnabled(true);
 }
 
 void createfile::disableAll()
 {
-	ui->pbCreate->setEnabled(false);
-	ui->lineEditFileName->setEnabled(false);
-	ui->lineEditFilePath->setEnabled(false);
-	ui->lineEditFileSize->setEnabled(false);
-	ui->comboBox->setEnabled(false);
-	ui->comboBoxRNG->setEnabled(false);
-	ui->pbOpenFolder->setEnabled(false);
-	ui->label->setEnabled(false);
-	ui->label_2->setEnabled(false);
-	ui->label_3->setEnabled(false);
-	ui->label_4->setEnabled(false);
-	ui->label_5->setEnabled(false);
+	m_ui->pbCreate->setEnabled(false);
+	m_ui->lineEditFileName->setEnabled(false);
+	m_ui->lineEditFilePath->setEnabled(false);
+	m_ui->lineEditFileSize->setEnabled(false);
+	m_ui->comboBox->setEnabled(false);
+	m_ui->comboBoxRNG->setEnabled(false);
+	m_ui->pbOpenFolder->setEnabled(false);
+	m_ui->label->setEnabled(false);
+	m_ui->label_2->setEnabled(false);
+	m_ui->label_3->setEnabled(false);
+	m_ui->label_4->setEnabled(false);
+	m_ui->label_5->setEnabled(false);
 }
 
 void createfile::showUI()
 {
 	enableAll();
-	ui->comboBox->setCurrentIndex(1) ;
-	ui->comboBoxRNG->setCurrentIndex(0);
-	ui->lineEditFileName->clear();
-	ui->lineEditFilePath->setText(QDir::homePath());
-	ui->lineEditFileSize->clear();
-	ui->progressBar->setValue(0);
-	ui->lineEditFileName->setFocus();
-	creating = false ;
+	m_ui->comboBox->setCurrentIndex(1) ;
+	m_ui->comboBoxRNG->setCurrentIndex(0);
+	m_ui->lineEditFileName->clear();
+	m_ui->lineEditFilePath->setText(QDir::homePath());
+	m_ui->lineEditFileSize->clear();
+	m_ui->progressBar->setValue(0);
+	m_ui->lineEditFileName->setFocus();
+	m_creating = false ;
 	this->show();
+}
+
+void createfile::UIMessage(QString title, QString message)
+{
+	QMessageBox m ;
+	m.setParent(this);
+	m.setWindowFlags(Qt::Window | Qt::Dialog);
+	m.setText(message);
+	m.setWindowTitle(title);
+	m.addButton(QMessageBox::Ok);
+	m.setFont(this->font());
+	m.exec() ;
 }
 
 void createfile::pbCreate()
 {
-	QMessageBox m ;
-	m.setWindowTitle(tr("ERROR!"));
-	m.setParent(this);
-	m.setWindowFlags(Qt::Window | Qt::Dialog);
-	m.addButton(QMessageBox::Ok);
-	m.setFont(this->font());
+	QString fileName = m_ui->lineEditFileName->text() ;
+	QString filePath = m_ui->lineEditFilePath->text() ;
+	QString fileSize = m_ui->lineEditFileSize->text() ;
 
-	if(ui->lineEditFileName->text().isEmpty()){
-		m.setText(tr("file name field is empty"));
-		m.exec() ;
-		return ;
-	}
-	if(ui->lineEditFilePath->text().isEmpty()){
-		m.setText(tr("file path field is empty"));
-		m.exec() ;
-		return ;
-	}
-	if(ui->lineEditFileSize->text().isEmpty()){
-		m.setText(tr("file size field is empty"));
-		m.exec() ;
-		return ;
-	}
-	path = ui->lineEditFilePath->text() ;
+	m_path = m_ui->lineEditFilePath->text() ;
 
-	if ( path.mid(0,2) == QString("~/"))
-		path = QDir::homePath() + QString("/") + path.mid(2) ;
-
-	QDir dir(path) ;
-	if(dir.exists() == false ){
-		m.setText(tr("destination folder does not exist"));
-		m.exec() ;
+	if(fileName == QString("")){
+		UIMessage(tr("ERROR!"),("file name field is empty"));
 		return ;
 	}
-	if(QFile::exists(path + QString("/") + ui->lineEditFileName->text())){
-		m.setText(tr("a file or folder with the same name already exist at destination address"));
-		m.exec() ;
+	if(filePath == QString("")){
+		UIMessage(tr("ERROR!"),("file path field is empty"));
+		return ;
+	}
+	if(fileSize == QString("")){
+		UIMessage(tr("ERROR!"),("file size field is empty"));
+		return ;
+	}	
+	if ( m_path.mid(0,2) == QString("~/"))
+		m_path = QDir::homePath() + QString("/") + m_path.mid(2) ;
+
+	if(miscfunctions::exists(m_path) == false ){
+		UIMessage(tr("ERROR!"),("destination folder does not exist"));
+		return ;
+	}
+	if(miscfunctions::exists(m_path + QString("/") + fileName)){
+		UIMessage(tr("ERROR!"),("a file or folder with the same name already exist at destination address"));
 		return ;
 	}
 	bool test ;
 
-	ui->lineEditFileSize->text().toInt(&test) ;
+	fileSize.toInt(&test) ;
 
 	if( test == false ){
-		m.setText(tr("Illegal character in the file size field.Only digits are allowed"));
-		m.exec() ;
+		UIMessage(tr("ERROR!"),("Illegal character in the file size field.Only digits are allowed"));
 		return ;
 	}
-	QString source = ui->comboBoxRNG->currentText() ;
+	QString source = m_ui->comboBoxRNG->currentText() ;
 
-	path = path + QString("/") +ui->lineEditFileName->text();
+	m_path = m_path + QString("/") + fileName;
 
-	QFile f( path ) ;
-
-	if( f.exists() == true){
-		m.setText(tr("file with the same name and at the destination folder already exist"));
-		m.exec() ;
+	if( miscfunctions::exists(m_path) == true){
+		UIMessage(tr("ERROR!"),("file with the same name and at the destination folder already exist"));
 		return ;
 	}
+	QFile f(m_path);
 	f.open(QIODevice::WriteOnly) ;
 
 	if( f.putChar('X') == false ){
 		f.close();
-		m.setText(tr("you dont seem to have writing access to the destination folder"));
-		m.exec() ;
+		UIMessage(tr("ERROR!"),("you dont seem to have writing access to the destination folder"));
 		return ;
 	}
 	f.close();
 	f.remove() ;
-
-	QString size ;
-
-	switch( ui ->comboBox->currentIndex()){
-		case 0 :fileSize = ui->lineEditFileSize->text().toDouble() * 1024 ;
+	switch( m_ui ->comboBox->currentIndex()){
+		case 0 :m_fileSize = fileSize.toDouble() * 1024 ;
 			break ;
-		case 1 :fileSize = ui->lineEditFileSize->text().toDouble() * 1024 * 1024 ;
+		case 1 :m_fileSize = fileSize.toDouble() * 1024 * 1024 ;
 			break ;
-		case 2 :fileSize = ui->lineEditFileSize->text().toDouble() * 1024 * 1024  * 1024;
+		case 2 :m_fileSize = fileSize.toDouble() * 1024 * 1024  * 1024;
 			break ;
 	}
-	if( fileSize < 3145728 ){
-		m.setText(tr("container file must be bigger than 3MB"));
-		m.exec() ;
+	if( m_fileSize < 3145728 ){
+		UIMessage(tr("ERROR!"),("container file must be bigger than 3MB"));
 		return ;
 	}
 	disableAll();
-	time.start();
-	creating = true ;
-	terminated = false ;
+	m_time.start();
+	m_creating = true ;
+	m_terminated = false ;
 	
-	cft = new createFileThread( source, path,fileSize,1 ) ;
+	m_cft = new createFileThread( source, m_path,m_fileSize,1 ) ;
 
-	connect(cft,SIGNAL(finished()),
+	connect(m_cft,SIGNAL(finished()),
 		this,SLOT(createFileThreadFinished()));
-	cft->start();
+	m_cft->start();
 }
 
 void createfile::createFileThreadFinished()
 {
-	time.stop();
-	delete cft ;
+	m_time.stop();
+	m_cft->deleteLater(); ;
 
-	if( mb.isVisible() == true ){
-		mb.hide();
-		Return = true ;
+	if( m_mb.isVisible() == true ){
+		m_mb.hide();
+		m_return = true ;
 	}
-	if( terminated == true )
+	if( m_terminated == true )
 		return ;
 
-	emit fileCreated( path ) ;
+	emit fileCreated( m_path ) ;
 	HideUI();
 }
 
@@ -225,8 +221,8 @@ void createfile::HideUI()
 
 void createfile::monitorFileGrowth()
 {
-	QFileInfo f( path ) ;
-	ui->progressBar->setValue(f.size() * 100 / fileSize);
+	QFileInfo f( m_path ) ;
+	m_ui->progressBar->setValue(f.size() * 100 / m_fileSize);
 }
 
 void createfile::pbOpenFolder()
@@ -235,24 +231,24 @@ void createfile::pbOpenFolder()
 						      tr("Select Path to where the file will be created"),
 						      QDir::homePath(),QFileDialog::ShowDirsOnly) ;
 
-	ui->lineEditFilePath->setText( Z );
+	m_ui->lineEditFilePath->setText( Z );
 }
 
 void createfile::pbCancel()
 {
-	if( creating == false ){
+	if( m_creating == false ){
 		HideUI();
 		return ;
 	}
-	mb.setWindowTitle(tr("terminating file creation process"));
-	mb.setParent(this);
-	mb.setWindowFlags(Qt::Window | Qt::Dialog);
-	mb.setText(tr("are you sure you want to stop file creation process?"));
-	mb.setFont(this->font());
+	m_mb.setWindowTitle(tr("terminating file creation process"));
+	m_mb.setParent(this);
+	m_mb.setWindowFlags(Qt::Window | Qt::Dialog);
+	m_mb.setText(tr("are you sure you want to stop file creation process?"));
+	m_mb.setFont(this->font());
 
-	Return = false ;
+	m_return = false ;
 
-	if(mb.exec() == QMessageBox::No)
+	if(m_mb.exec() == QMessageBox::No)
 		return ;
 	/*
 	  Below check is necessary because a user may cancel a file
@@ -263,18 +259,18 @@ void createfile::pbCancel()
 	  The value set in that function will have an end result of autoselecting "no"
 	  to the user.
 	  */
-	if( Return == true )
+	if( m_return == true )
 		return ;
 
-	cft->terminate();
-	terminated = true ;
-	creating = false ;
-	time.stop();
-	QFile::remove( path ) ;
+	m_cft->terminate();
+	m_terminated = true ;
+	m_creating = false ;
+	m_time.stop();
+	QFile::remove( m_path ) ;
 	HideUI();
 }
 
 createfile::~createfile()
 {
-	delete ui;
+	delete m_ui;
 }

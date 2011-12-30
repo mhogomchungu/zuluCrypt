@@ -34,32 +34,31 @@
 openpartition::openpartition(QWidget *parent ) :
 	QDialog(parent)
 {
-	partitionView = new Ui::PartitionView() ;
-	partitionView->setupUi(this);
-	row = -1 ;
+	m_ui = new Ui::PartitionView() ;
+	m_ui->setupUi(this);
 	this->setFixedSize(this->size());
-	connect(partitionView->tableWidgetPartitionView,
+	connect(m_ui->tableWidget,
 		SIGNAL(itemDoubleClicked(QTableWidgetItem *)),
 		this,
 		SLOT(tableEntryDoubleClicked(QTableWidgetItem *))) ;
 
-	connect(partitionView->tableWidgetPartitionView,
+	connect(m_ui->tableWidget,
 		SIGNAL(currentItemChanged( QTableWidgetItem * , QTableWidgetItem * )),
 		this,
 		SLOT(currentItemChanged( QTableWidgetItem * , QTableWidgetItem * ))) ;
 
-	action = new QAction( this ) ;
+	m_action = new QAction( this ) ;
 	QList<QKeySequence> keys ;
 	keys.append( Qt::Key_Enter );
 	keys.append( Qt::Key_Return );
-	action->setShortcuts( keys ) ;
-	connect(action,
+	m_action->setShortcuts( keys ) ;
+	connect(m_action,
 		SIGNAL(triggered()),
 		this,
 		SLOT(EnterKeyPressed()));
-	this->addAction( action );
+	this->addAction( m_action );
 
-	QTableWidget *tw = partitionView->tableWidgetPartitionView ;
+	QTableWidget *tw = m_ui->tableWidget ;
 	tw->setColumnWidth(0,90);
 	tw->setColumnWidth(1,90);
 	tw->setColumnWidth(2,90);
@@ -74,12 +73,12 @@ openpartition::openpartition(QWidget *parent ) :
 
 	tw->horizontalHeader()->setVisible(true);
 
-	partitionView->checkBoxUUID->setFont(this->font());
+	m_ui->checkBoxUUID->setFont(this->font());
 }
 
 void openpartition::EnterKeyPressed()
 {	
-	QTableWidget *tw = partitionView->tableWidgetPartitionView ;
+	QTableWidget *tw = m_ui->tableWidget ;
 	QTableWidgetItem *it = tw->currentItem() ;
 	if( it == NULL )
 		return ;
@@ -88,19 +87,19 @@ void openpartition::EnterKeyPressed()
 
 void openpartition::ShowNonSystemPartitionsFinished()
 {
-	delete nonsystempartitionlist ;
-	if(partitionView->tableWidgetPartitionView->rowCount() > 0){
+	m_nonsystempartitionlist->deleteLater();
+	if(m_ui->tableWidget->rowCount() > 0){
 		HighlightRow(0,true) ;
-		partitionView->tableWidgetPartitionView->setCurrentCell(0,2);
+		m_ui->tableWidget->setCurrentCell(0,2);
 	}
 }
 
 void openpartition::ShowSystemPartitionsFinished()
 {
-	delete partitionlist ;
-	if(partitionView->tableWidgetPartitionView->rowCount() > 0){
+	m_partitionlist->deleteLater(); ;
+	if(m_ui->tableWidget->rowCount() > 0){
 		HighlightRow(0,true) ;
-		partitionView->tableWidgetPartitionView->setCurrentCell(0,2);
+		m_ui->tableWidget->setCurrentCell(0,2);
 	}
 }
 
@@ -114,38 +113,38 @@ void openpartition::currentItemChanged(QTableWidgetItem *current, QTableWidgetIt
 
 void openpartition::HighlightRow(int r, bool b)
 {
-	partitionView->tableWidgetPartitionView->item(r,0)->setSelected(b);
-	partitionView->tableWidgetPartitionView->item(r,1)->setSelected(b);
-	partitionView->tableWidgetPartitionView->item(r,2)->setSelected(b);
-	partitionView->tableWidgetPartitionView->item(r,3)->setSelected(b);
-	partitionView->tableWidgetPartitionView->item(r,4)->setSelected(b);
+	m_ui->tableWidget->item(r,0)->setSelected(b);
+	m_ui->tableWidget->item(r,1)->setSelected(b);
+	m_ui->tableWidget->item(r,2)->setSelected(b);
+	m_ui->tableWidget->item(r,3)->setSelected(b);
+	m_ui->tableWidget->item(r,4)->setSelected(b);
 	if(b==true)
-		partitionView->tableWidgetPartitionView->setCurrentCell(r,4);
+		m_ui->tableWidget->setCurrentCell(r,4);
 }
 
 void openpartition::ShowNonSystemPartitions()
 {
 	this->setWindowTitle(tr("select a partition to create an encrypted volume in"));
-	nonsystempartitionlist  = new
-			ShowNonSystemPartitionsThread(partitionView,this->font());
+	m_nonsystempartitionlist  = new
+			ShowNonSystemPartitionsThread(m_ui,this->font());
 
-	connect(nonsystempartitionlist,
+	connect(m_nonsystempartitionlist,
 		SIGNAL(finished()),
 		this,
 		SLOT(ShowNonSystemPartitionsFinished())) ;
-	nonsystempartitionlist->start();
+	m_nonsystempartitionlist->start();
 	this->show();
 }
 
 void openpartition::ShowUI()
 {	
 	this->setWindowTitle(tr("select an encrypted partition to open"));
-	partitionlist = new partitionlistThread(partitionView,this->font()) ;
-	connect(partitionlist,
+	m_partitionlist = new partitionlistThread(m_ui,this->font()) ;
+	connect(m_partitionlist,
 		SIGNAL(finished()),
 		this,
 		SLOT(ShowSystemPartitionsFinished()));
-	partitionlist->start();
+	m_partitionlist->start();
 	this->show();
 }
 
@@ -158,9 +157,9 @@ void openpartition::HideUI()
 void openpartition::tableEntryDoubleClicked(QTableWidgetItem * item)
 {
 	QString dev ;
-	QTableWidget *tw = partitionView->tableWidgetPartitionView ;
+	QTableWidget *tw = m_ui->tableWidget ;
 
-	if(partitionView->checkBoxUUID->isChecked() == true)
+	if(m_ui->checkBoxUUID->isChecked() == true)
 		dev = QString("UUID=\"") + tw->item(item->row(),4)->text() + QString("\"") ;
 	else
 		dev = tw->item(item->row(),0)->text() ;
@@ -169,8 +168,14 @@ void openpartition::tableEntryDoubleClicked(QTableWidgetItem * item)
 	HideUI();
 }
 
+void openpartition::closeEvent(QCloseEvent *e)
+{
+	e->ignore();
+	HideUI();
+}
+
 openpartition::~openpartition()
 {
-	delete partitionView ;
-	delete action ;
+	delete m_ui ;
+	delete m_action ;
 }

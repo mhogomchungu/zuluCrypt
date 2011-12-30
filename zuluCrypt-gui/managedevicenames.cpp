@@ -23,126 +23,128 @@
 
 managedevicenames::managedevicenames(QWidget *parent) :
         QWidget(parent),
-        ui(new Ui::managedevicenames)
+	m_ui(new Ui::managedevicenames)
 {
-	ui->setupUi(this);
-	connect(ui->pbDeviceAddress,
+	m_ui->setupUi(this);
+	connect(m_ui->pbDeviceAddress,
 		SIGNAL(clicked()),
 		this,
-		SLOT(DeviceAddress()));
-	connect(ui->pbAdd,
+		SLOT(deviceAddress()));
+	connect(m_ui->pbAdd,
 		SIGNAL(clicked()),
 		this,
-		SLOT(Add()));
-	connect(ui->pbFileAddress,
+		SLOT(add()));
+	connect(m_ui->pbFileAddress,
 		SIGNAL(clicked()),
 		this,
-		SLOT(FileAddress()));
-	connect(ui->pbCancel,
+		SLOT(fileAddress()));
+	connect(m_ui->pbCancel,
 		SIGNAL(clicked()),
 		this,
-		SLOT(Cancel()));
-	connect(ui->tableWidget,
+		SLOT(cancel()));
+	connect(m_ui->tableWidget,
 		SIGNAL(currentItemChanged(QTableWidgetItem*,QTableWidgetItem*)),
 		this,
 		SLOT(currentItemChanged(QTableWidgetItem*,QTableWidgetItem*)));
-	connect(ui->tableWidget,
+	connect(m_ui->tableWidget,
 		SIGNAL(itemClicked(QTableWidgetItem*)),
 		this,
 		SLOT(itemClicked(QTableWidgetItem*)));
-	connect(ui->lineEditDeviceAddress,
+	connect(m_ui->lineEditDeviceAddress,
 		SIGNAL(textChanged(QString)),
 		this,
 		SLOT(devicePathTextChange(QString)));
 
-	ui->pbFileAddress->setIcon(QIcon(QString(":/keyfile.png")));
-	ui->pbDeviceAddress->setIcon(QIcon(QString(":/partition.png")));
-	ac = new QAction( this ) ;
+	m_ui->pbFileAddress->setIcon(QIcon(QString(":/keyfile.png")));
+	m_ui->pbDeviceAddress->setIcon(QIcon(QString(":/partition.png")));
+	m_ac = new QAction( this ) ;
 	QList<QKeySequence> keys ;
 	keys.append( Qt::Key_Enter );
 	keys.append( Qt::Key_Return );
-	ac->setShortcuts(keys) ;
-	connect(ac,SIGNAL(triggered()),this,SLOT(shortcutPressed())) ;
-	this->addAction( ac );
+	m_ac->setShortcuts(keys) ;
+	connect(m_ac,SIGNAL(triggered()),this,SLOT(shortcutPressed())) ;
+	this->addAction( m_ac );
 }
 
 void managedevicenames::devicePathTextChange(QString txt)
 {
 	if(txt == QString("")){
-		ui->lineEditMountPath->setText( "" ) ;
+		m_ui->lineEditMountPath->setText( "" ) ;
 		return ;		
 	}
 	QString ed = QDir::homePath() + QString("/") + txt.split("/").last() ;
-	ui->lineEditMountPath->setText( ed );
+	m_ui->lineEditMountPath->setText( ed );
 }
 
 void managedevicenames::shortcutPressed()
 {
-	QTableWidgetItem *it = ui->tableWidget->currentItem() ;
+	QTableWidgetItem *it = m_ui->tableWidget->currentItem() ;
 	if( it == NULL )
 		return ;
 	itemClicked( it );
 }
-void managedevicenames::deletePartitionUI()
+
+void managedevicenames::deviceAddress()
 {
-	openPartitionUI->deleteLater();
+	openpartition *openPartition = new openpartition(this) ;
+	openPartition->setWindowFlags(Qt::Window | Qt::Dialog);
+	openPartition->setFont(this->font());
+
+	connect(openPartition,
+		SIGNAL(clickedPartition(QString)),
+		this,
+		SLOT(PartitionEntry(QString)));
+	connect(openPartition,
+		SIGNAL(HideUISignal(openpartition *)),
+		this,
+		SLOT(deletePartitionUI(openpartition *)));
+
+	openPartition->ShowUI();
+}
+
+void managedevicenames::deletePartition(openpartition *obj)
+{
+	m_ui->tableWidget->setFocus();
+	obj->deleteLater();
 }
 
 void managedevicenames::ShowUI()
 {
-	openPartitionUI = new openpartition(this) ;
-	openPartitionUI->setWindowFlags(Qt::Window | Qt::Dialog);
-
-	ui->tableWidget->setColumnWidth(0,296);
-	ui->tableWidget->setColumnWidth(1,296);
-
-	connect(this,
-		SIGNAL(ShowPartitionUI()),
-		openPartitionUI,
-		SLOT(ShowUI()));
-	connect(openPartitionUI,
-		SIGNAL(clickedPartition(QString)),
-		this,
-		SLOT(PartitionEntry(QString)));
-	connect(openPartitionUI,
-		SIGNAL(HideUISignal()),
-		this,
-		SLOT(deletePartitionUI()));
-
-	this->show();
-
-	while( ui->tableWidget->rowCount() > 0)
-		ui->tableWidget->removeRow(0);
-
+	m_ui->tableWidget->setColumnWidth(0,296);
+	m_ui->tableWidget->setColumnWidth(1,296);
+	while( m_ui->tableWidget->rowCount() > 0)
+		m_ui->tableWidget->removeRow(0);
 	QStringList entries = miscfunctions::readFavorites() ;
-	QStringList line ;
+	QStringList line ;	
 	for( int i = 0 ; i < entries.size() - 1 ; i++){
 		line = entries.at(i).split("\t");
 		addEntries(line.at(0),line.at(1));
-	}
-	ui->lineEditDeviceAddress->clear();
-	ui->lineEditMountPath->clear();
-	ui->tableWidget->setFocus();
+	}	
+	m_ui->lineEditDeviceAddress->clear();
+	m_ui->lineEditMountPath->clear();
+	m_ui->tableWidget->setFocus();
+	this->show();
 }
 
 void managedevicenames::HideUI()
 {
 	this->hide();	
+	emit HideUISignal(this);
 }
 
 void managedevicenames::addEntries(QString dev, QString m_point)
 {
 	QTableWidgetItem *item = new QTableWidgetItem() ;
-	int row = ui->tableWidget->rowCount() ;
-	ui->tableWidget->insertRow(row);
+	int row = m_ui->tableWidget->rowCount() ;
+	m_ui->tableWidget->insertRow(row);
 	item->setText( dev );
 	item->setTextAlignment(Qt::AlignCenter);
-	ui->tableWidget->setItem(row,0,item);
+	m_ui->tableWidget->setItem(row,0,item);
 	item = new QTableWidgetItem() ;
 	item->setText( m_point );
 	item->setTextAlignment(Qt::AlignCenter);
-	ui->tableWidget->setItem(row,1,item);
-	ui->tableWidget->setCurrentCell(row ,1);
+	m_ui->tableWidget->setItem(row,1,item);
+	m_ui->tableWidget->setCurrentCell(row ,1);
 }
 
 void managedevicenames::itemClicked(QTableWidgetItem *current)
@@ -156,30 +158,29 @@ void managedevicenames::itemClicked(QTableWidgetItem *current)
 	m.addButton(QMessageBox::No);
 	if( m.exec() == QMessageBox::No )
 		return ;
-	QString entry = ui->tableWidget->item(current->row(),0)->text() + \
+	QString entry = m_ui->tableWidget->item(current->row(),0)->text() + \
 			QString("\t") + \
-			ui->tableWidget->item(current->row(),1)->text() + \
+			m_ui->tableWidget->item(current->row(),1)->text() + \
 			QString("\n") ;
 	miscfunctions::removeFavoriteEntry(entry);
-	ui->tableWidget->removeRow(current->row());
+	m_ui->tableWidget->removeRow(current->row());
 	HighlightRow(0,-1);
 }
 
-void managedevicenames::Cancel()
+void managedevicenames::cancel()
 {
 	HideUI();
-	emit HideUISignal(this);
 }
 
-void managedevicenames::Add()
+void managedevicenames::add()
 {
 	QMessageBox m ;
 	m.setParent(this);
 	m.setWindowTitle(QString("ERROR"));
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 
-	QString dev = ui->lineEditDeviceAddress->text() ;
-	QString m_point = ui->lineEditMountPath->text() ;
+	QString dev = m_ui->lineEditDeviceAddress->text() ;
+	QString mount_point = m_ui->lineEditMountPath->text() ;
 	
 	if( dev == QString("")){
 		m.setText("device address field is empty");
@@ -187,43 +188,38 @@ void managedevicenames::Add()
 		m.exec();
 		return ;
 	}
-	if( m_point == QString("")){
+	if( mount_point == QString("")){
 		m.setText("mount point path field is empty");
 		m.addButton(QMessageBox::Ok);
 		m.exec();
 		return ;
 	}
-	addEntries(dev,m_point);
-	miscfunctions::addToFavorite(dev,m_point);
+	addEntries(dev,mount_point);
+	miscfunctions::addToFavorite(dev,mount_point);
 	
-	ui->lineEditDeviceAddress->clear(); ;
-	ui->lineEditMountPath->clear() ;
+	m_ui->lineEditDeviceAddress->clear(); ;
+	m_ui->lineEditMountPath->clear() ;
 }
 
-void managedevicenames::DeviceAddress()
-{
-	emit ShowPartitionUI();
-}
-
-void managedevicenames::FileAddress()
+void managedevicenames::fileAddress()
 {
 	QString Z = QFileDialog::getOpenFileName(this,
 						 tr("path to an encrypted file"),
 						 QDir::homePath(),
 						 0);
-	ui->lineEditDeviceAddress->setText( Z ) ;
+	m_ui->lineEditDeviceAddress->setText( Z ) ;
 }
 
 void managedevicenames::PartitionEntry(QString device)
 {
-	ui->lineEditDeviceAddress->setText( device );
-	//ui->lineEditMountPath->setFocus();
+	m_ui->lineEditDeviceAddress->setText( device );
+	//m_ui->lineEditMountPath->setFocus();
 }
 
 managedevicenames::~managedevicenames()
 {
-	delete ui;
-	delete ac;
+	delete m_ui;
+	delete m_ac;
 }
 
 void managedevicenames::closeEvent(QCloseEvent *e)
@@ -251,14 +247,14 @@ void managedevicenames::currentItemChanged( QTableWidgetItem * current, QTableWi
 
 void managedevicenames::HighlightRow(int currentRow,int previousRow)
 {
-	int count = ui->tableWidget->rowCount() ;
+	int count = m_ui->tableWidget->rowCount() ;
 	if(count > 0 && currentRow != -1){
-		ui->tableWidget->item(currentRow,0)->setSelected(true);
-		ui->tableWidget->item(currentRow,1)->setSelected(true);
-		ui->tableWidget->setCurrentItem(ui->tableWidget->item(currentRow,1));
+		m_ui->tableWidget->item(currentRow,0)->setSelected(true);
+		m_ui->tableWidget->item(currentRow,1)->setSelected(true);
+		m_ui->tableWidget->setCurrentItem(m_ui->tableWidget->item(currentRow,1));
 	}
 	if(count > 1 && currentRow != previousRow && previousRow != -1 ){
-		ui->tableWidget->item(previousRow,0)->setSelected(false);
-		ui->tableWidget->item(previousRow,1)->setSelected(false);
+		m_ui->tableWidget->item(previousRow,0)->setSelected(false);
+		m_ui->tableWidget->item(previousRow,1)->setSelected(false);
 	}
 }

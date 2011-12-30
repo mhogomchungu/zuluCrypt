@@ -1,8 +1,8 @@
 /********************************************************************************
 ** Form generated from reading UI file 'createpartition.ui'
 **
-** Created: Thu Dec 22 20:13:45 2011
-**      by: Qt User Interface Compiler version 4.7.4
+** Created: Wed Dec 28 22:55:13 2011
+**      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/

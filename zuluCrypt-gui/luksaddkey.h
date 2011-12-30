@@ -27,16 +27,16 @@
 #include "openpartition.h"
 #include "runinthread.h"
 
-class luksaddkeyUI : public QDialog
+class luksaddkey : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit luksaddkeyUI(QWidget *parent = 0);
-	~luksaddkeyUI();
+	explicit luksaddkey(QWidget *parent = 0);
+	~luksaddkey();
 signals :
 	void clickedpbAdd(QString PathToVolume, bool keyfile, QString ExistingKey,bool newkeyfile, QString NewKey ) ;
 	void pbOpenPartitionClicked(void) ;
-	void HideUISignal(luksaddkeyUI *);
+	void HideUISignal(luksaddkey *);
 public slots:
 	void partitionEntry(QString) ;
 	void ShowUI(void) ;
@@ -54,13 +54,14 @@ private slots:
 	void pbCancel(void) ;	
 	void threadfinished(runInThread *,int) ;
 private:
+	void UIMessage(QString,QString);
 	void disableAll(void) ;
 	void enableAll(void) ;
 	void closeEvent(QCloseEvent *) ;
-	Ui::luksaddkeyUI *ui ;
-	openpartition *pUI ;
-	QString volumePath ;
-	runInThread *lakt ;
+	Ui::luksaddkey *m_ui ;
+	openpartition *m_openPartition ;
+	QString m_volumePath ;
+	runInThread *m_lakt ;
 };
 
 #endif // luksaddkeySUI_H

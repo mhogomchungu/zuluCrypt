@@ -45,13 +45,13 @@ private slots:
 	void EnterKeyPressed(void);
 	void currentItemChanged( QTableWidgetItem * current, QTableWidgetItem * previous );
 private:
+	void closeEvent(QCloseEvent *) ;
 	void HighlightRow(int, bool);	
-	Ui::PartitionView *partitionView ;
-	ShowNonSystemPartitionsThread *nonsystempartitionlist ;
-	partitionlistThread *partitionlist ;
-	int status ;
-	QAction *action ;
-	int row ;
+	Ui::PartitionView *m_ui ;
+	ShowNonSystemPartitionsThread *m_nonsystempartitionlist ;
+	partitionlistThread *m_partitionlist ;
+	int m_status ;
+	QAction *m_action ;
 };
 
 #endif

@@ -16,7 +16,7 @@
   <property name="windowTitle">
    <string>select a partition to open</string>
   </property>
-  <widget class="QTableWidget" name="tableWidgetPartitionView">
+  <widget class="QTableWidget" name="tableWidget">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -114,7 +114,7 @@
   </widget>
  </widget>
  <tabstops>
-  <tabstop>tableWidgetPartitionView</tabstop>
+  <tabstop>tableWidget</tabstop>
   <tabstop>checkBoxUUID</tabstop>
  </tabstops>
  <resources/>

@@ -31,7 +31,7 @@ signals:
 	void finished( runInThread *,int) ;
 private:
 	void run(void) ;
-	QString EXE ;
+	QString m_exe ;
 };
 
 #endif // RUNINTHREAD_H

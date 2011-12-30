@@ -52,20 +52,8 @@ QString startupupdateopenedvolumes::readMtab(QByteArray * mtab,QString entry)
 
 bool startupupdateopenedvolumes::checkUUID(QString *uuid,QString entry)
 {
-	/*
-	  zuluCrypt-2468d6a7-9a71-4312-8bd9-662f982fade5
-	  "entry" variable will have something like above and the code below
-	  will check to see if the latter part of the string is a UUID
-	  string by checking positions of the "-".
-	  */
-
-	if( entry.at(9) == QChar('-') && \
-	    entry.at(18) == QChar('-') && \
-	    entry.at(23) == QChar('-') && \
-	    entry.at(28) == QChar('-') && \
-	    entry.at(33) == QChar('-')){
-
-		*uuid = QString("UUID=\"") + entry.mid(10)  + QString("\"");
+	if(entry.mid(0,15) == QString("zuluCrypt-UUID-")){
+		*uuid = QString("UUID=\"") + entry.mid(15)  + QString("\"");
 		return true ;
 	}
 	return false ;
@@ -77,6 +65,7 @@ void startupupdateopenedvolumes::run()
 	QProcess p ;
 	QString device ;
 	QString dv = QString(ZULUCRYPTzuluCrypt) + QString(" device ") ;
+	QString ddv = QString(ZULUCRYPTzuluCrypt) + QString(" checkUUID ") ;
 	QString mp ;
 	QString uuid ;
 
@@ -84,33 +73,47 @@ void startupupdateopenedvolumes::run()
 	mt.open(QIODevice::ReadOnly) ;
 	QByteArray mtab = mt.readAll() ;
 	mt.close();
-
+	QString entry ;
+	int status ;
 	for ( int i = 0 ; i < Z.size() ; i++){
-
-		if(checkUUID(&device,Z.at(i)) == false){
-			p.start( dv + Z.at(i) ) ;
+		entry = Z.at(i);
+		if(checkUUID(&device,entry) == false){
+			p.start( dv + entry ) ;
 			p.waitForFinished() ;
-			if( p.exitCode() == 1 ){
-				QString s = tr("An inconsitency is detected, skipping /dev/mapper/zuluCrypt-") ;
-				s = s + Z.at(i) ;
-				s = s + tr(" because it does not look like a cryptsetup volume") ;
-
-				emit UIMessage(tr("WARNING"), s ) ;
-				continue ;
-			}
+			status = p.exitCode() ;
 			device = QString(p.readAllStandardOutput()).remove('\n')  ;
 			p.close();
-		}
-		mp = readMtab(&mtab,Z.at(i)) ;
+			if( status == 1 ){
+				QString s = tr("An inconsitency is detected, skipping /dev/mapper/zuluCrypt-") ;
+				s = s + entry ;
+				s = s + tr(" because it does not look like a cryptsetup volume") ;
 
+				UIMessage(tr("WARNING"), s ) ;
+				continue ;
+			}
+		}else{
+			p.start(ddv + device);
+			p.waitForFinished() ;
+			status = p.exitCode() ;
+			p.close();
+			if( status == 1 ){
+				QString s = tr("An inconsitency is detected, skipping /dev/mapper/zuluCrypt-") ;
+				s = s + entry ;
+				s = s + tr(" because the UUID does not match any attached partition") ;
+				UIMessage(tr("WARNING"), s ) ;
+				continue ;
+			}
+		}
+		mp = miscfunctions::readMtab(&mtab,entry) ;
 		if( mp == QString("") ){
-			emit UIMessage(tr("WARNING"),
+			UIMessage(tr("WARNING"),
 					  tr("An inconsitency is detected. Skipping \"") + \
 					  device + \
 					  tr("\" because its opened but not mounted"));
 			continue ;
 		}
-		emit addItemToTable(device,mp) ;
+		addItemToTable(device,mp) ;
 	}
+	emit finished(this);
 }
 

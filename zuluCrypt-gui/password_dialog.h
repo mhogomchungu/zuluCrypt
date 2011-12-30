@@ -31,16 +31,16 @@
 #include "zulucryptthreads.h"
 #include "runinthread.h"
 
-class password_Dialog :  public QDialog
+class passwordDialog :  public QDialog
 {	
 	Q_OBJECT
 public:
-	password_Dialog(QWidget *parent = 0);
-	virtual ~password_Dialog();
+	passwordDialog(QWidget *parent = 0);
+	virtual ~passwordDialog();
 signals :
 	void addItemToTable(QString,QString) ;
-	void HideUISignal(password_Dialog *);
-	void volumeOpened(QString,QString,password_Dialog *);
+	void HideUISignal(passwordDialog *);
+	void volumeOpened(QString,QString,passwordDialog *);
 public slots:
 	void HideUI(void);
 	void ShowUI(void);
@@ -60,10 +60,10 @@ private :
 	void disableAll(void);
 	void enableAll(void) ;
 	void closeEvent(QCloseEvent *) ;
-	Ui::PasswordDialog *ui;
-	QString volumePath ;
+	Ui::PasswordDialog *m_ui;
+	QString m_volumePath ;
 	QString m_point ;
-	runInThread * ovt ;
+	runInThread * m_ovt ;
 };
 
 #endif // PASSWORD_DIALOG_H

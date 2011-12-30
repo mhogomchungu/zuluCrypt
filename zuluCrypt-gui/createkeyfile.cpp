@@ -19,6 +19,7 @@
 
 #include "createkeyfile.h"
 #include "ui_createkeyfile.h"
+#include "miscfunctions.h"
 #include "../zuluCrypt-cli/executables.h"
 
 #include <QFileDialog>
@@ -30,14 +31,14 @@
 
 createkeyfile::createkeyfile(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::createkeyfile)
+    m_ui(new Ui::createkeyfile)
 {
-	ui->setupUi(this);
-	ui->pbOpenFolder->setIcon(QIcon(QString(":/folder.png")));
-	connect(ui->pbCreate,SIGNAL(clicked()),this,SLOT(pbCreate())) ;
-	connect(ui->pbOpenFolder,SIGNAL(clicked()),this,SLOT(pbOpenFolder())) ;
-	connect(ui->pbCancel,SIGNAL(clicked()),this,SLOT(pbCancel())) ;
-	rng = NULL ;
+	m_ui->setupUi(this);
+	m_ui->pbOpenFolder->setIcon(QIcon(QString(":/folder.png")));
+	connect(m_ui->pbCreate,SIGNAL(clicked()),this,SLOT(pbCreate())) ;
+	connect(m_ui->pbOpenFolder,SIGNAL(clicked()),this,SLOT(pbOpenFolder())) ;
+	connect(m_ui->pbCancel,SIGNAL(clicked()),this,SLOT(pbCancel())) ;
+	m_rng = NULL ;
 }
 
 void createkeyfile::HideUI()
@@ -46,107 +47,108 @@ void createkeyfile::HideUI()
 	emit HideUISignal(this);
 }
 
+void createkeyfile::closeEvent(QCloseEvent *e)
+{
+	e->ignore();
+	HideUI();
+}
+
 void createkeyfile::ShowUI()
 {
-	ui->lineEditFileName->clear();
-	ui->lineEditPath->setText(QDir::homePath());
+	m_ui->lineEditFileName->clear();
+	m_ui->lineEditPath->setText(QDir::homePath());
+	m_ui->comboBoxRNG->setCurrentIndex(0);
 	this->show();
-	ui->comboBoxRNG->setCurrentIndex(0);
 }
 
 void createkeyfile::pbCancel()
 {
-	if( rng == NULL){
+	if( m_rng == NULL){
 		HideUI() ;
 		return ;
 	}
-	rng->terminate();  ;
-	rng = NULL ;
+	m_rng->terminate();  ;
+	m_rng = NULL ;
 }
 
 void createkeyfile::enableAll()
 {
-	ui->label->setEnabled(true);
-	ui->label_2->setEnabled(true);
-	ui->lineEditFileName->setEnabled(true);
-	ui->lineEditPath->setEnabled(true);
-	ui->pbCreate->setEnabled(true);
-	ui->pbOpenFolder->setEnabled(true);
-	ui->labelRNG->setEnabled(true);
-	ui->comboBoxRNG->setEnabled(true);
+	m_ui->label->setEnabled(true);
+	m_ui->label_2->setEnabled(true);
+	m_ui->lineEditFileName->setEnabled(true);
+	m_ui->lineEditPath->setEnabled(true);
+	m_ui->pbCreate->setEnabled(true);
+	m_ui->pbOpenFolder->setEnabled(true);
+	m_ui->labelRNG->setEnabled(true);
+	m_ui->comboBoxRNG->setEnabled(true);
 }
 
 void createkeyfile::disableAll()
 {
-	ui->label->setEnabled(false);
-	ui->label_2->setEnabled(false);
-	ui->lineEditFileName->setEnabled(false);
-	ui->lineEditPath->setEnabled(false);
-	ui->pbCreate->setEnabled(false);
-	ui->pbOpenFolder->setEnabled(false);
-	ui->labelRNG->setEnabled(false);
-	ui->comboBoxRNG->setEnabled(false);
+	m_ui->label->setEnabled(false);
+	m_ui->label_2->setEnabled(false);
+	m_ui->lineEditFileName->setEnabled(false);
+	m_ui->lineEditPath->setEnabled(false);
+	m_ui->pbCreate->setEnabled(false);
+	m_ui->pbOpenFolder->setEnabled(false);
+	m_ui->labelRNG->setEnabled(false);
+	m_ui->comboBoxRNG->setEnabled(false);
+}
+
+void createkeyfile::UIMessage(QString title, QString message)
+{
+	QMessageBox m ;
+	m.setParent(this);
+	m.setWindowFlags(Qt::Window | Qt::Dialog);
+	m.setText(message);
+	m.setWindowTitle(title);
+	m.addButton(QMessageBox::Ok);
+	m.setFont(this->font());
+	m.exec() ;
 }
 
 void createkeyfile::pbCreate()
 {
-	QMessageBox m ;
-	m.addButton(QMessageBox::Ok);
-	m.setParent(this);
-	m.setWindowFlags(Qt::Window | Qt::Dialog);
-	m.setFont(this->font());
+	QString fileName = m_ui->lineEditFileName->text() ;
+	QString path = m_ui->lineEditPath->text() ;
 
-	if( ui->lineEditFileName->text().isEmpty() == true ){
+	m_path = m_ui->lineEditPath->text() ;
 
-		m.setWindowTitle(tr("ERROR!"));
-		m.setText(tr("the key name field is empth"));
-		m.exec() ;
+	if( fileName == QString("") ){
+		UIMessage(tr("ERROR!"),("the key name field is empth"));
 		return ;
 	}
-	if( ui->lineEditPath->text().isEmpty() == true ){
-
-		m.setWindowTitle(tr("ERROR!"));
-		m.setText(tr("folder path to where the key will be created is empty"));
-		m.exec() ;
+	if( path == QString("") ){
+		UIMessage(tr("ERROR!"),("folder path to where the key will be created is empty"));
 		return ;
 	}
-	path = ui->lineEditPath->text() ;
+	if(m_path.mid(0,2) == QString("~/"))
+		m_path = QDir::homePath() + QString("/") + m_path.mid(2) ;
 
-	if(path.mid(0,2) == QString("~/"))
-		path = QDir::homePath() + QString("/") + path.mid(2) ;
-
-	QDir dir(path) ;
-
-	if(dir.exists() == false){
-		m.setWindowTitle(tr("ERROR!"));
-		m.setText(tr("destination folder does not exist"));
-		m.exec() ;
+	if(miscfunctions::exists(m_path) == false){
+		UIMessage(tr("ERROR!"),("destination folder does not exist"));
 		return ;
 	}
-	QString keyfile = path + QString("/") + ui->lineEditFileName->text() ;
+	QString keyfile = m_path + QString("/") + m_ui->lineEditFileName->text() ;
 
+	if( miscfunctions::exists(keyfile) == true){
+		UIMessage(tr("ERROR!"),("file with the same name and at the destination folder already exist"));
+		return ;
+	}
 	QFile o( keyfile ) ;
-
-	if( o.exists() == true){
-		m.setWindowTitle(tr("ERROR!"));
-		m.setText(tr("file with the same name and at the destination folder already exist"));
-		m.exec() ;
-		return ;
-	}
 	o.open(QIODevice::WriteOnly) ;
 
 	if( o.putChar('X') == false ){
-		m.setWindowTitle(tr("ERROR!"));
-		m.setText(tr("you dont seem to have writing access to the destination folder"));
-		m.exec() ;
+		UIMessage(tr("ERROR!"),("you dont seem to have writing access to the destination folder"));
 		return ;
 	}
 	o.close();
+	o.remove();
 	
-	rng = new createFileThread(ui->comboBoxRNG->currentText(),keyfile,64,0) ;
-	connect(rng,SIGNAL(finished()),this,SLOT(threadfinished()));
+	m_rng = new createFileThread(m_ui->comboBoxRNG->currentText(),keyfile,64,0) ;
+	connect(m_rng,SIGNAL(finished()),this,SLOT(threadfinished()));
 	disableAll() ;
-	rng->start();
+	m_rng->start();
 }
 
 void createkeyfile::threadterminated()
@@ -156,13 +158,13 @@ void createkeyfile::threadterminated()
 
 void createkeyfile::threadfinished()
 {
-	delete rng ;
+	m_rng->deleteLater(); ;
 
-	rng = NULL ;
+	m_rng = NULL ;
 
 	enableAll();
 
-	QFile f(path + QString("/") + ui->lineEditFileName->text()) ;
+	QFile f(m_path + QString("/") + m_ui->lineEditFileName->text()) ;
 
 	QMessageBox m ;
 	m.addButton(QMessageBox::Ok);
@@ -188,11 +190,11 @@ void createkeyfile::pbOpenFolder()
 						      QString("Select a folder to create a key file in"),
 						      QDir::homePath(),QFileDialog::ShowDirsOnly) ;
 
-	ui->lineEditPath->setText( Z );
+	m_ui->lineEditPath->setText( Z );
 }
 
 
 createkeyfile::~createkeyfile()
 {
-	delete ui;
+	delete m_ui;
 }

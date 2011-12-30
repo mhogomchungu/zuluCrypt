@@ -50,23 +50,21 @@ public slots:
 	void HideUI(void);
 	void PartitionEntry(QString);
 private slots:
-	void Add(void);
-	void Cancel(void);
-	void DeviceAddress(void);
-	void FileAddress(void);
+	void add(void);
+	void cancel(void);
+	void deviceAddress(void);
+	void fileAddress(void);
 	void currentItemChanged( QTableWidgetItem * current, QTableWidgetItem * previous );
 	void itemClicked(QTableWidgetItem * current);
 	void shortcutPressed(void);
 	void devicePathTextChange(QString);
-	void deletePartitionUI(void);
-
+	void deletePartition(openpartition *);
 private:
 	void HighlightRow(int,int) ;
 	void closeEvent(QCloseEvent *) ;
 	void addEntries(QString,QString) ;
-	Ui::managedevicenames *ui;
-	openpartition *openPartitionUI ;
-	QAction * ac ;
+	Ui::managedevicenames *m_ui;
+	QAction * m_ac ;
 };
 
 #endif // MANAGEDEVICENAMES_H

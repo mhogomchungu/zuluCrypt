@@ -47,13 +47,15 @@ private slots:
 	void threadfinished(void);
 	void threadterminated(void);
 private:
+	void UIMessage(QString title, QString message);
+	void closeEvent(QCloseEvent *) ;
 	void disableAll(void);
 	void enableAll(void) ;
-	Ui::createkeyfile *ui;
-	createFileThread *rng ;
-	QString in ;
-	QString out ;
-	QString path ;
+	Ui::createkeyfile *m_ui;
+	createFileThread *m_rng ;
+	QString m_in ;
+	QString m_out ;
+	QString m_path ;
 };
 
 #endif // CREATEKEYFILE_H

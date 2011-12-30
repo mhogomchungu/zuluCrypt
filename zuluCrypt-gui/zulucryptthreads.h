@@ -30,20 +30,6 @@
 #include <QTableWidgetItem>
 #include <QMutex>
 
-class ClickedRowHighlight : public QThread
-{
-public :
-	ClickedRowHighlight() ;
-	void update(int previous,int current,QTableWidget*) ;
-	~ClickedRowHighlight();
-private:
-	void run() ;
-	int currentRow ;
-	int previousRow ;
-	QTableWidget *tableWidget ;
-	QMutex mutex ;
-};
-
 class zuluCryptThreads : public QThread
 {
 public:
@@ -56,8 +42,8 @@ public :
 	void run() ;
 	ShowNonSystemPartitionsThread(Ui::PartitionView *,QFont) ;
 private:
-	Ui::PartitionView * partitionView ;
-	QFont font ;
+	Ui::PartitionView * m_partitionView ;
+	QFont m_font ;
 };
 
 class partitionlistThread : public QThread
@@ -66,8 +52,8 @@ public :
 	void run() ;
 	partitionlistThread(Ui::PartitionView *,QFont) ;
 private:
-	Ui::PartitionView * partitionView ;
-	QFont font ;
+	Ui::PartitionView * m_partitionView ;
+	QFont m_font ;
 };
 
 class createFileThread : public QThread
@@ -76,10 +62,10 @@ public :
 	createFileThread(QString source,QString destination,double size,int type) ;
 private:
 	void run() ;
-	QString source ;
-	QString file ;
-	double size ;
-	int type ;
+	QString m_source ;
+	QString m_file ;
+	double m_size ;
+	int m_type ;
 };
 
 class volumePropertiesThread : public QThread
@@ -89,9 +75,9 @@ public :
 	void update(QString,QString,QString *) ;
 private:
 	void run() ;
-	QString path ;
-	QString mpoint ;
-	QString *volProperty ;
+	QString m_path ;
+	QString m_mpoint ;
+	QString *m_volProperty ;
 };
 
 #endif // ZULUCRYPTTHREADS_H

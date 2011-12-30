@@ -56,10 +56,10 @@ private:
 	void enableAll(void) ;
 	void UIMessage(QString title, QString message) ;
 	void closeEvent(QCloseEvent *) ;
-	Ui::luksdeletekey *ui;
-	openpartition *pUI ;
-	QString volumePath ;
-	runInThread *ldk ;
+	Ui::luksdeletekey *m_ui;
+	openpartition *m_openPartition ;
+	QString m_volumePath ;
+	runInThread *m_ldk ;
 };
 
 #endif // LUKSDELETEKEY_H

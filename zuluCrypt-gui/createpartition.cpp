@@ -30,35 +30,35 @@
 
 createpartition::createpartition(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::createpartition)
+    m_ui(new Ui::createpartition)
 {
-	ui->setupUi(this);
+	m_ui->setupUi(this);
 	this->setFixedSize(this->size());
-	ui->lineEditVolumePath->setEnabled(false);
-	ui->lineEditPassphrase1->setFocus();
-	cvt = NULL ;
+	m_ui->lineEditVolumePath->setEnabled(false);
+	m_ui->lineEditPassphrase1->setFocus();
+	m_cvt = NULL ;
 
-	connect(ui->pbOpenKeyFile,
+	connect(m_ui->pbOpenKeyFile,
 		SIGNAL(clicked()),
 		this,
 		SLOT(pbOpenKeyFile()));
-	connect(ui->pbCreate,
+	connect(m_ui->pbCreate,
 		SIGNAL(clicked()),
 		this,
 		SLOT(pbCreateClicked()));
-	connect(ui->pbCancel,
+	connect(m_ui->pbCancel,
 		SIGNAL(clicked()),
 		this,
 		SLOT(pbCancelClicked()));
-	connect(ui->rbPassphrase,
+	connect(m_ui->rbPassphrase,
 		SIGNAL(clicked()),
 		this,
 		SLOT(rbPassphraseClicked()));
-	connect(ui->rbPassphraseFromFile,
+	connect(m_ui->rbPassphraseFromFile,
 		SIGNAL(clicked()),
 		this,
 		SLOT(rbPasssphraseFromFileClicked()));
-	connect(ui->comboBoxVolumeType,
+	connect(m_ui->comboBoxVolumeType,
 		SIGNAL(currentIndexChanged(int)),
 		this,
 		SLOT(rng(int))) ;
@@ -67,24 +67,24 @@ createpartition::createpartition(QWidget *parent) :
 void createpartition::rng(int s)
 {
 	if( s == 1)
-		ui->comboBoxRNG->setEnabled(false);
+		m_ui->comboBoxRNG->setEnabled(false);
 	else
-		ui->comboBoxRNG->setEnabled(true);
+		m_ui->comboBoxRNG->setEnabled(true);
 }
 
 void createpartition::closeEvent(QCloseEvent *e)
 {
 	e->ignore();
-	if(cvt == NULL )
+	if(m_cvt == NULL )
 		pbCancelClicked() ;
 }
 
-void createpartition::ShowPartitionUI(QString volume)
+void createpartition::ShowPartition(QString volume)
 {
 	ShowUI(tr("path to partition"),volume);
 }
 
-void createpartition::ShowFileUI(QString volume)
+void createpartition::ShowFile(QString volume)
 {
 	ShowUI(tr("path to file"),volume);
 }
@@ -92,18 +92,18 @@ void createpartition::ShowFileUI(QString volume)
 void::createpartition::ShowUI(QString l,QString v)
 {
 	enableAll();
-	ui->labelVolumePath->setText(l);
-	ui->lineEditVolumePath->setText(v);
-	ui->rbPassphrase->setChecked(true);
-	ui->pbOpenKeyFile->setEnabled(false);
-	ui->lineEditVolumePath->setEnabled(false);
+	m_ui->labelVolumePath->setText(l);
+	m_ui->lineEditVolumePath->setText(v);
+	m_ui->rbPassphrase->setChecked(true);
+	m_ui->pbOpenKeyFile->setEnabled(false);
+	m_ui->lineEditVolumePath->setEnabled(false);
 	this->rbPassphraseClicked() ;
-	ui->lineEditPassphrase1->setFocus();
-	ui->comboBoxFS->setCurrentIndex(0);
-	ui->comboBoxRNG->setCurrentIndex(0);
-	ui->comboBoxVolumeType->setCurrentIndex(0);
-	ui->labelRepeatPassPhrase->setEnabled(true);
-	created = false ;
+	m_ui->lineEditPassphrase1->setFocus();
+	m_ui->comboBoxFS->setCurrentIndex(0);
+	m_ui->comboBoxRNG->setCurrentIndex(0);
+	m_ui->comboBoxVolumeType->setCurrentIndex(0);
+	m_ui->labelRepeatPassPhrase->setEnabled(true);
+	m_created = false ;
 	this->show();
 }
 
@@ -113,13 +113,13 @@ void createpartition::pbOpenKeyFile()
 						 tr("key file path"),
 						 QDir::homePath(),
 						 0);
-	ui->lineEditPassphrase1->setText(Z);
+	m_ui->lineEditPassphrase1->setText(Z);
 }
 
 void createpartition::pbCancelClicked()
 {
-	if( created == false ){
-		QString s = ui->lineEditVolumePath->text() ;
+	if( m_created == false ){
+		QString s = m_ui->lineEditVolumePath->text() ;
 		if(s.left(5) != QString("/dev/"))
 			QFile::remove(s) ;
 	}
@@ -134,68 +134,68 @@ void createpartition::HideUI()
 
 void createpartition::enableAll()
 {
-	ui->labelPassPhrase->setEnabled(true);
-	ui->labelVolumePath->setEnabled(true);
-	ui->labelRepeatPassPhrase->setEnabled(true);
-	ui->lineEditPassphrase1->setEnabled(true);
-	ui->lineEditPassPhrase2->setEnabled(true);
-	ui->lineEditVolumePath->setEnabled(true);
-	ui->pbCancel->setEnabled(true);
-	ui->pbCreate->setEnabled(true);
-	ui->pbOpenKeyFile->setEnabled(true);
-	ui->labelfs->setEnabled(true);
-	ui->labelvolumetype->setEnabled(true);
-	ui->labelrng->setEnabled(true);
-	ui->comboBoxFS->setEnabled(true);
-	ui->comboBoxVolumeType->setEnabled(true);
-	if(ui->comboBoxVolumeType->currentIndex() == 0)
-		ui->comboBoxRNG->setEnabled(true);
-	ui->rbPassphrase->setEnabled(true);
-	ui->rbPassphraseFromFile->setEnabled(true);
+	m_ui->labelPassPhrase->setEnabled(true);
+	m_ui->labelVolumePath->setEnabled(true);
+	m_ui->labelRepeatPassPhrase->setEnabled(true);
+	m_ui->lineEditPassphrase1->setEnabled(true);
+	m_ui->lineEditPassPhrase2->setEnabled(true);
+	m_ui->lineEditVolumePath->setEnabled(true);
+	m_ui->pbCancel->setEnabled(true);
+	m_ui->pbCreate->setEnabled(true);
+	m_ui->pbOpenKeyFile->setEnabled(true);
+	m_ui->labelfs->setEnabled(true);
+	m_ui->labelvolumetype->setEnabled(true);
+	m_ui->labelrng->setEnabled(true);
+	m_ui->comboBoxFS->setEnabled(true);
+	m_ui->comboBoxVolumeType->setEnabled(true);
+	if(m_ui->comboBoxVolumeType->currentIndex() == 0)
+		m_ui->comboBoxRNG->setEnabled(true);
+	m_ui->rbPassphrase->setEnabled(true);
+	m_ui->rbPassphraseFromFile->setEnabled(true);
 }
 
 void createpartition::disableAll()
 {
-	ui->labelPassPhrase->setEnabled(false);
-	ui->labelVolumePath->setEnabled(false);
-	ui->labelRepeatPassPhrase->setEnabled(false);
-	ui->lineEditPassphrase1->setEnabled(false);
-	ui->lineEditPassPhrase2->setEnabled(false);
-	ui->lineEditVolumePath->setEnabled(false);
-	ui->pbCancel->setEnabled(false);
-	ui->pbCreate->setEnabled(false);
-	ui->pbOpenKeyFile->setEnabled(false);
-	ui->labelfs->setEnabled(false);
-	ui->labelrng->setEnabled(false);
-	ui->labelvolumetype->setEnabled(false);
-	ui->comboBoxFS->setEnabled(false);
-	ui->comboBoxVolumeType->setEnabled(false);
-	ui->comboBoxRNG->setEnabled(false);
-	ui->rbPassphrase->setEnabled(false);
-	ui->rbPassphraseFromFile->setEnabled(false);
+	m_ui->labelPassPhrase->setEnabled(false);
+	m_ui->labelVolumePath->setEnabled(false);
+	m_ui->labelRepeatPassPhrase->setEnabled(false);
+	m_ui->lineEditPassphrase1->setEnabled(false);
+	m_ui->lineEditPassPhrase2->setEnabled(false);
+	m_ui->lineEditVolumePath->setEnabled(false);
+	m_ui->pbCancel->setEnabled(false);
+	m_ui->pbCreate->setEnabled(false);
+	m_ui->pbOpenKeyFile->setEnabled(false);
+	m_ui->labelfs->setEnabled(false);
+	m_ui->labelrng->setEnabled(false);
+	m_ui->labelvolumetype->setEnabled(false);
+	m_ui->comboBoxFS->setEnabled(false);
+	m_ui->comboBoxVolumeType->setEnabled(false);
+	m_ui->comboBoxRNG->setEnabled(false);
+	m_ui->rbPassphrase->setEnabled(false);
+	m_ui->rbPassphraseFromFile->setEnabled(false);
 }
 
 void createpartition::rbPassphraseClicked()
 {
-	ui->pbOpenKeyFile->setEnabled(false);
-	ui->lineEditPassPhrase2->setEnabled(true);
-	ui->lineEditPassphrase1->clear();
-	ui->lineEditPassPhrase2->clear();
-	ui->lineEditPassphrase1->setEchoMode(QLineEdit::Password);
-	ui->lineEditPassPhrase2->setEchoMode(QLineEdit::Password);
-	ui->labelPassPhrase->setText(tr("passphrase"));
-	ui->labelRepeatPassPhrase->setEnabled(true);
+	m_ui->pbOpenKeyFile->setEnabled(false);
+	m_ui->lineEditPassPhrase2->setEnabled(true);
+	m_ui->lineEditPassphrase1->clear();
+	m_ui->lineEditPassPhrase2->clear();
+	m_ui->lineEditPassphrase1->setEchoMode(QLineEdit::Password);
+	m_ui->lineEditPassPhrase2->setEchoMode(QLineEdit::Password);
+	m_ui->labelPassPhrase->setText(tr("passphrase"));
+	m_ui->labelRepeatPassPhrase->setEnabled(true);
 }
 
 void createpartition::rbPasssphraseFromFileClicked()
 {
-	ui->pbOpenKeyFile->setEnabled(true);
-	ui->lineEditPassphrase1->clear();
-	ui->lineEditPassPhrase2->clear();
-	ui->lineEditPassphrase1->setEchoMode(QLineEdit::Normal);
-	ui->lineEditPassPhrase2->setEnabled(false);
-	ui->labelPassPhrase->setText(tr("key file"));
-	ui->labelRepeatPassPhrase->setEnabled(false);
+	m_ui->pbOpenKeyFile->setEnabled(true);
+	m_ui->lineEditPassphrase1->clear();
+	m_ui->lineEditPassPhrase2->clear();
+	m_ui->lineEditPassphrase1->setEchoMode(QLineEdit::Normal);
+	m_ui->lineEditPassPhrase2->setEnabled(false);
+	m_ui->labelPassPhrase->setText(tr("key file"));
+	m_ui->labelRepeatPassPhrase->setEnabled(false);
 }
 
 void createpartition::UIMessage(QString title, QString message)
@@ -212,62 +212,51 @@ void createpartition::UIMessage(QString title, QString message)
 
 void createpartition::pbCreateClicked()
 {
-	if( ui->lineEditVolumePath->text().isEmpty() == true )	{
+	QString volumePath   =  m_ui->lineEditVolumePath->text() ;
+	QString passphrase_1 =  m_ui->lineEditPassphrase1->text() ;
+	QString passphrase_2 = m_ui->lineEditPassPhrase2->text();
+
+	if( volumePath == QString("") )	{
 		UIMessage(tr("ERROR!"),tr("volume path field is empty"));
 		return ;
 	}
-	if( ui->lineEditVolumePath->text().mid(0,5) == QString("UUID=")){
-		if( miscfunctions::isUUIDvalid(ui->lineEditVolumePath->text()) == false ){
+	if( volumePath.mid(0,5) == QString("UUID=")){
+		if( miscfunctions::isUUIDvalid(volumePath) == false ){
 			UIMessage(tr("ERROR"),tr("could not find any partition with the presented UUID"));
 			return ;
 		}
 	}
-	QString volumePath = ui->lineEditVolumePath->text().replace("\"","\"\"\"") ; ;
-
 	if( volumePath.mid(0,2) == QString("~/"))
 		volumePath = QDir::homePath() + QString("/") + volumePath.mid(2) ;
 
-	if( ui ->lineEditPassphrase1->text().isEmpty() == true){
-
-		if( ui->rbPassphrase->isChecked() == true)
+	if( passphrase_1 == QString("")){
+		if( m_ui->rbPassphrase->isChecked() == true)
 			UIMessage(tr("ERROR"),tr("passphrases field is empty"));
 		else
 			UIMessage(tr("ERROR"),tr("key file field is empty"));
 		return ;
 	}
-	if(ui->rbPassphrase->isChecked() == true){
-
-		if( QString::compare(ui->lineEditPassphrase1->text(),
-				     ui->lineEditPassPhrase2->text()) != 0 ){
+	if(m_ui->rbPassphrase->isChecked() == true){
+		if( passphrase_1 != passphrase_2){
 			UIMessage(tr("ERROR"),tr("passphrases do not match"));
 			return ;
 		}
 	}	
 	QString source ;
 
-	QString passphrase = ui->lineEditPassphrase1->text() ;
-
-	if (ui->rbPassphraseFromFile->isChecked() == true){
-		if( passphrase.mid(0,2) == QString("~/"))
-			passphrase = QDir::homePath() + QString("/") + passphrase.mid(2) ;
-		if(QFile::exists(passphrase) == false){
-			QMessageBox m ;
-			m.setFont(this->font());
-			m.setParent(this);
-			m.setWindowFlags(Qt::Window | Qt::Dialog);
-			m.setWindowTitle(tr("ERROR"));
-			m.addButton(QMessageBox::Ok);
-			m.setText(tr("invalid path to key file"));
-			m.exec() ;
+	if (m_ui->rbPassphraseFromFile->isChecked() == true){
+		if( passphrase_1.mid(0,2) == QString("~/"))
+			passphrase_1 = QDir::homePath() + QString("/") + passphrase_1.mid(2) ;
+		if(miscfunctions::exists(passphrase_1) == false){
+			UIMessage(tr("ERROR"),tr("invalid path to key file"));
 			return ;
 		}
 		source = QString("-f") ;
 	}else{
 		source = QString("-p") ;
 	}
-	passphrase.replace("\"","\"\"\"") ;	
 
-	if( ui->lineEditVolumePath->text().left(5) == QString("/dev/")){
+	if( volumePath.left(5) == QString("/dev/")){
 		QMessageBox m ;
 		m.setFont(this->font());
 		m.setParent(this);
@@ -279,35 +268,39 @@ void createpartition::pbCreateClicked()
 		m.setDefaultButton(QMessageBox::No);
 
 		QString wr = tr("all contents of \"") ;
-		wr = wr + ui->lineEditVolumePath->text() + tr("\" will be deleted!.");
+		wr = wr + volumePath + tr("\" will be deleted!.");
 		wr = wr + tr("\nAre you sure you want to proceed?") ;
 		m.setText(wr);
 
 		if ( m.exec() != QMessageBox::Yes )
 			return ;
 	}
+
+	passphrase_1.replace("\"","\"\"\"") ;
+	volumePath.replace("\"","\"\"\"") ;
+
 	QString exe = QString(ZULUCRYPTzuluCrypt) ;
 	exe = exe + QString(" create \"") ;
 	exe = exe + volumePath + QString("\" ") ;
-	exe = exe + ui->comboBoxFS->currentText() + QString(" ") ;
-	exe = exe + ui->comboBoxVolumeType->currentText() + QString(" ") ;
+	exe = exe + m_ui->comboBoxFS->currentText() + QString(" ") ;
+	exe = exe + m_ui->comboBoxVolumeType->currentText() + QString(" ") ;
 	exe = exe +  source + QString(" \"") ;;
-	exe = exe + passphrase + QString("\" ") ;;
-	exe = exe + ui->comboBoxRNG->currentText();
+	exe = exe + passphrase_1 + QString("\" ") ;;
+	exe = exe + m_ui->comboBoxRNG->currentText();
 
-	cvt = new runInThread(exe) ;
+	m_cvt = new runInThread(exe) ;
 
-	connect(cvt,
+	connect(m_cvt,
 		SIGNAL(finished(runInThread *,int)),
 		this,
 		SLOT(threadfinished(runInThread *,int))) ;
 	disableAll();
-	cvt->start();
+	m_cvt->start();
 }
 
 void createpartition::threadfinished(runInThread *cvt,int status)
 {	
-	created = true ;
+	m_created = true ;
 	cvt->wait() ;
 	delete cvt ;
 	cvt = NULL ;
@@ -332,5 +325,5 @@ void createpartition::threadfinished(runInThread *cvt,int status)
 
 createpartition::~createpartition()
 {
-    delete ui;
+    delete m_ui;
 }

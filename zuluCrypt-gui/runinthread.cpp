@@ -22,12 +22,12 @@
 #include <iostream>
 runInThread::runInThread(QString exe)
 {
-	EXE = exe ;
+	m_exe = exe ;
 }
 void runInThread::run()
 {
 	QProcess p ;
-	p.start(EXE);
+	p.start(m_exe);
 	p.waitForFinished() ;	
 	emit finished( this,p.exitCode());
 	p.close();

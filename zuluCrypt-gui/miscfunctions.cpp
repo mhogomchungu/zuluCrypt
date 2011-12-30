@@ -19,9 +19,19 @@
 
 #include "miscfunctions.h"
 #include <iostream>
+#include <sys/stat.h>
 
 miscfunctions::miscfunctions()
 {
+}
+
+bool miscfunctions::exists(QString path)
+{
+	struct stat st ;
+	if(stat(path.toAscii().data(),&st) == 0)
+		return true ;
+	else
+		return false ;
 }
 
 QStringList miscfunctions::deviceProperties(QString device)

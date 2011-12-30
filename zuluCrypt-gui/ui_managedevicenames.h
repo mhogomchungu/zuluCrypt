@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'managedevicenames.ui'
 **
-** Created: Mon Dec 26 18:05:19 2011
+** Created: Wed Dec 28 22:55:14 2011
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!

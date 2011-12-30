@@ -35,44 +35,10 @@ zuluCryptThreads::zuluCryptThreads(QObject *parent) :
 }
 
 ShowNonSystemPartitionsThread::ShowNonSystemPartitionsThread(
-		Ui::PartitionView * p,QFont f)
+		Ui::PartitionView * partitionView,QFont font)
 {
-	partitionView = p ;
-	font = f ;
-}
-
-ClickedRowHighlight::ClickedRowHighlight()
-{
-}
-
-ClickedRowHighlight::~ClickedRowHighlight()
-{
-}
-
-void ClickedRowHighlight::update(int c,int p, QTableWidget *t)
-{
-	currentRow = c ;
-	tableWidget = t ;
-	previousRow = p ;
-}
-
-void ClickedRowHighlight::run()
-{	
-	mutex.lock();
-	int count = tableWidget->rowCount() ;
-	std::cout << currentRow << ":" << previousRow << std::endl ;
-	if(count > 0 && currentRow != -1){
-		tableWidget->item(currentRow,0)->setSelected(true);
-		tableWidget->item(currentRow,1)->setSelected(true);
-		tableWidget->item(currentRow,2)->setSelected(true);
-		tableWidget->setCurrentItem(tableWidget->item(currentRow,1));
-	}
-	if(count > 1 && currentRow != previousRow && previousRow != -1){
-		tableWidget->item(previousRow,0)->setSelected(false);
-		tableWidget->item(previousRow,1)->setSelected(false);
-		tableWidget->item(previousRow,2)->setSelected(false);
-	}
-	mutex.unlock();
+	m_partitionView = partitionView ;
+	m_font = font ;
 }
 
 void ShowNonSystemPartitionsThread::run()
@@ -87,7 +53,7 @@ void ShowNonSystemPartitionsThread::run()
 
 	int i ;
 
-	QTableWidget *tw = partitionView->tableWidgetPartitionView ;
+	QTableWidget *tw = m_partitionView->tableWidget ;
 
 	while ( tw->rowCount() > 0 ){
 		tw->removeRow(0);
@@ -119,13 +85,13 @@ void ShowNonSystemPartitionsThread::run()
 
 partitionlistThread::partitionlistThread(Ui::PartitionView * p,QFont f)
 {
-	partitionView = p ;
-	font = f ;
+	m_partitionView = p ;
+	m_font = f ;
 }
 
 void partitionlistThread::run()
 {
-	QTableWidget *tw = partitionView->tableWidgetPartitionView ;
+	QTableWidget *tw = m_partitionView->tableWidget ;
 
 	while ( tw->rowCount() > 0 ){
 		tw->removeRow(0);
@@ -211,10 +177,10 @@ major minor  #blocks  name
 
 createFileThread::createFileThread(QString s,QString f,double l,int t)
 {
-	source = s ;
-	file = f ;
-	size = l ;
-	type = t ;
+	m_source = s ;
+	m_file = f ;
+	m_size = l ;
+	m_type = t ;
 }
 
 void createFileThread::run()
@@ -224,12 +190,12 @@ void createFileThread::run()
 	//QFile blocked when reading from /dev/random for some reason,
 	//going back to C API for file access
 
-	FILE * in = fopen( source.toAscii().data(),"r") ;
-	FILE * out = fopen( file.toAscii().data(),"w") ;
+	FILE * in = fopen( m_source.toAscii().data(),"r") ;
+	FILE * out = fopen( m_file.toAscii().data(),"w") ;
 	double i ;
 
-	if( type == 0 ){
-		for( i = 0 ; i < size ; i++){
+	if( m_type == 0 ){
+		for( i = 0 ; i < m_size ; i++){
 			do{
 				data = fgetc(in) ;
 			}while( data < 32 || data > 126) ;
@@ -237,7 +203,7 @@ void createFileThread::run()
 			fputc(data,out) ;
 		}
 	}else{
-		for( i = 0 ; i < size ; i++){
+		for( i = 0 ; i < m_size ; i++){
 			data = fgetc(in) ;
 			fputc(data,out) ;
 		}
@@ -253,9 +219,9 @@ volumePropertiesThread::volumePropertiesThread()
 
 void volumePropertiesThread::update(QString p,QString z,QString *q)
 {
-	path = p.replace("\"","\"\"\"") ; ;
-	mpoint = z ;
-	volProperty = q ;
+	m_path = p.replace("\"","\"\"\"") ; ;
+	m_mpoint = z ;
+	m_volProperty = q ;
 }
 
 void volumePropertiesThread::run()
@@ -263,7 +229,7 @@ void volumePropertiesThread::run()
 	QString z = QString(ZULUCRYPTzuluCrypt) ;
 	z = z + QString(" status ") ;
 	z = z + QString("\"") ;
-	z = z + path + QString("\"");
+	z = z + m_path + QString("\"");
 
 	QProcess p ;
 	p.start( z ) ;
@@ -280,7 +246,7 @@ void volumePropertiesThread::run()
 	
 	p.waitForFinished() ;
 
-	QStringList df = QString(p.readAllStandardOutput()).split("\n").filter(mpoint) ;
+	QStringList df = QString(p.readAllStandardOutput()).split("\n").filter(m_mpoint) ;
 
 	p.close();
 
@@ -327,15 +293,15 @@ void volumePropertiesThread::run()
 
 	y = y + QString("\n used%:\t") + QString(c.mid(j,i - j - 1));
 
-	QStringList l = miscfunctions::luksEmptySlots(path) ;
+	QStringList l = miscfunctions::luksEmptySlots(m_path) ;
 
-	if ( miscfunctions::isLuks(path) == true){
+	if ( miscfunctions::isLuks(m_path) == true){
 		QString x =  QString(" ") ;
 		x = x + QString( r.right(start) ) ;
 		x = x + QString(" used slots:\t") ;
 		x = x + l.at(0) + QString(" / ") + l.at(1) + QString("\n");
 
-		*volProperty = x + y;
+		*m_volProperty = x + y;
 	}else
-		*volProperty = QString(" ") + QString( r.right(start) ) + y;
+		*m_volProperty = QString(" ") + QString( r.right(start) ) + y;
 }

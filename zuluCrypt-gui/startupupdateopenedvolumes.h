@@ -26,10 +26,11 @@ class startupupdateopenedvolumes : public QThread
 {
 	Q_OBJECT
 public:
-	explicit startupupdateopenedvolumes(QObject *parent = 0);
+	explicit startupupdateopenedvolumes(QObject *parent = 0);	
 signals:
 	void addItemToTable(QString,QString) ;
 	void UIMessage(QString title,QString message) ;
+	void finished(startupupdateopenedvolumes *);
 private:
 	void run() ;
 	QString readMtab(QByteArray *,QString) ;

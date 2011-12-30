@@ -43,6 +43,7 @@ public:
 	static void addToFavorite(QString dev, QString m_point);
 	static QStringList readFavorites(void);
 	static void removeFavoriteEntry(QString);
+	static bool exists(QString);
 };
 
 #endif // MISCFUNCTIONS_H

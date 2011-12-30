@@ -41,8 +41,8 @@ signals:
 	void CreateVolume(QString fileSystem,QString containterType,QString volumePath,QString passphrase,bool passphraseFromFile) ;
 	void HideUISignal(createpartition *);
 public slots:
-	void ShowPartitionUI(QString volume) ;
-	void ShowFileUI(QString volume) ;
+	void ShowPartition(QString volume) ;
+	void ShowFile(QString volume) ;
 	void HideUI(void);
 private slots:
 	void pbCreateClicked(void) ;
@@ -55,12 +55,12 @@ private slots:
 private:
 	void enableAll(void) ;
 	void disableAll(void);
-	void closeEvent(QCloseEvent *) ;
-	Ui::createpartition *ui;
-	runInThread *cvt ;
-	void UIMessage(QString title,QString message) ;	
-	bool created ;
+	void closeEvent(QCloseEvent *) ;		
+	void UIMessage(QString title,QString message) ;		
 	void ShowUI(QString,QString);
+	bool m_created ;
+	runInThread *m_cvt ;
+	Ui::createpartition *m_ui;
 };
 
 #endif // CREATEPARTITION_H
