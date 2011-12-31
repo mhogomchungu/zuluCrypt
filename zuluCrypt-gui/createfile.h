@@ -26,7 +26,7 @@
 #include <QCloseEvent>
 #include <QMessageBox>
 
-#include "zulucryptthreads.h"
+#include "createfilethread.h"
 
 namespace Ui {
     class createfile;

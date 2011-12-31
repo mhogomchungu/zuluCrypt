@@ -28,7 +28,8 @@ void runInThread::run()
 {
 	QProcess p ;
 	p.start(m_exe);
-	p.waitForFinished() ;	
-	emit finished( this,p.exitCode());
+	p.waitForFinished() ;
+	int status = p.exitCode() ;
 	p.close();
+	emit finished( this,status);
 }

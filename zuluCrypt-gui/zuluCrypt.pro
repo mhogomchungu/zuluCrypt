@@ -19,13 +19,14 @@ SOURCES += main.cpp\
     createpartition.cpp \
     createfile.cpp \
     createkeyfile.cpp \
-    zulucryptthreads.cpp \
     startupupdateopenedvolumes.cpp \
     closeallvolumesthread.cpp \
-    additemtotablethread.cpp \
     runinthread.cpp \
     miscfunctions.cpp \
-    managedevicenames.cpp
+    managedevicenames.cpp \
+    partitionproperties.cpp \
+    volumepropertiesthread.cpp \
+    createfilethread.cpp
 
 HEADERS  += zulucrypt.h password_dialog.h \
     openpartition.h \
@@ -34,13 +35,14 @@ HEADERS  += zulucrypt.h password_dialog.h \
     createpartition.h \
     createfile.h \
     createkeyfile.h \
-    zulucryptthreads.h \
     startupupdateopenedvolumes.h \
     closeallvolumesthread.h \
-    additemtotablethread.h \
     runinthread.h \
     miscfunctions.h \
-    managedevicenames.h
+    managedevicenames.h \
+    partitionproperties.h \
+    volumepropertiesthread.h \
+    createfilethread.h
 
 FORMS    += zulucrypt.ui password.ui \
     openpartition.ui \
@@ -57,7 +59,7 @@ RESOURCES = icon.qrc
 
 LIBS += -lblkid
 
-
+QMAKE_CXXFLAGS += -D_FILE_OFFSET_BITS=64 -Wall
 
 
 

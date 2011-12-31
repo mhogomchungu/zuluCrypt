@@ -24,20 +24,20 @@
 #include <QProcess>
 #include <QStringList>
 
-closeAllVolumesThread::closeAllVolumesThread(QTableWidget *t)
+closeAllVolumesThread::closeAllVolumesThread(QTableWidget * table)
 {
-	table = t ;
+	m_table = table ;
 }
 void closeAllVolumesThread::run()
 {		
-	table->setEnabled(false);
-	int i = table->rowCount() ;
+	m_table->setEnabled(false);
+	int i = m_table->rowCount() ;
 	int j = -1 ;
 	QTableWidgetItem * tableItems[ i ] ;
 	QTableWidgetItem * deviceItem ;
 
 	while( ++j < i )
-		tableItems[ j ] = table->item(j,0) ;
+		tableItems[ j ] = m_table->item(j,0) ;
 
 	QProcess p ;
 	QString exe ;
@@ -53,5 +53,5 @@ void closeAllVolumesThread::run()
 		emit close(deviceItem,p.exitCode()) ;
 		p.close();
 	}
-	table->setEnabled(true);
+	m_table->setEnabled(true);
 }

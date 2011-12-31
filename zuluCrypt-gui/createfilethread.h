@@ -30,32 +30,6 @@
 #include <QTableWidgetItem>
 #include <QMutex>
 
-class zuluCryptThreads : public QThread
-{
-public:
-    explicit zuluCryptThreads(QObject *parent = 0);
-};
-
-class ShowNonSystemPartitionsThread : public QThread
-{
-public :
-	void run() ;
-	ShowNonSystemPartitionsThread(Ui::PartitionView *,QFont) ;
-private:
-	Ui::PartitionView * m_partitionView ;
-	QFont m_font ;
-};
-
-class partitionlistThread : public QThread
-{
-public :
-	void run() ;
-	partitionlistThread(Ui::PartitionView *,QFont) ;
-private:
-	Ui::PartitionView * m_partitionView ;
-	QFont m_font ;
-};
-
 class createFileThread : public QThread
 {
 public :
@@ -66,18 +40,6 @@ private:
 	QString m_file ;
 	double m_size ;
 	int m_type ;
-};
-
-class volumePropertiesThread : public QThread
-{
-public :
-	volumePropertiesThread(void) ;
-	void update(QString,QString,QString *) ;
-private:
-	void run() ;
-	QString m_path ;
-	QString m_mpoint ;
-	QString *m_volProperty ;
 };
 
 #endif // ZULUCRYPTTHREADS_H

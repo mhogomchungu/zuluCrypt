@@ -98,7 +98,6 @@ void passwordDialog::ShowUI(QString volumePath, QString mount_point)
 		m_ui->PushButtonVolumePath->setIcon(QIcon(QString(":/partition.png")));
 	else
 		m_ui->PushButtonVolumePath->setIcon(QIcon(QString(":/file.png")));
-
 	this->show();
 }
 
@@ -106,7 +105,6 @@ void passwordDialog::ShowUI()
 {
 	m_ui->OpenVolumePath->clear();
 	m_ui->OpenVolumePath->setFocus();
-	//m_ui->MountPointPath->setText(QDir::homePath());
 	m_ui->PassPhraseField->clear();
 	m_ui->radioButtonPassPhrase->setChecked(true);
 	m_ui->labelPassphrase->setText(tr("passphrase"));
@@ -204,8 +202,7 @@ void passwordDialog::buttonOpenClicked(void )
 		QDir d(m_volumePath) ;
 
 		m_volumePath = d.canonicalPath() ;
-
-		if( QFile::exists( m_volumePath ) == false ){
+		if( miscfunctions::exists( m_volumePath ) == false ){
 			UIMessage(tr("ERROR"),tr("No file or device exist on given path")) ;
 			return ;
 		}
@@ -362,7 +359,7 @@ void passwordDialog::threadfinished(runInThread *,int status)
 			break ;	
 		case 10 : UIMessage(tr("ERROR"),tr("\",\" (comma) is not a valid mount point"));
 			break ;
-		case 11 : UIMessage(tr("ERROR"),tr("Could not find any partition with the presented UUID"));
+		case 11 : UIMessage(tr("ERROR"),tr("presented UUID does not match any UUID from attached partitions"));
 			break ;
 		default :UIMessage(tr("ERROR"),tr("un unknown error has occured, volume not opened"));		
 	}

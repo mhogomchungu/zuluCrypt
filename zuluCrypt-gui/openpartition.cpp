@@ -27,9 +27,11 @@
 #include <QFile>
 #include <QThread>
 #include <QKeySequence>
-
+#include "partitionproperties.h"
 #include "../zuluCrypt-cli/executables.h"
 
+#define ALL_PARTITIONS 1
+#define NON_SYSTEM_PARTITIONS 3
 
 openpartition::openpartition(QWidget *parent ) :
 	QDialog(parent)
@@ -72,6 +74,7 @@ openpartition::openpartition(QWidget *parent ) :
 	tw->horizontalHeaderItem(4)->setFont(this->font());
 
 	tw->horizontalHeader()->setVisible(true);
+	tw->horizontalHeader()->setFont(this->font());
 
 	m_ui->checkBoxUUID->setFont(this->font());
 }
@@ -85,67 +88,75 @@ void openpartition::EnterKeyPressed()
 	tableEntryDoubleClicked(tw->item(it->row(),0));
 }
 
-void openpartition::ShowNonSystemPartitionsFinished()
-{
-	m_nonsystempartitionlist->deleteLater();
-	if(m_ui->tableWidget->rowCount() > 0){
-		HighlightRow(0,true) ;
-		m_ui->tableWidget->setCurrentCell(0,2);
-	}
-}
-
-void openpartition::ShowSystemPartitionsFinished()
-{
-	m_partitionlist->deleteLater(); ;
-	if(m_ui->tableWidget->rowCount() > 0){
-		HighlightRow(0,true) ;
-		m_ui->tableWidget->setCurrentCell(0,2);
-	}
-}
-
 void openpartition::currentItemChanged(QTableWidgetItem *current, QTableWidgetItem *previous)
 {
-	HighlightRow(current->row(), true) ;
+	if(current != NULL)
+		HighlightRow(current->row(), true) ;
 	if(previous != NULL)
-		if(previous->row() != current->row())
-			HighlightRow(previous->row(), false) ;
+		if(current != NULL)
+			if(previous->row() != current->row())
+				HighlightRow(previous->row(), false) ;
 }
 
 void openpartition::HighlightRow(int r, bool b)
 {
-	m_ui->tableWidget->item(r,0)->setSelected(b);
-	m_ui->tableWidget->item(r,1)->setSelected(b);
-	m_ui->tableWidget->item(r,2)->setSelected(b);
-	m_ui->tableWidget->item(r,3)->setSelected(b);
-	m_ui->tableWidget->item(r,4)->setSelected(b);
+	for( int i = 0 ; i < 5 ; i++)
+		m_ui->tableWidget->item(r,i)->setSelected(b);
 	if(b==true)
 		m_ui->tableWidget->setCurrentCell(r,4);
 }
 
 void openpartition::ShowNonSystemPartitions()
 {
-	this->setWindowTitle(tr("select a partition to create an encrypted volume in"));
-	m_nonsystempartitionlist  = new
-			ShowNonSystemPartitionsThread(m_ui,this->font());
+	partitionList(QString("select a partition to create an encrypted volume in"),
+		      NON_SYSTEM_PARTITIONS);
+}
 
-	connect(m_nonsystempartitionlist,
-		SIGNAL(finished()),
+void openpartition::ShowAllPartitions()
+{	
+	partitionList(QString("select an encrypted partition to open"),
+		      ALL_PARTITIONS);
+}
+
+void openpartition::partitionList(QString title, int type)
+{
+	this->setWindowTitle(title);
+
+	while ( m_ui->tableWidget->rowCount() > 0 )
+		m_ui->tableWidget->removeRow(0);
+
+	partitionproperties * pp = new partitionproperties(type);
+
+	connect(pp,
+		SIGNAL(finished(partitionproperties*)),
 		this,
-		SLOT(ShowNonSystemPartitionsFinished())) ;
-	m_nonsystempartitionlist->start();
+		SLOT(partitionpropertiesThreadFinished(partitionproperties*)));
+	connect(pp,
+		SIGNAL(partitionProperties(QStringList)),
+		this,
+		SLOT(partitionProperties(QStringList)));
+
+	pp->start();
+
 	this->show();
 }
 
-void openpartition::ShowUI()
-{	
-	this->setWindowTitle(tr("select an encrypted partition to open"));
-	m_partitionlist = new partitionlistThread(m_ui,this->font()) ;
-	connect(m_partitionlist,
-		SIGNAL(finished()),
-		this,
-		SLOT(ShowSystemPartitionsFinished()));
-	m_partitionlist->start();
-	this->show();
+void openpartition::partitionProperties(QStringList entry)
+{
+	QTableWidgetItem * item ;
+	int row = m_ui->tableWidget->rowCount() ;
+	m_ui->tableWidget->insertRow(row);
+	for( int i = 0 ; i < 5 ; i++){
+		item = new QTableWidgetItem( entry.at(i) ) ;
+		item->setTextAlignment(Qt::AlignCenter);
+		m_ui->tableWidget->setItem(row,i,item);
+	}
+	m_ui->tableWidget->setCurrentCell(row,4);
+}
+
+void openpartition::partitionpropertiesThreadFinished(partitionproperties *obj)
+{
+	obj->deleteLater();
 }
 
 void openpartition::HideUI()

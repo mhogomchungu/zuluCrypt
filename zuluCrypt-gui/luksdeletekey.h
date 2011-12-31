@@ -21,7 +21,6 @@
 #define LUKSDELETEKEY_H
 
 #include <QDialog>
-#include "zulucryptthreads.h"
 #include "ui_openpartition.h"
 #include "openpartition.h"
 #include "ui_luksdeletekey.h"

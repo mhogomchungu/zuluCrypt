@@ -97,9 +97,9 @@ void managedevicenames::deviceAddress()
 	connect(openPartition,
 		SIGNAL(HideUISignal(openpartition *)),
 		this,
-		SLOT(deletePartitionUI(openpartition *)));
+		SLOT(deletePartition(openpartition *)));
 
-	openPartition->ShowUI();
+	openPartition->ShowAllPartitions();
 }
 
 void managedevicenames::deletePartition(openpartition *obj)
@@ -164,7 +164,8 @@ void managedevicenames::itemClicked(QTableWidgetItem *current)
 			QString("\n") ;
 	miscfunctions::removeFavoriteEntry(entry);
 	m_ui->tableWidget->removeRow(current->row());
-	HighlightRow(0,-1);
+	if( m_ui->tableWidget->rowCount() > 0)
+		HighlightRow(m_ui->tableWidget->rowCount() - 1,true);
 }
 
 void managedevicenames::cancel()
@@ -213,7 +214,6 @@ void managedevicenames::fileAddress()
 void managedevicenames::PartitionEntry(QString device)
 {
 	m_ui->lineEditDeviceAddress->setText( device );
-	//m_ui->lineEditMountPath->setFocus();
 }
 
 managedevicenames::~managedevicenames()
@@ -230,31 +230,18 @@ void managedevicenames::closeEvent(QCloseEvent *e)
 
 void managedevicenames::currentItemChanged( QTableWidgetItem * current, QTableWidgetItem * previous )
 {
-	int c ;
-	int p ;
-	if( current == NULL )
-		c = -1 ;
-	else
-		c = current->row() ;
-
-	if( previous == NULL )
-		p = -1 ;
-	else
-		p = previous->row() ;
-
-	HighlightRow(c,p);
+	if(current != NULL)
+		HighlightRow(current->row(), true) ;
+	if(previous != NULL)
+		if(current != NULL)
+			if(previous->row() != current->row())
+				HighlightRow(previous->row(), false) ;
 }
 
-void managedevicenames::HighlightRow(int currentRow,int previousRow)
+void managedevicenames::HighlightRow(int row,bool b)
 {
-	int count = m_ui->tableWidget->rowCount() ;
-	if(count > 0 && currentRow != -1){
-		m_ui->tableWidget->item(currentRow,0)->setSelected(true);
-		m_ui->tableWidget->item(currentRow,1)->setSelected(true);
-		m_ui->tableWidget->setCurrentItem(m_ui->tableWidget->item(currentRow,1));
-	}
-	if(count > 1 && currentRow != previousRow && previousRow != -1 ){
-		m_ui->tableWidget->item(previousRow,0)->setSelected(false);
-		m_ui->tableWidget->item(previousRow,1)->setSelected(false);
-	}
+	m_ui->tableWidget->item(row,0)->setSelected(b);
+	m_ui->tableWidget->item(row,1)->setSelected(b);
+	if(b == true)
+		m_ui->tableWidget->setCurrentCell(row,1);
 }

@@ -289,7 +289,7 @@ void luksdeletekey::threadfinished(runInThread * ldk,int status)
 		case 7 :UIMessage(tr("ERROR"),tr("could not get enough memory to open the key file"));
 			break ;
 		case 11 :UIMessage(tr("ERROR"),
-			tr("could not find any partition with the presented UUID"));
+			tr("presented UUID does not match any UUID from attached partitions"));
 			break ;
 		default:UIMessage(tr("ERROR"),tr( "un unexpected error has occured, key not removed "));
 	}

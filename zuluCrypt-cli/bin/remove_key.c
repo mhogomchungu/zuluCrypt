@@ -21,10 +21,10 @@
 
 int removekey(  int argn , char * device, char * keyType, char * keytoremove  )
 {
-	StrHandle *p;
-	int status = 0 , z = 0 ;
+	StrHandle * pass;
+	int status = 0 ;
 	struct stat st ;	
-	char *c ;
+	char * c ;
 	
 	if (  stat(  device,&st  ) != 0  ){
 		status = 10 ;
@@ -32,30 +32,21 @@ int removekey(  int argn , char * device, char * keyType, char * keytoremove  )
 	}	
 	if (  argn == 3  ){
 		printf( "Enter the passphrase of the key you want to delete: " ) ;
-		p = get_passphrase(  ) ;
+		pass = get_passphrase(  ) ;
 		printf( "\n" ) ;	
-		status = remove_key(  device,StringContent( p ) ) ;
-		StringDelete(  p  ) ;
+		status = remove_key(  device,StringContent( pass ) ) ;
+		StringDelete( pass ) ;
 	}else if (  argn == 5  ){
-		if(  strcmp( keyType, "-f" ) == 0  ){
-			if (  stat(  keytoremove,&st  ) != 0  ){
-				status =  5 ;
-				goto out;
-			}
-			c = (  char *  ) malloc (  sizeof(  char  ) * (  st.st_size + 1  )  ) ;
-			if(  c == NULL  ){
-				status = 7 ;
-				goto out ;
-			}
-			*(  c + st.st_size   ) = '\0' ;
-			z = open(  keytoremove, O_RDONLY  ) ;
-			read(  z , c , st.st_size  ) ;
-			close(  z  ) ;		
-			status = remove_key(  device,c  ) ;
-			free(  c  ) ;
+		if(  strcmp( keyType, "-f" ) == 0  ){			
+			switch( read_file( &c,keytoremove ) ){
+				case 1 : status = 5 ; goto out ; 
+				case 2 : status = 7 ; goto out ; 
+			}	
+			status = remove_key( device,c ) ;
+			free( c ) ;
 		}else if(  strcmp( keyType, "-p" ) == 0  ) {
 			
-			status = remove_key(  device,keytoremove  ) ;		
+			status = remove_key( device,keytoremove ) ;		
 		}
 	}else
 		status = 6 ;

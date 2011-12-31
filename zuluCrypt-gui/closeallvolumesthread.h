@@ -34,7 +34,7 @@ signals:
 	void finished(closeAllVolumesThread*);
 private:
 	void run(void) ;
-	QTableWidget * table ;
+	QTableWidget * m_table ;
 };
 
 #endif // CLOSEALLVOLUMESTHREAD_H

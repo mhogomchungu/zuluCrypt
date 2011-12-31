@@ -21,14 +21,13 @@
 
 int create_volumes( int argn,char * device,char * fs,char * mode,char * keyType,char * pass,char * rng  )
 {
-	StrHandle * p ;
-	StrHandle * q ;
+	StrHandle * pass_1 ;
+	StrHandle * pass_2 ;
 	
 	char Y ;
 	int st ;
 	struct stat xt ;
 	char * c ;
-	int z ;
 	
 	if(  stat(  device, &xt  ) != 0  ){
 		st = 1 ;
@@ -60,11 +59,11 @@ int create_volumes( int argn,char * device,char * fs,char * mode,char * keyType,
 		else{			
 			getchar();    //get rid of "\n" still in stdin buffer				
 			printf( "Enter passphrase: " ) ;			
-			p = get_passphrase(  );			
+			pass_1 = get_passphrase(  );			
 			printf( "\nRe enter passphrase: " ) ;			
-			q = get_passphrase(  );				
+			pass_2 = get_passphrase(  );				
 			printf( "\n" ) ;			
-			if(  StringCompare(  p , q  ) != 0  ){				
+			if(  StringCompare( pass_1 , pass_2 ) != 0  ){				
 				st = 7 ;
 			}else{				
 				if( strcmp( mode,"luks" ) == 0  ){					
@@ -73,19 +72,19 @@ int create_volumes( int argn,char * device,char * fs,char * mode,char * keyType,
 					Y = getchar() ;
 					getchar() ;					
 					if(  Y == '1' )
-						st = create_volume( device,fs,mode,StringContent(  p  ),"/dev/random" );
+						st = create_volume( device,fs,mode,StringContent( pass_1 ),"/dev/random" );
 					else if (  Y == '2'  )
-						st = create_volume( device,fs,mode,StringContent(  p  ),"/dev/urandom" );
+						st = create_volume( device,fs,mode,StringContent( pass_1 ),"/dev/urandom" );
 					else{
 						st = 5 ;
 						goto out ;
 					}
 				}else{
-					st = create_volume( device,fs,mode,StringContent(  p  ),"NULL" ) ;						
+					st = create_volume( device,fs,mode,StringContent( pass_1 ),"NULL" ) ;						
 				}		
 			}
-			StringDelete(  p  ) ;
-			StringDelete(  q  ) ;				
+			StringDelete( pass_1 ) ;
+			StringDelete( pass_2 ) ;				
 		}		
 	}else if (  argn == 8  ){		
 		if(  strcmp( rng,"/dev/random" ) != 0 )
@@ -98,21 +97,12 @@ int create_volumes( int argn,char * device,char * fs,char * mode,char * keyType,
 				st = create_volume( device,fs,mode,pass,rng ) ;			
 				
 			}else if(  strcmp(  keyType, "-f"  ) == 0  ) {				
-				if(  stat(  pass, &xt ) == 0  ) {					
-					c = (  char * ) malloc (  sizeof( char ) * (  xt.st_size + 1  )  ) ;					
-					if(  c == NULL  ){
-						st = 6 ;
-						goto out ;
-					}					
-					*(  c + xt.st_size   ) = '\0' ;					
-					z = open( pass , O_RDONLY  ) ;					
-					read(  z, c, xt.st_size  ) ;					
-					close(  z  ) ;	
-					st = create_volume( device,fs,mode,c,rng ) ;					
-					free(  c  ) ;
-				}else{
-					st = 8 ;
-				}				
+				switch( read_file( &c,pass ) ){
+					case 1 : st = 8 ; goto out ; 
+					case 2 : st = 9 ; goto out ; 
+				}
+				st = create_volume( device,fs,mode,c,rng ) ;					
+				free(  c  ) ;				
 			}else{
 				st = 2 ;			
 			}

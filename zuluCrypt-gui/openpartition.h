@@ -22,8 +22,8 @@
 
 #include <QCloseEvent>
 
-#include "zulucryptthreads.h"
 #include "ui_openpartition.h"
+#include "partitionproperties.h"
 
 class openpartition :  public QDialog
 {
@@ -36,20 +36,19 @@ signals :
 	void clickedPartition(QString) ;
 public slots:
 	void tableEntryDoubleClicked(QTableWidgetItem *) ;
-	void ShowUI(void);
+	void ShowAllPartitions(void);
 	void HideUI(void);
 	void ShowNonSystemPartitions(void) ;	
 private slots:
-	void ShowNonSystemPartitionsFinished(void) ;
-	void ShowSystemPartitionsFinished(void) ;
 	void EnterKeyPressed(void);
 	void currentItemChanged( QTableWidgetItem * current, QTableWidgetItem * previous );
-private:
+	void partitionpropertiesThreadFinished(partitionproperties *);
+	void partitionProperties(QStringList);
+private:	
+	void partitionList(QString,int);
 	void closeEvent(QCloseEvent *) ;
 	void HighlightRow(int, bool);	
 	Ui::PartitionView *m_ui ;
-	ShowNonSystemPartitionsThread *m_nonsystempartitionlist ;
-	partitionlistThread *m_partitionlist ;
 	int m_status ;
 	QAction *m_action ;
 };

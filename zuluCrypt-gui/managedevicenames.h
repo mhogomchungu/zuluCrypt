@@ -60,7 +60,7 @@ private slots:
 	void devicePathTextChange(QString);
 	void deletePartition(openpartition *);
 private:
-	void HighlightRow(int,int) ;
+	void HighlightRow(int,bool) ;
 	void closeEvent(QCloseEvent *) ;
 	void addEntries(QString,QString) ;
 	Ui::managedevicenames *m_ui;

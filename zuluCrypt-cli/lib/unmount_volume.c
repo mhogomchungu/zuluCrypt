@@ -56,11 +56,8 @@ int unmount_volume( const char * map, char ** m_point )
 	if ( stat( map , &st ) != 0 )
 		return 1 ;		
 	
-	realpath( "/etc/mtab", path ) ;
-	
-	/*
-	 *go theough /etc/mtab to find out the mount point,umount works with mount points, not device addresses. 
-	*/
+	realpath( "/etc/mtab", path ) ;	
+
 	f = setmntent( path ,"r" ) ;
 	
 	if( strncmp( path, "/proc/",6 ) == 0 ){
@@ -76,6 +73,10 @@ int unmount_volume( const char * map, char ** m_point )
 			}		
 		}			
 	}else if ( strncmp( path, "/etc/",5 ) == 0 ) {	
+		/*
+		 * .  /etc/mtab is not a symbolic link to /proc/mounts
+		 *   umount command does it.
+		 */
 		lock = mnt_new_lock( "/etc/mtab~", getpid() ) ;
 		status = mnt_lock_file( lock ) ;	
 		

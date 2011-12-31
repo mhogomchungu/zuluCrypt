@@ -22,7 +22,7 @@
 
 #include <QWidget>
 
-#include "zulucryptthreads.h"
+#include "createfilethread.h"
 
 namespace Ui {
     class createkeyfile;

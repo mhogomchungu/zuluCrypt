@@ -21,16 +21,16 @@
 
 int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount_point,char * mode,char * source,char * pass )
 {
-	StrHandle * p = NULL ;	
-	StrHandle * q = NULL ;	
-	StrHandle * z = NULL ;
+	StrHandle * passphrase  ;	
+	StrHandle * m_name  ;	
+	StrHandle * m_point  ;
 	
 	int st ;
 	
 	struct stat xt ;
 
-	q = String( mapping_name ) ;
-	z = String( mount_point );
+	m_name = String( mapping_name ) ;
+	m_point = String( mount_point );
 
 	if ( argn != 5 && argn != 7  ){
 		st = 11 ;
@@ -52,26 +52,26 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 			goto eerr ;	
 		}
 	}		
-	StringReplaceCharString( q,'_',"#;\"',\\`:!*?&$@(){}[]><|%~^ \n" ) ;
+	StringReplaceCharString( m_name,'_',"#;\"',\\`:!*?&$@(){}[]><|%~^ \n" ) ;
 	
-	StringPrepend( q,"/dev/mapper/zuluCrypt-" ) ;
+	StringPrepend( m_name,"/dev/mapper/zuluCrypt-" ) ;
 
-	while( StringEndsWithChar( z , '/' ) == 0 )
-		StringRemoveRight( z,1 );
+	while( StringEndsWithChar( m_point , '/' ) == 0 )
+		StringRemoveRight( m_point,1 );
 		
-	if ( mkdir( StringContent( z ), S_IRWXU  ) != 0 ){		
+	if ( mkdir( StringContent( m_point ), S_IRWXU  ) != 0 ){		
 		st = 5 ;			
 		goto eerr ;
 	
 	}	
 	if (  argn == 5  ){
 		printf(  "Enter passphrase: "  ) ;		
-		p = get_passphrase(  );	
+		passphrase = get_passphrase(  );	
 		printf( "\n" ) ;	
-		st = open_volume( device,StringContent( q ),StringContent( z ),id,mode,StringContent(  p  ),"-p" ) ;
-		StringDelete(  p  ) ;
+		st = open_volume( device,StringContent( m_name ),StringContent( m_point ),id,mode,StringContent( passphrase ),"-p" ) ;
+		StringDelete( passphrase ) ;
 	}else if (  argn == 7  ){
-		st = open_volume( device,StringContent( q ),StringContent( z ),id,mode,pass,source ) ;	
+		st = open_volume( device,StringContent( m_name ),StringContent( m_point ),id,mode,pass,source ) ;	
 	}else{
 		st =  11 ;			
 	}
@@ -79,7 +79,7 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 	if( st == 0 )
 		 printf( "SUCCESS: Volume opened successfully\n" );
 	else{		
-		remove( StringContent( z ) ) ;
+		remove( StringContent( m_point ) ) ;
 		switch (  st  ){
 			case 1 : printf( "ERROR: No free loop device to use\n" ) ; 
 				break ;					
@@ -107,7 +107,7 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 				;
 		}
 	}	
-	StringDelete( q ) ;
-	StringDelete( z ) ;
+	StringDelete( m_name ) ;
+	StringDelete( m_point ) ;
 	return st ;
 }

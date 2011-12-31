@@ -38,71 +38,71 @@ char * status( const char * mapper )
 	struct crypt_device * cd;
 	crypt_status_info csi ;
 	struct crypt_active_device cad ;
-	StrHandle * p ;
+	StrHandle * properties ;
 	
 	crypt_init_by_name( &cd,mapper );
 	crypt_get_active_device( cd1,mapper,&cad ) ;
 	csi = crypt_status( cd, mapper );
 	
-	p = String( mapper ) ;
+	properties = String( mapper ) ;
 	
 	switch( csi ){
 		case CRYPT_INACTIVE :
-			StringAppend( p," is inactive.\n" ) ; 	
+			StringAppend( properties," is inactive.\n" ) ; 	
 			goto out ;
 		case CRYPT_ACTIVE   : 
-			StringAppend( p," is active.\n" ) ;
+			StringAppend( properties," is active.\n" ) ;
 			break ;
 		case CRYPT_BUSY     : 	
-			StringAppend( p," is active and is in use.\n" ) ;
+			StringAppend( properties," is active and is in use.\n" ) ;
 			break ;
 		case CRYPT_INVALID  : 
-			StringAppend( p," is invalid.\n" ) ;	
+			StringAppend( properties," is invalid.\n" ) ;	
 			goto out ;
 	}	
 	
-	StringAppend( p," type:\t" );
+	StringAppend( properties," type:\t" );
 	e = crypt_get_type( cd ) ;
 	
 	if( strcmp( e,"LUKS1" ) == 0 )
-		StringAppend( p,"luks1" ) ;
+		StringAppend( properties,"luks1" ) ;
 	else if( strcmp( e,"plain") )
-		StringAppend( p,"plain" ) ;
+		StringAppend( properties,"plain" ) ;
 	
-	StringAppend( p,"\n cipher:\t" );
-	StringAppend( p,crypt_get_cipher_mode( cd ) ) ;
-	StringAppend( p,"\n keysize:\t" );
-	StringAppend( p,StringIntToString( buffer,SIZE,8 * crypt_get_volume_key_size( cd ) ) ) ;
-	StringAppend( p," bits" );
-	StringAppend( p,"\n device:\t" );
+	StringAppend( properties,"\n cipher:\t" );
+	StringAppend( properties,crypt_get_cipher_mode( cd ) ) ;
+	StringAppend( properties,"\n keysize:\t" );
+	StringAppend( properties,StringIntToString( buffer,SIZE,8 * crypt_get_volume_key_size( cd ) ) ) ;
+	StringAppend( properties," bits" );
+	StringAppend( properties,"\n device:\t" );
 	e = crypt_get_device_name( cd ) ;
-	StringAppend( p, e ) ;
+	StringAppend( properties, e ) ;
 	
 	if( strncmp( e ,"/dev/loop",9 ) == 0 ){
 		fd = open( e , O_RDONLY ) ;
 		ioctl( fd, LOOP_GET_STATUS64, &l_info ) ;
-		StringAppend( p,"\n loop:\t" );
+		StringAppend( properties,"\n loop:\t" );
 		realpath( ( char * ) l_info.lo_file_name, path ) ;
-		StringAppend( p, path ) ;
+		StringAppend( properties, path ) ;
 		close( fd ) ;
 	}
-	StringAppend( p,"\n offset:\t");
-	StringAppend( p,StringIntToString( buffer,SIZE,crypt_get_data_offset( cd ) ) )  ;
-	StringAppend( p," sectors" ) ;	
-	StringAppend( p,"\n size:\t" );
-	StringAppend( p,StringIntToString( buffer,SIZE,cad.size ) ) ;	
-	StringAppend( p," sectors" );
-	StringAppend( p,"\n mode:\t");
+	StringAppend( properties,"\n offset:\t");
+	StringAppend( properties,StringIntToString( buffer,SIZE,crypt_get_data_offset( cd ) ) )  ;
+	StringAppend( properties," sectors" ) ;	
+	StringAppend( properties,"\n size:\t" );
+	StringAppend( properties,StringIntToString( buffer,SIZE,cad.size ) ) ;	
+	StringAppend( properties," sectors" );
+	StringAppend( properties,"\n mode:\t");
 	
 	if( cad.flags == 1 )
-		StringAppend( p,"read only" );
+		StringAppend( properties,"read only" );
 	else
-		StringAppend( p,"read and write" );	
+		StringAppend( properties,"read and write" );	
 	
 	out:
 	crypt_free( cd );
 	crypt_free( cd1 );
-	return StringDeleteHandle( p ) ;
+	return StringDeleteHandle( properties ) ;
 }
 
 char * volume_device_name( const char * mapper )
@@ -110,7 +110,7 @@ char * volume_device_name( const char * mapper )
 	struct crypt_device * cd;
 	char path[ 512 ] ;
 	int i ;
-	StrHandle * p ;
+	StrHandle * address ;
 	const char * e ;
 	struct loop_info64 l_info ;
 	
@@ -126,9 +126,9 @@ char * volume_device_name( const char * mapper )
 		ioctl( i, LOOP_GET_STATUS64, &l_info ) ;
 		close( i ) ;
 		realpath( ( char * ) l_info.lo_file_name, path ) ;		
-		p = String( path ) ;		
+		address = String( path ) ;		
 	}else
-		p = String( e ) ;
+		address = String( e ) ;
 	
-	return StringDeleteHandle( p ) ;
+	return StringDeleteHandle( address ) ;
 }

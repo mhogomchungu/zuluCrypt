@@ -84,10 +84,8 @@ void startupupdateopenedvolumes::run()
 			device = QString(p.readAllStandardOutput()).remove('\n')  ;
 			p.close();
 			if( status == 1 ){
-				QString s = tr("An inconsitency is detected, skipping /dev/mapper/zuluCrypt-") ;
-				s = s + entry ;
-				s = s + tr(" because it does not look like a cryptsetup volume") ;
-
+				QString s = tr("An inconsitency is detected, skipping /dev/mapper/zuluCrypt-%1 \
+					       because it does not look like a cryptsetup volume").arg(entry) ;
 				UIMessage(tr("WARNING"), s ) ;
 				continue ;
 			}
@@ -97,9 +95,8 @@ void startupupdateopenedvolumes::run()
 			status = p.exitCode() ;
 			p.close();
 			if( status == 1 ){
-				QString s = tr("An inconsitency is detected, skipping /dev/mapper/zuluCrypt-") ;
-				s = s + entry ;
-				s = s + tr(" because the UUID does not match any attached partition") ;
+				QString s = tr("An inconsitency is detected, skipping /dev/mapper/zuluCrypt-%1 \
+					       because its UUID does not match any UUID from attached partitions").arg(entry) ;
 				UIMessage(tr("WARNING"), s ) ;
 				continue ;
 			}
@@ -112,7 +109,7 @@ void startupupdateopenedvolumes::run()
 					  tr("\" because its opened but not mounted"));
 			continue ;
 		}
-		addItemToTable(device,mp) ;
+		emit addItemToTable(device,mp) ;
 	}
 	emit finished(this);
 }

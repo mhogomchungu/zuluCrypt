@@ -63,7 +63,7 @@ sleep 1
 echo ""
 echo "opening \"$plain\" volume using passphrase"
 
-zuluCrypt-cli open "$plain" "$mount_point" rw -p "$passphrase"
+zuluCrypt-cli open "$plain" "$mount_point"/plain rw -p "$passphrase"
 
 sleep 1
 echo ""
@@ -75,7 +75,7 @@ sleep 1
 echo ""
 echo "opening \"$plain\" volume using keyfile"
 
-zuluCrypt-cli open "$plain" "$mount_point" rw -f "$passfile"
+zuluCrypt-cli open "$plain" "$mount_point"/plain rw -f "$passfile"
 
 sleep 1
 echo ""
@@ -92,7 +92,7 @@ sleep 1
 echo ""
 echo "opening \"$luks\" volume using passphrase"
 
-zuluCrypt-cli open "$luks" "$mount_point" rw -p "$passphrase"
+zuluCrypt-cli open "$luks" "$mount_point"/luks rw -p "$passphrase"
 
 sleep 1
 echo ""
@@ -104,7 +104,7 @@ sleep 1
 echo ""
 echo "opening \"$luks\" volume using keyfile"
 
-zuluCrypt-cli open "$luks" "$mount_point" rw -f "$passfile"
+zuluCrypt-cli open "$luks" "$mount_point"/luks rw -f "$passfile"
 
 sleep 1
 echo ""

@@ -49,7 +49,6 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 	setupConnections();
 
 	StartUpAddOpenedVolumesToTableThread();
-	//StartUpAddOpenedVolumesToTable() ;
 
 	QString home = QDir::homePath() + QString("/.zuluCrypt/") ;
 	QDir d(home) ;
@@ -64,14 +63,11 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 		f.write("1") ;
 		f.close();
 	}
-	
 	f.open(QIODevice::ReadOnly) ;
 
 	QByteArray c = f.readAll() ;
 
 	f.close() ;
-
-	m_ui->actionTray_icon->setCheckable(true);
 
 	if( c.at(0) == '1'){
 		m_ui->actionTray_icon->setChecked(true);
@@ -80,7 +76,6 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 		m_ui->actionTray_icon->setChecked(false);
 		m_trayIcon->hide();
 	}
-
 	QString fontPath = QDir::homePath() + QString("/.zuluCrypt/font") ;
 
 	QFile z( fontPath ) ;
@@ -91,7 +86,6 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 		z.write( s.toAscii() ) ;
 		z.close();
 	}
-
 	QFile x( fontPath );
 	x.open(QIODevice::ReadOnly) ;
 	QStringList xs = QString( x.readAll() ).split("\n") ;
@@ -116,24 +110,17 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 
 	setUserFont(F);
 
-	m_vpt = new volumePropertiesThread() ;
-
-	connect(m_vpt,
-		SIGNAL(finished()),
-		this,
-	SLOT(volumePropertyThreadFinished())) ;
-
-	m_rca = new QAction( this ) ;
+	QAction * rca = new QAction( this ) ;
 
 	QList<QKeySequence> keys ;
 
 	keys.append( Qt::Key_Menu );
 	keys.append( Qt::CTRL + Qt::Key_M );
 
-	m_rca->setShortcuts(keys) ;
-	connect(m_rca,SIGNAL(triggered()),this,SLOT(menuKeyPressed())) ;
+	rca->setShortcuts(keys) ;
+	connect(rca,SIGNAL(triggered()),this,SLOT(menuKeyPressed())) ;
 
-	this->addAction( m_rca );
+	this->addAction( rca );
 }
 
 void zuluCrypt::StartUpAddOpenedVolumesToTableThread()
@@ -208,36 +195,24 @@ void zuluCrypt::setupConnections()
 	connect(m_ui->actionClose_all_opened_volumes,SIGNAL(triggered()),this,SLOT(closeAllVolumes())) ;
 }
 
-void zuluCrypt::HighlightRow(int currentRow,int previousRow)
+void zuluCrypt::HighlightRow(int row,bool b)
 {
-	int count = m_ui->tableWidget->rowCount() ;
-	if(count > 0 && currentRow != -1){
-		m_ui->tableWidget->item(currentRow,0)->setSelected(true);
-		m_ui->tableWidget->item(currentRow,1)->setSelected(true);
-		m_ui->tableWidget->item(currentRow,2)->setSelected(true);
-		m_ui->tableWidget->setCurrentCell(currentRow,1);
-	}
-	if(count > 1 && currentRow != previousRow && previousRow != -1 ){
-		m_ui->tableWidget->item(previousRow,0)->setSelected(false);
-		m_ui->tableWidget->item(previousRow,1)->setSelected(false);
-		m_ui->tableWidget->item(previousRow,2)->setSelected(false);
-	}
+	m_ui->tableWidget->item(row,0)->setSelected(b);
+	m_ui->tableWidget->item(row,1)->setSelected(b);
+	m_ui->tableWidget->item(row,2)->setSelected(b);
+	if( b == true)
+		m_ui->tableWidget->setCurrentCell(row,1);
 	m_ui->tableWidget->setFocus();
 }
 
 void zuluCrypt::currentItemChanged(QTableWidgetItem *current, QTableWidgetItem *previous)
 {
-	int c ;
-	int p ;
-	if( current == NULL )
-		c = -1 ;
-	else
-		c = current->row() ;
-	if( previous == NULL )
-		p = -1 ;
-	else
-		p = previous->row() ;
-	HighlightRow(c,p);
+	if(current != NULL)
+		HighlightRow(current->row(), true) ;
+	if(previous != NULL)
+		if(current != NULL)
+			if(previous->row() != current->row())
+				HighlightRow(previous->row(), false) ;
 }
 
 void zuluCrypt::closeAllVolumes()
@@ -391,6 +366,8 @@ void zuluCrypt::setUserFont(QFont Font)
 	m_ui->actionSelect_random_number_generator->setFont(this->font());
 	m_ui->actionTray_icon->setFont(this->font());
 	m_ui->menuFavorites->setFont(this->font());
+	m_ui->actionManage_names->setFont(this->font());
+	m_ui->menu_zc->setFont(this->font());
 }
 
 void zuluCrypt::info()
@@ -412,15 +389,7 @@ void zuluCrypt::info()
 
 	info = info +tr("random number generator device:\t( user specified )\n") ;
 
-	QMessageBox m ;
-	m.setParent(this);
-	m.setWindowFlags(Qt::Window | Qt::Dialog);
-	m.addButton(QMessageBox::Ok);
-	m.setWindowTitle(tr("cryptographic info"));
-	m.setFont(this->font());
-	m.setText(info) ;
-
-	m.exec() ;
+	UIMessage(tr("cryptographic info"),info);
 }
 
 void zuluCrypt::createEncryptedpartitionUI()
@@ -430,13 +399,6 @@ void zuluCrypt::createEncryptedpartitionUI()
 
 void zuluCrypt::aboutMenuOption(void)
 {
-	QMessageBox m ;
-	m.setParent(this);
-	m.setWindowFlags(Qt::Window | Qt::Dialog);
-	m.addButton(QMessageBox::Ok);
-	m.setWindowTitle(tr("about zuluCrypt"));
-	m.setFont(this->font());
-
 	QString license = QString("version %1 of zuluCrypt, a front end to cryptsetup.\n\n\
 name : mhogo mchungu\n\
 Copyright 2011,2012\n\
@@ -454,9 +416,7 @@ GNU General Public License for more details.\n\
 You should have received a copy of the GNU General Public License\n\
 along with this program.  If not, see <http://www.gnu.org/licenses/>.").arg(VERSION_STRING);
 
-
-	m.setText( license ) ;
-	m.exec() ;
+	UIMessage(tr("about zuluCrypt"),license);
 }
 
 void zuluCrypt::addItemToTableByVolume(QString vp)
@@ -467,79 +427,50 @@ void zuluCrypt::addItemToTableByVolume(QString vp)
 
 void zuluCrypt::addItemToTable(QString device,QString m_point)
 {
-	QTableWidget * tableWidget = m_ui->tableWidget ;
-	int row = tableWidget->rowCount() ;
-	tableWidget->insertRow(row);
-	tableWidget->setItem(row,0,new QTableWidgetItem(device)) ;
-	tableWidget->setItem(row,1,new QTableWidgetItem(m_point)) ;
+	int row = m_ui->tableWidget->rowCount() ;
+	m_ui->tableWidget->insertRow(row);
+	m_ui->tableWidget->setItem(row,0,new QTableWidgetItem(device)) ;
+	m_ui->tableWidget->setItem(row,1,new QTableWidgetItem(m_point)) ;
 
 	if ( miscfunctions::isLuks( device.replace("\"","\"\"\"") ) == true )
-		tableWidget->setItem(row,2,new QTableWidgetItem(tr("luks"))) ;
+		m_ui->tableWidget->setItem(row,2,new QTableWidgetItem(tr("luks"))) ;
 	else
-		tableWidget->setItem(row,2,new QTableWidgetItem(tr("plain"))) ;
+		m_ui->tableWidget->setItem(row,2,new QTableWidgetItem(tr("plain"))) ;
 
-	tableWidget->item(row,0)->setTextAlignment(Qt::AlignCenter);
-	tableWidget->item(row,1)->setTextAlignment(Qt::AlignCenter);
-	tableWidget->item(row,2)->setTextAlignment(Qt::AlignCenter);
+	m_ui->tableWidget->item(row,0)->setTextAlignment(Qt::AlignCenter);
+	m_ui->tableWidget->item(row,1)->setTextAlignment(Qt::AlignCenter);
+	m_ui->tableWidget->item(row,2)->setTextAlignment(Qt::AlignCenter);
 
-	tableWidget->setCurrentCell(row,1);
-	/*
-	addItemToTableThread * addThread  = new addItemToTableThread(&mutex,m_ui->tableWidget,x,y) ;
-	connect(addThread,
-		SIGNAL(threadFinished(addItemToTableThread*)),
-		this,
-		SLOT(deleteAddItemToTableThread(addItemToTableThread *))) ;
-	addThread->start();
-	*/
-
-	/*
-	  "passwordDialogm_ui->HideUI()" should ideally be in the case 0 of "threadfinished" member of
-	  "password_Dialog" class. It is here because the UI freezes for a bit
-	  while it disaapears when placed there.
-
-	if(passwordDialogUI != NULL){
-		passwordDialogm_ui->hide();
-		passwordDialogm_ui->deleteLater();
-	}*/
-}
-
-void zuluCrypt::deleteAddItemToTableThread(addItemToTableThread *Thread)
-{
-	Thread->deleteLater(); ;
-	/*
-	  "passwordDialogm_ui->HideUI()" should ideally be in the case 0 of "threadfinished" member of
-	  "password_Dialog" class. It is here because the UI freezes for a bit
-	  while it disaapears when placed there.
-	  */
-	//if(passwordDialogm_ui->isVisible() == true)
-	//	passwordDialogm_ui->HideUI() ;
+	m_ui->tableWidget->setCurrentCell(row,1);
 }
 
 void zuluCrypt::removeRowFromTable( int x )
 {
 	m_ui->tableWidget->removeRow( x ) ;
-	if( m_ui->tableWidget->rowCount() > 0 )
-		m_ui->tableWidget->setCurrentCell(0,1);
+	int count = m_ui->tableWidget->rowCount() ;
+	if( count > 0 )
+		m_ui->tableWidget->setCurrentCell(count - 1,1);
 }
 
 void zuluCrypt::volume_property()
 {
-	m_vpt->update(m_ui->tableWidget->item(m_currentItem->row(),0)->text(),
-		    m_ui->tableWidget->item(m_currentItem->row(),1)->text(),
-		    &m_volumeProperty);
-	m_vpt->start();
+	QString x = m_ui->tableWidget->item(m_currentItem->row(),0)->text() ;
+	QString y = m_ui->tableWidget->item(m_currentItem->row(),1)->text() ;
+
+	volumePropertiesThread * vpt = new volumePropertiesThread(x,y);
+
+	connect(vpt,
+		SIGNAL(finished(QString,volumePropertiesThread *)),
+		this,
+	SLOT(volumePropertyThreadFinished(QString,volumePropertiesThread *))) ;
+
+	vpt->start();
 }
 
-void zuluCrypt::volumePropertyThreadFinished()
+void zuluCrypt::volumePropertyThreadFinished(QString properties,volumePropertiesThread * obj)
 {
-	QMessageBox mpv ;
-	mpv.setWindowTitle(tr("volume properties"));
-	mpv.setParent(this);
-	mpv.setWindowFlags(Qt::Window | Qt::Dialog);
-	mpv.addButton(QMessageBox::Ok);
-	mpv.setFont(this->font());
-	mpv.setText(m_volumeProperty);
-	mpv.exec() ;
+	UIMessage(tr("volume properties"),properties);
+	obj->deleteLater();
 }
 
 void zuluCrypt::favAboutToHide()
@@ -660,6 +591,7 @@ void zuluCrypt::UIMessage(QString title, QString message)
 {
 	QMessageBox m ;
 	m.setParent(this);
+	m.setFont(this->font());
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 	m.setText(message);
 	m.setWindowTitle(title);
@@ -842,7 +774,7 @@ openpartition * zuluCrypt::setUpOpenpartition()
 
 void zuluCrypt::ShowNonSystemPartitions()
 {
-	openpartition *NonSystemPartitions = setUpOpenpartition() ;
+	openpartition * NonSystemPartitions = setUpOpenpartition() ;
 
 	connect(NonSystemPartitions,
 		SIGNAL(clickedPartition(QString)),
@@ -854,14 +786,14 @@ void zuluCrypt::ShowNonSystemPartitions()
 
 void zuluCrypt::ShowOpenPartition()
 {
-	openpartition * op = setUpOpenpartition() ;
+	openpartition * allPartitions = setUpOpenpartition() ;
 
-	connect(op,
+	connect(allPartitions,
 		SIGNAL(clickedPartition(QString)),
 		this,
 		SLOT(partitionClicked(QString)));
 
-	op->ShowUI();
+	allPartitions->ShowAllPartitions();
 }
 
 passwordDialog * zuluCrypt::setUpPasswordDialog()
@@ -965,8 +897,6 @@ void zuluCrypt::StartUpAddOpenedVolumesToTableThreadFinished(startupupdateopened
 
 zuluCrypt::~zuluCrypt()
 {
-	delete m_rca ;
 	delete m_ui;
 	delete m_trayIcon;
-	delete m_vpt ;
 }

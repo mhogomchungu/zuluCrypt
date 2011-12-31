@@ -30,8 +30,8 @@
 
 int mount_volume( const char * mapper,const char * m_point,const char * mode,uid_t id )
 {
-	StrHandle * p = NULL ;
-	StrHandle * q ;
+	StrHandle * fs ;
+	StrHandle * options ;
 	unsigned long mountflags = 0 ;
 	struct mntent mt  ;
 	blkid_probe blkid ;
@@ -39,43 +39,38 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 	char path[ 16 ] ;
 	int h ;
 	int status ;
-	const char * fs ;	
+	const char * cf ;	
 	FILE * f ;
 	mnt_lock * m_lock ;
 	
 	blkid = blkid_new_probe_from_filename( mapper ) ;
 	blkid_do_probe( blkid );
-	h = blkid_probe_lookup_value( blkid , "TYPE", &fs, NULL ) ;		
+	h = blkid_probe_lookup_value( blkid , "TYPE", &cf, NULL ) ;		
 	
 	if( h != 0 ){
 		blkid_free_probe( blkid );
 		close_mapper( mapper ) ; 
 		return 4 ;
-	}
-	
-	q = String( fs ) ;
-	fs = StringContent( q ) ;
+	}	
+	fs = String( cf ) ;
 	
 	blkid_free_probe( blkid );
 	
 	if ( strcmp( mode, "ro" ) == 0 )
 		mountflags = MS_RDONLY ;
 		
-	if( strcmp( fs, "vfat" ) == 0 ){
-		p = String( "dmask=007,uid=" ) ;
-		StringAppend( p ,StringIntToString( uid, 5, id ) ) ;
-		StringAppend( p , ",gid=" ) ;
-		StringAppend( p ,StringIntToString( uid, 5, id ) );
-		h = mount( mapper, m_point,fs,mountflags,StringContent( p ) ) ;	
-		StringPrepend( p ,"," ) ;
-		StringPrepend( p , mode ) ;
+	if( strcmp( StringContent( fs ), "vfat" ) == 0 ){
+		options = String( "dmask=007,uid=" ) ;
+		StringAppend( options ,StringIntToString( uid, 5, id ) ) ;
+		StringAppend( options , ",gid=" ) ;
+		StringAppend( options ,StringIntToString( uid, 5, id ) );
+		h = mount( mapper, m_point,StringContent( fs ),mountflags,StringContent( options ) ) ;	
+		StringPrepend( options ,"," ) ;
+		StringPrepend( options , mode ) ;
 	}else{		
-		p = String( mode ) ;
-		h = mount( mapper, m_point,fs,mountflags,NULL) ;
-		chown( m_point, id, id ) ;
-		chmod( m_point, S_IRWXU ) ;		
-	}
-	
+		options = String( mode ) ;
+		h = mount( mapper, m_point,StringContent( fs ),mountflags,NULL) ;
+	}	
 	if( h != 0 ){
 		close_mapper( mapper ) ; 
 		h = 4 ;		
@@ -95,8 +90,8 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 				f = setmntent( "/etc/mtab","a" ) ;	
 				mt.mnt_fsname = ( char * ) mapper ;
 				mt.mnt_dir =    ( char * ) m_point ;
-				mt.mnt_type =   ( char * ) fs ;	
-				mt.mnt_opts =   ( char * ) StringContent( p ) ;
+				mt.mnt_type =   ( char * ) StringContent( fs ) ;	
+				mt.mnt_opts =   ( char * ) StringContent( options ) ;
 				mt.mnt_freq =   0 ;
 				mt.mnt_passno = 0 ;
 				addmntent( f, &mt ) ;	
@@ -106,8 +101,8 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 			}
 		}
 	}
-	StringDelete( p ) ;
-	StringDelete( q ) ;
+	StringDelete( fs ) ;
+	StringDelete( options ) ;
 	return h ;
 }
 

@@ -28,7 +28,6 @@
 
 #include "ui_password.h"
 #include "openpartition.h"
-#include "zulucryptthreads.h"
 #include "runinthread.h"
 
 class passwordDialog :  public QDialog

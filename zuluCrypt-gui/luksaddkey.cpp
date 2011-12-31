@@ -356,7 +356,7 @@ void luksaddkey::threadfinished(runInThread * lakt,int status)
 			UIMessage(tr("ERROR!"),tr("could not open key file for reading, run out of memory"));
 			break ;
 		case 11 :
-			UIMessage(tr("ERROR!"),tr("could not find any partition with the presented UUID"));
+			UIMessage(tr("ERROR!"),tr("presented UUID does not match any UUID from attached partitions"));
 			break ;	
 		default:
 			UIMessage(tr("ERROR!"),tr("un unrecognized error has occured, key not added"));

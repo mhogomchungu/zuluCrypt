@@ -21,18 +21,17 @@
 
 int addkey( int argn,char * device,char * keyType1,char * existingKey,char * keyType2,char * newKey )
 {
-	StrHandle * p ;
-	StrHandle * q ;
-	StrHandle * n ;
+	StrHandle * presentKey ;
+	StrHandle * newKey_1 ;
+	StrHandle * newKey_2 ;
 	
-	struct stat st1 ;
+	struct stat st ;
 	int status = 0 ;
-	int z ;
 	char * c = NULL ;
 	char * d = NULL ;
-	char * e = NULL ;
+	char * e = NULL ;	
 	
-	if(  stat( device,&st1 ) != 0  ){		
+	if(  stat( device,&st ) != 0  ){		
 		status = 4 ;
 		goto out ;
 	}
@@ -53,59 +52,37 @@ int addkey( int argn,char * device,char * keyType1,char * existingKey,char * key
 	
 	if (  argn == 3  ){		
 		printf( "Enter an existing passphrase: " ) ;		
-		p = get_passphrase(  ) ;		
+		presentKey = get_passphrase(  ) ;		
 		printf( "\n" ) ;		
 		printf( "Enter the new passphrase: " ) ;		
-		q = get_passphrase(  ) ;		
+		newKey_1 = get_passphrase(  ) ;		
 		printf( "\n" ) ;		
 		printf( "Re enter the new passphrase: " ) ;		
-		n = get_passphrase(  ) ;		
+		newKey_2 = get_passphrase(  ) ;		
 		printf( "\n" ) ;
 		
-		if(  StringCompare(  q , n  ) != 0  )			
+		if(  StringCompare( newKey_1 , newKey_2 ) != 0  )			
 			status = 7 ;
 		else			
-			status = add_key(  device,StringContent(  p  ), StringContent(  q  ) ) ;			
+			status = add_key( device,StringContent( presentKey ), StringContent( newKey_1 ) ) ;			
 		
-		StringDelete(  p  ) ;			
-		StringDelete(  q  ) ;	
-		StringDelete(  n  ) ;
+		StringDelete( presentKey ) ;			
+		StringDelete( newKey_1 ) ;	
+		StringDelete( newKey_2 ) ;
 		
 	}else if(  argn == 7  ){		
-		if (  strcmp(  keyType1, "-f"  ) == 0  ){			
-			if(  stat(  existingKey, &st1 ) == 0  ) {				
-				c = (  char * ) malloc (  sizeof( char ) * ( st1.st_size + 1  ) ) ;				
-				if(  c == NULL  ){
-					status = 9 ;
-					goto out ;
-				}
-				*(  c + st1.st_size  ) = '\0' ;				
-				z = open( existingKey, O_RDONLY  ) ;				
-				read(  z, c, st1.st_size  ) ;				
-				close(  z  ) ;				
-			}else{
-				status = 8 ;
-				goto out ;
+		if ( strcmp(  keyType1, "-f"  ) == 0 ){			
+			switch( read_file( &c,existingKey ) ){
+				case 1 : status = 8 ; goto out ; 
+				case 2 : status = 9 ; goto out ;
 			}
-		}
-		
-		if (  strcmp(  keyType2, "-f"  ) == 0 ){			
-			if(  stat(  newKey, &st1 ) == 0  ) {				
-				d = (  char * ) malloc (  sizeof( char ) * (  st1.st_size + 1  ) ) ;				
-				if(  d == NULL  ){
-					status = 9 ;
-					goto out ;
-				}				
-				*(  d + st1.st_size  ) = '\0' ;				
-				z = open( newKey, O_RDONLY  ) ;				
-				read(  z, d, st1.st_size  ) ;				
-				close(  z  ) ;				
-			}else{
-				status = 8 ;
-				goto out ;
-			}			
-		}
-		
+		}		
+		if ( strcmp(  keyType2, "-f"  ) == 0 ){				
+			switch( read_file( &d,newKey ) ){
+				case 1 : status = 8 ; goto out ; 
+				case 2 : status = 9 ; goto out ; 		
+			}
+		}		
 		if (  strcmp( keyType1,"-f" ) == 0 && strcmp( keyType2,"-f" ) == 0  ){
 			status = add_key(  device, c, d ) ;			
 			free(  c  ) ;

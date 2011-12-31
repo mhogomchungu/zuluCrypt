@@ -42,10 +42,9 @@
 #include "createkeyfile.h"
 #include "startupupdateopenedvolumes.h"
 #include "closeallvolumesthread.h"
-#include "zulucryptthreads.h"
-#include "additemtotablethread.h"
 #include "runinthread.h"
 #include "managedevicenames.h"
+#include "volumepropertiesthread.h"
 
 namespace Ui {
     class zuluCrypt;
@@ -86,7 +85,7 @@ private slots :
 	void trayClicked(QSystemTrayIcon::ActivationReason ) ;
 	void trayProperty(void) ;
 	void addItemToTable(QString pathToVolume, QString pathToMountPoint);
-	void volumePropertyThreadFinished(void) ;
+	void volumePropertyThreadFinished(QString properties,volumePropertiesThread * obj) ;
 	void closeApplication(void) ;
 	void StartUpAddOpenedVolumesToTableThreadFinished(startupupdateopenedvolumes *) ;
 	void minimize(void) ;
@@ -94,7 +93,6 @@ private slots :
 	void closeAllVolumes(void) ;
 	void deletecloseAllVolumesThread(closeAllVolumesThread *) ;
 	void closeThreadFinished(runInThread *,int) ;
-	void deleteAddItemToTableThread(addItemToTableThread *);
 	void menuKeyPressed(void) ;
 	void addItemToTableByVolume(QString volume_path);
 	void ShowCreateFile(void);
@@ -133,14 +131,11 @@ private:
 	void setupUIElements(void) ;
 	void closeEvent(QCloseEvent *) ;
 	void setUserFont(QFont) ;
-	void HighlightRow(int,int) ;
+	void HighlightRow(int,bool) ;
 
 	Ui::zuluCrypt * m_ui;
 	QTableWidgetItem * m_currentItem ;
-	volumePropertiesThread * m_vpt ;
-	QString m_volumeProperty ;
 	QSystemTrayIcon * m_trayIcon ;
-	QAction * m_rca;
 };
 
 #endif // ZULUCRYPT_H

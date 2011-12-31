@@ -24,7 +24,6 @@
 #include <QString>
 #include <QCloseEvent>
 
-#include "zulucryptthreads.h"
 #include "runinthread.h"
 
 namespace Ui {
