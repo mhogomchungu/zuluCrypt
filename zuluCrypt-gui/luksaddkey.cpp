@@ -162,6 +162,7 @@ void luksaddkey::pbOpenPartition(void)
 {
 	openpartition * openPartition = new openpartition(this);
 	openPartition->setWindowFlags(Qt::Window | Qt::Dialog);
+	openPartition->setFont(this->font());
 
 	connect(openPartition,
 		SIGNAL(clickedPartition(QString)),
