@@ -44,18 +44,8 @@ luksdeletekey::luksdeletekey(QWidget *parent) :
 	m_ui->setupUi(this);
 	this->setFixedSize(this->size());
 
-	m_openPartition = new openpartition(this);
-	m_openPartition->setWindowFlags(Qt::Window | Qt::Dialog);
-
 	m_ldk = NULL ;
-	connect(m_openPartition,
-		SIGNAL(clickedPartition(QString)),
-		this,
-		SLOT(deleteKey(QString)));
-	connect(this,
-		SIGNAL(pbOpenPartitionClicked()),
-		m_openPartition,
-		SLOT(ShowUI()));
+
 	connect(m_ui->pushButtonDelete,
 		SIGNAL(clicked()),
 		this,
@@ -172,8 +162,25 @@ void luksdeletekey::pbCancel()
 
 void luksdeletekey::pbOpenPartition()
 {
-	emit pbOpenPartitionClicked();
+	openpartition * openPartition = new openpartition(this);
+	openPartition->setWindowFlags(Qt::Window | Qt::Dialog);
+
+	connect(openPartition,
+		SIGNAL(clickedPartition(QString)),
+		this,
+		SLOT(deleteKey(QString)));
+	connect(openPartition,
+		SIGNAL(HideUISignal(openpartition*)),
+		this,
+		SLOT(openpartitionFinished(openpartition*)));
+	openPartition->ShowAllPartitions();
 }
+
+void luksdeletekey::openpartitionFinished(openpartition * obj)
+{
+	obj->deleteLater();
+}
+
 void luksdeletekey::UIMessage(QString title, QString message)
 {
 	QMessageBox m ;
@@ -319,6 +326,5 @@ void luksdeletekey::HideUI()
 
 luksdeletekey::~luksdeletekey()
 {
-	delete m_openPartition ;
 	delete m_ui ;
 }

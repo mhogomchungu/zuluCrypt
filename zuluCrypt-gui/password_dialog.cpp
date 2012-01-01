@@ -94,7 +94,7 @@ void passwordDialog::ShowUI(QString volumePath, QString mount_point)
 	m_ui->OpenVolumePath->setEnabled(false);
 	m_ui->PushButtonVolumePath->setEnabled(false);
 	m_ui->MountPointPath->setText(mount_point);
-	if( volumePath.left(5) == QString("/dev/") )
+	if( volumePath.left(5) == QString("/dev/") || volumePath.left(5) == QString("UUID="))
 		m_ui->PushButtonVolumePath->setIcon(QIcon(QString(":/partition.png")));
 	else
 		m_ui->PushButtonVolumePath->setIcon(QIcon(QString(":/file.png")));

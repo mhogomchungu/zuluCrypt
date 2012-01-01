@@ -46,17 +46,6 @@ luksaddkey::luksaddkey(QWidget *parent) :
 
 	this->setFixedSize(this->size());
 
-	m_openPartition = new openpartition(this);
-	m_openPartition->setWindowFlags(Qt::Window | Qt::Dialog);
-
-	connect(m_openPartition,
-		SIGNAL(clickedPartition(QString)),
-		this,
-		SLOT(partitionEntry(QString)));
-	connect(this,
-		SIGNAL(pbOpenPartitionClicked()),
-		m_openPartition,
-		SLOT(ShowUI()));
 	connect(m_ui->pushButtonOpenFile,
 		SIGNAL(clicked()),
 		this,
@@ -171,7 +160,23 @@ void luksaddkey::pbOpenFile(void)
 
 void luksaddkey::pbOpenPartition(void)
 {
-	emit pbOpenPartitionClicked() ;
+	openpartition * openPartition = new openpartition(this);
+	openPartition->setWindowFlags(Qt::Window | Qt::Dialog);
+
+	connect(openPartition,
+		SIGNAL(clickedPartition(QString)),
+		this,
+		SLOT(partitionEntry(QString)));
+	connect(openPartition,
+		SIGNAL(HideUISignal(openpartition*)),
+		this,
+		SLOT(openpartitionFinished(openpartition*)));
+	openPartition->ShowAllPartitions();
+}
+
+void luksaddkey::openpartitionFinished(openpartition *obj)
+{
+	obj->deleteLater();
 }
 
 void luksaddkey::rbExistingPassphrase(void)
@@ -427,6 +432,5 @@ void luksaddkey::pbCancel(void)
 
 luksaddkey::~luksaddkey()
 {
-	delete m_openPartition ;
 	delete m_ui ;
 }

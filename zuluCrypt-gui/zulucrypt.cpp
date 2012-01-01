@@ -69,6 +69,7 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 
 	f.close() ;
 
+	m_ui->actionTray_icon->setCheckable(true);
 	if( c.at(0) == '1'){
 		m_ui->actionTray_icon->setChecked(true);
 		m_trayIcon->show();
@@ -812,7 +813,7 @@ passwordDialog * zuluCrypt::setUpPasswordDialog()
 		this,
 		SLOT(volumeOpened(QString,QString,passwordDialog *))) ;
 
-		connect(passworddialog,
+	connect(passworddialog,
 		SIGNAL(addItemToTable(QString,QString)),
 		this,
 		SLOT(addItemToTable(QString,QString))) ;
@@ -820,14 +821,11 @@ passwordDialog * zuluCrypt::setUpPasswordDialog()
 	return passworddialog ;
 }
 
-void zuluCrypt::volumeOpened(QString dev,QString m_point,passwordDialog *pd)
+void zuluCrypt::volumeOpened(QString dev,QString m_point,passwordDialog * obj)
 {
 	addItemToTable(dev,m_point);
-	/*
-	 * dont call pd->HideUI() to reduce/remove UI freeze
-	 */
-	pd->hide();
-	pd->deleteLater();	
+	obj->hide();
+	HidePasswordDialog(obj);
 }
 
 void zuluCrypt::ShowPasswordDialog()

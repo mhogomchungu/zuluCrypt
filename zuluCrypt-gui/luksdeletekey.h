@@ -50,13 +50,13 @@ private slots:
 	void pbOpenKeyFile(void) ;
 	void pbOpenVolume(void) ;
 	void threadfinished(runInThread *,int) ;
+	void openpartitionFinished(openpartition *);
 private:
 	void disableAll(void) ;
 	void enableAll(void) ;
 	void UIMessage(QString title, QString message) ;
 	void closeEvent(QCloseEvent *) ;
 	Ui::luksdeletekey *m_ui;
-	openpartition *m_openPartition ;
 	QString m_volumePath ;
 	runInThread *m_ldk ;
 };

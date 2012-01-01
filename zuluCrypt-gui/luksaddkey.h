@@ -53,13 +53,13 @@ private slots:
 	void pbAdd(void) ;
 	void pbCancel(void) ;	
 	void threadfinished(runInThread *,int) ;
+	void openpartitionFinished(openpartition *);
 private:
 	void UIMessage(QString,QString);
 	void disableAll(void) ;
 	void enableAll(void) ;
 	void closeEvent(QCloseEvent *) ;
-	Ui::luksaddkey *m_ui ;
-	openpartition *m_openPartition ;
+	Ui::luksaddkey *m_ui ;	
 	QString m_volumePath ;
 	runInThread *m_lakt ;
 };

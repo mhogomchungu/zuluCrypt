@@ -120,7 +120,7 @@ int main(  int argc , char *argv[] )
 			}
 			else
 				strncpy( m_name + 5,device + 5,36 ) ;
-			m_name[41] = '\0' ;
+			*( m_name + 41 ) = '\0' ;
 			mapping_name = m_name ;
 			device = dev ;
 		}else{
@@ -134,7 +134,6 @@ int main(  int argc , char *argv[] )
 			mapping_name =  device  ;			
 		}
 	}
-	
 	setuid( 0 );
 	
 	if(  strcmp(  action, "isLuks"  ) == 0  ){
