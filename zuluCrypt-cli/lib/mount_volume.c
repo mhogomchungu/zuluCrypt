@@ -30,8 +30,8 @@
 
 int mount_volume( const char * mapper,const char * m_point,const char * mode,uid_t id )
 {
-	StrHandle * fs ;
-	StrHandle * options ;
+	string_t * fs ;
+	string_t * options ;
 	unsigned long mountflags = 0 ;
 	struct mntent mt  ;
 	blkid_probe blkid ;

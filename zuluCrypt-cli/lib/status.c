@@ -38,7 +38,7 @@ char * status( const char * mapper )
 	struct crypt_device * cd;
 	crypt_status_info csi ;
 	struct crypt_active_device cad ;
-	StrHandle * properties ;
+	string_t * properties ;
 	
 	crypt_init_by_name( &cd,mapper );
 	crypt_get_active_device( cd1,mapper,&cad ) ;
@@ -110,7 +110,7 @@ char * volume_device_name( const char * mapper )
 	struct crypt_device * cd;
 	char path[ 512 ] ;
 	int i ;
-	StrHandle * address ;
+	string_t * address ;
 	const char * e ;
 	struct loop_info64 l_info ;
 	

@@ -455,8 +455,9 @@ void zuluCrypt::removeRowFromTable( int x )
 
 void zuluCrypt::volume_property()
 {
-	QString x = m_ui->tableWidget->item(m_currentItem->row(),0)->text() ;
-	QString y = m_ui->tableWidget->item(m_currentItem->row(),1)->text() ;
+	QTableWidgetItem * item = m_ui->tableWidget->currentItem();
+	QString x = m_ui->tableWidget->item(item->row(),0)->text() ;
+	QString y = m_ui->tableWidget->item(item->row(),1)->text() ;
 
 	volumePropertiesThread * vpt = new volumePropertiesThread(x,y);
 
@@ -494,8 +495,9 @@ void zuluCrypt::readFavorites()
 
 void zuluCrypt::addToFavorite()
 {
-	miscfunctions::addToFavorite(m_ui->tableWidget->item(m_currentItem->row(),0)->text(),
-				     m_ui->tableWidget->item(m_currentItem->row(),1)->text());
+	QTableWidgetItem * item = m_ui->tableWidget->currentItem();
+	miscfunctions::addToFavorite(m_ui->tableWidget->item(item->row(),0)->text(),
+				     m_ui->tableWidget->item(item->row(),1)->text());
 }
 
 void zuluCrypt::menuKeyPressed()
@@ -511,10 +513,8 @@ void zuluCrypt::itemClicked(QTableWidgetItem * it)
 	itemClicked(it,true);
 }
 
-void zuluCrypt::itemClicked(QTableWidgetItem *it, bool clicked)
+void zuluCrypt::itemClicked(QTableWidgetItem * item, bool clicked)
 {
-	m_currentItem = it ;
-
 	QMenu m ;
 	m.setFont(this->font());
 	connect(m.addAction("close"),SIGNAL(triggered()),this,SLOT(close())) ;
@@ -523,7 +523,7 @@ void zuluCrypt::itemClicked(QTableWidgetItem *it, bool clicked)
 
 	connect(m.addAction("properties"),SIGNAL(triggered()),this,SLOT(volume_property())) ;
 
-	if( m_ui->tableWidget->item(m_currentItem->row(),2)->text() == QString("luks") ){
+	if( m_ui->tableWidget->item(item->row(),2)->text() == QString("luks") ){
 		m.addSeparator() ;
 		connect(m.addAction("add key"),
 			SIGNAL(triggered()),
@@ -537,8 +537,8 @@ void zuluCrypt::itemClicked(QTableWidgetItem *it, bool clicked)
 
 	m.addSeparator() ;
 
-	QString volume_path = m_ui->tableWidget->item(m_currentItem->row(),0)->text() ;
-	QString mount_point_path = m_ui->tableWidget->item(m_currentItem->row(),1)->text();
+	QString volume_path = m_ui->tableWidget->item(item->row(),0)->text() ;
+	QString mount_point_path = m_ui->tableWidget->item(item->row(),1)->text();
 
 	int i = mount_point_path.lastIndexOf("/") ;
 
@@ -570,7 +570,7 @@ void zuluCrypt::itemClicked(QTableWidgetItem *it, bool clicked)
 		m.exec(QCursor::pos()) ;
 	else{
 		int x = m_ui->tableWidget->columnWidth(0) ;
-		int y = m_ui->tableWidget->rowHeight(m_currentItem->row()) * m_currentItem->row() + 20 ;
+		int y = m_ui->tableWidget->rowHeight(item->row()) * item->row() + 20 ;
 
 		m.addSeparator() ;
 		m.addAction("cancel") ;
@@ -580,12 +580,14 @@ void zuluCrypt::itemClicked(QTableWidgetItem *it, bool clicked)
 
 void zuluCrypt::luksAddKeyContextMenu(void)
 {
-	emit luksAddKey(m_ui->tableWidget->item(m_currentItem->row(),0)->text() ) ;
+	QTableWidgetItem * item = m_ui->tableWidget->currentItem();
+	emit luksAddKey(m_ui->tableWidget->item(item->row(),0)->text() ) ;
 }
 
 void zuluCrypt::luksDeleteKeyContextMenu(void)
 {
-	emit luksDeleteKey(m_ui->tableWidget->item(m_currentItem->row(),0)->text()) ;
+	QTableWidgetItem * item = m_ui->tableWidget->currentItem();
+	emit luksDeleteKey(m_ui->tableWidget->item(item->row(),0)->text()) ;
 }
 
 void zuluCrypt::UIMessage(QString title, QString message)
@@ -604,7 +606,7 @@ void zuluCrypt::closeThreadFinished(runInThread * vct,int st)
 {
 	m_ui->tableWidget->setEnabled( true );
 	switch ( st ) {
-	case 0 :removeRowFromTable(m_currentItem->row()) ;
+	case 0 :removeRowFromTable(m_ui->tableWidget->currentItem()->row()) ;
 		break ;
 	case 1 :UIMessage(tr("ERROR"),
 			  tr("close failed, encrypted volume with that name does not exist")) ;
@@ -629,7 +631,8 @@ void zuluCrypt::closeThreadFinished(runInThread * vct,int st)
 
 void zuluCrypt::close()
 {
-	QString vol = m_ui->tableWidget->item(m_currentItem->row(),0)->text().replace("\"","\"\"\"") ;
+	QTableWidgetItem * item = m_ui->tableWidget->currentItem();
+	QString vol = m_ui->tableWidget->item(item->row(),0)->text().replace("\"","\"\"\"") ;
 	QString exe = QString(ZULUCRYPTzuluCrypt) + QString(" close ") + QString("\"") + \
 			vol + QString("\"") ;
 	runInThread * vct = new runInThread( exe ) ;

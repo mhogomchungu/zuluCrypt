@@ -21,9 +21,9 @@
 
 int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount_point,char * mode,char * source,char * pass )
 {
-	StrHandle * passphrase  ;	
-	StrHandle * m_name  ;	
-	StrHandle * m_point  ;
+	string_t * passphrase  ;	
+	string_t * m_name  ;	
+	string_t * m_point  ;
 	
 	int st ;
 	

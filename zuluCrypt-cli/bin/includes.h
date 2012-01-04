@@ -34,7 +34,7 @@
 #define SYSTEM_PARTITIONS     2
 #define NON_SYSTEM_PARTITIONS 3
 
-StrHandle * get_passphrase(  void  ) ;
+string_t * get_passphrase(  void  ) ;
  
 char * partitions(  int option  ) ;
  

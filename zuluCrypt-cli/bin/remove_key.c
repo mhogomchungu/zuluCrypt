@@ -21,7 +21,7 @@
 
 int removekey(  int argn , char * device, char * keyType, char * keytoremove  )
 {
-	StrHandle * pass;
+	string_t * pass;
 	int status = 0 ;
 	struct stat st ;	
 	char * c ;

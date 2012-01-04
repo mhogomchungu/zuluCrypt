@@ -21,17 +21,17 @@
 #include "String.h"
 #include <stdio.h>
 
-struct StringHandle
+struct StringType
 {
 	size_t size ;
 	char * string ; 
 };
 
-StrHandle * String( const char * c )
+string_t * String( const char * c )
 {
 	char * d ;
 	
-	StrHandle * st = ( StrHandle * ) malloc ( sizeof( StrHandle ) ) ;
+	string_t * st = ( string_t * ) malloc ( sizeof( string_t ) ) ;
 	
 	if( st == NULL )
 		return NULL ;
@@ -51,16 +51,16 @@ StrHandle * String( const char * c )
 	return st ;	
 }
 
-void StringReadToBuffer( StrHandle * st,char * buffer, int size )
+void StringReadToBuffer( string_t * st,char * buffer, int size )
 {
 	int i  ;	
 	for ( i = 0 ; i < size ; i++ )
 		buffer[i] = st->string[i] ;	
 }
 
-StrHandle * StringInherit( char * data )
+string_t * StringInherit( char * data )
 {
-	StrHandle * st = ( StrHandle * ) malloc ( sizeof( StrHandle ) ) ;
+	string_t * st = ( string_t * ) malloc ( sizeof( string_t ) ) ;
 	
 	if( st == NULL )
 		return NULL ;
@@ -72,7 +72,7 @@ StrHandle * StringInherit( char * data )
 	return st ;	
 }
 
-int StringIndexOfString( StrHandle * st,int p, const char * s )
+int StringIndexOfString( string_t * st,int p, const char * s )
 {
 	char * c = strstr( st->string + p,s ) ;
 	
@@ -82,7 +82,7 @@ int StringIndexOfString( StrHandle * st,int p, const char * s )
 		return  c - st->string;	
 }
 
-int StringLastIndexOfChar( StrHandle * st , char s ) 
+int StringLastIndexOfChar( string_t * st , char s ) 
 {
 	char * c = st->string + st->size  ;
 	char * d = st->string ;
@@ -94,7 +94,7 @@ int StringLastIndexOfChar( StrHandle * st , char s )
 	return -1 ;	
 }
 
-int StringLastIndexOfString( StrHandle * st ,const char * s ) 
+int StringLastIndexOfString( string_t * st ,const char * s ) 
 {
 	int p = -1 ;
 	int j = -1 ;
@@ -110,7 +110,7 @@ int StringLastIndexOfString( StrHandle * st ,const char * s )
 	}
 }
 
-int StringIndexOfChar( StrHandle * st, int p , char s ) 
+int StringIndexOfChar( string_t * st, int p , char s ) 
 {	
 	char * c = st->string  + p - 1 ;	
 	
@@ -121,7 +121,7 @@ int StringIndexOfChar( StrHandle * st, int p , char s )
 	return -1 ;
 }
 
-const char * StringRemoveString( StrHandle * st,int x , int y ) 
+const char * StringRemoveString( string_t * st,int x , int y ) 
 {	
 	char * b = st->string + x ;
 	char * c = st->string - 1  ;
@@ -147,22 +147,22 @@ const char * StringRemoveString( StrHandle * st,int x , int y )
 	return st->string = d ;
 }
 
-int StringLength( StrHandle * st )
+int StringLength( string_t * st )
 {
 	return st->size ;	
 }
 
-const char * StringContent( StrHandle * st )
+const char * StringContent( string_t * st )
 {
 	return st->string ;
 }
 
-char * StringCopy( StrHandle * st )
+char * StringCopy( string_t * st )
 {
 	return StringLengthCopy( st,StringLength( st ) ) ;	
 }
 
-char * StringLengthCopy( StrHandle * st,int l )
+char * StringLengthCopy( string_t * st,int l )
 {
 	char * c ;
 	char * d = st->string - 1 ;
@@ -181,7 +181,7 @@ char * StringLengthCopy( StrHandle * st,int l )
 	return e ;	
 }
 
-int StringEndsWithString( StrHandle * st , const char *s ) 
+int StringEndsWithString( string_t * st , const char *s ) 
 {
 	int j = strlen(s) ;
 	int i = strncmp(st->string + st->size - j, s, j ) ;
@@ -192,7 +192,7 @@ int StringEndsWithString( StrHandle * st , const char *s )
 		return -1 ;	
 }
 
-int StringEndsWithChar( StrHandle * st ,char s )
+int StringEndsWithChar( string_t * st ,char s )
 {
 	if ( * ( st->string + st->size -1 ) == s )
 		return 0 ;
@@ -200,17 +200,17 @@ int StringEndsWithChar( StrHandle * st ,char s )
 		return -1 ;
 }
 
-char StringCharAt( StrHandle * st, int p)
+char StringCharAt( string_t * st, int p)
 {
 	return * ( st->string + p )  ;
 }
 
-const char * StringStringAt( StrHandle * st , int p)
+const char * StringStringAt( string_t * st , int p)
 {
 	return st->string + p ;	
 }
 
-void StringDelete( StrHandle * st)
+void StringDelete( string_t * st)
 {	
 	if( st != NULL ) 
 	{
@@ -220,20 +220,20 @@ void StringDelete( StrHandle * st)
 	}
 }
 
-char * StringDeleteHandle( StrHandle * st)
+char * StringDeleteHandle( string_t * st)
 {
 	char * c = st->string ;
 	free( st ) ;
 	return c ;	
 }
 
-const char * StringSubChar( StrHandle * st, int x, char s )
+const char * StringSubChar( string_t * st, int x, char s )
 {	
 	* ( st->string + x ) = s ;
 	return st->string ; 	
 }
 
-const char * StringReplaceCharString( StrHandle * st, char x, const char * y ) 
+const char * StringReplaceCharString( string_t * st, char x, const char * y ) 
 {
 	int i ;
 	int j ;
@@ -254,7 +254,7 @@ const char * StringReplaceCharString( StrHandle * st, char x, const char * y )
 	return st->string ;
 }
 
-const char * StringSubString( StrHandle * st, int x, const char * s ) 
+const char * StringSubString( string_t * st, int x, const char * s ) 
 {
 	const char * c = s - 1  ;
 	char * d = st->string + x  ;
@@ -264,7 +264,7 @@ const char * StringSubString( StrHandle * st, int x, const char * s )
 	return st->string ;
 }
 
-const char * StringInsertChar( StrHandle * st, int x,char s ) 
+const char * StringInsertChar( string_t * st, int x,char s ) 
 {
 	char c[2] ;
 	c[0] = s ;
@@ -272,17 +272,17 @@ const char * StringInsertChar( StrHandle * st, int x,char s )
 	return StringInsertString( st, x, c ) ;
 }
 
-const char * StringPrepend( StrHandle * st ,const  char * s )
+const char * StringPrepend( string_t * st ,const  char * s )
 {
 	return StringInsertString( st,0,s ) ;
 }
 
-const char * StringAppend( StrHandle * st ,const char * s ) 
+const char * StringAppend( string_t * st ,const char * s ) 
 {	
 	return StringInsertString( st, st->size, s ) ;
 }
 
-const char * StringInsertString( StrHandle * st, int x, const char * s )
+const char * StringInsertString( string_t * st, int x, const char * s )
 {
 	int k = st->size + strlen( s ) ;
 	char * c ;
@@ -310,7 +310,7 @@ const char * StringInsertString( StrHandle * st, int x, const char * s )
 	return  st->string = d ;
 }
 
-char * StringMidString( StrHandle * st , int x, int y ) 
+char * StringMidString( string_t * st , int x, int y ) 
 {
 	char * c ;
 	char * d ;
@@ -329,17 +329,17 @@ char * StringMidString( StrHandle * st , int x, int y )
 	return c ;
 }
 
-const char * StringRemoveRight(StrHandle * st, int x ) 
+const char * StringRemoveRight(string_t * st, int x ) 
 {
 	return StringCrop( st,0,x ) ;
 }
 
-const char * StringRemoveLeft(StrHandle * st, int x ) 
+const char * StringRemoveLeft(string_t * st, int x ) 
 {
 	return StringCrop( st,x,0 ) ;
 }
 
-const char * StringCrop( StrHandle *st, int x, int y ) 
+const char * StringCrop( string_t *st, int x, int y ) 
 {
 	char * c ;
 	char * d ;
@@ -368,12 +368,12 @@ const char * StringCrop( StrHandle *st, int x, int y )
 	return st->string = d ;	
 }
 
-const char * StringRemoveStringString(StrHandle * st, const char * s ) 
+const char * StringRemoveStringString(string_t * st, const char * s ) 
 {
 	return StringReplaceString( st,s,"" ) ;
 }
 
-const char * StringReplaceString( StrHandle * st, const char * x, const char * s ) 
+const char * StringReplaceString( string_t * st, const char * x, const char * s ) 
 {
 	char * c ;
 	char * d ;
@@ -419,7 +419,7 @@ const char * StringReplaceString( StrHandle * st, const char * x, const char * s
 	return st->string = f ;	
 }
 
-const char * StringReplaceChar( StrHandle * st, char x, char y)
+const char * StringReplaceChar( string_t * st, char x, char y)
 {
 	char * c = st->string - 1;
 	
@@ -445,7 +445,7 @@ char * StringIntToString( char * x, int y,uint64_t z )
 	return ++c ;
 }
 
-int StringCompare( StrHandle * x , StrHandle * y ) 
+int StringCompare( string_t * x , string_t * y ) 
 {
 	if( x->size != y->size )
 		return 1 ;
@@ -455,7 +455,7 @@ int StringCompare( StrHandle * x , StrHandle * y )
 		return 0 ;	
 }
 
-int StringCompareString( StrHandle * x, const char * y )
+int StringCompareString( string_t * x, const char * y )
 {
 	if( strcmp( x->string, y ) == 0 )
 		return 0 ;
@@ -463,7 +463,7 @@ int StringCompareString( StrHandle * x, const char * y )
 		return 1 ;	
 }
 
-const char * StringInsertCharString( StrHandle * st, char x, const char * n ) 
+const char * StringInsertCharString( string_t * st, char x, const char * n ) 
 {	
 	char * d ;
 	char * f ;
@@ -511,7 +511,7 @@ const char * StringInsertCharString( StrHandle * st, char x, const char * n )
 	return st->string = d ;
 }
 
-const char * StringInsertCharChar( StrHandle * st, char x, char y )
+const char * StringInsertCharChar( string_t * st, char x, char y )
 {
 	char c[2] ;
 	c[0] = y ;

@@ -22,9 +22,9 @@
 #include <mntent.h>
 #include <blkid/blkid.h>
 
-StrHandle * partitionList(void)
+string_t * partitionList(void)
 {
-	StrHandle * all ;
+	string_t * all ;
 	FILE * fd ;
 	
 	char buffer[512];
@@ -69,7 +69,7 @@ int device_from_uuid(char * dev, char * uuid )
 	int k ;
 	
 	blkid_probe bp ;
-	StrHandle * all = partitionList() ;
+	string_t * all = partitionList() ;
 	e = StringContent( all ) ;
 	/*
 	 * Below code will take into account UUID given within quotation marks ie:
@@ -108,7 +108,7 @@ int device_from_uuid(char * dev, char * uuid )
 	return -1 ;	
 }
 
-void blkid( const char * type,const char * entry, int size, StrHandle * system, StrHandle * non_system )
+void blkid( const char * type,const char * entry, int size, string_t * system, string_t * non_system )
 {	
 	char device[12] ;
 	const char * f ;
@@ -155,9 +155,9 @@ char * partitions( int option )
 	
 	struct mntent * mt ;
 	
-	StrHandle * all ;
-	StrHandle * system ;
-	StrHandle * non_system ;
+	string_t * all ;
+	string_t * system ;
+	string_t * non_system ;
 	
 	all = partitionList() ;
 	

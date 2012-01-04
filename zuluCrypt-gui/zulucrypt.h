@@ -134,7 +134,6 @@ private:
 	void HighlightRow(int,bool) ;
 
 	Ui::zuluCrypt * m_ui;
-	QTableWidgetItem * m_currentItem ;
 	QSystemTrayIcon * m_trayIcon ;
 };
 

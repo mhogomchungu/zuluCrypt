@@ -21,9 +21,9 @@
 
 int addkey( int argn,char * device,char * keyType1,char * existingKey,char * keyType2,char * newKey )
 {
-	StrHandle * presentKey ;
-	StrHandle * newKey_1 ;
-	StrHandle * newKey_2 ;
+	string_t * presentKey ;
+	string_t * newKey_1 ;
+	string_t * newKey_2 ;
 	
 	struct stat st ;
 	int status = 0 ;
