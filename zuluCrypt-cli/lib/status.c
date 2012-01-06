@@ -61,7 +61,7 @@ char * status( const char * mapper )
 			goto out ;
 	}	
 	
-	StringAppend( properties," type:\t" );
+	StringAppend( properties," type:   \t" );
 	e = crypt_get_type( cd ) ;
 	
 	if( strcmp( e,"LUKS1" ) == 0 )
@@ -89,10 +89,10 @@ char * status( const char * mapper )
 	StringAppend( properties,"\n offset:\t");
 	StringAppend( properties,StringIntToString( buffer,SIZE,crypt_get_data_offset( cd ) ) )  ;
 	StringAppend( properties," sectors" ) ;	
-	StringAppend( properties,"\n size:\t" );
+	StringAppend( properties,"\n size:   \t" );
 	StringAppend( properties,StringIntToString( buffer,SIZE,cad.size ) ) ;	
 	StringAppend( properties," sectors" );
-	StringAppend( properties,"\n mode:\t");
+	StringAppend( properties,"\n mode:   \t");
 	
 	if( cad.flags == 1 )
 		StringAppend( properties,"read only" );

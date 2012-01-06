@@ -114,10 +114,8 @@ int main(  int argc , char *argv[] )
 	if( strncmp( device, "UUID=", 5 ) == 0 ){
 		strcpy(m_name,"UUID-");
 		if( device_from_uuid( dev,device ) == 0 ) {
-			if( *( device + 5 ) == '\"'){
+			if( *( device + 5 ) == '\"')
 				strncpy( m_name + 5,device + 6,36 ) ;
-				m_name[ strlen( m_name ) ] = '\0' ;
-			}
 			else
 				strncpy( m_name + 5,device + 5,36 ) ;
 			*( m_name + 41 ) = '\0' ;
