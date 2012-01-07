@@ -29,7 +29,7 @@
 #include "includes.h"
 
 //function prototypes
-string_t * get_passphrase( void ) ;
+string_t get_passphrase( void ) ;
 
 //defined in lib/status.c
 char * volume_device_name( const char * ) ;
@@ -41,11 +41,11 @@ int check_system_tools( void ) ;
 //defined in lib/partitions.c
 int device_from_uuid(char * dev, char * uuid ) ;
 
-string_t * get_passphrase(  void  )
+string_t get_passphrase(  void  )
 {	
 	//I got the big chunk of this code from: http://www.gnu.org/s/hello/manual/libc/getpass.html
 	char c[2] ;
-	string_t * p ;
+	string_t p ;
 	struct termios old, new;
 			
        /* Turn echoing off and fail if we can't. */

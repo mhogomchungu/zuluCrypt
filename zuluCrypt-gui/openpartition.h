@@ -49,7 +49,6 @@ private:
 	void closeEvent(QCloseEvent *) ;
 	void HighlightRow(int, bool);	
 	Ui::PartitionView *m_ui ;
-	int m_status ;
 	QAction *m_action ;
 };
 

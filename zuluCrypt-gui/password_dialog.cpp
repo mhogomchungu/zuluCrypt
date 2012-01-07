@@ -215,6 +215,12 @@ void passwordDialog::buttonOpenClicked(void )
 	if( mountPointPath.mid(0,2) == QString("~/"))
 		mountPointPath = QDir::homePath() + QString("/") + mountPointPath.mid(2) ;
 
+	QString pos = mountPointPath.mid(0,mountPointPath.lastIndexOf(QChar('/'))) ;
+	if( miscfunctions::exists(pos) == false ){
+		UIMessage(tr("ERROR"),tr("invalid path to mount point")) ;
+		return ;
+	}
+
 	if( miscfunctions::exists(mountPointPath) == true ){
 		UIMessage(tr("ERROR"),tr("mount point path is already taken")) ;
 		return ;
@@ -351,7 +357,7 @@ void passwordDialog::threadfinished(runInThread *,int status)
 			m_ui->PassPhraseField->setFocus();
 			UIMessage(tr("ERROR"),tr("wrong passphrase."));
 			break ;
-		case 5 : UIMessage(tr("ERROR"),tr("mount point address is already taken by a file or folder")) ;
+		case 5 : UIMessage(tr("ERROR"),tr("ccould not create mount point, invalid path or path already taken")) ;
 			break ;
 		case 8 : UIMessage(tr("ERROR"),tr("failed to open volume")) ;
 			break ;

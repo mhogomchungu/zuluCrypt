@@ -44,43 +44,29 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 {
 	qRegisterMetaType<Qt::Orientation>("Qt::Orientation") ;
 	qRegisterMetaType<QItemSelection>("QItemSelection") ;
-
 	setupUIElements();
 	setupConnections();
-
 	StartUpAddOpenedVolumesToTableThread();
+	initTray();
+	initFont();
+	initKeyCombo();
+}
 
-	QString home = QDir::homePath() + QString("/.zuluCrypt/") ;
-	QDir d(home) ;
+void zuluCrypt::initKeyCombo()
+{
+	QAction * rca = new QAction( this ) ;
+	QList<QKeySequence> keys ;
+	keys.append( Qt::Key_Menu );
+	keys.append( Qt::CTRL + Qt::Key_M );
+	rca->setShortcuts(keys) ;
+	connect(rca,SIGNAL(triggered()),this,SLOT(menuKeyPressed())) ;
+	this->addAction( rca );
+}
 
-	if(d.exists() == false)
-		d.mkdir(home) ;
-
-	QFile f(QDir::homePath() + QString("/.zuluCrypt/tray")) ;
-
-	if(f.exists() == false){
-		f.open(QIODevice::WriteOnly | QIODevice::Truncate) ;
-		f.write("1") ;
-		f.close();
-	}
-	f.open(QIODevice::ReadOnly) ;
-
-	QByteArray c = f.readAll() ;
-
-	f.close() ;
-
-	m_ui->actionTray_icon->setCheckable(true);
-	if( c.at(0) == '1'){
-		m_ui->actionTray_icon->setChecked(true);
-		m_trayIcon->show();
-	}else{
-		m_ui->actionTray_icon->setChecked(false);
-		m_trayIcon->hide();
-	}
+void zuluCrypt::initFont()
+{
 	QString fontPath = QDir::homePath() + QString("/.zuluCrypt/font") ;
-
 	QFile z( fontPath ) ;
-
 	if(z.exists() == false){
 		z.open(QIODevice::WriteOnly | QIODevice::Truncate) ;
 		QString s = QString("Sans Serif\n8\nnormal\nnormal\n") ;
@@ -91,12 +77,9 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 	x.open(QIODevice::ReadOnly) ;
 	QStringList xs = QString( x.readAll() ).split("\n") ;
 	x.close();
-	
 	QFont F ;
-
 	F.setFamily(xs.at(0));
 	F.setPointSize(xs.at(1).toInt());
-
 	if(xs.at(2) == QString("normal"))
 		F.setStyle(QFont::StyleNormal);
 	else if(xs.at(2) == QString("italic"))
@@ -108,20 +91,32 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
 		F.setWeight(QFont::Normal);
 	else
 		F.setWeight(QFont::Bold);
-
 	setUserFont(F);
+}
 
-	QAction * rca = new QAction( this ) ;
-
-	QList<QKeySequence> keys ;
-
-	keys.append( Qt::Key_Menu );
-	keys.append( Qt::CTRL + Qt::Key_M );
-
-	rca->setShortcuts(keys) ;
-	connect(rca,SIGNAL(triggered()),this,SLOT(menuKeyPressed())) ;
-
-	this->addAction( rca );
+void zuluCrypt::initTray()
+{
+	QString home = QDir::homePath() + QString("/.zuluCrypt/") ;
+	QDir d(home) ;
+	if(d.exists() == false)
+		d.mkdir(home) ;
+	QFile f(QDir::homePath() + QString("/.zuluCrypt/tray")) ;
+	if(f.exists() == false){
+		f.open(QIODevice::WriteOnly | QIODevice::Truncate) ;
+		f.write("1") ;
+		f.close();
+	}
+	f.open(QIODevice::ReadOnly) ;
+	QByteArray c = f.readAll() ;
+	f.close() ;
+	m_ui->actionTray_icon->setCheckable(true);
+	if( c.at(0) == '1'){
+		m_ui->actionTray_icon->setChecked(true);
+		m_trayIcon->show();
+	}else{
+		m_ui->actionTray_icon->setChecked(false);
+		m_trayIcon->hide();
+	}
 }
 
 void zuluCrypt::StartUpAddOpenedVolumesToTableThread()

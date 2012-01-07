@@ -21,7 +21,7 @@
 
 int create_volume( const char * dev,const char * fs,const char * type,const char * pass,const char * rng )
 {
-	string_t * q ;
+	string_t q ;
 	struct stat st ;
 	int status ;
 	

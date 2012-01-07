@@ -54,3 +54,9 @@ version 4.3.1
 -- Device addresses can be given in a form of "/dev/XYZN" or "UUID=bla-bla-bla".
 -- various fixes
 -- A separate window to manage favorite volumes
+
+version 4.3.2
+-- ext3/ext4 can not be mounted with user specified permissions and they use the permissions set when the volume was last mounted.
+    This creates a problem on freshly created volumes because they always end up owned by root. This update fix the problem by setting
+    permissions everytime a volume is opened in read/write mode. If a volume open with root as owner, then reopen the volume in read/write
+    mode and permissions will be set properly(0700 with the owner being the user who opened the volume)

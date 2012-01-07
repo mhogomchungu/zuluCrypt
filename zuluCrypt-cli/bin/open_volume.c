@@ -21,9 +21,9 @@
 
 int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount_point,char * mode,char * source,char * pass )
 {
-	string_t * passphrase  ;	
-	string_t * m_name  ;	
-	string_t * m_point  ;
+	string_t passphrase  ;	
+	string_t m_name  ;	
+	string_t m_point  ;
 	
 	int st ;
 	
@@ -81,19 +81,19 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 	else{		
 		remove( StringContent( m_point ) ) ;
 		switch (  st  ){
-			case 1 : printf( "ERROR: No free loop device to use\n" ) ; 
+			case 1 : printf( "ERROR: no free loop device to use\n" ) ; 
 				break ;					
-			case 2 : printf( "ERROR: There seem to be an open volume accociated with given address\n" );
+			case 2 : printf( "ERROR: there seem to be an open volume accociated with given address\n" );
 				break ;				
-			case 3 : printf( "ERROR: No file or device exist on given path\n" ) ; 
+			case 3 : printf( "ERROR: no file or device exist on given path\n" ) ; 
 				break ;		
-			case 4 : printf( "ERROR: Wrong passphrase\n" );		
+			case 4 : printf( "ERROR: wrong passphrase\n" );		
 				break ;			
-			case 5 : printf( "ERROR: a file or folder already exist at mount point\n" ) ;
+			case 5 : printf( "ERROR ccould not create mount point, invalid path or path already taken\n" ) ;
 				break ;		
 			case 6 : printf( "ERROR: passphrase file does not exist\n" );
 				break ;	
-			case 11 : printf( "ERROR: Wrong number of arguments, run zuluCrypt with \"-h\" for help\n" );
+			case 11 : printf( "ERROR: wrong number of arguments, run zuluCrypt with \"-h\" for help\n" );
 				break ;
 			case 8 : printf( "ERROR: failed to open volume\n" );
 				break ;	

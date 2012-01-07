@@ -28,7 +28,7 @@
 
 int entry_found( const char * map, const char * map_m_point, char ** m_point )
 {
-	string_t * p ;
+	string_t p ;
 	int h = umount( map_m_point ) ;
 	
 	if( h == 0 ){

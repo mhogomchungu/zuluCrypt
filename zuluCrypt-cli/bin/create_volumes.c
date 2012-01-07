@@ -21,8 +21,8 @@
 
 int create_volumes( int argn,char * device,char * fs,char * mode,char * keyType,char * pass,char * rng  )
 {
-	string_t * pass_1 ;
-	string_t * pass_2 ;
+	string_t pass_1 ;
+	string_t pass_2 ;
 	
 	char Y ;
 	int st ;

@@ -132,6 +132,9 @@ private:
 	void closeEvent(QCloseEvent *) ;
 	void setUserFont(QFont) ;
 	void HighlightRow(int,bool) ;
+	void initTray(void);
+	void initFont(void);
+	void initKeyCombo(void);
 
 	Ui::zuluCrypt * m_ui;
 	QSystemTrayIcon * m_trayIcon ;

@@ -25,7 +25,7 @@ int volume_info(  const char * mapper, const char * device  )
 	int xt ;
 	struct stat st;
 	
-	string_t * p ;
+	string_t p ;
 	
 	p = String( mapper ) ;		
 	
