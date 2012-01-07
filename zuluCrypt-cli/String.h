@@ -124,7 +124,7 @@ char StringCharAt( string_t st, size_t p ) ;
  * 
  * NOTE: first character in the string is at position 0
  */
-size_t StringIndexOfChar( string_t st, size_t p , char s ) ;
+int StringIndexOfChar( string_t st, size_t p , char s ) ;
 
 
 /*
@@ -134,7 +134,7 @@ size_t StringIndexOfChar( string_t st, size_t p , char s ) ;
  * 
  * NOTE: first character in the string is at position 0
  */
-size_t StringIndexOfString( string_t st,size_t p, const char * s ) ;
+int StringIndexOfString( string_t st,size_t p, const char * s ) ;
 
 
 /*
@@ -142,7 +142,7 @@ size_t StringIndexOfString( string_t st,size_t p, const char * s ) ;
  * 
  * -1 is returned if the character isnt in the string
  */
-size_t StringLastIndexOfChar( string_t st , char s ) ;
+int StringLastIndexOfChar( string_t st , char s ) ;
 
 
 /*
@@ -153,7 +153,7 @@ size_t StringLastIndexOfChar( string_t st , char s ) ;
  * NOTE: first character in the string is at position 0
  * 
  */
-size_t StringLastIndexOfString( string_t st , const char * s ) ;
+int StringLastIndexOfString( string_t st , const char * s ) ;
 
 
 /*
@@ -171,7 +171,7 @@ const char * StringStringAt( string_t st , size_t p ) ;
  * 
  * return -1 if it doesnt * 
  */
-size_t StringEndsWithString( string_t st , const char * s ) ;
+int StringEndsWithString( string_t st , const char * s ) ;
 
 
 /*
@@ -181,7 +181,7 @@ size_t StringEndsWithString( string_t st , const char * s ) ;
  * 
  * return -1 if it doesnt * 
  */
-size_t StringEndsWithChar( string_t st ,char s ) ;
+int StringEndsWithChar( string_t st ,char s ) ;
 
 
 /*
@@ -293,14 +293,14 @@ const char * StringReplaceCharString( string_t st, char x, const char * y ) ;
 char * StringIntToString( char * x, size_t y, uint64_t z ) ;
 
 /*
- * Compare a string handled by handle x to a string handled by handle y and return 0 if they are equal and 1 if they are not  
+ * Compare a string handled by handle x to a string handled by handle y and return 0 if they are equal and -1 if they are not  
  */
-size_t StringCompare( string_t x , string_t y ) ;
+int StringCompare( string_t x , string_t y ) ;
 
 /*
- * Compare a string handled by handle x to a string pointer to by y and return 0 if they are equal and 1 if they are not  
+ * Compare a string handled by handle x to a string pointer to by y and return 0 if they are equal and -1 if they are not  
  */
-size_t StringCompareString( string_t x, const char * y ) ;
+int StringCompareString( string_t x, const char * y ) ;
 
 /*
  * Insert character x infront of every character that appear in string y in a string handled by handle st.

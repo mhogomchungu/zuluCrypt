@@ -72,7 +72,7 @@ string_t StringInherit( char * data )
 	return st ;	
 }
 
-size_t StringIndexOfString( string_t st,size_t p, const char * s )
+int StringIndexOfString( string_t st,size_t p, const char * s )
 {
 	char * c = strstr( st->string + p,s ) ;
 	
@@ -82,7 +82,7 @@ size_t StringIndexOfString( string_t st,size_t p, const char * s )
 		return  c - st->string;	
 }
 
-size_t StringLastIndexOfChar( string_t st , char s ) 
+int StringLastIndexOfChar( string_t st , char s ) 
 {
 	char * c = st->string + st->size  ;
 	char * d = st->string ;
@@ -94,10 +94,10 @@ size_t StringLastIndexOfChar( string_t st , char s )
 	return -1 ;	
 }
 
-size_t StringLastIndexOfString( string_t st ,const char * s ) 
+int StringLastIndexOfString( string_t st ,const char * s ) 
 {
-	size_t p = -1 ;
-	size_t j = -1 ;
+	int p = -1 ;
+	int j = -1 ;
 	
 	while( 1 )
 	{		
@@ -110,7 +110,7 @@ size_t StringLastIndexOfString( string_t st ,const char * s )
 	}
 }
 
-size_t StringIndexOfChar( string_t st, size_t p , char s ) 
+int StringIndexOfChar( string_t st, size_t p , char s ) 
 {	
 	char * c = st->string  + p - 1 ;	
 	
@@ -181,7 +181,7 @@ char * StringLengthCopy( string_t st,size_t l )
 	return e ;	
 }
 
-size_t StringEndsWithString( string_t st , const char *s ) 
+int StringEndsWithString( string_t st , const char *s ) 
 {
 	size_t j = strlen(s) ;
 	size_t i = strncmp(st->string + st->size - j, s, j ) ;
@@ -192,7 +192,7 @@ size_t StringEndsWithString( string_t st , const char *s )
 		return -1 ;	
 }
 
-size_t StringEndsWithChar( string_t st ,char s )
+int StringEndsWithChar( string_t st ,char s )
 {
 	if ( * ( st->string + st->size -1 ) == s )
 		return 0 ;
@@ -401,8 +401,8 @@ const char * StringReplaceString( string_t st, const char * x, const char * s )
 	
 	e = st->string  ;
 	
-	while( ( c = strstr( e, x ) ) != NULL ){
-		
+	while( ( c = strstr( e, x ) ) != NULL )
+	{		
 		while( e != c ) { *d++ = *e++ ; }			
 				
 		g = s - 1 ;
@@ -445,22 +445,22 @@ char * StringIntToString( char * x, size_t y,uint64_t z )
 	return ++c ;
 }
 
-size_t StringCompare( string_t x , string_t y ) 
+int StringCompare( string_t x , string_t y ) 
 {
 	if( x->size != y->size )
 		return 1 ;
 	else if( strcmp( x->string, y->string ) != 0 )
-		return 1 ;
+		return -1 ;
 	else
 		return 0 ;	
 }
 
-size_t StringCompareString( string_t x, const char * y )
+int StringCompareString( string_t x, const char * y )
 {
 	if( strcmp( x->string, y ) == 0 )
 		return 0 ;
 	else
-		return 1 ;	
+		return -1 ;	
 }
 
 const char * StringInsertCharString( string_t st, char x, const char * n ) 
