@@ -58,7 +58,11 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 
 	while( StringEndsWithChar( m_point , '/' ) == 0 )
 		StringRemoveRight( m_point,1 );
-		
+	
+	StringReplaceString( m_point,"////","/" ) ;	
+	StringReplaceString( m_point,"///","/" ) ;	
+	StringReplaceString( m_point,"//","/" ) ;
+	
 	if ( mkdir( StringContent( m_point ), S_IRWXU  ) != 0 ){		
 		st = 5 ;			
 		goto eerr ;
