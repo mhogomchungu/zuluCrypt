@@ -26,17 +26,14 @@
 #define USE_UNSTABLE_LIBMOUNT_API 1
 #include <mount/mount.h>
 
-int entry_found( const char * map, const char * map_m_point, char ** m_point )
+int entry_found( const char * map, const char * m_dir, char ** m_point )
 {
-	string_t p ;
-	int h = umount( map_m_point ) ;
+	int h = umount( m_dir ) ;
 	
 	if( h == 0 ){
 		close_mapper( map ) ;
-		if( m_point != NULL ){
-			p = String( map_m_point ) ;
-			*m_point = StringDeleteHandle( p ) ;				
-		}
+		if( m_point != NULL )
+			*m_point = StringDeleteHandle( String( m_dir ) ) ;				
 	}		
 	return h ;
 }
@@ -74,8 +71,7 @@ int unmount_volume( const char * map, char ** m_point )
 		}			
 	}else if ( strncmp( path, "/etc/",5 ) == 0 ) {	
 		/*
-		 * .  /etc/mtab is not a symbolic link to /proc/mounts
-		 *   umount command does it.
+		 * .  /etc/mtab is a reguar file,manually edit it to remove the unmounted volume.
 		 */
 		lock = mnt_new_lock( "/etc/mtab~", getpid() ) ;
 		status = mnt_lock_file( lock ) ;	

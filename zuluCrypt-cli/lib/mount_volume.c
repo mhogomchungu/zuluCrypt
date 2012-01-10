@@ -69,27 +69,10 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 		StringPrepend( options , mode ) ;
 	}else{		
 		options = String( mode ) ;
-		/*
-		 * ext3 and ext4 do not seem to have options to set ownership of mount point
-		 * and they seem to remember and use mount options used last.  
-		 */
-		if( mountflags != MS_RDONLY){
-			/* The file system is mounted read and write and hence we can set permissions and
-			 * we gladly do 
-			 */
-			h = mount( mapper, m_point,StringContent( fs ),mountflags,NULL) ;
+		h = mount( mapper, m_point,StringContent( fs ),mountflags,NULL) ;	
+		if( h == 0 && mountflags != MS_RDONLY){			
 			chmod( m_point,S_IRWXU ) ;
 			chown( m_point,id,id ) ;
-		}else{
-			/*
-			 * The file system is mounted read only and we dont set permissions because we cant.
-			 * If the file system was mouted atleast once in read/write mode then it will mount
-			 * with proper permissions as set above, if it is the first time it is mounted and
-			 * in read only mode then it will mount with wrong permissions(owned by root and with
-			 * atleast read access to "other"). We can leave with this since the volume will have to be
-			 * opened in write mode to add content to it and proper permissions will be set then.
-			 */
-			h = mount( mapper, m_point,StringContent( fs ),mountflags,NULL) ;
 		}
 	}	
 	if( h != 0 ){

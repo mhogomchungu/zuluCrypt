@@ -9,33 +9,32 @@ volumePropertiesThread::volumePropertiesThread(QString path,QString mpoint,QObje
 
 void volumePropertiesThread::run()
 {
-	QString z = QString(ZULUCRYPTzuluCrypt) ;
-	z = z + QString(" status ") ;
-	z = z + QString("\"") ;
-	z = z + m_path + QString("\"");
+	QString z = QString(ZULUCRYPTzuluCrypt) + QString(" status ") + \
+			QString("\"") + m_path + QString("\"");
 
 	QProcess p ;
 	p.start( z ) ;
 	p.waitForFinished() ;
 
-	QByteArray t("\n") ;
-	QByteArray r = p.readAllStandardOutput() ;
-
-	int start = r.length() - r.indexOf(t) - 2 ;
+	QByteArray data = p.readAllStandardOutput() ;
 
 	p.close();
 
-	p.start("df -PTh ");
+	QString volumeProperties = QString(" ") + QString(data.mid(data.indexOf('\n') + 2));
 
+	QStringList l = miscfunctions::luksEmptySlots(m_path) ;
+
+	if ( miscfunctions::isLuks(m_path) == true)
+		volumeProperties += QString(" used slots:\t") + l.at(0) + QString(" / ") + l.at(1) + QString("\n");
+
+	p.start("df -PTh ");
 	p.waitForFinished() ;
 
 	QStringList df = QString(p.readAllStandardOutput()).split("\n").filter(m_mpoint) ;
 
 	p.close();
 
-	QByteArray c ;
-
-	c = df.at(0).toAscii() ;
+	QByteArray c = df.at(0).toAscii() ;
 	/*
 	  Below code will attemp to walk through a line like below without
 	  caring how many space characters are involved in separating items:
@@ -50,44 +49,31 @@ void volumePropertiesThread::run()
 	j = i - 1 ;
 	while ( c.at(i++) != ' ') { ; }
 
-	QString y = QString(" fs:\t") + QString(c.mid(j,i - j - 1)) ;
+	volumeProperties += QString(" fs:\t") + QString(c.mid(j,i - j - 1)) ;
 
 	while ( c.at(i++) == ' ') { ; }
 	j = i - 1 ;
 	while ( c.at(i++) != ' ') { ; }
 
-	y = y + QString("\n size:\t") + QString(c.mid(j,i - j - 1)) ;
+	volumeProperties += QString("\n size:\t") + QString(c.mid(j,i - j - 1)) ;
 
 	while ( c.at(i++) == ' ') { ; }
 	j = i - 1 ;
 	while ( c.at(i++) != ' ') { ; }
 
-	y = y + QString("\n used:\t") + QString(c.mid(j,i - j - 1)) ;
+	volumeProperties += QString("\n used:\t") + QString(c.mid(j,i - j - 1)) ;
 
 	while ( c.at(i++) == ' ') { ; }
 	j = i - 1 ;
 	while ( c.at(i++) != ' ') { ; }
 
-	y = y + QString("\n available:\t") + QString(c.mid(j,i - j - 1)) ;
+	volumeProperties += QString("\n available:\t") + QString(c.mid(j,i - j - 1)) ;
 
 	while ( c.at(i++) == ' ') { ; }
 	j = i - 1 ;
 	while ( c.at(i++) != ' ') { ; }
 
-	y = y + QString("\n used%:\t") + QString(c.mid(j,i - j - 1));
+	volumeProperties += QString("\n used%:\t") + QString(c.mid(j,i - j - 1));
 
-	QStringList l = miscfunctions::luksEmptySlots(m_path) ;
-
-	QString properties ;
-	if ( miscfunctions::isLuks(m_path) == true){
-		QString x =  QString(" ") ;
-		x = x + QString( r.right(start) ) ;
-		x = x + QString(" used slots:\t") ;
-		x = x + l.at(0) + QString(" / ") + l.at(1) + QString("\n");
-
-		properties = x + y;
-	}else
-		properties = QString(" ") + QString( r.right(start) ) + y;
-
-	emit finished(properties,this);
+	emit finished(volumeProperties,this);
 }

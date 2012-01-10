@@ -61,6 +61,7 @@ managedevicenames::managedevicenames(QWidget *parent) :
 	QList<QKeySequence> keys ;
 	keys.append( Qt::Key_Enter );
 	keys.append( Qt::Key_Return );
+	keys.append( Qt::Key_Menu );
 	m_ac->setShortcuts(keys) ;
 	connect(m_ac,SIGNAL(triggered()),this,SLOT(shortcutPressed())) ;
 	this->addAction( m_ac );
@@ -81,7 +82,7 @@ void managedevicenames::shortcutPressed()
 	QTableWidgetItem *it = m_ui->tableWidget->currentItem() ;
 	if( it == NULL )
 		return ;
-	itemClicked( it );
+	itemClicked( it,false );
 }
 
 void managedevicenames::deviceAddress()
@@ -149,21 +150,39 @@ void managedevicenames::addEntries(QString dev, QString m_point)
 
 void managedevicenames::itemClicked(QTableWidgetItem *current)
 {
-	QMessageBox m ;
-	m.setParent(this);
-	m.setWindowTitle(QString("WARNING"));
-	m.setWindowFlags(Qt::Window | Qt::Dialog);
-	m.setText("delete this entry from the favorite list?");
-	m.addButton(QMessageBox::Yes);
-	m.addButton(QMessageBox::No);
-	if( m.exec() == QMessageBox::No )
-		return ;
-	QString entry = m_ui->tableWidget->item(current->row(),0)->text() + \
+	itemClicked(current,true);
+}
+
+void managedevicenames::itemClicked(QTableWidgetItem *current, bool clicked)
+{
+	QMenu m ;
+	m.setFont(this->font());
+	connect(m.addAction(tr("remove selected entry")),
+		SIGNAL(triggered()),
+		this,
+		SLOT(removeEntryFromFavoriteList())) ;
+
+	m.addSeparator() ;
+	m.addAction(tr("cancel"));
+
+	if( clicked == true )
+		m.exec(QCursor::pos()) ;
+	else{
+		int x = m_ui->tableWidget->columnWidth(0) ;
+		int y = m_ui->tableWidget->rowHeight(current->row()) * current->row() + 20 ;
+		m.exec(m_ui->tableWidget->mapToGlobal(QPoint(x,y))) ;
+	}
+}
+
+void managedevicenames::removeEntryFromFavoriteList()
+{
+	int row = m_ui->tableWidget->currentRow() ;
+	QString entry = m_ui->tableWidget->item(row,0)->text() + \
 			QString("\t") + \
-			m_ui->tableWidget->item(current->row(),1)->text() + \
+			m_ui->tableWidget->item(row,1)->text() + \
 			QString("\n") ;
 	miscfunctions::removeFavoriteEntry(entry);
-	m_ui->tableWidget->removeRow(current->row());
+	m_ui->tableWidget->removeRow(row);
 	if( m_ui->tableWidget->rowCount() > 0)
 		HighlightRow(m_ui->tableWidget->rowCount() - 1,true);
 }

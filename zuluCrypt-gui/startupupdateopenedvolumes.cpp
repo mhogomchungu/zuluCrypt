@@ -33,23 +33,6 @@ startupupdateopenedvolumes::startupupdateopenedvolumes(QObject *parent) :
 {
 }
 
-QString startupupdateopenedvolumes::readMtab(QByteArray * mtab,QString entry)
-{
-	int i = mtab->indexOf(entry) ;
-	if( i == -1 )
-		return QString("") ;
-	while(mtab->at(i++) != ' ') { ; }
-	int j = i ;
-	while(mtab->at(i++) != ' ') { ; }
-	
-	QByteArray m_point = mtab->mid(j, i - j - 1) ;
-	m_point.replace("\\040"," ") ;
-	m_point.replace("\\011","\t") ;
-	m_point.replace("\\012","\n") ;
-	m_point.replace("\\134","\\") ;
-	return QString(m_point) ;
-}
-
 bool startupupdateopenedvolumes::checkUUID(QString *uuid,QString entry)
 {
 	if(entry.mid(0,15) == QString("zuluCrypt-UUID-")){

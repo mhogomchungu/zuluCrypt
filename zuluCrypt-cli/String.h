@@ -39,7 +39,7 @@ typedef struct StringType * string_t ;
  * Argument:      A character array to be stored
  * Return value:  A handle to use for subsequent access to the array, NULL is returned on fail.
  */
-string_t String(const char * data) ;
+string_t String( const char * data ) ;
 
 
 /*
@@ -48,7 +48,7 @@ string_t String(const char * data) ;
  * On success, a concatenated string is returned.
  * On error, NULL is returned and the original string remain intact. 
  */
-const char * StringAppend(string_t st ,const  char * s)  ;
+const char * StringAppend( string_t st ,const  char * s )  ;
 
 /*
  * Prepend a string pointed to by s into a string handled by handle st
@@ -56,7 +56,7 @@ const char * StringAppend(string_t st ,const  char * s)  ;
  * On success, a concatenated string is returned
  * On error, NULL is returned and the original string remain intact   
  */
-const char * StringPrepend(string_t st ,const  char * s)  ;
+const char * StringPrepend( string_t st ,const  char * s )  ;
 
 /*
  * Inherit a string pointed to by data and return a string handle to the string on success or NULL on error. 

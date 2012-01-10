@@ -27,6 +27,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QAction>
+#include <QMenu>
 
 #include "openpartition.h"
 #include "miscfunctions.h"
@@ -50,11 +51,13 @@ public slots:
 	void HideUI(void);
 	void PartitionEntry(QString);
 private slots:
+	void removeEntryFromFavoriteList(void);
 	void add(void);
 	void cancel(void);
 	void deviceAddress(void);
 	void fileAddress(void);
 	void currentItemChanged( QTableWidgetItem * current, QTableWidgetItem * previous );
+	void itemClicked(QTableWidgetItem * current,bool);
 	void itemClicked(QTableWidgetItem * current);
 	void shortcutPressed(void);
 	void devicePathTextChange(QString);

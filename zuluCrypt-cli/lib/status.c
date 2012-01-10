@@ -81,7 +81,7 @@ char * status( const char * mapper )
 	if( strncmp( e ,"/dev/loop",9 ) == 0 ){
 		fd = open( e , O_RDONLY ) ;
 		ioctl( fd, LOOP_GET_STATUS64, &l_info ) ;
-		StringAppend( properties,"\n loop:\t" );
+		StringAppend( properties,"\n loop:   \t" );
 		realpath( ( char * ) l_info.lo_file_name, path ) ;
 		StringAppend( properties, path ) ;
 		close( fd ) ;

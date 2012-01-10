@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'managedevicenames.ui'
 **
-** Created: Wed Dec 28 22:55:14 2011
+** Created: Mon Jan 9 21:55:07 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -99,7 +99,7 @@ public:
     void retranslateUi(QWidget *managedevicenames)
     {
         managedevicenames->setWindowTitle(QApplication::translate("managedevicenames", "manage favorites", 0, QApplication::UnicodeUTF8));
-        pbAdd->setText(QApplication::translate("managedevicenames", "add", 0, QApplication::UnicodeUTF8));
+        pbAdd->setText(QApplication::translate("managedevicenames", "&add", 0, QApplication::UnicodeUTF8));
         QTableWidgetItem *___qtablewidgetitem = tableWidget->horizontalHeaderItem(0);
         ___qtablewidgetitem->setText(QApplication::translate("managedevicenames", "device address", 0, QApplication::UnicodeUTF8));
         QTableWidgetItem *___qtablewidgetitem1 = tableWidget->horizontalHeaderItem(1);
@@ -114,7 +114,7 @@ public:
         pbFileAddress->setToolTip(QApplication::translate("managedevicenames", "open file dialog", 0, QApplication::UnicodeUTF8));
 #endif // QT_NO_TOOLTIP
         pbFileAddress->setText(QString());
-        pbCancel->setText(QApplication::translate("managedevicenames", "done", 0, QApplication::UnicodeUTF8));
+        pbCancel->setText(QApplication::translate("managedevicenames", "&done", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };

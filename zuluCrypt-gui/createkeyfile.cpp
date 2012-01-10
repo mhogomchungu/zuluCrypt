@@ -140,6 +140,7 @@ void createkeyfile::pbCreate()
 
 	if( o.putChar('X') == false ){
 		UIMessage(tr("ERROR!"),("you dont seem to have writing access to the destination folder"));
+		o.close();
 		return ;
 	}
 	o.close();

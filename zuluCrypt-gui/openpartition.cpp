@@ -63,18 +63,14 @@ openpartition::openpartition(QWidget *parent ) :
 	QTableWidget *tw = m_ui->tableWidget ;
 	tw->setColumnWidth(0,90);
 	tw->setColumnWidth(1,90);
-	tw->setColumnWidth(2,90);
+	tw->setColumnWidth(2,110);
 	tw->setColumnWidth(3,90);
 	tw->setColumnWidth(4,250);
 
-	tw->horizontalHeaderItem(0)->setFont(this->font());
-	tw->horizontalHeaderItem(1)->setFont(this->font());
-	tw->horizontalHeaderItem(2)->setFont(this->font());
-	tw->horizontalHeaderItem(3)->setFont(this->font());
-	tw->horizontalHeaderItem(4)->setFont(this->font());
+	for( int i = 0 ; i < 5 ; i++)
+		tw->horizontalHeaderItem(i)->setFont(this->font());
 
 	tw->horizontalHeader()->setVisible(true);
-	tw->horizontalHeader()->setFont(this->font());
 
 	m_ui->checkBoxUUID->setFont(this->font());
 }
@@ -108,13 +104,13 @@ void openpartition::HighlightRow(int r, bool b)
 
 void openpartition::ShowNonSystemPartitions()
 {
-	partitionList(QString("select a partition to create an encrypted volume in"),
+	partitionList(tr("select a partition to create an encrypted volume in"),
 		      NON_SYSTEM_PARTITIONS);
 }
 
 void openpartition::ShowAllPartitions()
 {	
-	partitionList(QString("select an encrypted partition to open"),
+	partitionList(tr("select an encrypted partition to open"),
 		      ALL_PARTITIONS);
 }
 

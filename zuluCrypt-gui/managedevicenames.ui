@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>add</string>
+    <string>&amp;add</string>
    </property>
   </widget>
   <widget class="QTableWidget" name="tableWidget">
@@ -164,7 +164,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>done</string>
+    <string>&amp;done</string>
    </property>
   </widget>
  </widget>

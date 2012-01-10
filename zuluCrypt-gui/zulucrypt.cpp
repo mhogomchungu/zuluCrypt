@@ -193,9 +193,8 @@ void zuluCrypt::setupConnections()
 
 void zuluCrypt::HighlightRow(int row,bool b)
 {
-	m_ui->tableWidget->item(row,0)->setSelected(b);
-	m_ui->tableWidget->item(row,1)->setSelected(b);
-	m_ui->tableWidget->item(row,2)->setSelected(b);
+	for( int i = 0 ; i < 3 ; i++)
+		m_ui->tableWidget->item(row,i)->setSelected(b);
 	if( b == true)
 		m_ui->tableWidget->setCurrentCell(row,1);
 	m_ui->tableWidget->setFocus();
@@ -425,17 +424,26 @@ void zuluCrypt::addItemToTable(QString device,QString m_point)
 {
 	int row = m_ui->tableWidget->rowCount() ;
 	m_ui->tableWidget->insertRow(row);
-	m_ui->tableWidget->setItem(row,0,new QTableWidgetItem(device)) ;
-	m_ui->tableWidget->setItem(row,1,new QTableWidgetItem(m_point)) ;
 
+	QTableWidgetItem * item ;
+
+	item = new QTableWidgetItem() ;
+	item->setText(device);
+	item->setTextAlignment(Qt::AlignCenter);
+	m_ui->tableWidget->setItem(row,0,item);
+
+	item = new QTableWidgetItem() ;
+	item->setText(m_point);
+	item->setTextAlignment(Qt::AlignCenter);
+	m_ui->tableWidget->setItem(row,1,item);
+
+	item = new QTableWidgetItem() ;
 	if ( miscfunctions::isLuks( device.replace("\"","\"\"\"") ) == true )
-		m_ui->tableWidget->setItem(row,2,new QTableWidgetItem(tr("luks"))) ;
+		item->setText(tr("luks"));
 	else
-		m_ui->tableWidget->setItem(row,2,new QTableWidgetItem(tr("plain"))) ;
-
-	m_ui->tableWidget->item(row,0)->setTextAlignment(Qt::AlignCenter);
-	m_ui->tableWidget->item(row,1)->setTextAlignment(Qt::AlignCenter);
-	m_ui->tableWidget->item(row,2)->setTextAlignment(Qt::AlignCenter);
+		item->setText(tr("plain"));
+	item->setTextAlignment(Qt::AlignCenter);
+	m_ui->tableWidget->setItem(row,2,item);
 
 	m_ui->tableWidget->setCurrentCell(row,1);
 }
