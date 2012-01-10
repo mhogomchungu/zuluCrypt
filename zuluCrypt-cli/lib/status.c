@@ -32,21 +32,24 @@ char * status( const char * mapper )
 	char buffer[ SIZE + 1 ] ;
 	const char * e ;
 	char path[ 512 ] ;
+	
 	int fd ;
+	int luks = 0 ;
+	int i ;
+	int j ;
+	int k ;
+	
 	struct loop_info64 l_info ;
 	struct crypt_device * cd1 = NULL;
 	struct crypt_device * cd;
-	crypt_status_info csi ;
 	struct crypt_active_device cad ;
-	string_t properties ;
+	
+	string_t properties = String( mapper ) ;
 	
 	crypt_init_by_name( &cd,mapper );
 	crypt_get_active_device( cd1,mapper,&cad ) ;
-	csi = crypt_status( cd, mapper );
 	
-	properties = String( mapper ) ;
-	
-	switch( csi ){
+	switch( crypt_status( cd, mapper ) ){
 		case CRYPT_INACTIVE :
 			StringAppend( properties," is inactive.\n" ) ; 	
 			goto out ;
@@ -61,12 +64,14 @@ char * status( const char * mapper )
 			goto out ;
 	}	
 	
-	StringAppend( properties," type:   \t" );
+	StringAppend( properties," type:   \t" );	
+	
 	e = crypt_get_type( cd ) ;
 	
-	if( strcmp( e,"LUKS1" ) == 0 )
+	if( strcmp( e,"LUKS1" ) == 0 ){
 		StringAppend( properties,"luks1" ) ;
-	else if( strcmp( e,"plain") )
+		luks = 1 ;
+	}else if( strcmp( e,"plain") )
 		StringAppend( properties,"plain" ) ;
 	
 	StringAppend( properties,"\n cipher:\t" );
@@ -99,6 +104,22 @@ char * status( const char * mapper )
 	else
 		StringAppend( properties,"read and write" );	
 	
+	if( luks == 1 ){
+		i = 0 ;
+		k = crypt_keyslot_max( CRYPT_LUKS1 ) ;
+		for( j = 0 ; j < k ; j++){
+			switch( crypt_keyslot_status(cd, j) ){
+				case CRYPT_SLOT_INACTIVE    :     ; break ;
+				case CRYPT_SLOT_ACTIVE_LAST : i++ ; break ;
+				case CRYPT_SLOT_ACTIVE      : i++ ; break ;
+				case CRYPT_SLOT_INVALID     :     ; break ;				
+			}		
+		}
+		StringAppend( properties,"\n active slots:\t");
+		StringAppend( properties,StringIntToString( buffer,SIZE,i));
+		StringAppend( properties," / ");
+		StringAppend( properties,StringIntToString( buffer,SIZE,k));
+	}
 	out:
 	crypt_free( cd );
 	crypt_free( cd1 );

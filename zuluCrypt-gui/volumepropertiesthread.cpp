@@ -22,11 +22,6 @@ void volumePropertiesThread::run()
 
 	QString volumeProperties = QString(" ") + QString(data.mid(data.indexOf('\n') + 2));
 
-	QStringList l = miscfunctions::luksEmptySlots(m_path) ;
-
-	if ( miscfunctions::isLuks(m_path) == true)
-		volumeProperties += QString(" used slots:\t") + l.at(0) + QString(" / ") + l.at(1) + QString("\n");
-
 	p.start("df -PTh ");
 	p.waitForFinished() ;
 
