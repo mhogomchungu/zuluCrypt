@@ -90,8 +90,7 @@ int close_volume(const char * mapper,//mapper is the full address of the volume 
  * 
  * return values:
  * 0 - success
- * 2 - ERROR: could not close the volume, probably because the volume is still mounted.
- * 
+ * 1 - ERROR: could not close the mapper.
  */
 int close_mapper( const char * mapper ) ;//mapper is the full address of the volume as it
 					//appears at /dev/mapper

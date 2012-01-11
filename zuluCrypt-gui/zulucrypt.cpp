@@ -623,6 +623,9 @@ void zuluCrypt::closeThreadFinished(runInThread * vct,int st)
 	case 4 :UIMessage(tr("ERROR"),
 			  tr("close failed, could not get a lock on /etc/mtab~"));
 		break ;	
+	case 5 :UIMessage(tr("ERROR"),
+		tr("close failed, close failed, volume is unmounted but could not close mapper"));
+		break ;	
 	case 11 :UIMessage(tr("ERROR"),
 		tr("could not find any partition with the presented UUID"));
 		break ;
