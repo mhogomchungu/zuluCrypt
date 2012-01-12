@@ -29,39 +29,55 @@
 #include <cstdio>
 #include "zulucrypt.h"
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 createFileThread::createFileThread(QString source,QString file,double size,int type)
 {
 	m_source = source ;
 	m_file = file ;
 	m_size = size ;
 	m_type = type ;
+	m_in = open( m_source.toAscii().data(),O_RDONLY) ;
+	m_out = open( m_file.toAscii().data(),O_WRONLY | O_CREAT) ;
+
+	chmod(m_file.toAscii().data(),S_IRWXU);
+}
+
+void createFileThread::createKeyFile()
+{
+	char data ;
+	for( int i = 0 ; i < m_size ; i++){
+		do{
+			read(m_in,&data,1);
+		}while( data < 32 || data > 126) ;
+
+		write(m_out,&data,1);
+	}
+}
+
+void createFileThread::createContainer()
+{
+	double count = m_size / 1024 ;
+	char data[1024];
+
+	for(double i = 0 ; i < count ; i++){
+		read(m_in,data,1024);
+		write(m_out,data,1024);
+	}
 }
 
 void createFileThread::run()
 {
-	char data ;
+	if( m_type == 0 )
+		createKeyFile();
+	else
+		createContainer();
+}
 
-	//QFile blocked when reading from /dev/random for some reason,
-	//going back to C API for file access
-
-	FILE * in = fopen( m_source.toAscii().data(),"r") ;
-	FILE * out = fopen( m_file.toAscii().data(),"w") ;
-	double i ;
-
-	if( m_type == 0 ){
-		for( i = 0 ; i < m_size ; i++){
-			do{
-				data = fgetc(in) ;
-			}while( data < 32 || data > 126) ;
-
-			fputc(data,out) ;
-		}
-	}else{
-		for( i = 0 ; i < m_size ; i++){
-			data = fgetc(in) ;
-			fputc(data,out) ;
-		}
-	}
-	fclose(in) ;
-	fclose(out) ;
+createFileThread::~createFileThread()
+{
+	close(m_in);
+	close(m_out);
 }

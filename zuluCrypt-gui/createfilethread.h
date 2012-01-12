@@ -34,12 +34,17 @@ class createFileThread : public QThread
 {
 public :
 	createFileThread(QString source,QString destination,double size,int type) ;
+	~createFileThread();
 private:
+	void createKeyFile(void);
+	void createContainer(void);
 	void run() ;
 	QString m_source ;
 	QString m_file ;
 	double m_size ;
 	int m_type ;
+	int m_in;
+	int m_out ;
 };
 
 #endif // ZULUCRYPTTHREADS_H
