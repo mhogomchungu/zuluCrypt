@@ -68,10 +68,24 @@ void createFileThread::createContainer()
 	}
 }
 
+void createFileThread::createContainerZero()
+{
+	double count = m_size / 1024 ;
+	char data[1024];
+
+	for( int j = 0 ; j < 1024 ; j++)
+		data[j] = '\0' ;
+
+	for(double i = 0 ; i < count ; i++)
+		write(m_out,data,1024);
+}
+
 void createFileThread::run()
 {
 	if( m_type == 0 )
 		createKeyFile();
+	else if( m_source == QString("/dev/zero"))
+		createContainerZero();
 	else
 		createContainer();
 }

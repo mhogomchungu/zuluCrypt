@@ -38,6 +38,7 @@ public :
 private:
 	void createKeyFile(void);
 	void createContainer(void);
+	void createContainerZero(void);
 	void run() ;
 	QString m_source ;
 	QString m_file ;
