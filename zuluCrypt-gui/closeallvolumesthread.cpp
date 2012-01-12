@@ -51,6 +51,7 @@ void closeAllVolumesThread::run()
 		p.start( exe );
 		p.waitForFinished() ;
 		emit close(deviceItem,p.exitCode()) ;
+		sleep(1) ; //volumes close too fast, put a one second pause to slow them down
 		p.close();
 	}
 	m_table->setEnabled(true);

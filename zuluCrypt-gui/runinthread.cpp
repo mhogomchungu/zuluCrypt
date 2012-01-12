@@ -20,12 +20,15 @@
 #include "runinthread.h"
 #include <QProcess>
 #include <iostream>
-runInThread::runInThread(QString exe)
+runInThread::runInThread(QString exe,int type)
 {
 	m_exe = exe ;
+	m_type = type ;
 }
 void runInThread::run()
 {
+	if(m_type == 0)
+		sleep(1); //volume closes too fast, put a second pause to show ui effect
 	QProcess p ;
 	p.start(m_exe);
 	p.waitForFinished() ;

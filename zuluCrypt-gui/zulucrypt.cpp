@@ -641,7 +641,7 @@ void zuluCrypt::close()
 	QString vol = m_ui->tableWidget->item(item->row(),0)->text().replace("\"","\"\"\"") ;
 	QString exe = QString(ZULUCRYPTzuluCrypt) + QString(" close ") + QString("\"") + \
 			vol + QString("\"") ;
-	runInThread * vct = new runInThread( exe ) ;
+	runInThread * vct = new runInThread( exe,0 ) ;
 	connect(vct,
 		SIGNAL(finished(runInThread *,int)),
 		this,
