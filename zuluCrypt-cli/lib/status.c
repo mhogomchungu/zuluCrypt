@@ -26,6 +26,18 @@
 #include <fcntl.h>
 #include <blkid/blkid.h>
 
+char * loop_device_address( const char * device, char * path )
+{
+	int fd ;
+	struct loop_info64 l_info ;
+	
+	fd = open( device , O_RDONLY ) ;
+	ioctl( fd, LOOP_GET_STATUS64, &l_info ) ;
+	realpath( ( char * ) l_info.lo_file_name, path ) ;
+	close( fd ) ;
+	return path ;
+}
+
 char * status( const char * mapper )
 {		
 	#define SIZE 32
@@ -33,13 +45,11 @@ char * status( const char * mapper )
 	const char * e ;
 	char path[ 512 ] ;
 	
-	int fd ;
 	int luks = 0 ;
 	int i ;
 	int j ;
 	int k ;
 	
-	struct loop_info64 l_info ;
 	struct crypt_device * cd1 = NULL;
 	struct crypt_device * cd;
 	struct crypt_active_device cad ;
@@ -80,16 +90,13 @@ char * status( const char * mapper )
 	StringAppend( properties,StringIntToString( buffer,SIZE,8 * crypt_get_volume_key_size( cd ) ) ) ;
 	StringAppend( properties," bits" );
 	StringAppend( properties,"\n device:\t" );
+	
 	e = crypt_get_device_name( cd ) ;
 	StringAppend( properties, e ) ;
 	
 	if( strncmp( e ,"/dev/loop",9 ) == 0 ){
-		fd = open( e , O_RDONLY ) ;
-		ioctl( fd, LOOP_GET_STATUS64, &l_info ) ;
 		StringAppend( properties,"\n loop:   \t" );
-		realpath( ( char * ) l_info.lo_file_name, path ) ;
-		StringAppend( properties, path ) ;
-		close( fd ) ;
+		StringAppend( properties, loop_device_address( e,path ) ) ;
 	}
 	StringAppend( properties,"\n offset:\t");
 	StringAppend( properties,StringIntToString( buffer,SIZE,crypt_get_data_offset( cd ) ) )  ;
@@ -133,23 +140,22 @@ char * volume_device_name( const char * mapper )
 	int i ;
 	string_t address ;
 	const char * e ;
-	struct loop_info64 l_info ;
 	
 	i = crypt_init_by_name( &cd,mapper );
 	
-	if( i < 0 )
+	if( i < 0 ){
+		crypt_free( cd ) ;		
 		return NULL ;
+	}
 	
 	e = crypt_get_device_name( cd ) ;	
 	
-	if( strncmp( e ,"/dev/loop",9 ) == 0 ){
-		i = open( e , O_RDONLY ) ;
-		ioctl( i, LOOP_GET_STATUS64, &l_info ) ;
-		close( i ) ;
-		realpath( ( char * ) l_info.lo_file_name, path ) ;		
-		address = String( path ) ;		
-	}else
+	if( strncmp( e ,"/dev/loop",9 ) == 0 )
+		address = String( loop_device_address( e,path ) ) ;		
+	else
 		address = String( e ) ;
+	
+	crypt_free( cd ) ;
 	
 	return StringDeleteHandle( address ) ;
 }
