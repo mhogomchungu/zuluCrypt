@@ -111,6 +111,22 @@ int main(  int argc , char *argv[] )
 			return 1 ;
 		}	
 	}
+	if( strcmp( action,"partitions" ) == 0 ){
+		switch(  argv[2][0]  ){	
+			case '1' : c = partitions( ALL_PARTITIONS ) ;
+			break ;
+			case '2' : c = partitions( SYSTEM_PARTITIONS ) ;
+			break ;
+			case '3' : c = partitions( NON_SYSTEM_PARTITIONS ) ;
+			break ;
+			default:
+				printf( "wrong argument\n" );
+				return 1 ;
+		}		
+		printf( "%s", c ) ;
+		free( c ) ;
+		return 0 ;
+	}
 	if( strncmp( device, "UUID=", 5 ) == 0 ){
 		strcpy(m_name,"UUID-");
 		if( device_from_uuid( dev,device ) == 0 ) {
@@ -132,6 +148,7 @@ int main(  int argc , char *argv[] )
 			mapping_name =  device  ;			
 		}
 	}
+	//all below code need root's priviledes to work
 	setuid( 0 );
 	
 	if(  strcmp(  action, "isLuks"  ) == 0  ){
@@ -174,21 +191,6 @@ int main(  int argc , char *argv[] )
 				
 		status =  removekey( argc, device, argv[3],argv[4]  );	
 	
-	}else if (  strcmp( action,"partitions" ) == 0  ){
-		switch(  argv[2][0]  ){	
-			case '1' : c = partitions(  ALL_PARTITIONS  ) ;
-				   break ;
-			case '2' : c = partitions(  SYSTEM_PARTITIONS  ) ;
-				   break ;
-			case '3' : c = partitions(  NON_SYSTEM_PARTITIONS  ) ;
-				   break ;
-			default:
-				   printf( "wrong argument\n" );
-				   return 1 ;
-		}		
-		printf( "%s", c  ) ;
-		free(  c  ) ;
-		status = 0 ;
 	}else if( strcmp( action,"emptyslots" ) == 0  ){
 		if(  stat( device,&st ) != 0  ){
 			printf( "path \"%s\" does not point to a device\n",device ) ;
