@@ -45,7 +45,7 @@ string_t partitionList(void)
 	
 	while ( fgets( buffer,512,fd  ) != NULL ){
 		c = buffer ;
-		while(  *c++ != '\n'  ) { ; }
+		while(  *++c != '\n'  ) { ; }
 		d = c ;
 		while(  *--d != ' '  ) { ; }
 		d++ ;		
