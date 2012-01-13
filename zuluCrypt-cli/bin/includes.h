@@ -34,6 +34,9 @@
 #define SYSTEM_PARTITIONS     2
 #define NON_SYSTEM_PARTITIONS 3
 
+#define UUID_LENGTH 36
+#define DEVICE_LENGHT 12
+
 string_t get_passphrase(  void  ) ;
  
 char * partitions(  int option  ) ;

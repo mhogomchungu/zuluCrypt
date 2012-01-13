@@ -39,7 +39,7 @@ void help(  void  ) ;
 int check_system_tools( void ) ;
 
 //defined in lib/partitions.c
-int device_from_uuid(char * dev, char * uuid ) ;
+int device_from_uuid(char * dev, const char * uuid ) ;
 
 string_t get_passphrase(  void  )
 {	
@@ -131,9 +131,9 @@ int main(  int argc , char *argv[] )
 		strcpy(m_name,"UUID-");
 		if( device_from_uuid( dev,device ) == 0 ) {
 			if( *( device + 5 ) == '\"')
-				strncpy( m_name + 5,device + 6,36 ) ;
+				strncpy( m_name + 5,device + 6,UUID_LENGTH ) ;
 			else
-				strncpy( m_name + 5,device + 5,36 ) ;
+				strncpy( m_name + 5,device + 5,UUID_LENGTH ) ;
 			*( m_name + 41 ) = '\0' ;
 			mapping_name = m_name ;
 			device = dev ;

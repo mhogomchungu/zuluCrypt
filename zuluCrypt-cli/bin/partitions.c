@@ -22,13 +22,14 @@
 #include <mntent.h>
 #include <blkid/blkid.h>
 
+#define BUFFER_SIZE 512
 string_t partitionList(void)
 {
 	string_t all ;
 	FILE * fd ;
 	
-	char buffer[512];
-	char device[12] ;
+	char buffer[ BUFFER_SIZE ];
+	char device[ DEVICE_LENGHT ] ;
 	char * b ;
 	char * c ;
 	char * d ;
@@ -43,7 +44,7 @@ string_t partitionList(void)
 	strcpy( device, "/dev/" ) ;
 	b = device + 5 ;
 	
-	while ( fgets( buffer,512,fd  ) != NULL ){
+	while ( fgets( buffer,BUFFER_SIZE,fd  ) != NULL ){
 		c = buffer ;
 		while(  *++c != '\n'  ) { ; }
 		d = c ;
@@ -58,9 +59,9 @@ string_t partitionList(void)
 	return all ;
 }
 
-int device_from_uuid(char * dev, char * uuid )
+int device_from_uuid(char * dev, const char * uuid )
 {
-	char device[12] ;
+	char device[ DEVICE_LENGHT ] ;
 	const char * d ;
 	const char * e ;
 	const char * f ;
@@ -95,7 +96,7 @@ int device_from_uuid(char * dev, char * uuid )
 		k = blkid_probe_lookup_value( bp, "UUID", &f, NULL );
 		
 		if( k == 0){
-			if( strncmp( uuid,f,36  ) == 0 ){
+			if( strncmp( uuid,f,UUID_LENGTH  ) == 0 ){
 				strcpy( dev,device ) ;
 				StringDelete( all ) ;
 				blkid_free_probe( bp );
@@ -110,7 +111,7 @@ int device_from_uuid(char * dev, char * uuid )
 
 void blkid( const char * type,const char * entry, int size, string_t system, string_t non_system )
 {	
-	char device[12] ;
+	char device[ DEVICE_LENGHT ] ;
 	const char * f ;
 	const char * e = StringContent( non_system ) ;
 	int j ;
@@ -146,8 +147,8 @@ void blkid( const char * type,const char * entry, int size, string_t system, str
 
 char * partitions( int option )
 {
-	char buffer[512];
-	char device[12] ;
+	char buffer[ BUFFER_SIZE ];
+	char device[ DEVICE_LENGHT ] ;
 	char * c ;
 	char * d ;
 	
@@ -191,7 +192,7 @@ char * partitions( int option )
 	fd = fopen( "/etc/crypttab","r" );
 	
 	if(  fd != NULL  ){
-		while (  fgets( buffer,512,fd  ) != NULL  ){	
+		while (  fgets( buffer,BUFFER_SIZE,fd  ) != NULL  ){	
 			if( buffer[0] == '#' )
 				continue ;
 			if( buffer[0] == '\n' )
