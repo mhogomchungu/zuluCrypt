@@ -151,17 +151,27 @@ int main(  int argc , char *argv[] )
 	//all below code need root's priviledes to work
 	setuid( 0 );
 	
-	if(  strcmp(  action, "isLuks"  ) == 0  ){
+	if( strcmp( action,"emptyslots" ) == 0  ){
+		if(  stat( device,&st ) != 0  ){
+			printf( "path \"%s\" does not point to a device\n",device ) ;
+			status = 1 ;			
+		}else{
+			c = empty_slots(  device  ) ;
+			if(  c == NULL  ){
+				printf( "device \"%s\" is not a luks device\n",device ) ;
+				status = 2 ;
+			}else{
+				printf( "%s\n",c  ) ;
+				status = 0 ;
+				free(  c  ) ;
+			}		
+		}
+	}else if(  strcmp(  action, "isLuks"  ) == 0  ){
 		status =  is_luks(  device  ) ;
 		if(  status == 0  )
 			printf( "\"%s\" is a luks device\n",device ) ;
 		else
-			printf( "\"%s\" is not a luks device\n",device ) ;
-		
-	}else if (  strcmp(  action, "status"  ) == 0  ){
-		
-		status = volume_info(  mapping_name, argv[2]  ) ;
-		
+			printf( "\"%s\" is not a luks device\n",device ) ;		
 	}else if (  strcmp(  action, "device"  ) == 0  ){
 		c = volume_device_name( device ) ;
 		if( c == NULL )
@@ -171,6 +181,10 @@ int main(  int argc , char *argv[] )
 			free(c) ;
 			status = 0 ;
 		}
+	}else if (  strcmp(  action, "status"  ) == 0  ){
+		
+		status = volume_info(  mapping_name, argv[2]  ) ;
+		
 	}else if (  strcmp(  action, "close"  ) == 0  ){			
 
 		status =  close_opened_volume(  mapping_name  ) ;
@@ -191,21 +205,6 @@ int main(  int argc , char *argv[] )
 				
 		status =  removekey( argc, device, argv[3],argv[4]  );	
 	
-	}else if( strcmp( action,"emptyslots" ) == 0  ){
-		if(  stat( device,&st ) != 0  ){
-			printf( "path \"%s\" does not point to a device\n",device ) ;
-			status = 1 ;			
-		}else{
-			c = empty_slots(  device  ) ;
-			if(  c == NULL  ){
-				printf( "device \"%s\" is not a luks device\n",device ) ;
-				status = 2 ;
-			}else{
-				printf( "%s\n",c  ) ;
-				status = 0 ;
-				free(  c  ) ;
-			}		
-		}
 	}else{
 		printf( "ERROR: Wrong argument\n" ) ;
 		help(  );
