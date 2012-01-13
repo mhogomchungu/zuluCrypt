@@ -132,6 +132,7 @@ void openpartition::partitionList(QString title, int type)
 		this,
 		SLOT(partitionProperties(QStringList)));
 
+	m_ui->tableWidget->setEnabled( false );
 	pp->start();
 
 	this->show();
@@ -152,6 +153,7 @@ void openpartition::partitionProperties(QStringList entry)
 
 void openpartition::partitionpropertiesThreadFinished(partitionproperties *obj)
 {
+	m_ui->tableWidget->setEnabled( true );
 	obj->deleteLater();
 }
 

@@ -35,15 +35,15 @@
 #include <QDebug>
 #include <QKeySequence>
 
-Q_DECLARE_METATYPE(Qt::Orientation) ;
-Q_DECLARE_METATYPE(QItemSelection) ;
+//Q_DECLARE_METATYPE(Qt::Orientation) ;
+//Q_DECLARE_METATYPE(QItemSelection) ;
 
 zuluCrypt::zuluCrypt(QWidget *parent) :
     QMainWindow(parent),
     m_ui(new Ui::zuluCrypt)
 {
-	qRegisterMetaType<Qt::Orientation>("Qt::Orientation") ;
-	qRegisterMetaType<QItemSelection>("QItemSelection") ;
+	//egisterMetaType<Qt::Orientation>("Qt::Orientation") ;
+	//qRegisterMetaType<QItemSelection>("QItemSelection") ;
 	setupUIElements();
 	setupConnections();
 	StartUpAddOpenedVolumesToTableThread();
@@ -121,6 +121,7 @@ void zuluCrypt::initTray()
 
 void zuluCrypt::StartUpAddOpenedVolumesToTableThread()
 {
+	m_ui->tableWidget->setEnabled( false );
 	startupupdateopenedvolumes * sov = new startupupdateopenedvolumes();
 	connect(sov,
 	       SIGNAL(addItemToTable(QString,QString)),
@@ -899,6 +900,7 @@ void zuluCrypt::HideNonSystemPartition(openpartition * obj)
 
 void zuluCrypt::StartUpAddOpenedVolumesToTableThreadFinished(startupupdateopenedvolumes *obj)
 {
+	m_ui->tableWidget->setEnabled( true );
 	obj->deleteLater(); ;
 }
 
