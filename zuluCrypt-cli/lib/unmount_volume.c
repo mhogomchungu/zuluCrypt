@@ -29,9 +29,8 @@
 int entry_found( const char * map, const char * m_dir, char ** m_point )
 {
 	int h = umount( m_dir ) ;	
-	if( h == 0 )
-		if( m_point != NULL )
-			*m_point = StringDeleteHandle( String( m_dir ) ) ;				
+	if( h == 0 && m_point != NULL )
+		*m_point = StringDeleteHandle( String( m_dir ) ) ;				
 	return h ;
 }
 
