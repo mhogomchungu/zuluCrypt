@@ -74,7 +74,6 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 	
 	if( h != 0 ){
 		blkid_free_probe( blkid );
-		close_mapper( mapper ) ; 
 		return 4 ;
 	}	
 	fs = String( cf ) ;

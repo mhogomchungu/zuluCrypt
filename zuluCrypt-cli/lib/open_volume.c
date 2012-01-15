@@ -56,6 +56,8 @@ int open_volume( const char * dev,const char * map,const char * m_point,uid_t id
 		open_plain( dev,map,mode,source,pass,"cbc-plain" ) ;
 		h = mount_volume( map,m_point,mode,id ) ;
 	}
+	if( h != 0 )
+		close_mapper( map ) ;
 	return h ;		
 }
 
