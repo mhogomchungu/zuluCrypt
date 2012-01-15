@@ -25,13 +25,12 @@ int addkey( int argn,char * device,char * keyType1,char * existingKey,char * key
 	string_t newKey_1 ;
 	string_t newKey_2 ;
 	
-	struct stat st ;
 	int status = 0 ;
 	char * c = NULL ;
 	char * d = NULL ;
 	char * e = NULL ;	
 	
-	if(  stat( device,&st ) != 0  ){		
+	if( is_path_valid( device ) == -1  ){		
 		status = 4 ;
 		goto out ;
 	}

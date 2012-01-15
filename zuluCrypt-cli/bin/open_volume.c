@@ -26,8 +26,6 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 	string_t m_point  ;
 	
 	int st ;
-	
-	struct stat xt ;
 
 	m_name = String( mapping_name ) ;
 	m_point = String( mount_point );
@@ -42,7 +40,7 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 			goto eerr ;			
 		}
 	}	
-	if( stat( mount_point,&xt ) == 0 ){		
+	if( is_path_valid( mount_point ) == 1 ){		
 		st = 9 ;
 		goto eerr ;
 	}	
@@ -65,8 +63,7 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 	
 	if ( mkdir( StringContent( m_point ), S_IRWXU  ) != 0 ){		
 		st = 5 ;			
-		goto eerr ;
-	
+		goto eerr ;	
 	}	
 	if (  argn == 5  ){
 		printf(  "Enter passphrase: "  ) ;		
@@ -93,7 +90,7 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 				break ;		
 			case 4 : printf( "ERROR: wrong passphrase\n" );		
 				break ;			
-			case 5 : printf( "ERROR ccould not create mount point, invalid path or path already taken\n" ) ;
+			case 5 : printf( "ERROR: could not create mount point, invalid path or path already taken\n" ) ;
 				break ;		
 			case 6 : printf( "ERROR: passphrase file does not exist\n" );
 				break ;	

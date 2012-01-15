@@ -21,14 +21,17 @@
 
 int open_luks( const char * device,const char * mapper,const char * mode,const char * source,const char * pass )
 {
-	struct stat st ;
 	struct crypt_device *cd;
 	uint32_t flags = 0;
 	int status;
 	const char * c ;	
+	struct stat st ;
 	
-	if( stat( device, &st ) != 0 )
+	if( is_path_valid( device ) == -1 )
 		return 3 ;
+	if(strcmp( source,"-f" ) == 0 )
+		if ( is_path_valid( pass ) == -1 )
+			return 4;		
 	
 	c = strrchr( mapper,'/' );
 	
@@ -64,17 +67,12 @@ int open_luks( const char * device,const char * mapper,const char * mode,const c
 	else
 		flags = 0 ;
 	
-	if(strcmp( source,"-p" )==0 ){
-		
+	if(strcmp( source,"-p" ) ==0 )		
 		status = crypt_activate_by_passphrase( cd,c,CRYPT_ANY_SLOT,pass,strlen( pass ),flags );
-	}else{
-		if ( stat( pass,&st ) != 0 ){
-			status = 4;	
-			goto out ;			
-		}	
+	else{
+		stat(pass,&st) ;
 		status = crypt_activate_by_keyfile( cd,c,CRYPT_ANY_SLOT,pass,st.st_size,flags ) ;
 	}
-	
 	if( status < 0 )
 		status = 1 ;
 	else

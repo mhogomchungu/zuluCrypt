@@ -26,17 +26,19 @@ int create_volumes( int argn,char * device,char * fs,char * mode,char * keyType,
 	
 	char Y ;
 	int st ;
-	struct stat xt ;
 	char * c ;
 	
-	if(  stat(  device, &xt  ) != 0  ){
+	struct stat xt ;
+	stat( device, &xt ) ;
+	
+	if( is_path_valid( device ) == -1 ){
 		st = 1 ;
 		goto out ;
 	}else if(  strncmp(  device,"/dev/",5 ) != 0 && xt.st_size < 3145728  ){
 		st = 9 ;
 		goto out ;		
 	}		
-	if( stat( ZULUCRYPTmkfs, &xt ) != 0  ){		
+	if( is_path_valid( ZULUCRYPTmkfs ) == -1 ){		
 		st = 11 ;
 		goto out ;		
 	}

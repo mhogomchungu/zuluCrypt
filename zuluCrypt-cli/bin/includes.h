@@ -54,3 +54,5 @@ int addkey( int argn,char * device,char * keyType1,char * existingKey,char * key
 int removekey(  int argn ,char * device, char * keyType, char * keytoremove  ) ;
 
 int read_file(char ** content,char * path) ;
+
+int is_path_valid(const char * path ) ;

@@ -64,3 +64,6 @@ char * version(void) ;
 int unmount_volume( const char * map, char ** mount_point ) ;
 
 char * volume_device_name( const char * mapper ) ;
+
+//defined in ../bin/is_path_valid.c
+int is_path_valid(const char * path ) ;

@@ -22,20 +22,19 @@
 int create_volume( const char * dev,const char * fs,const char * type,const char * pass,const char * rng )
 {
 	string_t q ;
-	struct stat st ;
 	int status ;
 	
-	if ( stat( dev, &st ) != 0 ){
+	if ( is_path_valid( dev ) == -1 )
 		return 1 ;
-	}	
+		
 	if( strcmp( type,"luks" ) == 0 )
 		if(  strcmp( rng,"/dev/random" ) != 0 )
 			if( strcmp( rng,"/dev/urandom" ) != 0 )
 				return 2 ;
 			
-	if( strncmp( fs,"ext3",4 ) != 0 )
-		if( strncmp( fs,"ext4",4 ) != 0 )
-			if( strncmp( fs,"vfat",4 ) != 0 )
+	if( strcmp( fs,"ext3" ) != 0 )
+		if( strcmp( fs,"ext4" ) != 0 )
+			if( strcmp( fs,"vfat" ) != 0 )
 				return 2 ;
 				
 	if( strcmp( type,"luks" )  == 0 ){

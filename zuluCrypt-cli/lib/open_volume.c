@@ -21,18 +21,17 @@
 
 int open_volume( const char * dev,const char * map,const char * m_point,uid_t id,const char * mode,const char * pass,const char * source ) 
 {
-	struct stat st ;
 	int h ;
 	int luks;
 	
-	if( stat( dev , &st ) != 0 ){		 
+	if( is_path_valid( dev ) == -1 ){		 
 		return 3 ;
 	}
 	if( strcmp( source,"-f" ) == 0 )
-		if( stat( pass, &st ) != 0 )
+		if( is_path_valid( pass ) == -1 )
 			return 6 ;
 		
-	if( stat( map,&st ) == 0 )
+	if( is_path_valid( map ) == 1 )
 		return 2 ;	
 		
 	luks = is_luks( dev ) ;		

@@ -23,7 +23,6 @@ int volume_info(  const char * mapper, const char * device  )
 {
 	char * output ;	
 	int xt ;
-	struct stat st;
 	
 	string_t p ;
 	
@@ -33,7 +32,7 @@ int volume_info(  const char * mapper, const char * device  )
 	
 	StringPrepend( p,"/dev/mapper/zuluCrypt-" ) ;
 	
-	if(  stat(  StringContent( p ),&st ) != 0  ) {
+	if( is_path_valid( StringContent( p ) ) ==-1 ) {
 		printf( "\"%s\" is inactive\n",device ) ;
 		xt =  1 ;
 	}else{

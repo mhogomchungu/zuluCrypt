@@ -25,13 +25,11 @@ int create_luks( const char * dev,const char * pass,const char * rng )
 	
 	struct crypt_device *cd;
 	
-	struct stat st;
-	
 	struct crypt_params_luks1 params = {
 		.hash = "sha1",
 		.data_alignment = 4096,
 	};
-	if( stat( dev,&st ) != 0 )
+	if( is_path_valid( dev ) == -1 )
 		return 4 ;
 	
 	status =  crypt_init( &cd,dev ) ;

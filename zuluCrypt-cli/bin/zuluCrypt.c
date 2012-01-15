@@ -76,7 +76,6 @@ int main(  int argc , char *argv[] )
 {
 	char * action = argv[1] ;
 	char * device = argv[2] ;
-	struct stat st ;
 	uid_t id ;
 	int status ;
 	char *  mapping_name ;
@@ -152,7 +151,7 @@ int main(  int argc , char *argv[] )
 	setuid( 0 );
 	
 	if( strcmp( action,"emptyslots" ) == 0  ){
-		if(  stat( device,&st ) != 0  ){
+		if( is_path_valid( device ) == -1 ){
 			printf( "path \"%s\" does not point to a device\n",device ) ;
 			status = 1 ;			
 		}else{
