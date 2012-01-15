@@ -46,7 +46,7 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 	}	
 	if ( strncmp( mode,"ro",2 ) != 0 ){
 		if ( strncmp( mode,"rw",2 ) != 0 ){
-			st = 10 ;
+			st = 13 ;
 			goto eerr ;	
 		}
 	}		
@@ -103,7 +103,9 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 			case 9 :  printf( "ERROR: mount point path is already taken\n" );		
 				break ;	
 			case 12 :  printf( "ERROR: could not get a lock on /etc/mtab~\n" );		
-				 break ;	
+				 break ;
+			case 13 :  printf( "ERROR: wrong argument for mode, valid options are \"rw\" or \"ro\"\n" );		
+					  break ;
 			default :
 				;
 		}
