@@ -33,26 +33,29 @@ int mount_mapper( const char * mapper,const char * m_point,const char * mode,uid
 	unsigned long mountflags = 0 ;
 	int h ;
 	char uid[ 5 ] ;
+	char * d = StringIntToString( uid, 5, id ) ;	
+	string_t opt ;
 	
 	if ( strcmp( mode, "ro" ) == 0 )
 		mountflags = MS_RDONLY ;
 	
 	if( strcmp( fs, "vfat" ) == 0 ){
-		*options = String( "dmask=077,uid=" ) ;
-		StringAppend( *options ,StringIntToString( uid, 5, id ) ) ;
-		StringAppend( *options , ",gid=" ) ;
-		StringAppend( *options ,StringIntToString( uid, 5, id ) );
-		h = mount( mapper, m_point,fs,mountflags,StringContent( *options ) ) ;	
-		StringPrepend( *options ,"," ) ;
-		StringPrepend( *options , mode ) ;
+		opt = String( "dmask=077,uid=" ) ;
+		StringAppend( opt ,d ) ;
+		StringAppend( opt , ",gid=" ) ;
+		StringAppend( opt ,d );
+		h = mount( mapper, m_point,fs,mountflags,StringContent( opt ) ) ;	
+		StringPrepend( opt ,"," ) ;
+		StringPrepend( opt , mode ) ;
 	}else{		
-		*options = String( mode ) ;
+		opt = String( mode ) ;
 		h = mount( mapper, m_point,fs,mountflags,NULL) ;	
 		if( h == 0 && mountflags != MS_RDONLY){			
 			chmod( m_point,S_IRWXU ) ;
 			chown( m_point,id,id ) ;
 		}
 	}
+	*options = opt ;
 	return h ;
 }
 
