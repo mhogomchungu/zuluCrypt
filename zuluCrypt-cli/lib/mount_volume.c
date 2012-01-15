@@ -28,20 +28,45 @@
 #define USE_UNSTABLE_LIBMOUNT_API 1
 #include <mount/mount.h>
 
+int mount_mapper( const char * mapper,const char * m_point,const char * mode,uid_t id, const char * fs, string_t * options )
+{
+	unsigned long mountflags = 0 ;
+	int h ;
+	char uid[ 5 ] ;
+	
+	if ( strcmp( mode, "ro" ) == 0 )
+		mountflags = MS_RDONLY ;
+	
+	if( strcmp( fs, "vfat" ) == 0 ){
+		*options = String( "dmask=077,uid=" ) ;
+		StringAppend( *options ,StringIntToString( uid, 5, id ) ) ;
+		StringAppend( *options , ",gid=" ) ;
+		StringAppend( *options ,StringIntToString( uid, 5, id ) );
+		h = mount( mapper, m_point,fs,mountflags,StringContent( *options ) ) ;	
+		StringPrepend( *options ,"," ) ;
+		StringPrepend( *options , mode ) ;
+	}else{		
+		*options = String( mode ) ;
+		h = mount( mapper, m_point,fs,mountflags,NULL) ;	
+		if( h == 0 && mountflags != MS_RDONLY){			
+			chmod( m_point,S_IRWXU ) ;
+			chown( m_point,id,id ) ;
+		}
+	}
+	return h ;
+}
+
 int mount_volume( const char * mapper,const char * m_point,const char * mode,uid_t id )
 {
-	string_t fs ;
-	string_t options ;
-	unsigned long mountflags = 0 ;
 	struct mntent mt  ;
 	blkid_probe blkid ;
-	char uid[ 5 ] ;
 	char path[ 16 ] ;
 	int h ;
-	int status ;
 	const char * cf ;	
 	FILE * f ;
 	mnt_lock * m_lock ;
+	string_t options = NULL ;
+	string_t fs ;
 	
 	blkid = blkid_new_probe_from_filename( mapper ) ;
 	blkid_do_probe( blkid );
@@ -54,43 +79,22 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 	}	
 	fs = String( cf ) ;
 	
-	blkid_free_probe( blkid );
+	blkid_free_probe( blkid );	
 	
-	if ( strcmp( mode, "ro" ) == 0 )
-		mountflags = MS_RDONLY ;
-		
-	if( strcmp( StringContent( fs ), "vfat" ) == 0 ){
-		options = String( "dmask=077,uid=" ) ;
-		StringAppend( options ,StringIntToString( uid, 5, id ) ) ;
-		StringAppend( options , ",gid=" ) ;
-		StringAppend( options ,StringIntToString( uid, 5, id ) );
-		h = mount( mapper, m_point,StringContent( fs ),mountflags,StringContent( options ) ) ;	
-		StringPrepend( options ,"," ) ;
-		StringPrepend( options , mode ) ;
-	}else{		
-		options = String( mode ) ;
-		h = mount( mapper, m_point,StringContent( fs ),mountflags,NULL) ;	
-		if( h == 0 && mountflags != MS_RDONLY){			
-			chmod( m_point,S_IRWXU ) ;
-			chown( m_point,id,id ) ;
-		}
-	}	
-	if( h != 0 ){
-		close_mapper( mapper ) ; 
-		h = 4 ;		
-	}else{		
-		realpath( "/etc/mtab", path ) ;
-		if( strncmp( path, "/etc/",5 ) == 0 ){
-			/* "/etc/mtab" is not a symbolic link to /proc/mounts, add an entry to it since 
-			 * mount command doesnt
-			 */		
-			m_lock = mnt_new_lock( "/etc/mtab~", getpid() ) ;
-			status = mnt_lock_file( m_lock ) ;	
-			if( status != 0 ){
-				umount( m_point ) ;	
-				close_mapper( mapper ) ;
-				h = 12 ;
-			}else{			
+	realpath( "/etc/mtab", path ) ;
+	
+	if( strncmp( path,"/proc",5 ) == 0 )
+		h = mount_mapper( mapper,m_point,mode,id, StringContent( fs ),&options ) ;
+	else{
+		/* "/etc/mtab" is not a symbolic link to /proc/mounts, manually,add an entry to it since 
+		 * mount command does not
+		 */		
+		m_lock = mnt_new_lock( "/etc/mtab~", getpid() ) ;
+		if( mnt_lock_file( m_lock ) != 0 ){
+			h = 12 ;
+		}else{		
+			h = mount_mapper( mapper,m_point,mode,id, StringContent( fs ),&options ) ;
+			if( h == 0 ){
 				f = setmntent( "/etc/mtab","a" ) ;	
 				mt.mnt_fsname = ( char * ) mapper ;
 				mt.mnt_dir =    ( char * ) m_point ;
