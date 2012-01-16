@@ -20,11 +20,11 @@
 #include "runinthread.h"
 #include <QProcess>
 #include <iostream>
-runInThread::runInThread(QString exe,int type)
+runInThread::runInThread(QString exe)
 {
 	m_exe = exe ;
-	m_type = type ;
 }
+
 void runInThread::run()
 {
 	QProcess p ;
@@ -32,7 +32,5 @@ void runInThread::run()
 	p.waitForFinished() ;
 	int status = p.exitCode() ;
 	p.close();
-	if(m_type == 0)
-		sleep(1); //volume closes too fast, put a second pause to show ui effect
 	emit finished(this,status);
 }

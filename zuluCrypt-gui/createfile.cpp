@@ -46,7 +46,7 @@ createfile::createfile(QWidget *parent) :
 
 	m_time.setInterval(250);
 
-	connect((QObject *)&m_time,SIGNAL(timeout()),this,SLOT(monitorFileGrowth()));
+	connect(static_cast<QObject *>(&m_time),SIGNAL(timeout()),this,SLOT(monitorFileGrowth()));
 	connect(m_ui->pbCancel,SIGNAL(clicked()),this,SLOT(pbCancel())) ;
 	connect(m_ui->pbOpenFolder,SIGNAL(clicked()),this,SLOT(pbOpenFolder())) ;
 	connect(m_ui->pbCreate,SIGNAL(clicked()),this,SLOT(pbCreate())) ;

@@ -107,9 +107,9 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 				addmntent( f, &mt ) ;	
 				endmntent( f ) ;
 				mnt_unlock_file( m_lock ) ;
-				mnt_free_lock( m_lock ) ;
 			}
-		}
+		}	
+		mnt_free_lock( m_lock ) ;
 	}
 	StringDelete( fs ) ;
 	StringDelete( options ) ;

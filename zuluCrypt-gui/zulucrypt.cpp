@@ -606,7 +606,7 @@ void zuluCrypt::UIMessage(QString title, QString message)
 	m.exec() ;
 }
 
-void zuluCrypt::closeThreadFinished(runInThread * vct,int st)
+void zuluCrypt::closeThreadFinished(closeVolumeThread * cvt,int st)
 {
 	m_ui->tableWidget->setEnabled( true );
 	switch ( st ) {
@@ -633,7 +633,7 @@ void zuluCrypt::closeThreadFinished(runInThread * vct,int st)
 	default :UIMessage(tr("ERROR"),
 			  tr("an unknown error has occured, volume not closed"));
 	}
-	vct->deleteLater(); ;
+	cvt->deleteLater(); ;
 }
 
 void zuluCrypt::close()
@@ -642,13 +642,13 @@ void zuluCrypt::close()
 	QString vol = m_ui->tableWidget->item(item->row(),0)->text().replace("\"","\"\"\"") ;
 	QString exe = QString(ZULUCRYPTzuluCrypt) + QString(" close ") + QString("\"") + \
 			vol + QString("\"") ;
-	runInThread * vct = new runInThread( exe,0 ) ;
-	connect(vct,
-		SIGNAL(finished(runInThread *,int)),
+	closeVolumeThread * cvt = new closeVolumeThread( exe ) ;
+	connect(cvt,
+		SIGNAL(finished(closeVolumeThread *,int)),
 		this,
-		SLOT(closeThreadFinished(runInThread *,int))) ;
+		SLOT(closeThreadFinished(closeVolumeThread *,int))) ;
 	m_ui->tableWidget->setEnabled( false );
-	vct->start();
+	cvt->start();
 }
 
 luksaddkey * zuluCrypt::setUpluksaddkey()
@@ -833,8 +833,8 @@ passwordDialog * zuluCrypt::setUpPasswordDialog()
 
 void zuluCrypt::volumeOpened(QString dev,QString m_point,passwordDialog * obj)
 {
-	addItemToTable(dev,m_point);
 	obj->hide();
+	addItemToTable(dev,m_point);	
 	HidePasswordDialog(obj);
 }
 

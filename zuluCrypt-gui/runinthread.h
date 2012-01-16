@@ -26,13 +26,12 @@ class runInThread : public QThread
 {
 	Q_OBJECT
 public:
-	explicit runInThread(QString,int) ;
+	explicit runInThread(QString) ;
 signals:
 	void finished( runInThread *,int) ;
 private:
 	void run(void) ;
 	QString m_exe ;
-	int m_type ;
 };
 
 #endif // RUNINTHREAD_H

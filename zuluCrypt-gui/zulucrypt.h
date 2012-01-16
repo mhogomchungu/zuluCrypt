@@ -45,6 +45,7 @@
 #include "runinthread.h"
 #include "managedevicenames.h"
 #include "volumepropertiesthread.h"
+#include "closevolumethread.h"
 
 namespace Ui {
     class zuluCrypt;
@@ -92,7 +93,7 @@ private slots :
 	void minimizeToTray(void);
 	void closeAllVolumes(void) ;
 	void deletecloseAllVolumesThread(closeAllVolumesThread *) ;
-	void closeThreadFinished(runInThread *,int) ;
+	void closeThreadFinished(closeVolumeThread *,int) ;
 	void menuKeyPressed(void) ;
 	void addItemToTableByVolume(QString volume_path);
 	void ShowCreateFile(void);

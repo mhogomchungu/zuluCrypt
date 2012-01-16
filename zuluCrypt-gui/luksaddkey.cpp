@@ -318,7 +318,7 @@ void luksaddkey::pbAdd(void)
 
 	disableAll();
 
-	m_lakt = new runInThread(exe,1);
+	m_lakt = new runInThread(exe);
 
 	connect(m_lakt,
 		SIGNAL(finished(runInThread *,int)),

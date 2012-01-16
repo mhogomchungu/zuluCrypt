@@ -26,7 +26,8 @@ SOURCES += main.cpp\
     managedevicenames.cpp \
     partitionproperties.cpp \
     volumepropertiesthread.cpp \
-    createfilethread.cpp
+    createfilethread.cpp \
+    closevolumethread.cpp
 
 HEADERS  += zulucrypt.h password_dialog.h \
     openpartition.h \
@@ -42,7 +43,8 @@ HEADERS  += zulucrypt.h password_dialog.h \
     managedevicenames.h \
     partitionproperties.h \
     volumepropertiesthread.h \
-    createfilethread.h
+    createfilethread.h \
+    closevolumethread.h
 
 FORMS    += zulucrypt.ui password.ui \
     openpartition.ui \

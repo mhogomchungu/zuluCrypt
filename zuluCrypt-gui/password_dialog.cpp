@@ -274,7 +274,7 @@ void passwordDialog::buttonOpenClicked(void )
 			mode + QString(" ") + passtype + \
 			QString(" \"") + passPhraseField + QString("\"");
 
-	m_ovt = new runInThread(exe,1) ;
+	m_ovt = new runInThread(exe) ;
 	connect(m_ovt,
 		SIGNAL(finished(runInThread *,int)),
 		this,
