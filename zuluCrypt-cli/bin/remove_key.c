@@ -19,38 +19,37 @@
 
 #include "includes.h"
 
-int removekey(  int argn , char * device, char * keyType, char * keytoremove  )
+int removekey( int argn , char * device, char * keyType, char * keytoremove )
 {
 	string_t pass;
 	int status = 0 ;
-	char * c ;
 	
 	if ( is_path_valid( device ) == -1 ){
 		status = 10 ;
 		goto out ;
 	}	
-	if (  argn == 3  ){
+	if ( argn == 3 ){
 		printf( "Enter the passphrase of the key you want to delete: " ) ;
-		pass = get_passphrase(  ) ;
+		pass = get_passphrase( ) ;
 		printf( "\n" ) ;	
-		status = remove_key(  device,StringContent( pass ) ) ;
+		status = remove_key( device,StringContent( pass ),StringLength( pass ) ) ;
 		StringDelete( pass ) ;
-	}else if (  argn == 5  ){
-		if(  strcmp( keyType, "-f" ) == 0  ){			
-			switch( read_file( &c,keytoremove ) ){
+	}else if ( argn == 5 ){
+		if( strcmp( keyType, "-f" ) == 0 ){	
+			switch( StringGetFromFile( &pass,keytoremove ) ){
 				case 1 : status = 5 ; goto out ; 
-				case 2 : status = 7 ; goto out ; 
-			}	
-			status = remove_key( device,c ) ;
-			free( c ) ;
-		}else if(  strcmp( keyType, "-p" ) == 0  ) {
+				case 3 : status = 7 ; goto out ;
+			}
+			status = remove_key( device,StringContent( pass ),StringLength( pass ) ) ;
+			StringDelete( pass ) ;
+		}else if( strcmp( keyType, "-p" ) == 0 ) {
 			
-			status = remove_key( device,keytoremove ) ;		
+			status = remove_key( device,keytoremove,strlen( keytoremove ) ) ;		
 		}
 	}else
 		status = 6 ;
 	out:
-	switch (  status  ){
+	switch ( status ){
 		case 0 : printf( "SUCCESS: key removed successfully\n" );
 		break ;
 		case 1 : printf( "ERROR: device \"%s\" is not a luks device",device ) ;
@@ -61,9 +60,9 @@ int removekey(  int argn , char * device, char * keyType, char * keytoremove  )
 		break ;  
 		case 5 : printf( "ERROR: keyfile does not exist\n" ) ;
 		break ;
-		case 6 : printf( "ERROR: Wrong number of arguments\n" ) ;
+		case 6 : printf( "ERROR: wrong number of arguments\n" ) ;
 		break ;
-		case 7 : printf( "ERROR: insuffucient system memory, quiting\n" ) ;
+		case 7 : printf( "ERROR: could not get enough memory to open the key file\n" ) ;
 		break ;
 		case 10 : printf( "ERROR: device does not exist\n" );
 		break ;		

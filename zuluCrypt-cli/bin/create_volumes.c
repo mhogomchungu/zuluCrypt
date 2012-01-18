@@ -19,39 +19,44 @@
 
 #include "includes.h"
 
+int check_partition( const char * device )
+{
+	char * c = partitions( SYSTEM_PARTITIONS ) ;	
+	char * d = strstr( c , device ) ;	
+	free( c ) ;
+	if ( d == NULL )
+		return -1 ;
+	else
+		return 1 ;	
+}
+
 int create_volumes( int argn,char * device,char * fs,char * mode,char * keyType,char * pass,char * rng  )
 {
 	string_t pass_1 ;
 	string_t pass_2 ;
+	string_t content ;
 	
 	char Y ;
-	int st ;
-	char * c ;
-	
+	int st  ;
 	struct stat xt ;
-	stat( device, &xt ) ;
 	
 	if( is_path_valid( device ) == -1 ){
 		st = 1 ;
 		goto out ;
-	}else if(  strncmp(  device,"/dev/",5 ) != 0 && xt.st_size < 3145728  ){
+	}	
+	stat( device, &xt ) ;	
+	if( strncmp( device,"/dev/",5 ) != 0 && xt.st_size < 3145728 ){
 		st = 9 ;
+		goto out ;		
+	}
+	if ( check_partition( device ) == 1  ){		
+		st = 10 ;
 		goto out ;		
 	}		
 	if( is_path_valid( ZULUCRYPTmkfs ) == -1 ){		
 		st = 11 ;
 		goto out ;		
 	}
-	
-	c = partitions(  SYSTEM_PARTITIONS  ) ;
-	
-	if (  strstr(  c , device  ) != NULL  ){		
-		st = 10 ;
-		free (  c  ) ;
-		goto out ;		
-	}	
-	
-	free (  c  ) ;
 	
 	if(  argn == 5  ){
 		printf( "ARE YOU SURE YOU WANT TO CREATE/OVERWRITE: \"%s\" ? Type \"Y\" if you are\n",device );		
@@ -74,15 +79,15 @@ int create_volumes( int argn,char * device,char * fs,char * mode,char * keyType,
 					Y = getchar() ;
 					getchar() ;					
 					if(  Y == '1' )
-						st = create_volume( device,fs,mode,StringContent( pass_1 ),"/dev/random" );
+						st = create_volume( device,fs,mode,StringContent( pass_1 ),StringLength( pass_1 ),"/dev/random" );
 					else if (  Y == '2'  )
-						st = create_volume( device,fs,mode,StringContent( pass_1 ),"/dev/urandom" );
+						st = create_volume( device,fs,mode,StringContent( pass_1 ),StringLength( pass_1 ),"/dev/urandom" );
 					else{
 						st = 5 ;
 						goto out ;
 					}
 				}else{
-					st = create_volume( device,fs,mode,StringContent( pass_1 ),"NULL" ) ;						
+					st = create_volume( device,fs,mode,StringContent( pass_1 ),StringLength( pass_1 ),"NULL" ) ;						
 				}		
 			}
 			StringDelete( pass_1 ) ;
@@ -96,15 +101,15 @@ int create_volumes( int argn,char * device,char * fs,char * mode,char * keyType,
 			}			
 			if(  strcmp(  keyType, "-p"  ) == 0  ) {			
 				
-				st = create_volume( device,fs,mode,pass,rng ) ;			
+				st = create_volume( device,fs,mode,pass,strlen( pass ),rng ) ;			
 				
-			}else if(  strcmp(  keyType, "-f"  ) == 0  ) {				
-				switch( read_file( &c,pass ) ){
+			}else if(  strcmp(  keyType, "-f"  ) == 0  ) {
+				switch( StringGetFromFile( &content,pass ) ){
 					case 1 : st = 8 ; goto out ; 
-					case 2 : st = 9 ; goto out ; 
+					case 3 : st = 6 ; goto out ;
 				}
-				st = create_volume( device,fs,mode,c,rng ) ;					
-				free(  c  ) ;				
+				st = create_volume( device,fs,mode,StringContent( content ),StringLength( content ),rng ) ;					
+				StringDelete( content ) ;				
 			}else{
 				st = 2 ;			
 			}
@@ -112,7 +117,7 @@ int create_volumes( int argn,char * device,char * fs,char * mode,char * keyType,
 		st = 4 ;			
 	}	
 	out:	
-	switch (  st  ){
+	switch ( st ){
 		case 0 : printf( "SUCCESS: volume created successfully\n" ) ;
 		break  ;
 		case 1 : printf( "ERROR: invalid path to a file or device\n" ) ;
@@ -124,8 +129,6 @@ int create_volumes( int argn,char * device,char * fs,char * mode,char * keyType,
 		case 4 : printf( "ERROR: Wrong number of arguments\n" );
 		break  ;
 		case 5 : printf( "ERROR: Wrong choice, exiting\n" );
-		break  ;	
-		case 6 : printf( "ERROR: couldnt get requested memory to open the key file.\n" );
 		break  ;
 		case 7 : printf( "ERROR: passphrases do not match\n" ) ;
 		break  ;	
@@ -137,7 +140,9 @@ int create_volumes( int argn,char * device,char * fs,char * mode,char * keyType,
 		printf( "System partitions have active entries in /etc/fstab and /etc/crypttab\n" ) ;
 		break  ;
 		case 11 : printf( "ERROR: %s not found \n",ZULUCRYPTmkfs ) ;
-				break  ;
+		break  ;
+		case 6 : printf( "ERROR: couldnt get enought memory to hold the key file\n" ) ;
+		break  ;
 		default:
 			;
 	}

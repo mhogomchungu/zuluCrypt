@@ -54,15 +54,14 @@ int is_luks(const char * device) ;
  *	8 - ERROR: failed to open device
  *      12 - ERROR: could not get a lock on /etc/mtab~
  */
-int open_volume(const char *device, // path to a file/partition to be opened
+int open_volume(const char * device, // path to a file/partition to be opened
 		const char * mapper,// mapper name( will show up in /dev/mapper/ )
-		const char *m_point,// mount point path, opened volume will be mounted on this path
+		const char * m_point,// mount point path, opened volume will be mounted on this path
 		uid_t id,           // owner of the mount point will have this id with rwx------ permissions 
 		const char * mode,  // "ro" or "rw",the former means open volume in read only mode,
 				    // the latter means open in read/write mode
-		const char *pass,   // encrypted volume passphrase to be used to open the volume
-		const char * source // "-p" or "-f",the latter means pass is a keyfile, the former means 
-		                    // pass is "naked" i.e already exist in memory 
+		const char * pass,   // encrypted volume passphrase to be used to open the volume
+		size_t pass_size     // passphrase size
 	       ) ;	       
 	       
 /**
@@ -159,6 +158,7 @@ int create_volume(const char * device,    // path to a file or partition
 		  const char * fs,       //file system to use in the volume(ext2,ext3.ext4,vfat)
 		  const char * type,      //type of volume to create( luks or plain )
 		  const char * passphrase,//passphrase to use to create the volume
+		  size_t passphrase_size, //passphrase size
 		  const char * rng);       //random number generator to use ( /dev/random or /dev/urandom )
 		                          //required when creating luks volume, just pick one if you
 		                          //creating a plain device, it will be ignored		                        
@@ -174,7 +174,9 @@ int create_volume(const char * device,    // path to a file or partition
  */
 int add_key(const char * device,     //path to an encrypted file or partition
 	    const char * existingkey,//a key that already exist in the encrypted volume
-	    const char * newkey) ;  //new key to be added to the volume
+	    size_t existingkey_size, //size of existingkey
+	    const char * newkey,  //new key to be added to the volume
+	    size_t newkey_size);  // size of the new key
 
 /**
  * This function deletes a key from a luks volume.
@@ -186,7 +188,8 @@ int add_key(const char * device,     //path to an encrypted file or partition
  * 3 - ERROR: could not open luks device
  */
 int remove_key(const char * device ,      //path to an encrypted device
-	       const char * passphrase ) ;//a key already in the volume to be removed
+	       const char * passphrase,//a key already in the volume to be removed
+	       size_t passphrase_size ) ; //passphrase size
 
 /**
  *This function gives information about slots in a luks volume. 
@@ -219,7 +222,6 @@ char * empty_slots(const char * device ) ;
 int open_luks( const char * device,      // path to encrypted file or partition
 	       const char * mapping_name,// mapper name to use
 	       const char * mode,        // "ro" or "rw" for opening in read only or read and write
-	       const char * source,      // "-f" or "-p" for passphrase is a path to a key file or a 					  // "naked" passphrase already in memory respectively 
 	       const char * passphrase ) ;// passphrase to use to open the volume
 	
 /**
@@ -235,6 +237,7 @@ int open_luks( const char * device,      // path to encrypted file or partition
  */
 int create_luks(const char * device,    // path to a file or partition to create a volume in
 		const char * passphrase,// passphrase to use to create a volume
+		size_t passphrase_size,// size of the passphrase
 		const char * rng) ;	//random number generator( /dev/random or /dev/urandom)
 		
 		
@@ -249,8 +252,8 @@ int create_luks(const char * device,    // path to a file or partition to create
 int open_plain( const char * device,      // path to encrypted file or partition
 		const char * mapping_name,// mapper name to use
 		const char * mode,        // "ro" or "rw" for opening in read only or read and write
-		const char * source,      // "-f" or "-p" for passphrase is a path to a key file or a "naked" passphrase already in memory respectively
 		const char * passphrase,  // passphrase to use to open the volume
+		size_t passphrase_size,
 		const char * cipher );	  // cipher to use, default is "cbc-essiv:sha256" for current cryptsetup default option.  
 
 

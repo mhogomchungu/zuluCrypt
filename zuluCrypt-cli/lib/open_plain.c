@@ -19,11 +19,10 @@
 
 #include "includes.h"
 
-int open_plain( const char * device,const char * mapper,const char * mode,const char * source,const char * pass,const char * cipher )
+int open_plain( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size,const char * cipher )
 {
 	int status ;
 	int flags ;
-	const char * c ;
 	struct crypt_device * cd;
 	
 	struct crypt_params_plain params = {
@@ -36,14 +35,7 @@ int open_plain( const char * device,const char * mapper,const char * mode,const 
 	
 	if( stat( device,&st ) != 0 )
 		return 3 ;
-	
-	c = strrchr( mapper,'/' );
-	
-	if( c == NULL )
-		c = mapper ;
-	else
-		c++ ;
-	
+
 	if( strcmp( mode,"ro" ) == 0 )
 		flags = 1 ;
 	else
@@ -61,16 +53,8 @@ int open_plain( const char * device,const char * mapper,const char * mode,const 
 		status = 2 ;
 		goto out ;
 	}
-	if( strcmp( source,"-p" ) == 0 ){
-		
-		status = crypt_activate_by_passphrase( cd,c,CRYPT_ANY_SLOT,pass,strlen( pass ),flags );
-	}else{			
-		if( stat( pass,&st ) != 0 ){
-			status = 4;
-			goto out ;
-		}		
-		status = crypt_activate_by_keyfile( cd,c,CRYPT_ANY_SLOT,pass,st.st_size,flags ) ;
-	}
+	status = crypt_activate_by_passphrase( cd,mapper,CRYPT_ANY_SLOT,pass,pass_size,flags );
+	
 	if ( status < 0 )
 		status = 2 ;
 	else

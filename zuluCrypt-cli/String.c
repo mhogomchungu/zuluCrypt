@@ -20,6 +20,10 @@
 
 #include "String.h"
 #include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 struct StringType
 {
@@ -60,18 +64,22 @@ void StringReadToBuffer( string_t st,char * buffer, size_t size )
 
 string_t StringInherit( char * data )
 {
+		return StringInheritWithSize( data,strlen( data ) ) ;
+}
+
+string_t StringInheritWithSize( char * data,size_t s )
+{
 	string_t st = ( string_t ) malloc ( sizeof( struct StringType ) ) ;
 	
 	if( st == NULL )
 		return NULL ;
 	
-	st->size = strlen( data ) ;
+	st->size = s ;
 	
 	st->string = data ;
 	
 	return st ;	
 }
-
 int StringIndexOfString( string_t st,size_t p, const char * s )
 {
 	char * c = strstr( st->string + p,s ) ;
@@ -518,3 +526,35 @@ const char * StringInsertCharChar( string_t st, char x, char y )
 	c[1] = '\0' ;
 	return StringInsertCharString( st, x, c ) ;
 }
+
+int StringGetFromFile( string_t * str,const char * path ) 
+{
+	struct stat st ;
+	int fd ;
+	char * c ;
+	
+	if( stat( path,&st ) != 0 )
+		return 1 ;
+	
+	if( ( fd = open( path,O_RDONLY ) ) == -1 )
+		return 2 ;	
+	
+	if( ( c = ( char * ) malloc( sizeof( char ) * ( st.st_size + 1 ) ) ) == NULL )  
+		return 3 ;
+
+	*( c + st.st_size ) = '\0' ;
+	
+	read( fd,c,st.st_size ) ;
+	
+	close( fd ) ;
+
+	if( ( *str = StringInheritWithSize( c, st.st_size ) ) == NULL )
+	{
+		free( c ) ;
+		return 3 ;
+	}
+	return 0 ;
+}
+
+
+

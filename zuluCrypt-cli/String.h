@@ -60,9 +60,17 @@ const char * StringPrepend( string_t st ,const  char * s )  ;
 
 /*
  * Inherit a string pointed to by data and return a string handle to the string on success or NULL on error. 
- * This function should inherit strings only from a dynamically created memory.  
+ * This function should inherit strings only from a dynamically created memory.
+ * The original string remains intact when the function error out.  
  */
 string_t StringInherit( char * data ) ;
+
+/*
+ * Inherit a string of size s pointed to by data and return a string handle to the string on success or NULL on error. 
+ * This function should inherit strings only from a dynamically created memory. 
+ * The original string remains intacct when the function error out. 
+ */
+string_t StringInheritWithSize( char * data,size_t s ) ;
 
 /* 
  * Returns a const pointer to a string handled by handle st. 
@@ -322,6 +330,14 @@ const char * StringInsertCharChar( string_t st, char x, char y ) ;
  */
 const char * StringCrop( string_t st, size_t x, size_t y ) ;
 
+/*
+ *  Open a file given by path and return a string_t handle through agrument st with the content of the file .  
+ *  return value: 0 - opefation succeeded.
+ *                1 - path is invalid.
+ *                2 - could not open file for reading.
+ * 		  3 - could not allocate memory to host file content 
+ */
+int StringGetFromFile( string_t * st,const char * path ) ;
 #ifdef __cplusplus
 }
 #endif

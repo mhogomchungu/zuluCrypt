@@ -19,7 +19,7 @@
 
 #include "includes.h"
 
-int remove_key( const char * device ,const char * pass )
+int remove_key( const char * device ,const char * pass,size_t pass_size )
 {       
 	int status ;
 	struct crypt_device * cd;
@@ -39,7 +39,7 @@ int remove_key( const char * device ,const char * pass )
 		status =  3 ;
 		goto out ;
 	}
-	status =  crypt_activate_by_passphrase( cd,NULL,CRYPT_ANY_SLOT,pass,strlen( pass ),0 );
+	status =  crypt_activate_by_passphrase( cd,NULL,CRYPT_ANY_SLOT,pass,pass_size,0 );
 	
 	if ( status < 0 ){
 		status = 2 ;

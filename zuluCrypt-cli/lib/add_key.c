@@ -19,7 +19,7 @@
 
 #include "includes.h"
 
-int add_key( const char * device,const char * existingkey,const char * newkey )
+int add_key( const char * device,const char * existingkey,size_t existingkey_size,const char * newkey,size_t newkey_size )
 {
 	int status ;
 	
@@ -41,7 +41,7 @@ int add_key( const char * device,const char * existingkey,const char * newkey )
 		status =  2 ;
 		goto out ;
 	}
-	status = crypt_keyslot_add_by_passphrase( cd,CRYPT_ANY_SLOT,existingkey,strlen( existingkey ),newkey,strlen( newkey ) ) ;
+	status = crypt_keyslot_add_by_passphrase( cd,CRYPT_ANY_SLOT,existingkey,existingkey_size,newkey,newkey_size ) ;
 						   
 	if ( status < 0 )
 		status =  1 ;

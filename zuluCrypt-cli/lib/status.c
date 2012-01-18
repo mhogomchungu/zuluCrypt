@@ -40,8 +40,8 @@ char * loop_device_address( const char * device, char * path )
 
 char * status( const char * mapper )
 {		
-	#define SIZE 32
-	char buffer[ SIZE + 1 ] ;
+	#define SIZE 33
+	char buffer[ SIZE ] ;
 	const char * e ;
 	char path[ 512 ] ;
 	
@@ -50,14 +50,13 @@ char * status( const char * mapper )
 	int j ;
 	int k ;
 	
-	struct crypt_device * cd1 = NULL;
 	struct crypt_device * cd;
 	struct crypt_active_device cad ;
 	
 	string_t properties = String( mapper ) ;
 	
 	crypt_init_by_name( &cd,mapper );
-	crypt_get_active_device( cd1,mapper,&cad ) ;
+	crypt_get_active_device( NULL,mapper,&cad ) ;
 	
 	switch( crypt_status( cd, mapper ) ){
 		case CRYPT_INACTIVE :
@@ -129,7 +128,6 @@ char * status( const char * mapper )
 	}
 	out:
 	crypt_free( cd );
-	crypt_free( cd1 );
 	return StringDeleteHandle( properties ) ;
 }
 

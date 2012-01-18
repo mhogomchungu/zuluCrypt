@@ -76,6 +76,11 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 	h = blkid_probe_lookup_value( blkid , "TYPE", &cf, NULL ) ;		
 	
 	if( h != 0 ){
+		/*
+		 * Attempt to read volume system has failed. This could be due to a luks volume not having a file system
+		 * or either a plain volume opened with a wrong passphrase or with the right one but on a volume with no
+		 * file system.		 * 
+		 */
 		blkid_free_probe( blkid );
 		return 4 ;
 	}	

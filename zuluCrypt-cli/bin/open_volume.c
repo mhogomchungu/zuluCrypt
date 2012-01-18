@@ -24,36 +24,37 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 	string_t passphrase  ;	
 	string_t m_name  ;	
 	string_t m_point  ;
+	string_t data ;
 	
-	int st ;
+	int st = 0 ;
 
 	m_name = String( mapping_name ) ;
 	m_point = String( mount_point );
 
 	if ( argn != 5 && argn != 7  ){
 		st = 11 ;
-		goto eerr ;
+		goto out ;
 	}	
 	if( strlen( mount_point ) == 1 ){
 		if (  strcmp( mount_point,"," ) == 0 ){
 			st = 10 ;
-			goto eerr ;			
+			goto out ;			
 		}
 	}	
 	if( is_path_valid( mount_point ) == 1 ){		
 		st = 9 ;
-		goto eerr ;
+		goto out ;
 	}	
 	if ( strncmp( mode,"ro",2 ) != 0 ){
 		if ( strncmp( mode,"rw",2 ) != 0 ){
 			st = 13 ;
-			goto eerr ;	
+			goto out ;	
 		}
 	}		
 	StringReplaceCharString( m_name,'_',"#;\"',\\`:!*?&$@(){}[]><|%~^ \n" ) ;
 	
-	StringPrepend( m_name,"/dev/mapper/zuluCrypt-" ) ;
-
+	StringPrepend( m_name,"zuluCrypt-") ;
+	
 	while( StringEndsWithChar( m_point , '/' ) == 0 )
 		StringRemoveRight( m_point,1 );
 	
@@ -63,20 +64,30 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 	
 	if ( mkdir( StringContent( m_point ), S_IRWXU  ) != 0 ){		
 		st = 5 ;			
-		goto eerr ;	
+		goto out ;	
 	}	
 	if (  argn == 5  ){
 		printf(  "Enter passphrase: "  ) ;		
 		passphrase = get_passphrase(  );	
 		printf( "\n" ) ;	
-		st = open_volume( device,StringContent( m_name ),StringContent( m_point ),id,mode,StringContent( passphrase ),"-p" ) ;
+		st = open_volume( device,StringContent( m_name ),StringContent( m_point ),id,mode,StringContent( passphrase ),StringLength( passphrase ) ) ;
 		StringDelete( passphrase ) ;
 	}else if (  argn == 7  ){
-		st = open_volume( device,StringContent( m_name ),StringContent( m_point ),id,mode,pass,source ) ;	
+		if( strcmp( source,"-p" ) == 0 )
+			st = open_volume( device,StringContent( m_name ),StringContent( m_point ),id,mode,pass,strlen(pass) ) ;	
+		
+		else if( strcmp( source,"-f" ) == 0 ){			
+			switch( StringGetFromFile( &data,pass ) ){
+				case 1 : st = 6 ; goto out ; 
+				case 3 : st = 14 ; goto out ;
+			}
+			st = open_volume( device,StringContent( m_name ),StringContent( m_point ),id,mode,StringContent( data ),StringLength( data ) ) ;	
+			StringDelete( data ) ;
+		}
 	}else{
 		st =  11 ;			
 	}
-	eerr:
+	out:
 	if( st == 0 )
 		 printf( "SUCCESS: Volume opened successfully\n" );
 	else{		
@@ -105,7 +116,9 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 			case 12 :  printf( "ERROR: could not get a lock on /etc/mtab~\n" );		
 				 break ;
 			case 13 :  printf( "ERROR: wrong argument for mode, valid options are \"rw\" or \"ro\"\n" );		
-					  break ;
+				  break ;
+			case 14 : printf( "ERROR: could not get enought memory to hold the key file\n" );		
+				break ;
 			default :
 				;
 		}

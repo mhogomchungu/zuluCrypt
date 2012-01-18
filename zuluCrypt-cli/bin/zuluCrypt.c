@@ -34,14 +34,14 @@ string_t get_passphrase( void ) ;
 //defined in lib/status.c
 char * volume_device_name( const char * ) ;
 
-void help(  void  ) ;
+void help( void ) ;
 		 
 int check_system_tools( void ) ;
 
 //defined in lib/partitions.c
 int device_from_uuid(char * dev, const char * uuid ) ;
 
-string_t get_passphrase(  void  )
+string_t get_passphrase( void )
 {	
 	//I got the big chunk of this code from: http://www.gnu.org/s/hello/manual/libc/getpass.html
 	char c[2] ;
@@ -58,21 +58,21 @@ string_t get_passphrase(  void  )
 	if ( tcsetattr ( 1, TCSAFLUSH, &new ) != 0 )
 		exit( -1 );
 	c[1] = '\0' ;
-	c[0] = getchar(  ) ;
-	p = String(  c  ) ;
-	while(  (  c[0] = getchar(  )  ) != '\n'  )		
-		StringAppend(  p, c  ) ;
+	c[0] = getchar() ;
+	p = String( c ) ;
+	while( ( c[0] = getchar() ) != '\n' )		
+		StringAppend( p, c ) ;
 	( void ) tcsetattr ( 1, TCSAFLUSH, &old );	
 	return p ;
 }
 
-void help(  void  )
+void help( void )
 {
 	printf( "run \"man zuluCrypt-cli\" for documentation on how to run this tool.\n" ) ;
 	printf( "The same documentation can be found at http://code.google.com/p/zulucrypt\n" );	
 }
 
-int main(  int argc , char *argv[] )
+int main( int argc , char *argv[] )
 {
 	char * action = argv[1] ;
 	char * device = argv[2] ;
@@ -85,19 +85,19 @@ int main(  int argc , char *argv[] )
 
 	id = getuid();		
 
-	if (  argc < 2  ){
+	if ( argc < 2 ){
 		help();
 		return 1 ;
 	}
-	if (  strcmp(  action, "-h"  ) == 0 || strcmp(  action, "--help"  ) == 0 || strcmp(  action, "-help"  ) == 0  ){			
+	if ( strcmp( action, "-h" ) == 0 || strcmp( action, "--help" ) == 0 || strcmp( action, "-help" ) == 0 ){			
 		help();	
 		return 0 ;
 	}
-	if (  strcmp(  action, "-v"  ) == 0 || strcmp(  action, "-version"  ) == 0 || strcmp(  action, "--version"  ) == 0  ){		
-		printf( "%s\n",version(  ) );
+	if ( strcmp( action, "-v" ) == 0 || strcmp( action, "-version" ) == 0 || strcmp( action, "--version" ) == 0 ){		
+		printf( "%s\n",version() );
 		return 0 ;
 	}
-	if (  argc < 3  ){
+	if ( argc < 3 ){
 		help();
 		return 1 ;
 	}
@@ -111,7 +111,7 @@ int main(  int argc , char *argv[] )
 		}	
 	}
 	if( strcmp( action,"partitions" ) == 0 ){
-		switch(  argv[2][0]  ){	
+		switch( argv[2][0] ){	
 			case '1' : c = partitions( ALL_PARTITIONS ) ;
 			break ;
 			case '2' : c = partitions( SYSTEM_PARTITIONS ) ;
@@ -141,7 +141,7 @@ int main(  int argc , char *argv[] )
 			return 11 ;			
 		}	
 	}else{
-		if (  ( c = strrchr( device,'/' ) ) != NULL ) {
+		if ( ( c = strrchr( device,'/' ) ) != NULL ) {
 			mapping_name =  c + 1  ;
 		}else{
 			mapping_name =  device  ;			
@@ -150,28 +150,28 @@ int main(  int argc , char *argv[] )
 	//all below code need root's priviledes to work
 	setuid( 0 );
 	
-	if( strcmp( action,"emptyslots" ) == 0  ){
+	if( strcmp( action,"emptyslots" ) == 0 ){
 		if( is_path_valid( device ) == -1 ){
 			printf( "path \"%s\" does not point to a device\n",device ) ;
 			status = 1 ;			
 		}else{
-			c = empty_slots(  device  ) ;
-			if(  c == NULL  ){
+			c = empty_slots( device ) ;
+			if( c == NULL ){
 				printf( "device \"%s\" is not a luks device\n",device ) ;
 				status = 2 ;
 			}else{
-				printf( "%s\n",c  ) ;
+				printf( "%s\n",c ) ;
 				status = 0 ;
-				free(  c  ) ;
+				free( c ) ;
 			}		
 		}
-	}else if(  strcmp(  action, "isLuks"  ) == 0  ){
-		status =  is_luks(  device  ) ;
-		if(  status == 0  )
+	}else if( strcmp( action, "isLuks" ) == 0 ){
+		status =  is_luks( device ) ;
+		if( status == 0 )
 			printf( "\"%s\" is a luks device\n",device ) ;
 		else
 			printf( "\"%s\" is not a luks device\n",device ) ;		
-	}else if (  strcmp(  action, "device"  ) == 0  ){
+	}else if ( strcmp( action, "device" ) == 0 ){
 		c = volume_device_name( device ) ;
 		if( c == NULL )
 			status = 1 ;
@@ -180,34 +180,34 @@ int main(  int argc , char *argv[] )
 			free(c) ;
 			status = 0 ;
 		}
-	}else if (  strcmp(  action, "status"  ) == 0  ){
+	}else if ( strcmp( action, "status" ) == 0 ){
 		
-		status = volume_info(  mapping_name, argv[2]  ) ;
+		status = volume_info( mapping_name, argv[2] ) ;
 		
-	}else if (  strcmp(  action, "close"  ) == 0  ){			
+	}else if ( strcmp( action, "close" ) == 0 ){			
 
-		status =  close_opened_volume(  mapping_name  ) ;
+		status =  close_opened_volume( mapping_name ) ;
 		
-	}else if (  strcmp(  action, "open"  ) == 0  ){
+	}else if ( strcmp( action, "open" ) == 0 ){
 		
-		status =  open_volumes( argc,device,mapping_name,id,argv[3],argv[4],argv[5],argv[6]  ) ;		
+		status =  open_volumes( argc,device,mapping_name,id,argv[3],argv[4],argv[5],argv[6] ) ;		
 		
-	}else if( strcmp( action,"create" ) == 0  ){
+	}else if( strcmp( action,"create" ) == 0 ){
 
-		status =  create_volumes( argc ,device,argv[3],argv[4],argv[5],argv[6],argv[7]  ) ;	
+		status =  create_volumes( argc,device,argv[3],argv[4],argv[5],argv[6],argv[7] ) ;	
 		
-	}else if( strcmp( action,"addkey" ) == 0  ){
+	}else if( strcmp( action,"addkey" ) == 0 ){
 		
 		status =  addkey( argc,device,argv[3],argv[4],argv[5],argv[6] ) ;
 		
-	}else if( strcmp( action,"removekey" ) == 0  ){
+	}else if( strcmp( action,"removekey" ) == 0 ){
 				
-		status =  removekey( argc, device, argv[3],argv[4]  );	
+		status =  removekey( argc, device, argv[3],argv[4] );	
 	
 	}else{
 		printf( "ERROR: Wrong argument\n" ) ;
-		help(  );
+		help();
 		status =  10 ;
 	}
 	return status ; 		
-}
+} 		

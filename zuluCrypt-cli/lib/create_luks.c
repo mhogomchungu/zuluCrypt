@@ -19,7 +19,7 @@
 
 #include "includes.h"
 
-int create_luks( const char * dev,const char * pass,const char * rng )
+int create_luks( const char * dev,const char * pass,size_t pass_size,const char * rng )
 {
 	int status ;
 	
@@ -49,7 +49,7 @@ int create_luks( const char * dev,const char * pass,const char * rng )
 		status = 2 ;
 		goto out ;
 	}
-	status = crypt_keyslot_add_by_volume_key( cd,CRYPT_ANY_SLOT,NULL,32,pass,strlen( pass ) );
+	status = crypt_keyslot_add_by_volume_key( cd,CRYPT_ANY_SLOT,NULL,32,pass,pass_size );
 	
 	if ( status < 0 )
 		status = 3 ;

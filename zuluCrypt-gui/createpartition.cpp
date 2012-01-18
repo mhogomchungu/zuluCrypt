@@ -313,7 +313,7 @@ void createpartition::threadfinished(runInThread *cvt,int status)
 			tr("could not create an encrypted volume in a file or device"));
 			break ;			
 		case 6 : UIMessage(tr("ERROR"),
-				   tr("couldnt get requested memory to open the key file"));
+				   tr("couldnt get enought memory to hold the key file"));
 			break ;
 		case 11: UIMessage(tr("ERROR"),
 			tr("can not create the volume,\"") + QString(ZULUCRYPTmkfs) + tr("\" not found."));	

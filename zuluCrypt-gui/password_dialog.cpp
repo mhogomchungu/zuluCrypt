@@ -366,7 +366,11 @@ void passwordDialog::threadfinished(runInThread *,int status)
 		case 10 : UIMessage(tr("ERROR"),tr("\",\" (comma) is not a valid mount point"));
 			break ;
 		case 11 : UIMessage(tr("ERROR"),tr("presented UUID does not match any UUID from attached partitions"));
+			break ;		
+		case 12 : UIMessage(tr("ERROR"),tr("could not get a lock on /etc/mtab~"));
 			break ;
+		case 14 : UIMessage(tr("ERROR"),tr("could not get enought memory to hold the key file"));
+			break ;	
 		default :UIMessage(tr("ERROR"),tr("un unknown error has occured, volume not opened"));		
 	}
 	enableAll();

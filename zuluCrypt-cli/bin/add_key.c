@@ -24,9 +24,11 @@ int addkey( int argn,char * device,char * keyType1,char * existingKey,char * key
 	string_t presentKey ;
 	string_t newKey_1 ;
 	string_t newKey_2 ;
+	string_t ek = NULL ;
+	string_t nk = NULL ;
 	
 	int status = 0 ;
-	char * c = NULL ;
+	
 	char * d = NULL ;
 	char * e = NULL ;	
 	
@@ -63,43 +65,42 @@ int addkey( int argn,char * device,char * keyType1,char * existingKey,char * key
 		if(  StringCompare( newKey_1 , newKey_2 ) != 0  )			
 			status = 7 ;
 		else			
-			status = add_key( device,StringContent( presentKey ), StringContent( newKey_1 ) ) ;			
+			status = add_key( device,StringContent( presentKey ),StringLength( presentKey ), StringContent( newKey_1 ),StringLength( newKey_1 ) );			
 		
 		StringDelete( presentKey ) ;			
 		StringDelete( newKey_1 ) ;	
 		StringDelete( newKey_2 ) ;
 		
 	}else if(  argn == 7  ){		
-		if ( strcmp(  keyType1, "-f"  ) == 0 ){			
-			switch( read_file( &c,existingKey ) ){
+		if ( strcmp(  keyType1, "-f"  ) == 0 ){	
+			switch( StringGetFromFile( &ek,existingKey ) ){
 				case 1 : status = 8 ; goto out ; 
-				case 2 : status = 9 ; goto out ;
+				case 3 : status = 9 ; goto out ;
 			}
 		}		
-		if ( strcmp(  keyType2, "-f"  ) == 0 ){				
-			switch( read_file( &d,newKey ) ){
+		if ( strcmp(  keyType2, "-f"  ) == 0 ){	
+			switch( StringGetFromFile( &nk,newKey ) ){
 				case 1 : status = 8 ; goto out ; 
-				case 2 : status = 9 ; goto out ; 		
+				case 3 : status = 9 ; goto out ;
 			}
 		}		
 		if (  strcmp( keyType1,"-f" ) == 0 && strcmp( keyType2,"-f" ) == 0  ){
-			status = add_key(  device, c, d ) ;			
-			free(  c  ) ;
-			free(  d  ) ;			
+			status = add_key(  device, StringContent( ek ),StringLength( ek ),StringContent( nk ),StringLength( nk ) ) ;			
+			StringDelete( nk ) ;
+			StringDelete( ek ) ;
 		}else if ( strcmp( keyType1,"-p" ) == 0 && strcmp( keyType2,"-p" ) == 0  ){
 			
-			status = add_key( device, existingKey, newKey  ) ;	
+			status = add_key( device,existingKey,strlen( existingKey ),newKey,strlen( newKey ) ) ;	
 			
 		}else if ( strcmp( keyType1,"-p" ) == 0 && strcmp( keyType2,"-f" ) == 0  ){
 			
-			status = add_key(  device, existingKey, d ) ;			
-			free(  d  ) ;	
+			status = add_key(  device, existingKey,strlen( existingKey ),StringContent( nk ),StringLength( nk ) ) ;			
+			StringDelete( nk ) ;	
 			
 		}else if ( strcmp( keyType1,"-f" ) == 0 && strcmp( keyType2,"-p" ) == 0  ){			
 			
-			status = add_key(  device, c, newKey ) ;	
-			
-			free(  c  ) ;
+			status = add_key(  device, StringContent( ek ),StringLength( ek ),newKey,strlen( newKey ) ) ;				
+			StringDelete( ek ) ;
 		}else{			
 			status = 5 ;
 		}
@@ -125,9 +126,9 @@ int addkey( int argn,char * device,char * keyType1,char * existingKey,char * key
 		break ;			
 		case 7 : printf( "ERROR: new passphrases do not match\n" ) ;
 		break ;
-		case 8 : printf( "ERROR: one or both keyfile( s ) does not exist\n" ) ;
+		case 8 : printf( "ERROR: one or both keyfile(s) does not exist\n" ) ;
 		break ;  
-		case 9 : printf( "ERROR: Run out of memory\n" ) ;
+		case 9 : printf( "ERROR: couldnt get enought memory to hold the key file\n" ) ;
 		break ;
 		case 10 : printf( "ERROR: all key slots are occupied, can not add any more keys\n" ) ;
 		break ;

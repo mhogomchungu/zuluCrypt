@@ -19,43 +19,45 @@
 
 #include "includes.h"
 
-int open_volume( const char * dev,const char * map,const char * m_point,uid_t id,const char * mode,const char * pass,const char * source ) 
+int open_volume( const char * dev,const char * map,const char * m_point,uid_t id,const char * mode,const char * pass,size_t pass_size ) 
 {
 	int h ;
 	int luks;
+	string_t mapper ;
 	
-	if( is_path_valid( dev ) == -1 ){		 
+	if( is_path_valid( dev ) == -1 )		 
 		return 3 ;
-	}
-	if( strcmp( source,"-f" ) == 0 )
-		if( is_path_valid( pass ) == -1 )
-			return 6 ;
-		
+	
 	if( is_path_valid( map ) == 1 )
 		return 2 ;	
 		
 	luks = is_luks( dev ) ;		
 		
 	if( luks == 0 )
-		h = open_luks( dev,map,mode,source,pass ) ;
+		h = open_luks( dev,map,mode,pass,pass_size ) ;
 	else
-		h = open_plain( dev,map,mode,source,pass,"cbc-essiv:sha256" ) ;
+		h = open_plain( dev,map,mode,pass,pass_size,"cbc-essiv:sha256" ) ;
 		
 	switch ( h ){
 		case 1 : return 4 ;
 		case 2 : return 8 ; 
 		case 3 : return 3 ;	 
 	}
-		
-	h = mount_volume( map,m_point,mode,id ) ;	
-		
+	
+	mapper = String( "/dev/mapper/" ) ;
+	StringAppend( mapper,map ) ;
+	h = mount_volume( StringContent( mapper ),m_point,mode,id ) ;	
+	
 	if( h == 4 && luks == 1 ){
 		/*
-		 * try to reopen a plain volume in legacy/compatibility mode
+		 * opening a plain volume failed,try to reopen it in legacy/compatibility mode
 		 */
-		open_plain( dev,map,mode,source,pass,"cbc-plain" ) ;
-		h = mount_volume( map,m_point,mode,id ) ;
+		open_plain( dev,map,mode,pass,pass_size,"cbc-plain" ) ;
+		h = mount_volume( StringContent( mapper ),m_point,mode,id ) ;
 	}
+	
+	StringDelete( mapper ) ;
+	
 	if( h != 0 )
 		close_mapper( map ) ;
 	return h ;		

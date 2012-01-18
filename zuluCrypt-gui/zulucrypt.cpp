@@ -832,9 +832,9 @@ passwordDialog * zuluCrypt::setUpPasswordDialog()
 }
 
 void zuluCrypt::volumeOpened(QString dev,QString m_point,passwordDialog * obj)
-{
-	obj->hide();
+{	
 	addItemToTable(dev,m_point);	
+	obj->hide();
 	HidePasswordDialog(obj);
 }
 

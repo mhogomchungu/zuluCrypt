@@ -31,9 +31,9 @@
 
 //function prototypes
 
-int add_key(const char * device,const char * existingkey,const char * newkey) ;
+int add_key(const char * device,const char * existingkey,size_t existingkey_size,const char * newkey,size_t newkey_size) ;
 	    
-int remove_key( const char * device ,const char * pass ) ;
+int remove_key( const char * device ,const char * pass,size_t pass_size ) ;
 			    
 char * empty_slots( const char * device ) ;
 			    
@@ -45,19 +45,19 @@ int is_luks(const char * dev) ;
 		     
 int close_mapper( const char * mapper ) ;
 		     
-int create_luks(const char * dev,const char * pass,const char * rng) ;
+int create_luks(const char * dev,const char * pass,size_t pass_size,const char * rng) ;
 		       
-int create_volume(const char * dev,const char * fs,const char * type,const char * pass,const char * rng) ;
+int create_volume(const char * dev,const char * fs,const char * type,const char * pass,size_t pass_size,const char * rng) ;
 			   
 int close_volume(const char * map, char ** mount_point) ;
 			   
 int mount_volume(const char * mapping_name,const char * m_point,const char * mode,uid_t id) ;
 		       
-int open_luks( const char * device,const char * mapping_name,const char * mode,const char * source,const char * pass ) ;
+int open_luks( const char * device,const char * mapping_name,const char * mode,const char * pass,size_t pass_size ) ;
 			
-int open_plain( const char * device,const char * mapping_name, const char * mode,const char * source,const char * pass, const char * cipher ) ;
+int open_plain( const char * device,const char * mapping_name,const char * mode,const char * pass,size_t pass_size,const char * cipher ) ;
 		   
-int open_volume(const char * dev,const char * map,const char * m_point,uid_t id,const char * mode, const char * pass,const char * source) ;			
+int open_volume(const char * dev,const char * map,const char * m_point,uid_t id,const char * mode,const char * pass,size_t pass_size) ;			
 		     
 char * version(void) ; 
 

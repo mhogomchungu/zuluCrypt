@@ -19,7 +19,7 @@
 
 #include "includes.h"
 
-int create_volume( const char * dev,const char * fs,const char * type,const char * pass,const char * rng )
+int create_volume( const char * dev,const char * fs,const char * type,const char * pass,size_t pass_size,const char * rng )
 {
 	string_t q ;
 	int status ;
@@ -38,14 +38,14 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 				return 2 ;
 				
 	if( strcmp( type,"luks" )  == 0 ){
-		status = create_luks( dev,pass,rng ) ;	
+		status = create_luks( dev,pass,pass_size,rng ) ;	
 		if( status != 0 )
 			return 3 ;
-		status = open_luks( dev,"/dev/mapper/zuluCrypt-create-new","rw","-p",pass ) ;
+		status = open_luks( dev,"zuluCrypt-create-new","rw",pass,pass_size ) ;
 		if( status != 0 )
 			return 3 ;
 	}else if( strcmp( type,"plain") == 0 ){
-		status = open_plain( dev,"/dev/mapper/zuluCrypt-create-new","rw","-p",pass,"cbc-essiv:sha256" ) ;
+		status = open_plain( dev,"zuluCrypt-create-new","rw",pass,pass_size,"cbc-essiv:sha256" ) ;
 		if( status != 0 )
 			return 3 ;		
 	}else{
