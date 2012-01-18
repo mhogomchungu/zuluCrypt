@@ -27,12 +27,17 @@ int addkey( int argn,char * device,char * keyType1,char * existingKey,char * key
 	string_t ek = NULL ;
 	string_t nk = NULL ;
 	
+	const char * key1 ;
+	const char * key2 ;
+	
+	size_t len1 ;
+	size_t len2 ;
 	int status = 0 ;
 	
 	char * d = NULL ;
 	char * e = NULL ;	
 	
-	if( is_path_valid( device ) == -1  ){		
+	if( is_path_valid( device ) == -1 ){		
 		status = 4 ;
 		goto out ;
 	}
@@ -51,55 +56,70 @@ int addkey( int argn,char * device,char * keyType1,char * existingKey,char * key
 		goto out ;		
 	}
 	
-	if (  argn == 3  ){		
+	if ( argn == 3 ){		
 		printf( "Enter an existing passphrase: " ) ;		
-		presentKey = get_passphrase(  ) ;		
+		presentKey = get_passphrase( ) ;		
 		printf( "\n" ) ;		
 		printf( "Enter the new passphrase: " ) ;		
-		newKey_1 = get_passphrase(  ) ;		
+		newKey_1 = get_passphrase( ) ;		
 		printf( "\n" ) ;		
 		printf( "Re enter the new passphrase: " ) ;		
-		newKey_2 = get_passphrase(  ) ;		
+		newKey_2 = get_passphrase( ) ;		
 		printf( "\n" ) ;
 		
-		if(  StringCompare( newKey_1 , newKey_2 ) != 0  )			
+		if( StringCompare( newKey_1 , newKey_2 ) != 0 )			
 			status = 7 ;
-		else			
-			status = add_key( device,StringContent( presentKey ),StringLength( presentKey ), StringContent( newKey_1 ),StringLength( newKey_1 ) );			
-		
+		else{	
+			key1 = StringContent( presentKey ) ;
+			len1 = StringLength( presentKey ) ;
+			key2 = StringContent( newKey_1 ) ;
+			len2 = StringLength( newKey_1 ) ;
+			status = add_key( device,key1,len1,key2,len2 );			
+		}
 		StringDelete( presentKey ) ;			
 		StringDelete( newKey_1 ) ;	
 		StringDelete( newKey_2 ) ;
 		
-	}else if(  argn == 7  ){		
-		if ( strcmp(  keyType1, "-f"  ) == 0 ){	
+	}else if( argn == 7 ){		
+		if ( strcmp( keyType1, "-f" ) == 0 ){	
 			switch( StringGetFromFile( &ek,existingKey ) ){
 				case 1 : status = 8 ; goto out ; 
 				case 3 : status = 9 ; goto out ;
 			}
 		}		
-		if ( strcmp(  keyType2, "-f"  ) == 0 ){	
+		if ( strcmp( keyType2, "-f" ) == 0 ){	
 			switch( StringGetFromFile( &nk,newKey ) ){
 				case 1 : status = 8 ; goto out ; 
 				case 3 : status = 9 ; goto out ;
 			}
 		}		
-		if (  strcmp( keyType1,"-f" ) == 0 && strcmp( keyType2,"-f" ) == 0  ){
-			status = add_key(  device, StringContent( ek ),StringLength( ek ),StringContent( nk ),StringLength( nk ) ) ;			
+		if ( strcmp( keyType1,"-f" ) == 0 && strcmp( keyType2,"-f" ) == 0 ){
+			key1 = StringContent( ek ) ;
+			len1 = StringLength( ek ) ;
+			key2 = StringContent( nk ) ;
+			len2 = StringLength( nk ) ;
+			status = add_key( device,key1,len1,key2,len2 ) ;			
 			StringDelete( nk ) ;
 			StringDelete( ek ) ;
-		}else if ( strcmp( keyType1,"-p" ) == 0 && strcmp( keyType2,"-p" ) == 0  ){
-			
-			status = add_key( device,existingKey,strlen( existingKey ),newKey,strlen( newKey ) ) ;	
-			
-		}else if ( strcmp( keyType1,"-p" ) == 0 && strcmp( keyType2,"-f" ) == 0  ){
-			
-			status = add_key(  device, existingKey,strlen( existingKey ),StringContent( nk ),StringLength( nk ) ) ;			
-			StringDelete( nk ) ;	
-			
-		}else if ( strcmp( keyType1,"-f" ) == 0 && strcmp( keyType2,"-p" ) == 0  ){			
-			
-			status = add_key(  device, StringContent( ek ),StringLength( ek ),newKey,strlen( newKey ) ) ;				
+		}else if ( strcmp( keyType1,"-p" ) == 0 && strcmp( keyType2,"-p" ) == 0 ){
+			key1 = existingKey ;
+			len1 = strlen( existingKey ) ;
+			key2 = newKey ;
+			len2 = strlen( newKey ) ;
+			status = add_key( device,key1,len1,key2,len2 ) ;			
+		}else if ( strcmp( keyType1,"-p" ) == 0 && strcmp( keyType2,"-f" ) == 0 ){
+			key1 = existingKey ;
+			len1 = strlen( existingKey ) ;
+			key2 = StringContent( nk ) ;
+			len2 = StringLength( nk ) ;
+			status = add_key( device,key1,len1,key2,len2 ) ;			
+			StringDelete( nk ) ;
+		}else if ( strcmp( keyType1,"-f" ) == 0 && strcmp( keyType2,"-p" ) == 0 ){			
+			key1 = StringContent( ek ) ;
+			len1 = StringLength( ek ) ;
+			key2 = newKey ;
+			len2 = strlen( newKey ) ;
+			status = add_key( device,key1,len1,key2,len2 ) ;
 			StringDelete( ek ) ;
 		}else{			
 			status = 5 ;
@@ -109,7 +129,7 @@ int addkey( int argn,char * device,char * keyType1,char * existingKey,char * key
 	}	
 	out:	
 	free( e ) ;	
-	switch (  status  ){
+	switch ( status ){
 		case 0 : printf( "SUCCESS: key added successfully\n" );
 		break ;		
 		case 1 : printf( "ERROR: presented key does not match any key in the volume\n" ) ;

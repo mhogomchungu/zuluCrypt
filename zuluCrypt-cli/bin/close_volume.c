@@ -32,7 +32,7 @@ int close_opened_volume( char * mapping_name )
 	 
 	 st = close_volume( StringContent( p ), &m_point ) ;
 	 
-	 switch(  st  ) {
+	 switch( st ) {
 		 case 0 : printf( "SUCCESS: volume closed successfully \n" );
 			  remove( m_point ) ;
 			  free( m_point ) ;
@@ -50,6 +50,6 @@ int close_opened_volume( char * mapping_name )
 		 default :
 			 ; //shouldnt get here			
 	 }	
-	 StringDelete(  p  ) ;	 
+	 StringDelete( p ) ;	 
 	 return st ;	
 }

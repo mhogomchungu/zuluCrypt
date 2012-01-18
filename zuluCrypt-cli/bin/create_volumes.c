@@ -49,7 +49,7 @@ int create_volumes( int argn,char * device,char * fs,char * mode,char * keyType,
 		st = 9 ;
 		goto out ;		
 	}
-	if ( check_partition( device ) == 1  ){		
+	if( check_partition( device ) == 1  ){		
 		st = 10 ;
 		goto out ;		
 	}		
@@ -58,10 +58,10 @@ int create_volumes( int argn,char * device,char * fs,char * mode,char * keyType,
 		goto out ;		
 	}
 	
-	if(  argn == 5  ){
+	if( argn == 5 ){
 		printf( "ARE YOU SURE YOU WANT TO CREATE/OVERWRITE: \"%s\" ? Type \"Y\" if you are\n",device );		
 		Y = getchar() ;		
-		if (  Y != 'Y' )
+		if ( Y != 'Y' )
 			st = 5 ;
 		else{			
 			getchar();    //get rid of "\n" still in stdin buffer				
@@ -78,9 +78,9 @@ int create_volumes( int argn,char * device,char * fs,char * mode,char * keyType,
 					printf( "enter 2 to use \"/dev/urandom\" device when generating the key (  secure enought and faster  )\n" ) ;
 					Y = getchar() ;
 					getchar() ;					
-					if(  Y == '1' )
+					if( Y == '1' )
 						st = create_volume( device,fs,mode,StringContent( pass_1 ),StringLength( pass_1 ),"/dev/random" );
-					else if (  Y == '2'  )
+					else if( Y == '2' )
 						st = create_volume( device,fs,mode,StringContent( pass_1 ),StringLength( pass_1 ),"/dev/urandom" );
 					else{
 						st = 5 ;
@@ -93,17 +93,17 @@ int create_volumes( int argn,char * device,char * fs,char * mode,char * keyType,
 			StringDelete( pass_1 ) ;
 			StringDelete( pass_2 ) ;				
 		}		
-	}else if (  argn == 8  ){		
-		if(  strcmp( rng,"/dev/random" ) != 0 )
-			if(  strcmp( rng,"/dev/urandom" ) != 0 ){
+	}else if ( argn == 8 ){		
+		if( strcmp( rng,"/dev/random" ) != 0 )
+			if( strcmp( rng,"/dev/urandom" ) != 0 ){
 				st = 2 ;
 				goto out ;
 			}			
-			if(  strcmp(  keyType, "-p"  ) == 0  ) {			
+			if( strcmp( keyType,"-p" ) == 0 ) {			
 				
 				st = create_volume( device,fs,mode,pass,strlen( pass ),rng ) ;			
 				
-			}else if(  strcmp(  keyType, "-f"  ) == 0  ) {
+			}else if( strcmp( keyType, "-f" ) == 0 ) {
 				switch( StringGetFromFile( &content,pass ) ){
 					case 1 : st = 8 ; goto out ; 
 					case 3 : st = 6 ; goto out ;

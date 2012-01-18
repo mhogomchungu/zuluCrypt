@@ -26,17 +26,22 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 	string_t m_point  ;
 	string_t data ;
 	
+	const char * cname ;
+	const char * cpoint ;
+	const char * cpass ;
+	
+	size_t len ;
 	int st = 0 ;
 
 	m_name = String( mapping_name ) ;
 	m_point = String( mount_point );
 
-	if ( argn != 5 && argn != 7  ){
+	if ( argn != 5 && argn != 7 ){
 		st = 11 ;
 		goto out ;
 	}	
 	if( strlen( mount_point ) == 1 ){
-		if (  strcmp( mount_point,"," ) == 0 ){
+		if ( strcmp( mount_point,"," ) == 0 ){
 			st = 10 ;
 			goto out ;			
 		}
@@ -45,7 +50,7 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 		st = 9 ;
 		goto out ;
 	}	
-	if ( strncmp( mode,"ro",2 ) != 0 ){
+	if( strncmp( mode,"ro",2 ) != 0 ){
 		if ( strncmp( mode,"rw",2 ) != 0 ){
 			st = 13 ;
 			goto out ;	
@@ -62,26 +67,37 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 	StringReplaceString( m_point,"///","/" ) ;	
 	StringReplaceString( m_point,"//","/" ) ;
 	
-	if ( mkdir( StringContent( m_point ), S_IRWXU  ) != 0 ){		
+	if ( mkdir( StringContent( m_point ), S_IRWXU ) != 0 ){		
 		st = 5 ;			
 		goto out ;	
 	}	
-	if (  argn == 5  ){
-		printf(  "Enter passphrase: "  ) ;		
-		passphrase = get_passphrase(  );	
-		printf( "\n" ) ;	
-		st = open_volume( device,StringContent( m_name ),StringContent( m_point ),id,mode,StringContent( passphrase ),StringLength( passphrase ) ) ;
+	if ( argn == 5 ){
+		printf( "Enter passphrase: " ) ;		
+		passphrase = get_passphrase();	
+		printf( "\n" ) ;
+		cname = StringContent( m_name ) ;
+		cpoint = StringContent( m_point ) ;
+		cpass = StringContent( passphrase ) ;
+		len = StringLength( passphrase ) ;
+		st = open_volume( device,cname,cpoint,id,mode,cpass,len ) ;
 		StringDelete( passphrase ) ;
-	}else if (  argn == 7  ){
-		if( strcmp( source,"-p" ) == 0 )
-			st = open_volume( device,StringContent( m_name ),StringContent( m_point ),id,mode,pass,strlen(pass) ) ;	
-		
-		else if( strcmp( source,"-f" ) == 0 ){			
+	}else if ( argn == 7 ){
+		if( strcmp( source,"-p" ) == 0 ){
+			cname = StringContent( m_name ) ;
+			cpoint = StringContent( m_point ) ;
+			cpass = pass ;
+			len = strlen(pass) ;
+			st = open_volume( device,cname,cpoint,id,mode,cpass,len ) ;		
+		}else if( strcmp( source,"-f" ) == 0 ){			
 			switch( StringGetFromFile( &data,pass ) ){
 				case 1 : st = 6 ; goto out ; 
 				case 3 : st = 14 ; goto out ;
 			}
-			st = open_volume( device,StringContent( m_name ),StringContent( m_point ),id,mode,StringContent( data ),StringLength( data ) ) ;	
+			cname = StringContent( m_name ) ;
+			cpoint = StringContent( m_point ) ;
+			cpass = StringContent( data ) ;
+			len = StringLength( data ) ;
+			st = open_volume( device,cname,cpoint,id,mode,cpass,len ) ;
 			StringDelete( data ) ;
 		}
 	}else{
@@ -92,7 +108,7 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 		 printf( "SUCCESS: Volume opened successfully\n" );
 	else{		
 		remove( StringContent( m_point ) ) ;
-		switch (  st  ){
+		switch ( st ){
 			case 1 : printf( "ERROR: no free loop device to use\n" ) ; 
 				break ;					
 			case 2 : printf( "ERROR: there seem to be an open volume accociated with given address\n" );

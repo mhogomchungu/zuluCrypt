@@ -19,7 +19,7 @@
 
 #include "includes.h"
 
-int volume_info(  const char * mapper, const char * device  )
+int volume_info( const char * mapper,const char * device )
 {
 	char * output ;	
 	int xt ;
@@ -32,11 +32,11 @@ int volume_info(  const char * mapper, const char * device  )
 	
 	StringPrepend( p,"/dev/mapper/zuluCrypt-" ) ;
 	
-	if( is_path_valid( StringContent( p ) ) ==-1 ) {
+	if( is_path_valid( StringContent( p ) ) == -1 ) {
 		printf( "\"%s\" is inactive\n",device ) ;
 		xt =  1 ;
 	}else{
-		output = status(  StringContent( p )  ) ;
+		output = status( StringContent( p ) ) ;
 		printf( "%s\n",output );
 		free( output ) ;
 		xt = 0 ;

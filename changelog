@@ -60,3 +60,8 @@ version 4.3.2
     This creates a problem on freshly created volumes because they always end up owned by root. This update fix the problem by setting
     permissions everytime a volume is opened in read/write mode. If a volume open with root as owner, then reopen the volume in read/write
     mode and permissions will be set properly(0700 with the owner being the user who opened the volume)
+  
+    
+version 4.3.3
+-- keyfile with '\0' character in them were not properly handled and volumes failed to open using them.
+    

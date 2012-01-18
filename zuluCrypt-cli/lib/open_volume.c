@@ -52,6 +52,7 @@ int open_volume( const char * dev,const char * map,const char * m_point,uid_t id
 		/*
 		 * opening a plain volume failed,try to reopen it in legacy/compatibility mode
 		 */
+		close_mapper( map ) ;
 		open_plain( dev,map,mode,pass,pass_size,"cbc-plain" ) ;
 		h = mount_volume( StringContent( mapper ),m_point,mode,id ) ;
 	}
