@@ -94,25 +94,24 @@ int create_volumes( int argn,char * device,char * fs,char * mode,char * keyType,
 			StringDelete( pass_2 ) ;				
 		}		
 	}else if ( argn == 8 ){		
-		if( strcmp( rng,"/dev/random" ) != 0 )
+		if( strcmp( rng,"/dev/random" ) != 0 ){
 			if( strcmp( rng,"/dev/urandom" ) != 0 ){
 				st = 2 ;
 				goto out ;
-			}			
-			if( strcmp( keyType,"-p" ) == 0 ) {			
-				
-				st = create_volume( device,fs,mode,pass,strlen( pass ),rng ) ;			
-				
-			}else if( strcmp( keyType, "-f" ) == 0 ) {
-				switch( StringGetFromFile( &content,pass ) ){
-					case 1 : st = 8 ; goto out ; 
-					case 3 : st = 6 ; goto out ;
-				}
-				st = create_volume( device,fs,mode,StringContent( content ),StringLength( content ),rng ) ;					
-				StringDelete( content ) ;				
-			}else{
-				st = 2 ;			
+			}	
+		}
+		if( strcmp( keyType,"-p" ) == 0 ) 			
+			st = create_volume( device,fs,mode,pass,strlen( pass ),rng ) ;			
+		else if( strcmp( keyType, "-f" ) == 0 ) {
+			switch( StringGetFromFile( &content,pass ) ){
+				case 1 : st = 8 ; goto out ; 
+				case 3 : st = 6 ; goto out ;
 			}
+			st = create_volume( device,fs,mode,StringContent( content ),StringLength( content ),rng ) ;					
+			StringDelete( content ) ;				
+		}else{
+			st = 2 ;			
+		}
 	}else{
 		st = 4 ;			
 	}	
@@ -122,13 +121,13 @@ int create_volumes( int argn,char * device,char * fs,char * mode,char * keyType,
 		break  ;
 		case 1 : printf( "ERROR: invalid path to a file or device\n" ) ;
 		break  ;
-		case 2 : printf( "ERROR: Wrong option type\n" );
+		case 2 : printf( "ERROR: wrong option type\n" );
 		break  ;
 		case 3 : printf( "ERROR: could not create an encrypted volume in a file or device\n" );
 		break  ;	
-		case 4 : printf( "ERROR: Wrong number of arguments\n" );
+		case 4 : printf( "ERROR: wrong number of arguments\n" );
 		break  ;
-		case 5 : printf( "ERROR: Wrong choice, exiting\n" );
+		case 5 : printf( "ERROR: wrong choice, exiting\n" );
 		break  ;
 		case 7 : printf( "ERROR: passphrases do not match\n" ) ;
 		break  ;	

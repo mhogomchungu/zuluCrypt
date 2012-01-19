@@ -56,7 +56,8 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 			goto out ;	
 		}
 	}		
-	StringReplaceCharString( m_name,'_',"#;\"',\\`:!*?&$@(){}[]><|%~^ \n" ) ;
+	
+	replace_bash_special_chars( &m_name ) ;
 	
 	StringPrepend( m_name,"zuluCrypt-") ;
 	
@@ -71,20 +72,20 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 		st = 5 ;			
 		goto out ;	
 	}	
+	
+	cname = StringContent( m_name ) ;
+	cpoint = StringContent( m_point ) ;
+	
 	if ( argn == 5 ){
 		printf( "Enter passphrase: " ) ;		
 		passphrase = get_passphrase();	
 		printf( "\n" ) ;
-		cname = StringContent( m_name ) ;
-		cpoint = StringContent( m_point ) ;
 		cpass = StringContent( passphrase ) ;
 		len = StringLength( passphrase ) ;
 		st = open_volume( device,cname,cpoint,id,mode,cpass,len ) ;
 		StringDelete( passphrase ) ;
 	}else if ( argn == 7 ){
 		if( strcmp( source,"-p" ) == 0 ){
-			cname = StringContent( m_name ) ;
-			cpoint = StringContent( m_point ) ;
 			cpass = pass ;
 			len = strlen(pass) ;
 			st = open_volume( device,cname,cpoint,id,mode,cpass,len ) ;		
@@ -93,8 +94,6 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 				case 1 : st = 6 ; goto out ; 
 				case 3 : st = 14 ; goto out ;
 			}
-			cname = StringContent( m_name ) ;
-			cpoint = StringContent( m_point ) ;
 			cpass = StringContent( data ) ;
 			len = StringLength( data ) ;
 			st = open_volume( device,cname,cpoint,id,mode,cpass,len ) ;

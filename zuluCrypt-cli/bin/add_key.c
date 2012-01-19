@@ -27,11 +27,11 @@ int addkey( int argn,char * device,char * keyType1,char * existingKey,char * key
 	string_t ek = NULL ;
 	string_t nk = NULL ;
 	
-	const char * key1 ;
-	const char * key2 ;
+	const char * key1 = NULL ;
+	const char * key2 = NULL ;
 	
-	size_t len1 ;
-	size_t len2 ;
+	size_t len1 = 0 ;
+	size_t len2 = 0 ;
 	int status = 0 ;
 	
 	char * d = NULL ;
@@ -86,18 +86,18 @@ int addkey( int argn,char * device,char * keyType1,char * existingKey,char * key
 				case 1 : status = 8 ; goto out ; 
 				case 3 : status = 9 ; goto out ;
 			}
+			key1 = StringContent( ek ) ;
+			len1 = StringLength( ek ) ;
 		}		
 		if ( strcmp( keyType2, "-f" ) == 0 ){	
 			switch( StringGetFromFile( &nk,newKey ) ){
 				case 1 : status = 8 ; goto out ; 
 				case 3 : status = 9 ; goto out ;
 			}
-		}		
-		if ( strcmp( keyType1,"-f" ) == 0 && strcmp( keyType2,"-f" ) == 0 ){
-			key1 = StringContent( ek ) ;
-			len1 = StringLength( ek ) ;
 			key2 = StringContent( nk ) ;
 			len2 = StringLength( nk ) ;
+		}		
+		if ( strcmp( keyType1,"-f" ) == 0 && strcmp( keyType2,"-f" ) == 0 ){
 			status = add_key( device,key1,len1,key2,len2 ) ;			
 			StringDelete( nk ) ;
 			StringDelete( ek ) ;
@@ -110,13 +110,9 @@ int addkey( int argn,char * device,char * keyType1,char * existingKey,char * key
 		}else if ( strcmp( keyType1,"-p" ) == 0 && strcmp( keyType2,"-f" ) == 0 ){
 			key1 = existingKey ;
 			len1 = strlen( existingKey ) ;
-			key2 = StringContent( nk ) ;
-			len2 = StringLength( nk ) ;
 			status = add_key( device,key1,len1,key2,len2 ) ;			
 			StringDelete( nk ) ;
 		}else if ( strcmp( keyType1,"-f" ) == 0 && strcmp( keyType2,"-p" ) == 0 ){			
-			key1 = StringContent( ek ) ;
-			len1 = StringLength( ek ) ;
 			key2 = newKey ;
 			len2 = strlen( newKey ) ;
 			status = add_key( device,key1,len1,key2,len2 ) ;

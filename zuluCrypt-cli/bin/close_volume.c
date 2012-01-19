@@ -26,7 +26,7 @@ int close_opened_volume( char * mapping_name )
 	 
 	 string_t p = String( mapping_name ) ;
 	 
-	 StringReplaceCharString( p,'_',"#;\"',\\`:!*?&$@(){}[]><|%~^ \n" ) ;
+	 replace_bash_special_chars( &p ) ;
 	 
 	 StringPrepend( p,"/dev/mapper/zuluCrypt-" ) ;	
 	 
