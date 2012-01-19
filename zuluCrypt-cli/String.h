@@ -331,13 +331,34 @@ const char * StringInsertCharChar( string_t st, char x, char y ) ;
 const char * StringCrop( string_t st, size_t x, size_t y ) ;
 
 /*
+ *  Open a file given by path and return a string_t handle 
+ * 
+ *  NULL is returned if the file could not be opened for reading or could not get sufficient memory to hold the file.
+ */
+string_t StringGetFromFile( const char * path ) ;
+
+/*
  *  Open a file given by path and return a string_t handle through agrument st with the content of the file .  
  *  return value: 0 - opefation succeeded.
  *                1 - path is invalid.
  *                2 - could not open file for reading.
  * 		  3 - could not allocate memory to host file content 
  */
-int StringGetFromFile( string_t * st,const char * path ) ;
+int StringGetFromFile_1( string_t * st,const char * path ) ;
+
+/*
+ *  Open a file given by path and return a string_t handle with hhe content of the file .  
+ *  return value through status:
+ *                0 - opefation succeeded.
+ *                1 - path is invalid.
+ *                2 - could not open file for reading.
+ * 		  3 - could not allocate memory to host file content 
+ * 
+ * This function does the same thing the previous one does, the different is how return values are returned.
+ */
+string_t StringGetFromFile_2( const char * path,int * status ) ;
+
+
 #ifdef __cplusplus
 }
 #endif

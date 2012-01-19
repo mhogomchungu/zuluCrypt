@@ -82,7 +82,7 @@ int addkey( int argn,char * device,char * keyType1,char * existingKey,char * key
 		
 	}else if( argn == 7 ){		
 		if ( strcmp( keyType1, "-f" ) == 0 ){	
-			switch( StringGetFromFile( &ek,existingKey ) ){
+			switch( StringGetFromFile_1( &ek,existingKey ) ){
 				case 1 : status = 8 ; goto out ; 
 				case 3 : status = 9 ; goto out ;
 			}
@@ -90,7 +90,7 @@ int addkey( int argn,char * device,char * keyType1,char * existingKey,char * key
 			len1 = StringLength( ek ) ;
 		}		
 		if ( strcmp( keyType2, "-f" ) == 0 ){	
-			switch( StringGetFromFile( &nk,newKey ) ){
+			switch( StringGetFromFile_1( &nk,newKey ) ){
 				case 1 : status = 8 ; goto out ; 
 				case 3 : status = 9 ; goto out ;
 			}

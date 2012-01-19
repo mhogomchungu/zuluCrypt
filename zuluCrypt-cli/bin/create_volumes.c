@@ -103,7 +103,7 @@ int create_volumes( int argn,char * device,char * fs,char * mode,char * keyType,
 		if( strcmp( keyType,"-p" ) == 0 ) 			
 			st = create_volume( device,fs,mode,pass,strlen( pass ),rng ) ;			
 		else if( strcmp( keyType, "-f" ) == 0 ) {
-			switch( StringGetFromFile( &content,pass ) ){
+			switch( StringGetFromFile_1( &content,pass ) ){
 				case 1 : st = 8 ; goto out ; 
 				case 3 : st = 6 ; goto out ;
 			}

@@ -527,7 +527,7 @@ const char * StringInsertCharChar( string_t st, char x, char y )
 	return StringInsertCharString( st, x, c ) ;
 }
 
-int StringGetFromFile( string_t * str,const char * path ) 
+int StringGetFromFile_1( string_t * str,const char * path ) 
 {
 	struct stat st ;
 	int fd ;
@@ -556,5 +556,17 @@ int StringGetFromFile( string_t * str,const char * path )
 	return 0 ;
 }
 
+string_t StringGetFromFile_2( const char * path,int *  status ) 
+{
+	string_t st ;
+	*status = StringGetFromFile_1( &st,path ) ;
+	return st ; 
+}
 
+string_t StringGetFromFile( const char * path )
+{
+	string_t st ;
+	StringGetFromFile_1( &st,path ) ;
+	return st ;
+}
 

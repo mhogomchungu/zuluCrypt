@@ -90,7 +90,7 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 			len = strlen(pass) ;
 			st = open_volume( device,cname,cpoint,id,mode,cpass,len ) ;		
 		}else if( strcmp( source,"-f" ) == 0 ){			
-			switch( StringGetFromFile( &data,pass ) ){
+			switch( StringGetFromFile_1( &data,pass ) ){
 				case 1 : st = 6 ; goto out ; 
 				case 3 : st = 14 ; goto out ;
 			}

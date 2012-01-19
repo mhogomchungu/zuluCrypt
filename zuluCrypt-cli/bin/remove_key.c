@@ -30,13 +30,13 @@ int removekey( int argn , char * device, char * keyType, char * keytoremove )
 	}	
 	if ( argn == 3 ){
 		printf( "Enter the passphrase of the key you want to delete: " ) ;
-		pass = get_passphrase( ) ;
+		pass = get_passphrase() ;
 		printf( "\n" ) ;	
 		status = remove_key( device,StringContent( pass ),StringLength( pass ) ) ;
 		StringDelete( pass ) ;
 	}else if ( argn == 5 ){
 		if( strcmp( keyType, "-f" ) == 0 ){	
-			switch( StringGetFromFile( &pass,keytoremove ) ){
+			switch( StringGetFromFile_1( &pass,keytoremove ) ){
 				case 1 : status = 5 ; goto out ; 
 				case 3 : status = 7 ; goto out ;
 			}
