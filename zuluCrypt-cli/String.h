@@ -82,8 +82,13 @@ const char * StringContent( string_t st ) ;
  * Remember to free it when you are done using it.
  * NULL is returned when the copy can not be made. 
  */
-char * StringCopy( string_t st ) ;
+char * StringCopyChar( string_t st ) ;
 
+/*
+ * Make a copy of string_t st
+ * return NULL on error.
+ */
+string_t StringCopy( string_t st ) ;
 
 /*
  * Write "size" amount of content of a string handled by "st" to a buffer pointed by "buffer"  *

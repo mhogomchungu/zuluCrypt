@@ -165,9 +165,19 @@ const char * StringContent( string_t st )
 	return st->string ;
 }
 
-char * StringCopy( string_t st )
+char * StringCopyChar( string_t st )
 {
-	return StringLengthCopy( st,StringLength( st ) ) ;	
+	return StringLengthCopy( st,st->size ) ;	
+}
+
+string_t StringCopy( string_t st )
+{
+	size_t size = st->size;
+	char * c = StringLengthCopy( st,size ) ;
+	if( c == NULL )
+		return NULL ;
+	else
+		return StringInheritWithSize( c,size ) ;
 }
 
 char * StringLengthCopy( string_t st,size_t l )
@@ -533,6 +543,8 @@ int StringGetFromFile_1( string_t * str,const char * path )
 	int fd ;
 	char * c ;
 	
+	*str = NULL ;
+	
 	if( stat( path,&st ) != 0 )
 		return 1 ;
 	
@@ -558,14 +570,14 @@ int StringGetFromFile_1( string_t * str,const char * path )
 
 string_t StringGetFromFile_2( const char * path,int *  status ) 
 {
-	string_t st ;
+	string_t st = NULL ;
 	*status = StringGetFromFile_1( &st,path ) ;
 	return st ; 
 }
 
 string_t StringGetFromFile( const char * path )
 {
-	string_t st ;
+	string_t st = NULL ;
 	StringGetFromFile_1( &st,path ) ;
 	return st ;
 }
