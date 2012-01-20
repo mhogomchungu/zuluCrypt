@@ -134,6 +134,8 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 				  break ;
 			case 14 : printf( "ERROR: could not get enought memory to hold the key file\n" );		
 				break ;
+			case 15 : printf( "ERROR: failed to open volume and failed to close the mapper, advice to do it manunally\n" );		
+					 break ;
 			default :
 				;
 		}

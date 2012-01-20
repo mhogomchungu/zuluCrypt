@@ -45,7 +45,7 @@ int close_opened_volume( char * mapping_name )
 			  break ;
 		 case 4 : printf( "ERROR: close failed, could not get a lock on /etc/mtab~\n" ) ;
 			  break ;
-		 case 5 : printf( "ERROR: close failed, volume is unmounted but could not close mapper\n");
+		 case 5 : printf( "ERROR: close failed, volume is unmounted but could not close mapper,advice to close it manually\n");
 			  break ;
 		 default :
 			 ; //shouldnt get here			

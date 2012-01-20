@@ -371,6 +371,8 @@ void passwordDialog::threadfinished(runInThread *,int status)
 			break ;
 		case 14 : UIMessage(tr("ERROR"),tr("could not get enought memory to hold the key file"));
 			break ;	
+		case 15 : UIMessage(tr("ERROR"),tr("failed to open volume and failed to close the mapper, advice to do it manunally"));
+			break ;	
 		default :UIMessage(tr("ERROR"),tr("un unknown error has occured, volume not opened"));		
 	}
 	enableAll();

@@ -408,6 +408,9 @@ const char * StringReplaceString( string_t st, const char * x, const char * s )
 		e = c + k ;		
 	}
 	
+	if( i == 0 )
+		return st->string ;
+	
 	i = st->size - i * ( k - j ) ;
 	
 	d = f = ( char * ) malloc( sizeof( char ) * ( i + 1 ) ) ;

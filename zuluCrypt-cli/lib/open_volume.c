@@ -52,7 +52,10 @@ int open_volume( const char * dev,const char * map,const char * m_point,uid_t id
 		/*
 		 * opening a plain volume failed,try to reopen it in legacy/compatibility mode
 		 */
-		close_mapper( map ) ;
+		if( close_mapper( map ) != 0 ){
+			h = 15 ;
+			goto out ;
+		}
 		open_plain( dev,map,mode,pass,pass_size,"cbc-plain" ) ;
 		h = mount_volume( StringContent( mapper ),m_point,mode,id ) ;
 	}
@@ -60,7 +63,9 @@ int open_volume( const char * dev,const char * map,const char * m_point,uid_t id
 	StringDelete( mapper ) ;
 	
 	if( h != 0 )
-		close_mapper( map ) ;
-	return h ;		
+		if( close_mapper( map ) != 0 )
+			h = 15 ;
+	out:
+	return h ;
 }
 
