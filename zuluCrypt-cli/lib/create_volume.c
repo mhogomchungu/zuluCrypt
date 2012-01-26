@@ -65,7 +65,7 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 	StringAppend( q , " 1>/dev/null 2>&1" ) ;
 	execute( StringContent( q ),NULL,0 ) ;
 	close_mapper( "/dev/mapper/zuluCrypt-create-new" );	
-	StringDelete( q ) ;
+	StringDelete( &q ) ;
 	return 0 ;	
 }
 

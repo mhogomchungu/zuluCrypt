@@ -90,8 +90,8 @@ int create_volumes( int argn,char * device,char * fs,char * mode,char * keyType,
 					st = create_volume( device,fs,mode,StringContent( pass_1 ),StringLength( pass_1 ),"NULL" ) ;						
 				}		
 			}
-			StringDelete( pass_1 ) ;
-			StringDelete( pass_2 ) ;				
+			StringDelete( &pass_1 ) ;
+			StringDelete( &pass_2 ) ;				
 		}		
 	}else if ( argn == 8 ){		
 		if( strcmp( rng,"/dev/random" ) != 0 ){
@@ -108,7 +108,7 @@ int create_volumes( int argn,char * device,char * fs,char * mode,char * keyType,
 				case 3 : st = 6 ; goto out ;
 			}
 			st = create_volume( device,fs,mode,StringContent( content ),StringLength( content ),rng ) ;					
-			StringDelete( content ) ;				
+			StringDelete( &content ) ;				
 		}else{
 			st = 2 ;			
 		}

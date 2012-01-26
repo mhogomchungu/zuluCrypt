@@ -60,7 +60,7 @@ int open_volume( const char * dev,const char * map,const char * m_point,uid_t id
 		h = mount_volume( StringContent( mapper ),m_point,mode,id ) ;
 	}
 	
-	StringDelete( mapper ) ;
+	StringDelete( &mapper ) ;
 	
 	if( h != 0 )
 		if( close_mapper( map ) != 0 )

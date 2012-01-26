@@ -33,7 +33,7 @@ int removekey( int argn , char * device, char * keyType, char * keytoremove )
 		pass = get_passphrase() ;
 		printf( "\n" ) ;	
 		status = remove_key( device,StringContent( pass ),StringLength( pass ) ) ;
-		StringDelete( pass ) ;
+		StringDelete( &pass ) ;
 	}else if ( argn == 5 ){
 		if( strcmp( keyType, "-f" ) == 0 ){	
 			switch( StringGetFromFile_1( &pass,keytoremove ) ){
@@ -41,7 +41,7 @@ int removekey( int argn , char * device, char * keyType, char * keytoremove )
 				case 3 : status = 7 ; goto out ;
 			}
 			status = remove_key( device,StringContent( pass ),StringLength( pass ) ) ;
-			StringDelete( pass ) ;
+			StringDelete( &pass ) ;
 		}else if( strcmp( keyType, "-p" ) == 0 ) {
 			
 			status = remove_key( device,keytoremove,strlen( keytoremove ) ) ;		

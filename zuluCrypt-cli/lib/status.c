@@ -128,7 +128,7 @@ char * status( const char * mapper )
 	}
 	out:
 	crypt_free( cd );
-	return StringDeleteHandle( properties ) ;
+	return StringDeleteHandle( &properties ) ;
 }
 
 char * volume_device_name( const char * mapper )
@@ -155,5 +155,5 @@ char * volume_device_name( const char * mapper )
 	
 	crypt_free( cd ) ;
 	
-	return StringDeleteHandle( address ) ;
+	return StringDeleteHandle( &address ) ;
 }

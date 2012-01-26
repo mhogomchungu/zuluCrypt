@@ -26,7 +26,7 @@ int close_opened_volume( char * mapping_name )
 	 
 	 string_t p = String( mapping_name ) ;
 	 
-	 replace_bash_special_chars( &p ) ;
+	 replace_bash_special_chars( p ) ;
 	 
 	 StringPrepend( p,"/dev/mapper/zuluCrypt-" ) ;	
 	 
@@ -50,6 +50,6 @@ int close_opened_volume( char * mapping_name )
 		 default :
 			 ; //shouldnt get here			
 	 }	
-	 StringDelete( p ) ;	 
+	 StringDelete( &p ) ;	 
 	 return st ;	
 }

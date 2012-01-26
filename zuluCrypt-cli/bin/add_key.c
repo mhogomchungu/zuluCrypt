@@ -76,9 +76,9 @@ int addkey( int argn,char * device,char * keyType1,char * existingKey,char * key
 			len2 = StringLength( newKey_1 ) ;
 			status = add_key( device,key1,len1,key2,len2 );			
 		}
-		StringDelete( presentKey ) ;			
-		StringDelete( newKey_1 ) ;	
-		StringDelete( newKey_2 ) ;
+		StringDelete( &presentKey ) ;			
+		StringDelete( &newKey_1 ) ;	
+		StringDelete( &newKey_2 ) ;
 		
 	}else if( argn == 7 ){		
 		if ( strcmp( keyType1, "-f" ) == 0 ){	
@@ -99,8 +99,8 @@ int addkey( int argn,char * device,char * keyType1,char * existingKey,char * key
 		}		
 		if ( strcmp( keyType1,"-f" ) == 0 && strcmp( keyType2,"-f" ) == 0 ){
 			status = add_key( device,key1,len1,key2,len2 ) ;			
-			StringDelete( nk ) ;
-			StringDelete( ek ) ;
+			StringDelete( &nk ) ;
+			StringDelete( &ek ) ;
 		}else if ( strcmp( keyType1,"-p" ) == 0 && strcmp( keyType2,"-p" ) == 0 ){
 			key1 = existingKey ;
 			len1 = strlen( existingKey ) ;
@@ -111,12 +111,12 @@ int addkey( int argn,char * device,char * keyType1,char * existingKey,char * key
 			key1 = existingKey ;
 			len1 = strlen( existingKey ) ;
 			status = add_key( device,key1,len1,key2,len2 ) ;			
-			StringDelete( nk ) ;
+			StringDelete( &nk ) ;
 		}else if ( strcmp( keyType1,"-f" ) == 0 && strcmp( keyType2,"-p" ) == 0 ){			
 			key2 = newKey ;
 			len2 = strlen( newKey ) ;
 			status = add_key( device,key1,len1,key2,len2 ) ;
-			StringDelete( ek ) ;
+			StringDelete( &ek ) ;
 		}else{			
 			status = 5 ;
 		}

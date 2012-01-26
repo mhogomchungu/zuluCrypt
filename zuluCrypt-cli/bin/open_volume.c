@@ -57,7 +57,7 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 		}
 	}		
 	
-	replace_bash_special_chars( &m_name ) ;
+	replace_bash_special_chars( m_name ) ;
 	
 	StringPrepend( m_name,"zuluCrypt-") ;
 	
@@ -83,7 +83,7 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 		cpass = StringContent( passphrase ) ;
 		len = StringLength( passphrase ) ;
 		st = open_volume( device,cname,cpoint,id,mode,cpass,len ) ;
-		StringDelete( passphrase ) ;
+		StringDelete( &passphrase ) ;
 	}else if ( argn == 7 ){
 		if( strcmp( source,"-p" ) == 0 ){
 			cpass = pass ;
@@ -97,7 +97,7 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 			cpass = StringContent( data ) ;
 			len = StringLength( data ) ;
 			st = open_volume( device,cname,cpoint,id,mode,cpass,len ) ;
-			StringDelete( data ) ;
+			StringDelete( &data ) ;
 		}
 	}else{
 		st =  11 ;			
@@ -140,7 +140,7 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 				;
 		}
 	}	
-	StringDelete( m_name ) ;
-	StringDelete( m_point ) ;
+	StringDelete( &m_name ) ;
+	StringDelete( &m_point ) ;
 	return st ;
 }

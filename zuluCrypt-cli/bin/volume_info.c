@@ -28,7 +28,7 @@ int volume_info( const char * mapper,const char * device )
 	
 	p = String( mapper ) ;		
 	
-	replace_bash_special_chars( &p ) ;
+	replace_bash_special_chars( p ) ;
 	
 	StringPrepend( p,"/dev/mapper/zuluCrypt-" ) ;
 	
@@ -41,7 +41,7 @@ int volume_info( const char * mapper,const char * device )
 		free( output ) ;
 		xt = 0 ;
 	}
-	StringDelete( p );
+	StringDelete( &p );
 	return xt ;
 }
 

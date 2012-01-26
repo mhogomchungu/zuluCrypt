@@ -17,8 +17,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FBString
-#define FBString
+#ifndef STRINGString
+#define STRINGString
 
 #ifdef __cplusplus
 extern "C" {
@@ -28,6 +28,8 @@ extern "C" {
 #include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
+
+//#define __STRING_MAKE_THREAD_SAFE
 
 /*
  * String handle, all string operation should happen through this handle.
@@ -90,6 +92,20 @@ char * StringCopyChar( string_t st ) ;
  */
 string_t StringCopy( string_t st ) ;
 
+
+/*
+ * This function returns a number of string_t objects pointing to the same string buffer.
+ * 
+ *  A new string_t object starts with a reference count of one and the number is incremented by one when a new copy of the object
+ * is made using "StringCopy" and is decremented by one when an objet is deleted with "StringDelete" or "StringDeleteHandle".
+ * 
+ * These functions employs the concept of COW(copy on write). Multiple string_t objects points to the same string buffer until they want to
+ * write to the buffer. An attempt to write to string managed by multiple handles will result in a creating of a private copy.
+ * 
+ */
+int StringReferenceCount( string_t st );
+
+
 /*
  * Write "size" amount of content of a string handled by "st" to a buffer pointed by "buffer"  *
  */
@@ -100,7 +116,7 @@ void StringReadToBuffer( string_t st,char * buffer, size_t size ) ;
  * Remember to clean after yourself.
  * Always call this function when you are done with the string handled by handle st.
  */
-void StringDelete( string_t st );
+void StringDelete( string_t * st );
 
 /*
  * input argument: String handle
@@ -114,7 +130,7 @@ void StringDelete( string_t st );
  * Use this function when you no longer need the handle i.e dont want to do string
  * manipulation through the handle but want the pointer to the string it managed.
  */
-char * StringDeleteHandle( string_t st ) ;
+char * StringDeleteHandle( string_t * st ) ;
 
 
 /*
@@ -137,7 +153,7 @@ char StringCharAt( string_t st, size_t p ) ;
  * 
  * NOTE: first character in the string is at position 0
  */
-int StringIndexOfChar( string_t st, size_t p , char s ) ;
+ssize_t StringIndexOfChar( string_t st, size_t p , char s ) ;
 
 
 /*
@@ -147,7 +163,7 @@ int StringIndexOfChar( string_t st, size_t p , char s ) ;
  * 
  * NOTE: first character in the string is at position 0
  */
-int StringIndexOfString( string_t st,size_t p, const char * s ) ;
+ssize_t StringIndexOfString( string_t st,size_t p, const char * s ) ;
 
 
 /*
@@ -155,7 +171,7 @@ int StringIndexOfString( string_t st,size_t p, const char * s ) ;
  * 
  * -1 is returned if the character isnt in the string
  */
-int StringLastIndexOfChar( string_t st , char s ) ;
+ssize_t StringLastIndexOfChar( string_t st , char s ) ;
 
 
 /*
@@ -166,7 +182,7 @@ int StringLastIndexOfChar( string_t st , char s ) ;
  * NOTE: first character in the string is at position 0
  * 
  */
-int StringLastIndexOfString( string_t st , const char * s ) ;
+ssize_t StringLastIndexOfString( string_t st , const char * s ) ;
 
 
 /*
@@ -182,7 +198,7 @@ const char * StringStringAt( string_t st , size_t p ) ;
  * 
  * return 0 is it does
  * 
- * return -1 if it doesnt * 
+ * return 1 if it doesnt * 
  */
 int StringEndsWithString( string_t st , const char * s ) ;
 
@@ -192,7 +208,7 @@ int StringEndsWithString( string_t st , const char * s ) ;
  * 
  * return 0 is it does
  * 
- * return -1 if it doesnt * 
+ * return 1 if it doesnt * 
  */
 int StringEndsWithChar( string_t st ,char s ) ;
 
@@ -232,7 +248,7 @@ const char * StringSubString( string_t st, size_t x, const char * s ) ;
  * to the new string or NULL on error and the original string remain intact.
  * Careful though, make sure you dont delete past the string length  
  */
-const char * StringRemoveString( string_t st,size_t x , size_t y ) ;
+const char * StringRemoveLenght( string_t st,size_t x , size_t y ) ;
 
 /*
  * remove all occurances of string s in a string handled by handle st.
@@ -240,7 +256,15 @@ const char * StringRemoveString( string_t st,size_t x , size_t y ) ;
  * remain intact
  * 
  */
-const char * StringRemoveStringString( string_t st, const char * s ) ;
+const char * StringRemoveString( string_t st, const char * s ) ;
+
+/*
+ * starting at position p,remove all occurances of string s in a string handled by handle st.
+ * return a pointer to the resulting string on success and NULL on error and the original string
+ * remain intact
+ * 
+ */
+const char * StringRemoveStringPos( string_t st, const char * s,size_t p ) ;
 
 /*
  * Cut the string from position x and discard all elements to the right of x. 
@@ -283,15 +307,36 @@ const char * StringReplaceString( string_t st, const char * x, const char * y ) 
 
 
 /*
+ * starting at position p,replace all occurance of string x by string y 
+ * return a pointer to the resulting string on success or NULL on error and the original string
+ * remain intact.
+ */
+const char * StringReplaceStringPos( string_t st, const char * x, const char * y,size_t p ) ;
+
+
+/*
  * replace all occurance of char x by char y  
  * Return a const pointer to a modified string   
  */
 const char * StringReplaceChar( string_t st,char x, char y ) ;
 
+
+/*
+ * starting at position p,replace all occurance of char x by char y  
+ * Return a const pointer to a modified string   
+ */
+const char * StringReplaceCharPos( string_t st,char x, char y,size_t p ) ;
+
 /*
  *  Replace all characters in y by x in a string handled by st
  */
 const char * StringReplaceCharString( string_t st, char x, const char * y ) ;
+
+
+/*
+ * Starting at position, Replace all characters in y by x in a string handled by st
+ */
+const char * StringReplaceCharStringPos( string_t st, char x, const char * y,size_t p ) ;
 
 /*
  * convert a number z into a string and store the result into array x of size y.
@@ -306,12 +351,12 @@ const char * StringReplaceCharString( string_t st, char x, const char * y ) ;
 char * StringIntToString( char * x, size_t y, uint64_t z ) ;
 
 /*
- * Compare a string handled by handle x to a string handled by handle y and return 0 if they are equal and -1 if they are not  
+ * Compare a string handled by handle x to a string handled by handle y and return 0 if they are equal and 1 if they are not  
  */
 int StringCompare( string_t x , string_t y ) ;
 
 /*
- * Compare a string handled by handle x to a string pointer to by y and return 0 if they are equal and -1 if they are not  
+ * Compare a string handled by handle x to a string pointer to by y and return 0 if they are equal and 1 if they are not  
  */
 int StringCompareString( string_t x, const char * y ) ;
 
@@ -320,6 +365,13 @@ int StringCompareString( string_t x, const char * y ) ;
  * Retun a poiter to the final string on success and NULL on error and the original string remain intact
  */
 const char * StringInsertCharString( string_t st, char x, const char * y ) ;
+
+/*
+ * Starting at position p,insert character x infront of every character that appear in string y in a string handled by handle st.
+ * Retun a poiter to the final string on success and NULL on error and the original string remain intact
+ */
+const char * StringInsertCharStringPos( string_t st, char x, const char * y,size_t p ) ;
+
 
 /*
  * Insert character x infront of every character y in a string handled by handle st.
@@ -363,6 +415,13 @@ int StringGetFromFile_1( string_t * st,const char * path ) ;
  */
 string_t StringGetFromFile_2( const char * path,int * status ) ;
 
+/*
+ *  White the string managed by handle st to a file given by path and return the number of bytes written. *  
+ */
+
+#define CREATE 1  /*if the file does not exist, create it,if the file exist,trancate it*/
+#define APPEND 2  /* if the file exist, append it*/
+void StringWriteToFile( string_t st,const char * path, int mode ) ; 
 
 #ifdef __cplusplus
 }

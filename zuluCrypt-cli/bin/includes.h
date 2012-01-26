@@ -57,4 +57,4 @@ int removekey(  int argn ,char * device, char * keyType, char * keytoremove  ) ;
 
 int is_path_valid(const char * path ) ;
 
-void replace_bash_special_chars( string_t * ) ;
+void replace_bash_special_chars( string_t ) ;

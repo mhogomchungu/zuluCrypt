@@ -24,34 +24,223 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <pthread.h>
+
+
+#ifdef __STRING_MAKE_THREAD_SAFE
+	#define THREAD_SAFE 1
+#else
+	#define THREAD_SAFE 0
+#endif
+
+#ifdef __STRING_DEBUG
+	#define DEBUG 1
+#else
+	#define DEBUG 0
+#endif
 
 struct StringType
 {
 	size_t size ;
 	char * string ; 
+	int * rc ;
+#if THREAD_SAFE	
+	pthread_mutex_t * mutex ;
+#endif	
 };
 
-string_t String( const char * c )
+#if THREAD_SAFE
+void STRINGdebug__( string_t st,char * c )
 {
-	char * d ;
+	if( st == NULL )
+		return ;
+	printf("%s: st:%d  st->string:%d  rc:%d mutex:%d  text:%s\n",c,(int)st,(int)st->string,*(st->rc),(int)st->mutex,st->string );
+}
+#else
+void STRINGdebug__( string_t st,char * c )
+{
+	if( st == NULL )
+		return ;
+	printf("%s: st:%d  st->string:%d  rc:%d text:%s\n",c,(int)st,(int)st->string,*(st->rc),st->string );
+}
+#endif
+
+void StringCNSH__( string_t st,string_t nst )
+{
+	st->size = nst->size ;
+	st->string = nst->string ;
+	st->rc = nst->rc ;
+#if THREAD_SAFE
+	st->mutex = nst->mutex ;
+#endif
+	free( nst ) ;
+}
+
+int StringLockMutex__( string_t st )
+{
+	int rc ;
+#if THREAD_SAFE 
+	pthread_mutex_lock( st->mutex ) ;
+#endif	
+	rc = *( st->rc ) ;
+	if( rc != 1 )
+		*( st->rc ) = *( st->rc ) - 1 ;
+	return rc ;
+}
+
+void StringUnlockMutex__( string_t st )
+{
+#if THREAD_SAFE 	
+	pthread_mutex_unlock( st->mutex ) ;
+#endif
+}
+
+void StringDelete( string_t * xt )
+{
+	string_t st = *xt ;
+	if( st != NULL ) 
+	{		
+		*xt = NULL ;		
+		if( StringLockMutex__( st )  == 1 ){	
+#if DEBUG
+#if THREAD_SAFE
+			printf("deleting string_t:%d string:%d mutex:%d\n",(int)st,(int)st->string,(int)st->mutex) ;
+#else
+			printf("deleting string_t:%d string:%d \n",(int)st,(int)st->string) ;
+#endif			
+#endif
+#if THREAD_SAFE	
+			pthread_mutex_unlock( st->mutex ) ;			
+			pthread_mutex_destroy( st->mutex ) ;			
+			free( st->mutex );
+#endif			
+			free( st->string ) ;
+			free( st->rc ) ;
+		}else{	
+#if THREAD_SAFE	
+			pthread_mutex_unlock( st->mutex ) ;			
+#endif
+#if DEBUG
+			printf("deleting string_t:%d decrementing rc to:%d  string_t:%d text:%s\n",(int)st,*(st->rc),(int)st->string,st->string) ;
+
+#endif			
+		}
+		free( st ) ;		
+	}	
+}
+
+char * StringDeleteHandle( string_t * xt )
+{
+	char * c  ;
+	string_t st = *xt ;
+	*xt = NULL ;
 	
+	if( StringLockMutex__( st ) == 1  ){
+#if DEBUG
+		printf( "deleting a handle:%d\n",(int)st );
+#endif
+		c = st->string ;
+#if THREAD_SAFE		
+		pthread_mutex_unlock( st->mutex ) ;
+		pthread_mutex_destroy( st->mutex ) ;
+		free( st->mutex ) ;
+#endif 
+	}else{
+#if DEBUG
+		printf( "deleting a handle:%d decrementing rc to:%d\n",(int)st,*(st->rc) - 1 );
+#endif
+		c = StringLengthCopy( st,st->size ) ;
+#if THREAD_SAFE	
+		pthread_mutex_unlock( st->mutex ) ;
+#endif		
+	}
+	free( st ) ;
+	return c ;
+}
+
+string_t StringCopy( string_t st )
+{
+	if( st == NULL )
+		return NULL ;
+#if THREAD_SAFE	
+	pthread_mutex_lock( st->mutex ) ;		
+#endif
+	*( st->rc)  = *( st->rc) + 1 ;
+	
+	string_t new_st = ( string_t ) malloc( sizeof( struct StringType ) ) ;
+	
+	if( new_st == NULL )
+		return NULL ;
+
+	new_st->size  = st->size  ;
+	
+	new_st->string = st->string ;
+	
+	new_st->rc = st->rc ;
+#if THREAD_SAFE
+	new_st->mutex = st->mutex ;
+	pthread_mutex_unlock( st->mutex ) ;
+#endif	
+	
+#if DEBUG
+	printf("creating a new string copy at:%d from %d\n",(int)new_st,(int)st ) ;
+#endif
+	return new_st ;
+}
+
+string_t StringPrepare__( size_t size )
+{
 	string_t st = ( string_t ) malloc ( sizeof( struct StringType ) ) ;
 	
 	if( st == NULL )
 		return NULL ;
 	
-	st->size = strlen( c ) ;
+	st->string = ( char * ) malloc ( sizeof ( char ) * ( size + 1 ) ) ;
 	
-	d = st->string = ( char * ) malloc ( sizeof ( char ) * ( st->size + 1 ) ) ;
-	
-	if ( d == NULL )
+	if ( st->string == NULL )
 	{
 		free( st ) ;
 		return NULL ;
 	}
 	
-	while( ( *d++ = *c++ ) ) { ; }	
+	st->rc = ( int * ) malloc( sizeof( int ) ) ;
 	
+	if( st->rc == NULL )
+	{
+		free( st->string ) ;
+		free( st ) ;
+		return NULL ;			
+	}
+
+#if THREAD_SAFE
+	st->mutex = ( pthread_mutex_t * ) malloc( sizeof( pthread_mutex_t ) ) ;
+	if( st->mutex == NULL )
+	{
+		free( st->rc ) ;
+		free( st->string ) ;
+		free( st ) ;
+		return NULL ;		
+	}
+	pthread_mutex_init( st->mutex,NULL ) ;
+#endif	
+	*( st->rc ) =  1 ;
+	
+#if DEBUG
+	printf("creating a new string at:%d\n",(int)st ) ;
+#endif
+	return st ;
+}
+
+string_t String( const char * c )
+{
+	size_t size = strlen( c ) ;	
+	string_t st = StringPrepare__( size ) ;
+	if( st == NULL )
+		return NULL ;
+	st->size = size ;
+
+	memcpy( st->string,c,size + 1 ) ;
+
 	return st ;	
 }
 
@@ -59,25 +248,23 @@ void StringReadToBuffer( string_t st,char * buffer, size_t size )
 {
 	size_t i  ;	
 	for ( i = 0 ; i < size ; i++ )
-		buffer[i] = st->string[i] ;	
+		buffer[i] = st->string[i] ;
 }
 
 string_t StringInherit( char * data )
 {
-		return StringInheritWithSize( data,strlen( data ) ) ;
+	return StringInheritWithSize( data,strlen( data ) ) ;
 }
 
 string_t StringInheritWithSize( char * data,size_t s )
 {
-	string_t st = ( string_t ) malloc ( sizeof( struct StringType ) ) ;
-	
+	string_t st = StringPrepare__( s ) ;
 	if( st == NULL )
 		return NULL ;
-	
 	st->size = s ;
 	
 	st->string = data ;
-	
+
 	return st ;	
 }
 int StringIndexOfString( string_t st,size_t p, const char * s )
@@ -90,7 +277,7 @@ int StringIndexOfString( string_t st,size_t p, const char * s )
 		return  c - st->string;	
 }
 
-int StringLastIndexOfChar( string_t st , char s ) 
+ssize_t StringLastIndexOfChar( string_t st , char s ) 
 {
 	char * c = st->string + st->size  ;
 	char * d = st->string ;
@@ -102,10 +289,10 @@ int StringLastIndexOfChar( string_t st , char s )
 	return -1 ;	
 }
 
-int StringLastIndexOfString( string_t st ,const char * s ) 
+ssize_t StringLastIndexOfString( string_t st ,const char * s ) 
 {
-	int p = -1 ;
-	int j = -1 ;
+	ssize_t p = -1 ;
+	ssize_t j = -1 ;
 	
 	while( 1 )
 	{		
@@ -118,41 +305,87 @@ int StringLastIndexOfString( string_t st ,const char * s )
 	}
 }
 
-int StringIndexOfChar( string_t st, size_t p , char s ) 
+ssize_t StringIndexOfChar( string_t st, size_t p , char s ) 
 {	
-	char * c = st->string  + p - 1 ;	
-	
+	char * c = st->string  + p - 1 ;
 	while ( *++c )
 		if( *c == s ) 
-			return c - st->string ;		
-			
+			return c - st->string ;
 	return -1 ;
 }
 
-const char * StringRemoveString( string_t st,size_t x , size_t y ) 
+const char * StringRemoveLength( string_t st,size_t x , size_t y ) 
 {	
-	char * b = st->string + x ;
-	char * c = st->string - 1  ;
-	char * d ;
-	char * e ;
-	size_t f = st->size - y ;
+	char * c ;	
+	size_t new_size ;
+	string_t nst ;
+	string_t mt = st ;
 	
-	e = d = ( char * ) malloc( sizeof(char) * ( f + 1  ) ) ;
+	if( StringLockMutex__( mt ) == 1 )
+	{
+		new_size = st->size - y ;
+		memmove( st->string + x,st->string + x + y,st->size - y - x + 1 ) ;
+		c = realloc( st->string,new_size + 1 ) ;
+		if( c != NULL )
+		{
+			st->string = c ;
+			st->size = new_size ;	
+		}
+	}else{
+		new_size = st->size - y ;
+		c = ( char * ) malloc( sizeof( char ) * ( new_size + 1 ) ) ;
+		if( c != NULL )
+		{
+			strncpy( c,st->string,x );
+			strcpy( c + x,st->string + x + y ) ;
+			nst = StringInheritWithSize( c,new_size ) ;
+			StringCNSH__( st,nst ) ;
+			c = st->string ;
+		}
+	}
+	StringUnlockMutex__( mt ) ;
+	return c ;
+}
 
-	if( d == NULL )
-		return NULL ;
+const char * StringRemoveRight(string_t st, size_t x ) 
+{
+	return StringRemoveLength( st,st->size - x ,x ) ;
+}
+
+const char * StringRemoveLeft(string_t st, size_t x ) 
+{
+	return StringRemoveLength( st,0,x ) ;
+}
+
+const char * StringCrop( string_t st, size_t x, size_t y ) 
+{
+	char * c ;	
+	size_t new_size ;
+	string_t nst ;
+	string_t mt = st ;
 	
-	st->size = f ;
-	
-	while( ++c < b ) { *e++ = *c ; }
-	
-	c = c + y  ;
-	
-	while( ( *e++ = *c++ ) ) { ; }
-	
-	free( st->string ) ;
-	
-	return st->string = d ;
+	if( StringLockMutex__( mt ) == 1 )
+	{
+		new_size = st->size - x - y ;
+		memmove( st->string,st->string + x,st->size - x ) ;
+		c = realloc( st->string,new_size + 1 ) ;
+		st->string = c ;
+		*( st->string + new_size ) = '\0';
+		st->size = new_size ;
+	}else{
+		new_size = st->size - x - y ;
+		c = ( char * ) malloc( sizeof( char ) * ( new_size + 1 ) ) ;
+		if( c != NULL )
+		{
+			strncpy( c,st->string + x,new_size );	
+			*( st->string + new_size ) = '\0';		
+			nst = StringInheritWithSize( c,new_size ) ;
+			StringCNSH__( st,nst ) ;
+			c = st->string ;
+		}
+	}
+	StringUnlockMutex__( mt ) ;
+	return c ;
 }
 
 size_t StringLength( string_t st )
@@ -165,41 +398,33 @@ const char * StringContent( string_t st )
 	return st->string ;
 }
 
+int StringReferenceCount( string_t st )
+{
+	return *( st->rc ) ;
+}
+
 char * StringCopyChar( string_t st )
 {
 	return StringLengthCopy( st,st->size ) ;	
 }
 
-string_t StringCopy( string_t st )
-{
-	size_t size = st->size;
-	char * c = StringLengthCopy( st,size ) ;
-	if( c == NULL )
-		return NULL ;
-	else
-		return StringInheritWithSize( c,size ) ;
-}
-
 char * StringLengthCopy( string_t st,size_t l )
 {
 	char * c ;
-	char * d = st->string - 1 ;
-	char * e ;
-	char * f = st->string + l ;
+
+	c = ( char * )malloc( sizeof( char ) * ( l + 1 ) ) ;
 	
-	e =  c = ( char * )malloc( sizeof( char ) * ( l + 1 ) ) ;
-	
-	if( e == NULL )
+	if( c == NULL )
 		return NULL ;
 	
-	while( ++d < f ) { *c++ = *d  ; }
+	strncpy( c,st->string,l ) ;
 	
-	*c = '\0' ;
+	*( c + l ) = '\0' ;
 	
-	return e ;	
+	return c ;	
 }
 
-int StringEndsWithString( string_t st , const char *s ) 
+int StringEndsWithString( string_t st , const char * s ) 
 {
 	size_t j = strlen(s) ;
 	size_t i = strncmp(st->string + st->size - j, s, j ) ;
@@ -207,7 +432,7 @@ int StringEndsWithString( string_t st , const char *s )
 	if( i == 0 )
 		return 0 ;
 	else
-		return -1 ;	
+		return 1 ;	
 }
 
 int StringEndsWithChar( string_t st ,char s )
@@ -215,71 +440,114 @@ int StringEndsWithChar( string_t st ,char s )
 	if ( * ( st->string + st->size -1 ) == s )
 		return 0 ;
 	else
-		return -1 ;
+		return 1 ;
 }
 
-char StringCharAt( string_t st, size_t p)
+char StringCharAt( string_t st, size_t p )
 {
 	return * ( st->string + p )  ;
 }
 
-const char * StringStringAt( string_t st , size_t p)
+const char * StringStringAt( string_t st , size_t p )
 {
 	return st->string + p ;	
 }
 
-void StringDelete( string_t st)
+const char * StringSubChar( string_t st, size_t x, char s )
 {	
-	if( st != NULL ) 
-	{
-		free( st->string ) ;
-		free( st ) ;
-		st = NULL ;
+	char * c = NULL ;
+	string_t nst;
+	string_t mt = st ;
+	
+	if( StringLockMutex__( mt ) == 1 ){	
+		* ( st->string + x ) = s ;
+		c = st->string ;
+	}else{
+		c = StringLengthCopy( st,st->size ) ;
+		if( c != NULL )
+		{
+			* ( c + x ) = s ;
+			nst = StringInheritWithSize( c,st->size ) ;
+			StringCNSH__( st,nst ) ;
+			c = st->string ;
+		}
 	}
-}
-
-char * StringDeleteHandle( string_t st)
-{
-	char * c = st->string ;
-	free( st ) ;
+	StringUnlockMutex__( mt ) ;
 	return c ;	
 }
 
-const char * StringSubChar( string_t st, size_t x, char s )
-{	
-	* ( st->string + x ) = s ;
-	return st->string ; 	
-}
-
-const char * StringReplaceCharString( string_t st, char x, const char * y ) 
+void Stringsrcs__( string_t st, char x, const char * y,size_t p )
 {
 	size_t i ;
 	size_t j ;
 	size_t k = strlen( y ) ;
-	size_t l = st->size ;
+	size_t l = st->size ;	
+	char * c = st->string ;
 	
-	for( j = 0 ; j < l ; j++ )
+	for( j = p ; j < l ; j++ )
 	{		
 		for( i = 0 ; i < k ; i++ )
 		{		
-			if( * ( st->string + j ) == * ( y + i ) )
+			if( * ( c + j ) == * ( y + i ) )
 			{				
-				* ( st->string + j ) = x ;
+				* ( c + j ) = x ;
 				break ;
 			}
 		}	
 	}
-	return st->string ;
+}
+
+const char * StringReplaceCharStringPos( string_t st, char x, const char * y,size_t p ) 
+{
+	char * c = NULL ;
+	string_t nst ;
+	string_t mt = st ;
+	
+	if( StringLockMutex__( mt ) == 1 )
+	{	
+		Stringsrcs__( st,x,y,p ) ;
+		c = st->string ;
+	}else{
+		c = StringLengthCopy( st,st->size ) ;
+		if( c != NULL )
+		{
+			nst = StringInheritWithSize( c,st->size ) ;
+			Stringsrcs__( nst,x,y,p ) ;		
+			StringCNSH__( st,nst ) ;
+			c = st->string ;
+		}
+	}
+	StringUnlockMutex__( mt ) ;
+	return c ;
+}
+
+const char * StringReplaceCharString( string_t st, char x, const char * y ) 
+{
+	return StringReplaceCharStringPos( st,x,y,0 )  ;
 }
 
 const char * StringSubString( string_t st, size_t x, const char * s ) 
 {
-	const char * c = s - 1  ;
-	char * d = st->string + x  ;
+	string_t nst ;
+	char * e = NULL ;
+	string_t mt = st ;
 	
-	while( *++c ) { *d++ = *c ; }
-	
-	return st->string ;
+	if( StringLockMutex__( mt ) == 1 ){
+		memcpy( st->string + x,s,strlen( s ) );
+		e = st->string ;
+		
+	}else{
+		e = StringLengthCopy( st,st->size ) ;
+		if( e != NULL )
+		{
+			memcpy( e + x,s,strlen( s ) );		
+			nst = StringInheritWithSize( e,st->size ) ;
+			StringCNSH__( st,nst ) ;
+			e = st->string ;
+		}
+	}
+	StringUnlockMutex__( mt ) ;
+	return  e ;
 }
 
 const char * StringInsertChar( string_t st, size_t x,char s ) 
@@ -292,163 +560,271 @@ const char * StringInsertChar( string_t st, size_t x,char s )
 
 const char * StringPrepend( string_t st ,const  char * s )
 {
-	return StringInsertString( st,0,s ) ;
+	char * c ;	
+	size_t len ;
+	size_t new_size ;
+	string_t nst ;
+	string_t mt = st ;
+	
+	len = strlen( s ) ;	
+	
+	if( StringLockMutex__( mt ) == 1 )
+	{
+		new_size = st->size + len ;
+		c = realloc( st->string,new_size + 1 ) ;
+		if( c != NULL )
+		{
+			st->string = c ;
+			memmove( st->string + len,st->string,st->size + 1 ) ;
+			memcpy( st->string,s,len ) ;
+			st->size = new_size ;
+			c = st->string ;
+		}
+	}else{
+		new_size = st->size + len ;
+		c = ( char * ) malloc( sizeof( char ) * ( new_size + 1 ) ) ;
+
+		if( c != NULL )
+		{
+			memcpy( c,s,len ) ;
+			memcpy( c + len,st->string,st->size + 1 ) ;
+			nst = StringInheritWithSize( c,new_size ) ;
+			StringCNSH__( st,nst ) ;
+			c = st->string ;
+		}
+	}
+	StringUnlockMutex__( mt ) ;
+	return c ;	
 }
 
 const char * StringAppend( string_t st ,const char * s ) 
-{	
-	return StringInsertString( st, st->size, s ) ;
+{
+	char * c ;	
+	size_t len ;
+	size_t new_size ;
+	string_t nst ;
+	len = strlen( s ) ;
+	string_t mt = st ;
+	
+	if( StringLockMutex__( mt ) == 1 )
+	{
+		new_size = st->size + len ;		
+		c = realloc( st->string,new_size + 1 ) ;
+		if( c != NULL )
+		{
+			st->string = c ;
+			strcpy( st->string + st->size,s ) ;
+			st->size = new_size ;
+		}
+	}else{
+		new_size = st->size + len ;	
+		c = ( char * ) malloc( sizeof( char ) * ( new_size + 1 ) ) ;
+		if( c != NULL )
+		{
+			memcpy( c,st->string,st->size ) ;
+			memcpy( c + st->size,s,len + 1 ) ;
+			nst = StringInheritWithSize( c,new_size ) ;
+			StringCNSH__( st,nst ) ;
+		}
+	}
+	StringUnlockMutex__( mt ) ;
+	return c ;
 }
 
 const char * StringInsertString( string_t st, size_t x, const char * s )
 {
-	size_t k = st->size + strlen( s ) ;
-	char * c ;
-	char * d ;
-	char * f = st->string + x ;
-	char * e = st->string - 1 ;
+	char * c ;	
+	size_t len ;
+	size_t new_size ;
+	string_t nst ;
+	string_t mt = st ;
 	
-	c = d = ( char * ) malloc ( sizeof( char ) * ( k + 1 ) ) ;
+	len = strlen( s ) ;	
 	
-	if( d == NULL )
-		return NULL ;
-		
-	st->size = k ;
-	
-	s = s - 1 ;
-	
-	while( ++e < f ) { *c++ = *e ; }	
-	
-	while( *++s ) { *c++ = *s ; }	
-	
-	while( ( *c++ = *e++ ) ) { ; }
-	
-	free( st->string ) ;
-	
-	return  st->string = d ;
+	if( StringLockMutex__( mt ) == 1 )
+	{
+		new_size = st->size + len ;
+		c = realloc( st->string,new_size + 1 ) ;
+		if( c != NULL )
+		{
+			st->string = c ;
+			memmove( st->string + len + x,st->string + x ,len ) ;
+			memcpy( st->string + x,s,len ) ;
+			st->size = new_size ;
+		}
+	}else{
+		new_size = st->size + len ;
+		c = ( char * ) malloc( sizeof( char ) * ( new_size + 1 ) ) ;
+		if( c != NULL )
+		{
+			strncpy( c,st->string,x ) ;
+			strcpy( c + x,s ) ;
+			strcpy( c + x + len,st->string + x ) ;		
+			nst = StringInheritWithSize( c,new_size ) ;
+			StringCNSH__( st,nst ) ;
+		}
+	}
+	StringUnlockMutex__( mt ) ;
+	return c ;	
 }
 
 char * StringMidString( string_t st , size_t x, size_t y ) 
 {
 	char * c ;
-	char * d ;
-	char * e = st->string + x + y ;
-	char * f = st->string + x - 1 ;		
 	
-	c = d = ( char * ) malloc ( sizeof( char ) * ( y + 1 ) ) ;
-	
+	c = ( char * ) malloc ( sizeof( char ) * ( y + 1 ) ) ;
 	if( c == NULL )
 		return NULL ;
+	strncpy( c,st->string + x, y ) ;
 	
-	while ( ++f < e ) { *d++ = *f ; }
-	
-	*d = '\0' ;
-	
+	*( c + y ) = '\0' ;
+
 	return c ;
 }
 
-const char * StringRemoveRight(string_t st, size_t x ) 
-{
-	return StringCrop( st,0,x ) ;
-}
-
-const char * StringRemoveLeft(string_t st, size_t x ) 
-{
-	return StringCrop( st,x,0 ) ;
-}
-
-const char * StringCrop( string_t st, size_t x, size_t y ) 
+char * StringRS__( string_t st, const char * x, const char * s,size_t p )
 {
 	char * c ;
-	char * d ;
-	char * e ;
-	size_t j = 0 ;
-	size_t k = st->size - y - x ;
+	char * d = st->string ;
+	char * e = st->string + p ;
+
+	size_t j = strlen( s ) ;
+	size_t k = strlen( x ) ;
+	size_t pos ;
+	size_t diff ;
+	size_t new_size ;
 	
-	if( k < 0 )
-		return NULL ;
+	if( j > k  )
+	{
+		diff = j - k ;
+		while( ( c = strstr( e, x ) ) != NULL )
+		{
+			pos = c - st->string ;
+			new_size = st->size + diff ;
+			d = realloc( st->string, new_size + 1 ) ;
+			if( d != NULL )
+			{	
+				st->string = d ;
+				c = st->string + pos ;					
+				memmove( c + diff,c,st->size - pos ) ;				
+				memcpy( c,s,j ) ;
+				st->size = new_size ;		
+				e = st->string + pos ;
+			}
+		}
+	}else if( k > j ){
+		diff = k - j ;
+		while( ( c = strstr( e, x ) ) != NULL )
+		{
+			pos = c - st->string ;
+			new_size = st->size - diff ;
+			d = realloc( st->string, new_size + 1 ) ;
+			if( d != NULL )
+			{	
+				c = st->string + pos ;				
+				memmove( c ,c + diff,st->size - pos ) ;
+				memcpy( c,s,j ) ;
+				st->string = d ;
+				st->size = new_size ;		
+				e = st->string + pos ;
+			}
+		}
+	}
 	
-	c = d = ( char * ) malloc ( sizeof( char ) * ( k + 1 ) ) ;
-	
-	if( c == NULL )
-		return NULL ;
-	
-	st->size = k ;
-	
-	e = st->string + x ;
-	
-	while( j++ < k ) { *c++ = *e++ ; }
-	
-	*c = '\0' ;
-	
-	free( st->string ) ;
-	
-	return st->string = d ;	
+	return d ;
 }
 
-const char * StringRemoveStringString(string_t st, const char * s ) 
+const char * StringReplaceStringPos( string_t st, const char * x, const char * s,size_t p ) 
 {
-	return StringReplaceString( st,s,"" ) ;
+	char * d ;
+	string_t nst ;
+	string_t mt = st ;
+	
+	if( StringLockMutex__( mt ) == 1 )
+	{
+		d = StringRS__( st,x,s,p ) ;		
+	}else{
+		d = ( char * ) malloc( sizeof( char ) * ( st->size + 1 ) ) ;
+
+		if( d != NULL )
+		{
+			memcpy( d,st->string,st->size + 1 ) ;
+			nst = StringInheritWithSize( d,st->size ) ;
+			StringCNSH__( st,nst ) ;
+			d = StringRS__( st,x,s,p ) ;
+		}
+	}	
+	StringUnlockMutex__( mt ) ;
+	return d ;
 }
 
 const char * StringReplaceString( string_t st, const char * x, const char * s ) 
 {
-	char * c ;
-	char * d ;
-	char * e = st->string  ;
-	char * f ;
-	const char * g ;
-	size_t i = 0 ;
-	size_t j = strlen( s ) ;
-	size_t k = strlen( x ) ;
-	
-	while( ( c = strstr( e, x ) ) != NULL )
-	{
-		i++ ;
-		e = c + k ;		
-	}
-	
-	if( i == 0 )
-		return st->string ;
-	
-	i = st->size - i * ( k - j ) ;
-	
-	d = f = ( char * ) malloc( sizeof( char ) * ( i + 1 ) ) ;
-	
-	if ( d == NULL )
-		return NULL ;
-	
-	st->size = i ;
-	
-	e = st->string  ;
-	
-	while( ( c = strstr( e, x ) ) != NULL )
-	{		
-		while( e != c ) { *d++ = *e++ ; }			
-				
-		g = s - 1 ;
-		
-		while ( *++g  ) { *d++ = *g ; }
-		
-		e = c + k ;
-	}
-	
-	while ( ( *d++ = *e++ ) ) { ; }
-	
-	free( st->string ) ;
-	
-	return st->string = f ;	
+	return StringReplaceStringPos( st,x,s,0 ) ;
 }
 
-const char * StringReplaceChar( string_t st, char x, char y)
+const char * StringRemoveStringPos( string_t st, const char * s,size_t p ) 
 {
-	char * c = st->string - 1;
+	char * d = NULL ;
+	string_t nst ;
+	string_t mt = st ;
 	
+	if( StringLockMutex__( mt ) == 1 )
+	{
+		d = StringRS__( st,s,"",p ) ;
+	}else{
+		d = ( char * ) malloc( sizeof( char ) * ( st->size + 1 ) ) ;
+		
+		if( d != NULL )
+		{
+			memcpy( d,st->string,st->size + 1 ) ;
+			nst = StringInheritWithSize( d,st->size ) ;
+			StringCNSH__( st,nst ) ;
+			d = StringRS__( st,s,"",p ) ;
+		}		
+	}
+	StringUnlockMutex__( mt ) ;
+	return d ;
+}
+
+const char * StringRemoveString( string_t st, const char * s )
+{
+	return StringRemoveStringPos( st,s,0 ) ;
+}
+
+char * StringRC__( string_t st, char x, char y,size_t p )
+{
+	char * c = st->string - 1 + p ;	
 	while ( *++c  )
 		if( *c == x )
 			*c = y ;
+	return st->string ;
+}
 
-	return st->string ;	
+const char * StringReplaceCharPos( string_t st, char x, char y,size_t p )
+{	
+	char * c = NULL ;
+	string_t nst ;
+	string_t mt = st ;
+	
+	if( StringLockMutex__( mt ) == 1 ){	
+		c = StringRC__( st,x,y,p ) ;
+	}else{
+		c = StringLengthCopy( st,st->size ) ;
+		if( c != NULL )
+		{
+			nst = StringInheritWithSize( c,st->size ) ;
+			c = StringRC__( nst,x,y,p ) ;		
+			StringCNSH__( st,nst ) ;
+		}
+	}
+	StringUnlockMutex__( mt ) ;
+	return c ;
+}
+
+const char * StringReplaceChar( string_t st, char x, char y )
+{
+	return StringReplaceCharPos( st,x,y,0 ) ;
 }
 
 char * StringIntToString( char * x, size_t y,uint64_t z )
@@ -471,7 +847,7 @@ int StringCompare( string_t x , string_t y )
 	if( x->size != y->size )
 		return 1 ;
 	else if( strcmp( x->string, y->string ) != 0 )
-		return -1 ;
+		return 1 ;
 	else
 		return 0 ;	
 }
@@ -481,55 +857,66 @@ int StringCompareString( string_t x, const char * y )
 	if( strcmp( x->string, y ) == 0 )
 		return 0 ;
 	else
-		return -1 ;	
+		return 1 ;	
 }
 
-const char * StringInsertCharString( string_t st, char x, const char * n ) 
-{	
-	char * d ;
-	char * f ;
-	size_t count = 0 ;
-	size_t i,j ;
-	size_t z = st->size ;
-	char * c = st->string ;
-	size_t k = strlen( n ) ;
+char * StringICS__( string_t st, char x, const char * s,size_t p )
+{
+	const char * d = s - 1 ;
+	char * e ;
+	char * f  ;
+	size_t pos ;
 	
-	for ( i = 0 ; i < z ; i++ )
-	{		
-		for( j = 0 ; j < k ; j++ )
-		{			
-			if( c[i] == n[j] )
+	while( *++d )
+	{
+		f = st->string - 1 + p ;
+		while( *++f )
+		{
+			if( *d == *f )
 			{
-				count++ ;
-				break ;
-			}
-		}		
-	}
-	
-	f = d = (char * ) malloc(sizeof(char) * ( z + count + 1 ) ) ;	
-	
-	if( f == NULL )
-		return NULL ;
-	
-	st->size = z + count ;
-	
-	for ( i = 0 ; i < z ; i++ ){
-		
-		for( j = 0 ; j < k ; j++ ){
-			
-			if( c[i] == n[j] ){
-				*f++ = x ;
-				break ;
-			}
+				pos = f - st->string ;
+				e = realloc( st->string,st->size + 2 ) ;
+				if( e != NULL )
+				{					
+					st->string = e ;
+					memmove( e + pos + 1,e + pos,st->size - pos ) ;
+					*( e + pos ) = x ;
+					f = e + pos + 1 ;					
+					st->size++ ;					
+				}
+			}			
 		}
-		
-		*f++ = c[i] ;
 	}
-	*f = '\0' ;
+	return st->string ;
+}
+
+const char * StringInsertCharStringPos( string_t st, char x, const char * s,size_t p ) 
+{	
+	char * d = NULL ;
+	string_t nst ;
+	string_t mt = st ;
 	
-	free( st->string ) ;
-	
-	return st->string = d ;
+	if( StringLockMutex__( mt ) == 1 )
+	{
+		d = StringICS__( st,x,s,p ) ;
+	}else{
+		d = ( char *) malloc( sizeof( char ) * ( st->size + 1 ) ) ;	
+		
+		if( d != NULL )
+		{
+			memcpy( d,st->string,st->size + 1 ) ;			
+			nst = StringInheritWithSize( d,st->size ) ;
+			d = StringICS__( nst,x,s,p ) ;
+			StringCNSH__( st,nst ) ;
+		}
+	}
+	StringUnlockMutex__( mt ) ;	
+	return d ;
+}
+
+const char * StringInsertCharString( string_t st, char x, const char * s ) 
+{
+ 	return StringInsertCharStringPos( st,x,s,0 ) ;
 }
 
 const char * StringInsertCharChar( string_t st, char x, char y )
@@ -546,15 +933,15 @@ int StringGetFromFile_1( string_t * str,const char * path )
 	int fd ;
 	char * c ;
 	
-	*str = NULL ;
-	
 	if( stat( path,&st ) != 0 )
 		return 1 ;
 	
 	if( ( fd = open( path,O_RDONLY ) ) == -1 )
 		return 2 ;	
 	
-	if( ( c = ( char * ) malloc( sizeof( char ) * ( st.st_size + 1 ) ) ) == NULL )  
+	c = ( char * ) malloc( sizeof( char ) * ( st.st_size + 1 ) ) ; 
+
+	if(  c == NULL )  
 		return 3 ;
 
 	*( c + st.st_size ) = '\0' ;
@@ -563,7 +950,8 @@ int StringGetFromFile_1( string_t * str,const char * path )
 	
 	close( fd ) ;
 
-	if( ( *str = StringInheritWithSize( c, st.st_size ) ) == NULL )
+	*str = StringInheritWithSize( c, st.st_size ) ;
+	if( *str == NULL )
 	{
 		free( c ) ;
 		return 3 ;
@@ -583,5 +971,27 @@ string_t StringGetFromFile( const char * path )
 	string_t st = NULL ;
 	StringGetFromFile_1( &st,path ) ;
 	return st ;
+}
+
+void StringWriteToFile( string_t st,const char * path, int mode ) 
+{
+	size_t size = st->size ;
+	int fd ;
+#if THREAD_SAFE
+	pthread_mutex_lock( st->mutex ) ;
+#endif
+	if( mode == 1 )
+		fd = open( path, O_WRONLY | O_CREAT | O_TRUNC ) ;
+	else
+		fd = open( path, O_WRONLY | O_CREAT | O_APPEND ) ;
+	
+	do{		
+		size = size - write(fd,st->string,size ) ;
+	}while( size != 0 ) ;
+	
+	close( fd ) ;
+#if THREAD_SAFE
+	pthread_mutex_unlock( st->mutex ) ;
+#endif	
 }
 
