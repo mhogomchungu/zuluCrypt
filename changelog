@@ -63,5 +63,5 @@ version 4.3.2
   
     
 version 4.3.3
--- keyfile with '\0' character in them were not properly handled and volumes failed to open using them.
+-- fix a bug that cause improper reading of key files if they were not made up of C strings.
     

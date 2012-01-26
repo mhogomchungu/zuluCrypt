@@ -54,14 +54,14 @@ void STRINGdebug__( string_t st,char * c )
 {
 	if( st == NULL )
 		return ;
-	printf("%s: st:%d  st->string:%d  rc:%d mutex:%d  text:%s\n",c,(int)st,(int)st->string,*(st->rc),(int)st->mutex,st->string );
+	printf("%s: st:%d  st->string:%d  rc:%d rc:%d mutex:%d  text:%s\n",c,(int)st,(int)st->string,*(st->rc),(int)st->rc,(int)st->mutex,st->string );
 }
 #else
 void STRINGdebug__( string_t st,char * c )
 {
 	if( st == NULL )
 		return ;
-	printf("%s: st:%d  st->string:%d  rc:%d text:%s\n",c,(int)st,(int)st->string,*(st->rc),st->string );
+	printf("%s: st:%d  st->string:%d  rc:%d rc:%d text:%s\n",c,(int)st,(int)st->string,*(st->rc),(int)st->rc,st->string );
 }
 #endif
 
@@ -367,11 +367,14 @@ const char * StringCrop( string_t st, size_t x, size_t y )
 	if( StringLockMutex__( mt ) == 1 )
 	{
 		new_size = st->size - x - y ;
-		memmove( st->string,st->string + x,st->size - x ) ;
+		memmove( st->string,st->string + x,st->size - x + 1 ) ;
 		c = realloc( st->string,new_size + 1 ) ;
-		st->string = c ;
-		*( st->string + new_size ) = '\0';
-		st->size = new_size ;
+		if( c != NULL )
+		{
+			st->string = c ;
+			*( st->string + new_size ) = '\0';
+			st->size = new_size ;
+		}
 	}else{
 		new_size = st->size - x - y ;
 		c = ( char * ) malloc( sizeof( char ) * ( new_size + 1 ) ) ;
@@ -535,7 +538,6 @@ const char * StringSubString( string_t st, size_t x, const char * s )
 	if( StringLockMutex__( mt ) == 1 ){
 		memcpy( st->string + x,s,strlen( s ) );
 		e = st->string ;
-		
 	}else{
 		e = StringLengthCopy( st,st->size ) ;
 		if( e != NULL )
@@ -578,19 +580,16 @@ const char * StringPrepend( string_t st ,const  char * s )
 			memmove( st->string + len,st->string,st->size + 1 ) ;
 			memcpy( st->string,s,len ) ;
 			st->size = new_size ;
-			c = st->string ;
 		}
 	}else{
 		new_size = st->size + len ;
 		c = ( char * ) malloc( sizeof( char ) * ( new_size + 1 ) ) ;
-
 		if( c != NULL )
 		{
 			memcpy( c,s,len ) ;
 			memcpy( c + len,st->string,st->size + 1 ) ;
 			nst = StringInheritWithSize( c,new_size ) ;
 			StringCNSH__( st,nst ) ;
-			c = st->string ;
 		}
 	}
 	StringUnlockMutex__( mt ) ;
@@ -648,7 +647,7 @@ const char * StringInsertString( string_t st, size_t x, const char * s )
 		if( c != NULL )
 		{
 			st->string = c ;
-			memmove( st->string + len + x,st->string + x ,len ) ;
+			memmove( st->string + len + x,st->string + x,st->size - x + 1 ) ;
 			memcpy( st->string + x,s,len ) ;
 			st->size = new_size ;
 		}
@@ -690,43 +689,38 @@ char * StringRS__( string_t st, const char * x, const char * s,size_t p )
 
 	size_t j = strlen( s ) ;
 	size_t k = strlen( x ) ;
-	size_t pos ;
+	size_t len ;
 	size_t diff ;
-	size_t new_size ;
 	
 	if( j > k  )
 	{
-		diff = j - k ;
 		while( ( c = strstr( e, x ) ) != NULL )
 		{
-			pos = c - st->string ;
-			new_size = st->size + diff ;
-			d = realloc( st->string, new_size + 1 ) ;
+			len = c - st->string ;
+			d = realloc( st->string, st->size + j + 1 ) ;
 			if( d != NULL )
 			{	
 				st->string = d ;
-				c = st->string + pos ;					
-				memmove( c + diff,c,st->size - pos ) ;				
+				c = st->string + len ;					
+				memmove( c + j,c,st->size - ( c - st->string ) + 1 ) ;				
 				memcpy( c,s,j ) ;
-				st->size = new_size ;		
-				e = st->string + pos ;
+				st->size = st->size + j ;		
+				e = st->string + len ;
 			}
 		}
 	}else if( k > j ){
-		diff = k - j ;
 		while( ( c = strstr( e, x ) ) != NULL )
 		{
-			pos = c - st->string ;
-			new_size = st->size - diff ;
-			d = realloc( st->string, new_size + 1 ) ;
+			len = c - st->string ; 
+			diff = k - j ;
+			memmove( c + j,c + k,st->size - ( c - st->string + k ) + 1 ) ;			
+			memcpy( c,s,j ) ;
+			d = realloc( st->string,st->size - diff + 1 ) ;
 			if( d != NULL )
-			{	
-				c = st->string + pos ;				
-				memmove( c ,c + diff,st->size - pos ) ;
-				memcpy( c,s,j ) ;
+			{
 				st->string = d ;
-				st->size = new_size ;		
-				e = st->string + pos ;
+				st->size = st->size - diff ;
+				e = st->string + len ;
 			}
 		}
 	}
@@ -879,7 +873,7 @@ char * StringICS__( string_t st, char x, const char * s,size_t p )
 				if( e != NULL )
 				{					
 					st->string = e ;
-					memmove( e + pos + 1,e + pos,st->size - pos ) ;
+					memmove( e + pos + 1,e + pos,st->size - pos + 1 ) ;
 					*( e + pos ) = x ;
 					f = e + pos + 1 ;					
 					st->size++ ;					
