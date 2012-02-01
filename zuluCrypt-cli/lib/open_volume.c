@@ -48,7 +48,7 @@ int open_volume( const char * dev,const char * map,const char * m_point,uid_t id
 	StringAppend( mapper,map ) ;
 	h = mount_volume( StringContent( mapper ),m_point,mode,id ) ;	
 	
-	if( h == 4 && luks == 1 ){
+	if( h != 0 && luks == 1 ){
 		/*
 		 * opening a plain volume failed,try to reopen it in legacy/compatibility mode
 		 */
@@ -60,12 +60,11 @@ int open_volume( const char * dev,const char * map,const char * m_point,uid_t id
 		h = mount_volume( StringContent( mapper ),m_point,mode,id ) ;
 	}
 	
-	StringDelete( &mapper ) ;
-	
 	if( h != 0 )
 		if( close_mapper( map ) != 0 )
 			h = 15 ;
 	out:
+	StringDelete( &mapper ) ;
 	return h ;
 }
 

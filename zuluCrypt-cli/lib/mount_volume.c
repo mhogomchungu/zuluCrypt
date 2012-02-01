@@ -69,11 +69,16 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 	FILE * f ;
 	mnt_lock * m_lock ;
 	string_t options = NULL ;
-	string_t fs ;
+	string_t fs = NULL ;
 	
 	blkid = blkid_new_probe_from_filename( mapper ) ;
 	blkid_do_probe( blkid );
-	h = blkid_probe_lookup_value( blkid , "TYPE", &cf, NULL ) ;		
+	h = blkid_probe_lookup_value( blkid , "TYPE", &cf, NULL ) ;
+	
+	if( cf != NULL )
+		fs = String( cf ) ;
+	
+	blkid_free_probe( blkid );
 	
 	if( h != 0 ){
 		/*
@@ -81,12 +86,9 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 		 * or either a plain volume opened with a wrong passphrase or with the right one but on a volume with no
 		 * file system.		 * 
 		 */
-		blkid_free_probe( blkid );
+		StringDelete( &fs ) ;
 		return 4 ;
-	}	
-	fs = String( cf ) ;
-	
-	blkid_free_probe( blkid );	
+	}
 	
 	realpath( "/etc/mtab", path ) ;
 	
@@ -111,8 +113,8 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 				mt.mnt_passno = 0 ;
 				addmntent( f, &mt ) ;	
 				endmntent( f ) ;
-				mnt_unlock_file( m_lock ) ;
 			}
+			mnt_unlock_file( m_lock ) ;
 		}	
 		mnt_free_lock( m_lock ) ;
 	}

@@ -160,14 +160,16 @@ char * StringDeleteHandle( string_t * xt )
 
 string_t StringCopy( string_t st )
 {
+	string_t new_st ;
+	
 	if( st == NULL )
 		return NULL ;
 #if THREAD_SAFE	
 	pthread_mutex_lock( st->mutex ) ;		
 #endif
-	*( st->rc)  = *( st->rc) + 1 ;
+	*( st->rc )  = *( st->rc ) + 1 ;
 	
-	string_t new_st = ( string_t ) malloc( sizeof( struct StringType ) ) ;
+	new_st = ( string_t ) malloc( sizeof( struct StringType ) ) ;
 	
 	if( new_st == NULL )
 		return NULL ;
@@ -692,8 +694,14 @@ char * StringRS__( string_t st, const char * x, const char * s,size_t p )
 	size_t len ;
 	size_t diff ;
 	
-	if( j > k  )
+	if( j == k )
 	{
+		while( ( c = strstr( e, x ) ) != NULL )
+		{
+			memcpy( c,s,j ) ;
+			e = e + j ;			
+		}		
+	}else if( j > k  ){
 		while( ( c = strstr( e, x ) ) != NULL )
 		{
 			len = c - st->string ;
@@ -702,10 +710,10 @@ char * StringRS__( string_t st, const char * x, const char * s,size_t p )
 			{	
 				st->string = d ;
 				c = st->string + len ;					
-				memmove( c + j,c,st->size - ( c - st->string ) + 1 ) ;				
+				memmove( c + j,c + k,st->size - ( c - st->string ) + 1 ) ;				
 				memcpy( c,s,j ) ;
-				st->size = st->size + j ;		
-				e = st->string + len ;
+				st->size = st->size + j - k ;		
+				e = st->string + len + j ;
 			}
 		}
 	}else if( k > j ){
