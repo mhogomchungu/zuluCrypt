@@ -52,16 +52,16 @@ private slots:
 	void rbNewPassphraseFromFile(void);
 	void pbAdd(void) ;
 	void pbCancel(void) ;	
-	void threadfinished(runInThread *,int) ;
+	void threadfinished(int) ;
 	void openpartitionFinished(openpartition *);
 private:
 	void UIMessage(QString,QString);
 	void disableAll(void) ;
 	void enableAll(void) ;
 	void closeEvent(QCloseEvent *) ;
-	Ui::luksaddkey *m_ui ;	
+	Ui::luksaddkey * m_ui ;
 	QString m_volumePath ;
-	runInThread *m_lakt ;
+	bool m_isWindowClosable ;
 };
 
 #endif // luksaddkeySUI_H

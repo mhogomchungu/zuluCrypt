@@ -20,17 +20,19 @@
 #ifndef STARTUPUPDATEOPENEDVOLUMES_H
 #define STARTUPUPDATEOPENEDVOLUMES_H
 
-#include <QThread>
+#include <QRunnable>
+#include <QObject>
+#include <QString>
 
-class startupupdateopenedvolumes : public QThread
+class startupupdateopenedvolumes : public QObject, public QRunnable
 {
 	Q_OBJECT
 public:
-	explicit startupupdateopenedvolumes(QObject *parent = 0);	
+	explicit startupupdateopenedvolumes();
 signals:
 	void addItemToTable(QString,QString) ;
 	void UIMessage(QString title,QString message) ;
-	void finished(startupupdateopenedvolumes *);
+	void finished(void);
 private:
 	void run() ;
 	bool checkUUID(QString *,QString ) ;

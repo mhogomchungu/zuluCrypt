@@ -52,17 +52,17 @@ private slots :
 	void passphraseFromFileOption(void) ;
 	void passphraseOption(void) ;	
 	void file_path(void ) ;	
-	void threadfinished(runInThread *,int) ;
+	void threadfinished(int) ;
 	void mountPointPath(QString);
 private :	
 	void UIMessage(QString title, QString message) ;
 	void disableAll(void);
 	void enableAll(void) ;
 	void closeEvent(QCloseEvent *) ;
-	Ui::PasswordDialog *m_ui;
+	Ui::PasswordDialog * m_ui;
 	QString m_volumePath ;
 	QString m_point ;
-	runInThread * m_ovt ;
+	bool m_isWindowClosable ;
 };
 
 #endif // PASSWORD_DIALOG_H

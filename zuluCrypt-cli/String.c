@@ -65,7 +65,7 @@ void STRINGdebug__( string_t st,char * c )
 }
 #endif
 
-void StringCNSH__( string_t st,string_t nst )
+inline void StringCNSH__( string_t st,string_t nst )
 {
 	st->size = nst->size ;
 	st->string = nst->string ;
@@ -76,7 +76,7 @@ void StringCNSH__( string_t st,string_t nst )
 	free( nst ) ;
 }
 
-int StringLockMutex__( string_t st )
+inline int StringLockMutex__( string_t st )
 {
 	int rc ;
 #if THREAD_SAFE 
@@ -84,11 +84,11 @@ int StringLockMutex__( string_t st )
 #endif	
 	rc = *( st->rc ) ;
 	if( rc != 1 )
-		*( st->rc ) = *( st->rc ) - 1 ;
+		*( st->rc ) = *( st->rc) - 1 ;
 	return rc ;
 }
 
-void StringUnlockMutex__( string_t st )
+inline void StringUnlockMutex__( string_t st )
 {
 #if THREAD_SAFE 	
 	pthread_mutex_unlock( st->mutex ) ;
@@ -167,7 +167,7 @@ string_t StringCopy( string_t st )
 #if THREAD_SAFE	
 	pthread_mutex_lock( st->mutex ) ;		
 #endif
-	*( st->rc )  = *( st->rc ) + 1 ;
+	*( st->rc ) = *( st->rc) + 1 ;
 	
 	new_st = ( string_t ) malloc( sizeof( struct StringType ) ) ;
 	
@@ -190,7 +190,7 @@ string_t StringCopy( string_t st )
 	return new_st ;
 }
 
-string_t StringPrepare__( size_t size )
+inline string_t StringPrepare__( size_t size )
 {
 	string_t st = ( string_t ) malloc ( sizeof( struct StringType ) ) ;
 	
@@ -862,7 +862,7 @@ int StringCompareString( string_t x, const char * y )
 		return 1 ;	
 }
 
-char * StringICS__( string_t st, char x, const char * s,size_t p )
+inline char * StringICS__( string_t st, char x, const char * s,size_t p )
 {
 	const char * d = s - 1 ;
 	char * e ;

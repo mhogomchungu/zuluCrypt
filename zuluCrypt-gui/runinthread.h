@@ -20,15 +20,16 @@
 #ifndef RUNINTHREAD_H
 #define RUNINTHREAD_H
 
-#include <QThread>
+#include <QRunnable>
+#include <QObject>
 
-class runInThread : public QThread
+class runInThread : public QObject, public QRunnable
 {
 	Q_OBJECT
 public:
 	explicit runInThread(QString) ;
 signals:
-	void finished( runInThread *,int) ;
+	void finished(int) ;
 private:
 	void run(void) ;
 	QString m_exe ;

@@ -41,10 +41,9 @@ luksdeletekey::luksdeletekey(QWidget *parent) :
 	QDialog(parent),
 	m_ui(new Ui::luksdeletekey)
 {
+	m_isWindowClosable = true ;
 	m_ui->setupUi(this);
 	this->setFixedSize(this->size());
-
-	m_ldk = NULL ;
 
 	connect(m_ui->pushButtonDelete,
 		SIGNAL(clicked()),
@@ -79,7 +78,7 @@ luksdeletekey::luksdeletekey(QWidget *parent) :
 void luksdeletekey::closeEvent(QCloseEvent *e)
 {
 	e->ignore();
-	if( m_ldk == NULL )
+	if( m_isWindowClosable == true )
 		pbCancel();
 }
 
@@ -265,20 +264,21 @@ void luksdeletekey::pbDelete()
 
 	exe = exe + QString(" \"") + passphrase + QString("\"") ;
 
+	m_isWindowClosable = false ;
+
 	disableAll();
 
-	m_ldk = new runInThread(exe) ;
-	connect(m_ldk,
-		SIGNAL(finished(runInThread *,int)),
+	runInThread * ldk = new runInThread(exe) ;
+	connect(ldk,
+		SIGNAL(finished(int)),
 		this,
-		SLOT(threadfinished(runInThread *,int))) ;
-	m_ldk->start();
+		SLOT(threadfinished(int))) ;
+	QThreadPool::globalInstance()->start(ldk);
 }
 
-void luksdeletekey::threadfinished(runInThread * ldk,int status)
+void luksdeletekey::threadfinished(int status)
 {
-	ldk->deleteLater(); ;
-	ldk = NULL ;
+	m_isWindowClosable = true ;
 	QStringList l ;
 	QString success;
 	switch( status ){

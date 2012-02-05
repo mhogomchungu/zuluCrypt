@@ -35,15 +35,11 @@
 #include <QDebug>
 #include <QKeySequence>
 
-//Q_DECLARE_METATYPE(Qt::Orientation) ;
-//Q_DECLARE_METATYPE(QItemSelection) ;
-
 zuluCrypt::zuluCrypt(QWidget *parent) :
     QMainWindow(parent),
     m_ui(new Ui::zuluCrypt)
 {
-	//egisterMetaType<Qt::Orientation>("Qt::Orientation") ;
-	//qRegisterMetaType<QItemSelection>("QItemSelection") ;
+	QThreadPool::globalInstance()->setMaxThreadCount(2);
 	setupUIElements();
 	setupConnections();
 	StartUpAddOpenedVolumesToTableThread();
@@ -119,6 +115,11 @@ void zuluCrypt::initTray()
 	}
 }
 
+void zuluCrypt::startUpdateFinished()
+{
+	m_ui->tableWidget->setEnabled( true );
+}
+
 void zuluCrypt::StartUpAddOpenedVolumesToTableThread()
 {
 	m_ui->tableWidget->setEnabled( false );
@@ -128,14 +129,13 @@ void zuluCrypt::StartUpAddOpenedVolumesToTableThread()
 	       this,
 	       SLOT(addItemToTable(QString,QString))) ;
 	connect(sov,
-	       SIGNAL(finished(startupupdateopenedvolumes *)),
-	       this,
-	       SLOT(StartUpAddOpenedVolumesToTableThreadFinished(startupupdateopenedvolumes *))) ;
+		SIGNAL(finished()),
+		this,SLOT(startUpdateFinished()));
 	connect(sov,
 	       SIGNAL(UIMessage(QString,QString)),
 	       this,
 	       SLOT(UIMessage(QString,QString))) ;
-	sov->start();
+	QThreadPool::globalInstance()->start(sov);
 }
 
 void zuluCrypt::setupUIElements()
@@ -466,17 +466,16 @@ void zuluCrypt::volume_property()
 	volumePropertiesThread * vpt = new volumePropertiesThread(x,y);
 
 	connect(vpt,
-		SIGNAL(finished(QString,volumePropertiesThread *)),
+		SIGNAL(finished(QString)),
 		this,
-	SLOT(volumePropertyThreadFinished(QString,volumePropertiesThread *))) ;
+		SLOT(volumePropertyThreadFinished(QString))) ;
 
-	vpt->start();
+	QThreadPool::globalInstance()->start(vpt);
 }
 
-void zuluCrypt::volumePropertyThreadFinished(QString properties,volumePropertiesThread * obj)
+void zuluCrypt::volumePropertyThreadFinished(QString properties)
 {
 	UIMessage(tr("volume properties"),properties);
-	obj->deleteLater();
 }
 
 void zuluCrypt::favAboutToHide()
@@ -606,7 +605,7 @@ void zuluCrypt::UIMessage(QString title, QString message)
 	m.exec() ;
 }
 
-void zuluCrypt::closeThreadFinished(closeVolumeThread * cvt,int st)
+void zuluCrypt::closeStatus(int st)
 {
 	m_ui->tableWidget->setEnabled( true );
 	switch ( st ) {
@@ -633,7 +632,6 @@ void zuluCrypt::closeThreadFinished(closeVolumeThread * cvt,int st)
 	default :UIMessage(tr("ERROR"),
 			  tr("an unknown error has occured, volume not closed"));
 	}
-	cvt->deleteLater(); ;
 }
 
 void zuluCrypt::close()
@@ -642,13 +640,10 @@ void zuluCrypt::close()
 	QString vol = m_ui->tableWidget->item(item->row(),0)->text().replace("\"","\"\"\"") ;
 	QString exe = QString(ZULUCRYPTzuluCrypt) + QString(" close ") + QString("\"") + \
 			vol + QString("\"") ;
-	closeVolumeThread * cvt = new closeVolumeThread( exe ) ;
-	connect(cvt,
-		SIGNAL(finished(closeVolumeThread *,int)),
-		this,
-		SLOT(closeThreadFinished(closeVolumeThread *,int))) ;
 	m_ui->tableWidget->setEnabled( false );
-	cvt->start();
+	closeVolumeThread * cvt = new closeVolumeThread( exe ) ;
+	connect(cvt,SIGNAL(finished(int)),this,SLOT(closeStatus(int))) ;
+	QThreadPool::globalInstance()->start(cvt);
 }
 
 luksaddkey * zuluCrypt::setUpluksaddkey()
@@ -833,8 +828,7 @@ passwordDialog * zuluCrypt::setUpPasswordDialog()
 
 void zuluCrypt::volumeOpened(QString dev,QString m_point,passwordDialog * obj)
 {	
-	addItemToTable(dev,m_point);	
-	obj->hide();
+	addItemToTable(dev,m_point);
 	HidePasswordDialog(obj);
 }
 
@@ -859,7 +853,8 @@ void zuluCrypt::HideOpenPartition(openpartition *obj)
 }
 
 void zuluCrypt::HidePasswordDialog(passwordDialog *obj)
-{
+{	
+	obj->hide();
 	obj->deleteLater();
 }
 
@@ -896,12 +891,6 @@ void zuluCrypt::HideCreateFile(createfile *obj)
 void zuluCrypt::HideNonSystemPartition(openpartition * obj)
 {
 	obj->deleteLater();
-}
-
-void zuluCrypt::StartUpAddOpenedVolumesToTableThreadFinished(startupupdateopenedvolumes *obj)
-{
-	m_ui->tableWidget->setEnabled( true );
-	obj->deleteLater(); ;
 }
 
 zuluCrypt::~zuluCrypt()

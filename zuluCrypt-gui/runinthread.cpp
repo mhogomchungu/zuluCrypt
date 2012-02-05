@@ -32,5 +32,5 @@ void runInThread::run()
 	p.waitForFinished() ;
 	int status = p.exitCode() ;
 	p.close();
-	emit finished(this,status);
+	emit finished(status);
 }

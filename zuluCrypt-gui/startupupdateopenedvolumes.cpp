@@ -28,8 +28,7 @@
 #include "startupupdateopenedvolumes.h"
 #include "zulucrypt.h"
 
-startupupdateopenedvolumes::startupupdateopenedvolumes(QObject *parent) :
-    QThread(parent)
+startupupdateopenedvolumes::startupupdateopenedvolumes()
 {
 }
 
@@ -94,6 +93,6 @@ void startupupdateopenedvolumes::run()
 		}
 		emit addItemToTable(device,mp) ;
 	}
-	emit finished(this);
+	emit finished();
 }
 

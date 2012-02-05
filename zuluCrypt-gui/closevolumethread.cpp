@@ -13,5 +13,5 @@ void closeVolumeThread::run()
 	int status = p.exitCode() ;
 	p.close();
 	sleep(1); //volume closes too fast, put a second pause to show ui effect on closing
-	emit finished(this,status);
+	emit finished(status);
 }

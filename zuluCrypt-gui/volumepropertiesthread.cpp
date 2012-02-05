@@ -1,7 +1,6 @@
 #include "volumepropertiesthread.h"
 
-volumePropertiesThread::volumePropertiesThread(QString path,QString mpoint,QObject *parent) :
-        QThread(parent)
+volumePropertiesThread::volumePropertiesThread(QString path,QString mpoint)
 {
 	m_path = path.replace("\"","\"\"\"") ; ;
 	m_mpoint = mpoint ;
@@ -70,5 +69,5 @@ void volumePropertiesThread::run()
 
 	volumeProperties += QString("\n used%:\t") + QString(c.mid(j,i - j - 1));
 
-	emit finished(volumeProperties,this);
+	emit finished(volumeProperties);
 }

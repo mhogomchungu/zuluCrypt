@@ -37,7 +37,8 @@ passwordDialog::passwordDialog(QWidget *parent ) : QDialog(parent)
 	m_ui->setupUi(this);
 	this->setFixedSize(this->size());
 	m_ui->PushButtonMountPointPath->setIcon(QIcon(QString(":/folder.png")));
-	m_ovt = NULL ;
+
+	m_isWindowClosable = true ;
 
 	connect(m_ui->PushButtonCancel,
 		SIGNAL(clicked()),
@@ -76,7 +77,7 @@ passwordDialog::passwordDialog(QWidget *parent ) : QDialog(parent)
 void passwordDialog::closeEvent(QCloseEvent *e)
 {
 	e->ignore();
-	if( m_ovt == NULL )
+	if( m_isWindowClosable == true )
 		HideUI() ;
 }
 
@@ -274,13 +275,15 @@ void passwordDialog::buttonOpenClicked(void )
 			mode + QString(" ") + passtype + \
 			QString(" \"") + passPhraseField + QString("\"");
 
-	m_ovt = new runInThread(exe) ;
-	connect(m_ovt,
-		SIGNAL(finished(runInThread *,int)),
+	runInThread *ovt = new runInThread(exe) ;
+	connect(ovt,
+		SIGNAL(finished(int)),
 		this,
-		SLOT(threadfinished(runInThread *,int))) ;
+		SLOT(threadfinished(int))) ;
+
+	m_isWindowClosable = false ;
 	disableAll();
-	m_ovt->start();
+	QThreadPool::globalInstance()->start(ovt);
 }
 
 void passwordDialog::disableAll()
@@ -333,11 +336,9 @@ void passwordDialog::UIMessage(QString title, QString message)
 	m.addButton(QMessageBox::Ok);
 	m.exec() ;
 }
-void passwordDialog::threadfinished(runInThread *,int status)
+void passwordDialog::threadfinished(int status)
 {
-	m_ovt->deleteLater(); ;
-	m_ovt = NULL ;
-
+	m_isWindowClosable = true ;
 	switch ( status ){
 		case 0:	emit volumeOpened(m_volumePath,m_ui->MountPointPath->text(),this);
 			/*

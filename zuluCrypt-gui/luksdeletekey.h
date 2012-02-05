@@ -49,16 +49,16 @@ private slots:
 	void rbPassphraseFromFile(void);
 	void pbOpenKeyFile(void) ;
 	void pbOpenVolume(void) ;
-	void threadfinished(runInThread *,int) ;
+	void threadfinished(int) ;
 	void openpartitionFinished(openpartition *);
 private:
 	void disableAll(void) ;
 	void enableAll(void) ;
 	void UIMessage(QString title, QString message) ;
 	void closeEvent(QCloseEvent *) ;
-	Ui::luksdeletekey *m_ui;
+	Ui::luksdeletekey * m_ui;
 	QString m_volumePath ;
-	runInThread *m_ldk ;
+	bool m_isWindowClosable ;
 };
 
 #endif // LUKSDELETEKEY_H

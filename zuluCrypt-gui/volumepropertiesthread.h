@@ -1,18 +1,18 @@
 #ifndef VOLUMEPROPERTIESTHREAD_H
 #define VOLUMEPROPERTIESTHREAD_H
 
-#include <QThread>
+#include <QRunnable>
 #include "miscfunctions.h"
 #include <QString>
 #include <QStringList>
 
-class volumePropertiesThread : public QThread
+class volumePropertiesThread : public QObject, public QRunnable
 {
 	Q_OBJECT
 public:
-	explicit volumePropertiesThread(QString,QString,QObject *parent = 0);
+	explicit volumePropertiesThread(QString,QString);
 signals:
-	void finished(QString,volumePropertiesThread *) ;
+	void finished(QString) ;
 public slots:	
 private:
 	void run(void);

@@ -25,7 +25,7 @@
 #include <QTimer>
 #include <QCloseEvent>
 #include <QMessageBox>
-
+#include <QThreadPool>
 #include "createfilethread.h"
 
 namespace Ui {
@@ -64,7 +64,7 @@ private:
 	bool m_return ;
 	QString m_path ;
 	QMessageBox m_mb ;
-	createFileThread *m_cft ;
+	createFileThread * m_cft ;
 };
 
 #endif // CREATEFILE_H

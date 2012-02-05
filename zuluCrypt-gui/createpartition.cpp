@@ -36,7 +36,8 @@ createpartition::createpartition(QWidget *parent) :
 	this->setFixedSize(this->size());
 	m_ui->lineEditVolumePath->setEnabled(false);
 	m_ui->lineEditPassphrase1->setFocus();
-	m_cvt = NULL ;
+
+	m_isWindowClosable = true ;
 
 	connect(m_ui->pbOpenKeyFile,
 		SIGNAL(clicked()),
@@ -75,7 +76,7 @@ void createpartition::rng(int s)
 void createpartition::closeEvent(QCloseEvent *e)
 {
 	e->ignore();
-	if(m_cvt == NULL )
+	if(m_isWindowClosable == true )
 		pbCancelClicked() ;
 }
 
@@ -288,22 +289,23 @@ void createpartition::pbCreateClicked()
 	exe = exe + passphrase_1 + QString("\" ") ;;
 	exe = exe + m_ui->comboBoxRNG->currentText();
 
-	m_cvt = new runInThread(exe) ;
+	m_isWindowClosable = false ;
 
-	connect(m_cvt,
-		SIGNAL(finished(runInThread *,int)),
+	runInThread * cvt = new runInThread(exe) ;
+
+	connect(cvt,
+		SIGNAL(finished(int)),
 		this,
-		SLOT(threadfinished(runInThread *,int))) ;
+		SLOT(threadfinished(int))) ;
 	disableAll();
-	m_cvt->start();
+
+	QThreadPool::globalInstance()->start(cvt);
 }
 
-void createpartition::threadfinished(runInThread *cvt,int status)
+void createpartition::threadfinished(int status)
 {	
 	m_created = true ;
-	cvt->wait() ;
-	delete cvt ;
-	cvt = NULL ;
+	m_isWindowClosable = true ;
 	switch( status ) {
 		case 0 : UIMessage(tr("SUCCESS"),
 				   tr("volume created successfully"));

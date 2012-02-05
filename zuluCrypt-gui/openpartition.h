@@ -48,8 +48,8 @@ private:
 	void partitionList(QString,int);
 	void closeEvent(QCloseEvent *) ;
 	void HighlightRow(int, bool);	
-	Ui::PartitionView *m_ui ;
-	QAction *m_action ;
+	Ui::PartitionView * m_ui ;
+	QAction * m_action ;
 };
 
 #endif

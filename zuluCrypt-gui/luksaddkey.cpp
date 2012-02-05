@@ -42,7 +42,7 @@ luksaddkey::luksaddkey(QWidget *parent) :
 	m_ui->pushButtonOpenPartition->setIcon(QIcon(QString(":/partition.png")));
 	m_ui->pushButtonOpenFile->setIcon(QIcon(QString(":/file.png")));
 
-	m_lakt = NULL ;
+	m_isWindowClosable = true ;
 
 	this->setFixedSize(this->size());
 
@@ -93,8 +93,8 @@ luksaddkey::luksaddkey(QWidget *parent) :
 void luksaddkey::closeEvent(QCloseEvent *e)
 {
 	e->ignore();
-	if( m_lakt == NULL )
-		pbCancel();
+	if( m_isWindowClosable == true )
+		HideUI();
 }
 
 void luksaddkey::partitionEntry(QString partition)
@@ -316,15 +316,17 @@ void luksaddkey::pbAdd(void)
 	exe = exe + "\"" + m_volumePath + "\"" + existingPassType + "\"" + ExistingKey ;
 	exe = exe + "\"" + newPassType + "\"" + NewKey + "\"" ;
 
+	m_isWindowClosable = false ;
+
 	disableAll();
 
-	m_lakt = new runInThread(exe);
+	runInThread * lakt = new runInThread(exe);
 
-	connect(m_lakt,
-		SIGNAL(finished(runInThread *,int)),
+	connect(lakt,
+		SIGNAL(finished(int)),
 		this,
-		SLOT(threadfinished(runInThread *,int))) ;
-	m_lakt->start();
+		SLOT(threadfinished(int))) ;
+	QThreadPool::globalInstance()->start(lakt);
 }
 
 void luksaddkey::UIMessage(QString title, QString message)
@@ -339,11 +341,10 @@ void luksaddkey::UIMessage(QString title, QString message)
 	m.exec() ;
 }
 
-void luksaddkey::threadfinished(runInThread * lakt,int status)
+void luksaddkey::threadfinished(int status)
 {
+	m_isWindowClosable = true ;
 	QStringList x ;
-	lakt->deleteLater(); ;
-	lakt = NULL ;
 	QString success;
 	switch( status ){
 		case 0 :

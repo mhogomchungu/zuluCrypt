@@ -29,7 +29,7 @@
 #include <QList>
 #include <QMessageBox>
 #include <QCloseEvent>
-#include <QMutex>
+#include <QThreadPool>
 
 #include "../zuluCrypt-cli/executables.h"
 #include "../zuluCrypt-cli/version.h"
@@ -86,14 +86,14 @@ private slots :
 	void trayClicked(QSystemTrayIcon::ActivationReason ) ;
 	void trayProperty(void) ;
 	void addItemToTable(QString pathToVolume, QString pathToMountPoint);
-	void volumePropertyThreadFinished(QString properties,volumePropertiesThread * obj) ;
+	void volumePropertyThreadFinished(QString properties) ;
 	void closeApplication(void) ;
-	void StartUpAddOpenedVolumesToTableThreadFinished(startupupdateopenedvolumes *) ;
+	void startUpdateFinished(void) ;
 	void minimize(void) ;
 	void minimizeToTray(void);
 	void closeAllVolumes(void) ;
 	void deletecloseAllVolumesThread(closeAllVolumesThread *) ;
-	void closeThreadFinished(closeVolumeThread *,int) ;
+	void closeStatus(int) ;
 	void menuKeyPressed(void) ;
 	void addItemToTableByVolume(QString volume_path);
 	void ShowCreateFile(void);

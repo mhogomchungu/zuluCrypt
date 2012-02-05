@@ -23,6 +23,7 @@
 #include <QWidget>
 #include <QString>
 #include <QCloseEvent>
+#include <QThreadPool>
 
 #include "runinthread.h"
 
@@ -49,7 +50,7 @@ private slots:
 	void rbPassphraseClicked(void);
 	void rbPasssphraseFromFileClicked(void);
 	void pbOpenKeyFile(void);
-	void threadfinished(runInThread *,int);	
+	void threadfinished(int);
 	void rng(int) ;
 private:
 	void enableAll(void) ;
@@ -58,8 +59,8 @@ private:
 	void UIMessage(QString title,QString message) ;		
 	void ShowUI(QString,QString);
 	bool m_created ;
-	runInThread *m_cvt ;
-	Ui::createpartition *m_ui;
+	Ui::createpartition * m_ui;
+	bool m_isWindowClosable ;
 };
 
 #endif // CREATEPARTITION_H
