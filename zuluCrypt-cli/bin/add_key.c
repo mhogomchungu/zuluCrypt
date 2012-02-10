@@ -19,6 +19,20 @@
 
 #include "includes.h"
 
+int check_empty_slot( char * device )
+{
+	char * c ;
+	char * e = empty_slots( device ) ; 
+	if( e == NULL )
+		return 1 ;
+	c = strchr( e, '0' ) ;
+	free( e ) ;
+	if( c == NULL )
+		return 2 ;
+	else
+		return 0 ;
+}
+
 int addkey( int argn,char * device,char * keyType1,char * existingKey,char * keyType2,char * newKey )
 {
 	string_t presentKey ;
@@ -33,27 +47,15 @@ int addkey( int argn,char * device,char * keyType1,char * existingKey,char * key
 	size_t len1 = 0 ;
 	size_t len2 = 0 ;
 	int status = 0 ;
-	
-	char * d = NULL ;
-	char * e = NULL ;	
-	
+
 	if( is_path_valid( device ) == -1 ){		
 		status = 4 ;
 		goto out ;
 	}
-	
-	e = empty_slots( device ) ;
-	
-	if( e == NULL ){		
-		status = 2 ;
-		goto out ;		
-	}
-	
-	d = strchr( e, '0' ) ;
-	
-	if( d == NULL ){		
-		status = 10 ;
-		goto out ;		
+
+	switch( check_empty_slot( device ) ){
+		case 1 : status = 2 ; goto out ; 
+		case 2 : status = 10 ; goto out ;
 	}
 	
 	if ( argn == 3 ){		
@@ -124,7 +126,6 @@ int addkey( int argn,char * device,char * keyType1,char * existingKey,char * key
 		status = 6 ;		
 	}	
 	out:	
-	free( e ) ;	
 	switch ( status ){
 		case 0 : printf( "SUCCESS: key added successfully\n" );
 		break ;		
