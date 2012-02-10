@@ -1,7 +1,6 @@
 #include "partitionproperties.h"
 
-partitionproperties::partitionproperties(int partitionType,QObject *parent) :
-        QThread(parent)
+partitionproperties::partitionproperties(int partitionType)
 {
 	m_partitionType = partitionType ;
 }
@@ -21,6 +20,9 @@ void partitionproperties::run()
 
 	for (int i = 0 ; i < l.size() - 1 ; i++)
 		emit partitionProperties(miscfunctions::deviceProperties(l.at(i)));
+}
 
-	emit finished(this);
+partitionproperties::~partitionproperties()
+{
+	emit finished();
 }

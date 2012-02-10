@@ -28,11 +28,13 @@ class runInThread : public QObject, public QRunnable
 	Q_OBJECT
 public:
 	explicit runInThread(QString) ;
+	~runInThread();
 signals:
 	void finished(int) ;
 private:
 	void run(void) ;
 	QString m_exe ;
+	int m_status ;
 };
 
 #endif // RUNINTHREAD_H

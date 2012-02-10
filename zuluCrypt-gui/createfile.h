@@ -40,7 +40,7 @@ public:
 	~createfile();
 signals :
 	void fileCreated(QString) ;
-	void HideUISignal(createfile *);
+	void HideUISignal(void);
 
 public slots:
 	void HideUI();

@@ -31,6 +31,7 @@ closeAllVolumesThread::closeAllVolumesThread(QTableWidget * table)
 void closeAllVolumesThread::run()
 {		
 	m_table->setEnabled(false);
+	sleep(1) ; // for ui effect
 	int i = m_table->rowCount() ;
 	int j = -1 ;
 	QTableWidgetItem * tableItems[ i ] ;
@@ -51,7 +52,7 @@ void closeAllVolumesThread::run()
 		p.start( exe );
 		p.waitForFinished() ;
 		emit close(deviceItem,p.exitCode()) ;
-		sleep(1) ; //volumes close too fast, put a one second pause to slow them down
+		sleep(1) ; //for ui effect
 		p.close();
 	}
 	m_table->setEnabled(true);

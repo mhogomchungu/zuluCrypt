@@ -19,7 +19,7 @@ void volumePropertiesThread::run()
 
 	p.close();
 
-	QString volumeProperties = QString(" ") + QString(data.mid(data.indexOf('\n') + 2));
+	m_volumeProperties = QString(" ") + QString(data.mid(data.indexOf('\n') + 2));
 
 	p.start("df -PTh ");
 	p.waitForFinished() ;
@@ -43,31 +43,34 @@ void volumePropertiesThread::run()
 	j = i - 1 ;
 	while ( c.at(i++) != ' ') { ; }
 
-	volumeProperties += QString(" fs:\t") + QString(c.mid(j,i - j - 1)) ;
+	m_volumeProperties += QString(" fs:\t") + QString(c.mid(j,i - j - 1)) ;
 
 	while ( c.at(i++) == ' ') { ; }
 	j = i - 1 ;
 	while ( c.at(i++) != ' ') { ; }
 
-	volumeProperties += QString("\n size:\t") + QString(c.mid(j,i - j - 1)) ;
+	m_volumeProperties += QString("\n size:\t") + QString(c.mid(j,i - j - 1)) ;
 
 	while ( c.at(i++) == ' ') { ; }
 	j = i - 1 ;
 	while ( c.at(i++) != ' ') { ; }
 
-	volumeProperties += QString("\n used:\t") + QString(c.mid(j,i - j - 1)) ;
+	m_volumeProperties += QString("\n used:\t") + QString(c.mid(j,i - j - 1)) ;
 
 	while ( c.at(i++) == ' ') { ; }
 	j = i - 1 ;
 	while ( c.at(i++) != ' ') { ; }
 
-	volumeProperties += QString("\n available:\t") + QString(c.mid(j,i - j - 1)) ;
+	m_volumeProperties += QString("\n available:\t") + QString(c.mid(j,i - j - 1)) ;
 
 	while ( c.at(i++) == ' ') { ; }
 	j = i - 1 ;
 	while ( c.at(i++) != ' ') { ; }
 
-	volumeProperties += QString("\n used%:\t") + QString(c.mid(j,i - j - 1));
+	m_volumeProperties += QString("\n used%:\t") + QString(c.mid(j,i - j - 1));
+}
 
-	emit finished(volumeProperties);
+volumePropertiesThread::~volumePropertiesThread()
+{
+	emit finished(m_volumeProperties);
 }

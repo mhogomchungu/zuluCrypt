@@ -1,21 +1,21 @@
 #ifndef PARTITIONPROPERTIES_H
 #define PARTITIONPROPERTIES_H
 
-#include <QThread>
+#include <QRunnable>
 #include <QTableWidget>
 #include <QProcess>
 #include <QString>
 #include <QStringList>
 #include "miscfunctions.h"
 
-class partitionproperties : public QThread
+class partitionproperties : public QObject, public QRunnable
 {
 	Q_OBJECT
 public:
-	explicit partitionproperties(int,QObject *parent = 0);
-	
+	explicit partitionproperties(int);
+	~partitionproperties();
 signals:
-	void finished(partitionproperties *);
+	void finished();
 	void partitionProperties(QStringList);
 public slots:
 private:

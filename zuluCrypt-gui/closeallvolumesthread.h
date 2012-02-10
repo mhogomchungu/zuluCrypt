@@ -20,18 +20,17 @@
 #ifndef CLOSEALLVOLUMESTHREAD_H
 #define CLOSEALLVOLUMESTHREAD_H
 
-#include <QThread>
+#include <QRunnable>
 #include <QTableWidgetItem>
 #include <QTableWidget>
 
-class closeAllVolumesThread : public QThread
+class closeAllVolumesThread : public QObject, public QRunnable
 {
 	Q_OBJECT
 public:
 	explicit closeAllVolumesThread(QTableWidget*);
 signals:
 	void close(QTableWidgetItem *,int) ;
-	void finished(closeAllVolumesThread*);
 private:
 	void run(void) ;
 	QTableWidget * m_table ;

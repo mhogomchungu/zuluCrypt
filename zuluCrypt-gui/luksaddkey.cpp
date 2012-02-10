@@ -45,6 +45,8 @@ luksaddkey::luksaddkey(QWidget *parent) :
 	m_isWindowClosable = true ;
 
 	this->setFixedSize(this->size());
+	this->setWindowFlags(Qt::Window | Qt::Dialog);
+	this->setFont(parent->font());
 
 	connect(m_ui->pushButtonOpenFile,
 		SIGNAL(clicked()),
@@ -113,7 +115,7 @@ void luksaddkey::partitionEntry(QString partition)
 void luksaddkey::HideUI()
 {
 	this->hide();
-	emit HideUISignal(this);
+	emit HideUISignal();
 }
 
 void luksaddkey::ShowUI()
@@ -161,23 +163,16 @@ void luksaddkey::pbOpenFile(void)
 void luksaddkey::pbOpenPartition(void)
 {
 	openpartition * openPartition = new openpartition(this);
-	openPartition->setWindowFlags(Qt::Window | Qt::Dialog);
-	openPartition->setFont(this->font());
 
 	connect(openPartition,
 		SIGNAL(clickedPartition(QString)),
 		this,
 		SLOT(partitionEntry(QString)));
 	connect(openPartition,
-		SIGNAL(HideUISignal(openpartition*)),
-		this,
-		SLOT(openpartitionFinished(openpartition*)));
+		SIGNAL(HideUISignal()),
+		openPartition,
+		SLOT(deleteLater()));
 	openPartition->ShowAllPartitions();
-}
-
-void luksaddkey::openpartitionFinished(openpartition *obj)
-{
-	obj->deleteLater();
 }
 
 void luksaddkey::rbExistingPassphrase(void)
@@ -420,11 +415,8 @@ void luksaddkey::enableAll()
 	m_ui->radioButtonPassphraseInVolumeFromFile->setEnabled(true);
 	if(m_ui->radioButtonNewPassphrase->isChecked() == true)
 		m_ui->labelReEnterPassphrase->setEnabled(true) ;
-	if(m_ui->radioButtonNewPassphraseFromFile->isChecked() == true)
-		;
-	else
+	if(m_ui->radioButtonNewPassphraseFromFile->isChecked() == false)
 		m_ui->lineEditReEnterPassphrase->setEnabled(true);
-
 }
 
 void luksaddkey::pbCancel(void)

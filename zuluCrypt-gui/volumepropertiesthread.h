@@ -11,6 +11,7 @@ class volumePropertiesThread : public QObject, public QRunnable
 	Q_OBJECT
 public:
 	explicit volumePropertiesThread(QString,QString);
+	~volumePropertiesThread();
 signals:
 	void finished(QString) ;
 public slots:	
@@ -18,6 +19,7 @@ private:
 	void run(void);
 	QString m_path ;
 	QString m_mpoint ;
+	QString m_volumeProperties ;
 };
 
 #endif // VOLUMEPROPERTIESTHREAD_H

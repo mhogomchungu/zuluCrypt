@@ -34,6 +34,9 @@ createpartition::createpartition(QWidget *parent) :
 {
 	m_ui->setupUi(this);
 	this->setFixedSize(this->size());
+	this->setWindowFlags(Qt::Window | Qt::Dialog);
+	this->setFont(parent->font());
+
 	m_ui->lineEditVolumePath->setEnabled(false);
 	m_ui->lineEditPassphrase1->setFocus();
 
@@ -130,7 +133,7 @@ void createpartition::pbCancelClicked()
 void createpartition::HideUI()
 {
 	this->hide();
-	emit HideUISignal(this);
+	emit HideUISignal();
 }
 
 void createpartition::enableAll()

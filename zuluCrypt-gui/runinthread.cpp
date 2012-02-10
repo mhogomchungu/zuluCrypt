@@ -23,6 +23,7 @@
 runInThread::runInThread(QString exe)
 {
 	m_exe = exe ;
+	m_status = -1 ;
 }
 
 void runInThread::run()
@@ -30,7 +31,11 @@ void runInThread::run()
 	QProcess p ;
 	p.start(m_exe);
 	p.waitForFinished() ;
-	int status = p.exitCode() ;
-	p.close();
-	emit finished(status);
+	m_status = p.exitCode() ;
+	p.close();	
+}
+
+runInThread::~runInThread()
+{
+	emit finished(m_status);
 }

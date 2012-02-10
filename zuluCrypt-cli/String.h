@@ -272,6 +272,12 @@ const char * StringRemoveStringPos( string_t st, const char * s,size_t p ) ;
  */
 const char * StringRemoveRight( string_t st, size_t x ) ;
 
+/*
+ * Clear the string handled by handle st. Essentiall remove all elements in it. 
+ * NULL is returned when the opefation fail.
+ */
+const char *  StringClear( string_t st ) ;
+
 
 /*
  * Cut the string from position x and discard all elements to the left of x. 

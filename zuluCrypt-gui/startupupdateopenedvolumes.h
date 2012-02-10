@@ -29,6 +29,7 @@ class startupupdateopenedvolumes : public QObject, public QRunnable
 	Q_OBJECT
 public:
 	explicit startupupdateopenedvolumes();
+	~startupupdateopenedvolumes();
 signals:
 	void addItemToTable(QString,QString) ;
 	void UIMessage(QString title,QString message) ;

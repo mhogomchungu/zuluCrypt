@@ -36,7 +36,7 @@ public:
 signals :
 	void clickedpbAdd(QString PathToVolume, bool keyfile, QString ExistingKey,bool newkeyfile, QString NewKey ) ;
 	void pbOpenPartitionClicked(void) ;
-	void HideUISignal(luksaddkey *);
+	void HideUISignal(void);
 public slots:
 	void partitionEntry(QString) ;
 	void ShowUI(void) ;
@@ -53,7 +53,6 @@ private slots:
 	void pbAdd(void) ;
 	void pbCancel(void) ;	
 	void threadfinished(int) ;
-	void openpartitionFinished(openpartition *);
 private:
 	void UIMessage(QString,QString);
 	void disableAll(void) ;

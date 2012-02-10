@@ -35,7 +35,7 @@ public:
 	explicit createkeyfile(QWidget *parent = 0);
 	~createkeyfile();
 signals:
-	void HideUISignal(createkeyfile *);
+	void HideUISignal(void);
 public slots:
 	void ShowUI(void) ;
 	void HideUI(void) ;

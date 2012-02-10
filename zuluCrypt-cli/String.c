@@ -342,19 +342,44 @@ const char * StringRemoveLength( string_t st,size_t x , size_t y )
 			strcpy( c + x,st->string + x + y ) ;
 			nst = StringInheritWithSize( c,new_size ) ;
 			StringCNSH__( st,nst ) ;
-			c = st->string ;
 		}
 	}
 	StringUnlockMutex__( mt ) ;
 	return c ;
 }
 
-const char * StringRemoveRight(string_t st, size_t x ) 
+const char * StringClear( string_t st )
+{
+	char * c ;
+	string_t nst ;
+	string_t mt = st ;
+	if( StringLockMutex__( mt ) == 1 )
+	{
+		c = realloc( st->string,1 ) ;
+		if( c != NULL )
+		{
+			st->size = 0 ;
+			*( st->string ) = '\0' ;
+		}		
+	}else{
+		c = ( char * ) malloc( sizeof( char ) ) ;
+		if( c!= NULL )
+		{
+			*c = '\0' ;
+			nst = StringInheritWithSize( c,1 ) ;
+			StringCNSH__( st,nst ) ;
+		}
+	}
+	StringUnlockMutex__( mt ) ;
+	return c ;
+}
+
+const char * StringRemoveRight( string_t st, size_t x ) 
 {
 	return StringRemoveLength( st,st->size - x ,x ) ;
 }
 
-const char * StringRemoveLeft(string_t st, size_t x ) 
+const char * StringRemoveLeft( string_t st, size_t x ) 
 {
 	return StringRemoveLength( st,0,x ) ;
 }

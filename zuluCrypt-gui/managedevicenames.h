@@ -45,7 +45,7 @@ public:
 	~managedevicenames();
 signals:
 	void ShowPartitionUI(void);
-	void HideUISignal(managedevicenames *);
+	void HideUISignal(void);
 public slots:
 	void ShowUI(void);
 	void HideUI(void);
@@ -61,12 +61,11 @@ private slots:
 	void itemClicked(QTableWidgetItem * current);
 	void shortcutPressed(void);
 	void devicePathTextChange(QString);
-	void deletePartition(openpartition *);
 private:
 	void HighlightRow(int,bool) ;
 	void closeEvent(QCloseEvent *) ;
 	void addEntries(QString,QString) ;
-	Ui::managedevicenames *m_ui;
+	Ui::managedevicenames * m_ui;
 	QAction * m_ac ;
 };
 

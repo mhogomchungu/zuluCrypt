@@ -35,7 +35,11 @@ passwordDialog::passwordDialog(QWidget *parent ) : QDialog(parent)
 {
 	m_ui = new Ui::PasswordDialog() ;
 	m_ui->setupUi(this);
+
 	this->setFixedSize(this->size());
+	this->setWindowFlags(Qt::Window | Qt::Dialog);
+	this->setFont(parent->font());
+
 	m_ui->PushButtonMountPointPath->setIcon(QIcon(QString(":/folder.png")));
 
 	m_isWindowClosable = true ;
@@ -180,7 +184,7 @@ void passwordDialog::HideUI()
 {	
 	this->hide();
 	//enableAll();
-	emit HideUISignal(this);
+	emit HideUISignal();
 }
 
 void passwordDialog::buttonOpenClicked(void )

@@ -43,7 +43,10 @@ luksdeletekey::luksdeletekey(QWidget *parent) :
 {
 	m_isWindowClosable = true ;
 	m_ui->setupUi(this);
+
 	this->setFixedSize(this->size());
+	this->setWindowFlags(Qt::Window | Qt::Dialog);
+	this->setFont(parent->font());
 
 	connect(m_ui->pushButtonDelete,
 		SIGNAL(clicked()),
@@ -162,23 +165,15 @@ void luksdeletekey::pbCancel()
 void luksdeletekey::pbOpenPartition()
 {
 	openpartition * openPartition = new openpartition(this);
-	openPartition->setWindowFlags(Qt::Window | Qt::Dialog);
-	openPartition->setFont(this->font());
-
 	connect(openPartition,
 		SIGNAL(clickedPartition(QString)),
 		this,
 		SLOT(deleteKey(QString)));
 	connect(openPartition,
-		SIGNAL(HideUISignal(openpartition*)),
-		this,
-		SLOT(openpartitionFinished(openpartition*)));
+		SIGNAL(HideUISignal()),
+		openPartition,
+		SLOT(deleteLater()));
 	openPartition->ShowAllPartitions();
-}
-
-void luksdeletekey::openpartitionFinished(openpartition * obj)
-{
-	obj->deleteLater();
 }
 
 void luksdeletekey::UIMessage(QString title, QString message)
@@ -322,7 +317,7 @@ void luksdeletekey::deleteKey(QString path)
 void luksdeletekey::HideUI()
 {
 	this->hide();
-	emit HideUISignal(this);	
+	emit HideUISignal();
 }
 
 luksdeletekey::~luksdeletekey()

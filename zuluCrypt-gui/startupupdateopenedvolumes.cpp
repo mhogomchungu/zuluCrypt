@@ -92,7 +92,10 @@ void startupupdateopenedvolumes::run()
 			continue ;
 		}
 		emit addItemToTable(device,mp) ;
-	}
-	emit finished();
+	}	
 }
 
+startupupdateopenedvolumes::~startupupdateopenedvolumes()
+{
+	emit finished();
+}

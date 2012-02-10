@@ -24,6 +24,17 @@
 
 #include "ui_openpartition.h"
 #include "partitionproperties.h"
+#include <QProcess>
+#include <iostream>
+#include <QTableWidget>
+#include <QTableWidgetItem>
+#include <QObject>
+#include <QHeaderView>
+#include <QFile>
+#include <QThreadPool>
+#include <QKeySequence>
+#include "partitionproperties.h"
+#include "../zuluCrypt-cli/executables.h"
 
 class openpartition :  public QDialog
 {
@@ -32,7 +43,7 @@ public:
 	openpartition(QWidget *parent = 0);
 	virtual ~openpartition();
 signals :
-	void HideUISignal(openpartition *);
+	void HideUISignal(void);
 	void clickedPartition(QString) ;
 public slots:
 	void tableEntryDoubleClicked(QTableWidgetItem *) ;
@@ -42,7 +53,7 @@ public slots:
 private slots:
 	void EnterKeyPressed(void);
 	void currentItemChanged( QTableWidgetItem * current, QTableWidgetItem * previous );
-	void partitionpropertiesThreadFinished(partitionproperties *);
+	void partitionpropertiesThreadFinished();
 	void partitionProperties(QStringList);
 private:	
 	void partitionList(QString,int);

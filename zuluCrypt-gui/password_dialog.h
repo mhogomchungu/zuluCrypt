@@ -38,7 +38,7 @@ public:
 	virtual ~passwordDialog();
 signals :
 	void addItemToTable(QString,QString) ;
-	void HideUISignal(passwordDialog *);
+	void HideUISignal();
 	void volumeOpened(QString,QString,passwordDialog *);
 public slots:
 	void HideUI(void);

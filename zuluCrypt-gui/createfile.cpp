@@ -33,6 +33,8 @@ createfile::createfile(QWidget *parent) :
 {
 	m_ui->setupUi(this);
 	this->setFixedSize(this->size());
+	this->setWindowFlags(Qt::Window | Qt::Dialog);
+	this->setFont(parent->font());
 
 	m_mb.addButton(QMessageBox::Yes);
 	m_mb.addButton(QMessageBox::No);
@@ -216,7 +218,7 @@ void createfile::createFileThreadFinished()
 void createfile::HideUI()
 {
 	this->hide();
-	emit HideUISignal(this);
+	emit HideUISignal();
 }
 
 void createfile::monitorFileGrowth()

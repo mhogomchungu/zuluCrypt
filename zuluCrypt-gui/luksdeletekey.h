@@ -35,7 +35,7 @@ public:
 signals:
 	void pbDeleteClicked(QString volumePath,bool passPhraseIsFile,QString passPhrase) ;
 	void pbOpenPartitionClicked(void) ;
-	void HideUISignal(luksdeletekey *);
+	void HideUISignal(void);
 public slots:
 	void ShowUI(void) ;
 	void HideUI(void) ;
@@ -50,7 +50,6 @@ private slots:
 	void pbOpenKeyFile(void) ;
 	void pbOpenVolume(void) ;
 	void threadfinished(int) ;
-	void openpartitionFinished(openpartition *);
 private:
 	void disableAll(void) ;
 	void enableAll(void) ;

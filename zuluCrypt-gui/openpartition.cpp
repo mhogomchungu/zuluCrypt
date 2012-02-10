@@ -18,17 +18,6 @@
  */
 
 #include "openpartition.h"
-#include <QProcess>
-#include <iostream>
-#include <QTableWidget>
-#include <QTableWidgetItem>
-#include <QObject>
-#include <QHeaderView>
-#include <QFile>
-#include <QThread>
-#include <QKeySequence>
-#include "partitionproperties.h"
-#include "../zuluCrypt-cli/executables.h"
 
 #define ALL_PARTITIONS 1
 #define NON_SYSTEM_PARTITIONS 3
@@ -39,6 +28,9 @@ openpartition::openpartition(QWidget *parent ) :
 	m_ui = new Ui::PartitionView() ;
 	m_ui->setupUi(this);
 	this->setFixedSize(this->size());
+	this->setWindowFlags(Qt::Window | Qt::Dialog);
+	this->setFont(parent->font());
+
 	connect(m_ui->tableWidget,
 		SIGNAL(itemDoubleClicked(QTableWidgetItem *)),
 		this,
@@ -121,19 +113,20 @@ void openpartition::partitionList(QString title, int type)
 	while ( m_ui->tableWidget->rowCount() > 0 )
 		m_ui->tableWidget->removeRow(0);
 
-	partitionproperties * pp = new partitionproperties(type);
+	partitionproperties * op = new partitionproperties(type);
 
-	connect(pp,
-		SIGNAL(finished(partitionproperties*)),
+	connect(op,
+		SIGNAL(finished()),
 		this,
-		SLOT(partitionpropertiesThreadFinished(partitionproperties*)));
-	connect(pp,
+		SLOT(partitionpropertiesThreadFinished()));
+	connect(op,
 		SIGNAL(partitionProperties(QStringList)),
 		this,
 		SLOT(partitionProperties(QStringList)));
 
 	m_ui->tableWidget->setEnabled( false );
-	pp->start();
+
+	QThreadPool::globalInstance()->start(op);
 
 	this->show();
 }
@@ -151,16 +144,16 @@ void openpartition::partitionProperties(QStringList entry)
 	m_ui->tableWidget->setCurrentCell(row,4);
 }
 
-void openpartition::partitionpropertiesThreadFinished(partitionproperties *obj)
+void openpartition::partitionpropertiesThreadFinished()
 {
 	m_ui->tableWidget->setEnabled( true );
-	obj->deleteLater();
+	m_ui->tableWidget->setFocus();
 }
 
 void openpartition::HideUI()
 {
 	this->hide();
-	emit HideUISignal(this);
+	emit HideUISignal();
 }
 
 void openpartition::tableEntryDoubleClicked(QTableWidgetItem * item)

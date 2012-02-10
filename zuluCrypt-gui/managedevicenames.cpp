@@ -24,8 +24,11 @@
 managedevicenames::managedevicenames(QWidget *parent) :
         QWidget(parent),
 	m_ui(new Ui::managedevicenames)
-{
+{	
 	m_ui->setupUi(this);
+	this->setWindowFlags(Qt::Window | Qt::Dialog);
+	this->setFont(parent->font());
+
 	connect(m_ui->pbDeviceAddress,
 		SIGNAL(clicked()),
 		this,
@@ -88,25 +91,17 @@ void managedevicenames::shortcutPressed()
 void managedevicenames::deviceAddress()
 {
 	openpartition *openPartition = new openpartition(this) ;
-	openPartition->setWindowFlags(Qt::Window | Qt::Dialog);
-	openPartition->setFont(this->font());
 
 	connect(openPartition,
 		SIGNAL(clickedPartition(QString)),
 		this,
 		SLOT(PartitionEntry(QString)));
 	connect(openPartition,
-		SIGNAL(HideUISignal(openpartition *)),
-		this,
-		SLOT(deletePartition(openpartition *)));
+		SIGNAL(HideUISignal()),
+		openPartition,
+		SLOT(deleteLater()));
 
 	openPartition->ShowAllPartitions();
-}
-
-void managedevicenames::deletePartition(openpartition *obj)
-{
-	m_ui->tableWidget->setFocus();
-	obj->deleteLater();
 }
 
 void managedevicenames::ShowUI()
@@ -130,7 +125,7 @@ void managedevicenames::ShowUI()
 void managedevicenames::HideUI()
 {
 	this->hide();	
-	emit HideUISignal(this);
+	emit HideUISignal();
 }
 
 void managedevicenames::addEntries(QString dev, QString m_point)

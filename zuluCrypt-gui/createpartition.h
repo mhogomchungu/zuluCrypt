@@ -39,7 +39,7 @@ public:
 	~createpartition();
 signals:
 	void CreateVolume(QString fileSystem,QString containterType,QString volumePath,QString passphrase,bool passphraseFromFile) ;
-	void HideUISignal(createpartition *);
+	void HideUISignal(void);
 public slots:
 	void ShowPartition(QString volume) ;
 	void ShowFile(QString volume) ;

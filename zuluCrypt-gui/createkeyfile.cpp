@@ -34,6 +34,9 @@ createkeyfile::createkeyfile(QWidget *parent) :
     m_ui(new Ui::createkeyfile)
 {
 	m_ui->setupUi(this);
+	this->setWindowFlags(Qt::Window | Qt::Dialog);
+	this->setFont(parent->font());
+
 	m_ui->pbOpenFolder->setIcon(QIcon(QString(":/folder.png")));
 	connect(m_ui->pbCreate,SIGNAL(clicked()),this,SLOT(pbCreate())) ;
 	connect(m_ui->pbOpenFolder,SIGNAL(clicked()),this,SLOT(pbOpenFolder())) ;
@@ -44,7 +47,7 @@ createkeyfile::createkeyfile(QWidget *parent) :
 void createkeyfile::HideUI()
 {
 	this->hide();
-	emit HideUISignal(this);
+	emit HideUISignal();
 }
 
 void createkeyfile::closeEvent(QCloseEvent *e)
