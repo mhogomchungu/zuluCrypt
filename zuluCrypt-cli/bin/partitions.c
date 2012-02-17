@@ -24,63 +24,14 @@
 
 #define BUFFER_SIZE 512
 
-int getPartitionEntry( char * b,char * buffer,FILE * fd )
-{
-	/*
-	 *  cat /proc/partitions 
-	 m ajor minor  #blocks  name    *
-	 
-	 8        0   78150744 sda
-	 8        1   11566768 sda1
-	 8        2          1 sda2
-	 8        5   66581361 sda5
-	 8       16  312571224 sdb
-	 8       17    1044193 sdb1
-	 8       18          1 sdb2
-	 8       21  311524416 sdb5
-	 8       32  244198583 sdc
-	 8       33  244196001 sdc1
-	 7        0      10240 loop0
-	 
-	Above its the list of all partitions in my sytem as reported by "/proc/partitions"
-	
-	Below code will take only enties with atleast 4 characters and that start with sd or hd. 
-	In my case, sda1,sda2,sda5,sdb1,sdb2,sdb5 and sdc1
-	 * 
-	 * */
-	char * c ;
-	char * d ;	
-	char * e = fgets( buffer,BUFFER_SIZE,fd  ) ;
-	
-	if( e == NULL )
-		return 0 ;
-	
-	c = buffer ;
-	while( *++c != '\n' ) { ; }
-	*c = '\0';
-	d = c ;
-	while( *--d != ' ' ) { ; }
-	d++ ;		
-	
-	if( strlen( d ) <= 3  )
-		return 1 ;
-	
-	if( ( strncmp( d,"hd", 2 ) == 0 || strncmp( d,"sd",2 ) == 0 ) )
-	{
-		strcpy( b , d ) ;
-		return 2 ;
-	}	
-	return 1 ;
-}
-
 stringList_t partitionList( void )
 {
 	stringList_t stl = NULL;
-	FILE * fd ;
-	
+	FILE * fd ;	
 	char buffer[ BUFFER_SIZE ];
-	char device[ DEVICE_LENGHT ] ;
-	int r ;
+	char device[ DEVICE_LENGHT ] ;	
+	char * c ;
+	char * d ;
 	
 	fd = fopen( "/proc/partitions","r" ) ;
 	
@@ -89,12 +40,25 @@ stringList_t partitionList( void )
 
 	strcpy( device, "/dev/" ) ;
 	
-	while ( ( r = getPartitionEntry( device + 5,buffer,fd ) ) )
+	while( fgets( buffer,BUFFER_SIZE,fd  ) != NULL )
 	{
-		if( r == 2 )
+		c = buffer ;
+		while( *++c != '\n' ) { ; }
+		*c = '\0';
+		d = c ;
+		while( *--d != ' ' ) { ; }
+		d++ ;		
+		
+		if( strlen( d ) <= 3  )
+			continue ;
+		
+		if( ( strncmp( d,"hd", 2 ) == 0 || strncmp( d,"sd",2 ) == 0 ) )
+		{
+			strcpy( device + 5, d ) ;
 			stl = StringListAppend( stl,device );
-	}	
-	
+		}	
+	}
+		
 	fclose( fd );
 
 	return stl ;
@@ -217,9 +181,7 @@ stringList_t partitions( int option )
 	
 	if( fd != NULL ){
 		while ( fgets( buffer,BUFFER_SIZE,fd  ) != NULL ){	
-			if( buffer[0] == '#' )
-				continue ;
-			if( buffer[0] == '\n' )
+			if( buffer[0] == '#' || buffer[0] == '\n')
 				continue ;
 			c = buffer ;
 			while(  *++c != '/'  ) { ; }
