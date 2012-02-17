@@ -19,18 +19,19 @@
 
 #include "includes.h"
 
-int check_empty_slot( char * device )
+int check_empty_slot( const char * device )
 {
-	char * c ;
-	char * e = empty_slots( device ) ; 
-	if( e == NULL )
-		return 1 ;
-	c = strchr( e, '0' ) ;
-	free( e ) ;
-	if( c == NULL )
-		return 2 ;
-	else
-		return 0 ;
+	int i = 0 ;
+	char * c = empty_slots( device ) ;
+	char * d = c - 1 ;
+	while( *++d )
+	{
+		if( *d == '0' )
+			i++ ;
+	}
+	if( c != NULL )
+		free( c ) ;
+	return i ;
 }
 
 int addkey( int argn,char * device,char * keyType1,char * existingKey,char * keyType2,char * newKey )
@@ -52,10 +53,15 @@ int addkey( int argn,char * device,char * keyType1,char * existingKey,char * key
 		status = 4 ;
 		goto out ;
 	}
-
-	switch( check_empty_slot( device ) ){
-		case 1 : status = 2 ; goto out ; 
-		case 2 : status = 10 ; goto out ;
+	
+	if( is_luks( device ) == 1 ){
+		status = 3 ;
+		goto out ;
+	}
+	
+	if( check_empty_slot( device ) == 0 ){
+		status = 10 ; 
+		goto out ;
 	}
 	
 	if ( argn == 3 ){		
