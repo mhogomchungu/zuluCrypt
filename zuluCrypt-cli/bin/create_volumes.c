@@ -18,17 +18,10 @@
  */
 
 #include "includes.h"
-
-int check_partition( const char * device )
-{
-	char * c = partitions( SYSTEM_PARTITIONS ) ;	
-	char * d = strstr( c , device ) ;	
-	free( c ) ;
-	if ( d == NULL )
-		return -1 ;
-	else
-		return 1 ;	
-}
+/*
+ * defined in partitions.c 
+ */
+ssize_t check_partition( const char * device ) ;
 
 int create_volumes( int argn,char * device,char * fs,char * mode,char * keyType,char * pass,char * rng  )
 {
@@ -49,7 +42,7 @@ int create_volumes( int argn,char * device,char * fs,char * mode,char * keyType,
 		st = 9 ;
 		goto out ;		
 	}
-	if( check_partition( device ) == 1  ){		
+	if( check_partition( device ) != -1 ){		
 		st = 10 ;
 		goto out ;		
 	}		

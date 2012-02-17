@@ -28,21 +28,27 @@ extern "C" {
 #include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 
-//#define __STRING_MAKE_THREAD_SAFE
+#include "StringTypes.h"
 
 /*
- * String handle, all string operation should happen through this handle.
+ * st is a  string handle, all string operation should happen through this handle.  
  */
-typedef struct StringType * string_t ;
 
 /*
- * Initializes the string.
- * Argument:      A character array to be stored
- * Return value:  A handle to use for subsequent access to the array, NULL is returned on fail.
+ * initialize a handle with a C string
  */
-string_t String( const char * data ) ;
+string_t String( const char * cstring ) ;
 
+/*
+ * ininitialize a string handle by copying length characters from a string
+ */
+string_t StringWithSize( const char * string,size_t length ) ;
 
 /*
  * Append a string pointer to by s into a string handled by handle st 
@@ -65,14 +71,14 @@ const char * StringPrepend( string_t st ,const  char * s )  ;
  * This function should inherit strings only from a dynamically created memory.
  * The original string remains intact when the function error out.  
  */
-string_t StringInherit( char * data ) ;
+string_t StringInherit( char ** data ) ;
 
 /*
  * Inherit a string of size s pointed to by data and return a string handle to the string on success or NULL on error. 
  * This function should inherit strings only from a dynamically created memory. 
  * The original string remains intacct when the function error out. 
  */
-string_t StringInheritWithSize( char * data,size_t s ) ;
+string_t StringInheritWithSize( char ** data,size_t s ) ;
 
 /* 
  * Returns a const pointer to a string handled by handle st. 

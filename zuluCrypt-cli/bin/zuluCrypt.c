@@ -28,18 +28,32 @@
 
 #include "includes.h"
 
-//function prototypes
+/*
+ * function prototypes in this source file.
+ * */
 string_t get_passphrase( void ) ;
 
-//defined in lib/status.c
+/*
+ * defined in lib/status.c
+ * */
 char * volume_device_name( const char * ) ;
 
+/*
+ * function prototypes in this source file.
+ * */
 void help( void ) ;
 		 
 int check_system_tools( void ) ;
 
-//defined in lib/partitions.c
+/*
+ * defined in partitions.c
+ */
 int device_from_uuid(char * dev, const char * uuid ) ;
+
+/*
+ * defined in partitions.c
+ */
+int print_partitions( int option ) ;
 
 string_t get_passphrase( void )
 {	
@@ -76,14 +90,14 @@ int main( int argc , char *argv[] )
 {
 	char * action = argv[1] ;
 	char * device = argv[2] ;
-	uid_t id ;
+	
 	int status ;
 	char *  mapping_name ;
 	char * c ;
 	char dev[12];
 	char m_name[42] ;
 
-	id = getuid();		
+	uid_t id = getuid();		
 
 	if ( argc < 2 ){
 		help();
@@ -111,20 +125,9 @@ int main( int argc , char *argv[] )
 		}	
 	}
 	if( strcmp( action,"partitions" ) == 0 ){
-		switch( argv[2][0] ){	
-			case '1' : c = partitions( ALL_PARTITIONS ) ;
-			break ;
-			case '2' : c = partitions( SYSTEM_PARTITIONS ) ;
-			break ;
-			case '3' : c = partitions( NON_SYSTEM_PARTITIONS ) ;
-			break ;
-			default:
-				printf( "wrong argument\n" );
-				return 1 ;
-		}		
-		printf( "%s", c ) ;
-		free( c ) ;
-		return 0 ;
+		
+		return print_partitions( argv[2][0] ) ;
+
 	}
 	if( strncmp( device, "UUID=", 5 ) == 0 ){
 		strcpy(m_name,"UUID-");

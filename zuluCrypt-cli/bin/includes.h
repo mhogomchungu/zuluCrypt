@@ -26,7 +26,8 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 
-#include "../String.h" 
+#include "../string/String.h" 
+#include "../string/StringList.h" 
 #include "../executables.h"
 #include "../zuluCrypt.h"
  
@@ -39,7 +40,7 @@
 
 string_t get_passphrase(  void  ) ;
  
-char * partitions(  int option  ) ;
+stringList_t partitions(  int option  ) ;
  
 int volume_info(  const char * mapper, const char * device  ) ;
  

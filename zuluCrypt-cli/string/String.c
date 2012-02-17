@@ -19,35 +19,12 @@
  */
 
 #include "String.h"
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <pthread.h>
-
-
-#ifdef __STRING_MAKE_THREAD_SAFE
-	#define THREAD_SAFE 1
-#else
-	#define THREAD_SAFE 0
-#endif
 
 #ifdef __STRING_DEBUG
 	#define DEBUG 1
 #else
 	#define DEBUG 0
 #endif
-
-struct StringType
-{
-	size_t size ;
-	char * string ; 
-	int * rc ;
-#if THREAD_SAFE	
-	pthread_mutex_t * mutex ;
-#endif	
-};
 
 #if THREAD_SAFE
 void STRINGdebug__( string_t st,char * c )
@@ -197,19 +174,10 @@ inline string_t StringPrepare__( size_t size )
 	if( st == NULL )
 		return NULL ;
 	
-	st->string = ( char * ) malloc ( sizeof ( char ) * ( size + 1 ) ) ;
-	
-	if ( st->string == NULL )
-	{
-		free( st ) ;
-		return NULL ;
-	}
-	
 	st->rc = ( int * ) malloc( sizeof( int ) ) ;
 	
 	if( st->rc == NULL )
 	{
-		free( st->string ) ;
 		free( st ) ;
 		return NULL ;			
 	}
@@ -219,7 +187,6 @@ inline string_t StringPrepare__( size_t size )
 	if( st->mutex == NULL )
 	{
 		free( st->rc ) ;
-		free( st->string ) ;
 		free( st ) ;
 		return NULL ;		
 	}
@@ -239,10 +206,20 @@ string_t String( const char * c )
 	string_t st = StringPrepare__( size ) ;
 	if( st == NULL )
 		return NULL ;
+	
+	st->string = ( char * ) malloc ( sizeof ( char ) * ( size + 1 ) ) ;
+	
+	if ( st->string == NULL )
+	{
+#if THREAD_SAFE
+		free( st->mutex ) ;
+#endif	
+		free( st->rc ) ;
+		free( st ) ;
+		return NULL ;
+	}
 	st->size = size ;
-
 	memcpy( st->string,c,size + 1 ) ;
-
 	return st ;	
 }
 
@@ -253,22 +230,30 @@ void StringReadToBuffer( string_t st,char * buffer, size_t size )
 		buffer[i] = st->string[i] ;
 }
 
-string_t StringInherit( char * data )
+string_t StringInherit( char ** data )
 {
-	return StringInheritWithSize( data,strlen( data ) ) ;
+	return StringInheritWithSize( data,strlen( *data ) ) ;
 }
 
-string_t StringInheritWithSize( char * data,size_t s )
+string_t StringInheritWithSize( char ** data,size_t s )
 {
 	string_t st = StringPrepare__( s ) ;
 	if( st == NULL )
 		return NULL ;
-	st->size = s ;
-	
-	st->string = data ;
-
+	st->size = s ;	
+	st->string = *data ;
+	*data = NULL ;
 	return st ;	
 }
+
+string_t StringWithSize( const char * s,size_t len )
+{
+	char * c = ( char * ) malloc( sizeof( char ) * ( len + 1 ) ) ;
+	memcpy( c,s,len ) ;
+	*( c + len ) = '\0' ;
+	return StringInheritWithSize( &c,len ) ;
+}
+
 int StringIndexOfString( string_t st,size_t p, const char * s )
 {
 	char * c = strstr( st->string + p,s ) ;
@@ -318,7 +303,8 @@ ssize_t StringIndexOfChar( string_t st, size_t p , char s )
 
 const char * StringRemoveLength( string_t st,size_t x , size_t y ) 
 {	
-	char * c ;	
+	char * c ;
+	char * d ;
 	size_t new_size ;
 	string_t nst ;
 	string_t mt = st ;
@@ -335,12 +321,12 @@ const char * StringRemoveLength( string_t st,size_t x , size_t y )
 		}
 	}else{
 		new_size = st->size - y ;
-		c = ( char * ) malloc( sizeof( char ) * ( new_size + 1 ) ) ;
+		c = d = ( char * ) malloc( sizeof( char ) * ( new_size + 1 ) ) ;
 		if( c != NULL )
 		{
 			strncpy( c,st->string,x );
 			strcpy( c + x,st->string + x + y ) ;
-			nst = StringInheritWithSize( c,new_size ) ;
+			nst = StringInheritWithSize( &d,new_size ) ;
 			StringCNSH__( st,nst ) ;
 		}
 	}
@@ -351,6 +337,7 @@ const char * StringRemoveLength( string_t st,size_t x , size_t y )
 const char * StringClear( string_t st )
 {
 	char * c ;
+	char * d ;
 	string_t nst ;
 	string_t mt = st ;
 	if( StringLockMutex__( mt ) == 1 )
@@ -362,11 +349,11 @@ const char * StringClear( string_t st )
 			*( st->string ) = '\0' ;
 		}		
 	}else{
-		c = ( char * ) malloc( sizeof( char ) ) ;
+		d = c = ( char * ) malloc( sizeof( char ) ) ;
 		if( c!= NULL )
 		{
 			*c = '\0' ;
-			nst = StringInheritWithSize( c,1 ) ;
+			nst = StringInheritWithSize( &d,1 ) ;
 			StringCNSH__( st,nst ) ;
 		}
 	}
@@ -387,6 +374,7 @@ const char * StringRemoveLeft( string_t st, size_t x )
 const char * StringCrop( string_t st, size_t x, size_t y ) 
 {
 	char * c ;	
+	char * d ;
 	size_t new_size ;
 	string_t nst ;
 	string_t mt = st ;
@@ -404,12 +392,12 @@ const char * StringCrop( string_t st, size_t x, size_t y )
 		}
 	}else{
 		new_size = st->size - x - y ;
-		c = ( char * ) malloc( sizeof( char ) * ( new_size + 1 ) ) ;
+		d = c = ( char * ) malloc( sizeof( char ) * ( new_size + 1 ) ) ;
 		if( c != NULL )
 		{
 			strncpy( c,st->string + x,new_size );	
 			*( st->string + new_size ) = '\0';		
-			nst = StringInheritWithSize( c,new_size ) ;
+			nst = StringInheritWithSize( &d,new_size ) ;
 			StringCNSH__( st,nst ) ;
 			c = st->string ;
 		}
@@ -486,6 +474,7 @@ const char * StringStringAt( string_t st , size_t p )
 const char * StringSubChar( string_t st, size_t x, char s )
 {	
 	char * c = NULL ;
+	char * d ;
 	string_t nst;
 	string_t mt = st ;
 	
@@ -493,11 +482,11 @@ const char * StringSubChar( string_t st, size_t x, char s )
 		* ( st->string + x ) = s ;
 		c = st->string ;
 	}else{
-		c = StringLengthCopy( st,st->size ) ;
+		d = c = StringLengthCopy( st,st->size ) ;
 		if( c != NULL )
 		{
 			* ( c + x ) = s ;
-			nst = StringInheritWithSize( c,st->size ) ;
+			nst = StringInheritWithSize( &d,st->size ) ;
 			StringCNSH__( st,nst ) ;
 			c = st->string ;
 		}
@@ -530,6 +519,7 @@ void Stringsrcs__( string_t st, char x, const char * y,size_t p )
 const char * StringReplaceCharStringPos( string_t st, char x, const char * y,size_t p ) 
 {
 	char * c = NULL ;
+	char * d ;
 	string_t nst ;
 	string_t mt = st ;
 	
@@ -538,10 +528,10 @@ const char * StringReplaceCharStringPos( string_t st, char x, const char * y,siz
 		Stringsrcs__( st,x,y,p ) ;
 		c = st->string ;
 	}else{
-		c = StringLengthCopy( st,st->size ) ;
+		d = c = StringLengthCopy( st,st->size ) ;
 		if( c != NULL )
 		{
-			nst = StringInheritWithSize( c,st->size ) ;
+			nst = StringInheritWithSize( &d,st->size ) ;
 			Stringsrcs__( nst,x,y,p ) ;		
 			StringCNSH__( st,nst ) ;
 			c = st->string ;
@@ -560,17 +550,18 @@ const char * StringSubString( string_t st, size_t x, const char * s )
 {
 	string_t nst ;
 	char * e = NULL ;
+	char * d ;
 	string_t mt = st ;
 	
 	if( StringLockMutex__( mt ) == 1 ){
 		memcpy( st->string + x,s,strlen( s ) );
 		e = st->string ;
 	}else{
-		e = StringLengthCopy( st,st->size ) ;
+		d = e = StringLengthCopy( st,st->size ) ;
 		if( e != NULL )
 		{
 			memcpy( e + x,s,strlen( s ) );		
-			nst = StringInheritWithSize( e,st->size ) ;
+			nst = StringInheritWithSize( &d,st->size ) ;
 			StringCNSH__( st,nst ) ;
 			e = st->string ;
 		}
@@ -590,6 +581,7 @@ const char * StringInsertChar( string_t st, size_t x,char s )
 const char * StringPrepend( string_t st ,const  char * s )
 {
 	char * c ;	
+	char * d ;
 	size_t len ;
 	size_t new_size ;
 	string_t nst ;
@@ -610,12 +602,12 @@ const char * StringPrepend( string_t st ,const  char * s )
 		}
 	}else{
 		new_size = st->size + len ;
-		c = ( char * ) malloc( sizeof( char ) * ( new_size + 1 ) ) ;
+		d = c = ( char * ) malloc( sizeof( char ) * ( new_size + 1 ) ) ;
 		if( c != NULL )
 		{
 			memcpy( c,s,len ) ;
 			memcpy( c + len,st->string,st->size + 1 ) ;
-			nst = StringInheritWithSize( c,new_size ) ;
+			nst = StringInheritWithSize( &d,new_size ) ;
 			StringCNSH__( st,nst ) ;
 		}
 	}
@@ -626,6 +618,7 @@ const char * StringPrepend( string_t st ,const  char * s )
 const char * StringAppend( string_t st ,const char * s ) 
 {
 	char * c ;	
+	char * d ;
 	size_t len ;
 	size_t new_size ;
 	string_t nst ;
@@ -644,12 +637,12 @@ const char * StringAppend( string_t st ,const char * s )
 		}
 	}else{
 		new_size = st->size + len ;	
-		c = ( char * ) malloc( sizeof( char ) * ( new_size + 1 ) ) ;
+		d = c = ( char * ) malloc( sizeof( char ) * ( new_size + 1 ) ) ;
 		if( c != NULL )
 		{
 			memcpy( c,st->string,st->size ) ;
 			memcpy( c + st->size,s,len + 1 ) ;
-			nst = StringInheritWithSize( c,new_size ) ;
+			nst = StringInheritWithSize( &d,new_size ) ;
 			StringCNSH__( st,nst ) ;
 		}
 	}
@@ -660,6 +653,7 @@ const char * StringAppend( string_t st ,const char * s )
 const char * StringInsertString( string_t st, size_t x, const char * s )
 {
 	char * c ;	
+	char * d ;
 	size_t len ;
 	size_t new_size ;
 	string_t nst ;
@@ -680,13 +674,13 @@ const char * StringInsertString( string_t st, size_t x, const char * s )
 		}
 	}else{
 		new_size = st->size + len ;
-		c = ( char * ) malloc( sizeof( char ) * ( new_size + 1 ) ) ;
+		d = c = ( char * ) malloc( sizeof( char ) * ( new_size + 1 ) ) ;
 		if( c != NULL )
 		{
 			strncpy( c,st->string,x ) ;
 			strcpy( c + x,s ) ;
 			strcpy( c + x + len,st->string + x ) ;		
-			nst = StringInheritWithSize( c,new_size ) ;
+			nst = StringInheritWithSize( &d,new_size ) ;
 			StringCNSH__( st,nst ) ;
 		}
 	}
@@ -763,6 +757,7 @@ char * StringRS__( string_t st, const char * x, const char * s,size_t p )
 
 const char * StringReplaceStringPos( string_t st, const char * x, const char * s,size_t p ) 
 {
+	char * c ;
 	char * d ;
 	string_t nst ;
 	string_t mt = st ;
@@ -771,12 +766,12 @@ const char * StringReplaceStringPos( string_t st, const char * x, const char * s
 	{
 		d = StringRS__( st,x,s,p ) ;		
 	}else{
-		d = ( char * ) malloc( sizeof( char ) * ( st->size + 1 ) ) ;
+		c = d = ( char * ) malloc( sizeof( char ) * ( st->size + 1 ) ) ;
 
 		if( d != NULL )
 		{
 			memcpy( d,st->string,st->size + 1 ) ;
-			nst = StringInheritWithSize( d,st->size ) ;
+			nst = StringInheritWithSize( &c,st->size ) ;
 			StringCNSH__( st,nst ) ;
 			d = StringRS__( st,x,s,p ) ;
 		}
@@ -792,6 +787,7 @@ const char * StringReplaceString( string_t st, const char * x, const char * s )
 
 const char * StringRemoveStringPos( string_t st, const char * s,size_t p ) 
 {
+	char * c ;
 	char * d = NULL ;
 	string_t nst ;
 	string_t mt = st ;
@@ -800,12 +796,12 @@ const char * StringRemoveStringPos( string_t st, const char * s,size_t p )
 	{
 		d = StringRS__( st,s,"",p ) ;
 	}else{
-		d = ( char * ) malloc( sizeof( char ) * ( st->size + 1 ) ) ;
+		c = d = ( char * ) malloc( sizeof( char ) * ( st->size + 1 ) ) ;
 		
 		if( d != NULL )
 		{
 			memcpy( d,st->string,st->size + 1 ) ;
-			nst = StringInheritWithSize( d,st->size ) ;
+			nst = StringInheritWithSize( &c,st->size ) ;
 			StringCNSH__( st,nst ) ;
 			d = StringRS__( st,s,"",p ) ;
 		}		
@@ -831,16 +827,17 @@ char * StringRC__( string_t st, char x, char y,size_t p )
 const char * StringReplaceCharPos( string_t st, char x, char y,size_t p )
 {	
 	char * c = NULL ;
+	char * d ;
 	string_t nst ;
 	string_t mt = st ;
 	
 	if( StringLockMutex__( mt ) == 1 ){	
 		c = StringRC__( st,x,y,p ) ;
 	}else{
-		c = StringLengthCopy( st,st->size ) ;
+		d = c = StringLengthCopy( st,st->size ) ;
 		if( c != NULL )
 		{
-			nst = StringInheritWithSize( c,st->size ) ;
+			nst = StringInheritWithSize( &d,st->size ) ;
 			c = StringRC__( nst,x,y,p ) ;		
 			StringCNSH__( st,nst ) ;
 		}
@@ -920,6 +917,7 @@ inline char * StringICS__( string_t st, char x, const char * s,size_t p )
 const char * StringInsertCharStringPos( string_t st, char x, const char * s,size_t p ) 
 {	
 	char * d = NULL ;
+	char * c ;
 	string_t nst ;
 	string_t mt = st ;
 	
@@ -927,12 +925,12 @@ const char * StringInsertCharStringPos( string_t st, char x, const char * s,size
 	{
 		d = StringICS__( st,x,s,p ) ;
 	}else{
-		d = ( char *) malloc( sizeof( char ) * ( st->size + 1 ) ) ;	
+		c = d = ( char *) malloc( sizeof( char ) * ( st->size + 1 ) ) ;	
 		
 		if( d != NULL )
 		{
 			memcpy( d,st->string,st->size + 1 ) ;			
-			nst = StringInheritWithSize( d,st->size ) ;
+			nst = StringInheritWithSize( &c,st->size ) ;
 			d = StringICS__( nst,x,s,p ) ;
 			StringCNSH__( st,nst ) ;
 		}
@@ -977,7 +975,7 @@ int StringGetFromFile_1( string_t * str,const char * path )
 	
 	close( fd ) ;
 
-	*str = StringInheritWithSize( c, st.st_size ) ;
+	*str = StringInheritWithSize( &c, st.st_size ) ;
 	if( *str == NULL )
 	{
 		free( c ) ;

@@ -68,7 +68,7 @@ void startupupdateopenedvolumes::run()
 			if( status == 1 ){
 				QString s = tr("An inconsitency is detected, skipping /dev/mapper/zuluCrypt-%1 \
 					       because it does not look like a cryptsetup volume").arg(entry) ;
-				UIMessage(tr("WARNING"), s ) ;
+				emit UIMessage(tr("WARNING"), s ) ;
 				continue ;
 			}
 		}else{
@@ -79,13 +79,13 @@ void startupupdateopenedvolumes::run()
 			if( status == 1 ){
 				QString s = tr("An inconsitency is detected, skipping /dev/mapper/zuluCrypt-%1 \
 					       because its UUID does not match any UUID from attached partitions").arg(entry) ;
-				UIMessage(tr("WARNING"), s ) ;
+				emit UIMessage(tr("WARNING"), s ) ;
 				continue ;
 			}
 		}
 		mp = miscfunctions::readMtab(&mtab,entry) ;
 		if( mp == QString("") ){
-			UIMessage(tr("WARNING"),
+			emit UIMessage(tr("WARNING"),
 					  tr("An inconsitency is detected. Skipping \"") + \
 					  device + \
 					  tr("\" because its opened but not mounted"));
