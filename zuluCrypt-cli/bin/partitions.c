@@ -40,8 +40,7 @@ stringList_t partitionList( void )
 
 	strcpy( device, "/dev/" ) ;
 	
-	while( fgets( buffer,BUFFER_SIZE,fd  ) != NULL )
-	{
+	while( fgets( buffer,BUFFER_SIZE,fd  ) != NULL ){
 		c = buffer ;
 		while( *++c != '\n' ) { ; }
 		*c = '\0';
@@ -52,8 +51,7 @@ stringList_t partitionList( void )
 		if( strlen( d ) <= 3  )
 			continue ;
 		
-		if( ( strncmp( d,"hd", 2 ) == 0 || strncmp( d,"sd",2 ) == 0 ) )
-		{
+		if( ( strncmp( d,"hd", 2 ) == 0 || strncmp( d,"sd",2 ) == 0 ) ){
 			strcpy( device + 5, d ) ;
 			stl = StringListAppend( stl,device );
 		}	
@@ -85,8 +83,7 @@ int device_from_uuid( char * dev, const char * uuid )
 	
 	j = StringListSize( stl ) ; 
 	
-	for( i = 0 ; i < j ; i++ )
-	{
+	for( i = 0 ; i < j ; i++ ){
 		device = StringListContentAt( stl,i ) ;
 		
 		bp = blkid_new_probe_from_filename( device ) ;
@@ -119,8 +116,7 @@ void blkid( const char * type,const char * entry, int size, stringList_t * syste
 	
 	j = StringListSize( non_system ) ;
 	
-	for( i = 0 ; i < j ; i++ )
-	{
+	for( i = 0 ; i < j ; i++ ){
 		device = StringListContentAt( non_system,i ) ;
 		
 		bp = blkid_new_probe_from_filename( device ) ;

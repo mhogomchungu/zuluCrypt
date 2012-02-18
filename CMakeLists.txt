@@ -1,6 +1,9 @@
 
 cmake_minimum_required(VERSION 2.6)
 
+set( CMAKE_SHARED_LINKER_FLAGS "-s" )
+set( CMAKE_EXE_LINKER_FLAGS "-s" )
+
 find_file( blkid.h blkid/blkid.h )
  
 if(NOT blkid.h)

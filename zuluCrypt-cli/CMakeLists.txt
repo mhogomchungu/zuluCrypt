@@ -42,9 +42,7 @@
  
  find_path ( path_to_libcryptsetup.h libcryptsetup.h )
  
- add_definitions( -I${path_to_libcryptsetup.h} -D_FILE_OFFSET_BITS=64 -Wall ) 
- 
- #message( STATUS "Looking for libcryptsetup.so" )
+ add_definitions( -I${path_to_libcryptsetup.h} -D_FILE_OFFSET_BITS=64 -Wall -s ) 
  
  find_library( libcryptsetup libcryptsetup.so) 
  
@@ -78,6 +76,6 @@
             LIBRARY DESTINATION lib
  )
   
-  install(FILES zuluCrypt.h DESTINATION include )
+ install(FILES zuluCrypt.h DESTINATION include )
 
   
