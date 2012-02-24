@@ -19,10 +19,13 @@
 
 #include "includes.h"
 
+#include <unistd.h>
+#include <sys/wait.h>
+
 int create_volume( const char * dev,const char * fs,const char * type,const char * pass,size_t pass_size,const char * rng )
 {
-	string_t q ;
 	int status ;
+	pid_t frk ;
 	
 	if ( is_path_valid( dev ) == -1 )
 		return 1 ;
@@ -51,21 +54,21 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 	}else{
 		return 2 ;
 	}		
-	q = String( ZULUCRYPTmkfs );
 	
-	StringAppend( q , " -t ") ;
-	StringAppend( q , fs ) ;
-	
-	if( strcmp( fs,"vfat") == 0 )
-		StringAppend( q , " " ) ;
-	else
-		StringAppend( q , " -m 1 " ) ;
-				
-	StringAppend( q , "/dev/mapper/zuluCrypt-create-new" ) ;
-	StringAppend( q , " 1>/dev/null 2>&1" ) ;
-	execute( StringContent( q ),NULL,0 ) ;
+	frk = fork() ;
+	if( frk == 0 ){
+		close( 1 ); 
+		close( 2 );
+		if( strcmp( fs,"vfat") == 0 )
+			execl( ZULUCRYPTmkfs,"mkfs","-t","vfat","/dev/mapper/zuluCrypt-create-new",( char * ) 0 ) ;
+		else
+			execl( ZULUCRYPTmkfs,"mkfs","-t",fs,"-m","1","/dev/mapper/zuluCrypt-create-new",( char * ) 0 ) ;
+	}
+	waitpid( frk,&status,0 ) ;
 	close_mapper( "/dev/mapper/zuluCrypt-create-new" );	
-	StringDelete( &q ) ;
-	return 0 ;	
+	if( status == 0 )
+		return 0 ;
+	else
+		return 3 ;	
 }
 

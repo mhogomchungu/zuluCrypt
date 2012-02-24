@@ -90,7 +90,7 @@ stringList_t StringListAppendSize( stringList_t stl,const char * cstring,size_t 
 	stringList_t p ;
 	char * c = ( char * )malloc( sizeof( char ) * ( len + 1 ) ) ;
 	if( c == NULL )
-		return stl ;
+		return NULL ;
 	*( c + len ) = '\0' ;
 	memcpy( c,cstring,len ) ;
 	p = StringListAppendWithSize( stl,&c,len ) ;
@@ -182,6 +182,8 @@ stringList_t StringListInsertAtSize( stringList_t stl,const char * cstring,size_
 	c = ( char * ) malloc( sizeof( char ) * ( len + 1 ) ) ;
 	if( c == NULL )
 		return NULL ;
+	memcpy( c,cstring,len );
+	*( c + len ) = '\0' ;
 	q = StringInheritWithSize( &c,len ) ;
 	if( q == NULL )
 	{
@@ -194,8 +196,6 @@ stringList_t StringListInsertAtSize( stringList_t stl,const char * cstring,size_
 		StringDelete( &q ) ;
 		return NULL ;
 	}
-	memcpy( c,cstring,len );
-	*( c + len ) = '\0' ;
 	stl->stp = p ;
 	memmove( stl->stp + index + 1,stl->stp + index,size * ( stl->size - index ) ) ;	
 	stl->stp[index] = q ; 	
