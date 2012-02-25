@@ -45,14 +45,14 @@ int unmount_volume( const char * map, char ** m_point )
 	int h = 3 ;
 	int status ;
 	int map_len = strlen( map ) ;
-	char path[ 16 ] ;
+	char * path ;
 	mnt_lock * lock ;
 	struct mntent * mt ;
 	
 	if ( stat( map , &st ) != 0 )
 		return 1 ;		
 	
-	realpath( "/etc/mtab", path ) ;	
+	path = realpath( "/etc/mtab",NULL ) ;	
 
 	f = setmntent( path ,"r" ) ;
 	
@@ -102,5 +102,6 @@ int unmount_volume( const char * map, char ** m_point )
 	if( h != 0 && h != 3 && h != 4 )
 		h = 2 ;
 
+	free( path ) ;
 	return h ;
 }
