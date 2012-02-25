@@ -19,6 +19,9 @@
 
 #include "includes.h"
 
+#include <stdio.h>
+#include <limits.h>
+
 int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount_point,char * mode,char * source,char * pass )
 {
 	string_t passphrase  ;	
@@ -30,12 +33,11 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 	const char * cpoint ;
 	const char * cpass ;
 	
+	char * c ;
+	
 	size_t len ;
 	int st = 0 ;
-
-	m_name = String( mapping_name ) ;
-	m_point = String( mount_point );
-
+	
 	if ( argn != 5 && argn != 7 ){
 		st = 11 ;
 		goto out ;
@@ -55,23 +57,24 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 			st = 13 ;
 			goto out ;	
 		}
-	}		
+	}
 	
-	replace_bash_special_chars( m_name ) ;
-	
-	StringPrepend( m_name,"zuluCrypt-") ;
-	
-	while( StringEndsWithChar( m_point , '/' ) == 0 )
-		StringRemoveRight( m_point,1 );
-	
-	StringReplaceString( m_point,"////","/" ) ;	
-	StringReplaceString( m_point,"///","/" ) ;	
-	StringReplaceString( m_point,"//","/" ) ;
-	
-	if ( mkdir( StringContent( m_point ), S_IRWXU ) != 0 ){		
+	if ( mkdir( mount_point, S_IRWXU ) != 0 ){		
 		st = 5 ;			
 		goto out ;	
 	}	
+	
+	c = realpath( mount_point,NULL ) ;
+	if( c == NULL ){
+		st = 16 ;
+		goto out ;			
+	}
+	
+	m_point = StringInherit( &c ) ;
+
+	m_name = String( mapping_name ) ;	
+	replace_bash_special_chars( m_name ) ;	
+	StringPrepend( m_name,"zuluCrypt-" ) ;
 	
 	cname = StringContent( m_name ) ;
 	cpoint = StringContent( m_point ) ;
@@ -102,12 +105,18 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 	}else{
 		st =  11 ;			
 	}
-	out:
-	if( st == 0 )
-		 printf( "SUCCESS: Volume opened successfully\n" );
-	else{		
+	
+	if( st != 0 )
 		remove( StringContent( m_point ) ) ;
-		switch ( st ){
+	
+	StringDelete( &m_name ) ;	
+	StringDelete( &m_point ) ;	
+	
+	out:
+	
+	switch ( st ){
+			case 0 : printf( "SUCCESS: Volume opened successfully\n" ) ;
+				break ;
 			case 1 : printf( "ERROR: no free loop device to use\n" ) ; 
 				break ;					
 			case 2 : printf( "ERROR: there seem to be an open volume accociated with given address\n" );
@@ -135,12 +144,11 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 			case 14 : printf( "ERROR: could not get enought memory to hold the key file\n" );		
 				break ;
 			case 15 : printf( "ERROR: failed to open volume and failed to close the mapper, advice to do it manunally\n" );		
-					 break ;
+				break ;
+			case 16 : printf( "ERROR: could not resolve full path of mount point\n" );		
+					 break ;		 
 			default :
 				;
-		}
 	}	
-	StringDelete( &m_name ) ;
-	StringDelete( &m_point ) ;
 	return st ;
 }

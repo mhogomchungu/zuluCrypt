@@ -63,7 +63,7 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 {
 	struct mntent mt  ;
 	blkid_probe blkid ;
-	char path[ 16 ] ;
+	char * path ;
 	int h ;
 	const char * cf ;	
 	FILE * f ;
@@ -90,7 +90,7 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 		return 4 ;
 	}
 	
-	realpath( "/etc/mtab", path ) ;
+	path = realpath( "/etc/mtab",NULL ) ;
 	
 	if( strncmp( path,"/proc",5 ) == 0 )
 		h = mount_mapper( mapper,m_point,mode,id, StringContent( fs ),&options ) ;
@@ -118,6 +118,7 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 		}	
 		mnt_free_lock( m_lock ) ;
 	}
+	free( path ) ;
 	StringDelete( &fs ) ;
 	StringDelete( &options ) ;
 	return h ;

@@ -26,14 +26,15 @@
 #include <fcntl.h>
 #include <blkid/blkid.h>
 
-char * loop_device_address( const char * device, char * path )
+char * loop_device_address( const char * device )
 {
 	int fd ;
+	char * path ;
 	struct loop_info64 l_info ;
 	
 	fd = open( device , O_RDONLY ) ;
 	ioctl( fd, LOOP_GET_STATUS64, &l_info ) ;
-	realpath( ( char * ) l_info.lo_file_name, path ) ;
+	path = realpath( ( char * ) l_info.lo_file_name,NULL ) ;
 	close( fd ) ;
 	return path ;
 }
@@ -43,7 +44,7 @@ char * status( const char * mapper )
 	#define SIZE 33
 	char buffer[ SIZE ] ;
 	const char * e ;
-	char path[ 512 ] ;
+	char * path ;
 	
 	int luks = 0 ;
 	int i ;
@@ -95,7 +96,9 @@ char * status( const char * mapper )
 	
 	if( strncmp( e ,"/dev/loop",9 ) == 0 ){
 		StringAppend( properties,"\n loop:   \t" );
-		StringAppend( properties, loop_device_address( e,path ) ) ;
+		path = loop_device_address( e ) ;
+		StringAppend( properties,path ) ;
+		free( path ) ;
 	}
 	StringAppend( properties,"\n offset:\t");
 	StringAppend( properties,StringIntToString( buffer,SIZE,crypt_get_data_offset( cd ) ) )  ;
@@ -134,7 +137,7 @@ char * status( const char * mapper )
 char * volume_device_name( const char * mapper )
 {
 	struct crypt_device * cd;
-	char path[ 512 ] ;
+	char * path ;
 	int i ;
 	string_t address ;
 	const char * e ;
@@ -148,9 +151,10 @@ char * volume_device_name( const char * mapper )
 	
 	e = crypt_get_device_name( cd ) ;	
 	
-	if( strncmp( e ,"/dev/loop",9 ) == 0 )
-		address = String( loop_device_address( e,path ) ) ;		
-	else
+	if( strncmp( e ,"/dev/loop",9 ) == 0 ){
+		path = loop_device_address( e ) ;
+		address = StringInherit( &path ) ;	
+	}else
 		address = String( e ) ;
 	
 	crypt_free( cd ) ;
