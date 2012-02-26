@@ -57,9 +57,8 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 			st = 13 ;
 			goto out ;	
 		}
-	}
-	
-	if ( mkdir( mount_point, S_IRWXU ) != 0 ){		
+	}	
+	if( mkdir( mount_point,S_IRWXU ) != 0 ){		
 		st = 5 ;			
 		goto out ;	
 	}	

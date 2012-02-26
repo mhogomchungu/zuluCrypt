@@ -21,17 +21,21 @@
 
 int check_empty_slot( const char * device )
 {
-	int i = 0 ;
+	int status = 0 ;
 	char * c = empty_slots( device ) ;
-	char * d = c - 1 ;
-	while( *++d )
-	{
-		if( *d == '0' )
-			i++ ;
-	}
-	if( c != NULL )
-		free( c ) ;
-	return i ;
+	char * d  ;
+	
+	if( c == NULL )
+		return 1 ;
+	d = c - 1 ;
+	while( *++d ){
+		if( *d == '0' ){
+			status = 2 ;
+			break ;
+		}
+	}	
+	free( c ) ;
+	return status ;
 }
 
 int addkey( int argn,char * device,char * keyType1,char * existingKey,char * keyType2,char * newKey )
@@ -59,9 +63,9 @@ int addkey( int argn,char * device,char * keyType1,char * existingKey,char * key
 		goto out ;
 	}
 	
-	if( check_empty_slot( device ) == 0 ){
-		status = 10 ; 
-		goto out ;
+	switch( check_empty_slot( device ) ){
+		case 0 : status = 10 ; goto out ;
+		case 1 : status = 2  ; goto out ;
 	}
 	
 	if ( argn == 3 ){		
