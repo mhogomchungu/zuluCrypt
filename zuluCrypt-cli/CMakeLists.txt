@@ -16,13 +16,22 @@
 	 
  message( STATUS "Found sys/mount.h  : " ${mount_sys} )
 	 
- find_file ( mount mount/mount.h )
+ find_file ( mount_1 mount/mount.h )
  
- if(NOT mount)
-	 message (FATAL_ERROR "ERROR: could not find mount/mount.h header file")
- endif(NOT mount)
+ find_file ( mount_2 libmount/libmount.h )
  
- message( STATUS "Found mount/mount.h  : " ${mount} )
+ if(NOT mount_1)
+	 if(NOT mount_2)	 
+	 	message (FATAL_ERROR "ERROR: could not find libmount header file(mount/mount.h or libmount/limount.h")
+	 else(mount_2)
+		 message( STATUS "Found libmount/libmount.h  : " ${mount_2} )	
+		 file(WRITE libmount_header.h "#define USE_UNSTABLE_LIBMOUNT_API 1\n#include <libmount/libmount.h>")
+	 endif(NOT mount_2)
+ else(mount_1)
+	 message( STATUS "Found mount/mount.h  : " ${mount_1} )	
+	 file(WRITE libmount_header.h "#define USE_UNSTABLE_LIBMOUNT_API 1\n#include <mount/mount.h>")	 
+ endif(NOT mount_1)
+ 
  
  find_library( mountLibrary libmount.so )
  

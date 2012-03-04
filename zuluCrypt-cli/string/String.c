@@ -254,7 +254,7 @@ string_t StringWithSize( const char * s,size_t len )
 	return StringInheritWithSize( &c,len ) ;
 }
 
-int StringIndexOfString( string_t st,size_t p, const char * s )
+ssize_t StringIndexOfString( string_t st,size_t p, const char * s )
 {
 	char * c = strstr( st->string + p,s ) ;
 	

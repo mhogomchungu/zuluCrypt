@@ -25,8 +25,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define USE_UNSTABLE_LIBMOUNT_API 1
-#include <mount/mount.h>
+#include "../libmount_header.h"
 
 int mount_mapper( const char * mapper,const char * m_point,const char * mode,uid_t id, const char * fs, string_t * options )
 {

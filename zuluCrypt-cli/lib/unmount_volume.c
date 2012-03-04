@@ -23,8 +23,7 @@
 #include <sys/mount.h>
 #include <stdlib.h>
 
-#define USE_UNSTABLE_LIBMOUNT_API 1
-#include <mount/mount.h>
+#include "../libmount_header.h"
 
 int entry_found( const char * map, const char * m_dir, char ** m_point )
 {
