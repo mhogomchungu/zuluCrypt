@@ -32,25 +32,25 @@ int mount_mapper( const char * mapper,const char * m_point,const char * mode,uid
 {
 	unsigned long mountflags = 0 ;
 	int h ;
-	char uid[ 5 ] ;
-	char * d = StringIntToString( uid, 5, id ) ;	
+	char uid_s[ 5 ] ;
+	char * uid = StringIntToString( uid_s,5,id ) ;	
 	string_t opt ;
 	
-	if ( strcmp( mode, "ro" ) == 0 )
+	if( strcmp( mode,"ro" ) == 0 )
 		mountflags = MS_RDONLY ;
 	
-	if( strcmp( fs, "vfat" ) == 0 ){
+	if( strcmp( fs,"vfat" ) == 0 ){
 		opt = String( "dmask=077,uid=" ) ;
-		StringAppend( opt ,d ) ;
-		StringAppend( opt , ",gid=" ) ;
-		StringAppend( opt ,d );
-		h = mount( mapper, m_point,fs,mountflags,StringContent( opt ) ) ;	
-		StringPrepend( opt ,"," ) ;
-		StringPrepend( opt , mode ) ;
+		StringAppend( opt,uid ) ;
+		StringAppend( opt,",gid=" ) ;
+		StringAppend( opt,uid );
+		h = mount( mapper,m_point,fs,mountflags,StringContent( opt ) ) ;	
+		StringPrepend( opt,"," ) ;
+		StringPrepend( opt,mode ) ;
 	}else{		
 		opt = String( mode ) ;
-		h = mount( mapper, m_point,fs,mountflags,NULL) ;	
-		if( h == 0 && mountflags != MS_RDONLY){			
+		h = mount( mapper,m_point,fs,mountflags,NULL ) ;	
+		if( h == 0 && mountflags != MS_RDONLY ){			
 			chmod( m_point,S_IRWXU ) ;
 			chown( m_point,id,id ) ;
 		}
@@ -73,45 +73,41 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 	
 	blkid = blkid_new_probe_from_filename( mapper ) ;
 	blkid_do_probe( blkid );
-	h = blkid_probe_lookup_value( blkid , "TYPE", &cf, NULL ) ;
 	
-	if( cf != NULL )
-		fs = String( cf ) ;
+	if( blkid_probe_lookup_value( blkid,"TYPE",&cf,NULL ) != 0 ){
+		/*
+		 * Attempt to read volume file system has failed because either an attempt to open a plain based volumes with
+		 * a wrong password was made or the volume has no file system.
+		 */		
+		blkid_free_probe( blkid );
+		return 4 ;		
+	}
+	fs = String( cf ) ;
 	
 	blkid_free_probe( blkid );
-	
-	if( h != 0 ){
-		/*
-		 * Attempt to read volume system has failed. This could be due to a luks volume not having a file system
-		 * or either a plain volume opened with a wrong passphrase or with the right one but on a volume with no
-		 * file system.		 * 
-		 */
-		StringDelete( &fs ) ;
-		return 4 ;
-	}
 	
 	path = realpath( "/etc/mtab",NULL ) ;
 	
 	if( strncmp( path,"/proc",5 ) == 0 )
-		h = mount_mapper( mapper,m_point,mode,id, StringContent( fs ),&options ) ;
+		h = mount_mapper( mapper,m_point,mode,id,StringContent( fs ),&options ) ;
 	else{
 		/* "/etc/mtab" is not a symbolic link to /proc/mounts, manually,add an entry to it since 
 		 * mount command does not
 		 */		
-		m_lock = mnt_new_lock( "/etc/mtab~", getpid() ) ;
+		m_lock = mnt_new_lock( "/etc/mtab~",getpid() ) ;
 		if( mnt_lock_file( m_lock ) != 0 ){
 			h = 12 ;
 		}else{		
-			h = mount_mapper( mapper,m_point,mode,id, StringContent( fs ),&options ) ;
+			h = mount_mapper( mapper,m_point,mode,id,StringContent( fs ),&options ) ;
 			if( h == 0 ){
 				f = setmntent( "/etc/mtab","a" ) ;	
 				mt.mnt_fsname = ( char * ) mapper ;
-				mt.mnt_dir =    ( char * ) m_point ;
-				mt.mnt_type =   ( char * ) StringContent( fs ) ;	
-				mt.mnt_opts =   ( char * ) StringContent( options ) ;
-				mt.mnt_freq =   0 ;
+				mt.mnt_dir    = ( char * ) m_point ;
+				mt.mnt_type   = ( char * ) StringContent( fs ) ;	
+				mt.mnt_opts   = ( char * ) StringContent( options ) ;
+				mt.mnt_freq   = 0 ;
 				mt.mnt_passno = 0 ;
-				addmntent( f, &mt ) ;	
+				addmntent( f,&mt ) ;	
 				endmntent( f ) ;
 			}
 			mnt_unlock_file( m_lock ) ;

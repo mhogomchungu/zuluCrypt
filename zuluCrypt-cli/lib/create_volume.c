@@ -59,7 +59,7 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 	if( frk == 0 ){
 		close( 1 ); 
 		close( 2 );
-		if( strcmp( fs,"vfat") == 0 )
+		if( strcmp( fs,"vfat" ) == 0 )
 			execl( ZULUCRYPTmkfs,"mkfs","-t","vfat","/dev/mapper/zuluCrypt-create-new",( char * ) 0 ) ;
 		else
 			execl( ZULUCRYPTmkfs,"mkfs","-t",fs,"-m","1","/dev/mapper/zuluCrypt-create-new",( char * ) 0 ) ;

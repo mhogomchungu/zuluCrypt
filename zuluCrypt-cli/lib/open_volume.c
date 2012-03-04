@@ -38,7 +38,7 @@ int open_volume( const char * dev,const char * map,const char * m_point,uid_t id
 	else
 		h = open_plain( dev,map,mode,pass,pass_size,"cbc-essiv:sha256" ) ;
 		
-	switch ( h ){
+	switch( h ){
 		case 1 : return 4 ;
 		case 2 : return 8 ; 
 		case 3 : return 3 ;	 
