@@ -68,11 +68,11 @@
  
  add_executable( zuluCrypt-cli bin/replace_bash_special_chars.c bin/zuluCrypt.c bin/close_volume.c bin/add_key.c bin/volume_info.c bin/open_volume.c bin/partitions.c bin/create_volumes.c bin/remove_key.c) 
  
- TARGET_LINK_LIBRARIES( zuluCrypt ${libcryptsetup} String StringList ${blkid} ${mountLibrary} )
+ TARGET_LINK_LIBRARIES( zuluCrypt ${libcryptsetup} String ${blkid} ${mountLibrary} )
  
  set_target_properties( zuluCrypt PROPERTIES SOVERSION "1.1.0" )
  
- TARGET_LINK_LIBRARIES( zuluCrypt-cli zuluCrypt String ${blkid} ) 
+ TARGET_LINK_LIBRARIES( zuluCrypt-cli zuluCrypt String StringList ${blkid} ) 
  
  install(TARGETS zuluCrypt-cli 
             RUNTIME DESTINATION bin
