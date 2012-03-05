@@ -22,8 +22,7 @@
 #include <mntent.h>
 #include <sys/mount.h>
 #include <stdlib.h>
-
-#include "../libmount_header.h"
+#include <libmount/libmount.h>
 
 int entry_found( const char * map, const char * m_dir, char ** m_point )
 {
@@ -45,7 +44,7 @@ int unmount_volume( const char * map, char ** m_point )
 	int status ;
 	int map_len = strlen( map ) ;
 	char * path ;
-	mnt_lock * lock ;
+	struct libmnt_lock * lock ;
 	struct mntent * mt ;
 	
 	if( stat( map,&st ) != 0 )
