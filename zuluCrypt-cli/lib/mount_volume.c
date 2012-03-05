@@ -24,7 +24,8 @@
 #include <blkid/blkid.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <libmount/libmount.h>
+
+#include "../libmount_header.h"
 
 int mount_mapper( const char * mapper,const char * m_point,const char * mode,uid_t id, const char * fs, string_t * options )
 {
@@ -65,9 +66,11 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 	int h ;
 	const char * cf ;	
 	FILE * f ;
-	
+#if USE_NEW_LIBMOUNT_API
 	struct libmnt_lock * m_lock ;
-	
+#else
+	mnt_lock * m_lock ;
+#endif
 	string_t options = NULL ;
 	string_t fs = NULL ;
 	
