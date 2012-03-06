@@ -48,22 +48,17 @@ int open_volume( const char * dev,const char * map,const char * m_point,uid_t id
 	StringAppend( mapper,map ) ;
 	h = mount_volume( StringContent( mapper ),m_point,mode,id ) ;	
 	
-	if( h != 0 && luks == 1 ){
+	if( h != 0 && close_mapper( map ) == 0 ){	
 		/*
 		 * opening a plain volume failed,try to reopen it in legacy/compatibility mode
 		 */
-		if( close_mapper( map ) != 0 ){
-			h = 15 ;
-			goto out ;
-		}
 		open_plain( dev,map,mode,pass,pass_size,"cbc-plain" ) ;
-		h = mount_volume( StringContent( mapper ),m_point,mode,id ) ;
-	}
-	
-	if( h != 0 )
-		if( close_mapper( map ) != 0 )
+		h = mount_volume( StringContent( mapper ),m_point,mode,id ) ;	
+		if( h != 0 && close_mapper( map ) != 0 )
 			h = 15 ;
-	out:
+	}else{
+		h = 15 ;
+	}
 	StringDelete( &mapper ) ;
 	return h ;
 }
