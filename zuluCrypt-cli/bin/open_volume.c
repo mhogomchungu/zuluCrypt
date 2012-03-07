@@ -48,7 +48,7 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 			goto out ;			
 		}
 	}	
-	if( is_path_valid( mount_point ) == 1 ){		
+	if( is_path_valid( mount_point ) == 0 ){		
 		st = 9 ;
 		goto out ;
 	}	
@@ -114,40 +114,40 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 	out:
 	
 	switch ( st ){
-			case 0 : printf( "SUCCESS: Volume opened successfully\n" ) ;
-				break ;
-			case 1 : printf( "ERROR: no free loop device to use\n" ) ; 
-				break ;					
-			case 2 : printf( "ERROR: there seem to be an open volume accociated with given address\n" );
-				break ;				
-			case 3 : printf( "ERROR: no file or device exist on given path\n" ) ; 
-				break ;		
-			case 4 : printf( "ERROR: wrong passphrase\n" );		
-				break ;			
-			case 5 : printf( "ERROR: could not create mount point, invalid path or path already taken\n" ) ;
-				break ;		
-			case 6 : printf( "ERROR: passphrase file does not exist\n" );
-				break ;	
-			case 11 : printf( "ERROR: wrong number of arguments, run zuluCrypt with \"-h\" for help\n" );
-				break ;
-			case 8 : printf( "ERROR: failed to open volume\n" );
-				break ;	
-			case 10 : printf( "ERROR: \",\" ( comma ) is not a valid mount point\n" );
-				break ;
-			case 9 :  printf( "ERROR: mount point path is already taken\n" );		
-				break ;	
-			case 12 :  printf( "ERROR: could not get a lock on /etc/mtab~\n" );		
-				 break ;
-			case 13 :  printf( "ERROR: wrong argument for mode, valid options are \"rw\" or \"ro\"\n" );		
-				  break ;
-			case 14 : printf( "ERROR: could not get enought memory to hold the key file\n" );		
-				break ;
-			case 15 : printf( "ERROR: failed to open volume and failed to close the mapper, advice to do it manunally\n" );		
-				break ;
-			case 16 : printf( "ERROR: could not resolve full path of mount point\n" );		
-					 break ;		 
-			default :
-				;
-	}	
+		case 0 : printf( "SUCCESS: Volume opened successfully\n" ) ;
+			break ;
+		case 1 : printf( "ERROR: no free loop device to use\n" ) ; 
+			break ;					
+		case 2 : printf( "ERROR: there seem to be an open volume accociated with given address\n" );
+			break ;				
+		case 3 : printf( "ERROR: no file or device exist on given path\n" ) ; 
+			break ;		
+		case 4 : printf( "ERROR: wrong passphrase\n" );		
+			break ;			
+		case 5 : printf( "ERROR: could not create mount point, invalid path or path already taken\n" ) ;
+			break ;		
+		case 6 : printf( "ERROR: passphrase file does not exist\n" );
+			break ;	
+		case 11 : printf( "ERROR: wrong number of arguments, run zuluCrypt with \"-h\" for help\n" );
+			break ;
+		case 8 : printf( "ERROR: failed to open volume\n" );
+			break ;	
+		case 10 : printf( "ERROR: \",\" ( comma ) is not a valid mount point\n" );
+			break ;
+		case 9 :  printf( "ERROR: mount point path is already taken\n" );		
+			break ;	
+		case 12 :  printf( "ERROR: could not get a lock on /etc/mtab~\n" );		
+			 break ;
+		case 13 :  printf( "ERROR: wrong argument for mode, valid options are \"rw\" or \"ro\"\n" );		
+			  break ;
+		case 14 : printf( "ERROR: could not get enought memory to hold the key file\n" );		
+			break ;
+		case 15 : printf( "ERROR: failed to open volume and failed to close the mapper, advice to do it manunally\n" );		
+			break ;
+		case 16 : printf( "ERROR: could not resolve full path of mount point\n" );		
+			 break ;		 
+		default :
+			;
+	}
 	return st ;
 }

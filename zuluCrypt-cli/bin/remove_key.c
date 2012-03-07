@@ -24,7 +24,7 @@ int removekey( int argn , char * device, char * keyType, char * keytoremove )
 	string_t pass;
 	int status = 0 ;
 	
-	if ( is_path_valid( device ) == -1 ){
+	if ( is_path_valid( device ) == 1 ){
 		status = 10 ;
 		goto out ;
 	}	

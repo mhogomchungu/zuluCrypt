@@ -33,7 +33,7 @@ int create_volumes( int argn,char * device,char * fs,char * mode,char * keyType,
 	int st  ;
 	struct stat xt ;
 	
-	if( is_path_valid( device ) == -1 ){
+	if( is_path_valid( device ) == 1 ){
 		st = 1 ;
 		goto out ;
 	}	

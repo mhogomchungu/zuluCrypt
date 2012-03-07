@@ -27,7 +27,7 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 	int status ;
 	pid_t frk ;
 	
-	if ( is_path_valid( dev ) == -1 )
+	if ( is_path_valid( dev ) == 1 )
 		return 1 ;
 		
 	if( strcmp( type,"luks" ) == 0 )

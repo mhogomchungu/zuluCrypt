@@ -53,7 +53,7 @@ int addkey( int argn,char * device,char * keyType1,char * existingKey,char * key
 	size_t len2 = 0 ;
 	int status = 0 ;
 
-	if( is_path_valid( device ) == -1 ){		
+	if( is_path_valid( device ) == 1 ){		
 		status = 4 ;
 		goto out ;
 	}

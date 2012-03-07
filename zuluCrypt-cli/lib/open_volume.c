@@ -22,18 +22,22 @@
 int open_volume( const char * dev,const char * map,const char * m_point,uid_t id,const char * mode,const char * pass,size_t pass_size ) 
 {
 	int h ;
-	int luks;
-	string_t mapper ;
+	string_t p ;
+	const char * mapper ;
 	
-	if( is_path_valid( dev ) == -1 )		 
+	if( is_path_valid( dev ) == 1 )		 
 		return 3 ;
 	
-	if( is_path_valid( map ) == 1 )
+	p = String( "/dev/mapper/" ) ;
+	StringAppend( p,map ) ;
+	mapper = StringContent( p ) ;
+	
+	if( is_path_valid( mapper ) == 0 ){
+		StringDelete( &p ) ;
 		return 2 ;	
-		
-	luks = is_luks( dev ) ;		
-		
-	if( luks == 0 )
+	}
+
+	if( is_luks( dev ) == 0 )
 		h = open_luks( dev,map,mode,pass,pass_size ) ;
 	else
 		h = open_plain( dev,map,mode,pass,pass_size,"cbc-essiv:sha256" ) ;
@@ -43,23 +47,20 @@ int open_volume( const char * dev,const char * map,const char * m_point,uid_t id
 		case 2 : return 8 ; 
 		case 3 : return 3 ;	 
 	}
+
+	h = mount_volume( mapper,m_point,mode,id ) ;	
 	
-	mapper = String( "/dev/mapper/" ) ;
-	StringAppend( mapper,map ) ;
-	h = mount_volume( StringContent( mapper ),m_point,mode,id ) ;	
-	
-	if( h != 0 && close_mapper( map ) == 0 ){	
-		/*
-		 * opening a plain volume failed,try to reopen it in legacy/compatibility mode
-		 */
-		open_plain( dev,map,mode,pass,pass_size,"cbc-plain" ) ;
-		h = mount_volume( StringContent( mapper ),m_point,mode,id ) ;	
-		if( h != 0 && close_mapper( map ) != 0 )
+	if( h != 0 ){
+		if( close_mapper( map ) == 0 ){	
+			open_plain( dev,map,mode,pass,pass_size,"cbc-plain" ) ; /*try reopen plain volume in legacy mode*/
+			h = mount_volume( mapper,m_point,mode,id ) ;	
+			if( h != 0 && close_mapper( map ) != 0 )
+				h = 15 ;
+		}else{
 			h = 15 ;
-	}else{
-		h = 15 ;
+		}
 	}
-	StringDelete( &mapper ) ;
+	StringDelete( &p ) ;
 	return h ;
 }
 

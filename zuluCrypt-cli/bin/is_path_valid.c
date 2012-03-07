@@ -23,7 +23,7 @@ int is_path_valid( const char * path )
 {
 	struct stat st ;
 	if( stat( path,&st ) == 0 )
-		return 1 ;
+		return 0 ;
 	else
-		return -1 ;
+		return 1 ;
 }

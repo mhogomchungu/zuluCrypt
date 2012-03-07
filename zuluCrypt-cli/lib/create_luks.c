@@ -29,7 +29,7 @@ int create_luks( const char * dev,const char * pass,size_t pass_size,const char 
 		.hash = "sha1",
 		.data_alignment = 4096,
 	};
-	if( is_path_valid( dev ) == -1 )
+	if( is_path_valid( dev ) == 1 )
 		return 4 ;
 	
 	status =  crypt_init( &cd,dev ) ;

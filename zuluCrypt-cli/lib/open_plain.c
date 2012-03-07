@@ -31,7 +31,7 @@ int open_plain( const char * device,const char * mapper,const char * mode,const 
 		.offset = 0,
 	};
 	
-	if( is_path_valid( device ) == -1 )
+	if( is_path_valid( device ) == 1 )
 		return 3 ;
 
 	if( strcmp( mode,"ro" ) == 0 )
