@@ -21,6 +21,6 @@
 
 #define ZULUCRYPT_VERSION
 
-#define VERSION_STRING "4.3.3"
+#define VERSION_STRING "4.3.4"
 
 #endif
