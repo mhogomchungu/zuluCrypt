@@ -231,8 +231,8 @@ void miscfunctions::addItemToTable(QTableWidget * table, QString device, QString
 	table->setItem(row,1,item);
 
 	item = new QTableWidgetItem() ;
-	QString path = mountAddr.replace("\"","\"\"\"") ;
-	if( miscfunctions::isLuks(path))
+	QString path = device.replace("\"","\"\"\"") ;
+	if( miscfunctions::isLuks(path) )
 		item->setText("luks");
 	else
 		item->setText("plain");
