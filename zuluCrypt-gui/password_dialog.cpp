@@ -31,7 +31,7 @@
 
 #include "miscfunctions.h"
 
-passwordDialog::passwordDialog(QWidget *parent ) : QDialog(parent)
+passwordDialog::passwordDialog(QTableWidget * table,QWidget *parent ) : QDialog(parent)
 {
 	m_ui = new Ui::PasswordDialog() ;
 	m_ui->setupUi(this);
@@ -43,6 +43,8 @@ passwordDialog::passwordDialog(QWidget *parent ) : QDialog(parent)
 	m_ui->PushButtonMountPointPath->setIcon(QIcon(QString(":/folder.png")));
 
 	m_isWindowClosable = true ;
+
+	m_table = table ;
 
 	connect(m_ui->PushButtonCancel,
 		SIGNAL(clicked()),
@@ -183,7 +185,6 @@ void passwordDialog::file_path(void )
 void passwordDialog::HideUI()
 {	
 	this->hide();
-	//enableAll();
 	emit HideUISignal();
 }
 
@@ -340,17 +341,17 @@ void passwordDialog::UIMessage(QString title, QString message)
 	m.addButton(QMessageBox::Ok);
 	m.exec() ;
 }
+
 void passwordDialog::threadfinished(int status)
 {
 	m_isWindowClosable = true ;
+
 	switch ( status ){
-		case 0:	emit volumeOpened(m_volumePath,m_ui->MountPointPath->text(),this);
-			/*
-			look at zuluCrypt::volumeOpened comment for an explanation
-			why HideUI() is not called here
-			*/
-			//emit addItemToTable(volumePath,m_ui->MountPointPath->text());
-			//HideUI();
+		case 0:
+			miscfunctions::addItemToTable(m_table,
+						      m_ui->OpenVolumePath->text(),
+						      m_ui->MountPointPath->text());
+			HideUI();
 			return ;
 		case 1 : UIMessage(tr("ERROR"),tr("no free loop device to use.")) ;
 			break ;

@@ -46,6 +46,7 @@
 #include "managedevicenames.h"
 #include "volumepropertiesthread.h"
 #include "closevolumethread.h"
+#include "checkvolumetype.h"
 
 namespace Ui {
     class zuluCrypt;
@@ -85,7 +86,7 @@ private slots :
 	void favAboutToHide(void) ;
 	void trayClicked(QSystemTrayIcon::ActivationReason ) ;
 	void trayProperty(void) ;
-	void addItemToTable(QString pathToVolume, QString pathToMountPoint);
+	void addItemToTable(QString pathToVolume,QString pathToMountPoint);
 	void volumePropertyThreadFinished(QString properties) ;
 	void closeApplication(void) ;
 	void startUpdateFinished(void) ;
@@ -94,7 +95,6 @@ private slots :
 	void closeAllVolumes(void) ;
 	void closeStatus(int) ;
 	void menuKeyPressed(void) ;
-	void addItemToTableByVolume(QString volume_path);
 	void ShowCreateFile(void);
 	void FileCreated(QString);
 	void ShowFavoritesEntries(void);
@@ -107,7 +107,6 @@ private slots :
 	void ShowPasswordDialog(void);
 	void ShowOpenPartition(void);
 	void ShowPasswordDialogFromFavorite(QString,QString);
-	void volumeOpened(QString,QString,passwordDialog *);
 	void partitionClicked(QString);
 	void createPartition(QString);
 private:
@@ -129,6 +128,11 @@ private:
 
 	Ui::zuluCrypt * m_ui;
 	QSystemTrayIcon * m_trayIcon ;
+
+	//passwordDialog * m_passd ;
+	//QString m_device ;
+	//QString m_mountAddress ;
+	//QString m_type ;
 };
 
 #endif // ZULUCRYPT_H

@@ -27,6 +27,7 @@
 #include <QFile>
 #include <QFile>
 #include <QDir>
+#include <QTableWidget>
 
 #include "../zuluCrypt-cli/executables.h"
 
@@ -44,6 +45,7 @@ public:
 	static QStringList readFavorites(void);
 	static void removeFavoriteEntry(QString);
 	static bool exists(QString);
+	static void addItemToTable(QTableWidget *,QString,QString) ;
 };
 
 #endif // MISCFUNCTIONS_H

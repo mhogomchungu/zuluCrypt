@@ -65,3 +65,7 @@ version 4.3.2
 version 4.3.3
 -- fix a bug that caused improper reading of key files if they were not made up of C strings.
 -- fix a bug triggered when attempting to open a plain type volume using aes-cbc-plain cypher( opening plain volume in legacy mode ).
+
+version 4.3.4
+-- fix a compilation bug on some system
+-- support libmount both above and below version 2.18 

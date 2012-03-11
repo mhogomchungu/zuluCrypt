@@ -25,19 +25,21 @@
 #include <QFileDialog>
 #include <QStringList>
 #include <QCloseEvent>
+#include <QTableWidget>
 
 #include "ui_password.h"
 #include "openpartition.h"
 #include "runinthread.h"
+#include "miscfunctions.h"
 
 class passwordDialog :  public QDialog
 {	
 	Q_OBJECT
 public:
-	passwordDialog(QWidget *parent = 0);
+	passwordDialog(QTableWidget * table,QWidget *parent = 0);
 	virtual ~passwordDialog();
 signals :
-	void addItemToTable(QString,QString) ;
+	void addItemToTable(QString,QString,QString) ;
 	void HideUISignal();
 	void volumeOpened(QString,QString,passwordDialog *);
 public slots:
@@ -63,6 +65,7 @@ private :
 	QString m_volumePath ;
 	QString m_point ;
 	bool m_isWindowClosable ;
+	QTableWidget * m_table ;
 };
 
 #endif // PASSWORD_DIALOG_H

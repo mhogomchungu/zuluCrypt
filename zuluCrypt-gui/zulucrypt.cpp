@@ -407,38 +407,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.").arg(VERS
 	UIMessage(tr("about zuluCrypt"),license);
 }
 
-void zuluCrypt::addItemToTableByVolume(QString vp)
-{
-	QString zvp = QString("/dev/mapper/zuluCrypt-") + vp.split("/").last() ;
-	addItemToTable(vp, miscfunctions::mtab(zvp));
-}
+//void zuluCrypt::addItemToTableByVolume(QString vp)
+//{
+//	QString zvp = QString("/dev/mapper/zuluCrypt-") + vp.split("/").last() ;
+//	addItemToTable(vp, miscfunctions::mtab(zvp));
+//}
 
 void zuluCrypt::addItemToTable(QString device,QString m_point)
 {
-	int row = m_ui->tableWidget->rowCount() ;
-	m_ui->tableWidget->insertRow(row);
-
-	QTableWidgetItem * item ;
-
-	item = new QTableWidgetItem() ;
-	item->setText(device);
-	item->setTextAlignment(Qt::AlignCenter);
-	m_ui->tableWidget->setItem(row,0,item);
-
-	item = new QTableWidgetItem() ;
-	item->setText(m_point);
-	item->setTextAlignment(Qt::AlignCenter);
-	m_ui->tableWidget->setItem(row,1,item);
-
-	item = new QTableWidgetItem() ;
-	if ( miscfunctions::isLuks( device.replace("\"","\"\"\"") ) == true )
-		item->setText(tr("luks"));
-	else
-		item->setText(tr("plain"));
-	item->setTextAlignment(Qt::AlignCenter);
-	m_ui->tableWidget->setItem(row,2,item);
-
-	m_ui->tableWidget->setCurrentCell(row,1);
+	miscfunctions::addItemToTable(m_ui->tableWidget,device,m_point);
 }
 
 void zuluCrypt::removeRowFromTable( int x )
@@ -734,32 +711,9 @@ void zuluCrypt::ShowOpenPartition()
 
 passwordDialog * zuluCrypt::setUpPasswordDialog()
 {
-	passwordDialog * pd = new passwordDialog(this) ;
+	passwordDialog * pd = new passwordDialog(m_ui->tableWidget,this) ;
 	connect(pd,SIGNAL(HideUISignal()),pd,SLOT(deleteLater()));
-
-	connect(pd,
-		SIGNAL(volumeOpened(QString,QString,passwordDialog *)),
-		this,
-		SLOT(volumeOpened(QString,QString,passwordDialog *))) ;
-
-	connect(pd,
-		SIGNAL(addItemToTable(QString,QString)),
-		this,
-		SLOT(addItemToTable(QString,QString))) ;
-
 	return pd ;
-}
-
-void zuluCrypt::volumeOpened(QString dev,QString m_point,passwordDialog * obj)
-{	
-	addItemToTable(dev,m_point);
-	/*
-	  For some reason, passwordDialog freezes for a few seconds sometimes
-	  before it disappears.Add an item to the tablve( above command) and
-	  then hide the UI before deleting it to try to remove the freeze
-	  */
-	obj->hide();
-	obj->deleteLater();
 }
 
 void zuluCrypt::ShowPasswordDialog()

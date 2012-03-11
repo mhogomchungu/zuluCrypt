@@ -212,3 +212,32 @@ void miscfunctions::removeFavoriteEntry(QString entry)
 	f.write( c ) ;
 	f.close() ;
 }
+
+void miscfunctions::addItemToTable(QTableWidget * table, QString device, QString mountAddr)
+{
+	int row = table->rowCount() ;
+	table->insertRow(row);
+
+	QTableWidgetItem * item ;
+
+	item = new QTableWidgetItem() ;
+	item->setText(device);
+	item->setTextAlignment(Qt::AlignCenter);
+	table->setItem(row,0,item);
+
+	item = new QTableWidgetItem() ;
+	item->setText(mountAddr);
+	item->setTextAlignment(Qt::AlignCenter);
+	table->setItem(row,1,item);
+
+	item = new QTableWidgetItem() ;
+	QString path = mountAddr.replace("\"","\"\"\"") ;
+	if( miscfunctions::isLuks(path))
+		item->setText("luks");
+	else
+		item->setText("plain");
+	item->setTextAlignment(Qt::AlignCenter);
+	table->setItem(row,2,item);
+
+	table->setCurrentCell(row,1);
+}
