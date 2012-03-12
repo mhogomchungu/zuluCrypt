@@ -140,7 +140,16 @@ QString miscfunctions::readMtab(QByteArray * mtab,QString entry)
 	int i = mtab->indexOf(entry) ;
 	if( i == -1 )
 		return QString("") ;
-	while(mtab->at(i++) != ' ') { ; }
+	int k ;
+	QByteArray x ;
+	while( true ){
+		i = mtab->indexOf(entry,i) ;
+		k = i ;
+		while(mtab->at(i++) != ' ') { ; }
+		if( entry == mtab->mid(k,i-k-1) )
+			break ;
+	}	
+	
 	int j = i ;
 	while(mtab->at(i++) != ' ') { ; }
 

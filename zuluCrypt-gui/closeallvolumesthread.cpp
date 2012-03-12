@@ -46,7 +46,8 @@ void closeAllVolumesThread::run()
 
 	for( j = 0 ; j < i ; j++ ){
 		deviceItem = tableItems[ j ] ;
-		device = deviceItem->text().replace("\"","\"\"\"") ;
+		device = deviceItem->text() ;
+		device.replace("\"","\"\"\"") ;
 		exe = QString(ZULUCRYPTzuluCrypt) + QString(" close ") + QString("\"") + \
 			       device  + QString("\"") ;
 		p.start( exe );

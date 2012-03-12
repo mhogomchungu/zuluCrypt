@@ -125,6 +125,7 @@ private:
 	void initTray(void);
 	void initFont(void);
 	void initKeyCombo(void);
+	void closeStatusErrorMessage(int);
 
 	Ui::zuluCrypt * m_ui;
 	QSystemTrayIcon * m_trayIcon ;

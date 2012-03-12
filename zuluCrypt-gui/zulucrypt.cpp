@@ -221,19 +221,15 @@ void zuluCrypt::closeAllVolumes()
 		this,
 		SLOT(closeAll(QTableWidgetItem *,int))) ;
 
-	QThreadPool::globalInstance()->start(cavt);
+	QThreadPool::globalInstance()->start(cavt);	
 }
 
 void zuluCrypt::closeAll(QTableWidgetItem * i,int st)
 {
 	if( st == 0 )
 		removeRowFromTable(i->row());
-	else{
-		QString msg = tr("Could not close \"") + \
-			      m_ui->tableWidget->item(i->row(),0)->text() + \
-				tr("\" because the mount point and/or one or more files from the volume are in use.") ;
-		UIMessage(QString("ERROR!"),msg);
-	}
+	else		
+		closeStatusErrorMessage(st);	
 }
 
 void zuluCrypt::minimize()
@@ -577,9 +573,15 @@ void zuluCrypt::UIMessage(QString title, QString message)
 void zuluCrypt::closeStatus(int st)
 {
 	m_ui->tableWidget->setEnabled( true );
+	if( st == 0 )
+		removeRowFromTable(m_ui->tableWidget->currentItem()->row()) ;
+	else
+		closeStatusErrorMessage(st);
+}
+
+void zuluCrypt::closeStatusErrorMessage(int st)
+{
 	switch ( st ) {
-	case 0 :removeRowFromTable(m_ui->tableWidget->currentItem()->row()) ;
-		break ;
 	case 1 :UIMessage(tr("ERROR"),
 			  tr("close failed, encrypted volume with that name does not exist")) ;
 		break ;

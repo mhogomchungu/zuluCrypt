@@ -19,13 +19,21 @@
 
 #include "includes.h"
 
-int close_volume( const char * map, char ** mount_point ) 
-{		
-	int i = unmount_volume( map, mount_point ) ;
-	if( i != 0 )
-		return i ;
+static int close_1( const char * map )
+{	
 	if( close_mapper( map ) == 0 ) 
 		return 0 ;
 	else
-		return 5 ;
+		return 5 ;	
+}
+
+int close_volume( const char * map, char ** mount_point ) 
+{		
+	int i = unmount_volume( map, mount_point ) ;
+	
+	switch( i ){
+		case 0:
+		case 3: return close_1( map ) ;	
+	}
+	return i ;
 }
