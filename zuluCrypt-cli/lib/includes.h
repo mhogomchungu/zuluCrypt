@@ -58,7 +58,7 @@ int open_plain( const char * device,const char * mapping_name,const char * mode,
 		   
 int open_volume(const char * dev,const char * map,const char * m_point,uid_t id,const char * mode,const char * pass,size_t pass_size) ;			
 		     
-char * version(void) ; 
+const char * version(void) ; 
 
 int unmount_volume( const char * map, char ** mount_point ) ;
 
