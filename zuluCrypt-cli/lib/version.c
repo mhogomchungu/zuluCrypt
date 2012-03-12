@@ -19,7 +19,7 @@
 
 #include "includes.h"
 
-char * version(void)
+const char * version(void)
 {
 	return VERSION_STRING ;
 }

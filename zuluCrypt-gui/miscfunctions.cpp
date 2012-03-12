@@ -137,23 +137,23 @@ QString miscfunctions::mtab(QString entry)
 
 QString miscfunctions::readMtab(QByteArray * mtab,QString entry)
 {
-	int i = mtab->indexOf(entry) ;
-	if( i == -1 )
-		return QString("") ;
+	int i = 0 ;
 	int k ;
 	QByteArray x ;
 	while( true ){
 		i = mtab->indexOf(entry,i) ;
+		if( i == -1 )
+			return QString("") ;
 		k = i ;
 		while(mtab->at(i++) != ' ') { ; }
-		if( entry == mtab->mid(k,i-k-1) )
+		if( entry == mtab->mid(k,i - k - 1) )
 			break ;
 	}	
 	
-	int j = i ;
+	k = i ;
 	while(mtab->at(i++) != ' ') { ; }
 
-	QByteArray m_point = mtab->mid(j, i - j - 1) ;
+	QByteArray m_point = mtab->mid(k, i - k - 1) ;
 	m_point.replace("\\040"," ") ;
 	m_point.replace("\\011","\t") ;
 	m_point.replace("\\012","\n") ;
