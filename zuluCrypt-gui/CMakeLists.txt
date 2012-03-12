@@ -26,6 +26,7 @@ set( MOC_FILES createfile.h
 		partitionproperties.h
 		volumepropertiesthread.h
 		closevolumethread.h
+		checkvolumetype.h
  )
 	
 set (SRC createfile.cpp
@@ -46,6 +47,7 @@ set (SRC createfile.cpp
 	volumepropertiesthread.cpp
 	createfilethread.cpp
 	closevolumethread.cpp
+	checkvolumetype.cpp
 )
 
 add_definitions( -D_FILE_OFFSET_BITS=64 -Wall ) 

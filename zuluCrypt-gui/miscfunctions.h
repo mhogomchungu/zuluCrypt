@@ -34,7 +34,6 @@
 class miscfunctions
 {
 public:
-	miscfunctions();
 	static QStringList luksEmptySlots(QString volumePath) ;
 	static bool isLuks(QString volumePath) ;
 	static QString mtab(QString) ;
@@ -46,6 +45,7 @@ public:
 	static void removeFavoriteEntry(QString);
 	static bool exists(QString);
 	static void addItemToTable(QTableWidget *,QString,QString) ;
+	static void addItemToTableWithType(QTableWidget *,QString ,QString,QString);
 };
 
 #endif // MISCFUNCTIONS_H

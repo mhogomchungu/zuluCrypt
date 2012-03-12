@@ -21,10 +21,6 @@
 #include <iostream>
 #include <sys/stat.h>
 
-miscfunctions::miscfunctions()
-{
-}
-
 bool miscfunctions::exists(QString path)
 {
 	struct stat st ;
@@ -224,6 +220,19 @@ void miscfunctions::removeFavoriteEntry(QString entry)
 
 void miscfunctions::addItemToTable(QTableWidget * table, QString device, QString mountAddr)
 {
+	QString type ;
+	QString path = device ;
+	path.replace("\"","\"\"\"") ;
+	if( miscfunctions::isLuks(path) )
+		type = QString("luks");
+	else
+		type = QString("plain");
+	
+	miscfunctions::addItemToTableWithType(table,device,mountAddr,type);
+}
+
+void miscfunctions::addItemToTableWithType(QTableWidget * table, QString device, QString mountAddr,QString type)
+{
 	int row = table->rowCount() ;
 	table->insertRow(row);
 
@@ -240,11 +249,7 @@ void miscfunctions::addItemToTable(QTableWidget * table, QString device, QString
 	table->setItem(row,1,item);
 
 	item = new QTableWidgetItem() ;
-	QString path = device.replace("\"","\"\"\"") ;
-	if( miscfunctions::isLuks(path) )
-		item->setText("luks");
-	else
-		item->setText("plain");
+	item->setText(type);
 	item->setTextAlignment(Qt::AlignCenter);
 	table->setItem(row,2,item);
 

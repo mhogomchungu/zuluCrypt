@@ -31,6 +31,7 @@
 #include "openpartition.h"
 #include "runinthread.h"
 #include "miscfunctions.h"
+#include "checkvolumetype.h"
 
 class passwordDialog :  public QDialog
 {	
@@ -56,11 +57,13 @@ private slots :
 	void file_path(void ) ;	
 	void threadfinished(int) ;
 	void mountPointPath(QString);
+	void done(QString);	
 private :	
 	void UIMessage(QString title, QString message) ;
 	void disableAll(void);
 	void enableAll(void) ;
 	void closeEvent(QCloseEvent *) ;
+	void success(void);
 	Ui::PasswordDialog * m_ui;
 	QString m_volumePath ;
 	QString m_point ;

@@ -15,8 +15,6 @@ public:
 	~checkvolumetype() ;
 signals:
 	void done(QString);
-public slots:
-	
 private:
 	QString m_device ;
 	QString m_type ;

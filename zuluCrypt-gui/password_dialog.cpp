@@ -342,16 +342,25 @@ void passwordDialog::UIMessage(QString title, QString message)
 	m.exec() ;
 }
 
+void passwordDialog::success(void)
+{
+	checkvolumetype * cvt = new checkvolumetype(m_ui->OpenVolumePath->text());
+	connect(cvt,SIGNAL(done(QString)),this,SLOT(done(QString)));
+	QThreadPool::globalInstance()->start(cvt) ;
+}
+
+void passwordDialog::done(QString type)
+{
+	miscfunctions::addItemToTableWithType(m_table,m_ui->OpenVolumePath->text(),m_ui->MountPointPath->text(),type);
+	HideUI();
+}
+
 void passwordDialog::threadfinished(int status)
 {
 	m_isWindowClosable = true ;
 
 	switch ( status ){
-		case 0:
-			miscfunctions::addItemToTable(m_table,
-						      m_ui->OpenVolumePath->text(),
-						      m_ui->MountPointPath->text());
-			HideUI();
+		case 0: success();
 			return ;
 		case 1 : UIMessage(tr("ERROR"),tr("no free loop device to use.")) ;
 			break ;
