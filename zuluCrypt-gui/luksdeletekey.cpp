@@ -48,34 +48,13 @@ luksdeletekey::luksdeletekey(QWidget *parent) :
 	this->setWindowFlags(Qt::Window | Qt::Dialog);
 	this->setFont(parent->font());
 
-	connect(m_ui->pushButtonDelete,
-		SIGNAL(clicked()),
-		this,
-		SLOT(pbDelete())) ;
-	connect(m_ui->pushButtonCancel,
-		SIGNAL(clicked()),
-		this,
-		SLOT(pbCancel())) ;
-	connect(m_ui->rbPassphrase,
-		SIGNAL(toggled(bool)),
-		this,
-		SLOT(rbPassphrase())) ;
-	connect(m_ui->rbPassphraseFromFile,
-		SIGNAL(toggled(bool)),
-		this,
-		SLOT(rbPassphraseFromFile())) ;
-	connect(m_ui->pushButtonOpenKeyFile,
-		SIGNAL(clicked()),
-		this,
-		SLOT(pbOpenKeyFile())) ;
-	connect(m_ui->pushButtonOpenVolume,
-		SIGNAL(clicked()),
-		this,
-		SLOT(pbOpenVolume()));
-	connect(m_ui->pushButtonOpenPartition,
-		SIGNAL(clicked()),
-		this,
-		SLOT(pbOpenPartition())) ;
+	connect(m_ui->pushButtonDelete,SIGNAL(clicked()),this,SLOT(pbDelete())) ;
+	connect(m_ui->pushButtonCancel,SIGNAL(clicked()),this,SLOT(pbCancel())) ;
+	connect(m_ui->rbPassphrase,SIGNAL(toggled(bool)),this,SLOT(rbPassphrase())) ;
+	connect(m_ui->rbPassphraseFromFile,SIGNAL(toggled(bool)),this,SLOT(rbPassphraseFromFile())) ;
+	connect(m_ui->pushButtonOpenKeyFile,SIGNAL(clicked()),this,SLOT(pbOpenKeyFile())) ;
+	connect(m_ui->pushButtonOpenVolume,SIGNAL(clicked()),this,SLOT(pbOpenVolume()));
+	connect(m_ui->pushButtonOpenPartition,SIGNAL(clicked()),this,SLOT(pbOpenPartition())) ;
 }
 
 void luksdeletekey::closeEvent(QCloseEvent *e)
@@ -105,10 +84,7 @@ void luksdeletekey::rbPassphraseFromFile()
 
 void luksdeletekey::pbOpenKeyFile()
 {
-	QString Z = QFileDialog::getOpenFileName(this,
-						 tr("key file with a passphrase to delete"),
-						 QDir::homePath(),
-						 0);
+	QString Z = QFileDialog::getOpenFileName(this,tr("key file with a passphrase to delete"),QDir::homePath(),0);
 	m_ui->lineEditPassphrase->setText( Z );
 }
 
@@ -165,14 +141,8 @@ void luksdeletekey::pbCancel()
 void luksdeletekey::pbOpenPartition()
 {
 	openpartition * openPartition = new openpartition(this);
-	connect(openPartition,
-		SIGNAL(clickedPartition(QString)),
-		this,
-		SLOT(deleteKey(QString)));
-	connect(openPartition,
-		SIGNAL(HideUISignal()),
-		openPartition,
-		SLOT(deleteLater()));
+	connect(openPartition,SIGNAL(clickedPartition(QString)),this,SLOT(deleteKey(QString)));
+	connect(openPartition,SIGNAL(HideUISignal()),openPartition,SLOT(deleteLater()));
 	openPartition->ShowAllPartitions();
 }
 
@@ -264,10 +234,7 @@ void luksdeletekey::pbDelete()
 	disableAll();
 
 	runInThread * ldk = new runInThread(exe) ;
-	connect(ldk,
-		SIGNAL(finished(int)),
-		this,
-		SLOT(threadfinished(int))) ;
+	connect(ldk,SIGNAL(finished(int)),this,SLOT(threadfinished(int))) ;
 	QThreadPool::globalInstance()->start(ldk);
 }
 
@@ -301,10 +268,7 @@ void luksdeletekey::threadfinished(int status)
 
 void luksdeletekey::pbOpenVolume()
 {
-	QString Z = QFileDialog::getOpenFileName(this,
-						 tr("volume path"),
-						 QDir::homePath(),
-						 0);
+	QString Z = QFileDialog::getOpenFileName(this,tr("volume path"),QDir::homePath(),0);
 	m_ui->lineEditVolumePath->setText( Z );
 }
 

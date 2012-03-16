@@ -48,46 +48,16 @@ luksaddkey::luksaddkey(QWidget *parent) :
 	this->setWindowFlags(Qt::Window | Qt::Dialog);
 	this->setFont(parent->font());
 
-	connect(m_ui->pushButtonOpenFile,
-		SIGNAL(clicked()),
-		this,
-		SLOT(pbOpenFile())) ;
-	connect(m_ui->pushButtonOpenExistingKeyFile,
-		SIGNAL(clicked()),
-		this,
-		SLOT(pbOpenExisitingKeyFile())) ;
-	connect(m_ui->pushButtonOpenNewKeyFile,
-		(SIGNAL(clicked())),
-		this,
-		SLOT(pbOpenNewKeyFile())) ;
-	connect(m_ui->pushButtonOpenPartition,
-		SIGNAL(clicked()),
-		this,
-		SLOT(pbOpenPartition(void))) ;
-	connect(m_ui->pushButtonAdd,
-		SIGNAL(clicked()),
-		this,
-		SLOT(pbAdd())) ;
-	connect(m_ui->pushButtonCancel,
-		SIGNAL(clicked()),
-		this,
-		SLOT(pbCancel())) ;
-	connect(m_ui->radioButtonNewPassphrase,
-		SIGNAL(toggled(bool)),
-		this,
-		SLOT(rbNewPassphrase())) ;
-	connect(m_ui->radioButtonNewPassphraseFromFile,
-		SIGNAL(toggled(bool)),
-		this,
-		SLOT(rbNewPassphraseFromFile())) ;
-	connect(m_ui->radioButtonPassphraseinVolume,
-		SIGNAL(toggled(bool)),
-		this,
-		SLOT(rbExistingPassphrase())) ;
-	connect(m_ui->radioButtonPassphraseInVolumeFromFile,
-		SIGNAL(toggled(bool)),
-		this,
-		SLOT(rbExistingPassphraseFromFile())) ;
+	connect(m_ui->pushButtonOpenFile,SIGNAL(clicked()),this,SLOT(pbOpenFile())) ;
+	connect(m_ui->pushButtonOpenExistingKeyFile,SIGNAL(clicked()),this,SLOT(pbOpenExisitingKeyFile())) ;
+	connect(m_ui->pushButtonOpenNewKeyFile,SIGNAL(clicked()),this,SLOT(pbOpenNewKeyFile())) ;
+	connect(m_ui->pushButtonOpenPartition,SIGNAL(clicked()),this,SLOT(pbOpenPartition(void))) ;
+	connect(m_ui->pushButtonAdd,SIGNAL(clicked()),this,SLOT(pbAdd())) ;
+	connect(m_ui->pushButtonCancel,SIGNAL(clicked()),this,SLOT(pbCancel())) ;
+	connect(m_ui->radioButtonNewPassphrase,SIGNAL(toggled(bool)),this,SLOT(rbNewPassphrase())) ;
+	connect(m_ui->radioButtonNewPassphraseFromFile,SIGNAL(toggled(bool)),this,SLOT(rbNewPassphraseFromFile())) ;
+	connect(m_ui->radioButtonPassphraseinVolume,SIGNAL(toggled(bool)),this,SLOT(rbExistingPassphrase())) ;
+	connect(m_ui->radioButtonPassphraseInVolumeFromFile,SIGNAL(toggled(bool)),this,SLOT(rbExistingPassphraseFromFile())) ;
 
 	m_ui->lineEditReEnterPassphrase->setEchoMode(QLineEdit::Password);
 }
@@ -135,43 +105,27 @@ void luksaddkey::ShowUI()
 
 void luksaddkey::pbOpenExisitingKeyFile(void)
 {	
-	QString Z = QFileDialog::getOpenFileName(this,
-						 tr("existing key file"),
-						 QDir::homePath(),
-						 0);
+	QString Z = QFileDialog::getOpenFileName(this,tr("existing key file"),QDir::homePath(),0);
 	m_ui->textEditExistingPassphrase->setText( Z ) ;
 }
 
 void luksaddkey::pbOpenNewKeyFile(void)
 {
-	QString Z = QFileDialog::getOpenFileName(this,
-						 tr("new key file"),
-						 QDir::homePath(),
-						 0);
+	QString Z = QFileDialog::getOpenFileName(this,tr("new key file"),QDir::homePath(),0);
 	m_ui->textEditPassphraseToAdd->setText( Z ) ;
 }
 
 void luksaddkey::pbOpenFile(void)
 {
-	QString Z = QFileDialog::getOpenFileName(this,
-						 tr("encrypted volume path"),
-						 QDir::homePath(),
-						 0);
+	QString Z = QFileDialog::getOpenFileName(this,tr("encrypted volume path"),QDir::homePath(),0);
 	m_ui->textEditPathToVolume->setText( Z ) ;
 }
 
 void luksaddkey::pbOpenPartition(void)
 {
 	openpartition * openPartition = new openpartition(this);
-
-	connect(openPartition,
-		SIGNAL(clickedPartition(QString)),
-		this,
-		SLOT(partitionEntry(QString)));
-	connect(openPartition,
-		SIGNAL(HideUISignal()),
-		openPartition,
-		SLOT(deleteLater()));
+	connect(openPartition,SIGNAL(clickedPartition(QString)),this,SLOT(partitionEntry(QString)));
+	connect(openPartition,SIGNAL(HideUISignal()),openPartition,SLOT(deleteLater()));
 	openPartition->ShowAllPartitions();
 }
 
@@ -317,10 +271,7 @@ void luksaddkey::pbAdd(void)
 
 	runInThread * lakt = new runInThread(exe);
 
-	connect(lakt,
-		SIGNAL(finished(int)),
-		this,
-		SLOT(threadfinished(int))) ;
+	connect(lakt,SIGNAL(finished(int)),this,SLOT(threadfinished(int))) ;
 	QThreadPool::globalInstance()->start(lakt);
 }
 

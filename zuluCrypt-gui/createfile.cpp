@@ -127,26 +127,26 @@ void createfile::pbCreate()
 	m_path = m_ui->lineEditFilePath->text() ;
 
 	if(fileName == QString("")){
-		UIMessage(tr("ERROR!"),("file name field is empty"));
+		UIMessage(tr("ERROR!"),tr("file name field is empty"));
 		return ;
 	}
 	if(filePath == QString("")){
-		UIMessage(tr("ERROR!"),("file path field is empty"));
+		UIMessage(tr("ERROR!"),tr("file path field is empty"));
 		return ;
 	}
 	if(fileSize == QString("")){
-		UIMessage(tr("ERROR!"),("file size field is empty"));
+		UIMessage(tr("ERROR!"),tr("file size field is empty"));
 		return ;
 	}	
 	if ( m_path.mid(0,2) == QString("~/"))
 		m_path = QDir::homePath() + QString("/") + m_path.mid(2) ;
 
 	if(miscfunctions::exists(m_path) == false ){
-		UIMessage(tr("ERROR!"),("destination folder does not exist"));
+		UIMessage(tr("ERROR!"),tr("destination folder does not exist"));
 		return ;
 	}
 	if(miscfunctions::exists(m_path + QString("/") + fileName)){
-		UIMessage(tr("ERROR!"),("a file or folder with the same name already exist at destination address"));
+		UIMessage(tr("ERROR!"),tr("a file or folder with the same name already exist at destination address"));
 		return ;
 	}
 	bool test ;
@@ -154,7 +154,7 @@ void createfile::pbCreate()
 	fileSize.toInt(&test) ;
 
 	if( test == false ){
-		UIMessage(tr("ERROR!"),("Illegal character in the file size field.Only digits are allowed"));
+		UIMessage(tr("ERROR!"),tr("Illegal character in the file size field.Only digits are allowed"));
 		return ;
 	}
 	QString source = m_ui->comboBoxRNG->currentText() ;
@@ -162,7 +162,7 @@ void createfile::pbCreate()
 	m_path = m_path + QString("/") + fileName;
 
 	if( miscfunctions::exists(m_path) == true){
-		UIMessage(tr("ERROR!"),("file with the same name and at the destination folder already exist"));
+		UIMessage(tr("ERROR!"),tr("file with the same name and at the destination folder already exist"));
 		return ;
 	}
 	QFile f(m_path);
@@ -170,7 +170,7 @@ void createfile::pbCreate()
 
 	if( f.putChar('X') == false ){
 		f.close();
-		UIMessage(tr("ERROR!"),("you dont seem to have writing access to the destination folder"));
+		UIMessage(tr("ERROR!"),tr("you dont seem to have writing access to the destination folder"));
 		return ;
 	}
 	f.close();
@@ -184,7 +184,7 @@ void createfile::pbCreate()
 			break ;
 	}
 	if( m_fileSize < 3145728 ){
-		UIMessage(tr("ERROR!"),("container file must be bigger than 3MB"));
+		UIMessage(tr("ERROR!"),tr("container file must be bigger than 3MB"));
 		return ;
 	}
 	disableAll();
@@ -194,8 +194,7 @@ void createfile::pbCreate()
 	
 	m_cft = new createFileThread( source, m_path,m_fileSize,1 ) ;
 
-	connect(m_cft,SIGNAL(finished()),
-		this,SLOT(createFileThreadFinished()));
+	connect(m_cft,SIGNAL(finished()),this,SLOT(createFileThreadFinished()));
 	m_cft->start();
 }
 

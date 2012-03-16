@@ -85,10 +85,8 @@ void startupupdateopenedvolumes::run()
 		}
 		mp = miscfunctions::readMtab(&mtab,entry) ;
 		if( mp == QString("") ){
-			emit UIMessage(tr("WARNING"),
-					  tr("An inconsitency is detected. Skipping \"") + \
-					  device + \
-					  tr("\" because its opened but not mounted"));
+			QString s = tr("An inconsitency is detected. Skipping \"%1\" because its opened but not mounted").arg(device);
+			emit UIMessage(tr("WARNING"),s);					  
 			continue ;
 		}
 		emit addItemToTable(device,mp) ;

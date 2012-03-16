@@ -3,7 +3,6 @@
 closeVolumeThread::closeVolumeThread(QString exe)
 {
 	m_exe = exe ;
-	m_status = -1 ;
 }
 
 void closeVolumeThread::run()

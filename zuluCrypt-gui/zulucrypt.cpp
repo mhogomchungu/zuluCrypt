@@ -124,17 +124,9 @@ void zuluCrypt::StartUpAddOpenedVolumesToTableThread()
 {
 	m_ui->tableWidget->setEnabled( false );
 	startupupdateopenedvolumes * sov = new startupupdateopenedvolumes();
-	connect(sov,
-	       SIGNAL(addItemToTable(QString,QString)),
-	       this,
-	       SLOT(addItemToTable(QString,QString))) ;
-	connect(sov,
-		SIGNAL(finished()),
-		this,SLOT(startUpdateFinished()));
-	connect(sov,
-	       SIGNAL(UIMessage(QString,QString)),
-	       this,
-	       SLOT(UIMessage(QString,QString))) ;
+	connect(sov,SIGNAL(addItemToTable(QString,QString)),this,SLOT(addItemToTable(QString,QString))) ;
+	connect(sov,SIGNAL(finished()),this,SLOT(startUpdateFinished()));
+	connect(sov,SIGNAL(UIMessage(QString,QString)),this,SLOT(UIMessage(QString,QString))) ;
 	QThreadPool::globalInstance()->start(sov);
 }
 
@@ -144,8 +136,7 @@ void zuluCrypt::setupUIElements()
 	m_trayIcon->setIcon(QIcon(QString(":/zuluCrypt.png")));
 
 	QMenu *trayMenu = new QMenu(this) ;
-	trayMenu->addAction(tr("quit"),
-			    this,SLOT(closeApplication()));
+	trayMenu->addAction(tr("quit"),this,SLOT(closeApplication()));
 	m_trayIcon->setContextMenu(trayMenu);
 
 	m_ui->setupUi(this);
@@ -216,11 +207,7 @@ void zuluCrypt::closeAllVolumes()
 	if( m_ui->tableWidget->rowCount() < 1 )
 		return ;
 	closeAllVolumesThread *cavt = new closeAllVolumesThread(m_ui->tableWidget) ;
-	connect(cavt,
-		SIGNAL(close(QTableWidgetItem *,int)),
-		this,
-		SLOT(closeAll(QTableWidgetItem *,int))) ;
-
+	connect(cavt,SIGNAL(close(QTableWidgetItem *,int)),this,SLOT(closeAll(QTableWidgetItem *,int))) ;
 	QThreadPool::globalInstance()->start(cavt);	
 }
 
@@ -403,12 +390,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.").arg(VERS
 	UIMessage(tr("about zuluCrypt"),license);
 }
 
-//void zuluCrypt::addItemToTableByVolume(QString vp)
-//{
-//	QString zvp = QString("/dev/mapper/zuluCrypt-") + vp.split("/").last() ;
-//	addItemToTable(vp, miscfunctions::mtab(zvp));
-//}
-
 void zuluCrypt::addItemToTable(QString device,QString m_point)
 {
 	miscfunctions::addItemToTable(m_ui->tableWidget,device,m_point);
@@ -427,14 +408,8 @@ void zuluCrypt::volume_property()
 	QTableWidgetItem * item = m_ui->tableWidget->currentItem();
 	QString x = m_ui->tableWidget->item(item->row(),0)->text() ;
 	QString y = m_ui->tableWidget->item(item->row(),1)->text() ;
-
 	volumePropertiesThread * vpt = new volumePropertiesThread(x,y);
-
-	connect(vpt,
-		SIGNAL(finished(QString)),
-		this,
-		SLOT(volumePropertyThreadFinished(QString))) ;
-
+	connect(vpt,SIGNAL(finished(QString)),this,SLOT(volumePropertyThreadFinished(QString))) ;
 	QThreadPool::globalInstance()->start(vpt);
 }
 
@@ -464,8 +439,9 @@ void zuluCrypt::readFavorites()
 void zuluCrypt::addToFavorite()
 {
 	QTableWidgetItem * item = m_ui->tableWidget->currentItem();
-	miscfunctions::addToFavorite(m_ui->tableWidget->item(item->row(),0)->text(),
-				     m_ui->tableWidget->item(item->row(),1)->text());
+	QString x = m_ui->tableWidget->item(item->row(),0)->text() ;
+	QString y = m_ui->tableWidget->item(item->row(),1)->text() ;
+	miscfunctions::addToFavorite(x,y);
 }
 
 void zuluCrypt::menuKeyPressed()
@@ -493,14 +469,8 @@ void zuluCrypt::itemClicked(QTableWidgetItem * item, bool clicked)
 
 	if( m_ui->tableWidget->item(item->row(),2)->text() == QString("luks") ){
 		m.addSeparator() ;
-		connect(m.addAction("add key"),
-			SIGNAL(triggered()),
-			this,
-			SLOT(luksAddKeyContextMenu())) ;
-		connect(m.addAction("remove key"),
-			SIGNAL(triggered()),
-			this,
-			SLOT(luksDeleteKeyContextMenu())) ;
+		connect(m.addAction("add key"),SIGNAL(triggered()),this,SLOT(luksAddKeyContextMenu())) ;
+		connect(m.addAction("remove key"),SIGNAL(triggered()),this,SLOT(luksDeleteKeyContextMenu())) ;
 	}
 
 	m.addSeparator() ;
@@ -526,10 +496,7 @@ void zuluCrypt::itemClicked(QTableWidgetItem * item, bool clicked)
 
 	if( strstr( data.data() , fav.toAscii().data() ) == NULL ){
 		a.setEnabled(true);
-		a.connect((QObject *)&a,
-			  SIGNAL(triggered()),
-			  this,
-			  SLOT(addToFavorite())) ;
+		a.connect((QObject *)&a,SIGNAL(triggered()),this,SLOT(addToFavorite())) ;
 
 	}else
 		a.setEnabled(false);

@@ -42,30 +42,12 @@ createpartition::createpartition(QWidget *parent) :
 
 	m_isWindowClosable = true ;
 
-	connect(m_ui->pbOpenKeyFile,
-		SIGNAL(clicked()),
-		this,
-		SLOT(pbOpenKeyFile()));
-	connect(m_ui->pbCreate,
-		SIGNAL(clicked()),
-		this,
-		SLOT(pbCreateClicked()));
-	connect(m_ui->pbCancel,
-		SIGNAL(clicked()),
-		this,
-		SLOT(pbCancelClicked()));
-	connect(m_ui->rbPassphrase,
-		SIGNAL(clicked()),
-		this,
-		SLOT(rbPassphraseClicked()));
-	connect(m_ui->rbPassphraseFromFile,
-		SIGNAL(clicked()),
-		this,
-		SLOT(rbPasssphraseFromFileClicked()));
-	connect(m_ui->comboBoxVolumeType,
-		SIGNAL(currentIndexChanged(int)),
-		this,
-		SLOT(rng(int))) ;
+	connect(m_ui->pbOpenKeyFile,SIGNAL(clicked()),this,SLOT(pbOpenKeyFile()));
+	connect(m_ui->pbCreate,SIGNAL(clicked()),this,SLOT(pbCreateClicked()));
+	connect(m_ui->pbCancel,SIGNAL(clicked()),this,SLOT(pbCancelClicked()));
+	connect(m_ui->rbPassphrase,SIGNAL(clicked()),this,SLOT(rbPassphraseClicked()));
+	connect(m_ui->rbPassphraseFromFile,SIGNAL(clicked()),this,SLOT(rbPasssphraseFromFileClicked()));
+	connect(m_ui->comboBoxVolumeType,SIGNAL(currentIndexChanged(int)),this,SLOT(rng(int))) ;
 }
 
 void createpartition::rng(int s)
@@ -113,10 +95,7 @@ void::createpartition::ShowUI(QString l,QString v)
 
 void createpartition::pbOpenKeyFile()
 {
-	QString Z = QFileDialog::getOpenFileName(this,
-						 tr("key file path"),
-						 QDir::homePath(),
-						 0);
+	QString Z = QFileDialog::getOpenFileName(this,tr("key file path"),QDir::homePath(),0);
 	m_ui->lineEditPassphrase1->setText(Z);
 }
 
@@ -216,8 +195,8 @@ void createpartition::UIMessage(QString title, QString message)
 
 void createpartition::pbCreateClicked()
 {
-	QString volumePath   =  m_ui->lineEditVolumePath->text() ;
-	QString passphrase_1 =  m_ui->lineEditPassphrase1->text() ;
+	QString volumePath   = m_ui->lineEditVolumePath->text() ;
+	QString passphrase_1 = m_ui->lineEditPassphrase1->text() ;
 	QString passphrase_2 = m_ui->lineEditPassPhrase2->text();
 
 	if( volumePath == QString("") )	{
@@ -288,20 +267,16 @@ void createpartition::pbCreateClicked()
 	exe = exe + volumePath + QString("\" ") ;
 	exe = exe + m_ui->comboBoxFS->currentText() + QString(" ") ;
 	exe = exe + m_ui->comboBoxVolumeType->currentText() + QString(" ") ;
-	exe = exe +  source + QString(" \"") ;;
-	exe = exe + passphrase_1 + QString("\" ") ;;
+	exe = exe + source + QString(" \"") ;
+	exe = exe + passphrase_1 + QString("\" ") ;
 	exe = exe + m_ui->comboBoxRNG->currentText();
 
 	m_isWindowClosable = false ;
 
 	runInThread * cvt = new runInThread(exe) ;
 
-	connect(cvt,
-		SIGNAL(finished(int)),
-		this,
-		SLOT(threadfinished(int))) ;
+	connect(cvt,SIGNAL(finished(int)),this,SLOT(threadfinished(int))) ;
 	disableAll();
-
 	QThreadPool::globalInstance()->start(cvt);
 }
 
@@ -310,20 +285,16 @@ void createpartition::threadfinished(int status)
 	m_created = true ;
 	m_isWindowClosable = true ;
 	switch( status ) {
-		case 0 : UIMessage(tr("SUCCESS"),
-				   tr("volume created successfully"));
+		case 0 : UIMessage(tr("SUCCESS"),tr("volume created successfully"));
 			HideUI();
 			break;
-		case 3 : UIMessage(tr("ERROR"),
-			tr("could not create an encrypted volume in a file or device"));
+		case 3 : UIMessage(tr("ERROR"),tr("could not create an encrypted volume in a file or device"));
 			break ;			
-		case 6 : UIMessage(tr("ERROR"),
-				   tr("couldnt get enought memory to hold the key file"));
+		case 6 : UIMessage(tr("ERROR"),tr("couldnt get enought memory to hold the key file"));
 			break ;
 		case 11: UIMessage(tr("ERROR"),
 			tr("can not create the volume,\"") + QString(ZULUCRYPTmkfs) + tr("\" not found."));	
-		default: UIMessage(tr("ERROR"),
-				   (tr("unrecognized error has occured,volume not created")));
+		default: UIMessage(tr("ERROR"),tr("unrecognized error has occured,volume not created"));
 	}
 	enableAll();
 }

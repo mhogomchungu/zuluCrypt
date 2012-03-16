@@ -31,14 +31,9 @@ openpartition::openpartition(QWidget *parent ) :
 	this->setWindowFlags(Qt::Window | Qt::Dialog);
 	this->setFont(parent->font());
 
-	connect(m_ui->tableWidget,
-		SIGNAL(itemDoubleClicked(QTableWidgetItem *)),
-		this,
+	connect(m_ui->tableWidget,SIGNAL(itemDoubleClicked(QTableWidgetItem *)),this,
 		SLOT(tableEntryDoubleClicked(QTableWidgetItem *))) ;
-
-	connect(m_ui->tableWidget,
-		SIGNAL(currentItemChanged( QTableWidgetItem * , QTableWidgetItem * )),
-		this,
+	connect(m_ui->tableWidget,SIGNAL(currentItemChanged( QTableWidgetItem * , QTableWidgetItem * )),this,
 		SLOT(currentItemChanged( QTableWidgetItem * , QTableWidgetItem * ))) ;
 
 	m_action = new QAction( this ) ;
@@ -46,10 +41,7 @@ openpartition::openpartition(QWidget *parent ) :
 	keys.append( Qt::Key_Enter );
 	keys.append( Qt::Key_Return );
 	m_action->setShortcuts( keys ) ;
-	connect(m_action,
-		SIGNAL(triggered()),
-		this,
-		SLOT(EnterKeyPressed()));
+	connect(m_action,SIGNAL(triggered()),this,SLOT(EnterKeyPressed()));
 	this->addAction( m_action );
 
 	QTableWidget *tw = m_ui->tableWidget ;
@@ -115,19 +107,10 @@ void openpartition::partitionList(QString title, int type)
 
 	partitionproperties * op = new partitionproperties(type);
 
-	connect(op,
-		SIGNAL(finished()),
-		this,
-		SLOT(partitionpropertiesThreadFinished()));
-	connect(op,
-		SIGNAL(partitionProperties(QStringList)),
-		this,
-		SLOT(partitionProperties(QStringList)));
-
+	connect(op,SIGNAL(finished()),this,SLOT(partitionpropertiesThreadFinished()));
+	connect(op,SIGNAL(partitionProperties(QStringList)),this,SLOT(partitionProperties(QStringList)));
 	m_ui->tableWidget->setEnabled( false );
-
 	QThreadPool::globalInstance()->start(op);
-
 	this->show();
 }
 

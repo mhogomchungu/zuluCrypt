@@ -46,38 +46,14 @@ passwordDialog::passwordDialog(QTableWidget * table,QWidget *parent ) : QDialog(
 
 	m_table = table ;
 
-	connect(m_ui->PushButtonCancel,
-		SIGNAL(clicked()),
-		this,
-		SLOT(HideUI())) ;
-	connect(m_ui->PushButtonOpen,
-		SIGNAL(clicked()),
-		this,
-		SLOT(buttonOpenClicked())) ;
-	connect(m_ui->PushButtonMountPointPath,
-		SIGNAL(clicked()),
-		this,
-		SLOT(mount_point()));
-	connect(m_ui->PushButtonVolumePath,
-		SIGNAL(clicked()),
-		this,
-		SLOT(file_path())) ;
-	connect(m_ui->pushButtonPassPhraseFromFile,
-		SIGNAL(clicked()),
-		this,
-		SLOT(clickedPassPhraseFromFileButton()));
-	connect(m_ui->radioButtonPassPhraseFromFile,
-		SIGNAL(clicked()),
-		this,
-		SLOT(passphraseFromFileOption())) ;
-	connect(m_ui->radioButtonPassPhrase,
-		SIGNAL(clicked()),
-		this,
-		SLOT(passphraseOption())) ;
-	connect(m_ui->OpenVolumePath,
-		SIGNAL(textChanged(QString)),
-		this,
-		SLOT(mountPointPath(QString)));
+	connect(m_ui->PushButtonCancel,SIGNAL(clicked()),this,SLOT(HideUI())) ;
+	connect(m_ui->PushButtonOpen,SIGNAL(clicked()),this,SLOT(buttonOpenClicked())) ;
+	connect(m_ui->PushButtonMountPointPath,SIGNAL(clicked()),this,SLOT(mount_point()));
+	connect(m_ui->PushButtonVolumePath,SIGNAL(clicked()),this,SLOT(file_path())) ;
+	connect(m_ui->pushButtonPassPhraseFromFile,SIGNAL(clicked()),this,SLOT(clickedPassPhraseFromFileButton()));
+	connect(m_ui->radioButtonPassPhraseFromFile,SIGNAL(clicked()),this,SLOT(passphraseFromFileOption())) ;
+	connect(m_ui->radioButtonPassPhrase,SIGNAL(clicked()),this,SLOT(passphraseOption())) ;
+	connect(m_ui->OpenVolumePath,SIGNAL(textChanged(QString)),this,SLOT(mountPointPath(QString)));
 }
 
 void passwordDialog::closeEvent(QCloseEvent *e)
@@ -151,10 +127,7 @@ void passwordDialog::passphraseFromFileOption()
 
 void passwordDialog::clickedPassPhraseFromFileButton()
 {
-	QString Z = QFileDialog::getOpenFileName(this,
-						 tr("Select passphrase file"),
-						 QDir::homePath(),
-						 0);
+	QString Z = QFileDialog::getOpenFileName(this,tr("Select passphrase file"),QDir::homePath(),0);
 	m_ui->PassPhraseField->setText( Z );
 }
 
@@ -166,19 +139,13 @@ void passwordDialog::clickedPartitionOption(QString dev)
 
 void passwordDialog::mount_point(void )
 {	
-	QString Z = QFileDialog::getExistingDirectory(this,
-						      tr("Select Path to mount point folder"),
-						      QDir::homePath(),
-						      QFileDialog::ShowDirsOnly) ;
+	QString Z = QFileDialog::getExistingDirectory(this,tr("Select Path to mount point folder"),QDir::homePath(),QFileDialog::ShowDirsOnly) ;
 	m_ui->MountPointPath->setText( Z );
 }
 
 void passwordDialog::file_path(void )
 {	
-	QString Z = QFileDialog::getOpenFileName(this,
-						 tr("Select encrypted volume"),
-						 QDir::homePath(),
-						 0);
+	QString Z = QFileDialog::getOpenFileName(this,tr("Select encrypted volume"),QDir::homePath(),0);
 	m_ui->OpenVolumePath->setText( Z );
 }
 
@@ -242,9 +209,7 @@ void passwordDialog::buttonOpenClicked(void )
 	if(m_ui->radioButtonPassPhraseFromFile->isChecked() == true){
 
 		if( passPhraseField.mid(0,2) == QString("~/"))
-			passPhraseField = QDir::homePath() +  \
-					QString("/") + \
-					passPhraseField.mid(2);
+			passPhraseField = QDir::homePath() +  QString("/") + passPhraseField.mid(2);
 
 		if(miscfunctions::exists(passPhraseField) == false){
 			UIMessage(tr("ERROR"),tr("invalid path to a key file")) ;
@@ -273,19 +238,12 @@ void passwordDialog::buttonOpenClicked(void )
 
 	mountPointPath.replace("\"","\"\"\"") ;
 
-	QString exe = QString(ZULUCRYPTzuluCrypt) + \
-			QString(" open ") + \
-			QString(" \"") + vp + QString("\" ") + \
-			QString(" \"") + mountPointPath + QString("\" ") + \
-			mode + QString(" ") + passtype + \
-			QString(" \"") + passPhraseField + QString("\"");
+	QString exe = QString(ZULUCRYPTzuluCrypt) + QString(" open ") + QString(" \"") + vp + QString("\" ") ;
+	exe = exe + QString(" \"") + mountPointPath + QString("\" ") + mode + QString(" ") + passtype ;
+	exe = exe + QString(" \"") + passPhraseField + QString("\"");
 
-	runInThread *ovt = new runInThread(exe) ;
-	connect(ovt,
-		SIGNAL(finished(int)),
-		this,
-		SLOT(threadfinished(int))) ;
-
+	runInThread * ovt = new runInThread(exe) ;
+	connect(ovt,SIGNAL(finished(int)),this,SLOT(threadfinished(int))) ;
 	m_isWindowClosable = false ;
 	disableAll();
 	QThreadPool::globalInstance()->start(ovt);

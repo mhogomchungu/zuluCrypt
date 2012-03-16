@@ -29,34 +29,15 @@ managedevicenames::managedevicenames(QWidget *parent) :
 	this->setWindowFlags(Qt::Window | Qt::Dialog);
 	this->setFont(parent->font());
 
-	connect(m_ui->pbDeviceAddress,
-		SIGNAL(clicked()),
-		this,
-		SLOT(deviceAddress()));
-	connect(m_ui->pbAdd,
-		SIGNAL(clicked()),
-		this,
-		SLOT(add()));
-	connect(m_ui->pbFileAddress,
-		SIGNAL(clicked()),
-		this,
-		SLOT(fileAddress()));
-	connect(m_ui->pbCancel,
-		SIGNAL(clicked()),
-		this,
-		SLOT(cancel()));
-	connect(m_ui->tableWidget,
-		SIGNAL(currentItemChanged(QTableWidgetItem*,QTableWidgetItem*)),
-		this,
+	connect(m_ui->pbDeviceAddress,SIGNAL(clicked()),this,SLOT(deviceAddress()));
+	connect(m_ui->pbAdd,SIGNAL(clicked()),this,SLOT(add()));
+	connect(m_ui->pbFileAddress,SIGNAL(clicked()),this,SLOT(fileAddress()));
+	connect(m_ui->pbCancel,SIGNAL(clicked()),this,SLOT(cancel()));
+	connect(m_ui->tableWidget,SIGNAL(currentItemChanged(QTableWidgetItem*,QTableWidgetItem*)),this,
 		SLOT(currentItemChanged(QTableWidgetItem*,QTableWidgetItem*)));
-	connect(m_ui->tableWidget,
-		SIGNAL(itemClicked(QTableWidgetItem*)),
-		this,
+	connect(m_ui->tableWidget,SIGNAL(itemClicked(QTableWidgetItem*)),this,
 		SLOT(itemClicked(QTableWidgetItem*)));
-	connect(m_ui->lineEditDeviceAddress,
-		SIGNAL(textChanged(QString)),
-		this,
-		SLOT(devicePathTextChange(QString)));
+	connect(m_ui->lineEditDeviceAddress,SIGNAL(textChanged(QString)),this,SLOT(devicePathTextChange(QString)));
 
 	m_ui->pbFileAddress->setIcon(QIcon(QString(":/keyfile.png")));
 	m_ui->pbDeviceAddress->setIcon(QIcon(QString(":/partition.png")));
@@ -91,16 +72,8 @@ void managedevicenames::shortcutPressed()
 void managedevicenames::deviceAddress()
 {
 	openpartition *openPartition = new openpartition(this) ;
-
-	connect(openPartition,
-		SIGNAL(clickedPartition(QString)),
-		this,
-		SLOT(PartitionEntry(QString)));
-	connect(openPartition,
-		SIGNAL(HideUISignal()),
-		openPartition,
-		SLOT(deleteLater()));
-
+	connect(openPartition,SIGNAL(clickedPartition(QString)),this,SLOT(PartitionEntry(QString)));
+	connect(openPartition,SIGNAL(HideUISignal()),openPartition,SLOT(deleteLater()));
 	openPartition->ShowAllPartitions();
 }
 
@@ -152,10 +125,7 @@ void managedevicenames::itemClicked(QTableWidgetItem *current, bool clicked)
 {
 	QMenu m ;
 	m.setFont(this->font());
-	connect(m.addAction(tr("remove selected entry")),
-		SIGNAL(triggered()),
-		this,
-		SLOT(removeEntryFromFavoriteList())) ;
+	connect(m.addAction(tr("remove selected entry")),SIGNAL(triggered()),this,SLOT(removeEntryFromFavoriteList())) ;
 
 	m.addSeparator() ;
 	m.addAction(tr("cancel"));
@@ -198,13 +168,13 @@ void managedevicenames::add()
 	QString mount_point = m_ui->lineEditMountPath->text() ;
 	
 	if( dev == QString("")){
-		m.setText("device address field is empty");
+		m.setText(tr("device address field is empty"));
 		m.addButton(QMessageBox::Ok);
 		m.exec();
 		return ;
 	}
 	if( mount_point == QString("")){
-		m.setText("mount point path field is empty");
+		m.setText(tr("mount point path field is empty"));
 		m.addButton(QMessageBox::Ok);
 		m.exec();
 		return ;
@@ -218,10 +188,7 @@ void managedevicenames::add()
 
 void managedevicenames::fileAddress()
 {
-	QString Z = QFileDialog::getOpenFileName(this,
-						 tr("path to an encrypted file"),
-						 QDir::homePath(),
-						 0);
+	QString Z = QFileDialog::getOpenFileName(this,tr("path to an encrypted file"),QDir::homePath(),0);
 	m_ui->lineEditDeviceAddress->setText( Z ) ;
 }
 

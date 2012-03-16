@@ -118,31 +118,31 @@ void createkeyfile::pbCreate()
 	m_path = m_ui->lineEditPath->text() ;
 
 	if( fileName == QString("") ){
-		UIMessage(tr("ERROR!"),("the key name field is empth"));
+		UIMessage(tr("ERROR!"),tr("the key name field is empth"));
 		return ;
 	}
 	if( path == QString("") ){
-		UIMessage(tr("ERROR!"),("folder path to where the key will be created is empty"));
+		UIMessage(tr("ERROR!"),tr("folder path to where the key will be created is empty"));
 		return ;
 	}
 	if(m_path.mid(0,2) == QString("~/"))
 		m_path = QDir::homePath() + QString("/") + m_path.mid(2) ;
 
 	if(miscfunctions::exists(m_path) == false){
-		UIMessage(tr("ERROR!"),("destination folder does not exist"));
+		UIMessage(tr("ERROR!"),tr("destination folder does not exist"));
 		return ;
 	}
 	QString keyfile = m_path + QString("/") + m_ui->lineEditFileName->text() ;
 
 	if( miscfunctions::exists(keyfile) == true){
-		UIMessage(tr("ERROR!"),("file with the same name and at the destination folder already exist"));
+		UIMessage(tr("ERROR!"),tr("file with the same name and at the destination folder already exist"));
 		return ;
 	}
 	QFile o( keyfile ) ;
 	o.open(QIODevice::WriteOnly) ;
 
 	if( o.putChar('X') == false ){
-		UIMessage(tr("ERROR!"),("you dont seem to have writing access to the destination folder"));
+		UIMessage(tr("ERROR!"),tr("you dont seem to have writing access to the destination folder"));
 		o.close();
 		return ;
 	}
@@ -191,7 +191,7 @@ void createkeyfile::threadfinished()
 void createkeyfile::pbOpenFolder()
 {
 	QString Z = QFileDialog::getExistingDirectory(this,
-						      QString("Select a folder to create a key file in"),
+						      tr("Select a folder to create a key file in"),
 						      QDir::homePath(),QFileDialog::ShowDirsOnly) ;
 
 	m_ui->lineEditPath->setText( Z );
