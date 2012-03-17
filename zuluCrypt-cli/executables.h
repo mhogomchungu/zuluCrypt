@@ -21,5 +21,6 @@
 
 #define ZULUCRYPTmkfs        	"/sbin/mkfs" 
 #define ZULUCRYPTzuluCrypt      "/usr/bin/zuluCrypt-cli"  
+#define ZULUCRYPTmount      	"/bin/mount"  
 
 #endif

@@ -24,36 +24,81 @@
 #include <blkid/blkid.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <unistd.h>
+#include <sys/wait.h>
 
+/*
+ * below header file does not ship with the source code, it is created at configure time
+ * */
 #include "../libmount_header.h"
+
+int fopt( const char * st,const char * mapper,const char * fs,const char * m_point,const char * mode,unsigned long mountflags, string_t * p,uid_t id )
+{
+	int h ;
+	char uid_s[ 5 ] ;
+	char * uid = StringIntToString( uid_s,5,id ) ;		
+	string_t opt = String( st ) ;
+	StringAppend( opt,uid ) ;
+	StringAppend( opt,",gid=" ) ;
+	StringAppend( opt,uid );
+	h = mount( mapper,m_point,fs,mountflags,StringContent( opt ) ) ;	
+	StringPrepend( opt,"," ) ;
+	StringPrepend( opt,mode ) ;
+	*p = opt ;
+	return h ;
+}
+
+int mount_ntfs( const char * mapper,const char * m_point,const char * mode,uid_t id )
+{
+	pid_t pid ;	
+	char uid_s[ 5 ] ;
+	char * uid = StringIntToString( uid_s,5,id ) ;	string_t opt ;
+	const char * copt ;
+	int status ;
+	
+	pid = fork() ;	
+	if( pid == 0 ){
+		close(1);
+		close(2);
+		opt = String( "-o dmask=077,umask=077," ) ;
+		StringAppend( opt,mode ) ;
+		StringAppend( opt,",uid=" ) ;
+		StringAppend( opt,uid ) ;
+		StringAppend( opt,",gid=" ) ;
+		StringAppend( opt,uid ) ;
+		copt = StringContent( opt ) ;
+		execl( ZULUCRYPTmount,"mount","-t","ntfs-3g",copt,mapper,m_point,( char * )0 ) ;
+	}
+	waitpid( pid,&status,0 ) ;
+	return status ;	
+}
 
 int mount_mapper( const char * mapper,const char * m_point,const char * mode,uid_t id, const char * fs, string_t * options )
 {
 	unsigned long mountflags = 0 ;
 	int h ;
-	char uid_s[ 5 ] ;
-	char * uid = StringIntToString( uid_s,5,id ) ;	
+
 	string_t opt ;
 	
 	if( strcmp( mode,"ro" ) == 0 )
-		mountflags = MS_RDONLY ;
+		mountflags = MS_RDONLY ;	
 	
-	if( strcmp( fs,"vfat" ) == 0 ){
-		opt = String( "dmask=077,uid=" ) ;
-		StringAppend( opt,uid ) ;
-		StringAppend( opt,",gid=" ) ;
-		StringAppend( opt,uid );
-		h = mount( mapper,m_point,fs,mountflags,StringContent( opt ) ) ;	
-		StringPrepend( opt,"," ) ;
-		StringPrepend( opt,mode ) ;
-	}else{		
+	if( strcmp( fs,"ext2" ) == 0 || strcmp( fs,"ext3" ) == 0 || strcmp( fs,"ext4" ) == 0 ){
 		opt = String( mode ) ;
 		h = mount( mapper,m_point,fs,mountflags,NULL ) ;	
 		if( h == 0 && mountflags != MS_RDONLY ){			
 			chmod( m_point,S_IRWXU ) ;
 			chown( m_point,id,id ) ;
 		}
+	}else if( strcmp( fs,"vfat" ) == 0 || strcmp( fs,"fat" ) == 0 || strcmp( fs,"msdos" ) == 0 || strcmp( fs,"umsdos" ) == 0 ){
+		h = fopt( "dmask=077,uid=",mapper,fs,m_point,mode,mountflags,&opt,id ) ;
+	}else if( strcmp( fs,"affs" ) == 0 || strcmp( fs,"hfs" ) == 0 || strcmp( fs,"iso9660" ) == 0 ){
+		h = fopt( "uid=",mapper,fs,m_point,mode,mountflags,&opt,id ) ;		
+	}else{
+		opt = String( mode ) ;
+		h = mount( mapper,m_point,fs,mountflags,NULL ) ;		
 	}
+
 	*options = opt ;
 	return h ;
 }
@@ -85,9 +130,19 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 		blkid_free_probe( blkid );
 		return 4 ;		
 	}
+	
 	fs = String( cf ) ;
 	
 	blkid_free_probe( blkid );
+	
+	/*
+	 * Currently, i dont know how to use mount system call to use ntfs-3g instead of ntfs to mount ntfs file systems.
+	 * Use fork to use mount executable as a temporary solution.
+	 */
+	if( strcmp( StringContent( fs ),"ntfs" ) == 0 ){
+		StringDelete( &fs ) ;
+		return mount_ntfs( mapper,m_point,mode,id ) ;
+	}
 	
 	path = realpath( "/etc/mtab",NULL ) ;
 	

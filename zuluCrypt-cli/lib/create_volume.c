@@ -35,11 +35,6 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 			if( strcmp( rng,"/dev/urandom" ) != 0 )
 				return 2 ;
 			
-	if( strcmp( fs,"ext3" ) != 0 )
-		if( strcmp( fs,"ext4" ) != 0 )
-			if( strcmp( fs,"vfat" ) != 0 )
-				return 2 ;
-				
 	if( strcmp( type,"luks" )  == 0 ){
 		status = create_luks( dev,pass,pass_size,rng ) ;	
 		if( status != 0 )
@@ -59,10 +54,10 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 	if( frk == 0 ){
 		close( 1 ); 
 		close( 2 );
-		if( strcmp( fs,"vfat" ) == 0 )
-			execl( ZULUCRYPTmkfs,"mkfs","-t","vfat","/dev/mapper/zuluCrypt-create-new",( char * ) 0 ) ;
-		else
+		if( strcmp( fs,"ext2" ) == 0 || strcmp( fs,"ext3" ) == 0 || strcmp( fs,"ext4" ) == 0 )
 			execl( ZULUCRYPTmkfs,"mkfs","-t",fs,"-m","1","/dev/mapper/zuluCrypt-create-new",( char * ) 0 ) ;
+		else
+			execl( ZULUCRYPTmkfs,"mkfs","-t",fs,"/dev/mapper/zuluCrypt-create-new",( char * ) 0 ) ;
 	}
 	waitpid( frk,&status,0 ) ;
 	close_mapper( "/dev/mapper/zuluCrypt-create-new" );	
