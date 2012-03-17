@@ -42,12 +42,27 @@ createpartition::createpartition(QWidget *parent) :
 
 	m_isWindowClosable = true ;
 
+	findInstalledFs() ;
+
 	connect(m_ui->pbOpenKeyFile,SIGNAL(clicked()),this,SLOT(pbOpenKeyFile()));
 	connect(m_ui->pbCreate,SIGNAL(clicked()),this,SLOT(pbCreateClicked()));
 	connect(m_ui->pbCancel,SIGNAL(clicked()),this,SLOT(pbCancelClicked()));
 	connect(m_ui->rbPassphrase,SIGNAL(clicked()),this,SLOT(rbPassphraseClicked()));
 	connect(m_ui->rbPassphraseFromFile,SIGNAL(clicked()),this,SLOT(rbPasssphraseFromFileClicked()));
 	connect(m_ui->comboBoxVolumeType,SIGNAL(currentIndexChanged(int)),this,SLOT(rng(int))) ;
+}
+
+void createpartition::findInstalledFs()
+{
+	QStringList mkfsList =  QDir(QString(ZULUCRYPTmkfs_dir)).entryList().filter("mkfs.") ;
+	QStringList mkfs ;
+	QString entry ;
+	int j = mkfsList.size() ;
+	for( int i = 0 ; i < j ; i++ ) {
+		entry = mkfsList.at(i) ;
+		mkfs.append(entry.mid(entry.indexOf(".") + 1));
+	}
+	m_ui->comboBoxFS->addItems(mkfs);
 }
 
 void createpartition::rng(int s)

@@ -53,6 +53,7 @@ private slots:
 	void threadfinished(int);
 	void rng(int) ;
 private:
+	void findInstalledFs(void);
 	void enableAll(void) ;
 	void disableAll(void);
 	void closeEvent(QCloseEvent *) ;		

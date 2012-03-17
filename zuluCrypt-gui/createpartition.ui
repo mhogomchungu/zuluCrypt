@@ -209,21 +209,6 @@
      <height>31</height>
     </rect>
    </property>
-   <item>
-    <property name="text">
-     <string notr="true">ext4</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string notr="true">ext3</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string notr="true">vfat</string>
-    </property>
-   </item>
   </widget>
   <widget class="QLabel" name="labelvolumetype">
    <property name="geometry">

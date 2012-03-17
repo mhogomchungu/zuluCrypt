@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'createpartition.ui'
 **
-** Created: Mon Jan 9 22:36:20 2012
+** Created: Sat Mar 17 18:21:21 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -100,11 +100,6 @@ public:
         labelfs->setGeometry(QRect(50, 140, 121, 21));
         labelfs->setAlignment(Qt::AlignCenter);
         comboBoxFS = new QComboBox(createpartition);
-        comboBoxFS->insertItems(0, QStringList()
-         << QString::fromUtf8("ext4")
-         << QString::fromUtf8("ext3")
-         << QString::fromUtf8("vfat")
-        );
         comboBoxFS->setObjectName(QString::fromUtf8("comboBoxFS"));
         comboBoxFS->setGeometry(QRect(50, 160, 121, 31));
         labelvolumetype = new QLabel(createpartition);
