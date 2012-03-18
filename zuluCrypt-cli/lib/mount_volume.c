@@ -52,7 +52,8 @@ int mount_ntfs( const char * mapper,const char * m_point,const char * mode,uid_t
 {
 	pid_t pid ;	
 	char uid_s[ 5 ] ;
-	char * uid = StringIntToString( uid_s,5,id ) ;	string_t opt ;
+	char * uid = StringIntToString( uid_s,5,id ) ;	
+	string_t opt ;
 	const char * copt ;
 	int status ;
 	
