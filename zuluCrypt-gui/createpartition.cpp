@@ -55,9 +55,26 @@ createpartition::createpartition(QWidget *parent) :
 void createpartition::findInstalledFs()
 {
 	QStringList mkfsList =  QDir(QString(ZULUCRYPTmkfs_dir)).entryList().filter("mkfs.") ;
+
+	int index = mkfsList.indexOf(QString("mkfs.ext2")) ;
+	if( index != -1 )
+		mkfsList.move(index,0);
+	index = mkfsList.indexOf(QString("mkfs.ntfs")) ;
+	if( index != -1 )
+		mkfsList.move(index,0);
+	index = mkfsList.indexOf(QString("mkfs.vfat")) ;
+	if( index != -1 )
+		mkfsList.move(index,0);
+	index = mkfsList.indexOf(QString("mkfs.ext3")) ;
+	if( index != -1 )
+		mkfsList.move(index,0);
+	index = mkfsList.indexOf(QString("mkfs.ext4")) ;
+	if( index != -1 )
+		mkfsList.move(index,0);
+
+	int j = mkfsList.size() ;
 	QStringList mkfs ;
 	QString entry ;
-	int j = mkfsList.size() ;
 	for( int i = 0 ; i < j ; i++ ) {
 		entry = mkfsList.at(i) ;
 		mkfs.append(entry.mid(entry.indexOf(".") + 1));
