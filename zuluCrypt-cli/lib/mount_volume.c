@@ -84,20 +84,17 @@ int mount_mapper( const char * mapper,const char * m_point,const char * mode,uid
 	if( strcmp( mode,"ro" ) == 0 )
 		mountflags = MS_RDONLY ;	
 	
-	if( strcmp( fs,"ext2" ) == 0 || strcmp( fs,"ext3" ) == 0 || strcmp( fs,"ext4" ) == 0 ){
-		opt = String( mode ) ;
-		h = mount( mapper,m_point,fs,mountflags,NULL ) ;	
-		if( h == 0 && mountflags != MS_RDONLY ){			
-			chmod( m_point,S_IRWXU ) ;
-			chown( m_point,id,id ) ;
-		}
-	}else if( strcmp( fs,"vfat" ) == 0 || strcmp( fs,"fat" ) == 0 || strcmp( fs,"msdos" ) == 0 || strcmp( fs,"umsdos" ) == 0 ){
+	if( strcmp( fs,"vfat" ) == 0 || strcmp( fs,"fat" ) == 0 || strcmp( fs,"msdos" ) == 0 || strcmp( fs,"umsdos" ) == 0 ){
 		h = fopt( "dmask=077,uid=",mapper,fs,m_point,mode,mountflags,&opt,id ) ;
 	}else if( strcmp( fs,"affs" ) == 0 || strcmp( fs,"hfs" ) == 0 || strcmp( fs,"iso9660" ) == 0 ){
 		h = fopt( "uid=",mapper,fs,m_point,mode,mountflags,&opt,id ) ;		
 	}else{
 		opt = String( mode ) ;
-		h = mount( mapper,m_point,fs,mountflags,NULL ) ;		
+		h = mount( mapper,m_point,fs,mountflags,NULL ) ;
+		if( h == 0 && mountflags != MS_RDONLY ){			
+			chmod( m_point,S_IRWXU ) ;
+			chown( m_point,id,id ) ;
+		}
 	}
 
 	*options = opt ;

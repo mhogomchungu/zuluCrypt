@@ -56,6 +56,8 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 		close( 2 );
 		if( strcmp( fs,"ext2" ) == 0 || strcmp( fs,"ext3" ) == 0 || strcmp( fs,"ext4" ) == 0 )
 			execl( ZULUCRYPTmkfs,"mkfs","-t",fs,"-m","1","/dev/mapper/zuluCrypt-create-new",( char * ) 0 ) ;
+		else if( strcmp( fs,"reiserfs" ) == 0 )
+			execl( ZULUCRYPTmkfs,"mkfs","-t","reiserfs","-f","-f","-q","/dev/mapper/zuluCrypt-create-new",( char * ) 0 ) ;		
 		else
 			execl( ZULUCRYPTmkfs,"mkfs","-t",fs,"/dev/mapper/zuluCrypt-create-new",( char * ) 0 ) ;
 	}
