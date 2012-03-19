@@ -97,8 +97,11 @@ char * status( const char * mapper )
 	if( strncmp( e ,"/dev/loop",9 ) == 0 ){
 		StringAppend( properties,"\n loop:   \t" );
 		path = loop_device_address( e ) ;
-		StringAppend( properties,path ) ;
-		free( path ) ;
+		if( path != NULL ){
+			StringAppend( properties,path ) ;
+			free( path ) ;
+		}else
+			StringAppend( properties,"NaN" ) ;		
 	}
 	StringAppend( properties,"\n offset:\t");
 	StringAppend( properties,StringIntToString( buffer,SIZE,crypt_get_data_offset( cd ) ) )  ;
