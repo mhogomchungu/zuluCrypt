@@ -45,7 +45,7 @@ int is_luks(const char * device) ;
  * 
  * return values:
  *	0 - success, the encrypted volume was opened and mounted successfully
- * 	1 - ERROR: No free loop device to use
+ * 	1 - ERROR: failed to mount ntfs file system using ntfs-3g,is ntfs-3g package installed?
  * 	2 - ERROR: There seem to already be an opened volume associated with "mapping_name" argument
  * 	3 - ERROR: device does not exist.
  * 	4 - ERROR: wrong passphrase

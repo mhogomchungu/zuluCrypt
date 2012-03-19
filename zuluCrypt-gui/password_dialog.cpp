@@ -320,15 +320,15 @@ void passwordDialog::threadfinished(int status)
 	switch ( status ){
 		case 0: success();
 			return ;
-		case 1 : UIMessage(tr("ERROR"),tr("no free loop device to use.")) ;
+		case 1 : UIMessage(tr("ERROR"),tr("failed to mount ntfs file system using ntfs-3g,is ntfs-3g package installed?")) ;
 			break ;
 		case 2 : UIMessage(tr("ERROR"),tr("there seem to be an open volume accociated with given path."));
 			break ;
 		case 3 : UIMessage(tr("ERROR"),tr("no file or device exist on given path")) ;
 			break ;
-		case 4 :m_ui->PassPhraseField->clear();
+		case 4 :UIMessage(tr("ERROR"),tr("wrong passphrase."));
+			m_ui->PassPhraseField->clear();
 			m_ui->PassPhraseField->setFocus();
-			UIMessage(tr("ERROR"),tr("wrong passphrase."));
 			break ;
 		case 5 : UIMessage(tr("ERROR"),tr("could not create mount point, invalid path or path already taken")) ;
 			break ;

@@ -23,6 +23,9 @@
 #include <sys/mount.h>
 #include <stdlib.h>
 
+/*
+ * below header file does not ship with the source code, it is created at configure time
+ * */
 #include "../libmount_header.h"
 
 int entry_found( const char * map, const char * m_dir, char ** m_point )

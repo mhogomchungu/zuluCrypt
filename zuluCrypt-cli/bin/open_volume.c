@@ -116,7 +116,7 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 	switch ( st ){
 		case 0 : printf( "SUCCESS: Volume opened successfully\n" ) ;
 			break ;
-		case 1 : printf( "ERROR: no free loop device to use\n" ) ; 
+		case 1 : printf( "ERROR: failed to mount ntfs file system using ntfs-3g,is ntfs-3g package installed?\n" ) ; 
 			break ;					
 		case 2 : printf( "ERROR: there seem to be an open volume accociated with given address\n" );
 			break ;				

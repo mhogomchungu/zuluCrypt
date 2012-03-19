@@ -21,11 +21,45 @@
 
 #include <unistd.h>
 #include <sys/wait.h>
+#include <pthread.h>
+#include <sys/types.h>
+#include <signal.h>
+
+typedef struct st_1
+{
+	pid_t * pid ;
+	int * status ;
+}st_2;
+
+/*
+ * Some mkfs.xxx tools like mkfs.reiserfs requires and option to be passed to run them in non-interactive mode.
+ * SOme mkfs.xxx tools like mkfs.ext4 does not. There does not seem to be a standard way to know which tool 
+ * require an option which doesnt and i cant know all of them. The ones i know are specified in  the code below in the child process.
+ * 
+ * I am not aware of mkfs.xxx tool that will take 20 seconds to complete its task.Hence each mkfs.xxx is given 2o seconds to complete.
+ * A tool that continue to run after 20 seconds is assumed to be stuck at an interactive prompt and will be killed since a tool
+ * stuck in interactive mode waiting for user input will have the library and whoever is using it. * 
+ */
+
+/*
+ * function prototypes.
+ * This function is defined at the end of this source file. Its primary function is to check if an mkfs.xxx is still running
+ * after 20 seconds and kills it if it is. The function tries its best to make sure an
+ * occurance doesnt happen when an mkfs.xxx tool exit,the system gives the same pid to another process and we end up
+ * killing a process that inst ours.
+ */
+
+void * kill_hanged_mkfs( void * ) ;
 
 int create_volume( const char * dev,const char * fs,const char * type,const char * pass,size_t pass_size,const char * rng )
 {
 	int status ;
-	pid_t frk ;
+	pid_t pid ;
+	pthread_t thread ;
+	
+	st_2 st ;
+	st.status = &status ;
+	st.pid = &pid ;
 	
 	if ( is_path_valid( dev ) == 1 )
 		return 1 ;
@@ -53,8 +87,8 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 		return 2 ;
 	}		
 	
-	frk = fork() ;
-	if( frk == 0 ){
+	pid = fork() ;
+	if( pid == 0 ){
 		close( 1 ); 
 		close( 2 );
 		if( strcmp( fs,"ext2" ) == 0 || strcmp( fs,"ext3" ) == 0 || strcmp( fs,"ext4" ) == 0 )
@@ -66,11 +100,37 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 		else
 			execl( ZULUCRYPTmkfs,"mkfs","-t",fs,"/dev/mapper/zuluCrypt-create-new",( char * ) 0 ) ;
 	}
-	waitpid( frk,&status,0 ) ;
+	
+	status = -1 ;
+	
+	pthread_create( &thread,NULL,kill_hanged_mkfs,( void * ) &st );
+	
+	waitpid( pid,&status,0 ) ;	
+	
+	pthread_cancel( thread );
+	
 	close_mapper( "/dev/mapper/zuluCrypt-create-new" );	
+	
 	if( status == 0 )
 		return 0 ;
 	else
 		return 3 ;	
 }
 
+void * kill_hanged_mkfs( void * s )
+{
+	st_2 * st = ( st_2 * ) s ;
+	sleep( 20 ) ;
+	if( *( st->status ) < 0 ){	
+		/*
+		 *  mkfs.xxx is still running, kill the process
+		 */
+		kill( ( pid_t ) *( st->pid ),SIGKILL ) ;		
+	}else{
+		/*
+		 * mkfs.xxx returned but we are still alive, ,must be very luck today, do nothing
+		 */
+		;
+	}		
+	return ( void * ) 0 ; 
+}

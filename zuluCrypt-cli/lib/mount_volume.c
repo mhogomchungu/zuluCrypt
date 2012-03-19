@@ -139,7 +139,12 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 	 */
 	if( strcmp( StringContent( fs ),"ntfs" ) == 0 ){
 		StringDelete( &fs ) ;
-		return mount_ntfs( mapper,m_point,mode,id ) ;
+		h = mount_ntfs( mapper,m_point,mode,id ) ;
+		switch( h ){
+			case 0  : return 0 ;
+			case 16 : return 12 ;
+			default : return 1 ;
+		}
 	}
 	
 	path = realpath( "/etc/mtab",NULL ) ;
