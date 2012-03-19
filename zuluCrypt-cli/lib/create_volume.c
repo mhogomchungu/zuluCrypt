@@ -33,10 +33,10 @@ typedef struct st_1
 
 /*
  * Some mkfs.xxx tools like mkfs.reiserfs requires and option to be passed to run them in non-interactive mode.
- * SOme mkfs.xxx tools like mkfs.ext4 does not. There does not seem to be a standard way to know which tool 
- * require an option which doesnt and i cant know all of them. The ones i know are specified in  the code below in the child process.
+ * Some mkfs.xxx tools like mkfs.ext4 do not. There does not seem to be a standard way to know which tool 
+ * require an option and which doesnt and i cant know all of them. The ones i know are specified in the code below in the child process.
  * 
- * I am not aware of mkfs.xxx tool that will take 20 seconds to complete its task.Hence each mkfs.xxx is given 2o seconds to complete.
+ * I am not aware of any mkfs.xxx tool that will take 20 seconds to complete its task.Hence each mkfs.xxx is given 20 seconds to complete.
  * A tool that continue to run after 20 seconds is assumed to be stuck at an interactive prompt and will be killed since a tool
  * stuck in interactive mode waiting for user input will have the library and whoever is using it. * 
  */
