@@ -25,12 +25,6 @@
 #include <sys/types.h>
 #include <signal.h>
 
-typedef struct st_1
-{
-	pid_t * pid ;
-	int * status ;
-}st_2;
-
 /*
  * Some mkfs.xxx tools like mkfs.reiserfs requires and option to be passed to run them in non-interactive mode.
  * Some mkfs.xxx tools like mkfs.ext4 do not. There does not seem to be a standard way to know which tool 
@@ -41,25 +35,37 @@ typedef struct st_1
  * stuck in interactive mode waiting for user input will have the library and whoever is using it. * 
  */
 
-/*
- * function prototypes.
- * This function is defined at the end of this source file. Its primary function is to check if an mkfs.xxx is still running
- * after 20 seconds and kills it if it is. The function tries its best to make sure an
- * occurance doesnt happen when an mkfs.xxx tool exit,the system gives the same pid to another process and we end up
- * killing a process that inst ours.
- */
 
-void * kill_hanged_mkfs( void * ) ;
+/*
+ *check if an mkfs.xxx is still running
+ * after 20 seconds and kills it if it is.
+ */
+void * kill_hanged_mkfs( void * p )
+{
+	pid_t pid_1 ;
+	pid_t pid_2 ;
+	pid_t pid_3 ;
+
+	sleep( 20 ) ;
+	
+	pid_1 = getpgid( getpid() ) ; 
+	pid_2 = ( pid_t ) p ;
+	pid_3 = getpgid( pid_2 ) ;
+	
+	if( pid_1 == pid_3 ){	
+		/*
+		 *  mkfs.xxx is still running, kill the process
+		 */
+		kill( pid_2,SIGKILL ) ;		
+	}
+	return ( void * ) 0 ; 
+}
 
 int create_volume( const char * dev,const char * fs,const char * type,const char * pass,size_t pass_size,const char * rng )
 {
 	int status ;
 	pid_t pid ;
 	pthread_t thread ;
-	
-	st_2 st ;
-	st.status = &status ;
-	st.pid = &pid ;
 	
 	if ( is_path_valid( dev ) == 1 )
 		return 1 ;
@@ -88,6 +94,8 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 	}		
 	
 	pid = fork() ;
+	if( pid == -1 )
+		return 3 ;	
 	if( pid == 0 ){
 		close( 1 ); 
 		close( 2 );
@@ -101,9 +109,7 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 			execl( ZULUCRYPTmkfs,"mkfs","-t",fs,"/dev/mapper/zuluCrypt-create-new",( char * ) 0 ) ;
 	}
 	
-	status = -1 ;
-	
-	pthread_create( &thread,NULL,kill_hanged_mkfs,( void * ) &st );
+	pthread_create( &thread,NULL,kill_hanged_mkfs,( void * ) pid );
 	
 	waitpid( pid,&status,0 ) ;	
 	
@@ -115,22 +121,4 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 		return 0 ;
 	else
 		return 3 ;	
-}
-
-void * kill_hanged_mkfs( void * s )
-{
-	st_2 * st = ( st_2 * ) s ;
-	sleep( 20 ) ;
-	if( *( st->status ) < 0 ){	
-		/*
-		 *  mkfs.xxx is still running, kill the process
-		 */
-		kill( ( pid_t ) *( st->pid ),SIGKILL ) ;		
-	}else{
-		/*
-		 * mkfs.xxx returned but we are still alive, ,must be very luck today, do nothing
-		 */
-		;
-	}		
-	return ( void * ) 0 ; 
 }
