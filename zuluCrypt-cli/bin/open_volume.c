@@ -22,18 +22,17 @@
 #include <stdio.h>
 #include <limits.h>
 
-int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount_point,char * mode,char * source,char * pass )
+int open_volumes( int argn,char * dev,char * mapping_name,int id,char * mount_point,char * mode,char * source,char * pass )
 {
 	string_t passphrase  ;	
 	string_t m_name  ;	
-	string_t m_point  ;
 	string_t data ;
 	
+	const char * cpass ;	
 	const char * cname ;
-	const char * cpoint ;
-	const char * cpass ;
 	
-	char * c ;
+	char * device ;
+	char * cpoint ;
 	
 	size_t len ;
 	int st = 0 ;
@@ -63,20 +62,24 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 		goto out ;	
 	}	
 	
-	c = realpath( mount_point,NULL ) ;
-	if( c == NULL ){
+	cpoint = realpath( mount_point,NULL ) ;
+	if( cpoint == NULL ){
 		st = 16 ;
 		goto out ;			
 	}
 	
-	m_point = StringInherit( &c ) ;
-
+	device = realpath( dev,NULL ) ;
+	if( device == NULL ){
+		free( cpoint ) ;
+		st = 17 ;
+		goto out ;			
+	}
+	
 	m_name = String( mapping_name ) ;	
 	replace_bash_special_chars( m_name ) ;	
 	StringPrepend( m_name,"zuluCrypt-" ) ;
 	
 	cname = StringContent( m_name ) ;
-	cpoint = StringContent( m_point ) ;
 	
 	if ( argn == 5 ){
 		printf( "Enter passphrase: " ) ;		
@@ -106,10 +109,11 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 	}
 	
 	if( st != 0 )
-		remove( StringContent( m_point ) ) ;
+		remove( cpoint ) ;
 	
-	StringDelete( &m_name ) ;	
-	StringDelete( &m_point ) ;	
+	StringDelete( &m_name ) ;
+	free( cpoint ) ;
+	free( device ) ;
 	
 	out:
 	
@@ -145,7 +149,9 @@ int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount
 		case 15 : printf( "ERROR: failed to open volume and failed to close the mapper, advice to do it manunally\n" );		
 			break ;
 		case 16 : printf( "ERROR: could not resolve full path of mount point\n" );		
-			 break ;		 
+			 break ;
+		case 17 : printf( "ERROR: could not resolve full path of device address\n" );		
+			break ;
 		default :
 			;
 	}

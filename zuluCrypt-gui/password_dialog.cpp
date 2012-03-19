@@ -346,6 +346,10 @@ void passwordDialog::threadfinished(int status)
 			break ;	
 		case 15 : UIMessage(tr("ERROR"),tr("failed to open volume and failed to close the mapper, advice to do it manunally"));
 			break ;	
+		case 16 : UIMessage(tr("ERROR"),tr("could not resolve full path of mount point"));
+	                break ;	
+		case 17 : UIMessage(tr("ERROR"),tr("could not resolve full path of device address"));
+			break ;	
 		default :UIMessage(tr("ERROR"),tr("un unknown error has occured, volume not opened"));		
 	}
 	enableAll();
