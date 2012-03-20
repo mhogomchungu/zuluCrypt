@@ -35,33 +35,20 @@
  * stuck in interactive mode waiting for user input will have the library and whoever is using it. * 
  */
 
+typedef struct st_2{
+	pid_t * pid  ;
+	int * status ;
+}st_1;
 
-/*
- *check if an mkfs.xxx is still running
- * after 20 seconds and kills it if it is.
- */
 void * kill_hanged_mkfs( void * p )
 {
-	pid_t pid_1 ;
-	pid_t pid_2 ;
-	pid_t pid_3 ;
-
 	sleep( 20 ) ;
-	/*
-	 * The probability of the process to exit and the OS giving the same PID to another process
-	 * is not very hight but it doesnt hurt making sure the process with the PID we are about 
-	 * to kill belong to us. We know this by checking group PID, processes from the same parent
-	 * have the same group ID.	 
-	 */
-	pid_1 = getpgid( getpid() ) ; 
-	pid_2 = ( pid_t ) p ;
-	pid_3 = getpgid( pid_2 ) ;
-	
-	if( pid_1 == pid_3 ){	
+	st_1 * st = ( st_1 * ) p ;
+	if( *( st->status ) < 0 ){	
 		/*
 		 *  mkfs.xxx is still running, kill the process
 		 */
-		kill( pid_2,SIGKILL ) ;		
+		kill( *( st-> pid ),SIGKILL ) ;		
 	}
 	return ( void * ) 0 ; 
 }
@@ -71,7 +58,8 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 	int status ;
 	pid_t pid ;
 	pthread_t thread ;
-	
+	st_1 st ;
+
 	if ( is_path_valid( dev ) == 1 )
 		return 1 ;
 		
@@ -110,11 +98,21 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 			execl( ZULUCRYPTmkfs,"mkfs","-t","reiserfs","-f","-f","-q","/dev/mapper/zuluCrypt-create-new",( char * ) 0 ) ;	
 		else if( strcmp( fs,"jfs" ) == 0 )
 			execl( ZULUCRYPTmkfs,"mkfs","-t","jfs","-q","/dev/mapper/zuluCrypt-create-new",( char * ) 0 ) ;
+		else if( strcmp( fs,"ntfs" ) == 0 )
+			execl( ZULUCRYPTmkfs,"mkfs","-t","ntfs","-f","/dev/mapper/zuluCrypt-create-new",( char * ) 0 ) ;
 		else
 			execl( ZULUCRYPTmkfs,"mkfs","-t",fs,"/dev/mapper/zuluCrypt-create-new",( char * ) 0 ) ;
 	}
 	
-	pthread_create( &thread,NULL,kill_hanged_mkfs,( void * ) pid );
+	st.pid = &pid ;
+	st.status = &status ;
+	/*
+	 * waitpid below will set status value to a number > 0 before it return, signifying the forked process has finished.
+	 * checking this value is one of the ways the thread can know the forked process is still running 
+	 */
+	status = -1 ; 
+	
+	pthread_create( &thread,NULL,kill_hanged_mkfs,( void * ) &st );
 	
 	waitpid( pid,&status,0 ) ;	
 	
