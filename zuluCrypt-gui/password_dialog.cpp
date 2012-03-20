@@ -327,9 +327,10 @@ void passwordDialog::threadfinished(int status)
 		case 3 : UIMessage(tr("ERROR"),tr("no file or device exist on given path")) ;
 			break ;
 		case 4 :UIMessage(tr("ERROR"),tr("wrong passphrase."));
+			enableAll();
 			m_ui->PassPhraseField->clear();
 			m_ui->PassPhraseField->setFocus();
-			break ;
+			return ;
 		case 5 : UIMessage(tr("ERROR"),tr("could not create mount point, invalid path or path already taken")) ;
 			break ;
 		case 8 : UIMessage(tr("ERROR"),tr("failed to open volume")) ;
