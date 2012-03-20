@@ -24,7 +24,7 @@ int open_volume( const char * dev,const char * map,const char * m_point,uid_t id
 	int h ;
 	string_t p ;
 	const char * mapper ;
-	int type ;
+
 	if( is_path_valid( dev ) == 1 )		 
 		return 3 ;
 	
@@ -37,8 +37,7 @@ int open_volume( const char * dev,const char * map,const char * m_point,uid_t id
 		return 2 ;	
 	}
 
-	type = is_luks( dev ) ;
-	if( type == 0 )
+	if( is_luks( dev ) == 0 )
 		h = open_luks( dev,map,mode,pass,pass_size ) ;
 	else
 		h = open_plain( dev,map,mode,pass,pass_size,"cbc-essiv:sha256" ) ;
@@ -56,18 +55,5 @@ int open_volume( const char * dev,const char * map,const char * m_point,uid_t id
 			h = 15 ;
 	StringDelete( &p ) ;
 	return h ;
-	/*
-	 * do not support cbc-plain :-(
-	if( h != 0 && type == 1 ){
-		if( close_mapper( map ) == 0 ){	
-			open_plain( dev,map,mode,pass,pass_size,"cbc-plain" ) ; 
-			h = mount_volume( mapper,m_point,mode,id ) ;	
-			if( h != 0 && close_mapper( map ) != 0 )
-				h = 15 ;
-		}else{
-			h = 15 ;
-		}
-	}
-	*/
 }
 

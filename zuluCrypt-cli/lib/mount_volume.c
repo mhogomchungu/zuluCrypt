@@ -58,6 +58,8 @@ int mount_ntfs( const char * mapper,const char * m_point,const char * mode,uid_t
 	int status ;
 	
 	pid = fork() ;	
+	if( pid == -1 )
+		return 1 ;
 	if( pid == 0 ){
 		close(1);
 		close(2);

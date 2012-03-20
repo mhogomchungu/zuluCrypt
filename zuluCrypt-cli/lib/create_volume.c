@@ -47,7 +47,12 @@ void * kill_hanged_mkfs( void * p )
 	pid_t pid_3 ;
 
 	sleep( 20 ) ;
-	
+	/*
+	 * The probability of the process to exit and the OS giving the same PID to another process
+	 * is not very hight but it doesnt hurt making sure the process with the PID we are about 
+	 * to kill belong to us. We know this by checking group PID, processes from the same parent
+	 * have the same group ID.	 
+	 */
 	pid_1 = getpgid( getpid() ) ; 
 	pid_2 = ( pid_t ) p ;
 	pid_3 = getpgid( pid_2 ) ;
