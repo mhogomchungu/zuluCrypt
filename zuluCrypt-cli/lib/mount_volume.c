@@ -41,7 +41,7 @@ int fopt( const char * st,const char * mapper,const char * fs,const char * m_poi
 	StringAppend( opt,uid ) ;
 	StringAppend( opt,",gid=" ) ;
 	StringAppend( opt,uid );
-	h = mount( mapper,m_point,fs,mountflags,StringContent( opt ) ) ;	
+	h = mount( mapper,m_point,fs,mountflags,StringContent( opt ) ) ;
 	StringPrepend( opt,"," ) ;
 	StringPrepend( opt,mode ) ;
 	*p = opt ;
@@ -138,7 +138,7 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 	/*
 	 * Currently, i dont know how to use mount system call to use ntfs-3g instead of ntfs to mount ntfs file systems.
 	 * Use fork to use mount executable as a temporary solution.
-	 */
+	*/
 	if( strcmp( StringContent( fs ),"ntfs" ) == 0 ){
 		StringDelete( &fs ) ;
 		h = mount_ntfs( mapper,m_point,mode,id ) ;
@@ -148,7 +148,7 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 			default : return 1 ;
 		}
 	}
-	
+	 
 	path = realpath( "/etc/mtab",NULL ) ;
 	
 	if( strncmp( path,"/proc",5 ) == 0 )

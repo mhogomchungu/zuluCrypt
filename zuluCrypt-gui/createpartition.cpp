@@ -40,9 +40,7 @@ createpartition::createpartition(QWidget *parent) :
 	m_ui->lineEditVolumePath->setEnabled(false);
 	m_ui->lineEditPassphrase1->setFocus();
 
-	m_isWindowClosable = true ;
-
-	findInstalledFs() ;
+	m_isWindowClosable = true ;	
 
 	connect(m_ui->pbOpenKeyFile,SIGNAL(clicked()),this,SLOT(pbOpenKeyFile()));
 	connect(m_ui->pbCreate,SIGNAL(clicked()),this,SLOT(pbCreateClicked()));
@@ -56,6 +54,14 @@ void createpartition::findInstalledFs()
 {
 	QStringList mkfsList =  QDir(QString(ZULUCRYPTmkfs_dir)).entryList().filter("mkfs.") ;
 
+	if(mkfsList.size() == 0){
+		disableAll();
+		QString msg = tr("this tool expects to find file system creation tools at \"%1/\" ").arg(ZULUCRYPTmkfs_dir);
+		msg = msg + tr("and it can not find them.\nIt is therefore not possible to create volumes using this tool.");
+		UIMessage(tr("ERROR"),msg) ;
+		return ;
+	}
+	
 	int index = mkfsList.indexOf(QString("mkfs.ext2")) ;
 	if( index != -1 )
 		mkfsList.move(index,0);
@@ -123,6 +129,7 @@ void::createpartition::ShowUI(QString l,QString v)
 	m_ui->labelRepeatPassPhrase->setEnabled(true);
 	m_created = false ;
 	this->show();
+	findInstalledFs() ;
 }
 
 void createpartition::pbOpenKeyFile()
