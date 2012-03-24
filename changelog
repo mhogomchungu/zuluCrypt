@@ -69,3 +69,7 @@ version 4.3.3
 version 4.3.4
 -- fix a compilation bug on some system
 -- support libmount both above and below version 2.18 
+
+version 4.3.5
+-- when creating a volume, use mkfs.xxx tools installed on the system and not hard code a subset of them.
+-- use ntfs-3g to mount volumes that use ntfs file system.

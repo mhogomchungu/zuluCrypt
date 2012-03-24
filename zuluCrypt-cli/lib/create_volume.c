@@ -42,13 +42,13 @@ typedef struct st_2{
 
 void * kill_hanged_mkfs( void * p )
 {
-	sleep( 20 ) ;
 	st_1 * st = ( st_1 * ) p ;
+	sleep( 20 ) ;
 	if( *( st->status ) < 0 ){	
 		/*
 		 *  mkfs.xxx is still running, kill the process
 		 */
-		kill( *( st-> pid ),SIGKILL ) ;		
+		kill( *( st->pid ),SIGKILL ) ;		
 	}
 	return ( void * ) 0 ; 
 }
