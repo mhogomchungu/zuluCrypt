@@ -343,24 +343,9 @@ void zuluCrypt::setUserFont(QFont Font)
 
 void zuluCrypt::info()
 {
-	QString info = tr("cryptographic options used in volume management\n\n") ;
-
-	info = info + tr("type:\t\tplain\n") ;
-	info = info + tr("cipher:\t\taes-cbc-essiv:sha256\n") ;
-	info = info + tr("keysize:\t\t256bits ( 32 bytes )\n") ;
-	info = info + tr("hash:\t\tripemd160\n") ;
-
-	info = info + QString("\n") ;
-
-	info = info + tr("type:\t\tluks\n") ;
-	info = info + tr("keysize:\t\t256bits ( 32 bytes )\n\n") ;
-	info = info + tr("luks header hashing: sha1\n\n") ;
-
-	info = info + tr("key files are generated with:\t\t64 characters( 512bits )\n\n") ;
-
-	info = info +tr("random number generator device:\t( user specified )\n") ;
-
-	UIMessage(tr("cryptographic info"),info);
+	cryptoinfo * cinfo = new cryptoinfo(this);
+	connect(cinfo,SIGNAL(closeUISignal()),cinfo,SLOT(deleteLater()));
+	cinfo->show();
 }
 
 void zuluCrypt::createEncryptedpartitionUI()

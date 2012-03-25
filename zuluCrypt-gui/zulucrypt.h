@@ -47,6 +47,7 @@
 #include "volumepropertiesthread.h"
 #include "closevolumethread.h"
 #include "checkvolumetype.h"
+#include "cryptoinfo.h"
 
 namespace Ui {
     class zuluCrypt;

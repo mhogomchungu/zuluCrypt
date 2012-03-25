@@ -9,6 +9,7 @@ set (UI_FILES createfile.ui
 		createkeyfile.ui
 		luksaddkey.ui
 		openpartition.ui
+		cryptoinfo.ui
 )
 
 set( MOC_FILES createfile.h
@@ -27,6 +28,7 @@ set( MOC_FILES createfile.h
 		volumepropertiesthread.h
 		closevolumethread.h
 		checkvolumetype.h
+		cryptoinfo.h
  )
 	
 set (SRC createfile.cpp
@@ -48,6 +50,7 @@ set (SRC createfile.cpp
 	createfilethread.cpp
 	closevolumethread.cpp
 	checkvolumetype.cpp
+	cryptoinfo.cpp
 )
 
 add_definitions( -D_FILE_OFFSET_BITS=64 -Wall ) 
