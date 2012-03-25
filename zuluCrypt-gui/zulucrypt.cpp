@@ -290,13 +290,14 @@ void zuluCrypt::fonts()
 	if( ok == true ){
 		QByteArray ba ;
 		int k = Font.pointSize() ;
-		do{
-			ba.push_front( k % 10 + '0' ) ;
-			k = k / 10 ;
-		}while( k != 0 ) ;
+		if( k > 10 ){
+			k = 10 ;
+			Font.setPointSize(k);
+			UIMessage(tr("info"),tr("resetting font size to 10 because larger font sizes do not fit"));
+		}
 		setUserFont(Font);
 		QString s = Font.family()+ QString("\n");
-		s = s + QString( ba )  + QString("\n") ;
+		s = s + QString::number(k)  + QString("\n") ;
 		if(Font.style() == QFont::StyleNormal)
 			s = s + QString("normal\n") ;
 		else if(Font.style() == QFont::StyleItalic)
