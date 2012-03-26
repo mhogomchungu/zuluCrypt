@@ -32,18 +32,26 @@
  * */
 #include "../libmount_header.h"
 
-int fopt( const char * st,const char * mapper,const char * fs,const char * m_point,const char * mode,unsigned long mountflags, string_t * p,uid_t id )
+#define FAT_FAMILY_FS 1
+#define OTHER_FAMILY_FS 2
+
+int mount_fs( int type,const char * mapper,const char * fs,const char * m_point,const char * mode,unsigned long mountflags, string_t * p,uid_t id )
 {
 	int h ;
-	char uid_s[ 5 ] ;
-	char * uid = StringIntToString( uid_s,5,id ) ;		
-	string_t opt = String( st ) ;
-	StringAppend( opt,uid ) ;
-	StringAppend( opt,",gid=" ) ;
-	StringAppend( opt,uid );
-	h = mount( mapper,m_point,fs,mountflags,StringContent( opt ) ) ;
-	StringPrepend( opt,"," ) ;
-	StringPrepend( opt,mode ) ;
+	char uid_s[ UID_SIZE ] ;
+	char * uid ;
+	const char * copt ;
+	
+	string_t opt = String( mode ) ;
+	
+	if( type == FAT_FAMILY_FS )
+		StringAppend( opt,",dmask=077,uid=UID,gid=UID" ) ;
+	else
+		StringAppend( opt,",uid=UID,gid=UID" ) ;
+	
+	uid = StringIntToString( uid_s,UID_SIZE,id ) ;
+	copt = StringReplaceString( opt,"UID",uid ) + 3 ;
+	h = mount( mapper,m_point,fs,mountflags,copt ) ;
 	*p = opt ;
 	return h ;
 }
@@ -51,8 +59,8 @@ int fopt( const char * st,const char * mapper,const char * fs,const char * m_poi
 int mount_ntfs( const char * mapper,const char * m_point,const char * mode,uid_t id )
 {
 	pid_t pid ;     
-	char uid_s[ 5 ] ;
-	char * uid = StringIntToString( uid_s,5,id ) ;  
+	char uid_s[ UID_SIZE ] ;
+	char * uid  ;  
 	string_t opt ;
 	const char * copt ;
 	int status ;
@@ -61,15 +69,14 @@ int mount_ntfs( const char * mapper,const char * m_point,const char * mode,uid_t
 	if( pid == -1 )
 		return 1 ;
 	if( pid == 0 ){
-		close(1);
-		close(2);
-		opt = String( "-o dmask=077,umask=077," ) ;
-		StringAppend( opt,mode ) ;
-		StringAppend( opt,",uid=" ) ;
-		StringAppend( opt,uid ) ;
-		StringAppend( opt,",gid=" ) ;
-		StringAppend( opt,uid ) ;
-		copt = StringContent( opt ) ;
+		close( 1 );
+		close( 2 );
+		if( strcmp( mode,"ro" ) == 0 )
+			opt = String( "-o dmask=077,umask=077,ro,uid=UID,gid=UID" ) ;
+		else
+			opt = String( "-o dmask=077,umask=077,rw,uid=UID,gid=UID" ) ;
+		uid = StringIntToString( uid_s,UID_SIZE,id ) ;
+		copt = StringReplaceString( opt,"UID",uid ) ;
 		execl( ZULUCRYPTmount,"mount","-t","ntfs-3g",copt,mapper,m_point,( char * )0 ) ;
 	}
 	waitpid( pid,&status,0 ) ;
@@ -78,19 +85,20 @@ int mount_ntfs( const char * mapper,const char * m_point,const char * mode,uid_t
 
 int mount_ntfs_1( const char * mapper,const char * m_point,const char * mode,unsigned long mountflags,string_t * st,uid_t id )
 {
-	char uid_s[ 5 ] ;
-	char * uid = StringIntToString( uid_s,5,id ) ;	
+	char uid_s[ UID_SIZE ] ;
+	char * 	uid ;
 	string_t opt ;
 	int h ;
+	const char * copt ;
 	
-	opt = String( "rootmode=700" ) ;
-	StringAppend( opt,",user_id=" ) ;
-	StringAppend( opt,uid ) ;
-	StringAppend( opt,",group_id=" ) ;
-	StringAppend( opt,uid ) ;
-	h = mount( mapper,m_point,"fuseblk",mountflags,StringContent( opt ) ) ;
-	StringPrepend( opt,"," ) ;
-	StringPrepend( opt,mode ) ;
+	if( strcmp( mode,"ro" ) == 0 )
+		opt = String( "ro,rootmode=700,user_id=UID,group_id=UID" ) ;
+	else
+		opt = String( "rw,rootmode=700,user_id=UID,group_id=UID" ) ;
+	
+	uid = StringIntToString( uid_s,UID_SIZE,id ) ;
+	copt = StringReplaceString( opt,"UID",uid ) + 3 ;
+	h = mount( mapper,m_point,"fuseblk",mountflags,copt ) ;
 	*st = opt ;
 	return h ;
 }
@@ -103,14 +111,17 @@ int mount_mapper( const char * mapper,const char * m_point,const char * mode,uid
 	string_t opt ;
 	
 	if( strcmp( mode,"ro" ) == 0 )
-		mountflags = MS_RDONLY ;	
+		mountflags = MS_RDONLY ;
 	
-	if( strcmp( fs,"vfat" ) == 0 || strcmp( fs,"fat" ) == 0 || strcmp( fs,"msdos" ) == 0 || strcmp( fs,"umsdos" ) == 0 ){
-		h = fopt( "dmask=077,uid=",mapper,fs,m_point,mode,mountflags,&opt,id ) ;
-	}else if( strcmp( fs,"ntfs" ) == 0 ){ /* currently broken*/
+	/*
+	 * currently broken
+	if( strcmp( fs,"ntfs" ) == 0 ){  
 		h = mount_ntfs_1( mapper,m_point,mode,mountflags,&opt,id ) ;
+	*/	
+	if( strcmp( fs,"vfat" ) == 0 || strcmp( fs,"fat" ) == 0 || strcmp( fs,"msdos" ) == 0 || strcmp( fs,"umsdos" ) == 0 ){
+		h = mount_fs( FAT_FAMILY_FS,mapper,fs,m_point,mode,mountflags,&opt,id ) ;
 	}else if( strcmp( fs,"affs" ) == 0 || strcmp( fs,"hfs" ) == 0 || strcmp( fs,"iso9660" ) == 0 ){
-		h = fopt( "uid=",mapper,fs,m_point,mode,mountflags,&opt,id ) ;		
+		h = mount_fs( OTHER_FAMILY_FS,mapper,fs,m_point,mode,mountflags,&opt,id ) ;		
 	}else{
 		opt = String( mode ) ;
 		h = mount( mapper,m_point,fs,mountflags,NULL ) ;
