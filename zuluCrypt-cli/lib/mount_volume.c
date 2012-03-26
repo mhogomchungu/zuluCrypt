@@ -35,28 +35,35 @@
 #define FAT_FAMILY_FS 1
 #define OTHER_FAMILY_FS 2
 
-static int mount_fs( int type,const char * mapper,const char * fs,const char * m_point,const char * mode,unsigned long mountflags, string_t * p,uid_t id )
+typedef struct mount_properties{
+	const char * device ;
+	const char * m_point ;
+	const char * mode ;
+	const char * fs ;
+	uid_t uid ;
+	unsigned long m_flags ;
+}m_struct;
+
+static int mount_fs( int type,const m_struct * mst, string_t * st )
 {
-	int h ;
 	char uid_s[ UID_SIZE ] ;
 	char * uid ;
 	const char * copt ;
 	
-	string_t opt = String( mode ) ;
+	string_t opt = String( mst->mode ) ;
 	
 	if( type == FAT_FAMILY_FS )
 		StringAppend( opt,",dmask=077,uid=UID,gid=UID" ) ;
 	else
 		StringAppend( opt,",uid=UID,gid=UID" ) ;
 	
-	uid = StringIntToString( uid_s,UID_SIZE,id ) ;
+	uid = StringIntToString( uid_s,UID_SIZE,mst->uid ) ;
 	copt = StringReplaceString( opt,"UID",uid ) + 3 ;
-	h = mount( mapper,m_point,fs,mountflags,copt ) ;
-	*p = opt ;
-	return h ;
+	*st = opt ;
+	return mount( mst->device,mst->m_point,mst->fs,mst->m_flags,copt ) ;
 }
 
-static int mount_ntfs( const char * mapper,const char * m_point,const char * mode,uid_t id )
+static int mount_ntfs( const m_struct * mst )
 {
 	pid_t pid ;     
 	char uid_s[ UID_SIZE ] ;
@@ -71,13 +78,13 @@ static int mount_ntfs( const char * mapper,const char * m_point,const char * mod
 	if( pid == 0 ){
 		close( 1 );
 		close( 2 );
-		if( strcmp( mode,"ro" ) == 0 )
+		if( strcmp( mst->mode,"ro" ) == 0 )
 			opt = String( "-o dmask=077,umask=077,ro,uid=UID,gid=UID" ) ;
 		else
 			opt = String( "-o dmask=077,umask=077,rw,uid=UID,gid=UID" ) ;
-		uid = StringIntToString( uid_s,UID_SIZE,id ) ;
+		uid = StringIntToString( uid_s,UID_SIZE,mst->uid ) ;
 		copt = StringReplaceString( opt,"UID",uid ) ;
-		execl( ZULUCRYPTmount,"mount","-t","ntfs-3g",copt,mapper,m_point,( char * )0 ) ;
+		execl( ZULUCRYPTmount,"mount","-t","ntfs-3g",copt,mst->device,mst->m_point,( char * )0 ) ;
 	}
 	waitpid( pid,&status,0 ) ;
 	return status ; 
@@ -85,56 +92,44 @@ static int mount_ntfs( const char * mapper,const char * m_point,const char * mod
 
 /*
  * currently broken for reasons i havent identified yet, use exe above as a temp soln.
-static int mount_ntfs_3g( const char * mapper,const char * m_point,const char * mode,unsigned long mountflags,string_t * st,uid_t id )
+static int mount_ntfs_3g( const m_struct * mst )
 {
 	char uid_s[ UID_SIZE ] ;
 	char * 	uid ;
-	string_t opt ;
-	int h ;
 	const char * copt ;
 	
-	if( strcmp( mode,"ro" ) == 0 )
-		opt = String( "ro,rootmode=700,user_id=UID,group_id=UID" ) ;
+	if( strcmp( mst->mode,"ro" ) == 0 )
+		*st = String( "ro,rootmode=700,user_id=UID,group_id=UID" ) ;
 	else
-		opt = String( "rw,rootmode=700,user_id=UID,group_id=UID" ) ;
+		*st = String( "rw,rootmode=700,user_id=UID,group_id=UID" ) ;
 	
-	uid = StringIntToString( uid_s,UID_SIZE,id ) ;
-	copt = StringReplaceString( opt,"UID",uid ) + 3 ;
-	h = mount( mapper,m_point,"fuseblk",mountflags,copt ) ;
-	*st = opt ;
-	return h ;
+	uid = StringIntToString( uid_s,UID_SIZE,mst->uid ) ;
+	copt = StringReplaceString( *st,"UID",uid ) + 3 ;
+	return mount( mst->devicer,mst->m_point,"fuseblk",mst->flags,copt ) ;
 }
 */
 
-static int mount_mapper( const char * mapper,const char * m_point,const char * mode,uid_t id, const char * fs, string_t * options )
+static int mount_mapper( const m_struct * mst, string_t * st )
 {
-	unsigned long mountflags = 0 ;
 	int h ;
-
-	string_t opt ;
-	
-	if( strcmp( mode,"ro" ) == 0 )
-		mountflags = MS_RDONLY ;
-	
+	const char * fs = mst->fs ;
 	/*
 	 * currently broken
 	if( strcmp( fs,"ntfs" ) == 0 ){  
-		h = mount_ntfs_1( mapper,m_point,mode,mountflags,&opt,id ) ;
+		h = mount_ntfs_1( mapper,m_point,mode,mountflags,opt,id ) ;
 	*/	
 	if( strcmp( fs,"vfat" ) == 0 || strcmp( fs,"fat" ) == 0 || strcmp( fs,"msdos" ) == 0 || strcmp( fs,"umsdos" ) == 0 ){
-		h = mount_fs( FAT_FAMILY_FS,mapper,fs,m_point,mode,mountflags,&opt,id ) ;
+		h = mount_fs( FAT_FAMILY_FS,mst,st ) ;
 	}else if( strcmp( fs,"affs" ) == 0 || strcmp( fs,"hfs" ) == 0 || strcmp( fs,"iso9660" ) == 0 ){
-		h = mount_fs( OTHER_FAMILY_FS,mapper,fs,m_point,mode,mountflags,&opt,id ) ;		
+		h = mount_fs( OTHER_FAMILY_FS,mst,st ) ;		
 	}else{
-		opt = String( mode ) ;
-		h = mount( mapper,m_point,fs,mountflags,NULL ) ;
-		if( h == 0 && mountflags != MS_RDONLY ){			
-			chmod( m_point,S_IRWXU ) ;
-			chown( m_point,id,id ) ;
+		*st = String( mst->mode ) ;
+		h = mount( mst->device,mst->m_point,mst->fs,mst->m_flags,NULL ) ;
+		if( h == 0 && mst->m_flags != MS_RDONLY ){			
+			chmod( mst->m_point,S_IRWXU ) ;
+			chown( mst->m_point,mst->uid,mst->uid ) ;
 		}
 	}
-
-	*options = opt ;
 	return h ;
 }
 
@@ -154,6 +149,17 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 	string_t options = NULL ;
 	string_t fs = NULL ;
 	
+	m_struct mst ;
+	mst.device = mapper ;
+	mst.m_point = m_point ;
+	mst.mode = mode ;
+	mst.uid = id ;
+	
+	if( strcmp( mode,"ro" ) == 0 )
+		mst.m_flags = MS_RDONLY ;
+	else
+		mst.m_flags = 0 ;
+	
 	blkid = blkid_new_probe_from_filename( mapper ) ;
 	blkid_do_probe( blkid );
 	
@@ -167,7 +173,6 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 	}
 	
 	fs = String( cf ) ;
-	
 	blkid_free_probe( blkid );
 	
 	/*
@@ -176,7 +181,7 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 	*/
 	if( strcmp( StringContent( fs ),"ntfs" ) == 0 ){
 		StringDelete( &fs ) ;
-		h = mount_ntfs( mapper,m_point,mode,id ) ;
+		h = mount_ntfs( &mst ) ;
 		switch( h ){
 			case 0  : return 0 ;
 			case 16 : return 12 ;
@@ -184,10 +189,12 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 		}
 	}
 	 
+	mst.fs = StringContent( fs ) ;
+	 
 	path = realpath( "/etc/mtab",NULL ) ;
 	
 	if( strncmp( path,"/proc",5 ) == 0 )
-		h = mount_mapper( mapper,m_point,mode,id,StringContent( fs ),&options ) ;
+		h = mount_mapper( &mst,&options ) ;
 	else{
 		/* "/etc/mtab" is not a symbolic link to /proc/mounts, manually,add an entry to it since 
 		 * mount command does not
@@ -196,7 +203,7 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 		if( mnt_lock_file( m_lock ) != 0 ){
 			h = 12 ;
 		}else{		
-			h = mount_mapper( mapper,m_point,mode,id,StringContent( fs ),&options ) ;
+			h = mount_mapper( &mst,&options ) ;
 			if( h == 0 ){
 				f = setmntent( "/etc/mtab","a" ) ;	
 				mt.mnt_fsname = ( char * ) mapper ;
