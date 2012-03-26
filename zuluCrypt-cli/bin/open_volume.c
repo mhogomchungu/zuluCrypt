@@ -109,7 +109,7 @@ int open_volumes( int argn,char * dev,char * mapping_name,int id,char * mount_po
 	}
 	
 	if( st != 0 )
-		remove( cpoint ) ;
+		rmdir( cpoint ) ;
 	
 	StringDelete( &m_name ) ;
 	free( cpoint ) ;

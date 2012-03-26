@@ -301,13 +301,13 @@ char * StringLengthCopy( string_t st,size_t x ) ;
 
 
 /*
- * Return an editable string starting at position x and made up of y characters
+ * Return a sub string starting at position x and made up of y characters
  *
  * NULL is returned if the operation fail.
  * 
  * Remember to free the returned string when done with it. * 
  */
-char * StringMidString( string_t st , size_t x, size_t y ) ;
+string_t StringMidString( string_t st , size_t x, size_t y ) ;
 
 
 /*

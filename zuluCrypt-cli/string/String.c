@@ -688,7 +688,7 @@ const char * StringInsertString( string_t st, size_t x, const char * s )
 	return c ;	
 }
 
-char * StringMidString( string_t st , size_t x, size_t y ) 
+string_t StringMidString( string_t st , size_t x, size_t y ) 
 {
 	char * c ;
 	
@@ -699,7 +699,7 @@ char * StringMidString( string_t st , size_t x, size_t y )
 	
 	*( c + y ) = '\0' ;
 
-	return c ;
+	return StringInheritWithSize( &c,y ) ;
 }
 
 char * StringRS__( string_t st, const char * x, const char * s,size_t p )
