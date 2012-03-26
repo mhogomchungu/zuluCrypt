@@ -50,14 +50,14 @@ int fopt( const char * st,const char * mapper,const char * fs,const char * m_poi
 
 int mount_ntfs( const char * mapper,const char * m_point,const char * mode,uid_t id )
 {
-	pid_t pid ;	
+	pid_t pid ;     
 	char uid_s[ 5 ] ;
-	char * uid = StringIntToString( uid_s,5,id ) ;	
+	char * uid = StringIntToString( uid_s,5,id ) ;  
 	string_t opt ;
 	const char * copt ;
 	int status ;
 	
-	pid = fork() ;	
+	pid = fork() ;  
 	if( pid == -1 )
 		return 1 ;
 	if( pid == 0 ){
@@ -73,7 +73,26 @@ int mount_ntfs( const char * mapper,const char * m_point,const char * mode,uid_t
 		execl( ZULUCRYPTmount,"mount","-t","ntfs-3g",copt,mapper,m_point,( char * )0 ) ;
 	}
 	waitpid( pid,&status,0 ) ;
-	return status ;	
+	return status ; 
+}
+
+int mount_ntfs_1( const char * mapper,const char * m_point,const char * mode,unsigned long mountflags,string_t * st,uid_t id )
+{
+	char uid_s[ 5 ] ;
+	char * uid = StringIntToString( uid_s,5,id ) ;	
+	string_t opt ;
+	int h ;
+	
+	opt = String( "rootmode=700" ) ;
+	StringAppend( opt,",user_id=" ) ;
+	StringAppend( opt,uid ) ;
+	StringAppend( opt,",group_id=" ) ;
+	StringAppend( opt,uid ) ;
+	h = mount( mapper,m_point,"fuseblk",mountflags,StringContent( opt ) ) ;
+	StringPrepend( opt,"," ) ;
+	StringPrepend( opt,mode ) ;
+	*st = opt ;
+	return h ;
 }
 
 int mount_mapper( const char * mapper,const char * m_point,const char * mode,uid_t id, const char * fs, string_t * options )
@@ -88,6 +107,8 @@ int mount_mapper( const char * mapper,const char * m_point,const char * mode,uid
 	
 	if( strcmp( fs,"vfat" ) == 0 || strcmp( fs,"fat" ) == 0 || strcmp( fs,"msdos" ) == 0 || strcmp( fs,"umsdos" ) == 0 ){
 		h = fopt( "dmask=077,uid=",mapper,fs,m_point,mode,mountflags,&opt,id ) ;
+	}else if( strcmp( fs,"ntfs" ) == 0 ){ /* currently broken*/
+		h = mount_ntfs_1( mapper,m_point,mode,mountflags,&opt,id ) ;
 	}else if( strcmp( fs,"affs" ) == 0 || strcmp( fs,"hfs" ) == 0 || strcmp( fs,"iso9660" ) == 0 ){
 		h = fopt( "uid=",mapper,fs,m_point,mode,mountflags,&opt,id ) ;		
 	}else{
