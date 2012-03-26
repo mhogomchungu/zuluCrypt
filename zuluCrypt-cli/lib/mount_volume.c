@@ -35,7 +35,7 @@
 #define FAT_FAMILY_FS 1
 #define OTHER_FAMILY_FS 2
 
-int mount_fs( int type,const char * mapper,const char * fs,const char * m_point,const char * mode,unsigned long mountflags, string_t * p,uid_t id )
+static int mount_fs( int type,const char * mapper,const char * fs,const char * m_point,const char * mode,unsigned long mountflags, string_t * p,uid_t id )
 {
 	int h ;
 	char uid_s[ UID_SIZE ] ;
@@ -56,7 +56,7 @@ int mount_fs( int type,const char * mapper,const char * fs,const char * m_point,
 	return h ;
 }
 
-int mount_ntfs( const char * mapper,const char * m_point,const char * mode,uid_t id )
+static int mount_ntfs( const char * mapper,const char * m_point,const char * mode,uid_t id )
 {
 	pid_t pid ;     
 	char uid_s[ UID_SIZE ] ;
@@ -83,7 +83,9 @@ int mount_ntfs( const char * mapper,const char * m_point,const char * mode,uid_t
 	return status ; 
 }
 
-int mount_ntfs_1( const char * mapper,const char * m_point,const char * mode,unsigned long mountflags,string_t * st,uid_t id )
+/*
+ * currently broken for reasons i havent identified yet, use exe above as a temp soln.
+static int mount_ntfs_3g( const char * mapper,const char * m_point,const char * mode,unsigned long mountflags,string_t * st,uid_t id )
 {
 	char uid_s[ UID_SIZE ] ;
 	char * 	uid ;
@@ -102,8 +104,9 @@ int mount_ntfs_1( const char * mapper,const char * m_point,const char * mode,uns
 	*st = opt ;
 	return h ;
 }
+*/
 
-int mount_mapper( const char * mapper,const char * m_point,const char * mode,uid_t id, const char * fs, string_t * options )
+static int mount_mapper( const char * mapper,const char * m_point,const char * mode,uid_t id, const char * fs, string_t * options )
 {
 	unsigned long mountflags = 0 ;
 	int h ;

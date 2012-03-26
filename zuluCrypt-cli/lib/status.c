@@ -26,7 +26,7 @@
 #include <fcntl.h>
 #include <blkid/blkid.h>
 
-char * loop_device_address( const char * device )
+static char * loop_device_address( const char * device )
 {
 	int fd ;
 	char * path ;
