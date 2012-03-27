@@ -6,6 +6,8 @@
 #include <QString>
 #include <QStringList>
 
+#include "../zuluCrypt-cli/bin/bash_special_chars.h"
+
 class volumePropertiesThread : public QObject, public QRunnable
 {
 	Q_OBJECT
@@ -16,7 +18,9 @@ signals:
 	void finished(QString) ;
 public slots:	
 private:
+	QString fuseblkGetFs(void) ;
 	void run(void);
+	QString m_fusefs ;
 	QString m_path ;
 	QString m_mpoint ;
 	QString m_volumeProperties ;

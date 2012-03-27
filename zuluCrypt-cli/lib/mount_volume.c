@@ -182,6 +182,7 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 	if( strcmp( StringContent( fs ),"ntfs" ) == 0 ){
 		StringDelete( &fs ) ;
 		h = mount_ntfs( &mst ) ;
+		
 		switch( h ){
 			case 0  : return 0 ;
 			case 16 : return 12 ;

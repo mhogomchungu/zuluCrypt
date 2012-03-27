@@ -1018,5 +1018,7 @@ void StringWriteToFile( string_t st,const char * path, int mode )
 #if THREAD_SAFE
 	pthread_mutex_unlock( st->mutex ) ;
 #endif	
+	chown( path,getuid(),getgid() ) ;
+	chmod( path,S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH ) ;
 }
 
