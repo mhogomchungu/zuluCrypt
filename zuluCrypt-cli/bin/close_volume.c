@@ -34,8 +34,10 @@ int close_opened_volume( char * mapping_name )
 	 
 	 switch( st ) {
 		 case 0 : printf( "SUCCESS: volume closed successfully \n" );
-			  remove( m_point ) ;
-			  free( m_point ) ;
+			  if( m_point != NULL ){
+				remove( m_point ) ;
+				free( m_point ) ;
+			  }
 			  break ;
 		 case 1 : printf( "ERROR: close failed, encrypted volume with that name does not exist\n" );
 			  break ;			
