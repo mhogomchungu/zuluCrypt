@@ -48,11 +48,13 @@ int open_volume( const char * dev,const char * map,const char * m_point,uid_t id
 		case 3 : return 3 ;	 
 	}
 
-	h = mount_volume( mapper,m_point,mode,id ) ;	
+	if( m_point != NULL ){	
+		h = mount_volume( mapper,m_point,mode,id ) ;	
 	
-	if( h != 0 )
-		if( close_mapper( map ) != 0 )
-			h = 15 ;
+		if( h != 0 )
+			if( close_mapper( map ) != 0 )
+				h = 15 ;
+	}
 	StringDelete( &p ) ;
 	return h ;
 }

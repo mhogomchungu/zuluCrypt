@@ -302,14 +302,15 @@ void createpartition::pbCreateClicked()
 	volumePath.replace("\"","\"\"\"") ;
 
 	QString exe = QString(ZULUCRYPTzuluCrypt) ;
-	exe = exe + QString(" create \"") ;
-	exe = exe + volumePath + QString("\" ") ;
-	exe = exe + m_ui->comboBoxFS->currentText() + QString(" ") ;
+	exe = exe + QString(" -c -k -d \"") ;
+	exe = exe + volumePath + QString("\" -z ") ;
+	exe = exe + m_ui->comboBoxFS->currentText() + QString(" -t ") ;
 	exe = exe + m_ui->comboBoxVolumeType->currentText() + QString(" ") ;
 	exe = exe + source + QString(" \"") ;
-	exe = exe + passphrase_1 + QString("\" ") ;
+	exe = exe + passphrase_1 + QString("\" -g ") ;
 	exe = exe + m_ui->comboBoxRNG->currentText();
 
+	std::cout << exe.toStdString() << std::endl ;
 	m_isWindowClosable = false ;
 
 	runInThread * cvt = new runInThread(exe) ;

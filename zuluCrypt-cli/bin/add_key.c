@@ -19,7 +19,7 @@
 
 #include "includes.h"
 
-int check_empty_slot( const char * device )
+static int check_empty_slot( const char * device )
 {
 	int status = 0 ;
 	char * c = empty_slots( device ) ;
@@ -38,7 +38,7 @@ int check_empty_slot( const char * device )
 	return status ;
 }
 
-int addkey( int argn,char * device,char * keyType1,char * existingKey,char * keyType2,char * newKey )
+int addkey( int i,char * device,char * keyType1,char * existingKey,char * keyType2,char * newKey )
 {
 	string_t presentKey ;
 	string_t newKey_1 ;
@@ -68,7 +68,7 @@ int addkey( int argn,char * device,char * keyType1,char * existingKey,char * key
 		case 1 : status = 2  ; goto out ;
 	}
 	
-	if ( argn == 3 ){		
+	if ( i == 1 ){		
 		printf( "Enter an existing passphrase: " ) ;		
 		presentKey = get_passphrase( ) ;		
 		printf( "\n" ) ;		
@@ -92,7 +92,11 @@ int addkey( int argn,char * device,char * keyType1,char * existingKey,char * key
 		StringDelete( &newKey_1 ) ;	
 		StringDelete( &newKey_2 ) ;
 		
-	}else if( argn == 7 ){		
+	}else{		
+		if( keyType1 == NULL || keyType2 == NULL || newKey == NULL || existingKey == NULL ){
+			status = 6 ;
+			goto out ;
+		}
 		if ( strcmp( keyType1, "-f" ) == 0 ){	
 			switch( StringGetFromFile_1( &ek,existingKey ) ){
 				case 1 : status = 8 ; goto out ; 
@@ -132,8 +136,6 @@ int addkey( int argn,char * device,char * keyType1,char * existingKey,char * key
 		}else{			
 			status = 5 ;
 		}
-	}else{
-		status = 6 ;		
 	}	
 	out:	
 	switch ( status ){
@@ -147,9 +149,9 @@ int addkey( int argn,char * device,char * keyType1,char * existingKey,char * key
 		break ;
 		case 4 : printf( "ERROR: device does not exist\n" ) ;
 		break ;
-		case 5 : printf( "ERROR: Wrong arguments\n" ) ;
+		case 5 : printf( "ERROR: wrong arguments\n" ) ;
 		break ;
-		case 6 : printf( "ERROR: Wrong number of arguments\n" ) ;
+		case 6 : printf( "ERROR: one or more required argument(s) for this operation is missing\n" ) ;
 		break ;			
 		case 7 : printf( "ERROR: new passphrases do not match\n" ) ;
 		break ;

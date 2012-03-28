@@ -57,113 +57,113 @@ echo ""
 
 echo "creating a plain volume"
 
-zuluCrypt-cli create "$plain" ext4 plain -p "$passphrase" /dev/urandom
+zuluCrypt-cli -c -k -d "$plain" -z ext4 -t plain -p "$passphrase" -g /dev/urandom
 
 sleep 1
 echo ""
 echo "opening \"$plain\" volume using passphrase"
 
-zuluCrypt-cli open "$plain" "$mount_point"/plain rw -p "$passphrase"
+zuluCrypt-cli -o -d "$plain" -m "$mount_point"/plain -e rw -p "$passphrase"
 
 sleep 1
 echo ""
 echo "closing \"$plain\" volume"
 
-zuluCrypt-cli close "$plain"
+zuluCrypt-cli -q -d "$plain"
 
 sleep 1
 echo ""
 echo "opening \"$plain\" volume using keyfile"
 
-zuluCrypt-cli open "$plain" "$mount_point"/plain rw -f "$passfile"
+zuluCrypt-cli -o -d "$plain" -m "$mount_point"/plain -e rw -f "$passfile"
 
 sleep 1
 echo ""
 echo "closing \"$plain\" volume"
 
-zuluCrypt-cli close "$plain"
+zuluCrypt-cli -q -d "$plain"
 sleep 1
 echo ""
 echo "creating a luks volume"
 
-zuluCrypt-cli create "$luks" ext4  luks -p "$passphrase" /dev/urandom
+zuluCrypt-cli -c -k -d "$luks" -z ext4 -t luks -p "$passphrase" -g /dev/urandom
 
 sleep 1
 echo ""
 echo "opening \"$luks\" volume using passphrase"
 
-zuluCrypt-cli open "$luks" "$mount_point"/luks rw -p "$passphrase"
+zuluCrypt-cli -o -d "$luks" -m "$mount_point"/luks -e rw -p "$passphrase"
 
 sleep 1
 echo ""
 echo "closing \"$luks\" volume"
 
-zuluCrypt-cli close "$luks"
+zuluCrypt-cli -q -d "$luks"
 
 sleep 1
 echo ""
 echo "opening \"$luks\" volume using keyfile"
 
-zuluCrypt-cli open "$luks" "$mount_point"/luks rw -f "$passfile"
+zuluCrypt-cli -o -d "$luks" -m "$mount_point"/luks -e rw -f "$passfile"
 
 sleep 1
 echo ""
 echo "closing \"$luks\""
-zuluCrypt-cli close "$luks"
+zuluCrypt-cli -q -d "$luks"
 
 sleep 1
 echo ""
 echo "check keys slots in use"
 
-zuluCrypt-cli emptyslots "$luks"
+zuluCrypt-cli -b -d "$luks"
 
 sleep 1
 echo ""
 echo "add key to luks volume using passphrase and passphrase"
 
-zuluCrypt-cli addkey "$luks" -p "$passphrase" -p "$passphrase1"
+zuluCrypt-cli -a -d "$luks" -y "$passphrase" -l "$passphrase1"
 
 sleep 1
 echo ""
 echo "add key to luks volume using keyfile and keyfile"
 
-zuluCrypt-cli addkey "$luks" -f "$passfile" -f "$passfile"
+zuluCrypt-cli -a -d "$luks" -u "$passfile" -n "$passfile"
 
 sleep 1
 echo ""
 echo "add key to luks volume using passphrase and keyfile"
 
-zuluCrypt-cli addkey "$luks" -p "$passphrase" -f "$passfile"
+zuluCrypt-cli -a -d "$luks" -y "$passphrase" -n "$passfile"
 
 sleep 1
 echo ""
 echo "add key to luks volume using keyfile and passphrase"
 
-zuluCrypt-cli addkey "$luks" -f "$passfile" -p "$passphrase1"
+zuluCrypt-cli -a -d "$luks" -u "$passfile" -l "$passphrase1"
 
 sleep 1
 echo ""
 echo "check keys slots in use"
 
-zuluCrypt-cli emptyslots "$luks"
+zuluCrypt-cli -b -d "$luks"
 
 sleep 1
 echo ""
 echo "remove added key using a passphrase"
 
-zuluCrypt-cli removekey "$luks" -p "$passphrase"
+zuluCrypt-cli -r -d "$luks" -p "$passphrase"
 
 sleep 1
 echo ""
 echo "remove added key using a keyfile"
 
-zuluCrypt-cli removekey "$luks" -f "$passfile"
+zuluCrypt-cli -r -d "$luks" -f "$passfile"
 
 sleep 1
 echo ""
 echo "check keys slots in use"
 
-zuluCrypt-cli emptyslots "$luks"
+zuluCrypt-cli -b -d "$luks"
 
 sleep 1
 echo "deleting testing files"

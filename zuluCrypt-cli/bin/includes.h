@@ -46,13 +46,13 @@ int volume_info(  const char * mapper, const char * device  ) ;
  
 int close_opened_volume(  char * mapping_name  ) ;
  
-int open_volumes( int argn,char * device,char * mapping_name,int id,char * mount_point,char * mode,char * source,char * pass ) ;
+int open_volumes( int o,int i,char * device,char * mapping_name,int id,char * mount_point,char * mode,char * source,char * pass ) ;
 		   
-int create_volumes( int argn ,char * device,char * fs,char * mode,char * keyType,char * pass,char * rng  ) ;
+int create_volumes( int i,int c,char * device,char * fs,char * mode,char * keyType,char * pass,char * rng  ) ;
 
-int addkey( int argn,char * device,char * keyType1,char * existingKey,char * keyType2,char * newKey ) ;
+int addkey( int i,char * device,char * keyType1,char * existingKey,char * keyType2,char * newKey ) ;
 		
-int removekey(  int argn ,char * device, char * keyType, char * keytoremove  ) ;
+int removekey(  int i,int k,char * device, char * keyType, char * keytoremove  ) ;
 
 //int read_file(char ** content,char * path) ;
 

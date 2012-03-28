@@ -88,17 +88,15 @@ void openpartition::HighlightRow(int r, bool b)
 
 void openpartition::ShowNonSystemPartitions()
 {
-	partitionList(tr("select a partition to create an encrypted volume in"),
-		      NON_SYSTEM_PARTITIONS);
+	partitionList(tr("select a partition to create an encrypted volume in")," -N");
 }
 
 void openpartition::ShowAllPartitions()
 {	
-	partitionList(tr("select an encrypted partition to open"),
-		      ALL_PARTITIONS);
+	partitionList(tr("select an encrypted partition to open")," -A");
 }
 
-void openpartition::partitionList(QString title, int type)
+void openpartition::partitionList(QString title, QString type)
 {
 	this->setWindowTitle(title);
 

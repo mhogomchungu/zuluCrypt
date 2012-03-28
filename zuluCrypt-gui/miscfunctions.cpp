@@ -95,7 +95,7 @@ QStringList miscfunctions::deviceProperties(QString device)
 bool miscfunctions::isLuks(QString volumePath)
 {
 	QProcess p ;
-	p.start(QString(ZULUCRYPTzuluCrypt) + QString(" isLuks ") + QString("\"") + volumePath + QString("\"") );
+	p.start(QString(ZULUCRYPTzuluCrypt) + QString(" -i ") + QString("\"") + volumePath + QString("\"") );
 	p.waitForFinished() ;
 	int i = p.exitCode() ;
 	p.close();
@@ -159,7 +159,7 @@ QString miscfunctions::readMtab(QByteArray * mtab,QString entry)
 QStringList miscfunctions::luksEmptySlots(QString volumePath)
 {
 	QProcess N ;
-	N.start(QString(ZULUCRYPTzuluCrypt) + QString(" emptyslots \"") + volumePath + QString("\""));
+	N.start(QString(ZULUCRYPTzuluCrypt) + QString(" -b -d \"") + volumePath + QString("\""));
 	N.waitForFinished() ;
 	QByteArray s = N.readAllStandardOutput() ;
 	int i = 0 ;
@@ -176,7 +176,7 @@ QStringList miscfunctions::luksEmptySlots(QString volumePath)
 bool miscfunctions::isUUIDvalid(QString uuid)
 {
 	QProcess p ;
-	p.start(QString(ZULUCRYPTzuluCrypt) + QString(" checkUUID ") + uuid);
+	p.start(QString(ZULUCRYPTzuluCrypt) + QString(" -w ") + uuid);
 	p.waitForFinished() ;
 	int result = p.exitCode() ;
 	p.close();

@@ -217,7 +217,7 @@ void luksdeletekey::pbDelete()
 			return ;
 	}	
 	QString exe = QString(ZULUCRYPTzuluCrypt) ;
-	exe = exe + QString(" removekey ")  ;
+	exe = exe + QString(" -k -r -d ")  ;
 	exe = exe + QString("\"") +  m_volumePath + QString("\"") ;
 
 	if ( m_ui->rbPassphraseFromFile->isChecked() == true )

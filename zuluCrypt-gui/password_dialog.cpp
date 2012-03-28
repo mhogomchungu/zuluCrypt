@@ -226,9 +226,9 @@ void passwordDialog::buttonOpenClicked(void )
 	QString passtype ;
 
 	if ( B == true )
-		passtype = " -f " ;
+		passtype = "-f" ;
 	else
-		passtype = " -p " ;
+		passtype = "-p" ;
 
 	passPhraseField.replace("\"","\"\"\"") ;
 
@@ -238,8 +238,8 @@ void passwordDialog::buttonOpenClicked(void )
 
 	mountPointPath.replace("\"","\"\"\"") ;
 
-	QString exe = QString(ZULUCRYPTzuluCrypt) + QString(" open ") + QString(" \"") + vp + QString("\" ") ;
-	exe = exe + QString(" \"") + mountPointPath + QString("\" ") + mode + QString(" ") + passtype ;
+	QString exe = QString(ZULUCRYPTzuluCrypt) + QString(" -o ") + QString("-d \"") + vp + QString("\" ") ;
+	exe = exe + QString("-m \"") + mountPointPath + QString("\" -e ") + mode + QString(" ") + passtype ;
 	exe = exe + QString(" \"") + passPhraseField + QString("\"");
 
 	runInThread * ovt = new runInThread(exe) ;

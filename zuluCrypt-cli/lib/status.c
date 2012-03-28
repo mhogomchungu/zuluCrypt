@@ -145,6 +145,9 @@ char * volume_device_name( const char * mapper )
 	string_t address ;
 	const char * e ;
 	
+	if( strncmp( mapper,"/dev/mapper",11 ) != 0 )
+		return NULL ;
+	
 	i = crypt_init_by_name( &cd,mapper );
 	
 	if( i < 0 ){
@@ -156,7 +159,10 @@ char * volume_device_name( const char * mapper )
 	
 	if( strncmp( e ,"/dev/loop",9 ) == 0 ){
 		path = loop_device_address( e ) ;
-		address = StringInherit( &path ) ;	
+		if( path != NULL )
+			address = StringInherit( &path ) ;
+		else
+			address = String( "NaN" ) ;
 	}else
 		address = String( e ) ;
 	

@@ -23,16 +23,16 @@
  */
 ssize_t check_partition( const char * device ) ;
 
-int create_volumes( int argn,char * device,char * fs,char * mode,char * keyType,char * pass,char * rng  )
+int create_volumes( int i,int conf,char * device,char * fs,char * type,char * keyType,char * pass,char * rng  )
 {
 	string_t pass_1 ;
 	string_t pass_2 ;
 	string_t content ;
 	
-	char Y ;
 	int st  ;
 	struct stat xt ;
-	
+	char confirm ;
+
 	if( is_path_valid( device ) == 1 ){
 		st = 1 ;
 		goto out ;
@@ -49,64 +49,53 @@ int create_volumes( int argn,char * device,char * fs,char * mode,char * keyType,
 	if( is_path_valid( ZULUCRYPTmkfs ) == -1 ){		
 		st = 11 ;
 		goto out ;		
+	}	
+	if( conf == -1 ){			
+		printf( "\nThis operation will destroy all data in a device at: \"%s\"\n",device ) ;
+		printf("Are you sure you want to proceed?\n" ) ;
+		printf( "Type \"Y\" and press enter if you want to process: " ) ;
+		confirm = getchar() ;
+		while( getchar() != '\n' ){ ; } /* clear the keyboard buffer */
+			
+		if( confirm != 'Y' ){
+			st = 12 ;
+			goto out ;
+		}
 	}
-	
-	if( argn == 5 ){
-		printf( "ARE YOU SURE YOU WANT TO CREATE/OVERWRITE: \"%s\" ? Type \"Y\" if you are\n",device );		
-		Y = getchar() ;		
-		if ( Y != 'Y' )
-			st = 5 ;
-		else{			
-			getchar();    //get rid of "\n" still in stdin buffer				
-			printf( "Enter passphrase: " ) ;			
-			pass_1 = get_passphrase(  );			
-			printf( "\nRe enter passphrase: " ) ;			
-			pass_2 = get_passphrase(  );				
-			printf( "\n" ) ;			
-			if(  StringCompare( pass_1 , pass_2 ) != 0  ){				
-				st = 7 ;
-			}else{				
-				if( strcmp( mode,"luks" ) == 0  ){					
-					printf( "enter 1 to use \"/dev/random\" device when generating the key  (  more secure but slower  )\n" ) ;
-					printf( "enter 2 to use \"/dev/urandom\" device when generating the key (  secure enought and faster  )\n" ) ;
-					Y = getchar() ;
-					getchar() ;					
-					if( Y == '1' )
-						st = create_volume( device,fs,mode,StringContent( pass_1 ),StringLength( pass_1 ),"/dev/random" );
-					else if( Y == '2' )
-						st = create_volume( device,fs,mode,StringContent( pass_1 ),StringLength( pass_1 ),"/dev/urandom" );
-					else{
-						st = 5 ;
-						goto out ;
-					}
-				}else{
-					st = create_volume( device,fs,mode,StringContent( pass_1 ),StringLength( pass_1 ),"NULL" ) ;						
-				}		
-			}
-			StringDelete( &pass_1 ) ;
-			StringDelete( &pass_2 ) ;				
-		}		
-	}else if ( argn == 8 ){		
-		if( strcmp( rng,"/dev/random" ) != 0 ){
-			if( strcmp( rng,"/dev/urandom" ) != 0 ){
-				st = 2 ;
-				goto out ;
-			}	
+	if( i == 1 ){
+		if( fs == NULL || type == NULL || rng == NULL ){
+			st = 4 ;
+			goto out ;			
+		}
+		printf( "Enter passphrase: " ) ;			
+		pass_1 = get_passphrase(  );			
+		printf( "\nRe enter passphrase: " ) ;			
+		pass_2 = get_passphrase(  );				
+		printf( "\n" ) ;			
+		if(  StringCompare( pass_1,pass_2 ) != 0  ){				
+			st = 7 ;
+		}else{				
+			st = create_volume( device,fs,type,StringContent( pass_1 ),StringLength( pass_1 ),rng ) ;
+		}
+		StringDelete( &pass_1 ) ;
+		StringDelete( &pass_2 ) ;				
+	}else{	
+		if( fs == NULL || type == NULL || pass == NULL || rng == NULL || keyType == NULL ){
+			st = 4 ;
+			goto out ;			
 		}
 		if( strcmp( keyType,"-p" ) == 0 ) 			
-			st = create_volume( device,fs,mode,pass,strlen( pass ),rng ) ;			
+			st = create_volume( device,fs,type,pass,strlen( pass ),rng ) ;			
 		else if( strcmp( keyType, "-f" ) == 0 ) {
 			switch( StringGetFromFile_1( &content,pass ) ){
 				case 1 : st = 8 ; goto out ; 
 				case 3 : st = 6 ; goto out ;
 			}
-			st = create_volume( device,fs,mode,StringContent( content ),StringLength( content ),rng ) ;					
+			st = create_volume( device,fs,type,StringContent( content ),StringLength( content ),rng ) ;					
 			StringDelete( &content ) ;				
 		}else{
 			st = 2 ;			
 		}
-	}else{
-		st = 4 ;			
 	}	
 	out:	
 	switch ( st ){
@@ -118,7 +107,7 @@ int create_volumes( int argn,char * device,char * fs,char * mode,char * keyType,
 		break  ;
 		case 3 : printf( "ERROR: could not create an encrypted volume in a file or device\n" );
 		break  ;	
-		case 4 : printf( "ERROR: wrong number of arguments\n" );
+		case 4 : printf( "ERROR: one or more required argument(s) for this operation is missing\n" );
 		break  ;
 		case 5 : printf( "ERROR: wrong choice, exiting\n" );
 		break  ;
@@ -135,6 +124,8 @@ int create_volumes( int argn,char * device,char * fs,char * mode,char * keyType,
 		break  ;
 		case 6 : printf( "ERROR: couldnt get enought memory to hold the key file\n" ) ;
 		break  ;
+		case 12 : printf( "ERROR: user chose not to proceed\n" ) ;
+				break  ;
 		default:
 			;
 	}

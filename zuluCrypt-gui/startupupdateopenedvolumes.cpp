@@ -46,8 +46,8 @@ void startupupdateopenedvolumes::run()
 	QStringList Z =  QDir(QString("/dev/mapper")).entryList().filter("zuluCrypt-") ;
 	QProcess p ;
 	QString device ;
-	QString dv = QString(ZULUCRYPTzuluCrypt) + QString(" device ") ;
-	QString ddv = QString(ZULUCRYPTzuluCrypt) + QString(" checkUUID ") ;
+	QString dv = QString(ZULUCRYPTzuluCrypt) + QString(" -D -d /dev/mapper/") ;
+	QString ddv = QString(ZULUCRYPTzuluCrypt) + QString(" -w -d ") ;
 	QString mp ;
 	QString uuid ;
 
@@ -60,14 +60,15 @@ void startupupdateopenedvolumes::run()
 	for ( int i = 0 ; i < Z.size() ; i++){
 		entry = Z.at(i);
 		if(checkUUID(&device,entry) == false){
+			QString x = dv + entry ;
 			p.start( dv + entry ) ;
+
 			p.waitForFinished() ;
 			status = p.exitCode() ;
 			device = QString(p.readAllStandardOutput()).remove('\n')  ;
 			p.close();
 			if( status == 1 ){
-				QString s = tr("An inconsitency is detected, skipping /dev/mapper/zuluCrypt-%1 \
-					       because it does not look like a cryptsetup volume").arg(entry) ;
+				QString s = tr("An inconsitency is detected, skipping /dev/mapper/zuluCrypt-%1 because it does not look like a cryptsetup volume").arg(entry) ;
 				emit UIMessage(tr("WARNING"), s ) ;
 				continue ;
 			}
@@ -77,8 +78,7 @@ void startupupdateopenedvolumes::run()
 			status = p.exitCode() ;
 			p.close();
 			if( status == 1 ){
-				QString s = tr("An inconsitency is detected, skipping /dev/mapper/zuluCrypt-%1 \
-					       because its UUID does not match any UUID from attached partitions").arg(entry) ;
+				QString s = tr("An inconsitency is detected, skipping /dev/mapper/zuluCrypt-%1 because its UUID does not match any UUID from attached partitions").arg(entry) ;
 				emit UIMessage(tr("WARNING"), s ) ;
 				continue ;
 			}

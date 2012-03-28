@@ -22,7 +22,7 @@
 #include <stdio.h>
 #include <limits.h>
 
-int open_volumes( int argn,char * dev,char * mapping_name,int id,char * mount_point,char * mode,char * source,char * pass )
+int open_volumes( int nmp,int i,char * dev,char * mapping_name,int id,char * mount_point,char * mode,char * source,char * pass )
 {
 	string_t passphrase  ;	
 	string_t m_name  ;	
@@ -32,45 +32,55 @@ int open_volumes( int argn,char * dev,char * mapping_name,int id,char * mount_po
 	const char * cname ;
 	
 	char * device ;
-	char * cpoint ;
+	char * cpoint = NULL ;
 	
 	size_t len ;
 	int st = 0 ;
 	
-	if ( argn != 5 && argn != 7 ){
+	if( mode == NULL ){
 		st = 11 ;
 		goto out ;
-	}	
-	if( strlen( mount_point ) == 1 ){
-		if ( strcmp( mount_point,"," ) == 0 ){
-			st = 10 ;
-			goto out ;			
-		}
-	}	
-	if( is_path_valid( mount_point ) == 0 ){		
-		st = 9 ;
-		goto out ;
-	}	
+	}
 	if( strncmp( mode,"ro",2 ) != 0 ){
 		if ( strncmp( mode,"rw",2 ) != 0 ){
 			st = 13 ;
 			goto out ;	
 		}
-	}	
-	if( mkdir( mount_point,S_IRWXU ) != 0 ){		
-		st = 5 ;			
-		goto out ;	
-	}	
-	
-	cpoint = realpath( mount_point,NULL ) ;
-	if( cpoint == NULL ){
-		st = 16 ;
-		goto out ;			
 	}
+	if( nmp == 1 && mount_point != NULL ){
+		st = 18 ;
+		goto out ;
+	}
+	if( nmp == -1 ){
+		if( mount_point == NULL ){
+			st = 11 ;
+			goto out ;
+		}
+		if( strlen( mount_point ) == 1 ){
+			if ( strcmp( mount_point,"," ) == 0 ){
+				st = 10 ;
+				goto out ;			
+			}
+		}
+		if( is_path_valid( mount_point ) == 0 ){		
+			st = 9 ;
+			goto out ;
+		}
+		if( mkdir( mount_point,S_IRWXU ) != 0 ){		
+			st = 5 ;			
+			goto out ;	
+		}
+		cpoint = realpath( mount_point,NULL ) ;
+		if( cpoint == NULL ){
+			st = 16 ;
+			goto out ;			
+		}		
+	}			
 	
 	device = realpath( dev,NULL ) ;
 	if( device == NULL ){
-		free( cpoint ) ;
+		if( nmp == -1 )
+			free( cpoint ) ;
 		st = 17 ;
 		goto out ;			
 	}
@@ -81,7 +91,7 @@ int open_volumes( int argn,char * dev,char * mapping_name,int id,char * mount_po
 	
 	cname = StringContent( m_name ) ;
 	
-	if ( argn == 5 ){
+	if ( i == 1 ){
 		printf( "Enter passphrase: " ) ;		
 		passphrase = get_passphrase();	
 		printf( "\n" ) ;
@@ -89,7 +99,11 @@ int open_volumes( int argn,char * dev,char * mapping_name,int id,char * mount_po
 		len = StringLength( passphrase ) ;
 		st = open_volume( device,cname,cpoint,id,mode,cpass,len ) ;
 		StringDelete( &passphrase ) ;
-	}else if ( argn == 7 ){
+	}else{
+		if( source == NULL || pass == NULL ){
+			st = 11 ;
+			goto out ;
+		}
 		if( strcmp( source,"-p" ) == 0 ){
 			cpass = pass ;
 			len = strlen(pass) ;
@@ -104,8 +118,6 @@ int open_volumes( int argn,char * dev,char * mapping_name,int id,char * mount_po
 			st = open_volume( device,cname,cpoint,id,mode,cpass,len ) ;
 			StringDelete( &data ) ;
 		}
-	}else{
-		st =  11 ;			
 	}
 	
 	if( st != 0 )
@@ -132,7 +144,7 @@ int open_volumes( int argn,char * dev,char * mapping_name,int id,char * mount_po
 			break ;		
 		case 6 : printf( "ERROR: passphrase file does not exist\n" );
 			break ;	
-		case 11 : printf( "ERROR: wrong number of arguments, run zuluCrypt with \"-h\" for help\n" );
+		case 11 : printf( "ERROR: one or more required argument(s) for this operation is missing\n" );
 			break ;
 		case 8 : printf( "ERROR: failed to open volume\n" );
 			break ;	
@@ -152,6 +164,8 @@ int open_volumes( int argn,char * dev,char * mapping_name,int id,char * mount_po
 			 break ;
 		case 17 : printf( "ERROR: could not resolve full path of device address\n" );		
 			break ;
+		case 18 : printf( "ERROR: -O and -m options can not be used together\n" );		
+				 break ;
 		default :
 			;
 	}

@@ -1,6 +1,6 @@
 #include "partitionproperties.h"
 
-partitionproperties::partitionproperties(int partitionType)
+partitionproperties::partitionproperties(QString partitionType)
 {
 	m_partitionType = partitionType ;
 }
@@ -9,7 +9,7 @@ void partitionproperties::run()
 {
 	QProcess p ;
 
-	p.start(QString(ZULUCRYPTzuluCrypt) + QString(" partitions ") + QString::number(m_partitionType));
+	p.start(QString(ZULUCRYPTzuluCrypt) + m_partitionType);
 
 	p.waitForFinished() ;
 

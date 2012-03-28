@@ -205,11 +205,11 @@ int print_partitions( int option )
 	size_t j ;
 	stringList_t stl ;
 	switch( option ){	
-		case '1' : stl = partitions( ALL_PARTITIONS ) ;
+		case 1 : stl = partitions( ALL_PARTITIONS ) ;
 		break ;
-		case '2' : stl = partitions( SYSTEM_PARTITIONS ) ;
+		case 2 : stl = partitions( SYSTEM_PARTITIONS ) ;
 		break ;
-		case '3' : stl = partitions( NON_SYSTEM_PARTITIONS ) ;
+		case 3 : stl = partitions( NON_SYSTEM_PARTITIONS ) ;
 		break ;
 		default:
 			printf( "wrong argument\n" );

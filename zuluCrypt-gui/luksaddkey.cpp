@@ -247,21 +247,21 @@ void luksaddkey::pbAdd(void)
 	bool y = m_ui->radioButtonNewPassphraseFromFile->isChecked() ;
 
 	if ( x == true)
-		existingPassType = QString(" -f ") ;
+		existingPassType = QString(" -u ") ;
 	else
-		existingPassType = QString(" -p ") ;
+		existingPassType = QString(" -y ") ;
 
 	ExistingKey.replace("\"","\"\"\"") ;
 	
 	if ( y == true)
-		newPassType = QString(" -f ") ;
+		newPassType = QString(" -n ") ;
 	else
-		newPassType = QString(" -p ") ;
+		newPassType = QString(" -l ") ;
 
 	NewKey.replace("\"","\"\"\"") ;
 
 	QString exe = QString(ZULUCRYPTzuluCrypt) ;
-	exe = exe + QString(" addkey ") ;
+	exe = exe + QString(" -a -d ") ;
 	exe = exe + "\"" + m_volumePath + "\"" + existingPassType + "\"" + ExistingKey ;
 	exe = exe + "\"" + newPassType + "\"" + NewKey + "\"" ;
 

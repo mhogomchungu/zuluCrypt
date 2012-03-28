@@ -56,7 +56,7 @@ private slots:
 	void partitionpropertiesThreadFinished();
 	void partitionProperties(QStringList);
 private:	
-	void partitionList(QString,int);
+	void partitionList(QString,QString);
 	void closeEvent(QCloseEvent *) ;
 	void HighlightRow(int, bool);	
 	Ui::PartitionView * m_ui ;

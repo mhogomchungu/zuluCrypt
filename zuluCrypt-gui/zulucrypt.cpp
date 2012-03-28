@@ -562,7 +562,7 @@ void zuluCrypt::close()
 {
 	QTableWidgetItem * item = m_ui->tableWidget->currentItem();
 	QString vol = m_ui->tableWidget->item(item->row(),0)->text().replace("\"","\"\"\"") ;
-	QString exe = QString(ZULUCRYPTzuluCrypt) + QString(" close ") + QString("\"") + \
+	QString exe = QString(ZULUCRYPTzuluCrypt) + QString(" -q -d ") + QString("\"") + \
 			vol + QString("\"") ;
 	m_ui->tableWidget->setEnabled( false );
 	closeVolumeThread * cvt = new closeVolumeThread( exe ) ;

@@ -29,7 +29,7 @@ QString volumePropertiesThread::fuseblkGetFs()
 
 void volumePropertiesThread::run()
 {
-	QString z = QString(ZULUCRYPTzuluCrypt) + QString(" status ") + QString("\"") + m_path + QString("\"");
+	QString z = QString(ZULUCRYPTzuluCrypt) + QString(" -s -d ") + QString("\"") + m_path + QString("\"");
 
 	QProcess p ;
 	p.start( z ) ;

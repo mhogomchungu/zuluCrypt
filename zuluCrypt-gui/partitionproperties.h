@@ -12,7 +12,7 @@ class partitionproperties : public QObject, public QRunnable
 {
 	Q_OBJECT
 public:
-	explicit partitionproperties(int);
+	explicit partitionproperties(QString);
 	~partitionproperties();
 signals:
 	void finished();
@@ -20,7 +20,7 @@ signals:
 public slots:
 private:
 	void run(void);
-	int m_partitionType ;
+	QString m_partitionType ;
 };
 
 #endif // PARTITIONPROPERTIES_H
