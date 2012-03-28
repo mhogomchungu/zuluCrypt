@@ -124,29 +124,8 @@ add key      : zuluCrypt-cli -a -d /dev/sdc1 -y xxx -l yyy\n\
 get device path from mapper  : zuluCrypt-cli -D -d /dev/mapper/zuluCrypt-sdc1\n\
 check if partition with UUID is present : zuluCrypt-cli -w -d UUID=\"d2d210b8-0b1f-419f-9172-9d509ea9af0c\"\n\
 ";
-
 	printf( "%s\n",help ) ;
 }
-
-typedef struct struct_opts_1{
-	char * device ;
-	char * mount_point ;
-	char * action ;
-	char * mode ;
-	char * key_source ;
-	char * key ;
-	char * fs ;
-	char * type ;
-	char * rng ;
-	char * existing_key_source ;
-	char * existing_key ;
-	char * new_key ;
-	char * new_key_source ;
-	int partition_number ;
-	int dont_ask_confirmation ;
-	int interactive_passphrase ;
-	int open_no_mount ;
-}struct_opts;
 
 void get_opts( int argc , char *argv[],struct_opts * stopts )
 {
@@ -237,14 +216,16 @@ void get_opts( int argc , char *argv[],struct_opts * stopts )
 
 int main( int argc , char *argv[] )
 {
-	char * action ;
-	char * device ;	
-	struct_opts clargs ;
-	int status ;
-	char *  mapping_name ;
+	const char * action ;
+	const char * device ;
+	const char * mapping_name ;
 	char * c ;
 	char dev[12];
 	char m_name[42] ;
+	
+	struct_opts clargs ;
+	int status ;	
+
 	uid_t uid = getuid();		
 
 	if( argc > 1 ){
@@ -350,23 +331,19 @@ int main( int argc , char *argv[] )
 		
 	}else if ( strcmp( action, "open" ) == 0 ){
 		
-		status =  open_volumes( clargs.open_no_mount,clargs.interactive_passphrase,device,mapping_name,uid,
-					clargs.mount_point,clargs.mode,clargs.key_source,clargs.key ) ;		
+		status =  open_volumes( &clargs,mapping_name,uid ) ;		
 		
 	}else if( strcmp( action,"create" ) == 0 ){
 		
-		status =  create_volumes( clargs.interactive_passphrase,clargs.dont_ask_confirmation,
-					  device,clargs.fs,clargs.type,clargs.key_source,clargs.key,clargs.rng ) ;		
+		status =  create_volumes( &clargs ) ;		
 		
 	}else if( strcmp( action,"addkey" ) == 0 ){
 		
-		status =  addkey( clargs.interactive_passphrase,device,clargs.existing_key_source,clargs.
-					existing_key,clargs.new_key_source,clargs.new_key ) ;
+		status =  addkey( &clargs ) ;
 		
 	}else if( strcmp( action,"removekey" ) == 0 ){
 				
-		status =  removekey( clargs.interactive_passphrase,clargs.dont_ask_confirmation,
-				     device,clargs.key_source,clargs.key );	
+		status =  removekey( &clargs );	
 	
 	}else{
 		printf( "ERROR: Wrong argument\n" ) ;

@@ -36,8 +36,15 @@ static int check_empty_slot( const char * device )
 	free( c ) ;
 	return status ;
 }
-int removekey( int i,int k,char * device,char * keyType,char * keytoremove )
+
+int removekey( const struct_opts * opts ) 
 {
+	int i                    = opts->interactive_passphrase ;
+	int k                    = opts->dont_ask_confirmation ;
+	const char * device      = opts->device ;
+	const char * keyType     = opts->key_source ;
+	const char * keytoremove = opts->key ;
+	
 	string_t pass;
 	int status = 0 ;
 	

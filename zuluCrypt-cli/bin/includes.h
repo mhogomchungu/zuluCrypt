@@ -38,23 +38,41 @@
 #define UUID_LENGTH 36
 #define DEVICE_LENGHT 12
 
-string_t get_passphrase(  void  ) ;
+typedef struct struct_opts_1{
+	const char * device ;
+	const char * mount_point ;
+	const char * action ;
+	const char * mode ;
+	const char * key_source ;
+	const char * key ;
+	const char * fs ;
+	const char * type ;
+	const char * rng ;
+	const char * existing_key_source ;
+	const char * existing_key ;
+	const char * new_key ;
+	const char * new_key_source ;
+	int partition_number ;
+	int dont_ask_confirmation ;
+	int interactive_passphrase ;
+	int open_no_mount ;
+}struct_opts;
+
+string_t get_passphrase( void ) ;
  
-stringList_t partitions(  int option  ) ;
+stringList_t partitions( int option ) ;
  
-int volume_info(  const char * mapper, const char * device  ) ;
+int volume_info( const char * mapper,const char * device ) ;
  
-int close_opened_volume(  char * mapping_name  ) ;
+int close_opened_volume( const char * mapping_name ) ;
  
-int open_volumes( int o,int i,char * device,char * mapping_name,uid_t uid,char * mount_point,char * mode,char * source,char * pass ) ;
+int open_volumes( const struct_opts *,const char * mapping_name,uid_t uid ) ;
 		   
-int create_volumes( int i,int c,char * device,char * fs,char * mode,char * keyType,char * pass,char * rng  ) ;
+int create_volumes( const struct_opts * ) ;
 
-int addkey( int i,char * device,char * keyType1,char * existingKey,char * keyType2,char * newKey ) ;
+int addkey( const struct_opts * ) ;
 		
-int removekey(  int i,int k,char * device, char * keyType, char * keytoremove  ) ;
-
-//int read_file(char ** content,char * path) ;
+int removekey( const struct_opts * ) ;
 
 int is_path_valid(const char * path ) ;
 

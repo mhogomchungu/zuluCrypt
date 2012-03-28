@@ -21,10 +21,20 @@
 /*
  * defined in partitions.c 
  */
+
 ssize_t check_partition( const char * device ) ;
 
-int create_volumes( int i,int conf,char * device,char * fs,char * type,char * keyType,char * pass,char * rng  )
+int create_volumes( const struct_opts * opts  )
 {
+	int i                = opts->interactive_passphrase ;
+	int conf             = opts->dont_ask_confirmation ;
+	const char * device  = opts->device ;
+	const char * fs      = opts->fs ;
+	const char * type    = opts->type ;
+	const char * keyType = opts->key_source ;
+	const char * pass    = opts->key ;
+	const char * rng     = opts->rng ;
+	
 	string_t pass_1 ;
 	string_t pass_2 ;
 	string_t content ;

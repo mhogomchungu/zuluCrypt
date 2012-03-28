@@ -22,8 +22,16 @@
 #include <stdio.h>
 #include <limits.h>
 
-int open_volumes( int nmp,int i,char * dev,char * mapping_name,uid_t uid,char * mount_point,char * mode,char * source,char * pass )
+int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 {
+	int nmp                  = opts->open_no_mount ;
+	int i                    = opts->interactive_passphrase ;
+	const char * dev         = opts->device ;
+	const char * mount_point = opts->mount_point ;
+	const char * mode        = opts->mode ;
+	const char * source      = opts->key_source ;
+	const char * pass        = opts->key ;
+	
 	string_t passphrase  ;	
 	string_t m_name  ;	
 	string_t data ;

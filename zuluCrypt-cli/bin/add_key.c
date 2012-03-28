@@ -38,8 +38,15 @@ static int check_empty_slot( const char * device )
 	return status ;
 }
 
-int addkey( int i,char * device,char * keyType1,char * existingKey,char * keyType2,char * newKey )
+int addkey( const struct_opts * opts )
 {
+	int i                    = opts->interactive_passphrase ;
+	const char * device      = opts->device ;
+	const char * keyType1    = opts->existing_key_source ;
+	const char * existingKey = opts->existing_key ;
+	const char * keyType2    = opts->new_key_source ;
+	const char * newKey      = opts->new_key ;
+	
 	string_t presentKey ;
 	string_t newKey_1 ;
 	string_t newKey_2 ;

@@ -19,7 +19,7 @@
 
 #include "includes.h"
 
-int close_opened_volume( char * mapping_name )
+int close_opened_volume( const char * mapping_name )
 {	
 	 int st ;	 
 	 char * m_point = NULL ;
