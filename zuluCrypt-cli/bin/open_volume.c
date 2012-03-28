@@ -22,7 +22,7 @@
 #include <stdio.h>
 #include <limits.h>
 
-int open_volumes( int nmp,int i,char * dev,char * mapping_name,int id,char * mount_point,char * mode,char * source,char * pass )
+int open_volumes( int nmp,int i,char * dev,char * mapping_name,uid_t uid,char * mount_point,char * mode,char * source,char * pass )
 {
 	string_t passphrase  ;	
 	string_t m_name  ;	
@@ -97,7 +97,7 @@ int open_volumes( int nmp,int i,char * dev,char * mapping_name,int id,char * mou
 		printf( "\n" ) ;
 		cpass = StringContent( passphrase ) ;
 		len = StringLength( passphrase ) ;
-		st = open_volume( device,cname,cpoint,id,mode,cpass,len ) ;
+		st = open_volume( device,cname,cpoint,uid,mode,cpass,len ) ;
 		StringDelete( &passphrase ) ;
 	}else{
 		if( source == NULL || pass == NULL ){
@@ -107,7 +107,7 @@ int open_volumes( int nmp,int i,char * dev,char * mapping_name,int id,char * mou
 		if( strcmp( source,"-p" ) == 0 ){
 			cpass = pass ;
 			len = strlen(pass) ;
-			st = open_volume( device,cname,cpoint,id,mode,cpass,len ) ;		
+			st = open_volume( device,cname,cpoint,uid,mode,cpass,len ) ;		
 		}else if( strcmp( source,"-f" ) == 0 ){			
 			switch( StringGetFromFile_1( &data,pass ) ){
 				case 1 : st = 6 ; goto out ; 
@@ -115,7 +115,7 @@ int open_volumes( int nmp,int i,char * dev,char * mapping_name,int id,char * mou
 			}
 			cpass = StringContent( data ) ;
 			len = StringLength( data ) ;
-			st = open_volume( device,cname,cpoint,id,mode,cpass,len ) ;
+			st = open_volume( device,cname,cpoint,uid,mode,cpass,len ) ;
 			StringDelete( &data ) ;
 		}
 	}

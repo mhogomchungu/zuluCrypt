@@ -46,7 +46,7 @@ int volume_info(  const char * mapper, const char * device  ) ;
  
 int close_opened_volume(  char * mapping_name  ) ;
  
-int open_volumes( int o,int i,char * device,char * mapping_name,int id,char * mount_point,char * mode,char * source,char * pass ) ;
+int open_volumes( int o,int i,char * device,char * mapping_name,uid_t uid,char * mount_point,char * mode,char * source,char * pass ) ;
 		   
 int create_volumes( int i,int c,char * device,char * fs,char * mode,char * keyType,char * pass,char * rng  ) ;
 

@@ -41,7 +41,7 @@ int is_luks(const char * device) ;
 
 
 /**
- * This function openes a volume,creates a mount point and mount the opened volume.
+ * This function openes a volume and mount it at m_point,the volume is only opened if m_point is NULL
  * 
  * return values:
  *	0 - success, the encrypted volume was opened and mounted successfully

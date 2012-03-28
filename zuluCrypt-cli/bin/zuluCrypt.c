@@ -245,7 +245,7 @@ int main( int argc , char *argv[] )
 	char * c ;
 	char dev[12];
 	char m_name[42] ;
-	uid_t id = getuid();		
+	uid_t uid = getuid();		
 
 	if( argc > 1 ){
 		action = argv[ 1 ] ;
@@ -350,7 +350,7 @@ int main( int argc , char *argv[] )
 		
 	}else if ( strcmp( action, "open" ) == 0 ){
 		
-		status =  open_volumes( clargs.open_no_mount,clargs.interactive_passphrase,device,mapping_name,id,
+		status =  open_volumes( clargs.open_no_mount,clargs.interactive_passphrase,device,mapping_name,uid,
 					clargs.mount_point,clargs.mode,clargs.key_source,clargs.key ) ;		
 		
 	}else if( strcmp( action,"create" ) == 0 ){
