@@ -19,11 +19,16 @@
 
 #include "includes.h"
 
+static int free_crypt( int st,struct crypt_device * cd )
+{
+	crypt_free( cd );
+	return st ;
+}
+
 int open_plain( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size,const char * cipher )
 {
-	int status ;
 	int flags ;
-	struct crypt_device * cd;
+	struct crypt_device * cd ;
 	
 	struct crypt_params_plain params = {
 		.hash = "ripemd160",
@@ -39,26 +44,15 @@ int open_plain( const char * device,const char * mapper,const char * mode,const 
 	else
 		flags = 0 ;
 	
-	status = crypt_init( &cd, device ) ;	
+	if( crypt_init( &cd, device ) != 0 )
+		return 2 ;
 	
-	if( status != 0 ){
-		status = 2 ;
-		goto out ;
-	}
-	status = crypt_format( cd,CRYPT_PLAIN,"aes",cipher,NULL,NULL,32,&params );
+	if( crypt_format( cd,CRYPT_PLAIN,"aes",cipher,NULL,NULL,32,&params ) != 0 )
+		return free_crypt( 2,cd ) ;
 	
-	if( status != 0 ){
-		status = 2 ;
-		goto out ;
-	}
-	status = crypt_activate_by_passphrase( cd,mapper,CRYPT_ANY_SLOT,pass,pass_size,flags );
-	
-	if ( status < 0 )
-		status = 2 ;
+	if( crypt_activate_by_passphrase( cd,mapper,CRYPT_ANY_SLOT,pass,pass_size,flags ) < 0 )
+		return free_crypt( 2,cd ) ;
 	else
-		status = 0 ;
-	out:
-	crypt_free( cd );
-	return status ;
+		return free_crypt( 0,cd ) ;
 }
 

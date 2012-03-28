@@ -19,35 +19,31 @@
 
 #include "includes.h"
 
+static int free_crypt( int st,struct crypt_device * cd )
+{
+	crypt_free( cd );
+	return st ;
+}
+
 int add_key( const char * device,const char * existingkey,size_t existingkey_size,const char * newkey,size_t newkey_size )
 {
 	int status ;
 	
 	struct crypt_device * cd;
 	
-	if( is_luks( device ) == 1 ){		
-		status =  3 ;
-		goto out ;
-	}
-	status = crypt_init( &cd,device )  ;
+	if( is_luks( device ) == 1 )
+		return 3 ;
+		
+	if( crypt_init( &cd,device ) != 0 )
+		return 2 ;
 	
-	if( status != 0 ){		
-		status =  2 ;
-		goto out ;
-	}
-	status = crypt_load( cd, CRYPT_LUKS1, NULL ) ;
+	if( crypt_load( cd,CRYPT_LUKS1,NULL ) != 0 )
+		return free_crypt( 2,cd ) ;
 	
-	if( status != 0 ){		
-		status =  2 ;
-		goto out ;
-	}
 	status = crypt_keyslot_add_by_passphrase( cd,CRYPT_ANY_SLOT,existingkey,existingkey_size,newkey,newkey_size ) ;
 						   
 	if ( status < 0 )
-		status =  1 ;
+		return free_crypt( 1,cd ) ;
 	else
-		status = 0 ;
-	out:
-	crypt_free( cd );
-	return status ;
+		return free_crypt( 0,cd ) ;
 }

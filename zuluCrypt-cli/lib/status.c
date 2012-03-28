@@ -59,10 +59,11 @@ char * status( const char * mapper )
 	crypt_init_by_name( &cd,mapper );
 	crypt_get_active_device( NULL,mapper,&cad ) ;
 	
-	switch( crypt_status( cd, mapper ) ){
+	switch( crypt_status( cd,mapper ) ){
 		case CRYPT_INACTIVE :
 			StringAppend( properties," is inactive.\n" ) ; 	
-			goto out ;
+			crypt_free( cd );
+			return StringDeleteHandle( &properties ) ;
 		case CRYPT_ACTIVE   : 
 			StringAppend( properties," is active.\n" ) ;
 			break ;
@@ -71,7 +72,8 @@ char * status( const char * mapper )
 			break ;
 		case CRYPT_INVALID  : 
 			StringAppend( properties," is invalid.\n" ) ;	
-			goto out ;
+			crypt_free( cd );
+			return StringDeleteHandle( &properties ) ;		
 	}	
 	
 	StringAppend( properties," type:   \t" );	
@@ -132,7 +134,6 @@ char * status( const char * mapper )
 		StringAppend( properties," / ");
 		StringAppend( properties,StringIntToString( buffer,SIZE,k));
 	}
-	out:
 	crypt_free( cd );
 	return StringDeleteHandle( &properties ) ;
 }

@@ -19,39 +19,34 @@
 
 #include "includes.h"
 
+static int free_crypt( int st,struct crypt_device * cd )
+{
+	crypt_free( cd );
+	return st ;
+}
+
 int open_luks( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
 {
-	struct crypt_device *cd;
+	struct crypt_device * cd;
 	uint32_t flags = 0;
-	int status;
 	
 	if( is_path_valid( device ) == 1 )
 		return 3 ;
 
-	status = crypt_init( &cd, device ) ;
-	if ( status != 0 ){
-		status = 2;	
-		goto out ;
-	}
-	status = crypt_load( cd, CRYPT_LUKS1, NULL ) ;
+	if( crypt_init( &cd,device ) != 0 )
+		return 2 ;
 	
-	if ( status != 0 ){
-		status = 2;	
-		goto out ;
-	}
+	if( crypt_load( cd,CRYPT_LUKS1,NULL ) != 0 )
+		return free_crypt( 2,cd ) ;
+	
 	if( strcmp( mode,"ro" ) == 0 )
 		flags = 1 ;
 	else
 		flags = 0 ;
 	
-	status = crypt_activate_by_passphrase( cd,mapper,CRYPT_ANY_SLOT,pass,pass_size,flags );
-	
-	if( status < 0 )
-		status = 1 ;
+	if( crypt_activate_by_passphrase( cd,mapper,CRYPT_ANY_SLOT,pass,pass_size,flags ) < 0 )
+		return free_crypt( 1,cd ) ;
 	else
-		status = 0 ;
-	out:
-	crypt_free( cd );
-	return status ;
+		return free_crypt( 0,cd ) ;
 }
 

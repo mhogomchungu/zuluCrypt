@@ -38,6 +38,30 @@ static int check_empty_slot( const char * device )
 	return status ;
 }
 
+static int status_msg( int st )
+{
+	switch ( st ){
+		case 0  : printf( "SUCCESS: key added successfully\n" );	                              break ;		
+		case 1  : printf( "ERROR: presented key does not match any key in the volume\n" ) ;           break ;
+		case 2  : printf( "ERROR: could not open luks device, quiting\n" ) ;	                      break ;
+		case 4  : printf( "ERROR: device does not exist\n" ) ;	                                      break ;
+		case 5  : printf( "ERROR: wrong arguments\n" ) ;	                                      break ;
+		case 6  : printf( "ERROR: one or more required argument(s) for this operation is missing\n" );break ;			
+		case 7  : printf( "ERROR: new passphrases do not match\n" ) ;	                              break ;
+		case 8  : printf( "ERROR: one or both keyfile(s) does not exist\n" ) ;	                      break ;  
+		case 9  : printf( "ERROR: couldnt get enought memory to hold the key file\n" ) ;	      break ;
+		case 10 : printf( "ERROR: all key slots are occupied, can not add any more keys\n" ) ;	      break ;
+		default : printf( "ERROR: unrecognized error with status number %d encountered\n",st );
+	}
+	return st ;
+}
+
+static int status_msg_1( int st,const char * device )
+{
+	printf( "ERROR: device \"%s\" is not a luks device\n",device ) ;
+	return st ;
+}
+
 int addkey( const struct_opts * opts )
 {
 	int i                    = opts->interactive_passphrase ;
@@ -58,21 +82,18 @@ int addkey( const struct_opts * opts )
 	
 	size_t len1 = 0 ;
 	size_t len2 = 0 ;
-	int status = 0 ;
 
-	if( is_path_valid( device ) == 1 ){		
-		status = 4 ;
-		goto out ;
-	}
+	int status = 0 ;
 	
-	if( is_luks( device ) == 1 ){
-		status = 3 ;
-		goto out ;
-	}
+	if( is_path_valid( device ) == 1 )
+		return status_msg( 4 ) ;
+	
+	if( is_luks( device ) == 1 )
+		return status_msg_1( 3,device ) ;
 	
 	switch( check_empty_slot( device ) ){
-		case 0 : status = 10 ; goto out ;
-		case 1 : status = 2  ; goto out ;
+		case 0 : return status_msg( 10 ) ;
+		case 1 : return status_msg( 2 )  ; 
 	}
 	
 	if ( i == 1 ){		
@@ -100,22 +121,20 @@ int addkey( const struct_opts * opts )
 		StringDelete( &newKey_2 ) ;
 		
 	}else{		
-		if( keyType1 == NULL || keyType2 == NULL || newKey == NULL || existingKey == NULL ){
-			status = 6 ;
-			goto out ;
-		}
+		if( keyType1 == NULL || keyType2 == NULL || newKey == NULL || existingKey == NULL )
+			return status_msg( 6 ) ;
 		if ( strcmp( keyType1, "-f" ) == 0 ){	
 			switch( StringGetFromFile_1( &ek,existingKey ) ){
-				case 1 : status = 8 ; goto out ; 
-				case 3 : status = 9 ; goto out ;
+				case 1 : return status_msg( 8 ) ; 
+				case 3 : return status_msg( 9 ) ;
 			}
 			key1 = StringContent( ek ) ;
 			len1 = StringLength( ek ) ;
 		}		
 		if ( strcmp( keyType2, "-f" ) == 0 ){	
 			switch( StringGetFromFile_1( &nk,newKey ) ){
-				case 1 : status = 8 ; goto out ; 
-				case 3 : status = 9 ; goto out ;
+				case 1 : return status_msg( 8 ) ; 
+				case 3 : return status_msg( 9 ) ;
 			}
 			key2 = StringContent( nk ) ;
 			len2 = StringLength( nk ) ;
@@ -144,32 +163,5 @@ int addkey( const struct_opts * opts )
 			status = 5 ;
 		}
 	}	
-	out:	
-	switch ( status ){
-		case 0 : printf( "SUCCESS: key added successfully\n" );
-		break ;		
-		case 1 : printf( "ERROR: presented key does not match any key in the volume\n" ) ;
-		break ;
-		case 2 : printf( "ERROR: could not open luks device, quiting\n" ) ;
-		break ;
-		case 3 : printf( "ERROR: device \"%s\" is not a luks device\n",device ) ;
-		break ;
-		case 4 : printf( "ERROR: device does not exist\n" ) ;
-		break ;
-		case 5 : printf( "ERROR: wrong arguments\n" ) ;
-		break ;
-		case 6 : printf( "ERROR: one or more required argument(s) for this operation is missing\n" ) ;
-		break ;			
-		case 7 : printf( "ERROR: new passphrases do not match\n" ) ;
-		break ;
-		case 8 : printf( "ERROR: one or both keyfile(s) does not exist\n" ) ;
-		break ;  
-		case 9 : printf( "ERROR: couldnt get enought memory to hold the key file\n" ) ;
-		break ;
-		case 10 : printf( "ERROR: all key slots are occupied, can not add any more keys\n" ) ;
-		break ;
-		default :
-			;		
-	}
-	return status ;
+	return status_msg( status ) ;
 }

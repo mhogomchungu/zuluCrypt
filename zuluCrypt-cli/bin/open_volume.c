@@ -22,6 +22,31 @@
 #include <stdio.h>
 #include <limits.h>
 
+static int status_msg( int st )
+{
+	switch ( st ){
+		case 0 : printf( "SUCCESS: Volume opened successfully\n" ) ;								break ;
+		case 1 : printf( "ERROR: failed to mount ntfs file system using ntfs-3g,is ntfs-3g package installed?\n" ) ;		break ;					
+		case 2 : printf( "ERROR: there seem to be an open volume accociated with given address\n" );				break ;				
+		case 3 : printf( "ERROR: no file or device exist on given path\n" ) ; 							break ;		
+		case 4 : printf( "ERROR: wrong passphrase\n" );										break ;			
+		case 5 : printf( "ERROR: could not create mount point, invalid path or path already taken\n" ) ;			break ;		
+		case 6 : printf( "ERROR: passphrase file does not exist\n" );								break ;	
+		case 8 : printf( "ERROR: failed to open volume\n" );									break ;	
+		case 9 : printf( "ERROR: mount point path is already taken\n" );							break ;					 
+		case 10: printf( "ERROR: \",\" ( comma ) is not a valid mount point\n" );						break ;
+		case 11: printf( "ERROR: one or more required argument(s) for this operation is missing\n" );				break ;				
+		case 12: printf( "ERROR: could not get a lock on /etc/mtab~\n" );							break ;
+		case 13: printf( "ERROR: wrong argument for mode, valid options are \"rw\" or \"ro\"\n" );				break ;
+		case 14: printf( "ERROR: could not get enought memory to hold the key file\n" );					break ;
+		case 15: printf( "ERROR: failed to open volume and failed to close the mapper, advice to do it manunally\n" );		break ;
+		case 16: printf( "ERROR: could not resolve full path of mount point\n" );						break ;
+		case 17: printf( "ERROR: could not resolve full path of device address\n" );						break ;
+		case 18: printf( "ERROR: -O and -m options can not be used together\n" );						break ;
+		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
+	}
+	return st ;
+}
 int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 {
 	int nmp                  = opts->open_no_mount ;
@@ -45,52 +70,42 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 	size_t len ;
 	int st = 0 ;
 	
-	if( mode == NULL ){
-		st = 11 ;
-		goto out ;
-	}
+	if( mode == NULL ) 
+		return status_msg( 11 ) ;
+	
 	if( strncmp( mode,"ro",2 ) != 0 ){
-		if ( strncmp( mode,"rw",2 ) != 0 ){
-			st = 13 ;
-			goto out ;	
-		}
+		if ( strncmp( mode,"rw",2 ) != 0 )
+			return status_msg( 13 ) ;
 	}
-	if( nmp == 1 && mount_point != NULL ){
-		st = 18 ;
-		goto out ;
-	}
+	
+	if( nmp == 1 && mount_point != NULL )
+		return status_msg( 18 ) ;
+	
 	if( nmp == -1 ){
-		if( mount_point == NULL ){
-			st = 11 ;
-			goto out ;
-		}
-		if( strlen( mount_point ) == 1 ){
-			if ( strcmp( mount_point,"," ) == 0 ){
-				st = 10 ;
-				goto out ;			
-			}
-		}
-		if( is_path_valid( mount_point ) == 0 ){		
-			st = 9 ;
-			goto out ;
-		}
-		if( mkdir( mount_point,S_IRWXU ) != 0 ){		
-			st = 5 ;			
-			goto out ;	
-		}
+		if( mount_point == NULL )
+			return status_msg( 11 ) ;
+		
+		if( strlen( mount_point ) == 1 )
+			if ( strcmp( mount_point,"," ) == 0 )
+				return status_msg( 10 ) ;
+		
+		if( is_path_valid( mount_point ) == 0 )
+			return status_msg( 9 ) ;
+		
+		if( mkdir( mount_point,S_IRWXU ) != 0 )
+			return status_msg( 5 ) ;
+		
 		cpoint = realpath( mount_point,NULL ) ;
-		if( cpoint == NULL ){
-			st = 16 ;
-			goto out ;			
-		}		
+		if( cpoint == NULL )
+			return status_msg( 16 ) ;
 	}			
 	
 	device = realpath( dev,NULL ) ;
 	if( device == NULL ){
 		if( nmp == -1 )
 			free( cpoint ) ;
-		st = 17 ;
-		goto out ;			
+		
+		return status_msg( 17 ) ;	
 	}
 	
 	m_name = String( mapping_name ) ;	
@@ -108,18 +123,17 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 		st = open_volume( device,cname,cpoint,uid,mode,cpass,len ) ;
 		StringDelete( &passphrase ) ;
 	}else{
-		if( source == NULL || pass == NULL ){
-			st = 11 ;
-			goto out ;
-		}
+		if( source == NULL || pass == NULL )
+			return status_msg( 11 ) ;
+		
 		if( strcmp( source,"-p" ) == 0 ){
 			cpass = pass ;
 			len = strlen(pass) ;
 			st = open_volume( device,cname,cpoint,uid,mode,cpass,len ) ;		
 		}else if( strcmp( source,"-f" ) == 0 ){			
 			switch( StringGetFromFile_1( &data,pass ) ){
-				case 1 : st = 6 ; goto out ; 
-				case 3 : st = 14 ; goto out ;
+				case 1 : return status_msg( 16 ) ; 
+				case 3 : return status_msg( 14 ) ;
 			}
 			cpass = StringContent( data ) ;
 			len = StringLength( data ) ;
@@ -135,47 +149,5 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 	free( cpoint ) ;
 	free( device ) ;
 	
-	out:
-	
-	switch ( st ){
-		case 0 : printf( "SUCCESS: Volume opened successfully\n" ) ;
-			break ;
-		case 1 : printf( "ERROR: failed to mount ntfs file system using ntfs-3g,is ntfs-3g package installed?\n" ) ; 
-			break ;					
-		case 2 : printf( "ERROR: there seem to be an open volume accociated with given address\n" );
-			break ;				
-		case 3 : printf( "ERROR: no file or device exist on given path\n" ) ; 
-			break ;		
-		case 4 : printf( "ERROR: wrong passphrase\n" );		
-			break ;			
-		case 5 : printf( "ERROR: could not create mount point, invalid path or path already taken\n" ) ;
-			break ;		
-		case 6 : printf( "ERROR: passphrase file does not exist\n" );
-			break ;	
-		case 11 : printf( "ERROR: one or more required argument(s) for this operation is missing\n" );
-			break ;
-		case 8 : printf( "ERROR: failed to open volume\n" );
-			break ;	
-		case 10 : printf( "ERROR: \",\" ( comma ) is not a valid mount point\n" );
-			break ;
-		case 9 :  printf( "ERROR: mount point path is already taken\n" );		
-			break ;	
-		case 12 :  printf( "ERROR: could not get a lock on /etc/mtab~\n" );		
-			 break ;
-		case 13 :  printf( "ERROR: wrong argument for mode, valid options are \"rw\" or \"ro\"\n" );		
-			  break ;
-		case 14 : printf( "ERROR: could not get enought memory to hold the key file\n" );		
-			break ;
-		case 15 : printf( "ERROR: failed to open volume and failed to close the mapper, advice to do it manunally\n" );		
-			break ;
-		case 16 : printf( "ERROR: could not resolve full path of mount point\n" );		
-			 break ;
-		case 17 : printf( "ERROR: could not resolve full path of device address\n" );		
-			break ;
-		case 18 : printf( "ERROR: -O and -m options can not be used together\n" );		
-				 break ;
-		default :
-			;
-	}
-	return st ;
+	return status_msg( st ) ;
 }

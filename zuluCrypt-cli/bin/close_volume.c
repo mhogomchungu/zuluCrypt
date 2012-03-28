@@ -30,7 +30,7 @@ int close_opened_volume( const char * mapping_name )
 	 
 	 StringPrepend( p,"/dev/mapper/zuluCrypt-" ) ;	
 	 
-	 st = close_volume( StringContent( p ), &m_point ) ;
+	 st = close_volume( StringContent( p ),&m_point ) ;
 	 
 	 switch( st ) {
 		 case 0 : printf( "SUCCESS: volume closed successfully \n" );
@@ -39,18 +39,12 @@ int close_opened_volume( const char * mapping_name )
 				free( m_point ) ;
 			  }
 			  break ;
-		 case 1 : printf( "ERROR: close failed, encrypted volume with that name does not exist\n" );
-			  break ;			
-		 case 2 : printf( "ERROR: close failed, the mount point and/or one or more files are in use\n" );
-			  break ;
-		 case 3 : printf( "ERROR: close failed, volume does not have an entry in /etc/mtab\n" ) ;
-			  break ;
-		 case 4 : printf( "ERROR: close failed, could not get a lock on /etc/mtab~\n" ) ;
-			  break ;
-		 case 5 : printf( "ERROR: close failed, volume is unmounted but could not close mapper,advice to close it manually\n");
-			  break ;
-		 default :
-			 ; //shouldnt get here			
+		 case 1 : printf( "ERROR: close failed, encrypted volume with that name does not exist\n" );      			  break ;			
+		 case 2 : printf( "ERROR: close failed, the mount point and/or one or more files are in use\n" );			  break ;
+		 case 3 : printf( "ERROR: close failed, volume does not have an entry in /etc/mtab\n" ) ;        			  break ;
+		 case 4 : printf( "ERROR: close failed, could not get a lock on /etc/mtab~\n" ) ;               			  break ;
+		 case 5 : printf( "ERROR: close failed, volume is unmounted but could not close mapper,advice to close it manually\n");	  break ;
+		 default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	 }	
 	 StringDelete( &p ) ;	 
 	 return st ;	
