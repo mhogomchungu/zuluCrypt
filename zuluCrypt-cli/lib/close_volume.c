@@ -19,21 +19,15 @@
 
 #include "includes.h"
 
-static int close_1( const char * map )
-{	
-	if( close_mapper( map ) == 0 ) 
-		return 0 ;
-	else
-		return 5 ;	
-}
-
-int close_volume( const char * map, char ** mount_point ) 
+int close_volume( const char * map,char ** mount_point ) 
 {		
-	int i = unmount_volume( map, mount_point ) ;
+	int i = unmount_volume( map,mount_point ) ;
 	
-	switch( i ){
-		case 0:
-		case 3: return close_1( map ) ;	
-	}
-	return i ;
+	if( i == 0 || i == 3 ){
+		if( close_mapper( map ) == 0 ) 
+			return 0 ;
+		else
+			return 5 ;
+	}else
+		return i ;
 }
