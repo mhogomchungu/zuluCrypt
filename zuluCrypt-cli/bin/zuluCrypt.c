@@ -130,7 +130,6 @@ check if partition with UUID is present : zuluCrypt-cli -w -d UUID=\"d2d210b8-0b
 void get_opts( int argc , char *argv[],struct_opts * stopts )
 {
 	int c ;	
-	
 	stopts->device = NULL ;
 	stopts->mount_point = NULL ;
 	stopts->action = NULL ;
@@ -149,9 +148,9 @@ void get_opts( int argc , char *argv[],struct_opts * stopts )
 	stopts->interactive_passphrase = -1 ;
 	stopts->open_no_mount = -1 ;
 	
-	while ( (c = getopt(argc,argv,"OASNDkhocsarqwibm:d:p:f:e:z:g:y:u:l:n:j:t:") ) != -1 ) {
+	while ( (c = getopt(argc,argv,"LOASNDkhocsarqwibm:d:p:f:e:z:g:y:u:l:n:j:t:") ) != -1 ) {
 		switch( c ){	
-			
+			case( 'L' ) : stopts->action = "print"      ; break ;			     
 			case( 'o' ) : stopts->action = "open"       ; break ;
 			case( 'c' ) : stopts->action = "create"     ; break ;
 			case( 's' ) : stopts->action = "status"     ; break ;
@@ -226,8 +225,6 @@ int main( int argc , char *argv[] )
 	struct_opts clargs ;
 	int status ;	
 
-	uid_t uid = getuid();		
-
 	if( argc > 1 ){
 		action = argv[ 1 ] ;
 		if ( strcmp( action, "-h" ) == 0 || strcmp( action, "--help" ) == 0 || strcmp( action, "-help" ) == 0 ){			
@@ -245,6 +242,12 @@ int main( int argc , char *argv[] )
 	action = clargs.action ;
 	device = clargs.device ;
 	
+	uid_t uid = getuid();		
+	setuid( 0 );
+	
+	if( strcmp( action,"print" ) == 0 ){
+		return print_opened_volumes( uid ) ;
+	}
 	if( strcmp( action,"partitions" ) == 0 ){
 		return print_partitions( clargs.partition_number ) ;
 	}
@@ -255,7 +258,7 @@ int main( int argc , char *argv[] )
 	if( device == NULL ){
 		printf("ERROR: required option( device path ) is missing for this operation\n" ) ;
 		return 110 ;
-	}
+	}	
 	if( strcmp( action,"checkUUID") == 0 ){		
 		if( device_from_uuid( dev,device ) == 0 ){
 			printf( "%s\n",dev ) ;
@@ -274,7 +277,7 @@ int main( int argc , char *argv[] )
 				strncpy( m_name + 5,device + 5,UUID_LENGTH ) ;
 			*( m_name + 41 ) = '\0' ;
 			mapping_name = m_name ;
-			device = dev ;
+			clargs.device = dev ;
 		}else{
 			printf("ERROR: could not find any partition with the presented UUID\n") ;
 			return 11 ;			
@@ -286,9 +289,7 @@ int main( int argc , char *argv[] )
 			mapping_name =  device  ;			
 		}
 	}
-	//all below code need root's priviledes to work
-	setuid( 0 );
-	
+		
 	if( strcmp( action,"emptyslots" ) == 0 ){
 		if( is_path_valid( device ) == 1 ){
 			printf( "path \"%s\" does not point to a device\n",device ) ;
@@ -323,27 +324,27 @@ int main( int argc , char *argv[] )
 		}
 	}else if ( strcmp( action, "status" ) == 0 ){
 		
-		status = volume_info( mapping_name,device ) ;
+		status = volume_info( mapping_name,device,uid ) ;
 		
 	}else if ( strcmp( action, "close" ) == 0 ){			
 
-		status =  close_opened_volume( mapping_name ) ;
+		status =  close_opened_volume( mapping_name,uid ) ;
 		
 	}else if ( strcmp( action, "open" ) == 0 ){
 		
-		status =  open_volumes( &clargs,mapping_name,uid ) ;		
+		status =  open_volumes( &clargs,mapping_name,uid ) ;
 		
 	}else if( strcmp( action,"create" ) == 0 ){
 		
-		status =  create_volumes( &clargs ) ;		
+		status =  create_volumes( &clargs,uid ) ;		
 		
 	}else if( strcmp( action,"addkey" ) == 0 ){
 		
-		status =  addkey( &clargs ) ;
+		status =  addkey( &clargs,uid ) ;
 		
 	}else if( strcmp( action,"removekey" ) == 0 ){
 				
-		status =  removekey( &clargs );	
+		status =  removekey( &clargs,uid );	
 	
 	}else{
 		printf( "ERROR: Wrong argument\n" ) ;

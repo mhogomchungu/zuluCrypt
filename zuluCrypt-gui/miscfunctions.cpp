@@ -95,7 +95,7 @@ QStringList miscfunctions::deviceProperties(QString device)
 bool miscfunctions::isLuks(QString volumePath)
 {
 	QProcess p ;
-	p.start(QString(ZULUCRYPTzuluCrypt) + QString(" -i ") + QString("\"") + volumePath + QString("\"") );
+	p.start(QString(ZULUCRYPTzuluCrypt) + QString(" -i -d ") + QString("\"") + volumePath + QString("\"") );
 	p.waitForFinished() ;
 	int i = p.exitCode() ;
 	p.close();

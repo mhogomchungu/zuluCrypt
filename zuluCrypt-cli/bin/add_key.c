@@ -19,14 +19,23 @@
 
 #include "includes.h"
 
+/*
+ * Its not possible to add more keys to a volume with no empty slots or to a non luks volume
+ *
+ * This function checks if a volume is luks and if it has atleast one empty slot.
+ */
 static int check_empty_slot( const char * device )
 {
 	int status = 0 ;
 	char * c = empty_slots( device ) ;
 	char * d  ;
 	
-	if( c == NULL )
+	if( c == NULL ){
+		/*
+		 * we got here because the volume is either not luks based or the path is invalid
+		 */
 		return 1 ;
+	}
 	d = c - 1 ;
 	while( *++d ){
 		if( *d == '0' ){
@@ -41,16 +50,18 @@ static int check_empty_slot( const char * device )
 static int status_msg( int st )
 {
 	switch ( st ){
-		case 0  : printf( "SUCCESS: key added successfully\n" );	                              break ;		
-		case 1  : printf( "ERROR: presented key does not match any key in the volume\n" ) ;           break ;
-		case 2  : printf( "ERROR: could not open luks device, quiting\n" ) ;	                      break ;
-		case 4  : printf( "ERROR: device does not exist\n" ) ;	                                      break ;
-		case 5  : printf( "ERROR: wrong arguments\n" ) ;	                                      break ;
-		case 6  : printf( "ERROR: one or more required argument(s) for this operation is missing\n" );break ;			
-		case 7  : printf( "ERROR: new passphrases do not match\n" ) ;	                              break ;
-		case 8  : printf( "ERROR: one or both keyfile(s) does not exist\n" ) ;	                      break ;  
-		case 9  : printf( "ERROR: couldnt get enought memory to hold the key file\n" ) ;	      break ;
-		case 10 : printf( "ERROR: all key slots are occupied, can not add any more keys\n" ) ;	      break ;
+		case 0  : printf( "SUCCESS: key added successfully\n" );	                              	break ;		
+		case 1  : printf( "ERROR: presented key does not match any key in the volume\n" ) ;           	break ;
+		case 2  : printf( "ERROR: could not open luks device, quiting\n" ) ;	                      	break ;
+		case 4  : printf( "ERROR: device does not exist\n" ) ;	                                      	break ;
+		case 5  : printf( "ERROR: wrong arguments\n" ) ;	                                      	break ;
+		case 6  : printf( "ERROR: one or more required argument(s) for this operation is missing\n" );	break ;			
+		case 7  : printf( "ERROR: new passphrases do not match\n" ) ;	                              	break ;
+		case 8  : printf( "ERROR: one or both keyfile(s) does not exist\n" ) ;	                      	break ;  
+		case 9  : printf( "ERROR: couldnt get enought memory to hold the key file\n" ) ;	     	break ;
+		case 10 : printf( "ERROR: all key slots are occupied, can not add any more keys\n" ) ;	      	break ;
+		case 11 : printf( "ERROR: insufficient privilege to search for volume path\n" ) ;	        break ;	
+		case 12 : printf( "ERROR: insufficient privilege to search for key file\n" );			break ;					
 		default : printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
 	return st ;
@@ -62,7 +73,10 @@ static int status_msg_1( int st,const char * device )
 	return st ;
 }
 
-int addkey( const struct_opts * opts )
+/*
+ * get_pass_from_file function is defined at get_pass_from_file.c * 
+ */
+int addkey( const struct_opts * opts,uid_t uid )
 {
 	int i                    = opts->interactive_passphrase ;
 	const char * device      = opts->device ;
@@ -85,9 +99,16 @@ int addkey( const struct_opts * opts )
 
 	int status = 0 ;
 	
-	if( is_path_valid( device ) == 1 )
-		return status_msg( 4 ) ;
-	
+	/*
+	 * This function is defined at "is_path_valid.c"
+	 * It makes sure the path exists and the user has atleast reading access to the path.
+	 * 
+	 * The importance of the function is explained where it is defined.
+	 */
+	switch( is_path_valid_by_euid( device,uid ) ){
+		case 1 : return status_msg( 4 ) ; break ;
+		case 2 : return status_msg( 11 ); break ;		
+	}
 	if( is_luks( device ) == 1 )
 		return status_msg_1( 3,device ) ;
 	
@@ -124,17 +145,19 @@ int addkey( const struct_opts * opts )
 		if( keyType1 == NULL || keyType2 == NULL || newKey == NULL || existingKey == NULL )
 			return status_msg( 6 ) ;
 		if ( strcmp( keyType1, "-f" ) == 0 ){	
-			switch( StringGetFromFile_1( &ek,existingKey ) ){
+			switch( get_pass_from_file( existingKey,uid,&ek ) ){
 				case 1 : return status_msg( 8 ) ; 
-				case 3 : return status_msg( 9 ) ;
+				case 2 : return status_msg( 12 ) ;
+				case 4 : return status_msg( 9 );				
 			}
 			key1 = StringContent( ek ) ;
 			len1 = StringLength( ek ) ;
 		}		
 		if ( strcmp( keyType2, "-f" ) == 0 ){	
-			switch( StringGetFromFile_1( &nk,newKey ) ){
+			switch( get_pass_from_file( newKey,uid,&nk ) ){
 				case 1 : return status_msg( 8 ) ; 
-				case 3 : return status_msg( 9 ) ;
+				case 2 : return status_msg( 12 ) ;
+				case 4 : return status_msg( 9 );				
 			}
 			key2 = StringContent( nk ) ;
 			len2 = StringLength( nk ) ;

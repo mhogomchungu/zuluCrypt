@@ -49,6 +49,8 @@ static int status_msg( int st )
 		case 10: printf( "ERROR: device does not exist\n" );											break ;	
 		case 11: printf( "WARNING: there is only one key in the volume left and all data in the volume will be lost if you continue.\n" );
 			 printf( "if you want to continue,rerun the command with -k option\n" ) ;							break;
+		case 12: printf( "ERROR: insufficient privilege to search for volume path\n" ) ;							break ;
+		case 13: printf( "ERROR: insufficient privilege to search for key file\n" );								break ;	
 		default :printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}		
 	return st ;
@@ -60,7 +62,7 @@ static int status_msg_1( int st,const char * device )
 	return st ;
 }
 
-int removekey( const struct_opts * opts ) 
+int removekey( const struct_opts * opts,uid_t uid ) 
 {
 	int i                    = opts->interactive_passphrase ;
 	int k                    = opts->dont_ask_confirmation ;
@@ -71,12 +73,20 @@ int removekey( const struct_opts * opts )
 	string_t pass;
 	int status = 0 ;
 	
+	/*
+	 * This function is defined at "is_path_valid.c"
+	 * It makes sure the path exists and the user has atleast reading access to the path.
+	 * 
+	 * The importance of the function is explained where it is defined.
+	 */
+	switch( is_path_valid_by_euid( device,uid ) ){
+		case 1 : return status_msg( 10 ); break ;
+		case 2 : return status_msg( 12 ); break ;		
+	}
+	
 	if( check_empty_slot( device ) )
 		if( k != 1 )
-			return status_msg( 11 ) ;		
-				
-	if ( is_path_valid( device ) == 1 )
-		return status_msg( 10 ); 
+			return status_msg( 11 ) ;
 	
 	if ( i == 1 ){
 		printf( "Enter the passphrase of the key you want to delete: " ) ;
@@ -89,9 +99,10 @@ int removekey( const struct_opts * opts )
 			return status_msg( 6 ) ;
 		
 		if( strcmp( keyType, "-f" ) == 0 ){	
-			switch( StringGetFromFile_1( &pass,keytoremove ) ){
+			switch( get_pass_from_file( keytoremove,uid,&pass ) ){
 				case 1 : return status_msg( 5 )  ; 
-				case 3 : return status_msg( 7 )  ;
+				case 2 : return status_msg( 7 )  ;
+				case 4 : return status_msg( 13 ) ;				
 			}
 			status = remove_key( device,StringContent( pass ),StringLength( pass ) ) ;
 			StringDelete( &pass ) ;

@@ -8,6 +8,8 @@
 #include <QStringList>
 #include "miscfunctions.h"
 
+#include <unistd.h>
+
 class partitionproperties : public QObject, public QRunnable
 {
 	Q_OBJECT

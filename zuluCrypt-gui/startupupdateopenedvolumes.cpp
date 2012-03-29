@@ -32,65 +32,24 @@ startupupdateopenedvolumes::startupupdateopenedvolumes()
 {
 }
 
-bool startupupdateopenedvolumes::checkUUID(QString *uuid,QString entry)
-{
-	if(entry.mid(0,15) == QString("zuluCrypt-UUID-")){
-		*uuid = QString("UUID=\"") + entry.mid(15)  + QString("\"");
-		return true ;
-	}
-	return false ;
-}
-
 void startupupdateopenedvolumes::run()
 {
-	QStringList Z =  QDir(QString("/dev/mapper")).entryList().filter("zuluCrypt-") ;
 	QProcess p ;
-	QString device ;
-	QString dv = QString(ZULUCRYPTzuluCrypt) + QString(" -D -d /dev/mapper/") ;
-	QString ddv = QString(ZULUCRYPTzuluCrypt) + QString(" -w -d ") ;
-	QString mp ;
-	QString uuid ;
+	p.start(QString(ZULUCRYPTzuluCrypt) + QString(" -L"));
+	p.waitForFinished();
 
-	QFile mt(QString("/etc/mtab")) ;
-	mt.open(QIODevice::ReadOnly) ;
-	QByteArray mtab = mt.readAll() ;
-	mt.close();
-	QString entry ;
-	int status ;
-	for ( int i = 0 ; i < Z.size() ; i++){
-		entry = Z.at(i);
-		if(checkUUID(&device,entry) == false){
-			QString x = dv + entry ;
-			p.start( dv + entry ) ;
+	QStringList l = QString(p.readAll()).split("\n") ;
 
-			p.waitForFinished() ;
-			status = p.exitCode() ;
-			device = QString(p.readAllStandardOutput()).remove('\n')  ;
-			p.close();
-			if( status == 1 ){
-				QString s = tr("An inconsitency is detected, skipping /dev/mapper/zuluCrypt-%1 because it does not look like a cryptsetup volume").arg(entry) ;
-				emit UIMessage(tr("WARNING"), s ) ;
-				continue ;
-			}
-		}else{
-			p.start(ddv + device);
-			p.waitForFinished() ;
-			status = p.exitCode() ;
-			p.close();
-			if( status == 1 ){
-				QString s = tr("An inconsitency is detected, skipping /dev/mapper/zuluCrypt-%1 because its UUID does not match any UUID from attached partitions").arg(entry) ;
-				emit UIMessage(tr("WARNING"), s ) ;
-				continue ;
-			}
-		}
-		mp = miscfunctions::readMtab(&mtab,entry) ;
-		if( mp == QString("") ){
-			QString s = tr("An inconsitency is detected. Skipping \"%1\" because its opened but not mounted").arg(device);
-			emit UIMessage(tr("WARNING"),s);					  
-			continue ;
-		}
-		emit addItemToTable(device,mp) ;
-	}	
+	int j = l.size() ;
+
+	if( j == 1 )
+		return ;
+
+	QStringList entry ;
+	for( int i = 0 ; i < j - 1 ; i++ ){
+		entry = l.at(i).split("\t");
+		emit addItemToTable(entry.at(0),entry.at(1)) ;
+	}
 }
 
 startupupdateopenedvolumes::~startupupdateopenedvolumes()

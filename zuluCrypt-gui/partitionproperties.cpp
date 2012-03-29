@@ -9,6 +9,13 @@ void partitionproperties::run()
 {
 	QProcess p ;
 
+	/*
+	  Root user can create encrypted volumes in all partitions including system partitions.
+	  Show all partitions, not only non system.
+	  */
+	if(m_partitionType == QString(" -N") && getuid() == 0)
+		m_partitionType = QString(" -A") ;
+
 	p.start(QString(ZULUCRYPTzuluCrypt) + m_partitionType);
 
 	p.waitForFinished() ;

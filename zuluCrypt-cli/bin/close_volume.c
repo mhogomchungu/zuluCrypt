@@ -19,16 +19,17 @@
 
 #include "includes.h"
 
-int close_opened_volume( const char * mapping_name )
+int close_opened_volume( const char * mapping_name,uid_t uid )
 {	
 	 int st ;	 
 	 char * m_point = NULL ;
 	 
-	 string_t p = String( mapping_name ) ;
-	 
-	 replace_bash_special_chars( p ) ;
-	 
-	 StringPrepend( p,"/dev/mapper/zuluCrypt-" ) ;	
+	 /*
+	  * This function is defined at "create_mapper_name.c"
+	  * 
+	  * Explanation for what it does is explained where it is defined.	  * 
+	  */
+	 string_t p = create_mapper_name( mapping_name,uid,CLOSE ) ;	
 	 
 	 st = close_volume( StringContent( p ),&m_point ) ;
 	 

@@ -18,9 +18,7 @@
  */
 
 #include "includes.h"
-
-#include <stdio.h>
-#include <limits.h>
+#include <errno.h>
 
 static int status_msg( int st )
 {
@@ -43,10 +41,59 @@ static int status_msg( int st )
 		case 16: printf( "ERROR: could not resolve full path of mount point\n" );						break ;
 		case 17: printf( "ERROR: could not resolve full path of device address\n" );						break ;
 		case 18: printf( "ERROR: -O and -m options can not be used together\n" );						break ;
+		case 19: printf( "ERROR: insufficient privilege to search mount point path\n" );					break ;	
+		case 20: printf( "ERROR: insufficient privilege to search device path\n" );						break ;	
+		case 21: printf( "ERROR: insufficient privilege to create a mount point\n" );						break ;	
+		case 22: printf( "ERROR: insufficient privilege to search for key file\n" );						break ;					
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
 	return st ;
 }
+
+/*
+ * open_volume function below can be devided into two, the first part is before the mount point folder is created and the 
+ * other part is after. This function is called after the mount point is created to see if it the mount point folder
+ * should be removed first before calling the above function.The above function is called directly when "open_volume"
+ * function is to be exited before the mount point is created. * 
+ */
+static int status_msg_1( int st,const struct_opts * opts )
+{
+	if( opts->open_no_mount == -1 && st != 0 )
+		rmdir( opts->mount_point ) ;
+	return status_msg( st ) ;
+}
+
+/*
+ * This function creates a mount point folder to be used to mount the volume.
+ * 
+ * The function drops privileges to those of the person who started the tool(normal user usually),create the folder
+ * and then elevates back to root's.
+ * 
+ * This prevents one normal user for example from creating a folder in another normal user's account
+ * doing some sort of a denial of service attack.    * 
+ */
+int create_directory( const char * path,uid_t uid )
+{
+	int st ;
+
+	uid_t euid = geteuid();     /* store effective user ID of the process,it should be root's                 */
+	
+	seteuid( uid ) ;            /* *set uid to the person who started the program                             */
+	
+	st = mkdir( path,S_IRWXU ) ;/* create the mount point using privileges of the user who started the program*/
+	
+	seteuid( euid ) ;           /* elevate privileges back to root's                                          */
+	
+	if( st == 0 )
+		return 0 ;
+	else{
+		if( errno == EACCES ) 
+			return 2 ;
+		else
+			return 1 ;
+	}
+}
+
 int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 {
 	int nmp                  = opts->open_no_mount ;
@@ -70,13 +117,25 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 	size_t len ;
 	int st = 0 ;
 	
+	/*
+	 * This function is defined at "is_path_valid.c"
+	 * It makes sure the path exists and the user has atleast reading access to the path.
+	 * 
+	 * The importance of the function is explained where it is defined.
+	 */
+	if( is_path_valid_by_euid( dev,uid ) == 2 )
+		return status_msg( 20 ) ;
+	
+	device = realpath( dev,NULL ) ;
+	if( device == NULL )
+		return status_msg( 17 ) ;
+	
 	if( mode == NULL ) 
 		return status_msg( 11 ) ;
 	
-	if( strncmp( mode,"ro",2 ) != 0 ){
+	if( strncmp( mode,"ro",2 ) != 0 )
 		if ( strncmp( mode,"rw",2 ) != 0 )
 			return status_msg( 13 ) ;
-	}
 	
 	if( nmp == 1 && mount_point != NULL )
 		return status_msg( 18 ) ;
@@ -89,28 +148,28 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 			if ( strcmp( mount_point,"," ) == 0 )
 				return status_msg( 10 ) ;
 		
+		if( is_path_valid_by_euid( mount_point,uid ) == 2 )
+			return status_msg( 19 ) ;
+		
 		if( is_path_valid( mount_point ) == 0 )
 			return status_msg( 9 ) ;
 		
-		if( mkdir( mount_point,S_IRWXU ) != 0 )
-			return status_msg( 5 ) ;
+		switch( create_directory( mount_point,uid ) ){
+			case 1 : return status_msg( 5 ) ;
+			case 2 : return status_msg( 21 ) ;
+		}
 		
 		cpoint = realpath( mount_point,NULL ) ;
 		if( cpoint == NULL )
-			return status_msg( 16 ) ;
-	}			
-	
-	device = realpath( dev,NULL ) ;
-	if( device == NULL ){
-		if( nmp == -1 )
-			free( cpoint ) ;
-		
-		return status_msg( 17 ) ;	
-	}
-	
-	m_name = String( mapping_name ) ;	
-	replace_bash_special_chars( m_name ) ;	
-	StringPrepend( m_name,"zuluCrypt-" ) ;
+			return status_msg_1( 16,opts ) ;
+	}		
+
+	/*
+	 * This function is defined at "create_mapper_name.c"
+	 * 
+	 * Explanation for what it does is explained where it is defined.	  * 
+	 */
+	m_name = create_mapper_name( mapping_name,uid,OPEN ) ;
 	
 	cname = StringContent( m_name ) ;
 	
@@ -124,16 +183,17 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 		StringDelete( &passphrase ) ;
 	}else{
 		if( source == NULL || pass == NULL )
-			return status_msg( 11 ) ;
+			return status_msg_1( 11,opts ) ;
 		
 		if( strcmp( source,"-p" ) == 0 ){
 			cpass = pass ;
 			len = strlen(pass) ;
 			st = open_volume( device,cname,cpoint,uid,mode,cpass,len ) ;		
 		}else if( strcmp( source,"-f" ) == 0 ){			
-			switch( StringGetFromFile_1( &data,pass ) ){
-				case 1 : return status_msg( 16 ) ; 
-				case 3 : return status_msg( 14 ) ;
+			switch( get_pass_from_file( pass,uid,&data ) ){
+				case 1 : return status_msg_1( 6,opts ) ; 
+				case 2 : return status_msg_1( 14,opts ) ; 				
+				case 4 : return status_msg_1( 22,opts ) ;
 			}
 			cpass = StringContent( data ) ;
 			len = StringLength( data ) ;
@@ -141,13 +201,10 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 			StringDelete( &data ) ;
 		}
 	}
-	
-	if( st != 0 )
-		rmdir( cpoint ) ;
-	
+		
 	StringDelete( &m_name ) ;
 	free( cpoint ) ;
 	free( device ) ;
 	
-	return status_msg( st ) ;
+	return status_msg_1( st,opts ) ;
 }

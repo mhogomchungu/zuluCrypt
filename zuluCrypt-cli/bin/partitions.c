@@ -24,6 +24,22 @@
 
 #define BUFFER_SIZE 512
 
+/*
+ * This source file deals with parsing partition list from "/proc/partitions,"/etc/fstab" and "/etc/mtab".
+ * 
+ * For security reasons,a normal user it is not allowed to create volumes in system partitions.
+ * 
+ * A System partition is defined as a partition with an active entries in /etc/fstab and/or /etc/crypttab.
+ * 
+ * This policy is in place to prevent a normal user from attempting to create volumes in internal partitions
+ * intentially to destroy other people's data.
+ * 
+ * External,pluggable usb based partitions are not considered to be system partitions and the tool can be used to create volumes in those.
+ * 
+ * Internal partitions are considered part of the system and the policy is in place to make sure a normal user does not
+ * perform actions reserved for root user.
+ * 
+ */
 stringList_t partitionList( void )
 {
 	stringList_t stl = NULL;
@@ -211,9 +227,6 @@ int print_partitions( int option )
 		break ;
 		case 3 : stl = partitions( NON_SYSTEM_PARTITIONS ) ;
 		break ;
-		default:
-			printf( "wrong argument\n" );
-			return 1 ;
 	}
 	j = StringListSize( stl ) ;
 	for( i = 0 ; i < j ; i++ )	

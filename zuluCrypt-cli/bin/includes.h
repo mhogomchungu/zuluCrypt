@@ -62,18 +62,28 @@ string_t get_passphrase( void ) ;
  
 stringList_t partitions( int option ) ;
  
-int volume_info( const char * mapper,const char * device ) ;
+int volume_info( const char * mapper,const char * device,uid_t ) ;
  
-int close_opened_volume( const char * mapping_name ) ;
+int close_opened_volume( const char * mapping_name,uid_t ) ;
  
 int open_volumes( const struct_opts *,const char * mapping_name,uid_t uid ) ;
 		   
-int create_volumes( const struct_opts * ) ;
+int create_volumes( const struct_opts *,uid_t ) ;
 
-int addkey( const struct_opts * ) ;
+int addkey( const struct_opts *,uid_t ) ;
 		
-int removekey( const struct_opts * ) ;
+int removekey( const struct_opts *,uid_t ) ;
 
 int is_path_valid(const char * path ) ;
 
+int is_path_valid_by_euid( const char * path,uid_t uid ) ;
+
 void replace_bash_special_chars( string_t ) ;
+
+int get_pass_from_file( const char * path,uid_t uid,string_t * st ) ;
+
+int print_opened_volumes( uid_t ) ;
+
+#define OPEN 1
+#define CLOSE 2
+string_t create_mapper_name( const char * mapping_name,uid_t uid,int ) ;

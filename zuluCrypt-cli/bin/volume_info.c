@@ -19,18 +19,19 @@
 
 #include "includes.h"
 
-int volume_info( const char * mapper,const char * device )
+int volume_info( const char * mapper,const char * device,uid_t uid )
 {
 	char * output ;	
 	int xt ;
 	
 	string_t p ;
 	
-	p = String( mapper ) ;		
-	
-	replace_bash_special_chars( p ) ;
-	
-	StringPrepend( p,"/dev/mapper/zuluCrypt-" ) ;
+	/*
+	 * This function is defined at "create_mapper_name.c"
+	 * 
+	 * Explanation for what it does is explained where it is defined.	  * 
+	 */
+	p = create_mapper_name( mapper,uid,CLOSE ) ;
 	
 	if( is_path_valid( StringContent( p ) ) == 1 ) {
 		printf( "\"%s\" is inactive\n",device ) ;

@@ -198,7 +198,7 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 		h = mount_mapper( &mst,&options ) ;
 	else{
 		/* "/etc/mtab" is not a symbolic link to /proc/mounts, manually,add an entry to it since 
-		 * mount command does not
+		 * mount API does not
 		 */		
 		m_lock = mnt_new_lock( "/etc/mtab~",getpid() ) ;
 		if( mnt_lock_file( m_lock ) != 0 ){
