@@ -84,7 +84,7 @@ void help( void )
 {
 	const char * help = "\
 usage: zuluCrypt-cli < operation > < options specific to the operation >\n\
-argument:  operation\n\
+operation list\n\
 -c         create an encrypted volume\n\
 -o         open and encrypted volume\n\
 -O         open an encrypted volume but do not mount it( -m therefore not needed )\n\

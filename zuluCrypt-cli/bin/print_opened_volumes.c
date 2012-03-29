@@ -140,6 +140,9 @@ int print_opened_volumes( uid_t uid )
 	
 	path = realpath( "/etc/mtab",NULL ) ;
 	
+	if( path == NULL )
+		return 1 ;
+	
 	if( strncmp( path,"/etc/",5 ) == 0 ){
 		m_lock = mnt_new_lock( "/etc/mtab~",getpid() ) ;
 		

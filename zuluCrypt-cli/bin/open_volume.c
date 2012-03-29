@@ -148,11 +148,10 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 			if ( strcmp( mount_point,"," ) == 0 )
 				return status_msg( 10 ) ;
 		
-		if( is_path_valid_by_euid( mount_point,uid ) == 2 )
-			return status_msg( 19 ) ;
-		
-		if( is_path_valid( mount_point ) == 0 )
-			return status_msg( 9 ) ;
+		switch( is_path_valid_by_euid( mount_point,uid ) ){
+			case 0 : return status_msg( 9 ) ;
+			case 2 : return status_msg( 19 ) ;
+		}
 		
 		switch( create_directory( mount_point,uid ) ){
 			case 1 : return status_msg( 5 ) ;

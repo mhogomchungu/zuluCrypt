@@ -181,9 +181,7 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 	*/
 	if( strcmp( StringContent( fs ),"ntfs" ) == 0 ){
 		StringDelete( &fs ) ;
-		h = mount_ntfs( &mst ) ;
-		
-		switch( h ){
+		switch( mount_ntfs( &mst ) ){
 			case 0  : return 0 ;
 			case 16 : return 12 ;
 			default : return 1 ;
@@ -193,34 +191,46 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 	mst.fs = StringContent( fs ) ;
 	 
 	path = realpath( "/etc/mtab",NULL ) ;
-	
-	if( strncmp( path,"/proc",5 ) == 0 )
+
+	if( path == NULL ){
+		/*
+		 * weired,/etc/mtab is MIA
+		 */
 		h = mount_mapper( &mst,&options ) ;
-	else{
-		/* "/etc/mtab" is not a symbolic link to /proc/mounts, manually,add an entry to it since 
-		 * mount API does not
-		 */		
-		m_lock = mnt_new_lock( "/etc/mtab~",getpid() ) ;
-		if( mnt_lock_file( m_lock ) != 0 ){
-			h = 12 ;
-		}else{		
+	}else{
+		if( strncmp( path,"/proc",5 ) == 0 ){
+			/*
+			 * it looks like /etc/mtab is a soft link to /proc/mounts
+			 * 
+			 */
 			h = mount_mapper( &mst,&options ) ;
-			if( h == 0 ){
-				f = setmntent( "/etc/mtab","a" ) ;	
-				mt.mnt_fsname = ( char * ) mapper ;
-				mt.mnt_dir    = ( char * ) m_point ;
-				mt.mnt_type   = ( char * ) StringContent( fs ) ;	
-				mt.mnt_opts   = ( char * ) StringContent( options ) ;
-				mt.mnt_freq   = 0 ;
-				mt.mnt_passno = 0 ;
-				addmntent( f,&mt ) ;	
-				endmntent( f ) ;
-			}
-			mnt_unlock_file( m_lock ) ;
-		}	
-		mnt_free_lock( m_lock ) ;
-	}
-	free( path ) ;
+		}else{
+			/* 
+			 * "/etc/mtab" is not a symbolic link to /proc/mounts, manually,add an entry to it since 
+			 * mount API does not
+			 */		
+			m_lock = mnt_new_lock( "/etc/mtab~",getpid() ) ;
+			if( mnt_lock_file( m_lock ) != 0 ){
+				h = 12 ;
+			}else{		
+				h = mount_mapper( &mst,&options ) ;
+				if( h == 0 ){
+					f = setmntent( "/etc/mtab","a" ) ;	
+					mt.mnt_fsname = ( char * ) mapper ;
+					mt.mnt_dir    = ( char * ) m_point ;
+					mt.mnt_type   = ( char * ) StringContent( fs ) ;	
+					mt.mnt_opts   = ( char * ) StringContent( options ) ;
+					mt.mnt_freq   = 0 ;
+					mt.mnt_passno = 0 ;
+					addmntent( f,&mt ) ;	
+					endmntent( f ) ;
+				}
+				mnt_unlock_file( m_lock ) ;
+			}	
+			mnt_free_lock( m_lock ) ;
+		}
+		free( path ) ;
+	}	
 	StringDelete( &fs ) ;
 	StringDelete( &options ) ;
 	return h ;

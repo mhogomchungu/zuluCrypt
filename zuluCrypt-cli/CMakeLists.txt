@@ -64,9 +64,37 @@
  
  add_library( StringList STATIC string/StringList.c )
  
- add_library( zuluCrypt SHARED bin/is_path_valid.c lib/version.c lib/close_volume.c lib/add_key.c lib/remove_key.c lib/empty_slots.c lib/status.c lib/create_luks.c lib/is_luks.c lib/create_volume.c lib/close_mapper.c lib/open_luks.c lib/open_plain.c lib/open_volume.c lib/mount_volume.c lib/unmount_volume.c)
+ SET( BIN  bin/print_opened_volumes.c 
+ bin/get_pass_from_file.c 
+ bin/create_mapper_name.c 
+ bin/replace_bash_special_chars.c 
+ bin/main.c bin/close_volume.c 
+ bin/add_key.c
+ bin/volume_info.c
+ bin/open_volume.c 
+ bin/partitions.c 
+ bin/create_volumes.c 
+ bin/remove_key.c) 
  
- add_executable( zuluCrypt-cli bin/print_opened_volumes.c bin/get_pass_from_file.c bin/create_mapper_name.c bin/replace_bash_special_chars.c bin/zuluCrypt.c bin/close_volume.c bin/add_key.c bin/volume_info.c bin/open_volume.c bin/partitions.c bin/create_volumes.c bin/remove_key.c) 
+ SET( LIB bin/is_path_valid.c 
+ lib/version.c 
+ lib/close_volume.c 
+ lib/add_key.c 
+ lib/remove_key.c 
+ lib/empty_slots.c 
+ lib/status.c 
+ lib/create_luks.c 
+ lib/is_luks.c 
+ lib/create_volume.c
+ lib/close_mapper.c
+ lib/open_luks.c 
+ lib/open_plain.c
+ lib/open_volume.c
+ lib/mount_volume.c
+ lib/unmount_volume.c)
+ 
+ add_library( zuluCrypt SHARED ${LIB} )
+ add_executable( zuluCrypt-cli ${BIN} )
  
  TARGET_LINK_LIBRARIES( zuluCrypt ${libcryptsetup} String ${blkid} ${mountLibrary} )
  

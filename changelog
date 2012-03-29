@@ -71,5 +71,11 @@ version 4.3.4
 -- support libmount both above and below version 2.18 
 
 version 4.3.5
+-- lots fa code added to increase security and reliability of the tool,updating strongly advised.
 -- when creating a volume, use mkfs.xxx tools installed on the system and not hard code a subset of them.
 -- use ntfs-3g to mount volumes that use ntfs file system.
+-- major cli interface change, run zulucrypt-cli --help for more info.
+-- normal users can not create volumes in system partitions but root user now can. system partition is defined as a partition
+   with active entry(not commented out) in /etc/fstab and /etc/crypttab.
+   
+   
