@@ -40,7 +40,7 @@
  * perform actions reserved for root user.
  * 
  */
-stringList_t partitionList( void )
+static stringList_t partitionList( void )
 {
 	stringList_t stl = NULL;
 	FILE * fd ;	
@@ -121,7 +121,7 @@ int device_from_uuid( char * dev, const char * uuid )
 	return -1 ;	
 }
 
-void blkid( const char * type,const char * entry, int size, stringList_t * system, stringList_t non_system )
+static void blkid( const char * type,const char * entry, int size, stringList_t * system, stringList_t non_system )
 {	
 	const char * device ;
 	const char * f ;
@@ -151,7 +151,7 @@ void blkid( const char * type,const char * entry, int size, stringList_t * syste
 	}	
 }
 
-stringList_t partitions( int option )
+static stringList_t partitions( int option )
 {
 	char buffer[ BUFFER_SIZE ];
 	char device[ DEVICE_LENGHT ] ;

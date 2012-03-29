@@ -72,7 +72,7 @@ static int status_msg_1( int st,const struct_opts * opts )
  * This prevents one normal user for example from creating a folder in another normal user's account
  * doing some sort of a denial of service attack.    * 
  */
-int create_directory( const char * path,uid_t uid )
+static int create_directory( const char * path,uid_t uid )
 {
 	int st ;
 

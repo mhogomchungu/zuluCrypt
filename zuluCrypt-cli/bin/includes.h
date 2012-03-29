@@ -60,8 +60,6 @@ typedef struct struct_opts_1{
 
 string_t get_passphrase( void ) ;
  
-stringList_t partitions( int option ) ;
- 
 int volume_info( const char * mapper,const char * device,uid_t ) ;
  
 int close_opened_volume( const char * mapping_name,uid_t ) ;
