@@ -18,7 +18,7 @@
  */
 
 #include "closeallvolumesthread.h"
-#include "../zuluCrypt-cli/executables.h"
+#include "../zuluCrypt-cli/constants.h"
 
 #include <iostream>
 #include <QProcess>

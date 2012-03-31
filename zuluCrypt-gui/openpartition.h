@@ -34,7 +34,7 @@
 #include <QThreadPool>
 #include <QKeySequence>
 #include "partitionproperties.h"
-#include "../zuluCrypt-cli/executables.h"
+#include "../zuluCrypt-cli/constants.h"
 
 class openpartition :  public QDialog
 {

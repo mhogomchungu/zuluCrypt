@@ -45,6 +45,7 @@ static int status_msg( int st )
 		case 11: printf( "ERROR: %s not found \n",ZULUCRYPTmkfs ) ;					break  ;
 		case 12: printf( "ERROR: user chose not to proceed\n" ) ;					break  ;
 		case 13: printf( "ERROR: insufficient privilege to search for volume path\n" ) ;		break  ;
+		case 14: printf( "ERROR: insufficient privilege to create a volume in this device\n" ) ;	break  ;
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
 	return st ;
@@ -87,12 +88,18 @@ int create_volumes( const struct_opts * opts,uid_t uid  )
 	 * Only root user can create volumes in system partitions.
 	 * System partitions are defined as partitions with active entried in "/etc/fstab" and "/etc/crypttab"
 	 * 
-	 * Active entries are entries not commented out.	 * 
+	 * Active entries are entries not commented out.
+	 * 
+	 * devices other than sdX and hdY require root privileges
 	 */
-	if( uid != 0 )
-		if( check_partition( device ) != -1 )
-			return status_msg( 10 ) ;
-	
+	if( strncmp( device,"/dev/",5 ) == 0 ){
+		if( strncmp( device,"/dev/hd",7 ) == 0 || strncmp( device,"/dev/sd",7 ) == 0 ){
+			if( uid != 0 )
+				if( check_partition( device ) == 1 )
+					return status_msg( 10 ) ;
+		}else
+			return status_msg( 14 ) ;
+	}
 	/*
 	 * ZULUCRYPTmkfs is defined at "../executables.h"
 	 * File systems are cureated not through file systems APIs but through mkfs.xxx executables started using exec call.

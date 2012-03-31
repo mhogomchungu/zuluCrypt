@@ -28,20 +28,12 @@
 
 #include "../string/String.h" 
 #include "../string/StringList.h" 
-#include "../executables.h"
+#include "../constants.h"
 #include "../zuluCrypt.h"
- 
-#define ALL_PARTITIONS        1
-#define SYSTEM_PARTITIONS     2
-#define NON_SYSTEM_PARTITIONS 3
-
-#define UUID_LENGTH 36
-#define DEVICE_LENGHT 12
 
 typedef struct struct_opts_1{
 	const char * device ;
 	const char * mount_point ;
-	const char * action ;
 	const char * mode ;
 	const char * key_source ;
 	const char * key ;
@@ -52,6 +44,7 @@ typedef struct struct_opts_1{
 	const char * existing_key ;
 	const char * new_key ;
 	const char * new_key_source ;
+	char action ;
 	int partition_number ;
 	int dont_ask_confirmation ;
 	int interactive_passphrase ;
@@ -82,6 +75,4 @@ int get_pass_from_file( const char * path,uid_t uid,string_t * st ) ;
 
 int print_opened_volumes( uid_t ) ;
 
-#define OPEN 1
-#define CLOSE 2
 string_t create_mapper_name( const char * mapping_name,uid_t uid,int ) ;

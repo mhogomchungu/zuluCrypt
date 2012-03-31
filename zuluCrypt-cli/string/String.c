@@ -294,11 +294,16 @@ ssize_t StringLastIndexOfString( string_t st ,const char * s )
 
 ssize_t StringIndexOfChar( string_t st, size_t p , char s ) 
 {	
-	char * c = st->string  + p - 1 ;
-	while ( *++c )
-		if( *c == s ) 
-			return c - st->string ;
-	return -1 ;
+	char * c ;
+	char d[ 2 ] ;
+	d[ 1 ] = '\0' ;
+	d[ 0 ] = s ;
+
+	c = strstr( st->string + p,d ) ;
+	if( c == NULL )
+		return -1 ;
+	else
+		return c - st->string ;
 }
 
 const char * StringRemoveLength( string_t st,size_t x , size_t y ) 
@@ -363,7 +368,7 @@ const char * StringClear( string_t st )
 
 const char * StringRemoveRight( string_t st, size_t x ) 
 {
-	return StringRemoveLength( st,st->size - x ,x ) ;
+	return StringRemoveLength( st,x,st->size - x ) ;
 }
 
 const char * StringRemoveLeft( string_t st, size_t x ) 
@@ -615,6 +620,14 @@ const char * StringPrepend( string_t st ,const  char * s )
 	return c ;	
 }
 
+const char * StringPrependChar( string_t st,char c )
+{
+	char s[ 2 ] ;
+	s[ 1 ] = '\0' ;
+	s[ 0 ] = c ;
+	return StringPrepend( st,s ) ;
+}
+
 const char * StringAppend( string_t st ,const char * s ) 
 {
 	char * c ;	
@@ -648,6 +661,14 @@ const char * StringAppend( string_t st ,const char * s )
 	}
 	StringUnlockMutex__( mt ) ;
 	return c ;
+}
+
+const char * StringAppendChar( string_t st,char c )
+{
+	char s[ 2 ] ;
+	s[ 1 ] = '\0' ;
+	s[ 0 ] = c ;
+	return StringAppend( st,s ) ;
 }
 
 const char * StringInsertString( string_t st, size_t x, const char * s )
@@ -851,15 +872,27 @@ const char * StringReplaceChar( string_t st, char x, char y )
 	return StringReplaceCharPos( st,x,y,0 ) ;
 }
 
-char * StringIntToString( char * x, size_t y,uint64_t z )
+string_t StringIntToString( uint64_t z )
+{
+	string_t st = String( "" ) ;
+	
+	do{
+		StringPrependChar( st,z % 10 + '0' ) ;
+		z = z / 10 ;		
+	}while( z != 0 ) ;
+	
+	return st ;
+}
+
+char * StringIntToString_1( char * x, size_t y,uint64_t z )
 {
 	char *c =  x + y - 1  ;
 	
-	*c-- = '\0' ;	
+	*c-- = '\0' ;   
 	
 	do{
 		*c-- = z % 10 + '0' ;
-		z = z / 10 ;		
+		z = z / 10 ;            
 		
 	}while( z != 0 ) ;
 	

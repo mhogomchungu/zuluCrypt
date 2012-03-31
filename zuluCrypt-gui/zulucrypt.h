@@ -31,7 +31,7 @@
 #include <QCloseEvent>
 #include <QThreadPool>
 
-#include "../zuluCrypt-cli/executables.h"
+#include "../zuluCrypt-cli/constants.h"
 #include "../zuluCrypt-cli/version.h"
 #include "password_dialog.h"
 #include "openpartition.h"

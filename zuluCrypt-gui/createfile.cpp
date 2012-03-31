@@ -20,7 +20,7 @@
 #include "ui_createfile.h"
 #include "createfile.h"
 #include "miscfunctions.h"
-#include "../zuluCrypt-cli/executables.h"
+#include "../zuluCrypt-cli/constants.h"
 
 #include <QFileDialog>
 #include <QFile>

@@ -25,12 +25,9 @@
 #include <libcryptsetup.h>   
 
 #include "../string/String.h"
-#include "../executables.h"
+#include "../constants.h"
 #include "../version.h"
-/*
- *  uid number seem to be a 16 bit number requiring 5 digits,the extra one is for NULL character 
- * */
-#define UID_SIZE 6
+
 //function prototypes
 
 int add_key(const char * device,const char * existingkey,size_t existingkey_size,const char * newkey,size_t newkey_size) ;

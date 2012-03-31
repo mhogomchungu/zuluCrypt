@@ -60,6 +60,9 @@ int unmount_volume( const char * map, char ** m_point )
 	
 	path = realpath( "/etc/mtab",NULL ) ;	
 
+	if( path == NULL )
+		return h ;
+	
 	f = setmntent( path,"r" ) ;
 	
 	if( strncmp( path,"/proc/",6 ) == 0 ){

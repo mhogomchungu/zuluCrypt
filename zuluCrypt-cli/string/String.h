@@ -59,12 +59,28 @@ string_t StringWithSize( const char * string,size_t length ) ;
 const char * StringAppend( string_t st ,const  char * s )  ;
 
 /*
+ * Append a char c into a string handled by handle st 
+ *
+ * On success, a concatenated string is returned.
+ * On error, NULL is returned and the original string remain intact. 
+ */
+const char * StringAppendChar( string_t st ,char c )  ;
+
+/*
  * Prepend a string pointed to by s into a string handled by handle st
  * 
  * On success, a concatenated string is returned
  * On error, NULL is returned and the original string remain intact   
  */
 const char * StringPrepend( string_t st ,const  char * s )  ;
+
+/*
+ * Prepend a char c into a string handled by handle st
+ * 
+ * On success, a concatenated string is returned
+ * On error, NULL is returned and the original string remain intact   
+ */
+const char * StringPrependChar( string_t st ,char c )  ;
 
 /*
  * Inherit a string pointed to by data and return a string handle to the string on success or NULL on error. 
@@ -360,7 +376,12 @@ const char * StringReplaceCharStringPos( string_t st, char x, const char * y,siz
  * takes the last spot.  
  */
 
-char * StringIntToString( char * x, size_t y, uint64_t z ) ;
+char * StringIntToString_1( char * x, size_t y, uint64_t z ) ;
+
+/*
+ * convert a number z into a string
+ */
+string_t StringIntToString( uint64_t ) ;
 
 /*
  * Compare a string handled by handle x to a string handled by handle y and return 0 if they are equal and 1 if they are not  

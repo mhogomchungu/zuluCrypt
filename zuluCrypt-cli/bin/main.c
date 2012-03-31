@@ -48,7 +48,7 @@ int check_system_tools( void ) ;
 /*
  * defined in partitions.c
  */
-int device_from_uuid(char * dev, const char * uuid ) ;
+string_t device_from_uuid( const char * uuid ) ;
 
 /*
  * defined in partitions.c
@@ -101,19 +101,19 @@ operation list\n\
 -D         get device path from mapper( located at /dev/mapper )\n\
 \n\
 options that goes with above operations:\n\
--k         dont ask for confirmation when doing dangerous operations( used by -c and -r )\n\
+-k         dont ask for confirmation when doing dangerous operations(used by -c and -r)\n\
 -d         path to a file or partition with encrypted volume( required by all except by -v )\n\
 -m         a folder will be created at this path to be used as mount point when opening volume( required by -o )\n\
--z         file system type(ext2,ext3 etc) ( required by -c )\n\
--t         type of volume( plain or luks ) ( required by -c )\n\
+-z         file system type(ext2,ext3 etc) (required by -c)\n\
+-t         type of volume(plain or luks)   (required by -c)\n\
 -g         random number generator (/dev/random or /dev/urandom) ( used by -c,/dev/urandom is used if absent )\n\
 -h         get passphrase interactively,if absent then -p or -f must be used ( used with -c,-r,-a)\n\
--p         passphrase ( used with -c and -r )\n\
--f         passphrase is in a key file ( used with -c and -r )\n\
--y         passphrase already in the volume ( required by -a if -u is absent and -h is also absent )\n\
--u         passphrase in a key file to be checked against a key already in the volume ( required by -a if -y is absent and -h is also absent\n\
--l         passphrase to be added ( required by -a if -n is absent and -h is also absent )\n\
--n         passphrase in a keyfile to be added ( required by -a if -l is absent and -h is also absent\n\
+-p         passphrase (used with -c and -r)\n\
+-f         passphrase is in a key file (used with -c and -r)\n\
+-y         passphrase already in the volume (required by -a if -u is absent and -h is also absent)\n\
+-u         passphrase in a key file to be checked against a key already in the volume (required by -a if -y is absent and -h is also absent)\n\
+-l         passphrase to be added (required by -a if -n is absent and -h is also absent)\n\
+-n         passphrase in a keyfile to be added (required by -a if -l is absent and -h is also absent)\n\
 \n\
 examples:\n\
 create volume: zuluCrypt-cli -c -d /dev/sdc1 -z ext4 -t luks -p xxx\n\
@@ -132,7 +132,7 @@ void get_opts( int argc , char *argv[],struct_opts * stopts )
 	int c ;	
 	stopts->device = NULL ;
 	stopts->mount_point = NULL ;
-	stopts->action = NULL ;
+	stopts->action = '\0' ;
 	stopts->mode = "ro" ;
 	stopts->key_source = NULL ;
 	stopts->key = NULL ;
@@ -150,30 +150,29 @@ void get_opts( int argc , char *argv[],struct_opts * stopts )
 	
 	while ( (c = getopt(argc,argv,"LOASNDkhocsarqwibm:d:p:f:e:z:g:y:u:l:n:j:t:") ) != -1 ) {
 		switch( c ){	
-			case( 'L' ) : stopts->action = "print"      ; break ;			     
-			case( 'o' ) : stopts->action = "open"       ; break ;
-			case( 'c' ) : stopts->action = "create"     ; break ;
-			case( 's' ) : stopts->action = "status"     ; break ;
-			case( 'a' ) : stopts->action = "addkey"     ; break ;
-			case( 'r' ) : stopts->action = "removekey"  ; break ;
-			case( 'q' ) : stopts->action = "close"      ; break ;
-			case( 'w' ) : stopts->action = "checkUUID"  ; break ;
-			case( 'i' ) : stopts->action = "isLuks"     ; break ;
-			case( 'b' ) : stopts->action = "emptyslots" ; break ;
-			case( 'D' ) : stopts->action = "device"     ; break ;
-			case( 'O' ) : stopts->action = "open"     ;
-				      stopts->open_no_mount = 1 ;
-				      break ;
+			case( 'L' ) : stopts->action = 'L'      ; break ;			     
+			case( 'o' ) : stopts->action = 'o'      ; break ;
+			case( 'c' ) : stopts->action = 'c'      ; break ;
+			case( 's' ) : stopts->action = 's'      ; break ;
+			case( 'a' ) : stopts->action = 'a'      ; break ;
+			case( 'r' ) : stopts->action = 'r'      ; break ;
+			case( 'q' ) : stopts->action = 'q'      ; break ;
+			case( 'w' ) : stopts->action = 'w'      ; break ;
+			case( 'i' ) : stopts->action = 'i'      ; break ;
+			case( 'b' ) : stopts->action = 'b'      ; break ;
+			case( 'D' ) : stopts->action = 'D'      ; break ;
+			case( 'O' ) : stopts->action = 'O'      ;
+				      stopts->open_no_mount = 1 ; break ;
 			case( 'k' ) : stopts->dont_ask_confirmation = 1 ;
 				      break ;
 			case( 'A' ) : stopts->partition_number = ALL_PARTITIONS ;
-				      stopts->action = "partitions" ;
+				      stopts->action = 'A' ;
 				      break ;
 			case( 'S' ) : stopts->partition_number = SYSTEM_PARTITIONS ;
-				      stopts->action = "partitions" ;
+				      stopts->action = 'S' ;
 				      break ;
 			case( 'N' ) : stopts->partition_number = NON_SYSTEM_PARTITIONS ;
-				      stopts->action = "partitions" ;
+				      stopts->action = 'N' ;
 				      break ;
 			case( 't' ) : stopts->type = optarg ;
 				      break ;
@@ -213,25 +212,109 @@ void get_opts( int argc , char *argv[],struct_opts * stopts )
 	}
 }
 
+static int get_device( const char * device )
+{
+	char * c = volume_device_name( device ) ;
+	if( c == NULL ){
+		printf( "ERROR: could not get device address from mapper address\n" ) ;
+		return 1 ;
+	}else{
+		printf( "%s\n",c ) ;		
+		free( c ) ;
+		return 0 ;
+	}
+}
+
+static int check_if_luks( const char * device )
+{
+	int status =  is_luks( device ) ;
+	
+	if( status == 0 )
+		printf( "\"%s\" is a luks device\n",device ) ;
+	else
+		printf( "\"%s\" is not a luks device\n",device ) ;
+	
+	return status ;
+}
+
+static int check_empty_slots( const char * device )
+{
+	int status ;
+	char * c  ;
+	if( is_path_valid( device ) == 1 ){
+		printf( "path \"%s\" does not point to a device\n",device ) ;
+		status = 1 ;			
+	}else{
+		c = empty_slots( device ) ;
+		if( c == NULL ){
+			printf( "device \"%s\" is not a luks device\n",device ) ;
+			status = 2 ;
+		}else{
+			printf( "%s\n",c ) ;
+			status = 0 ;
+			free( c ) ;
+		}		
+	}
+	return status ;
+}
+
+static int check_UUID( const char * device )
+{
+	string_t p = device_from_uuid( device ) ;
+	
+	if( p != NULL ){
+		printf( "%s\n",StringContent( p ) ) ;
+		StringDelete( &p ) ;
+		return 0 ;
+	}else{
+		printf("ERROR: could not find any partition with the presented UUID\n") ;
+		return 1 ;
+	}
+}
+
+static int exe( struct_opts * clargs, const char * mapping_name,uid_t uid )
+{
+	switch( clargs->action ){
+		case 'w' : return check_UUID( clargs->device ) ;
+		case 'b' : return check_empty_slots( clargs->device ) ;
+		case 'i' : return check_if_luks( clargs->device ) ;
+		case 'D' : return get_device( clargs->device ) ;
+		case 's' : return volume_info( mapping_name,clargs->device,uid ) ;
+		case 'q' : return close_opened_volume( mapping_name,uid ) ;
+		case 'o' : return open_volumes( clargs,mapping_name,uid ) ;
+		case 'c' : return create_volumes( clargs,uid ) ;
+		case 'a' : return addkey( clargs,uid ) ;
+		case 'r' : return removekey( clargs,uid );
+	}
+	return 10000 ; /* shouldnt get here */	
+}
+
+stringList_t get_partition_from_crypttab( void ) ;
+
 int main( int argc , char *argv[] )
 {
-	const char * action ;
 	const char * device ;
 	const char * mapping_name ;
-	char * c ;
-	char dev[12];
-	char m_name[42] ;
+	char * ac ;
+	char action ;
+	int st ;
+	
+	/*
+	 * string_t is prototyped as "typedef struct StringType * string_t" at ../string/StringTypes.h
+	 * string_t type is therefore a pointer and it is appropriate to assign NULL to it	 
+	 */
+	string_t p = NULL ;
+	string_t q = NULL ;
 	
 	struct_opts clargs ;
-	int status ;	
 
 	if( argc > 1 ){
-		action = argv[ 1 ] ;
-		if ( strcmp( action, "-h" ) == 0 || strcmp( action, "--help" ) == 0 || strcmp( action, "-help" ) == 0 ){			
+		ac = argv[ 1 ] ;
+		if ( strcmp( ac,"-h" ) == 0 || strcmp( ac,"--help" ) == 0 || strcmp( ac,"-help" ) == 0 ){			
 			help();	
 			return 0 ;
 		}	
-		if ( strcmp( action, "-v" ) == 0 || strcmp( action, "-version" ) == 0 || strcmp( action, "--version" ) == 0 ){		
+		if ( strcmp( ac,"-v" ) == 0 || strcmp( ac,"-version" ) == 0 || strcmp( ac,"--version" ) == 0 ){		
 			printf( "%s\n",version() );
 			return 0 ;
 		}
@@ -245,111 +328,51 @@ int main( int argc , char *argv[] )
 	uid_t uid = getuid();		
 	setuid( 0 );
 	
-	if( strcmp( action,"print" ) == 0 ){
-		return print_opened_volumes( uid ) ;
+	/*
+	 * below tests are here because they do not use -d option
+	 */	
+	switch( action ){
+		case 'A':
+		case 'N':
+		case 'S': return print_partitions( clargs.partition_number ) ;	
+		case 'L': return print_opened_volumes( uid ) ;
 	}
-	if( strcmp( action,"partitions" ) == 0 ){
-		return print_partitions( clargs.partition_number ) ;
-	}
-	if( action == NULL ){
+	if( action == '\0' ){
 		printf("ERROR: \"action\" argument is missing\n" ) ;
 		return 110 ;
 	}
 	if( device == NULL ){
 		printf("ERROR: required option( device path ) is missing for this operation\n" ) ;
 		return 110 ;
-	}	
-	if( strcmp( action,"checkUUID") == 0 ){		
-		if( device_from_uuid( dev,device ) == 0 ){
-			printf( "%s\n",dev ) ;
-			return 0 ;
-		}else{
-			printf("ERROR: could not find any partition with the presented UUID\n") ;
-			return 1 ;
-		}	
 	}
 	if( strncmp( device,"UUID=", 5 ) == 0 ){
-		strcpy(m_name,"UUID-");
-		if( device_from_uuid( dev,device ) == 0 ) {
-			if( *( device + 5 ) == '\"')
-				strncpy( m_name + 5,device + 6,UUID_LENGTH ) ;
-			else
-				strncpy( m_name + 5,device + 5,UUID_LENGTH ) ;
-			*( m_name + 41 ) = '\0' ;
-			mapping_name = m_name ;
-			clargs.device = dev ;
+
+		q = String( device ) ;		
+		StringReplaceString( q,"UUID=","UUID-" ) ;
+		StringRemoveString( q,"\"" ) ;
+		
+		mapping_name = StringContent( q ) ;
+
+		p = device_from_uuid( mapping_name + 5 ) ;
+		
+		if( p != NULL ) {		
+			clargs.device = StringContent( p ) ;			
+			st = exe( &clargs,mapping_name,uid );			
+			StringDelete( &p ) ;
+			StringDelete( &q ) ;
+			return st ;
 		}else{
 			printf("ERROR: could not find any partition with the presented UUID\n") ;
-			return 11 ;			
+			StringDelete( &q ) ;
+			return 110 ;			
 		}	
 	}else{
-		if ( ( c = strrchr( device,'/' ) ) != NULL ) {
-			mapping_name =  c + 1  ;
+		if ( ( ac = strrchr( device,'/' ) ) != NULL ) {
+			mapping_name =  ac + 1  ;
 		}else{
 			mapping_name =  device  ;			
 		}
 	}
-		
-	if( strcmp( action,"emptyslots" ) == 0 ){
-		if( is_path_valid( device ) == 1 ){
-			printf( "path \"%s\" does not point to a device\n",device ) ;
-			status = 1 ;			
-		}else{
-			c = empty_slots( device ) ;
-			if( c == NULL ){
-				printf( "device \"%s\" is not a luks device\n",device ) ;
-				status = 2 ;
-			}else{
-				printf( "%s\n",c ) ;
-				status = 0 ;
-				free( c ) ;
-			}		
-		}
-	}else if( strcmp( action,"isLuks" ) == 0 ){		
 
-		status =  is_luks( device ) ;
-		if( status == 0 )
-			printf( "\"%s\" is a luks device\n",device ) ;
-		else
-			printf( "\"%s\" is not a luks device\n",device ) ;		
-	}else if ( strcmp( action,"device" ) == 0 ){
-		c = volume_device_name( device ) ;
-		if( c == NULL ){
-			status = 1 ;
-			printf("ERROR: could not get device address from mapper address\n") ;
-		}else{
-			printf("%s\n",c) ;		
-			free(c) ;
-			status = 0 ;
-		}
-	}else if ( strcmp( action, "status" ) == 0 ){
-		
-		status = volume_info( mapping_name,device,uid ) ;
-		
-	}else if ( strcmp( action, "close" ) == 0 ){			
-
-		status =  close_opened_volume( mapping_name,uid ) ;
-		
-	}else if ( strcmp( action, "open" ) == 0 ){
-		
-		status =  open_volumes( &clargs,mapping_name,uid ) ;
-		
-	}else if( strcmp( action,"create" ) == 0 ){
-		
-		status =  create_volumes( &clargs,uid ) ;		
-		
-	}else if( strcmp( action,"addkey" ) == 0 ){
-		
-		status =  addkey( &clargs,uid ) ;
-		
-	}else if( strcmp( action,"removekey" ) == 0 ){
-				
-		status =  removekey( &clargs,uid );	
-	
-	}else{
-		printf( "ERROR: Wrong argument\n" ) ;
-		help();
-		status =  10 ;
-	}
-	return status ; 		
+	return exe( &clargs,mapping_name,uid ) ;	
 } 

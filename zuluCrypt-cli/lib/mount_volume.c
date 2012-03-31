@@ -44,21 +44,26 @@ typedef struct mount_properties{
 	unsigned long m_flags ;
 }m_struct;
 
+/*
+ * UID_SIZE is set at ../constants.h
+ * it is the number of maximum digits uid_t type can hold. *  
+ */
+
 static int mount_fs( int type,const m_struct * mst, string_t * st )
 {
-	char uid_s[ UID_SIZE ] ;
-	char * uid ;
-	const char * copt ;
-	
 	string_t opt = String( mst->mode ) ;
+	
+	string_t uid = StringIntToString( mst->uid ) ;
+	
+	const char * copt = StringContent( uid ) ;	
 	
 	if( type == FAT_FAMILY_FS )
 		StringAppend( opt,",dmask=077,uid=UID,gid=UID" ) ;
 	else
 		StringAppend( opt,",uid=UID,gid=UID" ) ;
 	
-	uid = StringIntToString( uid_s,UID_SIZE,mst->uid ) ;
-	copt = StringReplaceString( opt,"UID",uid ) + 3 ;
+	copt = StringReplaceString( opt,"UID",copt ) + 3 ;
+	StringDelete( &uid ) ;
 	*st = opt ;
 	return mount( mst->device,mst->m_point,mst->fs,mst->m_flags,copt ) ;
 }
@@ -66,24 +71,33 @@ static int mount_fs( int type,const m_struct * mst, string_t * st )
 static int mount_ntfs( const m_struct * mst )
 {
 	pid_t pid ;     
-	char uid_s[ UID_SIZE ] ;
-	char * uid  ;  
+ 
 	string_t opt ;
 	const char * copt ;
 	int status ;
 	
-	pid = fork() ;  
+	string_t uid ;
+	
+	pid = fork() ;
+	
 	if( pid == -1 )
 		return 1 ;
+	
 	if( pid == 0 ){
+	
 		close( 1 );
 		close( 2 );
+		
 		if( strcmp( mst->mode,"ro" ) == 0 )
 			opt = String( "-o dmask=077,umask=077,ro,uid=UID,gid=UID" ) ;
 		else
 			opt = String( "-o dmask=077,umask=077,rw,uid=UID,gid=UID" ) ;
-		uid = StringIntToString( uid_s,UID_SIZE,mst->uid ) ;
-		copt = StringReplaceString( opt,"UID",uid ) ;
+		
+		uid = StringIntToString( mst->uid ) ;
+		copt = StringContent( uid ) ;		
+		
+		copt = StringReplaceString( opt,"UID",copt ) ;
+		
 		execl( ZULUCRYPTmount,"mount","-t","ntfs-3g",copt,mst->device,mst->m_point,( char * )0 ) ;
 	}
 	waitpid( pid,&status,0 ) ;

@@ -25,48 +25,43 @@
  */
 #include "../libmount_header.h"
 
-#define UID_SIZE 6
-
 /*
- * defined at ../lib/status.c * 
+ * defined at ../lib/status.c 
  */
 char * volume_device_name( const char * ) ;
 
-
 static void print_UUID( const char * entry )
 {
-	const char * d = strstr( entry,"-UUID-" ) + 6 ;
-	const char * c = d - 1 ;
+	const char * c = strstr( entry,"-UUID-" ) + 6 ;
 	
+	if( c == NULL )
+		return ;
+	 
 	printf( "UUID=\"" ) ;
 	
+	c-- ;
+	
 	while( *++c != ' ' )
-		printf("%c",*c ) ;
+		printf( "%c",*c ) ;
 	
 	printf( "\"\t" ) ;
 	
 	while( *++c != ' ' )
-		printf("%c",*c ) ;
+		printf( "%c",*c ) ;
 	printf( "\n" ) ;	
 }
 
 static void print_NAAN( const char * entry )
 {
 	char * volume ;
-	const char * c = entry - 1 ;
-	const char * d ;
-	string_t p = String( "" ) ;
-	char s[ 2 ];
-	s[ 1 ] = '\0' ;
-	
-	while( *++c != ' ' )	{
-		*s = *c ;
-		StringAppend( p,s ) ; 
-	}
-	
-	d = StringContent( p ) ;
+	const char * c = entry - 1;
 
-	volume = volume_device_name( d ) ;
+	string_t p = String( "" ) ;
+	
+	while( *++c != ' ' )
+		StringAppendChar( p,*c ) ; 
+
+	volume = volume_device_name( StringContent( p ) ) ;
 	
 	printf( "%s\t",volume ) ;
 	
@@ -80,16 +75,18 @@ static void print_NAAN( const char * entry )
 
 static void print( uid_t uid,char * path )
 {
-	char uid_s[ UID_SIZE ] ;
-	char * cuid ;
 	int len ;
 	const char * entry ;
 	const char * c ;
-	
+
+	string_t z ;
 	string_t q ;
 	string_t p = String( "/dev/mapper/zuluCrypt-" ) ;
-	cuid = StringIntToString( uid_s,UID_SIZE,uid ) ;
-	StringAppend( p,cuid ) ;
+	
+	z = StringIntToString( uid ) ;
+	
+	StringAppend( p,StringContent( z ) ) ;
+	
 	len = StringLength( p ) ;
 	entry = StringContent( p ) ;
 	
@@ -120,7 +117,8 @@ static void print( uid_t uid,char * path )
 	}
 	
 	StringDelete( &p ) ;
-	StringDelete( &q ) ;	
+	StringDelete( &q ) ;
+	StringDelete( &z ) ;
 }
 
 static int free_return( char * path,int st )

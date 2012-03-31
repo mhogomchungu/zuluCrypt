@@ -38,9 +38,14 @@ int volume_info( const char * mapper,const char * device,uid_t uid )
 		xt =  1 ;
 	}else{
 		output = status( StringContent( p ) ) ;
-		printf( "%s\n",output );
-		free( output ) ;
-		xt = 0 ;
+		if( output != NULL ){
+			printf( "%s\n",output );
+			free( output ) ;
+			xt = 0 ;
+		}else{
+			printf( "ERROR: could not get volume info\n" ) ;
+			xt = 2 ;
+		}
 	}
 	StringDelete( &p );
 	return xt ;

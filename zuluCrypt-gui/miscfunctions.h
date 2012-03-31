@@ -29,7 +29,7 @@
 #include <QDir>
 #include <QTableWidget>
 
-#include "../zuluCrypt-cli/executables.h"
+#include "../zuluCrypt-cli/constants.h"
 
 class miscfunctions
 {

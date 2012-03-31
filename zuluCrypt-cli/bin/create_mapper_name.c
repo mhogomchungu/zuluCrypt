@@ -20,11 +20,6 @@
 #include "includes.h"
 
 /*
- * UID number is a 16 bit number and hence it takes 5 digits,6 should be more than enough.
- */
-#define UID_SIZE 6
-
-/*
  * This function is responsible for creating a mapper name,the mapper name will show up at "/dev/mapper" if the volume
  * is successfully opened.
  * 
@@ -37,10 +32,14 @@
  * XXX is there for security reason.It makes sure one user can not manage another user's mappers 
  */
 
+/*
+ * UID_SIZE is set at ../constants.h
+ * it is the number of maximum digits uid_t type can hold. *  
+ */
+
 string_t create_mapper_name( const char * mapping_name,uid_t uid,int i )
 {
-	char uid_s[ UID_SIZE ] ;
-	char * c = StringIntToString( uid_s,UID_SIZE,uid ) ;
+	string_t q = StringIntToString( uid ) ;
 	
 	string_t p ;
 	
@@ -49,7 +48,7 @@ string_t create_mapper_name( const char * mapping_name,uid_t uid,int i )
 	else
 		p = String( "/dev/mapper/zuluCrypt-" ) ;
 	
-	StringAppend( p,c ) ;
+	StringAppend( p,StringContent( q ) ) ;
 	
 	if( strncmp( mapping_name,"UUID-",5 ) != 0 )
 		StringAppend( p,"-NAAN-" ) ;
@@ -60,5 +59,6 @@ string_t create_mapper_name( const char * mapping_name,uid_t uid,int i )
 	
 	replace_bash_special_chars( p ) ;
 	
+	StringDelete( &q ) ;
 	return p ;
 }

@@ -22,8 +22,6 @@
 #include <mntent.h>
 #include <blkid/blkid.h>
 
-#define BUFFER_SIZE 512
-
 /*
  * This source file deals with parsing partition list from "/proc/partitions,"/etc/fstab" and "/etc/mtab".
  * 
@@ -40,46 +38,96 @@
  * perform actions reserved for root user.
  * 
  */
+
+/*
+ * this function reads a line from a fine, it does what gets() does,it just handles the memory dynamically * 
+ */
+static int read_line( string_t * st,FILE * f )
+{
+	int s ;
+	StringClear( *st ) ;
+	
+	s = fgetc( f ) ;
+	
+	if( s == EOF )
+		return -1 ;	
+	
+	if( s == '\n' )
+		StringAppendChar( *st,( char ) s ) ;
+	else{
+		StringAppendChar( *st,( char ) s ) ;
+		do{
+			s = fgetc( f ) ;
+			StringAppendChar( *st,( char ) s ) ;
+		}
+		while( s != '\n' ) ;		
+	}
+	return 0 ;
+}
+
+/*
+ * major minor  #blocks  name
+ * 
+ 8        0   78150744 sda *
+ 8        1   11566768 sda1
+ 8        2          1 sda2
+ 8        5   66581361 sda5
+ 8       16  312571224 sdb
+ 8       17    1044193 sdb1
+ 8       18          1 sdb2
+ 8       21  311524416 sdb5
+ 8       32     250879 sdc
+ 8       33     250608 sdc1
+ *
+ * above output is the output of "cat /proc/partitions" and below function was build again it.
+ * The list of partitions is taken from the 4th field and only sdX and hdY entries are taken
+ * 
+ */
 static stringList_t partitionList( void )
 {
+	string_t st = String( "" ) ;
 	stringList_t stl = NULL;
-	FILE * fd ;	
-	char buffer[ BUFFER_SIZE ];
-	char device[ DEVICE_LENGHT ] ;	
-	char * c ;
-	char * d ;
 	
-	fd = fopen( "/proc/partitions","r" ) ;
+	FILE * f ;
 	
-	fgets( buffer,1,fd  ) ;
-	fgets( buffer,1,fd  ) ;
+	const char * device ;	
 
-	strcpy( device, "/dev/" ) ;
+	ssize_t index ;
+
+	f = fopen( "/proc/partitions","r" ) ;
 	
-	while( fgets( buffer,BUFFER_SIZE,fd  ) != NULL ){
-		c = buffer ;
-		while( *++c != '\n' ) { ; }
-		*c = '\0';
-		d = c ;
-		while( *--d != ' ' ) { ; }
-		d++ ;		
+	read_line( &st,f ) ;
+	read_line( &st,f ) ;
+	
+	while( read_line( &st,f ) != -1 ){
+		device = StringContent( st ) ;
 		
-		if( strlen( d ) <= 3  )
+		index = StringLastIndexOfChar( st,' ' ) ;
+
+		if( index == -1 )
 			continue ;
+
+		StringCrop( st,index + 1,1 ) ;
+				
+		if( StringLength( st ) <= 3  )
+			continue ;
+	
+		device = StringContent( st ) ;
 		
-		if( ( strncmp( d,"hd", 2 ) == 0 || strncmp( d,"sd",2 ) == 0 ) ){
-			strcpy( device + 5, d ) ;
+		if( ( strncmp( device,"hd", 2 ) == 0 || strncmp( device,"sd",2 ) == 0 ) ){
+			device = StringPrepend( st,"/dev/" ) ;			
 			stl = StringListAppend( stl,device );
 		}	
 	}
-		
-	fclose( fd );
-
+	
+	fclose( f );
+	StringDelete( &st ) ;
 	return stl ;
 }
 
-int device_from_uuid( char * dev, const char * uuid )
+string_t device_from_uuid( const char * uuid )
 {
+	string_t st ;
 	const char * f ;
 	const char * device ;
 	int i ;
@@ -87,15 +135,6 @@ int device_from_uuid( char * dev, const char * uuid )
 	int k ;
 	blkid_probe bp ;
 	stringList_t stl = partitionList() ;
-
-	/*
-	 * Below code will take into account UUID given within quotation marks ie:
-	 * UUID="2468d6a7-9a71-4312-8bd9-662f982fade5"	 * 
-	 */
-	if( *( uuid + 5 ) == '\"' )
-		uuid = uuid + 6 ;
-	else
-		uuid = uuid + 5 ;
 	
 	j = StringListSize( stl ) ; 
 	
@@ -107,18 +146,18 @@ int device_from_uuid( char * dev, const char * uuid )
 		k = blkid_probe_lookup_value( bp,"UUID",&f,NULL );
 		
 		if( k == 0 ){
-			if( strncmp( uuid,f,UUID_LENGTH ) == 0 ){
-				strcpy( dev,device ) ;
+			if( strcmp( uuid,f ) == 0 ){
+				st = String( device ) ;
 				StringListDelete( &stl ) ; ;
 				blkid_free_probe( bp );
-				return 0 ;
+				return st ;
 			}			
 		}
 		blkid_free_probe( bp );
 	}
 
 	StringListDelete( &stl ) ;
-	return -1 ;	
+	return NULL ;	
 }
 
 static void blkid( const char * type,const char * entry, int size, stringList_t * system, stringList_t non_system )
@@ -153,12 +192,14 @@ static void blkid( const char * type,const char * entry, int size, stringList_t 
 
 static stringList_t partitions( int option )
 {
-	char buffer[ BUFFER_SIZE ];
-	char device[ DEVICE_LENGHT ] ;
-	char * c = NULL ;
-	char * d = NULL ;
+	string_t st = String( "" ) ;
+
+	const char * entry ;
+	const char * device ;
+
+	ssize_t index ;
 	
-	FILE * fd ;
+	FILE * f ;
 	
 	stringList_t non_system = NULL ;
 	stringList_t system = NULL ;
@@ -169,43 +210,38 @@ static stringList_t partitions( int option )
 	non_system = partitionList() ;
 	system = NULL ;
 
-	fd = fopen("/etc/fstab","r");
+	f = fopen("/etc/fstab","r");
 	
-	while( fgets( buffer,BUFFER_SIZE,fd  ) != NULL ){
-		c = buffer ;
-		while( *++c != ' ' ) { ; }
-		*c = '\0' ;
-		if ( strncmp( buffer, "/dev/",5 ) == 0 ){
-			strcpy( device,buffer ) ;
+	while( read_line( &st,f ) != -1 ){
+		
+		entry = StringContent( st ) ;
+
+		if( entry[0] == '#' || entry[0] == '\n' )
+			continue ;
+		
+		index = StringIndexOfChar( st,0,' ' ) ;
+		
+		if( index == - 1 )
+			continue ;
+		
+		entry = StringRemoveRight( st,index ) ;
+				
+		device = StringRemoveString( st,"\"" ) ;		
+		
+		if ( strncmp( entry,"/dev/",5 ) == 0 ){			
 			system = StringListAppend( system,device ) ;
 			StringListRemoveString( non_system ,device ) ;
-		}else if ( strncmp( buffer, "UUID",4 ) == 0 ){;
-			blkid( "UUID",buffer, 5, &system, non_system ) ;  
-			
-		}else if ( strncmp( buffer, "LABEL",5 ) == 0 ){
-			blkid( "LABEL",buffer, 6, &system, non_system ) ;
+		}else if( strncmp( entry,"UUID",4 ) == 0 ){;
+			blkid( "UUID",device,5,&system,non_system ) ;  			
+		}else if( strncmp( entry,"LABEL",5 ) == 0 ){
+			blkid( "LABEL",device,6,&system, non_system ) ;
 		}		
 	}
-
-	fclose( fd ) ;
 	
-	fd = fopen( "/etc/crypttab","r" );
+	fclose( f ) ;
 	
-	if( fd != NULL ){
-		while ( fgets( buffer,BUFFER_SIZE,fd  ) != NULL ){	
-			if( buffer[0] == '#' || buffer[0] == '\n')
-				continue ;
-			c = buffer ;
-			while(  *++c != '/'  ) { ; }
-			d = c ;
-			while(  *++d != ' '  ) { ; }
-			*d = '\0' ;
-			system = StringListAppend( system,buffer ) ;	
-			StringListRemoveString( non_system, buffer ) ;
-		}
-		fclose( fd ) ;
-	}	
-
+	StringDelete( &st ) ;
+	
 	if( option == SYSTEM_PARTITIONS ){
 		StringListDelete( &non_system ) ;
 		return system  ;
@@ -235,11 +271,103 @@ int print_partitions( int option )
 	return 0 ;
 }
 
+/*
+ * this function will parse /etc/crypttab to see if it has any entries to be used as system partition.
+ * 
+ * sample example of the file content this function was build on.
+ * 
+ 
+ * secret /dev/sda15 none
+ * secret_1 UUID=d2d210b8-0b1f-419f-9172-9d509ea9af0c none 
+ * 
+ */
+stringList_t get_partition_from_crypttab( void )
+{
+	stringList_t stl = NULL ;
+	string_t st = String( "" ) ;
+	string_t q ;
+	const char * device ;
+	const char * entry ;
+	ssize_t index ;
+	ssize_t index_1 ;
+	FILE * f = fopen( "/etc/crypttab","r" );
+  
+	if( f != NULL ){
+		while( read_line( &st,f ) != -1 ){
+			
+			entry = StringContent( st ) ;			
+		 
+			if( entry[0] == '#' || entry[0] == '\n' )
+				continue ;
+		 
+			index = StringIndexOfChar( st,0,'/' ) ;
+			if( index == -1 ){
+				/*
+				 * did not find '/' character,assuming the line uses UUID,get the UUID by 
+				 * removing fields on both of its sides
+				 */
+				index = StringIndexOfChar( st,0,'U' ) ;
+
+				StringRemoveLeft( st,index - 1 ) ;
+				
+				index_1 = StringIndexOfChar( st,index,' ' ) ;
+				
+				StringRemoveRight( st,index_1 ) ;
+				
+				StringRemoveString( st,"\"" ) ;  /* remove quotes if they are used */
+				
+				/* 
+				 * resolve the UUID to its device address 
+				 * q will have NULL  most likely if the drive with UUID is not attached				 
+				 */
+				q = device_from_uuid( StringContent( st ) + 6 );    
+				
+				if( q != NULL ){
+					StringListAppend( stl,StringContent( q ) ) ;
+					StringDelete( &q ) ;					
+				}	
+				
+			}else{		
+				/*
+				 * the entry is of the first format,work to get the device address 
+				 */
+				index_1 = StringIndexOfChar( st,index,' ' ) ;
+				if ( index_1 == -1 )
+					continue ;
+				
+				StringRemoveRight( st,index_1 ) ;
+		 
+				device = StringRemoveLeft( st,index ) ;	
+				stl = StringListAppend( stl,device ) ;
+			}			
+		}
+		fclose( f ) ;		
+	}
+	StringDelete( &st ) ;
+
+	return stl ;
+}
+
 ssize_t check_partition( const char * device )
 {
-	ssize_t index ;
-	stringList_t stl = partitions( SYSTEM_PARTITIONS ) ;
-	index = StringListContains( stl,device );
-	StringListDelete( &stl ) ;
-	return index ;	
+	ssize_t index_1 = -1 ;
+	ssize_t index_2 = -1 ;
+	
+	stringList_t stl_1 = partitions( SYSTEM_PARTITIONS ) ;
+	index_1 = StringListContains( stl_1,device );
+	StringListDelete( &stl_1 ) ;
+	
+	stringList_t stl_2 = get_partition_from_crypttab() ;
+	
+	if( stl_2 != NULL ){
+		
+		index_2 = StringListContains( stl_2,device );
+		
+		StringListDelete( &stl_2 ) ;		
+	}	
+	
+	if( index_1 > 0 || index_2 > 0 )
+		return 1 ;
+	else
+		return 0 ;
 }

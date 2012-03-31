@@ -19,7 +19,7 @@
 
 #include "ui_luksaddkey.h"
 #include "luksaddkey.h"
-#include "../zuluCrypt-cli/executables.h"
+#include "../zuluCrypt-cli/constants.h"
 #include "zulucrypt.h"
 #include "miscfunctions.h"
 
