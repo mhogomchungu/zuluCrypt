@@ -100,7 +100,6 @@ static stringList_t partitionList( void )
 	read_line( &st,f ) ;
 	
 	while( read_line( &st,f ) != -1 ){
-		device = StringContent( st ) ;
 		
 		index = StringLastIndexOfChar( st,' ' ) ;
 
@@ -290,6 +289,7 @@ stringList_t get_partition_from_crypttab( void )
 	const char * entry ;
 	ssize_t index ;
 	ssize_t index_1 ;
+	
 	FILE * f = fopen( "/etc/crypttab","r" );
   
 	if( f != NULL ){
@@ -307,31 +307,35 @@ stringList_t get_partition_from_crypttab( void )
 				 * removing fields on both of its sides
 				 */
 				index = StringIndexOfChar( st,0,'U' ) ;
+				
+				if( index == -1 )
+					continue ;
+				
+				index = StringIndexOfChar( st,index,' ' ) ;
 
-				StringRemoveLeft( st,index - 1 ) ;
+				if( index == -1 )
+					continue ;
 				
-				index_1 = StringIndexOfChar( st,index,' ' ) ;
-				
-				StringRemoveRight( st,index_1 ) ;
+				StringRemoveRight( st,index ) ;
 				
 				StringRemoveString( st,"\"" ) ;  /* remove quotes if they are used */
-				
+
 				/* 
 				 * resolve the UUID to its device address 
 				 * q will have NULL  most likely if the drive with UUID is not attached				 
 				 */
-				q = device_from_uuid( StringContent( st ) + 6 );    
-				
-				if( q != NULL ){
-					StringListAppend( stl,StringContent( q ) ) ;
+				q = device_from_uuid( strstr( StringContent( st ),"=" ) + 1 );    
+
+				if( q != NULL ){	
+					stl = StringListAppend( stl,StringContent( q ) ) ;
 					StringDelete( &q ) ;					
-				}	
-				
+				}
 			}else{		
 				/*
 				 * the entry is of the first format,work to get the device address 
 				 */
-				index_1 = StringIndexOfChar( st,index,' ' ) ;
+				index_1 = StringIndexOfChar( st,index,' ' ) ; /*index is set before the conditional statement above */
+				
 				if ( index_1 == -1 )
 					continue ;
 				
@@ -362,11 +366,10 @@ ssize_t check_partition( const char * device )
 	if( stl_2 != NULL ){
 		
 		index_2 = StringListContains( stl_2,device );
-		
 		StringListDelete( &stl_2 ) ;		
 	}	
 	
-	if( index_1 > 0 || index_2 > 0 )
+	if( index_1 >= 0 || index_2 >= 0 )
 		return 1 ;
 	else
 		return 0 ;
