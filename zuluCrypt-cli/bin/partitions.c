@@ -19,7 +19,6 @@
 
 #include "includes.h"
 
-#include <mntent.h>
 #include <blkid/blkid.h>
 
 /*

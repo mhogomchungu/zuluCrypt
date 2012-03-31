@@ -279,17 +279,28 @@ ssize_t StringLastIndexOfChar( string_t st , char s )
 ssize_t StringLastIndexOfString( string_t st ,const char * s ) 
 {
 	ssize_t p = -1 ;
-	ssize_t j = -1 ;
+	
+	size_t len = strlen( s ) ;
+	
+	char * c ;
+	char * d = st->string ;
+	char * e = st->string ;
+	
+	if( len == 0 )
+		return -1 ;
 	
 	while( 1 )
-	{		
-		p = StringIndexOfString( st,p + 1,s ) ;
-		
-		if( p == -1 )
-			return j ;
-		else
-			j = p ;
+	{
+		c = strstr( d,s ) ;
+		if( c != NULL )
+		{
+			p = c - e ;
+			d = d + len ;
+		}else{
+			break ;
+		}
 	}
+	return p ;
 }
 
 ssize_t StringIndexOfChar( string_t st, size_t p , char s ) 
@@ -351,6 +362,7 @@ const char * StringClear( string_t st )
 		if( c != NULL )
 		{
 			st->size = 0 ;
+			st->string = c ;
 			*( st->string ) = '\0' ;
 		}		
 	}else{
