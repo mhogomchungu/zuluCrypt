@@ -76,13 +76,15 @@ static int create_directory( const char * path,uid_t uid )
 {
 	int st ;
 
-	uid_t euid = geteuid();     /* store effective user ID of the process,it should be root's                 */
+	uid_t org = geteuid();    
 	
-	seteuid( uid ) ;            /* *set uid to the person who started the program                             */
+	seteuid( uid ) ;            
+	setuid( uid ) ;
 	
-	st = mkdir( path,S_IRWXU ) ;/* create the mount point using privileges of the user who started the program*/
+	st = mkdir( path,S_IRWXU ) ;
 	
-	seteuid( euid ) ;           /* elevate privileges back to root's                                          */
+	seteuid( org ) ;           
+	setuid( org ) ;
 	
 	if( st == 0 )
 		return 0 ;

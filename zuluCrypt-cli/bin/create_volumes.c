@@ -46,6 +46,7 @@ static int status_msg( int st )
 		case 12: printf( "ERROR: user chose not to proceed\n" ) ;					break  ;
 		case 13: printf( "ERROR: insufficient privilege to search for volume path\n" ) ;		break  ;
 		case 14: printf( "ERROR: insufficient privilege to create a volume in this device\n" ) ;	break  ;
+		case 15: printf( "ERROR: insufficient privilege to open the file in write mode\n" ) ;	break  ;				
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
 	return st ;
@@ -69,6 +70,7 @@ int create_volumes( const struct_opts * opts,uid_t uid  )
 	struct stat xt ;
 	char confirm ;
 	
+	uid_t org ;
 	/*
 	 * This function is defined at "is_path_valid.c"
 	 * It makes sure the path exists and the user has atleast reading access to the path.
@@ -99,6 +101,22 @@ int create_volumes( const struct_opts * opts,uid_t uid  )
 					return status_msg( 10 ) ;
 		}else
 			return status_msg( 14 ) ;
+	}else{
+		/*
+		 * the device seem to be a regular file. Check to see if the user who run the tool had sufficient rights
+		 * to write to it.
+		 */	
+		org = getuid() ;
+		setuid( uid ) ;
+		seteuid( uid ) ;
+		st = open( device,O_WRONLY ) ;
+		setuid( org ) ;
+		seteuid( org ) ;
+		if( st > 0 ){
+			close( st ) ;
+		}else
+			return status_msg( 15 ) ;
+		
 	}
 	/*
 	 * ZULUCRYPTmkfs is defined at "../executables.h"

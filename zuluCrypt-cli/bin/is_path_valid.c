@@ -48,13 +48,15 @@ int is_path_valid_by_euid( const char * path,uid_t uid )
 	int xt ;
 	struct stat st ;
 	
-	uid_t euid = geteuid();
+	uid_t org = geteuid();
 	
 	seteuid( uid ) ;
+	setuid( uid ) ;
 	
 	xt = stat( path,&st ) ;
 	
-	seteuid( euid ) ;
+	seteuid( org ) ;
+	setuid( org ) ;
 	
 	if( xt == 0 )
 		return 0 ;
