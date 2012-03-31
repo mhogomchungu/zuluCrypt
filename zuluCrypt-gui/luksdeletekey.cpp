@@ -250,18 +250,17 @@ void luksdeletekey::threadfinished(int status)
 			UIMessage(tr("SUCCESS"),success);
 			HideUI() ;
 			return ;
-		case 1 :UIMessage(tr("ERROR"),tr("device is not a luks device or does not exist"));
-			break ;
-		case 2 :UIMessage(tr("ERROR"),tr("there is no key in the volume that match entered key"));
-			break ;
-		case 3 :UIMessage(tr("ERROR"),tr("could not open luks device"));
-			break ;
-		case 7 :UIMessage(tr("ERROR"),tr("could not get enough memory to open the key file"));
-			break ;
-		case 11 :UIMessage(tr("ERROR"),
-			tr("presented UUID does not match any UUID from attached partitions"));
-			break ;
-		default:UIMessage(tr("ERROR"),tr( "un unexpected error has occured, key not removed "));
+		case 2 : UIMessage(tr("ERROR"),tr("there is no key in the volume that match the presented key") ) ;			break ;
+		case 3 : UIMessage(tr("ERROR"),tr("could not open device\n" )) ;							break ;  
+		case 5 : UIMessage(tr("ERROR"),tr("keyfile does not exist\n" )) ;							break ;
+		case 6 : UIMessage(tr("ERROR"),tr("one or more required argument(s) for this operation is missing") ) ;			break ;
+		case 7 : UIMessage(tr("ERROR"),tr("could not get enough memory to open the key file") ) ;				break ;
+		case 10: UIMessage(tr("ERROR"),tr("device does not exist" ));								break ;	
+		case 11: UIMessage(tr("WARNING"),tr("there is only one key in the volume left and all data in the volume \
+will be lost if you continue.\nif you want to continue,rerun the command with -k option" ));						break;
+		case 12: UIMessage(tr("ERROR"),tr("insufficient privilege to search for volume path" ) );				break ;
+		case 13: UIMessage(tr("ERROR"),tr("insufficient privilege to search for key file" ));					break ;	
+		default :UIMessage(tr("ERROR"),tr("unrecognized error with status number %d encountered").arg(status));
 	}
 	enableAll();
 }

@@ -320,21 +320,33 @@ void createpartition::pbCreateClicked()
 	QThreadPool::globalInstance()->start(cvt);
 }
 
-void createpartition::threadfinished(int status)
+void createpartition::threadfinished(int st)
 {	
 	m_created = true ;
 	m_isWindowClosable = true ;
-	switch( status ) {
-		case 0 : UIMessage(tr("SUCCESS"),tr("volume created successfully"));
-			HideUI();
-			break;
-		case 3 : UIMessage(tr("ERROR"),tr("could not create an encrypted volume in a file or device"));
-			break ;			
-		case 6 : UIMessage(tr("ERROR"),tr("couldnt get enought memory to hold the key file"));
-			break ;
-		case 11: UIMessage(tr("ERROR"),
-			tr("can not create the volume,\"") + QString(ZULUCRYPTmkfs) + tr("\" not found."));	
-		default: UIMessage(tr("ERROR"),tr("unrecognized error has occured,volume not created"));
+	
+	switch ( st ){
+		case 0 : UIMessage(tr("SUCCESS"),tr("volume created successfully") ) ;
+			 HideUI();											break  ;
+		case 1 : UIMessage(tr("ERROR"),tr("invalid path to a file or device"));					break  ; 
+		case 2 : UIMessage(tr("ERROR"),tr("wrong option type"));						break  ;	
+		case 3 : UIMessage(tr("ERROR"),tr("could not create an encrypted volume in a file or device" ));	break  ;	
+		case 4 : UIMessage(tr("ERROR"),tr("one or more required argument(s) for this operation is missing" ));	break  ;
+		case 5 : UIMessage(tr("ERROR"),tr("wrong choice, exiting" ));						break  ;
+		case 6 : UIMessage(tr("ERROR"),tr("couldnt get enought memory to hold the key file" )) ;		break  ;				
+		case 7 : UIMessage(tr("ERROR"),tr("passphrases do not match" ) );					break  ;	
+		case 8 : UIMessage(tr("ERROR"),tr("invalid path to key file" ) );					break  ;
+		case 9 : UIMessage(tr("ERROR"),tr("container file must be bigger than 3MB" )) ;				break  ;
+		case 10: UIMessage(tr("ERROR"),tr("insufficient privilege to create a volume on a system partition.\
+A system partition is a partition with an active entry in \"/etc/fstab\"\
+and \"/etc/crypttab.\"\nRerun the tool from root's accout to proceed" )) ;
+															break  ;
+		case 11: UIMessage(tr("ERROR"),tr("%1 not found").arg(ZULUCRYPTmkfs) );					break  ;
+		case 12: UIMessage(tr("ERROR"),tr("user chose not to proceed\n" ) );					break  ;
+		case 13: UIMessage(tr("ERROR"),tr("insufficient privilege to search for volume path\n" )) ;		break  ;
+		case 14: UIMessage(tr("ERROR"),tr("insufficient privilege to create a volume in this device\n" )) ;	break  ;
+		case 15: UIMessage(tr("ERROR"),tr("insufficient privilege to open the file in write mode\n" )) ;	break  ;				
+		default: UIMessage(tr("ERROR"),tr("unrecognized error with status number %1 encountered").arg(st));
 	}
 	enableAll();
 }

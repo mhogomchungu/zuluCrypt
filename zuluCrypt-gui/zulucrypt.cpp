@@ -535,26 +535,12 @@ void zuluCrypt::closeStatus(int st)
 void zuluCrypt::closeStatusErrorMessage(int st)
 {
 	switch ( st ) {
-	case 1 :UIMessage(tr("ERROR"),
-			  tr("close failed, encrypted volume with that name does not exist")) ;
-		break ;
-	case 2 :UIMessage(tr("ERROR"),
-			  tr("close failed, the mount point and/or one or more files from the volume are in use."));
-		break ;
-	case 3 :UIMessage(tr("ERROR"),
-			  tr("close failed, volume does not have an entry in /etc/mtab"));
-		break ;
-	case 4 :UIMessage(tr("ERROR"),
-			  tr("close failed, could not get a lock on /etc/mtab~"));
-		break ;	
-	case 5 :UIMessage(tr("ERROR"),
-		tr("close failed, volume is unmounted but could not close mapper,advice to close it manually"));
-		break ;	
-	case 11 :UIMessage(tr("ERROR"),
-		tr("could not find any partition with the presented UUID"));
-		break ;
-	default :UIMessage(tr("ERROR"),
-			  tr("an unknown error has occured, volume not closed"));
+	case 1 :UIMessage(tr("ERROR"),tr("close failed, encrypted volume with that name does not exist")) ;				break ;
+	case 2 :UIMessage(tr("ERROR"),tr("close failed, the mount point and/or one or more files from the volume are in use."));	break ;
+	case 3 :UIMessage(tr("ERROR"),tr("close failed, volume does not have an entry in /etc/mtab"));					break ;
+	case 4 :UIMessage(tr("ERROR"),tr("close failed, could not get a lock on /etc/mtab~"));						break ;	
+	case 5 :UIMessage(tr("ERROR"),tr("close failed, volume is unmounted but could not close mapper,advice to close it manually"));	break ;	
+	default: UIMessage(tr("ERROR"),tr("unrecognized error with status number %d encountered").arg( st ));
 	}
 }
 

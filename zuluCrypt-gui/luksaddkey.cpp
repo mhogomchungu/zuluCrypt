@@ -299,20 +299,19 @@ void luksaddkey::threadfinished(int status)
 			UIMessage(tr("SUCCESS"),success);
 			HideUI();
 			return ;
-		case 1 :
-			UIMessage(tr("ERROR!"),tr("presented key does not match any key in the volume"));
-			break ;
-		case 2 :
-			UIMessage(tr("ERROR!"),tr("could not open luks device"));
-			break ;
-		case 9 :
-			UIMessage(tr("ERROR!"),tr("could not open key file for reading, run out of memory"));
-			break ;
-		case 11 :
-			UIMessage(tr("ERROR!"),tr("presented UUID does not match any UUID from attached partitions"));
-			break ;	
-		default:
-			UIMessage(tr("ERROR!"),tr("un unrecognized error has occured, key not added"));
+			
+		case 1  : UIMessage(tr("ERROR"),tr("presented key does not match any key in the volume" )) ;          	break ;
+		case 2  : UIMessage(tr("ERROR"),tr("could not open luks device, quiting" )) ;	                      	break ;
+		case 4  : UIMessage(tr("ERROR"),tr("device does not exist" )) ;	                                      	break ;
+		case 5  : UIMessage(tr("ERROR"),tr("wrong arguments" )) ;	                                      	break ;
+		case 6  : UIMessage(tr("ERROR"),tr("one or more required argument(s) for this operation is missing" ));	break ;			
+		case 7  : UIMessage(tr("ERROR"),tr("new passphrases do not match" ) );	                              	break ;
+		case 8  : UIMessage(tr("ERROR"),tr("one or both keyfile(s) does not exist" )) ;	                      	break ;  
+		case 9  : UIMessage(tr("ERROR"),tr("couldnt get enought memory to hold the key file" )) ;	     	break ;
+		case 10 : UIMessage(tr("ERROR"),tr("all key slots are occupied, can not add any more keys" )) ;	      	break ;
+		case 11 : UIMessage(tr("ERROR"),tr("insufficient privilege to search for volume path" )) ;	        break ;	
+		case 12 : UIMessage(tr("ERROR"),tr("insufficient privilege to search for key file" ));			break ;					
+		default : UIMessage(tr("ERROR"),tr("unrecognized error with status number %d encountered").arg( status ));	
 	}
 	enableAll();
 }

@@ -96,11 +96,14 @@ int create_volumes( const struct_opts * opts,uid_t uid  )
 	 */
 	if( strncmp( device,"/dev/",5 ) == 0 ){
 		if( strncmp( device,"/dev/hd",7 ) == 0 || strncmp( device,"/dev/sd",7 ) == 0 ){
-			if( uid != 0 )
-				if( check_partition( device ) == 1 )
+			if( uid != 0 ){
+				if( check_partition( device ) == 1 ){
 					return status_msg( 10 ) ;
-		}else
+				}
+			}
+		}else{
 			return status_msg( 14 ) ;
+		}
 	}else{
 		/*
 		 * the device seem to be a regular file. Check to see if the user who run the tool had sufficient rights
@@ -112,7 +115,7 @@ int create_volumes( const struct_opts * opts,uid_t uid  )
 		st = open( device,O_WRONLY ) ;
 		setuid( org ) ;
 		seteuid( org ) ;
-		if( st > 0 ){
+		if( st >= 0 ){
 			close( st ) ;
 		}else
 			return status_msg( 15 ) ;
