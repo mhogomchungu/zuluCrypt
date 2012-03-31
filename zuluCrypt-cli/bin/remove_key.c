@@ -49,8 +49,8 @@ static int status_msg( int st )
 		case 10: printf( "ERROR: device does not exist\n" );											break ;	
 		case 11: printf( "WARNING: there is only one key in the volume left and all data in the volume will be lost if you continue.\n" );
 			 printf( "if you want to continue,rerun the command with -k option\n" ) ;							break;
-		case 12: printf( "ERROR: insufficient privilege to search for volume path\n" ) ;							break ;
-		case 13: printf( "ERROR: insufficient privilege to search for key file\n" );								break ;	
+		case 12: printf( "ERROR: insufficient privilege to open volume path\n" ) ;								break ;
+		case 13: printf( "ERROR: insufficient privilege to open key file for reading\n" );								break ;	
 		default :printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}		
 	return st ;
@@ -79,9 +79,9 @@ int removekey( const struct_opts * opts,uid_t uid )
 	 * 
 	 * The importance of the function is explained where it is defined.
 	 */
-	switch( is_path_valid_by_euid( device,uid ) ){
-		case 1 : return status_msg( 10 ); break ;
-		case 2 : return status_msg( 12 ); break ;		
+	switch( can_open_path_for_writing( device,uid ) ){
+		case 2 : return status_msg( 10 ); break ;
+		case 1 : return status_msg( 12 ); break ;		
 	}
 	
 	if( check_empty_slot( device ) )
@@ -99,6 +99,9 @@ int removekey( const struct_opts * opts,uid_t uid )
 			return status_msg( 6 ) ;
 		
 		if( strcmp( keyType, "-f" ) == 0 ){	
+			/*
+			 * function is defined at security.c"
+			 */
 			switch( get_pass_from_file( keytoremove,uid,&pass ) ){
 				case 1 : return status_msg( 5 )  ; 
 				case 2 : return status_msg( 7 )  ;

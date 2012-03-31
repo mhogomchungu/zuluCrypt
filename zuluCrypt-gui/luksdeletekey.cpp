@@ -258,8 +258,8 @@ void luksdeletekey::threadfinished(int status)
 		case 10: UIMessage(tr("ERROR"),tr("device does not exist" ));								break ;	
 		case 11: UIMessage(tr("WARNING"),tr("there is only one key in the volume left and all data in the volume \
 will be lost if you continue.\nif you want to continue,rerun the command with -k option" ));						break;
-		case 12: UIMessage(tr("ERROR"),tr("insufficient privilege to search for volume path" ) );				break ;
-		case 13: UIMessage(tr("ERROR"),tr("insufficient privilege to search for key file" ));					break ;	
+		case 12: UIMessage(tr("ERROR"),tr("insufficient privilege to create mount point" ) );					break ;
+		case 13: UIMessage(tr("ERROR"),tr("insufficient privilege to open key file for reading key file" ));			break ;	
 		default :UIMessage(tr("ERROR"),tr("unrecognized error with status number %d encountered").arg(status));
 	}
 	enableAll();

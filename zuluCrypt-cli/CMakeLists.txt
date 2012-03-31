@@ -64,19 +64,22 @@
  
  add_library( StringList STATIC string/StringList.c )
  
- SET( BIN  bin/print_opened_volumes.c 
- bin/get_pass_from_file.c 
+ SET( BIN  
+ bin/print_opened_volumes.c 
  bin/create_mapper_name.c 
  bin/replace_bash_special_chars.c 
- bin/main.c bin/close_volume.c 
+ bin/main.c 
+ bin/close_volume.c 
  bin/add_key.c
  bin/volume_info.c
  bin/open_volume.c 
  bin/partitions.c 
+ bin/security.c
  bin/create_volumes.c 
- bin/remove_key.c) 
+ bin/remove_key.c ) 
  
- SET( LIB bin/is_path_valid.c 
+ SET( LIB 
+ lib/is_path_valid.c 
  lib/version.c 
  lib/close_volume.c 
  lib/add_key.c 
@@ -91,7 +94,7 @@
  lib/open_plain.c
  lib/open_volume.c
  lib/mount_volume.c
- lib/unmount_volume.c)
+ lib/unmount_volume.c )
  
  add_library( zuluCrypt SHARED ${LIB} )
  add_executable( zuluCrypt-cli ${BIN} )

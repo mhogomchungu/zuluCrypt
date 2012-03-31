@@ -322,11 +322,12 @@ int main( int argc , char *argv[] )
 	
 	get_opts( argc,argv,&clargs );
 	
+	uid_t uid = getuid();
+	
+	setuid( 0 );
+	
 	action = clargs.action ;
 	device = clargs.device ;
-	
-	uid_t uid = getuid();		
-	setuid( 0 );
 	
 	/*
 	 * below tests are here because they do not use -d option

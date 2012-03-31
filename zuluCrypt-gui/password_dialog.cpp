@@ -341,10 +341,10 @@ void passwordDialog::threadfinished(int status)
 		case 16: UIMessage(tr("ERROR"),tr("could not resolve full path of mount point" ));						break ;
 		case 17: UIMessage(tr("ERROR"),tr("could not resolve full path of device address" ));						break ;
 		case 18: UIMessage(tr("ERROR"),tr("-O and -m options can not be used together" ));						break ;
-		case 19: UIMessage(tr("ERROR"),tr("insufficient privilege to search mount point path" ));					break ;	
-		case 20: UIMessage(tr("ERROR"),tr("insufficient privilege to search device path" ));						break ;	
-		case 21: UIMessage(tr("ERROR"),tr("insufficient privilege to create a mount point" ));						break ;	
-		case 22: UIMessage(tr("ERROR"),tr("insufficient privilege to search for key file" ));						break ;					
+		case 19: UIMessage(tr("ERROR"),tr("insufficient privilege to create mount point" ));						break ;	
+		case 20: UIMessage(tr("ERROR"),tr("insufficient privilege to open device" ));							break ;	
+		case 21: UIMessage(tr("ERROR"),tr("insufficient privilege to create mount point" ));						break ;	
+		case 22: UIMessage(tr("ERROR"),tr("insufficient privilege to open key file for reading" ));					break ;					
 		default: UIMessage(tr("ERROR"),tr("unrecognized error with status number %d encountered").arg(status ));	
 	}
 	enableAll();

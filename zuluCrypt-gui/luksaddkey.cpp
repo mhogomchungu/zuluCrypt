@@ -310,7 +310,7 @@ void luksaddkey::threadfinished(int status)
 		case 9  : UIMessage(tr("ERROR"),tr("couldnt get enought memory to hold the key file" )) ;	     	break ;
 		case 10 : UIMessage(tr("ERROR"),tr("all key slots are occupied, can not add any more keys" )) ;	      	break ;
 		case 11 : UIMessage(tr("ERROR"),tr("insufficient privilege to search for volume path" )) ;	        break ;	
-		case 12 : UIMessage(tr("ERROR"),tr("insufficient privilege to search for key file" ));			break ;					
+		case 12 : UIMessage(tr("ERROR"),tr("insufficient privilege to open key file for reading" ));		break ;					
 		default : UIMessage(tr("ERROR"),tr("unrecognized error with status number %d encountered").arg( status ));	
 	}
 	enableAll();

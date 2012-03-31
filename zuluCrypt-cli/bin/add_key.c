@@ -60,8 +60,8 @@ static int status_msg( int st )
 		case 8  : printf( "ERROR: one or both keyfile(s) does not exist\n" ) ;	                      	break ;  
 		case 9  : printf( "ERROR: couldnt get enought memory to hold the key file\n" ) ;	     	break ;
 		case 10 : printf( "ERROR: all key slots are occupied, can not add any more keys\n" ) ;	      	break ;
-		case 11 : printf( "ERROR: insufficient privilege to search for volume path\n" ) ;	        break ;	
-		case 12 : printf( "ERROR: insufficient privilege to search for key file\n" );			break ;					
+		case 11 : printf( "ERROR: insufficient privilege to write to the volume\n" ) ;	   		break ;	
+		case 12 : printf( "ERROR: insufficient privilege to open key file for reading\n" );		break ;					
 		default : printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
 	return st ;
@@ -100,14 +100,14 @@ int addkey( const struct_opts * opts,uid_t uid )
 	int status = 0 ;
 	
 	/*
-	 * This function is defined at "is_path_valid.c"
+	 * This function is defined at "security.c"
 	 * It makes sure the path exists and the user has atleast reading access to the path.
 	 * 
 	 * The importance of the function is explained where it is defined.
 	 */
-	switch( is_path_valid_by_euid( device,uid ) ){
-		case 1 : return status_msg( 4 ) ; break ;
-		case 2 : return status_msg( 11 ); break ;		
+	switch( can_open_path_for_writing( device,uid ) ){
+		case 1 : return status_msg( 11 ) ; break ;
+		case 2 : return status_msg( 4 )  ; break ;		
 	}
 	if( is_luks( device ) == 1 )
 		return status_msg_1( 3,device ) ;
@@ -145,19 +145,25 @@ int addkey( const struct_opts * opts,uid_t uid )
 		if( keyType1 == NULL || keyType2 == NULL || newKey == NULL || existingKey == NULL )
 			return status_msg( 6 ) ;
 		if ( strcmp( keyType1, "-f" ) == 0 ){	
+			/*
+			 * this function is defined at "security.c.c"
+			 */
 			switch( get_pass_from_file( existingKey,uid,&ek ) ){
 				case 1 : return status_msg( 8 ) ; 
-				case 2 : return status_msg( 12 ) ;
-				case 4 : return status_msg( 9 );				
+				case 4 : return status_msg( 12 ) ;
+				case 2 : return status_msg( 9 );				
 			}
 			key1 = StringContent( ek ) ;
 			len1 = StringLength( ek ) ;
 		}		
 		if ( strcmp( keyType2, "-f" ) == 0 ){	
+			/*
+			 * this function is defined at "security.c.c"
+			 */
 			switch( get_pass_from_file( newKey,uid,&nk ) ){
 				case 1 : return status_msg( 8 ) ; 
-				case 2 : return status_msg( 12 ) ;
-				case 4 : return status_msg( 9 );				
+				case 4 : return status_msg( 12 ) ;
+				case 2 : return status_msg( 9 );				
 			}
 			key2 = StringContent( nk ) ;
 			len2 = StringLength( nk ) ;

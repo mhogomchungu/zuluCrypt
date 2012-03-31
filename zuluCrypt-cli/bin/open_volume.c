@@ -42,9 +42,9 @@ static int status_msg( int st )
 		case 17: printf( "ERROR: could not resolve full path of device address\n" );						break ;
 		case 18: printf( "ERROR: -O and -m options can not be used together\n" );						break ;
 		case 19: printf( "ERROR: insufficient privilege to search mount point path\n" );					break ;	
-		case 20: printf( "ERROR: insufficient privilege to search device path\n" );						break ;	
+		case 20: printf( "ERROR: insufficient privilege to open device\n" );							break ;	
 		case 21: printf( "ERROR: insufficient privilege to create a mount point\n" );						break ;	
-		case 22: printf( "ERROR: insufficient privilege to search for key file\n" );						break ;					
+		case 22: printf( "ERROR: insufficient privilege to open key file for reading\n" );					break ;					
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
 	return st ;
@@ -61,39 +61,6 @@ static int status_msg_1( int st,const struct_opts * opts )
 	if( opts->open_no_mount == -1 && st != 0 )
 		rmdir( opts->mount_point ) ;
 	return status_msg( st ) ;
-}
-
-/*
- * This function creates a mount point folder to be used to mount the volume.
- * 
- * The function drops privileges to those of the person who started the tool(normal user usually),create the folder
- * and then elevates back to root's.
- * 
- * This prevents one normal user for example from creating a folder in another normal user's account
- * doing some sort of a denial of service attack.    * 
- */
-static int create_directory( const char * path,uid_t uid )
-{
-	int st ;
-
-	uid_t org = geteuid();    
-	
-	seteuid( uid ) ;            
-	setuid( uid ) ;
-	
-	st = mkdir( path,S_IRWXU ) ;
-	
-	seteuid( org ) ;           
-	setuid( org ) ;
-	
-	if( st == 0 )
-		return 0 ;
-	else{
-		if( errno == EACCES ) 
-			return 2 ;
-		else
-			return 1 ;
-	}
 }
 
 int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
@@ -125,8 +92,11 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 	 * 
 	 * The importance of the function is explained where it is defined.
 	 */
-	if( is_path_valid_by_euid( dev,uid ) == 2 )
-		return status_msg( 20 ) ;
+	switch( can_open_path_for_reading( dev,uid ) ){
+		case 0 : break ;
+		case 1 : return status_msg( 20 ) ;
+		default: return status_msg( 3 ) ;
+	}
 	
 	device = realpath( dev,NULL ) ;
 	if( device == NULL )
@@ -149,15 +119,12 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 		if( strlen( mount_point ) == 1 )
 			if ( strcmp( mount_point,"," ) == 0 )
 				return status_msg( 10 ) ;
-		
-		switch( is_path_valid_by_euid( mount_point,uid ) ){
-			case 0 : return status_msg( 9 ) ;
-			case 2 : return status_msg( 19 ) ;
-		}
-		
-		switch( create_directory( mount_point,uid ) ){
-			case 1 : return status_msg( 5 ) ;
-			case 2 : return status_msg( 21 ) ;
+		/*
+		 * defined in security.c
+		 */
+		switch( create_mount_point( mount_point,uid ) ){
+			case 2 : return status_msg( 5 ) ;
+			case 1 : return status_msg( 21 ) ;
 		}
 		
 		cpoint = realpath( mount_point,NULL ) ;
@@ -190,7 +157,10 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 			cpass = pass ;
 			len = strlen(pass) ;
 			st = open_volume( device,cname,cpoint,uid,mode,cpass,len ) ;		
-		}else if( strcmp( source,"-f" ) == 0 ){			
+		}else if( strcmp( source,"-f" ) == 0 ){		
+			/*
+			 * function is defined at "security.c"
+			 */
 			switch( get_pass_from_file( pass,uid,&data ) ){
 				case 1 : return status_msg_1( 6,opts ) ; 
 				case 2 : return status_msg_1( 14,opts ) ; 				

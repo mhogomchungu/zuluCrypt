@@ -44,7 +44,7 @@ static int status_msg( int st )
 														break  ;
 		case 11: printf( "ERROR: %s not found \n",ZULUCRYPTmkfs ) ;					break  ;
 		case 12: printf( "ERROR: user chose not to proceed\n" ) ;					break  ;
-		case 13: printf( "ERROR: insufficient privilege to search for volume path\n" ) ;		break  ;
+		case 13: printf( "ERROR: insufficient privilege to write to device\n" ) ;		break  ;
 		case 14: printf( "ERROR: insufficient privilege to create a volume in this device\n" ) ;	break  ;
 		case 15: printf( "ERROR: insufficient privilege to open the file in write mode\n" ) ;	break  ;				
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
@@ -70,16 +70,15 @@ int create_volumes( const struct_opts * opts,uid_t uid  )
 	struct stat xt ;
 	char confirm ;
 	
-	uid_t org ;
 	/*
-	 * This function is defined at "is_path_valid.c"
+	 * This function is defined at "security.c"
 	 * It makes sure the path exists and the user has atleast reading access to the path.
 	 * 
 	 * The importance of the function is explained where it is defined.
 	 */
-	switch( is_path_valid_by_euid( device,uid ) ){
-		case 1 : return status_msg( 1 ) ; break ;
-		case 2 : return status_msg( 13 ); break ;		
+	switch( can_open_path_for_writing( device,uid ) ){
+		case 2 : return status_msg( 1 ) ; break ;
+		case 1 : return status_msg( 13 ); break ;		
 	}
 	
 	stat( device, &xt ) ;	
@@ -109,15 +108,7 @@ int create_volumes( const struct_opts * opts,uid_t uid  )
 		 * the device seem to be a regular file. Check to see if the user who run the tool had sufficient rights
 		 * to write to it.
 		 */	
-		org = getuid() ;
-		setuid( uid ) ;
-		seteuid( uid ) ;
-		st = open( device,O_WRONLY ) ;
-		setuid( org ) ;
-		seteuid( org ) ;
-		if( st >= 0 ){
-			close( st ) ;
-		}else
+		if( can_open_path_for_writing( device,uid ) != 0 )
 			return status_msg( 15 ) ;
 		
 	}
@@ -125,7 +116,7 @@ int create_volumes( const struct_opts * opts,uid_t uid  )
 	 * ZULUCRYPTmkfs is defined at "../executables.h"
 	 * File systems are cureated not through file systems APIs but through mkfs.xxx executables started using exec call.
 	 * 	 */
-	if( is_path_valid( ZULUCRYPTmkfs ) == -1 )
+	if( is_path_valid( ZULUCRYPTmkfs ) != 0 )
 		return status_msg( 11 ) ;
 	
 	if( conf == -1 ){			
@@ -172,9 +163,13 @@ int create_volumes( const struct_opts * opts,uid_t uid  )
 		if( strcmp( keyType,"-p" ) == 0 ) 			
 			st = create_volume( device,fs,type,pass,strlen( pass ),rng ) ;			
 		else if( strcmp( keyType, "-f" ) == 0 ) {
-			switch( StringGetFromFile_1( &content,pass ) ){
+			/*
+			 * function is defined at "security.c"
+			 */
+			switch( get_pass_from_file( pass,uid,&content ) ){
 				case 1 : return status_msg( 8 ) ; 
-				case 3 : return status_msg( 6 ) ;
+				case 4 : return status_msg( 15 ) ;
+				case 2 : return status_msg( 6 ) ;
 			}
 			st = create_volume( device,fs,type,StringContent( content ),StringLength( content ),rng ) ;					
 			StringDelete( &content ) ;				

@@ -76,3 +76,10 @@ int get_pass_from_file( const char * path,uid_t uid,string_t * st ) ;
 int print_opened_volumes( uid_t ) ;
 
 string_t create_mapper_name( const char * mapping_name,uid_t uid,int ) ;
+
+int create_mount_point( const char * path,uid_t uid ) ;
+
+int can_open_path_for_writing( const char * path,uid_t uid ) ;
+
+int can_open_path_for_reading( const char * path,uid_t uid ) ;
+
