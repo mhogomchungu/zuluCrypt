@@ -27,8 +27,6 @@ static int free_crypt( int st,struct crypt_device * cd )
 
 int add_key( const char * device,const char * existingkey,size_t existingkey_size,const char * newkey,size_t newkey_size )
 {
-	int status ;
-	
 	struct crypt_device * cd;
 	
 	if( is_luks( device ) == 1 )
@@ -40,9 +38,7 @@ int add_key( const char * device,const char * existingkey,size_t existingkey_siz
 	if( crypt_load( cd,CRYPT_LUKS1,NULL ) != 0 )
 		return free_crypt( 2,cd ) ;
 	
-	status = crypt_keyslot_add_by_passphrase( cd,CRYPT_ANY_SLOT,existingkey,existingkey_size,newkey,newkey_size ) ;
-						   
-	if ( status < 0 )
+	if( crypt_keyslot_add_by_passphrase( cd,CRYPT_ANY_SLOT,existingkey,existingkey_size,newkey,newkey_size ) < 0 )
 		return free_crypt( 1,cd ) ;
 	else
 		return free_crypt( 0,cd ) ;

@@ -150,19 +150,14 @@ char * volume_device_name( const char * mapper )
 {
 	struct crypt_device * cd;
 	char * path ;
-	int i ;
 	string_t address ;
 	const char * e ;
 	
 	if( strncmp( mapper,"/dev/mapper",11 ) != 0 )
 		return NULL ;
 	
-	i = crypt_init_by_name( &cd,mapper );
-	
-	if( i < 0 ){
-		crypt_free( cd ) ;		
+	if( crypt_init_by_name( &cd,mapper ) < 0 )
 		return NULL ;
-	}
 	
 	e = crypt_get_device_name( cd ) ;	
 	

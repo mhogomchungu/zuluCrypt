@@ -76,24 +76,20 @@ static void print_NAAN( const char * entry )
 	free( volume ) ;
 }
 
-static void print( uid_t uid,char * path )
+static void print( uid_t uid,string_t q )
 {
 	int len ;
 	const char * entry ;
 	const char * c ;
 
-	string_t z ;
-	string_t q ;
+	string_t z = StringIntToString( uid ) ;
 	string_t p = String( "/dev/mapper/zuluCrypt-" ) ;
-	
-	z = StringIntToString( uid ) ;
-	
+		
 	StringAppend( p,StringContent( z ) ) ;
 	
 	len = StringLength( p ) ;
 	entry = StringContent( p ) ;
 	
-	q = StringGetFromFile( path ) ;	
 	c = StringContent( q ) ;
 	
 	/*
@@ -120,7 +116,6 @@ static void print( uid_t uid,char * path )
 	}
 	
 	StringDelete( &p ) ;
-	StringDelete( &q ) ;
 	StringDelete( &z ) ;
 }
 
@@ -139,6 +134,8 @@ int print_opened_volumes( uid_t uid )
 #endif
 	char * path ;
 	
+	string_t q ;
+	
 	path = realpath( "/etc/mtab",NULL ) ;
 	
 	if( path == NULL )
@@ -150,12 +147,18 @@ int print_opened_volumes( uid_t uid )
 		if( mnt_lock_file( m_lock ) != 0 )
 			return free_return( path,1 ) ;
 		
-		print( uid,path ) ;
+		q = StringGetFromFile( path ) ;	
 		
 		mnt_unlock_file( m_lock ) ;
 		mnt_free_lock( m_lock ) ;
-	}else
-		print( uid,path ) ;
+		
+		print( uid,q ) ;
+	}else{
+		q = StringGetFromFile( path ) ;			
+		print( uid,q ) ;
+	}
+	
+	StringDelete( &q ) ;
 	
 	return free_return( path,0 ) ;
 }

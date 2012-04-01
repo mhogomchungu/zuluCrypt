@@ -53,6 +53,9 @@ void * kill_hanged_mkfs( void * p )
 	return ( void * ) 0 ; 
 }
 
+#define DEVICE_MAPPER "/dev/mapper/zuluCrypt-create-new"
+#define MAPPER        "zuluCrypt-create-new"
+
 int create_volume( const char * dev,const char * fs,const char * type,const char * pass,size_t pass_size,const char * rng )
 {
 	int status ;
@@ -68,19 +71,16 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 			if( strcmp( rng,"/dev/urandom" ) != 0 )
 				return 2 ;
 			
-	if( is_path_valid( "/dev/mapper/zuluCrypt-create-new" ) == 0 )
-		close_mapper( "/dev/mapper/zuluCrypt-create-new" );	
+	if( is_path_valid( DEVICE_MAPPER ) == 0 )
+		close_mapper( DEVICE_MAPPER );	
 	
 	if( strcmp( type,"luks" )  == 0 ){
-		status = create_luks( dev,pass,pass_size,rng ) ;	
-		if( status != 0 )
+		if( create_luks( dev,pass,pass_size,rng ) != 0 )	
 			return 3 ;
-		status = open_luks( dev,"zuluCrypt-create-new","rw",pass,pass_size ) ;
-		if( status != 0 )
+		if( open_luks( dev,MAPPER,"rw",pass,pass_size ) != 0 )
 			return 3 ;
 	}else if( strcmp( type,"plain") == 0 ){
-		status = open_plain( dev,"zuluCrypt-create-new","rw",pass,pass_size,"cbc-essiv:sha256" ) ;
-		if( status != 0 )
+		if( open_plain( dev,MAPPER,"rw",pass,pass_size,"cbc-essiv:sha256" ) )
 			return 3 ;		
 	}else{
 		return 2 ;
@@ -93,15 +93,15 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 		close( 1 ); 
 		close( 2 );
 		if( strcmp( fs,"ext2" ) == 0 || strcmp( fs,"ext3" ) == 0 || strcmp( fs,"ext4" ) == 0 )
-			execl( ZULUCRYPTmkfs,"mkfs","-t",fs,"-m","1","/dev/mapper/zuluCrypt-create-new",( char * ) 0 ) ;
+			execl( ZULUCRYPTmkfs,"mkfs","-t",fs,"-m","1",DEVICE_MAPPER,( char * ) 0 ) ;
 		else if( strcmp( fs,"reiserfs" ) == 0 )
-			execl( ZULUCRYPTmkfs,"mkfs","-t","reiserfs","-f","-f","-q","/dev/mapper/zuluCrypt-create-new",( char * ) 0 ) ;	
+			execl( ZULUCRYPTmkfs,"mkfs","-t","reiserfs","-f","-f","-q",DEVICE_MAPPER,( char * ) 0 ) ;	
 		else if( strcmp( fs,"jfs" ) == 0 )
-			execl( ZULUCRYPTmkfs,"mkfs","-t","jfs","-q","/dev/mapper/zuluCrypt-create-new",( char * ) 0 ) ;
+			execl( ZULUCRYPTmkfs,"mkfs","-t","jfs","-q",DEVICE_MAPPER,( char * ) 0 ) ;
 		else if( strcmp( fs,"ntfs" ) == 0 )
-			execl( ZULUCRYPTmkfs,"mkfs","-t","ntfs","-f","/dev/mapper/zuluCrypt-create-new",( char * ) 0 ) ;
+			execl( ZULUCRYPTmkfs,"mkfs","-t","ntfs","-f",DEVICE_MAPPER,( char * ) 0 ) ;
 		else
-			execl( ZULUCRYPTmkfs,"mkfs","-t",fs,"/dev/mapper/zuluCrypt-create-new",( char * ) 0 ) ;
+			execl( ZULUCRYPTmkfs,"mkfs","-t",fs,DEVICE_MAPPER,( char * ) 0 ) ;
 	}
 	
 	st.pid = &pid ;

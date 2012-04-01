@@ -44,11 +44,6 @@ typedef struct mount_properties{
 	unsigned long m_flags ;
 }m_struct;
 
-/*
- * UID_SIZE is set at ../constants.h
- * it is the number of maximum digits uid_t type can hold. *  
- */
-
 static int mount_fs( int type,const m_struct * mst, string_t * st )
 {
 	string_t opt = String( mst->mode ) ;
@@ -63,8 +58,11 @@ static int mount_fs( int type,const m_struct * mst, string_t * st )
 		StringAppend( opt,",uid=UID,gid=UID" ) ;
 	
 	copt = StringReplaceString( opt,"UID",copt ) + 3 ;
+	
 	StringDelete( &uid ) ;
+	
 	*st = opt ;
+	
 	return mount( mst->device,mst->m_point,mst->fs,mst->m_flags,copt ) ;
 }
 
@@ -94,13 +92,16 @@ static int mount_ntfs( const m_struct * mst )
 			opt = String( "-o dmask=077,umask=077,rw,uid=UID,gid=UID" ) ;
 		
 		uid = StringIntToString( mst->uid ) ;
+		
 		copt = StringContent( uid ) ;		
 		
 		copt = StringReplaceString( opt,"UID",copt ) ;
 		
 		execl( ZULUCRYPTmount,"mount","-t","ntfs-3g",copt,mst->device,mst->m_point,( char * )0 ) ;
 	}
+	
 	waitpid( pid,&status,0 ) ;
+	
 	return status ; 
 }
 
