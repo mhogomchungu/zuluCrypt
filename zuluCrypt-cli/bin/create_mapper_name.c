@@ -32,11 +32,6 @@
  * XXX is there for security reason.It makes sure one user can not manage another user's mappers 
  */
 
-/*
- * UID_SIZE is set at ../constants.h
- * it is the number of maximum digits uid_t type can hold. *  
- */
-
 string_t create_mapper_name( const char * mapping_name,uid_t uid,int i )
 {
 	string_t q = StringIntToString( uid ) ;
@@ -57,7 +52,7 @@ string_t create_mapper_name( const char * mapping_name,uid_t uid,int i )
 	
 	StringAppend( p,mapping_name ) ;
 	
-	replace_bash_special_chars( p ) ;
+	replace_bash_special_chars( &p ) ;
 	
 	StringDelete( &q ) ;
 	return p ;

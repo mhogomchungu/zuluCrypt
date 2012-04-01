@@ -31,6 +31,10 @@
 #include "../constants.h"
 #include "../zuluCrypt.h"
 
+/*
+ * this structure holds command line arguments. * 
+ * It is instantiated in main.c * 
+ */
 typedef struct struct_opts_1{
 	const char * device ;
 	const char * mount_point ;
@@ -51,35 +55,100 @@ typedef struct struct_opts_1{
 	int open_no_mount ;
 }struct_opts;
 
+/*
+ * this function reads user passphrase interactively.
+ * It is defined and used in main.c
+ */
 string_t get_passphrase( void ) ;
  
+/*
+ * this function is responsibe for printing information about an opened volume.
+ * It is defined in volume_info.c  
+ */
 int volume_info( const char * mapper,const char * device,uid_t ) ;
  
+/*
+ * this function is responsibe for closing an opened volume.
+ * It is defined in close_volume.c 
+ */
 int close_opened_volume( const char * mapping_name,uid_t ) ;
  
+/*
+ * this function is responsibe for opening volumes.
+ * It is defined in open_volume.c * 
+ */
 int open_volumes( const struct_opts *,const char * mapping_name,uid_t uid ) ;
-		   
+
+/*
+ * this function is responsibe for creating volumes.
+ * It is defined in create_volume.c
+ */		   
 int create_volumes( const struct_opts *,uid_t ) ;
 
+/*
+ * this function is responsibe for adding keys to luks volumes.
+ * It is defined in add_key.c
+ */
 int addkey( const struct_opts *,uid_t ) ;
-		
+
+/*
+ * this function is responsibe for removing keys from luks files.
+ * It is defined in remove_key.c
+ */		
 int removekey( const struct_opts *,uid_t ) ;
 
+/*
+ * this function is responsibe for checking if a path exist or not.
+ * It is defined in ../lib/is_path_valid.c
+ */
 int is_path_valid(const char * path ) ;
 
-int is_path_valid_by_euid( const char * path,uid_t uid ) ;
+/*
+ * this function is responsibe substituting bash special characters with an underscore.
+ * The explanation for why it does that is in the source file.
+ * The function is defined in replace_bash_special_chars.c * 
+ */
+void replace_bash_special_chars( string_t * ) ;
 
-void replace_bash_special_chars( string_t ) ;
-
+/*
+ * thiw function reads a passphrase from a key file after it makes sure a user who started the
+ * tool had reading access to the file.
+ * It is defined in security.c
+ */
 int get_pass_from_file( const char * path,uid_t uid,string_t * st ) ;
 
+/*
+ * this function is responsibe for printing a list of opened volumes.
+ * It primary purpose is for the GUI pqrt of the tool and hence the output isnt formatted.
+ * It is defined in print_opened_volumes.c
+ */
 int print_opened_volumes( uid_t ) ;
 
+/*
+ * this function makes a unique mapper name based on user UID to make sure one user can not manage another user
+ * opened volumes.
+ * It is defined in create_mapper_name.c
+ */
 string_t create_mapper_name( const char * mapping_name,uid_t uid,int ) ;
 
+/*
+ * this function is responsibe for creating a mount point after it checks to make sure a user who started the tool
+ * had writing access to the parent folder.
+ * It is defined in security.c * 
+ */
 int create_mount_point( const char * path,uid_t uid ) ;
 
+/*
+ * this function checks if a user who started the tool has writing access to a file or device they want this tool to 
+ * write to.
+ * It is defined in security.c
+ */
 int can_open_path_for_writing( const char * path,uid_t uid ) ;
 
+/*
+ * this function checks if a user who started the tool has reading access to a file or device they want this tool to 
+ * read from.
+ * It is defined in security.c
+ */
 int can_open_path_for_reading( const char * path,uid_t uid ) ;
 

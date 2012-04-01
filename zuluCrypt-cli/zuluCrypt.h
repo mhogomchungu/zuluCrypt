@@ -104,7 +104,8 @@ int close_mapper( const char * mapper ) ;//mapper is the full address of the vol
  * 4 - ERROR: could not get a lock on /etc/mtab~
   */
 int unmount_volume( const char * mapper, //mapper is the full address of the volume as it appears at /dev/mapper
-		    char * m_point ) ;  // read close volume docs for more info on this argument
+		    char ** m_point ) ;  //mount point will be returned on this variable if closing succeeded.useful for deleting 
+					 //mount point folder
 					
 /**
  * This function mounts a volume
@@ -148,7 +149,7 @@ char *status( const  char * mapper );//mapper is the full address of the volume 
  * return values:
  *      0 - success
  * 	1 - ERROR: device argument does not point to a file or partition
- * 	2 - ERROR: wrong argument. (probably mistyped fs and rng arguments
+ * 	2 - ERROR: wrong argument. (probably mistyped fs or rng arguments)
  * 	3 - ERROR: could not create the volume
  * 
  * NOTE: This function expected mkfs executable to be present and its full path to be /sbin/mkfs
@@ -221,8 +222,8 @@ char * empty_slots(const char * device ) ;
 int open_luks( const char * device,      // path to encrypted file or partition
 	       const char * mapping_name,// mapper name to use
 	       const char * mode,        // "ro" or "rw" for opening in read only or read and write
-	       const char * passphrase ) ;// passphrase to use to open the volume
-	
+	       const char * passphrase,  // passphrase to use to open the volume
+	       size_t passphrase_size); // the length of the passphrase
 /**
  * This function creates a luks volume
  * 

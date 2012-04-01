@@ -45,7 +45,6 @@ static int has_access( const char * path, int c )
 		close( f ) ;
 		return 0 ;
 	}else{
-		//perror("");
 		switch( errno ){
 			case EACCES : return 1 ; /* permission denied */
 			case ENOENT : return 2 ; /* invalid path*/
@@ -61,12 +60,10 @@ int can_open_path_for_reading( const char * path,uid_t uid )
 	
 	uid_t org = getuid() ;
 	
-	//setuid( uid ) ;
 	seteuid( uid ) ;
 	
 	st = has_access( path,READ ) ;
 	
-	//setuid( org ) ;
 	seteuid( org ) ;
 	
 	return st ;
@@ -78,12 +75,10 @@ int can_open_path_for_writing( const char * path,uid_t uid )
 	
 	uid_t org = getuid() ;
 	
-	//setuid( uid ) ;
 	seteuid( uid ) ;
 	
 	st = has_access( path,WRITE ) ;
 	
-	//setuid( org ) ;
 	seteuid( org ) ;
 	
 	return st ;
@@ -96,12 +91,10 @@ int create_mount_point( const char * path,uid_t uid )
 	uid_t org = geteuid();    
 	
 	seteuid( uid ) ;            
-	//setuid( uid ) ;
 	
 	st = mkdir( path,S_IRWXU ) ;
 	
 	seteuid( org ) ;           
-	//setuid( org ) ;
 	
 	if( st == 0 )
 		return 0 ;

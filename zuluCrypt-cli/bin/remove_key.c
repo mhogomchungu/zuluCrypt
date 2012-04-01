@@ -49,8 +49,8 @@ static int status_msg( int st )
 		case 10: printf( "ERROR: device does not exist\n" );											break ;	
 		case 11: printf( "WARNING: there is only one key in the volume left and all data in the volume will be lost if you continue.\n" );
 			 printf( "if you want to continue,rerun the command with -k option\n" ) ;							break;
-		case 12: printf( "ERROR: insufficient privilege to open volume path\n" ) ;								break ;
-		case 13: printf( "ERROR: insufficient privilege to open key file for reading\n" );								break ;	
+		case 12: printf( "ERROR: insufficient privilege to open volume for writing\n" ) ;							break ;
+		case 13: printf( "ERROR: insufficient privilege to open key file for reading\n" );							break ;	
 		default :printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}		
 	return st ;

@@ -63,6 +63,9 @@ static void print_NAAN( const char * entry )
 
 	volume = volume_device_name( StringContent( p ) ) ;
 	
+	if( volume == NULL )
+		return ;
+	
 	printf( "%s\t",volume ) ;
 	
 	while( *++c != ' ' )
