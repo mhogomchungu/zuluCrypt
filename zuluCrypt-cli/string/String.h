@@ -456,6 +456,12 @@ string_t StringGetFromFile_2( const char * path,int * status ) ;
 #define APPEND 2  /* if the file exist, append it*/
 void StringWriteToFile( string_t st,const char * path, int mode ) ; 
 
+/*
+ * Open a virtual file given by path return a string_t handle with the content of the file.
+ * Virtual files are like those in /proc,you cab read stuff from them but their sizes are always zero
+ */
+string_t StringGetFromVirtualFile( const char * path ) ;
+
 #ifdef __cplusplus
 }
 #endif

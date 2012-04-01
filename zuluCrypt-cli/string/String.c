@@ -1067,3 +1067,28 @@ void StringWriteToFile( string_t st,const char * path, int mode )
 	chmod( path,S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH ) ;
 }
 
+string_t StringGetFromVirtualFile( const char * path ) 
+{
+	int c ;
+	
+	string_t st = String( "" ) ;
+	
+	char s[ 2 ] ;	
+	
+	FILE * f = fopen( path,"r" ) ;
+	
+	if( f == NULL )
+		return NULL ;
+	
+	s[ 1 ] = '\0' ;
+	
+	while( ( c = getc( f ) ) != EOF )
+	{
+		s[ 0 ] = ( char ) c ;
+		StringAppend( st,s ) ;
+	}
+	
+	fclose( f ) ;
+	
+	return st ;
+}

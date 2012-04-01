@@ -42,6 +42,29 @@ stringList_t StringList( const char * cstring )
 	return stl ;
 }
 
+stringList_t StringListString( string_t * st ) 
+{
+	stringList_t stl = ( stringList_t ) malloc( sizeof( struct StringListType ) ) ;	
+	if( stl == NULL )
+		return NULL ;
+	stl->stp = ( string_t * ) malloc ( sizeof ( struct StringType ) ) ;
+	if( stl->stp == NULL )
+	{
+		free( stl ) ;
+		return NULL ;
+	}	
+	stl->stp[0] = *st ;
+	*st = NULL ;
+	if( stl->stp[0] == NULL )
+	{
+		free( stl->stp );
+		free( stl ) ;
+		return NULL ;
+	}
+	stl->size = 1 ;
+	return stl ;
+}
+
 stringList_t StringListWithSize( char ** c, size_t s )
 {
 	stringList_t stl = ( stringList_t ) malloc( sizeof( struct StringListType ) ) ;	
@@ -102,42 +125,71 @@ stringList_t StringListAppendSize( stringList_t stl,const char * cstring,size_t 
 		return p ;
 }
 
-stringList_t StringListSplit( const char * cstring,const char * splitter ) 
+stringList_t StringListAppendString( stringList_t stl,string_t * st ) 
+{
+	string_t * p ;
+	
+	if( stl == NULL )
+		return StringListString( st ) ;
+	
+	p = realloc( stl->stp,sizeof( struct StringType ) * ( stl->size + 1 ) ) ;
+	
+	if( p == NULL )
+		return NULL ;
+	
+	stl->stp = p ;
+	stl->stp[ stl->size ] = *st ;
+	*st = NULL ;
+	stl->size = stl->size + 1 ;	
+	return stl ;
+	
+}
+
+stringList_t StringListSplit( const char * cstring,char splitter ) 
 {
 	const char * b = cstring ;
-	const char * c = splitter ;	
 	char * d ;
 	char * e ;
+	char s[ 2 ] ;
+	s[ 1 ] = '\0' ;
+	s[ 0 ] = splitter ;
 	
-	size_t sp_len = strlen( splitter ) ;
+	size_t sp_len = sizeof( char ) ;
 	size_t len ; 
 	stringList_t stl = NULL ;
 
 	while( 1 )
 	{
-		d = strstr( b,c ) ;
+		d = strstr( b,s ) ;
 		if( d == NULL )
 		{			
-			stl = StringListAppend( stl,b ) ;
-			if( stl == NULL )
-				return NULL ;
 			break ;
 		}else{
 			len = d - b ;
-			e = ( char * ) malloc( sizeof( char ) * ( len + 1 ) ) ;
-			if( e == NULL )
-				return NULL;
-			memcpy( e,b,len ) ;
-			*( e + len ) = '\0' ;
-			stl = StringListAppendWithSize( stl,&e,len );
-			if( stl == NULL )
-			{
-				free( e ) ;
-				return NULL ;
+			if( len > 0 ){
+				e = ( char * ) malloc( sizeof( char ) * ( len + 1 ) ) ;
+				if( e == NULL )
+					return NULL;
+				memcpy( e,b,len ) ;
+				*( e + len ) = '\0' ;
+				stl = StringListAppendWithSize( stl,&e,len );
+				if( stl == NULL )
+				{
+					free( e ) ;
+					return NULL ;
+				}
 			}
 			b = d + sp_len ;
 		}
 	}
+	return stl ;
+}
+
+stringList_t StringListStringSplit( string_t * st,char splitter ) 
+{
+	string_t xt = *st ;
+	stringList_t stl = StringListSplit( xt->string,splitter ) ;	
+	StringDelete( st ) ;
 	return stl ;
 }
 
@@ -170,6 +222,33 @@ stringList_t StringListInsertAt( stringList_t stl,const char * cstring,size_t in
 	stl->stp[index] = q ;	
 	stl->size = stl->size + 1 ;	
 	return stl ;	
+}
+
+stringList_t StringListStringInsertAt( stringList_t stl,string_t * st,size_t index ) 
+{
+	string_t * p ;
+	size_t size = sizeof( struct StringType ) ;
+	
+	if( stl == NULL )
+		return StringListString( st ) ;		
+
+	p = realloc( stl->stp, size * ( stl->size + 1 ) ) ;
+	if( p == NULL )
+	{
+		return NULL ;
+	}
+	stl->stp = p ;
+	memmove( stl->stp + index + 1,stl->stp + index,size * ( stl->size - index ) ) ;	
+	stl->stp[index] = *st ;	
+	stl->size = stl->size + 1 ;
+	*st = NULL ;
+	return stl ;
+	
+}
+
+stringList_t StringListPrependString( stringList_t stl,string_t * st )
+{
+	return StringListStringInsertAt( stl,st,0 ) ;
 }
 
 stringList_t StringListInsertAtSize( stringList_t stl,const char * cstring,size_t len,size_t index ) 
@@ -317,4 +396,12 @@ stringList_t StringListCopy( stringList_t stl )
 	for( i = 0 ; i < j ; i++)
 		stx->stp[i] = StringWithSize( stl->stp[i]->string,stl->stp[i]->size ) ;
 	return stx ;
+}
+
+stringList_t StringListSwap( stringList_t stl, size_t x,size_t y ) 
+{
+	string_t p = stl->stp[ x ] ;
+	stl->stp[ x ] = stl->stp[ y ] ;
+	stl->stp[ y ] = p ;
+	return stl ;
 }

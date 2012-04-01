@@ -25,6 +25,12 @@
  */
 stringList_t StringList( const char * cstring ) ;
 
+/*
+ *  create stringlist handle with a string_t. All stringlist operations should happen through this handle 
+ *  this function will take ownership of st,invalidating the handle after auto deleting its contents
+ */
+stringList_t StringListString( string_t * ) ;
+
 
 /*
  * Return the number of elements in the list * 
@@ -34,7 +40,13 @@ size_t StringListSize( stringList_t stl ) ;
 /*
  * create a  stringlist from splitted cstring using splitter as a splitting trigger. * 
  */
-stringList_t StringListSplit( const char * cstring,const char * splitter ) ;
+stringList_t StringListSplit( const char * cstring,char splitter ) ;
+
+/*
+ * create a stringlist from string_t using splitter as a splitting trigger. 
+ * this function will take ownership of st,invalidating the handle after auto deleting its contents
+ */
+stringList_t StringListStringSplit( string_t * st,char splitter ) ;
 
 /*
  * return a string_t element at position index.
@@ -61,6 +73,15 @@ ssize_t StringListContains( stringList_t stl,const char * cstring );
 stringList_t StringListAppend( stringList_t stl,const char * cstring ) ;
 
 /*
+ * append an entry into the list.
+ * if stl == NULL, then the function call is the same as "StringList( cstring )" 
+ * 
+ * this function will take ownership of st,invalidating the handle after auto deleting its contents
+ * 
+ */
+stringList_t StringListAppendString( stringList_t stl,string_t * ) ;
+
+/*
  * append an entry into the list by taking only len characters from the string.
  * if stl == NULL, then the function call is the same as "StringList( cstring )" 
  */
@@ -74,6 +95,15 @@ stringList_t StringListAppendSize( stringList_t stl,const char * cstring,size_t 
 stringList_t StringListPrepend( stringList_t stl,const char * cstring ) ;
 
 /*
+ * prepend an entry into the list
+ * if stl == NULL then the function is the same as "StringList( cstring )" 
+ * 
+ * this function will take ownership of st,invalidating the handle after auto deleting its contents
+ * 
+ */
+stringList_t StringListPrependString( stringList_t stl,string_t * st ) ;
+
+/*
  * prepend an entry into the list by taking len characters from the string.
  * if stl == NULL then the function is the same as "StringList( cstring )" 
  */
@@ -85,6 +115,15 @@ stringList_t StringListPrependSize( stringList_t stl,const char * cstring,size_t
  * the program will most likely crash is stl == NULL
  */
 stringList_t StringListInsertAt( stringList_t stl,const char * cstring,size_t index ) ;
+
+/*
+ * insert string_t as position index.
+ * the first position is at position 0
+ * the program will most likely crash is stl == NULL
+ * 
+ * this function will take ownership of st,invalidating the handle after auto deleting its contents * 
+ */
+stringList_t StringListStringInsertAt( stringList_t stl,string_t *,size_t index ) ;
 
 /*
  * insert an element as position index by taking only len characters from the string
@@ -130,3 +169,9 @@ stringList_t StringListWithSize( char ** cstring,size_t s ) ;
  * returns a copy of a string list
  */
 stringList_t StringListCopy( stringList_t stl ) ;
+
+/*
+ * move entry at position x to position y and entry at position y to position x * 
+ * first entry is at position 0.
+ */
+stringList_t StringListSwap( stringList_t stl, size_t x,size_t y ) ;

@@ -41,28 +41,6 @@
 /*
  * this function reads a line from a fine, it does what gets() does,it just handles the memory dynamically * 
  */
-static int read_line( string_t * st,FILE * f )
-{
-	int s ;
-	StringClear( *st ) ;
-	
-	s = fgetc( f ) ;
-	
-	if( s == EOF )
-		return -1 ;	
-	
-	if( s == '\n' )
-		StringAppendChar( *st,( char ) s ) ;
-	else{
-		StringAppendChar( *st,( char ) s ) ;
-		do{
-			s = fgetc( f ) ;
-			StringAppendChar( *st,( char ) s ) ;
-		}
-		while( s != '\n' ) ;		
-	}
-	return 0 ;
-}
 
 /*
  * major minor  #blocks  name
@@ -84,43 +62,42 @@ static int read_line( string_t * st,FILE * f )
  */
 static stringList_t partitionList( void )
 {
-	string_t st = String( "" ) ;
-	stringList_t stl = NULL;
-	
-	FILE * f ;
-	
+	size_t i ;
+	size_t j ;	
+	stringList_t stl ;	
+	stringList_t stl_1 = NULL ;	
 	const char * device ;	
-
-	ssize_t index ;
-
-	f = fopen( "/proc/partitions","r" ) ;
+	ssize_t index ;	
+	string_t st = StringGetFromVirtualFile( "/proc/partitions" ) ;	
+	string_t st_1 ;
 	
-	read_line( &st,f ) ;
-	read_line( &st,f ) ;
+	stl = StringListStringSplit( &st,'\n' ) ;
+
+	j = StringListSize( stl )  ;
 	
-	while( read_line( &st,f ) != -1 ){
-		
+	for( i = 0 ; i < j ; i++ )	{
+		st = StringListStringAt( stl,i ) ;
+
 		index = StringLastIndexOfChar( st,' ' ) ;
 
 		if( index == -1 )
 			continue ;
 
-		StringCrop( st,index + 1,1 ) ;
+		StringCrop( st,index + 1,0 ) ;
 				
 		if( StringLength( st ) <= 3  )
 			continue ;
 	
 		device = StringContent( st ) ;
-		
-		if( ( strncmp( device,"hd", 2 ) == 0 || strncmp( device,"sd",2 ) == 0 ) ){
-			device = StringPrepend( st,"/dev/" ) ;			
-			stl = StringListAppend( stl,device );
+
+		if( ( strncmp( device,"hd", 2 ) == 0 || strncmp( device,"sd",2 ) == 0 ) ){			
+			st_1 = String( "/dev/" ) ;
+			StringAppend( st_1,device ) ;
+			stl_1 = StringListAppendString( stl_1,&st_1 ) ;			
 		}	
 	}
-	
-	fclose( f );
-	StringDelete( &st ) ;
-	return stl ;
+	StringListDelete( &stl ) ;
+	return stl_1 ;
 }
 
 string_t device_from_uuid( const char * uuid )
@@ -190,14 +167,16 @@ static void blkid( const char * type,const char * entry, int size, stringList_t 
 
 static stringList_t partitions( int option )
 {
-	string_t st = String( "" ) ;
-
+	string_t st  ;
+	stringList_t stl ;
+	
 	const char * entry ;
 	const char * device ;
 
 	ssize_t index ;
-	
-	FILE * f ;
+
+	size_t i ;
+	size_t j ;
 	
 	stringList_t non_system = NULL ;
 	stringList_t system = NULL ;
@@ -208,12 +187,18 @@ static stringList_t partitions( int option )
 	non_system = partitionList() ;
 	system = NULL ;
 
-	f = fopen("/etc/fstab","r");
+	st = StringGetFromFile( "/etc/fstab" );
 	
-	while( read_line( &st,f ) != -1 ){
+	stl = StringListStringSplit( &st,'\n' ) ;
+	
+	j = StringListSize( stl ) ;
+	
+	for( i = 0 ; i < j ; i++ ){
 		
-		entry = StringContent( st ) ;
+		st = StringListStringAt( stl,i ) ;
 
+		entry = StringContent( st ) ;
+		
 		if( entry[0] == '#' || entry[0] == '\n' )
 			continue ;
 		
@@ -222,11 +207,11 @@ static stringList_t partitions( int option )
 		if( index == - 1 )
 			continue ;
 		
-		entry = StringRemoveRight( st,index ) ;
+		StringRemoveRight( st,index ) ;
 				
 		device = StringRemoveString( st,"\"" ) ;		
 		
-		if ( strncmp( entry,"/dev/",5 ) == 0 ){			
+		if ( strncmp( device,"/dev/",5 ) == 0 ){			
 			system = StringListAppend( system,device ) ;
 			StringListRemoveString( non_system ,device ) ;
 		}else if( strncmp( entry,"UUID",4 ) == 0 ){;
@@ -236,9 +221,7 @@ static stringList_t partitions( int option )
 		}		
 	}
 	
-	fclose( f ) ;
-	
-	StringDelete( &st ) ;
+	StringListDelete( &stl ) ;
 	
 	if( option == SYSTEM_PARTITIONS ){
 		StringListDelete( &non_system ) ;
@@ -281,74 +264,89 @@ int print_partitions( int option )
  */
 stringList_t get_partition_from_crypttab( void )
 {
-	stringList_t stl = NULL ;
-	string_t st = String( "" ) ;
+	stringList_t stl ;
+	stringList_t stl_1 = NULL ;
+	string_t st  ;
 	string_t q ;
 	const char * device ;
 	const char * entry ;
 	ssize_t index ;
 	ssize_t index_1 ;
 	
-	FILE * f = fopen( "/etc/crypttab","r" );
-  
-	if( f != NULL ){
-		while( read_line( &st,f ) != -1 ){
-			
-			entry = StringContent( st ) ;			
-		 
-			if( entry[0] == '#' || entry[0] == '\n' )
-				continue ;
-		 
-			index = StringIndexOfChar( st,0,'/' ) ;
-			if( index == -1 ){
-				/*
-				 * did not find '/' character,assuming the line uses UUID,get the UUID by 
-				 * removing fields on both of its sides
-				 */
-				index = StringIndexOfChar( st,0,'U' ) ;
-				
-				if( index == -1 )
-					continue ;
-				
-				index = StringIndexOfChar( st,index,' ' ) ;
-
-				if( index == -1 )
-					continue ;
-				
-				StringRemoveRight( st,index ) ;
-				
-				StringRemoveString( st,"\"" ) ;  /* remove quotes if they are used */
-
-				/* 
-				 * resolve the UUID to its device address 
-				 * q will have NULL  most likely if the drive with UUID is not attached				 
-				 */
-				q = device_from_uuid( strstr( StringContent( st ),"=" ) + 1 );    
-
-				if( q != NULL ){	
-					stl = StringListAppend( stl,StringContent( q ) ) ;
-					StringDelete( &q ) ;					
-				}
-			}else{		
-				/*
-				 * the entry is of the first format,work to get the device address 
-				 */
-				index_1 = StringIndexOfChar( st,index,' ' ) ; /*index is set before the conditional statement above */
-				
-				if ( index_1 == -1 )
-					continue ;
-				
-				StringRemoveRight( st,index_1 ) ;
-		 
-				device = StringRemoveLeft( st,index ) ;	
-				stl = StringListAppend( stl,device ) ;
-			}			
-		}
-		fclose( f ) ;		
-	}
+	size_t i ;
+	size_t j ;
+	
+	st = StringGetFromFile( "/etc/crypttab" );
+	
+	if( st == NULL )
+		return NULL ;
+	
+	stl = StringListSplit( StringContent( st ),'\n' ) ;
+	
 	StringDelete( &st ) ;
+	
+	j = StringListSize( stl ) ;
+	
+	if( j == 0 )
+		return NULL ;
+	
+	for( i = 0 ; i < j ; i++ ){
+			
+		st = StringListStringAt( stl,i ) ;
+	
+		entry = StringContent( st ) ;			
+		 
+		if( entry[0] == '#' || entry[0] == '\n' )
+			continue ;
+		 
+		index = StringIndexOfChar( st,0,'/' ) ;
+	
+		if( index == -1 ){
+			/*
+			 * did not find '/' character,assuming the line uses UUID,get the UUID by 
+			 * removing fields on both of its sides
+			 */
+			index = StringIndexOfChar( st,0,'U' ) ;
+				
+			if( index == -1 )
+				continue ;
+				
+			index = StringIndexOfChar( st,index,' ' ) ;
 
-	return stl ;
+			if( index == -1 )
+				continue ;
+				
+			StringRemoveRight( st,index ) ;
+				
+			StringRemoveString( st,"\"" ) ;  /* remove quotes if they are used */
+			
+			/* 
+			 * resolve the UUID to its device address 
+			 * q will have NULL  most likely if the drive with UUID is not attached				 
+			 */
+			q = device_from_uuid( strstr( StringContent( st ),"=" ) + 1 );    
+
+			if( q != NULL ){	
+				stl_1 = StringListAppend( stl_1,StringContent( q ) ) ;
+				StringDelete( &q ) ;					
+			}
+		}else{		
+			/*
+			 * the entry is of the first format,work to get the device address 
+			 */
+			index_1 = StringIndexOfChar( st,index,' ' ) ; /*index is set before the conditional statement above */
+				
+			if ( index_1 == -1 )
+				continue ;
+				
+			StringRemoveRight( st,index_1 ) ;
+		 
+			device = StringRemoveLeft( st,index ) ;	
+			stl_1 = StringListAppend( stl_1,device ) ;
+		}			
+	}
+	StringListDelete( &stl ) ;
+	return stl_1 ;
 }
 
 ssize_t check_partition( const char * device )
