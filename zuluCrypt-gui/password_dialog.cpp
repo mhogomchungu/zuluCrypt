@@ -344,8 +344,9 @@ void passwordDialog::threadfinished(int status)
 		case 19: UIMessage(tr("ERROR"),tr("insufficient privilege to create mount point" ));						break ;	
 		case 20: UIMessage(tr("ERROR"),tr("insufficient privilege to open device" ));							break ;	
 		case 21: UIMessage(tr("ERROR"),tr("insufficient privilege to create mount point" ));						break ;	
-		case 22: UIMessage(tr("ERROR"),tr("insufficient privilege to open key file for reading" ));					break ;					
-		default: UIMessage(tr("ERROR"),tr("unrecognized error with status number %d encountered").arg(status ));	
+		case 22: UIMessage(tr("ERROR"),tr("insufficient privilege to open key file for reading" ));					break ;	
+		case 110:UIMessage(tr("ERROR"),tr("can not find a partition that match presented UUID" ));					break ;
+		default: UIMessage(tr("ERROR"),tr("unrecognized error with status number %1 encountered").arg(status ));	
 	}
 	enableAll();
 }

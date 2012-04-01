@@ -260,7 +260,8 @@ void luksdeletekey::threadfinished(int status)
 will be lost if you continue.\nif you want to continue,rerun the command with -k option" ));						break;
 		case 12: UIMessage(tr("ERROR"),tr("insufficient privilege to create mount point" ) );					break ;
 		case 13: UIMessage(tr("ERROR"),tr("insufficient privilege to open key file for reading key file" ));			break ;	
-		default :UIMessage(tr("ERROR"),tr("unrecognized error with status number %d encountered").arg(status));
+		case 110:UIMessage(tr("ERROR"),tr("can not find a partition that match presented UUID" ));				break ;				      
+		default :UIMessage(tr("ERROR"),tr("unrecognized error with status number %1 encountered").arg(status));
 	}
 	enableAll();
 }

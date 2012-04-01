@@ -344,7 +344,7 @@ int main( int argc , char *argv[] )
 	}
 	if( device == NULL ){
 		printf("ERROR: required option( device path ) is missing for this operation\n" ) ;
-		return 110 ;
+		return 120 ;
 	}
 	if( strncmp( device,"UUID=", 5 ) == 0 ){
 
