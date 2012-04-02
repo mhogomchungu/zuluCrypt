@@ -23,7 +23,6 @@ char * empty_slots( const char * device )
 {
 	crypt_keyslot_info cki ;
 	struct crypt_device * cd;
-	int i ;
 	int j ;
 	int k ;
 	char * slot ;
@@ -31,15 +30,13 @@ char * empty_slots( const char * device )
 	if( is_luks( device ) == 1 )
 		return NULL ;
 	
-	i = crypt_init( &cd,device ) ;
-	
-	if( i != 0 )
+	if( crypt_init( &cd,device ) != 0 )
 		return NULL ;
 	
-	i = crypt_load( cd, CRYPT_LUKS1, NULL ) ;
-	
-	if( i != 0 )
+	if( crypt_load( cd,CRYPT_LUKS1,NULL ) != 0 ){
+		crypt_free( cd );		
 		return NULL ;
+	}
 	
 	k = crypt_keyslot_max( CRYPT_LUKS1 ) ;
 	
