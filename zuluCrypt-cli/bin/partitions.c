@@ -83,7 +83,7 @@ static stringList_t partitionList( void )
 		if( index == -1 )
 			continue ;
 
-		StringCrop( st,index + 1,0 ) ;
+		StringRemoveLeft( st,index + 1 ) ;
 				
 		if( StringLength( st ) <= 3  )
 			continue ;

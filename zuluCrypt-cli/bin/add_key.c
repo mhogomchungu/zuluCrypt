@@ -64,6 +64,7 @@ static int status_msg( int st )
 		case 12 : printf( "ERROR: insufficient privilege to open key file for reading\n" );		break ;					
 		default : printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
+	
 	return st ;
 }
 
@@ -192,5 +193,10 @@ int addkey( const struct_opts * opts,uid_t uid )
 			status = 5 ;
 		}
 	}	
-	return status_msg( status ) ;
+	
+	status = status_msg( status ) ;
+	
+	check_invalid_key( opts->device ) ;
+	
+	return status ;
 }

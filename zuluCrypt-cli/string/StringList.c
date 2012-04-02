@@ -158,29 +158,23 @@ stringList_t StringListSplit( const char * cstring,char splitter )
 	size_t len ; 
 	stringList_t stl = NULL ;
 
-	while( 1 )
+	while( ( d = strstr( b,s ) ) != NULL )
 	{
-		d = strstr( b,s ) ;
-		if( d == NULL )
-		{			
-			break ;
-		}else{
-			len = d - b ;
-			if( len > 0 ){
-				e = ( char * ) malloc( sizeof( char ) * ( len + 1 ) ) ;
-				if( e == NULL )
-					return NULL;
-				memcpy( e,b,len ) ;
-				*( e + len ) = '\0' ;
-				stl = StringListAppendWithSize( stl,&e,len );
-				if( stl == NULL )
-				{
-					free( e ) ;
-					return NULL ;
-				}
+		len = d - b ;
+		if( len > 0 ){
+			e = ( char * ) malloc( sizeof( char ) * ( len + 1 ) ) ;
+			if( e == NULL )
+				return NULL;
+			memcpy( e,b,len ) ;
+			*( e + len ) = '\0' ;
+			stl = StringListAppendWithSize( stl,&e,len );
+			if( stl == NULL )
+			{
+				free( e ) ;
+				return NULL ;
 			}
-			b = d + sp_len ;
 		}
+		b = d + sp_len ;
 	}
 	return stl ;
 }

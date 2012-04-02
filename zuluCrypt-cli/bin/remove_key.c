@@ -116,9 +116,13 @@ int removekey( const struct_opts * opts,uid_t uid )
 	}
 	
 	if( status == 1 )
-		return status_msg_1( status,device ) ;
+		status = status_msg_1( status,device ) ;
 	else
-		return status_msg( status ) ; 
+		status = status_msg( status ) ; 
+	
+	check_invalid_key( opts->device ) ;
+	
+	return status ;
 }
 
  

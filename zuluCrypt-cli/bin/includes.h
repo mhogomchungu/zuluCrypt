@@ -152,3 +152,7 @@ int can_open_path_for_writing( const char * path,uid_t uid ) ;
  */
 int can_open_path_for_reading( const char * path,uid_t uid ) ;
 
+/* 
+ * check if the volume has atleast one corrupted key slot
+ */ 
+void check_invalid_key( const char * device ) ;

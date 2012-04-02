@@ -174,8 +174,13 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 	}
 		
 	StringDelete( &m_name ) ;
+	
 	free( cpoint ) ;
 	free( device ) ;
 	
-	return status_msg_1( st,opts ) ;
+	st = status_msg_1( st,opts ) ;
+	
+	check_invalid_key( opts->device ) ;
+	
+	return st ;	
 }

@@ -1,6 +1,6 @@
 /*
  * 
- *  Copyright (c) 2011
+ *  Copyright (c) 2012
  *  name : mhogo mchungu 
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
@@ -19,31 +19,22 @@
 
 #include "includes.h"
 
-int volume_info( const char * mapper,const char * device,uid_t uid )
+void check_invalid_key( const char * device )
 {
-	char * output ;	
-	int xt ;
+	char * c = empty_slots( device ) ;
+	char * d  ;
 	
-	string_t p ;
-	
-	/*
-	 * This function is defined at "create_mapper_name.c"
-	 * 
-	 * Explanation for what it does is explained where it is defined.	  * 
-	 */
-	p = create_mapper_name( mapper,uid,CLOSE ) ;
-	
-	output = status( StringContent( p ) ) ;
-	
-	if( output != NULL ){
-		printf( "%s\n",output );
-		free( output ) ;
-		xt = 0 ;
-	}else{
-		printf( "ERROR: could not get volume info,is the volume opened?\n" ) ;
-		xt = 2 ;
+	if( c == NULL ){
+		/*
+		 * we got here because the volume is either not luks based or the path is invalid
+		 */
+		return ;
 	}
-	StringDelete( &p );
-	return xt ;
-}
-
+	d = c - 1 ;
+	while( *++d ){
+		if( *d == '2' ){
+			printf("WARNING: the volume has atleast one corrupted key slot\n" ) ;
+		}
+	}	
+	free( c ) ;
+} 

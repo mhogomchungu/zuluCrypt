@@ -75,6 +75,7 @@
  bin/open_volume.c 
  bin/partitions.c 
  bin/security.c
+ bin/check_invalid_key.c
  bin/create_volumes.c 
  bin/remove_key.c ) 
  

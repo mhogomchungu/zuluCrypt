@@ -54,8 +54,13 @@ char * status( const char * mapper )
 	string_t p = String( mapper ) ;
 	string_t q ;
 	
-	crypt_init_by_name( &cd,mapper );
-	crypt_get_active_device( NULL,mapper,&cad ) ;
+	if( crypt_init_by_name( &cd,mapper ) != 0 )
+		return NULL ;
+	
+	if( crypt_get_active_device( NULL,mapper,&cad ) != 0 ){
+		crypt_free( cd ) ;
+		return NULL ;
+	}
 	
 	switch( crypt_status( cd,mapper ) ){
 		case CRYPT_INACTIVE :

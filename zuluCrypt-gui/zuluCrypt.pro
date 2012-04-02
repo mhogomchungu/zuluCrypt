@@ -29,7 +29,8 @@ SOURCES += main.cpp\
     createfilethread.cpp \
     closevolumethread.cpp \
     checkvolumetype.cpp \
-    cryptoinfo.cpp
+    cryptoinfo.cpp \
+    keyslots.cpp
 
 HEADERS  += zulucrypt.h password_dialog.h \
     openpartition.h \
@@ -48,7 +49,8 @@ HEADERS  += zulucrypt.h password_dialog.h \
     createfilethread.h \
     closevolumethread.h \
     checkvolumetype.h \
-    cryptoinfo.h
+    cryptoinfo.h \
+    keyslots.h
 
 FORMS    += zulucrypt.ui password.ui \
     openpartition.ui \
@@ -58,7 +60,8 @@ FORMS    += zulucrypt.ui password.ui \
     createfile.ui \
     createkeyfile.ui \
     managedevicenames.ui \
-    cryptoinfo.ui
+    cryptoinfo.ui \
+    keyslots.ui
 
 TRANSLATIONS = 
 

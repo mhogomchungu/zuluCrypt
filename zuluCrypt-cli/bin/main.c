@@ -282,11 +282,13 @@ static int exe( struct_opts * clargs, const char * mapping_name,uid_t uid )
 		case 's' : return volume_info( mapping_name,clargs->device,uid ) ;
 		case 'q' : return close_opened_volume( mapping_name,uid ) ;
 		case 'o' : return open_volumes( clargs,mapping_name,uid ) ;
+		case 'O' : return open_volumes( clargs,mapping_name,uid ) ;		
 		case 'c' : return create_volumes( clargs,uid ) ;
 		case 'a' : return addkey( clargs,uid ) ;
 		case 'r' : return removekey( clargs,uid );
 	}
-	return 10000 ; /* shouldnt get here */	
+	printf("ERROR!!!!!!!!!!: cli option missed!\n" );
+	return 200 ; /* shouldnt get here */	
 }
 
 stringList_t get_partition_from_crypttab( void ) ;
