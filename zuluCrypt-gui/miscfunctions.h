@@ -36,9 +36,6 @@ class miscfunctions
 public:
 	static QStringList luksEmptySlots(QString volumePath) ;
 	static bool isLuks(QString volumePath) ;
-	static QString mtab(QString) ;
-	static QString readMtab(QByteArray * mtab,QString entry);
-	static bool isUUIDvalid(QString);
 	static QStringList deviceProperties(QString device) ;
 	static void addToFavorite(QString dev, QString m_point);
 	static QStringList readFavorites(void);

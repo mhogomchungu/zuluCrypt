@@ -183,13 +183,6 @@ void luksaddkey::pbAdd(void)
 	if( m_volumePath.mid(0,2) == QString("~/"))
 		m_volumePath = QDir::homePath() + QString("/") + m_volumePath.mid(2) ;
 
-	if( m_volumePath.mid(0,5) == QString("UUID=")){
-		if( miscfunctions::isUUIDvalid(m_volumePath) == false ){
-			UIMessage(tr("ERROR!"),tr("could not find any partition with the presented UUID"));
-			enableAll();
-			return ;
-		}
-	}
 	if ( miscfunctions::exists(m_volumePath) == false && m_volumePath.mid(0,5) != QString("UUID=")){
 		UIMessage(tr("ERROR!"),tr("volume path field does not point to a file or device"));
 		return ;

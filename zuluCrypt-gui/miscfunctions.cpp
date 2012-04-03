@@ -105,57 +105,6 @@ bool miscfunctions::isLuks(QString volumePath)
 		return false ;
 }
 
-QString miscfunctions::mtab(QString entry)
-{
-	QFile mt(QString("/etc/mtab")) ;
-	QByteArray sc = "#;\"',\\`:!*?&$@(){}[]><|%~^ \n" ;
-	for( int n = 0 ; n < sc.size() ; n++){
-
-		entry.replace(QChar(sc.at(n)),QChar('_')) ;
-	}
-	mt.open(QIODevice::ReadOnly) ;
-	QByteArray data = mt.readAll() ;
-	mt.close();
-	int i = data.indexOf(entry) ;
-	if( i == -1 )
-		return QString("") ;
-	while(data.at(i++) != ' ') { ; }
-	int j = i ;
-	while(data.at(i++) != ' ') { ; }
-	QByteArray mount_point = data.mid(j, i - j - 1) ;
-	mount_point.replace("\\040"," ") ;
-	mount_point.replace("\\011","\t") ;
-	mount_point.replace("\\012","\n") ;
-	mount_point.replace("\\134","\\") ;
-	return QString(mount_point) ;
-}
-
-QString miscfunctions::readMtab(QByteArray * mtab,QString entry)
-{
-	int i = 0 ;
-	int k ;
-	QByteArray x ;
-	while( true ){
-		i = mtab->indexOf(entry,i) ;
-		if( i == -1 )
-			return QString("") ;
-		k = i ;
-		while(mtab->at(i++) != ' ') { ; }
-		if( entry == mtab->mid(k,i - k - 1) )
-			break ;
-	}	
-	
-	k = i ;
-	while(mtab->at(i++) != ' ') { ; }
-
-	QByteArray m_point = mtab->mid(k, i - k - 1) ;
-	m_point.replace("\\040"," ") ;
-	m_point.replace("\\011","\t") ;
-	m_point.replace("\\012","\n") ;
-	m_point.replace("\\134","\\") ;
-	return QString(m_point) ;
-}
-
 QStringList miscfunctions::luksEmptySlots(QString volumePath)
 {
 	QProcess N ;
@@ -171,19 +120,6 @@ QStringList miscfunctions::luksEmptySlots(QString volumePath)
 	list << QString::number( i ) ;
 	list << QString::number(  s.size() - 1 ) ;
 	return list ;
-}
-
-bool miscfunctions::isUUIDvalid(QString uuid)
-{
-	QProcess p ;
-	p.start(QString(ZULUCRYPTzuluCrypt) + QString(" -w ") + uuid);
-	p.waitForFinished() ;
-	int result = p.exitCode() ;
-	p.close();
-	if( result == 0 )
-		return true ;
-	else
-		return false ;
 }
 
 void miscfunctions::addToFavorite(QString dev, QString m_point)

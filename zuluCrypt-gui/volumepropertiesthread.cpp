@@ -1,4 +1,6 @@
 #include "volumepropertiesthread.h"
+#include <iostream>
+#include <unistd.h>
 
 volumePropertiesThread::volumePropertiesThread(QString path,QString mpoint)
 {
@@ -9,10 +11,11 @@ volumePropertiesThread::volumePropertiesThread(QString path,QString mpoint)
 
 QString volumePropertiesThread::fuseblkGetFs()
 {
-	QString fuse = QString("/dev/mapper/zuluCrypt-") ;
+	QString pid = QString::number(getuid())  ;
+	QString fuse = QString("/dev/mapper/zuluCrypt-") + pid ;
 	if( m_fusefs.mid(0,5) == QString("UUID=") ){
 		m_fusefs.remove(QChar('"'));
-		fuse += QString("UUID-") + m_fusefs.mid(5) ;
+		fuse += QString("-UUID-") + m_fusefs.mid(5) ;
 	}else{
 		//replace bash special characters with '_' to workaround cryptsetup bug
 		QString p = QString(BASH_SPECIAL_CHARS);
@@ -21,8 +24,9 @@ QString volumePropertiesThread::fuseblkGetFs()
 		for( int i = 0 ; i < g ; i++ ){
 			f.replace(p.at(i),QChar('_'));
 		}
-		fuse += f ;
+		fuse += QString("-NAAN-") + f ;
 	}
+	std::cout << fuse.toStdString() << std::endl ;
 	QStringList stl = miscfunctions::deviceProperties(fuse) ;
 	return stl.at(3) ;
 }

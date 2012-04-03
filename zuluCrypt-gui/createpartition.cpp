@@ -242,12 +242,7 @@ void createpartition::pbCreateClicked()
 		UIMessage(tr("ERROR!"),tr("volume path field is empty"));
 		return ;
 	}
-	if( volumePath.mid(0,5) == QString("UUID=")){
-		if( miscfunctions::isUUIDvalid(volumePath) == false ){
-			UIMessage(tr("ERROR"),tr("could not find any partition with the presented UUID"));
-			return ;
-		}
-	}
+
 	if( volumePath.mid(0,2) == QString("~/"))
 		volumePath = QDir::homePath() + QString("/") + volumePath.mid(2) ;
 
@@ -310,7 +305,6 @@ void createpartition::pbCreateClicked()
 	exe = exe + passphrase_1 + QString("\" -g ") ;
 	exe = exe + m_ui->comboBoxRNG->currentText();
 
-	std::cout << exe.toStdString() << std::endl ;
 	m_isWindowClosable = false ;
 
 	runInThread * cvt = new runInThread(exe) ;
@@ -322,7 +316,6 @@ void createpartition::pbCreateClicked()
 
 void createpartition::threadfinished(int st)
 {	
-	m_created = true ;
 	m_isWindowClosable = true ;
 	
 	switch ( st ){
@@ -342,12 +335,14 @@ A system partition is a partition with an active entry in \"/etc/fstab\"\
 and \"/etc/crypttab.\"\nRerun the tool from root's accout to proceed" )) ;
 															break  ;
 		case 11: UIMessage(tr("ERROR"),tr("%1 not found").arg(ZULUCRYPTmkfs) );					break  ;
-		case 12: UIMessage(tr("ERROR"),tr("user chose not to proceed\n" ) );					break  ;
-		case 13: UIMessage(tr("ERROR"),tr("insufficient privilege to search for volume path\n" )) ;		break  ;
-		case 14: UIMessage(tr("ERROR"),tr("insufficient privilege to create a volume in this device\n" )) ;	break  ;
-		case 15: UIMessage(tr("ERROR"),tr("insufficient privilege to open the file in write mode\n" )) ;	break  ;				
+		case 12: UIMessage(tr("ERROR"),tr("user chose not to proceed" ) );					break  ;
+		case 13: UIMessage(tr("ERROR"),tr("insufficient privilege to search for volume path" )) ;		break  ;
+		case 14: UIMessage(tr("ERROR"),tr("insufficient privilege to create a volume in this device" )) ;	break  ;
+		case 15: UIMessage(tr("ERROR"),tr("insufficient privilege to open the file in write mode" )) ;		break  ;
+		case 110:UIMessage(tr("ERROR"),tr("could not find any partition with the presented UUID" )) ;		break  ;
 		default: UIMessage(tr("ERROR"),tr("unrecognized error with status number %1 encountered").arg(st));
 	}
+
 	enableAll();
 }
 

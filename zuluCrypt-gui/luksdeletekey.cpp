@@ -174,12 +174,7 @@ void luksdeletekey::pbDelete()
 		UIMessage(tr("ERROR"),tr("the path to encrypted volume field is empty"));
 		return ;
 	}
-	if( m_volumePath.mid(0,5) == QString("UUID=")){
-		if( miscfunctions::isUUIDvalid(m_volumePath) == false ){
-			UIMessage(tr("ERROR"),tr("could not find any partition with the presented UUID"));
-			return ;
-		}
-	}
+
 	if(miscfunctions::exists(m_volumePath) == false && m_volumePath.mid(0,5) != QString("UUID=")){
 		UIMessage(tr("ERROR"),tr("volume path field does not point to a file or device"));
 		return ;
