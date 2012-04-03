@@ -63,7 +63,7 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 	pthread_t thread ;
 	st_1 st ;
 
-	if ( is_path_valid( dev ) == 1 )
+	if ( is_path_valid( dev ) != 0 )
 		return 1 ;
 		
 	if( strcmp( type,"luks" ) == 0 )
@@ -118,7 +118,7 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 	
 	pthread_cancel( thread );
 	
-	close_mapper( "/dev/mapper/zuluCrypt-create-new" );	
+	close_mapper( DEVICE_MAPPER );	
 	
 	if( status == 0 )
 		return 0 ;

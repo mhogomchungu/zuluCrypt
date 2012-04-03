@@ -32,8 +32,8 @@ static char * loop_device_address( const char * device )
 	char * path ;
 	struct loop_info64 l_info ;
 	
-	fd = open( device , O_RDONLY ) ;
-	ioctl( fd, LOOP_GET_STATUS64, &l_info ) ;
+	fd = open( device ,O_RDONLY ) ;
+	ioctl( fd, LOOP_GET_STATUS64,&l_info ) ;
 	path = realpath( ( char * ) l_info.lo_file_name,NULL ) ;
 	close( fd ) ;
 	return path ;

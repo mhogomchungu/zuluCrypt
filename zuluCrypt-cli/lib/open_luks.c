@@ -30,7 +30,7 @@ int open_luks( const char * device,const char * mapper,const char * mode,const c
 	struct crypt_device * cd;
 	uint32_t flags = 0;
 	
-	if( is_path_valid( device ) == 1 )
+	if( is_path_valid( device ) != 0 )
 		return 3 ;
 
 	if( crypt_init( &cd,device ) != 0 )

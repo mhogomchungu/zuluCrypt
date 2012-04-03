@@ -22,14 +22,15 @@
 int is_luks( const char * dev )
 {		
 	struct crypt_device * cd;
+	int st ;
 	
 	if( crypt_init( &cd,dev ) != 0 )
 		return 1 ;
 	
-	if( crypt_load( cd,CRYPT_LUKS1,NULL ) == 0 ){
-		crypt_free( cd );
-		return 0 ;
-	}
-		return 1 ;
+	st = crypt_load( cd,CRYPT_LUKS1,NULL ) ;
+	
+	crypt_free( cd );
+	
+	return st ;
 }
 

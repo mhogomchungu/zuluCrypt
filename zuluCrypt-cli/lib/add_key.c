@@ -29,7 +29,7 @@ int add_key( const char * device,const char * existingkey,size_t existingkey_siz
 {
 	struct crypt_device * cd;
 	
-	if( is_luks( device ) == 1 )
+	if( is_luks( device ) != 0 )
 		return 3 ;
 		
 	if( crypt_init( &cd,device ) != 0 )

@@ -109,6 +109,7 @@ string_t device_from_uuid( const char * uuid )
 	int j ;
 	int k ;
 	blkid_probe bp ;
+	
 	stringList_t stl = partitionList() ;
 	
 	j = StringListSize( stl ) ; 

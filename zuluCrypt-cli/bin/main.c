@@ -263,7 +263,7 @@ static int check_empty_slots( const char * device )
 {
 	int status ;
 	char * c  ;
-	if( is_path_valid( device ) == 1 ){
+	if( is_path_valid( device ) != 0 ){
 		printf( "path \"%s\" does not point to a device\n",device ) ;
 		status = 1 ;			
 	}else{

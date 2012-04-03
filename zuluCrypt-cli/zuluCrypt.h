@@ -105,7 +105,7 @@ int close_mapper( const char * mapper ) ;//mapper is the full address of the vol
   */
 int unmount_volume( const char * mapper, //mapper is the full address of the volume as it appears at /dev/mapper
 		    char ** m_point ) ;  //mount point will be returned on this variable if closing succeeded.useful for deleting 
-					 //mount point folder
+					 //mount point folder.Its the caller's responsibility to free() this return value
 					
 /**
  * This function mounts a volume
@@ -138,9 +138,9 @@ int mount_volume( const char * mapper, // path to a file or partition to mount
  * 
  * output is a pointer to a string with volume info.
  * 
- * remember to free the returned pointer when done with the output. 
+ * remember to free() the returned pointer when done with the output. 
  */
-char *status( const  char * mapper );//mapper is the full address of the volume as it
+char * status( const  char * mapper );//mapper is the full address of the volume as it
 					//appears at /dev/mapper
 
 
@@ -206,6 +206,8 @@ int remove_key(const char * device ,      //path to an encrypted device
  * 
  *       example:
  *	00100000 means, slot number 3 is occupied/enabled, the rest are not(emply/disabled).  
+ * 
+ *  Remember to free() the return value when done with the pointer
  */
 char * empty_slots(const char * device ) ; 
 
@@ -268,6 +270,9 @@ int open_plain( const char * device,      // path to encrypted file or partition
  * when done with it 
  * 
  *  NULl is returned if the mapper device can not be opened for the reasons that include the mapper not being cryptsetup mapper.
+ * 
+ *  Remember to free() the return value when done with the pointer(if it is not NULL ofcourse)
+ * 
  */
 char * volume_device_name( const char * mapper ) ;
 

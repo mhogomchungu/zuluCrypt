@@ -25,7 +25,7 @@ int open_volume( const char * dev,const char * map,const char * m_point,uid_t id
 	string_t p ;
 	const char * mapper ;
 
-	if( is_path_valid( dev ) == 1 )		 
+	if( is_path_valid( dev ) != 0 )		 
 		return 3 ;
 	
 	p = String( "/dev/mapper/" ) ;

@@ -30,7 +30,7 @@ int remove_key( const char * device ,const char * pass,size_t pass_size )
 	int slot ;
 	struct crypt_device * cd;
 	
-	if( is_luks( device ) == 1 )
+	if( is_luks( device ) != 0 )
 		return 1 ;      
 	
 	if( crypt_init( &cd,device ) != 0 )

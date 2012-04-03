@@ -25,7 +25,7 @@ int volume_info( const char * mapper,const char * device,uid_t uid )
 	int xt ;
 	
 	string_t p ;
-	
+
 	/*
 	 * This function is defined at "create_mapper_name.c"
 	 * 

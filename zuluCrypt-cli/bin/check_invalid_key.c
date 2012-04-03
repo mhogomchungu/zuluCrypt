@@ -34,6 +34,7 @@ void check_invalid_key( const char * device )
 	while( *++d ){
 		if( *d == '2' ){
 			printf("WARNING: the volume has atleast one corrupted key slot\n" ) ;
+			break ;
 		}
 	}	
 	free( c ) ;
