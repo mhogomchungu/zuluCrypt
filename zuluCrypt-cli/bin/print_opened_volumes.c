@@ -32,15 +32,10 @@ char * volume_device_name( const char * ) ;
 
 static void print_UUID( const char * entry )
 {
-	const char * c = strstr( entry,"-UUID-" ) + 6 ;
+	const char * c = entry - 1 ;
 	
-	if( c == NULL )
-		return ;
-	 
 	printf( "UUID=\"" ) ;
-	
-	c-- ;
-	
+
 	while( *++c != ' ' )
 		printf( "%c",*c ) ;
 	
@@ -76,40 +71,31 @@ static void print_NAAN( const char * entry )
 	free( volume ) ;
 }
 
-static void print( uid_t uid,string_t q )
+static void print( uid_t uid,stringList_t stl )
 {
-	int len ;
 	const char * entry ;
 	const char * c ;
-
+	size_t len ;
+	size_t j ;
+	size_t i ;
+	
 	string_t z = StringIntToString( uid ) ;
 	string_t p = String( "/dev/mapper/zuluCrypt-" ) ;
-		
+
 	StringAppend( p,StringContent( z ) ) ;
 	
 	len = StringLength( p ) ;
 	entry = StringContent( p ) ;
 	
-	c = StringContent( q ) ;
+	j = StringListSize( stl )  ;
 	
-	/*
-	 * examine the first line.
-	 */
-	if( strncmp( c,entry,len ) == 0 ){
-		if( strncmp( c + len + 1,"UUID",4 ) == 0 )
-			print_UUID( c ) ;
-		else
-			print_NAAN( c ) ;
-	}
-	/*
-	 * examine the remaining lines.
-	 */
-	while( ( c = strstr( c,"\n" ) ) != NULL )
-	{
-		c++ ;
+	for( i = 0 ; i < j ; i++ ){
+		
+		c = StringListContentAt( stl,i ) ;
+		
 		if( strncmp( c,entry,len ) == 0 ){
 			if( strncmp( c + len + 1,"UUID",4 ) == 0 )
-				print_UUID( c ) ;
+				print_UUID( c + len + 6 ) ;
 			else
 				print_NAAN( c ) ;
 		}
@@ -136,12 +122,15 @@ int print_opened_volumes( uid_t uid )
 	
 	string_t q ;
 	
+	stringList_t stl ;
 	path = realpath( "/etc/mtab",NULL ) ;
 	
 	if( path == NULL )
 		return 1 ;
 	
-	if( strncmp( path,"/etc/",5 ) == 0 ){
+	if( strncmp( path,"/proc/",6 ) == 0 ){
+		q = StringGetFromVirtualFile( path ) ;
+	}else{
 		m_lock = mnt_new_lock( "/etc/mtab~",getpid() ) ;
 		
 		if( mnt_lock_file( m_lock ) != 0 )
@@ -150,15 +139,14 @@ int print_opened_volumes( uid_t uid )
 		q = StringGetFromFile( path ) ;	
 		
 		mnt_unlock_file( m_lock ) ;
-		mnt_free_lock( m_lock ) ;
-		
-		print( uid,q ) ;
-	}else{
-		q = StringGetFromFile( path ) ;			
-		print( uid,q ) ;
+		mnt_free_lock( m_lock ) ;		
 	}
 	
-	StringDelete( &q ) ;
+	stl = StringListStringSplit( &q,'\n' ) ;
+	
+	print( uid,stl ) ;
+	
+	StringListDelete( &stl ) ;
 	
 	return free_return( path,0 ) ;
 }
