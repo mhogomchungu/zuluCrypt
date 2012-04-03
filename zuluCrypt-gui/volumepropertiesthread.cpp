@@ -26,7 +26,7 @@ QString volumePropertiesThread::fuseblkGetFs()
 		}
 		fuse += QString("-NAAN-") + f ;
 	}
-	std::cout << fuse.toStdString() << std::endl ;
+
 	QStringList stl = miscfunctions::deviceProperties(fuse) ;
 	return stl.at(3) ;
 }
