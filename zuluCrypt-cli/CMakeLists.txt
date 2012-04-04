@@ -1,5 +1,7 @@
  cmake_minimum_required(VERSION 2.6)  
  
+ file(WRITE bin_path.h "\n#define ZULUCRYPTzuluCrypt      \"${CMAKE_INSTALL_PREFIX}/bin/zuluCrypt-cli\"\n")
+ 
  find_file ( mntent mntent.h )
  
  if(NOT mntent)

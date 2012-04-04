@@ -1,2 +1,3 @@
 zuluCrypt-cli/libmount_header.h
 zuluCrypt-gui/zuluCrypt.pro.user
+zuluCrypt-cli/bin_path.h

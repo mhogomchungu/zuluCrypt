@@ -1,0 +1,23 @@
+
+
+This tool depends on the following packages installed to build, their precise name may differ in your distro.
+1. libmount-devel
+2. libblkid-devel
+3. Qt-devel
+4. gcc
+5. gcc-c++
+6. cryptsetup-devel
+7. cmake
+
+After you have above packages installed,run these 3 command to build and install.
+The last command depends on your distribution,go with the one recommended by disto.
+
+cmake -DCMAKE_INSTALL_PREFIX=/usr/ -DCMAKE_BUILD_TYPE=MINSIZEREL .
+	
+make
+
+make install ( or sudo make install or su -c "make install" )
+
+After you have it installed,run "zuluCrypt-test" to make sure everything is working as expected.
+
+Build errors/test fails/feature requests/recommendations can be reported at: http://code.google.com/p/zulucrypt/issues/list

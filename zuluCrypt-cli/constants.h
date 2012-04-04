@@ -20,8 +20,9 @@
 
 #define EXECUTABLES_H
 
+#include "bin_path.h"
+
 #define ZULUCRYPTmkfs        	"/sbin/mkfs" 
-#define ZULUCRYPTzuluCrypt      "/usr/bin/zuluCrypt-cli"  
 #define ZULUCRYPTmount      	"/bin/mount"  
 #define ZULUCRYPTmkfs_dir      	"/sbin"  
 
@@ -34,10 +35,5 @@
 
 #define OPEN 1
 #define CLOSE 2
-
-/*
- *  uid number seem to be a 16 bit number requiring 5 digits,the extra one is for NULL character 
- * */
-#define UID_SIZE 6
 
 #endif
