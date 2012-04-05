@@ -1,118 +1,20 @@
 
-how to build and install
 
-run the following commands:
+zuluCrypt is a front end to cryptsetup. It makes it easy to use 
+cryptsetup to manage encrypted volumes by providing a Qt based 
+GUI and a simpler to use cli front end to cryptsetup.
 
-./configure
-make
-make install (must run this one with root's privileges)
+It does the same thing truecrypt does but uses(through cryptsetup) cryptographic 
+infrastructure that exist inside the kernel in linux and some bsd systems. 
 
-The above will install it at "/usr". 
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 2 of the License, or
+( at your option ) any later version. Version 2 and 3 of GNU General
+Public License are provided with these sources for your convenience.
 
-If you want to install it someplace else, modify paths in the configure script in this folder and "ZULUCRYPTzuluCrypt" variable in zuluCrypt-cli/executables.h
-to where you want it to be installed.
+Build instructions are in a text file named "BUILD_INSTRUCTIONS"
 
-how to uninstall
+The project is hosted at : http://code.google.com/p/zulucrypt/
 
-./make uninstall (must run this one with root's privileges
-	
-zuluCrypt is a front end to cryptsetup. It aims to simplify using cryptsetup volumes by creating a simple to use
-command line interface and a Qt based GUI front end to the command line.
-
-The command line program is called "zuluCrypt-cli", the Qt based GUI is called "zuluCrypt-gui".
-The cli part of the program is an suid program to allow management of the volumes without 
-setting up sudo with appropriate permissions first or requiring root's password.
-
-The GUI part of the program calls the cli part for its operations.
-
-USAGE
-
-how to use zuluCrypt-cli
-
-NOTE: <path to volume> can be given in two forms
-1. As paths ie: "/dev/sdc1"
-2. As UUID  ie UUID="2468d6a7-9a71-4312-8bd9-662f982fade5"
-
-1. How to open a volumes.
-
-zuluCrypt-cli open <path to volume> <mount point path> <mode>
-
-<path to volume>      is a path to an encrypted file or partition.
-<path to mount point> is a path to a folder zuluCrypt will create a mount point to the volume in.
-<mode>                is opening mode, two options are allowed "ro" for read only and "rw" for read and write.
-
-The above usage is appropriate when using the program interactively because the user will be asked for a password and it wont be displayed.
-
-Another way to open a volume is with below format. This format is more convenient when the cli is used by another application.
-
-zuluCrypt-cli <path to volume> <mount point path> <mode> <pass type > <passphrase> 
-
-<pass type> is either "-f" or "-p". Option "-f" expects a keyfile while "-p" expects a "naked" passphrase
-
-2. How to check the status of an opened volume
-
-zuluCrypt-cli status <path to volume>
-
-3. How to close an opened volume
-zuluCrypt-cli close <path to volume>
-
-4. How to create new volumes
-zuluCrypt-cli create <path to volume> <file system type> <encryption type> <random number generator>
-
-<encryption type> is either "plain" or "luks"
-
-<<random number generator> is either "/dev/random" or "/dev/urandom"
-
-plain volumes do not use random number generator and hence the option is ignored but it must be presented.
-
-example usage
-zuluCrypt-cli create /dev/sdc1 ext4 plain /dev/urandom
-zuluCrypt-cli create UUID="2468d6a7-9a71-4312-8bd9-662f982fade5" ext4 plain /dev/urandom
-zuluCrypt-cli create /dev/sdc1 ext4 luks /dev/urandom
-
-another alternative suitable when called from another program:
-
-zuluCrypt-cli create UUID="2468d6a7-9a71-4312-8bd9-662f982fade5" ext4 luks -f path-to-keyfile /dev/urandom
-
-zuluCrypt-cli create UUID="2468d6a7-9a71-4312-8bd9-662f982fade5" ext4 luks -p typing-in-passphrase /dev/urandom
-
-5. How to add a key to a luks volume
-zuluCrypt-cli addkey <path to luks volume> < source > < passphrase > < source > < passphrase1 >
-source could be either "-f" or "-p" for keyfile and naked passphrase respectively
-passphrase must be a key already in the volume
-
-for interactive use, run zuluCrypt-cli addkey < path to volume > and follow instructions
-
-6. How to delete a keyfile
-zuluCrypt-cli removekey <path to volume> < source > < passphrase >
-passphrase must be already in the volume
-source could be "-f" or "-p" for a keyfile or naked passphrase respectively.
-
-for interactive use, run zuluCrypt-cli removekey < path to volume > and follow instructions
-	
-7. How to see which ones and how many slots are empty is a luks volume
-zuluCrypt-cli emptyslots <path to volume>
-"0" represent an inactive slot/empty slots
-"1" represent an active slot/accupied slots
-"2" represent an invalid slot
-"3" represent a last active slot
-
-8.
-How to get a list of all partitions
-zuluCrypt-cli partitions 1
-
-How to get a list of system partitions
-zuluCrypt-cli partitions 2
-
-How to get a list of non system partitions
-zuluCrypt-cli partitions 3
-
-This tool will create volumes only in non system partitions. This will allow a normal user to create volumes
-in external hard drives but not on a root's partition effectively distroying a system.
-
-System partition is a partition with an active entry in /etc/fstab and /etc/crypttab
-
-AUTHOR
-mhogo mchungu
-
-Last change: Wed Oct 26 17:46:57 EDT 2011
+bugs,wishes and comments can be reported at: http://code.google.com/p/zulucrypt/issues/list

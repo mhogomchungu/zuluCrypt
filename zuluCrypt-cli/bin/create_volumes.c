@@ -113,8 +113,8 @@ int create_volumes( const struct_opts * opts,uid_t uid  )
 		
 	}
 	/*
-	 * ZULUCRYPTmkfs is defined at "../executables.h"
-	 * File systems are cureated not through file systems APIs but through mkfs.xxx executables started using exec call.
+	 * ZULUCRYPTmkfs is defined at "../constants.h"
+	 * File systems are created not through file systems APIs but through mkfs.xxx executables started using exec call.
 	 * 	 */
 	if( is_path_valid( ZULUCRYPTmkfs ) != 0 )
 		return status_msg( 11 ) ;
