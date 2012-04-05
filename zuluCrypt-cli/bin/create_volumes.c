@@ -101,16 +101,18 @@ int create_volumes( const struct_opts * opts,uid_t uid  )
 				}
 			}
 		}else{
+			/*
+			 * device maybe an lvm device or something else completely different,since not sure what the device is,ask
+			 * user to rerun the tool as root.
+			 */
 			return status_msg( 14 ) ;
 		}
 	}else{
 		/*
-		 * the device seem to be a regular file. Check to see if the user who run the tool had sufficient rights
-		 * to write to it.
-		 */	
-		if( can_open_path_for_writing( device,uid ) != 0 )
-			return status_msg( 15 ) ;
-		
+		 * the device seem to be a regular file. Do nothing since the check to see if the user has writing access is already
+		 * done above
+		 */
+		;
 	}
 	/*
 	 * ZULUCRYPTmkfs is defined at "../constants.h"

@@ -71,7 +71,7 @@ int volume_info( const char * mapper,const char * device,uid_t ) ;
  * this function is responsibe for closing an opened volume.
  * It is defined in close_volume.c 
  */
-int close_opened_volume( const char * mapping_name,uid_t ) ;
+int close_opened_volume( const char * device,const char * mapping_name,uid_t ) ;
  
 /*
  * this function is responsibe for opening volumes.
@@ -129,7 +129,7 @@ int print_opened_volumes( uid_t ) ;
  * opened volumes.
  * It is defined in create_mapper_name.c
  */
-string_t create_mapper_name( const char * mapping_name,uid_t uid,int ) ;
+string_t create_mapper_name( const char * device,const char * mapping_name,uid_t uid,int ) ;
 
 /*
  * this function is responsibe for creating a mount point after it checks to make sure a user who started the tool

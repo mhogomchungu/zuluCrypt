@@ -137,7 +137,7 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 	 * 
 	 * Explanation for what it does is explained where it is defined.	  * 
 	 */
-	m_name = create_mapper_name( mapping_name,uid,OPEN ) ;
+	m_name = create_mapper_name( device,mapping_name,uid,OPEN ) ;
 	
 	cname = StringContent( m_name ) ;
 	

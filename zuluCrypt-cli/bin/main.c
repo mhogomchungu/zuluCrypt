@@ -302,7 +302,7 @@ static int exe( struct_opts * clargs, const char * mapping_name,uid_t uid )
 		case 'i' : return check_if_luks( clargs->device ) ;
 		case 'D' : return get_device( clargs->device ) ;
 		case 's' : return volume_info( mapping_name,clargs->device,uid ) ;
-		case 'q' : return close_opened_volume( mapping_name,uid ) ;
+		case 'q' : return close_opened_volume( clargs->device,mapping_name,uid ) ;
 		case 'o' : return open_volumes( clargs,mapping_name,uid ) ;
 		case 'O' : return open_volumes( clargs,mapping_name,uid ) ;		
 		case 'c' : return create_volumes( clargs,uid ) ;
@@ -332,7 +332,11 @@ int main( int argc , char *argv[] )
 	
 	struct_opts clargs ;
 
-	if( argc > 1 ){
+	if( argc == 1 ){
+		help();
+		return 1;
+	}
+	if( argc == 2 ){
 		ac = argv[ 1 ] ;
 		if ( strcmp( ac,"-h" ) == 0 || strcmp( ac,"--help" ) == 0 || strcmp( ac,"-help" ) == 0 ){			
 			help();	

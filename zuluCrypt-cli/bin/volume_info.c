@@ -31,7 +31,7 @@ int volume_info( const char * mapper,const char * device,uid_t uid )
 	 * 
 	 * Explanation for what it does is explained where it is defined.	  * 
 	 */
-	p = create_mapper_name( mapper,uid,CLOSE ) ;
+	p = create_mapper_name( device,mapper,uid,CLOSE ) ;
 	
 	output = status( StringContent( p ) ) ;
 	

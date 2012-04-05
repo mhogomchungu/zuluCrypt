@@ -33,16 +33,22 @@ char * volume_device_name( const char * ) ;
 static void print_UUID( const char * entry )
 {
 	const char * c = entry - 1 ;
+	const char * d = strstr( entry," " ) ;
 	
 	printf( "UUID=\"" ) ;
 
-	while( *++c != ' ' )
-		printf( "%c",*c ) ;
+	while( *--d != '-' ) { ; }
 	
+	while( ++c != d )
+		printf( "%c",*c ) ;
+		
 	printf( "\"\t" ) ;
 	
+	while( *++c != ' ' ) { ; }
+		
 	while( *++c != ' ' )
 		printf( "%c",*c ) ;
+	
 	printf( "\n" ) ;	
 }
 

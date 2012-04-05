@@ -32,10 +32,32 @@
  * XXX is there for security reason.It makes sure one user can not manage another user's mappers 
  */
 
-string_t create_mapper_name( const char * mapping_name,uid_t uid,int i )
+/*
+ * the mapping_name name is taken from the last segment of volume path,this means that two volumes 
+ * with the same name but from two different paths will end up with the same mapping_name making it impossible to open second volume.
+ * 
+ * this simple hash function will make the above possible by appending hush of full path hopefully to make sure two
+ * paths will always be different while using the same mapping_name
+ */
+string_t hash_path( const char * path )
 {
-	string_t q = StringIntToString( uid ) ;
+	string_t p ;
+	size_t i = 0 ;
+	size_t l = strlen( path ) ;
+	uint64_t h = 0 ;
 	
+	for ( i = 0 ; i < l ; i++ ) 
+		h = 4 * h + path[ i ] ;	
+	
+	p = StringIntToString( h ) ;
+	StringPrepend( p,"-" );
+	return p ;
+}
+
+string_t create_mapper_name( const char * device,const char * mapping_name,uid_t uid,int i )
+{
+	string_t z = hash_path( device ) ;
+	string_t q = StringIntToString( uid ) ;	
 	string_t p ;
 	
 	if( i == OPEN )
@@ -51,9 +73,12 @@ string_t create_mapper_name( const char * mapping_name,uid_t uid,int i )
 		StringAppend( p,"-" ) ;	
 	
 	StringAppend( p,mapping_name ) ;
+	StringAppend( p,StringContent( z ) ) ;
 	
 	replace_bash_special_chars( &p ) ;
 	
 	StringDelete( &q ) ;
+	StringDelete( &z ) ;
+
 	return p ;
 }
