@@ -26,6 +26,7 @@
 #include <QStringList>
 #include <QCloseEvent>
 #include <QTableWidget>
+#include <stdlib.h>
 
 #include "ui_password.h"
 #include "openpartition.h"

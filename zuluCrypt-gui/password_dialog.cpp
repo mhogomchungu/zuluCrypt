@@ -309,7 +309,17 @@ void passwordDialog::success(void)
 
 void passwordDialog::done(QString type)
 {
-	miscfunctions::addItemToTableWithType(m_table,m_ui->OpenVolumePath->text(),m_ui->MountPointPath->text(),type);
+	QString q = m_ui->OpenVolumePath->text() ;
+	if(q.mid(0,5) == QString("UUID="))
+		miscfunctions::addItemToTableWithType(m_table,q,m_ui->MountPointPath->text(),type);
+	else{
+		char * p = realpath(q.toAscii().data(),NULL) ;
+		if(p != NULL){
+			miscfunctions::addItemToTableWithType(m_table,QString(p),m_ui->MountPointPath->text(),type);
+			free(p);
+		}else
+			miscfunctions::addItemToTableWithType(m_table,q,m_ui->MountPointPath->text(),type);
+	}
 	HideUI();
 }
 
