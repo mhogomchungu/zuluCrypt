@@ -47,7 +47,7 @@ string_t hash_path( const char * path )
 	uint64_t h = 0 ;
 	
 	for ( i = 0 ; i < l ; i++ ) 
-		h = 4 * h + path[ i ] ;	
+		h = h + path[ i ] ;	
 	
 	p = StringIntToString( h ) ;
 	StringPrepend( p,"-" );
@@ -56,9 +56,14 @@ string_t hash_path( const char * path )
 
 string_t create_mapper_name( const char * device,const char * mapping_name,uid_t uid,int i )
 {
-	string_t z = hash_path( device ) ;
+	string_t z ;
 	string_t q = StringIntToString( uid ) ;	
 	string_t p ;
+	
+	if( strncmp( mapping_name,"UUID-",5 ) == 0 )
+		z = hash_path( mapping_name ) ;
+	else
+		z = hash_path( device ) ;
 	
 	if( i == OPEN )
 		p = String( "zuluCrypt-" ) ;

@@ -1,6 +1,4 @@
 #include "volumepropertiesthread.h"
-#include <iostream>
-#include <unistd.h>
 
 volumePropertiesThread::volumePropertiesThread(QString path,QString mpoint)
 {
@@ -9,14 +7,28 @@ volumePropertiesThread::volumePropertiesThread(QString path,QString mpoint)
 	m_mpoint = mpoint ;
 }
 
+QString volumePropertiesThread::hashPath(QString p)
+{
+	size_t i = 0 ;
+	size_t l = p.size() ;
+	double h = 0 ;
+
+	for ( i = 0 ; i < l ; i++ )
+		h = h + p.at(i).toAscii() ;
+
+	return QString("-") + QString::number(h);
+}
+
 QString volumePropertiesThread::fuseblkGetFs()
 {
 	QString pid = QString::number(getuid())  ;
 	QString fuse = QString("/dev/mapper/zuluCrypt-") + pid ;
 	if( m_fusefs.mid(0,5) == QString("UUID=") ){
 		m_fusefs.remove(QChar('"'));
-		fuse += QString("-UUID-") + m_fusefs.mid(5) ;
+		QString p = hashPath(QString("UUID-") + m_fusefs.mid(5))  ;
+		fuse += QString("-UUID-") + m_fusefs.mid(5) + p ;
 	}else{
+		QString hash = hashPath(m_fusefs);
 		//replace bash special characters with '_' to workaround cryptsetup bug
 		QString p = QString(BASH_SPECIAL_CHARS);
 		QString f = m_fusefs.split("/").last() ;
@@ -25,8 +37,8 @@ QString volumePropertiesThread::fuseblkGetFs()
 			f.replace(p.at(i),QChar('_'));
 		}
 		fuse += QString("-NAAN-") + f ;
+		fuse += hash ;
 	}
-
 	QStringList stl = miscfunctions::deviceProperties(fuse) ;
 	return stl.at(3) ;
 }
@@ -109,3 +121,4 @@ volumePropertiesThread::~volumePropertiesThread()
 {
 	emit finished(m_volumeProperties);
 }
+
