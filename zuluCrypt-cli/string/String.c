@@ -55,6 +55,9 @@ inline void StringCNSH__( string_t st,string_t nst )
 
 inline int StringLockMutex__( string_t st )
 {
+#if NO_COW
+	return 1 ;
+#else
 	int rc ;
 #if THREAD_SAFE 
 	pthread_mutex_lock( st->mutex ) ;
@@ -63,6 +66,7 @@ inline int StringLockMutex__( string_t st )
 	if( rc != 1 )
 		*( st->rc ) = *( st->rc) - 1 ;
 	return rc ;
+#endif	
 }
 
 inline void StringUnlockMutex__( string_t st )

@@ -43,7 +43,7 @@ char * empty_slots( const char * device )
 	slot = ( char * ) malloc( sizeof( char ) * ( k + 1 ) ) ;
 	
 	for( j = 0 ; j < k ; j++){
-		cki = crypt_keyslot_status(cd, j);
+		cki = crypt_keyslot_status( cd,j );
 		switch ( cki ){
 			case CRYPT_SLOT_INACTIVE :   slot[j] = '0' ; break ;
 			case CRYPT_SLOT_ACTIVE :     slot[j] = '1' ; break ;

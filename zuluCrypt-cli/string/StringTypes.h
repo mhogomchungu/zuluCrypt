@@ -32,6 +32,11 @@ extern "C" {
 	#define THREAD_SAFE 0
 #endif
 
+/*
+ * do not use copy on write feature of the library
+ */
+#define NO_COW 1
+
 struct StringType
 {
 	size_t size ;
