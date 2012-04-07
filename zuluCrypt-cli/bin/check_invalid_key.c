@@ -21,21 +21,23 @@
 
 void check_invalid_key( const char * device )
 {
-	char * c = empty_slots( device ) ;
-	char * d  ;
+	char * d = empty_slots( device ) ;
+	char * c ;
+	int e = 0  ;
 	
-	if( c == NULL ){
+	if( d == NULL ){
 		/*
 		 * we got here because the volume is either not luks based or the path is invalid
 		 */
 		return ;
 	}
-	d = c - 1 ;
-	while( *++d ){
-		if( *d == '2' ){
-			printf("WARNING: the volume has atleast one corrupted key slot\n" ) ;
-			break ;
-		}
+	
+	c = d - 1 ;
+	
+	while( *++c ){
+		if( *c == '2' )
+			printf("WARNING: key slot number: %d is corrupted\n",e ) ;
+		e++ ;
 	}	
-	free( c ) ;
+	free( d ) ;
 } 

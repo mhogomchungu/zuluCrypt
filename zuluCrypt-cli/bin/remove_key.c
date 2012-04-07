@@ -84,7 +84,7 @@ int removekey( const struct_opts * opts,uid_t uid )
 		case 1 : return status_msg( 12 ); break ;		
 	}
 	
-	if( check_empty_slot( device ) )
+	if( check_empty_slot( device ) == 3 )
 		if( k != 1 )
 			return status_msg( 11 ) ;
 	
