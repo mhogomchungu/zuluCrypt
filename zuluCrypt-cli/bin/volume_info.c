@@ -21,17 +21,24 @@
 
 int volume_info( const char * mapper,const char * device,uid_t uid )
 {
+	char * dev ;
 	char * output ;	
 	int xt ;
 	
 	string_t p ;
 
+	dev = realpath( device,NULL ) ;
+	if( dev == NULL ){
+		printf( "ERROR: full device path could not get resolved\n" ) ;
+		return 1 ;
+	}
+		
 	/*
 	 * This function is defined at "create_mapper_name.c"
 	 * 
 	 * Explanation for what it does is explained where it is defined.	  * 
 	 */
-	p = create_mapper_name( device,mapper,uid,CLOSE ) ;
+	p = create_mapper_name( dev,mapper,uid,CLOSE ) ;
 	
 	output = status( StringContent( p ) ) ;
 	
@@ -44,6 +51,7 @@ int volume_info( const char * mapper,const char * device,uid_t uid )
 		xt = 2 ;
 	}
 	StringDelete( &p );
+	free( dev ) ;
 	return xt ;
 }
 
