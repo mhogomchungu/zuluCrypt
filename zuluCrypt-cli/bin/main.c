@@ -322,7 +322,7 @@ int main( int argc , char *argv[] )
 	char * ac ;
 	char action ;
 	int st ;
-	
+	uid_t uid ;
 	/*
 	 * string_t is prototyped as "typedef struct StringType * string_t" at ../string/StringTypes.h
 	 * string_t type is therefore a pointer and it is appropriate to assign NULL to it	 
@@ -350,7 +350,7 @@ int main( int argc , char *argv[] )
 	
 	get_opts( argc,argv,&clargs );
 	
-	uid_t uid = getuid();
+	uid = getuid();
 	
 	setuid( 0 );
 	
@@ -376,8 +376,8 @@ int main( int argc , char *argv[] )
 	}
 	if( strncmp( device,"UUID=", 5 ) == 0 ){
 
-		q = String( device ) ;		
-		StringReplaceString( q,"UUID=","UUID-" ) ;
+		q = String( device ) ;	
+		StringSubChar( q,4,'-' ) ;
 		StringRemoveString( q,"\"" ) ;
 		
 		mapping_name = StringContent( q ) ;
