@@ -25,31 +25,21 @@
 #include <sys/types.h>
 #include <signal.h>
 
-/*
- * Some mkfs.xxx tools like mkfs.reiserfs requires and option to be passed to run them in non-interactive mode.
- * Some mkfs.xxx tools like mkfs.ext4 do not. There does not seem to be a standard way to know which tool 
- * require an option and which doesnt and i cant know all of them. The ones i know are specified in the code below in the child process.
- * 
- * I am not aware of any mkfs.xxx tool that will take 20 seconds to complete its task.Hence each mkfs.xxx is given 20 seconds to complete.
- * A tool that continue to run after 20 seconds is assumed to be stuck at an interactive prompt and will be killed since a tool
- * stuck in interactive mode waiting for user input will have the library and whoever is using it. * 
- */
-
 typedef struct st_2{
-	pid_t * pid  ;
-	int * status ;
+	pid_t pid  ;
+	int status ;
+	int no_expire ;
 }st_1;
 
 void * kill_hanged_mkfs( void * p )
 {
 	st_1 * st = ( st_1 * ) p ;
-	sleep( 20 ) ;
-	if( *( st->status ) < 0 ){	
-		/*
-		 *  mkfs.xxx is still running, kill the process
-		 */
-		kill( *( st->pid ),SIGKILL ) ;		
-	}
+	
+	sleep( 60 ) ;
+	
+	if( st->no_expire  == 0 && st->status == -1 )
+		kill( st->pid,SIGKILL ) ;		
+	
 	return ( void * ) 0 ; 
 }
 
@@ -58,8 +48,6 @@ void * kill_hanged_mkfs( void * p )
 
 int create_volume( const char * dev,const char * fs,const char * type,const char * pass,size_t pass_size,const char * rng )
 {
-	int status ;
-	pid_t pid ;
 	pthread_t thread ;
 	st_1 st ;
 
@@ -86,10 +74,10 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 		return 2 ;
 	}		
 	
-	pid = fork() ;
-	if( pid == -1 )
+	st.pid = fork() ;
+	if( st.pid == -1 )
 		return 3 ;	
-	if( pid == 0 ){
+	if( st.pid == 0 ){
 		close( 1 ); 
 		close( 2 );
 		if( strcmp( fs,"ext2" ) == 0 || strcmp( fs,"ext3" ) == 0 || strcmp( fs,"ext4" ) == 0 )
@@ -104,23 +92,35 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 			execl( ZULUCRYPTmkfs,"mkfs","-t",fs,DEVICE_MAPPER,( char * ) 0 ) ;
 	}
 	
-	st.pid = &pid ;
-	st.status = &status ;
+	/*
+	 * Some mkfs.xxx tools like mkfs.reiserfs requires an option to be passed to run them in non-interactive mode.
+	 * Some mkfs.xxx tools like mkfs.ext4 do not. There does not seem to be a standard way to know which tool 
+	 * require an option and which doesnt and i cant know all of them. 
+	 * The mkfs tools i do not know about are given 60 seconds to complete.If they take longer then an assumption is made
+	 * that they are stuck running in interactive mode and we kill to prevent their hanging dragging us with them.
+	 */
+	if( strcmp( fs,"ext2" ) == 0 || strcmp( fs,"ext3" ) == 0 || strcmp( fs,"ext4" ) == 0 )
+		st.no_expire = 1 ;
+	else if( strcmp( fs,"reiserfs" ) == 0 || strcmp( fs,"jfs" ) == 0 || strcmp( fs,"ntfs" ) == 0 || strcmp( fs,"vfat" ) == 0 )
+		st.no_expire = 1 ;
+	else
+		st.no_expire = 0 ;
+	
 	/*
 	 * waitpid below will set status value to a number > 0 before it return, signifying the forked process has finished.
 	 * checking this value is one of the ways the thread can know the forked process is still running 
 	 */
-	status = -1 ; 
+	st.status = -1 ; 
 	
 	pthread_create( &thread,NULL,kill_hanged_mkfs,( void * ) &st );
 	
-	waitpid( pid,&status,0 ) ;	
+	waitpid( st.pid,&st.status,0 ) ;	
 	
 	pthread_cancel( thread );
 	
 	close_mapper( DEVICE_MAPPER );	
 	
-	if( status == 0 )
+	if( st.status == 0 )
 		return 0 ;
 	else
 		return 3 ;	
