@@ -158,7 +158,7 @@ char * volume_device_name( const char * mapper )
 	string_t address ;
 	const char * e ;
 	
-	if( strncmp( mapper,"/dev/mapper",11 ) != 0 )
+	if( strncmp( mapper,crypt_get_dir(),11 ) != 0 )
 		return NULL ;
 	
 	if( crypt_init_by_name( &cd,mapper ) < 0 )

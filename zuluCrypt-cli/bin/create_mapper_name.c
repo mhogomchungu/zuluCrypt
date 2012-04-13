@@ -20,6 +20,11 @@
 #include "includes.h"
 
 /*
+ *  adding the header below because it contains prototype of crypt_get_dir()
+ */
+#include <libcryptsetup.h> 
+
+/*
  * This function is responsible for creating a mapper name,the mapper name will show up at "/dev/mapper" if the volume
  * is successfully opened.
  * 
@@ -65,10 +70,12 @@ string_t create_mapper_name( const char * device,const char * mapping_name,uid_t
 	else
 		z = hash_path( device ) ;
 	
-	if( i == OPEN )
-		p = String( "zuluCrypt-" ) ;
-	else
-		p = String( "/dev/mapper/zuluCrypt-" ) ;
+	p = String( "zuluCrypt-" ) ;
+	
+	if( i != OPEN ){
+		StringPrepend( p,"/" ) ;
+		StringPrepend( p,crypt_get_dir() ) ;
+	}
 	
 	StringAppend( p,StringContent( q ) ) ;
 	

@@ -28,8 +28,11 @@ int open_volume( const char * dev,const char * map,const char * m_point,uid_t id
 	if( is_path_valid( dev ) != 0 )		 
 		return 3 ;
 	
-	p = String( "/dev/mapper/" ) ;
+	p = String( crypt_get_dir() ) ;
+	
+	StringAppend( p,"/" ) ;
 	StringAppend( p,map ) ;
+	
 	mapper = StringContent( p ) ;
 	
 	if( is_path_valid( mapper ) == 0 ){

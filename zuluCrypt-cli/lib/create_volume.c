@@ -43,14 +43,20 @@ void * kill_hanged_mkfs( void * p )
 	return ( void * ) 0 ; 
 }
 
-#define DEVICE_MAPPER "/dev/mapper/zuluCrypt-create-new"
-#define MAPPER        "zuluCrypt-create-new"
-
 int create_volume( const char * dev,const char * fs,const char * type,const char * pass,size_t pass_size,const char * rng )
 {
 	pthread_t thread ;
 	st_1 st ;
-
+	
+	const char * DEVICE_MAPPER ;
+	const char * MAPPER ;
+	
+	string_t mapper = String( crypt_get_dir() ) ;	
+	StringAppend( mapper,"/zuluCrypt-create-new" ) ;
+	
+	DEVICE_MAPPER = StringContent( mapper ) ;
+	MAPPER = DEVICE_MAPPER + StringLastIndexOfChar( mapper,'/' ) + 1 ;
+	
 	if ( is_path_valid( dev ) != 0 )
 		return 1 ;
 		
