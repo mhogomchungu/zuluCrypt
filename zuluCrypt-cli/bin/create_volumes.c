@@ -44,9 +44,9 @@ static int status_msg( int st )
 														break  ;
 		case 11: printf( "ERROR: %s not found \n",ZULUCRYPTmkfs ) ;					break  ;
 		case 12: printf( "ERROR: user chose not to proceed\n" ) ;					break  ;
-		case 13: printf( "ERROR: insufficient privilege to write to device\n" ) ;		break  ;
+		case 13: printf( "ERROR: insufficient privilege to write to device\n" ) ;			break  ;
 		case 14: printf( "ERROR: insufficient privilege to create a volume in this device\n" ) ;	break  ;
-		case 15: printf( "ERROR: insufficient privilege to open the file in write mode\n" ) ;	break  ;				
+		case 15: printf( "ERROR: insufficient privilege to open the file in write mode\n" ) ;		break  ;				
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
 	return st ;
@@ -105,7 +105,8 @@ int create_volumes( const struct_opts * opts,uid_t uid  )
 			 * device maybe an lvm device or something else completely different,since not sure what the device is,ask
 			 * user to rerun the tool as root.
 			 */
-			return status_msg( 14 ) ;
+			if( uid != 0 )
+				return status_msg( 14 ) ;
 		}
 	}else{
 		/*
