@@ -23,6 +23,7 @@
 #include <QWidget>
 
 #include "createfilethread.h"
+#include "miscfunctions.h"
 
 namespace Ui {
     class createkeyfile;
@@ -47,7 +48,6 @@ private slots:
 	void threadfinished(void);
 	void threadterminated(void);
 private:
-	void UIMessage(QString title, QString message);
 	void closeEvent(QCloseEvent *) ;
 	void disableAll(void);
 	void enableAll(void) ;
@@ -56,6 +56,10 @@ private:
 	QString m_in ;
 	QString m_out ;
 	QString m_path ;
+	/*
+	  prototyped at miscfunctions.h
+	  */
+	UIMsg m_msg ;
 };
 
 #endif // CREATEKEYFILE_H

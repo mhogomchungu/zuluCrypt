@@ -46,6 +46,8 @@ passwordDialog::passwordDialog(QTableWidget * table,QWidget *parent ) : QDialog(
 
 	m_table = table ;
 
+	m_msg.setParent(this);
+
 	connect(m_ui->PushButtonCancel,SIGNAL(clicked()),this,SLOT(HideUI())) ;
 	connect(m_ui->PushButtonOpen,SIGNAL(clicked()),this,SLOT(buttonOpenClicked())) ;
 	connect(m_ui->PushButtonMountPointPath,SIGNAL(clicked()),this,SLOT(mount_point()));
@@ -139,7 +141,8 @@ void passwordDialog::clickedPartitionOption(QString dev)
 
 void passwordDialog::mount_point(void )
 {	
-	QString Z = QFileDialog::getExistingDirectory(this,tr("Select Path to mount point folder"),QDir::homePath(),QFileDialog::ShowDirsOnly) ;
+	QString p = tr("Select Path to mount point folder") ;
+	QString Z = QFileDialog::getExistingDirectory(this,p,QDir::homePath(),QFileDialog::ShowDirsOnly) ;
 	m_ui->MountPointPath->setText( Z );
 }
 
@@ -157,90 +160,40 @@ void passwordDialog::HideUI()
 
 void passwordDialog::buttonOpenClicked(void )
 {	
-	bool A = m_ui->checkBoxReadOnly->isChecked() ;
-	bool B = m_ui->radioButtonPassPhraseFromFile->isChecked() ;
-	m_volumePath = m_ui->OpenVolumePath->text() ;
-	QString mountPointPath = m_ui->MountPointPath->text() ;
+	QString mountPointPath = miscfunctions::resolveHomeSymbol(m_ui->MountPointPath->text()) ;
+	QString vp = miscfunctions::resolveHomeSymbol(m_ui->OpenVolumePath->text()) ;
+
 	QString passPhraseField = m_ui->PassPhraseField->text() ;
 
-	if(m_volumePath == QString("")){
-		UIMessage(tr("ERROR"),tr("volume path field is empty")) ;
-		m_ui->OpenVolumePath->setFocus();
-		return ;
-	}
-	if( m_volumePath.mid(0,5) != QString("UUID=")){
-		if( m_volumePath.mid(0,2) == QString("~/"))
-			m_volumePath = QDir::homePath() + QString("/") + m_volumePath.mid(2) ;
+	if( mountPointPath.isEmpty() || passPhraseField.isEmpty() || vp.isEmpty())
+		return m_msg.UIMessage(tr("ERROR!"),tr("atleast one required field is empty"));
 
-		QDir d(m_volumePath) ;
+	passPhraseField.replace("\"","\"\"\"") ;
+	vp.replace("\"","\"\"\"") ;
+	mountPointPath.replace("\"","\"\"\"") ;
 
-		m_volumePath = d.canonicalPath() ;
-		if( miscfunctions::exists( m_volumePath ) == false ){
-			UIMessage(tr("ERROR"),tr("No file or device exist on given path")) ;
-			return ;
-		}
-	}
-	if(mountPointPath == QString("")){
-		UIMessage(tr("ERROR"),tr("mount point path field is empty")) ;
-		m_ui->MountPointPath->setFocus();
-		return ;
-	}
-	if( mountPointPath.mid(0,2) == QString("~/"))
-		mountPointPath = QDir::homePath() + QString("/") + mountPointPath.mid(2) ;
-
-	QString pos = mountPointPath.mid(0,mountPointPath.lastIndexOf(QChar('/'))) ;
-	if( miscfunctions::exists(pos) == false ){
-		UIMessage(tr("ERROR"),tr("invalid path to mount point")) ;
-		return ;
-	}
-
-	if( miscfunctions::exists(mountPointPath) == true ){
-		UIMessage(tr("ERROR"),tr("mount point path is already taken")) ;
-		return ;
-	}
-	if(passPhraseField == QString("")){
-		if( B == true )
-			UIMessage(tr("ERROR"),tr("key file field is empty")) ;
-		else
-			UIMessage(tr("ERROR"),tr("passphrase field is empty")) ;
-		m_ui->PassPhraseField->setFocus();
-		return ;
-	}	
-	if(m_ui->radioButtonPassPhraseFromFile->isChecked() == true){
-
-		if( passPhraseField.mid(0,2) == QString("~/"))
-			passPhraseField = QDir::homePath() +  QString("/") + passPhraseField.mid(2);
-
-		if(miscfunctions::exists(passPhraseField) == false){
-			UIMessage(tr("ERROR"),tr("invalid path to a key file")) ;
-			return ;
-		}
-	}
 	QString mode ;
 
-	if ( A == true )
+	if ( m_ui->checkBoxReadOnly->isChecked() )
 		mode = "ro" ;
 	else
 		mode = "rw" ;
 
 	QString passtype ;
 
-	if ( B == true )
+	if ( m_ui->radioButtonPassPhraseFromFile->isChecked() )
 		passtype = "-f" ;
 	else
 		passtype = "-p" ;
 
-	passPhraseField.replace("\"","\"\"\"") ;
+	QString a = QString(ZULUCRYPTzuluCrypt) ;
+	QString b = vp;
+	QString c = mountPointPath ;
+	QString d = mode ;
+	QString e = passtype ;
+	QString f = passPhraseField ;
 
-	QString vp = m_volumePath ;
-
-	vp.replace("\"","\"\"\"") ;
-
-	mountPointPath.replace("\"","\"\"\"") ;
-
-	QString exe = QString(ZULUCRYPTzuluCrypt) + QString(" -o ") + QString("-d \"") + vp + QString("\" ") ;
-	exe = exe + QString("-m \"") + mountPointPath + QString("\" -e ") + mode + QString(" ") + passtype ;
-	exe = exe + QString(" \"") + passPhraseField + QString("\"");
+	QString exe = QString("%1 -o -d \"%2\" -m \"%3\" -e %4 %5 \"%6\"").arg(a).arg(b).arg(c).arg(d).arg(e).arg(f) ;
 
 	runInThread * ovt = new runInThread(exe) ;
 	connect(ovt,SIGNAL(finished(int)),this,SLOT(threadfinished(int))) ;
@@ -288,17 +241,6 @@ void passwordDialog::enableAll()
 	m_ui->radioButtonPassPhraseFromFile->setEnabled(true);
 	m_ui->radioButtonPassPhrase->setEnabled(true);
 }
-void passwordDialog::UIMessage(QString title, QString message)
-{
-	QMessageBox m ;
-	m.setFont(this->font());
-	m.setParent(this);
-	m.setWindowFlags(Qt::Window | Qt::Dialog);
-	m.setText(message);
-	m.setWindowTitle(title);
-	m.addButton(QMessageBox::Ok);
-	m.exec() ;
-}
 
 void passwordDialog::success(void)
 {
@@ -309,16 +251,18 @@ void passwordDialog::success(void)
 
 void passwordDialog::done(QString type)
 {
-	QString q = m_ui->OpenVolumePath->text() ;
+	QString q = miscfunctions::resolveHomeSymbol(m_ui->OpenVolumePath->text()) ;
+	QString z = miscfunctions::resolveHomeSymbol(m_ui->MountPointPath->text());
+
 	if(q.mid(0,5) == QString("UUID="))
-		miscfunctions::addItemToTableWithType(m_table,q,m_ui->MountPointPath->text(),type);
+		miscfunctions::addItemToTableWithType(m_table,q,z,type);
 	else{
 		char * p = realpath(q.toAscii().data(),NULL) ;
 		if(p != NULL){
-			miscfunctions::addItemToTableWithType(m_table,QString(p),m_ui->MountPointPath->text(),type);
+			miscfunctions::addItemToTableWithType(m_table,QString(p),z,type);
 			free(p);
 		}else
-			miscfunctions::addItemToTableWithType(m_table,q,m_ui->MountPointPath->text(),type);
+			miscfunctions::addItemToTableWithType(m_table,q,z,type);
 	}
 	HideUI();
 }
@@ -330,33 +274,33 @@ void passwordDialog::threadfinished(int status)
 	switch ( status ){
 		case 0: success();
 			return ;
-		case 1 : UIMessage(tr("ERROR"),tr("failed to mount ntfs file system using ntfs-3g,is ntfs-3g package installed?" )) ;		break ;					
-		case 2 : UIMessage(tr("ERROR"),tr("there seem to be an open volume accociated with given address" ));				break ;				
-		case 3 : UIMessage(tr("ERROR"),tr("no file or device exist on given path" )) ; 							break ;		
-		case 4 : UIMessage(tr("ERROR"),tr("wrong passphrase" ));					
+		case 1 : m_msg.UIMessage(tr("ERROR!"),tr("failed to mount ntfs file system using ntfs-3g,is ntfs-3g package installed?" )) ;		break ;
+		case 2 : m_msg.UIMessage(tr("ERROR!"),tr("there seem to be an open volume accociated with given address" ));				break ;
+		case 3 : m_msg.UIMessage(tr("ERROR!"),tr("no file or device exist on given path" )) ; 							break ;
+		case 4 : m_msg.UIMessage(tr("ERROR!"),tr("wrong passphrase" ));
 			 enableAll();
 			 m_ui->PassPhraseField->clear();
 			 m_ui->PassPhraseField->setFocus();
 			 return ;			
-		case 5 : UIMessage(tr("ERROR"),tr("could not create mount point, invalid path or path already taken") ) ;			break ;		
-		case 6 : UIMessage(tr("ERROR"),tr("passphrase file does not exist" ));								break ;	
-		case 8 : UIMessage(tr("ERROR"),tr("failed to open volume" ));									break ;	
-		case 9 : UIMessage(tr("ERROR"),tr("mount point path is already taken" ));							break ;					 
-		case 10: UIMessage(tr("ERROR"),tr("\",\" ( comma ) is not a valid mount point" ));						break ;
-		case 11: UIMessage(tr("ERROR"),tr("one or more required argument(s) for this operation is missing\n" ));			break ;				
-		case 12: UIMessage(tr("ERROR"),tr("could not get a lock on /etc/mtab~" ));							break ;
-		case 13: UIMessage(tr("ERROR"),tr("wrong argument for mode, valid options are \"rw\" or \"ro\"" ));				break ;
-		case 14: UIMessage(tr("ERROR"),tr("could not get enought memory to hold the key file" ));					break ;
-		case 15: UIMessage(tr("ERROR"),tr("failed to open volume and failed to close the mapper, advice to do it manunally" ));		break ;
-		case 16: UIMessage(tr("ERROR"),tr("could not resolve full path of mount point" ));						break ;
-		case 17: UIMessage(tr("ERROR"),tr("could not resolve full path of device address" ));						break ;
-		case 18: UIMessage(tr("ERROR"),tr("-O and -m options can not be used together" ));						break ;
-		case 19: UIMessage(tr("ERROR"),tr("insufficient privilege to create mount point" ));						break ;	
-		case 20: UIMessage(tr("ERROR"),tr("insufficient privilege to open device" ));							break ;	
-		case 21: UIMessage(tr("ERROR"),tr("insufficient privilege to create mount point" ));						break ;	
-		case 22: UIMessage(tr("ERROR"),tr("insufficient privilege to open key file for reading" ));					break ;	
-		case 110:UIMessage(tr("ERROR"),tr("can not find a partition that match presented UUID" ));					break ;
-		default: UIMessage(tr("ERROR"),tr("unrecognized error with status number %1 encountered").arg(status ));	
+		case 5 : m_msg.UIMessage(tr("ERROR!"),tr("could not create mount point, invalid path or path already taken") ) ;			break ;
+		case 6 : m_msg.UIMessage(tr("ERROR!"),tr("passphrase file does not exist" ));								break ;
+		case 8 : m_msg.UIMessage(tr("ERROR!"),tr("failed to open volume" ));									break ;
+		case 9 : m_msg.UIMessage(tr("ERROR!"),tr("mount point path is already taken" ));							break ;
+		case 10: m_msg.UIMessage(tr("ERROR!"),tr("\",\" ( comma ) is not a valid mount point" ));						break ;
+		case 11: m_msg.UIMessage(tr("ERROR!"),tr("one or more required argument(s) for this operation is missing\n" ));				break ;
+		case 12: m_msg.UIMessage(tr("ERROR!"),tr("could not get a lock on /etc/mtab~" ));							break ;
+		case 13: m_msg.UIMessage(tr("ERROR!"),tr("wrong argument for mode, valid options are \"rw\" or \"ro\"" ));				break ;
+		case 14: m_msg.UIMessage(tr("ERROR!"),tr("could not get enought memory to hold the key file" ));					break ;
+		case 15: m_msg.UIMessage(tr("ERROR!"),tr("failed to open volume and failed to close the mapper, advice to do it manunally" ));		break ;
+		case 16: m_msg.UIMessage(tr("ERROR!"),tr("could not resolve full path of mount point" ));						break ;
+		case 17: m_msg.UIMessage(tr("ERROR!"),tr("could not resolve full path of device address" ));						break ;
+		case 18: m_msg.UIMessage(tr("ERROR!"),tr("-O and -m options can not be used together" ));						break ;
+		case 19: m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to create mount point" ));						break ;
+		case 20: m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to open device" ));							break ;
+		case 21: m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to create mount point" ));						break ;
+		case 22: m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to open key file for reading" ));					break ;
+		case 110:m_msg.UIMessage(tr("ERROR!"),tr("can not find a partition that match presented UUID" ));					break ;
+		default: m_msg.UIMessage(tr("ERROR!"),tr("unrecognized ERROR with status number %1 encountered").arg(status));
 	}
 	enableAll();
 }

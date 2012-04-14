@@ -33,7 +33,6 @@ public:
 	~startupupdateopenedvolumes();
 signals:
 	void addItemToTable(QString,QString) ;
-	void UIMessage(QString title,QString message) ;
 	void finished(void);
 private:
 	void run() ;

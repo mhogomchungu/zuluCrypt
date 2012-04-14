@@ -368,7 +368,7 @@ int main( int argc , char *argv[] )
 	}
 	if( action == '\0' ){
 		printf("ERROR: \"action\" argument is missing\n" ) ;
-		return 110 ;
+		return 130 ;
 	}
 	if( device == NULL ){
 		printf("ERROR: required option( device path ) is missing for this operation\n" ) ;

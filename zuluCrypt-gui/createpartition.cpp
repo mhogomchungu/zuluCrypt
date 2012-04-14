@@ -42,6 +42,8 @@ createpartition::createpartition(QWidget *parent) :
 
 	m_isWindowClosable = true ;	
 
+	m_msg.setParent(this);
+
 	connect(m_ui->pbOpenKeyFile,SIGNAL(clicked()),this,SLOT(pbOpenKeyFile()));
 	connect(m_ui->pbCreate,SIGNAL(clicked()),this,SLOT(pbCreateClicked()));
 	connect(m_ui->pbCancel,SIGNAL(clicked()),this,SLOT(pbCancelClicked()));
@@ -58,7 +60,7 @@ void createpartition::findInstalledFs()
 		disableAll();
 		QString msg = tr("this tool expects to find file system creation tools at \"%1/\" ").arg(ZULUCRYPTmkfs_dir);
 		msg = msg + tr("and it can not find them.\nIt is therefore not possible to create volumes using this tool.");
-		UIMessage(tr("ERROR"),msg) ;
+		m_msg.UIMessage(tr("ERROR!"),msg) ;
 		return ;
 	}
 	
@@ -220,56 +222,25 @@ void createpartition::rbPasssphraseFromFileClicked()
 	m_ui->labelRepeatPassPhrase->setEnabled(false);
 }
 
-void createpartition::UIMessage(QString title, QString message)
-{
-	QMessageBox m ;
-	m.setParent(this);
-	m.setWindowFlags(Qt::Window | Qt::Dialog);
-	m.setText(message);
-	m.setWindowTitle(title);
-	m.addButton(QMessageBox::Ok);
-	m.setFont(this->font());
-	m.exec() ;
-}
-
 void createpartition::pbCreateClicked()
 {
 	QString volumePath   = m_ui->lineEditVolumePath->text() ;
 	QString passphrase_1 = m_ui->lineEditPassphrase1->text() ;
 	QString passphrase_2 = m_ui->lineEditPassPhrase2->text();
 
-	if( volumePath == QString("") )	{
-		UIMessage(tr("ERROR!"),tr("volume path field is empty"));
-		return ;
-	}
+	if( volumePath.isEmpty() )
+		return 	m_msg.UIMessage(tr("ERROR!"),tr("volume path field is empty"));
 
-	if( volumePath.mid(0,2) == QString("~/"))
-		volumePath = QDir::homePath() + QString("/") + volumePath.mid(2) ;
-
-	if( passphrase_1 == QString("")){
-		if( m_ui->rbPassphrase->isChecked() == true)
-			UIMessage(tr("ERROR"),tr("passphrases field is empty"));
-		else
-			UIMessage(tr("ERROR"),tr("key file field is empty"));
-		return ;
-	}
-	if(m_ui->rbPassphrase->isChecked() == true){
-		if( passphrase_1 != passphrase_2){
-			UIMessage(tr("ERROR"),tr("passphrases do not match"));
-			return ;
-		}
-	}	
 	QString source ;
 
-	if (m_ui->rbPassphraseFromFile->isChecked() == true){
-		if( passphrase_1.mid(0,2) == QString("~/"))
-			passphrase_1 = QDir::homePath() + QString("/") + passphrase_1.mid(2) ;
-		if(miscfunctions::exists(passphrase_1) == false){
-			UIMessage(tr("ERROR"),tr("invalid path to key file"));
-			return ;
-		}
+	if (m_ui->rbPassphraseFromFile->isChecked() == true)
 		source = QString("-f") ;
-	}else{
+	else{
+		if( passphrase_1.isEmpty() || passphrase_2.isEmpty() )
+			return 	m_msg.UIMessage(tr("ERROR!"),tr("atleast one required field is empty"));
+		if( passphrase_1 != passphrase_2 )
+			return 	m_msg.UIMessage(tr("ERROR!"),tr("passphrases do not match"));
+
 		source = QString("-p") ;
 	}
 
@@ -278,7 +249,7 @@ void createpartition::pbCreateClicked()
 		m.setFont(this->font());
 		m.setParent(this);
 		m.setWindowFlags(Qt::Window | Qt::Dialog);
-		m.setWindowTitle(tr("WARNING"));
+		m.setWindowTitle(tr("WARNING!"));
 
 		m.addButton(QMessageBox::Yes);
 		m.addButton(QMessageBox::No);
@@ -296,14 +267,15 @@ void createpartition::pbCreateClicked()
 	passphrase_1.replace("\"","\"\"\"") ;
 	volumePath.replace("\"","\"\"\"") ;
 
-	QString exe = QString(ZULUCRYPTzuluCrypt) ;
-	exe = exe + QString(" -c -k -d \"") ;
-	exe = exe + volumePath + QString("\" -z ") ;
-	exe = exe + m_ui->comboBoxFS->currentText() + QString(" -t ") ;
-	exe = exe + m_ui->comboBoxVolumeType->currentText() + QString(" ") ;
-	exe = exe + source + QString(" \"") ;
-	exe = exe + passphrase_1 + QString("\" -g ") ;
-	exe = exe + m_ui->comboBoxRNG->currentText();
+	QString a = QString(ZULUCRYPTzuluCrypt) ;
+	QString b = volumePath ;
+	QString c = m_ui->comboBoxFS->currentText() ;
+	QString d = m_ui->comboBoxVolumeType->currentText() ;
+	QString e = source ;
+	QString f = passphrase_1 ;
+	QString g = m_ui->comboBoxRNG->currentText();
+
+	QString exe = QString("%1 -c -k -d \"%2\" -z %3 -t %4 %5 \"%6\" -g %7").arg(a).arg(b).arg(c).arg(d).arg(e).arg(f).arg(g);
 
 	m_isWindowClosable = false ;
 
@@ -319,28 +291,28 @@ void createpartition::threadfinished(int st)
 	m_isWindowClosable = true ;
 	
 	switch ( st ){
-		case 0 : UIMessage(tr("SUCCESS"),tr("volume created successfully") ) ;
+		case 0 : m_msg.UIMessage(tr("SUCCESS!"),tr("volume created successfully") ) ;
 			 HideUI();											break  ;
-		case 1 : UIMessage(tr("ERROR"),tr("invalid path to a file or device"));					break  ; 
-		case 2 : UIMessage(tr("ERROR"),tr("wrong option type"));						break  ;	
-		case 3 : UIMessage(tr("ERROR"),tr("could not create an encrypted volume in a file or device" ));	break  ;	
-		case 4 : UIMessage(tr("ERROR"),tr("one or more required argument(s) for this operation is missing" ));	break  ;
-		case 5 : UIMessage(tr("ERROR"),tr("wrong choice, exiting" ));						break  ;
-		case 6 : UIMessage(tr("ERROR"),tr("couldnt get enought memory to hold the key file" )) ;		break  ;				
-		case 7 : UIMessage(tr("ERROR"),tr("passphrases do not match" ) );					break  ;	
-		case 8 : UIMessage(tr("ERROR"),tr("invalid path to key file" ) );					break  ;
-		case 9 : UIMessage(tr("ERROR"),tr("container file must be bigger than 3MB" )) ;				break  ;
-		case 10: UIMessage(tr("ERROR"),tr("insufficient privilege to create a volume on a system partition.\
+		case 1 : m_msg.UIMessage(tr("ERROR!"),tr("invalid path to a file or device"));					break  ;
+		case 2 : m_msg.UIMessage(tr("ERROR!"),tr("wrong option type"));						break  ;
+		case 3 : m_msg.UIMessage(tr("ERROR!"),tr("could not create an encrypted volume in a file or device" ));	break  ;
+		case 4 : m_msg.UIMessage(tr("ERROR!"),tr("one or more required argument(s) for this operation is missing" ));	break  ;
+		case 5 : m_msg.UIMessage(tr("ERROR!"),tr("wrong choice, exiting" ));						break  ;
+		case 6 : m_msg.UIMessage(tr("ERROR!"),tr("couldnt get enought memory to hold the key file" )) ;		break  ;
+		case 7 : m_msg.UIMessage(tr("ERROR!"),tr("passphrases do not match" ) );					break  ;
+		case 8 : m_msg.UIMessage(tr("ERROR!"),tr("invalid path to key file" ) );					break  ;
+		case 9 : m_msg.UIMessage(tr("ERROR!"),tr("container file must be bigger than 3MB" )) ;				break  ;
+		case 10: m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to create a volume on a system partition.\
 A system partition is a partition with an active entry in \"/etc/fstab\"\
 and \"/etc/crypttab.\"\nRerun the tool from root's accout to proceed" )) ;
 															break  ;
-		case 11: UIMessage(tr("ERROR"),tr("%1 not found").arg(ZULUCRYPTmkfs) );					break  ;
-		case 12: UIMessage(tr("ERROR"),tr("user chose not to proceed" ) );					break  ;
-		case 13: UIMessage(tr("ERROR"),tr("insufficient privilege to search for volume path" )) ;		break  ;
-		case 14: UIMessage(tr("ERROR"),tr("insufficient privilege to create a volume in this device" )) ;	break  ;
-		case 15: UIMessage(tr("ERROR"),tr("insufficient privilege to open the file in write mode" )) ;		break  ;
-		case 110:UIMessage(tr("ERROR"),tr("could not find any partition with the presented UUID" )) ;		break  ;
-		default: UIMessage(tr("ERROR"),tr("unrecognized error with status number %1 encountered").arg(st));
+		case 11: m_msg.UIMessage(tr("ERROR!"),tr("%1 not found").arg(ZULUCRYPTmkfs) );					break  ;
+		case 12: m_msg.UIMessage(tr("ERROR!"),tr("user chose not to proceed" ) );					break  ;
+		case 13: m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to search for volume path" )) ;		break  ;
+		case 14: m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to create a volume in this device" )) ;	break  ;
+		case 15: m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to open the file in write mode" )) ;		break  ;
+		case 110:m_msg.UIMessage(tr("ERROR!"),tr("could not find any partition with the presented UUID" )) ;		break  ;
+		default: m_msg.UIMessage(tr("ERROR!"),tr("unrecognized ERROR! with status number %1 encountered").arg(st));
 	}
 
 	enableAll();

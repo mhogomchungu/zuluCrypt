@@ -38,9 +38,8 @@ signals:
 	void HideUISignal(void);
 public slots:
 	void ShowUI(void) ;
+	void ShowUI(QString) ;
 	void HideUI(void) ;
-public slots :
-	void deleteKey(QString) ;
 private slots:
 	void pbOpenPartition(void);
 	void pbDelete(void) ;
@@ -53,11 +52,14 @@ private slots:
 private:
 	void disableAll(void) ;
 	void enableAll(void) ;
-	void UIMessage(QString title, QString message) ;
 	void closeEvent(QCloseEvent *) ;
 	Ui::luksdeletekey * m_ui;
 	QString m_volumePath ;
 	bool m_isWindowClosable ;
+	/*
+	  prototyped at miscfunctions.h
+	  */
+	UIMsg m_msg ;
 };
 
 #endif // LUKSDELETEKEY_H

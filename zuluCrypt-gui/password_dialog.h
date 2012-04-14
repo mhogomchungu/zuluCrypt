@@ -60,16 +60,17 @@ private slots :
 	void mountPointPath(QString);
 	void done(QString);	
 private :	
-	void UIMessage(QString title, QString message) ;
 	void disableAll(void);
 	void enableAll(void) ;
 	void closeEvent(QCloseEvent *) ;
 	void success(void);
 	Ui::PasswordDialog * m_ui;
-	QString m_volumePath ;
-	QString m_point ;
 	bool m_isWindowClosable ;
 	QTableWidget * m_table ;
+	/*
+	  prototyped at miscfunctions.h
+	  */
+	UIMsg m_msg ;
 };
 
 #endif // PASSWORD_DIALOG_H

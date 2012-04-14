@@ -28,8 +28,22 @@
 #include <QFile>
 #include <QDir>
 #include <QTableWidget>
+#include <QMessageBox>
 
 #include "../zuluCrypt-cli/constants.h"
+
+class UIMsg
+{
+public:
+	UIMsg(void) ;
+	void setParent(QWidget *);
+	void UIMessage(QString,QString);
+	int UIMessageWithConfirm(QString,QString);
+private:
+	QWidget * parent ;
+	QPushButton * m_yes ;
+	QPushButton * m_no  ;
+};
 
 class miscfunctions
 {
@@ -43,6 +57,8 @@ public:
 	static bool exists(QString);
 	static void addItemToTable(QTableWidget *,QString,QString) ;
 	static void addItemToTableWithType(QTableWidget *,QString ,QString,QString);
+	static bool canCreateFile(QString);
+	static QString resolveHomeSymbol(QString);
 };
 
 #endif // MISCFUNCTIONS_H

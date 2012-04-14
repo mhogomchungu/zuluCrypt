@@ -68,14 +68,14 @@ void openpartition::EnterKeyPressed()
 	tableEntryDoubleClicked(tw->item(it->row(),0));
 }
 
-void openpartition::currentItemChanged(QTableWidgetItem *current, QTableWidgetItem *previous)
+void openpartition::currentItemChanged(QTableWidgetItem * current, QTableWidgetItem * previous)
 {
 	if(current != NULL)
-		HighlightRow(current->row(), true) ;
+		HighlightRow(current->row(),true) ;
 	if(previous != NULL)
 		if(current != NULL)
 			if(previous->row() != current->row())
-				HighlightRow(previous->row(), false) ;
+				HighlightRow(previous->row(),false) ;
 }
 
 void openpartition::HighlightRow(int r, bool b)
@@ -140,7 +140,7 @@ void openpartition::HideUI()
 void openpartition::tableEntryDoubleClicked(QTableWidgetItem * item)
 {
 	QString dev ;
-	QTableWidget *tw = m_ui->tableWidget ;
+	QTableWidget * tw = m_ui->tableWidget ;
 
 	if(m_ui->checkBoxUUID->isChecked() == true)
 		dev = QString("UUID=\"") + tw->item(item->row(),4)->text() + QString("\"") ;
@@ -151,7 +151,7 @@ void openpartition::tableEntryDoubleClicked(QTableWidgetItem * item)
 	HideUI();
 }
 
-void openpartition::closeEvent(QCloseEvent *e)
+void openpartition::closeEvent(QCloseEvent * e)
 {
 	e->ignore();
 	HideUI();

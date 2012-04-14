@@ -37,6 +37,8 @@ createkeyfile::createkeyfile(QWidget *parent) :
 	this->setWindowFlags(Qt::Window | Qt::Dialog);
 	this->setFont(parent->font());
 
+	m_msg.setParent(this);
+
 	m_ui->pbOpenFolder->setIcon(QIcon(QString(":/folder.png")));
 	connect(m_ui->pbCreate,SIGNAL(clicked()),this,SLOT(pbCreate())) ;
 	connect(m_ui->pbOpenFolder,SIGNAL(clicked()),this,SLOT(pbOpenFolder())) ;
@@ -98,57 +100,30 @@ void createkeyfile::disableAll()
 	m_ui->comboBoxRNG->setEnabled(false);
 }
 
-void createkeyfile::UIMessage(QString title, QString message)
-{
-	QMessageBox m ;
-	m.setParent(this);
-	m.setWindowFlags(Qt::Window | Qt::Dialog);
-	m.setText(message);
-	m.setWindowTitle(title);
-	m.addButton(QMessageBox::Ok);
-	m.setFont(this->font());
-	m.exec() ;
-}
-
 void createkeyfile::pbCreate()
 {
 	QString fileName = m_ui->lineEditFileName->text() ;
-	QString path = m_ui->lineEditPath->text() ;
+	m_path = miscfunctions::resolveHomeSymbol(m_ui->lineEditPath->text()) ;
 
-	m_path = m_ui->lineEditPath->text() ;
+	if( fileName.isEmpty() )
+		return m_msg.UIMessage(tr("ERROR!"),tr("the key name field is empth"));
 
-	if( fileName == QString("") ){
-		UIMessage(tr("ERROR!"),tr("the key name field is empth"));
-		return ;
-	}
-	if( path == QString("") ){
-		UIMessage(tr("ERROR!"),tr("folder path to where the key will be created is empty"));
-		return ;
-	}
-	if(m_path.mid(0,2) == QString("~/"))
-		m_path = QDir::homePath() + QString("/") + m_path.mid(2) ;
+	if( m_path.isEmpty() )
+		return m_msg.UIMessage(tr("ERROR!"),tr("folder path to where the key will be created is empty"));
 
-	if(miscfunctions::exists(m_path) == false){
-		UIMessage(tr("ERROR!"),tr("destination folder does not exist"));
-		return ;
-	}
+	if(miscfunctions::exists(m_path) == false)
+		return m_msg.UIMessage(tr("ERROR!"),tr("destination folder does not exist"));
+
 	QString keyfile = m_path + QString("/") + m_ui->lineEditFileName->text() ;
 
-	if( miscfunctions::exists(keyfile) == true){
-		UIMessage(tr("ERROR!"),tr("file with the same name and at the destination folder already exist"));
-		return ;
-	}
-	QFile o( keyfile ) ;
-	o.open(QIODevice::WriteOnly) ;
+	if( miscfunctions::exists(keyfile) == true)
+		return m_msg.UIMessage(tr("ERROR!"),tr("file with the same name and at the destination folder already exist"));
 
-	if( o.putChar('X') == false ){
-		UIMessage(tr("ERROR!"),tr("you dont seem to have writing access to the destination folder"));
-		o.close();
+	if( miscfunctions::canCreateFile(keyfile) == false ){
+		m_msg.UIMessage(tr("ERROR!"),tr("you dont seem to have writing access to the destination folder"));
+		m_ui->lineEditPath->setFocus();
 		return ;
 	}
-	o.close();
-	o.remove();
-	
 	m_rng = new createFileThread(m_ui->comboBoxRNG->currentText(),keyfile,64,0) ;
 	connect(m_rng,SIGNAL(finished()),this,SLOT(threadfinished()));
 	disableAll() ;
@@ -170,29 +145,19 @@ void createkeyfile::threadfinished()
 
 	QFile f(m_path + QString("/") + m_ui->lineEditFileName->text()) ;
 
-	QMessageBox m ;
-	m.addButton(QMessageBox::Ok);
-	m.setParent(this);
-	m.setWindowFlags(Qt::Window | Qt::Dialog);
-	m.setFont(this->font());
+	if( f.size() == 64)
+		m_msg.UIMessage(tr("SUCCESS!"),tr("key file successfully created"));
+	else
+		m_msg.UIMessage(tr("WARNING!"),tr("process interrupted, key not fully generated"));
 
-	if( f.size() == 64){
-		m.setWindowTitle(tr("SUCCESS!"));
-		m.setText(tr("key file successfully created"));
-		m.exec() ;
-	}else{
-		m.setWindowTitle(tr("WARNING!"));
-		m.setText(tr("process interrupted, key not fully generated"));
-		m.exec() ;
-	}
 	this->HideUI();
 }
 
 void createkeyfile::pbOpenFolder()
 {
-	QString Z = QFileDialog::getExistingDirectory(this,
-						      tr("Select a folder to create a key file in"),
-						      QDir::homePath(),QFileDialog::ShowDirsOnly) ;
+	QString p = tr("Select a folder to create a key file in");
+	QString q = QDir::homePath() ;
+	QString Z = QFileDialog::getExistingDirectory(this,p,q,QFileDialog::ShowDirsOnly) ;
 
 	m_ui->lineEditPath->setText( Z );
 }

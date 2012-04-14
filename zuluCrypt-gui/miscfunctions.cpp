@@ -20,6 +20,11 @@
 #include "miscfunctions.h"
 #include <iostream>
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <QObject>
+
+#include <QAbstractButton>
 
 bool miscfunctions::exists(QString path)
 {
@@ -28,6 +33,30 @@ bool miscfunctions::exists(QString path)
 		return true ;
 	else
 		return false ;
+}
+
+bool miscfunctions::canCreateFile(QString path)
+{
+	char * p = path.toAscii().data() ;
+	int i = open(p,O_WRONLY|O_CREAT) ;
+
+	if( i == -1 )
+		return false ;
+	else{
+		close(i) ;
+		remove(p);
+		return true ;
+	}
+}
+
+QString miscfunctions::resolveHomeSymbol(QString path)
+{
+	if( path.size() == 1 && path.at(0) == QChar('~') )
+		return QDir::homePath() + QString("/" );
+	else if( path.mid(0,2) == QString("~/") )
+		return QDir::homePath() + QString("/" ) + path.mid(2);
+	else
+		return path ;
 }
 
 QStringList miscfunctions::deviceProperties(QString device)
@@ -158,9 +187,9 @@ void miscfunctions::addItemToTable(QTableWidget * table, QString device, QString
 	QString path = device ;
 	path.replace("\"","\"\"\"") ;
 	if( miscfunctions::isLuks(path) )
-		type = QString("luks");
+		type = QObject::tr("luks");
 	else
-		type = QString("plain");
+		type = QObject::tr("plain");
 	
 	miscfunctions::addItemToTableWithType(table,device,mountAddr,type);
 }
@@ -189,3 +218,46 @@ void miscfunctions::addItemToTableWithType(QTableWidget * table, QString device,
 
 	table->setCurrentCell(row,1);
 }
+
+UIMsg::UIMsg()
+{
+}
+
+void UIMsg::setParent(QWidget *p)
+{
+	parent = p ;
+}
+
+void UIMsg::UIMessage(QString title, QString message)
+{
+	QMessageBox m ;
+	m.setFont(parent->font());
+	m.setParent(parent);
+	m.setWindowFlags(Qt::Window | Qt::Dialog);
+	m.setText(message);
+	m.setWindowTitle(title);
+	m.addButton(QObject::tr("ok"),QMessageBox::YesRole);
+	m.exec() ;
+}
+
+int UIMsg::UIMessageWithConfirm(QString title,QString msg )
+{
+	QMessageBox m ;
+	m.setFont(parent->font());
+	m.setParent(parent);
+	m.setWindowFlags(Qt::Window | Qt::Dialog);
+	m.setWindowTitle(title);
+	m.setText(msg) ;
+	m.addButton(QObject::tr("yes"),QMessageBox::YesRole);
+	m.addButton(QObject::tr("no"),QMessageBox::NoRole);
+
+	m.exec() ;
+
+	QAbstractButton * button = m.clickedButton();
+
+	if(button->text() == QString("yes"))
+		return QMessageBox::Yes ;
+	else
+		return QMessageBox::No ;
+}
+

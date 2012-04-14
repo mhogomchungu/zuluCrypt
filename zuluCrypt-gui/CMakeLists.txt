@@ -26,9 +26,10 @@ set( MOC_FILES createfile.h
 		managedevicenames.h
 		partitionproperties.h
 		volumepropertiesthread.h
+		createfilethread.h
 		closevolumethread.h
 		checkvolumetype.h
-		cryptoinfo.h
+		cryptoinfo.h		
  )
 	
 set (SRC createfile.cpp

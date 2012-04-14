@@ -130,11 +130,10 @@ private:
 
 	Ui::zuluCrypt * m_ui;
 	QSystemTrayIcon * m_trayIcon ;
-
-	//passwordDialog * m_passd ;
-	//QString m_device ;
-	//QString m_mountAddress ;
-	//QString m_type ;
+	/*
+	  prototyped at miscfunctions.h
+	  */
+	UIMsg m_msg ;
 };
 
 #endif // ZULUCRYPT_H

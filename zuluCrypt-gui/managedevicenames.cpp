@@ -29,6 +29,8 @@ managedevicenames::managedevicenames(QWidget *parent) :
 	this->setWindowFlags(Qt::Window | Qt::Dialog);
 	this->setFont(parent->font());
 
+	m_msg.setParent(this);
+
 	connect(m_ui->pbDeviceAddress,SIGNAL(clicked()),this,SLOT(deviceAddress()));
 	connect(m_ui->pbAdd,SIGNAL(clicked()),this,SLOT(add()));
 	connect(m_ui->pbFileAddress,SIGNAL(clicked()),this,SLOT(fileAddress()));
@@ -41,6 +43,7 @@ managedevicenames::managedevicenames(QWidget *parent) :
 
 	m_ui->pbFileAddress->setIcon(QIcon(QString(":/keyfile.png")));
 	m_ui->pbDeviceAddress->setIcon(QIcon(QString(":/partition.png")));
+
 	m_ac = new QAction( this ) ;
 	QList<QKeySequence> keys ;
 	keys.append( Qt::Key_Enter );
@@ -53,8 +56,8 @@ managedevicenames::managedevicenames(QWidget *parent) :
 
 void managedevicenames::devicePathTextChange(QString txt)
 {
-	if(txt == QString("")){
-		m_ui->lineEditMountPath->setText( "" ) ;
+	if(txt.isEmpty()){
+		m_ui->lineEditMountPath->clear(); ;
 		return ;		
 	}
 	QString ed = QDir::homePath() + QString("/") + txt.split("/").last() ;
@@ -159,27 +162,17 @@ void managedevicenames::cancel()
 
 void managedevicenames::add()
 {
-	QMessageBox m ;
-	m.setParent(this);
-	m.setWindowTitle(QString("ERROR"));
-	m.setWindowFlags(Qt::Window | Qt::Dialog);
-
 	QString dev = m_ui->lineEditDeviceAddress->text() ;
 	QString mount_point = m_ui->lineEditMountPath->text() ;
 	
-	if( dev == QString("")){
-		m.setText(tr("device address field is empty"));
-		m.addButton(QMessageBox::Ok);
-		m.exec();
-		return ;
-	}
-	if( mount_point == QString("")){
-		m.setText(tr("mount point path field is empty"));
-		m.addButton(QMessageBox::Ok);
-		m.exec();
-		return ;
-	}
-	addEntries(dev,mount_point);
+	if( dev.isEmpty())
+		return m_msg.UIMessage(tr("ERROR!"),tr("device address field is empty"));
+
+	if( mount_point.isEmpty())
+		return m_msg.UIMessage(tr("ERROR!"),tr("mount point path field is empty"));
+
+	this->addEntries(dev,mount_point);
+
 	miscfunctions::addToFavorite(dev,mount_point);
 	
 	m_ui->lineEditDeviceAddress->clear(); ;

@@ -67,6 +67,10 @@ private:
 	void addEntries(QString,QString) ;
 	Ui::managedevicenames * m_ui;
 	QAction * m_ac ;
+	/*
+	  prototyped at miscfunctions.h
+	  */
+	UIMsg m_msg ;
 };
 
 #endif // MANAGEDEVICENAMES_H

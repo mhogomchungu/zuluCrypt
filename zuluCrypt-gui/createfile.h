@@ -28,6 +28,8 @@
 #include <QThreadPool>
 #include "createfilethread.h"
 
+#include "miscfunctions.h"
+
 namespace Ui {
     class createfile;
 }
@@ -51,20 +53,23 @@ public slots:
 private slots:
 	void monitorFileGrowth(void);
 	void createFileThreadFinished(void) ;
+	void createFileThreadTerminated(void);
 private:
-	void UIMessage(QString title, QString message);
 	void enableAll(void) ;
 	void disableAll(void) ;
 	void closeEvent(QCloseEvent *) ;
 	Ui::createfile *m_ui;
 	QTimer m_time ;
 	double m_fileSize ;
-	bool m_creating ;
-	bool m_terminated ;
-	bool m_return ;
 	QString m_path ;
 	QMessageBox m_mb ;
 	createFileThread * m_cft ;
+	QPushButton * m_yes ;
+	QPushButton * m_no  ;
+	/*
+	  prototyped at miscfunctions.h
+	  */
+	UIMsg m_msg ;
 };
 
 #endif // CREATEFILE_H

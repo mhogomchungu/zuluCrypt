@@ -40,7 +40,7 @@ private slots:
 private:
 	void closeEvent(QCloseEvent *) ;
 	void HideUI(void);
-	Ui::cryptoinfo *m_ui;
+	Ui::cryptoinfo * m_ui;
 };
 
 #endif // CRYPTOINFO_H

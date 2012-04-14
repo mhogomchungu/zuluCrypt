@@ -73,8 +73,7 @@ void createFileThread::createContainerZero()
 	double count = m_size / 1024 ;
 	char data[1024];
 
-	for( int j = 0 ; j < 1024 ; j++)
-		data[j] = '\0' ;
+	memset(data,0,1024);
 
 	for(double i = 0 ; i < count ; i++)
 		write(m_out,data,1024);
@@ -88,10 +87,12 @@ void createFileThread::run()
 		createContainerZero();
 	else
 		createContainer();
+
+	emit complete();
 }
 
 createFileThread::~createFileThread()
-{
+{	
 	close(m_in);
 	close(m_out);
 }

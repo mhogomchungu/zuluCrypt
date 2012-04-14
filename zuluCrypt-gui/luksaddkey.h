@@ -38,7 +38,7 @@ signals :
 	void pbOpenPartitionClicked(void) ;
 	void HideUISignal(void);
 public slots:
-	void partitionEntry(QString) ;
+	void ShowUI(QString) ;
 	void ShowUI(void) ;
 	void HideUI(void) ;
 private slots:	
@@ -54,13 +54,16 @@ private slots:
 	void pbCancel(void) ;	
 	void threadfinished(int) ;
 private:
-	void UIMessage(QString,QString);
 	void disableAll(void) ;
 	void enableAll(void) ;
 	void closeEvent(QCloseEvent *) ;
 	Ui::luksaddkey * m_ui ;
 	QString m_volumePath ;
 	bool m_isWindowClosable ;
+	/*
+	  prototyped at miscfunctions.h
+	  */
+	UIMsg m_msg ;
 };
 
 #endif // luksaddkeySUI_H

@@ -33,6 +33,12 @@ void closeAllVolumesThread::run()
 	m_table->setEnabled(false);
 	sleep(1) ; // for ui effect
 	int i = m_table->rowCount() ;
+
+	if(i < 1){
+		m_table->setEnabled(true);
+		return ;
+	}
+
 	int j = -1 ;
 	QTableWidgetItem * tableItems[ i ] ;
 	QTableWidgetItem * deviceItem ;
@@ -48,7 +54,7 @@ void closeAllVolumesThread::run()
 		deviceItem = tableItems[ j ] ;
 		device = deviceItem->text() ;
 		device.replace("\"","\"\"\"") ;
-		exe = QString(ZULUCRYPTzuluCrypt) + QString(" -q -d ") + QString("\"") + device  + QString("\"") ;
+		exe = QString("%1 -q -d \"%2\"" ).arg(ZULUCRYPTzuluCrypt).arg(device) ;
 		p.start( exe );
 		p.waitForFinished() ;
 		emit close(deviceItem,p.exitCode()) ;

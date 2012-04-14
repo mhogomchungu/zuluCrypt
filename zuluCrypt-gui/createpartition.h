@@ -26,6 +26,7 @@
 #include <QThreadPool>
 
 #include "runinthread.h"
+#include "miscfunctions.h"
 
 namespace Ui {
     class createpartition;
@@ -57,11 +58,14 @@ private:
 	void enableAll(void) ;
 	void disableAll(void);
 	void closeEvent(QCloseEvent *) ;		
-	void UIMessage(QString title,QString message) ;		
 	void ShowUI(QString,QString);
 	bool m_created ;
 	Ui::createpartition * m_ui;
 	bool m_isWindowClosable ;
+	/*
+	  prototyped at miscfunctions.h
+	  */
+	UIMsg m_msg ;
 };
 
 #endif // CREATEPARTITION_H

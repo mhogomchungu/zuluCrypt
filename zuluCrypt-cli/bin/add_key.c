@@ -52,7 +52,7 @@ static int status_msg( int st )
 	switch ( st ){
 		case 0  : printf( "SUCCESS: key added successfully\n" );	                              	break ;		
 		case 1  : printf( "ERROR: presented key does not match any key in the volume\n" ) ;           	break ;
-		case 2  : printf( "ERROR: could not open luks device, quiting\n" ) ;	                      	break ;
+		case 2  : printf( "ERROR: could not open luks device\n" ) ;		                      	break ;
 		case 4  : printf( "ERROR: device does not exist\n" ) ;	                                      	break ;
 		case 5  : printf( "ERROR: wrong arguments\n" ) ;	                                      	break ;
 		case 6  : printf( "ERROR: one or more required argument(s) for this operation is missing\n" );	break ;			

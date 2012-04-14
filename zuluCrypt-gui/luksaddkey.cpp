@@ -39,10 +39,15 @@ luksaddkey::luksaddkey(QWidget *parent) :
 {
 	m_ui = new Ui::luksaddkey() ;
 	m_ui->setupUi(this);
-	m_ui->pushButtonOpenPartition->setIcon(QIcon(QString(":/partition.png")));
-	m_ui->pushButtonOpenFile->setIcon(QIcon(QString(":/file.png")));
 
 	m_isWindowClosable = true ;
+
+	m_ui->textEditPathToVolume->setText(QString(""));
+
+	m_ui->textEditExistingPassphrase->setEchoMode(QLineEdit::Password);
+	m_ui->textEditPassphraseToAdd->setEchoMode(QLineEdit::Password);
+
+	m_msg.setParent(this);
 
 	this->setFixedSize(this->size());
 	this->setWindowFlags(Qt::Window | Qt::Dialog);
@@ -60,6 +65,15 @@ luksaddkey::luksaddkey(QWidget *parent) :
 	connect(m_ui->radioButtonPassphraseInVolumeFromFile,SIGNAL(toggled(bool)),this,SLOT(rbExistingPassphraseFromFile())) ;
 
 	m_ui->lineEditReEnterPassphrase->setEchoMode(QLineEdit::Password);
+
+	m_ui->radioButtonNewPassphrase->setChecked(true);
+	m_ui->radioButtonPassphraseinVolume->setChecked(true);
+
+	m_ui->pushButtonOpenExistingKeyFile->setEnabled(false);
+	m_ui->pushButtonOpenNewKeyFile->setEnabled(false);
+
+	m_ui->pushButtonOpenPartition->setIcon(QIcon(QString(":/partition.png")));
+	m_ui->pushButtonOpenFile->setIcon(QIcon(QString(":/file.png")));
 }
 
 void luksaddkey::closeEvent(QCloseEvent *e)
@@ -69,38 +83,25 @@ void luksaddkey::closeEvent(QCloseEvent *e)
 		HideUI();
 }
 
-void luksaddkey::partitionEntry(QString partition)
+void luksaddkey::ShowUI(QString path)
 {
-	enableAll();
-	m_ui->textEditPathToVolume->setText(partition);
-	m_ui->textEditExistingPassphrase->clear();
-	m_ui->textEditPassphraseToAdd->clear();
-	m_ui->radioButtonNewPassphrase->setChecked(true);
-	m_ui->radioButtonPassphraseinVolume->setChecked(true);
-	m_ui->textEditExistingPassphrase->setFocus();
-	m_ui->lineEditReEnterPassphrase->clear() ;
-	this->show(); ;
+	m_ui->textEditPathToVolume->setText(path);
+	this->ShowUI();
+}
+
+void luksaddkey::ShowUI()
+{
+	if( m_ui->textEditPathToVolume->text() == QString("") )
+		m_ui->textEditPathToVolume->setFocus();
+	else
+		m_ui->textEditExistingPassphrase->setFocus();
+	this->show();
 }
 
 void luksaddkey::HideUI()
 {
 	this->hide();
 	emit HideUISignal();
-}
-
-void luksaddkey::ShowUI()
-{
-	enableAll();
-	m_ui->textEditExistingPassphrase->clear();
-	m_ui->textEditPassphraseToAdd->clear();
-	m_ui->textEditPathToVolume->clear();
-	m_ui->lineEditReEnterPassphrase->clear();
-	m_ui->radioButtonNewPassphrase->setChecked(true);
-	m_ui->radioButtonPassphraseinVolume->setChecked(true);
-	m_ui->pushButtonOpenExistingKeyFile->setEnabled(false);
-	m_ui->pushButtonOpenNewKeyFile->setEnabled(false);
-	m_ui->textEditPathToVolume->setFocus();
-	this->show();
 }
 
 void luksaddkey::pbOpenExisitingKeyFile(void)
@@ -124,7 +125,7 @@ void luksaddkey::pbOpenFile(void)
 void luksaddkey::pbOpenPartition(void)
 {
 	openpartition * openPartition = new openpartition(this);
-	connect(openPartition,SIGNAL(clickedPartition(QString)),this,SLOT(partitionEntry(QString)));
+	connect(openPartition,SIGNAL(clickedPartition(QString)),this,SLOT(ShowUI(QString)));
 	connect(openPartition,SIGNAL(HideUISignal()),openPartition,SLOT(deleteLater()));
 	openPartition->ShowAllPartitions();
 }
@@ -136,6 +137,7 @@ void luksaddkey::rbExistingPassphrase(void)
 	m_ui->labelExistingPassphrase->setText(tr("passphrase")) ;
 	m_ui->textEditExistingPassphrase->clear();
 	m_ui->pushButtonOpenExistingKeyFile->setIcon(QIcon(QString(":/passphrase.png")));
+	m_ui->textEditExistingPassphrase->setFocus();
 }
 
 void luksaddkey::rbExistingPassphraseFromFile(void)
@@ -145,6 +147,8 @@ void luksaddkey::rbExistingPassphraseFromFile(void)
 	m_ui->labelExistingPassphrase->setText(tr("key file")) ;
 	m_ui->textEditExistingPassphrase->clear();
 	m_ui->pushButtonOpenExistingKeyFile->setIcon(QIcon(QString(":/keyfile.png")));
+	m_ui->textEditExistingPassphrase->setFocus();
+
 }
 
 void luksaddkey::rbNewPassphrase(void)
@@ -156,6 +160,7 @@ void luksaddkey::rbNewPassphrase(void)
 	m_ui->lineEditReEnterPassphrase->setEnabled(true) ;
 	m_ui->labelReEnterPassphrase->setEnabled(true);
 	m_ui->pushButtonOpenNewKeyFile->setIcon(QIcon(QString(":/passphrase.png")));
+	m_ui->textEditPassphraseToAdd->setFocus();
 }
 
 void luksaddkey::rbNewPassphraseFromFile()
@@ -167,96 +172,52 @@ void luksaddkey::rbNewPassphraseFromFile()
 	m_ui->lineEditReEnterPassphrase->clear() ;
 	m_ui->labelReEnterPassphrase->setEnabled(false);
 	m_ui->pushButtonOpenNewKeyFile->setIcon(QIcon(QString(":/keyfile.png")));
+	m_ui->textEditPassphraseToAdd->setFocus();
 }
 
 void luksaddkey::pbAdd(void)
 {
-	m_volumePath = m_ui->textEditPathToVolume->text() ;
+	m_volumePath = miscfunctions::resolveHomeSymbol(m_ui->textEditPathToVolume->text()) ;
 	QString ExistingKey = m_ui->textEditExistingPassphrase->text() ;
+
 	QString NewKey = m_ui->textEditPassphraseToAdd->text() ;
 	QString NewKey_1 = m_ui->lineEditReEnterPassphrase->text() ;
 
-	if ( m_volumePath == QString("") ){
-		UIMessage(tr("ERROR!"),tr("the encrypted volume path field is empty"));
-		return ;
+	if(m_ui->radioButtonNewPassphraseFromFile->isChecked()){
+		if( m_volumePath.isEmpty() || ExistingKey.isEmpty() || NewKey.isEmpty() )
+			return m_msg.UIMessage(tr("ERROR!"),tr("atleast one required field is empty"));
+	}else{
+		if( m_volumePath.isEmpty() || ExistingKey.isEmpty() || NewKey.isEmpty() || NewKey_1.isEmpty())
+			return m_msg.UIMessage(tr("ERROR!"),tr("atleast one required field is empty"));
 	}
-	if( m_volumePath.mid(0,2) == QString("~/"))
-		m_volumePath = QDir::homePath() + QString("/") + m_volumePath.mid(2) ;
 
-	if ( miscfunctions::exists(m_volumePath) == false && m_volumePath.mid(0,5) != QString("UUID=")){
-		UIMessage(tr("ERROR!"),tr("volume path field does not point to a file or device"));
-		return ;
-	}
-	if ( ExistingKey == QString("") ){
-		UIMessage(tr("ERROR!"),tr("existing passphrase field is empth"));
-		m_ui->textEditExistingPassphrase->setFocus();
-		return ;
-	}
-	if ( NewKey.isEmpty() == true ){
-		UIMessage(tr("ERROR!"),tr("new passphrase field is empty"));
-		m_ui->textEditPassphraseToAdd->setFocus();
-		return ;
-	}
-	if ( m_ui->radioButtonNewPassphraseFromFile->isChecked() == false){
-		if ( NewKey != NewKey_1 ){
-			UIMessage(tr("ERROR!"),tr("passphrases do not match"));
-			return ;
-		}
-	}
 	m_volumePath.replace("\"","\"\"\"") ;
-
-	if ( miscfunctions::isLuks(m_volumePath) == false ){
-		UIMessage(tr("ERROR!"),tr("volume path does not point to a luks volume"));
-		return ;
-	}
-	QStringList l = miscfunctions::luksEmptySlots(m_volumePath) ;
-	
-	if( l.at(0) == l.at(1)){
-		UIMessage(tr("ERROR!"),tr("can not add any more keys, all slots are occupied"));
-		return ;
-	}
-	if(m_ui->radioButtonNewPassphraseFromFile->isChecked() == true){
-		if( NewKey.mid(0,2) == QString("~/"))
-			NewKey = QDir::homePath() + QString("/") + NewKey.mid(2) ;
-
-		if(miscfunctions::exists(NewKey) == false){
-			UIMessage(tr("ERROR!"),tr("invalid path to a key file with a key to be added"));
-			return ;
-		}
-	}
-	if(m_ui->radioButtonPassphraseInVolumeFromFile->isChecked() == true){
-		if( ExistingKey.mid(0,2) == QString("~/"))
-			ExistingKey = QDir::homePath() + QString("/") + ExistingKey.mid(2) ;
-
-		if(miscfunctions::exists(ExistingKey) == false){
-			UIMessage(tr("ERROR!"),tr("invalid path to a key file with an existing key"));
-			return ;
-		}
-	}
-	QString existingPassType ;
-	QString newPassType ;
-
-	bool x = m_ui->radioButtonPassphraseInVolumeFromFile->isChecked() ;
-	bool y = m_ui->radioButtonNewPassphraseFromFile->isChecked() ;
-
-	if ( x == true)
-		existingPassType = QString(" -u ") ;
-	else
-		existingPassType = QString(" -y ") ;
-
 	ExistingKey.replace("\"","\"\"\"") ;
-	
-	if ( y == true)
-		newPassType = QString(" -n ") ;
-	else
-		newPassType = QString(" -l ") ;
-
 	NewKey.replace("\"","\"\"\"") ;
 
-	QString exe = QString(ZULUCRYPTzuluCrypt) ;
-	exe = exe + QString(" -a -d ") ;
-	exe = exe + "\"" + m_volumePath + "\"" + existingPassType + "\"" + ExistingKey ;
-	exe = exe + "\"" + newPassType + "\"" + NewKey + "\"" ;
+	QString existingPassType ;
+
+	if (m_ui->radioButtonPassphraseInVolumeFromFile->isChecked()){
+		ExistingKey = miscfunctions::resolveHomeSymbol(ExistingKey);
+		existingPassType = QString("-u") ;
+	}else
+		existingPassType = QString("-y") ;
+
+	QString newPassType ;
+	if (m_ui->radioButtonNewPassphraseFromFile->isChecked()){
+		NewKey = miscfunctions::resolveHomeSymbol(NewKey);
+		newPassType = QString("-n") ;
+	}else
+		newPassType = QString("-l") ;
+
+	QString a = QString(ZULUCRYPTzuluCrypt) ;
+	QString b = m_volumePath ;
+	QString c = existingPassType ;
+	QString d = ExistingKey ;
+	QString e = newPassType ;
+	QString f = NewKey ;
+
+	QString exe = QString("%1 -a -d \"%2\" %3 \"%4\" %5 \"%6\"").arg(a).arg(b).arg(c).arg(d).arg(e).arg(f);
 
 	m_isWindowClosable = false ;
 
@@ -268,18 +229,6 @@ void luksaddkey::pbAdd(void)
 	QThreadPool::globalInstance()->start(lakt);
 }
 
-void luksaddkey::UIMessage(QString title, QString message)
-{
-	QMessageBox m ;
-	m.setFont(this->font());
-	m.setParent(this);
-	m.setWindowFlags(Qt::Window | Qt::Dialog);
-	m.setText(message);
-	m.setWindowTitle(title);
-	m.addButton(QMessageBox::Ok);
-	m.exec() ;
-}
-
 void luksaddkey::threadfinished(int status)
 {
 	m_isWindowClosable = true ;
@@ -289,23 +238,22 @@ void luksaddkey::threadfinished(int status)
 		case 0 :
 			x = miscfunctions::luksEmptySlots(m_volumePath);
 			success = tr("key added successfully.\n%1 / %2 slots are now in use").arg(x.at(0)).arg(x.at(1));
-			UIMessage(tr("SUCCESS"),success);
+			m_msg.UIMessage(tr("SUCCESS!"),success);
 			HideUI();
 			return ;			
-		case 1  : UIMessage(tr("ERROR"),tr("presented key does not match any key in the volume" )) ;          	break ;
-		case 2  : UIMessage(tr("ERROR"),tr("could not open luks device, quiting" )) ;	                      	break ;
-		case 4  : UIMessage(tr("ERROR"),tr("device does not exist" )) ;	                                      	break ;
-		case 5  : UIMessage(tr("ERROR"),tr("wrong arguments" )) ;	                                      	break ;
-		case 6  : UIMessage(tr("ERROR"),tr("one or more required argument(s) for this operation is missing" ));	break ;			
-		case 7  : UIMessage(tr("ERROR"),tr("new passphrases do not match" ) );	                              	break ;
-		case 8  : UIMessage(tr("ERROR"),tr("one or both keyfile(s) does not exist" )) ;	                      	break ;  
-		case 9  : UIMessage(tr("ERROR"),tr("couldnt get enought memory to hold the key file" )) ;	     	break ;
-		case 10 : UIMessage(tr("ERROR"),tr("all key slots are occupied, can not add any more keys" )) ;	      	break ;
-		case 11 : UIMessage(tr("ERROR"),tr("insufficient privilege to search for volume path" )) ;	        break ;	
-		case 12 : UIMessage(tr("ERROR"),tr("insufficient privilege to open key file for reading" ));		break ;	
-		case 110:UIMessage(tr("ERROR"),tr("can not find a partition that match presented UUID" ));		break ;
-				      
-		default : UIMessage(tr("ERROR"),tr("unrecognized error with status number %1 encountered").arg( status ));	
+		case 1  : m_msg.UIMessage(tr("ERROR!"),tr("presented key does not match any key in the volume" )) ;          	break ;
+		case 2  : m_msg.UIMessage(tr("ERROR!"),tr("could not open luks device" )) ;		                      	break ;
+		case 4  : m_msg.UIMessage(tr("ERROR!"),tr("device does not exist" )) ;	                                      	break ;
+		case 5  : m_msg.UIMessage(tr("ERROR!"),tr("wrong arguments" )) ;	                                      	break ;
+		case 6  : m_msg.UIMessage(tr("ERROR!"),tr("one or more required argument(s) for this operation is missing" ));	break ;
+		case 7  : m_msg.UIMessage(tr("ERROR!"),tr("new passphrases do not match" ) );	                              	break ;
+		case 8  : m_msg.UIMessage(tr("ERROR!"),tr("one or both keyfile(s) does not exist" )) ;	                      	break ;
+		case 9  : m_msg.UIMessage(tr("ERROR!"),tr("couldnt get enought memory to hold the key file" )) ;	     	break ;
+		case 10 : m_msg.UIMessage(tr("ERROR!"),tr("all key slots are occupied, can not add any more keys" )) ;	      	break ;
+		case 11 : m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to write to the volume" )) ;		        break ;
+		case 12 : m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to open key file for reading" ));		break ;
+		case 110: m_msg.UIMessage(tr("ERROR!"),tr("can not find a partition that match presented UUID" ));		break ;
+		default : m_msg.UIMessage(tr("ERROR!"),tr("unrecognized ERROR! with status number %1 encountered").arg( status ));
 	}
 	enableAll();
 }

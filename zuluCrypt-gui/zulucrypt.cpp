@@ -39,6 +39,7 @@ zuluCrypt::zuluCrypt(QWidget *parent) :
     QMainWindow(parent),
     m_ui(new Ui::zuluCrypt)
 {
+
 	setupUIElements();
 	setupConnections();
 	StartUpAddOpenedVolumesToTableThread();
@@ -126,7 +127,6 @@ void zuluCrypt::StartUpAddOpenedVolumesToTableThread()
 	startupupdateopenedvolumes * sov = new startupupdateopenedvolumes();
 	connect(sov,SIGNAL(addItemToTable(QString,QString)),this,SLOT(addItemToTable(QString,QString))) ;
 	connect(sov,SIGNAL(finished()),this,SLOT(startUpdateFinished()));
-	connect(sov,SIGNAL(UIMessage(QString,QString)),this,SLOT(UIMessage(QString,QString))) ;
 	QThreadPool::globalInstance()->start(sov);
 }
 
@@ -141,6 +141,7 @@ void zuluCrypt::setupUIElements()
 
 	m_ui->setupUi(this);
 
+	m_msg.setParent(this);
 	this->setFixedSize(this->size());
 	this->setWindowIcon(QIcon(QString(":/zuluCrypt.png")));
 
@@ -204,8 +205,6 @@ void zuluCrypt::currentItemChanged(QTableWidgetItem *current, QTableWidgetItem *
 
 void zuluCrypt::closeAllVolumes()
 {
-	if( m_ui->tableWidget->rowCount() < 1 )
-		return ;
 	closeAllVolumesThread *cavt = new closeAllVolumesThread(m_ui->tableWidget) ;
 	connect(cavt,SIGNAL(close(QTableWidgetItem *,int)),this,SLOT(closeAll(QTableWidgetItem *,int))) ;
 	QThreadPool::globalInstance()->start(cavt);	
@@ -293,7 +292,7 @@ void zuluCrypt::fonts()
 		if( k > 10 ){
 			k = 10 ;
 			Font.setPointSize(k);
-			UIMessage(tr("info"),tr("resetting font size to 10 because larger font sizes do not fit"));
+			m_msg.UIMessage(tr("info"),tr("resetting font size to 10 because larger font sizes do not fit"));
 		}
 		setUserFont(Font);
 		QString s = Font.family()+ QString("\n");
@@ -373,7 +372,7 @@ GNU General Public License for more details.\n\
 You should have received a copy of the GNU General Public License\n\
 along with this program.  If not, see <http://www.gnu.org/licenses/>.").arg(VERSION_STRING);
 
-	UIMessage(tr("about zuluCrypt"),license);
+	m_msg.UIMessage(tr("about zuluCrypt"),license);
 }
 
 void zuluCrypt::addItemToTable(QString device,QString m_point)
@@ -401,7 +400,7 @@ void zuluCrypt::volume_property()
 
 void zuluCrypt::volumePropertyThreadFinished(QString properties)
 {
-	UIMessage(tr("volume properties"),properties);
+	m_msg.UIMessage(tr("volume properties"),properties);
 }
 
 void zuluCrypt::favAboutToHide()
@@ -513,14 +512,7 @@ void zuluCrypt::luksDeleteKeyContextMenu(void)
 
 void zuluCrypt::UIMessage(QString title, QString message)
 {
-	QMessageBox m ;
-	m.setParent(this);
-	m.setFont(this->font());
-	m.setWindowFlags(Qt::Window | Qt::Dialog);
-	m.setText(message);
-	m.setWindowTitle(title);
-	m.addButton(QMessageBox::Ok);
-	m.exec() ;
+	m_msg.UIMessage(title,message);
 }
 
 void zuluCrypt::closeStatus(int st)
@@ -535,12 +527,12 @@ void zuluCrypt::closeStatus(int st)
 void zuluCrypt::closeStatusErrorMessage(int st)
 {
 	switch ( st ) {
-	case 1 :UIMessage(tr("ERROR"),tr("close failed, encrypted volume with that name does not exist")) ;				break ;
-	case 2 :UIMessage(tr("ERROR"),tr("close failed, the mount point and/or one or more files from the volume are in use."));	break ;
-	case 3 :UIMessage(tr("ERROR"),tr("close failed, volume does not have an entry in /etc/mtab"));					break ;
-	case 4 :UIMessage(tr("ERROR"),tr("close failed, could not get a lock on /etc/mtab~"));						break ;	
-	case 5 :UIMessage(tr("ERROR"),tr("close failed, volume is unmounted but could not close mapper,advice to close it manually"));	break ;	
-	default: UIMessage(tr("ERROR"),tr("unrecognized error with status number %d encountered").arg( st ));
+		case 1 :m_msg.UIMessage(tr("ERROR!"),tr("close failed, encrypted volume with that name does not exist")) ;				break ;
+		case 2 :m_msg.UIMessage(tr("ERROR!"),tr("close failed, the mount point and/or one or more files from the volume are in use."));		break ;
+		case 3 :m_msg.UIMessage(tr("ERROR!"),tr("close failed, volume does not have an entry in /etc/mtab"));					break ;
+		case 4 :m_msg.UIMessage(tr("ERROR!"),tr("close failed, could not get a lock on /etc/mtab~"));						break ;
+		case 5 :m_msg.UIMessage(tr("ERROR!"),tr("close failed, volume is unmounted but could not close mapper,advice to close it manually"));	break ;
+		default:m_msg.UIMessage(tr("ERROR!"),tr("unrecognized error with status number %d encountered").arg( st ));
 	}
 }
 
@@ -565,7 +557,7 @@ luksaddkey * zuluCrypt::setUpluksaddkey()
 
 void zuluCrypt::ShowAddKeyContextMenu(QString key)
 {
-	setUpluksaddkey()->partitionEntry(key);
+	setUpluksaddkey()->ShowUI( key );
 }
 
 void zuluCrypt::ShowAddKey()
@@ -582,7 +574,7 @@ luksdeletekey * zuluCrypt::setUpluksdeletekey()
 
 void zuluCrypt::ShowDeleteKeyContextMenu(QString key)
 {
-	setUpluksdeletekey()->deleteKey( key );
+	setUpluksdeletekey()->ShowUI( key );
 }
 
 void zuluCrypt::ShowDeleteKey()
