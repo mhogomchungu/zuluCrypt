@@ -36,6 +36,7 @@ class UIMsg
 {
 public:
 	UIMsg(void) ;
+	UIMsg(QWidget *) ;
 	void setParent(QWidget *);
 	void UIMessage(QString,QString);
 	int UIMessageWithConfirm(QString,QString);

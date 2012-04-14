@@ -245,22 +245,13 @@ void createpartition::pbCreateClicked()
 	}
 
 	if( volumePath.left(5) == QString("/dev/")){
-		QMessageBox m ;
-		m.setFont(this->font());
-		m.setParent(this);
-		m.setWindowFlags(Qt::Window | Qt::Dialog);
-		m.setWindowTitle(tr("WARNING!"));
 
-		m.addButton(QMessageBox::Yes);
-		m.addButton(QMessageBox::No);
-		m.setDefaultButton(QMessageBox::No);
+		QString wr = tr("all contents of \"%1\" will be deleted!.").arg(volumePath) ;
+		wr += tr("\nAre you sure you want to proceed?") ;
 
-		QString wr = tr("all contents of \"") ;
-		wr = wr + volumePath + tr("\" will be deleted!.");
-		wr = wr + tr("\nAre you sure you want to proceed?") ;
-		m.setText(wr);
+		int opt = m_msg.UIMessageWithConfirm(tr("WARNING!"),wr) ;
 
-		if ( m.exec() != QMessageBox::Yes )
+		if ( opt != QMessageBox::Yes )
 			return ;
 	}
 
@@ -292,20 +283,20 @@ void createpartition::threadfinished(int st)
 	
 	switch ( st ){
 		case 0 : m_msg.UIMessage(tr("SUCCESS!"),tr("volume created successfully") ) ;
-			 HideUI();											break  ;
+		HideUI();													break  ;
 		case 1 : m_msg.UIMessage(tr("ERROR!"),tr("invalid path to a file or device"));					break  ;
-		case 2 : m_msg.UIMessage(tr("ERROR!"),tr("wrong option type"));						break  ;
-		case 3 : m_msg.UIMessage(tr("ERROR!"),tr("could not create an encrypted volume in a file or device" ));	break  ;
+		case 2 : m_msg.UIMessage(tr("ERROR!"),tr("wrong option type"));							break  ;
+		case 3 : m_msg.UIMessage(tr("ERROR!"),tr("could not create an encrypted volume in a file or device" ));		break  ;
 		case 4 : m_msg.UIMessage(tr("ERROR!"),tr("one or more required argument(s) for this operation is missing" ));	break  ;
 		case 5 : m_msg.UIMessage(tr("ERROR!"),tr("wrong choice, exiting" ));						break  ;
-		case 6 : m_msg.UIMessage(tr("ERROR!"),tr("couldnt get enought memory to hold the key file" )) ;		break  ;
+		case 6 : m_msg.UIMessage(tr("ERROR!"),tr("couldnt get enought memory to hold the key file" )) ;			break  ;
 		case 7 : m_msg.UIMessage(tr("ERROR!"),tr("passphrases do not match" ) );					break  ;
 		case 8 : m_msg.UIMessage(tr("ERROR!"),tr("invalid path to key file" ) );					break  ;
 		case 9 : m_msg.UIMessage(tr("ERROR!"),tr("container file must be bigger than 3MB" )) ;				break  ;
 		case 10: m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to create a volume on a system partition.\
 A system partition is a partition with an active entry in \"/etc/fstab\"\
 and \"/etc/crypttab.\"\nRerun the tool from root's accout to proceed" )) ;
-															break  ;
+																break  ;
 		case 11: m_msg.UIMessage(tr("ERROR!"),tr("%1 not found").arg(ZULUCRYPTmkfs) );					break  ;
 		case 12: m_msg.UIMessage(tr("ERROR!"),tr("user chose not to proceed" ) );					break  ;
 		case 13: m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to search for volume path" )) ;		break  ;

@@ -223,7 +223,12 @@ UIMsg::UIMsg()
 {
 }
 
-void UIMsg::setParent(QWidget *p)
+UIMsg::UIMsg(QWidget * p)
+{
+	parent = p ;
+}
+
+void UIMsg::setParent(QWidget * p)
 {
 	parent = p ;
 }
@@ -247,15 +252,15 @@ int UIMsg::UIMessageWithConfirm(QString title,QString msg )
 	m.setParent(parent);
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 	m.setWindowTitle(title);
-	m.setText(msg) ;
-	m.addButton(QObject::tr("yes"),QMessageBox::YesRole);
-	m.addButton(QObject::tr("no"),QMessageBox::NoRole);
+	m.setText(msg) ;	
 
+	m.addButton(QObject::tr("yes"),QMessageBox::YesRole);
+	QPushButton * b = m.addButton(QObject::tr("no"),QMessageBox::NoRole);
+
+	m.setDefaultButton(b);
 	m.exec() ;
 
-	QAbstractButton * button = m.clickedButton();
-
-	if(button->text() == QString("yes"))
+	if(m.clickedButton()->text() == QString("yes"))
 		return QMessageBox::Yes ;
 	else
 		return QMessageBox::No ;
