@@ -163,7 +163,7 @@ void createpartition::enableAll()
 	m_ui->labelRepeatPassPhrase->setEnabled(true);
 	m_ui->lineEditPassphrase1->setEnabled(true);
 	m_ui->lineEditPassPhrase2->setEnabled(true);
-	m_ui->lineEditVolumePath->setEnabled(true);
+	//m_ui->lineEditVolumePath->setEnabled(true);
 	m_ui->pbCancel->setEnabled(true);
 	m_ui->pbCreate->setEnabled(true);
 	m_ui->pbOpenKeyFile->setEnabled(true);
@@ -209,6 +209,7 @@ void createpartition::rbPassphraseClicked()
 	m_ui->lineEditPassPhrase2->setEchoMode(QLineEdit::Password);
 	m_ui->labelPassPhrase->setText(tr("passphrase"));
 	m_ui->labelRepeatPassPhrase->setEnabled(true);
+	m_ui->pbOpenKeyFile->setIcon(QIcon(QString(":/passphrase.png")));
 }
 
 void createpartition::rbPasssphraseFromFileClicked()
@@ -220,6 +221,7 @@ void createpartition::rbPasssphraseFromFileClicked()
 	m_ui->lineEditPassPhrase2->setEnabled(false);
 	m_ui->labelPassPhrase->setText(tr("key file"));
 	m_ui->labelRepeatPassPhrase->setEnabled(false);
+	m_ui->pbOpenKeyFile->setIcon(QIcon(QString(":/keyfile.png")));
 }
 
 void createpartition::pbCreateClicked()
@@ -233,9 +235,12 @@ void createpartition::pbCreateClicked()
 
 	QString source ;
 
-	if (m_ui->rbPassphraseFromFile->isChecked() == true)
+	if (m_ui->rbPassphraseFromFile->isChecked() == true){
+		if( passphrase_1.isEmpty() )
+			return 	m_msg.UIMessage(tr("ERROR!"),tr("atleast one required field is empty"));
+
 		source = QString("-f") ;
-	else{
+	}else{
 		if( passphrase_1.isEmpty() || passphrase_2.isEmpty() )
 			return 	m_msg.UIMessage(tr("ERROR!"),tr("atleast one required field is empty"));
 		if( passphrase_1 != passphrase_2 )
