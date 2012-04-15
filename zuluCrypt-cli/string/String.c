@@ -239,6 +239,11 @@ string_t StringInherit( char ** data )
 	return StringInheritWithSize( data,strlen( *data ) ) ;
 }
 
+void StringPrint( string_t st )
+{
+	printf( "%s",st->string ) ;
+}
+
 string_t StringInheritWithSize( char ** data,size_t s )
 {
 	string_t st = StringPrepare__( s ) ;

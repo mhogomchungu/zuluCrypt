@@ -532,7 +532,8 @@ void zuluCrypt::closeStatusErrorMessage(int st)
 		case 3 :m_msg.UIMessage(tr("ERROR!"),tr("close failed, volume does not have an entry in /etc/mtab"));					break ;
 		case 4 :m_msg.UIMessage(tr("ERROR!"),tr("close failed, could not get a lock on /etc/mtab~"));						break ;
 		case 5 :m_msg.UIMessage(tr("ERROR!"),tr("close failed, volume is unmounted but could not close mapper,advice to close it manually"));	break ;
-		default:m_msg.UIMessage(tr("ERROR!"),tr("unrecognized error with status number %d encountered").arg( st ));
+		case 110:m_msg.UIMessage(tr("ERROR!"),tr("close failed, could not find any partition with the presented UUID"));			break ;
+		default:m_msg.UIMessage(tr("ERROR!"),tr("unrecognized error with status number %1 encountered").arg( st ));
 	}
 }
 

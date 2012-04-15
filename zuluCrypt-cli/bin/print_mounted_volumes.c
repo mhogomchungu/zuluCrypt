@@ -30,68 +30,44 @@
  */
 char * volume_device_name( const char * ) ;
 
-static void print_UUID( const char * entry )
+static void print_UUID( const char * mapper,const char * m_point )
 {
-	const char * c = entry - 1 ;
-	const char * d = strstr( entry," " ) ;
-	
-	printf( "UUID=\"" ) ;
-
-	while( *--d != '-' ) { ; }
-	
-	while( ++c != d )
-		printf( "%c",*c ) ;
-		
-	printf( "\"\t" ) ;
-	
-	while( *++c != ' ' ) { ; }
-		
-	while( *++c != ' ' )
-		printf( "%c",*c ) ;
-	
-	printf( "\n" ) ;	
+	printf( "UUID=\"%s\"\t%s\n",mapper,m_point ) ;	
 }
 
-static void print_NAAN( const char * entry )
+static void print_NAAN( const char * mapper,const char * m_point )
 {
-	char * volume ;
-	const char * c = entry - 1;
-
-	string_t p = String( "" ) ;
-	
-	while( *++c != ' ' )
-		StringAppendChar( p,*c ) ; 
-
-	volume = volume_device_name( StringContent( p ) ) ;
+	char * volume = volume_device_name( mapper ) ;
 	
 	if( volume == NULL )
 		return ;
 	
-	printf( "%s\t",volume ) ;
+	printf( "%s\t%s\n",volume,m_point ) ;
 	
-	while( *++c != ' ' )
-		printf( "%c",*c ) ;
-	
-	printf( "\n" );
-	StringDelete( &p ) ;
 	free( volume ) ;
 }
 
 static void print( uid_t uid,stringList_t stl )
 {
-	const char * entry ;
+	const char * d ;
 	const char * c ;
+	const char * e ;
+	
 	size_t len ;
 	size_t j ;
 	size_t i ;
+	size_t k ;
 	
+	stringList_t stx ;
+	
+	string_t q ; 
 	string_t z = StringIntToString( uid ) ;
 	string_t p = String( "/dev/mapper/zuluCrypt-" ) ;
 
 	StringAppend( p,StringContent( z ) ) ;
 	
 	len = StringLength( p ) ;
-	entry = StringContent( p ) ;
+	e = StringContent( p ) ;
 	
 	j = StringListSize( stl )  ;
 	
@@ -99,11 +75,27 @@ static void print( uid_t uid,stringList_t stl )
 		
 		c = StringListContentAt( stl,i ) ;
 		
-		if( strncmp( c,entry,len ) == 0 ){
-			if( strncmp( c + len + 1,"UUID",4 ) == 0 )
-				print_UUID( c + len + 6 ) ;
-			else
-				print_NAAN( c ) ;
+		if( strncmp( c,e,len ) == 0 ){
+			
+			stx = StringListSplit( c,' ' ) ;
+			
+			if( strncmp( c + len + 1,"UUID",4 ) == 0 ){
+				q = StringListStringAt( stx,0 ) ;
+				StringRemoveLeft( q,len + 6 ) ;
+				k = StringLastIndexOfChar( q,'-' ) ;
+				if( k != -1 ){
+					StringRemoveRight( q,k ) ;
+					c = StringContent( q ) ;
+					d = StringListContentAt( stx,1 ) ;					
+					print_UUID( c,d ) ;					
+				}
+			}else{
+				c = StringListContentAt( stx,0 ) ;
+				d = StringListContentAt( stx,1 ) ;
+				print_NAAN( c,d ) ;
+			}
+			
+			StringListDelete( &stx ) ;
 		}
 	}
 	

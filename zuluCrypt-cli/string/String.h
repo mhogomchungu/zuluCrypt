@@ -101,6 +101,11 @@ string_t StringInheritWithSize( char ** data,size_t s ) ;
  */
 const char * StringContent( string_t st ) ;
 
+/*
+ * printf() the string handled bt handle st * 
+ */
+void StringPrint( string_t st ) ;
+
 /* 
  * Returns an editable string copy of a string handled by handle st. 
  * Remember to free it when you are done using it.

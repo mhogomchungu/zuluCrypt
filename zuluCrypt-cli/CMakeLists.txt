@@ -67,7 +67,7 @@
  add_library( StringList STATIC string/StringList.c )
  
  SET( BIN  
- bin/print_opened_volumes.c 
+ bin/print_mounted_volumes.c 
  bin/create_mapper_name.c 
  bin/replace_bash_special_chars.c 
  bin/main.c 
