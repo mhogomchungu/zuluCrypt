@@ -52,7 +52,7 @@
  
  find_path ( path_to_libcryptsetup.h libcryptsetup.h )
  
- add_definitions( -I${path_to_libcryptsetup.h} -D_FILE_OFFSET_BITS=64 -Wall -s -fPIC ) 
+ add_definitions( -I${path_to_libcryptsetup.h} -D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread ) 
  
  find_library( libcryptsetup libcryptsetup.so) 
  

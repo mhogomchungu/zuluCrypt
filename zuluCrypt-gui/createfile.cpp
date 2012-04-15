@@ -174,32 +174,32 @@ void createfile::pbCreate()
 	
 	m_cft = new createFileThread( source, m_path,m_fileSize,1 ) ;
 
-	connect(m_cft,SIGNAL(complete()),this,SLOT(createFileThreadFinished()));
-	connect(m_cft,SIGNAL(terminated()),this,SLOT(createFileThreadTerminated()));
+	connect(m_cft,SIGNAL(terminated()),m_cft,SLOT(deleteLater()));
+	connect(m_cft,SIGNAL(finished()),m_cft,SLOT(deleteLater()));
+
+	/*
+	  exitStatus will be 1 if the thread is terminated
+	  exitStatus will be 0 if the thread is left to finish its work
+	  */
+	connect(m_cft,SIGNAL(exitStatus(int)),this,SLOT(exitStatus(int))) ;
 
 	m_cft->start();
 }
 
-void createfile::createFileThreadFinished()
+void createfile::exitStatus(int status)
 {
-	m_cft->deleteLater();
 	m_cft = NULL ;
 	m_time.stop();
-	
-	if( m_mb.isVisible() == true )
-		m_mb.hide();
 
-	emit fileCreated( m_path ) ;
+	if( status == 1 )
+		QFile::remove( m_path ) ;
+	else{
+		if( m_mb.isVisible() == true )
+			m_mb.hide();
 
-	HideUI();
-}
+		emit fileCreated( m_path ) ;
+	}
 
-void createfile::createFileThreadTerminated()
-{
-	m_cft->deleteLater();
-	m_cft = NULL ;
-	m_time.stop();
-	QFile::remove( m_path ) ;
 	HideUI();
 }
 

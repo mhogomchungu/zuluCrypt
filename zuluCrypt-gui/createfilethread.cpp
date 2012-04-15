@@ -35,6 +35,7 @@
 
 createFileThread::createFileThread(QString source,QString file,double size,int type)
 {
+	m_cancelled = 1 ;
 	m_source = source ;
 	m_file = file ;
 	m_size = size ;
@@ -88,11 +89,12 @@ void createFileThread::run()
 	else
 		createContainer();
 
-	emit complete();
+	m_cancelled = 0 ;
 }
 
 createFileThread::~createFileThread()
 {	
 	close(m_in);
 	close(m_out);
+	emit exitStatus(m_cancelled);
 }

@@ -37,8 +37,7 @@ public :
 	createFileThread(QString source,QString destination,double size,int type) ;
 	~createFileThread();
 signals:
-	void complete(void);
-	void incomplete(void);
+	void exitStatus(int);
 private:
 	void createKeyFile(void);
 	void createContainer(void);
@@ -50,7 +49,7 @@ private:
 	int m_type ;
 	int m_in;
 	int m_out ;
-	bool done ;
+	int m_cancelled ;
 };
 
 #endif // ZULUCRYPTTHREADS_H

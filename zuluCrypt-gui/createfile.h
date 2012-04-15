@@ -52,8 +52,7 @@ public slots:
 	void pbCreate(void) ;
 private slots:
 	void monitorFileGrowth(void);
-	void createFileThreadFinished(void) ;
-	void createFileThreadTerminated(void);
+	void exitStatus(int);
 private:
 	void enableAll(void) ;
 	void disableAll(void) ;
