@@ -62,12 +62,15 @@
  */
 static stringList_t partitionList( void )
 {
+	const char * device ;	
+	
 	size_t i ;
 	size_t j ;	
+	ssize_t index ;	
+	
 	stringList_t stl ;	
 	stringList_t stl_1 = NULL ;	
-	const char * device ;	
-	ssize_t index ;	
+	
 	string_t st = StringGetFromVirtualFile( "/proc/partitions" ) ;	
 	string_t st_1 ;
 	
@@ -75,22 +78,21 @@ static stringList_t partitionList( void )
 
 	j = StringListSize( stl )  ;
 	
-	for( i = 0 ; i < j ; i++ )	{
+	for( i = 0 ; i < j ; i++ ){
+		
 		st = StringListStringAt( stl,i ) ;
 
 		index = StringLastIndexOfChar( st,' ' ) ;
 
 		if( index == -1 )
 			continue ;
-
-		StringRemoveLeft( st,index + 1 ) ;
-				
-		if( StringLength( st ) <= 3  )
+		
+		device = StringContent( st ) + index + 1 ;
+		
+		if( strlen( device  ) <= 3  )
 			continue ;
 	
-		device = StringContent( st ) ;
-
-		if( ( strncmp( device,"hd", 2 ) == 0 || strncmp( device,"sd",2 ) == 0 ) ){			
+		if( ( strncmp( device,"hd",2 ) == 0 || strncmp( device,"sd",2 ) == 0 ) ){			
 			st_1 = String( "/dev/" ) ;
 			StringAppend( st_1,device ) ;
 			stl_1 = StringListAppendString( stl_1,&st_1 ) ;			
@@ -115,6 +117,7 @@ string_t device_from_uuid( const char * uuid )
 	j = StringListSize( stl ) ; 
 	
 	for( i = 0 ; i < j ; i++ ){
+		
 		device = StringListContentAt( stl,i ) ;
 		
 		bp = blkid_new_probe_from_filename( device ) ;
@@ -148,6 +151,7 @@ static void blkid( const char * type,const char * entry, int size, stringList_t 
 	j = StringListSize( non_system ) ;
 	
 	for( i = 0 ; i < j ; i++ ){
+		
 		device = StringListContentAt( non_system,i ) ;
 		
 		bp = blkid_new_probe_from_filename( device ) ;

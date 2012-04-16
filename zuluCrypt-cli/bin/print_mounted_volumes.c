@@ -30,33 +30,17 @@
  */
 char * volume_device_name( const char * ) ;
 
-static void print_UUID( const char * mapper,const char * m_point )
-{
-	printf( "UUID=\"%s\"\t%s\n",mapper,m_point ) ;	
-}
-
-static void print_NAAN( const char * mapper,const char * m_point )
-{
-	char * volume = volume_device_name( mapper ) ;
-	
-	if( volume == NULL )
-		return ;
-	
-	printf( "%s\t%s\n",volume,m_point ) ;
-	
-	free( volume ) ;
-}
-
 static void print( uid_t uid,stringList_t stl )
 {
+	const char * c ;	
 	const char * d ;
-	const char * c ;
 	const char * e ;
+	char * f ;
 	
 	size_t len ;
 	size_t j ;
 	size_t i ;
-	size_t k ;
+	ssize_t k ;
 	
 	stringList_t stx ;
 	
@@ -81,18 +65,21 @@ static void print( uid_t uid,stringList_t stl )
 			
 			if( strncmp( c + len + 1,"UUID",4 ) == 0 ){
 				q = StringListStringAt( stx,0 ) ;
-				StringRemoveLeft( q,len + 6 ) ;
 				k = StringLastIndexOfChar( q,'-' ) ;
 				if( k != -1 ){
-					StringRemoveRight( q,k ) ;
-					c = StringContent( q ) ;
+					StringSubChar( q,k,'\0' ) ;
+					c = StringContent( q ) + len + 6 ;
 					d = StringListContentAt( stx,1 ) ;					
-					print_UUID( c,d ) ;					
+					printf( "UUID=\"%s\"\t%s\n",c,d ) ;	
 				}
 			}else{
-				c = StringListContentAt( stx,0 ) ;
-				d = StringListContentAt( stx,1 ) ;
-				print_NAAN( c,d ) ;
+				f = volume_device_name( StringListContentAt( stx,0 ) ) ;
+				
+				if( f != NULL ){
+					d = StringListContentAt( stx,1 ) ;					
+					printf( "%s\t%s\n",f,d ) ;			
+					free( f ) ;
+				}
 			}
 			
 			StringListDelete( &stx ) ;
