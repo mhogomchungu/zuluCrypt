@@ -202,40 +202,6 @@
     </property>
    </item>
   </widget>
-  <widget class="QComboBox" name="comboBoxRNG">
-   <property name="geometry">
-    <rect>
-     <x>120</x>
-     <y>100</y>
-     <width>161</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="toolTip">
-    <string>/dev/random is too slow to be practical but its most secure
-( move your mouse around to speed things up ).
-
-/dev/zero is fastest but least secure.
-
-/dev/urandom is in the middle and secure enough.
-</string>
-   </property>
-   <item>
-    <property name="text">
-     <string notr="true">/dev/urandom</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string notr="true">/dev/zero</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string notr="true">/dev/random</string>
-    </property>
-   </item>
-  </widget>
   <widget class="QLabel" name="label_5">
    <property name="geometry">
     <rect>
@@ -246,10 +212,23 @@
     </rect>
    </property>
    <property name="text">
-    <string>rng</string>
+    <string>operation</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelOperation">
+   <property name="geometry">
+    <rect>
+     <x>124</x>
+     <y>103</y>
+     <width>271</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>creating a volume file</string>
    </property>
   </widget>
  </widget>
@@ -259,7 +238,6 @@
   <tabstop>pbOpenFolder</tabstop>
   <tabstop>lineEditFileSize</tabstop>
   <tabstop>comboBox</tabstop>
-  <tabstop>comboBoxRNG</tabstop>
   <tabstop>pbCreate</tabstop>
   <tabstop>pbCancel</tabstop>
  </tabstops>

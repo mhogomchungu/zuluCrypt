@@ -45,16 +45,13 @@ private slots:
 	void pbCancel(void) ;
 	void pbCreate(void) ;
 	void pbOpenFolder(void) ;
-	void threadfinished(void);
-	void threadterminated(void);
 private:
 	void closeEvent(QCloseEvent *) ;
 	void disableAll(void);
 	void enableAll(void) ;
 	Ui::createkeyfile *m_ui;
-	createFileThread *m_rng ;
-	QString m_in ;
-	QString m_out ;
+
+	bool proceed ;
 	QString m_path ;
 	/*
 	  prototyped at miscfunctions.h

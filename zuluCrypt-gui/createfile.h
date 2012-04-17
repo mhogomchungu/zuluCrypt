@@ -42,6 +42,7 @@ public:
 	~createfile();
 signals :
 	void fileCreated(QString) ;
+	void cancelOperation(void);
 	void HideUISignal(void);
 
 public slots:
@@ -53,6 +54,8 @@ public slots:
 private slots:
 	void monitorFileGrowth(void);
 	void exitStatus(int);
+	void doneCreatingFile(void);
+	void progress(int);
 private:
 	void enableAll(void) ;
 	void disableAll(void) ;

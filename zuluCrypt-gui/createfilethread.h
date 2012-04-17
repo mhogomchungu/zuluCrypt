@@ -23,6 +23,7 @@
 #include "../zuluCrypt-cli/constants.h"
 #include "ui_openpartition.h"
 
+#include <QProcess>
 #include <QThread>
 #include <QFile>
 #include <QMetaType>
@@ -34,22 +35,29 @@ class createFileThread : public QThread
 {
 	Q_OBJECT
 public :
-	createFileThread(QString source,QString destination,double size,int type) ;
+	createFileThread(QString destination,double size) ;
 	~createFileThread();
 signals:
 	void exitStatus(int);
+	void doneCreatingFile(void);
+	void progress(int);
+private slots:
+	void cancelOperation(void);
 private:
-	void createKeyFile(void);
-	void createContainer(void);
-	void createContainerZero(void);
+	void writeVolume(void);
+	void openVolume(void);
+	void closeVolume(void);
+	void getKey(void) ;
+	void createFile(void) ;
+	void fillCreatedFileWithRandomData(void);
 	void run() ;
-	QString m_source ;
+
 	QString m_file ;
 	double m_size ;
-	int m_type ;
-	int m_in;
-	int m_out ;
 	int m_cancelled ;
+	int m_pid ;
+	char m_key[65];
+	char m_data[1024];
 };
 
 #endif // ZULUCRYPTTHREADS_H

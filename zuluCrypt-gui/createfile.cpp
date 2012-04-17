@@ -76,8 +76,6 @@ void createfile::enableAll()
 	m_ui->lineEditFileName->setEnabled(true);
 	m_ui->lineEditFilePath->setEnabled(true);
 	m_ui->lineEditFileSize->setEnabled(true);
-	m_ui->comboBox->setEnabled(true);
-	m_ui->comboBoxRNG->setEnabled(true);
 	m_ui->pbOpenFolder->setEnabled(true);
 	m_ui->label->setEnabled(true);
 	m_ui->label_2->setEnabled(true);
@@ -94,7 +92,6 @@ void createfile::disableAll()
 	m_ui->lineEditFilePath->setEnabled(false);
 	m_ui->lineEditFileSize->setEnabled(false);
 	m_ui->comboBox->setEnabled(false);
-	m_ui->comboBoxRNG->setEnabled(false);
 	m_ui->pbOpenFolder->setEnabled(false);
 	m_ui->label->setEnabled(false);
 	m_ui->label_2->setEnabled(false);
@@ -107,7 +104,6 @@ void createfile::showUI()
 {
 	enableAll();
 	m_ui->comboBox->setCurrentIndex(1) ;
-	m_ui->comboBoxRNG->setCurrentIndex(0);
 	m_ui->lineEditFileName->clear();
 	m_ui->lineEditFilePath->setText(QDir::homePath());
 	m_ui->lineEditFileSize->clear();
@@ -146,8 +142,6 @@ void createfile::pbCreate()
 	if( test == false )
 		return m_msg.UIMessage(tr("ERROR!"),tr("Illegal character in the file size field.Only digits are allowed"));
 
-	QString source = m_ui->comboBoxRNG->currentText() ;
-
 	m_path = m_path + QString("/") + fileName;
 
 	if( miscfunctions::exists(m_path) == true )
@@ -172,10 +166,12 @@ void createfile::pbCreate()
 	disableAll();
 	m_time.start();
 	
-	m_cft = new createFileThread( source, m_path,m_fileSize,1 ) ;
+	m_cft = new createFileThread( m_path,m_fileSize ) ;
 
-	connect(m_cft,SIGNAL(terminated()),m_cft,SLOT(deleteLater()));
 	connect(m_cft,SIGNAL(finished()),m_cft,SLOT(deleteLater()));
+	connect(m_cft,SIGNAL(doneCreatingFile()),this,SLOT(doneCreatingFile()));
+	connect(m_cft,SIGNAL(progress(int)),this,SLOT(progress(int)));
+	connect(this,SIGNAL(cancelOperation()),m_cft,SLOT(cancelOperation()));
 
 	/*
 	  exitStatus will be 1 if the thread is terminated
@@ -217,9 +213,7 @@ void createfile::pbCancel()
 	m_mb.exec() ;
 
 	if(m_mb.clickedButton() == m_yes)
-		m_cft->terminate();
-	else if(m_mb.clickedButton() == m_no) {;} //dont care about this variable,
-						  //add it here to silence compiler warning
+		emit cancelOperation();
 }
 
 void createfile::HideUI()
@@ -232,6 +226,18 @@ void createfile::monitorFileGrowth()
 {
 	QFileInfo f( m_path ) ;
 	m_ui->progressBar->setValue(f.size() * 100 / m_fileSize);
+}
+
+void createfile::progress(int p)
+{
+	m_ui->progressBar->setValue(p);
+}
+
+void createfile::doneCreatingFile()
+{
+	m_ui->progressBar->setValue(0);
+	m_time.stop();
+	m_ui->labelOperation->setText(tr("writing random data to file"));
 }
 
 void createfile::pbOpenFolder()

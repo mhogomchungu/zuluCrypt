@@ -20,7 +20,6 @@
 #include "createfilethread.h"
 #include "miscfunctions.h"
 
-#include <QProcess>
 #include <QFile>
 #include <QMessageBox>
 #include <QTableWidgetItem>
@@ -32,69 +31,126 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <unistd.h>
 
-createFileThread::createFileThread(QString source,QString file,double size,int type)
+createFileThread::createFileThread(QString file,double size)
 {
-	m_cancelled = 1 ;
-	m_source = source ;
+	m_cancelled = 0 ;
 	m_file = file ;
-	m_size = size ;
-	m_type = type ;
-	m_in = open( m_source.toAscii().data(),O_RDONLY) ;
-	m_out = open( m_file.toAscii().data(),O_WRONLY | O_CREAT) ;
-
-	chmod(m_file.toAscii().data(),S_IRWXU);
+	m_size = size / 1024 ;
 }
 
-void createFileThread::createKeyFile()
+void createFileThread::getKey()
 {
-	char data ;
-	for( int i = 0 ; i < m_size ; i++){
+	int x = open("/dev/urandom",O_RDONLY) ;
+	char k ;
+	for( int j = 0 ; j < 64 ; j++ ){
 		do{
-			read(m_in,&data,1);
-		}while( data < 32 || data > 126) ;
-
-		write(m_out,&data,1);
+			read(x,&k,1);
+		}while(k < 32 || k > 126) ;
+		m_key[j] = k ;
 	}
+
+	close(x);
+	m_key[64] = '\0' ;
 }
 
-void createFileThread::createContainer()
+void createFileThread::cancelOperation()
 {
-	double count = m_size / 1024 ;
-	char data[1024];
+	this->terminate();
 
-	for(double i = 0 ; i < count ; i++){
-		read(m_in,data,1024);
-		write(m_out,data,1024);
-	}
-}
+	m_cancelled = 1 ;
 
-void createFileThread::createContainerZero()
-{
-	double count = m_size / 1024 ;
-	char data[1024];
-
-	memset(data,0,1024);
-
-	for(double i = 0 ; i < count ; i++)
-		write(m_out,data,1024);
+	close(m_pid);
+	this->closeVolume() ;
 }
 
 void createFileThread::run()
 {
-	if( m_type == 0 )
-		createKeyFile();
-	else if( m_source == QString("/dev/zero"))
-		createContainerZero();
-	else
-		createContainer();
+	/*
+	 * This is the entry point for this class.
+	 * The class basically cr*eates a file of a size specified by a user by writing '\0' to it.
+	 *
+	 * Then it creates a cryptsetup mapper and writes '\0' to the file through the mapper.
+	 *
+	 * This medhod of writing random data to the file seem to be faster than creating the file using random
+	 * data from /dev/urandom 
+	 */
+	memset(m_data,0,1024);
 
-	m_cancelled = 0 ;
+	this->createFile();
+
+	emit doneCreatingFile();
+
+	this->getKey();
+
+	this->fillCreatedFileWithRandomData();
+}
+
+void createFileThread::createFile()
+{
+	int x = open( m_file.toAscii().data(),O_WRONLY | O_CREAT ) ;
+
+	for(double i = 0 ; i < m_size ; i++)
+		write(x,m_data,1024);
+
+	close(x);
+	chmod(m_file.toAscii().data(),S_IRWXU);
+}
+
+void createFileThread::fillCreatedFileWithRandomData()
+{
+	this->openVolume()  ;
+	
+	this->writeVolume() ;
+	
+	this->closeVolume() ;
+}
+
+void createFileThread::closeVolume()
+{
+	/*
+	 * not using qprocess like when opening the volume to remove UI hanging while the volume is being closed
+	 */
+	QString exe = QString("%1 -q -d \"%2\"").arg(ZULUCRYPTzuluCrypt).arg(m_file) ;
+	runInThread * rt = new runInThread(exe);
+	QThreadPool::globalInstance()->start(rt);
+}
+
+void createFileThread::openVolume()
+{
+	QString exe = QString("%1 -O -d \"%2\" -e rw -p %3").arg(ZULUCRYPTzuluCrypt).arg(m_file).arg(QString(m_key));
+
+	QProcess p ;
+	p.start(exe);
+	p.waitForFinished();
+	p.close();
+}
+
+void createFileThread::writeVolume()
+{
+	QString path = miscfunctions::cryptMapperPath() + QString("zuluCrypt-") + QString::number(getuid()) ;
+	
+	path += QString("-NAAN-") + m_file.split("/").last() + miscfunctions::hashPath(m_file);
+	
+	m_pid = open(path.toAscii().data(),O_WRONLY) ;
+	
+	int Z ;
+	
+	for(double i = 0 ; i < m_size ; i++){
+		
+		Z = (int)( i / m_size  * 100 ) ;
+		
+		if( Z % 5 == 0 )
+			emit progress(Z);
+		
+		write(m_pid,m_data,1024);
+	}
+	
+	close(m_pid);
 }
 
 createFileThread::~createFileThread()
 {	
-	close(m_in);
-	close(m_out);
 	emit exitStatus(m_cancelled);
 }

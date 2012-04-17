@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'createfile.ui'
 **
-** Created: Wed Dec 28 22:55:13 2011
+** Created: Mon Apr 16 21:16:12 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -39,8 +39,8 @@ public:
     QLabel *label_4;
     QPushButton *pbCreate;
     QComboBox *comboBox;
-    QComboBox *comboBoxRNG;
     QLabel *label_5;
+    QLabel *labelOperation;
 
     void setupUi(QWidget *createfile)
     {
@@ -93,24 +93,18 @@ public:
         comboBox->setObjectName(QString::fromUtf8("comboBox"));
         comboBox->setGeometry(QRect(230, 70, 51, 31));
         comboBox->setFrame(true);
-        comboBoxRNG = new QComboBox(createfile);
-        comboBoxRNG->insertItems(0, QStringList()
-         << QString::fromUtf8("/dev/urandom")
-         << QString::fromUtf8("/dev/zero")
-         << QString::fromUtf8("/dev/random")
-        );
-        comboBoxRNG->setObjectName(QString::fromUtf8("comboBoxRNG"));
-        comboBoxRNG->setGeometry(QRect(120, 100, 161, 31));
         label_5 = new QLabel(createfile);
         label_5->setObjectName(QString::fromUtf8("label_5"));
         label_5->setGeometry(QRect(50, 104, 61, 20));
         label_5->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
+        labelOperation = new QLabel(createfile);
+        labelOperation->setObjectName(QString::fromUtf8("labelOperation"));
+        labelOperation->setGeometry(QRect(124, 103, 271, 21));
         QWidget::setTabOrder(lineEditFileName, lineEditFilePath);
         QWidget::setTabOrder(lineEditFilePath, pbOpenFolder);
         QWidget::setTabOrder(pbOpenFolder, lineEditFileSize);
         QWidget::setTabOrder(lineEditFileSize, comboBox);
-        QWidget::setTabOrder(comboBox, comboBoxRNG);
-        QWidget::setTabOrder(comboBoxRNG, pbCreate);
+        QWidget::setTabOrder(comboBox, pbCreate);
         QWidget::setTabOrder(pbCreate, pbCancel);
 
         retranslateUi(createfile);
@@ -137,16 +131,8 @@ public:
          << QApplication::translate("createfile", "MB", 0, QApplication::UnicodeUTF8)
          << QApplication::translate("createfile", "GB", 0, QApplication::UnicodeUTF8)
         );
-#ifndef QT_NO_TOOLTIP
-        comboBoxRNG->setToolTip(QApplication::translate("createfile", "/dev/random is too slow to be practical but its most secure\n"
-"( move your mouse around to speed things up ).\n"
-"\n"
-"/dev/zero is fastest but least secure.\n"
-"\n"
-"/dev/urandom is in the middle and secure enough.\n"
-"", 0, QApplication::UnicodeUTF8));
-#endif // QT_NO_TOOLTIP
-        label_5->setText(QApplication::translate("createfile", "rng", 0, QApplication::UnicodeUTF8));
+        label_5->setText(QApplication::translate("createfile", "operation", 0, QApplication::UnicodeUTF8));
+        labelOperation->setText(QApplication::translate("createfile", "creating a volume file", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };

@@ -29,6 +29,9 @@
 #include <QFile>
 #include <QKeyEvent>
 
+#include <fcntl.h>
+#include <unistd.h>
+
 createkeyfile::createkeyfile(QWidget *parent) :
     QWidget(parent),
     m_ui(new Ui::createkeyfile)
@@ -43,7 +46,8 @@ createkeyfile::createkeyfile(QWidget *parent) :
 	connect(m_ui->pbCreate,SIGNAL(clicked()),this,SLOT(pbCreate())) ;
 	connect(m_ui->pbOpenFolder,SIGNAL(clicked()),this,SLOT(pbOpenFolder())) ;
 	connect(m_ui->pbCancel,SIGNAL(clicked()),this,SLOT(pbCancel())) ;
-	m_rng = NULL ;
+
+	proceed = true ;
 }
 
 void createkeyfile::HideUI()
@@ -68,12 +72,7 @@ void createkeyfile::ShowUI()
 
 void createkeyfile::pbCancel()
 {
-	if( m_rng == NULL){
-		HideUI() ;
-		return ;
-	}
-	m_rng->terminate();  ;
-	m_rng = NULL ;
+	proceed = false ;
 }
 
 void createkeyfile::enableAll()
@@ -124,28 +123,31 @@ void createkeyfile::pbCreate()
 		m_ui->lineEditPath->setFocus();
 		return ;
 	}
-	m_rng = new createFileThread(m_ui->comboBoxRNG->currentText(),keyfile,64,0) ;
-	connect(m_rng,SIGNAL(finished()),this,SLOT(threadfinished()));
+
 	disableAll() ;
-	m_rng->start();
-}
 
-void createkeyfile::threadterminated()
-{
-	enableAll();
-}
+	char data ;
+	int in = open(m_ui->comboBoxRNG->currentText().toAscii().data(),O_RDONLY) ;
+	int out = open(keyfile.toAscii().data(),O_WRONLY|O_CREAT);
 
-void createkeyfile::threadfinished()
-{
-	m_rng->deleteLater(); ;
+	for( int i = 0 ; i < 64 ; i++){
 
-	m_rng = NULL ;
+		if( proceed == false )
+			break ;
+		do{
+			read(in,&data,1);
+		}while( data < 32 || data > 126) ;
 
-	enableAll();
+		write(out,&data,1);
+	}
 
-	QFile f(m_path + QString("/") + m_ui->lineEditFileName->text()) ;
+	/*
+	  using global namespace to find close() because otherwise Qt tries to use QWidget::close()
+	  */
+	::close(in);
+	::close(out);
 
-	if( f.size() == 64)
+	if( proceed == true )
 		m_msg.UIMessage(tr("SUCCESS!"),tr("key file successfully created"));
 	else
 		m_msg.UIMessage(tr("WARNING!"),tr("process interrupted, key not fully generated"));

@@ -25,6 +25,30 @@
 #include <QObject>
 
 #include <QAbstractButton>
+//#include <libcryptsetup.h>
+
+QString miscfunctions::cryptMapperPath()
+{
+	//return QString(crypt_get_dir())
+	return QString("/dev/mapper/") ;
+}
+
+void miscfunctions::debug(QString s)
+{
+	std::cout << s.toStdString() << std::endl ;
+}
+
+QString miscfunctions::hashPath(QString p)
+{
+	size_t i = 0 ;
+	size_t l = p.size() ;
+	double h = 0 ;
+
+	for ( i = 0 ; i < l ; i++ )
+		h = h + p.at(i).toAscii() ;
+
+	return QString("-") + QString::number(h);
+}
 
 bool miscfunctions::exists(QString path)
 {

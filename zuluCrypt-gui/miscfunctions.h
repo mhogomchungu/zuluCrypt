@@ -60,6 +60,9 @@ public:
 	static void addItemToTableWithType(QTableWidget *,QString ,QString,QString);
 	static bool canCreateFile(QString);
 	static QString resolveHomeSymbol(QString);
+	static QString hashPath(QString p);
+	static QString cryptMapperPath(void);
+	static void debug(QString);
 };
 
 #endif // MISCFUNCTIONS_H
