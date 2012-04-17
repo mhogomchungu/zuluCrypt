@@ -141,6 +141,9 @@ char * StringDeleteHandle( string_t * xt )
 
 string_t StringCopy( string_t st )
 {
+#if NO_COW	
+	return String( st->string ) ;
+#else	
 	string_t new_st ;
 	
 	if( st == NULL )
@@ -169,6 +172,7 @@ string_t StringCopy( string_t st )
 	printf("creating a new string copy at:%d from %d\n",(int)new_st,(int)st ) ;
 #endif
 	return new_st ;
+#endif
 }
 
 inline string_t StringPrepare__( size_t size )

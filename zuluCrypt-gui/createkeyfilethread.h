@@ -1,9 +1,8 @@
 #ifndef CREATEKEYFILETHREAD_H
 #define CREATEKEYFILETHREAD_H
 
-#include <QObject>
 #include <QThread>
-
+#include <QProcess>
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/stat.h>

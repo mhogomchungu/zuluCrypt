@@ -79,7 +79,8 @@
  bin/security.c
  bin/check_invalid_key.c
  bin/create_volumes.c 
- bin/remove_key.c ) 
+ bin/remove_key.c
+ bin/write_device_with_junk.c ) 
  
  SET( LIB 
  lib/is_path_valid.c 

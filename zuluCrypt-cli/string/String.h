@@ -117,9 +117,7 @@ char * StringCopyChar( string_t st ) ;
  * Make a copy of string_t st
  * return NULL on error.
  */
-#if ! NO_COW
 string_t StringCopy( string_t st ) ;
-#endif
 
 /*
  * This function returns a number of string_t objects pointing to the same string buffer.

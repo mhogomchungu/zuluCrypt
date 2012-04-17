@@ -28,6 +28,17 @@
 
 #include "includes.h"
 #include "../string/StringList.h"
+
+/*
+ * function defined at write_device_with_junk.c
+ */
+int write_device_with_junk( const struct_opts * opts,const char * mapping_name,uid_t uid ) ;
+
+/*
+ * function defined at write_device_with_junk.c
+ */
+int open_plain_as_me(const struct_opts * opts,const char * mapping_name,uid_t uid ) ;
+
 /*
  * function prototypes in this source file.
  * */
@@ -101,6 +112,8 @@ zuluCrypt-cli -a [ -d ] [ [ -y/-u ] [ -l/-n ] ]/[ -h ]\n\
 zuluCrypt-cli -b [ -d ]\n\
 zuluCrypt-cli -w [ -d ]   d argument must be something like: UUID=\"2468d6a7-9a71-4312-8bd9-662f982fade5\" ( or without quotes )\n\
 zuluCrypt-cli -D [ -d ]   d device must be mapper path at /dev/mapper/\n\
+zuluCrypt-cli -X [ -d ]\n\
+zuluCrypt-cli -J [ -d ]\n\
 zuluCrypt-cli -A\n\
 zuluCrypt-cli -S\n\
 zuluCrypt-cli -N\n\
@@ -130,6 +143,8 @@ operation list\n\n\
 -w         check if UUID matches UUID of any partition\n\
 -D         get device path from mapper( located at /dev/mapper )\n\
 -L         print a list of all opened volumes and their mount point.The list is not formatted\n\
+-X         open a device pointed by argument -d and write random data to it hiding data previously written to device\n\
+-J         create a plain mapper owned by the user who run the command on a device pointed by argument -d\n\
 \n\
 options that goes with above operations:\n\
 -e         mode for opening volumes(ro*/rw)\n\
@@ -170,8 +185,10 @@ void get_opts( int argc , char *argv[],struct_opts * stopts )
 	stopts->interactive_passphrase = -1 ;
 	stopts->open_no_mount = -1 ;
 	
-	while ( (c = getopt(argc,argv,"LOASNDkhocsarqwibm:d:p:f:e:z:g:y:u:l:n:j:t:") ) != -1 ) {
+	while ( (c = getopt(argc,argv,"JLOXASNDkhocsarqwibm:d:p:f:e:z:g:y:u:l:n:j:t:") ) != -1 ) {
 		switch( c ){	
+			case( 'X' ) : stopts->action = 'X'      ; break ;			     
+			case( 'J' ) : stopts->action = 'J'      ; break ;			     
 			case( 'L' ) : stopts->action = 'L'      ; break ;			     
 			case( 'o' ) : stopts->action = 'o'      ; break ;
 			case( 'c' ) : stopts->action = 'c'      ; break ;
@@ -297,6 +314,8 @@ static int check_UUID( const char * device )
 static int exe( struct_opts * clargs, const char * mapping_name,uid_t uid )
 {
 	switch( clargs->action ){
+		case 'J' : return open_plain_as_me( clargs,mapping_name,uid ) ;		
+		case 'X' : return write_device_with_junk( clargs,mapping_name,uid ) ;
 		case 'w' : return check_UUID( clargs->device ) ;
 		case 'b' : return check_empty_slots( clargs->device ) ;
 		case 'i' : return check_if_luks( clargs->device ) ;

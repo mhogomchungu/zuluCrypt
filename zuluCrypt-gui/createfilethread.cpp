@@ -74,7 +74,7 @@ void createFileThread::run()
 	 * Then it creates a cryptsetup mapper and writes '\0' to the file through the mapper.
 	 *
 	 * This medhod of writing random data to the file seem to be faster than creating the file using random
-	 * data from /dev/urandom 
+	 * data from /dev/urandom
 	 */
 	memset(m_data,0,1024);
 
@@ -107,7 +107,7 @@ void createFileThread::fillCreatedFileWithRandomData()
 	this->openVolume()  ;
 	
 	this->writeVolume() ;
-	
+
 	this->closeVolume() ;
 }
 
@@ -123,7 +123,7 @@ void createFileThread::closeVolume()
 
 void createFileThread::openVolume()
 {
-	QString exe = QString("%1 -O -d \"%2\" -e rw -p %3").arg(ZULUCRYPTzuluCrypt).arg(m_file).arg(QString(m_key));
+	QString exe = QString("%1 -J -d \"%2\"").arg(ZULUCRYPTzuluCrypt).arg(m_file);
 
 	QProcess p ;
 	p.start(exe);
@@ -153,11 +153,11 @@ void createFileThread::writeVolume()
 		for( size = 1024 ; size != 0 ; )
 			size = size - write(m_pid,m_data,size);
 	}
-	
+
 	close(m_pid);
 }
 
 createFileThread::~createFileThread()
-{	
+{
 	emit exitStatus(m_cancelled);
 }
