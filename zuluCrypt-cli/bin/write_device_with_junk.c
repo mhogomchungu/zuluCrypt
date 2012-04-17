@@ -60,6 +60,8 @@ static int return_value( string_t * st, int status )
 
 static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name,uid_t uid )
 {
+	string_t mapper ;
+	
 	int k ;
 	
 	char * dev ;
@@ -83,7 +85,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	if( dev == NULL )
 		return return_value( NULL,2 ) ;	
 	
-	string_t mapper = create_mapper_name( dev,mapping_name,uid,OPEN ) ;
+	mapper = create_mapper_name( dev,mapping_name,uid,OPEN ) ;
 	
 	free( dev ) ;
 	
@@ -106,7 +108,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	StringPrepend( mapper,crypt_get_dir() ) ;
 	
 	/*
-	 *  mapper path is usuaaly a soft link to /dev/dm-X
+	 *  mapper path is usually a soft link to /dev/dm-X
 	 *  resolve the mapper path to its respective /dev/dm-X and set permission on it.
 	 *  
 	 * We set permission of /dev/dm-X pointing to the device to "u+rw" because we want notmal user to be able
@@ -157,13 +159,13 @@ int write_device_with_junk( const struct_opts * opts,const char * mapping_name,u
 	int prev_ratio ;
 	int k ;	
 	
-	if( ( k = open_plain_as_me_1( opts,mapping_name,uid ) ) != 4 ) 
-		return return_value( NULL,7 ) ;
-
 	dev = realpath( device,NULL ) ;
 	
 	if( dev == NULL )
 		return_value( NULL,2 ) ;
+	
+	if( ( k = open_plain_as_me_1( opts,mapping_name,uid ) ) != 4 ) 
+		return return_value( NULL,7 ) ;
 	
 	mapper = create_mapper_name( dev,mapping_name,uid,OPEN ) ;
 	
@@ -221,10 +223,3 @@ int write_device_with_junk( const struct_opts * opts,const char * mapping_name,u
 		
 	return return_value( &mapper,3 ) ;
 }
-
-
-
-
-
-
-
