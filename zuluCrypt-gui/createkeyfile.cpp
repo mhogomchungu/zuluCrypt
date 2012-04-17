@@ -29,9 +29,6 @@
 #include <QFile>
 #include <QKeyEvent>
 
-#include <fcntl.h>
-#include <unistd.h>
-
 createkeyfile::createkeyfile(QWidget *parent) :
     QWidget(parent),
     m_ui(new Ui::createkeyfile)
@@ -42,12 +39,12 @@ createkeyfile::createkeyfile(QWidget *parent) :
 
 	m_msg.setParent(this);
 
+	m_ckt = NULL ;
+
 	m_ui->pbOpenFolder->setIcon(QIcon(QString(":/folder.png")));
 	connect(m_ui->pbCreate,SIGNAL(clicked()),this,SLOT(pbCreate())) ;
 	connect(m_ui->pbOpenFolder,SIGNAL(clicked()),this,SLOT(pbOpenFolder())) ;
 	connect(m_ui->pbCancel,SIGNAL(clicked()),this,SLOT(pbCancel())) ;
-
-	proceed = true ;
 }
 
 void createkeyfile::HideUI()
@@ -59,7 +56,7 @@ void createkeyfile::HideUI()
 void createkeyfile::closeEvent(QCloseEvent *e)
 {
 	e->ignore();
-	HideUI();
+	this->pbCancel();
 }
 
 void createkeyfile::ShowUI()
@@ -72,7 +69,10 @@ void createkeyfile::ShowUI()
 
 void createkeyfile::pbCancel()
 {
-	proceed = false ;
+	if( m_ckt == NULL )
+		HideUI();
+	else
+		m_ckt->cancelOperation();
 }
 
 void createkeyfile::enableAll()
@@ -126,33 +126,22 @@ void createkeyfile::pbCreate()
 
 	disableAll() ;
 
-	char data ;
-	int in = open(m_ui->comboBoxRNG->currentText().toAscii().data(),O_RDONLY) ;
-	int out = open(keyfile.toAscii().data(),O_WRONLY|O_CREAT);
+	m_ckt = new createkeyfilethread(keyfile,m_ui->comboBoxRNG->currentText());
+	connect(m_ckt,SIGNAL(finished()),m_ckt,SLOT(deleteLater()));
+	connect(m_ckt,SIGNAL(exitStatus(int)),this,SLOT(threadExitStatus(int)));
+	m_ckt->start();
+}
 
-	for( int i = 0 ; i < 64 ; i++){
-
-		if( proceed == false )
-			break ;
-		do{
-			read(in,&data,1);
-		}while( data < 32 || data > 126) ;
-
-		while( write(out,&data,1) != 1 ) { ; }
-	}
-
-	/*
-	  using global namespace to find close() because otherwise Qt tries to use QWidget::close()
-	  */
-	::close(in);
-	::close(out);
-
-	if( proceed == true )
+void createkeyfile::threadExitStatus(int st)
+{
+	m_ckt = NULL ;
+	if( st == 1 ){
+		m_msg.UIMessage(tr("WARNING!"),tr("process interrupted,key not fully generated"));
+		this->enableAll();
+	}else{
 		m_msg.UIMessage(tr("SUCCESS!"),tr("key file successfully created"));
-	else
-		m_msg.UIMessage(tr("WARNING!"),tr("process interrupted, key not fully generated"));
-
-	this->HideUI();
+		this->HideUI();
+	}
 }
 
 void createkeyfile::pbOpenFolder()

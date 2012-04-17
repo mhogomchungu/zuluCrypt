@@ -15,6 +15,7 @@ set (UI_FILES createfile.ui
 set( MOC_FILES createfile.h
 		luksaddkey.h
 		createkeyfile.h
+		createkeyfilethread.h		
 		luksdeletekey.h 
 		createpartition.h
 		openpartition.h
@@ -37,6 +38,7 @@ set (SRC createfile.cpp
 	luksdeletekey.cpp
 	openpartition.cpp
 	createkeyfile.cpp
+	createkeyfilethread.cpp	
 	luksaddkey.cpp
 	main.cpp
 	password_dialog.cpp

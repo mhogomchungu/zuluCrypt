@@ -24,6 +24,7 @@
 
 #include "createfilethread.h"
 #include "miscfunctions.h"
+#include "createkeyfilethread.h"
 
 namespace Ui {
     class createkeyfile;
@@ -45,13 +46,14 @@ private slots:
 	void pbCancel(void) ;
 	void pbCreate(void) ;
 	void pbOpenFolder(void) ;
+	void threadExitStatus(int);
 private:
 	void closeEvent(QCloseEvent *) ;
 	void disableAll(void);
 	void enableAll(void) ;
 	Ui::createkeyfile *m_ui;
+	createkeyfilethread * m_ckt ;
 
-	bool proceed ;
 	QString m_path ;
 	/*
 	  prototyped at miscfunctions.h
