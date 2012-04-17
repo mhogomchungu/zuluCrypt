@@ -89,10 +89,14 @@ void createFileThread::run()
 
 void createFileThread::createFile()
 {
+	size_t size ;
+	double i ;
 	int x = open( m_file.toAscii().data(),O_WRONLY | O_CREAT ) ;
 
-	for(double i = 0 ; i < m_size ; i++)
-		write(x,m_data,1024);
+	for(i = 0 ; i < m_size ; i++){
+		for( size = 1024 ; size != 0 ; )
+			size = size - write(x,m_data,size);
+	}
 
 	close(x);
 	chmod(m_file.toAscii().data(),S_IRWXU);
@@ -137,14 +141,17 @@ void createFileThread::writeVolume()
 	
 	int Z ;
 	
-	for(double i = 0 ; i < m_size ; i++){
+	size_t size ;
+	double i ;
+	for(i = 0 ; i < m_size ; i++){
 		
 		Z = (int)( i / m_size  * 100 ) ;
 		
 		if( Z % 5 == 0 )
 			emit progress(Z);
-		
-		write(m_pid,m_data,1024);
+
+		for( size = 1024 ; size != 0 ; )
+			size = size - write(m_pid,m_data,size);
 	}
 	
 	close(m_pid);

@@ -138,7 +138,7 @@ void createkeyfile::pbCreate()
 			read(in,&data,1);
 		}while( data < 32 || data > 126) ;
 
-		write(out,&data,1);
+		while( write(out,&data,1) != 1 ) { ; }
 	}
 
 	/*
