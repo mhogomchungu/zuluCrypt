@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>erasedevice</class>
+ <widget class="QWidget" name="erasedevice">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>532</width>
+    <height>135</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>erase data on a device</string>
+  </property>
+  <widget class="QLabel" name="labelPath">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>20</y>
+     <width>121</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>path to device: </string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonFile">
+   <property name="geometry">
+    <rect>
+     <x>420</x>
+     <y>20</y>
+     <width>41</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonPartition">
+   <property name="geometry">
+    <rect>
+     <x>460</x>
+     <y>20</y>
+     <width>41</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>50</y>
+     <width>111</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>% completed: </string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QProgressBar" name="progressBar">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>50</y>
+     <width>291</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="value">
+    <number>24</number>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonStart">
+   <property name="geometry">
+    <rect>
+     <x>180</x>
+     <y>90</y>
+     <width>81</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&amp;start</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonCancel">
+   <property name="geometry">
+    <rect>
+     <x>270</x>
+     <y>90</y>
+     <width>81</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&amp;cancel</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEdit">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>20</y>
+     <width>291</width>
+     <height>31</height>
+    </rect>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

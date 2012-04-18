@@ -96,6 +96,11 @@ void openpartition::ShowAllPartitions()
 	partitionList(tr("select an encrypted partition to open")," -A");
 }
 
+void openpartition::ShowPartitionList(QString x, QString y)
+{
+	partitionList(x,y);
+}
+
 void openpartition::partitionList(QString title, QString type)
 {
 	this->setWindowTitle(title);

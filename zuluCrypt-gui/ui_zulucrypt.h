@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'zulucrypt.ui'
 **
-** Created: Mon Mar 5 02:34:09 2012
+** Created: Wed Apr 18 01:45:23 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -47,6 +47,7 @@ public:
     QAction *action_close;
     QAction *actionClose_all_opened_volumes;
     QAction *actionManage_names;
+    QAction *actionErase_data_on_device;
     QWidget *centralWidget;
     QTableWidget *tableWidget;
     QMenuBar *menuBar;
@@ -113,6 +114,8 @@ public:
         actionClose_all_opened_volumes->setObjectName(QString::fromUtf8("actionClose_all_opened_volumes"));
         actionManage_names = new QAction(zuluCrypt);
         actionManage_names->setObjectName(QString::fromUtf8("actionManage_names"));
+        actionErase_data_on_device = new QAction(zuluCrypt);
+        actionErase_data_on_device->setObjectName(QString::fromUtf8("actionErase_data_on_device"));
         centralWidget = new QWidget(zuluCrypt);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         centralWidget->setContextMenuPolicy(Qt::ActionsContextMenu);
@@ -188,6 +191,8 @@ public:
         menu_zc->addSeparator();
         menu_zc->addAction(actionClose_all_opened_volumes);
         menu_zc->addSeparator();
+        menu_zc->addAction(actionErase_data_on_device);
+        menu_zc->addSeparator();
         menu_zc->addAction(action_close);
 
         retranslateUi(zuluCrypt);
@@ -236,6 +241,8 @@ public:
         actionClose_all_opened_volumes->setShortcut(QApplication::translate("zuluCrypt", "Ctrl+G", 0, QApplication::UnicodeUTF8));
         actionManage_names->setText(QApplication::translate("zuluCrypt", "manage favorites", 0, QApplication::UnicodeUTF8));
         actionManage_names->setShortcut(QApplication::translate("zuluCrypt", "Ctrl+F", 0, QApplication::UnicodeUTF8));
+        actionErase_data_on_device->setText(QApplication::translate("zuluCrypt", "erase data on device", 0, QApplication::UnicodeUTF8));
+        actionErase_data_on_device->setShortcut(QApplication::translate("zuluCrypt", "Ctrl+N", 0, QApplication::UnicodeUTF8));
         QTableWidgetItem *___qtablewidgetitem = tableWidget->horizontalHeaderItem(0);
         ___qtablewidgetitem->setText(QApplication::translate("zuluCrypt", "Encrypted volume path", 0, QApplication::UnicodeUTF8));
         QTableWidgetItem *___qtablewidgetitem1 = tableWidget->horizontalHeaderItem(1);

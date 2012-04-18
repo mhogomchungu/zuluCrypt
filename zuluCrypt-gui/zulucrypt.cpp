@@ -152,6 +152,7 @@ void zuluCrypt::setupUIElements()
 
 void zuluCrypt::setupConnections()
 {
+	connect(m_ui->actionErase_data_on_device,SIGNAL(triggered()),this,SLOT(ShowEraseDataDialog()));
 	connect(this,SIGNAL(favClickedVolume(QString,QString)),	this,
 		SLOT(ShowPasswordDialogFromFavorite(QString,QString))) ;
 	connect(m_ui->actionPartitionOpen,SIGNAL(triggered()),this,SLOT(ShowOpenPartition()));
@@ -663,6 +664,13 @@ void zuluCrypt::ShowPasswordDialogFromFavorite(QString x, QString y)
 void zuluCrypt::partitionClicked(QString partition)
 {
 	setUpPasswordDialog()->clickedPartitionOption(partition);
+}
+
+void zuluCrypt::ShowEraseDataDialog()
+{
+	erasedevice * ed = new erasedevice(this) ;
+	connect(ed,SIGNAL(HideUISignal()),ed,SLOT(deleteLater()));
+	ed->ShowUI();
 }
 
 zuluCrypt::~zuluCrypt()

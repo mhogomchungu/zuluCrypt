@@ -49,14 +49,15 @@ public slots:
 	void tableEntryDoubleClicked(QTableWidgetItem *) ;
 	void ShowAllPartitions(void);
 	void HideUI(void);
-	void ShowNonSystemPartitions(void) ;	
+	void ShowNonSystemPartitions(void) ;
+	void ShowPartitionList(QString,QString);
+	void partitionList(QString,QString);
 private slots:
 	void EnterKeyPressed(void);
 	void currentItemChanged( QTableWidgetItem * current, QTableWidgetItem * previous );
 	void partitionpropertiesThreadFinished();
 	void partitionProperties(QStringList);
 private:	
-	void partitionList(QString,QString);
 	void closeEvent(QCloseEvent *) ;
 	void HighlightRow(int, bool);	
 	Ui::PartitionView * m_ui ;

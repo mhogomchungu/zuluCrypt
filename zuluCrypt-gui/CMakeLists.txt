@@ -30,7 +30,9 @@ set( MOC_FILES createfile.h
 		createfilethread.h
 		closevolumethread.h
 		checkvolumetype.h
-		cryptoinfo.h		
+		cryptoinfo.h	
+		erasedevice.h
+		erasedevicethread.h		
  )
 	
 set (SRC createfile.cpp
@@ -54,6 +56,8 @@ set (SRC createfile.cpp
 	closevolumethread.cpp
 	checkvolumetype.cpp
 	cryptoinfo.cpp
+	erasedevice.cpp
+	erasedevicethread.cpp
 )
 
 add_definitions( -D_FILE_OFFSET_BITS=64 -Wall ) 

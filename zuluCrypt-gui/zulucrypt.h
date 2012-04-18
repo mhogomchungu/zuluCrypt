@@ -48,6 +48,7 @@
 #include "closevolumethread.h"
 #include "checkvolumetype.h"
 #include "cryptoinfo.h"
+#include "erasedevice.h"
 
 namespace Ui {
     class zuluCrypt;
@@ -108,6 +109,7 @@ private slots :
 	void ShowPasswordDialog(void);
 	void ShowOpenPartition(void);
 	void ShowPasswordDialogFromFavorite(QString,QString);
+	void ShowEraseDataDialog(void);
 	void partitionClicked(QString);
 	void createPartition(QString);
 private:

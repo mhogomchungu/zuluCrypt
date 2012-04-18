@@ -153,6 +153,8 @@
     <addaction name="separator"/>
     <addaction name="actionClose_all_opened_volumes"/>
     <addaction name="separator"/>
+    <addaction name="actionErase_data_on_device"/>
+    <addaction name="separator"/>
     <addaction name="action_close"/>
    </widget>
    <addaction name="menu_zc"/>
@@ -328,6 +330,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+F</string>
+   </property>
+  </action>
+  <action name="actionErase_data_on_device">
+   <property name="text">
+    <string>erase data on device</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
    </property>
   </action>
  </widget>
