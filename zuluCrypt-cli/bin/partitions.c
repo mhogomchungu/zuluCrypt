@@ -72,9 +72,16 @@ static stringList_t partitionList( void )
 	stringList_t stl_1 = NULL ;	
 	
 	string_t st = StringGetFromVirtualFile( "/proc/partitions" ) ;	
+	
+	if( st == NULL )
+		return NULL ;
+	
 	string_t st_1 ;
 	
 	stl = StringListStringSplit( &st,'\n' ) ;
+	
+	if( stl == NULL )
+		return NULL ;
 
 	j = StringListSize( stl )  ;
 	
@@ -113,6 +120,9 @@ string_t device_from_uuid( const char * uuid )
 	blkid_probe bp ;
 	
 	stringList_t stl = partitionList() ;
+	
+	if( stl == NULL )
+		return NULL ;
 	
 	j = StringListSize( stl ) ; 
 	
@@ -249,7 +259,13 @@ int print_partitions( int option )
 		break ;
 		case 3 : stl = partitions( NON_SYSTEM_PARTITIONS ) ;
 		break ;
+	}	
+	
+	if( stl == NULL ){
+		printf( "ERROR: unable to print a list of partitions you have requested\n" ) ;
+		return 1 ;
 	}
+	
 	j = StringListSize( stl ) ;
 	for( i = 0 ; i < j ; i++ )	
 		printf("%s\n",StringListContentAt( stl,i ) );
@@ -286,9 +302,10 @@ stringList_t get_partition_from_crypttab( void )
 	if( st == NULL )
 		return NULL ;
 	
-	stl = StringListSplit( StringContent( st ),'\n' ) ;
+	stl = StringListStringSplit( &st,'\n' ) ;
 	
-	StringDelete( &st ) ;
+	if( stl == NULL )
+		return NULL ;
 	
 	j = StringListSize( stl ) ;
 	
@@ -354,16 +371,73 @@ stringList_t get_partition_from_crypttab( void )
 	return stl_1 ;
 }
 
-int check_partition( const char * device )
+stringList_t get_partition_from_zulutab()
 {
+	size_t i ;
+	size_t j ;
+	
+	const char * entry ;
+	
+	stringList_t stl ;
+	stringList_t stl_1 = NULL ;
+	
+	string_t st = StringGetFromFile( "/etc/zuluCrypttab" ) ;
+	
+	if( st == NULL )
+		return NULL ;
+
+	stl = StringListStringSplit( &st,'\n' ) ;
+	
+	if( stl == NULL )
+		return NULL ;
+	
+	j = StringListSize( stl ) ;
+	
+	for( i = 0 ; i < j ; i++ ){
+		
+		st = StringListStringAt( stl,i ) ;
+		
+		StringRemoveString( st,"\"" ) ;
+		
+		entry = StringContent( st ) ;
+		
+		if( entry[ 0 ] == '#' )
+			continue ;
+		
+		if( strncmp( entry,"UUID=",5 ) == 0 ){			
+			
+			st = device_from_uuid( entry + 5 ) ;
+			
+			if( st != NULL ){
+
+				stl_1 = StringListAppendString( stl_1,&st ) ;
+				StringDelete( &st ) ;
+			}
+		}else
+			stl_1 = StringListAppend( stl_1,entry ) ;		
+		
+	}
+	
+	StringListDelete( &stl ) ;
+	
+	return stl_1 ;	
+}
+
+int check_partition( const char * device )
+{	
+	stringList_t stl_1 ;
+	stringList_t stl_2 ;
+	stringList_t stl_3 ;
+	
 	ssize_t index_1 = -1 ;
 	ssize_t index_2 = -1 ;
+	ssize_t index_3 = -1 ;
 	
-	stringList_t stl_1 = partitions( SYSTEM_PARTITIONS ) ;
+	stl_1 = partitions( SYSTEM_PARTITIONS ) ;
 	index_1 = StringListContains( stl_1,device );
 	StringListDelete( &stl_1 ) ;
 	
-	stringList_t stl_2 = get_partition_from_crypttab() ;
+	stl_2 = get_partition_from_crypttab() ;
 	
 	if( stl_2 != NULL ){
 		
@@ -371,7 +445,15 @@ int check_partition( const char * device )
 		StringListDelete( &stl_2 ) ;		
 	}	
 	
-	if( index_1 >= 0 || index_2 >= 0 )
+	stl_3 = get_partition_from_zulutab() ;
+	
+	if( stl_3 != NULL ){
+		
+		index_3 = StringListContains( stl_3,device );
+		StringListDelete( &stl_3 ) ;		
+	}
+	
+	if( index_1 >= 0 || index_2 >= 0 || index_3 >= 0 )
 		return 1 ;
 	else
 		return 0 ;

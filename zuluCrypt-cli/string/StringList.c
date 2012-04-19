@@ -158,6 +158,9 @@ stringList_t StringListSplit( const char * cstring,char splitter )
 	size_t len ; 
 	stringList_t stl = NULL ;
 
+	if( strstr( b,s ) == NULL )
+		return StringList( cstring ) ;
+	
 	while( ( d = strstr( b,s ) ) != NULL )
 	{
 		len = d - b ;
