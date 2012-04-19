@@ -185,7 +185,7 @@ void get_opts( int argc , char *argv[],struct_opts * stopts )
 	stopts->interactive_passphrase = -1 ;
 	stopts->open_no_mount = -1 ;
 	
-	while ( (c = getopt(argc,argv,"JLOXASNDkhocsarqwibm:d:p:f:e:z:g:y:u:l:n:j:t:") ) != -1 ) {
+	while ( (c = getopt(argc,argv,"JLORBXASNDkhocsarqwibm:d:p:f:e:z:g:y:u:l:n:j:t:") ) != -1 ) {
 		switch( c ){	
 			case( 'X' ) : stopts->action = 'X'      ; break ;			     
 			case( 'J' ) : stopts->action = 'J'      ; break ;			     
@@ -202,6 +202,12 @@ void get_opts( int argc , char *argv[],struct_opts * stopts )
 			case( 'D' ) : stopts->action = 'D'      ; break ;
 			case( 'O' ) : stopts->action = 'O'      ;
 				      stopts->open_no_mount = 1 ; break ;
+			case( 'B' ) : stopts->action = 'B' ;
+				      stopts->key_source = optarg ;
+				      break ;
+			case( 'R' ) : stopts->action = 'R' ;
+				      stopts->key_source = optarg ;
+				      break ;
 			case( 'k' ) : stopts->dont_ask_confirmation = 1 ;
 				      break ;
 			case( 'A' ) : stopts->partition_number = ALL_PARTITIONS ;
@@ -314,6 +320,8 @@ static int check_UUID( const char * device )
 static int exe( struct_opts * clargs, const char * mapping_name,uid_t uid )
 {
 	switch( clargs->action ){
+		case 'B' : return save_and_restore_luks_header( clargs,uid,LUKS_HEADER_SAVE ) ;
+		case 'R' : return save_and_restore_luks_header( clargs,uid,LUKS_HEADER_RESTORE ) ;		
 		case 'J' : return open_plain_as_me( clargs,mapping_name,uid ) ;		
 		case 'X' : return write_device_with_junk( clargs,mapping_name,uid ) ;
 		case 'w' : return check_UUID( clargs->device ) ;

@@ -19,12 +19,6 @@
 
 #include "includes.h"
 
-/*
- * defined in partitions.c 
- * The function is explained where it is defined
- */
-ssize_t check_partition( const char * device ) ;
-
 static int status_msg( int st )
 {
 	switch ( st ){

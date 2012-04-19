@@ -80,7 +80,8 @@
  bin/check_invalid_key.c
  bin/create_volumes.c 
  bin/remove_key.c
- bin/write_device_with_junk.c ) 
+ bin/write_device_with_junk.c
+ bin/save_and_restore_luks_header.c ) 
  
  SET( LIB 
  lib/is_path_valid.c 

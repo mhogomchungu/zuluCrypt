@@ -56,6 +56,19 @@ typedef struct struct_opts_1{
 }struct_opts;
 
 /*
+ * these two defines are used in save_and_restore_luks_header.c  
+ */
+#define LUKS_HEADER_RESTORE 1
+#define LUKS_HEADER_SAVE 0
+
+/*
+ * this function is responsibe for creating and restoring luks header.
+ * 
+ * the function is defined in save_and_restore_luks_header.c
+ */
+int save_and_restore_luks_header( const struct_opts * opts,uid_t uid,int option  ) ;
+
+/*
  * this function reads user passphrase interactively.
  * It is defined and used in main.c
  */
@@ -156,3 +169,10 @@ int can_open_path_for_reading( const char * path,uid_t uid ) ;
  * check if the volume has atleast one corrupted key slot
  */ 
 void check_invalid_key( const char * device ) ;
+
+/*
+ * this function checks if a device is a system partition or not.
+ * 
+ * the function is defined in partitions.c * 
+ */
+int check_partition( const char * device ) ;

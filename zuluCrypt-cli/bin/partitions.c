@@ -354,7 +354,7 @@ stringList_t get_partition_from_crypttab( void )
 	return stl_1 ;
 }
 
-ssize_t check_partition( const char * device )
+int check_partition( const char * device )
 {
 	ssize_t index_1 = -1 ;
 	ssize_t index_2 = -1 ;
