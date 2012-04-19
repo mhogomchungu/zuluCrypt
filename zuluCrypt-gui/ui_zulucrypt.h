@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'zulucrypt.ui'
 **
-** Created: Thu Apr 19 01:17:33 2012
+** Created: Thu Apr 19 04:05:12 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -255,6 +255,7 @@ public:
         actionBackup_header->setText(QApplication::translate("zuluCrypt", "backup header", 0, QApplication::UnicodeUTF8));
         actionBackup_header->setShortcut(QApplication::translate("zuluCrypt", "Ctrl+B", 0, QApplication::UnicodeUTF8));
         actionRestore_header->setText(QApplication::translate("zuluCrypt", "restore header", 0, QApplication::UnicodeUTF8));
+        actionRestore_header->setShortcut(QApplication::translate("zuluCrypt", "Ctrl+P", 0, QApplication::UnicodeUTF8));
         QTableWidgetItem *___qtablewidgetitem = tableWidget->horizontalHeaderItem(0);
         ___qtablewidgetitem->setText(QApplication::translate("zuluCrypt", "Encrypted volume path", 0, QApplication::UnicodeUTF8));
         QTableWidgetItem *___qtablewidgetitem1 = tableWidget->horizontalHeaderItem(1);

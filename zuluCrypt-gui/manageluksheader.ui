@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>backupluksheader</class>
- <widget class="QWidget" name="backupluksheader">
+ <class>manageluksheader</class>
+ <widget class="QWidget" name="manageluksheader">
   <property name="windowModality">
    <enum>Qt::ApplicationModal</enum>
   </property>
@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>571</width>
-    <height>150</height>
+    <height>119</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,7 +26,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QLabel" name="label">
+  <widget class="QLabel" name="labelBackUpHeader">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -42,19 +42,6 @@
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
    </property>
   </widget>
-  <widget class="QLineEdit" name="lineEditPath">
-   <property name="geometry">
-    <rect>
-     <x>130</x>
-     <y>70</y>
-     <width>311</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="toolTip">
-    <string>path to a folder to create a key in</string>
-   </property>
-  </widget>
   <widget class="QPushButton" name="pbOpenFolder">
    <property name="geometry">
     <rect>
@@ -65,7 +52,7 @@
     </rect>
    </property>
    <property name="toolTip">
-    <string>open a folder a key file will be created in</string>
+    <string/>
    </property>
    <property name="text">
     <string/>
@@ -75,7 +62,7 @@
    <property name="geometry">
     <rect>
      <x>190</x>
-     <y>110</y>
+     <y>80</y>
      <width>91</width>
      <height>31</height>
     </rect>
@@ -94,7 +81,7 @@
    <property name="geometry">
     <rect>
      <x>290</x>
-     <y>110</y>
+     <y>80</y>
      <width>91</width>
      <height>31</height>
     </rect>
@@ -109,23 +96,7 @@
     <bool>false</bool>
    </property>
   </widget>
-  <widget class="QLabel" name="label_2">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>70</y>
-     <width>131</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>destination folder: </string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_3">
+  <widget class="QLabel" name="labelDevicePath">
    <property name="geometry">
     <rect>
      <x>0</x>
@@ -180,7 +151,6 @@
  </widget>
  <tabstops>
   <tabstop>lineEditBackUpName</tabstop>
-  <tabstop>lineEditPath</tabstop>
   <tabstop>pbOpenFolder</tabstop>
   <tabstop>pbCreate</tabstop>
   <tabstop>pbCancel</tabstop>

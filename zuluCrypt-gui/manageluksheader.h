@@ -17,46 +17,52 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef BACKUPLUKSHEADER_H
-#define BACKUPLUKSHEADER_H
+#ifndef MANAGELUKSHEADER_H
+#define MANAGELUKSHEADER_H
 
 #include <QWidget>
 #include <QThreadPool>
 #include <QFileDialog>
 
+#include "ui_manageluksheader.h"
 #include "runinthread.h"
 #include "miscfunctions.h"
 #include "openpartition.h"
 
 namespace Ui {
-    class backupluksheader;
+    class manageluksheader;
 }
 
-class backupluksheader : public QWidget
+class manageluksheader : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit backupluksheader(QWidget *parent = 0);
-	~backupluksheader();
+	explicit manageluksheader(QWidget *parent = 0);
+	~manageluksheader();
 signals:
 	void HideUISignal(void);
 public slots:
 	void ShowUI(void) ;
 	void HideUI(void) ;
+	void backUpHeader(void);
+	void backUpHeader(QString);
+	void restoreHeader(void);
 
 private slots:
 	void pbCancel(void) ;
 	void pbCreate(void) ;
-	void pbOpenFolder(void) ;
+	void pbOpenLuksHeaderBackUp(void) ;
 	void threadExitStatus(int);
 	void pbOpenPartition(void);
 	void pbOpenFile(void);
 	void selectedPartition(QString);
+	void backUpHeaderNameChange(QString);
 private:
+	void headerBackUp(void);
 	void closeEvent(QCloseEvent *) ;
 	void disableAll(void);
 	void enableAll(void) ;
-	Ui::backupluksheader *m_ui;
+	Ui::manageluksheader * m_ui;
 
 	QString m_path ;
 	/*
@@ -64,7 +70,8 @@ private:
 	  */
 	UIMsg m_msg ;
 
-	bool m_backUpInProgress ;
+	bool m_OperationInProgress ;
+	QString m_operation ;
 };
 
 #endif // CREATEKEYFILE_H

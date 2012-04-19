@@ -10,7 +10,7 @@ set (UI_FILES createfile.ui
 		luksaddkey.ui
 		openpartition.ui
 		cryptoinfo.ui
-		backupluksheader.ui
+		manageluksheader.ui
 )
 
 set( MOC_FILES createfile.h
@@ -34,7 +34,7 @@ set( MOC_FILES createfile.h
 		cryptoinfo.h	
 		erasedevice.h
 		erasedevicethread.h	
-		backupluksheader.h
+		manageluksheader.h
  )
 	
 set (SRC createfile.cpp
@@ -60,7 +60,7 @@ set (SRC createfile.cpp
 	cryptoinfo.cpp
 	erasedevice.cpp
 	erasedevicethread.cpp
-	backupluksheader.cpp
+	manageluksheader.cpp
 )
 
 add_definitions( -D_FILE_OFFSET_BITS=64 -Wall ) 

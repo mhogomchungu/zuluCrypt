@@ -184,6 +184,7 @@ void zuluCrypt::setupConnections()
 	connect(m_ui->actionMinimize_to_tray,SIGNAL(triggered()),this,SLOT(minimizeToTray())) ;
 	connect(m_ui->actionClose_all_opened_volumes,SIGNAL(triggered()),this,SLOT(closeAllVolumes())) ;
 	connect(m_ui->actionBackup_header,SIGNAL(triggered()),this,SLOT(luksHeaderBackUp()));
+	connect(m_ui->actionRestore_header,SIGNAL(triggered()),this,SLOT(luksRestoreHeader()));
 }
 
 void zuluCrypt::HighlightRow(int row,bool b)
@@ -553,16 +554,31 @@ void zuluCrypt::close()
 	QThreadPool::globalInstance()->start(cvt);
 }
 
-void zuluCrypt::luksHeaderBackUpContextMenu()
+manageluksheader * zuluCrypt::setUpManageLuksHeader()
 {
+	manageluksheader * bkh = new manageluksheader(this);
+	connect(bkh,SIGNAL(HideUISignal()),bkh,SLOT(deleteLater()));
+	return bkh ;
+}
 
+void zuluCrypt::luksRestoreHeader()
+{
+	this->setUpManageLuksHeader()->restoreHeader();
 }
 
 void zuluCrypt::luksHeaderBackUp()
 {
-	backupluksheader * bkh = new backupluksheader(this);
-	connect(bkh,SIGNAL(HideUISignal()),bkh,SLOT(deleteLater()));
-	bkh->ShowUI();
+	this->setUpManageLuksHeader()->backUpHeader();
+}
+
+void zuluCrypt::luksHeaderBackUpContextMenu()
+{
+	QTableWidgetItem * item = m_ui->tableWidget->currentItem();
+	if(item == NULL)
+		return ;
+	QString device = m_ui->tableWidget->item(item->row(),0)->text() ;
+
+	this->setUpManageLuksHeader()->backUpHeader(device);
 }
 
 luksaddkey * zuluCrypt::setUpluksaddkey()

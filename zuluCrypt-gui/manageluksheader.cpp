@@ -17,8 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "backupluksheader.h"
-#include "ui_backupluksheader.h"
+#include "manageluksheader.h"
 #include "miscfunctions.h"
 #include "../zuluCrypt-cli/constants.h"
 
@@ -29,9 +28,9 @@
 #include <QFile>
 #include <QKeyEvent>
 
-backupluksheader::backupluksheader(QWidget *parent) :
+manageluksheader::manageluksheader(QWidget *parent) :
     QWidget(parent),
-    m_ui(new Ui::backupluksheader)
+    m_ui(new Ui::manageluksheader)
 {
 	m_ui->setupUi(this);
 	this->setWindowFlags(Qt::Window | Qt::Dialog);
@@ -39,51 +38,97 @@ backupluksheader::backupluksheader(QWidget *parent) :
 
 	m_msg.setParent(this);
 
+	m_ui->pbOpenFolder->setIcon(QIcon(QString(":/folder.png")));
+	m_ui->pushButtonPartition->setIcon(QIcon(QString(":/partition.png")));
+	m_ui->pushButtonFile->setIcon(QIcon(QString(":/file.png")));
+
+	m_ui->lineEditDevicePath->setFocus();
+
 	connect(m_ui->pbCreate,SIGNAL(clicked()),this,SLOT(pbCreate())) ;
-	connect(m_ui->pbOpenFolder,SIGNAL(clicked()),this,SLOT(pbOpenFolder())) ;
+	connect(m_ui->pbOpenFolder,SIGNAL(clicked()),this,SLOT(pbOpenLuksHeaderBackUp())) ;
 	connect(m_ui->pbCancel,SIGNAL(clicked()),this,SLOT(pbCancel())) ;
 	connect(m_ui->pushButtonFile,SIGNAL(clicked()),this,SLOT(pbOpenFile()));
 	connect(m_ui->pushButtonPartition,SIGNAL(clicked()),this,SLOT(pbOpenPartition()));
+	connect(m_ui->lineEditDevicePath,SIGNAL(textChanged(QString)),this,SLOT(backUpHeaderNameChange(QString)));
 
-	m_backUpInProgress = false ;
+	m_OperationInProgress = false ;
 }
 
-void backupluksheader::HideUI()
+void manageluksheader::HideUI()
 {
 	this->hide();
 	emit HideUISignal();
 }
 
-void backupluksheader::closeEvent(QCloseEvent *e)
+void manageluksheader::closeEvent(QCloseEvent *e)
 {
 	e->ignore();
 	this->pbCancel();
 }
 
-void backupluksheader::ShowUI()
+void manageluksheader::ShowUI()
 {
-	m_ui->pbOpenFolder->setIcon(QIcon(QString(":/folder.png")));	
-	m_ui->pushButtonPartition->setIcon(QIcon(QString(":/partition.png")));
-	m_ui->pushButtonFile->setIcon(QIcon(QString(":/file.png")));
-	m_ui->lineEditPath->setText(QDir::homePath());
 	m_ui->lineEditDevicePath->setFocus();
 	this->show();
 }
 
-void backupluksheader::pbCancel()
+void manageluksheader::headerBackUp()
 {
-	if( m_backUpInProgress == false )
+	m_operation = QString("backup") ;
+	this->setWindowTitle(QString("back up luks header"));
+	m_ui->labelBackUpHeader->setText(QString("backup path: "));
+	m_ui->pbOpenFolder->setEnabled(false);
+	m_ui->labelBackUpHeader->setEnabled(false);
+	m_ui->lineEditBackUpName->setEnabled(false);
+}
+
+void manageluksheader::backUpHeader()
+{
+	this->headerBackUp();
+	this->show();
+}
+
+void manageluksheader::backUpHeader(QString device)
+{
+	this->headerBackUp();
+	m_ui->lineEditDevicePath->setText(device);
+	this->show();
+}
+void manageluksheader::backUpHeaderNameChange(QString name)
+{
+	if( m_operation == QString("restore"))
+		return ;
+
+	if(name.isEmpty())
+		m_ui->lineEditBackUpName->setText(QString(""));
+
+	name = QDir::homePath() + QString("/") + name.split("/").last() + QString(".luksHeaderBackUp");
+	
+	m_ui->lineEditBackUpName->setText(name);
+}
+
+void manageluksheader::restoreHeader()
+{
+	m_operation = QString("restore") ;
+	this->setWindowTitle(QString("restore luks header"));
+	m_ui->labelBackUpHeader->setText(QString("backup path: "));
+	m_ui->pbCreate->setText(QString("&restore"));
+	this->show();
+}
+
+void manageluksheader::pbCancel()
+{
+	if( m_OperationInProgress == false )
 		this->HideUI();
 }
 
-void backupluksheader::enableAll()
+void manageluksheader::enableAll()
 {
-	m_ui->label->setEnabled(true);
-	m_ui->label_2->setEnabled(true);
-	m_ui->label_3->setEnabled(true);
-	m_ui->lineEditBackUpName->setEnabled(true);
+	m_ui->labelBackUpHeader->setEnabled(true);
+	m_ui->labelDevicePath->setEnabled(true);
+	if(m_operation == QString("restore"))
+		m_ui->lineEditBackUpName->setEnabled(true);
 	m_ui->lineEditDevicePath->setEnabled(true);
-	m_ui->lineEditPath->setEnabled(true);
 	m_ui->pbCancel->setEnabled(true);
 	m_ui->pbCreate->setEnabled(true);
 	m_ui->pbOpenFolder->setEnabled(true);
@@ -91,14 +136,12 @@ void backupluksheader::enableAll()
 	m_ui->pushButtonPartition->setEnabled(true);
 }
 
-void backupluksheader::disableAll()
+void manageluksheader::disableAll()
 {
-	m_ui->label->setEnabled(false);
-	m_ui->label_2->setEnabled(false);
-	m_ui->label_3->setEnabled(false);
+	m_ui->labelBackUpHeader->setEnabled(false);
+	m_ui->labelDevicePath->setEnabled(false);
 	m_ui->lineEditBackUpName->setEnabled(false);
 	m_ui->lineEditDevicePath->setEnabled(false);
-	m_ui->lineEditPath->setEnabled(false);
 	m_ui->pbCancel->setEnabled(false);
 	m_ui->pbCreate->setEnabled(false);
 	m_ui->pbOpenFolder->setEnabled(false);
@@ -106,34 +149,35 @@ void backupluksheader::disableAll()
 	m_ui->pushButtonPartition->setEnabled(false);
 }
 
-void backupluksheader::pbCreate()
+void manageluksheader::pbCreate()
 {
 	QString device = miscfunctions::resolveHomeSymbol(m_ui->lineEditDevicePath->text());
-
-	m_path = miscfunctions::resolveHomeSymbol(m_ui->lineEditPath->text()) ;
 
 	if( device.isEmpty() )
 		return m_msg.UIMessage(tr("ERROR!"),tr("path to device field is empty"));
 
-	if( m_path.isEmpty() )
-		return m_msg.UIMessage(tr("ERROR!"),tr("folder path to where the backup header will be stored is empty"));
-
-	if(miscfunctions::exists(m_path) == false)
-		return m_msg.UIMessage(tr("ERROR!"),tr("destination folder does not exist"));
-
-	QString bkpath = m_ui->lineEditBackUpName->text();
-
-	m_path.replace("\"","\"\"\"") ;
-	bkpath.replace("\"","\"\"\"") ;
 	device.replace("\"","\"\"\"") ;
 	
-	bkpath = m_path + QString("/") + bkpath + QString(".luksHeaderBackUp");
+	QString backUp = m_ui->lineEditBackUpName->text().replace("\"","\"\"\"");
 
-	QString exe = QString("%1 -B -d \"%2\" -f \"%3\"").arg(ZULUCRYPTzuluCrypt).arg(device).arg(bkpath);
+	QString exe ;
+	if( m_operation == QString("backup"))
+		exe = QString("%1 -B -d \"%2\" -f \"%3\"").arg(ZULUCRYPTzuluCrypt).arg(device).arg(backUp);
+	else{
+		UIMsg msg(this) ;
+		QString x = m_ui->lineEditDevicePath->text() ;
+		QString y = m_ui->lineEditBackUpName->text() ;
 
+		QString warn = tr("Are you sure you want to replace a header on device \"%1\" with a backup copy at \"%2\"?").arg(x).arg(y);
+
+		if(msg.UIMessageWithConfirm(tr("WARNING!"),warn) == QMessageBox::No)
+			return ;
+		exe = QString("%1 -kR -d \"%2\" -f \"%3\"").arg(ZULUCRYPTzuluCrypt).arg(device).arg(backUp);
+	}
+	
 	this->disableAll();
 
-	m_backUpInProgress = true ;
+	m_OperationInProgress = true ;
 
 	runInThread * rt = new runInThread(exe);
 	connect(rt,SIGNAL(finished(int)),this,SLOT(threadExitStatus(int)));
@@ -142,7 +186,7 @@ void backupluksheader::pbCreate()
 	disableAll() ;
 }
 
-void backupluksheader::pbOpenPartition()
+void manageluksheader::pbOpenPartition()
 {
 	openpartition * openPartition = new openpartition(this);
 	connect(openPartition,SIGNAL(clickedPartition(QString)),this,SLOT(selectedPartition(QString)));
@@ -150,20 +194,22 @@ void backupluksheader::pbOpenPartition()
 	openPartition->ShowNonSystemPartitions();
 }
 
-void backupluksheader::selectedPartition(QString p)
+void manageluksheader::selectedPartition(QString p)
 {
 	m_ui->lineEditDevicePath->setText(p);
+	m_ui->lineEditBackUpName->setFocus();
 }
 
-void backupluksheader::pbOpenFile()
+void manageluksheader::pbOpenFile()
 {
-	QString Z = QFileDialog::getOpenFileName(this,tr("select a file volume with a luks header to backup"),QDir::homePath(),0);
+	QString Z = QFileDialog::getOpenFileName(this,tr("select luks container you want to backup its header"),QDir::homePath(),0);
 	m_ui->lineEditDevicePath->setText(Z);
+	m_ui->lineEditBackUpName->setFocus();
 }
 
-void backupluksheader::threadExitStatus(int st)
+void manageluksheader::threadExitStatus(int st)
 {
-	m_backUpInProgress = false ;
+	m_OperationInProgress = false ;
 
 	this->enableAll();
 
@@ -184,22 +230,18 @@ void backupluksheader::threadExitStatus(int st)
 		case 13: m_msg.UIMessage( tr("ERROR!"),tr("argument for path to a backup  header file is missing" )) 			; break ;
 		case 14: m_msg.UIMessage( tr("ERROR!"),tr("only root user can restore luks header on a system partition" )) 		; break ;
 		case 15: m_msg.UIMessage( tr("ERROR!"),tr("insufficient privilege to open device for writing" ))			; break ;
-
 	}
 }
 
-void backupluksheader::pbOpenFolder()
+void manageluksheader::pbOpenLuksHeaderBackUp()
 {
-	QString p = tr("Select a folder to create a backup file in");
-	QString q = QDir::homePath() ;
-	QString Z = QFileDialog::getExistingDirectory(this,p,q,QFileDialog::ShowDirsOnly) ;
-
-	m_ui->lineEditPath->setText( Z );
+	QString Z = QFileDialog::getOpenFileName(this,tr("select a file with a luks backup header"),QDir::homePath(),0);
+	m_ui->lineEditBackUpName->setText(Z);
+	m_ui->lineEditDevicePath->setFocus();
 }
 
 
-backupluksheader::~backupluksheader()
+manageluksheader::~manageluksheader()
 {
-	miscfunctions::debug("~backupluksheader()");
 	delete m_ui;
 }

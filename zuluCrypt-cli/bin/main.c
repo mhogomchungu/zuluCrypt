@@ -114,6 +114,8 @@ zuluCrypt-cli -w [ -d ]   d argument must be something like: UUID=\"2468d6a7-9a7
 zuluCrypt-cli -D [ -d ]   d device must be mapper path at /dev/mapper/\n\
 zuluCrypt-cli -X [ -d ]\n\
 zuluCrypt-cli -J [ -d ]\n\
+zuluCrypt-cli -R [ -d ] [ -f ]\n\
+zuluCrypt-cli -B [ -d ] [ -f ]\n\
 zuluCrypt-cli -A\n\
 zuluCrypt-cli -S\n\
 zuluCrypt-cli -N\n\
@@ -145,6 +147,8 @@ operation list\n\n\
 -L         print a list of all opened volumes and their mount point.The list is not formatted\n\
 -X         open a device pointed by argument -d and write random data to it hiding data previously written to device\n\
 -J         create a plain mapper owned by the user who run the command on a device pointed by argument -d\n\
+-B         create a luks header backup\n\
+-R         restore a luks header on a device from backup\n\
 \n\
 options that goes with above operations:\n\
 -e         mode for opening volumes(ro*/rw)\n\
@@ -156,7 +160,7 @@ options that goes with above operations:\n\
 -g         random number generator (/dev/random or /dev/urandom*)\n\
 -h         get passphrase interactively\n\
 -p         passphrase \n\
--f         path to keyfile\n\
+-f         path to keyfile or luks header backup\n\
 -y         passphrase already in the volume(required by -a if -u is absent and -h is also absent)\n\
 -u         path to keyfile with passphrase already in the volume(required by -a if -y is absent and -h is also absent)\n\
 -l         passphrase to be added(required by -a if -n is absent and -h is also absent)\n\
