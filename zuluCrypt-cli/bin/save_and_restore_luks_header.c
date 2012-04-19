@@ -27,8 +27,8 @@ static int msg( int st,struct crypt_device * cd )
 		case 0 : printf( "SUCCESS: header saved successfully\n" ) 						; break ;
 		case 1 : printf( "SUCCESS: header restored successfully\n" ) 						; break ;
 		case 2 : printf( "ERROR: presented device is not a LUKS device\n" ) 					; break ;
-		case 3 : printf( "ERROR: failed to read/write header\n" ) 						; break ;
-		case 4 : printf( "ERROR: failed to create header back up\n" ) 						; break ;
+		case 3 : printf( "ERROR: failed to read/write header,is the volume open?\n" ) 				; break ;
+		case 4 : printf( "ERROR: failed to read/write header,is the volume open?\n" )				; break ;
 		case 5 : printf( "INFO: operation terminater per user request\n" ) 					; break ;
 		case 6 : printf( "ERROR: path to be used to create a back up file is occupied\n" ) 			; break ;
 		case 7 : printf( "ERROR: failed to restore\n" ) 							; break ;
@@ -39,6 +39,7 @@ static int msg( int st,struct crypt_device * cd )
 		case 12: printf( "ERROR: argument for path to a backup  header file is missing\n" ) 			; break ;
 		case 13: printf( "ERROR: argument for path to a backup  header file is missing\n" ) 			; break ;
 		case 14: printf( "ERROR: only root user can restore luks header on a system partition\n" ) 		; break ;
+		case 15: printf( "ERROR: insufficient privilege to open device for writing\n" ) 			; break ;				
 	}
 	
 	if( cd != NULL )
@@ -47,8 +48,11 @@ static int msg( int st,struct crypt_device * cd )
 	return st ;
 }
 
-static int save_header( struct crypt_device * cd,const char * path,uid_t uid )
+static int save_header( struct crypt_device * cd,const char * device,const char * path,uid_t uid )
 {
+	if( is_luks( device ) != 0 )
+		return msg( 2,cd ) ;
+	
 	if( crypt_header_backup( cd,NULL,path ) == 0 ){
 		chown( path,uid,uid ) ;
 		chmod( path,S_IRUSR ) ;
@@ -111,6 +115,10 @@ int save_and_restore_luks_header( const struct_opts * opts,uid_t uid,int option 
 			case 2 : return msg( 11,NULL ) ;
 		}
 	}else{
+		switch( can_open_path_for_reading( device,uid ) ){
+			case 1 : return msg( 15,NULL ) ;
+			case 2 : return msg( 11,NULL ) ;		
+		}
 		if( is_path_valid( path ) == 0 )
 			return msg( 6,NULL ) ;
 		
@@ -123,7 +131,7 @@ int save_and_restore_luks_header( const struct_opts * opts,uid_t uid,int option 
 	
 	switch( option ){
 		case LUKS_HEADER_RESTORE : return restore_header( cd,device,path,confirm,uid ) ;
-		case LUKS_HEADER_SAVE    : return save_header( cd,path,uid ) ;
+		case LUKS_HEADER_SAVE    : return save_header( cd,device,path,uid ) ;
 	}
 	
 	/*

@@ -49,6 +49,7 @@
 #include "checkvolumetype.h"
 #include "cryptoinfo.h"
 #include "erasedevice.h"
+#include "backupluksheader.h"
 
 namespace Ui {
     class zuluCrypt;
@@ -112,6 +113,8 @@ private slots :
 	void ShowEraseDataDialog(void);
 	void partitionClicked(QString);
 	void createPartition(QString);
+	void luksHeaderBackUpContextMenu(void);
+	void luksHeaderBackUp(void);
 private:
 	passwordDialog * setUpPasswordDialog(void);
 	openpartition * setUpOpenpartition(void);

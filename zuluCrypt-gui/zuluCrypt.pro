@@ -32,7 +32,8 @@ SOURCES += main.cpp\
     cryptoinfo.cpp \ 
     createkeyfilethread.cpp \
     erasedevice.cpp \
-    erasedevicethread.cpp
+    erasedevicethread.cpp \
+    backupluksheader.cpp \
 
 HEADERS  += zulucrypt.h password_dialog.h \
     openpartition.h \
@@ -54,7 +55,9 @@ HEADERS  += zulucrypt.h password_dialog.h \
     cryptoinfo.h \ 
     createkeyfilethread.h \
     erasedevice.h \
-    erasedevicethread.h
+    erasedevicethread.h \
+    backupluksheader.h \
+    
 
 FORMS    += zulucrypt.ui password.ui \
     openpartition.ui \
@@ -65,7 +68,8 @@ FORMS    += zulucrypt.ui password.ui \
     createkeyfile.ui \
     managedevicenames.ui \
     cryptoinfo.ui \ 
-    erasedevice.ui
+    erasedevice.ui \
+    backupluksheader.ui \
 
 TRANSLATIONS = 
 
@@ -74,6 +78,9 @@ RESOURCES = icon.qrc
 LIBS += -lblkid
 
 QMAKE_CXXFLAGS += -D_FILE_OFFSET_BITS=64 -Wall
+
+OTHER_FILES += \
+    backupluksheaderui
 
 
 

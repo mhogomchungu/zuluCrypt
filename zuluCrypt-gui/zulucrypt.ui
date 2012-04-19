@@ -130,6 +130,9 @@
     </property>
     <addaction name="actionAddKey"/>
     <addaction name="actionDeleteKey"/>
+    <addaction name="separator"/>
+    <addaction name="actionBackup_header"/>
+    <addaction name="actionRestore_header"/>
    </widget>
    <widget class="QMenu" name="menuOptions">
     <property name="title">
@@ -338,6 +341,19 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="actionBackup_header">
+   <property name="text">
+    <string>backup header</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+B</string>
+   </property>
+  </action>
+  <action name="actionRestore_header">
+   <property name="text">
+    <string>restore header</string>
    </property>
   </action>
  </widget>
