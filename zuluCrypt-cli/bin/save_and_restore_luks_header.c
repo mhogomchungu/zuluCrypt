@@ -39,7 +39,11 @@ static int msg( int st,struct crypt_device * cd )
 		case 12: printf( "ERROR: argument for path to a backup  header file is missing\n" ) 			; break ;
 		case 13: printf( "ERROR: argument for path to a backup  header file is missing\n" ) 			; break ;
 		case 14: printf( "ERROR: only root user can restore luks header on a system partition\n" ) 		; break ;
-		case 15: printf( "ERROR: insufficient privilege to open device for writing\n" ) 			; break ;				
+		case 15: printf( "ERROR: insufficient privilege to open device for writing\n" ) 			; break ;	
+		case 16: printf( "ERROR: could not resolve path to device\n" ) 						; break ;	
+		case 17: printf( "ERROR: backup file does not appear to contain luks header\n" ) 			; break ;				
+				
+				
 	}
 	
 	if( cd != NULL )
@@ -61,22 +65,53 @@ static int save_header( struct crypt_device * cd,const char * device,const char 
 		return msg( 4,cd ) ;
 }
 
+static int back_up_is_luks( const char * path )
+{
+	struct crypt_device * cd;
+
+	int st = -1 ;
+	
+	if( crypt_init( &cd,path ) != 0 )
+		return 2 ;
+	
+	if( crypt_load( cd,NULL,NULL ) != 0 )
+		st = 1 ;
+	else
+		st = 0 ;
+	
+	crypt_free( cd ) ;
+	
+	return st ;
+}
+
 static int restore_header( struct crypt_device * cd,const char * device,const char * path,int k,uid_t uid )
 {
 	const char * warn = "\
 Are you sure you want to replace a header on device \"%s\" with a backup copy at \"%s\"?\n\
 Type \"Y\" and press Enter to continue: " ;
 
-	if( check_partition( device ) == 1 )
+	char * dev ;
+	
+	 if( back_up_is_luks( path ) != 0 )
+		 return msg( 17,cd ) ;
+	
+	dev = realpath( device,NULL ) ;
+	
+	if( dev == NULL )
+		return msg( 16,cd ) ;
+	
+	if( check_partition( dev ) == 1 )
 		if( uid != 0 )
 			return msg( 14,cd ) ;
 	
 	if( k == -1 ){
-		printf( warn,device,path ) ;
+		printf( warn,dev,path ) ;
 		
 		if( getchar() != 'Y' )
 			return msg( 5,cd ) ;
 	}
+	
+	free( dev ) ;
 	
 	if( crypt_header_restore( cd,NULL,path ) == 0 )
 		return msg( 1,cd ) ;

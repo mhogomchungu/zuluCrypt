@@ -36,7 +36,7 @@ int open_luks( const char * device,const char * mapper,const char * mode,const c
 	if( crypt_init( &cd,device ) != 0 )
 		return 2 ;
 	
-	if( crypt_load( cd,CRYPT_LUKS1,NULL ) != 0 )
+	if( crypt_load( cd,NULL,NULL ) != 0 )
 		return free_crypt( 2,cd ) ;
 	
 	if( strcmp( mode,"ro" ) == 0 )

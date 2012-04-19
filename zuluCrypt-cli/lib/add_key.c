@@ -35,7 +35,7 @@ int add_key( const char * device,const char * existingkey,size_t existingkey_siz
 	if( crypt_init( &cd,device ) != 0 )
 		return 2 ;
 	
-	if( crypt_load( cd,CRYPT_LUKS1,NULL ) != 0 )
+	if( crypt_load( cd,NULL,NULL ) != 0 )
 		return free_crypt( 2,cd ) ;
 	
 	if( crypt_keyslot_add_by_passphrase( cd,CRYPT_ANY_SLOT,existingkey,existingkey_size,newkey,newkey_size ) < 0 )

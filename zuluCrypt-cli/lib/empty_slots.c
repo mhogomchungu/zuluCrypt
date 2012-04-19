@@ -19,6 +19,13 @@
 
 #include "includes.h"
 
+static char * return_value( char * c,struct crypt_device * cd )
+{
+	if( cd != NULL )
+		crypt_free( cd );
+	return c ;
+}
+
 char * empty_slots( const char * device )
 {
 	crypt_keyslot_info cki ;
@@ -26,19 +33,26 @@ char * empty_slots( const char * device )
 	int j ;
 	int k ;
 	char * slot ;
+	const char * type ;
 	
 	if( is_luks( device ) == 1 )
-		return NULL ;
+		return return_value( NULL,NULL ) ;
 	
 	if( crypt_init( &cd,device ) != 0 )
-		return NULL ;
+		return return_value( NULL,NULL ) ;
 	
-	if( crypt_load( cd,CRYPT_LUKS1,NULL ) != 0 ){
-		crypt_free( cd );		
-		return NULL ;
-	}
+	if( crypt_load( cd,NULL,NULL ) != 0 )
+		return_value( NULL,cd ) ;
+		
+	type = crypt_get_type( cd ) ;
 	
-	k = crypt_keyslot_max( CRYPT_LUKS1 ) ;
+	if( type == NULL )
+		return return_value( NULL,cd ) ;
+	
+	k = crypt_keyslot_max( type ) ;
+	
+	if( k < 0 )
+		return return_value( NULL,cd ) ;
 	
 	slot = ( char * ) malloc( sizeof( char ) * ( k + 1 ) ) ;
 	
@@ -51,8 +65,8 @@ char * empty_slots( const char * device )
 			case CRYPT_SLOT_ACTIVE_LAST: slot[j] = '3' ; break ;			
 		}		
 	}
-	slot[j] = '\0' ;	
-	crypt_free( cd );
-	return slot ;
+	slot[j] = '\0' ;
+	
+	return return_value( slot,cd ) ;	
 }
 
