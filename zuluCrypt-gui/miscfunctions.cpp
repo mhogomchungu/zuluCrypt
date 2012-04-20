@@ -262,8 +262,12 @@ void UIMsg::setParent(QWidget * p)
 void UIMsg::UIMessage(QString title, QString message)
 {
 	QMessageBox m ;
-	m.setFont(parent->font());
-	m.setParent(parent);
+
+	if( parent != NULL ){
+		m.setFont(parent->font());
+		m.setParent(parent);
+	}
+
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 	m.setText(message);
 	m.setWindowTitle(title);
@@ -274,8 +278,12 @@ void UIMsg::UIMessage(QString title, QString message)
 int UIMsg::UIMessageWithConfirm(QString title,QString msg )
 {
 	QMessageBox m ;
-	m.setFont(parent->font());
-	m.setParent(parent);
+
+	if( parent != NULL ){
+		m.setFont(parent->font());
+		m.setParent(parent);
+	}
+
 	m.setWindowFlags(Qt::Window | Qt::Dialog);
 	m.setWindowTitle(title);
 	m.setText(msg) ;	

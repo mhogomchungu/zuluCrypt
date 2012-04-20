@@ -92,7 +92,7 @@ Type \"Y\" and press Enter to continue: " ;
 
 	char * dev ;
 	
-	 if( back_up_is_luks( path ) != 0 )
+	if( back_up_is_luks( path ) != 0 )
 		 return msg( 17,cd ) ;
 	
 	dev = realpath( device,NULL ) ;

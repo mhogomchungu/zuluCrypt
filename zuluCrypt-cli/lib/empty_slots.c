@@ -23,6 +23,7 @@ static char * return_value( char * c,struct crypt_device * cd )
 {
 	if( cd != NULL )
 		crypt_free( cd );
+	
 	return c ;
 }
 
@@ -34,15 +35,12 @@ char * empty_slots( const char * device )
 	int k ;
 	char * slot ;
 	const char * type ;
-	
-	if( is_luks( device ) == 1 )
-		return return_value( NULL,NULL ) ;
-	
+
 	if( crypt_init( &cd,device ) != 0 )
 		return return_value( NULL,NULL ) ;
 	
 	if( crypt_load( cd,NULL,NULL ) != 0 )
-		return_value( NULL,cd ) ;
+		return return_value( NULL,cd ) ;
 		
 	type = crypt_get_type( cd ) ;
 	

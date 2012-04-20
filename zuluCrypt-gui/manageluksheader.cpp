@@ -77,6 +77,7 @@ void manageluksheader::headerBackUp()
 	m_operation = QString("backup") ;
 	this->setWindowTitle(QString("back up luks header"));
 	m_ui->labelBackUpHeader->setText(QString("backup path: "));
+	m_ui->pbCreate->setText(QString("&backup"));
 	m_ui->pbOpenFolder->setEnabled(false);
 	m_ui->labelBackUpHeader->setEnabled(false);
 	m_ui->lineEditBackUpName->setEnabled(false);
