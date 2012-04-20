@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'erasedevice.ui'
 **
-** Created: Wed Apr 18 02:42:55 2012
+** Created: Fri Apr 20 02:15:28 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -60,7 +60,7 @@ public:
         progressBar->setValue(24);
         pushButtonStart = new QPushButton(erasedevice);
         pushButtonStart->setObjectName(QString::fromUtf8("pushButtonStart"));
-        pushButtonStart->setGeometry(QRect(180, 90, 81, 31));
+        pushButtonStart->setGeometry(QRect(190, 90, 81, 31));
         pushButtonCancel = new QPushButton(erasedevice);
         pushButtonCancel->setObjectName(QString::fromUtf8("pushButtonCancel"));
         pushButtonCancel->setGeometry(QRect(270, 90, 81, 31));
@@ -75,7 +75,7 @@ public:
 
     void retranslateUi(QWidget *erasedevice)
     {
-        erasedevice->setWindowTitle(QApplication::translate("erasedevice", "erase data on a device", 0, QApplication::UnicodeUTF8));
+        erasedevice->setWindowTitle(QApplication::translate("erasedevice", "erase data on the device by writing random data over them", 0, QApplication::UnicodeUTF8));
         labelPath->setText(QApplication::translate("erasedevice", "path to device: ", 0, QApplication::UnicodeUTF8));
         pushButtonFile->setText(QString());
         pushButtonPartition->setText(QString());

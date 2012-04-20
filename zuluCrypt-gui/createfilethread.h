@@ -23,6 +23,7 @@
 #include "../zuluCrypt-cli/constants.h"
 #include "ui_openpartition.h"
 
+#include <QTimer>
 #include <QProcess>
 #include <QThread>
 #include <QFile>
@@ -43,11 +44,11 @@ signals:
 	void progress(int);
 private slots:
 	void cancelOperation(void);
+	void timerSignal(void);
 private:
 	void writeVolume(void);
 	void openVolume(void);
 	void closeVolume(void);
-	void getKey(void) ;
 	void createFile(void) ;
 	void fillCreatedFileWithRandomData(void);
 	void run() ;
@@ -56,8 +57,9 @@ private:
 	double m_size ;
 	int m_cancelled ;
 	int m_pid ;
-	char m_key[65];
+	double m_data_written ;
 	char m_data[1024];
+	QTimer * m_timer ;
 };
 
 #endif // ZULUCRYPTTHREADS_H

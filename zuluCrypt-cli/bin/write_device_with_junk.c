@@ -194,30 +194,20 @@ int write_device_with_junk( const struct_opts * opts,const char * mapping_name,u
 	size_written = 0 ;
 	prev_ratio = -1 ;
 	
-	while( 1 ){
-		
-		if( size - size_written <= SIZE ){
-			printf( "\rpercentage complete: 100" ) ;
-			write( k,buffer,size - size_written ) ;
-			break ;			
-		}
-		
+	while( write( k,buffer,SIZE ) > 0 ){
+
 		size_written += SIZE ;
 		
 		ratio = ( int ) ( ( size_written / size ) * 100 ) ;
 
-		if( ratio % 5 == 0 )
-			if( ratio != prev_ratio )
-				printf( "\rpercentage complete: %d\n",ratio ) ;
+		if( ratio % 5 == 0 && ratio != prev_ratio )
+			printf( "\rpercentage complete: %d\n",ratio ) ;
 			
 		prev_ratio = ratio ;
 		
-		write( k,buffer,SIZE ) ;		
 	}	
 	
 	close( k ) ;
-	
-	printf( "\n" ) ;
 	
 	close_mapper( StringContent( mapper ) ) ;
 		

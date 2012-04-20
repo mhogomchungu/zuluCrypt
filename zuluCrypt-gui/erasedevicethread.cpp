@@ -27,24 +27,13 @@ void erasedevicethread::writeJunkThroughMapper()
 	m_size_written = 0 ;
 
 	const size_t SIZE = 1024 ;
-	size_t size ;
 
 	char buffer[SIZE];
 	memset( buffer,0,SIZE ) ;
 
-	while( 1 ){
-
-		if( m_size - m_size_written <= SIZE ){
-			for( size = m_size - m_size_written ; size != 0 ; )
-				size = write( m_id,buffer,size ) ;
-			break ;
-		}
-
+	while( write( m_id,buffer,SIZE ) > 0 )
 		m_size_written += SIZE ;
-
-		for( size = SIZE ; size != 0 ; )
-			size = write( m_id,buffer,size ) ;
-	}
+	
 	close(m_id);
 }
 
@@ -101,6 +90,5 @@ erasedevicethread::~erasedevicethread()
 {
 	m_timer->stop();
 	m_timer->deleteLater();
-	miscfunctions::debug("~erasedevicethread()");
 	emit exitStatus(m_status);
 }

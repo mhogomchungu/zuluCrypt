@@ -52,6 +52,7 @@ void erasedevice::threadExitStatus(int st)
 	switch(st){
 		case 0 : m_ui->progressBar->setValue(100);
 			 msg.UIMessage(tr("SUCCESS!"),tr("data on the device successfully erased")) ;
+			 this->HideUI();
 			 break ;
 		case 1 : msg.UIMessage(tr("INFO!"),tr("operation terminated per user choice")) ;
 			 break ;

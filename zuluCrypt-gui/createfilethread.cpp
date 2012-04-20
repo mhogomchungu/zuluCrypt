@@ -37,22 +37,10 @@ createFileThread::createFileThread(QString file,double size)
 {
 	m_cancelled = 0 ;
 	m_file = file ;
-	m_size = size / 1024 ;
-}
-
-void createFileThread::getKey()
-{
-	int x = open("/dev/urandom",O_RDONLY) ;
-	char k ;
-	for( int j = 0 ; j < 64 ; j++ ){
-		do{
-			read(x,&k,1);
-		}while(k < 32 || k > 126) ;
-		m_key[j] = k ;
-	}
-
-	close(x);
-	m_key[64] = '\0' ;
+	m_size = size ;
+	m_timer = new QTimer(this);
+	m_timer->setInterval(250);
+	connect(m_timer,SIGNAL(timeout()),this,SLOT(timerSignal()));
 }
 
 void createFileThread::cancelOperation()
@@ -76,13 +64,10 @@ void createFileThread::run()
 	 * This medhod of writing random data to the file seem to be faster than creating the file using random
 	 * data from /dev/urandom
 	 */
-	memset(m_data,0,1024);
 
 	this->createFile();
 
 	emit doneCreatingFile();
-
-	this->getKey();
 
 	this->fillCreatedFileWithRandomData();
 }
@@ -93,13 +78,21 @@ void createFileThread::createFile()
 	double i ;
 	int x = open( m_file.toAscii().data(),O_WRONLY | O_CREAT ) ;
 
-	for(i = 0 ; i < m_size ; i++){
+	memset(m_data,0,1024);
+
+	double k = m_size / 1024 ;
+	for(i = 0 ; i < k ; i++){
 		for( size = 1024 ; size != 0 ; )
 			size = size - write(x,m_data,size);
 	}
 
 	close(x);
 	chmod(m_file.toAscii().data(),S_IRWXU);
+}
+
+void createFileThread::timerSignal()
+{
+	emit progress(( int ) ( m_data_written * 100 / m_size ));
 }
 
 void createFileThread::fillCreatedFileWithRandomData()
@@ -114,7 +107,8 @@ void createFileThread::fillCreatedFileWithRandomData()
 void createFileThread::closeVolume()
 {
 	/*
-	 * not using qprocess like when opening the volume to remove UI hanging while the volume is being closed
+	 * not using qprocess here because the operations will hang for a moment and the hanging
+	 * will show up on the UI
 	 */
 	QString exe = QString("%1 -q -d \"%2\"").arg(ZULUCRYPTzuluCrypt).arg(m_file) ;
 	runInThread * rt = new runInThread(exe);
@@ -123,6 +117,10 @@ void createFileThread::closeVolume()
 
 void createFileThread::openVolume()
 {
+	/*
+	 * We do not let the cli write random data to the file by using -X(we use -J)because we want to write the random data
+	 * ourselves giving us the ability to knoe exactly much data is already written
+	 */
 	QString exe = QString("%1 -J -d \"%2\"").arg(ZULUCRYPTzuluCrypt).arg(m_file);
 
 	QProcess p ;
@@ -139,25 +137,17 @@ void createFileThread::writeVolume()
 	
 	m_pid = open(path.toAscii().data(),O_WRONLY) ;
 	
-	int Z ;
-	
-	size_t size ;
-	double i ;
-	for(i = 0 ; i < m_size ; i++){
-		
-		Z = (int)( i / m_size  * 100 ) ;
-		
-		if( Z % 5 == 0 )
-			emit progress(Z);
+	m_timer->start();
 
-		for( size = 1024 ; size != 0 ; )
-			size = size - write(m_pid,m_data,size);
-	}
+	while(write(m_pid,m_data,1024) > 0)
+		m_data_written += 1024 ;
 
 	close(m_pid);
 }
 
 createFileThread::~createFileThread()
 {
+	m_timer->stop();
+	m_timer->deleteLater();
 	emit exitStatus(m_cancelled);
 }

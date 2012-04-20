@@ -212,11 +212,11 @@ void manageluksheader::threadExitStatus(int st)
 {
 	m_OperationInProgress = false ;
 
-	this->enableAll();
-
 	switch( st ){
-		case 0 : m_msg.UIMessage( tr("SUCCESS"),tr("header saved successfully" ) )						; break ;
-		case 1 : m_msg.UIMessage( tr("SUCCESS"),tr("header restored successfully" ) )						; break ;
+		case 0 : m_msg.UIMessage( tr("SUCCESS"),tr("header saved successfully" ) ) ;
+			 return this->HideUI();
+		case 1 : m_msg.UIMessage( tr("SUCCESS"),tr("header restored successfully" ) )	;
+			 return this->HideUI();
 		case 2 : m_msg.UIMessage( tr("ERROR!"),tr("presented device is not a LUKS device" ) )					; break ;
 		case 3 : m_msg.UIMessage( tr("ERROR!"),tr("failed to read/write header,is the volume open?" ) )				; break ;
 		case 4 : m_msg.UIMessage( tr("ERROR!"),tr("failed to read/write header,is the volume open?" ) )				; break ;
@@ -233,8 +233,8 @@ void manageluksheader::threadExitStatus(int st)
 		case 15: m_msg.UIMessage( tr("ERROR!"),tr("insufficient privilege to open device for writing" ))			; break ;
 		case 16: m_msg.UIMessage( tr("ERROR!"),tr("could not resolve path to device" ))						; break ;
 		case 17: m_msg.UIMessage( tr("ERROR!"),tr("backup file does not appear to contain luks header" ))			; break ;
-					 
 	}
+	this->enableAll();
 }
 
 void manageluksheader::pbOpenLuksHeaderBackUp()
