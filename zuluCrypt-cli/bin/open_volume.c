@@ -44,7 +44,8 @@ static int status_msg( int st )
 		case 19: printf( "ERROR: insufficient privilege to search mount point path\n" );					break ;	
 		case 20: printf( "ERROR: insufficient privilege to open device\n" );							break ;	
 		case 21: printf( "ERROR: insufficient privilege to create a mount point\n" );						break ;	
-		case 22: printf( "ERROR: insufficient privilege to open key file for reading\n" );					break ;					
+		case 22: printf( "ERROR: insufficient privilege to open key file for reading\n" );					break ;	
+		case 23: printf( "ERROR: insufficient privilege to open device in read/write mode\n" );					break ;					
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
 	return st ;
@@ -98,6 +99,13 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 		default: return status_msg( 3 ) ;
 	}
 	
+	if( strcmp( opts->mode,"rw" ) == 0 ){
+		switch( can_open_path_for_writing( dev,uid ) ){
+			case 0 : break ;
+			case 1 : return status_msg( 23 ) ;
+			default: return status_msg( 3 ) ;
+		}
+	}
 	device = realpath( dev,NULL ) ;
 	if( device == NULL )
 		return status_msg( 17 ) ;

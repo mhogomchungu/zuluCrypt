@@ -17,8 +17,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef STRINGString
-#define STRINGString
+#ifndef STRINGTYPE
+#define STRINGTYPE
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,11 +34,10 @@ extern "C" {
 #include <fcntl.h>
 #include <unistd.h>
 
-#include "StringTypes.h"
-
 /*
- * st is a  string handle, all string operation should happen through this handle.  
+ * string_t type is a  string handle, all string operation should happen through this handle.  
  */
+typedef struct StringType * string_t ;
 
 /*
  * initialize a handle with a C string
@@ -56,7 +55,15 @@ string_t StringWithSize( const char * string,size_t length ) ;
  * On success, a concatenated string is returned.
  * On error, NULL is returned and the original string remain intact. 
  */
-const char * StringAppend( string_t st ,const  char * s )  ;
+const char * StringAppend( string_t st,const  char * s )  ;
+
+/*
+ * Append a string handled by xt into a string handled by handle st 
+ *
+ * On success, a concatenated string is returned.
+ * On error, NULL is returned and the original string remain intact. 
+ */
+const char * StringAppendString( string_t st,string_t xt )  ;
 
 /*
  * Append a char c into a string handled by handle st 
@@ -74,6 +81,14 @@ const char * StringAppendChar( string_t st ,char c )  ;
  */
 const char * StringPrepend( string_t st ,const  char * s )  ;
 
+
+/*
+ * Prepend a string_t xt into a string handled by handle st
+ * 
+ * On success, a concatenated string is returned
+ * On error, NULL is returned and the original string remain intact   
+ */
+const char * StringPrependString( string_t st,string_t xt )  ;
 /*
  * Prepend a char c into a string handled by handle st
  * 

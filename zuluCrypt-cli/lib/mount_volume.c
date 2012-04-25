@@ -27,6 +27,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
+#include "../process/process.h"
 /*
  * below header file does not ship with the source code, it is created at configure time
  * */
@@ -68,41 +69,40 @@ static int mount_fs( int type,const m_struct * mst, string_t * st )
 
 static int mount_ntfs( const m_struct * mst )
 {
-	pid_t pid ;     
- 
-	string_t opt ;
 	const char * copt ;
-	int status ;
+	int status ;	
+	string_t uid ;	
+	process_t p ;
 	
-	string_t uid ;
+	string_t opt = String( ZULUCRYPTmount );
 	
-	pid = fork() ;
-	
-	if( pid == -1 )
-		return 1 ;
-	
-	if( pid == 0 ){
-	
-		close( 1 );
-		close( 2 );
+	if( strcmp( mst->mode,"ro" ) == 0 )
+		StringAppend( opt," -t ntfs-3g -o dmask=077,umask=077,ro,uid=UID,gid=UID DEVICE M_POINT" ) ;
+	else
+		StringAppend( opt," -t ntfs-3g -o dmask=077,umask=077,rw,uid=UID,gid=UID DEVICE M_POINT" ) ;
 		
-		if( strcmp( mst->mode,"ro" ) == 0 )
-			opt = String( "-o dmask=077,umask=077,ro,uid=UID,gid=UID" ) ;
-		else
-			opt = String( "-o dmask=077,umask=077,rw,uid=UID,gid=UID" ) ;
+	uid = StringIntToString( mst->uid ) ;
 		
-		uid = StringIntToString( mst->uid ) ;
+	StringReplaceString( opt,"UID",StringContent( uid ) ) ;
 		
-		copt = StringContent( uid ) ;		
-		
-		copt = StringReplaceString( opt,"UID",copt ) ;
-		
-		execl( ZULUCRYPTmount,"mount","-t","ntfs-3g",copt,mst->device,mst->m_point,( char * )0 ) ;
-	}
+	StringReplaceString( opt,"DEVICE",mst->device ) ;
 	
-	waitpid( pid,&status,0 ) ;
+	copt = StringReplaceString( opt,"M_POINT",mst->m_point ) ;
 	
-	return status ; 
+	p = Process( copt ) ;
+	
+	ProcessSetOption( p,CLOSE_BOTH_STD_OUT ) ;
+
+	ProcessStart( p ) ;
+	
+	status = ProcessExitStatus( p ) ; 
+	
+	ProcessDelete( &p ) ;
+	
+	StringDelete( &opt ) ;
+	StringDelete( &uid ) ;
+	
+	return status ;
 }
 
 /*

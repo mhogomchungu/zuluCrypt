@@ -32,7 +32,7 @@ static int entry_found( const char * map, const char * m_dir, char ** m_point )
 {
 	string_t st ;
 	int h = umount( m_dir ) ;	
-	if( h == 0 ){
+	if( h == 0 && m_point != NULL ){
 		st = String( m_dir ) ;
 		*m_point = StringDeleteHandle( &st ) ;
 	}

@@ -109,75 +109,14 @@ static stringList_t partitionList( void )
 	return stl_1 ;
 }
 
-string_t device_from_uuid( const char * uuid )
+char * device_from_uuid( const char * uuid )
 {
-	string_t st ;
-	const char * f ;
-	const char * device ;
-	int i ;
-	int j ;
-	int k ;
-	blkid_probe bp ;
-	
-	stringList_t stl = partitionList() ;
-	
-	if( stl == NULL )
-		return NULL ;
-	
-	j = StringListSize( stl ) ; 
-	
-	for( i = 0 ; i < j ; i++ ){
-		
-		device = StringListContentAt( stl,i ) ;
-		
-		bp = blkid_new_probe_from_filename( device ) ;
-		blkid_do_probe( bp );
-		k = blkid_probe_lookup_value( bp,"UUID",&f,NULL );
-		
-		if( k == 0 ){
-			if( strcmp( uuid,f ) == 0 ){
-				st = String( device ) ;
-				StringListDelete( &stl ) ; ;
-				blkid_free_probe( bp );
-				return st ;
-			}			
-		}
-		blkid_free_probe( bp );
-	}
-
-	StringListDelete( &stl ) ;
-	return NULL ;	
+	return blkid_evaluate_tag( "UUID",uuid,NULL ) ;
 }
 
-static void blkid( const char * type,const char * entry, int size, stringList_t * system, stringList_t non_system )
-{	
-	const char * device ;
-	const char * f ;
-	int i ;
-	int j ;
-	int k ;
-	blkid_probe bp ;
-	
-	j = StringListSize( non_system ) ;
-	
-	for( i = 0 ; i < j ; i++ ){
-		
-		device = StringListContentAt( non_system,i ) ;
-		
-		bp = blkid_new_probe_from_filename( device ) ;
-		blkid_do_probe( bp );
-		k = blkid_probe_lookup_value( bp, type, &f, NULL );
-		
-		if( k == 0 ){
-			if( strcmp( f, entry + size ) == 0 ){	
-				*system = StringListAppend( *system,device ) ;
-				StringListRemoveString( non_system,device ) ;
-				blkid_free_probe( bp );
-				return ;
-			}	
-		}
-		blkid_free_probe( bp );
-	}	
+char * device_from_label( const char * label )
+{
+	return blkid_evaluate_tag( "LABEL",label,NULL ) ;
 }
 
 static stringList_t partitions( int option )
@@ -187,7 +126,8 @@ static stringList_t partitions( int option )
 	
 	const char * entry ;
 	const char * device ;
-
+	char * ac ;
+	
 	ssize_t index ;
 
 	size_t i ;
@@ -222,17 +162,27 @@ static stringList_t partitions( int option )
 		if( index == - 1 )
 			continue ;
 		
-		StringRemoveRight( st,index ) ;
+		StringSubChar( st,index,'\0' ) ;
 				
 		device = StringRemoveString( st,"\"" ) ;		
 		
 		if ( strncmp( device,"/dev/",5 ) == 0 ){			
 			system = StringListAppend( system,device ) ;
 			StringListRemoveString( non_system ,device ) ;
-		}else if( strncmp( entry,"UUID",4 ) == 0 ){;
-			blkid( "UUID",device,5,&system,non_system ) ;  			
+		}else if( strncmp( entry,"UUID",4 ) == 0 ){
+			ac = device_from_uuid( device + 5 ) ;
+			if( ac != NULL ){
+				system = StringListAppend( system,ac ) ;
+				StringListRemoveString( non_system,ac ) ;
+				free( ac ) ;
+			}
 		}else if( strncmp( entry,"LABEL",5 ) == 0 ){
-			blkid( "LABEL",device,6,&system, non_system ) ;
+			ac = device_from_label( device + 6 ) ;
+			if( ac != NULL ){
+				system = StringListAppend( system,ac ) ;
+				StringListRemoveString( non_system,ac ) ;
+				free( ac ) ;
+			}
 		}		
 	}
 	
@@ -288,9 +238,10 @@ stringList_t get_partition_from_crypttab( void )
 	stringList_t stl ;
 	stringList_t stl_1 = NULL ;
 	string_t st  ;
-	string_t q ;
-	const char * device ;
+
 	const char * entry ;
+	char * ac ;
+	
 	ssize_t index ;
 	ssize_t index_1 ;
 	
@@ -325,8 +276,8 @@ stringList_t get_partition_from_crypttab( void )
 	
 		if( index == -1 ){
 			/*
-			 * did not find '/' character,assuming the line uses UUID,get the UUID by 
-			 * removing fields on both of its sides
+			 * check above did not find '/' character and we are in this block assuming the line uses UUID
+			 * 
 			 */
 			index = StringIndexOfChar( st,0,'U' ) ;
 				
@@ -338,7 +289,7 @@ stringList_t get_partition_from_crypttab( void )
 			if( index == -1 )
 				continue ;
 				
-			StringRemoveRight( st,index ) ;
+			StringSubChar( st,index,'\0' ) ;
 				
 			StringRemoveString( st,"\"" ) ;  /* remove quotes if they are used */
 			
@@ -346,11 +297,11 @@ stringList_t get_partition_from_crypttab( void )
 			 * resolve the UUID to its device address 
 			 * q will have NULL  most likely if the drive with UUID is not attached				 
 			 */
-			q = device_from_uuid( strstr( StringContent( st ),"=" ) + 1 );    
+			ac = device_from_uuid( strstr( StringContent( st ),"=" ) + 1 );    
 
-			if( q != NULL ){	
-				stl_1 = StringListAppend( stl_1,StringContent( q ) ) ;
-				StringDelete( &q ) ;					
+			if( ac != NULL ){	
+				stl_1 = StringListAppend( stl_1,ac ) ;
+				free( ac ) ;					
 			}
 		}else{		
 			/*
@@ -361,10 +312,9 @@ stringList_t get_partition_from_crypttab( void )
 			if ( index_1 == -1 )
 				continue ;
 				
-			StringRemoveRight( st,index_1 ) ;
+			StringSubChar( st,index_1,'\0' ) ;
 		 
-			device = StringRemoveLeft( st,index ) ;	
-			stl_1 = StringListAppend( stl_1,device ) ;
+			stl_1 = StringListAppend( stl_1,StringContent( st ) + index ) ;
 		}			
 	}
 	StringListDelete( &stl ) ;
@@ -377,6 +327,7 @@ stringList_t get_partition_from_zulutab()
 	size_t j ;
 	
 	const char * entry ;
+	char * ac ;
 	
 	stringList_t stl ;
 	stringList_t stl_1 = NULL ;
@@ -406,12 +357,12 @@ stringList_t get_partition_from_zulutab()
 		
 		if( strncmp( entry,"UUID=",5 ) == 0 ){			
 			
-			st = device_from_uuid( entry + 5 ) ;
+			ac = device_from_uuid( entry + 5 ) ;
 			
-			if( st != NULL ){
+			if( ac != NULL ){
 
-				stl_1 = StringListAppendString( stl_1,&st ) ;
-				StringDelete( &st ) ;
+				stl_1 = StringListAppend( stl_1,ac ) ;
+				free( ac ) ;
 			}
 		}else
 			stl_1 = StringListAppend( stl_1,entry ) ;		

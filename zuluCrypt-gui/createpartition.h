@@ -27,6 +27,7 @@
 
 #include "runinthread.h"
 #include "miscfunctions.h"
+#include "erasedevice.h"
 
 namespace Ui {
     class createpartition;
@@ -54,6 +55,7 @@ private slots:
 	void threadfinished(int);
 	void rng(int) ;
 private:
+	void eraseDataPartition(void);
 	void findInstalledFs(void);
 	void enableAll(void) ;
 	void disableAll(void);

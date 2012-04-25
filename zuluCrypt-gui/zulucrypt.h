@@ -116,6 +116,7 @@ private slots :
 	void luksHeaderBackUpContextMenu(void);
 	void luksHeaderBackUp(void);
 	void luksRestoreHeader(void);
+	void permissionExplanation(void);
 private:
 	passwordDialog * setUpPasswordDialog(void);
 	openpartition * setUpOpenpartition(void);

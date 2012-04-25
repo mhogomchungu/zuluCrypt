@@ -229,7 +229,7 @@ void manageluksheader::threadExitStatus(int st)
 		case 11: m_msg.UIMessage( tr("ERROR!"),tr("invalid path to device" ) )							; break ;
 		case 12: m_msg.UIMessage( tr("ERROR!"),tr("argument for path to a backup  header file is missing" )) 			; break ;
 		case 13: m_msg.UIMessage( tr("ERROR!"),tr("argument for path to a backup  header file is missing" )) 			; break ;
-		case 14: m_msg.UIMessage( tr("ERROR!"),tr("only root user can restore luks header on a system partition" )) 		; break ;
+		case 14: m_msg.UIMessage( tr("ERROR!"),tr("only root user can restore luks header on a system device" )) 		; break ;
 		case 15: m_msg.UIMessage( tr("ERROR!"),tr("insufficient privilege to open device for writing" ))			; break ;
 		case 16: m_msg.UIMessage( tr("ERROR!"),tr("could not resolve path to device" ))						; break ;
 		case 17: m_msg.UIMessage( tr("ERROR!"),tr("backup file does not appear to contain luks header" ))			; break ;

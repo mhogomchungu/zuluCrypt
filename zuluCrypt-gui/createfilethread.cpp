@@ -137,10 +137,23 @@ void createFileThread::writeVolume()
 	
 	m_pid = open(path.toAscii().data(),O_WRONLY) ;
 	
-	m_timer->start();
+	//m_timer->start();
 
-	while(write(m_pid,m_data,1024) > 0)
+	int j ;
+	int k = -1 ;
+	while(write(m_pid,m_data,1024) > 0){
+
 		m_data_written += 1024 ;
+
+		j = ( int )( m_data_written * 100 / m_size ) ;
+
+		if( j % 5 == 0 && j != k ){
+			emit progress( j );
+			k = j ;
+
+		}
+
+	}
 
 	close(m_pid);
 }

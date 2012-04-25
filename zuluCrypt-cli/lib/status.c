@@ -42,6 +42,7 @@ static char * loop_device_address( const char * device )
 char * status( const char * mapper )
 {		
 	const char * e ;
+	const char * type ;
 	char * path ;
 	int luks = 0 ;
 	int i ;
@@ -81,12 +82,12 @@ char * status( const char * mapper )
 	
 	StringAppend( p," type:   \t" );	
 	
-	e = crypt_get_type( cd ) ;
+	type = crypt_get_type( cd ) ;
 	
-	if( strcmp( e,"LUKS1" ) == 0 ){
-		StringAppend( p,"luks1" ) ;
+	if( strncmp( type,"LUKS",4 ) == 0 ){
+		StringAppend( p,type ) ;
 		luks = 1 ;
-	}else if( strcmp( e,"plain") )
+	}else if( strcmp( type,"plain") )
 		StringAppend( p,"plain" ) ;
 	
 	StringAppend( p,"\n cipher:\t" );
@@ -129,7 +130,7 @@ char * status( const char * mapper )
 	
 	if( luks == 1 ){
 		i = 0 ;
-		k = crypt_keyslot_max( CRYPT_LUKS1 ) ;
+		k = crypt_keyslot_max( type ) ;
 		for( j = 0 ; j < k ; j++){
 			switch( crypt_keyslot_status(cd, j) ){
 				case CRYPT_SLOT_INACTIVE    :     ; break ;

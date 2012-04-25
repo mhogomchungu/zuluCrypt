@@ -59,7 +59,7 @@ int check_system_tools( void ) ;
 /*
  * defined in partitions.c
  */
-string_t device_from_uuid( const char * uuid ) ;
+char * device_from_uuid( const char * uuid ) ;
 
 /*
  * defined in partitions.c
@@ -309,16 +309,8 @@ static int check_empty_slots( const char * device )
 
 static int check_UUID( const char * device )
 {
-	string_t p = device_from_uuid( device ) ;
-	
-	if( p != NULL ){
-		printf( "%s\n",StringContent( p ) ) ;
-		StringDelete( &p ) ;
-		return 0 ;
-	}else{
-		printf("ERROR: could not find any partition with the presented UUID\n") ;
-		return 1 ;
-	}
+	printf( "%s\n",device ) ;
+	return 0 ;
 }
 
 static int exe( struct_opts * clargs, const char * mapping_name,uid_t uid )
@@ -358,7 +350,6 @@ int main( int argc , char *argv[] )
 	 * string_t is prototyped as "typedef struct StringType * string_t" at ../string/StringTypes.h
 	 * string_t type is therefore a pointer and it is appropriate to assign NULL to it	 
 	 */
-	string_t p = NULL ;
 	string_t q = NULL ;
 	
 	struct_opts clargs ;
@@ -408,17 +399,16 @@ int main( int argc , char *argv[] )
 	if( strncmp( device,"UUID=", 5 ) == 0 ){
 
 		q = String( device ) ;	
-		StringSubChar( q,4,'-' ) ;
 		StringRemoveString( q,"\"" ) ;
 		
 		mapping_name = StringContent( q ) ;
 
-		p = device_from_uuid( mapping_name + 5 ) ;
+		ac = device_from_uuid( mapping_name + 5 ) ;
 		
-		if( p != NULL ) {		
-			clargs.device = StringContent( p ) ;			
+		if( ac != NULL ) {		
+			clargs.device = ac ;			
 			st = exe( &clargs,mapping_name,uid );			
-			StringDelete( &p ) ;
+			free( ac ) ;
 			StringDelete( &q ) ;
 			return st ;
 		}else{

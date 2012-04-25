@@ -48,7 +48,7 @@ static void print( uid_t uid,stringList_t stl )
 	string_t z = StringIntToString( uid ) ;
 	string_t p = String( "/dev/mapper/zuluCrypt-" ) ;
 
-	StringAppend( p,StringContent( z ) ) ;
+	StringAppendString( p,z ) ;
 	
 	len = StringLength( p ) ;
 	e = StringContent( p ) ;

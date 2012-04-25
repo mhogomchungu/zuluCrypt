@@ -20,9 +20,11 @@ public:
 	explicit erasedevice(QWidget *parent = 0);
 	~erasedevice();
 	void ShowUI(void);
+	void ShowUI(QString);
 	void HideUI(void);
 signals:
 	void HideUISignal(void);
+	void done(QString);
 private slots:
 	void enableAll(void);
 	void disableAll(void);
@@ -39,6 +41,7 @@ private:
 	Ui::erasedevice * m_ui;
 	erasedevicethread * m_dt  ;
 	bool m_cancelClicked ;
+	int m_option ;
 };
 
 #endif // ERASEDEVICE_H

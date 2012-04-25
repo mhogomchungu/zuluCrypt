@@ -16,9 +16,23 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef STRINGLISTTYPE
+#define STRINGLISTTYPE
+
+#ifdef __cplusplus
+extern "C" {
+#endif	
 
 #include "String.h"
-#include "StringTypes.h"
+
+typedef struct StringListType * stringList_t ;
+
+/*
+ * stringList_t is a type to be used as a handle with these functions
+ * 
+ * this library implements a an array of strings_t type dynamically and add other functionality
+ * 
+ */
 
 /*
  *  create stringlist handle with a C string. All stringlist operations should happen through this handle 
@@ -59,6 +73,16 @@ string_t StringListStringAt( stringList_t stl, size_t index ) ;
  * First element is at position 0. * 
  */
 const char * StringListContentAt( stringList_t stl,size_t index ) ;
+
+/*
+ *  return a pointer to a string at the last elenent in the list.
+ */
+const char * StringListContentAtLast( stringList_t stl ) ;
+
+/*
+ *  return a string_t at the last elenent in the list.
+ */
+string_t StringListStringAtLast( stringList_t stl ) ;
 
 /*
  *  return an index position of an element with cstring.
@@ -133,10 +157,16 @@ stringList_t StringListStringInsertAt( stringList_t stl,string_t *,size_t index 
 stringList_t StringListInsertAtSize( stringList_t stl,const char * cstring,size_t len, size_t index ) ;
 
 /*
- * remove an entry from the list
+ * remove an entry from the list bt deleting it
  * the first position is at position 0
  */
 stringList_t StringListRemoveAt( stringList_t stl, size_t index ) ;
+
+/*
+ * remove an entry from the list at position index and "let it free",the detached entry is now a fully fledged string_t object.
+ * the first position is at position 0
+ */
+string_t StringListDetachAt( stringList_t stl, size_t index ) ;
 
 /*
  *  remember to clean after yourself
@@ -175,3 +205,9 @@ stringList_t StringListCopy( stringList_t stl ) ;
  * first entry is at position 0.
  */
 stringList_t StringListSwap( stringList_t stl, size_t x,size_t y ) ;
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif

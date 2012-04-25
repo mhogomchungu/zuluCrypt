@@ -15,6 +15,8 @@ erasedevice::erasedevice(QWidget *parent) :
 	m_ui->progressBar->setMaximum(100);
 	m_ui->progressBar->setMinimum(0);
 
+	this->setWindowTitle(QString("write random data over existing data"));
+
 	connect(m_ui->pushButtonFile,SIGNAL(clicked()),this,SLOT(pbFile()));
 	connect(m_ui->pushButtonPartition,SIGNAL(clicked()),this,SLOT(pbPartition()));
 	connect(m_ui->pushButtonStart,SIGNAL(clicked()),this,SLOT(pbStart()));
@@ -29,6 +31,7 @@ erasedevice::erasedevice(QWidget *parent) :
 
 void erasedevice::ShowUI()
 {
+	m_option = 0 ;
 	UIMsg msg(this);
 
 	QString msg_1 = tr("The next dialog will write random data to a device ");
@@ -42,10 +45,19 @@ void erasedevice::ShowUI()
 		this->HideUI();
 }
 
+void erasedevice::ShowUI(QString path)
+{
+	m_option = 1 ;
+	m_ui->lineEdit->setText(path);
+	this->show();
+	this->pbStart();
+}
+
 void erasedevice::threadExitStatus(int st)
 {
+	this->setWindowTitle(QString("write random data over existing data"));
+
 	m_dt = NULL ;
-	m_ui->pushButtonStart->setEnabled(true);
 
 	UIMsg msg(this);
 
@@ -59,6 +71,9 @@ void erasedevice::threadExitStatus(int st)
 		case 2 : msg.UIMessage(tr("ERROR!"),tr("could not write random data to device")) ;
 			 break ;
 	}
+
+	if( m_option == 1 )
+		this->HideUI();
 	this->enableAll();
 }
 
@@ -70,6 +85,8 @@ void erasedevice::HideUI()
 
 void erasedevice::pbStart()
 {
+	this->setWindowTitle(QString("writing random data over existing data"));
+
 	QString path = miscfunctions::resolveHomeSymbol(m_ui->lineEdit->text()) ;
 
 	UIMsg msg(this);
@@ -80,12 +97,14 @@ void erasedevice::pbStart()
 	if(miscfunctions::exists(path) == false)
 		return msg.UIMessage(tr("ERROR!"),tr("invalid path to device"));
 	
-	QString x_1 = tr("Are you really sure you want to write random data to \"%1\"").arg(path)	;
-	QString x_2 = tr(" effectively destroying all contents in it?");
-	QString x_3 = x_1 + x_2 ;
+	if( m_option == 0 ){
+		QString x_1 = tr("Are you really sure you want to write random data to \"%1\"").arg(path)	;
+		QString x_2 = tr(" effectively destroying all contents in it?");
+		QString x_3 = x_1 + x_2 ;
 
-	if( msg.UIMessageWithConfirm(tr("WARNING!"),x_3) == QMessageBox::No )
-		return ;
+		if( msg.UIMessageWithConfirm(tr("WARNING!"),x_3) == QMessageBox::No )
+			return ;
+	}
 
 	this->disableAll();
 

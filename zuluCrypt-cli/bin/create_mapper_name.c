@@ -77,7 +77,7 @@ string_t create_mapper_name( const char * device,const char * mapping_name,uid_t
 		StringPrepend( p,crypt_get_dir() ) ;
 	}
 	
-	StringAppend( p,StringContent( q ) ) ;
+	StringAppendString( p,q ) ;
 	
 	if( strncmp( mapping_name,"UUID-",5 ) != 0 )
 		StringAppend( p,"-NAAN-" ) ;
@@ -85,7 +85,7 @@ string_t create_mapper_name( const char * device,const char * mapping_name,uid_t
 		StringAppend( p,"-" ) ;	
 	
 	StringAppend( p,mapping_name ) ;
-	StringAppend( p,StringContent( z ) ) ;
+	StringAppendString( p,z ) ;
 	
 	replace_bash_special_chars( &p ) ;
 	

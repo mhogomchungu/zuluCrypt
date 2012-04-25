@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'zulucrypt.ui'
 **
-** Created: Thu Apr 19 04:05:12 2012
+** Created: Mon Apr 23 01:25:07 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -50,6 +50,7 @@ public:
     QAction *actionErase_data_on_device;
     QAction *actionBackup_header;
     QAction *actionRestore_header;
+    QAction *actionPermission_problems;
     QWidget *centralWidget;
     QTableWidget *tableWidget;
     QMenuBar *menuBar;
@@ -122,6 +123,8 @@ public:
         actionBackup_header->setObjectName(QString::fromUtf8("actionBackup_header"));
         actionRestore_header = new QAction(zuluCrypt);
         actionRestore_header->setObjectName(QString::fromUtf8("actionRestore_header"));
+        actionPermission_problems = new QAction(zuluCrypt);
+        actionPermission_problems->setObjectName(QString::fromUtf8("actionPermission_problems"));
         centralWidget = new QWidget(zuluCrypt);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         centralWidget->setContextMenuPolicy(Qt::ActionsContextMenu);
@@ -187,6 +190,7 @@ public:
         menuCreate->addAction(actionCreatekeyFile);
         menuHelp->addAction(actionInfo);
         menuHelp->addAction(actionAbout);
+        menuHelp->addAction(actionPermission_problems);
         menuConfigure->addAction(actionAddKey);
         menuConfigure->addAction(actionDeleteKey);
         menuConfigure->addSeparator();
@@ -256,6 +260,7 @@ public:
         actionBackup_header->setShortcut(QApplication::translate("zuluCrypt", "Ctrl+B", 0, QApplication::UnicodeUTF8));
         actionRestore_header->setText(QApplication::translate("zuluCrypt", "restore header", 0, QApplication::UnicodeUTF8));
         actionRestore_header->setShortcut(QApplication::translate("zuluCrypt", "Ctrl+P", 0, QApplication::UnicodeUTF8));
+        actionPermission_problems->setText(QApplication::translate("zuluCrypt", "permission problems", 0, QApplication::UnicodeUTF8));
         QTableWidgetItem *___qtablewidgetitem = tableWidget->horizontalHeaderItem(0);
         ___qtablewidgetitem->setText(QApplication::translate("zuluCrypt", "Encrypted volume path", 0, QApplication::UnicodeUTF8));
         QTableWidgetItem *___qtablewidgetitem1 = tableWidget->horizontalHeaderItem(1);

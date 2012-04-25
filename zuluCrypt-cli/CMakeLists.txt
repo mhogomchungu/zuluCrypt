@@ -66,6 +66,8 @@
  
  add_library( StringList STATIC string/StringList.c )
  
+ add_library( process STATIC process/process.c )
+ 
  SET( BIN  
  bin/print_mounted_volumes.c 
  bin/create_mapper_name.c 
@@ -104,7 +106,7 @@
  add_library( zuluCrypt SHARED ${LIB} )
  add_executable( zuluCrypt-cli ${BIN} )
  
- TARGET_LINK_LIBRARIES( zuluCrypt ${libcryptsetup} String ${blkid} ${mountLibrary} )
+ TARGET_LINK_LIBRARIES( zuluCrypt ${libcryptsetup} String ${blkid} ${mountLibrary} process )
  
  set_target_properties( zuluCrypt PROPERTIES SOVERSION "1.1.0" )
  

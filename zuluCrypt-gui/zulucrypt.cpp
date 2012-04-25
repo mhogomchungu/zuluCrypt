@@ -185,6 +185,21 @@ void zuluCrypt::setupConnections()
 	connect(m_ui->actionClose_all_opened_volumes,SIGNAL(triggered()),this,SLOT(closeAllVolumes())) ;
 	connect(m_ui->actionBackup_header,SIGNAL(triggered()),this,SLOT(luksHeaderBackUp()));
 	connect(m_ui->actionRestore_header,SIGNAL(triggered()),this,SLOT(luksRestoreHeader()));
+	connect(m_ui->actionPermission_problems,SIGNAL(triggered()),this,SLOT(permissionExplanation()));
+
+}
+
+void zuluCrypt::permissionExplanation()
+{
+	QString msg = tr("\
+\"insufficent privilege to open device\" and related permission errors when\n\
+attempting to operate on a device are primarily caused by not having proper \
+privileges to partitions.\n\nmost systems will give necessary permission \
+when a user is a member of \"disk\" goups.\n\n\
+Some operations can not be done on certain partitions when a user is not root.\
+Please see documentation for further details.") ;
+
+	UIMessage(tr("INFORMATION"),msg);
 }
 
 void zuluCrypt::HighlightRow(int row,bool b)

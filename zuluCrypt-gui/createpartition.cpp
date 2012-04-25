@@ -115,7 +115,38 @@ void createpartition::ShowFile(QString volume)
 	ShowUI(tr("path to file"),volume);
 }
 
-void::createpartition::ShowUI(QString l,QString v)
+void createpartition::eraseDataPartition()
+{
+	UIMsg msg(this);
+
+	QString path = m_ui->lineEditVolumePath->text() ;
+
+	if( path.left(5) != QString("/dev/") )
+		return ;
+
+	QString m = tr("\
+all contents of \"%1\" will be deleted!.\
+\nAre you sure you want to proceed?").arg(path) ;
+
+	int opt = m_msg.UIMessageWithConfirm(tr("WARNING!"),m) ;
+
+	if ( opt == QMessageBox::No )
+		return this->HideUI();
+
+	m = tr("\
+It is advised to create encrypted containers over random data to prevent information leakage.\n\n\
+Do you want to write random data to \"%1\" first before creating an encrypted container in it?\n\n\
+You can stop the random data writing process anytime you want if \
+it takes too long and you can no longer wait.\n\n").arg(path);
+
+	if( msg.UIMessageWithConfirm(tr("INFO"),m) == QMessageBox::Yes ){
+		erasedevice * ed = new erasedevice(this) ;
+		connect(ed,SIGNAL(HideUISignal()),ed,SLOT(deleteLater()));
+		ed->ShowUI(path);
+	}
+}
+
+void createpartition::ShowUI(QString l,QString v)
 {
 	enableAll();
 	m_ui->labelVolumePath->setText(l);
@@ -131,6 +162,7 @@ void::createpartition::ShowUI(QString l,QString v)
 	m_ui->labelRepeatPassPhrase->setEnabled(true);
 	m_created = false ;
 	this->show();
+	this->eraseDataPartition();
 	findInstalledFs() ;
 }
 
@@ -247,17 +279,6 @@ void createpartition::pbCreateClicked()
 			return 	m_msg.UIMessage(tr("ERROR!"),tr("passphrases do not match"));
 
 		source = QString("-p") ;
-	}
-
-	if( volumePath.left(5) == QString("/dev/")){
-
-		QString wr = tr("all contents of \"%1\" will be deleted!.").arg(volumePath) ;
-		wr += tr("\nAre you sure you want to proceed?") ;
-
-		int opt = m_msg.UIMessageWithConfirm(tr("WARNING!"),wr) ;
-
-		if ( opt != QMessageBox::Yes )
-			return ;
 	}
 
 	passphrase_1.replace("\"","\"\"\"") ;
