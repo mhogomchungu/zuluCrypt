@@ -147,12 +147,10 @@ void createFileThread::writeVolume()
 
 		j = ( int )( m_data_written * 100 / m_size ) ;
 
-		if( j % 5 == 0 && j != k ){
+		if( j > k ){
 			emit progress( j );
 			k = j ;
-
 		}
-
 	}
 
 	close(m_pid);

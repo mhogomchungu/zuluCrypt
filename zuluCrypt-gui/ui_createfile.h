@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'createfile.ui'
 **
-** Created: Mon Apr 16 21:16:12 2012
+** Created: Sun Apr 29 19:59:43 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -39,14 +39,12 @@ public:
     QLabel *label_4;
     QPushButton *pbCreate;
     QComboBox *comboBox;
-    QLabel *label_5;
-    QLabel *labelOperation;
 
     void setupUi(QWidget *createfile)
     {
         if (createfile->objectName().isEmpty())
             createfile->setObjectName(QString::fromUtf8("createfile"));
-        createfile->resize(475, 196);
+        createfile->resize(475, 180);
         lineEditFileName = new QLineEdit(createfile);
         lineEditFileName->setObjectName(QString::fromUtf8("lineEditFileName"));
         lineEditFileName->setGeometry(QRect(120, 10, 271, 31));
@@ -70,36 +68,29 @@ public:
         lineEditFileSize->setGeometry(QRect(120, 70, 113, 31));
         progressBar = new QProgressBar(createfile);
         progressBar->setObjectName(QString::fromUtf8("progressBar"));
-        progressBar->setGeometry(QRect(120, 130, 271, 23));
+        progressBar->setGeometry(QRect(120, 110, 271, 23));
         progressBar->setValue(24);
         pbOpenFolder = new QPushButton(createfile);
         pbOpenFolder->setObjectName(QString::fromUtf8("pbOpenFolder"));
         pbOpenFolder->setGeometry(QRect(390, 40, 31, 31));
         pbCancel = new QPushButton(createfile);
         pbCancel->setObjectName(QString::fromUtf8("pbCancel"));
-        pbCancel->setGeometry(QRect(240, 160, 91, 31));
+        pbCancel->setGeometry(QRect(240, 140, 91, 31));
         pbCancel->setAutoDefault(false);
         pbCancel->setDefault(false);
         label_4 = new QLabel(createfile);
         label_4->setObjectName(QString::fromUtf8("label_4"));
-        label_4->setGeometry(QRect(10, 130, 101, 21));
+        label_4->setGeometry(QRect(10, 110, 101, 21));
         label_4->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         pbCreate = new QPushButton(createfile);
         pbCreate->setObjectName(QString::fromUtf8("pbCreate"));
-        pbCreate->setGeometry(QRect(150, 160, 91, 31));
+        pbCreate->setGeometry(QRect(150, 140, 91, 31));
         pbCreate->setAutoDefault(false);
         pbCreate->setDefault(true);
         comboBox = new QComboBox(createfile);
         comboBox->setObjectName(QString::fromUtf8("comboBox"));
         comboBox->setGeometry(QRect(230, 70, 51, 31));
         comboBox->setFrame(true);
-        label_5 = new QLabel(createfile);
-        label_5->setObjectName(QString::fromUtf8("label_5"));
-        label_5->setGeometry(QRect(50, 104, 61, 20));
-        label_5->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
-        labelOperation = new QLabel(createfile);
-        labelOperation->setObjectName(QString::fromUtf8("labelOperation"));
-        labelOperation->setGeometry(QRect(124, 103, 271, 21));
         QWidget::setTabOrder(lineEditFileName, lineEditFilePath);
         QWidget::setTabOrder(lineEditFilePath, pbOpenFolder);
         QWidget::setTabOrder(pbOpenFolder, lineEditFileSize);
@@ -131,8 +122,6 @@ public:
          << QApplication::translate("createfile", "MB", 0, QApplication::UnicodeUTF8)
          << QApplication::translate("createfile", "GB", 0, QApplication::UnicodeUTF8)
         );
-        label_5->setText(QApplication::translate("createfile", "operation", 0, QApplication::UnicodeUTF8));
-        labelOperation->setText(QApplication::translate("createfile", "creating a volume file", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };

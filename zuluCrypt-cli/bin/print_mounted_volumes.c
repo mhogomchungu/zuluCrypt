@@ -20,6 +20,7 @@
 
 #include "includes.h"
 
+#include <libcryptsetup.h>
 /*
  * below header file does not ship with the source code, it is created at configure time * 
  */
@@ -45,9 +46,13 @@ static void print( uid_t uid,stringList_t stl )
 	stringList_t stx ;
 	
 	string_t q ; 
+	
 	string_t z = StringIntToString( uid ) ;
-	string_t p = String( "/dev/mapper/zuluCrypt-" ) ;
+	
+	string_t p = String( crypt_get_dir() ) ;
 
+	StringAppend( p,"/zuluCrypt-" ) ;
+	
 	StringAppendString( p,z ) ;
 	
 	len = StringLength( p ) ;

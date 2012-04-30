@@ -81,7 +81,6 @@ void createfile::enableAll()
 	m_ui->label_2->setEnabled(true);
 	m_ui->label_3->setEnabled(true);
 	m_ui->label_4->setEnabled(true);
-	m_ui->label_5->setEnabled(true);
 	m_ui->pbCreate->setEnabled(true);
 }
 
@@ -97,7 +96,6 @@ void createfile::disableAll()
 	m_ui->label_2->setEnabled(false);
 	m_ui->label_3->setEnabled(false);
 	m_ui->label_4->setEnabled(false);
-	m_ui->label_5->setEnabled(false);
 }
 
 void createfile::showUI()
@@ -109,6 +107,7 @@ void createfile::showUI()
 	m_ui->lineEditFileSize->clear();
 	m_ui->progressBar->setValue(0);
 	m_ui->lineEditFileName->setFocus();
+	this->setWindowTitle(tr("1/2 create container file"));
 	this->show();
 }
 
@@ -237,7 +236,8 @@ void createfile::doneCreatingFile()
 {
 	m_ui->progressBar->setValue(0);
 	m_time.stop();
-	m_ui->labelOperation->setText(tr("writing random data to file"));
+	this->setWindowTitle(tr("2/2 write random data to container file"));
+
 }
 
 void createfile::pbOpenFolder()
