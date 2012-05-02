@@ -48,9 +48,10 @@ static int status_msg( int st )
 		case 7 : printf( "ERROR: could not get enough memory to open the key file\n" ) ;							break ;
 		case 10: printf( "ERROR: device does not exist\n" );											break ;	
 		case 11: printf( "WARNING: there is only one key in the volume left and all data in the volume will be lost if you continue.\n" );
-			 printf( "if you want to continue,rerun the command with -k option\n" ) ;							break;
+			 printf( "if you want to continue,rerun the command with -k option\n" ) ;							break ;
 		case 12: printf( "ERROR: insufficient privilege to open volume for writing\n" ) ;							break ;
-		case 13: printf( "ERROR: insufficient privilege to open key file for reading\n" );							break ;	
+		case 13: printf( "ERROR: insufficient privilege to open key file for reading\n" );							break ;
+		case 14: printf( "ERROR: only root user can remove keys from system devices\n" );								break ;	
 		default :printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}		
 	return st ;
@@ -73,6 +74,12 @@ int removekey( const struct_opts * opts,uid_t uid )
 	string_t pass;
 	int status = 0 ;
 	
+	/*
+	* check_partition is defined in partition.c
+	*/
+	if( check_partition( device ) == 1 && uid != 0 )
+		return status_msg( 14 ) ;
+
 	/*
 	 * This function is defined at "is_path_valid.c"
 	 * It makes sure the path exists and the user has atleast reading access to the path.

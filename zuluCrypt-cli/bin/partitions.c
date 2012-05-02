@@ -374,7 +374,7 @@ stringList_t get_partition_from_zulutab()
 	return stl_1 ;	
 }
 
-int check_partition( const char * device )
+int check_partition( const char * dev )
 {	
 	stringList_t stl_1 ;
 	stringList_t stl_2 ;
@@ -383,6 +383,11 @@ int check_partition( const char * device )
 	ssize_t index_1 = -1 ;
 	ssize_t index_2 = -1 ;
 	ssize_t index_3 = -1 ;
+	
+	char * device = realpath( dev,NULL ) ;
+		
+	if( device == NULL )
+		return 2 ;
 	
 	stl_1 = partitions( SYSTEM_PARTITIONS ) ;
 	index_1 = StringListContains( stl_1,device );
@@ -403,6 +408,8 @@ int check_partition( const char * device )
 		index_3 = StringListContains( stl_3,device );
 		StringListDelete( &stl_3 ) ;		
 	}
+	
+	free( device ) ;
 	
 	if( index_1 >= 0 || index_2 >= 0 || index_3 >= 0 )
 		return 1 ;

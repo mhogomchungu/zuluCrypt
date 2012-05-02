@@ -61,7 +61,8 @@ static int status_msg( int st )
 		case 9  : printf( "ERROR: couldnt get enought memory to hold the key file\n" ) ;	     	break ;
 		case 10 : printf( "ERROR: all key slots are occupied, can not add any more keys\n" ) ;	      	break ;
 		case 11 : printf( "ERROR: insufficient privilege to write to the volume\n" ) ;	   		break ;	
-		case 12 : printf( "ERROR: insufficient privilege to open key file for reading\n" );		break ;					
+		case 12 : printf( "ERROR: insufficient privilege to open key file for reading\n" );		break ;	
+		case 13 : printf( "ERROR: only root user can add keys to system devices\n" );			break ;	
 		default : printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
 	
@@ -99,6 +100,12 @@ int addkey( const struct_opts * opts,uid_t uid )
 	size_t len2 = 0 ;
 
 	int status = 0 ;
+	
+	/*
+	 * check_partition is defined in partition.c
+	 */
+	if( check_partition( device ) == 1 && uid != 0 )
+		return status_msg( 13 ) ;
 	
 	/*
 	 * This function is defined at "security.c"

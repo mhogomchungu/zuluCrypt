@@ -252,6 +252,7 @@ void luksaddkey::threadfinished(int status)
 		case 10 : m_msg.UIMessage(tr("ERROR!"),tr("all key slots are occupied, can not add any more keys" )) ;	      	break ;
 		case 11 : m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to write to the volume" )) ;		        break ;
 		case 12 : m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to open key file for reading" ));		break ;
+		case 13 : m_msg.UIMessage(tr("ERROR!"),tr("only root user can add keys to system devices" ));			break ;
 		case 110: m_msg.UIMessage(tr("ERROR!"),tr("can not find a partition that match presented UUID" ));		break ;
 		default : m_msg.UIMessage(tr("ERROR!"),tr("unrecognized ERROR! with status number %1 encountered").arg( status ));
 	}

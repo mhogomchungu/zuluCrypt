@@ -214,15 +214,16 @@ void luksdeletekey::threadfinished(int status)
 			HideUI() ;
 			return ;
 		case 2 : m_msg.UIMessage(tr("ERROR!"),tr("there is no key in the volume that match the presented key") ) ;			break ;
-		case 3 : m_msg.UIMessage(tr("ERROR!"),tr("could not open device\n" )) ;							break ;
+		case 3 : m_msg.UIMessage(tr("ERROR!"),tr("could not open device\n" )) ;								break ;
 		case 5 : m_msg.UIMessage(tr("ERROR!"),tr("keyfile does not exist\n" )) ;							break ;
 		case 6 : m_msg.UIMessage(tr("ERROR!"),tr("one or more required argument(s) for this operation is missing") ) ;			break ;
 		case 7 : m_msg.UIMessage(tr("ERROR!"),tr("could not get enough memory to open the key file") ) ;				break ;
 		case 10: m_msg.UIMessage(tr("ERROR!"),tr("device does not exist" ));								break ;
 		case 11: m_msg.UIMessage(tr("WARNING"),tr("there is only one key in the volume left and all data in the volume \
-will be lost if you continue.\nif you want to continue,rerun the command with -k option" ));						break;
-		case 12: m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to open volume for writing" ) );					break ;
-		case 13: m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to open key file for reading" ));			break ;
+will be lost if you continue.\nif you want to continue,rerun the command with -k option" ));							break;
+		case 12: m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to open volume for writing" ) );				break ;
+		case 13: m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to open key file for reading" ));				break ;
+		case 14: m_msg.UIMessage(tr("ERROR!"),tr("only root user can remove keys from system devices" ));				break ;					    
 		case 110:m_msg.UIMessage(tr("ERROR!"),tr("can not find a partition that match presented UUID" ));				break ;
 		default :m_msg.UIMessage(tr("ERROR!"),tr("unrecognized ERROR! with status number %1 encountered").arg(status));
 	}
