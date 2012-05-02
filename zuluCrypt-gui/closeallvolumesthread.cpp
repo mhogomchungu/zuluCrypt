@@ -20,14 +20,11 @@
 #include "closeallvolumesthread.h"
 #include "../zuluCrypt-cli/constants.h"
 
-#include <iostream>
-#include <QProcess>
-#include <QStringList>
-
 closeAllVolumesThread::closeAllVolumesThread(QTableWidget * table)
 {
 	m_table = table ;
 }
+
 void closeAllVolumesThread::run()
 {		
 	m_table->setEnabled(false);

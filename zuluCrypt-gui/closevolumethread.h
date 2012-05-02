@@ -4,6 +4,7 @@
 #include <QRunnable>
 #include <QString>
 #include <QProcess>
+#include <unistd.h>
 
 class closeVolumeThread : public QObject, public QRunnable
 {

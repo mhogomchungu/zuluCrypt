@@ -24,6 +24,10 @@
 #include <QTableWidgetItem>
 #include <QTableWidget>
 
+#include <QProcess>
+#include <QString>
+#include <unistd.h>
+
 class closeAllVolumesThread : public QObject, public QRunnable
 {
 	Q_OBJECT
