@@ -56,10 +56,8 @@ private:
 	QString m_file ;
 	double m_size ;
 	int m_cancelled ;
-	int m_pid ;
 	double m_data_written ;
 	char m_data[1024];
-	QTimer * m_timer ;
 };
 
 #endif // ZULUCRYPTTHREADS_H

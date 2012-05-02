@@ -38,19 +38,11 @@ createFileThread::createFileThread(QString file,double size)
 	m_cancelled = 0 ;
 	m_file = file ;
 	m_size = size ;
-	m_timer = new QTimer(this);
-	m_timer->setInterval(250);
-	connect(m_timer,SIGNAL(timeout()),this,SLOT(timerSignal()));
 }
 
 void createFileThread::cancelOperation()
 {
-	this->terminate();
-
 	m_cancelled = 1 ;
-
-	close(m_pid);
-	this->closeVolume() ;
 }
 
 void createFileThread::run()
@@ -76,17 +68,20 @@ void createFileThread::createFile()
 {
 	size_t size ;
 	double i ;
-	int x = open( m_file.toAscii().data(),O_WRONLY | O_CREAT ) ;
+
+	int fd = open( m_file.toAscii().data(),O_WRONLY | O_CREAT ) ;
 
 	memset(m_data,0,1024);
 
 	double k = m_size / 1024 ;
 	for(i = 0 ; i < k ; i++){
+		if(m_cancelled == 1)
+			break ;
 		for( size = 1024 ; size != 0 ; )
-			size = size - write(x,m_data,size);
+			size = size - write(fd,m_data,size);
 	}
 
-	close(x);
+	close(fd) ;
 	chmod(m_file.toAscii().data(),S_IRWXU);
 }
 
@@ -131,17 +126,20 @@ void createFileThread::openVolume()
 
 void createFileThread::writeVolume()
 {
+	if(m_cancelled == 1)
+		return ;
+
 	QString path = miscfunctions::cryptMapperPath() + QString("zuluCrypt-") + QString::number(getuid()) ;
 	
 	path += QString("-NAAN-") + m_file.split("/").last() + miscfunctions::hashPath(m_file);
 	
-	m_pid = open(path.toAscii().data(),O_WRONLY) ;
+	int fd = open(path.toAscii().data(),O_WRONLY) ;
 	
-	//m_timer->start();
-
 	int j ;
 	int k = -1 ;
-	while(write(m_pid,m_data,1024) > 0){
+	m_data_written = 0 ;
+
+	while(write(fd,m_data,1024) > 0){
 
 		m_data_written += 1024 ;
 
@@ -151,14 +149,14 @@ void createFileThread::writeVolume()
 			emit progress( j );
 			k = j ;
 		}
-	}
 
-	close(m_pid);
+		if(m_cancelled == 1)
+			break ;
+	}
+	close(fd);
 }
 
 createFileThread::~createFileThread()
 {
-	m_timer->stop();
-	m_timer->deleteLater();
 	emit exitStatus(m_cancelled);
 }
