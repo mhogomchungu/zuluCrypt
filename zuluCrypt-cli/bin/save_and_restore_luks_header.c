@@ -41,9 +41,7 @@ static int msg( int st,struct crypt_device * cd )
 		case 14: printf( "ERROR: only root user can restore luks header on a system device\n" ) 		; break ;
 		case 15: printf( "ERROR: insufficient privilege to open device for writing\n" ) 			; break ;	
 		case 16: printf( "ERROR: could not resolve path to device\n" ) 						; break ;	
-		case 17: printf( "ERROR: backup file does not appear to contain luks header\n" ) 			; break ;				
-				
-				
+		case 17: printf( "ERROR: backup file does not appear to contain luks header\n" ) 			; break ;
 	}
 	
 	if( cd != NULL )

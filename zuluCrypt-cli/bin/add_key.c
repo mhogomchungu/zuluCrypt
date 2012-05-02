@@ -110,6 +110,7 @@ int addkey( const struct_opts * opts,uid_t uid )
 		case 1 : return status_msg( 11 ) ; break ;
 		case 2 : return status_msg( 4 )  ; break ;		
 	}
+	
 	if( is_luks( device ) == 1 )
 		return status_msg_1( 3,device ) ;
 	

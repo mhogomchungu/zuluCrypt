@@ -194,9 +194,9 @@ void zuluCrypt::permissionExplanation()
 	QString msg = tr("\
 \"insufficent privilege to open device\" and related permission errors when\n\
 attempting to operate on a device are primarily caused by not having proper \
-privileges to partitions.\n\nmost systems will give necessary permission \
-when a user is a member of \"disk\" goups.\n\n\
-Some operations can not be done on certain partitions when a user is not root.\
+privileges to open devices for reading or writing.\n\nmost systems will give necessary permission \
+when a user is a member of \"disk\" goups.If you get above errors,then check to make sure you are a member of the group and try again.\n\n\
+Some operations can not be performed on devices marked as \"system partitions\" when a user is not root.\
 Please see documentation for further details.") ;
 
 	UIMessage(tr("INFORMATION"),msg);
