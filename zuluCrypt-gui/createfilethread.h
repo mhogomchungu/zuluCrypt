@@ -22,17 +22,19 @@
 
 #include "../zuluCrypt-cli/constants.h"
 #include "ui_openpartition.h"
+#include "miscfunctions.h"
 
-#include <QTimer>
 #include <QProcess>
-#include <QThread>
-#include <QFile>
-#include <QMetaType>
-#include <QTableWidget>
-#include <QTableWidgetItem>
-#include <QMutex>
+#include <QRunnable>
+#include <QString>
 
-class createFileThread : public QThread
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <string.h>
+
+class createFileThread : public QObject,public QRunnable
 {
 	Q_OBJECT
 public :

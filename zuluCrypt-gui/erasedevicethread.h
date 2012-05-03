@@ -16,6 +16,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <blkid/blkid.h>
+#include <string.h>
 
 class erasedevicethread : public QThread
 {

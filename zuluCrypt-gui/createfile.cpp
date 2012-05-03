@@ -167,7 +167,6 @@ void createfile::pbCreate()
 	
 	m_cft = new createFileThread( m_path,m_fileSize ) ;
 
-	connect(m_cft,SIGNAL(finished()),m_cft,SLOT(deleteLater()));
 	connect(m_cft,SIGNAL(doneCreatingFile()),this,SLOT(doneCreatingFile()));
 	connect(m_cft,SIGNAL(progress(int)),this,SLOT(progress(int)));
 	connect(this,SIGNAL(cancelOperation()),m_cft,SLOT(cancelOperation()));
@@ -178,7 +177,7 @@ void createfile::pbCreate()
 	  */
 	connect(m_cft,SIGNAL(exitStatus(int)),this,SLOT(exitStatus(int))) ;
 
-	m_cft->start();
+	QThreadPool::globalInstance()->start(m_cft);
 }
 
 void createfile::exitStatus(int status)

@@ -18,20 +18,6 @@
  */
 
 #include "createfilethread.h"
-#include "miscfunctions.h"
-
-#include <QFile>
-#include <QMessageBox>
-#include <QTableWidgetItem>
-#include <iostream>
-#include <QDir>
-#include <cstdio>
-#include "zulucrypt.h"
-
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
 
 createFileThread::createFileThread(QString file,double size)
 {
@@ -58,6 +44,9 @@ void createFileThread::run()
 	 */
 
 	this->createFile();
+
+	if(m_cancelled == 1)
+		return ;
 
 	emit doneCreatingFile();
 
@@ -101,13 +90,12 @@ void createFileThread::fillCreatedFileWithRandomData()
 
 void createFileThread::closeVolume()
 {
-	/*
-	 * not using qprocess here because the operations will hang for a moment and the hanging
-	 * will show up on the UI
-	 */
-	QString exe = QString("%1 -q -d \"%2\"").arg(ZULUCRYPTzuluCrypt).arg(m_file) ;
-	runInThread * rt = new runInThread(exe);
-	QThreadPool::globalInstance()->start(rt);
+	QString exe = QString("%1 -q -d \"%2\"").arg(ZULUCRYPTzuluCrypt).arg(m_file);
+
+	QProcess p ;
+	p.start(exe);
+	p.waitForFinished();
+	p.close();
 }
 
 void createFileThread::openVolume()
@@ -126,9 +114,6 @@ void createFileThread::openVolume()
 
 void createFileThread::writeVolume()
 {
-	if(m_cancelled == 1)
-		return ;
-
 	QString path = miscfunctions::cryptMapperPath() + QString("zuluCrypt-") + QString::number(getuid()) ;
 	
 	path += QString("-NAAN-") + m_file.split("/").last() + miscfunctions::hashPath(m_file);

@@ -32,7 +32,7 @@ void runInThread::run()
 	p.start(m_exe);
 	p.waitForFinished() ;
 	m_status = p.exitCode() ;
-	p.close();	
+	p.close();
 }
 
 runInThread::~runInThread()
