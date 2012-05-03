@@ -86,9 +86,31 @@ install( TARGETS zuluCrypt-gui RUNTIME DESTINATION bin )
 install (FILES zuluCrypt.desktop 
 DESTINATION share/applications
 
-#PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE 
+PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE 
 )
 
 install (FILES zuluCrypt.png DESTINATION share/icons)
 
+file(WRITE zuluCrypt.desktop
 
+"[Desktop Entry]
+Comment[en_US]=
+Comment=
+Exec=${CMAKE_INSTALL_PREFIX}/bin/zuluCrypt-gui
+GenericName[en_US]=manage encypted volumes
+GenericName=manage encypted volumes
+Icon=${CMAKE_INSTALL_PREFIX}/share/icons/zuluCrypt.png
+MimeType=
+Name[en_US]=zuluCrypt
+Name=zuluCrypt
+NoDisplay=false
+Path=
+StartupNotify=true
+Terminal=false
+TerminalOptions=
+Type=Application
+X-DBUS-ServiceName=
+X-DBUS-StartupType=
+X-KDE-SubstituteUID=false
+X-KDE-Username=
+Categories=Security;Utility;Qt;\n")
