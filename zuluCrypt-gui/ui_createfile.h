@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'createfile.ui'
 **
-** Created: Thu May 3 18:27:09 2012
+** Created: Fri May 4 07:43:54 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -44,7 +44,7 @@ public:
     {
         if (createfile->objectName().isEmpty())
             createfile->setObjectName(QString::fromUtf8("createfile"));
-        createfile->resize(475, 180);
+        createfile->resize(475, 168);
         lineEditFileName = new QLineEdit(createfile);
         lineEditFileName->setObjectName(QString::fromUtf8("lineEditFileName"));
         lineEditFileName->setGeometry(QRect(120, 10, 271, 31));
@@ -68,23 +68,23 @@ public:
         lineEditFileSize->setGeometry(QRect(120, 70, 113, 31));
         progressBar = new QProgressBar(createfile);
         progressBar->setObjectName(QString::fromUtf8("progressBar"));
-        progressBar->setGeometry(QRect(120, 102, 271, 31));
+        progressBar->setGeometry(QRect(120, 102, 271, 21));
         progressBar->setValue(24);
         pbOpenFolder = new QPushButton(createfile);
         pbOpenFolder->setObjectName(QString::fromUtf8("pbOpenFolder"));
         pbOpenFolder->setGeometry(QRect(390, 40, 31, 31));
         pbCancel = new QPushButton(createfile);
         pbCancel->setObjectName(QString::fromUtf8("pbCancel"));
-        pbCancel->setGeometry(QRect(240, 140, 91, 31));
+        pbCancel->setGeometry(QRect(240, 130, 91, 31));
         pbCancel->setAutoDefault(false);
         pbCancel->setDefault(false);
         label_4 = new QLabel(createfile);
         label_4->setObjectName(QString::fromUtf8("label_4"));
-        label_4->setGeometry(QRect(10, 100, 101, 31));
+        label_4->setGeometry(QRect(10, 90, 101, 41));
         label_4->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         pbCreate = new QPushButton(createfile);
         pbCreate->setObjectName(QString::fromUtf8("pbCreate"));
-        pbCreate->setGeometry(QRect(150, 140, 91, 31));
+        pbCreate->setGeometry(QRect(150, 130, 91, 31));
         pbCreate->setAutoDefault(false);
         pbCreate->setDefault(true);
         comboBox = new QComboBox(createfile);

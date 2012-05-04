@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'erasedevice.ui'
 **
-** Created: Thu May 3 18:27:09 2012
+** Created: Fri May 4 07:46:21 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -39,31 +39,31 @@ public:
     {
         if (erasedevice->objectName().isEmpty())
             erasedevice->setObjectName(QString::fromUtf8("erasedevice"));
-        erasedevice->resize(532, 135);
+        erasedevice->resize(532, 120);
         labelPath = new QLabel(erasedevice);
         labelPath->setObjectName(QString::fromUtf8("labelPath"));
         labelPath->setGeometry(QRect(0, 20, 111, 31));
         labelPath->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         pushButtonFile = new QPushButton(erasedevice);
         pushButtonFile->setObjectName(QString::fromUtf8("pushButtonFile"));
-        pushButtonFile->setGeometry(QRect(420, 20, 41, 31));
+        pushButtonFile->setGeometry(QRect(410, 20, 31, 31));
         pushButtonPartition = new QPushButton(erasedevice);
         pushButtonPartition->setObjectName(QString::fromUtf8("pushButtonPartition"));
-        pushButtonPartition->setGeometry(QRect(460, 20, 41, 31));
+        pushButtonPartition->setGeometry(QRect(440, 20, 31, 31));
         label = new QLabel(erasedevice);
         label->setObjectName(QString::fromUtf8("label"));
-        label->setGeometry(QRect(10, 50, 101, 31));
+        label->setGeometry(QRect(10, 40, 101, 41));
         label->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         progressBar = new QProgressBar(erasedevice);
         progressBar->setObjectName(QString::fromUtf8("progressBar"));
-        progressBar->setGeometry(QRect(120, 50, 291, 31));
+        progressBar->setGeometry(QRect(120, 50, 291, 21));
         progressBar->setValue(24);
         pushButtonStart = new QPushButton(erasedevice);
         pushButtonStart->setObjectName(QString::fromUtf8("pushButtonStart"));
-        pushButtonStart->setGeometry(QRect(190, 90, 81, 31));
+        pushButtonStart->setGeometry(QRect(190, 80, 81, 31));
         pushButtonCancel = new QPushButton(erasedevice);
         pushButtonCancel->setObjectName(QString::fromUtf8("pushButtonCancel"));
-        pushButtonCancel->setGeometry(QRect(270, 90, 81, 31));
+        pushButtonCancel->setGeometry(QRect(270, 80, 81, 31));
         lineEdit = new QLineEdit(erasedevice);
         lineEdit->setObjectName(QString::fromUtf8("lineEdit"));
         lineEdit->setGeometry(QRect(120, 20, 291, 31));
