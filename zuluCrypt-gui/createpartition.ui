@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>454</width>
-    <height>226</height>
+    <width>560</width>
+    <height>242</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,7 +21,7 @@
     <rect>
      <x>130</x>
      <y>10</y>
-     <width>311</width>
+     <width>301</width>
      <height>31</height>
     </rect>
    </property>
@@ -29,9 +29,9 @@
   <widget class="QLabel" name="labelVolumePath">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>0</x>
      <y>10</y>
-     <width>101</width>
+     <width>121</width>
      <height>31</height>
     </rect>
    </property>
@@ -45,8 +45,8 @@
   <widget class="QPushButton" name="pbCreate">
    <property name="geometry">
     <rect>
-     <x>140</x>
-     <y>190</y>
+     <x>190</x>
+     <y>200</y>
      <width>91</width>
      <height>31</height>
     </rect>
@@ -64,8 +64,8 @@
   <widget class="QPushButton" name="pbCancel">
    <property name="geometry">
     <rect>
-     <x>230</x>
-     <y>190</y>
+     <x>280</x>
+     <y>200</y>
      <width>91</width>
      <height>31</height>
     </rect>
@@ -82,7 +82,7 @@
     <rect>
      <x>130</x>
      <y>80</y>
-     <width>281</width>
+     <width>301</width>
      <height>31</height>
     </rect>
    </property>
@@ -90,9 +90,9 @@
   <widget class="QLabel" name="labelPassPhrase">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>0</x>
      <y>80</y>
-     <width>101</width>
+     <width>121</width>
      <height>31</height>
     </rect>
    </property>
@@ -108,7 +108,7 @@
     <rect>
      <x>130</x>
      <y>110</y>
-     <width>281</width>
+     <width>301</width>
      <height>31</height>
     </rect>
    </property>
@@ -116,9 +116,9 @@
   <widget class="QLabel" name="labelRepeatPassPhrase">
    <property name="geometry">
     <rect>
-     <x>10</x>
+     <x>0</x>
      <y>110</y>
-     <width>111</width>
+     <width>121</width>
      <height>31</height>
     </rect>
    </property>
@@ -132,9 +132,9 @@
   <widget class="QPushButton" name="pbOpenKeyFile">
    <property name="geometry">
     <rect>
-     <x>410</x>
+     <x>430</x>
      <y>80</y>
-     <width>31</width>
+     <width>41</width>
      <height>31</height>
     </rect>
    </property>
@@ -150,7 +150,7 @@
     <rect>
      <x>20</x>
      <y>40</y>
-     <width>421</width>
+     <width>521</width>
      <height>41</height>
     </rect>
    </property>
@@ -173,7 +173,7 @@
    <widget class="QRadioButton" name="rbPassphraseFromFile">
     <property name="geometry">
      <rect>
-      <x>210</x>
+      <x>220</x>
       <y>10</y>
       <width>201</width>
       <height>21</height>
@@ -187,10 +187,10 @@
   <widget class="QLabel" name="labelfs">
    <property name="geometry">
     <rect>
-     <x>50</x>
+     <x>110</x>
      <y>140</y>
-     <width>121</width>
-     <height>21</height>
+     <width>111</width>
+     <height>31</height>
     </rect>
    </property>
    <property name="text">
@@ -203,9 +203,9 @@
   <widget class="QComboBox" name="comboBoxFS">
    <property name="geometry">
     <rect>
-     <x>50</x>
-     <y>160</y>
-     <width>121</width>
+     <x>110</x>
+     <y>170</y>
+     <width>111</width>
      <height>31</height>
     </rect>
    </property>
@@ -213,10 +213,10 @@
   <widget class="QLabel" name="labelvolumetype">
    <property name="geometry">
     <rect>
-     <x>170</x>
+     <x>220</x>
      <y>140</y>
-     <width>121</width>
-     <height>21</height>
+     <width>111</width>
+     <height>31</height>
     </rect>
    </property>
    <property name="text">
@@ -229,8 +229,8 @@
   <widget class="QComboBox" name="comboBoxVolumeType">
    <property name="geometry">
     <rect>
-     <x>170</x>
-     <y>160</y>
+     <x>220</x>
+     <y>170</y>
      <width>121</width>
      <height>31</height>
     </rect>
@@ -252,10 +252,10 @@
   <widget class="QLabel" name="labelrng">
    <property name="geometry">
     <rect>
-     <x>290</x>
+     <x>330</x>
      <y>140</y>
      <width>121</width>
-     <height>21</height>
+     <height>31</height>
     </rect>
    </property>
    <property name="text">
@@ -268,9 +268,9 @@
   <widget class="QComboBox" name="comboBoxRNG">
    <property name="geometry">
     <rect>
-     <x>290</x>
-     <y>160</y>
-     <width>121</width>
+     <x>340</x>
+     <y>170</y>
+     <width>111</width>
      <height>31</height>
     </rect>
    </property>

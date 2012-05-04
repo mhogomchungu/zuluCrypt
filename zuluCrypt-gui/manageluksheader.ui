@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>571</width>
+    <width>561</width>
     <height>119</height>
    </rect>
   </property>
@@ -19,9 +19,9 @@
   <widget class="QLineEdit" name="lineEditBackUpName">
    <property name="geometry">
     <rect>
-     <x>130</x>
+     <x>120</x>
      <y>40</y>
-     <width>311</width>
+     <width>321</width>
      <height>31</height>
     </rect>
    </property>
@@ -31,12 +31,12 @@
     <rect>
      <x>10</x>
      <y>40</y>
-     <width>121</width>
+     <width>101</width>
      <height>31</height>
     </rect>
    </property>
    <property name="text">
-    <string>backup name: </string>
+    <string>backup name</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -80,7 +80,7 @@
   <widget class="QPushButton" name="pbCancel">
    <property name="geometry">
     <rect>
-     <x>290</x>
+     <x>280</x>
      <y>80</y>
      <width>91</width>
      <height>31</height>
@@ -101,12 +101,12 @@
     <rect>
      <x>0</x>
      <y>10</y>
-     <width>131</width>
+     <width>111</width>
      <height>31</height>
     </rect>
    </property>
    <property name="text">
-    <string>device path: </string>
+    <string>device path</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -115,9 +115,9 @@
   <widget class="QLineEdit" name="lineEditDevicePath">
    <property name="geometry">
     <rect>
-     <x>130</x>
+     <x>120</x>
      <y>10</y>
-     <width>311</width>
+     <width>321</width>
      <height>31</height>
     </rect>
    </property>

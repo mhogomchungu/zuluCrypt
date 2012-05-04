@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'createfile.ui'
 **
-** Created: Sun Apr 29 19:59:43 2012
+** Created: Thu May 3 18:27:09 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -68,7 +68,7 @@ public:
         lineEditFileSize->setGeometry(QRect(120, 70, 113, 31));
         progressBar = new QProgressBar(createfile);
         progressBar->setObjectName(QString::fromUtf8("progressBar"));
-        progressBar->setGeometry(QRect(120, 110, 271, 23));
+        progressBar->setGeometry(QRect(120, 102, 271, 31));
         progressBar->setValue(24);
         pbOpenFolder = new QPushButton(createfile);
         pbOpenFolder->setObjectName(QString::fromUtf8("pbOpenFolder"));
@@ -80,7 +80,7 @@ public:
         pbCancel->setDefault(false);
         label_4 = new QLabel(createfile);
         label_4->setObjectName(QString::fromUtf8("label_4"));
-        label_4->setGeometry(QRect(10, 110, 101, 21));
+        label_4->setGeometry(QRect(10, 100, 101, 31));
         label_4->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         pbCreate = new QPushButton(createfile);
         pbCreate->setObjectName(QString::fromUtf8("pbCreate"));

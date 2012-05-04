@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'erasedevice.ui'
 **
-** Created: Fri Apr 20 02:15:28 2012
+** Created: Thu May 3 18:27:09 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -42,7 +42,7 @@ public:
         erasedevice->resize(532, 135);
         labelPath = new QLabel(erasedevice);
         labelPath->setObjectName(QString::fromUtf8("labelPath"));
-        labelPath->setGeometry(QRect(0, 20, 121, 31));
+        labelPath->setGeometry(QRect(0, 20, 111, 31));
         labelPath->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         pushButtonFile = new QPushButton(erasedevice);
         pushButtonFile->setObjectName(QString::fromUtf8("pushButtonFile"));
@@ -52,7 +52,7 @@ public:
         pushButtonPartition->setGeometry(QRect(460, 20, 41, 31));
         label = new QLabel(erasedevice);
         label->setObjectName(QString::fromUtf8("label"));
-        label->setGeometry(QRect(10, 50, 111, 31));
+        label->setGeometry(QRect(10, 50, 101, 31));
         label->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         progressBar = new QProgressBar(erasedevice);
         progressBar->setObjectName(QString::fromUtf8("progressBar"));
@@ -76,10 +76,10 @@ public:
     void retranslateUi(QWidget *erasedevice)
     {
         erasedevice->setWindowTitle(QApplication::translate("erasedevice", "erase data on the device by writing random data over them", 0, QApplication::UnicodeUTF8));
-        labelPath->setText(QApplication::translate("erasedevice", "path to device: ", 0, QApplication::UnicodeUTF8));
+        labelPath->setText(QApplication::translate("erasedevice", "path to device", 0, QApplication::UnicodeUTF8));
         pushButtonFile->setText(QString());
         pushButtonPartition->setText(QString());
-        label->setText(QApplication::translate("erasedevice", "% completed: ", 0, QApplication::UnicodeUTF8));
+        label->setText(QApplication::translate("erasedevice", "% completed", 0, QApplication::UnicodeUTF8));
         pushButtonStart->setText(QApplication::translate("erasedevice", "&start", 0, QApplication::UnicodeUTF8));
         pushButtonCancel->setText(QApplication::translate("erasedevice", "&cancel", 0, QApplication::UnicodeUTF8));
     } // retranslateUi

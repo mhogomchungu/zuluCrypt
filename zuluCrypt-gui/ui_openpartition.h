@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'openpartition.ui'
 **
-** Created: Thu Dec 29 13:34:39 2011
+** Created: Thu May 3 18:27:09 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -32,7 +32,7 @@ public:
         if (PartitionView->objectName().isEmpty())
             PartitionView->setObjectName(QString::fromUtf8("PartitionView"));
         PartitionView->setWindowModality(Qt::ApplicationModal);
-        PartitionView->resize(680, 327);
+        PartitionView->resize(680, 330);
         tableWidget = new QTableWidget(PartitionView);
         if (tableWidget->columnCount() < 5)
             tableWidget->setColumnCount(5);
@@ -66,7 +66,7 @@ public:
         checkBoxUUID = new QCheckBox(PartitionView);
         checkBoxUUID->setObjectName(QString::fromUtf8("checkBoxUUID"));
         checkBoxUUID->setEnabled(true);
-        checkBoxUUID->setGeometry(QRect(300, 300, 121, 21));
+        checkBoxUUID->setGeometry(QRect(300, 300, 121, 31));
         QWidget::setTabOrder(tableWidget, checkBoxUUID);
 
         retranslateUi(PartitionView);

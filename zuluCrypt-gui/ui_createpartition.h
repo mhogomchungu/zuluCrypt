@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'createpartition.ui'
 **
-** Created: Sat Mar 17 18:21:21 2012
+** Created: Thu May 3 18:33:09 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -52,59 +52,59 @@ public:
         if (createpartition->objectName().isEmpty())
             createpartition->setObjectName(QString::fromUtf8("createpartition"));
         createpartition->setWindowModality(Qt::ApplicationModal);
-        createpartition->resize(454, 226);
+        createpartition->resize(560, 242);
         lineEditVolumePath = new QLineEdit(createpartition);
         lineEditVolumePath->setObjectName(QString::fromUtf8("lineEditVolumePath"));
-        lineEditVolumePath->setGeometry(QRect(130, 10, 311, 31));
+        lineEditVolumePath->setGeometry(QRect(130, 10, 301, 31));
         labelVolumePath = new QLabel(createpartition);
         labelVolumePath->setObjectName(QString::fromUtf8("labelVolumePath"));
-        labelVolumePath->setGeometry(QRect(20, 10, 101, 31));
+        labelVolumePath->setGeometry(QRect(0, 10, 121, 31));
         labelVolumePath->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         pbCreate = new QPushButton(createpartition);
         pbCreate->setObjectName(QString::fromUtf8("pbCreate"));
-        pbCreate->setGeometry(QRect(140, 190, 91, 31));
+        pbCreate->setGeometry(QRect(190, 200, 91, 31));
         pbCreate->setAutoDefault(false);
         pbCreate->setDefault(false);
         pbCancel = new QPushButton(createpartition);
         pbCancel->setObjectName(QString::fromUtf8("pbCancel"));
-        pbCancel->setGeometry(QRect(230, 190, 91, 31));
+        pbCancel->setGeometry(QRect(280, 200, 91, 31));
         pbCancel->setDefault(false);
         lineEditPassphrase1 = new QLineEdit(createpartition);
         lineEditPassphrase1->setObjectName(QString::fromUtf8("lineEditPassphrase1"));
-        lineEditPassphrase1->setGeometry(QRect(130, 80, 281, 31));
+        lineEditPassphrase1->setGeometry(QRect(130, 80, 301, 31));
         labelPassPhrase = new QLabel(createpartition);
         labelPassPhrase->setObjectName(QString::fromUtf8("labelPassPhrase"));
-        labelPassPhrase->setGeometry(QRect(20, 80, 101, 31));
+        labelPassPhrase->setGeometry(QRect(0, 80, 121, 31));
         labelPassPhrase->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         lineEditPassPhrase2 = new QLineEdit(createpartition);
         lineEditPassPhrase2->setObjectName(QString::fromUtf8("lineEditPassPhrase2"));
-        lineEditPassPhrase2->setGeometry(QRect(130, 110, 281, 31));
+        lineEditPassPhrase2->setGeometry(QRect(130, 110, 301, 31));
         labelRepeatPassPhrase = new QLabel(createpartition);
         labelRepeatPassPhrase->setObjectName(QString::fromUtf8("labelRepeatPassPhrase"));
-        labelRepeatPassPhrase->setGeometry(QRect(10, 110, 111, 31));
+        labelRepeatPassPhrase->setGeometry(QRect(0, 110, 121, 31));
         labelRepeatPassPhrase->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         pbOpenKeyFile = new QPushButton(createpartition);
         pbOpenKeyFile->setObjectName(QString::fromUtf8("pbOpenKeyFile"));
-        pbOpenKeyFile->setGeometry(QRect(410, 80, 31, 31));
+        pbOpenKeyFile->setGeometry(QRect(430, 80, 41, 31));
         groupBox_3 = new QGroupBox(createpartition);
         groupBox_3->setObjectName(QString::fromUtf8("groupBox_3"));
-        groupBox_3->setGeometry(QRect(20, 40, 421, 41));
+        groupBox_3->setGeometry(QRect(20, 40, 521, 41));
         rbPassphrase = new QRadioButton(groupBox_3);
         rbPassphrase->setObjectName(QString::fromUtf8("rbPassphrase"));
         rbPassphrase->setGeometry(QRect(110, 10, 95, 21));
         rbPassphraseFromFile = new QRadioButton(groupBox_3);
         rbPassphraseFromFile->setObjectName(QString::fromUtf8("rbPassphraseFromFile"));
-        rbPassphraseFromFile->setGeometry(QRect(210, 10, 201, 21));
+        rbPassphraseFromFile->setGeometry(QRect(220, 10, 201, 21));
         labelfs = new QLabel(createpartition);
         labelfs->setObjectName(QString::fromUtf8("labelfs"));
-        labelfs->setGeometry(QRect(50, 140, 121, 21));
+        labelfs->setGeometry(QRect(110, 140, 111, 31));
         labelfs->setAlignment(Qt::AlignCenter);
         comboBoxFS = new QComboBox(createpartition);
         comboBoxFS->setObjectName(QString::fromUtf8("comboBoxFS"));
-        comboBoxFS->setGeometry(QRect(50, 160, 121, 31));
+        comboBoxFS->setGeometry(QRect(110, 170, 111, 31));
         labelvolumetype = new QLabel(createpartition);
         labelvolumetype->setObjectName(QString::fromUtf8("labelvolumetype"));
-        labelvolumetype->setGeometry(QRect(170, 140, 121, 21));
+        labelvolumetype->setGeometry(QRect(220, 140, 111, 31));
         labelvolumetype->setAlignment(Qt::AlignCenter);
         comboBoxVolumeType = new QComboBox(createpartition);
         comboBoxVolumeType->insertItems(0, QStringList()
@@ -112,11 +112,11 @@ public:
          << QString::fromUtf8("plain")
         );
         comboBoxVolumeType->setObjectName(QString::fromUtf8("comboBoxVolumeType"));
-        comboBoxVolumeType->setGeometry(QRect(170, 160, 121, 31));
+        comboBoxVolumeType->setGeometry(QRect(220, 170, 121, 31));
         comboBoxVolumeType->setLayoutDirection(Qt::LeftToRight);
         labelrng = new QLabel(createpartition);
         labelrng->setObjectName(QString::fromUtf8("labelrng"));
-        labelrng->setGeometry(QRect(290, 140, 121, 21));
+        labelrng->setGeometry(QRect(330, 140, 121, 31));
         labelrng->setAlignment(Qt::AlignCenter);
         comboBoxRNG = new QComboBox(createpartition);
         comboBoxRNG->insertItems(0, QStringList()
@@ -124,7 +124,7 @@ public:
          << QString::fromUtf8("/dev/random")
         );
         comboBoxRNG->setObjectName(QString::fromUtf8("comboBoxRNG"));
-        comboBoxRNG->setGeometry(QRect(290, 160, 121, 31));
+        comboBoxRNG->setGeometry(QRect(340, 170, 111, 31));
         QWidget::setTabOrder(lineEditVolumePath, rbPassphrase);
         QWidget::setTabOrder(rbPassphrase, rbPassphraseFromFile);
         QWidget::setTabOrder(rbPassphraseFromFile, lineEditPassphrase1);

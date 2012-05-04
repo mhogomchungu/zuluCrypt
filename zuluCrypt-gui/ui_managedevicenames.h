@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'managedevicenames.ui'
 **
-** Created: Mon Jan 9 21:55:07 2012
+** Created: Thu May 3 18:27:09 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -40,10 +40,10 @@ public:
     {
         if (managedevicenames->objectName().isEmpty())
             managedevicenames->setObjectName(QString::fromUtf8("managedevicenames"));
-        managedevicenames->resize(651, 323);
+        managedevicenames->resize(641, 323);
         pbAdd = new QPushButton(managedevicenames);
         pbAdd->setObjectName(QString::fromUtf8("pbAdd"));
-        pbAdd->setGeometry(QRect(240, 290, 75, 31));
+        pbAdd->setGeometry(QRect(240, 290, 81, 31));
         tableWidget = new QTableWidget(managedevicenames);
         if (tableWidget->columnCount() < 2)
             tableWidget->setColumnCount(2);
@@ -54,7 +54,7 @@ public:
         __qtablewidgetitem1->setTextAlignment(Qt::AlignHCenter|Qt::AlignVCenter|Qt::AlignCenter);
         tableWidget->setHorizontalHeaderItem(1, __qtablewidgetitem1);
         tableWidget->setObjectName(QString::fromUtf8("tableWidget"));
-        tableWidget->setGeometry(QRect(10, 10, 631, 221));
+        tableWidget->setGeometry(QRect(10, 10, 621, 221));
         tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
         tableWidget->setTabKeyNavigation(false);
         tableWidget->setProperty("showDropIndicator", QVariant(false));
@@ -83,7 +83,7 @@ public:
         pbFileAddress->setGeometry(QRect(500, 230, 31, 31));
         pbCancel = new QPushButton(managedevicenames);
         pbCancel->setObjectName(QString::fromUtf8("pbCancel"));
-        pbCancel->setGeometry(QRect(320, 290, 75, 31));
+        pbCancel->setGeometry(QRect(320, 290, 81, 31));
         QWidget::setTabOrder(tableWidget, lineEditDeviceAddress);
         QWidget::setTabOrder(lineEditDeviceAddress, pbDeviceAddress);
         QWidget::setTabOrder(pbDeviceAddress, pbFileAddress);

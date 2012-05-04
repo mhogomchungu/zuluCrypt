@@ -548,7 +548,7 @@ void zuluCrypt::closeStatusErrorMessage(int st)
 {
 	switch ( st ) {
 		case 1 :m_msg.UIMessage(tr("ERROR!"),tr("close failed, encrypted volume with that name does not exist")) ;				break ;
-		case 2 :m_msg.UIMessage(tr("ERROR!"),tr("close failed, the mount point and/or one or more files from the volume are in use."));		break ;
+		case 2 :m_msg.UIMessage(tr("ERROR!"),tr("close failed, one or more files in the volume are in use."));		break ;
 		case 3 :m_msg.UIMessage(tr("ERROR!"),tr("close failed, volume does not have an entry in /etc/mtab"));					break ;
 		case 4 :m_msg.UIMessage(tr("ERROR!"),tr("close failed, could not get a lock on /etc/mtab~"));						break ;
 		case 5 :m_msg.UIMessage(tr("ERROR!"),tr("close failed, volume is unmounted but could not close mapper,advice to close it manually"));	break ;
@@ -561,8 +561,7 @@ void zuluCrypt::close()
 {
 	QTableWidgetItem * item = m_ui->tableWidget->currentItem();
 	QString vol = m_ui->tableWidget->item(item->row(),0)->text().replace("\"","\"\"\"") ;
-	QString exe = QString(ZULUCRYPTzuluCrypt) + QString(" -q -d ") + QString("\"") + \
-			vol + QString("\"") ;
+	QString exe = QString(ZULUCRYPTzuluCrypt) + QString(" -q -d ") + QString("\"") + vol + QString("\"") ;
 	m_ui->tableWidget->setEnabled( false );
 	closeVolumeThread * cvt = new closeVolumeThread( exe ) ;
 	connect(cvt,SIGNAL(finished(int)),this,SLOT(closeStatus(int))) ;

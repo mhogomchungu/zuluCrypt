@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>487</width>
+    <width>521</width>
     <height>167</height>
    </rect>
   </property>
@@ -24,7 +24,7 @@
     <rect>
      <x>100</x>
      <y>40</y>
-     <width>311</width>
+     <width>321</width>
      <height>31</height>
     </rect>
    </property>
@@ -32,9 +32,9 @@
   <widget class="QLabel" name="labelPassphrase">
    <property name="geometry">
     <rect>
-     <x>10</x>
+     <x>0</x>
      <y>40</y>
-     <width>81</width>
+     <width>91</width>
      <height>31</height>
     </rect>
    </property>
@@ -48,9 +48,9 @@
   <widget class="QGroupBox" name="groupBox">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>50</x>
      <y>70</y>
-     <width>451</width>
+     <width>421</width>
      <height>61</height>
     </rect>
    </property>
@@ -87,7 +87,7 @@
   <widget class="QPushButton" name="pushButtonOpenKeyFile">
    <property name="geometry">
     <rect>
-     <x>410</x>
+     <x>420</x>
      <y>40</y>
      <width>31</width>
      <height>31</height>
@@ -106,7 +106,7 @@
   <widget class="QPushButton" name="pushButtonDelete">
    <property name="geometry">
     <rect>
-     <x>160</x>
+     <x>170</x>
      <y>130</y>
      <width>91</width>
      <height>31</height>
@@ -143,7 +143,7 @@
     <rect>
      <x>100</x>
      <y>10</y>
-     <width>311</width>
+     <width>321</width>
      <height>31</height>
     </rect>
    </property>
@@ -151,9 +151,9 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>10</x>
+     <x>0</x>
      <y>10</y>
-     <width>81</width>
+     <width>91</width>
      <height>31</height>
     </rect>
    </property>
@@ -167,7 +167,7 @@
   <widget class="QPushButton" name="pushButtonOpenVolume">
    <property name="geometry">
     <rect>
-     <x>410</x>
+     <x>420</x>
      <y>10</y>
      <width>31</width>
      <height>31</height>
@@ -186,7 +186,7 @@
   <widget class="QPushButton" name="pushButtonOpenPartition">
    <property name="geometry">
     <rect>
-     <x>440</x>
+     <x>450</x>
      <y>10</y>
      <width>31</width>
      <height>31</height>

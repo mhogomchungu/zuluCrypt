@@ -35,6 +35,7 @@ manageluksheader::manageluksheader(QWidget *parent) :
 	m_ui->setupUi(this);
 	this->setWindowFlags(Qt::Window | Qt::Dialog);
 	this->setFont(parent->font());
+	this->setFixedSize(this->size());
 
 	m_msg.setParent(this);
 
@@ -76,7 +77,7 @@ void manageluksheader::headerBackUp()
 {
 	m_operation = QString("backup") ;
 	this->setWindowTitle(QString("back up luks header"));
-	m_ui->labelBackUpHeader->setText(QString("backup path: "));
+	m_ui->labelBackUpHeader->setText(QString("backup path"));
 	m_ui->pbCreate->setText(QString("&backup"));
 	m_ui->pbOpenFolder->setEnabled(false);
 	m_ui->labelBackUpHeader->setEnabled(false);
@@ -112,7 +113,7 @@ void manageluksheader::restoreHeader()
 {
 	m_operation = QString("restore") ;
 	this->setWindowTitle(QString("restore luks header"));
-	m_ui->labelBackUpHeader->setText(QString("backup path: "));
+	m_ui->labelBackUpHeader->setText(QString("backup path"));
 	m_ui->pbCreate->setText(QString("&restore"));
 	this->show();
 }
@@ -243,7 +244,6 @@ void manageluksheader::pbOpenLuksHeaderBackUp()
 	m_ui->lineEditBackUpName->setText(Z);
 	m_ui->lineEditDevicePath->setFocus();
 }
-
 
 manageluksheader::~manageluksheader()
 {

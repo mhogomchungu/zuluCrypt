@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>473</width>
+    <width>551</width>
     <height>138</height>
    </rect>
   </property>
@@ -29,9 +29,9 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>0</x>
      <y>10</y>
-     <width>91</width>
+     <width>111</width>
      <height>31</height>
     </rect>
    </property>
@@ -74,7 +74,7 @@
   <widget class="QPushButton" name="pbCreate">
    <property name="geometry">
     <rect>
-     <x>150</x>
+     <x>190</x>
      <y>100</y>
      <width>91</width>
      <height>31</height>
@@ -93,7 +93,7 @@
   <widget class="QPushButton" name="pbCancel">
    <property name="geometry">
     <rect>
-     <x>240</x>
+     <x>280</x>
      <y>100</y>
      <width>81</width>
      <height>31</height>
@@ -128,9 +128,9 @@
   <widget class="QLabel" name="labelRNG">
    <property name="geometry">
     <rect>
-     <x>10</x>
+     <x>0</x>
      <y>70</y>
-     <width>101</width>
+     <width>111</width>
      <height>31</height>
     </rect>
    </property>
@@ -146,7 +146,7 @@
     <rect>
      <x>120</x>
      <y>70</y>
-     <width>101</width>
+     <width>161</width>
      <height>31</height>
     </rect>
    </property>

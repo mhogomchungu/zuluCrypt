@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>528</width>
-    <height>295</height>
+    <width>602</width>
+    <height>320</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -72,20 +72,23 @@
     <rect>
      <x>10</x>
      <y>40</y>
-     <width>511</width>
-     <height>101</height>
+     <width>581</width>
+     <height>111</height>
     </rect>
    </property>
    <property name="title">
     <string>key already in the encrypted volume</string>
    </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
    <widget class="QRadioButton" name="radioButtonPassphraseinVolume">
     <property name="geometry">
      <rect>
-      <x>150</x>
+      <x>180</x>
       <y>20</y>
-      <width>181</width>
-      <height>21</height>
+      <width>271</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
@@ -95,10 +98,10 @@
    <widget class="QRadioButton" name="radioButtonPassphraseInVolumeFromFile">
     <property name="geometry">
      <rect>
-      <x>150</x>
+      <x>180</x>
       <y>40</y>
-      <width>221</width>
-      <height>21</height>
+      <width>271</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
@@ -109,7 +112,7 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>60</y>
+      <y>70</y>
       <width>121</width>
       <height>31</height>
      </rect>
@@ -125,7 +128,7 @@
     <property name="geometry">
      <rect>
       <x>450</x>
-      <y>60</y>
+      <y>70</y>
       <width>31</width>
       <height>31</height>
      </rect>
@@ -144,7 +147,7 @@
     <property name="geometry">
      <rect>
       <x>130</x>
-      <y>60</y>
+      <y>70</y>
       <width>321</width>
       <height>31</height>
      </rect>
@@ -154,8 +157,8 @@
   <widget class="QPushButton" name="pushButtonAdd">
    <property name="geometry">
     <rect>
-     <x>170</x>
-     <y>260</y>
+     <x>210</x>
+     <y>280</y>
      <width>91</width>
      <height>31</height>
     </rect>
@@ -173,8 +176,8 @@
   <widget class="QPushButton" name="pushButtonCancel">
    <property name="geometry">
     <rect>
-     <x>260</x>
-     <y>260</y>
+     <x>300</x>
+     <y>280</y>
      <width>91</width>
      <height>31</height>
     </rect>
@@ -203,21 +206,24 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>140</y>
-     <width>511</width>
+     <y>150</y>
+     <width>581</width>
      <height>131</height>
     </rect>
    </property>
    <property name="title">
     <string>         key to be added to the encrypted volume</string>
    </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
    <widget class="QRadioButton" name="radioButtonNewPassphrase">
     <property name="geometry">
      <rect>
-      <x>150</x>
+      <x>180</x>
       <y>20</y>
-      <width>321</width>
-      <height>21</height>
+      <width>271</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
@@ -227,10 +233,10 @@
    <widget class="QRadioButton" name="radioButtonNewPassphraseFromFile">
     <property name="geometry">
      <rect>
-      <x>150</x>
+      <x>180</x>
       <y>40</y>
-      <width>361</width>
-      <height>21</height>
+      <width>271</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
@@ -241,7 +247,7 @@
     <property name="geometry">
      <rect>
       <x>450</x>
-      <y>60</y>
+      <y>70</y>
       <width>31</width>
       <height>31</height>
      </rect>
@@ -260,7 +266,7 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>60</y>
+      <y>70</y>
       <width>121</width>
       <height>31</height>
      </rect>
@@ -276,7 +282,7 @@
     <property name="geometry">
      <rect>
       <x>130</x>
-      <y>60</y>
+      <y>70</y>
       <width>321</width>
       <height>31</height>
      </rect>
@@ -286,7 +292,7 @@
     <property name="geometry">
      <rect>
       <x>130</x>
-      <y>90</y>
+      <y>100</y>
       <width>321</width>
       <height>31</height>
      </rect>
@@ -296,7 +302,7 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>90</y>
+      <y>100</y>
       <width>121</width>
       <height>31</height>
      </rect>
