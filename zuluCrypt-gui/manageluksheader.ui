@@ -47,7 +47,7 @@
     <rect>
      <x>440</x>
      <y>40</y>
-     <width>41</width>
+     <width>31</width>
      <height>31</height>
     </rect>
    </property>
@@ -61,9 +61,9 @@
   <widget class="QPushButton" name="pbCreate">
    <property name="geometry">
     <rect>
-     <x>190</x>
+     <x>200</x>
      <y>80</y>
-     <width>91</width>
+     <width>81</width>
      <height>31</height>
     </rect>
    </property>
@@ -82,7 +82,7 @@
     <rect>
      <x>280</x>
      <y>80</y>
-     <width>91</width>
+     <width>81</width>
      <height>31</height>
     </rect>
    </property>
@@ -127,7 +127,7 @@
     <rect>
      <x>440</x>
      <y>10</y>
-     <width>41</width>
+     <width>31</width>
      <height>31</height>
     </rect>
    </property>
@@ -138,9 +138,9 @@
   <widget class="QPushButton" name="pushButtonPartition">
    <property name="geometry">
     <rect>
-     <x>480</x>
+     <x>470</x>
      <y>10</y>
-     <width>41</width>
+     <width>31</width>
      <height>31</height>
     </rect>
    </property>

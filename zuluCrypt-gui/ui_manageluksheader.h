@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'manageluksheader.ui'
 **
-** Created: Thu May 3 18:27:09 2012
+** Created: Fri May 4 19:14:32 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -50,15 +50,15 @@ public:
         labelBackUpHeader->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         pbOpenFolder = new QPushButton(manageluksheader);
         pbOpenFolder->setObjectName(QString::fromUtf8("pbOpenFolder"));
-        pbOpenFolder->setGeometry(QRect(440, 40, 41, 31));
+        pbOpenFolder->setGeometry(QRect(440, 40, 31, 31));
         pbCreate = new QPushButton(manageluksheader);
         pbCreate->setObjectName(QString::fromUtf8("pbCreate"));
-        pbCreate->setGeometry(QRect(190, 80, 91, 31));
+        pbCreate->setGeometry(QRect(200, 80, 81, 31));
         pbCreate->setAutoDefault(false);
         pbCreate->setDefault(true);
         pbCancel = new QPushButton(manageluksheader);
         pbCancel->setObjectName(QString::fromUtf8("pbCancel"));
-        pbCancel->setGeometry(QRect(280, 80, 91, 31));
+        pbCancel->setGeometry(QRect(280, 80, 81, 31));
         pbCancel->setAutoDefault(false);
         pbCancel->setDefault(false);
         labelDevicePath = new QLabel(manageluksheader);
@@ -70,10 +70,10 @@ public:
         lineEditDevicePath->setGeometry(QRect(120, 10, 321, 31));
         pushButtonFile = new QPushButton(manageluksheader);
         pushButtonFile->setObjectName(QString::fromUtf8("pushButtonFile"));
-        pushButtonFile->setGeometry(QRect(440, 10, 41, 31));
+        pushButtonFile->setGeometry(QRect(440, 10, 31, 31));
         pushButtonPartition = new QPushButton(manageluksheader);
         pushButtonPartition->setObjectName(QString::fromUtf8("pushButtonPartition"));
-        pushButtonPartition->setGeometry(QRect(480, 10, 41, 31));
+        pushButtonPartition->setGeometry(QRect(470, 10, 31, 31));
         QWidget::setTabOrder(lineEditBackUpName, pbOpenFolder);
         QWidget::setTabOrder(pbOpenFolder, pbCreate);
         QWidget::setTabOrder(pbCreate, pbCancel);

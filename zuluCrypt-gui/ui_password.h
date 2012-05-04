@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'password.ui'
 **
-** Created: Fri May 4 07:36:14 2012
+** Created: Fri May 4 19:14:32 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -58,12 +58,12 @@ public:
         PasswordDialog->setModal(true);
         PushButtonOpen = new QPushButton(PasswordDialog);
         PushButtonOpen->setObjectName(QString::fromUtf8("PushButtonOpen"));
-        PushButtonOpen->setGeometry(QRect(160, 160, 101, 31));
+        PushButtonOpen->setGeometry(QRect(180, 160, 81, 31));
         PushButtonOpen->setAutoDefault(false);
         PushButtonOpen->setDefault(true);
         PushButtonCancel = new QPushButton(PasswordDialog);
         PushButtonCancel->setObjectName(QString::fromUtf8("PushButtonCancel"));
-        PushButtonCancel->setGeometry(QRect(260, 160, 91, 31));
+        PushButtonCancel->setGeometry(QRect(260, 160, 81, 31));
         PushButtonCancel->setAutoDefault(false);
         PushButtonCancel->setDefault(false);
         checkBoxReadOnly = new QCheckBox(PasswordDialog);

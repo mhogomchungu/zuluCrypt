@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'createpartition.ui'
 **
-** Created: Thu May 3 18:33:09 2012
+** Created: Fri May 4 19:14:32 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -85,7 +85,7 @@ public:
         labelRepeatPassPhrase->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         pbOpenKeyFile = new QPushButton(createpartition);
         pbOpenKeyFile->setObjectName(QString::fromUtf8("pbOpenKeyFile"));
-        pbOpenKeyFile->setGeometry(QRect(430, 80, 41, 31));
+        pbOpenKeyFile->setGeometry(QRect(430, 80, 31, 31));
         groupBox_3 = new QGroupBox(createpartition);
         groupBox_3->setObjectName(QString::fromUtf8("groupBox_3"));
         groupBox_3->setGeometry(QRect(20, 40, 521, 41));

@@ -60,23 +60,39 @@ void createFileThread::createFile()
 
 	int fd = open( m_file.toAscii().data(),O_WRONLY | O_CREAT ) ;
 
-	memset(m_data,0,1024);
+	const int SIZE = 1024 ;
 
-	double k = m_size / 1024 ;
+	char data[SIZE];
+
+	memset(data,0,SIZE);
+
+	int x ;
+	int y = -1 ;
+
+	double data_written = 0 ;
+
+	double k = m_size / SIZE ;
+
+	emit progress( 0 );
+
 	for(i = 0 ; i < k ; i++){
 		if(m_cancelled == 1)
 			break ;
-		for( size = 1024 ; size != 0 ; )
-			size = size - write(fd,m_data,size);
+		for( size = SIZE ; size != 0 ; )
+			size = size - write(fd,data,size);
+
+		data_written += SIZE ;
+
+		x = ( int )( data_written * 100 / m_size ) ;
+
+		if( x > y){
+			emit progress( x );
+			y = x ;
+		}
 	}
 
 	close(fd) ;
 	chmod(m_file.toAscii().data(),S_IRWXU);
-}
-
-void createFileThread::timerSignal()
-{
-	emit progress(( int ) ( m_data_written * 100 / m_size ));
 }
 
 void createFileThread::fillCreatedFileWithRandomData()
@@ -122,13 +138,21 @@ void createFileThread::writeVolume()
 	
 	int j ;
 	int k = -1 ;
-	m_data_written = 0 ;
 
-	while(write(fd,m_data,1024) > 0){
+	double data_written = 0 ;
 
-		m_data_written += 1024 ;
+	const int SIZE = 1024 ;
+	char data[SIZE];
 
-		j = ( int )( m_data_written * 100 / m_size ) ;
+	memset(data,0,SIZE);
+
+	emit progress( 0 );
+
+	while(write(fd,data,SIZE) > 0){
+
+		data_written += SIZE ;
+
+		j = ( int )( data_written * 100 / m_size ) ;
 
 		if( j > k ){
 			emit progress( j );

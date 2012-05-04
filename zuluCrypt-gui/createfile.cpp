@@ -53,11 +53,8 @@ createfile::createfile(QWidget *parent) :
 
 	m_ui->pbOpenFolder->setIcon(QIcon(QString(":/folder.png")));
 
-	m_time.setInterval(250);
-
 	m_cft = NULL ;
 
-	connect(static_cast<QObject *>(&m_time),SIGNAL(timeout()),this,SLOT(monitorFileGrowth()));
 	connect(m_ui->pbCancel,SIGNAL(clicked()),this,SLOT(pbCancel())) ;
 	connect(m_ui->pbOpenFolder,SIGNAL(clicked()),this,SLOT(pbOpenFolder())) ;
 	connect(m_ui->pbCreate,SIGNAL(clicked()),this,SLOT(pbCreate())) ;
@@ -163,7 +160,6 @@ void createfile::pbCreate()
 		return m_msg.UIMessage(tr("ERROR!"),tr("container file must be bigger than 3MB"));
 
 	disableAll();
-	m_time.start();
 	
 	m_cft = new createFileThread( m_path,m_fileSize ) ;
 
@@ -183,7 +179,6 @@ void createfile::pbCreate()
 void createfile::exitStatus(int status)
 {
 	m_cft = NULL ;
-	m_time.stop();
 
 	if( status == 1 )
 		QFile::remove( m_path ) ;
@@ -220,12 +215,6 @@ void createfile::HideUI()
 	this->hide();	
 }
 
-void createfile::monitorFileGrowth()
-{
-	QFileInfo f( m_path ) ;
-	m_ui->progressBar->setValue(f.size() * 100 / m_fileSize);
-}
-
 void createfile::progress(int p)
 {
 	m_ui->progressBar->setValue(p);
@@ -234,7 +223,6 @@ void createfile::progress(int p)
 void createfile::doneCreatingFile()
 {
 	m_ui->progressBar->setValue(0);
-	m_time.stop();
 	this->setWindowTitle(tr("2/2 write random data to container file"));
 
 }

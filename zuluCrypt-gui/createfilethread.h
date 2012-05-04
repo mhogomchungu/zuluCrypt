@@ -46,7 +46,6 @@ signals:
 	void progress(int);
 private slots:
 	void cancelOperation(void);
-	void timerSignal(void);
 private:
 	void writeVolume(void);
 	void openVolume(void);
@@ -58,8 +57,6 @@ private:
 	QString m_file ;
 	double m_size ;
 	int m_cancelled ;
-	double m_data_written ;
-	char m_data[1024];
 };
 
 #endif // ZULUCRYPTTHREADS_H

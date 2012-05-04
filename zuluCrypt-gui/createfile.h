@@ -52,7 +52,6 @@ public slots:
 	void pbCancel(void) ;
 	void pbCreate(void) ;
 private slots:
-	void monitorFileGrowth(void);
 	void exitStatus(int);
 	void doneCreatingFile(void);
 	void progress(int);
@@ -61,7 +60,6 @@ private:
 	void disableAll(void) ;
 	void closeEvent(QCloseEvent *) ;
 	Ui::createfile *m_ui;
-	QTimer m_time ;
 	double m_fileSize ;
 	QString m_path ;
 	QMessageBox m_mb ;

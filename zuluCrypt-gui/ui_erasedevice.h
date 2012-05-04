@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'erasedevice.ui'
 **
-** Created: Fri May 4 07:46:21 2012
+** Created: Fri May 4 16:57:26 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!

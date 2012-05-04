@@ -74,9 +74,9 @@
   <widget class="QPushButton" name="pbCreate">
    <property name="geometry">
     <rect>
-     <x>190</x>
+     <x>200</x>
      <y>100</y>
-     <width>91</width>
+     <width>81</width>
      <height>31</height>
     </rect>
    </property>
