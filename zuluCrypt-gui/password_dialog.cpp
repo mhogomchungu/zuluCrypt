@@ -300,6 +300,7 @@ void passwordDialog::threadfinished(int status)
 		case 21: m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to create mount point" ));						break ;
 		case 22: m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to open key file for reading" ));					break ;
 		case 23: m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to open device in read/write mode" ));					break ;
+		case 24: m_msg.UIMessage(tr("ERROR!"),tr("there seem to be an opened mapper associated with the device" ));				break ;
 		case 110:m_msg.UIMessage(tr("ERROR!"),tr("can not find a partition that match presented UUID" ));					break ;
 		default: m_msg.UIMessage(tr("ERROR!"),tr("unrecognized ERROR with status number %1 encountered").arg(status));
 	}

@@ -18,7 +18,10 @@
  */
 
 #include "includes.h"
-#include <errno.h>
+#include <dirent.h>
+#include <sys/types.h>
+#include <string.h>
+#include <libcryptsetup.h> 
 
 static int status_msg( int st )
 {
@@ -45,9 +48,47 @@ static int status_msg( int st )
 		case 20: printf( "ERROR: insufficient privilege to open device\n" );							break ;	
 		case 21: printf( "ERROR: insufficient privilege to create a mount point\n" );						break ;	
 		case 22: printf( "ERROR: insufficient privilege to open key file for reading\n" );					break ;	
-		case 23: printf( "ERROR: insufficient privilege to open device in read/write mode\n" );					break ;					
+		case 23: printf( "ERROR: insufficient privilege to open device in read/write mode\n" );					break ;	
+		case 24: printf( "ERROR: there seem to be an opened mapper associated with the device\n" ) ;				break ;
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
+	return st ;
+}
+
+int check_opened_mapper( const char * mapper )
+{
+	const char * c = mapper ;
+	char * d ;
+	
+	int st = 0 ;
+	
+	struct dirent * entry ;
+	
+	DIR * dir = opendir( crypt_get_dir() ) ;
+	
+	if( dir == NULL )
+		return 2 ;
+	
+	while( *++c != '-' ) { ; }
+	while( *++c != '-' ) { ; }
+	
+	while( ( entry = readdir( dir ) ) != NULL ){
+		
+		d = strstr( entry->d_name,"zuluCrypt-" ) ;
+		if( d != NULL ){
+			
+			while( *++d != '-' ) { ; }
+			while( *++d != '-' ) { ; }
+
+			if( strcmp( c,d ) == 0 ){
+				st = 1 ;
+				break ;
+			}
+		}
+		
+	}
+	
+	closedir( dir ) ;
 	return st ;
 }
 
@@ -148,6 +189,11 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 	m_name = create_mapper_name( device,mapping_name,uid,OPEN ) ;
 	
 	cname = StringContent( m_name ) ;
+	
+	if( check_opened_mapper( cname ) == 1 ){
+		rmdir( mount_point ) ;
+		return status_msg( 24 ) ;
+	}
 	
 	if ( i == 1 ){
 		printf( "Enter passphrase: " ) ;		
