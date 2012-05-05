@@ -5,6 +5,11 @@ closeVolumeThread::closeVolumeThread(QString exe)
 	m_exe = exe ;
 }
 
+void closeVolumeThread::start()
+{
+	QThreadPool::globalInstance()->start(this);
+}
+
 void closeVolumeThread::run()
 {
 	QProcess p ;

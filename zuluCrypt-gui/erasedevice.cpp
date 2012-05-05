@@ -64,7 +64,6 @@ void erasedevice::threadExitStatus(int st)
 	switch(st){
 		case 0 : m_ui->progressBar->setValue(100);
 			 msg.UIMessage(tr("SUCCESS!"),tr("data on the device successfully erased")) ;
-			 this->HideUI();
 			 break ;
 		case 1 : msg.UIMessage(tr("INFO!"),tr("operation terminated per user choice")) ;
 			 break ;
@@ -72,9 +71,7 @@ void erasedevice::threadExitStatus(int st)
 			 break ;
 	}
 
-	if( m_option == 1 )
-		this->HideUI();
-	this->enableAll();
+	this->HideUI();
 }
 
 void erasedevice::HideUI()
@@ -114,7 +111,6 @@ void erasedevice::pbStart()
 
 	m_dt = new erasedevicethread(path) ;
 	connect(m_dt,SIGNAL(progress(int)),this,SLOT(setProgress(int)));
-	connect(m_dt,SIGNAL(finished()),m_dt,SLOT(deleteLater()));
 	connect(m_dt,SIGNAL(exitStatus(int)),this,SLOT(threadExitStatus(int)));
 	m_dt->start();
 }
@@ -148,13 +144,6 @@ void erasedevice::setProgress(int st)
 
 void erasedevice::pbCancel()
 {
-	/*
-	 * m_cancelClicked is added here to prevents a crash when a user cancel
-	 * the operation multiple times calling "m_dt->cancel()" multiple times.
-	 */
-	if(m_cancelClicked)
-		return ;
-
 	m_cancelClicked = true ;
 
 	if(m_dt == NULL)

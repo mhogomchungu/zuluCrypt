@@ -127,7 +127,7 @@ void zuluCrypt::StartUpAddOpenedVolumesToTableThread()
 	startupupdateopenedvolumes * sov = new startupupdateopenedvolumes();
 	connect(sov,SIGNAL(addItemToTable(QString,QString)),this,SLOT(addItemToTable(QString,QString))) ;
 	connect(sov,SIGNAL(finished()),this,SLOT(startUpdateFinished()));
-	QThreadPool::globalInstance()->start(sov);
+	sov->start();
 }
 
 void zuluCrypt::setupUIElements()
@@ -225,7 +225,7 @@ void zuluCrypt::closeAllVolumes()
 {
 	closeAllVolumesThread *cavt = new closeAllVolumesThread(m_ui->tableWidget) ;
 	connect(cavt,SIGNAL(close(QTableWidgetItem *,int)),this,SLOT(closeAll(QTableWidgetItem *,int))) ;
-	QThreadPool::globalInstance()->start(cavt);	
+	cavt->start();
 }
 
 void zuluCrypt::closeAll(QTableWidgetItem * i,int st)
@@ -413,7 +413,7 @@ void zuluCrypt::volume_property()
 	QString y = m_ui->tableWidget->item(item->row(),1)->text() ;
 	volumePropertiesThread * vpt = new volumePropertiesThread(x,y);
 	connect(vpt,SIGNAL(finished(QString)),this,SLOT(volumePropertyThreadFinished(QString))) ;
-	QThreadPool::globalInstance()->start(vpt);
+	vpt->start();
 }
 
 void zuluCrypt::volumePropertyThreadFinished(QString properties)
@@ -565,7 +565,7 @@ void zuluCrypt::close()
 	m_ui->tableWidget->setEnabled( false );
 	closeVolumeThread * cvt = new closeVolumeThread( exe ) ;
 	connect(cvt,SIGNAL(finished(int)),this,SLOT(closeStatus(int))) ;
-	QThreadPool::globalInstance()->start(cvt);
+	cvt->start();
 }
 
 manageluksheader * zuluCrypt::setUpManageLuksHeader()

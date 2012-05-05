@@ -32,6 +32,11 @@ startupupdateopenedvolumes::startupupdateopenedvolumes()
 {
 }
 
+void startupupdateopenedvolumes::start()
+{
+	QThreadPool::globalInstance()->start(this);
+}
+
 void startupupdateopenedvolumes::run()
 {
 	QProcess p ;

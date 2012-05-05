@@ -20,6 +20,7 @@
 #ifndef CLOSEALLVOLUMESTHREAD_H
 #define CLOSEALLVOLUMESTHREAD_H
 
+#include <QThreadPool>
 #include <QRunnable>
 #include <QTableWidgetItem>
 #include <QTableWidget>
@@ -33,6 +34,7 @@ class closeAllVolumesThread : public QObject, public QRunnable
 	Q_OBJECT
 public:
 	explicit closeAllVolumesThread(QTableWidget*);
+	void start(void);
 signals:
 	void close(QTableWidgetItem *,int) ;
 private:

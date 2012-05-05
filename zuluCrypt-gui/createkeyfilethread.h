@@ -1,18 +1,21 @@
 #ifndef CREATEKEYFILETHREAD_H
 #define CREATEKEYFILETHREAD_H
 
-#include <QThread>
+#include <QObject>
+#include <QRunnable>
+#include <QThreadPool>
 #include <QProcess>
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/stat.h>
 
-class createkeyfilethread : public QThread
+class createkeyfilethread : public QThread,public QRunnable
 {
 	Q_OBJECT
 public:
 	explicit createkeyfilethread(QString,QString);
 	~createkeyfilethread();
+	void start(void);
 signals:
 	void exitStatus(int);
 public slots:

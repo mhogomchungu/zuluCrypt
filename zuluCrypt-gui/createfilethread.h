@@ -24,9 +24,11 @@
 #include "ui_openpartition.h"
 #include "miscfunctions.h"
 
+#include <QObject>
 #include <QProcess>
 #include <QRunnable>
 #include <QString>
+#include <QThreadPool>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -39,6 +41,7 @@ class createFileThread : public QObject,public QRunnable
 	Q_OBJECT
 public :
 	createFileThread(QString destination,double size) ;
+	void start(void);
 	~createFileThread();
 signals:
 	void exitStatus(int);

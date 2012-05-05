@@ -19,11 +19,16 @@
 
 #include "runinthread.h"
 #include <QProcess>
-#include <iostream>
+
 runInThread::runInThread(QString exe)
 {
 	m_exe = exe ;
 	m_status = -1 ;
+}
+
+void runInThread::start()
+{
+	QThreadPool::globalInstance()->start(this);
 }
 
 void runInThread::run()

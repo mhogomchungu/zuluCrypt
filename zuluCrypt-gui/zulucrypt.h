@@ -29,7 +29,6 @@
 #include <QList>
 #include <QMessageBox>
 #include <QCloseEvent>
-#include <QThreadPool>
 
 #include "../zuluCrypt-cli/constants.h"
 #include "../zuluCrypt-cli/version.h"

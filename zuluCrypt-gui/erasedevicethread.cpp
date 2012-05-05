@@ -4,10 +4,11 @@ erasedevicethread::erasedevicethread(QString path)
 {
 	m_path = path ;
 	m_status = 0 ;
-	m_prev_ratio = -1 ;
-	m_timer = new QTimer(this);
-	connect(m_timer,SIGNAL(timeout()),this,SLOT(progressTimer()));
-	m_timer->start(250);
+}
+
+void erasedevicethread::start()
+{
+	QThreadPool::globalInstance()->start(this);
 }
 
 void erasedevicethread::run()
@@ -19,29 +20,60 @@ void erasedevicethread::run()
 		this->closeMapper();
 	}
 }
-
+#include <iostream>
 void erasedevicethread::writeJunkThroughMapper()
 {
-	m_size = ( double ) blkid_get_dev_size( m_id );
+	QString path = miscfunctions::cryptMapperPath() + QString("zuluCrypt-") + QString::number(getuid()) ;
 
-	m_size_written = 0 ;
+	path += QString("-NAAN-") + m_path.split("/").last() + miscfunctions::hashPath(m_path);
 
-	const size_t SIZE = 1024 ;
+	char * cpath = path.toAscii().data() ;
+
+	int fd = open(cpath,O_WRONLY) ;
+
+	if( fd < 0 )
+		return ;
+
+	const int SIZE = 1024 ;
+
+	double size_written = 0 ;
 
 	char buffer[SIZE];
+
 	memset( buffer,0,SIZE ) ;
 
-	while( write( m_id,buffer,SIZE ) > 0 )
-		m_size_written += SIZE ;
+	int i ;
+	int j = -1 ;
+
+	double dev_size = ( double ) blkid_get_dev_size( fd )  ;
+
+	while( write(fd,buffer,SIZE) > 0 ){
+
+		if( m_status == 1 )
+			break ;
+
+		size_written += SIZE ;
+
+		i = (int) ( size_written * 100 / dev_size ) ;
+
+		if( i > j ){
+			emit progress(i);
+			j = i ;
+		}
+
+	}
 	
-	close(m_id);
+	close(fd);
 }
 
 void erasedevicethread::closeMapper()
 {
 	QString exe = QString("%1 -q -d \"%2\"").arg(ZULUCRYPTzuluCrypt).arg(m_path) ;
-	runInThread * rt = new runInThread(exe);
-	QThreadPool::globalInstance()->start(rt);
+
+	QProcess p ;
+	p.start(exe);
+	p.waitForFinished();
+	p.close();
 }
 
 int erasedevicethread::openMapper()
@@ -54,41 +86,15 @@ int erasedevicethread::openMapper()
 	int st = p.exitStatus() ;
 	p.close();
 
-	if( st != 0 )
-		return 1 ;
-	
-	QString path = miscfunctions::cryptMapperPath() + QString("zuluCrypt-") + QString::number(getuid()) ;
-
-	path += QString("-NAAN-") + m_path.split("/").last() + miscfunctions::hashPath(m_path);
-
-	char * cpath = path.toAscii().data() ;
-
-	m_id = open(cpath,O_WRONLY) ;
-
-	return 0 ;
-}
-
-void erasedevicethread::progressTimer()
-{
-	m_ratio = ( int ) ( ( m_size_written / m_size ) * 100 ) ;
-
-	if( m_ratio != m_prev_ratio )
-		emit progress(m_ratio);
-
-	m_prev_ratio = m_ratio ;
+	return st ;
 }
 
 void erasedevicethread::cancel()
 {
-	this->terminate();
-	close(m_id);
-	this->closeMapper();
 	m_status = 1 ;
 }
 
 erasedevicethread::~erasedevicethread()
 {
-	m_timer->stop();
-	m_timer->deleteLater();
 	emit exitStatus(m_status);
 }

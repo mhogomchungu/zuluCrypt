@@ -31,6 +31,11 @@ void createFileThread::cancelOperation()
 	m_cancelled = 1 ;
 }
 
+void createFileThread::start()
+{
+	QThreadPool::globalInstance()->start(this);
+}
+
 void createFileThread::run()
 {
 	/*

@@ -127,7 +127,6 @@ void createkeyfile::pbCreate()
 	disableAll() ;
 
 	m_ckt = new createkeyfilethread(keyfile,m_ui->comboBoxRNG->currentText());
-	connect(m_ckt,SIGNAL(finished()),m_ckt,SLOT(deleteLater()));
 	connect(m_ckt,SIGNAL(exitStatus(int)),this,SLOT(threadExitStatus(int)));
 	m_ckt->start();
 }

@@ -1,6 +1,7 @@
 #ifndef CLOSEVOLUMETHREAD_H
 #define CLOSEVOLUMETHREAD_H
 
+#include <QThreadPool>
 #include <QRunnable>
 #include <QString>
 #include <QProcess>
@@ -11,6 +12,7 @@ class closeVolumeThread : public QObject, public QRunnable
 	Q_OBJECT
 public:
 	explicit closeVolumeThread(QString);
+	void start(void);
 	~ closeVolumeThread() ;
 signals:
 	void finished(int) ;

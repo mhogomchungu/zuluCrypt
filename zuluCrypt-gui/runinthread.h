@@ -22,6 +22,7 @@
 
 #include <QRunnable>
 #include <QObject>
+#include <QThreadPool>
 
 class runInThread : public QObject, public QRunnable
 {
@@ -29,6 +30,7 @@ class runInThread : public QObject, public QRunnable
 public:
 	explicit runInThread(QString) ;
 	~runInThread();
+	void start(void);
 signals:
 	void finished(int) ;
 private:

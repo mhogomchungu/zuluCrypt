@@ -173,7 +173,7 @@ void createfile::pbCreate()
 	  */
 	connect(m_cft,SIGNAL(exitStatus(int)),this,SLOT(exitStatus(int))) ;
 
-	QThreadPool::globalInstance()->start(m_cft);
+	m_cft->start();
 }
 
 void createfile::exitStatus(int status)

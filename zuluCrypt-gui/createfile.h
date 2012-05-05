@@ -25,7 +25,6 @@
 #include <QTimer>
 #include <QCloseEvent>
 #include <QMessageBox>
-#include <QThreadPool>
 #include "createfilethread.h"
 
 #include "miscfunctions.h"

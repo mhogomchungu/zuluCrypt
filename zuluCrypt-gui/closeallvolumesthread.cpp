@@ -25,6 +25,11 @@ closeAllVolumesThread::closeAllVolumesThread(QTableWidget * table)
 	m_table = table ;
 }
 
+void closeAllVolumesThread::start()
+{
+	QThreadPool::globalInstance()->start(this);
+}
+
 void closeAllVolumesThread::run()
 {		
 	m_table->setEnabled(false);

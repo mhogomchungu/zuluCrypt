@@ -20,6 +20,7 @@
 #ifndef STARTUPUPDATEOPENEDVOLUMES_H
 #define STARTUPUPDATEOPENEDVOLUMES_H
 
+#include <QThreadPool>
 #include <QRunnable>
 #include <QObject>
 #include <QString>
@@ -30,6 +31,7 @@ class startupupdateopenedvolumes : public QObject, public QRunnable
 	Q_OBJECT
 public:
 	explicit startupupdateopenedvolumes();
+	void start(void);
 	~startupupdateopenedvolumes();
 signals:
 	void addItemToTable(QString,QString) ;

@@ -7,6 +7,11 @@ volumePropertiesThread::volumePropertiesThread(QString path,QString mpoint)
 	m_mpoint = mpoint ;
 }
 
+void volumePropertiesThread::start()
+{
+	QThreadPool::globalInstance()->start(this);
+}
+
 QString volumePropertiesThread::fuseblkGetFs()
 {
 	QString pid = QString::number(getuid())  ;
