@@ -181,9 +181,10 @@ void passwordDialog::buttonOpenClicked(void )
 
 	QString passtype ;
 
-	if ( m_ui->radioButtonPassPhraseFromFile->isChecked() )
+	if ( m_ui->radioButtonPassPhraseFromFile->isChecked() ){
 		passtype = "-f" ;
-	else
+		passPhraseField = miscfunctions::resolveHomeSymbol(passPhraseField);
+	}else
 		passtype = "-p" ;
 
 	QString a = QString(ZULUCRYPTzuluCrypt) ;

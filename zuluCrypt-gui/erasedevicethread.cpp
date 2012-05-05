@@ -20,7 +20,7 @@ void erasedevicethread::run()
 		this->closeMapper();
 	}
 }
-#include <iostream>
+
 void erasedevicethread::writeJunkThroughMapper()
 {
 	QString path = miscfunctions::cryptMapperPath() + QString("zuluCrypt-") + QString::number(getuid()) ;
@@ -60,7 +60,6 @@ void erasedevicethread::writeJunkThroughMapper()
 			emit progress(i);
 			j = i ;
 		}
-
 	}
 	
 	close(fd);

@@ -83,7 +83,8 @@
  bin/create_volumes.c 
  bin/remove_key.c
  bin/write_device_with_junk.c
- bin/save_and_restore_luks_header.c ) 
+ bin/save_and_restore_luks_header.c
+ bin/crypt_file.c ) 
  
  SET( LIB 
  lib/is_path_valid.c 

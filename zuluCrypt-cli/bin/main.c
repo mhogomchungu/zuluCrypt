@@ -143,7 +143,7 @@ operation list\n\n\
 -N         print a list of non system partitions on the system( partitions with no active entries in /etc/fstab and /etc/crypttab\n\
 -S         print a list of system partitions on the system( partitions with active entries in /etc/fstab and /etc/crypttab\n\
 -w         check if UUID matches UUID of any partition\n\
--D         get device path from mapper( located at /dev/mapper )\n\
+-P         get device path from mapper( located at /dev/mapper )\n\
 -L         print a list of all opened volumes and their mount point.The list is not formatted\n\
 -X         open a device pointed by argument -d and write random data to it hiding data previously written to device\n\
 -J         create a plain mapper owned by the user who run the command on a device pointed by argument -d\n\
@@ -189,8 +189,10 @@ void get_opts( int argc , char *argv[],struct_opts * stopts )
 	stopts->interactive_passphrase = -1 ;
 	stopts->open_no_mount = -1 ;
 	
-	while ( (c = getopt(argc,argv,"JLORBXASNDkhocsarqwibm:d:p:f:e:z:g:y:u:l:n:j:t:") ) != -1 ) {
+	while ( (c = getopt(argc,argv,"JLORBXASNPkhocsarqwibEDs:m:d:p:f:e:z:g:y:u:l:n:j:t:") ) != -1 ) {
 		switch( c ){	
+			case( 'E' ) : stopts->action = 'E' 	; break ;	      
+			case( 'D' ) : stopts->action = 'D' 	; break ; 
 			case( 'X' ) : stopts->action = 'X'      ; break ;			     
 			case( 'J' ) : stopts->action = 'J'      ; break ;			     
 			case( 'L' ) : stopts->action = 'L'      ; break ;			     
@@ -203,7 +205,7 @@ void get_opts( int argc , char *argv[],struct_opts * stopts )
 			case( 'w' ) : stopts->action = 'w'      ; break ;
 			case( 'i' ) : stopts->action = 'i'      ; break ;
 			case( 'b' ) : stopts->action = 'b'      ; break ;
-			case( 'D' ) : stopts->action = 'D'      ; break ;
+			case( 'P' ) : stopts->action = 'P'      ; break ;
 			case( 'O' ) : stopts->action = 'O'      ;
 				      stopts->open_no_mount = 1 ; break ;
 			case( 'B' ) : stopts->action = 'B' ;
@@ -323,7 +325,7 @@ static int exe( struct_opts * clargs, const char * mapping_name,uid_t uid )
 		case 'w' : return check_UUID( clargs->device ) ;
 		case 'b' : return check_empty_slots( clargs->device ) ;
 		case 'i' : return check_if_luks( clargs->device ) ;
-		case 'D' : return get_device( clargs->device ) ;
+		case 'P' : return get_device( clargs->device ) ;
 		case 's' : return volume_info( mapping_name,clargs->device,uid ) ;
 		case 'q' : return close_opened_volume( clargs->device,mapping_name,uid ) ;
 		case 'o' : return open_volumes( clargs,mapping_name,uid ) ;
@@ -331,6 +333,8 @@ static int exe( struct_opts * clargs, const char * mapping_name,uid_t uid )
 		case 'c' : return create_volumes( clargs,uid ) ;
 		case 'a' : return addkey( clargs,uid ) ;
 		case 'r' : return removekey( clargs,uid );
+		case 'E' : return encrypt_file( clargs->device,mapping_name,clargs->mode,clargs->key,clargs->key_source,uid ) ;
+		case 'D' : return decrypt_file( clargs->device,mapping_name,clargs->mode,clargs->key,clargs->key_source,uid ) ;
 	}
 	printf("ERROR!!!!!!!!!!: cli option missed!\n" );
 	return 200 ; /* shouldnt get here */	
