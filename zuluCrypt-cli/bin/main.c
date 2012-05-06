@@ -102,6 +102,8 @@ meaning of symbols:\n\
 /  = alternatives for the same option\n\
 {}  = not allowed option\n\
 \n\
+zuluCrypt-cli -E [ -d ] [-e ]  [ -p/-f/-h ]\n\
+zuluCrypt-cli -D [ -d ] [-e ]  [ -p/-f/-h ]\n\
 zuluCrypt-cli -o [ -d ] [ -m ] ( -e ) [ -p/-f/-h ]\n\
 zuluCrypt-cli -O [ -d ] { -m } ( -e ) [ -p/-f/-h ]\n\
 zuluCrypt-cli -q [ -d ]\n\
@@ -127,7 +129,7 @@ open volume  : zuluCrypt-cli -o -d /dev/sdc1 -m ~/sdc1 -e ro -p xxx\n\
 close volume ; zuluCrypt-cli -q -d /dev/sdc1\n\
 remove key   ; zuluCrypt-cli -r -d /dev/sdc1 -p xxx\n\
 add key      : zuluCrypt-cli -a -d /dev/sdc1 -y xxx -l yyy\n\
-get device path from mapper  : zuluCrypt-cli -D -d /dev/mapper/zuluCrypt-sdc1\n\
+get device path from mapper  : zuluCrypt-cli -P -d /dev/mapper/zuluCrypt-sdc1\n\
 check if partition with UUID is present : zuluCrypt-cli -w -d UUID=\"d2d210b8-0b1f-419f-9172-9d509ea9af0c\"\n\
 operation list\n\n\
 -c         create an encrypted volume\n\
@@ -149,6 +151,9 @@ operation list\n\n\
 -J         create a plain mapper owned by the user who run the command on a device pointed by argument -d\n\
 -B         create a luks header backup\n\
 -R         restore a luks header on a device from backup\n\
+-D	   get device path from mapper\n\
+-E         encrypt a single file\n\
+-D         decrypt a single file\n\
 \n\
 options that goes with above operations:\n\
 -e         mode for opening volumes(ro*/rw)\n\
@@ -333,8 +338,8 @@ static int exe( struct_opts * clargs, const char * mapping_name,uid_t uid )
 		case 'c' : return create_volumes( clargs,uid ) ;
 		case 'a' : return addkey( clargs,uid ) ;
 		case 'r' : return removekey( clargs,uid );
-		case 'E' : return encrypt_file( clargs->device,mapping_name,clargs->mode,clargs->key,clargs->key_source,uid ) ;
-		case 'D' : return decrypt_file( clargs->device,mapping_name,clargs->mode,clargs->key,clargs->key_source,uid ) ;
+		case 'E' : return encrypt_file( clargs,mapping_name,uid ) ;
+		case 'D' : return decrypt_file( clargs,mapping_name,uid ) ;
 	}
 	printf("ERROR!!!!!!!!!!: cli option missed!\n" );
 	return 200 ; /* shouldnt get here */	

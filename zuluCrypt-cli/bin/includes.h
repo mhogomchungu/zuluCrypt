@@ -178,7 +178,13 @@ void check_invalid_key( const char * device ) ;
  */
 int check_partition( const char * device ) ;
 
-int encrypt_file( const char * source,const char * mapper,const char * dest,const char * passphrase,const char * type,uid_t uid ) ;
+/*
+ * defined in crypt_file.c
+ */
+int encrypt_file( const struct_opts *,const char *,uid_t uid ) ;
 
-int decrypt_file( const char * source,const char * mapper,const char * dest,const char * passphrase,const char * type,uid_t uid ) ;
+/*
+ * defined in crypt_file.c
+ */
+int decrypt_file( const struct_opts *,const char *,uid_t uid ) ;
 
