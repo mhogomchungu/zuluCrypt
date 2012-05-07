@@ -270,15 +270,15 @@ static int decrypt_path( const char * source,const char * dest,const char * key,
 	 * give expected value.
 	 * 
 	 * 1023 = 512 + 511
-	 * The first 512 is for thhe offset to store plain text file size.
+	 * The first 512 is for the offset to store plain text file size.
 	 * 
-	 * The 511 is the maximum bytes we can add to encrypted file to make it devisible by 512	 * 
+	 * The 511 is the maximum bytes we can add to encrypted file to make it devisible by 512 
 	 */
 	stat( source,&st ) ;
 	
 	test = st.st_size - size ;
 	
-	if( test < 0 || test > ( SIZE * 2 ) - 1 )
+	if( test < SIZE || test > ( SIZE * 2 ) - 1 )
 		return return_status( 2,f_in,f_out,p ) ;
 	
 	len = 0 ;
