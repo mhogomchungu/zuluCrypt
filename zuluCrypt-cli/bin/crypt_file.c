@@ -65,17 +65,18 @@
 static int msg( int st )
 {
 	switch( st ){
-		case 0 : printf( "SUCCESS: encrypted file created successfully\n")		; break ;
-		case 1 : printf( "SUCCESS: decrypted file created successfully\n" )  		; break ;
-		case 2 : printf( "ERROR: could not open key file for reading\n" )  		; break ;
-		case 3 : printf( "ERROR: missing key source\n")					; break ;
-		case 4 : printf( "ERROR: could not open encryption mapper\n")			; break ;
-		case 5 : printf( "ERROR: file or folder already exist at destination address\n"); break ; 
-		case 6 : printf( "ERROR: invalid path to source\n")				; break ;
-		case 7 : printf( "ERROR: could not resolve path to destination file\n")		; break ;
-		case 8 : printf( "ERROR: passphrases do not match\n")				; break ;
-		case 9 : printf( "ERROR: required argument is missing\n")			; break ;
-		case 10: printf( "ERROR: insufficient privilege to create destination file\n")	; break ;				
+		case 0 : printf( "SUCCESS: encrypted file created successfully\n")				; break ;
+		case 1 : printf( "SUCCESS: decrypted file created successfully\n" )  				; break ;
+		case 2 : printf( "ERROR: could not open key file for reading\n" )  				; break ;
+		case 3 : printf( "ERROR: missing key source\n")							; break ;
+		case 4 : printf( "ERROR: could not open encryption mapper\n")					; break ;
+		case 5 : printf( "ERROR: file or folder already exist at destination address\n")		; break ; 
+		case 6 : printf( "ERROR: invalid path to source\n")						; break ;
+		case 7 : printf( "ERROR: could not resolve path to destination file\n")				; break ;
+		case 8 : printf( "ERROR: passphrases do not match\n")						; break ;
+		case 9 : printf( "ERROR: required argument is missing\n")					; break ;
+		case 10: printf( "ERROR: insufficient privilege to create destination file\n")			; break ;
+		case 11: printf( "ERROR: inconsistency in the encrypted file detected,wrong passphrase?\n")	; break ;
 	}	
 	return st ;
 }
@@ -205,11 +206,27 @@ static int encrypt_path( const char * source,const char * dest,const char * key,
 	return 0 ;	
 }
 
+static int return_status( int st,int f_in,int f_out,string_t p )
+{
+	if( f_out != -1 )
+		close( f_out ) ;
+	
+	close( f_in ) ;
+	
+	close_mapper( StringContent( p ) ) ;
+	
+	StringDelete( &p ) ;
+	
+	return st ;
+}
+
 /*
  * function responsible for creating a decrypted file
  */
 static int decrypt_path( const char * source,const char * dest,const char * key,uint64_t key_len )
 {	
+	struct stat st ;
+	
 	char buffer[ SIZE ] ;
 	
 	uint64_t size ;
@@ -218,7 +235,9 @@ static int decrypt_path( const char * source,const char * dest,const char * key,
 	const char * mapper ;
 	
 	int f_in ;
-	int f_out ;
+	int f_out = -1 ;
+	
+	int test ;
 	
 	/*
 	 * attach a mapper to the file containing encrypted data
@@ -231,7 +250,6 @@ static int decrypt_path( const char * source,const char * dest,const char * key,
 	mapper = StringContent( p ) ;
 	
 	f_in = open( mapper,O_RDONLY ) ;
-	f_out = open( dest,O_WRONLY | O_CREAT ) ;
 	
 	/*
 	 * Read the first 512 bytes bytes from the encrypted file.
@@ -244,7 +262,28 @@ static int decrypt_path( const char * source,const char * dest,const char * key,
 	 */
 	size = atoll( buffer ) ;
 	
+	/*
+	 * Do a bit of sanity check to check for passphrase correctness.
+	 * The diffence btw encrypted file and plain text file must be btw 0 and 1023
+	 * 
+	 * A value out of range means a wrong passphrase was used and random data was read and atoll failed to 
+	 * give expected value.
+	 * 
+	 * 1023 = 512 + 511
+	 * The first 512 is for thhe offset to store plain text file size.
+	 * 
+	 * The 511 is the maximum bytes we can add to encrypted file to make it devisible by 512	 * 
+	 */
+	stat( source,&st ) ;
+	
+	test = st.st_size - size ;
+	
+	if( test < 0 || test > ( SIZE * 2 ) - 1 )
+		return return_status( 2,f_in,f_out,p ) ;
+	
 	len = 0 ;
+	
+	f_out = open( dest,O_WRONLY | O_CREAT ) ;
 	
 	/*
 	 * read the content of the encrypted file through the mapper and write them to a file in plain text
@@ -263,12 +302,7 @@ static int decrypt_path( const char * source,const char * dest,const char * key,
 		len += SIZE ;
 	}
 	
-	close( f_in ) ;
-	close( f_out ) ;
-	
-	close_mapper( mapper ) ;
-	StringDelete( &p ) ;
-	return 0 ;	
+	return return_status( 0,f_in,f_out,p ) ;	
 }
 
 static int crypt_opt( const struct_opts * opts,const char * mapper,uid_t uid,int opt )
@@ -335,8 +369,10 @@ static int crypt_opt( const struct_opts * opts,const char * mapper,uid_t uid,int
 	
 	StringDelete( &p ) ;
 	
-	if( st != 0 )
-		return msg( 4 ) ;
+	switch( st ){
+		case 1 : return msg( 4 ) ;
+		case 2 : return msg( 11 ) ;
+	}
 	
 	chmod( dest,S_IRUSR | S_IWUSR ) ;
 	chown( dest,uid,uid ) ;
