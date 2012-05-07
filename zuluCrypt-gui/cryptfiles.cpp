@@ -67,13 +67,16 @@ cryptfiles::cryptfiles(QWidget *parent) :
 void cryptfiles::rbKeyChecked()
 {
 	m_ui->pushButtonKeyFile->setIcon(QIcon(QString(":/passphrase.png")));
-	m_ui->lineEditPass_2->setEnabled(true);
 	m_ui->pushButtonKeyFile->setEnabled(false);
-	m_ui->labelKey2->setEnabled(true);
 	m_ui->lineEditPass_1->clear();
 	m_ui->lineEditPass_2->clear();
-	m_ui->lineEditPass_1->setEchoMode(QLineEdit::Password);
+	m_ui->lineEditPass_1->setEchoMode(QLineEdit::Password);	
 	m_ui->lineEditPass_1->setFocus();
+
+	if(m_operation == QString("-E")){
+		m_ui->labelKey2->setEnabled(true);
+		m_ui->lineEditPass_2->setEnabled(true);
+	}
 
 }
 
@@ -126,6 +129,8 @@ void cryptfiles::encrypt()
 void cryptfiles::decrypt()
 {
 	m_operation = QString("-D");
+	m_ui->labelKey2->setEnabled(false);
+	m_ui->lineEditPass_2->setEnabled(false);
 	this->setWindowTitle(tr("create decrypted version of an encrypted file"));
 	this->show();
 }
@@ -152,6 +157,14 @@ void cryptfiles::HideUI()
 
 void cryptfiles::enableAll()
 {
+	if(m_operation == QString("-E")){
+		m_ui->labelKey2->setEnabled(true);
+		m_ui->lineEditPass_2->setEnabled(true);
+	}
+
+	m_ui->labelKey->setEnabled(true);
+	m_ui->lineEditPass_1->setEnabled(true);
+
 	m_ui->labelDestinationPath->setEnabled(true);
 	m_ui->labelSourcePath->setEnabled(true);
 	m_ui->lineEditDestinationPath->setEnabled(true);
@@ -160,10 +173,16 @@ void cryptfiles::enableAll()
 	m_ui->pbOpenFolder->setEnabled(true);
 	m_ui->pushButtonFile->setEnabled(true);
 	m_ui->pushButtonCancel->setEnabled(true);
+	m_ui->rbKey->setEnabled(true);
+	m_ui->rbKeyFile->setEnabled(true);
 }
 
 void cryptfiles::disableAll()
 {
+	m_ui->lineEditPass_1->setEnabled(false);
+	m_ui->lineEditPass_2->setEnabled(false);
+	m_ui->labelKey2->setEnabled(false);
+	m_ui->labelKey->setEnabled(false);
 	m_ui->pushButtonCancel->setEnabled(false);
 	m_ui->labelDestinationPath->setEnabled(false);
 	m_ui->labelSourcePath->setEnabled(false);
@@ -172,6 +191,9 @@ void cryptfiles::disableAll()
 	m_ui->pbCreate->setEnabled(false);
 	m_ui->pbOpenFolder->setEnabled(false);
 	m_ui->pushButtonFile->setEnabled(false);
+	m_ui->rbKey->setEnabled(false);
+	m_ui->rbKeyFile->setEnabled(false);
+
 }
 
 void cryptfiles::pbCreate()
@@ -190,11 +212,13 @@ void cryptfiles::pbCreate()
 	if( m_ui->rbKey->isChecked()){
 		if( key_1.isEmpty())
 			return m_msg.UIMessage(tr("ERROR!"),tr("first key field is empty"));
-		if( key_2.isEmpty())
-			return m_msg.UIMessage(tr("ERROR!"),tr("second key field is empty"));
-		if( key_1 != key_2)
-			return m_msg.UIMessage(tr("ERROR!"),tr("keys do not match"));
 
+		if(m_operation == QString("-E")){
+			if( key_2.isEmpty())
+				return m_msg.UIMessage(tr("ERROR!"),tr("second key field is empty"));
+			if( key_1 != key_2)
+				return m_msg.UIMessage(tr("ERROR!"),tr("keys do not match"));
+		}
 		keySource = QString("-p") ;
 	}else{
 		if(miscfunctions::exists(key_1) == false)
@@ -268,17 +292,20 @@ void cryptfiles::threadExitStatus(int st)
 			 return this->HideUI();
 		case 2 : m_msg.UIMessage( tr("ERROR!"),tr("could not open key file for reading" ) )				; break ;
 		case 3 : m_msg.UIMessage( tr("ERROR!"),tr("missing key source" ) )						; break ;
-		case 4 : m_msg.UIMessage( tr("ERROR!"),tr("could not open encryption mapper" ) )				; break ;
+		case 4 : m_msg.UIMessage( tr("ERROR!"),tr("could not open encryption routines" ) )				; break ;
 		case 5 : m_msg.UIMessage( tr("INFO!"),tr("file or folder already exist at destination address" ) )		; break ;
 		case 6 : m_msg.UIMessage( tr("ERROR!"),tr("invalid path to source" ))						; break ;
 		case 7 : m_msg.UIMessage( tr("ERROR!"),tr("could not resolve path to destination file" ))			; break ;
 		case 8 : m_msg.UIMessage( tr("ERROR!"),tr("passphrases do not match" ))						; break ;
 		case 9 : m_msg.UIMessage( tr("ERROR!"),tr("required argument is missing" ) )					; break ;
 		case 10: m_msg.UIMessage( tr("ERROR!"),tr("insufficient privilege to create destination file" ))		; break ;
-		case 11: m_msg.UIMessage( tr("ERROR!"),tr("inconsistency in the encrypted file detected,wrong passphrase?" )) 	; break ;
-
+		case 11: m_msg.UIMessage( tr("ERROR!"),tr("wrong passphrase" ))						 	; break ;
 	}
 	this->enableAll();
+	if( st == 11 || st == 2 ){
+		m_ui->lineEditPass_1->clear();
+		m_ui->lineEditPass_1->setFocus();
+	}
 }
 
 cryptfiles::~cryptfiles()

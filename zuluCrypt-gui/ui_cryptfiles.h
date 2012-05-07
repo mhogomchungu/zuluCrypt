@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'cryptfiles.ui'
 **
-** Created: Mon May 7 08:22:15 2012
+** Created: Mon May 7 17:41:41 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -49,7 +49,7 @@ public:
         if (cryptfiles->objectName().isEmpty())
             cryptfiles->setObjectName(QString::fromUtf8("cryptfiles"));
         cryptfiles->setWindowModality(Qt::ApplicationModal);
-        cryptfiles->resize(552, 229);
+        cryptfiles->resize(552, 215);
         lineEditDestinationPath = new QLineEdit(cryptfiles);
         lineEditDestinationPath->setObjectName(QString::fromUtf8("lineEditDestinationPath"));
         lineEditDestinationPath->setGeometry(QRect(120, 40, 311, 31));
@@ -62,7 +62,7 @@ public:
         pbOpenFolder->setGeometry(QRect(430, 40, 31, 31));
         pbCreate = new QPushButton(cryptfiles);
         pbCreate->setObjectName(QString::fromUtf8("pbCreate"));
-        pbCreate->setGeometry(QRect(200, 190, 81, 31));
+        pbCreate->setGeometry(QRect(200, 180, 81, 31));
         pbCreate->setAutoDefault(false);
         pbCreate->setDefault(true);
         labelSourcePath = new QLabel(cryptfiles);
@@ -103,7 +103,7 @@ public:
         labelKey2->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         pushButtonCancel = new QPushButton(cryptfiles);
         pushButtonCancel->setObjectName(QString::fromUtf8("pushButtonCancel"));
-        pushButtonCancel->setGeometry(QRect(280, 190, 75, 31));
+        pushButtonCancel->setGeometry(QRect(280, 180, 75, 31));
         QWidget::setTabOrder(lineEditDestinationPath, pbOpenFolder);
         QWidget::setTabOrder(pbOpenFolder, pbCreate);
 
@@ -129,7 +129,7 @@ public:
         pushButtonKeyFile->setText(QString());
         labelKey->setText(QApplication::translate("cryptfiles", "key", 0, QApplication::UnicodeUTF8));
         labelKey2->setText(QApplication::translate("cryptfiles", "repeat key", 0, QApplication::UnicodeUTF8));
-        pushButtonCancel->setText(QApplication::translate("cryptfiles", "cancel", 0, QApplication::UnicodeUTF8));
+        pushButtonCancel->setText(QApplication::translate("cryptfiles", "&cancel", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };

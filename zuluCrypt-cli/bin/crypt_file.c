@@ -69,14 +69,14 @@ static int msg( int st )
 		case 1 : printf( "SUCCESS: decrypted file created successfully\n" )  				; break ;
 		case 2 : printf( "ERROR: could not open key file for reading\n" )  				; break ;
 		case 3 : printf( "ERROR: missing key source\n")							; break ;
-		case 4 : printf( "ERROR: could not open encryption mapper\n")					; break ;
+		case 4 : printf( "ERROR: could not open encryption routines\n")					; break ;
 		case 5 : printf( "ERROR: file or folder already exist at destination address\n")		; break ; 
 		case 6 : printf( "ERROR: invalid path to source\n")						; break ;
 		case 7 : printf( "ERROR: could not resolve path to destination file\n")				; break ;
 		case 8 : printf( "ERROR: passphrases do not match\n")						; break ;
 		case 9 : printf( "ERROR: required argument is missing\n")					; break ;
 		case 10: printf( "ERROR: insufficient privilege to create destination file\n")			; break ;
-		case 11: printf( "ERROR: inconsistency in the encrypted file detected,wrong passphrase?\n")	; break ;
+		case 11: printf( "ERROR: wrong passphrase\n")							; break ;
 	}	
 	return st ;
 }
@@ -232,8 +232,6 @@ static int decrypt_path( const char * source,const char * dest,const char * key,
 	uint64_t size ;
 	uint64_t len ;
 	
-	const char * mapper ;
-	
 	int f_in ;
 	int f_out = -1 ;
 	
@@ -247,9 +245,7 @@ static int decrypt_path( const char * source,const char * dest,const char * key,
 	if( p == NULL )
 		return 1 ;
 	
-	mapper = StringContent( p ) ;
-	
-	f_in = open( mapper,O_RDONLY ) ;
+	f_in = open( StringContent( p ),O_RDONLY ) ;
 	
 	/*
 	 * Read the first 512 bytes bytes from the encrypted file.
@@ -317,8 +313,6 @@ static int crypt_opt( const struct_opts * opts,const char * mapper,uid_t uid,int
 	const char * passphrase = opts->key ;
 	const char * type 	= opts->key_source ;
 	int i 			= opts->interactive_passphrase ;
-	
-	//remove( dest ) ;
 	
 	if( dest == NULL )
 		return msg( 9 ) ;
