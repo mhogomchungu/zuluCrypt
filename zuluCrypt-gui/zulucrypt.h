@@ -49,6 +49,7 @@
 #include "cryptoinfo.h"
 #include "erasedevice.h"
 #include "manageluksheader.h"
+#include "cryptfiles.h"
 
 namespace Ui {
     class zuluCrypt;
@@ -116,6 +117,8 @@ private slots :
 	void luksHeaderBackUp(void);
 	void luksRestoreHeader(void);
 	void permissionExplanation(void);
+	void encryptFile(void);
+	void decryptFile(void);
 private:
 	passwordDialog * setUpPasswordDialog(void);
 	openpartition * setUpOpenpartition(void);
@@ -123,6 +126,7 @@ private:
 	luksdeletekey * setUpluksdeletekey(void);
 	luksaddkey * setUpluksaddkey(void);
 	manageluksheader * setUpManageLuksHeader(void);
+	cryptfiles * setUpCryptFiles(void);
 
 	void StartUpAddOpenedVolumesToTableThread(void);
 	void setupConnections(void) ;

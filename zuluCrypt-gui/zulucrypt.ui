@@ -159,6 +159,9 @@
     <addaction name="separator"/>
     <addaction name="actionErase_data_on_device"/>
     <addaction name="separator"/>
+    <addaction name="actionEncrypt_file"/>
+    <addaction name="actionDecrypt_file"/>
+    <addaction name="separator"/>
     <addaction name="action_close"/>
    </widget>
    <addaction name="menu_zc"/>
@@ -363,6 +366,22 @@
   <action name="actionPermission_problems">
    <property name="text">
     <string>permission problems</string>
+   </property>
+  </action>
+  <action name="actionEncrypt_file">
+   <property name="text">
+    <string>encrypt file</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionDecrypt_file">
+   <property name="text">
+    <string>decrypt file</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+H</string>
    </property>
   </action>
  </widget>

@@ -186,6 +186,8 @@ void zuluCrypt::setupConnections()
 	connect(m_ui->actionBackup_header,SIGNAL(triggered()),this,SLOT(luksHeaderBackUp()));
 	connect(m_ui->actionRestore_header,SIGNAL(triggered()),this,SLOT(luksRestoreHeader()));
 	connect(m_ui->actionPermission_problems,SIGNAL(triggered()),this,SLOT(permissionExplanation()));
+	connect(m_ui->actionEncrypt_file,SIGNAL(triggered()),this,SLOT(encryptFile()));
+	connect(m_ui->actionDecrypt_file,SIGNAL(triggered()),this,SLOT(decryptFile()));
 
 }
 
@@ -716,6 +718,24 @@ void zuluCrypt::ShowEraseDataDialog()
 	erasedevice * ed = new erasedevice(this) ;
 	connect(ed,SIGNAL(HideUISignal()),ed,SLOT(deleteLater()));
 	ed->ShowUI();
+}
+
+cryptfiles * zuluCrypt::setUpCryptFiles()
+{
+	cryptfiles * cf = new cryptfiles(this);
+	connect(cf,SIGNAL(HideUISignal()),cf,SLOT(deleteLater())) ;
+	return cf ;
+}
+
+void zuluCrypt::encryptFile()
+{
+	setUpCryptFiles()->encrypt();
+}
+
+void zuluCrypt::decryptFile()
+{
+	setUpCryptFiles()->decrypt();
+
 }
 
 zuluCrypt::~zuluCrypt()

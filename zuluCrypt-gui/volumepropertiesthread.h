@@ -6,6 +6,8 @@
 #include "miscfunctions.h"
 #include <QString>
 #include <QStringList>
+#include <sys/types.h>
+#include <unistd.h>
 
 #include "../zuluCrypt-cli/bin/bash_special_chars.h"
 

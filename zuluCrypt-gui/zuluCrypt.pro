@@ -34,6 +34,7 @@ SOURCES += main.cpp\
     erasedevice.cpp \
     erasedevicethread.cpp \
     manageluksheader.cpp \
+    cryptfiles.cpp
 
 HEADERS  += zulucrypt.h password_dialog.h \
     openpartition.h \
@@ -57,6 +58,7 @@ HEADERS  += zulucrypt.h password_dialog.h \
     erasedevice.h \
     erasedevicethread.h \
     manageluksheader.h \
+    cryptfiles.h
     
 
 FORMS    += zulucrypt.ui password.ui \
@@ -70,6 +72,7 @@ FORMS    += zulucrypt.ui password.ui \
     cryptoinfo.ui \ 
     erasedevice.ui \
     manageluksheader.ui \
+    cryptfiles.ui
 
 TRANSLATIONS = 
 

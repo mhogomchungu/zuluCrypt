@@ -183,8 +183,7 @@ void manageluksheader::pbCreate()
 
 	runInThread * rt = new runInThread(exe);
 	connect(rt,SIGNAL(finished(int)),this,SLOT(threadExitStatus(int)));
-	QThreadPool::globalInstance()->start(rt) ;
-
+	rt->start();
 	disableAll() ;
 }
 

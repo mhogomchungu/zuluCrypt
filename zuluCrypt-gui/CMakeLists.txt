@@ -12,6 +12,7 @@ set (UI_FILES createfile.ui
 		openpartition.ui
 		cryptoinfo.ui
 		manageluksheader.ui
+		cryptfiles.ui
 )
 
 set( MOC_FILES createfile.h
@@ -36,6 +37,7 @@ set( MOC_FILES createfile.h
 		erasedevice.h
 		erasedevicethread.h	
 		manageluksheader.h
+		cryptfiles.h
  )
 	
 set (SRC createfile.cpp
@@ -62,6 +64,7 @@ set (SRC createfile.cpp
 	erasedevice.cpp
 	erasedevicethread.cpp
 	manageluksheader.cpp
+	cryptfiles.cpp
 )
 
 find_package( Qt4 REQUIRED )
