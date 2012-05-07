@@ -27,6 +27,7 @@
 #include <sys/stat.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 #define SIZE 512
 
@@ -38,14 +39,26 @@
  *  
  *  Basic idea of the operation:
  * 
- *  steps taken when creating an encrypted file.
- *  1. Create a destination file with the size a multple of 512
- *  2. Create a plain mapper and attach it to destination file.
- *  3. Copy contents of source file to destination file through the mapper.
- *  4. Resize the destination file to the size of the source.
+ *  basic concept:
+ *  
+ *  to create an encrypted file:
  * 
- *  For reasons i am not sure of,things work as expected when the file attached to the mapper
- *  has a file size that is a multiple of 512
+ *  create a "shell" file, attach a mapper to it and then copy the content of plain text file
+ *  to the shell file through the mapper to create a cypher text file.
+ * 
+ *  to create a decrypted file:
+ * 
+ *  create a "shell" file, attach a mapper to the encrypted file and copy contents of encrypted file through
+ *  the mapper to the "shell" file and the shell file will contain decrypted data.
+ * 
+ *  The encrypted file has a simple format.
+ *  1. The file will be a multiple of 512,if the plain text file has a file size that is not a multiple of 512,then
+ *     encrypted file will be padded to the next file size of 512 mupltiple.
+ * 
+ *  2. The encrypted file will have an addition size of 512 added to the beginning to contain the size of the encrypted data.
+ * 
+ *  If for example, a 100 bytes file is to be encrypted,the encrypted file will have a file size of 1024 bytes. First, the 100 bytes
+ *  will be padded to 512 and then 512 bytes will be added to store the size of the plain text file,useful when decrypting the file. 
  * 
  */
 
@@ -67,31 +80,41 @@ static int msg( int st )
 	return st ;
 }
 
-/*
- * write data from one file to another through the mapper
- */
-static void crypt( const char * cin,const char * cout )
+static string_t crypt_mapper( const char * path,const char * key,uint64_t key_len )
 {
-	char buffer[ SIZE ] ;	
+	string_t p = StringIntToString( getpid() ) ;
+	StringPrepend( p,"zuluCrypt-" ) ;
 	
-	int in = open( cin,O_RDONLY ) ;
-	int out = open( cout,O_WRONLY ) ;
-
-	size_t size ;
-	while( ( size = read( in,buffer,SIZE ) ) > 0 )
-		write( out,buffer,size );
+	if( open_plain( path,StringContent( p ),"rw",key,key_len,"cbc-essiv:sha256" ) != 0 ){
+		StringDelete( &p ) ;
+		return NULL ;
+	}
 	
-	close( in ) ;
-	close( out ) ;	
+	StringPrepend( p,"/" ) ;
+	StringPrepend( p,crypt_get_dir() ) ;
+	
+	return p ;
 }
 
-static int pad_path( const char * source,const char * dest )
+/*
+ * function responsible for creating an encrypted file
+ */
+static int encrypt_path( const char * source,const char * dest,const char * key,uint64_t key_len )
 {
+	string_t p ;
+	string_t q ;
+	
 	char buffer[ SIZE ] ;
-	int fd ;
+	
+	int f_in ;
+	int f_out ;
 	
 	uint64_t size ;
 	uint64_t size_1 ;
+	
+	size_t len ;
+	
+	const char * mapper ;
 	
 	struct stat st ;
 	
@@ -100,22 +123,27 @@ static int pad_path( const char * source,const char * dest )
 	size = st.st_size ;
 	
 	/*
-	 *  we want the file attached to the mapper to have a file size that is a multiple of 512.
-	 *  why? not sure but i suspect its to allow reading/writing in blocks of 512 bytes,this is the default
-	 *  block size used in cryptsetup if i remember the docs correctly
-	 * 
+	 * make sure the encrypted file is a multiple of 512, important because data will be read/written in chunks of 512 bytes.
 	 */
 	while( size % SIZE != 0 )
 		size++ ;
-
+	
+	/*
+	 * add 512 bytes to encrypted file, the exta space will be used to store the content size of the data to be encrypted.
+	 */
+	size += SIZE ;
+	
 	memset( buffer,0,SIZE ) ;
 	
-	fd = open( dest,O_WRONLY | O_CREAT ) ;
+	f_out = open( dest,O_WRONLY | O_CREAT ) ;
 	
 	size_1 = 0 ;
 	
+	/*
+	 * create a file to be used to store encrypted data.
+	 */
 	while( 1 ){
-		write( fd,buffer,SIZE );
+		write( f_out,buffer,SIZE );
 		
 		size_1 += SIZE ;
 		
@@ -123,32 +151,146 @@ static int pad_path( const char * source,const char * dest )
 			break ;
 	}
 	
-	close( fd ) ;
+	close( f_out ) ;
+	
+	/*
+	 * attach a mapper to the file that will contain encrypted data
+	 */
+	p = crypt_mapper( dest,key,key_len ) ;
+	if( p == NULL ){
+		remove( dest ) ;
+		return 1 ;
+	}
+	
+	mapper = StringContent( p ) ;
+	
+	f_out = open( mapper,O_WRONLY ) ;
+	
+	q = StringIntToString( st.st_size ) ;
+	
+	/*
+	 * write the size of plain text file to the encrypted file. This information when decrypting the data because it tells us
+	 * how much data is in the volume. We cant know this by looking at the file size because it can be padded and searching for 
+	 * NULL character to look for end point will not work with contents with NULL characters in them.
+	 */
+	write( f_out,StringContent( q ),StringLength( q ) ) ;
+	write( f_out,'\0',StringLength( q ) + 1 ) ;
+	
+	/*
+	 * set the beginning of the payload,The cypher text will start at byte 512.
+	 */
+	lseek( f_out,SIZE,SEEK_SET ) ;	
+	
+	f_in = open( source,O_RDONLY ) ;
+	
+	/*
+	 * Copy over plain text data to the "shell" file through the mapper, creating an encrypted file.
+	 */	
+	while( 1 ){
+		len = read( f_in,buffer,SIZE ) ;
+		if( len <= 0 )
+			break ;
+		
+		write( f_out,buffer,len ) ;
+	}
+	
+	close( f_in ) ;
+	close( f_out ) ;
+	
+	close_mapper( mapper ) ;
+	
+	StringDelete( &q ) ;
+	StringDelete( &p ) ;	
 	
 	return 0 ;	
 }
 
-static int shrink_file( const char * source,const char * dest )
-{
-	struct stat st ;
-	stat( source,&st ) ;
+/*
+ * function responsible for creating a decrypted file
+ */
+static int decrypt_path( const char * source,const char * dest,const char * key,uint64_t key_len )
+{	
+	char buffer[ SIZE ] ;
 	
-	return truncate( dest,st.st_size ) ;	
+	uint64_t size ;
+	uint64_t len ;
+	
+	const char * mapper ;
+	
+	int f_in ;
+	int f_out ;
+	
+	/*
+	 * attach a mapper to the file containing encrypted data
+	 */
+	string_t p = crypt_mapper( source,key,key_len ) ;
+	
+	if( p == NULL )
+		return 1 ;
+	
+	mapper = StringContent( p ) ;
+	
+	f_in = open( mapper,O_RDONLY ) ;
+	f_out = open( dest,O_WRONLY | O_CREAT ) ;
+	
+	/*
+	 * Read the first 512 bytes bytes from the encrypted file.
+	 * The content will be in plain text because we are reading from the mapper
+	 */
+	read( f_in,buffer,SIZE ) ;
+	
+	/*
+	 * get the size of encrypted data
+	 */
+	size = atoll( buffer ) ;
+	
+	len = 0 ;
+	
+	/*
+	 * read the content of the encrypted file through the mapper and write them to a file in plain text
+	 */
+	while( 1 ){
+		
+		read( f_in,buffer,SIZE ) ;
+		
+		if( size - len <= SIZE ){
+			write( f_out,buffer,size - len ) ;
+			break ;
+		}
+		
+		write( f_out,buffer,SIZE ) ;
+		
+		len += SIZE ;
+	}
+	
+	close( f_in ) ;
+	close( f_out ) ;
+	
+	close_mapper( mapper ) ;
+	StringDelete( &p ) ;
+	return 0 ;	
 }
 
 static int crypt_opt( const struct_opts * opts,const char * mapper,uid_t uid,int opt )
 {
 	string_t q ;
 	string_t p ;
-	
-	char * rpath ;
-	const char * x ;
+
+	int st ;
 	
 	const char * source	= opts->device ;
 	const char * dest  	= opts->mode ;
 	const char * passphrase = opts->key ;
 	const char * type 	= opts->key_source ;
 	int i 			= opts->interactive_passphrase ;
+	
+	//remove( dest ) ;
+	
+	if( dest == NULL )
+		return msg( 9 ) ;
+	
+	if( source == NULL )
+		return msg( 9 ) ;
 	
 	if( is_path_valid( dest ) == 0 )
 		return msg( 5 ) ;
@@ -186,41 +328,18 @@ static int crypt_opt( const struct_opts * opts,const char * mapper,uid_t uid,int
 		}
 	}		
 	
-	pad_path( source,dest ) ;
-	
-	rpath = realpath( dest,NULL ) ;
-	
-	if( rpath == NULL ){
-		remove( dest ) ;
-		return msg( 7 ) ;	
-	}
-	
-	q = create_mapper_name( rpath,mapper,uid,OPEN ) ;	
-	
-	if( open_plain( dest,StringContent( q ),"rw",StringContent( p ),StringLength( p ),"cbc-essiv:sha256" ) != 0 ){
-		remove( dest ) ;
-		return msg( 4 ) ;	
-	}
-
-	StringPrepend( q,"/" ) ;
-	x = StringPrepend( q,crypt_get_dir() ) ;	
-	
-	if( opt == DECRYPT )
-		crypt( x,dest ) ;
+	if( opt == ENCRYPT )
+		st = encrypt_path( source,dest,StringContent( p ),StringLength( p ) ) ;
 	else
-		crypt( source,x ) ;
+		st = decrypt_path( source,dest,StringContent( p ),StringLength( p ) ) ;	
 	
-	close_mapper( x ) ;
+	StringDelete( &p ) ;
 	
-	shrink_file( source,dest ) ;	
+	if( st != 0 )
+		return msg( 4 ) ;
 	
-	StringDelete( &q ) ;
-	StringDelete( &p ) ;	
-	
-	free( rpath ) ;	
-	
-	chown( dest,uid,uid ) ;
 	chmod( dest,S_IRUSR | S_IWUSR ) ;
+	chown( dest,uid,uid ) ;
 	
 	if( opt == 1 )
 		return msg( 1 ) ;

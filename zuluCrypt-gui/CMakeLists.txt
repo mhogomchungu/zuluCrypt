@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
+add_definitions( -D_FILE_OFFSET_BITS=64 -Wall ) 
 
 set (UI_FILES createfile.ui
 		createpartition.ui
@@ -62,8 +63,6 @@ set (SRC createfile.cpp
 	erasedevicethread.cpp
 	manageluksheader.cpp
 )
-
-add_definitions( -D_FILE_OFFSET_BITS=64 -Wall ) 
 
 find_package( Qt4 REQUIRED )
 
