@@ -43,7 +43,7 @@ int open_volume( const char * dev,const char * map,const char * m_point,uid_t id
 	if( is_luks( dev ) == 0 )
 		h = open_luks( dev,map,mode,pass,pass_size ) ;
 	else
-		h = open_plain( dev,map,mode,pass,pass_size,"cbc-essiv:sha256" ) ;
+		h = open_plain( dev,map,mode,pass,pass_size ) ;
 		
 	switch( h ){
 		case 1 : return 4 ;

@@ -98,7 +98,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	/*
 	 * Open a plain mapper, so that we can write to device through it
 	 */
-	if( open_plain( device,StringContent( mapper ),"rw",key,KEY_SIZE,"cbc-essiv:sha256" ) != 0 )
+	if( open_plain( device,StringContent( mapper ),"rw",key,KEY_SIZE ) != 0 )
 		return return_value( &mapper,1 ) ;		
 	
 	/*

@@ -25,7 +25,7 @@ static int free_crypt( int st,struct crypt_device * cd )
 	return st ;
 }
 
-int open_plain( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size,const char * cipher )
+int open_plain( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
 {
 	int flags ;
 	struct crypt_device * cd ;
@@ -47,7 +47,7 @@ int open_plain( const char * device,const char * mapper,const char * mode,const 
 	if( crypt_init( &cd,device ) != 0 )
 		return 2 ;
 	
-	if( crypt_format( cd,CRYPT_PLAIN,"aes",cipher,NULL,NULL,32,&params ) != 0 )
+	if( crypt_format( cd,CRYPT_PLAIN,"aes","cbc-essiv:sha256",NULL,NULL,32,&params ) != 0 )
 		return free_crypt( 2,cd ) ;
 	
 	if( crypt_activate_by_passphrase( cd,mapper,CRYPT_ANY_SLOT,pass,pass_size,flags ) < 0 )

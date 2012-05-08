@@ -68,7 +68,7 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 		if( open_luks( dev,mapper,"rw",pass,pass_size ) != 0 )
 			return 3 ;
 	}else if( strcmp( type,"plain") == 0 ){
-		if( open_plain( dev,mapper,"rw",pass,pass_size,"cbc-essiv:sha256" ) )
+		if( open_plain( dev,mapper,"rw",pass,pass_size ) )
 			return 3 ;		
 	}else{
 		return 2 ;

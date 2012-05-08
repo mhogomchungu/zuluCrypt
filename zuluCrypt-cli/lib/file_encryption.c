@@ -73,7 +73,7 @@ static string_t crypt_mapper( const char * path,const char * key,uint64_t key_le
 	string_t p = StringIntToString( getpid() ) ;
 	StringPrepend( p,"zuluCrypt-" ) ;
 	
-	if( open_plain( path,StringContent( p ),"rw",key,key_len,"cbc-essiv:sha256" ) != 0 ){
+	if( open_plain( path,StringContent( p ),"rw",key,key_len ) != 0 ){
 		StringDelete( &p ) ;
 		return NULL ;
 	}

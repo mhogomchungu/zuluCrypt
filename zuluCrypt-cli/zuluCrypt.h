@@ -255,8 +255,7 @@ int open_plain( const char * device,      // path to encrypted file or partition
 		const char * mapping_name,// mapper name to use
 		const char * mode,        // "ro" or "rw" for opening in read only or read and write
 		const char * passphrase,  // passphrase to use to open the volume
-		size_t passphrase_size,
-		const char * cipher );	  // cipher to use, default is "cbc-essiv:sha256" for current cryptsetup default option.  
+		size_t passphrase_size ); // passphrase length  
 
 
 /**

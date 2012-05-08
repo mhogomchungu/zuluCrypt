@@ -110,7 +110,7 @@
  
  TARGET_LINK_LIBRARIES( zuluCrypt ${libcryptsetup} String ${blkid} ${mountLibrary} process )
  
- set_target_properties( zuluCrypt PROPERTIES SOVERSION "1.1.0" )
+ set_target_properties( zuluCrypt PROPERTIES SOVERSION "2.0.0" )
  
  TARGET_LINK_LIBRARIES( zuluCrypt-cli zuluCrypt String StringList ${blkid} ) 
  
