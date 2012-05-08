@@ -156,7 +156,7 @@ operation list\n\n\
 -D         decrypt a single file\n\
 \n\
 options that goes with above operations:\n\
--e         mode for opening volumes(ro*/rw)\n\
+-e         mode for opening volumes(ro*/rw) when used with -o/-O. path to destination file when used with -E/-D\n\
 -k         do not ask for confirmation when doing dangerous operations\n\
 -d         path to a file or partition with encrypted volume\n\
 -m         path to where mount point folder will be created\n\

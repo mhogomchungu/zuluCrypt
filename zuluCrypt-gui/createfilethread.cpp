@@ -19,6 +19,13 @@
 
 #include "createfilethread.h"
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <string.h>
+#include <string.h>
+
 createFileThread::createFileThread(QString file,double size)
 {
 	m_cancelled = 0 ;

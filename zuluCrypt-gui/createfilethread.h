@@ -35,6 +35,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
+#include <string.h>
 
 class createFileThread : public QObject,public QRunnable
 {

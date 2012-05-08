@@ -182,7 +182,6 @@ int decrypt_file( const char * source,const char * dest,const char * key,uint64_
 		
 			read( f_in,buffer,SIZE ) ;
 			write( f_out,buffer,SIZE ) ;
-		
 		}
 		
 		len = size - ( i * SIZE ) ;

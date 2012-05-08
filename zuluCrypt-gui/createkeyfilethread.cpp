@@ -1,6 +1,12 @@
 #include "createkeyfilethread.h"
 #include "miscfunctions.h"
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <string.h>
+
 createkeyfilethread::createkeyfilethread(QString path,QString rng)
 {
 	m_path = path ;

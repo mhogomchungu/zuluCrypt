@@ -1,5 +1,7 @@
 #include "volumepropertiesthread.h"
 
+#include <unistd.h>
+
 volumePropertiesThread::volumePropertiesThread(QString path,QString mpoint)
 {
 	m_fusefs = path ;

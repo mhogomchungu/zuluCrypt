@@ -23,6 +23,7 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <string.h>
 #include <stdio.h>
 #include <QObject>
 
