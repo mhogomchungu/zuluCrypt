@@ -83,3 +83,4 @@ version 4.4.1
 -- add support for first writing random data to partitions before creating an encryped container in them.
 -- add support for "/etc/zuluCrypttab". A place to add additional paths to devices to be considered system devices.
 -- various security related fixes.
+-- add support for encrypting stand alone files
