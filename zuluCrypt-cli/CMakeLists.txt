@@ -102,7 +102,8 @@
  lib/open_plain.c
  lib/open_volume.c
  lib/mount_volume.c
- lib/unmount_volume.c )
+ lib/unmount_volume.c
+ lib/file_encryption.c )
  
  add_library( zuluCrypt SHARED ${LIB} )
  add_executable( zuluCrypt-cli ${BIN} )

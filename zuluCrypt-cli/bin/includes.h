@@ -181,10 +181,10 @@ int check_partition( const char * device ) ;
 /*
  * defined in crypt_file.c
  */
-int encrypt_file( const struct_opts *,const char *,uid_t uid ) ;
+int file_encrypt( const struct_opts *,const char *,uid_t uid ) ;
 
 /*
  * defined in crypt_file.c
  */
-int decrypt_file( const struct_opts *,const char *,uid_t uid ) ;
+int file_decrypt( const struct_opts *,const char *,uid_t uid ) ;
 

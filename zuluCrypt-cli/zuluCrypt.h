@@ -276,6 +276,27 @@ int open_plain( const char * device,      // path to encrypted file or partition
  */
 char * volume_device_name( const char * mapper ) ;
 
+/**
+ * This function encrypts a file given by argument source to a file given by argument dest using plain mapper
+ * opened with key of length key_len
+ * 
+ * output: 0 - success
+ *         1 - encryption failed,could not open mapper  
+ * 
+ */
+int encrypt_file( const char * source,const char * dest,const char * key,uint64_t key_len ) ;
+
+/**
+ * This function decrypts a file given by argument source to a file given by argument dest using plain mapper
+ * opened with key of length key_len
+ * 
+ * output: 0 - success
+ *         1 - decryption failed,could not open mapper 
+ * 	   2 - decryption failed,wrong passphrase
+ * 
+ */
+int decrypt_file( const char * source,const char * dest,const char * key,uint64_t key_len ) ;
+
 #ifdef __cplusplus
 }
 #endif

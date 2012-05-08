@@ -338,8 +338,8 @@ static int exe( struct_opts * clargs, const char * mapping_name,uid_t uid )
 		case 'c' : return create_volumes( clargs,uid ) ;
 		case 'a' : return addkey( clargs,uid ) ;
 		case 'r' : return removekey( clargs,uid );
-		case 'E' : return encrypt_file( clargs,mapping_name,uid ) ;
-		case 'D' : return decrypt_file( clargs,mapping_name,uid ) ;
+		case 'E' : return file_encrypt( clargs,mapping_name,uid ) ;
+		case 'D' : return file_decrypt( clargs,mapping_name,uid ) ;
 	}
 	printf("ERROR!!!!!!!!!!: cli option missed!\n" );
 	return 200 ; /* shouldnt get here */	
