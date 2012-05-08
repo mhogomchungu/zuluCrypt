@@ -172,19 +172,24 @@ int decrypt_file( const char * source,const char * dest,const char * key,uint64_
 	
 	f_out = open( dest,O_WRONLY | O_CREAT ) ;
 	
-	len = size / SIZE ;
-	
-	for( i = 0 ; i < len ; i++ ){
+	if( size <= SIZE ){
+		read( f_in,buffer,size ) ;
+		write( f_out,buffer,size ) ;
+	}else{
+		len = size / SIZE ;
 		
-		read( f_in,buffer,SIZE ) ;
-		write( f_out,buffer,SIZE ) ;
+		for( i = 0 ; i < len ; i++ ){
 		
+			read( f_in,buffer,SIZE ) ;
+			write( f_out,buffer,SIZE ) ;
+		
+		}
+		
+		len = size - ( i * SIZE ) ;
+		
+		read( f_in,buffer,len ) ;
+		write( f_out,buffer,len ) ;
 	}
-	
-	len = size - ( i * SIZE ) ;
-	
-	read( f_in,buffer,len ) ;
-	write( f_out,buffer,len ) ;
 	
 	return return_status( 0,f_in,f_out,p ) ;	
 }
