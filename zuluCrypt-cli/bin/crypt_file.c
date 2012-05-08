@@ -31,6 +31,8 @@
 
 #define SIZE 512
 
+#define KEY_SIZE 100
+
 #define DECRYPT 1
 #define ENCRYPT 0
 
@@ -55,7 +57,14 @@
  *  1. The file will be a multiple of 512,if the plain text file has a file size that is not a multiple of 512,then
  *     encrypted file will be padded to the next file size of 512 mupltiple.
  * 
- *  2. The encrypted file will have an addition size of 512 added to the beginning to contain the size of the encrypted data.
+ *  2. The encrypted file will have an addition size of 512 added to the beginning of thhe encrypted file.This is the header
+ *     of the encrypted file.
+ * 
+ *     offset 0 to 100 contains the size of plain text in a C string format. If for example the plain text file has 69 bytes in it,
+ *     the header at offset 0 will contain "69\0".Only characters from '0' to '9' are allowed and they must be null terminated.
+ * 
+ *     offset 100 to 200 will contain atmost 100 characters used in creating the encrypted file.
+ *     If the key is less than 100 bytes in length,then the remaining length is NULL padded.
  * 
  *  If for example, a 100 bytes file is to be encrypted,the encrypted file will have a file size of 1024 bytes. First, the 100 bytes
  *  will be padded to 512 and then 512 bytes will be added to store the size of the plain text file,useful when decrypting the file. 
@@ -106,14 +115,13 @@ static int encrypt_path( const char * source,const char * dest,const char * key,
 	string_t q ;
 	
 	char buffer[ SIZE ] ;
+	char memkey[ KEY_SIZE ] ;
 	
 	int f_in ;
 	int f_out ;
 	
 	uint64_t size ;
 	uint64_t size_1 ;
-	
-	size_t len ;
 	
 	const char * mapper ;
 	
@@ -170,12 +178,27 @@ static int encrypt_path( const char * source,const char * dest,const char * key,
 	q = StringIntToString( st.st_size ) ;
 	
 	/*
-	 * write the size of plain text file to the encrypted file. This information when decrypting the data because it tells us
-	 * how much data is in the volume. We cant know this by looking at the file size because it can be padded and searching for 
-	 * NULL character to look for end point will not work with contents with NULL characters in them.
+	 * write the size of plain text file to the encrypted file. This information is important when decrypting the data 
+	 * because it tells us how much padding was applied if any.
+	 * 
 	 */
 	write( f_out,StringContent( q ),StringLength( q ) ) ;
 	write( f_out,'\0',StringLength( q ) + 1 ) ;
+	
+	/*
+	 * set offset of the header to contain at most 100 characters from the key.Useful when checking if
+	 * the volume is opened with right key.
+	 */
+	memset( memkey,0,KEY_SIZE ) ;
+	
+	if( key_len <= KEY_SIZE )
+		memcpy( memkey,key,key_len ) ;
+	else
+		memcpy( memkey,key,KEY_SIZE ) ;	
+	
+	lseek( f_out,KEY_SIZE,SEEK_SET ) ;	
+	
+	write( f_out,memkey,KEY_SIZE ) ;
 	
 	/*
 	 * set the beginning of the payload,The cypher text will start at byte 512.
@@ -187,13 +210,8 @@ static int encrypt_path( const char * source,const char * dest,const char * key,
 	/*
 	 * Copy over plain text data to the "shell" file through the mapper, creating an encrypted file.
 	 */	
-	while( 1 ){
-		len = read( f_in,buffer,SIZE ) ;
-		if( len <= 0 )
-			break ;
-		
-		write( f_out,buffer,len ) ;
-	}
+	while( read( f_in,buffer,SIZE ) > 0 )
+		write( f_out,buffer,SIZE ) ;
 	
 	close( f_in ) ;
 	close( f_out ) ;
@@ -254,27 +272,37 @@ static int decrypt_path( const char * source,const char * dest,const char * key,
 	read( f_in,buffer,SIZE ) ;
 	
 	/*
+	 * Go to offset 100 and compare its content against presented key.
+	 * Them being the same means the mapper was opened with the right passphrase since there
+	 * isrecognizable pattern.
+	 * 
+	 */
+	
+	if( key_len <= KEY_SIZE ){
+		if( memcmp( buffer + KEY_SIZE,key,key_len ) != 0 )
+			return return_status( 2,f_in,f_out,p ) ;
+	}else{
+		if( memcmp( buffer + KEY_SIZE,key,KEY_SIZE ) != 0 )
+			return return_status( 2,f_in,f_out,p ) ;
+	}
+	
+	/*
 	 * get the size of encrypted data
 	 */
 	size = atoll( buffer ) ;
-	
+
 	/*
-	 * Do a bit of sanity check to check for passphrase correctness.
-	 * The diffence btw encrypted file and plain text file must be btw 0 and 1023
+	 * Make sure the size of the encrypted file is with in expected range.
+	 * It being out of range means either a wrong encrypted key was used or the encrypted file is corrupted.
 	 * 
-	 * A value out of range means a wrong passphrase was used and random data was read and atoll failed to 
-	 * give expected value.
-	 * 
-	 * 1023 = 512 + 511
-	 * The first 512 is for the offset to store plain text file size.
-	 * 
-	 * The 511 is the maximum bytes we can add to encrypted file to make it devisible by 512 
+	 *  Because the padding can be up to 511 bytes and the header takes 512 bytes, the encrypted file will be
+	 *  larger and the different will be >= 512 and < 1024.
 	 */
 	stat( source,&st ) ;
 	
 	test = st.st_size - size ;
 	
-	if( test < SIZE || test > ( SIZE * 2 ) - 1 )
+	if( test < SIZE || test >= ( SIZE * 2 ) )
 		return return_status( 2,f_in,f_out,p ) ;
 	
 	len = 0 ;
