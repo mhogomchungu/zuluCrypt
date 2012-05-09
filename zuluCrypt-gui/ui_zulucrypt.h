@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'zulucrypt.ui'
 **
-** Created: Mon May 7 06:34:29 2012
+** Created: Wed May 9 02:32:19 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -270,9 +270,9 @@ public:
         actionRestore_header->setText(QApplication::translate("zuluCrypt", "restore header", 0, QApplication::UnicodeUTF8));
         actionRestore_header->setShortcut(QApplication::translate("zuluCrypt", "Ctrl+P", 0, QApplication::UnicodeUTF8));
         actionPermission_problems->setText(QApplication::translate("zuluCrypt", "permission problems", 0, QApplication::UnicodeUTF8));
-        actionEncrypt_file->setText(QApplication::translate("zuluCrypt", "encrypt file", 0, QApplication::UnicodeUTF8));
+        actionEncrypt_file->setText(QApplication::translate("zuluCrypt", "encrypt a file", 0, QApplication::UnicodeUTF8));
         actionEncrypt_file->setShortcut(QApplication::translate("zuluCrypt", "Ctrl+R", 0, QApplication::UnicodeUTF8));
-        actionDecrypt_file->setText(QApplication::translate("zuluCrypt", "decrypt file", 0, QApplication::UnicodeUTF8));
+        actionDecrypt_file->setText(QApplication::translate("zuluCrypt", "decrypt a file", 0, QApplication::UnicodeUTF8));
         actionDecrypt_file->setShortcut(QApplication::translate("zuluCrypt", "Ctrl+H", 0, QApplication::UnicodeUTF8));
         QTableWidgetItem *___qtablewidgetitem = tableWidget->horizontalHeaderItem(0);
         ___qtablewidgetitem->setText(QApplication::translate("zuluCrypt", "Encrypted volume path", 0, QApplication::UnicodeUTF8));

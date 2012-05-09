@@ -409,6 +409,7 @@ int main( int argc , char *argv[] )
 
 		q = String( device ) ;	
 		StringRemoveString( q,"\"" ) ;
+		StringSubChar( q,4,'-' ) ;
 		
 		mapping_name = StringContent( q ) ;
 

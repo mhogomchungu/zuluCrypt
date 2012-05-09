@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'password.ui'
 **
-** Created: Fri May 4 19:14:32 2012
+** Created: Wed May 9 02:39:54 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -49,7 +49,7 @@ public:
         if (PasswordDialog->objectName().isEmpty())
             PasswordDialog->setObjectName(QString::fromUtf8("PasswordDialog"));
         PasswordDialog->setWindowModality(Qt::ApplicationModal);
-        PasswordDialog->resize(511, 198);
+        PasswordDialog->resize(511, 197);
         QFont font;
         font.setBold(false);
         font.setWeight(50);
@@ -72,11 +72,11 @@ public:
         checkBoxReadOnly->setChecked(false);
         PushButtonMountPointPath = new QPushButton(PasswordDialog);
         PushButtonMountPointPath->setObjectName(QString::fromUtf8("PushButtonMountPointPath"));
-        PushButtonMountPointPath->setGeometry(QRect(410, 40, 41, 31));
+        PushButtonMountPointPath->setGeometry(QRect(410, 40, 31, 31));
         PushButtonMountPointPath->setAutoDefault(false);
         PushButtonVolumePath = new QPushButton(PasswordDialog);
         PushButtonVolumePath->setObjectName(QString::fromUtf8("PushButtonVolumePath"));
-        PushButtonVolumePath->setGeometry(QRect(410, 10, 41, 31));
+        PushButtonVolumePath->setGeometry(QRect(410, 10, 31, 31));
         PushButtonVolumePath->setAutoDefault(false);
         PushButtonVolumePath->setFlat(false);
         PassPhraseField = new QLineEdit(PasswordDialog);
@@ -97,7 +97,7 @@ public:
         radioButtonPassPhraseFromFile->setChecked(false);
         pushButtonPassPhraseFromFile = new QPushButton(PasswordDialog);
         pushButtonPassPhraseFromFile->setObjectName(QString::fromUtf8("pushButtonPassPhraseFromFile"));
-        pushButtonPassPhraseFromFile->setGeometry(QRect(410, 100, 41, 31));
+        pushButtonPassPhraseFromFile->setGeometry(QRect(410, 100, 31, 31));
         pushButtonPassPhraseFromFile->setAutoDefault(false);
         OpenVolumePath = new QLineEdit(PasswordDialog);
         OpenVolumePath->setObjectName(QString::fromUtf8("OpenVolumePath"));

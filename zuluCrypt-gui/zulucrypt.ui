@@ -370,7 +370,7 @@
   </action>
   <action name="actionEncrypt_file">
    <property name="text">
-    <string>encrypt file</string>
+    <string>encrypt a file</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+R</string>
@@ -378,7 +378,7 @@
   </action>
   <action name="actionDecrypt_file">
    <property name="text">
-    <string>decrypt file</string>
+    <string>decrypt a file</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+H</string>
