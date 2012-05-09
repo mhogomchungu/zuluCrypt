@@ -31,8 +31,6 @@
 
 #define SIZE 512
 
-#define KEY_SIZE 100
-
 /*
  *  routines for encrypting and decrypting stand alone files.
  *  
@@ -130,26 +128,14 @@ int decrypt_file( const char * source,const char * dest,const char * key,uint64_
 	f_in = open( StringContent( p ),O_RDONLY ) ;
 	
 	/*
-	 * Read the first 512 bytes bytes from the encrypted file.
-	 * The content will be in plain text because we are reading from the mapper
+	 * 100 bytes from offset 100 and 100 bytes from offset 200 are supposed to be te same if
+	 * the right key is used.
 	 */
 	read( f_in,buffer,SIZE ) ;
 	
-	/*
-	 * Go to offset 100 and compare its content against presented key.
-	 * Them being the same means the mapper was opened with the right passphrase since there
-	 * isrecognizable pattern.
-	 * 
-	 */
-	
-	if( key_len <= KEY_SIZE ){
-		if( memcmp( buffer + KEY_SIZE,key,key_len ) != 0 )
-			return return_status( 2,f_in,f_out,p ) ;
-	}else{
-		if( memcmp( buffer + KEY_SIZE,key,KEY_SIZE ) != 0 )
-			return return_status( 2,f_in,f_out,p ) ;
-	}
-	
+	if( memcmp( buffer + 100,buffer + 200,100 ) != 0 )
+		return return_status( 2,f_in,f_out,p ) ;
+		
 	/*
 	 * get the size of encrypted data
 	 */
@@ -199,7 +185,6 @@ int encrypt_file( const char * source,const char * dest,const char * key,uint64_
 	string_t q ;
 	
 	char buffer[ SIZE ] ;
-	char memkey[ KEY_SIZE ] ;
 	
 	int f_in ;
 	int f_out ;
@@ -270,19 +255,16 @@ int encrypt_file( const char * source,const char * dest,const char * key,uint64_
 	write( f_out,'\0',StringLength( q ) + 1 ) ;
 	
 	/*
-	 * set offset of the header to contain at most 100 characters from the key.Useful when checking if
-	 * the volume is opened with right key.
+	 * write the same 100 byte random data in two locations to be used to check the decrypting key during decryption.	 * 
 	 */
-	memset( memkey,0,KEY_SIZE ) ;
+	f_in = open( "/dev/urandom",O_RDONLY ) ;
+	read( f_in,buffer,100 ) ;
+	close( f_in ) ;
 	
-	if( key_len <= KEY_SIZE )
-		memcpy( memkey,key,key_len ) ;
-	else
-		memcpy( memkey,key,KEY_SIZE ) ;	
+	lseek( f_out,100,SEEK_SET ) ;	
 	
-	lseek( f_out,KEY_SIZE,SEEK_SET ) ;	
-	
-	write( f_out,memkey,KEY_SIZE ) ;
+	write( f_out,buffer,100 ) ;
+	write( f_out,buffer,100 ) ;
 	
 	/*
 	 * set the beginning of the payload,The cypher text will start at byte 512.
