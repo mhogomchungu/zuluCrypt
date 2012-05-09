@@ -82,9 +82,6 @@ static string_t crypt_mapper( const char * path,const char * key,uint64_t key_le
 	return p ;
 }
 
-/*
- * function responsible for creating an encrypted file
- */
 static int return_status( int st,int f_in,int f_out,string_t p )
 {
 	if( f_out != -1 )
@@ -155,7 +152,6 @@ int decrypt_file( const char * source,const char * dest,const char * key,uint64_
 	if( test < SIZE || test >= ( SIZE * 2 ) )
 		return return_status( 2,f_in,f_out,p ) ;
 	
-	
 	f_out = open( dest,O_WRONLY | O_CREAT ) ;
 	
 	if( size <= SIZE ){
@@ -179,6 +175,9 @@ int decrypt_file( const char * source,const char * dest,const char * key,uint64_
 	return return_status( 0,f_in,f_out,p ) ;	
 }
 
+/*
+ * function responsible for creating an encrypted file
+ */
 int encrypt_file( const char * source,const char * dest,const char * key,uint64_t key_len )
 {
 	string_t p ;

@@ -93,6 +93,7 @@ PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_
 
 install (FILES zuluCrypt.png DESTINATION share/icons)
 
+# desktop file section
 file(WRITE zuluCrypt.desktop
 
 "[Desktop Entry]

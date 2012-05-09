@@ -1,0 +1,4 @@
+
+zuluCrypt.desktop file will be edited during the configuration stage.
+
+If you want your changes to not get overwritten, add them to the desktop file section in the "CMakeLists.txt" file located in this folder.
