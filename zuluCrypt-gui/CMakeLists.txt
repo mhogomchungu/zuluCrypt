@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
-add_definitions( -D_FILE_OFFSET_BITS=64 -Wall ) 
+add_definitions( -D_FILE_OFFSET_BITS=64 -Wall -pedantic -std=c++0x ) 
 
 set (UI_FILES createfile.ui
 		createpartition.ui

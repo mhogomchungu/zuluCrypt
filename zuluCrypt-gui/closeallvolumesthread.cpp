@@ -42,18 +42,20 @@ void closeAllVolumesThread::run()
 	}
 
 	int j = -1 ;
-	QTableWidgetItem * tableItems[ i ] ;
+	
+	QVector<QTableWidgetItem *> tableItems(i) ;
+
 	QTableWidgetItem * deviceItem ;
 
 	while( ++j < i )
-		tableItems[ j ] = m_table->item(j,0) ;
+		tableItems.append(m_table->item(j,0));
 
 	QProcess p ;
 	QString exe ;
 	QString device ;
 
 	for( j = 0 ; j < i ; j++ ){
-		deviceItem = tableItems[ j ] ;
+		deviceItem = tableItems.at(j) ;
 		device = deviceItem->text() ;
 		device.replace("\"","\"\"\"") ;
 		exe = QString("%1 -q -d \"%2\"" ).arg(ZULUCRYPTzuluCrypt).arg(device) ;

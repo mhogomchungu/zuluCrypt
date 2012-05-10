@@ -24,6 +24,7 @@
 #include <QRunnable>
 #include <QTableWidgetItem>
 #include <QTableWidget>
+#include <QVector>
 
 #include <QProcess>
 #include <QString>
