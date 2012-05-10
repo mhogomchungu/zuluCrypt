@@ -50,12 +50,7 @@
 	 
  message( STATUS "Found libcryptsetup.h  : " ${libcryptsetup.h} )   
  
- find_path ( path_to_libcryptsetup.h libcryptsetup.h )
- 
- add_definitions( -I${path_to_libcryptsetup.h} -D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -ansi -pedantic -std=c99 -fPIE ) 
- 
- set( CMAKE_SHARED_LINKER_FLAGS "-s -pie" )
- set( CMAKE_EXE_LINKER_FLAGS "-s -pie" )
+ find_path ( path_to_libcryptsetup.h libcryptsetup.h ) 
  
  find_library( libcryptsetup libcryptsetup.so) 
  
@@ -65,13 +60,7 @@
  
  message( STATUS "Found libcryptsetup.so : " ${libcryptsetup} ) 
  
- add_library( String STATIC string/String.c )
- 
- add_library( StringList STATIC string/StringList.c )
- 
- add_library( process STATIC process/process.c )
- 
- SET( BIN  
+  SET( BIN  
  bin/print_mounted_volumes.c 
  bin/create_mapper_name.c 
  bin/replace_bash_special_chars.c 
@@ -109,12 +98,30 @@
  lib/unmount_volume.c
  lib/file_encryption.c )
  
- add_library( zuluCrypt SHARED ${LIB} )
- add_executable( zuluCrypt-cli ${BIN} )
+ add_definitions( -I${path_to_libcryptsetup.h}  )  
  
- TARGET_LINK_LIBRARIES( zuluCrypt ${libcryptsetup} String ${blkid} ${mountLibrary} process )
+ #set( CMAKE_SHARED_LINKER_FLAGS "-s" )
+ 
+ add_library( String STATIC string/String.c ) 
+ 
+ add_library( StringList STATIC string/StringList.c )
+ 
+ add_library( Process STATIC process/process.c )
+ 
+ add_library( zuluCrypt SHARED ${LIB} )
+ 
+ set_target_properties( String     PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -ansi -pedantic -std=c99" )
+ set_target_properties( StringList PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -ansi -pedantic -std=c99" )
+ set_target_properties( Process    PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -ansi -pedantic -std=c99" )
+ 
+ TARGET_LINK_LIBRARIES( zuluCrypt ${libcryptsetup} String ${blkid} ${mountLibrary} Process )
  
  set_target_properties( zuluCrypt PROPERTIES SOVERSION "2.0.0" )
+ set_target_properties( zuluCrypt PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -ansi -pedantic -std=c99" )
+ 
+ add_executable( zuluCrypt-cli ${BIN} )
+ set_target_properties( zuluCrypt-cli PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread -ansi -pedantic -std=c99" )
+ set_target_properties( zuluCrypt-cli PROPERTIES LINK_FLAGS "-pie" )
  
  TARGET_LINK_LIBRARIES( zuluCrypt-cli zuluCrypt String StringList ${blkid} ) 
  
@@ -124,7 +131,13 @@
             PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE SETUID
  )
  
-  install(TARGETS zuluCrypt
+ if( UNIX AND NOT APPLE AND NOT CMAKE_CROSSCOMPILING AND NOT EXISTS "/etc/debian_version" )
+	if ( CMAKE_SIZEOF_VOID_P EQUAL 8 AND NOT LIB_SUFFIX )
+	     set ( LIB_SUFFIX 64 )
+	 endif( CMAKE_SIZEOF_VOID_P EQUAL 8 AND NOT LIB_SUFFIX)
+ endif( UNIX AND NOT APPLE AND NOT CMAKE_CROSSCOMPILING AND NOT EXISTS "/etc/debian_version" )
+  
+ install(TARGETS zuluCrypt
             LIBRARY DESTINATION lib
  )
   
