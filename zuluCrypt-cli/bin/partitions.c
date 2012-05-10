@@ -201,7 +201,7 @@ int print_partitions( int option )
 {
 	size_t i ;
 	size_t j ;
-	stringList_t stl ;
+	stringList_t stl = NULL ;
 	switch( option ){	
 		case 1 : stl = partitions( ALL_PARTITIONS ) ;
 		break ;

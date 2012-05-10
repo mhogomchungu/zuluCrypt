@@ -52,7 +52,10 @@
  
  find_path ( path_to_libcryptsetup.h libcryptsetup.h )
  
- add_definitions( -I${path_to_libcryptsetup.h} -D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -ansi -pedantic -std=c99 ) 
+ add_definitions( -I${path_to_libcryptsetup.h} -D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -ansi -pedantic -std=c99 -fPIE ) 
+ 
+ set( CMAKE_SHARED_LINKER_FLAGS "-s -pie" )
+ set( CMAKE_EXE_LINKER_FLAGS "-s -pie" )
  
  find_library( libcryptsetup libcryptsetup.so) 
  

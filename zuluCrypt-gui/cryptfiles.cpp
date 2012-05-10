@@ -249,8 +249,10 @@ void cryptfiles::pbOpenFolder(void)
 	QString p = tr("Select Path to put destination file") ;
 	QString Z = QFileDialog::getExistingDirectory(this,p,QDir::homePath(),QFileDialog::ShowDirsOnly) ;
 
+	if(Z.isEmpty())
+		Z = QDir::homePath() ;
 	QString path ;
-	if(m_operation == QString("encrypt"))
+	if(m_operation == QString("-E"))
 		path = Z + QString("/") + m_ui->lineEditSourcePath->text().split("/").last() + QString(".zc");
 	else{
 		path = Z + QString("/") + m_ui->lineEditSourcePath->text().split("/").last();
