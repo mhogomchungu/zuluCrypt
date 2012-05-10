@@ -47,6 +47,8 @@ static void ProcessSetArguments_1( process_t p )
 	 * this function converts a one dimentional array into a two dimentional array as expected by the second argument of execl
 	 * 
 	 */
+	size_t k = 0 ;
+	
 	char * c ;
 	const char * d ;
 	
@@ -61,8 +63,6 @@ static void ProcessSetArguments_1( process_t p )
 	}
 	
 	delimiter = p->delimiter ;
-	
-	size_t k = 0 ;
 	
 	d = p->exe - 1 ;
 	

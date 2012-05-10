@@ -23,13 +23,18 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <libcryptsetup.h>   
+#include <stdlib.h>
 
 #include "../string/String.h"
 #include "../constants.h"
 #include "../version.h"
 #include "../zuluCrypt.h"
 
+#ifdef __STDC__
+char * realpath( const char * path, char * resolved_path ) ;
+#endif
+
 /*
  * this function checks if path exists or not.
  */
-int is_path_valid(const char * path ) ;
+int is_path_valid( const char * path ) ;

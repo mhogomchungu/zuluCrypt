@@ -17,6 +17,7 @@
   *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
   */
  
+#include <stdlib.h>
 #include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -32,6 +33,9 @@
 #include "../constants.h"
 #include "../zuluCrypt.h"
 
+#ifdef __STDC__
+char * realpath( const char * path, char * resolved_path ) ;
+#endif
 /*
  * this structure holds command line arguments. * 
  * It is instantiated in main.c * 

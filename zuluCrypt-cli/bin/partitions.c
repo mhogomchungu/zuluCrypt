@@ -64,6 +64,8 @@ static stringList_t partitionList( void )
 {
 	const char * device ;	
 	
+	string_t st_1 ;
+	
 	size_t i ;
 	size_t j ;	
 	ssize_t index ;	
@@ -75,8 +77,6 @@ static stringList_t partitionList( void )
 	
 	if( st == NULL )
 		return NULL ;
-	
-	string_t st_1 ;
 	
 	stl = StringListStringSplit( &st,'\n' ) ;
 	

@@ -17,6 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <unistd.h>
 #include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,6 +28,8 @@
 #include <sys/wait.h>
 
 #include "includes.h"
+#include "getopt.h"
+
 #include "../string/StringList.h"
 
 /*
@@ -66,9 +69,11 @@ char * device_from_uuid( const char * uuid ) ;
  */
 int print_partitions( int option ) ;
 
+void get_opts( int argc ,char *argv[],struct_opts * stopts ) ;
+
 string_t get_passphrase( void )
 {	
-	//I got the big chunk of this code from: http://www.gnu.org/s/hello/manual/libc/getpass.html
+	/* I got the big chunk of this code from: http://www.gnu.org/s/hello/manual/libc/getpass.html */
 	char c[2] ;
 	string_t p ;
 	struct termios old, new;

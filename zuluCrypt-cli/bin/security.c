@@ -20,9 +20,14 @@
 #include "includes.h"
 
 #include <errno.h>
+#include <unistd.h>
 
 #define READ 1 
 #define WRITE 0
+
+#ifdef __STDC__
+int seteuid( uid_t );
+#endif
 
 /*
  * 

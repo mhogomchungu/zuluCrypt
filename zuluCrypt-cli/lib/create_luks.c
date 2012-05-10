@@ -33,7 +33,7 @@ int create_luks( const char * dev,const char * pass,size_t pass_size,const char 
 		.hash = "sha1",
 		.data_alignment = 4096,
 	};
-	
+		
 	if( is_path_valid( dev ) != 0 )
 		return 4 ;
 	

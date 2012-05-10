@@ -24,6 +24,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <pthread.h>
+#include <signal.h>
+
+#ifdef __STDC__
+int kill( pid_t,int );
+#endif
 
 typedef struct Process_t * process_t ;
 

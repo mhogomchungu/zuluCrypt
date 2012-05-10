@@ -31,6 +31,7 @@
 
 #define SIZE 512
 
+
 /*
  *  routines for encrypting and decrypting stand alone files.
  *  

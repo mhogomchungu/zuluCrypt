@@ -164,14 +164,15 @@ stringList_t StringListSplit( const char * cstring,char splitter )
 	const char * b = cstring ;
 	char * d ;
 	char * e ;
-	char s[ 2 ] ;
-	s[ 1 ] = '\0' ;
-	s[ 0 ] = splitter ;
 	
 	size_t sp_len = sizeof( char ) ;
 	size_t len ; 
 	stringList_t stl = NULL ;
 
+	char s[ 2 ] ;
+	s[ 1 ] = '\0' ;
+	s[ 0 ] = splitter ;
+	
 	if( strstr( b,s ) == NULL )
 		return StringList( cstring ) ;
 	

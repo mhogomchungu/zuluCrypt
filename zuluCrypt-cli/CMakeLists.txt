@@ -52,7 +52,7 @@
  
  find_path ( path_to_libcryptsetup.h libcryptsetup.h )
  
- add_definitions( -I${path_to_libcryptsetup.h} -D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread ) 
+ add_definitions( -I${path_to_libcryptsetup.h} -D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -ansi -pedantic -std=c99 ) 
  
  find_library( libcryptsetup libcryptsetup.so) 
  
@@ -84,7 +84,8 @@
  bin/remove_key.c
  bin/write_device_with_junk.c
  bin/save_and_restore_luks_header.c
- bin/crypt_file.c ) 
+ bin/crypt_file.c
+ ) 
  
  SET( LIB 
  lib/is_path_valid.c 

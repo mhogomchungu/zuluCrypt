@@ -35,7 +35,7 @@ int open_plain( const char * device,const char * mapper,const char * mode,const 
 		.skip = 0,
 		.offset = 0,
 	};
-	
+		
 	if( is_path_valid( device ) != 0 )
 		return 3 ;
 
