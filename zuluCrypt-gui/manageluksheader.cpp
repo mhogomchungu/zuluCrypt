@@ -80,33 +80,76 @@ void manageluksheader::headerBackUp()
 	m_ui->labelBackUpHeader->setText(QString("backup path"));
 	m_ui->pbCreate->setText(QString("&backup"));
 	m_ui->pbOpenFolder->setEnabled(false);
-	m_ui->labelBackUpHeader->setEnabled(false);
-	m_ui->lineEditBackUpName->setEnabled(false);
+	//m_ui->labelBackUpHeader->setEnabled(false);
+	//m_ui->lineEditBackUpName->setEnabled(false);
+	this->show();
 }
 
 void manageluksheader::backUpHeader()
 {
-	this->headerBackUp();
-	this->show();
+	this->headerBackUp();	
 }
 
 void manageluksheader::backUpHeader(QString device)
 {
-	this->headerBackUp();
 	m_ui->lineEditDevicePath->setText(device);
-	this->show();
+	this->headerBackUp();
 }
+
 void manageluksheader::backUpHeaderNameChange(QString name)
 {
 	if( m_operation == QString("restore"))
 		return ;
 
-	if(name.isEmpty())
-		m_ui->lineEditBackUpName->setText(QString(""));
+	if( m_ui->lineEditDevicePath->text().isEmpty()){
+		;
+	}else{
+		QString p = name.split("/").last() ;
 
-	name = QDir::homePath() + QString("/") + name.split("/").last() + QString(".luksHeaderBackUp");
-	
-	m_ui->lineEditBackUpName->setText(name);
+		if(p.isEmpty())
+			m_ui->lineEditBackUpName->clear();
+		else{
+			QString path = m_ui->lineEditBackUpName->text() ;
+
+			if(path.isEmpty())
+				path = QDir::homePath() + QString("/") ;
+
+			QStringList q = path.split("/") ;
+			q.removeLast();
+
+			int j ;
+			int i ;
+
+			j = q.size() ;
+			path.clear();
+			for( i = 0 ; i < j ; i++ )
+				path += q.at(i) +  QString("/") ;
+
+			path += p + QString(".luksHeaderBackUp");
+			m_ui->lineEditBackUpName->setText(path);
+		}
+	}
+}
+
+void manageluksheader::pbOpenLuksHeaderBackUp()
+{
+	QString Z ;
+	QString Y ;
+	if(m_operation == QString("restore"))
+		Z = QFileDialog::getOpenFileName(this,tr("select a file with a luks backup header"),QDir::homePath(),0);
+	else{
+		//Y = Z ;
+		//QString p = Z.split("/").last() ;
+
+		Z = QFileDialog::getExistingDirectory(this,tr("select a folder to store the header"),QDir::homePath(),0);
+		//if( Z.isEmpty())
+		//	Z = Y ;
+
+		//Z += Z + p ;
+	}
+
+	m_ui->lineEditBackUpName->setText(Z);
+	m_ui->lineEditDevicePath->setFocus();
 }
 
 void manageluksheader::restoreHeader()
@@ -235,13 +278,6 @@ void manageluksheader::threadExitStatus(int st)
 		case 17: m_msg.UIMessage( tr("ERROR!"),tr("backup file does not appear to contain luks header" ))			; break ;
 	}
 	this->enableAll();
-}
-
-void manageluksheader::pbOpenLuksHeaderBackUp()
-{
-	QString Z = QFileDialog::getOpenFileName(this,tr("select a file with a luks backup header"),QDir::homePath(),0);
-	m_ui->lineEditBackUpName->setText(Z);
-	m_ui->lineEditDevicePath->setFocus();
 }
 
 manageluksheader::~manageluksheader()
