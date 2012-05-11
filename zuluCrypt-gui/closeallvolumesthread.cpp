@@ -43,7 +43,7 @@ void closeAllVolumesThread::run()
 
 	int j = -1 ;
 	
-	QVector<QTableWidgetItem *> tableItems(i) ;
+	QVector<QTableWidgetItem *> tableItems(0) ;
 
 	QTableWidgetItem * deviceItem ;
 
