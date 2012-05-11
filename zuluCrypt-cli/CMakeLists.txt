@@ -137,9 +137,7 @@
 	 endif( CMAKE_SIZEOF_VOID_P EQUAL 8 AND NOT LIB_SUFFIX)
  endif( UNIX AND NOT APPLE AND NOT CMAKE_CROSSCOMPILING AND NOT EXISTS "/etc/debian_version" )
   
- install(TARGETS zuluCrypt
-            LIBRARY DESTINATION lib
- )
+ install(TARGETS zuluCrypt LIBRARY DESTINATION lib${LIB_SUFFIX} )
   
  install(FILES zuluCrypt.h DESTINATION include )
 
