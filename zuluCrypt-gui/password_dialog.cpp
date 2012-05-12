@@ -247,7 +247,7 @@ void passwordDialog::success(void)
 {
 	checkvolumetype * cvt = new checkvolumetype(m_ui->OpenVolumePath->text());
 	connect(cvt,SIGNAL(done(QString)),this,SLOT(done(QString)));
-	QThreadPool::globalInstance()->start(cvt) ;
+	cvt->start();
 }
 
 void passwordDialog::done(QString type)

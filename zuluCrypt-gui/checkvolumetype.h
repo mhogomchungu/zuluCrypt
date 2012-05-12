@@ -23,6 +23,7 @@
 #include <QRunnable>
 #include <QObject>
 #include <QString>
+#include <QThreadPool>
 
 #include "miscfunctions.h"
 
@@ -32,6 +33,7 @@ class checkvolumetype : public QObject,public QRunnable
 public:
 	checkvolumetype(QString);
 	~checkvolumetype() ;
+	void start(void);
 signals:
 	void done(QString);
 private:

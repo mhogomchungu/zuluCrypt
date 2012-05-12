@@ -25,6 +25,11 @@ checkvolumetype::checkvolumetype(QString path)
 	m_device = path ;
 }
 
+void checkvolumetype::start()
+{
+	QThreadPool::globalInstance()->start(this) ;	
+}
+
 void checkvolumetype::run()
 {
 	QString path = m_device ;
