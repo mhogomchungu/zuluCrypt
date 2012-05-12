@@ -79,7 +79,7 @@ void manageluksheader::headerBackUp()
 	this->setWindowTitle(QString("back up luks header"));
 	m_ui->labelBackUpHeader->setText(QString("backup path"));
 	m_ui->pbCreate->setText(QString("&backup"));
-	m_ui->pbOpenFolder->setEnabled(false);
+	//m_ui->pbOpenFolder->setEnabled(false);
 	//m_ui->labelBackUpHeader->setEnabled(false);
 	//m_ui->lineEditBackUpName->setEnabled(false);
 	this->show();
@@ -115,14 +115,9 @@ void manageluksheader::backUpHeaderNameChange(QString name)
 				path = QDir::homePath() + QString("/") ;
 
 			QStringList q = path.split("/") ;
-			q.removeLast();
-
-			int j ;
-			int i ;
-
-			j = q.size() ;
 			path.clear();
-			for( i = 0 ; i < j ; i++ )
+			int j = q.size() - 1 ;
+			for( int i = 0 ; i < j ; i++ )
 				path += q.at(i) +  QString("/") ;
 
 			path += p + QString(".luksHeaderBackUp");
@@ -138,18 +133,29 @@ void manageluksheader::pbOpenLuksHeaderBackUp()
 	if(m_operation == QString("restore"))
 		Z = QFileDialog::getOpenFileName(this,tr("select a file with a luks backup header"),QDir::homePath(),0);
 	else{
-		//Y = Z ;
-		//QString p = Z.split("/").last() ;
-
 		Z = QFileDialog::getExistingDirectory(this,tr("select a folder to store the header"),QDir::homePath(),0);
-		//if( Z.isEmpty())
-		//	Z = Y ;
 
-		//Z += Z + p ;
+		QString p = m_ui->lineEditDevicePath->text().split("/").last() ;
+
+		if(!p.isEmpty()){
+			QString q = m_ui->lineEditBackUpName->text() ;
+			if(q.isEmpty())
+				Z += QString("/") + p + QString(".luksHeaderBackUp");
+			else{
+				q = q.split("/").last() ;
+				if(q.isEmpty())
+					Z += QString("/") + p + QString(".luksHeaderBackUp");
+				else
+					Z += QString("/") + q ;
+			}
+		}
 	}
 
 	m_ui->lineEditBackUpName->setText(Z);
-	m_ui->lineEditDevicePath->setFocus();
+	if(m_ui->lineEditDevicePath->text().isEmpty())
+		m_ui->lineEditDevicePath->setFocus();
+	else
+		m_ui->pbCreate->setFocus();
 }
 
 void manageluksheader::restoreHeader()
@@ -241,15 +247,20 @@ void manageluksheader::pbOpenPartition()
 void manageluksheader::selectedPartition(QString p)
 {
 	m_ui->lineEditDevicePath->setText(p);
-	m_ui->lineEditBackUpName->setFocus();
+	if(m_ui->lineEditBackUpName->text().isEmpty())
+		m_ui->lineEditBackUpName->setFocus();
+	else
+		m_ui->pbCreate->setFocus();
 }
 
 void manageluksheader::pbOpenFile()
 {
 	QString Z = QFileDialog::getOpenFileName(this,tr("select luks container you want to backup its header"),QDir::homePath(),0);
 	m_ui->lineEditDevicePath->setText(Z);
-	m_ui->lineEditBackUpName->setFocus();
-}
+	if(m_ui->lineEditBackUpName->text().isEmpty())
+		m_ui->lineEditBackUpName->setFocus();
+	else
+		m_ui->pbCreate->setFocus();}
 
 void manageluksheader::threadExitStatus(int st)
 {

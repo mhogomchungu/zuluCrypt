@@ -194,7 +194,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>encrypted file</string>
+    <string>encrypted container in a file</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+A</string>
@@ -208,7 +208,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>encrypted partition</string>
+    <string>encrypted container in a partition</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>

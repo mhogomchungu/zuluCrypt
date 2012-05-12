@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'zulucrypt.ui'
 **
-** Created: Wed May 9 02:32:19 2012
+** Created: Fri May 11 15:51:23 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -229,9 +229,9 @@ public:
         actionFileOpen->setShortcut(QApplication::translate("zuluCrypt", "Ctrl+Z", 0, QApplication::UnicodeUTF8));
         actionPartitionOpen->setText(QApplication::translate("zuluCrypt", "encrypted partition", 0, QApplication::UnicodeUTF8));
         actionPartitionOpen->setShortcut(QApplication::translate("zuluCrypt", "Ctrl+X", 0, QApplication::UnicodeUTF8));
-        actionFileCreate->setText(QApplication::translate("zuluCrypt", "encrypted file", 0, QApplication::UnicodeUTF8));
+        actionFileCreate->setText(QApplication::translate("zuluCrypt", "encrypted container in a file", 0, QApplication::UnicodeUTF8));
         actionFileCreate->setShortcut(QApplication::translate("zuluCrypt", "Ctrl+A", 0, QApplication::UnicodeUTF8));
-        actionPartitionCreate->setText(QApplication::translate("zuluCrypt", "encrypted partition", 0, QApplication::UnicodeUTF8));
+        actionPartitionCreate->setText(QApplication::translate("zuluCrypt", "encrypted container in a partition", 0, QApplication::UnicodeUTF8));
         actionPartitionCreate->setShortcut(QApplication::translate("zuluCrypt", "Ctrl+S", 0, QApplication::UnicodeUTF8));
         actionAbout->setText(QApplication::translate("zuluCrypt", "about", 0, QApplication::UnicodeUTF8));
         actionAbout->setShortcut(QApplication::translate("zuluCrypt", "Ctrl+R", 0, QApplication::UnicodeUTF8));

@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>552</width>
-    <height>216</height>
+    <height>195</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -62,7 +62,7 @@
    <property name="geometry">
     <rect>
      <x>200</x>
-     <y>180</y>
+     <y>160</y>
      <width>81</width>
      <height>31</height>
     </rect>
@@ -122,7 +122,7 @@
      <x>120</x>
      <y>70</y>
      <width>311</width>
-     <height>41</height>
+     <height>31</height>
     </rect>
    </property>
    <property name="title">
@@ -131,8 +131,8 @@
    <widget class="QRadioButton" name="rbKey">
     <property name="geometry">
      <rect>
-      <x>6</x>
-      <y>8</y>
+      <x>0</x>
+      <y>0</y>
       <width>111</width>
       <height>31</height>
      </rect>
@@ -144,8 +144,8 @@
    <widget class="QRadioButton" name="rbKeyFile">
     <property name="geometry">
      <rect>
-      <x>110</x>
-      <y>10</y>
+      <x>120</x>
+      <y>0</y>
       <width>161</width>
       <height>31</height>
      </rect>
@@ -159,7 +159,7 @@
    <property name="geometry">
     <rect>
      <x>120</x>
-     <y>120</y>
+     <y>100</y>
      <width>311</width>
      <height>31</height>
     </rect>
@@ -169,7 +169,7 @@
    <property name="geometry">
     <rect>
      <x>430</x>
-     <y>120</y>
+     <y>100</y>
      <width>31</width>
      <height>31</height>
     </rect>
@@ -182,7 +182,7 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>120</y>
+     <y>100</y>
      <width>111</width>
      <height>31</height>
     </rect>
@@ -198,7 +198,7 @@
    <property name="geometry">
     <rect>
      <x>120</x>
-     <y>149</y>
+     <y>130</y>
      <width>311</width>
      <height>31</height>
     </rect>
@@ -207,8 +207,8 @@
   <widget class="QLabel" name="labelKey2">
    <property name="geometry">
     <rect>
-     <x>4</x>
-     <y>149</y>
+     <x>0</x>
+     <y>130</y>
      <width>111</width>
      <height>31</height>
     </rect>
@@ -224,7 +224,7 @@
    <property name="geometry">
     <rect>
      <x>280</x>
-     <y>180</y>
+     <y>160</y>
      <width>75</width>
      <height>31</height>
     </rect>

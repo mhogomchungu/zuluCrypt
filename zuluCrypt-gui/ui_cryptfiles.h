@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'cryptfiles.ui'
 **
-** Created: Mon May 7 17:41:41 2012
+** Created: Fri May 11 15:54:24 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -49,7 +49,7 @@ public:
         if (cryptfiles->objectName().isEmpty())
             cryptfiles->setObjectName(QString::fromUtf8("cryptfiles"));
         cryptfiles->setWindowModality(Qt::ApplicationModal);
-        cryptfiles->resize(552, 215);
+        cryptfiles->resize(552, 194);
         lineEditDestinationPath = new QLineEdit(cryptfiles);
         lineEditDestinationPath->setObjectName(QString::fromUtf8("lineEditDestinationPath"));
         lineEditDestinationPath->setGeometry(QRect(120, 40, 311, 31));
@@ -62,7 +62,7 @@ public:
         pbOpenFolder->setGeometry(QRect(430, 40, 31, 31));
         pbCreate = new QPushButton(cryptfiles);
         pbCreate->setObjectName(QString::fromUtf8("pbCreate"));
-        pbCreate->setGeometry(QRect(200, 180, 81, 31));
+        pbCreate->setGeometry(QRect(200, 160, 81, 31));
         pbCreate->setAutoDefault(false);
         pbCreate->setDefault(true);
         labelSourcePath = new QLabel(cryptfiles);
@@ -77,33 +77,33 @@ public:
         pushButtonFile->setGeometry(QRect(430, 10, 31, 31));
         groupBox = new QGroupBox(cryptfiles);
         groupBox->setObjectName(QString::fromUtf8("groupBox"));
-        groupBox->setGeometry(QRect(120, 70, 311, 41));
+        groupBox->setGeometry(QRect(120, 70, 311, 31));
         rbKey = new QRadioButton(groupBox);
         rbKey->setObjectName(QString::fromUtf8("rbKey"));
-        rbKey->setGeometry(QRect(6, 8, 111, 31));
+        rbKey->setGeometry(QRect(0, 0, 111, 31));
         rbKeyFile = new QRadioButton(groupBox);
         rbKeyFile->setObjectName(QString::fromUtf8("rbKeyFile"));
-        rbKeyFile->setGeometry(QRect(110, 10, 161, 31));
+        rbKeyFile->setGeometry(QRect(120, 0, 161, 31));
         lineEditPass_1 = new QLineEdit(cryptfiles);
         lineEditPass_1->setObjectName(QString::fromUtf8("lineEditPass_1"));
-        lineEditPass_1->setGeometry(QRect(120, 120, 311, 31));
+        lineEditPass_1->setGeometry(QRect(120, 100, 311, 31));
         pushButtonKeyFile = new QPushButton(cryptfiles);
         pushButtonKeyFile->setObjectName(QString::fromUtf8("pushButtonKeyFile"));
-        pushButtonKeyFile->setGeometry(QRect(430, 120, 31, 31));
+        pushButtonKeyFile->setGeometry(QRect(430, 100, 31, 31));
         labelKey = new QLabel(cryptfiles);
         labelKey->setObjectName(QString::fromUtf8("labelKey"));
-        labelKey->setGeometry(QRect(0, 120, 111, 31));
+        labelKey->setGeometry(QRect(0, 100, 111, 31));
         labelKey->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         lineEditPass_2 = new QLineEdit(cryptfiles);
         lineEditPass_2->setObjectName(QString::fromUtf8("lineEditPass_2"));
-        lineEditPass_2->setGeometry(QRect(120, 149, 311, 31));
+        lineEditPass_2->setGeometry(QRect(120, 130, 311, 31));
         labelKey2 = new QLabel(cryptfiles);
         labelKey2->setObjectName(QString::fromUtf8("labelKey2"));
-        labelKey2->setGeometry(QRect(4, 149, 111, 31));
+        labelKey2->setGeometry(QRect(0, 130, 111, 31));
         labelKey2->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         pushButtonCancel = new QPushButton(cryptfiles);
         pushButtonCancel->setObjectName(QString::fromUtf8("pushButtonCancel"));
-        pushButtonCancel->setGeometry(QRect(280, 180, 75, 31));
+        pushButtonCancel->setGeometry(QRect(280, 160, 75, 31));
         QWidget::setTabOrder(lineEditDestinationPath, pbOpenFolder);
         QWidget::setTabOrder(pbOpenFolder, pbCreate);
 
