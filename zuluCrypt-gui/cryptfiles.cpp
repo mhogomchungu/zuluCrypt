@@ -72,6 +72,8 @@ void cryptfiles::rbKeyChecked()
 	m_ui->lineEditPass_2->clear();
 	m_ui->lineEditPass_1->setEchoMode(QLineEdit::Password);	
 	m_ui->lineEditPass_1->setFocus();
+	m_ui->labelKey->setText(QString("passphrase"));
+	m_ui->labelKey2->setText(QString("repeat passphrase"));
 
 	if(m_operation == QString("-E")){
 		m_ui->labelKey2->setEnabled(true);
@@ -82,6 +84,7 @@ void cryptfiles::rbKeyChecked()
 
 void cryptfiles::rbKeyFileChecked()
 {
+	m_ui->labelKey->setText(QString("keyfile"));
 	m_ui->pushButtonKeyFile->setIcon(QIcon(QString(":/keyfile.png")));
 	m_ui->lineEditPass_2->setEnabled(false);
 	m_ui->pushButtonKeyFile->setEnabled(true);
