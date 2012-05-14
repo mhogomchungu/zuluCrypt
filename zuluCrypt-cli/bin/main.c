@@ -118,14 +118,13 @@ zuluCrypt-cli -r [ -d ] [ -p/-f/-h ] \n\
 zuluCrypt-cli -a [ -d ] [ [ -y/-u ] [ -l/-n ] ]/[ -h ]\n\
 zuluCrypt-cli -b [ -d ]\n\
 zuluCrypt-cli -w [ -d ]   d argument must be something like: UUID=\"2468d6a7-9a71-4312-8bd9-662f982fade5\" ( or without quotes )\n\
-zuluCrypt-cli -D [ -d ]   d device must be mapper path at /dev/mapper/\n\
+zuluCrypt-cli -P [ -d ]   d device must be mapper path at /dev/mapper/\n\
 zuluCrypt-cli -X [ -d ]\n\
 zuluCrypt-cli -J [ -d ]\n\
 zuluCrypt-cli -R [ -d ] [ -f ]\n\
 zuluCrypt-cli -B [ -d ] [ -f ]\n\
 zuluCrypt-cli -A\n\
 zuluCrypt-cli -S\n\
-zuluCrypt-cli -N\n\
 zuluCrypt-cli -N\n\
 \n\
 examples:\n\

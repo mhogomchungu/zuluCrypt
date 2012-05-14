@@ -122,8 +122,8 @@
      <string>&amp;help</string>
     </property>
     <addaction name="actionInfo"/>
-    <addaction name="actionAbout"/>
     <addaction name="actionPermission_problems"/>
+    <addaction name="actionAbout"/>
    </widget>
    <widget class="QMenu" name="menuConfigure">
     <property name="title">
@@ -175,7 +175,7 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionFileOpen">
    <property name="text">
-    <string>encrypted file</string>
+    <string>encrypted container in a file</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Z</string>
@@ -183,7 +183,7 @@
   </action>
   <action name="actionPartitionOpen">
    <property name="text">
-    <string>encrypted partition</string>
+    <string>encrypted container in a partition</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+X</string>
@@ -341,7 +341,7 @@
   </action>
   <action name="actionErase_data_on_device">
    <property name="text">
-    <string>erase data on device</string>
+    <string>erase data in a device</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+N</string>
@@ -365,7 +365,7 @@
   </action>
   <action name="actionPermission_problems">
    <property name="text">
-    <string>permission problems</string>
+    <string>permission</string>
    </property>
   </action>
   <action name="actionEncrypt_file">
