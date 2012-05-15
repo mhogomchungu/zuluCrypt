@@ -528,14 +528,20 @@ const char * StringReplaceChar( string_t st,char x,char y )
 
 string_t StringIntToString( uint64_t z )
 {
-	string_t st = String( "" ) ;
-	
+	/*
+	 *  2^64 has a maximum of 19 digits,64 byte buffer is more that enough
+	 */
+	char buffer[ 64 ] ;
+	buffer[ 63 ] = '\0' ;
+	int i = 63 ;
+
 	do{
-		StringPrependChar( st,z % 10 + '0' ) ;
+		i-- ;
+		buffer[ i ] = z % 10 + '0' ;
 		z = z / 10 ;		
-	}while( z != 0 ) ;
+	}while( z != 0 && i != 0 ) ;
 	
-	return st ;
+	return String( buffer + i ) ;
 }
 
 char * StringIntToString_1( char * x, size_t y,uint64_t z )

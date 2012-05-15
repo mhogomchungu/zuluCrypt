@@ -46,22 +46,23 @@
  * 
  *  to create a decrypted file:
  * 
- *  create a "shell" file, attach a mapper to the encrypted file and copy contents of encrypted file through
- *  the mapper to the "shell" file and the shell file will contain decrypted data.
+ *  create a container file, attach a mapper to the container file and copy contents ofthe file to be encrypted to the container file through
+ *  the mapper .
  * 
- *  The encrypted file has a simple format.
+ *  The container file has a simple format.
  *  1. The file will be a multiple of 512,if the plain text file has a file size that is not a multiple of 512,then
  *     encrypted file will be padded to the next file size of 512 mupltiple.
  * 
- *  2. The encrypted file will have an addition size of 512 added to the beginning of thhe encrypted file.This is the header
+ *  2. The encrypted file will have an addition size of 512 bytes added to the beginning of the encrypted file.This is the header
  *     of the encrypted file.
  * 
- *     offset 0 to 100 contains the size of plain text in a C string format. If for example the plain text file has 69 bytes in it,
- *     the header at offset 0 will contain "69\0".Only characters from '0' to '9' are allowed and they must be null terminated.
+ *     100 bytes of data are read from "/dev/urandom" and added at offset 100 and offset 200.These two 100 bytes data chunks will bo
+ *     compared to check if the decryption key is the same as encrypting key.The offsett should math if thhe keys are the same.
  * 
- *     offset 100 to 200 will contain atmost 100 characters used in creating the encrypted file.
- *     If the key is less than 100 bytes in length,then the remaining length is NULL padded.
+ *     The first 100 bytes will contain the size of the load and the format should be a format atoll() can correctly undestand. ie
+ *     the size must be a null terminated string of digits representing the size of the load.
  * 
+ *      
  *  If for example, a 100 bytes file is to be encrypted,the encrypted file will have a file size of 1024 bytes. First, the 100 bytes
  *  will be padded to 512 and then 512 bytes will be added to store the size of the plain text file,useful when decrypting the file. 
  * 

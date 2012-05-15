@@ -173,9 +173,6 @@ stringList_t StringListSplit( const char * cstring,char splitter )
 	s[ 1 ] = '\0' ;
 	s[ 0 ] = splitter ;
 	
-	if( strstr( b,s ) == NULL )
-		return StringList( cstring ) ;
-	
 	while( ( d = strstr( b,s ) ) != NULL )
 	{
 		len = d - b ;
@@ -194,6 +191,15 @@ stringList_t StringListSplit( const char * cstring,char splitter )
 		}
 		b = d + sp_len ;
 	}
+	
+	if( b == cstring ){
+		/*
+		 * the loop above was skipped,meaning the delimiter wasnt found.
+		 * create a stringlist with one element made up of the original string
+		 */
+		stl = StringList( cstring ) ;
+	}
+	
 	return stl ;
 }
 

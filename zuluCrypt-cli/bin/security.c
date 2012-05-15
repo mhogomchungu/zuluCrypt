@@ -37,9 +37,15 @@ int seteuid( uid_t );
  */
 
 
-static int has_access( const char * path, int c )
+static int has_access( const char * path,int c,uid_t uid )
 {
 	int f ;
+	
+	int st = -1 ;
+	
+	uid_t org = getuid() ;
+	
+	seteuid( uid ) ;
 	
 	if( c == READ )
 		f = open( path,O_RDONLY );
@@ -48,45 +54,28 @@ static int has_access( const char * path, int c )
 	
 	if( f >= 0 ){
 		close( f ) ;
-		return 0 ;
+		st = 0 ;
 	}else{
 		switch( errno ){
-			case EACCES : return 1 ; /* permission denied */
-			case ENOENT : return 2 ; /* invalid path*/
-			default     : return 3 ; /* common error */    
+			case EACCES : st = 1 ; break ; /* permission denied */
+			case ENOENT : st = 2 ; break ; /* invalid path*/
+			default     : st = 3 ; break ; /* common error */    
 		}
 	}
-	return -1 ; /*shouldnt get here,silence compiler warning */
+	
+	seteuid( org ) ;
+	
+	return st ; 
 }
 
 int can_open_path_for_reading( const char * path,uid_t uid )
 {
-	int st ;
-	
-	uid_t org = getuid() ;
-	
-	seteuid( uid ) ;
-	
-	st = has_access( path,READ ) ;
-	
-	seteuid( org ) ;
-	
-	return st ;
+	return has_access( path,READ,uid ) ;
 }
 
 int can_open_path_for_writing( const char * path,uid_t uid )
 {
-	int st ;
-	
-	uid_t org = getuid() ;
-	
-	seteuid( uid ) ;
-	
-	st = has_access( path,WRITE ) ;
-	
-	seteuid( org ) ;
-	
-	return st ;
+	return has_access( path,WRITE,uid ) ;
 }
 
 int create_mount_point( const char * path,uid_t uid )

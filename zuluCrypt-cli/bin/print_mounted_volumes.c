@@ -22,7 +22,7 @@
 
 #include <libcryptsetup.h>
 /*
- * below header file does not ship with the source code, it is created at configure time * 
+ * below header file does not ship with the source code, it is created at configure time 
  */
 #include "../libmount_header.h"
 
@@ -46,14 +46,11 @@ static void print( uid_t uid,stringList_t stl )
 	stringList_t stx ;
 	
 	string_t q ; 
-	
-	string_t z = StringIntToString( uid ) ;
-	
-	string_t p = String( crypt_get_dir() ) ;
 
-	StringAppend( p,"/zuluCrypt-" ) ;
+	string_t p = StringIntToString( uid ) ;
 	
-	StringAppendString( p,z ) ;
+	StringPrepend( p,"/zuluCrypt-" ) ;
+	StringPrepend( p,crypt_get_dir() ) ;
 	
 	len = StringLength( p ) ;
 	e = StringContent( p ) ;
@@ -92,7 +89,6 @@ static void print( uid_t uid,stringList_t stl )
 	}
 	
 	StringDelete( &p ) ;
-	StringDelete( &z ) ;
 }
 
 static int free_return( char * path,int st )
