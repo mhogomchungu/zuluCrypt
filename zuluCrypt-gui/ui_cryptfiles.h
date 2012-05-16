@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'cryptfiles.ui'
 **
-** Created: Fri May 11 15:54:24 2012
+** Created: Tue May 15 16:34:20 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -49,7 +49,7 @@ public:
         if (cryptfiles->objectName().isEmpty())
             cryptfiles->setObjectName(QString::fromUtf8("cryptfiles"));
         cryptfiles->setWindowModality(Qt::ApplicationModal);
-        cryptfiles->resize(552, 194);
+        cryptfiles->resize(552, 195);
         lineEditDestinationPath = new QLineEdit(cryptfiles);
         lineEditDestinationPath->setObjectName(QString::fromUtf8("lineEditDestinationPath"));
         lineEditDestinationPath->setGeometry(QRect(120, 40, 311, 31));
@@ -80,10 +80,10 @@ public:
         groupBox->setGeometry(QRect(120, 70, 311, 31));
         rbKey = new QRadioButton(groupBox);
         rbKey->setObjectName(QString::fromUtf8("rbKey"));
-        rbKey->setGeometry(QRect(0, 0, 111, 31));
+        rbKey->setGeometry(QRect(10, 0, 111, 31));
         rbKeyFile = new QRadioButton(groupBox);
         rbKeyFile->setObjectName(QString::fromUtf8("rbKeyFile"));
-        rbKeyFile->setGeometry(QRect(120, 0, 161, 31));
+        rbKeyFile->setGeometry(QRect(120, 0, 191, 31));
         lineEditPass_1 = new QLineEdit(cryptfiles);
         lineEditPass_1->setObjectName(QString::fromUtf8("lineEditPass_1"));
         lineEditPass_1->setGeometry(QRect(120, 100, 311, 31));

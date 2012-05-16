@@ -634,13 +634,13 @@ int StringGetFromFile_1( string_t * str,const char * path )
 	if( stat( path,&st ) != 0 )
 		return 1 ;
 	
+	c = ( char * ) malloc( sizeof( char ) * ( st.st_size + 1 ) ) ; 
+	
+	if( c == NULL )  
+		return 3 ;
+	
 	if( ( fd = open( path,O_RDONLY ) ) == -1 )
 		return 2 ;	
-	
-	c = ( char * ) malloc( sizeof( char ) * ( st.st_size + 1 ) ) ; 
-
-	if(  c == NULL )  
-		return 3 ;
 
 	*( c + st.st_size ) = '\0' ;
 	
@@ -673,7 +673,6 @@ string_t StringGetFromFile( const char * path )
 
 void StringWriteToFile( string_t st,const char * path,int mode ) 
 {
-	size_t size = st->size ;
 	int fd ;
 
 	if( mode == 1 )
@@ -681,9 +680,7 @@ void StringWriteToFile( string_t st,const char * path,int mode )
 	else
 		fd = open( path, O_WRONLY | O_CREAT | O_APPEND ) ;
 	
-	do{		
-		size = size - write(fd,st->string,size ) ;
-	}while( size != 0 ) ;
+	write( fd,st->string,st->size ) ;
 	
 	close( fd ) ;
 	
@@ -693,26 +690,52 @@ void StringWriteToFile( string_t st,const char * path,int mode )
 
 string_t StringGetFromVirtualFile( const char * path ) 
 {
-	int c ;
+	#define SIZE 64
 	
-	string_t st = String( "" ) ;
+	char * c ;	
+	char * d ;
 	
-	char s[ 2 ] ;	
+	ssize_t i = -1 ;
+	ssize_t j ;
+	size_t size = SIZE ;
 	
 	FILE * f = fopen( path,"r" ) ;
 	
 	if( f == NULL )
 		return NULL ;
 	
-	s[ 1 ] = '\0' ;
+	c = ( char * ) malloc( sizeof( char ) * SIZE ) ;
 	
-	while( ( c = getc( f ) ) != EOF )
+	if( c == NULL )
 	{
-		s[ 0 ] = ( char ) c ;
-		StringAppend( st,s ) ;
+		fclose( f ) ;
+		return NULL ;
+	}		
+	
+	while( ( j = getc( f ) ) != EOF )
+	{
+		if( ++i < size )
+			c[ i ] = ( char ) j ;
+		else{
+			d = c ;			
+			size += SIZE ;
+			c = realloc( c,size ) ;
+			if( c == NULL ){
+				fclose( f ) ;
+				free( d ) ;
+				return NULL ;
+			}else{
+				c[ i ] = ( char ) j ;
+			}
+		}
+			
 	}
 	
 	fclose( f ) ;
 	
-	return st ;
+	i++ ;
+	c = realloc( c,i ) ;	
+	c[ i ] = '\0' ;	
+
+	return StringInheritWithSize( &c,i - 1 ) ;
 }

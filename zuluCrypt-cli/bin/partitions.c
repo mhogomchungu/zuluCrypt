@@ -122,7 +122,6 @@ char * device_from_label( const char * label )
 static stringList_t partitions( int option )
 {
 	string_t st  ;
-	stringList_t stl ;
 	
 	const char * entry ;
 	const char * device ;
@@ -136,13 +135,24 @@ static stringList_t partitions( int option )
 	stringList_t non_system = NULL ;
 	stringList_t system = NULL ;
 	
-	if( option == ALL_PARTITIONS )
-		return partitionList() ;
+	stringList_t stl = partitionList() ;
 	
-	non_system = partitionList() ;
+	if( stl == NULL )
+		return NULL ;
+	
+	if( option == ALL_PARTITIONS )
+		return stl ;
+	
+	non_system = stl ;
 	system = NULL ;
 
 	st = StringGetFromFile( "/etc/fstab" );
+	
+	if( st == NULL ){
+		StringListDelete( &stl ) ;
+		return NULL ;
+		
+	}
 	
 	stl = StringListStringSplit( &st,'\n' ) ;
 	
@@ -390,8 +400,12 @@ int check_partition( const char * dev )
 		return 2 ;
 	
 	stl_1 = partitions( SYSTEM_PARTITIONS ) ;
-	index_1 = StringListContains( stl_1,device );
-	StringListDelete( &stl_1 ) ;
+	
+	if( stl_1 != NULL ){
+		
+		index_1 = StringListContains( stl_1,device );
+		StringListDelete( &stl_1 ) ;
+	}	
 	
 	stl_2 = get_partition_from_crypttab() ;
 	

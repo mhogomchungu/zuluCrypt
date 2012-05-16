@@ -68,13 +68,7 @@ stringList_t StringListString( string_t * st )
 		return NULL ;
 	}	
 	stl->stp[0] = *st ;
-	*st = NULL ;
-	if( stl->stp[0] == NULL )
-	{
-		free( stl->stp );
-		free( stl ) ;
-		return NULL ;
-	}
+	*st = NULL ;	
 	stl->size = 1 ;
 	return stl ;
 }
@@ -178,8 +172,11 @@ stringList_t StringListSplit( const char * cstring,char splitter )
 		len = d - b ;
 		if( len > 0 ){
 			e = ( char * ) malloc( sizeof( char ) * ( len + 1 ) ) ;
-			if( e == NULL )
+			if( e == NULL ){
+				if( stl != NULL )
+					StringListDelete( &stl ) ;
 				return NULL;
+			}
 			memcpy( e,b,len ) ;
 			*( e + len ) = '\0' ;
 			stl = StringListAppendWithSize( stl,&e,len );
@@ -206,8 +203,9 @@ stringList_t StringListSplit( const char * cstring,char splitter )
 stringList_t StringListStringSplit( string_t * st,char splitter ) 
 {
 	string_t xt = *st ;
-	stringList_t stl = StringListSplit( xt->string,splitter ) ;	
-	StringDelete( st ) ;
+	stringList_t stl = StringListSplit( xt->string,splitter ) ;
+	if( stl != NULL )
+		StringDelete( st ) ;
 	return stl ;
 }
 
