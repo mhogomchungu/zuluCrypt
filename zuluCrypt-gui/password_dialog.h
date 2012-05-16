@@ -59,7 +59,9 @@ private slots :
 	void threadfinished(int) ;
 	void mountPointPath(QString);
 	void done(QString);	
+	void cbStateChanged(int);
 private :	
+	void setDefaultOpenMode(void);
 	void disableAll(void);
 	void enableAll(void) ;
 	void closeEvent(QCloseEvent *) ;

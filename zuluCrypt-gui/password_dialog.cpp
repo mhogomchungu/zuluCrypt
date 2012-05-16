@@ -39,6 +39,7 @@ passwordDialog::passwordDialog(QTableWidget * table,QWidget *parent ) : QDialog(
 	this->setFixedSize(this->size());
 	this->setWindowFlags(Qt::Window | Qt::Dialog);
 	this->setFont(parent->font());
+	this->setDefaultOpenMode();
 
 	m_ui->PushButtonMountPointPath->setIcon(QIcon(QString(":/folder.png")));
 
@@ -56,6 +57,36 @@ passwordDialog::passwordDialog(QTableWidget * table,QWidget *parent ) : QDialog(
 	connect(m_ui->radioButtonPassPhraseFromFile,SIGNAL(clicked()),this,SLOT(passphraseFromFileOption())) ;
 	connect(m_ui->radioButtonPassPhrase,SIGNAL(clicked()),this,SLOT(passphraseOption())) ;
 	connect(m_ui->OpenVolumePath,SIGNAL(textChanged(QString)),this,SLOT(mountPointPath(QString)));
+	connect(m_ui->checkBoxReadOnly,SIGNAL(stateChanged(int)),this,SLOT(cbStateChanged(int)));
+}
+
+void passwordDialog::cbStateChanged(int state)
+{
+	QFile f(QDir::homePath() + QString("/.zuluCrypt/open_mode")) ;
+	f.open(QIODevice::WriteOnly | QIODevice::Truncate) ;
+	f.write(QString::number(state).toAscii()) ;
+	f.close();
+}
+
+void passwordDialog::setDefaultOpenMode()
+{
+	QString home = QDir::homePath() + QString("/.zuluCrypt/") ;
+	QDir d(home) ;
+	if(d.exists() == false)
+		d.mkdir(home) ;
+
+	QFile f(home + QString("open_mode")) ;
+
+	if(f.exists() == false){
+		f.open(QIODevice::WriteOnly | QIODevice::Truncate) ;
+		f.write(QString::number(Qt::Checked).toAscii()) ;
+		f.close();
+	}
+
+	f.open(QIODevice::ReadOnly) ;
+	int st = QString(f.readAll()).toInt() ;
+	m_ui->checkBoxReadOnly->setCheckState((Qt::CheckState)st);
+	f.close();
 }
 
 void passwordDialog::closeEvent(QCloseEvent *e)
@@ -68,7 +99,6 @@ void passwordDialog::closeEvent(QCloseEvent *e)
 void passwordDialog::ShowUI(QString volumePath, QString mount_point)
 {
 	m_ui->OpenVolumePath->setText(volumePath);
-	m_ui->checkBoxReadOnly->setChecked( true );
 	m_ui->PassPhraseField->setFocus();
 	m_ui->PassPhraseField->clear();
 	m_ui->radioButtonPassPhrase->setChecked( true );
