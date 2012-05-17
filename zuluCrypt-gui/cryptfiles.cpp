@@ -270,7 +270,13 @@ void cryptfiles::pbOpenFolder(void)
 
 void cryptfiles::pbOpenFile()
 {
-	QString Z = QFileDialog::getOpenFileName(this,tr("select a file you want to work on"),QDir::homePath(),0);
+	QString Z ;
+	if(m_operation == QString("-E"))
+		Z = QFileDialog::getOpenFileName(this,tr("select a file you want to encrypt"),QDir::homePath(),0);
+	else{
+		QString x = tr("zuluCrypt encrypted files (*.zc) ;; All Files (*)") ;
+		Z = QFileDialog::getOpenFileName(this,tr("select a file you want to decrypt"),QDir::homePath(),x);
+	}
 	m_ui->lineEditSourcePath->setText(Z);
 	m_ui->lineEditPass_1->setFocus();
 }
