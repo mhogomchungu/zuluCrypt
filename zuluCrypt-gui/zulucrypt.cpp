@@ -357,7 +357,12 @@ void zuluCrypt::setUserFont(QFont Font)
 	m_ui->actionTray_icon->setFont(this->font());
 	m_ui->menuFavorites->setFont(this->font());
 	m_ui->actionManage_names->setFont(this->font());
+	m_ui->actionBackup_header->setFont(this->font());
+	m_ui->actionRestore_header->setFont(this->font());
+	m_ui->actionEncrypt_file->setFont(this->font());
+	m_ui->actionDecrypt_file->setFont(this->font());
 	m_ui->menu_zc->setFont(this->font());
+	m_ui->actionPermission_problems->setFont(this->font());
 }
 
 void zuluCrypt::info()

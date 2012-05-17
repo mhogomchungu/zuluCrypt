@@ -1,3 +1,4 @@
+
 /*
  * 
  *  Copyright (c) 2012
@@ -49,7 +50,10 @@ static int return_value( string_t * st, int status )
 		case 6 : printf( "ERROR: policy prevents non root user opening mapper on system partition\n" ) ;break ;	
 		case 7 : /* 7 is used when returning with no feedback */				       ;break ;
 		case 8 : printf( "ERROR: insufficitied privilege to oped device for reading\n" )               ;break ;
-		case 9 : printf( "ERROR: device path is invalid\n" )   ;                                       ;break ;	
+		case 9 : printf( "ERROR: device path is invalid\n" )                                           ;break ;	
+		case 10: printf( "ERROR: passphrase file does not exist\n" )				       ;break ;
+		case 11: printf( "ERROR: could not get enought memory to hold the key file\n" )  	       ;break ;
+		case 12: printf( "ERROR: insufficient privilege to open key file for reading\n" )	       ;break ;	
 	}
 	
 	if( st != NULL )
@@ -61,11 +65,20 @@ static int return_value( string_t * st, int status )
 static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name,uid_t uid )
 {
 	string_t mapper ;
+	string_t passphrase  ;	
+	
+	size_t len = 0 ;
 	
 	int k ;
 	
+	int i			 = opts->interactive_passphrase ;
+	const char * source      = opts->key_source ;
+	const char * pass        = opts->key ;
+	
+	const char * cpass = NULL ;
+	
 	char * dev ;
-	char key[ KEY_SIZE ] ;	
+	char key[ KEY_SIZE + 1 ] ;	
 	
 	const char * device = opts->device ;
 	
@@ -89,16 +102,49 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	
 	free( dev ) ;
 	
-	k = open( "/dev/urandom",O_RDONLY ) ;
-	
-	read( k,key,KEY_SIZE );
-	
-	close( k );
+	if ( i == 1 ){
+		printf( "Enter passphrase: " ) ;		
+		passphrase = get_passphrase();	
+		printf( "\n" ) ;
+		cpass = StringContent( passphrase ) ;
+		len = StringLength( passphrase ) ;
+	}else{
+		if( source == NULL || pass == NULL ){
+			
+			k = open( "/dev/urandom",O_RDONLY ) ;
+		
+			read( k,key,KEY_SIZE );
+			
+			close( k );
+		
+			key[ KEY_SIZE ] = '\0' ;
+		
+			passphrase = String( key ) ;
+			cpass = StringContent( passphrase ) ;
+			len = StringLength( passphrase ) ;
+			
+		}else if( strcmp( source,"-p" ) == 0 ){
+			passphrase = String( pass ) ;
+			cpass = StringContent( passphrase ) ;
+			len = StringLength( passphrase ) ;
+		}else if( strcmp( source,"-f" ) == 0 ){		
+			/*
+			 * function is defined at "security.c"
+			 */
+			switch( get_pass_from_file( pass,uid,&passphrase ) ){
+				case 1 : return return_value( &mapper,10 ) ; 
+				case 2 : return return_value( &mapper,11 ) ; 				
+				case 4 : return return_value( &mapper,12 ) ;
+			}
+			cpass = StringContent( passphrase ) ;
+			len = StringLength( passphrase ) ;
+		}
+	}
 	
 	/*
 	 * Open a plain mapper, so that we can write to device through it
 	 */
-	if( open_plain( device,StringContent( mapper ),"rw",key,KEY_SIZE ) != 0 )
+	if( open_plain( device,StringContent( mapper ),"rw",cpass,len ) != 0 )
 		return return_value( &mapper,1 ) ;		
 	
 	/*
@@ -124,12 +170,19 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 		free( dev ) ;
 	}	
 	
+	StringDelete( &passphrase ) ;
+	
 	return return_value( &mapper,4 ) ;		
 }
 
 int open_plain_as_me(const struct_opts * opts,const char * mapping_name,uid_t uid )
 {
-	int st = open_plain_as_me_1( opts,mapping_name,uid );
+	int st  ;
+	
+	if( opts->key  == NULL || opts->key_source  == NULL )
+		printf("WARNING: getting key from \"/dev/urandom\" because atleast one required argument is missing\n" ) ;		
+	
+	st = open_plain_as_me_1( opts,mapping_name,uid );
 	
 	if( st == 4 )
 		return return_value( NULL,0 ) ;
