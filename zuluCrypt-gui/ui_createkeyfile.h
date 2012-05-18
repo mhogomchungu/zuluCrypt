@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'createkeyfile.ui'
 **
-** Created: Fri May 4 19:14:32 2012
+** Created: Fri May 18 09:53:55 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -94,7 +94,7 @@ public:
     void retranslateUi(QWidget *createkeyfile)
     {
         createkeyfile->setWindowTitle(QApplication::translate("createkeyfile", "create a key file", 0, QApplication::UnicodeUTF8));
-        label->setText(QApplication::translate("createkeyfile", "key file name", 0, QApplication::UnicodeUTF8));
+        label->setText(QApplication::translate("createkeyfile", "keyfile name", 0, QApplication::UnicodeUTF8));
 #ifndef QT_NO_TOOLTIP
         lineEditPath->setToolTip(QApplication::translate("createkeyfile", "path to a folder to create a key in", 0, QApplication::UnicodeUTF8));
 #endif // QT_NO_TOOLTIP
@@ -104,7 +104,7 @@ public:
         pbOpenFolder->setText(QString());
         pbCreate->setText(QApplication::translate("createkeyfile", "c&reate", 0, QApplication::UnicodeUTF8));
         pbCancel->setText(QApplication::translate("createkeyfile", "&cancel", 0, QApplication::UnicodeUTF8));
-        label_2->setText(QApplication::translate("createkeyfile", "destination folder", 0, QApplication::UnicodeUTF8));
+        label_2->setText(QApplication::translate("createkeyfile", "keyfile path", 0, QApplication::UnicodeUTF8));
         labelRNG->setText(QApplication::translate("createkeyfile", "rng", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 

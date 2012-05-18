@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'managedevicenames.ui'
 **
-** Created: Fri May 4 16:57:26 2012
+** Created: Fri May 18 09:46:38 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -63,11 +63,11 @@ public:
         tableWidget->setShowGrid(false);
         labelName = new QLabel(managedevicenames);
         labelName->setObjectName(QString::fromUtf8("labelName"));
-        labelName->setGeometry(QRect(30, 230, 131, 31));
+        labelName->setGeometry(QRect(0, 230, 161, 31));
         labelName->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         labelDeviceAddress = new QLabel(managedevicenames);
         labelDeviceAddress->setObjectName(QString::fromUtf8("labelDeviceAddress"));
-        labelDeviceAddress->setGeometry(QRect(60, 260, 101, 31));
+        labelDeviceAddress->setGeometry(QRect(0, 260, 161, 31));
         labelDeviceAddress->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         lineEditMountPath = new QLineEdit(managedevicenames);
         lineEditMountPath->setObjectName(QString::fromUtf8("lineEditMountPath"));

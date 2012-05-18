@@ -22,14 +22,14 @@
   <widget class="QLabel" name="labelLuksVolume">
    <property name="geometry">
     <rect>
-     <x>10</x>
+     <x>0</x>
      <y>10</y>
-     <width>121</width>
+     <width>131</width>
      <height>31</height>
     </rect>
    </property>
    <property name="text">
-    <string>path to luks volume</string>
+    <string>volume path</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -92,7 +92,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>passphrase</string>
+     <string>key</string>
     </property>
    </widget>
    <widget class="QRadioButton" name="radioButtonPassphraseInVolumeFromFile">
@@ -105,7 +105,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>passphrase from a key file</string>
+     <string>key from a keyfile</string>
     </property>
    </widget>
    <widget class="QLabel" name="labelExistingPassphrase">
@@ -118,7 +118,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>passphrase</string>
+     <string>key</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -227,7 +227,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>passphrase</string>
+     <string>key</string>
     </property>
    </widget>
    <widget class="QRadioButton" name="radioButtonNewPassphraseFromFile">
@@ -240,7 +240,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>passphrase from a key file</string>
+     <string>key from a keyfile</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButtonOpenNewKeyFile">
@@ -272,7 +272,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>passphrase</string>
+     <string>key</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -308,7 +308,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>reenter passphrase</string>
+     <string>reenter key</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

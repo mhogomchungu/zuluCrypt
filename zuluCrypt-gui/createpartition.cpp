@@ -107,7 +107,7 @@ void createpartition::closeEvent(QCloseEvent *e)
 
 void createpartition::ShowPartition(QString volume)
 {
-	ShowUI(tr("path to partition"),volume);
+	ShowUI(tr("path to device"),volume);
 }
 
 void createpartition::ShowFile(QString volume)
@@ -239,7 +239,7 @@ void createpartition::rbPassphraseClicked()
 	m_ui->lineEditPassPhrase2->clear();
 	m_ui->lineEditPassphrase1->setEchoMode(QLineEdit::Password);
 	m_ui->lineEditPassPhrase2->setEchoMode(QLineEdit::Password);
-	m_ui->labelPassPhrase->setText(tr("passphrase"));
+	m_ui->labelPassPhrase->setText(tr("key"));
 	m_ui->labelRepeatPassPhrase->setEnabled(true);
 	m_ui->pbOpenKeyFile->setIcon(QIcon(QString(":/passphrase.png")));
 }
@@ -251,7 +251,7 @@ void createpartition::rbPasssphraseFromFileClicked()
 	m_ui->lineEditPassPhrase2->clear();
 	m_ui->lineEditPassphrase1->setEchoMode(QLineEdit::Normal);
 	m_ui->lineEditPassPhrase2->setEnabled(false);
-	m_ui->labelPassPhrase->setText(tr("key file"));
+	m_ui->labelPassPhrase->setText(tr("keyfile"));
 	m_ui->labelRepeatPassPhrase->setEnabled(false);
 	m_ui->pbOpenKeyFile->setIcon(QIcon(QString(":/keyfile.png")));
 }

@@ -70,7 +70,7 @@ void luksdeletekey::closeEvent(QCloseEvent *e)
 
 void luksdeletekey::rbPassphrase()
 {
-	m_ui->labelPassphrase->setText(tr("passphrase"));
+	m_ui->labelPassphrase->setText(tr("key"));
 	m_ui->lineEditPassphrase->setEchoMode(QLineEdit::Password);
 	m_ui->lineEditPassphrase->clear();
 	m_ui->pushButtonOpenKeyFile->setEnabled(false);
@@ -97,7 +97,7 @@ void luksdeletekey::ShowUI()
 {
 	enableAll();
 	m_ui->rbPassphrase->setEnabled(true);
-	m_ui->labelPassphrase->setText(tr("passphrase"));
+	m_ui->labelPassphrase->setText(tr("key"));
 	m_ui->rbPassphrase->setChecked(true);
 
 	if(m_ui->lineEditVolumePath->text().isEmpty())

@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'zulucrypt.ui'
 **
-** Created: Sun May 13 11:55:12 2012
+** Created: Fri May 18 09:53:55 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -241,7 +241,7 @@ public:
         actionDeleteKey->setShortcut(QApplication::translate("zuluCrypt", "Ctrl+W", 0, QApplication::UnicodeUTF8));
         actionInfo->setText(QApplication::translate("zuluCrypt", "crypto info", 0, QApplication::UnicodeUTF8));
         actionInfo->setShortcut(QApplication::translate("zuluCrypt", "Ctrl+E", 0, QApplication::UnicodeUTF8));
-        actionCreatekeyFile->setText(QApplication::translate("zuluCrypt", "key file", 0, QApplication::UnicodeUTF8));
+        actionCreatekeyFile->setText(QApplication::translate("zuluCrypt", "keyfile", 0, QApplication::UnicodeUTF8));
         actionCreatekeyFile->setShortcut(QApplication::translate("zuluCrypt", "Ctrl+D", 0, QApplication::UnicodeUTF8));
         actionTray_icon->setText(QApplication::translate("zuluCrypt", "tray icon", 0, QApplication::UnicodeUTF8));
         actionTray_icon->setShortcut(QApplication::translate("zuluCrypt", "Ctrl+K", 0, QApplication::UnicodeUTF8));

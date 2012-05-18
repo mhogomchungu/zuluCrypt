@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>521</width>
+    <width>542</width>
     <height>167</height>
    </rect>
   </property>
@@ -22,7 +22,7 @@
   <widget class="QLineEdit" name="lineEditPassphrase">
    <property name="geometry">
     <rect>
-     <x>100</x>
+     <x>110</x>
      <y>40</y>
      <width>321</width>
      <height>31</height>
@@ -34,12 +34,12 @@
     <rect>
      <x>0</x>
      <y>40</y>
-     <width>91</width>
+     <width>101</width>
      <height>31</height>
     </rect>
    </property>
    <property name="text">
-    <string>passphrase</string>
+    <string>key </string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -48,9 +48,9 @@
   <widget class="QGroupBox" name="groupBox">
    <property name="geometry">
     <rect>
-     <x>50</x>
+     <x>110</x>
      <y>70</y>
-     <width>421</width>
+     <width>321</width>
      <height>61</height>
     </rect>
    </property>
@@ -60,34 +60,34 @@
    <widget class="QRadioButton" name="rbPassphrase">
     <property name="geometry">
      <rect>
-      <x>90</x>
-      <y>10</y>
+      <x>10</x>
+      <y>0</y>
       <width>311</width>
-      <height>21</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>existing passphrase in a volume to delete</string>
+     <string>existing key in the volume to delete</string>
     </property>
    </widget>
    <widget class="QRadioButton" name="rbPassphraseFromFile">
     <property name="geometry">
      <rect>
-      <x>90</x>
-      <y>30</y>
-      <width>301</width>
-      <height>21</height>
+      <x>10</x>
+      <y>20</y>
+      <width>311</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>existing passphrase from a key file to delete</string>
+     <string>existing key from a keyfile to delete</string>
     </property>
    </widget>
   </widget>
   <widget class="QPushButton" name="pushButtonOpenKeyFile">
    <property name="geometry">
     <rect>
-     <x>420</x>
+     <x>430</x>
      <y>40</y>
      <width>31</width>
      <height>31</height>
@@ -106,7 +106,7 @@
   <widget class="QPushButton" name="pushButtonDelete">
    <property name="geometry">
     <rect>
-     <x>170</x>
+     <x>180</x>
      <y>130</y>
      <width>91</width>
      <height>31</height>
@@ -122,7 +122,7 @@
   <widget class="QPushButton" name="pushButtonCancel">
    <property name="geometry">
     <rect>
-     <x>260</x>
+     <x>270</x>
      <y>130</y>
      <width>91</width>
      <height>31</height>
@@ -141,7 +141,7 @@
   <widget class="QLineEdit" name="lineEditVolumePath">
    <property name="geometry">
     <rect>
-     <x>100</x>
+     <x>110</x>
      <y>10</y>
      <width>321</width>
      <height>31</height>
@@ -153,7 +153,7 @@
     <rect>
      <x>0</x>
      <y>10</y>
-     <width>91</width>
+     <width>101</width>
      <height>31</height>
     </rect>
    </property>
@@ -167,7 +167,7 @@
   <widget class="QPushButton" name="pushButtonOpenVolume">
    <property name="geometry">
     <rect>
-     <x>420</x>
+     <x>430</x>
      <y>10</y>
      <width>31</width>
      <height>31</height>
@@ -186,7 +186,7 @@
   <widget class="QPushButton" name="pushButtonOpenPartition">
    <property name="geometry">
     <rect>
-     <x>450</x>
+     <x>460</x>
      <y>10</y>
      <width>31</width>
      <height>31</height>

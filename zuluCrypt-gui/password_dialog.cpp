@@ -102,7 +102,7 @@ void passwordDialog::ShowUI(QString volumePath, QString mount_point)
 	m_ui->PassPhraseField->setFocus();
 	m_ui->PassPhraseField->clear();
 	m_ui->radioButtonPassPhrase->setChecked( true );
-	m_ui->labelPassphrase->setText(tr("passphrase"));
+	m_ui->labelPassphrase->setText(tr("key"));
 	m_ui->PassPhraseField->setEchoMode(QLineEdit::Password);
 	m_ui->pushButtonPassPhraseFromFile->setEnabled( false );
 	m_ui->pushButtonPassPhraseFromFile->setIcon(QIcon(QString(":/passphrase.png")));
@@ -122,7 +122,7 @@ void passwordDialog::ShowUI()
 	m_ui->OpenVolumePath->setFocus();
 	m_ui->PassPhraseField->clear();
 	m_ui->radioButtonPassPhrase->setChecked(true);
-	m_ui->labelPassphrase->setText(tr("passphrase"));
+	m_ui->labelPassphrase->setText(tr("key"));
 	m_ui->pushButtonPassPhraseFromFile->setEnabled(false);
 	m_ui->PassPhraseField->setEchoMode(QLineEdit::Password);
 	m_ui->checkBoxReadOnly->setChecked(true);
@@ -153,7 +153,7 @@ void passwordDialog::passphraseFromFileOption()
 	m_ui->PassPhraseField->setEchoMode(QLineEdit::Normal);
 	m_ui->PassPhraseField->clear();
 	m_ui->pushButtonPassPhraseFromFile->setEnabled(true) ;
-	m_ui->labelPassphrase->setText(tr("key file"));
+	m_ui->labelPassphrase->setText(tr("keyfile"));
 	m_ui->pushButtonPassPhraseFromFile->setIcon(QIcon(QString(":/keyfile.png")));
 }
 

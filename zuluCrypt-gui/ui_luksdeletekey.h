@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'luksdeletekey.ui'
 **
-** Created: Fri May 4 19:14:32 2012
+** Created: Fri May 18 11:01:47 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -45,51 +45,51 @@ public:
         if (luksdeletekey->objectName().isEmpty())
             luksdeletekey->setObjectName(QString::fromUtf8("luksdeletekey"));
         luksdeletekey->setWindowModality(Qt::ApplicationModal);
-        luksdeletekey->resize(521, 167);
+        luksdeletekey->resize(542, 167);
         luksdeletekey->setModal(true);
         lineEditPassphrase = new QLineEdit(luksdeletekey);
         lineEditPassphrase->setObjectName(QString::fromUtf8("lineEditPassphrase"));
-        lineEditPassphrase->setGeometry(QRect(100, 40, 321, 31));
+        lineEditPassphrase->setGeometry(QRect(110, 40, 321, 31));
         labelPassphrase = new QLabel(luksdeletekey);
         labelPassphrase->setObjectName(QString::fromUtf8("labelPassphrase"));
-        labelPassphrase->setGeometry(QRect(0, 40, 91, 31));
+        labelPassphrase->setGeometry(QRect(0, 40, 101, 31));
         labelPassphrase->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         groupBox = new QGroupBox(luksdeletekey);
         groupBox->setObjectName(QString::fromUtf8("groupBox"));
-        groupBox->setGeometry(QRect(50, 70, 421, 61));
+        groupBox->setGeometry(QRect(110, 70, 321, 61));
         rbPassphrase = new QRadioButton(groupBox);
         rbPassphrase->setObjectName(QString::fromUtf8("rbPassphrase"));
-        rbPassphrase->setGeometry(QRect(90, 10, 311, 21));
+        rbPassphrase->setGeometry(QRect(10, 0, 311, 31));
         rbPassphraseFromFile = new QRadioButton(groupBox);
         rbPassphraseFromFile->setObjectName(QString::fromUtf8("rbPassphraseFromFile"));
-        rbPassphraseFromFile->setGeometry(QRect(90, 30, 301, 21));
+        rbPassphraseFromFile->setGeometry(QRect(10, 20, 311, 31));
         pushButtonOpenKeyFile = new QPushButton(luksdeletekey);
         pushButtonOpenKeyFile->setObjectName(QString::fromUtf8("pushButtonOpenKeyFile"));
-        pushButtonOpenKeyFile->setGeometry(QRect(420, 40, 31, 31));
+        pushButtonOpenKeyFile->setGeometry(QRect(430, 40, 31, 31));
         pushButtonOpenKeyFile->setAutoDefault(false);
         pushButtonDelete = new QPushButton(luksdeletekey);
         pushButtonDelete->setObjectName(QString::fromUtf8("pushButtonDelete"));
-        pushButtonDelete->setGeometry(QRect(170, 130, 91, 31));
+        pushButtonDelete->setGeometry(QRect(180, 130, 91, 31));
         pushButtonDelete->setAutoDefault(false);
         pushButtonCancel = new QPushButton(luksdeletekey);
         pushButtonCancel->setObjectName(QString::fromUtf8("pushButtonCancel"));
-        pushButtonCancel->setGeometry(QRect(260, 130, 91, 31));
+        pushButtonCancel->setGeometry(QRect(270, 130, 91, 31));
         pushButtonCancel->setAutoDefault(false);
         pushButtonCancel->setDefault(true);
         lineEditVolumePath = new QLineEdit(luksdeletekey);
         lineEditVolumePath->setObjectName(QString::fromUtf8("lineEditVolumePath"));
-        lineEditVolumePath->setGeometry(QRect(100, 10, 321, 31));
+        lineEditVolumePath->setGeometry(QRect(110, 10, 321, 31));
         label = new QLabel(luksdeletekey);
         label->setObjectName(QString::fromUtf8("label"));
-        label->setGeometry(QRect(0, 10, 91, 31));
+        label->setGeometry(QRect(0, 10, 101, 31));
         label->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         pushButtonOpenVolume = new QPushButton(luksdeletekey);
         pushButtonOpenVolume->setObjectName(QString::fromUtf8("pushButtonOpenVolume"));
-        pushButtonOpenVolume->setGeometry(QRect(420, 10, 31, 31));
+        pushButtonOpenVolume->setGeometry(QRect(430, 10, 31, 31));
         pushButtonOpenVolume->setAutoDefault(false);
         pushButtonOpenPartition = new QPushButton(luksdeletekey);
         pushButtonOpenPartition->setObjectName(QString::fromUtf8("pushButtonOpenPartition"));
-        pushButtonOpenPartition->setGeometry(QRect(450, 10, 31, 31));
+        pushButtonOpenPartition->setGeometry(QRect(460, 10, 31, 31));
         pushButtonOpenPartition->setAutoDefault(false);
         QWidget::setTabOrder(lineEditVolumePath, pushButtonOpenVolume);
         QWidget::setTabOrder(pushButtonOpenVolume, pushButtonOpenPartition);
@@ -108,10 +108,10 @@ public:
     void retranslateUi(QDialog *luksdeletekey)
     {
         luksdeletekey->setWindowTitle(QApplication::translate("luksdeletekey", "remove a key from a volume", 0, QApplication::UnicodeUTF8));
-        labelPassphrase->setText(QApplication::translate("luksdeletekey", "passphrase", 0, QApplication::UnicodeUTF8));
+        labelPassphrase->setText(QApplication::translate("luksdeletekey", "key ", 0, QApplication::UnicodeUTF8));
         groupBox->setTitle(QString());
-        rbPassphrase->setText(QApplication::translate("luksdeletekey", "existing passphrase in a volume to delete", 0, QApplication::UnicodeUTF8));
-        rbPassphraseFromFile->setText(QApplication::translate("luksdeletekey", "existing passphrase from a key file to delete", 0, QApplication::UnicodeUTF8));
+        rbPassphrase->setText(QApplication::translate("luksdeletekey", "existing key in the volume to delete", 0, QApplication::UnicodeUTF8));
+        rbPassphraseFromFile->setText(QApplication::translate("luksdeletekey", "existing key from a keyfile to delete", 0, QApplication::UnicodeUTF8));
 #ifndef QT_NO_TOOLTIP
         pushButtonOpenKeyFile->setToolTip(QApplication::translate("luksdeletekey", "open a keyfile", 0, QApplication::UnicodeUTF8));
 #endif // QT_NO_TOOLTIP

@@ -251,7 +251,7 @@
   </action>
   <action name="actionCreatekeyFile">
    <property name="text">
-    <string>key file</string>
+    <string>keyfile</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+D</string>

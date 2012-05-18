@@ -303,15 +303,16 @@ void zuluCrypt::trayProperty()
 
 void zuluCrypt::fonts()
 {
+	int size = 11 ;
 	bool ok ;
 	QFont Font = QFontDialog::getFont(&ok,this->font(),this) ;
 	if( ok == true ){
 		QByteArray ba ;
 		int k = Font.pointSize() ;
-		if( k > 10 ){
-			k = 10 ;
+		if( k > size ){
+			k = size ;
 			Font.setPointSize(k);
-			m_msg.UIMessage(tr("info"),tr("resetting font size to 10 because larger font sizes do not fit"));
+			m_msg.UIMessage(tr("info"),tr("resetting font size to %1 because larger font sizes do not fit").arg(QString::number(size)));
 		}
 		setUserFont(Font);
 		QString s = Font.family()+ QString("\n");

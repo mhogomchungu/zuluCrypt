@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'luksaddkey.ui'
 **
-** Created: Fri May 4 19:17:16 2012
+** Created: Fri May 18 09:47:04 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -57,7 +57,7 @@ public:
         luksaddkey->setModal(true);
         labelLuksVolume = new QLabel(luksaddkey);
         labelLuksVolume->setObjectName(QString::fromUtf8("labelLuksVolume"));
-        labelLuksVolume->setGeometry(QRect(10, 10, 121, 31));
+        labelLuksVolume->setGeometry(QRect(0, 10, 131, 31));
         labelLuksVolume->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         pushButtonOpenFile = new QPushButton(luksaddkey);
         pushButtonOpenFile->setObjectName(QString::fromUtf8("pushButtonOpenFile"));
@@ -149,7 +149,7 @@ public:
     void retranslateUi(QDialog *luksaddkey)
     {
         luksaddkey->setWindowTitle(QApplication::translate("luksaddkey", "add a key to a luks volume", 0, QApplication::UnicodeUTF8));
-        labelLuksVolume->setText(QApplication::translate("luksaddkey", "path to luks volume", 0, QApplication::UnicodeUTF8));
+        labelLuksVolume->setText(QApplication::translate("luksaddkey", "volume path", 0, QApplication::UnicodeUTF8));
 #ifndef QT_NO_TOOLTIP
         pushButtonOpenFile->setToolTip(QApplication::translate("luksaddkey", "open file", 0, QApplication::UnicodeUTF8));
 #endif // QT_NO_TOOLTIP
@@ -159,9 +159,9 @@ public:
 #endif // QT_NO_TOOLTIP
         pushButtonOpenPartition->setText(QString());
         groupBox->setTitle(QApplication::translate("luksaddkey", "key already in the encrypted volume", 0, QApplication::UnicodeUTF8));
-        radioButtonPassphraseinVolume->setText(QApplication::translate("luksaddkey", "passphrase", 0, QApplication::UnicodeUTF8));
-        radioButtonPassphraseInVolumeFromFile->setText(QApplication::translate("luksaddkey", "passphrase from a key file", 0, QApplication::UnicodeUTF8));
-        labelExistingPassphrase->setText(QApplication::translate("luksaddkey", "passphrase", 0, QApplication::UnicodeUTF8));
+        radioButtonPassphraseinVolume->setText(QApplication::translate("luksaddkey", "key", 0, QApplication::UnicodeUTF8));
+        radioButtonPassphraseInVolumeFromFile->setText(QApplication::translate("luksaddkey", "key from a keyfile", 0, QApplication::UnicodeUTF8));
+        labelExistingPassphrase->setText(QApplication::translate("luksaddkey", "key", 0, QApplication::UnicodeUTF8));
 #ifndef QT_NO_TOOLTIP
         pushButtonOpenExistingKeyFile->setToolTip(QApplication::translate("luksaddkey", "open keyfile", 0, QApplication::UnicodeUTF8));
 #endif // QT_NO_TOOLTIP
@@ -169,14 +169,14 @@ public:
         pushButtonAdd->setText(QApplication::translate("luksaddkey", "&add", 0, QApplication::UnicodeUTF8));
         pushButtonCancel->setText(QApplication::translate("luksaddkey", "&cancel", 0, QApplication::UnicodeUTF8));
         groupBox_2->setTitle(QApplication::translate("luksaddkey", "         key to be added to the encrypted volume", 0, QApplication::UnicodeUTF8));
-        radioButtonNewPassphrase->setText(QApplication::translate("luksaddkey", "passphrase", 0, QApplication::UnicodeUTF8));
-        radioButtonNewPassphraseFromFile->setText(QApplication::translate("luksaddkey", "passphrase from a key file", 0, QApplication::UnicodeUTF8));
+        radioButtonNewPassphrase->setText(QApplication::translate("luksaddkey", "key", 0, QApplication::UnicodeUTF8));
+        radioButtonNewPassphraseFromFile->setText(QApplication::translate("luksaddkey", "key from a keyfile", 0, QApplication::UnicodeUTF8));
 #ifndef QT_NO_TOOLTIP
         pushButtonOpenNewKeyFile->setToolTip(QApplication::translate("luksaddkey", "open keyfile", 0, QApplication::UnicodeUTF8));
 #endif // QT_NO_TOOLTIP
         pushButtonOpenNewKeyFile->setText(QString());
-        labelNewPassphrase->setText(QApplication::translate("luksaddkey", "passphrase", 0, QApplication::UnicodeUTF8));
-        labelReEnterPassphrase->setText(QApplication::translate("luksaddkey", "reenter passphrase", 0, QApplication::UnicodeUTF8));
+        labelNewPassphrase->setText(QApplication::translate("luksaddkey", "key", 0, QApplication::UnicodeUTF8));
+        labelReEnterPassphrase->setText(QApplication::translate("luksaddkey", "reenter key", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };

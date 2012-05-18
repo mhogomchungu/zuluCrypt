@@ -73,9 +73,9 @@
   <widget class="QLabel" name="labelName">
    <property name="geometry">
     <rect>
-     <x>30</x>
+     <x>0</x>
      <y>230</y>
-     <width>131</width>
+     <width>161</width>
      <height>31</height>
     </rect>
    </property>
@@ -89,9 +89,9 @@
   <widget class="QLabel" name="labelDeviceAddress">
    <property name="geometry">
     <rect>
-     <x>60</x>
+     <x>0</x>
      <y>260</y>
-     <width>101</width>
+     <width>161</width>
      <height>31</height>
     </rect>
    </property>

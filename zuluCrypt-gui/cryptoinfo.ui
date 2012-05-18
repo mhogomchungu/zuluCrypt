@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>453</width>
+    <width>482</width>
     <height>228</height>
    </rect>
   </property>
@@ -16,7 +16,7 @@
   <widget class="QPushButton" name="pbOK">
    <property name="geometry">
     <rect>
-     <x>180</x>
+     <x>200</x>
      <y>190</y>
      <width>91</width>
      <height>31</height>
@@ -31,7 +31,7 @@
     <rect>
      <x>0</x>
      <y>30</y>
-     <width>451</width>
+     <width>481</width>
      <height>31</height>
     </rect>
    </property>
@@ -47,7 +47,7 @@
     <rect>
      <x>0</x>
      <y>50</y>
-     <width>451</width>
+     <width>481</width>
      <height>31</height>
     </rect>
    </property>
@@ -63,7 +63,7 @@
     <rect>
      <x>0</x>
      <y>70</y>
-     <width>451</width>
+     <width>481</width>
      <height>31</height>
     </rect>
    </property>
@@ -79,7 +79,7 @@
     <rect>
      <x>0</x>
      <y>90</y>
-     <width>451</width>
+     <width>481</width>
      <height>31</height>
     </rect>
    </property>
@@ -95,7 +95,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>451</width>
+     <width>481</width>
      <height>31</height>
     </rect>
    </property>
@@ -111,7 +111,7 @@
     <rect>
      <x>0</x>
      <y>120</y>
-     <width>451</width>
+     <width>481</width>
      <height>31</height>
     </rect>
    </property>
@@ -127,7 +127,7 @@
     <rect>
      <x>0</x>
      <y>140</y>
-     <width>451</width>
+     <width>481</width>
      <height>31</height>
     </rect>
    </property>
@@ -143,7 +143,7 @@
     <rect>
      <x>20</x>
      <y>110</y>
-     <width>411</width>
+     <width>461</width>
      <height>21</height>
     </rect>
    </property>
@@ -156,7 +156,7 @@
     <rect>
      <x>0</x>
      <y>160</y>
-     <width>451</width>
+     <width>481</width>
      <height>31</height>
     </rect>
    </property>
@@ -172,7 +172,7 @@
     <rect>
      <x>20</x>
      <y>20</y>
-     <width>411</width>
+     <width>461</width>
      <height>16</height>
     </rect>
    </property>

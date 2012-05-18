@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'cryptoinfo.ui'
 **
-** Created: Fri May 4 16:57:26 2012
+** Created: Fri May 18 10:31:51 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -41,50 +41,50 @@ public:
     {
         if (cryptoinfo->objectName().isEmpty())
             cryptoinfo->setObjectName(QString::fromUtf8("cryptoinfo"));
-        cryptoinfo->resize(453, 228);
+        cryptoinfo->resize(482, 228);
         pbOK = new QPushButton(cryptoinfo);
         pbOK->setObjectName(QString::fromUtf8("pbOK"));
-        pbOK->setGeometry(QRect(180, 190, 91, 31));
+        pbOK->setGeometry(QRect(200, 190, 91, 31));
         label = new QLabel(cryptoinfo);
         label->setObjectName(QString::fromUtf8("label"));
-        label->setGeometry(QRect(0, 30, 451, 31));
+        label->setGeometry(QRect(0, 30, 481, 31));
         label->setAlignment(Qt::AlignCenter);
         label_3 = new QLabel(cryptoinfo);
         label_3->setObjectName(QString::fromUtf8("label_3"));
-        label_3->setGeometry(QRect(0, 50, 451, 31));
+        label_3->setGeometry(QRect(0, 50, 481, 31));
         label_3->setAlignment(Qt::AlignCenter);
         label_4 = new QLabel(cryptoinfo);
         label_4->setObjectName(QString::fromUtf8("label_4"));
-        label_4->setGeometry(QRect(0, 70, 451, 31));
+        label_4->setGeometry(QRect(0, 70, 481, 31));
         label_4->setAlignment(Qt::AlignCenter);
         label_5 = new QLabel(cryptoinfo);
         label_5->setObjectName(QString::fromUtf8("label_5"));
-        label_5->setGeometry(QRect(0, 90, 451, 31));
+        label_5->setGeometry(QRect(0, 90, 481, 31));
         label_5->setAlignment(Qt::AlignCenter);
         label_9 = new QLabel(cryptoinfo);
         label_9->setObjectName(QString::fromUtf8("label_9"));
-        label_9->setGeometry(QRect(0, 0, 451, 31));
+        label_9->setGeometry(QRect(0, 0, 481, 31));
         label_9->setAlignment(Qt::AlignCenter);
         label_10 = new QLabel(cryptoinfo);
         label_10->setObjectName(QString::fromUtf8("label_10"));
-        label_10->setGeometry(QRect(0, 120, 451, 31));
+        label_10->setGeometry(QRect(0, 120, 481, 31));
         label_10->setAlignment(Qt::AlignCenter);
         label_12 = new QLabel(cryptoinfo);
         label_12->setObjectName(QString::fromUtf8("label_12"));
-        label_12->setGeometry(QRect(0, 140, 451, 31));
+        label_12->setGeometry(QRect(0, 140, 481, 31));
         label_12->setAlignment(Qt::AlignCenter);
         line = new QFrame(cryptoinfo);
         line->setObjectName(QString::fromUtf8("line"));
-        line->setGeometry(QRect(20, 110, 411, 21));
+        line->setGeometry(QRect(20, 110, 461, 21));
         line->setFrameShape(QFrame::HLine);
         line->setFrameShadow(QFrame::Sunken);
         label_14 = new QLabel(cryptoinfo);
         label_14->setObjectName(QString::fromUtf8("label_14"));
-        label_14->setGeometry(QRect(0, 160, 451, 31));
+        label_14->setGeometry(QRect(0, 160, 481, 31));
         label_14->setAlignment(Qt::AlignCenter);
         line_2 = new QFrame(cryptoinfo);
         line_2->setObjectName(QString::fromUtf8("line_2"));
-        line_2->setGeometry(QRect(20, 20, 411, 16));
+        line_2->setGeometry(QRect(20, 20, 461, 16));
         line_2->setFrameShape(QFrame::HLine);
         line_2->setFrameShadow(QFrame::Sunken);
 

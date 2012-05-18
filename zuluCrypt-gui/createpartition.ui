@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>560</width>
-    <height>242</height>
+    <height>228</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -36,7 +36,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>path to volume</string>
+    <string>path to device</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -46,7 +46,7 @@
    <property name="geometry">
     <rect>
      <x>190</x>
-     <y>200</y>
+     <y>190</y>
      <width>91</width>
      <height>31</height>
     </rect>
@@ -65,7 +65,7 @@
    <property name="geometry">
     <rect>
      <x>280</x>
-     <y>200</y>
+     <y>190</y>
      <width>91</width>
      <height>31</height>
     </rect>
@@ -81,7 +81,7 @@
    <property name="geometry">
     <rect>
      <x>130</x>
-     <y>80</y>
+     <y>70</y>
      <width>301</width>
      <height>31</height>
     </rect>
@@ -91,13 +91,13 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>80</y>
+     <y>70</y>
      <width>121</width>
      <height>31</height>
     </rect>
    </property>
    <property name="text">
-    <string>passphrase</string>
+    <string>key</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -107,7 +107,7 @@
    <property name="geometry">
     <rect>
      <x>130</x>
-     <y>110</y>
+     <y>100</y>
      <width>301</width>
      <height>31</height>
     </rect>
@@ -117,13 +117,13 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>110</y>
+     <y>100</y>
      <width>121</width>
      <height>31</height>
     </rect>
    </property>
    <property name="text">
-    <string>repeat passphrase</string>
+    <string>repeat key</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -133,7 +133,7 @@
    <property name="geometry">
     <rect>
      <x>430</x>
-     <y>80</y>
+     <y>70</y>
      <width>31</width>
      <height>31</height>
     </rect>
@@ -151,7 +151,7 @@
      <x>20</x>
      <y>40</y>
      <width>521</width>
-     <height>41</height>
+     <height>31</height>
     </rect>
    </property>
    <property name="title">
@@ -160,27 +160,27 @@
    <widget class="QRadioButton" name="rbPassphrase">
     <property name="geometry">
      <rect>
-      <x>110</x>
-      <y>10</y>
+      <x>120</x>
+      <y>0</y>
       <width>95</width>
-      <height>21</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>passphrase</string>
+     <string>key</string>
     </property>
    </widget>
    <widget class="QRadioButton" name="rbPassphraseFromFile">
     <property name="geometry">
      <rect>
       <x>220</x>
-      <y>10</y>
+      <y>0</y>
       <width>201</width>
-      <height>21</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>passphrase from a key file</string>
+     <string>key from a keyfile</string>
     </property>
    </widget>
   </widget>
@@ -188,13 +188,13 @@
    <property name="geometry">
     <rect>
      <x>110</x>
-     <y>140</y>
-     <width>111</width>
+     <y>130</y>
+     <width>101</width>
      <height>31</height>
     </rect>
    </property>
    <property name="text">
-    <string>file system type</string>
+    <string>file system</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
@@ -204,8 +204,8 @@
    <property name="geometry">
     <rect>
      <x>110</x>
-     <y>170</y>
-     <width>111</width>
+     <y>160</y>
+     <width>101</width>
      <height>31</height>
     </rect>
    </property>
@@ -213,8 +213,8 @@
   <widget class="QLabel" name="labelvolumetype">
    <property name="geometry">
     <rect>
-     <x>220</x>
-     <y>140</y>
+     <x>340</x>
+     <y>130</y>
      <width>111</width>
      <height>31</height>
     </rect>
@@ -229,9 +229,9 @@
   <widget class="QComboBox" name="comboBoxVolumeType">
    <property name="geometry">
     <rect>
-     <x>220</x>
-     <y>170</y>
-     <width>121</width>
+     <x>340</x>
+     <y>160</y>
+     <width>111</width>
      <height>31</height>
     </rect>
    </property>
@@ -252,9 +252,9 @@
   <widget class="QLabel" name="labelrng">
    <property name="geometry">
     <rect>
-     <x>330</x>
-     <y>140</y>
-     <width>121</width>
+     <x>210</x>
+     <y>130</y>
+     <width>131</width>
      <height>31</height>
     </rect>
    </property>
@@ -268,9 +268,9 @@
   <widget class="QComboBox" name="comboBoxRNG">
    <property name="geometry">
     <rect>
-     <x>340</x>
-     <y>170</y>
-     <width>111</width>
+     <x>210</x>
+     <y>160</y>
+     <width>131</width>
      <height>31</height>
     </rect>
    </property>
