@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>552</width>
-    <height>195</height>
+    <height>213</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -62,7 +62,7 @@
    <property name="geometry">
     <rect>
      <x>200</x>
-     <y>160</y>
+     <y>180</y>
      <width>81</width>
      <height>31</height>
     </rect>
@@ -138,7 +138,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>passphrase</string>
+     <string>key</string>
     </property>
    </widget>
    <widget class="QRadioButton" name="rbKeyFile">
@@ -151,7 +151,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>passphrase from keyfile</string>
+     <string>key from a keyfile</string>
     </property>
    </widget>
   </widget>
@@ -224,13 +224,42 @@
    <property name="geometry">
     <rect>
      <x>280</x>
-     <y>160</y>
+     <y>180</y>
      <width>75</width>
      <height>31</height>
     </rect>
    </property>
    <property name="text">
     <string>&amp;cancel</string>
+   </property>
+  </widget>
+  <widget class="QProgressBar" name="progressBar">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>160</y>
+     <width>311</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="value">
+    <number>24</number>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelProgressBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>149</y>
+     <width>111</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>% complete</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
    </property>
   </widget>
  </widget>

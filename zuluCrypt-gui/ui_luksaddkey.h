@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'luksaddkey.ui'
 **
-** Created: Fri May 18 09:47:04 2012
+** Created: Sun May 20 19:55:43 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -53,7 +53,7 @@ public:
         if (luksaddkey->objectName().isEmpty())
             luksaddkey->setObjectName(QString::fromUtf8("luksaddkey"));
         luksaddkey->setWindowModality(Qt::ApplicationModal);
-        luksaddkey->resize(602, 327);
+        luksaddkey->resize(602, 313);
         luksaddkey->setModal(true);
         labelLuksVolume = new QLabel(luksaddkey);
         labelLuksVolume->setObjectName(QString::fromUtf8("labelLuksVolume"));
@@ -88,12 +88,12 @@ public:
         textEditExistingPassphrase->setGeometry(QRect(130, 70, 321, 31));
         pushButtonAdd = new QPushButton(luksaddkey);
         pushButtonAdd->setObjectName(QString::fromUtf8("pushButtonAdd"));
-        pushButtonAdd->setGeometry(QRect(210, 290, 91, 31));
+        pushButtonAdd->setGeometry(QRect(210, 280, 91, 31));
         pushButtonAdd->setAutoDefault(false);
         pushButtonAdd->setDefault(true);
         pushButtonCancel = new QPushButton(luksaddkey);
         pushButtonCancel->setObjectName(QString::fromUtf8("pushButtonCancel"));
-        pushButtonCancel->setGeometry(QRect(300, 290, 91, 31));
+        pushButtonCancel->setGeometry(QRect(300, 280, 91, 31));
         pushButtonCancel->setAutoDefault(false);
         pushButtonCancel->setDefault(false);
         textEditPathToVolume = new QLineEdit(luksaddkey);

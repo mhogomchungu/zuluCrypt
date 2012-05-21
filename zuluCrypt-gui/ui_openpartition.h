@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'openpartition.ui'
 **
-** Created: Fri May 4 16:57:26 2012
+** Created: Sun May 20 19:55:42 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!

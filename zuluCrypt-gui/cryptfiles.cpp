@@ -39,6 +39,10 @@ cryptfiles::cryptfiles(QWidget *parent) :
 
 	m_msg.setParent(this);
 
+	m_ui->progressBar->setMinimum(0);
+	m_ui->progressBar->setMaximum(100);
+	m_ui->progressBar->setValue(0);
+
 	m_ui->pbOpenFolder->setIcon(QIcon(QString(":/folder.png")));
 	m_ui->pushButtonFile->setIcon(QIcon(QString(":/file.png")));
 
@@ -66,14 +70,15 @@ cryptfiles::cryptfiles(QWidget *parent) :
 
 void cryptfiles::rbKeyChecked()
 {
+	m_ui->lineEditPass_1->setToolTip(QString("enter a key"));
 	m_ui->pushButtonKeyFile->setIcon(QIcon(QString(":/passphrase.png")));
 	m_ui->pushButtonKeyFile->setEnabled(false);
 	m_ui->lineEditPass_1->clear();
 	m_ui->lineEditPass_2->clear();
 	m_ui->lineEditPass_1->setEchoMode(QLineEdit::Password);	
 	m_ui->lineEditPass_1->setFocus();
-	m_ui->labelKey->setText(QString("passphrase"));
-	m_ui->labelKey2->setText(QString("repeat passphrase"));
+	m_ui->labelKey->setText(QString("key"));
+	m_ui->labelKey2->setText(QString("repeat key"));
 
 	if(m_operation == QString("-E")){
 		m_ui->labelKey2->setEnabled(true);
@@ -84,6 +89,7 @@ void cryptfiles::rbKeyChecked()
 
 void cryptfiles::rbKeyFileChecked()
 {
+	m_ui->lineEditPass_1->setToolTip(QString("enter a path to a keyfile location"));
 	m_ui->labelKey->setText(QString("keyfile"));
 	m_ui->pushButtonKeyFile->setIcon(QIcon(QString(":/keyfile.png")));
 	m_ui->lineEditPass_2->setEnabled(false);
@@ -153,9 +159,11 @@ void cryptfiles::pbCancel()
 void cryptfiles::HideUI()
 {
 	if(m_OperationInProgress)
-		return ;
-	emit this->HideUISignal();
-	this->hide();
+		m_cft->terminate();
+	else{
+		emit this->HideUISignal();
+		this->hide();
+	}
 }
 
 void cryptfiles::enableAll()
@@ -178,6 +186,7 @@ void cryptfiles::enableAll()
 	m_ui->pushButtonCancel->setEnabled(true);
 	m_ui->rbKey->setEnabled(true);
 	m_ui->rbKeyFile->setEnabled(true);
+	m_ui->labelProgressBar->setEnabled(true);
 }
 
 void cryptfiles::disableAll()
@@ -186,7 +195,7 @@ void cryptfiles::disableAll()
 	m_ui->lineEditPass_2->setEnabled(false);
 	m_ui->labelKey2->setEnabled(false);
 	m_ui->labelKey->setEnabled(false);
-	m_ui->pushButtonCancel->setEnabled(false);
+	//m_ui->pushButtonCancel->setEnabled(false);
 	m_ui->labelDestinationPath->setEnabled(false);
 	m_ui->labelSourcePath->setEnabled(false);
 	m_ui->lineEditDestinationPath->setEnabled(false);
@@ -196,6 +205,7 @@ void cryptfiles::disableAll()
 	m_ui->pushButtonFile->setEnabled(false);
 	m_ui->rbKey->setEnabled(false);
 	m_ui->rbKeyFile->setEnabled(false);
+	m_ui->labelProgressBar->setEnabled(false);
 
 }
 
@@ -234,17 +244,26 @@ void cryptfiles::pbCreate()
 	dest.replace("\"","\"\"\"") ;
 	key_1.replace("\"","\"\"\"") ;
 
-	QString	exe = QString("%1 %2 -d \"%3\" -e \"%4\" %5 \"%6\"").arg(ZULUCRYPTzuluCrypt).arg(m_operation).arg(source).arg(dest).arg(keySource).arg(key_1);
-	
 	this->disableAll();
 
 	m_OperationInProgress = true ;
 
-	runInThread * rt = new runInThread(exe);
-	connect(rt,SIGNAL(finished(int)),this,SLOT(threadExitStatus(int)));
-	rt->start();
+	m_cft = new cryptfilethread(source,dest,keySource,key_1,m_operation);
+	connect(m_cft,SIGNAL(done(int)),this,SLOT(threadExitStatus(int)));
+	connect(m_cft,SIGNAL(progressUpdate(int)),this,SLOT(progressBarUpdate(int)));
+	connect(m_cft,SIGNAL(titleUpdate(QString)),this,SLOT(titleUpdate(QString)));
+	m_cft->start() ;
 
-	disableAll() ;
+}
+
+void cryptfiles::titleUpdate(QString title)
+{
+	this->setWindowTitle(title);
+}
+
+void cryptfiles::progressBarUpdate(int i)
+{
+	m_ui->progressBar->setValue(i);
 }
 
 void cryptfiles::pbOpenFolder(void)
@@ -283,7 +302,7 @@ void cryptfiles::pbOpenFile()
 
 void cryptfiles::pbKeyFile()
 {
-	QString Z = QFileDialog::getOpenFileName(this,tr("select a key file"),QDir::homePath(),0);
+	QString Z = QFileDialog::getOpenFileName(this,tr("select a keyfile"),QDir::homePath(),0);
 
 	m_ui->lineEditPass_1->setText(Z);
 	if(m_ui->lineEditSourcePath->text().isEmpty())
@@ -301,16 +320,19 @@ void cryptfiles::threadExitStatus(int st)
 			 return this->HideUI();
 		case 1 : m_msg.UIMessage( tr("SUCCESS"),tr("decrypted file created successfully" ) )	;
 			 return this->HideUI();
-		case 2 : m_msg.UIMessage( tr("ERROR!"),tr("could not open key file for reading" ) )				; break ;
+		case 2 : m_msg.UIMessage( tr("ERROR!"),tr("could not open keyfile for reading" ) )				; break ;
 		case 3 : m_msg.UIMessage( tr("ERROR!"),tr("missing key source" ) )						; break ;
 		case 4 : m_msg.UIMessage( tr("ERROR!"),tr("could not open encryption routines" ) )				; break ;
-		case 5 : m_msg.UIMessage( tr("INFO!"),tr("file or folder already exist at destination address" ) )		; break ;
+		case 5 : m_msg.UIMessage( tr("ERROR!"),tr("file or folder already exist at destination address" ) )		; break ;
 		case 6 : m_msg.UIMessage( tr("ERROR!"),tr("invalid path to source" ))						; break ;
 		case 7 : m_msg.UIMessage( tr("ERROR!"),tr("could not resolve path to destination file" ))			; break ;
-		case 8 : m_msg.UIMessage( tr("ERROR!"),tr("passphrases do not match" ))						; break ;
+		case 8 : m_msg.UIMessage( tr("ERROR!"),tr("keys do not match" ))						; break ;
 		case 9 : m_msg.UIMessage( tr("ERROR!"),tr("required argument is missing" ) )					; break ;
 		case 10: m_msg.UIMessage( tr("ERROR!"),tr("insufficient privilege to create destination file" ))		; break ;
-		case 11: m_msg.UIMessage( tr("ERROR!"),tr("wrong passphrase" ))						 	; break ;
+		case 11: m_msg.UIMessage( tr("ERROR!"),tr("presented key did not match the encryption key" ))			; break ;
+		case 12: m_msg.UIMessage( tr("INFO!"),tr("operation terminated per user request" )) ;
+			 return this->HideUI();
+
 	}
 	this->enableAll();
 	if( st == 11 || st == 2 ){

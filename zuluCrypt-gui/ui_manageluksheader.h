@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'manageluksheader.ui'
 **
-** Created: Fri May 4 19:14:32 2012
+** Created: Sun May 20 19:55:43 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -40,7 +40,7 @@ public:
         if (manageluksheader->objectName().isEmpty())
             manageluksheader->setObjectName(QString::fromUtf8("manageluksheader"));
         manageluksheader->setWindowModality(Qt::ApplicationModal);
-        manageluksheader->resize(561, 119);
+        manageluksheader->resize(561, 104);
         lineEditBackUpName = new QLineEdit(manageluksheader);
         lineEditBackUpName->setObjectName(QString::fromUtf8("lineEditBackUpName"));
         lineEditBackUpName->setGeometry(QRect(120, 40, 321, 31));
@@ -53,12 +53,12 @@ public:
         pbOpenFolder->setGeometry(QRect(440, 40, 31, 31));
         pbCreate = new QPushButton(manageluksheader);
         pbCreate->setObjectName(QString::fromUtf8("pbCreate"));
-        pbCreate->setGeometry(QRect(200, 80, 81, 31));
+        pbCreate->setGeometry(QRect(200, 70, 81, 31));
         pbCreate->setAutoDefault(false);
         pbCreate->setDefault(true);
         pbCancel = new QPushButton(manageluksheader);
         pbCancel->setObjectName(QString::fromUtf8("pbCancel"));
-        pbCancel->setGeometry(QRect(280, 80, 81, 31));
+        pbCancel->setGeometry(QRect(280, 70, 81, 31));
         pbCancel->setAutoDefault(false);
         pbCancel->setDefault(false);
         labelDevicePath = new QLabel(manageluksheader);

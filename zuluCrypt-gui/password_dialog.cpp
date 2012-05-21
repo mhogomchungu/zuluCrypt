@@ -45,6 +45,8 @@ passwordDialog::passwordDialog(QTableWidget * table,QWidget *parent ) : QDialog(
 
 	m_isWindowClosable = true ;
 
+	m_open_with_path = false ;
+
 	m_table = table ;
 
 	m_msg.setParent(this);
@@ -98,18 +100,15 @@ void passwordDialog::closeEvent(QCloseEvent *e)
 
 void passwordDialog::ShowUI(QString volumePath, QString mount_point)
 {
+	m_open_with_path = true ;
+	this->passphraseOption();
 	m_ui->OpenVolumePath->setText(volumePath);
-	m_ui->PassPhraseField->setFocus();
-	m_ui->PassPhraseField->clear();
-	m_ui->radioButtonPassPhrase->setChecked( true );
-	m_ui->labelPassphrase->setText(tr("key"));
-	m_ui->PassPhraseField->setEchoMode(QLineEdit::Password);
-	m_ui->pushButtonPassPhraseFromFile->setEnabled( false );
-	m_ui->pushButtonPassPhraseFromFile->setIcon(QIcon(QString(":/passphrase.png")));
 	m_ui->OpenVolumePath->setEnabled(false);
 	m_ui->PushButtonVolumePath->setEnabled(false);
 	m_ui->MountPointPath->setText(mount_point);
-	if( volumePath.left(5) == QString("/dev/") || volumePath.left(5) == QString("UUID="))
+	m_ui->PassPhraseField->setFocus();
+	QString vp = volumePath.mid(0,5);
+	if( vp == QString("/dev/") || vp == QString("UUID="))
 		m_ui->PushButtonVolumePath->setIcon(QIcon(QString(":/partition.png")));
 	else
 		m_ui->PushButtonVolumePath->setIcon(QIcon(QString(":/file.png")));
@@ -118,18 +117,9 @@ void passwordDialog::ShowUI(QString volumePath, QString mount_point)
 
 void passwordDialog::ShowUI()
 {
-	m_ui->OpenVolumePath->clear();
+	this->passphraseOption();
 	m_ui->OpenVolumePath->setFocus();
-	m_ui->PassPhraseField->clear();
-	m_ui->radioButtonPassPhrase->setChecked(true);
-	m_ui->labelPassphrase->setText(tr("key"));
-	m_ui->pushButtonPassPhraseFromFile->setEnabled(false);
-	m_ui->PassPhraseField->setEchoMode(QLineEdit::Password);
-	m_ui->checkBoxReadOnly->setChecked(true);
-	m_ui->OpenVolumePath->setEnabled(true);
-	m_ui->PushButtonVolumePath->setEnabled(true);
 	m_ui->PushButtonVolumePath->setIcon(QIcon(QString(":/file.png")));
-	m_ui->pushButtonPassPhraseFromFile->setIcon(QIcon(QString(":/passphrase.png")));
 	this->show();
 }
 
@@ -141,15 +131,17 @@ void passwordDialog::mountPointPath(QString path)
 
 void passwordDialog::passphraseOption()
 {
+	m_ui->PassPhraseField->setToolTip(QString("enter a key"));
 	m_ui->PassPhraseField->setEchoMode(QLineEdit::Password);
 	m_ui->PassPhraseField->clear();
 	m_ui->pushButtonPassPhraseFromFile->setEnabled(false) ;
-	m_ui->labelPassphrase->setText(tr("passphrase"));
+	m_ui->labelPassphrase->setText(tr("key"));
 	m_ui->pushButtonPassPhraseFromFile->setIcon(QIcon(QString(":/passphrase.png")));
 }
 
 void passwordDialog::passphraseFromFileOption()
 {
+	m_ui->PassPhraseField->setToolTip(QString("enter a path to a keyfile location"));
 	m_ui->PassPhraseField->setEchoMode(QLineEdit::Normal);
 	m_ui->PassPhraseField->clear();
 	m_ui->pushButtonPassPhraseFromFile->setEnabled(true) ;
@@ -271,6 +263,11 @@ void passwordDialog::enableAll()
 	m_ui->radioButtonPassPhrase->setEnabled(true);
 	m_ui->radioButtonPassPhraseFromFile->setEnabled(true);
 	m_ui->radioButtonPassPhrase->setEnabled(true);
+
+	if(m_open_with_path){
+		m_ui->OpenVolumePath->setEnabled(false);
+		m_ui->PushButtonVolumePath->setEnabled(false);
+	}
 }
 
 void passwordDialog::success(void)
@@ -303,18 +300,13 @@ void passwordDialog::threadfinished(int status)
 	m_isWindowClosable = true ;
 
 	switch ( status ){
-		case 0: success();
-			return ;
+		case 0 : return success();
 		case 1 : m_msg.UIMessage(tr("ERROR!"),tr("failed to mount ntfs file system using ntfs-3g,is ntfs-3g package installed?" )) ;		break ;
 		case 2 : m_msg.UIMessage(tr("ERROR!"),tr("there seem to be an open volume accociated with given address" ));				break ;
 		case 3 : m_msg.UIMessage(tr("ERROR!"),tr("no file or device exist on given path" )) ; 							break ;
-		case 4 : m_msg.UIMessage(tr("ERROR!"),tr("wrong passphrase" ));
-			 enableAll();
-			 m_ui->PassPhraseField->clear();
-			 m_ui->PassPhraseField->setFocus();
-			 return ;			
+		case 4 : m_msg.UIMessage(tr("ERROR!"),tr("presented key was not found in the volume"));							break ;
 		case 5 : m_msg.UIMessage(tr("ERROR!"),tr("could not create mount point, invalid path or path already taken") ) ;			break ;
-		case 6 : m_msg.UIMessage(tr("ERROR!"),tr("passphrase file does not exist" ));								break ;
+		case 6 : m_msg.UIMessage(tr("ERROR!"),tr("invalid path to keyfile" ));									break ;
 		case 8 : m_msg.UIMessage(tr("ERROR!"),tr("failed to open volume" ));									break ;
 		case 9 : m_msg.UIMessage(tr("ERROR!"),tr("mount point path is already taken" ));							break ;
 		case 10: m_msg.UIMessage(tr("ERROR!"),tr("\",\" ( comma ) is not a valid mount point" ));						break ;
@@ -329,13 +321,17 @@ void passwordDialog::threadfinished(int status)
 		case 19: m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to create mount point" ));						break ;
 		case 20: m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to open device" ));							break ;
 		case 21: m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to create mount point" ));						break ;
-		case 22: m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to open key file for reading" ));					break ;
+		case 22: m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to open keyfile for reading" ));					break ;
 		case 23: m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to open device in read/write mode" ));					break ;
 		case 24: m_msg.UIMessage(tr("ERROR!"),tr("there seem to be an opened mapper associated with the device" ));				break ;
 		case 110:m_msg.UIMessage(tr("ERROR!"),tr("can not find a partition that match presented UUID" ));					break ;
 		default: m_msg.UIMessage(tr("ERROR!"),tr("unrecognized ERROR with status number %1 encountered").arg(status));
 	}
 	enableAll();
+	if( status == 4 ){
+		m_ui->PassPhraseField->clear();
+		m_ui->PassPhraseField->setFocus();
+	}
 }
 
 passwordDialog::~passwordDialog()

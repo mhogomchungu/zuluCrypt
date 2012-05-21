@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'createkeyfile.ui'
 **
-** Created: Fri May 18 09:53:55 2012
+** Created: Sun May 20 19:55:43 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -41,7 +41,7 @@ public:
         if (createkeyfile->objectName().isEmpty())
             createkeyfile->setObjectName(QString::fromUtf8("createkeyfile"));
         createkeyfile->setWindowModality(Qt::ApplicationModal);
-        createkeyfile->resize(551, 138);
+        createkeyfile->resize(551, 133);
         lineEditFileName = new QLineEdit(createkeyfile);
         lineEditFileName->setObjectName(QString::fromUtf8("lineEditFileName"));
         lineEditFileName->setGeometry(QRect(120, 10, 311, 31));

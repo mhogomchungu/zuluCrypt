@@ -29,6 +29,7 @@
 #include "runinthread.h"
 #include "miscfunctions.h"
 #include "openpartition.h"
+#include "cryptfilethread.h"
 
 namespace Ui {
     class cryptfiles;
@@ -57,6 +58,8 @@ private slots:
 	void rbKeyFileChecked(void);
 	void sourceTextChanged(QString);
 	void threadExitStatus(int);
+	void progressBarUpdate(int);
+	void titleUpdate(QString);
 private:
 	void HideUI(void);
 	void headerBackUp(void);
@@ -73,6 +76,8 @@ private:
 
 	bool m_OperationInProgress ;
 	QString m_operation ;
+	cryptfilethread * m_cft ;
+
 };
 
 #endif // CREATEKEYFILE_H

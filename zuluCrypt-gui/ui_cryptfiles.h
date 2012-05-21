@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'cryptfiles.ui'
 **
-** Created: Tue May 15 16:34:20 2012
+** Created: Sun May 20 19:55:43 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -18,6 +18,7 @@
 #include <QtGui/QHeaderView>
 #include <QtGui/QLabel>
 #include <QtGui/QLineEdit>
+#include <QtGui/QProgressBar>
 #include <QtGui/QPushButton>
 #include <QtGui/QRadioButton>
 #include <QtGui/QWidget>
@@ -43,13 +44,15 @@ public:
     QLineEdit *lineEditPass_2;
     QLabel *labelKey2;
     QPushButton *pushButtonCancel;
+    QProgressBar *progressBar;
+    QLabel *labelProgressBar;
 
     void setupUi(QWidget *cryptfiles)
     {
         if (cryptfiles->objectName().isEmpty())
             cryptfiles->setObjectName(QString::fromUtf8("cryptfiles"));
         cryptfiles->setWindowModality(Qt::ApplicationModal);
-        cryptfiles->resize(552, 195);
+        cryptfiles->resize(552, 213);
         lineEditDestinationPath = new QLineEdit(cryptfiles);
         lineEditDestinationPath->setObjectName(QString::fromUtf8("lineEditDestinationPath"));
         lineEditDestinationPath->setGeometry(QRect(120, 40, 311, 31));
@@ -62,7 +65,7 @@ public:
         pbOpenFolder->setGeometry(QRect(430, 40, 31, 31));
         pbCreate = new QPushButton(cryptfiles);
         pbCreate->setObjectName(QString::fromUtf8("pbCreate"));
-        pbCreate->setGeometry(QRect(200, 160, 81, 31));
+        pbCreate->setGeometry(QRect(200, 180, 81, 31));
         pbCreate->setAutoDefault(false);
         pbCreate->setDefault(true);
         labelSourcePath = new QLabel(cryptfiles);
@@ -103,7 +106,15 @@ public:
         labelKey2->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         pushButtonCancel = new QPushButton(cryptfiles);
         pushButtonCancel->setObjectName(QString::fromUtf8("pushButtonCancel"));
-        pushButtonCancel->setGeometry(QRect(280, 160, 75, 31));
+        pushButtonCancel->setGeometry(QRect(280, 180, 75, 31));
+        progressBar = new QProgressBar(cryptfiles);
+        progressBar->setObjectName(QString::fromUtf8("progressBar"));
+        progressBar->setGeometry(QRect(120, 160, 311, 21));
+        progressBar->setValue(24);
+        labelProgressBar = new QLabel(cryptfiles);
+        labelProgressBar->setObjectName(QString::fromUtf8("labelProgressBar"));
+        labelProgressBar->setGeometry(QRect(0, 149, 111, 41));
+        labelProgressBar->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         QWidget::setTabOrder(lineEditDestinationPath, pbOpenFolder);
         QWidget::setTabOrder(pbOpenFolder, pbCreate);
 
@@ -124,12 +135,13 @@ public:
         labelSourcePath->setText(QApplication::translate("cryptfiles", "source path", 0, QApplication::UnicodeUTF8));
         pushButtonFile->setText(QString());
         groupBox->setTitle(QString());
-        rbKey->setText(QApplication::translate("cryptfiles", "passphrase", 0, QApplication::UnicodeUTF8));
-        rbKeyFile->setText(QApplication::translate("cryptfiles", "passphrase from keyfile", 0, QApplication::UnicodeUTF8));
+        rbKey->setText(QApplication::translate("cryptfiles", "key", 0, QApplication::UnicodeUTF8));
+        rbKeyFile->setText(QApplication::translate("cryptfiles", "key from a keyfile", 0, QApplication::UnicodeUTF8));
         pushButtonKeyFile->setText(QString());
         labelKey->setText(QApplication::translate("cryptfiles", "key", 0, QApplication::UnicodeUTF8));
         labelKey2->setText(QApplication::translate("cryptfiles", "repeat key", 0, QApplication::UnicodeUTF8));
         pushButtonCancel->setText(QApplication::translate("cryptfiles", "&cancel", 0, QApplication::UnicodeUTF8));
+        labelProgressBar->setText(QApplication::translate("cryptfiles", "% complete", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };

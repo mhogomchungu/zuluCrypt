@@ -104,7 +104,7 @@ void createfile::showUI()
 	m_ui->lineEditFileSize->clear();
 	m_ui->progressBar->setValue(0);
 	m_ui->lineEditFileName->setFocus();
-	this->setWindowTitle(tr("1/2 create container file"));
+	this->setWindowTitle(tr("1/2 create a container file"));
 	this->show();
 }
 
@@ -223,7 +223,7 @@ void createfile::progress(int p)
 void createfile::doneCreatingFile()
 {
 	m_ui->progressBar->setValue(0);
-	this->setWindowTitle(tr("2/2 write random data to container file"));
+	this->setWindowTitle(tr("2/2 write random data to a container file"));
 
 }
 

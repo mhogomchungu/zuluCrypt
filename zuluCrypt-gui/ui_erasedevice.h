@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'erasedevice.ui'
 **
-** Created: Fri May 4 16:57:26 2012
+** Created: Sun May 20 19:55:43 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -39,7 +39,7 @@ public:
     {
         if (erasedevice->objectName().isEmpty())
             erasedevice->setObjectName(QString::fromUtf8("erasedevice"));
-        erasedevice->resize(532, 120);
+        erasedevice->resize(532, 104);
         labelPath = new QLabel(erasedevice);
         labelPath->setObjectName(QString::fromUtf8("labelPath"));
         labelPath->setGeometry(QRect(0, 20, 111, 31));
@@ -60,10 +60,10 @@ public:
         progressBar->setValue(24);
         pushButtonStart = new QPushButton(erasedevice);
         pushButtonStart->setObjectName(QString::fromUtf8("pushButtonStart"));
-        pushButtonStart->setGeometry(QRect(190, 80, 81, 31));
+        pushButtonStart->setGeometry(QRect(190, 70, 81, 31));
         pushButtonCancel = new QPushButton(erasedevice);
         pushButtonCancel->setObjectName(QString::fromUtf8("pushButtonCancel"));
-        pushButtonCancel->setGeometry(QRect(270, 80, 81, 31));
+        pushButtonCancel->setGeometry(QRect(270, 70, 81, 31));
         lineEdit = new QLineEdit(erasedevice);
         lineEdit->setObjectName(QString::fromUtf8("lineEdit"));
         lineEdit->setGeometry(QRect(120, 20, 291, 31));

@@ -69,6 +69,7 @@ private :
 	Ui::PasswordDialog * m_ui;
 	bool m_isWindowClosable ;
 	QTableWidget * m_table ;
+	bool m_open_with_path ;
 	/*
 	  prototyped at miscfunctions.h
 	  */

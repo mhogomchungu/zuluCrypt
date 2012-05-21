@@ -38,6 +38,7 @@ set( MOC_FILES createfile.h
 		erasedevicethread.h	
 		manageluksheader.h
 		cryptfiles.h
+		cryptfilethread.h
  )
 	
 set (SRC createfile.cpp
@@ -65,6 +66,7 @@ set (SRC createfile.cpp
 	erasedevicethread.cpp
 	manageluksheader.cpp
 	cryptfiles.cpp
+	cryptfilethread.cpp
 )
 
 find_package( Qt4 REQUIRED )
