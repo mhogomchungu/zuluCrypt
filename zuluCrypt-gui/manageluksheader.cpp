@@ -177,8 +177,7 @@ void manageluksheader::enableAll()
 {
 	m_ui->labelBackUpHeader->setEnabled(true);
 	m_ui->labelDevicePath->setEnabled(true);
-	if(m_operation == QString("restore"))
-		m_ui->lineEditBackUpName->setEnabled(true);
+	m_ui->lineEditBackUpName->setEnabled(true);
 	m_ui->lineEditDevicePath->setEnabled(true);
 	m_ui->pbCancel->setEnabled(true);
 	m_ui->pbCreate->setEnabled(true);
