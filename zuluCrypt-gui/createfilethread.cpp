@@ -103,6 +103,7 @@ void createFileThread::createFile()
 		}
 	}
 
+	emit progress( 100 );
 	close(fd) ;
 	chmod(m_file.toAscii().data(),S_IRWXU);
 }
@@ -174,6 +175,8 @@ void createFileThread::writeVolume()
 		if(m_cancelled == 1)
 			break ;
 	}
+
+	emit progress( 100 );
 	close(fd);
 }
 

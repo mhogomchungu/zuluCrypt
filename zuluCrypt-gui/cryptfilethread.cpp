@@ -141,6 +141,7 @@ int cryptfilethread::encrypt()
 
 	}
 	
+	emit progressUpdate( 100 );
 	close( fd_1 ) ;
 	close( fd_2 ) ;
 
