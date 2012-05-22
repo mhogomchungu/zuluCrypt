@@ -119,6 +119,7 @@ private slots :
 	void permissionExplanation(void);
 	void encryptFile(void);
 	void decryptFile(void);
+	void HelpLuksHeaderBackUp(void);
 private:
 	passwordDialog * setUpPasswordDialog(void);
 	openpartition * setUpOpenpartition(void);

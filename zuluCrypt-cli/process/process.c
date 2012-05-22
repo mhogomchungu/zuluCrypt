@@ -67,7 +67,7 @@ static void ProcessSetArguments_1( process_t p )
 	d = p->exe - 1 ;
 	
 	/*
-	 * find out to many pieces we should break the string
+	 * find out to how many pieces we should break the string
 	 */
 	while( *++d ){
 		if( *d == delimiter ) ;
@@ -75,7 +75,7 @@ static void ProcessSetArguments_1( process_t p )
 	}
 	
 	/*
-	 * create an array of pointers,each slot will to point to each "piece" of string creating a 2-D array
+	 * create an array of pointers,each slot will point to each "piece" of string creating a 2-D array
 	 */
 	f = ( char ** ) malloc( sizeof( char * ) * ( k + 2 ) ) ;
 

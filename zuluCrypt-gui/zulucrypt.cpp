@@ -187,7 +187,7 @@ void zuluCrypt::setupConnections()
 	connect(m_ui->actionPermission_problems,SIGNAL(triggered()),this,SLOT(permissionExplanation()));
 	connect(m_ui->actionEncrypt_file,SIGNAL(triggered()),this,SLOT(encryptFile()));
 	connect(m_ui->actionDecrypt_file,SIGNAL(triggered()),this,SLOT(decryptFile()));
-
+	connect(m_ui->actionLuks_header_backup,SIGNAL(triggered()),this,SLOT(HelpLuksHeaderBackUp()));
 }
 
 void zuluCrypt::permissionExplanation()
@@ -398,6 +398,22 @@ You should have received a copy of the GNU General Public License\n\
 along with this program.  If not, see <http://www.gnu.org/licenses/>.").arg(VERSION_STRING);
 
 	m_msg.UIMessage(tr("about zuluCrypt"),license);
+}
+
+void zuluCrypt::HelpLuksHeaderBackUp()
+{
+	QString msg = QString("\nIf anything damages the LUKS header or the key-stripe area,\
+then decrypting the LUKS device can become impossible and this happens frequently enought to warrant serious attention.\
+For example, an accidental format of the volume or some software overwriting \
+the first sector where it suspects a partition boot sector typically makes a LUKS partition permanently \
+inacessible and the encryted data lost forever.\
+\n\nHaving a backup of the luks header is strongly advised because it is the only way the encrypted data \
+will be accessed again after the header is restored when the header on the volume get corrupted. \n\n\
+The above text is a modified excerpt from \"Cryptsetup FAQ\" and is licenced as described in section 1.4 of the FAQ.\n\n\
+The full text to the FAQ can be located at http://code.google.com/p/cryptsetup/wiki/FrequentlyAskedQuestions\n\n\
+Going through the FAQ is highly recommended.");
+
+	UIMessage(QString("important information on luks header"),msg);
 }
 
 void zuluCrypt::addItemToTable(QString device,QString m_point)

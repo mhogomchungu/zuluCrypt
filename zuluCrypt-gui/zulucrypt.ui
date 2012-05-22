@@ -123,6 +123,7 @@
     </property>
     <addaction name="actionInfo"/>
     <addaction name="actionPermission_problems"/>
+    <addaction name="actionLuks_header_backup"/>
     <addaction name="actionAbout"/>
    </widget>
    <widget class="QMenu" name="menuConfigure">
@@ -382,6 +383,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+H</string>
+   </property>
+  </action>
+  <action name="actionLuks_header_backup">
+   <property name="text">
+    <string>luks header backup</string>
    </property>
   </action>
  </widget>
