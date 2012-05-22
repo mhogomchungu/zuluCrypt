@@ -306,9 +306,11 @@ void createpartition::pbCreateClicked()
 void createpartition::threadfinished(int st)
 {	
 	m_isWindowClosable = true ;
-	
+	QString msg = tr("volume created successfully") ;
+	if(m_ui->comboBoxVolumeType->currentText() == QString("luks"))
+		msg += tr("\n\ncreating a backup of the luks header is strongly advised.\n\nplease read documentation on why this is important.") ;
 	switch ( st ){
-		case 0 : m_msg.UIMessage(tr("SUCCESS!"),tr("volume created successfully") ) ;
+		case 0 : m_msg.UIMessage(tr("SUCCESS!"),msg ) ;
 		HideUI();													break  ;
 		case 1 : m_msg.UIMessage(tr("ERROR!"),tr("invalid path to a file or device"));					break  ;
 		case 2 : m_msg.UIMessage(tr("ERROR!"),tr("wrong option type"));							break  ;

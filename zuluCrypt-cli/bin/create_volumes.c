@@ -45,6 +45,18 @@ static int status_msg( int st )
 	}
 	return st ;
 }
+
+static int status_msg_1( const char * type )
+{
+	printf( "SUCCESS: volume created successfully\n" ) ;
+	
+	if( strcmp( type,"luks" ) == 0 ){
+		printf( "\ncreating a backup of the volume luks header is strongly adviced\n" ) ;
+		printf( "please read documentation on why this is important\n\n" ) ;
+	}
+	return 0 ;
+}
+
 int create_volumes( const struct_opts * opts,uid_t uid  )
 {
 	int i                = opts->interactive_passphrase ;
@@ -175,6 +187,9 @@ int create_volumes( const struct_opts * opts,uid_t uid  )
 		}
 	}
 	
-	return status_msg( st ) ;
+	if( st == 0 )
+		return status_msg_1( type ) ;
+	else
+		return status_msg( st ) ;
 }
 
