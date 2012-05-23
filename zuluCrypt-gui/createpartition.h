@@ -28,6 +28,7 @@
 #include "runinthread.h"
 #include "miscfunctions.h"
 #include "erasedevice.h"
+#include "createvolumedialog.h"
 
 namespace Ui {
     class createpartition;
@@ -54,6 +55,7 @@ private slots:
 	void pbOpenKeyFile(void);
 	void threadfinished(int);
 	void rng(int) ;
+	void dialogResult(int);
 private:
 	void eraseDataPartition(void);
 	void findInstalledFs(void);

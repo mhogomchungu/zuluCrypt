@@ -13,6 +13,7 @@ set (UI_FILES createfile.ui
 		cryptoinfo.ui
 		manageluksheader.ui
 		cryptfiles.ui
+		createvolumedialog.ui
 )
 
 set( MOC_FILES createfile.h
@@ -39,6 +40,7 @@ set( MOC_FILES createfile.h
 		manageluksheader.h
 		cryptfiles.h
 		cryptfilethread.h
+		createvolumedialog.h
  )
 	
 set (SRC createfile.cpp
@@ -67,6 +69,7 @@ set (SRC createfile.cpp
 	manageluksheader.cpp
 	cryptfiles.cpp
 	cryptfilethread.cpp
+	createvolumedialog.cpp
 )
 
 find_package( Qt4 REQUIRED )
