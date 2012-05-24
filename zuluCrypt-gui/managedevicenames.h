@@ -31,6 +31,7 @@
 
 #include "openpartition.h"
 #include "miscfunctions.h"
+#include "dialogmsg.h"
 
 namespace Ui {
 class managedevicenames;
@@ -67,10 +68,6 @@ private:
 	void addEntries(QString,QString) ;
 	Ui::managedevicenames * m_ui;
 	QAction * m_ac ;
-	/*
-	  prototyped at miscfunctions.h
-	  */
-	UIMsg m_msg ;
 };
 
 #endif // MANAGEDEVICENAMES_H

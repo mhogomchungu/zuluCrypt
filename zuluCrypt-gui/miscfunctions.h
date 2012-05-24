@@ -32,20 +32,6 @@
 
 #include "../zuluCrypt-cli/constants.h"
 
-class UIMsg
-{
-public:
-	UIMsg(void) ;
-	UIMsg(QWidget *) ;
-	void setParent(QWidget *);
-	void UIMessage(QString,QString);
-	int UIMessageWithConfirm(QString,QString);
-private:
-	QWidget * parent ;
-	QPushButton * m_yes ;
-	QPushButton * m_no  ;
-};
-
 class miscfunctions
 {
 public:

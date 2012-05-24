@@ -26,6 +26,7 @@
 #include "ui_luksaddkey.h"
 #include "openpartition.h"
 #include "runinthread.h"
+#include "dialogmsg.h"
 
 class luksaddkey : public QDialog
 {
@@ -60,10 +61,6 @@ private:
 	Ui::luksaddkey * m_ui ;
 	QString m_volumePath ;
 	bool m_isWindowClosable ;
-	/*
-	  prototyped at miscfunctions.h
-	  */
-	UIMsg m_msg ;
 };
 
 #endif // luksaddkeySUI_H

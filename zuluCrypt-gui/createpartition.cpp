@@ -42,8 +42,6 @@ createpartition::createpartition(QWidget *parent) :
 
 	m_isWindowClosable = true ;	
 
-	m_msg.setParent(this);
-
 	connect(m_ui->pbOpenKeyFile,SIGNAL(clicked()),this,SLOT(pbOpenKeyFile()));
 	connect(m_ui->pbCreate,SIGNAL(clicked()),this,SLOT(pbCreateClicked()));
 	connect(m_ui->pbCancel,SIGNAL(clicked()),this,SLOT(pbCancelClicked()));
@@ -54,13 +52,15 @@ createpartition::createpartition(QWidget *parent) :
 
 void createpartition::findInstalledFs()
 {
+	DialogMsg msg(this);
+
 	QStringList mkfsList =  QDir(QString(ZULUCRYPTmkfs_dir)).entryList().filter("mkfs.") ;
 
 	if(mkfsList.size() == 0){
 		disableAll();
-		QString msg = tr("this tool expects to find file system creation tools at \"%1/\" ").arg(ZULUCRYPTmkfs_dir);
-		msg = msg + tr("and it can not find them.\nIt is therefore not possible to create volumes using this tool.");
-		m_msg.UIMessage(tr("ERROR!"),msg) ;
+		QString x = tr("this tool expects to find file system creation tools at \"%1/\" ").arg(ZULUCRYPTmkfs_dir);
+		x += tr("and it can not find them.\nIt is therefore not possible to create volumes using this tool.");
+		msg.ShowUIOK(tr("ERROR!"),x) ;
 		return ;
 	}
 	
@@ -252,25 +252,27 @@ void createpartition::rbPasssphraseFromFileClicked()
 
 void createpartition::pbCreateClicked()
 {
+	DialogMsg msg(this) ;
+
 	QString volumePath   = m_ui->lineEditVolumePath->text() ;
 	QString passphrase_1 = m_ui->lineEditPassphrase1->text() ;
 	QString passphrase_2 = m_ui->lineEditPassPhrase2->text();
 
 	if( volumePath.isEmpty() )
-		return 	m_msg.UIMessage(tr("ERROR!"),tr("volume path field is empty"));
+		return 	msg.ShowUIOK(tr("ERROR!"),tr("volume path field is empty"));
 
 	QString source ;
 
 	if (m_ui->rbPassphraseFromFile->isChecked() == true){
 		if( passphrase_1.isEmpty() )
-			return 	m_msg.UIMessage(tr("ERROR!"),tr("atleast one required field is empty"));
+			return 	msg.ShowUIOK(tr("ERROR!"),tr("atleast one required field is empty"));
 
 		source = QString("-f") ;
 	}else{
 		if( passphrase_1.isEmpty() || passphrase_2.isEmpty() )
-			return 	m_msg.UIMessage(tr("ERROR!"),tr("atleast one required field is empty"));
+			return 	msg.ShowUIOK(tr("ERROR!"),tr("atleast one required field is empty"));
 		if( passphrase_1 != passphrase_2 )
-			return 	m_msg.UIMessage(tr("ERROR!"),tr("passphrases do not match"));
+			return 	msg.ShowUIOK(tr("ERROR!"),tr("passphrases do not match"));
 
 		source = QString("-p") ;
 	}
@@ -299,33 +301,34 @@ void createpartition::pbCreateClicked()
 
 void createpartition::threadfinished(int st)
 {	
+	DialogMsg msg(this) ;
 	m_isWindowClosable = true ;
-	QString msg = tr("volume created successfully") ;
+	QString x = tr("volume created successfully") ;
 	if(m_ui->comboBoxVolumeType->currentText() == QString("luks"))
-		msg += tr("\n\ncreating a backup of the luks header is strongly advised.\n\nplease read documentation on why this is important.") ;
+		x += tr("\n\ncreating a backup of the luks header is strongly advised.please read documentation on why this is important.") ;
 	switch ( st ){
-		case 0 : m_msg.UIMessage(tr("SUCCESS!"),msg ) ;
+		case 0 : msg.ShowUIOK(tr("SUCCESS!"),x ) ;
 		HideUI();													break  ;
-		case 1 : m_msg.UIMessage(tr("ERROR!"),tr("invalid path to a file or device"));					break  ;
-		case 2 : m_msg.UIMessage(tr("ERROR!"),tr("wrong option type"));							break  ;
-		case 3 : m_msg.UIMessage(tr("ERROR!"),tr("could not create an encrypted volume in a file or device" ));		break  ;
-		case 4 : m_msg.UIMessage(tr("ERROR!"),tr("one or more required argument(s) for this operation is missing" ));	break  ;
-		case 5 : m_msg.UIMessage(tr("ERROR!"),tr("wrong choice, exiting" ));						break  ;
-		case 6 : m_msg.UIMessage(tr("ERROR!"),tr("couldnt get enought memory to hold the key file" )) ;			break  ;
-		case 7 : m_msg.UIMessage(tr("ERROR!"),tr("passphrases do not match" ) );					break  ;
-		case 8 : m_msg.UIMessage(tr("ERROR!"),tr("invalid path to key file" ) );					break  ;
-		case 9 : m_msg.UIMessage(tr("ERROR!"),tr("container file must be bigger than 3MB" )) ;				break  ;
-		case 10: m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to create a volume on a system partition.\
+		case 1 : msg.ShowUIOK(tr("ERROR!"),tr("invalid path to a file or device"));					break  ;
+		case 2 : msg.ShowUIOK(tr("ERROR!"),tr("wrong option type"));							break  ;
+		case 3 : msg.ShowUIOK(tr("ERROR!"),tr("could not create an encrypted volume in a file or device" ));		break  ;
+		case 4 : msg.ShowUIOK(tr("ERROR!"),tr("one or more required argument(s) for this operation is missing" ));	break  ;
+		case 5 : msg.ShowUIOK(tr("ERROR!"),tr("wrong choice, exiting" ));						break  ;
+		case 6 : msg.ShowUIOK(tr("ERROR!"),tr("couldnt get enought memory to hold the key file" )) ;			break  ;
+		case 7 : msg.ShowUIOK(tr("ERROR!"),tr("passphrases do not match" ) );						break  ;
+		case 8 : msg.ShowUIOK(tr("ERROR!"),tr("invalid path to key file" ) );						break  ;
+		case 9 : msg.ShowUIOK(tr("ERROR!"),tr("container file must be bigger than 3MB" )) ;				break  ;
+		case 10: msg.ShowUIOK(tr("ERROR!"),tr("insufficient privilege to create a volume on a system partition.\
 A system partition is a partition with an active entry in \"/etc/fstab\"\
 and \"/etc/crypttab.\"\nRerun the tool from root's accout to proceed" )) ;
 																break  ;
-		case 11: m_msg.UIMessage(tr("ERROR!"),tr("%1 not found").arg(ZULUCRYPTmkfs) );					break  ;
-		case 12: m_msg.UIMessage(tr("ERROR!"),tr("user chose not to proceed" ) );					break  ;
-		case 13: m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to search for volume path" )) ;		break  ;
-		case 14: m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to create a volume in this device" )) ;	break  ;
-		case 15: m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to open the file in write mode" )) ;		break  ;
-		case 110:m_msg.UIMessage(tr("ERROR!"),tr("could not find any partition with the presented UUID" )) ;		break  ;
-		default: m_msg.UIMessage(tr("ERROR!"),tr("unrecognized ERROR! with status number %1 encountered").arg(st));
+		case 11: msg.ShowUIOK(tr("ERROR!"),tr("%1 not found").arg(ZULUCRYPTmkfs) );					break  ;
+		case 12: msg.ShowUIOK(tr("ERROR!"),tr("user chose not to proceed" ) );						break  ;
+		case 13: msg.ShowUIOK(tr("ERROR!"),tr("insufficient privilege to search for volume path" )) ;			break  ;
+		case 14: msg.ShowUIOK(tr("ERROR!"),tr("insufficient privilege to create a volume in this device" )) ;		break  ;
+		case 15: msg.ShowUIOK(tr("ERROR!"),tr("insufficient privilege to open the file in write mode" )) ;		break  ;
+		case 110:msg.ShowUIOK(tr("ERROR!"),tr("could not find any partition with the presented UUID" )) ;		break  ;
+		default: msg.ShowUIOK(tr("ERROR!"),tr("unrecognized ERROR! with status number %1 encountered").arg(st));
 	}
 
 	enableAll();

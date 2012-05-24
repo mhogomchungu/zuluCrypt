@@ -49,8 +49,6 @@ passwordDialog::passwordDialog(QTableWidget * table,QWidget *parent ) : QDialog(
 
 	m_table = table ;
 
-	m_msg.setParent(this);
-
 	connect(m_ui->PushButtonCancel,SIGNAL(clicked()),this,SLOT(HideUI())) ;
 	connect(m_ui->PushButtonOpen,SIGNAL(clicked()),this,SLOT(buttonOpenClicked())) ;
 	connect(m_ui->PushButtonMountPointPath,SIGNAL(clicked()),this,SLOT(mount_point()));
@@ -187,8 +185,11 @@ void passwordDialog::buttonOpenClicked(void )
 
 	QString passPhraseField = m_ui->PassPhraseField->text() ;
 
-	if( mountPointPath.isEmpty() || passPhraseField.isEmpty() || vp.isEmpty())
-		return m_msg.UIMessage(tr("ERROR!"),tr("atleast one required field is empty"));
+	if( mountPointPath.isEmpty() || passPhraseField.isEmpty() || vp.isEmpty()){
+		DialogMsg msg(this) ;
+		return msg.ShowUIOK(QString("ERROR!"),QString("atleast one required field is empty"));
+
+	}
 
 	passPhraseField.replace("\"","\"\"\"") ;
 	vp.replace("\"","\"\"\"") ;
@@ -298,34 +299,34 @@ void passwordDialog::done(QString type)
 void passwordDialog::threadfinished(int status)
 {
 	m_isWindowClosable = true ;
-
+	DialogMsg msg(this);
 	switch ( status ){
 		case 0 : return success();
-		case 1 : m_msg.UIMessage(tr("ERROR!"),tr("failed to mount ntfs file system using ntfs-3g,is ntfs-3g package installed?" )) ;		break ;
-		case 2 : m_msg.UIMessage(tr("ERROR!"),tr("there seem to be an open volume accociated with given address" ));				break ;
-		case 3 : m_msg.UIMessage(tr("ERROR!"),tr("no file or device exist on given path" )) ; 							break ;
-		case 4 : m_msg.UIMessage(tr("ERROR!"),tr("presented key was not found in the volume"));							break ;
-		case 5 : m_msg.UIMessage(tr("ERROR!"),tr("could not create mount point, invalid path or path already taken") ) ;			break ;
-		case 6 : m_msg.UIMessage(tr("ERROR!"),tr("invalid path to keyfile" ));									break ;
-		case 8 : m_msg.UIMessage(tr("ERROR!"),tr("failed to open volume" ));									break ;
-		case 9 : m_msg.UIMessage(tr("ERROR!"),tr("mount point path is already taken" ));							break ;
-		case 10: m_msg.UIMessage(tr("ERROR!"),tr("\",\" ( comma ) is not a valid mount point" ));						break ;
-		case 11: m_msg.UIMessage(tr("ERROR!"),tr("one or more required argument(s) for this operation is missing\n" ));				break ;
-		case 12: m_msg.UIMessage(tr("ERROR!"),tr("could not get a lock on /etc/mtab~" ));							break ;
-		case 13: m_msg.UIMessage(tr("ERROR!"),tr("wrong argument for mode, valid options are \"rw\" or \"ro\"" ));				break ;
-		case 14: m_msg.UIMessage(tr("ERROR!"),tr("could not get enought memory to hold the key file" ));					break ;
-		case 15: m_msg.UIMessage(tr("ERROR!"),tr("failed to open volume and failed to close the mapper, advice to do it manunally" ));		break ;
-		case 16: m_msg.UIMessage(tr("ERROR!"),tr("could not resolve full path of mount point" ));						break ;
-		case 17: m_msg.UIMessage(tr("ERROR!"),tr("could not resolve full path of device address" ));						break ;
-		case 18: m_msg.UIMessage(tr("ERROR!"),tr("-O and -m options can not be used together" ));						break ;
-		case 19: m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to create mount point" ));						break ;
-		case 20: m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to open device" ));							break ;
-		case 21: m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to create mount point" ));						break ;
-		case 22: m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to open keyfile for reading" ));					break ;
-		case 23: m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to open device in read/write mode" ));					break ;
-		case 24: m_msg.UIMessage(tr("ERROR!"),tr("there seem to be an opened mapper associated with the device" ));				break ;
-		case 110:m_msg.UIMessage(tr("ERROR!"),tr("can not find a partition that match presented UUID" ));					break ;
-		default: m_msg.UIMessage(tr("ERROR!"),tr("unrecognized ERROR with status number %1 encountered").arg(status));
+		case 1 : msg.ShowUIOK(tr("ERROR!"),tr("failed to mount ntfs file system using ntfs-3g,is ntfs-3g package installed?" )) ;	break ;
+		case 2 : msg.ShowUIOK(tr("ERROR!"),tr("there seem to be an open volume accociated with given address" ));			break ;
+		case 3 : msg.ShowUIOK(tr("ERROR!"),tr("no file or device exist on given path" )) ; 						break ;
+		case 4 : msg.ShowUIOK(tr("ERROR!"),tr("presented key was not found in the volume"));						break ;
+		case 5 : msg.ShowUIOK(tr("ERROR!"),tr("could not create mount point, invalid path or path already taken") ) ;			break ;
+		case 6 : msg.ShowUIOK(tr("ERROR!"),tr("invalid path to keyfile" ));								break ;
+		case 8 : msg.ShowUIOK(tr("ERROR!"),tr("failed to open volume" ));								break ;
+		case 9 : msg.ShowUIOK(tr("ERROR!"),tr("mount point path is already taken" ));							break ;
+		case 10: msg.ShowUIOK(tr("ERROR!"),tr("\",\" ( comma ) is not a valid mount point" ));						break ;
+		case 11: msg.ShowUIOK(tr("ERROR!"),tr("one or more required argument(s) for this operation is missing\n" ));			break ;
+		case 12: msg.ShowUIOK(tr("ERROR!"),tr("could not get a lock on /etc/mtab~" ));							break ;
+		case 13: msg.ShowUIOK(tr("ERROR!"),tr("wrong argument for mode, valid options are \"rw\" or \"ro\"" ));				break ;
+		case 14: msg.ShowUIOK(tr("ERROR!"),tr("could not get enought memory to hold the key file" ));					break ;
+		case 15: msg.ShowUIOK(tr("ERROR!"),tr("failed to open volume and failed to close the mapper, advice to do it manunally" ));	break ;
+		case 16: msg.ShowUIOK(tr("ERROR!"),tr("could not resolve full path of mount point" ));						break ;
+		case 17: msg.ShowUIOK(tr("ERROR!"),tr("could not resolve full path of device address" ));					break ;
+		case 18: msg.ShowUIOK(tr("ERROR!"),tr("-O and -m options can not be used together" ));						break ;
+		case 19: msg.ShowUIOK(tr("ERROR!"),tr("insufficient privilege to create mount point" ));					break ;
+		case 20: msg.ShowUIOK(tr("ERROR!"),tr("insufficient privilege to open device" ));						break ;
+		case 21: msg.ShowUIOK(tr("ERROR!"),tr("insufficient privilege to create mount point" ));					break ;
+		case 22: msg.ShowUIOK(tr("ERROR!"),tr("insufficient privilege to open keyfile for reading" ));					break ;
+		case 23: msg.ShowUIOK(tr("ERROR!"),tr("insufficient privilege to open device in read/write mode" ));				break ;
+		case 24: msg.ShowUIOK(tr("ERROR!"),tr("there seem to be an opened mapper associated with the device" ));			break ;
+		case 110:msg.ShowUIOK(tr("ERROR!"),tr("can not find a partition that match presented UUID" ));					break ;
+		default: msg.ShowUIOK(tr("ERROR!"),tr("unrecognized ERROR with status number %1 encountered").arg(status));
 	}
 	enableAll();
 	if( status == 4 ){

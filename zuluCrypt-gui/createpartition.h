@@ -29,6 +29,7 @@
 #include "miscfunctions.h"
 #include "erasedevice.h"
 #include "createvolumedialog.h"
+#include "dialogmsg.h"
 
 namespace Ui {
     class createpartition;
@@ -66,10 +67,6 @@ private:
 	bool m_created ;
 	Ui::createpartition * m_ui;
 	bool m_isWindowClosable ;
-	/*
-	  prototyped at miscfunctions.h
-	  */
-	UIMsg m_msg ;
 };
 
 #endif // CREATEPARTITION_H

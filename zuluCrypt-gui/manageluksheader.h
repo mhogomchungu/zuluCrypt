@@ -28,6 +28,7 @@
 #include "runinthread.h"
 #include "miscfunctions.h"
 #include "openpartition.h"
+#include "dialogmsg.h"
 
 namespace Ui {
     class manageluksheader;
@@ -65,10 +66,6 @@ private:
 	Ui::manageluksheader * m_ui;
 
 	QString m_path ;
-	/*
-	  prototyped at miscfunctions.h
-	  */
-	UIMsg m_msg ;
 
 	bool m_OperationInProgress ;
 	QString m_operation ;

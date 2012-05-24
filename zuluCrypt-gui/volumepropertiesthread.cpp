@@ -122,7 +122,7 @@ void volumePropertiesThread::run()
 	j = i - 1 ;
 	while ( c.at(i++) != ' ') { ; }
 
-	m_volumeProperties += QString("\n available:\t") + QString(c.mid(j,i - j - 1)) ;
+	m_volumeProperties += QString("\n unused:\t") + QString(c.mid(j,i - j - 1)) ;
 
 	while ( c.at(i++) == ' ') { ; }
 	j = i - 1 ;

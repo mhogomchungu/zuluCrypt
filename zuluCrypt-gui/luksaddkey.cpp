@@ -47,8 +47,6 @@ luksaddkey::luksaddkey(QWidget *parent) :
 	m_ui->textEditExistingPassphrase->setEchoMode(QLineEdit::Password);
 	m_ui->textEditPassphraseToAdd->setEchoMode(QLineEdit::Password);
 
-	m_msg.setParent(this);
-
 	this->setFixedSize(this->size());
 	this->setWindowFlags(Qt::Window | Qt::Dialog);
 	this->setFont(parent->font());
@@ -181,6 +179,7 @@ void luksaddkey::rbNewPassphraseFromFile()
 
 void luksaddkey::pbAdd(void)
 {
+	DialogMsg msg(this) ;
 	m_volumePath = miscfunctions::resolveHomeSymbol(m_ui->textEditPathToVolume->text()) ;
 	QString ExistingKey = m_ui->textEditExistingPassphrase->text() ;
 
@@ -189,10 +188,18 @@ void luksaddkey::pbAdd(void)
 
 	if(m_ui->radioButtonNewPassphraseFromFile->isChecked()){
 		if( m_volumePath.isEmpty() || ExistingKey.isEmpty() || NewKey.isEmpty() )
-			return m_msg.UIMessage(tr("ERROR!"),tr("atleast one required field is empty"));
+			return msg.ShowUIOK(tr("ERROR!"),tr("atleast one required field is empty"));
 	}else{
 		if( m_volumePath.isEmpty() || ExistingKey.isEmpty() || NewKey.isEmpty() || NewKey_1.isEmpty())
-			return m_msg.UIMessage(tr("ERROR!"),tr("atleast one required field is empty"));
+			return msg.ShowUIOK(tr("ERROR!"),tr("atleast one required field is empty"));
+
+		if( NewKey != NewKey_1 ){
+			msg.ShowUIOK(tr("ERROR!"),tr("keys do not match"));
+			m_ui->textEditPassphraseToAdd->clear();
+			m_ui->lineEditReEnterPassphrase->clear();
+			m_ui->textEditPassphraseToAdd->setFocus();
+			return ;
+		}
 	}
 
 	m_volumePath.replace("\"","\"\"\"") ;
@@ -236,29 +243,30 @@ void luksaddkey::pbAdd(void)
 void luksaddkey::threadfinished(int status)
 {
 	m_isWindowClosable = true ;
+	DialogMsg msg(this) ;
 	QStringList x ;
 	QString success;
 	switch( status ){
 		case 0 :
 			x = miscfunctions::luksEmptySlots(m_volumePath);
 			success = tr("key added successfully.\n%1 / %2 slots are now in use").arg(x.at(0)).arg(x.at(1));
-			m_msg.UIMessage(tr("SUCCESS!"),success);
+			msg.ShowUIOK(tr("SUCCESS!"),success);
 			HideUI();
 			return ;			
-		case 1  : m_msg.UIMessage(tr("ERROR!"),tr("presented key does not match any key in the volume" )) ;          	break ;
-		case 2  : m_msg.UIMessage(tr("ERROR!"),tr("could not open luks device" )) ;		                      	break ;
-		case 4  : m_msg.UIMessage(tr("ERROR!"),tr("device does not exist" )) ;	                                      	break ;
-		case 5  : m_msg.UIMessage(tr("ERROR!"),tr("wrong arguments" )) ;	                                      	break ;
-		case 6  : m_msg.UIMessage(tr("ERROR!"),tr("one or more required argument(s) for this operation is missing" ));	break ;
-		case 7  : m_msg.UIMessage(tr("ERROR!"),tr("new passphrases do not match" ) );	                              	break ;
-		case 8  : m_msg.UIMessage(tr("ERROR!"),tr("one or both keyfile(s) does not exist" )) ;	                      	break ;
-		case 9  : m_msg.UIMessage(tr("ERROR!"),tr("couldnt get enought memory to hold the key file" )) ;	     	break ;
-		case 10 : m_msg.UIMessage(tr("ERROR!"),tr("all key slots are occupied, can not add any more keys" )) ;	      	break ;
-		case 11 : m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to write to the volume" )) ;		        break ;
-		case 12 : m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to open key file for reading" ));		break ;
-		case 13 : m_msg.UIMessage(tr("ERROR!"),tr("only root user can add keys to system devices" ));			break ;
-		case 110: m_msg.UIMessage(tr("ERROR!"),tr("can not find a partition that match presented UUID" ));		break ;
-		default : m_msg.UIMessage(tr("ERROR!"),tr("unrecognized ERROR! with status number %1 encountered").arg( status ));
+		case 1  : msg.ShowUIOK(tr("ERROR!"),tr("presented key does not match any key in the volume" )) ;          	break ;
+		case 2  : msg.ShowUIOK(tr("ERROR!"),tr("could not open luks device" )) ;		                      	break ;
+		case 4  : msg.ShowUIOK(tr("ERROR!"),tr("device does not exist" )) ;	                                      	break ;
+		case 5  : msg.ShowUIOK(tr("ERROR!"),tr("wrong arguments" )) ;							break ;
+		case 6  : msg.ShowUIOK(tr("ERROR!"),tr("one or more required argument(s) for this operation is missing" ));	break ;
+		case 7  : msg.ShowUIOK(tr("ERROR!"),tr("new passphrases do not match" ) );	                              	break ;
+		case 8  : msg.ShowUIOK(tr("ERROR!"),tr("one or both keyfile(s) does not exist" )) ;	                      	break ;
+		case 9  : msg.ShowUIOK(tr("ERROR!"),tr("couldnt get enought memory to hold the key file" )) ;			break ;
+		case 10 : msg.ShowUIOK(tr("ERROR!"),tr("all key slots are occupied, can not add any more keys" )) ;	      	break ;
+		case 11 : msg.ShowUIOK(tr("ERROR!"),tr("insufficient privilege to write to the volume" )) ;		        break ;
+		case 12 : msg.ShowUIOK(tr("ERROR!"),tr("insufficient privilege to open key file for reading" ));		break ;
+		case 13 : msg.ShowUIOK(tr("ERROR!"),tr("only root user can add keys to system devices" ));			break ;
+		case 110: msg.ShowUIOK(tr("ERROR!"),tr("can not find a partition that match presented UUID" ));			break ;
+		default : msg.ShowUIOK(tr("ERROR!"),tr("unrecognized ERROR! with status number %1 encountered").arg( status ));
 	}
 	enableAll();
 }

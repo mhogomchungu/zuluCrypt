@@ -50,6 +50,7 @@
 #include "erasedevice.h"
 #include "manageluksheader.h"
 #include "cryptfiles.h"
+#include "dialogmsg.h"
 
 namespace Ui {
     class zuluCrypt;
@@ -142,10 +143,7 @@ private:
 
 	Ui::zuluCrypt * m_ui;
 	QSystemTrayIcon * m_trayIcon ;
-	/*
-	  prototyped at miscfunctions.h
-	  */
-	UIMsg m_msg ;
+
 };
 
 #endif // ZULUCRYPT_H

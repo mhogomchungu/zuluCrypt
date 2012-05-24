@@ -30,6 +30,7 @@
 #include "miscfunctions.h"
 #include "openpartition.h"
 #include "cryptfilethread.h"
+#include "dialogmsg.h"
 
 namespace Ui {
     class cryptfiles;
@@ -69,15 +70,10 @@ private:
 	Ui::cryptfiles * m_ui;
 
 	QString m_path ;
-	/*
-	  prototyped at miscfunctions.h
-	  */
-	UIMsg m_msg ;
 
 	bool m_OperationInProgress ;
 	QString m_operation ;
 	cryptfilethread * m_cft ;
-
 };
 
 #endif // CREATEKEYFILE_H

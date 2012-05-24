@@ -33,6 +33,7 @@
 #include "runinthread.h"
 #include "miscfunctions.h"
 #include "checkvolumetype.h"
+#include "dialogmsg.h"
 
 class passwordDialog :  public QDialog
 {	
@@ -70,10 +71,6 @@ private :
 	bool m_isWindowClosable ;
 	QTableWidget * m_table ;
 	bool m_open_with_path ;
-	/*
-	  prototyped at miscfunctions.h
-	  */
-	UIMsg m_msg ;
 };
 
 #endif // PASSWORD_DIALOG_H

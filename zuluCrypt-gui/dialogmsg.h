@@ -1,6 +1,5 @@
 /*
- * 
- *  Copyright (c) 2011
+ *  Copyright (c) 2012
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
@@ -17,45 +16,42 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CREATEKEYFILE_H
-#define CREATEKEYFILE_H
+#ifndef DIALOGMSG_H
+#define DIALOGMSG_H
 
-#include <QWidget>
-
-#include "createfilethread.h"
-#include "miscfunctions.h"
-#include "createkeyfilethread.h"
-#include "dialogmsg.h"
+#include <QDialog>
+#include <QString>
+#include <QMessageBox>
+#include <QCloseEvent>
 
 namespace Ui {
-    class createkeyfile;
+class DialogMsg;
 }
 
-class createkeyfile : public QWidget
+class DialogMsg : public QDialog
 {
 	Q_OBJECT
+	
 public:
-	explicit createkeyfile(QWidget *parent = 0);
-	~createkeyfile();
-signals:
-	void HideUISignal(void);
-public slots:
-	void ShowUI(void) ;
-	void HideUI(void) ;
+	explicit DialogMsg(QWidget *);
+	void ShowUIOK(QString title,QString msg);
+	int  ShowUIYesNo(QString title,QString msg);
+	void ShowUIInfo(QString title,QString msg);
+	void ShowUIVolumeProperties(QString title,QString msg);
+	void HideUI(void);
+	~DialogMsg();
 
 private slots:
-	void pbCancel(void) ;
-	void pbCreate(void) ;
-	void pbOpenFolder(void) ;
-	void threadExitStatus(int);
+	void pbOK(void);
+	void pbYes(void);
+	void pbNo(void);
+	
 private:
+	void ShowUI(QString title,QString msg);
+	void setDimentions(QString msg);
 	void closeEvent(QCloseEvent *) ;
-	void disableAll(void);
-	void enableAll(void) ;
-	Ui::createkeyfile *m_ui;
-	createkeyfilethread * m_ckt ;
-
-	QString m_path ;
+	Ui::DialogMsg * m_ui;
+	int m_status ;
 };
 
-#endif // CREATEKEYFILE_H
+#endif // DIALOGMSG_H

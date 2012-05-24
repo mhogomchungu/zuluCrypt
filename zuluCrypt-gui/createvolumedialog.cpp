@@ -34,13 +34,12 @@ CreateVolumeDialog::CreateVolumeDialog(QString path,QWidget *parent) :
 
 	connect(m_ui->pbYes,SIGNAL(clicked()),this,SLOT(pbYes())) ;
 	connect(m_ui->pbNo,SIGNAL(clicked()),this,SLOT(pbNo())) ;
-
 }
 
 void CreateVolumeDialog::ShowUI()
 {
 	QString msg = tr("This operation will lead to permanent destrunction \
-of all present data in %1. Are you sure you want to continue?").arg(m_path);
+of all present data in \"%1\".\n\nAre you sure you want to continue?").arg(m_path);
 	m_ui->label_1->setText(msg);
 	this->show();
 }

@@ -27,25 +27,14 @@
 
 #include <iostream>
 
-createfile::createfile(QWidget *parent) :
-    QWidget(parent),
-    m_ui(new Ui::createfile)
+createfile::createfile(QWidget *parent) :QWidget(parent),m_ui(new Ui::createfile)
 {
 	m_ui->setupUi(this);
 	this->setFixedSize(this->size());
 	this->setWindowFlags(Qt::Window | Qt::Dialog);
 	this->setFont(parent->font());
 
-	m_mb.setWindowTitle(tr("terminating file creation process"));
-	m_mb.setParent(this);
-	m_mb.setWindowFlags(Qt::Window | Qt::Dialog);
-	m_mb.setText(tr("are you sure you want to stop file creation process?"));
-	m_mb.setFont(this->font());
-
-	m_msg.setParent(this);
-
-	m_yes = m_mb.addButton(tr("dummy"),QMessageBox::YesRole);
-	m_no  = m_mb.addButton(tr("dummy1"),QMessageBox::NoRole);
+	m_msg = new DialogMsg(this) ;
 
 	m_ui->progressBar->setMinimum(0);
 	m_ui->progressBar->setMaximum(100);
@@ -110,6 +99,8 @@ void createfile::showUI()
 
 void createfile::pbCreate()
 {
+	DialogMsg msg(this) ;
+
 	QString fileName = m_ui->lineEditFileName->text() ;
 	QString filePath = m_ui->lineEditFilePath->text() ;
 	QString fileSize = m_ui->lineEditFileSize->text() ;
@@ -117,34 +108,34 @@ void createfile::pbCreate()
 	m_path = miscfunctions::resolveHomeSymbol(m_ui->lineEditFilePath->text()) ;
 
 	if(fileName.isEmpty())
-		return m_msg.UIMessage(tr("ERROR!"),tr("file name field is empty"));
+		return msg.ShowUIOK(tr("ERROR!"),tr("file name field is empty"));
 
 	if(filePath.isEmpty())
-		return m_msg.UIMessage(tr("ERROR!"),tr("file path field is empty"));
+		return msg.ShowUIOK(tr("ERROR!"),tr("file path field is empty"));
 
 	if(fileSize.isEmpty())
-		return m_msg.UIMessage(tr("ERROR!"),tr("file size field is empty"));
+		return msg.ShowUIOK(tr("ERROR!"),tr("file size field is empty"));
 
 	if(miscfunctions::exists(m_path) == false )
-		return m_msg.UIMessage(tr("ERROR!"),tr("destination folder does not exist"));
+		return msg.ShowUIOK(tr("ERROR!"),tr("destination folder does not exist"));
 
 	if(miscfunctions::exists(m_path + QString("/") + fileName))
-		return m_msg.UIMessage(tr("ERROR!"),tr("a file or folder with the same name already exist at destination address"));
+		return msg.ShowUIOK(tr("ERROR!"),tr("a file or folder with the same name already exist at destination address"));
 
 	bool test ;
 
 	fileSize.toInt(&test) ;
 
 	if( test == false )
-		return m_msg.UIMessage(tr("ERROR!"),tr("Illegal character in the file size field.Only digits are allowed"));
+		return msg.ShowUIOK(tr("ERROR!"),tr("Illegal character in the file size field.Only digits are allowed"));
 
 	m_path = m_path + QString("/") + fileName;
 
 	if( miscfunctions::exists(m_path) == true )
-		return m_msg.UIMessage(tr("ERROR!"),tr("file with the same name and at the destination folder already exist"));
+		return msg.ShowUIOK(tr("ERROR!"),tr("file with the same name and at the destination folder already exist"));
 
 	if( miscfunctions::canCreateFile(m_path) == false ){
-		m_msg.UIMessage(tr("ERROR!"),tr("you dont seem to have writing access to the destination folder"));
+		msg.ShowUIOK(tr("ERROR!"),tr("you dont seem to have writing access to the destination folder"));
 		m_ui->lineEditFilePath->setFocus();
 		return ;
 	}
@@ -157,7 +148,7 @@ void createfile::pbCreate()
 			break ;
 	}
 	if( m_fileSize < 3145728 )
-		return m_msg.UIMessage(tr("ERROR!"),tr("container file must be bigger than 3MB"));
+		return msg.ShowUIOK(tr("ERROR!"),tr("container file must be bigger than 3MB"));
 
 	disableAll();
 	
@@ -183,8 +174,8 @@ void createfile::exitStatus(int status)
 	if( status == 1 )
 		QFile::remove( m_path ) ;
 	else{
-		if( m_mb.isVisible() == true )
-			m_mb.hide();
+		if( m_msg->isVisible() )
+			m_msg->HideUI();
 
 		emit fileCreated( m_path ) ;
 	}
@@ -197,15 +188,10 @@ void createfile::pbCancel()
 	if(m_cft == NULL)
 		return HideUI();
 
-	m_mb.removeButton(m_yes);
-	m_mb.removeButton(m_no);
+	QString x = tr("terminating file creation process") ;
+	QString y = tr("are you sure you want to stop file creation process?") ;
 
-	m_yes = m_mb.addButton(tr("yes"),QMessageBox::YesRole);
-	m_no  = m_mb.addButton(tr("no"),QMessageBox::NoRole);
-
-	m_mb.exec() ;
-
-	if(m_mb.clickedButton() == m_yes)
+	if(m_msg->ShowUIYesNo(x,y) == QMessageBox::Yes)
 		emit cancelOperation();
 }
 

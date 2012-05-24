@@ -37,8 +37,6 @@ createkeyfile::createkeyfile(QWidget *parent) :
 	this->setWindowFlags(Qt::Window | Qt::Dialog);
 	this->setFont(parent->font());
 
-	m_msg.setParent(this);
-
 	m_ckt = NULL ;
 
 	m_ui->pbOpenFolder->setIcon(QIcon(QString(":/folder.png")));
@@ -101,25 +99,27 @@ void createkeyfile::disableAll()
 
 void createkeyfile::pbCreate()
 {
+	DialogMsg msg(this);
+
 	QString fileName = m_ui->lineEditFileName->text() ;
 	m_path = miscfunctions::resolveHomeSymbol(m_ui->lineEditPath->text()) ;
 
 	if( fileName.isEmpty() )
-		return m_msg.UIMessage(tr("ERROR!"),tr("the key name field is empth"));
+		return msg.ShowUIOK(tr("ERROR!"),tr("the key name field is empth"));
 
 	if( m_path.isEmpty() )
-		return m_msg.UIMessage(tr("ERROR!"),tr("folder path to where the key will be created is empty"));
+		return msg.ShowUIOK(tr("ERROR!"),tr("folder path to where the key will be created is empty"));
 
 	if(miscfunctions::exists(m_path) == false)
-		return m_msg.UIMessage(tr("ERROR!"),tr("destination folder does not exist"));
+		return msg.ShowUIOK(tr("ERROR!"),tr("destination folder does not exist"));
 
 	QString keyfile = m_path + QString("/") + m_ui->lineEditFileName->text() ;
 
 	if( miscfunctions::exists(keyfile) == true)
-		return m_msg.UIMessage(tr("ERROR!"),tr("file with the same name and at the destination folder already exist"));
+		return msg.ShowUIOK(tr("ERROR!"),tr("file with the same name and at the destination folder already exist"));
 
 	if( miscfunctions::canCreateFile(keyfile) == false ){
-		m_msg.UIMessage(tr("ERROR!"),tr("you dont seem to have writing access to the destination folder"));
+		msg.ShowUIOK(tr("ERROR!"),tr("you dont seem to have writing access to the destination folder"));
 		m_ui->lineEditPath->setFocus();
 		return ;
 	}
@@ -133,12 +133,14 @@ void createkeyfile::pbCreate()
 
 void createkeyfile::threadExitStatus(int st)
 {
+	DialogMsg msg(this) ;
+
 	m_ckt = NULL ;
 	if( st == 1 ){
-		m_msg.UIMessage(tr("WARNING!"),tr("process interrupted,key not fully generated"));
+		msg.ShowUIOK(tr("WARNING!"),tr("process interrupted,key not fully generated"));
 		this->enableAll();
 	}else{
-		m_msg.UIMessage(tr("SUCCESS!"),tr("key file successfully created"));
+		msg.ShowUIOK(tr("SUCCESS!"),tr("key file successfully created"));
 		this->HideUI();
 	}
 }

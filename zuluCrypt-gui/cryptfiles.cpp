@@ -37,8 +37,6 @@ cryptfiles::cryptfiles(QWidget *parent) :
 	this->setFont(parent->font());
 	this->setFixedSize(this->size());
 
-	m_msg.setParent(this);
-
 	m_ui->progressBar->setMinimum(0);
 	m_ui->progressBar->setMaximum(100);
 	m_ui->progressBar->setValue(0);
@@ -211,10 +209,12 @@ void cryptfiles::disableAll()
 
 void cryptfiles::pbCreate()
 {
+	DialogMsg msg(this);
+
 	QString source = miscfunctions::resolveHomeSymbol(m_ui->lineEditSourcePath->text());
 
 	if( source.isEmpty() )
-		return m_msg.UIMessage(tr("ERROR!"),tr("path to source field is empty"));
+		return msg.ShowUIOK(tr("ERROR!"),tr("path to source field is empty"));
 
 	QString dest = m_ui->lineEditDestinationPath->text();
 
@@ -224,18 +224,18 @@ void cryptfiles::pbCreate()
 	QString keySource ;
 	if( m_ui->rbKey->isChecked()){
 		if( key_1.isEmpty())
-			return m_msg.UIMessage(tr("ERROR!"),tr("first key field is empty"));
+			return msg.ShowUIOK(tr("ERROR!"),tr("first key field is empty"));
 
 		if(m_operation == QString("-E")){
 			if( key_2.isEmpty())
-				return m_msg.UIMessage(tr("ERROR!"),tr("second key field is empty"));
+				return msg.ShowUIOK(tr("ERROR!"),tr("second key field is empty"));
 			if( key_1 != key_2)
-				return m_msg.UIMessage(tr("ERROR!"),tr("keys do not match"));
+				return msg.ShowUIOK(tr("ERROR!"),tr("keys do not match"));
 		}
 		keySource = QString("-p") ;
 	}else{
 		if(miscfunctions::exists(key_1) == false)
-			return m_msg.UIMessage(tr("ERROR!"),tr("invalid path to key file"));
+			return msg.ShowUIOK(tr("ERROR!"),tr("invalid path to key file"));
 
 		keySource = QString("-f") ;
 	}
@@ -313,24 +313,26 @@ void cryptfiles::pbKeyFile()
 
 void cryptfiles::threadExitStatus(int st)
 {
+	DialogMsg msg(this);
+
 	m_OperationInProgress = false ;
 
 	switch( st ){
-		case 0 : m_msg.UIMessage( tr("SUCCESS"),tr("encrypted file created successfully" ) ) ;
+		case 0 : msg.ShowUIOK( tr("SUCCESS"),tr("encrypted file created successfully" ) ) ;
 			 return this->HideUI();
-		case 1 : m_msg.UIMessage( tr("SUCCESS"),tr("decrypted file created successfully" ) )	;
+		case 1 : msg.ShowUIOK( tr("SUCCESS"),tr("decrypted file created successfully" ) )	;
 			 return this->HideUI();
-		case 2 : m_msg.UIMessage( tr("ERROR!"),tr("could not open keyfile for reading" ) )				; break ;
-		case 3 : m_msg.UIMessage( tr("ERROR!"),tr("missing key source" ) )						; break ;
-		case 4 : m_msg.UIMessage( tr("ERROR!"),tr("could not open encryption routines" ) )				; break ;
-		case 5 : m_msg.UIMessage( tr("ERROR!"),tr("file or folder already exist at destination address" ) )		; break ;
-		case 6 : m_msg.UIMessage( tr("ERROR!"),tr("invalid path to source" ))						; break ;
-		case 7 : m_msg.UIMessage( tr("ERROR!"),tr("could not resolve path to destination file" ))			; break ;
-		case 8 : m_msg.UIMessage( tr("ERROR!"),tr("keys do not match" ))						; break ;
-		case 9 : m_msg.UIMessage( tr("ERROR!"),tr("required argument is missing" ) )					; break ;
-		case 10: m_msg.UIMessage( tr("ERROR!"),tr("insufficient privilege to create destination file" ))		; break ;
-		case 11: m_msg.UIMessage( tr("ERROR!"),tr("presented key did not match the encryption key" ))			; break ;
-		case 12: m_msg.UIMessage( tr("INFO!"),tr("operation terminated per user request" )) ;
+		case 2 : msg.ShowUIOK( tr("ERROR!"),tr("could not open keyfile for reading" ) )				; break ;
+		case 3 : msg.ShowUIOK( tr("ERROR!"),tr("missing key source" ) )						; break ;
+		case 4 : msg.ShowUIOK( tr("ERROR!"),tr("could not open encryption routines" ) )				; break ;
+		case 5 : msg.ShowUIOK( tr("ERROR!"),tr("file or folder already exist at destination address" ) )		; break ;
+		case 6 : msg.ShowUIOK( tr("ERROR!"),tr("invalid path to source" ))						; break ;
+		case 7 : msg.ShowUIOK( tr("ERROR!"),tr("could not resolve path to destination file" ))			; break ;
+		case 8 : msg.ShowUIOK( tr("ERROR!"),tr("keys do not match" ))						; break ;
+		case 9 : msg.ShowUIOK( tr("ERROR!"),tr("required argument is missing" ) )					; break ;
+		case 10: msg.ShowUIOK( tr("ERROR!"),tr("insufficient privilege to create destination file" ))		; break ;
+		case 11: msg.ShowUIOK( tr("ERROR!"),tr("presented key did not match the encryption key" ))			; break ;
+		case 12: msg.ShowUIOK( tr("INFO!"),tr("operation terminated per user request" )) ;
 			 return this->HideUI();
 
 	}

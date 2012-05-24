@@ -25,6 +25,7 @@
 #include "openpartition.h"
 #include "ui_luksdeletekey.h"
 #include "runinthread.h"
+#include "dialogmsg.h"
 
 class luksdeletekey : public QDialog
 {
@@ -56,10 +57,6 @@ private:
 	Ui::luksdeletekey * m_ui;
 	QString m_volumePath ;
 	bool m_isWindowClosable ;
-	/*
-	  prototyped at miscfunctions.h
-	  */
-	UIMsg m_msg ;
 };
 
 #endif // LUKSDELETEKEY_H

@@ -140,7 +140,6 @@ void zuluCrypt::setupUIElements()
 
 	m_ui->setupUi(this);
 
-	m_msg.setParent(this);
 	this->setFixedSize(this->size());
 	this->setWindowIcon(QIcon(QString(":/zuluCrypt.png")));
 
@@ -200,7 +199,8 @@ when a user is a member of \"disk\" goups.If you get above errors,then check to 
 Some operations can not be performed on devices marked as \"system partitions\" when a user is not root.\
 Please see documentation for further details.") ;
 
-	UIMessage(tr("INFORMATION"),msg);
+	DialogMsg m(this) ;
+	m.ShowUIInfo(tr("INFORMATION"),msg);
 }
 
 void zuluCrypt::HighlightRow(int row,bool b)
@@ -312,7 +312,7 @@ void zuluCrypt::fonts()
 		if( k > size ){
 			k = size ;
 			Font.setPointSize(k);
-			m_msg.UIMessage(tr("info"),tr("resetting font size to %1 because larger font sizes do not fit").arg(QString::number(size)));
+			UIMessage(tr("info"),tr("resetting font size to %1 because larger font sizes do not fit").arg(QString::number(size)));
 		}
 		setUserFont(Font);
 		QString s = Font.family()+ QString("\n");
@@ -364,6 +364,7 @@ void zuluCrypt::setUserFont(QFont Font)
 	m_ui->actionDecrypt_file->setFont(this->font());
 	m_ui->menu_zc->setFont(this->font());
 	m_ui->actionPermission_problems->setFont(this->font());
+	m_ui->actionLuks_header_backup->setFont(this->font());
 }
 
 void zuluCrypt::info()
@@ -397,7 +398,8 @@ GNU General Public License for more details.\n\
 You should have received a copy of the GNU General Public License\n\
 along with this program.  If not, see <http://www.gnu.org/licenses/>.").arg(VERSION_STRING);
 
-	m_msg.UIMessage(tr("about zuluCrypt"),license);
+	DialogMsg m(this) ;
+	m.ShowUIInfo(tr("about zuluCrypt"),license);
 }
 
 void zuluCrypt::HelpLuksHeaderBackUp()
@@ -413,7 +415,8 @@ The above text is a modified excerpt from \"Cryptsetup FAQ\" and is licenced as 
 The full text to the FAQ can be located at http://code.google.com/p/cryptsetup/wiki/FrequentlyAskedQuestions\n\n\
 Going through the FAQ is highly recommended.");
 
-	UIMessage(QString("important information on luks header"),msg);
+	DialogMsg m(this) ;
+	m.ShowUIInfo(tr("important information on luks header"),msg);
 }
 
 void zuluCrypt::addItemToTable(QString device,QString m_point)
@@ -441,7 +444,8 @@ void zuluCrypt::volume_property()
 
 void zuluCrypt::volumePropertyThreadFinished(QString properties)
 {
-	m_msg.UIMessage(tr("volume properties"),properties);
+	DialogMsg msg(this) ;
+	msg.ShowUIVolumeProperties(tr("volume properties"),properties);
 }
 
 void zuluCrypt::favAboutToHide()
@@ -555,7 +559,8 @@ void zuluCrypt::luksDeleteKeyContextMenu(void)
 
 void zuluCrypt::UIMessage(QString title, QString message)
 {
-	m_msg.UIMessage(title,message);
+	DialogMsg msg(this);
+	msg.ShowUIOK(title,message);
 }
 
 void zuluCrypt::closeStatus(int st)
@@ -570,13 +575,13 @@ void zuluCrypt::closeStatus(int st)
 void zuluCrypt::closeStatusErrorMessage(int st)
 {
 	switch ( st ) {
-		case 1 :m_msg.UIMessage(tr("ERROR!"),tr("close failed, encrypted volume with that name does not exist")) ;				break ;
-		case 2 :m_msg.UIMessage(tr("ERROR!"),tr("close failed, one or more files in the volume are in use."));		break ;
-		case 3 :m_msg.UIMessage(tr("ERROR!"),tr("close failed, volume does not have an entry in /etc/mtab"));					break ;
-		case 4 :m_msg.UIMessage(tr("ERROR!"),tr("close failed, could not get a lock on /etc/mtab~"));						break ;
-		case 5 :m_msg.UIMessage(tr("ERROR!"),tr("close failed, volume is unmounted but could not close mapper,advice to close it manually"));	break ;
-		case 110:m_msg.UIMessage(tr("ERROR!"),tr("close failed, could not find any partition with the presented UUID"));			break ;
-		default:m_msg.UIMessage(tr("ERROR!"),tr("unrecognized error with status number %1 encountered").arg( st ));
+		case 1 :UIMessage(tr("ERROR!"),tr("close failed, encrypted volume with that name does not exist")) ;				break ;
+		case 2 :UIMessage(tr("ERROR!"),tr("close failed, one or more files in the volume are in use."));				break ;
+		case 3 :UIMessage(tr("ERROR!"),tr("close failed, volume does not have an entry in /etc/mtab"));					break ;
+		case 4 :UIMessage(tr("ERROR!"),tr("close failed, could not get a lock on /etc/mtab~"));						break ;
+		case 5 :UIMessage(tr("ERROR!"),tr("close failed, volume is unmounted but could not close mapper,advice to close it manually"));	break ;
+		case 110:UIMessage(tr("ERROR!"),tr("close failed, could not find any partition with the presented UUID"));			break ;
+		default:UIMessage(tr("ERROR!"),tr("unrecognized error with status number %1 encountered").arg( st ));
 	}
 }
 

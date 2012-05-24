@@ -28,6 +28,7 @@
 #include "createfilethread.h"
 
 #include "miscfunctions.h"
+#include "dialogmsg.h"
 
 namespace Ui {
     class createfile;
@@ -61,14 +62,11 @@ private:
 	Ui::createfile *m_ui;
 	double m_fileSize ;
 	QString m_path ;
-	QMessageBox m_mb ;
 	createFileThread * m_cft ;
 	QPushButton * m_yes ;
 	QPushButton * m_no  ;
-	/*
-	  prototyped at miscfunctions.h
-	  */
-	UIMsg m_msg ;
+
+	DialogMsg * m_msg ;
 };
 
 #endif // CREATEFILE_H

@@ -26,6 +26,7 @@
 #include "miscfunctions.h"
 #include "erasedevicethread.h"
 #include "openpartition.h"
+#include "dialogmsg.h"
 
 namespace Ui {
 class erasedevice;

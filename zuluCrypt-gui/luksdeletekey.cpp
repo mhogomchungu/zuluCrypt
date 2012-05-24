@@ -50,8 +50,6 @@ luksdeletekey::luksdeletekey(QWidget *parent) :
 
 	m_ui->lineEditVolumePath->clear();
 
-	m_msg.setParent(this);
-
 	connect(m_ui->pushButtonDelete,SIGNAL(clicked()),this,SLOT(pbDelete())) ;
 	connect(m_ui->pushButtonCancel,SIGNAL(clicked()),this,SLOT(pbCancel())) ;
 	connect(m_ui->rbPassphrase,SIGNAL(toggled(bool)),this,SLOT(rbPassphrase())) ;
@@ -166,12 +164,14 @@ void luksdeletekey::pbOpenPartition()
 
 void luksdeletekey::pbDelete()
 {
+	DialogMsg msg(this) ;
+
 	m_volumePath = miscfunctions::resolveHomeSymbol(m_ui->lineEditVolumePath->text()) ;
 
 	QString passphrase = m_ui->lineEditPassphrase->text() ;
 
 	if( m_volumePath.isEmpty() || passphrase.isEmpty() )
-		return m_msg.UIMessage(tr("ERROR!"),tr("atleast one required field is empty"));
+		return msg.ShowUIOK(tr("ERROR!"),tr("atleast one required field is empty"));
 
 	m_volumePath.replace("\"","\"\"\"") ;
 	passphrase.replace("\"","\"\"\"") ;
@@ -181,7 +181,7 @@ void luksdeletekey::pbDelete()
 		s = s + tr("\nDeleting it will make the volume unopenable and lost forever.") ;
 		s = s + tr("\nAre you sure you want to delete this key?");
 
-		if( m_msg.UIMessageWithConfirm(tr("WARNING"),s) == QMessageBox::No )
+		if( msg.ShowUIYesNo(tr("WARNING"),s) == QMessageBox::No )
 			return ;
 	}	
 
@@ -205,6 +205,7 @@ void luksdeletekey::pbDelete()
 
 void luksdeletekey::threadfinished(int status)
 {
+	DialogMsg msg(this) ;
 	m_isWindowClosable = true ;
 	QStringList l ;
 	QString success;
@@ -212,22 +213,22 @@ void luksdeletekey::threadfinished(int status)
 		case 0 :
 			l = miscfunctions::luksEmptySlots(m_volumePath) ;
 			success = tr("key removed successfully.\n%1 / %2 slots are now in use").arg(l.at(0)).arg(l.at(1));
-			m_msg.UIMessage(tr("SUCCESS!"),success);
+			msg.ShowUIOK(tr("SUCCESS!"),success);
 			HideUI() ;
 			return ;
-		case 2 : m_msg.UIMessage(tr("ERROR!"),tr("there is no key in the volume that match the presented key") ) ;			break ;
-		case 3 : m_msg.UIMessage(tr("ERROR!"),tr("could not open device\n" )) ;								break ;
-		case 5 : m_msg.UIMessage(tr("ERROR!"),tr("keyfile does not exist\n" )) ;							break ;
-		case 6 : m_msg.UIMessage(tr("ERROR!"),tr("one or more required argument(s) for this operation is missing") ) ;			break ;
-		case 7 : m_msg.UIMessage(tr("ERROR!"),tr("could not get enough memory to open the key file") ) ;				break ;
-		case 10: m_msg.UIMessage(tr("ERROR!"),tr("device does not exist" ));								break ;
-		case 11: m_msg.UIMessage(tr("WARNING"),tr("there is only one key in the volume left and all data in the volume \
+		case 2 : msg.ShowUIOK(tr("ERROR!"),tr("there is no key in the volume that match the presented key") ) ;				break ;
+		case 3 : msg.ShowUIOK(tr("ERROR!"),tr("could not open device\n" )) ;								break ;
+		case 5 : msg.ShowUIOK(tr("ERROR!"),tr("keyfile does not exist\n" )) ;								break ;
+		case 6 : msg.ShowUIOK(tr("ERROR!"),tr("one or more required argument(s) for this operation is missing") ) ;			break ;
+		case 7 : msg.ShowUIOK(tr("ERROR!"),tr("could not get enough memory to open the key file") ) ;					break ;
+		case 10: msg.ShowUIOK(tr("ERROR!"),tr("device does not exist" ));								break ;
+		case 11: msg.ShowUIOK(tr("WARNING"),tr("there is only one key in the volume left and all data in the volume \
 will be lost if you continue.\nif you want to continue,rerun the command with -k option" ));							break;
-		case 12: m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to open volume for writing" ) );				break ;
-		case 13: m_msg.UIMessage(tr("ERROR!"),tr("insufficient privilege to open key file for reading" ));				break ;
-		case 14: m_msg.UIMessage(tr("ERROR!"),tr("only root user can remove keys from system devices" ));				break ;					    
-		case 110:m_msg.UIMessage(tr("ERROR!"),tr("can not find a partition that match presented UUID" ));				break ;
-		default :m_msg.UIMessage(tr("ERROR!"),tr("unrecognized ERROR! with status number %1 encountered").arg(status));
+		case 12: msg.ShowUIOK(tr("ERROR!"),tr("insufficient privilege to open volume for writing" ) );					break ;
+		case 13: msg.ShowUIOK(tr("ERROR!"),tr("insufficient privilege to open key file for reading" ));					break ;
+		case 14: msg.ShowUIOK(tr("ERROR!"),tr("only root user can remove keys from system devices" ));					break ;
+		case 110:msg.ShowUIOK(tr("ERROR!"),tr("can not find a partition that match presented UUID" ));					break ;
+		default :msg.ShowUIOK(tr("ERROR!"),tr("unrecognized ERROR! with status number %1 encountered").arg(status));
 	}
 
 	enableAll();

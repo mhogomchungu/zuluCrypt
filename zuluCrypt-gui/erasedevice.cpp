@@ -50,14 +50,15 @@ erasedevice::erasedevice(QWidget *parent) :
 void erasedevice::ShowUI()
 {
 	m_option = 0 ;
-	UIMsg msg(this);
+
+	DialogMsg msg(this);
 
 	QString msg_1 = tr("The next dialog will write random data to a device ");
 	QString msg_2 = tr("leading to permanent loss of contents on the device.\n\n");
 	QString msg_3 = tr("Are you sure you want to continue?");
 	QString msg_4 = msg_1 + msg_2 + msg_3 ;
 
-	if( msg.UIMessageWithConfirm(tr("WARNING"),msg_4) == QMessageBox::Yes )
+	if( msg.ShowUIYesNo(tr("WARNING"),msg_4) == QMessageBox::Yes )
 		this->show();
 	else
 		this->HideUI();
@@ -77,15 +78,15 @@ void erasedevice::threadExitStatus(int st)
 
 	m_dt = NULL ;
 
-	UIMsg msg(this);
+	DialogMsg msg(this);
 
 	switch(st){
 		case 0 : m_ui->progressBar->setValue(100);
-			 msg.UIMessage(tr("SUCCESS!"),tr("data on the device successfully erased")) ;
+			 msg.ShowUIOK(tr("SUCCESS!"),tr("data on the device successfully erased")) ;
 			 break ;
-		case 1 : msg.UIMessage(tr("INFO!"),tr("operation terminated per user choice")) ;
+		case 1 : msg.ShowUIOK(tr("INFO!"),tr("operation terminated per user choice")) ;
 			 break ;
-		case 2 : msg.UIMessage(tr("ERROR!"),tr("could not write random data to device")) ;
+		case 2 : msg.ShowUIOK(tr("ERROR!"),tr("could not write random data to device")) ;
 			 break ;
 	}
 
@@ -104,20 +105,20 @@ void erasedevice::pbStart()
 
 	QString path = miscfunctions::resolveHomeSymbol(m_ui->lineEdit->text()) ;
 
-	UIMsg msg(this);
+	DialogMsg msg(this);
 	
 	if(path.isEmpty())
-		return msg.UIMessage(tr("ERROR!"),tr("device path field is empty"));
+		return msg.ShowUIOK(tr("ERROR!"),tr("device path field is empty"));
 	
 	if(miscfunctions::exists(path) == false)
-		return msg.UIMessage(tr("ERROR!"),tr("invalid path to device"));
+		return msg.ShowUIOK(tr("ERROR!"),tr("invalid path to device"));
 	
 	if( m_option == 0 ){
 		QString x_1 = tr("Are you really sure you want to write random data to \"%1\"").arg(path)	;
 		QString x_2 = tr(" effectively destroying all contents in it?");
 		QString x_3 = x_1 + x_2 ;
 
-		if( msg.UIMessageWithConfirm(tr("WARNING!"),x_3) == QMessageBox::No )
+		if( msg.ShowUIYesNo(tr("WARNING!"),x_3) == QMessageBox::No )
 			return ;
 	}
 
