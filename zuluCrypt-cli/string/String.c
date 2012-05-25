@@ -728,14 +728,12 @@ string_t StringGetFromVirtualFile( const char * path )
 				c[ i ] = ( char ) j ;
 			}
 		}
-			
 	}
 	
 	fclose( f ) ;
 	
-	i++ ;
-	c = realloc( c,i ) ;	
+	c = realloc( c,i + 1 ) ;	
 	c[ i ] = '\0' ;	
 
-	return StringInheritWithSize( &c,i - 1 ) ;
+	return StringInheritWithSize( &c,i ) ;
 }
