@@ -117,9 +117,15 @@ string_t StringInheritWithSize( char ** data,size_t s ) ;
 const char * StringContent( string_t st ) ;
 
 /*
- * printf() the string handled bt handle st * 
+ * printf() the string handled by handle st * 
  */
 void StringPrint( string_t st ) ;
+
+/*
+ * printf() the string handled by handle st and followed by a newline
+ * it has the same effect as StringPrint() followed by printf("\n")  
+ */
+void StringPrintLine( string_t st ) ;
 
 /* 
  * Returns an editable string copy of a string handled by handle st. 

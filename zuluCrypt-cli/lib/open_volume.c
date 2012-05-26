@@ -19,6 +19,12 @@
 
 #include "includes.h"
 
+static int value( int x,string_t * p )
+{
+	StringDelete( p ) ;	
+	return x ;
+}
+
 int open_volume( const char * dev,const char * map,const char * m_point,uid_t id,const char * mode,const char * pass,size_t pass_size ) 
 {
 	int h ;
@@ -35,10 +41,9 @@ int open_volume( const char * dev,const char * map,const char * m_point,uid_t id
 	
 	mapper = StringContent( p ) ;
 	
-	if( is_path_valid( mapper ) == 0 ){
-		StringDelete( &p ) ;
-		return 2 ;	
-	}
+	if( is_path_valid( mapper ) == 0 )
+		return value( 2,&p ) ;	
+	
 
 	if( is_luks( dev ) == 0 )
 		h = open_luks( dev,map,mode,pass,pass_size ) ;
@@ -46,9 +51,9 @@ int open_volume( const char * dev,const char * map,const char * m_point,uid_t id
 		h = open_plain( dev,map,mode,pass,pass_size ) ;
 		
 	switch( h ){
-		case 1 : return 4 ;
-		case 2 : return 8 ; 
-		case 3 : return 3 ;	 
+		case 1 : return value( 4,&p ) ;
+		case 2 : return value( 8,&p ) ; 
+		case 3 : return value( 3,&p ) ;	 
 	}
 
 	if( m_point != NULL ){	
@@ -58,7 +63,7 @@ int open_volume( const char * dev,const char * map,const char * m_point,uid_t id
 			if( close_mapper( map ) != 0 )
 				h = 15 ;
 	}
-	StringDelete( &p ) ;
-	return h ;
+	
+	return value( h,&p ) ;
 }
 

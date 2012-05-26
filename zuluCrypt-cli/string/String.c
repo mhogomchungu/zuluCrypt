@@ -48,7 +48,26 @@ char * StringDeleteHandle( string_t * xt )
 
 string_t StringCopy( string_t st )
 {	
-	return String( st->string ) ;
+	string_t xt ;
+	
+	char * c = ( char * ) malloc( sizeof( char ) * ( st->size + 1 ) ) ;
+	
+	if( c == NULL )
+		return NULL ;
+	
+	memcpy( c,st->string,st->size + 1 ) ;
+	
+	xt = ( string_t ) malloc ( sizeof( struct StringType ) ) ;
+	
+	if( st == NULL ){
+		free( c ) ;
+		return NULL ;
+	}
+	
+	xt->size = st->size ;	
+	xt->string = c ;
+	
+	return xt ;
 }
 
 string_t String( const char * c )
@@ -87,6 +106,12 @@ string_t StringInherit( char ** data )
 void StringPrint( string_t st )
 {
 	printf( "%s",st->string ) ;
+}
+
+void StringPrintLine( string_t st ) 
+{
+	printf( "%s\n",st->string ) ;
+	
 }
 
 string_t StringInheritWithSize( char ** data,size_t s )
