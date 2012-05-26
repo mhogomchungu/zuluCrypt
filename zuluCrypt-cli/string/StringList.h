@@ -58,7 +58,9 @@ stringList_t StringListSplit( const char * cstring,char splitter ) ;
 
 /*
  * create a stringlist from string_t using splitter as a splitting trigger. 
- * this function will take ownership of st,invalidating the handle after auto deleting its contents
+ * If the operation succeeds( return value is not NULL), st will be deleted.
+ * If the operation fail( return value is NULL), st will not be deleted and you have to delete it yourself.
+ * If you want to split and not delete st then use StringListSplit()
  */
 stringList_t StringListStringSplit( string_t * st,char splitter ) ;
 

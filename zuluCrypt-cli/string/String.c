@@ -714,7 +714,9 @@ string_t StringGetFromVirtualFile( const char * path )
 	
 	while( ( j = getc( f ) ) != EOF )
 	{
-		if( ++i < size )
+		i++ ;
+
+		if( i < size )
 			c[ i ] = ( char ) j ;
 		else{
 			d = c ;			
@@ -731,9 +733,8 @@ string_t StringGetFromVirtualFile( const char * path )
 	}
 	
 	fclose( f ) ;
+	c = realloc( c,i + 2 ) ;	
+	c[ i + 1 ] = '\0' ;	
 	
-	c = realloc( c,i + 1 ) ;	
-	c[ i ] = '\0' ;	
-
 	return StringInheritWithSize( &c,i ) ;
 }

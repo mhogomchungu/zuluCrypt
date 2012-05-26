@@ -60,6 +60,14 @@
  * The list of partitions is taken from the 4th field and only sdX and hdY entries are taken
  * 
  */
+
+/*
+ * defined in this source file
+ */
+stringList_t get_partition_from_crypttab( void ) ;
+
+stringList_t get_partition_from_zulutab( void ) ;
+
 static stringList_t partitionList( void )
 {
 	const char * device ;	
@@ -149,7 +157,7 @@ static stringList_t partitions( int option )
 	st = StringGetFromFile( "/etc/fstab" );
 	
 	if( st == NULL ){
-		StringListDelete( &stl ) ;
+		StringListDelete( &non_system ) ;
 		return NULL ;
 		
 	}
@@ -196,7 +204,31 @@ static stringList_t partitions( int option )
 		}		
 	}
 	
-	StringListDelete( &stl ) ;
+	StringListDelete( &stl ) ;	
+	
+	stl = get_partition_from_crypttab() ;
+	if( stl != NULL ){
+			
+		j = StringListSize( stl ) ;
+		
+		for( i = 0 ; i < j ; i++ ){
+			entry = StringListContentAt( stl,i ) ;
+			StringListAppend( system,entry ) ;
+		}
+		StringListDelete( &stl ) ;
+	}
+	
+	stl = get_partition_from_zulutab() ;
+	if( stl != NULL ){
+		
+		j = StringListSize( stl ) ;
+		
+		for( i = 0 ; i < j ; i++ ){
+			entry = StringListContentAt( stl,i ) ;
+			StringListAppend( system,entry ) ;
+		}
+		StringListDelete( &stl ) ;
+	}
 	
 	if( option == SYSTEM_PARTITIONS ){
 		StringListDelete( &non_system ) ;
@@ -265,8 +297,10 @@ stringList_t get_partition_from_crypttab( void )
 	
 	stl = StringListStringSplit( &st,'\n' ) ;
 	
-	if( stl == NULL )
+	if( stl == NULL ){
+		StringDelete( &st ) ;
 		return NULL ;
+	}
 	
 	j = StringListSize( stl ) ;
 	
@@ -278,7 +312,7 @@ stringList_t get_partition_from_crypttab( void )
 		st = StringListStringAt( stl,i ) ;
 	
 		entry = StringContent( st ) ;			
-		 
+
 		if( entry[0] == '#' || entry[0] == '\n' )
 			continue ;
 		 
@@ -349,8 +383,10 @@ stringList_t get_partition_from_zulutab()
 
 	stl = StringListStringSplit( &st,'\n' ) ;
 	
-	if( stl == NULL )
+	if( stl == NULL ){
+		StringDelete( &st ) ;
 		return NULL ;
+	}
 	
 	j = StringListSize( stl ) ;
 	
@@ -386,46 +422,26 @@ stringList_t get_partition_from_zulutab()
 
 int check_partition( const char * dev )
 {	
-	stringList_t stl_1 ;
-	stringList_t stl_2 ;
-	stringList_t stl_3 ;
+	stringList_t stl ;
 	
-	ssize_t index_1 = -1 ;
-	ssize_t index_2 = -1 ;
-	ssize_t index_3 = -1 ;
+	ssize_t index = -1 ;
 	
 	char * device = realpath( dev,NULL ) ;
 		
 	if( device == NULL )
 		return 2 ;
 	
-	stl_1 = partitions( SYSTEM_PARTITIONS ) ;
+	stl = partitions( SYSTEM_PARTITIONS ) ;
 	
-	if( stl_1 != NULL ){
+	if( stl != NULL ){
 		
-		index_1 = StringListContains( stl_1,device );
-		StringListDelete( &stl_1 ) ;
+		index = StringListContains( stl,device );
+		StringListDelete( &stl ) ;
 	}	
-	
-	stl_2 = get_partition_from_crypttab() ;
-	
-	if( stl_2 != NULL ){
-		
-		index_2 = StringListContains( stl_2,device );
-		StringListDelete( &stl_2 ) ;		
-	}	
-	
-	stl_3 = get_partition_from_zulutab() ;
-	
-	if( stl_3 != NULL ){
-		
-		index_3 = StringListContains( stl_3,device );
-		StringListDelete( &stl_3 ) ;		
-	}
 	
 	free( device ) ;
 	
-	if( index_1 >= 0 || index_2 >= 0 || index_3 >= 0 )
+	if( index >= 0 )
 		return 1 ;
 	else
 		return 0 ;

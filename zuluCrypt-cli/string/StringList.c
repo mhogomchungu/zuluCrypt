@@ -167,36 +167,37 @@ stringList_t StringListSplit( const char * cstring,char splitter )
 	s[ 1 ] = '\0' ;
 	s[ 0 ] = splitter ;
 	
-	while( ( d = strstr( b,s ) ) != NULL )
-	{
-		len = d - b ;
-		if( len > 0 ){
-			e = ( char * ) malloc( sizeof( char ) * ( len + 1 ) ) ;
-			if( e == NULL ){
-				if( stl != NULL )
-					StringListDelete( &stl ) ;
-				return NULL;
+	while( 1 ){
+		
+		d = strstr( b,s ) ;
+		
+		if( d == NULL ){
+			if( *b != '\0' )
+				if( b == cstring || *b != splitter )
+					stl = StringListAppend( stl,b ) ;
+			 break ;			
+		}else{
+			len = d - b ;
+			if( len > 0 ){
+				e = ( char * ) malloc( sizeof( char ) * ( len + 1 ) ) ;
+				if( e == NULL ){
+					if( stl != NULL )
+						StringListDelete( &stl ) ;
+					return NULL;
+				}
+				memcpy( e,b,len ) ;
+				*( e + len ) = '\0' ;
+				stl = StringListAppendWithSize( stl,&e,len );
+				if( stl == NULL )
+				{
+					free( e ) ;
+					return NULL ;
+				}
 			}
-			memcpy( e,b,len ) ;
-			*( e + len ) = '\0' ;
-			stl = StringListAppendWithSize( stl,&e,len );
-			if( stl == NULL )
-			{
-				free( e ) ;
-				return NULL ;
-			}
+			b = d + sp_len ;
 		}
-		b = d + sp_len ;
 	}
-	
-	if( b == cstring ){
-		/*
-		 * the loop above was skipped,meaning the delimiter wasnt found.
-		 * create a stringlist with one element made up of the original string
-		 */
-		stl = StringList( cstring ) ;
-	}
-	
+
 	return stl ;
 }
 

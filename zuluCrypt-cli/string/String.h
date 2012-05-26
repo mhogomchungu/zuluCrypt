@@ -135,19 +135,6 @@ char * StringCopyChar( string_t st ) ;
 string_t StringCopy( string_t st ) ;
 
 /*
- * This function returns a number of string_t objects pointing to the same string buffer.
- * 
- *  A new string_t object starts with a reference count of one and the number is incremented by one when a new copy of the object
- * is made using "StringCopy" and is decremented by one when an objet is deleted with "StringDelete" or "StringDeleteHandle".
- * 
- * These functions employs the concept of COW(copy on write). Multiple string_t objects points to the same string buffer until they want to
- * write to the buffer. An attempt to write to string managed by multiple handles will result in a creating of a private copy.
- * 
- */
-int StringReferenceCount( string_t st );
-
-
-/*
  * Write "size" amount of content of a string handled by "st" to a buffer pointed by "buffer"  *
  */
 void StringReadToBuffer( string_t st,char * buffer, size_t size ) ;

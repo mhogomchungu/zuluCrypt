@@ -23,7 +23,7 @@
 #include <string.h>
 #include <libcryptsetup.h> 
 
-static int status_msg( int st )
+static int status_msg( int st,char * device,char * m_point )
 {
 	switch ( st ){
 		case 0 : printf( "SUCCESS: Volume opened successfully\n" ) ;								break ;
@@ -52,6 +52,13 @@ static int status_msg( int st )
 		case 24: printf( "ERROR: there seem to be an opened mapper associated with the device\n" ) ;				break ;
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
+	
+	if( device != NULL )
+		free( device ) ;
+	
+	if( m_point != NULL )
+		free( m_point ) ;
+	
 	return st ;
 }
 
@@ -98,11 +105,11 @@ int check_opened_mapper( const char * mapper )
  * should be removed first before calling the above function.The above function is called directly when "open_volume"
  * function is to be exited before the mount point is created. * 
  */
-static int status_msg_1( int st,const struct_opts * opts )
+static int status_msg_1( int st,const struct_opts * opts,char * device,char * cpoint )
 {
 	if( opts->open_no_mount == -1 && st != 0 )
 		rmdir( opts->mount_point ) ;
-	return status_msg( st ) ;
+	return status_msg( st,device,cpoint ) ;
 }
 
 int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
@@ -122,7 +129,7 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 	const char * cpass ;	
 	const char * cname ;
 	
-	char * device ;
+	char * device = NULL ;
 	char * cpoint = NULL ;
 	
 	size_t len ;
@@ -136,49 +143,49 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 	 */
 	switch( can_open_path_for_reading( dev,uid ) ){
 		case 0 : break ;
-		case 1 : return status_msg( 20 ) ;
-		default: return status_msg( 3 ) ;
+		case 1 : return status_msg( 20,device,cpoint ) ;
+		default: return status_msg( 3,device,cpoint ) ;
 	}
 	
 	if( strcmp( opts->mode,"rw" ) == 0 ){
 		switch( can_open_path_for_writing( dev,uid ) ){
 			case 0 : break ;
-			case 1 : return status_msg( 23 ) ;
-			default: return status_msg( 3 ) ;
+			case 1 : return status_msg( 23,device,cpoint ) ;
+			default: return status_msg( 3,device,cpoint ) ;
 		}
 	}
 	device = realpath( dev,NULL ) ;
 	if( device == NULL )
-		return status_msg( 17 ) ;
+		return status_msg( 17,device,cpoint ) ;
 	
 	if( mode == NULL ) 
-		return status_msg( 11 ) ;
+		return status_msg( 11,device,cpoint ) ;
 	
 	if( strncmp( mode,"ro",2 ) != 0 )
 		if ( strncmp( mode,"rw",2 ) != 0 )
-			return status_msg( 13 ) ;
+			return status_msg( 13,device,cpoint ) ;
 	
 	if( nmp == 1 && mount_point != NULL )
-		return status_msg( 18 ) ;
+		return status_msg( 18,device,cpoint ) ;
 	
 	if( nmp == -1 ){
 		if( mount_point == NULL )
-			return status_msg( 11 ) ;
+			return status_msg( 11,device,cpoint ) ;
 		
 		if( strlen( mount_point ) == 1 )
 			if ( strcmp( mount_point,"," ) == 0 )
-				return status_msg( 10 ) ;
+				return status_msg( 10,device,cpoint ) ;
 		/*
 		 * defined in security.c
 		 */
 		switch( create_mount_point( mount_point,uid ) ){
-			case 2 : return status_msg( 5 ) ;
-			case 1 : return status_msg( 21 ) ;
+			case 2 : return status_msg( 5,device,cpoint ) ;
+			case 1 : return status_msg( 21,device,cpoint ) ;
 		}
 		
 		cpoint = realpath( mount_point,NULL ) ;
 		if( cpoint == NULL )
-			return status_msg_1( 16,opts ) ;
+			return status_msg_1( 16,opts,device,cpoint ) ;
 	}		
 
 	/*
@@ -187,12 +194,16 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 	 * Explanation for what it does is explained where it is defined.	  * 
 	 */
 	m_name = create_mapper_name( device,mapping_name,uid,OPEN ) ;
-	
+
 	cname = StringContent( m_name ) ;
 	
 	if( check_opened_mapper( cname ) == 1 ){
-		rmdir( mount_point ) ;
-		return status_msg( 24 ) ;
+		if( cpoint != NULL )
+			rmdir( cpoint ) ;
+		
+		StringDelete( &m_name ) ;
+		
+		return status_msg( 24,device,cpoint ) ;
 	}
 	
 	if ( i == 1 ){
@@ -205,7 +216,7 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 		StringDelete( &passphrase ) ;
 	}else{
 		if( source == NULL || pass == NULL )
-			return status_msg_1( 11,opts ) ;
+			return status_msg_1( 11,opts,device,cpoint ) ;
 		
 		if( strcmp( source,"-p" ) == 0 ){
 			cpass = pass ;
@@ -216,9 +227,9 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 			 * function is defined at "security.c"
 			 */
 			switch( get_pass_from_file( pass,uid,&data ) ){
-				case 1 : return status_msg_1( 6,opts ) ; 
-				case 2 : return status_msg_1( 14,opts ) ; 				
-				case 4 : return status_msg_1( 22,opts ) ;
+				case 1 : return status_msg_1( 6,opts,device,cpoint ) ;
+				case 2 : return status_msg_1( 14,opts,device,cpoint ) ; 				
+				case 4 : return status_msg_1( 22,opts,device,cpoint ) ;
 			}
 			cpass = StringContent( data ) ;
 			len = StringLength( data ) ;
@@ -229,12 +240,9 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 		
 	StringDelete( &m_name ) ;
 	
-	free( cpoint ) ;
-	free( device ) ;
-	
-	st = status_msg_1( st,opts ) ;
+	st = status_msg_1( st,opts,device,cpoint ) ;
 	
 	check_invalid_key( opts->device ) ;
 	
-	return st ;	
+	return 0 ;	
 }
