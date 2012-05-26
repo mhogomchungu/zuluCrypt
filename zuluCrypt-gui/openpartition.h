@@ -35,6 +35,9 @@
 #include <QKeySequence>
 #include "partitionproperties.h"
 #include "../zuluCrypt-cli/constants.h"
+#include "dialogmsg.h"
+
+#include <unistd.h>
 
 class openpartition :  public QDialog
 {
@@ -52,6 +55,8 @@ public slots:
 	void ShowNonSystemPartitions(void) ;
 	void ShowPartitionList(QString,QString);
 	void partitionList(QString,QString);
+	void pbHelp(void);
+	void pbUUID(void);
 private slots:
 	void EnterKeyPressed(void);
 	void currentItemChanged( QTableWidgetItem * current, QTableWidgetItem * previous );
@@ -62,6 +67,7 @@ private:
 	void HighlightRow(int, bool);	
 	Ui::PartitionView * m_ui ;
 	QAction * m_action ;
+	int m_option ;
 };
 
 #endif

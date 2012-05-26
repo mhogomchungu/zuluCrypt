@@ -35,6 +35,8 @@ openpartition::openpartition(QWidget *parent ) :
 		SLOT(tableEntryDoubleClicked(QTableWidgetItem *))) ;
 	connect(m_ui->tableWidget,SIGNAL(currentItemChanged( QTableWidgetItem * , QTableWidgetItem * )),this,
 		SLOT(currentItemChanged( QTableWidgetItem * , QTableWidgetItem * ))) ;
+	connect(m_ui->pbHelp,SIGNAL(clicked()),this,SLOT(pbHelp()));
+	connect(m_ui->pbUUID,SIGNAL(clicked()),this,SLOT(pbUUID())) ;
 
 	m_action = new QAction( this ) ;
 	QList<QKeySequence> keys ;
@@ -57,6 +59,35 @@ openpartition::openpartition(QWidget *parent ) :
 	tw->horizontalHeader()->setVisible(true);
 
 	m_ui->checkBoxUUID->setFont(this->font());
+
+	m_ui->pbUUID->setVisible(false);
+}
+
+void openpartition::pbHelp()
+{
+	DialogMsg msg(this) ;
+
+	QString m ;
+
+	if(m_option == 2){
+		m = tr("a list of all partitions on this system are displayed here.\nDouble click an entry to use it") ;
+	}else{
+		if( getuid() != 0 ) {
+			m = tr("you are not root user and hence only non system partition are displayed on this list.\
+\nPlease read documentation for more information.\nDouble click an entry to use it") ;
+		}else{
+			m = tr("you are a root user and all partitions are displayed.\nDouble click an entry to use it")	;
+		}
+	}
+	msg.ShowUIOK(tr("info"),m);
+}
+
+void openpartition::pbUUID()
+{
+	if(m_ui->pbUUID->isFlat())
+		m_ui->pbUUID->setFlat(false);
+	else
+		m_ui->pbUUID->setFlat(true);
 }
 
 void openpartition::EnterKeyPressed()
@@ -88,11 +119,13 @@ void openpartition::HighlightRow(int r, bool b)
 
 void openpartition::ShowNonSystemPartitions()
 {
+	m_option = 1 ;
 	partitionList(tr("select a partition to create an encrypted volume in")," -N");
 }
 
 void openpartition::ShowAllPartitions()
 {	
+	m_option = 2 ;
 	partitionList(tr("select an encrypted partition to open")," -A");
 }
 
@@ -113,7 +146,7 @@ void openpartition::partitionList(QString title, QString type)
 	connect(op,SIGNAL(finished()),this,SLOT(partitionpropertiesThreadFinished()));
 	connect(op,SIGNAL(partitionProperties(QStringList)),this,SLOT(partitionProperties(QStringList)));
 	m_ui->tableWidget->setEnabled( false );
-	QThreadPool::globalInstance()->start(op);
+	op->start();
 	this->show();
 }
 

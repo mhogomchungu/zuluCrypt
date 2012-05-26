@@ -26,6 +26,7 @@
 #include <QString>
 #include <QStringList>
 #include "miscfunctions.h"
+#include <QThreadPool>
 
 #include <unistd.h>
 
@@ -34,6 +35,7 @@ class partitionproperties : public QObject, public QRunnable
 	Q_OBJECT
 public:
 	explicit partitionproperties(QString);
+	void start(void);
 	~partitionproperties();
 signals:
 	void finished();

@@ -24,6 +24,11 @@ partitionproperties::partitionproperties(QString partitionType)
 	m_partitionType = partitionType ;
 }
 
+void partitionproperties::start()
+{
+	QThreadPool::globalInstance()->start(this);
+}
+
 void partitionproperties::run()
 {
 	QProcess p ;
