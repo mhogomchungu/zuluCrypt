@@ -88,9 +88,11 @@ static stringList_t partitionList( void )
 	
 	stl = StringListStringSplit( &st,'\n' ) ;
 	
-	if( stl == NULL )
+	if( stl == NULL ){
+		StringDelete( &st ) ;
 		return NULL ;
-
+	}
+	
 	j = StringListSize( stl )  ;
 	
 	for( i = 0 ; i < j ; i++ ){
@@ -159,10 +161,15 @@ static stringList_t partitions( int option )
 	if( st == NULL ){
 		StringListDelete( &non_system ) ;
 		return NULL ;
-		
 	}
 	
 	stl = StringListStringSplit( &st,'\n' ) ;
+	
+	if( stl == NULL ){
+		StringListDelete( &non_system ) ;
+		StringDelete( &st ) ;
+		return NULL ;
+	}
 	
 	j = StringListSize( stl ) ;
 	
@@ -434,7 +441,6 @@ int check_partition( const char * dev )
 	stl = partitions( SYSTEM_PARTITIONS ) ;
 	
 	if( stl != NULL ){
-		
 		index = StringListContains( stl,device );
 		StringListDelete( &stl ) ;
 	}	
