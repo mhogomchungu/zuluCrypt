@@ -52,7 +52,7 @@ char * status( const char * mapper )
 	struct crypt_device * cd;
 	struct crypt_active_device cad ;
 	
-	string_t p = String( mapper ) ;
+	string_t p ;
 	string_t q ;
 	
 	if( crypt_init_by_name( &cd,mapper ) != 0 )
@@ -62,6 +62,8 @@ char * status( const char * mapper )
 		crypt_free( cd ) ;
 		return NULL ;
 	}
+	
+	p = String( mapper ) ;
 	
 	switch( crypt_status( cd,mapper ) ){
 		case CRYPT_INACTIVE :
@@ -100,9 +102,9 @@ char * status( const char * mapper )
 	StringAppend( p,"\n device:\t" );
 	
 	e = crypt_get_device_name( cd ) ;
-	StringAppend( p, e ) ;
+	StringAppend( p,e ) ;
 	
-	if( strncmp( e ,"/dev/loop",9 ) == 0 ){
+	if( strncmp( e,"/dev/loop",9 ) == 0 ){
 		StringAppend( p,"\n loop:   \t" );
 		path = loop_device_address( e ) ;
 		if( path != NULL ){

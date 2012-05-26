@@ -155,7 +155,6 @@ operation list\n\n\
 -J         create a plain mapper owned by the user who run the command on a device pointed by argument -d\n\
 -B         create a luks header backup\n\
 -R         restore a luks header on a device from backup\n\
--D	   get device path from mapper\n\
 -E         encrypt a single file\n\
 -D         decrypt a single file\n\
 \n\
