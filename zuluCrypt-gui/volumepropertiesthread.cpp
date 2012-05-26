@@ -36,7 +36,7 @@ void volumePropertiesThread::start()
 QString volumePropertiesThread::fuseblkGetFs()
 {
 	QString pid = QString::number(getuid())  ;
-	QString fuse = QString("/dev/mapper/zuluCrypt-") + pid ;
+	QString fuse = miscfunctions::cryptMapperPath() + pid ;
 	if( m_fusefs.mid(0,5) == QString("UUID=") ){
 		m_fusefs.remove(QChar('"'));
 		QString p = miscfunctions::hashPath(QString("UUID-") + m_fusefs.mid(5))  ;

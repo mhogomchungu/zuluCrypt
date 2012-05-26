@@ -30,7 +30,10 @@
 #include <QTableWidget>
 #include <QMessageBox>
 
+#include <unistd.h>
+
 #include "../zuluCrypt-cli/constants.h"
+#include "../zuluCrypt-cli/bin/bash_special_chars.h"
 
 class miscfunctions
 {
@@ -49,6 +52,8 @@ public:
 	static QString hashPath(QString p);
 	static QString cryptMapperPath(void);
 	static void debug(QString);
+	static void debug(int);
+	static QString mapperPath(QString);
 };
 
 #endif // MISCFUNCTIONS_H

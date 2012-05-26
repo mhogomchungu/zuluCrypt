@@ -41,6 +41,27 @@ void miscfunctions::debug(QString s)
 	std::cout << s.toStdString() << std::endl ;
 }
 
+void miscfunctions::debug(int s)
+{
+	std::cout << s << std::endl ;
+}
+
+QString miscfunctions::mapperPath(QString rpath)
+{
+	QString path = miscfunctions::cryptMapperPath() + QString("zuluCrypt-") + QString::number(getuid()) ;
+
+	path += QString("-NAAN-") + rpath.split("/").last() + miscfunctions::hashPath(rpath);
+
+	QString z = QString(BASH_SPECIAL_CHARS);
+
+	int g = z.size() ;
+
+	for( int i = 0 ; i < g ; i++ )
+		path.replace(z.at(i),QChar('_'));
+
+	return path ;
+}
+
 QString miscfunctions::hashPath(QString p)
 {
 	size_t i = 0 ;

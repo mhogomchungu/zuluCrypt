@@ -143,10 +143,8 @@ void createFileThread::openVolume()
 
 void createFileThread::writeVolume()
 {
-	QString path = miscfunctions::cryptMapperPath() + QString("zuluCrypt-") + QString::number(getuid()) ;
-	
-	path += QString("-NAAN-") + m_file.split("/").last() + miscfunctions::hashPath(m_file);
-	
+	QString path = miscfunctions::mapperPath(m_file);
+
 	int fd = open(path.toAscii().data(),O_WRONLY) ;
 	
 	int j ;

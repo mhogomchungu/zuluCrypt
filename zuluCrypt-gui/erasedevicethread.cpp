@@ -41,9 +41,7 @@ void erasedevicethread::run()
 
 void erasedevicethread::writeJunkThroughMapper()
 {
-	QString path = miscfunctions::cryptMapperPath() + QString("zuluCrypt-") + QString::number(getuid()) ;
-
-	path += QString("-NAAN-") + m_path.split("/").last() + miscfunctions::hashPath(m_path);
+	QString path = miscfunctions::mapperPath(m_path) ;
 
 	char * cpath = path.toAscii().data() ;
 

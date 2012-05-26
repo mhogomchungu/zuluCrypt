@@ -258,15 +258,8 @@ int cryptfilethread::openMapper(QString path)
 		return st ;
 	}
 
-	m_mapperPath = miscfunctions::cryptMapperPath() + QString("zuluCrypt-") + QString::number(getuid()) ;
+	m_mapperPath = miscfunctions::mapperPath(rpath) ;
 
-	m_mapperPath += QString("-NAAN-") + rpath.split("/").last() + miscfunctions::hashPath(rpath);
-
-	QString z = QString(BASH_SPECIAL_CHARS);
-	int g = z.size() ;
-	for( int i = 0 ; i < g ; i++ ){
-		m_mapperPath.replace(z.at(i),QChar('_'));
-	}
 	return 0 ;
 }
 
