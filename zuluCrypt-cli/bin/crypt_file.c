@@ -118,12 +118,12 @@ static int crypt_opt( const struct_opts * opts,const char * mapper,uid_t uid,int
 		return msg( 0 ) ;
 }
 
-int file_decrypt( const struct_opts * opts,const char *mapper,uid_t uid ) 
+int file_decrypt( const struct_opts * opts,const char * mapper,uid_t uid ) 
 {
 	return crypt_opt( opts,mapper,uid,DECRYPT ) ;
 }
 
-int file_encrypt( const struct_opts * opts,const char *mapper,uid_t uid )
+int file_encrypt( const struct_opts * opts,const char * mapper,uid_t uid )
 {
 	return crypt_opt( opts,mapper,uid,ENCRYPT ) ;		
 }

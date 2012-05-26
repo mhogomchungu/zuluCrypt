@@ -218,6 +218,12 @@ void cryptfiles::pbCreate()
 
 	QString dest = m_ui->lineEditDestinationPath->text();
 
+	if(miscfunctions::exists(source) == false)
+		return msg.ShowUIOK(tr("ERROR!"),tr("invalid path to source file"));
+
+	if(miscfunctions::exists(dest) == true)
+		return msg.ShowUIOK(tr("ERROR!"),tr("destination path already taken"));
+
 	QString key_1 = m_ui->lineEditPass_1->text() ;
 	QString key_2 = m_ui->lineEditPass_2->text() ;
 
@@ -239,10 +245,6 @@ void cryptfiles::pbCreate()
 
 		keySource = QString("-f") ;
 	}
-
-	source.replace("\"","\"\"\"") ;
-	dest.replace("\"","\"\"\"") ;
-	key_1.replace("\"","\"\"\"") ;
 
 	this->disableAll();
 

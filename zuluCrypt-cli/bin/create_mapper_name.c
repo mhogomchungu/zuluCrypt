@@ -70,11 +70,11 @@ string_t create_mapper_name( const char * device,const char * mapping_name,uid_t
 	else
 		z = hash_path( device ) ;
 	
-	p = String( "zuluCrypt-" ) ;
-	
-	if( i != OPEN ){
-		StringPrepend( p,"/" ) ;
-		StringPrepend( p,crypt_get_dir() ) ;
+	if( i == OPEN )
+		p = String( "zuluCrypt-" ) ;
+	else{
+		p = String( crypt_get_dir() ) ;
+		StringAppend( p,"/zuluCrypt-" ) ;
 	}
 	
 	StringAppendString( p,q ) ;

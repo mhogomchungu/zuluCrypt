@@ -240,9 +240,7 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 		
 	StringDelete( &m_name ) ;
 	
-	st = status_msg_1( st,opts,device,cpoint ) ;
-	
 	check_invalid_key( opts->device ) ;
 	
-	return 0 ;	
+	return status_msg_1( st,opts,device,cpoint );	
 }

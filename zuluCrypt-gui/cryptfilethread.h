@@ -26,6 +26,7 @@
 #include <QThreadPool>
 #include "miscfunctions.h"
 #include "../zuluCrypt-cli/constants.h"
+#include "../zuluCrypt-cli/bin/bash_special_chars.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>

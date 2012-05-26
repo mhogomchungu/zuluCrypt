@@ -76,7 +76,6 @@ int cryptfilethread::encrypt()
 			close( fd_1 ) ;
 			remove(m_dest.toAscii().data()) ;
 			return m_status ;
-
 		}
 		i = (int)(size_1 * 100 / size) ;
 		if(i > j )
@@ -129,7 +128,6 @@ int cryptfilethread::encrypt()
 			this->closeMapper(m_dest) ;
 			remove(m_dest.toAscii().data()) ;
 			return m_status ;
-
 		}
 
 		i = (int)(size_1 * 100 / size) ;
@@ -138,7 +136,6 @@ int cryptfilethread::encrypt()
 		j = i ;
 		read(fd_1,buffer,SIZE) ;
 		write(fd_2,buffer,SIZE);
-
 	}
 	
 	emit progressUpdate( 100 );
@@ -159,7 +156,7 @@ int cryptfilethread::decrypt()
 {
 	const int SIZE = 512 ;
 	int st = this->openMapper(m_source) ;
-	if( st != 0)
+	if( st != 0 )
 		return st ;
 
 	const char * path = m_mapperPath.toAscii().data() ;
@@ -167,6 +164,7 @@ int cryptfilethread::decrypt()
 	char buffer[SIZE] ;
 
 	int fd_1 = open(path,O_RDONLY) ;
+
 	read( fd_1,buffer,SIZE) ;
 
 	if(memcmp(buffer+100,buffer+200,100) != 0){
@@ -174,7 +172,6 @@ int cryptfilethread::decrypt()
 		this->closeMapper(m_source) ;
 		m_status = 11 ;
 		return 11 ;
-
 	}
 
 	qint64 size = atoll(buffer);
@@ -201,7 +198,6 @@ int cryptfilethread::decrypt()
 				this->closeMapper(m_source) ;
 				remove(m_dest.toAscii().data()) ;
 				return m_status ;
-
 			}
 
 			j = (int)( i * 100 / len ) ;
@@ -232,7 +228,6 @@ int cryptfilethread::decrypt()
 
 	m_status = 1 ;
 	return m_status ;
-
 }
 
 int cryptfilethread::openMapper(QString path)
@@ -246,12 +241,18 @@ int cryptfilethread::openMapper(QString path)
 	QString rpath = QString(p);
 	free(p) ;
 
-	QString e = QString("%1 -J %3 %4 -d %5").arg(ZULUCRYPTzuluCrypt).arg(m_keySource).arg(m_key).arg(path);
+	path.replace("\"","\"\"\"") ;
+	m_key.replace("\"","\"\"\"") ;
+
+	QString e = QString("%1 -J %3 \"%4\" -d \"%5\"").arg(ZULUCRYPTzuluCrypt).arg(m_keySource).arg(m_key).arg(path);
 	QProcess exe ;
+
 	exe.start(e);
 	exe.waitForFinished();
+
 	int st = exe.exitStatus() ;
 	exe.close();
+
 	if( st != 0 ){
 		m_status = st ;
 		return st ;
@@ -261,12 +262,18 @@ int cryptfilethread::openMapper(QString path)
 
 	m_mapperPath += QString("-NAAN-") + rpath.split("/").last() + miscfunctions::hashPath(rpath);
 
+	QString z = QString(BASH_SPECIAL_CHARS);
+	int g = z.size() ;
+	for( int i = 0 ; i < g ; i++ ){
+		m_mapperPath.replace(z.at(i),QChar('_'));
+	}
 	return 0 ;
 }
 
 int cryptfilethread::closeMapper(QString path)
 {
-	QString e = QString("%1 -q -d %2").arg(ZULUCRYPTzuluCrypt).arg(path);
+	path.replace("\"","\"\"\"") ;
+	QString e = QString("%1 -q -d \"%2\"").arg(ZULUCRYPTzuluCrypt).arg(path);
 	QProcess exe ;
 	exe.start(e);
 	exe.waitForFinished();
