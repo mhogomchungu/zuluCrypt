@@ -36,7 +36,7 @@ void volumePropertiesThread::start()
 QString volumePropertiesThread::fuseblkGetFs()
 {
 	QString pid = QString::number(getuid())  ;
-	QString fuse = miscfunctions::cryptMapperPath() + pid ;
+	QString fuse = miscfunctions::cryptMapperPath() + QString("zuluCrypt-") + pid ;
 	if( m_fusefs.mid(0,5) == QString("UUID=") ){
 		m_fusefs.remove(QChar('"'));
 		QString p = miscfunctions::hashPath(QString("UUID-") + m_fusefs.mid(5))  ;
@@ -53,6 +53,7 @@ QString volumePropertiesThread::fuseblkGetFs()
 		fuse += QString("-NAAN-") + f ;
 		fuse += hash ;
 	}
+
 	QStringList stl = miscfunctions::deviceProperties(fuse) ;
 	return stl.at(3) ;
 }

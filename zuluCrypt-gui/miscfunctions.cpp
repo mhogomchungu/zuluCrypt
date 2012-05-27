@@ -164,6 +164,7 @@ QStringList miscfunctions::deviceProperties(QString device)
 		prp << QString( buffer ) ;
 	else
 		prp << QString( "NaN" ) ;
+
 	blkid_free_probe( dp ) ;
 
 	return prp ;
