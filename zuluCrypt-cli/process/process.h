@@ -44,19 +44,21 @@ typedef struct Process_t * process_t ;
  * 
  *  char * c = ProcessGetOutPut( p ) ;
  * 
- *  ProcessWaitWithOutTimer( p ) ;
- *  
  *  ProcessDelete( &p ) ;
  * 
- *  printf("%s\n,c");
+ *  printf("%s\n",c);
  *  free( c ) ;
  * 
  */
 
 /*
  * create a handle to a process that will be started.
- * Path to executable to be started must be in full path format and by defaults, arguments aew separated by
- * space character. * 
+ * Path to executable to be started must be in full path format.
+ *
+ * By defaults, arguments aew separated by space character,the delimiter can be changed with ProcessSetOptionDelimiter()
+ * 
+ * Make sure delimiter character do not exist consercutively and do not exist at the ends of the argument string.A crash
+ * will most likey happen is this expectation is not obeyed.
  *  
  */
 process_t Process( const char * path ) ;
