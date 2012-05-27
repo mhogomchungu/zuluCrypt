@@ -207,7 +207,7 @@ pid_t ProcessStart( process_t p )
 
 char * ProcessGetOutPut( process_t p ) 
 {
-	#define SIZE 32
+	#define SIZE 64
 	char * buffer = NULL ;
 	char buff[ SIZE ] ;
 	int size = 0 ;
@@ -217,15 +217,17 @@ char * ProcessGetOutPut( process_t p )
 		count = read( p->pd[ 0 ],buff,SIZE ) ;
 
 		if( count == SIZE ){
-			buffer = ( char * ) realloc( buffer,size + SIZE ) ;
-			strncpy( buffer + size,buff,SIZE ) ;
+			buffer = ( char * ) realloc( buffer,size + SIZE + 1 ) ;
+			memcpy( buffer + size,buff,SIZE ) ;
+			buffer[ size + SIZE ] = '\0' ;
 			size += SIZE ;
 		}else if( count < SIZE && count != 0 ){
 			buffer = ( char * ) realloc( buffer,size + count + 1 ) ;
-			strncpy( buffer + size,buff,count ) ;
+			memcpy( buffer + size,buff,count ) ;
 			buffer[ size + count ] = '\0' ;
+			size += count ;
 		}else
-			break ;		
+			break ;	
 	}	
 	
 	return buffer ;
