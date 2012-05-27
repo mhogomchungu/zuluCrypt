@@ -50,6 +50,7 @@ int volume_info( const char * mapper,const char * device,uid_t uid )
 		printf( "ERROR: could not get volume info,is the volume opened?\n" ) ;
 		xt = 2 ;
 	}
+	
 	StringDelete( &p );
 	free( dev ) ;
 	return xt ;

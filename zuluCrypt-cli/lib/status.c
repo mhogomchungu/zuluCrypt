@@ -40,20 +40,27 @@ static char * loop_device_address( const char * device )
 }
 
 char * status( const char * mapper )
-{		
+{	
+	/*
+	 * 64 byte buffer is more than enough because the API that will produce the largest number is crypt_get_data_offset()
+	 * and it produces a uint64_t number and this type has a maximum digit count is 19. 
+	 */
+	#define SIZE 64
+	char buff[ SIZE ] ;	
+	char * buffer = buff ;
+	
 	const char * e ;
 	const char * type ;
 	char * path ;
 	int luks = 0 ;
 	int i ;
 	int j ;
-	int k ;
+	int k ;	
 	
 	struct crypt_device * cd;
 	struct crypt_active_device cad ;
 	
 	string_t p ;
-	string_t q ;
 	
 	if( crypt_init_by_name( &cd,mapper ) != 0 )
 		return NULL ;
@@ -83,24 +90,23 @@ char * status( const char * mapper )
 	}	
 	
 	StringAppend( p," type:   \t" );	
-	
 	type = crypt_get_type( cd ) ;
 	
 	if( strncmp( type,"LUKS",4 ) == 0 ){
-		StringAppend( p,type ) ;
+		if( strcmp( type,"LUKS1" ) == 0 )
+			StringAppend( p,"luks1" ) ;
 		luks = 1 ;
 	}else if( strcmp( type,"plain") )
 		StringAppend( p,"plain" ) ;
 	
 	StringAppend( p,"\n cipher:\t" );
 	StringAppend( p,crypt_get_cipher_mode( cd ) ) ;
-	StringAppend( p,"\n keysize:\t" );
-	q = StringIntToString( 8 * crypt_get_volume_key_size( cd ) ) ;	
-	StringAppend( p,StringContent( q ) ) ;
-	StringDelete( &q ) ;
-	StringAppend( p," bits" );
-	StringAppend( p,"\n device:\t" );
 	
+	StringAppend( p,"\n keysize:\t" );
+	StringAppend( p,StringIntToString_1( buffer,SIZE,8 * crypt_get_volume_key_size( cd ) ) ) ;
+	StringAppend( p," bits" );
+	
+	StringAppend( p,"\n device:\t" );	
 	e = crypt_get_device_name( cd ) ;
 	StringAppend( p,e ) ;
 	
@@ -113,22 +119,19 @@ char * status( const char * mapper )
 		}else
 			StringAppend( p,"NaN" ) ;		
 	}
+	
 	StringAppend( p,"\n offset:\t");
-	q = StringIntToString( crypt_get_data_offset( cd ) ) ;
-	StringAppend( p,StringContent( q ) )  ;
-	StringDelete( &q ) ;
+	StringAppend( p,StringIntToString_1( buffer,SIZE,crypt_get_data_offset( cd ) ) )  ;
 	StringAppend( p," sectors" ) ;	
+	
 	StringAppend( p,"\n size:   \t" );
-	q = StringIntToString( cad.size ) ;
-	StringAppend( p,StringContent( q ) ) ;
-	StringDelete( &q ) ;
+	StringAppend( p,StringIntToString_1( buffer,SIZE,cad.size ) ) ;
 	StringAppend( p," sectors" );
-	StringAppend( p,"\n mode:   \t");
 	
 	if( cad.flags == 1 )
-		StringAppend( p,"read only" );
+		StringAppend( p,"\n mode:   \tread only" );
 	else
-		StringAppend( p,"read and write" );	
+		StringAppend( p,"\n mode:   \tread and write" );	
 	
 	if( luks == 1 ){
 		i = 0 ;
@@ -141,15 +144,14 @@ char * status( const char * mapper )
 				case CRYPT_SLOT_INVALID     :     ; break ;				
 			}		
 		}
+		
 		StringAppend( p,"\n active slots:\t");
-		q = StringIntToString( i ) ;
-		StringAppend( p,StringContent( q ) );
-		StringDelete( &q ) ;
+		StringAppend( p,StringIntToString_1( buffer,SIZE,i ) );
+		
 		StringAppend( p," / ");
-		q = StringIntToString( k ) ;
-		StringAppend( p,StringContent( q ) );
-		StringDelete( &q ) ;
+		StringAppend( p,StringIntToString_1( buffer,SIZE,k ) ) ;
 	}
+	
 	crypt_free( cd );
 	return StringDeleteHandle( &p ) ;
 }
