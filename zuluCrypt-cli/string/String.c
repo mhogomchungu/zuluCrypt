@@ -267,6 +267,11 @@ const char * StringContent( string_t st )
 	return st->string ;
 }
 
+const char ** StringPointer( string_t st ) 
+{
+	return ( const char ** )&st->string ;
+}
+
 char * StringCopyChar( string_t st )
 {
 	return StringLengthCopy( st,st->size ) ;	
