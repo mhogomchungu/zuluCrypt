@@ -338,7 +338,7 @@ static int exe( struct_opts * clargs, const char * mapping_name,uid_t uid )
 		case 'q' : return close_opened_volume( clargs->device,mapping_name,uid ) ;
 		case 'o' : return open_volumes( clargs,mapping_name,uid ) ;
 		case 'O' : return open_volumes( clargs,mapping_name,uid ) ;		
-		case 'c' : return create_volumes( clargs,uid ) ;
+		case 'c' : return create_volumes( clargs,mapping_name,uid ) ;
 		case 'a' : return addkey( clargs,uid ) ;
 		case 'r' : return removekey( clargs,uid );
 		case 'E' : return file_encrypt( clargs,mapping_name,uid ) ;

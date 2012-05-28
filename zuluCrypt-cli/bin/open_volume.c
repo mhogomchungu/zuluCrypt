@@ -18,10 +18,8 @@
  */
 
 #include "includes.h"
-#include <dirent.h>
 #include <sys/types.h>
 #include <string.h>
-#include <libcryptsetup.h> 
 
 static int status_msg( int st,char * device,char * m_point )
 {
@@ -59,43 +57,6 @@ static int status_msg( int st,char * device,char * m_point )
 	if( m_point != NULL )
 		free( m_point ) ;
 	
-	return st ;
-}
-
-int check_opened_mapper( const char * mapper )
-{
-	const char * c = mapper ;
-	char * d ;
-	
-	int st = 0 ;
-	
-	struct dirent * entry ;
-	
-	DIR * dir = opendir( crypt_get_dir() ) ;
-	
-	if( dir == NULL )
-		return 2 ;
-	
-	while( *++c != '-' ) { ; }
-	while( *++c != '-' ) { ; }
-	
-	while( ( entry = readdir( dir ) ) != NULL ){
-		
-		d = strstr( entry->d_name,"zuluCrypt-" ) ;
-		if( d != NULL ){
-			
-			while( *++d != '-' ) { ; }
-			while( *++d != '-' ) { ; }
-
-			if( strcmp( c,d ) == 0 ){
-				st = 1 ;
-				break ;
-			}
-		}
-		
-	}
-	
-	closedir( dir ) ;
 	return st ;
 }
 

@@ -101,7 +101,7 @@ int open_volumes( const struct_opts *,const char * mapping_name,uid_t uid ) ;
  * this function is responsibe for creating volumes.
  * It is defined in create_volume.c
  */		   
-int create_volumes( const struct_opts *,uid_t ) ;
+int create_volumes( const struct_opts *,const char * mapping_name,uid_t uid ) ;
 
 /*
  * this function is responsibe for adding keys to luks volumes.
@@ -192,3 +192,11 @@ int file_encrypt( const struct_opts *,const char *,uid_t uid ) ;
  */
 int file_decrypt( const struct_opts *,const char *,uid_t uid ) ;
 
+/*
+ * defined in check_opened_mapper.c
+ * 
+ * the function checks to see if the argument mapper has an entry in crypt_get_dir().
+ * 
+ * the function is used to prevent performing operations like creating a volume on devices with mapper open.
+ */
+int check_opened_mapper( const char * mapper ) ;

@@ -77,6 +77,7 @@
  bin/write_device_with_junk.c
  bin/save_and_restore_luks_header.c
  bin/crypt_file.c
+ bin/check_opened_mapper.c
  ) 
  
  SET( LIB 
