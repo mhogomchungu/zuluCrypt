@@ -41,7 +41,10 @@ int check_partition( const char * ) ;
 static int return_value( string_t * st, int status ) 
 {
 	switch( status ){
-		case 0 : printf( "SUCCESS: mapper created successfully\n" ) 				       ;break ;
+		case 0 : printf( "SUCCESS: mapper created successfully\n" ) ;
+			 printf( "opened mapper path: " ) ;
+			 StringPrintLine( *st ) ;
+			 break ;
 		case 1 : printf( "ERROR: could not create mapper\n" )                                          ;break ;
 		case 2 : printf( "ERROR: could not resolve device path\n" )                                    ;break ;
 		case 3 : printf( "SUCCESS: random data successfully written\n" )                               ;break ;
@@ -64,7 +67,7 @@ static int return_value( string_t * st, int status )
 	return status ;
 }
 
-static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name,uid_t uid )
+static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name,uid_t uid,int op )
 {
 	string_t mapper ;
 	string_t passphrase  ;	
@@ -138,6 +141,8 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	}else{
 		if( source == NULL || pass == NULL ){
 			
+			printf("WARNING: getting key from \"/dev/urandom\" because atleast one required argument is missing\n" ) ;		
+			
 			k = open( "/dev/urandom",O_RDONLY ) ;
 		
 			read( k,key,KEY_SIZE );
@@ -199,16 +204,17 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	
 	StringDelete( &passphrase ) ;
 	
-	return return_value( &mapper,0 ) ;		
+	if( op == 1 )
+		return return_value( &mapper,0 ) ;
+	else{
+		StringDelete( &mapper ) ;
+		return 0 ;
+	}
 }
 
 int open_plain_as_me(const struct_opts * opts,const char * mapping_name,uid_t uid )
 {
-	if( opts->key  == NULL || opts->key_source  == NULL )
-		printf("WARNING: getting key from \"/dev/urandom\" because atleast one required argument is missing\n" ) ;		
-	
-	return open_plain_as_me_1( opts,mapping_name,uid );
-
+	return open_plain_as_me_1( opts,mapping_name,uid,1 ) ;
 }
 
 /*
@@ -238,7 +244,7 @@ int write_device_with_junk( const struct_opts * opts,const char * mapping_name,u
 	if( dev == NULL )
 		return 2 ;
 	
-	if( ( k = open_plain_as_me_1( opts,mapping_name,uid ) ) != 0 ) 
+	if( ( k = open_plain_as_me_1( opts,mapping_name,uid,0 ) ) != 0 ) 
 		return k ;
 	
 	mapper = create_mapper_name( dev,mapping_name,uid,OPEN ) ;
