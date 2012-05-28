@@ -66,7 +66,7 @@ void erasedevicethread::writeJunkThroughMapper()
 
 	while( write(fd,buffer,SIZE) > 0 ){
 
-		if( m_status == 100 )
+		if( m_status == 5 )
 			break ;
 
 		size_written += SIZE ;
@@ -107,7 +107,7 @@ int erasedevicethread::openMapper()
 
 void erasedevicethread::cancel()
 {
-	m_status = 100 ;
+	m_status = 5 ;
 }
 
 erasedevicethread::~erasedevicethread()

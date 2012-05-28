@@ -49,7 +49,7 @@ static int return_value( string_t * st, int status )
 		case 5 : printf( "INFO: user chose not to proceed\n" )                                         ;break ;	
 		case 6 : printf( "ERROR: policy prevents non root user opening mapper on system partition\n" ) ;break ;	
 		case 7 : /* 7 is used when returning with no feedback */				       ;break ;
-		case 8 : printf( "ERROR: insufficitied privilege to oped device for reading\n" )               ;break ;
+		case 8 : printf( "ERROR: insufficitied privilege to oped device in read/write mode\n" )        ;break ;
 		case 9 : printf( "ERROR: device path is invalid\n" )                                           ;break ;	
 		case 10: printf( "ERROR: passphrase file does not exist\n" )				       ;break ;
 		case 11: printf( "ERROR: could not get enought memory to hold the key file\n" )  	       ;break ;
@@ -89,6 +89,11 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	int n ;
 	
 	switch( can_open_path_for_reading( device,uid ) ){
+		case 1 : return return_value( NULL,8 ) ;
+		case 2 : return return_value( NULL,9 ) ;		
+	}
+	
+	switch( can_open_path_for_writing( device,uid ) ){
 		case 1 : return return_value( NULL,8 ) ;
 		case 2 : return return_value( NULL,9 ) ;		
 	}
@@ -231,10 +236,10 @@ int write_device_with_junk( const struct_opts * opts,const char * mapping_name,u
 	dev = realpath( device,NULL ) ;
 	
 	if( dev == NULL )
-		return_value( NULL,2 ) ;
+		return 2 ;
 	
-	if( ( k = open_plain_as_me_1( opts,mapping_name,uid ) ) != 4 ) 
-		return return_value( NULL,7 ) ;
+	if( ( k = open_plain_as_me_1( opts,mapping_name,uid ) ) != 0 ) 
+		return k ;
 	
 	mapper = create_mapper_name( dev,mapping_name,uid,OPEN ) ;
 	
