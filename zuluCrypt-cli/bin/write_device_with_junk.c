@@ -45,7 +45,7 @@ static int return_value( string_t * st, int status )
 		case 1 : printf( "ERROR: could not create mapper\n" )                                          ;break ;
 		case 2 : printf( "ERROR: could not resolve device path\n" )                                    ;break ;
 		case 3 : printf( "SUCCESS: random data successfully written\n" )                               ;break ;
-		/*4 is deliberately skipped */
+		/*4 is currently un used */
 		case 5 : printf( "INFO: user chose not to proceed\n" )                                         ;break ;	
 		case 6 : printf( "ERROR: policy prevents non root user opening mapper on system partition\n" ) ;break ;	
 		case 7 : /* 7 is used when returning with no feedback */				       ;break ;
@@ -54,6 +54,8 @@ static int return_value( string_t * st, int status )
 		case 10: printf( "ERROR: passphrase file does not exist\n" )				       ;break ;
 		case 11: printf( "ERROR: could not get enought memory to hold the key file\n" )  	       ;break ;
 		case 12: printf( "ERROR: insufficient privilege to open key file for reading\n" )	       ;break ;	
+		case 13: printf( "ERROR: can not open a mapper on a device with an opened mapper\n" )          ;break ;	
+		case 14: printf( "ERROR: can not open a mapper on a mounted device\n" )                        ;break ;				
 	}
 	
 	if( st != NULL )
@@ -66,6 +68,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 {
 	string_t mapper ;
 	string_t passphrase  ;	
+	string_t p ;
 	
 	size_t len = 0 ;
 	
@@ -81,6 +84,9 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	char key[ KEY_SIZE + 1 ] ;	
 	
 	const char * device = opts->device ;
+	
+	int j ;
+	int n ;
 	
 	switch( can_open_path_for_reading( device,uid ) ){
 		case 1 : return return_value( NULL,8 ) ;
@@ -100,7 +106,23 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	
 	mapper = create_mapper_name( dev,mapping_name,uid,OPEN ) ;
 	
+	p = create_mapper_name( dev,mapping_name,uid,CLOSE ) ;
+	
+	j = check_opened_mapper( StringContent( p ) ) ;
+	
+	/*
+	 * defined in print_mounted_volumes.c
+	 */
+	n = check_if_mounted( dev ) ;
+	
 	free( dev ) ;
+	StringDelete( &p ) ;
+	
+	if( j == 1 )
+		return return_value( &mapper,13 ) ;
+	
+	if( n == 1 )
+		return return_value( &mapper,14 ) ;
 	
 	if ( i == 1 ){
 		printf( "Enter passphrase: " ) ;		
@@ -172,22 +194,16 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	
 	StringDelete( &passphrase ) ;
 	
-	return return_value( &mapper,4 ) ;		
+	return return_value( &mapper,0 ) ;		
 }
 
 int open_plain_as_me(const struct_opts * opts,const char * mapping_name,uid_t uid )
 {
-	int st  ;
-	
 	if( opts->key  == NULL || opts->key_source  == NULL )
 		printf("WARNING: getting key from \"/dev/urandom\" because atleast one required argument is missing\n" ) ;		
 	
-	st = open_plain_as_me_1( opts,mapping_name,uid );
-	
-	if( st == 4 )
-		return return_value( NULL,0 ) ;
-	else
-		return return_value( NULL,st ) ;
+	return open_plain_as_me_1( opts,mapping_name,uid );
+
 }
 
 /*

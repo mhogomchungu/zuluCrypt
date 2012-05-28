@@ -31,12 +31,13 @@ void erasedevicethread::start()
 
 void erasedevicethread::run()
 {
-	if( this->openMapper() != 0 )
-		m_status = 2 ;
-	else{
-		this->writeJunkThroughMapper();
-		this->closeMapper();
-	}
+	m_status = this->openMapper() ;
+
+	if(m_status != 0)
+		return ;
+
+	this->writeJunkThroughMapper();
+	this->closeMapper();
 }
 
 void erasedevicethread::writeJunkThroughMapper()
@@ -65,7 +66,7 @@ void erasedevicethread::writeJunkThroughMapper()
 
 	while( write(fd,buffer,SIZE) > 0 ){
 
-		if( m_status == 1 )
+		if( m_status == 100 )
 			break ;
 
 		size_written += SIZE ;
@@ -98,7 +99,7 @@ int erasedevicethread::openMapper()
 	QProcess p ;
 	p.start(exe);
 	p.waitForFinished();
-	int st = p.exitStatus() ;
+	int st = p.exitCode() ;
 	p.close();
 
 	return st ;
@@ -106,7 +107,7 @@ int erasedevicethread::openMapper()
 
 void erasedevicethread::cancel()
 {
-	m_status = 1 ;
+	m_status = 100 ;
 }
 
 erasedevicethread::~erasedevicethread()

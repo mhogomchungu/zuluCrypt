@@ -84,10 +84,14 @@ void erasedevice::threadExitStatus(int st)
 		case 0 : m_ui->progressBar->setValue(100);
 			 msg.ShowUIOK(tr("SUCCESS!"),tr("data on the device successfully erased")) ;
 			 break ;
-		case 1 : msg.ShowUIOK(tr("INFO!"),tr("operation terminated per user choice")) ;
+		case 100: msg.ShowUIOK(tr("INFO!"),tr("operation terminated per user choice")) ;
 			 break ;
-		case 2 : msg.ShowUIOK(tr("ERROR!"),tr("could not write random data to device")) ;
+		case 13: msg.ShowUIOK(tr("ERROR!"),tr("can not write on a device with opened mapper")) ;
 			 break ;
+		case 14: msg.ShowUIOK(tr("ERROR!"),tr("can not write on a mounted device")) ;
+			 break ;
+		default:
+			 msg.ShowUIOK(tr("ERROR!"),tr("could not write to the device")) ;
 	}
 
 	this->HideUI();
