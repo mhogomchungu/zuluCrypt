@@ -65,6 +65,9 @@ static void print( uid_t uid,stringList_t stl )
 			
 			stx = StringListSplit( c,' ' ) ;
 			
+			if( stx == NULL )
+				continue ;
+
 			if( strncmp( c + len + 1,"UUID",4 ) == 0 ){
 				q = StringListStringAt( stx,0 ) ;
 				k = StringLastIndexOfChar( q,'-' ) ;
