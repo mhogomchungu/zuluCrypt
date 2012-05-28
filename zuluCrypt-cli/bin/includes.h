@@ -200,3 +200,10 @@ int file_decrypt( const struct_opts *,const char *,uid_t uid ) ;
  * the function is used to prevent performing operations like creating a volume on devices with mapper open.
  */
 int check_opened_mapper( const char * mapper ) ;
+
+/*
+ * check if a  device with a path "path" as an entry in /etc/mtab.
+ * 
+ * defined in print_opened_volumes.c 
+ */
+int check_if_mounted( const char * path ) ;

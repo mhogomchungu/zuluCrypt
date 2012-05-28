@@ -91,49 +91,98 @@ static void print( uid_t uid,stringList_t stl )
 	StringDelete( &p ) ;
 }
 
-static int free_return( char * path,int st )
-{
-	free( path ) ;
-	return st ;
-}
-
-int print_opened_volumes( uid_t uid )
+static stringList_t get_mtab_list( void )
 {
 #if USE_NEW_LIBMOUNT_API
 	struct libmnt_lock * m_lock ;
 #else
 	mnt_lock * m_lock ;
 #endif
-	char * path ;
-	
-	string_t q ;
-	
+	string_t q = NULL ;
 	stringList_t stl ;
-	path = realpath( "/etc/mtab",NULL ) ;
+	
+	char * path = realpath( "/etc/mtab",NULL ) ;
 	
 	if( path == NULL )
-		return 1 ;
+		return NULL ;
 	
 	if( strncmp( path,"/proc/",6 ) == 0 ){
 		q = StringGetFromVirtualFile( path ) ;
 	}else{
 		m_lock = mnt_new_lock( "/etc/mtab~",getpid() ) ;
 		
-		if( mnt_lock_file( m_lock ) != 0 )
-			return free_return( path,1 ) ;
-		
-		q = StringGetFromFile( path ) ;	
-		
-		mnt_unlock_file( m_lock ) ;
+		if( mnt_lock_file( m_lock ) == 0 ){
+			q = StringGetFromFile( path ) ;		
+			mnt_unlock_file( m_lock ) ;
+		}		
+
 		mnt_free_lock( m_lock ) ;		
 	}
 	
+	free( path ) ;
+	
+	if( q == NULL )
+		return NULL ;
+	
 	stl = StringListStringSplit( &q,'\n' ) ;
+	
+	if( stl == NULL ){
+		StringDelete( &q ) ;
+		return NULL ;
+	}
+	
+	return stl ;
+}
+
+int print_opened_volumes( uid_t uid )
+{
+	stringList_t stl = get_mtab_list() ;
+	
+	if( stl == NULL )
+		return 1 ;
 	
 	print( uid,stl ) ;
 	
 	StringListDelete( &stl ) ;
 	
-	return free_return( path,0 ) ;
+	return 0 ;
+}
+
+int check_if_mounted( const char * path )
+{
+	int st = 0 ;
+	
+	size_t i ;
+	size_t j ;
+	ssize_t k ;
+	
+	string_t entry ;
+	
+	const char * e ;
+	
+	stringList_t stl = get_mtab_list() ;
+	
+	if( stl == NULL )
+		return 2 ;
+	
+	j = StringListSize( stl ) ;
+	
+	for( i = 0 ; i < j ; i++ ){
+		entry = StringListStringAt( stl,i ) ;
+		
+		k = StringIndexOfChar( entry,0,' ' ) ;
+		
+		if( k != -1 ){
+			e = StringSubChar( entry,k,'\0' ) ;
+			
+			if( strcmp( e,path ) == 0 ){
+				st = 1 ;
+				break ;
+			}
+		}
+	}
+	
+	StringListDelete( &stl ) ;
+	return st ;
 }
 

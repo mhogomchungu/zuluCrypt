@@ -328,7 +328,9 @@ and \"/etc/crypttab.\"\nRerun the tool from root's accout to proceed" )) ;
 		case 14: msg.ShowUIOK(tr("ERROR!"),tr("insufficient privilege to create a volume in this device" )) ;		break  ;
 		case 15: msg.ShowUIOK(tr("ERROR!"),tr("insufficient privilege to open the file in write mode" )) ;		break  ;
 		case 16: msg.ShowUIOK(tr("ERROR!"),tr("there seem to be an opened mapper associated with the device" )) ;	break  ;
-		case 17: msg.ShowUIOK(tr("ERROR!"),tr("unable to resolve full path to device" )) ;				break  ;					 
+		case 17: msg.ShowUIOK(tr("ERROR!"),tr("unable to resolve full path to device" )) ;				break  ;
+		case 18: msg.ShowUIOK(tr("ERROR!"),tr("can not create a volume on a mounted device" )) ;			break  ;					 
+					 
 		case 110:msg.ShowUIOK(tr("ERROR!"),tr("could not find any partition with the presented UUID" )) ;		break  ;
 		default: msg.ShowUIOK(tr("ERROR!"),tr("unrecognized ERROR! with status number %1 encountered").arg(st));
 	}

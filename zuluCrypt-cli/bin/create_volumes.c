@@ -43,6 +43,7 @@ static int status_msg( int st )
 		case 15: printf( "ERROR: insufficient privilege to open the file in write mode\n" ) ;		break  ;
 		case 16: printf( "ERROR: there seem to be an opened mapper associated with the device\n" ) ;	break  ;
 		case 17: printf( "ERROR: unable to resolve full path to device\n" ) ;				break  ;
+		case 18: printf( "ERROR: can not create a volume on a mounted device\n" ) ;			break  ;				
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
 	return st ;
@@ -81,6 +82,9 @@ int create_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid
 	char * dev ; 
 	string_t mapper ; 
 	
+	int j ;
+	int k ;
+	
 	/*
 	 * This function is defined at "security.c"
 	 * It makes sure the path exists and the user has atleast reading access to the path.
@@ -99,14 +103,22 @@ int create_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid
 	
 	mapper = create_mapper_name( dev,mapping_name,uid,CLOSE ) ;
 	
-	i = check_opened_mapper( StringContent( mapper ) ) ;
+	j = check_opened_mapper( StringContent( mapper ) ) ;
+	
+	/*
+	 * defined in print_mounted_volumes.c
+	 */
+	k = check_if_mounted( dev ) ;
 	
 	free( dev ) ;
 	StringDelete( &mapper ) ;
 	
-	if( i == 1 )
+	if( j == 1 )
 		return status_msg( 16 ) ;
-		
+	
+	if( k == 1 )
+		return status_msg( 18 ) ;
+	
 	stat( device, &xt ) ;	
 	if( strncmp( device,"/dev/",5 ) != 0 && xt.st_size < 3145728 )
 		return status_msg( 9 ) ;
