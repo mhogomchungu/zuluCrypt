@@ -42,8 +42,10 @@ static int return_value( string_t * st, int status )
 {
 	switch( status ){
 		case 0 : printf( "SUCCESS: mapper created successfully\n" ) ;
-			 printf( "opened mapper path: " ) ;
-			 StringPrintLine( *st ) ;
+			 if( st != NULL ){
+				printf( "opened mapper path: " ) ;
+				StringPrintLine( *st ) ;
+			 }
 			 break ;
 		case 1 : printf( "ERROR: could not create mapper\n" )                                          ;break ;
 		case 2 : printf( "ERROR: could not resolve device path\n" )                                    ;break ;
