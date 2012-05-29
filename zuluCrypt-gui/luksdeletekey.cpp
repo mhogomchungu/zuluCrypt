@@ -80,7 +80,7 @@ void luksdeletekey::rbPassphrase()
 void luksdeletekey::rbPassphraseFromFile()
 {
 	m_ui->lineEditPassphrase->setToolTip(QString("enter a path to a keyfile location"));
-	m_ui->labelPassphrase->setText(tr("keyfile"));
+	m_ui->labelPassphrase->setText(tr("keyfile path"));
 	m_ui->lineEditPassphrase->setEchoMode(QLineEdit::Normal);
 	m_ui->lineEditPassphrase->clear();
 	m_ui->pushButtonOpenKeyFile->setEnabled(true);

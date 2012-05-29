@@ -143,7 +143,7 @@ void passwordDialog::passphraseFromFileOption()
 	m_ui->PassPhraseField->setEchoMode(QLineEdit::Normal);
 	m_ui->PassPhraseField->clear();
 	m_ui->pushButtonPassPhraseFromFile->setEnabled(true) ;
-	m_ui->labelPassphrase->setText(tr("keyfile"));
+	m_ui->labelPassphrase->setText(tr("keyfile path"));
 	m_ui->pushButtonPassPhraseFromFile->setIcon(QIcon(QString(":/keyfile.png")));
 }
 

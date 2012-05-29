@@ -88,7 +88,7 @@ void cryptfiles::rbKeyChecked()
 void cryptfiles::rbKeyFileChecked()
 {
 	m_ui->lineEditPass_1->setToolTip(QString("enter a path to a keyfile location"));
-	m_ui->labelKey->setText(QString("keyfile"));
+	m_ui->labelKey->setText(QString("keyfile path"));
 	m_ui->pushButtonKeyFile->setIcon(QIcon(QString(":/keyfile.png")));
 	m_ui->lineEditPass_2->setEnabled(false);
 	m_ui->pushButtonKeyFile->setEnabled(true);
