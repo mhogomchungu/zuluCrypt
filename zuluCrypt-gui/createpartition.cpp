@@ -296,7 +296,7 @@ void createpartition::pbCreateClicked()
 
 	connect(cvt,SIGNAL(finished(int)),this,SLOT(threadfinished(int))) ;
 	disableAll();
-	QThreadPool::globalInstance()->start(cvt);
+	cvt->start() ;
 }
 
 void createpartition::threadfinished(int st)
