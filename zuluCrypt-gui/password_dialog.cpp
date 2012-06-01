@@ -123,7 +123,23 @@ void passwordDialog::ShowUI()
 
 void passwordDialog::mountPointPath(QString path)
 {
-	QString p = QDir::homePath() + QString("/") + path.split("/").last() ;
+	if(path.isEmpty())
+		return ;
+
+	QString p = m_ui->MountPointPath->text() ;
+
+	if(p.isEmpty()){
+		QString x = QDir::homePath() + QString("/") + path.split("/").last() ;
+		m_ui->MountPointPath->setText(x) ;
+		return ;
+	}
+
+	int i = p.lastIndexOf("/") ;
+	if( i == -1 )
+		return ;
+
+	p = p.mid(0,i) + QString("/") + path.split("/").last();
+
 	m_ui->MountPointPath->setText(p) ;
 }
 
@@ -163,6 +179,9 @@ void passwordDialog::mount_point(void )
 {	
 	QString p = tr("Select Path to mount point folder") ;
 	QString Z = QFileDialog::getExistingDirectory(this,p,QDir::homePath(),QFileDialog::ShowDirsOnly) ;
+	if(Z.isEmpty())
+		return ;
+	Z = Z + QString("/") + m_ui->OpenVolumePath->text().split("/").last() ;
 	m_ui->MountPointPath->setText( Z );
 }
 
