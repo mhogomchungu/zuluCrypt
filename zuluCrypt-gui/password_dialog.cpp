@@ -179,10 +179,16 @@ void passwordDialog::mount_point(void )
 {	
 	QString p = tr("Select Path to mount point folder") ;
 	QString Z = QFileDialog::getExistingDirectory(this,p,QDir::homePath(),QFileDialog::ShowDirsOnly) ;
-	if(Z.isEmpty())
-		return ;
-	Z = Z + QString("/") + m_ui->OpenVolumePath->text().split("/").last() ;
-	m_ui->MountPointPath->setText( Z );
+
+	if(!Z.isEmpty()){
+		Z = Z + QString("/") + m_ui->OpenVolumePath->text().split("/").last() ;
+		m_ui->MountPointPath->setText( Z );
+	}
+
+	if(m_ui->MountPointPath->text().isEmpty())
+		m_ui->MountPointPath->setFocus();
+	else if(m_ui->PassPhraseField->text().isEmpty())
+		m_ui->PassPhraseField->setFocus();
 }
 
 void passwordDialog::file_path(void )
