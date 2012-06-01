@@ -20,17 +20,42 @@
 #include <stdio.h>
 #include "StringList.h"
 
+/*
+ * buffer size will grow exponentially by a multiple of this number
+ */
+#define FACTOR 2
+
+/*
+ * initial buffer size
+ */
+#define INIT_SIZE 32
+
 struct StringListType
 {
-	size_t size ;
-	string_t * stp ;
+	size_t size ;     /* size of the array*/
+	size_t length ;   /* size of the buffer of thr array */
+	string_t * stp ;  /* pointer to String_t array */
 };
 
 struct StringType
 {
 	size_t size ;
+	size_t length ;
 	char * string ; 
 };
+
+static string_t * __ExpandMemory( stringList_t stl )
+{
+	string_t * p = stl->stp ;
+	//printf("%d:%d",stl->size,stl->length);
+	if( stl->size + 1 > stl->length )
+	{
+		stl->length *= FACTOR ;
+		p = realloc( p,sizeof( string_t ) * ( stl->length ) ) ; 		
+	}
+	//printf(":%d\n",stl->length);
+	return p ;
+}
 
 stringList_t StringList( const char * cstring )
 {
@@ -38,7 +63,7 @@ stringList_t StringList( const char * cstring )
 	if( stl == NULL )
 		return NULL ;
 	
-	stl->stp = ( string_t * ) malloc( sizeof( string_t ) ) ;
+	stl->stp = ( string_t * ) malloc( sizeof( string_t ) * INIT_SIZE ) ;
 	
 	if( stl->stp == NULL )
 	{
@@ -52,7 +77,9 @@ stringList_t StringList( const char * cstring )
 		free( stl ) ;
 		return NULL ;
 	}
+	
 	stl->size = 1 ;
+	stl->length = INIT_SIZE ;
 	return stl ;
 }
 
@@ -61,7 +88,7 @@ stringList_t StringListString( string_t * st )
 	stringList_t stl = ( stringList_t ) malloc( sizeof( struct StringListType ) ) ;	
 	if( stl == NULL )
 		return NULL ;
-	stl->stp = ( string_t * ) malloc( sizeof( string_t ) ) ;
+	stl->stp = ( string_t * ) malloc( sizeof( string_t ) * INIT_SIZE ) ;
 	if( stl->stp == NULL )
 	{
 		free( stl ) ;
@@ -70,6 +97,7 @@ stringList_t StringListString( string_t * st )
 	stl->stp[0] = *st ;
 	*st = NULL ;	
 	stl->size = 1 ;
+	stl->length = INIT_SIZE ;
 	return stl ;
 }
 
@@ -78,7 +106,7 @@ stringList_t StringListWithSize( char ** c, size_t s )
 	stringList_t stl = ( stringList_t ) malloc( sizeof( struct StringListType ) ) ;	
 	if( stl == NULL )
 		return NULL ;
-	stl->stp = ( string_t * ) malloc( sizeof( string_t ) ) ;
+	stl->stp = ( string_t * ) malloc( sizeof( string_t ) * INIT_SIZE ) ;
 	if( stl->stp == NULL )
 	{
 		free( stl ) ;
@@ -92,6 +120,7 @@ stringList_t StringListWithSize( char ** c, size_t s )
 		return NULL ;
 	}
 	stl->size = 1 ;
+	stl->length = INIT_SIZE ;
 	return stl ;
 }
 
@@ -104,7 +133,9 @@ stringList_t StringListAppendWithSize( stringList_t stl,char ** c, size_t s )
 	q = StringInheritWithSize( c,s ) ;
 	if( q == NULL )
 		return NULL ;
-	p = realloc( stl->stp,sizeof( string_t ) * ( stl->size + 1 ) ) ;
+
+	p = __ExpandMemory( stl ) ;
+	
 	if( p == NULL )
 	{
 		StringDelete( &q ) ;
@@ -140,7 +171,7 @@ stringList_t StringListAppendString( stringList_t stl,string_t * st )
 	if( stl == NULL )
 		return StringListString( st ) ;
 	
-	p = realloc( stl->stp,sizeof( string_t ) * ( stl->size + 1 ) ) ;
+	p = __ExpandMemory( stl ) ;
 	
 	if( p == NULL )
 		return NULL ;
@@ -238,7 +269,9 @@ stringList_t StringListInsertAt( stringList_t stl,const char * cstring,size_t in
 	q = String( cstring ) ;
 	if( q == NULL )
 		return NULL ;
-	p = realloc( stl->stp, size * ( stl->size + 1 ) ) ;
+	
+	p = __ExpandMemory( stl ) ;
+	
 	if( p == NULL )
 	{
 		StringDelete( &q ) ;
@@ -259,7 +292,8 @@ stringList_t StringListStringInsertAt( stringList_t stl,string_t * st,size_t ind
 	if( stl == NULL )
 		return StringListString( st ) ;		
 
-	p = realloc( stl->stp, size * ( stl->size + 1 ) ) ;
+	p = __ExpandMemory( stl ) ;
+	
 	if( p == NULL )
 	{
 		return NULL ;
@@ -296,7 +330,9 @@ stringList_t StringListInsertAtSize( stringList_t stl,const char * cstring,size_
 		free( c ) ;
 		return NULL ;
 	}
-	p = realloc( stl->stp, size * ( stl->size + 1 ) ) ;
+	
+	p = __ExpandMemory( stl ) ;
+	
 	if( p == NULL )
 	{
 		StringDelete( &q ) ;
@@ -347,14 +383,18 @@ stringList_t StringListAppend( stringList_t stl,const char * cstring )
 	q = String( cstring ) ;
 	if( q == NULL )
 		return NULL ;
-	stl->stp = realloc( stl->stp,sizeof( string_t ) * ( stl->size + 1 ) ) ;
+	
+	stl->stp = __ExpandMemory( stl ) ;
+	
 	if( stl->stp == NULL )
 	{
 		StringDelete( &q ) ;
 		return NULL ;
 	}
+	
 	stl->stp[ stl->size ] = q ;	
-	stl->size = stl->size + 1 ;	
+	stl->size = stl->size + 1 ;
+	
 	return stl ;	
 }
 
@@ -373,7 +413,6 @@ stringList_t StringListRemoveAt( stringList_t stl, size_t index )
 	size_t size = sizeof( string_t ) ;	
 	StringDelete( &stl->stp[index] ) ;		
 	memmove( stl->stp + index,stl->stp + index + 1,size * ( stl->size - 1 - index ) ) ;	
-	stl->stp = realloc( stl->stp,size * ( stl->size - 1 ) ) ;	
 	stl->size = stl->size - 1 ;
 	return stl ;
 }
@@ -383,7 +422,6 @@ string_t StringListDetachAt( stringList_t stl, size_t index )
 	string_t st = stl->stp[index] ;
 	size_t size = sizeof( string_t ) ;	
 	memmove( stl->stp + index,stl->stp + index + 1,size * ( stl->size - 1 - index ) ) ;	
-	stl->stp = realloc( stl->stp,size * ( stl->size - 1 ) ) ;	
 	stl->size = stl->size - 1 ;
 	return st ;
 }

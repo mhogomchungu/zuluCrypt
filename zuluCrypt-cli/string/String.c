@@ -20,13 +20,44 @@
 
 #include "String.h"
 
-#define DEBUG 0
+/*
+ * a string memory block gows by below factor when it expands
+ */
+#define FACTOR 1.5
+
+/*
+ * when an empty string is initialized,star it with below buffer size
+ */
+#define EMPTY_STRING_SIZE 32
 
 struct StringType
-{
+{	/*
+	 *the size of the string
+	 */	
 	size_t size ;
+	/*
+	 * the size of the string buffer
+	 */
+	size_t length ;
+	/*
+	 * pointer to the string
+	 */
 	char * string ; 
 };
+
+static char * __StringExpandMemory( string_t st,size_t new_size )
+{
+	char * c = st->string;
+	//printf("%d:%d",st->size,st->length);
+	if( new_size > st->length ) {
+		st->length = new_size * FACTOR ; 
+		c = realloc( c,st->length + 1 ) ;
+		if( c != NULL )
+			st->string = c ;
+	}
+	//printf(":%d\n",st->length);
+	return c ;
+}
 
 void StringDelete( string_t * xt )
 {
@@ -64,7 +95,8 @@ string_t StringCopy( string_t st )
 		return NULL ;
 	}
 	
-	xt->size = st->size ;	
+	xt->size = st->size ;
+	xt->length = st->size ;
 	xt->string = c ;
 	
 	return xt ;
@@ -79,14 +111,27 @@ string_t String( const char * c )
 	if( st == NULL )
 		return NULL ;
 	
-	st->string = ( char * ) malloc ( sizeof ( char ) * ( size + 1 ) ) ;
+	if( size == 0 ){
+		/*
+		 * you will get here if a user does something like string_t = String("") ;
+		 */
+		st->string = ( char * ) malloc( ( sizeof( char ) * EMPTY_STRING_SIZE ) + 1 ) ;
+		st->string[ 0 ] = '\0' ;
+		st->size = 0 ;
+		st->length = EMPTY_STRING_SIZE ;
+		return st ;
+	}
+	
+	st->string = NULL ;
+	st->size = size ;
+	st->length = 0 ;
+	
+	__StringExpandMemory( st,size ) ;
 	
 	if ( st->string == NULL ){
 		free( st ) ;
 		return NULL ;
 	}
-	
-	st->size = size ;
 	
 	memcpy( st->string,c,size + 1 ) ;
 	
@@ -122,6 +167,7 @@ string_t StringInheritWithSize( char ** data,size_t s )
 		return NULL ;
 	
 	st->size = s ;	
+	st->length = s ;
 	st->string = *data ;
 	*data = NULL ;
 	return st ;	
@@ -200,34 +246,18 @@ ssize_t StringIndexOfChar( string_t st,size_t p,char s )
 
 const char * StringRemoveLength( string_t st,size_t x ,size_t y ) 
 {	
-	char * c ;
-	size_t new_size ;
-
-	new_size = st->size - y ;
 	memmove( st->string + x,st->string + x + y,st->size - y - x + 1 ) ;
 	
-	c = realloc( st->string,new_size + 1 ) ;
+	st->size -= y ;
 	
-	if( c != NULL )	{
-		st->string = c ;
-		st->size = new_size ;	
-	}
-	return c ;
+	return st->string ;
 }
 
 const char * StringClear( string_t st )
 {
-	char * c ;
-
-	c = realloc( st->string,1 ) ;
-	
-	if( c != NULL )
-	{
-		st->size = 0 ;
-		st->string = c ;
-		*( st->string ) = '\0' ;
-	}
-	return c ;
+	st->size = 0 ;
+	st->string[0] = '\0' ;
+	return st->string ;
 }
 
 const char * StringRemoveRight( string_t st,size_t x ) 
@@ -242,19 +272,14 @@ const char * StringRemoveLeft( string_t st,size_t x )
 
 const char * StringCrop( string_t st,size_t x,size_t y ) 
 {
-	char * c ;	
 	size_t new_size ;
 
 	new_size = st->size - x - y ;
 	memmove( st->string,st->string + x,st->size - x + 1 ) ;
-	c = realloc( st->string,new_size + 1 ) ;
 	
-	if( c != NULL )	{
-		st->string = c ;
-		*( st->string + new_size ) = '\0';
-		st->size = new_size ;
-	}
-	return c ;
+	*( st->string + new_size ) = '\0';
+	
+	return st->string ;
 }
 
 size_t StringLength( string_t st )
@@ -372,22 +397,21 @@ const char * StringInsertChar( string_t st,size_t x,char s )
 	char c[2] ;
 	c[0] = s ;
 	c[1] = '\0' ;
-	return StringInsertString( st, x, c ) ;
+	return StringInsertString( st,x,c ) ;
 }
 
 const char * StringPrepend( string_t st,const char * s )
 {
 	char * c ;	
 	size_t len = strlen( s ) ;
-	size_t new_size = st->size + len ;
 	
-	c = realloc( st->string,new_size + 1 ) ;
+	c = __StringExpandMemory( st,st->size + len ) ;
 	
 	if( c != NULL )	{
 		st->string = c ;
 		memmove( st->string + len,st->string,st->size + 1 ) ;
 		memcpy( st->string,s,len ) ;
-		st->size = new_size ;
+		st->size += len ;
 	}
 	return c ;	
 }
@@ -409,13 +433,13 @@ const char * StringAppend( string_t st,const char * s )
 {
 	char * c ;	
 	size_t len = strlen( s ) ;
-	size_t new_size = st->size + len ;	
+
+	c = __StringExpandMemory( st,st->size + len ) ;
 	
-	c = realloc( st->string,new_size + 1 ) ;
 	if( c != NULL )	{
 		st->string = c ;
 		memcpy( st->string + st->size,s,len + 1 ) ;
-		st->size = new_size ;
+		st->size += len ;
 	}
 	return c ;
 }
@@ -427,24 +451,29 @@ const char * StringAppendString( string_t st,string_t xt )
 
 const char * StringAppendChar( string_t st,char c )
 {
-	char s[ 2 ] ;
-	s[ 1 ] = '\0' ;
-	s[ 0 ] = c ;
-	return StringAppend( st,s ) ;
+	char * d = __StringExpandMemory( st,st->size + 1 ) ;
+	
+	if( d != NULL ){
+		st->string[ st->size ] = c ;
+		st->string[ st->size + 1 ] = '\0' ;
+		st->size += 1 ;
+	}
+	
+	return d ;
 }
 
 const char * StringInsertString( string_t st,size_t x,const char * s )
 {
 	char * c ;	
 	size_t len = strlen( s ) ;
-	size_t new_size = st->size + len ;
 	
-	c = realloc( st->string,new_size + 1 ) ;
+	c = __StringExpandMemory( st,len ) ;
+	
 	if( c != NULL )	{
 		st->string = c ;
 		memmove( st->string + len + x,st->string + x,st->size - x + 1 ) ;
 		memcpy( st->string + x,s,len ) ;
-		st->size = new_size ;
+		st->size += len ;
 	}
 	return c ;	
 }
@@ -476,7 +505,7 @@ static char * StringRS__( string_t st,const char * x,const char * s,size_t p )
 	
 	if( j == k )
 	{
-		while( ( c = strstr( e, x ) ) != NULL )
+		while( ( c = strstr( e,x ) ) != NULL )
 		{
 			memcpy( c,s,j ) ;
 			e = e + j ;			
@@ -485,7 +514,8 @@ static char * StringRS__( string_t st,const char * x,const char * s,size_t p )
 		while( ( c = strstr( e, x ) ) != NULL )
 		{
 			len = c - st->string ;
-			d = realloc( st->string, st->size + j + 1 ) ;
+			d = __StringExpandMemory( st,st->size + j ) ;
+			//d = realloc( st->string, st->size + j + 1 ) ;
 			if( d != NULL )
 			{	
 				st->string = d ;
@@ -503,7 +533,8 @@ static char * StringRS__( string_t st,const char * x,const char * s,size_t p )
 			diff = k - j ;
 			memmove( c + j,c + k,st->size - ( c - st->string + k ) + 1 ) ;			
 			memcpy( c,s,j ) ;
-			d = realloc( st->string,st->size - diff + 1 ) ;
+			d = __StringExpandMemory( st,st->size - diff ) ;
+			//d = realloc( st->string,st->size - diff + 1 ) ;
 			if( d != NULL )
 			{
 				st->string = d ;
@@ -622,7 +653,8 @@ static char * StringICS__( string_t st,char x,const char * s,size_t p )
 			if( *d == *f )
 			{
 				pos = f - st->string ;
-				e = realloc( st->string,st->size + 2 ) ;
+				e = __StringExpandMemory( st,st->size + 2 ) ;
+				//e = realloc( st->string,st->size + 2 ) ;
 				if( e != NULL )
 				{					
 					st->string = e ;

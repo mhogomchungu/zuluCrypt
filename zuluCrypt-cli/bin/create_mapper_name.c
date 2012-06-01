@@ -46,7 +46,6 @@
  */
 string_t hash_path( const char * path )
 {
-	string_t p ;
 	size_t i = 0 ;
 	size_t l = strlen( path ) ;
 	uint64_t h = 0 ;
@@ -54,22 +53,15 @@ string_t hash_path( const char * path )
 	for ( i = 0 ; i < l ; i++ ) 
 		h = h + path[ i ] ;	
 	
-	p = StringIntToString( h ) ;
-	StringPrepend( p,"-" );
-	return p ;
+	return StringIntToString( h ) ;
 }
 
 string_t create_mapper_name( const char * device,const char * mapping_name,uid_t uid,int i )
 {
 	string_t z ;
-	string_t q = StringIntToString( uid ) ;	
+	string_t q ;
 	string_t p ;
-	
-	if( strncmp( mapping_name,"UUID-",5 ) == 0 )
-		z = hash_path( mapping_name ) ;
-	else
-		z = hash_path( device ) ;
-	
+
 	if( i == OPEN )
 		p = String( "zuluCrypt-" ) ;
 	else{
@@ -77,6 +69,7 @@ string_t create_mapper_name( const char * device,const char * mapping_name,uid_t
 		StringAppend( p,"/zuluCrypt-" ) ;
 	}
 	
+	q = StringIntToString( uid ) ;	
 	StringAppendString( p,q ) ;
 	
 	if( strncmp( mapping_name,"UUID-",5 ) != 0 )
@@ -85,6 +78,14 @@ string_t create_mapper_name( const char * device,const char * mapping_name,uid_t
 		StringAppend( p,"-" ) ;	
 	
 	StringAppend( p,mapping_name ) ;
+	
+	StringAppend( p,"-" ) ;
+		
+	if( strncmp( mapping_name,"UUID-",5 ) == 0 )
+		z = hash_path( mapping_name ) ;
+	else
+		z = hash_path( device ) ;
+	
 	StringAppendString( p,z ) ;
 	
 	replace_bash_special_chars( &p ) ;
