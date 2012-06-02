@@ -28,7 +28,7 @@
 /*
  * when an empty string is initialized,star it with below buffer size
  */
-#define EMPTY_STRING_SIZE 32
+#define STRING_INIT_SIZE 32
 
 struct StringType
 {	/*
@@ -48,14 +48,14 @@ struct StringType
 static char * __StringExpandMemory( string_t st,size_t new_size )
 {
 	char * c = st->string;
-	//printf("%d:%d",st->size,st->length);
+	//printf("%d:%d-->",st->size,st->length);
 	if( new_size > st->length ) {
 		st->length = new_size * FACTOR ; 
 		c = realloc( c,st->length + 1 ) ;
 		if( c != NULL )
 			st->string = c ;
 	}
-	//printf(":%d\n",st->length);
+	//printf("%d:%d\n",new_size,st->length);
 	return c ;
 }
 
@@ -102,9 +102,9 @@ string_t StringCopy( string_t st )
 	return xt ;
 }
 
-string_t String( const char * c )
+string_t String( const char * cstring )
 {
-	size_t size = strlen( c ) ;
+	size_t size = strlen( cstring ) ;
 	
 	string_t st = ( string_t ) malloc ( sizeof( struct StringType ) ) ;
 	
@@ -115,26 +115,36 @@ string_t String( const char * c )
 		/*
 		 * you will get here if a user does something like string_t = String("") ;
 		 */
-		st->string = ( char * ) malloc( ( sizeof( char ) * EMPTY_STRING_SIZE ) + 1 ) ;
+		st->string = ( char * ) malloc( sizeof( char ) * STRING_INIT_SIZE ) ;
+		if ( st->string == NULL )
+			return NULL ;
 		st->string[ 0 ] = '\0' ;
 		st->size = 0 ;
-		st->length = EMPTY_STRING_SIZE ;
-		return st ;
+		st->length = STRING_INIT_SIZE ;
+		
+	}else if( size < STRING_INIT_SIZE / 2 ){
+		
+		st->string = ( char * ) malloc( ( sizeof( char ) * STRING_INIT_SIZE ) + 1 ) ;		
+		if ( st->string == NULL )
+			return NULL ;
+		memcpy( st->string,cstring,size + 1 ) ;
+		st->size = size ;
+		st->length = STRING_INIT_SIZE ;
+		
+	}else{	
+		st->string = NULL ;
+		st->size = size ;
+		st->length = 0 ;
+	
+		st->string = __StringExpandMemory( st,size ) ;
+	
+		if ( st->string == NULL ){
+			free( st ) ;
+			return NULL ;
+		}
+	
+		memcpy( st->string,cstring,size + 1 ) ;
 	}
-	
-	st->string = NULL ;
-	st->size = size ;
-	st->length = 0 ;
-	
-	__StringExpandMemory( st,size ) ;
-	
-	if ( st->string == NULL ){
-		free( st ) ;
-		return NULL ;
-	}
-	
-	memcpy( st->string,c,size + 1 ) ;
-	
 	return st ;	
 }
 
@@ -272,12 +282,11 @@ const char * StringRemoveLeft( string_t st,size_t x )
 
 const char * StringCrop( string_t st,size_t x,size_t y ) 
 {
-	size_t new_size ;
-
-	new_size = st->size - x - y ;
 	memmove( st->string,st->string + x,st->size - x + 1 ) ;
 	
-	*( st->string + new_size ) = '\0';
+	st->size = st->size - x - y ;
+	
+	*( st->string + st->size ) = '\0';
 	
 	return st->string ;
 }
@@ -349,7 +358,6 @@ const char * StringStringAt( string_t st,size_t p )
 
 const char * StringSubChar( string_t st,size_t x,char s )
 {	
-
 	st->string[ x ] = s ;
 	return st->string ;
 }
@@ -511,11 +519,10 @@ static char * StringRS__( string_t st,const char * x,const char * s,size_t p )
 			e = e + j ;			
 		}		
 	}else if( j > k  ){
-		while( ( c = strstr( e, x ) ) != NULL )
+		while( ( c = strstr( e,x ) ) != NULL )
 		{
 			len = c - st->string ;
 			d = __StringExpandMemory( st,st->size + j ) ;
-			//d = realloc( st->string, st->size + j + 1 ) ;
 			if( d != NULL )
 			{	
 				st->string = d ;
@@ -527,14 +534,13 @@ static char * StringRS__( string_t st,const char * x,const char * s,size_t p )
 			}
 		}
 	}else if( k > j ){
-		while( ( c = strstr( e, x ) ) != NULL )
+		while( ( c = strstr( e,x ) ) != NULL )
 		{
 			len = c - st->string ; 
 			diff = k - j ;
 			memmove( c + j,c + k,st->size - ( c - st->string + k ) + 1 ) ;			
 			memcpy( c,s,j ) ;
 			d = __StringExpandMemory( st,st->size - diff ) ;
-			//d = realloc( st->string,st->size - diff + 1 ) ;
 			if( d != NULL )
 			{
 				st->string = d ;

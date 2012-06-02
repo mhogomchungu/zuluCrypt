@@ -37,13 +37,10 @@ int open_volume( const char * dev,const char * map,const char * m_point,uid_t id
 	p = String( crypt_get_dir() ) ;
 	
 	StringAppend( p,"/" ) ;
-	StringAppend( p,map ) ;
-	
-	mapper = StringContent( p ) ;
+	mapper = StringAppend( p,map ) ;
 	
 	if( is_path_valid( mapper ) == 0 )
 		return value( 2,&p ) ;	
-	
 
 	if( is_luks( dev ) == 0 )
 		h = open_luks( dev,map,mode,pass,pass_size ) ;

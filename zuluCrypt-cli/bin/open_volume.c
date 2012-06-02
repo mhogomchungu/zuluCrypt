@@ -31,7 +31,7 @@ static int status_msg( int st,char * device,char * m_point )
 		case 4 : printf( "ERROR: wrong passphrase\n" );										break ;			
 		case 5 : printf( "ERROR: could not create mount point, invalid path or path already taken\n" ) ;			break ;		
 		case 6 : printf( "ERROR: passphrase file does not exist\n" );								break ;	
-		case 8 : printf( "ERROR: failed to open volume\n" );									break ;	
+		case 8 : printf( "ERROR: failed to open volume,device may already be in use\n" );					break ;	
 		case 9 : printf( "ERROR: mount point path is already taken\n" );							break ;					 
 		case 10: printf( "ERROR: \",\" ( comma ) is not a valid mount point\n" );						break ;
 		case 11: printf( "ERROR: one or more required argument(s) for this operation is missing\n" );				break ;				

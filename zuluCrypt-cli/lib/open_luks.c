@@ -29,6 +29,7 @@ int open_luks( const char * device,const char * mapper,const char * mode,const c
 {
 	struct crypt_device * cd;
 	uint32_t flags = 0;
+	int st ;
 	
 	if( is_path_valid( device ) != 0 )
 		return 3 ;
@@ -44,9 +45,13 @@ int open_luks( const char * device,const char * mapper,const char * mode,const c
 	else
 		flags = 0 ;
 	
-	if( crypt_activate_by_passphrase( cd,mapper,CRYPT_ANY_SLOT,pass,pass_size,flags ) < 0 )
-		return free_crypt( 1,cd ) ;
-	else
+	st = crypt_activate_by_passphrase( cd,mapper,CRYPT_ANY_SLOT,pass,pass_size,flags ) ;
+	
+	if( st == 0 )
 		return free_crypt( 0,cd ) ;
+	else if( st == -1 )
+		return free_crypt( 1,cd ) ;	
+	else
+		return free_crypt( 2,cd ) ;
 }
 
