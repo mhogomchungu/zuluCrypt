@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'openpartition.ui'
 **
-** Created: Sat May 26 09:27:06 2012
+** Created: Sat Jun 2 14:42:56 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -29,6 +29,7 @@ public:
     QCheckBox *checkBoxUUID;
     QPushButton *pbHelp;
     QPushButton *pbUUID;
+    QPushButton *pbCancel;
 
     void setupUi(QDialog *PartitionView)
     {
@@ -69,13 +70,16 @@ public:
         checkBoxUUID = new QCheckBox(PartitionView);
         checkBoxUUID->setObjectName(QString::fromUtf8("checkBoxUUID"));
         checkBoxUUID->setEnabled(true);
-        checkBoxUUID->setGeometry(QRect(350, 310, 121, 31));
+        checkBoxUUID->setGeometry(QRect(560, 320, 71, 31));
         pbHelp = new QPushButton(PartitionView);
         pbHelp->setObjectName(QString::fromUtf8("pbHelp"));
-        pbHelp->setGeometry(QRect(270, 310, 75, 31));
+        pbHelp->setGeometry(QRect(220, 310, 75, 31));
         pbUUID = new QPushButton(PartitionView);
         pbUUID->setObjectName(QString::fromUtf8("pbUUID"));
-        pbUUID->setGeometry(QRect(510, 310, 75, 31));
+        pbUUID->setGeometry(QRect(380, 310, 75, 31));
+        pbCancel = new QPushButton(PartitionView);
+        pbCancel->setObjectName(QString::fromUtf8("pbCancel"));
+        pbCancel->setGeometry(QRect(300, 310, 75, 31));
         QWidget::setTabOrder(tableWidget, checkBoxUUID);
 
         retranslateUi(PartitionView);
@@ -99,6 +103,7 @@ public:
         checkBoxUUID->setText(QApplication::translate("PartitionView", "use uuid", 0, QApplication::UnicodeUTF8));
         pbHelp->setText(QApplication::translate("PartitionView", "&help", 0, QApplication::UnicodeUTF8));
         pbUUID->setText(QApplication::translate("PartitionView", "use &uuid", 0, QApplication::UnicodeUTF8));
+        pbCancel->setText(QApplication::translate("PartitionView", "&cancel", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };

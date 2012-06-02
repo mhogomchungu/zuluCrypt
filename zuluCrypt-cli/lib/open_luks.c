@@ -46,8 +46,8 @@ int open_luks( const char * device,const char * mapper,const char * mode,const c
 		flags = 0 ;
 	
 	st = crypt_activate_by_passphrase( cd,mapper,CRYPT_ANY_SLOT,pass,pass_size,flags ) ;
-	
-	if( st == 0 )
+
+	if( st >= 0 )
 		return free_crypt( 0,cd ) ;
 	else if( st == -1 )
 		return free_crypt( 1,cd ) ;	

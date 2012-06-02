@@ -55,9 +55,10 @@ public slots:
 	void ShowNonSystemPartitions(void) ;
 	void ShowPartitionList(QString,QString);
 	void partitionList(QString,QString);
+private slots:
 	void pbHelp(void);
 	void pbUUID(void);
-private slots:
+	void pbCancel(void);
 	void EnterKeyPressed(void);
 	void currentItemChanged( QTableWidgetItem * current, QTableWidgetItem * previous );
 	void partitionpropertiesThreadFinished();

@@ -37,7 +37,7 @@ openpartition::openpartition(QWidget *parent ) :
 		SLOT(currentItemChanged( QTableWidgetItem * , QTableWidgetItem * ))) ;
 	connect(m_ui->pbHelp,SIGNAL(clicked()),this,SLOT(pbHelp()));
 	connect(m_ui->pbUUID,SIGNAL(clicked()),this,SLOT(pbUUID())) ;
-
+	connect(m_ui->pbCancel,SIGNAL(clicked()),this,SLOT(pbCancel()));
 	m_action = new QAction( this ) ;
 	QList<QKeySequence> keys ;
 	keys.append( Qt::Key_Enter );
@@ -58,9 +58,9 @@ openpartition::openpartition(QWidget *parent ) :
 
 	tw->horizontalHeader()->setVisible(true);
 
-	m_ui->checkBoxUUID->setFont(this->font());
+	m_ui->checkBoxUUID->setVisible(false);
 
-	m_ui->pbUUID->setVisible(false);
+	//m_ui->pbUUID->setVisible(false);
 }
 
 void openpartition::pbHelp()
@@ -88,6 +88,11 @@ void openpartition::pbUUID()
 		m_ui->pbUUID->setFlat(false);
 	else
 		m_ui->pbUUID->setFlat(true);
+}
+
+void openpartition::pbCancel()
+{
+	this->HideUI();
 }
 
 void openpartition::EnterKeyPressed()
@@ -180,7 +185,8 @@ void openpartition::tableEntryDoubleClicked(QTableWidgetItem * item)
 	QString dev ;
 	QTableWidget * tw = m_ui->tableWidget ;
 
-	if(m_ui->checkBoxUUID->isChecked() == true)
+	//if(m_ui->checkBoxUUID->isChecked() == true)
+	if(m_ui->pbUUID->isFlat())
 		dev = QString("UUID=\"") + tw->item(item->row(),4)->text() + QString("\"") ;
 	else
 		dev = tw->item(item->row(),0)->text() ;

@@ -102,9 +102,9 @@
    </property>
    <property name="geometry">
     <rect>
-     <x>350</x>
-     <y>310</y>
-     <width>121</width>
+     <x>560</x>
+     <y>320</y>
+     <width>71</width>
      <height>31</height>
     </rect>
    </property>
@@ -115,7 +115,7 @@
   <widget class="QPushButton" name="pbHelp">
    <property name="geometry">
     <rect>
-     <x>270</x>
+     <x>220</x>
      <y>310</y>
      <width>75</width>
      <height>31</height>
@@ -128,7 +128,7 @@
   <widget class="QPushButton" name="pbUUID">
    <property name="geometry">
     <rect>
-     <x>510</x>
+     <x>380</x>
      <y>310</y>
      <width>75</width>
      <height>31</height>
@@ -136,6 +136,19 @@
    </property>
    <property name="text">
     <string>use &amp;uuid</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pbCancel">
+   <property name="geometry">
+    <rect>
+     <x>300</x>
+     <y>310</y>
+     <width>75</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&amp;cancel</string>
    </property>
   </widget>
  </widget>
