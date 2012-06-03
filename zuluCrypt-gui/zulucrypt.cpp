@@ -404,16 +404,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.").arg(VERS
 
 void zuluCrypt::HelpLuksHeaderBackUp()
 {
-	QString msg = QString("\nIf anything damages the LUKS header or the key-stripe area,\
-then decrypting the LUKS device can become impossible and this happens frequently enought to warrant serious attention.\
-For example, an accidental format of the volume or some software overwriting \
-the first sector where it suspects a partition boot sector typically makes a LUKS partition permanently \
-inacessible and the encryted data lost forever.\
-\n\nHaving a backup of the luks header is strongly advised because it is the only way the encrypted data \
-will be accessed again after the header is restored when the header on the volume get corrupted. \n\n\
-The above text is a modified excerpt from \"Cryptsetup FAQ\" and is licenced as described in section 1.4 of the FAQ.\n\n\
-The full text to the FAQ can be located at http://code.google.com/p/cryptsetup/wiki/FrequentlyAskedQuestions\n\n\
-Going through the FAQ is highly recommended.");
+	QString msg = QString("\nAll luks based encrypted volumes have what is called a \"luks header\".\n\n\
+A luks header is responsible for storing information necessary to open a luks based volume and any damage \
+to it will makes it impossible to open the volume causing permanent loss of encrypted data.\n\n\
+The damage to the header is usually caused by accidental formatting of the device or use of \
+some buggy partitioning tools or wrongly reassembled logical volumes.\n\n\
+Having a backup of the luks header is strongly advised because it is the only way the encrypted data will be accessible \
+again after the header is restored if the header on the volume get corrupted.\n\n\
+For more information, please read the FAQ at: http://code.google.com/p/cryptsetup/wiki/FrequentlyAskedQuestions");
 
 	DialogMsg m(this) ;
 	m.ShowUIInfo(tr("important information on luks header"),msg);

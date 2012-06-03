@@ -113,7 +113,7 @@ string_t String( const char * cstring )
 	
 	if( size == 0 ){
 		/*
-		 * you will get here if a user does something like string_t = String("") ;
+		 * you will get here if a user does something like string_t p = String("") ;
 		 */
 		st->string = ( char * ) malloc( sizeof( char ) * STRING_INIT_SIZE ) ;
 		if ( st->string == NULL )
