@@ -129,9 +129,9 @@ void DialogMsg::ShowUIInfo(QString title,QString msg)
 	m_ui->pbNo->setHidden(true);
 	m_ui->pbOk->setHidden(false);
 
-	//m_ui->label->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
+	m_ui->label->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
 	this->setFixedSize(562,338);
-	m_ui->label->setGeometry(10,10,541,271);
+	m_ui->label->setGeometry(20,10,531,271);
 	m_ui->label->setFixedSize(m_ui->label->size());
 	m_ui->pbOk->setGeometry(240,290,81,31);
 	//m_ui->pbYes ->setGeometry(120,230,71,31);
