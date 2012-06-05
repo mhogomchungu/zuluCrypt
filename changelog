@@ -78,7 +78,7 @@ version 4.4.0
 -- normal users can not create volumes in system partitions but root user now can. system partition is defined as a partition
    with active entry(not commented out) in /etc/fstab and /etc/crypttab.
    
-version 4.4.1
+version 4.5.0
 -- add support for creating backups of luks headers and restoring luks headers
 -- add support for first writing random data to partitions before creating an encryped container in them.
 -- add support for "/etc/zuluCrypttab". A place to add additional paths to devices to be considered system devices.
