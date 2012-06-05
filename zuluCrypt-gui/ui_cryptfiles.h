@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'cryptfiles.ui'
 **
-** Created: Sun May 20 19:55:43 2012
+** Created: Mon Jun 4 20:01:42 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -115,8 +115,16 @@ public:
         labelProgressBar->setObjectName(QString::fromUtf8("labelProgressBar"));
         labelProgressBar->setGeometry(QRect(0, 149, 111, 41));
         labelProgressBar->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
+        QWidget::setTabOrder(lineEditSourcePath, pushButtonFile);
+        QWidget::setTabOrder(pushButtonFile, lineEditDestinationPath);
         QWidget::setTabOrder(lineEditDestinationPath, pbOpenFolder);
-        QWidget::setTabOrder(pbOpenFolder, pbCreate);
+        QWidget::setTabOrder(pbOpenFolder, rbKey);
+        QWidget::setTabOrder(rbKey, rbKeyFile);
+        QWidget::setTabOrder(rbKeyFile, lineEditPass_1);
+        QWidget::setTabOrder(lineEditPass_1, pushButtonKeyFile);
+        QWidget::setTabOrder(pushButtonKeyFile, lineEditPass_2);
+        QWidget::setTabOrder(lineEditPass_2, pbCreate);
+        QWidget::setTabOrder(pbCreate, pushButtonCancel);
 
         retranslateUi(cryptfiles);
 

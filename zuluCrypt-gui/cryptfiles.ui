@@ -264,9 +264,17 @@
   </widget>
  </widget>
  <tabstops>
+  <tabstop>lineEditSourcePath</tabstop>
+  <tabstop>pushButtonFile</tabstop>
   <tabstop>lineEditDestinationPath</tabstop>
   <tabstop>pbOpenFolder</tabstop>
+  <tabstop>rbKey</tabstop>
+  <tabstop>rbKeyFile</tabstop>
+  <tabstop>lineEditPass_1</tabstop>
+  <tabstop>pushButtonKeyFile</tabstop>
+  <tabstop>lineEditPass_2</tabstop>
   <tabstop>pbCreate</tabstop>
+  <tabstop>pushButtonCancel</tabstop>
  </tabstops>
  <resources/>
  <connections/>
