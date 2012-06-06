@@ -166,7 +166,6 @@ void StringPrint( string_t st )
 void StringPrintLine( string_t st ) 
 {
 	printf( "%s\n",st->string ) ;
-	
 }
 
 string_t StringInheritWithSize( char ** data,size_t s )
