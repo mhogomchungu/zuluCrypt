@@ -305,7 +305,7 @@ void createpartition::threadfinished(int st)
 	m_isWindowClosable = true ;
 	QString x = tr("volume created successfully") ;
 	if(m_ui->comboBoxVolumeType->currentText() == QString("luks"))
-		x += tr("\n\ncreating a backup of the luks header is strongly advised.please read documentation on why this is important.") ;
+		x += tr("\n\ncreating a backup of the luks header is strongly advised.\nPlease read documentation on why this is important.") ;
 	switch ( st ){
 		case 0 : msg.ShowUIOK(tr("SUCCESS!"),x ) ;
 		HideUI();													break  ;

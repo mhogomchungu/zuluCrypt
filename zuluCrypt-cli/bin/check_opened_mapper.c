@@ -50,7 +50,6 @@ int check_opened_mapper( const char * mapper )
 				break ;
 			}
 		}
-		
 	}
 	
 	closedir( dir ) ;

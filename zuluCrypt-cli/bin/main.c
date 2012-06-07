@@ -286,7 +286,7 @@ static int get_device( const char * device )
 
 static int check_if_luks( const char * device )
 {
-	int status =  is_luks( device ) ;
+	int status = is_luks( device ) ;
 	
 	if( status == 0 )
 		printf( "\"%s\" is a luks device\n",device ) ;
@@ -350,7 +350,7 @@ static int exe( struct_opts * clargs, const char * mapping_name,uid_t uid )
 
 stringList_t get_partition_from_crypttab( void ) ;
 
-int main( int argc , char *argv[] )
+int main( int argc,char * argv[] )
 {
 	const char * device ;
 	const char * mapping_name ;
@@ -408,7 +408,7 @@ int main( int argc , char *argv[] )
 		printf("ERROR: required option( device path ) is missing for this operation\n" ) ;
 		return 120 ;
 	}
-	if( strncmp( device,"UUID=", 5 ) == 0 ){
+	if( strncmp( device,"UUID=",5 ) == 0 ){
 
 		q = String( device ) ;	
 		StringRemoveString( q,"\"" ) ;

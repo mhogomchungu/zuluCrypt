@@ -72,10 +72,10 @@ string_t create_mapper_name( const char * device,const char * mapping_name,uid_t
 	q = StringIntToString( uid ) ;	
 	StringAppendString( p,q ) ;
 	
-	if( strncmp( mapping_name,"UUID-",5 ) != 0 )
-		StringAppend( p,"-NAAN-" ) ;
+	if( strncmp( mapping_name,"UUID-",5 ) == 0 )
+		StringAppend( p,"-" ) ;
 	else
-		StringAppend( p,"-" ) ;	
+		StringAppend( p,"-NAAN-" ) ;			
 	
 	StringAppend( p,mapping_name ) ;
 	

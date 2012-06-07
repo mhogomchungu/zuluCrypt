@@ -33,8 +33,8 @@ static int status_msg( int st )
 		case 8 : printf( "ERROR: invalid path to key file\n" ) ;					break  ;
 		case 9 : printf( "ERROR: container file must be bigger than 3MB\n" ) ;				break  ;
 		case 10: printf( "ERROR: insufficient privilege to create a volume on a system partition.\n" );
-			 printf( "A system partition is a partition with an active entry in \"/etc/fstab\" " ) ;	
-			 printf( "and \"/etc/crypttab.\"\nRerun the tool from root's accout to proceed.\n" ) ;
+			 printf( "A system partition is a partition with an active entry in \"/etc/fstab\"," ) ;	
+			 printf( "\"/etc/crypttab and \"/etc/zuluCrypttab\".\"\nRerun the tool from root's accout to proceed.\n" ) ;
 														break  ;
 		case 11: printf( "ERROR: %s not found \n",ZULUCRYPTmkfs ) ;					break  ;
 		case 12: printf( "ERROR: user chose not to proceed\n" ) ;					break  ;
@@ -54,8 +54,8 @@ static int status_msg_1( const char * type )
 	printf( "SUCCESS: volume created successfully\n" ) ;
 	
 	if( strcmp( type,"luks" ) == 0 ){
-		printf( "\ncreating a backup of the volume luks header is strongly adviced\n" ) ;
-		printf( "please read documentation on why this is important\n\n" ) ;
+		printf( "\ncreating a backup of the volume luks header is strongly adviced.\n" ) ;
+		printf( "Please read documentation on why this is important\n\n" ) ;
 	}
 	return 0 ;
 }
@@ -118,45 +118,36 @@ int create_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid
 	
 	if( k == 1 )
 		return status_msg( 18 ) ;
-	
-	stat( device, &xt ) ;	
-	if( strncmp( device,"/dev/",5 ) != 0 && xt.st_size < 3145728 )
-		return status_msg( 9 ) ;
+			
+	if( strncmp( device,"/dev/",5 ) != 0 ){
+		stat( device,&xt ) ;
+		if( xt.st_size < 3145728 )
+			return status_msg( 9 ) ;
+	}
 	
 	/*
 	 * Only root user can create volumes in system partitions.
-	 * System partitions are defined as partitions with active entried in "/etc/fstab" and "/etc/crypttab"
+	 * System partitions are defined as partitions with active entried in "/etc/fstab","/etc/crypttab" and "/etc/zuluCrypttab"
 	 * 
 	 * Active entries are entries not commented out.
-	 * 
-	 * devices other than sdX and hdY require root privileges
+	 */	
+	if( check_partition( device ) == 1 )
+		if( uid != 0 )
+			return status_msg( 10 ) ;
+	
+	/*
+	 * root's privileges required to create volumes in devices located in "/dev/" other than /dev/sdX and /dev/hdX
 	 */
-	if( strncmp( device,"/dev/",5 ) == 0 ){
-		if( strncmp( device,"/dev/hd",7 ) == 0 || strncmp( device,"/dev/sd",7 ) == 0 ){
-			if( uid != 0 ){
-				if( check_partition( device ) == 1 ){
-					return status_msg( 10 ) ;
-				}
-			}
-		}else{
-			/*
-			 * device maybe an lvm device or something else completely different,since not sure what the device is,ask
-			 * user to rerun the tool as root.
-			 */
-			if( uid != 0 )
-				return status_msg( 14 ) ;
-		}
-	}else{
-		/*
-		 * the device seem to be a regular file. Do nothing since the check to see if the user has writing access is already
-		 * done above
-		 */
-		;
-	}
+	if( strncmp( device,"/dev/",5 ) == 0 )
+		if( strncmp( device,"/dev/hd",7 ) != 0 )
+			if( strncmp( device,"/dev/sd",7 ) != 0 )
+				if( uid != 0 )
+					return status_msg( 14 ) ;
+
 	/*
 	 * ZULUCRYPTmkfs is defined at "../constants.h"
 	 * File systems are created not through file systems APIs but through mkfs.xxx executables started using exec call.
-	 * 	 */
+	 */
 	if( is_path_valid( ZULUCRYPTmkfs ) != 0 )
 		return status_msg( 11 ) ;
 	
@@ -178,9 +169,9 @@ int create_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid
 			return status_msg( 4 ) ;
 		
 		printf( "Enter passphrase: " ) ;			
-		pass_1 = get_passphrase(  );			
+		pass_1 = get_passphrase();			
 		printf( "\nRe enter passphrase: " ) ;			
-		pass_2 = get_passphrase(  );				
+		pass_2 = get_passphrase();				
 		printf( "\n" ) ;			
 		if(  StringCompare( pass_1,pass_2 ) != 0  ){				
 			st = 7 ;

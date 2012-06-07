@@ -335,7 +335,7 @@ int ProcessKill( process_t p )
 	
 }
 
-void * timer( void * x )
+static void * __timer( void * x )
 {
 	st_1 * t = ( st_1 * ) x ;
 	
@@ -361,7 +361,7 @@ static int ProcessWaitWithTimer( process_t p )
 	t.signal = p->signal ;
 	t.p = p ;
 	
-	pthread_create( &thread,NULL,timer,( void * ) &t );
+	pthread_create( &thread,NULL,__timer,( void * ) &t );
 	
 	waitpid( p->pid,&status,0 ) ;	
 	

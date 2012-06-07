@@ -48,14 +48,12 @@ struct StringType
 static char * __StringExpandMemory( string_t st,size_t new_size )
 {
 	char * c = st->string;
-	//printf("%d:%d-->",st->size,st->length);
 	if( new_size > st->length ) {
 		st->length = new_size * FACTOR ; 
 		c = realloc( c,st->length + 1 ) ;
 		if( c != NULL )
 			st->string = c ;
 	}
-	//printf("%d:%d\n",new_size,st->length);
 	return c ;
 }
 

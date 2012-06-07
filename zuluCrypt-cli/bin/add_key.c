@@ -36,14 +36,18 @@ static int check_empty_slot( const char * device )
 		 */
 		return 1 ;
 	}
+	
 	d = c - 1 ;
+	
 	while( *++d ){
 		if( *d == '0' ){
 			status = 2 ;
 			break ;
 		}
-	}	
+	}
+	
 	free( c ) ;
+	
 	return status ;
 }
 

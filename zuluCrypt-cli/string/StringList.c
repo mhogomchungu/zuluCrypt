@@ -47,13 +47,11 @@ struct StringType
 static string_t * __ExpandMemory( stringList_t stl )
 {
 	string_t * p = stl->stp ;
-	//printf("%d:%d",stl->size,stl->length);
 	if( stl->size + 1 > stl->length )
 	{
 		stl->length *= FACTOR ;
 		p = realloc( p,sizeof( string_t ) * ( stl->length ) ) ; 		
 	}
-	//printf(":%d\n",stl->length);
 	return p ;
 }
 
