@@ -45,16 +45,13 @@ struct StringType
 	char * string ; 
 };
 
-static char * __StringExpandMemory( string_t st,size_t new_size )
+static inline char * __StringExpandMemory( string_t st,size_t new_size )
 {
-	char * c = st->string;
-	if( new_size > st->length ) {
+	if( new_size + 1 > st->length ) {
 		st->length = new_size * FACTOR ; 
-		c = realloc( c,st->length + 1 ) ;
-		if( c != NULL )
-			st->string = c ;
-	}
-	return c ;
+		return realloc( st->string,st->length ) ;
+	}else
+		return st->string ;
 }
 
 void StringDelete( string_t * xt )
@@ -109,20 +106,9 @@ string_t String( const char * cstring )
 	if( st == NULL )
 		return NULL ;
 	
-	if( size == 0 ){
-		/*
-		 * you will get here if a user does something like string_t p = String("") ;
-		 */
-		st->string = ( char * ) malloc( sizeof( char ) * STRING_INIT_SIZE ) ;
-		if ( st->string == NULL )
-			return NULL ;
-		st->string[ 0 ] = '\0' ;
-		st->size = 0 ;
-		st->length = STRING_INIT_SIZE ;
+	if( size < STRING_INIT_SIZE / 2 ){
 		
-	}else if( size < STRING_INIT_SIZE / 2 ){
-		
-		st->string = ( char * ) malloc( ( sizeof( char ) * STRING_INIT_SIZE ) + 1 ) ;		
+		st->string = ( char * ) malloc( sizeof( char ) * STRING_INIT_SIZE ) ;		
 		if ( st->string == NULL )
 			return NULL ;
 		memcpy( st->string,cstring,size + 1 ) ;
@@ -657,7 +643,6 @@ static char * StringICS__( string_t st,char x,const char * s,size_t p )
 			{
 				pos = f - st->string ;
 				e = __StringExpandMemory( st,st->size + 2 ) ;
-				//e = realloc( st->string,st->size + 2 ) ;
 				if( e != NULL )
 				{					
 					st->string = e ;

@@ -179,7 +179,7 @@ static stringList_t partitions( int option )
 
 		entry = StringContent( st ) ;
 		
-		if( entry[0] == '#' || entry[0] == '\n' )
+		if( entry[0] == '#' )
 			continue ;
 		
 		index = StringIndexOfChar( st,0,' ' ) ;
@@ -193,7 +193,7 @@ static stringList_t partitions( int option )
 		
 		if ( strncmp( device,"/dev/",5 ) == 0 ){			
 			system = StringListAppend( system,device ) ;
-			StringListRemoveString( non_system ,device ) ;
+			StringListRemoveString( non_system,device ) ;
 		}else if( strncmp( entry,"UUID",4 ) == 0 ){
 			ac = device_from_uuid( device + 5 ) ;
 			if( ac != NULL ){
