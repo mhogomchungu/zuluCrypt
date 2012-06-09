@@ -86,7 +86,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	const char * cpass = NULL ;
 	
 	char * dev ;
-	char key[ KEY_SIZE + 1 ] ;	
+	char * key ; 	
 	
 	const char * device = opts->device ;
 	
@@ -147,13 +147,15 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 			
 			k = open( "/dev/urandom",O_RDONLY ) ;
 		
+			key = ( char * ) malloc( sizeof( char ) * ( KEY_SIZE + 1 ) ) ;
+			
 			read( k,key,KEY_SIZE );
 			
 			close( k );
 		
 			key[ KEY_SIZE ] = '\0' ;
 		
-			passphrase = String( key ) ;
+			passphrase = StringInheritWithSize( &key,KEY_SIZE ) ;
 			cpass = StringContent( passphrase ) ;
 			len = StringLength( passphrase ) ;
 			
