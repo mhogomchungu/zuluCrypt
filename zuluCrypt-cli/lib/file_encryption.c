@@ -70,16 +70,25 @@
 
 static string_t crypt_mapper( const char * path,const char * key,uint64_t key_len )
 {
-	string_t p = StringIntToString( getpid() ) ;
-	const char * mapper = StringPrepend( p,"zuluCrypt-" ) ;
+	const char * mapper ;
+	
+	char * q = strrchr( path,'/' ) ;
+	
+	string_t p = String( crypt_get_dir() ) ;
+	
+	size_t s = StringLength( p ) + 1 ;
+	
+	StringAppend( p,"/zuluCrypt-" ) ;
+	
+	if( q == NULL )
+		mapper = StringAppend( p,path ) + s ;
+	else
+		mapper = StringAppend( p,q + 1 ) + s ;
 	
 	if( open_plain( path,mapper,"rw",key,key_len ) != 0 ){
 		StringDelete( &p ) ;
 		return NULL ;
 	}
-	
-	StringPrepend( p,"/" ) ;
-	StringPrepend( p,crypt_get_dir() ) ;
 	
 	return p ;
 }

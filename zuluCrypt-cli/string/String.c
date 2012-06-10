@@ -589,7 +589,7 @@ string_t StringIntToString( uint64_t z )
 	return String( buffer + i ) ;
 }
 
-char * StringIntToString_1( char * x, size_t y,uint64_t z )
+char * StringIntToString_1( char * x,size_t y,uint64_t z )
 {
 	char *c =  x + y - 1  ;
 	
@@ -608,7 +608,7 @@ int StringCompare( string_t x,string_t y )
 {
 	if( x->size != y->size )
 		return 1 ;
-	else if( strcmp( x->string, y->string ) != 0 )
+	else if( strcmp( x->string,y->string ) != 0 )
 		return 1 ;
 	else
 		return 0 ;	
