@@ -333,7 +333,7 @@ void passwordDialog::threadfinished(int status)
 		case 4 : msg.ShowUIOK(tr("ERROR!"),tr("presented key was not found in the volume"));						break ;
 		case 5 : msg.ShowUIOK(tr("ERROR!"),tr("could not create mount point, invalid path or path already taken") ) ;			break ;
 		case 6 : msg.ShowUIOK(tr("ERROR!"),tr("invalid path to keyfile" ));								break ;
-		case 8 : msg.ShowUIOK(tr("ERROR!"),tr("failed to open volume,device may already be in use" ));					break ;
+		case 8 : msg.ShowUIOK(tr("ERROR!"),tr("failed to open volume.\ndevice may already be in use" ));					break ;
 		case 9 : msg.ShowUIOK(tr("ERROR!"),tr("mount point path is already taken" ));							break ;
 		case 10: msg.ShowUIOK(tr("ERROR!"),tr("\",\" ( comma ) is not a valid mount point" ));						break ;
 		case 11: msg.ShowUIOK(tr("ERROR!"),tr("one or more required argument(s) for this operation is missing\n" ));			break ;
