@@ -77,6 +77,16 @@ string_t StringListStringAt( stringList_t stl, size_t index ) ;
 const char * StringListContentAt( stringList_t stl,size_t index ) ;
 
 /*
+ * printf() string content at a given index
+ */
+void StringListPrintAt( stringList_t stl,size_t index ) ;
+
+/*
+ * printf() with a new line string content at a given index
+ */
+void StringListPrintLineAt( stringList_t stl,size_t index ) ;
+
+/*
  *  return a pointer to a string at the last elenent in the list.
  */
 const char * StringListContentAtLast( stringList_t stl ) ;

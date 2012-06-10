@@ -478,3 +478,13 @@ stringList_t StringListSwap( stringList_t stl, size_t x,size_t y )
 	stl->stp[ y ] = p ;
 	return stl ;
 }
+
+void StringListPrintAt( stringList_t stl,size_t index )
+{
+	printf("%s",stl->stp[ index ]->string ) ;
+}
+
+void StringListPrintLineAt( stringList_t stl,size_t index ) 
+{
+	printf("%s\n",stl->stp[ index ]->string ) ;	
+}

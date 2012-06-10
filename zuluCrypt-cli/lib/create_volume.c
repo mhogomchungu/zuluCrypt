@@ -120,8 +120,5 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 	StringDelete( &cmd ) ;
 	StringDelete( &m ) ;
 	
-	if( status == 0 )
-		return 0 ;
-	else
-		return 3 ;	
+	return status == 0 ? 0 : 3 ;
 }

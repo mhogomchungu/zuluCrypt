@@ -115,6 +115,7 @@ static stringList_t partitionList( void )
 			stl_1 = StringListAppendString( stl_1,&st_1 ) ;			
 		}	
 	}
+	
 	StringListDelete( &stl ) ;
 	return stl_1 ;
 }
@@ -127,6 +128,22 @@ char * device_from_uuid( const char * uuid )
 char * device_from_label( const char * label )
 {
 	return blkid_evaluate_tag( "LABEL",label,NULL ) ;
+}
+
+static void appendSystemList( stringList_t system,stringList_t stl )
+{
+	size_t j ;
+	size_t i ;
+	
+	if( stl == NULL )
+		return ;
+	
+	j = StringListSize( stl ) ;
+	
+	for( i = 0 ; i < j ; i++ )
+		StringListAppend( system,StringListContentAt( stl,i ) ) ;
+	
+	StringListDelete( &stl ) ;	
 }
 
 static stringList_t partitions( int option )
@@ -213,30 +230,10 @@ static stringList_t partitions( int option )
 	
 	StringListDelete( &stl ) ;	
 	
-	stl = get_partition_from_crypttab() ;
-	if( stl != NULL ){
-			
-		j = StringListSize( stl ) ;
-		
-		for( i = 0 ; i < j ; i++ ){
-			entry = StringListContentAt( stl,i ) ;
-			StringListAppend( system,entry ) ;
-		}
-		StringListDelete( &stl ) ;
-	}
+	appendSystemList( system,get_partition_from_crypttab() ) ;
 	
-	stl = get_partition_from_zulutab() ;
-	if( stl != NULL ){
+	appendSystemList( system,get_partition_from_zulutab() ) ;
 		
-		j = StringListSize( stl ) ;
-		
-		for( i = 0 ; i < j ; i++ ){
-			entry = StringListContentAt( stl,i ) ;
-			StringListAppend( system,entry ) ;
-		}
-		StringListDelete( &stl ) ;
-	}
-	
 	if( option == SYSTEM_PARTITIONS ){
 		StringListDelete( &non_system ) ;
 		return system  ;
@@ -250,25 +247,27 @@ int print_partitions( int option )
 {
 	size_t i ;
 	size_t j ;
+	
 	stringList_t stl = NULL ;
+	
 	switch( option ){	
-		case 1 : stl = partitions( ALL_PARTITIONS ) ;
-		break ;
-		case 2 : stl = partitions( SYSTEM_PARTITIONS ) ;
-		break ;
-		case 3 : stl = partitions( NON_SYSTEM_PARTITIONS ) ;
-		break ;
+		case 1 : stl = partitions( ALL_PARTITIONS ) 	  ;break ;
+		case 2 : stl = partitions( SYSTEM_PARTITIONS )    ;break ;
+		case 3 : stl = partitions( NON_SYSTEM_PARTITIONS );break ;
 	}	
 	
 	if( stl == NULL ){
-		printf( "ERROR: unable to print a list of partitions you have requested\n" ) ;
+		printf( "ERROR: unable to print requested list of partitions\n" ) ;
 		return 1 ;
 	}
 	
 	j = StringListSize( stl ) ;
+	
 	for( i = 0 ; i < j ; i++ )	
-		printf("%s\n",StringListContentAt( stl,i ) );
+		StringListPrintLineAt( stl,i ) ;
+	
 	StringListDelete( &stl ) ;
+	
 	return 0 ;
 }
 
@@ -427,7 +426,7 @@ stringList_t get_partition_from_zulutab()
 	return stl_1 ;	
 }
 
-int check_partition( const char * dev )
+int check_if_partition_is_system_partition( const char * dev )
 {	
 	stringList_t stl ;
 	
@@ -447,8 +446,5 @@ int check_partition( const char * dev )
 	
 	free( device ) ;
 	
-	if( index >= 0 )
-		return 1 ;
-	else
-		return 0 ;
+	return index >= 0 ? 1 : 0 ;
 }

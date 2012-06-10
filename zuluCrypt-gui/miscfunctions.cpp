@@ -77,10 +77,7 @@ QString miscfunctions::hashPath(QString p)
 bool miscfunctions::exists(QString path)
 {
 	struct stat st ;
-	if(stat(path.toAscii().data(),&st) == 0)
-		return true ;
-	else
-		return false ;
+	return stat(path.toAscii().data(),&st) == 0 ? true : false ;
 }
 
 bool miscfunctions::canCreateFile(QString path)
@@ -140,8 +137,10 @@ QStringList miscfunctions::deviceProperties(QString device)
 			case 14:size = size.mid(0,2) + QString(" TB");break;
 			case 15:size = size.mid(0,3) + QString(" TB");break ;
 		}
-	}else
+	}else{
 		size = QString("NaN");
+	}
+
 	prp << size ;
 
 	i = blkid_probe_lookup_value( dp, "LABEL", &buffer, NULL);
@@ -179,10 +178,8 @@ bool miscfunctions::isLuks(QString volumePath)
 	p.waitForFinished() ;
 	int i = p.exitCode() ;
 	p.close();
-	if ( i == 0 )
-		return true ;
-	else
-		return false ;
+
+	return i == 0 ? true : false ;
 }
 
 QStringList miscfunctions::luksEmptySlots(QString volumePath)

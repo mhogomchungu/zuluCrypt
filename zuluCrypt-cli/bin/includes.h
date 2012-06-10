@@ -180,7 +180,7 @@ void check_invalid_key( const char * device ) ;
  * 
  * the function is defined in partitions.c * 
  */
-int check_partition( const char * device ) ;
+int check_if_partition_is_system_partition( const char * device ) ;
 
 /*
  * defined in crypt_file.c

@@ -63,6 +63,7 @@ char * empty_slots( const char * device )
 			case CRYPT_SLOT_ACTIVE_LAST: slot[j] = '3' ; break ;			
 		}		
 	}
+	
 	slot[j] = '\0' ;
 	
 	return return_value( slot,cd ) ;	

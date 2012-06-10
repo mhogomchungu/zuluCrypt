@@ -36,7 +36,7 @@
  * 
  * the function is used to check is a presented path is a system partition or not * 
  */
-int check_partition( const char * ) ;
+int check_if_partition_is_system_partition( const char * ) ;
 
 static int return_value( string_t * st, int status ) 
 {
@@ -93,6 +93,8 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	int j ;
 	int n ;
 	
+	const char * cmapper ;
+	
 	switch( can_open_path_for_reading( device,uid ) ){
 		case 1 : return return_value( NULL,8 ) ;
 		case 2 : return return_value( NULL,9 ) ;		
@@ -104,7 +106,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	}
 	
 	if( uid != 0 ){
-		if( check_partition( opts->device ) == 1 ){
+		if( check_if_partition_is_system_partition( opts->device ) == 1 ){
 			return return_value( NULL,6 ) ;
 		}
 	}
@@ -187,7 +189,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	 * Create a mapper path(usually at /dev/mapper) associated with opened plain mapper above.
 	 */
 	StringPrepend( mapper,"/" ) ;
-	StringPrepend( mapper,crypt_get_dir() ) ;
+	cmapper = StringPrepend( mapper,crypt_get_dir() ) ;
 	
 	/*
 	 *  mapper path is usually a soft link to /dev/dm-X
@@ -198,7 +200,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	 * 
 	 * Useful when a normal user want to delete content of the device by writing random data to it.	 * 
 	 */
-	dev = realpath( StringContent( mapper ),NULL ) ;
+	dev = realpath( cmapper,NULL ) ;
 	
 	if( dev != NULL ){
 		chown( dev,uid,0 ) ;

@@ -71,9 +71,9 @@
 static string_t crypt_mapper( const char * path,const char * key,uint64_t key_len )
 {
 	string_t p = StringIntToString( getpid() ) ;
-	StringPrepend( p,"zuluCrypt-" ) ;
+	const char * mapper = StringPrepend( p,"zuluCrypt-" ) ;
 	
-	if( open_plain( path,StringContent( p ),"rw",key,key_len ) != 0 ){
+	if( open_plain( path,mapper,"rw",key,key_len ) != 0 ){
 		StringDelete( &p ) ;
 		return NULL ;
 	}

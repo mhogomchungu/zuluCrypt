@@ -178,10 +178,7 @@ ssize_t StringIndexOfString( string_t st,size_t p,const char * s )
 {
 	char * c = strstr( st->string + p,s ) ;
 	
-	if( c == NULL )
-		return -1 ;
-	else
-		return  c - st->string;	
+	return c == NULL ? -1 : c - st->string;	
 }
 
 ssize_t StringLastIndexOfChar( string_t st,char s ) 
@@ -231,10 +228,8 @@ ssize_t StringIndexOfChar( string_t st,size_t p,char s )
 	d[ 0 ] = s ;
 
 	c = strstr( st->string + p,d ) ;
-	if( c == NULL )
-		return -1 ;
-	else
-		return c - st->string ;
+	
+	return c == NULL ? -1 : c - st->string ;
 }
 
 const char * StringRemoveLength( string_t st,size_t x ,size_t y ) 
@@ -621,10 +616,7 @@ int StringCompare( string_t x,string_t y )
 
 int StringCompareString( string_t x,const char * y )
 {
-	if( strcmp( x->string, y ) == 0 )
-		return 0 ;
-	else
-		return 1 ;	
+	return strcmp( x->string,y ) == 0 ? 0 : 1 ;	
 }
 
 static char * StringICS__( string_t st,char x,const char * s,size_t p )

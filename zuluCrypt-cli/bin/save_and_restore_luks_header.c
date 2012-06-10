@@ -98,7 +98,7 @@ Type \"Y\" and press Enter to continue: " ;
 	if( dev == NULL )
 		return msg( 16,cd ) ;
 	
-	if( check_partition( dev ) == 1 )
+	if( check_if_partition_is_system_partition( dev ) == 1 )
 		if( uid != 0 )
 			return msg( 14,cd ) ;
 	

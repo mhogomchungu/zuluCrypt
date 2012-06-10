@@ -77,7 +77,7 @@ int removekey( const struct_opts * opts,uid_t uid )
 	/*
 	* check_partition is defined in partition.c
 	*/
-	if( check_partition( device ) == 1 && uid != 0 )
+	if( check_if_partition_is_system_partition( device ) == 1 && uid != 0 )
 		return status_msg( 14 ) ;
 
 	/*

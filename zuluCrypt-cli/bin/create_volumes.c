@@ -131,7 +131,7 @@ int create_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid
 	 * 
 	 * Active entries are entries not commented out.
 	 */	
-	if( check_partition( device ) == 1 )
+	if( check_if_partition_is_system_partition( device ) == 1 )
 		if( uid != 0 )
 			return status_msg( 10 ) ;
 	

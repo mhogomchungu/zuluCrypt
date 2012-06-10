@@ -23,11 +23,8 @@ int close_volume( const char * map,char ** mount_point )
 {		
 	int i = unmount_volume( map,mount_point ) ;
 	
-	if( i == 0 || i == 3 ){
-		if( close_mapper( map ) == 0 ) 
-			return 0 ;
-		else
-			return 5 ;
-	}else
+	if( i == 0 || i == 3 )
+		return close_mapper( map ) == 0 ? 0 : 5 ;		
+	else
 		return i ;
 }
