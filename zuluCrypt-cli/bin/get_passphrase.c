@@ -22,6 +22,8 @@
 string_t get_passphrase( void )
 {	
 	/* I got the big chunk of this code from: http://www.gnu.org/s/hello/manual/libc/getpass.html */
+	
+	const char * msg = "failed to turn off echoing to mask passphrase,bailing out with \"Nil\" as a passphrase" ;
 	char c ;
 	string_t p ;
 	struct termios old ;
@@ -30,16 +32,16 @@ string_t get_passphrase( void )
 	
 	/* Turn echoing off and fail if we can't. */
 	if ( tcgetattr ( 1,&old ) != 0 ){
-		printf(" failed to turn off echoing to mask passphrase,exiting" ) ;
-		exit( -1 );
+		printf( msg ) ;
+		return String( "Nil" ) ;
 	}
 	
 	new = old;
 	new.c_lflag &= ~ECHO;
 	
 	if ( tcsetattr ( 1,TCSAFLUSH,&new ) != 0 ){
-		printf(" failed to turn off echoing to mask passphrase,exiting" ) ;		
-		exit( -1 );
+		printf( msg ) ;		
+		return String( "Nil" ) ;
 	}
 	
 	p = String( "" ) ;

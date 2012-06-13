@@ -132,16 +132,16 @@ int addkey( const struct_opts * opts,uid_t uid )
 	
 	if ( i == 1 ){		
 		printf( "Enter an existing passphrase: " ) ;		
-		presentKey = get_passphrase( ) ;		
+		presentKey = get_passphrase() ;		
 		printf( "\n" ) ;		
 		printf( "Enter the new passphrase: " ) ;		
-		newKey_1 = get_passphrase( ) ;		
+		newKey_1 = get_passphrase() ;		
 		printf( "\n" ) ;		
 		printf( "Re enter the new passphrase: " ) ;		
-		newKey_2 = get_passphrase( ) ;		
+		newKey_2 = get_passphrase() ;		
 		printf( "\n" ) ;
 		
-		if( StringCompare( newKey_1 , newKey_2 ) != 0 )			
+		if( StringCompare( newKey_1,newKey_2 ) != 0 )			
 			status = 7 ;
 		else{	
 			key1 = StringContent( presentKey ) ;
