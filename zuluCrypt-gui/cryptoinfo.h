@@ -1,12 +1,12 @@
 /*
  *
- *  Copyright (c) 2012
+ *  Copyright ( c ) 2012
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
- *  (at your option) any later version.
+ *  ( at your option ) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -31,15 +31,15 @@ class cryptoinfo : public QWidget
 {
 	Q_OBJECT	
 public:
-	explicit cryptoinfo(QWidget *parent = 0);
+	explicit cryptoinfo( QWidget * parent = 0 );
 	~cryptoinfo();
 signals:
-	void closeUISignal(void);
+	void closeUISignal( void );
 private slots:
-	void pbOK(void);
+	void pbOK( void );
 private:
-	void closeEvent(QCloseEvent *) ;
-	void HideUI(void);
+	void closeEvent( QCloseEvent * ) ;
+	void HideUI( void );
 	Ui::cryptoinfo * m_ui;
 };
 

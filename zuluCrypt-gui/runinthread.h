@@ -1,12 +1,12 @@
 /*
  * 
- *  Copyright (c) 2011
+ *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
- *  (at your option) any later version.
+ *  ( at your option ) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,17 +24,17 @@
 #include <QObject>
 #include <QThreadPool>
 
-class runInThread : public QObject, public QRunnable
+class runInThread : public QObject,public QRunnable
 {
 	Q_OBJECT
 public:
-	explicit runInThread(QString) ;
+	explicit runInThread( QString ) ;
 	~runInThread();
-	void start(void);
+	void start( void );
 signals:
-	void finished(int) ;
+	void finished( int ) ;
 private:
-	void run(void) ;
+	void run( void ) ;
 	QString m_exe ;
 	int m_status ;
 };

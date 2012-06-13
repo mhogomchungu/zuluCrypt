@@ -1,12 +1,12 @@
 /*
  * 
- *  Copyright (c) 2011
+ *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
- *  (at your option) any later version.
+ *  ( at your option ) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -38,22 +38,22 @@
 class miscfunctions
 {
 public:
-	static QStringList luksEmptySlots(QString volumePath) ;
-	static bool isLuks(QString volumePath) ;
-	static QStringList deviceProperties(QString device) ;
-	static void addToFavorite(QString dev, QString m_point);
-	static QStringList readFavorites(void);
-	static void removeFavoriteEntry(QString);
-	static bool exists(QString);
-	static void addItemToTable(QTableWidget *,QString,QString) ;
-	static void addItemToTableWithType(QTableWidget *,QString ,QString,QString);
-	static bool canCreateFile(QString);
-	static QString resolveHomeSymbol(QString);
-	static QString hashPath(QString p);
-	static QString cryptMapperPath(void);
-	static void debug(QString);
-	static void debug(int);
-	static QString mapperPath(QString);
+	static QStringList luksEmptySlots( QString volumePath ) ;
+	static bool isLuks( QString volumePath ) ;
+	static QStringList deviceProperties( QString device ) ;
+	static void addToFavorite( QString dev, QString m_point );
+	static QStringList readFavorites( void );
+	static void removeFavoriteEntry( QString );
+	static bool exists( QString );
+	static void addItemToTable( QTableWidget *,QString,QString ) ;
+	static void addItemToTableWithType( QTableWidget *,QString,QString,QString );
+	static bool canCreateFile( QString );
+	static QString resolvePath( QString );
+	static QString hashPath( QString p );
+	static QString cryptMapperPath( void );
+	static void debug( QString );
+	static void debug( int );
+	static QString mapperPath( QString );
 };
 
 #endif // MISCFUNCTIONS_H

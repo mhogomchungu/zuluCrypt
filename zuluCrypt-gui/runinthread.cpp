@@ -1,12 +1,12 @@
 /*
  * 
- *  Copyright (c) 2011
+ *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
- *  (at your option) any later version.
+ *  ( at your option ) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,7 +20,7 @@
 #include "runinthread.h"
 #include <QProcess>
 
-runInThread::runInThread(QString exe)
+runInThread::runInThread( QString exe )
 {
 	m_exe = exe ;
 	m_status = -1 ;
@@ -28,13 +28,13 @@ runInThread::runInThread(QString exe)
 
 void runInThread::start()
 {
-	QThreadPool::globalInstance()->start(this);
+	QThreadPool::globalInstance()->start( this );
 }
 
 void runInThread::run()
 {
 	QProcess p ;
-	p.start(m_exe);
+	p.start( m_exe );
 	p.waitForFinished() ;
 	m_status = p.exitCode() ;
 	p.close();
@@ -42,5 +42,5 @@ void runInThread::run()
 
 runInThread::~runInThread()
 {
-	emit finished(m_status);
+	emit finished( m_status );
 }

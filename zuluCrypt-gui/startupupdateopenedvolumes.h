@@ -1,12 +1,12 @@
 /*
  * 
- *  Copyright (c) 2011
+ *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
- *  (at your option) any later version.
+ *  ( at your option ) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -30,14 +30,14 @@ class startupupdateopenedvolumes : public QObject, public QRunnable
 {
 	Q_OBJECT
 public:
-	explicit startupupdateopenedvolumes();
-	void start(void);
+	startupupdateopenedvolumes( void );
+	void start( void );
 	~startupupdateopenedvolumes();
 signals:
-	void addItemToTable(QString,QString) ;
-	void finished(void);
+	void addItemToTable( QString,QString ) ;
+	void finished( void );
 private:
-	void run() ;
+	void run( void ) ;
 };
 
 #endif // STARTUPUPDATEOPENEDVOLUMES_H

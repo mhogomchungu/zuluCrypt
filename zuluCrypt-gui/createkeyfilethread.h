@@ -1,12 +1,12 @@
 /*
  *
- *  Copyright (c) 2011
+ *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
- *  (at your option) any later version.
+ *  ( at your option ) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,31 +21,30 @@
 #define CREATEKEYFILETHREAD_H
 
 #include <QObject>
-#include <QRunnable>
-#include <QThreadPool>
+#include <QThread>
 #include <QProcess>
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/stat.h>
+#include <QFile>
+#include <QTextStream>
 
-class createkeyfilethread : public QThread,public QRunnable
+#include <string.h>
+
+class createkeyfilethread : public QThread
 {
 	Q_OBJECT
 public:
-	explicit createkeyfilethread(QString,QString);
+	explicit createkeyfilethread( QString,int );
 	~createkeyfilethread();
-	void start(void);
 signals:
-	void exitStatus(int);
+	void exitStatus( int );
 public slots:
-	void cancelOperation(void);
+	void cancelOperation( void );
 private:
-	void run();
+	void run( void );
 	QString m_path ;
-	QString m_rng ;
+	int m_rng ;
 	int m_cancelled ;
-	int m_in ;
-	int m_out ;
+	int m_qfread  ;
+	int m_qfwrite ;
 };
 
 #endif // CREATEKEYFILETHREAD_H

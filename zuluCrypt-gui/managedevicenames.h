@@ -1,12 +1,12 @@
 /*
  * 
- *  Copyright (c) 2011
+ *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
- *  (at your option) any later version.
+ *  ( at your option ) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -40,32 +40,31 @@ class managedevicenames;
 class managedevicenames : public QWidget
 {
 	Q_OBJECT
-	
 public:
-	explicit managedevicenames(QWidget *parent = 0);
+	explicit managedevicenames( QWidget * parent = 0 );
 	~managedevicenames();
 signals:
-	void ShowPartitionUI(void);
-	void HideUISignal(void);
+	void ShowPartitionUI( void );
+	void HideUISignal( void );
 public slots:
-	void ShowUI(void);
-	void HideUI(void);
-	void PartitionEntry(QString);
+	void ShowUI( void );
+	void HideUI( void );
+	void PartitionEntry( QString );
 private slots:
-	void removeEntryFromFavoriteList(void);
-	void add(void);
-	void cancel(void);
-	void deviceAddress(void);
-	void fileAddress(void);
-	void currentItemChanged( QTableWidgetItem * current, QTableWidgetItem * previous );
-	void itemClicked(QTableWidgetItem * current,bool);
-	void itemClicked(QTableWidgetItem * current);
-	void shortcutPressed(void);
-	void devicePathTextChange(QString);
+	void removeEntryFromFavoriteList( void );
+	void add( void );
+	void cancel( void );
+	void deviceAddress( void );
+	void fileAddress( void );
+	void currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous );
+	void itemClicked( QTableWidgetItem * current,bool );
+	void itemClicked( QTableWidgetItem * current );
+	void shortcutPressed( void );
+	void devicePathTextChange( QString );
 private:
-	void HighlightRow(int,bool) ;
-	void closeEvent(QCloseEvent *) ;
-	void addEntries(QString,QString) ;
+	void HighlightRow( int,bool ) ;
+	void closeEvent( QCloseEvent * ) ;
+	void addEntries( QString,QString ) ;
 	Ui::managedevicenames * m_ui;
 	QAction * m_ac ;
 };

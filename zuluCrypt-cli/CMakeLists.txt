@@ -77,6 +77,9 @@
  bin/save_and_restore_luks_header.c
  bin/crypt_file.c
  bin/check_opened_mapper.c
+ bin/get_opts.c
+ bin/help.c
+ bin/get_passphrase.c
  ) 
  
  SET( LIB 
@@ -106,25 +109,28 @@
  
  add_library( Process STATIC process/process.c )
  
- add_library( exe STATIC ${BIN} )
+ add_library( zuluCrypt-exe SHARED ${BIN} )
  
  add_library( zuluCrypt SHARED ${LIB} )
  
- set_target_properties( String     PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -ansi -pedantic -std=c99" )
- set_target_properties( StringList PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -ansi -pedantic -std=c99" )
- set_target_properties( Process    PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -ansi -pedantic -std=c99" )
- set_target_properties( exe        PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -ansi -pedantic -std=c99" )
+ set_target_properties( String        PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -ansi -pedantic -std=c99" )
+ set_target_properties( StringList    PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -ansi -pedantic -std=c99" )
+ set_target_properties( Process       PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -ansi -pedantic -std=c99" )
+ set_target_properties( zuluCrypt-exe PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -ansi -pedantic -std=c99" )
+ set_target_properties( zuluCrypt     PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -ansi -pedantic -std=c99" )
  
- TARGET_LINK_LIBRARIES( zuluCrypt ${libcryptsetup} String ${blkid} ${mountLibrary} Process )
+ set_target_properties( zuluCrypt     PROPERTIES SOVERSION "2.0.0" )
+ set_target_properties( zuluCrypt-exe PROPERTIES SOVERSION "2.0.0" )
  
- set_target_properties( zuluCrypt PROPERTIES SOVERSION "2.0.0" )
- set_target_properties( zuluCrypt PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -ansi -pedantic -std=c99" )
+ TARGET_LINK_LIBRARIES( zuluCrypt ${libcryptsetup} String ${blkid} ${mountLibrary} Process ) 
+ 
+ TARGET_LINK_LIBRARIES( zuluCrypt-exe zuluCrypt )
  
  add_executable( zuluCrypt-cli  bin/main.c  )
  set_target_properties( zuluCrypt-cli PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread -ansi -pedantic -std=c99" )
  set_target_properties( zuluCrypt-cli PROPERTIES LINK_FLAGS "-pie" )
  
- TARGET_LINK_LIBRARIES( zuluCrypt-cli exe zuluCrypt String StringList ${blkid}  ) 
+ TARGET_LINK_LIBRARIES( zuluCrypt-cli zuluCrypt-exe String StringList ${blkid}  ) 
  
  install(TARGETS zuluCrypt-cli 
             RUNTIME DESTINATION bin
@@ -140,6 +146,8 @@
   
  install(TARGETS zuluCrypt LIBRARY DESTINATION lib${LIB_SUFFIX} )
   
+ install(TARGETS zuluCrypt-exe LIBRARY DESTINATION lib${LIB_SUFFIX} )
+ 
  install(FILES zuluCrypt.h DESTINATION include )
 
  

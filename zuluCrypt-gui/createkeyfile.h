@@ -1,12 +1,12 @@
 /*
  * 
- *  Copyright (c) 2011
+ *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
- *  (at your option) any later version.
+ *  ( at your option ) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
 #define CREATEKEYFILE_H
 
 #include <QWidget>
+#include <QFile>
 
 #include "createfilethread.h"
 #include "miscfunctions.h"
@@ -35,27 +36,26 @@ class createkeyfile : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit createkeyfile(QWidget *parent = 0);
+	explicit createkeyfile( QWidget * parent = 0 );
 	~createkeyfile();
 signals:
-	void HideUISignal(void);
+	void HideUISignal( void );
 public slots:
-	void ShowUI(void) ;
-	void HideUI(void) ;
+	void ShowUI( void ) ;
+	void HideUI( void ) ;
 
 private slots:
-	void pbCancel(void) ;
-	void pbCreate(void) ;
-	void pbOpenFolder(void) ;
-	void threadExitStatus(int);
+	void pbCancel( void ) ;
+	void pbCreate( void ) ;
+	void pbOpenFolder( void ) ;
+	void threadExitStatus( int );
+	void keyTextChange( QString ) ;
 private:
-	void closeEvent(QCloseEvent *) ;
-	void disableAll(void);
-	void enableAll(void) ;
-	Ui::createkeyfile *m_ui;
+	void closeEvent( QCloseEvent * ) ;
+	void disableAll( void );
+	void enableAll( void ) ;
+	Ui::createkeyfile * m_ui;
 	createkeyfilethread * m_ckt ;
-
-	QString m_path ;
 };
 
 #endif // CREATEKEYFILE_H

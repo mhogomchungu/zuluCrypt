@@ -1,12 +1,12 @@
 /*
  * 
- *  Copyright (c) 2011
+ *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
- *  (at your option) any later version.
+ *  ( at your option ) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -43,29 +43,29 @@ class openpartition :  public QDialog
 {
 	Q_OBJECT
 public:
-	openpartition(QWidget *parent = 0);
+	openpartition( QWidget *parent = 0 );
 	virtual ~openpartition();
 signals :
-	void HideUISignal(void);
-	void clickedPartition(QString) ;
+	void HideUISignal( void );
+	void clickedPartition( QString ) ;
 public slots:
-	void tableEntryDoubleClicked(QTableWidgetItem *) ;
-	void ShowAllPartitions(void);
-	void HideUI(void);
-	void ShowNonSystemPartitions(void) ;
-	void ShowPartitionList(QString,QString);
-	void partitionList(QString,QString);
+	void tableEntryDoubleClicked( QTableWidgetItem * ) ;
+	void ShowAllPartitions( void );
+	void HideUI( void );
+	void ShowNonSystemPartitions( void ) ;
+	void ShowPartitionList( QString,QString );
+	void partitionList( QString,QString );
 private slots:
-	void pbHelp(void);
-	void pbUUID(void);
-	void pbCancel(void);
-	void EnterKeyPressed(void);
-	void currentItemChanged( QTableWidgetItem * current, QTableWidgetItem * previous );
-	void partitionpropertiesThreadFinished();
-	void partitionProperties(QStringList);
+	void pbHelp( void );
+	void pbUUID( void );
+	void pbCancel( void );
+	void EnterKeyPressed( void );
+	void currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous );
+	void partitionpropertiesThreadFinished( void );
+	void partitionProperties( QStringList );
 private:	
-	void closeEvent(QCloseEvent *) ;
-	void HighlightRow(int, bool);	
+	void closeEvent( QCloseEvent * ) ;
+	void HighlightRow( int,bool );	
 	Ui::PartitionView * m_ui ;
 	QAction * m_action ;
 	int m_option ;

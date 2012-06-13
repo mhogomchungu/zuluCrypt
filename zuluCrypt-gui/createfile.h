@@ -1,12 +1,12 @@
 /*
  * 
- *  Copyright (c) 2011
+ *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
- *  (at your option) any later version.
+ *  ( at your option ) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -38,27 +38,28 @@ class createfile : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit createfile(QWidget *parent = 0);
+	explicit createfile( QWidget * parent = 0 );
 	~createfile();
 signals :
-	void fileCreated(QString) ;
-	void cancelOperation(void);
-	void HideUISignal(void);
+	void fileCreated( QString ) ;
+	void cancelOperation( void );
+	void HideUISignal( void );
 
 public slots:
-	void HideUI();
-	void showUI(void) ;
-	void pbOpenFolder(void) ;
-	void pbCancel(void) ;
-	void pbCreate(void) ;
+	void HideUI( void );
+	void showUI( void ) ;
+	void pbOpenFolder( void ) ;
+	void pbCancel( void ) ;
+	void pbCreate( void ) ;
 private slots:
-	void exitStatus(int);
-	void doneCreatingFile(void);
-	void progress(int);
+	void exitStatus( int );
+	void doneCreatingFile( void );
+	void progress( int );
+	void fileTextChange( QString ) ;
 private:
-	void enableAll(void) ;
-	void disableAll(void) ;
-	void closeEvent(QCloseEvent *) ;
+	void enableAll( void ) ;
+	void disableAll( void ) ;
+	void closeEvent( QCloseEvent * ) ;
 	Ui::createfile *m_ui;
 	double m_fileSize ;
 	QString m_path ;

@@ -95,6 +95,14 @@ char * status( const char * mapper )
 	if( strncmp( type,"LUKS",4 ) == 0 ){
 		if( strcmp( type,"LUKS1" ) == 0 )
 			StringAppend( p,"luks1" ) ;
+		else{
+			/*
+			 * future versions of luks will go here.
+			 * "LUKS" in capital letters sticks out when displaying volume properties in the GUI.
+			 *  Thats why they are converted to small letters in this conditional block.
+			 */
+			;
+		}
 		luks = 1 ;
 	}else if( strcmp( type,"plain") )
 		StringAppend( p,"plain" ) ;
@@ -116,9 +124,12 @@ char * status( const char * mapper )
 		if( path != NULL ){
 			StringAppend( p,path ) ;
 			free( path ) ;
-		}else
-			StringAppend( p,"NaN" ) ;		
-	}
+		}else{
+			StringAppend( p,"Nil" ) ;
+		}
+	}else{
+		StringAppend( p,"\n loop:   \tNil" ) ;
+	}		
 	
 	StringAppend( p,"\n offset:\t");
 	StringAppend( p,StringIntToString_1( buffer,SIZE,crypt_get_data_offset( cd ) ) )  ;
@@ -150,6 +161,8 @@ char * status( const char * mapper )
 		
 		StringAppend( p," / ");
 		StringAppend( p,StringIntToString_1( buffer,SIZE,k ) ) ;
+	}else{
+		StringAppend( p,"\n active slots:\tNil");
 	}
 	
 	crypt_free( cd );
@@ -163,7 +176,7 @@ char * volume_device_name( const char * mapper )
 	string_t address ;
 	const char * e ;
 	
-	if( strncmp( mapper,crypt_get_dir(),11 ) != 0 )
+	if( strncmp( mapper,crypt_get_dir(),strlen( crypt_get_dir() ) != 0 ) )
 		return NULL ;
 	
 	if( crypt_init_by_name( &cd,mapper ) < 0 )
@@ -176,7 +189,7 @@ char * volume_device_name( const char * mapper )
 		if( path != NULL )
 			address = StringInherit( &path ) ;
 		else
-			address = String( "NaN" ) ;
+			address = String( "Nil" ) ;
 	}else
 		address = String( e ) ;
 	

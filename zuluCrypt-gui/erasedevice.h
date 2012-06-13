@@ -1,11 +1,11 @@
 /*
- *  Copyright (c) 2012
+ *  Copyright ( c ) 2012
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
- *  (at your option) any later version.
+ *  ( at your option ) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -36,27 +36,27 @@ class erasedevice : public QWidget
 {
 	Q_OBJECT	
 public:
-	explicit erasedevice(QWidget *parent = 0);
+	explicit erasedevice( QWidget * parent = 0 );
 	~erasedevice();
-	void ShowUI(void);
-	void ShowUI(QString);
-	void HideUI(void);
+	void ShowUI( void );
+	void ShowUI( QString );
+	void HideUI( void );
 signals:
-	void HideUISignal(void);
-	void done(QString);
+	void HideUISignal( void );
+	void done( QString );
 private slots:
-	void enableAll(void);
-	void disableAll(void);
-	void pbStart(void);
-	void pbCancel(void);
-	void pbFile(void);
-	void pbPartition(void);
-	void setProgress(int);
-	void setPath(QString);
-	void threadExitStatus(int);
+	void enableAll( void );
+	void disableAll( void );
+	void pbStart( void );
+	void pbCancel( void );
+	void pbFile( void );
+	void pbPartition( void );
+	void setProgress( int );
+	void setPath( QString );
+	void threadExitStatus( int );
 private:
-	void run(void);
-	void closeEvent(QCloseEvent *);
+	void run( void );
+	void closeEvent( QCloseEvent * );
 	Ui::erasedevice * m_ui;
 	erasedevicethread * m_dt  ;
 	bool m_cancelClicked ;

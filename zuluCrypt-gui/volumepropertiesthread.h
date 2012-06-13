@@ -1,12 +1,12 @@
 /*
  *
- *  Copyright (c) 2011
+ *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
- *  (at your option) any later version.
+ *  ( at your option ) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -30,20 +30,20 @@
 
 #include "../zuluCrypt-cli/bin/bash_special_chars.h"
 
-class volumePropertiesThread : public QObject, public QRunnable
+class volumePropertiesThread : public QObject,public QRunnable
 {
 	Q_OBJECT
 public:
-	explicit volumePropertiesThread(QString,QString);
-	void start(void);
+	volumePropertiesThread( QString,QString );
+	void start( void );
 	~volumePropertiesThread();
 signals:
-	void finished(QString) ;
+	void finished( QString ) ;
 public slots:	
 private:
-	QString fuseblkGetFs(void) ;
-	QString hashPath(QString)	;
-	void run(void);
+	QString fuseblkGetFs( void ) ;
+	QString hashPath( QString )	;
+	void run( void );
 	QString m_fusefs ;
 	QString m_path ;
 	QString m_mpoint ;

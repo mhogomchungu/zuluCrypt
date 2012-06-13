@@ -1,12 +1,12 @@
 /*
  *
- *  Copyright (c) 2012
+ *  Copyright ( c ) 2012
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
- *  (at your option) any later version.
+ *  ( at your option ) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,37 +24,34 @@
 #include <QProcess>
 #include <QString>
 #include <QThreadPool>
+#include <QFile>
+#include <QTextStream>
+
 #include "miscfunctions.h"
 #include "../zuluCrypt-cli/constants.h"
 #include "../zuluCrypt-cli/bin/bash_special_chars.h"
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <stdlib.h>
 #include <string.h>
-#include <inttypes.h>
 
 class cryptfilethread : public QObject,public QRunnable
 {
 	Q_OBJECT
 public:
-	explicit cryptfilethread(QString source,QString dest,QString keySource,QString key,QString task);
+	explicit cryptfilethread( QString source,QString dest,QString keySource,QString key,QString task );
 	~cryptfilethread() ;
 signals:
-	void done(int);
-	void progressUpdate(int);
-	void titleUpdate(QString);
+	void done( int );
+	void progressUpdate( int );
+	void titleUpdate( QString );
 public slots:
-	void terminate(void);
-	void start(void);
+	void terminate( void );
+	void start( void );
 private:
-	void run(void);
-	int encrypt(void);
-	int decrypt(void);
-	int openMapper(QString path);
-	int closeMapper(QString path);
+	void run( void );
+	int encrypt( void );
+	int decrypt( void );
+	int openMapper( QString path );
+	int closeMapper( QString path );
 	QString m_source ;
 	QString m_dest ;
 	QString m_keySource ;

@@ -1,12 +1,12 @@
 /*
  * 
- *  Copyright (c) 2011
+ *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
- *  (at your option) any later version.
+ *  ( at your option ) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -39,34 +39,34 @@ class passwordDialog :  public QDialog
 {	
 	Q_OBJECT
 public:
-	passwordDialog(QTableWidget * table,QWidget *parent = 0);
+	passwordDialog( QTableWidget * table,QWidget * parent = 0 );
 	virtual ~passwordDialog();
 signals :
-	void addItemToTable(QString,QString,QString) ;
-	void HideUISignal();
-	void volumeOpened(QString,QString,passwordDialog *);
+	void addItemToTable( QString,QString,QString ) ;
+	void HideUISignal( void );
+	void volumeOpened( QString,QString,passwordDialog * );
 public slots:
-	void HideUI(void);
-	void ShowUI(void);
-	void ShowUI(QString volumePath,QString mount_point) ;
-	void clickedPartitionOption(QString);
+	void HideUI( void );
+	void ShowUI( void );
+	void ShowUI( QString volumePath,QString mount_point ) ;
+	void clickedPartitionOption( QString );
 private slots :
-	void buttonOpenClicked(void) ;
-	void mount_point(void);	
-	void clickedPassPhraseFromFileButton(void) ;
-	void passphraseFromFileOption(void) ;
-	void passphraseOption(void) ;	
-	void file_path(void ) ;	
-	void threadfinished(int) ;
-	void mountPointPath(QString);
-	void done(QString);	
-	void cbStateChanged(int);
+	void buttonOpenClicked( void ) ;
+	void mount_point( void );	
+	void clickedPassPhraseFromFileButton( void ) ;
+	void passphraseFromFileOption( void ) ;
+	void passphraseOption( void ) ;	
+	void file_path( void  ) ;	
+	void threadfinished( int ) ;
+	void mountPointPath( QString );
+	void done( QString );	
+	void cbStateChanged( int );
 private :	
-	void setDefaultOpenMode(void);
-	void disableAll(void);
-	void enableAll(void) ;
-	void closeEvent(QCloseEvent *) ;
-	void success(void);
+	void setDefaultOpenMode( void );
+	void disableAll( void );
+	void enableAll( void ) ;
+	void closeEvent( QCloseEvent * ) ;
+	void success( void );
 	Ui::PasswordDialog * m_ui;
 	bool m_isWindowClosable ;
 	QTableWidget * m_table ;

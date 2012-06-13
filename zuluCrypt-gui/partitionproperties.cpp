@@ -1,12 +1,12 @@
 /*
  *
- *  Copyright (c) 2011
+ *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
- *  (at your option) any later version.
+ *  ( at your option ) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,14 +19,14 @@
 
 #include "partitionproperties.h"
 
-partitionproperties::partitionproperties(QString partitionType)
+partitionproperties::partitionproperties( QString partitionType )
 {
 	m_partitionType = partitionType ;
 }
 
 void partitionproperties::start()
 {
-	QThreadPool::globalInstance()->start(this);
+	QThreadPool::globalInstance()->start( this );
 }
 
 void partitionproperties::run()
@@ -37,19 +37,19 @@ void partitionproperties::run()
 	  Root user can create encrypted volumes in all partitions including system partitions.
 	  Show all partitions, not only non system.
 	  */
-	if(m_partitionType == QString(" -N") && getuid() == 0)
-		m_partitionType = QString(" -A") ;
+	if( m_partitionType == QString( " -N" ) && getuid() == 0 )
+		m_partitionType = QString( " -A" ) ;
 
-	p.start(QString(ZULUCRYPTzuluCrypt) + m_partitionType);
+	p.start( QString( ZULUCRYPTzuluCrypt ) + m_partitionType );
 
 	p.waitForFinished() ;
 
-	QStringList l = QString( p.readAllStandardOutput()).split("\n") ;
+	QStringList l = QString( p.readAllStandardOutput() ).split( "\n" ) ;
 
 	p.close();
 
-	for (int i = 0 ; i < l.size() - 1 ; i++)
-		emit partitionProperties(miscfunctions::deviceProperties(l.at(i)));
+	for ( int i = 0 ; i < l.size() - 1 ; i++ )
+		emit partitionProperties( miscfunctions::deviceProperties( l.at( i ) ) );
 }
 
 partitionproperties::~partitionproperties()

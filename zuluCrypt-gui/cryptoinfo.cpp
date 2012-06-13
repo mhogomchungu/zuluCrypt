@@ -1,11 +1,11 @@
 /*
- *  Copyright (c) 2012
+ *  Copyright ( c ) 2012
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
- *  (at your option) any later version.
+ *  ( at your option ) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,18 +19,18 @@
 #include "cryptoinfo.h"
 #include "ui_cryptoinfo.h"
 
-cryptoinfo::cryptoinfo(QWidget *parent) :
-        QWidget(parent),
-	m_ui(new Ui::cryptoinfo)
+cryptoinfo::cryptoinfo( QWidget * parent ) :
+        QWidget( parent ),
+	m_ui( new Ui::cryptoinfo )
 {
-	m_ui->setupUi(this);
-	this->setFixedSize(this->size());
-	this->setWindowFlags(Qt::Window | Qt::Dialog);
-	this->setFont(parent->font());
-	connect(m_ui->pbOK,SIGNAL(clicked()),this,SLOT(pbOK()));
+	m_ui->setupUi( this );
+	this->setFixedSize( this->size() );
+	this->setWindowFlags( Qt::Window | Qt::Dialog );
+	this->setFont( parent->font() );
+	connect( m_ui->pbOK,SIGNAL( clicked() ),this,SLOT( pbOK() ) );
 }
 
-void cryptoinfo::closeEvent(QCloseEvent *e)
+void cryptoinfo::closeEvent( QCloseEvent *e )
 {
 	e->ignore();
 	HideUI();

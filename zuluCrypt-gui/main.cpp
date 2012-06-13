@@ -20,15 +20,11 @@
 #include <QIcon>
 #include <QtGui/QApplication>
 #include "zulucrypt.h"
-#include <QTranslator>
 
-int main(int argc, char *argv[])
+int main( int argc,char * argv[] )
 {
-    QApplication a(argc, argv);
-    //QTranslator translator;
-    //translator.load("test_la") ;
-   //a.installTranslator(&translator);
-    zuluCrypt w;
-    w.show();
-    return a.exec();
+	QApplication a( argc,argv );
+	zuluCrypt zc ;
+	zc.show();
+	return a.exec();
 }

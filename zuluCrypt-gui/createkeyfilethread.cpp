@@ -1,12 +1,12 @@
 /*
  *
- *  Copyright (c) 2012
+ *  Copyright ( c ) 2012
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
- *  (at your option) any later version.
+ *  ( at your option ) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,9 +24,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <string.h>
 
-createkeyfilethread::createkeyfilethread(QString path,QString rng)
+createkeyfilethread::createkeyfilethread( QString path,int rng )
 {
 	m_path = path ;
 	m_rng = rng ;
@@ -36,37 +35,36 @@ createkeyfilethread::createkeyfilethread(QString path,QString rng)
 void createkeyfilethread::run()
 {
 	char data ;
-	char * path = m_path.toAscii().data() ;
 
-	m_in = open(m_rng.toAscii().data(),O_RDONLY) ;
-	m_out = open(path,O_WRONLY|O_CREAT);
+	if( m_rng == 0 )
+		m_qfread = open( "/dev/urandom",O_RDONLY ) ;
+	else
+		m_qfread = open( "/dev/random",O_RDONLY ) ;
 
-	chmod(path,S_IRWXU);
+	m_qfwrite = open( m_path.toAscii().data(),O_WRONLY|O_CREAT ) ;
 
-	for( int i = 0 ; i < 64 ; i++){
-		if(m_cancelled == 1)
-			break ;
+	for( int i = 0 ; i < 64 ; i++ ){
 		do{
-			read(m_in,&data,1);
-		}while( data < 32 || data > 126) ;
-
-		while( write(m_out,&data,1) != 1 ) { ; }
+			read( m_qfread,&data,1 ) ;
+		}while( data < 32 || data > 126 ) ;
+		write( m_qfwrite,&data,1 ) ;
 	}
-	close(m_in);
-	close(m_out);
-}
-
-void createkeyfilethread::start()
-{
-	QThreadPool::globalInstance()->start(this);
+	this->deleteLater();
 }
 
 void createkeyfilethread::cancelOperation()
 {
 	m_cancelled = 1 ;
+	this->terminate();
+	this->deleteLater();
 }
 
 createkeyfilethread::~createkeyfilethread()
 {
-	emit exitStatus(m_cancelled);
+	close( m_qfread ) ;
+	close( m_qfwrite ) ;
+	if( m_cancelled != 1 )
+		QFile::setPermissions( m_path,QFile::ReadOwner|QFile::WriteOwner ) ;
+
+	emit exitStatus( m_cancelled );
 }

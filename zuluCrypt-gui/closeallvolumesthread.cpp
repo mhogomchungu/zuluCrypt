@@ -20,50 +20,49 @@
 #include "closeallvolumesthread.h"
 #include "../zuluCrypt-cli/constants.h"
 
-closeAllVolumesThread::closeAllVolumesThread(QTableWidget * table)
+closeAllVolumesThread::closeAllVolumesThread( QTableWidget * table )
 {
 	m_table = table ;
 }
 
 void closeAllVolumesThread::start()
 {
-	QThreadPool::globalInstance()->start(this);
+	QThreadPool::globalInstance()->start( this );
 }
 
 void closeAllVolumesThread::run()
 {		
-	m_table->setEnabled(false);
-	sleep(1) ; // for ui effect
+	m_table->setEnabled( false );
+	sleep( 1 ) ; // for ui effect
 	int i = m_table->rowCount() ;
 
 	if(i < 1){
-		m_table->setEnabled(true);
+		m_table->setEnabled( true );
 		return ;
 	}
 
 	int j = -1 ;
 	
-	QVector<QTableWidgetItem *> tableItems(0) ;
+	QVector<QTableWidgetItem*> tableItems( 0 ) ;
 
 	QTableWidgetItem * deviceItem ;
 
 	while( ++j < i )
-		tableItems.append(m_table->item(j,0));
+		tableItems.append( m_table->item( j,0 ) );
 
 	QProcess p ;
 	QString exe ;
 	QString device ;
 
 	for( j = 0 ; j < i ; j++ ){
-		deviceItem = tableItems.at(j) ;
-		device = deviceItem->text() ;
-		device.replace("\"","\"\"\"") ;
-		exe = QString("%1 -q -d \"%2\"" ).arg(ZULUCRYPTzuluCrypt).arg(device) ;
+		deviceItem = tableItems.at( j ) ;
+		device = deviceItem->text().replace( "\"","\"\"\"" ) ;
+		exe = QString( "%1 -q -d \"%2\"" ).arg(ZULUCRYPTzuluCrypt).arg( device ) ;
 		p.start( exe );
 		p.waitForFinished() ;
-		emit close(deviceItem,p.exitCode()) ;
-		sleep(1) ; //for ui effect
+		emit close( deviceItem,p.exitCode() ) ;
+		sleep( 1 ) ; //for ui effect
 		p.close();
 	}
-	m_table->setEnabled(true);
+	m_table->setEnabled( true );
 }

@@ -1,12 +1,12 @@
 /*
  * 
- *  Copyright (c) 2011
+ *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
- *  (at your option) any later version.
+ *  ( at your option ) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,34 +29,30 @@
 #include <QRunnable>
 #include <QString>
 #include <QThreadPool>
+#include <QFile>
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <string.h>
 #include <string.h>
 
 class createFileThread : public QObject,public QRunnable
 {
 	Q_OBJECT
 public :
-	createFileThread(QString destination,double size) ;
-	void start(void);
+	createFileThread( QString destination,double size ) ;
+	void start( void );
 	~createFileThread();
 signals:
-	void exitStatus(int);
-	void doneCreatingFile(void);
-	void progress(int);
+	void exitStatus( int );
+	void doneCreatingFile( void );
+	void progress( int );
 private slots:
-	void cancelOperation(void);
+	void cancelOperation( void );
 private:
-	void writeVolume(void);
-	void openVolume(void);
-	void closeVolume(void);
-	void createFile(void) ;
-	void fillCreatedFileWithRandomData(void);
-	void run() ;
+	void writeVolume( void );
+	void openVolume( void );
+	void closeVolume( void );
+	void createFile( void ) ;
+	void fillCreatedFileWithRandomData( void );
+	void run( void ) ;
 
 	QString m_file ;
 	double m_size ;

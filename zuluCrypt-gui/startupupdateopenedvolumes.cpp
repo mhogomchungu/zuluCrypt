@@ -1,12 +1,12 @@
 /*
  * 
- *  Copyright (c) 2011
+ *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
- *  (at your option) any later version.
+ *  ( at your option ) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -34,16 +34,16 @@ startupupdateopenedvolumes::startupupdateopenedvolumes()
 
 void startupupdateopenedvolumes::start()
 {
-	QThreadPool::globalInstance()->start(this);
+	QThreadPool::globalInstance()->start( this );
 }
 
 void startupupdateopenedvolumes::run()
 {
 	QProcess p ;
-	p.start(QString(ZULUCRYPTzuluCrypt) + QString(" -L"));
+	p.start( QString( ZULUCRYPTzuluCrypt ) + QString( " -L" ) );
 	p.waitForFinished();
 
-	QStringList l = QString(p.readAll()).split("\n") ;
+	QStringList l = QString( p.readAll() ).split( "\n" ) ;
 
 	int j = l.size() ;
 
@@ -52,8 +52,8 @@ void startupupdateopenedvolumes::run()
 
 	QStringList entry ;
 	for( int i = 0 ; i < j - 1 ; i++ ){
-		entry = l.at(i).split("\t");
-		emit addItemToTable(entry.at(0),entry.at(1)) ;
+		entry = l.at( i ).split( "\t" );
+		emit addItemToTable( entry.at( 0 ),entry.at( 1 ) ) ;
 	}
 }
 

@@ -1,12 +1,12 @@
 /*
  * 
- *  Copyright (c) 2011
+ *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
- *  (at your option) any later version.
+ *  ( at your option ) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,14 +19,7 @@
 
 #include "createfilethread.h"
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <string.h>
-#include <string.h>
-
-createFileThread::createFileThread(QString file,double size)
+createFileThread::createFileThread( QString file,double size )
 {
 	m_cancelled = 0 ;
 	m_file = file ;
@@ -40,7 +33,7 @@ void createFileThread::cancelOperation()
 
 void createFileThread::start()
 {
-	QThreadPool::globalInstance()->start(this);
+	QThreadPool::globalInstance()->start( this );
 }
 
 void createFileThread::run()
@@ -57,7 +50,7 @@ void createFileThread::run()
 
 	this->createFile();
 
-	if(m_cancelled == 1)
+	if( m_cancelled == 1 )
 		return ;
 
 	emit doneCreatingFile();
@@ -67,16 +60,16 @@ void createFileThread::run()
 
 void createFileThread::createFile()
 {
-	size_t size ;
 	double i ;
 
-	int fd = open( m_file.toAscii().data(),O_WRONLY | O_CREAT ) ;
+	QFile file( m_file ) ;
+	file.open( QIODevice::WriteOnly ) ;
 
 	const int SIZE = 1024 ;
 
 	char data[SIZE];
 
-	memset(data,0,SIZE);
+	memset( data,0,SIZE );
 
 	int x ;
 	int y = -1 ;
@@ -87,25 +80,26 @@ void createFileThread::createFile()
 
 	emit progress( 0 );
 
-	for(i = 0 ; i < k ; i++){
-		if(m_cancelled == 1)
+	for( i = 0 ; i < k ; i++ ){
+		if( m_cancelled == 1 )
 			break ;
-		for( size = SIZE ; size != 0 ; )
-			size = size - write(fd,data,size);
+
+		file.write( data,SIZE ) ;
 
 		data_written += SIZE ;
 
 		x = ( int )( data_written * 100 / m_size ) ;
 
-		if( x > y){
+		if( x > y ){
 			emit progress( x );
 			y = x ;
 		}
 	}
 
 	emit progress( 100 );
-	close(fd) ;
-	chmod(m_file.toAscii().data(),S_IRWXU);
+
+	file.setPermissions( QFile::ReadOwner|QFile::WriteOwner ) ;
+	file.close();
 }
 
 void createFileThread::fillCreatedFileWithRandomData()
@@ -120,11 +114,11 @@ void createFileThread::fillCreatedFileWithRandomData()
 void createFileThread::closeVolume()
 {
 	QString path = m_file ;
-	path.replace("\"","\"\"\"") ;
-	QString exe = QString("%1 -q -d \"%2\"").arg(ZULUCRYPTzuluCrypt).arg(path);
+	path.replace( "\"","\"\"\"" ) ;
+	QString exe = QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( path );
 
 	QProcess p ;
-	p.start(exe);
+	p.start( exe );
 	p.waitForFinished();
 	p.close();
 }
@@ -132,25 +126,25 @@ void createFileThread::closeVolume()
 void createFileThread::openVolume()
 {
 	QString path = m_file ;
-	path.replace("\"","\"\"\"") ;
+	path.replace( "\"","\"\"\"" ) ;
 	/*
-	 * We do not let the cli write random data to the file by using -X(we use -J)because we want to write the random data
+	 * We do not let the cli write random data to the file by using -X( we use -J )because we want to write the random data
 	 * ourselves giving us the ability to knoe exactly much data is already written
 	 */
-	QString exe = QString("%1 -J -d \"%2\"").arg(ZULUCRYPTzuluCrypt).arg(path);
+	QString exe = QString( "%1 -J -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( path );
 
 	QProcess p ;
-	p.start(exe);
+	p.start( exe );
 	p.waitForFinished();
 	p.close();
 }
 
 void createFileThread::writeVolume()
 {
-	QString path = miscfunctions::mapperPath(m_file);
+	QFile path( miscfunctions::mapperPath( m_file ) ) ;
 
-	int fd = open(path.toAscii().data(),O_WRONLY) ;
-	
+	path.open( QIODevice::WriteOnly ) ;
+
 	int j ;
 	int k = -1 ;
 
@@ -159,11 +153,11 @@ void createFileThread::writeVolume()
 	const int SIZE = 1024 ;
 	char data[SIZE];
 
-	memset(data,0,SIZE);
+	memset( data,0,SIZE );
 
 	emit progress( 0 );
 
-	while(write(fd,data,SIZE) > 0){
+	while( path.write( data,SIZE ) > 0 ){
 
 		data_written += SIZE ;
 
@@ -174,15 +168,15 @@ void createFileThread::writeVolume()
 			k = j ;
 		}
 
-		if(m_cancelled == 1)
+		if( m_cancelled == 1 )
 			break ;
 	}
 
 	emit progress( 100 );
-	close(fd);
+	path.close();
 }
 
 createFileThread::~createFileThread()
 {
-	emit exitStatus(m_cancelled);
+	emit exitStatus( m_cancelled );
 }

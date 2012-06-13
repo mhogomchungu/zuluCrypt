@@ -31,15 +31,15 @@ class checkvolumetype : public QObject,public QRunnable
 {
 	Q_OBJECT
 public:
-	checkvolumetype(QString);
+	checkvolumetype( QString );
 	~checkvolumetype() ;
-	void start(void);
+	void start( void );
 signals:
-	void done(QString);
+	void done( QString );
 private:
 	QString m_device ;
 	QString m_type ;
-	void run(void);
+	void run( void );
 };
 
 #endif // CHECKVOLUMETYPE_H

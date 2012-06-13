@@ -1,11 +1,11 @@
 /*
- *  Copyright (c) 2012
+ *  Copyright ( c ) 2012
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
- *  (at your option) any later version.
+ *  ( at your option ) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -31,25 +31,26 @@ class DialogMsg;
 class DialogMsg : public QDialog
 {
 	Q_OBJECT
-	
 public:
-	explicit DialogMsg(QWidget *);
-	void ShowUIOK(QString title,QString msg);
-	int  ShowUIYesNo(QString title,QString msg);
-	void ShowUIInfo(QString title,QString msg);
-	void ShowUIVolumeProperties(QString title,QString msg);
-	void HideUI(void);
+	explicit DialogMsg( QWidget * );
+	void ShowUIOK( QString title,QString msg );
+	int  ShowUIYesNo( QString title,QString msg );
+	void ShowUIInfo( QString title,QString msg );
+	void ShowUIVolumeProperties( QString title,QString msg );
+	void HideUI( void );
 	~DialogMsg();
 
 private slots:
-	void pbOK(void);
-	void pbYes(void);
-	void pbNo(void);
+	void pbOK( void );
+	void pbYes( void );
+	void pbNo( void );
 	
 private:
-	void ShowUI(QString title,QString msg);
-	void setDimentions(QString msg);
-	void closeEvent(QCloseEvent *) ;
+	void ShowLabels( void ) ;
+	void HideLabels( void ) ;
+	void ShowUI( QString title,QString msg );
+	void setDimentions( QString msg );
+	void closeEvent( QCloseEvent * ) ;
 	Ui::DialogMsg * m_ui;
 	int m_status ;
 };

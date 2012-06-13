@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'createkeyfile.ui'
 **
-** Created: Sun May 20 19:55:43 2012
+** Created: Tue Jun 12 04:52:28 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -75,8 +75,8 @@ public:
         labelRNG->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         comboBoxRNG = new QComboBox(createkeyfile);
         comboBoxRNG->insertItems(0, QStringList()
-         << QString::fromUtf8("/dev/random")
          << QString::fromUtf8("/dev/urandom")
+         << QString::fromUtf8("/dev/random")
         );
         comboBoxRNG->setObjectName(QString::fromUtf8("comboBoxRNG"));
         comboBoxRNG->setGeometry(QRect(120, 70, 161, 31));

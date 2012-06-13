@@ -1,12 +1,12 @@
 /*
  * 
- *  Copyright (c) 2011
+ *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
- *  (at your option) any later version.
+ *  ( at your option ) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -32,32 +32,32 @@ class luksaddkey : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit luksaddkey(QWidget *parent = 0);
+	explicit luksaddkey( QWidget * parent = 0 );
 	~luksaddkey();
 signals :
-	void clickedpbAdd(QString PathToVolume, bool keyfile, QString ExistingKey,bool newkeyfile, QString NewKey ) ;
-	void pbOpenPartitionClicked(void) ;
-	void HideUISignal(void);
+	void clickedpbAdd( QString PathToVolume,bool keyfile,QString ExistingKey,bool newkeyfile,QString NewKey ) ;
+	void pbOpenPartitionClicked( void ) ;
+	void HideUISignal( void );
 public slots:
-	void ShowUI(QString) ;
-	void ShowUI(void) ;
-	void HideUI(void) ;
+	void ShowUI( QString ) ;
+	void ShowUI( void ) ;
+	void HideUI( void ) ;
 private slots:	
-	void pbOpenExisitingKeyFile(void) ;
-	void pbOpenNewKeyFile(void) ;
-	void pbOpenFile(void) ;
-	void pbOpenPartition(void) ;
-	void rbExistingPassphrase(void) ;
-	void rbExistingPassphraseFromFile(void);
-	void rbNewPassphrase(void) ;
-	void rbNewPassphraseFromFile(void);
-	void pbAdd(void) ;
-	void pbCancel(void) ;	
-	void threadfinished(int) ;
+	void pbOpenExisitingKeyFile( void ) ;
+	void pbOpenNewKeyFile( void ) ;
+	void pbOpenFile( void ) ;
+	void pbOpenPartition( void ) ;
+	void rbExistingPassphrase( void ) ;
+	void rbExistingPassphraseFromFile( void );
+	void rbNewPassphrase( void ) ;
+	void rbNewPassphraseFromFile( void );
+	void pbAdd( void ) ;
+	void pbCancel( void ) ;	
+	void threadfinished( int ) ;
 private:
-	void disableAll(void) ;
-	void enableAll(void) ;
-	void closeEvent(QCloseEvent *) ;
+	void disableAll( void ) ;
+	void enableAll( void ) ;
+	void closeEvent( QCloseEvent * ) ;
 	Ui::luksaddkey * m_ui ;
 	QString m_volumePath ;
 	bool m_isWindowClosable ;

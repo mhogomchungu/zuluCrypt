@@ -67,6 +67,11 @@ typedef struct struct_opts_1{
 #define LUKS_HEADER_SAVE 0
 
 /*
+ * get command line arguments and in struct_opts structure to be used in various calls * 
+ */
+void get_opts( int argc,char * argv[],struct_opts * ) ;
+
+/*
  * this function is responsibe for creating and restoring luks header.
  * 
  * the function is defined in save_and_restore_luks_header.c
@@ -119,7 +124,7 @@ int removekey( const struct_opts *,uid_t ) ;
  * this function is responsibe for checking if a path exist or not.
  * It is defined in ../lib/is_path_valid.c
  */
-int is_path_valid(const char * path ) ;
+int is_path_valid( const char * path ) ;
 
 /*
  * this function is responsibe substituting bash special characters with an underscore.
@@ -207,3 +212,43 @@ int check_opened_mapper( const char * mapper ) ;
  * defined in print_opened_volumes.c 
  */
 int check_if_mounted( const char * path ) ;
+
+/*
+ * function defined at write_device_with_junk.c
+ */
+int write_device_with_junk( const struct_opts * opts,const char * mapping_name,uid_t uid ) ;
+
+/*
+ * function defined at write_device_with_junk.c
+ */
+int open_plain_as_me(const struct_opts * opts,const char * mapping_name,uid_t uid ) ;
+
+/*
+ * defined in lib/status.c
+ * */
+char * volume_device_name( const char * ) ;
+
+/*
+ * defined at help.c
+ * */
+void help( void ) ;
+
+/*
+ * defined at partitions.c
+ */
+int check_system_tools( void ) ;
+
+/*
+ * defined in partitions.c
+ */
+char * device_from_uuid( const char * uuid ) ;
+
+/*
+ * defined in partitions.c
+ */
+int print_partitions( int option ) ;
+
+/*
+ * deined at get_passphrase.c * 
+ */
+string_t get_passphrase( void ) ;
