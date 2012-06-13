@@ -31,11 +31,27 @@
 static int entry_found( const char * map, const char * m_dir, char ** m_point )
 {
 	string_t st ;
-	int h = umount( m_dir ) ;	
+	int h ;
+	int i ;
+	
+	/*
+	 * try 5 times on one second intervals to umount the volume.
+	 * Trying to unmount more than once seem to be necessary sometimes
+	 *  when the opened volume is accessed over samba share. 
+	 */
+	for( i = 0 ; i < 5 ; i++ ){
+		h = umount( m_dir ) ;
+		if( h == 0 )
+			break ;
+		sleep( 1 ) ;
+		
+	}	
+	
 	if( h == 0 && m_point != NULL ){
 		st = String( m_dir ) ;
 		*m_point = StringDeleteHandle( &st ) ;
 	}
+	
 	return h ;
 }
 
