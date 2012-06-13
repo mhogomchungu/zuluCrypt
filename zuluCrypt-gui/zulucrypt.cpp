@@ -440,7 +440,10 @@ void zuluCrypt::volume_property()
 void zuluCrypt::volumePropertyThreadFinished( QString properties )
 {
 	DialogMsg msg( this ) ;
-	msg.ShowUIVolumeProperties( tr( "volume properties" ),properties );
+	if( properties.isEmpty() )
+		msg.ShowUIOK( tr( "ERROR!"),tr( "volume doesnt seem to be accessible" ) );
+	else
+		msg.ShowUIVolumeProperties( tr( "volume properties" ),properties );
 }
 
 void zuluCrypt::favAboutToHide()

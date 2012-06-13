@@ -418,7 +418,6 @@ stringList_t get_partition_from_zulutab()
 			}
 		}else
 			stl_1 = StringListAppend( stl_1,entry ) ;		
-		
 	}
 	
 	StringListDelete( &stl ) ;

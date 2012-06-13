@@ -65,10 +65,15 @@ void volumePropertiesThread::run()
 	QProcess p ;
 	p.start( z ) ;
 	p.waitForFinished() ;
-
+	int st = p.exitCode() ;
 	QByteArray data = p.readAllStandardOutput() ;
 
 	p.close();
+
+	if( st != 0 ){
+		m_volumeProperties = QString( "" ) ;
+		return ;
+	}
 
 	m_volumeProperties = QString( " " ) + QString( data.mid( data.indexOf( '\n' ) + 2 ) );
 
