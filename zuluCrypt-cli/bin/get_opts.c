@@ -110,7 +110,6 @@ void get_opts( int argc,char * argv[],struct_opts * stopts )
 			case( 'h' ) : stopts->interactive_passphrase = 1 ;
 			break ;
 			default: printf( "run zuluCrypt-cli --help for help\n" ) ; 
-			exit( 100 ) ;
 		}
 	}
 }
