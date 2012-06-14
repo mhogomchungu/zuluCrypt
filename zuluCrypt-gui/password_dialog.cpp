@@ -210,7 +210,6 @@ void passwordDialog::buttonOpenClicked( void )
 	if( mountPointPath.isEmpty() || passPhraseField.isEmpty() || vp.isEmpty() ){
 		DialogMsg msg( this ) ;
 		return msg.ShowUIOK( QString( "ERROR!" ),QString( "atleast one required field is empty" ) );
-
 	}
 
 	passPhraseField.replace( "\"","\"\"\"" ) ;

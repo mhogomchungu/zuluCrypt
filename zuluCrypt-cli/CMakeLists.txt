@@ -122,7 +122,8 @@
  set_target_properties( zuluCrypt     PROPERTIES SOVERSION "2.0.0" )
  set_target_properties( zuluCrypt-exe PROPERTIES SOVERSION "2.0.0" )
  
- TARGET_LINK_LIBRARIES( zuluCrypt ${libcryptsetup} String ${blkid} ${mountLibrary} Process ) 
+ TARGET_LINK_LIBRARIES( zuluCrypt     ${libcryptsetup} String ${blkid} ${mountLibrary} Process ) 
+ TARGET_LINK_LIBRARIES( zuluCrypt-exe ${libcryptsetup} String StringList ${blkid} ${mountLibrary} Process ) 
  
  TARGET_LINK_LIBRARIES( zuluCrypt-exe zuluCrypt )
  
@@ -130,7 +131,7 @@
  set_target_properties( zuluCrypt-cli PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread -ansi -pedantic -std=c99" )
  set_target_properties( zuluCrypt-cli PROPERTIES LINK_FLAGS "-pie" )
  
- TARGET_LINK_LIBRARIES( zuluCrypt-cli zuluCrypt-exe String StringList ${blkid}  ) 
+ TARGET_LINK_LIBRARIES( zuluCrypt-cli zuluCrypt-exe ${blkid}  ) 
  
  install(TARGETS zuluCrypt-cli 
             RUNTIME DESTINATION bin
