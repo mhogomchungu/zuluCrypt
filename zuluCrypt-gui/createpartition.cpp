@@ -133,7 +133,7 @@ void createpartition::dialogResult( int result )
 		this->HideUI() ;
 	else if( result == 1 )
 		;
-	else if( result ==2 ){
+	else if( result == 2 ){
 		erasedevice * ed = new erasedevice( this ) ;
 		connect( ed,SIGNAL( HideUISignal() ),ed,SLOT( deleteLater() ) );
 		ed->ShowUI( m_ui->lineEditVolumePath->text() );

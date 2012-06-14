@@ -27,6 +27,8 @@ ADD_SUBDIRECTORY( zuluCrypt-gui )
 ADD_SUBDIRECTORY( test )
 	 
 install (FILES zuluCrypt-cli.1.bz2 DESTINATION share/man/man1)
+install (FILES zuluCrypt-test.1.bz2 DESTINATION share/man/man1)
+install (FILES zuluCrypt-gui.1.bz2 DESTINATION share/man/man1)
 
 # uninstall target
 configure_file(
