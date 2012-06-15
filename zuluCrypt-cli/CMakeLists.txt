@@ -111,7 +111,11 @@
  
  add_library( zuluCrypt-exe SHARED ${BIN} )
  
+ add_library( zuluCrypt-exe-static STATIC ${BIN} )
+ 
  add_library( zuluCrypt SHARED ${LIB} )
+ 
+ add_library( zuluCrypt-static STATIC ${LIB} )
  
  set_target_properties( String        PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -ansi -pedantic -std=c99" )
  set_target_properties( StringList    PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -ansi -pedantic -std=c99" )
@@ -119,11 +123,17 @@
  set_target_properties( zuluCrypt-exe PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -ansi -pedantic -std=c99" )
  set_target_properties( zuluCrypt     PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -ansi -pedantic -std=c99" )
  
+ set_target_properties( zuluCrypt-exe-static PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -ansi -pedantic -std=c99" )
+ set_target_properties( zuluCrypt-static     PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -ansi -pedantic -std=c99" )
+ 
  set_target_properties( zuluCrypt     PROPERTIES SOVERSION "2.0.0" )
  set_target_properties( zuluCrypt-exe PROPERTIES SOVERSION "2.0.0" )
  
  TARGET_LINK_LIBRARIES( zuluCrypt     ${libcryptsetup} String ${blkid} ${mountLibrary} Process ) 
  TARGET_LINK_LIBRARIES( zuluCrypt-exe ${libcryptsetup} String StringList ${blkid} ${mountLibrary} Process ) 
+ 
+ TARGET_LINK_LIBRARIES( zuluCrypt-static     ${libcryptsetup} String ${blkid} ${mountLibrary} Process ) 
+ TARGET_LINK_LIBRARIES( zuluCrypt-exe-static ${libcryptsetup} String StringList ${blkid} ${mountLibrary} Process )
  
  TARGET_LINK_LIBRARIES( zuluCrypt-exe zuluCrypt )
  
@@ -148,6 +158,10 @@
  install(TARGETS zuluCrypt LIBRARY DESTINATION lib${LIB_SUFFIX} )
   
  install(TARGETS zuluCrypt-exe LIBRARY DESTINATION lib${LIB_SUFFIX} )
+ 
+ install(TARGETS zuluCrypt-exe-static ARCHIVE DESTINATION lib${LIB_SUFFIX} )
+ 
+ install(TARGETS zuluCrypt-static ARCHIVE DESTINATION lib${LIB_SUFFIX} ) 
  
  install(FILES zuluCrypt.h DESTINATION include )
 
