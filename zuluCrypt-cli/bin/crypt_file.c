@@ -18,7 +18,6 @@
  */
 
 #include "includes.h"
-#include "../zuluCrypt.h"
 
 #define DECRYPT 1
 #define ENCRYPT 0

@@ -28,7 +28,7 @@
 #include "../string/String.h"
 #include "../constants.h"
 #include "../version.h"
-#include "../zuluCrypt.h"
+#include "libzuluCrypt.h"
 
 #ifdef __STDC__
 char * realpath( const char * path, char * resolved_path ) ;

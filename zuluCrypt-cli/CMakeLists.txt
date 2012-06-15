@@ -163,7 +163,8 @@
  
  install(TARGETS zuluCrypt-static ARCHIVE DESTINATION lib${LIB_SUFFIX} ) 
  
- install(FILES zuluCrypt.h DESTINATION include )
-
+ install(FILES lib/libzuluCrypt.h DESTINATION include )
+ install(FILES bin/libzuluCrypt-exe.h DESTINATION include )
+ 
  
  
