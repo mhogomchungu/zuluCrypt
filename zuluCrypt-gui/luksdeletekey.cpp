@@ -212,10 +212,12 @@ void luksdeletekey::threadfinished( int status )
 	switch(  status ){
 		case 0 :
 			l = miscfunctions::luksEmptySlots( m_volumePath ) ;
-			success = tr( "key removed successfully.\n%1 / %2 slots are now in use" ).arg( l.at( 0 ) ).arg( l.at( 1 ) );
+			if( l.isEmpty() == false )
+				success = tr( "key removed successfully.\n%1 / %2 slots are now in use" ).arg( l.at( 0 ) ).arg( l.at( 1 ) );
+			else
+				success = tr( "key removed successfully." ) ;
 			msg.ShowUIOK( tr( "SUCCESS!" ),success );
-			HideUI() ;
-			return ;
+			return HideUI() ;
 		case 2 : msg.ShowUIOK( tr( "ERROR!" ),tr( "there is no key in the volume that match the presented key" ) ) ;				break ;
 		case 3 : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open device\n" ) ) ;								break ;
 		case 5 : msg.ShowUIOK( tr( "ERROR!" ),tr( "keyfile does not exist\n" ) ) ;								break ;
@@ -233,7 +235,7 @@ will be lost if you continue.\nif you want to continue,rerun the command with -k
 
 	enableAll();
 
-	if(  status == 2 ){
+	if( status == 2 ){
 		m_ui->lineEditPassphrase->clear();
 		m_ui->lineEditPassphrase->setFocus();
 	}

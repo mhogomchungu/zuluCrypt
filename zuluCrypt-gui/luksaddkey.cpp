@@ -249,10 +249,12 @@ void luksaddkey::threadfinished( int status )
 	switch( status ){
 		case 0 :
 			x = miscfunctions::luksEmptySlots( m_volumePath );
-			success = tr( "key added successfully.\n%1 / %2 slots are now in use" ).arg( x.at( 0 ) ).arg( x.at( 1 ) );
+			if( x.isEmpty() == false )
+				success = tr( "key added successfully.\n%1 / %2 slots are now in use" ).arg( x.at( 0 ) ).arg( x.at( 1 ) );
+			else
+				success = tr( "key added successfully." ) ;
 			msg.ShowUIOK( tr( "SUCCESS!" ),success );
-			HideUI();
-			return ;			
+			return HideUI();
 		case 1  : msg.ShowUIOK( tr( "ERROR!" ),tr( "presented key does not match any key in the volume" ) ) ;		      	break ;
 		case 2  : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open luks device" ) ) ;					     	break ;
 		case 4  : msg.ShowUIOK( tr( "ERROR!" ),tr( "device does not exist" ) ) ;	                                      	break ;

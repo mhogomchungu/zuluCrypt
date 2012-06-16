@@ -148,21 +148,21 @@ QStringList miscfunctions::deviceProperties( QString device )
 
 	prp << size ;
 
-	i = blkid_probe_lookup_value( dp, "LABEL", &buffer, NULL );
+	i = blkid_probe_lookup_value( dp,"LABEL",&buffer,NULL );
 
 	if( i == 0 )
 		prp << QString( buffer ) ;
 	else
 		prp << QString( "Nil" ) ;
 
-	i = blkid_probe_lookup_value( dp, "TYPE", &buffer, NULL );
+	i = blkid_probe_lookup_value( dp,"TYPE",&buffer,NULL );
 
 	if( i == 0 )
 		prp << QString( buffer ) ;
 	else
 		prp << QString( "Nil" ) ;
 
-	i = blkid_probe_lookup_value( dp, "UUID", &buffer, NULL );
+	i = blkid_probe_lookup_value( dp,"UUID",&buffer,NULL );
 
 	if( i == 0 )
 		prp << QString( buffer ) ;
@@ -189,22 +189,24 @@ bool miscfunctions::isLuks( QString volumePath )
 
 QStringList miscfunctions::luksEmptySlots( QString volumePath )
 {
+	QStringList list ;	
 	QProcess N ;
 	N.start( QString( ZULUCRYPTzuluCrypt ) + QString( " -b -d \"" ) + volumePath + QString( "\"" ) );
 	N.waitForFinished() ;
+	if( N.exitCode() != 0 )
+		return list ;
 	QByteArray s = N.readAllStandardOutput() ;
+	N.close();
 	int i = 0 ;
 	for ( int j = 0 ; j < s.size() ; j++ )
 		if( s.at( j ) == '1' || s.at( j ) == '3' )
 			i++ ;
-	N.close();
-	QStringList list ;
 	list << QString::number( i ) ;
 	list << QString::number(  s.size() - 1 ) ;
 	return list ;
 }
 
-void miscfunctions::addToFavorite( QString dev, QString m_point )
+void miscfunctions::addToFavorite( QString dev,QString m_point )
 {
 	QString fav = dev + QString( "\t" ) + m_point + QString( "\n" ) ;
 	QFile f( QDir::homePath() + QString( "/.zuluCrypt/favorites" ) ) ;
@@ -234,7 +236,7 @@ void miscfunctions::removeFavoriteEntry( QString entry )
 	f.close() ;
 }
 
-void miscfunctions::addItemToTable( QTableWidget * table, QString device, QString mountAddr )
+void miscfunctions::addItemToTable( QTableWidget * table,QString device,QString mountAddr )
 {
 	QString type ;
 	QString path = device ;
@@ -247,7 +249,7 @@ void miscfunctions::addItemToTable( QTableWidget * table, QString device, QStrin
 	miscfunctions::addItemToTableWithType( table,device,mountAddr,type );
 }
 
-void miscfunctions::addItemToTableWithType( QTableWidget * table, QString device, QString mountAddr,QString type )
+void miscfunctions::addItemToTableWithType( QTableWidget * table,QString device,QString mountAddr,QString type )
 {
 	int row = table->rowCount() ;
 	table->insertRow( row );
