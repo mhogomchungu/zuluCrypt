@@ -32,7 +32,7 @@ cryptfilethread::cryptfilethread( QString source,QString dest,QString keySource,
 	m_keySource = keySource ;
 	m_key = key ;
 	m_task = task ;
-	m_status = 0 ;
+	m_status = -1 ;
 }
 
 void cryptfilethread::start()
@@ -152,8 +152,7 @@ int cryptfilethread::encrypt()
 
 	QFile::setPermissions( m_dest,QFile::ReadOwner|QFile::WriteOwner ) ;
 
-	m_status = 0 ;	
-	return m_status ;
+	return 0 ;
 }
 
 int cryptfilethread::decrypt()
@@ -173,7 +172,6 @@ int cryptfilethread::decrypt()
 	if( memcmp( buffer+100,buffer+200,100 ) != 0 ){
 		fd_1.close() ;
 		this->closeMapper( m_source ) ;
-		m_status = 11 ;
 		return 11 ;
 	}
 
@@ -229,8 +227,7 @@ int cryptfilethread::decrypt()
 
 	QFile::setPermissions( m_dest,QFile::ReadOwner|QFile::WriteOwner ) ;
 
-	m_status = 1 ;
-	return m_status ;
+	return 1 ;
 }
 
 int cryptfilethread::openMapper( QString path )
@@ -248,13 +245,7 @@ int cryptfilethread::openMapper( QString path )
 
 	int st = exe.exitStatus() ;
 	exe.close();
-
-	if( st != 0 ){
-		m_status = st ;
-		return st ;
-	}
-
-	return 0 ;
+	return st ;
 }
 
 int cryptfilethread::closeMapper( QString path )
@@ -272,9 +263,9 @@ int cryptfilethread::closeMapper( QString path )
 void cryptfilethread::run()
 {
 	if( m_task == QString( "-E" ) )
-		this->encrypt();
+		m_status = this->encrypt();
 	else
-		this->decrypt();
+		m_status = this->decrypt();
 }
 
 cryptfilethread::~cryptfilethread()
