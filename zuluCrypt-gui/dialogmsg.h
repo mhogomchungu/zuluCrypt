@@ -35,6 +35,7 @@ public:
 	explicit DialogMsg( QWidget * );
 	void ShowUIOK( QString title,QString msg );
 	int  ShowUIYesNo( QString title,QString msg );
+	int  ShowUIYesNoDefaultNo( QString title,QString msg );
 	void ShowUIInfo( QString title,QString msg );
 	void ShowUIVolumeProperties( QString title,QString msg );
 	void HideUI( void );
@@ -46,6 +47,7 @@ private slots:
 	void pbNo( void );
 	
 private:
+	void SetUpButtons( void ) ;
 	void ShowLabels( void ) ;
 	void HideLabels( void ) ;
 	void ShowUI( QString title,QString msg );

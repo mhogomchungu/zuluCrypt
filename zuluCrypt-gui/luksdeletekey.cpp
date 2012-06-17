@@ -188,7 +188,7 @@ void luksdeletekey::pbDelete()
 		s = s + tr( "\nDeleting it will make the volume unopenable and lost forever." ) ;
 		s = s + tr( "\nAre you sure you want to delete this key?" );
 
-		if(  msg.ShowUIYesNo( tr( "WARNING" ),s ) == QMessageBox::No )
+		if(  msg.ShowUIYesNoDefaultNo( tr( "WARNING" ),s ) == QMessageBox::No )
 			return ;
 	}	
 

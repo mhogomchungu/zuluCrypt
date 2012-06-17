@@ -195,15 +195,28 @@ void DialogMsg::ShowUIOK( QString title,QString msg )
 	this->ShowUI( title,msg );
 }
 
-int DialogMsg::ShowUIYesNo( QString title,QString msg )
+void DialogMsg::SetUpButtons()
 {
 	m_ui->pbYes->setHidden( false );
 	m_ui->pbNo->setHidden( false );
 	m_ui->pbOk->setHidden( true );
-	
 	this->HideLabels();
+}
+
+int DialogMsg::ShowUIYesNo( QString title,QString msg )
+{
+	this->SetUpButtons();
 	this->setDimentions( msg );
 	this->ShowUI( title,msg );	
+	return m_status;
+}
+
+int  DialogMsg::ShowUIYesNoDefaultNo( QString title,QString msg )
+{
+	this->SetUpButtons();
+	this->setDimentions( msg );
+	m_ui->pbNo->setFocus();
+	this->ShowUI( title,msg );
 	return m_status;
 }
 
