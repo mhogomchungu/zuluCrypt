@@ -90,7 +90,11 @@ void luksdeletekey::rbPassphraseFromFile()
 void luksdeletekey::pbOpenKeyFile()
 {
 	QString Z = QFileDialog::getOpenFileName( this,tr( "key file with a passphrase to delete" ),QDir::homePath(),0 );
-	m_ui->lineEditPassphrase->setText(  Z );
+	m_ui->lineEditPassphrase->setText( Z );
+	if( m_ui->lineEditVolumePath->text().isEmpty() )
+		m_ui->lineEditVolumePath->setFocus();
+	else
+		m_ui->pushButtonDelete->setFocus();
 }
 
 void luksdeletekey::ShowUI()
@@ -176,7 +180,10 @@ void luksdeletekey::pbDelete()
 	m_volumePath.replace( "\"","\"\"\"" ) ;
 	passphrase.replace( "\"","\"\"\"" ) ;
 
-	if( miscfunctions::luksEmptySlots( m_volumePath ).at( 0 ) == QString( "1" ) ){
+	QStringList l = miscfunctions::luksEmptySlots( m_volumePath ) ;
+	if( l.isEmpty() )
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "volume is not a luks volume" ) );
+	else if( l.at( 0 ) == QString( "1" ) ){
 		QString s = tr( "There is only one last key in the volume." );
 		s = s + tr( "\nDeleting it will make the volume unopenable and lost forever." ) ;
 		s = s + tr( "\nAre you sure you want to delete this key?" );
@@ -244,7 +251,11 @@ will be lost if you continue.\nif you want to continue,rerun the command with -k
 void luksdeletekey::pbOpenVolume()
 {
 	QString Z = QFileDialog::getOpenFileName( this,tr( "volume path" ),QDir::homePath(),0 );
-	m_ui->lineEditVolumePath->setText(  Z );
+	m_ui->lineEditVolumePath->setText( Z );
+	if( m_ui->lineEditPassphrase->text().isEmpty() )
+		m_ui->lineEditPassphrase->setFocus();
+	else
+		m_ui->pushButtonDelete->setFocus() ;
 }
 
 void luksdeletekey::HideUI()

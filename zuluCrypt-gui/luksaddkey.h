@@ -54,6 +54,7 @@ private slots:
 	void pbAdd( void ) ;
 	void pbCancel( void ) ;	
 	void threadfinished( int ) ;
+	void setFieldFocus( void ) ;
 private:
 	void disableAll( void ) ;
 	void enableAll( void ) ;

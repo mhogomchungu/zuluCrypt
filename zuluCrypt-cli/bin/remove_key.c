@@ -59,7 +59,7 @@ static int status_msg( int st )
 
 static int status_msg_1( int st,const char * device )
 {
-	printf( "ERROR: device \"%s\" is not a luks device",device ) ;
+	printf( "ERROR: device \"%s\" is not a luks device\n",device ) ;
 	return st ;
 }
 

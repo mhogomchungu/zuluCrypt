@@ -89,11 +89,25 @@ void luksaddkey::ShowUI( QString path )
 
 void luksaddkey::ShowUI()
 {
-	if( m_ui->textEditPathToVolume->text() == QString( "" ) )
-		m_ui->textEditPathToVolume->setFocus();
-	else
-		m_ui->textEditExistingPassphrase->setFocus();
+	this->setFieldFocus();
 	this->show();
+}
+
+void luksaddkey::setFieldFocus()
+{
+	if( m_ui->textEditPathToVolume->text().isEmpty() )
+		m_ui->textEditPathToVolume->setFocus();
+	else if( m_ui->textEditExistingPassphrase->text().isEmpty() )
+		m_ui->textEditExistingPassphrase->setFocus();
+	else if( m_ui->textEditPassphraseToAdd->text().isEmpty() )
+		m_ui->textEditPassphraseToAdd->setFocus();
+	else if( m_ui->radioButtonNewPassphrase->isChecked() )
+		if( m_ui->lineEditReEnterPassphrase->text().isEmpty() )
+			m_ui->lineEditReEnterPassphrase->setFocus();
+		else
+			m_ui->pushButtonAdd->setFocus();
+	else
+		m_ui->pushButtonAdd->setFocus();
 }
 
 void luksaddkey::HideUI()
@@ -105,19 +119,25 @@ void luksaddkey::HideUI()
 void luksaddkey::pbOpenExisitingKeyFile( void )
 {	
 	QString Z = QFileDialog::getOpenFileName( this,tr( "existing key file" ),QDir::homePath(),0 );
-	m_ui->textEditExistingPassphrase->setText( Z ) ;
+	if( Z.isEmpty() == false )
+		m_ui->textEditExistingPassphrase->setText( Z ) ;
+	this->setFieldFocus();
 }
 
 void luksaddkey::pbOpenNewKeyFile( void )
 {
 	QString Z = QFileDialog::getOpenFileName( this,tr( "new key file" ),QDir::homePath(),0 );
-	m_ui->textEditPassphraseToAdd->setText( Z ) ;
+	if( Z.isEmpty() == false )
+		m_ui->textEditPassphraseToAdd->setText( Z ) ;
+	this->setFieldFocus();
 }
 
 void luksaddkey::pbOpenFile( void )
 {
 	QString Z = QFileDialog::getOpenFileName( this,tr( "encrypted volume path" ),QDir::homePath(),0 );
-	m_ui->textEditPathToVolume->setText( Z ) ;
+	if( Z.isEmpty() == false )
+		m_ui->textEditPathToVolume->setText( Z ) ;
+	this->setFieldFocus();
 }
 
 void luksaddkey::pbOpenPartition( void )
@@ -125,6 +145,7 @@ void luksaddkey::pbOpenPartition( void )
 	openpartition * openPartition = new openpartition( this );
 	connect( openPartition,SIGNAL( clickedPartition( QString ) ),this,SLOT( ShowUI( QString ) ) );
 	connect( openPartition,SIGNAL( HideUISignal() ),openPartition,SLOT( deleteLater() ) );
+	connect( openPartition,SIGNAL( HideUISignal() ),this,SLOT( setFieldFocus() ) ) ;
 	openPartition->ShowAllPartitions();
 }
 
