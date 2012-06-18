@@ -81,14 +81,14 @@ string_t StringCopy( string_t st )
 	if( c == NULL )
 		return NULL ;
 	
-	memcpy( c,st->string,st->size + 1 ) ;
-	
 	xt = ( string_t ) malloc ( sizeof( struct StringType ) ) ;
 	
 	if( st == NULL ){
 		free( c ) ;
 		return NULL ;
 	}
+	
+	memcpy( c,st->string,st->size + 1 ) ;
 	
 	xt->size = st->size ;
 	xt->length = st->size ;

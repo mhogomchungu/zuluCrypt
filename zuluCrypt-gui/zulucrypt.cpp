@@ -429,6 +429,7 @@ void zuluCrypt::removeRowFromTable( int x )
 
 void zuluCrypt::volume_property()
 {
+	m_ui->tableWidget->setEnabled( false );
 	QTableWidgetItem * item = m_ui->tableWidget->currentItem();
 	QString x = m_ui->tableWidget->item( item->row(),0 )->text() ;
 	QString y = m_ui->tableWidget->item( item->row(),1 )->text() ;
@@ -444,6 +445,7 @@ void zuluCrypt::volumePropertyThreadFinished( QString properties )
 		msg.ShowUIOK( tr( "ERROR!"),tr( "volume doesnt seem to be accessible" ) );
 	else
 		msg.ShowUIVolumeProperties( tr( "volume properties" ),properties );
+	m_ui->tableWidget->setEnabled(true );
 }
 
 void zuluCrypt::favAboutToHide()

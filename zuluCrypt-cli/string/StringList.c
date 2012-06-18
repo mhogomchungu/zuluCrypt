@@ -191,6 +191,7 @@ stringList_t StringListSplit( const char * cstring,char splitter )
 	size_t sp_len = sizeof( char ) ;
 	size_t len ; 
 	stringList_t stl = NULL ;
+	stringList_t stx ;
 
 	char s[ 2 ] ;
 	s[ 1 ] = '\0' ;
@@ -216,12 +217,16 @@ stringList_t StringListSplit( const char * cstring,char splitter )
 				}
 				memcpy( e,b,len ) ;
 				*( e + len ) = '\0' ;
-				stl = StringListAppendWithSize( stl,&e,len );
-				if( stl == NULL )
-				{
+				stx = StringListAppendWithSize( stl,&e,len );
+				if( stx == NULL ){
+					if( stl != NULL )
+						StringListDelete( &stl ) ;
 					free( e ) ;
 					return NULL ;
+				}else{
+					stl = stx ;
 				}
+				
 			}
 			b = d + sp_len ;
 		}

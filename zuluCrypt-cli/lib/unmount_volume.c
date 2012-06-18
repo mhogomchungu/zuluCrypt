@@ -44,7 +44,6 @@ static int entry_found( const char * map, const char * m_dir, char ** m_point )
 		if( h == 0 )
 			break ;
 		sleep( 1 ) ;
-		
 	}	
 	
 	if( h == 0 && m_point != NULL ){
