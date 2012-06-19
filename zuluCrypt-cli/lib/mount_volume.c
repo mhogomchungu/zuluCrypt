@@ -115,34 +115,11 @@ static int mount_ntfs( const m_struct * mst )
 	return status ;
 }
 
-/*
- * currently broken for reasons i havent identified yet, use exe above as a temp soln.
-static int mount_ntfs_3g( const m_struct * mst )
-{
-	char uid_s[ UID_SIZE ] ;
-	char * 	uid ;
-	const char * copt ;
-	
-	if( strcmp( mst->mode,"ro" ) == 0 )
-		*st = String( "ro,rootmode=700,user_id=UID,group_id=UID" ) ;
-	else
-		*st = String( "rw,rootmode=700,user_id=UID,group_id=UID" ) ;
-	
-	uid = StringIntToString( uid_s,UID_SIZE,mst->uid ) ;
-	copt = StringReplaceString( *st,"UID",uid ) + 3 ;
-	return mount( mst->devicer,mst->m_point,"fuseblk",mst->flags,copt ) ;
-}
-*/
-
 static int mount_mapper( const m_struct * mst, string_t * st )
 {
 	int h ;
 	const char * fs = mst->fs ;
-	/*
-	 * currently broken
-	if( strcmp( fs,"ntfs" ) == 0 ){  
-		h = mount_ntfs_1( mapper,m_point,mode,mountflags,opt,id ) ;
-	*/	
+
 	if( strcmp( fs,"vfat" ) == 0 || strcmp( fs,"fat" ) == 0 || strcmp( fs,"msdos" ) == 0 || strcmp( fs,"umsdos" ) == 0 ){
 		h = mount_fs( FAT_FAMILY_FS,mst,st ) ;
 	}else if( strcmp( fs,"affs" ) == 0 || strcmp( fs,"hfs" ) == 0 || strcmp( fs,"iso9660" ) == 0 ){
