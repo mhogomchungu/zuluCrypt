@@ -128,7 +128,7 @@ void erasedevice::pbStart()
 		QString x_2 = tr( " effectively destroying all contents in it?" );
 		QString x_3 = x_1 + x_2 ;
 
-		if( msg.ShowUIYesNo( tr( "WARNING!" ),x_3 ) == QMessageBox::No )
+		if( msg.ShowUIYesNoDefaultNo( tr( "WARNING!" ),x_3 ) == QMessageBox::No )
 			return ;
 	}
 
