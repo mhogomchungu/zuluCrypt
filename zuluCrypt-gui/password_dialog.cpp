@@ -336,6 +336,7 @@ void passwordDialog::threadfinished( int status )
 		case 22: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open keyfile for reading" ) );					break ;
 		case 23: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open device in read/write mode" ) );				break ;
 		case 24: msg.ShowUIOK( tr( "ERROR!" ),tr( "there seem to be an opened mapper associated with the device" ) );				break ;
+		case 25: msg.ShowUIOK( tr( "ERROR!" ),tr( "space character is an illegal character in mount point path" ) );				break ;
 		case 110:msg.ShowUIOK( tr( "ERROR!" ),tr( "can not find a partition that match presented UUID" ) );					break ;
 		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR with status number %1 encountered" ).arg( status ) );
 	}
