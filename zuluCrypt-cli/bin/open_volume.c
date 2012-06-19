@@ -134,8 +134,8 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 		if( mount_point == NULL )
 			return status_msg( 11,device,cpoint ) ;
 		
-		if( strchr( mount_point,' ' ) != NULL )
-			return status_msg( 25,device,cpoint ) ;
+		//if( strchr( mount_point,' ' ) != NULL )
+		//	return status_msg( 25,device,cpoint ) ;
 		
 		if( strlen( mount_point ) == 1 )
 			if ( strcmp( mount_point,"," ) == 0 )

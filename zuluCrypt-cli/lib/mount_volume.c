@@ -69,28 +69,37 @@ static int mount_fs( int type,const m_struct * mst, string_t * st )
 
 static int mount_ntfs( const m_struct * mst )
 {
+	char ** opts ;
 	const char * copt ;
+	
 	int status ;	
-	string_t uid ;	
+	
 	process_t p ;
 	
-	string_t opt = String( ZULUCRYPTmount );
+	string_t uid = StringIntToString( mst->uid );		
+	string_t q ;
 	
 	if( strcmp( mst->mode,"ro" ) == 0 )
-		StringAppend( opt," -t ntfs-3g -o dmask=077,umask=077,ro,uid=UID,gid=UID DEVICE M_POINT" ) ;
+		q = String( "dmask=077,umask=077,ro,uid=UID,gid=UID" ) ;
 	else
-		StringAppend( opt," -t ntfs-3g -o dmask=077,umask=077,rw,uid=UID,gid=UID DEVICE M_POINT" ) ;
-		
-	uid = StringIntToString( mst->uid ) ;
-		
-	StringReplaceString( opt,"UID",StringContent( uid ) ) ;
-		
-	StringReplaceString( opt,"DEVICE",mst->device ) ;
+		q = String( "dmask=077,umask=077,rw,uid=UID,gid=UID" ) ;
 	
-	copt = StringReplaceString( opt,"M_POINT",mst->m_point ) ;
+	copt = StringReplaceString( q,"UID",StringContent( uid ) ) ;
 	
-	p = Process( copt ) ;
+	opts = ( char ** ) malloc( sizeof( char * ) * 8 ) ;
+
+	opts[ 0 ] = ZULUCRYPTmount ;
+	opts[ 1 ] = "-t" ;
+	opts[ 2 ] = "ntfs-3g" ;
+	opts[ 3 ] = "-o" ;
+	opts[ 4 ] = ( char * ) copt ;
+	opts[ 5 ] = ( char * ) mst->device ;
+	opts[ 6 ] = ( char * ) mst->m_point ;
+	opts[ 7 ] = '\0' ;
+		
+	p = Process( ZULUCRYPTmount ) ;
 	
+	ProcessSetArguments( p,opts ) ;
 	ProcessSetOption( p,CLOSE_BOTH_STD_OUT ) ;
 
 	ProcessStart( p ) ;
@@ -99,8 +108,9 @@ static int mount_ntfs( const m_struct * mst )
 	
 	ProcessDelete( &p ) ;
 	
-	StringDelete( &opt ) ;
+	StringDelete( &q ) ;
 	StringDelete( &uid ) ;
+	free( opts ) ;
 	
 	return status ;
 }

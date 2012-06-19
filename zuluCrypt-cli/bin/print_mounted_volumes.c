@@ -31,6 +31,14 @@
  */
 char * volume_device_name( const char * ) ;
 
+static const char * substitute_chars( string_t st )
+{
+	StringReplaceString( st,"\\012","\n" ) ;			
+	StringReplaceString( st,"\\040"," " ) ;
+	StringReplaceString( st,"\\134","\\" ) ;
+	return StringReplaceString( st,"\\011","\\t" ) ;
+}
+
 static void print( uid_t uid,stringList_t stl )
 {
 	const char * c ;	
@@ -74,14 +82,14 @@ static void print( uid_t uid,stringList_t stl )
 				if( k != -1 ){
 					StringSubChar( q,k,'\0' ) ;
 					c = StringContent( q ) + len + 6 ;
-					d = StringListContentAt( stx,1 ) ;					
+					d = substitute_chars( StringListStringAt( stx,1 ) ) ;
 					printf( "UUID=\"%s\"\t%s\n",c,d ) ;	
 				}
 			}else{
 				f = volume_device_name( StringListContentAt( stx,0 ) ) ;
 				
 				if( f != NULL ){
-					d = StringListContentAt( stx,1 ) ;					
+					d = substitute_chars( StringListStringAt( stx,1 ) ) ;					
 					printf( "%s\t%s\n",f,d ) ;			
 					free( f ) ;
 				}

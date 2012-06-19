@@ -28,6 +28,7 @@ struct Process_t{
 	char * exe ;
 	char delimiter ;
 	char ** args ;
+	int args_source ;
 	int signal ;
 	int timeout ;
 	int wait_status ;
@@ -62,6 +63,8 @@ static void ProcessSetArguments_1( process_t p )
 		return ;		
 	}
 	
+	p->args_source = 0 ;
+
 	delimiter = p->delimiter ;
 	
 	d = p->exe - 1 ;
@@ -268,6 +271,7 @@ process_t Process( const char * path )
 	p->signal = -1 ;
 	p->timeout = -1 ;
 	p->wait_status = -1 ;
+	p->args_source = -1 ;
 	
 	return p ;
 }
@@ -291,7 +295,8 @@ void ProcessSetOptionDelimiter( process_t p,char s )
 void ProcessDelete( process_t * p ) 
 {
 	process_t px = *p ;
-	
+	*p = NULL ;
+
 	if( px->std_io <= 3 )
 		;
 	else if( px->std_io < 12 )
@@ -301,11 +306,10 @@ void ProcessDelete( process_t * p )
 	
 	if( px->wait_status == -1 )
 		waitpid( px->pid,0,WNOHANG ) ;
-	
-	*p = NULL ;
-	
+		
 	if( px->args != NULL )
-		free( px->args ) ;
+		if( px->args_source == 0 )
+			free( px->args ) ;
 	
 	if( px->exe != NULL )
 		free( px->exe ) ;
@@ -389,6 +393,7 @@ int ProcessExitStatus( process_t p )
 void ProcessSetArguments( process_t p,char * const s[] ) 
 {
 	p->args = ( char ** ) s ;
+	p->args_source = 1 ;
 }
 
 int ProcessSetSearchPaths( const char * s ) 
