@@ -54,11 +54,11 @@ void erasedevice::ShowUI()
 	DialogMsg msg( this );
 
 	QString msg_1 = tr( "The next dialog will write random data to a device " );
-	QString msg_2 = tr( "leading to permanent loss of contents on the device.\n\n" );
+	QString msg_2 = tr( "leading to permanent loss of all contents on the device.\n\n" );
 	QString msg_3 = tr( "Are you sure you want to continue?" );
 	QString msg_4 = msg_1 + msg_2 + msg_3 ;
 
-	if( msg.ShowUIYesNo( tr( "WARNING" ),msg_4 ) == QMessageBox::Yes )
+	if( msg.ShowUIYesNoDefaultNo( tr( "WARNING" ),msg_4 ) == QMessageBox::Yes )
 		this->show();
 	else
 		this->HideUI();
