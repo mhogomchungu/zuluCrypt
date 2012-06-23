@@ -77,8 +77,8 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 	cmd = String( ZULUCRYPTmkfs ) ;
 	
 	if( strcmp( fs,"ext2" ) == 0 || strcmp( fs,"ext3" ) == 0 || strcmp( fs,"ext4" ) == 0 ){
-		StringAppend( cmd," -t FS -m 1 " ) ;
-		StringReplaceString(cmd,"FS",fs ) ;	
+		StringAppend( cmd," -t extX -m 1 " ) ;
+		StringReplaceString( cmd,"extX",fs ) ;	
 		wait = 0 ;
 	}else if( strcmp( fs,"reiserfs" ) == 0 ){
 		StringAppend( cmd," -t reiserfs -f -f -q " ) ;
