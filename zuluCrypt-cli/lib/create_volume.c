@@ -30,6 +30,17 @@
  */
 #include "../process/process.h"
 
+static int result( int st,string_t x,string_t y,string_t z )
+{
+	if( x != NULL )
+		StringDelete( &x ) ;
+	if( y != NULL )
+		StringDelete( &y ) ;
+	if( z != NULL )
+		StringDelete( &z ) ;
+	return st ;
+}
+
 int create_volume( const char * dev,const char * fs,const char * type,const char * pass,size_t pass_size,const char * rng )
 {
 	int wait ;
@@ -37,8 +48,8 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 	
 	process_t p ;
 	
-	string_t cmd ;
-	string_t m ;
+	string_t cmd = NULL ;
+	string_t m = NULL ;
 	string_t pid = StringIntToString( getpid() ) ;
 	
 	const char * device_mapper ;
@@ -46,12 +57,12 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 	const char * copts ;
 	
 	if ( is_path_valid( dev ) != 0 )
-		return 1 ;
+		return result( 1,cmd,m,pid ) ;
 		
 	if( strcmp( type,"luks" ) == 0 )
 		if( strcmp( rng,"/dev/random" ) != 0 )
 			if( strcmp( rng,"/dev/urandom" ) != 0 )
-				return 2 ;
+				return result( 2,cmd,m,pid ) ;
 			
 	m = String( crypt_get_dir() ) ;	
 		
@@ -65,14 +76,14 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 	
 	if( strcmp( type,"luks" )  == 0 ){
 		if( create_luks( dev,pass,pass_size,rng ) != 0 )	
-			return 3 ;
+			return result( 3,cmd,m,pid ) ;
 		if( open_luks( dev,mapper,"rw",pass,pass_size ) != 0 )
-			return 3 ;
+			return result( 3,cmd,m,pid ) ; ;
 	}else if( strcmp( type,"plain") == 0 ){
 		if( open_plain( dev,mapper,"rw",pass,pass_size ) )
-			return 3 ;		
+			return result( 3,cmd,m,pid ) ; ;		
 	}else{
-		return 2 ;
+		return result( 2,cmd,m,pid ) ; ;
 	}		
 
 	cmd = String( ZULUCRYPTmkfs ) ;
@@ -118,9 +129,8 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 	
 	ProcessDelete( &p ) ;
 	
-	StringDelete( &cmd ) ;
-	StringDelete( &m ) ;
-	StringDelete( &pid ) ;
-	
-	return status == 0 ? 0 : 3 ;
+	if( status == 0 )
+		return result( 0,cmd,m,pid ) ;
+	else
+		return result( 3,cmd,m,pid ) ;
 }
