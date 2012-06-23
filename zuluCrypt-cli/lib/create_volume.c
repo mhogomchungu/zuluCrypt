@@ -39,26 +39,27 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 	
 	string_t cmd ;
 	string_t m ;
+	string_t pid = StringIntToString( getpid() ) ;
 	
 	const char * device_mapper ;
-	const char * mapper ;
-	
+	const char * mapper ;	
 	const char * copts ;
-	
-	m = String( crypt_get_dir() ) ;	
-	StringAppend( m,"/zuluCrypt-create-new" ) ;
-	
-	device_mapper = StringContent( m ) ;
-	mapper = device_mapper + StringLastIndexOfChar( m,'/' ) + 1 ;
 	
 	if ( is_path_valid( dev ) != 0 )
 		return 1 ;
 		
 	if( strcmp( type,"luks" ) == 0 )
-		if(  strcmp( rng,"/dev/random" ) != 0 )
+		if( strcmp( rng,"/dev/random" ) != 0 )
 			if( strcmp( rng,"/dev/urandom" ) != 0 )
 				return 2 ;
 			
+	m = String( crypt_get_dir() ) ;	
+		
+	StringAppend( m,"/zuluCrypt-create-new-" ) ;
+	device_mapper = StringAppend( m,StringContent( pid ) ) ;
+	
+	mapper = device_mapper + StringLastIndexOfChar( m,'/' ) + 1 ;
+	
 	if( is_path_valid( device_mapper ) == 0 )
 		close_mapper( device_mapper );	
 	
@@ -119,6 +120,7 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 	
 	StringDelete( &cmd ) ;
 	StringDelete( &m ) ;
+	StringDelete( &pid ) ;
 	
 	return status == 0 ? 0 : 3 ;
 }
