@@ -31,6 +31,21 @@
 #define SIZE 1024
 #define KEY_SIZE 128
 
+#include <signal.h>
+#include <bits/sigaction.h>
+
+int sigaction( int sig,const struct sigaction *,struct sigaction * );
+
+static int __exit_as_requested ;
+static int __sig_caught ;
+
+void sigTERMhandler( int sig )
+{
+	__exit_as_requested = 1 ;
+	__sig_caught = sig ;
+	printf( "\nINFO: caught signal %d,cleaning up\n",__sig_caught ) ;
+}
+
 /*
  * define in partition.c
  * 
@@ -49,7 +64,7 @@ static int return_value( string_t * st, int status )
 			 break ;
 		case 1 : printf( "ERROR: could not create mapper\n" )                                          ;break ;
 		case 2 : printf( "ERROR: could not resolve device path\n" )                                    ;break ;
-		case 3 : printf( "SUCCESS: random data successfully written\n" )                               ;break ;
+		case 3 : printf( "\nSUCCESS: random data successfully written\n" )                               ;break ;
 		/*4 is currently un used */
 		case 5 : printf( "INFO: user chose not to proceed\n" )                                         ;break ;	
 		case 6 : printf( "ERROR: policy prevents non root user opening mapper on system partition\n" ) ;break ;	
@@ -60,7 +75,9 @@ static int return_value( string_t * st, int status )
 		case 11: printf( "ERROR: could not get enought memory to hold the key file\n" )  	       ;break ;
 		case 12: printf( "ERROR: insufficient privilege to open key file for reading\n" )	       ;break ;	
 		case 13: printf( "ERROR: can not open a mapper on a device with an opened mapper\n" )          ;break ;	
-		case 14: printf( "ERROR: can not open a mapper on a mounted device\n" )                        ;break ;				
+		case 14: printf( "ERROR: can not open a mapper on a mounted device\n" )                        ;break ;	
+		case 15: printf( "INFO: signal caught,exiting prematurely\n" ) ;
+		
 	}
 	
 	if( st != NULL )
@@ -245,6 +262,18 @@ int write_device_with_junk( const struct_opts * opts,const char * mapping_name,u
 	int prev_ratio ;
 	int k ;	
 	
+	struct sigaction sigac;
+	
+	memset( &sigac,'\0',sizeof( struct sigaction ) ) ;
+	
+	sigac.sa_handler = &sigTERMhandler ;
+	
+	sigaction( SIGINT,&sigac,NULL ) ;
+	sigaction( SIGTERM,&sigac,NULL ) ;
+	sigaction( SIGHUP,&sigac,NULL ) ;	
+	
+	__exit_as_requested = 0 ;
+	
 	dev = realpath( device,NULL ) ;
 	
 	if( dev == NULL )
@@ -282,20 +311,27 @@ int write_device_with_junk( const struct_opts * opts,const char * mapping_name,u
 	
 	while( write( k,buffer,SIZE ) > 0 ){
 
+		if( __exit_as_requested == 1 )
+			break ;
+		
 		size_written += SIZE ;
 		
 		ratio = ( int ) ( ( size_written / size ) * 100 ) ;
 
-		if( ratio % 5 == 0 && ratio != prev_ratio )
-			printf( "\rpercentage complete: %d\n",ratio ) ;
-			
-		prev_ratio = ratio ;
-		
+		if( ratio > prev_ratio ){
+			printf( "\rpercentage complete: %d%%",ratio ) ;
+			fflush( stdout );
+			prev_ratio = ratio ;
+		}
 	}	
-	
+		
 	close( k ) ;
 	
 	close_mapper( StringContent( mapper ) ) ;
 		
-	return return_value( &mapper,3 ) ;
+	if( __exit_as_requested == 1 ) 
+		return return_value( &mapper,15 ) ;
+	else
+		return return_value( &mapper,3 ) ;
+	
 }
