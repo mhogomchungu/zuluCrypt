@@ -25,6 +25,7 @@
 #include <string.h>
 #include <pthread.h>
 #include <signal.h>
+#include <stdarg.h>
 
 #ifdef __STDC__
 int kill( pid_t,int );
@@ -103,8 +104,16 @@ int ProcessKill( process_t ) ;
  */
 void ProcessSetArguments( process_t p,char * const argv[] ) ;
 
-int ProcessSetSearchPaths( const char * ) ;
-
+/*
+ * the forked process is started with arguments list given as const char * and the
+ * last entry ust be null.
+ * example:
+ * process_t p = Process( "/usr/bin/du" ) ;
+ * ProcessSetArgumentList( p,"-s","-c","-h",'\0' ) ;
+ * ProcessStart( p ) ;
+ * ProcessDelete( &p ) ;
+ */
+void ProcessSetArgumentList( process_t p,... ) ;
 /*
  * get state of the process handled by handle p 
  */

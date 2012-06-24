@@ -42,6 +42,35 @@ typedef struct st_2{
 	process_t p;
 }st_1;
 
+void ProcessSetArgumentList( process_t p,... )
+{
+	char * entry ;
+	char ** args  ;
+	size_t size = sizeof( char * ) ;
+	int index = 0 ;
+	va_list list ;
+	
+	args = ( char ** )malloc( size ) ;
+	args[ index ] = p->exe ;
+	index++ ;
+	
+	va_start( list,p ) ;
+	
+	while( 1 ){
+		entry = va_arg( list,char * ) ;
+		args = ( char ** )realloc( args,( 1 + index ) * size ) ;
+		args[ index ] = entry ;
+		index++ ;
+		if( entry == '\0' )
+			break ;
+	}
+	
+	va_end( list ) ;
+	
+	p->args = args ;
+	p->args_source = 0 ;	
+}
+
 static void ProcessSetArguments_1( process_t p ) 
 {
 	/*
@@ -189,7 +218,7 @@ pid_t ProcessStart( process_t p )
 		/*
 		 * execv has failed :-( 
 		 */
-		exit( 1 ) ;
+		_Exit( 1 ) ;
 		/*
 		 * child process block ends here
 		 */

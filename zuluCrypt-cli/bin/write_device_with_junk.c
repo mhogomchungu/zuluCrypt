@@ -32,9 +32,11 @@
 #define KEY_SIZE 128
 
 #include <signal.h>
-#include <bits/sigaction.h>
 
+#ifdef __STDC__
+#include <bits/sigaction.h>
 int sigaction( int sig,const struct sigaction *,struct sigaction * );
+#endif
 
 static int __exit_as_requested ;
 static int __sig_caught ;
@@ -205,8 +207,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	/*
 	 * Create a mapper path(usually at /dev/mapper) associated with opened plain mapper above.
 	 */
-	StringPrepend( mapper,"/" ) ;
-	cmapper = StringPrepend( mapper,crypt_get_dir() ) ;
+	cmapper = StringMultiplePrepend( mapper,"/",crypt_get_dir(),'\0' ) ;
 	
 	/*
 	 *  mapper path is usually a soft link to /dev/dm-X
@@ -284,8 +285,7 @@ int write_device_with_junk( const struct_opts * opts,const char * mapping_name,u
 	
 	mapper = create_mapper_name( dev,mapping_name,uid,OPEN ) ;
 	
-	StringPrepend( mapper,"/" ) ;
-	StringPrepend( mapper,crypt_get_dir() ) ;
+	StringMultiplePrepend( mapper,"/",crypt_get_dir(),'\0' ) ;
 	
 	if( opts->dont_ask_confirmation == -1 ){
 		printf( "\nWARNING, device \"%s\" will be overwritten with random data destroying all present data.\n",device ) ;

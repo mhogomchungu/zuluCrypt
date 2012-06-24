@@ -430,6 +430,74 @@ const char * StringAppend( string_t st,const char * s )
 	return c ;
 }
 
+const char * StringMultipleAppend( string_t st,... ) 
+{
+	const char * entry ;
+	va_list list ;
+	va_start( list,st ) ;
+	
+	while( 1 ){
+		entry = va_arg( list,const char * ) ;
+		if( entry == '\0' )
+			break ;
+		StringAppend( st,entry ) ;
+	}
+	
+	va_end( list ) ;
+	return st->string ;
+}
+
+const char * StringAppendMultipleString( string_t st,... ) 
+{
+	string_t entry ;
+	va_list list ;
+	va_start( list,st ) ;
+	
+	while( 1 ){
+		entry = va_arg( list,string_t ) ;
+		if( entry == '\0' )
+			break ;
+		StringAppend( st,entry->string ) ;
+	}
+	
+	va_end( list ) ;
+	return st->string ;
+}
+
+const char * StringMultiplePrepend( string_t st,... )  
+{
+	const char * entry ;
+	va_list list ;
+	va_start( list,st ) ;
+	
+	while( 1 ){
+		entry = va_arg( list,const char * ) ;
+		if( entry == '\0' )
+			break ;
+		StringPrepend( st,entry ) ;
+	}
+	
+	va_end( list ) ;
+	return st->string ;
+}
+
+const char * StringPrependMultipleString( string_t st,... )  
+{
+	string_t entry ;
+	va_list list ;
+	va_start( list,st ) ;
+	
+	while( 1 ){
+		entry = va_arg( list,string_t ) ;
+		if( entry == '\0' )
+			break ;
+		StringPrepend( st,entry->string ) ;
+	}
+	
+	va_end( list ) ;
+	return st->string ;
+}
+
 const char * StringAppendString( string_t st,string_t xt )  
 {
 	return StringAppend( st,xt->string ) ;

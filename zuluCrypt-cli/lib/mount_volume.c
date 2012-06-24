@@ -69,7 +69,6 @@ static int mount_fs( int type,const m_struct * mst, string_t * st )
 
 static int mount_ntfs( const m_struct * mst )
 {
-	char ** opts ;
 	const char * copt ;
 	
 	int status ;	
@@ -85,21 +84,11 @@ static int mount_ntfs( const m_struct * mst )
 		q = String( "dmask=077,umask=077,rw,uid=UID,gid=UID" ) ;
 	
 	copt = StringReplaceString( q,"UID",StringContent( uid ) ) ;
-	
-	opts = ( char ** ) malloc( sizeof( char * ) * 8 ) ;
-
-	opts[ 0 ] = ZULUCRYPTmount ;
-	opts[ 1 ] = "-t" ;
-	opts[ 2 ] = "ntfs-3g" ;
-	opts[ 3 ] = "-o" ;
-	opts[ 4 ] = ( char * ) copt ;
-	opts[ 5 ] = ( char * ) mst->device ;
-	opts[ 6 ] = ( char * ) mst->m_point ;
-	opts[ 7 ] = '\0' ;
 		
 	p = Process( ZULUCRYPTmount ) ;
 	
-	ProcessSetArguments( p,opts ) ;
+	ProcessSetArgumentList( p,"-t","ntfs-3g","-o",copt,mst->device,mst->m_point,'\0' ) ;
+
 	ProcessSetOption( p,CLOSE_BOTH_STD_OUT ) ;
 
 	ProcessStart( p ) ;
@@ -110,7 +99,6 @@ static int mount_ntfs( const m_struct * mst )
 	
 	StringDelete( &q ) ;
 	StringDelete( &uid ) ;
-	free( opts ) ;
 	
 	return status ;
 }

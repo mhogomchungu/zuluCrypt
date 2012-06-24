@@ -33,6 +33,7 @@ extern "C" {
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <stdarg.h>
 
 /*
  * string_t type is a  string handle, all string operation should happen through this handle.  
@@ -58,12 +59,27 @@ string_t StringWithSize( const char * string,size_t length ) ;
 const char * StringAppend( string_t st,const  char * s )  ;
 
 /*
+ * Append multitple const char * strings to a string handled by handle st.
+ * NOTE: The list must be terminated a NULL character.
+ * example usage
+ *  string_t st = String( "abc" ) ;
+ *  StringMultipleAppend( st,"def","ghi",'\0' ) ; 
+ */
+const char * StringMultipleAppend( string_t st,... )  ;
+
+/*
  * Append a string handled by xt into a string handled by handle st 
  *
  * On success, a concatenated string is returned.
  * On error, NULL is returned and the original string remain intact. 
  */
 const char * StringAppendString( string_t st,string_t xt )  ;
+
+/*
+ * Append multiple string_t to a string handled by handle st .
+ * Same requirement as StringMultipleAppend apply 
+ */
+const char * StringAppendMultipleString( string_t st,... )  ;
 
 /*
  * Append a char c into a string handled by handle st 
@@ -79,8 +95,24 @@ const char * StringAppendChar( string_t st ,char c )  ;
  * On success, a concatenated string is returned
  * On error, NULL is returned and the original string remain intact   
  */
-const char * StringPrepend( string_t st ,const  char * s )  ;
+const char * StringPrepend( string_t st,const char * s )  ;
 
+/*
+ * prepend multiple const char * to a string handled by string_t st.
+ * NOTE: entries will be prepended in the order they are presented
+ * NOTE: a list of entries must be NULL terminated
+ *  example usage
+ *  string_t st = String( "ghi" ) ;
+ *  StringMultipleAppend( st,"def","abc",'\0' ) ;
+ */
+const char * StringMultiplePrepend( string_t st,... )  ;
+
+/*
+ * prepend multiple string_t to a string handled by string_t st.
+ * NOTE: entries will be prepended in the order they are presented
+ * NOTE: a list of entries must be NULL terminated
+ */
+const char * StringMultiplePrependString( string_t st,... )  ;
 
 /*
  * Prepend a string_t xt into a string handled by handle st

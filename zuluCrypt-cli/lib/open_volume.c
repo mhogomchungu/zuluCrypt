@@ -36,8 +36,7 @@ int open_volume( const char * dev,const char * map,const char * m_point,uid_t id
 	
 	p = String( crypt_get_dir() ) ;
 	
-	StringAppend( p,"/" ) ;
-	mapper = StringAppend( p,map ) ;
+	mapper = StringMultipleAppend( p,"/",map,'\0' ) ;
 	
 	if( is_path_valid( mapper ) == 0 )
 		return value( 2,&p ) ;	

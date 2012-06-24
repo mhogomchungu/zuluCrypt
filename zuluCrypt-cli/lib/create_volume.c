@@ -67,7 +67,7 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 	m = String( crypt_get_dir() ) ;	
 		
 	StringAppend( m,"/zuluCrypt-create-new-" ) ;
-	device_mapper = StringAppend( m,StringContent( pid ) ) ;
+	device_mapper = StringAppendString( m,pid ) ;
 	
 	mapper = device_mapper + StringLastIndexOfChar( m,'/' ) + 1 ;
 	
