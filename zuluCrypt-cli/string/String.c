@@ -682,7 +682,7 @@ int StringCompare( string_t x,string_t y )
 		return 0 ;	
 }
 
-int StringCompareString( string_t x,const char * y )
+int StringEqual( string_t x,const char * y )
 {
 	return strcmp( x->string,y ) == 0 ? 0 : 1 ;	
 }

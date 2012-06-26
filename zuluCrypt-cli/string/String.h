@@ -445,7 +445,7 @@ int StringCompare( string_t x,string_t y ) ;
 /*
  * Compare a string handled by handle x to a string pointer to by y and return 0 if they are equal and 1 if they are not  
  */
-int StringCompareString( string_t x,const char * y ) ;
+int StringEqual( string_t x,const char * y ) ;
 
 /*
  * Insert character x infront of every character that appear in string y in a string handled by handle st.

@@ -163,7 +163,7 @@ int create_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid
 		if( confirm == NULL )
 			return status_msg( 21 ) ;
 		else{
-			k = StringCompareString( confirm,"YES" ) ;
+			k = StringEqual( confirm,"YES" ) ;
 			StringDelete( &confirm ) ;
 		
 			if( k == 1 )

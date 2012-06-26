@@ -406,7 +406,7 @@ ssize_t StringListContains( stringList_t stl,const char * cstring )
 	ssize_t index  ;
 	size_t size = stl->size ;
 	for( index = 0 ; index < size ; index++ )	
-		if( StringCompareString( stl->stp[index],cstring ) == 0 )
+		if( strcmp( stl->stp[index]->string,cstring ) == 0 )
 			return index ;	
 	return -1 ;
 }

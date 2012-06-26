@@ -302,7 +302,7 @@ int write_device_with_junk( const struct_opts * opts,const char * mapping_name,u
 		if( confirm == NULL )
 			return return_value( &mapper,17 ) ;
 		else{
-			k = StringCompareString( confirm,"YES" ) ;
+			k = StringEqual( confirm,"YES" ) ;
 			StringDelete( &confirm ) ;
 		
 			if( k == 1 ){			
