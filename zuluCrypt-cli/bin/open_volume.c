@@ -49,6 +49,8 @@ static int status_msg( int st,char * device,char * m_point )
 		case 23: printf( "ERROR: insufficient privilege to open device in read/write mode\n" );					break ;	
 		case 24: printf( "ERROR: there seem to be an opened mapper associated with the device\n" ) ;				break ;
 		case 25: printf( "ERROR: space character is an illegal character in mount point path\n" ) ;				break ;
+		case 26: printf( "ERROR: can not get passphrase in silent mode\n" );							break ;	
+		case 27: printf( "ERROR: insufficient memory to hold passphrase\n" );							break ;
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
 	
@@ -171,9 +173,13 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 		return status_msg( 24,device,cpoint ) ;
 	}
 	
-	if ( i == 1 ){
+	if ( i == 1 || source == NULL ){
+		
 		printf( "Enter passphrase: " ) ;		
-		passphrase = get_passphrase();	
+		switch( StringSilentlyGetFromTerminal( &passphrase ) ){
+			case 1 : return status_msg_1( 26,opts,device,cpoint ) ;
+			case 2 : return status_msg_1( 27,opts,device,cpoint ) ;
+		}
 		printf( "\n" ) ;
 		cpass = StringContent( passphrase ) ;
 		len = StringLength( passphrase ) ;

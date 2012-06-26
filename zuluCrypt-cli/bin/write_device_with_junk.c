@@ -66,7 +66,7 @@ static int return_value( string_t * st, int status )
 			 break ;
 		case 1 : printf( "ERROR: could not create mapper\n" )                                          ;break ;
 		case 2 : printf( "ERROR: could not resolve device path\n" )                                    ;break ;
-		case 3 : printf( "\nSUCCESS: random data successfully written\n" )                               ;break ;
+		case 3 : printf( "\nSUCCESS: random data successfully written\n" )                             ;break ;
 		/*4 is currently un used */
 		case 5 : printf( "INFO: user chose not to proceed\n" )                                         ;break ;	
 		case 6 : printf( "ERROR: policy prevents non root user opening mapper on system partition\n" ) ;break ;	
@@ -78,8 +78,11 @@ static int return_value( string_t * st, int status )
 		case 12: printf( "ERROR: insufficient privilege to open key file for reading\n" )	       ;break ;	
 		case 13: printf( "ERROR: can not open a mapper on a device with an opened mapper\n" )          ;break ;	
 		case 14: printf( "ERROR: can not open a mapper on a mounted device\n" )                        ;break ;	
-		case 15: printf( "INFO: signal caught,exiting prematurely\n" ) ;
-		
+		case 15: printf( "INFO: signal caught,exiting prematurely\n" ) 				       ;break ;
+		case 16: printf( "ERROR: can not get passphrase in silent mode\n" )			       ;break ;	
+		case 17: printf( "ERROR: insufficient memory to hold passphrase\n" );			       ;break ;	
+		case 18: printf( "ERROR: insufficient memory to hold 3 characters?really?\n" );		       ;break ;		
+				
 	}
 	
 	if( st != NULL )
@@ -156,8 +159,11 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 		return return_value( &mapper,14 ) ;
 	
 	if ( i == 1 ){
-		printf( "Enter passphrase: " ) ;		
-		passphrase = get_passphrase();	
+		printf( "Enter passphrase: " ) ;	
+		switch( StringSilentlyGetFromTerminal( &passphrase ) ){
+			case 1 : return return_value( &mapper,16 ) ;
+			case 2 : return return_value( &mapper,17 ) ;
+		}
 		printf( "\n" ) ;
 		cpass = StringContent( passphrase ) ;
 		len = StringLength( passphrase ) ;
@@ -250,6 +256,7 @@ int open_plain_as_me(const struct_opts * opts,const char * mapping_name,uid_t ui
 int write_device_with_junk( const struct_opts * opts,const char * mapping_name,uid_t uid )
 {	
 	string_t mapper ;	
+	string_t confirm ;
 	
 	double size ;	
 	double size_written ;
@@ -289,14 +296,19 @@ int write_device_with_junk( const struct_opts * opts,const char * mapping_name,u
 	
 	if( opts->dont_ask_confirmation == -1 ){
 		printf( "\nWARNING, device \"%s\" will be overwritten with random data destroying all present data.\n",device ) ;
-		printf( "Are you sure you want to proceed? Type 'Y' and press enter if you are sure: " ) ;
+		printf( "Are you sure you want to proceed? Type \"YES\" and press enter if you are sure: " ) ;
 		
-		buffer[ 0 ] = getchar() ;
-		while( getchar() != '\n' ) { ; }
+		confirm = StringGetFromTerminal() ;
+		if( confirm == NULL )
+			return return_value( &mapper,17 ) ;
+		else{
+			k = StringCompareString( confirm,"YES" ) ;
+			StringDelete( &confirm ) ;
 		
-		if( buffer[ 0 ] != 'Y' ){
-			close_mapper( StringContent( mapper ) ) ;			
-			return return_value( NULL,5 ) ;
+			if( k == 1 ){			
+				close_mapper( StringContent( mapper ) ) ;			
+				return return_value( &mapper,5 ) ;
+			}
 		}
 	}
 	

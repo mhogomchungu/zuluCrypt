@@ -51,7 +51,9 @@ static int status_msg( int st )
 			 printf( "if you want to continue,rerun the command with -k option\n" ) ;							break ;
 		case 12: printf( "ERROR: insufficient privilege to open volume for writing\n" ) ;							break ;
 		case 13: printf( "ERROR: insufficient privilege to open key file for reading\n" );							break ;
-		case 14: printf( "ERROR: only root user can remove keys from system devices\n" );								break ;	
+		case 14: printf( "ERROR: only root user can remove keys from system devices\n" );							break ;	
+		case 15: printf( "ERROR: can not get passphrase in silent mode\n" );									break ;	
+		case 16: printf( "ERROR: insufficient memory to hold passphrase\n" );
 		default :printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}		
 	return st ;
@@ -95,17 +97,23 @@ int removekey( const struct_opts * opts,uid_t uid )
 		if( k != 1 )
 			return status_msg( 11 ) ;
 	
-	if ( i == 1 ){
-		printf( "Enter the passphrase of the key you want to delete: " ) ;
-		pass = get_passphrase() ;
-		printf( "\n" ) ;	
+	if ( i == 1 || keyType == NULL ){
+	
+		printf( "Enter a key to be removed: " ) ;
+		switch( StringSilentlyGetFromTerminal( &pass ) ){
+			case 1 : return status_msg( 15 ) ;
+			case 2 : return status_msg( 16 ) ;
+		}
+		
+		printf( "\n" ) ;
+		
 		status = remove_key( device,StringContent( pass ),StringLength( pass ) ) ;
 		StringDelete( &pass ) ;
 	}else{
 		if( keyType == NULL || keytoremove == NULL )
 			return status_msg( 6 ) ;
 		
-		if( strcmp( keyType, "-f" ) == 0 ){	
+		if( strcmp( keyType,"-f" ) == 0 ){	
 			/*
 			 * function is defined at security.c"
 			 */

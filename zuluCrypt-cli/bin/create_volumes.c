@@ -43,7 +43,10 @@ static int status_msg( int st )
 		case 15: printf( "ERROR: insufficient privilege to open the file in write mode\n" ) ;		break  ;
 		case 16: printf( "ERROR: there seem to be an opened mapper associated with the device\n" ) ;	break  ;
 		case 17: printf( "ERROR: unable to resolve full path to device\n" ) ;				break  ;
-		case 18: printf( "ERROR: can not create a volume on a mounted device\n" ) ;			break  ;				
+		case 18: printf( "ERROR: can not create a volume on a mounted device\n" ) ;			break  ;
+		case 19: printf( "ERROR: can not get passphrase in silent mode\n" );				break  ;	
+		case 20: printf( "ERROR: insufficient memory to hold passphrase\n" );				break  ;
+		case 21: printf( "ERROR: insufficient memory to hold your response\n" );			break  ;
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
 	return st ;
@@ -77,7 +80,7 @@ int create_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid
 	
 	int st  ;
 	struct stat xt ;
-	char confirm ;
+	string_t confirm ;
 	
 	char * dev ; 
 	string_t mapper ; 
@@ -154,26 +157,44 @@ int create_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid
 	if( conf == -1 ){			
 		printf( "\nThis operation will destroy all data in a device at: \"%s\"\n",device ) ;
 		printf("Are you sure you want to proceed?\n" ) ;
-		printf( "Type \"Y\" and press enter if you want to process: " ) ;
-		confirm = getchar() ;
-		while( getchar() != '\n' ){ ; } /* clear the keyboard buffer */
-			
-		if( confirm != 'Y' )
-			return status_msg( 12 ) ;
+		printf( "Type \"YES\" and press enter if you want to process: " ) ;
+		
+		confirm = StringGetFromTerminal() ;	
+		if( confirm == NULL )
+			return status_msg( 21 ) ;
+		else{
+			k = StringCompareString( confirm,"YES" ) ;
+			StringDelete( &confirm ) ;
+		
+			if( k == 1 )
+				return status_msg( 12 ) ;
+		}
 	}
-	if( i == 1 ){
+	
+	if( i == 1 || keyType == NULL ){
 		/*
 		 * Make sure the user has provided all required options
 		 */
 		if( fs == NULL || type == NULL || rng == NULL )
 			return status_msg( 4 ) ;
 		
-		printf( "Enter passphrase: " ) ;			
-		pass_1 = get_passphrase();			
-		printf( "\nRe enter passphrase: " ) ;			
-		pass_2 = get_passphrase();				
-		printf( "\n" ) ;			
-		if(  StringCompare( pass_1,pass_2 ) != 0  ){				
+		printf( "Enter passphrase: " ) ;
+		switch( StringSilentlyGetFromTerminal( &pass_1 ) ){
+			case 1 : return status_msg( 19 ) ;
+			case 2 : return status_msg( 20 ) ;
+		}
+		
+		printf( "\nRe enter passphrase: " ) ;
+		switch( StringSilentlyGetFromTerminal( &pass_2 ) ){
+			case 1 : StringDelete( &pass_1 ) ;
+				 return status_msg( 19 ) ;
+			case 2 : StringDelete( &pass_1 ) ;
+				 return status_msg( 20 ) ;
+		}
+		
+		printf( "\n" ) ;
+		
+		if( StringCompare( pass_1,pass_2 ) != 0 ){				
 			st = 7 ;
 		}else{				
 			st = create_volume( device,fs,type,StringContent( pass_1 ),StringLength( pass_1 ),rng ) ;

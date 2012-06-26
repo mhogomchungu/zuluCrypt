@@ -37,6 +37,8 @@ static int msg( int st )
 		case 9 : printf( "ERROR: required argument is missing\n")					; break ;
 		case 10: printf( "ERROR: insufficient privilege to create destination file\n")			; break ;
 		case 11: printf( "ERROR: wrong passphrase\n")							; break ;
+		case 12: printf( "ERROR: can not get passphrase in silent mode\n" )				; break ;	
+		case 13: printf( "ERROR: insufficient memory to hold passphrase\n" )				; break ;
 	}	
 	return st ;
 }
@@ -70,11 +72,23 @@ static int crypt_opt( const struct_opts * opts,const char * mapper,uid_t uid,int
 		return msg( 6 ) ;
 	
 	if( i == 1 ){
-		printf( "Enter passphrase: " ) ;			
-		p = get_passphrase();			
-		printf( "\nRe enter passphrase: " ) ;			
-		q = get_passphrase();				
-		printf( "\n" ) ;			
+
+		printf( "Enter passphrase: " ) ;
+		switch( StringSilentlyGetFromTerminal( &p ) ){
+			case 1 : return msg( 12 ) ;
+			case 2 : return msg( 13 ) ;
+		}
+		
+		printf( "\nRe enter passphrase: " ) ;
+		switch( StringSilentlyGetFromTerminal( &q ) ){
+			case 1 : StringDelete( &p ) ;
+				 return msg( 12 ) ;
+			case 2 : StringDelete( &p ) ;
+				 return msg( 13 ) ;
+		}
+		
+		printf( "\n" ) ;
+		
 		if( StringCompare( p,q ) != 0 ){
 			StringDelete( &p ) ;
 			StringDelete( &q ) ;

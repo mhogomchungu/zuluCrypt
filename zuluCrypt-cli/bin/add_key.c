@@ -67,6 +67,9 @@ static int status_msg( int st )
 		case 11 : printf( "ERROR: insufficient privilege to write to the volume\n" ) ;	   		break ;	
 		case 12 : printf( "ERROR: insufficient privilege to open key file for reading\n" );		break ;	
 		case 13 : printf( "ERROR: only root user can add keys to system devices\n" );			break ;	
+		case 14 : printf( "ERROR: can not get passphrase in silent mode\n" );				break ;	
+		case 15 : printf( "ERROR: insufficient memory to hold passphrase\n" );				break ;	
+				 
 		default : printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
 	
@@ -77,6 +80,31 @@ static int status_msg_1( int st,const char * device )
 {
 	printf( "ERROR: device \"%s\" is not a luks device\n",device ) ;
 	return st ;
+}
+
+static int get_keys( string_t * key1,string_t * key2,string_t * key3 )
+{
+	int st ;
+	printf( "Enter an existing passphrase: " ) ;		
+	st = StringSilentlyGetFromTerminal( key1 ) ;
+	if( st != 0 )
+		return st ;
+	printf( "\nEnter the new passphrase: " ) ;		
+	st = StringSilentlyGetFromTerminal( key2 ) ;
+	if( st != 0 ){
+		StringDelete( key1 ) ;
+		return st ;
+	}
+	printf( "\nRe enter the new passphrase: " ) ;		
+	st = StringSilentlyGetFromTerminal( key3 ) ;	
+	if( st != 0 ){
+		StringDelete( key1 ) ;
+		StringDelete( key2 ) ;
+		return st ;
+	}
+	
+	printf( "\n" ) ;
+	return 0 ;
 }
 
 /*
@@ -130,16 +158,14 @@ int addkey( const struct_opts * opts,uid_t uid )
 		case 1 : return status_msg( 2 )  ; 
 	}
 	
-	if ( i == 1 ){		
-		printf( "Enter an existing passphrase: " ) ;		
-		presentKey = get_passphrase() ;		
-		printf( "\n" ) ;		
-		printf( "Enter the new passphrase: " ) ;		
-		newKey_1 = get_passphrase() ;		
-		printf( "\n" ) ;		
-		printf( "Re enter the new passphrase: " ) ;		
-		newKey_2 = get_passphrase() ;		
-		printf( "\n" ) ;
+	if( keyType1 == NULL && keyType2 == NULL )
+		i = 1 ;
+	
+	if ( i == 1 ){	
+		switch( get_keys( &presentKey,&newKey_1,&newKey_2 ) ){
+			case 1 : return status_msg( 14 ) ;
+			case 2 : return status_msg( 15 ) ;
+		}
 		
 		if( StringCompare( newKey_1,newKey_2 ) != 0 )			
 			status = 7 ;

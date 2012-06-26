@@ -135,7 +135,7 @@ void zuluCrypt::setupUIElements()
 	m_trayIcon = new QSystemTrayIcon( this );
 	m_trayIcon->setIcon( QIcon( QString( ":/zuluCrypt.png" ) ) );
 
-	QMenu *trayMenu = new QMenu( this ) ;
+	QMenu * trayMenu = new QMenu( this ) ;
 	trayMenu->addAction( tr( "quit" ),this,SLOT( closeApplication() ) );
 	m_trayIcon->setContextMenu( trayMenu );
 
@@ -209,7 +209,7 @@ void zuluCrypt::HighlightRow( int row,bool b )
 	m_ui->tableWidget->setFocus();
 }
 
-void zuluCrypt::currentItemChanged( QTableWidgetItem *current, QTableWidgetItem *previous )
+void zuluCrypt::currentItemChanged( QTableWidgetItem * current, QTableWidgetItem * previous )
 {
 	if( current != NULL )
 		HighlightRow( current->row(), true ) ;
@@ -221,7 +221,7 @@ void zuluCrypt::currentItemChanged( QTableWidgetItem *current, QTableWidgetItem 
 
 void zuluCrypt::closeAllVolumes()
 {
-	closeAllVolumesThread *cavt = new closeAllVolumesThread( m_ui->tableWidget ) ;
+	closeAllVolumesThread * cavt = new closeAllVolumesThread( m_ui->tableWidget ) ;
 	connect( cavt,SIGNAL( close( QTableWidgetItem *,int ) ),this,SLOT( closeAll( QTableWidgetItem *,int ) ) ) ;
 	cavt->start();
 }
@@ -452,7 +452,7 @@ void zuluCrypt::favAboutToHide()
 {
 }
 
-void zuluCrypt::favClicked( QAction *e )
+void zuluCrypt::favClicked( QAction * e )
 {
 	QStringList l = e->text().split( "\t" ) ;
 	emit favClickedVolume( l.at( 0 ),l.at( 1 ) );
@@ -476,7 +476,7 @@ void zuluCrypt::addToFavorite()
 
 void zuluCrypt::menuKeyPressed()
 {
-	QTableWidgetItem *it = m_ui->tableWidget->currentItem() ;
+	QTableWidgetItem * it = m_ui->tableWidget->currentItem() ;
 	if( it != NULL )
 		itemClicked( it,false );
 }
@@ -625,7 +625,7 @@ void zuluCrypt::luksHeaderBackUpContextMenu()
 
 luksaddkey * zuluCrypt::setUpluksaddkey()
 {
-	luksaddkey *addKey = new luksaddkey( this );
+	luksaddkey * addKey = new luksaddkey( this );
 	connect( addKey,SIGNAL( HideUISignal() ),addKey,SLOT( deleteLater() ) );
 	return addKey ;
 }
@@ -642,7 +642,7 @@ void zuluCrypt::ShowAddKey()
 
 luksdeletekey * zuluCrypt::setUpluksdeletekey()
 {
-	luksdeletekey *deleteKey = new luksdeletekey( this );
+	luksdeletekey * deleteKey = new luksdeletekey( this );
 	connect( deleteKey,SIGNAL( HideUISignal() ),deleteKey,SLOT( deleteLater() ) );
 	return deleteKey ;
 }

@@ -59,12 +59,6 @@ void get_opts( int argc,char * argv[],struct_opts * ) ;
 int save_and_restore_luks_header( const struct_opts * opts,uid_t uid,int option  ) ;
 
 /*
- * this function reads user passphrase interactively.
- * It is defined and used in main.c
- */
-string_t get_passphrase( void ) ;
-
-/*
  * this function is responsibe for printing information about an opened volume.
  * It is defined in volume_info.c  
  */
@@ -228,7 +222,3 @@ char * device_from_uuid( const char * uuid ) ;
  */
 int print_partitions( int option ) ;
 
-/*
- * deined at get_passphrase.c * 
- */
-string_t get_passphrase( void ) ;

@@ -34,9 +34,10 @@ extern "C" {
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdarg.h>
+#include <termios.h>
 
 /*
- * string_t type is a  string handle, all string operation should happen through this handle.  
+ * string_t type is a  string handle,all string operation should happen through this handle.  
  */
 typedef struct StringType * string_t ;
 
@@ -53,8 +54,8 @@ string_t StringWithSize( const char * string,size_t length ) ;
 /*
  * Append a string pointer to by s into a string handled by handle st 
  *
- * On success, a concatenated string is returned.
- * On error, NULL is returned and the original string remain intact. 
+ * On success,a concatenated string is returned.
+ * On error,NULL is returned and the original string remain intact. 
  */
 const char * StringAppend( string_t st,const  char * s )  ;
 
@@ -70,8 +71,8 @@ const char * StringMultipleAppend( string_t st,... )  ;
 /*
  * Append a string handled by xt into a string handled by handle st 
  *
- * On success, a concatenated string is returned.
- * On error, NULL is returned and the original string remain intact. 
+ * On success,a concatenated string is returned.
+ * On error,NULL is returned and the original string remain intact. 
  */
 const char * StringAppendString( string_t st,string_t xt )  ;
 
@@ -84,16 +85,16 @@ const char * StringAppendMultipleString( string_t st,... )  ;
 /*
  * Append a char c into a string handled by handle st 
  *
- * On success, a concatenated string is returned.
- * On error, NULL is returned and the original string remain intact. 
+ * On success,a concatenated string is returned.
+ * On error,NULL is returned and the original string remain intact. 
  */
-const char * StringAppendChar( string_t st ,char c )  ;
+const char * StringAppendChar( string_t st,char c )  ;
 
 /*
  * Prepend a string pointed to by s into a string handled by handle st
  * 
- * On success, a concatenated string is returned
- * On error, NULL is returned and the original string remain intact   
+ * On success,a concatenated string is returned
+ * On error,NULL is returned and the original string remain intact   
  */
 const char * StringPrepend( string_t st,const char * s )  ;
 
@@ -117,17 +118,17 @@ const char * StringMultiplePrependString( string_t st,... )  ;
 /*
  * Prepend a string_t xt into a string handled by handle st
  * 
- * On success, a concatenated string is returned
- * On error, NULL is returned and the original string remain intact   
+ * On success,a concatenated string is returned
+ * On error,NULL is returned and the original string remain intact   
  */
 const char * StringPrependString( string_t st,string_t xt )  ;
 /*
  * Prepend a char c into a string handled by handle st
  * 
- * On success, a concatenated string is returned
- * On error, NULL is returned and the original string remain intact   
+ * On success,a concatenated string is returned
+ * On error,NULL is returned and the original string remain intact   
  */
-const char * StringPrependChar( string_t st ,char c )  ;
+const char * StringPrependChar( string_t st,char c )  ;
 
 /*
  * Inherit a string pointed to by data and return a string handle to the string on success or NULL on error. 
@@ -184,7 +185,7 @@ string_t StringCopy( string_t st ) ;
 /*
  * Write "size" amount of content of a string handled by "st" to a buffer pointed by "buffer"  *
  */
-void StringReadToBuffer( string_t st,char * buffer, size_t size ) ;
+void StringReadToBuffer( string_t st,char * buffer,size_t size ) ;
 
 
 /*
@@ -219,7 +220,7 @@ size_t StringLength( string_t st ) ;
  * 
  * NOTE: it is your responsibility to make sure p is within range
  */
-char StringCharAt( string_t st, size_t p ) ;
+char StringCharAt( string_t st,size_t p ) ;
 
 /*
  * return the position of the first occurance of character s starting from position p.
@@ -228,7 +229,7 @@ char StringCharAt( string_t st, size_t p ) ;
  * 
  * NOTE: first character in the string is at position 0
  */
-ssize_t StringIndexOfChar( string_t st, size_t p , char s ) ;
+ssize_t StringIndexOfChar( string_t st,size_t p,char s ) ;
 
 
 /*
@@ -238,7 +239,7 @@ ssize_t StringIndexOfChar( string_t st, size_t p , char s ) ;
  * 
  * NOTE: first character in the string is at position 0
  */
-ssize_t StringIndexOfString( string_t st,size_t p, const char * s ) ;
+ssize_t StringIndexOfString( string_t st,size_t p,const char * s ) ;
 
 
 /*
@@ -246,7 +247,7 @@ ssize_t StringIndexOfString( string_t st,size_t p, const char * s ) ;
  * 
  * -1 is returned if the character isnt in the string
  */
-ssize_t StringLastIndexOfChar( string_t st , char s ) ;
+ssize_t StringLastIndexOfChar( string_t st,char s ) ;
 
 
 /*
@@ -257,7 +258,7 @@ ssize_t StringLastIndexOfChar( string_t st , char s ) ;
  * NOTE: first character in the string is at position 0
  * 
  */
-ssize_t StringLastIndexOfString( string_t st , const char * s ) ;
+ssize_t StringLastIndexOfString( string_t st,const char * s ) ;
 
 
 /*
@@ -265,7 +266,7 @@ ssize_t StringLastIndexOfString( string_t st , const char * s ) ;
  *  
  * NOTE: it is your responsibility to make sure p is within range.
  */
-const char * StringStringAt( string_t st , size_t p ) ;
+const char * StringStringAt( string_t st,size_t p ) ;
 
 
 /*
@@ -275,7 +276,7 @@ const char * StringStringAt( string_t st , size_t p ) ;
  * 
  * return 1 if it doesnt * 
  */
-int StringEndsWithString( string_t st , const char * s ) ;
+int StringEndsWithString( string_t st,const char * s ) ;
 
 
 /*
@@ -285,7 +286,7 @@ int StringEndsWithString( string_t st , const char * s ) ;
  * 
  * return 1 if it doesnt * 
  */
-int StringEndsWithChar( string_t st ,char s ) ;
+int StringEndsWithChar( string_t st,char s ) ;
 
 
 /*
@@ -293,7 +294,7 @@ int StringEndsWithChar( string_t st ,char s ) ;
  * 
  * on error returns NULL and the original string remains intact  
  */
-const char * StringInsertString( string_t st, size_t x, const char * s ) ;
+const char * StringInsertString( string_t st,size_t x,const char * s ) ;
 
 
 /*
@@ -301,29 +302,29 @@ const char * StringInsertString( string_t st, size_t x, const char * s ) ;
  * 
  * on error returns NULL and the original string remains intact  
  */
-const char * StringInsertChar( string_t st, size_t x, char s ) ;
+const char * StringInsertChar( string_t st,size_t x,char s ) ;
 
 
 /*
  * subsititue whatever character is at position x by character s
  * returns a pointer to the string containing the subsititue
  */
-const char * StringSubChar( string_t st, size_t x, char s ) ;
+const char * StringSubChar( string_t st,size_t x,char s ) ;
 
 
 /*
  * start from position x and subsititue all characters in the string by string s.
  * returns a pointer with the substitution.  
  */
-const char * StringSubString( string_t st, size_t x, const char * s ) ;
+const char * StringSubString( string_t st,size_t x,const char * s ) ;
 
 
 /*
  * start at position x and remove y character(s) going right and returns a pointer
  * to the new string or NULL on error and the original string remain intact.
- * Careful though, make sure you dont delete past the string length  
+ * Careful though,make sure you dont delete past the string length  
  */
-const char * StringRemoveLenght( string_t st,size_t x , size_t y ) ;
+const char * StringRemoveLenght( string_t st,size_t x,size_t y ) ;
 
 /*
  * remove all occurances of string s in a string handled by handle st.
@@ -331,7 +332,7 @@ const char * StringRemoveLenght( string_t st,size_t x , size_t y ) ;
  * remain intact
  * 
  */
-const char * StringRemoveString( string_t st, const char * s ) ;
+const char * StringRemoveString( string_t st,const char * s ) ;
 
 /*
  * starting at position p,remove all occurances of string s in a string handled by handle st.
@@ -339,13 +340,13 @@ const char * StringRemoveString( string_t st, const char * s ) ;
  * remain intact
  * 
  */
-const char * StringRemoveStringPos( string_t st, const char * s,size_t p ) ;
+const char * StringRemoveStringPos( string_t st,const char * s,size_t p ) ;
 
 /*
  * Cut the string from position x and discard all elements to the right of x. 
- * Returns a pointer to the result, NULL on error and the original string remain intact
+ * Returns a pointer to the result,NULL on error and the original string remain intact
  */
-const char * StringRemoveRight( string_t st, size_t x ) ;
+const char * StringRemoveRight( string_t st,size_t x ) ;
 
 /*
  * Clear the string handled by handle st. Essentiall remove all elements in it. 
@@ -356,9 +357,9 @@ const char *  StringClear( string_t st ) ;
 
 /*
  * Cut the string from position x and discard all elements to the left of x. 
- * Returns a pointer to the result, NULL on error and the original string remain intact
+ * Returns a pointer to the result,NULL on error and the original string remain intact
  */
-const char * StringRemoveLeft( string_t st, size_t x ) ;
+const char * StringRemoveLeft( string_t st,size_t x ) ;
 
 
 /*
@@ -376,7 +377,7 @@ char * StringLengthCopy( string_t st,size_t x ) ;
  * 
  * Remember to free the returned string when done with it. * 
  */
-string_t StringMidString( string_t st , size_t x, size_t y ) ;
+string_t StringMidString( string_t st,size_t x,size_t y ) ;
 
 
 /*
@@ -384,7 +385,7 @@ string_t StringMidString( string_t st , size_t x, size_t y ) ;
  * return a pointer to the resulting string on success or NULL on error and the original string
  * remain intact.
  */
-const char * StringReplaceString( string_t st, const char * x, const char * y ) ;
+const char * StringReplaceString( string_t st,const char * x,const char * y ) ;
 
 
 /*
@@ -392,32 +393,32 @@ const char * StringReplaceString( string_t st, const char * x, const char * y ) 
  * return a pointer to the resulting string on success or NULL on error and the original string
  * remain intact.
  */
-const char * StringReplaceStringPos( string_t st, const char * x, const char * y,size_t p ) ;
+const char * StringReplaceStringPos( string_t st,const char * x,const char * y,size_t p ) ;
 
 
 /*
  * replace all occurance of char x by char y  
  * Return a const pointer to a modified string   
  */
-const char * StringReplaceChar( string_t st,char x, char y ) ;
+const char * StringReplaceChar( string_t st,char x,char y ) ;
 
 
 /*
  * starting at position p,replace all occurance of char x by char y  
  * Return a const pointer to a modified string   
  */
-const char * StringReplaceCharPos( string_t st,char x, char y,size_t p ) ;
+const char * StringReplaceCharPos( string_t st,char x,char y,size_t p ) ;
 
 /*
  *  Replace all characters in y by x in a string handled by st
  */
-const char * StringReplaceCharString( string_t st, char x, const char * y ) ;
+const char * StringReplaceCharString( string_t st,char x,const char * y ) ;
 
 
 /*
- * Starting at position, Replace all characters in y by x in a string handled by st
+ * Starting at position,Replace all characters in y by x in a string handled by st
  */
-const char * StringReplaceCharStringPos( string_t st, char x, const char * y,size_t p ) ;
+const char * StringReplaceCharStringPos( string_t st,char x,const char * y,size_t p ) ;
 
 /*
  * convert a number z into a string and store the result into array x of size y.
@@ -425,11 +426,11 @@ const char * StringReplaceCharStringPos( string_t st, char x, const char * y,siz
  * return value: a pointer to the beginning of the result(use this pointer and not x).
  * 
  * NOTE: Its your responsibility to make sure the resulting string fit into array x.
- * If z has N digits, then the array must be atleast N+1 in size, null character
+ * If z has N digits,then the array must be atleast N+1 in size,null character
  * takes the last spot.  
  */
 
-char * StringIntToString_1( char * x, size_t y, uint64_t z ) ;
+char * StringIntToString_1( char * x,size_t y,uint64_t z ) ;
 
 /*
  * convert a number z into a string
@@ -439,31 +440,31 @@ string_t StringIntToString( uint64_t ) ;
 /*
  * Compare a string handled by handle x to a string handled by handle y and return 0 if they are equal and 1 if they are not  
  */
-int StringCompare( string_t x , string_t y ) ;
+int StringCompare( string_t x,string_t y ) ;
 
 /*
  * Compare a string handled by handle x to a string pointer to by y and return 0 if they are equal and 1 if they are not  
  */
-int StringCompareString( string_t x, const char * y ) ;
+int StringCompareString( string_t x,const char * y ) ;
 
 /*
  * Insert character x infront of every character that appear in string y in a string handled by handle st.
  * Retun a poiter to the final string on success and NULL on error and the original string remain intact
  */
-const char * StringInsertCharString( string_t st, char x, const char * y ) ;
+const char * StringInsertCharString( string_t st,char x,const char * y ) ;
 
 /*
  * Starting at position p,insert character x infront of every character that appear in string y in a string handled by handle st.
  * Retun a poiter to the final string on success and NULL on error and the original string remain intact
  */
-const char * StringInsertCharStringPos( string_t st, char x, const char * y,size_t p ) ;
+const char * StringInsertCharStringPos( string_t st,char x,const char * y,size_t p ) ;
 
 
 /*
  * Insert character x infront of every character y in a string handled by handle st.
  * Retun a poiter to the final string on success and NULL on error and the original string remain intact
  */
-const char * StringInsertCharChar( string_t st, char x, char y ) ;
+const char * StringInsertCharChar( string_t st,char x,char y ) ;
 
 /*
  * Crop off the first x elements and the last y elements from the string handled by handle st
@@ -471,7 +472,23 @@ const char * StringInsertCharChar( string_t st, char x, char y ) ;
  * Return a pointer to the cropped string on success and NULL on error and the original string remain intact. 
  * NULL is also returned if cropping will result in less that zero characters in the string 
  */
-const char * StringCrop( string_t st, size_t x, size_t y ) ;
+const char * StringCrop( string_t st,size_t x,size_t y ) ;
+
+/*
+ * getchar() until a newline or EOF character is reached and put the characters to a string_t object
+ * The function basically get its content from the terminal ( stdin ) .
+ * NULL is returned if sufficient memory can not be optained to hold terminal content.
+ */
+string_t StringGetFromTerminal( void ) ;
+
+/*
+ * Turn echo off and get string from the terminal.
+ * This function is ideal for reading passphrases from the terminal.
+ * 1 is returned when character echoing can not be turned off.
+ * 2 is returned if sufficient memory can not be optained to hold terminal content.
+ * 0 is returned on success. 
+ */
+int StringSilentlyGetFromTerminal( string_t * ) ;
 
 /*
  *  Open a file given by path and return a string_t handle 
@@ -497,7 +514,7 @@ int StringGetFromFile_1( string_t * st,const char * path ) ;
  *                2 - could not open file for reading.
  * 		  3 - could not allocate memory to host file content 
  * 
- * This function does the same thing the previous one does, the different is how return values are returned.
+ * This function does the same thing the previous one does,the different is how return values are returned.
  */
 string_t StringGetFromFile_2( const char * path,int * status ) ;
 
@@ -505,9 +522,9 @@ string_t StringGetFromFile_2( const char * path,int * status ) ;
  *  White the string managed by handle st to a file given by path and return the number of bytes written. *  
  */
 
-#define CREATE 1  /*if the file does not exist, create it,if the file exist,trancate it*/
-#define APPEND 2  /* if the file exist, append it*/
-void StringWriteToFile( string_t st,const char * path, int mode ) ; 
+#define CREATE 1  /*if the file does not exist,create it,if the file exist,trancate it*/
+#define APPEND 2  /* if the file exist,append it*/
+void StringWriteToFile( string_t st,const char * path,int mode ) ; 
 
 /*
  * Open a virtual file given by path return a string_t handle with the content of the file.

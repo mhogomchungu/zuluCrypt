@@ -735,6 +735,55 @@ const char * StringInsertCharChar( string_t st,char x,char y )
 	return StringInsertCharString( st,x,c ) ;
 }
 
+string_t StringGetFromTerminal( void ) 
+{
+	int c ;
+	const char * d ;
+	string_t p = String( "" ) ;
+	
+	if( p == NULL )
+		return NULL ;
+	while( 1 ){
+		c = getchar() ;
+		if( c == '\n' || c == EOF )
+			break ;
+		else{
+			d = StringAppendChar( p,( char )c ) ;
+			if( d == NULL ){
+				StringDelete( &p ) ;
+				return NULL ;
+			}			
+		}
+	}
+	
+	return p ;
+}
+
+int StringSilentlyGetFromTerminal( string_t * q ) 
+{
+	string_t p ;
+	struct termios old ;
+	struct termios new ;
+	
+	if ( tcgetattr ( 1,&old ) != 0 )
+		return 1 ;
+	
+	new = old;
+	new.c_lflag &= ~ECHO;
+	
+	if ( tcsetattr ( 1,TCSAFLUSH,&new ) != 0 )
+		return 1 ;
+	
+	p = StringGetFromTerminal() ;
+	if( p == NULL )
+		return 2 ;
+	
+	( void ) tcsetattr ( 1,TCSAFLUSH,&old );
+	
+	*q = p ;
+	return 0 ;
+}
+
 int StringGetFromFile_1( string_t * str,const char * path ) 
 {
 	struct stat st ;
