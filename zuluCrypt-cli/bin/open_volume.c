@@ -111,23 +111,24 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 		default: return status_msg( 3,device,cpoint ) ;
 	}
 	
-	if( strcmp( opts->mode,"rw" ) == 0 ){
+	if( mode == NULL )
+		mode = "ro" ;
+	
+	if( strncmp( mode,"ro",2 ) != 0 )
+		if ( strncmp( mode,"rw",2 ) != 0 )
+			return status_msg( 13,device,cpoint ) ;
+		
+	if( strcmp( mode,"rw" ) == 0 ){
 		switch( can_open_path_for_writing( dev,uid ) ){
 			case 0 : break ;
 			case 1 : return status_msg( 23,device,cpoint ) ;
 			default: return status_msg( 3,device,cpoint ) ;
 		}
 	}
+	
 	device = realpath( dev,NULL ) ;
 	if( device == NULL )
-		return status_msg( 17,device,cpoint ) ;
-	
-	if( mode == NULL ) 
-		return status_msg( 11,device,cpoint ) ;
-	
-	if( strncmp( mode,"ro",2 ) != 0 )
-		if ( strncmp( mode,"rw",2 ) != 0 )
-			return status_msg( 13,device,cpoint ) ;
+		return status_msg( 17,device,cpoint ) ;	
 	
 	if( nmp == 1 && mount_point != NULL )
 		return status_msg( 18,device,cpoint ) ;

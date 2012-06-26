@@ -26,7 +26,7 @@ void get_opts( int argc,char * argv[],struct_opts * stopts )
 	stopts->device = NULL ;
 	stopts->mount_point = NULL ;
 	stopts->action = '\0' ;
-	stopts->mode = "ro" ;
+	stopts->mode = NULL ;
 	stopts->key_source = NULL ;
 	stopts->key = NULL ;
 	stopts->fs = "ext4" ;

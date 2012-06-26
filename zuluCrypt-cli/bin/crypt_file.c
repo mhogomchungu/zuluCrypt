@@ -34,11 +34,12 @@ static int msg( int st )
 		case 6 : printf( "ERROR: invalid path to source\n")						; break ;
 		case 7 : printf( "ERROR: could not resolve path to destination file\n")				; break ;
 		case 8 : printf( "ERROR: passphrases do not match\n")						; break ;
-		case 9 : printf( "ERROR: required argument is missing\n")					; break ;
+		case 9 : printf( "ERROR: destination path is missing\n")					; break ;
 		case 10: printf( "ERROR: insufficient privilege to create destination file\n")			; break ;
 		case 11: printf( "ERROR: wrong passphrase\n")							; break ;
 		case 12: printf( "ERROR: can not get passphrase in silent mode\n" )				; break ;	
 		case 13: printf( "ERROR: insufficient memory to hold passphrase\n" )				; break ;
+		case 14: printf( "ERROR: source path is missing\n")						; break ;
 	}	
 	return st ;
 }
@@ -58,9 +59,9 @@ static int crypt_opt( const struct_opts * opts,const char * mapper,uid_t uid,int
 	
 	if( dest == NULL )
 		return msg( 9 ) ;
-	
+
 	if( source == NULL )
-		return msg( 9 ) ;
+		return msg( 14 ) ;
 	
 	if( is_path_valid( dest ) == 0 )
 		return msg( 5 ) ;
@@ -71,7 +72,7 @@ static int crypt_opt( const struct_opts * opts,const char * mapper,uid_t uid,int
 	if( is_path_valid( source ) != 0 )
 		return msg( 6 ) ;
 	
-	if( i == 1 ){
+	if( i == 1 || type == NULL ){
 
 		printf( "Enter passphrase: " ) ;
 		switch( StringSilentlyGetFromTerminal( &p ) ){
