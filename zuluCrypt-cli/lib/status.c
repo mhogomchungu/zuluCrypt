@@ -32,7 +32,7 @@ static char * loop_device_address( const char * device )
 	char * path ;
 	struct loop_info64 l_info ;
 	
-	fd = open( device ,O_RDONLY ) ;
+	fd = open( device,O_RDONLY ) ;
 	ioctl( fd, LOOP_GET_STATUS64,&l_info ) ;
 	path = realpath( ( char * ) l_info.lo_file_name,NULL ) ;
 	close( fd ) ;
@@ -48,7 +48,7 @@ char * status( const char * mapper )
 	#define SIZE 64
 	char buff[ SIZE ] ;	
 	char * buffer = buff ;
-	
+	const char * z ;
 	const char * e ;
 	const char * type ;
 	char * path ;
@@ -107,16 +107,13 @@ char * status( const char * mapper )
 	}else if( strcmp( type,"plain") )
 		StringAppend( p,"plain" ) ;
 	
-	StringAppend( p,"\n cipher:\t" );
-	StringAppend( p,crypt_get_cipher_mode( cd ) ) ;
+	StringMultipleAppend( p,"\n cipher:\t",crypt_get_cipher_mode( cd ),'\0' );
 	
-	StringAppend( p,"\n keysize:\t" );
-	StringAppend( p,StringIntToString_1( buffer,SIZE,8 * crypt_get_volume_key_size( cd ) ) ) ;
-	StringAppend( p," bits" );
-	
-	StringAppend( p,"\n device:\t" );	
-	e = crypt_get_device_name( cd ) ;
-	StringAppend( p,e ) ;
+	z = StringIntToString_1( buffer,SIZE,8 * crypt_get_volume_key_size( cd ) ) ;
+	StringMultipleAppend( p,"\n keysize:\t",z," bits",'\0' );
+
+	e = crypt_get_device_name( cd ) ;	
+	StringMultipleAppend( p,"\n device:\t",e,'\0' );	
 	
 	if( strncmp( e,"/dev/loop",9 ) == 0 ){
 		StringAppend( p,"\n loop:   \t" );
@@ -131,13 +128,11 @@ char * status( const char * mapper )
 		StringAppend( p,"\n loop:   \tNil" ) ;
 	}		
 	
-	StringAppend( p,"\n offset:\t");
-	StringAppend( p,StringIntToString_1( buffer,SIZE,crypt_get_data_offset( cd ) ) )  ;
-	StringAppend( p," sectors" ) ;	
+	z = StringIntToString_1( buffer,SIZE,crypt_get_data_offset( cd ) ) ;
+	StringMultipleAppend( p,"\n offset:\t",z," sectors",'\0' );
 	
-	StringAppend( p,"\n size:   \t" );
-	StringAppend( p,StringIntToString_1( buffer,SIZE,cad.size ) ) ;
-	StringAppend( p," sectors" );
+	z = StringIntToString_1( buffer,SIZE,cad.size ) ;
+	StringMultipleAppend( p,"\n size:   \t",z," sectors",'\0' );
 	
 	if( cad.flags == 1 )
 		StringAppend( p,"\n mode:   \tread only" );
@@ -156,13 +151,11 @@ char * status( const char * mapper )
 			}		
 		}
 		
-		StringAppend( p,"\n active slots:\t");
-		StringAppend( p,StringIntToString_1( buffer,SIZE,i ) );
+		StringMultipleAppend( p,"\n active slots:\t",StringIntToString_1( buffer,SIZE,i ),'\0' );
 		
-		StringAppend( p," / ");
-		StringAppend( p,StringIntToString_1( buffer,SIZE,k ) ) ;
+		StringMultipleAppend( p," / ",StringIntToString_1( buffer,SIZE,k ),'\0' );
 	}else{
-		StringAppend( p,"\n active slots:\tNil");
+		StringAppend( p,"\n active slots:\tNil" );
 	}
 	
 	crypt_free( cd );

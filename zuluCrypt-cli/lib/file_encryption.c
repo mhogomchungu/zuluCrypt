@@ -18,6 +18,8 @@
  */
 
 #include "includes.h"
+#include "../bin/libzuluCrypt-exe.h"
+#include "../bin/bash_special_chars.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -85,11 +87,13 @@ static string_t crypt_mapper( const char * path,const char * key,uint64_t key_le
 	else
 		mapper = StringAppend( p,q + 1 ) + s ;
 	
+	replace_bash_special_chars( p ) ;
+	
 	if( open_plain( path,mapper,"rw",key,key_len ) != 0 ){
 		StringDelete( &p ) ;
 		return NULL ;
 	}
-	
+
 	return p ;
 }
 

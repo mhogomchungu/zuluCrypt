@@ -25,7 +25,7 @@
  * work around the bug. 
 */
 
-void replace_bash_special_chars( string_t * st )
+void replace_bash_special_chars( string_t st )
 {
-	StringReplaceCharString( *st,'_',BASH_SPECIAL_CHARS ) ;
+	StringReplaceCharString( st,'_',BASH_SPECIAL_CHARS ) ;
 }

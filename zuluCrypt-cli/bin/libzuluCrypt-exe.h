@@ -105,7 +105,7 @@ int is_path_valid( const char * path ) ;
  * The explanation for why it does that is in the source file.
  * The function is defined in replace_bash_special_chars.c * 
  */
-void replace_bash_special_chars( string_t * ) ;
+void replace_bash_special_chars( string_t ) ;
 
 /*
  * thiw function reads a passphrase from a key file after it makes sure a user who started the
