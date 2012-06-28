@@ -44,7 +44,7 @@
  * this simple hash function will make the above possible by appending hush of full path hopefully to make sure two
  * paths will always be different while using the same mapping_name
  */
-string_t hash_path( const char * path )
+static string_t hash_path( const char * path )
 {
 	size_t i = 0 ;
 	size_t l = strlen( path ) ;

@@ -19,7 +19,6 @@
 
 #include "includes.h"
 #include "../bin/libzuluCrypt-exe.h"
-#include "../bin/bash_special_chars.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -72,28 +71,22 @@
 
 static string_t crypt_mapper( const char * path,const char * key,uint64_t key_len )
 {
-	const char * mapper ;
+	string_t p ;
 	
-	char * q = strrchr( path,'/' ) ;
+	char * mpath = realpath( path,NULL ) ;
 	
-	string_t p = String( crypt_get_dir() ) ;
+	if( mpath == NULL )
+		return NULL ;
 	
-	size_t s = StringLength( p ) + 1 ;
-	
-	StringAppend( p,"/zuluCrypt-" ) ;
-	
-	if( q == NULL )
-		mapper = StringAppend( p,path ) + s ;
-	else
-		mapper = StringAppend( p,q + 1 ) + s ;
-	
-	replace_bash_special_chars( p ) ;
-	
-	if( open_plain( path,mapper,"rw",key,key_len ) != 0 ){
+	p = create_mapper_name( mpath,strrchr( mpath,'/' ) + 1,0,OPEN ) ;
+
+	if( open_plain( mpath,StringContent( p ),"rw",key,key_len ) != 0 ){
 		StringDelete( &p ) ;
 		return NULL ;
 	}
-
+	
+	StringMultiplePrepend( p,"/",crypt_get_dir(),'\0' ) ;
+	free( mpath ) ;
 	return p ;
 }
 
