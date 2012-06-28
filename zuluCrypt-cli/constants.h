@@ -36,4 +36,10 @@
 #define OPEN 1
 #define CLOSE 2
 
+#define READ 1
+#define WRITE 0
+
+#define KEYFILE_MAX_SIZE 8192000
+#define KEY_MAX_SIZE 512
+
 #endif

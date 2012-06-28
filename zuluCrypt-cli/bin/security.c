@@ -22,8 +22,7 @@
 #include <errno.h>
 #include <unistd.h>
 
-#define READ 1 
-#define WRITE 0
+#include "../constants.h"
 
 #ifdef __STDC__
 int seteuid( uid_t );
@@ -115,7 +114,8 @@ int get_pass_from_file( const char * path,uid_t uid,string_t * st )
 		case 1 : return 4 ;
 		case 2 : return 1 ;
 	}
-	switch( StringGetFromFile_1( st,path ) ){
+	
+	switch( StringGetFromFile_3( st,path,0,KEYFILE_MAX_SIZE ) ){
 		case 1 : return 1 ;
 		case 2 : return 4 ;
 		case 3 : return 2 ;

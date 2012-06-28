@@ -482,6 +482,13 @@ const char * StringCrop( string_t st,size_t x,size_t y ) ;
 string_t StringGetFromTerminal( void ) ;
 
 /*
+ * getchar() of upto s characters or until a newline or EOF character is reached and put the characters to a string_t object
+ * The function basically get its content from the terminal ( stdin ) .
+ * NULL is returned if sufficient memory can not be optained to hold terminal content.
+ */
+string_t StringGetFromTerminal_1( size_t s ) ;
+
+/*
  * Turn echo off and get string from the terminal.
  * This function is ideal for reading passphrases from the terminal.
  * 1 is returned when character echoing can not be turned off.
@@ -490,6 +497,14 @@ string_t StringGetFromTerminal( void ) ;
  */
 int StringSilentlyGetFromTerminal( string_t * ) ;
 
+/*
+ * Turn echo off and get a string of upto s characters from the terminal.
+ * This function is ideal for reading passphrases from the terminal.
+ * 1 is returned when character echoing can not be turned off.
+ * 2 is returned if sufficient memory can not be optained to hold terminal content.
+ * 0 is returned on success. 
+ */
+int StringSilentlyGetFromTerminal_1( string_t *,size_t s ) ;
 /*
  *  Open a file given by path and return a string_t handle 
  * 
@@ -506,6 +521,15 @@ string_t StringGetFromFile( const char * path ) ;
  */
 int StringGetFromFile_1( string_t * st,const char * path ) ;
 
+/*
+ *  Open a file given by path and return a string_t handle through agrument st with the content of the file .
+ *  Strart reading the file from offset byte and read length bytes.  
+ *  return value: 0 - opefation succeeded.
+ *                1 - path is invalid.
+ *                2 - could not open file for reading.
+ * 		  3 - could not allocate memory to host file content 
+ */
+int StringGetFromFile_3( string_t * st,const char * path,size_t offset,size_t length ) ;
 /*
  *  Open a file given by path and return a string_t handle with hhe content of the file .  
  *  return value through status:

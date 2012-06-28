@@ -100,7 +100,7 @@ int removekey( const struct_opts * opts,uid_t uid )
 	if ( i == 1 || keyType == NULL ){
 	
 		printf( "Enter a key to be removed: " ) ;
-		switch( StringSilentlyGetFromTerminal( &pass ) ){
+		switch( StringSilentlyGetFromTerminal_1( &pass,KEY_MAX_SIZE ) ){
 			case 1 : return status_msg( 15 ) ;
 			case 2 : return status_msg( 16 ) ;
 		}

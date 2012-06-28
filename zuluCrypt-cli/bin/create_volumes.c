@@ -159,7 +159,7 @@ int create_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid
 		printf("Are you sure you want to proceed?\n" ) ;
 		printf( "Type \"YES\" and press enter if you want to process: " ) ;
 		
-		confirm = StringGetFromTerminal() ;	
+		confirm = StringGetFromTerminal_1( 3 ) ;	
 		if( confirm == NULL )
 			return status_msg( 21 ) ;
 		else{
@@ -179,13 +179,13 @@ int create_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid
 			return status_msg( 4 ) ;
 		
 		printf( "Enter passphrase: " ) ;
-		switch( StringSilentlyGetFromTerminal( &pass_1 ) ){
+		switch( StringSilentlyGetFromTerminal_1( &pass_1,KEY_MAX_SIZE ) ){
 			case 1 : return status_msg( 19 ) ;
 			case 2 : return status_msg( 20 ) ;
 		}
 		
 		printf( "\nRe enter passphrase: " ) ;
-		switch( StringSilentlyGetFromTerminal( &pass_2 ) ){
+		switch( StringSilentlyGetFromTerminal_1( &pass_2,KEY_MAX_SIZE ) ){
 			case 1 : StringDelete( &pass_1 ) ;
 				 return status_msg( 19 ) ;
 			case 2 : StringDelete( &pass_1 ) ;

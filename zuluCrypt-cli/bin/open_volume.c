@@ -177,7 +177,7 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 	if ( i == 1 || source == NULL ){
 		
 		printf( "Enter passphrase: " ) ;		
-		switch( StringSilentlyGetFromTerminal( &passphrase ) ){
+		switch( StringSilentlyGetFromTerminal_1( &passphrase,KEY_MAX_SIZE ) ){
 			case 1 : return status_msg_1( 26,opts,device,cpoint ) ;
 			case 2 : return status_msg_1( 27,opts,device,cpoint ) ;
 		}

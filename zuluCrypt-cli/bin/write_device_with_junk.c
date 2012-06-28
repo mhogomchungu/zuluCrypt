@@ -160,7 +160,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	
 	if ( i == 1 ){
 		printf( "Enter passphrase: " ) ;	
-		switch( StringSilentlyGetFromTerminal( &passphrase ) ){
+		switch( StringSilentlyGetFromTerminal_1( &passphrase,KEY_MAX_SIZE ) ){
 			case 1 : return return_value( &mapper,16 ) ;
 			case 2 : return return_value( &mapper,17 ) ;
 		}
@@ -298,7 +298,7 @@ int write_device_with_junk( const struct_opts * opts,const char * mapping_name,u
 		printf( "\nWARNING, device \"%s\" will be overwritten with random data destroying all present data.\n",device ) ;
 		printf( "Are you sure you want to proceed? Type \"YES\" and press enter if you are sure: " ) ;
 		
-		confirm = StringGetFromTerminal() ;
+		confirm = StringGetFromTerminal_1( 3 ) ;
 		if( confirm == NULL )
 			return return_value( &mapper,17 ) ;
 		else{

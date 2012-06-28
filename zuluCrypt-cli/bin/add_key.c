@@ -86,17 +86,17 @@ static int get_keys( string_t * key1,string_t * key2,string_t * key3 )
 {
 	int st ;
 	printf( "Enter an existing passphrase: " ) ;		
-	st = StringSilentlyGetFromTerminal( key1 ) ;
+	st = StringSilentlyGetFromTerminal_1( key1,KEY_MAX_SIZE ) ;
 	if( st != 0 )
 		return st ;
 	printf( "\nEnter the new passphrase: " ) ;		
-	st = StringSilentlyGetFromTerminal( key2 ) ;
+	st = StringSilentlyGetFromTerminal_1( key2,KEY_MAX_SIZE ) ;
 	if( st != 0 ){
 		StringDelete( key1 ) ;
 		return st ;
 	}
 	printf( "\nRe enter the new passphrase: " ) ;		
-	st = StringSilentlyGetFromTerminal( key3 ) ;	
+	st = StringSilentlyGetFromTerminal_1( key3,KEY_MAX_SIZE ) ;	
 	if( st != 0 ){
 		StringDelete( key1 ) ;
 		StringDelete( key2 ) ;

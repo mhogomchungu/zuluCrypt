@@ -759,55 +759,138 @@ string_t StringGetFromTerminal( void )
 	return p ;
 }
 
+string_t StringGetFromTerminal_1( size_t s ) 
+{
+	int c ;
+	const char * d ;
+	string_t p = String( "" ) ;
+	
+	if( p == NULL )
+		return NULL ;
+	while( 1 ){
+		
+		if( s == 0 ){
+			/*
+			 * we already got the requested number of characters,now clear the buffer
+			 * by reading until we get a newline or EOF character
+			 */
+			while( 1 ){
+				c = getchar() ;
+				if( c == '\n' || c == EOF )
+					break ;
+			}
+			
+			return p ;
+		}
+		
+		c = getchar() ;
+		
+		if( c == '\n' || c == EOF )
+			break ;
+		else{
+			s-- ;
+			d = StringAppendChar( p,( char )c ) ;
+			if( d == NULL ){
+				StringDelete( &p ) ;
+				return NULL ;
+			}			
+		}
+	}
+	
+	return p ;
+}
+
+static inline int __terminalEchoOff( struct termios * old,struct termios * new )
+{	
+	if( tcgetattr ( 1,old ) != 0 )
+		return 1 ;
+	
+	*new = *old;
+	new->c_lflag &= ~ECHO;
+	
+	if( tcsetattr ( 1,TCSAFLUSH,new ) != 0 )
+		return 1 ;
+	
+	return 0 ;	
+}
+
 int StringSilentlyGetFromTerminal( string_t * q ) 
 {
 	string_t p ;
 	struct termios old ;
 	struct termios new ;
 	
-	if ( tcgetattr ( 1,&old ) != 0 )
-		return 1 ;
-	
-	new = old;
-	new.c_lflag &= ~ECHO;
-	
-	if ( tcsetattr ( 1,TCSAFLUSH,&new ) != 0 )
+	if( __terminalEchoOff( &old,&new ) == 1 )
 		return 1 ;
 	
 	p = StringGetFromTerminal() ;
 	if( p == NULL )
 		return 2 ;
 	
-	( void ) tcsetattr ( 1,TCSAFLUSH,&old );
+	tcsetattr ( 1,TCSAFLUSH,&old );
 	
 	*q = p ;
 	return 0 ;
 }
 
+int StringSilentlyGetFromTerminal_1( string_t * q,size_t s ) 
+{
+	string_t p ;
+	struct termios old ;
+	struct termios new ;
+	
+	if( __terminalEchoOff( &old,&new ) == 1 )
+		return 1 ;
+	
+	p = StringGetFromTerminal_1( s ) ;
+	if( p == NULL )
+		return 2 ;
+	
+	tcsetattr ( 1,TCSAFLUSH,&old );
+	
+	*q = p ;
+	return 0 ;
+}
 int StringGetFromFile_1( string_t * str,const char * path ) 
 {
 	struct stat st ;
-	int fd ;
-	char * c ;
-	
 	if( stat( path,&st ) != 0 )
 		return 1 ;
+	return StringGetFromFile_3( str,path,0,st.st_size ) ;
+}
+
+int StringGetFromFile_3( string_t * str,const char * path,size_t offset,size_t length ) 
+{
+	int fd ;
+	char * c ;
+	size_t size ;
 	
-	c = ( char * ) malloc( sizeof( char ) * ( st.st_size + 1 ) ) ; 
+	struct stat xt ;
+	
+	if( stat( path,&xt ) != 0 )
+		return 1 ;
+	
+	if( length < xt.st_size )
+		size = length ;
+	else
+		size = xt.st_size ;
+		
+	c = ( char * ) malloc( sizeof( char ) * ( size + 1 ) ) ; 
 	
 	if( c == NULL )  
 		return 3 ;
 	
 	if( ( fd = open( path,O_RDONLY ) ) == -1 )
 		return 2 ;	
-
-	*( c + st.st_size ) = '\0' ;
 	
-	read( fd,c,st.st_size ) ;
+	lseek( fd,offset,SEEK_SET ) ;
+	read( fd,c,size ) ;
 	
 	close( fd ) ;
-
-	*str = StringInheritWithSize( &c,st.st_size ) ;
+	
+	*( c + size ) = '\0' ;
+	
+	*str = StringInheritWithSize( &c,size ) ;
 	if( *str == NULL )
 	{
 		free( c ) ;
@@ -816,10 +899,15 @@ int StringGetFromFile_1( string_t * str,const char * path )
 	return 0 ;
 }
 
-string_t StringGetFromFile_2( const char * path,int *  status ) 
+string_t StringGetFromFile_2( const char * path,int * status ) 
 {
 	string_t st = NULL ;
-	*status = StringGetFromFile_1( &st,path ) ;
+	struct stat xt ;
+	if( stat( path,&xt ) != 0 ){
+		*status = 1 ;
+		return NULL ;
+	}
+	*status = StringGetFromFile_3( &st,path,0,xt.st_size ) ;
 	return st ; 
 }
 

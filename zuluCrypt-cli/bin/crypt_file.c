@@ -75,13 +75,13 @@ static int crypt_opt( const struct_opts * opts,const char * mapper,uid_t uid,int
 	if( i == 1 || type == NULL ){
 
 		printf( "Enter passphrase: " ) ;
-		switch( StringSilentlyGetFromTerminal( &p ) ){
+		switch( StringSilentlyGetFromTerminal_1( &p,KEY_MAX_SIZE ) ){
 			case 1 : return msg( 12 ) ;
 			case 2 : return msg( 13 ) ;
 		}
 		
 		printf( "\nRe enter passphrase: " ) ;
-		switch( StringSilentlyGetFromTerminal( &q ) ){
+		switch( StringSilentlyGetFromTerminal_1( &q,KEY_MAX_SIZE ) ){
 			case 1 : StringDelete( &p ) ;
 				 return msg( 12 ) ;
 			case 2 : StringDelete( &p ) ;
