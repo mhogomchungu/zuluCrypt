@@ -18,6 +18,7 @@
  */
 
 #include "includes.h"
+
 static int check_empty_slot( const char * device )
 {
 	int status = 0 ;
@@ -47,14 +48,14 @@ static int status_msg( int st )
 		case 6 : printf( "ERROR: one or more required argument(s) for this operation is missing\n" ) ;						break ;
 		case 7 : printf( "ERROR: could not get enough memory to open the key file\n" ) ;							break ;
 		case 10: printf( "ERROR: device does not exist\n" );											break ;	
-		case 11: printf( "WARNING: there is only one key in the volume left and all data in the volume will be lost if you continue.\n" );
-			 printf( "if you want to continue,rerun the command with -k option\n" ) ;							break ;
+		case 11: printf( "INFO: operation terminated per user request\n" );									break ;
 		case 12: printf( "ERROR: insufficient privilege to open volume for writing\n" ) ;							break ;
 		case 13: printf( "ERROR: insufficient privilege to open key file for reading\n" );							break ;
 		case 14: printf( "ERROR: only root user can remove keys from system devices\n" );							break ;	
 		case 15: printf( "ERROR: can not get passphrase in silent mode\n" );									break ;	
 		case 16: printf( "ERROR: insufficient memory to hold passphrase\n" );
-		default :printf( "ERROR: unrecognized error with status number %d encountered\n",st );
+		case 17: printf( "ERROR: insufficient memory to hold your response\n" );
+		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}		
 	return st ;
 }
@@ -74,6 +75,8 @@ int removekey( const struct_opts * opts,uid_t uid )
 	const char * keytoremove = opts->key ;
 	
 	string_t pass;
+	string_t confirm ;
+	
 	int status = 0 ;
 	
 	/*
@@ -93,9 +96,20 @@ int removekey( const struct_opts * opts,uid_t uid )
 		case 1 : return status_msg( 12 ); break ;		
 	}
 	
-	if( check_empty_slot( device ) == 3 )
-		if( k != 1 )
-			return status_msg( 11 ) ;
+	if( check_empty_slot( device ) == 3 ){
+		if( k != 1 ){
+			printf( "WARNING: there is only one key in the volume and all data in it will be lost if you continue.\n" );
+			printf( "Do you still want to continue? Type \"YES\" if you do: " );
+			confirm = StringGetFromTerminal_1( 3 ) ;
+			if( confirm == NULL )
+				return status_msg( 17 ) ;
+			k = StringEqual( confirm,"YES" ) ;
+			StringDelete( &confirm ) ;
+			if( k == 1 )
+				return status_msg( 11 ) ;
+		}
+			
+	}
 	
 	if ( i == 1 || keyType == NULL ){
 	

@@ -555,7 +555,6 @@ static char * StringRS__( string_t st,const char * x,const char * s,size_t p )
 	size_t j = strlen( s ) ;
 	size_t k = strlen( x ) ;
 	size_t len ;
-	size_t diff ;
 	
 	if( j == k )
 	{
@@ -583,14 +582,12 @@ static char * StringRS__( string_t st,const char * x,const char * s,size_t p )
 		while( ( c = strstr( e,x ) ) != NULL )
 		{
 			len = c - st->string ; 
-			diff = k - j ;
 			memmove( c + j,c + k,st->size - ( c - st->string + k ) + 1 ) ;			
 			memcpy( c,s,j ) ;
-			d = __StringExpandMemory( st,st->size - diff ) ;
 			if( d != NULL )
 			{
 				st->string = d ;
-				st->size = st->size - diff ;
+				st->size = st->size +j - k  ;
 				e = st->string + len ;
 			}
 		}
@@ -767,8 +764,9 @@ string_t StringGetFromTerminal_1( size_t s )
 	
 	if( p == NULL )
 		return NULL ;
+	
 	while( 1 ){
-		
+
 		if( s == 0 ){
 			/*
 			 * we already got the requested number of characters,now clear the buffer

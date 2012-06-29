@@ -219,7 +219,7 @@ void manageluksheader::pbCreate()
 
 		QString warn = tr( "Are you sure you want to replace a header on device \"%1\" with a backup copy at \"%2\"?" ).arg( x ).arg( y );
 
-		if( msg.ShowUIYesNo( tr( "WARNING!" ),warn ) == QMessageBox::No )
+		if( msg.ShowUIYesNoDefaultNo( tr( "WARNING!" ),warn ) == QMessageBox::No )
 			return ;
 		exe = QString( "%1 -kR -d \"%2\" -f \"%3\"" ).arg( ZULUCRYPTzuluCrypt ).arg( device ).arg( backUp );
 	}

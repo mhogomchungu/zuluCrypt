@@ -37,7 +37,7 @@ static int status_msg( int st )
 			 printf( "\"/etc/crypttab and \"/etc/zuluCrypttab\".\"\nRerun the tool from root's accout to proceed.\n" ) ;
 														break  ;
 		case 11: printf( "ERROR: %s not found \n",ZULUCRYPTmkfs ) ;					break  ;
-		case 12: printf( "ERROR: user chose not to proceed\n" ) ;					break  ;
+		case 12: printf( "INFO: operation terminated per user request\n" ) ;				break  ;
 		case 13: printf( "ERROR: insufficient privilege to write to device\n" ) ;			break  ;
 		case 14: printf( "ERROR: insufficient privilege to create a volume in this device\n" ) ;	break  ;
 		case 15: printf( "ERROR: insufficient privilege to open the file in write mode\n" ) ;		break  ;
