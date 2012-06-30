@@ -45,7 +45,7 @@ static void format_size_1( char * buffer,int x,int y,const char * z )
 static void format_size( char * buffer,const char * buff )
 {
 	strcpy( buffer,buff ) ;
-
+	
 	switch( strlen( buff ) ){
 		case 0 : 
 		case 1 :  
@@ -94,9 +94,9 @@ static void file_system_properties( string_t p,const char * mapper,const char * 
 		return ;
 	
 	block_size = vfs.f_frsize ;
-	total = block_size * vfs.f_blocks  ;
-	free =  block_size * vfs.f_bavail  ;
-		
+	total = block_size * vfs.f_blocks / ( 1.024 * 1.024 ) ;
+	free =  block_size * vfs.f_bavail / ( 1.024 * 1.024 ) ;
+	
 	used = total - free ;
 	st = ( 100 * used / total ) ;
 	
