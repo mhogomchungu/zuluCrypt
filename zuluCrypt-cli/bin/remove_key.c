@@ -108,7 +108,6 @@ int removekey( const struct_opts * opts,uid_t uid )
 			if( k == 1 )
 				return status_msg( 11 ) ;
 		}
-			
 	}
 	
 	if ( i == 1 || keyType == NULL ){

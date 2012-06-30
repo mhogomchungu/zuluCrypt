@@ -21,12 +21,12 @@
 
 int close_mapper( const char * mapper )
 {
-	int j = 0 ;
+	int j ;
 	/*
 	 * For reasons currently unknown to me, the mapper fail to close sometimes so give it some room when it happens
 	 */
-	while( j++ < 10 ){
-		if( crypt_deactivate( NULL, mapper ) == 0 )
+	for( j = 0 ; j < 10 ; j++ ) { 
+		if( crypt_deactivate( NULL,mapper ) == 0 )
 			return 0 ;
 		sleep( 1 );
 	}

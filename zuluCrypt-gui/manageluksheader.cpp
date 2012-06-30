@@ -67,8 +67,22 @@ void manageluksheader::closeEvent( QCloseEvent * e )
 
 void manageluksheader::ShowUI()
 {
-	m_ui->lineEditDevicePath->setFocus();
+	if( m_ui->lineEditDevicePath->text().isEmpty() )
+		m_ui->lineEditDevicePath->setFocus();
+	else if( m_ui->lineEditBackUpName->text().isEmpty() )
+		m_ui->lineEditBackUpName->setFocus();
+	else
+		m_ui->pbCreate->setFocus();
 	this->show();
+}
+
+void manageluksheader::restoreHeader()
+{
+	m_operation = QString( "restore" ) ;
+	this->setWindowTitle( QString( "restore luks header" ) );
+	m_ui->labelBackUpHeader->setText( QString( "backup path" ) );
+	m_ui->pbCreate->setText( QString( "&restore" ) );
+	this->ShowUI();
 }
 
 void manageluksheader::headerBackUp()
@@ -77,10 +91,7 @@ void manageluksheader::headerBackUp()
 	this->setWindowTitle( QString( "back up luks header" ) );
 	m_ui->labelBackUpHeader->setText( QString( "backup path" ) );
 	m_ui->pbCreate->setText( QString( "&backup" ) );
-	//m_ui->pbOpenFolder->setEnabled( false );
-	//m_ui->labelBackUpHeader->setEnabled( false );
-	//m_ui->lineEditBackUpName->setEnabled( false );
-	this->show();
+	this->ShowUI();
 }
 
 void manageluksheader::backUpHeader()
@@ -154,15 +165,6 @@ void manageluksheader::pbOpenLuksHeaderBackUp()
 		m_ui->lineEditDevicePath->setFocus();
 	else
 		m_ui->pbCreate->setFocus();
-}
-
-void manageluksheader::restoreHeader()
-{
-	m_operation = QString( "restore" ) ;
-	this->setWindowTitle( QString( "restore luks header" ) );
-	m_ui->labelBackUpHeader->setText( QString( "backup path" ) );
-	m_ui->pbCreate->setText( QString( "&restore" ) );
-	this->show();
 }
 
 void manageluksheader::pbCancel()

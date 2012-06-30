@@ -29,18 +29,15 @@ int seteuid( uid_t );
 #endif
 
 /*
+ * This source file makes sure the user who started the tool( usually non root user ) has permission 
+ * to perform operations they want on paths they presented.
  * 
- * This source file makes sure the user who started the tool has permission to perform operations they want on paths they presented.  
- * 
- * 
+ * This feature allows tradition unix permissions to be set on a paths to control non user access to volumes  
  */
-
 
 static int has_access( const char * path,int c,uid_t uid )
 {
 	int f ;
-	
-	int st = -1 ;
 	
 	uid_t org = getuid() ;
 	
@@ -51,20 +48,20 @@ static int has_access( const char * path,int c,uid_t uid )
 	else
 		f = open( path,O_WRONLY );
 	
-	if( f >= 0 ){
+	if( f >= 0 )
 		close( f ) ;
-		st = 0 ;
-	}else{
-		switch( errno ){
-			case EACCES : st = 1 ; break ; /* permission denied */
-			case ENOENT : st = 2 ; break ; /* invalid path*/
-			default     : st = 3 ; break ; /* common error */    
-		}
-	}
 	
 	seteuid( org ) ;
 	
-	return st ; 
+	if( f >= 0 )
+		return 0 ;
+	else{
+		switch( errno ){
+			case EACCES : return 1 ; /* permission denied */
+			case ENOENT : return 2 ; /* invalid path*/
+			default     : return 3 ; /* common error */    
+		}
+	}
 }
 
 int can_open_path_for_reading( const char * path,uid_t uid )
@@ -92,12 +89,11 @@ int create_mount_point( const char * path,uid_t uid )
 	if( st == 0 )
 		return 0 ;
 	else{
-		if( errno == EACCES ) 
-			return 1 ;
-		else if( errno == EEXIST )
-			return 2 ;
-		else
-			return 3 ;
+		switch( errno ){
+			case EACCES : return 1 ; 
+			case EEXIST : return 2 ; ; 
+			default     : return 3 ; ;     
+		}
 	}
 }
 

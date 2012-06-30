@@ -321,7 +321,7 @@ void passwordDialog::threadfinished( int status )
 		case 6 : msg.ShowUIOK( tr( "ERROR!" ),tr( "invalid path to keyfile" ) );								break ;
 		case 8 : msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to open volume.\ndevice may already be in use" ) );					break ;
 		case 9 : msg.ShowUIOK( tr( "ERROR!" ),tr( "mount point path is already taken" ) );							break ;
-		case 10: msg.ShowUIOK( tr( "ERROR!" ),tr( "\",\" ( comma ) is not a valid mount point" ) );						break ;
+		/*case 10: msg.ShowUIOK( tr( "ERROR!" ),tr( "\",\" ( comma ) is not a valid mount point" ) );						break ;*/
 		case 11: msg.ShowUIOK( tr( "ERROR!" ),tr( "one or more required argument( s ) for this operation is missing\n" ) );			break ;
 		case 12: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get a lock on /etc/mtab~" ) );							break ;
 		case 13: msg.ShowUIOK( tr( "ERROR!" ),tr( "wrong argument for mode, valid options are \"rw\" or \"ro\"" ) );				break ;
@@ -336,7 +336,7 @@ void passwordDialog::threadfinished( int status )
 		case 22: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open keyfile for reading" ) );					break ;
 		case 23: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open device in read/write mode" ) );				break ;
 		case 24: msg.ShowUIOK( tr( "ERROR!" ),tr( "there seem to be an opened mapper associated with the device" ) );				break ;
-		case 25: msg.ShowUIOK( tr( "ERROR!" ),tr( "space character is an illegal character in mount point path" ) );				break ;
+		/*case 25: msg.ShowUIOK( tr( "ERROR!" ),tr( "space character is an illegal character in mount point path" ) );				break ;*/
 		case 110:msg.ShowUIOK( tr( "ERROR!" ),tr( "can not find a partition that match presented UUID" ) );					break ;
 		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR with status number %1 encountered" ).arg( status ) );
 	}

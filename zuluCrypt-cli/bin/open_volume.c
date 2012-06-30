@@ -33,7 +33,7 @@ static int status_msg( int st,char * device,char * m_point )
 		case 6 : printf( "ERROR: passphrase file does not exist\n" );								break ;	
 		case 8 : printf( "ERROR: failed to open volume,device may already be in use\n" );					break ;	
 		case 9 : printf( "ERROR: mount point path is already taken\n" );							break ;					 
-		case 10: printf( "ERROR: \",\" ( comma ) is not a valid mount point\n" );						break ;
+		/* case 10: currently unused */
 		case 11: printf( "ERROR: one or more required argument(s) for this operation is missing\n" );				break ;				
 		case 12: printf( "ERROR: could not get a lock on /etc/mtab~\n" );							break ;
 		case 13: printf( "ERROR: wrong argument for mode, valid options are \"rw\" or \"ro\"\n" );				break ;
@@ -48,7 +48,7 @@ static int status_msg( int st,char * device,char * m_point )
 		case 22: printf( "ERROR: insufficient privilege to open key file for reading\n" );					break ;	
 		case 23: printf( "ERROR: insufficient privilege to open device in read/write mode\n" );					break ;	
 		case 24: printf( "ERROR: there seem to be an opened mapper associated with the device\n" ) ;				break ;
-		case 25: printf( "ERROR: space character is an illegal character in mount point path\n" ) ;				break ;
+		/* case 25: currently unused */
 		case 26: printf( "ERROR: can not get passphrase in silent mode\n" );							break ;	
 		case 27: printf( "ERROR: insufficient memory to hold passphrase\n" );							break ;
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
@@ -136,13 +136,7 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 	if( nmp == -1 ){
 		if( mount_point == NULL )
 			return status_msg( 11,device,cpoint ) ;
-		
-		//if( strchr( mount_point,' ' ) != NULL )
-		//	return status_msg( 25,device,cpoint ) ;
-		
-		if( strlen( mount_point ) == 1 )
-			if ( strcmp( mount_point,"," ) == 0 )
-				return status_msg( 10,device,cpoint ) ;
+	
 		/*
 		 * defined in security.c
 		 */
