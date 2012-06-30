@@ -157,6 +157,46 @@ int print_opened_volumes( uid_t uid )
 	return 0 ;
 }
 
+string_t get_mount_point_from_path( const char * path )
+{
+	size_t i ;
+	size_t j ;
+	
+	string_t entry = NULL ;
+	
+	const char * e ;
+	
+	stringList_t stl = get_mtab_list() ;
+	stringList_t stl_1 ;
+	
+	if( stl == NULL )
+		return NULL ;
+	
+	j = StringListSize( stl ) ;
+	
+	for( i = 0 ; i < j ; i++ ){
+		e = StringListContentAt( stl,i ) ;
+		stl_1 = StringListSplit( e,' ' ) ;
+		
+		if( stl_1 == NULL )
+			continue ;
+		
+		e = StringListContentAt( stl_1,0 ) ;
+		
+		if( strcmp( e,path ) == 0 ){
+			entry = String( StringListContentAt( stl_1,1 ) ) ;
+			StringListDelete( &stl_1 ) ;
+			break ;
+		}
+		
+		StringListDelete( &stl_1 ) ;		
+	}
+	
+	StringListDelete( &stl ) ;
+	
+	return entry ;	
+}
+
 int check_if_mounted( const char * path )
 {
 	int st = 0 ;

@@ -41,8 +41,6 @@ signals:
 	void finished( QString ) ;
 public slots:	
 private:
-	QString fuseblkGetFs( void ) ;
-	QString hashPath( QString )	;
 	void run( void );
 	QString m_fusefs ;
 	QString m_path ;

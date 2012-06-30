@@ -25,6 +25,96 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <blkid/blkid.h>
+#include <sys/statvfs.h>
+
+/*
+ * 64 byte buffer is more than enough because the API that will produce the largest number is crypt_get_data_offset()
+ * and it produces a uint64_t number and this type has a maximum digit count is 19. 
+ */
+#define SIZE 64
+
+string_t get_mount_point_from_path( const char * path ) ;
+
+static void format_size_1( char * buffer,int x,int y,const char * z )
+{
+	buffer[ x ] = buffer[ y ] ; 
+	buffer[ y ] = '.' ;
+	strcpy( buffer + x + 1,z ) ; 
+}
+
+static void format_size( char * buffer,const char * buff )
+{
+	strcpy( buffer,buff ) ;
+
+	switch( strlen( buff ) ){
+		case 0 : 
+		case 1 :  
+		case 2 : 
+		case 3 : strcat( buffer," B" )             ; break ;
+		case 4 : format_size_1( buffer,2,1," KB" ) ; break ; 
+		case 5 : format_size_1( buffer,3,2," KB" ) ; break ;
+		case 6 : format_size_1( buffer,4,3," KB" ) ; break ;
+		case 7 : format_size_1( buffer,2,1," MB" ) ; break ; 
+		case 8 : format_size_1( buffer,3,2," MB" ) ; break ;
+		case 9 : format_size_1( buffer,4,3," MB" ) ; break ;
+		case 10: format_size_1( buffer,2,1," GB" ) ; break ;
+		case 11: format_size_1( buffer,3,2," GB" ) ; break ;
+		case 12: format_size_1( buffer,4,3," GB" ) ; break ;
+		case 13: format_size_1( buffer,2,1," TB" ) ; break ;
+		case 14: format_size_1( buffer,3,2," TB" ) ; break ;
+		case 15: format_size_1( buffer,4,3," TB" ) ; break ;			
+	}	
+}
+
+static void file_system_properties( string_t p,const char * mapper,const char * m_point )
+{
+	const char * e ;	
+	blkid_probe blkid ;	
+	struct statvfs vfs ;
+	int st ;
+	uint64_t total ;
+	uint64_t used ;
+	uint64_t free ;
+	uint32_t block_size ;
+	char buff[ SIZE ] ;	
+	char * buffer = buff ;
+	char format[ SIZE ] ;
+	
+	blkid = blkid_new_probe_from_filename( mapper ) ;
+	blkid_do_probe( blkid );
+	
+	if( blkid_probe_lookup_value( blkid,"TYPE",&e,NULL ) == 0 )
+		StringMultipleAppend( p,"\n file system:\t",e,'\0' ) ;
+	else
+		StringAppend( p,"\n file system:\tNil" ) ;
+	
+	blkid_free_probe( blkid );	
+	
+	if( statvfs( m_point,&vfs ) != 0 )
+		return ;
+	
+	block_size = vfs.f_frsize ;
+	total = block_size * vfs.f_blocks  ;
+	free =  block_size * vfs.f_bavail  ;
+		
+	used = total - free ;
+	st = ( 100 * used / total ) ;
+	
+	e = StringIntToString_1( buffer,SIZE,total ) ;
+	format_size( format,e ) ;	
+	StringMultipleAppend( p,"\n total space:\t",format,'\0' ) ;
+	
+	e = StringIntToString_1( buffer,SIZE,used )  ;
+	format_size( format,e ) ;
+	StringMultipleAppend( p,"\n used space:\t",format,'\0' ) ;
+	
+	e = StringIntToString_1( buffer,SIZE,free ) ;
+	format_size( format,e ) ;
+	StringMultipleAppend( p,"\n free space:\t",format,'\0' ) ;
+	
+	e = StringIntToString_1( buffer,SIZE,st ) ;
+	StringMultipleAppend( p,"\n used%:   \t",e,"%",'\0' ) ;
+}
 
 static char * loop_device_address( const char * device )
 {
@@ -41,11 +131,6 @@ static char * loop_device_address( const char * device )
 
 char * status( const char * mapper )
 {	
-	/*
-	 * 64 byte buffer is more than enough because the API that will produce the largest number is crypt_get_data_offset()
-	 * and it produces a uint64_t number and this type has a maximum digit count is 19. 
-	 */
-	#define SIZE 64
 	char buff[ SIZE ] ;	
 	char * buffer = buff ;
 	const char * z ;
@@ -61,6 +146,7 @@ char * status( const char * mapper )
 	struct crypt_active_device cad ;
 	
 	string_t p ;
+	string_t m ;
 	
 	if( crypt_init_by_name( &cd,mapper ) != 0 )
 		return NULL ;
@@ -114,10 +200,10 @@ char * status( const char * mapper )
 
 	e = crypt_get_device_name( cd ) ;	
 	StringMultipleAppend( p,"\n device:\t",e,'\0' );	
-	
+		
 	if( strncmp( e,"/dev/loop",9 ) == 0 ){
 		StringAppend( p,"\n loop:   \t" );
-		path = loop_device_address( e ) ;
+		path = loop_device_address( e ) ;		
 		if( path != NULL ){
 			StringAppend( p,path ) ;
 			free( path ) ;
@@ -156,6 +242,16 @@ char * status( const char * mapper )
 		StringMultipleAppend( p," / ",StringIntToString_1( buffer,SIZE,k ),'\0' );
 	}else{
 		StringAppend( p,"\n active slots:\tNil" );
+	}
+	
+	/*
+	 * defined in ../bin/check_mounted_volumes.c
+	 * The function returns a mount point path given a path representing a device 
+	 */
+	m = get_mount_point_from_path( mapper ) ;
+	if( m != NULL ){
+		file_system_properties( p,mapper,StringContent( m ) ) ; 
+		StringDelete( &m ) ;
 	}
 	
 	crypt_free( cd );

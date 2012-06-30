@@ -117,7 +117,7 @@ int get_pass_from_file( const char * path,uid_t uid,string_t * st ) ;
 /*
  * this function is responsibe for printing a list of opened volumes.
  * It primary purpose is for the GUI pqrt of the tool and hence the output isnt formatted.
- * It is defined in print_opened_volumes.c
+ * It is defined in print_mounted_volumes.c
  */
 int print_opened_volumes( uid_t ) ;
 
@@ -183,7 +183,7 @@ int check_opened_mapper( const char * mapper ) ;
 /*
  * check if a  device with a path "path" as an entry in /etc/mtab.
  * 
- * defined in print_opened_volumes.c 
+ * defined in print_mounted_volumes.c 
  */
 int check_if_mounted( const char * path ) ;
 
@@ -221,4 +221,10 @@ char * device_from_uuid( const char * uuid ) ;
  * defined in partitions.c
  */
 int print_partitions( int option ) ;
+
+/*
+ * defined at print_mounted_volumes.c
+ * 
+ */
+string_t get_mount_point_from_path( const char * path ) ;
 
