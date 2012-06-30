@@ -110,8 +110,8 @@ static void file_system_properties( string_t p,const char * mapper,const char * 
 	format_size( format,e ) ;
 	StringMultipleAppend( p,"\n free space:\t",format,'\0' ) ;
 	
-	snprintf( buff,SIZE,"%.2f",100 * ( ( float ) used / ( float ) total ) ) ;
-	StringMultipleAppend( p,"\n used%:   \t",buff,"%",'\0' ) ;
+	snprintf( buff,SIZE,"%.2f%%",100 * ( ( float ) used / ( float ) total ) ) ;
+	StringMultipleAppend( p,"\n used%:   \t",buff,'\0' ) ;
 }
 
 static char * loop_device_address( const char * device )
