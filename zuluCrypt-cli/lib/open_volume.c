@@ -30,14 +30,15 @@ int open_volume( const char * dev,const char * map,const char * m_point,uid_t id
 	int h ;
 	string_t p ;
 	const char * mapper ;
-
+	char * m ;
+	
 	if( is_path_valid( dev ) != 0 )		 
 		return 3 ;
 	
 	p = String( crypt_get_dir() ) ;
 	
 	mapper = StringMultipleAppend( p,"/",map,'\0' ) ;
-	
+
 	if( is_path_valid( mapper ) == 0 )
 		return value( 2,&p ) ;	
 
@@ -52,6 +53,11 @@ int open_volume( const char * dev,const char * map,const char * m_point,uid_t id
 		case 3 : return value( 3,&p ) ;	 
 	}
 
+	m = realpath( mapper,NULL ) ;
+	chown( m,0,0 ) ;
+	chmod( m,S_IRWXU ) ;
+	free( m ) ;
+	
 	if( m_point != NULL ){	
 		h = mount_volume( mapper,m_point,mode,id ) ;	
 	
