@@ -157,7 +157,7 @@ int print_opened_volumes( uid_t uid )
 	return 0 ;
 }
 
-string_t get_mount_point_from_path( const char * path )
+char * get_mount_point_from_path( const char * path )
 {
 	size_t i ;
 	size_t j ;
@@ -167,7 +167,7 @@ string_t get_mount_point_from_path( const char * path )
 	const char * e ;
 	
 	stringList_t stl = get_mtab_list() ;
-	stringList_t stl_1 ;
+	stringList_t stx ;
 	
 	if( stl == NULL )
 		return NULL ;
@@ -176,25 +176,26 @@ string_t get_mount_point_from_path( const char * path )
 	
 	for( i = 0 ; i < j ; i++ ){
 		e = StringListContentAt( stl,i ) ;
-		stl_1 = StringListSplit( e,' ' ) ;
+		stx = StringListSplit( e,' ' ) ;
 		
-		if( stl_1 == NULL )
+		if( stx == NULL )
 			continue ;
 		
-		e = StringListContentAt( stl_1,0 ) ;
+		e = StringListContentAt( stx,0 ) ;
 		
 		if( strcmp( e,path ) == 0 ){
-			entry = String( StringListContentAt( stl_1,1 ) ) ;
-			StringListDelete( &stl_1 ) ;
-			break ;
+			entry = String( StringListContentAt( stx,1 ) ) ;
+			StringListDelete( &stx ) ;
+			StringListDelete( &stl ) ;			
+			return StringDeleteHandle( &entry ) ;
 		}
 		
-		StringListDelete( &stl_1 ) ;		
+		StringListDelete( &stx ) ;		
 	}
 	
 	StringListDelete( &stl ) ;
 	
-	return entry ;	
+	return NULL ;	
 }
 
 int check_if_mounted( const char * path )

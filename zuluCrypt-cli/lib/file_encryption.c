@@ -18,7 +18,7 @@
  */
 
 #include "includes.h"
-#include "../bin/libzuluCrypt-exe.h"
+#include "../bin/includes.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>

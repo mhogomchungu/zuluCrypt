@@ -101,32 +101,11 @@ int removekey( const struct_opts *,uid_t ) ;
 int is_path_valid( const char * path ) ;
 
 /*
- * this function is responsibe substituting bash special characters with an underscore.
- * The explanation for why it does that is in the source file.
- * The function is defined in replace_bash_special_chars.c * 
- */
-void replace_bash_special_chars( string_t ) ;
-
-/*
- * thiw function reads a passphrase from a key file after it makes sure a user who started the
- * tool had reading access to the file.
- * It is defined in security.c
- */
-int get_pass_from_file( const char * path,uid_t uid,string_t * st ) ;
-
-/*
  * this function is responsibe for printing a list of opened volumes.
  * It primary purpose is for the GUI pqrt of the tool and hence the output isnt formatted.
  * It is defined in print_mounted_volumes.c
  */
 int print_opened_volumes( uid_t ) ;
-
-/*
- * this function makes a unique mapper name based on user UID to make sure one user can not manage another user
- * opened volumes.
- * It is defined in create_mapper_name.c
- */
-string_t create_mapper_name( const char * device,const char * mapping_name,uid_t uid,int ) ;
 
 /*
  * this function is responsibe for creating a mount point after it checks to make sure a user who started the tool
@@ -224,7 +203,7 @@ int print_partitions( int option ) ;
 
 /*
  * defined at print_mounted_volumes.c
- * 
+ * remember to free() a returned pointer when done with it.
  */
-string_t get_mount_point_from_path( const char * path ) ;
+char * get_mount_point_from_path( const char * path ) ;
 

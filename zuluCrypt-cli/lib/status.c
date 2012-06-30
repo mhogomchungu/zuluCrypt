@@ -33,7 +33,7 @@
  */
 #define SIZE 64
 
-string_t get_mount_point_from_path( const char * path ) ;
+char * get_mount_point_from_path( const char * path ) ;
 
 static void format_size_1( char * buffer,int x,int y,const char * z )
 {
@@ -146,7 +146,6 @@ char * status( const char * mapper )
 	struct crypt_active_device cad ;
 	
 	string_t p ;
-	string_t m ;
 	
 	if( crypt_init_by_name( &cd,mapper ) != 0 )
 		return NULL ;
@@ -248,10 +247,10 @@ char * status( const char * mapper )
 	 * defined in ../bin/check_mounted_volumes.c
 	 * The function returns a mount point path given a path representing a device 
 	 */
-	m = get_mount_point_from_path( mapper ) ;
-	if( m != NULL ){
-		file_system_properties( p,mapper,StringContent( m ) ) ; 
-		StringDelete( &m ) ;
+	path = get_mount_point_from_path( mapper ) ;
+	if( path != NULL ){
+		file_system_properties( p,mapper,path ) ; 
+		free( path ) ;
 	}
 	
 	crypt_free( cd );
