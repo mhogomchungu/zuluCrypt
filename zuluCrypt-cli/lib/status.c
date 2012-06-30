@@ -71,7 +71,6 @@ static void file_system_properties( string_t p,const char * mapper,const char * 
 	const char * e ;	
 	blkid_probe blkid ;	
 	struct statvfs vfs ;
-	int st ;
 	uint64_t total ;
 	uint64_t used ;
 	uint64_t free ;
@@ -94,11 +93,10 @@ static void file_system_properties( string_t p,const char * mapper,const char * 
 		return ;
 	
 	block_size = vfs.f_frsize ;
-	total = block_size * vfs.f_blocks / ( 1.024 * 1.024 ) ;
-	free =  block_size * vfs.f_bavail / ( 1.024 * 1.024 ) ;
+	total = block_size * vfs.f_blocks  ;
+	free =  block_size * vfs.f_bavail  ;
 	
 	used = total - free ;
-	st = ( 100 * used / total ) ;
 	
 	e = StringIntToString_1( buffer,SIZE,total ) ;
 	format_size( format,e ) ;	
@@ -112,8 +110,8 @@ static void file_system_properties( string_t p,const char * mapper,const char * 
 	format_size( format,e ) ;
 	StringMultipleAppend( p,"\n free space:\t",format,'\0' ) ;
 	
-	e = StringIntToString_1( buffer,SIZE,st ) ;
-	StringMultipleAppend( p,"\n used%:   \t",e,"%",'\0' ) ;
+	snprintf( buff,SIZE,"%.2f",100 * ( ( float ) used / ( float ) total ) ) ;
+	StringMultipleAppend( p,"\n used%:   \t",buff,"%",'\0' ) ;
 }
 
 static char * loop_device_address( const char * device )
