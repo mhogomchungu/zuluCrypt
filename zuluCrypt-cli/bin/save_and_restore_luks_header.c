@@ -34,7 +34,7 @@ static int msg( int st,struct crypt_device * cd )
 		case 7 : printf( "ERROR: failed to restore\n" ) 							; break ;
 		case 8 : printf( "ERROR: insufficient privilege to open backup header file for reading\n" ) 		; break ;
 		case 9 : printf( "ERROR: invalid path to back up header file\n" ) 					; break ;
-		case 10: printf( "ERROR: insufficient privilege to create a backup file in a destination folder\n" ) 	; break ;
+		case 10: printf( "ERROR: insufficient privilege to create a backup header in a destination folder\n" ) 	; break ;
 		case 11: printf( "ERROR: invalid path to device\n" ) 							; break ;
 		case 12: printf( "ERROR: argument for path to a backup  header file is missing\n" ) 			; break ;
 		case 13: printf( "ERROR: argument for path to a backup  header file is missing\n" ) 			; break ;
@@ -42,6 +42,7 @@ static int msg( int st,struct crypt_device * cd )
 		case 15: printf( "ERROR: insufficient privilege to open device for writing\n" ) 			; break ;	
 		case 16: printf( "ERROR: could not resolve path to device\n" ) 						; break ;	
 		case 17: printf( "ERROR: backup file does not appear to contain luks header\n" ) 			; break ;
+		case 18: printf( "ERROR: insufficient privilege to open device for reading\n" ) 			; break ;					
 	}
 	
 	if( cd != NULL )
@@ -144,12 +145,12 @@ int save_and_restore_luks_header( const struct_opts * opts,uid_t uid,int option 
 		}
 		
 		switch( can_open_path_for_writing( device,uid ) ){
-			case 1 : return msg( 10,NULL ) ;
+			case 1 : return msg( 15,NULL ) ;
 			case 2 : return msg( 11,NULL ) ;
 		}
 	}else{
 		switch( can_open_path_for_reading( device,uid ) ){
-			case 1 : return msg( 15,NULL ) ;
+			case 1 : return msg( 18,NULL ) ;
 			case 2 : return msg( 11,NULL ) ;		
 		}
 		if( is_path_valid( path ) == 0 )

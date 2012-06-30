@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'createpartition.ui'
 **
-** Created: Sun May 20 19:55:43 2012
+** Created: Fri Jun 29 21:38:01 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -131,9 +131,9 @@ public:
         QWidget::setTabOrder(lineEditPassphrase1, pbOpenKeyFile);
         QWidget::setTabOrder(pbOpenKeyFile, lineEditPassPhrase2);
         QWidget::setTabOrder(lineEditPassPhrase2, comboBoxFS);
-        QWidget::setTabOrder(comboBoxFS, comboBoxVolumeType);
-        QWidget::setTabOrder(comboBoxVolumeType, comboBoxRNG);
-        QWidget::setTabOrder(comboBoxRNG, pbCreate);
+        QWidget::setTabOrder(comboBoxFS, comboBoxRNG);
+        QWidget::setTabOrder(comboBoxRNG, comboBoxVolumeType);
+        QWidget::setTabOrder(comboBoxVolumeType, pbCreate);
         QWidget::setTabOrder(pbCreate, pbCancel);
 
         retranslateUi(createpartition);

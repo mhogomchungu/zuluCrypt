@@ -294,8 +294,8 @@
   <tabstop>pbOpenKeyFile</tabstop>
   <tabstop>lineEditPassPhrase2</tabstop>
   <tabstop>comboBoxFS</tabstop>
-  <tabstop>comboBoxVolumeType</tabstop>
   <tabstop>comboBoxRNG</tabstop>
+  <tabstop>comboBoxVolumeType</tabstop>
   <tabstop>pbCreate</tabstop>
   <tabstop>pbCancel</tabstop>
  </tabstops>
