@@ -138,7 +138,7 @@ int save_and_restore_luks_header( const struct_opts * opts,uid_t uid,int option 
 	int k ;
 	
 	if( dev == NULL )
-		return msg( 16,cd ) ;	
+		return msg( 16,NULL ) ;	
 	k = check_if_partition_is_system_partition( dev ) ;
 	free( dev ) ;
 	
