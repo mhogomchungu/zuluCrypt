@@ -38,11 +38,12 @@ static int msg( int st,struct crypt_device * cd )
 		case 11: printf( "ERROR: invalid path to device\n" ) 							; break ;
 		case 12: printf( "ERROR: argument for path to a backup  header file is missing\n" ) 			; break ;
 		case 13: printf( "ERROR: argument for path to a backup  header file is missing\n" ) 			; break ;
-		case 14: printf( "ERROR: only root user can restore luks header on a system device\n" ) 		; break ;
+		case 14: printf( "ERROR: only root user can restore and back up luks headers on system devices\n" )	; break ;
 		case 15: printf( "ERROR: insufficient privilege to open device for writing\n" ) 			; break ;	
 		case 16: printf( "ERROR: could not resolve path to device\n" ) 						; break ;	
 		case 17: printf( "ERROR: backup file does not appear to contain luks header\n" ) 			; break ;
-		case 18: printf( "ERROR: insufficient privilege to open device for reading\n" ) 			; break ;					
+		case 18: printf( "ERROR: insufficient privilege to open device for reading\n" ) 			; break ;
+		case 19: printf( "ERROR: insufficient memory to hold your responce\n" )		 			; break ;					
 	}
 	
 	if( cd != NULL )
@@ -85,32 +86,35 @@ static int back_up_is_luks( const char * path )
 
 static int restore_header( struct crypt_device * cd,const char * device,const char * path,int k,uid_t uid )
 {
+	char * p ;
+	char * q ;
+	string_t confirm ;
 	const char * warn = "\
 Are you sure you want to replace a header on device \"%s\" with a backup copy at \"%s\"?\n\
-Type \"Y\" and press Enter to continue: " ;
+Type \"YES\" and press Enter to continue: " ;
 
-	char * dev ;
-	
 	if( back_up_is_luks( path ) != 0 )
 		 return msg( 17,cd ) ;
 	
-	dev = realpath( device,NULL ) ;
-	
-	if( dev == NULL )
-		return msg( 16,cd ) ;
-	
-	if( check_if_partition_is_system_partition( dev ) == 1 )
-		if( uid != 0 )
-			return msg( 14,cd ) ;
-	
 	if( k == -1 ){
-		printf( warn,dev,path ) ;
 		
-		if( getchar() != 'Y' )
-			return msg( 5,cd ) ;
+		p = realpath( path,NULL ) ;
+		q = realpath( device,NULL ) ;
+		
+		printf( warn,q,p ) ;
+		
+		free( p ) ;
+		free( q ) ;
+		
+		confirm = StringGetFromTerminal_1( 3 ) ;
+		if( confirm != NULL ){
+			k = StringEqual( confirm,"YES" ) ;
+			StringDelete( &confirm ) ;
+			if( k == 1 )
+				return msg( 5,cd ) ;
+		}else
+			return msg( 19,cd ) ;
 	}
-	
-	free( dev ) ;
 	
 	if( crypt_header_restore( cd,NULL,path ) == 0 )
 		return msg( 1,cd ) ;
@@ -127,10 +131,20 @@ int save_and_restore_luks_header( const struct_opts * opts,uid_t uid,int option 
 	/*
 	 * using key_key here because i do not want to introduce a key field in the structure.
 	 */
-	const char * path = opts->key ;
+	const char * path = opts->key ;	
 	
-	int confirm = opts->dont_ask_confirmation ;
+	char * dev = realpath( device,NULL ) ;
 	
+	int k ;
+	
+	if( dev == NULL )
+		return msg( 16,cd ) ;	
+	k = check_if_partition_is_system_partition( dev ) ;
+	free( dev ) ;
+	
+	if( k == 1 && uid != 0 )
+		return msg( 14,NULL ) ;
+		
 	if( path == NULL ){
 		if( option == LUKS_HEADER_RESTORE )			
 			return msg( 12,NULL ) ;
@@ -164,7 +178,7 @@ int save_and_restore_luks_header( const struct_opts * opts,uid_t uid,int option 
 		return msg( 3,NULL ) ;
 	
 	switch( option ){
-		case LUKS_HEADER_RESTORE : return restore_header( cd,device,path,confirm,uid ) ;
+		case LUKS_HEADER_RESTORE : return restore_header( cd,device,path,opts->dont_ask_confirmation,uid ) ;
 		case LUKS_HEADER_SAVE    : return save_header( cd,device,path,uid ) ;
 	}
 	
