@@ -275,7 +275,8 @@ void cryptfiles::pbOpenFolder( void )
 	if( m_operation == QString( "-E" ) )
 		path = Z + QString( "/" ) + m_ui->lineEditSourcePath->text().split( "/" ).last() + QString( ".zc" );
 	else{
-		path = Z + QString( "/" ) + m_ui->lineEditSourcePath->text().split( "/" ).last();
+		path = Z + QString( "/" ) + m_ui->lineEditSourcePath->text().split( "/" ).last() ;
+		path.chop( 3 );
 	}
 
 	m_ui->lineEditDestinationPath->setText( path );
@@ -332,7 +333,7 @@ void cryptfiles::threadExitStatus( int st )
 		case 11: msg.ShowUIOK( tr( "ERROR!" ),tr( "presented key did not match the encryption key" ) )			; break ;
 		case 12: msg.ShowUIOK( tr( "INFO!" ),tr( "operation terminated per user request" ) ) ;
 			 return this->HideUI();
-
+		case 13: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open source file for reading" ) )		; break ;
 	}
 	this->enableAll();
 	if( st == 11 || st == 2 ){

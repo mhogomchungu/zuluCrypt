@@ -47,6 +47,16 @@ void cryptfilethread::terminate()
 
 int cryptfilethread::encrypt()
 {
+	QFile fd_4( m_source ) ;
+	if( fd_4.open( QIODevice::ReadOnly ) == false )
+		return 13 ;
+
+	QFile fd_1( m_dest ) ;
+	if( fd_1.open( QIODevice::WriteOnly ) == false ){
+		fd_4.close();
+		return 10 ;
+	}
+
 	const int SIZE = 512 ;
 	char buffer[SIZE];
 
@@ -54,24 +64,21 @@ int cryptfilethread::encrypt()
 	qint64 size = f.size() ;
 	QString size_1 = QString::number( size ) ;
 
+	int i = 0 ;
+	int j = -1 ;
+
+	emit titleUpdate( tr( "creating encrypted container file" ) );
+
 	while( size % SIZE != 0 )
 		size++ ;
 
 	size += SIZE ;
 
 	memset( buffer,0,SIZE ) ;
-
-	QFile fd_1( m_dest ) ;
-	fd_1.open( QIODevice::WriteOnly ) ;
-
-	int i = 0 ;
-	int j = -1 ;
-
-	emit titleUpdate( tr( "creating encrypted container file" ) );
-
 	for( qint64 size_1 = 0 ; size_1 < size ; size_1 += SIZE ){
 
 		if( m_status == TERM_ST ){
+			fd_4.close();
 			fd_1.close();
 			QFile::remove( m_dest ) ;
 			return m_status ;
@@ -91,12 +98,18 @@ int cryptfilethread::encrypt()
 	int x = this->openMapper( m_dest ) ;
 	
 	if( x != 0 ){
+		fd_4.close();
 		QFile::remove( m_dest ) ;
 		return x ;
 	}
 
 	QFile fd_2( m_mapperPath ) ;
-	fd_2.open( QIODevice::WriteOnly ) ;
+	if( fd_2.open( QIODevice::WriteOnly ) == false ){
+		fd_4.close();
+		this->closeMapper( m_dest ) ;
+		QFile::remove( m_dest ) ;
+		return 4 ;
+	}
 
 	fd_2.write( size_1.toAscii(),size_1.size() );
 
@@ -117,9 +130,6 @@ int cryptfilethread::encrypt()
 	fd_2.write( bff,100 ) ;
 
 	fd_2.seek( SIZE ) ;
-
-	QFile fd_4( m_source ) ;
-	fd_4.open( QIODevice::ReadOnly ) ;
 
 	j = -1 ;
 	
@@ -157,15 +167,28 @@ int cryptfilethread::encrypt()
 
 int cryptfilethread::decrypt()
 {
+	if( miscfunctions::exists( m_dest ) )
+		return 5 ;
+
+	QFile fd_2( m_dest ) ;
+	if( fd_2.open( QIODevice::WriteOnly ) == false )
+		return 10 ;
+
 	const int SIZE = 512 ;
 	int st = this->openMapper( m_source ) ;
-	if( st != 0 )
+	if( st != 0 ){
+		fd_2.close();
 		return st ;
+	}
 
 	char buffer[SIZE] ;
 
 	QFile fd_1( m_mapperPath ) ;
-	fd_1.open( QIODevice::ReadOnly ) ;
+	if( fd_1.open( QIODevice::ReadOnly ) == false ){
+		fd_2.close();
+		this->closeMapper( m_source ) ;
+		return 4 ;
+	}
 
 	fd_1.read( buffer,SIZE ) ;
 
@@ -180,9 +203,6 @@ int cryptfilethread::decrypt()
 	qint64 i = 0;
 	int j = 0;
 	int k = -1 ;
-
-	QFile fd_2( m_dest ) ;
-	fd_2.open( QIODevice::WriteOnly ) ;
 
 	emit titleUpdate( tr( "copying data from the container file" ) );
 
