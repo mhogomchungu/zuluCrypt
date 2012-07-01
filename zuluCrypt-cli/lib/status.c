@@ -270,7 +270,7 @@ char * volume_device_name( const char * mapper )
 	
 	e = crypt_get_device_name( cd ) ;	
 	
-	if( strncmp( e ,"/dev/loop",9 ) == 0 ){
+	if( strncmp( e,"/dev/loop",9 ) == 0 ){
 		path = loop_device_address( e ) ;
 		if( path != NULL )
 			address = StringInherit( &path ) ;
