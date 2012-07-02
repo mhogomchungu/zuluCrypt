@@ -280,6 +280,7 @@ void zuluCrypt::trayClicked( QSystemTrayIcon::ActivationReason e )
 
 void zuluCrypt::trayProperty()
 {
+	m_ui->actionTray_icon->setEnabled( false );
 	QFile f( QDir::homePath() + QString( "/.zuluCrypt/tray" ) ) ;
 	f.open( QIODevice::ReadOnly ) ;
 	QByteArray c = f.readAll() ;
@@ -296,6 +297,7 @@ void zuluCrypt::trayProperty()
 		m_trayIcon->show();
 	}
 	f.close();
+	m_ui->actionTray_icon->setEnabled( true );
 }
 
 void zuluCrypt::fonts()

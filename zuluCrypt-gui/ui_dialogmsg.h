@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'dialogmsg.ui'
 **
-** Created: Mon Jun 11 06:58:58 2012
+** Created: Mon Jul 2 03:08:33 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -47,6 +47,7 @@ public:
     {
         if (DialogMsg->objectName().isEmpty())
             DialogMsg->setObjectName(QString::fromUtf8("DialogMsg"));
+        DialogMsg->setWindowModality(Qt::ApplicationModal);
         DialogMsg->resize(321, 344);
         pbOk = new QPushButton(DialogMsg);
         pbOk->setObjectName(QString::fromUtf8("pbOk"));

@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'erasedevice.ui'
 **
-** Created: Sun May 20 19:55:43 2012
+** Created: Mon Jul 2 03:08:33 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -39,6 +39,7 @@ public:
     {
         if (erasedevice->objectName().isEmpty())
             erasedevice->setObjectName(QString::fromUtf8("erasedevice"));
+        erasedevice->setWindowModality(Qt::ApplicationModal);
         erasedevice->resize(532, 104);
         labelPath = new QLabel(erasedevice);
         labelPath->setObjectName(QString::fromUtf8("labelPath"));

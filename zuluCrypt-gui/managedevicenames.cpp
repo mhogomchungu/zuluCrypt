@@ -117,12 +117,12 @@ void managedevicenames::addEntries( QString dev, QString m_point )
 	m_ui->tableWidget->setCurrentCell( row ,1 );
 }
 
-void managedevicenames::itemClicked( QTableWidgetItem *current )
+void managedevicenames::itemClicked( QTableWidgetItem * current )
 {
 	itemClicked( current,true );
 }
 
-void managedevicenames::itemClicked( QTableWidgetItem *current, bool clicked )
+void managedevicenames::itemClicked( QTableWidgetItem * current, bool clicked )
 {
 	QMenu m ;
 	m.setFont( this->font() );
@@ -142,6 +142,7 @@ void managedevicenames::itemClicked( QTableWidgetItem *current, bool clicked )
 
 void managedevicenames::removeEntryFromFavoriteList()
 {
+	m_ui->tableWidget->setEnabled( false );
 	int row = m_ui->tableWidget->currentRow() ;
 	QString entry = m_ui->tableWidget->item( row,0 )->text() + \
 			QString( "\t" ) + \
@@ -151,6 +152,8 @@ void managedevicenames::removeEntryFromFavoriteList()
 	m_ui->tableWidget->removeRow( row );
 	if( m_ui->tableWidget->rowCount() > 0 )
 		HighlightRow( m_ui->tableWidget->rowCount() - 1,true );
+
+	m_ui->tableWidget->setEnabled( true );
 }
 
 void managedevicenames::cancel()
@@ -171,12 +174,15 @@ void managedevicenames::add()
 	if( mount_point.isEmpty() )
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "mount point path field is empty" ) );
 
+	m_ui->tableWidget->setEnabled( false );
 	this->addEntries( dev,mount_point );
 
 	miscfunctions::addToFavorite( dev,mount_point );
 	
 	m_ui->lineEditDeviceAddress->clear(); ;
 	m_ui->lineEditMountPath->clear() ;
+
+	m_ui->tableWidget->setEnabled( true );
 }
 
 void managedevicenames::fileAddress()

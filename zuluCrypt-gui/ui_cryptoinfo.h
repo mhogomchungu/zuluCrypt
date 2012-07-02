@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'cryptoinfo.ui'
 **
-** Created: Sun May 20 19:55:43 2012
+** Created: Mon Jul 2 03:08:33 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -41,6 +41,7 @@ public:
     {
         if (cryptoinfo->objectName().isEmpty())
             cryptoinfo->setObjectName(QString::fromUtf8("cryptoinfo"));
+        cryptoinfo->setWindowModality(Qt::ApplicationModal);
         cryptoinfo->resize(482, 228);
         pbOK = new QPushButton(cryptoinfo);
         pbOK->setObjectName(QString::fromUtf8("pbOK"));

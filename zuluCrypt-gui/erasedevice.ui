@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>erasedevice</class>
  <widget class="QWidget" name="erasedevice">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>

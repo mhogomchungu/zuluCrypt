@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'managedevicenames.ui'
 **
-** Created: Sun May 20 19:55:43 2012
+** Created: Mon Jul 2 03:04:05 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -40,6 +40,7 @@ public:
     {
         if (managedevicenames->objectName().isEmpty())
             managedevicenames->setObjectName(QString::fromUtf8("managedevicenames"));
+        managedevicenames->setWindowModality(Qt::ApplicationModal);
         managedevicenames->resize(641, 323);
         pbAdd = new QPushButton(managedevicenames);
         pbAdd->setObjectName(QString::fromUtf8("pbAdd"));

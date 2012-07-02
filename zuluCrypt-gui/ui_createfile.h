@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'createfile.ui'
 **
-** Created: Tue May 22 09:24:05 2012
+** Created: Mon Jul 2 03:08:33 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -44,6 +44,7 @@ public:
     {
         if (createfile->objectName().isEmpty())
             createfile->setObjectName(QString::fromUtf8("createfile"));
+        createfile->setWindowModality(Qt::ApplicationModal);
         createfile->resize(475, 164);
         lineEditFileName = new QLineEdit(createfile);
         lineEditFileName->setObjectName(QString::fromUtf8("lineEditFileName"));

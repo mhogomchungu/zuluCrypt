@@ -62,10 +62,12 @@ passwordDialog::passwordDialog( QTableWidget * table,QWidget * parent ) : QDialo
 
 void passwordDialog::cbStateChanged( int state )
 {
+	m_ui->checkBoxReadOnly->setEnabled( false );
 	QFile f( QDir::homePath() + QString( "/.zuluCrypt/open_mode" ) ) ;
 	f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
 	f.write( QString::number( state ).toAscii() ) ;
 	f.close();
+	m_ui->checkBoxReadOnly->setEnabled( true );
 }
 
 void passwordDialog::setDefaultOpenMode()
@@ -244,7 +246,7 @@ void passwordDialog::buttonOpenClicked( void )
 	connect( ovt,SIGNAL( finished( int ) ),this,SLOT( threadfinished( int ) ) ) ;
 	m_isWindowClosable = false ;
 	disableAll();
-	QThreadPool::globalInstance()->start( ovt );
+	ovt->start();
 }
 
 void passwordDialog::disableAll()

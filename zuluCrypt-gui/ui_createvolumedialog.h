@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'createvolumedialog.ui'
 **
-** Created: Wed May 23 18:31:26 2012
+** Created: Mon Jul 2 03:08:33 2012
 **      by: Qt User Interface Compiler version 4.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -32,6 +32,7 @@ public:
     {
         if (CreateVolumeDialog->objectName().isEmpty())
             CreateVolumeDialog->setObjectName(QString::fromUtf8("CreateVolumeDialog"));
+        CreateVolumeDialog->setWindowModality(Qt::ApplicationModal);
         CreateVolumeDialog->resize(461, 195);
         pbYes = new QPushButton(CreateVolumeDialog);
         pbYes->setObjectName(QString::fromUtf8("pbYes"));
