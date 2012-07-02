@@ -79,7 +79,7 @@ void passwordDialog::setDefaultOpenMode()
 
 	if( f.exists() == false ){
 		f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
-		f.write( QString::number( Qt::Checked ).toAscii() ) ;
+		f.write( QString::number( Qt::Unchecked ).toAscii() ) ;
 		f.close();
 	}
 
