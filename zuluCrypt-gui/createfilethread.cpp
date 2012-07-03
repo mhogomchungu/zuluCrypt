@@ -21,14 +21,14 @@
 
 createFileThread::createFileThread( QString file,double size )
 {
-	m_cancelled = 0 ;
+	m_status = 0 ;
 	m_file = file ;
 	m_size = size ;
 }
 
 void createFileThread::cancelOperation()
 {
-	m_cancelled = 1 ;
+	m_status = -1 ;
 }
 
 void createFileThread::start()
@@ -50,7 +50,7 @@ void createFileThread::run()
 
 	this->createFile();
 
-	if( m_cancelled == 1 )
+	if( m_status != 0 )
 		return ;
 
 	emit doneCreatingFile();
@@ -81,7 +81,7 @@ void createFileThread::createFile()
 	emit progress( 0 );
 
 	for( i = 0 ; i < k ; i++ ){
-		if( m_cancelled == 1 )
+		if( m_status == -1 )
 			break ;
 
 		file.write( data,SIZE ) ;
@@ -106,6 +106,9 @@ void createFileThread::fillCreatedFileWithRandomData()
 {
 	this->openVolume()  ;
 	
+	if( m_status != 0 )
+		return ;
+
 	this->writeVolume() ;
 
 	this->closeVolume() ;
@@ -136,6 +139,7 @@ void createFileThread::openVolume()
 	QProcess p ;
 	p.start( exe );
 	p.waitForFinished();
+	m_status = p.exitCode() ;
 	p.close();
 }
 
@@ -168,7 +172,7 @@ void createFileThread::writeVolume()
 			k = j ;
 		}
 
-		if( m_cancelled == 1 )
+		if( m_status == -1 )
 			break ;
 	}
 
@@ -178,5 +182,5 @@ void createFileThread::writeVolume()
 
 createFileThread::~createFileThread()
 {
-	emit exitStatus( m_cancelled );
+	emit exitStatus( m_status );
 }

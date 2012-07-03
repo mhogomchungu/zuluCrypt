@@ -183,15 +183,19 @@ void createfile::exitStatus( int status )
 {
 	m_cft = NULL ;
 
-	if( status == 1 )
+	if( status == -1 ){
 		QFile::remove( m_path ) ;
-	else{
+		return ;
+	}else if( status == 0 ){
 		if( m_msg->isVisible() )
 			m_msg->HideUI();
-
-		emit fileCreated( m_path ) ;
+	}else{
+		DialogMsg msg( this ) ;
+		msg.ShowUIOK( tr( "ERROR" ),
+			      tr( "could not open cryptographic back end to generate random data" ) ) ;
 	}
 
+	emit fileCreated( m_path ) ;
 	HideUI();
 }
 

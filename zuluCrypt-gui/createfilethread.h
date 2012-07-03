@@ -58,7 +58,7 @@ private:
 
 	QString m_file ;
 	double m_size ;
-	int m_cancelled ;
+	int m_status ;
 };
 
 #endif // ZULUCRYPTTHREADS_H
