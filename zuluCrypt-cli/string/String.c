@@ -48,7 +48,7 @@ struct StringType
 static inline char * __StringExpandMemory( string_t st,size_t new_size )
 {
 	if( new_size + 1 > st->length ) {
-		st->length = new_size * FACTOR ; 
+		st->length = ( size_t )( new_size * FACTOR ) ; 
 		return realloc( st->string,st->length ) ;
 	}else
 		return st->string ;
