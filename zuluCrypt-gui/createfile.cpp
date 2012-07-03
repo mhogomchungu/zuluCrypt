@@ -152,11 +152,11 @@ void createfile::pbCreate()
 		return ;
 	}
 	switch( m_ui ->comboBox->currentIndex() ){
-		case 0 :m_fileSize = fileSize.toDouble() * 1024 ;
+		case 0 :m_fileSize = fileSize.toDouble() * BLOCK_SIZE ;
 			break ;
-		case 1 :m_fileSize = fileSize.toDouble() * 1024 * 1024 ;
+		case 1 :m_fileSize = fileSize.toDouble() * BLOCK_SIZE * BLOCK_SIZE ;
 			break ;
-		case 2 :m_fileSize = fileSize.toDouble() * 1024 * 1024  * 1024;
+		case 2 :m_fileSize = fileSize.toDouble() * BLOCK_SIZE * BLOCK_SIZE  * BLOCK_SIZE;
 			break ;
 	}
 	if( m_fileSize < 3145728 )

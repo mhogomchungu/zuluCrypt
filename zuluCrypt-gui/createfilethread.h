@@ -31,7 +31,9 @@
 #include <QThreadPool>
 #include <QFile>
 
-#include <string.h>
+#include <cstring>
+
+#define BLOCK_SIZE 1000
 
 class createFileThread : public QObject,public QRunnable
 {

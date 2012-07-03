@@ -65,7 +65,7 @@ void createFileThread::createFile()
 	QFile file( m_file ) ;
 	file.open( QIODevice::WriteOnly ) ;
 
-	const int SIZE = 1024 ;
+	const int SIZE = BLOCK_SIZE ;
 
 	char data[SIZE];
 
