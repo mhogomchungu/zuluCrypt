@@ -112,6 +112,8 @@ static void file_system_properties( string_t p,const char * mapper,const char * 
 	
 	snprintf( buff,SIZE,"%.2f%%",100 * ( ( float ) used / ( float ) total ) ) ;
 	StringMultipleAppend( p,"\n used%:   \t",buff,'\0' ) ;
+	
+	StringMultipleAppend( p,"\n mount point:\t",m_point,'\0' ) ;
 }
 
 static char * loop_device_address( const char * device )
