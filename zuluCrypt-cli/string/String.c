@@ -54,20 +54,53 @@ static inline char * __StringExpandMemory( string_t st,size_t new_size )
 		return st->string ;
 }
 
-void StringDelete( string_t * xt )
+void StringDelete( string_t * st )
 {
-	string_t st = *xt ;
-	*xt = NULL ;
-	free( st->string ) ;
-	free( st ) ;
+	if( *st == NULL )
+		return ;
+	free( ( *st )->string ) ;
+	free( *st ) ;
+	*st = NULL ;
+	
+}
+
+void StringMultipleDelete( string_t * xt,... )
+{
+	string_t * entry ;
+	va_list list ;
+	
+	if( *xt != NULL ){
+		free( ( *xt )->string ) ;
+		free( *xt ) ;
+		*xt = NULL ;
+	}
+	
+	va_start( list,xt ) ;
+	
+	while( 1 ){
+		entry = va_arg( list,string_t * ) ;
+		if( entry == '\0' )
+			break ;
+		
+		if( *entry == NULL )
+			continue ;
+		
+		free( ( *entry )->string ) ;
+		free( *entry ) ;
+		*entry = NULL ;
+	}
+	
+	va_end( list ) ;
 }
 
 char * StringDeleteHandle( string_t * xt )
 {
 	char * c ;
-	string_t st = *xt ;
-	c = st->string ;
-	free( st ) ;
+	if( *xt == NULL )
+		return NULL ;
+	
+	c = ( *xt )->string ;
+	free( *xt ) ;
 	*xt = NULL ;
 	return c ;
 }

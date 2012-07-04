@@ -32,12 +32,7 @@
 
 static int result( int st,string_t x,string_t y,string_t z )
 {
-	if( x != NULL )
-		StringDelete( &x ) ;
-	if( y != NULL )
-		StringDelete( &y ) ;
-	if( z != NULL )
-		StringDelete( &z ) ;
+	StringMultipleDelete( &x,&y,&z,'\0' ) ;
 	return st ;
 }
 

@@ -97,8 +97,7 @@ static int mount_ntfs( const m_struct * mst )
 	
 	ProcessDelete( &p ) ;
 	
-	StringDelete( &q ) ;
-	StringDelete( &uid ) ;
+	StringMultipleDelete( &q,&uid,'\0' ) ;
 	
 	return status ;
 }
@@ -221,8 +220,9 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 		}
 		free( path ) ;
 	}	
-	StringDelete( &fs ) ;
-	StringDelete( &options ) ;
+	
+	StringMultipleDelete( &fs,&options,'\0' ) ;
+
 	return h ;
 }
 

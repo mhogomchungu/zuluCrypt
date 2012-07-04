@@ -86,8 +86,7 @@ string_t create_mapper_name( const char * device,const char * mapping_name,uid_t
 	
 	replace_bash_special_chars( p ) ;
 	
-	StringDelete( &q ) ;
-	StringDelete( &z ) ;
+	StringMultipleDelete( &q,&z,'\0' ) ;
 
 	return p ;
 }
