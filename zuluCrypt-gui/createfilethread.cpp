@@ -36,26 +36,68 @@ void createFileThread::start()
 	QThreadPool::globalInstance()->start( this );
 }
 
+int createFileThread::createContainerFile( void )
+{
+	QFile file( m_file ) ;
+	file.open( QIODevice::WriteOnly ) ;
+
+	char buffer[ BLOCK_SIZE ] ;
+
+	QFile random( QString( "/dev/urandom" ) ) ;
+	random.open( QIODevice::ReadOnly ) ;
+
+	qint64 size_written = 0 ;
+
+	int j = 0 ;
+	int k ;
+	do{
+		if( m_status == -1 )
+			break ;
+		random.read( buffer,BLOCK_SIZE ) ;
+		file.write( buffer,BLOCK_SIZE ) ;
+		file.flush() ;
+
+		size_written += BLOCK_SIZE ;
+
+		k = ( int ) ( size_written * 100 / m_size ) ;
+
+		if( k > j )
+			emit progress( k );
+		j = k ;
+	}while( size_written < m_size ) ;
+
+	file.setPermissions( QFile::ReadOwner|QFile::WriteOwner ) ;
+	file.close();
+	random.close();
+
+	return m_status == -1 ? -1 : 0 ;
+}
+
 void createFileThread::run()
 {
 	/*
-	 * This is the entry point for this class.
-	 * The class basically cr*eates a file of a size specified by a user by writing '\0' to it.
-	 *
-	 * Then it creates a cryptsetup mapper and writes '\0' to the file through the mapper.
-	 *
-	 * This medhod of writing random data to the file seem to be faster than creating the file using random
-	 * data from /dev/urandom
+	 * RANDOM_SOURCE is set at createfilethread.h
 	 */
+	if( RANDOM_SOURCE == 1 ){
+		/*
+		 * write random data using data from reading "/dev/urandom", slow
+		 * but dependable
+		 */
+		m_status = this->createContainerFile() ;
+	}else{
+		/*
+		 * write raandom data using cryptsetup,much faster but
+		 * hangs on some kernels when the data to be written is large enough
+		 */
+		this->createFile();
 
-	this->createFile();
+		if( m_status != 0 )
+			return ;
 
-	if( m_status != 0 )
-		return ;
+		emit doneCreatingFile();
 
-	emit doneCreatingFile();
-
-	this->fillCreatedFileWithRandomData();
+		this->fillCreatedFileWithRandomData();
+	}
 }
 
 void createFileThread::createFile()
@@ -85,7 +127,7 @@ void createFileThread::createFile()
 			break ;
 
 		file.write( data,SIZE ) ;
-
+		file.flush() ;
 		data_written += SIZE ;
 
 		x = ( int )( data_written * 100 / m_size ) ;
@@ -163,6 +205,7 @@ void createFileThread::writeVolume()
 
 	while( path.write( data,SIZE ) > 0 ){
 
+		path.flush() ;
 		data_written += SIZE ;
 
 		j = ( int )( data_written * 100 / m_size ) ;

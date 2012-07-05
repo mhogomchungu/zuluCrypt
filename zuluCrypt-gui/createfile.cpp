@@ -113,7 +113,9 @@ void createfile::showUI()
 	m_ui->lineEditFileSize->clear();
 	m_ui->progressBar->setValue( 0 );
 	m_ui->lineEditFileName->setFocus();
-	this->setWindowTitle( tr( "1/2 create a container file" ) );
+	//this->setWindowTitle( tr( "1/2 create a container file" ) );
+	this->setWindowTitle( tr( "create a container file" ) );
+
 	this->show();
 }
 
@@ -185,7 +187,7 @@ void createfile::exitStatus( int status )
 
 	if( status == -1 ){
 		QFile::remove( m_path ) ;
-		return ;
+		return HideUI() ;
 	}else if( status == 0 ){
 		if( m_msg->isVisible() )
 			m_msg->HideUI();
@@ -207,7 +209,7 @@ void createfile::pbCancel()
 	QString x = tr( "terminating file creation process" ) ;
 	QString y = tr( "are you sure you want to stop file creation process?" ) ;
 
-	if( m_msg->ShowUIYesNo( x,y ) == QMessageBox::Yes )
+	if( m_msg->ShowUIYesNoDefaultNo( x,y ) == QMessageBox::Yes )
 		emit cancelOperation();
 }
 

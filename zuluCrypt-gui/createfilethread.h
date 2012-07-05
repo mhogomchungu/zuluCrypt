@@ -35,6 +35,16 @@
 
 #define BLOCK_SIZE 1000
 
+/*
+ * getting random data to write to devices is much slower when obtained through
+ * reading them from "/dev/urandom" but its dependable.
+ *
+ * getting them from cryptsetup is much faster but it locks up some kernel versions.
+ *
+ * Use "1" to get data from "/dev/urandom" and "0" from cryptsetup
+ */
+#define RANDOM_SOURCE 0
+
 class createFileThread : public QObject,public QRunnable
 {
 	Q_OBJECT
@@ -49,6 +59,7 @@ signals:
 private slots:
 	void cancelOperation( void );
 private:
+	int createContainerFile( void );
 	void writeVolume( void );
 	void openVolume( void );
 	void closeVolume( void );

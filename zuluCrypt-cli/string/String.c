@@ -61,7 +61,6 @@ void StringDelete( string_t * st )
 	free( ( *st )->string ) ;
 	free( *st ) ;
 	*st = NULL ;
-	
 }
 
 void StringMultipleDelete( string_t * xt,... )

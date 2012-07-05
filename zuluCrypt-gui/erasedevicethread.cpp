@@ -33,15 +33,73 @@ void erasedevicethread::start()
 	QThreadPool::globalInstance()->start( this );
 }
 
+int erasedevicethread::writeJunk()
+{
+	const int SIZE = 512 ;
+
+	int f = open( m_path.toAscii().constData(),O_RDONLY ) ;
+	qint64 size = ( qint64 ) blkid_get_dev_size( f )   ;
+	close( f ) ;
+
+	QFile file( m_path ) ;
+	if( file.open( QIODevice::WriteOnly ) == false )
+		return 8 ;
+
+	char buffer[ SIZE ] ;
+
+	QFile random( QString( "/dev/urandom" ) ) ;
+	random.open( QIODevice::ReadOnly ) ;
+
+	qint64 size_written = 0 ;
+
+	int j = 0 ;
+	int k ;
+	do{
+		if( m_status == 5 )
+			break ;
+		random.read( buffer,SIZE ) ;
+		file.write( buffer,SIZE ) ;
+		file.flush() ;
+
+		size_written += SIZE ;
+
+		k = ( int ) ( size_written * 100 / size ) ;
+
+		if( k > j )
+			emit progress( k );
+		j = k ;
+	}while( size_written < size ) ;
+
+	file.close();
+	random.close();
+
+	return 0 ;
+}
+
 void erasedevicethread::run()
 {
-	m_status = this->openMapper() ;
+	/*
+	 * RANDOM_SOURCE is set at createfilethread.h
+	 */
+	if( RANDOM_SOURCE == 1 ){
+		/*
+		 * write random data using data from reading "/dev/urandom", slow
+		 * but dependable
+		 */
+		m_status = this->writeJunk();
+	}else{
+		/*
+		 * write raandom data using cryptsetup,much faster but
+		 * hangs on some kernels when the data to be written is large enough
+		 */
+		m_status = this->openMapper() ;
 
-	if( m_status != 0 )
-		return ;
+		if( m_status != 0 )
+			return ;
 
-	this->writeJunkThroughMapper();
-	this->closeMapper();
+		this->writeJunkThroughMapper();
+		this->closeMapper();
+	}
 }
 
 void erasedevicethread::writeJunkThroughMapper()
@@ -69,6 +127,7 @@ void erasedevicethread::writeJunkThroughMapper()
 
 	while( fd.write( buffer,SIZE ) > 0 ){
 
+		//fd.flush() ;
 		if( m_status == 5 )
 			break ;
 

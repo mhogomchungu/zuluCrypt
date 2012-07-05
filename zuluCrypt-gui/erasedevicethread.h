@@ -30,6 +30,7 @@
 #include "miscfunctions.h"
 #include "runinthread.h"
 #include "../zuluCrypt-cli/constants.h"
+#include "createfilethread.h"
 
 #include <blkid/blkid.h>
 #include <string.h>
@@ -47,6 +48,7 @@ signals:
 public slots:
 	void cancel( void );
 private:
+	int writeJunk( void ) ;
 	int openMapper( void );
 	void writeJunkThroughMapper( void );
 	void closeMapper( void );

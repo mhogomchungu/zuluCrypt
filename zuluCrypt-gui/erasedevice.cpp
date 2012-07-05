@@ -90,7 +90,7 @@ void erasedevice::threadExitStatus( int st )
 		case 5: msg.ShowUIOK( tr( "ERROR!" ),tr( "operation terminated per user choicer" ) )				;break ;
 		case 6: msg.ShowUIOK( tr( "ERROR!" ),tr( "can not write on a device with opened mapper" ) )			;break ;
 		case 7: msg.ShowUIOK( tr( "ERROR!" ),tr( "policy prevents non root user opening mapper on system partition" ) );break;
-		case 8: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficitied privilege to oped device for reading" ) )		;break ;
+		case 8: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficitied privilege to oped device in read/write mode" ) )	;break ;
 		case 9: msg.ShowUIOK( tr( "ERROR!" ),tr( "device path is invalid" ) )						;break ;
 		case 10:msg.ShowUIOK( tr( "ERROR!" ),tr( "passphrase file does not exist" ) )					;break ;
 		case 11:msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get enought memory to hold the key file" ) )		;break ;
