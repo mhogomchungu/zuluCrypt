@@ -54,9 +54,11 @@ int open_volume( const char * dev,const char * map,const char * m_point,uid_t id
 	}
 
 	m = realpath( mapper,NULL ) ;
-	chown( m,0,0 ) ;
-	chmod( m,S_IRWXU ) ;
-	free( m ) ;
+	if( m != NULL ){
+		chown( m,0,0 ) ;
+		chmod( m,S_IRWXU ) ;
+		free( m ) ;
+	}
 	
 	if( m_point != NULL ){	
 		h = mount_volume( mapper,m_point,mode,id ) ;	

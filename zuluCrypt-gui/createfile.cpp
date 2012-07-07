@@ -21,6 +21,7 @@
 #include "createfile.h"
 #include "miscfunctions.h"
 #include "../zuluCrypt-cli/constants.h"
+#include "createfilethread.h"
 
 #include <QFileDialog>
 #include <QFile>
@@ -113,8 +114,14 @@ void createfile::showUI()
 	m_ui->lineEditFileSize->clear();
 	m_ui->progressBar->setValue( 0 );
 	m_ui->lineEditFileName->setFocus();
-	//this->setWindowTitle( tr( "1/2 create a container file" ) );
-	this->setWindowTitle( tr( "create a container file" ) );
+	
+	/*
+	 * RANDOM_SOURCE is defined at createfilethread.h
+	 */
+	if( RANDOM_SOURCE == 0 )
+		this->setWindowTitle( tr( "1/2 create a container file" ) );
+	else
+		this->setWindowTitle( tr( "create a container file" ) );
 
 	this->show();
 }

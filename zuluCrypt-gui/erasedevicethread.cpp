@@ -105,16 +105,14 @@ void erasedevicethread::run()
 void erasedevicethread::writeJunkThroughMapper()
 {
 	QFile fd( miscfunctions::mapperPath( m_path ) ) ;
-	bool b = fd.open( QIODevice::WriteOnly ) ;
-
-	if( b == false )
+	if( fd.open( QIODevice::WriteOnly ) == false )
 		return ;
 
 	const int SIZE = 1024 ;
 
 	qint64 size_written = 0 ;
 
-	char buffer[SIZE];
+	char buffer[ SIZE ];
 
 	memset( buffer,0,SIZE ) ;
 
@@ -127,10 +125,11 @@ void erasedevicethread::writeJunkThroughMapper()
 
 	while( fd.write( buffer,SIZE ) > 0 ){
 
-		//fd.flush() ;
 		if( m_status == 5 )
 			break ;
-
+		
+		fd.flush() ;
+		
 		size_written += SIZE ;
 
 		i = ( int ) ( size_written * 100 / dev_size ) ;

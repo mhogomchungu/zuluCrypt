@@ -85,7 +85,7 @@ int cryptfilethread::encrypt()
 		j = i ;
 
 		fd_1.write( buffer,SIZE );
-		//fd_1.flush() ;
+		fd_1.flush() ;
 	}
 
 	fd_1.close();
@@ -137,10 +137,10 @@ int cryptfilethread::encrypt()
 		j = i ;
 		fd_4.read( buffer,SIZE ) ;
 		fd_2.write( buffer,SIZE );
-		//fd_2.flush() ;
+		fd_2.flush() ;
 	}
 
-	//fd_2.flush() ;
+	fd_2.flush() ;
 
 	emit progressUpdate( 100 );
 
@@ -179,7 +179,7 @@ int cryptfilethread::decrypt()
 	if( size <= SIZE ){
 		fd_1.read( buffer,size ) ;
 		fd_2.write( buffer,size ) ;
-		//fd_2.flush() ;
+		fd_2.flush() ;
 	}else{
 		len = size / SIZE ;
 
@@ -196,14 +196,14 @@ int cryptfilethread::decrypt()
 
 			fd_1.read( buffer,SIZE ) ;
 			fd_2.write( buffer,SIZE ) ;
-			//fd_2.flush() ;
+			fd_2.flush() ;
 		}
 
 		len = size - ( i * SIZE ) ;
 
 		fd_1.read( buffer,len ) ;
 		fd_2.write( buffer,len ) ;
-		//fd_2.flush() ;
+		fd_2.flush() ;
 	}
 
 	emit progressUpdate( 100 );
