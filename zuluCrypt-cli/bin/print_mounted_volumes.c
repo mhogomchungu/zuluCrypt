@@ -109,12 +109,14 @@ static stringList_t get_mtab_list( void )
 #endif
 	string_t q = NULL ;
 	stringList_t stl ;
+	struct stat st ;
+	const char * path ;
 	
-	char * path = realpath( "/etc/mtab",NULL ) ;
-	
-	if( path == NULL )
-		return NULL ;
-	
+	if( stat( "/etc/mtab",&st ) == 0 )
+		path = "/etc/mtab" ;
+	else
+		path = "/proc/mounts" ;
+
 	if( strncmp( path,"/proc/",6 ) == 0 ){
 		q = StringGetFromVirtualFile( path ) ;
 	}else{
@@ -127,8 +129,6 @@ static stringList_t get_mtab_list( void )
 
 		mnt_free_lock( m_lock ) ;		
 	}
-	
-	free( path ) ;
 	
 	if( q == NULL )
 		return NULL ;
@@ -162,7 +162,7 @@ char * get_mount_point_from_path( const char * path )
 	size_t i ;
 	size_t j ;
 	
-	string_t entry = NULL ;
+	string_t entry ;
 	
 	const char * e ;
 	
@@ -181,12 +181,9 @@ char * get_mount_point_from_path( const char * path )
 		if( stx == NULL )
 			continue ;
 		
-		e = StringListContentAt( stx,0 ) ;
-		
-		if( strcmp( e,path ) == 0 ){
+		if( StringListContentAtEqual( stx,0,path ) == 0 ){
 			entry = String( StringListContentAt( stx,1 ) ) ;
-			StringListDelete( &stx ) ;
-			StringListDelete( &stl ) ;			
+			StringListMultipleDelete( &stx,&stl,'\0' ) ;
 			return StringDeleteHandle( &entry ) ;
 		}
 		

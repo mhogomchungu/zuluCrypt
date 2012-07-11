@@ -21,14 +21,25 @@
 
 int close_mapper( const char * mapper )
 {
+	struct stat st ;
+	
 	int j ;
 	/*
 	 * For reasons currently unknown to me, the mapper fail to close sometimes so give it some room when it happens
 	 */
 	for( j = 0 ; j < 10 ; j++ ) { 
-		if( crypt_deactivate( NULL,mapper ) == 0 )
+		if( crypt_deactivate( NULL,mapper ) == 0 ){
+			/*
+			 * For reasons currently unknown to me,the mapper path soft link does not always get deleted
+			 */
+			if( stat( mapper,&st ) == 0 )
+				remove( mapper ) ;
+			
 			return 0 ;
+		}
+		
 		sleep( 1 );
 	}
+	
 	return 1 ;
 }

@@ -77,6 +77,11 @@ string_t StringListStringAt( stringList_t stl, size_t index ) ;
 const char * StringListContentAt( stringList_t stl,size_t index ) ;
 
 /*
+ * strcmp() a strinf at index with cstring
+ */
+int StringListContentAtEqual( stringList_t stl,size_t index,const char * cstring );
+
+/*
  * printf() string content at a given index
  */
 void StringListPrintAt( stringList_t stl,size_t index ) ;
@@ -185,6 +190,12 @@ string_t StringListDetachAt( stringList_t stl, size_t index ) ;
  *  when function return, stl will point to NULL
  */
 void StringListDelete( stringList_t * stl ) ;
+
+/*
+ * delete multiple stringList_t * objects.
+ * NOTE; The last element on the argument list must be '\0' 
+ */
+void StringListMultipleDelete( stringList_t * stl,... ) ;
 
 /*
  * find the first element with cstring and remove it and return the position of where the element was.

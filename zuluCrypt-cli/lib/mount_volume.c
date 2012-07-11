@@ -36,7 +36,7 @@
 #define FAT_FAMILY_FS 1
 #define OTHER_FAMILY_FS 2
 
-typedef struct mount_properties{
+typedef struct{
 	const char * device ;
 	const char * m_point ;
 	const char * mode ;
@@ -124,9 +124,10 @@ static int mount_mapper( const m_struct * mst, string_t * st )
 
 int mount_volume( const char * mapper,const char * m_point,const char * mode,uid_t id )
 {
+	struct stat st ;
 	struct mntent mt  ;
 	blkid_probe blkid ;
-	char * path ;
+	const char * path ;
 	int h ;
 	const char * cf ;	
 	FILE * f ;
@@ -179,47 +180,40 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 	 
 	mst.fs = StringContent( fs ) ;
 	 
-	path = realpath( "/etc/mtab",NULL ) ;
+	if( stat( "/etc/mtab",&st ) == 0 )
+		path = "/etc/mtab" ;
+	else
+		path = "/proc/mounts" ;
 
-	if( path == NULL ){
-		/*
-		 * weired,/etc/mtab is MIA
-		 */
+	if( strncmp( path,"/proc",5 ) == 0 ){
 		h = mount_mapper( &mst,&options ) ;
 	}else{
-		if( strncmp( path,"/proc",5 ) == 0 ){
-			/*
-			 * it looks like /etc/mtab is a soft link to /proc/mounts
-			 * 
-			 */
+		/* 
+		 * "/etc/mtab" is not a symbolic link to /proc/mounts, manually,add an entry to it since 
+		 * mount API does not
+		 */		
+		m_lock = mnt_new_lock( "/etc/mtab~",getpid() ) ;
+		if( mnt_lock_file( m_lock ) != 0 ){
+			h = 12 ;
+		}else{		
 			h = mount_mapper( &mst,&options ) ;
-		}else{
-			/* 
-			 * "/etc/mtab" is not a symbolic link to /proc/mounts, manually,add an entry to it since 
-			 * mount API does not
-			 */		
-			m_lock = mnt_new_lock( "/etc/mtab~",getpid() ) ;
-			if( mnt_lock_file( m_lock ) != 0 ){
-				h = 12 ;
-			}else{		
-				h = mount_mapper( &mst,&options ) ;
-				if( h == 0 ){
-					f = setmntent( "/etc/mtab","a" ) ;	
-					mt.mnt_fsname = ( char * ) mapper ;
-					mt.mnt_dir    = ( char * ) m_point ;
-					mt.mnt_type   = ( char * ) StringContent( fs ) ;	
-					mt.mnt_opts   = ( char * ) StringContent( options ) ;
-					mt.mnt_freq   = 0 ;
-					mt.mnt_passno = 0 ;
-					addmntent( f,&mt ) ;	
-					endmntent( f ) ;
-				}
-				mnt_unlock_file( m_lock ) ;
-			}	
-			mnt_free_lock( m_lock ) ;
+			if( h == 0 ){
+				f = setmntent( "/etc/mtab","a" ) ;	
+				mt.mnt_fsname = ( char * ) mapper ;
+				mt.mnt_dir    = ( char * ) m_point ;
+				mt.mnt_type   = ( char * ) StringContent( fs ) ;	
+				mt.mnt_opts   = ( char * ) StringContent( options ) ;
+				mt.mnt_freq   = 0 ;
+				mt.mnt_passno = 0 ;
+				addmntent( f,&mt ) ;	
+				endmntent( f ) ;
+			}
+			
+			mnt_unlock_file( m_lock ) ;
 		}
-		free( path ) ;
-	}	
+		
+		mnt_free_lock( m_lock ) ;
+	}
 	
 	StringMultipleDelete( &fs,&options,'\0' ) ;
 

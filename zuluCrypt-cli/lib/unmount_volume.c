@@ -62,7 +62,8 @@ int unmount_volume( const char * map, char ** m_point )
 	int h = 3 ;
 	int status ;
 	int map_len = strlen( map ) ;
-	char * path ;
+	const char * path ;
+	
 #if USE_NEW_LIBMOUNT_API
 	struct libmnt_lock * lock ;
 #else
@@ -73,11 +74,11 @@ int unmount_volume( const char * map, char ** m_point )
 	if( stat( map,&st ) != 0 )
 		return 1 ;		
 	
-	path = realpath( "/etc/mtab",NULL ) ;	
+	if( stat( "/etc/mtab",&st ) == 0 )
+		path = "/etc/mtab" ;
+	else
+		path = "/proc/mounts" ;
 
-	if( path == NULL )
-		return h ;
-	
 	f = setmntent( path,"r" ) ;
 	
 	if( strncmp( path,"/proc/",6 ) == 0 ){
@@ -121,11 +122,12 @@ int unmount_volume( const char * map, char ** m_point )
 		
 			mnt_unlock_file( lock ) ;
 		}	
+		
 		mnt_free_lock( lock ) ;
-	}	
+	}
+	
 	if( h != 0 && h != 3 && h != 4 )
 		h = 2 ;
 
-	free( path ) ;
 	return h ;
 }

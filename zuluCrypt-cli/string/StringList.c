@@ -256,6 +256,11 @@ const char * StringListContentAt( stringList_t stl,size_t index )
 	return stl->stp[index]->string  ;	
 }
 
+int StringListContentAtEqual( stringList_t stl,size_t index,const char * cstring )
+{
+	return strcmp( stl->stp[index]->string,cstring ) ;
+}
+
 const char * StringListContentAtLast( stringList_t stl ) 
 {
 	return stl->stp[ stl->size - 1 ]->string  ;
@@ -470,14 +475,43 @@ string_t StringListStringAt( stringList_t stl,size_t index )
 
 void StringListDelete( stringList_t * stl ) 
 {
-	size_t index ;	
-	stringList_t stx = *stl ;
-	size_t size  = stx->size ;
+	size_t index ;
+	stringList_t stx ;
+	size_t size ;
+	
+	if( *stl == NULL )
+		return ;
+	
+	stx = *stl ;
+	size  = stx->size ;
 	*stl = NULL ;	
+	
 	for( index = 0 ; index < size ; index++ )
 		StringDelete( &stx->stp[index] ) ;
+	
 	free( stx->stp ) ;	
 	free( stx );	
+}
+
+void StringListMultipleDelete( stringList_t * stl,... ) 
+{
+	stringList_t * entry ;
+	va_list list ;
+	va_start( list,stl ) ;
+	
+	StringListDelete( stl ) ;
+	
+	while( 1 ){
+		
+		entry = va_arg( list,stringList_t * ) ;
+		
+		if( entry == '\0' )
+			break ;
+		
+		StringListDelete( entry ) ;		
+	}
+	
+	va_end( list ) ;	
 }
 
 stringList_t StringListCopy( stringList_t stl ) 
