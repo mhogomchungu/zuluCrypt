@@ -84,7 +84,12 @@ string_t create_mapper_name( const char * device,const char * mapping_name,uid_t
 	
 	StringAppendString( p,z ) ;
 	
-	replace_bash_special_chars( p ) ;
+	/*
+	 * cryptsetup 1.4.1 and previous have a bug and its triggered when the mapper has one or more bash
+	 * special characters, this functions substitute bash special characters for an underscore to
+	 * work around the bug. 
+	 */
+	StringReplaceCharString( p,'_',BASH_SPECIAL_CHARS ) ;
 	
 	StringMultipleDelete( &q,&z,'\0' ) ;
 

@@ -29,10 +29,13 @@
 #include "../constants.h"
 #include "../version.h"
 #include "libzuluCrypt.h"
+#include "../bin/bash_special_chars.h"
 
 #ifdef __STDC__
 char * realpath( const char * path, char * resolved_path ) ;
 #endif
+
+string_t create_mapper_name( const char * device,const char * mapping_name,uid_t uid,int i ) ;
 
 /*
  * this function checks if path exists or not.

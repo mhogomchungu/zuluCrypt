@@ -50,7 +50,7 @@ int close_opened_volume( const char * device,const char * mapping_name,uid_t uid
 	 if( dev == NULL )
 		 return st_msg( 6,NULL ) ;
 	 /*
-	  * This function is defined at "create_mapper_name.c"
+	  * This function is defined at "../lib/create_mapper_name.c"
 	  * 
 	  * Explanation for what it does is explained where it is defined.	  * 
 	  */

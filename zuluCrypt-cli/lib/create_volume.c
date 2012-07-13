@@ -30,9 +30,9 @@
  */
 #include "../process/process.h"
 
-static int result( int st,string_t x,string_t y,string_t z )
+static int result( int st,string_t x,string_t y )
 {
-	StringMultipleDelete( &x,&y,&z,'\0' ) ;
+	StringMultipleDelete( &x,&y,'\0' ) ;
 	return st ;
 }
 
@@ -45,40 +45,42 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 	
 	string_t cmd = NULL ;
 	string_t m = NULL ;
-	string_t pid = StringIntToString( getpid() ) ;
 	
 	const char * device_mapper ;
 	const char * mapper ;	
 	const char * copts ;
+	char * device ;
 	
 	if ( is_path_valid( dev ) != 0 )
-		return result( 1,cmd,m,pid ) ;
+		return result( 1,cmd,m ) ;
 		
 	if( strcmp( type,"luks" ) == 0 )
 		if( strcmp( rng,"/dev/random" ) != 0 )
 			if( strcmp( rng,"/dev/urandom" ) != 0 )
-				return result( 2,cmd,m,pid ) ;
-			
-	m = String( crypt_get_dir() ) ;	
-		
-	StringAppend( m,"/zuluCrypt-create-new-" ) ;
-	device_mapper = StringAppendString( m,pid ) ;
+				return result( 2,cmd,m ) ;
 	
-	mapper = device_mapper + StringLastIndexOfChar( m,'/' ) + 1 ;
+	device = realpath( dev,NULL ) ;
+	if( device == NULL )
+		return result( 3,cmd,m ) ;
 	
-	if( is_path_valid( device_mapper ) == 0 )
-		close_mapper( device_mapper );	
+	m = create_mapper_name( device,strrchr( device,'/' ) + 1,0,OPEN ) ;
 	
+	free( device ) ;
+
+	device_mapper = StringMultiplePrepend( m,"/new-",crypt_get_dir(),'\0' ) ;
+	
+	mapper = strrchr( device_mapper,'/' ) + 1 ;
+
 	if( strcmp( type,"luks" )  == 0 ){
 		if( create_luks( dev,pass,pass_size,rng ) != 0 )	
-			return result( 3,cmd,m,pid ) ;
+			return result( 3,cmd,m ) ;
 		if( open_luks( dev,mapper,"rw",pass,pass_size ) != 0 )
-			return result( 3,cmd,m,pid ) ; ;
+			return result( 3,cmd,m ) ; ;
 	}else if( strcmp( type,"plain") == 0 ){
 		if( open_plain( dev,mapper,"rw",pass,pass_size ) )
-			return result( 3,cmd,m,pid ) ; ;		
+			return result( 3,cmd,m ) ; ;		
 	}else{
-		return result( 2,cmd,m,pid ) ; ;
+		return result( 2,cmd,m ) ; ;
 	}		
 
 	cmd = String( ZULUCRYPTmkfs ) ;
@@ -119,13 +121,13 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 	ProcessStart( p ) ;
 
 	status = ProcessExitStatus( p ) ;
-	
+
 	close_mapper( device_mapper );	
 	
 	ProcessDelete( &p ) ;
 	
 	if( status == 0 )
-		return result( 0,cmd,m,pid ) ;
+		return result( 0,cmd,m ) ;
 	else
-		return result( 3,cmd,m,pid ) ;
+		return result( 3,cmd,m ) ;
 }

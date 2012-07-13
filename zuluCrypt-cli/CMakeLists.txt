@@ -62,8 +62,6 @@
  
  SET( BIN  
  bin/print_mounted_volumes.c 
- bin/create_mapper_name.c 
- bin/replace_bash_special_chars.c 
  bin/close_volume.c 
  bin/add_key.c
  bin/volume_info.c
@@ -82,6 +80,7 @@
  ) 
  
  SET( LIB 
+ lib/create_mapper_name.c  
  lib/is_path_valid.c 
  lib/version.c 
  lib/close_volume.c 

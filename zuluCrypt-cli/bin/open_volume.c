@@ -151,7 +151,7 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 	}		
 
 	/*
-	 * This function is defined at "create_mapper_name.c"
+	 * This function is defined at "../lib/create_mapper_name.c"
 	 * 
 	 * Explanation for what it does is explained where it is defined.	  * 
 	 */
