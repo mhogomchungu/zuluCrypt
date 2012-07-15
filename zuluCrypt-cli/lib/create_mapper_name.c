@@ -72,15 +72,13 @@ string_t create_mapper_name( const char * device,const char * mapping_name,uid_t
 	q = StringIntToString( uid ) ;	
 	StringAppendString( p,q ) ;
 	
-	if( strncmp( mapping_name,"UUID-",5 ) == 0 )
+	if( strncmp( mapping_name,"UUID-",5 ) == 0 ){
 		StringMultipleAppend( p,"-",mapping_name,"-",'\0' ) ;
-	else
+		z = hash_path( mapping_name ) ;		
+	}else{
 		StringMultipleAppend( p,"-NAAN-",mapping_name,"-",'\0' ) ;			
-	
-	if( strncmp( mapping_name,"UUID-",5 ) == 0 )
-		z = hash_path( mapping_name ) ;
-	else
 		z = hash_path( device ) ;
+	}
 	
 	StringAppendString( p,z ) ;
 	
