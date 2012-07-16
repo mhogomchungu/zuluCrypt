@@ -182,7 +182,8 @@ char * get_mount_point_from_path( const char * path )
 			continue ;
 		
 		if( StringListContentAtEqual( stx,0,path ) == 0 ){
-			entry = String( StringListContentAt( stx,1 ) ) ;
+			entry = StringListDetachAt( stx,1 ) ;
+			substitute_chars( entry ) ;
 			StringListMultipleDelete( &stx,&stl,'\0' ) ;
 			return StringDeleteHandle( &entry ) ;
 		}

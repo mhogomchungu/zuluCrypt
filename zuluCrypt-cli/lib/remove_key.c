@@ -36,7 +36,7 @@ int remove_key( const char * device ,const char * pass,size_t pass_size )
 	if( crypt_init( &cd,device ) != 0 )
 		return 3 ;
 	
-	if( crypt_load( cd, CRYPT_LUKS1,NULL ) != 0 )
+	if( crypt_load( cd,NULL,NULL ) != 0 )
 		return free_crypt( 3,cd ) ;
 	
 	slot = crypt_activate_by_passphrase( cd,NULL,CRYPT_ANY_SLOT,pass,pass_size,0 );
