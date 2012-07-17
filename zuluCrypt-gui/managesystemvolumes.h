@@ -42,6 +42,7 @@ private slots:
 	void itemClicked( QTableWidgetItem * current );
 	void removeCurrentRow( void ) ;
 	void contextMenu( void ) ;
+	void setFocusTableWidget( void );
 private:
 	void highlightRow( int,bool ) ;
 	void readSystemPartitions( void ) ;

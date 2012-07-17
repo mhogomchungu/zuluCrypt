@@ -30,7 +30,7 @@ manageSystemVolumes::manageSystemVolumes( QWidget * parent ) :
 	connect( m_ui->pbAdd,SIGNAL( clicked() ),this,SLOT( pbAdd() ) ) ;
 	connect( m_ui->pbDone,SIGNAL( clicked() ),this,SLOT( pbDone() ) ) ;
 	connect( m_ui->pbFile,SIGNAL( clicked() ),this,SLOT( pbFile() ) ) ;
-	connect( m_ui->pbPartition,SIGNAL( clicked() ),this,SLOT(pbPartition() ) ) ;
+	connect( m_ui->pbPartition,SIGNAL( clicked() ),this,SLOT( pbPartition() ) ) ;
 	connect( m_ui->tableWidget,SIGNAL( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ),this,
 		SLOT( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ) );
 	connect( m_ui->tableWidget,SIGNAL( itemClicked( QTableWidgetItem * ) ),this,
@@ -202,9 +202,15 @@ void manageSystemVolumes::pbFile()
 void manageSystemVolumes::pbPartition()
 {
 	openpartition * op = new openpartition( this ) ;
-	connect( op,SIGNAL( HideUISignal() ),op,SLOT(deleteLater() ) ) ;
+	connect( op,SIGNAL( HideUISignal() ),op,SLOT( deleteLater() ) ) ;
+	connect( op,SIGNAL( HideUISignal() ),this,SLOT( setFocusTableWidget() ) ) ;
 	connect( op,SIGNAL( clickedPartition( QString ) ),this,SLOT( clickedPartition( QString ) ) ) ;
 	op->ShowAllPartitions();
+}
+
+void manageSystemVolumes::setFocusTableWidget()
+{
+	m_ui->tableWidget->setFocus();
 }
 
 void manageSystemVolumes::clickedPartition( QString path )
