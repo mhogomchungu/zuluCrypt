@@ -1,13 +1,11 @@
 #include "managesystemvolumes.h"
 #include "ui_managesystemvolumes.h"
 
-#include <QDebug>
-
 manageSystemVolumes::manageSystemVolumes( QWidget * parent ) :
         QDialog(parent),
 	m_ui(new Ui::manageSystemVolumes)
 {
-	m_ui->setupUi(this);
+	m_ui->setupUi( this ) ;
 
 	this->setFont( parent->font() );
 	this->setFixedSize( this->size() );
