@@ -27,20 +27,7 @@
  */
 static int unlink_mapper( const char * mapper )
 {
-	struct stat st ;	
-	int i ;
-	
-	for( i = 0 ; i < 10 ; i++ ){
-		sleep( 1 ) ;
-		if( stat( mapper,&st ) != 0 ){
-			return 0 ;
-		}else{
-			if( unlink( mapper ) == 0 ){
-				return 0 ;
-			}
-		}	
-	}
-	
+	unlink( mapper ) ;
 	return 0 ;
 }
 
@@ -51,10 +38,9 @@ int close_mapper( const char * mapper )
 	 * For reasons currently unknown to me, the mapper fail to close sometimes so give it some room when it happens
 	 */
 	for( j = 0 ; j < 10 ; j++ ) { 
+		sleep( 1 );
 		if( crypt_deactivate( NULL,mapper ) == 0 )			
 			return unlink_mapper( mapper ) ;	
-		else		
-			sleep( 1 );
 	}
 	
 	return 1 ;
