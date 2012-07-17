@@ -24,6 +24,7 @@ int close_mapper( const char * mapper )
 	struct stat st ;
 	
 	int j ;
+	int i ;
 	/*
 	 * For reasons currently unknown to me, the mapper fail to close sometimes so give it some room when it happens
 	 */
@@ -31,10 +32,16 @@ int close_mapper( const char * mapper )
 		if( crypt_deactivate( NULL,mapper ) == 0 ){
 			/*
 			 * For reasons currently unknown to me,the mapper path soft link does not always get deleted
-			 */
-			if( stat( mapper,&st ) == 0 )
-				remove( mapper ) ;
-			
+			 */			
+			for( i = 0 ; i < 10 ; i++ ){
+				sleep( 1 ) ;
+				if( stat( mapper,&st ) == 0 ){
+					remove( mapper ) ;
+				}else{
+					break ;
+				}
+			}			
+
 			return 0 ;
 		}
 		

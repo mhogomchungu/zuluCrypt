@@ -37,7 +37,8 @@ SOURCES += main.cpp\
     cryptfiles.cpp \
     cryptfilethread.cpp \
     createvolumedialog.cpp \
-    dialogmsg.cpp
+    dialogmsg.cpp \
+    managesystemvolumes.cpp
 
 HEADERS  += zulucrypt.h password_dialog.h \
     openpartition.h \
@@ -64,7 +65,8 @@ HEADERS  += zulucrypt.h password_dialog.h \
     cryptfiles.h \
     cryptfilethread.h \
     createvolumedialog.h \
-    dialogmsg.h
+    dialogmsg.h \
+    managesystemvolumes.h
     
 
 FORMS    += zulucrypt.ui password.ui \
@@ -80,7 +82,8 @@ FORMS    += zulucrypt.ui password.ui \
     manageluksheader.ui \
     cryptfiles.ui \
     createvolumedialog.ui \
-    dialogmsg.ui
+    dialogmsg.ui \
+    managesystemvolumes.ui
 
 TRANSLATIONS = 
 

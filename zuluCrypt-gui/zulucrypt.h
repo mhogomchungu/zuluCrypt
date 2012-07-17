@@ -30,6 +30,9 @@
 #include <QMessageBox>
 #include <QCloseEvent>
 
+#include <unistd.h>
+#include <sys/types.h>
+
 #include "../zuluCrypt-cli/constants.h"
 #include "../zuluCrypt-cli/version.h"
 #include "password_dialog.h"
@@ -51,6 +54,7 @@
 #include "manageluksheader.h"
 #include "cryptfiles.h"
 #include "dialogmsg.h"
+#include "managesystemvolumes.h"
 
 namespace Ui {
     class zuluCrypt;
@@ -110,6 +114,7 @@ private slots :
 	void ShowNonSystemPartitions( void );
 	void ShowPasswordDialog( void );
 	void ShowOpenPartition( void );
+	void ShowManageSystemPartitions( void ) ;
 	void ShowPasswordDialogFromFavorite( QString,QString );
 	void ShowEraseDataDialog( void );
 	void partitionClicked( QString );

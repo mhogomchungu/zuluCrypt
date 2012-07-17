@@ -15,6 +15,7 @@ set (UI_FILES createfile.ui
 		cryptfiles.ui
 		createvolumedialog.ui
 		dialogmsg.ui
+		managesystemvolumes.ui
 )
 
 set( MOC_FILES createfile.h
@@ -43,6 +44,7 @@ set( MOC_FILES createfile.h
 		cryptfilethread.h
 		createvolumedialog.h
 		dialogmsg.h
+		managesystemvolumes.h
  )
 	
 set (SRC createfile.cpp
@@ -73,6 +75,7 @@ set (SRC createfile.cpp
 	cryptfilethread.cpp
 	createvolumedialog.cpp
 	dialogmsg.cpp
+	managesystemvolumes.cpp
 )
 
 find_package( Qt4 REQUIRED )

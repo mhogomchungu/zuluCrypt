@@ -29,6 +29,7 @@
 #include <QDir>
 #include <QTableWidget>
 #include <QMessageBox>
+#include <QTableWidgetItem>
 
 #include <unistd.h>
 

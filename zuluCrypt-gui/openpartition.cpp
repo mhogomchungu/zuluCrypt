@@ -48,7 +48,7 @@ openpartition::openpartition( QWidget * parent ) :
 	
 	this->addAction( m_action );
 
-	QTableWidget *tw = m_ui->tableWidget ;
+	QTableWidget * tw = m_ui->tableWidget ;
 	tw->setColumnWidth( 0,90 );
 	tw->setColumnWidth( 1,90 );
 	tw->setColumnWidth( 2,110 );

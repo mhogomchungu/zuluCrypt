@@ -61,7 +61,6 @@ void closeAllVolumesThread::run()
 		p.start( exe );
 		p.waitForFinished() ;
 		emit close( deviceItem,p.exitCode() ) ;
-		sleep( 1 ) ; //for ui effect
 		p.close();
 	}
 	m_table->setEnabled( true );

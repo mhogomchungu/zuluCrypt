@@ -33,10 +33,10 @@ managedevicenames::managedevicenames( QWidget * parent ) :
 	connect( m_ui->pbAdd,SIGNAL( clicked() ),this,SLOT( add() ) );
 	connect( m_ui->pbFileAddress,SIGNAL( clicked() ),this,SLOT( fileAddress() ) );
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( cancel() ) );
-	connect( m_ui->tableWidget,SIGNAL( currentItemChanged( QTableWidgetItem*,QTableWidgetItem* ) ),this,
-		SLOT( currentItemChanged( QTableWidgetItem*,QTableWidgetItem* ) ) );
-	connect( m_ui->tableWidget,SIGNAL( itemClicked( QTableWidgetItem* ) ),this,
-		SLOT( itemClicked( QTableWidgetItem* ) ) );
+	connect( m_ui->tableWidget,SIGNAL( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ),this,
+		SLOT( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ) );
+	connect( m_ui->tableWidget,SIGNAL( itemClicked( QTableWidgetItem * ) ),this,
+		SLOT( itemClicked( QTableWidgetItem * ) ) );
 	connect( m_ui->lineEditDeviceAddress,SIGNAL( textChanged( QString ) ),this,SLOT( devicePathTextChange( QString ) ) );
 
 	m_ui->pbFileAddress->setIcon( QIcon( QString( ":/keyfile.png" ) ) );
@@ -56,23 +56,22 @@ void managedevicenames::devicePathTextChange( QString txt )
 {
 	if( txt.isEmpty() ){
 		m_ui->lineEditMountPath->clear(); ;
-		return ;		
+	}else{
+		QString ed = QDir::homePath() + QString( "/" ) + txt.split( "/" ).last() ;
+		m_ui->lineEditMountPath->setText( ed );
 	}
-	QString ed = QDir::homePath() + QString( "/" ) + txt.split( "/" ).last() ;
-	m_ui->lineEditMountPath->setText( ed );
 }
 
 void managedevicenames::shortcutPressed()
 {
-	QTableWidgetItem *it = m_ui->tableWidget->currentItem() ;
-	if( it == NULL )
-		return ;
-	itemClicked( it,false );
+	QTableWidgetItem * it = m_ui->tableWidget->currentItem() ;
+	if( it != NULL )
+		itemClicked( it,false );
 }
 
 void managedevicenames::deviceAddress()
 {
-	openpartition *openPartition = new openpartition( this ) ;
+	openpartition * openPartition = new openpartition( this ) ;
 	connect( openPartition,SIGNAL( clickedPartition( QString ) ),this,SLOT( PartitionEntry( QString ) ) );
 	connect( openPartition,SIGNAL( HideUISignal() ),openPartition,SLOT( deleteLater() ) );
 	openPartition->ShowAllPartitions();
@@ -82,14 +81,19 @@ void managedevicenames::ShowUI()
 {
 	m_ui->tableWidget->setColumnWidth( 0,296 );
 	m_ui->tableWidget->setColumnWidth( 1,296 );
+	
 	while( m_ui->tableWidget->rowCount() > 0 )
 		m_ui->tableWidget->removeRow( 0 );
+	
 	QStringList entries = miscfunctions::readFavorites() ;
-	QStringList line ;	
-	for( int i = 0 ; i < entries.size() - 1 ; i++ ){
+	QStringList line ;
+	int j = entries.size() - 1 ;
+	
+	for( int i = 0 ; i < j ; i++ ){
 		line = entries.at( i ).split( "\t" );
 		addEntries( line.at( 0 ),line.at( 1 ) );
 	}	
+	
 	m_ui->lineEditDeviceAddress->clear();
 	m_ui->lineEditMountPath->clear();
 	m_ui->tableWidget->setFocus();
@@ -102,9 +106,9 @@ void managedevicenames::HideUI()
 	emit HideUISignal();
 }
 
-void managedevicenames::addEntries( QString dev, QString m_point )
+void managedevicenames::addEntries( QString dev,QString m_point )
 {
-	QTableWidgetItem *item = new QTableWidgetItem() ;
+	QTableWidgetItem * item = new QTableWidgetItem() ;
 	int row = m_ui->tableWidget->rowCount() ;
 	m_ui->tableWidget->insertRow( row );
 	item->setText( dev );
@@ -114,15 +118,15 @@ void managedevicenames::addEntries( QString dev, QString m_point )
 	item->setText( m_point );
 	item->setTextAlignment( Qt::AlignCenter );
 	m_ui->tableWidget->setItem( row,1,item );
-	m_ui->tableWidget->setCurrentCell( row ,1 );
+	m_ui->tableWidget->setCurrentCell( row,1 );
 }
 
 void managedevicenames::itemClicked( QTableWidgetItem * current )
 {
-	itemClicked( current,true );
+	this->itemClicked( current,true );
 }
 
-void managedevicenames::itemClicked( QTableWidgetItem * current, bool clicked )
+void managedevicenames::itemClicked( QTableWidgetItem * current,bool clicked )
 {
 	QMenu m ;
 	m.setFont( this->font() );
@@ -158,7 +162,7 @@ void managedevicenames::removeEntryFromFavoriteList()
 
 void managedevicenames::cancel()
 {
-	HideUI();
+	this->HideUI();
 }
 
 void managedevicenames::add()
@@ -211,11 +215,11 @@ void managedevicenames::closeEvent( QCloseEvent * e )
 void managedevicenames::currentItemChanged( QTableWidgetItem * current, QTableWidgetItem * previous )
 {
 	if( current != NULL )
-		HighlightRow( current->row(), true ) ;
+		this->HighlightRow( current->row(),true ) ;
 	if( previous != NULL )
 		if( current != NULL )
 			if( previous->row() != current->row() )
-				HighlightRow( previous->row(), false ) ;
+				this->HighlightRow( previous->row(),false ) ;
 }
 
 void managedevicenames::HighlightRow( int row,bool b )

@@ -32,7 +32,7 @@ class DialogMsg : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit DialogMsg( QWidget * );
+	explicit DialogMsg( QWidget * parent = 0 );
 	void ShowUIOK( QString title,QString msg );
 	int  ShowUIYesNo( QString title,QString msg );
 	int  ShowUIYesNoDefaultNo( QString title,QString msg );

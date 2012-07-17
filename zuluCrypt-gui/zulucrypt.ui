@@ -143,6 +143,7 @@
     <addaction name="actionTray_icon"/>
     <addaction name="actionFonts"/>
     <addaction name="actionManage_names"/>
+    <addaction name="actionManage_system_partitions"/>
    </widget>
    <widget class="QMenu" name="menuFavorites">
     <property name="title">
@@ -368,6 +369,9 @@
    <property name="text">
     <string>permission</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
+   </property>
   </action>
   <action name="actionEncrypt_file">
    <property name="text">
@@ -388,6 +392,17 @@
   <action name="actionLuks_header_backup">
    <property name="text">
     <string>luks header backup</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+J</string>
+   </property>
+  </action>
+  <action name="actionManage_system_partitions">
+   <property name="text">
+    <string>manage system partitions</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
    </property>
   </action>
  </widget>

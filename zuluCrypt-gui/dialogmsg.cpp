@@ -24,8 +24,9 @@ DialogMsg::DialogMsg( QWidget * parent ) :
 	m_ui( new Ui::DialogMsg )
 {
 	m_ui->setupUi( this );
-	this->setFont( parent->font() );
-	this->setModal( true );
+	if( parent != 0 )
+		this->setFont( parent->font() );
+
 	connect( m_ui->pbNo,SIGNAL( clicked() ),this,SLOT( pbNo() ) );
 	connect( m_ui->pbYes,SIGNAL( clicked() ),this,SLOT( pbYes() ) );
 	connect( m_ui->pbOk,SIGNAL( clicked() ),this,SLOT( pbOK() ) );

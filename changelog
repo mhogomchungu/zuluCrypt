@@ -84,3 +84,7 @@ version 4.5.0
 -- add support for "/etc/zuluCrypttab". A place to add additional paths to devices to be considered system devices.
 -- various security related fixes.
 -- add support for encrypting stand alone files
+
+version 4.6.0
+-- add the ability to manage system volumes in the UI,the GUI must be running from root account for the ability to be enabled
+-- various fixes

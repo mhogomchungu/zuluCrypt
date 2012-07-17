@@ -141,6 +141,9 @@ void zuluCrypt::setupUIElements()
 
 	m_ui->setupUi( this );
 
+	if( getuid() != 0 )
+		m_ui->actionManage_system_partitions->setEnabled( false );
+
 	this->setFixedSize( this->size() );
 	this->setWindowIcon( QIcon( QString( ":/zuluCrypt.png" ) ) );
 
@@ -184,6 +187,7 @@ void zuluCrypt::setupConnections()
 	connect( m_ui->actionEncrypt_file,SIGNAL( triggered() ),this,SLOT( encryptFile() ) );
 	connect( m_ui->actionDecrypt_file,SIGNAL( triggered() ),this,SLOT( decryptFile() ) );
 	connect( m_ui->actionLuks_header_backup,SIGNAL( triggered() ),this,SLOT( HelpLuksHeaderBackUp() ) );
+	connect( m_ui->actionManage_system_partitions,SIGNAL( triggered() ),this,SLOT( ShowManageSystemPartitions() ) ) ;
 }
 
 void zuluCrypt::permissionExplanation()
@@ -207,6 +211,13 @@ void zuluCrypt::HighlightRow( int row,bool b )
 	if( b == true )
 		m_ui->tableWidget->setCurrentCell( row,1 );
 	m_ui->tableWidget->setFocus();
+}
+
+void zuluCrypt::ShowManageSystemPartitions()
+{
+	manageSystemVolumes * msv = new manageSystemVolumes( this ) ;
+	connect( msv,SIGNAL( HideUISignal() ),msv,SLOT(deleteLater()) ) ;
+	msv->ShowUI();
 }
 
 void zuluCrypt::currentItemChanged( QTableWidgetItem * current, QTableWidgetItem * previous )

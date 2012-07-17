@@ -18,15 +18,10 @@
  */
 
 #include <QProcess>
-#include <QDir>
 #include <QString>
 #include <QStringList>
-#include <QMessageBox>
-#include <iostream>
-#include <QFile>
-#include <QByteArray>
 #include "startupupdateopenedvolumes.h"
-#include "zulucrypt.h"
+#include "../zuluCrypt-cli/constants.h"
 
 startupupdateopenedvolumes::startupupdateopenedvolumes()
 {
@@ -45,13 +40,13 @@ void startupupdateopenedvolumes::run()
 
 	QStringList l = QString( p.readAll() ).split( "\n" ) ;
 
-	int j = l.size() ;
+	int j = l.size() - 1 ;
 
-	if( j == 1 )
+	if( j == 0 )
 		return ;
 
 	QStringList entry ;
-	for( int i = 0 ; i < j - 1 ; i++ ){
+	for( int i = 0 ; i < j ; i++ ){
 		entry = l.at( i ).split( "\t" );
 		emit addItemToTable( entry.at( 0 ),entry.at( 1 ) ) ;
 	}
