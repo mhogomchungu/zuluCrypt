@@ -85,6 +85,6 @@ version 4.5.0
 -- various security related fixes.
 -- add support for encrypting stand alone files
 
-version 4.6.0
+version 4.5.1
 -- add the ability to manage system volumes in the UI,the GUI must be running from root account for the ability to be enabled
--- various fixes
+-- by default, volumes are opened in read/write mode.
