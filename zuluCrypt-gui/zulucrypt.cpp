@@ -375,6 +375,7 @@ void zuluCrypt::setUserFont( QFont Font )
 	m_ui->menu_zc->setFont( this->font() );
 	m_ui->actionPermission_problems->setFont( this->font() );
 	m_ui->actionLuks_header_backup->setFont( this->font() );
+	m_ui->actionManage_system_partitions->setFont( this->font() );
 }
 
 void zuluCrypt::info()
@@ -473,10 +474,19 @@ void zuluCrypt::favClicked( QAction * e )
 
 void zuluCrypt::readFavorites()
 {
+	QAction * ac ;
 	m_ui->menuFavorites->clear();
 	QStringList l = miscfunctions::readFavorites() ;
-	for( int i = 0 ; i < l.size() - 1 ; i++ )
-		m_ui->menuFavorites->addAction( new QAction( l.at( i ),m_ui->menuFavorites ) );
+	if( l.isEmpty() == false ){
+		for( int i = 0 ; i < l.size() - 1 ; i++ ){
+			ac = new QAction( l.at( i ),m_ui->menuFavorites ) ;
+			m_ui->menuFavorites->addAction( ac );
+		}
+	}else{
+		ac = new QAction( tr( "list is empty" ),m_ui->menuFavorites ) ;
+		ac->setEnabled( false );
+		m_ui->menuFavorites->addAction( ac );
+	}
 }
 
 void zuluCrypt::addToFavorite()

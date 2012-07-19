@@ -208,7 +208,7 @@ QStringList miscfunctions::luksEmptySlots( QString volumePath )
 
 void miscfunctions::addToFavorite( QString dev,QString m_point )
 {
-	QString fav = dev + QString( "\t" ) + m_point + QString( "\n" ) ;
+	QString fav = QString( "%1\t%2\n" ).arg( dev ).arg( m_point ) ;
 	QFile f( QDir::homePath() + QString( "/.zuluCrypt/favorites" ) ) ;
 	f.open( QIODevice::WriteOnly | QIODevice::Append ) ;
 	f.write( fav.toAscii() ) ;
@@ -218,10 +218,18 @@ void miscfunctions::addToFavorite( QString dev,QString m_point )
 QStringList miscfunctions::readFavorites()
 {
 	QFile f( QDir::homePath() + QString( "/.zuluCrypt/favorites" ) ) ;
-	f.open( QIODevice::ReadOnly ) ;
-	QString data( f.readAll() ) ;
-	f.close();
-	return data.split( "\n" );
+
+	QStringList list ;
+
+	if( f.open( QIODevice::ReadOnly ) ){
+		QString data( f.readAll() ) ;
+		f.close();
+
+		if( data.isEmpty() == false )
+			list = data.split( "\n" ) ;
+	}
+
+	return list ;
 }
 
 void miscfunctions::removeFavoriteEntry( QString entry )
