@@ -61,7 +61,6 @@
  message( STATUS "Found libcryptsetup.so : " ${libcryptsetup} ) 
  
  SET( BIN  
- bin/print_mounted_volumes.c 
  bin/close_volume.c 
  bin/add_key.c
  bin/volume_info.c
@@ -80,6 +79,7 @@
  ) 
  
  SET( LIB 
+ lib/print_mounted_volumes.c  
  lib/create_mapper_name.c  
  lib/is_path_valid.c 
  lib/version.c 
@@ -127,11 +127,11 @@
  set_target_properties( zuluCrypt     PROPERTIES SOVERSION "2.0.0" )
  set_target_properties( zuluCrypt-exe PROPERTIES SOVERSION "2.0.0" )
  
- TARGET_LINK_LIBRARIES( zuluCrypt     ${libcryptsetup} String ${blkid} ${mountLibrary} Process ) 
- TARGET_LINK_LIBRARIES( zuluCrypt-exe ${libcryptsetup} String StringList ${blkid} ${mountLibrary} Process ) 
+ TARGET_LINK_LIBRARIES( zuluCrypt     ${libcryptsetup} String StringList ${blkid} ${mountLibrary} Process ) 
+ TARGET_LINK_LIBRARIES( zuluCrypt-exe ${libcryptsetup} String ${blkid} ) 
  
- TARGET_LINK_LIBRARIES( zuluCrypt-static     ${libcryptsetup} String ${blkid} ${mountLibrary} Process ) 
- TARGET_LINK_LIBRARIES( zuluCrypt-exe-static ${libcryptsetup} String StringList ${blkid} ${mountLibrary} Process )
+ TARGET_LINK_LIBRARIES( zuluCrypt-static     ${libcryptsetup} String StringList ${blkid} ${mountLibrary} Process ) 
+ TARGET_LINK_LIBRARIES( zuluCrypt-exe-static ${libcryptsetup} String ${blkid} )
  
  TARGET_LINK_LIBRARIES( zuluCrypt-exe zuluCrypt )
  

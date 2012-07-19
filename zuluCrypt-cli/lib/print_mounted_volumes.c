@@ -19,6 +19,7 @@
  */
 
 #include "includes.h"
+#include "../string/StringList.h"
 
 #include <libcryptsetup.h>
 /*
