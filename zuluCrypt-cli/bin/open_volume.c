@@ -112,7 +112,7 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 	}
 	
 	if( mode == NULL )
-		mode = "ro" ;
+		mode = "rw" ;
 	
 	if( strncmp( mode,"ro",2 ) != 0 )
 		if ( strncmp( mode,"rw",2 ) != 0 )
