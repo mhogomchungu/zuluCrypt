@@ -24,6 +24,7 @@
  * this source file dublicated code in ../zuluCrypt-cli/bin/file_encryption.c
  * documentation for what this header file does are there.
  */
+#include <QDebug>
 
 cryptfilethread::cryptfilethread( QString source,QString dest,QString keySource,QString key,QString task )
 {
@@ -59,9 +60,8 @@ int cryptfilethread::encrypt()
 	const int SIZE = 512 ;
 	char buffer[ SIZE ];
 
-	QFile f( m_source ) ;
-	qint64 size = f.size() ;
-
+	qint64 size = fd_4.size() ;
+	qint64 source_size = size ;
 	int i = 0 ;
 	int j = -1 ;
 
@@ -101,7 +101,7 @@ int cryptfilethread::encrypt()
 	if( fd_2.open(QIODevice::WriteOnly ) == false )
 		return 4 ;
 
-	QString s = QString::number( size ) ;
+	QString s = QString::number( source_size ) ;
 
 	fd_2.write( s.toAscii(),s.size() );
 
