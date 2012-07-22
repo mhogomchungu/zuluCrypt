@@ -109,7 +109,7 @@ int create_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid
 	j = check_opened_mapper( StringContent( mapper ) ) ;
 	
 	/*
-	 * defined in print_mounted_volumes.c
+	 * defined in ../lib/print_mounted_volumes.c
 	 */
 	k = check_if_mounted( dev ) ;
 	

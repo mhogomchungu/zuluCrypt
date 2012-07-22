@@ -32,6 +32,23 @@
  */
 char * volume_device_name( const char * ) ;
 
+int mtab_is_at_etc( void )
+{
+	char * path = realpath( "/etc/mtab",NULL ) ;
+	
+	if( path == NULL ){
+		return 1 ;
+	}else{
+		if( strcmp( path,"/etc/mtab" ) == 0 ){
+			free( path ) ;
+			return 0 ;
+		}else{
+			free( path ) ;
+			return 1 ;
+		}
+	}
+}
+
 static const char * substitute_chars( string_t st )
 {
 	StringReplaceString( st,"\\012","\n" ) ;			
@@ -110,21 +127,14 @@ static stringList_t get_mtab_list( void )
 #endif
 	string_t q = NULL ;
 	stringList_t stl ;
-	struct stat st ;
-	const char * path ;
-	
-	if( stat( "/etc/mtab",&st ) == 0 )
-		path = "/etc/mtab" ;
-	else
-		path = "/proc/mounts" ;
 
-	if( strncmp( path,"/proc/",6 ) == 0 ){
-		q = StringGetFromVirtualFile( path ) ;
+	if( mtab_is_at_etc() != 0 ){
+		q = StringGetFromVirtualFile( "/proc/mounts" ) ;
 	}else{
 		m_lock = mnt_new_lock( "/etc/mtab~",getpid() ) ;
 		
 		if( mnt_lock_file( m_lock ) == 0 ){
-			q = StringGetFromFile( path ) ;		
+			q = StringGetFromFile( "/etc/mtab" ) ;		
 			mnt_unlock_file( m_lock ) ;
 		}		
 
@@ -187,9 +197,9 @@ char * get_mount_point_from_path( const char * path )
 			substitute_chars( entry ) ;
 			StringListMultipleDelete( &stx,&stl,'\0' ) ;
 			return StringDeleteHandle( &entry ) ;
+		}else{		
+			StringListDelete( &stx ) ;
 		}
-		
-		StringListDelete( &stx ) ;		
 	}
 	
 	StringListDelete( &stl ) ;
@@ -199,39 +209,13 @@ char * get_mount_point_from_path( const char * path )
 
 int check_if_mounted( const char * path )
 {
-	int st = 0 ;
+	char * p = get_mount_point_from_path( path ) ;
 	
-	size_t i ;
-	size_t j ;
-	ssize_t k ;
-	
-	string_t entry ;
-	
-	const char * e ;
-	
-	stringList_t stl = get_mtab_list() ;
-	
-	if( stl == NULL )
-		return 2 ;
-	
-	j = StringListSize( stl ) ;
-	
-	for( i = 0 ; i < j ; i++ ){
-		entry = StringListStringAt( stl,i ) ;
-		
-		k = StringIndexOfChar( entry,0,' ' ) ;
-		
-		if( k != -1 ){
-			e = StringSubChar( entry,k,'\0' ) ;
-			
-			if( strcmp( e,path ) == 0 ){
-				st = 1 ;
-				break ;
-			}
-		}
+	if( p == NULL ){
+		return 0 ;
+	}else{
+		free( p ) ;
+		return 1 ;
 	}
-	
-	StringListDelete( &stl ) ;
-	return st ;
 }
 

@@ -221,17 +221,17 @@ void passwordDialog::buttonOpenClicked( void )
 	QString mode ;
 
 	if ( m_ui->checkBoxReadOnly->isChecked() )
-		mode = "ro" ;
+		mode = QString( "ro" ) ;
 	else
-		mode = "rw" ;
+		mode = QString( "rw" ) ;
 
 	QString passtype ;
 
 	if ( m_ui->radioButtonPassPhraseFromFile->isChecked() ){
-		passtype = "-f" ;
+		passtype = QString( "-f" ) ;
 		passPhraseField = miscfunctions::resolvePath( passPhraseField );
 	}else
-		passtype = "-p" ;
+		passtype = QString( "-p" );
 
 	QString a = QString( ZULUCRYPTzuluCrypt ) ;
 	QString b = vp;

@@ -41,3 +41,9 @@ string_t create_mapper_name( const char * device,const char * mapping_name,uid_t
  * this function checks if path exists or not.
  */
 int is_path_valid( const char * path ) ;
+
+/*
+ * this function is deined in ../lib/print_mountd_volumes.c
+ * 
+ */
+int mtab_is_at_etc( void ) ;

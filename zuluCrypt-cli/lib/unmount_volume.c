@@ -61,8 +61,7 @@ int unmount_volume( const char * map, char ** m_point )
 	FILE * g ;	
 	int h = 3 ;
 	int status ;
-	int map_len = strlen( map ) ;
-	const char * path ;
+	size_t map_len = strlen( map ) ;
 	
 #if USE_NEW_LIBMOUNT_API
 	struct libmnt_lock * lock ;
@@ -73,30 +72,26 @@ int unmount_volume( const char * map, char ** m_point )
 	
 	if( stat( map,&st ) != 0 )
 		return 1 ;		
-	
-	if( stat( "/etc/mtab",&st ) == 0 )
-		path = "/etc/mtab" ;
-	else
-		path = "/proc/mounts" ;
 
-	f = setmntent( path,"r" ) ;
-	
-	if( strncmp( path,"/proc/",6 ) == 0 ){
-		/*
-		 *.  /etc/mtab is a symbolic link to /proc/mounts, dont modify it to remove the entry since
-		 *   umount command does it.
-		 */		
+	/*
+	 * mtab_is_at_etc() is defined in check_mounted_volumes.c
+	 * 
+	 */
+	if( mtab_is_at_etc() != 0 ){
+		
+		f = setmntent( "/proc/mounts","r" ) ;
+
 		while( ( mt = getmntent( f ) ) != NULL ){
+
 			if( strncmp( mt->mnt_fsname,map,map_len ) == 0 ){
 				h = entry_found( mt->mnt_fsname,mt->mnt_dir,m_point ) ;
 				endmntent( f ) ;
 				break ;
 			}		
 		}			
-	}else if( strncmp( path,"/etc/",5 ) == 0 ) {	
-		/*
-		 * .  /etc/mtab is a reguar file,manually edit it to remove the unmounted volume.
-		 */
+	}else{	
+		f = setmntent( "/etc/mtab","r" ) ;
+		
 		lock = mnt_new_lock( "/etc/mtab~",getpid() ) ;
 		status = mnt_lock_file( lock ) ;	
 		
@@ -108,17 +103,20 @@ int unmount_volume( const char * map, char ** m_point )
 			while( ( mt = getmntent( f ) ) != NULL ){
 				if( strncmp( mt->mnt_fsname,map,map_len ) == 0 ){
 					h = entry_found( mt->mnt_fsname,mt->mnt_dir,m_point ) ;				
-				}else			
-					addmntent( g,mt ) ;			
+				}else{			
+					addmntent( g,mt ) ;
+				}
 			}
+			
 			endmntent( f ) ;
 			endmntent( g ) ;		
 		
 			if( h == 0 ){			
 				rename( "/etc/mtab-zC","/etc/mtab" ) ;
 				chown( "/etc/mtab",0,0 ) ;
-			}else
-				remove( "/etc/mtab-zC" ) ;		
+			}else{
+				remove( "/etc/mtab-zC" ) ;
+			}
 		
 			mnt_unlock_file( lock ) ;
 		}	

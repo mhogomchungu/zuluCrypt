@@ -124,12 +124,10 @@ static int mount_mapper( const m_struct * mst, string_t * st )
 
 int mount_volume( const char * mapper,const char * m_point,const char * mode,uid_t id )
 {
-	struct stat st ;
 	struct mntent mt  ;
 	blkid_probe blkid ;
-	const char * path ;
 	int h ;
-	const char * cf ;	
+	const char * cf ;
 	FILE * f ;
 #if USE_NEW_LIBMOUNT_API
 	struct libmnt_lock * m_lock ;
@@ -179,13 +177,13 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 	}
 	 
 	mst.fs = StringContent( fs ) ;
-	 
-	if( stat( "/etc/mtab",&st ) == 0 )
-		path = "/etc/mtab" ;
-	else
-		path = "/proc/mounts" ;
 
-	if( strncmp( path,"/proc",5 ) == 0 ){
+	/*
+	 * mtab_is_at_etc() is defined in print_mounted_volumes.c
+	 * 
+	 */
+	
+	if( mtab_is_at_etc() != 0 ){
 		h = mount_mapper( &mst,&options ) ;
 	}else{
 		/* 
