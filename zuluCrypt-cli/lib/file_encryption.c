@@ -291,8 +291,7 @@ int encrypt_file( const char * source,const char * dest,const char * key,uint64_
 	
 	close_mapper( mapper ) ;
 	
-	StringDelete( &q ) ;
-	StringDelete( &p ) ;	
+	StringMultipleDelete( &q,&p,'\0' ) ;
 	
 	return 0 ;	
 }
