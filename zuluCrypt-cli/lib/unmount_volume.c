@@ -85,10 +85,12 @@ int unmount_volume( const char * map, char ** m_point )
 
 			if( strncmp( mt->mnt_fsname,map,map_len ) == 0 ){
 				h = entry_found( mt->mnt_fsname,mt->mnt_dir,m_point ) ;
-				endmntent( f ) ;
 				break ;
 			}		
-		}			
+		}
+		
+		endmntent( f ) ;
+		
 	}else{	
 		f = setmntent( "/etc/mtab","r" ) ;
 		
@@ -96,7 +98,6 @@ int unmount_volume( const char * map, char ** m_point )
 		status = mnt_lock_file( lock ) ;	
 		
 		if( status != 0 ){
-			endmntent( f ) ;
 			h = 4 ;
 		}else{		
 			g = setmntent( "/etc/mtab-zC","w" ) ;
@@ -108,7 +109,6 @@ int unmount_volume( const char * map, char ** m_point )
 				}
 			}
 			
-			endmntent( f ) ;
 			endmntent( g ) ;		
 		
 			if( h == 0 ){			
@@ -121,6 +121,7 @@ int unmount_volume( const char * map, char ** m_point )
 			mnt_unlock_file( lock ) ;
 		}	
 		
+		endmntent( f ) ;		
 		mnt_free_lock( lock ) ;
 	}
 	

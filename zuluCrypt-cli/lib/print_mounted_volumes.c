@@ -35,17 +35,16 @@ char * volume_device_name( const char * ) ;
 int mtab_is_at_etc( void )
 {
 	char * path = realpath( "/etc/mtab",NULL ) ;
+	int st ;
 	
 	if( path == NULL ){
 		return 1 ;
 	}else{
-		if( strcmp( path,"/etc/mtab" ) == 0 ){
-			free( path ) ;
-			return 0 ;
-		}else{
-			free( path ) ;
-			return 1 ;
-		}
+		st = strcmp( path,"/etc/mtab" ) ;
+		
+		free( path ) ;
+		
+		return st == 0 ? 0 : 1 ;
 	}
 }
 
