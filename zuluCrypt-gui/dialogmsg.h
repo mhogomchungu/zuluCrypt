@@ -23,6 +23,7 @@
 #include <QString>
 #include <QMessageBox>
 #include <QCloseEvent>
+#include <QCheckBox>
 
 namespace Ui {
 class DialogMsg;
@@ -38,6 +39,7 @@ public:
 	int  ShowUIYesNoDefaultNo( QString title,QString msg );
 	void ShowUIInfo( QString title,QString msg );
 	void ShowUIVolumeProperties( QString title,QString msg );
+	bool ShowUIOKDoNotShowOption( QString title,QString msg ) ;
 	void HideUI( void );
 	~DialogMsg();
 

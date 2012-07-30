@@ -67,6 +67,48 @@ void passwordDialog::cbStateChanged( int state )
 	f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
 	f.write( QString::number( state ).toAscii() ) ;
 	f.close();
+
+	if( m_ui->checkBoxReadOnly->isChecked() == false ){
+		m_ui->checkBoxReadOnly->setEnabled( true ) ;
+		return ;
+	}
+
+	DialogMsg msg( this ) ;
+	QString m = tr( "setting this option will cause the volume to open in read only mode" ) ;
+
+	QString path = QDir::homePath() + QString( "/.zuluCrypt/readOnlyOption" ) ;
+
+	f.setFileName( path ) ;
+
+	if( f.exists() ){
+
+		f.open( QIODevice::ReadWrite ) ;
+		QByteArray opt = f.readAll() ;
+		if( opt == QByteArray( "0" ) ) {
+			f.seek( 0 ) ;
+
+			bool st = msg.ShowUIOKDoNotShowOption( QString( "info" ),m ) ;
+
+			if( st )
+				f.write( "1" ) ;
+			else
+				f.write( "0" ) ;
+
+			f.close();
+		}
+	}else{
+		bool st = msg.ShowUIOKDoNotShowOption( QString( "info" ),m ) ;
+
+		f.open( QIODevice::WriteOnly ) ;
+
+		if( st )
+			f.write( "1" ) ;
+		else
+			f.write( "0" ) ;
+
+		f.close();
+	}
+
 	m_ui->checkBoxReadOnly->setEnabled( true );
 }
 

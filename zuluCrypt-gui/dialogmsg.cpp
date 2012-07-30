@@ -221,6 +221,33 @@ int  DialogMsg::ShowUIYesNoDefaultNo( QString title,QString msg )
 	return m_status;
 }
 
+bool DialogMsg::ShowUIOKDoNotShowOption( QString title,QString msg )
+{
+	QCheckBox * checkBox = new QCheckBox( tr( "do not show this dialog again" ),this ) ;
+
+	this->setFixedSize( 270,110 );
+
+	checkBox->setGeometry( 30,40,251,31 );
+
+	m_ui->label->setGeometry( 10,10,251,31 );
+	m_ui->label->setFixedSize( m_ui->label->size() );
+	m_ui->pbOk->setGeometry( 100,70,75,31 );
+
+	m_ui->pbYes->setHidden( true );
+	m_ui->pbNo->setHidden( true );
+	m_ui->pbOk->setHidden( false );
+
+	this->HideLabels();
+
+	this->ShowUI( title,msg ) ;
+
+	bool st = checkBox->isChecked() ;
+
+	checkBox->deleteLater();
+
+	return st ;
+}
+
 DialogMsg::~DialogMsg()
 {
 	delete m_ui;
