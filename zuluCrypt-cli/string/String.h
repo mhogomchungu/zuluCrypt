@@ -192,7 +192,8 @@ void StringReadToBuffer( string_t st,char * buffer,size_t size ) ;
  * Remember to clean after yourself.
  * Always call this function when you are done with the string handled by handle st.
  * The function will not attempt to double delete,or delete unassigned handle( NULL handle ),for
- * this to work,make sure your handled are NULL ininitialized.
+ * this to work,make sure your handles are NULL ininitialized.
+ * NULL is assigned to handle to invalidate it
  */
 void StringDelete( string_t * st );
 
@@ -202,6 +203,7 @@ void StringDelete( string_t * st );
  * NOTE: a list of entries must be NULL terminated
  * The function will not attempt to double delete,or delete unassigned handle( NULL handle ),for
  * this to work,make sure your handled are NULL ininitialized.
+ * NULL is assigned to each handle to invalidate them
  */
 void StringMultipleDelete( string_t * st,... );
 

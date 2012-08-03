@@ -80,13 +80,13 @@ static string_t crypt_mapper( const char * path,const char * key,uint64_t key_le
 	
 	p = create_mapper_name( mpath,strrchr( mpath,'/' ) + 1,0,OPEN ) ;
 
-	if( open_plain( mpath,StringContent( p ),"rw",key,key_len ) != 0 ){
+	if( open_plain( mpath,StringContent( p ),"rw",key,key_len ) != 0 )
 		StringDelete( &p ) ;
-		return NULL ;
-	}
+	else	
+		StringMultiplePrepend( p,"/",crypt_get_dir(),'\0' ) ;
 	
-	StringMultiplePrepend( p,"/",crypt_get_dir(),'\0' ) ;
 	free( mpath ) ;
+	
 	return p ;
 }
 

@@ -148,7 +148,7 @@ void zuluCrypt::setupUIElements()
 	this->setWindowIcon( QIcon( QString( ":/zuluCrypt.png" ) ) );
 
 	m_ui->tableWidget->setColumnWidth( 0,298 );
-	m_ui->tableWidget->setColumnWidth( 1,290 );
+	m_ui->tableWidget->setColumnWidth( 1,288 );
 	m_ui->tableWidget->setColumnWidth( 2,90 );
 }
 
