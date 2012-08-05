@@ -29,107 +29,19 @@
 #include "../zuluCrypt-cli/string/StringList.h"
 #include "../zuluCrypt-cli/process/process.h"
 
-stringList_t mount_partitionList( void ) ;
 stringList_t partitionList( void ) ;
+
+stringList_t get_mtab_list( void ) ;
+
+void format_size( char * buffer,const char * buff ) ;
+
+const char * substitute_chars( string_t st ) ;
+
+char * volume_device_name( const char * ) ;
 
 #ifdef __STDC__
 char * realpath( const char * path, char * resolved_path ) ;
 #endif
-
-int mtab_is_at_etc( void ) ;
-
-char * volume_device_name( const char * ) ;
-
-int mtab_is_at_etc( void )
-{
-	char * path = realpath( "/etc/mtab",NULL ) ;
-	int st ;
-	
-	if( path == NULL ){
-		return 1 ;
-	}else{
-		st = strcmp( path,"/etc/mtab" ) ;
-		
-		free( path ) ;
-		
-		return st == 0 ? 0 : 1 ;
-	}
-}
-
-static const char * substitute_chars( string_t st )
-{
-	StringReplaceString( st,"\\012","\n" ) ;			
-	StringReplaceString( st,"\\040"," " ) ;
-	StringReplaceString( st,"\\134","\\" ) ;
-	return StringReplaceString( st,"\\011","\\t" ) ;
-}
-
-static stringList_t get_mtab_list( void )
-{
-#if USE_NEW_LIBMOUNT_API
-	struct libmnt_lock * m_lock ;
-#else
-	mnt_lock * m_lock ;
-#endif
-	string_t q = NULL ;
-	stringList_t stl ;
-
-	if( mtab_is_at_etc() != 0 ){
-		q = StringGetFromVirtualFile( "/proc/mounts" ) ;
-	}else{
-		m_lock = mnt_new_lock( "/etc/mtab~",getpid() ) ;
-		
-		if( mnt_lock_file( m_lock ) == 0 ){
-			q = StringGetFromFile( "/etc/mtab" ) ;		
-			mnt_unlock_file( m_lock ) ;
-		}		
-
-		mnt_free_lock( m_lock ) ;		
-	}
-	
-	if( q == NULL )
-		return NULL ;
-	
-	stl = StringListStringSplit( &q,'\n' ) ;
-	
-	if( stl == NULL ){
-		StringDelete( &q ) ;
-		return NULL ;
-	}
-	
-	return stl ;
-}
-
-static void format_size_1( char * buffer,int x,int y,const char * z )
-{
-	buffer[ x ] = buffer[ y ] ; 
-	buffer[ y ] = '.' ;
-	strcpy( buffer + x + 1,z ) ; 
-}
-
-static void format_size( char * buffer,const char * buff )
-{
-	strcpy( buffer,buff ) ;
-	
-	switch( strlen( buff ) ){
-		case 0 : 
-		case 1 :  
-		case 2 : 
-		case 3 : strcat( buffer," B" )             ; break ;
-		case 4 : format_size_1( buffer,2,1," KB" ) ; break ; 
-		case 5 : format_size_1( buffer,3,2," KB" ) ; break ;
-		case 6 : format_size_1( buffer,4,3," KB" ) ; break ;
-		case 7 : format_size_1( buffer,2,1," MB" ) ; break ; 
-		case 8 : format_size_1( buffer,3,2," MB" ) ; break ;
-		case 9 : format_size_1( buffer,4,3," MB" ) ; break ;
-		case 10: format_size_1( buffer,2,1," GB" ) ; break ;
-		case 11: format_size_1( buffer,3,2," GB" ) ; break ;
-		case 12: format_size_1( buffer,4,3," GB" ) ; break ;
-		case 13: format_size_1( buffer,2,1," TB" ) ; break ;
-		case 14: format_size_1( buffer,3,2," TB" ) ; break ;
-		case 15: format_size_1( buffer,4,3," TB" ) ; break ;			
-	}	
-}
 
 static void partition_properties( const char * path,const char * m_point )
 {
@@ -169,6 +81,9 @@ static void partition_properties( const char * path,const char * m_point )
 	
 	if( total >= 0 ){
 		g = StringIntToString_1( buffer,SIZE,total ) ;
+		/*
+		 * format_size() is defined in ../zuluCrypt-cli/lib/status.c
+		 */
 		format_size( format,g ) ;
 		printf( "\t%s",format ) ;
 	}else{
@@ -186,7 +101,6 @@ static void partition_properties( const char * path,const char * m_point )
 	}
 	
 	block_size = vfs.f_frsize ;
-	//total = block_size * vfs.f_blocks  ;
 	free =  block_size * vfs.f_bavail  ;
 		
 	used = total - free ;
@@ -213,8 +127,18 @@ int mount_print_mounted_volumes( uid_t uid )
 	
 	string_t mapper ;
 	
-	stringList_t stl = get_mtab_list() ;
 	stringList_t stx ;
+	
+	/*
+	 * get_mtab_list() is  defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c
+	 * It returns contents of "/etc/mtab"
+	 */
+	stringList_t stl = get_mtab_list() ;
+	
+	/*
+	 * partitionList() is defined in ../zuluCrypt-cli/partitions.c
+	 * It returns contents of "/proc/partitions"
+	 */
 	stringList_t stz = partitionList() ;
 	
 	if( stl == NULL )
@@ -247,13 +171,22 @@ int mount_print_mounted_volumes( uid_t uid )
 		
 		q = StringListContentAt( stx,0 ) ;
 		
-		if( strncmp( q,e,k ) == 0 ){
-		
+		if( strncmp( q,e,k ) == 0 ){			
+			/*
+			 * volume_device_name() is defined in ../zuluCrypt-cli/lib/status.c
+			 * It takes cryptsetup path in "/dev/mapper" and return a device path associated with
+			 * the mapper
+			 */
 			x = volume_device_name( q ) ;
 			
 			if( x != NULL ){
 				
-				StringListRemoveString( stz,x ) ;				
+				StringListRemoveString( stz,x ) ;
+				
+				/*
+				 * substitute_chars() is defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c
+				 * it decodes space,tab,new line and backslash characters since they are written differently in "/etc/mtab" 
+				 */
 				f = substitute_chars( StringListStringAt( stx,1 ) ) ;				
 				
 				printf( "%s\t%s",x,f ) ;				

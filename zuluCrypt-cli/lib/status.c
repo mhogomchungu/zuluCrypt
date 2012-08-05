@@ -35,14 +35,14 @@
 
 char * get_mount_point_from_path( const char * path ) ;
 
-static void format_size_1( char * buffer,int x,int y,const char * z )
+static void format_size_1( char * buffer,int x,const char * z )
 {
-	buffer[ x ] = buffer[ y ] ; 
-	buffer[ y ] = '.' ;
+	buffer[ x ] = buffer[ x - 1 ] ; 
+	buffer[ x - 1 ] = '.' ;
 	strcpy( buffer + x + 1,z ) ; 
 }
 
-static void format_size( char * buffer,const char * buff )
+void format_size( char * buffer,const char * buff )
 {
 	strcpy( buffer,buff ) ;
 	
@@ -51,18 +51,18 @@ static void format_size( char * buffer,const char * buff )
 		case 1 :  
 		case 2 : 
 		case 3 : strcat( buffer," B" )             ; break ;
-		case 4 : format_size_1( buffer,2,1," KB" ) ; break ; 
-		case 5 : format_size_1( buffer,3,2," KB" ) ; break ;
-		case 6 : format_size_1( buffer,4,3," KB" ) ; break ;
-		case 7 : format_size_1( buffer,2,1," MB" ) ; break ; 
-		case 8 : format_size_1( buffer,3,2," MB" ) ; break ;
-		case 9 : format_size_1( buffer,4,3," MB" ) ; break ;
-		case 10: format_size_1( buffer,2,1," GB" ) ; break ;
-		case 11: format_size_1( buffer,3,2," GB" ) ; break ;
-		case 12: format_size_1( buffer,4,3," GB" ) ; break ;
-		case 13: format_size_1( buffer,2,1," TB" ) ; break ;
-		case 14: format_size_1( buffer,3,2," TB" ) ; break ;
-		case 15: format_size_1( buffer,4,3," TB" ) ; break ;			
+		case 4 : format_size_1( buffer,2," KB" ) ; break ; 
+		case 5 : format_size_1( buffer,3," KB" ) ; break ;
+		case 6 : format_size_1( buffer,4," KB" ) ; break ;
+		case 7 : format_size_1( buffer,2," MB" ) ; break ; 
+		case 8 : format_size_1( buffer,3," MB" ) ; break ;
+		case 9 : format_size_1( buffer,4," MB" ) ; break ;
+		case 10: format_size_1( buffer,2," GB" ) ; break ;
+		case 11: format_size_1( buffer,3," GB" ) ; break ;
+		case 12: format_size_1( buffer,4," GB" ) ; break ;
+		case 13: format_size_1( buffer,2," TB" ) ; break ;
+		case 14: format_size_1( buffer,3," TB" ) ; break ;
+		case 15: format_size_1( buffer,4," TB" ) ; break ;			
 	}	
 }
 

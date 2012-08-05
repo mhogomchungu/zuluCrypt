@@ -360,7 +360,7 @@ void passwordDialog::threadfinished( int status )
 		case 1 : msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to mount ntfs file system using ntfs-3g,is ntfs-3g package installed?" ) ) ;		break ;
 		case 2 : msg.ShowUIOK( tr( "ERROR!" ),tr( "there seem to be an open volume accociated with given address" ) );				break ;
 		case 3 : msg.ShowUIOK( tr( "ERROR!" ),tr( "no file or device exist on given path" ) ) ; 						break ;
-		case 4 : msg.ShowUIOK( tr( "ERROR!" ),tr( "volume can not be opened with the presented key" ) );						break ;
+		case 4 : msg.ShowUIOK( tr( "ERROR!" ),tr( "volume could not be opened with the presented key" ) );						break ;
 		case 5 : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not create mount point, invalid path or path already taken" ) ) ;			break ;
 		case 6 : msg.ShowUIOK( tr( "ERROR!" ),tr( "invalid path to keyfile" ) );								break ;
 		case 8 : msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to open volume.\ndevice may already be in use" ) );					break ;

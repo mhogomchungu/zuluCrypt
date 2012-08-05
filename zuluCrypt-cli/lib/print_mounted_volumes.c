@@ -48,7 +48,7 @@ int mtab_is_at_etc( void )
 	}
 }
 
-static const char * substitute_chars( string_t st )
+const char * substitute_chars( string_t st )
 {
 	StringReplaceString( st,"\\012","\n" ) ;			
 	StringReplaceString( st,"\\040"," " ) ;
@@ -117,7 +117,7 @@ static void print( uid_t uid,stringList_t stl )
 	StringDelete( &p ) ;
 }
 
-static stringList_t get_mtab_list( void )
+stringList_t get_mtab_list( void )
 {
 #if USE_NEW_LIBMOUNT_API
 	struct libmnt_lock * m_lock ;

@@ -82,6 +82,12 @@ static int inkmount( const char * device,const char * m_point,const char * mode,
 	
 	struct passwd * pass ;
 
+	/*
+	 * below functin checks the device if it has an entry in "/etc/fstab","/etc/crypttab" and "/etc/zuluCrypttab".
+	 * 1 is returned if an entry is found and 0 is returned if an entry is not found.
+	 *
+	 * The function is defined in ../zuluCrypt-cli/bin/partitions.c 
+	 */
 	if( check_if_partition_is_system_partition( device ) == 1 ){
 		
 		if( uid != 0 ){
@@ -90,6 +96,10 @@ static int inkmount( const char * device,const char * m_point,const char * mode,
 		}
 	}
 	
+	/*
+	 * Below function is defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c
+	 * It checks if a device has an entry in "/etc/mtab" and return 1 if it does and 0 is it doesnt	 * 
+	 */
 	if( check_if_mounted( device ) == 1 ){
 		printf( "ERROR: device already mounted\n" ) ;
 		return 2 ;
@@ -143,7 +153,10 @@ static int inkmount( const char * device,const char * m_point,const char * mode,
 		StringDelete( &p ) ;		
 		return 6 ;	
 	}
-		
+	
+	/*
+	 * below function is defined in ../zuluCrypt-cli/lib/mount_volume.c
+	 */
 	status = mount_volume( device,path,mode,uid )	;
 	
 	if( status == 0 ){
@@ -152,10 +165,9 @@ static int inkmount( const char * device,const char * m_point,const char * mode,
 		printf( "SUCCESS: mount complete successfully\n" ) ;
 		return 0 ;
 	}else{
-		StringDelete( &p ) ;		
 		free( path ) ;
-		remove( m_point ) ;
-		
+		rmdir( m_point ) ;
+		StringDelete( &p ) ;				
 		switch( status ){
 			case 1 : printf( "ERROR: failed to mount ntfs file system using ntfs-3g,is ntfs-3g package installed?\n" ) 	; break ;
 			case 4 : printf( "ERROR: mount failed,no or unrecognized file system\n" )					; break ;
@@ -185,6 +197,9 @@ static int inkumount( const char * device,uid_t uid )
 		return 2 ;
 	}
 	
+	/*
+	 * below function is defined in ../zuluCrypt-cli/lib/unmount_volume.c
+	 */
 	status = unmount_volume( device,&m_point ) ;
 	if( status == 0 ){
 		printf( "SUCCESS: umount complete successfully\n" ) ;
@@ -210,11 +225,19 @@ static int inkumount( const char * device,uid_t uid )
 
 static int device_list( void )
 {
+	/*
+	 * function is defined in ../zuluCrypt-cli/partitions.c
+	 * 
+	 * it printf() contents of "/proc/partitions" 
+	 */
 	return print_partitions( ALL_PARTITIONS ) ;
 }
 
 static int mounted_list( uid_t uid )
 {
+	/*
+	 * function is defined in print_mounted_volumes.c
+	 */
 	return mount_print_mounted_volumes( uid ) ;
 }
 
@@ -225,7 +248,11 @@ static int crypto_mount( const char * device,const char * mode,uid_t uid,const c
 	string_t p = NULL;
 	
 	int st ;
+	/*
+	 * the struct is declared in ../zuluCrypt-cli/bin/libzuluCrypt-exe.h
+	 */
 	struct_opts opts ;
+	
 	const char * mapping_name ;
 	const char * e = strrchr( device,'/' ) ;
 	
@@ -270,6 +297,9 @@ static int crypto_mount( const char * device,const char * mode,uid_t uid,const c
 	opts.key = key ;
 	opts.key_source = key_source ;
 	
+	/*
+	 * the function is defined in ../zuluCrypt-cli/bin/open_volume.c
+	 */
 	st = open_volumes( &opts,mapping_name,uid ) ;
 	
 	StringDelete( &p ) ;
@@ -295,6 +325,9 @@ static int crypto_umount( const char * device,uid_t uid )
 	else
 		mapping_name = e + 1 ;
 	
+	/*
+	 * the function is defined in ../zuluCrypt-cli/bin/close_volume.c
+	 */
 	return close_opened_volume( device,mapping_name,uid ) ;	
 }
 
@@ -365,8 +398,13 @@ int main( int argc,char * argv[] )
 		return 150 ;
 	}
 	
-	if( strcmp( action,"-s" ) == 0 )
-		return print_partitions( SYSTEM_PARTITIONS ) ;
+	if( strcmp( action,"-s" ) == 0 ){
+		/*
+		 * function is defined in ../zuluCrypt-cli/bin/partitions.c
+		 * it printf() devices with entries in "/etc/fstab","/etc/crypttab", and "/etc/zuluCrypttab"
+		 */
+		return print_partitions( SYSTEM_PARTITIONS ) ;		
+	}
 	
 	if( strcmp( action,"-l" ) == 0 )
 		return mounted_list( uid ) ;

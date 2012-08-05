@@ -28,7 +28,7 @@ static int status_msg( int st,char * device,char * m_point )
 		case 1 : printf( "ERROR: failed to mount ntfs file system using ntfs-3g,is ntfs-3g package installed?\n" ) ;		break ;					
 		case 2 : printf( "ERROR: there seem to be an open volume accociated with given address\n" );				break ;				
 		case 3 : printf( "ERROR: no file or device exist on given path\n" ) ; 							break ;		
-		case 4 : printf( "ERROR: wrong passphrase\n" );										break ;			
+		case 4 : printf( "ERROR: volume could not be opened with the presented key\n" );					break ;			
 		case 5 : printf( "ERROR: could not create mount point, invalid path or path already taken\n" ) ;			break ;		
 		case 6 : printf( "ERROR: passphrase file does not exist\n" );								break ;	
 		case 8 : printf( "ERROR: failed to open volume,device may already be in use\n" );					break ;	

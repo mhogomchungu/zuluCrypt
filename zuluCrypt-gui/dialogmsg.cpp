@@ -77,7 +77,7 @@ void DialogMsg::setDimentions( QString msg )
 {
 	int len = msg.size() ;
 
-	if( len <= -1 ){ // dont use this one for now
+	if( len <= 30 ){ 
 		this->setFixedSize( 270,90 );
 		m_ui->label->setGeometry( 10,10,251,31 );
 		m_ui->label->setFixedSize( m_ui->label->size() );
