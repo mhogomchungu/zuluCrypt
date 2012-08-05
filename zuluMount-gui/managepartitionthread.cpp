@@ -30,10 +30,6 @@ void managepartitionthread::run()
 
 		this->partitionList();
 
-	}else if( m_action == QString( "partitionList" ) ){
-
-		this->partitionList();
-
 	}else if( m_action == QString( "mount" ) ){
 
 		this->mount();
@@ -51,14 +47,20 @@ void managepartitionthread::run()
 void managepartitionthread::partitionList()
 {
 	QProcess p ;
-	QStringList list ;
 
 	p.start( QString( "%1 -l" ).arg( zuluMount ) ) ;
 	p.waitForFinished() ;
 
-	list = QString( p.readAll() ).split( '\n' ) ;
+	QStringList k = QString( p.readAll() ).split( '\n' ) ;
 	p.close();
-	emit signalMountedList( list ) ;
+
+	p.start( QString( "%1 -s" ).arg( zuluMount ) ) ;
+	p.waitForFinished() ;
+
+	QStringList j = QString( p.readAll() ).split( '\n' ) ;
+	p.close();
+
+	emit signalMountedList( k,j ) ;
 }
 
 void managepartitionthread::cryptoOpen()

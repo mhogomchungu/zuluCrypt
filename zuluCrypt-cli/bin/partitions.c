@@ -68,7 +68,7 @@ stringList_t get_partition_from_crypttab( void ) ;
 
 stringList_t get_partition_from_zulutab( void ) ;
 
-static stringList_t partitionList( void )
+stringList_t partitionList( void )
 {
 	const char * device ;	
 	

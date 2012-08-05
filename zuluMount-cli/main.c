@@ -27,6 +27,7 @@
 #include <pwd.h>
 
 #include "../zuluCrypt-cli/bin/getopt.h"
+#include "../zuluCrypt-cli/constants.h"
 #include "../zuluCrypt-cli/bin/libzuluCrypt-exe.h"
 #include "../zuluCrypt-cli/string/String.h"
 #include "../zuluCrypt-cli/lib/libzuluCrypt.h"
@@ -37,15 +38,15 @@ int seteuid(uid_t uid);
 #endif
 
 int mount_print_mounted_volumes( uid_t uid ) ;
-int mount_print_partitions( void ) ;
 char * device_from_label( const char * ) ;
 char * device_from_uuid( const char * ) ;
 
 static int mount_get_opts( int argc,char * argv[],const char ** action,const char ** device, const char ** m_point, const char ** mode,const char ** key,const char ** key_source )
 {
 	int c ;
-	while ( ( c = getopt( argc,argv,"hlMmUud:z:e:p:f:" ) ) != -1 ) {
+	while ( ( c = getopt( argc,argv,"shlMmUud:z:e:p:f:" ) ) != -1 ) {
 		switch( c ){
+			case 's' : *action  = "-s"   ; break ;
 			case 'U' : *action  = "-U"   ; break ;
 			case 'M' : *action  = "-M"   ; break ;
 			case 'l' : *action  = "-l"   ; break ;
@@ -81,6 +82,14 @@ static int inkmount( const char * device,const char * m_point,const char * mode,
 	
 	struct passwd * pass ;
 
+	if( check_if_partition_is_system_partition( device ) == 1 ){
+		
+		if( uid != 0 ){
+			printf( "ERROR: insuffienct privilege to operate on a system partition\n" ) ;
+			return 200 ;			
+		}
+	}
+	
 	if( check_if_mounted( device ) == 1 ){
 		printf( "ERROR: device already mounted\n" ) ;
 		return 2 ;
@@ -157,11 +166,19 @@ static int inkmount( const char * device,const char * m_point,const char * mode,
 	}
 }
 
-static int inkumount( const char * device )
+static int inkumount( const char * device,uid_t uid )
 {
 	char * m_point = NULL ;
 
 	int status ;
+	
+	if( check_if_partition_is_system_partition( device ) == 1 ){
+		
+		if( uid != 0 ){
+			printf( "ERROR: insuffienct privilege to operate on a system partition\n" ) ;
+			return 200 ;			
+		}
+	}
 	
 	if( check_if_mounted( device ) == 0 ){
 		printf( "ERROR: device not mounted\n" ) ;
@@ -193,7 +210,7 @@ static int inkumount( const char * device )
 
 static int device_list( void )
 {
-	return mount_print_partitions() ;
+	return print_partitions( ALL_PARTITIONS ) ;
 }
 
 static int mounted_list( uid_t uid )
@@ -211,6 +228,14 @@ static int crypto_mount( const char * device,const char * mode,uid_t uid,const c
 	struct_opts opts ;
 	const char * mapping_name ;
 	const char * e = strrchr( device,'/' ) ;
+	
+	if( check_if_partition_is_system_partition( device ) == 1 ){
+		
+		if( uid != 0 ){
+			printf( "ERROR: insuffienct privilege to operate on a system partition\n" ) ;
+			return 200 ;			
+		}
+	}
 	
 	if( e == NULL)
 		mapping_name = device ;
@@ -257,6 +282,14 @@ static int crypto_umount( const char * device,uid_t uid )
 	const char * mapping_name ;
 	const char * e = strrchr( device,'/' ) ;
 	
+	if( check_if_partition_is_system_partition( device ) == 1 ){
+		
+		if( uid != 0 ){
+			printf( "ERROR: insuffienct privilege to operate on a system partition\n" ) ;
+			return 200 ;			
+		}
+	}
+	
 	if( e == NULL)
 		mapping_name = device ;
 	else
@@ -270,7 +303,7 @@ static int exe( const char * device, const char * action,const char * m_point,co
 	if( strcmp( action,"-m" ) == 0 )
 		return inkmount( device,m_point,mode,uid ) ;
 	else if( strcmp( action,"-u" ) == 0 )
-		return inkumount( device ) ;
+		return inkumount( device,uid ) ;
 	else if( strcmp( action,"-M" ) == 0 )
 		return crypto_mount( device,mode,uid,key,key_source,m_point ) ;
 	else if( strcmp( action,"-U" ) == 0 )
@@ -331,6 +364,9 @@ int main( int argc,char * argv[] )
 		printf( "ERROR: action not specified\n" ) ;
 		return 150 ;
 	}
+	
+	if( strcmp( action,"-s" ) == 0 )
+		return print_partitions( SYSTEM_PARTITIONS ) ;
 	
 	if( strcmp( action,"-l" ) == 0 )
 		return mounted_list( uid ) ;

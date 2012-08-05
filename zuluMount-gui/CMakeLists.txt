@@ -2,22 +2,22 @@ cmake_minimum_required(VERSION 2.6)
 
 add_definitions( -D_FILE_OFFSET_BITS=64 -Wall -pedantic -std=c++0x -I${PROJECT_BINARY_DIR}/zuluMount-gui/ ) 
 
-set (UI_FILES 	dialogmsg.ui
+set (UI_FILES 	../zuluCrypt-gui/dialogmsg.ui
 		mainwindow.ui
 		keydialog.ui
 )
 
-set(MOC_FILES dialogmsg.h
-		mainwindow.h
+set(MOC_FILES 	mainwindow.h
 		keydialog.h
 		managepartitionthread.h
+		../zuluCrypt-gui/dialogmsg.h
  )
 	
 set (SRC 	main.cpp
 		mainwindow.cpp
 		keydialog.cpp
 		managepartitionthread.cpp
-		dialogmsg.cpp
+		../zuluCrypt-gui/dialogmsg.cpp
 )
 
 find_package( Qt4 REQUIRED )

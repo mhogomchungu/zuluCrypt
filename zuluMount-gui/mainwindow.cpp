@@ -94,9 +94,9 @@ MainWindow::MainWindow( QWidget * parent ) :
 	managepartitionthread * part = new managepartitionthread() ;
 
 	m_ui->tableWidget->setEnabled( false );
-	connect( part,SIGNAL( signalMountedList( QStringList ) ),this,SLOT( slotMountedList( QStringList ) ) ) ;
+	connect( part,SIGNAL( signalMountedList( QStringList,QStringList ) ),this,SLOT( slotMountedList( QStringList,QStringList ) ) ) ;
 
-	part->startAction( QString( "partitionList" ) ) ;
+	part->startAction( QString( "update" ) ) ;
 
 	m_working = false ;
 }
@@ -197,12 +197,12 @@ void MainWindow::pbUpdate()
 	managepartitionthread * part = new managepartitionthread() ;
 
 	m_ui->tableWidget->setEnabled( false );
-	connect( part,SIGNAL( signalMountedList( QStringList ) ),this,SLOT( slotMountedList( QStringList ) ) ) ;
+	connect( part,SIGNAL( signalMountedList( QStringList,QStringList ) ),this,SLOT( slotMountedList( QStringList,QStringList ) ) ) ;
 
 	part->startAction( QString( "update" ) ) ;
 }
 
-void MainWindow::slotMountedList( QStringList list )
+void MainWindow::slotMountedList( QStringList list,QStringList sys )
 {
 	QTableWidgetItem * item ;
 	QTableWidget * table = m_ui->tableWidget ;
@@ -213,16 +213,32 @@ void MainWindow::slotMountedList( QStringList list )
 	int row ;
 	int col = table->columnCount() ;
 
+	QFont f = this->font() ;
+
+	if( f.italic() )
+		f.setItalic( false );
+	else
+		f.setItalic( true );
+
 	for( int i = 0 ; i < j ; i++ ){
 		
 		row = table->rowCount() ;
 		table->insertRow( row ) ;
 		entries = list.at( i ).split( '\t' ) ;
 
-		for( int p = 0 ; p < col ; p++ ){
-			item = new QTableWidgetItem( entries.at( p ) ) ;
-			item->setTextAlignment( Qt::AlignCenter ) ;
-			table->setItem( row,p,item );
+		if( sys.contains( entries.at( 0 ) ) ){
+			for( int p = 0 ; p < col ; p++ ){
+				item = new QTableWidgetItem( entries.at( p ) ) ;
+				item->setTextAlignment( Qt::AlignCenter ) ;
+				item->setFont( f );
+				table->setItem( row,p,item );
+			}
+		}else{
+			for( int p = 0 ; p < col ; p++ ){
+				item = new QTableWidgetItem( entries.at( p ) ) ;
+				item->setTextAlignment( Qt::AlignCenter ) ;
+				table->setItem( row,p,item );
+			}
 		}
 
 		table->setCurrentCell( row,4 ) ;

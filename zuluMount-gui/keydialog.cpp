@@ -109,7 +109,7 @@ void keyDialog::rbKeyFile( bool opt )
 {
 	if( opt ){
 		m_ui->lineEditKey->setEchoMode( QLineEdit::Normal );
-		m_ui->label->setText( QString( "key from keyfile: " ) );
+		m_ui->label->setText( QString( "keyfile path: " ) );
 		m_ui->pbOpenKeyFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) );
 		m_ui->pbOpenKeyFile->setEnabled( true );
 		m_ui->lineEditKey->clear();

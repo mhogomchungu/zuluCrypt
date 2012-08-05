@@ -31,9 +31,10 @@
 #include <QSystemTrayIcon>
 #include <QMenu>
 #include <QCloseEvent>
+#include <QFont>
 
 #include "keydialog.h"
-#include "dialogmsg.h"
+#include "../zuluCrypt-gui/dialogmsg.h"
 #include "managepartitionthread.h"
 
 namespace Ui {
@@ -57,7 +58,7 @@ private slots:
 	void pbClose( void ) ;
 	void slotMountComplete( int,QString ) ;
 	void slotUnmountComplete( int,QString ) ;
-	void slotMountedList( QStringList ) ;
+	void slotMountedList( QStringList,QStringList ) ;
 	void slotcbReadOnly( void ) ;
 	void slotCloseApplication( void ) ;
 	void slotTrayClicked( QSystemTrayIcon::ActivationReason ) ;

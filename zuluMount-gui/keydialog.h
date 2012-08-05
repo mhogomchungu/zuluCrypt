@@ -6,7 +6,7 @@
 #include <QCloseEvent>
 #include <QFileDialog>
 
-#include "dialogmsg.h"
+#include "../zuluCrypt-gui/dialogmsg.h"
 #include "managepartitionthread.h"
 
 namespace Ui {

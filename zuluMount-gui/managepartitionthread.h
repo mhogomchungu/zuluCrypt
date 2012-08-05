@@ -44,7 +44,7 @@ public:
 signals:
 	void signalMountComplete( int,QString ) ;
 	void signalUnmountComplete( int,QString ) ;
-	void signalMountedList( QStringList ) ;
+	void signalMountedList( QStringList,QStringList ) ;
 private:
 	void cryptoMount( QString ) ;
 	void cryptoOpen( void );

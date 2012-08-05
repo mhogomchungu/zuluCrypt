@@ -12,18 +12,18 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp\
-        dialogmsg.cpp \
     keydialog.cpp \
-    managepartitionthread.cpp
+    managepartitionthread.cpp\
+    ../zuluCrypt-gui/dialogmsg.cpp
 
 HEADERS  += mainwindow.h\
-	    dialogmsg.h \
     keydialog.h \
+    ../zuluCrypt-gui/dialogmsg.h\
     managepartitionthread.h
 
 FORMS    += mainwindow.ui\	    
-	    dialogmsg.ui \
-    keydialog.ui
+	    ../zuluCrypt-gui/dialogmsg.ui \
+	    keydialog.ui
 
 RESOURCES += \
     icon.qrc

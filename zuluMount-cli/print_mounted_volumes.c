@@ -30,6 +30,7 @@
 #include "../zuluCrypt-cli/process/process.h"
 
 stringList_t mount_partitionList( void ) ;
+stringList_t partitionList( void ) ;
 
 #ifdef __STDC__
 char * realpath( const char * path, char * resolved_path ) ;
@@ -214,7 +215,7 @@ int mount_print_mounted_volumes( uid_t uid )
 	
 	stringList_t stl = get_mtab_list() ;
 	stringList_t stx ;
-	stringList_t stz = mount_partitionList() ;
+	stringList_t stz = partitionList() ;
 	
 	if( stl == NULL )
 		return 1;
