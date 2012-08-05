@@ -19,9 +19,9 @@ if(NOT blkid)
 endif(NOT blkid)
  
 message( STATUS "Found libblkid.so  : " ${blkid} )
- 
-ADD_SUBDIRECTORY( zuluCrypt-cli )
 
+ADD_SUBDIRECTORY( zuluCrypt-cli )
+ADD_SUBDIRECTORY( zuluMount-gui )
 ADD_SUBDIRECTORY( zuluCrypt-gui )
 
 ADD_SUBDIRECTORY( test )

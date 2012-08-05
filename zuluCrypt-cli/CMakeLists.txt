@@ -1,6 +1,7 @@
  cmake_minimum_required(VERSION 2.6)  
  
- file(WRITE bin_path.h "\n#define ZULUCRYPTzuluCrypt      \"${CMAKE_INSTALL_PREFIX}/bin/zuluCrypt-cli\"\n")
+ file(WRITE  bin_path.h "\n#define ZULUCRYPTzuluCrypt      \"${CMAKE_INSTALL_PREFIX}/bin/zuluCrypt-cli\"\n")
+ file(APPEND bin_path.h "\n#define zuluMount      \"${CMAKE_INSTALL_PREFIX}/bin/zuluMount-cli\"\n")
  
  find_file ( mntent mntent.h )
  
@@ -78,6 +79,13 @@
  bin/help.c
  ) 
  
+ SET( BINMount
+ ../zuluMount-cli/print_mounted_volumes.c
+ ../zuluMount-cli/partitions.c
+ ../zuluMount-cli/main.c
+ ../zuluMount-cli/mount_volume.c 
+ )
+ 
  SET( LIB 
  lib/print_mounted_volumes.c  
  lib/create_mapper_name.c  
@@ -135,6 +143,12 @@
  
  TARGET_LINK_LIBRARIES( zuluCrypt-exe zuluCrypt )
  
+ add_executable( zuluMount-cli ../zuluMount-cli ${BINMount} )
+ 
+ set_target_properties( zuluMount-cli PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread -ansi -pedantic -std=c99" )
+ set_target_properties( zuluMount-cli PROPERTIES LINK_FLAGS "-pie" )
+ TARGET_LINK_LIBRARIES( zuluMount-cli zuluCrypt-exe ) 
+ 
  add_executable( zuluCrypt-cli  bin/main.c  )
  set_target_properties( zuluCrypt-cli PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread -ansi -pedantic -std=c99" )
  set_target_properties( zuluCrypt-cli PROPERTIES LINK_FLAGS "-pie" )
@@ -145,6 +159,12 @@
             RUNTIME DESTINATION bin
             
             PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE SETUID
+ )
+ 
+ install(TARGETS zuluMount-cli 
+ RUNTIME DESTINATION bin
+ 
+ PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE SETUID
  )
  
  if( UNIX AND NOT APPLE AND NOT CMAKE_CROSSCOMPILING AND NOT EXISTS "/etc/debian_version" )

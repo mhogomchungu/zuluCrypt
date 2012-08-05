@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
-add_definitions( -D_FILE_OFFSET_BITS=64 -Wall -pedantic -std=c++0x ) 
+add_definitions( -D_FILE_OFFSET_BITS=64 -Wall -pedantic -std=c++0x -I${PROJECT_BINARY_DIR}/zuluCrypt-gui/) 
 
 set (UI_FILES createfile.ui
 		createpartition.ui
@@ -16,6 +16,8 @@ set (UI_FILES createfile.ui
 		createvolumedialog.ui
 		dialogmsg.ui
 		managesystemvolumes.ui
+		managedevicenames.ui
+		erasedevice.ui		
 )
 
 set( MOC_FILES createfile.h

@@ -1,0 +1,9 @@
+
+ <!DOCTYPE RCC>
+ <RCC version="1.0">
+	 <qresource>
+		 <file>zuluMount.png</file>
+		 <file>passphrase.png</file>		 
+		 <file>keyfile.png</file>		 		 
+	 </qresource>
+ </RCC>
