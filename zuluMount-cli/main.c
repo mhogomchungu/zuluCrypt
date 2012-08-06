@@ -41,7 +41,8 @@ int mount_print_mounted_volumes( uid_t uid ) ;
 char * device_from_label( const char * ) ;
 char * device_from_uuid( const char * ) ;
 
-static int mount_get_opts( int argc,char * argv[],const char ** action,const char ** device, const char ** m_point, const char ** mode,const char ** key,const char ** key_source )
+static int mount_get_opts( int argc,char * argv[],const char ** action,const char ** device,
+			   const char ** m_point, const char ** mode,const char ** key,const char ** key_source )
 {
 	int c ;
 	while ( ( c = getopt( argc,argv,"shlMmUud:z:e:p:f:" ) ) != -1 ) {
@@ -67,6 +68,20 @@ static int mount_get_opts( int argc,char * argv[],const char ** action,const cha
 	return 0 ;
 }
 
+static int mount_return( int st,string_t p,char * q,const char * msg )
+{
+	if( q != NULL )
+		free( q ) ;
+	
+	if( p != NULL )
+		StringDelete( &p ) ;
+	
+	if( msg != NULL )
+		printf( "%s",msg ) ;
+	
+	return st ;
+}
+
 static int inkmount( const char * device,const char * m_point,const char * mode,uid_t uid )
 {
 	int status ;
@@ -88,33 +103,24 @@ static int inkmount( const char * device,const char * m_point,const char * mode,
 	 *
 	 * The function is defined in ../zuluCrypt-cli/bin/partitions.c 
 	 */
-	if( check_if_partition_is_system_partition( device ) == 1 ){
+	if( check_if_partition_is_system_partition( device ) == 1 && uid != 0 )				
+			return mount_return( 200,NULL,NULL,"ERROR: insuffienct privilege to operate on a system partition\n" ) ;
 		
-		if( uid != 0 ){
-			printf( "ERROR: insuffienct privilege to operate on a system partition\n" ) ;
-			return 200 ;			
-		}
-	}
-	
 	/*
 	 * Below function is defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c
 	 * It checks if a device has an entry in "/etc/mtab" and return 1 if it does and 0 is it doesnt	 * 
 	 */
-	if( check_if_mounted( device ) == 1 ){
-		printf( "ERROR: device already mounted\n" ) ;
-		return 2 ;
-	}
+	if( check_if_mounted( device ) == 1 )
+		return mount_return( 2,NULL,NULL,"ERROR: device already mounted\n" ) ;
 
 	if( m_point != NULL ){
 		p = String( m_point ) ;
 	}else{		
 		pass = getpwuid( uid ) ;
 		
-		if( pass == NULL ){
-			printf( "ERROR: could not get path to current user home directory\n" ) ;
-			return 3 ;
-		}
-		
+		if( pass == NULL )
+			mount_return( 3,NULL,NULL,"ERROR: could not get path to current user home directory\n" ) ;
+				
 		p = String( pass->pw_dir ) ;
 		
 		q = strrchr( device,'/' ) ;
@@ -129,52 +135,36 @@ static int inkmount( const char * device,const char * m_point,const char * mode,
 	
 	seteuid( uid ) ;
 	
-	if( stat( m_point,&st ) == 0 ){
-		printf( "ERROR: mount failed,mount point path already taken or insuffienct privilege to mount point path\n" ) ;
-		StringDelete( &p ) ;
-		return 4 ;
-	}
-	
-	if( mkdir( m_point,S_IRUSR | S_IWUSR | S_IXUSR ) != 0 ){
-		printf( "ERROR: mount failed,could not create mount point\n" ) ;
-		StringDelete( &p ) ;		
-		return 5 ;
-	}
-	
+	if( stat( m_point,&st ) == 0 )
+		mount_return( 4,p,NULL,"ERROR: mount failed,mount point path already taken\n" ) ;
+			
+	if( mkdir( m_point,S_IRUSR | S_IWUSR | S_IXUSR ) != 0 )
+		mount_return( 5,p,NULL,"ERROR: mount failed,could not create mount point\n" ) ;
+			
 	seteuid( org ) ;
 	
 	chown( m_point,uid,uid ) ;
 		
 	path = realpath( m_point,NULL ) ;
 	
-	if( path == NULL ){
-		printf( "ERROR: could not resolve mount point path\n" ) ;
-		remove( m_point ) ;
-		StringDelete( &p ) ;		
-		return 6 ;	
-	}
-	
+	if( path == NULL )
+		mount_return( 6,p,NULL,"ERROR: could not resolve mount point path\n" ) ;
+			
 	/*
 	 * below function is defined in ../zuluCrypt-cli/lib/mount_volume.c
 	 */
 	status = mount_volume( device,path,mode,uid )	;
 	
-	if( status == 0 ){
-		free( path ) ;
-		StringDelete( &p ) ;		
-		printf( "SUCCESS: mount complete successfully\n" ) ;
-		return 0 ;
+	if( status == 0 ){		
+		return mount_return( 0,p,path,"SUCCESS: mount complete successfully\n" ) ;		
 	}else{
-		free( path ) ;
 		rmdir( m_point ) ;
-		StringDelete( &p ) ;				
 		switch( status ){
-			case 1 : printf( "ERROR: failed to mount ntfs file system using ntfs-3g,is ntfs-3g package installed?\n" ) 	; break ;
-			case 4 : printf( "ERROR: mount failed,no or unrecognized file system\n" )					; break ;
-			case 12: printf( "ERROR: mount failed,could not get a lock on /etc/mtab~\n" ) 					; break ;	
-			default: printf( "ERROR: failed to mount the partition\n" )							; break ;
+			case 1 : return mount_return( 7,p,path,"ERROR: failed to mount ntfs file system using ntfs-3g,is ntfs-3g package installed?\n" ) ;
+			case 4 : return mount_return( 7,p,path,"ERROR: mount failed,no or unrecognized file system\n" )	; 
+			case 12: return mount_return( 7,p,path,"ERROR: mount failed,could not get a lock on /etc/mtab~\n" ) ;	
+			default: return mount_return( 7,p,path,"ERROR: failed to mount the partition\n" ) ;
 		}
-		return 7 ;
 	}
 }
 
@@ -184,42 +174,27 @@ static int inkumount( const char * device,uid_t uid )
 
 	int status ;
 	
-	if( check_if_partition_is_system_partition( device ) == 1 ){
+	if( check_if_partition_is_system_partition( device ) == 1 && uid != 0 )
+		return mount_return( 200,NULL,NULL,"ERROR: insuffienct privilege to operate on a system partition\n" ) ;
+			
+	if( check_if_mounted( device ) == 0 )
+		return mount_return( 200,NULL,NULL,"ERROR: device not mounted\n" ) ;
 		
-		if( uid != 0 ){
-			printf( "ERROR: insuffienct privilege to operate on a system partition\n" ) ;
-			return 200 ;			
-		}
-	}
-	
-	if( check_if_mounted( device ) == 0 ){
-		printf( "ERROR: device not mounted\n" ) ;
-		return 2 ;
-	}
-	
 	/*
 	 * below function is defined in ../zuluCrypt-cli/lib/unmount_volume.c
 	 */
 	status = unmount_volume( device,&m_point ) ;
 	if( status == 0 ){
-		printf( "SUCCESS: umount complete successfully\n" ) ;
-		if( m_point != NULL ){
-			remove( m_point ) ;
-			free( m_point ) ;
-		}
-		return 0 ;
-	}else{
 		if( m_point != NULL )
-			free( m_point ) ;
-		
+			rmdir( m_point ) ;					
+		return mount_return( 0,NULL,m_point,"SUCCESS: umount complete successfully\n" ) ;		
+	}else{
 		switch( status ) {
-			case 1 : printf( "ERROR: device does not exist\n" ) 							; break ;
-			case 2 : printf( "ERROR: failed to unmount,the mount point and/or one or more files are in use\n" )	; break ;					
-			case 4 : printf( "ERROR: failed to unmount,could not get a lock on /etc/mtab~\n" ) 			; break ;	
-			default: printf( "ERROR: failed to unmount the partition\n" )						; break ;			
+			case 1 : return mount_return( 3,NULL,m_point,"ERROR: device does not exist\n" )  ;
+			case 2 : return mount_return( 3,NULL,m_point,"ERROR: failed to unmount,the mount point and/or one or more files are in use\n" )	;	
+			case 4 : return mount_return( 3,NULL,m_point,"ERROR: failed to unmount,could not get a lock on /etc/mtab~\n" ) ;	
+			default: return mount_return( 3,NULL,m_point,"ERROR: failed to unmount the partition\n" )	 ;			
 		}
-		
-		return 3 ;
 	}
 }
 
@@ -256,13 +231,8 @@ static int crypto_mount( const char * device,const char * mode,uid_t uid,const c
 	const char * mapping_name ;
 	const char * e = strrchr( device,'/' ) ;
 	
-	if( check_if_partition_is_system_partition( device ) == 1 ){
-		
-		if( uid != 0 ){
-			printf( "ERROR: insuffienct privilege to operate on a system partition\n" ) ;
-			return 200 ;			
-		}
-	}
+	if( check_if_partition_is_system_partition( device ) == 1 && uid != 0 )
+		return mount_return( 200,NULL,NULL,"ERROR: insuffienct privilege to operate on a system partition\n" ) ;
 	
 	if( e == NULL)
 		mapping_name = device ;
@@ -274,11 +244,9 @@ static int crypto_mount( const char * device,const char * mode,uid_t uid,const c
 	}else{		
 		pass = getpwuid( uid ) ;
 		
-		if( pass == NULL ){
-			printf( "ERROR: could not get path to current user home directory\n" ) ;
-			return 3 ;
-		}
-		
+		if( pass == NULL )
+			return mount_return( 3,NULL,NULL,"ERROR: could not get path to current user home directory\n" ) ;
+				
 		p = String( pass->pw_dir ) ;
 		
 		e = strrchr( device,'/' ) ;
@@ -312,13 +280,8 @@ static int crypto_umount( const char * device,uid_t uid )
 	const char * mapping_name ;
 	const char * e = strrchr( device,'/' ) ;
 	
-	if( check_if_partition_is_system_partition( device ) == 1 ){
-		
-		if( uid != 0 ){
-			printf( "ERROR: insuffienct privilege to operate on a system partition\n" ) ;
-			return 200 ;			
-		}
-	}
+	if( check_if_partition_is_system_partition( device ) == 1 && uid != 0 )
+		return mount_return( 200,NULL,NULL,"ERROR: insuffienct privilege to operate on a system partition\n" ) ;
 	
 	if( e == NULL)
 		mapping_name = device ;
@@ -341,10 +304,8 @@ static int exe( const char * device, const char * action,const char * m_point,co
 		return crypto_mount( device,mode,uid,key,key_source,m_point ) ;
 	else if( strcmp( action,"-U" ) == 0 )
 		return crypto_umount( device,uid ) ;
-	else{
-		printf( "ERROR: unrecognized argument encountered\n" ) ;		
-		return 150 ;
-	}	
+	else
+		return mount_return( 150,NULL,NULL,"ERROR: unrecognized argument encountered\n" ) ;	
 }
 
 static int mount_help()
@@ -383,20 +344,14 @@ int main( int argc,char * argv[] )
 	if( mount_get_opts( argc,argv,&action,&dev,&m_point,&mode,&key,&key_source ) != 0 )
 		return mount_help() ;
 	
-	if( setuid( 0 ) != 0 ){
-		printf( "ERROR: setuid(0) failed,check executable permissions\n" ) ;
-		return 120 ;
-	}
+	if( setuid( 0 ) != 0 )
+		return mount_return( 120,NULL,NULL,"ERROR: setuid(0) failed,check executable permissions\n" ) ;
 	
-	if( argc < 2 ){
-		printf( "wrong number of arguments\n" ) ;
-		exit( 100 ) ;
-	}
+	if( argc < 2 )
+		return mount_return( 100,NULL,NULL,"wrong number of arguments\n" ) ;
 	
-	if( action == NULL ){
-		printf( "ERROR: action not specified\n" ) ;
-		return 150 ;
-	}
+	if( action == NULL )
+		return mount_return( 150,NULL,NULL,"ERROR: action not specified\n" ) ;
 	
 	if( strcmp( action,"-s" ) == 0 ){
 		/*
@@ -415,10 +370,8 @@ int main( int argc,char * argv[] )
 	if( strcmp( action,"-h" ) == 0 )
 		return mount_help() ;	
 	
-	if( dev == NULL ){
-		printf( "ERROR: device argument missing\n" ) ;
-		return 160 ;
-	}
+	if( dev == NULL )
+		return mount_return( 160,NULL,NULL,"ERROR: device argument missing\n" ) ;
 		
 	if( mode == NULL )
 		mode = "rw" ;

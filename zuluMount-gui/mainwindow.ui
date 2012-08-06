@@ -137,7 +137,7 @@
    <widget class="QCheckBox" name="cbReadOnly">
     <property name="geometry">
      <rect>
-      <x>270</x>
+      <x>310</x>
       <y>330</y>
       <width>271</width>
       <height>31</height>
