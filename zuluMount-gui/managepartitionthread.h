@@ -28,7 +28,7 @@
 #include <QObject>
 #include <QDir>
 
-#include "../zuluCrypt-cli/bin_path.h"
+#include "bin_path.h"
 
 class managepartitionthread : public QObject,public QRunnable
 {

@@ -96,7 +96,7 @@ QMAKE_CXXFLAGS += -D_FILE_OFFSET_BITS=64 -Wall
 OTHER_FILES += \
     backupluksheaderui
 
-
+INCLUDEPATH +=/home/ink/build
 
 
 

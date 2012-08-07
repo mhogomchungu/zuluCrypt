@@ -24,7 +24,7 @@
 #include <stdint.h>
 #include <libcryptsetup.h>
 
-#include "../zuluCrypt-cli/libmount_header.h"
+#include "libmount_header.h"
 #include "../zuluCrypt-cli/string/String.h"
 #include "../zuluCrypt-cli/string/StringList.h"
 #include "../zuluCrypt-cli/process/process.h"

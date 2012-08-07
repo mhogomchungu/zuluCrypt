@@ -27,3 +27,5 @@ FORMS    += mainwindow.ui\
 
 RESOURCES += \
     icon.qrc
+
+INCLUDEPATH +=/home/ink/build

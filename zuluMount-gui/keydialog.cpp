@@ -71,12 +71,21 @@ void keyDialog::slotMountComplete( int st,QString m )
 		DialogMsg msg( this ) ;
 
 		msg.ShowUIOK( QString( "ERROR" ),m ) ;
+		m_ui->lineEditKey->clear();
+		m_ui->lineEditKey->setFocus();
 		this->enableAll();
 	}
 }
 
 void keyDialog::pbOpen()
 {
+	if( m_ui->lineEditKey->text().isEmpty() ){
+		DialogMsg msg( this ) ;
+		msg.ShowUIOK( QString( "ERROR" ),QString( "passphrase field is empty" ) ) ;
+		m_ui->lineEditKey->setFocus();
+		return ;
+	}
+
 	QString m ;
 	if( m_ui->rbKey->isChecked() )
 		m = QString( "-p ") + m_ui->lineEditKey->text().replace( "\"","\"\"\"" ) ;

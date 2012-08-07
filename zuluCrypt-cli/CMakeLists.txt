@@ -1,7 +1,9 @@
  cmake_minimum_required(VERSION 2.6)  
  
- file(WRITE  bin_path.h "\n#define ZULUCRYPTzuluCrypt      \"${CMAKE_INSTALL_PREFIX}/bin/zuluCrypt-cli\"\n")
- file(APPEND bin_path.h "\n#define zuluMount      \"${CMAKE_INSTALL_PREFIX}/bin/zuluMount-cli\"\n")
+ file(WRITE  ${PROJECT_BINARY_DIR}/bin_path.h "\n#define ZULUCRYPTzuluCrypt      \"${CMAKE_INSTALL_PREFIX}/bin/zuluCrypt-cli\"\n")
+ file(APPEND ${PROJECT_BINARY_DIR}/bin_path.h "\n#define zuluMount	         \"${CMAKE_INSTALL_PREFIX}/bin/zuluMount-cli\"\n")
+ 
+ add_definitions( -I${PROJECT_BINARY_DIR} ) 
  
  find_file ( mntent mntent.h )
  
@@ -28,11 +30,11 @@
 	 	message (FATAL_ERROR "ERROR: could not find libmount header file(mount/mount.h or libmount/limount.h)")
 	 else(mount_2)
 		 message( STATUS "Found libmount/libmount.h  : " ${mount_2} )	
-		 file(WRITE libmount_header.h "\n#define USE_UNSTABLE_LIBMOUNT_API 1\n#define USE_NEW_LIBMOUNT_API 1\n#include <libmount/libmount.h>\n")
+		 file(WRITE ${PROJECT_BINARY_DIR}/libmount_header.h "\n#define USE_UNSTABLE_LIBMOUNT_API 1\n#define USE_NEW_LIBMOUNT_API 1\n#include <libmount/libmount.h>\n")
 	 endif(NOT mount_2)
  else(mount_1)
 	 message( STATUS "Found mount/mount.h  : " ${mount_1} )	
-	 file(WRITE libmount_header.h "\n#define USE_UNSTABLE_LIBMOUNT_API 1\n#include <mount/mount.h>\n")	 
+	 file(WRITE ${PROJECT_BINARY_DIR}/libmount_header.h "\n#define USE_UNSTABLE_LIBMOUNT_API 1\n#include <mount/mount.h>\n")	 
  endif(NOT mount_1) 
  
  find_library( mountLibrary libmount.so )

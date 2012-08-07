@@ -38,7 +38,7 @@ int close_mapper( const char * mapper )
 	 * For reasons currently unknown to me, the mapper fail to close sometimes so give it some room when it happens
 	 */
 	for( j = 0 ; j < 10 ; j++ ) { 
-		sleep( 1 );
+		sleep( 1 ); /* this one second pause is for UI effect,volumes close too fast without it */
 		if( crypt_deactivate( NULL,mapper ) == 0 )			
 			return unlink_mapper( mapper ) ;	
 	}

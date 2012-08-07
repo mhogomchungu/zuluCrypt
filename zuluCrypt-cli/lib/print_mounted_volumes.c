@@ -25,7 +25,7 @@
 /*
  * below header file does not ship with the source code, it is created at configure time 
  */
-#include "../libmount_header.h"
+#include "libmount_header.h"
 
 /*
  * defined at ../lib/status.c 
