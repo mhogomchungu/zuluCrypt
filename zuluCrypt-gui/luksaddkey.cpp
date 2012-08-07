@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -61,6 +61,7 @@ luksaddkey::luksaddkey( QWidget * parent ) :
 	connect( m_ui->radioButtonNewPassphraseFromFile,SIGNAL( toggled( bool ) ),this,SLOT( rbNewPassphraseFromFile() ) ) ;
 	connect( m_ui->radioButtonPassphraseinVolume,SIGNAL( toggled( bool ) ),this,SLOT( rbExistingPassphrase() ) ) ;
 	connect( m_ui->radioButtonPassphraseInVolumeFromFile,SIGNAL( toggled( bool ) ),this,SLOT( rbExistingPassphraseFromFile() ) ) ;
+	connect( m_ui->textEditPassphraseToAdd,SIGNAL( textChanged( QString ) ),this,SLOT( keyChanged( QString ) ) ) ;
 
 	m_ui->lineEditReEnterPassphrase->setEchoMode( QLineEdit::Password );
 
@@ -72,6 +73,25 @@ luksaddkey::luksaddkey( QWidget * parent ) :
 
 	m_ui->pushButtonOpenPartition->setIcon( QIcon( QString( ":/partition.png" ) ) );
 	m_ui->pushButtonOpenFile->setIcon( QIcon( QString( ":/file.png" ) ) );
+
+	m_keystrength = new keystrength() ;
+}
+
+void luksaddkey::keyChanged( QString key )
+{
+	if( m_ui->radioButtonNewPassphrase && m_keystrength->canCheckQuality() ){
+
+		if( key.length() <= 8 ){
+			this->setWindowTitle( QString( "passphrase quality: BAD" ) ) ;
+		}else{
+			if( m_keystrength->quality( key ) < 50 )
+				this->setWindowTitle( QString( "passphrase quality: BAD" ) ) ;
+			else
+				this->setWindowTitle( QString( "passphrase quality: GOOD" ) ) ;
+		}
+	}else{
+		this->setWindowTitle( QString( "add a key to a luks volume" ) ) ;
+	}
 }
 
 void luksaddkey::closeEvent( QCloseEvent * e )
@@ -117,7 +137,7 @@ void luksaddkey::HideUI()
 }
 
 void luksaddkey::pbOpenExisitingKeyFile( void )
-{	
+{
 	QString Z = QFileDialog::getOpenFileName( this,tr( "existing key file" ),QDir::homePath(),0 );
 	if( Z.isEmpty() == false )
 		m_ui->textEditExistingPassphrase->setText( Z ) ;
@@ -354,5 +374,6 @@ void luksaddkey::pbCancel( void )
 
 luksaddkey::~luksaddkey()
 {
+	m_keystrength->~keystrength() ;
 	delete m_ui ;
 }

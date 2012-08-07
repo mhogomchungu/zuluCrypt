@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -30,6 +30,7 @@
 #include "erasedevice.h"
 #include "createvolumedialog.h"
 #include "dialogmsg.h"
+#include "keystrength.h"
 
 namespace Ui {
     class createpartition;
@@ -49,6 +50,7 @@ public slots:
 	void ShowFile( QString volume ) ;
 	void HideUI( void );
 private slots:
+	void keyChanged( QString );
 	void pbCreateClicked( void ) ;
 	void pbCancelClicked( void ) ;
 	void rbPassphraseClicked( void );
@@ -62,11 +64,12 @@ private:
 	void findInstalledFs( void );
 	void enableAll( void ) ;
 	void disableAll( void );
-	void closeEvent( QCloseEvent * ) ;		
+	void closeEvent( QCloseEvent * ) ;
 	void ShowUI( QString,QString );
 	bool m_created ;
 	Ui::createpartition * m_ui;
 	bool m_isWindowClosable ;
+	keystrength * m_keyStrength ;
 };
 
 #endif // CREATEPARTITION_H

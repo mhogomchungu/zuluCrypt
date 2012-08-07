@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -27,6 +27,7 @@
 #include "openpartition.h"
 #include "runinthread.h"
 #include "dialogmsg.h"
+#include "keystrength.h"
 
 class luksaddkey : public QDialog
 {
@@ -42,7 +43,8 @@ public slots:
 	void ShowUI( QString ) ;
 	void ShowUI( void ) ;
 	void HideUI( void ) ;
-private slots:	
+private slots:
+	void keyChanged( QString ) ;
 	void pbOpenExisitingKeyFile( void ) ;
 	void pbOpenNewKeyFile( void ) ;
 	void pbOpenFile( void ) ;
@@ -52,7 +54,7 @@ private slots:
 	void rbNewPassphrase( void ) ;
 	void rbNewPassphraseFromFile( void );
 	void pbAdd( void ) ;
-	void pbCancel( void ) ;	
+	void pbCancel( void ) ;
 	void threadfinished( int ) ;
 	void setFieldFocus( void ) ;
 private:
@@ -62,6 +64,7 @@ private:
 	Ui::luksaddkey * m_ui ;
 	QString m_volumePath ;
 	bool m_isWindowClosable ;
+	keystrength * m_keystrength ;
 };
 
 #endif // luksaddkeySUI_H

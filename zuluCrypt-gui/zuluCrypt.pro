@@ -38,7 +38,8 @@ SOURCES += main.cpp\
     cryptfilethread.cpp \
     createvolumedialog.cpp \
     dialogmsg.cpp \
-    managesystemvolumes.cpp
+    managesystemvolumes.cpp \
+    keystrength.cpp
 
 HEADERS  += zulucrypt.h password_dialog.h \
     openpartition.h \
@@ -66,7 +67,8 @@ HEADERS  += zulucrypt.h password_dialog.h \
     cryptfilethread.h \
     createvolumedialog.h \
     dialogmsg.h \
-    managesystemvolumes.h
+    managesystemvolumes.h \
+    keystrength.h
     
 
 FORMS    += zulucrypt.ui password.ui \
@@ -89,7 +91,7 @@ TRANSLATIONS =
 
 RESOURCES = icon.qrc
 
-LIBS += -lblkid
+LIBS += -lblkid -lpwquality
 
 QMAKE_CXXFLAGS += -D_FILE_OFFSET_BITS=64 -Wall
 

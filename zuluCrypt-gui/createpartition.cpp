@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -26,6 +26,7 @@
 #include <QProcess>
 #include <QThread>
 
+#include <QDebug>
 #include "../zuluCrypt-cli/constants.h"
 
 createpartition::createpartition( QWidget * parent ) :
@@ -40,7 +41,9 @@ createpartition::createpartition( QWidget * parent ) :
 	m_ui->lineEditVolumePath->setEnabled( false );
 	m_ui->lineEditPassphrase1->setFocus();
 
-	m_isWindowClosable = true ;	
+	m_isWindowClosable = true ;
+
+	m_keyStrength = new keystrength() ;
 
 	connect( m_ui->pbOpenKeyFile,SIGNAL( clicked() ),this,SLOT( pbOpenKeyFile() ) );
 	connect( m_ui->pbCreate,SIGNAL( clicked() ),this,SLOT( pbCreateClicked() ) );
@@ -48,6 +51,24 @@ createpartition::createpartition( QWidget * parent ) :
 	connect( m_ui->rbPassphrase,SIGNAL( clicked() ),this,SLOT( rbPassphraseClicked() ) );
 	connect( m_ui->rbPassphraseFromFile,SIGNAL( clicked() ),this,SLOT( rbPasssphraseFromFileClicked() ) );
 	connect( m_ui->comboBoxVolumeType,SIGNAL( currentIndexChanged( int ) ),this,SLOT( rng( int ) ) ) ;
+	connect( m_ui->lineEditPassphrase1,SIGNAL( textChanged( QString ) ),this,SLOT( keyChanged( QString ) ) ) ;
+}
+
+void createpartition::keyChanged( QString key )
+{
+	if( m_ui->rbPassphrase->isChecked() && m_keyStrength->canCheckQuality() ){
+
+		if( key.length() <= 8 ){
+			this->setWindowTitle( QString( "passphrase quality: BAD" ) ) ;
+		}else{
+			if( m_keyStrength->quality( key ) < 50 )
+				this->setWindowTitle( QString( "passphrase quality: BAD" ) ) ;
+			else
+				this->setWindowTitle( QString( "passphrase quality: GOOD" ) ) ;
+		}
+	}else{
+		this->setWindowTitle( QString( "create a new volume" ) ) ;
+	}
 }
 
 void createpartition::findInstalledFs()
@@ -63,7 +84,7 @@ void createpartition::findInstalledFs()
 		msg.ShowUIOK( tr( "ERROR!" ),x ) ;
 		return ;
 	}
-	
+
 	int index = mkfsList.indexOf( QString( "mkfs.ext2" ) ) ;
 	if( index != -1 )
 		mkfsList.move( index,0 );
@@ -236,6 +257,7 @@ void createpartition::rbPassphraseClicked()
 	m_ui->labelPassPhrase->setText( tr( "key" ) );
 	m_ui->labelRepeatPassPhrase->setEnabled( true );
 	m_ui->pbOpenKeyFile->setIcon( QIcon( QString( ":/passphrase.png" ) ) );
+	this->setWindowTitle( QString( "create a new volume" ) ) ;
 }
 
 void createpartition::rbPasssphraseFromFileClicked()
@@ -248,6 +270,7 @@ void createpartition::rbPasssphraseFromFileClicked()
 	m_ui->labelPassPhrase->setText( tr( "keyfile" ) );
 	m_ui->labelRepeatPassPhrase->setEnabled( false );
 	m_ui->pbOpenKeyFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) );
+	this->setWindowTitle( QString( "create a new volume" ) ) ;
 }
 
 void createpartition::pbCreateClicked()
@@ -300,7 +323,7 @@ void createpartition::pbCreateClicked()
 }
 
 void createpartition::threadfinished( int st )
-{	
+{
 	DialogMsg msg( this ) ;
 	m_isWindowClosable = true ;
 	QString x = tr( "volume created successfully" ) ;
@@ -329,8 +352,8 @@ and \"/etc/crypttab.\"\nRerun the tool from root's accout to proceed" ) ) ;
 		case 15: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open the file in write mode" ) ) ;		break  ;
 		case 16: msg.ShowUIOK( tr( "ERROR!" ),tr( "there seem to be an opened mapper associated with the device" ) ) ;	break  ;
 		case 17: msg.ShowUIOK( tr( "ERROR!" ),tr( "unable to resolve full path to device" ) ) ;				break  ;
-		case 18: msg.ShowUIOK( tr( "ERROR!" ),tr( "can not create a volume on a mounted device" ) ) ;			break  ;					 
-					 
+		case 18: msg.ShowUIOK( tr( "ERROR!" ),tr( "can not create a volume on a mounted device" ) ) ;			break  ;
+
 		case 110:msg.ShowUIOK( tr( "ERROR!" ),tr( "could not find any partition with the presented UUID" ) ) ;		break  ;
 		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR! with status number %1 encountered" ).arg( st ) );
 	}
@@ -340,5 +363,6 @@ and \"/etc/crypttab.\"\nRerun the tool from root's accout to proceed" ) ) ;
 
 createpartition::~createpartition()
 {
-    delete m_ui;
+	m_keyStrength->~keystrength() ;
+	delete m_ui;
 }
