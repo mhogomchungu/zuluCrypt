@@ -79,6 +79,7 @@ set (SRC createfile.cpp
 	dialogmsg.cpp
 	managesystemvolumes.cpp
 	keystrength.cpp
+	userfont.cpp
 )
 
 find_package( Qt4 REQUIRED )

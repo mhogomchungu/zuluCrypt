@@ -22,7 +22,7 @@ int keystrength::quality( QString key )
 	void * auxerror ;
 	const char * p = key.toAscii().constData() ;
 	int st = pwquality_check( m_handle,p,NULL,NULL,&auxerror);
-	pwquality_strerror( NULL,0,0,auxerror);
+	pwquality_strerror( NULL,0,st,auxerror);
 	return st ;
 #else
 	return NOT_USED ;

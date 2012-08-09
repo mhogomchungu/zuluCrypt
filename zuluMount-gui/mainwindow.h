@@ -35,6 +35,7 @@
 
 #include "keydialog.h"
 #include "../zuluCrypt-gui/dialogmsg.h"
+#include "../zuluCrypt-gui/userfont.h"
 #include "managepartitionthread.h"
 
 namespace Ui {
@@ -43,7 +44,7 @@ class MainWindow;
 
 class MainWindow : public QMainWindow
 {
-	Q_OBJECT	
+	Q_OBJECT
 public:
 	explicit MainWindow( QWidget * parent = 0 );
 	~MainWindow();
@@ -75,6 +76,8 @@ private:
 	managepartitionthread * m_part ;
 	void disableAll( void ) ;
 	void closeEvent( QCloseEvent * e );
+	void setUpFont( void ) ;
+	void setUpShortCuts( void ) ;
 };
 
 #endif // MAINWINDOW_H

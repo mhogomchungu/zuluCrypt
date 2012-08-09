@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -55,6 +55,7 @@
 #include "cryptfiles.h"
 #include "dialogmsg.h"
 #include "managesystemvolumes.h"
+#include "userfont.h"
 
 namespace Ui {
     class zuluCrypt;

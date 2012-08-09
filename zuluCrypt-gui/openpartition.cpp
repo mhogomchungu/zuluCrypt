@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -37,15 +37,15 @@ openpartition::openpartition( QWidget * parent ) :
 	connect( m_ui->pbHelp,SIGNAL( clicked() ),this,SLOT( pbHelp() ) );
 	connect( m_ui->pbUUID,SIGNAL( clicked() ),this,SLOT( pbUUID() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) );
-	
+
 	m_action = new QAction( this ) ;
 	QList<QKeySequence> keys ;
 	keys.append( Qt::Key_Enter );
 	keys.append( Qt::Key_Return );
 	m_action->setShortcuts( keys ) ;
-	
+
 	connect( m_action,SIGNAL( triggered() ),this,SLOT( EnterKeyPressed() ) );
-	
+
 	this->addAction( m_action );
 
 	QTableWidget * tw = m_ui->tableWidget ;
@@ -53,7 +53,7 @@ openpartition::openpartition( QWidget * parent ) :
 	tw->setColumnWidth( 1,90 );
 	tw->setColumnWidth( 2,110 );
 	tw->setColumnWidth( 3,90 );
-	tw->setColumnWidth( 4,250 );
+	tw->setColumnWidth( 4,309 );
 
 	for( int i = 0 ; i < 5 ; i++ )
 		tw->horizontalHeaderItem( i )->setFont( this->font() );
@@ -98,7 +98,7 @@ void openpartition::pbCancel()
 }
 
 void openpartition::EnterKeyPressed()
-{	
+{
 	QTableWidget *tw = m_ui->tableWidget ;
 	QTableWidgetItem *it = tw->currentItem() ;
 	if( it == NULL )
@@ -131,7 +131,7 @@ void openpartition::ShowNonSystemPartitions()
 }
 
 void openpartition::ShowAllPartitions()
-{	
+{
 	m_option = 2 ;
 	partitionList( tr( "select an encrypted partition to open" )," -A" );
 }
@@ -162,10 +162,12 @@ void openpartition::partitionProperties( QStringList entry )
 	QTableWidgetItem * item ;
 	int row = m_ui->tableWidget->rowCount() ;
 	m_ui->tableWidget->insertRow( row );
+	int h = m_ui->tableWidget->rowHeight( 0 ) ;
 	for( int i = 0 ; i < 5 ; i++ ){
 		item = new QTableWidgetItem( entry.at( i ) ) ;
 		item->setTextAlignment( Qt::AlignCenter );
 		m_ui->tableWidget->setItem( row,i,item );
+		m_ui->tableWidget->setRowHeight( row,h );
 	}
 	m_ui->tableWidget->setCurrentCell( row,4 );
 }

@@ -19,49 +19,41 @@
 
 #include "includes.h"
 
-#include <unistd.h>
-#include <sys/wait.h>
-#include <pthread.h>
-#include <sys/types.h>
-#include <signal.h>
-
 /*
  * provides Process API to call mkfs.xxx tools through fork()/execl() to create file systems in encrypted volumes
  */
 #include "../process/process.h"
 
-static int result( int st,string_t x,string_t y )
+static int result( int st,string_t x )
 {
-	StringMultipleDelete( &x,&y,'\0' ) ;
+	StringDelete( &x ) ;
 	return st ;
 }
 
 int create_volume( const char * dev,const char * fs,const char * type,const char * pass,size_t pass_size,const char * rng )
 {
-	int wait ;
 	int status ;
 	
 	process_t p ;
 	
-	string_t cmd = NULL ;
 	string_t m = NULL ;
 	
 	const char * device_mapper ;
 	const char * mapper ;	
-	const char * copts ;
 	char * device ;
 	
 	if ( is_path_valid( dev ) != 0 )
-		return result( 1,cmd,m ) ;
+		return 1 ;
 		
 	if( strcmp( type,"luks" ) == 0 )
 		if( strcmp( rng,"/dev/random" ) != 0 )
 			if( strcmp( rng,"/dev/urandom" ) != 0 )
-				return result( 2,cmd,m ) ;
+				return 2 ;
 	
 	device = realpath( dev,NULL ) ;
+	
 	if( device == NULL )
-		return result( 3,cmd,m ) ;
+		return 3 ;
 	
 	m = create_mapper_name( device,strrchr( device,'/' ) + 1,0,OPEN ) ;
 	
@@ -73,51 +65,47 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 
 	if( strcmp( type,"luks" )  == 0 ){
 		if( create_luks( dev,pass,pass_size,rng ) != 0 )	
-			return result( 3,cmd,m ) ;
+			return result( 3,m ) ;
 		if( open_luks( dev,mapper,"rw",pass,pass_size ) != 0 )
-			return result( 3,cmd,m ) ; ;
+			return result( 3,m ) ; ;
 	}else if( strcmp( type,"plain") == 0 ){
 		if( open_plain( dev,mapper,"rw",pass,pass_size ) )
-			return result( 3,cmd,m ) ; ;		
+			return result( 3,m ) ; ;		
 	}else{
-		return result( 2,cmd,m ) ; ;
+		return result( 2,m ) ;
 	}		
 
-	cmd = String( ZULUCRYPTmkfs ) ;
+	p = Process( ZULUCRYPTmkfs ) ;
+	ProcessSetOption( p,CLOSE_BOTH_STD_OUT ) ;
 	
 	if( strcmp( fs,"ext2" ) == 0 || strcmp( fs,"ext3" ) == 0 || strcmp( fs,"ext4" ) == 0 ){
-		StringAppend( cmd," -t extX -m 1 " ) ;
-		StringReplaceString( cmd,"extX",fs ) ;	
-		wait = 0 ;
+		
+		ProcessSetArgumentList( p,"-t",fs,"-m","1",device_mapper,'\0' ) ;
+		
 	}else if( strcmp( fs,"reiserfs" ) == 0 ){
-		StringAppend( cmd," -t reiserfs -f -f -q " ) ;
-		wait = 0 ;
+		
+		ProcessSetArgumentList( p,"-t",fs,"-f","-f","-q",device_mapper,'\0' ) ;
+		
 	}else if( strcmp( fs,"jfs" ) == 0 ){
-		StringAppend( cmd," -t jfs -q " ) ;
-		wait = 0 ;
+		
+		ProcessSetArgumentList( p,"-t",fs,"-q",device_mapper,'\0' ) ;
+		
 	}else if( strcmp( fs,"ntfs" ) == 0 ){
-		StringAppend( cmd," -t ntfs -f " ) ;
-		wait = 0 ;
+		
+		ProcessSetArgumentList( p,"-t",fs,"-f",device_mapper,'\0' ) ;
+		
 	}else{		
+		ProcessSetArgumentList( p,"-t",fs,device_mapper,'\0' ) ;
+		
 		/*
 		 * unhandled fs are processed here.They are given 60 seconds to accomplish their task
 		 * and are assumed to be running in interactive more and are blocked waiting for user input
 		 * when they fail to return in time and hence are killed since we cant get to them from GUI 
 		 */
-		StringAppend( cmd," -t FS " ) ;
-		StringReplaceString( cmd,"FS",fs ) ;
-		wait = 1 ;
+		
+		ProcessSetOptionTimeout( p,60,SIGKILL ) ;
 	}
 	
-	copts = StringAppend( cmd,device_mapper ) ;
-
-	p = Process( copts ) ;
-	
-	ProcessSetOption( p,CLOSE_BOTH_STD_OUT ) ;
-
-	if( wait == 1 )
-		ProcessSetOptionTimeout( p,60,SIGKILL ) ;	
-		
 	ProcessStart( p ) ;
 
 	status = ProcessExitStatus( p ) ;
@@ -126,8 +114,5 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 	
 	ProcessDelete( &p ) ;
 	
-	if( status == 0 )
-		return result( 0,cmd,m ) ;
-	else
-		return result( 3,cmd,m ) ;
+	return status == 0 ? result( 0,m ) : result( 3,m ) ;
 }

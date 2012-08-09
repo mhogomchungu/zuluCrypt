@@ -41,9 +41,9 @@ int create_luks( const char * dev,const char * pass,size_t pass_size,const char 
 		return 1 ;
 	
 	if( strcmp( rng,"/dev/random" ) == 0 )
-		crypt_set_rng_type( cd, CRYPT_RNG_RANDOM );
+		crypt_set_rng_type( cd,CRYPT_RNG_RANDOM );
 	else 
-		crypt_set_rng_type( cd, CRYPT_RNG_URANDOM );
+		crypt_set_rng_type( cd,CRYPT_RNG_URANDOM );
 	
 	if( crypt_format( cd,CRYPT_LUKS1,"aes","cbc-essiv:sha256",NULL,NULL,32,&params ) != 0 )
 		return free_crypt( 2,cd ) ;

@@ -45,6 +45,34 @@ MainWindow::MainWindow( QWidget * parent ) :
 	connect( m_ui->pbupdate,SIGNAL( clicked()),this,SLOT(pbUpdate() ) ) ;
 	connect( m_ui->pbclose,SIGNAL( clicked() ),this,SLOT( pbClose() ) ) ;
 
+	this->setUpShortCuts();
+
+	this->setUpFont();
+
+	QSystemTrayIcon * tray_icon = new QSystemTrayIcon( this ) ;
+	tray_icon->setIcon( QIcon( QString( ":/zuluMount.png" ) ) );
+
+	QMenu * trayMenu = new QMenu( this ) ;
+	trayMenu->addAction( tr( "quit" ),this,SLOT( slotCloseApplication() ) );
+	tray_icon->setContextMenu( trayMenu );
+
+	connect( tray_icon,SIGNAL( activated( QSystemTrayIcon::ActivationReason ) ),this,SLOT( slotTrayClicked( QSystemTrayIcon::ActivationReason ) ) );
+
+	tray_icon->show();
+
+	managepartitionthread * part = new managepartitionthread() ;
+
+	this->disableAll();
+
+	connect( part,SIGNAL( signalMountedList( QStringList,QStringList ) ),this,SLOT( slotMountedList( QStringList,QStringList ) ) ) ;
+
+	part->startAction( QString( "update" ) ) ;
+
+	m_working = false ;
+}
+
+void MainWindow::setUpShortCuts()
+{
 	QAction * qa = new QAction( this ) ;
 	QList<QKeySequence> z ;
 	z.append( Qt::Key_M );
@@ -79,26 +107,20 @@ MainWindow::MainWindow( QWidget * parent ) :
 	qa->setShortcuts( e ) ;
 	connect( qa,SIGNAL( triggered() ),this,SLOT( slotCloseApplication() ) );
 	this->addAction( qa ) ;
+}
 
-	QSystemTrayIcon * tray_icon = new QSystemTrayIcon( this ) ;
-	tray_icon->setIcon( QIcon( QString( ":/zuluMount.png" ) ) );
+void MainWindow::setUpFont()
+{
+	userfont F( this ) ;
+	QFont f( F.getFont() ) ;
 
-	QMenu * trayMenu = new QMenu( this ) ;
-	trayMenu->addAction( tr( "quit" ),this,SLOT( slotCloseApplication() ) );
-	tray_icon->setContextMenu( trayMenu );
-
-	connect( tray_icon,SIGNAL( activated( QSystemTrayIcon::ActivationReason ) ),this,SLOT( slotTrayClicked( QSystemTrayIcon::ActivationReason ) ) );
-
-	tray_icon->show(); 
-
-	managepartitionthread * part = new managepartitionthread() ;
-
-	m_ui->tableWidget->setEnabled( false );
-	connect( part,SIGNAL( signalMountedList( QStringList,QStringList ) ),this,SLOT( slotMountedList( QStringList,QStringList ) ) ) ;
-
-	part->startAction( QString( "update" ) ) ;
-
-	m_working = false ;
+	m_ui->cbReadOnly->setFont( f );
+	m_ui->centralWidget->setFont( f );
+	m_ui->pbclose->setFont( f );
+	m_ui->pbmount->setFont( f );
+	m_ui->pbunmount->setFont( f );
+	m_ui->pbupdate->setFont( f );
+	m_ui->tableWidget->setFont( f );
 }
 
 void MainWindow::closeEvent( QCloseEvent * e )
@@ -137,21 +159,21 @@ void MainWindow::slotcbReadOnly()
 }
 
 void MainWindow::pbMount()
-{	
+{
 	this->disableAll();
 
 	int row = m_ui->tableWidget->currentRow() ;
 	QString type = m_ui->tableWidget->item( row,2 )->text()  ;
 	QString path = m_ui->tableWidget->item( row,0 )->text() ;
-	
+
 	QString mode ;
 	if( m_ui->cbReadOnly->isChecked() )
 		mode = QString( "ro ") ;
 	else
 		mode = QString( "rw" ) ;
-	
+
 	if( type == QString( "crypto_LUKS" ) ){
-		
+
 		keyDialog * kd = new keyDialog( this,path,mode ) ;
 		connect( kd,SIGNAL( hideUISignal() ),kd,SLOT( deleteLater() ) ) ;
 		connect( kd,SIGNAL( hideUISignal() ),this,SLOT( enableAll() ) ) ;
@@ -221,7 +243,7 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 		f.setItalic( true );
 
 	for( int i = 0 ; i < j ; i++ ){
-		
+
 		row = table->rowCount() ;
 		table->insertRow( row ) ;
 		entries = list.at( i ).split( '\t' ) ;
@@ -251,16 +273,13 @@ void MainWindow::slotMountComplete( int status,QString msg )
 {
 	emit result( status,msg );
 
-	this->enableAll();
-
 	if( status == 0 ){
 		this->pbUpdate();
 	}else{
 		DialogMsg m( this ) ;
 		m.ShowUIOK( QString( "ERROR" ),msg );
+		this->enableAll();
 	}
-
-	this->enableAll();
 }
 
 void MainWindow::slotUnmountComplete( int status,QString msg )
@@ -270,9 +289,8 @@ void MainWindow::slotUnmountComplete( int status,QString msg )
 	}else{
 		DialogMsg m( this ) ;
 		m.ShowUIOK( QString( "ERROR" ),msg );
+		this->enableAll();
 	}
-
-	this->enableAll();
 }
 
 void MainWindow::slotCurrentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous )
@@ -293,7 +311,7 @@ void MainWindow::slotCurrentItemChanged( QTableWidgetItem * current,QTableWidget
 	int prow = previous->row() ;
 	int crow = current->row() ;
 	int col = table->columnCount() ;
-	
+
 	for( int i = 0 ; i < col ; i++ ){
 		table->item( prow,i )->setSelected( false );
 		table->item( crow,i )->setSelected( true );

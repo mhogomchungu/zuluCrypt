@@ -44,6 +44,9 @@ typedef struct st_2{
 
 void ProcessSetArgumentList( process_t p,... )
 {
+	if( p == NULL )
+		return ;
+	
 	char * entry ;
 	char ** args  ;
 	size_t size = sizeof( char * ) ;
@@ -132,6 +135,9 @@ static void ProcessSetArguments_1( process_t p )
 
 pid_t ProcessStart( process_t p ) 
 {
+	if( p == NULL )
+		return -1 ;
+	
 	if( p->std_io >= 4 )
 		if( pipe( p->pd ) != 0 ) 
 			return -1 ;
@@ -245,6 +251,9 @@ char * ProcessGetOutPut( process_t p )
 	int size = 0 ;
 	int count ;
 
+	if( p == NULL )
+		return NULL ;
+	
 	while( 1 ) {
 		count = read( p->pd[ 0 ],buff,SIZE ) ;
 
@@ -267,16 +276,25 @@ char * ProcessGetOutPut( process_t p )
 
 int ProcessGetOutPut_1( process_t p,char * buffer,int size ) 
 {
-	return read( p->pd[ 0 ],buffer,size ) ;
+	if( p != NULL )		
+		return read( p->pd[ 0 ],buffer,size ) ;
+	else
+		return -1 ;
 }
 
 int ProcessWrite( process_t p,const char * data ) 
 {	
-	return write( p->pd[ 1 ],data,strlen( data ) ) ;
+	if( p != NULL )
+		return write( p->pd[ 1 ],data,strlen( data ) ) ;
+	else
+		return -1 ;
 }
 
 process_t Process( const char * path ) 
 {
+	if( path == NULL )
+		return NULL;
+	
 	process_t p = ( process_t ) malloc( sizeof( struct Process_t ) ) ;
 	
 	if( p == NULL )
@@ -307,22 +325,30 @@ process_t Process( const char * path )
 
 void ProcessSetOption( process_t p,int opt ) 
 {
-	p->std_io += opt ;	
+	if( p != NULL )
+		p->std_io += opt ;	
 }
 
 void ProcessSetOptionTimeout( process_t p,int timeout,int signal ) 
 {
+	if( p == NULL )
+		return ;
+	
 	p->signal = signal ;
 	p->timeout = timeout ;
 }
 
 void ProcessSetOptionDelimiter( process_t p,char s ) 
 {
-	p->delimiter = s ;
+	if( p != NULL )
+		p->delimiter = s ;
 }
 
 void ProcessDelete( process_t * p ) 
 {
+	if( p == NULL )
+		return ;
+	
 	process_t px = *p ;
 	*p = NULL ;
 
@@ -349,6 +375,10 @@ void ProcessDelete( process_t * p )
 int ProcessTerminate( process_t p ) 
 {
 	int st ;
+	
+	if( p == NULL )
+		return -1;
+	
 	p->state = CANCELLED ;
 	st = kill( p->pid,SIGTERM ) ;
 	waitpid( p->pid,0,WNOHANG ) ;
@@ -359,6 +389,10 @@ int ProcessTerminate( process_t p )
 int ProcessKill( process_t p ) 
 {
 	int st ;
+	
+	if( p == NULL )
+		return -1;
+	
 	p->state = CANCELLED ;
 	
 	st = kill( p->pid,SIGKILL ) ;
@@ -389,6 +423,9 @@ static int ProcessWaitWithTimer( process_t p )
 	
 	st_1 t ;
 	
+	if( p == NULL )
+		return -1;
+	
 	t.pid = p->pid ;
 	t.time = p->timeout ;
 	t.signal = p->signal ;
@@ -407,6 +444,9 @@ int ProcessExitStatus( process_t p )
 {
 	int status ;
 	
+	if( p == NULL )
+		return -1;
+	
 	if( p->timeout != -1 ){
 		status = ProcessWaitWithTimer( p ) ;		
 	}else{
@@ -421,6 +461,9 @@ int ProcessExitStatus( process_t p )
 
 void ProcessSetArguments( process_t p,char * const s[] ) 
 {
+	if( p == NULL )
+		return ;
+	
 	p->args = ( char ** ) s ;
 	p->args_source = 1 ;
 }

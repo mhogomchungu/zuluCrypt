@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright (c) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -31,18 +31,18 @@ void closeAllVolumesThread::start()
 }
 
 void closeAllVolumesThread::run()
-{		
+{
 	m_table->setEnabled( false );
 	sleep( 1 ) ; // for ui effect
 	int i = m_table->rowCount() ;
 
-	if(i < 1){
+	if( i < 1 ){
 		m_table->setEnabled( true );
 		return ;
 	}
 
 	int j = -1 ;
-	
+
 	QVector<QTableWidgetItem*> tableItems( 0 ) ;
 
 	QTableWidgetItem * deviceItem ;
@@ -62,6 +62,7 @@ void closeAllVolumesThread::run()
 		p.waitForFinished() ;
 		emit close( deviceItem,p.exitCode() ) ;
 		p.close();
+		sleep( 1 ) ; // for ui effect
 	}
 	m_table->setEnabled( true );
 }

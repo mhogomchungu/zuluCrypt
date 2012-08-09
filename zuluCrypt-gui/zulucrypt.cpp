@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -58,33 +58,8 @@ void zuluCrypt::initKeyCombo()
 
 void zuluCrypt::initFont()
 {
-	QString fontPath = QDir::homePath() + QString( "/.zuluCrypt/font" ) ;
-	QFile z( fontPath ) ;
-	if( z.exists() == false ){
-		z.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
-		QString s = QString( "Sans Serif\n8\nnormal\nnormal\n" ) ;
-		z.write( s.toAscii() ) ;
-		z.close();
-	}
-	QFile x( fontPath );
-	x.open( QIODevice::ReadOnly ) ;
-	QStringList xs = QString( x.readAll() ).split( "\n" ) ;
-	x.close();
-	QFont F ;
-	F.setFamily( xs.at( 0 ) );
-	F.setPointSize( xs.at( 1 ).toInt() );
-	if( xs.at( 2 ) == QString( "normal" ) )
-		F.setStyle( QFont::StyleNormal );
-	else if( xs.at( 2 ) == QString( "italic" ) )
-		F.setStyle( QFont::StyleItalic );
-	else
-		F.setStyle( QFont::StyleOblique );
-
-	if( xs.at( 3 ) == QString( "normal" ) )
-		F.setWeight( QFont::Normal );
-	else
-		F.setWeight( QFont::Bold );
-	setUserFont( F );
+	userfont f( this ) ;
+	setUserFont( f.getFont() );
 }
 
 void zuluCrypt::initTray()
@@ -99,13 +74,13 @@ void zuluCrypt::initTray()
 		f.write( "1" ) ;
 		f.close();
 	}
-	
+
 	f.open( QIODevice::ReadOnly ) ;
 	QByteArray c = f.readAll() ;
 	f.close() ;
-	
+
 	m_ui->actionTray_icon->setCheckable( true );
-	
+
 	if( c.at( 0 ) == '1' ){
 		m_ui->actionTray_icon->setChecked( true );
 		m_trayIcon->show();
@@ -148,7 +123,7 @@ void zuluCrypt::setupUIElements()
 	this->setWindowIcon( QIcon( QString( ":/zuluCrypt.png" ) ) );
 
 	m_ui->tableWidget->setColumnWidth( 0,298 );
-	m_ui->tableWidget->setColumnWidth( 1,288 );
+	m_ui->tableWidget->setColumnWidth( 1,336 );
 	m_ui->tableWidget->setColumnWidth( 2,90 );
 }
 
@@ -241,8 +216,8 @@ void zuluCrypt::closeAll( QTableWidgetItem * i,int st )
 {
 	if( st == 0 )
 		removeRowFromTable( i->row() );
-	else		
-		closeStatusErrorMessage( st );	
+	else
+		closeStatusErrorMessage( st );
 }
 
 void zuluCrypt::minimize()
@@ -317,30 +292,16 @@ void zuluCrypt::fonts()
 	bool ok ;
 	QFont Font = QFontDialog::getFont( &ok,this->font(),this ) ;
 	if( ok == true ){
-		QByteArray ba ;
 		int k = Font.pointSize() ;
 		if( k > size ){
 			k = size ;
 			Font.setPointSize( k );
 			UIMessage( tr( "info" ),tr( "resetting font size to %1 because larger font sizes do not fit" ).arg( QString::number( size ) ) );
 		}
+
 		setUserFont( Font );
-		QString s = Font.family()+ QString( "\n" );
-		s = s + QString::number( k )  + QString( "\n" ) ;
-		if( Font.style() == QFont::StyleNormal )
-			s = s + QString( "normal\n" ) ;
-		else if( Font.style() == QFont::StyleItalic )
-			s = s + QString( "italic\n" ) ;
-			else
-			s = s + QString( "oblique\n" ) ;
-		if( Font.weight() == QFont::Normal )
-			s = s + QString( "normal\n" ) ;
-		else
-			s = s + QString( "bold" ) ;
-		QFile f( QDir::homePath() + QString( "/.zuluCrypt/font" ) ) ;
-		f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
-		f.write( s.toAscii() ) ;
-		f.close();
+		userfont f( this ) ;
+		f.saveFont( Font );
 	}
 }
 

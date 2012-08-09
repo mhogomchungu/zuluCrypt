@@ -29,6 +29,7 @@
 #include <QDir>
 
 #include "bin_path.h"
+#include <unistd.h>
 
 class managepartitionthread : public QObject,public QRunnable
 {

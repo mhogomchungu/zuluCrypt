@@ -229,9 +229,10 @@ static int crypto_mount( const char * device,const char * mode,uid_t uid,const c
 	const char * mapping_name ;
 	const char * e = strrchr( device,'/' ) ;
 	
+	/*
 	if( check_if_partition_is_system_partition( device ) == 1 && uid != 0 )
 		return mount_return( 200,NULL,NULL,"ERROR: insuffienct privilege to operate on a system partition" ) ;
-	
+	*/
 	if( e == NULL)
 		mapping_name = device ;
 	else
@@ -277,10 +278,10 @@ static int crypto_umount( const char * device,uid_t uid )
 {
 	const char * mapping_name ;
 	const char * e = strrchr( device,'/' ) ;
-	
-	if( check_if_partition_is_system_partition( device ) == 1 && uid != 0 )
+	/*
+	if( is_luks( device ) == 1 && check_if_partition_is_system_partition( device ) == 1 && uid != 0 )
 		return mount_return( 200,NULL,NULL,"ERROR: insuffienct privilege to operate on a system partition" ) ;
-	
+	*/
 	if( e == NULL)
 		mapping_name = device ;
 	else

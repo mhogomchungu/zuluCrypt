@@ -80,17 +80,13 @@ luksaddkey::luksaddkey( QWidget * parent ) :
 void luksaddkey::keyChanged( QString key )
 {
 	if( m_ui->radioButtonNewPassphrase && m_keystrength->canCheckQuality() ){
-
-		if( key.length() <= 8 ){
-			this->setWindowTitle( QString( "passphrase quality: BAD" ) ) ;
-		}else{
-			if( m_keystrength->quality( key ) < 50 )
-				this->setWindowTitle( QString( "passphrase quality: BAD" ) ) ;
-			else
-				this->setWindowTitle( QString( "passphrase quality: GOOD" ) ) ;
-		}
+		int st = m_keystrength->quality( key ) ;
+		if(  st < 0 )
+			this->setWindowTitle( tr( "passphrase quality: 0/100" ) ) ;
+		else
+			this->setWindowTitle( tr( "passphrase quality: %1/100" ).arg( st ) ) ;
 	}else{
-		this->setWindowTitle( QString( "add a key to a luks volume" ) ) ;
+		this->setWindowTitle( tr( "add a key to a luks volume" ) ) ;
 	}
 }
 

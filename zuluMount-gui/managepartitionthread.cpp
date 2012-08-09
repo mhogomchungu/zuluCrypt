@@ -107,8 +107,6 @@ void managepartitionthread::umount( QString type )
 	QProcess p ;
 	QString exe ;
 
-	m_point = QDir::homePath() + QString( "/" ) + m_device.split( "/" ).last() ;
-
 	if( type == QString( "crypto_LUKS" ) )
 		exe = QString( "%1 -U -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;
 	else
@@ -116,7 +114,9 @@ void managepartitionthread::umount( QString type )
 
 	p.start( exe );
 	p.waitForFinished() ;
-
+	
+	sleep( 1 );
+	
 	QString output = QString( p.readAll() ) ;
 	int index = output.indexOf( QChar( ':') ) ;
 	output = output.mid( index + 1 ) ;

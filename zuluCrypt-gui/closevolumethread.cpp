@@ -19,7 +19,7 @@
 
 #include "closevolumethread.h"
 
-closeVolumeThread::closeVolumeThread( QString exe ) 
+closeVolumeThread::closeVolumeThread( QString exe )
 {
 	m_exe = exe ;
 }
@@ -36,6 +36,7 @@ void closeVolumeThread::run()
 	p.waitForFinished() ;
 	m_status = p.exitCode() ;
 	p.close();
+	sleep( 1 ) ; // for ui effect
 }
 
 closeVolumeThread::~closeVolumeThread()

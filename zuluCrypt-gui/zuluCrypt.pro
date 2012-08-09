@@ -39,7 +39,8 @@ SOURCES += main.cpp\
     createvolumedialog.cpp \
     dialogmsg.cpp \
     managesystemvolumes.cpp \
-    keystrength.cpp
+    keystrength.cpp \
+    userfont.cpp
 
 HEADERS  += zulucrypt.h password_dialog.h \
     openpartition.h \
@@ -68,7 +69,8 @@ HEADERS  += zulucrypt.h password_dialog.h \
     createvolumedialog.h \
     dialogmsg.h \
     managesystemvolumes.h \
-    keystrength.h
+    keystrength.h \
+    userfont.h
     
 
 FORMS    += zulucrypt.ui password.ui \
