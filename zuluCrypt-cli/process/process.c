@@ -32,6 +32,7 @@ struct Process_t{
 	int signal ;
 	int timeout ;
 	int wait_status ;
+	uid_t uid ;
 };
 
 typedef struct st_2{
@@ -152,7 +153,12 @@ pid_t ProcessStart( process_t p )
 	ProcessSetArguments_1( p ) ;
 	
 	if( p->pid == 0 ){
-
+		
+		if( p->uid != -1 ){
+			setuid( p->uid ) ;			
+			seteuid( p->uid ) ;
+		}
+		
 		/*
 		#define CLOSE_STD_OUT 		1
 		#define CLOSE_STD_ERROR		2
@@ -219,7 +225,7 @@ pid_t ProcessStart( process_t p )
 			             dup2( p->pd[ 0 ],0 ) ;
 			             break ;	     
 		}
-		
+				
 		execv( p->args[0],p->args ) ;
 		/*
 		 * execv has failed :-( 
@@ -256,7 +262,6 @@ char * ProcessGetOutPut( process_t p )
 	
 	while( 1 ) {
 		count = read( p->pd[ 0 ],buff,SIZE ) ;
-
 		if( count == SIZE ){
 			buffer = ( char * ) realloc( buffer,size + SIZE + 1 ) ;
 			memcpy( buffer + size,buff,SIZE ) ;
@@ -272,6 +277,14 @@ char * ProcessGetOutPut( process_t p )
 	}	
 	
 	return buffer ;
+}
+
+int ProcessState( process_t p ) 
+{
+	if( p != NULL )
+		return p->state ;
+	else
+		return -1 ;
 }
 
 int ProcessGetOutPut_1( process_t p,char * buffer,int size ) 
@@ -319,6 +332,7 @@ process_t Process( const char * path )
 	p->timeout = -1 ;
 	p->wait_status = -1 ;
 	p->args_source = -1 ;
+	p->uid = -1 ;
 	
 	return p ;
 }
@@ -386,6 +400,12 @@ int ProcessTerminate( process_t p )
 	return st ;
 }
 
+void ProcessSetUser( process_t p,uid_t uid ) 
+{
+	if( p != NULL )
+		p->uid = uid ;
+}
+
 int ProcessKill( process_t p ) 
 {
 	int st ;
@@ -398,8 +418,7 @@ int ProcessKill( process_t p )
 	st = kill( p->pid,SIGKILL ) ;
 	waitpid( p->pid,0,WNOHANG ) ;
 	
-	return st ;
-	
+	return st ;	
 }
 
 static void * __timer( void * x )

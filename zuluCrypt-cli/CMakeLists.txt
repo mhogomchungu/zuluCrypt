@@ -112,6 +112,8 @@
  
  add_definitions( -I${path_to_libcryptsetup.h}  )  
  
+ add_library( Socket STATIC socket/socket.c ) 
+ 
  add_library( String STATIC string/String.c ) 
  
  add_library( StringList STATIC string/StringList.c )
@@ -144,7 +146,7 @@
  TARGET_LINK_LIBRARIES( zuluCrypt-static     ${libcryptsetup} String StringList ${blkid} ${mountLibrary} Process ) 
  TARGET_LINK_LIBRARIES( zuluCrypt-exe-static zuluCrypt-static )
  
- TARGET_LINK_LIBRARIES( zuluCrypt-exe zuluCrypt )
+ TARGET_LINK_LIBRARIES( zuluCrypt-exe zuluCrypt Socket )
  
  add_executable( zuluMount-cli ../zuluMount-cli ${BINMount} )
  

@@ -154,7 +154,7 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 	/*
 	 * This function is defined at "../lib/create_mapper_name.c"
 	 * 
-	 * Explanation for what it does is explained where it is defined.	  * 
+	 * Explanation for what it does is explained where it is defined. 
 	 */
 	m_name = create_mapper_name( device,mapping_name,uid,OPEN ) ;
 
@@ -173,7 +173,7 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 		/*
 		 * GetKeyFromModule is defined in plugin_system.c
 		 */
-		passphrase = GetKeyFromModule( plugin_path ) ;
+		passphrase = GetKeyFromModule( plugin_path,uid ) ;
 		
 		if( passphrase == NULL )
 			return status_msg_1( 25,opts,device,cpoint ) ;

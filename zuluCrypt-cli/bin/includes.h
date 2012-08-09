@@ -66,4 +66,4 @@ int get_pass_from_file( const char * path,uid_t uid,string_t * st ) ;
  * this function is defined in module_system.c
  * It gets a passphrase from a .so file as a plugin.
  */
-string_t GetKeyFromModule( const char * path ) ;
+string_t GetKeyFromModule( const char * path,uid_t ) ;

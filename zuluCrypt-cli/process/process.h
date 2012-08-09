@@ -19,16 +19,17 @@
 
 #include <stdlib.h>
 #include <unistd.h>
-#include <unistd.h>
 #include <sys/wait.h>
 #include <stdio.h>
 #include <string.h>
 #include <pthread.h>
 #include <signal.h>
 #include <stdarg.h>
+#include <sys/types.h>
 
 #ifdef __STDC__
 int kill( pid_t,int );
+int seteuid( uid_t uid );
 #endif
 
 typedef struct Process_t * process_t ;
@@ -92,6 +93,11 @@ void ProcessDelete( process_t * ) ;
  * send a forked process sigterm to terminate it.
  */
 int ProcessTerminate( process_t ) ;
+
+/*
+ * run the child process with privileges of a user with UID of uid
+ */
+void ProcessSetUser( process_t,uid_t uid ) ;
 
 /*
  * send a forked process sigkill to kill it

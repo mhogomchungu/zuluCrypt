@@ -18,11 +18,82 @@
  */
 
 #include <dlfcn.h>
-
+#include <sys/stat.h>
 #include "includes.h"
+#include <unistd.h>
+#include <pwd.h>
 
-string_t GetKeyFromModule( const char * name )
+#include "../process/process.h"
+#include "../socket/socket.h"
+
+string_t GetKeyFromModule( const char * name,uid_t uid )
+{
+	struct passwd * pass ;	
+	socket_t s ;
+	char buffer[ 1024 ] ;	
+	process_t p ;	
+	string_t key = NULL ;	
+	int i ;	
+	const char * sockpath ;	
+	string_t mpath ;	
+	string_t  spath ;	
+	const char * cpath ;	
+		
+	pass = getpwuid( uid ) ;
+	
+	if( pass == NULL )
+		return NULL ;
+	
+	mpath = String( "/etc/zuluCrypt/modules/" ) ;
+	
+	cpath = StringAppend( mpath,name ) ;
+	
+	if( is_path_valid( cpath ) != 0 ){
+		StringDelete( &mpath ) ;
+		return NULL ;
+	}	
+		
+	spath = StringIntToString( getpid() ) ;
+	sockpath = StringMultiplePrepend( spath,"/.zuluCrypt-",pass->pw_dir,'\0' ) ;
+	
+	unlink( sockpath ) ;
+	
+	p = Process( cpath ) ;		
+	ProcessSetUser( p,uid ) ;	
+	ProcessSetArgumentList( p,sockpath,"1024",'\0' ) ;	
+	ProcessStart( p ) ;		
+	
+	s = Socket( "local" ) ;
+	
+	SocketSetHostAddress( s,sockpath ) ;
+	
+	for( i = 0 ; ; i++ ){
+		if( SocketConnect( s ) == 0 ){			
+			SocketGetData( s,buffer,1024 ) ;
+			key = String( buffer ) ;
+			break ;			
+		}else if( i == 20 ){			
+			ProcessKill( p ) ;
+			break ;
+		}else{
+			sleep( 1 ) ;			
+		}
+	}
+	
+	unlink( sockpath ) ;
+		
+	StringMultipleDelete( &mpath,&spath,'\0' ) ;
+	
+	ProcessDelete( &p ) ;
+
+	SocketDelete( &s ) ;
+	
+	return key ;
+}
+
+string_t GetKeyFromModule_1( const char * name )
 {	
+	/*
 	char * key = NULL ;	
 	char * ( *f )( void ) ;	
 	void * handle ;
@@ -48,6 +119,8 @@ string_t GetKeyFromModule( const char * name )
 	
 	StringDelete( &path ) ;
 	
-	return pass ; 
+	return pass ;
+	*/
+	return NULL ;
 }
  

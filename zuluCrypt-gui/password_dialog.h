@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -36,7 +36,7 @@
 #include "dialogmsg.h"
 
 class passwordDialog :  public QDialog
-{	
+{
 	Q_OBJECT
 public:
 	passwordDialog( QTableWidget * table,QWidget * parent = 0 );
@@ -52,16 +52,17 @@ public slots:
 	void clickedPartitionOption( QString );
 private slots :
 	void buttonOpenClicked( void ) ;
-	void mount_point( void );	
+	void mount_point( void );
 	void clickedPassPhraseFromFileButton( void ) ;
 	void passphraseFromFileOption( void ) ;
-	void passphraseOption( void ) ;	
-	void file_path( void  ) ;	
+	void passphraseOption( void ) ;
+	void pluginOption( void ) ;
+	void file_path( void  ) ;
 	void threadfinished( int ) ;
 	void mountPointPath( QString );
-	void done( QString );	
+	void done( QString );
 	void cbStateChanged( int );
-private :	
+private :
 	void setDefaultOpenMode( void );
 	void disableAll( void );
 	void enableAll( void ) ;

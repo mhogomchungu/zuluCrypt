@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -58,6 +58,7 @@ passwordDialog::passwordDialog( QTableWidget * table,QWidget * parent ) : QDialo
 	connect( m_ui->radioButtonPassPhrase,SIGNAL( clicked() ),this,SLOT( passphraseOption() ) ) ;
 	connect( m_ui->OpenVolumePath,SIGNAL( textChanged( QString ) ),this,SLOT( mountPointPath( QString ) ) );
 	connect( m_ui->checkBoxReadOnly,SIGNAL( stateChanged( int ) ),this,SLOT( cbStateChanged( int ) ) );
+	connect( m_ui->radioButtonPlugin,SIGNAL( clicked() ),this,SLOT( pluginOption() ) ) ;
 }
 
 void passwordDialog::cbStateChanged( int state )
@@ -184,6 +185,16 @@ void passwordDialog::mountPointPath( QString path )
 	m_ui->MountPointPath->setText( p ) ;
 }
 
+void passwordDialog::pluginOption()
+{
+	m_ui->PassPhraseField->setToolTip( QString( "enter a module name to use to get passphrase" ) );
+	m_ui->PassPhraseField->setEchoMode( QLineEdit::Normal );
+	m_ui->PassPhraseField->clear();
+	m_ui->pushButtonPassPhraseFromFile->setEnabled( true ) ;
+	m_ui->labelPassphrase->setText( tr( "module name" ) );
+	m_ui->pushButtonPassPhraseFromFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) );
+}
+
 void passwordDialog::passphraseOption()
 {
 	m_ui->PassPhraseField->setToolTip( QString( "enter a key" ) );
@@ -206,8 +217,16 @@ void passwordDialog::passphraseFromFileOption()
 
 void passwordDialog::clickedPassPhraseFromFileButton()
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "Select passphrase file" ),QDir::homePath(),0 );
-	m_ui->PassPhraseField->setText( Z );
+	if( m_ui->radioButtonPassPhraseFromFile->isChecked() ){
+		QString Z = QFileDialog::getOpenFileName( this,tr( "Select passphrase file" ),QDir::homePath(),0 );
+		if( !Z.isEmpty() )
+			m_ui->PassPhraseField->setText( Z );
+	}else if( m_ui->radioButtonPlugin->isChecked() ){
+		QString path = QString( "/etc/zuluCrypt/modules/" ) ;
+		QString Z = QFileDialog::getOpenFileName( this,tr( "Select passphrase file" ),path,0 );
+		if( !Z.isEmpty() )
+			m_ui->PassPhraseField->setText( Z );
+	}
 }
 
 void passwordDialog::clickedPartitionOption( QString dev )
@@ -217,7 +236,7 @@ void passwordDialog::clickedPartitionOption( QString dev )
 }
 
 void passwordDialog::mount_point( void )
-{	
+{
 	QString p = tr( "Select Path to mount point folder" ) ;
 	QString Z = QFileDialog::getExistingDirectory( this,p,QDir::homePath(),QFileDialog::ShowDirsOnly ) ;
 
@@ -233,19 +252,19 @@ void passwordDialog::mount_point( void )
 }
 
 void passwordDialog::file_path( void )
-{	
+{
 	QString Z = QFileDialog::getOpenFileName( this,tr( "Select encrypted volume" ),QDir::homePath(),0 );
 	m_ui->OpenVolumePath->setText( Z );
 }
 
 void passwordDialog::HideUI()
-{	
+{
 	this->hide();
 	emit HideUISignal();
 }
 
 void passwordDialog::buttonOpenClicked( void )
-{	
+{
 	QString mountPointPath = miscfunctions::resolvePath( m_ui->MountPointPath->text() ) ;
 	QString vp = miscfunctions::resolvePath( m_ui->OpenVolumePath->text() ) ;
 
@@ -272,8 +291,11 @@ void passwordDialog::buttonOpenClicked( void )
 	if ( m_ui->radioButtonPassPhraseFromFile->isChecked() ){
 		passtype = QString( "-f" ) ;
 		passPhraseField = miscfunctions::resolvePath( passPhraseField );
-	}else
+	}else if( m_ui->radioButtonPassPhraseFromFile->isChecked() ){
 		passtype = QString( "-p" );
+	}else{
+		passtype = QString( "-G" );
+	}
 
 	QString a = QString( ZULUCRYPTzuluCrypt ) ;
 	QString b = vp;
