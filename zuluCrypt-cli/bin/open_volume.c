@@ -180,8 +180,13 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 		
 		cpass = StringContent( passphrase ) ;
 		len = StringLength( passphrase ) ;
+		
 		st = open_volume( device,cname,cpoint,uid,mode,cpass,len ) ;
-		StringDelete( &passphrase ) ;
+		
+		plugin_path = StringDeleteHandle( &passphrase ) ;
+		
+		memset( ( char * )plugin_path,'\0',len ) ;
+		free( ( char * )plugin_path ) ;
 		
 	}else if( i == 1 || source == NULL ){
 		
