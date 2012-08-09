@@ -48,7 +48,7 @@ static int status_msg( int st,char * device,char * m_point )
 		case 22: printf( "ERROR: insufficient privilege to open key file for reading\n" );					break ;	
 		case 23: printf( "ERROR: insufficient privilege to open device in read/write mode\n" );					break ;	
 		case 24: printf( "ERROR: there seem to be an opened mapper associated with the device\n" ) ;				break ;
-		/* case 25: currently unused */
+		case 25: printf( "ERROR: could not get a passphrase from the module\n" ) ;						break ;
 		case 26: printf( "ERROR: can not get passphrase in silent mode\n" );							break ;	
 		case 27: printf( "ERROR: insufficient memory to hold passphrase\n" );							break ;
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
@@ -85,6 +85,7 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 	const char * mode        = opts->mode ;
 	const char * source      = opts->key_source ;
 	const char * pass        = opts->key ;
+	const char * plugin_path = opts->plugin_path ;
 	
 	string_t passphrase  ;	
 	string_t m_name  ;	
@@ -168,7 +169,21 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 		return status_msg( 24,device,cpoint ) ;
 	}
 	
-	if ( i == 1 || source == NULL ){
+	if( plugin_path != NULL ){
+		/*
+		 * GetKeyFromModule is defined in plugin_system.c
+		 */
+		passphrase = GetKeyFromModule( plugin_path ) ;
+		
+		if( passphrase == NULL )
+			return status_msg_1( 25,opts,device,cpoint ) ;
+		
+		cpass = StringContent( passphrase ) ;
+		len = StringLength( passphrase ) ;
+		st = open_volume( device,cname,cpoint,uid,mode,cpass,len ) ;
+		StringDelete( &passphrase ) ;
+		
+	}else if( i == 1 || source == NULL ){
 		
 		printf( "Enter passphrase: " ) ;		
 		switch( StringSilentlyGetFromTerminal_1( &passphrase,KEY_MAX_SIZE ) ){

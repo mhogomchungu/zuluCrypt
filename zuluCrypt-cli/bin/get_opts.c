@@ -23,6 +23,7 @@
 void get_opts( int argc,char * argv[],struct_opts * stopts )
 {
 	int c ;	
+	stopts->plugin_path = NULL ;
 	stopts->device = NULL ;
 	stopts->mount_point = NULL ;
 	stopts->action = '\0' ;
@@ -41,7 +42,7 @@ void get_opts( int argc,char * argv[],struct_opts * stopts )
 	stopts->interactive_passphrase = -1 ;
 	stopts->open_no_mount = -1 ;
 	
-	while ( (c = getopt(argc,argv,"JLORBXASNPkhocsarqwibEDs:m:d:p:f:e:z:g:y:u:l:n:j:t:") ) != -1 ) {
+	while ( (c = getopt(argc,argv,"JLORBXASNPkhocsarqwibEDs:m:d:p:f:e:z:g:y:u:l:n:j:t:G:") ) != -1 ) {
 		switch( c ){	
 			case( 'E' ) : stopts->action = 'E' 	; break ;	      
 			case( 'D' ) : stopts->action = 'D' 	; break ; 
@@ -62,6 +63,8 @@ void get_opts( int argc,char * argv[],struct_opts * stopts )
 			stopts->open_no_mount = 1 ; break ;
 			case( 'B' ) : stopts->action = 'B' ;
 			stopts->key_source = optarg ;
+			break ;
+			case( 'G' ) : stopts->plugin_path = optarg ;
 			break ;
 			case( 'R' ) : stopts->action = 'R' ;
 			stopts->key_source = optarg ;

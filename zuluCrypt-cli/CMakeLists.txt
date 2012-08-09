@@ -79,6 +79,7 @@
  bin/check_opened_mapper.c
  bin/get_opts.c
  bin/help.c
+ bin/plugin_system.c
  ) 
  
  SET( BINMount

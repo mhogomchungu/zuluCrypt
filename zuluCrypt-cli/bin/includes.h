@@ -61,3 +61,9 @@ void replace_bash_special_chars( string_t ) ;
  * It is defined in security.c
  */
 int get_pass_from_file( const char * path,uid_t uid,string_t * st ) ;
+
+/*
+ * this function is defined in module_system.c
+ * It gets a passphrase from a .so file as a plugin.
+ */
+string_t GetKeyFromModule( const char * path ) ;

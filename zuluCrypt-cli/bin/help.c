@@ -21,7 +21,7 @@
 
 void help( void )
 {
-	const char * help = "\
+	const char * help1 = "\
 	usage: zuluCrypt-cli < operation > < options specific to the operation >\n\
 	meaning of symbols:\n\
 	[] = required option\n\
@@ -48,8 +48,9 @@ void help( void )
 	zuluCrypt-cli -B [ -d ] [ -f ]\n\
 	zuluCrypt-cli -A\n\
 	zuluCrypt-cli -S\n\
-	zuluCrypt-cli -N\n\
-	\n\
+	zuluCrypt-cli -N\n" ;
+	
+	const char * help2 = "\
 	examples:\n\
 	create volume: zuluCrypt-cli -c -d /dev/sdc1 -z ext4 -t luks -p xxx\n\
 	open volume  : zuluCrypt-cli -o -d /dev/sdc1 -m ~/sdc1 -e ro -p xxx\n\
@@ -82,6 +83,7 @@ void help( void )
 	-D         decrypt a single file\n\
 	\n\
 	options that goes with above operations:\n\
+	-G 	   module name to use to get a passphrase to open a volume\n\
 	-e         mode for opening volumes(ro*/rw) when used with -o/-O. path to destination file when used with -E/-D\n\
 	-k         do not ask for confirmation when doing dangerous operations\n\
 	-d         path to a file or partition with encrypted volume\n\
@@ -96,6 +98,7 @@ void help( void )
 	-u         path to keyfile with passphrase already in the volume(required by -a if -y is absent and -h is also absent)\n\
 	-l         passphrase to be added(required by -a if -n is absent and -h is also absent)\n\
 	-n         path to keyfile with a passphrase to be added (required by -a if -l is absent and -h is also absent)\n";
-	printf( "%s\n",help ) ;
+	
+	printf( "%s%s\n",help1,help2 ) ;
 }
 

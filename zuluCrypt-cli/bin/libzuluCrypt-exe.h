@@ -21,6 +21,7 @@
  * It is instantiated in main.c * 
  */
 typedef struct struct_opts_1{
+	const char * plugin_path ;
 	const char * device ;
 	const char * mount_point ;
 	const char * mode ;
