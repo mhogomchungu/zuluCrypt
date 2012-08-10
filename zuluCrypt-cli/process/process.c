@@ -33,15 +33,8 @@ struct Process_t{
 	int timeout ;
 	int wait_status ;
 	uid_t uid ;
+	pthread_t * thread ;
 };
-
-typedef struct st_2{
-	pid_t pid  ;
-	int time ;
-	int signal ;
-	int * status ;
-	process_t p;
-}st_1;
 
 void ProcessSetArgumentList( process_t p,... )
 {
@@ -134,6 +127,29 @@ static void ProcessSetArguments_1( process_t p )
 	p->args = f ;
 }
 
+static void * __timer( void * x )
+{
+	process_t  p = ( process_t ) x ;
+	
+	sleep( p->timeout ) ;
+	
+	kill( p->pid,p->signal ) ;
+	
+	p->state = CANCELLED ;
+	
+	return ( void * ) 0 ; 
+}
+
+static void __ProcessStartTimer( process_t p )
+{
+	p->thread = ( pthread_t * ) malloc( sizeof( pthread_t ) ) ;
+	
+	if( p->thread == NULL )
+		return  ;
+		
+	pthread_create( p->thread,NULL,__timer,( void * ) p );	
+}
+
 pid_t ProcessStart( process_t p ) 
 {
 	if( p == NULL )
@@ -148,12 +164,10 @@ pid_t ProcessStart( process_t p )
 	if( p->pid == -1 )
 		return -1 ;
 	
-	p->state = RUNNING ;
-	
 	ProcessSetArguments_1( p ) ;
 	
 	if( p->pid == 0 ){
-		
+				
 		if( p->uid != -1 ){
 			setuid( p->uid ) ;			
 			seteuid( p->uid ) ;
@@ -235,6 +249,11 @@ pid_t ProcessStart( process_t p )
 		 * child process block ends here
 		 */
 	}
+		
+	p->state = RUNNING ;
+		
+	if( p->timeout != -1 )
+		__ProcessStartTimer( p ) ;
 	
 	/*
 	 * parent process continues from here
@@ -333,6 +352,7 @@ process_t Process( const char * path )
 	p->wait_status = -1 ;
 	p->args_source = -1 ;
 	p->uid = -1 ;
+	p->thread = NULL ;
 	
 	return p ;
 }
@@ -366,6 +386,11 @@ void ProcessDelete( process_t * p )
 	process_t px = *p ;
 	*p = NULL ;
 
+	if( px->thread != NULL ){
+		pthread_cancel( *(px)->thread ) ;
+		free( px->thread ) ;
+	}	
+	
 	if( px->std_io <= 3 )
 		;
 	else if( px->std_io < 12 )
@@ -421,44 +446,6 @@ int ProcessKill( process_t p )
 	return st ;	
 }
 
-static void * __timer( void * x )
-{
-	st_1 * t = ( st_1 * ) x ;
-	
-	sleep( t->time ) ;
-
-	kill( t->pid,t->signal ) ;
-
-	t->p->state = CANCELLED ;
-	
-	return ( void * ) 0 ; 
-}
-
-static int ProcessWaitWithTimer( process_t p )
-{
-	int status ;
-	
-	pthread_t thread ;
-	
-	st_1 t ;
-	
-	if( p == NULL )
-		return -1;
-	
-	t.pid = p->pid ;
-	t.time = p->timeout ;
-	t.signal = p->signal ;
-	t.p = p ;
-	
-	pthread_create( &thread,NULL,__timer,( void * ) &t );
-	
-	waitpid( p->pid,&status,0 ) ;	
-	
-	pthread_cancel( thread ) ;
-	
-	return status ;
-}
-
 int ProcessExitStatus( process_t p )
 {
 	int status ;
@@ -466,15 +453,9 @@ int ProcessExitStatus( process_t p )
 	if( p == NULL )
 		return -1;
 	
-	if( p->timeout != -1 ){
-		status = ProcessWaitWithTimer( p ) ;		
-	}else{
-		waitpid( p->pid,&status,0 ) ;	
-		p->state = FINISHED ;		
-	}	
-	
-	p->wait_status = 1 ;
-	
+	waitpid( p->pid,&status,0 ) ;	
+	p->state = FINISHED ;		
+	p->wait_status = 1 ;	
 	return status ;
 }
 

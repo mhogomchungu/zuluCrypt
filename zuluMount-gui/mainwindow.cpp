@@ -44,6 +44,7 @@ MainWindow::MainWindow( QWidget * parent ) :
 	connect( m_ui->pbunmount,SIGNAL( clicked() ),this,SLOT( pbUmount() ) ) ;
 	connect( m_ui->pbupdate,SIGNAL( clicked()),this,SLOT(pbUpdate() ) ) ;
 	connect( m_ui->pbclose,SIGNAL( clicked() ),this,SLOT( pbClose() ) ) ;
+	connect( m_ui->tableWidget,SIGNAL( itemClicked( QTableWidgetItem * ) ),this,SLOT( itemClicked( QTableWidgetItem * ) ) ) ;
 
 	this->setUpShortCuts();
 
@@ -69,6 +70,19 @@ MainWindow::MainWindow( QWidget * parent ) :
 	part->startAction( QString( "update" ) ) ;
 
 	m_working = false ;
+}
+
+void MainWindow::itemClicked( QTableWidgetItem * item )
+{
+	QMenu m ;
+	m.setFont( this->font() );
+	QString mt = m_ui->tableWidget->item( item->row(),1 )->text() ;
+
+	if( mt == QString( "Nil" ) )
+		connect( m.addAction( tr( "mount" ) ),SIGNAL( triggered() ),this,SLOT( pbMount() ) ) ;
+	else
+		connect( m.addAction( tr( "unmount" ) ),SIGNAL( triggered() ),this,SLOT( pbUmount() ) ) ;
+	m.exec( QCursor::pos() ) ;
 }
 
 void MainWindow::setUpShortCuts()
@@ -107,6 +121,25 @@ void MainWindow::setUpShortCuts()
 	qa->setShortcuts( e ) ;
 	connect( qa,SIGNAL( triggered() ),this,SLOT( slotCloseApplication() ) );
 	this->addAction( qa ) ;
+
+	qa = new QAction( this ) ;
+	QList<QKeySequence> n ;
+	n.append( Qt::Key_Space );
+	//n.append( Qt::Key_Enter );
+	qa->setShortcuts( n ) ;
+	connect( qa,SIGNAL( triggered() ),this,SLOT( enterKeyPressed() ) );
+	this->addAction( qa ) ;
+}
+
+void MainWindow::enterKeyPressed()
+{
+	int row = m_ui->tableWidget->currentRow() ;
+	QString mt = m_ui->tableWidget->item( row,1 )->text() ;
+
+	if( mt == QString( "Nil" ) )
+		this->pbMount();
+	else
+		this->pbUmount();
 }
 
 void MainWindow::setUpFont()

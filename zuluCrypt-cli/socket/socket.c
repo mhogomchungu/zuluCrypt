@@ -156,7 +156,7 @@ int SocketGetData( socket_t s,char * buffer,size_t len )
 	return recv( s->fd,buffer,len,s->fread ) ;
 }
 
-int SocketSendData( socket_t s,char * buffer,size_t len ) 
+int SocketSendData( socket_t s,const char * buffer,size_t len ) 
 {
 	send( s->fd,buffer,len,s->fwrite ) ;
 }

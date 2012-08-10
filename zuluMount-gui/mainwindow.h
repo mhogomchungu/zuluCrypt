@@ -32,6 +32,7 @@
 #include <QMenu>
 #include <QCloseEvent>
 #include <QFont>
+#include <QCursor>
 
 #include "keydialog.h"
 #include "../zuluCrypt-gui/dialogmsg.h"
@@ -53,6 +54,8 @@ signals:
 	void result( int,QString ) ;
 
 private slots:
+	void enterKeyPressed( void ) ;
+	void itemClicked( QTableWidgetItem * ) ;
 	void pbUpdate( void ) ;
 	void pbMount( void ) ;
 	void pbUmount( void ) ;

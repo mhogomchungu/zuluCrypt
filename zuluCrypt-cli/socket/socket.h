@@ -46,7 +46,7 @@ int SocketListen( socket_t ) ;
 
 int SocketGetData( socket_t,char * buffer,size_t len ) ;
 
-int SocketSendData( socket_t,char * buffer,size_t len ) ;
+int SocketSendData( socket_t,const char * buffer,size_t len ) ;
 
 void SockectSetReadOption( socket_t,int option ) ;
 

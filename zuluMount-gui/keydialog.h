@@ -8,6 +8,7 @@
 
 #include "../zuluCrypt-gui/dialogmsg.h"
 #include "managepartitionthread.h"
+#include "../zuluCrypt-gui/miscfunctions.h"
 
 namespace Ui {
 class keyDialog;
@@ -15,7 +16,7 @@ class keyDialog;
 
 class keyDialog : public QDialog
 {
-	Q_OBJECT	
+	Q_OBJECT
 public:
 	keyDialog( QWidget * parent,QString path,QString mode );
 	~keyDialog();
@@ -28,6 +29,7 @@ signals:
 public slots:
 	void slotMountComplete( int,QString ) ;
 private slots:
+	void rbPlugIn( bool ) ;
 	void rbKey( bool ) ;
 	void rbKeyFile( bool ) ;
 	void pbOpen( void ) ;

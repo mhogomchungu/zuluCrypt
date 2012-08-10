@@ -138,7 +138,7 @@ void zuluCrypt::setupConnections()
 	connect( m_ui->tableWidget,SIGNAL( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ),
 		 this,SLOT( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ) ) ;
 	connect( m_ui->actionCreatekeyFile,SIGNAL( triggered() ),this,SLOT( ShowCreateKeyFile() ) );
-	connect( m_ui->tableWidget,SIGNAL( itemClicked( QTableWidgetItem* ) ),this,SLOT( itemClicked( QTableWidgetItem* ) ) ) ;
+	connect( m_ui->tableWidget,SIGNAL( itemClicked( QTableWidgetItem * ) ),this,SLOT( itemClicked( QTableWidgetItem * ) ) ) ;
 	connect( m_ui->actionAbout,SIGNAL( triggered() ),this,SLOT( aboutMenuOption() ) ) ;
 	connect( m_ui->actionAddKey,SIGNAL( triggered() ),this,SLOT( ShowAddKey() ) ) ;
 	connect( m_ui->actionDeleteKey,SIGNAL( triggered() ),this,SLOT( ShowDeleteKey() ) ) ;
@@ -475,18 +475,18 @@ void zuluCrypt::itemClicked( QTableWidgetItem * item, bool clicked )
 {
 	QMenu m ;
 	m.setFont( this->font() );
-	connect( m.addAction( "close" ),SIGNAL( triggered() ),this,SLOT( close() ) ) ;
+	connect( m.addAction( tr( "close" ) ),SIGNAL( triggered() ),this,SLOT( close() ) ) ;
 
 	m.addSeparator() ;
 
-	connect( m.addAction( "properties" ),SIGNAL( triggered() ),this,SLOT( volume_property() ) ) ;
+	connect( m.addAction( tr( "properties" ) ) ,SIGNAL( triggered() ),this,SLOT( volume_property() ) ) ;
 
 	if( m_ui->tableWidget->item( item->row(),2 )->text() == QString( "luks" ) ){
 		m.addSeparator() ;
-		connect( m.addAction( "add key" ),SIGNAL( triggered() ),this,SLOT( luksAddKeyContextMenu() ) ) ;
-		connect( m.addAction( "remove key" ),SIGNAL( triggered() ),this,SLOT( luksDeleteKeyContextMenu() ) ) ;
+		connect( m.addAction( tr( "add key" ) ),SIGNAL( triggered() ),this,SLOT( luksAddKeyContextMenu() ) ) ;
+		connect( m.addAction( tr( "remove key" ) ),SIGNAL( triggered() ),this,SLOT( luksDeleteKeyContextMenu() ) ) ;
 		m.addSeparator();
-		connect( m.addAction( "backup luks header" ),SIGNAL( triggered() ),this,SLOT( luksHeaderBackUpContextMenu() ) ) ;
+		connect( m.addAction( tr( "backup luks header" ) ),SIGNAL( triggered() ),this,SLOT( luksHeaderBackUpContextMenu() ) ) ;
 	}
 
 	m.addSeparator() ;
@@ -524,7 +524,7 @@ void zuluCrypt::itemClicked( QTableWidgetItem * item, bool clicked )
 		int y = m_ui->tableWidget->rowHeight( item->row() ) * item->row() + 20 ;
 
 		m.addSeparator() ;
-		m.addAction( "cancel" ) ;
+		m.addAction( tr( "cancel" ) ) ;
 		m.exec( m_ui->tableWidget->mapToGlobal( QPoint( x,y ) ) ) ;
 	}
 }

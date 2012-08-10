@@ -49,16 +49,16 @@ void miscfunctions::debug( int s )
 QString miscfunctions::mapperPath( QString rpath )
 {
 	QString path = miscfunctions::cryptMapperPath() + QString( "zuluCrypt-" ) + QString::number( getuid() ) ;
-
+	
 	path += QString( "-NAAN-" ) + rpath.split( "/" ).last() + miscfunctions::hashPath( rpath );
-
+	
 	QString z = QString( BASH_SPECIAL_CHARS );
-
+	
 	int g = z.size() ;
-
+	
 	for( int i = 0 ; i < g ; i++ )
 		path.replace( z.at( i ),QChar( '_' ) );
-
+	
 	return path ;
 }
 
@@ -67,10 +67,10 @@ QString miscfunctions::hashPath( QString p )
 	size_t i = 0 ;
 	size_t l = p.size() ;
 	double h = 0 ;
-
+	
 	for ( i = 0 ; i < l ; i++ )
 		h = h + p.at( i ).toAscii() ;
-
+	
 	return QString( "-" ) + QString::number( h );
 }
 
@@ -84,7 +84,7 @@ bool miscfunctions::canCreateFile( QString path )
 {
 	char * p = path.toAscii().data() ;
 	int i = open( p,O_WRONLY|O_CREAT ) ;
-
+	
 	if( i == -1 )
 		return false ;
 	else{
@@ -116,12 +116,12 @@ QStringList miscfunctions::deviceProperties( QString device )
 	QStringList prp ;
 	QString size ;
 	prp << device ;
-
+	
 	blkid_probe dp = blkid_new_probe_from_filename( device.toAscii().data() ) ;
 	blkid_do_probe( dp ) ;
-
+	
 	i = blkid_probe_get_size( dp ) ;
-
+	
 	if( i >= 0 ){
 		size = QString::number( i ) ;
 		switch( size.length() ){
@@ -145,32 +145,32 @@ QStringList miscfunctions::deviceProperties( QString device )
 	}else{
 		size = QString( "Nil" );
 	}
-
+	
 	prp << size ;
-
+	
 	i = blkid_probe_lookup_value( dp,"LABEL",&buffer,NULL );
-
+	
 	if( i == 0 )
 		prp << QString( buffer ) ;
 	else
 		prp << QString( "Nil" ) ;
-
+	
 	i = blkid_probe_lookup_value( dp,"TYPE",&buffer,NULL );
-
+	
 	if( i == 0 )
 		prp << QString( buffer ) ;
 	else
 		prp << QString( "Nil" ) ;
-
+	
 	i = blkid_probe_lookup_value( dp,"UUID",&buffer,NULL );
-
+	
 	if( i == 0 )
 		prp << QString( buffer ) ;
 	else
 		prp << QString( "Nil" ) ;
-
+	
 	blkid_free_probe( dp ) ;
-
+	
 	return prp ;
 }
 
@@ -183,13 +183,13 @@ bool miscfunctions::isLuks( QString volumePath )
 	p.waitForFinished() ;
 	int i = p.exitCode() ;
 	p.close();
-
+	
 	return i == 0 ? true : false ;
 }
 
 QStringList miscfunctions::luksEmptySlots( QString volumePath )
 {
-	QStringList list ;	
+	QStringList list ;      
 	QProcess N ;
 	N.start( QString( ZULUCRYPTzuluCrypt ) + QString( " -b -d \"" ) + volumePath + QString( "\"" ) );
 	N.waitForFinished() ;
@@ -201,7 +201,7 @@ QStringList miscfunctions::luksEmptySlots( QString volumePath )
 	for ( int j = 0 ; j < s.size() ; j++ )
 		if( s.at( j ) == '1' || s.at( j ) == '3' )
 			i++ ;
-	list << QString::number( i ) ;
+		list << QString::number( i ) ;
 	list << QString::number(  s.size() - 1 ) ;
 	return list ;
 }
@@ -218,17 +218,17 @@ void miscfunctions::addToFavorite( QString dev,QString m_point )
 QStringList miscfunctions::readFavorites()
 {
 	QFile f( QDir::homePath() + QString( "/.zuluCrypt/favorites" ) ) ;
-
+	
 	QStringList list ;
-
+	
 	if( f.open( QIODevice::ReadOnly ) ){
 		QString data( f.readAll() ) ;
 		f.close();
-
+		
 		if( data.isEmpty() == false )
 			list = data.split( "\n" ) ;
 	}
-
+	
 	return list ;
 }
 
@@ -261,23 +261,24 @@ void miscfunctions::addItemToTableWithType( QTableWidget * table,QString device,
 {
 	int row = table->rowCount() ;
 	table->insertRow( row );
-
+	
 	QTableWidgetItem * item ;
-
+	
 	item = new QTableWidgetItem() ;
 	item->setText( device );
 	item->setTextAlignment( Qt::AlignCenter );
 	table->setItem( row,0,item );
-
+	
 	item = new QTableWidgetItem() ;
 	item->setText( mountAddr );
 	item->setTextAlignment( Qt::AlignCenter );
 	table->setItem( row,1,item );
-
+	
 	item = new QTableWidgetItem() ;
 	item->setText( type );
 	item->setTextAlignment( Qt::AlignCenter );
 	table->setItem( row,2,item );
-
+	
 	table->setCurrentCell( row,1 );
 }
+

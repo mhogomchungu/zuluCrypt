@@ -70,27 +70,40 @@
    <widget class="QRadioButton" name="rbKey">
     <property name="geometry">
      <rect>
-      <x>60</x>
+      <x>10</x>
       <y>0</y>
       <width>71</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>key</string>
+     <string>&amp;key</string>
     </property>
    </widget>
    <widget class="QRadioButton" name="rbKeyFile">
     <property name="geometry">
      <rect>
-      <x>130</x>
+      <x>80</x>
       <y>0</y>
-      <width>161</width>
+      <width>131</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>key from keyfile</string>
+     <string>key &amp;from keyfile</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="rbPlugIn">
+    <property name="geometry">
+     <rect>
+      <x>217</x>
+      <y>0</y>
+      <width>71</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&amp;plugin</string>
     </property>
    </widget>
   </widget>

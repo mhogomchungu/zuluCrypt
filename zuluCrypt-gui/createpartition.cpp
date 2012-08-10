@@ -205,7 +205,8 @@ void createpartition::enableAll()
 	m_ui->labelVolumePath->setEnabled( true );
 	m_ui->labelRepeatPassPhrase->setEnabled( true );
 	m_ui->lineEditPassphrase1->setEnabled( true );
-	m_ui->lineEditPassPhrase2->setEnabled( true );
+	if( m_ui->rbPassphrase->isChecked() )
+		m_ui->lineEditPassPhrase2->setEnabled( true );
 	//m_ui->lineEditVolumePath->setEnabled( true );
 	m_ui->pbCancel->setEnabled( true );
 	m_ui->pbCreate->setEnabled( true );

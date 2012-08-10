@@ -45,7 +45,7 @@ static int mount_get_opts( int argc,char * argv[],const char ** action,const cha
 			   const char ** m_point, const char ** mode,const char ** key,const char ** key_source )
 {
 	int c ;
-	while ( ( c = getopt( argc,argv,"shlMmUud:z:e:p:f:" ) ) != -1 ) {
+	while ( ( c = getopt( argc,argv,"shlMmUud:z:e:p:f:G:" ) ) != -1 ) {
 		switch( c ){
 			case 's' : *action  = "-s"   ; break ;
 			case 'U' : *action  = "-U"   ; break ;
@@ -61,6 +61,8 @@ static int mount_get_opts( int argc,char * argv[],const char ** action,const cha
 				   *key_source = "-p"; break ;
 			case 'f' : *key     = optarg ;
 				   *key_source = "-f"; break ;
+			case 'G' : *key     = optarg ;
+				   *key_source = "-G"; break ;
 			default  : return -1 ;
 		}
 	}
@@ -255,6 +257,11 @@ static int crypto_mount( const char * device,const char * mode,uid_t uid,const c
 		else
 			StringAppend( p,e ) ;
 	}
+	
+	if( strcmp( key_source,"-G" ) == 0 )
+		opts.plugin_path = key ;
+	else
+		opts.plugin_path = NULL ;
 	
 	opts.mount_point = StringContent( p ) ;
 	opts.interactive_passphrase = -1 ;

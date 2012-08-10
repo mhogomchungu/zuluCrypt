@@ -218,14 +218,19 @@ void passwordDialog::passphraseFromFileOption()
 void passwordDialog::clickedPassPhraseFromFileButton()
 {
 	if( m_ui->radioButtonPassPhraseFromFile->isChecked() ){
-		QString Z = QFileDialog::getOpenFileName( this,tr( "Select passphrase file" ),QDir::homePath(),0 );
+		QString Z = QFileDialog::getOpenFileName( this,tr( "Select a keyfile" ),QDir::homePath(),0 );
 		if( !Z.isEmpty() )
 			m_ui->PassPhraseField->setText( Z );
 	}else if( m_ui->radioButtonPlugin->isChecked() ){
+
 		QString path = QString( "/etc/zuluCrypt/modules/" ) ;
-		QString Z = QFileDialog::getOpenFileName( this,tr( "Select passphrase file" ),path,0 );
-		if( !Z.isEmpty() )
+		if( miscfunctions::exists( QString("/etc/zuluCrypt/modules") ) == false )
+			path = QDir::homePath() ;
+
+		QString Z = QFileDialog::getOpenFileName( this,tr( "select a key module" ),path,0 );
+		if( !Z.isEmpty() ){
 			m_ui->PassPhraseField->setText( Z );
+		}
 	}
 }
 
@@ -331,6 +336,7 @@ void passwordDialog::disableAll()
 	m_ui->radioButtonPassPhrase->setEnabled( false );
 	m_ui->radioButtonPassPhraseFromFile->setEnabled( false );
 	m_ui->radioButtonPassPhrase->setEnabled( false );
+	m_ui->radioButtonPlugin->setEnabled( false );
 }
 
 void passwordDialog::enableAll()
@@ -351,6 +357,7 @@ void passwordDialog::enableAll()
 	m_ui->radioButtonPassPhrase->setEnabled( true );
 	m_ui->radioButtonPassPhraseFromFile->setEnabled( true );
 	m_ui->radioButtonPassPhrase->setEnabled( true );
+	m_ui->radioButtonPlugin->setEnabled( true );
 
 	if( m_open_with_path ){
 		m_ui->OpenVolumePath->setEnabled( false );
@@ -402,7 +409,7 @@ void passwordDialog::threadfinished( int status )
 		case 22: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open keyfile for reading" ) );					break ;
 		case 23: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open device in read/write mode" ) );				break ;
 		case 24: msg.ShowUIOK( tr( "ERROR!" ),tr( "there seem to be an opened mapper associated with the device" ) );				break ;
-		/*case 25: msg.ShowUIOK( tr( "ERROR!" ),tr( "space character is an illegal character in mount point path" ) );				break ;*/
+		case 25: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get a passphrase from the module" ) );						break ;
 		case 110:msg.ShowUIOK( tr( "ERROR!" ),tr( "can not find a partition that match presented UUID" ) );					break ;
 		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR with status number %1 encountered" ).arg( status ) );
 	}

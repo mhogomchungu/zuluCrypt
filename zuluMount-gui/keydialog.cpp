@@ -21,6 +21,7 @@ keyDialog::keyDialog( QWidget * parent,QString path,QString mode ) :
 	connect( m_ui->pbOpenKeyFile,SIGNAL( clicked() ),this,SLOT( pbKeyFileOpen() ) ) ;
 	connect( m_ui->rbKey,SIGNAL( toggled( bool ) ),this,SLOT( rbKey( bool ) ) ) ;
 	connect( m_ui->rbKeyFile,SIGNAL( toggled( bool ) ),this,SLOT( rbKeyFile( bool ) ) ) ;
+	connect( m_ui->rbPlugIn,SIGNAL( toggled( bool ) ),this,SLOT( rbPlugIn( bool ) ) ) ;
 	m_ui->rbKey->setChecked( true ) ;
 }
 
@@ -32,7 +33,7 @@ void keyDialog::enableAll()
 	m_ui->rbKey->setEnabled( true );
 	m_ui->rbKeyFile->setEnabled( true );
 	m_ui->lineEditKey->setEnabled( true );
-
+	m_ui->rbPlugIn->setEnabled( true );
 	if( m_ui->rbKeyFile->isChecked() )
 		m_ui->pbOpenKeyFile->setEnabled( true );
 }
@@ -46,14 +47,24 @@ void keyDialog::disableAll()
 	m_ui->label->setEnabled( false );
 	m_ui->rbKey->setEnabled( false );
 	m_ui->rbKeyFile->setEnabled( false );
+	m_ui->rbPlugIn->setEnabled( false );
 }
 
 void keyDialog::pbKeyFileOpen()
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "keyfile path" ),QDir::homePath(),0 );
-
-	if( !Z.isEmpty() )
-		m_ui->lineEditKey->setText( Z );
+	if( m_ui->rbKeyFile->isChecked() ){
+		QString Z = QFileDialog::getOpenFileName( this,tr( "select a keyfile" ),QDir::homePath(),0 );
+		if( !Z.isEmpty() )
+			m_ui->lineEditKey->setText( Z );
+	}else if( m_ui->rbPlugIn->isChecked() ){
+		QString path = QString( "/etc/zuluCrypt/modules/" ) ;
+		QDir d( path ) ;
+		if( d.exists() == false )
+			path = QDir::homePath() ;
+		QString Z = QFileDialog::getOpenFileName( this,tr( "select a key module" ),path,0 );
+		if( !Z.isEmpty() )
+			m_ui->lineEditKey->setText( Z );
+	}
 }
 
 void keyDialog::closeEvent( QCloseEvent * e )
@@ -89,8 +100,10 @@ void keyDialog::pbOpen()
 	QString m ;
 	if( m_ui->rbKey->isChecked() )
 		m = QString( "-p ") + m_ui->lineEditKey->text().replace( "\"","\"\"\"" ) ;
-	else
+	else if( m_ui->rbKeyFile->isChecked() )
 		m = QString( "-f ") + m_ui->lineEditKey->text().replace( "\"","\"\"\"" ) ;
+	else if( m_ui->rbPlugIn->isChecked() )
+		m = QString( "-G ") + m_ui->lineEditKey->text().replace( "\"","\"\"\"" ) ;
 
 	managepartitionthread * part = new managepartitionthread() ;
 	connect( part,SIGNAL( signalMountComplete( int,QString ) ),this,SLOT( slotMountComplete( int,QString ) ) ) ;
@@ -103,7 +116,18 @@ void keyDialog::pbOpen()
 	this->disableAll();
 }
 
-void keyDialog::rbKey( bool opt)
+void keyDialog::rbPlugIn( bool opt )
+{
+	if( opt ){
+		m_ui->lineEditKey->setEchoMode( QLineEdit::Normal );
+		m_ui->label->setText( QString( "module path: " ) );
+		m_ui->pbOpenKeyFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) );
+		m_ui->pbOpenKeyFile->setEnabled( true );
+		m_ui->lineEditKey->clear();
+	}
+}
+
+void keyDialog::rbKey( bool opt )
 {
 	if( opt ){
 		m_ui->label->setText( QString( "key: " ) );

@@ -30,7 +30,7 @@ string_t GetKeyFromModule( const char * name,uid_t uid )
 {
 	struct passwd * pass ;	
 	socket_t s ;
-	char buffer[ 1024 ] ;	
+	char buffer[ 1025 ] ;	
 	process_t p ;	
 	string_t key = NULL ;	
 	int i ;	
@@ -38,15 +38,27 @@ string_t GetKeyFromModule( const char * name,uid_t uid )
 	string_t mpath ;	
 	string_t  spath ;	
 	const char * cpath ;	
-		
+	
 	pass = getpwuid( uid ) ;
 	
 	if( pass == NULL )
-		return NULL ;
+		return NULL ;	
 	
-	mpath = String( "/etc/zuluCrypt/modules/" ) ;
+	if( strrchr( name,'/' ) == NULL ){
+		/*
+		 * module name does not contain a backslash, assume its a module name and go look for
+		 * it in /etc/zuluCrypt/modules
+		 */
+		mpath = String( "/etc/zuluCrypt/modules/" ) ;	
+		StringAppend( mpath,name ) ;
+	}else{
+		/*
+		 * module has a backslash, assume its path to where a module is located
+		 */
+		mpath = String( name ) ;
+	}
 	
-	cpath = StringAppend( mpath,name ) ;
+	cpath = StringContent( mpath ) ;
 	
 	if( is_path_valid( cpath ) != 0 ){
 		StringDelete( &mpath ) ;
@@ -56,10 +68,12 @@ string_t GetKeyFromModule( const char * name,uid_t uid )
 	spath = StringIntToString( getpid() ) ;
 	sockpath = StringMultiplePrepend( spath,"/.zuluCrypt-",pass->pw_dir,'\0' ) ;
 	
-	unlink( sockpath ) ;
+	if( is_path_valid( sockpath ) == 0 )
+		unlink( sockpath ) ;
 	
 	p = Process( cpath ) ;		
-	ProcessSetUser( p,uid ) ;	
+	ProcessSetUser( p,uid ) ;
+	ProcessSetOptionTimeout( p,30,SIGKILL ) ;
 	ProcessSetArgumentList( p,sockpath,"1024",'\0' ) ;	
 	ProcessStart( p ) ;		
 	
@@ -68,10 +82,14 @@ string_t GetKeyFromModule( const char * name,uid_t uid )
 	SocketSetHostAddress( s,sockpath ) ;
 	
 	for( i = 0 ; ; i++ ){
-		if( SocketConnect( s ) == 0 ){			
-			SocketGetData( s,buffer,1024 ) ;
-			key = String( buffer ) ;
-			break ;			
+		if( SocketConnect( s ) == 0 ){
+			i = SocketGetData( s,buffer,1024 ) ;
+			if( i > 0 ){
+				buffer[ i ] = '\0' ;
+				key = String( buffer ) ;
+			}			
+			SocketClose( s ) ;			
+			break ;
 		}else if( i == 20 ){			
 			ProcessKill( p ) ;
 			break ;
@@ -80,13 +98,12 @@ string_t GetKeyFromModule( const char * name,uid_t uid )
 		}
 	}
 	
-	unlink( sockpath ) ;
-		
-	StringMultipleDelete( &mpath,&spath,'\0' ) ;
+	StringMultipleDelete( &mpath,&spath,'\0' ) ;	
 	
+	ProcessExitStatus( p ) ;
+	unlink( sockpath ) ;	
+	SocketDelete( &s ) ;	
 	ProcessDelete( &p ) ;
-
-	SocketDelete( &s ) ;
 	
 	return key ;
 }
