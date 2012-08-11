@@ -20,7 +20,7 @@
 #include "includes.h"
 #include "getopt.h"
 
-void get_opts( int argc,char * argv[],struct_opts * stopts )
+void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
 {
 	int c ;	
 	stopts->plugin_path = NULL ;

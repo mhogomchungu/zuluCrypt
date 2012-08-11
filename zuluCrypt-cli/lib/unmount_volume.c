@@ -54,7 +54,7 @@ static int entry_found( const char * map, const char * m_dir, char ** m_point )
 	return h ;
 }
 
-int unmount_volume( const char * map, char ** m_point )
+int zuluCryptUnmountVolume( const char * map, char ** m_point )
 {
 	struct stat st ;	
 	FILE * f ;	
@@ -77,7 +77,7 @@ int unmount_volume( const char * map, char ** m_point )
 	 * mtab_is_at_etc() is defined in check_mounted_volumes.c
 	 * 
 	 */
-	if( mtab_is_at_etc() != 0 ){
+	if( zuluCryptMtabIsAtEtc() != 0 ){
 		
 		f = setmntent( "/proc/mounts","r" ) ;
 

@@ -25,11 +25,11 @@ static int free_crypt( int st,struct crypt_device * cd )
 	return st ;
 }
 
-int add_key( const char * device,const char * existingkey,size_t existingkey_size,const char * newkey,size_t newkey_size )
+int zuluCryptAddKey( const char * device,const char * existingkey,size_t existingkey_size,const char * newkey,size_t newkey_size )
 {
 	struct crypt_device * cd;
 	
-	if( is_luks( device ) != 0 )
+	if( zuluCryptVolumeIsLuks( device ) != 0 )
 		return 3 ;
 		
 	if( crypt_init( &cd,device ) != 0 )

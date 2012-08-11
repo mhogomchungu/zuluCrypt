@@ -46,21 +46,14 @@ char * realpath( const char * path, char * resolved_path ) ;
  * opened volumes.
  * It is defined in create_mapper_name.c
  */
-string_t create_mapper_name( const char * device,const char * mapping_name,uid_t uid,int ) ;
-
-/*
- * this function is responsibe substituting bash special characters with an underscore.
- * The explanation for why it does that is in the source file.
- * The function is defined in replace_bash_special_chars.c * 
- */
-void replace_bash_special_chars( string_t ) ;
+string_t zuluCryptCreateMapperName( const char * device,const char * mapping_name,uid_t uid,int ) ;
 
 /*
  * thiw function reads a passphrase from a key file after it makes sure a user who started the
  * tool had reading access to the file.
  * It is defined in security.c
  */
-int get_pass_from_file( const char * path,uid_t uid,string_t * st ) ;
+int zuluCryptGetPassFromFile( const char * path,uid_t uid,string_t * st ) ;
 
 /*
  * this function is defined in module_system.c

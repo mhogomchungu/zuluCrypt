@@ -39,7 +39,7 @@ static int st_msg( int st,char * m_point )
 	return st ;
 }
 
-int close_opened_volume( const char * device,const char * mapping_name,uid_t uid )
+int zuluCryptEXECloseVolume( const char * device,const char * mapping_name,uid_t uid )
 {	
 	 int st ;	 
 	 string_t p ;
@@ -54,9 +54,9 @@ int close_opened_volume( const char * device,const char * mapping_name,uid_t uid
 	  * 
 	  * Explanation for what it does is explained where it is defined.	  * 
 	  */
-	 p = create_mapper_name( dev,mapping_name,uid,CLOSE ) ;
+	 p = zuluCryptCreateMapperName( dev,mapping_name,uid,CLOSE ) ;
 	 
-	 st = close_volume( StringContent( p ),&m_point ) ;	 
+	 st = zuluCryptCloseVolume( StringContent( p ),&m_point ) ;	 
 
 	 StringDelete( &p ) ;	
 	 free( dev ) ;

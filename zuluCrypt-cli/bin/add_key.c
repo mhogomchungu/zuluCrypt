@@ -24,10 +24,10 @@
  *
  * This function checks if a volume is luks and if it has atleast one empty slot.
  */
-static int check_empty_slot( const char * device )
+static int zuluCryptCheckEmptySlots( const char * device )
 {
 	int status = 0 ;
-	char * c = empty_slots( device ) ;
+	char * c = zuluCryptEmptySlots( device ) ;
 	char * d  ;
 	
 	if( c == NULL ){
@@ -110,7 +110,7 @@ static int get_keys( string_t * key1,string_t * key2,string_t * key3 )
 /*
  * get_pass_from_file function is defined at get_pass_from_file.c * 
  */
-int addkey( const struct_opts * opts,uid_t uid )
+int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 {
 	int i                    = opts->interactive_passphrase ;
 	const char * device      = opts->device ;
@@ -136,7 +136,7 @@ int addkey( const struct_opts * opts,uid_t uid )
 	/*
 	 * check_if_partition_is_system_partition() is defined in partition.c
 	 */
-	if( check_if_partition_is_system_partition( device ) == 1 && uid != 0 )
+	if( zuluCryptCheckIfPartitionIsSystemPartition( device ) == 1 && uid != 0 )
 		return status_msg( 13 ) ;
 	
 	/*
@@ -145,15 +145,15 @@ int addkey( const struct_opts * opts,uid_t uid )
 	 * 
 	 * The importance of the function is explained where it is defined.
 	 */
-	switch( can_open_path_for_writing( device,uid ) ){
+	switch( zuluCryptCanOpenPathForWriting( device,uid ) ){
 		case 1 : return status_msg( 11 ) ; break ;
 		case 2 : return status_msg( 4 )  ; break ;		
 	}
 	
-	if( is_luks( device ) == 1 )
+	if( zuluCryptVolumeIsLuks( device ) == 1 )
 		return status_msg_1( 3,device ) ;
 	
-	switch( check_empty_slot( device ) ){
+	switch( zuluCryptCheckEmptySlots( device ) ){
 		case 0 : return status_msg( 10 ) ;
 		case 1 : return status_msg( 2 )  ; 
 	}
@@ -174,7 +174,7 @@ int addkey( const struct_opts * opts,uid_t uid )
 			len1 = StringLength( presentKey ) ;
 			key2 = StringContent( newKey_1 ) ;
 			len2 = StringLength( newKey_1 ) ;
-			status = add_key( device,key1,len1,key2,len2 );			
+			status = zuluCryptAddKey( device,key1,len1,key2,len2 );			
 		}
 		StringDelete( &presentKey ) ;			
 		StringDelete( &newKey_1 ) ;	
@@ -187,7 +187,7 @@ int addkey( const struct_opts * opts,uid_t uid )
 			/*
 			 * this function is defined at "security.c.c"
 			 */
-			switch( get_pass_from_file( existingKey,uid,&ek ) ){
+			switch( zuluCryptGetPassFromFile( existingKey,uid,&ek ) ){
 				case 1 : return status_msg( 8 ) ; 
 				case 4 : return status_msg( 12 ) ;
 				case 2 : return status_msg( 9 );				
@@ -199,7 +199,7 @@ int addkey( const struct_opts * opts,uid_t uid )
 			/*
 			 * this function is defined at "security.c.c"
 			 */
-			switch( get_pass_from_file( newKey,uid,&nk ) ){
+			switch( zuluCryptGetPassFromFile( newKey,uid,&nk ) ){
 				case 1 : return status_msg( 8 ) ; 
 				case 4 : return status_msg( 12 ) ;
 				case 2 : return status_msg( 9 );				
@@ -208,7 +208,7 @@ int addkey( const struct_opts * opts,uid_t uid )
 			len2 = StringLength( nk ) ;
 		}		
 		if ( strcmp( keyType1,"-f" ) == 0 && strcmp( keyType2,"-f" ) == 0 ){
-			status = add_key( device,key1,len1,key2,len2 ) ;			
+			status = zuluCryptAddKey( device,key1,len1,key2,len2 ) ;			
 			StringDelete( &nk ) ;
 			StringDelete( &ek ) ;
 		}else if ( strcmp( keyType1,"-p" ) == 0 && strcmp( keyType2,"-p" ) == 0 ){
@@ -216,16 +216,16 @@ int addkey( const struct_opts * opts,uid_t uid )
 			len1 = strlen( existingKey ) ;
 			key2 = newKey ;
 			len2 = strlen( newKey ) ;
-			status = add_key( device,key1,len1,key2,len2 ) ;			
+			status = zuluCryptAddKey( device,key1,len1,key2,len2 ) ;			
 		}else if ( strcmp( keyType1,"-p" ) == 0 && strcmp( keyType2,"-f" ) == 0 ){
 			key1 = existingKey ;
 			len1 = strlen( existingKey ) ;
-			status = add_key( device,key1,len1,key2,len2 ) ;			
+			status = zuluCryptAddKey( device,key1,len1,key2,len2 ) ;			
 			StringDelete( &nk ) ;
 		}else if ( strcmp( keyType1,"-f" ) == 0 && strcmp( keyType2,"-p" ) == 0 ){			
 			key2 = newKey ;
 			len2 = strlen( newKey ) ;
-			status = add_key( device,key1,len1,key2,len2 ) ;
+			status = zuluCryptAddKey( device,key1,len1,key2,len2 ) ;
 			StringDelete( &ek ) ;
 		}else{			
 			status = 5 ;
@@ -234,7 +234,7 @@ int addkey( const struct_opts * opts,uid_t uid )
 	
 	status = status_msg( status ) ;
 	
-	check_invalid_key( opts->device ) ;
+	zuluCryptCheckInvalidKey( opts->device ) ;
 	
 	return status ;
 }

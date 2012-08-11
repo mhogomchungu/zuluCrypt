@@ -53,7 +53,7 @@ void sigTERMhandler( int sig )
  * 
  * the function is used to check is a presented path is a system partition or not * 
  */
-int check_if_partition_is_system_partition( const char * ) ;
+int zuluCryptCheckIfPartitionIsSystemPartition( const char * ) ;
 
 static int return_value( string_t * st, int status ) 
 {
@@ -117,18 +117,18 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	
 	const char * cmapper ;
 	
-	switch( can_open_path_for_reading( device,uid ) ){
+	switch( zuluCryptCanOpenPathForReading( device,uid ) ){
 		case 1 : return return_value( NULL,8 ) ;
 		case 2 : return return_value( NULL,9 ) ;		
 	}
 	
-	switch( can_open_path_for_writing( device,uid ) ){
+	switch( zuluCryptCanOpenPathForWriting( device,uid ) ){
 		case 1 : return return_value( NULL,8 ) ;
 		case 2 : return return_value( NULL,9 ) ;		
 	}
 	
 	if( uid != 0 ){
-		if( check_if_partition_is_system_partition( opts->device ) == 1 ){
+		if( zuluCryptCheckIfPartitionIsSystemPartition( opts->device ) == 1 ){
 			return return_value( NULL,6 ) ;
 		}
 	}
@@ -138,16 +138,16 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	if( dev == NULL )
 		return return_value( NULL,2 ) ;	
 	
-	mapper = create_mapper_name( dev,mapping_name,uid,OPEN ) ;
+	mapper = zuluCryptCreateMapperName( dev,mapping_name,uid,OPEN ) ;
 	
-	p = create_mapper_name( dev,mapping_name,uid,CLOSE ) ;
+	p = zuluCryptCreateMapperName( dev,mapping_name,uid,CLOSE ) ;
 	
-	j = check_opened_mapper( StringContent( p ) ) ;
+	j = zuluCryptCheckOpenedMapper( StringContent( p ) ) ;
 	
 	/*
 	 * defined in print_mounted_volumes.c
 	 */
-	n = check_if_mounted( dev ) ;
+	n = zuluCryptCheckIfMounted( dev ) ;
 	
 	free( dev ) ;
 	StringDelete( &p ) ;
@@ -194,7 +194,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 			/*
 			 * function is defined at "security.c"
 			 */
-			switch( get_pass_from_file( pass,uid,&passphrase ) ){
+			switch( zuluCryptGetPassFromFile( pass,uid,&passphrase ) ){
 				case 1 : return return_value( &mapper,10 ) ; 
 				case 2 : return return_value( &mapper,11 ) ; 				
 				case 4 : return return_value( &mapper,12 ) ;
@@ -207,7 +207,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	/*
 	 * Open a plain mapper, so that we can write to device through it
 	 */
-	if( open_plain( device,StringContent( mapper ),"rw",cpass,len ) != 0 )
+	if( zuluCryptOpenPlain( device,StringContent( mapper ),"rw",cpass,len ) != 0 )
 		return return_value( &mapper,1 ) ;		
 	
 	/*
@@ -242,7 +242,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	}
 }
 
-int open_plain_as_me(const struct_opts * opts,const char * mapping_name,uid_t uid )
+int zuluCryptEXEOpenPlainAsMe(const struct_opts * opts,const char * mapping_name,uid_t uid )
 {
 	return open_plain_as_me_1( opts,mapping_name,uid,1 ) ;
 }
@@ -253,7 +253,7 @@ int open_plain_as_me(const struct_opts * opts,const char * mapping_name,uid_t ui
  * The above is accomplished by opening a plain mapper against the device and then write to the device through the mapper
  * 
  */
-int write_device_with_junk( const struct_opts * opts,const char * mapping_name,uid_t uid )
+int zuluCryptEXEWriteDeviceWithJunk( const struct_opts * opts,const char * mapping_name,uid_t uid )
 {	
 	string_t mapper ;	
 	string_t confirm ;
@@ -290,7 +290,7 @@ int write_device_with_junk( const struct_opts * opts,const char * mapping_name,u
 	if( ( k = open_plain_as_me_1( opts,mapping_name,uid,0 ) ) != 0 ) 
 		return k ;
 	
-	mapper = create_mapper_name( dev,mapping_name,uid,OPEN ) ;
+	mapper = zuluCryptCreateMapperName( dev,mapping_name,uid,OPEN ) ;
 	
 	StringMultiplePrepend( mapper,"/",crypt_get_dir(),'\0' ) ;
 	
@@ -306,7 +306,7 @@ int write_device_with_junk( const struct_opts * opts,const char * mapping_name,u
 			StringDelete( &confirm ) ;
 		
 			if( k == 1 ){			
-				close_mapper( StringContent( mapper ) ) ;			
+				zuluCryptCloseMapper( StringContent( mapper ) ) ;			
 				return return_value( &mapper,5 ) ;
 			}
 		}
@@ -339,11 +339,10 @@ int write_device_with_junk( const struct_opts * opts,const char * mapping_name,u
 		
 	close( k ) ;
 	
-	close_mapper( StringContent( mapper ) ) ;
+	zuluCryptCloseMapper( StringContent( mapper ) ) ;
 		
 	if( __exit_as_requested == 1 ) 
 		return return_value( &mapper,15 ) ;
 	else
 		return return_value( &mapper,3 ) ;
-	
 }

@@ -19,9 +19,9 @@
 
 #include "includes.h"
 
-void check_invalid_key( const char * device )
+void zuluCryptCheckInvalidKey( const char * device )
 {
-	char * d = empty_slots( device ) ;
+	char * d = zuluCryptEmptySlots( device ) ;
 	char * c ;
 	int e = 0  ;
 	

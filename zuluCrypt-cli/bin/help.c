@@ -19,7 +19,7 @@
 
 #include "includes.h"
 
-void help( void )
+void zuluCryptEXEHelp( void )
 {
 	const char * help1 = "\
 	usage: zuluCrypt-cli < operation > < options specific to the operation >\n\

@@ -19,9 +19,9 @@
 
 #include "includes.h"
 
-static int get_device( const char * device )
+static int zuluCryptEXEGetDevice( const char * device )
 {
-	char * c = volume_device_name( device ) ;
+	char * c = zuluCryptVolumeDeviceName( device ) ;
 	if( c == NULL ){
 		printf( "ERROR: could not get device address from mapper address\n" ) ;
 		return 1 ;
@@ -32,9 +32,9 @@ static int get_device( const char * device )
 	}
 }
 
-static int check_if_luks( const char * device )
+static int zuluCryptEXECheckIfLuks( const char * device )
 {
-	int status = is_luks( device ) ;
+	int status = zuluCryptVolumeIsLuks( device ) ;
 	
 	if( status == 0 )
 		printf( "\"%s\" is a luks device\n",device ) ;
@@ -44,15 +44,15 @@ static int check_if_luks( const char * device )
 	return status ;
 }
 
-static int check_empty_slots( const char * device )
+static int zuluCryptEXECheckEmptySlots( const char * device )
 {
 	int status ;
 	char * c  ;
-	if( is_path_valid( device ) != 0 ){
+	if( zuluCryptIsPathValid( device ) != 0 ){
 		printf( "path \"%s\" does not point to a device\n",device ) ;
 		status = 1 ;			
 	}else{
-		c = empty_slots( device ) ;
+		c = zuluCryptEmptySlots( device ) ;
 		if( c == NULL ){
 			printf( "device \"%s\" is not a luks device\n",device ) ;
 			status = 2 ;
@@ -65,32 +65,32 @@ static int check_empty_slots( const char * device )
 	return status ;
 }
 
-static int check_UUID( const char * device )
+static int zuluCryptEXECheckUUID( const char * device )
 {
 	printf( "%s\n",device ) ;
 	return 0 ;
 }
 
-static int exe( struct_opts * clargs, const char * mapping_name,uid_t uid )
+static int zuluCryptEXE( struct_opts * clargs, const char * mapping_name,uid_t uid )
 {
 	switch( clargs->action ){
-		case 'B' : return save_and_restore_luks_header( clargs,uid,LUKS_HEADER_SAVE ) ;
-		case 'R' : return save_and_restore_luks_header( clargs,uid,LUKS_HEADER_RESTORE ) ;		
-		case 'J' : return open_plain_as_me( clargs,mapping_name,uid ) ;		
-		case 'X' : return write_device_with_junk( clargs,mapping_name,uid ) ;
-		case 'w' : return check_UUID( clargs->device ) ;
-		case 'b' : return check_empty_slots( clargs->device ) ;
-		case 'i' : return check_if_luks( clargs->device ) ;
-		case 'P' : return get_device( clargs->device ) ;
-		case 's' : return volume_info( mapping_name,clargs->device,uid ) ;
-		case 'q' : return close_opened_volume( clargs->device,mapping_name,uid ) ;
-		case 'o' : return open_volumes( clargs,mapping_name,uid ) ;
-		case 'O' : return open_volumes( clargs,mapping_name,uid ) ;		
-		case 'c' : return create_volumes( clargs,mapping_name,uid ) ;
-		case 'a' : return addkey( clargs,uid ) ;
-		case 'r' : return removekey( clargs,uid );
-		case 'E' : return file_encrypt( clargs,mapping_name,uid ) ;
-		case 'D' : return file_decrypt( clargs,mapping_name,uid ) ;
+		case 'B' : return zuluCryptEXESaveAndRestoreLuksHeader( clargs,uid,LUKS_HEADER_SAVE ) ;
+		case 'R' : return zuluCryptEXESaveAndRestoreLuksHeader( clargs,uid,LUKS_HEADER_RESTORE ) ;		
+		case 'J' : return zuluCryptEXEOpenPlainAsMe( clargs,mapping_name,uid ) ;		
+		case 'X' : return zuluCryptEXEWriteDeviceWithJunk( clargs,mapping_name,uid ) ;
+		case 'w' : return zuluCryptEXECheckUUID( clargs->device ) ;
+		case 'b' : return zuluCryptEXECheckEmptySlots( clargs->device ) ;
+		case 'i' : return zuluCryptEXECheckIfLuks( clargs->device ) ;
+		case 'P' : return zuluCryptEXEGetDevice( clargs->device ) ;
+		case 's' : return zuluCryptEXEVolumeInfo( mapping_name,clargs->device,uid ) ;
+		case 'q' : return zuluCryptEXECloseVolume( clargs->device,mapping_name,uid ) ;
+		case 'o' : return zuluCryptEXEOpenVolume( clargs,mapping_name,uid ) ;
+		case 'O' : return zuluCryptEXEOpenVolume( clargs,mapping_name,uid ) ;		
+		case 'c' : return zuluCryptEXECreateVolume( clargs,mapping_name,uid ) ;
+		case 'a' : return zuluCryptEXEAddKey( clargs,uid ) ;
+		case 'r' : return zuluCryptEXERemoveKey( clargs,uid );
+		case 'E' : return zuluCryptExeFileEncrypt( clargs,mapping_name,uid ) ;
+		case 'D' : return zuluCryptExeFileDecrypt( clargs,mapping_name,uid ) ;
 	}
 	printf("ERROR!!!!!!!!!!: cli option missed!\n" );
 	return 200 ; /* shouldnt get here */	
@@ -115,22 +115,22 @@ int main( int argc,char * argv[] )
 	struct_opts clargs ;
 
 	if( argc == 1 ){
-		help();
+		zuluCryptEXEHelp();
 		return 1;
 	}
 	if( argc == 2 ){
 		ac = argv[ 1 ] ;
 		if ( strcmp( ac,"-h" ) == 0 || strcmp( ac,"--help" ) == 0 || strcmp( ac,"-help" ) == 0 ){			
-			help();	
+			zuluCryptEXEHelp();	
 			return 0 ;
 		}	
 		if ( strcmp( ac,"-v" ) == 0 || strcmp( ac,"-version" ) == 0 || strcmp( ac,"--version" ) == 0 ){		
-			printf( "%s\n",version() );
+			printf( "%s\n",zuluCryptVersion() );
 			return 0 ;
 		}
 	}
 	
-	get_opts( argc,argv,&clargs );
+	zuluCryptEXEGetOpts( argc,argv,&clargs );
 	
 	uid = getuid();
 	
@@ -145,8 +145,8 @@ int main( int argc,char * argv[] )
 	switch( action ){
 		case 'A':
 		case 'N':
-		case 'S': return print_partitions( clargs.partition_number ) ;	
-		case 'L': return print_opened_volumes( uid ) ;
+		case 'S': return zuluCryptPrintPartitions( clargs.partition_number ) ;	
+		case 'L': return zuluCryptPrintOpenedVolumes( uid ) ;
 	}
 	if( action == '\0' ){
 		printf("ERROR: \"action\" argument is missing\n" ) ;
@@ -164,11 +164,11 @@ int main( int argc,char * argv[] )
 		
 		mapping_name = StringContent( q ) ;
 
-		ac = device_from_uuid( mapping_name + 5 ) ;
+		ac = zuluCryptDeviceFromUUID( mapping_name + 5 ) ;
 		
 		if( ac != NULL ) {		
 			clargs.device = ac ;			
-			st = exe( &clargs,mapping_name,uid );			
+			st = zuluCryptEXE( &clargs,mapping_name,uid );			
 			free( ac ) ;
 			StringDelete( &q ) ;
 			return st ;
@@ -185,5 +185,5 @@ int main( int argc,char * argv[] )
 		}
 	}
 
-	return exe( &clargs,mapping_name,uid ) ;	
+	return zuluCryptEXE( &clargs,mapping_name,uid ) ;	
 } 

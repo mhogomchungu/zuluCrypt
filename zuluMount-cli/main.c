@@ -38,8 +38,9 @@ int seteuid(uid_t uid);
 #endif
 
 int mount_print_mounted_volumes( uid_t uid ) ;
-char * device_from_label( const char * ) ;
-char * device_from_uuid( const char * ) ;
+char * zuluCryptDeviceFromUUID( const char * ) ;
+char * zuluCryptDeviceFromLabel( const char * ) ;
+int zuluMountMountVolume( const char * mapper,const char * m_point,const char * mode,uid_t id ) ;
 
 static int mount_get_opts( int argc,char * argv[],const char ** action,const char ** device,
 			   const char ** m_point, const char ** mode,const char ** key,const char ** key_source )
@@ -84,7 +85,7 @@ static int mount_return( int st,string_t p,char * q,const char * msg )
 	return st ;
 }
 
-static int inkmount( const char * device,const char * m_point,const char * mode,uid_t uid )
+static int zuluMountMount( const char * device,const char * m_point,const char * mode,uid_t uid )
 {
 	int status ;
 	
@@ -105,14 +106,14 @@ static int inkmount( const char * device,const char * m_point,const char * mode,
 	 *
 	 * The function is defined in ../zuluCrypt-cli/bin/partitions.c 
 	 */
-	if( check_if_partition_is_system_partition( device ) == 1 && uid != 0 )				
+	if( zuluCryptCheckIfPartitionIsSystemPartition( device ) == 1 && uid != 0 )				
 			return mount_return( 200,NULL,NULL,"ERROR: insuffienct privilege to operate on a system partition" ) ;
 		
 	/*
 	 * Below function is defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c
 	 * It checks if a device has an entry in "/etc/mtab" and return 1 if it does and 0 is it doesnt	 * 
 	 */
-	if( check_if_mounted( device ) == 1 )
+	if( zuluCryptCheckIfMounted( device ) == 1 )
 		return mount_return( 2,NULL,NULL,"ERROR: device already mounted" ) ;
 
 	if( m_point != NULL ){
@@ -153,7 +154,7 @@ static int inkmount( const char * device,const char * m_point,const char * mode,
 	/*
 	 * below function is defined in ../zuluCrypt-cli/lib/mount_volume.c
 	 */
-	status = mount_volume( device,path,mode,uid )	;
+	status = zuluMountMountVolume( device,path,mode,uid )	;
 	
 	if( status == 0 ){		
 		return mount_return( 0,p,path,"SUCCESS: mount complete successfully" ) ;		
@@ -168,22 +169,22 @@ static int inkmount( const char * device,const char * m_point,const char * mode,
 	}
 }
 
-static int inkumount( const char * device,uid_t uid )
+static int zuluMountUMount( const char * device,uid_t uid )
 {
 	char * m_point = NULL ;
 
 	int status ;
 	
-	if( check_if_partition_is_system_partition( device ) == 1 && uid != 0 )
+	if( zuluCryptCheckIfPartitionIsSystemPartition( device ) == 1 && uid != 0 )
 		return mount_return( 200,NULL,NULL,"ERROR: insuffienct privilege to operate on a system partition" ) ;
 			
-	if( check_if_mounted( device ) == 0 )
+	if( zuluCryptCheckIfMounted( device ) == 0 )
 		return mount_return( 200,NULL,NULL,"ERROR: device not mounted" ) ;
 		
 	/*
 	 * below function is defined in ../zuluCrypt-cli/lib/unmount_volume.c
 	 */
-	status = unmount_volume( device,&m_point ) ;
+	status = zuluCryptUnmountVolume( device,&m_point ) ;
 	if( status == 0 ){
 		if( m_point != NULL )
 			rmdir( m_point ) ;					
@@ -205,7 +206,7 @@ static int device_list( void )
 	 * 
 	 * it printf() contents of "/proc/partitions" 
 	 */
-	return print_partitions( ALL_PARTITIONS ) ;
+	return zuluCryptPrintPartitions( ALL_PARTITIONS ) ;
 }
 
 static int mounted_list( uid_t uid )
@@ -216,7 +217,7 @@ static int mounted_list( uid_t uid )
 	return mount_print_mounted_volumes( uid ) ;
 }
 
-static int crypto_mount( const char * device,const char * mode,uid_t uid,const char * key,const char * key_source,const char * m_point )
+static int zuluMountCryptoMount( const char * device,const char * mode,uid_t uid,const char * key,const char * key_source,const char * m_point )
 {
 	struct passwd * pass ;
 	
@@ -274,14 +275,14 @@ static int crypto_mount( const char * device,const char * mode,uid_t uid,const c
 	/*
 	 * the function is defined in ../zuluCrypt-cli/bin/open_volume.c
 	 */
-	st = open_volumes( &opts,mapping_name,uid ) ;
+	st = zuluCryptEXEOpenVolume( &opts,mapping_name,uid ) ;
 	
 	StringDelete( &p ) ;
 	
 	return st ;
 }
 
-static int crypto_umount( const char * device,uid_t uid )
+static int zuluMountCryptoUMount( const char * device,uid_t uid )
 {
 	const char * mapping_name ;
 	const char * e = strrchr( device,'/' ) ;
@@ -297,19 +298,19 @@ static int crypto_umount( const char * device,uid_t uid )
 	/*
 	 * the function is defined in ../zuluCrypt-cli/bin/close_volume.c
 	 */
-	return close_opened_volume( device,mapping_name,uid ) ;	
+	return zuluCryptEXECloseVolume( device,mapping_name,uid ) ;	
 }
 
 static int exe( const char * device, const char * action,const char * m_point,const char * mode,uid_t uid,const char * key,const char * key_source )
 {	
 	if( strcmp( action,"-m" ) == 0 )
-		return inkmount( device,m_point,mode,uid ) ;
+		return zuluMountMount( device,m_point,mode,uid ) ;
 	else if( strcmp( action,"-u" ) == 0 )
-		return inkumount( device,uid ) ;
+		return zuluMountUMount( device,uid ) ;
 	else if( strcmp( action,"-M" ) == 0 )
-		return crypto_mount( device,mode,uid,key,key_source,m_point ) ;
+		return zuluMountCryptoMount( device,mode,uid,key,key_source,m_point ) ;
 	else if( strcmp( action,"-U" ) == 0 )
-		return crypto_umount( device,uid ) ;
+		return zuluMountCryptoUMount( device,uid ) ;
 	else
 		return mount_return( 150,NULL,NULL,"ERROR: unrecognized argument encountered" ) ;	
 }
@@ -364,7 +365,7 @@ int main( int argc,char * argv[] )
 		 * function is defined in ../zuluCrypt-cli/bin/partitions.c
 		 * it printf() devices with entries in "/etc/fstab","/etc/crypttab", and "/etc/zuluCrypttab"
 		 */
-		return print_partitions( SYSTEM_PARTITIONS ) ;		
+		return zuluCryptPrintPartitions( SYSTEM_PARTITIONS ) ;		
 	}
 	
 	if( strcmp( action,"-l" ) == 0 )
@@ -388,7 +389,7 @@ int main( int argc,char * argv[] )
 	}
 	
 	if( strncmp( dev,"UUID=",5 ) == 0 ){
-		device = device_from_uuid( dev + 5 ) ;
+		device = zuluCryptDeviceFromUUID( dev + 5 ) ;
 		if( device != NULL ){
 			status = exe( device,action,m_point,mode,uid,key,key_source ) ;
 			free( device ) ;
@@ -397,7 +398,7 @@ int main( int argc,char * argv[] )
 			status = 130 ;
 		}
 	}else if( strncmp( dev,"LABEL=",6 ) == 0 ){
-		device = device_from_label( dev + 6 ) ;
+		device = zuluCryptDeviceFromLabel( dev + 6 ) ;
 		if( device != NULL ){
 			status = exe( device,action,m_point,mode,uid,key,key_source ) ;
 			free( device ) ;

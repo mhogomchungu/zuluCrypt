@@ -29,15 +29,15 @@
 #include "../zuluCrypt-cli/string/StringList.h"
 #include "../zuluCrypt-cli/process/process.h"
 
-stringList_t partitionList( void ) ;
+stringList_t zuluCryptPartitionList( void ) ;
 
-stringList_t get_mtab_list( void ) ;
+stringList_t zuluCryptGetMtabList( void ) ;
 
-void format_size( char * buffer,const char * buff ) ;
+void zuluCryptFormatSize( char * buffer,const char * buff ) ;
 
-const char * substitute_chars( string_t st ) ;
+const char * zuluCryptDecodeMtabEntry( string_t st ) ;
 
-char * volume_device_name( const char * ) ;
+char * zuluCryptVolumeDeviceName( const char * ) ;
 
 #ifdef __STDC__
 char * realpath( const char * path, char * resolved_path ) ;
@@ -84,7 +84,7 @@ static void partition_properties( const char * path,const char * m_point )
 		/*
 		 * format_size() is defined in ../zuluCrypt-cli/lib/status.c
 		 */
-		format_size( format,g ) ;
+		zuluCryptFormatSize( format,g ) ;
 		printf( "\t%s",format ) ;
 	}else{
 		printf( "\tNil" ) ;
@@ -106,7 +106,7 @@ static void partition_properties( const char * path,const char * m_point )
 	used = total - free ;
 		
 	g = StringIntToString_1( buffer,SIZE,used ) ;
-	format_size( format,g ) ;
+	zuluCryptFormatSize( format,g ) ;
 	printf( "\t%s",format ) ;
 	
 	snprintf( buff,SIZE,"%.2f%%",100 * ( ( float ) used / ( float ) total ) ) ;
@@ -133,13 +133,13 @@ int mount_print_mounted_volumes( uid_t uid )
 	 * get_mtab_list() is  defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c
 	 * It returns contents of "/etc/mtab"
 	 */
-	stringList_t stl = get_mtab_list() ;
+	stringList_t stl = zuluCryptGetMtabList() ;
 	
 	/*
 	 * partitionList() is defined in ../zuluCrypt-cli/partitions.c
 	 * It returns contents of "/proc/partitions"
 	 */
-	stringList_t stz = partitionList() ;
+	stringList_t stz = zuluCryptPartitionList() ;
 	
 	if( stl == NULL )
 		return 1;
@@ -177,7 +177,7 @@ int mount_print_mounted_volumes( uid_t uid )
 			 * It takes cryptsetup path in "/dev/mapper" and return a device path associated with
 			 * the mapper
 			 */
-			x = volume_device_name( q ) ;
+			x = zuluCryptVolumeDeviceName( q ) ;
 			
 			if( x != NULL ){
 				
@@ -187,7 +187,7 @@ int mount_print_mounted_volumes( uid_t uid )
 				 * substitute_chars() is defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c
 				 * it decodes space,tab,new line and backslash characters since they are written differently in "/etc/mtab" 
 				 */
-				f = substitute_chars( StringListStringAt( stx,1 ) ) ;				
+				f = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;				
 				
 				printf( "%s\t%s",x,f ) ;				
 				partition_properties( x,f ) ;
@@ -196,8 +196,8 @@ int mount_print_mounted_volumes( uid_t uid )
 			}	
 		}else{			
 			StringListRemoveString( stz,q ) ;			
-			e = substitute_chars( StringListStringAt( stx,0 ) ) ;
-			f = substitute_chars( StringListStringAt( stx,1 ) ) ;
+			e = zuluCryptDecodeMtabEntry( StringListStringAt( stx,0 ) ) ;
+			f = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;
 			
 			printf( "%s\t%s",e,f ) ;
 			partition_properties( e,f ) ;			

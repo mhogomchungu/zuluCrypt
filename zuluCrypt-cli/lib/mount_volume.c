@@ -122,7 +122,7 @@ static int mount_mapper( const m_struct * mst, string_t * st )
 	return h ;
 }
 
-int mount_volume( const char * mapper,const char * m_point,const char * mode,uid_t id )
+int zuluCryptMountVolume( const char * mapper,const char * m_point,const char * mode,uid_t id )
 {
 	struct mntent mt  ;
 	blkid_probe blkid ;
@@ -183,7 +183,7 @@ int mount_volume( const char * mapper,const char * m_point,const char * mode,uid
 	 * 
 	 */
 	
-	if( mtab_is_at_etc() != 0 ){
+	if( zuluCryptMtabIsAtEtc() != 0 ){
 		h = mount_mapper( &mst,&options ) ;
 	}else{
 		/* 

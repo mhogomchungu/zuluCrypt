@@ -25,12 +25,12 @@ static int free_crypt( int st,struct crypt_device * cd )
 	return st ;
 }
 
-int remove_key( const char * device ,const char * pass,size_t pass_size )
+int zuluCryptRemoveKey( const char * device ,const char * pass,size_t pass_size )
 {       
 	int slot ;
 	struct crypt_device * cd;
 	
-	if( is_luks( device ) != 0 )
+	if( zuluCryptVolumeIsLuks( device ) != 0 )
 		return 1 ;      
 	
 	if( crypt_init( &cd,device ) != 0 )

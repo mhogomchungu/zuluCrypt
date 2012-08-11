@@ -19,7 +19,7 @@
 
 #include "includes.h"
 
-int is_path_valid( const char * path ) 
+int zuluCryptIsPathValid( const char * path ) 
 {
 	struct stat st ;
 	return stat( path,&st ) ;	

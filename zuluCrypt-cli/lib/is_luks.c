@@ -19,7 +19,7 @@
 
 #include "includes.h"
 
-int is_luks( const char * dev )
+int zuluCryptVolumeIsLuks( const char * dev )
 {		
 	struct crypt_device * cd;
 	int st ;

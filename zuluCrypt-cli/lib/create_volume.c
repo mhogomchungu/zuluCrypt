@@ -30,7 +30,7 @@ static int result( int st,string_t x )
 	return st ;
 }
 
-int create_volume( const char * dev,const char * fs,const char * type,const char * pass,size_t pass_size,const char * rng )
+int zuluCryptCreateVolume( const char * dev,const char * fs,const char * type,const char * pass,size_t pass_size,const char * rng )
 {
 	int status ;
 	
@@ -42,7 +42,7 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 	const char * mapper ;	
 	char * device ;
 	
-	if ( is_path_valid( dev ) != 0 )
+	if ( zuluCryptIsPathValid( dev ) != 0 )
 		return 1 ;
 		
 	if( strcmp( type,"luks" ) == 0 )
@@ -55,7 +55,7 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 	if( device == NULL )
 		return 3 ;
 	
-	m = create_mapper_name( device,strrchr( device,'/' ) + 1,0,OPEN ) ;
+	m = zuluCryptCreateMapperName( device,strrchr( device,'/' ) + 1,0,OPEN ) ;
 	
 	free( device ) ;
 
@@ -64,12 +64,12 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 	mapper = strrchr( device_mapper,'/' ) + 1 ;
 
 	if( strcmp( type,"luks" )  == 0 ){
-		if( create_luks( dev,pass,pass_size,rng ) != 0 )	
+		if( zuluCryptCreateLuks( dev,pass,pass_size,rng ) != 0 )	
 			return result( 3,m ) ;
-		if( open_luks( dev,mapper,"rw",pass,pass_size ) != 0 )
+		if( zuluCryptOpenLuks( dev,mapper,"rw",pass,pass_size ) != 0 )
 			return result( 3,m ) ; ;
 	}else if( strcmp( type,"plain") == 0 ){
-		if( open_plain( dev,mapper,"rw",pass,pass_size ) )
+		if( zuluCryptOpenPlain( dev,mapper,"rw",pass,pass_size ) )
 			return result( 3,m ) ; ;		
 	}else{
 		return result( 2,m ) ;
@@ -110,7 +110,7 @@ int create_volume( const char * dev,const char * fs,const char * type,const char
 
 	status = ProcessExitStatus( p ) ;
 
-	close_mapper( device_mapper );	
+	zuluCryptCloseMapper( device_mapper );	
 	
 	ProcessDelete( &p ) ;
 	

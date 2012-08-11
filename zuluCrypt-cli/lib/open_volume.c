@@ -25,27 +25,27 @@ static int value( int x,string_t p )
 	return x ;
 }
 
-int open_volume( const char * dev,const char * map,const char * m_point,uid_t id,const char * mode,const char * pass,size_t pass_size ) 
+int zuluCryptOpenVolume( const char * dev,const char * map,const char * m_point,uid_t id,const char * mode,const char * pass,size_t pass_size ) 
 {
 	int h ;
 	string_t p ;
 	const char * mapper ;
 	char * m ;
 	
-	if( is_path_valid( dev ) != 0 )		 
+	if( zuluCryptIsPathValid( dev ) != 0 )		 
 		return 3 ;
 	
 	p = String( crypt_get_dir() ) ;
 	
 	mapper = StringMultipleAppend( p,"/",map,'\0' ) ;
 
-	if( is_path_valid( mapper ) == 0 )
+	if( zuluCryptIsPathValid( mapper ) == 0 )
 		return value( 2,p ) ;	
 
-	if( is_luks( dev ) == 0 )
-		h = open_luks( dev,map,mode,pass,pass_size ) ;
+	if( zuluCryptVolumeIsLuks( dev ) == 0 )
+		h = zuluCryptOpenLuks( dev,map,mode,pass,pass_size ) ;
 	else
-		h = open_plain( dev,map,mode,pass,pass_size ) ;
+		h = zuluCryptOpenPlain( dev,map,mode,pass,pass_size ) ;
 		
 	switch( h ){
 		case 1 : return value( 4,p ) ;
@@ -61,10 +61,10 @@ int open_volume( const char * dev,const char * map,const char * m_point,uid_t id
 	}
 	
 	if( m_point != NULL ){	
-		h = mount_volume( mapper,m_point,mode,id ) ;	
+		h = zuluCryptMountVolume( mapper,m_point,mode,id ) ;	
 	
 		if( h != 0 )
-			if( close_mapper( map ) != 0 )
+			if( zuluCryptCloseMapper( map ) != 0 )
 				h = 15 ;
 	}
 	

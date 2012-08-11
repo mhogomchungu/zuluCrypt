@@ -25,7 +25,7 @@ static int free_crypt( int st,struct crypt_device * cd )
 	return st ;
 }
 
-int open_plain( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
+int zuluCryptOpenPlain( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
 {
 	int flags ;
 	struct crypt_device * cd ;
@@ -36,7 +36,7 @@ int open_plain( const char * device,const char * mapper,const char * mode,const 
 		.offset = 0,
 	};
 		
-	if( is_path_valid( device ) != 0 )
+	if( zuluCryptIsPathValid( device ) != 0 )
 		return 3 ;
 
 	if( strcmp( mode,"ro" ) == 0 )

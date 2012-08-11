@@ -64,11 +64,11 @@
 /*
  * defined in this source file
  */
-stringList_t get_partition_from_crypttab( void ) ;
+stringList_t zuluCryptGetPartitionFromCrypttab( void ) ;
 
-stringList_t get_partition_from_zulutab( void ) ;
+stringList_t zuluCryptGetPartitionFromZulutab( void ) ;
 
-stringList_t partitionList( void )
+stringList_t zuluCryptPartitionList( void )
 {
 	const char * device ;	
 	
@@ -120,12 +120,12 @@ stringList_t partitionList( void )
 	return stl_1 ;
 }
 
-char * device_from_uuid( const char * uuid )
+char * zuluCryptDeviceFromUUID( const char * uuid )
 {
 	return blkid_evaluate_tag( "UUID",uuid,NULL ) ;
 }
 
-char * device_from_label( const char * label )
+char * zuluCryptDeviceFromLabel( const char * label )
 {
 	return blkid_evaluate_tag( "LABEL",label,NULL ) ;
 }
@@ -162,7 +162,7 @@ static stringList_t partitions( int option )
 	stringList_t non_system = NULL ;
 	stringList_t system = NULL ;
 	
-	stringList_t stl = partitionList() ;
+	stringList_t stl = zuluCryptPartitionList() ;
 	
 	if( stl == NULL )
 		return NULL ;
@@ -212,14 +212,14 @@ static stringList_t partitions( int option )
 			system = StringListAppend( system,device ) ;
 			StringListRemoveString( non_system,device ) ;
 		}else if( strncmp( entry,"UUID",4 ) == 0 ){
-			ac = device_from_uuid( device + 5 ) ;
+			ac = zuluCryptDeviceFromUUID( device + 5 ) ;
 			if( ac != NULL ){
 				system = StringListAppend( system,ac ) ;
 				StringListRemoveString( non_system,ac ) ;
 				free( ac ) ;
 			}
 		}else if( strncmp( entry,"LABEL",5 ) == 0 ){
-			ac = device_from_label( device + 6 ) ;
+			ac = zuluCryptDeviceFromLabel( device + 6 ) ;
 			if( ac != NULL ){
 				system = StringListAppend( system,ac ) ;
 				StringListRemoveString( non_system,ac ) ;
@@ -230,9 +230,9 @@ static stringList_t partitions( int option )
 	
 	StringListDelete( &stl ) ;	
 	
-	appendSystemList( system,get_partition_from_crypttab() ) ;
+	appendSystemList( system,zuluCryptGetPartitionFromCrypttab() ) ;
 	
-	appendSystemList( system,get_partition_from_zulutab() ) ;
+	appendSystemList( system,zuluCryptGetPartitionFromZulutab() ) ;
 		
 	if( option == SYSTEM_PARTITIONS ){
 		StringListDelete( &non_system ) ;
@@ -243,7 +243,7 @@ static stringList_t partitions( int option )
 	}
 }
 
-int print_partitions( int option )
+int zuluCryptPrintPartitions( int option )
 {
 	size_t i ;
 	size_t j ;
@@ -281,7 +281,7 @@ int print_partitions( int option )
  * secret_1 UUID=d2d210b8-0b1f-419f-9172-9d509ea9af0c none 
  * 
  */
-stringList_t get_partition_from_crypttab( void )
+stringList_t zuluCryptGetPartitionFromCrypttab( void )
 {
 	stringList_t stl ;
 	stringList_t stl_1 = NULL ;
@@ -347,7 +347,7 @@ stringList_t get_partition_from_crypttab( void )
 			 * resolve the UUID to its device address 
 			 * q will have NULL  most likely if the drive with UUID is not attached				 
 			 */
-			ac = device_from_uuid( strstr( StringContent( st ),"=" ) + 1 );    
+			ac = zuluCryptDeviceFromUUID( strstr( StringContent( st ),"=" ) + 1 );    
 
 			if( ac != NULL ){	
 				stl_1 = StringListAppend( stl_1,ac ) ;
@@ -371,7 +371,7 @@ stringList_t get_partition_from_crypttab( void )
 	return stl_1 ;
 }
 
-stringList_t get_partition_from_zulutab()
+stringList_t zuluCryptGetPartitionFromZulutab()
 {
 	size_t i ;
 	size_t j ;
@@ -409,7 +409,7 @@ stringList_t get_partition_from_zulutab()
 		
 		if( strncmp( entry,"UUID=",5 ) == 0 ){			
 			
-			ac = device_from_uuid( entry + 5 ) ;
+			ac = zuluCryptDeviceFromUUID( entry + 5 ) ;
 			
 			if( ac != NULL ){
 
@@ -425,7 +425,7 @@ stringList_t get_partition_from_zulutab()
 	return stl_1 ;	
 }
 
-int check_if_partition_is_system_partition( const char * dev )
+int zuluCryptCheckIfPartitionIsSystemPartition( const char * dev )
 {	
 	stringList_t stl ;
 	

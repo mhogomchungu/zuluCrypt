@@ -19,7 +19,7 @@
 
 #include "includes.h"
 
-int volume_info( const char * mapper,const char * device,uid_t uid )
+int zuluCryptEXEVolumeInfo( const char * mapper,const char * device,uid_t uid )
 {
 	char * dev ;
 	char * output ;	
@@ -38,9 +38,9 @@ int volume_info( const char * mapper,const char * device,uid_t uid )
 	 * 
 	 * Explanation for what it does is explained where it is defined.	  * 
 	 */
-	p = create_mapper_name( dev,mapper,uid,CLOSE ) ;
+	p = zuluCryptCreateMapperName( dev,mapper,uid,CLOSE ) ;
 	
-	output = status( StringContent( p ) ) ;
+	output = zuluCryptVolumeStatus( StringContent( p ) ) ;
 	
 	if( output != NULL ){
 		printf( "%s\n",output );

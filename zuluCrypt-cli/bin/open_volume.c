@@ -76,7 +76,7 @@ static int status_msg_1( int st,const struct_opts * opts,char * device,char * cp
 	return status_msg( st,device,cpoint ) ;
 }
 
-int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
+int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,uid_t uid )
 {
 	int nmp                  = opts->open_no_mount ;
 	int i                    = opts->interactive_passphrase ;
@@ -106,7 +106,7 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 	 * 
 	 * The importance of the function is explained where it is defined.
 	 */
-	switch( can_open_path_for_reading( dev,uid ) ){
+	switch( zuluCryptCanOpenPathForReading( dev,uid ) ){
 		case 0 : break ;
 		case 1 : return status_msg( 20,device,cpoint ) ;
 		default: return status_msg( 3,device,cpoint ) ;
@@ -120,7 +120,7 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 			return status_msg( 13,device,cpoint ) ;
 		
 	if( strcmp( mode,"rw" ) == 0 ){
-		switch( can_open_path_for_writing( dev,uid ) ){
+		switch( zuluCryptCanOpenPathForWriting( dev,uid ) ){
 			case 0 : break ;
 			case 1 : return status_msg( 23,device,cpoint ) ;
 			default: return status_msg( 3,device,cpoint ) ;
@@ -141,7 +141,7 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 		/*
 		 * defined in security.c
 		 */
-		switch( create_mount_point( mount_point,uid ) ){
+		switch( zuluCryptCreateMountPoint( mount_point,uid ) ){
 			case 2 : return status_msg( 5,device,cpoint ) ;
 			case 1 : return status_msg( 21,device,cpoint ) ;
 		}
@@ -156,11 +156,11 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 	 * 
 	 * Explanation for what it does is explained where it is defined. 
 	 */
-	m_name = create_mapper_name( device,mapping_name,uid,OPEN ) ;
+	m_name = zuluCryptCreateMapperName( device,mapping_name,uid,OPEN ) ;
 
 	cname = StringContent( m_name ) ;
 	
-	if( check_opened_mapper( cname ) == 1 ){
+	if( zuluCryptCheckOpenedMapper( cname ) == 1 ){
 		if( cpoint != NULL )
 			rmdir( cpoint ) ;
 		
@@ -171,9 +171,9 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 	
 	if( plugin_path != NULL ){
 		/*
-		 * GetKeyFromModule is defined in plugin_system.c
+		 * zuluCryptPluginManagerGetKeyFromModule is defined in zuluCryptPluginManager.c
 		 */
-		passphrase = GetKeyFromModule( plugin_path,uid ) ;
+		passphrase = zuluCryptPluginManagerGetKeyFromModule( plugin_path,uid ) ;
 		
 		if( passphrase == NULL )
 			return status_msg_1( 25,opts,device,cpoint ) ;
@@ -181,7 +181,7 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 		cpass = StringContent( passphrase ) ;
 		len = StringLength( passphrase ) ;
 		
-		st = open_volume( device,cname,cpoint,uid,mode,cpass,len ) ;
+		st = zuluCryptOpenVolume( device,cname,cpoint,uid,mode,cpass,len ) ;
 		
 		plugin_path = StringDeleteHandle( &passphrase ) ;
 		
@@ -198,7 +198,7 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 		printf( "\n" ) ;
 		cpass = StringContent( passphrase ) ;
 		len = StringLength( passphrase ) ;
-		st = open_volume( device,cname,cpoint,uid,mode,cpass,len ) ;
+		st = zuluCryptOpenVolume( device,cname,cpoint,uid,mode,cpass,len ) ;
 		StringDelete( &passphrase ) ;
 	}else{
 		if( source == NULL || pass == NULL )
@@ -207,26 +207,26 @@ int open_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
 		if( strcmp( source,"-p" ) == 0 ){
 			cpass = pass ;
 			len = strlen(pass) ;
-			st = open_volume( device,cname,cpoint,uid,mode,cpass,len ) ;		
+			st = zuluCryptOpenVolume( device,cname,cpoint,uid,mode,cpass,len ) ;		
 		}else if( strcmp( source,"-f" ) == 0 ){		
 			/*
 			 * function is defined at "security.c"
 			 */
-			switch( get_pass_from_file( pass,uid,&data ) ){
+			switch( zuluCryptGetPassFromFile( pass,uid,&data ) ){
 				case 1 : return status_msg_1( 6,opts,device,cpoint ) ;
 				case 2 : return status_msg_1( 14,opts,device,cpoint ) ; 				
 				case 4 : return status_msg_1( 22,opts,device,cpoint ) ;
 			}
 			cpass = StringContent( data ) ;
 			len = StringLength( data ) ;
-			st = open_volume( device,cname,cpoint,uid,mode,cpass,len ) ;
+			st = zuluCryptOpenVolume( device,cname,cpoint,uid,mode,cpass,len ) ;
 			StringDelete( &data ) ;
 		}
 	}
 		
 	StringDelete( &m_name ) ;
 	
-	check_invalid_key( opts->device ) ;
+	zuluCryptCheckInvalidKey( opts->device ) ;
 	
 	return status_msg_1( st,opts,device,cpoint );	
 }

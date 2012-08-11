@@ -1,6 +1,6 @@
 /*
  * 
- *  Copyright (c) 2011
+ *  Copyright (c) 2012
  *  name : mhogo mchungu 
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
@@ -26,7 +26,28 @@
 #include "../process/process.h"
 #include "../socket/socket.h"
 
-string_t GetKeyFromModule( const char * name,uid_t uid )
+void zuluCryptPluginManager( const char * sockpath,int size,const char * buffer )
+{
+	socket_t p ;
+	socket_t q = Socket( "local" ) ;
+	
+	SocketSetHostAddress( q,sockpath ) ;
+	
+	SocketBind( q ) ;
+	SocketListen( q ) ;
+	
+	p = SocketAccept( q ) ;
+	
+	SocketSendData( p,buffer,size ) ;
+	
+	SocketClose( p ) ;	
+	SocketClose( q ) ;	
+	
+	SocketDelete( &p ) ;	
+	SocketDelete( &q ) ;
+} 
+
+string_t zuluCryptPluginManagerGetKeyFromModule( const char * name,uid_t uid )
 {
 	struct passwd * pass ;	
 	socket_t s ;
@@ -38,7 +59,7 @@ string_t GetKeyFromModule( const char * name,uid_t uid )
 	string_t mpath ;	
 	string_t  spath ;	
 	const char * cpath ;	
-	
+	struct stat st ;
 	pass = getpwuid( uid ) ;
 	
 	if( pass == NULL )
@@ -60,7 +81,7 @@ string_t GetKeyFromModule( const char * name,uid_t uid )
 	
 	cpath = StringContent( mpath ) ;
 	
-	if( is_path_valid( cpath ) != 0 ){
+	if( stat( cpath,&st ) != 0 ){
 		StringDelete( &mpath ) ;
 		return NULL ;
 	}	
@@ -68,7 +89,7 @@ string_t GetKeyFromModule( const char * name,uid_t uid )
 	spath = StringIntToString( getpid() ) ;
 	sockpath = StringMultiplePrepend( spath,"/.zuluCrypt-",pass->pw_dir,'\0' ) ;
 	
-	if( is_path_valid( sockpath ) == 0 )
+	if( stat( sockpath,&st ) == 0 )
 		unlink( sockpath ) ;
 	
 	p = Process( cpath ) ;		
@@ -107,37 +128,3 @@ string_t GetKeyFromModule( const char * name,uid_t uid )
 	
 	return key ;
 }
-
-string_t GetKeyFromModule_1( const char * name )
-{	
-	/*
-	char * key = NULL ;	
-	char * ( *f )( void ) ;	
-	void * handle ;
-	const char * cpath ;
-	
-	string_t pass = NULL ;
-	string_t path = String( "/etc/zuluCrypt/modules/" ) ;
-		
-	cpath = StringMultipleAppend( path,name,".so",'\0' ) ;
-	
-	handle = ( void * ) dlopen( cpath,RTLD_LAZY ) ;
-	
-	if( handle != NULL ){
-		f = ( char * ( * )() ) dlsym( handle,"zuluCryptGetKeyFromModule" ) ;	
-		if( f != NULL ){
-			key = ( *f )() ;		
-			if( key != NULL ){
-				pass = StringInherit( &key ) ;
-			}
-		}		
-		dlclose( handle ) ;			
-	}	
-	
-	StringDelete( &path ) ;
-	
-	return pass ;
-	*/
-	return NULL ;
-}
- 

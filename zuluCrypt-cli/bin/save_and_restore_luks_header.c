@@ -54,7 +54,7 @@ static int msg( int st,struct crypt_device * cd )
 
 static int save_header( struct crypt_device * cd,const char * device,const char * path,uid_t uid )
 {
-	if( is_luks( device ) != 0 )
+	if( zuluCryptVolumeIsLuks( device ) != 0 )
 		return msg( 2,cd ) ;
 	
 	if( crypt_header_backup( cd,NULL,path ) == 0 ){
@@ -122,7 +122,7 @@ Type \"YES\" and press Enter to continue: " ;
 		return msg( 7,cd ) ;
 }
 
-int save_and_restore_luks_header( const struct_opts * opts,uid_t uid,int option  )
+int zuluCryptEXESaveAndRestoreLuksHeader( const struct_opts * opts,uid_t uid,int option  )
 {
 	struct crypt_device * cd;
 	
@@ -139,7 +139,7 @@ int save_and_restore_luks_header( const struct_opts * opts,uid_t uid,int option 
 	
 	if( dev == NULL )
 		return msg( 16,NULL ) ;	
-	k = check_if_partition_is_system_partition( dev ) ;
+	k = zuluCryptCheckIfPartitionIsSystemPartition( dev ) ;
 	free( dev ) ;
 	
 	if( k == 1 && uid != 0 )
@@ -153,24 +153,24 @@ int save_and_restore_luks_header( const struct_opts * opts,uid_t uid,int option 
 	}
 	
 	if( option == LUKS_HEADER_RESTORE ){
-		switch( can_open_path_for_reading( path,uid ) ){
+		switch( zuluCryptCanOpenPathForReading( path,uid ) ){
 			case 1 : return msg( 8,NULL ) ;
 			case 2 : return msg( 9,NULL ) ;		
 		}
 		
-		switch( can_open_path_for_writing( device,uid ) ){
+		switch( zuluCryptCanOpenPathForWriting( device,uid ) ){
 			case 1 : return msg( 15,NULL ) ;
 			case 2 : return msg( 11,NULL ) ;
 		}
 	}else{
-		switch( can_open_path_for_reading( device,uid ) ){
+		switch( zuluCryptCanOpenPathForReading( device,uid ) ){
 			case 1 : return msg( 18,NULL ) ;
 			case 2 : return msg( 11,NULL ) ;		
 		}
-		if( is_path_valid( path ) == 0 )
+		if( zuluCryptIsPathValid( path ) == 0 )
 			return msg( 6,NULL ) ;
 		
-		if( can_open_path_for_writing( path,uid ) == 1 )
+		if( zuluCryptCanOpenPathForWriting( path,uid ) == 1 )
 			return msg( 10,NULL ) ;
 	}	
 		

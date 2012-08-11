@@ -31,7 +31,7 @@ static int unlink_mapper( const char * mapper )
 	return 0 ;
 }
 
-int close_mapper( const char * mapper )
+int zuluCryptCloseMapper( const char * mapper )
 {
 	int j ;
 	/*

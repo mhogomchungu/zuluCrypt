@@ -25,7 +25,7 @@ static int free_crypt( int st,struct crypt_device * cd )
 	return st ;
 }
 
-int create_luks( const char * dev,const char * pass,size_t pass_size,const char * rng )
+int zuluCryptCreateLuks( const char * dev,const char * pass,size_t pass_size,const char * rng )
 {
 	struct crypt_device * cd;
 	
@@ -34,7 +34,7 @@ int create_luks( const char * dev,const char * pass,size_t pass_size,const char 
 		.data_alignment = 4096,
 	};
 		
-	if( is_path_valid( dev ) != 0 )
+	if( zuluCryptIsPathValid( dev ) != 0 )
 		return 4 ;
 	
 	if( crypt_init( &cd,dev ) != 0 )

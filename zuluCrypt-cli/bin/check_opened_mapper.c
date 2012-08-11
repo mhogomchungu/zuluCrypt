@@ -20,7 +20,7 @@
 #include <dirent.h>
 #include <libcryptsetup.h> 
 
-int check_opened_mapper( const char * mapper )
+int zuluCryptCheckOpenedMapper( const char * mapper )
 {
 	const char * c = mapper ;
 	char * d ;

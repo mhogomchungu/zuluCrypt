@@ -64,17 +64,17 @@ static int has_access( const char * path,int c,uid_t uid )
 	}
 }
 
-int can_open_path_for_reading( const char * path,uid_t uid )
+int zuluCryptCanOpenPathForReading( const char * path,uid_t uid )
 {
 	return has_access( path,READ,uid ) ;
 }
 
-int can_open_path_for_writing( const char * path,uid_t uid )
+int zuluCryptCanOpenPathForWriting( const char * path,uid_t uid )
 {
 	return has_access( path,WRITE,uid ) ;
 }
 
-int create_mount_point( const char * path,uid_t uid )
+int zuluCryptCreateMountPoint( const char * path,uid_t uid )
 {
 	int st ;
 	
@@ -104,9 +104,9 @@ int create_mount_point( const char * path,uid_t uid )
  *  2  insufficient memory to open file
  *  0  success * 
  */
-int get_pass_from_file( const char * path,uid_t uid,string_t * st )
+int zuluCryptGetPassFromFile( const char * path,uid_t uid,string_t * st )
 {
-	switch ( can_open_path_for_reading( path,uid ) ){
+	switch ( zuluCryptCanOpenPathForReading( path,uid ) ){
 		case 1 : return 4 ;
 		case 2 : return 1 ;
 	}

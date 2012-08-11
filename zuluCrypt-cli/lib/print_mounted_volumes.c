@@ -30,9 +30,9 @@
 /*
  * defined at ../lib/status.c 
  */
-char * volume_device_name( const char * ) ;
+char * zuluCryptVolumeDeviceName( const char * ) ;
 
-int mtab_is_at_etc( void )
+int zuluCryptMtabIsAtEtc( void )
 {
 	char * path = realpath( "/etc/mtab",NULL ) ;
 	int st ;
@@ -48,7 +48,7 @@ int mtab_is_at_etc( void )
 	}
 }
 
-const char * substitute_chars( string_t st )
+const char * zuluCryptDecodeMtabEntry( string_t st )
 {
 	StringReplaceString( st,"\\012","\n" ) ;			
 	StringReplaceString( st,"\\040"," " ) ;
@@ -97,14 +97,14 @@ static void print( uid_t uid,stringList_t stl )
 				if( k != -1 ){
 					StringSubChar( q,k,'\0' ) ;
 					c = StringContent( q ) + len + 6 ;
-					d = substitute_chars( StringListStringAt( stx,1 ) ) ;
+					d = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;
 					printf( "UUID=\"%s\"\t%s\n",c,d ) ;	
 				}
 			}else{
-				f = volume_device_name( StringListContentAt( stx,0 ) ) ;
+				f = zuluCryptVolumeDeviceName( StringListContentAt( stx,0 ) ) ;
 				
 				if( f != NULL ){
-					d = substitute_chars( StringListStringAt( stx,1 ) ) ;					
+					d = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;					
 					printf( "%s\t%s\n",f,d ) ;			
 					free( f ) ;
 				}
@@ -117,7 +117,7 @@ static void print( uid_t uid,stringList_t stl )
 	StringDelete( &p ) ;
 }
 
-stringList_t get_mtab_list( void )
+stringList_t zuluCryptGetMtabList( void )
 {
 #if USE_NEW_LIBMOUNT_API
 	struct libmnt_lock * m_lock ;
@@ -127,7 +127,7 @@ stringList_t get_mtab_list( void )
 	string_t q = NULL ;
 	stringList_t stl ;
 
-	if( mtab_is_at_etc() != 0 ){
+	if( zuluCryptMtabIsAtEtc() != 0 ){
 		q = StringGetFromVirtualFile( "/proc/mounts" ) ;
 	}else{
 		m_lock = mnt_new_lock( "/etc/mtab~",getpid() ) ;
@@ -153,9 +153,9 @@ stringList_t get_mtab_list( void )
 	return stl ;
 }
 
-int print_opened_volumes( uid_t uid )
+int zuluCryptPrintOpenedVolumes( uid_t uid )
 {
-	stringList_t stl = get_mtab_list() ;
+	stringList_t stl = zuluCryptGetMtabList() ;
 	
 	if( stl == NULL )
 		return 1 ;
@@ -167,7 +167,7 @@ int print_opened_volumes( uid_t uid )
 	return 0 ;
 }
 
-char * get_mount_point_from_path( const char * path )
+char * zuluCryptGetMountPointFromPath( const char * path )
 {
 	size_t i ;
 	size_t j ;
@@ -176,7 +176,7 @@ char * get_mount_point_from_path( const char * path )
 	
 	const char * e ;
 	
-	stringList_t stl = get_mtab_list() ;
+	stringList_t stl = zuluCryptGetMtabList() ;
 	stringList_t stx ;
 	
 	if( stl == NULL )
@@ -193,7 +193,7 @@ char * get_mount_point_from_path( const char * path )
 		
 		if( StringListContentAtEqual( stx,0,path ) == 0 ){
 			entry = StringListDetachAt( stx,1 ) ;
-			substitute_chars( entry ) ;
+			zuluCryptDecodeMtabEntry( entry ) ;
 			StringListMultipleDelete( &stx,&stl,'\0' ) ;
 			return StringDeleteHandle( &entry ) ;
 		}else{		
@@ -206,9 +206,9 @@ char * get_mount_point_from_path( const char * path )
 	return NULL ;	
 }
 
-int check_if_mounted( const char * path )
+int zuluCryptCheckIfMounted( const char * path )
 {
-	char * p = get_mount_point_from_path( path ) ;
+	char * p = zuluCryptGetMountPointFromPath( path ) ;
 	
 	if( p == NULL ){
 		return 0 ;

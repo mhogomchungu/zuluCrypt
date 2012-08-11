@@ -22,7 +22,18 @@ keyDialog::keyDialog( QWidget * parent,QString path,QString mode ) :
 	connect( m_ui->rbKey,SIGNAL( toggled( bool ) ),this,SLOT( rbKey( bool ) ) ) ;
 	connect( m_ui->rbKeyFile,SIGNAL( toggled( bool ) ),this,SLOT( rbKeyFile( bool ) ) ) ;
 	connect( m_ui->rbPlugIn,SIGNAL( toggled( bool ) ),this,SLOT( rbPlugIn( bool ) ) ) ;
+	connect( m_ui->lineEditKey,SIGNAL( textChanged( QString ) ),this,SLOT( keyTextChanged( QString ) ) ) ;
 	m_ui->rbKey->setChecked( true ) ;
+}
+
+void keyDialog::keyTextChanged( QString txt )
+{
+	if( m_ui->rbPlugIn->isChecked() ){
+		if( txt.contains( QString( "/") ) )
+			m_ui->label->setText( tr( "plugin path") );
+		else
+			m_ui->label->setText( tr( "plugin name") );
+	}
 }
 
 void keyDialog::enableAll()
@@ -92,7 +103,7 @@ void keyDialog::pbOpen()
 {
 	if( m_ui->lineEditKey->text().isEmpty() ){
 		DialogMsg msg( this ) ;
-		msg.ShowUIOK( QString( "ERROR" ),QString( "passphrase field is empty" ) ) ;
+		msg.ShowUIOK( tr( "ERROR" ),tr( "passphrase field is empty" ) ) ;
 		m_ui->lineEditKey->setFocus();
 		return ;
 	}
@@ -120,7 +131,7 @@ void keyDialog::rbPlugIn( bool opt )
 {
 	if( opt ){
 		m_ui->lineEditKey->setEchoMode( QLineEdit::Normal );
-		m_ui->label->setText( QString( "module path: " ) );
+		m_ui->label->setText( tr( "plugin name" ) );
 		m_ui->pbOpenKeyFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) );
 		m_ui->pbOpenKeyFile->setEnabled( true );
 		m_ui->lineEditKey->clear();
@@ -130,7 +141,7 @@ void keyDialog::rbPlugIn( bool opt )
 void keyDialog::rbKey( bool opt )
 {
 	if( opt ){
-		m_ui->label->setText( QString( "key: " ) );
+		m_ui->label->setText( tr( "key" ) );
 		m_ui->lineEditKey->setEchoMode( QLineEdit::Password );
 		m_ui->pbOpenKeyFile->setIcon( QIcon( QString( ":/passphrase.png" ) ) );
 		m_ui->pbOpenKeyFile->setEnabled( false );
@@ -142,7 +153,7 @@ void keyDialog::rbKeyFile( bool opt )
 {
 	if( opt ){
 		m_ui->lineEditKey->setEchoMode( QLineEdit::Normal );
-		m_ui->label->setText( QString( "keyfile path: " ) );
+		m_ui->label->setText( tr( "keyfile path" ) );
 		m_ui->pbOpenKeyFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) );
 		m_ui->pbOpenKeyFile->setEnabled( true );
 		m_ui->lineEditKey->clear();

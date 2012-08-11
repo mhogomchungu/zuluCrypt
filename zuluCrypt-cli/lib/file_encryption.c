@@ -78,9 +78,9 @@ static string_t crypt_mapper( const char * path,const char * key,uint64_t key_le
 	if( mpath == NULL )
 		return NULL ;
 	
-	p = create_mapper_name( mpath,strrchr( mpath,'/' ) + 1,0,OPEN ) ;
+	p = zuluCryptCreateMapperName( mpath,strrchr( mpath,'/' ) + 1,0,OPEN ) ;
 
-	if( open_plain( mpath,StringContent( p ),"rw",key,key_len ) != 0 )
+	if( zuluCryptOpenPlain( mpath,StringContent( p ),"rw",key,key_len ) != 0 )
 		StringDelete( &p ) ;
 	else	
 		StringMultiplePrepend( p,"/",crypt_get_dir(),'\0' ) ;
@@ -97,7 +97,7 @@ static int return_status( int st,int f_in,int f_out,string_t p )
 	
 	close( f_in ) ;
 	
-	close_mapper( StringContent( p ) ) ;
+	zuluCryptCloseMapper( StringContent( p ) ) ;
 	
 	StringDelete( &p ) ;
 	
@@ -107,7 +107,7 @@ static int return_status( int st,int f_in,int f_out,string_t p )
 /*
  * function responsible for creating a decrypted file
  */
-int decrypt_file( const char * source,const char * dest,const char * key,uint64_t key_len )
+int zuluCryptDecryptFile( const char * source,const char * dest,const char * key,uint64_t key_len )
 {	
 	struct stat st ;
 	
@@ -186,7 +186,7 @@ int decrypt_file( const char * source,const char * dest,const char * key,uint64_
 /*
  * function responsible for creating an encrypted file
  */
-int encrypt_file( const char * source,const char * dest,const char * key,uint64_t key_len )
+int zuluCryptEncryptFile( const char * source,const char * dest,const char * key,uint64_t key_len )
 {
 	string_t p ;
 	string_t q ;
@@ -289,7 +289,7 @@ int encrypt_file( const char * source,const char * dest,const char * key,uint64_
 	close( f_in ) ;
 	close( f_out ) ;
 	
-	close_mapper( mapper ) ;
+	zuluCryptCloseMapper( mapper ) ;
 	
 	StringMultipleDelete( &q,&p,'\0' ) ;
 	

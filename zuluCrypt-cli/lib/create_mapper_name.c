@@ -56,7 +56,7 @@ static string_t hash_path( const char * path )
 	return StringIntToString( h ) ;
 }
 
-string_t create_mapper_name( const char * device,const char * mapping_name,uid_t uid,int i )
+string_t zuluCryptCreateMapperName( const char * device,const char * mapping_name,uid_t uid,int i )
 {
 	string_t z ;
 	string_t q ;

@@ -63,7 +63,7 @@ static int status_msg_1( const char * type )
 	return 0 ;
 }
 
-int create_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid )
+int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name,uid_t uid )
 {
 	int i                = opts->interactive_passphrase ;
 	int conf             = opts->dont_ask_confirmation ;
@@ -94,7 +94,7 @@ int create_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid
 	 * 
 	 * The importance of the function is explained where it is defined.
 	 */
-	switch( can_open_path_for_writing( device,uid ) ){
+	switch( zuluCryptCanOpenPathForWriting( device,uid ) ){
 		case 2 : return status_msg( 1 ) ; break ;
 		case 1 : return status_msg( 13 ); break ;		
 	}
@@ -104,14 +104,14 @@ int create_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid
 	if( dev == NULL )
 		return status_msg( 17 ) ;
 	
-	mapper = create_mapper_name( dev,mapping_name,uid,CLOSE ) ;
+	mapper = zuluCryptCreateMapperName( dev,mapping_name,uid,CLOSE ) ;
 	
-	j = check_opened_mapper( StringContent( mapper ) ) ;
+	j = zuluCryptCheckOpenedMapper( StringContent( mapper ) ) ;
 	
 	/*
 	 * defined in ../lib/print_mounted_volumes.c
 	 */
-	k = check_if_mounted( dev ) ;
+	k = zuluCryptCheckIfMounted( dev ) ;
 	
 	free( dev ) ;
 	StringDelete( &mapper ) ;
@@ -134,7 +134,7 @@ int create_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid
 	 * 
 	 * Active entries are entries not commented out.
 	 */	
-	if( check_if_partition_is_system_partition( device ) == 1 )
+	if( zuluCryptCheckIfPartitionIsSystemPartition( device ) == 1 )
 		if( uid != 0 )
 			return status_msg( 10 ) ;
 	
@@ -151,7 +151,7 @@ int create_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid
 	 * ZULUCRYPTmkfs is defined at "../constants.h"
 	 * File systems are created not through file systems APIs but through mkfs.xxx executables started using exec call.
 	 */
-	if( is_path_valid( ZULUCRYPTmkfs ) != 0 )
+	if( zuluCryptIsPathValid( ZULUCRYPTmkfs ) != 0 )
 		return status_msg( 11 ) ;
 	
 	if( conf == -1 ){			
@@ -197,7 +197,7 @@ int create_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid
 		if( StringCompare( pass_1,pass_2 ) != 0 ){				
 			st = 7 ;
 		}else{				
-			st = create_volume( device,fs,type,StringContent( pass_1 ),StringLength( pass_1 ),rng ) ;
+			st = zuluCryptCreateVolume( device,fs,type,StringContent( pass_1 ),StringLength( pass_1 ),rng ) ;
 		}
 		StringDelete( &pass_1 ) ;
 		StringDelete( &pass_2 ) ;				
@@ -214,17 +214,17 @@ int create_volumes( const struct_opts * opts,const char * mapping_name,uid_t uid
 		 *  if functions are used to read files.One is used here to do that.		 * 
 		 */
 		if( strcmp( keyType,"-p" ) == 0 ) 			
-			st = create_volume( device,fs,type,pass,strlen( pass ),rng ) ;			
+			st = zuluCryptCreateVolume( device,fs,type,pass,strlen( pass ),rng ) ;			
 		else if( strcmp( keyType, "-f" ) == 0 ) {
 			/*
 			 * function is defined at "security.c"
 			 */
-			switch( get_pass_from_file( pass,uid,&content ) ){
+			switch( zuluCryptGetPassFromFile( pass,uid,&content ) ){
 				case 1 : return status_msg( 8 ) ; 
 				case 4 : return status_msg( 15 ) ;
 				case 2 : return status_msg( 6 ) ;
 			}
-			st = create_volume( device,fs,type,StringContent( content ),StringLength( content ),rng ) ;					
+			st = zuluCryptCreateVolume( device,fs,type,StringContent( content ),StringLength( content ),rng ) ;					
 			StringDelete( &content ) ;				
 		}else{
 			st = 2 ;			

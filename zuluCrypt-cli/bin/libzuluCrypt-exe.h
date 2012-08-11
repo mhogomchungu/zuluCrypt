@@ -50,106 +50,106 @@ typedef struct struct_opts_1{
 /*
  * get command line arguments and in struct_opts structure to be used in various calls * 
  */
-void get_opts( int argc,char * argv[],struct_opts * ) ;
+void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * ) ;
 
 /*
  * this function is responsibe for creating and restoring luks header.
  * 
  * the function is defined in save_and_restore_luks_header.c
  */
-int save_and_restore_luks_header( const struct_opts * opts,uid_t uid,int option  ) ;
+int zuluCryptEXESaveAndRestoreLuksHeader( const struct_opts * opts,uid_t uid,int option  ) ;
 
 /*
  * this function is responsibe for printing information about an opened volume.
  * It is defined in volume_info.c  
  */
-int volume_info( const char * mapper,const char * device,uid_t ) ;
+int zuluCryptEXEVolumeInfo( const char * mapper,const char * device,uid_t ) ;
 
 /*
  * this function is responsibe for closing an opened volume.
  * It is defined in close_volume.c 
  */
-int close_opened_volume( const char * device,const char * mapping_name,uid_t ) ;
+int zuluCryptEXECloseVolume( const char * device,const char * mapping_name,uid_t ) ;
 
 /*
  * this function is responsibe for opening volumes.
  * It is defined in open_volume.c * 
  */
-int open_volumes( const struct_opts *,const char * mapping_name,uid_t uid ) ;
+int zuluCryptEXEOpenVolume( const struct_opts *,const char * mapping_name,uid_t uid ) ;
 
 /*
  * this function is responsibe for creating volumes.
  * It is defined in create_volume.c
  */		   
-int create_volumes( const struct_opts *,const char * mapping_name,uid_t uid ) ;
+int zuluCryptEXECreateVolume( const struct_opts *,const char * mapping_name,uid_t uid ) ;
 
 /*
  * this function is responsibe for adding keys to luks volumes.
  * It is defined in add_key.c
  */
-int addkey( const struct_opts *,uid_t ) ;
+int zuluCryptEXEAddKey( const struct_opts *,uid_t ) ;
 
 /*
  * this function is responsibe for removing keys from luks files.
  * It is defined in remove_key.c
  */		
-int removekey( const struct_opts *,uid_t ) ;
+int zuluCryptEXERemoveKey( const struct_opts *,uid_t ) ;
 
 /*
  * this function is responsibe for checking if a path exist or not.
  * It is defined in ../lib/is_path_valid.c
  */
-int is_path_valid( const char * path ) ;
+int zuluCryptIsPathValid( const char * path ) ;
 
 /*
  * this function is responsibe for printing a list of opened volumes.
  * It primary purpose is for the GUI pqrt of the tool and hence the output isnt formatted.
  * It is defined in print_mounted_volumes.c
  */
-int print_opened_volumes( uid_t ) ;
+int zuluCryptPrintOpenedVolumes( uid_t ) ;
 
 /*
  * this function is responsibe for creating a mount point after it checks to make sure a user who started the tool
  * had writing access to the parent folder.
  * It is defined in security.c * 
  */
-int create_mount_point( const char * path,uid_t uid ) ;
+int zuluCryptCreateMountPoint( const char * path,uid_t uid ) ;
 
 /*
  * this function checks if a user who started the tool has writing access to a file or device they want this tool to 
  * write to.
  * It is defined in security.c
  */
-int can_open_path_for_writing( const char * path,uid_t uid ) ;
+int zuluCryptCanOpenPathForWriting( const char * path,uid_t uid ) ;
 
 /*
  * this function checks if a user who started the tool has reading access to a file or device they want this tool to 
  * read from.
  * It is defined in security.c
  */
-int can_open_path_for_reading( const char * path,uid_t uid ) ;
+int zuluCryptCanOpenPathForReading( const char * path,uid_t uid ) ;
 
 /* 
  * check if the volume has atleast one corrupted key slot
  */ 
-void check_invalid_key( const char * device ) ;
+void zuluCryptCheckInvalidKey( const char * device ) ;
 
 /*
  * this function checks if a device is a system partition or not.
  * 
  * the function is defined in partitions.c * 
  */
-int check_if_partition_is_system_partition( const char * device ) ;
+int zuluCryptCheckIfPartitionIsSystemPartition( const char * device ) ;
 
 /*
  * defined in crypt_file.c
  */
-int file_encrypt( const struct_opts *,const char *,uid_t uid ) ;
+int zuluCryptExeFileEncrypt( const struct_opts *,const char *,uid_t uid ) ;
 
 /*
  * defined in crypt_file.c
  */
-int file_decrypt( const struct_opts *,const char *,uid_t uid ) ;
+int zuluCryptExeFileDecrypt( const struct_opts *,const char *,uid_t uid ) ;
 
 /*
  * defined in check_opened_mapper.c
@@ -158,53 +158,55 @@ int file_decrypt( const struct_opts *,const char *,uid_t uid ) ;
  * 
  * the function is used to prevent performing operations like creating a volume on devices with mapper open.
  */
-int check_opened_mapper( const char * mapper ) ;
+int zuluCryptCheckOpenedMapper( const char * mapper ) ;
 
 /*
  * check if a  device with a path "path" as an entry in /etc/mtab.
  * 
  * defined in print_mounted_volumes.c 
  */
-int check_if_mounted( const char * path ) ;
+int zuluCryptCheckIfMounted( const char * path ) ;
 
 /*
  * function defined at write_device_with_junk.c
  */
-int write_device_with_junk( const struct_opts * opts,const char * mapping_name,uid_t uid ) ;
+int zuluCryptEXEWriteDeviceWithJunk( const struct_opts * opts,const char * mapping_name,uid_t uid ) ;
 
 /*
  * function defined at write_device_with_junk.c
  */
-int open_plain_as_me(const struct_opts * opts,const char * mapping_name,uid_t uid ) ;
+int zuluCryptEXEOpenPlainAsMe(const struct_opts * opts,const char * mapping_name,uid_t uid ) ;
 
 /*
  * defined in lib/status.c
+ * remember to free() the return value when done with it
  * */
-char * volume_device_name( const char * ) ;
+char * zuluCryptVolumeDeviceName( const char * ) ;
 
 /*
  * defined at help.c
  * */
-void help( void ) ;
+void zuluCryptEXEHelp( void ) ;
 
 /*
  * defined at partitions.c
  */
-int check_system_tools( void ) ;
+int zuluCryptCheckSystemTools( void ) ;
+
+/*
+ * defined in partitions.c
+ * remember to free() the return value when done with it * 
+ */
+char * zuluCryptDeviceFromUUID( const char * uuid ) ;
 
 /*
  * defined in partitions.c
  */
-char * device_from_uuid( const char * uuid ) ;
-
-/*
- * defined in partitions.c
- */
-int print_partitions( int option ) ;
+int zuluCryptPrintPartitions( int option ) ;
 
 /*
  * defined at print_mounted_volumes.c
  * remember to free() a returned pointer when done with it.
  */
-char * get_mount_point_from_path( const char * path ) ;
+char * zuluCryptGetMountPointFromPath( const char * path ) ;
 

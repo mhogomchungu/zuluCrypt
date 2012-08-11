@@ -25,13 +25,13 @@ static int free_crypt( int st,struct crypt_device * cd )
 	return st ;
 }
 
-int open_luks( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
+int zuluCryptOpenLuks( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
 {
 	struct crypt_device * cd;
 	uint32_t flags = 0;
 	int st ;
 	
-	if( is_path_valid( device ) != 0 )
+	if( zuluCryptIsPathValid( device ) != 0 )
 		return 3 ;
 
 	if( crypt_init( &cd,device ) != 0 )

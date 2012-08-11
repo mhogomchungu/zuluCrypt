@@ -33,7 +33,7 @@
  */
 #define SIZE 64
 
-char * get_mount_point_from_path( const char * path ) ;
+char * zuluCryptGetMountPointFromPath( const char * path ) ;
 
 static void format_size_1( char * buffer,int x,const char * z )
 {
@@ -42,7 +42,7 @@ static void format_size_1( char * buffer,int x,const char * z )
 	strcpy( buffer + x + 1,z ) ; 
 }
 
-void format_size( char * buffer,const char * buff )
+void zuluCryptFormatSize( char * buffer,const char * buff )
 {
 	strcpy( buffer,buff ) ;
 	
@@ -99,15 +99,15 @@ static void file_system_properties( string_t p,const char * mapper,const char * 
 	used = total - free ;
 	
 	e = StringIntToString_1( buffer,SIZE,total ) ;
-	format_size( format,e ) ;	
+	zuluCryptFormatSize( format,e ) ;	
 	StringMultipleAppend( p,"\n total space:\t",format,'\0' ) ;
 	
 	e = StringIntToString_1( buffer,SIZE,used )  ;
-	format_size( format,e ) ;
+	zuluCryptFormatSize( format,e ) ;
 	StringMultipleAppend( p,"\n used space:\t",format,'\0' ) ;
 	
 	e = StringIntToString_1( buffer,SIZE,free ) ;
-	format_size( format,e ) ;
+	zuluCryptFormatSize( format,e ) ;
 	StringMultipleAppend( p,"\n free space:\t",format,'\0' ) ;
 	
 	snprintf( buff,SIZE,"%.2f%%",100 * ( ( float ) used / ( float ) total ) ) ;
@@ -116,7 +116,7 @@ static void file_system_properties( string_t p,const char * mapper,const char * 
 	StringMultipleAppend( p,"\n mount point:\t",m_point,'\0' ) ;
 }
 
-static char * loop_device_address( const char * device )
+static char * zuluCryptLoopDeviceAddress( const char * device )
 {
 	int fd ;
 	char * path ;
@@ -131,7 +131,7 @@ static char * loop_device_address( const char * device )
 	return path ;
 }
 
-char * status( const char * mapper )
+char * zuluCryptVolumeStatus( const char * mapper )
 {	
 	char buff[ SIZE ] ;	
 	char * buffer = buff ;
@@ -204,7 +204,7 @@ char * status( const char * mapper )
 		
 	if( strncmp( e,"/dev/loop",9 ) == 0 ){
 		StringAppend( p,"\n loop:   \t" );
-		path = loop_device_address( e ) ;		
+		path = zuluCryptLoopDeviceAddress( e ) ;		
 		if( path != NULL ){
 			StringAppend( p,path ) ;
 			free( path ) ;
@@ -249,7 +249,7 @@ char * status( const char * mapper )
 	 * defined in ../bin/check_mounted_volumes.c
 	 * The function returns a mount point path given a path representing a device 
 	 */
-	path = get_mount_point_from_path( mapper ) ;
+	path = zuluCryptGetMountPointFromPath( mapper ) ;
 	if( path != NULL ){
 		file_system_properties( p,mapper,path ) ; 
 		free( path ) ;
@@ -259,7 +259,7 @@ char * status( const char * mapper )
 	return StringDeleteHandle( &p ) ;
 }
 
-char * volume_device_name( const char * mapper )
+char * zuluCryptVolumeDeviceName( const char * mapper )
 {
 	struct crypt_device * cd;
 	char * path ;
@@ -275,7 +275,7 @@ char * volume_device_name( const char * mapper )
 	e = crypt_get_device_name( cd ) ;	
 	
 	if( strncmp( e,"/dev/loop",9 ) == 0 ){
-		path = loop_device_address( e ) ;
+		path = zuluCryptLoopDeviceAddress( e ) ;
 		if( path != NULL )
 			address = StringInherit( &path ) ;
 		else

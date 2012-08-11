@@ -22,7 +22,7 @@
 static int check_empty_slot( const char * device )
 {
 	int status = 0 ;
-	char * c = empty_slots( device ) ;
+	char * c = zuluCryptEmptySlots( device ) ;
 	char * d  ;
 	
 	if( c == NULL )
@@ -66,7 +66,7 @@ static int status_msg_1( int st,const char * device )
 	return st ;
 }
 
-int removekey( const struct_opts * opts,uid_t uid ) 
+int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid ) 
 {
 	int i                    = opts->interactive_passphrase ;
 	int k                    = opts->dont_ask_confirmation ;
@@ -82,7 +82,7 @@ int removekey( const struct_opts * opts,uid_t uid )
 	/*
 	* check_partition is defined in partition.c
 	*/
-	if( check_if_partition_is_system_partition( device ) == 1 && uid != 0 )
+	if( zuluCryptCheckIfPartitionIsSystemPartition( device ) == 1 && uid != 0 )
 		return status_msg( 14 ) ;
 
 	/*
@@ -91,7 +91,7 @@ int removekey( const struct_opts * opts,uid_t uid )
 	 * 
 	 * The importance of the function is explained where it is defined.
 	 */
-	switch( can_open_path_for_writing( device,uid ) ){
+	switch( zuluCryptCanOpenPathForWriting( device,uid ) ){
 		case 2 : return status_msg( 10 ); break ;
 		case 1 : return status_msg( 12 ); break ;		
 	}
@@ -120,7 +120,7 @@ int removekey( const struct_opts * opts,uid_t uid )
 		
 		printf( "\n" ) ;
 		
-		status = remove_key( device,StringContent( pass ),StringLength( pass ) ) ;
+		status = zuluCryptRemoveKey( device,StringContent( pass ),StringLength( pass ) ) ;
 		StringDelete( &pass ) ;
 	}else{
 		if( keyType == NULL || keytoremove == NULL )
@@ -130,16 +130,16 @@ int removekey( const struct_opts * opts,uid_t uid )
 			/*
 			 * function is defined at security.c"
 			 */
-			switch( get_pass_from_file( keytoremove,uid,&pass ) ){
+			switch( zuluCryptGetPassFromFile( keytoremove,uid,&pass ) ){
 				case 1 : return status_msg( 5 )  ; 
 				case 2 : return status_msg( 7 )  ;
 				case 4 : return status_msg( 13 ) ;				
 			}
-			status = remove_key( device,StringContent( pass ),StringLength( pass ) ) ;
+			status = zuluCryptRemoveKey( device,StringContent( pass ),StringLength( pass ) ) ;
 			StringDelete( &pass ) ;
 		}else if( strcmp( keyType, "-p" ) == 0 ) {
 			
-			status = remove_key( device,keytoremove,strlen( keytoremove ) ) ;		
+			status = zuluCryptRemoveKey( device,keytoremove,strlen( keytoremove ) ) ;		
 		}
 	}
 	
@@ -148,7 +148,7 @@ int removekey( const struct_opts * opts,uid_t uid )
 	else
 		status = status_msg( status ) ; 
 	
-	check_invalid_key( opts->device ) ;
+	zuluCryptCheckInvalidKey( opts->device ) ;
 	
 	return status ;
 }

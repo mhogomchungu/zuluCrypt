@@ -64,16 +64,16 @@ static int crypt_opt( const struct_opts * opts,const char * mapper,uid_t uid,int
 	if( source == NULL )
 		return msg( 14 ) ;
 	
-	if( is_path_valid( dest ) == 0 )
+	if( zuluCryptIsPathValid( dest ) == 0 )
 		return msg( 5 ) ;
 	
-	if( is_path_valid( source ) != 0 )
+	if( zuluCryptIsPathValid( source ) != 0 )
 		return msg( 6 ) ;
 	
-	if( can_open_path_for_writing( dest,uid ) == 1 )
+	if( zuluCryptCanOpenPathForWriting( dest,uid ) == 1 )
 		return msg( 10 ) ;		
 	
-	if( can_open_path_for_reading( source,uid ) == 1 )
+	if( zuluCryptCanOpenPathForReading( source,uid ) == 1 )
 		return msg( 15 ) ;
 	
 	if( i == 1 || type == NULL ){
@@ -116,9 +116,9 @@ static int crypt_opt( const struct_opts * opts,const char * mapper,uid_t uid,int
 	}		
 	
 	if( opt == ENCRYPT )
-		st = encrypt_file( source,dest,StringContent( p ),StringLength( p ) ) ;
+		st = zuluCryptEncryptFile( source,dest,StringContent( p ),StringLength( p ) ) ;
 	else
-		st = decrypt_file( source,dest,StringContent( p ),StringLength( p ) ) ;	
+		st = zuluCryptDecryptFile( source,dest,StringContent( p ),StringLength( p ) ) ;	
 	
 	StringDelete( &p ) ;
 	
@@ -136,12 +136,12 @@ static int crypt_opt( const struct_opts * opts,const char * mapper,uid_t uid,int
 		return msg( 0 ) ;
 }
 
-int file_decrypt( const struct_opts * opts,const char * mapper,uid_t uid ) 
+int zuluCryptExeFileDecrypt( const struct_opts * opts,const char * mapper,uid_t uid ) 
 {
 	return crypt_opt( opts,mapper,uid,DECRYPT ) ;
 }
 
-int file_encrypt( const struct_opts * opts,const char * mapper,uid_t uid )
+int zuluCryptExeFileEncrypt( const struct_opts * opts,const char * mapper,uid_t uid )
 {
 	return crypt_opt( opts,mapper,uid,ENCRYPT ) ;		
 }

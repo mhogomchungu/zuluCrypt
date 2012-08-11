@@ -59,6 +59,7 @@ passwordDialog::passwordDialog( QTableWidget * table,QWidget * parent ) : QDialo
 	connect( m_ui->OpenVolumePath,SIGNAL( textChanged( QString ) ),this,SLOT( mountPointPath( QString ) ) );
 	connect( m_ui->checkBoxReadOnly,SIGNAL( stateChanged( int ) ),this,SLOT( cbStateChanged( int ) ) );
 	connect( m_ui->radioButtonPlugin,SIGNAL( clicked() ),this,SLOT( pluginOption() ) ) ;
+	connect( m_ui->PassPhraseField,SIGNAL( textChanged( QString ) ),this,SLOT(keyTextChanged( QString ) ) ) ;
 }
 
 void passwordDialog::cbStateChanged( int state )
@@ -185,19 +186,30 @@ void passwordDialog::mountPointPath( QString path )
 	m_ui->MountPointPath->setText( p ) ;
 }
 
+void passwordDialog::keyTextChanged( QString txt )
+{
+	if( m_ui->radioButtonPlugin->isChecked() ){
+
+		if( txt.contains( QString( "/") ) )
+			m_ui->labelPassphrase->setText( tr( "plugin path" ) ) ;
+		else
+			m_ui->labelPassphrase->setText( tr( "plugin name" ) ) ;
+	}
+}
+
 void passwordDialog::pluginOption()
 {
-	m_ui->PassPhraseField->setToolTip( QString( "enter a module name to use to get passphrase" ) );
+	m_ui->PassPhraseField->setToolTip( tr( "enter a module name to use to get passphrase" ) );
 	m_ui->PassPhraseField->setEchoMode( QLineEdit::Normal );
 	m_ui->PassPhraseField->clear();
 	m_ui->pushButtonPassPhraseFromFile->setEnabled( true ) ;
-	m_ui->labelPassphrase->setText( tr( "module name" ) );
+	m_ui->labelPassphrase->setText( tr( "plugin name" ) );
 	m_ui->pushButtonPassPhraseFromFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) );
 }
 
 void passwordDialog::passphraseOption()
 {
-	m_ui->PassPhraseField->setToolTip( QString( "enter a key" ) );
+	m_ui->PassPhraseField->setToolTip( tr( "enter a key" ) );
 	m_ui->PassPhraseField->setEchoMode( QLineEdit::Password );
 	m_ui->PassPhraseField->clear();
 	m_ui->pushButtonPassPhraseFromFile->setEnabled( false ) ;
@@ -207,7 +219,7 @@ void passwordDialog::passphraseOption()
 
 void passwordDialog::passphraseFromFileOption()
 {
-	m_ui->PassPhraseField->setToolTip( QString( "enter a path to a keyfile location" ) );
+	m_ui->PassPhraseField->setToolTip( tr( "enter a path to a keyfile location" ) );
 	m_ui->PassPhraseField->setEchoMode( QLineEdit::Normal );
 	m_ui->PassPhraseField->clear();
 	m_ui->pushButtonPassPhraseFromFile->setEnabled( true ) ;

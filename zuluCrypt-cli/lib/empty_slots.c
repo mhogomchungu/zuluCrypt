@@ -27,7 +27,7 @@ static char * return_value( char * c,struct crypt_device * cd )
 	return c ;
 }
 
-char * empty_slots( const char * device )
+char * zuluCryptEmptySlots( const char * device )
 {
 	crypt_keyslot_info cki ;
 	struct crypt_device * cd;

@@ -27,7 +27,7 @@ extern "C" {
 /**
  * Return the version string of the library * 
  */
-const char * version(void) ;
+const char * zuluCryptVersion(void) ;
 
 /**
  * This function checks to see if a volume is a luks volume or not.
@@ -37,7 +37,7 @@ const char * version(void) ;
  *	 0 - the device is a cryptsetup device of type "luks"
  * 	 1 - the device is not a crptsetup device of type "luks".
  */
-int is_luks(const char * device) ;
+int zuluCryptVolumeIsLuks( const char * device ) ;
 
 
 /**
@@ -54,15 +54,15 @@ int is_luks(const char * device) ;
  *	8 - ERROR: failed to open device
  *      12 - ERROR: could not get a lock on /etc/mtab~
  */
-int open_volume(const char * device, /* path to a file/partition to be opened                                	*/
-		const char * mapper, /* mapper name( will show up in /dev/mapper/ )                          	*/
-		const char * m_point,/* mount point path, opened volume will be mounted on this path          	*/
-		uid_t id,            /* owner of the mount point will have this id with rwx------ permissions 	*/
-		const char * mode,   /* "ro" or "rw",the former means open volume in read only mode,          	*/
-				     /* the latter means open in read/write mode                              	*/
-		const char * pass,   /* encrypted volume passphrase to be used to open the volume             	*/
-		size_t pass_size     /* passphrase size 						      	*/
-	       ) ;	       
+int zuluCryptOpenVolume( const char * device, /* path to a file/partition to be opened                                	*/
+			 const char * mapper, /* mapper name( will show up in /dev/mapper/ )                          	*/
+			 const char * m_point,/* mount point path, opened volume will be mounted on this path          	*/
+			 uid_t id,            /* owner of the mount point will have this id with rwx------ permissions 	*/
+			 const char * mode,   /* "ro" or "rw",the former means open volume in read only mode,          	*/
+					      /* the latter means open in read/write mode                              	*/
+			 const char * pass,   /* encrypted volume passphrase to be used to open the volume             	*/
+			 size_t pass_size     /* passphrase size 						      	*/
+			) ;	       
 	       
 /**
  * This function unmount the mounted opened volume,delete the mount point and then close the volume.
@@ -79,8 +79,8 @@ int open_volume(const char * device, /* path to a file/partition to be opened   
  * 	2 - ERROR: close failed, encrypted volume associated with mapping_name argument is not opened  	
  *      
   */
-int close_volume(const char * mapper,    /* mapper is the full address of the volume as it appears at /dev/mapper */
-		 char ** mount_point ) ; /* returned pointer to mount point                                       */
+int zuluCryptCloseVolume(const char * mapper,    /* mapper is the full address of the volume as it appears at /dev/mapper */
+			 char ** mount_point ) ; /* returned pointer to mount point                                       */
 					
 
 /**
@@ -90,7 +90,7 @@ int close_volume(const char * mapper,    /* mapper is the full address of the vo
  * 0 - success
  * 1 - ERROR: could not close the mapper.
  */
-int close_mapper( const char * mapper ) ;/* mapper is the full address of the volume as it */
+int zuluCryptCloseMapper( const char * mapper ) ;/* mapper is the full address of the volume as it */
 					 /* appears at /dev/mapper                         */
 
 /**
@@ -103,8 +103,8 @@ int close_mapper( const char * mapper ) ;/* mapper is the full address of the vo
  * 3 - ERROR: volume does not have an entry in /etc/mtab
  * 4 - ERROR: could not get a lock on /etc/mtab~
   */
-int unmount_volume( const char * mapper, /*mapper is the full address of the volume as it appears at /dev/mapper                  */
-		    char ** m_point ) ;  /*mount point will be returned on this variable if closing succeeded.useful for deleting */
+int zuluCryptUnmountVolume( const char * mapper, /*mapper is the full address of the volume as it appears at /dev/mapper                  */
+			    char ** m_point ) ;  /*mount point will be returned on this variable if closing succeeded.useful for deleting */
 					 /*mount point folder.Its the caller's responsibility to free() this return value         */
 					
 /**
@@ -115,10 +115,10 @@ int unmount_volume( const char * mapper, /*mapper is the full address of the vol
  * 4 -  ERROR: mount failed, couldnt find valid file system in the volume
  * 12 - ERROR: could not get a lock on /etc/mtab~ * 
  */
-int mount_volume( const char * mapper, /* path to a file or partition to mount                                      */
-		  const char * m_point,/* mount point								    */
-		  const char * mode,   /* mode, options are "ro" and "rw" for read only and read/write respectively */
-		  uid_t id ) ;         /* user id the mount point should use					    */
+int zuluCryptMountVolume( const char * mapper, /* path to a file or partition to mount                                      */
+			  const char * m_point,/* mount point								    */
+			  const char * mode,   /* mode, options are "ro" and "rw" for read only and read/write respectively */
+			  uid_t id ) ;         /* user id the mount point should use					    */
 
 /**
  * This function returns a pointer to string with volume status information.
@@ -140,7 +140,7 @@ int mount_volume( const char * mapper, /* path to a file or partition to mount  
  * 
  * remember to free() the returned pointer when done with the output. 
  */
-char * status( const  char * mapper );  /* mapper is the full address of the volume as it */
+char * zuluCryptVolumeStatus( const char * mapper );  /* mapper is the full address of the volume as it */
 					/* appears at /dev/mapper                         */
 
 
@@ -154,14 +154,14 @@ char * status( const  char * mapper );  /* mapper is the full address of the vol
  * 
  * NOTE: This function expected mkfs executable to be present and its full path to be /sbin/mkfs
  */
-int create_volume(const char * device,    /* path to a file or partition					*/
-		  const char * fs,        /* file system to use in the volume(ext2,ext3.ext4,vfat etc)		*/
-		  const char * type,      /* type of volume to create( luks or plain )				*/
-		  const char * passphrase,/* passphrase to use to create the volume				*/
-		  size_t passphrase_size, /* passphrase size							*/
-		  const char * rng);      /* random number generator to use ( /dev/random or /dev/urandom )	*/
-		                          /*mrequired when creating luks volume, just pick one if you		*/
-		                          /* creating a plain device, it will be ignored		        */                
+int zuluCryptCreateVolume( const char * device,    /* path to a file or partition					*/
+			   const char * fs,        /* file system to use in the volume(ext2,ext3.ext4,vfat etc)		*/
+			   const char * type,      /* type of volume to create( luks or plain )				*/
+			   const char * passphrase,/* passphrase to use to create the volume				*/
+			   size_t passphrase_size, /* passphrase size							*/
+			   const char * rng);      /* random number generator to use ( /dev/random or /dev/urandom )	*/
+						   /*mrequired when creating luks volume, just pick one if you		*/
+						   /* creating a plain device, it will be ignored		        */                
 
 /**
  * This function adds a key to a luks volume
@@ -172,11 +172,11 @@ int create_volume(const char * device,    /* path to a file or partition					*/
  *      2 - ERROR: could not open encrypted volume
  *      3 - ERROR: device either doesnt exist or not a luks device
  */
-int add_key(const char * device,     /* path to an encrypted file or partition			*/
-	    const char * existingkey,/* a key that already exist in the encrypted volume	*/
-	    size_t existingkey_size, /* size of existingkey					*/
-	    const char * newkey,     /* new key to be added to the volume			*/
-	    size_t newkey_size);     /* size of the new key					*/
+int zuluCryptAddKey( const char * device,     /* path to an encrypted file or partition			*/
+		     const char * existingkey,/* a key that already exist in the encrypted volume	*/
+		     size_t existingkey_size, /* size of existingkey					*/
+		     const char * newkey,     /* new key to be added to the volume			*/
+		     size_t newkey_size );    /* size of the new key					*/
 
 /**
  * This function deletes a key from a luks volume.
@@ -187,9 +187,9 @@ int add_key(const char * device,     /* path to an encrypted file or partition		
  * 2 - ERROR: passphrase is not present in the volume
  * 3 - ERROR: could not open luks device
  */
-int remove_key(const char * device ,      /* path to an encrypted device			*/
-	       const char * passphrase,   /* a key already in the volume to be removed		*/
-	       size_t passphrase_size ) ; /* passphrase size					*/
+int zuluCryptRemoveKey( const char * device ,      /* path to an encrypted device			*/
+			const char * passphrase,   /* a key already in the volume to be removed		*/
+			size_t passphrase_size ) ; /* passphrase size					*/
 
 /**
  *This function gives information about slots in a luks volume. 
@@ -209,7 +209,7 @@ int remove_key(const char * device ,      /* path to an encrypted device			*/
  * 
  *  Remember to free() the return value when done with the pointer
  */
-char * empty_slots(const char * device ) ; 
+char * zuluCryptEmptySlots( const char * device ) ; 
 
 /**
  * This function just opens a luks volume, doesnt create a mount point and doesnt mount it.
@@ -221,11 +221,11 @@ char * empty_slots(const char * device ) ;
  * 3 - ERROR: device path does not point to a device
  * 4 - ERROR: key file does not exist
  */
-int open_luks( const char * device,      /* path to encrypted file or partition				*/
-	       const char * mapping_name,/* mapper name to use						*/
-	       const char * mode,        /* "ro" or "rw" for opening in read only or read and write	*/
-	       const char * passphrase,  /* passphrase to use to open the volume			*/
-	       size_t passphrase_size);  /* the length of the passphrase				*/
+int zuluCryptOpenLuks( const char * device,      /* path to encrypted file or partition				*/
+		       const char * mapping_name,/* mapper name to use						*/
+		       const char * mode,        /* "ro" or "rw" for opening in read only or read and write	*/
+	               const char * passphrase,  /* passphrase to use to open the volume			*/
+	               size_t passphrase_size );  /* the length of the passphrase				*/
 /**
  * This function creates a luks volume
  * 
@@ -237,11 +237,10 @@ int open_luks( const char * device,      /* path to encrypted file or partition	
  * 4 - ERROR: device path does not point to a device 
  * 
  */
-int create_luks(const char * device,    /* path to a file or partition to create a volume in		*/
-		const char * passphrase,/* passphrase to use to create a volume				*/
-		size_t passphrase_size, /* size of the passphrase					*/
-		const char * rng) ;	/*random number generator( /dev/random or /dev/urandom)		*/
-		
+int zuluCryptCreateLuks( const char * device,    /* path to a file or partition to create a volume in		*/
+			 const char * passphrase,/* passphrase to use to create a volume			*/
+			 size_t passphrase_size, /* size of the passphrase					*/
+			 const char * rng ) ;    /*random number generator( /dev/random or /dev/urandom)	*/		
 		
 /**
  * This function just opens a plain volume, it doesnt create a mount point and it doesnt mount it.
@@ -251,11 +250,11 @@ int create_luks(const char * device,    /* path to a file or partition to create
  * 3 - ERROR: device path does not point to a device
  * 4 - ERROR: key file does not exist
  */
-int open_plain( const char * device,      /* path to encrypted file or partition			*/
-		const char * mapping_name,/* mapper name to use						*/
-		const char * mode,        /* "ro" or "rw" for opening in read only or read and write	*/
-		const char * passphrase,  /* passphrase to use to open the volume			*/
-		size_t passphrase_size ); /* passphrase length  					*/
+int zuluCryptOpenPlain( const char * device,      /* path to encrypted file or partition			*/
+			const char * mapping_name,/* mapper name to use						*/
+			const char * mode,        /* "ro" or "rw" for opening in read only or read and write	*/
+			const char * passphrase,  /* passphrase to use to open the volume			*/
+			size_t passphrase_size ); /* passphrase length  					*/
 
 
 /**
@@ -273,7 +272,7 @@ int open_plain( const char * device,      /* path to encrypted file or partition
  *  Remember to free() the return value when done with the pointer(if it is not NULL ofcourse)
  * 
  */
-char * volume_device_name( const char * mapper ) ;
+char * zuluCryptVolumeDeviceName( const char * mapper ) ;
 
 /**
  * This function encrypts a file given by argument source to a file given by argument dest using plain mapper
@@ -283,7 +282,7 @@ char * volume_device_name( const char * mapper ) ;
  *         1 - encryption failed,could not open mapper  
  * 
  */
-int encrypt_file( const char * source,const char * dest,const char * key,uint64_t key_len ) ;
+int zuluCryptEncryptFile( const char * source,const char * dest,const char * key,uint64_t key_len ) ;
 
 /**
  * This function decrypts a file given by argument source to a file given by argument dest using plain mapper
@@ -294,7 +293,7 @@ int encrypt_file( const char * source,const char * dest,const char * key,uint64_
  * 	   2 - decryption failed,wrong passphrase
  * 
  */
-int decrypt_file( const char * source,const char * dest,const char * key,uint64_t key_len ) ;
+int zuluCryptDecryptFile( const char * source,const char * dest,const char * key,uint64_t key_len ) ;
 
 #ifdef __cplusplus
 }

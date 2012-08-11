@@ -19,7 +19,7 @@
 
 #include "includes.h"
 
-const char * version(void)
+const char * zuluCryptVersion(void)
 {
 	return VERSION_STRING ;
 }

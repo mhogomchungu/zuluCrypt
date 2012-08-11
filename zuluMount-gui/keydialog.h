@@ -29,6 +29,7 @@ signals:
 public slots:
 	void slotMountComplete( int,QString ) ;
 private slots:
+	void keyTextChanged( QString ) ;
 	void rbPlugIn( bool ) ;
 	void rbKey( bool ) ;
 	void rbKeyFile( bool ) ;

@@ -51,6 +51,7 @@ public slots:
 	void ShowUI( QString volumePath,QString mount_point ) ;
 	void clickedPartitionOption( QString );
 private slots :
+	void keyTextChanged( QString ) ;
 	void buttonOpenClicked( void ) ;
 	void mount_point( void );
 	void clickedPassPhraseFromFileButton( void ) ;

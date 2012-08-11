@@ -79,7 +79,6 @@
  bin/check_opened_mapper.c
  bin/get_opts.c
  bin/help.c
- bin/plugin_system.c
  ) 
  
  SET( BINMount
@@ -128,6 +127,12 @@
  
  add_library( zuluCrypt-static STATIC ${LIB} )
  
+ add_library( zuluCryptPluginManager SHARED bin/zuluCryptPluginManager.c )
+ 
+ TARGET_LINK_LIBRARIES( zuluCryptPluginManager Socket Process )
+ 
+ set_target_properties( zuluCryptPluginManager PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread -ansi -pedantic -std=c99" )
+ 
  set_target_properties( String        PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -ansi -pedantic -std=c99" )
  set_target_properties( StringList    PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -ansi -pedantic -std=c99" )
  set_target_properties( Process       PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -ansi -pedantic -std=c99" )
@@ -137,16 +142,16 @@
  set_target_properties( zuluCrypt-exe-static PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -ansi -pedantic -std=c99" )
  set_target_properties( zuluCrypt-static     PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -ansi -pedantic -std=c99" )
  
- set_target_properties( zuluCrypt     PROPERTIES SOVERSION "2.0.0" )
- set_target_properties( zuluCrypt-exe PROPERTIES SOVERSION "2.0.0" )
+ set_target_properties( zuluCrypt     PROPERTIES SOVERSION "3.0.0" )
+ set_target_properties( zuluCrypt-exe PROPERTIES SOVERSION "3.0.0" )
  
  TARGET_LINK_LIBRARIES( zuluCrypt     ${libcryptsetup} String StringList ${blkid} ${mountLibrary} Process ) 
- TARGET_LINK_LIBRARIES( zuluCrypt-exe zuluCrypt ) 
+ TARGET_LINK_LIBRARIES( zuluCrypt-exe zuluCrypt zuluCryptPluginManager ) 
  
  TARGET_LINK_LIBRARIES( zuluCrypt-static     ${libcryptsetup} String StringList ${blkid} ${mountLibrary} Process ) 
- TARGET_LINK_LIBRARIES( zuluCrypt-exe-static zuluCrypt-static )
+ TARGET_LINK_LIBRARIES( zuluCrypt-exe-static zuluCrypt-static zuluCryptPluginManager )
  
- TARGET_LINK_LIBRARIES( zuluCrypt-exe zuluCrypt Socket )
+ TARGET_LINK_LIBRARIES( zuluCrypt-exe zuluCrypt )
  
  add_executable( zuluMount-cli ../zuluMount-cli ${BINMount} )
  
@@ -160,16 +165,12 @@
  
  TARGET_LINK_LIBRARIES( zuluCrypt-cli zuluCrypt-exe ) 
  
- install(TARGETS zuluCrypt-cli 
-            RUNTIME DESTINATION bin
-            
+ install(TARGETS zuluCrypt-cli RUNTIME DESTINATION bin            
             PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE SETUID
  )
  
- install(TARGETS zuluMount-cli 
- RUNTIME DESTINATION bin
- 
- PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE SETUID
+ install(TARGETS zuluMount-cli RUNTIME DESTINATION bin 
+	PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE SETUID
  )
  
  if( UNIX AND NOT APPLE AND NOT CMAKE_CROSSCOMPILING AND NOT EXISTS "/etc/debian_version" )
@@ -177,7 +178,9 @@
 	     set ( LIB_SUFFIX 64 )
 	 endif( CMAKE_SIZEOF_VOID_P EQUAL 8 AND NOT LIB_SUFFIX)
  endif( UNIX AND NOT APPLE AND NOT CMAKE_CROSSCOMPILING AND NOT EXISTS "/etc/debian_version" )
-  
+ 
+ install(TARGETS zuluCryptPluginManager LIBRARY DESTINATION lib${LIB_SUFFIX} )
+ 
  install(TARGETS zuluCrypt LIBRARY DESTINATION lib${LIB_SUFFIX} )
   
  install(TARGETS zuluCrypt-exe LIBRARY DESTINATION lib${LIB_SUFFIX} )
@@ -186,8 +189,9 @@
  
  install(TARGETS zuluCrypt-static ARCHIVE DESTINATION lib${LIB_SUFFIX} ) 
  
- install(FILES lib/libzuluCrypt.h DESTINATION include )
- install(FILES bin/libzuluCrypt-exe.h DESTINATION include )
+ install(FILES lib/libzuluCrypt.h          DESTINATION include/zuluCrypt )
+ install(FILES bin/libzuluCrypt-exe.h      DESTINATION include/zuluCrypt )
+ install(FILES bin/zuluCryptPluginManager.h DESTINATION include/zuluCrypt )
  
  
  
