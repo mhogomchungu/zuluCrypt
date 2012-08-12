@@ -106,16 +106,8 @@ void wallet::getKey()
 	m_key = map.value( m_uuid ) ;
 
 	if( m_key.isEmpty() ){
-		int i = m_uuid.indexOf( "=" ) ;
-		if( i != -1 ){
-			m_uuid.insert( i + 1,QString( "/") ) ;
-			m_uuid = m_uuid + QString( "\"" ) ;
-			m_key = map.value( m_uuid ) ;
-			if( m_key.isEmpty() ){
-				//qDebug() << "no match found" ;
-				return ;
-			}
-		}
+		m_uuid.remove( QChar( '\"' ) ) ;
+		m_key = map.value( m_uuid ) ;
 	}
 }
 
