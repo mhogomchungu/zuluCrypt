@@ -1,9 +1,3 @@
-#ifndef WALLET_H
-#define WALLET_H
-
-#include <kwallet.h>
-#include <QDebug>
-#include <QObject>
 /*
  *
  *  Copyright (c) 2012
@@ -23,13 +17,20 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef WALLET_H
+#define WALLET_H
+
+#include <kwallet.h>
+#include <QDebug>
+#include <QObject>
+#include <QFile>
+#include <QString>
 #include <QCoreApplication>
 #include <QMap>
 #include <QtNetwork/QLocalServer>
 #include <QtNetwork/QLocalSocket>
-#include "wallet.h"
 
-#include <cstdlib>
+#include "wallet.h"
 
 using namespace KWallet ;
 

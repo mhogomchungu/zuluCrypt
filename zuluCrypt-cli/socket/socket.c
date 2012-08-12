@@ -32,6 +32,13 @@ struct Socket_t{
 	struct sockaddr_in * net ;
 };
 
+socket_t SocketLocal( const char * address )
+{
+	socket_t s = Socket( "local" ) ;
+	SocketSetHostAddress( s,address ) ;
+	return s ;
+}
+
 socket_t Socket( const char * domain ) 
 {
 	socket_t s = ( socket_t ) malloc( sizeof( struct Socket_t ) ) ;
@@ -99,6 +106,16 @@ void SocketSetHostAddress( socket_t s,const char * address )
 	}
 }
 
+const char * SocketAddress( socket_t s )
+{	
+	if( s->domain = AF_UNIX )
+		return s->local->sun_path ;
+	else{
+		//host = gethostbyname( address ) ;
+		//s->net->sin_addr.s_addr = ( struct in_addr * )host->h_addr_list[ 0 ] ;		
+	}
+}
+
 void SocketSetHostIPAddress( socket_t s,const char * address ) 
 {
 	if( s->domain == AF_INET )
@@ -156,11 +173,7 @@ int SocketGetData( socket_t s,char * buffer,size_t len )
 
 int SocketSendData( socket_t s,const char * buffer,size_t len ) 
 {
-	int st ;
-	st = send( s->fd,buffer,len,s->fwrite ) ;
-	if( st == -1 )
-		perror( "data not sent") ;
-	printf( "data sent = %d\n",st );
+	return send( s->fd,buffer,len,s->fwrite ) ;	
 }
 
 void SockectSetReadOption( socket_t s,int option ) 

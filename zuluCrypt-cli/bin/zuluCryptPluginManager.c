@@ -30,9 +30,7 @@
 void zuluCryptPluginManager( const char * sockpath,int size,const char * buffer )
 {
 	socket_t p ;
-	socket_t q = Socket( "local" ) ;
-	
-	SocketSetHostAddress( q,sockpath ) ;
+	socket_t q = SocketLocal( sockpath ) ;
 	
 	SocketBind( q ) ;
 	SocketListen( q ) ;
@@ -47,6 +45,50 @@ void zuluCryptPluginManager( const char * sockpath,int size,const char * buffer 
 	SocketDelete( &p ) ;	
 	SocketDelete( &q ) ;
 } 
+
+typedef struct {
+	socket_t server ;
+	socket_t connected ;
+} socketStruct ;
+
+void * zuluCryptPluginManagerStartConnection( const char * sockpath )
+{
+	socketStruct * sc = ( socketStruct * ) malloc( sizeof( socketStruct ) ) ;
+	
+	sc->server = SocketLocal( sockpath ) ;
+	
+	SocketBind( sc->server ) ;
+	SocketListen( sc->server ) ;
+	
+	sc->connected = SocketAccept( sc->server ) ;
+	
+	return sc ;	
+}
+
+int zuluCryptPluginManagerSendKey( void * p,const char * key,int length )
+{
+	socketStruct * sc = ( socketStruct * ) p ;
+	
+	return SocketSendData( sc->connected,key,length ) ;
+}
+
+void zuluCryptPluginManagerCloseConnection( void * p )
+{
+	socketStruct * sc = ( socketStruct * ) p ;
+	const char * sockpath = SocketAddress( sc->server ) ;
+	
+	SocketClose( sc->connected ) ;
+	SocketClose( sc->server ) ;
+	
+	printf( "socket address is:%s\n",sockpath ) ;
+	
+	unlink( sockpath ) ;
+	
+	SocketDelete( &sc->connected ) ;
+	SocketDelete( &sc->server ) ;
+	
+	free( sc ) ;	
+}
 
 static string_t zuluCryptGetDeviceUUID( const char * device )
 {
@@ -78,7 +120,8 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	int i ;	
 	const char * sockpath ;	
 	string_t mpath ;	
-	string_t  spath ;
+	string_t path ;
+	string_t id ;
 	string_t uuid ;
 	const char * cpath ;	
 	struct stat st ;
@@ -108,9 +151,16 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		return NULL ;
 	}	
 		
-	spath = StringIntToString( getpid() ) ;
-	sockpath = StringMultiplePrepend( spath,"/.zuluCrypt-",pass->pw_dir,'\0' ) ;
+	id = StringIntToString( getpid() ) ;
 	
+	path = String( pass->pw_dir ) ;
+	sockpath = StringAppend( path,"/.zuluCrypt-socket/" ) ;
+	
+	mkdir( sockpath,S_IRWXU | S_IRWXG | S_IRWXO ) ;
+	chmod( sockpath,S_IRWXU | S_IRWXG | S_IRWXO ) ;
+	
+	sockpath = StringAppendString( path,id ) ;
+
 	if( stat( sockpath,&st ) == 0 )
 		unlink( sockpath ) ;
 	
@@ -122,9 +172,7 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	ProcessSetArgumentList( p,device,StringContent( uuid ),sockpath,"1024",'\0' ) ;	
 	ProcessStart( p ) ;		
 	
-	s = Socket( "local" ) ;
-	
-	SocketSetHostAddress( s,sockpath ) ;
+	s = SocketLocal( sockpath ) ;
 	
 	for( i = 0 ; ; i++ ){
 		if( SocketConnect( s ) == 0 ){
@@ -143,11 +191,10 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		}
 	}
 	
-	StringMultipleDelete( &mpath,&spath,&uuid,'\0' ) ;	
+	StringMultipleDelete( &mpath,&uuid,&id,&path,'\0' ) ;	
 	
 	ProcessExitStatus( p ) ;
-	if( stat( sockpath,&st ) == 0 )
-		unlink( sockpath ) ;	
+	
 	SocketDelete( &s ) ;	
 	ProcessDelete( &p ) ;
 	

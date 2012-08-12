@@ -36,7 +36,11 @@ extern "C" {
 
 typedef struct Socket_t * socket_t ;
 
+socket_t SocketLocal( const char * address ) ;
+
 socket_t Socket( const char * domain ) ;
+
+const char * SocketAddress( socket_t ) ;
 
 void SocketSetPortNumber( socket_t,int port ) ;
 

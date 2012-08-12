@@ -78,8 +78,8 @@ void passwordDialog::pbPlugin()
 
 	QStringList list = dir.entryList() ;
 
-	list.removeFirst();
-	list.removeFirst();
+	list.removeOne( QString( ".") ) ;
+	list.removeOne( QString( "..") ) ;
 
 	m_pluginMenu->clear();
 

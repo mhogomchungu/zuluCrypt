@@ -43,6 +43,14 @@ extern "C" {
 
 void zuluCryptPluginManager( const char * sockpath,int size,const char * buffer ) ;
 
+int zuluCryptPluginManagerSendKey( void * p,const char * key,int length ) ;
+
+void * zuluCryptPluginManagerStartConnection( const char * sockpath ) ;
+
+void zuluCryptPluginManagerCloseConnection( void * p ) ;
+
+
+
 #ifdef __cplusplus
 }
 #endif

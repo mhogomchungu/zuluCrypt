@@ -27,7 +27,7 @@ wallet::wallet( int argc,char * argv[] )
 	m_device = QString( argv[ 1 ] ) ;
 	m_uuid = QString( argv[ 2 ] ) ;
 	m_sockpath = QString( argv[ 3 ] ) ;
-	m_bufferSize = atoi( argv[ 4 ] ) ;
+	m_bufferSize = QString( argv[ 4 ] ).toInt() ;
 }
 
 void wallet::openWallet()
@@ -119,6 +119,9 @@ void wallet::Exit( int st )
 
 	m_server->close();
 	m_server->deleteLater();
+
+	QFile::remove( m_sockpath ) ;
+
 	QCoreApplication::exit( st ) ;
 }
 
