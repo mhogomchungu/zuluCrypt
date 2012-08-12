@@ -32,6 +32,8 @@ wallet::wallet( int argc,char * argv[] )
 
 void wallet::openWallet()
 {
+	this->openConnection();
+
 	m_wallet = Wallet::openWallet( "zuluCrypt",0,KWallet::Wallet::Asynchronous ) ;
 
 	if( m_wallet ){
@@ -42,23 +44,26 @@ void wallet::openWallet()
 	}
 }
 
+void wallet::gotConnected()
+{
+	m_socket = m_server->nextPendingConnection() ;
+}
+
 void wallet::walletOpened( bool e )
 {
-	this->openConnection();
 	m_walletOpened = e ;
+	this->sendKey();
 }
 
 void wallet::openConnection()
 {
 	m_server = new QLocalServer( this ) ;
-	connect( m_server,SIGNAL( newConnection() ),this,SLOT( sendKey() ) ) ;
+	connect( m_server,SIGNAL( newConnection() ),this,SLOT( gotConnected() ) ) ;
 	m_server->listen( m_sockpath ) ;
 }
 
 void wallet::sendKey()
 {
-	m_socket = m_server->nextPendingConnection() ;
-
 	this->getKey();
 
 	if( m_key.isEmpty() )

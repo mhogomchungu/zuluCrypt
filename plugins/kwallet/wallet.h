@@ -41,6 +41,7 @@ public:
 	~wallet();
 
 private slots:
+	void gotConnected( void ) ;
 	void openWallet( void ) ;
 	void walletOpened( bool ) ;
 	void sendKey( void ) ;
