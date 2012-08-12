@@ -49,6 +49,11 @@ passwordDialog::passwordDialog( QTableWidget * table,QWidget * parent ) : QDialo
 
 	m_table = table ;
 
+	m_pluginMenu = new QMenu( this ) ;
+	m_pluginMenu->setFont( this->font() );
+
+	m_ui->pushButtonPlugin->setIcon( QIcon( QString( ":/module.png" ) ) );
+
 	connect( m_ui->PushButtonCancel,SIGNAL( clicked() ),this,SLOT( HideUI() ) ) ;
 	connect( m_ui->PushButtonOpen,SIGNAL( clicked() ),this,SLOT( buttonOpenClicked() ) ) ;
 	connect( m_ui->PushButtonMountPointPath,SIGNAL( clicked() ),this,SLOT( mount_point() ) );
@@ -60,6 +65,43 @@ passwordDialog::passwordDialog( QTableWidget * table,QWidget * parent ) : QDialo
 	connect( m_ui->checkBoxReadOnly,SIGNAL( stateChanged( int ) ),this,SLOT( cbStateChanged( int ) ) );
 	connect( m_ui->radioButtonPlugin,SIGNAL( clicked() ),this,SLOT( pluginOption() ) ) ;
 	connect( m_ui->PassPhraseField,SIGNAL( textChanged( QString ) ),this,SLOT(keyTextChanged( QString ) ) ) ;
+	connect( m_ui->pushButtonPlugin,SIGNAL( clicked() ),this,SLOT( pbPlugin() ) ) ;
+}
+
+void passwordDialog::pbPlugin()
+{
+	QDir dir( QString( "/etc/zuluCrypt/modules" ) ) ;
+	if( !dir.exists() ){
+		m_ui->pushButtonPlugin->setEnabled( false );
+		return ;
+	}
+
+	QStringList list = dir.entryList() ;
+
+	list.removeFirst();
+	list.removeFirst();
+
+	m_pluginMenu->clear();
+
+	int j = list.size()  ;
+
+	for( int i = 0 ; i < j ; i++ )
+		m_pluginMenu->addAction( list.at( i ) ) ;
+
+	m_pluginMenu->addSeparator() ;
+
+	m_pluginMenu->addAction( tr( "cancel" ) ) ;
+
+	connect( m_pluginMenu,SIGNAL( triggered( QAction * ) ),this,SLOT( pbPluginEntryClicked( QAction * ) ) ) ;
+
+	m_pluginMenu->exec( QCursor::pos() ) ;
+}
+
+void passwordDialog::pbPluginEntryClicked( QAction * e )
+{
+	if( e->text() == tr( "cancel" ) )
+		return ;
+	m_ui->PassPhraseField->setText( e->text() ) ;
 }
 
 void passwordDialog::cbStateChanged( int state )
@@ -199,12 +241,15 @@ void passwordDialog::keyTextChanged( QString txt )
 
 void passwordDialog::pluginOption()
 {
+	m_ui->pushButtonPassPhraseFromFile->setToolTip( tr( "open key module"));
 	m_ui->PassPhraseField->setToolTip( tr( "enter a module name to use to get passphrase" ) );
 	m_ui->PassPhraseField->setEchoMode( QLineEdit::Normal );
 	m_ui->PassPhraseField->clear();
 	m_ui->pushButtonPassPhraseFromFile->setEnabled( true ) ;
 	m_ui->labelPassphrase->setText( tr( "plugin name" ) );
 	m_ui->pushButtonPassPhraseFromFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) );
+	m_ui->pushButtonPlugin->setEnabled( true );
+	m_ui->pushButtonPlugin->setToolTip( tr( "select a key module") ) ;
 }
 
 void passwordDialog::passphraseOption()
@@ -215,16 +260,19 @@ void passwordDialog::passphraseOption()
 	m_ui->pushButtonPassPhraseFromFile->setEnabled( false ) ;
 	m_ui->labelPassphrase->setText( tr( "key" ) );
 	m_ui->pushButtonPassPhraseFromFile->setIcon( QIcon( QString( ":/passphrase.png" ) ) );
+	m_ui->pushButtonPlugin->setEnabled( false );
 }
 
 void passwordDialog::passphraseFromFileOption()
 {
+	m_ui->pushButtonPassPhraseFromFile->setToolTip( tr( "open keyfile"));
 	m_ui->PassPhraseField->setToolTip( tr( "enter a path to a keyfile location" ) );
 	m_ui->PassPhraseField->setEchoMode( QLineEdit::Normal );
 	m_ui->PassPhraseField->clear();
 	m_ui->pushButtonPassPhraseFromFile->setEnabled( true ) ;
 	m_ui->labelPassphrase->setText( tr( "keyfile path" ) );
 	m_ui->pushButtonPassPhraseFromFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) );
+	m_ui->pushButtonPlugin->setEnabled( false );
 }
 
 void passwordDialog::clickedPassPhraseFromFileButton()
@@ -332,6 +380,7 @@ void passwordDialog::buttonOpenClicked( void )
 
 void passwordDialog::disableAll()
 {
+	m_ui->pushButtonPlugin->setEnabled( false );
 	m_ui->checkBoxReadOnly->setEnabled( false );
 	m_ui->groupBox->setEnabled( false );
 	m_ui->labelMoutPointPath->setEnabled( false );
@@ -353,6 +402,7 @@ void passwordDialog::disableAll()
 
 void passwordDialog::enableAll()
 {
+	m_ui->pushButtonPlugin->setEnabled( true );
 	m_ui->checkBoxReadOnly->setEnabled( true );
 	m_ui->groupBox->setEnabled( true );
 	m_ui->labelMoutPointPath->setEnabled( true );
@@ -434,6 +484,7 @@ void passwordDialog::threadfinished( int status )
 
 passwordDialog::~passwordDialog()
 {
+	m_pluginMenu->deleteLater();
 	delete m_ui ;
 }
 

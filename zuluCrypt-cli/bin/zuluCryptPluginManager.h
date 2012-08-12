@@ -18,6 +18,12 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef ZULUCRYPTPLUGINMANAGER
+#define ZULUCRYPTPLUGINMANAGER
+
+#ifdef __cplusplus
+extern "C" {
+#endif	
 /*
  * This header and its associated library with the same name provide a plugin infrastructure
  * that allow passage of keys from a key module to zuluCrypt-cli in a safe way.
@@ -35,5 +41,10 @@
  *  
  */
 
-void zuluCryptPluginManagerGetKeyFromModule( const char * sockpath,int size,const char * buffer ) ;
+void zuluCryptPluginManager( const char * sockpath,int size,const char * buffer ) ;
 
+#ifdef __cplusplus
+}
+#endif
+
+#endif

@@ -17,6 +17,14 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */ 
  
+
+#ifndef SOCKET
+#define SOCKET
+
+#ifdef __cplusplus
+extern "C" {
+#endif	
+
 #include <sys/types.h>          /* See NOTES */
 #include <sys/socket.h>
 #include <unistd.h>
@@ -61,3 +69,10 @@ void SocketDelete( socket_t * ) ;
 void SocketSetOptionType( socket_t,int option ) ;
 
 void SocketSetProtocolType( socket_t,int protocol ) ;
+
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif

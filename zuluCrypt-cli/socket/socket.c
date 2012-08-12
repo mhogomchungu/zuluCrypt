@@ -26,7 +26,7 @@ struct Socket_t{
 	int fwrite ;
 	int cmax ;
 	int domain ;
-	int size ;
+	socklen_t size ;
 	int fd ;
 	struct sockaddr_un * local ;
 	struct sockaddr_in * net ;
@@ -38,7 +38,7 @@ socket_t Socket( const char * domain )
 	
 	if( strcmp( domain,"local" ) == 0 ){
 		s->domain = AF_UNIX ;		
-		s->size = sizeof( struct sockaddr_un  ) ;		
+		s->size = sizeof( struct sockaddr_un ) ;		
 		s->local = ( struct sockaddr_un * ) malloc( s->size ) ;
 		s->local->sun_family = AF_UNIX ;
 	}else{
@@ -51,11 +51,10 @@ socket_t Socket( const char * domain )
 	s->type = SOCK_STREAM ;
 	s->protocol = 0 ;
 	s->cmax = 1 ;
-	s->fread = 0 ;
+	s->fread = MSG_WAITALL ;
 	s->fwrite = 0 ;
 	
 	s->fd = socket( s->domain,s->type,s->protocol ) ;
-	
 	return s ;	
 }
 
@@ -116,18 +115,17 @@ int SocketBind( socket_t s )
 
 socket_t SocketAccept( socket_t s ) 
 {
-	int len ;
 	struct sockaddr addr ;
+	
 	socket_t x = ( socket_t ) malloc( sizeof( struct Socket_t ) ) ;
 	
 	if( s->domain == AF_UNIX ){
 		x->local = ( struct sockaddr_un * ) malloc( s->size ) ;
-		x->fd = accept( s->fd,&addr,&len ) ;
-		memcpy( s->local,( struct sockaddr_un * )&addr,s->size ) ;
+		x->fd = accept( s->fd,( struct sockaddr * )x->local,&x->size ) ;
 	}else{
-		x->net = ( struct sockaddr_in * ) malloc( s->size )  ;
-		x->fd = accept( s->fd,&addr,&len ) ;
-		memcpy( s->net,( struct sockaddr_in * )&addr,s->size ) ;		
+		//x->net = ( struct sockaddr_in * ) malloc( s->size )  ;
+		//x->fd = accept( s->fd,&addr,&len ) ;
+		//memcpy( s->net,( struct sockaddr_in * )&addr,s->size ) ;		
 	}
 	
 	return x ;
@@ -158,7 +156,11 @@ int SocketGetData( socket_t s,char * buffer,size_t len )
 
 int SocketSendData( socket_t s,const char * buffer,size_t len ) 
 {
-	send( s->fd,buffer,len,s->fwrite ) ;
+	int st ;
+	st = send( s->fd,buffer,len,s->fwrite ) ;
+	if( st == -1 )
+		perror( "data not sent") ;
+	printf( "data sent = %d\n",st );
 }
 
 void SockectSetReadOption( socket_t s,int option ) 

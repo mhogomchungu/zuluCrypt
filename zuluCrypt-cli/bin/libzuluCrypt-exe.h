@@ -16,6 +16,13 @@
   *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
   */
 
+  
+#ifndef ZULUCRYPTEXE
+#define ZULUCRYPTEXE
+
+#ifdef __cplusplus
+extern "C" {
+#endif	
 /*
  * this structure holds command line arguments. * 
  * It is instantiated in main.c * 
@@ -210,3 +217,9 @@ int zuluCryptPrintPartitions( int option ) ;
  */
 char * zuluCryptGetMountPointFromPath( const char * path ) ;
 
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif

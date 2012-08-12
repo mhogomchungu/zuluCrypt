@@ -32,6 +32,14 @@ int kill( pid_t,int );
 int seteuid( uid_t uid );
 #endif
 
+
+#ifndef PROCESS
+#define PROCESS
+
+#ifdef __cplusplus
+extern "C" {
+#endif	
+	
 typedef struct Process_t * process_t ;
 
 /*
@@ -165,3 +173,9 @@ char * ProcessGetOutPut( process_t ) ;
  * read size number of bytes from the ourput of the forket process.
  */
 int ProcessGetOutPut_1( process_t,char * buffer,int size ) ;
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif

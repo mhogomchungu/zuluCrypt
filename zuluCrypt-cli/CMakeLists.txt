@@ -129,7 +129,7 @@
  
  add_library( zuluCryptPluginManager SHARED bin/zuluCryptPluginManager.c )
  
- TARGET_LINK_LIBRARIES( zuluCryptPluginManager Socket Process )
+ TARGET_LINK_LIBRARIES( zuluCryptPluginManager Socket Process String ${blkid} )
  
  set_target_properties( zuluCryptPluginManager PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread -ansi -pedantic -std=c99" )
  

@@ -8,5 +8,6 @@
 		 <file>partition.png</file>
 		 <file>file.png</file>
 		 <file>passphrase.png</file>
+		 <file>module.png</file>		 
 	 </qresource>
  </RCC>

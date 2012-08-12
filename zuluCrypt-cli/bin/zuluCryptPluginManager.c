@@ -22,6 +22,7 @@
 #include "includes.h"
 #include <unistd.h>
 #include <pwd.h>
+#include <blkid/blkid.h>
 
 #include "../process/process.h"
 #include "../socket/socket.h"
@@ -47,7 +48,27 @@ void zuluCryptPluginManager( const char * sockpath,int size,const char * buffer 
 	SocketDelete( &q ) ;
 } 
 
-string_t zuluCryptPluginManagerGetKeyFromModule( const char * name,uid_t uid )
+static string_t zuluCryptGetDeviceUUID( const char * device )
+{
+	string_t p ;
+	blkid_probe blkid ;
+	const char * uuid ;
+	
+	blkid = blkid_new_probe_from_filename( device ) ;
+	blkid_do_probe( blkid );
+	
+	if( blkid_probe_lookup_value( blkid,"UUID",&uuid,NULL ) == 0 ){
+		p = String( "UUID=" ) ;
+		StringAppend( p,uuid ) ;
+	}else
+		p = String( "Nil" ) ;
+	
+	blkid_free_probe( blkid );
+	
+	return p ;		
+}
+
+string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * name,uid_t uid )
 {
 	struct passwd * pass ;	
 	socket_t s ;
@@ -57,7 +78,8 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * name,uid_t uid )
 	int i ;	
 	const char * sockpath ;	
 	string_t mpath ;	
-	string_t  spath ;	
+	string_t  spath ;
+	string_t uuid ;
 	const char * cpath ;	
 	struct stat st ;
 	pass = getpwuid( uid ) ;
@@ -92,10 +114,12 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * name,uid_t uid )
 	if( stat( sockpath,&st ) == 0 )
 		unlink( sockpath ) ;
 	
+	uuid = zuluCryptGetDeviceUUID( device ) ;
+	
 	p = Process( cpath ) ;		
 	ProcessSetUser( p,uid ) ;
-	ProcessSetOptionTimeout( p,30,SIGKILL ) ;
-	ProcessSetArgumentList( p,sockpath,"1024",'\0' ) ;	
+	ProcessSetOptionTimeout( p,60,SIGKILL ) ;
+	ProcessSetArgumentList( p,device,StringContent( uuid ),sockpath,"1024",'\0' ) ;	
 	ProcessStart( p ) ;		
 	
 	s = Socket( "local" ) ;
@@ -111,7 +135,7 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * name,uid_t uid )
 			}			
 			SocketClose( s ) ;			
 			break ;
-		}else if( i == 20 ){			
+		}else if( i == 30 ){			
 			ProcessKill( p ) ;
 			break ;
 		}else{
@@ -119,10 +143,11 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * name,uid_t uid )
 		}
 	}
 	
-	StringMultipleDelete( &mpath,&spath,'\0' ) ;	
+	StringMultipleDelete( &mpath,&spath,&uuid,'\0' ) ;	
 	
 	ProcessExitStatus( p ) ;
-	unlink( sockpath ) ;	
+	if( stat( sockpath,&st ) == 0 )
+		unlink( sockpath ) ;	
 	SocketDelete( &s ) ;	
 	ProcessDelete( &p ) ;
 	

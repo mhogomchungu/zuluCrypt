@@ -51,6 +51,8 @@ public slots:
 	void ShowUI( QString volumePath,QString mount_point ) ;
 	void clickedPartitionOption( QString );
 private slots :
+	void pbPluginEntryClicked( QAction * ) ;
+	void pbPlugin( void ) ;
 	void keyTextChanged( QString ) ;
 	void buttonOpenClicked( void ) ;
 	void mount_point( void );
@@ -73,6 +75,7 @@ private :
 	bool m_isWindowClosable ;
 	QTableWidget * m_table ;
 	bool m_open_with_path ;
+	QMenu * m_pluginMenu ;
 };
 
 #endif // PASSWORD_DIALOG_H
