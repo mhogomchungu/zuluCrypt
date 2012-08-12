@@ -35,6 +35,8 @@
 
 char * zuluCryptGetMountPointFromPath( const char * path ) ;
 
+char * zuluCryptVolumeDeviceName( const char * mapper ) ;
+
 static void format_size_1( char * buffer,int x,const char * z )
 {
 	buffer[ x ] = buffer[ x - 1 ] ; 
@@ -66,6 +68,30 @@ void zuluCryptFormatSize( char * buffer,const char * buff )
 	}	
 }
 
+char * zuluCryptGetUUIDFromMapper( const char * mapper )
+{
+	string_t p ;
+	blkid_probe blkid ;
+	const char * uuid ;
+	
+	char * device = zuluCryptVolumeDeviceName( mapper ) ;
+	
+	blkid = blkid_new_probe_from_filename( device ) ;
+	blkid_do_probe( blkid );
+	
+	if( blkid_probe_lookup_value( blkid,"UUID",&uuid,NULL ) == 0 ){
+		p = String( "" ) ;
+		StringMultipleAppend( p," UUID=\"",uuid,"\"",'\0' ) ;
+	}else
+		p = String( " UUID=\"Nil\"" ) ;
+	
+	blkid_free_probe( blkid );
+	
+	free( device ) ;
+	
+	return StringDeleteHandle( &p ) ;		
+}
+
 static void file_system_properties( string_t p,const char * mapper,const char * m_point )
 {
 	const char * e ;	
@@ -73,7 +99,7 @@ static void file_system_properties( string_t p,const char * mapper,const char * 
 	struct statvfs vfs ;
 	uint64_t total ;
 	uint64_t used ;
-	uint64_t free ;
+	uint64_t unused ;
 	uint32_t block_size ;
 	char buff[ SIZE ] ;	
 	char * buffer = buff ;
@@ -94,9 +120,9 @@ static void file_system_properties( string_t p,const char * mapper,const char * 
 	
 	block_size = vfs.f_frsize ;
 	total = block_size * vfs.f_blocks  ;
-	free =  block_size * vfs.f_bavail  ;
+	unused =  block_size * vfs.f_bavail  ;
 	
-	used = total - free ;
+	used = total - unused ;
 	
 	e = StringIntToString_1( buffer,SIZE,total ) ;
 	zuluCryptFormatSize( format,e ) ;	
@@ -106,14 +132,19 @@ static void file_system_properties( string_t p,const char * mapper,const char * 
 	zuluCryptFormatSize( format,e ) ;
 	StringMultipleAppend( p,"\n used space:\t",format,'\0' ) ;
 	
-	e = StringIntToString_1( buffer,SIZE,free ) ;
+	e = StringIntToString_1( buffer,SIZE,unused ) ;
 	zuluCryptFormatSize( format,e ) ;
 	StringMultipleAppend( p,"\n free space:\t",format,'\0' ) ;
 	
 	snprintf( buff,SIZE,"%.2f%%",100 * ( ( float ) used / ( float ) total ) ) ;
-	StringMultipleAppend( p,"\n used%:   \t",buff,'\0' ) ;
+	StringMultipleAppend( p,"\n used%:   \t",buff,"\n",'\0' ) ;
+		
+	buffer = zuluCryptGetUUIDFromMapper( mapper ) ;
+	StringAppend( p,buffer );
 	
-	StringMultipleAppend( p,"\n mount point:\t",m_point,'\0' ) ;
+	free( buffer ) ;
+	
+	StringMultipleAppend( p,"\n mount point:\t",m_point,"\n",'\0' ) ;
 }
 
 static char * zuluCryptLoopDeviceAddress( const char * device )
@@ -217,9 +248,6 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	
 	z = StringIntToString_1( buffer,SIZE,crypt_get_data_offset( cd ) ) ;
 	StringMultipleAppend( p,"\n offset:\t",z," sectors",'\0' );
-	
-	z = StringIntToString_1( buffer,SIZE,cad.size ) ;
-	StringMultipleAppend( p,"\n size:   \t",z," sectors",'\0' );
 	
 	if( cad.flags == 1 )
 		StringAppend( p,"\n mode:   \tread only" );

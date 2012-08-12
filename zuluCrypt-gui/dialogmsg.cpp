@@ -20,7 +20,7 @@
 #include "ui_dialogmsg.h"
 
 DialogMsg::DialogMsg( QWidget * parent ) :
-        QDialog( parent ),
+	QDialog( parent ),
 	m_ui( new Ui::DialogMsg )
 {
 	m_ui->setupUi( this );
@@ -77,7 +77,7 @@ void DialogMsg::setDimentions( QString msg )
 {
 	int len = msg.size() ;
 
-	if( len <= 30 ){ 
+	if( len <= 30 ){
 		this->setFixedSize( 270,90 );
 		m_ui->label->setGeometry( 10,10,251,31 );
 		m_ui->label->setFixedSize( m_ui->label->size() );
@@ -146,7 +146,7 @@ void DialogMsg::ShowUIVolumeProperties( QString title,QString msg )
 	m_ui->label->setHidden( true );
 
 	msg.replace( "   ","" ) ;
-	
+
 	QStringList stl = msg.split("\n") ;
 
 	this->setFixedSize( this->size() );
@@ -192,7 +192,7 @@ void DialogMsg::ShowUIOK( QString title,QString msg )
 	m_ui->pbOk->setHidden( false );
 
 	this->HideLabels();
-	this->setDimentions( msg );	
+	this->setDimentions( msg );
 	this->ShowUI( title,msg );
 }
 
@@ -208,7 +208,7 @@ int DialogMsg::ShowUIYesNo( QString title,QString msg )
 {
 	this->SetUpButtons();
 	this->setDimentions( msg );
-	this->ShowUI( title,msg );	
+	this->ShowUI( title,msg );
 	return m_status;
 }
 
