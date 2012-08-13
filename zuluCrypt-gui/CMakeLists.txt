@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
-add_definitions( -D_FILE_OFFSET_BITS=64 -Wall -pedantic -std=c++0x -I${PROJECT_BINARY_DIR}/zuluCrypt-gui/) 
+add_definitions( -D_FILE_OFFSET_BITS=64 -Wall -pedantic -std=c++0x -I${PROJECT_BINARY_DIR}/zuluCrypt-gui/ -I${KDEINCLUDE} ) 
 
 set (UI_FILES createfile.ui
 		createpartition.ui
@@ -17,7 +17,8 @@ set (UI_FILES createfile.ui
 		dialogmsg.ui
 		managesystemvolumes.ui
 		managedevicenames.ui
-		erasedevice.ui		
+		erasedevice.ui	
+		kwalletconfig.ui
 )
 
 set( MOC_FILES createfile.h
@@ -47,6 +48,7 @@ set( MOC_FILES createfile.h
 		createvolumedialog.h
 		dialogmsg.h
 		managesystemvolumes.h
+		kwalletconfig.h
  )
 	
 set (SRC createfile.cpp
@@ -80,6 +82,8 @@ set (SRC createfile.cpp
 	managesystemvolumes.cpp
 	keystrength.cpp
 	userfont.cpp
+	kwalletplugin.cpp
+	kwalletconfig.cpp
 )
 
 find_package( Qt4 REQUIRED )
@@ -118,11 +122,7 @@ endif( header_pwquality )
 				
 add_executable( zuluCrypt-gui ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS})			
 
-if( library_pwquality )	
-	TARGET_LINK_LIBRARIES( zuluCrypt-gui ${QT_LIBRARIES} ${blkid} ${library_pwquality})
-else( library_pwquality )
-	TARGET_LINK_LIBRARIES( zuluCrypt-gui ${QT_LIBRARIES} ${blkid} )	
-endif( library_pwquality )	
+TARGET_LINK_LIBRARIES( zuluCrypt-gui ${QT_LIBRARIES} ${blkid} ${library_pwquality} ${kwallet_library} )
 
 install( TARGETS zuluCrypt-gui RUNTIME DESTINATION bin )
 

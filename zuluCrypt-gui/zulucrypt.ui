@@ -144,6 +144,7 @@
     <addaction name="actionFonts"/>
     <addaction name="actionManage_names"/>
     <addaction name="actionManage_system_partitions"/>
+    <addaction name="actionManage_kwallet"/>
    </widget>
    <widget class="QMenu" name="menuFavorites">
     <property name="title">
@@ -403,6 +404,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+C</string>
+   </property>
+  </action>
+  <action name="actionManage_kwallet">
+   <property name="text">
+    <string>manage kwallet</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
    </property>
   </action>
  </widget>

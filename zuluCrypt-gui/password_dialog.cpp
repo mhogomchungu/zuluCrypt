@@ -36,6 +36,8 @@ passwordDialog::passwordDialog( QTableWidget * table,QWidget * parent ) : QDialo
 	m_ui = new Ui::PasswordDialog() ;
 	m_ui->setupUi( this );
 
+	m_parent = parent ;
+
 	this->setFixedSize( this->size() );
 	this->setWindowFlags( Qt::Window | Qt::Dialog );
 	this->setFont( parent->font() );
@@ -70,7 +72,10 @@ passwordDialog::passwordDialog( QTableWidget * table,QWidget * parent ) : QDialo
 
 void passwordDialog::pbPlugin()
 {
-	QDir dir( QString( "/etc/zuluCrypt/modules" ) ) ;
+	// constant is set in "../zuluCrypt-cli/constants.h"
+	// current value is "/etc/zuluCrypt/modules"
+
+	QDir dir( QString( ZULUCRYPTpluginPath ) ) ;
 	if( !dir.exists() ){
 		m_ui->pushButtonPlugin->setEnabled( false );
 		return ;
@@ -80,6 +85,12 @@ void passwordDialog::pbPlugin()
 
 	list.removeOne( QString( ".") ) ;
 	list.removeOne( QString( "..") ) ;
+
+	if( kwalletplugin::hasFunctionality() ){
+		if( list.contains( QString( "kwallet" ) ) == false ){
+			list.append( QString( "kwallet" ) ) ;
+		}
+	}
 
 	m_pluginMenu->clear();
 
@@ -340,7 +351,6 @@ void passwordDialog::buttonOpenClicked( void )
 		return msg.ShowUIOK( QString( "ERROR!" ),QString( "atleast one required field is empty" ) );
 	}
 
-	passPhraseField.replace( "\"","\"\"\"" ) ;
 	vp.replace( "\"","\"\"\"" ) ;
 	mountPointPath.replace( "\"","\"\"\"" ) ;
 
@@ -358,9 +368,26 @@ void passwordDialog::buttonOpenClicked( void )
 		passPhraseField = miscfunctions::resolvePath( passPhraseField );
 	}else if( m_ui->radioButtonPassPhraseFromFile->isChecked() ){
 		passtype = QString( "-p" );
-	}else{
-		passtype = QString( "-G" );
+	}else if( m_ui->radioButtonPlugin->isChecked() ){
+
+		if( m_ui->PassPhraseField->text() == QString( "kwallet" ) ){
+
+			if( kwalletplugin::hasFunctionality() ){
+
+				passPhraseField = this->getKeyFromKWallet() ;
+
+				if( passPhraseField.isEmpty() )
+					return ;
+				passtype = QString( "-p" );
+			}else{
+				passtype = QString( "-G" ) ;
+			}
+		}else{
+			passtype = QString( "-G" ) ;
+		}
 	}
+
+	passPhraseField.replace( "\"","\"\"\"" ) ;
 
 	QString a = QString( ZULUCRYPTzuluCrypt ) ;
 	QString b = vp;
@@ -376,6 +403,32 @@ void passwordDialog::buttonOpenClicked( void )
 	m_isWindowClosable = false ;
 	disableAll();
 	ovt->start();
+}
+
+QString passwordDialog::getKeyFromKWallet()
+{
+	QString key ;
+
+	QString uuid = miscfunctions::getUUIDFromPath( m_ui->OpenVolumePath->text() ) ;
+
+	if( uuid.isEmpty() ){
+		DialogMsg msg( this ) ;
+		msg.ShowUIOK( tr( "ERROR" ),tr( "can store and retrieve passphrases only for LUKS volumes" ) ) ;
+	}else{
+		kwalletplugin kWallet( m_parent ) ;
+
+		if( kWallet.open() ){
+			key = kWallet.getKey( uuid ) ;
+			if( key.isEmpty() ){
+				DialogMsg msg( this ) ;
+				msg.ShowUIOK( tr( "ERROR" ),tr( "the volume does not appear to have an entry in the wallet" ) ) ;
+			}
+
+			kWallet.close();
+		}
+	}
+
+	return key ;
 }
 
 void passwordDialog::disableAll()

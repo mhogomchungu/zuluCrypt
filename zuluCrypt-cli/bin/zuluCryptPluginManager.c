@@ -80,8 +80,6 @@ void zuluCryptPluginManagerCloseConnection( void * p )
 	SocketClose( sc->connected ) ;
 	SocketClose( sc->server ) ;
 	
-	printf( "socket address is:%s\n",sockpath ) ;
-	
 	unlink( sockpath ) ;
 	
 	SocketDelete( &sc->connected ) ;
@@ -135,7 +133,12 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		 * module name does not contain a backslash, assume its a module name and go look for
 		 * it in /etc/zuluCrypt/modules
 		 */
-		mpath = String( "/etc/zuluCrypt/modules/" ) ;	
+		
+		/*
+		 * ZULUCRYPTpluginPath is set in ../constants.h
+		 * its current value is "/etc/zuluCrypt/modules"
+		 */
+		mpath = String( ZULUCRYPTpluginPath ) ;	
 		StringAppend( mpath,name ) ;
 	}else{
 		/*

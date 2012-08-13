@@ -107,6 +107,9 @@ void zuluCrypt::StartUpAddOpenedVolumesToTableThread()
 
 void zuluCrypt::setupUIElements()
 {
+	if( !kwalletplugin::hasFunctionality() )
+		m_ui->actionManage_kwallet->setEnabled( false ) ;
+
 	m_trayIcon = new QSystemTrayIcon( this );
 	m_trayIcon->setIcon( QIcon( QString( ":/zuluCrypt.png" ) ) );
 
@@ -163,6 +166,7 @@ void zuluCrypt::setupConnections()
 	connect( m_ui->actionDecrypt_file,SIGNAL( triggered() ),this,SLOT( decryptFile() ) );
 	connect( m_ui->actionLuks_header_backup,SIGNAL( triggered() ),this,SLOT( HelpLuksHeaderBackUp() ) );
 	connect( m_ui->actionManage_system_partitions,SIGNAL( triggered() ),this,SLOT( ShowManageSystemPartitions() ) ) ;
+	connect( m_ui->actionManage_kwallet,SIGNAL( triggered() ),this,SLOT( manageWallet() ) ) ;
 }
 
 void zuluCrypt::permissionExplanation()
@@ -746,6 +750,13 @@ void zuluCrypt::decryptFile()
 {
 	setUpCryptFiles()->decrypt();
 
+}
+
+void zuluCrypt::manageWallet()
+{
+	kwalletconfig * cfg = new kwalletconfig( this ) ;
+	connect( cfg,SIGNAL( HideUISignal() ),cfg,SLOT( deleteLater() ) ) ;
+	cfg->ShowUI();
 }
 
 zuluCrypt::~zuluCrypt()

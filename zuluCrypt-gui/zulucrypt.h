@@ -56,6 +56,8 @@
 #include "dialogmsg.h"
 #include "managesystemvolumes.h"
 #include "userfont.h"
+#include "kwalletplugin.h"
+#include "kwalletconfig.h"
 
 namespace Ui {
     class zuluCrypt;
@@ -127,6 +129,7 @@ private slots :
 	void encryptFile( void );
 	void decryptFile( void );
 	void HelpLuksHeaderBackUp( void );
+	void manageWallet( void ) ;
 private:
 	passwordDialog * setUpPasswordDialog( void );
 	openpartition * setUpOpenpartition( void );

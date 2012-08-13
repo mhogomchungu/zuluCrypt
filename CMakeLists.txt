@@ -4,6 +4,9 @@ cmake_minimum_required(VERSION 2.6)
 #set( CMAKE_SHARED_LINKER_FLAGS "-s" )
 #set( CMAKE_EXE_LINKER_FLAGS "-s" )
 
+set( KDEINCLUDE $ENV{KDEDIR}/include )
+set( KDELIB $ENV{KDEDIR}/lib )
+
 find_file( blkid.h blkid/blkid.h )
  
 if(NOT blkid.h)
@@ -23,7 +26,26 @@ message( STATUS "Found libblkid.so  : " ${blkid} )
 ADD_SUBDIRECTORY( zuluCrypt-cli )
 ADD_SUBDIRECTORY( zuluMount-gui )
 ADD_SUBDIRECTORY( zuluCrypt-gui )
-ADD_SUBDIRECTORY( plugins )
+#ADD_SUBDIRECTORY( plugins )
+
+
+find_file( kwallet_header kwallet.h PATHS ${KDEINCLUDE} )
+
+find_library( kwallet_library libkwalletbackend.so PATHS ${KDELIB} )
+
+if( kwallet_header )
+	if( kwallet_library )
+		message( STATUS "Found kwallet.h  : " ${kwallet_header} )
+		message( STATUS "Found libkwalletbackend.so  : " ${kwallet_library} )	
+		file( WRITE  ${PROJECT_BINARY_DIR}/can_build_kwallet.h "\n#define BUILD_KWALLET 1\n")
+		ADD_SUBDIRECTORY( kwallet )	
+	else( kwallet_library )
+		file(WRITE  ${PROJECT_BINARY_DIR}/can_build_kwallet.h "\n#define BUILD_KWALLET 0\n")		
+		message( STATUS "------------------------------\ncould not find libkwalletbackend.so,not building kwallet module\n------------------------------" )		
+	endif( kwallet_library)
+else( kwallet_header )
+	message( STATUS "------------------------------\ncould not find kwallet.h,not building kwallet module\n------------------------------" )		
+endif( kwallet_header )	
 
 ADD_SUBDIRECTORY( test )
 	 

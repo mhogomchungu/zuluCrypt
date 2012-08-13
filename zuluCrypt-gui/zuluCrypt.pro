@@ -11,8 +11,8 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        zulucrypt.cpp\
-        password_dialog.cpp \
+	zulucrypt.cpp\
+	password_dialog.cpp \
     openpartition.cpp \
     luksaddkey.cpp \
     luksdeletekey.cpp \
@@ -29,7 +29,7 @@ SOURCES += main.cpp\
     createfilethread.cpp \
     closevolumethread.cpp \
     checkvolumetype.cpp \
-    cryptoinfo.cpp \ 
+    cryptoinfo.cpp \
     createkeyfilethread.cpp \
     erasedevice.cpp \
     erasedevicethread.cpp \
@@ -40,7 +40,9 @@ SOURCES += main.cpp\
     dialogmsg.cpp \
     managesystemvolumes.cpp \
     keystrength.cpp \
-    userfont.cpp
+    userfont.cpp \
+    kwalletplugin.cpp \
+    kwalletconfig.cpp
 
 HEADERS  += zulucrypt.h password_dialog.h \
     openpartition.h \
@@ -59,7 +61,7 @@ HEADERS  += zulucrypt.h password_dialog.h \
     createfilethread.h \
     closevolumethread.h \
     checkvolumetype.h \
-    cryptoinfo.h \ 
+    cryptoinfo.h \
     createkeyfilethread.h \
     erasedevice.h \
     erasedevicethread.h \
@@ -70,8 +72,10 @@ HEADERS  += zulucrypt.h password_dialog.h \
     dialogmsg.h \
     managesystemvolumes.h \
     keystrength.h \
-    userfont.h
-    
+    userfont.h \
+    kwalletplugin.h \
+    kwalletconfig.h
+
 
 FORMS    += zulucrypt.ui password.ui \
     openpartition.ui \
@@ -81,26 +85,27 @@ FORMS    += zulucrypt.ui password.ui \
     createfile.ui \
     createkeyfile.ui \
     managedevicenames.ui \
-    cryptoinfo.ui \ 
+    cryptoinfo.ui \
     erasedevice.ui \
     manageluksheader.ui \
     cryptfiles.ui \
     createvolumedialog.ui \
     dialogmsg.ui \
-    managesystemvolumes.ui
+    managesystemvolumes.ui \
+    kwalletconfig.ui
 
-TRANSLATIONS = 
+TRANSLATIONS =
 
 RESOURCES = icon.qrc
 
-LIBS += -lblkid -lpwquality
+LIBS += -lblkid -lpwquality /home/local/KDE4/lib/libkwalletbackend.so
 
 QMAKE_CXXFLAGS += -D_FILE_OFFSET_BITS=64 -Wall
 
 OTHER_FILES += \
     backupluksheaderui
 
-INCLUDEPATH +=/home/ink/build
+INCLUDEPATH +=/home/ink/build /home/local/KDE4/include
 
 
 

@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -55,6 +55,7 @@ public:
 	static void debug( QString );
 	static void debug( int );
 	static QString mapperPath( QString );
+	static QString getUUIDFromPath( QString ) ;
 };
 
 #endif // MISCFUNCTIONS_H

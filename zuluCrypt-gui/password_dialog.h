@@ -34,6 +34,9 @@
 #include "miscfunctions.h"
 #include "checkvolumetype.h"
 #include "dialogmsg.h"
+#include "kwalletplugin.h"
+
+#include "../zuluCrypt-cli/constants.h"
 
 class passwordDialog :  public QDialog
 {
@@ -66,6 +69,7 @@ private slots :
 	void done( QString );
 	void cbStateChanged( int );
 private :
+	QString getKeyFromKWallet( void ) ;
 	void setDefaultOpenMode( void );
 	void disableAll( void );
 	void enableAll( void ) ;
@@ -76,6 +80,7 @@ private :
 	QTableWidget * m_table ;
 	bool m_open_with_path ;
 	QMenu * m_pluginMenu ;
+	QWidget * m_parent ;
 };
 
 #endif // PASSWORD_DIALOG_H
