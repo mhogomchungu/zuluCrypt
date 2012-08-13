@@ -72,23 +72,30 @@ passwordDialog::passwordDialog( QTableWidget * table,QWidget * parent ) : QDialo
 
 void passwordDialog::pbPlugin()
 {
+
+	QStringList list ;
+
 	// constant is set in "../zuluCrypt-cli/constants.h"
 	// current value is "/etc/zuluCrypt/modules"
 
 	QDir dir( QString( ZULUCRYPTpluginPath ) ) ;
+
 	if( !dir.exists() ){
-		m_ui->pushButtonPlugin->setEnabled( false );
-		return ;
-	}
-
-	QStringList list = dir.entryList() ;
-
-	list.removeOne( QString( ".") ) ;
-	list.removeOne( QString( "..") ) ;
-
-	if( kwalletplugin::hasFunctionality() ){
-		if( list.contains( QString( "kwallet" ) ) == false ){
+		if( kwalletplugin::hasFunctionality() ){
 			list.append( QString( "kwallet" ) ) ;
+		}else{
+			m_ui->pushButtonPlugin->setEnabled( false );
+			return ;
+		}
+	}else{
+		list = dir.entryList() ;
+
+		list.removeOne( QString( ".") ) ;
+		list.removeOne( QString( "..") ) ;
+
+		if( kwalletplugin::hasFunctionality() ){
+			if( !list.contains( QString( "kwallet" ) ) )
+				list.append( QString( "kwallet" ) ) ;
 		}
 	}
 
