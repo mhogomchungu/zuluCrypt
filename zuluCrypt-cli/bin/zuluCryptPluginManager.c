@@ -139,7 +139,7 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		 * its current value is "/etc/zuluCrypt/modules"
 		 */
 		mpath = String( ZULUCRYPTpluginPath ) ;	
-		StringAppend( mpath,name ) ;
+		StringMultipleAppend( mpath,"/",name,'\0' ) ;
 	}else{
 		/*
 		 * module has a backslash, assume its path to where a module is located
@@ -168,7 +168,7 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		unlink( sockpath ) ;
 	
 	uuid = zuluCryptGetDeviceUUID( device ) ;
-	
+
 	p = Process( cpath ) ;		
 	ProcessSetUser( p,uid ) ;
 	ProcessSetOptionTimeout( p,60,SIGKILL ) ;

@@ -107,9 +107,6 @@ void zuluCrypt::StartUpAddOpenedVolumesToTableThread()
 
 void zuluCrypt::setupUIElements()
 {
-	if( !kwalletplugin::hasFunctionality() )
-		m_ui->actionManage_kwallet->setEnabled( false ) ;
-
 	m_trayIcon = new QSystemTrayIcon( this );
 	m_trayIcon->setIcon( QIcon( QString( ":/zuluCrypt.png" ) ) );
 
@@ -118,9 +115,6 @@ void zuluCrypt::setupUIElements()
 	m_trayIcon->setContextMenu( trayMenu );
 
 	m_ui->setupUi( this );
-
-	if( getuid() != 0 )
-		m_ui->actionManage_system_partitions->setEnabled( false );
 
 	this->setFixedSize( this->size() );
 	this->setWindowIcon( QIcon( QString( ":/zuluCrypt.png" ) ) );
@@ -167,6 +161,11 @@ void zuluCrypt::setupConnections()
 	connect( m_ui->actionLuks_header_backup,SIGNAL( triggered() ),this,SLOT( HelpLuksHeaderBackUp() ) );
 	connect( m_ui->actionManage_system_partitions,SIGNAL( triggered() ),this,SLOT( ShowManageSystemPartitions() ) ) ;
 	connect( m_ui->actionManage_kwallet,SIGNAL( triggered() ),this,SLOT( manageWallet() ) ) ;
+
+	if( !kwalletplugin::hasFunctionality() )
+		m_ui->actionManage_kwallet->setEnabled( false ) ;
+
+	m_ui->actionManage_system_partitions->setEnabled( miscfunctions::userIsRoot() );
 }
 
 void zuluCrypt::permissionExplanation()
@@ -341,6 +340,7 @@ void zuluCrypt::setUserFont( QFont Font )
 	m_ui->actionPermission_problems->setFont( this->font() );
 	m_ui->actionLuks_header_backup->setFont( this->font() );
 	m_ui->actionManage_system_partitions->setFont( this->font() );
+	m_ui->actionManage_kwallet->setFont( this->font() );
 }
 
 void zuluCrypt::info()
@@ -749,7 +749,6 @@ void zuluCrypt::encryptFile()
 void zuluCrypt::decryptFile()
 {
 	setUpCryptFiles()->decrypt();
-
 }
 
 void zuluCrypt::manageWallet()

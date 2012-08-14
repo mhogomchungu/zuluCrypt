@@ -62,6 +62,7 @@ openpartition::openpartition( QWidget * parent ) :
 
 	m_ui->checkBoxUUID->setVisible( false );
 
+	m_diableNonLUKS = false ;
 	//m_ui->pbUUID->setVisible( false );
 }
 
@@ -141,6 +142,12 @@ void openpartition::ShowPartitionList( QString x,QString y )
 	partitionList( x,y );
 }
 
+void openpartition::allowLUKSOnly()
+{
+	m_diableNonLUKS = true ;
+	this->ShowAllPartitions();
+}
+
 void openpartition::partitionList( QString title,QString type )
 {
 	this->setWindowTitle( title );
@@ -189,6 +196,16 @@ void openpartition::tableEntryDoubleClicked( QTableWidgetItem * item )
 	QString dev ;
 	QTableWidget * tw = m_ui->tableWidget ;
 
+	if( m_diableNonLUKS ){
+		if( tw->item( item->row(),3 )->text() != QString( "crypto_LUKS") ){
+			DialogMsg m( this ) ;
+
+			return m.ShowUIOK( tr( "ERROR" ),tr( "only cryto_LUKS volumes can be selected" ) ) ;
+		}else{
+			m_ui->pbUUID->setFlat( true );
+		}
+
+	}
 	//if( m_ui->checkBoxUUID->isChecked() == true )
 	if( m_ui->pbUUID->isFlat() )
 		dev = QString( "UUID=\"" ) + tw->item( item->row(),4 )->text() + QString( "\"" ) ;

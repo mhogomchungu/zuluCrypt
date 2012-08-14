@@ -56,6 +56,7 @@ public:
 	static void debug( int );
 	static QString mapperPath( QString );
 	static QString getUUIDFromPath( QString ) ;
+	static bool userIsRoot( void ) ;
 };
 
 #endif // MISCFUNCTIONS_H

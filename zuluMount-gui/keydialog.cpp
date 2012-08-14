@@ -10,6 +10,8 @@ keyDialog::keyDialog( QWidget * parent,QString path,QString mode ) :
 	m_path = path ;
 	m_mode = mode ;
 
+	m_menu = new QMenu( this ) ;
+
 	this->setFixedSize( this->size() );
 	this->setWindowFlags( Qt::Window | Qt::Dialog );
 	this->setFont( parent->font() );
@@ -18,7 +20,7 @@ keyDialog::keyDialog( QWidget * parent,QString path,QString mode ) :
 
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->pbOpen,SIGNAL( clicked() ),this,SLOT( pbOpen() ) ) ;
-	connect( m_ui->pbOpenKeyFile,SIGNAL( clicked() ),this,SLOT( pbKeyFileOpen() ) ) ;
+	connect( m_ui->pbOpenKeyFile,SIGNAL( clicked() ),this,SLOT( pbPlugin() ) ) ;
 	connect( m_ui->rbKey,SIGNAL( toggled( bool ) ),this,SLOT( rbKey( bool ) ) ) ;
 	connect( m_ui->rbKeyFile,SIGNAL( toggled( bool ) ),this,SLOT( rbKeyFile( bool ) ) ) ;
 	connect( m_ui->rbPlugIn,SIGNAL( toggled( bool ) ),this,SLOT( rbPlugIn( bool ) ) ) ;
@@ -45,7 +47,7 @@ void keyDialog::enableAll()
 	m_ui->rbKeyFile->setEnabled( true );
 	m_ui->lineEditKey->setEnabled( true );
 	m_ui->rbPlugIn->setEnabled( true );
-	if( m_ui->rbKeyFile->isChecked() )
+	if( m_ui->rbPlugIn->isChecked() )
 		m_ui->pbOpenKeyFile->setEnabled( true );
 }
 
@@ -61,21 +63,46 @@ void keyDialog::disableAll()
 	m_ui->rbPlugIn->setEnabled( false );
 }
 
-void keyDialog::pbKeyFileOpen()
+void keyDialog::pbPlugin()
 {
-	if( m_ui->rbKeyFile->isChecked() ){
-		QString Z = QFileDialog::getOpenFileName( this,tr( "select a keyfile" ),QDir::homePath(),0 );
-		if( !Z.isEmpty() )
-			m_ui->lineEditKey->setText( Z );
-	}else if( m_ui->rbPlugIn->isChecked() ){
-		QString path = QString( "/etc/zuluCrypt/modules/" ) ;
-		QDir d( path ) ;
-		if( d.exists() == false )
-			path = QDir::homePath() ;
-		QString Z = QFileDialog::getOpenFileName( this,tr( "select a key module" ),path,0 );
-		if( !Z.isEmpty() )
-			m_ui->lineEditKey->setText( Z );
-	}
+	QStringList list ;
+
+	// constant is set in "../zuluCrypt-cli/constants.h"
+	// current value is "/etc/zuluCrypt/modules"
+
+	QDir dir( QString( ZULUCRYPTpluginPath ) ) ;
+
+	if( !dir.exists() )
+		return ;
+
+	list = dir.entryList() ;
+
+	list.removeOne( QString( ".") ) ;
+	list.removeOne( QString( "..") ) ;
+
+	m_menu->clear();
+
+	int j = list.size()  ;
+
+	if( j == 0 )
+		return ;
+
+	for( int i = 0 ; i < j ; i++ )
+		m_menu->addAction( list.at( i ) ) ;
+
+	m_menu->addSeparator() ;
+
+	m_menu->addAction( tr( "cancel" ) ) ;
+
+	connect( m_menu,SIGNAL( triggered( QAction * ) ),this,SLOT( pbPluginEntryClicked( QAction * ) ) ) ;
+
+	m_menu->exec( QCursor::pos() ) ;
+}
+
+void keyDialog::pbPluginEntryClicked( QAction * e )
+{
+	if( e->text() != tr( "cancel" ) )
+		m_ui->lineEditKey->setText( e->text() ) ;
 }
 
 void keyDialog::closeEvent( QCloseEvent * e )
@@ -132,7 +159,8 @@ void keyDialog::rbPlugIn( bool opt )
 	if( opt ){
 		m_ui->lineEditKey->setEchoMode( QLineEdit::Normal );
 		m_ui->label->setText( tr( "plugin name" ) );
-		m_ui->pbOpenKeyFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) );
+		m_ui->pbOpenKeyFile->setIcon( QIcon( QString( ":/module.png" ) ) );
+
 		m_ui->pbOpenKeyFile->setEnabled( true );
 		m_ui->lineEditKey->clear();
 	}
@@ -178,5 +206,6 @@ void keyDialog::HideUI()
 
 keyDialog::~keyDialog()
 {
+	m_menu->deleteLater();
 	delete m_ui;
 }

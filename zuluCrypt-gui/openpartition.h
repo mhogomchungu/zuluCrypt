@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -55,6 +55,7 @@ public slots:
 	void ShowNonSystemPartitions( void ) ;
 	void ShowPartitionList( QString,QString );
 	void partitionList( QString,QString );
+	void allowLUKSOnly( void ) ;
 private slots:
 	void pbHelp( void );
 	void pbUUID( void );
@@ -63,12 +64,13 @@ private slots:
 	void currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous );
 	void partitionpropertiesThreadFinished( void );
 	void partitionProperties( QStringList );
-private:	
+private:
 	void closeEvent( QCloseEvent * ) ;
-	void HighlightRow( int,bool );	
+	void HighlightRow( int,bool );
 	Ui::PartitionView * m_ui ;
 	QAction * m_action ;
 	int m_option ;
+	bool m_diableNonLUKS ;
 };
 
 #endif

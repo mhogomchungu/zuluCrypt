@@ -40,7 +40,9 @@ public:
 	bool open( void ) ;
 	static bool hasFunctionality( void ) ;
 	bool setFolder( QString ) ;
-	int readMap( QString,QMap<QString,QString> & ) ;
+	int readMap( QMap<QString,QString> & ) ;
+	int writeMap( QMap<QString,QString> & ) ;
+	void initWallet( void ) ;
 private:
 	KWallet::Wallet * m_wallet ;
 	QWidget * m_parent ;
@@ -52,15 +54,16 @@ private:
 class kwalletplugin
 {
 public:
-	kwalletplugin( QWidget * p ){ m_parent = p ; m_walletOpened = false ; };
-	//~kwalletplugin() ;
-	QString getKey( QString uuid ){ return uuid ; } ;
-	void close( void ){} ;
-	bool open( void ){ return false ; } ;
-	static bool hasFunctionality( void ) { return false ; } ;
-	bool setFolder( QString ){ return false ; } ;
-	int readMap( QString,QMap<QString,QString> & ) { QMap<QString,QString> m ; return m ; };
-
+	kwalletplugin( QWidget * p ){ m_parent = p ; m_walletOpened = false ; }
+	~kwalletplugin(){}
+	QString getKey( QString uuid ){ return uuid ; }
+	void close( void ){}
+	bool open( void ){ return false ; }
+	static bool hasFunctionality( void ) { return false ; }
+	bool setFolder( QString ){ return false ; }
+	int readMap( QMap<QString,QString> & ) { return 0 ; }
+	int writeMap( QMap<QString,QString> & ) { return 0 ; }
+	void initWallet( void ) {}
 private:
 	//KWallet::Wallet * m_wallet ;
 	QWidget * m_parent ;

@@ -32,7 +32,7 @@ bool kwalletplugin::hasFunctionality()
 
 bool kwalletplugin::open()
 {
-	m_wallet = KWallet::Wallet::openWallet( "zuluCrypt",m_parent->winId(),KWallet::Wallet::Synchronous ) ;
+	m_wallet = KWallet::Wallet::openWallet( QString( "zuluCrypt" ),m_parent->winId(),KWallet::Wallet::Synchronous ) ;
 
 	if( m_wallet )
 		m_walletOpened = true ;
@@ -47,9 +47,19 @@ bool kwalletplugin::setFolder( QString folder )
 	return m_wallet->setFolder( folder ) ;
 }
 
-int kwalletplugin::readMap( QString key,QMap<QString,QString> & map )
+int kwalletplugin::readMap( QMap<QString,QString> & map )
 {
-	return m_wallet->readMap( key,map ) ;
+	return m_wallet->readMap( QString( "LUKS" ),map ) ;
+}
+
+int kwalletplugin::writeMap( QMap<QString, QString> & map )
+{
+	return m_wallet->writeMap( QString( "LUKS" ),map ) ;
+}
+
+void kwalletplugin::initWallet()
+{
+	//if( )
 }
 
 QString kwalletplugin::getKey( QString uuid )
@@ -66,7 +76,7 @@ QString kwalletplugin::getKey( QString uuid )
 
 	QMap <QString,QString> map ;
 
-	if( m_wallet->readMap( "LUKS",map ) ){
+	if( m_wallet->readMap( QString( "LUKS"),map ) ){
 		qDebug() << "readMap() failed";
 		return key ;
 	}

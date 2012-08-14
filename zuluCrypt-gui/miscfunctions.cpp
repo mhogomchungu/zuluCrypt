@@ -36,6 +36,11 @@ QString miscfunctions::cryptMapperPath()
 	return QString( "/dev/mapper/" ) ;
 }
 
+bool miscfunctions::userIsRoot()
+{
+	return getuid() == 0 ? true : false ;
+}
+
 void miscfunctions::debug( QString s )
 {
 	std::cout << s.toStdString() << std::endl ;

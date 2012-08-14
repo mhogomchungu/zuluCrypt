@@ -39,7 +39,7 @@ MainWindow::MainWindow( QWidget * parent ) :
 	this->setWindowIcon( QIcon( QString( ":/zuluMount.png" ) ) );
 
 	connect( m_ui->tableWidget,SIGNAL( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ),
-		 this,SLOT( slotCurrentItemChanged( QTableWidgetItem*,QTableWidgetItem * ) ) ) ;
+		 this,SLOT( slotCurrentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ) ) ;
 	connect( m_ui->pbmount,SIGNAL( clicked() ),this,SLOT( pbMount() ) ) ;
 	connect( m_ui->pbunmount,SIGNAL( clicked() ),this,SLOT( pbUmount() ) ) ;
 	connect( m_ui->pbupdate,SIGNAL( clicked()),this,SLOT(pbUpdate() ) ) ;
@@ -275,6 +275,8 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 	else
 		f.setItalic( true );
 
+	int p ;
+	
 	for( int i = 0 ; i < j ; i++ ){
 
 		row = table->rowCount() ;
@@ -282,14 +284,14 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 		entries = list.at( i ).split( '\t' ) ;
 
 		if( sys.contains( entries.at( 0 ) ) ){
-			for( int p = 0 ; p < col ; p++ ){
+			for( p = 0 ; p < col ; p++ ){
 				item = new QTableWidgetItem( entries.at( p ) ) ;
 				item->setTextAlignment( Qt::AlignCenter ) ;
 				item->setFont( f );
 				table->setItem( row,p,item );
 			}
 		}else{
-			for( int p = 0 ; p < col ; p++ ){
+			for( p = 0 ; p < col ; p++ ){
 				item = new QTableWidgetItem( entries.at( p ) ) ;
 				item->setTextAlignment( Qt::AlignCenter ) ;
 				table->setItem( row,p,item );

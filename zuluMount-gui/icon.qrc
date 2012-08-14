@@ -4,6 +4,7 @@
 	 <qresource>
 		 <file>zuluMount.png</file>
 		 <file>passphrase.png</file>		 
-		 <file>keyfile.png</file>		 		 
+		 <file>keyfile.png</file>
+		 <file>module.png</file>
 	 </qresource>
  </RCC>

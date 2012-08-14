@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>723</width>
-    <height>357</height>
+    <height>388</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <property name="geometry">
     <rect>
      <x>220</x>
-     <y>320</y>
+     <y>350</y>
      <width>91</width>
      <height>31</height>
     </rect>
@@ -71,7 +71,7 @@
    <property name="geometry">
     <rect>
      <x>310</x>
-     <y>320</y>
+     <y>350</y>
      <width>91</width>
      <height>31</height>
     </rect>
@@ -119,14 +119,14 @@
   <widget class="QLabel" name="labelPassphrase">
    <property name="geometry">
     <rect>
-     <x>15</x>
-     <y>294</y>
-     <width>131</width>
-     <height>21</height>
+     <x>20</x>
+     <y>290</y>
+     <width>121</width>
+     <height>31</height>
     </rect>
    </property>
    <property name="text">
-    <string>passphrase</string>
+    <string>key</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -135,9 +135,9 @@
   <widget class="QPushButton" name="pbShowUUID">
    <property name="geometry">
     <rect>
-     <x>570</x>
+     <x>600</x>
      <y>260</y>
-     <width>41</width>
+     <width>31</width>
      <height>31</height>
     </rect>
    </property>
@@ -149,7 +149,7 @@
    <property name="geometry">
     <rect>
      <x>400</x>
-     <y>320</y>
+     <y>350</y>
      <width>101</width>
      <height>31</height>
     </rect>
@@ -158,7 +158,56 @@
     <string>&amp;close</string>
    </property>
   </widget>
+  <widget class="QLineEdit" name="lineEditRepeatPassphrase">
+   <property name="geometry">
+    <rect>
+     <x>150</x>
+     <y>320</y>
+     <width>421</width>
+     <height>31</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelRepeatPassphrase">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>320</y>
+     <width>131</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>repeat key</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pbGetUUIDFromFile">
+   <property name="geometry">
+    <rect>
+     <x>570</x>
+     <y>260</y>
+     <width>31</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
  </widget>
+ <tabstops>
+  <tabstop>tableWidget</tabstop>
+  <tabstop>lineEditUUID</tabstop>
+  <tabstop>pbShowUUID</tabstop>
+  <tabstop>lineEditPassphrase</tabstop>
+  <tabstop>lineEditRepeatPassphrase</tabstop>
+  <tabstop>pbAdd</tabstop>
+  <tabstop>pbDelete</tabstop>
+  <tabstop>pbClose</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

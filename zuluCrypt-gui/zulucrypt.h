@@ -30,9 +30,6 @@
 #include <QMessageBox>
 #include <QCloseEvent>
 
-#include <unistd.h>
-#include <sys/types.h>
-
 #include "../zuluCrypt-cli/constants.h"
 #include "../zuluCrypt-cli/version.h"
 #include "password_dialog.h"

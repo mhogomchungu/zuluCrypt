@@ -83,9 +83,9 @@
    <widget class="QRadioButton" name="rbKeyFile">
     <property name="geometry">
      <rect>
-      <x>70</x>
+      <x>150</x>
       <y>0</y>
-      <width>131</width>
+      <width>141</width>
       <height>31</height>
      </rect>
     </property>
@@ -96,7 +96,7 @@
    <widget class="QRadioButton" name="rbPlugIn">
     <property name="geometry">
      <rect>
-      <x>207</x>
+      <x>70</x>
       <y>0</y>
       <width>81</width>
       <height>31</height>

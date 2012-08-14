@@ -5,10 +5,13 @@
 #include <QString>
 #include <QCloseEvent>
 #include <QFileDialog>
+#include <QDir>
+#include <QMenu>
 
 #include "../zuluCrypt-gui/dialogmsg.h"
 #include "managepartitionthread.h"
 #include "../zuluCrypt-gui/miscfunctions.h"
+#include "../zuluCrypt-cli/constants.h"
 
 namespace Ui {
 class keyDialog;
@@ -29,13 +32,14 @@ signals:
 public slots:
 	void slotMountComplete( int,QString ) ;
 private slots:
+	void pbPluginEntryClicked( QAction * ) ;
 	void keyTextChanged( QString ) ;
 	void rbPlugIn( bool ) ;
 	void rbKey( bool ) ;
 	void rbKeyFile( bool ) ;
 	void pbOpen( void ) ;
 	void pbCancel( void ) ;
-	void pbKeyFileOpen( void );
+	void pbPlugin( void );
 private:
 	void enableAll( void ) ;
 	void disableAll( void ) ;
@@ -43,6 +47,7 @@ private:
 	Ui::keyDialog * m_ui;
 	QString m_path ;
 	QString m_mode ;
+	QMenu * m_menu ;
 };
 
 #endif // KEYDIALOG_H

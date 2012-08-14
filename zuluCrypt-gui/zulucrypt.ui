@@ -143,8 +143,8 @@
     <addaction name="actionTray_icon"/>
     <addaction name="actionFonts"/>
     <addaction name="actionManage_names"/>
-    <addaction name="actionManage_system_partitions"/>
     <addaction name="actionManage_kwallet"/>
+    <addaction name="actionManage_system_partitions"/>
    </widget>
    <widget class="QMenu" name="menuFavorites">
     <property name="title">

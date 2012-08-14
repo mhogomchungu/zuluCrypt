@@ -72,7 +72,6 @@ passwordDialog::passwordDialog( QTableWidget * table,QWidget * parent ) : QDialo
 
 void passwordDialog::pbPlugin()
 {
-
 	QStringList list ;
 
 	// constant is set in "../zuluCrypt-cli/constants.h"
@@ -103,6 +102,9 @@ void passwordDialog::pbPlugin()
 
 	int j = list.size()  ;
 
+	if( j == 0 )
+		return ;
+
 	for( int i = 0 ; i < j ; i++ )
 		m_pluginMenu->addAction( list.at( i ) ) ;
 
@@ -117,9 +119,8 @@ void passwordDialog::pbPlugin()
 
 void passwordDialog::pbPluginEntryClicked( QAction * e )
 {
-	if( e->text() == tr( "cancel" ) )
-		return ;
-	m_ui->PassPhraseField->setText( e->text() ) ;
+	if( e->text() != tr( "cancel" ) )
+		m_ui->PassPhraseField->setText( e->text() ) ;
 }
 
 void passwordDialog::cbStateChanged( int state )
@@ -149,7 +150,7 @@ void passwordDialog::cbStateChanged( int state )
 		if( opt == QByteArray( "0" ) ) {
 			f.seek( 0 ) ;
 
-			bool st = msg.ShowUIOKDoNotShowOption( QString( "info" ),m ) ;
+			bool st = msg.ShowUIOKDoNotShowOption( tr( "info" ),m ) ;
 
 			if( st )
 				f.write( "1" ) ;
@@ -159,7 +160,7 @@ void passwordDialog::cbStateChanged( int state )
 			f.close();
 		}
 	}else{
-		bool st = msg.ShowUIOKDoNotShowOption( QString( "info" ),m ) ;
+		bool st = msg.ShowUIOKDoNotShowOption( tr( "info" ),m ) ;
 
 		f.open( QIODevice::WriteOnly ) ;
 
@@ -355,7 +356,7 @@ void passwordDialog::buttonOpenClicked( void )
 
 	if( mountPointPath.isEmpty() || passPhraseField.isEmpty() || vp.isEmpty() ){
 		DialogMsg msg( this ) ;
-		return msg.ShowUIOK( QString( "ERROR!" ),QString( "atleast one required field is empty" ) );
+		return msg.ShowUIOK( QString( "ERROR!" ),tr( "atleast one required field is empty" ) );
 	}
 
 	vp.replace( "\"","\"\"\"" ) ;
