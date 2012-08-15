@@ -109,20 +109,7 @@ void openpartition::EnterKeyPressed()
 
 void openpartition::currentItemChanged( QTableWidgetItem * current, QTableWidgetItem * previous )
 {
-	if( current != NULL )
-		HighlightRow( current->row(),true ) ;
-	if( previous != NULL )
-		if( current != NULL )
-			if( previous->row() != current->row() )
-				HighlightRow( previous->row(),false ) ;
-}
-
-void openpartition::HighlightRow( int r, bool b )
-{
-	for( int i = 0 ; i < 5 ; i++ )
-		m_ui->tableWidget->item( r,i )->setSelected( b );
-	if( b==true )
-		m_ui->tableWidget->setCurrentCell( r,4 );
+	miscfunctions::selectTableRow( current,previous ) ;
 }
 
 void openpartition::ShowNonSystemPartitions()
@@ -169,14 +156,15 @@ void openpartition::partitionProperties( QStringList entry )
 	QTableWidgetItem * item ;
 	int row = m_ui->tableWidget->rowCount() ;
 	m_ui->tableWidget->insertRow( row );
-	int h = m_ui->tableWidget->rowHeight( 0 ) ;
-	for( int i = 0 ; i < 5 ; i++ ){
+
+	int col = m_ui->tableWidget->columnCount() ;
+	for( int i = 0 ; i < col ; i++ ){
 		item = new QTableWidgetItem( entry.at( i ) ) ;
 		item->setTextAlignment( Qt::AlignCenter );
 		m_ui->tableWidget->setItem( row,i,item );
-		m_ui->tableWidget->setRowHeight( row,h );
 	}
-	m_ui->tableWidget->setCurrentCell( row,4 );
+
+	m_ui->tableWidget->setCurrentCell( row,m_ui->tableWidget->columnCount() - 1 );
 }
 
 void openpartition::partitionpropertiesThreadFinished()

@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -62,7 +62,6 @@ private slots:
 	void shortcutPressed( void );
 	void devicePathTextChange( QString );
 private:
-	void HighlightRow( int,bool ) ;
 	void closeEvent( QCloseEvent * ) ;
 	void addEntries( QString,QString ) ;
 	Ui::managedevicenames * m_ui;

@@ -44,6 +44,7 @@ if( kwallet_header )
 		message( STATUS "------------------------------\ncould not find libkwalletbackend.so,not building kwallet module\n------------------------------" )		
 	endif( kwallet_library)
 else( kwallet_header )
+	file(WRITE  ${PROJECT_BINARY_DIR}/can_build_kwallet.h "\n#define BUILD_KWALLET 0\n")			
 	message( STATUS "------------------------------\ncould not find kwallet.h,not building kwallet module\n------------------------------" )		
 endif( kwallet_header )	
 

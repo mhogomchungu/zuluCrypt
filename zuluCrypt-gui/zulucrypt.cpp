@@ -182,15 +182,6 @@ Please see documentation for further details." ) ;
 	m.ShowUIInfo( tr( "INFORMATION" ),msg );
 }
 
-void zuluCrypt::HighlightRow( int row,bool b )
-{
-	for( int i = 0 ; i < 3 ; i++ )
-		m_ui->tableWidget->item( row,i )->setSelected( b );
-	if( b == true )
-		m_ui->tableWidget->setCurrentCell( row,1 );
-	m_ui->tableWidget->setFocus();
-}
-
 void zuluCrypt::ShowManageSystemPartitions()
 {
 	manageSystemVolumes * msv = new manageSystemVolumes( this ) ;
@@ -200,12 +191,7 @@ void zuluCrypt::ShowManageSystemPartitions()
 
 void zuluCrypt::currentItemChanged( QTableWidgetItem * current, QTableWidgetItem * previous )
 {
-	if( current != NULL )
-		HighlightRow( current->row(), true ) ;
-	if( previous != NULL )
-		if( current != NULL )
-			if( previous->row() != current->row() )
-				HighlightRow( previous->row(), false ) ;
+	miscfunctions::selectTableRow( current,previous ) ;
 }
 
 void zuluCrypt::closeAllVolumes()
@@ -401,9 +387,6 @@ void zuluCrypt::addItemToTable( QString device,QString m_point )
 void zuluCrypt::removeRowFromTable( int x )
 {
 	m_ui->tableWidget->removeRow( x ) ;
-	int count = m_ui->tableWidget->rowCount() ;
-	if( count > 0 )
-		m_ui->tableWidget->setCurrentCell( count - 1,1 );
 }
 
 void zuluCrypt::volume_property()
@@ -465,13 +448,13 @@ void zuluCrypt::addToFavorite()
 void zuluCrypt::menuKeyPressed()
 {
 	QTableWidgetItem * it = m_ui->tableWidget->currentItem() ;
-	if( it != NULL )
+	if( it )
 		itemClicked( it,false );
 }
 
 void zuluCrypt::itemClicked( QTableWidgetItem * it )
 {
-	if( it != NULL )
+	if( it )
 		itemClicked( it,true );
 }
 

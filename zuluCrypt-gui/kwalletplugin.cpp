@@ -57,9 +57,14 @@ int kwalletplugin::writeMap( QMap<QString, QString> & map )
 	return m_wallet->writeMap( QString( "LUKS" ),map ) ;
 }
 
-void kwalletplugin::initWallet()
+bool kwalletplugin::isOpen()
 {
-	//if( )
+	return m_walletOpened ;
+}
+
+bool kwalletplugin::folderDoesNotExist()
+{
+	return KWallet::Wallet::folderDoesNotExist( QString( "zuluCrypt" ),QString( "Form Data" ) ) ;
 }
 
 QString kwalletplugin::getKey( QString uuid )
@@ -69,10 +74,11 @@ QString kwalletplugin::getKey( QString uuid )
 	if( m_walletOpened == false )
 		return key ;
 
-	if( !m_wallet->setFolder( "Form Data" ) ){
-		qDebug() << "setFolder() failed ";
-		return key ;
-	}
+	if( m_wallet->hasFolder( QString( "Form Data") ) == false )
+		if( m_wallet->createFolder( QString( "Form Data" ) ) == false )
+			return key ;
+
+	m_wallet->setFolder( QString( "Form Data" ) )  ;
 
 	QMap <QString,QString> map ;
 

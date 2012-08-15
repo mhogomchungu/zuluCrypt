@@ -39,7 +39,6 @@ private slots:
 	void pbClose( void ) ;
 	void pbGetUUIDFromDevices( void ) ;
 private:
-	void HighlightRow( int,bool ) ;
 	void ShowWalletEntries( void );
 	Ui::kwalletconfig * m_ui;
 	void closeEvent( QCloseEvent * ) ;

@@ -284,7 +284,7 @@ void miscfunctions::addItemToTableWithType( QTableWidget * table,QString device,
 	item->setTextAlignment( Qt::AlignCenter );
 	table->setItem( row,2,item );
 
-	table->setCurrentCell( row,1 );
+	table->setCurrentCell( row,table->columnCount() - 1 );
 }
 
 QString miscfunctions::getUUIDFromPath( QString device )
@@ -307,4 +307,56 @@ QString miscfunctions::getUUIDFromPath( QString device )
 	blkid_free_probe( dp ) ;
 
 	return uuid ;
+}
+
+void miscfunctions::selectTableRow( QTableWidgetItem * current,QTableWidgetItem * previous )
+{
+	QTableWidget * table ;
+
+	int col = 0 ;
+	int i   = 0 ;
+	int j   = 0 ;
+
+	if( current != 0 && previous != 0 ){
+
+		if( previous->row() == current->row() ){
+			table = current->tableWidget() ;
+			table->setCurrentCell( current->row(),table->columnCount() - 1 );
+			table->setFocus();
+			return ;
+		}
+	}
+
+	if( current != 0 ){
+
+		table = current->tableWidget() ;
+
+		if( table->rowCount() > 0 ){
+
+			col = table->columnCount() ;
+			j = current->row() ;
+
+			for( i = 0 ; i < col ; i++ )
+				table->item( j,i )->setSelected( true );
+		}
+
+		table->setCurrentCell( j,col - 1 );
+		table->setFocus();
+	}
+
+	if( previous != 0 ){
+
+		table = previous->tableWidget() ;
+
+		if( table->rowCount() > 0 ){
+
+			col = table->columnCount() ;
+			j = previous->row() ;
+
+			for( i = 0 ; i < col ; i++ )
+				table->item( j,i )->setSelected( false );
+		}
+
+		table->setFocus();
+	}
 }

@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -24,7 +24,7 @@
 managedevicenames::managedevicenames( QWidget * parent ) :
 	QWidget( parent ),
 	m_ui( new Ui::managedevicenames )
-{	
+{
 	m_ui->setupUi( this );
 	this->setWindowFlags( Qt::Window | Qt::Dialog );
 	this->setFont( parent->font() );
@@ -81,19 +81,19 @@ void managedevicenames::ShowUI()
 {
 	m_ui->tableWidget->setColumnWidth( 0,296 );
 	m_ui->tableWidget->setColumnWidth( 1,296 );
-	
+
 	while( m_ui->tableWidget->rowCount() > 0 )
 		m_ui->tableWidget->removeRow( 0 );
-	
+
 	QStringList entries = miscfunctions::readFavorites() ;
 	QStringList line ;
 	int j = entries.size() - 1 ;
-	
+
 	for( int i = 0 ; i < j ; i++ ){
 		line = entries.at( i ).split( "\t" );
 		addEntries( line.at( 0 ),line.at( 1 ) );
-	}	
-	
+	}
+
 	m_ui->lineEditDeviceAddress->clear();
 	m_ui->lineEditMountPath->clear();
 	m_ui->tableWidget->setFocus();
@@ -118,7 +118,7 @@ void managedevicenames::addEntries( QString dev,QString m_point )
 	item->setText( m_point );
 	item->setTextAlignment( Qt::AlignCenter );
 	m_ui->tableWidget->setItem( row,1,item );
-	m_ui->tableWidget->setCurrentCell( row,1 );
+	m_ui->tableWidget->setCurrentCell( row,m_ui->tableWidget->columnCount() - 1 );
 }
 
 void managedevicenames::itemClicked( QTableWidgetItem * current )
@@ -153,9 +153,8 @@ void managedevicenames::removeEntryFromFavoriteList()
 			m_ui->tableWidget->item( row,1 )->text() + \
 			QString( "\n" ) ;
 	miscfunctions::removeFavoriteEntry( entry );
+
 	m_ui->tableWidget->removeRow( row );
-	if( m_ui->tableWidget->rowCount() > 0 )
-		HighlightRow( m_ui->tableWidget->rowCount() - 1,true );
 
 	m_ui->tableWidget->setEnabled( true );
 }
@@ -171,7 +170,7 @@ void managedevicenames::add()
 
 	QString dev = m_ui->lineEditDeviceAddress->text() ;
 	QString mount_point = m_ui->lineEditMountPath->text() ;
-	
+
 	if( dev.isEmpty() )
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "device address field is empty" ) );
 
@@ -182,7 +181,7 @@ void managedevicenames::add()
 	this->addEntries( dev,mount_point );
 
 	miscfunctions::addToFavorite( dev,mount_point );
-	
+
 	m_ui->lineEditDeviceAddress->clear(); ;
 	m_ui->lineEditMountPath->clear() ;
 
@@ -214,18 +213,5 @@ void managedevicenames::closeEvent( QCloseEvent * e )
 
 void managedevicenames::currentItemChanged( QTableWidgetItem * current, QTableWidgetItem * previous )
 {
-	if( current != NULL )
-		this->HighlightRow( current->row(),true ) ;
-	if( previous != NULL )
-		if( current != NULL )
-			if( previous->row() != current->row() )
-				this->HighlightRow( previous->row(),false ) ;
-}
-
-void managedevicenames::HighlightRow( int row,bool b )
-{
-	m_ui->tableWidget->item( row,0 )->setSelected( b );
-	m_ui->tableWidget->item( row,1 )->setSelected( b );
-	if( b == true )
-		m_ui->tableWidget->setCurrentCell( row,1 );
+	miscfunctions::selectTableRow( current,previous ) ;
 }

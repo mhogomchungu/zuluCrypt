@@ -78,13 +78,13 @@ void wallet::sendKey()
 void wallet::getKey()
 {
 	if( !m_walletOpened ){
-		qDebug() << "openWallet() failed ";
+		//qDebug() << "openWallet() failed ";
 		m_key.clear();
 		return ;
 	}
 
 	if( !m_wallet->setFolder( "Form Data" ) ){
-		qDebug() << "setFolder() failed ";
+		//qDebug() << "setFolder() failed ";
 		m_key.clear();
 		return ;
 	}
@@ -92,13 +92,13 @@ void wallet::getKey()
 	QMap <QString,QString> map ;
 
 	if( m_wallet->readMap( "LUKS",map ) ){
-		qDebug() << "readMap() failed";
+		//qDebug() << "readMap() failed";
 		m_key.clear();
 		return;
 	}
 
 	if( m_uuid == QString( "Nil" ) ){
-		qDebug() << "device has no UUID";
+		//qDebug() << "device has no UUID";
 		m_key.clear();
 		return  ;
 	}

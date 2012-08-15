@@ -42,6 +42,8 @@ void zuluCryptPluginManager( const char * sockpath,int size,const char * buffer 
 	SocketClose( p ) ;	
 	SocketClose( q ) ;	
 	
+	unlink( sockpath ) ;
+	
 	SocketDelete( &p ) ;	
 	SocketDelete( &q ) ;
 } 

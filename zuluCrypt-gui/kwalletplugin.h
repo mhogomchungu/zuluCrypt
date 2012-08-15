@@ -42,7 +42,8 @@ public:
 	bool setFolder( QString ) ;
 	int readMap( QMap<QString,QString> & ) ;
 	int writeMap( QMap<QString,QString> & ) ;
-	void initWallet( void ) ;
+	bool isOpen( void ) ;
+	static bool folderDoesNotExist( void ) ;
 private:
 	KWallet::Wallet * m_wallet ;
 	QWidget * m_parent ;
@@ -63,7 +64,9 @@ public:
 	bool setFolder( QString ){ return false ; }
 	int readMap( QMap<QString,QString> & ) { return 0 ; }
 	int writeMap( QMap<QString,QString> & ) { return 0 ; }
-	void initWallet( void ) {}
+	bool isOpen( void ) { return false ; }
+	static bool folderDoesNotExist( void ){ return false ; }
+
 private:
 	//KWallet::Wallet * m_wallet ;
 	QWidget * m_parent ;

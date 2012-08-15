@@ -141,7 +141,6 @@ private:
 	void setupUIElements( void ) ;
 	void closeEvent( QCloseEvent * ) ;
 	void setUserFont( QFont ) ;
-	void HighlightRow( int,bool ) ;
 	void initTray( void );
 	void initFont( void );
 	void initKeyCombo( void );

@@ -296,21 +296,16 @@ void passwordDialog::passphraseFromFileOption()
 
 void passwordDialog::clickedPassPhraseFromFileButton()
 {
+	QString msg ;
 	if( m_ui->radioButtonPassPhraseFromFile->isChecked() ){
-		QString Z = QFileDialog::getOpenFileName( this,tr( "Select a keyfile" ),QDir::homePath(),0 );
-		if( !Z.isEmpty() )
-			m_ui->PassPhraseField->setText( Z );
+		msg = tr( "Select a keyfile" );
 	}else if( m_ui->radioButtonPlugin->isChecked() ){
-
-		QString path = QString( "/etc/zuluCrypt/modules/" ) ;
-		if( miscfunctions::exists( QString("/etc/zuluCrypt/modules") ) == false )
-			path = QDir::homePath() ;
-
-		QString Z = QFileDialog::getOpenFileName( this,tr( "select a key module" ),path,0 );
-		if( !Z.isEmpty() ){
-			m_ui->PassPhraseField->setText( Z );
-		}
+		msg = tr( "Select a key module" );
 	}
+
+	QString Z = QFileDialog::getOpenFileName( this,msg,QDir::homePath(),0 );
+	if( !Z.isEmpty() )
+		m_ui->PassPhraseField->setText( Z );
 }
 
 void passwordDialog::clickedPartitionOption( QString dev )
@@ -417,10 +412,18 @@ QString passwordDialog::getKeyFromKWallet()
 {
 	QString key ;
 
-	QString uuid = miscfunctions::getUUIDFromPath( m_ui->OpenVolumePath->text() ) ;
+	DialogMsg msg( this ) ;
+
+	if( kwalletplugin::folderDoesNotExist() ){
+
+		msg.ShowUIOK( tr( "ERROR"),tr( "\"zuluCrypt\" wallet is not configured,go to:\n\"menu->options->manage kwallet\"\n to configure it and then add this volume first before continuing" ) ) ;
+		return key ;
+	}
+
+	QString path = miscfunctions::resolvePath( m_ui->OpenVolumePath->text() ) ;
+	QString uuid = miscfunctions::getUUIDFromPath( path ) ;
 
 	if( uuid.isEmpty() ){
-		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR" ),tr( "can store and retrieve passphrases only for LUKS volumes" ) ) ;
 	}else{
 		kwalletplugin kWallet( m_parent ) ;
@@ -428,7 +431,6 @@ QString passwordDialog::getKeyFromKWallet()
 		if( kWallet.open() ){
 			key = kWallet.getKey( uuid ) ;
 			if( key.isEmpty() ){
-				DialogMsg msg( this ) ;
 				msg.ShowUIOK( tr( "ERROR" ),tr( "the volume does not appear to have an entry in the wallet" ) ) ;
 			}
 
