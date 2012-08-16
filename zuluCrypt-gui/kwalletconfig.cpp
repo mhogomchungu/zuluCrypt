@@ -95,9 +95,10 @@ void kwalletconfig::pbAdd()
 
 void kwalletconfig::pbDelete()
 {
-	QTableWidgetItem * item = m_ui->tableWidget->currentItem() ;
+	QTableWidget * table = m_ui->tableWidget ;
+	QTableWidgetItem * item = table->currentItem() ;
 
-	QString key = m_ui->tableWidget->item( item->row(),0 )->text() ;
+	QString key = table->item( item->row(),0 )->text() ;
 
 	//read comment on ShowWalletEntries() function below to understand why there are two remove.
 
@@ -107,7 +108,7 @@ void kwalletconfig::pbDelete()
 
 	m_map.remove( key ) ;
 
-	m_ui->tableWidget->removeRow( item->row() );
+	miscfunctions::deleteRowFromTable( table,item->row() ) ;
 }
 
 void kwalletconfig::pbClose()
@@ -176,9 +177,6 @@ void kwalletconfig::ShowWalletEntries()
 	}
 
 	QTableWidget * table = m_ui->tableWidget ;
-	QTableWidgetItem * item ;
-
-	int row = table->rowCount() ;
 
 	QMap< QString,QString >::const_iterator i = m_map.constBegin() ;
 	QMap< QString,QString >::const_iterator j = m_map.constEnd() ;
@@ -195,7 +193,8 @@ void kwalletconfig::ShowWalletEntries()
 	 * To populate the table with the above 3 information,the first loop below sets UUID and passphrase
 	 * and the second loop match each comment to its corresponding volume line based on UUID
 	 */
-	int column = table->columnCount() - 1 ;
+
+	QStringList s ;
 
 	for( ; i != j ; i++ ){
 
@@ -203,26 +202,13 @@ void kwalletconfig::ShowWalletEntries()
 		if( uuid.contains( QString( "-comment" ) ) )
 			continue ;
 
-		table->insertRow( row );
-
-		item = new QTableWidgetItem() ;
-		item->setText( uuid );
-		item->setTextAlignment( Qt::AlignCenter );
-		table->setItem( row,0,item );
-
-		item = new QTableWidgetItem() ;
-		item->setText( QString("") );
-		item->setTextAlignment( Qt::AlignCenter );
-		table->setItem( row,1,item );
-
-		item = new QTableWidgetItem() ;
+		s.clear();
+		s.append( uuid );
+		s.append( QString( "" ) );
 		//item->setText( i.value() );
-		item->setText( tr( "<reducted>" ) ) ;
-		item->setTextAlignment( Qt::AlignCenter );
-		table->setItem( row,2,item );
+		s.append( tr( "<redacted>" ) ) ;
 
-		table->setCurrentCell( row,column );
-		row++ ;
+		miscfunctions::addRowToTable( table,s ) ;
 	}
 
 	int p ;

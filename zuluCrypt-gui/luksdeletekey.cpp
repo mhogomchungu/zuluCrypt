@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -170,7 +170,8 @@ void luksdeletekey::pbDelete()
 {
 	DialogMsg msg( this ) ;
 
-	m_volumePath = miscfunctions::resolvePath( m_ui->lineEditVolumePath->text() ) ;
+	QString path = m_ui->lineEditVolumePath->text() ;
+	m_volumePath = miscfunctions::resolvePath( path ) ;
 
 	QString passphrase = m_ui->lineEditPassphrase->text() ;
 
@@ -190,7 +191,7 @@ void luksdeletekey::pbDelete()
 
 		if(  msg.ShowUIYesNoDefaultNo( tr( "WARNING" ),s ) == QMessageBox::No )
 			return ;
-	}	
+	}
 
 	QString passType ;
 	if (  m_ui->rbPassphraseFromFile->isChecked() == true ){

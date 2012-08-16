@@ -203,10 +203,7 @@ void zuluCrypt::closeAllVolumes()
 
 void zuluCrypt::closeAll( QTableWidgetItem * i,int st )
 {
-	if( st == 0 )
-		removeRowFromTable( i->row() );
-	else
-		closeStatusErrorMessage( st );
+	st ? closeStatusErrorMessage( st ) : removeRowFromTable( i->row() );
 }
 
 void zuluCrypt::minimize()
@@ -381,12 +378,27 @@ For more information, please read the FAQ at: http://code.google.com/p/cryptsetu
 
 void zuluCrypt::addItemToTable( QString device,QString m_point )
 {
-	miscfunctions::addItemToTable( m_ui->tableWidget,device,m_point );
+	QStringList s ;
+	QString type ;
+
+	QString dev = device ;
+	dev.replace( "\"","\"\"\"" ) ;
+
+	if( miscfunctions::isLuks( dev ) )
+		type = tr( "luks" ) ;
+	else
+		type = tr( "plain" ) ;
+
+	s.append( device );
+	s.append( m_point );
+	s.append( type );
+
+	miscfunctions::addRowToTable( m_ui->tableWidget,s );
 }
 
 void zuluCrypt::removeRowFromTable( int x )
 {
-	m_ui->tableWidget->removeRow( x ) ;
+	miscfunctions::deleteRowFromTable( m_ui->tableWidget,x ) ;
 }
 
 void zuluCrypt::volume_property()
@@ -448,14 +460,12 @@ void zuluCrypt::addToFavorite()
 void zuluCrypt::menuKeyPressed()
 {
 	QTableWidgetItem * it = m_ui->tableWidget->currentItem() ;
-	if( it )
-		itemClicked( it,false );
+	itemClicked( it,false );
 }
 
 void zuluCrypt::itemClicked( QTableWidgetItem * it )
 {
-	if( it )
-		itemClicked( it,true );
+	itemClicked( it,true );
 }
 
 void zuluCrypt::itemClicked( QTableWidgetItem * item, bool clicked )

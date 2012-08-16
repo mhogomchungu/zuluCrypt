@@ -28,6 +28,8 @@
 #include <QObject>
 #include <QDir>
 
+#include <QDebug>
+
 //#include <libcryptsetup.h>
 
 QString miscfunctions::cryptMapperPath()
@@ -249,44 +251,6 @@ void miscfunctions::removeFavoriteEntry( QString entry )
 	f.close() ;
 }
 
-void miscfunctions::addItemToTable( QTableWidget * table,QString device,QString mountAddr )
-{
-	QString type ;
-	QString path = device ;
-	path.replace( "\"","\"\"\"" ) ;
-	if( miscfunctions::isLuks( path ) )
-		type = QObject::tr( "luks" );
-	else
-		type = QObject::tr( "plain" );
-
-	miscfunctions::addItemToTableWithType( table,device,mountAddr,type );
-}
-
-void miscfunctions::addItemToTableWithType( QTableWidget * table,QString device,QString mountAddr,QString type )
-{
-	int row = table->rowCount() ;
-	table->insertRow( row );
-
-	QTableWidgetItem * item ;
-
-	item = new QTableWidgetItem() ;
-	item->setText( device );
-	item->setTextAlignment( Qt::AlignCenter );
-	table->setItem( row,0,item );
-
-	item = new QTableWidgetItem() ;
-	item->setText( mountAddr );
-	item->setTextAlignment( Qt::AlignCenter );
-	table->setItem( row,1,item );
-
-	item = new QTableWidgetItem() ;
-	item->setText( type );
-	item->setTextAlignment( Qt::AlignCenter );
-	table->setItem( row,2,item );
-
-	table->setCurrentCell( row,table->columnCount() - 1 );
-}
-
 QString miscfunctions::getUUIDFromPath( QString device )
 {
 	QString uuid ;
@@ -309,6 +273,32 @@ QString miscfunctions::getUUIDFromPath( QString device )
 	return uuid ;
 }
 
+void miscfunctions::addRowToTable( QTableWidget * table,QStringList list )
+{
+	QTableWidgetItem * item ;
+
+	int j = list.size() ;
+
+	if( j != table->columnCount() ){
+		qDebug() << "ERROR: table column count is NOT the same as QStringList size ";
+		return ;
+	}
+
+	int row = table->rowCount() ;
+
+	table->insertRow( row );
+
+	for( int i = 0 ; i < j ; i++ ){
+
+		item = new QTableWidgetItem() ;
+		item->setText( list.at( i ) );
+		item->setTextAlignment( Qt::AlignCenter );
+		table->setItem( row,i,item );
+	}
+
+	table->setCurrentCell( row,j - 1 );
+}
+
 void miscfunctions::selectTableRow( QTableWidgetItem * current,QTableWidgetItem * previous )
 {
 	QTableWidget * table ;
@@ -317,7 +307,7 @@ void miscfunctions::selectTableRow( QTableWidgetItem * current,QTableWidgetItem 
 	int i   = 0 ;
 	int j   = 0 ;
 
-	if( current != 0 && previous != 0 ){
+	if( current && previous ){
 
 		if( previous->row() == current->row() ){
 			table = current->tableWidget() ;
@@ -327,7 +317,7 @@ void miscfunctions::selectTableRow( QTableWidgetItem * current,QTableWidgetItem 
 		}
 	}
 
-	if( current != 0 ){
+	if( current ){
 
 		table = current->tableWidget() ;
 
@@ -340,11 +330,11 @@ void miscfunctions::selectTableRow( QTableWidgetItem * current,QTableWidgetItem 
 				table->item( j,i )->setSelected( true );
 		}
 
-		table->setCurrentCell( j,col - 1 );
+		table->setCurrentCell( j,table->columnCount() -1 );
 		table->setFocus();
 	}
 
-	if( previous != 0 ){
+	if( previous ){
 
 		table = previous->tableWidget() ;
 
@@ -360,3 +350,12 @@ void miscfunctions::selectTableRow( QTableWidgetItem * current,QTableWidgetItem 
 		table->setFocus();
 	}
 }
+
+void miscfunctions::deleteRowFromTable( QTableWidget * table,int row )
+{
+	table->removeRow( row );
+	if( table->rowCount() > 0 )
+		table->setCurrentCell( table->rowCount() - 1,table->columnCount() -  1 );
+	table->setFocus();
+}
+

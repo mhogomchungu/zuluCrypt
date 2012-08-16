@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -46,6 +46,7 @@ void startupupdateopenedvolumes::run()
 		return ;
 
 	QStringList entry ;
+
 	for( int i = 0 ; i < j ; i++ ){
 		entry = l.at( i ).split( "\t" );
 		emit addItemToTable( entry.at( 0 ),entry.at( 1 ) ) ;

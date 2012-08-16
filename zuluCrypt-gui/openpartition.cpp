@@ -153,18 +153,7 @@ void openpartition::partitionList( QString title,QString type )
 
 void openpartition::partitionProperties( QStringList entry )
 {
-	QTableWidgetItem * item ;
-	int row = m_ui->tableWidget->rowCount() ;
-	m_ui->tableWidget->insertRow( row );
-
-	int col = m_ui->tableWidget->columnCount() ;
-	for( int i = 0 ; i < col ; i++ ){
-		item = new QTableWidgetItem( entry.at( i ) ) ;
-		item->setTextAlignment( Qt::AlignCenter );
-		m_ui->tableWidget->setItem( row,i,item );
-	}
-
-	m_ui->tableWidget->setCurrentCell( row,m_ui->tableWidget->columnCount() - 1 );
+	miscfunctions::addRowToTable( m_ui->tableWidget,entry ) ;
 }
 
 void openpartition::partitionpropertiesThreadFinished()

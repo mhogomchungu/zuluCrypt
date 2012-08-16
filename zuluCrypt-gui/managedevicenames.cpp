@@ -65,8 +65,7 @@ void managedevicenames::devicePathTextChange( QString txt )
 void managedevicenames::shortcutPressed()
 {
 	QTableWidgetItem * it = m_ui->tableWidget->currentItem() ;
-	if( it != NULL )
-		itemClicked( it,false );
+	itemClicked( it,false );
 }
 
 void managedevicenames::deviceAddress()
@@ -108,17 +107,12 @@ void managedevicenames::HideUI()
 
 void managedevicenames::addEntries( QString dev,QString m_point )
 {
-	QTableWidgetItem * item = new QTableWidgetItem() ;
-	int row = m_ui->tableWidget->rowCount() ;
-	m_ui->tableWidget->insertRow( row );
-	item->setText( dev );
-	item->setTextAlignment( Qt::AlignCenter );
-	m_ui->tableWidget->setItem( row,0,item );
-	item = new QTableWidgetItem() ;
-	item->setText( m_point );
-	item->setTextAlignment( Qt::AlignCenter );
-	m_ui->tableWidget->setItem( row,1,item );
-	m_ui->tableWidget->setCurrentCell( row,m_ui->tableWidget->columnCount() - 1 );
+	QStringList s ;
+
+	s.append( dev );
+	s.append( m_point );
+
+	miscfunctions::addRowToTable( m_ui->tableWidget,s ) ;
 }
 
 void managedevicenames::itemClicked( QTableWidgetItem * current )
@@ -146,17 +140,22 @@ void managedevicenames::itemClicked( QTableWidgetItem * current,bool clicked )
 
 void managedevicenames::removeEntryFromFavoriteList()
 {
-	m_ui->tableWidget->setEnabled( false );
-	int row = m_ui->tableWidget->currentRow() ;
-	QString entry = m_ui->tableWidget->item( row,0 )->text() + \
-			QString( "\t" ) + \
-			m_ui->tableWidget->item( row,1 )->text() + \
-			QString( "\n" ) ;
+	QTableWidget * table = m_ui->tableWidget ;
+
+	table->setEnabled( false );
+
+	int row = table->currentRow() ;
+
+	QString txt1 = table->item( row,0 )->text() ;
+	QString txt2 = table->item( row,1 )->text() ;
+
+	QString entry = QString( "%1\t%2\n" ).arg( txt1 ).arg( txt2 ) ;
+
 	miscfunctions::removeFavoriteEntry( entry );
 
-	m_ui->tableWidget->removeRow( row );
+	miscfunctions::deleteRowFromTable( table,row ) ;
 
-	m_ui->tableWidget->setEnabled( true );
+	table->setEnabled( true );
 }
 
 void managedevicenames::cancel()

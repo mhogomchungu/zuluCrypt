@@ -217,7 +217,8 @@ void luksaddkey::rbNewPassphraseFromFile()
 void luksaddkey::pbAdd( void )
 {
 	DialogMsg msg( this ) ;
-	m_volumePath = miscfunctions::resolvePath( m_ui->textEditPathToVolume->text() ) ;
+	QString path = m_ui->textEditPathToVolume->text() ;
+	m_volumePath = miscfunctions::resolvePath( path ) ;
 	QString ExistingKey = m_ui->textEditExistingPassphrase->text() ;
 
 	QString NewKey = m_ui->textEditPassphraseToAdd->text() ;

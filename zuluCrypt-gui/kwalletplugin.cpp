@@ -105,6 +105,11 @@ void kwalletplugin::close()
 	}
 }
 
+bool kwalletplugin::keyDoesNotExist( QString key )
+{
+	return KWallet::Wallet::keyDoesNotExist( QString( "zuluCrypt" ),QString( "LUKS" ),key ) ;
+}
+
 kwalletplugin::~kwalletplugin()
 {
 }

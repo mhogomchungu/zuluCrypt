@@ -499,9 +499,14 @@ void passwordDialog::success( void )
 
 void passwordDialog::done( QString type )
 {
-	QString q = miscfunctions::resolvePath( m_ui->OpenVolumePath->text() ) ;
-	QString z = miscfunctions::resolvePath( m_ui->MountPointPath->text() );
-	miscfunctions::addItemToTableWithType( m_table,q,z,type );
+	QStringList list ;
+
+	list.append( miscfunctions::resolvePath( m_ui->OpenVolumePath->text() ) ) ;
+	list.append( miscfunctions::resolvePath( m_ui->MountPointPath->text() ) ) ;
+	list.append( type );
+
+	miscfunctions::addRowToTable( m_table,list ) ;
+
 	HideUI();
 }
 

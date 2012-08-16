@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -24,7 +24,8 @@
 #include <QRunnable>
 #include <QObject>
 #include <QString>
-#include <unistd.h>
+
+#include "miscfunctions.h"
 
 class startupupdateopenedvolumes : public QObject, public QRunnable
 {

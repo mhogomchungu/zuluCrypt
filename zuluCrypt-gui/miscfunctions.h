@@ -42,12 +42,10 @@ public:
 	static QStringList luksEmptySlots( QString volumePath ) ;
 	static bool isLuks( QString volumePath ) ;
 	static QStringList deviceProperties( QString device ) ;
-	static void addToFavorite( QString dev, QString m_point );
+	static void addToFavorite( QString dev,QString m_point );
 	static QStringList readFavorites( void );
 	static void removeFavoriteEntry( QString );
 	static bool exists( QString );
-	static void addItemToTable( QTableWidget *,QString,QString ) ;
-	static void addItemToTableWithType( QTableWidget *,QString,QString,QString );
 	static bool canCreateFile( QString );
 	static QString resolvePath( QString );
 	static QString hashPath( QString p );
@@ -58,6 +56,8 @@ public:
 	static QString getUUIDFromPath( QString ) ;
 	static bool userIsRoot( void ) ;
 	static void selectTableRow( QTableWidgetItem * current,QTableWidgetItem * previous ) ;
+	static void addRowToTable( QTableWidget *,QStringList );
+	static void deleteRowFromTable( QTableWidget *,int row ) ;
 };
 
 #endif // MISCFUNCTIONS_H
