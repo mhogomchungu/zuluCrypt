@@ -27,7 +27,7 @@ extern "C" {
 /**
  * Return the version string of the library * 
  */
-const char * zuluCryptVersion(void) ;
+const char * zuluCryptVersion ( void) ;
 
 /**
  * This function checks to see if a volume is a luks volume or not.
@@ -49,10 +49,10 @@ int zuluCryptVolumeIsLuks( const char * device ) ;
  * 	2 - ERROR: There seem to already be an opened volume associated with "mapping_name" argument
  * 	3 - ERROR: device does not exist.
  * 	4 - ERROR: wrong passphrase
- * 	5 - ERROR: Cant create a mount point because a file/folder with the same exist at the mount point
  *	6 - ERROR: key file does not exist :
  *	8 - ERROR: failed to open device
- *      12 - ERROR: could not get a lock on /etc/mtab~
+ *      12- ERROR: could not get a lock on /etc/mtab~
+ *      15- ERROR: could not remove mapper 
  */
 int zuluCryptOpenVolume( const char * device, /* path to a file/partition to be opened                                	*/
 			 const char * mapper, /* mapper name( will show up in /dev/mapper/ )                          	*/
@@ -91,7 +91,7 @@ int zuluCryptCloseVolume(const char * mapper,    /* mapper is the full address o
  * 1 - ERROR: could not close the mapper.
  */
 int zuluCryptCloseMapper( const char * mapper ) ;/* mapper is the full address of the volume as it */
-					 /* appears at /dev/mapper                         */
+					         /* appears at /dev/mapper                         */
 
 /**
  * This function unmounts a volume* 
@@ -105,7 +105,7 @@ int zuluCryptCloseMapper( const char * mapper ) ;/* mapper is the full address o
   */
 int zuluCryptUnmountVolume( const char * mapper, /*mapper is the full address of the volume as it appears at /dev/mapper                  */
 			    char ** m_point ) ;  /*mount point will be returned on this variable if closing succeeded.useful for deleting */
-					 /*mount point folder.Its the caller's responsibility to free() this return value         */
+					         /*mount point folder.Its the caller's responsibility to free() this return value         */
 					
 /**
  * This function mounts a volume

@@ -83,7 +83,6 @@ QString kwalletplugin::getKey( QString uuid )
 	QMap <QString,QString> map ;
 
 	if( m_wallet->readMap( QString( "LUKS"),map ) ){
-		qDebug() << "readMap() failed";
 		return key ;
 	}
 

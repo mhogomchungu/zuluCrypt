@@ -6,8 +6,6 @@ kwalletconfig::kwalletconfig( QWidget * parent ) : QWidget( parent ),m_ui( new U
 {
 	m_ui->setupUi( this );
 
-	m_wallet = 0 ;
-
 	this->setFixedSize( this->size() );
 	this->setWindowFlags( Qt::Window | Qt::Dialog );
 	this->setFont( parent->font() );
@@ -135,7 +133,7 @@ void kwalletconfig::pbGetUUIDFromFile()
 
 	if( Z.isEmpty() ){
 		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "ERROR" ),tr( "File does not appear to be a luks volume") ) ;
+		msg.ShowUIOK( tr( "ERROR" ),tr( "File does not appear to contain a luks volume") ) ;
 		m_ui->lineEditUUID->clear();
 	}else{
 		m_ui->lineEditUUID->setText( Z ) ;
@@ -151,30 +149,20 @@ void kwalletconfig::ShowUI()
 {
 	m_wallet = new kwalletplugin( this ) ;
 
-	if( m_wallet->open() ){
-		this->ShowWalletEntries();
-	}else{
-		qDebug() << "failed to open";
-		this->HideUI();
-	}
+	m_wallet->open() ? this->ShowWalletEntries() : this->HideUI() ;
 }
 
 void kwalletconfig::ShowWalletEntries()
 {
-	if( !m_wallet->setFolder( "Form Data" ) ){
-		qDebug() << "setFolder() failed ";
+	if( !m_wallet->setFolder( "Form Data" ) )
 		return ;
-	}
 
-	if( m_wallet->readMap( m_map ) ){
-		qDebug() << "readMap() failed";
+	if( m_wallet->readMap( m_map ) )
 		return ;
-	}
 
-	if( m_map.empty() ){
-		qDebug()<< "map is empty";
-		return 	this->show();
-	}
+
+	if( m_map.empty() )
+		return this->show();
 
 	QTableWidget * table = m_ui->tableWidget ;
 
@@ -240,8 +228,12 @@ void kwalletconfig::ShowWalletEntries()
 
 void kwalletconfig::HideUI()
 {
-	if( m_wallet->isOpen() )
+	if( m_wallet->isOpen() ){
 		m_wallet->writeMap( m_map ) ;
+		m_wallet->close();
+	}
+
+	m_wallet->deleteLater();
 	emit HideUISignal() ;
 	this->hide();
 }
@@ -254,11 +246,5 @@ void kwalletconfig::closeEvent( QCloseEvent * e )
 
 kwalletconfig::~kwalletconfig()
 {
-	//qDebug() << m_ui->tableWidget->columnWidth(0);
-	//qDebug() << m_ui->tableWidget->columnWidth(1);
-	//qDebug() << m_ui->tableWidget->columnWidth(2);
-
-	if( m_wallet )
-		m_wallet->close();
 	delete m_ui;
 }

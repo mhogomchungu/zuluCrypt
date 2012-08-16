@@ -22,7 +22,7 @@
 #include "can_build_kwallet.h"
 
 #if BUILD_KWALLET
-
+#include <QObject>
 #include <QString>
 #include <QStringList>
 #include <QMap>
@@ -30,7 +30,7 @@
 #include <QWidget>
 #include <kwallet.h>
 
-class kwalletplugin
+class kwalletplugin : public QObject
 {
 public:
 	kwalletplugin( QWidget * );
@@ -51,9 +51,10 @@ private:
 	bool m_walletOpened ;
 };
 #else
+#include <QObject>
 #include <QString>
 #include <QStringList>
-class kwalletplugin
+class kwalletplugin : public QObject
 {
 public:
 	kwalletplugin( QWidget * p ){ m_parent = p ; m_walletOpened = false ; }
