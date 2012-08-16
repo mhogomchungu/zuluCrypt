@@ -28,7 +28,6 @@ ADD_SUBDIRECTORY( zuluMount-gui )
 ADD_SUBDIRECTORY( zuluCrypt-gui )
 #ADD_SUBDIRECTORY( plugins )
 
-
 find_file( kwallet_header kwallet.h PATHS ${KDEINCLUDE} )
 
 find_library( kwallet_library libkwalletbackend.so PATHS ${KDELIB} )

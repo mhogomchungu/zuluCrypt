@@ -122,6 +122,10 @@ endif( header_pwquality )
 				
 add_executable( zuluCrypt-gui ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS})			
 
+find_file( kwallet_header kwallet.h PATHS ${KDEINCLUDE} )
+
+find_library( kwallet_library libkwalletbackend.so PATHS ${KDELIB} )
+
 if( library_pwquality )
 	if( kwallet_library )
 		TARGET_LINK_LIBRARIES( zuluCrypt-gui ${QT_LIBRARIES} ${blkid} ${library_pwquality} ${kwallet_library} )
