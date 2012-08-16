@@ -117,6 +117,7 @@ if( header_pwquality )
 		message ( WARNING ${msg} )		
 	endif( library_pwquality )
 else( header_pwquality )
+	file(WRITE  ${PROJECT_BINARY_DIR}/can_build_pwquality.h "#define BUILD_PWQUALITY 0\n")	
 	message ( WARNING "${msg}" )
 endif( header_pwquality )
 				
