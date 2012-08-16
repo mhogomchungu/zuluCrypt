@@ -99,7 +99,7 @@ QT4_ADD_RESOURCES( TRAY_RC_SRCS icon.qrc)
 INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
 
 set ( msg "---------------------------------------------------------------------
-optional package pwquality used to measure passphrase quality not found
+optional package pwquality used to measure passphrase quality not found.
 sources can be found at:https://fedorahosted.org/libpwquality/
 ---------------------------------------------------------------------" )
 
@@ -117,13 +117,25 @@ if( header_pwquality )
 		message ( WARNING ${msg} )		
 	endif( library_pwquality )
 else( header_pwquality )
-	message ( WARNING ${msg} )
+	message ( WARNING "${msg}" )
 endif( header_pwquality )
 				
 add_executable( zuluCrypt-gui ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS})			
 
-TARGET_LINK_LIBRARIES( zuluCrypt-gui ${QT_LIBRARIES} ${blkid} ${library_pwquality} ${kwallet_library} )
-
+if( library_pwquality )
+	if( kwallet_library )
+		TARGET_LINK_LIBRARIES( zuluCrypt-gui ${QT_LIBRARIES} ${blkid} ${library_pwquality} ${kwallet_library} )
+	else( kwallet_library )
+		TARGET_LINK_LIBRARIES( zuluCrypt-gui ${QT_LIBRARIES} ${blkid} ${library_pwquality} )		
+	endif( kwallet_library )
+else( library_pwquality )
+	if( kwallet_library )
+		TARGET_LINK_LIBRARIES( zuluCrypt-gui ${QT_LIBRARIES} ${blkid} ${kwallet_library} )
+	else( kwallet_library )
+		TARGET_LINK_LIBRARIES( zuluCrypt-gui ${QT_LIBRARIES} ${blkid} )
+	endif( kwallet_library )
+endif( library_pwquality )			
+		
 install( TARGETS zuluCrypt-gui RUNTIME DESTINATION bin )
 
 install (FILES zuluCrypt.desktop 

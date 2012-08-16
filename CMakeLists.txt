@@ -33,6 +33,10 @@ find_file( kwallet_header kwallet.h PATHS ${KDEINCLUDE} )
 
 find_library( kwallet_library libkwalletbackend.so PATHS ${KDELIB} )
 
+set ( msg "---------------------------------------------------------------------
+optional package kwallet functionality not found.Not building kwallet module
+---------------------------------------------------------------------------" )
+
 if( kwallet_header )
 	if( kwallet_library )
 		message( STATUS "Found kwallet.h  : " ${kwallet_header} )
@@ -41,11 +45,11 @@ if( kwallet_header )
 		ADD_SUBDIRECTORY( kwallet )	
 	else( kwallet_library )
 		file(WRITE  ${PROJECT_BINARY_DIR}/can_build_kwallet.h "\n#define BUILD_KWALLET 0\n")		
-		message( STATUS "------------------------------\ncould not find libkwalletbackend.so,not building kwallet module\n------------------------------" )		
+		message( STATUS "${msg}" )		
 	endif( kwallet_library)
 else( kwallet_header )
 	file(WRITE  ${PROJECT_BINARY_DIR}/can_build_kwallet.h "\n#define BUILD_KWALLET 0\n")			
-	message( STATUS "------------------------------\ncould not find kwallet.h,not building kwallet module\n------------------------------" )		
+	message( WARNING "${msg}" )		
 endif( kwallet_header )	
 
 ADD_SUBDIRECTORY( test )
