@@ -28,7 +28,6 @@
 #include <QMap>
 #include <QDebug>
 #include <QWidget>
-#include <kwallet.h>
 
 class kwalletplugin : public QObject
 {

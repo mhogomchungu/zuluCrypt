@@ -33,6 +33,7 @@ extern "C" {
 #include <stdlib.h>
 #include <sys/un.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 
 typedef struct Socket_t * socket_t ;
 

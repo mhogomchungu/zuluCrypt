@@ -96,9 +96,9 @@ void SocketSetPortNumber( socket_t s,int port )
 
 void SocketSetHostAddress( socket_t s,const char * address ) 
 {
-	struct hostent * host ;
+	//struct hostent * host ;
 	
-	if( s->domain = AF_UNIX )
+	if( s->domain == AF_UNIX )
 		strcpy( s->local->sun_path,address ) ;
 	else{
 		//host = gethostbyname( address ) ;
@@ -108,11 +108,12 @@ void SocketSetHostAddress( socket_t s,const char * address )
 
 const char * SocketAddress( socket_t s )
 {	
-	if( s->domain = AF_UNIX )
+	if( s->domain == AF_UNIX )
 		return s->local->sun_path ;
 	else{
 		//host = gethostbyname( address ) ;
-		//s->net->sin_addr.s_addr = ( struct in_addr * )host->h_addr_list[ 0 ] ;		
+		//s->net->sin_addr.s_addr = ( struct in_addr * )host->h_addr_list[ 0 ] ;
+		return ( void * ) 0 ;
 	}
 }
 
@@ -132,7 +133,7 @@ int SocketBind( socket_t s )
 
 socket_t SocketAccept( socket_t s ) 
 {
-	struct sockaddr addr ;
+	//struct sockaddr addr ;
 	
 	socket_t x = ( socket_t ) malloc( sizeof( struct Socket_t ) ) ;
 	
