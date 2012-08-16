@@ -29,6 +29,7 @@ ADD_SUBDIRECTORY( zuluCrypt-gui )
 #ADD_SUBDIRECTORY( plugins )
 
 find_file( kwallet_header kwallet.h PATHS ${KDEINCLUDE} )
+find_file( kdeui_export kdeui_export.h PATHS ${KDEINCLUDE} )
 
 find_library( kwallet_library libkwalletbackend.so PATHS ${KDELIB} )
 
@@ -38,12 +39,14 @@ optional package kwallet functionality not found.Not building kwallet module
 
 if( kwallet_header )
 	if( kwallet_library )
-		message( STATUS "Found kwallet.h  : " ${kwallet_header} )
-		message( STATUS "Found libkwalletbackend.so  : " ${kwallet_library} )	
-		file( WRITE  ${PROJECT_BINARY_DIR}/can_build_kwallet.h "\n#define BUILD_KWALLET 1\n" )
-		file( APPEND ${PROJECT_BINARY_DIR}/can_build_kwallet.h "\n#include <${kwallet_header}>\n" )
-		
-		ADD_SUBDIRECTORY( kwallet )	
+		if( kdeui_export )
+			message( STATUS "Found kwallet.h  : " ${kwallet_header} )
+			message( STATUS "Found libkwalletbackend.so  : " ${kwallet_library} )	
+			file( WRITE  ${PROJECT_BINARY_DIR}/can_build_kwallet.h "\n#define BUILD_KWALLET 1\n" )
+			file( APPEND ${PROJECT_BINARY_DIR}/can_build_kwallet.h "\n#include <${kwallet_header}>\n" )
+			file( APPEND ${PROJECT_BINARY_DIR}/can_build_kwallet.h "\n#include <${kdeui_export}>\n" )		
+			ADD_SUBDIRECTORY( kwallet )
+		endif( kdeui_export )	
 	else( kwallet_library )
 		file(WRITE  ${PROJECT_BINARY_DIR}/can_build_kwallet.h "\n#define BUILD_KWALLET 0\n")		
 		message( STATUS "${msg}" )		
