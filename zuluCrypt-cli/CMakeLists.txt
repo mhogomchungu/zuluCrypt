@@ -129,9 +129,17 @@
  
  add_library( zuluCryptPluginManager SHARED bin/zuluCryptPluginManager.c )
  
+ add_library( zuluCryptPluginManager-static STATIC bin/zuluCryptPluginManager.c )
+ 
  TARGET_LINK_LIBRARIES( zuluCryptPluginManager Socket Process String ${blkid} )
  
+ TARGET_LINK_LIBRARIES( zuluCryptPluginManager-static Socket Process String ${blkid} )
+ 
  set_target_properties( zuluCryptPluginManager PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread -ansi -pedantic -std=c99" )
+ 
+ set_target_properties( zuluCryptPluginManager-static PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread -ansi -pedantic -std=c99" )
+ 
+ set_target_properties( zuluCryptPluginManager PROPERTIES SOVERSION "1.0.0" )
  
  set_target_properties( String        PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -ansi -pedantic -std=c99" )
  set_target_properties( StringList    PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -ansi -pedantic -std=c99" )
@@ -149,7 +157,7 @@
  TARGET_LINK_LIBRARIES( zuluCrypt-exe zuluCrypt zuluCryptPluginManager ) 
  
  TARGET_LINK_LIBRARIES( zuluCrypt-static     ${libcryptsetup} String StringList ${blkid} ${mountLibrary} Process ) 
- TARGET_LINK_LIBRARIES( zuluCrypt-exe-static zuluCrypt-static zuluCryptPluginManager )
+ TARGET_LINK_LIBRARIES( zuluCrypt-exe-static zuluCrypt-static zuluCryptPluginManager-static )
  
  TARGET_LINK_LIBRARIES( zuluCrypt-exe zuluCrypt )
  
@@ -181,6 +189,8 @@
  
  install(TARGETS zuluCryptPluginManager LIBRARY DESTINATION lib${LIB_SUFFIX} )
  
+ install(TARGETS zuluCryptPluginManager-static ARCHIVE DESTINATION lib${LIB_SUFFIX} )
+ 
  install(TARGETS zuluCrypt LIBRARY DESTINATION lib${LIB_SUFFIX} )
   
  install(TARGETS zuluCrypt-exe LIBRARY DESTINATION lib${LIB_SUFFIX} )
@@ -189,9 +199,9 @@
  
  install(TARGETS zuluCrypt-static ARCHIVE DESTINATION lib${LIB_SUFFIX} ) 
  
- install(FILES lib/libzuluCrypt.h          DESTINATION include/zuluCrypt )
- install(FILES bin/libzuluCrypt-exe.h      DESTINATION include/zuluCrypt )
- install(FILES bin/zuluCryptPluginManager.h DESTINATION include/zuluCrypt )
+ install(FILES lib/libzuluCrypt.h              DESTINATION include/zuluCrypt )
+ install(FILES bin/libzuluCrypt-exe.h          DESTINATION include/zuluCrypt )
+ install(FILES bin/libzuluCryptPluginManager.h DESTINATION include/zuluCrypt )
  
  
  
