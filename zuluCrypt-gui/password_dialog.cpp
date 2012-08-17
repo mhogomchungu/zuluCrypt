@@ -102,8 +102,11 @@ void passwordDialog::pbPlugin()
 
 	int j = list.size()  ;
 
-	if( j == 0 )
-		return ;
+	if( j == 0 ){
+
+		DialogMsg msg( this ) ;
+		return	msg.ShowUIOK( tr( "ERROR" ),tr( "could not find any plugin installed" ) ) ;
+	}
 
 	for( int i = 0 ; i < j ; i++ )
 		m_pluginMenu->addAction( list.at( i ) ) ;
@@ -152,10 +155,7 @@ void passwordDialog::cbStateChanged( int state )
 
 			bool st = msg.ShowUIOKDoNotShowOption( tr( "info" ),m ) ;
 
-			if( st )
-				f.write( "1" ) ;
-			else
-				f.write( "0" ) ;
+			st ? f.write( "1" ) : f.write( "0" ) ;
 
 			f.close();
 		}
@@ -164,10 +164,7 @@ void passwordDialog::cbStateChanged( int state )
 
 		f.open( QIODevice::WriteOnly ) ;
 
-		if( st )
-			f.write( "1" ) ;
-		else
-			f.write( "0" ) ;
+		st ? f.write( "1" ) : f.write( "0" ) ;
 
 		f.close();
 	}
@@ -260,7 +257,7 @@ void passwordDialog::keyTextChanged( QString txt )
 
 void passwordDialog::pluginOption()
 {
-	m_ui->pushButtonPassPhraseFromFile->setToolTip( tr( "open key module"));
+	m_ui->pushButtonPassPhraseFromFile->setToolTip( tr( "choose a module from the file system" ) );
 	m_ui->PassPhraseField->setToolTip( tr( "enter a module name to use to get passphrase" ) );
 	m_ui->PassPhraseField->setEchoMode( QLineEdit::Normal );
 	m_ui->PassPhraseField->clear();
@@ -268,7 +265,7 @@ void passwordDialog::pluginOption()
 	m_ui->labelPassphrase->setText( tr( "plugin name" ) );
 	m_ui->pushButtonPassPhraseFromFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) );
 	m_ui->pushButtonPlugin->setEnabled( true );
-	m_ui->pushButtonPlugin->setToolTip( tr( "select a key module") ) ;
+	m_ui->pushButtonPlugin->setToolTip( tr( "select a key module" ) ) ;
 }
 
 void passwordDialog::passphraseOption()
@@ -284,7 +281,7 @@ void passwordDialog::passphraseOption()
 
 void passwordDialog::passphraseFromFileOption()
 {
-	m_ui->pushButtonPassPhraseFromFile->setToolTip( tr( "open keyfile"));
+	m_ui->pushButtonPassPhraseFromFile->setToolTip( tr( "choose a key file from the file system" ) );
 	m_ui->PassPhraseField->setToolTip( tr( "enter a path to a keyfile location" ) );
 	m_ui->PassPhraseField->setEchoMode( QLineEdit::Normal );
 	m_ui->PassPhraseField->clear();
@@ -369,7 +366,7 @@ void passwordDialog::buttonOpenClicked( void )
 	if ( m_ui->radioButtonPassPhraseFromFile->isChecked() ){
 		passtype = QString( "-f" ) ;
 		passPhraseField = miscfunctions::resolvePath( passPhraseField );
-	}else if( m_ui->radioButtonPassPhraseFromFile->isChecked() ){
+	}else if( m_ui->radioButtonPassPhrase->isChecked() ){
 		passtype = QString( "-p" );
 	}else if( m_ui->radioButtonPlugin->isChecked() ){
 
