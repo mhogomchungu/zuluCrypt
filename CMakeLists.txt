@@ -4,6 +4,8 @@ cmake_minimum_required(VERSION 2.6)
 #set( CMAKE_SHARED_LINKER_FLAGS "-s" )
 #set( CMAKE_EXE_LINKER_FLAGS "-s" )
 
+find_package( Qt4 REQUIRED )
+
 set( KDEINCLUDE $ENV{KDEDIR}/include )
 set( KDELIB $ENV{KDEDIR}/lib )
 

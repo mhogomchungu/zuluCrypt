@@ -25,7 +25,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <gnome-keyring-1/gnome-keyring.h>
+#include <gnome-keyring.h>
 
 static GnomeKeyringPasswordSchema LPS =
 {

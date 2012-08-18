@@ -86,8 +86,6 @@ set (SRC createfile.cpp
 	kwalletconfig.cpp
 )
 
-find_package( Qt4 REQUIRED )
-
 INCLUDE( ${QT_USE_FILE} )
 
 QT4_WRAP_UI( UI ${UI_FILES})
