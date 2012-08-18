@@ -19,6 +19,7 @@ kwalletconfig::kwalletconfig( QWidget * parent ) : QWidget( parent ),m_ui( new U
 
 	m_ui->lineEditPassphrase->setEchoMode( QLineEdit::Password );
 	m_ui->lineEditRepeatPassphrase->setEchoMode( QLineEdit::Password );
+	m_ui->lineEditUUID->setEnabled( false );
 
 	connect( m_ui->pbGetUUIDFromFile,SIGNAL( clicked() ),this,SLOT( pbGetUUIDFromFile() ) ) ;
 	connect( m_ui->pbAdd,SIGNAL( clicked() ),this,SLOT( pbAdd() ) );
@@ -122,6 +123,20 @@ void kwalletconfig::pbGetUUIDFromDevices()
 	op->allowLUKSOnly();
 }
 
+void kwalletconfig::SetFocus()
+{
+	if( m_ui->lineEditUUID->text().isEmpty() )
+		m_ui->lineEditUUID->setFocus();
+	else if( m_ui->lineEditComment->text().isEmpty() )
+		m_ui->lineEditComment->setFocus();
+	else if( m_ui->lineEditPassphrase->text().isEmpty() )
+		m_ui->lineEditPassphrase->setFocus();
+	else if( m_ui->lineEditRepeatPassphrase->text().isEmpty() )
+		m_ui->lineEditRepeatPassphrase->setFocus();
+	else
+		m_ui->pbAdd->setFocus();
+}
+
 void kwalletconfig::pbGetUUIDFromFile()
 {
 	QString Z = QFileDialog::getOpenFileName( this,tr( "select a luks volume" ),QDir::homePath(),0 );
@@ -137,12 +152,14 @@ void kwalletconfig::pbGetUUIDFromFile()
 		m_ui->lineEditUUID->clear();
 	}else{
 		m_ui->lineEditUUID->setText( Z ) ;
+		this->SetFocus();
 	}
 }
 
 void kwalletconfig::selectedVolume( QString volume )
 {
 	m_ui->lineEditUUID->setText( volume );
+	this->SetFocus();
 }
 
 void kwalletconfig::ShowUI()

@@ -26,7 +26,6 @@ message( STATUS "Found libblkid.so  : " ${blkid} )
 ADD_SUBDIRECTORY( zuluCrypt-cli )
 ADD_SUBDIRECTORY( zuluMount-gui )
 ADD_SUBDIRECTORY( zuluCrypt-gui )
-#ADD_SUBDIRECTORY( plugins )
 
 find_file( kwallet_header kwallet.h PATHS ${KDEINCLUDE} )
 find_file( kdeui_export kdeui_export.h PATHS ${KDEINCLUDE} )

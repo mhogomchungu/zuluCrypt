@@ -100,7 +100,7 @@ static void file_system_properties( string_t p,const char * mapper,const char * 
 	uint64_t total ;
 	uint64_t used ;
 	uint64_t unused ;
-	uint32_t block_size ;
+	uint64_t block_size ;
 	char buff[ SIZE ] ;	
 	char * buffer = buff ;
 	char format[ SIZE ] ;

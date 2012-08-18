@@ -53,6 +53,7 @@ static int status_msg( int st,char * device,char * m_point )
 		case 25: printf( "ERROR: could not get a passphrase from the module\n" ) ;						break ;
 		case 26: printf( "ERROR: can not get passphrase in silent mode\n" );							break ;	
 		case 27: printf( "ERROR: insufficient memory to hold passphrase\n" );							break ;
+		case 28: printf( "ERROR: insufficient privilege to open plugin or path does not exist\n" );				break ;				
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
 	
@@ -172,6 +173,11 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	}
 	
 	if( plugin_path != NULL ){
+		
+		if( strstr( plugin_path,"/" ) != NULL )
+			if( zuluCryptCanOpenPathForReading( plugin_path,uid ) != 0 )
+				return status_msg_1( 28,opts,device,cpoint ) ;
+				
 		/*
 		 * zuluCryptPluginManagerGetKeyFromModule is defined in zuluCryptPluginManager.c
 		 */
