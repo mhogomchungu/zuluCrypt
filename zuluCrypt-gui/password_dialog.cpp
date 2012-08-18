@@ -417,8 +417,10 @@ QString passwordDialog::getKeyFromKWallet()
 		return key ;
 	}
 
-	QString path = miscfunctions::resolvePath( m_ui->OpenVolumePath->text() ) ;
-	QString uuid = miscfunctions::getUUIDFromPath( path ) ;
+	QString uuid = m_ui->OpenVolumePath->text() ;
+
+	if( uuid.mid( 0,5 ) != QString( "UUID=") )
+		uuid = miscfunctions::getUUIDFromPath( uuid ) ;
 
 	if( uuid.isEmpty() ){
 		msg.ShowUIOK( tr( "ERROR" ),tr( "can store and retrieve passphrases only for LUKS volumes" ) ) ;

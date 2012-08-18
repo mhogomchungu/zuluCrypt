@@ -21,7 +21,7 @@
  * http://developer.gnome.org/gnome-keyring/stable/gnome-keyring-Simple-Password-Storage.html#gnome-keyring-find-password-sync
  */
 
-#include <zuluCrypt/zuluCryptPluginManager.h>
+#include "../bin/libzuluCryptPluginManager.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -65,15 +65,16 @@ int main( int argc,char * argv[] )
 	e = uuid + 6 ;
 	f = UUID + 5 ;
 		
-	for( i = 0 ; i < 65 ; i++ ){
+	for( i = 0 ; i < 64 ; i++ ){
 		
 		if( e[i] == '\"' ){
-			f[i] = '\0' ;
 			break ;
 		}else{
 			f[i] = e[i] ;		
 		}
 	}
+	
+	f[i] = '\0' ;
 	
 	handle = zuluCryptPluginManagerStartConnection( addr ) ;
 	

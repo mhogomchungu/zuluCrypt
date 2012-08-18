@@ -28,28 +28,65 @@ extern "C" {
  * This header and its associated library with the same name provide a plugin infrastructure
  * that allow passage of keys from a key module to zuluCrypt-cli in a safe way.
  * 
- * In your key module, call this function to pass the key to zuluCrypt-cli
+ * In your key module, call functions in this header file to pass the key to zuluCrypt-cli
  *  
- * Your key module executable will be started with 3 argument.
- * The first argument(argv[0]) is the name of your executable
- * The second argument(argv[1]) is the path to local socket used to pass the key to zuluCrypt-cli
- * The third argument(argv[2]) is a maximun number of bytes you can use to pass the key.
- *
- * Just pass the second argument as is to the first argument of zuluCryptPlugInServer.
- * pass atoi(argv[2]) to the second argument of zuluCryptPlugInServer.
- * pass a buffer with the key to the third argument of zuluCryptPlugInServer.
- *  
+ * The following options will be passed to the module.
+ * argv[0] - the name of the module
+ * argv[1] - the device path with the encrypted volume
+ * argv[2] - the UUID of the encrypted volume in a form of UUID="blablbabla"
+ * argv[3] - the socket path.The address to where the local socket is created.
+ * argv[4] - the maximum number of bytes that will be read. *  
  */
 
-void zuluCryptPluginManager( const char * sockpath,int size,const char * buffer ) ;
-
-int zuluCryptPluginManagerSendKey( void * p,const char * key,int length ) ;
-
+/*
+ * The key to zuluCrypt-cli will be sent through a unix local socket.This function will create the connection on the plugin side.
+ * The argument it takes is argv[3].
+ * 
+ * The returned value is handle to the connection to be used for subsequent calls.
+ * 
+ * A plugin is expected to call this function within 20 seconds of its life.
+ */
 void * zuluCryptPluginManagerStartConnection( const char * sockpath ) ;
 
+/*
+ * This function sends the key to zuluCrypt-cli.
+ * The first argument is a handle returned above
+ * The second argument is a buffer to the key to be sent
+ * The third argument is the length of the buffer
+ * 
+ * A key is expected to be sent and the plugin finish its business within 60 seconds.SIGKILL will be sent its way 
+ * if its still alive after 60 seconds.
+ */
+int zuluCryptPluginManagerSendKey( void * p,const char * key,int length ) ;
+
+/*
+ * Close the connection and free up all used memory.
+ */
 void zuluCryptPluginManagerCloseConnection( void * p ) ;
 
-
+/*
+ * Sample plugin on how to use the library
+ * 
+ * #include <zuluCrypt/libzuluCryptPluginManager.h>
+ * #include <stdlib.h>
+ * 
+ * int main( int argc,char * argv[] )
+ * {
+ * 	const char * exe    = argv[0] ;
+ * 	const char * device = argv[1] ;
+ *      const char * uuid   = argv[2] ;
+ * 	const char * addr   = argv[3] ;
+ * 	int len             = atoi( argv[4] ) ;
+ * 
+ * 	void * handle = zuluCryptPluginManagerStartConnection( addr ) ;
+ * 
+ *	zuluCryptPluginManagerSendKey( handle,"xyz",3 ) ;
+ * 
+ * 	zuluCryptPluginManagerCloseConnection( handle ) ;
+ * 
+ * 	return 0 ;  
+ * }
+ */
 
 #ifdef __cplusplus
 }

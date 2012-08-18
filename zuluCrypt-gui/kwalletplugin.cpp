@@ -20,6 +20,13 @@
 
 #if BUILD_KWALLET
 
+class zuluOptions{
+public:
+	static QString wallet( void )  { return QString( "zuluCrypt")  ; }
+	static QString key( void )     { return QString( "LUKS" )      ; }
+	static QString formData( void ){ return QString( "Form Data" ) ; }
+};
+
 kwalletplugin::kwalletplugin( QWidget * parent )
 {
 	m_parent = parent ;
@@ -32,7 +39,7 @@ bool kwalletplugin::hasFunctionality()
 
 bool kwalletplugin::open()
 {
-	m_wallet = KWallet::Wallet::openWallet( QString( "zuluCrypt" ),m_parent->winId(),KWallet::Wallet::Synchronous ) ;
+	m_wallet = KWallet::Wallet::openWallet( zuluOptions::wallet(),m_parent->winId(),KWallet::Wallet::Synchronous ) ;
 
 	if( m_wallet )
 		m_walletOpened = true ;
@@ -49,12 +56,12 @@ bool kwalletplugin::setFolder( QString folder )
 
 int kwalletplugin::readMap( QMap<QString,QString> & map )
 {
-	return m_wallet->readMap( QString( "LUKS" ),map ) ;
+	return m_wallet->readMap( zuluOptions::key(),map ) ;
 }
 
 int kwalletplugin::writeMap( QMap<QString, QString> & map )
 {
-	return m_wallet->writeMap( QString( "LUKS" ),map ) ;
+	return m_wallet->writeMap( zuluOptions::key(),map ) ;
 }
 
 bool kwalletplugin::isOpen()
@@ -64,7 +71,7 @@ bool kwalletplugin::isOpen()
 
 bool kwalletplugin::folderDoesNotExist()
 {
-	return KWallet::Wallet::folderDoesNotExist( QString( "zuluCrypt" ),QString( "Form Data" ) ) ;
+	return KWallet::Wallet::folderDoesNotExist( zuluOptions::wallet(),zuluOptions::formData() ) ;
 }
 
 QString kwalletplugin::getKey( QString uuid )
@@ -74,15 +81,16 @@ QString kwalletplugin::getKey( QString uuid )
 	if( m_walletOpened == false )
 		return key ;
 
-	if( m_wallet->hasFolder( QString( "Form Data") ) == false )
-		if( m_wallet->createFolder( QString( "Form Data" ) ) == false )
+	QString fd = zuluOptions::formData() ;
+	if( !m_wallet->hasFolder( fd ) )
+		if( !m_wallet->createFolder( fd ) )
 			return key ;
 
-	m_wallet->setFolder( QString( "Form Data" ) )  ;
+	m_wallet->setFolder( fd )  ;
 
 	QMap <QString,QString> map ;
 
-	if( m_wallet->readMap( QString( "LUKS"),map ) ){
+	if( m_wallet->readMap( zuluOptions::key(),map ) ){
 		return key ;
 	}
 
@@ -99,14 +107,14 @@ QString kwalletplugin::getKey( QString uuid )
 void kwalletplugin::close()
 {
 	if( m_walletOpened ){
-		KWallet::Wallet::closeWallet( QString( "zuluCrypt" ),false ) ;
+		KWallet::Wallet::closeWallet( zuluOptions::wallet(),false ) ;
 		m_wallet->deleteLater();
 	}
 }
 
 bool kwalletplugin::keyDoesNotExist( QString key )
 {
-	return KWallet::Wallet::keyDoesNotExist( QString( "zuluCrypt" ),QString( "LUKS" ),key ) ;
+	return KWallet::Wallet::keyDoesNotExist( zuluOptions::wallet(),zuluOptions::key(),key ) ;
 }
 
 kwalletplugin::~kwalletplugin()
