@@ -20,7 +20,6 @@
 #ifndef PASSWORD_DIALOG_H
 #define PASSWORD_DIALOG_H
 
-
 #include <QString>
 #include <QFileDialog>
 #include <QStringList>

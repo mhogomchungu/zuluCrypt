@@ -54,6 +54,7 @@
  message( STATUS "Found libcryptsetup.h  : " ${libcryptsetup.h} )   
  
  find_path ( path_to_libcryptsetup.h libcryptsetup.h ) 
+ add_definitions( -I${path_to_libcryptsetup.h} )  
  
  find_library( libcryptsetup libcryptsetup.so) 
  
@@ -173,29 +174,15 @@
  
  TARGET_LINK_LIBRARIES( zuluCrypt-cli zuluCrypt-exe ) 
  
- find_file( keyring_header gnome-keyring.h PATHS /usr/include/gnome-keyring-1 /usr/include /usr/local/include /usr/local/include/glib-2.0 /usr/include/glib-2.0 /usr/lib/glib-2.0/include /usr/lib64/glib-2.0/include )
- find_library( keyring_library libgnome-keyring.so )
- 
- set( keyringMsg "---------------------------------------\ngnome keyring headers not found, not building gnome keyring support\n----------------------------------------" )
- 
- add_definitions( -I${path_to_libcryptsetup.h} -I/usr/include/gnome-keyring-1 -I/usr/include -I/usr/local/include -I/usr/local/include/glib-2.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/lib64/glib-2.0/include )  
- 		 
- if( keyring_header )
-	 if( keyring_library )
-		add_executable( keyring  keyring/keyring.c )
-		set_target_properties( keyring PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread -ansi -pedantic -std=c99" )
-		set_target_properties( keyring PROPERTIES LINK_FLAGS "-pie" )
-		TARGET_LINK_LIBRARIES( keyring zuluCryptPluginManager ${keyring_library} )
-		install( TARGETS keyring RUNTIME DESTINATION "/etc/zuluCrypt/modules" )	
-		message( STATUS "found gnome-keyring/gnome-keyring.h  ${keyring_header}" )
-		message( STATUS "found libgnome-keyring.so  ${keyring_library}" )
-		message( STATUS "found keyring support, will build keyring functionality" )				
-	else( keyring_library )
-		message( WARNING "${keyringMsg}" )
-	endif( keyring_library )	
- else( keyring_header )
-	message( WARNING "${keyringMsg}" )		
- endif( keyring_header )
+ if( KEYRINGSUPPORT )
+	add_executable( keyring  keyring/keyring.c )
+	set_target_properties( keyring PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread -ansi -pedantic -std=c99" )
+	set_target_properties( keyring PROPERTIES LINK_FLAGS "-pie" )
+	TARGET_LINK_LIBRARIES( keyring zuluCryptPluginManager ${keyring_library} )
+	install( TARGETS keyring RUNTIME DESTINATION "/etc/zuluCrypt/modules" )	
+	message( STATUS "found gnome-keyring/gnome-keyring.h  ${keyring_header}" )
+	message( STATUS "found libgnome-keyring.so  ${keyring_library}" )
+ endif( KEYRINGSUPPORT )
  
  install(TARGETS zuluCrypt-cli RUNTIME DESTINATION bin            
             PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE SETUID

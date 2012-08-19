@@ -95,35 +95,8 @@ QT4_WRAP_CPP(MOC ${MOC_FILES})
 QT4_ADD_RESOURCES( TRAY_RC_SRCS icon.qrc)
 
 INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
-
-set ( msg "---------------------------------------------------------------------
-optional package pwquality used to measure passphrase quality not found.
-sources can be found at:https://fedorahosted.org/libpwquality/
----------------------------------------------------------------------" )
-
-find_file ( header_pwquality pwquality.h )
-find_library ( library_pwquality libpwquality.so )
-
-if( header_pwquality )
-	message ( STATUS "Found pwquality.h  : " ${header_pwquality} )
-	if( library_pwquality )
-		message( STATUS "Found libpwquality.so : " ${library_pwquality} )
-		file(WRITE  ${PROJECT_BINARY_DIR}/can_build_pwquality.h "#define BUILD_PWQUALITY 1\n")
-		file(APPEND ${PROJECT_BINARY_DIR}/can_build_pwquality.h "extern \"C\"\n{\n#include <${header_pwquality}>\n}" )
-	else( library_pwquality )
-		file(WRITE  ${PROJECT_BINARY_DIR}/can_build_pwquality.h "#define BUILD_PWQUALITY 0\n")
-		message ( WARNING ${msg} )		
-	endif( library_pwquality )
-else( header_pwquality )
-	file(WRITE  ${PROJECT_BINARY_DIR}/can_build_pwquality.h "#define BUILD_PWQUALITY 0\n")	
-	message ( WARNING "${msg}" )
-endif( header_pwquality )
 				
 add_executable( zuluCrypt-gui ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS})			
-
-find_file( kwallet_header kwallet.h PATHS ${KDEINCLUDE} )
-
-find_library( kwallet_library libkwalletbackend.so PATHS ${KDELIB} )
 
 if( library_pwquality )
 	if( kwallet_library )

@@ -22,6 +22,7 @@
 #include "can_build_kwallet.h"
 
 #if BUILD_KWALLET
+#include <kwallet.h>
 #include <QObject>
 #include <QString>
 #include <QStringList>
