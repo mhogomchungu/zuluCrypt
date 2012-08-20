@@ -56,7 +56,7 @@ public:
 	static QString getUUIDFromPath( QString ) ;
 	static bool userIsRoot( void ) ;
 	static void selectTableRow( QTableWidgetItem * current,QTableWidgetItem * previous ) ;
-	static void addRowToTable( QTableWidget *,QStringList );
+	static void addRowToTable( QTableWidget *,QStringList & );
 	static void deleteRowFromTable( QTableWidget *,int row ) ;
 };
 

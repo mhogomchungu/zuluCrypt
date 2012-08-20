@@ -20,6 +20,7 @@
 #define KWALLETPLUGIN_H
 
 #include "can_build_kwallet.h"
+#include "zuluoptions.h"
 
 #if BUILD_KWALLET
 #include <kwallet.h>

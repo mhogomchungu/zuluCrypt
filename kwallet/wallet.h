@@ -30,7 +30,7 @@
 #include <QtNetwork/QLocalServer>
 #include <QtNetwork/QLocalSocket>
 
-#include "wallet.h"
+#include "../zuluCrypt-gui/zuluoptions.h"
 
 using namespace KWallet ;
 

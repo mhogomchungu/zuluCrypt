@@ -20,13 +20,6 @@
 
 #if BUILD_KWALLET
 
-class zuluOptions{
-public:
-	static QString wallet( void )  { return QString( "zuluCrypt")  ; }
-	static QString key( void )     { return QString( "LUKS" )      ; }
-	static QString formData( void ){ return QString( "Form Data" ) ; }
-};
-
 kwalletplugin::kwalletplugin( QWidget * parent )
 {
 	m_parent = parent ;

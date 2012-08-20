@@ -273,7 +273,7 @@ QString miscfunctions::getUUIDFromPath( QString device )
 	return uuid ;
 }
 
-void miscfunctions::addRowToTable( QTableWidget * table,QStringList list )
+void miscfunctions::addRowToTable( QTableWidget * table,QStringList & list )
 {
 	QTableWidgetItem * item ;
 

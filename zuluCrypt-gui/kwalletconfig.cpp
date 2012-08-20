@@ -62,29 +62,14 @@ void kwalletconfig::pbAdd()
 	m_map.insert( m,comm ) ;
 	m_map.insert( uuid,pass ) ;
 
-	QTableWidgetItem * item ;
-	QTableWidget * table = m_ui->tableWidget ;
+	QStringList entry ;
 
-	int row = table->rowCount() ;
-	table->insertRow( row );
+	entry.append( uuid );
+	entry.append( comm );
+	//entry.append( pass );
+	entry.append( QString( "<redacted>" ) );
 
-	item = new QTableWidgetItem() ;
-	item->setTextAlignment( Qt::AlignCenter );
-	item->setText( uuid );
-	table->setItem( row,0,item ) ;
-
-	item = new QTableWidgetItem() ;
-	item->setTextAlignment( Qt::AlignCenter );
-	item->setText( comm );
-	table->setItem( row,1,item ) ;
-
-	item = new QTableWidgetItem() ;
-	item->setTextAlignment( Qt::AlignCenter );
-	//item->setText( pass );
-	item->setText( tr( "<reducted>" ) ) ;
-	table->setItem( row,2,item ) ;
-
-	table->setCurrentCell( row,table->columnCount() -1 );
+	miscfunctions::addRowToTable( m_ui->tableWidget,entry ) ;
 
 	m_ui->lineEditUUID->clear();
 	m_ui->lineEditPassphrase->clear();

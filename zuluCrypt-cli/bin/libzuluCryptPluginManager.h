@@ -53,9 +53,6 @@ void * zuluCryptPluginManagerStartConnection( const char * sockpath ) ;
  * The first argument is a handle returned above
  * The second argument is a buffer to the key to be sent
  * The third argument is the length of the buffer
- * 
- * A key is expected to be sent and the plugin finish its business within 60 seconds.SIGKILL will be sent its way 
- * if its still alive after 60 seconds.
  */
 int zuluCryptPluginManagerSendKey( void * p,const char * key,int length ) ;
 

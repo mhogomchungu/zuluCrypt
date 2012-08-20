@@ -28,18 +28,19 @@ wallet::wallet( int argc,char * argv[] )
 	m_uuid = QString( argv[ 2 ] ) ;
 	m_sockpath = QString( argv[ 3 ] ) ;
 	m_bufferSize = QString( argv[ 4 ] ).toInt() ;
+	m_socket = 0 ;
 }
 
 void wallet::openWallet()
 {
 	this->openConnection();
 
-	m_wallet = Wallet::openWallet( "zuluCrypt",0,KWallet::Wallet::Asynchronous ) ;
+	m_wallet = Wallet::openWallet( zuluOptions::wallet(),0,KWallet::Wallet::Asynchronous ) ;
 
 	if( m_wallet ){
 		connect( m_wallet,SIGNAL( walletOpened( bool ) ),this,SLOT( walletOpened( bool ) ) ) ;
 	}else{
-		qDebug() << "failed to open wallet";
+		//qDebug() << "failed to open wallet";
 		this->Exit( 1 );
 	}
 }
@@ -83,7 +84,7 @@ void wallet::getKey()
 		return ;
 	}
 
-	if( !m_wallet->setFolder( "Form Data" ) ){
+	if( !m_wallet->setFolder( zuluOptions::formData() ) ){
 		//qDebug() << "setFolder() failed ";
 		m_key.clear();
 		return ;
@@ -91,14 +92,14 @@ void wallet::getKey()
 
 	QMap <QString,QString> map ;
 
-	if( m_wallet->readMap( "LUKS",map ) ){
+	if( m_wallet->readMap( zuluOptions::key(),map ) ){
 		//qDebug() << "readMap() failed";
 		m_key.clear();
 		return;
 	}
 
 	if( m_uuid == QString( "Nil" ) ){
-		//qDebug() << "device has no UUID";
+		qDebug() << "device has no UUID";
 		m_key.clear();
 		return  ;
 	}
@@ -113,9 +114,12 @@ void wallet::getKey()
 
 void wallet::Exit( int st )
 {
-	if( m_socket->isOpen() )
-		m_socket->close();
-	m_socket->deleteLater();
+	if( m_socket ){
+		if( m_socket->isOpen() )
+			m_socket->close();
+
+		m_socket->deleteLater();
+	}
 
 	m_server->close();
 	m_server->deleteLater();
