@@ -25,7 +25,7 @@ wallet::wallet( int argc,char * argv[] )
 {
 	m_argc = argc ;
 	m_device = QString( argv[ 1 ] ) ;
-	m_uuid = QString( argv[ 2 ] ) ;
+	m_uuid = QString( "UUID=\"%1\"").arg( QString( argv[ 2 ] ) ) ;
 	m_sockpath = QString( argv[ 3 ] ) ;
 	m_bufferSize = QString( argv[ 4 ] ).toInt() ;
 	m_socket = 0 ;

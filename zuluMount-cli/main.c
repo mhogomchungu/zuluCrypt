@@ -152,7 +152,7 @@ static int zuluMountMount( const char * device,const char * m_point,const char *
 	chown( m_point,uid,uid ) ;
 		
 	/*
-	 * below function is defined in ../zuluCrypt-cli/lib/mount_volume.c
+	 * below function is defined in ./mount_volume.c
 	 */
 	status = zuluMountMountVolume( device,path,mode,uid )	;
 	
@@ -342,11 +342,8 @@ int main( int argc,char * argv[] )
 	char * device ;
 	
 	uid_t uid = getuid() ;
-	uid_t org ;
 	
 	int status ;
-	
-	struct stat st ;
 	
 	if( mount_get_opts( argc,argv,&action,&dev,&m_point,&mode,&key,&key_source ) != 0 )
 		return mount_help() ;
@@ -358,7 +355,7 @@ int main( int argc,char * argv[] )
 		return mount_return( 100,NULL,NULL,"wrong number of arguments" ) ;
 	
 	if( action == NULL )
-		return mount_return( 150,NULL,NULL,"ERROR: action not specified" ) ;
+		return mount_return( 160,NULL,NULL,"ERROR: action not specified" ) ;
 	
 	if( strcmp( action,"-s" ) == 0 ){
 		/*
@@ -378,7 +375,7 @@ int main( int argc,char * argv[] )
 		return mount_help() ;	
 	
 	if( dev == NULL )
-		return mount_return( 160,NULL,NULL,"ERROR: device argument missing" ) ;
+		return mount_return( 170,NULL,NULL,"ERROR: device argument missing" ) ;
 		
 	if( mode == NULL )
 		mode = "rw" ;
@@ -406,19 +403,14 @@ int main( int argc,char * argv[] )
 			printf( "could not resolve LABEL\n" ) ;
 			status = 140 ;
 		}
-	}else{		
-		org = geteuid() ;		
-		seteuid( uid ) ;		
-		status = stat( dev,&st ) ;
-		seteuid( org ) ;		
-		
-		if( status != 0 ){			
-			printf( "invalid path to device or insuffienct privilege to access it\n" ) ;
-			status = 160 ;
-		}else{		
-			device = realpath( dev,NULL ) ;		
+	}else{
+		device = realpath( dev,NULL ) ;	
+		if( device != NULL ){
 			status = exe( device,action,m_point,mode,uid,key,key_source ) ;		
 			free( device ) ;		
+		}else{
+			printf( "could not resolve path to device\n" ) ;
+			status = 180 ;
 		}
 	}	
 	

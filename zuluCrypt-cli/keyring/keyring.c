@@ -27,7 +27,7 @@
 #include <stdlib.h>
 #include <gnome-keyring.h>
 
-static GnomeKeyringPasswordSchema LPS =
+static GnomeKeyringPasswordSchema lps =
 {
 	GNOME_KEYRING_ITEM_GENERIC_SECRET,
 	{
@@ -38,56 +38,51 @@ static GnomeKeyringPasswordSchema LPS =
 
 int main( int argc,char * argv[] )
 {
-	//const char * exe    = argv[ 0 ] ;
-	//const char * device = argv[ 1 ] ;
-	const char * uuid   = argv[ 2 ] ;
-	const char * addr   = argv[ 3 ] ;
-	//int          size   = atoi( argv[ 4 ] ) ;	
+	/*
+	 * const char * exe    = argv[ 0 ] ;
+	 * const char * device = argv[ 1 ] ;
+	 * int          size   = atoi( argv[ 4 ] ) ;
+	 *
+	 * const char * msg ;	 	
+	 * 
+	 */
+	
+	const char * uuid = argv[ 2 ] ;
+	const char * addr = argv[ 3 ] ;
 	
 	int i ;
 	
-	char UUID[ 65 ] ;
+	char UUID[ 64 ] ;
 	
-	//const char * msg ;
 	const char * e ;	
-	char * f ;
 	
 	void * handle ;
 	
 	gchar * key ;
 	GnomeKeyringResult r ;
 	
-	if( strcmp( uuid,"Nil" ) == 0 )
-		return 1 ;
-	
-	strcpy( UUID,"luks-" ) ;
-	
-	e = uuid + 6 ;
-	f = UUID + 5 ;
-		
-	for( i = 0 ; i < 64 ; i++ ){
-		
-		if( e[i] == '\"' ){
-			break ;
-		}else{
-			f[i] = e[i] ;		
-		}
-	}
-	
-	f[i] = '\0' ;
-	
 	handle = zuluCryptPluginManagerStartConnection( addr ) ;
 	
-	r = gnome_keyring_find_password_sync( &LPS,&key,"gvfs-luks-uuid",UUID,NULL ) ;
-	
-	if( r == GNOME_KEYRING_RESULT_OK ){
-		zuluCryptPluginManagerSendKey( handle,( char * )key,strlen( ( char * )key ) ) ;
-		gnome_keyring_free_password( key ) ;
-		i = 0 ;
-	}else{
-		//msg = ( const char * )gnome_keyring_result_to_message( r );
-		//printf( "failed to get key from keyring, reason:%s\n",msg ) ;		 
+	if( strcmp( uuid,"Nil" ) == 0 ){
 		i = 1 ;
+	}else{			
+		strcpy( UUID,"luks-" ) ;
+		strncat( UUID,uuid,63 ) ;
+		
+		r = gnome_keyring_find_password_sync( &lps,&key,"gvfs-luks-uuid",UUID,NULL ) ;
+	
+		if( r == GNOME_KEYRING_RESULT_OK ){
+			e = ( const char * ) key ;
+			zuluCryptPluginManagerSendKey( handle,e,strlen( e ) ) ;
+			gnome_keyring_free_password( key ) ;
+			i = 0 ;
+		}else{
+			/*
+			 * msg = ( const char * )gnome_keyring_result_to_message( r );
+			 * printf( "failed to get key from keyring, reason:%s\n",msg ) ;		 
+			 */
+			i = 1 ;
+		}
 	}
 	
 	zuluCryptPluginManagerCloseConnection( handle ) ;
