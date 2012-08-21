@@ -175,7 +175,7 @@
  TARGET_LINK_LIBRARIES( zuluCrypt-cli zuluCrypt-exe ) 
  
  if( KEYRINGSUPPORT )
-	add_executable( keyring  keyring/keyring.c )
+	add_executable( keyring  ../plugins/keyring/keyring.c )
 	set_target_properties( keyring PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread -ansi -pedantic -std=c99" )
 	set_target_properties( keyring PROPERTIES LINK_FLAGS "-pie" )
 	TARGET_LINK_LIBRARIES( keyring zuluCryptPluginManager ${keyring_library} )
