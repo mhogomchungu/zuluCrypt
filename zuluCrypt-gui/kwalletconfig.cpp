@@ -156,7 +156,7 @@ void kwalletconfig::ShowUI()
 
 void kwalletconfig::ShowWalletEntries()
 {
-	if( !m_wallet->setFolder( "Form Data" ) )
+	if( !m_wallet->setFolder( zuluOptions::formData() ) )
 		return ;
 
 	if( m_wallet->readMap( m_map ) )

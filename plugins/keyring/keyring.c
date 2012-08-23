@@ -59,6 +59,7 @@ int main( int argc,char * argv[] )
 	void * handle ;
 	
 	gchar * key ;
+	
 	GnomeKeyringResult r ;
 	
 	handle = zuluCryptPluginManagerStartConnection( addr ) ;
@@ -67,8 +68,9 @@ int main( int argc,char * argv[] )
 		i = 1 ;
 	}else{			
 		strcpy( UUID,"luks-" ) ;
-		strncat( UUID,uuid,63 ) ;
-		
+		strncat( UUID,uuid,64 ) ;
+		UUID[ 63 ] = '\0' ;
+
 		r = gnome_keyring_find_password_sync( &lps,&key,"gvfs-luks-uuid",UUID,NULL ) ;
 	
 		if( r == GNOME_KEYRING_RESULT_OK ){
