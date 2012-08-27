@@ -30,6 +30,7 @@
 #ifdef __STDC__
 int kill( pid_t,int );
 int seteuid( uid_t uid );
+int setegid( uid_t uid ) ;
 #endif
 
 

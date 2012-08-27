@@ -71,9 +71,11 @@ else( header_pwquality )
 	file( WRITE  ${PROJECT_BINARY_DIR}/can_build_pwquality.h "#define BUILD_PWQUALITY 0\n")	
 endif( header_pwquality )
 
+ADD_SUBDIRECTORY( plugins/keykeyfile )
 ADD_SUBDIRECTORY( zuluCrypt-cli )
 ADD_SUBDIRECTORY( zuluMount-gui )
 ADD_SUBDIRECTORY( zuluCrypt-gui )
+
 ADD_SUBDIRECTORY( test )
 
 message ( STATUS "---------------------------------------------------------------------------" )

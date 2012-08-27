@@ -35,6 +35,9 @@
 
 #ifdef __STDC__
 char * realpath( const char * path, char * resolved_path ) ;
+int getopt(int argc, char * const argv[], const char *optstring);
+extern char *optarg;
+extern int optind, opterr, optopt;
 #endif
 
 /*

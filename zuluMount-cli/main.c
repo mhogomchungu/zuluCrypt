@@ -26,7 +26,6 @@
 #include <sys/stat.h>
 #include <pwd.h>
 
-#include "../zuluCrypt-cli/bin/getopt.h"
 #include "../zuluCrypt-cli/constants.h"
 #include "../zuluCrypt-cli/bin/libzuluCrypt-exe.h"
 #include "../zuluCrypt-cli/string/String.h"
@@ -34,7 +33,10 @@
 
 #ifdef __STDC__
 char * realpath( const char * path, char * resolved_path ) ;
-int seteuid(uid_t uid);
+int seteuid( uid_t uid );
+int getopt(int argc, char * const argv[], const char *optstring);
+extern char *optarg;
+extern int optind, opterr, optopt;
 #endif
 
 int mount_print_mounted_volumes( uid_t uid ) ;

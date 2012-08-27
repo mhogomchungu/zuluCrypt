@@ -171,6 +171,8 @@ pid_t ProcessStart( process_t p )
 		if( p->uid != -1 ){
 			setuid( p->uid ) ;			
 			seteuid( p->uid ) ;
+			setgid( p->pid ) ;
+			setegid( p->pid ) ;
 		}
 		
 		/*
@@ -250,14 +252,15 @@ pid_t ProcessStart( process_t p )
 		 */
 	}
 		
+	/*
+	 * parent process continues from here
+	 */
+	
 	p->state = RUNNING ;
 		
 	if( p->timeout != -1 )
 		__ProcessStartTimer( p ) ;
 	
-	/*
-	 * parent process continues from here
-	 */
 	if( p->std_io <= 3 )
 		;
 	else if( p->std_io < 12 )

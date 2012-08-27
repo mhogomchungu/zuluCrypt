@@ -18,7 +18,6 @@
  */
 
 #include "includes.h"
-#include "getopt.h"
 
 void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
 {
