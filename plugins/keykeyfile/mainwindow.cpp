@@ -5,6 +5,8 @@ MainWindow::MainWindow( QWidget * parent ) : QMainWindow( parent ),m_ui( new Ui:
 {
 	m_ui->setupUi( this );
 
+	m_ui->lineEditKey->setEchoMode( QLineEdit::Password );
+
 	m_client = 0 ;
 	m_server = 0 ;
 

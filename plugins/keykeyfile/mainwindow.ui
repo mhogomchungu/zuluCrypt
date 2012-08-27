@@ -116,6 +116,13 @@
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>lineEditKey</tabstop>
+  <tabstop>lineEditKeyFile</tabstop>
+  <tabstop>pbKeyFile</tabstop>
+  <tabstop>pbOpen</tabstop>
+  <tabstop>pbCancel</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
