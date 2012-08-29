@@ -103,9 +103,11 @@ void SocketSetHostAddress( socket_t s,const char * address )
 	if( s->domain == AF_UNIX )
 		strcpy( s->local->sun_path,address ) ;
 	else{
+		/*
 		host = gethostbyname( address ) ;
 		if( host != NULL )
 			s->net->sin_addr.s_addr = inet_addr( host->h_addr_list[ 0 ] ) ;		
+		*/
 	}
 }
 
