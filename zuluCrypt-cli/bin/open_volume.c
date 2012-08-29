@@ -191,10 +191,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		
 		st = zuluCryptOpenVolume( device,cname,cpoint,uid,mode,cpass,len ) ;
 		
-		plugin_path = StringDeleteHandle( &passphrase ) ;
-		
-		memset( ( char * )plugin_path,'\0',len ) ;
-		free( ( char * )plugin_path ) ;
+		StringClearDelete( &passphrase ) ;
 		
 	}else if( i == 1 || source == NULL ){
 		
@@ -207,7 +204,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		cpass = StringContent( passphrase ) ;
 		len = StringLength( passphrase ) ;
 		st = zuluCryptOpenVolume( device,cname,cpoint,uid,mode,cpass,len ) ;
-		StringDelete( &passphrase ) ;
+		StringClearDelete( &passphrase ) ;
 	}else{
 		if( source == NULL || pass == NULL )
 			return status_msg_1( 11,opts,device,cpoint ) ;
@@ -228,7 +225,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 			cpass = StringContent( data ) ;
 			len = StringLength( data ) ;
 			st = zuluCryptOpenVolume( device,cname,cpoint,uid,mode,cpass,len ) ;
-			StringDelete( &data ) ;
+			StringClearDelete( &data ) ;
 		}
 	}
 		

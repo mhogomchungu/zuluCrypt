@@ -232,7 +232,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 		free( dev ) ;
 	}	
 	
-	StringDelete( &passphrase ) ;
+	StringClearDelete( &passphrase ) ;
 	
 	if( op == 1 )
 		return return_value( &mapper,0 ) ;

@@ -19,34 +19,20 @@
 
 #include <dlfcn.h>
 #include <sys/stat.h>
-#include "includes.h"
 #include <unistd.h>
 #include <pwd.h>
 #include <blkid/blkid.h>
 
+#include "libzuluCryptPluginManager.h"
 #include "../process/process.h"
 #include "../socket/socket.h"
-
-void zuluCryptPluginManager( const char * sockpath,int size,const char * buffer )
-{
-	socket_t p ;
-	socket_t q = SocketLocal( sockpath ) ;
-	
-	SocketBind( q ) ;
-	SocketListen( q ) ;
-	
-	p = SocketAccept( q ) ;
-	
-	SocketSendData( p,buffer,size ) ;
-	
-	SocketClose( p ) ;	
-	SocketClose( q ) ;	
-	
-	unlink( sockpath ) ;
-	
-	SocketDelete( &p ) ;	
-	SocketDelete( &q ) ;
-} 
+#include "../string/String.h"
+#include "../constants.h"
+/*
+ * The below number is the cryptsetup default amount of maximum bytes to read from a keyfile.
+ */
+#define INTMAXKEYZISE  8192000
+#define CHARMAXKEYZISE "8192000"
 
 typedef struct {
 	socket_t server ;
@@ -114,7 +100,7 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 {
 	struct passwd * pass ;	
 	socket_t s ;
-	char buffer[ 1025 ] ;	
+	char * buffer ;	
 	process_t p ;	
 	string_t key = NULL ;	
 	int i ;	
@@ -176,18 +162,16 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	/* 
 	 * ProcessSetOptionTimeout( p,60,SIGKILL ) ;
 	 */
-	ProcessSetArgumentList( p,device,StringContent( uuid ),sockpath,"1024",'\0' ) ;	
+	ProcessSetArgumentList( p,device,StringContent( uuid ),sockpath,CHARMAXKEYZISE,'\0' ) ;	
 	ProcessStart( p ) ;		
 	
 	s = SocketLocal( sockpath ) ;
 	
 	for( i = 0 ; ; i++ ){
 		if( SocketConnect( s ) == 0 ){
-			i = SocketGetData( s,buffer,1024 ) ;
-			if( i > 0 ){
-				buffer[ i ] = '\0' ;
-				key = String( buffer ) ;
-			}			
+			i = SocketGetData( s,&buffer,INTMAXKEYZISE ) ;
+			if( i > 0 )
+				key = StringInheritWithSize( &buffer,i ) ;
 			SocketClose( s ) ;			
 			break ;
 		}else if( i == 30 ){			
@@ -207,3 +191,27 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	
 	return key ;
 }
+
+/*
+ * Currently unsed function.
+ */
+void zuluCryptPluginManager( const char * sockpath,int size,const char * buffer )
+{
+	socket_t p ;
+	socket_t q = SocketLocal( sockpath ) ;
+	
+	SocketBind( q ) ;
+	SocketListen( q ) ;
+	
+	p = SocketAccept( q ) ;
+	
+	SocketSendData( p,buffer,size ) ;
+	
+	SocketClose( p ) ;	
+	SocketClose( q ) ;	
+	
+	unlink( sockpath ) ;
+	
+	SocketDelete( &p ) ;	
+	SocketDelete( &q ) ;
+} 

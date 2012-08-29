@@ -121,7 +121,7 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 		printf( "\n" ) ;
 		
 		status = zuluCryptRemoveKey( device,StringContent( pass ),StringLength( pass ) ) ;
-		StringDelete( &pass ) ;
+		StringClearDelete( &pass ) ;
 	}else{
 		if( keyType == NULL || keytoremove == NULL )
 			return status_msg( 6 ) ;
@@ -136,7 +136,7 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 				case 4 : return status_msg( 13 ) ;				
 			}
 			status = zuluCryptRemoveKey( device,StringContent( pass ),StringLength( pass ) ) ;
-			StringDelete( &pass ) ;
+			StringClearDelete( &pass ) ;
 		}else if( strcmp( keyType, "-p" ) == 0 ) {
 			
 			status = zuluCryptRemoveKey( device,keytoremove,strlen( keytoremove ) ) ;		

@@ -21,7 +21,7 @@
  * http://developer.gnome.org/gnome-keyring/stable/gnome-keyring-Simple-Password-Storage.html#gnome-keyring-find-password-sync
  */
 
-#include "../../zuluCrypt-cli/bin/libzuluCryptPluginManager.h"
+#include "../../zuluCrypt-cli/pluginManager/libzuluCryptPluginManager.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>

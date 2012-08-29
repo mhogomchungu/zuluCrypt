@@ -63,6 +63,16 @@ void StringDelete( string_t * st )
 	*st = NULL ;
 }
 
+void StringClearDelete( string_t * st ) 
+{	
+	if( *st == NULL )
+		return ;
+	memset( ( *st )->string,'\0',( *st )->size ) ;	
+	free( ( *st )->string ) ;
+	free( *st ) ;
+	*st = NULL ;	
+}
+
 void StringMultipleDelete( string_t * xt,... )
 {
 	string_t * entry ;

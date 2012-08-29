@@ -47,11 +47,13 @@ socket_t Socket( const char * domain )
 		s->domain = AF_UNIX ;		
 		s->size = sizeof( struct sockaddr_un ) ;		
 		s->local = ( struct sockaddr_un * ) malloc( s->size ) ;
+		memset( s->local,'\0',s->size ) ;			
 		s->local->sun_family = AF_UNIX ;
 	}else{
 		s->domain = AF_INET ;
 		s->size = sizeof( struct sockaddr_in ) ;
 		s->net = ( struct sockaddr_in  * ) malloc( s->size ) ;
+		memset( s->net,'\0',s->size ) ;		
 		s->net->sin_family = AF_INET ;		
 	}
 	
@@ -96,13 +98,14 @@ void SocketSetPortNumber( socket_t s,int port )
 
 void SocketSetHostAddress( socket_t s,const char * address ) 
 {
-	//struct hostent * host ;
+	struct hostent * host ;
 	
 	if( s->domain == AF_UNIX )
 		strcpy( s->local->sun_path,address ) ;
 	else{
-		//host = gethostbyname( address ) ;
-		//s->net->sin_addr.s_addr = ( struct in_addr * )host->h_addr_list[ 0 ] ;		
+		host = gethostbyname( address ) ;
+		if( host != NULL )
+			s->net->sin_addr.s_addr = inet_addr( host->h_addr_list[ 0 ] ) ;		
 	}
 }
 
@@ -110,11 +113,8 @@ const char * SocketAddress( socket_t s )
 {	
 	if( s->domain == AF_UNIX )
 		return s->local->sun_path ;
-	else{
-		//host = gethostbyname( address ) ;
-		//s->net->sin_addr.s_addr = ( struct in_addr * )host->h_addr_list[ 0 ] ;
-		return ( void * ) 0 ;
-	}
+	else
+		return inet_ntoa( s->net->sin_addr ) ;	
 }
 
 void SocketSetHostIPAddress( socket_t s,const char * address ) 
@@ -133,17 +133,14 @@ int SocketBind( socket_t s )
 
 socket_t SocketAccept( socket_t s ) 
 {
-	//struct sockaddr addr ;
-	
 	socket_t x = ( socket_t ) malloc( sizeof( struct Socket_t ) ) ;
 	
 	if( s->domain == AF_UNIX ){
 		x->local = ( struct sockaddr_un * ) malloc( s->size ) ;
 		x->fd = accept( s->fd,( struct sockaddr * )x->local,&x->size ) ;
 	}else{
-		//x->net = ( struct sockaddr_in * ) malloc( s->size )  ;
-		//x->fd = accept( s->fd,&addr,&len ) ;
-		//memcpy( s->net,( struct sockaddr_in * )&addr,s->size ) ;		
+		x->net = ( struct sockaddr_in * ) malloc( s->size )  ;
+		x->fd = accept( s->fd,( struct sockaddr * )x->net,&x->size ) ;
 	}
 	
 	return x ;
@@ -167,13 +164,45 @@ int SocketListen( socket_t s )
 	return listen( s->fd,s->cmax ) ;
 }
 
-int SocketGetData( socket_t s,char * buffer,size_t len ) 
+#define BUFFSIZE 64
+
+int SocketGetData( socket_t s,char ** buffer,size_t len ) 
 {
-	return recv( s->fd,buffer,len,s->fread ) ;
+	size_t i ;
+	size_t buffCount = BUFFSIZE ;
+	
+	char * c = ( char * ) malloc( sizeof( char ) * BUFFSIZE ) ;
+	char * d = NULL ;
+	
+	if( c == NULL )
+		return -1 ;
+	
+	for( i = 0 ; i < len ; i++ ){
+	
+		if( i == buffCount ){
+			
+			buffCount += BUFFSIZE ;
+			d = realloc( c,buffCount ) ;
+			
+			if( d == NULL ){
+				free( c ) ;
+				return -1 ;
+			}else{
+				c = d ;
+			}
+		}
+		
+		if( recv( s->fd,c + i,1,s->fread ) <= 0 )
+			break ;
+	}	
+	
+	*buffer = realloc( c,i ) ;
+	
+	return i ;
 }
 
 int SocketSendData( socket_t s,const char * buffer,size_t len ) 
-{
+{	
 	return send( s->fd,buffer,len,s->fwrite ) ;	
 }
 

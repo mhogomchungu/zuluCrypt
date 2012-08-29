@@ -25,7 +25,7 @@
 extern "C" {
 #endif	
 
-#include <sys/types.h>          /* See NOTES */
+#include <sys/types.h>         
 #include <sys/socket.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -34,6 +34,8 @@ extern "C" {
 #include <sys/un.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <sys/select.h>
+#include <netdb.h>
 
 typedef struct Socket_t * socket_t ;
 
@@ -57,7 +59,7 @@ int SocketConnect( socket_t ) ;
 
 int SocketListen( socket_t ) ;
 
-int SocketGetData( socket_t,char * buffer,size_t len ) ;
+int SocketGetData( socket_t,char ** buffer,size_t len ) ;
 
 int SocketSendData( socket_t,const char * buffer,size_t len ) ;
 

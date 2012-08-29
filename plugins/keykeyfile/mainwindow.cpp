@@ -93,7 +93,7 @@ void MainWindow::Exit()
 
 void MainWindow::pbOpen()
 {
-	QString key = m_ui->lineEditKey->text() ;
+	QByteArray key = m_ui->lineEditKey->text().toAscii() ;
 
 	m_keyFile = m_ui->lineEditKeyFile->text() ;
 
@@ -110,12 +110,15 @@ void MainWindow::pbOpen()
 		QFile file( m_keyFile ) ;
 
 		if( file.open( QIODevice::ReadOnly ) ){
-			key = key + QString( file.readAll() ) ;
+			if( key.isEmpty() )
+				key = file.readAll() ;
+			else 
+				key = key + file.readAll() ;
 			file.close();
 		}
 	}
 
-	m_client->write( key.toAscii() ) ;
+	m_client->write( key ) ;
 	m_client->flush() ;
 	m_client->close();
 

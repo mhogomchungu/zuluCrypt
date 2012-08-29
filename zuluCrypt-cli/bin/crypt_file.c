@@ -86,17 +86,17 @@ static int crypt_opt( const struct_opts * opts,const char * mapper,uid_t uid,int
 		
 		printf( "\nRe enter passphrase: " ) ;
 		switch( StringSilentlyGetFromTerminal_1( &q,KEY_MAX_SIZE ) ){
-			case 1 : StringDelete( &p ) ;
+			case 1 : StringClearDelete( &p ) ;
 				 return msg( 12 ) ;
-			case 2 : StringDelete( &p ) ;
+			case 2 : StringClearDelete( &p ) ;
 				 return msg( 13 ) ;
 		}
 		
 		printf( "\n" ) ;
 		
 		if( StringCompare( p,q ) != 0 ){
-			StringDelete( &p ) ;
-			StringDelete( &q ) ;
+			StringClearDelete( &p ) ;
+			StringClearDelete( &q ) ;
 			return msg( 8 ) ; 
 		}else{
 			StringDelete( &q ) ;
@@ -120,7 +120,7 @@ static int crypt_opt( const struct_opts * opts,const char * mapper,uid_t uid,int
 	else
 		st = zuluCryptDecryptFile( source,dest,StringContent( p ),StringLength( p ) ) ;	
 	
-	StringDelete( &p ) ;
+	StringClearDelete( &p ) ;
 	
 	switch( st ){
 		case 1 : return msg( 4 ) ;

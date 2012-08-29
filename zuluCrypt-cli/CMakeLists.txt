@@ -126,9 +126,9 @@
  
  add_library( zuluCrypt-static STATIC ${LIB} )
  
- add_library( zuluCryptPluginManager SHARED bin/zuluCryptPluginManager.c )
+ add_library( zuluCryptPluginManager SHARED pluginManager/zuluCryptPluginManager.c )
  
- add_library( zuluCryptPluginManager-static STATIC bin/zuluCryptPluginManager.c )
+ add_library( zuluCryptPluginManager-static STATIC pluginManager/zuluCryptPluginManager.c )
  
  TARGET_LINK_LIBRARIES( zuluCryptPluginManager Socket Process String ${blkid} )
  
@@ -210,9 +210,9 @@
  
  install(TARGETS zuluCrypt-static ARCHIVE DESTINATION lib${LIB_SUFFIX} ) 
  
- install(FILES lib/libzuluCrypt.h              DESTINATION include/zuluCrypt )
- install(FILES bin/libzuluCrypt-exe.h          DESTINATION include/zuluCrypt )
- install(FILES bin/libzuluCryptPluginManager.h DESTINATION include/zuluCrypt )
+ install(FILES lib/libzuluCrypt.h              		 DESTINATION include/zuluCrypt )
+ install(FILES bin/libzuluCrypt-exe.h		         DESTINATION include/zuluCrypt )
+ install(FILES pluginManager/libzuluCryptPluginManager.h DESTINATION include/zuluCrypt )
  
  
  

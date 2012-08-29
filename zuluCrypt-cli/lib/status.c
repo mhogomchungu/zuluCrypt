@@ -52,7 +52,7 @@ void zuluCryptFormatSize( char * buffer,const char * buff )
 		case 0 : 
 		case 1 :  
 		case 2 : 
-		case 3 : strcat( buffer," B" )             ; break ;
+		case 3 : strcat( buffer," B" )           ; break ;
 		case 4 : format_size_1( buffer,2," KB" ) ; break ; 
 		case 5 : format_size_1( buffer,3," KB" ) ; break ;
 		case 6 : format_size_1( buffer,4," KB" ) ; break ;
@@ -81,9 +81,9 @@ char * zuluCryptGetUUIDFromMapper( const char * mapper )
 	
 	if( blkid_probe_lookup_value( blkid,"UUID",&uuid,NULL ) == 0 ){
 		p = String( "" ) ;
-		StringMultipleAppend( p," UUID=\"",uuid,"\"",'\0' ) ;
+		StringMultipleAppend( p," UUID:  \t\"",uuid,"\"",'\0' ) ;
 	}else
-		p = String( " UUID=\"Nil\"" ) ;
+		p = String( " UUID:  \t\"Nil\"" ) ;
 	
 	blkid_free_probe( blkid );
 	

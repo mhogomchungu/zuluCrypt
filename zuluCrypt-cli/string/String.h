@@ -47,7 +47,8 @@ typedef struct StringType * string_t ;
 string_t String( const char * cstring ) ;
 
 /*
- * ininitialize a string handle by copying length characters from a string
+ * ininitialize a string handle by memcpy() length characters from a string
+ * a NULL character will be appended to the string.
  */
 string_t StringWithSize( const char * string,size_t length ) ;
 
@@ -196,6 +197,11 @@ void StringReadToBuffer( string_t st,char * buffer,size_t size ) ;
  * NULL is assigned to handle to invalidate it
  */
 void StringDelete( string_t * st );
+
+/*
+ * clear the string before StringDelete() it
+ */
+void StringClearDelete( string_t * st ) ;
 
 /*
  * Remember to clean after yourself.

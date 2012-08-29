@@ -186,9 +186,9 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		
 		printf( "\nRe enter passphrase: " ) ;
 		switch( StringSilentlyGetFromTerminal_1( &pass_2,KEY_MAX_SIZE ) ){
-			case 1 : StringDelete( &pass_1 ) ;
+			case 1 : StringClearDelete( &pass_1 ) ;
 				 return status_msg( 19 ) ;
-			case 2 : StringDelete( &pass_1 ) ;
+			case 2 : StringClearDelete( &pass_1 ) ;
 				 return status_msg( 20 ) ;
 		}
 		
@@ -199,8 +199,8 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		}else{				
 			st = zuluCryptCreateVolume( device,fs,type,StringContent( pass_1 ),StringLength( pass_1 ),rng ) ;
 		}
-		StringDelete( &pass_1 ) ;
-		StringDelete( &pass_2 ) ;				
+		StringClearDelete( &pass_1 ) ;
+		StringClearDelete( &pass_2 ) ;				
 	}else{	
 		/*
 		 * Make sure the user has provided all required options
@@ -225,7 +225,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 				case 2 : return status_msg( 6 ) ;
 			}
 			st = zuluCryptCreateVolume( device,fs,type,StringContent( content ),StringLength( content ),rng ) ;					
-			StringDelete( &content ) ;				
+			StringClearDelete( &content ) ;				
 		}else{
 			st = 2 ;			
 		}

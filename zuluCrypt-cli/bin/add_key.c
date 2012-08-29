@@ -92,14 +92,14 @@ static int get_keys( string_t * key1,string_t * key2,string_t * key3 )
 	printf( "\nEnter the new passphrase: " ) ;		
 	st = StringSilentlyGetFromTerminal_1( key2,KEY_MAX_SIZE ) ;
 	if( st != 0 ){
-		StringDelete( key1 ) ;
+		StringClearDelete( key1 ) ;
 		return st ;
 	}
 	printf( "\nRe enter the new passphrase: " ) ;		
 	st = StringSilentlyGetFromTerminal_1( key3,KEY_MAX_SIZE ) ;	
 	if( st != 0 ){
-		StringDelete( key1 ) ;
-		StringDelete( key2 ) ;
+		StringClearDelete( key1 ) ;
+		StringClearDelete( key2 ) ;
 		return st ;
 	}
 	
@@ -176,16 +176,17 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 			len2 = StringLength( newKey_1 ) ;
 			status = zuluCryptAddKey( device,key1,len1,key2,len2 );			
 		}
-		StringDelete( &presentKey ) ;			
-		StringDelete( &newKey_1 ) ;	
-		StringDelete( &newKey_2 ) ;
+		
+		StringClearDelete( &presentKey ) ;			
+		StringClearDelete( &newKey_1 ) ;	
+		StringClearDelete( &newKey_2 ) ;
 		
 	}else{		
 		if( keyType1 == NULL || keyType2 == NULL || newKey == NULL || existingKey == NULL )
 			return status_msg( 6 ) ;
 		if ( strcmp( keyType1, "-f" ) == 0 ){	
 			/*
-			 * this function is defined at "security.c.c"
+			 * this function is defined at "security.c"
 			 */
 			switch( zuluCryptGetPassFromFile( existingKey,uid,&ek ) ){
 				case 1 : return status_msg( 8 ) ; 
@@ -209,8 +210,8 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 		}		
 		if ( strcmp( keyType1,"-f" ) == 0 && strcmp( keyType2,"-f" ) == 0 ){
 			status = zuluCryptAddKey( device,key1,len1,key2,len2 ) ;			
-			StringDelete( &nk ) ;
-			StringDelete( &ek ) ;
+			StringClearDelete( &nk ) ;
+			StringClearDelete( &ek ) ;
 		}else if ( strcmp( keyType1,"-p" ) == 0 && strcmp( keyType2,"-p" ) == 0 ){
 			key1 = existingKey ;
 			len1 = strlen( existingKey ) ;
@@ -221,12 +222,12 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 			key1 = existingKey ;
 			len1 = strlen( existingKey ) ;
 			status = zuluCryptAddKey( device,key1,len1,key2,len2 ) ;			
-			StringDelete( &nk ) ;
+			StringClearDelete( &nk ) ;
 		}else if ( strcmp( keyType1,"-f" ) == 0 && strcmp( keyType2,"-p" ) == 0 ){			
 			key2 = newKey ;
 			len2 = strlen( newKey ) ;
 			status = zuluCryptAddKey( device,key1,len1,key2,len2 ) ;
-			StringDelete( &ek ) ;
+			StringClearDelete( &ek ) ;
 		}else{			
 			status = 5 ;
 		}
