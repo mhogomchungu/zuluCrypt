@@ -179,7 +179,7 @@
 	set_target_properties( keyring PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread -ansi -pedantic -std=c99" )
 	set_target_properties( keyring PROPERTIES LINK_FLAGS "-pie" )
 	TARGET_LINK_LIBRARIES( keyring zuluCryptPluginManager ${keyring_library} )
-	install( TARGETS keyring RUNTIME DESTINATION "/etc/zuluCrypt/modules" )	
+	install( TARGETS keyring RUNTIME DESTINATION "${PLUGINPATH}" )	
 	message( STATUS "found gnome-keyring/gnome-keyring.h  ${keyring_header}" )
 	message( STATUS "found libgnome-keyring.so  ${keyring_library}" )
  endif( KEYRINGSUPPORT )
@@ -191,12 +191,6 @@
  install(TARGETS zuluMount-cli RUNTIME DESTINATION bin 
 	PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE SETUID
  )
- 
- if( UNIX AND NOT APPLE AND NOT CMAKE_CROSSCOMPILING AND NOT EXISTS "/etc/debian_version" )
-	if ( CMAKE_SIZEOF_VOID_P EQUAL 8 AND NOT LIB_SUFFIX )
-	     set ( LIB_SUFFIX 64 )
-	 endif( CMAKE_SIZEOF_VOID_P EQUAL 8 AND NOT LIB_SUFFIX)
- endif( UNIX AND NOT APPLE AND NOT CMAKE_CROSSCOMPILING AND NOT EXISTS "/etc/debian_version" )
  
  install(TARGETS zuluCryptPluginManager LIBRARY DESTINATION lib${LIB_SUFFIX} )
  

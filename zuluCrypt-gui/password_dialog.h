@@ -34,6 +34,7 @@
 #include "checkvolumetype.h"
 #include "dialogmsg.h"
 #include "kwalletplugin.h"
+#include "plugin_path.h"
 
 #include "../zuluCrypt-cli/constants.h"
 

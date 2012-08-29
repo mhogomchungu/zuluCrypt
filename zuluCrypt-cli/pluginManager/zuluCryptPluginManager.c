@@ -28,6 +28,12 @@
 #include "../socket/socket.h"
 #include "../string/String.h"
 #include "../constants.h"
+
+/*
+ * below header file is created at config time.
+ */
+#include "plugin_path.h"
+
 /*
  * The below number is the cryptsetup default amount of maximum bytes to read from a keyfile.
  */
@@ -123,11 +129,10 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		 */
 		
 		/*
-		 * ZULUCRYPTpluginPath is set in ../constants.h
-		 * its current value is "/etc/zuluCrypt/modules"
+		 * ZULUCRYPTpluginPath is set at config time at it equals $prefix/lib(64)/zuluCrypt/
 		 */
 		mpath = String( ZULUCRYPTpluginPath ) ;	
-		StringMultipleAppend( mpath,"/",name,'\0' ) ;
+		StringAppend( mpath,name ) ;
 	}else{
 		/*
 		 * module has a backslash, assume its path to where a module is located

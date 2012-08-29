@@ -67,8 +67,7 @@ void keyDialog::pbPlugin()
 {
 	QStringList list ;
 
-	// constant is set in "../zuluCrypt-cli/constants.h"
-	// current value is "/etc/zuluCrypt/modules"
+	// ZULUCRYPTpluginPath is set at config time and it equals $prefix/lib(64)/zuluCrypt
 
 	QDir dir( QString( ZULUCRYPTpluginPath ) ) ;
 

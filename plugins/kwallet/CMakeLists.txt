@@ -14,4 +14,4 @@ TARGET_LINK_LIBRARIES( kwallet ${kwallet_library} )
 
 set_target_properties( kwallet PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread -pedantic " )
 
-install( TARGETS kwallet RUNTIME DESTINATION "/etc/zuluCrypt/modules" )
+install( TARGETS kwallet RUNTIME DESTINATION "${PLUGINPATH}" )

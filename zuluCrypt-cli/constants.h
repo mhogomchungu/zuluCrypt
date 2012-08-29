@@ -26,8 +26,6 @@
 #define ZULUCRYPTmount      	"/bin/mount"  
 #define ZULUCRYPTmkfs_dir      	"/sbin"  
 
-#define ZULUCRYPTpluginPath     "/etc/zuluCrypt/modules"
-
 #define ALL_PARTITIONS        1
 #define SYSTEM_PARTITIONS     2
 #define NON_SYSTEM_PARTITIONS 3

@@ -12,6 +12,7 @@
 #include "managepartitionthread.h"
 #include "../zuluCrypt-gui/miscfunctions.h"
 #include "../zuluCrypt-cli/constants.h"
+#include "plugin_path.h"
 
 namespace Ui {
 class keyDialog;

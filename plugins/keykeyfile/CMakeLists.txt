@@ -16,4 +16,4 @@ TARGET_LINK_LIBRARIES( keykeyfile ${QT_LIBRARIES} -lQtNetwork )
 
 set_target_properties( keykeyfile PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread -pedantic " )
 
-install( TARGETS keykeyfile RUNTIME DESTINATION "/etc/zuluCrypt/modules" )
+install( TARGETS keykeyfile RUNTIME DESTINATION "${PLUGINPATH}" )
