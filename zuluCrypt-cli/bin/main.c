@@ -106,11 +106,8 @@ int main( int argc,char * argv[] )
 	char action ;
 	int st ;
 	uid_t uid ;
-	/*
-	 * string_t is prototyped as "typedef struct StringType * string_t" at ../string/StringTypes.h
-	 * string_t type is therefore a pointer and it is appropriate to assign NULL to it	 
-	 */
-	string_t q = NULL ;
+	
+	string_t q = StringVoid ;
 	
 	struct_opts clargs ;
 

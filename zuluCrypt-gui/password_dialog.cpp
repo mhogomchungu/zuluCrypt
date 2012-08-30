@@ -503,7 +503,7 @@ void passwordDialog::done( QString type )
 	list.append( miscfunctions::resolvePath( m_ui->MountPointPath->text() ) ) ;
 	list.append( type );
 
-	miscfunctions::addRowToTable( m_table,list ) ;
+	tablewidget::addRowToTable( m_table,list ) ;
 
 	HideUI();
 }

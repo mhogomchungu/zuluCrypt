@@ -35,7 +35,7 @@
 #include "dialogmsg.h"
 #include "kwalletplugin.h"
 #include "plugin_path.h"
-
+#include "tablewidget.h"
 #include "../zuluCrypt-cli/constants.h"
 
 class passwordDialog :  public QDialog

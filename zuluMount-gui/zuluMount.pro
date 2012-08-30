@@ -15,13 +15,15 @@ SOURCES += main.cpp\
     keydialog.cpp \
     managepartitionthread.cpp\
     ../zuluCrypt-gui/dialogmsg.cpp \
-    ../zuluCrypt-gui/userfont.cpp
+    ../zuluCrypt-gui/userfont.cpp \
+    ../zuluCrypt-gui/tablewidget.cpp
 
 HEADERS  += mainwindow.h\
     keydialog.h \
     ../zuluCrypt-gui/dialogmsg.h\
     managepartitionthread.h \
-    ../zuluCrypt-gui/userfont.h
+    ../zuluCrypt-gui/userfont.h \
+    ../zuluCrypt-gui/tablewidget.h
 
 FORMS    += mainwindow.ui\	    
 	    ../zuluCrypt-gui/dialogmsg.ui \

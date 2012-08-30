@@ -37,6 +37,12 @@ extern "C" {
 #include <termios.h>
 
 /*
+ * create a custom type to represent a string_t pointing to NULL while hiding the pointer nature of string_t
+ * string_t is an opaque handle and NULL assignment "gives unnecessary info" about its nature.  
+ */
+#define StringVoid ( ( void * ) 0 ) 
+
+/*
  * string_t type is a  string handle,all string operation should happen through this handle.  
  */
 typedef struct StringType * string_t ;
@@ -368,11 +374,9 @@ const char * StringRemoveStringPos( string_t st,const char * s,size_t p ) ;
 const char * StringRemoveRight( string_t st,size_t x ) ;
 
 /*
- * Clear the string handled by handle st. Essentiall remove all elements in it. 
- * NULL is returned when the opefation fail.
+ * Clear the string by writing '\0' to a string buffer handled by handle st. Essentiall remove all elements in it.  
  */
-const char *  StringClear( string_t st ) ;
-
+void StringClear( string_t st ) ;
 
 /*
  * Cut the string from position x and discard all elements to the left of x. 

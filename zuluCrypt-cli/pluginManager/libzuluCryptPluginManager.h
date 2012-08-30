@@ -54,7 +54,7 @@ void * zuluCryptPluginManagerStartConnection( const char * sockpath ) ;
  * The second argument is a buffer to the key to be sent
  * The third argument is the length of the buffer
  */
-int zuluCryptPluginManagerSendKey( void * p,const char * key,int length ) ;
+int zuluCryptPluginManagerSendKey( void * p,const char * key,size_t length ) ;
 
 /*
  * Close the connection and free up all used memory.

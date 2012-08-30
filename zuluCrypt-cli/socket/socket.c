@@ -96,18 +96,35 @@ void SocketSetPortNumber( socket_t s,int port )
 		s->net->sin_port = htons( port );
 }
 
+#ifdef __STDC__
+struct addrinfo {
+	int     ai_flags;
+	int     ai_family;
+	int     ai_socktype;
+	int     ai_protocol;
+	size_t  ai_addrlen;
+	struct  sockaddr *ai_addr;
+	char    *ai_canonname;     
+	struct  addrinfo *ai_next;
+};
+
+int getaddrinfo( const char *,const char *,const struct addrinfo *,struct addrinfo ** );
+void freeaddrinfo( struct addrinfo * );
+#endif
+
 void SocketSetHostAddress( socket_t s,const char * address ) 
 {
-	struct hostent * host ;
+	struct addrinfo * addr ;
+	struct sockaddr_in * addr_in ;
 	
 	if( s->domain == AF_UNIX )
 		strcpy( s->local->sun_path,address ) ;
 	else{
-		/*
-		host = gethostbyname( address ) ;
-		if( host != NULL )
-			s->net->sin_addr.s_addr = inet_addr( host->h_addr_list[ 0 ] ) ;		
-		*/
+		if( getaddrinfo( address,NULL,NULL,&addr ) == 0 ){
+			addr_in = ( struct sockaddr_in * ) addr->ai_addr ;		
+			s->net->sin_addr.s_addr = addr_in->sin_addr.s_addr ;		
+			freeaddrinfo( addr ) ;		
+		}
 	}
 }
 

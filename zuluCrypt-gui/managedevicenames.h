@@ -32,6 +32,7 @@
 #include "openpartition.h"
 #include "miscfunctions.h"
 #include "dialogmsg.h"
+#include "tablewidget.h"
 
 namespace Ui {
 class managedevicenames;

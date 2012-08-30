@@ -37,6 +37,7 @@
 #include "keydialog.h"
 #include "../zuluCrypt-gui/dialogmsg.h"
 #include "../zuluCrypt-gui/userfont.h"
+#include "../zuluCrypt-gui/tablewidget.h"
 #include "managepartitionthread.h"
 
 namespace Ui {

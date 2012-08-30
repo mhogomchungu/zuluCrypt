@@ -24,6 +24,11 @@ void managepartitionthread::setKeySource( QString key )
 	m_keySource = key ;
 }
 
+void managepartitionthread::setMountPoint( QString m )
+{
+	m_point = m ;
+}
+
 void managepartitionthread::run()
 {
 	if( m_action == QString( "update") ){
@@ -68,8 +73,6 @@ void managepartitionthread::cryptoOpen()
 	QProcess p ;
 	QString exe ;
 
-	m_point = QDir::homePath() + QString( "/" ) + m_device.split( "/" ).last() ;
-
 	exe = QString( "%1 -M -d \"%2\" -z \"%3\" -e %4 %5" ).arg( zuluMount ).arg( m_device ).arg( m_point ).arg( m_mode ).arg( m_keySource ) ;
 
 	p.start( exe );
@@ -88,7 +91,9 @@ void managepartitionthread::mount()
 	QProcess p ;
 	QString exe ;
 
-	QString mount_p = QDir::homePath() + QString( "/" ) + m_device.split( "/" ).last() ;
+	QString mount_p ;
+	if( m_point.isEmpty() )
+		mount_p = QDir::homePath() + QString( "/" ) + m_device.split( "/" ).last() ;
 
 	exe = QString( "%1 -m -d \"%2\" -e %3 -z \"%4\"" ).arg( zuluMount ).arg( m_device ).arg( m_mode ).arg( mount_p ) ;
 
@@ -97,7 +102,8 @@ void managepartitionthread::mount()
 
 	QString output = QString( p.readAll() ) ;
 	int index = output.indexOf( QChar( ':') ) ;
-	output = output.mid( index + 1 ) ;
+	if( index != -1 )
+		output = output.mid( index + 1 ) ;
 	emit signalMountComplete( p.exitCode(),output ) ;
 	p.close();
 }
@@ -114,9 +120,9 @@ void managepartitionthread::umount( QString type )
 
 	p.start( exe );
 	p.waitForFinished() ;
-	
+
 	sleep( 1 );
-	
+
 	QString output = QString( p.readAll() ) ;
 	int index = output.indexOf( QChar( ':') ) ;
 	output = output.mid( index + 1 ) ;

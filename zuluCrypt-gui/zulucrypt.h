@@ -55,6 +55,7 @@
 #include "userfont.h"
 #include "kwalletplugin.h"
 #include "kwalletconfig.h"
+#include "tablewidget.h"
 
 namespace Ui {
     class zuluCrypt;

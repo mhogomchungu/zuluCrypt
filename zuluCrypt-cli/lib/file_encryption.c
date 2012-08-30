@@ -76,7 +76,7 @@ static string_t crypt_mapper( const char * path,const char * key,uint64_t key_le
 	char * mpath = realpath( path,NULL ) ;
 	
 	if( mpath == NULL )
-		return NULL ;
+		return StringVoid ;
 	
 	p = zuluCryptCreateMapperName( mpath,strrchr( mpath,'/' ) + 1,0,OPEN ) ;
 
@@ -127,7 +127,7 @@ int zuluCryptDecryptFile( const char * source,const char * dest,const char * key
 	 */
 	string_t p = crypt_mapper( source,key,key_len ) ;
 	
-	if( p == NULL )
+	if( p == StringVoid )
 		return 1 ;
 	
 	f_in = open( StringContent( p ),O_RDONLY ) ;
@@ -242,7 +242,7 @@ int zuluCryptEncryptFile( const char * source,const char * dest,const char * key
 	 * attach a mapper to the file that will contain encrypted data
 	 */
 	p = crypt_mapper( dest,key,key_len ) ;
-	if( p == NULL ){
+	if( p == StringVoid ){
 		remove( dest ) ;
 		return 1 ;
 	}

@@ -109,7 +109,7 @@ void openpartition::EnterKeyPressed()
 
 void openpartition::currentItemChanged( QTableWidgetItem * current, QTableWidgetItem * previous )
 {
-	miscfunctions::selectTableRow( current,previous ) ;
+	tablewidget::selectTableRow( current,previous ) ;
 }
 
 void openpartition::ShowNonSystemPartitions()
@@ -153,7 +153,7 @@ void openpartition::partitionList( QString title,QString type )
 
 void openpartition::partitionProperties( QStringList entry )
 {
-	miscfunctions::addRowToTable( m_ui->tableWidget,entry ) ;
+	tablewidget::addRowToTable( m_ui->tableWidget,entry ) ;
 }
 
 void openpartition::partitionpropertiesThreadFinished()

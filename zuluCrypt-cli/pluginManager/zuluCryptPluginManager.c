@@ -40,10 +40,10 @@
 #define INTMAXKEYZISE  8192000
 #define CHARMAXKEYZISE "8192000"
 
-typedef struct {
+typedef struct{
 	socket_t server ;
-	socket_t connected ;
-} socketStruct ;
+	socket_t client ;
+}socketStruct ;
 
 void * zuluCryptPluginManagerStartConnection( const char * sockpath )
 {
@@ -54,16 +54,16 @@ void * zuluCryptPluginManagerStartConnection( const char * sockpath )
 	SocketBind( sc->server ) ;
 	SocketListen( sc->server ) ;
 	
-	sc->connected = SocketAccept( sc->server ) ;
+	sc->client = SocketAccept( sc->server ) ;
 	
-	return sc ;	
+	return ( void * ) sc ;	
 }
 
-int zuluCryptPluginManagerSendKey( void * p,const char * key,int length )
+int zuluCryptPluginManagerSendKey( void * p,const char * key,size_t length )
 {
 	socketStruct * sc = ( socketStruct * ) p ;
 	
-	return SocketSendData( sc->connected,key,length ) ;
+	return SocketSendData( sc->client,key,length ) ;
 }
 
 void zuluCryptPluginManagerCloseConnection( void * p )
@@ -71,12 +71,12 @@ void zuluCryptPluginManagerCloseConnection( void * p )
 	socketStruct * sc = ( socketStruct * ) p ;
 	const char * sockpath = SocketAddress( sc->server ) ;
 	
-	SocketClose( sc->connected ) ;
+	SocketClose( sc->client ) ;
 	SocketClose( sc->server ) ;
 	
 	unlink( sockpath ) ;
 	
-	SocketDelete( &sc->connected ) ;
+	SocketDelete( &sc->client ) ;
 	SocketDelete( &sc->server ) ;
 	
 	free( sc ) ;	
@@ -108,7 +108,7 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	socket_t s ;
 	char * buffer ;	
 	process_t p ;	
-	string_t key = NULL ;	
+	string_t key = StringVoid ;	
 	int i ;	
 	const char * sockpath ;	
 	string_t mpath ;	
@@ -123,11 +123,6 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		return NULL ;	
 	
 	if( strrchr( name,'/' ) == NULL ){
-		/*
-		 * module name does not contain a backslash, assume its a module name and go look for
-		 * it in /etc/zuluCrypt/modules
-		 */
-		
 		/*
 		 * ZULUCRYPTpluginPath is set at config time at it equals $prefix/lib(64)/zuluCrypt/
 		 */

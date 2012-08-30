@@ -112,7 +112,7 @@ void managedevicenames::addEntries( QString dev,QString m_point )
 	s.append( dev );
 	s.append( m_point );
 
-	miscfunctions::addRowToTable( m_ui->tableWidget,s ) ;
+	tablewidget::addRowToTable( m_ui->tableWidget,s ) ;
 }
 
 void managedevicenames::itemClicked( QTableWidgetItem * current )
@@ -153,7 +153,7 @@ void managedevicenames::removeEntryFromFavoriteList()
 
 	miscfunctions::removeFavoriteEntry( entry );
 
-	miscfunctions::deleteRowFromTable( table,row ) ;
+	tablewidget::deleteRowFromTable( table,row ) ;
 
 	table->setEnabled( true );
 }
@@ -212,5 +212,5 @@ void managedevicenames::closeEvent( QCloseEvent * e )
 
 void managedevicenames::currentItemChanged( QTableWidgetItem * current, QTableWidgetItem * previous )
 {
-	miscfunctions::selectTableRow( current,previous ) ;
+	tablewidget::selectTableRow( current,previous ) ;
 }

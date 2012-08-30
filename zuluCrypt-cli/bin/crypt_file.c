@@ -47,8 +47,8 @@ static int msg( int st )
 
 static int crypt_opt( const struct_opts * opts,const char * mapper,uid_t uid,int opt )
 {
-	string_t q ;
-	string_t p ;
+	string_t q = StringVoid ;
+	string_t p = StringVoid ;
 
 	int st ;
 	

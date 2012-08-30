@@ -78,20 +78,20 @@ stringList_t zuluCryptPartitionList( void )
 	size_t j ;	
 	ssize_t index ;	
 	
-	stringList_t stl ;	
-	stringList_t stl_1 = NULL ;	
+	stringList_t stl   = StringListVoid ;	
+	stringList_t stl_1 = StringListVoid ;	
 	
 	string_t st = StringGetFromVirtualFile( "/proc/partitions" ) ;	
 	
-	if( st == NULL )
-		return NULL ;
+	if( st == StringVoid )
+		return StringListVoid ;
 	
-	stl = StringListStringSplit( &st,'\n' ) ;
+	stl = StringListStringSplit( st,'\n' ) ;
 	
-	if( stl == NULL ){
-		StringDelete( &st ) ;
-		return NULL ;
-	}
+	StringDelete( &st ) ;
+	
+	if( stl == StringListVoid )
+		return StringListVoid ;
 	
 	j = StringListSize( stl )  ;
 	
@@ -135,7 +135,7 @@ static void appendSystemList( stringList_t system,stringList_t stl )
 	size_t j ;
 	size_t i ;
 	
-	if( stl == NULL )
+	if( stl == StringListVoid )
 		return ;
 	
 	j = StringListSize( stl ) ;
@@ -159,33 +159,34 @@ static stringList_t partitions( int option )
 	size_t i ;
 	size_t j ;
 	
-	stringList_t non_system = NULL ;
-	stringList_t system = NULL ;
+	stringList_t non_system = StringListVoid ;
+	stringList_t system     = StringListVoid ;
 	
 	stringList_t stl = zuluCryptPartitionList() ;
 	
-	if( stl == NULL )
-		return NULL ;
+	if( stl == StringListVoid )
+		return StringListVoid ;
 	
 	if( option == ALL_PARTITIONS )
 		return stl ;
 	
 	non_system = stl ;
-	system = NULL ;
+	system = StringListVoid ;
 
 	st = StringGetFromFile( "/etc/fstab" );
 	
-	if( st == NULL ){
+	if( st == StringVoid ){
 		StringListDelete( &non_system ) ;
-		return NULL ;
+		return StringListVoid ;
 	}
 	
-	stl = StringListStringSplit( &st,'\n' ) ;
+	stl = StringListStringSplit( st,'\n' ) ;
 	
-	if( stl == NULL ){
+	StringDelete( &st ) ;
+	
+	if( stl == StringListVoid ){
 		StringListDelete( &non_system ) ;
-		StringDelete( &st ) ;
-		return NULL ;
+		return StringListVoid ;
 	}
 	
 	j = StringListSize( stl ) ;
@@ -248,7 +249,7 @@ int zuluCryptPrintPartitions( int option )
 	size_t i ;
 	size_t j ;
 	
-	stringList_t stl = NULL ;
+	stringList_t stl = StringListVoid ;
 	
 	switch( option ){	
 		case 1 : stl = partitions( ALL_PARTITIONS ) 	  ;break ;
@@ -256,7 +257,7 @@ int zuluCryptPrintPartitions( int option )
 		case 3 : stl = partitions( NON_SYSTEM_PARTITIONS );break ;
 	}	
 	
-	if( stl == NULL ){
+	if( stl == StringListVoid ){
 		printf( "ERROR: unable to print requested list of partitions\n" ) ;
 		return 1 ;
 	}
@@ -283,8 +284,8 @@ int zuluCryptPrintPartitions( int option )
  */
 stringList_t zuluCryptGetPartitionFromCrypttab( void )
 {
-	stringList_t stl ;
-	stringList_t stl_1 = NULL ;
+	stringList_t stl   = StringListVoid ;
+	stringList_t stl_1 = StringListVoid ;
 	string_t st  ;
 
 	const char * entry ;
@@ -298,20 +299,20 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 	
 	st = StringGetFromFile( "/etc/crypttab" );
 	
-	if( st == NULL )
-		return NULL ;
+	if( st == StringVoid )
+		return StringListVoid ;
 	
-	stl = StringListStringSplit( &st,'\n' ) ;
+	stl = StringListStringSplit( st,'\n' ) ;
 	
-	if( stl == NULL ){
-		StringDelete( &st ) ;
-		return NULL ;
-	}
+	StringDelete( &st ) ;
+	
+	if( stl == StringListVoid )
+		return StringListVoid ;	
 	
 	j = StringListSize( stl ) ;
 	
 	if( j == 0 )
-		return NULL ;
+		return StringListVoid ;
 	
 	for( i = 0 ; i < j ; i++ ){
 			
@@ -367,6 +368,7 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 			stl_1 = StringListAppend( stl_1,StringContent( st ) + index ) ;
 		}			
 	}
+	
 	StringListDelete( &stl ) ;
 	return stl_1 ;
 }
@@ -380,19 +382,19 @@ stringList_t zuluCryptGetPartitionFromZulutab()
 	char * ac ;
 	
 	stringList_t stl ;
-	stringList_t stl_1 = NULL ;
+	stringList_t stl_1 = StringListVoid ;
 	
 	string_t st = StringGetFromFile( "/etc/zuluCrypttab" ) ;
 	
-	if( st == NULL )
-		return NULL ;
+	if( st == StringVoid )
+		return StringListVoid ;
 
-	stl = StringListStringSplit( &st,'\n' ) ;
+	stl = StringListStringSplit( st,'\n' ) ;
 	
-	if( stl == NULL ){
-		StringDelete( &st ) ;
-		return NULL ;
-	}
+	StringDelete( &st ) ;
+	
+	if( stl == StringListVoid )
+		return StringListVoid ;	
 	
 	j = StringListSize( stl ) ;
 	
@@ -438,7 +440,7 @@ int zuluCryptCheckIfPartitionIsSystemPartition( const char * dev )
 	
 	stl = partitions( SYSTEM_PARTITIONS ) ;
 	
-	if( stl != NULL ){
+	if( stl != StringListVoid ){
 		index = StringListContains( stl,device );
 		StringListDelete( &stl ) ;
 	}	

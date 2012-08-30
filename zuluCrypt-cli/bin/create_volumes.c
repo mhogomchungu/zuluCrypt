@@ -74,9 +74,9 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	const char * pass    = opts->key ;
 	const char * rng     = opts->rng ;
 	
-	string_t pass_1 ;
-	string_t pass_2 ;
-	string_t content ;
+	string_t pass_1  = StringVoid;
+	string_t pass_2  = StringVoid;
+	string_t content = StringVoid;
 	
 	int st  ;
 	struct stat xt ;

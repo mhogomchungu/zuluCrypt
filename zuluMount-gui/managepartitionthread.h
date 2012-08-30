@@ -42,6 +42,7 @@ public:
 	void setDevice( QString ) ;
 	void setType( QString ) ;
 	void setKeySource( QString ) ;
+	void setMountPoint( QString ) ;
 signals:
 	void signalMountComplete( int,QString ) ;
 	void signalUnmountComplete( int,QString ) ;

@@ -88,7 +88,7 @@ static void print( uid_t uid,stringList_t stl )
 			
 			stx = StringListSplit( c,' ' ) ;
 			
-			if( stx == NULL )
+			if( stx == StringListVoid )
 				continue ;
 
 			if( strncmp( c + len + 1,"UUID",4 ) == 0 ){
@@ -124,8 +124,8 @@ stringList_t zuluCryptGetMtabList( void )
 #else
 	mnt_lock * m_lock ;
 #endif
-	string_t q = NULL ;
-	stringList_t stl ;
+	string_t q       = StringVoid     ;
+	stringList_t stl = StringListVoid ;
 
 	if( zuluCryptMtabIsAtEtc() != 0 ){
 		q = StringGetFromVirtualFile( "/proc/mounts" ) ;
@@ -140,15 +140,15 @@ stringList_t zuluCryptGetMtabList( void )
 		mnt_free_lock( m_lock ) ;		
 	}
 	
-	if( q == NULL )
-		return NULL ;
+	if( q == StringVoid )
+		return StringListVoid ;
 	
-	stl = StringListStringSplit( &q,'\n' ) ;
+	stl = StringListSplit( StringContent( q ),'\n' ) ;
 	
-	if( stl == NULL ){
-		StringDelete( &q ) ;
-		return NULL ;
-	}
+	StringDelete( &q ) ;
+	
+	if( stl == StringListVoid )
+		return StringListVoid ;	
 	
 	return stl ;
 }
@@ -157,7 +157,7 @@ int zuluCryptPrintOpenedVolumes( uid_t uid )
 {
 	stringList_t stl = zuluCryptGetMtabList() ;
 	
-	if( stl == NULL )
+	if( stl == StringListVoid )
 		return 1 ;
 	
 	print( uid,stl ) ;
@@ -179,7 +179,7 @@ char * zuluCryptGetMountPointFromPath( const char * path )
 	stringList_t stl = zuluCryptGetMtabList() ;
 	stringList_t stx ;
 	
-	if( stl == NULL )
+	if( stl == StringListVoid )
 		return NULL ;
 	
 	j = StringListSize( stl ) ;
@@ -188,7 +188,7 @@ char * zuluCryptGetMountPointFromPath( const char * path )
 		e = StringListContentAt( stl,i ) ;
 		stx = StringListSplit( e,' ' ) ;
 		
-		if( stx == NULL )
+		if( stx == StringListVoid )
 			continue ;
 		
 		if( StringListContentAtEqual( stx,0,path ) == 0 ){

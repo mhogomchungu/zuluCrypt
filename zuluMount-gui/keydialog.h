@@ -33,6 +33,7 @@ signals:
 public slots:
 	void slotMountComplete( int,QString ) ;
 private slots:
+	void pbMountPointPath( void ) ;
 	void pbPluginEntryClicked( QAction * ) ;
 	void keyTextChanged( QString ) ;
 	void rbPlugIn( bool ) ;

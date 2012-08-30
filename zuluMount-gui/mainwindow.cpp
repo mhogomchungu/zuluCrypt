@@ -217,7 +217,7 @@ void MainWindow::pbMount()
 		part->setDevice( path );
 		part->setMode( mode );
 		m_ui->tableWidget->setEnabled( false );
-		connect( part,SIGNAL( signalMountComplete( int,QString ) ),this,SLOT( slotMountComplete(int,QString ) ) ) ;
+		connect( part,SIGNAL( signalMountComplete( int,QString ) ),this,SLOT( slotMountComplete( int,QString ) ) ) ;
 
 		part->startAction( QString( "mount" ) ) ;
 	}
@@ -259,14 +259,11 @@ void MainWindow::pbUpdate()
 
 void MainWindow::slotMountedList( QStringList list,QStringList sys )
 {
-	QTableWidgetItem * item ;
 	QTableWidget * table = m_ui->tableWidget ;
 
 	QStringList entries ;
 
 	int j = list.size() - 1 ;
-	int row ;
-	int col = table->columnCount() ;
 
 	QFont f = this->font() ;
 
@@ -275,30 +272,14 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 	else
 		f.setItalic( true );
 
-	int p ;
-	
 	for( int i = 0 ; i < j ; i++ ){
 
-		row = table->rowCount() ;
-		table->insertRow( row ) ;
 		entries = list.at( i ).split( '\t' ) ;
 
-		if( sys.contains( entries.at( 0 ) ) ){
-			for( p = 0 ; p < col ; p++ ){
-				item = new QTableWidgetItem( entries.at( p ) ) ;
-				item->setTextAlignment( Qt::AlignCenter ) ;
-				item->setFont( f );
-				table->setItem( row,p,item );
-			}
-		}else{
-			for( p = 0 ; p < col ; p++ ){
-				item = new QTableWidgetItem( entries.at( p ) ) ;
-				item->setTextAlignment( Qt::AlignCenter ) ;
-				table->setItem( row,p,item );
-			}
-		}
-
-		table->setCurrentCell( row,4 ) ;
+		if( sys.contains( entries.at( 0 ) ) )
+			tablewidget::addRowToTable( table,entries,f ) ;
+		else
+			tablewidget::addRowToTable( table,entries ) ;
 	}
 
 	this->enableAll();
@@ -330,27 +311,7 @@ void MainWindow::slotUnmountComplete( int status,QString msg )
 
 void MainWindow::slotCurrentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous )
 {
-	if( current == 0 )
-		return ;
-
-	if( previous == 0 )
-		return ;
-
-	QTableWidget * table = m_ui->tableWidget ;
-
-	if( current->row() == previous->row() ){
-		table->setCurrentCell( current->row(),4 ) ;
-		return ;
-	}
-
-	int prow = previous->row() ;
-	int crow = current->row() ;
-	int col = table->columnCount() ;
-
-	for( int i = 0 ; i < col ; i++ ){
-		table->item( prow,i )->setSelected( false );
-		table->item( crow,i )->setSelected( true );
-	}
+	tablewidget::selectTableRow( current,previous ) ;
 }
 
 void MainWindow::disableAll()

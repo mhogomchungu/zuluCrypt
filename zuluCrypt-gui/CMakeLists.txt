@@ -84,6 +84,7 @@ set (SRC createfile.cpp
 	userfont.cpp
 	kwalletplugin.cpp
 	kwalletconfig.cpp
+	tablewidget.cpp
 )
 
 INCLUDE( ${QT_USE_FILE} )

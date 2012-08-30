@@ -10,6 +10,14 @@ keyDialog::keyDialog( QWidget * parent,QString path,QString mode ) :
 	m_path = path ;
 	m_mode = mode ;
 
+	QString msg = tr( "unlock and mount a luks volume in \"%1\"").arg( m_path ) ;
+
+	this->setWindowTitle( msg );
+
+	m_ui->lineEditMountPoint->setText( QDir::homePath() + QString( "/" ) + m_path.split( "/" ).last() );
+
+	m_ui->pbOpenMountPoint->setIcon( QIcon( QString( ":/folder.png" ) ) );
+
 	m_menu = new QMenu( this ) ;
 
 	this->setFixedSize( this->size() );
@@ -25,6 +33,7 @@ keyDialog::keyDialog( QWidget * parent,QString path,QString mode ) :
 	connect( m_ui->rbKeyFile,SIGNAL( toggled( bool ) ),this,SLOT( rbKeyFile( bool ) ) ) ;
 	connect( m_ui->rbPlugIn,SIGNAL( toggled( bool ) ),this,SLOT( rbPlugIn( bool ) ) ) ;
 	connect( m_ui->lineEditKey,SIGNAL( textChanged( QString ) ),this,SLOT( keyTextChanged( QString ) ) ) ;
+	connect( m_ui->pbOpenMountPoint,SIGNAL( clicked() ),this,SLOT( pbMountPointPath() ) ) ;
 	m_ui->rbKey->setChecked( true ) ;
 }
 
@@ -38,8 +47,22 @@ void keyDialog::keyTextChanged( QString txt )
 	}
 }
 
+void keyDialog::pbMountPointPath()
+{
+	QString msg = tr( "select a folder to create a mount point in" ) ;
+	QString Z = QFileDialog::getExistingDirectory( this,msg,QDir::homePath(),QFileDialog::ShowDirsOnly ) ;
+
+	if( !Z.isEmpty() ){
+		Z = Z + QString( "/" ) + m_ui->lineEditMountPoint->text().split( "/" ).last() ;
+		m_ui->lineEditMountPoint->setText( Z );
+	}
+}
+
 void keyDialog::enableAll()
 {
+	m_ui->label_2->setEnabled( true );
+	m_ui->lineEditMountPoint->setEnabled( true );
+	m_ui->pbOpenMountPoint->setEnabled( true );
 	m_ui->pbCancel->setEnabled( true );
 	m_ui->pbOpen->setEnabled( true );
 	m_ui->label->setEnabled( true );
@@ -53,6 +76,9 @@ void keyDialog::enableAll()
 
 void keyDialog::disableAll()
 {
+	m_ui->label_2->setEnabled( false );
+	m_ui->lineEditMountPoint->setEnabled( false );
+	m_ui->pbOpenMountPoint->setEnabled( false );
 	m_ui->lineEditKey->setEnabled( false );
 	m_ui->pbCancel->setEnabled( false );
 	m_ui->pbOpen->setEnabled( false );
@@ -148,6 +174,7 @@ void keyDialog::pbOpen()
 	part->setDevice( m_path );
 	part->setMode( m_mode );
 	part->setKeySource( m );
+	part->setMountPoint( m_ui->lineEditMountPoint->text().replace( "\"","\"\"\"" ) );
 
 	part->startAction( QString( "cryptoOpen" ) ) ;
 	this->disableAll();

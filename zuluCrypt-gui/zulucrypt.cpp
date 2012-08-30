@@ -191,7 +191,7 @@ void zuluCrypt::ShowManageSystemPartitions()
 
 void zuluCrypt::currentItemChanged( QTableWidgetItem * current, QTableWidgetItem * previous )
 {
-	miscfunctions::selectTableRow( current,previous ) ;
+	tablewidget::selectTableRow( current,previous ) ;
 }
 
 void zuluCrypt::closeAllVolumes()
@@ -393,12 +393,12 @@ void zuluCrypt::addItemToTable( QString device,QString m_point )
 	s.append( m_point );
 	s.append( type );
 
-	miscfunctions::addRowToTable( m_ui->tableWidget,s );
+	tablewidget::addRowToTable( m_ui->tableWidget,s );
 }
 
 void zuluCrypt::removeRowFromTable( int x )
 {
-	miscfunctions::deleteRowFromTable( m_ui->tableWidget,x ) ;
+	tablewidget::deleteRowFromTable( m_ui->tableWidget,x ) ;
 }
 
 void zuluCrypt::volume_property()

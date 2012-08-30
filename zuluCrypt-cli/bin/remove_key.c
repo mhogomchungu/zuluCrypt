@@ -74,8 +74,8 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 	const char * keyType     = opts->key_source ;
 	const char * keytoremove = opts->key ;
 	
-	string_t pass;
-	string_t confirm ;
+	string_t pass    = StringVoid ;
+	string_t confirm = StringVoid ;
 	
 	int status = 0 ;
 	
@@ -101,7 +101,7 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 			printf( "WARNING: there is only one key in the volume and all data in it will be lost if you continue.\n" );
 			printf( "Do you still want to continue? Type \"YES\" if you do: " );
 			confirm = StringGetFromTerminal_1( 3 ) ;
-			if( confirm == NULL )
+			if( confirm == StringVoid )
 				return status_msg( 17 ) ;
 			k = StringEqual( confirm,"YES" ) ;
 			StringDelete( &confirm ) ;

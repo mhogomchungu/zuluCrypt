@@ -107,7 +107,7 @@ Type \"YES\" and press Enter to continue: " ;
 		free( q ) ;
 		
 		confirm = StringGetFromTerminal_1( 3 ) ;
-		if( confirm != NULL ){
+		if( confirm != StringVoid ){
 			k = StringEqual( confirm,"YES" ) ;
 			StringDelete( &confirm ) ;
 			if( k == 1 )

@@ -32,7 +32,7 @@ kwalletconfig::kwalletconfig( QWidget * parent ) : QWidget( parent ),m_ui( new U
 
 void kwalletconfig::currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous )
 {
-	miscfunctions::selectTableRow( current,previous ) ;
+	tablewidget::selectTableRow( current,previous ) ;
 }
 
 void kwalletconfig::pbAdd()
@@ -69,7 +69,7 @@ void kwalletconfig::pbAdd()
 	//entry.append( pass );
 	entry.append( QString( "<redacted>" ) );
 
-	miscfunctions::addRowToTable( m_ui->tableWidget,entry ) ;
+	tablewidget::addRowToTable( m_ui->tableWidget,entry ) ;
 
 	m_ui->lineEditUUID->clear();
 	m_ui->lineEditPassphrase->clear();
@@ -92,7 +92,7 @@ void kwalletconfig::pbDelete()
 
 	m_map.remove( key ) ;
 
-	miscfunctions::deleteRowFromTable( table,item->row() ) ;
+	tablewidget::deleteRowFromTable( table,item->row() ) ;
 }
 
 void kwalletconfig::pbClose()
@@ -198,7 +198,7 @@ void kwalletconfig::ShowWalletEntries()
 		//item->setText( i.value() );
 		s.append( tr( "<redacted>" ) ) ;
 
-		miscfunctions::addRowToTable( table,s ) ;
+		tablewidget::addRowToTable( table,s ) ;
 	}
 
 	int p ;

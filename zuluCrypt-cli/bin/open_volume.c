@@ -90,9 +90,9 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	const char * pass        = opts->key ;
 	const char * plugin_path = opts->plugin_path ;
 	
-	string_t passphrase  ;	
-	string_t m_name  ;	
-	string_t data ;
+	string_t passphrase = StringVoid ;	
+	string_t m_name     = StringVoid ;	
+	string_t data       = StringVoid ; 
 	
 	const char * cpass ;	
 	const char * cname ;
@@ -183,7 +183,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		 */
 		passphrase = zuluCryptPluginManagerGetKeyFromModule( device,plugin_path,uid ) ;
 		
-		if( passphrase == NULL )
+		if( passphrase == StringVoid )
 			return status_msg_1( 25,opts,device,cpoint ) ;
 		
 		cpass = StringContent( passphrase ) ;

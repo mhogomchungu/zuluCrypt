@@ -93,9 +93,9 @@ static int return_value( string_t * st, int status )
 
 static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name,uid_t uid,int op )
 {
-	string_t mapper ;
-	string_t passphrase  ;	
-	string_t p ;
+	string_t mapper     = StringVoid ;
+	string_t passphrase = StringVoid ;	
+	string_t p          = StringVoid ;
 	
 	size_t len = 0 ;
 	

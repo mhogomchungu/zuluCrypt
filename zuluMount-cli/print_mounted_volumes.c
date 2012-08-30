@@ -40,7 +40,7 @@ const char * zuluCryptDecodeMtabEntry( string_t st ) ;
 char * zuluCryptVolumeDeviceName( const char * ) ;
 
 #ifdef __STDC__
-char * realpath( const char * path, char * resolved_path ) ;
+char * realpath( const char * path,char * resolved_path ) ;
 #endif
 
 static void partition_properties( const char * path,const char * m_point )
@@ -128,24 +128,28 @@ int mount_print_mounted_volumes( uid_t uid )
 	string_t mapper ;
 	
 	stringList_t stx ;
+	stringList_t stl ;
+	stringList_t stz ;
 	
 	/*
 	 * get_mtab_list() is  defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c
 	 * It returns contents of "/etc/mtab"
 	 */
-	stringList_t stl = zuluCryptGetMtabList() ;
+	stl = zuluCryptGetMtabList() ;
+		
+	if( stl == StringListVoid )
+		return 1;
 	
 	/*
 	 * partitionList() is defined in ../zuluCrypt-cli/partitions.c
-	 * It returns contents of "/proc/partitions"
+	 * It returns edited contents of "/proc/partitions"
 	 */
-	stringList_t stz = zuluCryptPartitionList() ;
+	stz = zuluCryptPartitionList() ;	
 	
-	if( stl == NULL )
+	if( stz == StringListVoid ){
+		StringListDelete( &stl ) ;
 		return 1;
-	
-	if( stz == NULL )
-		return 1;
+	}
 	
 	mapper = StringIntToString( uid ) ;
 	
@@ -166,7 +170,7 @@ int mount_print_mounted_volumes( uid_t uid )
 			
 		stx = StringListSplit( e,' ' ) ;
 		
-		if( stx == NULL )
+		if( stx == StringListVoid )
 			continue ;		
 		
 		q = StringListContentAt( stx,0 ) ;

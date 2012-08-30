@@ -36,6 +36,7 @@
 #include "partitionproperties.h"
 #include "../zuluCrypt-cli/constants.h"
 #include "dialogmsg.h"
+#include "tablewidget.h"
 
 #include <unistd.h>
 

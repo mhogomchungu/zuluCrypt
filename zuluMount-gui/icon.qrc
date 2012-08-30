@@ -6,5 +6,6 @@
 		 <file>passphrase.png</file>		 
 		 <file>keyfile.png</file>
 		 <file>module.png</file>
+		 <file>folder.png</file>		 
 	 </qresource>
  </RCC>

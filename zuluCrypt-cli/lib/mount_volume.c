@@ -167,7 +167,7 @@ int zuluCryptMountVolume( const char * mapper,const char * m_point,const char * 
 	 * Currently, i dont know how to use mount system call to use ntfs-3g instead of ntfs to mount ntfs file systems.
 	 * Use fork to use mount executable as a temporary solution.
 	*/
-	if( strcmp( StringContent( fs ),"ntfs" ) == 0 ){
+	if( StringEqual( fs,"ntfs" ) == 0 ){
 		StringDelete( &fs ) ;
 		switch( mount_ntfs( &mst ) ){
 			case 0  : return 0 ;

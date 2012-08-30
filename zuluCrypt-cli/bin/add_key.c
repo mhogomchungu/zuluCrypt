@@ -122,8 +122,8 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 	string_t presentKey ;
 	string_t newKey_1 ;
 	string_t newKey_2 ;
-	string_t ek = NULL ;
-	string_t nk = NULL ;
+	string_t ek = StringVoid ;
+	string_t nk = StringVoid ;
 	
 	const char * key1 = NULL ;
 	const char * key2 = NULL ;

@@ -18,7 +18,9 @@ set (SRC 	main.cpp
 		keydialog.cpp
 		managepartitionthread.cpp
 		../zuluCrypt-gui/dialogmsg.cpp
-		../zuluCrypt-gui/userfont.cpp		
+		../zuluCrypt-gui/userfont.cpp
+		../zuluCrypt-gui/tablewidget.cpp		
+		
 )
 
 find_package( Qt4 REQUIRED )

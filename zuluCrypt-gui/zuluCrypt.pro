@@ -42,7 +42,8 @@ SOURCES += main.cpp\
     keystrength.cpp \
     userfont.cpp \
     kwalletplugin.cpp \
-    kwalletconfig.cpp
+    kwalletconfig.cpp \
+    tablewidget.cpp
 
 HEADERS  += zulucrypt.h password_dialog.h \
     openpartition.h \
@@ -74,7 +75,8 @@ HEADERS  += zulucrypt.h password_dialog.h \
     keystrength.h \
     userfont.h \
     kwalletplugin.h \
-    kwalletconfig.h
+    kwalletconfig.h \
+    tablewidget.h
 
 
 FORMS    += zulucrypt.ui password.ui \

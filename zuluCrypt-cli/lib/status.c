@@ -81,9 +81,9 @@ char * zuluCryptGetUUIDFromMapper( const char * mapper )
 	
 	if( blkid_probe_lookup_value( blkid,"UUID",&uuid,NULL ) == 0 ){
 		p = String( "" ) ;
-		StringMultipleAppend( p," UUID:  \t\"",uuid,"\"",'\0' ) ;
+		StringMultipleAppend( p," UUID:   \t\"",uuid,"\"",'\0' ) ;
 	}else
-		p = String( " UUID:  \t\"Nil\"" ) ;
+		p = String( " UUID:   \t\"Nil\"" ) ;
 	
 	blkid_free_probe( blkid );
 	
@@ -144,7 +144,7 @@ static void file_system_properties( string_t p,const char * mapper,const char * 
 	
 	free( buffer ) ;
 	
-	StringMultipleAppend( p,"\n mount point:\t",m_point,"\n",'\0' ) ;
+	StringMultipleAppend( p,"\n mount point:\t",m_point,'\0' ) ;
 }
 
 static char * zuluCryptLoopDeviceAddress( const char * device )
