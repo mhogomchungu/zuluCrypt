@@ -112,7 +112,8 @@ stringList_t zuluCryptPartitionList( void )
 		if( ( strncmp( device,"hd",2 ) == 0 || strncmp( device,"sd",2 ) == 0 ) ){			
 			st_1 = String( "/dev/" ) ;
 			StringAppend( st_1,device ) ;
-			stl_1 = StringListAppendString( stl_1,&st_1 ) ;			
+			stl_1 = StringListAppendString( stl_1,st_1 ) ;
+			StringDelete( &st_1 ) ;
 		}	
 	}
 	

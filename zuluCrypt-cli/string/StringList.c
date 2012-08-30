@@ -162,24 +162,12 @@ stringList_t StringListAppendSize( stringList_t stl,const char * cstring,size_t 
 		return p ;
 }
 
-stringList_t StringListAppendString( stringList_t stl,string_t * st ) 
+stringList_t StringListAppendString( stringList_t stl,string_t st ) 
 {
-	string_t * p ;
-	
-	if( stl == StringListVoid )
-		return StringListString( st ) ;
-	
-	p = __ExpandMemory( stl ) ;
-	
-	if( p == NULL )
-		return StringListVoid ;
-	
-	stl->stp = p ;
-	stl->stp[ stl->size ] = *st ;
-	*st = StringListVoid ;
-	stl->size = stl->size + 1 ;	
-	return stl ;
-	
+	if( st == StringVoid )
+		return stl ;
+	else
+		return StringListAppendSize( stl,st->string,st->size ) ;	
 }
 
 stringList_t StringListSplit( const char * cstring,char splitter ) 
@@ -237,7 +225,10 @@ stringList_t StringListSplit( const char * cstring,char splitter )
 
 stringList_t StringListStringSplit( string_t st,char splitter ) 
 {	
-	return StringListSplit( st->string,splitter ) ;	
+	if( st == StringVoid )
+		return StringListVoid ;
+	else
+		return StringListSplit( st->string,splitter ) ;	
 }
 
 size_t StringListSize( stringList_t stl )

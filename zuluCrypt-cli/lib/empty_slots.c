@@ -33,8 +33,10 @@ char * zuluCryptEmptySlots( const char * device )
 	struct crypt_device * cd;
 	int j ;
 	int k ;
-	char * slot ;
+	char * q ;
 	const char * type ;
+	
+	string_t p = StringVoid ;
 
 	if( crypt_init( &cd,device ) != 0 )
 		return return_value( NULL,NULL ) ;
@@ -51,21 +53,21 @@ char * zuluCryptEmptySlots( const char * device )
 	
 	if( k < 0 )
 		return return_value( NULL,cd ) ;
+
+	p = String( "" ) ;
 	
-	slot = ( char * ) malloc( sizeof( char ) * ( k + 1 ) ) ;
-	
-	for( j = 0 ; j < k ; j++){
+	for( j = 0 ; j < k ; j++ ){
 		cki = crypt_keyslot_status( cd,j );
 		switch ( cki ){
-			case CRYPT_SLOT_INACTIVE :   slot[j] = '0' ; break ;
-			case CRYPT_SLOT_ACTIVE :     slot[j] = '1' ; break ;
-			case CRYPT_SLOT_INVALID :    slot[j] = '2' ; break ;
-			case CRYPT_SLOT_ACTIVE_LAST: slot[j] = '3' ; break ;			
+			case CRYPT_SLOT_INACTIVE   : StringAppend( p,"0" ) ; break ;
+			case CRYPT_SLOT_ACTIVE     : StringAppend( p,"1" ) ; break ;
+			case CRYPT_SLOT_INVALID    : StringAppend( p,"2" ) ; break ;
+			case CRYPT_SLOT_ACTIVE_LAST: StringAppend( p,"3" ) ; break ;			
 		}		
 	}
 	
-	slot[j] = '\0' ;
+	q = StringDeleteHandle( &p ) ;
 	
-	return return_value( slot,cd ) ;	
+	return return_value( q,cd ) ;	
 }
 

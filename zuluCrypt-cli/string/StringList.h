@@ -119,12 +119,9 @@ stringList_t StringListAppend( stringList_t stl,const char * cstring ) ;
 
 /*
  * append an entry into the list.
- * if stl == NULL, then the function call is the same as "StringList( cstring )" 
- * 
- * this function will take ownership of st,invalidating the handle after auto deleting its contents
- * 
+ * if stl == NULL, then the function call is the same as "StringList( cstring )"  
  */
-stringList_t StringListAppendString( stringList_t stl,string_t * ) ;
+stringList_t StringListAppendString( stringList_t stl,string_t ) ;
 
 /*
  * append an entry into the list by taking only len characters from the string.

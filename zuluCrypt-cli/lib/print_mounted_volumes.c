@@ -143,13 +143,10 @@ stringList_t zuluCryptGetMtabList( void )
 	if( q == StringVoid )
 		return StringListVoid ;
 	
-	stl = StringListSplit( StringContent( q ),'\n' ) ;
+	stl = StringListStringSplit( q,'\n' ) ;
 	
 	StringDelete( &q ) ;
-	
-	if( stl == StringListVoid )
-		return StringListVoid ;	
-	
+		
 	return stl ;
 }
 

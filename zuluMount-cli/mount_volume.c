@@ -115,7 +115,9 @@ static int mount_mapper( const m_struct * mst, string_t * st )
 		h = mount( mst->device,mst->m_point,mst->fs,mst->m_flags,NULL ) ;
 		if( h == 0 && mst->m_flags != MS_RDONLY ){			
 			chmod( mst->m_point,S_IRWXU|S_IRWXG|S_IRWXO ) ;
-			//chown( mst->m_point,mst->uid,mst->uid ) ;			
+			/*
+			 * chown( mst->m_point,mst->uid,mst->uid ) ;		
+			 */	
 		}
 	}
 	return h ;
