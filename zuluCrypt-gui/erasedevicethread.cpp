@@ -35,7 +35,7 @@ void erasedevicethread::start()
 
 int erasedevicethread::writeJunk()
 {
-	const int SIZE = 512 ;
+	const int ZSIZE = 512 ;
 
 	int f = open( m_path.toAscii().constData(),O_RDONLY ) ;
 	qint64 size = ( qint64 ) blkid_get_dev_size( f )   ;
@@ -57,11 +57,11 @@ int erasedevicethread::writeJunk()
 	do{
 		if( m_status == 5 )
 			break ;
-		random.read( buffer,SIZE ) ;
-		file.write( buffer,SIZE ) ;
+		random.read( buffer,ZSIZE ) ;
+		file.write( buffer,ZSIZE ) ;
 		file.flush() ;
 
-		size_written += SIZE ;
+		size_written += ZSIZE ;
 
 		k = ( int ) ( size_written * 100 / size ) ;
 
@@ -108,13 +108,13 @@ void erasedevicethread::writeJunkThroughMapper()
 	if( fd.open( QIODevice::WriteOnly ) == false )
 		return ;
 
-	const int SIZE = 1024 ;
+	const int ZSIZE = 1024 ;
 
 	qint64 size_written = 0 ;
 
-	char buffer[ SIZE ];
+	char buffer[ ZSIZE ];
 
-	memset( buffer,0,SIZE ) ;
+	memset( buffer,0,ZSIZE ) ;
 
 	int i ;
 	int j = -1 ;
@@ -123,14 +123,14 @@ void erasedevicethread::writeJunkThroughMapper()
 	qint64 dev_size = ( qint64 ) blkid_get_dev_size( f )  ;
 	close( f ) ;
 
-	while( fd.write( buffer,SIZE ) > 0 ){
+	while( fd.write( buffer,ZSIZE ) > 0 ){
 
 		if( m_status == 5 )
 			break ;
-		
+
 		fd.flush() ;
-		
-		size_written += SIZE ;
+
+		size_written += ZSIZE ;
 
 		i = ( int ) ( size_written * 100 / dev_size ) ;
 
@@ -139,7 +139,7 @@ void erasedevicethread::writeJunkThroughMapper()
 			j = i ;
 		}
 	}
-	
+
 	fd.close();
 }
 

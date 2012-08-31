@@ -100,7 +100,7 @@ TRANSLATIONS =
 
 RESOURCES = icon.qrc
 
-LIBS += -lblkid -lpwquality /home/local/KDE4/lib/libkwalletbackend.so
+LIBS += -lblkid -lpwquality /home/local/KDE4/lib/libkwalletbackend.so -lgcrypt
 
 QMAKE_CXXFLAGS += -D_FILE_OFFSET_BITS=64 -Wall
 

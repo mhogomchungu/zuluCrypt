@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -31,9 +31,11 @@
 #include <QThreadPool>
 #include <QFile>
 
+//#include <gcrypt.h>
 #include <cstring>
 
 #define BLOCK_SIZE 1000
+#define SIZE 1024
 
 /*
  * getting random data to write to devices is much slower when obtained through
@@ -43,7 +45,7 @@
  *
  * Use "1" to get data from "/dev/urandom" and "0" from cryptsetup
  */
-#define RANDOM_SOURCE 0
+#define RANDOM_SOURCE 2
 
 class createFileThread : public QObject,public QRunnable
 {
@@ -59,6 +61,7 @@ signals:
 private slots:
 	void cancelOperation( void );
 private:
+	int createContainerFileUsinggCrypt( void ) ;
 	int createContainerFile( void );
 	void writeVolume( void );
 	void openVolume( void );

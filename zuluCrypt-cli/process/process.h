@@ -82,10 +82,9 @@ pid_t ProcessStart( process_t p ) ;
 
 /*
  * pass data to the child process,the child process will get the data from reading its stdin.
- * ProcessSetOption( p,WRITE_STD_IN ) must be called first for this to work.
- * 
+ * ProcessSetOption( p,WRITE_STD_IN ) must be called first for this to work. * 
  */
-int ProcessWrite( process_t p,const char * data ) ;
+size_t ProcessWrite( process_t p,const char * data,size_t len ) ;
 
 /*
  * default delimiter is ' '( space character ),set another character with this function to change it
@@ -163,12 +162,13 @@ void ProcessSetOptionTimeout( process_t p,int timeout,int signal ) ;
 int ProcessExitStatus( process_t ) ;
 
 /*
- * read get contents of std out from the process.
- * remember to free() the return buffer when done with it
+ * get contents of std out/std error from the process.
+ * remember to free() the return buffer when done with it.
  * 
+ * return value is the size of the data.  
  * this function must be called after ProcessStart()
  */
-char * ProcessGetOutPut( process_t ) ;
+size_t ProcessGetOutPut( process_t,char ** data ) ;
 
 /*
  * read size number of bytes from the ourput of the forket process.

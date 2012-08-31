@@ -23,6 +23,7 @@ struct Process_t{
 	size_t len ;
 	pid_t pid ;
 	int pd[2] ;
+	int pdw[2] ;
 	int state ;
 	int std_io ;
 	char * exe ;
@@ -155,9 +156,12 @@ pid_t ProcessStart( process_t p )
 	if( p == NULL )
 		return -1 ;
 	
-	if( p->std_io >= 4 )
+	if( p->std_io >= 4 ){
 		if( pipe( p->pd ) != 0 ) 
 			return -1 ;
+		if( pipe( p->pdw ) != 0 )
+			return -1 ;
+	}
 
 	p->pid = fork() ;
 	
@@ -239,7 +243,20 @@ pid_t ProcessStart( process_t p )
 				     close( 0 ) ;
 			             close( p->pd[ 1 ] ) ;
 			             dup2( p->pd[ 0 ],0 ) ;
-			             break ;	     
+			             break ;
+			case 15:
+			case 16:
+			case 17:     break ;			
+			case 18:     
+				     //printf("abc\n" ) ;
+				     //  close( 2 ) ;
+				     close( 1 ) ;
+				     dup2( p->pd[ 1 ],1 ) ;				     
+				     close( p->pd[ 0 ] ) ;
+				     close( 0 ) ;
+				     dup2( p->pdw[ 0 ],0 ) ;				     
+				     close( p->pdw[ 1 ] ) ;				     
+				     break ;
 		}
 				
 		execv( p->args[0],p->args ) ;
@@ -263,24 +280,26 @@ pid_t ProcessStart( process_t p )
 	
 	if( p->std_io <= 3 )
 		;
-	else if( p->std_io < 12 )
+	else if ( p->std_io < 12 )
 		close( p->pd[ 1 ] ) ;
-	else
-		close( p->pd[ 0 ] ) ;
+	else{
+		close( p->pd[ 1 ] ) ;
+		close( p->pdw[ 0 ] ) ;		
+	}
 	
 	return p->pid ;
 }
 
-char * ProcessGetOutPut( process_t p ) 
+size_t ProcessGetOutPut( process_t p,char ** data ) 
 {
 	#define SIZE 64
 	char * buffer = NULL ;
 	char buff[ SIZE ] ;
-	int size = 0 ;
-	int count ;
+	size_t size = 0 ;
+	size_t count ;
 
 	if( p == NULL )
-		return NULL ;
+		return 0 ;
 	
 	while( 1 ) {
 		count = read( p->pd[ 0 ],buff,SIZE ) ;
@@ -297,8 +316,9 @@ char * ProcessGetOutPut( process_t p )
 		}else
 			break ;	
 	}	
-	
-	return buffer ;
+
+	*data = buffer ;
+	return size ;	
 }
 
 int ProcessState( process_t p ) 
@@ -317,12 +337,12 @@ int ProcessGetOutPut_1( process_t p,char * buffer,int size )
 		return -1 ;
 }
 
-int ProcessWrite( process_t p,const char * data ) 
+size_t ProcessWrite( process_t p,const char * data,size_t len ) 
 {	
 	if( p != NULL )
-		return write( p->pd[ 1 ],data,strlen( data ) ) ;
+		return write( p->pdw[ 1 ],data,len ) ;
 	else
-		return -1 ;
+		return 0 ;
 }
 
 process_t Process( const char * path ) 

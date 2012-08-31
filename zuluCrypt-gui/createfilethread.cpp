@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -72,19 +72,89 @@ int createFileThread::createContainerFile( void )
 
 	return m_status == -1 ? -1 : 0 ;
 }
+#include <QDebug>
+int createFileThread::createContainerFileUsinggCrypt( void )
+{/*
+	#define GSIZE 16
+
+	char iv[ GSIZE ] ;
+	char key[ GSIZE ] ;
+
+	char plaintext[ GSIZE ] ;
+	char ciphertext[ GSIZE ] ;
+
+	QFile f( QString( "/dev/urandom" ) ) ;
+	f.open( QIODevice::ReadOnly ) ;
+
+	f.read( plaintext,GSIZE ) ;
+	f.read( iv,GSIZE ) ;
+	f.read( key,GSIZE ) ;
+	f.close();
+
+	f.setFileName( m_file ) ;
+	f.open( QIODevice::WriteOnly ) ;
+
+	gcry_cipher_hd_t hd ;
+
+	gcry_cipher_open( &hd,GCRY_CIPHER_AES256,GCRY_CIPHER_MODE_CBC,0 ) ;
+
+	gcry_cipher_setkey( hd,key,GSIZE ) ;
+
+	gcry_cipher_setiv( hd,iv,GSIZE ) ;
+
+	emit progress( 0 );
+
+	qint64 size_written = 0 ;
+
+	int j = 0 ;
+	int k ;
+	do{
+		if( m_status == -1 )
+			break ;
+
+		if( gcry_cipher_encrypt( hd,ciphertext,GSIZE,plaintext,GSIZE ) != 0 ){
+			qDebug() << "gcrypt_cipher_error";
+		}
+
+		f.write( ciphertext,GSIZE ) ;
+		f.flush() ;
+
+		size_written += GSIZE ;
+
+		k = ( int ) ( size_written * 100 / m_size ) ;
+
+		if( k > j )
+			emit progress( k );
+		j = k ;
+	}while( size_written < m_size ) ;
+
+	emit progress( 100 );
+
+	f.setPermissions( QFile::ReadOwner|QFile::WriteOwner ) ;
+	f.close();
+
+	gcry_cipher_close ( hd ) ;
+
+*/	return m_status ;
+
+}
 
 void createFileThread::run()
 {
 	/*
 	 * RANDOM_SOURCE is set at createfilethread.h
 	 */
-	if( RANDOM_SOURCE == 1 ){
+	if( RANDOM_SOURCE == 0 ){
+
+		m_status = this->createContainerFileUsinggCrypt() ;
+
+	}else if( RANDOM_SOURCE == 1 ){
 		/*
 		 * write random data using data from reading "/dev/urandom", slow
 		 * but dependable
 		 */
 		m_status = this->createContainerFile() ;
-	}else{
+	}else if( RANDOM_SOURCE == 2 ){
 		/*
 		 * write raandom data using cryptsetup,much faster but
 		 * hangs on some kernels when the data to be written is large enough
@@ -107,13 +177,11 @@ void createFileThread::createFile()
 	QFile file( m_file ) ;
 	file.open( QIODevice::WriteOnly ) ;
 
-	const int SIZE = BLOCK_SIZE ;
+	char data[ BLOCK_SIZE ];
 
-	char data[SIZE];
+	memset( data,0,BLOCK_SIZE );
 
-	memset( data,0,SIZE );
-
-	int x ;
+	int x = 0 ;
 	int y = -1 ;
 
 	double data_written = 0 ;
@@ -126,16 +194,16 @@ void createFileThread::createFile()
 		if( m_status == -1 )
 			break ;
 
-		file.write( data,SIZE ) ;
-		file.flush() ;
-		data_written += SIZE ;
-
-		x = ( int )( data_written * 100 / m_size ) ;
-
 		if( x > y ){
 			emit progress( x );
 			y = x ;
 		}
+		file.write( data,BLOCK_SIZE ) ;
+		file.flush() ;
+		data_written += BLOCK_SIZE ;
+
+		x = ( int )( data_written * 100 / m_size ) ;
+
 	}
 
 	emit progress( 100 );
@@ -147,7 +215,7 @@ void createFileThread::createFile()
 void createFileThread::fillCreatedFileWithRandomData()
 {
 	this->openVolume()  ;
-	
+
 	if( m_status != 0 )
 		return ;
 
@@ -196,8 +264,7 @@ void createFileThread::writeVolume()
 
 	double data_written = 0 ;
 
-	const int SIZE = 1024 ;
-	char data[SIZE];
+	char data[ SIZE ];
 
 	memset( data,0,SIZE );
 

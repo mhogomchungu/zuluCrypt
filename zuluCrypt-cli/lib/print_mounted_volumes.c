@@ -34,13 +34,14 @@ char * zuluCryptVolumeDeviceName( const char * ) ;
 
 int zuluCryptMtabIsAtEtc( void )
 {
-	char * path = realpath( "/etc/mtab",NULL ) ;
+	const char * mpath = "/etc/mtab" ;
+	char * path = realpath( mpath,NULL ) ;
 	int st ;
 	
 	if( path == NULL ){
 		return 1 ;
 	}else{
-		st = strcmp( path,"/etc/mtab" ) ;
+		st = strcmp( path,mpath ) ;
 		
 		free( path ) ;
 		
@@ -95,8 +96,7 @@ static void print( uid_t uid,stringList_t stl )
 				q = StringListStringAt( stx,0 ) ;
 				k = StringLastIndexOfChar( q,'-' ) ;
 				if( k != -1 ){
-					StringSubChar( q,k,'\0' ) ;
-					c = StringContent( q ) + len + 6 ;
+					c = StringSubChar( q,k,'\0' ) + len + 6 ;
 					d = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;
 					printf( "UUID=\"%s\"\t%s\n",c,d ) ;	
 				}
