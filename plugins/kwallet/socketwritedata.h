@@ -18,16 +18,35 @@
  */
 
 
-#include <QtCore/QCoreApplication>
-#include "wallet.h"
+#ifndef SOCKETWRITEDATA_H
+#define SOCKETWRITEDATA_H
 
-int main( int argc,char * argv[] )
+#include <QObject>
+#include <QThreadPool>
+#include <QRunnable>
+#include <QByteArray>
+#include <QtNetwork/QLocalSocket>
+
+
+class socketWriteData : public QObject,public QRunnable
+//class socketWriteData : public QObject
 {
-	QCoreApplication a( argc,argv );
+	Q_OBJECT
+public:
+	void start( void ) ;
+	socketWriteData( QLocalSocket * socket,QByteArray * data ) ;
+signals:
+	void done( void ) ;
+public slots:
+	void bytesWritten( qint64 ) ;
+private slots:
+private:
+	void sendData() ;
+	void run( void ) ;
+	QByteArray * m_data ;
+	qint64 m_size ;
+	qint64 m_dataSent ;
+	QLocalSocket * m_socket ;
+};
 
-	wallet w( argv[ 2 ],argv[ 3 ] ) ;
-
-	QMetaObject::invokeMethod( &w,"start",Qt::QueuedConnection );
-
-	return a.exec() ;
-}
+#endif // SOCKETWRITEDATA_H

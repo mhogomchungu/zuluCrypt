@@ -10,10 +10,14 @@ TARGET = gpg
 TEMPLATE = app
 
 SOURCES += main.cpp\
-	mainwindow.cpp
+	mainwindow.cpp \
+    ../kwallet/zulusocket.cpp \
+    ../../zuluCrypt-gui/dialogmsg.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    ../kwallet/zulusocket.h \
+    ../../zuluCrypt-gui/dialogmsg.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui ../../zuluCrypt-gui/dialogmsg.ui
 
 LIBS += -lQtNetwork

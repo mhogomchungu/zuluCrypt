@@ -21,115 +21,61 @@
 #include <iostream>
 #include <QFile>
 
-wallet::wallet( int argc,char * argv[] )
+wallet::wallet( QString uuid,QString sockAddr )
 {
-	m_argc = argc ;
-	m_device = QString( argv[ 1 ] ) ;
-	m_uuid = QString( "UUID=\"%1\"").arg( QString( argv[ 2 ] ) ) ;
-	m_sockpath = QString( argv[ 3 ] ) ;
-	m_bufferSize = QString( argv[ 4 ] ).toInt() ;
-	m_socket = 0 ;
+	m_uuid = QString( "UUID=\"%1\"" ).arg( uuid ) ;
+	m_sockAddr = sockAddr ;
+}
+
+void wallet::start()
+{
+	m_zuluSocket = new zuluSocket( this ) ;
+	connect( m_zuluSocket,SIGNAL( gotConnected() ),this,SLOT( openWallet() ) ) ;
+	m_zuluSocket->startServer( m_sockAddr );
 }
 
 void wallet::openWallet()
 {
-	this->openConnection();
+	m_wallet = Wallet::openWallet( zuluOptions::wallet(),0,KWallet::Wallet::Synchronous ) ;
 
-	m_wallet = Wallet::openWallet( zuluOptions::wallet(),0,KWallet::Wallet::Asynchronous ) ;
-
-	if( m_wallet ){
-		connect( m_wallet,SIGNAL( walletOpened( bool ) ),this,SLOT( walletOpened( bool ) ) ) ;
-	}else{
-		//qDebug() << "failed to open wallet";
+	if( m_wallet )
+		this->readKwallet();
+	else
 		this->Exit( 1 );
-	}
 }
 
-void wallet::gotConnected()
+void wallet::SendKey()
 {
-	m_socket = m_server->nextPendingConnection() ;
+	m_zuluSocket->sendData( &m_key );
+	this->Exit( 0 );
 }
 
-void wallet::walletOpened( bool e )
+void wallet::readKwallet()
 {
-	m_walletOpened = e ;
-	this->sendKey();
-}
+	QString formData = zuluOptions::formData() ;
+	if( !m_wallet->hasFolder( formData ) )
+		m_wallet->createFolder( formData ) ;
 
-void wallet::openConnection()
-{
-	m_server = new QLocalServer( this ) ;
-	connect( m_server,SIGNAL( newConnection() ),this,SLOT( gotConnected() ) ) ;
-	m_server->listen( m_sockpath ) ;
-}
-
-void wallet::sendKey()
-{
-	this->getKey();
-
-	if( m_key.isEmpty() )
-		this->Exit( 1 );
-	else{
-		m_socket->write( m_key.toAscii() ) ;
-		m_socket->flush() ;
-		this->Exit( 0 );
-	}
-}
-
-void wallet::getKey()
-{
-	if( !m_walletOpened ){
-		//qDebug() << "openWallet() failed ";
-		m_key.clear();
-		return ;
-	}
-
-	if( !m_wallet->setFolder( zuluOptions::formData() ) ){
-		//qDebug() << "setFolder() failed ";
-		m_key.clear();
-		return ;
-	}
+	m_wallet->setFolder( formData ) ;
 
 	QMap <QString,QString> map ;
 
-	if( m_wallet->readMap( zuluOptions::key(),map ) ){
-		//qDebug() << "readMap() failed";
-		m_key.clear();
-		return;
-	}
+	m_wallet->readMap( zuluOptions::key(),map ) ;
 
-	if( m_uuid == QString( "Nil" ) ){
-		qDebug() << "device has no UUID";
-		m_key.clear();
-		return  ;
-	}
-
-	m_key = map.value( m_uuid ) ;
-
-	if( m_key.isEmpty() ){
-		m_uuid.remove( QChar( '\"' ) ) ;
-		m_key = map.value( m_uuid ) ;
-	}
+	m_key = map.value( m_uuid ).toAscii() ;
+	if( m_key.isEmpty() )
+		return this->Exit( 4 );
+	else
+		this->SendKey();
 }
 
 void wallet::Exit( int st )
 {
-	if( m_socket ){
-		if( m_socket->isOpen() )
-			m_socket->close();
-
-		m_socket->deleteLater();
-	}
-
-	m_server->close();
-	m_server->deleteLater();
-
-	QFile::remove( m_sockpath ) ;
-
 	QCoreApplication::exit( st ) ;
 }
 
 wallet::~wallet()
 {
+	m_zuluSocket->deleteLater();
 	m_wallet->deleteLater();
 }

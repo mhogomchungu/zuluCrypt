@@ -6,11 +6,11 @@ INCLUDE( ${QT_USE_FILE} )
 
 QT4_WRAP_UI( UI mainwindow.ui )
 
-QT4_WRAP_CPP( MOC mainwindow.h )
+QT4_WRAP_CPP( MOC mainwindow.h ../kwallet/zulusocket.h )
 
 QT4_ADD_RESOURCES( ICON icon.qrc )
 
-add_executable( keykeyfile ${ICON} ${MOC} ${UI} main.cpp mainwindow.cpp )
+add_executable( keykeyfile ${ICON} ${MOC} ${UI} main.cpp mainwindow.cpp ../kwallet/zulusocket.cpp )
 
 TARGET_LINK_LIBRARIES( keykeyfile ${QT_LIBRARIES} -lQtNetwork ) 
 

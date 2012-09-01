@@ -25,6 +25,11 @@ kwalletplugin::kwalletplugin( QWidget * parent )
 	m_parent = parent ;
 }
 
+bool kwalletplugin::KwalletIsEnabled()
+{
+	return true ;
+}
+
 bool kwalletplugin::hasFunctionality()
 {
 	return true ;

@@ -21,6 +21,8 @@
 #ifndef ZULUCRYPTPLUGINMANAGER
 #define ZULUCRYPTPLUGINMANAGER
 
+#include <stddef.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif	

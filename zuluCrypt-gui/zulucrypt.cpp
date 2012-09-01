@@ -746,9 +746,14 @@ void zuluCrypt::decryptFile()
 
 void zuluCrypt::manageWallet()
 {
-	kwalletconfig * cfg = new kwalletconfig( this ) ;
-	connect( cfg,SIGNAL( HideUISignal() ),cfg,SLOT( deleteLater() ) ) ;
-	cfg->ShowUI();
+	if( kwalletplugin::KwalletIsEnabled() ){
+		kwalletconfig * cfg = new kwalletconfig( this ) ;
+		connect( cfg,SIGNAL( HideUISignal() ),cfg,SLOT( deleteLater() ) ) ;
+		cfg->ShowUI();
+	}else{
+		DialogMsg msg( this ) ;
+		msg.ShowUIOK( tr( "ERROR" ),tr( "kwallet functionality doesnt seem to be enabled" ) ) ;
+	}
 }
 
 zuluCrypt::~zuluCrypt()

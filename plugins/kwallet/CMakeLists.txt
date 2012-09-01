@@ -6,9 +6,9 @@ find_package( Qt4 REQUIRED )
 
 INCLUDE( ${QT_USE_FILE} )
 
-QT4_WRAP_CPP( MOC wallet.h )
+QT4_WRAP_CPP( MOC wallet.h zulusocket.h socketwritedata.h )
 
-add_executable( kwallet ${MOC} main.cpp wallet.cpp )
+add_executable( kwallet ${MOC} main.cpp wallet.cpp zulusocket.cpp socketwritedata.cpp )
 
 TARGET_LINK_LIBRARIES( kwallet ${kwallet_library} ) 
 

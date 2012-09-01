@@ -17,46 +17,50 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WALLET_H
-#define WALLET_H
+#ifndef ZULUSOCKET_H
+#define ZULUSOCKET_H
 
-#include <kwallet.h>
 #include <QDebug>
 #include <QObject>
-#include <QCoreApplication>
-#include <QMap>
 #include <QtNetwork/QLocalServer>
 #include <QtNetwork/QLocalSocket>
+#include <QString>
 #include <QByteArray>
-#include "../../zuluCrypt-gui/zuluoptions.h"
-#include "wallet.h"
+#include <QFile>
 
-#include "zulusocket.h"
+//#include "socketwritedata.h"
 
-#include <cstdlib>
-
-using namespace KWallet ;
-
-class wallet : public QObject
+class zuluSocket : public QObject
 {
 	Q_OBJECT
 public:
-	wallet( QString uuid,QString sockAddr ) ;
-	~wallet();
+	zuluSocket( QObject * );
+	~zuluSocket() ;
+	bool isConnected( void ) ;
+	/* The socket address sockAddr ideally should be deleted by the class but it doesnt for some reason,
+	 * caller of the class should manually delete it after the class is destructed.
+	 */
+	void startServer( QString sockAddr ) ;
+signals:
+	void gotConnected( void ) ;
+	void doneWritingData( void ) ;
+public slots:
+	void sendData( QByteArray * ) ;
 private slots:
-	void start( void ) ;
-	void openWallet( void ) ;
+	void bytesWritten( qint64 bytes ) ;
+	void acceptConnection( void ) ;
 private:
-	void SendKey( void ) ;
-	void Exit( int ) ;
-	void readKwallet( void ) ;
-	zuluSocket * m_zuluSocket ;
-	Wallet * m_wallet ;
-	QString m_uuid ;
+	void done( void ) ;
+	void sendDataToSocket( void ) ;
+	bool m_connected ;
 	QString m_sockAddr ;
+	QLocalSocket * m_socket ;
 	QLocalServer * m_server ;
-	QByteArray m_key ;
-	int m_status ;
+	//socketWriteData * m_sockWriteData ;
+	qint64 m_size ;
+	qint64 m_dataSent ;
+	QByteArray * m_data ;
+	QObject * m_parent ;
 };
 
-#endif // WALLET_H
+#endif // ZULUSOCKET_H

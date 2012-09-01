@@ -99,6 +99,11 @@ void passwordDialog::pbPlugin()
 
 	m_pluginMenu->clear();
 
+	if( list.contains( QString( "kwallet" ) ) ){
+		int index = list.indexOf( "kwallet" ) ;
+		list.move( index,0 );
+	}
+
 	int j = list.size()  ;
 
 	if( j == 0 ){

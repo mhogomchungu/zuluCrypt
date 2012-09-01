@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>key and key file plugin</string>
+   <string>gpg key module</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QPushButton" name="pbOpen">
@@ -63,7 +63,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>path to keyfile</string>
+     <string>gpg keyfile</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -79,7 +79,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>key</string>
+     <string>gpg key</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

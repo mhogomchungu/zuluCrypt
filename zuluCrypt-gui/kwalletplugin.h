@@ -46,6 +46,7 @@ public:
 	bool isOpen( void ) ;
 	static bool folderDoesNotExist( void ) ;
 	static bool keyDoesNotExist( QString key ) ;
+	static bool KwalletIsEnabled( void ) ;
 private:
 	KWallet::Wallet * m_wallet ;
 	QWidget * m_parent ;
@@ -70,7 +71,7 @@ public:
 	bool isOpen( void ) { return false ; }
 	static bool folderDoesNotExist( void ){ return false ; }
 	static bool keyDoesNotExist( QString key ){ return true ; }
-
+	static bool KwalletIsEnabled( void ) { return false ; }
 private:
 	//KWallet::Wallet * m_wallet ;
 	QWidget * m_parent ;

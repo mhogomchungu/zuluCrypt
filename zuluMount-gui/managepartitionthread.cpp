@@ -76,7 +76,7 @@ void managepartitionthread::cryptoOpen()
 	exe = QString( "%1 -M -d \"%2\" -z \"%3\" -e %4 %5" ).arg( zuluMount ).arg( m_device ).arg( m_point ).arg( m_mode ).arg( m_keySource ) ;
 
 	p.start( exe );
-	p.waitForFinished() ;
+	p.waitForFinished( -1 ) ;
 
 	QString output = QString( p.readAll() ) ;
 	int index = output.indexOf( QChar( ':') ) ;

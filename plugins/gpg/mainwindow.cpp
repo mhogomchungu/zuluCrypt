@@ -26,14 +26,10 @@ MainWindow::MainWindow( QWidget * parent ) : QMainWindow( parent ),m_ui( new Ui:
 
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Password );
 
-	m_client = 0 ;
-	m_server = 0 ;
+	m_zuluSocket = 0 ;
 
-	this->setWindowIcon( QIcon( QString( ":/keyfile.png" ) ) );
-	m_ui->pbKeyFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) );
-
-	m_server = new QLocalServer( this ) ;
-	connect( m_server,SIGNAL( newConnection() ),this,SLOT( acceptConnection() ) ) ;
+	this->setWindowIcon( QIcon( QString( ":/gpg.png" ) ) );
+	m_ui->pbKeyFile->setIcon( QIcon( QString( ":/gpg.png" ) ) );
 
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->pbOpen,SIGNAL( clicked() ),this,SLOT( pbOpen() ) ) ;
@@ -41,18 +37,19 @@ MainWindow::MainWindow( QWidget * parent ) : QMainWindow( parent ),m_ui( new Ui:
 
 	this->SetFocus();
 	m_ui->pbOpen->setEnabled( false );
-	m_ui->lineEditKeyFile->setText( "/home/ink/gpg.gpg" );
 }
 
 void MainWindow::SetAddr( QString addr )
 {
 	m_addr = addr ;
-	m_server->listen( m_addr ) ;
+	m_zuluSocket = new zuluSocket( this ) ;
+	connect( m_zuluSocket,SIGNAL( gotConnected() ),this,SLOT( gotConnected() ) ) ;
+	connect( m_zuluSocket,SIGNAL( doneWritingData() ),this,SLOT( doneWritingData() ) ) ;
+	m_zuluSocket->startServer( m_addr );
 }
 
-void MainWindow::acceptConnection()
+void MainWindow::gotConnected()
 {
-	m_client = m_server->nextPendingConnection() ;
 	m_ui->pbOpen->setEnabled( true );
 }
 
@@ -68,57 +65,73 @@ void MainWindow::SetFocus()
 
 void MainWindow::pbCancel()
 {
-	this->Exit();
+	this->Exit( 1 );
 }
 
-void MainWindow::Exit()
+void MainWindow::Exit( int st )
 {
-	if( m_client ){
-		if( m_client->isOpen() )
-			m_client->close();
-
-		m_client->deleteLater();
-	}
-
-	if( m_server ){
-		m_server->close();
-		m_server->deleteLater();
-	}
-
-	QFile::remove( m_addr ) ;
-
 	this->hide();
-
-	QCoreApplication::quit() ;
+	QCoreApplication::exit( st );
 }
 
-#include <QDebug>
+QString MainWindow::FindGPG()
+{
+	if( QFile::exists( QString( "/usr/local/bin/gpg" ) ) )
+		return QString( "/usr/local/bin/gpg" ) ;
+	else if( QFile::exists( QString( "/usr/bin/gpg" ) ) )
+		return QString( "/usr/bin/gpg" ) ;
+	else if( QFile::exists( QString( "/usr/sbin/gpg") ) )
+		return QString( "/usr/sbin/gpg" ) ;
+	else{
+		QString m ;
+		return m ;
+	}
+}
+
 void MainWindow::pbOpen()
 {
-	QProcess p ;
-	m_ui->lineEditKeyFile->setText( "/home/ink/gpg.gpg" );
-	QString EXE = QString( "/usr/bin/gpg" ) ;
 	QString path = m_ui->lineEditKeyFile->text().replace( "\"","\"\"\"" ) ;
-	QString key = m_ui->lineEditKey->text() ;
 
-	QString exe = QString( "%1 --batch --passphrase-fd 0 -d \"%2\"" ).arg( EXE ).arg( path ) ;
+	DialogMsg msg( this ) ;
 
+	if( !QFile::exists( path ) )
+		return msg.ShowUIOK( tr( "ERROR" ),tr( "invalid path to gpg keyfile" ) ) ;
+
+	QString key = m_ui->lineEditKey->text().replace( "\"","\"\"\"" ) ;
+
+	if( key.isEmpty() )
+		return msg.ShowUIOK( tr( "ERROR" ),tr( "key field is empty" ) ) ;
+
+	this->disableAll();
+	QString EXE = this->FindGPG() ;
+
+	if( EXE.isEmpty() )
+		return msg.ShowUIOK( tr( "ERROR" ),tr( "could not find \"gpg\" executable in \"/usr/local\",\"/usr/bin\" and \"/usr/sbin\"" ) ) ;
+
+	QString exe = QString( "%1 --batch --passphrase \"%2\" -d \"%3\"" ).arg( EXE ).arg( key ).arg( path ) ;
+
+	QProcess p ;
 	p.start( exe );
-	p.waitForStarted() ;
-	p.write( key.toAscii() ) ;
 	p.waitForFinished() ;
 
-	QByteArray data = p.readAll() ;
+	if( p.exitCode() == 0 ){
+		QByteArray data = p.readAll() ;
 
-	if( !data.isEmpty() ){
-		qDebug() << data;
-		qDebug() << m_client->write( data ) ;
-		m_client->flush() ;
-		m_client->close();
-	}else
-		qDebug() << "data is empty";
+		if( !data.isEmpty() )
+			m_zuluSocket->sendData( &data );
+	}else{
+		DialogMsg msg( this ) ;
+		msg.ShowUIOK( tr( "ERROR" ),tr("could not decrept the gpg keyfile,wrong key?" ) );
+		this->enableAlll();
+	}
+	p.close();
+}
 
-	this->Exit();
+void MainWindow::doneWritingData()
+{
+	this->enableAlll();
+	this->hide();
+	this->Exit( 0 );
 }
 
 void MainWindow::pbKeyFile()
@@ -130,7 +143,38 @@ void MainWindow::pbKeyFile()
 	this->SetFocus();
 }
 
+void MainWindow::closeEvent( QCloseEvent * e )
+{
+	e->ignore();
+	this->doneWritingData();
+}
+
+void MainWindow::disableAll()
+{
+	m_ui->label->setEnabled( false );
+	m_ui->label_2->setEnabled( false );
+	m_ui->lineEditKey->setEnabled( false );
+	m_ui->lineEditKeyFile->setEnabled( false );
+	m_ui->pbKeyFile->setEnabled( false );
+	m_ui->pbOpen->setEnabled( false );
+	m_ui->pbCancel->setEnabled( false );
+}
+
+void MainWindow::enableAlll()
+{
+	m_ui->label->setEnabled( true );
+	m_ui->label_2->setEnabled( true );
+	m_ui->lineEditKey->setEnabled( true );
+	m_ui->lineEditKeyFile->setEnabled( true );
+	m_ui->pbKeyFile->setEnabled( true );
+	m_ui->pbOpen->setEnabled( true );
+	m_ui->pbCancel->setEnabled( true );
+}
+
 MainWindow::~MainWindow()
 {
+	if( m_zuluSocket )
+		m_zuluSocket->deleteLater();
+
 	delete m_ui;
 }

@@ -105,6 +105,11 @@ void keyDialog::pbPlugin()
 	list.removeOne( QString( ".") ) ;
 	list.removeOne( QString( "..") ) ;
 
+	if( list.contains( QString( "kwallet" ) ) ){
+		int index = list.indexOf( "kwallet" ) ;
+		list.move( index,0 );
+	}
+
 	m_menu->clear();
 
 	int j = list.size()  ;

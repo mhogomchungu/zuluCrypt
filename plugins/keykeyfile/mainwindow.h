@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright (c) 2012
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -30,6 +30,8 @@
 #include <QtNetwork/QLocalServer>
 #include <QtNetwork/QLocalSocket>
 
+#include "../kwallet/zulusocket.h"
+
 namespace Ui {
 class MainWindow;
 }
@@ -46,15 +48,14 @@ private slots:
 	void pbOpen( void ) ;
 	void pbCancel( void ) ;
 	void pbKeyFile( void ) ;
-	void acceptConnection( void ) ;
+	void gotConnected( void ) ;
 private:
 	void SetFocus( void );
 	void Exit( void ) ;
 	Ui::MainWindow * m_ui;
 	QString m_addr ;
 	QString m_keyFile ;
-	QLocalSocket * m_client ;
-	QLocalServer * m_server ;
+	zuluSocket * m_zuluSocket ;
 };
 
 #endif // MAINWINDOW_H

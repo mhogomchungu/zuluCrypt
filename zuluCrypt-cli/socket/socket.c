@@ -185,7 +185,7 @@ int SocketListen( socket_t s )
 
 #define BUFFSIZE 64
 
-int SocketGetData( socket_t s,char ** buffer,size_t len ) 
+size_t SocketGetData( socket_t s,char ** buffer,size_t len ) 
 {
 	size_t i ;
 	size_t buffCount = BUFFSIZE ;
@@ -220,7 +220,7 @@ int SocketGetData( socket_t s,char ** buffer,size_t len )
 	return i ;
 }
 
-int SocketSendData( socket_t s,const char * buffer,size_t len ) 
+ssize_t SocketSendData( socket_t s,const char * buffer,size_t len ) 
 {	
 	return send( s->fd,buffer,len,s->fwrite ) ;	
 }

@@ -10,9 +10,11 @@ TARGET = keykeyfile
 TEMPLATE = app
 
 SOURCES += main.cpp\
-	mainwindow.cpp
+	mainwindow.cpp \
+    ../kwallet/zulusocket.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    ../kwallet/zulusocket.h
 
 FORMS    += mainwindow.ui
 

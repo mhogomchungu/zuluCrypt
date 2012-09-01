@@ -30,6 +30,10 @@
 #include <QtNetwork/QLocalServer>
 #include <QtNetwork/QLocalSocket>
 #include <QProcess>
+#include <QCloseEvent>
+
+#include "../kwallet/zulusocket.h"
+#include "../../zuluCrypt-gui/dialogmsg.h"
 
 namespace Ui {
 class MainWindow;
@@ -47,15 +51,19 @@ private slots:
 	void pbOpen( void ) ;
 	void pbCancel( void ) ;
 	void pbKeyFile( void ) ;
-	void acceptConnection( void ) ;
+	void gotConnected( void ) ;
+	void doneWritingData( void ) ;
 private:
+	void closeEvent( QCloseEvent * );
+	void disableAll( void ) ;
+	void enableAlll( void ) ;
+	QString FindGPG( void ) ;
 	void SetFocus( void );
-	void Exit( void ) ;
+	void Exit( int ) ;
 	Ui::MainWindow * m_ui;
 	QString m_addr ;
 	QString m_keyFile ;
-	QLocalSocket * m_client ;
-	QLocalServer * m_server ;
+	zuluSocket * m_zuluSocket ;
 };
 
 #endif // MAINWINDOW_H

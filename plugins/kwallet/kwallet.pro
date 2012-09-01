@@ -16,7 +16,9 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp \
-    wallet.cpp
+    wallet.cpp \
+    zulusocket.cpp \
+    socketwritedata.cpp
 
 QMAKE_CXXFLAGS += -I/home/local/KDE4/include -Wall
 
@@ -24,4 +26,6 @@ LIBS += -lkwalletbackend -L/home/local/KDE4/lib -lzuluCryptPluginManager
 
 
 HEADERS += \
-    wallet.h
+    wallet.h \
+    zulusocket.h \
+    socketwritedata.h

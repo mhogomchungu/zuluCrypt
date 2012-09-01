@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright (c) 2012
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -26,14 +26,8 @@ MainWindow::MainWindow( QWidget * parent ) : QMainWindow( parent ),m_ui( new Ui:
 
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Password );
 
-	m_client = 0 ;
-	m_server = 0 ;
-
 	this->setWindowIcon( QIcon( QString( ":/keyfile.png" ) ) );
 	m_ui->pbKeyFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) );
-
-	m_server = new QLocalServer( this ) ;
-	connect( m_server,SIGNAL( newConnection() ),this,SLOT( acceptConnection() ) ) ;
 
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->pbOpen,SIGNAL( clicked() ),this,SLOT( pbOpen() ) ) ;
@@ -41,17 +35,20 @@ MainWindow::MainWindow( QWidget * parent ) : QMainWindow( parent ),m_ui( new Ui:
 
 	this->SetFocus();
 	m_ui->pbOpen->setEnabled( false );
+
+	m_zuluSocket = 0 ;
 }
 
 void MainWindow::SetAddr( QString addr )
 {
 	m_addr = addr ;
-	m_server->listen( m_addr ) ;
+	m_zuluSocket = new zuluSocket() ;
+	m_zuluSocket->startServer( addr );
+	connect( m_zuluSocket,SIGNAL( gotConnected() ),this,SLOT( gotConnected() ) ) ;
 }
 
-void MainWindow::acceptConnection()
+void MainWindow::gotConnected()
 {
-	m_client = m_server->nextPendingConnection() ;
 	m_ui->pbOpen->setEnabled( true );
 }
 
@@ -72,22 +69,7 @@ void MainWindow::pbCancel()
 
 void MainWindow::Exit()
 {
-	if( m_client ){
-		if( m_client->isOpen() )
-			m_client->close();
-
-		m_client->deleteLater();
-	}
-
-	if( m_server ){
-		m_server->close();
-		m_server->deleteLater();
-	}
-
-	QFile::remove( m_addr ) ;
-
 	this->hide();
-
 	QCoreApplication::quit() ;
 }
 
@@ -112,16 +94,13 @@ void MainWindow::pbOpen()
 		if( file.open( QIODevice::ReadOnly ) ){
 			if( key.isEmpty() )
 				key = file.readAll() ;
-			else 
+			else
 				key = key + file.readAll() ;
 			file.close();
 		}
 	}
 
-	m_client->write( key ) ;
-	m_client->flush() ;
-	m_client->close();
-
+	m_zuluSocket->sendData( key );
 	this->Exit();
 }
 
@@ -136,5 +115,10 @@ void MainWindow::pbKeyFile()
 
 MainWindow::~MainWindow()
 {
+	if( m_zuluSocket )
+		m_zuluSocket->deleteLater();
+
+	QFile::remove( m_addr ) ;
+
 	delete m_ui;
 }
