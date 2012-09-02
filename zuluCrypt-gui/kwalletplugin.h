@@ -30,6 +30,7 @@
 #include <QMap>
 #include <QDebug>
 #include <QWidget>
+#include <QApplication>
 
 class kwalletplugin : public QObject
 {

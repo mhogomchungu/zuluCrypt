@@ -143,8 +143,6 @@ static void appendSystemList( stringList_t system,stringList_t stl )
 	
 	for( i = 0 ; i < j ; i++ )
 		StringListAppend( system,StringListContentAt( stl,i ) ) ;
-	
-	StringListDelete( &stl ) ;	
 }
 
 static stringList_t partitions( int option )
@@ -163,6 +161,7 @@ static stringList_t partitions( int option )
 	stringList_t non_system = StringListVoid ;
 	stringList_t system     = StringListVoid ;
 	
+	stringList_t p ;
 	stringList_t stl = zuluCryptPartitionList() ;
 	
 	if( stl == StringListVoid )
@@ -232,10 +231,13 @@ static stringList_t partitions( int option )
 	
 	StringListDelete( &stl ) ;	
 	
-	appendSystemList( system,zuluCryptGetPartitionFromCrypttab() ) ;
+	p = zuluCryptGetPartitionFromCrypttab() ;
+	appendSystemList( system,p ) ;
+	StringListDelete( &p ) ;
+	p = zuluCryptGetPartitionFromZulutab() ;
+	appendSystemList( system,p ) ;
+	StringListDelete( &p ) ;
 	
-	appendSystemList( system,zuluCryptGetPartitionFromZulutab() ) ;
-		
 	if( option == SYSTEM_PARTITIONS ){
 		StringListDelete( &non_system ) ;
 		return system  ;

@@ -37,7 +37,12 @@ bool kwalletplugin::hasFunctionality()
 
 bool kwalletplugin::open()
 {
-	m_wallet = KWallet::Wallet::openWallet( zuluOptions::wallet(),m_parent->winId(),KWallet::Wallet::Synchronous ) ;
+	QWidget * aW = QApplication::activeWindow() ;
+	uint wId = 0;
+	if( aW )
+	    wId = ( uint ) aW->winId();
+
+	m_wallet = KWallet::Wallet::openWallet( zuluOptions::wallet(),wId,KWallet::Wallet::Synchronous ) ;
 
 	if( m_wallet )
 		m_walletOpened = true ;
