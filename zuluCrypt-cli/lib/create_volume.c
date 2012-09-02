@@ -33,7 +33,6 @@ static int zuluExit( int st,string_t * x )
 int zuluCryptCreateVolume( const char * dev,const char * fs,const char * type,const char * pass,size_t pass_size,const char * rng )
 {
 	int status ;
-	
 	process_t p ;
 	
 	string_t z = StringVoid ;
@@ -110,7 +109,7 @@ int zuluCryptCreateVolume( const char * dev,const char * fs,const char * type,co
 	ProcessStart( p ) ;
 
 	status = ProcessExitStatus( p ) ;
-
+	
 	zuluCryptCloseMapper( device_mapper );	
 	
 	ProcessDelete( &p ) ;

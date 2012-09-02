@@ -83,7 +83,6 @@
  ../zuluMount-cli/print_mounted_volumes.c
  bin/partitions.c
  ../zuluMount-cli/main.c
- ../zuluMount-cli/mount_volume.c 
  )
  
  SET( LIB 

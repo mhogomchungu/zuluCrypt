@@ -31,6 +31,8 @@
 #include "../zuluCrypt-cli/string/String.h"
 #include "../zuluCrypt-cli/lib/libzuluCrypt.h"
 
+int zuluMountPrintMountedVolumes( uid_t uid ) ;
+
 #ifdef __STDC__
 char * realpath( const char * path, char * resolved_path ) ;
 int seteuid( uid_t uid );
@@ -141,15 +143,21 @@ static int zuluMountMount( const char * device,const char * m_point,const char *
 	
 	path = ( char * ) StringContent( p ) ;
 	
-	if( stat( path,&st ) == 0 )
-		return zuluExit( 4,z,NULL,"ERROR: mount failed,mount point path already taken" ) ;
-			
-	if( mkdir( path,S_IRUSR | S_IWUSR | S_IXUSR ) != 0 )
+	if( stat( path,&st ) == 0 ){
+		seteuid( org ) ;		
+		return zuluExit( 4,z,NULL,"ERROR: mount failed,mount point path already taken" ) ;			
+	}
+	
+	if( mkdir( path,S_IRUSR | S_IWUSR | S_IXUSR ) != 0 ){
+		seteuid( org ) ;		
 		return zuluExit( 5,z,NULL,"ERROR: mount failed,could not create mount point" ) ;
+	}
 	
 	path = realpath( path,NULL ) ;
 	printf( path ) ;
+	
 	if( path == NULL ){
+		seteuid( org ) ;		
 		rmdir( path ) ;
 		return zuluExit( 6,z,path,"ERROR: could not resolve mount point path" ) ;
 	}
@@ -159,9 +167,9 @@ static int zuluMountMount( const char * device,const char * m_point,const char *
 	chown( m_point,uid,uid ) ;
 		
 	/*
-	 * below function is defined in ./mount_volume.c
+	 * zuluCryptMountVolume() defined in ../zuluCrypt-cli/lib/mount_volume.c
 	 */
-	status = zuluMountMountVolume( device,path,mode,uid )	;
+	status = zuluCryptMountVolume( device,path,mode,uid )	;
 	
 	if( status == 0 ){		
 		return zuluExit( 0,z,path,"SUCCESS: mount complete successfully" ) ;		
