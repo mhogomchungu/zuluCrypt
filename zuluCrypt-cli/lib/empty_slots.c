@@ -19,7 +19,7 @@
 
 #include "includes.h"
 
-static char * return_value( char * c,struct crypt_device * cd )
+static char * zuluExit( char * c,struct crypt_device * cd )
 {
 	if( cd != NULL )
 		crypt_free( cd );
@@ -39,20 +39,20 @@ char * zuluCryptEmptySlots( const char * device )
 	string_t p = StringVoid ;
 
 	if( crypt_init( &cd,device ) != 0 )
-		return return_value( NULL,NULL ) ;
+		return zuluExit( NULL,NULL ) ;
 	
 	if( crypt_load( cd,NULL,NULL ) != 0 )
-		return return_value( NULL,cd ) ;
+		return zuluExit( NULL,cd ) ;
 		
 	type = crypt_get_type( cd ) ;
 	
 	if( type == NULL )
-		return return_value( NULL,cd ) ;
+		return zuluExit( NULL,cd ) ;
 	
 	k = crypt_keyslot_max( type ) ;
 	
 	if( k < 0 )
-		return return_value( NULL,cd ) ;
+		return zuluExit( NULL,cd ) ;
 
 	p = String( "" ) ;
 	
@@ -68,6 +68,6 @@ char * zuluCryptEmptySlots( const char * device )
 	
 	q = StringDeleteHandle( &p ) ;
 	
-	return return_value( q,cd ) ;	
+	return zuluExit( q,cd ) ;	
 }
 

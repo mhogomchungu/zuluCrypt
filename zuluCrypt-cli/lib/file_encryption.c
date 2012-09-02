@@ -90,7 +90,7 @@ static string_t crypt_mapper( const char * path,const char * key,uint64_t key_le
 	return p ;
 }
 
-static int return_status( int st,int f_in,int f_out,string_t p )
+static int zuluExit( int st,int f_in,int f_out,string_t p )
 {
 	if( f_out != -1 )
 		close( f_out ) ;
@@ -139,7 +139,7 @@ int zuluCryptDecryptFile( const char * source,const char * dest,const char * key
 	read( f_in,buffer,SIZE ) ;
 	
 	if( memcmp( buffer + 100,buffer + 200,100 ) != 0 )
-		return return_status( 2,f_in,f_out,p ) ;
+		return zuluExit( 2,f_in,f_out,p ) ;
 		
 	/*
 	 * get the size of encrypted data
@@ -158,7 +158,7 @@ int zuluCryptDecryptFile( const char * source,const char * dest,const char * key
 	test = st.st_size - size ;
 	
 	if( test < SIZE || test >= ( SIZE * 2 ) )
-		return return_status( 2,f_in,f_out,p ) ;
+		return zuluExit( 2,f_in,f_out,p ) ;
 	
 	f_out = open( dest,O_WRONLY | O_CREAT ) ;
 	
@@ -180,7 +180,7 @@ int zuluCryptDecryptFile( const char * source,const char * dest,const char * key
 		write( f_out,buffer,len ) ;
 	}
 	
-	return return_status( 0,f_in,f_out,p ) ;	
+	return zuluExit( 0,f_in,f_out,p ) ;	
 }
 
 /*

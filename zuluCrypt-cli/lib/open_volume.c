@@ -19,9 +19,9 @@
 
 #include "includes.h"
 
-static int value( int x,string_t p )
+static int zuluExit( int x,string_t * p )
 {
-	StringDelete( &p ) ;	
+	StringDelete( p ) ;	
 	return x ;
 }
 
@@ -29,6 +29,7 @@ int zuluCryptOpenVolume( const char * dev,const char * map,const char * m_point,
 {
 	int h ;
 	string_t p ;
+	string_t * z = &p ;
 	const char * mapper ;
 	char * m ;
 	
@@ -40,7 +41,7 @@ int zuluCryptOpenVolume( const char * dev,const char * map,const char * m_point,
 	mapper = StringMultipleAppend( p,"/",map,'\0' ) ;
 
 	if( zuluCryptIsPathValid( mapper ) == 0 )
-		return value( 2,p ) ;	
+		return zuluExit( 2,z ) ;	
 
 	if( zuluCryptVolumeIsLuks( dev ) == 0 )
 		h = zuluCryptOpenLuks( dev,map,mode,pass,pass_size ) ;
@@ -48,9 +49,9 @@ int zuluCryptOpenVolume( const char * dev,const char * map,const char * m_point,
 		h = zuluCryptOpenPlain( dev,map,mode,pass,pass_size ) ;
 		
 	switch( h ){
-		case 1 : return value( 4,p ) ;
-		case 2 : return value( 8,p ) ; 
-		case 3 : return value( 3,p ) ;	 
+		case 1 : return zuluExit( 4,z ) ;
+		case 2 : return zuluExit( 8,z ) ; 
+		case 3 : return zuluExit( 3,z ) ;	 
 	}
 
 	m = realpath( mapper,NULL ) ;
@@ -68,6 +69,6 @@ int zuluCryptOpenVolume( const char * dev,const char * map,const char * m_point,
 				h = 15 ;
 	}
 	
-	return value( h,p ) ;
+	return zuluExit( h,z ) ;
 }
 

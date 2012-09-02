@@ -73,13 +73,13 @@ static int mount_get_opts( int argc,char * argv[],const char ** action,const cha
 	return 0 ;
 }
 
-static int mount_return( int st,string_t p,char * q,const char * msg )
+static int zuluExit( int st,string_t * p,char * q,const char * msg )
 {
 	if( q != NULL )
 		free( q ) ;
 	
 	if( p != NULL )
-		StringDelete( &p ) ;
+		StringDelete( p ) ;
 	
 	if( msg != NULL )
 		printf( "%s\n",msg ) ;
@@ -91,7 +91,8 @@ static int zuluMountMount( const char * device,const char * m_point,const char *
 {
 	int status ;
 	
-	string_t p = NULL ;
+	string_t p   = StringVoid ;
+	string_t * z = &p ;
 	
 	struct stat st ;
 	
@@ -109,14 +110,14 @@ static int zuluMountMount( const char * device,const char * m_point,const char *
 	 * The function is defined in ../zuluCrypt-cli/bin/partitions.c 
 	 */
 	if( zuluCryptCheckIfPartitionIsSystemPartition( device ) == 1 && uid != 0 )				
-			return mount_return( 200,NULL,NULL,"ERROR: insuffienct privilege to operate on a system partition" ) ;
+			return zuluExit( 200,NULL,NULL,"ERROR: insuffienct privilege to operate on a system partition" ) ;
 		
 	/*
 	 * Below function is defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c
 	 * It checks if a device has an entry in "/etc/mtab" and return 1 if it does and 0 is it doesnt	 * 
 	 */
 	if( zuluCryptCheckIfMounted( device ) == 1 )
-		return mount_return( 2,NULL,NULL,"ERROR: device already mounted" ) ;
+		return zuluExit( 2,NULL,NULL,"ERROR: device already mounted" ) ;
 
 	if( m_point != NULL ){
 		p = String( m_point ) ;
@@ -124,7 +125,7 @@ static int zuluMountMount( const char * device,const char * m_point,const char *
 		pass = getpwuid( uid ) ;
 		
 		if( pass == NULL )
-			mount_return( 3,NULL,NULL,"ERROR: could not get path to current user home directory" ) ;
+			zuluExit( 3,NULL,NULL,"ERROR: could not get path to current user home directory" ) ;
 				
 		p = String( pass->pw_dir ) ;
 		
@@ -135,20 +136,24 @@ static int zuluMountMount( const char * device,const char * m_point,const char *
 		else
 			StringAppend( p,q ) ;
 	}
-
-	path = realpath( StringContent( p ),NULL ) ;
-	
-	if( path == NULL )
-		mount_return( 6,p,NULL,"ERROR: could not resolve mount point path" ) ;
 		
 	seteuid( uid ) ;
 	
+	path = ( char * ) StringContent( p ) ;
+	
 	if( stat( path,&st ) == 0 )
-		mount_return( 4,p,NULL,"ERROR: mount failed,mount point path already taken" ) ;
+		return zuluExit( 4,z,NULL,"ERROR: mount failed,mount point path already taken" ) ;
 			
 	if( mkdir( path,S_IRUSR | S_IWUSR | S_IXUSR ) != 0 )
-		mount_return( 5,p,NULL,"ERROR: mount failed,could not create mount point" ) ;
-			
+		return zuluExit( 5,z,NULL,"ERROR: mount failed,could not create mount point" ) ;
+	
+	path = realpath( path,NULL ) ;
+	printf( path ) ;
+	if( path == NULL ){
+		rmdir( path ) ;
+		return zuluExit( 6,z,path,"ERROR: could not resolve mount point path" ) ;
+	}
+	
 	seteuid( org ) ;
 	
 	chown( m_point,uid,uid ) ;
@@ -159,14 +164,14 @@ static int zuluMountMount( const char * device,const char * m_point,const char *
 	status = zuluMountMountVolume( device,path,mode,uid )	;
 	
 	if( status == 0 ){		
-		return mount_return( 0,p,path,"SUCCESS: mount complete successfully" ) ;		
+		return zuluExit( 0,z,path,"SUCCESS: mount complete successfully" ) ;		
 	}else{
 		rmdir( m_point ) ;
 		switch( status ){
-			case 1 : return mount_return( 7,p,path,"ERROR: failed to mount ntfs file system using ntfs-3g,is ntfs-3g package installed?" ) ;
-			case 4 : return mount_return( 7,p,path,"ERROR: mount failed,no or unrecognized file system" )	; 
-			case 12: return mount_return( 7,p,path,"ERROR: mount failed,could not get a lock on /etc/mtab~" ) ;	
-			default: return mount_return( 7,p,path,"ERROR: failed to mount the partition" ) ;
+			case 1 : return zuluExit( 7,z,path,"ERROR: failed to mount ntfs file system using ntfs-3g,is ntfs-3g package installed?" ) ;
+			case 4 : return zuluExit( 7,z,path,"ERROR: mount failed,no or unrecognized file system" )	; 
+			case 12: return zuluExit( 7,z,path,"ERROR: mount failed,could not get a lock on /etc/mtab~" ) ;	
+			default: return zuluExit( 7,z,path,"ERROR: failed to mount the partition" ) ;
 		}
 	}
 }
@@ -178,10 +183,10 @@ static int zuluMountUMount( const char * device,uid_t uid )
 	int status ;
 	
 	if( zuluCryptCheckIfPartitionIsSystemPartition( device ) == 1 && uid != 0 )
-		return mount_return( 200,NULL,NULL,"ERROR: insuffienct privilege to operate on a system partition" ) ;
+		return zuluExit( 200,NULL,NULL,"ERROR: insuffienct privilege to operate on a system partition" ) ;
 			
 	if( zuluCryptCheckIfMounted( device ) == 0 )
-		return mount_return( 200,NULL,NULL,"ERROR: device not mounted" ) ;
+		return zuluExit( 200,NULL,NULL,"ERROR: device not mounted" ) ;
 		
 	/*
 	 * below function is defined in ../zuluCrypt-cli/lib/unmount_volume.c
@@ -190,13 +195,13 @@ static int zuluMountUMount( const char * device,uid_t uid )
 	if( status == 0 ){
 		if( m_point != NULL )
 			rmdir( m_point ) ;					
-		return mount_return( 0,NULL,m_point,"SUCCESS: umount complete successfully" ) ;		
+		return zuluExit( 0,NULL,m_point,"SUCCESS: umount complete successfully" ) ;		
 	}else{
 		switch( status ) {
-			case 1 : return mount_return( 3,NULL,m_point,"ERROR: device does not exist" )  ;
-			case 2 : return mount_return( 3,NULL,m_point,"ERROR: failed to unmount,the mount point and/or one or more files are in use" )	;	
-			case 4 : return mount_return( 3,NULL,m_point,"ERROR: failed to unmount,could not get a lock on /etc/mtab~" ) ;	
-			default: return mount_return( 3,NULL,m_point,"ERROR: failed to unmount the partition" )	 ;			
+			case 1 : return zuluExit( 3,NULL,m_point,"ERROR: device does not exist" )  ;
+			case 2 : return zuluExit( 3,NULL,m_point,"ERROR: failed to unmount,the mount point and/or one or more files are in use" )	;	
+			case 4 : return zuluExit( 3,NULL,m_point,"ERROR: failed to unmount,could not get a lock on /etc/mtab~" ) ;	
+			default: return zuluExit( 3,NULL,m_point,"ERROR: failed to unmount the partition" )	 ;			
 		}
 	}
 }
@@ -236,7 +241,7 @@ static int zuluMountCryptoMount( const char * device,const char * mode,uid_t uid
 	
 	/*
 	if( check_if_partition_is_system_partition( device ) == 1 && uid != 0 )
-		return mount_return( 200,NULL,NULL,"ERROR: insuffienct privilege to operate on a system partition" ) ;
+		return zuluExit( 200,NULL,NULL,"ERROR: insuffienct privilege to operate on a system partition" ) ;
 	*/
 	if( e == NULL)
 		mapping_name = device ;
@@ -249,7 +254,7 @@ static int zuluMountCryptoMount( const char * device,const char * mode,uid_t uid
 		pass = getpwuid( uid ) ;
 		
 		if( pass == NULL )
-			return mount_return( 3,NULL,NULL,"ERROR: could not get path to current user home directory" ) ;
+			return zuluExit( 3,NULL,NULL,"ERROR: could not get path to current user home directory" ) ;
 				
 		p = String( pass->pw_dir ) ;
 		
@@ -290,7 +295,7 @@ static int zuluMountCryptoUMount( const char * device,uid_t uid )
 	const char * e = strrchr( device,'/' ) ;
 	/*
 	if( is_luks( device ) == 1 && check_if_partition_is_system_partition( device ) == 1 && uid != 0 )
-		return mount_return( 200,NULL,NULL,"ERROR: insuffienct privilege to operate on a system partition" ) ;
+		return zuluExit( 200,NULL,NULL,"ERROR: insuffienct privilege to operate on a system partition" ) ;
 	*/
 	if( e == NULL)
 		mapping_name = device ;
@@ -314,7 +319,7 @@ static int exe( const char * device, const char * action,const char * m_point,co
 	else if( strcmp( action,"-U" ) == 0 )
 		return zuluMountCryptoUMount( device,uid ) ;
 	else
-		return mount_return( 150,NULL,NULL,"ERROR: unrecognized argument encountered" ) ;	
+		return zuluExit( 150,NULL,NULL,"ERROR: unrecognized argument encountered" ) ;	
 }
 
 static int mount_help()
@@ -351,13 +356,13 @@ int main( int argc,char * argv[] )
 		return mount_help() ;
 	
 	if( setuid( 0 ) != 0 )
-		return mount_return( 120,NULL,NULL,"ERROR: setuid(0) failed,check executable permissions" ) ;
+		return zuluExit( 120,NULL,NULL,"ERROR: setuid(0) failed,check executable permissions" ) ;
 	
 	if( argc < 2 )
-		return mount_return( 100,NULL,NULL,"wrong number of arguments" ) ;
+		return zuluExit( 100,NULL,NULL,"wrong number of arguments" ) ;
 	
 	if( action == NULL )
-		return mount_return( 160,NULL,NULL,"ERROR: action not specified" ) ;
+		return zuluExit( 160,NULL,NULL,"ERROR: action not specified" ) ;
 	
 	if( strcmp( action,"-s" ) == 0 ){
 		/*
@@ -377,7 +382,7 @@ int main( int argc,char * argv[] )
 		return mount_help() ;	
 	
 	if( dev == NULL )
-		return mount_return( 170,NULL,NULL,"ERROR: device argument missing" ) ;
+		return zuluExit( 170,NULL,NULL,"ERROR: device argument missing" ) ;
 		
 	if( mode == NULL )
 		mode = "rw" ;

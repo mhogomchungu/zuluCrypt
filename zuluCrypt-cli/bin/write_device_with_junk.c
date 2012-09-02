@@ -55,13 +55,14 @@ void sigTERMhandler( int sig )
  */
 int zuluCryptCheckIfPartitionIsSystemPartition( const char * ) ;
 
-static int return_value( string_t * st, int status ) 
+static int zuluExit( string_t * st, int status ) 
 {
 	switch( status ){
 		case 0 : printf( "SUCCESS: mapper created successfully\n" ) ;
 			 if( st != NULL ){
 				printf( "opened mapper path: " ) ;
 				StringPrintLine( *st ) ;
+				StringDelete( st ) ;				
 			 }
 			 break ;
 		case 1 : printf( "ERROR: could not create mapper\n" )                                          ;break ;
@@ -84,10 +85,7 @@ static int return_value( string_t * st, int status )
 		case 18: printf( "ERROR: insufficient memory to hold 3 characters?really?\n" );		       ;break ;		
 				
 	}
-	
-	if( st != NULL )
-		StringDelete( st ) ;
-	
+		
 	return status ;
 }
 
@@ -118,25 +116,25 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	const char * cmapper ;
 	
 	switch( zuluCryptCanOpenPathForReading( device,uid ) ){
-		case 1 : return return_value( NULL,8 ) ;
-		case 2 : return return_value( NULL,9 ) ;		
+		case 1 : return zuluExit( NULL,8 ) ;
+		case 2 : return zuluExit( NULL,9 ) ;		
 	}
 	
 	switch( zuluCryptCanOpenPathForWriting( device,uid ) ){
-		case 1 : return return_value( NULL,8 ) ;
-		case 2 : return return_value( NULL,9 ) ;		
+		case 1 : return zuluExit( NULL,8 ) ;
+		case 2 : return zuluExit( NULL,9 ) ;		
 	}
 	
 	if( uid != 0 ){
 		if( zuluCryptCheckIfPartitionIsSystemPartition( opts->device ) == 1 ){
-			return return_value( NULL,6 ) ;
+			return zuluExit( NULL,6 ) ;
 		}
 	}
 	
 	dev = realpath( device,NULL );
 	
 	if( dev == NULL )
-		return return_value( NULL,2 ) ;	
+		return zuluExit( NULL,2 ) ;	
 	
 	mapper = zuluCryptCreateMapperName( dev,mapping_name,uid,OPEN ) ;
 	
@@ -153,16 +151,16 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	StringDelete( &p ) ;
 	
 	if( j == 1 )
-		return return_value( &mapper,13 ) ;
+		return zuluExit( &mapper,13 ) ;
 	
 	if( n == 1 )
-		return return_value( &mapper,14 ) ;
+		return zuluExit( &mapper,14 ) ;
 	
 	if ( i == 1 ){
 		printf( "Enter passphrase: " ) ;	
 		switch( StringSilentlyGetFromTerminal_1( &passphrase,KEY_MAX_SIZE ) ){
-			case 1 : return return_value( &mapper,16 ) ;
-			case 2 : return return_value( &mapper,17 ) ;
+			case 1 : return zuluExit( &mapper,16 ) ;
+			case 2 : return zuluExit( &mapper,17 ) ;
 		}
 		printf( "\n" ) ;
 		cpass = StringContent( passphrase ) ;
@@ -195,9 +193,9 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 			 * function is defined at "security.c"
 			 */
 			switch( zuluCryptGetPassFromFile( pass,uid,&passphrase ) ){
-				case 1 : return return_value( &mapper,10 ) ; 
-				case 2 : return return_value( &mapper,11 ) ; 				
-				case 4 : return return_value( &mapper,12 ) ;
+				case 1 : return zuluExit( &mapper,10 ) ; 
+				case 2 : return zuluExit( &mapper,11 ) ; 				
+				case 4 : return zuluExit( &mapper,12 ) ;
 			}
 			cpass = StringContent( passphrase ) ;
 			len = StringLength( passphrase ) ;
@@ -208,7 +206,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	 * Open a plain mapper, so that we can write to device through it
 	 */
 	if( zuluCryptOpenPlain( device,StringContent( mapper ),"rw",cpass,len ) != 0 )
-		return return_value( &mapper,1 ) ;		
+		return zuluExit( &mapper,1 ) ;		
 	
 	/*
 	 * Create a mapper path(usually at /dev/mapper) associated with opened plain mapper above.
@@ -235,7 +233,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	StringClearDelete( &passphrase ) ;
 	
 	if( op == 1 )
-		return return_value( &mapper,0 ) ;
+		return zuluExit( &mapper,0 ) ;
 	else{
 		StringDelete( &mapper ) ;
 		return 0 ;
@@ -300,14 +298,14 @@ int zuluCryptEXEWriteDeviceWithJunk( const struct_opts * opts,const char * mappi
 		
 		confirm = StringGetFromTerminal_1( 3 ) ;
 		if( confirm == NULL )
-			return return_value( &mapper,17 ) ;
+			return zuluExit( &mapper,17 ) ;
 		else{
 			k = StringEqual( confirm,"YES" ) ;
 			StringDelete( &confirm ) ;
 		
 			if( k == 1 ){			
 				zuluCryptCloseMapper( StringContent( mapper ) ) ;			
-				return return_value( &mapper,5 ) ;
+				return zuluExit( &mapper,5 ) ;
 			}
 		}
 	}
@@ -342,7 +340,7 @@ int zuluCryptEXEWriteDeviceWithJunk( const struct_opts * opts,const char * mappi
 	zuluCryptCloseMapper( StringContent( mapper ) ) ;
 		
 	if( __exit_as_requested == 1 ) 
-		return return_value( &mapper,15 ) ;
+		return zuluExit( &mapper,15 ) ;
 	else
-		return return_value( &mapper,3 ) ;
+		return zuluExit( &mapper,3 ) ;
 }

@@ -19,7 +19,7 @@
 
 #include "includes.h"
 
-static int free_crypt( int st,struct crypt_device * cd )
+static int zuluExit( int st,struct crypt_device * cd )
 {
 	crypt_free( cd );
 	return st ;
@@ -46,11 +46,11 @@ int zuluCryptCreateLuks( const char * dev,const char * pass,size_t pass_size,con
 		crypt_set_rng_type( cd,CRYPT_RNG_URANDOM );
 	
 	if( crypt_format( cd,CRYPT_LUKS1,"aes","cbc-essiv:sha256",NULL,NULL,32,&params ) != 0 )
-		return free_crypt( 2,cd ) ;
+		return zuluExit( 2,cd ) ;
 	
 	if( crypt_keyslot_add_by_volume_key( cd,CRYPT_ANY_SLOT,NULL,32,pass,pass_size ) < 0 )
-		return free_crypt( 3,cd ) ;
+		return zuluExit( 3,cd ) ;
 	else
-		return free_crypt( 0,cd ) ;
+		return zuluExit( 0,cd ) ;
 }
 

@@ -37,7 +37,7 @@ char * zuluCryptGetMountPointFromPath( const char * path ) ;
 
 char * zuluCryptVolumeDeviceName( const char * mapper ) ;
 
-static void format_size_1( char * buffer,int x,const char * z )
+static void zuluCryptFormatSize_1( char * buffer,int x,const char * z )
 {
 	buffer[ x ] = buffer[ x - 1 ] ; 
 	buffer[ x - 1 ] = '.' ;
@@ -52,19 +52,19 @@ void zuluCryptFormatSize( char * buffer,const char * buff )
 		case 0 : 
 		case 1 :  
 		case 2 : 
-		case 3 : strcat( buffer," B" )           ; break ;
-		case 4 : format_size_1( buffer,2," KB" ) ; break ; 
-		case 5 : format_size_1( buffer,3," KB" ) ; break ;
-		case 6 : format_size_1( buffer,4," KB" ) ; break ;
-		case 7 : format_size_1( buffer,2," MB" ) ; break ; 
-		case 8 : format_size_1( buffer,3," MB" ) ; break ;
-		case 9 : format_size_1( buffer,4," MB" ) ; break ;
-		case 10: format_size_1( buffer,2," GB" ) ; break ;
-		case 11: format_size_1( buffer,3," GB" ) ; break ;
-		case 12: format_size_1( buffer,4," GB" ) ; break ;
-		case 13: format_size_1( buffer,2," TB" ) ; break ;
-		case 14: format_size_1( buffer,3," TB" ) ; break ;
-		case 15: format_size_1( buffer,4," TB" ) ; break ;			
+		case 3 : strcat( buffer," B" )          	 ; break ;
+		case 4 : zuluCryptFormatSize_1( buffer,2," KB" ) ; break ; 
+		case 5 : zuluCryptFormatSize_1( buffer,3," KB" ) ; break ;
+		case 6 : zuluCryptFormatSize_1( buffer,4," KB" ) ; break ;
+		case 7 : zuluCryptFormatSize_1( buffer,2," MB" ) ; break ; 
+		case 8 : zuluCryptFormatSize_1( buffer,3," MB" ) ; break ;
+		case 9 : zuluCryptFormatSize_1( buffer,4," MB" ) ; break ;
+		case 10: zuluCryptFormatSize_1( buffer,2," GB" ) ; break ;
+		case 11: zuluCryptFormatSize_1( buffer,3," GB" ) ; break ;
+		case 12: zuluCryptFormatSize_1( buffer,4," GB" ) ; break ;
+		case 13: zuluCryptFormatSize_1( buffer,2," TB" ) ; break ;
+		case 14: zuluCryptFormatSize_1( buffer,3," TB" ) ; break ;
+		case 15: zuluCryptFormatSize_1( buffer,4," TB" ) ; break ;			
 	}	
 }
 
@@ -92,7 +92,7 @@ char * zuluCryptGetUUIDFromMapper( const char * mapper )
 	return StringDeleteHandle( &p ) ;		
 }
 
-static void file_system_properties( string_t p,const char * mapper,const char * m_point )
+static void zuluCryptFileSystemProperties( string_t p,const char * mapper,const char * m_point )
 {
 	const char * e ;	
 	blkid_probe blkid ;	
@@ -279,7 +279,7 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	 */
 	path = zuluCryptGetMountPointFromPath( mapper ) ;
 	if( path != NULL ){
-		file_system_properties( p,mapper,path ) ; 
+		zuluCryptFileSystemProperties( p,mapper,path ) ; 
 		free( path ) ;
 	}
 	

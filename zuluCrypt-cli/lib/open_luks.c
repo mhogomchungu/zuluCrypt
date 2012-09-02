@@ -19,7 +19,7 @@
 
 #include "includes.h"
 
-static int free_crypt( int st,struct crypt_device * cd )
+static int zuluExit( int st,struct crypt_device * cd )
 {
 	crypt_free( cd );
 	return st ;
@@ -38,7 +38,7 @@ int zuluCryptOpenLuks( const char * device,const char * mapper,const char * mode
 		return 2 ;
 	
 	if( crypt_load( cd,NULL,NULL ) != 0 )
-		return free_crypt( 2,cd ) ;
+		return zuluExit( 2,cd ) ;
 	
 	if( strcmp( mode,"ro" ) == 0 )
 		flags = 1 ;
@@ -48,10 +48,10 @@ int zuluCryptOpenLuks( const char * device,const char * mapper,const char * mode
 	st = crypt_activate_by_passphrase( cd,mapper,CRYPT_ANY_SLOT,pass,pass_size,flags ) ;
 
 	if( st >= 0 )
-		return free_crypt( 0,cd ) ;
+		return zuluExit( 0,cd ) ;
 	else if( st == -1 )
-		return free_crypt( 1,cd ) ;	
+		return zuluExit( 1,cd ) ;	
 	else
-		return free_crypt( 2,cd ) ;
+		return zuluExit( 2,cd ) ;
 }
 

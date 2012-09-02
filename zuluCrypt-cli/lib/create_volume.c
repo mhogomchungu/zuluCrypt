@@ -24,9 +24,9 @@
  */
 #include "../process/process.h"
 
-static int result( int st,string_t x )
+static int zuluExit( int st,string_t * x )
 {
-	StringDelete( &x ) ;
+	StringDelete( x ) ;
 	return st ;
 }
 
@@ -36,7 +36,8 @@ int zuluCryptCreateVolume( const char * dev,const char * fs,const char * type,co
 	
 	process_t p ;
 	
-	string_t m = NULL ;
+	string_t z = StringVoid ;
+	string_t * m = &z ;
 	
 	const char * device_mapper ;
 	const char * mapper ;	
@@ -55,24 +56,24 @@ int zuluCryptCreateVolume( const char * dev,const char * fs,const char * type,co
 	if( device == NULL )
 		return 3 ;
 	
-	m = zuluCryptCreateMapperName( device,strrchr( device,'/' ) + 1,0,OPEN ) ;
+	z = zuluCryptCreateMapperName( device,strrchr( device,'/' ) + 1,0,OPEN ) ;
 	
 	free( device ) ;
 
-	device_mapper = StringMultiplePrepend( m,"/new-",crypt_get_dir(),'\0' ) ;
+	device_mapper = StringMultiplePrepend( z,"/new-",crypt_get_dir(),'\0' ) ;
 	
 	mapper = strrchr( device_mapper,'/' ) + 1 ;
 
 	if( strcmp( type,"luks" )  == 0 ){
 		if( zuluCryptCreateLuks( dev,pass,pass_size,rng ) != 0 )	
-			return result( 3,m ) ;
+			return zuluExit( 3,m ) ;
 		if( zuluCryptOpenLuks( dev,mapper,"rw",pass,pass_size ) != 0 )
-			return result( 3,m ) ; ;
+			return zuluExit( 3,m ) ; ;
 	}else if( strcmp( type,"plain") == 0 ){
 		if( zuluCryptOpenPlain( dev,mapper,"rw",pass,pass_size ) )
-			return result( 3,m ) ; ;		
+			return zuluExit( 3,m ) ; ;		
 	}else{
-		return result( 2,m ) ;
+		return zuluExit( 2,m ) ;
 	}		
 
 	p = Process( ZULUCRYPTmkfs ) ;
@@ -114,5 +115,5 @@ int zuluCryptCreateVolume( const char * dev,const char * fs,const char * type,co
 	
 	ProcessDelete( &p ) ;
 	
-	return status == 0 ? result( 0,m ) : result( 3,m ) ;
+	return status == 0 ? zuluExit( 0,m ) : zuluExit( 3,m ) ;
 }
