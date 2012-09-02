@@ -33,6 +33,7 @@ public:
 	static void addRowToTable( QTableWidget *,QStringList & );
 	static void addRowToTable( QTableWidget *,QStringList &,QFont & );
 	static void deleteRowFromTable( QTableWidget *,int row ) ;
+	static void selectRow( QTableWidget *,int row ) ;
 };
 
 #endif // TABLEWIDGET_H

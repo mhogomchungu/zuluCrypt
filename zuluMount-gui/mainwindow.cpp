@@ -70,6 +70,7 @@ MainWindow::MainWindow( QWidget * parent ) :
 	part->startAction( QString( "update" ) ) ;
 
 	m_working = false ;
+	m_justMounted = false ;
 }
 
 void MainWindow::itemClicked( QTableWidgetItem * item )
@@ -199,6 +200,8 @@ void MainWindow::pbMount()
 	QString type = m_ui->tableWidget->item( row,2 )->text()  ;
 	QString path = m_ui->tableWidget->item( row,0 )->text() ;
 
+	m_device = path ;
+	m_justMounted = true ;
 	QString mode ;
 	if( m_ui->cbReadOnly->isChecked() )
 		mode = QString( "ro ") ;
@@ -237,7 +240,7 @@ void MainWindow::pbUmount()
 	part->setDevice( path );
 	part->setType( type );
 
-	connect( part,SIGNAL( signalUnmountComplete( int,QString ) ),this,SLOT( slotUnmountComplete(int,QString ) ) ) ;
+	connect( part,SIGNAL( signalUnmountComplete( int,QString ) ),this,SLOT( slotUnmountComplete( int,QString ) ) ) ;
 
 	part->startAction( QString( "umount" ) ) ;
 }
@@ -267,10 +270,8 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 
 	QFont f = this->font() ;
 
-	if( f.italic() )
-		f.setItalic( false );
-	else
-		f.setItalic( true );
+	f.setItalic( !f.italic() );
+	f.setBold( !f.bold() );
 
 	for( int i = 0 ; i < j ; i++ ){
 
@@ -282,6 +283,18 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 			tablewidget::addRowToTable( table,entries ) ;
 	}
 
+	if( m_justMounted ){
+		m_justMounted = false ;
+		QTableWidget * table = m_ui->tableWidget ;
+		int j = table->rowCount() ;
+		for( int row = 0 ; row < j ; row++ ){
+			if( table->item( row,0 )->text() == m_device ){
+				tablewidget::selectRow( table,row ) ;
+				break ;
+			}
+		}
+	}
+
 	this->enableAll();
 }
 
@@ -289,23 +302,23 @@ void MainWindow::slotMountComplete( int status,QString msg )
 {
 	emit result( status,msg );
 
-	if( status == 0 ){
-		this->pbUpdate();
-	}else{
+	if( status ){
 		DialogMsg m( this ) ;
 		m.ShowUIOK( QString( "ERROR" ),msg );
 		this->enableAll();
+	}else{
+		this->pbUpdate();
 	}
 }
 
 void MainWindow::slotUnmountComplete( int status,QString msg )
 {
-	if( status == 0 ){
-		this->pbUpdate();
-	}else{
+	if( status ){
 		DialogMsg m( this ) ;
 		m.ShowUIOK( QString( "ERROR" ),msg );
 		this->enableAll();
+	}else{
+		this->pbUpdate();
 	}
 }
 

@@ -115,3 +115,8 @@ void tablewidget::deleteRowFromTable( QTableWidget * table,int row )
 		table->setCurrentCell( table->rowCount() - 1,table->columnCount() -  1 );
 	table->setFocus();
 }
+
+void tablewidget::selectRow( QTableWidget * table,int row )
+{
+	table->setCurrentCell( row,table->columnCount() - 1 );
+}

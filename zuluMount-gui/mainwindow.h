@@ -82,6 +82,7 @@ private:
 	void closeEvent( QCloseEvent * e );
 	void setUpFont( void ) ;
 	void setUpShortCuts( void ) ;
+	bool m_justMounted ;
 };
 
 #endif // MAINWINDOW_H
