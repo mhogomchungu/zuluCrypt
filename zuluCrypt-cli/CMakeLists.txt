@@ -5,15 +5,15 @@
  
  add_definitions( -I${PROJECT_BINARY_DIR} ) 
  
- find_file ( mntent mntent.h )
- 
+ find_file ( mntent mntent.h PATHS /usr/lib /usr/lib64 /usr/lib/include /usr/lib64/include /usr/include/gnome-keyring-1 /usr/include /usr/local/include /usr/local/include/glib-2.0 /usr/include/glib-2.0 /usr/lib/glib-2.0/include /usr/lib64/glib-2.0/include ) 
+  
  if(NOT mntent)
 	 message (FATAL_ERROR "ERROR: could not find mntent.h header file")
  endif(NOT mntent)
 	 
  message( STATUS "Found mntent.h  : " ${mntent} )
  
- find_file ( mount_sys sys/mount.h )
+ find_file ( mount_sys sys/mount.h PATHS /usr/lib /usr/lib64 /usr/lib/include /usr/lib64/include /usr/include/gnome-keyring-1 /usr/include /usr/local/include /usr/local/include/glib-2.0 /usr/include/glib-2.0 /usr/lib/glib-2.0/include /usr/lib64/glib-2.0/include )
  
  if(NOT mount_sys)
 	 message (FATAL_ERROR "ERROR: could not find sys/mount.h header file")
@@ -21,10 +21,10 @@
 	 
  message( STATUS "Found sys/mount.h  : " ${mount_sys} )
 	 
- find_file ( mount_1 mount/mount.h )
- 
- find_file ( mount_2 libmount/libmount.h )
- 
+ find_file ( mount_1 mount/mount.h PATHS /usr/lib /usr/lib64 /usr/lib/include /usr/lib64/include /usr/include/gnome-keyring-1 /usr/include /usr/local/include /usr/local/include/glib-2.0 /usr/include/glib-2.0 /usr/lib/glib-2.0/include /usr/lib64/glib-2.0/include ) 
+  
+  find_file ( mount_2 libmount/libmount.h PATHS /usr/lib /usr/lib64 /usr/lib/include /usr/lib64/include /usr/include/gnome-keyring-1 /usr/include /usr/local/include /usr/local/include/glib-2.0 /usr/include/glib-2.0 /usr/lib/glib-2.0/include /usr/lib64/glib-2.0/include ) 
+   
  if(NOT mount_1)
 	 if(NOT mount_2)	 
 	 	message (FATAL_ERROR "ERROR: could not find libmount header file(mount/mount.h or libmount/limount.h)")
@@ -45,16 +45,13 @@
 	 
  message( STATUS "Found libmount.so  : " ${mountLibrary} ) 
  
- find_file ( libcryptsetup.h libcryptsetup.h ) 
- 
+ find_file ( libcryptsetup.h libcryptsetup.h PATHS /include /usr/lib /usr/lib64 /usr/lib/include /usr/lib64/include /usr/include/gnome-keyring-1 /usr/include /usr/local/include /usr/local/include/glib-2.0 /usr/include/glib-2.0 /usr/lib/glib-2.0/include /usr/lib64/glib-2.0/include )
+  
  if(NOT libcryptsetup.h)
 	 message (FATAL_ERROR "ERROR: could not find libcryptsetup.h header file, is the development package of cryptsetup installed?")
  endif(NOT libcryptsetup.h)
 	 
  message( STATUS "Found libcryptsetup.h  : " ${libcryptsetup.h} )   
- 
- find_path ( path_to_libcryptsetup.h libcryptsetup.h ) 
- add_definitions( -I${path_to_libcryptsetup.h} )  
  
  find_library( libcryptsetup libcryptsetup.so) 
  

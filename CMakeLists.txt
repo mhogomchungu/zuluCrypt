@@ -9,7 +9,7 @@ find_package( Qt4 REQUIRED )
 set( KDEINCLUDE $ENV{KDEDIR}/include )
 set( KDELIB $ENV{KDEDIR}/lib )
 
-find_file( blkid.h blkid/blkid.h )
+find_file( blkid.h blkid/blkid.h PATHS /usr/lib /usr/lib64 /usr/lib/include /usr/lib64/include /usr/include/gnome-keyring-1 /usr/include /usr/local/include /usr/local/include/glib-2.0 /usr/include/glib-2.0 /usr/lib/glib-2.0/include /usr/lib64/glib-2.0/include )
  
 if(NOT blkid.h)
 	message (FATAL_ERROR "ERROR: could not find blkid.h header file?")
@@ -24,7 +24,6 @@ if(NOT blkid)
 endif(NOT blkid)
  
 message( STATUS "Found libblkid.so  : " ${blkid} )
-
  
 if( UNIX AND NOT APPLE AND NOT CMAKE_CROSSCOMPILING AND NOT EXISTS "/etc/debian_version" )
 	if ( CMAKE_SIZEOF_VOID_P EQUAL 8 AND NOT LIB_SUFFIX )
@@ -36,8 +35,8 @@ set( PLUGINPATH "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/zuluCrypt" )
 
 file( WRITE  ${PROJECT_BINARY_DIR}/plugin_path.h "\n#define ZULUCRYPTpluginPath      \"${PLUGINPATH}/\"\n")
 
+find_file( keyring_header gnome-keyring.h PATHS /usr/lib /usr/lib64 /usr/lib/include /usr/lib64/include /usr/include/gnome-keyring-1 /usr/include /usr/local/include /usr/local/include/glib-2.0 /usr/include/glib-2.0 /usr/lib/glib-2.0/include /usr/lib64/glib-2.0/include ) 
 
-find_file( keyring_header gnome-keyring.h PATHS /usr/include/gnome-keyring-1 /usr/include /usr/local/include /usr/local/include/glib-2.0 /usr/include/glib-2.0 /usr/lib/glib-2.0/include /usr/lib64/glib-2.0/include )
 find_library( keyring_library libgnome-keyring.so )
 
 if( keyring_header )

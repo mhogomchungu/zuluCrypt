@@ -42,7 +42,7 @@ MainWindow::MainWindow( QWidget * parent ) : QMainWindow( parent ),m_ui( new Ui:
 void MainWindow::SetAddr( QString addr )
 {
 	m_addr = addr ;
-	m_zuluSocket = new zuluSocket() ;
+	m_zuluSocket = new zuluSocket( this ) ;
 	m_zuluSocket->startServer( addr );
 	connect( m_zuluSocket,SIGNAL( gotConnected() ),this,SLOT( gotConnected() ) ) ;
 }
@@ -100,7 +100,7 @@ void MainWindow::pbOpen()
 		}
 	}
 
-	m_zuluSocket->sendData( key );
+	m_zuluSocket->sendData( &key );
 	this->Exit();
 }
 
@@ -117,8 +117,6 @@ MainWindow::~MainWindow()
 {
 	if( m_zuluSocket )
 		m_zuluSocket->deleteLater();
-
-	QFile::remove( m_addr ) ;
 
 	delete m_ui;
 }
