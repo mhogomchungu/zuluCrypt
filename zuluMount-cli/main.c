@@ -206,7 +206,7 @@ static int zuluMountUMount( const char * device,uid_t uid )
 	}
 }
 
-static int device_list( void )
+static int zuluMountDeviceList( void )
 {
 	/*
 	 * function is defined in ../zuluCrypt-cli/partitions.c
@@ -216,12 +216,12 @@ static int device_list( void )
 	return zuluCryptPrintPartitions( ALL_PARTITIONS ) ;
 }
 
-static int mounted_list( uid_t uid )
+static int zuluMountMmountedList( uid_t uid )
 {
 	/*
 	 * function is defined in print_mounted_volumes.c
 	 */
-	return mount_print_mounted_volumes( uid ) ;
+	return zuluMountPrintMountedVolumes( uid ) ;
 }
 
 static int zuluMountCryptoMount( const char * device,const char * mode,uid_t uid,const char * key,const char * key_source,const char * m_point )
@@ -308,7 +308,7 @@ static int zuluMountCryptoUMount( const char * device,uid_t uid )
 	return zuluCryptEXECloseVolume( device,mapping_name,uid ) ;	
 }
 
-static int exe( const char * device, const char * action,const char * m_point,const char * mode,uid_t uid,const char * key,const char * key_source )
+static int zuluMountExe( const char * device, const char * action,const char * m_point,const char * mode,uid_t uid,const char * key,const char * key_source )
 {	
 	if( strcmp( action,"-m" ) == 0 )
 		return zuluMountMount( device,m_point,mode,uid ) ;
@@ -373,10 +373,10 @@ int main( int argc,char * argv[] )
 	}
 	
 	if( strcmp( action,"-l" ) == 0 )
-		return mounted_list( uid ) ;
+		return zuluMountMmountedList( uid ) ;
 	
 	if( strcmp( action,"-P" ) == 0 )
-		return device_list() ;	
+		return zuluMountDeviceList() ;	
 	
 	if( strcmp( action,"-h" ) == 0 )
 		return mount_help() ;	
@@ -395,7 +395,7 @@ int main( int argc,char * argv[] )
 	if( strncmp( dev,"UUID=",5 ) == 0 ){
 		device = zuluCryptDeviceFromUUID( dev + 5 ) ;
 		if( device != NULL ){
-			status = exe( device,action,m_point,mode,uid,key,key_source ) ;
+			status = zuluMountExe( device,action,m_point,mode,uid,key,key_source ) ;
 			free( device ) ;
 		}else{
 			printf( "could not resolve UUID\n" ) ;
@@ -404,7 +404,7 @@ int main( int argc,char * argv[] )
 	}else if( strncmp( dev,"LABEL=",6 ) == 0 ){
 		device = zuluCryptDeviceFromLabel( dev + 6 ) ;
 		if( device != NULL ){
-			status = exe( device,action,m_point,mode,uid,key,key_source ) ;
+			status = zuluMountExe( device,action,m_point,mode,uid,key,key_source ) ;
 			free( device ) ;
 		}else{
 			printf( "could not resolve LABEL\n" ) ;
@@ -413,7 +413,7 @@ int main( int argc,char * argv[] )
 	}else{
 		device = realpath( dev,NULL ) ;	
 		if( device != NULL ){
-			status = exe( device,action,m_point,mode,uid,key,key_source ) ;		
+			status = zuluMountExe( device,action,m_point,mode,uid,key,key_source ) ;		
 			free( device ) ;		
 		}else{
 			printf( "could not resolve path to device\n" ) ;

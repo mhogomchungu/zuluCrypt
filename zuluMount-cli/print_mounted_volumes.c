@@ -43,7 +43,7 @@ char * zuluCryptVolumeDeviceName( const char * ) ;
 char * realpath( const char * path,char * resolved_path ) ;
 #endif
 
-static void partition_properties( const char * path,const char * m_point )
+static void zuluMountPartitionProperties( const char * path,const char * m_point )
 {
 	#define SIZE 64
 	
@@ -113,7 +113,13 @@ static void partition_properties( const char * path,const char * m_point )
 	printf( "\t%s\n",buff ) ;	
 }
 
-int mount_print_mounted_volumes( uid_t uid )
+/*
+ * This function takes contents of "/etc/mtab" and "/proc/partitions" and compare them.
+ * It first print information about partitions with entries in "/etc/mtab" and then
+ * the remaining entries net effect being it prints information about partitions that
+ * are mounted first and then print information about partitions that are not mounted. 
+ */
+int zuluMountPrintMountedVolumes( uid_t uid )
 {
 	size_t i ;
 	size_t j ;
@@ -159,6 +165,9 @@ int mount_print_mounted_volumes( uid_t uid )
 	
 	j = StringListSize( stl ) ;
 	
+	/*
+	 * This loop prints partitions with entries in "/etc/mtab" 
+	 */
 	for( i = 0 ; i < j ; i++ ){
 		
 		e = StringListContentAt( stl,i ) ;
@@ -194,7 +203,7 @@ int mount_print_mounted_volumes( uid_t uid )
 				f = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;				
 				
 				printf( "%s\t%s",x,f ) ;				
-				partition_properties( x,f ) ;
+				zuluMountPartitionProperties( x,f ) ;
 				
 				free( x ) ;
 			}	
@@ -204,7 +213,7 @@ int mount_print_mounted_volumes( uid_t uid )
 			f = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;
 			
 			printf( "%s\t%s",e,f ) ;
-			partition_properties( e,f ) ;			
+			zuluMountPartitionProperties( e,f ) ;			
 		}		
 		
 		StringListDelete( &stx ) ;
@@ -212,10 +221,13 @@ int mount_print_mounted_volumes( uid_t uid )
 	
 	j = StringListSize( stz ) ;
 	
+	/*
+	 * this loop prints entries that are not in "/etc/mtab" ie not mounted partitions. 
+	 */
 	for( i = 0 ; i < j ; i++ ){
 		e = StringListContentAt( stz,i ) ;
 		printf( "%s\tNil",e ) ;
-		partition_properties( e,NULL ) ;		
+		zuluMountPartitionProperties( e,NULL ) ;		
 	}
 	
 	StringDelete( &mapper ) ;
