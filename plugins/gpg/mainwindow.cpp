@@ -94,13 +94,16 @@ void MainWindow::pbOpen()
 
 	DialogMsg msg( this ) ;
 
+	if( path.isEmpty() )
+		return msg.ShowUIOK( tr( "ERROR" ),tr( "path gpg key is empty" ) ) ;
+
 	if( !QFile::exists( path ) )
 		return msg.ShowUIOK( tr( "ERROR" ),tr( "invalid path to gpg keyfile" ) ) ;
 
 	QString key = m_ui->lineEditKey->text().replace( "\"","\"\"\"" ) ;
 
-	if( key.isEmpty() )
-		return msg.ShowUIOK( tr( "ERROR" ),tr( "key field is empty" ) ) ;
+	//if( key.isEmpty() )
+	//	return msg.ShowUIOK( tr( "ERROR" ),tr( "key field is empty" ) ) ;
 
 	this->disableAll();
 	QString EXE = this->FindGPG() ;
@@ -108,7 +111,11 @@ void MainWindow::pbOpen()
 	if( EXE.isEmpty() )
 		return msg.ShowUIOK( tr( "ERROR" ),tr( "could not find \"gpg\" executable in \"/usr/local\",\"/usr/bin\" and \"/usr/sbin\"" ) ) ;
 
-	QString exe = QString( "%1 --batch --passphrase \"%2\" -d \"%3\"" ).arg( EXE ).arg( key ).arg( path ) ;
+	QString exe ;
+	if( key.isEmpty() )
+		exe = QString( "%1 --batch -d \"%2\"" ).arg( EXE ).arg( path ) ;
+	else
+		exe = QString( "%1 --batch --passphrase \"%2\" -d \"%3\"" ).arg( EXE ).arg( key ).arg( path ) ;
 
 	QProcess p ;
 	p.start( exe );

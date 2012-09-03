@@ -148,7 +148,8 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	sockpath = StringAppend( path,"/.zuluCrypt-socket/" ) ;
 	
 	mkdir( sockpath,S_IRWXU | S_IRWXG | S_IRWXO ) ;
-	chmod( sockpath,S_IRWXU | S_IRWXG | S_IRWXO ) ;
+	chown( sockpath,uid,uid ) ;
+	chmod( sockpath,S_IRWXU ) ;
 	
 	sockpath = StringAppendString( path,id ) ;
 

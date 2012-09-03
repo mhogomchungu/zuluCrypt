@@ -144,10 +144,12 @@ void SocketSetHostIPAddress( socket_t s,const char * address )
 
 int SocketBind( socket_t s )
 {
-	if( s->domain == AF_UNIX )
+	if( s->domain == AF_UNIX ){
+		unlink( s->local->sun_path ) ;
 		return bind( s->fd,( struct sockaddr * )s->local,s->size ) ;
-	else
+	}else{
 		return bind( s->fd,( struct sockaddr * )s->net,s->size ) ;
+	}
 }
 
 socket_t SocketAccept( socket_t s ) 
