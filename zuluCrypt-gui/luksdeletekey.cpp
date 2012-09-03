@@ -197,8 +197,14 @@ void luksdeletekey::pbDelete()
 	if (  m_ui->rbPassphraseFromFile->isChecked() == true ){
 		passphrase = miscfunctions::resolvePath( passphrase ) ;
 		passType = QString( "-f" ) ;
-	}else
-		passType = QString( "-p" ) ;
+	}else{
+		passType = QString( "-f" ) ;
+		passphrase = zuluOptions::getSocketPath() ;
+		zuluSocket * zs = new zuluSocket( this ) ;
+		connect( zs,SIGNAL( gotConnected( zuluSocket * ) ),this,SLOT( sendKey( zuluSocket * ) ) ) ;
+		connect( zs,SIGNAL( doneWritingData() ),zs,SLOT( deleteLater() ) ) ;
+		zs->startServer( passphrase );
+	}
 
 	QString exe = QString( "%1 -k -r -d \"%2\" %3 \"%4\"" ).arg( QString( ZULUCRYPTzuluCrypt ) ).arg( m_volumePath ).arg( passType ).arg( passphrase );
 
@@ -209,6 +215,12 @@ void luksdeletekey::pbDelete()
 	runInThread * ldk = new runInThread( exe ) ;
 	connect( ldk,SIGNAL( finished( int ) ),this,SLOT( threadfinished( int ) ) ) ;
 	QThreadPool::globalInstance()->start( ldk );
+}
+
+void luksdeletekey::sendKey( zuluSocket * s )
+{
+	QByteArray data = m_ui->lineEditPassphrase->text().toAscii() ;
+	s->sendData( &data );
 }
 
 void luksdeletekey::threadfinished( int status )

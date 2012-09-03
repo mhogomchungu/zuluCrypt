@@ -55,6 +55,9 @@ public:
 	static QString mapperPath( QString );
 	static QString getUUIDFromPath( QString ) ;
 	static bool userIsRoot( void ) ;
+	static void deleteRowFromTable( QTableWidget * table,int row ) ;
+	static void selectTableRow( QTableWidgetItem * current,QTableWidgetItem * previous ) ;
+	static void addRowToTable( QTableWidget * table,QStringList & list ) ;
 };
 
 #endif // MISCFUNCTIONS_H

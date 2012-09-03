@@ -31,7 +31,14 @@
 #include "../string/StringList.h" 
 #include "../constants.h"
 #include "../lib/libzuluCrypt.h"
+#include "../socket/socket.h"
 #include "libzuluCrypt-exe.h"
+
+/*
+ * The below number is the cryptsetup default amount of maximum bytes to read from a keyfile.
+ */
+#define INTMAXKEYZISE  8192000
+#define CHARMAXKEYZISE "8192000"
 
 #ifdef __STDC__
 char * realpath( const char * path, char * resolved_path ) ;
@@ -63,3 +70,14 @@ int zuluCryptGetPassFromFile( const char * path,uid_t uid,string_t * st ) ;
  * It gets a passphrase from a .so file as a plugin.
  */
 string_t GetKeyFromModule( const char * path,uid_t ) ;
+
+/*
+ * this function is defined in get_key_from_socket.c
+ */
+
+int zuluCryptGetKeyFromSocket( const char * path,string_t * ) ;
+
+/*
+ * this function returns "$HOME/" and is defined in ../pluginManager/zuluCryptPluginManager.c
+ */
+string_t zuluCryptGetUserHomePath( uid_t ) ;

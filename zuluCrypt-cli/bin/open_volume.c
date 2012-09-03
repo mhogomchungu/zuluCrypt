@@ -22,7 +22,7 @@
 #include <string.h>
  
 string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * name,uid_t uid ) ;
- 
+
 static int status_msg( int st,char * device,char * m_point )
 {
 	switch ( st ){
@@ -32,7 +32,7 @@ static int status_msg( int st,char * device,char * m_point )
 		case 3 : printf( "ERROR: no file or device exist on given path\n" ) ; 							break ;		
 		case 4 : printf( "ERROR: volume could not be opened with the presented key\n" );					break ;			
 		case 5 : printf( "ERROR: could not create mount point, invalid path or path already taken\n" ) ;			break ;		
-		case 6 : printf( "ERROR: passphrase file does not exist\n" );								break ;	
+		case 6 : printf( "ERROR: invalid path to key file\n" );									break ;	
 		case 8 : printf( "ERROR: failed to open volume,device may already be in use\n" );					break ;	
 		case 9 : printf( "ERROR: mount point path is already taken\n" );							break ;					 
 		/* case 10: currently unused */
@@ -54,6 +54,7 @@ static int status_msg( int st,char * device,char * m_point )
 		case 26: printf( "ERROR: can not get passphrase in silent mode\n" );							break ;	
 		case 27: printf( "ERROR: insufficient memory to hold passphrase\n" );							break ;
 		case 28: printf( "ERROR: insufficient privilege to open plugin or path does not exist\n" );				break ;				
+		case 29: printf( "ERROR: could not get a passphrase through a local socket\n" );					break ;					
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
 	
@@ -209,9 +210,9 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		if( source == NULL || pass == NULL )
 			return status_msg_1( 11,opts,device,cpoint ) ;
 		
-		if( strcmp( source,"-p" ) == 0 ){
+		if( strcmp( source,"-p" ) == 0 ){			
 			cpass = pass ;
-			len = strlen(pass) ;
+			len = strlen( pass ) ;
 			st = zuluCryptOpenVolume( device,cname,cpoint,uid,mode,cpass,len ) ;		
 		}else if( strcmp( source,"-f" ) == 0 ){		
 			/*
@@ -221,6 +222,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 				case 1 : return status_msg_1( 6,opts,device,cpoint ) ;
 				case 2 : return status_msg_1( 14,opts,device,cpoint ) ; 				
 				case 4 : return status_msg_1( 22,opts,device,cpoint ) ;
+				case 5 : return status_msg_1( 29,opts,device,cpoint ) ;
 			}
 			cpass = StringContent( data ) ;
 			len = StringLength( data ) ;

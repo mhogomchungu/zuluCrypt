@@ -25,6 +25,8 @@
 #include <QCloseEvent>
 #include <QCheckBox>
 
+//#include "../zuluCrypt-gui/zulucrypt.h"
+
 namespace Ui {
 class DialogMsg;
 }
@@ -47,7 +49,7 @@ private slots:
 	void pbOK( void );
 	void pbYes( void );
 	void pbNo( void );
-	
+
 private:
 	void SetUpButtons( void ) ;
 	void ShowLabels( void ) ;

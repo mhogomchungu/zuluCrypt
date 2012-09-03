@@ -76,6 +76,7 @@ void zuluSocket::acceptConnection()
 	connect( m_socket,SIGNAL( bytesWritten( qint64 ) ),this,SLOT( bytesWritten( qint64 ) ) ) ;
 	m_connected = true ;
 	emit gotConnected();
+	emit gotConnected( this );
 }
 
 /*

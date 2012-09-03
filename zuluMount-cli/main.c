@@ -32,6 +32,7 @@
 #include "../zuluCrypt-cli/lib/libzuluCrypt.h"
 
 int zuluMountPrintMountedVolumes( uid_t uid ) ;
+string_t zuluCryptGetUserHomePath( uid_t uid ) ;
 
 #ifdef __STDC__
 char * realpath( const char * path, char * resolved_path ) ;
@@ -95,7 +96,7 @@ static int zuluMountMount( const char * device,const char * m_point,const char *
 	
 	string_t p   = StringVoid ;
 	string_t * z = &p ;
-	
+
 	struct stat st ;
 	
 	uid_t org = geteuid() ;
@@ -103,8 +104,6 @@ static int zuluMountMount( const char * device,const char * m_point,const char *
 	char * path ;
 	char * q ;
 	
-	struct passwd * pass ;
-
 	/*
 	 * below functin checks the device if it has an entry in "/etc/fstab","/etc/crypttab" and "/etc/zuluCrypttab".
 	 * 1 is returned if an entry is found and 0 is returned if an entry is not found.
@@ -123,20 +122,21 @@ static int zuluMountMount( const char * device,const char * m_point,const char *
 
 	if( m_point != NULL ){
 		p = String( m_point ) ;
-	}else{		
-		pass = getpwuid( uid ) ;
+	}else{	
+		/*
+		 * Below function returns "$HOME/" and is defined in ../zuluCrypt-cli/lib/user_get_home_path.c
+		 */
+		p = zuluCryptGetUserHomePath( uid ) ;
 		
-		if( pass == NULL )
+		if( p == StringVoid )
 			zuluExit( 3,NULL,NULL,"ERROR: could not get path to current user home directory" ) ;
-				
-		p = String( pass->pw_dir ) ;
 		
 		q = strrchr( device,'/' ) ;
 		
 		if( q == NULL )
-			StringMultipleAppend( p,"/",device,'\0' ) ;
+			StringAppend( p,device ) ;
 		else
-			StringAppend( p,q ) ;
+			StringAppend( p,q + 1 ) ;
 	}
 		
 	seteuid( uid ) ;
@@ -154,7 +154,6 @@ static int zuluMountMount( const char * device,const char * m_point,const char *
 	}
 	
 	path = realpath( path,NULL ) ;
-	printf( path ) ;
 	
 	if( path == NULL ){
 		seteuid( org ) ;		
@@ -234,9 +233,7 @@ static int zuluMountMmountedList( uid_t uid )
 
 static int zuluMountCryptoMount( const char * device,const char * mode,uid_t uid,const char * key,const char * key_source,const char * m_point )
 {
-	struct passwd * pass ;
-	
-	string_t p = NULL;
+	string_t p = StringVoid ;
 	
 	int st ;
 	/*
@@ -258,20 +255,18 @@ static int zuluMountCryptoMount( const char * device,const char * mode,uid_t uid
 	
 	if( m_point != NULL ){
 		p = String( m_point ) ;
-	}else{		
-		pass = getpwuid( uid ) ;
+	}else{	
+		p = zuluCryptGetUserHomePath( uid ) ;
 		
-		if( pass == NULL )
+		if( p == StringVoid )
 			return zuluExit( 3,NULL,NULL,"ERROR: could not get path to current user home directory" ) ;
 				
-		p = String( pass->pw_dir ) ;
-		
 		e = strrchr( device,'/' ) ;
 		
 		if( e == NULL )
-			StringMultipleAppend( p,"/",device,'\0' ) ;
+			StringAppend( p,device ) ;
 		else
-			StringAppend( p,e ) ;
+			StringAppend( p,e + 1 ) ;
 	}
 	
 	if( strcmp( key_source,"-G" ) == 0 )
@@ -360,8 +355,16 @@ int main( int argc,char * argv[] )
 	
 	int status ;
 	
+	string_t k = StringVoid ;
+	
 	if( mount_get_opts( argc,argv,&action,&dev,&m_point,&mode,&key,&key_source ) != 0 )
 		return mount_help() ;
+	
+	if( key != NULL ){
+		k = String( key ) ;
+		memset( ( char * )key,'\0',StringLength( k ) ) ;
+		key = StringContent( k ) ;
+	}
 	
 	if( setuid( 0 ) != 0 )
 		return zuluExit( 120,NULL,NULL,"ERROR: setuid(0) failed,check executable permissions" ) ;
@@ -428,6 +431,9 @@ int main( int argc,char * argv[] )
 			status = 180 ;
 		}
 	}	
+	
+	if( k != StringVoid )
+		StringDelete( &k ) ;
 	
 	return status ;
 }

@@ -104,7 +104,9 @@
  lib/open_volume.c
  lib/mount_volume.c
  lib/unmount_volume.c
- lib/file_encryption.c )
+ lib/file_encryption.c 
+ lib/user_home_path.c 
+)
  	 
  add_library( Socket STATIC socket/socket.c ) 
  

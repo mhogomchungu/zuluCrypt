@@ -294,7 +294,13 @@ void createpartition::pbCreateClicked()
 		if( passphrase_1 != passphrase_2 )
 			return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "passphrases do not match" ) );
 
-		source = QString( "-p" ) ;
+		source = QString( "-f" ) ;
+
+		zuluSocket * zs = new zuluSocket( this ) ;
+		connect( zs,SIGNAL( gotConnected( zuluSocket * ) ),this,SLOT( sendKey( zuluSocket * ) ) ) ;
+		connect( zs,SIGNAL( doneWritingData() ),zs,SLOT( deleteLater() ) ) ;
+		passphrase_1 = zuluOptions::getSocketPath() ;
+		zs->startServer( passphrase_1 ) ;
 	}
 
 	passphrase_1.replace( "\"","\"\"\"" ) ;
@@ -317,6 +323,12 @@ void createpartition::pbCreateClicked()
 	connect( cvt,SIGNAL( finished( int ) ),this,SLOT( threadfinished( int ) ) ) ;
 	disableAll();
 	cvt->start() ;
+}
+
+void createpartition::sendKey( zuluSocket * s)
+{
+	QByteArray data = m_ui->lineEditPassphrase1->text().toAscii() ;
+	s->sendData( &data );
 }
 
 void createpartition::threadfinished( int st )

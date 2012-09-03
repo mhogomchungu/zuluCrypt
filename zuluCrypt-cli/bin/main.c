@@ -72,7 +72,7 @@ static int zuluCryptEXECheckUUID( const char * device )
 }
 
 static int zuluCryptEXE( struct_opts * clargs, const char * mapping_name,uid_t uid )
-{
+{	
 	switch( clargs->action ){
 		case 'B' : return zuluCryptEXESaveAndRestoreLuksHeader( clargs,uid,LUKS_HEADER_SAVE ) ;
 		case 'R' : return zuluCryptEXESaveAndRestoreLuksHeader( clargs,uid,LUKS_HEADER_RESTORE ) ;		
@@ -96,7 +96,15 @@ static int zuluCryptEXE( struct_opts * clargs, const char * mapping_name,uid_t u
 	return 200 ; /* shouldnt get here */	
 }
 
-//stringList_t get_partition_from_crypttab( void ) ;
+static int zuluExit( int st,string_t * p,string_t * q,string_t * z,const char * msg )
+{
+	StringMultipleDelete( p,q,z,'\0' ) ;	
+	
+	if( msg != NULL )
+		printf( "%s\n",msg ) ;
+	
+	return st ;
+}
 
 int main( int argc,char * argv[] )
 {
@@ -107,10 +115,23 @@ int main( int argc,char * argv[] )
 	int st ;
 	uid_t uid ;
 	
-	string_t q = StringVoid ;
+	string_t q      = StringVoid ;
+	string_t key    = StringVoid ;
+	string_t * K    = &key       ;
+	string_t newKey = StringVoid ;
+	string_t * N    = &newKey    ;
+	string_t exKey  = StringVoid ;
+	string_t * X    = &exKey     ;
 	
 	struct_opts clargs ;
-
+	
+	uid = getuid();
+	
+	if( setuid( 0 ) != 0 ){
+		printf( "ERROR: could not setuid(0),check the executable permission\n" ) ;
+		return 255 ;
+	}
+	
 	if( argc == 1 ){
 		zuluCryptEXEHelp();
 		return 1;
@@ -129,9 +150,23 @@ int main( int argc,char * argv[] )
 	
 	zuluCryptEXEGetOpts( argc,argv,&clargs );
 	
-	uid = getuid();
+	if( clargs.key != NULL ){
+		key = String( clargs.key ) ;
+		memset( ( char * )clargs.key,'\0',StringLength( key ) ) ;
+		clargs.key = StringContent( key ) ;
+	}
 	
-	setuid( 0 );
+	if( clargs.new_key != NULL ){
+		newKey = String( clargs.new_key ) ;
+		memset( ( char * )clargs.new_key,'\0',StringLength( newKey ) ) ;
+		clargs.new_key = StringContent( newKey ) ;		
+	}
+	
+	if( clargs.existing_key != NULL ){
+		exKey = String( clargs.existing_key ) ;
+		memset( ( char * )clargs.existing_key,'\0',StringLength( exKey ) );
+		clargs.existing_key = StringContent( exKey ) ;		
+	}	
 	
 	action = clargs.action ;
 	device = clargs.device ;
@@ -142,17 +177,18 @@ int main( int argc,char * argv[] )
 	switch( action ){
 		case 'A':
 		case 'N':
-		case 'S': return zuluCryptPrintPartitions( clargs.partition_number ) ;	
-		case 'L': return zuluCryptPrintOpenedVolumes( uid ) ;
+		case 'S': st = zuluCryptPrintPartitions( clargs.partition_number ) 	;
+			  return zuluExit( st,K,N,X,NULL ) ;
+		case 'L': st = zuluCryptPrintOpenedVolumes( uid ) 			; 
+		    	  return zuluExit( st,K,N,X,NULL ) ;
 	}
-	if( action == '\0' ){
-		printf("ERROR: \"action\" argument is missing\n" ) ;
-		return 130 ;
-	}
-	if( device == NULL ){
-		printf("ERROR: required option( device path ) is missing for this operation\n" ) ;
-		return 120 ;
-	}
+	
+	if( action == '\0' )
+		return zuluExit( 130,K,N,X,"ERROR: \"action\" argument is missing\n" ) ;	
+	
+	if( device == NULL )
+		return zuluExit( 120,K,N,X,"ERROR: required option( device path ) is missing for this operation\n" ) ;		
+	
 	if( strncmp( device,"UUID=",5 ) == 0 ){
 
 		q = String( device ) ;	
@@ -167,13 +203,9 @@ int main( int argc,char * argv[] )
 			clargs.device = ac ;			
 			st = zuluCryptEXE( &clargs,mapping_name,uid );			
 			free( ac ) ;
-			StringDelete( &q ) ;
-			return st ;
-		}else{
-			printf("ERROR: could not find any partition with the presented UUID\n") ;
-			StringDelete( &q ) ;
-			return 110 ;			
-		}	
+			return zuluExit( st,K,N,X,NULL ) ;
+		}else
+			return zuluExit( 110,K,N,X,"ERROR: could not find any partition with the presented UUID\n") ;					
 	}else{
 		if ( ( ac = strrchr( device,'/' ) ) != NULL ) {
 			mapping_name =  ac + 1  ;
@@ -182,5 +214,7 @@ int main( int argc,char * argv[] )
 		}
 	}
 
-	return zuluCryptEXE( &clargs,mapping_name,uid ) ;	
+	st = zuluCryptEXE( &clargs,mapping_name,uid ) ;	
+	
+	return zuluExit( st,K,N,X,NULL ) ;
 } 

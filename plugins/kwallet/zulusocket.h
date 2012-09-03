@@ -37,12 +37,10 @@ public:
 	zuluSocket( QObject * );
 	~zuluSocket() ;
 	bool isConnected( void ) ;
-	/* The socket address sockAddr ideally should be deleted by the class but it doesnt for some reason,
-	 * caller of the class should manually delete it after the class is destructed.
-	 */
 	void startServer( QString sockAddr ) ;
 signals:
 	void gotConnected( void ) ;
+	void gotConnected( zuluSocket * );
 	void doneWritingData( void ) ;
 public slots:
 	void sendData( QByteArray * ) ;

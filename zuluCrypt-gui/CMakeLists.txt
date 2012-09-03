@@ -49,6 +49,7 @@ set( MOC_FILES createfile.h
 		dialogmsg.h
 		managesystemvolumes.h
 		kwalletconfig.h
+		../plugins/kwallet/zulusocket.h
  )
 	
 set (SRC createfile.cpp
@@ -85,6 +86,7 @@ set (SRC createfile.cpp
 	kwalletplugin.cpp
 	kwalletconfig.cpp
 	tablewidget.cpp
+	../plugins/kwallet/zulusocket.cpp	
 )
 
 INCLUDE( ${QT_USE_FILE} )

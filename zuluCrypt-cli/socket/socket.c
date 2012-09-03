@@ -19,7 +19,8 @@
 
 #include "socket.h"
 
-struct Socket_t{
+struct Socket_t
+{
 	int type ;
 	int protocol ;
 	int fread ;
@@ -31,6 +32,47 @@ struct Socket_t{
 	struct sockaddr_un * local ;
 	struct sockaddr_in * net ;
 };
+
+struct SocketPair_t
+{
+	socket_t first ;
+	socket_t second ;
+};
+
+socketPair_t SocketPair( void )
+{
+	socketPair_t sp = ( socketPair_t ) malloc( sizeof( struct SocketPair_t ) ) ;
+	return sp ;	
+}
+
+void SocketPairSet( socketPair_t sp,socket_t s,size_t index )
+{
+	switch( index ){
+		case 0 : sp->first  = s ; break ;
+		case 1 : sp->second = s ; break ;
+	}
+}
+
+socket_t SocketPairFirst( socketPair_t sp ) 
+{
+	return sp->first ;
+}
+
+socket_t SocketPairSecond( socketPair_t sp )
+{
+	return sp->second ;
+}
+
+void SocketPairDelete( socketPair_t * sp )
+{
+	socketPair_t s = *sp ;
+	*sp = socketPairVoid ;
+	
+	SocketDelete( &s->first )  ;
+	SocketDelete( &s->second ) ;
+	
+	free( s ) ;
+}
 
 socket_t SocketLocal( const char * address )
 {
@@ -217,7 +259,13 @@ size_t SocketGetData( socket_t s,char ** buffer,size_t len )
 			break ;
 	}	
 	
-	*buffer = realloc( c,i ) ;
+	if( i > 0 ){
+		c = realloc( c,i + 1 ) ;
+		*( c + i ) = '\0' ;
+		*buffer = c ;
+	}else{
+		free( c ) ;
+	}
 	
 	return i ;
 }

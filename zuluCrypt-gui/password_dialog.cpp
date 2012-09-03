@@ -391,6 +391,15 @@ void passwordDialog::buttonOpenClicked( void )
 		}
 	}
 
+	if( passtype == QString( "-p" ) ){
+		passtype = QString( "-f" ) ;
+		passPhraseField = zuluOptions::getSocketPath() ;
+		zuluSocket * zs = new zuluSocket( this ) ;
+		connect( zs,SIGNAL( gotConnected( zuluSocket * ) ),this,SLOT( sendKey( zuluSocket * ) ) ) ;
+		connect( zs,SIGNAL( doneWritingData() ),zs,SLOT( deleteLater() ) ) ;
+		zs->startServer( passPhraseField );
+	}
+
 	passPhraseField.replace( "\"","\"\"\"" ) ;
 
 	QString a = QString( ZULUCRYPTzuluCrypt ) ;
@@ -407,6 +416,16 @@ void passwordDialog::buttonOpenClicked( void )
 	m_isWindowClosable = false ;
 	disableAll();
 	ovt->start();
+}
+
+void passwordDialog::sendKeyThroughSocket()
+{
+}
+
+void passwordDialog::sendKey( zuluSocket * s )
+{
+	QByteArray data = m_ui->PassPhraseField->text().toAscii() ;
+	s->sendData( &data );
 }
 
 QString passwordDialog::getKeyFromKWallet()
@@ -543,6 +562,7 @@ void passwordDialog::threadfinished( int status )
 		case 23: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open device in read/write mode" ) );				break ;
 		case 24: msg.ShowUIOK( tr( "ERROR!" ),tr( "there seem to be an opened mapper associated with the device" ) );				break ;
 		case 25: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get a passphrase from the module" ) );						break ;
+		case 29: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get a passphrase through a local socket" ) ) ;					break ;
 		case 110:msg.ShowUIOK( tr( "ERROR!" ),tr( "can not find a partition that match presented UUID" ) );					break ;
 		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR with status number %1 encountered" ).arg( status ) );
 	}

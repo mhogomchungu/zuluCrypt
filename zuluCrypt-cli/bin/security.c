@@ -99,6 +99,7 @@ int zuluCryptCreateMountPoint( const char * path,uid_t uid )
 
 /*
  *  return values:
+ *  5 - couldnt get key from the socket
  *  4 -permission denied
  *  1  invalid path
  *  2  insufficient memory to open file
@@ -106,6 +107,27 @@ int zuluCryptCreateMountPoint( const char * path,uid_t uid )
  */
 int zuluCryptGetPassFromFile( const char * path,uid_t uid,string_t * st )
 {
+	/*
+	 * zuluCryptGetUserHomePath() is defined in ../lib/user_get_home_path.c
+	 */
+	string_t p = zuluCryptGetUserHomePath( uid ) ;
+	StringAppend( p,".zuluCrypt-socket" ) ;
+	const char * z = StringContent( p ) ;
+	size_t s = StringLength( p ) ;
+	
+	if( strncmp( path,z,s ) == 0 ){
+		StringDelete( &p ) ;		
+		/*
+		 * path that starts with $HOME/.zuluCrypt-socket is treated not as a path to key file but as path
+		 * to a local socket to get a passphrase 
+		 * 
+		 * This function is defined in ../pluginManager/zuluCryptPluginManager.c
+		 */
+		return zuluCryptGetKeyFromSocket( path,st ) ;		
+	}
+	
+	StringDelete( &p ) ;
+	
 	switch ( zuluCryptCanOpenPathForReading( path,uid ) ){
 		case 1 : return 4 ;
 		case 2 : return 1 ;
@@ -116,6 +138,7 @@ int zuluCryptGetPassFromFile( const char * path,uid_t uid,string_t * st )
 		case 2 : return 4 ;
 		case 3 : return 2 ;
 	}
+	
 	return 0 ;
 }
 		

@@ -17,11 +17,24 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef ZULUOPTIONS_H
+#define ZULUOPTIONS_H
+
 #include <QString>
+#include <QDir>
+
+#include <sys/types.h>
+#include <unistd.h>
 
 class zuluOptions{
 public:
 	static QString wallet( void )  { return QString( "zuluCrypt")  ; }
 	static QString key( void )     { return QString( "LUKS" )      ; }
 	static QString formData( void ){ return QString( "Form Data" ) ; }
+	static QString getSocketPath( void )
+	{
+		return QString( QDir::homePath() + QString( "/.zuluCrypt-socket/" ) + QString::number( getpid() ) ) ;
+	}
 };
+
+#endif

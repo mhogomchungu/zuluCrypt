@@ -11,21 +11,24 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp\
+	mainwindow.cpp\
     keydialog.cpp \
     managepartitionthread.cpp\
     ../zuluCrypt-gui/dialogmsg.cpp \
     ../zuluCrypt-gui/userfont.cpp \
-    ../zuluCrypt-gui/tablewidget.cpp
+    ../zuluCrypt-gui/tablewidget.cpp \
+    ../plugins/kwallet/zulusocket.cpp
 
 HEADERS  += mainwindow.h\
     keydialog.h \
     ../zuluCrypt-gui/dialogmsg.h\
     managepartitionthread.h \
     ../zuluCrypt-gui/userfont.h \
-    ../zuluCrypt-gui/tablewidget.h
+    ../zuluCrypt-gui/tablewidget.h \
+    ../plugins/kwallet/zulusocket.h \
+    ../zuluCrypt-gui/zuluoptions.h
 
-FORMS    += mainwindow.ui\	    
+FORMS    += mainwindow.ui\
 	    ../zuluCrypt-gui/dialogmsg.ui \
 	    keydialog.ui
 
@@ -33,3 +36,5 @@ RESOURCES += \
     icon.qrc
 
 INCLUDEPATH +=/home/ink/build
+
+LIBS += -lQtNetwork

@@ -28,58 +28,87 @@
 #include "../socket/socket.h"
 #include "../string/String.h"
 #include "../constants.h"
-
+#include "../bin/includes.h"
 /*
  * below header file is created at config time.
  */
 #include "plugin_path.h"
 
-/*
- * The below number is the cryptsetup default amount of maximum bytes to read from a keyfile.
- */
-#define INTMAXKEYZISE  8192000
-#define CHARMAXKEYZISE "8192000"
 
-typedef struct{
-	socket_t server ;
-	socket_t client ;
-}socketStruct ;
+int zuluCryptGetKeyFromSocket( const char * path,string_t * key )
+{
+	socket_t client = SocketLocal( path ) ;
+	
+	int i ;
+	size_t dataLength ;
+	char * buffer ;
+	
+	for( i = 0 ;  ; i++ ){		
+		if( i == 10 )
+			return 5 ;
+		if( SocketConnect( client ) == 0 )			
+			break ;		
+	}	
+	
+	dataLength = SocketGetData( client,&buffer,INTMAXKEYZISE ) ;	
+	
+	if( dataLength == 0 )
+		return 5 ;
+	
+	*key = StringInheritWithSize( &buffer,dataLength ) ;
+	
+	return 0 ;	
+}
 
 void * zuluCryptPluginManagerStartConnection( const char * sockpath )
 {
-	socketStruct * sc = ( socketStruct * ) malloc( sizeof( socketStruct ) ) ;
+	/*
+	 * SocketPair() return a struct that looks like
+	 * struct{
+	 * socket_t client ;
+	 * socket_t server ;
+	 * }; 
+	 * It just holds two socket_t varibles to pass to the user to hold them for us in order to use
+	 * them across functions used to setup and send key over the socket 
+	 */
+	socketPair_t sp = SocketPair() ;
 	
-	sc->server = SocketLocal( sockpath ) ;
+	socket_t server = SocketLocal( sockpath ) ;
+	socket_t client ;
 	
-	SocketBind( sc->server ) ;
-	SocketListen( sc->server ) ;
+	SocketPairSet( sp,server,0 ) ;
 	
-	sc->client = SocketAccept( sc->server ) ;
+	SocketBind( server ) ;
+	SocketListen( server ) ;
 	
-	return ( void * ) sc ;	
+	client = SocketAccept( server ) ;
+	
+	SocketPairSet( sp,client,1 ) ;
+	
+	return ( void * ) sp ;	
 }
 
 int zuluCryptPluginManagerSendKey( void * p,const char * key,size_t length )
 {
-	socketStruct * sc = ( socketStruct * ) p ;
-	
-	return SocketSendData( sc->client,key,length ) ;
+	socketPair_t sp = ( socketPair_t ) p ;
+	socket_t client = SocketPairSecond( sp ) ;
+	return SocketSendData( client,key,length ) ;
 }
 
 void zuluCryptPluginManagerCloseConnection( void * p )
 {
-	socketStruct * sc = ( socketStruct * ) p ;
-	const char * sockpath = SocketAddress( sc->server ) ;
+	socketPair_t sp = ( socketPair_t ) p ;
+	socket_t server = SocketPairFirst( sp ) ;
+	socket_t client = SocketPairSecond( sp ) ;
 	
-	SocketClose( sc->client ) ;
-	SocketClose( sc->server ) ;
+	const char * sockpath = SocketAddress( server ) ;
+	
+	SocketClose( server ) ;
+	SocketClose( client ) ;
 	
 	unlink( sockpath ) ;
 	
-	SocketDelete( &sc->client ) ;
-	SocketDelete( &sc->server ) ;
-	
-	free( sc ) ;	
+	SocketPairDelete( &sp ) ;	
 }
 
 static string_t zuluCryptGetDeviceUUID( const char * device )
@@ -192,27 +221,3 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	
 	return key ;
 }
-
-/*
- * Currently unsed function.
- */
-void zuluCryptPluginManager( const char * sockpath,int size,const char * buffer )
-{
-	socket_t p ;
-	socket_t q = SocketLocal( sockpath ) ;
-	
-	SocketBind( q ) ;
-	SocketListen( q ) ;
-	
-	p = SocketAccept( q ) ;
-	
-	SocketSendData( p,buffer,size ) ;
-	
-	SocketClose( p ) ;	
-	SocketClose( q ) ;	
-	
-	unlink( sockpath ) ;
-	
-	SocketDelete( &p ) ;	
-	SocketDelete( &q ) ;
-} 
