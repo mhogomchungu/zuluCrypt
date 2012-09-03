@@ -46,6 +46,7 @@ typedef struct struct_opts_1{
 	int dont_ask_confirmation ;
 	int interactive_passphrase ;
 	int open_no_mount ;
+	char ** argv ;
 }struct_opts;
 
 /*

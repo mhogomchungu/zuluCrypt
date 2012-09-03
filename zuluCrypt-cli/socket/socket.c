@@ -272,7 +272,14 @@ size_t SocketGetData( socket_t s,char ** buffer,size_t len )
 
 ssize_t SocketSendData( socket_t s,const char * buffer,size_t len ) 
 {	
-	return send( s->fd,buffer,len,s->fwrite ) ;	
+	size_t sent = 0 ;
+	size_t remain = len ;
+	do{
+		sent = sent + send( s->fd,buffer + sent,remain,s->fwrite ) ;		
+		remain = remain - sent ;
+	}while( sent != len );
+	
+	return sent ;
 }
 
 void SockectSetReadOption( socket_t s,int option ) 

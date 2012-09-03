@@ -153,18 +153,21 @@ int main( int argc,char * argv[] )
 	if( clargs.key != NULL ){
 		key = String( clargs.key ) ;
 		memset( ( char * )clargs.key,'\0',StringLength( key ) ) ;
+		strcpy( ( char * )clargs.key,"xxxx" ) ;		
 		clargs.key = StringContent( key ) ;
 	}
 	
 	if( clargs.new_key != NULL ){
 		newKey = String( clargs.new_key ) ;
 		memset( ( char * )clargs.new_key,'\0',StringLength( newKey ) ) ;
+		strcpy( ( char * )clargs.new_key,"xxxx" ) ;
 		clargs.new_key = StringContent( newKey ) ;		
 	}
 	
 	if( clargs.existing_key != NULL ){
 		exKey = String( clargs.existing_key ) ;
 		memset( ( char * )clargs.existing_key,'\0',StringLength( exKey ) );
+		strcpy( ( char * )clargs.existing_key,"xxxx" ) ;		
 		clargs.existing_key = StringContent( exKey ) ;		
 	}	
 	

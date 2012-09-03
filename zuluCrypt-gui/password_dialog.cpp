@@ -381,8 +381,7 @@ void passwordDialog::buttonOpenClicked( void )
 				passPhraseField = this->getKeyFromKWallet() ;
 
 				if( passPhraseField.isEmpty() )
-					return ;
-				passtype = QString( "-p" );
+					return ;				
 			}else{
 				passtype = QString( "-G" ) ;
 			}

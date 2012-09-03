@@ -21,7 +21,7 @@
 #include <sys/types.h>
 #include <string.h>
  
-string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * name,uid_t uid ) ;
+string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * name,uid_t uid,char ** argv ) ;
 
 static int status_msg( int st,char * device,char * m_point )
 {
@@ -90,6 +90,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	const char * source      = opts->key_source ;
 	const char * pass        = opts->key ;
 	const char * plugin_path = opts->plugin_path ;
+	char ** argv      	 = opts->argv ;
 	
 	string_t passphrase = StringVoid ;	
 	string_t m_name     = StringVoid ;	
@@ -182,7 +183,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		/*
 		 * zuluCryptPluginManagerGetKeyFromModule is defined in zuluCryptPluginManager.c
 		 */
-		passphrase = zuluCryptPluginManagerGetKeyFromModule( device,plugin_path,uid ) ;
+		passphrase = zuluCryptPluginManagerGetKeyFromModule( device,plugin_path,uid,argv ) ;
 		
 		if( passphrase == StringVoid )
 			return status_msg_1( 25,opts,device,cpoint ) ;

@@ -20,6 +20,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <fcntl.h>
+#include <unistd.h>
+
 MainWindow::MainWindow( QWidget * parent ) : QMainWindow( parent ),m_ui( new Ui::MainWindow )
 {
 	m_ui->setupUi( this );
@@ -102,22 +105,28 @@ void MainWindow::pbOpen()
 
 	QString key = m_ui->lineEditKey->text().replace( "\"","\"\"\"" ) ;
 
-	//if( key.isEmpty() )
-	//	return msg.ShowUIOK( tr( "ERROR" ),tr( "key field is empty" ) ) ;
-
 	this->disableAll();
 	QString EXE = this->FindGPG() ;
 
 	if( EXE.isEmpty() )
 		return msg.ShowUIOK( tr( "ERROR" ),tr( "could not find \"gpg\" executable in \"/usr/local\",\"/usr/bin\" and \"/usr/sbin\"" ) ) ;
 
+	QString gpgFile ;
 	QString exe ;
+	QFile f ;
 	if( key.isEmpty() )
 		exe = QString( "%1 --batch -d \"%2\"" ).arg( EXE ).arg( path ) ;
-	else
-		exe = QString( "%1 --batch --passphrase \"%2\" -d \"%3\"" ).arg( EXE ).arg( key ).arg( path ) ;
+	else{
+		gpgFile = QString( "%1%2%3" ).arg( QDir::homePath() ).arg( QString( "/.zuluCrypt-socket/gpg-" ) ).arg( QString::number( getpid() ) ) ;
+		f.setFileName( gpgFile ) ;
+		f.open( QIODevice::WriteOnly ) ;
+		f.write( m_ui->lineEditKey->text().toAscii() ) ;
+		f.flush() ;
+		exe = QString( "%1 --batch --passphrase-file %2 -d \"%3\"" ).arg( EXE ).arg( gpgFile ).arg( path ) ;
+	}
 
 	QProcess p ;
+
 	p.start( exe );
 	p.waitForFinished() ;
 
@@ -131,7 +140,18 @@ void MainWindow::pbOpen()
 		msg.ShowUIOK( tr( "ERROR" ),tr("could not decrept the gpg keyfile,wrong key?" ) );
 		this->enableAlll();
 	}
+
 	p.close();
+
+	if( f.isOpen() ){
+		f.seek( 0 ) ;
+		int size = f.size() ;
+		for( int i = 0 ; i < size ; i++ ){
+			f.putChar( '\0' ) ;
+		}
+		f.close();
+		f.remove() ;
+	}
 }
 
 void MainWindow::doneWritingData()

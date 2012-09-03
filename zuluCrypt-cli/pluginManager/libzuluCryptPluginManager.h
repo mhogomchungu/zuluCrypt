@@ -48,7 +48,7 @@ extern "C" {
  * 
  * A plugin is expected to call this function within 20 seconds of its life.
  */
-void * zuluCryptPluginManagerStartConnection( const char * sockpath ) ;
+void * zuluCryptPluginManagerOpenConnection( const char * sockpath ) ;
 
 /*
  * This function sends the key to zuluCrypt-cli.

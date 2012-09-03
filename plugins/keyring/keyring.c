@@ -42,10 +42,11 @@ int main( int argc,char * argv[] )
 	 * const char * exe    = argv[ 0 ] ;
 	 * const char * device = argv[ 1 ] ;
 	 * int          size   = atoi( argv[ 4 ] ) ;
-	 *
-	 * const char * msg ;	 	
 	 * 
-	 */
+	 * argv[ 5 ] is argument list given to zuluCrypt-cli
+	 * const char * argv   = argv[ 5 ] ;
+	 * const char * msg ;	 
+	 */	
 	
 	const char * uuid = argv[ 2 ] ;
 	const char * addr = argv[ 3 ] ;
@@ -62,7 +63,7 @@ int main( int argc,char * argv[] )
 	
 	GnomeKeyringResult r ;
 	
-	handle = zuluCryptPluginManagerStartConnection( addr ) ;
+	handle = zuluCryptPluginManagerOpenConnection( addr ) ;
 	
 	if( strcmp( uuid,"Nil" ) == 0 ){
 		i = 1 ;

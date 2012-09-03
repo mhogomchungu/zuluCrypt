@@ -60,7 +60,7 @@ int zuluCryptGetKeyFromSocket( const char * path,string_t * key )
 	return 0 ;	
 }
 
-void * zuluCryptPluginManagerStartConnection( const char * sockpath )
+void * zuluCryptPluginManagerOpenConnection( const char * sockpath )
 {
 	/*
 	 * SocketPair() return a struct that looks like
@@ -131,13 +131,36 @@ static string_t zuluCryptGetDeviceUUID( const char * device )
 	return p ;		
 }
 
-string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * name,uid_t uid )
+static string_t zuluCryptGetCmdArgumentList( char ** argv )
+{
+	string_t p = StringVoid ;
+	size_t len ;	
+	
+	if( argv == NULL ){
+		p = String( "-none" ) ;
+	}else{
+		p = String( "" ) ;
+		
+		while( *argv ){
+			StringMultipleAppend( p,*argv," ",'\0' ) ;
+			argv++ ;			
+		}
+		
+		len = StringLength( p ) ;
+		StringSubChar( p,len - 1,'\0' ) ;
+	}
+	
+	return p ;
+}
+
+string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * name,uid_t uid,char ** argv )
 {
 	struct passwd * pass ;	
 	socket_t s ;
 	char * buffer ;	
 	process_t p ;	
 	string_t key = StringVoid ;	
+	string_t cmd = StringVoid ;
 	int i ;	
 	const char * sockpath ;	
 	string_t mpath ;	
@@ -168,7 +191,7 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	
 	if( stat( cpath,&st ) != 0 ){
 		StringDelete( &mpath ) ;
-		return NULL ;
+		return StringVoid ;
 	}	
 		
 	id = StringIntToString( getpid() ) ;
@@ -192,7 +215,9 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	/* 
 	 * ProcessSetOptionTimeout( p,60,SIGKILL ) ;
 	 */
-	ProcessSetArgumentList( p,device,StringContent( uuid ),sockpath,CHARMAXKEYZISE,'\0' ) ;	
+	
+	cmd = zuluCryptGetCmdArgumentList( argv ) ;
+	ProcessSetArgumentList( p,device,StringContent( uuid ),sockpath,CHARMAXKEYZISE,StringContent( cmd ),'\0' ) ;	
 	ProcessStart( p ) ;		
 	
 	s = SocketLocal( sockpath ) ;
@@ -212,7 +237,7 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		}
 	}
 	
-	StringMultipleDelete( &mpath,&uuid,&id,&path,'\0' ) ;	
+	StringMultipleDelete( &mpath,&uuid,&id,&path,&cmd,'\0' ) ;	
 	
 	ProcessExitStatus( p ) ;
 	
