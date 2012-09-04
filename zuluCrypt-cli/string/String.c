@@ -189,17 +189,22 @@ string_t StringInherit( char ** data )
 
 void StringPrint( string_t st )
 {
-	printf( "%s",st->string ) ;
+	if( st != StringVoid )
+		printf( "%s",st->string ) ;
 }
 
 void StringPrintLine( string_t st ) 
 {
-	printf( "%s\n",st->string ) ;
+	if( st != StringVoid )
+		printf( "%s\n",st->string ) ;
 }
 
 int StringContains( string_t st,const char * str )
 {
-	return strstr( st->string,str ) != NULL ?  0 : 1 ;
+	if( st == StringVoid )
+		return 1 ;
+	else
+		return strstr( st->string,str ) != NULL ?  0 : 1 ;
 }
 
 string_t StringInheritWithSize( char ** data,size_t s )
@@ -226,7 +231,14 @@ string_t StringWithSize( const char * s,size_t len )
 
 ssize_t StringIndexOfString( string_t st,size_t p,const char * s )
 {
-	char * c = strstr( st->string + p,s ) ;
+	char * c ;
+	
+	if( st == StringVoid )
+		return -1 ;
+	if( p >= st->size )
+		return -1 ;
+	
+	c = strstr( st->string + p,s ) ;
 	
 	return c == NULL ? -1 : c - st->string;	
 }
@@ -235,6 +247,9 @@ ssize_t StringLastIndexOfChar( string_t st,char s )
 {
 	char * c = st->string + st->size  ;
 	char * d = st->string ;
+	
+	if( st == StringVoid )
+		return -1 ;
 	
 	while( --c != d )
 		if ( *c == s )
@@ -247,15 +262,16 @@ ssize_t StringLastIndexOfString( string_t st,const char * s )
 {
 	ssize_t p = -1 ;
 	
-	size_t len = strlen( s ) ;
-	
 	char * c ;
 	char * d = st->string ;
 	char * e = st->string ;
+
+	size_t len = strlen( s ) ;
 	
 	if( len == 0 )
 		return -1 ;
-	
+	if( st == StringVoid )
+		return -1 ;
 	while( 1 )
 	{
 		c = strstr( d,s ) ;
@@ -277,6 +293,8 @@ ssize_t StringIndexOfChar( string_t st,size_t p,char s )
 	d[ 1 ] = '\0' ;
 	d[ 0 ] = s ;
 
+	if( st == StringVoid )
+		return -1 ;
 	c = strstr( st->string + p,d ) ;
 	
 	return c == NULL ? -1 : c - st->string ;
@@ -284,6 +302,15 @@ ssize_t StringIndexOfChar( string_t st,size_t p,char s )
 
 const char * StringRemoveLength( string_t st,size_t x ,size_t y ) 
 {	
+	if( st == StringVoid )
+		return NULL ;
+	
+	if( x >= st->size )
+		return NULL ;
+	
+	if( x + y >= st->size )
+		y = st->size - x ;
+	
 	memmove( st->string + x,st->string + x + y,st->size - y - x + 1 ) ;
 	
 	st->size -= y ;
@@ -293,6 +320,8 @@ const char * StringRemoveLength( string_t st,size_t x ,size_t y )
 
 void StringClear( string_t st )
 {
+	if( st == StringVoid )
+		return ;
 	memset( st->string,'\0',st->size ) ;
 	st->size = 0 ;
 }
@@ -309,39 +338,58 @@ const char * StringRemoveLeft( string_t st,size_t x )
 
 const char * StringCrop( string_t st,size_t x,size_t y ) 
 {
+	if( st == StringVoid )
+		return NULL ;
+	if( x >= st->size )
+		x = st->size - 1 ;
+	if( y >= st->size )
+		y = st->size - 1 ;
 	memmove( st->string,st->string + x,st->size - x + 1 ) ;
 	
 	st->size = st->size - x - y ;
 	
+	if( st->size < 0 )
+		st->size = 0 ;
 	*( st->string + st->size ) = '\0';
 	
 	return st->string ;
 }
 
-size_t StringLength( string_t st )
-{
+ssize_t StringLength( string_t st )
+{	
+	if( st == StringVoid )
+		return -1 ;
 	return st->size ;	
 }
 
 const char * StringContent( string_t st )
 {
+	if( st == StringVoid )
+		return NULL ;
 	return st->string ;
 }
 
 const char ** StringPointer( string_t st ) 
 {
+	if( st == StringVoid )
+		return NULL ;
 	return ( const char ** )&st->string ;
 }
 
 char * StringCopyChar( string_t st )
 {
+	if( st == StringVoid )
+		return NULL ;
 	return StringLengthCopy( st,st->size ) ;	
 }
 
 char * StringLengthCopy( string_t st,size_t l )
 {
 	char * c ;
-
+	
+	if( st == StringVoid )
+		return NULL ;
+	
 	c = ( char * )malloc( sizeof( char ) * ( l + 1 ) ) ;
 	
 	if( c == NULL )
@@ -356,17 +404,26 @@ char * StringLengthCopy( string_t st,size_t l )
 
 int StringEndsWithString( string_t st,const char * s ) 
 {
-	size_t j = strlen(s) ;
-	size_t i = strncmp(st->string + st->size - j, s, j ) ;
+	size_t j ;
+	size_t i ;
 	
-	if( i == 0 )
-		return 0 ;
-	else
-		return 1 ;	
+	if( st == StringVoid )
+		return 1 ;
+	if( s == NULL )
+		return 1 ;
+	
+	j = strlen(s) ;
+	
+	i = strncmp( st->string + st->size - j,s,j ) ;
+	
+	return i == 0 ? 0 : 1 ;	
 }
 
 int StringEndsWithChar( string_t st,char s )
-{
+{	
+	if( st == StringVoid )
+		return 1 ;
+	
 	if ( * ( st->string + st->size -1 ) == s )
 		return 0 ;
 	else
@@ -375,16 +432,29 @@ int StringEndsWithChar( string_t st,char s )
 
 char StringCharAt( string_t st,size_t p )
 {
+	if( st == StringVoid )
+		return '\0' ;
+	if( p >= st->size )
+		return '\0' ;
 	return * ( st->string + p )  ;
 }
 
 const char * StringStringAt( string_t st,size_t p )
-{
+{	
+	if( st == StringVoid )
+		return NULL ;
+	if( p >= st->size )
+		return NULL ;
+	
 	return st->string + p ;	
 }
 
 const char * StringSubChar( string_t st,size_t x,char s )
-{	
+{		
+	if( st == StringVoid )
+		return NULL ;
+	if( x >= st->size )
+		return NULL ;
 	st->string[ x ] = s ;
 	return st->string ;
 }
@@ -393,9 +463,18 @@ static void Stringsrcs__( string_t st,char x,const char * y,size_t p )
 {
 	size_t i ;
 	size_t j ;
-	size_t k = strlen( y ) ;
+	size_t k ;
 	size_t l = st->size ;	
 	char * c = st->string ;
+	
+	if( st == StringVoid )
+		return  ;
+	if( y == NULL )
+		return ;
+	if( p >= st->size )
+		return ;
+	
+	k = strlen( y ) ;
 	
 	for( j = p ; j < l ; j++ )
 	{		
@@ -423,7 +502,17 @@ const char * StringReplaceCharString( string_t st,char x,const char * y )
 
 const char * StringSubString( string_t st, size_t x,const char * s ) 
 {
-	memcpy( st->string + x,s,strlen( s ) );
+	size_t k ;
+	if( st == StringVoid )
+		return NULL ;
+	if( x >= st->size )
+		return NULL ;
+	if( s == NULL )
+		return NULL ;
+	k = strlen( s ) ;
+	if( x + k >= st->size )
+		return NULL ;
+	memcpy( st->string + x,s,k );
 	return st->string ;
 }
 
@@ -605,6 +694,15 @@ static char * StringRS__( string_t st,const char * x,const char * s,size_t p )
 	size_t k = strlen( x ) ;
 	size_t len ;
 	
+	if( st == StringVoid )
+		return NULL ;
+	if( x == NULL )
+		return NULL ;
+	if( s == NULL )
+		return NULL ;
+	if( p >= st->size )
+		return NULL ;
+	
 	if( j == k )
 	{
 		while( ( c = strstr( e,x ) ) != NULL )
@@ -668,6 +766,13 @@ const char * StringRemoveString( string_t st,const char * s )
 static char * StringCRC__( string_t st, char x,char y,size_t p )
 {
 	char * c = st->string - 1 + p ;	
+		
+	if( st == StringVoid )
+		return NULL ;
+	
+	if( p >= st->size )
+		return NULL ;
+	
 	while ( *++c  )
 		if( *c == x )
 			*c = y ;
@@ -720,6 +825,10 @@ char * StringIntToString_1( char * x,size_t y,uint64_t z )
 
 int StringCompare( string_t x,string_t y ) 
 {
+	if( x == StringVoid )
+		return 1 ;
+	if( y == StringVoid )
+		return 1 ;
 	if( x->size != y->size )
 		return 1 ;
 	else if( strcmp( x->string,y->string ) != 0 )
@@ -730,7 +839,10 @@ int StringCompare( string_t x,string_t y )
 
 int StringEqual( string_t x,const char * y )
 {
-	return strcmp( x->string,y ) == 0 ? 0 : 1 ;	
+	if( x == StringVoid )
+		return 1 ;
+	else
+		return strcmp( x->string,y ) == 0 ? 0 : 1 ;	
 }
 
 static char * StringICS__( string_t st,char x,const char * s,size_t p )
@@ -739,6 +851,15 @@ static char * StringICS__( string_t st,char x,const char * s,size_t p )
 	char * e ;
 	char * f  ;
 	size_t pos ;
+	
+	if( st == StringVoid )
+		return NULL ;
+	
+	if( p >= st->size )
+		return NULL ;
+	
+	if( s == NULL )
+		return NULL ;
 	
 	while( *++d )
 	{

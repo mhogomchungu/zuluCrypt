@@ -244,7 +244,7 @@ char * StringDeleteHandle( string_t * st ) ;
 /*
  * Return the length of the string handled by handle st.
  */
-size_t StringLength( string_t st ) ;
+ssize_t StringLength( string_t st ) ;
 
 
 /*

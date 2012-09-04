@@ -315,10 +315,6 @@ static int zuluMountCryptoMount( const char * device,const char * mode,uid_t uid
 	const char * mapping_name ;
 	const char * e = strrchr( device,'/' ) ;
 	
-	/*
-	if( check_if_partition_is_system_partition( device ) == 1 && uid != 0 )
-		return zuluExit( 200,NULL,NULL,"ERROR: insuffienct privilege to operate on a system partition" ) ;
-	*/
 	if( e == NULL)
 		mapping_name = device ;
 	else
@@ -340,10 +336,11 @@ static int zuluMountCryptoMount( const char * device,const char * mode,uid_t uid
 			StringAppend( p,e + 1 ) ;
 	}
 	
-	if( strcmp( key_source,"-G" ) == 0 )
-		opts.plugin_path = key ;
-	else
-		opts.plugin_path = NULL ;
+	opts.plugin_path = NULL ;
+	
+	if( key_source != NULL )
+		if( strcmp( key_source,"-G" ) == 0 )
+			opts.plugin_path = key ;
 	
 	opts.mount_point = StringContent( p ) ;
 	opts.interactive_passphrase = -1 ;

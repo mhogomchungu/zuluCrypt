@@ -245,17 +245,26 @@ const char * StringListContentAt( stringList_t stl,size_t index )
 
 int StringListContentAtEqual( stringList_t stl,size_t index,const char * cstring )
 {
-	return strcmp( stl->stp[ index ]->string,cstring ) ;
+	if( index < 0 || index > stl->size )
+		return -1 ;
+	else
+		return strcmp( stl->stp[ index ]->string,cstring ) ;
 }
 
 const char * StringListContentAtLast( stringList_t stl ) 
 {
-	return stl->stp[ stl->size - 1 ]->string  ;
+	if( stl->size < 1 )
+		return NULL ;
+	else
+		return stl->stp[ stl->size - 1 ]->string  ;
 }
 
 string_t StringListStringAtLast( stringList_t stl ) 
 {
-	return stl->stp[ stl->size - 1 ] ;
+	if( stl->size < 1 )
+		return StringVoid ;
+	else
+		return stl->stp[ stl->size - 1 ] ;
 }
 
 stringList_t StringListInsertAt( stringList_t stl,const char * cstring,size_t index ) 
