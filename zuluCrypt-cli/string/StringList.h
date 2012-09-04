@@ -56,7 +56,7 @@ stringList_t StringListString( string_t * ) ;
 /*
  * Return the number of elements in the list * 
  */
-size_t StringListSize( stringList_t stl ) ;
+ssize_t StringListSize( stringList_t stl ) ;
 
 /*
  * create a  stringlist from splitted cstring using splitter as a splitting trigger. * 

@@ -23,7 +23,7 @@
 /*
  * buffer size will grow exponentially by a multiple of this number
  */
-#define FACTOR 2
+#define FACTOR 1.5
 
 /*
  * initial buffer size
@@ -231,21 +231,23 @@ stringList_t StringListStringSplit( string_t st,char splitter )
 		return StringListSplit( st->string,splitter ) ;	
 }
 
-size_t StringListSize( stringList_t stl )
+ssize_t StringListSize( stringList_t stl )
 {
+	if( stl == StringListVoid )
+		return -1 ;
 	return stl->size ;
 }
 
 const char * StringListContentAt( stringList_t stl,size_t index )
 {
-	if( index < 0 || index > stl->size )
+	if( index < 0 || index >= stl->size )
 		return NULL ;
 	return stl->stp[index]->string  ;	
 }
 
 int StringListContentAtEqual( stringList_t stl,size_t index,const char * cstring )
 {
-	if( index < 0 || index > stl->size )
+	if( index < 0 || index >= stl->size )
 		return -1 ;
 	else
 		return strcmp( stl->stp[ index ]->string,cstring ) ;
@@ -273,7 +275,7 @@ stringList_t StringListInsertAt( stringList_t stl,const char * cstring,size_t in
 	string_t q ;
 	size_t size = sizeof( string_t ) ;
 	
-	if( index < 0 || index > stl->size )
+	if( index < 0 || index >= stl->size )
 		return stl ;
 	
 	q = String( cstring ) ;
@@ -299,7 +301,7 @@ stringList_t StringListStringInsertAt( stringList_t stl,string_t * st,size_t ind
 	string_t * p ;
 	size_t size = sizeof( string_t ) ;
 	
-	if( index < 0 || index > stl->size )
+	if( index < 0 || index >= stl->size )
 		return stl ;
 	
 	p = __ExpandMemory( stl ) ;
@@ -328,7 +330,7 @@ stringList_t StringListInsertAtSize( stringList_t stl,const char * cstring,size_
 	string_t q ;
 	size_t size = sizeof( string_t ) ;	
 	
-	if( index < 0 || index > stl->size )
+	if( index < 0 || index >= stl->size )
 		return stl ;
 	
 	c = ( char * ) malloc( sizeof( char ) * ( len + 1 ) ) ;
@@ -414,7 +416,15 @@ stringList_t StringListAppend( stringList_t stl,const char * cstring )
 ssize_t StringListContains( stringList_t stl,const char * cstring )
 {
 	ssize_t index  ;
-	size_t size = stl->size ;
+	size_t size ;
+	
+	if( stl == StringListVoid )
+		return -1 ;
+	size = stl->size ;
+	
+	if( size == 0 )
+		return -1 ;
+	
 	for( index = 0 ; index < size ; index++ )	
 		if( strcmp( stl->stp[index]->string,cstring ) == 0 )
 			return index ;	
@@ -425,8 +435,8 @@ stringList_t StringListRemoveAt( stringList_t stl, size_t index )
 {
 	size_t size ;
 	
-	if( index < 0 || index > stl->size )
-		return stl ;
+	if( index < 0 || index >= stl->size )
+		return StringListVoid ;
 	
 	size = sizeof( string_t ) ;
 	StringDelete( &stl->stp[index] ) ;		
@@ -440,7 +450,7 @@ string_t StringListDetachAt( stringList_t stl, size_t index )
 	string_t st;
 	size_t  size ;
 	
-	if( index < 0 || index > stl->size )
+	if( index < 0 || index >= stl->size )
 		return StringVoid ;
 	
 	st = stl->stp[index] ;
@@ -464,7 +474,7 @@ ssize_t StringListRemoveString( stringList_t stl,const char * cstring )
 
 string_t StringListStringAt( stringList_t stl,size_t index ) 
 {
-	if( index < 0 || index > stl->size )
+	if( index < 0 || index >= stl->size )
 		return StringVoid ;
 	return stl->stp[index] ;
 }
@@ -482,8 +492,9 @@ void StringListDelete( stringList_t * stl )
 	size  = stx->size ;
 	*stl = StringListVoid ;	
 	
-	for( index = 0 ; index < size ; index++ )
-		StringDelete( &stx->stp[index] ) ;
+	if( size > 0 )
+		for( index = 0 ; index < size ; index++ )
+			StringDelete( &stx->stp[index] ) ;
 	
 	free( stx->stp ) ;	
 	free( stx );	
@@ -531,6 +542,13 @@ stringList_t StringListCopy( stringList_t stl )
 
 stringList_t StringListSwap( stringList_t stl, size_t x,size_t y ) 
 {
+	if( stl == StringListVoid )
+		return StringListVoid ;
+	if( x >= stl->size )
+		return StringListVoid ;
+	if( y >= stl->size )
+		return StringListVoid ;
+	
 	string_t p = stl->stp[ x ] ;
 	stl->stp[ x ] = stl->stp[ y ] ;
 	stl->stp[ y ] = p ;
@@ -539,14 +557,14 @@ stringList_t StringListSwap( stringList_t stl, size_t x,size_t y )
 
 void StringListPrintAt( stringList_t stl,size_t index )
 {
-	if( index < 0 || index > stl->size )
+	if( index < 0 || index >= stl->size )
 		return  ;
 	printf("%s",stl->stp[ index ]->string ) ;
 }
 
 void StringListPrintLineAt( stringList_t stl,size_t index ) 
 {
-	if( index < 0 || index > stl->size )
+	if( index < 0 || index >= stl->size )
 		return  ;
 	printf("%s\n",stl->stp[ index ]->string ) ;	
 }
