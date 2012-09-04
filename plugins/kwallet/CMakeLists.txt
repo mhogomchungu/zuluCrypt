@@ -10,7 +10,7 @@ QT4_WRAP_CPP( MOC wallet.h zulusocket.h socketwritedata.h )
 
 add_executable( kwallet ${MOC} main.cpp wallet.cpp zulusocket.cpp socketwritedata.cpp )
 
-TARGET_LINK_LIBRARIES( kwallet ${kwallet_library} ) 
+TARGET_LINK_LIBRARIES( kwallet ${kwallet_library} -lQtNetwork ) 
 
 set_target_properties( kwallet PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread -pedantic " )
 

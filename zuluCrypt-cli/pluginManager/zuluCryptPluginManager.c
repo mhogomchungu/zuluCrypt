@@ -63,13 +63,8 @@ int zuluCryptGetKeyFromSocket( const char * path,string_t * key )
 void * zuluCryptPluginManagerOpenConnection( const char * sockpath )
 {
 	/*
-	 * SocketPair() return a struct that looks like
-	 * struct{
-	 * socket_t client ;
-	 * socket_t server ;
-	 * }; 
-	 * It just holds two socket_t varibles to pass to the user to hold them for us in order to use
-	 * them across functions used to setup and send key over the socket 
+	 * socketPair_t structure is more or less equivalent to vector<socket_t>
+	 * It makes it easier to move around with two  socket_t objects
 	 */
 	socketPair_t sp = SocketPair() ;
 	
