@@ -377,11 +377,11 @@ void passwordDialog::buttonOpenClicked( void )
 		if( m_ui->PassPhraseField->text() == QString( "kwallet" ) ){
 
 			if( kwalletplugin::hasFunctionality() ){
+				passtype = QString( "-p" );
+				m_key = this->getKeyFromKWallet() ;
 
-				passPhraseField = this->getKeyFromKWallet() ;
-
-				if( passPhraseField.isEmpty() )
-					return ;				
+				if( m_key.isEmpty() )
+					return ;
 			}else{
 				passtype = QString( "-G" ) ;
 			}
@@ -417,13 +417,10 @@ void passwordDialog::buttonOpenClicked( void )
 	ovt->start();
 }
 
-void passwordDialog::sendKeyThroughSocket()
-{
-}
-
 void passwordDialog::sendKey( zuluSocket * s )
 {
-	QByteArray data = m_ui->PassPhraseField->text().toAscii() ;
+	QByteArray data = m_key.toAscii() ;
+
 	s->sendData( &data );
 }
 

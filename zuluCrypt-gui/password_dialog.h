@@ -72,7 +72,6 @@ private slots :
 	void done( QString );
 	void cbStateChanged( int );
 private :
-	void sendKeyThroughSocket() ;
 	QString getKeyFromKWallet( void ) ;
 	void setDefaultOpenMode( void );
 	void disableAll( void );
@@ -85,6 +84,7 @@ private :
 	bool m_open_with_path ;
 	QMenu * m_pluginMenu ;
 	QWidget * m_parent ;
+	QString m_key ;
 };
 
 #endif // PASSWORD_DIALOG_H
