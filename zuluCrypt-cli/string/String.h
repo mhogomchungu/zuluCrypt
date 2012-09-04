@@ -84,6 +84,13 @@ const char * StringMultipleAppend( string_t st,... )  ;
 const char * StringAppendString( string_t st,string_t xt )  ;
 
 /*
+ * check if a string handled by st has str in it
+ * return 0 if str is found
+ * return 1 if str is not found
+ */
+int StringContains( string_t st,const char * str ) ;
+
+/*
  * Append multiple string_t to a string handled by handle st .
  * Same requirement as StringMultipleAppend apply 
  */

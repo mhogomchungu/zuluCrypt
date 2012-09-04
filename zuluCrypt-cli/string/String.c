@@ -197,6 +197,11 @@ void StringPrintLine( string_t st )
 	printf( "%s\n",st->string ) ;
 }
 
+int StringContains( string_t st,const char * str )
+{
+	return strstr( st->string,str ) != NULL ?  0 : 1 ;
+}
+
 string_t StringInheritWithSize( char ** data,size_t s )
 {
 	string_t st = ( string_t ) malloc ( sizeof( struct StringType ) ) ;

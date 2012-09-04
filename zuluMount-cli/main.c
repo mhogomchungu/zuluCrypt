@@ -29,6 +29,7 @@
 #include "../zuluCrypt-cli/constants.h"
 #include "../zuluCrypt-cli/bin/libzuluCrypt-exe.h"
 #include "../zuluCrypt-cli/string/String.h"
+#include "../zuluCrypt-cli/string/StringList.h"
 #include "../zuluCrypt-cli/lib/libzuluCrypt.h"
 
 int zuluMountPrintMountedVolumes( uid_t uid ) ;
@@ -90,6 +91,79 @@ static int zuluExit( int st,string_t * p,char * q,const char * msg )
 	return st ;
 }
 
+static int zuluMountNormalUserCanManagePartition( const char * device )
+{
+	string_t p = StringGetFromFile( "/etc/fstab" ) ;	
+	string_t f ;
+	
+	stringList_t q ;
+	stringList_t z ;
+	
+	const char * e ;
+	
+	size_t i ;
+	size_t j ;
+	
+	if( p == StringVoid )
+		return 1 ;	
+	
+	q = StringListStringSplit( p,'\n' ) ;
+	StringDelete( &p ) ;
+	
+	if( q == StringListVoid )
+		return 1 ;
+	
+	j = StringListSize( q ) ;
+	
+	for( i = 0 ; i < j ; i++ ){
+		
+		e = StringListContentAt( q,i ) ;
+		
+		z = StringListSplit( e,' ' ) ;
+		
+		if( z == StringListVoid ){
+			StringListDelete( &q ) ;
+			return 1 ;
+		}
+		
+		f = StringListStringAt( z,0 ) ;
+		
+		if( StringEqual( f,device ) == 0 ){
+			
+			f = StringListStringAt( z,3 ) ;
+				
+			if( StringContains( f,"nouser" ) == 0 ){
+				StringListMultipleDelete( &q,&z,'\0' ) ;
+				return 1 ;
+			}
+		
+			if( StringContains( f,"user" ) == 0 ){
+				StringListMultipleDelete( &q,&z,'\0' ) ;
+				return 0 ;
+			}
+		}
+		
+		StringListDelete( &z ) ;		
+	}
+	
+	StringListDelete( &q ) ;		
+	
+	return 1 ;	
+}
+
+static int zuluMountCheckDevicePermissions( const char * device,uid_t uid )
+{	
+	if( zuluCryptCheckIfPartitionIsSystemPartition( device ) == 1 ){
+		if( zuluMountNormalUserCanManagePartition( device ) == 1 ){
+			if( uid != 0 ){
+				return 1 ;
+			}
+		}
+	}
+	
+	return 0 ;
+}
+
 static int zuluMountMount( const char * device,const char * m_point,const char * mode,uid_t uid )
 {
 	int status ;
@@ -102,24 +176,18 @@ static int zuluMountMount( const char * device,const char * m_point,const char *
 	uid_t org = geteuid() ;
 	
 	char * path ;
-	char * q ;
-	
-	/*
-	 * below functin checks the device if it has an entry in "/etc/fstab","/etc/crypttab" and "/etc/zuluCrypttab".
-	 * 1 is returned if an entry is found and 0 is returned if an entry is not found.
-	 *
-	 * The function is defined in ../zuluCrypt-cli/bin/partitions.c 
-	 */
-	if( zuluCryptCheckIfPartitionIsSystemPartition( device ) == 1 && uid != 0 )				
-			return zuluExit( 200,NULL,NULL,"ERROR: insuffienct privilege to operate on a system partition" ) ;
+	char * q ;	
 		
 	/*
 	 * Below function is defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c
 	 * It checks if a device has an entry in "/etc/mtab" and return 1 if it does and 0 is it doesnt	 * 
 	 */
 	if( zuluCryptCheckIfMounted( device ) == 1 )
-		return zuluExit( 2,NULL,NULL,"ERROR: device already mounted" ) ;
-
+		return zuluExit( 101,NULL,NULL,"ERROR: device already mounted" ) ;
+	
+	if( zuluMountCheckDevicePermissions( device,uid ) == 1 )
+		return zuluExit( 100,NULL,NULL,"ERROR: could not mount a system partition because it does not have \"user\" option in \"/etc/fstab\"" ) ;
+	
 	if( m_point != NULL ){
 		p = String( m_point ) ;
 	}else{	
@@ -129,7 +197,7 @@ static int zuluMountMount( const char * device,const char * m_point,const char *
 		p = zuluCryptGetUserHomePath( uid ) ;
 		
 		if( p == StringVoid )
-			zuluExit( 3,NULL,NULL,"ERROR: could not get path to current user home directory" ) ;
+			zuluExit( 102,NULL,NULL,"ERROR: could not get path to current user home directory" ) ;
 		
 		q = strrchr( device,'/' ) ;
 		
@@ -145,12 +213,12 @@ static int zuluMountMount( const char * device,const char * m_point,const char *
 	
 	if( stat( path,&st ) == 0 ){
 		seteuid( org ) ;		
-		return zuluExit( 4,z,NULL,"ERROR: mount failed,mount point path already taken" ) ;			
+		return zuluExit( 105,z,NULL,"ERROR: mount failed,mount point path already taken" ) ;			
 	}
 	
 	if( mkdir( path,S_IRUSR | S_IWUSR | S_IXUSR ) != 0 ){
 		seteuid( org ) ;		
-		return zuluExit( 5,z,NULL,"ERROR: mount failed,could not create mount point" ) ;
+		return zuluExit( 106,z,NULL,"ERROR: mount failed,could not create mount point" ) ;
 	}
 	
 	path = realpath( path,NULL ) ;
@@ -158,7 +226,7 @@ static int zuluMountMount( const char * device,const char * m_point,const char *
 	if( path == NULL ){
 		seteuid( org ) ;		
 		rmdir( path ) ;
-		return zuluExit( 6,z,path,"ERROR: could not resolve mount point path" ) ;
+		return zuluExit( 107,z,path,"ERROR: could not resolve mount point path" ) ;
 	}
 	
 	seteuid( org ) ;
@@ -175,10 +243,10 @@ static int zuluMountMount( const char * device,const char * m_point,const char *
 	}else{
 		rmdir( m_point ) ;
 		switch( status ){
-			case 1 : return zuluExit( 7,z,path,"ERROR: failed to mount ntfs file system using ntfs-3g,is ntfs-3g package installed?" ) ;
-			case 4 : return zuluExit( 7,z,path,"ERROR: mount failed,no or unrecognized file system" )	; 
-			case 12: return zuluExit( 7,z,path,"ERROR: mount failed,could not get a lock on /etc/mtab~" ) ;	
-			default: return zuluExit( 7,z,path,"ERROR: failed to mount the partition" ) ;
+			case 1 : return zuluExit( 108,z,path,"ERROR: failed to mount ntfs file system using ntfs-3g,is ntfs-3g package installed?" ) ;
+			case 4 : return zuluExit( 109,z,path,"ERROR: mount failed,no or unrecognized file system" )	; 
+			case 12: return zuluExit( 110,z,path,"ERROR: mount failed,could not get a lock on /etc/mtab~" ) ;	
+			default: return zuluExit( 111,z,path,"ERROR: failed to mount the partition" ) ;
 		}
 	}
 }
@@ -188,12 +256,15 @@ static int zuluMountUMount( const char * device,uid_t uid )
 	char * m_point = NULL ;
 
 	int status ;
-	
-	if( zuluCryptCheckIfPartitionIsSystemPartition( device ) == 1 && uid != 0 )
-		return zuluExit( 200,NULL,NULL,"ERROR: insuffienct privilege to operate on a system partition" ) ;
-			
+		
+	/*
+	 * zuluCryptCheckIfMounted()  is defined in defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c 	 
+	 */
 	if( zuluCryptCheckIfMounted( device ) == 0 )
-		return zuluExit( 200,NULL,NULL,"ERROR: device not mounted" ) ;
+		return zuluExit( 127,NULL,NULL,"ERROR: device does appear to be mounted as it does not have an entry in \"/etc/mtab\"" ) ;
+	
+	if( zuluMountCheckDevicePermissions( device,uid ) == 1 )
+		return zuluExit( 112,NULL,NULL,"ERROR: could not mount a system partition because it does not have \"user\" option in \"/etc/fstab\"" ) ;
 		
 	/*
 	 * below function is defined in ../zuluCrypt-cli/lib/unmount_volume.c
@@ -205,10 +276,10 @@ static int zuluMountUMount( const char * device,uid_t uid )
 		return zuluExit( 0,NULL,m_point,"SUCCESS: umount complete successfully" ) ;		
 	}else{
 		switch( status ) {
-			case 1 : return zuluExit( 3,NULL,m_point,"ERROR: device does not exist" )  ;
-			case 2 : return zuluExit( 3,NULL,m_point,"ERROR: failed to unmount,the mount point and/or one or more files are in use" )	;	
-			case 4 : return zuluExit( 3,NULL,m_point,"ERROR: failed to unmount,could not get a lock on /etc/mtab~" ) ;	
-			default: return zuluExit( 3,NULL,m_point,"ERROR: failed to unmount the partition" )	 ;			
+			case 1 : return zuluExit( 113,NULL,m_point,"ERROR: device does not exist" )  ;
+			case 2 : return zuluExit( 114,NULL,m_point,"ERROR: failed to unmount,the mount point and/or one or more files are in use" )	;	
+			case 4 : return zuluExit( 115,NULL,m_point,"ERROR: failed to unmount,could not get a lock on /etc/mtab~" ) ;	
+			default: return zuluExit( 116,NULL,m_point,"ERROR: failed to unmount the partition" )	 ;			
 		}
 	}
 }
@@ -259,7 +330,7 @@ static int zuluMountCryptoMount( const char * device,const char * mode,uid_t uid
 		p = zuluCryptGetUserHomePath( uid ) ;
 		
 		if( p == StringVoid )
-			return zuluExit( 3,NULL,NULL,"ERROR: could not get path to current user home directory" ) ;
+			return zuluExit( 117,NULL,NULL,"ERROR: could not get path to current user home directory" ) ;
 				
 		e = strrchr( device,'/' ) ;
 		
@@ -322,7 +393,7 @@ static int zuluMountExe( const char * device, const char * action,const char * m
 	else if( strcmp( action,"-U" ) == 0 )
 		return zuluMountCryptoUMount( device,uid ) ;
 	else
-		return zuluExit( 150,NULL,NULL,"ERROR: unrecognized argument encountered" ) ;	
+		return zuluExit( 118,NULL,NULL,"ERROR: unrecognized argument encountered" ) ;	
 }
 
 static int mount_help()
@@ -337,7 +408,7 @@ options:\n\
 -U -- unmount a LUKS volume: arguments: -d partition_path\n" ;
 
 	printf( doc ) ;
-	return 170 ;
+	return 119 ;
 }
 
 int main( int argc,char * argv[] )
@@ -370,10 +441,10 @@ int main( int argc,char * argv[] )
 		return zuluExit( 120,NULL,NULL,"ERROR: setuid(0) failed,check executable permissions" ) ;
 	
 	if( argc < 2 )
-		return zuluExit( 100,NULL,NULL,"wrong number of arguments" ) ;
+		return zuluExit( 121,NULL,NULL,"wrong number of arguments" ) ;
 	
 	if( action == NULL )
-		return zuluExit( 160,NULL,NULL,"ERROR: action not specified" ) ;
+		return zuluExit( 122,NULL,NULL,"ERROR: action not specified" ) ;
 	
 	if( strcmp( action,"-s" ) == 0 ){
 		/*
@@ -393,7 +464,7 @@ int main( int argc,char * argv[] )
 		return mount_help() ;	
 	
 	if( dev == NULL )
-		return zuluExit( 170,NULL,NULL,"ERROR: device argument missing" ) ;
+		return zuluExit( 123,NULL,NULL,"ERROR: device argument missing" ) ;
 		
 	if( mode == NULL )
 		mode = "rw" ;
@@ -410,7 +481,7 @@ int main( int argc,char * argv[] )
 			free( device ) ;
 		}else{
 			printf( "could not resolve UUID\n" ) ;
-			status = 130 ;
+			status = 124 ;
 		}
 	}else if( strncmp( dev,"LABEL=",6 ) == 0 ){
 		device = zuluCryptDeviceFromLabel( dev + 6 ) ;
@@ -419,7 +490,7 @@ int main( int argc,char * argv[] )
 			free( device ) ;
 		}else{
 			printf( "could not resolve LABEL\n" ) ;
-			status = 140 ;
+			status = 125 ;
 		}
 	}else{
 		device = realpath( dev,NULL ) ;	
@@ -428,7 +499,7 @@ int main( int argc,char * argv[] )
 			free( device ) ;		
 		}else{
 			printf( "could not resolve path to device\n" ) ;
-			status = 180 ;
+			status = 126 ;
 		}
 	}	
 	

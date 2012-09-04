@@ -165,6 +165,9 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 
 	cname = StringContent( m_name ) ;
 	
+	/*
+	 *  zuluCryptCheckOpenedMapper() is defined in check_opened_mapper.c 
+	 */
 	if( zuluCryptCheckOpenedMapper( cname ) == 1 ){
 		if( cpoint != NULL )
 			rmdir( cpoint ) ;

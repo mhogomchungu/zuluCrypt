@@ -145,7 +145,7 @@ static void appendSystemList( stringList_t system,stringList_t stl )
 		StringListAppend( system,StringListContentAt( stl,i ) ) ;
 }
 
-static stringList_t partitions( int option )
+stringList_t zuluCryptPartitions( int option )
 {
 	string_t st  ;
 	
@@ -255,9 +255,9 @@ int zuluCryptPrintPartitions( int option )
 	stringList_t stl = StringListVoid ;
 	
 	switch( option ){	
-		case 1 : stl = partitions( ALL_PARTITIONS ) 	  ;break ;
-		case 2 : stl = partitions( SYSTEM_PARTITIONS )    ;break ;
-		case 3 : stl = partitions( NON_SYSTEM_PARTITIONS );break ;
+		case 1 : stl = zuluCryptPartitions( ALL_PARTITIONS ) 	   ;break ;
+		case 2 : stl = zuluCryptPartitions( SYSTEM_PARTITIONS )    ;break ;
+		case 3 : stl = zuluCryptPartitions( NON_SYSTEM_PARTITIONS );break ;
 	}	
 	
 	if( stl == StringListVoid ){
@@ -441,7 +441,7 @@ int zuluCryptCheckIfPartitionIsSystemPartition( const char * dev )
 	if( device == NULL )
 		return 2 ;
 	
-	stl = partitions( SYSTEM_PARTITIONS ) ;
+	stl = zuluCryptPartitions( SYSTEM_PARTITIONS ) ;
 	
 	if( stl != StringListVoid ){
 		index = StringListContains( stl,device );
