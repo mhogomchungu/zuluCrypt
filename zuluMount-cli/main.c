@@ -104,6 +104,7 @@ static int zuluMountNormalUserCanManagePartition( const char * device )
 	
 	size_t i ;
 	size_t j ;
+	int st = 1 ;
 	
 	if( p == StringVoid )
 		return 1 ;	
@@ -134,14 +135,20 @@ static int zuluMountNormalUserCanManagePartition( const char * device )
 			f = StringListStringAt( z,3 ) ;
 				
 			if( StringContains( f,"nouser" ) == 0 ){
-				StringListMultipleDelete( &q,&z,'\0' ) ;
-				return 1 ;
+				st = 1 ;
+			}else if( StringContains( f,"user" ) == 0 ){
+				st = 0 ;
+			}else{
+				/*
+				 * not having either option means "nouser" since its
+				 * the default option
+				 */
+				st = 1 ;
 			}
-		
-			if( StringContains( f,"user" ) == 0 ){
-				StringListMultipleDelete( &q,&z,'\0' ) ;
-				return 0 ;
-			}
+			
+			StringListMultipleDelete( &q,&z,'\0' ) ;
+			
+			return st ;
 		}
 		
 		StringListDelete( &z ) ;		
