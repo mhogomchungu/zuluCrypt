@@ -76,7 +76,7 @@ string_t GetKeyFromModule( const char * path,uid_t ) ;
  * this function is defined in get_key_from_socket.c
  */
 
-int zuluCryptGetKeyFromSocket( const char * path,string_t * ) ;
+size_t zuluCryptGetKeyFromSocket( const char * path,string_t * ) ;
 
 /*
  * this function returns "$HOME/" and is defined in ../pluginManager/zuluCryptPluginManager.c

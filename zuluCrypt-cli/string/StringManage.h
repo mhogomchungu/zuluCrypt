@@ -34,6 +34,7 @@ typedef struct StringManage_t * stringManage_t ;
 stringManage_t StringManage( void ) ;
 
 string_t * StringManageString( void ) ;
+
 void StringManageStringDelete( string_t * ) ;
 
 string_t * StringManageAssign( stringManage_t ) ;
@@ -42,19 +43,11 @@ void StringManageDelete( stringManage_t ) ;
 
 void StringManageClearDelete( stringManage_t ) ;
 
-/*
-stringManage_t StringMultipleManage( string_t *,... ) ;
-
-int StringManageAdd( stringManage_t,string_t * ) ;
-
-int StringManageMultipleAdd( stringManage_t,... ) ;
-
-void StringManageRemove( stringManage_t,size_t index ) ;
-
 ssize_t StringManageSize( stringManage_t ) ;
 
 string_t StringManageStringAt( stringManage_t,size_t index ) ;
-*/
+
+int StringManageMaxSize( void ) ;
 
 #ifdef __cplusplus
 }

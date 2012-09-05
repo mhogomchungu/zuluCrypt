@@ -36,29 +36,30 @@
 #include "plugin_path.h"
 
 
-int zuluCryptGetKeyFromSocket( const char * path,string_t * key )
-{
-	socket_t client = SocketLocal( path ) ;
-	
+size_t zuluCryptGetKeyFromSocket( const char * path,string_t * key )
+{	
 	int i ;
-	size_t dataLength ;
+	size_t dataLength = 0 ;
 	char * buffer ;
+
+	socket_t client = SocketLocal( path ) ;	
 	
-	for( i = 0 ;  ; i++ ){		
-		if( i == 10 )
-			return 5 ;
-		if( SocketConnect( client ) == 0 )			
-			break ;		
+	for( i = 0 ;  ; i++ ){				
+		if( SocketConnect( client ) == 0 ){
+			dataLength = SocketGetData( client,&buffer,INTMAXKEYZISE ) ;			
+			if( dataLength > 0 )
+				*key = StringInheritWithSize( &buffer,dataLength ) ;			
+			break ;
+		}else if( i == 10 ){
+			break ;			
+		}else{
+			sleep( 1 ) ;
+		}
 	}	
+		
+	SocketDelete( &client ) ;
 	
-	dataLength = SocketGetData( client,&buffer,INTMAXKEYZISE ) ;	
-	
-	if( dataLength == 0 )
-		return 5 ;
-	
-	*key = StringInheritWithSize( &buffer,dataLength ) ;
-	
-	return 0 ;	
+	return dataLength ;	
 }
 
 void * zuluCryptPluginManagerOpenConnection( const char * sockpath )

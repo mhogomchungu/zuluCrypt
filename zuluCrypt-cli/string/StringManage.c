@@ -22,11 +22,33 @@
 struct StringManage_t
 {
 	size_t index ;
-	size_t len  ;
 	string_t * stp ;
 };
 
 #define SIZE 10
+
+int StringManageMaxSize() 
+{
+	return SIZE ;
+}
+
+ssize_t StringManageSize( stringManage_t stm ) 
+{
+	if( stm == StringManageVoid )
+		return -1 ;
+	else
+		return stm->index ;
+}
+
+string_t StringManageStringAt( stringManage_t stm,size_t index )
+{
+	if( stm == StringManageVoid )
+		return StringVoid ;
+	if( index < 0 || index >= SIZE )
+		return StringVoid ;
+	
+	return stm->stp[ index ] ;
+}
 
 stringManage_t StringManage( void ) 
 {	
@@ -40,7 +62,6 @@ stringManage_t StringManage( void )
 	if( stm->stp == NULL )
 		return StringManageVoid ;
 	
-	stm->len = SIZE ;
 	stm->index = 0 ;	
 	
 	return stm ;	
@@ -50,7 +71,7 @@ string_t * StringManageAssign( stringManage_t stm )
 {
 	string_t * p ;
 	
-	if( stm->index + 1 == stm->len )
+	if( stm->index == SIZE )
 		return StringVoid ;
 	
 	p =  &stm->stp[ stm->index ] ;
