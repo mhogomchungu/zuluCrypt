@@ -50,7 +50,7 @@ static string_t * __ExpandMemory( stringList_t stl )
 	if( stl->size + 1 > stl->length )
 	{
 		stl->length *= FACTOR ;
-		p = realloc( p,sizeof( string_t ) * ( stl->length ) ) ; 		
+		p = realloc( p,sizeof( string_t * ) * ( stl->length ) ) ; 		
 	}
 	return p ;
 }

@@ -29,6 +29,7 @@
 #include "../zuluCrypt-cli/constants.h"
 #include "../zuluCrypt-cli/bin/libzuluCrypt-exe.h"
 #include "../zuluCrypt-cli/string/String.h"
+#include "../zuluCrypt-cli/string/StringManage.h"
 #include "../zuluCrypt-cli/string/StringList.h"
 #include "../zuluCrypt-cli/lib/libzuluCrypt.h"
 
@@ -83,7 +84,7 @@ static int zuluExit( int st,string_t * p,char * q,const char * msg )
 		free( q ) ;
 	
 	if( p != NULL )
-		StringDelete( p ) ;
+		StringManageStringDelete( p ) ;
 	
 	if( msg != NULL )
 		printf( "%s\n",msg ) ;
@@ -168,8 +169,7 @@ static int zuluMountMount( const char * device,const char * m_point,const char *
 {
 	int status ;
 	
-	string_t p   = StringVoid ;
-	string_t * z = &p ;
+	string_t * z ;
 
 	struct stat st ;
 	
@@ -188,28 +188,30 @@ static int zuluMountMount( const char * device,const char * m_point,const char *
 	if( zuluMountCheckDevicePermissions( device,uid ) == 1 )
 		return zuluExit( 100,NULL,NULL,"ERROR: could not mount a system partition because it does not have \"user\" option in \"/etc/fstab\"" ) ;
 	
+	z = StringManageString() ;
+	
 	if( m_point != NULL ){
-		p = String( m_point ) ;
+		*z = String( m_point ) ;
 	}else{	
 		/*
 		 * Below function returns "$HOME/" and is defined in ../zuluCrypt-cli/lib/user_get_home_path.c
 		 */
-		p = zuluCryptGetUserHomePath( uid ) ;
+		*z = zuluCryptGetUserHomePath( uid ) ;
 		
-		if( p == StringVoid )
-			zuluExit( 102,NULL,NULL,"ERROR: could not get path to current user home directory" ) ;
+		if( *z == StringVoid )
+			zuluExit( 102,z,NULL,"ERROR: could not get path to current user home directory" ) ;
 		
 		q = strrchr( device,'/' ) ;
 		
 		if( q == NULL )
-			StringAppend( p,device ) ;
+			StringAppend( *z,device ) ;
 		else
-			StringAppend( p,q + 1 ) ;
+			StringAppend( *z,q + 1 ) ;
 	}
 		
 	seteuid( uid ) ;
 	
-	path = ( char * ) StringContent( p ) ;
+	path = ( char * ) StringContent( *z ) ;
 	
 	if( stat( path,&st ) == 0 ){
 		seteuid( org ) ;		

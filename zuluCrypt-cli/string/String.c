@@ -56,6 +56,8 @@ static inline char * __StringExpandMemory( string_t st,size_t new_size )
 
 void StringDelete( string_t * st )
 {
+	if( st == NULL )
+		return ;
 	if( *st == StringVoid )
 		return ;
 	free( ( *st )->string ) ;

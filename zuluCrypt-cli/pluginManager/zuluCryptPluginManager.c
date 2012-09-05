@@ -27,6 +27,7 @@
 #include "../process/process.h"
 #include "../socket/socket.h"
 #include "../string/String.h"
+#include "../string/StringManage.h"
 #include "../constants.h"
 #include "../bin/includes.h"
 /*
@@ -154,18 +155,19 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	socket_t s ;
 	char * buffer ;	
 	process_t p ;	
-	string_t key = StringVoid ;	
-	string_t cmd = StringVoid ;
+	
 	int i ;	
 	const char * sockpath ;	
-	string_t mpath ;	
-	string_t path ;
-	string_t id ;
-	string_t uuid ;
+	string_t key   = StringVoid ;	
+	string_t cmd   = StringVoid ;
+	string_t mpath = StringVoid ;	
+	string_t path  = StringVoid ;
+	string_t id    = StringVoid ;
+	string_t uuid  = StringVoid ;
 	const char * cpath ;	
 	struct stat st ;
 	pass = getpwuid( uid ) ;
-	
+		
 	if( pass == NULL )
 		return NULL ;	
 	
@@ -210,7 +212,6 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	/* 
 	 * ProcessSetOptionTimeout( p,60,SIGKILL ) ;
 	 */
-	
 	cmd = zuluCryptGetCmdArgumentList( argv ) ;
 	ProcessSetArgumentList( p,device,StringContent( uuid ),sockpath,CHARMAXKEYZISE,StringContent( cmd ),'\0' ) ;	
 	ProcessStart( p ) ;		
@@ -232,9 +233,9 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		}
 	}
 	
-	StringMultipleDelete( &mpath,&uuid,&id,&path,&cmd,'\0' ) ;	
-	
 	ProcessExitStatus( p ) ;
+	
+	StringMultipleDelete( &mpath,&uuid,&id,&path,&cmd,'\0' ) ;      
 	
 	SocketDelete( &s ) ;	
 	ProcessDelete( &p ) ;

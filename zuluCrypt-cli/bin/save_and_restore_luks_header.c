@@ -21,7 +21,7 @@
 #include "includes.h"
 #include <libcryptsetup.h>
 
-static int msg( int st,struct crypt_device * cd )
+static int zuluExit( int st,struct crypt_device * cd )
 {
 	switch( st ){
 		case 0 : printf( "SUCCESS: header saved successfully\n" ) 						; break ;
@@ -55,14 +55,14 @@ static int msg( int st,struct crypt_device * cd )
 static int save_header( struct crypt_device * cd,const char * device,const char * path,uid_t uid )
 {
 	if( zuluCryptVolumeIsLuks( device ) != 0 )
-		return msg( 2,cd ) ;
+		return zuluExit( 2,cd ) ;
 	
 	if( crypt_header_backup( cd,NULL,path ) == 0 ){
 		chown( path,uid,uid ) ;
 		chmod( path,S_IRUSR ) ;
-		return msg( 0,cd ) ;
+		return zuluExit( 0,cd ) ;
 	}else
-		return msg( 4,cd ) ;
+		return zuluExit( 4,cd ) ;
 }
 
 static int back_up_is_luks( const char * path )
@@ -94,7 +94,7 @@ Are you sure you want to replace a header on device \"%s\" with a backup copy at
 Type \"YES\" and press Enter to continue: " ;
 
 	if( back_up_is_luks( path ) != 0 )
-		 return msg( 17,cd ) ;
+		 return zuluExit( 17,cd ) ;
 	
 	if( k == -1 ){
 		
@@ -111,15 +111,15 @@ Type \"YES\" and press Enter to continue: " ;
 			k = StringEqual( confirm,"YES" ) ;
 			StringDelete( &confirm ) ;
 			if( k == 1 )
-				return msg( 5,cd ) ;
+				return zuluExit( 5,cd ) ;
 		}else
-			return msg( 19,cd ) ;
+			return zuluExit( 19,cd ) ;
 	}
 	
 	if( crypt_header_restore( cd,NULL,path ) == 0 )
-		return msg( 1,cd ) ;
+		return zuluExit( 1,cd ) ;
 	else
-		return msg( 7,cd ) ;
+		return zuluExit( 7,cd ) ;
 }
 
 int zuluCryptEXESaveAndRestoreLuksHeader( const struct_opts * opts,uid_t uid,int option  )
@@ -138,44 +138,44 @@ int zuluCryptEXESaveAndRestoreLuksHeader( const struct_opts * opts,uid_t uid,int
 	int k ;
 	
 	if( dev == NULL )
-		return msg( 16,NULL ) ;	
+		return zuluExit( 16,NULL ) ;	
 	k = zuluCryptCheckIfPartitionIsSystemPartition( dev ) ;
 	free( dev ) ;
 	
 	if( k == 1 && uid != 0 )
-		return msg( 14,NULL ) ;
+		return zuluExit( 14,NULL ) ;
 		
 	if( path == NULL ){
 		if( option == LUKS_HEADER_RESTORE )			
-			return msg( 12,NULL ) ;
+			return zuluExit( 12,NULL ) ;
 		else
-			return msg( 13,NULL ) ;
+			return zuluExit( 13,NULL ) ;
 	}
 	
 	if( option == LUKS_HEADER_RESTORE ){
 		switch( zuluCryptCanOpenPathForReading( path,uid ) ){
-			case 1 : return msg( 8,NULL ) ;
-			case 2 : return msg( 9,NULL ) ;		
+			case 1 : return zuluExit( 8,NULL ) ;
+			case 2 : return zuluExit( 9,NULL ) ;		
 		}
 		
 		switch( zuluCryptCanOpenPathForWriting( device,uid ) ){
-			case 1 : return msg( 15,NULL ) ;
-			case 2 : return msg( 11,NULL ) ;
+			case 1 : return zuluExit( 15,NULL ) ;
+			case 2 : return zuluExit( 11,NULL ) ;
 		}
 	}else{
 		switch( zuluCryptCanOpenPathForReading( device,uid ) ){
-			case 1 : return msg( 18,NULL ) ;
-			case 2 : return msg( 11,NULL ) ;		
+			case 1 : return zuluExit( 18,NULL ) ;
+			case 2 : return zuluExit( 11,NULL ) ;		
 		}
 		if( zuluCryptIsPathValid( path ) == 0 )
-			return msg( 6,NULL ) ;
+			return zuluExit( 6,NULL ) ;
 		
 		if( zuluCryptCanOpenPathForWriting( path,uid ) == 1 )
-			return msg( 10,NULL ) ;
+			return zuluExit( 10,NULL ) ;
 	}	
 		
 	if( crypt_init( &cd,device ) != 0 )
-		return msg( 3,NULL ) ;
+		return zuluExit( 3,NULL ) ;
 	
 	switch( option ){
 		case LUKS_HEADER_RESTORE : return restore_header( cd,device,path,opts->dont_ask_confirmation,uid ) ;

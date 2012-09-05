@@ -21,27 +21,26 @@
 
 static int zuluExit( int x,string_t * p )
 {
-	StringDelete( p ) ;	
+	StringManageStringDelete( p ) ;
 	return x ;
 }
 
 int zuluCryptOpenVolume( const char * dev,const char * map,const char * m_point,uid_t id,const char * mode,const char * pass,size_t pass_size ) 
 {
-	int h ;
-	string_t p ;
-	string_t * z = &p ;
+	int h ;	
+	string_t * p = StringManageString() ;
 	const char * mapper ;
 	char * m ;
 	
 	if( zuluCryptIsPathValid( dev ) != 0 )		 
 		return 3 ;
 	
-	p = String( crypt_get_dir() ) ;
+	*p = String( crypt_get_dir() ) ;
 	
-	mapper = StringMultipleAppend( p,"/",map,'\0' ) ;
+	mapper = StringMultipleAppend( *p,"/",map,'\0' ) ;
 
 	if( zuluCryptIsPathValid( mapper ) == 0 )
-		return zuluExit( 2,z ) ;	
+		return zuluExit( 2,p ) ;	
 
 	if( zuluCryptVolumeIsLuks( dev ) == 0 )
 		h = zuluCryptOpenLuks( dev,map,mode,pass,pass_size ) ;
@@ -49,9 +48,9 @@ int zuluCryptOpenVolume( const char * dev,const char * map,const char * m_point,
 		h = zuluCryptOpenPlain( dev,map,mode,pass,pass_size ) ;
 		
 	switch( h ){
-		case 1 : return zuluExit( 4,z ) ;
-		case 2 : return zuluExit( 8,z ) ; 
-		case 3 : return zuluExit( 3,z ) ;	 
+		case 1 : return zuluExit( 4,p ) ;
+		case 2 : return zuluExit( 8,p ) ; 
+		case 3 : return zuluExit( 3,p ) ;	 
 	}
 
 	m = realpath( mapper,NULL ) ;
@@ -69,6 +68,6 @@ int zuluCryptOpenVolume( const char * dev,const char * map,const char * m_point,
 				h = 15 ;
 	}
 	
-	return zuluExit( h,z ) ;
+	return zuluExit( h,p ) ;
 }
 

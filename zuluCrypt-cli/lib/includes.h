@@ -26,6 +26,7 @@
 #include <stdlib.h>
 
 #include "../string/String.h"
+#include "../string/StringManage.h"
 #include "../constants.h"
 #include "../version.h"
 #include "libzuluCrypt.h"

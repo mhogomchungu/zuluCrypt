@@ -24,9 +24,9 @@
  */
 #include "../process/process.h"
 
-static int zuluExit( int st,string_t * x )
+static int zuluExit( int st,string_t * m )
 {
-	StringDelete( x ) ;
+	StringManageStringDelete( m ) ;
 	return st ;
 }
 
@@ -35,9 +35,8 @@ int zuluCryptCreateVolume( const char * dev,const char * fs,const char * type,co
 	int status ;
 	process_t p ;
 	
-	string_t z = StringVoid ;
-	string_t * m = &z ;
-	
+	string_t * m = StringManageString() ;
+		
 	const char * device_mapper ;
 	const char * mapper ;	
 	char * device ;
@@ -55,11 +54,11 @@ int zuluCryptCreateVolume( const char * dev,const char * fs,const char * type,co
 	if( device == NULL )
 		return 3 ;
 	
-	z = zuluCryptCreateMapperName( device,strrchr( device,'/' ) + 1,0,OPEN ) ;
+	*m = zuluCryptCreateMapperName( device,strrchr( device,'/' ) + 1,0,OPEN ) ;
 	
 	free( device ) ;
 
-	device_mapper = StringMultiplePrepend( z,"/new-",crypt_get_dir(),'\0' ) ;
+	device_mapper = StringMultiplePrepend( *m,"/new-",crypt_get_dir(),'\0' ) ;
 	
 	mapper = strrchr( device_mapper,'/' ) + 1 ;
 
