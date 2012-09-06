@@ -227,7 +227,7 @@ static int zuluMountMount( const char * device,const char * m_point,const char *
 		return zuluExit( 107,z,path,"ERROR: could not resolve mount point path" ) ;
 	}	
 
-	chown( m_point,uid,uid ) ;
+	chown( path,uid,uid ) ;
 		
 	/*
 	 * zuluCryptMountVolume() defined in ../zuluCrypt-cli/lib/mount_volume.c
