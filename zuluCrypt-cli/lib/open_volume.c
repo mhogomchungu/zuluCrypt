@@ -19,25 +19,25 @@
 
 #include "includes.h"
 
-static int zuluExit( int x,string_t * p )
+static int zuluExit( int x,string_t p )
 {
-	StringManageStringDelete( p ) ;
+	StringDelete( &p ) ;
 	return x ;
 }
 
 int zuluCryptOpenVolume( const char * dev,const char * map,const char * m_point,uid_t id,const char * mode,const char * pass,size_t pass_size ) 
 {
 	int h ;	
-	string_t * p = StringManageString() ;
+	string_t p = StringVoid ;
 	const char * mapper ;
 	char * m ;
 	
 	if( zuluCryptIsPathValid( dev ) != 0 )		 
 		return 3 ;
 	
-	*p = String( crypt_get_dir() ) ;
+	p = String( crypt_get_dir() ) ;
 	
-	mapper = StringMultipleAppend( *p,"/",map,'\0' ) ;
+	mapper = StringMultipleAppend( p,"/",map,'\0' ) ;
 
 	if( zuluCryptIsPathValid( mapper ) == 0 )
 		return zuluExit( 2,p ) ;	
