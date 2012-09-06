@@ -78,13 +78,12 @@ static int mount_get_opts( int argc,char * argv[],const char ** action,const cha
 	return 0 ;
 }
 
-static int zuluExit( int st,string_t * p,char * q,const char * msg )
+static int zuluExit( int st,string_t * z,char * q,const char * msg )
 {
 	if( q != NULL )
 		free( q ) ;
 	
-	if( p != NULL )
-		StringManageStringDelete( p ) ;
+	StringManageStringDelete( z ) ;
 	
 	if( msg != NULL )
 		printf( "%s\n",msg ) ;
@@ -176,26 +175,26 @@ static int zuluMountMount( const char * device,const char * m_point,const char *
 {
 	int status ;
 	
-	string_t * z ;
+	string_t * z = StringManageString() ;
 
-	struct stat st ;
-	
-	uid_t org = geteuid() ;
-	
 	char * path ;
 	char * q ;	
 		
+	/*
+	 * below function is defined in ../zuluCrypt-cli/bin/security.c
+	 */
+	if( zuluCryptCanOpenPathForReading( device,uid ) != 0 )
+		return zuluExit( 106,z,NULL,"ERROR: invalid path to device or insuffienct previlege to access it" ) ;
+	
 	/*
 	 * Below function is defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c
 	 * It checks if a device has an entry in "/etc/mtab" and return 1 if it does and 0 is it doesnt	 * 
 	 */
 	if( zuluCryptCheckIfMounted( device ) == 1 )
-		return zuluExit( 101,NULL,NULL,"ERROR: device already mounted" ) ;
+		return zuluExit( 101,z,NULL,"ERROR: device already mounted" ) ;
 	
 	if( zuluMountCheckDevicePermissions( device,uid ) == 1 )
-		return zuluExit( 100,NULL,NULL,"ERROR: could not mount a system partition because it does not have \"user\" option in \"/etc/fstab\"" ) ;
-	
-	z = StringManageString() ;
+		return zuluExit( 100,z,NULL,"ERROR: could not mount a system partition because it does not have \"user\" option in \"/etc/fstab\"" ) ;
 	
 	if( m_point != NULL ){
 		*z = String( m_point ) ;
@@ -216,30 +215,18 @@ static int zuluMountMount( const char * device,const char * m_point,const char *
 			StringAppend( *z,q + 1 ) ;
 	}
 		
-	seteuid( uid ) ;
-	
 	path = ( char * ) StringContent( *z ) ;
 	
-	if( stat( path,&st ) == 0 ){
-		seteuid( org ) ;		
-		return zuluExit( 105,z,NULL,"ERROR: mount failed,mount point path already taken" ) ;			
-	}
-	
-	if( mkdir( path,S_IRUSR | S_IWUSR | S_IXUSR ) != 0 ){
-		seteuid( org ) ;		
-		return zuluExit( 106,z,NULL,"ERROR: mount failed,could not create mount point" ) ;
-	}
+	if( zuluCryptCreateMountPoint( path,uid ) != 0 )
+		return zuluExit( 105,z,NULL,"ERROR: mount point path already taken or insuffienct privilege to create a folder at it" ) ;
 	
 	path = realpath( path,NULL ) ;
 	
 	if( path == NULL ){
-		seteuid( org ) ;		
 		rmdir( path ) ;
 		return zuluExit( 107,z,path,"ERROR: could not resolve mount point path" ) ;
-	}
-	
-	seteuid( org ) ;
-	
+	}	
+
 	chown( m_point,uid,uid ) ;
 		
 	/*
@@ -273,7 +260,7 @@ static int zuluMountUMount( const char * device,uid_t uid )
 		return zuluExit( 127,NULL,NULL,"ERROR: device does appear to be mounted as it does not have an entry in \"/etc/mtab\"" ) ;
 	
 	if( zuluMountCheckDevicePermissions( device,uid ) == 1 )
-		return zuluExit( 112,NULL,NULL,"ERROR: could not mount a system partition because it does not have \"user\" option in \"/etc/fstab\"" ) ;
+		return zuluExit( 112,NULL,NULL,"ERROR: could not unmount a system partition because it does not have \"user\" option in \"/etc/fstab\"" ) ;
 		
 	/*
 	 * below function is defined in ../zuluCrypt-cli/lib/unmount_volume.c
