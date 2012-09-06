@@ -83,7 +83,8 @@ static int zuluExit( int st,string_t * z,char * q,const char * msg )
 	if( q != NULL )
 		free( q ) ;
 	
-	StringManageStringDelete( z ) ;
+	if( z != NULL )
+		StringManageStringDelete( z ) ;
 	
 	if( msg != NULL )
 		printf( "%s\n",msg ) ;
