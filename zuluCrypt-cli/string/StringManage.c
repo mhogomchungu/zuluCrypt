@@ -59,8 +59,10 @@ stringManage_t StringManage( void )
 	
 	stm->stp = ( string_t * ) malloc( sizeof( string_t ) * SIZE ) ;
 	
-	if( stm->stp == NULL )
+	if( stm->stp == NULL ){
+		free( stm ) ;
 		return StringManageVoid ;
+	}
 	
 	stm->index = 0 ;	
 	
