@@ -41,7 +41,7 @@ void mountPartition::pbOpenMountPath()
 	QString Z = QFileDialog::getExistingDirectory( this,p,QDir::homePath(),QFileDialog::ShowDirsOnly ) ;
 
 	if( !Z.isEmpty() ){
-		Z = Z + QString( "/" ) + m_path.split( "/" ).last() ;
+		Z = Z + QString( "/" ) + m_ui->lineEdit->text().split( "/" ).last() ;
 		m_ui->lineEdit->setText( Z );
 	}
 }

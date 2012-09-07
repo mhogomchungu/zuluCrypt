@@ -41,12 +41,12 @@ typedef struct struct_opts_1{
 	const char * existing_key ;
 	const char * new_key ;
 	const char * new_key_source ;
+	const char * argv ;	
 	char action ;
 	int partition_number ;
 	int dont_ask_confirmation ;
 	int interactive_passphrase ;
 	int open_no_mount ;
-	char ** argv ;
 }struct_opts;
 
 /*

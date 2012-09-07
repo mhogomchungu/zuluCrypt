@@ -128,29 +128,7 @@ static string_t zuluCryptGetDeviceUUID( const char * device )
 	return p ;		
 }
 
-static string_t zuluCryptGetCmdArgumentList( char ** argv )
-{
-	string_t p = StringVoid ;
-	size_t len ;	
-	
-	if( argv == NULL ){
-		p = String( "-none" ) ;
-	}else{
-		p = String( "" ) ;
-		
-		while( *argv ){
-			StringMultipleAppend( p,*argv," ",'\0' ) ;
-			argv++ ;			
-		}
-		
-		len = StringLength( p ) ;
-		StringSubChar( p,len - 1,'\0' ) ;
-	}
-	
-	return p ;
-}
-
-string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * name,uid_t uid,char ** argv )
+string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * name,uid_t uid,const char * argv )
 {
 	struct passwd * pass ;	
 	socket_t s ;
@@ -160,7 +138,6 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	int i ;	
 	const char * sockpath ;	
 	string_t key   = StringVoid ;	
-	string_t cmd   = StringVoid ;
 	string_t mpath = StringVoid ;	
 	string_t path  = StringVoid ;
 	string_t id    = StringVoid ;
@@ -213,8 +190,8 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	/* 
 	 * ProcessSetOptionTimeout( p,60,SIGKILL ) ;
 	 */
-	cmd = zuluCryptGetCmdArgumentList( argv ) ;
-	ProcessSetArgumentList( p,device,StringContent( uuid ),sockpath,CHARMAXKEYZISE,StringContent( cmd ),'\0' ) ;	
+
+	ProcessSetArgumentList( p,device,StringContent( uuid ),sockpath,CHARMAXKEYZISE,argv,'\0' ) ;	
 	ProcessStart( p ) ;		
 	
 	s = SocketLocal( sockpath ) ;
@@ -236,7 +213,7 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	
 	ProcessExitStatus( p ) ;
 	
-	StringMultipleDelete( &mpath,&uuid,&id,&path,&cmd,'\0' ) ;      
+	StringMultipleDelete( &mpath,&uuid,&id,&path,'\0' ) ;      
 	
 	SocketDelete( &s ) ;	
 	ProcessDelete( &p ) ;

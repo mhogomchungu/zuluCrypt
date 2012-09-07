@@ -82,10 +82,25 @@ string_t * StringManageAssign( stringManage_t stm )
 	return p ;
 }
 
-void StringManageDelete( stringManage_t stm ) 
+string_t * StringManageStringGet( stringManage_t stm,string_t * st ) 
+{	
+	if( stm->index == stm->size )
+		return StringVoid ;
+	
+	stm->stp[ stm->index ] = *st ;
+	*st = StringVoid ;
+	st = &stm->stp[ stm->index ] ;		
+	stm->index = stm->index + 1 ; 
+	return st ;	
+}
+
+void StringManageDelete( stringManage_t * s ) 
 {
 	size_t i ;
 	size_t j ;
+		
+	stringManage_t stm = * s ;
+	*s = StringManageVoid ;
 	
 	j = stm->index ;
 	
@@ -97,10 +112,78 @@ void StringManageDelete( stringManage_t stm )
 	free( stm ) ;
 }
 
-void StringManageClearDelete( stringManage_t stm ) 
+void StringManageRemoveAt( stringManage_t stm,size_t index )
+{	
+	size_t s ;
+	string_t * p ;
+	if( stm == StringManageVoid )
+		return ;
+	if( index < 0 || index >= stm->index )
+		return ;
+		
+	s = sizeof( string_t ) ;
+	
+	p = stm->stp ;
+	
+	StringDelete( &p[ index ] ) ;
+	
+	memmove( &p[ index ],&p[ index + 1 ],( stm->index - index - 1 ) * s ) ;
+	
+	stm->index = stm->index - 1 ;	
+}
+
+string_t * StringManageInsertAt( stringManage_t stm,string_t * st,size_t index ) 
+{
+	size_t s ;
+	string_t * p ;
+	
+	if( stm == StringManageVoid )
+		return StringVoid ;
+	if( index < 0 || index >= stm->index + 1 )
+		return StringVoid ;
+	
+	s = sizeof( string_t ) ;
+	
+	p = stm->stp ;
+	
+	memmove( &p[ index + 1 ],&p[ index ],( stm->index - index ) * s ) ;
+	
+	p = &stm->stp[ index ] ;
+	*p = *st ;
+	*st = StringVoid ;
+
+	stm->index = stm->index + 1 ;
+	
+	return p ;
+}
+
+string_t * StringManageInsertAtLast( stringManage_t stm,string_t * st ) 
+{
+	return StringManageInsertAt( stm,st,stm->index ) ;
+}
+
+string_t * StringManageReplaceAt( stringManage_t stm,string_t * st,size_t index ) 
+{	
+	string_t * p ;
+	if( stm == StringManageVoid )
+		return StringVoid ;
+	if( index < 0 || index >= stm->index )
+		return StringVoid ;
+	
+	p = &stm->stp[ index ] ;
+	StringDelete( p ) ;
+	*p = *st ;
+	*st = StringVoid ;
+	return p ;
+}
+
+void StringManageClearDelete( stringManage_t * s ) 
 {
 	size_t i ;
 	size_t j ;
+	
+	stringManage_t stm = * s ;
+	*s = StringManageVoid ;
 	
 	j = stm->index ;
 	
@@ -124,4 +207,3 @@ void StringManageStringDelete( string_t * st )
 	StringDelete( st ) ;
 	free( st ) ;
 }
-

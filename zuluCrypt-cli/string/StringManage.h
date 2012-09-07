@@ -39,13 +39,23 @@ void StringManageStringDelete( string_t * ) ;
 
 string_t * StringManageAssign( stringManage_t ) ;
 
-void StringManageDelete( stringManage_t ) ;
+string_t * StringManageStringGet( stringManage_t,string_t * ) ;
 
-void StringManageClearDelete( stringManage_t ) ;
+void StringManageDelete( stringManage_t * ) ;
+
+void StringManageClearDelete( stringManage_t * ) ;
 
 ssize_t StringManageSize( stringManage_t ) ;
 
 string_t StringManageStringAt( stringManage_t,size_t index ) ;
+
+void StringManageRemoveAt( stringManage_t,size_t index ) ;
+
+string_t * StringManageInsertAt( stringManage_t,string_t *,size_t index ) ;
+
+string_t * StringManageReplaceAt( stringManage_t,string_t *,size_t index ) ;
+
+string_t * StringManageInsertAtLast( stringManage_t,string_t * ) ;
 
 int StringManageMaxSize( stringManage_t ) ;
 

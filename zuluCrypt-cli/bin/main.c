@@ -96,11 +96,9 @@ static int zuluCryptEXE( struct_opts * clargs, const char * mapping_name,uid_t u
 	return 200 ; /* shouldnt get here */	
 }
 
-static int zuluExit( int st,string_t * p,string_t * q,string_t * z,const char * msg )
+static int zuluExit( int st,stringManage_t stm,const char * msg )
 {
-	StringManageStringDelete( p ) ;
-	StringManageStringDelete( q ) ;
-	StringManageStringDelete( z ) ;	
+	StringManageClearDelete( &stm ) ;
 	
 	if( msg != NULL )
 		printf( "%s\n",msg ) ;
@@ -116,11 +114,8 @@ int main( int argc,char * argv[] )
 	char action ;
 	int st ;
 	uid_t uid ;
-	string_t q ;
-	string_t * key    ;
-	string_t * newKey ;
-	string_t * exKey  ;
-	
+	string_t q = StringVoid ;
+	stringManage_t stm = StringManage( 3 ) ;
 	struct_opts clargs ;
 	
 	uid = getuid();
@@ -148,29 +143,43 @@ int main( int argc,char * argv[] )
 	
 	zuluCryptEXEGetOpts( argc,argv,&clargs );
 	
-	key    = StringManageString() ;	
-	newKey = StringManageString() ;
-	exKey  = StringManageString() ;
+	q = String( "" ) ;	
+	if( argc > 0 ){
+		while( *argv ){
+			StringMultipleAppend( q,*argv," ",'\0' ) ;
+			argv++ ;			
+		}
+			
+		StringSubChar( q,StringLength( q ) - 1,'\0' ) ;
+	}		
+	
+	StringManageInsertAtLast( stm,&q ) ;
+	
+	q = StringManageStringAt( stm,0 ) ;
+	clargs.argv = StringContent( q ) ;	
 	
 	if( clargs.key != NULL ){
-		*key = String( clargs.key ) ;
-		memset( ( char * )clargs.key,'\0',StringLength( *key ) ) ;
+		q = String( clargs.key ) ;
+		memset( ( char * )clargs.key,'\0',StringLength( q ) ) ;
 		strcpy( ( char * )clargs.key,"xxxx" ) ;		
-		clargs.key = StringContent( *key ) ;
+		clargs.key = StringContent( q ) ;
+		StringManageInsertAtLast( stm,&q ) ;
 	}
 	
 	if( clargs.new_key != NULL ){
-		*newKey = String( clargs.new_key ) ;
-		memset( ( char * )clargs.new_key,'\0',StringLength( *newKey ) ) ;
+		q = String( clargs.new_key ) ;
+		memset( ( char * )clargs.new_key,'\0',StringLength( q ) ) ;
 		strcpy( ( char * )clargs.new_key,"xxxx" ) ;
-		clargs.new_key = StringContent( *newKey ) ;		
+		clargs.new_key = StringContent( q ) ;
+		StringManageInsertAtLast( stm,&q ) ;
 	}
 	
 	if( clargs.existing_key != NULL ){
-		*exKey = String( clargs.existing_key ) ;
-		memset( ( char * )clargs.existing_key,'\0',StringLength( *exKey ) );
+		q = String( clargs.existing_key ) ;
+		memset( ( char * )clargs.existing_key,'\0',StringLength( q ) );
 		strcpy( ( char * )clargs.existing_key,"xxxx" ) ;		
-		clargs.existing_key = StringContent( *exKey ) ;		
+		clargs.existing_key = StringContent( q ) ;
+		StringManageInsertAtLast( stm,&q ) ;
 	}	
 	
 	action = clargs.action ;
@@ -183,16 +192,16 @@ int main( int argc,char * argv[] )
 		case 'A':
 		case 'N':
 		case 'S': st = zuluCryptPrintPartitions( clargs.partition_number ) 	;
-			  return zuluExit( st,key,newKey,exKey,NULL ) ;
+			  return zuluExit( st,stm,NULL ) ;
 		case 'L': st = zuluCryptPrintOpenedVolumes( uid ) 			; 
-		    	  return zuluExit( st,key,newKey,exKey,NULL ) ;
+		    	  return zuluExit( st,stm,NULL ) ;
 	}
 	
 	if( action == '\0' )
-		return zuluExit( 130,key,newKey,exKey,"ERROR: \"action\" argument is missing\n" ) ;	
+		return zuluExit( 130,stm,"ERROR: \"action\" argument is missing\n" ) ;	
 	
 	if( device == NULL )
-		return zuluExit( 120,key,newKey,exKey,"ERROR: required option( device path ) is missing for this operation\n" ) ;		
+		return zuluExit( 120,stm,"ERROR: required option( device path ) is missing for this operation\n" ) ;		
 	
 	if( strncmp( device,"UUID=",5 ) == 0 ){
 
@@ -209,10 +218,10 @@ int main( int argc,char * argv[] )
 			st = zuluCryptEXE( &clargs,mapping_name,uid );			
 			free( ac ) ;
 			StringDelete( &q ) ;
-			return zuluExit( st,key,newKey,exKey,NULL ) ;
+			return zuluExit( st,stm,NULL ) ;
 		}else{
 			StringDelete( &q ) ;
-			return zuluExit( 110,key,newKey,exKey,"ERROR: could not find any partition with the presented UUID\n") ;
+			return zuluExit( 110,stm,"ERROR: could not find any partition with the presented UUID\n") ;
 		}
 	}else{
 		if ( ( ac = strrchr( device,'/' ) ) != NULL ) {
@@ -224,5 +233,5 @@ int main( int argc,char * argv[] )
 
 	st = zuluCryptEXE( &clargs,mapping_name,uid ) ;	
 	
-	return zuluExit( st,key,newKey,exKey,NULL ) ;
+	return zuluExit( st,stm,NULL ) ;
 } 

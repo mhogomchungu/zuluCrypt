@@ -21,11 +21,14 @@
 #include <sys/types.h>
 #include <string.h>
  
-string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * name,uid_t uid,char ** argv ) ;
+string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * name,uid_t uid,const char * argv ) ;
 
 static int zuluExit( int st,char * device,char * m_point,stringManage_t stm )
 {
-	StringManageClearDelete( stm ) ;
+	/*
+	 * this function is defined in ../string/StringManage.c
+	 */
+	StringManageClearDelete( &stm ) ;
 	
 	switch ( st ){
 		case 0 : printf( "SUCCESS: Volume opened successfully\n" ) ;								break ;
@@ -92,7 +95,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	const char * source      = opts->key_source ;
 	const char * pass        = opts->key ;
 	const char * plugin_path = opts->plugin_path ;
-	char ** argv      	 = opts->argv ;
+	const char * argv      	 = opts->argv ;
 		
 	stringManage_t stm = StringManage( 3 ) ;
 	

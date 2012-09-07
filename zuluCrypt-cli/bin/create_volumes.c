@@ -21,7 +21,10 @@
 
 static int zuluExit( int st,stringManage_t stm )
 {
-	StringManageClearDelete( stm ) ;
+	/*
+	 * this function is defined in ../string/StringManage.c
+	 */
+	StringManageClearDelete( &stm ) ;
 	
 	switch ( st ){
 		case 0 : printf( "SUCCESS: volume created successfully\n" ) ;					break  ;
@@ -56,7 +59,7 @@ static int zuluExit( int st,stringManage_t stm )
 
 static int zuluExit_1( const char * type,stringManage_t stm )
 {
-	StringManageClearDelete( stm ) ;
+	StringManageClearDelete( &stm ) ;
 	
 	printf( "SUCCESS: volume created successfully\n" ) ;
 	

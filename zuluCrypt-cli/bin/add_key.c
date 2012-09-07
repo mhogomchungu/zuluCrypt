@@ -56,7 +56,7 @@ static int zuluExit( int st,stringManage_t stm )
 	/*
 	 * this function is defined in ../string/StringManage.c
 	 */
-	StringManageClearDelete( stm ) ;
+	StringManageClearDelete( &stm ) ;
 	
 	switch ( st ){
 		case 0  : printf( "SUCCESS: key added successfully\n" );	                              	break ;		
@@ -83,7 +83,7 @@ static int zuluExit( int st,stringManage_t stm )
 
 static int zuluExit_1( int st,const char * device,stringManage_t stm )
 {
-	StringManageClearDelete( stm ) ;	
+	StringManageClearDelete( &stm ) ;	
 	printf( "ERROR: device \"%s\" is not a luks device\n",device ) ;
 	return st ;
 }
