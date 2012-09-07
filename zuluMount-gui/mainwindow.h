@@ -77,6 +77,7 @@ private:
 
 	bool m_working ;
 	managepartitionthread * m_part ;
+	void disableCommand( void ) ;
 	void disableAll( void ) ;
 	void closeEvent( QCloseEvent * e );
 	void setUpFont( void ) ;

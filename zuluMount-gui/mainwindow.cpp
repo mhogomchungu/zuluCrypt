@@ -76,9 +76,8 @@ MainWindow::MainWindow( QWidget * parent ) :
 void MainWindow::itemClicked( QTableWidgetItem * item )
 {
 	QMenu m ;
-	userfont F( this ) ;
 
-	m.setFont( F.getFont() );
+	m.setFont( this->font() );
 
 	QString mt = m_ui->tableWidget->item( item->row(),1 )->text() ;
 
@@ -149,15 +148,7 @@ void MainWindow::enterKeyPressed()
 void MainWindow::setUpFont()
 {
 	userfont F( this ) ;
-	QFont f( F.getFont() ) ;
-
-	m_ui->cbReadOnly->setFont( f );
-	m_ui->centralWidget->setFont( f );
-	m_ui->pbclose->setFont( f );
-	m_ui->pbmount->setFont( f );
-	m_ui->pbunmount->setFont( f );
-	m_ui->pbupdate->setFont( f );
-	m_ui->tableWidget->setFont( f );
+	this->setFont( F.getFont() ) ;
 }
 
 void MainWindow::closeEvent( QCloseEvent * e )
@@ -299,6 +290,7 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 	}
 
 	this->enableAll();
+	this->disableCommand();
 }
 
 void MainWindow::slotUnmountComplete( int status,QString msg )
@@ -315,6 +307,24 @@ void MainWindow::slotUnmountComplete( int status,QString msg )
 void MainWindow::slotCurrentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous )
 {
 	tablewidget::selectTableRow( current,previous ) ;
+	this->disableCommand();
+}
+
+void MainWindow::disableCommand()
+{
+	int row = m_ui->tableWidget->currentRow() ;
+
+	if( row < 0 )
+		return ;
+	QString entry = m_ui->tableWidget->item( row,1 )->text() ;
+
+	if( entry == QString( "Nil" ) ){
+		m_ui->pbunmount->setEnabled( false );
+		m_ui->pbmount->setEnabled( true );
+	}else{
+		m_ui->pbmount->setEnabled( false );
+		m_ui->pbunmount->setEnabled( true );
+	}
 }
 
 void MainWindow::disableAll()
