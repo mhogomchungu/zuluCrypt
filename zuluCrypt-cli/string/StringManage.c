@@ -82,22 +82,13 @@ string_t * StringManageAssign( stringManage_t stm )
 	return p ;
 }
 
-string_t * StringManageStringGet( stringManage_t stm,string_t * st ) 
-{	
-	if( stm->index == stm->size )
-		return StringVoid ;
-	
-	stm->stp[ stm->index ] = *st ;
-	*st = StringVoid ;
-	st = &stm->stp[ stm->index ] ;		
-	stm->index = stm->index + 1 ; 
-	return st ;	
-}
-
 void StringManageDelete( stringManage_t * s ) 
 {
 	size_t i ;
 	size_t j ;
+	
+	if( s == NULL )
+		return ;
 		
 	stringManage_t stm = * s ;
 	*s = StringManageVoid ;
@@ -181,6 +172,9 @@ void StringManageClearDelete( stringManage_t * s )
 {
 	size_t i ;
 	size_t j ;
+		
+	if( s == NULL )
+		return ;
 	
 	stringManage_t stm = * s ;
 	*s = StringManageVoid ;

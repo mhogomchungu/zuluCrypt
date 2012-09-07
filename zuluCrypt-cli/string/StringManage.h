@@ -39,8 +39,6 @@ void StringManageStringDelete( string_t * ) ;
 
 string_t * StringManageAssign( stringManage_t ) ;
 
-string_t * StringManageStringGet( stringManage_t,string_t * ) ;
-
 void StringManageDelete( stringManage_t * ) ;
 
 void StringManageClearDelete( stringManage_t * ) ;
