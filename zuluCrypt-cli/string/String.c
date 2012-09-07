@@ -526,6 +526,28 @@ const char * StringInsertChar( string_t st,size_t x,char s )
 	return StringInsertString( st,x,c ) ;
 }
 
+const char * StringInsertAndDelete( string_t st,size_t x,const char * s ) 
+{
+	size_t len ;
+	char * c   ; 
+	
+	if( st == StringVoid )
+		return NULL ;
+	if( x < 0 || x > st->size )
+		return NULL ;
+	
+	len = strlen( s ) ;
+	c = __StringExpandMemory( st,st->size + len ) ;
+	
+	if( c != NULL )	{
+		st->string = c ;
+		memcpy( st->string + x,s,len + 1 ) ;
+		st->size = x + len ;		
+	}
+	
+	return c ;
+}
+
 const char * StringPrepend( string_t st,const char * s )
 {
 	char * c ;	

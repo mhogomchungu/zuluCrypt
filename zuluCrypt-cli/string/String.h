@@ -350,6 +350,11 @@ const char * StringSubChar( string_t st,size_t x,char s ) ;
  */
 const char * StringSubString( string_t st,size_t x,const char * s ) ;
 
+/*
+ * remove all character after index x and then insert string s at index.
+ */
+const char * StringInsertAndDelete( string_t st,size_t x,const char * s ) ;
+
 
 /*
  * start at position x and remove y character(s) going right and returns a pointer

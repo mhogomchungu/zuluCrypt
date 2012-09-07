@@ -91,11 +91,10 @@ void managepartitionthread::mount()
 	QProcess p ;
 	QString exe ;
 
-	QString mount_p ;
 	if( m_point.isEmpty() )
-		mount_p = QDir::homePath() + QString( "/" ) + m_device.split( "/" ).last() ;
+		m_point = QDir::homePath() + QString( "/" ) + m_device.split( "/" ).last() ;
 
-	exe = QString( "%1 -m -d \"%2\" -e %3 -z \"%4\"" ).arg( zuluMount ).arg( m_device ).arg( m_mode ).arg( mount_p ) ;
+	exe = QString( "%1 -m -d \"%2\" -e %3 -z \"%4\"" ).arg( zuluMount ).arg( m_device ).arg( m_mode ).arg( m_point ) ;
 
 	p.start( exe );
 	p.waitForFinished() ;

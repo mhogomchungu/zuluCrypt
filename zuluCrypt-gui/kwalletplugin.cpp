@@ -110,7 +110,7 @@ QString kwalletplugin::getKey( QString uuid )
 void kwalletplugin::close()
 {
 	if( m_walletOpened ){
-		KWallet::Wallet::closeWallet( zuluOptions::wallet(),false ) ;
+		//KWallet::Wallet::closeWallet( zuluOptions::wallet(),false ) ;
 		m_wallet->deleteLater();
 	}
 }

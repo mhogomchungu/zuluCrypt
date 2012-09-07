@@ -154,6 +154,11 @@ void kwalletconfig::ShowUI()
 	m_wallet->open() ? this->ShowWalletEntries() : this->HideUI() ;
 }
 
+void kwalletconfig::ReShowUI()
+{
+	this->show();
+}
+
 void kwalletconfig::ShowWalletEntries()
 {
 	if( !m_wallet->setFolder( zuluOptions::formData() ) )
@@ -232,10 +237,9 @@ void kwalletconfig::HideUI()
 {
 	if( m_wallet->isOpen() ){
 		m_wallet->writeMap( m_map ) ;
-		m_wallet->close();
+		//m_wallet->close();
 	}
 
-	m_wallet->deleteLater();
 	emit HideUISignal() ;
 	this->hide();
 }
@@ -248,5 +252,6 @@ void kwalletconfig::closeEvent( QCloseEvent * e )
 
 kwalletconfig::~kwalletconfig()
 {
+	m_wallet->deleteLater();
 	delete m_ui;
 }

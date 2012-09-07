@@ -94,7 +94,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	const char * plugin_path = opts->plugin_path ;
 	char ** argv      	 = opts->argv ;
 		
-	stringManage_t stm = StringManage() ;
+	stringManage_t stm = StringManage( 3 ) ;
 	
 	string_t * passphrase =  StringManageAssign( stm ) ;	
 	string_t * m_name     =  StringManageAssign( stm ) ;	

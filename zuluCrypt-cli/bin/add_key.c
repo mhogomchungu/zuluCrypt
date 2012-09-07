@@ -125,7 +125,7 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 	const char * keyType2    = opts->new_key_source ;
 	const char * newKey      = opts->new_key ;
 	
-	stringManage_t stm = StringManage() ;
+	stringManage_t stm = StringManage( 5 ) ;
 	
 	string_t * presentKey	= StringManageAssign( stm ) ;
 	string_t * newKey_1  	= StringManageAssign( stm ) ; 

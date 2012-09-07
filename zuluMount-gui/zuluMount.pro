@@ -17,7 +17,8 @@ SOURCES += main.cpp\
     ../zuluCrypt-gui/dialogmsg.cpp \
     ../zuluCrypt-gui/userfont.cpp \
     ../zuluCrypt-gui/tablewidget.cpp \
-    ../plugins/kwallet/zulusocket.cpp
+    ../plugins/kwallet/zulusocket.cpp \
+    mountpartition.cpp
 
 HEADERS  += mainwindow.h\
     keydialog.h \
@@ -26,11 +27,13 @@ HEADERS  += mainwindow.h\
     ../zuluCrypt-gui/userfont.h \
     ../zuluCrypt-gui/tablewidget.h \
     ../plugins/kwallet/zulusocket.h \
-    ../zuluCrypt-gui/zuluoptions.h
+    ../zuluCrypt-gui/zuluoptions.h \
+    mountpartition.h
 
 FORMS    += mainwindow.ui\
 	    ../zuluCrypt-gui/dialogmsg.ui \
-	    keydialog.ui
+	    keydialog.ui \
+    mountpartition.ui
 
 RESOURCES += \
     icon.qrc

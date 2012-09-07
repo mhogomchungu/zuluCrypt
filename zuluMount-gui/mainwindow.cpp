@@ -216,13 +216,13 @@ void MainWindow::pbMount()
 		connect( kd,SIGNAL( updatePartitions() ),this,SLOT( pbUpdate() ) ) ;
 		kd->ShowUI();
 	}else{
-		managepartitionthread * part = new managepartitionthread() ;
-		part->setDevice( path );
-		part->setMode( mode );
-		m_ui->tableWidget->setEnabled( false );
-		connect( part,SIGNAL( signalMountComplete( int,QString ) ),this,SLOT( slotMountComplete( int,QString ) ) ) ;
+		mountPartition * mp = new mountPartition( this ) ;
+		connect( mp,SIGNAL( hideUISignal() ),mp,SLOT( deleteLater() ) ) ;
+		connect( mp,SIGNAL( hideUISignal() ),this,SLOT( enableAll() ) ) ;
+		connect( mp,SIGNAL( mounted() ),this,SLOT( pbUpdate() ) ) ;
 
-		part->startAction( QString( "mount" ) ) ;
+		QString label = m_ui->tableWidget->item( row,3 )->text() ;
+		mp->ShowUI( m_device,mode,label );
 	}
 }
 
@@ -296,19 +296,6 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 	}
 
 	this->enableAll();
-}
-
-void MainWindow::slotMountComplete( int status,QString msg )
-{
-	emit result( status,msg );
-
-	if( status ){
-		DialogMsg m( this ) ;
-		m.ShowUIOK( QString( "ERROR" ),msg );
-		this->enableAll();
-	}else{
-		this->pbUpdate();
-	}
 }
 
 void MainWindow::slotUnmountComplete( int status,QString msg )

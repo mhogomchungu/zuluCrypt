@@ -31,7 +31,7 @@ extern "C" {
 
 typedef struct StringManage_t * stringManage_t ;
 
-stringManage_t StringManage( void ) ;
+stringManage_t StringManage( size_t ) ;
 
 string_t * StringManageString( void ) ;
 
@@ -47,7 +47,7 @@ ssize_t StringManageSize( stringManage_t ) ;
 
 string_t StringManageStringAt( stringManage_t,size_t index ) ;
 
-int StringManageMaxSize( void ) ;
+int StringManageMaxSize( stringManage_t ) ;
 
 #ifdef __cplusplus
 }

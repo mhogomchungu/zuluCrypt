@@ -45,6 +45,7 @@ class kwalletconfig : public QWidget
 public:
 	explicit kwalletconfig( QWidget * parent = 0 );
 	~kwalletconfig();
+	void ReShowUI( void ) ;
 	void ShowUI( void ) ;
 	void HideUI( void ) ;
 signals:

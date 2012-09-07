@@ -38,7 +38,7 @@
 #include "../zuluCrypt-gui/dialogmsg.h"
 #include "../zuluCrypt-gui/userfont.h"
 #include "../zuluCrypt-gui/tablewidget.h"
-#include "managepartitionthread.h"
+#include "mountpartition.h"
 
 namespace Ui {
 class MainWindow;
@@ -61,7 +61,6 @@ private slots:
 	void pbMount( void ) ;
 	void pbUmount( void ) ;
 	void pbClose( void ) ;
-	void slotMountComplete( int,QString ) ;
 	void slotUnmountComplete( int,QString ) ;
 	void slotMountedList( QStringList,QStringList ) ;
 	void slotcbReadOnly( void ) ;

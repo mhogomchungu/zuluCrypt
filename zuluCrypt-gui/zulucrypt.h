@@ -149,7 +149,6 @@ private:
 
 	Ui::zuluCrypt * m_ui;
 	QSystemTrayIcon * m_trayIcon ;
-
 };
 
 #endif // ZULUCRYPT_H

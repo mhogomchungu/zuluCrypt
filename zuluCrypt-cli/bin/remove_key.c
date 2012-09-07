@@ -77,7 +77,7 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 	const char * keyType     = opts->key_source ;
 	const char * keytoremove = opts->key ;
 		
-	stringManage_t stm = StringManage() ;
+	stringManage_t stm = StringManage( 2 ) ;
 	
 	string_t * pass    =  StringManageAssign( stm ) ;
 	string_t * confirm =  StringManageAssign( stm ) ;

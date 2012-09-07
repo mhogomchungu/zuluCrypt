@@ -72,8 +72,6 @@ stringList_t zuluCryptPartitionList( void )
 {
 	const char * device ;	
 	
-	string_t st_1 ;
-	
 	size_t i ;
 	size_t j ;	
 	ssize_t index ;	
@@ -82,6 +80,7 @@ stringList_t zuluCryptPartitionList( void )
 	stringList_t stl_1 = StringListVoid ;	
 	
 	string_t st = StringGetFromVirtualFile( "/proc/partitions" ) ;	
+	string_t st_1 ;
 	
 	if( st == StringVoid )
 		return StringListVoid ;
@@ -95,6 +94,8 @@ stringList_t zuluCryptPartitionList( void )
 	
 	j = StringListSize( stl )  ;
 	
+	st_1 = String( "/dev/" ) ;
+	
 	for( i = 0 ; i < j ; i++ ){
 		
 		st = StringListStringAt( stl,i ) ;
@@ -105,18 +106,17 @@ stringList_t zuluCryptPartitionList( void )
 			continue ;
 		
 		device = StringContent( st ) + index + 1 ;
-		
+
 		if( strlen( device  ) <= 3  )
 			continue ;
-	
+		
 		if( ( strncmp( device,"hd",2 ) == 0 || strncmp( device,"sd",2 ) == 0 ) ){			
-			st_1 = String( "/dev/" ) ;
-			StringAppend( st_1,device ) ;
+			StringInsertAndDelete( st_1,5,device ) ;
 			stl_1 = StringListAppendString( stl_1,st_1 ) ;
-			StringDelete( &st_1 ) ;
 		}	
 	}
 	
+	StringDelete( &st_1 ) ;
 	StringListDelete( &stl ) ;
 	return stl_1 ;
 }
