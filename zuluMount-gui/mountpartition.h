@@ -9,9 +9,11 @@
 #include <QCloseEvent>
 #include <QByteArray>
 #include <QFileDialog>
+#include <QFont>
 
 #include "managepartitionthread.h"
 #include "../zuluCrypt-gui/dialogmsg.h"
+#include "../zuluCrypt-gui/userfont.h"
 
 namespace Ui {
 class mountPartition;

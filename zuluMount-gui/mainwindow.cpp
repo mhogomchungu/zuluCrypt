@@ -76,7 +76,10 @@ MainWindow::MainWindow( QWidget * parent ) :
 void MainWindow::itemClicked( QTableWidgetItem * item )
 {
 	QMenu m ;
-	m.setFont( this->font() );
+	userfont F( this ) ;
+
+	m.setFont( F.getFont() );
+
 	QString mt = m_ui->tableWidget->item( item->row(),1 )->text() ;
 
 	if( mt == QString( "Nil" ) )
