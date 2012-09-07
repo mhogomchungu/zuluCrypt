@@ -15,6 +15,8 @@ mountPartition::mountPartition(QWidget *parent) :
 	connect( m_ui->pbMountFolder,SIGNAL( clicked() ),this,SLOT( pbOpenMountPath() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->checkBox,SIGNAL( stateChanged( int ) ),this,SLOT( stateChanged( int ) ) ) ;
+
+	m_ui->pbMountFolder->setIcon( QIcon( QString( ":/folder.png" ) ) );
 }
 
 void mountPartition::pbCancel()

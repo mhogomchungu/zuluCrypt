@@ -5,11 +5,13 @@ add_definitions( -D_FILE_OFFSET_BITS=64 -Wall -pedantic -std=c++0x -I${PROJECT_B
 set (UI_FILES 	../zuluCrypt-gui/dialogmsg.ui
 		mainwindow.ui
 		keydialog.ui
+		mountpartition.ui
 )
 
 set(MOC_FILES 	mainwindow.h
 		keydialog.h
 		managepartitionthread.h
+		mountpartition.h
 		../zuluCrypt-gui/dialogmsg.h
 		../plugins/kwallet/zulusocket.h		
  )
@@ -18,6 +20,7 @@ set (SRC 	main.cpp
 		mainwindow.cpp
 		keydialog.cpp
 		managepartitionthread.cpp
+		mountpartition.cpp
 		../zuluCrypt-gui/dialogmsg.cpp
 		../zuluCrypt-gui/userfont.cpp
 		../zuluCrypt-gui/tablewidget.cpp
