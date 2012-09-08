@@ -29,7 +29,7 @@ public:
 	~mountPartition();
 signals:
 	void hideUISignal( void ) ;
-	void mounted( void ) ;
+	void mounted( QString ) ;
 private slots:
 	void stateChanged( int ) ;
 	void pbMount( void ) ;

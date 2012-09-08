@@ -49,6 +49,7 @@ signals:
 	void signalMountedList( QStringList,QStringList ) ;
 	void signalProperties( QString ) ;
 private:
+	void volumeMiniProperties( void ) ;
 	void volumeProperties( void ) ;
 	void cryptoMount( QString ) ;
 	void cryptoOpen( void );

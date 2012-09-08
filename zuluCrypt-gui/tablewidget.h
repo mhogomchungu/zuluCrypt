@@ -34,6 +34,7 @@ public:
 	static void addRowToTable( QTableWidget *,QStringList &,QFont & );
 	static void deleteRowFromTable( QTableWidget *,int row ) ;
 	static void selectRow( QTableWidget *,int row ) ;
+	static void setText( QTableWidget *,int row,int col,QString text ) ;
 };
 
 #endif // TABLEWIDGET_H

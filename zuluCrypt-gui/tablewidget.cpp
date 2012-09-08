@@ -120,3 +120,14 @@ void tablewidget::selectRow( QTableWidget * table,int row )
 {
 	table->setCurrentCell( row,table->columnCount() - 1 );
 }
+
+void tablewidget::setText( QTableWidget * table,int row,int col,QString text )
+{
+	QFont f = table->item( row,col )->font() ;
+
+	QTableWidgetItem * item = new QTableWidgetItem() ;
+	item->setText( text );
+	item->setTextAlignment( Qt::AlignCenter );
+	item->setFont( f );
+	table->setItem( row,col,item );
+}

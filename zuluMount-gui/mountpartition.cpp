@@ -97,7 +97,7 @@ void mountPartition::slotMountComplete( int status,QString msg )
 		DialogMsg m( this ) ;
 		m.ShowUIOK( QString( "ERROR" ),msg );
 	}else{
-		emit mounted();
+		emit mounted( m_ui->lineEdit->text() );
 		this->saveOptions( m_ui->lineEdit->text(),m_ui->checkBox->isChecked() );
 		this->HideUI();
 	}

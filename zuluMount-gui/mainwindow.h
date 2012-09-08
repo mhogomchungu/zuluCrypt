@@ -55,6 +55,8 @@ signals:
 	void result( int,QString ) ;
 
 private slots:
+	void mounted( QString,QString,QString,QString,QString ) ;
+	void mounted( QString ) ;
 	void volumeProperties( QString );
 	void volumeProperties( void ) ;
 	void enterKeyPressed( void ) ;

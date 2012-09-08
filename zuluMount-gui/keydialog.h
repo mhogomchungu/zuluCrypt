@@ -29,12 +29,13 @@ public:
 	void ShowUI( void );
 	void HideUI( void ) ;
 signals:
+	void mounted( QString,QString,QString,QString,QString ) ;
 	void cryptoOpen( QString ) ;
 	void hideUISignal( void ) ;
-	void updatePartitions( void ) ;
 public slots:
 	void slotMountComplete( int,QString ) ;
 private slots:
+	void volumeProperties( QString ) ;
 	void sendKey( zuluSocket * ) ;
 	void pbMountPointPath( void ) ;
 	void pbPluginEntryClicked( QAction * ) ;

@@ -242,17 +242,36 @@ void MainWindow::pbMount()
 		keyDialog * kd = new keyDialog( this,path,mode ) ;
 		connect( kd,SIGNAL( hideUISignal() ),kd,SLOT( deleteLater() ) ) ;
 		connect( kd,SIGNAL( hideUISignal() ),this,SLOT( enableAll() ) ) ;
-		connect( kd,SIGNAL( updatePartitions() ),this,SLOT( pbUpdate() ) ) ;
+		connect( kd,SIGNAL( mounted( QString,QString,QString,QString,QString ) ),
+			 this,SLOT( mounted( QString,QString,QString,QString,QString ) ) ) ;
 		kd->ShowUI();
 	}else{
 		mountPartition * mp = new mountPartition( this ) ;
 		connect( mp,SIGNAL( hideUISignal() ),mp,SLOT( deleteLater() ) ) ;
 		connect( mp,SIGNAL( hideUISignal() ),this,SLOT( enableAll() ) ) ;
-		connect( mp,SIGNAL( mounted() ),this,SLOT( pbUpdate() ) ) ;
+		connect( mp,SIGNAL( mounted( QString ) ),this,SLOT( mounted( QString ) ) ) ;
 
 		QString label = m_ui->tableWidget->item( row,3 )->text() ;
 		mp->ShowUI( m_device,mode,label );
 	}
+}
+
+void MainWindow::mounted( QString path )
+{
+	QTableWidget * table = m_ui->tableWidget ;
+	QTableWidgetItem * item = table->item( table->currentRow(),1 ) ;
+	item->setText( path ) ;
+}
+
+void MainWindow::mounted( QString path,QString total,QString used,QString perc,QString label )
+{
+	QTableWidget * table = m_ui->tableWidget ;
+	int row = table->currentRow() ;
+	tablewidget::setText( table,row,1,path ) ;
+	tablewidget::setText( table,row,3,label ) ;
+	tablewidget::setText( table,row,4,total ) ;
+	tablewidget::setText( table,row,5,used ) ;
+	tablewidget::setText( table,row,6,perc ) ;
 }
 
 void MainWindow::pbUmount()
@@ -312,18 +331,6 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 			tablewidget::addRowToTable( table,entries ) ;
 	}
 
-	if( m_justMounted ){
-		m_justMounted = false ;
-		QTableWidget * table = m_ui->tableWidget ;
-		int j = table->rowCount() ;
-		for( int row = 0 ; row < j ; row++ ){
-			if( table->item( row,0 )->text() == m_device ){
-				tablewidget::selectRow( table,row ) ;
-				break ;
-			}
-		}
-	}
-
 	this->enableAll();
 	this->disableCommand();
 }
@@ -335,7 +342,17 @@ void MainWindow::slotUnmountComplete( int status,QString msg )
 		m.ShowUIOK( QString( "ERROR" ),msg );
 		this->enableAll();
 	}else{
-		this->pbUpdate();
+		QTableWidget * table = m_ui->tableWidget ;
+		int row = table->currentRow() ;
+		table->item( row,1 )->setText( QString( "Nil" ) );
+		if( table->item( row,2 )->text() == QString( "crypto_LUKS" ) ){
+			table->item( row,3 )->setText( QString( "Nil" ) );
+			table->item( row,4 )->setText( QString( "Nil" ) );
+			table->item( row,5 )->setText( QString( "Nil" ) );
+			table->item( row,6 )->setText( QString( "Nil" ) );
+		}
+
+		this->enableAll();
 	}
 }
 
@@ -377,12 +394,16 @@ void MainWindow::enableAll()
 {
 	m_ui->cbReadOnly->setEnabled( true );
 	m_ui->pbclose->setEnabled( true );
-	m_ui->pbmount->setEnabled( true );
 	m_ui->pbupdate->setEnabled( true );
 	m_ui->tableWidget->setEnabled( true );
-	m_ui->tableWidget->setFocus();
-	m_ui->pbunmount->setEnabled( true );
 	m_working = false ;
+	if( m_ui->tableWidget->item( m_ui->tableWidget->currentRow(),1 )->text() == QString( "Nil" ) )
+		m_ui->pbmount->setEnabled( true );
+	else
+		m_ui->pbunmount->setEnabled( true );
+
+	m_ui->tableWidget->setFocus();
+
 }
 
 MainWindow::~MainWindow()

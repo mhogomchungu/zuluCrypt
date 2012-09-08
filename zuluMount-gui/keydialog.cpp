@@ -157,11 +157,39 @@ void keyDialog::closeEvent( QCloseEvent * e )
 	this->HideUI();
 }
 
+void keyDialog::volumeProperties( QString p )
+{
+	QStringList l ;
+	QString total ;
+	QString used ;
+	QString perc ;
+	QString label ;
+
+	if( p.isEmpty() ){
+		total = QString( "0" ) ;
+		used  = QString( "0" ) ;
+		perc  = QString( "0%" );
+		label = QString( "Nil" ) ;
+	}else{
+		l = p.split( "\t" ) ;
+		label = l.at( 2 ) ;
+		total = l.at( 3 ) ;
+		used = l.at( 4 ) ;
+		perc = l.at( 5 ) ;
+		perc.remove( QChar( '\n' ) ) ;
+	}
+
+	emit mounted( m_ui->lineEditMountPoint->text(),total,used,perc,label );
+	this->HideUI();
+}
+
 void keyDialog::slotMountComplete( int st,QString m )
 {
 	if( st == 0 ){
-		emit updatePartitions();
-		this->HideUI();
+		managepartitionthread * mpt = new managepartitionthread() ;
+		mpt->setDevice( m_path );
+		connect( mpt,SIGNAL( signalProperties( QString ) ),this,SLOT( volumeProperties( QString ) ) ) ;
+		mpt->startAction( QString( "volumeMiniProperties" ) ) ;
 	}else{
 		DialogMsg msg( this ) ;
 

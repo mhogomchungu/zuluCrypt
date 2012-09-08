@@ -43,7 +43,7 @@ char * zuluCryptVolumeDeviceName( const char * ) ;
 char * realpath( const char * path,char * resolved_path ) ;
 #endif
 
-static void zuluMountPartitionProperties( const char * path,const char * m_point )
+void zuluMountPartitionProperties( const char * path,const char * mapper,const char * m_point )
 {
 	#define SIZE 64
 	
@@ -65,12 +65,15 @@ static void zuluMountPartitionProperties( const char * path,const char * m_point
 	
 	blkid_do_probe( blkid );
 	
-	total = blkid_probe_get_size( blkid ) ;
-	
 	if( blkid_probe_lookup_value( blkid,"TYPE",&g,NULL ) == 0 )
 		printf( "\t%s",g ) ;
 	else
 		printf( "\tNil" ) ;
+	
+	blkid_free_probe( blkid );
+	
+	blkid = blkid_new_probe_from_filename( mapper ) ;
+	blkid_do_probe( blkid );
 	
 	if( blkid_probe_lookup_value( blkid,"LABEL",&g,NULL ) == 0 )
 		printf( "\t%s",g ) ;
@@ -79,28 +82,24 @@ static void zuluMountPartitionProperties( const char * path,const char * m_point
 	
 	blkid_free_probe( blkid );
 	
-	if( total >= 0 ){
-		g = StringIntToString_1( buffer,SIZE,total ) ;
-		/*
-		 * format_size() is defined in ../zuluCrypt-cli/lib/status.c
-		 */
-		zuluCryptFormatSize( format,g ) ;
-		printf( "\t%s",format ) ;
-	}else{
-		printf( "\tNil" ) ;
-	}
-	
 	if( m_point == NULL ){
-		printf( "\tNil\tNil\n" ) ;
+		printf( "\tNil\tNil\tNil\n" ) ;
 		return ;
 	}
 		
 	if( statvfs( m_point,&vfs ) != 0 ){
-		printf( "\tNil\tNil\n" ) ;
+		printf( "\tNil\tNil\tNil\n" ) ;
 		return ;
 	}
 	
 	block_size = vfs.f_frsize ;
+	
+	total = block_size * vfs.f_blocks  ;
+	
+	g = StringIntToString_1( buffer,SIZE,total ) ;
+	zuluCryptFormatSize( format,g ) ;
+	printf( "\t%s",format ) ;
+	
 	free =  block_size * vfs.f_bavail  ;
 		
 	used = total - free ;
@@ -203,7 +202,7 @@ int zuluMountPrintMountedVolumes( uid_t uid )
 				f = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;				
 				
 				printf( "%s\t%s",x,f ) ;				
-				zuluMountPartitionProperties( x,f ) ;
+				zuluMountPartitionProperties( x,q,f ) ;
 				
 				free( x ) ;
 			}	
@@ -213,7 +212,7 @@ int zuluMountPrintMountedVolumes( uid_t uid )
 			f = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;
 			
 			printf( "%s\t%s",e,f ) ;
-			zuluMountPartitionProperties( e,f ) ;			
+			zuluMountPartitionProperties( e,e,f ) ;			
 		}		
 		
 		StringListDelete( &stx ) ;
@@ -227,7 +226,7 @@ int zuluMountPrintMountedVolumes( uid_t uid )
 	for( i = 0 ; i < j ; i++ ){
 		e = StringListContentAt( stz,i ) ;
 		printf( "%s\tNil",e ) ;
-		zuluMountPartitionProperties( e,NULL ) ;		
+		zuluMountPartitionProperties( e,e,NULL ) ;		
 	}
 	
 	StringDelete( &mapper ) ;

@@ -50,6 +50,10 @@ void managepartitionthread::run()
 	}else if( m_action == QString( "volumeProperties" ) ){
 
 		this->volumeProperties();
+
+	}else if( m_action == QString( "volumeMiniProperties" ) ){
+
+		this->volumeMiniProperties() ;
 	}
 }
 
@@ -78,6 +82,28 @@ void managepartitionthread::volumeProperties()
 	QString exe ;
 
 	exe = QString( "%1 -s -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;
+
+	p.start( exe );
+	p.waitForFinished() ;
+
+	QString output = QString( p.readAll() ) ;
+
+	if( p.exitCode() ){
+		QString failed ;
+		emit signalProperties( failed );
+	}else{
+		emit signalProperties( output );
+	}
+
+	p.close();
+}
+
+void managepartitionthread::volumeMiniProperties()
+{
+	QProcess p ;
+	QString exe ;
+
+	exe = QString( "%1 -t -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;
 
 	p.start( exe );
 	p.waitForFinished() ;

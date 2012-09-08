@@ -35,6 +35,9 @@
 
 int zuluMountPrintMountedVolumes( uid_t uid ) ;
 string_t zuluCryptGetUserHomePath( uid_t uid ) ;
+char * zuluCryptGetMountPointFromPath( const char * path ) ;
+string_t zuluCryptCreateMapperName( const char * device,const char * mapping_name,uid_t uid,int i ) ;
+void zuluMountPartitionProperties( const char * mapper,const char * device,const char * m_point ) ;
 
 #ifdef __STDC__
 char * realpath( const char * path, char * resolved_path ) ;
@@ -53,9 +56,10 @@ static int mount_get_opts( int argc,char * argv[],const char ** action,const cha
 			   const char ** m_point, const char ** mode,const char ** key,const char ** key_source )
 {
 	int c ;
-	while ( ( c = getopt( argc,argv,"SshlMmUud:z:e:p:f:G:" ) ) != -1 ) {
+	while ( ( c = getopt( argc,argv,"tSshlMmUud:z:e:p:f:G:" ) ) != -1 ) {
 		switch( c ){
-			case 's' : *action  = "-s"   ; break ;			
+			case 't' : *action  = "-t"   ; break ;
+			case 's' : *action  = "-s"   ; break ;
 			case 'S' : *action  = "-S"   ; break ;
 			case 'U' : *action  = "-U"   ; break ;
 			case 'M' : *action  = "-M"   ; break ;
@@ -382,6 +386,39 @@ int zuluMountVolumeStatus( const char * device,uid_t uid )
 	return zuluCryptEXEVolumeInfo( strrchr( device,'/' ) + 1,device,uid ) ;
 }
 
+int zuluMiniProperties( const char * device,uid_t uid )
+{
+	int st ;
+	char * d ;
+	string_t p = zuluCryptCreateMapperName( device,strrchr( device,'/' ) + 1,uid,CLOSE ) ;
+
+	if( p == StringVoid ){
+		printf( "Nil\t0\t0\t0\t\n" ) ;
+		st = 1 ;
+	}else{
+		/*
+		 * this function is defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c
+		 */
+		d = zuluCryptGetMountPointFromPath( StringContent( p ) ) ;
+		
+		if( d == NULL ){
+			printf( "Nil\t0\t0\t0\t\n" ) ;
+			st = 1 ;
+		}else{
+			/*
+			* this function is defined in print_mounted_volumes.c
+			*/
+			zuluMountPartitionProperties( device,StringContent( p ),d ) ;
+			free( d ) ;
+			st = 0 ;
+		}
+
+		StringDelete( &p ) ;			
+	}	
+	
+	return st ;
+}
+
 static int zuluMountExe( const char * device, const char * action,const char * m_point,const char * mode,uid_t uid,const char * key,const char * key_source )
 {	
 	if( strcmp( action,"-m" ) == 0 )
@@ -394,6 +431,8 @@ static int zuluMountExe( const char * device, const char * action,const char * m
 		return zuluMountCryptoUMount( device,uid ) ;
 	else if( strcmp( action,"-s" ) == 0 )
 		return zuluMountVolumeStatus( device,uid ) ;		
+	else if( strcmp( action,"-t" ) == 0 )
+		return zuluMiniProperties( device,uid ) ;
 	else
 		return zuluExit( 118,NULL,NULL,"ERROR: unrecognized argument encountered" ) ;	
 }
