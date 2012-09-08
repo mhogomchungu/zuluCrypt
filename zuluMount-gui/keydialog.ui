@@ -117,7 +117,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QPushButton" name="pbOpenKeyFile">
+  <widget class="QPushButton" name="pbPlugin">
    <property name="geometry">
     <rect>
      <x>390</x>
@@ -169,12 +169,25 @@
     </rect>
    </property>
   </widget>
+  <widget class="QPushButton" name="pbkeyFile">
+   <property name="geometry">
+    <rect>
+     <x>390</x>
+     <y>20</y>
+     <width>31</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
  </widget>
  <tabstops>
   <tabstop>lineEditKey</tabstop>
   <tabstop>rbKey</tabstop>
   <tabstop>rbKeyFile</tabstop>
-  <tabstop>pbOpenKeyFile</tabstop>
+  <tabstop>pbPlugin</tabstop>
   <tabstop>pbOpen</tabstop>
   <tabstop>pbCancel</tabstop>
  </tabstops>

@@ -45,6 +45,7 @@ private slots:
 	void pbOpen( void ) ;
 	void pbCancel( void ) ;
 	void pbPlugin( void );
+	void pbKeyFile( void ) ;
 private:
 	void enableAll( void ) ;
 	void disableAll( void ) ;
