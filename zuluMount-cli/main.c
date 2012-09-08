@@ -53,9 +53,10 @@ static int mount_get_opts( int argc,char * argv[],const char ** action,const cha
 			   const char ** m_point, const char ** mode,const char ** key,const char ** key_source )
 {
 	int c ;
-	while ( ( c = getopt( argc,argv,"shlMmUud:z:e:p:f:G:" ) ) != -1 ) {
+	while ( ( c = getopt( argc,argv,"SshlMmUud:z:e:p:f:G:" ) ) != -1 ) {
 		switch( c ){
-			case 's' : *action  = "-s"   ; break ;
+			case 's' : *action  = "-s"   ; break ;			
+			case 'S' : *action  = "-S"   ; break ;
 			case 'U' : *action  = "-U"   ; break ;
 			case 'M' : *action  = "-M"   ; break ;
 			case 'l' : *action  = "-l"   ; break ;
@@ -376,6 +377,11 @@ static int zuluMountCryptoUMount( const char * device,uid_t uid )
 	return zuluCryptEXECloseVolume( device,mapping_name,uid ) ;	
 }
 
+int zuluMountVolumeStatus( const char * device,uid_t uid )
+{
+	return zuluCryptEXEVolumeInfo( strrchr( device,'/' ) + 1,device,uid ) ;
+}
+
 static int zuluMountExe( const char * device, const char * action,const char * m_point,const char * mode,uid_t uid,const char * key,const char * key_source )
 {	
 	if( strcmp( action,"-m" ) == 0 )
@@ -386,6 +392,8 @@ static int zuluMountExe( const char * device, const char * action,const char * m
 		return zuluMountCryptoMount( device,mode,uid,key,key_source,m_point ) ;
 	else if( strcmp( action,"-U" ) == 0 )
 		return zuluMountCryptoUMount( device,uid ) ;
+	else if( strcmp( action,"-s" ) == 0 )
+		return zuluMountVolumeStatus( device,uid ) ;		
 	else
 		return zuluExit( 118,NULL,NULL,"ERROR: unrecognized argument encountered" ) ;	
 }
@@ -440,14 +448,14 @@ int main( int argc,char * argv[] )
 	if( action == NULL )
 		return zuluExit( 122,NULL,NULL,"ERROR: action not specified" ) ;
 	
-	if( strcmp( action,"-s" ) == 0 ){
+	if( strcmp( action,"-S" ) == 0 ){
 		/*
 		 * function is defined in ../zuluCrypt-cli/bin/partitions.c
 		 * it printf() devices with entries in "/etc/fstab","/etc/crypttab", and "/etc/zuluCrypttab"
 		 */
 		return zuluCryptPrintPartitions( SYSTEM_PARTITIONS ) ;		
 	}
-	
+		
 	if( strcmp( action,"-l" ) == 0 )
 		return zuluMountMmountedList( uid ) ;
 	

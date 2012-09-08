@@ -47,7 +47,9 @@ signals:
 	void signalMountComplete( int,QString ) ;
 	void signalUnmountComplete( int,QString ) ;
 	void signalMountedList( QStringList,QStringList ) ;
+	void signalProperties( QString ) ;
 private:
+	void volumeProperties( void ) ;
 	void cryptoMount( QString ) ;
 	void cryptoOpen( void );
 	void run( void ) ;
@@ -60,6 +62,7 @@ private:
 	QString m_keySource ;
 	QString m_mode ;
 	QString m_type ;
+	QString m_properties ;
 };
 
 #endif // MANAGEPARTITIONTHREAD_H

@@ -80,12 +80,47 @@ void MainWindow::itemClicked( QTableWidgetItem * item )
 	m.setFont( this->font() );
 
 	QString mt = m_ui->tableWidget->item( item->row(),1 )->text() ;
+	QString type = m_ui->tableWidget->item( item->row(),2 )->text() ;
 
-	if( mt == QString( "Nil" ) )
+	if( mt == QString( "Nil" ) ){
 		connect( m.addAction( tr( "mount" ) ),SIGNAL( triggered() ),this,SLOT( pbMount() ) ) ;
-	else
+	}else{
 		connect( m.addAction( tr( "unmount" ) ),SIGNAL( triggered() ),this,SLOT( pbUmount() ) ) ;
+
+		if( type == QString( "crypto_LUKS" ) ){
+			m.addSeparator() ;
+			connect( m.addAction( tr( "properties" ) ),SIGNAL( triggered() ),this,SLOT( volumeProperties() ) ) ;
+		}
+	}
+
 	m.exec( QCursor::pos() ) ;
+}
+
+void MainWindow::volumeProperties()
+{
+	this->disableAll();
+	managepartitionthread * part = new managepartitionthread() ;
+	part->setDevice( m_ui->tableWidget->item( m_ui->tableWidget->currentRow(),0 )->text() );
+	connect( part,SIGNAL( signalProperties( QString ) ),this,SLOT( volumeProperties( QString ) ) ) ;
+
+	part->startAction( QString( "volumeProperties" ) ) ;
+}
+
+void MainWindow::volumeProperties( QString properties )
+{
+	DialogMsg msg( this ) ;
+
+	if( properties.isEmpty() ){
+		msg.ShowUIOK( tr("ERROR"),tr("could not get volume properties" ) ) ;
+	}else{
+		int i = properties.indexOf( "\n" ) ;
+		if( i != -1 ){
+			msg.ShowUIVolumeProperties( tr("luks volume properties" ),properties.mid( i + 1 ) ) ;
+		}else{
+			msg.ShowUIOK( tr("ERROR"),tr("could not get volume properties" ) ) ;
+		}
+	}
+	this->enableAll();
 }
 
 void MainWindow::setUpShortCuts()

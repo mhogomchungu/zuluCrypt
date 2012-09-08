@@ -55,6 +55,8 @@ signals:
 	void result( int,QString ) ;
 
 private slots:
+	void volumeProperties( QString );
+	void volumeProperties( void ) ;
 	void enterKeyPressed( void ) ;
 	void itemClicked( QTableWidgetItem * ) ;
 	void pbUpdate( void ) ;
@@ -76,7 +78,6 @@ private:
 	QString m_device ;
 
 	bool m_working ;
-	managepartitionthread * m_part ;
 	void disableCommand( void ) ;
 	void disableAll( void ) ;
 	void closeEvent( QCloseEvent * e );

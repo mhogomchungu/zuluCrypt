@@ -91,6 +91,9 @@ void keyDialog::disableAll()
 
 void keyDialog::pbPlugin()
 {
+	if( m_ui->rbKeyFile->isChecked() )
+		return this->pbMountPointPath() ;
+
 	QStringList list ;
 
 	// ZULUCRYPTpluginPath is set at config time and it equals $prefix/lib(64)/zuluCrypt
