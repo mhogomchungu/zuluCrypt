@@ -242,36 +242,60 @@ void MainWindow::pbMount()
 		keyDialog * kd = new keyDialog( this,path,mode ) ;
 		connect( kd,SIGNAL( hideUISignal() ),kd,SLOT( deleteLater() ) ) ;
 		connect( kd,SIGNAL( hideUISignal() ),this,SLOT( enableAll() ) ) ;
-		connect( kd,SIGNAL( mounted( QString,QString,QString,QString,QString ) ),
-			 this,SLOT( mounted( QString,QString,QString,QString,QString ) ) ) ;
+		connect( kd,SIGNAL( mounted( QString ) ),this,SLOT( mounted( QString ) ) ) ;
 		kd->ShowUI();
 	}else{
 		mountPartition * mp = new mountPartition( this ) ;
 		connect( mp,SIGNAL( hideUISignal() ),mp,SLOT( deleteLater() ) ) ;
 		connect( mp,SIGNAL( hideUISignal() ),this,SLOT( enableAll() ) ) ;
 		connect( mp,SIGNAL( mounted( QString ) ),this,SLOT( mounted( QString ) ) ) ;
-
 		QString label = m_ui->tableWidget->item( row,3 )->text() ;
 		mp->ShowUI( m_device,mode,label );
 	}
 }
 
-void MainWindow::mounted( QString path )
+void MainWindow::volumeMiniProperties( QString p )
 {
-	QTableWidget * table = m_ui->tableWidget ;
-	QTableWidgetItem * item = table->item( table->currentRow(),1 ) ;
-	item->setText( path ) ;
-}
+	QStringList l ;
+	QString total ;
+	QString used ;
+	QString perc ;
+	QString label ;
 
-void MainWindow::mounted( QString path,QString total,QString used,QString perc,QString label )
-{
+	if( p.isEmpty() ){
+		total = QString( "0" ) ;
+		used  = QString( "0" ) ;
+		perc  = QString( "0%" );
+		label = QString( "Nil" ) ;
+	}else{
+		l = p.split( "\t" ) ;
+		label = l.at( 2 ) ;
+		total = l.at( 3 ) ;
+		used = l.at( 4 ) ;
+		perc = l.at( 5 ) ;
+		perc.remove( QChar( '\n' ) ) ;
+	}
+
 	QTableWidget * table = m_ui->tableWidget ;
 	int row = table->currentRow() ;
-	tablewidget::setText( table,row,1,path ) ;
+
 	tablewidget::setText( table,row,3,label ) ;
 	tablewidget::setText( table,row,4,total ) ;
 	tablewidget::setText( table,row,5,used ) ;
 	tablewidget::setText( table,row,6,perc ) ;
+}
+
+void MainWindow::mounted( QString m_point )
+{
+	QTableWidget * table = m_ui->tableWidget ;
+	int row = table->currentRow() ;
+
+	tablewidget::setText( table,row,1,m_point ) ;
+
+	managepartitionthread * mpt = new managepartitionthread() ;
+	mpt->setDevice( m_ui->tableWidget->item( m_ui->tableWidget->currentRow(),0 )->text() );
+	connect( mpt,SIGNAL( signalProperties( QString ) ),this,SLOT( volumeMiniProperties( QString ) ) ) ;
+	mpt->startAction( QString( "volumeMiniProperties" ) ) ;
 }
 
 void MainWindow::pbUmount()
@@ -345,12 +369,11 @@ void MainWindow::slotUnmountComplete( int status,QString msg )
 		QTableWidget * table = m_ui->tableWidget ;
 		int row = table->currentRow() ;
 		table->item( row,1 )->setText( QString( "Nil" ) );
-		if( table->item( row,2 )->text() == QString( "crypto_LUKS" ) ){
-			table->item( row,3 )->setText( QString( "Nil" ) );
-			table->item( row,4 )->setText( QString( "Nil" ) );
-			table->item( row,5 )->setText( QString( "Nil" ) );
-			table->item( row,6 )->setText( QString( "Nil" ) );
-		}
+
+		table->item( row,3 )->setText( QString( "Nil" ) );
+		table->item( row,4 )->setText( QString( "Nil" ) );
+		table->item( row,5 )->setText( QString( "Nil" ) );
+		table->item( row,6 )->setText( QString( "Nil" ) );
 
 		this->enableAll();
 	}

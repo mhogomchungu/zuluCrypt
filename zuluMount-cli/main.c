@@ -390,7 +390,23 @@ int zuluMiniProperties( const char * device,uid_t uid )
 {
 	int st ;
 	char * d ;
-	string_t p = zuluCryptCreateMapperName( device,strrchr( device,'/' ) + 1,uid,CLOSE ) ;
+	string_t p ;
+	
+	if( zuluCryptVolumeIsLuks( device ) != 0 ){
+		
+		d = zuluCryptGetMountPointFromPath( device ) ;		
+		
+		if( d != NULL ){
+			zuluMountPartitionProperties( device,device,d ) ;
+			free( d ) ;
+			return 0 ;
+		}else{
+			printf( "Nil\t0\t0\t0\t\n" ) ;
+			return 1 ;
+		}
+	}
+	
+	p = zuluCryptCreateMapperName( device,strrchr( device,'/' ) + 1,uid,CLOSE ) ;
 
 	if( p == StringVoid ){
 		printf( "Nil\t0\t0\t0\t\n" ) ;
