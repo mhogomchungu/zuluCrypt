@@ -369,8 +369,8 @@ void MainWindow::slotUnmountComplete( int status,QString msg )
 		QTableWidget * table = m_ui->tableWidget ;
 		int row = table->currentRow() ;
 		table->item( row,1 )->setText( QString( "Nil" ) );
-
-		table->item( row,3 )->setText( QString( "Nil" ) );
+		if( table->item( row,2 )->text() == QString( "crypto_LUKS" ) )
+			table->item( row,3 )->setText( QString( "Nil" ) );
 		table->item( row,4 )->setText( QString( "Nil" ) );
 		table->item( row,5 )->setText( QString( "Nil" ) );
 		table->item( row,6 )->setText( QString( "Nil" ) );
