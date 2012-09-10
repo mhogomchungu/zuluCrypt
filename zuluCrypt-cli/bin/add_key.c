@@ -232,9 +232,10 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 		}
 	}	
 	
-	status = zuluExit( status,stm ) ;
-	
+	/*
+	 * this function is defined in check_invalid_key.c
+	 */
 	zuluCryptCheckInvalidKey( opts->device ) ;
 	
-	return status ;
+	return zuluExit( status,stm ) ;	
 }

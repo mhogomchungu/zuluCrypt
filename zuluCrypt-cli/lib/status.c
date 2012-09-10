@@ -294,7 +294,9 @@ char * zuluCryptVolumeDeviceName( const char * mapper )
 	string_t address ;
 	const char * e ;
 	
-	if( strncmp( mapper,crypt_get_dir(),strlen( crypt_get_dir() ) != 0 ) )
+	e = crypt_get_dir() ;
+	
+	if( strncmp( mapper,e,strlen( e ) != 0 ) )
 		return NULL ;
 	
 	if( crypt_init_by_name( &cd,mapper ) < 0 )
