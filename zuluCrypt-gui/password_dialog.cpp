@@ -349,6 +349,7 @@ void passwordDialog::buttonOpenClicked( void )
 	QString vp = miscfunctions::resolvePath( m_ui->OpenVolumePath->text() ) ;
 
 	QString passPhraseField = m_ui->PassPhraseField->text() ;
+	m_key = m_ui->PassPhraseField->text() ;
 
 	if( mountPointPath.isEmpty() || passPhraseField.isEmpty() || vp.isEmpty() ){
 		DialogMsg msg( this ) ;
