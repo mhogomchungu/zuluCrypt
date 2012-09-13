@@ -37,8 +37,8 @@
 #include "plugin_path.h"
 #include "tablewidget.h"
 #include "../zuluCrypt-cli/constants.h"
-#include "../plugins/kwallet/zulusocket.h"
 #include "zuluoptions.h"
+#include "socketsendkey.h"
 
 class passwordDialog :  public QDialog
 {
@@ -56,7 +56,6 @@ public slots:
 	void ShowUI( QString volumePath,QString mount_point ) ;
 	void clickedPartitionOption( QString );
 private slots :
-	void sendKey( zuluSocket * ) ;
 	void pbPluginEntryClicked( QAction * ) ;
 	void pbPlugin( void ) ;
 	void keyTextChanged( QString ) ;
@@ -72,6 +71,7 @@ private slots :
 	void done( QString );
 	void cbStateChanged( int );
 private :
+	void sendKey( QString sockpath ) ;
 	QString getKeyFromKWallet( void ) ;
 	void setDefaultOpenMode( void );
 	void disableAll( void );

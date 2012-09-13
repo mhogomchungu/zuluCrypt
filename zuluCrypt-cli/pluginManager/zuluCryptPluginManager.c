@@ -34,78 +34,74 @@
  * below header file is created at config time.
  */
 #include "plugin_path.h"
+#include <stdio.h>
 
-
-size_t zuluCryptGetKeyFromSocket( const char * path,string_t * key )
+size_t zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid )
 {	
-	int i ;
 	size_t dataLength = 0 ;
 	char * buffer ;
-
-	socket_t client = SocketLocal( path ) ;	
 	
-	for( i = 0 ;  ; i++ ){				
-		if( SocketConnect( client ) == 0 ){
-			dataLength = SocketGetData( client,&buffer,INTMAXKEYZISE ) ;			
-			if( dataLength > 0 )
-				*key = StringInheritWithSize( &buffer,dataLength ) ;			
-			break ;
-		}else if( i == 10 ){
-			break ;			
-		}else{
-			sleep( 1 ) ;
-		}
-	}	
-		
+	socket_t client ;
+	
+	socket_t server = SocketLocal( sockpath ) ;	
+	
+	unlink( sockpath ) ;
+	
+	SocketBind( server ) ;
+	
+	chown( sockpath,uid,uid ) ;	
+	chmod( sockpath,S_IRWXU | S_IRWXG | S_IRWXO ) ;
+	
+	SocketListen( server ) ;
+	
+	client = SocketAccept( server ) ;
+	
+	dataLength = SocketGetData( client,&buffer,INTMAXKEYZISE ) ;	
+	
+	SocketClose( server ) ;
+	SocketClose( client ) ;
+	
+	SocketDelete( &server ) ;	
 	SocketDelete( &client ) ;
+	
+	if( dataLength > 0 )
+		*key = StringInheritWithSize( &buffer,dataLength ) ;
+	
+	unlink( sockpath ) ;
 	
 	return dataLength ;	
 }
 
 void * zuluCryptPluginManagerOpenConnection( const char * sockpath )
 {
-	/*
-	 * socketPair_t structure is more or less equivalent to vector<socket_t>
-	 * It makes it easier to move around with two  socket_t objects
-	 */
-	socketPair_t sp = SocketPair() ;
+	int i ;	
+	socket_t client = SocketLocal( sockpath ) ;
+		
+	for( i = 0 ;  ; i++ ){
+		if( SocketConnect( client ) == 0 )
+			return ( void * ) client ;
+		else if( i == 20 ){
+			SocketDelete( &client ) ;
+			break ;
+		}else
+			sleep( 1 ) ;	
+	}
 	
-	socket_t server = SocketLocal( sockpath ) ;
-	socket_t client ;
-	
-	SocketPairSet( sp,server,0 ) ;
-	
-	SocketBind( server ) ;
-	SocketListen( server ) ;
-	
-	client = SocketAccept( server ) ;
-	
-	SocketPairSet( sp,client,1 ) ;
-	
-	return ( void * ) sp ;	
+	return NULL ;	
 }
 
-int zuluCryptPluginManagerSendKey( void * p,const char * key,size_t length )
+ssize_t zuluCryptPluginManagerSendKey( void * client,const char * key,size_t length )
 {
-	socketPair_t sp = ( socketPair_t ) p ;
-	socket_t client = SocketPairSecond( sp ) ;
-	return SocketSendData( client,key,length ) ;
+	return client == NULL ? -1 : SocketSendData( ( socket_t )client,key,length ) ;
 }
 
 void zuluCryptPluginManagerCloseConnection( void * p )
-{
-	socketPair_t sp = ( socketPair_t ) p ;
-	socket_t server = SocketPairFirst( sp ) ;
-	socket_t client = SocketPairSecond( sp ) ;
-	
-	const char * sockpath = SocketAddress( server ) ;
-	
-	SocketClose( server ) ;
-	SocketClose( client ) ;
-	
-	unlink( sockpath ) ;
-	
-	SocketPairDelete( &sp ) ;	
+{	
+	if( p != NULL ){
+		socket_t client = ( socket_t ) p;
+		SocketClose( client ) ;
+		SocketDelete( &client ) ;	
+	}
 }
 
 static string_t zuluCryptGetDeviceUUID( const char * device )
@@ -131,7 +127,10 @@ static string_t zuluCryptGetDeviceUUID( const char * device )
 string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * name,uid_t uid,const char * argv )
 {
 	struct passwd * pass ;	
-	socket_t s ;
+	
+	socket_t server ;
+	socket_t client ;
+	
 	char * buffer ;	
 	process_t p ;	
 	
@@ -168,20 +167,17 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		StringDelete( &mpath ) ;
 		return StringVoid ;
 	}	
-		
-	id = StringIntToString( getpid() ) ;
 	
 	path = String( pass->pw_dir ) ;
 	sockpath = StringAppend( path,"/.zuluCrypt-socket/" ) ;
 	
 	mkdir( sockpath,S_IRWXU | S_IRWXG | S_IRWXO ) ;
 	chown( sockpath,uid,uid ) ;
-	chmod( sockpath,S_IRWXU ) ;
+	chmod( sockpath,S_IRWXU ) ;		
+	
+	id = StringIntToString( getpid() ) ;
 	
 	sockpath = StringAppendString( path,id ) ;
-
-	if( stat( sockpath,&st ) == 0 )
-		unlink( sockpath ) ;
 	
 	uuid = zuluCryptGetDeviceUUID( device ) ;
 
@@ -194,29 +190,38 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	ProcessSetArgumentList( p,device,StringContent( uuid ),sockpath,CHARMAXKEYZISE,argv,'\0' ) ;	
 	ProcessStart( p ) ;		
 	
-	s = SocketLocal( sockpath ) ;
+	server = SocketLocal( sockpath ) ;
 	
-	for( i = 0 ; ; i++ ){
-		if( SocketConnect( s ) == 0 ){
-			i = SocketGetData( s,&buffer,INTMAXKEYZISE ) ;
-			if( i > 0 )
-				key = StringInheritWithSize( &buffer,i ) ;
-			SocketClose( s ) ;			
-			break ;
-		}else if( i == 30 ){			
-			ProcessKill( p ) ;
-			break ;
-		}else{
-			sleep( 1 ) ;			
-		}
-	}
+	if( stat( sockpath,&st ) == 0 )
+		unlink( sockpath ) ;
 	
+	SocketBind( server ) ;
+	
+	chown( sockpath,uid,uid ) ;	
+	chmod( sockpath,S_IRWXU | S_IRWXG | S_IRWXO ) ;
+	
+	SocketListen( server ) ;
+	
+	client = SocketAccept( server ) ;
+	
+	i = SocketGetData( client,&buffer,INTMAXKEYZISE ) ;
+	
+	if( i > 0 )
+		key = StringInheritWithSize( &buffer,i ) ;	
+
 	ProcessExitStatus( p ) ;
 	
-	StringMultipleDelete( &mpath,&uuid,&id,&path,'\0' ) ;      
+	SocketClose( server ) ;
+	SocketClose( client ) ;
 	
-	SocketDelete( &s ) ;	
+	unlink( sockpath ) ;
+	
+	SocketDelete( &server ) ;
+	SocketDelete( &client ) ;
+	
 	ProcessDelete( &p ) ;
+	
+	StringMultipleDelete( &mpath,&uuid,&id,&path,'\0' ) ;      
 	
 	return key ;
 }

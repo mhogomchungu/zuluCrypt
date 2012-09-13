@@ -32,7 +32,7 @@
 #include <QProcess>
 #include <QCloseEvent>
 
-#include "../kwallet/zulusocket.h"
+#include "../../zuluCrypt-gui/socketsendkey.h"
 #include "../../zuluCrypt-gui/dialogmsg.h"
 
 namespace Ui {
@@ -63,7 +63,7 @@ private:
 	Ui::MainWindow * m_ui;
 	QString m_addr ;
 	QString m_keyFile ;
-	zuluSocket * m_zuluSocket ;
+	void * m_handle ;
 };
 
 #endif // MAINWINDOW_H

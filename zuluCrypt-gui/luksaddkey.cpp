@@ -252,10 +252,9 @@ void luksaddkey::pbAdd( void )
 	}else{
 		existingPassType = QString( "-u" ) ;
 		ExistingKey = zuluOptions::getSocketPath() + QString( "-existingKey" ) ;
-		zuluSocket * zs_1 = new zuluSocket( this ) ;
-		connect( zs_1,SIGNAL( gotConnected( zuluSocket * ) ),this,SLOT( sendKey_1( zuluSocket * ) ) ) ;
-		connect( zs_1,SIGNAL( doneWritingData() ),zs_1,SLOT( deleteLater() ) ) ;
-		zs_1->startServer( ExistingKey );
+
+		socketSendKey * s = new socketSendKey( this,ExistingKey,m_ui->textEditExistingPassphrase->text().toAscii() ) ;
+		s->sendKey();
 	}
 
 	QString newPassType ;
@@ -266,10 +265,9 @@ void luksaddkey::pbAdd( void )
 		newPassType = QString( "-n" ) ;
 
 		NewKey = zuluOptions::getSocketPath() + QString( "-newKey" ) ;
-		zuluSocket * zs_2 = new zuluSocket( this ) ;
-		connect( zs_2,SIGNAL( gotConnected( zuluSocket * ) ),this,SLOT( sendKey_2( zuluSocket * ) ) ) ;
-		connect( zs_2,SIGNAL( doneWritingData() ),zs_2,SLOT( deleteLater() ) ) ;
-		zs_2->startServer( NewKey );
+
+		socketSendKey * s = new socketSendKey( this,NewKey,m_ui->textEditPassphraseToAdd->text().toAscii() ) ;
+		s->sendKey();
 	}
 
 	QString a = QString( ZULUCRYPTzuluCrypt ) ;
@@ -289,18 +287,6 @@ void luksaddkey::pbAdd( void )
 
 	connect( lakt,SIGNAL( finished( int ) ),this,SLOT( threadfinished( int ) ) ) ;
 	QThreadPool::globalInstance()->start( lakt );
-}
-
-void luksaddkey::sendKey_1( zuluSocket * s )
-{
-	QByteArray data = m_ui->textEditExistingPassphrase->text().toAscii() ;
-	s->sendData( &data );
-}
-
-void luksaddkey::sendKey_2( zuluSocket * s )
-{
-	QByteArray data = m_ui->textEditPassphraseToAdd->text().toAscii() ;
-	s->sendData( &data );
 }
 
 void luksaddkey::threadfinished( int status )

@@ -22,6 +22,7 @@
 #define ZULUCRYPTPLUGINMANAGER
 
 #include <stddef.h>
+#include <sys/types.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -56,12 +57,12 @@ void * zuluCryptPluginManagerOpenConnection( const char * sockpath ) ;
  * The second argument is a buffer to the key to be sent
  * The third argument is the length of the buffer
  */
-int zuluCryptPluginManagerSendKey( void * p,const char * key,size_t length ) ;
+ssize_t zuluCryptPluginManagerSendKey( void * handle,const char * key,size_t length ) ;
 
 /*
  * Close the connection and free up all used memory.
  */
-void zuluCryptPluginManagerCloseConnection( void * p ) ;
+void zuluCryptPluginManagerCloseConnection( void * handle ) ;
 
 /*
  * Sample plugin on how to use the library
@@ -76,6 +77,7 @@ void zuluCryptPluginManagerCloseConnection( void * p ) ;
  *      const char * uuid   = argv[2] ;
  * 	const char * addr   = argv[3] ;
  * 	int len             = atoi( argv[4] ) ;
+ * 	const char * argv   = argv[ 5 ] ;
  * 
  * 	void * handle = zuluCryptPluginManagerStartConnection( addr ) ;
  * 

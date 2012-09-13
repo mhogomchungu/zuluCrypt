@@ -18,20 +18,13 @@
  */
 
 #include "wallet.h"
-#include <iostream>
-#include <QFile>
+#include <QDebug>
 
 wallet::wallet( QString uuid,QString sockAddr )
 {
 	m_uuid = QString( "UUID=\"%1\"" ).arg( uuid ) ;
 	m_sockAddr = sockAddr ;
-}
-
-void wallet::start()
-{
-	m_zuluSocket = new zuluSocket( this ) ;
-	connect( m_zuluSocket,SIGNAL( gotConnected() ),this,SLOT( openWallet() ) ) ;
-	m_zuluSocket->startServer( m_sockAddr );
+	m_handle = socketSendKey::zuluCryptPluginManagerOpenConnection( m_sockAddr ) ;
 }
 
 void wallet::openWallet()
@@ -41,13 +34,13 @@ void wallet::openWallet()
 	if( m_wallet )
 		this->readKwallet();
 	else
-		this->Exit( 1 );
+		QCoreApplication::exit( 1 ) ;
 }
 
 void wallet::SendKey()
 {
-	m_zuluSocket->sendData( &m_key );
-	this->Exit( 0 );
+	socketSendKey::zuluCryptPluginManagerSendKey( m_handle,m_key ) ;
+	this->Exit();
 }
 
 void wallet::readKwallet()
@@ -63,19 +56,17 @@ void wallet::readKwallet()
 	m_wallet->readMap( zuluOptions::key(),map ) ;
 
 	m_key = map.value( m_uuid ).toAscii() ;
-	if( m_key.isEmpty() )
-		return this->Exit( 4 );
-	else
-		this->SendKey();
+
+	this->SendKey();
 }
 
-void wallet::Exit( int st )
+void wallet::Exit( void )
 {
-	QCoreApplication::exit( st ) ;
+	QCoreApplication::exit( 0 ) ;
 }
 
 wallet::~wallet()
 {
-	m_zuluSocket->deleteLater();
+	socketSendKey::zuluCryptPluginManagerCloseConnection( m_handle ) ;
 	m_wallet->deleteLater();
 }

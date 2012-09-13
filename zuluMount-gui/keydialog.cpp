@@ -186,10 +186,9 @@ void keyDialog::pbOpen()
 	if( m_ui->rbKey->isChecked() ){
 		QString addr = zuluOptions::getSocketPath() ;
 		m = QString( "-f ") + addr ;
-		zuluSocket * zs = new zuluSocket( this ) ;
-		connect( zs,SIGNAL( gotConnected( zuluSocket * ) ),this,SLOT( sendKey( zuluSocket * ) ) ) ;
-		connect( zs,SIGNAL( doneWritingData() ),zs,SLOT( deleteLater() ) ) ;
-		zs->startServer( addr );
+
+		socketSendKey * s = new socketSendKey( this,addr,m_ui->lineEditKey->text().toAscii() ) ;
+		s->sendKey();
 	}else if( m_ui->rbKeyFile->isChecked() )
 		m = QString( "-f ") + m_ui->lineEditKey->text().replace( "\"","\"\"\"" ) ;
 	else if( m_ui->rbPlugIn->isChecked() )
@@ -205,12 +204,6 @@ void keyDialog::pbOpen()
 
 	part->startAction( QString( "cryptoOpen" ) ) ;
 	this->disableAll();
-}
-
-void keyDialog::sendKey( zuluSocket * s )
-{
-	QByteArray data = m_ui->lineEditKey->text().toAscii() ;
-	s->sendData( &data );
 }
 
 void keyDialog::rbPlugIn( bool opt )

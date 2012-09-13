@@ -31,7 +31,7 @@
 #include "../../zuluCrypt-gui/zuluoptions.h"
 #include "wallet.h"
 
-#include "zulusocket.h"
+#include "../../zuluCrypt-gui/socketsendkey.h"
 
 #include <cstdlib>
 
@@ -44,19 +44,17 @@ public:
 	wallet( QString uuid,QString sockAddr ) ;
 	~wallet();
 private slots:
-	void start( void ) ;
 	void openWallet( void ) ;
+	void Exit( void ) ;
 private:
 	void SendKey( void ) ;
-	void Exit( int ) ;
 	void readKwallet( void ) ;
-	zuluSocket * m_zuluSocket ;
 	Wallet * m_wallet ;
 	QString m_uuid ;
 	QString m_sockAddr ;
-	QLocalServer * m_server ;
 	QByteArray m_key ;
 	int m_status ;
+	void * m_handle ;
 };
 
 #endif // WALLET_H

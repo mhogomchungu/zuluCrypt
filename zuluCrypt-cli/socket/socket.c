@@ -23,8 +23,6 @@ struct Socket_t
 {
 	int type ;
 	int protocol ;
-	int fread ;
-	int fwrite ;
 	int cmax ;
 	int domain ;
 	socklen_t size ;
@@ -32,47 +30,6 @@ struct Socket_t
 	struct sockaddr_un * local ;
 	struct sockaddr_in * net ;
 };
-
-struct SocketPair_t
-{
-	socket_t first ;
-	socket_t second ;
-};
-
-socketPair_t SocketPair( void )
-{
-	socketPair_t sp = ( socketPair_t ) malloc( sizeof( struct SocketPair_t ) ) ;
-	return sp ;	
-}
-
-void SocketPairSet( socketPair_t sp,socket_t s,size_t index )
-{
-	switch( index ){
-		case 0 : sp->first  = s ; break ;
-		case 1 : sp->second = s ; break ;
-	}
-}
-
-socket_t SocketPairFirst( socketPair_t sp ) 
-{
-	return sp->first ;
-}
-
-socket_t SocketPairSecond( socketPair_t sp )
-{
-	return sp->second ;
-}
-
-void SocketPairDelete( socketPair_t * sp )
-{
-	socketPair_t s = *sp ;
-	*sp = socketPairVoid ;
-	
-	SocketDelete( &s->first )  ;
-	SocketDelete( &s->second ) ;
-	
-	free( s ) ;
-}
 
 socket_t SocketLocal( const char * address )
 {
@@ -84,6 +41,9 @@ socket_t SocketLocal( const char * address )
 socket_t Socket( const char * domain ) 
 {
 	socket_t s = ( socket_t ) malloc( sizeof( struct Socket_t ) ) ;
+	
+	if( s == NULL )
+		return SocketVoid ;
 	
 	if( strcmp( domain,"local" ) == 0 ){
 		s->domain = AF_UNIX ;		
@@ -102,8 +62,6 @@ socket_t Socket( const char * domain )
 	s->type = SOCK_STREAM ;
 	s->protocol = 0 ;
 	s->cmax = 1 ;
-	s->fread = MSG_WAITALL ;
-	s->fwrite = 0 ;
 	
 	s->fd = socket( s->domain,s->type,s->protocol ) ;
 	return s ;	
@@ -111,18 +69,25 @@ socket_t Socket( const char * domain )
 
 void SocketSetOptionType( socket_t s,int option ) 
 {
-	s->type = option ;
+	if( s != SocketVoid )
+		s->type = option ;
 }
 
 void SocketSetProtocolType( socket_t s,int protocol ) 
 {
-	s->protocol = protocol ;
+	if( s != SocketVoid )		
+		s->protocol = protocol ;
 }
 
 void SocketDelete( socket_t * x )
 {
+	if( x == NULL )
+		return ;
+	if( *x == SocketVoid )
+		return ;
+	
 	socket_t s = *x ;
-	*x = NULL ;
+	*x = SocketVoid ;
 	
 	if( s->domain == AF_UNIX )
 		free( s->local ) ;
@@ -134,8 +99,9 @@ void SocketDelete( socket_t * x )
 
 void SocketSetPortNumber( socket_t s,int port ) 
 {
-	if( s->domain == AF_INET )
-		s->net->sin_port = htons( port );
+	if( s != SocketVoid )
+		if( s->domain == AF_INET )
+			s->net->sin_port = htons( port );
 }
 
 #ifdef __STDC__
@@ -156,12 +122,15 @@ void freeaddrinfo( struct addrinfo * );
 
 void SocketSetHostAddress( socket_t s,const char * address ) 
 {
+	size_t size ;
 	struct addrinfo * addr ;
 	struct sockaddr_in * addr_in ;
 	
-	if( s->domain == AF_UNIX )
-		strcpy( s->local->sun_path,address ) ;
-	else{
+	if( s->domain == AF_UNIX ){
+		size = sizeof( s->local->sun_path ) ;
+		strncpy( s->local->sun_path,address,size ) ;
+		s->local->sun_path[ size - 1 ] = '\0' ;
+	}else{
 		if( getaddrinfo( address,NULL,NULL,&addr ) == 0 ){
 			addr_in = ( struct sockaddr_in * ) addr->ai_addr ;		
 			s->net->sin_addr.s_addr = addr_in->sin_addr.s_addr ;		
@@ -172,6 +141,9 @@ void SocketSetHostAddress( socket_t s,const char * address )
 
 const char * SocketAddress( socket_t s )
 {	
+	if( s == SocketVoid )
+		return NULL ;
+	
 	if( s->domain == AF_UNIX )
 		return s->local->sun_path ;
 	else
@@ -180,12 +152,15 @@ const char * SocketAddress( socket_t s )
 
 void SocketSetHostIPAddress( socket_t s,const char * address ) 
 {
-	if( s->domain == AF_INET )
-		s->net->sin_addr.s_addr = inet_addr( address ) ;
+	if( s != SocketVoid )
+		if( s->domain == AF_INET )
+			s->net->sin_addr.s_addr = inet_addr( address ) ;
 }
 
 int SocketBind( socket_t s )
 {
+	if( s == SocketVoid )
+		return -1 ;
 	if( s->domain == AF_UNIX ){
 		unlink( s->local->sun_path ) ;
 		return bind( s->fd,( struct sockaddr * )s->local,s->size ) ;
@@ -198,12 +173,24 @@ socket_t SocketAccept( socket_t s )
 {
 	socket_t x = ( socket_t ) malloc( sizeof( struct Socket_t ) ) ;
 	
+	if( x == NULL )
+		return SocketVoid ;
 	if( s->domain == AF_UNIX ){
 		x->local = ( struct sockaddr_un * ) malloc( s->size ) ;
-		x->fd = accept( s->fd,( struct sockaddr * )x->local,&x->size ) ;
+		if( x->local == NULL ){
+			free( x ) ;
+			return SocketVoid ;
+		}else{
+			x->fd = accept( s->fd,( struct sockaddr * )x->local,&x->size ) ;
+		}
 	}else{
 		x->net = ( struct sockaddr_in * ) malloc( s->size )  ;
-		x->fd = accept( s->fd,( struct sockaddr * )x->net,&x->size ) ;
+		if( x->net == NULL ){
+			free( x ) ;
+			return SocketVoid ;
+		}else{
+			x->fd = accept( s->fd,( struct sockaddr * )x->net,&x->size ) ;
+		}
 	}
 	
 	return x ;
@@ -211,11 +198,14 @@ socket_t SocketAccept( socket_t s )
 
 void SocketSetListenMaximum( socket_t s,int m ) 
 {
-	s->cmax = m ;
+	if( s != SocketVoid )
+		s->cmax = m ;
 }
 
 int SocketConnect( socket_t s ) 
 {
+	if( s == SocketVoid )
+		return -1 ;
 	if( s->domain == AF_UNIX )
 		return connect( s->fd,( struct sockaddr * )s->local,s->size ) ;
 	else
@@ -224,11 +214,12 @@ int SocketConnect( socket_t s )
 
 int SocketListen( socket_t s ) 
 {
+	if( s == SocketVoid )
+		return -1 ;
 	return listen( s->fd,s->cmax ) ;
 }
 
 #define BUFFSIZE 64
-
 size_t SocketGetData( socket_t s,char ** buffer,size_t len ) 
 {
 	size_t i ;
@@ -249,13 +240,13 @@ size_t SocketGetData( socket_t s,char ** buffer,size_t len )
 			
 			if( d == NULL ){
 				free( c ) ;
-				return -1 ;
+				return 0 ;
 			}else{
 				c = d ;
 			}
 		}
 		
-		if( recv( s->fd,c + i,1,s->fread ) <= 0 )
+		if( read( s->fd,c + i,1 ) <= 0 )
 			break ;
 	}	
 	
@@ -266,34 +257,30 @@ size_t SocketGetData( socket_t s,char ** buffer,size_t len )
 	}else{
 		free( c ) ;
 	}
-	
+
 	return i ;
 }
 
 ssize_t SocketSendData( socket_t s,const char * buffer,size_t len ) 
-{	
+{		
 	size_t sent = 0 ;
 	size_t remain = len ;
+	
+	if( s == SocketVoid || buffer == NULL || len < 0 )
+		return -1 ;		
 	do{
-		sent = sent + send( s->fd,buffer + sent,remain,s->fwrite ) ;		
+		sent = sent + write( s->fd,buffer + sent,remain ) ;
 		remain = remain - sent ;
 	}while( sent != len );
 	
 	return sent ;
 }
 
-void SockectSetReadOption( socket_t s,int option ) 
-{
-	s->fread = option ;
-}
-
-void SocketSetWriteOption( socket_t s,int option ) 
-{
-	s->fwrite = option ;
-}
-
 int SocketClose( socket_t s ) 
 {
+	if( s == SocketVoid )
+		return -1 ;
+	shutdown( s->fd,SHUT_RDWR ) ;
 	return close( s->fd ) ;
 }
 

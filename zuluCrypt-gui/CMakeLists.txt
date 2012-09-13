@@ -49,7 +49,7 @@ set( MOC_FILES createfile.h
 		dialogmsg.h
 		managesystemvolumes.h
 		kwalletconfig.h
-		../plugins/kwallet/zulusocket.h
+		socketsendkey.h
  )
 	
 set (SRC createfile.cpp
@@ -86,7 +86,7 @@ set (SRC createfile.cpp
 	kwalletplugin.cpp
 	kwalletconfig.cpp
 	tablewidget.cpp
-	../plugins/kwallet/zulusocket.cpp	
+	socketsendkey.cpp
 )
 
 INCLUDE( ${QT_USE_FILE} )
@@ -99,7 +99,9 @@ QT4_ADD_RESOURCES( TRAY_RC_SRCS icon.qrc)
 
 INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
 				
-add_executable( zuluCrypt-gui ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS})			
+add_executable( zuluCrypt-gui ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
+
+target_link_libraries( zuluCrypt-gui ${zuluPluginManager} ) 
 
 if( library_pwquality )
 	if( kwallet_library )

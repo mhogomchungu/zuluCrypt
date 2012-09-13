@@ -34,22 +34,12 @@ MainWindow::MainWindow( QWidget * parent ) : QMainWindow( parent ),m_ui( new Ui:
 	connect( m_ui->pbKeyFile,SIGNAL( clicked() ),this,SLOT( pbKeyFile() ) ) ;
 
 	this->SetFocus();
-	m_ui->pbOpen->setEnabled( false );
-
-	m_zuluSocket = 0 ;
 }
 
 void MainWindow::SetAddr( QString addr )
 {
 	m_addr = addr ;
-	m_zuluSocket = new zuluSocket( this ) ;
-	m_zuluSocket->startServer( addr );
-	connect( m_zuluSocket,SIGNAL( gotConnected() ),this,SLOT( gotConnected() ) ) ;
-}
-
-void MainWindow::gotConnected()
-{
-	m_ui->pbOpen->setEnabled( true );
+	m_handle = socketSendKey::zuluCryptPluginManagerOpenConnection( m_addr ) ;
 }
 
 void MainWindow::SetFocus()
@@ -64,15 +54,17 @@ void MainWindow::SetFocus()
 
 void MainWindow::pbCancel()
 {
-	this->Exit();
+	this->done();
 }
 
-void MainWindow::Exit()
+#include<QDebug>
+
+void MainWindow::done()
 {
 	this->hide();
-	QCoreApplication::quit() ;
+	//qDebug() << "exiting";
+	QCoreApplication::exit() ;
 }
-
 void MainWindow::pbOpen()
 {
 	QByteArray key = m_ui->lineEditKey->text().toAscii() ;
@@ -86,9 +78,6 @@ void MainWindow::pbOpen()
 		if( kar == QString( "~" ) )
 			m_keyFile = QDir::homePath() + QString( "/" ) + m_keyFile.mid( 1 ) ;
 
-		if( kar != QString( "/" ) )
-			m_keyFile = QDir::homePath() + QString( "/" ) + m_keyFile ;
-
 		QFile file( m_keyFile ) ;
 
 		if( file.open( QIODevice::ReadOnly ) ){
@@ -100,8 +89,9 @@ void MainWindow::pbOpen()
 		}
 	}
 
-	m_zuluSocket->sendData( &key );
-	this->Exit();
+	socketSendKey::zuluCryptPluginManagerSendKey( m_handle,key ) ;
+
+	this->done();
 }
 
 void MainWindow::pbKeyFile()
@@ -115,8 +105,6 @@ void MainWindow::pbKeyFile()
 
 MainWindow::~MainWindow()
 {
-	if( m_zuluSocket )
-		m_zuluSocket->deleteLater();
-
+	socketSendKey::zuluCryptPluginManagerCloseConnection( m_handle ) ;
 	delete m_ui;
 }

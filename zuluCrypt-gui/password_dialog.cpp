@@ -391,16 +391,13 @@ void passwordDialog::buttonOpenClicked( void )
 		}
 	}
 
+	passPhraseField.replace( "\"","\"\"\"" ) ;
+
 	if( passtype == QString( "-p" ) ){
 		passtype = QString( "-f" ) ;
 		passPhraseField = zuluOptions::getSocketPath() ;
-		zuluSocket * zs = new zuluSocket( this ) ;
-		connect( zs,SIGNAL( gotConnected( zuluSocket * ) ),this,SLOT( sendKey( zuluSocket * ) ) ) ;
-		connect( zs,SIGNAL( doneWritingData() ),zs,SLOT( deleteLater() ) ) ;
-		zs->startServer( passPhraseField );
+		this->sendKey( passPhraseField );
 	}
-
-	passPhraseField.replace( "\"","\"\"\"" ) ;
 
 	QString a = QString( ZULUCRYPTzuluCrypt ) ;
 	QString b = vp;
@@ -418,11 +415,10 @@ void passwordDialog::buttonOpenClicked( void )
 	ovt->start();
 }
 
-void passwordDialog::sendKey( zuluSocket * s )
+void passwordDialog::sendKey( QString sockpath )
 {
-	QByteArray data = m_key.toAscii() ;
-
-	s->sendData( &data );
+	socketSendKey * sk = new socketSendKey( this,sockpath,m_key.toAscii() ) ;
+	sk->sendKey();
 }
 
 QString passwordDialog::getKeyFromKWallet()

@@ -13,8 +13,8 @@
 #include "../zuluCrypt-gui/miscfunctions.h"
 #include "../zuluCrypt-cli/constants.h"
 #include "plugin_path.h"
-#include "../plugins/kwallet/zulusocket.h"
 #include "../zuluCrypt-gui/zuluoptions.h"
+#include "../zuluCrypt-gui/socketsendkey.h"
 
 namespace Ui {
 class keyDialog;
@@ -35,7 +35,6 @@ signals:
 public slots:
 	void slotMountComplete( int,QString ) ;
 private slots:
-	void sendKey( zuluSocket * ) ;
 	void pbMountPointPath( void ) ;
 	void pbPluginEntryClicked( QAction * ) ;
 	void keyTextChanged( QString ) ;

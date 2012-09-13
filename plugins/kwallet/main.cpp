@@ -27,7 +27,7 @@ int main( int argc,char * argv[] )
 
 	wallet w( argv[ 2 ],argv[ 3 ] ) ;
 
-	QMetaObject::invokeMethod( &w,"start",Qt::QueuedConnection );
+	QMetaObject::invokeMethod( &w,"openWallet",Qt::QueuedConnection );
 
 	return a.exec() ;
 }

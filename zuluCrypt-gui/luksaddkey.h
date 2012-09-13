@@ -28,7 +28,7 @@
 #include "runinthread.h"
 #include "dialogmsg.h"
 #include "keystrength.h"
-#include "../plugins/kwallet/zulusocket.h"
+#include "socketsendkey.h"
 
 class luksaddkey : public QDialog
 {
@@ -45,8 +45,6 @@ public slots:
 	void ShowUI( void ) ;
 	void HideUI( void ) ;
 private slots:
-	void sendKey_1( zuluSocket * ) ;
-	void sendKey_2( zuluSocket * );
 	void keyChanged( QString ) ;
 	void pbOpenExisitingKeyFile( void ) ;
 	void pbOpenNewKeyFile( void ) ;
@@ -68,7 +66,6 @@ private:
 	QString m_volumePath ;
 	bool m_isWindowClosable ;
 	keystrength * m_keystrength ;
-	zuluSocket * m_zuluSocket ;
 };
 
 #endif // luksaddkeySUI_H

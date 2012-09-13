@@ -19,6 +19,7 @@
 
 #include "runinthread.h"
 #include <QProcess>
+#include <QDebug>
 
 runInThread::runInThread( QString exe )
 {

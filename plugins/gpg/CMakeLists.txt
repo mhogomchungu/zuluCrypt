@@ -6,13 +6,13 @@ INCLUDE( ${QT_USE_FILE} )
 
 QT4_WRAP_UI( UI mainwindow.ui ../../zuluCrypt-gui/dialogmsg.ui )
 
-QT4_WRAP_CPP( MOC mainwindow.h ../../zuluCrypt-gui/dialogmsg.h ../kwallet/zulusocket.h ../kwallet/socketwritedata.h )
+QT4_WRAP_CPP( MOC mainwindow.h ../../zuluCrypt-gui/dialogmsg.h ../../zuluCrypt-gui/socketsendkey.h )
 
 QT4_ADD_RESOURCES( ICON icon.qrc )
 
-add_executable( gpg ${ICON} ${MOC} ${UI} main.cpp mainwindow.cpp ../../zuluCrypt-gui/dialogmsg.cpp ../kwallet/zulusocket.cpp ../kwallet/socketwritedata.cpp )
+add_executable( gpg ${ICON} ${MOC} ${UI} main.cpp mainwindow.cpp ../../zuluCrypt-gui/dialogmsg.cpp ../../zuluCrypt-gui/socketsendkey.cpp )
 
-TARGET_LINK_LIBRARIES( gpg ${QT_LIBRARIES} -lQtNetwork ) 
+TARGET_LINK_LIBRARIES( gpg ${QT_LIBRARIES} ${zuluPluginManager} ) 
 
 set_target_properties( gpg PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread -pedantic " )
 

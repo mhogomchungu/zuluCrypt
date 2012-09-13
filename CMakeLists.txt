@@ -4,6 +4,8 @@ cmake_minimum_required(VERSION 2.6)
 #set( CMAKE_SHARED_LINKER_FLAGS "-s" )
 #set( CMAKE_EXE_LINKER_FLAGS "-s" )
 
+set ( zuluPluginManager "${PROJECT_BINARY_DIR}/zuluCrypt-cli/libzuluCryptPluginManager.so" ) 
+
 find_package( Qt4 REQUIRED )
 
 set( KDEINCLUDE $ENV{KDEDIR}/include )

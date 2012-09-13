@@ -44,7 +44,7 @@ SOURCES += main.cpp\
     kwalletplugin.cpp \
     kwalletconfig.cpp \
     tablewidget.cpp \
-    ../plugins/kwallet/zulusocket.cpp
+    socketsendkey.cpp
 
 HEADERS  += zulucrypt.h password_dialog.h \
     openpartition.h \
@@ -78,9 +78,9 @@ HEADERS  += zulucrypt.h password_dialog.h \
     kwalletplugin.h \
     kwalletconfig.h \
     tablewidget.h \
-    ../plugins/kwallet/zulusocket.h \
     miscfunctions.h \
-    zuluoptions.h
+    zuluoptions.h \
+    socketsendkey.h
 
 
 FORMS    += zulucrypt.ui password.ui \
@@ -104,7 +104,7 @@ TRANSLATIONS =
 
 RESOURCES = icon.qrc
 
-LIBS += -lblkid -lpwquality /home/local/KDE4/lib/libkwalletbackend.so -lgcrypt
+LIBS += -lblkid -lpwquality /home/local/KDE4/lib/libkwalletbackend.so -lgcrypt -lzuluCryptPluginManager
 
 QMAKE_CXXFLAGS += -D_FILE_OFFSET_BITS=64 -Wall
 

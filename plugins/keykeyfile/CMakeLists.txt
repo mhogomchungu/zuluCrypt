@@ -6,13 +6,13 @@ INCLUDE( ${QT_USE_FILE} )
 
 QT4_WRAP_UI( UI mainwindow.ui )
 
-QT4_WRAP_CPP( MOC mainwindow.h ../kwallet/zulusocket.h )
+QT4_WRAP_CPP( MOC mainwindow.h ../../zuluCrypt-gui/socketsendkey.h )
 
 QT4_ADD_RESOURCES( ICON icon.qrc )
 
-add_executable( keykeyfile ${ICON} ${MOC} ${UI} main.cpp mainwindow.cpp ../kwallet/zulusocket.cpp )
+add_executable( keykeyfile ${ICON} ${MOC} ${UI} main.cpp mainwindow.cpp ../../zuluCrypt-gui/socketsendkey.cpp )
 
-TARGET_LINK_LIBRARIES( keykeyfile ${QT_LIBRARIES} -lQtNetwork ) 
+TARGET_LINK_LIBRARIES( keykeyfile ${QT_LIBRARIES} ${zuluPluginManager} ) 
 
 set_target_properties( keykeyfile PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread -pedantic " )
 

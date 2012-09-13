@@ -29,8 +29,6 @@ MainWindow::MainWindow( QWidget * parent ) : QMainWindow( parent ),m_ui( new Ui:
 
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Password );
 
-	m_zuluSocket = 0 ;
-
 	this->setWindowIcon( QIcon( QString( ":/gpg.png" ) ) );
 	m_ui->pbKeyFile->setIcon( QIcon( QString( ":/gpg.png" ) ) );
 
@@ -39,21 +37,16 @@ MainWindow::MainWindow( QWidget * parent ) : QMainWindow( parent ),m_ui( new Ui:
 	connect( m_ui->pbKeyFile,SIGNAL( clicked() ),this,SLOT( pbKeyFile() ) ) ;
 
 	this->SetFocus();
-	m_ui->pbOpen->setEnabled( false );
 }
 
 void MainWindow::SetAddr( QString addr )
 {
 	m_addr = addr ;
-	m_zuluSocket = new zuluSocket( this ) ;
-	connect( m_zuluSocket,SIGNAL( gotConnected() ),this,SLOT( gotConnected() ) ) ;
-	connect( m_zuluSocket,SIGNAL( doneWritingData() ),this,SLOT( doneWritingData() ) ) ;
-	m_zuluSocket->startServer( m_addr );
+	m_handle = socketSendKey::zuluCryptPluginManagerOpenConnection( m_addr ) ;
 }
 
 void MainWindow::gotConnected()
 {
-	m_ui->pbOpen->setEnabled( true );
 }
 
 void MainWindow::SetFocus()
@@ -133,8 +126,7 @@ void MainWindow::pbOpen()
 	if( p.exitCode() == 0 ){
 		QByteArray data = p.readAll() ;
 
-		if( !data.isEmpty() )
-			m_zuluSocket->sendData( &data );
+		socketSendKey::zuluCryptPluginManagerSendKey( m_handle,data ) ;
 	}else{
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR" ),tr("could not decrept the gpg keyfile,wrong key?" ) );
@@ -152,12 +144,13 @@ void MainWindow::pbOpen()
 		f.close();
 		f.remove() ;
 	}
+
+	this->doneWritingData();
 }
 
 void MainWindow::doneWritingData()
 {
 	this->enableAlll();
-	this->hide();
 	this->Exit( 0 );
 }
 
@@ -200,8 +193,6 @@ void MainWindow::enableAlll()
 
 MainWindow::~MainWindow()
 {
-	if( m_zuluSocket )
-		m_zuluSocket->deleteLater();
-
+	socketSendKey::zuluCryptPluginManagerCloseConnection( m_handle ) ;
 	delete m_ui;
 }

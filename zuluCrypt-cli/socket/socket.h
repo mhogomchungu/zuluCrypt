@@ -37,22 +37,9 @@ extern "C" {
 #include <sys/select.h>
 #include <netdb.h>
 
-#define socketVoid     ( ( void * ) 0 )  
-#define socketPairVoid ( ( void * ) 0 )  
+#define SocketVoid     ( ( void * ) 0 )  
 
 typedef struct Socket_t * socket_t ;
-
-typedef struct SocketPair_t * socketPair_t ;
-
-socketPair_t SocketPair( void ) ;
-
-socket_t SocketPairFirst( socketPair_t sp ) ;
-
-socket_t SocketPairSecond( socketPair_t sp ) ;
-
-void SocketPairSet( socketPair_t sp,socket_t s,size_t index ) ;
-
-void SocketPairDelete( socketPair_t * ) ;
 
 socket_t SocketLocal( const char * address ) ;
 
@@ -77,10 +64,6 @@ int SocketListen( socket_t ) ;
 size_t SocketGetData( socket_t,char ** buffer,size_t len ) ;
 
 ssize_t SocketSendData( socket_t,const char * buffer,size_t len ) ;
-
-void SockectSetReadOption( socket_t,int option ) ;
-
-void SocketSetWriteOption( socket_t,int option ) ;
 
 int SocketClose( socket_t ) ;
 

@@ -26,7 +26,7 @@
 #include "ui_luksdeletekey.h"
 #include "runinthread.h"
 #include "dialogmsg.h"
-#include "../plugins/kwallet/zulusocket.h"
+#include "socketsendkey.h"
 
 class luksdeletekey : public QDialog
 {
@@ -51,7 +51,6 @@ private slots:
 	void pbOpenKeyFile( void ) ;
 	void pbOpenVolume( void ) ;
 	void threadfinished( int ) ;
-	void sendKey( zuluSocket * ) ;
 private:
 	void disableAll( void ) ;
 	void enableAll( void ) ;

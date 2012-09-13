@@ -6,11 +6,11 @@ find_package( Qt4 REQUIRED )
 
 INCLUDE( ${QT_USE_FILE} )
 
-QT4_WRAP_CPP( MOC wallet.h zulusocket.h socketwritedata.h )
+QT4_WRAP_CPP( MOC wallet.h ../../zuluCrypt-gui/socketsendkey.h )
 
-add_executable( kwallet ${MOC} main.cpp wallet.cpp zulusocket.cpp socketwritedata.cpp )
+add_executable( kwallet ${MOC} main.cpp wallet.cpp ../../zuluCrypt-gui/socketsendkey.cpp )
 
-TARGET_LINK_LIBRARIES( kwallet ${kwallet_library} -lQtNetwork ) 
+TARGET_LINK_LIBRARIES( kwallet ${kwallet_library} ${zuluPluginManager} ) 
 
 set_target_properties( kwallet PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread -pedantic " )
 

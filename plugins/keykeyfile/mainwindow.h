@@ -27,10 +27,8 @@
 #include <QFileDialog>
 #include <QFile>
 #include <QDir>
-#include <QtNetwork/QLocalServer>
-#include <QtNetwork/QLocalSocket>
 
-#include "../kwallet/zulusocket.h"
+#include "../../zuluCrypt-gui/socketsendkey.h"
 
 namespace Ui {
 class MainWindow;
@@ -48,14 +46,13 @@ private slots:
 	void pbOpen( void ) ;
 	void pbCancel( void ) ;
 	void pbKeyFile( void ) ;
-	void gotConnected( void ) ;
+	void done( void ) ;
 private:
 	void SetFocus( void );
-	void Exit( void ) ;
 	Ui::MainWindow * m_ui;
 	QString m_addr ;
 	QString m_keyFile ;
-	zuluSocket * m_zuluSocket ;
+	void * m_handle ;
 };
 
 #endif // MAINWINDOW_H

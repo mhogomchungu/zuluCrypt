@@ -31,8 +31,8 @@
 #include "createvolumedialog.h"
 #include "dialogmsg.h"
 #include "keystrength.h"
-#include "../plugins/kwallet/zulusocket.h"
 #include "zuluoptions.h"
+#include "socketsendkey.h"
 
 namespace Ui {
     class createpartition;
@@ -61,7 +61,6 @@ private slots:
 	void threadfinished( int );
 	void rng( int ) ;
 	void dialogResult( int );
-	void sendKey( zuluSocket * ) ;
 private:
 	void eraseDataPartition( void );
 	void findInstalledFs( void );

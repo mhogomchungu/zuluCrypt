@@ -13,7 +13,7 @@ set(MOC_FILES 	mainwindow.h
 		managepartitionthread.h
 		mountpartition.h
 		../zuluCrypt-gui/dialogmsg.h
-		../plugins/kwallet/zulusocket.h		
+		../zuluCrypt-gui/socketsendkey.h 		
  )
 	
 set (SRC 	main.cpp
@@ -24,7 +24,7 @@ set (SRC 	main.cpp
 		../zuluCrypt-gui/dialogmsg.cpp
 		../zuluCrypt-gui/userfont.cpp
 		../zuluCrypt-gui/tablewidget.cpp
-		../plugins/kwallet/zulusocket.cpp		
+		../zuluCrypt-gui/socketsendkey.cpp 
 )
 
 find_package( Qt4 REQUIRED )
@@ -41,7 +41,7 @@ INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
 
 add_executable( zuluMount-gui ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )			
 
-TARGET_LINK_LIBRARIES( zuluMount-gui ${QT_LIBRARIES} ${blkid} -lQtNetwork )
+TARGET_LINK_LIBRARIES( zuluMount-gui ${QT_LIBRARIES} ${blkid} ${zuluPluginManager} )
 
 install( TARGETS zuluMount-gui RUNTIME DESTINATION bin )
 
