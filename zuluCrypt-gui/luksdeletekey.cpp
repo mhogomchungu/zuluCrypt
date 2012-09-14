@@ -213,7 +213,7 @@ void luksdeletekey::pbDelete()
 
 	runInThread * ldk = new runInThread( exe ) ;
 	connect( ldk,SIGNAL( finished( int ) ),this,SLOT( threadfinished( int ) ) ) ;
-	QThreadPool::globalInstance()->start( ldk );
+	ldk->start();
 }
 
 void luksdeletekey::threadfinished( int status )

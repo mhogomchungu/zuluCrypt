@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -96,7 +96,7 @@ void manageluksheader::headerBackUp()
 
 void manageluksheader::backUpHeader()
 {
-	this->headerBackUp();	
+	this->headerBackUp();
 }
 
 void manageluksheader::backUpHeader( QString device )
@@ -139,11 +139,15 @@ void manageluksheader::pbOpenLuksHeaderBackUp()
 {
 	QString Z ;
 	QString Y ;
-	if( m_operation == QString( "restore" ) )
+	if( m_operation == QString( "restore" ) ){
 		Z = QFileDialog::getOpenFileName( this,tr( "select a file with a luks backup header" ),QDir::homePath(),0 );
-	else{
+		if( Z.isEmpty() )
+			return ;
+	}else{
 		Z = QFileDialog::getExistingDirectory( this,tr( "select a folder to store the header" ),QDir::homePath(),0 );
 
+		if( Z.isEmpty() )
+			return ;
 		QString p = m_ui->lineEditDevicePath->text().split( "/" ).last() ;
 
 		if( !p.isEmpty() ){
@@ -209,7 +213,7 @@ void manageluksheader::pbCreate()
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "path to device field is empty" ) );
 
 	device.replace( "\"","\"\"\"" ) ;
-	
+
 	QString backUp = m_ui->lineEditBackUpName->text().replace( "\"","\"\"\"" );
 
 	QString exe ;
@@ -225,7 +229,7 @@ void manageluksheader::pbCreate()
 			return ;
 		exe = QString( "%1 -kR -d \"%2\" -f \"%3\"" ).arg( ZULUCRYPTzuluCrypt ).arg( device ).arg( backUp );
 	}
-	
+
 	this->disableAll();
 
 	m_OperationInProgress = true ;
@@ -267,7 +271,7 @@ void manageluksheader::threadExitStatus( int st )
 	m_OperationInProgress = false ;
 	DialogMsg msg( this );
 	switch(  st ){
-		case 0 : msg.ShowUIOK(  tr( "SUCCESS" ),tr( "header saved successfully" ) ) ;
+		case 0 : msg.ShowUIOK(  tr( "SUCCESS" ),tr( "header saved successfully.\nif possible,store it securely." ) ) ;
 			 return this->HideUI();
 		case 1 : msg.ShowUIOK(  tr( "SUCCESS" ),tr( "header restored successfully" ) )	;
 			 return this->HideUI();

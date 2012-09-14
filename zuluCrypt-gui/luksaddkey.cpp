@@ -286,7 +286,7 @@ void luksaddkey::pbAdd( void )
 	runInThread * lakt = new runInThread( exe );
 
 	connect( lakt,SIGNAL( finished( int ) ),this,SLOT( threadfinished( int ) ) ) ;
-	QThreadPool::globalInstance()->start( lakt );
+	lakt->start();
 }
 
 void luksaddkey::threadfinished( int status )
