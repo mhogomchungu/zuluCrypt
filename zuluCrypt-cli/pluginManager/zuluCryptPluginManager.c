@@ -203,22 +203,20 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	SocketListen( server ) ;
 	
 	client = SocketAccept( server ) ;
+	SocketClose( server ) ;
 	
 	i = SocketGetData( client,&buffer,INTMAXKEYZISE ) ;
-	
-	if( i > 0 )
-		key = StringInheritWithSize( &buffer,i ) ;	
-
-	ProcessExitStatus( p ) ;
-	
-	SocketClose( server ) ;
 	SocketClose( client ) ;
 	
-	unlink( sockpath ) ;
+	if( i > 0 )
+		key = StringInheritWithSize( &buffer,i ) ;
 	
 	SocketDelete( &server ) ;
 	SocketDelete( &client ) ;
+
+	unlink( sockpath ) ;
 	
+	ProcessExitStatus( p ) ;
 	ProcessDelete( &p ) ;
 	
 	StringMultipleDelete( &mpath,&uuid,&id,&path,'\0' ) ;      

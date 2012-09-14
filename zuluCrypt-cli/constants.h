@@ -39,7 +39,12 @@
 #define READ 1
 #define WRITE 0
 
-#define KEYFILE_MAX_SIZE 8192000
+/*
+ * The below numbers are cryptsetup default numbers.
+ */
 #define KEY_MAX_SIZE 512
+#define KEYFILE_MAX_SIZE 8192000
+#define INTMAXKEYZISE  8192000
+#define CHARMAXKEYZISE "8192000"
 
 #endif

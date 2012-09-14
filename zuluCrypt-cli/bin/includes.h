@@ -35,12 +35,6 @@
 #include "../socket/socket.h"
 #include "libzuluCrypt-exe.h"
 
-/*
- * The below number is the cryptsetup default amount of maximum bytes to read from a keyfile.
- */
-#define INTMAXKEYZISE  8192000
-#define CHARMAXKEYZISE "8192000"
-
 #ifdef __STDC__
 char * realpath( const char * path, char * resolved_path ) ;
 int getopt(int argc, char * const argv[], const char *optstring);
