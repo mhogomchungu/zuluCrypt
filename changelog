@@ -91,3 +91,11 @@ version 4.5.1
 
 version 4.5.2
 -- a quick update to fix a regression in stand alone file encryption.
+
+version 4.5.3
+-- add a plug in architecture. Its now possible to send zulucrypt-cli passphrases through different means, default plugins can retrieve
+   passphrases from kde kwallet,gnome keyring,gpg encryped key files and a combination of keyfile and passphrase.
+-- show a dialog to warn a user the volume will be opened in read only mode when whey tick the option for the first time.
+-- passphrases are sent to the back end in a more secure way using unix local socket.
+-- small attempt to hide passphrases from ps command if they are passed through the command line argument.
+-- passphrases stored in kde kwallet can be managed from within zulucrypt-gui if their support is enabled at build time.
