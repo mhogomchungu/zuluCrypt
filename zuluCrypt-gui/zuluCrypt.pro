@@ -44,7 +44,8 @@ SOURCES += main.cpp\
     kwalletplugin.cpp \
     kwalletconfig.cpp \
     tablewidget.cpp \
-    socketsendkey.cpp
+    socketsendkey.cpp \
+    openvolumereadonly.cpp
 
 HEADERS  += zulucrypt.h password_dialog.h \
     openpartition.h \
@@ -80,7 +81,8 @@ HEADERS  += zulucrypt.h password_dialog.h \
     tablewidget.h \
     miscfunctions.h \
     zuluoptions.h \
-    socketsendkey.h
+    socketsendkey.h \
+    openvolumereadonly.h
 
 
 FORMS    += zulucrypt.ui password.ui \

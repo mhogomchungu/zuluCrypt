@@ -13,7 +13,7 @@ set(MOC_FILES 	mainwindow.h
 		managepartitionthread.h
 		mountpartition.h
 		../zuluCrypt-gui/dialogmsg.h
-		../zuluCrypt-gui/socketsendkey.h 		
+		../zuluCrypt-gui/socketsendkey.h 
  )
 	
 set (SRC 	main.cpp
@@ -25,6 +25,7 @@ set (SRC 	main.cpp
 		../zuluCrypt-gui/userfont.cpp
 		../zuluCrypt-gui/tablewidget.cpp
 		../zuluCrypt-gui/socketsendkey.cpp 
+		../zuluCrypt-gui/openvolumereadonly.cpp 		
 )
 
 find_package( Qt4 REQUIRED )

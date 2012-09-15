@@ -39,6 +39,7 @@
 #include "../zuluCrypt-cli/constants.h"
 #include "zuluoptions.h"
 #include "socketsendkey.h"
+#include "openvolumereadonly.h"
 
 class passwordDialog :  public QDialog
 {

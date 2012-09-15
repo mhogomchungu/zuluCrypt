@@ -39,6 +39,7 @@
 #include "../zuluCrypt-gui/userfont.h"
 #include "../zuluCrypt-gui/tablewidget.h"
 #include "mountpartition.h"
+#include "../zuluCrypt-gui/openvolumereadonly.h"
 
 namespace Ui {
 class MainWindow;
@@ -72,7 +73,7 @@ private slots:
 	void slotTrayClicked( QSystemTrayIcon::ActivationReason ) ;
 	void slotCurrentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ;
 	void enableAll( void ) ;
-
+	void stateChanged( int ) ;
 private:
 	Ui::MainWindow * m_ui ;
 

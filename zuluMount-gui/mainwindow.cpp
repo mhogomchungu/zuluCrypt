@@ -45,6 +45,9 @@ MainWindow::MainWindow( QWidget * parent ) :
 	connect( m_ui->pbupdate,SIGNAL( clicked()),this,SLOT(pbUpdate() ) ) ;
 	connect( m_ui->pbclose,SIGNAL( clicked() ),this,SLOT( pbClose() ) ) ;
 	connect( m_ui->tableWidget,SIGNAL( itemClicked( QTableWidgetItem * ) ),this,SLOT( itemClicked( QTableWidgetItem * ) ) ) ;
+	connect( m_ui->cbReadOnly,SIGNAL( stateChanged( int ) ),this,SLOT( stateChanged( int ) ) ) ;
+
+	m_ui->cbReadOnly->setCheckState( openvolumereadonly::getOption() );
 
 	this->setUpShortCuts();
 
@@ -219,6 +222,13 @@ void MainWindow::slotcbReadOnly()
 		m_ui->cbReadOnly->setChecked( false );
 	else
 		m_ui->cbReadOnly->setChecked( true );
+}
+
+void MainWindow::stateChanged( int state )
+{
+	m_ui->cbReadOnly->setEnabled( false );
+	m_ui->cbReadOnly->setChecked( openvolumereadonly::setOption( this,state) );
+	m_ui->cbReadOnly->setEnabled( true );
 }
 
 void MainWindow::pbMount()

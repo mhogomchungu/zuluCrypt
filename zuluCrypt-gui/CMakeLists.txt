@@ -87,6 +87,7 @@ set (SRC createfile.cpp
 	kwalletconfig.cpp
 	tablewidget.cpp
 	socketsendkey.cpp
+	openvolumereadonly.cpp
 )
 
 INCLUDE( ${QT_USE_FILE} )

@@ -133,68 +133,13 @@ void passwordDialog::pbPluginEntryClicked( QAction * e )
 void passwordDialog::cbStateChanged( int state )
 {
 	m_ui->checkBoxReadOnly->setEnabled( false );
-	QFile f( QDir::homePath() + QString( "/.zuluCrypt/open_mode" ) ) ;
-	f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
-	f.write( QString::number( state ).toAscii() ) ;
-	f.close();
-
-	if( m_ui->checkBoxReadOnly->isChecked() == false ){
-		m_ui->checkBoxReadOnly->setEnabled( true ) ;
-		return ;
-	}
-
-	DialogMsg msg( this ) ;
-	QString m = tr( "setting this option will cause the volume to open in read only mode" ) ;
-
-	QString path = QDir::homePath() + QString( "/.zuluCrypt/readOnlyOption" ) ;
-
-	f.setFileName( path ) ;
-
-	if( f.exists() ){
-
-		f.open( QIODevice::ReadWrite ) ;
-		QByteArray opt = f.readAll() ;
-		if( opt == QByteArray( "0" ) ) {
-			f.seek( 0 ) ;
-
-			bool st = msg.ShowUIOKDoNotShowOption( tr( "info" ),m ) ;
-
-			st ? f.write( "1" ) : f.write( "0" ) ;
-
-			f.close();
-		}
-	}else{
-		bool st = msg.ShowUIOKDoNotShowOption( tr( "info" ),m ) ;
-
-		f.open( QIODevice::WriteOnly ) ;
-
-		st ? f.write( "1" ) : f.write( "0" ) ;
-
-		f.close();
-	}
-
+	m_ui->checkBoxReadOnly->setChecked( openvolumereadonly::setOption( this,state) );
 	m_ui->checkBoxReadOnly->setEnabled( true );
 }
 
 void passwordDialog::setDefaultOpenMode()
 {
-	QString home = QDir::homePath() + QString( "/.zuluCrypt/" ) ;
-	QDir d( home ) ;
-	if( d.exists() == false )
-		d.mkdir( home ) ;
-
-	QFile f( home + QString( "open_mode" ) ) ;
-
-	if( f.exists() == false ){
-		f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
-		f.write( QString::number( Qt::Unchecked ).toAscii() ) ;
-		f.close();
-	}
-
-	f.open( QIODevice::ReadOnly ) ;
-	int st = QString( f.readAll() ).toInt() ;
-	m_ui->checkBoxReadOnly->setCheckState( ( Qt::CheckState ) st );
-	f.close();
+	m_ui->checkBoxReadOnly->setCheckState( openvolumereadonly::getOption() );
 }
 
 void passwordDialog::closeEvent( QCloseEvent * e )
