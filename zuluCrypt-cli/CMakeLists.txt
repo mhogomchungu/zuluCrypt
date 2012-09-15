@@ -116,6 +116,8 @@
  
  add_library( Process STATIC process/process.c )
  
+ TARGET_LINK_LIBRARIES( Process -pthread ) 
+ 
  add_library( zuluCrypt-exe SHARED ${BIN} )
  
  add_library( zuluCrypt-exe-static STATIC ${BIN} )
