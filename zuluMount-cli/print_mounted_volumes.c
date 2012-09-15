@@ -83,12 +83,12 @@ void zuluMountPartitionProperties( const char * path,const char * mapper,const c
 	blkid_free_probe( blkid );
 	
 	if( m_point == NULL ){
-		printf( "\tNil\tNil\tNil\n" ) ;
+		printf( "\tNil\tNil\n" ) ;
 		return ;
 	}
 		
 	if( statvfs( m_point,&vfs ) != 0 ){
-		printf( "\tNil\tNil\tNil\n" ) ;
+		printf( "\tNil\tNil\n" ) ;
 		return ;
 	}
 	
@@ -103,11 +103,12 @@ void zuluMountPartitionProperties( const char * path,const char * mapper,const c
 	free =  block_size * vfs.f_bavail  ;
 		
 	used = total - free ;
-		
+	
+	/*
 	g = StringIntToString_1( buffer,SIZE,used ) ;
 	zuluCryptFormatSize( format,g ) ;
 	printf( "\t%s",format ) ;
-	
+	*/
 	snprintf( buff,SIZE,"%.2f%%",100 * ( ( float ) used / ( float ) total ) ) ;
 	printf( "\t%s\n",buff ) ;	
 }

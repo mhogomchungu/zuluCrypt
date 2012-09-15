@@ -29,12 +29,11 @@ MainWindow::MainWindow( QWidget * parent ) :
 	this->setFixedSize( this->size() ) ;
 
 	m_ui->tableWidget->setColumnWidth( 0,140 );
-	m_ui->tableWidget->setColumnWidth( 1,140 );
+	m_ui->tableWidget->setColumnWidth( 1,226 );
 	m_ui->tableWidget->setColumnWidth( 2,100 );
 	m_ui->tableWidget->setColumnWidth( 3,100 );
 	m_ui->tableWidget->setColumnWidth( 4,90 );
 	m_ui->tableWidget->setColumnWidth( 5,90 );
-	m_ui->tableWidget->setColumnWidth( 6,90 );
 
 	this->setWindowIcon( QIcon( QString( ":/zuluMount.png" ) ) );
 
@@ -268,21 +267,18 @@ void MainWindow::volumeMiniProperties( QString p )
 {
 	QStringList l ;
 	QString total ;
-	QString used ;
 	QString perc ;
 	QString label ;
 
 	if( p.isEmpty() ){
 		total = QString( "0" ) ;
-		used  = QString( "0" ) ;
 		perc  = QString( "0%" );
 		label = QString( "Nil" ) ;
 	}else{
 		l = p.split( "\t" ) ;
 		label = l.at( 2 ) ;
 		total = l.at( 3 ) ;
-		used = l.at( 4 ) ;
-		perc = l.at( 5 ) ;
+		perc = l.at( 4 ) ;
 		perc.remove( QChar( '\n' ) ) ;
 	}
 
@@ -291,8 +287,7 @@ void MainWindow::volumeMiniProperties( QString p )
 
 	tablewidget::setText( table,row,3,label ) ;
 	tablewidget::setText( table,row,4,total ) ;
-	tablewidget::setText( table,row,5,used ) ;
-	tablewidget::setText( table,row,6,perc ) ;
+	tablewidget::setText( table,row,5,perc ) ;
 }
 
 void MainWindow::mounted( QString m_point )
@@ -438,8 +433,9 @@ void MainWindow::enableAll()
 	m_ui->tableWidget->setFocus();
 
 }
-
+#include <QDebug>
 MainWindow::~MainWindow()
 {
+	qDebug() << m_ui->tableWidget->columnWidth( 1 );
 	delete m_ui;
 }
