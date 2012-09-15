@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright (c) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -20,10 +20,12 @@
 #include <QIcon>
 #include <QtGui/QApplication>
 #include "zulucrypt.h"
+#include <QCoreApplication>
 
 int main( int argc,char * argv[] )
 {
 	QApplication a( argc,argv );
+	QCoreApplication::setApplicationName( QString( "zuluCrypt" ) ) ;
 	zuluCrypt zc ;
 	zc.show();
 	return a.exec();

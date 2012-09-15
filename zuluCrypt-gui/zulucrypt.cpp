@@ -34,7 +34,6 @@
 #include <QMetaType>
 #include <QDebug>
 #include <QKeySequence>
-
 zuluCrypt::zuluCrypt( QWidget * parent ) :QMainWindow( parent ),m_ui( new Ui::zuluCrypt )
 {
 	setupUIElements();
