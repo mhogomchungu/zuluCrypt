@@ -24,11 +24,10 @@
 
 #include <QObject>
 #include <QString>
+#include <QByteArray>
 #include <QFileDialog>
 #include <QFile>
 #include <QDir>
-#include <QtNetwork/QLocalServer>
-#include <QtNetwork/QLocalSocket>
 #include <QProcess>
 #include <QCloseEvent>
 
@@ -54,6 +53,7 @@ private slots:
 	void gotConnected( void ) ;
 	void doneWritingData( void ) ;
 private:
+	QByteArray getGPGKey( QString EXE,QString key,QString path ) ;
 	void closeEvent( QCloseEvent * );
 	void disableAll( void ) ;
 	void enableAlll( void ) ;

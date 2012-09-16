@@ -19,9 +19,14 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
+#include <QDebug>
 #include <fcntl.h>
 #include <unistd.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <sys/wait.h>
+#include <string.h>
 
 MainWindow::MainWindow( QWidget * parent ) : QMainWindow( parent ),m_ui( new Ui::MainWindow )
 {
@@ -84,6 +89,73 @@ QString MainWindow::FindGPG()
 	}
 }
 
+QByteArray MainWindow::getGPGKey( QString EXE,QString key,QString path )
+{
+	int fd_write_to_gpg[2] ;
+	int fd_read_from_gpg[2] ;
+
+	pipe( fd_write_to_gpg );
+
+	pipe( fd_read_from_gpg ) ;
+
+	int pid = fork() ;
+
+	if( pid == -1 ){
+		QByteArray nnggrr ;
+		return nnggrr ;
+	}
+
+	if( pid == 0 ){
+		::close( fd_write_to_gpg[ 1 ] );
+		dup2( fd_read_from_gpg[ 1 ],1 ) ;
+		::close( 2 ) ;
+
+		QString sfd = QString::number( fd_write_to_gpg[ 0 ] ) ;
+		const char * fd = sfd.toAscii().constData() ;
+
+		execl( EXE.toAscii().constData(),
+		       "--bash",
+			"--no-tty",
+			"--yes",
+			"--no-mdc-warning",
+			"--no-verbose",
+			"--passphrase-fd",
+			fd,
+			"-d",
+			path.toAscii().constData(),
+			( void *)0 ) ;
+		_Exit( 1 ); // shouldnt get here
+	}else{
+		::close( 2 ) ;
+		::close( fd_write_to_gpg[ 0 ] );
+		::close( fd_read_from_gpg[ 1 ] ) ;
+
+		write( fd_write_to_gpg[ 1 ],key.toAscii().constData(),key.size() ) ;
+		::close( fd_write_to_gpg[ 1 ] ) ;
+
+		char * buffer = NULL ;
+		int i = 0 ;
+		char c ;
+
+		while( read( fd_read_from_gpg[ 0 ],&c,1 ) ){
+			buffer = ( char * )realloc( buffer,i + 1 ) ;
+			buffer[ i ] = c ;
+			i++ ;
+		}
+
+		waitpid( pid,NULL,0 ) ;
+
+		QByteArray data = QByteArray( buffer,i ) ;
+
+		free( buffer ) ;
+
+		return data ;
+	}
+
+	QByteArray shouldntGetHere ;
+	return shouldntGetHere ;
+}
+
 void MainWindow::pbOpen()
 {
 	QString path = m_ui->lineEditKeyFile->text().replace( "\"","\"\"\"" ) ;
@@ -104,45 +176,24 @@ void MainWindow::pbOpen()
 	if( EXE.isEmpty() )
 		return msg.ShowUIOK( tr( "ERROR" ),tr( "could not find \"gpg\" executable in \"/usr/local\",\"/usr/bin\" and \"/usr/sbin\"" ) ) ;
 
-	QString gpgFile ;
-	QString exe ;
-	QFile f ;
-	if( key.isEmpty() )
-		exe = QString( "%1 --batch -d \"%2\"" ).arg( EXE ).arg( path ) ;
-	else{
-		gpgFile = QString( "%1%2%3" ).arg( QDir::homePath() ).arg( QString( "/.zuluCrypt-socket/gpg-" ) ).arg( QString::number( getpid() ) ) ;
-		f.setFileName( gpgFile ) ;
-		f.open( QIODevice::WriteOnly ) ;
-		f.write( m_ui->lineEditKey->text().toAscii() ) ;
-		f.flush() ;
-		exe = QString( "%1 --batch --passphrase-file %2 -d \"%3\"" ).arg( EXE ).arg( gpgFile ).arg( path ) ;
+	QByteArray data ;
+	if( key.isEmpty() ){
+		QProcess p ;
+		QString exe = QString( "%1 --batch -d \"%2\"" ).arg( EXE ).arg( path ) ;
+		p.start( exe );
+		p.waitForFinished() ;
+		data = p.readAll() ;
+		p.close();
+	}else{
+		data = this->getGPGKey( EXE,m_ui->lineEditKey->text(),m_ui->lineEditKeyFile->text() ) ;
 	}
 
-	QProcess p ;
-
-	p.start( exe );
-	p.waitForFinished() ;
-
-	if( p.exitCode() == 0 ){
-		QByteArray data = p.readAll() ;
-
+	if( !data.isEmpty() ){
 		socketSendKey::zuluCryptPluginManagerSendKey( m_handle,data ) ;
 	}else{
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR" ),tr("could not decrept the gpg keyfile,wrong key?" ) );
 		this->enableAlll();
-	}
-
-	p.close();
-
-	if( f.isOpen() ){
-		f.seek( 0 ) ;
-		int size = f.size() ;
-		for( int i = 0 ; i < size ; i++ ){
-			f.putChar( '\0' ) ;
-		}
-		f.close();
-		f.remove() ;
 	}
 
 	this->doneWritingData();
