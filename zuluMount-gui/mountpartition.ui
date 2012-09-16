@@ -65,7 +65,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>use label</string>
+    <string>use la&amp;bel</string>
    </property>
   </widget>
   <widget class="QLineEdit" name="lineEdit">
@@ -92,6 +92,13 @@
    </property>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>lineEdit</tabstop>
+  <tabstop>pbMountFolder</tabstop>
+  <tabstop>checkBox</tabstop>
+  <tabstop>pbMount</tabstop>
+  <tabstop>pbCancel</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

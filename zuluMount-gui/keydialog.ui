@@ -185,7 +185,11 @@
  </widget>
  <tabstops>
   <tabstop>lineEditKey</tabstop>
+  <tabstop>pbkeyFile</tabstop>
+  <tabstop>lineEditMountPoint</tabstop>
+  <tabstop>pbOpenMountPoint</tabstop>
   <tabstop>rbKey</tabstop>
+  <tabstop>rbPlugIn</tabstop>
   <tabstop>rbKeyFile</tabstop>
   <tabstop>pbPlugin</tabstop>
   <tabstop>pbOpen</tabstop>

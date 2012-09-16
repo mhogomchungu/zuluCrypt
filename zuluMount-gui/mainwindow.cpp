@@ -378,7 +378,6 @@ void MainWindow::slotUnmountComplete( int status,QString msg )
 			table->item( row,3 )->setText( QString( "Nil" ) );
 		table->item( row,4 )->setText( QString( "Nil" ) );
 		table->item( row,5 )->setText( QString( "Nil" ) );
-		table->item( row,6 )->setText( QString( "Nil" ) );
 
 		this->enableAll();
 	}
@@ -433,9 +432,8 @@ void MainWindow::enableAll()
 	m_ui->tableWidget->setFocus();
 
 }
-#include <QDebug>
+
 MainWindow::~MainWindow()
 {
-	qDebug() << m_ui->tableWidget->columnWidth( 1 );
 	delete m_ui;
 }
