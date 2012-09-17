@@ -43,7 +43,7 @@ char * zuluCryptVolumeDeviceName( const char * ) ;
 char * realpath( const char * path,char * resolved_path ) ;
 #endif
 
-void zuluMountPartitionProperties( const char * path,const char * mapper,const char * m_point )
+void zuluMountPartitionProperties( const char * device,const char * mapper,const char * m_point )
 {
 	#define SIZE 64
 	
@@ -56,15 +56,18 @@ void zuluMountPartitionProperties( const char * path,const char * mapper,const c
 	uint64_t used ;
 	uint64_t free ;
 	uint32_t block_size ;
+	int64_t blkid_device_size ;
 	
 	char buff[ SIZE ] ;	
 	char * buffer = buff ;
 	char format[ SIZE ] ;
 	
-	blkid = blkid_new_probe_from_filename( path ) ;
+	blkid = blkid_new_probe_from_filename( device ) ;
 	
 	blkid_do_probe( blkid );
 	
+	blkid_device_size = ( int64_t ) blkid_probe_get_size( blkid ) ;
+		
 	if( blkid_probe_lookup_value( blkid,"TYPE",&g,NULL ) == 0 )
 		printf( "\t%s",g ) ;
 	else
@@ -81,34 +84,33 @@ void zuluMountPartitionProperties( const char * path,const char * mapper,const c
 		printf( "\tNil" ) ;
 	
 	blkid_free_probe( blkid );
+		
+	if( blkid_device_size == -1 ){
+		printf( "\tNil" ) ;		
+	}else{
+		g = StringIntToString_1( buffer,SIZE,blkid_device_size ) ;
+		zuluCryptFormatSize( format,g ) ;
+		printf( "\t%s",format ) ;
+	}
 	
 	if( m_point == NULL ){
-		printf( "\tNil\tNil\n" ) ;
+		printf( "\tNil\n" ) ;
 		return ;
 	}
 		
 	if( statvfs( m_point,&vfs ) != 0 ){
-		printf( "\tNil\tNil\n" ) ;
+		printf( "\tNil\n" ) ;
 		return ;
 	}
 	
 	block_size = vfs.f_frsize ;
 	
-	total = block_size * vfs.f_blocks  ;
-	
-	g = StringIntToString_1( buffer,SIZE,total ) ;
-	zuluCryptFormatSize( format,g ) ;
-	printf( "\t%s",format ) ;
+	total = block_size * vfs.f_blocks  ;	
 	
 	free =  block_size * vfs.f_bavail  ;
 		
 	used = total - free ;
-	
-	/*
-	g = StringIntToString_1( buffer,SIZE,used ) ;
-	zuluCryptFormatSize( format,g ) ;
-	printf( "\t%s",format ) ;
-	*/
+
 	snprintf( buff,SIZE,"%.2f%%",100 * ( ( float ) used / ( float ) total ) ) ;
 	printf( "\t%s\n",buff ) ;	
 }

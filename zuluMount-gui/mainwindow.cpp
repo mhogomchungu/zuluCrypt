@@ -28,7 +28,7 @@ MainWindow::MainWindow( QWidget * parent ) :
 
 	this->setFixedSize( this->size() ) ;
 
-	m_ui->tableWidget->setColumnWidth( 0,140 );
+	m_ui->tableWidget->setColumnWidth( 0,120 );
 	m_ui->tableWidget->setColumnWidth( 1,226 );
 	m_ui->tableWidget->setColumnWidth( 2,100 );
 	m_ui->tableWidget->setColumnWidth( 3,100 );
@@ -376,7 +376,7 @@ void MainWindow::slotUnmountComplete( int status,QString msg )
 		table->item( row,1 )->setText( QString( "Nil" ) );
 		if( table->item( row,2 )->text() == QString( "crypto_LUKS" ) )
 			table->item( row,3 )->setText( QString( "Nil" ) );
-		table->item( row,4 )->setText( QString( "Nil" ) );
+		//table->item( row,4 )->setText( QString( "Nil" ) );
 		table->item( row,5 )->setText( QString( "Nil" ) );
 
 		this->enableAll();
