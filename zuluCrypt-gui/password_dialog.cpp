@@ -133,7 +133,7 @@ void passwordDialog::pbPluginEntryClicked( QAction * e )
 void passwordDialog::cbStateChanged( int state )
 {
 	m_ui->checkBoxReadOnly->setEnabled( false );
-	m_ui->checkBoxReadOnly->setChecked( openvolumereadonly::setOption( this,state) );
+	m_ui->checkBoxReadOnly->setChecked( openvolumereadonly::setOption( this,state ) );
 	m_ui->checkBoxReadOnly->setEnabled( true );
 }
 

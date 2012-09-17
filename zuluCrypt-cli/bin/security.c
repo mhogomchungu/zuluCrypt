@@ -111,8 +111,7 @@ int zuluCryptGetPassFromFile( const char * path,uid_t uid,string_t * st )
 	 * zuluCryptGetUserHomePath() is defined in ../lib/user_get_home_path.c
 	 */
 	string_t p = zuluCryptGetUserHomePath( uid ) ;
-	StringAppend( p,".zuluCrypt-socket" ) ;
-	const char * z = StringContent( p ) ;
+	const char * z = StringAppend( p,".zuluCrypt-socket" ) ;
 	size_t s = StringLength( p ) ;
 	
 	if( strncmp( path,z,s ) == 0 ){
