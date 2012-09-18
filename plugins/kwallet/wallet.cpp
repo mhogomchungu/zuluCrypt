@@ -68,5 +68,5 @@ void wallet::Exit( void )
 wallet::~wallet()
 {
 	socketSendKey::zuluCryptPluginManagerCloseConnection( m_handle ) ;
-	m_wallet->deleteLater();
+	delete m_wallet ;
 }

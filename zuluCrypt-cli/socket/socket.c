@@ -176,20 +176,30 @@ socket_t SocketAccept( socket_t s )
 	if( x == NULL )
 		return SocketVoid ;
 	if( s->domain == AF_UNIX ){
-		x->local = ( struct sockaddr_un * ) malloc( s->size ) ;
+		x->local = ( struct sockaddr_un * ) malloc( sizeof( struct sockaddr_un ) ) ;
 		if( x->local == NULL ){
 			free( x ) ;
-			return SocketVoid ;
+			x = SocketVoid ;
 		}else{
 			x->fd = accept( s->fd,( struct sockaddr * )x->local,&x->size ) ;
+			if( x->fd == -1 ){
+				free( x->local ) ;
+				free( x ) ;
+				x = SocketVoid ;
+			}
 		}
 	}else{
-		x->net = ( struct sockaddr_in * ) malloc( s->size )  ;
+		x->net = ( struct sockaddr_in * ) malloc( sizeof( struct sockaddr_in ) ) ;
 		if( x->net == NULL ){
 			free( x ) ;
-			return SocketVoid ;
+			x = SocketVoid ;
 		}else{
 			x->fd = accept( s->fd,( struct sockaddr * )x->net,&x->size ) ;
+			if( x->fd == -1 ){
+				free( x->net ) ;
+				free( x ) ;
+				x = SocketVoid ;			
+			}
 		}
 	}
 	
