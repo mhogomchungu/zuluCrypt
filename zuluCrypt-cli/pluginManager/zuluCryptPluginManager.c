@@ -36,6 +36,24 @@
 #include "plugin_path.h"
 #include <stdio.h>
 
+static socket_t zuluCryptSocketAccept( socket_t server ) 
+{
+	int i ;	
+	socket_t client = SocketVoid ;
+	
+	for( i = 0 ; i < 10 ; i++ ){
+		
+		client = SocketAccept( server ) ;
+		if( client != SocketVoid ){
+			break ;	
+		}else{
+			sleep( 1 ) ;
+		}
+	}	
+	
+	return client ;
+}
+
 size_t zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid )
 {	
 	size_t dataLength = 0 ;
@@ -45,8 +63,9 @@ size_t zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid
 	
 	socket_t server = SocketLocal( sockpath ) ;	
 	
-	unlink( sockpath ) ;
-	
+	/*
+	 * SocketBind() will unlink the "sockpath" address automatically
+	 */
 	SocketBind( server ) ;
 	
 	chown( sockpath,uid,uid ) ;	
@@ -54,7 +73,7 @@ size_t zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid
 	
 	SocketListen( server ) ;
 	
-	client = SocketAccept( server ) ;
+	client = zuluCryptSocketAccept( server ) ;
 	
 	dataLength = SocketGetData( client,&buffer,INTMAXKEYZISE ) ;	
 	
@@ -192,9 +211,6 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	
 	server = SocketLocal( sockpath ) ;
 	
-	if( stat( sockpath,&st ) == 0 )
-		unlink( sockpath ) ;
-	
 	SocketBind( server ) ;
 	
 	chown( sockpath,uid,uid ) ;	
@@ -202,7 +218,8 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	
 	SocketListen( server ) ;
 	
-	client = SocketAccept( server ) ;
+	client = zuluCryptSocketAccept( server ) ;
+	
 	SocketClose( server ) ;
 	
 	i = SocketGetData( client,&buffer,INTMAXKEYZISE ) ;

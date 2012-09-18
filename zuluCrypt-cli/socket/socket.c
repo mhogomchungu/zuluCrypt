@@ -232,11 +232,19 @@ int SocketListen( socket_t s )
 #define BUFFSIZE 64
 size_t SocketGetData( socket_t s,char ** buffer,size_t len ) 
 {
+	int fd ;
 	size_t i ;
 	size_t buffCount = BUFFSIZE ;
 	
-	char * c = ( char * ) malloc( sizeof( char ) * BUFFSIZE ) ;
+	char * c ;
 	char * d = NULL ;
+	
+	if( s == SocketVoid )
+		return 0 ;
+	
+	fd = s->fd ;
+	
+	c = ( char * ) malloc( sizeof( char ) * BUFFSIZE ) ;
 	
 	if( c == NULL )
 		return -1 ;
@@ -256,14 +264,19 @@ size_t SocketGetData( socket_t s,char ** buffer,size_t len )
 			}
 		}
 		
-		if( read( s->fd,c + i,1 ) <= 0 )
+		if( read( fd,c + i,1 ) <= 0 )
 			break ;
 	}	
 	
 	if( i > 0 ){
-		c = realloc( c,i + 1 ) ;
-		*( c + i ) = '\0' ;
-		*buffer = c ;
+		d = realloc( c,i + 1 ) ;
+		if( d == NULL ){
+			free( c ) ;
+			return 0 ;
+		}else{
+			*( d + i ) = '\0' ;
+			*buffer = d ;
+		}
 	}else{
 		free( c ) ;
 	}
