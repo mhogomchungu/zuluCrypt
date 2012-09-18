@@ -38,7 +38,7 @@ static int zuluExit( int st,char * device,char * m_point,stringManage_t stm )
 		case 4 : printf( "ERROR: volume could not be opened with the presented key\n" );					break ;			
 		case 5 : printf( "ERROR: could not create mount point, invalid path or path already taken\n" ) ;			break ;		
 		case 6 : printf( "ERROR: invalid path to key file\n" );									break ;	
-		case 8 : printf( "ERROR: failed to open volume,device may already be in use\n" );					break ;	
+		case 8 : printf( "ERROR: failed to open volume,device may already be in use or couldnt find a free loop device\n" );	break ;	
 		case 9 : printf( "ERROR: mount point path is already taken\n" );							break ;					 
 		/* case 10: currently unused */
 		case 11: printf( "ERROR: one or more required argument(s) for this operation is missing\n" );				break ;				

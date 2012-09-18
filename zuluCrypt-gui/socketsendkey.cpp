@@ -41,7 +41,7 @@ void socketSendKey::run()
 		//qDebug() << "failed to connect";
 		emit keyNotSent();
 	}else{
-		sleep( 1 ) ;
+		//sleep( 1 ) ;
 		//qDebug() << "got coonnected";
 
 		emit gotConnected() ;
@@ -67,7 +67,7 @@ ssize_t socketSendKey::zuluCryptPluginManagerSendKey( void * handle,QByteArray d
 	return ::zuluCryptPluginManagerSendKey( handle,data.constData(),data.size() ) ;
 }
 
-void socketSendKey::zuluCryptPluginManagerCloseConnection( void *handle )
+void socketSendKey::zuluCryptPluginManagerCloseConnection( void * handle )
 {
 	return ::zuluCryptPluginManagerCloseConnection( handle ) ;
 }

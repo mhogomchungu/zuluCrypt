@@ -120,7 +120,7 @@ void zuluCrypt::setupUIElements()
 
 	m_ui->tableWidget->setColumnWidth( 0,298 );
 	m_ui->tableWidget->setColumnWidth( 1,336 );
-	m_ui->tableWidget->setColumnWidth( 2,90 );
+	//m_ui->tableWidget->setColumnWidth( 2,70 );
 }
 
 void zuluCrypt::setupConnections()
@@ -191,6 +191,13 @@ void zuluCrypt::ShowManageSystemPartitions()
 void zuluCrypt::currentItemChanged( QTableWidgetItem * current, QTableWidgetItem * previous )
 {
 	tablewidget::selectTableRow( current,previous ) ;
+
+	int rowCount = m_ui->tableWidget->rowCount() ;
+
+	if( rowCount > 12 )
+		m_ui->tableWidget->setColumnWidth( 2,70 );
+	else
+		m_ui->tableWidget->setColumnWidth( 2,95 );
 }
 
 void zuluCrypt::closeAllVolumes()
