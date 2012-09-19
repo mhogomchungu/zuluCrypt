@@ -29,7 +29,7 @@ MainWindow::MainWindow( QWidget * parent ) :
 	this->setFixedSize( this->size() ) ;
 
 	m_ui->tableWidget->setColumnWidth( 0,120 );
-	m_ui->tableWidget->setColumnWidth( 1,226 );
+	//m_ui->tableWidget->setColumnWidth( 1,226 );
 	m_ui->tableWidget->setColumnWidth( 2,100 );
 	m_ui->tableWidget->setColumnWidth( 3,100 );
 	m_ui->tableWidget->setColumnWidth( 4,90 );
@@ -359,6 +359,11 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 		else
 			tablewidget::addRowToTable( table,entries ) ;
 	}
+
+	if( m_ui->tableWidget->rowCount() > 9 )
+		m_ui->tableWidget->setColumnWidth( 1,226 );
+	else
+		m_ui->tableWidget->setColumnWidth( 1,250 );
 
 	this->enableAll();
 	this->disableCommand();
