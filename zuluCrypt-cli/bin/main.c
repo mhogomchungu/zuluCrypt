@@ -161,7 +161,7 @@ int main( int argc,char * argv[] )
 	if( clargs.key != NULL ){
 		q = String( clargs.key ) ;
 		memset( ( char * )clargs.key,'\0',StringLength( q ) ) ;
-		strcpy( ( char * )clargs.key,"xxxx" ) ;		
+		strcpy( ( char * )clargs.key,"x" ) ;		
 		clargs.key = StringContent( q ) ;
 		StringManageInsertAtLast( stm,&q ) ;
 	}
@@ -169,7 +169,7 @@ int main( int argc,char * argv[] )
 	if( clargs.new_key != NULL ){
 		q = String( clargs.new_key ) ;
 		memset( ( char * )clargs.new_key,'\0',StringLength( q ) ) ;
-		strcpy( ( char * )clargs.new_key,"xxxx" ) ;
+		strcpy( ( char * )clargs.new_key,"x" ) ;
 		clargs.new_key = StringContent( q ) ;
 		StringManageInsertAtLast( stm,&q ) ;
 	}
@@ -177,7 +177,7 @@ int main( int argc,char * argv[] )
 	if( clargs.existing_key != NULL ){
 		q = String( clargs.existing_key ) ;
 		memset( ( char * )clargs.existing_key,'\0',StringLength( q ) );
-		strcpy( ( char * )clargs.existing_key,"xxxx" ) ;		
+		strcpy( ( char * )clargs.existing_key,"x" ) ;		
 		clargs.existing_key = StringContent( q ) ;
 		StringManageInsertAtLast( stm,&q ) ;
 	}		
@@ -185,7 +185,7 @@ int main( int argc,char * argv[] )
 	if( clargs.device != NULL ){
 		q = String( clargs.device ) ;
 		memset( ( char * )clargs.device,'\0',StringLength( q ) );
-		strcpy( ( char * )clargs.device,"xxxx" ) ;		
+		strcpy( ( char * )clargs.device,"x" ) ;		
 		clargs.device = StringContent( q ) ;
 		StringManageInsertAtLast( stm,&q ) ;
 	}	
