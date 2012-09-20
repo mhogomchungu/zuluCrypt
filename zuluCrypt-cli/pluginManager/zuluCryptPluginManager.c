@@ -207,9 +207,6 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 
 	p = Process( cpath ) ;		
 	ProcessSetUser( p,uid ) ;
-	/* 
-	 * ProcessSetOptionTimeout( p,60,SIGKILL ) ;
-	 */
 
 	ProcessSetArgumentList( p,device,StringContent( uuid ),sockpath,CHARMAXKEYZISE,argv,'\0' ) ;	
 	ProcessStart( p ) ;		

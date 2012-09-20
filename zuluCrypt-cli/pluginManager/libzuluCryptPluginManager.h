@@ -36,23 +36,22 @@ extern "C" {
  * The following options will be passed to the module.
  * argv[0] - the name of the module
  * argv[1] - the device path with the encrypted volume
- * argv[2] - the UUID of the encrypted volume in a form of UUID="blablbabla"
+ * argv[2] - the UUID of the encrypted volume or "Nil" if the encrypted volume has no UUID( plain volume )
  * argv[3] - the socket path.The address to where the local socket is created.
- * argv[4] - the maximum number of bytes that will be read. *  
+ * argv[4] - the maximum number of bytes that will be read. 
+ * argv[5] - the argument list as presented to zuluCrypt-cli  
  */
 
 /*
  * The key to zuluCrypt-cli will be sent through a unix local socket.This function will create the connection on the plugin side.
  * The argument it takes is argv[3].
  * 
- * The returned value is handle to the connection to be used for subsequent calls.
- * 
- * A plugin is expected to call this function within 20 seconds of its life.
+ * The returned value is a handle to the connection to be used for subsequent calls.
  */
 void * zuluCryptPluginManagerOpenConnection( const char * sockpath ) ;
 
 /*
- * This function sends the key to zuluCrypt-cli.
+ * This function sends the key to zuluCrypt-cli through a local socket.
  * The first argument is a handle returned above
  * The second argument is a buffer to the key to be sent
  * The third argument is the length of the buffer
