@@ -54,7 +54,7 @@ static int mount_fs( int type,const m_struct * mst, string_t * st )
 	const char * copt = StringContent( uid ) ;	
 	
 	if( type == FAT_FAMILY_FS )
-		StringAppend( opt,",dmask=077,uid=UID,gid=UID,shortname=mixed,flush" ) ;
+		StringAppend( opt,",dmask=0000,fmask=0000,uid=UID,gid=UID,shortname=mixed,flush" ) ;
 	else
 		StringAppend( opt,",uid=UID,gid=UID" ) ;
 	
