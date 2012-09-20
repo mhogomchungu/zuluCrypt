@@ -133,8 +133,8 @@ int zuluCryptMountVolume( const char * mapper,const char * m_point,const char * 
 #else
 	mnt_lock * m_lock ;
 #endif
-	string_t options = NULL ;
-	string_t fs = NULL ;
+	string_t options = StringVoid ;
+	string_t fs = StringVoid ;
 	
 	m_struct mst ;
 	mst.device = mapper ;
