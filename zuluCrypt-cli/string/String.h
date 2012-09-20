@@ -85,8 +85,8 @@ const char * StringAppendString( string_t st,string_t xt )  ;
 
 /*
  * check if a string handled by st has str in it
- * return 0 if str is found
- * return 1 if str is not found
+ * return 1 if str is found
+ * return 9 if str is not found
  */
 int StringContains( string_t st,const char * str ) ;
 
@@ -304,9 +304,9 @@ const char * StringStringAt( string_t st,size_t p ) ;
 /*
  *Check to see if the string pointer by st ends with string s. 
  * 
- * return 0 is it does
+ * return 1 is it does
  * 
- * return 1 if it doesnt * 
+ * return 0 if it doesnt * 
  */
 int StringEndsWithString( string_t st,const char * s ) ;
 
@@ -314,9 +314,9 @@ int StringEndsWithString( string_t st,const char * s ) ;
 /*
  *Check to see if the string pointer by st ends with char s. 
  * 
- * return 0 is it does
+ * return 1 is it does
  * 
- * return 1 if it doesnt * 
+ * return 0 if it doesnt * 
  */
 int StringEndsWithChar( string_t st,char s ) ;
 
@@ -473,12 +473,16 @@ char * StringIntToString_1( char * x,size_t y,uint64_t z ) ;
 string_t StringIntToString( uint64_t ) ;
 
 /*
- * Compare a string handled by handle x to a string handled by handle y and return 0 if they are equal and 1 if they are not  
+ * Compare a string handled by handle x to a string handled by handle y.
+ * return 1 if they are equal
+ * return 0 if they are not equal  
  */
-int StringCompare( string_t x,string_t y ) ;
+int StringEqualString( string_t x,string_t y ) ;
 
 /*
- * Compare a string handled by handle x to a string pointer to by y and return 0 if they are equal and 1 if they are not  
+ * Compare a string handled by handle x to a string pointer to by y.
+ * return 1 if they are equal 
+ * return 0 if they are not equal  
  */
 int StringEqual( string_t x,const char * y ) ;
 

@@ -22,6 +22,7 @@
 #include <unistd.h>
 #include <pwd.h>
 #include <blkid/blkid.h>
+#include <sys/syscall.h>
 
 #include "libzuluCryptPluginManager.h"
 #include "../process/process.h"
@@ -30,6 +31,10 @@
 #include "../string/StringManage.h"
 #include "../constants.h"
 #include "../bin/includes.h"
+
+#ifdef __STDC__
+int syscall(int number, ...) ;
+#endif
 /*
  * below header file is created at config time.
  */
@@ -194,7 +199,7 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	chown( sockpath,uid,uid ) ;
 	chmod( sockpath,S_IRWXU ) ;		
 	
-	id = StringIntToString( getpid() ) ;
+	id = StringIntToString( syscall( SYS_gettid ) ) ;
 	
 	sockpath = StringAppendString( path,id ) ;
 	

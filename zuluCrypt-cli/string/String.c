@@ -204,9 +204,9 @@ void StringPrintLine( string_t st )
 int StringContains( string_t st,const char * str )
 {
 	if( st == StringVoid )
-		return 1 ;
+		return 0 ;
 	else
-		return strstr( st->string,str ) != NULL ?  0 : 1 ;
+		return strstr( st->string,str ) == NULL ?  0 : 1 ;
 }
 
 string_t StringInheritWithSize( char ** data,size_t s )
@@ -407,29 +407,21 @@ char * StringLengthCopy( string_t st,size_t l )
 int StringEndsWithString( string_t st,const char * s ) 
 {
 	size_t j ;
-	size_t i ;
-	
-	if( st == StringVoid )
-		return 1 ;
-	if( s == NULL )
-		return 1 ;
+		
+	if( st == StringVoid || s == NULL )
+		return 0 ;
 	
 	j = strlen(s) ;
 	
-	i = strncmp( st->string + st->size - j,s,j ) ;
-	
-	return i == 0 ? 0 : 1 ;	
+	return strncmp( st->string + st->size - j,s,j ) == 0 ? 1 : 0 ;	
 }
 
 int StringEndsWithChar( string_t st,char s )
 {	
 	if( st == StringVoid )
-		return 1 ;
-	
-	if ( * ( st->string + st->size -1 ) == s )
 		return 0 ;
-	else
-		return 1 ;
+	
+	return st->string[ st->size - 1 ] == s ? 1 : 0 ;
 }
 
 char StringCharAt( string_t st,size_t p )
@@ -847,26 +839,23 @@ char * StringIntToString_1( char * x,size_t y,uint64_t z )
 	return ++c ;
 }
 
-int StringCompare( string_t x,string_t y ) 
+int StringEqualString( string_t x,string_t y ) 
 {
 	if( x == StringVoid )
-		return 1 ;
+		return 0 ;
 	if( y == StringVoid )
-		return 1 ;
+		return 0 ;
 	if( x->size != y->size )
-		return 1 ;
-	else if( strcmp( x->string,y->string ) != 0 )
-		return 1 ;
-	else
-		return 0 ;	
+		return 0 ;
+	return strcmp( x->string,y->string ) == 0 ? 1 : 0 ;	
 }
 
 int StringEqual( string_t x,const char * y )
 {
 	if( x == StringVoid )
-		return 1 ;
+		return 0 ;
 	else
-		return strcmp( x->string,y ) == 0 ? 0 : 1 ;	
+		return strcmp( x->string,y ) == 0 ? 1 : 0 ;	
 }
 
 static char * StringICS__( string_t st,char x,const char * s,size_t p )

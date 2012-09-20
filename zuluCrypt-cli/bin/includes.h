@@ -76,3 +76,8 @@ size_t zuluCryptGetKeyFromSocket( const char * path,string_t *,uid_t uid ) ;
  * this function returns "$HOME/" and is defined in ../pluginManager/zuluCryptPluginManager.c
  */
 string_t zuluCryptGetUserHomePath( uid_t ) ;
+
+/*
+ * this function is defined in partitions.c
+ */
+int zuluCryptPartitionIsSystemPartition( const char * dev ) ;

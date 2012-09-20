@@ -32,6 +32,8 @@
 #include "../zuluCrypt-cli/string/StringManage.h"
 #include "../zuluCrypt-cli/string/StringList.h"
 #include "../zuluCrypt-cli/lib/libzuluCrypt.h"
+#include "../zuluCrypt-cli/lib/includes.h"
+#include "../zuluCrypt-cli/bin/includes.h"
 
 int zuluMountPrintMountedVolumes( uid_t uid ) ;
 string_t zuluCryptGetUserHomePath( uid_t uid ) ;
@@ -135,13 +137,13 @@ static int zuluMountNormalUserCanManagePartition( const char * device )
 		
 		f = StringListStringAt( z,0 ) ;
 		
-		if( StringEqual( f,device ) == 0 ){
+		if( StringEqual( f,device ) && StringCharAt( f,0 ) != '#' ){
 			
 			f = StringListStringAt( z,3 ) ;
 				
-			if( StringContains( f,"nouser" ) == 0 ){
+			if( StringContains( f,"nouser" ) ){
 				st = 1 ;
-			}else if( StringContains( f,"user" ) == 0 ){
+			}else if( StringContains( f,"user" ) ){
 				st = 0 ;
 			}else{
 				/*
@@ -166,8 +168,11 @@ static int zuluMountNormalUserCanManagePartition( const char * device )
 
 static int zuluMountCheckDevicePermissions( const char * device,uid_t uid )
 {	
-	if( zuluCryptCheckIfPartitionIsSystemPartition( device ) == 1 ){
-		if( zuluMountNormalUserCanManagePartition( device ) == 1 ){
+	/*
+	 * zuluCryptPartitionIsSystemPartition() is defined in ../zuluCrypt-cli/bin/partitions.c
+	 */
+	if( zuluCryptPartitionIsSystemPartition( device ) ){
+		if( zuluMountNormalUserCanManagePartition( device ) ){
 			if( uid != 0 ){
 				return 1 ;
 			}
@@ -196,7 +201,7 @@ static int zuluMountMount( const char * device,const char * m_point,const char *
 	 * Below function is defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c
 	 * It checks if a device has an entry in "/etc/mtab" and return 1 if it does and 0 is it doesnt	 * 
 	 */
-	if( zuluCryptCheckIfMounted( device ) == 1 )
+	if( zuluCryptPartitionIsMounted( device ) )
 		return zuluExit( 101,z,NULL,"ERROR: device already mounted" ) ;
 	
 	if( zuluMountCheckDevicePermissions( device,uid ) == 1 )
@@ -260,9 +265,9 @@ static int zuluMountUMount( const char * device,uid_t uid )
 	int status ;
 		
 	/*
-	 * zuluCryptCheckIfMounted()  is defined in defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c 	 
+	 * zuluCryptPartitionIsMounted()  is defined in defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c 	 
 	 */
-	if( zuluCryptCheckIfMounted( device ) == 0 )
+	if( zuluCryptPartitionIsMounted( device ) == 0 )
 		return zuluExit( 127,NULL,NULL,"ERROR: device does appear to be mounted as it does not have an entry in \"/etc/mtab\"" ) ;
 	
 	if( zuluMountCheckDevicePermissions( device,uid ) == 1 )

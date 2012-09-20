@@ -18,6 +18,7 @@
  */
 
 #include "includes.h"
+#include "../lib/includes.h"
 
 #define DECRYPT 1
 #define ENCRYPT 0
@@ -64,10 +65,10 @@ static int crypt_opt( const struct_opts * opts,const char * mapper,uid_t uid,int
 	if( source == NULL )
 		return msg( 14 ) ;
 	
-	if( zuluCryptIsPathValid( dest ) == 0 )
+	if( zuluCryptPathIsValid( dest ) )
 		return msg( 5 ) ;
 	
-	if( zuluCryptIsPathValid( source ) != 0 )
+	if( zuluCryptPathIsNotValid( source ) )
 		return msg( 6 ) ;
 	
 	if( zuluCryptCanOpenPathForWriting( dest,uid ) == 1 )
@@ -94,7 +95,7 @@ static int crypt_opt( const struct_opts * opts,const char * mapper,uid_t uid,int
 		
 		printf( "\n" ) ;
 		
-		if( StringCompare( p,q ) != 0 ){
+		if( !StringEqualString( p,q ) ){
 			StringClearDelete( &p ) ;
 			StringClearDelete( &q ) ;
 			return msg( 8 ) ; 

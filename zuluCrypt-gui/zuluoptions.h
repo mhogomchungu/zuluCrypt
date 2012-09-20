@@ -22,9 +22,7 @@
 
 #include <QString>
 #include <QDir>
-
-#include <sys/types.h>
-#include <unistd.h>
+#include <QTime>
 
 class zuluOptions{
 public:
@@ -33,7 +31,12 @@ public:
 	static QString formData( void ){ return QString( "Form Data" ) ; }
 	static QString getSocketPath( void )
 	{
-		return QString( QDir::homePath() + QString( "/.zuluCrypt-socket/" ) + QString::number( getpid() ) ) ;
+		QTime T = QTime::currentTime() ;
+		QString h  = QString::number( T.hour() )   ;
+		QString m  = QString::number( T.minute() ) ;
+		QString s  = QString::number( T.second() ) ;
+		QString ms = QString::number( T.msec() )   ;
+		return QString( QDir::homePath() + QString( "/.zuluCrypt-socket/" ) + h + m + s + ms  ) ;
 	}
 };
 

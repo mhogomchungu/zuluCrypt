@@ -32,14 +32,14 @@ int zuluCryptOpenVolume( const char * dev,const char * map,const char * m_point,
 	const char * mapper ;
 	char * m ;
 	
-	if( zuluCryptIsPathValid( dev ) != 0 )		 
+	if( zuluCryptPathIsNotValid( dev ) )		 
 		return 3 ;
 	
 	p = String( crypt_get_dir() ) ;
 	
 	mapper = StringMultipleAppend( p,"/",map,'\0' ) ;
 
-	if( zuluCryptIsPathValid( mapper ) == 0 )
+	if( zuluCryptPathIsValid( mapper ) )
 		return zuluExit( 2,p ) ;	
 
 	if( zuluCryptVolumeIsLuks( dev ) == 0 )

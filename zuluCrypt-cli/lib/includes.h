@@ -40,11 +40,26 @@ string_t zuluCryptCreateMapperName( const char * device,const char * mapping_nam
 
 /*
  * this function checks if path exists or not.
+ * return 1 if the path exists
+ * return 0 if it does not
  */
-int zuluCryptIsPathValid( const char * path ) ;
+int zuluCryptPathIsValid( const char * path ) ;
+
+/*
+ * this function checks if a path exists or not
+ * return 1 if the path does not exists
+ * return 0 if the path exist
+ */
+int zuluCryptPathIsNotValid( const char * path ) ;
 
 /*
  * this function is deined in ../lib/print_mountd_volumes.c
- * 
+ * return 1 if mtab is a file and is located at /etc
+ * return 0 otherwise
  */
 int zuluCryptMtabIsAtEtc( void ) ;
+
+/*
+ * this is defined in print_mounted_volumes.c
+ */
+int zuluCryptPartitionIsMounted( const char * device ) ;

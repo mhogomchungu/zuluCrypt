@@ -31,7 +31,7 @@ int zuluCryptOpenLuks( const char * device,const char * mapper,const char * mode
 	uint32_t flags = 0;
 	int st ;
 	
-	if( zuluCryptIsPathValid( device ) != 0 )
+	if( zuluCryptPathIsNotValid( device ) )
 		return 3 ;
 
 	if( crypt_init( &cd,device ) != 0 )

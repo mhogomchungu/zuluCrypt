@@ -19,6 +19,7 @@
  */
 
 #include "includes.h"
+#include "../lib/includes.h"
 #include <libcryptsetup.h>
 
 static int zuluExit( int st,struct crypt_device * cd )
@@ -110,7 +111,7 @@ Type \"YES\" and press Enter to continue: " ;
 		if( confirm != StringVoid ){
 			k = StringEqual( confirm,"YES" ) ;
 			StringDelete( &confirm ) ;
-			if( k == 1 )
+			if( k == 0 )
 				return zuluExit( 5,cd ) ;
 		}else
 			return zuluExit( 19,cd ) ;
@@ -139,7 +140,10 @@ int zuluCryptEXESaveAndRestoreLuksHeader( const struct_opts * opts,uid_t uid,int
 	
 	if( dev == NULL )
 		return zuluExit( 16,NULL ) ;	
-	k = zuluCryptCheckIfPartitionIsSystemPartition( dev ) ;
+	/*
+	 * zuluCryptPartitionIsSystemPartition() is defined in partitions.c
+	 */
+	k = zuluCryptPartitionIsSystemPartition( dev ) ;
 	free( dev ) ;
 	
 	if( k == 1 && uid != 0 )
@@ -167,7 +171,7 @@ int zuluCryptEXESaveAndRestoreLuksHeader( const struct_opts * opts,uid_t uid,int
 			case 1 : return zuluExit( 18,NULL ) ;
 			case 2 : return zuluExit( 11,NULL ) ;		
 		}
-		if( zuluCryptIsPathValid( path ) == 0 )
+		if( zuluCryptPathIsValid( path ) )
 			return zuluExit( 6,NULL ) ;
 		
 		if( zuluCryptCanOpenPathForWriting( path,uid ) == 1 )

@@ -19,7 +19,7 @@
  */ 
 
 #include "includes.h"
-
+#include "../lib/includes.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -53,7 +53,7 @@ void sigTERMhandler( int sig )
  * 
  * the function is used to check is a presented path is a system partition or not * 
  */
-int zuluCryptCheckIfPartitionIsSystemPartition( const char * ) ;
+int zuluCryptPartitionIsSystemPartition( const char * ) ;
 
 static int zuluExit( string_t * st, int status ) 
 {
@@ -126,7 +126,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	}
 	
 	if( uid != 0 ){
-		if( zuluCryptCheckIfPartitionIsSystemPartition( opts->device ) == 1 ){
+		if( zuluCryptPartitionIsSystemPartition( opts->device ) ){
 			return zuluExit( NULL,6 ) ;
 		}
 	}
@@ -145,7 +145,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	/*
 	 * defined in print_mounted_volumes.c
 	 */
-	n = zuluCryptCheckIfMounted( dev ) ;
+	n = zuluCryptPartitionIsMounted( dev ) ;
 	
 	free( dev ) ;
 	StringDelete( &p ) ;
@@ -303,7 +303,7 @@ int zuluCryptEXEWriteDeviceWithJunk( const struct_opts * opts,const char * mappi
 			k = StringEqual( confirm,"YES" ) ;
 			StringDelete( &confirm ) ;
 		
-			if( k == 1 ){			
+			if( k == 0 ){			
 				zuluCryptCloseMapper( StringContent( mapper ) ) ;			
 				return zuluExit( &mapper,5 ) ;
 			}

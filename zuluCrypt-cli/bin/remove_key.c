@@ -88,9 +88,9 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 	int status = 0 ;
 	
 	/*
-	* check_partition is defined in partition.c
+	* check_partition is defined in partitions.c
 	*/
-	if( zuluCryptCheckIfPartitionIsSystemPartition( device ) == 1 && uid != 0 )
+	if( zuluCryptPartitionIsSystemPartition( device ) && uid != 0 )
 		return zuluExit( 14,stm ) ;
 
 	/*
@@ -111,8 +111,7 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 			*confirm = StringGetFromTerminal_1( 3 ) ;
 			if( *confirm == StringVoid )
 				return zuluExit( 17,stm ) ;
-			k = StringEqual( *confirm,"YES" ) ;
-			if( k == 1 )
+			if( !StringEqual( *confirm,"YES" ) )
 				return zuluExit( 11,stm ) ;
 		}
 	}

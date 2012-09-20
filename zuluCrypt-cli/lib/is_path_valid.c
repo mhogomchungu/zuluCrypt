@@ -19,8 +19,14 @@
 
 #include "includes.h"
 
-int zuluCryptIsPathValid( const char * path ) 
+int zuluCryptPathIsValid( const char * path ) 
 {
 	struct stat st ;
-	return stat( path,&st ) ;	
+	return stat( path,&st ) == 0 ? 1 : 0 ;	
+}
+
+int zuluCryptPathIsNotValid( const char * path )
+{
+	struct stat st ;
+	return stat( path,&st ) != 0 ? 1 : 0 ;
 }

@@ -18,6 +18,7 @@
  */
 
 #include "includes.h"
+#include "../lib/includes.h"
 
 static int zuluCryptEXEGetDevice( const char * device )
 {
@@ -48,7 +49,7 @@ static int zuluCryptEXECheckEmptySlots( const char * device )
 {
 	int status ;
 	char * c  ;
-	if( zuluCryptIsPathValid( device ) != 0 ){
+	if( zuluCryptPathIsNotValid( device ) ){
 		printf( "path \"%s\" does not point to a device\n",device ) ;
 		status = 1 ;			
 	}else{

@@ -34,7 +34,7 @@ int zuluCryptCreateLuks( const char * dev,const char * pass,size_t pass_size,con
 		.data_alignment = 4096,
 	};
 		
-	if( zuluCryptIsPathValid( dev ) != 0 )
+	if( zuluCryptPathIsNotValid( dev ) )
 		return 4 ;
 	
 	if( crypt_init( &cd,dev ) != 0 )

@@ -41,7 +41,7 @@ int zuluCryptCreateVolume( const char * dev,const char * fs,const char * type,co
 	const char * mapper ;	
 	char * device ;
 	
-	if ( zuluCryptIsPathValid( dev ) != 0 )
+	if ( zuluCryptPathIsNotValid( dev ) )
 		return 1 ;
 		
 	if( strcmp( type,"luks" ) == 0 )

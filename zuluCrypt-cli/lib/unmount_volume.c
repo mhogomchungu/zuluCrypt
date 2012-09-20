@@ -72,12 +72,14 @@ int zuluCryptUnmountVolume( const char * map, char ** m_point )
 	
 	if( stat( map,&st ) != 0 )
 		return 1 ;		
-
+	
 	/*
-	 * mtab_is_at_etc() is defined in check_mounted_volumes.c
-	 * 
+	 * mtab_is_at_etc() is defined in print_mounted_volumes.c
+	 * 1 is return if "mtab" is found to be a file located at "/etc/"
+	 * 0 is returned otherwise,probably because "mtab" is a soft like to "/proc/mounts"
 	 */
-	if( zuluCryptMtabIsAtEtc() != 0 ){
+	
+	if( !zuluCryptMtabIsAtEtc() ){
 		
 		f = setmntent( "/proc/mounts","r" ) ;
 

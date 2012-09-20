@@ -166,7 +166,7 @@ int zuluCryptMountVolume( const char * mapper,const char * m_point,const char * 
 	 * Currently, i dont know how to use mount system call to use ntfs-3g instead of ntfs to mount ntfs file systems.
 	 * Use fork to use mount executable as a temporary solution.
 	*/
-	if( StringEqual( fs,"ntfs" ) == 0 ){
+	if( StringEqual( fs,"ntfs" ) ){
 		StringDelete( &fs ) ;
 		switch( mount_ntfs( &mst ) ){
 			case 0  : return 0 ;
@@ -179,10 +179,11 @@ int zuluCryptMountVolume( const char * mapper,const char * m_point,const char * 
 
 	/*
 	 * mtab_is_at_etc() is defined in print_mounted_volumes.c
-	 * 
+	 * 1 is return if "mtab" is found to be a file located at "/etc/"
+	 * 0 is returned otherwise,probably because "mtab" is a soft like to "/proc/mounts"
 	 */
 	
-	if( zuluCryptMtabIsAtEtc() != 0 ){
+	if( !zuluCryptMtabIsAtEtc() ){
 		h = mount_mapper( &mst,&options ) ;
 	}else{
 		/* 

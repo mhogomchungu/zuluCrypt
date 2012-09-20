@@ -45,7 +45,7 @@ int zuluCryptMtabIsAtEtc( void )
 		
 		free( path ) ;
 		
-		return st == 0 ? 0 : 1 ;
+		return st == 0 ? 1 : 0 ;
 	}
 }
 
@@ -127,7 +127,7 @@ stringList_t zuluCryptGetMtabList( void )
 	string_t q       = StringVoid     ;
 	stringList_t stl = StringListVoid ;
 
-	if( zuluCryptMtabIsAtEtc() != 0 ){
+	if( !zuluCryptMtabIsAtEtc() ){
 		q = StringGetFromVirtualFile( "/proc/mounts" ) ;
 	}else{
 		m_lock = mnt_new_lock( "/etc/mtab~",getpid() ) ;
@@ -203,7 +203,7 @@ char * zuluCryptGetMountPointFromPath( const char * path )
 	return NULL ;	
 }
 
-int zuluCryptCheckIfMounted( const char * path )
+int zuluCryptPartitionIsMounted( const char * path )
 {
 	char * p = zuluCryptGetMountPointFromPath( path ) ;
 	

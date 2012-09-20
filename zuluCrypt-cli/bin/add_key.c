@@ -144,7 +144,7 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 	/*
 	 * check_if_partition_is_system_partition() is defined in partition.c
 	 */
-	if( zuluCryptCheckIfPartitionIsSystemPartition( device ) == 1 && uid != 0 )
+	if( zuluCryptPartitionIsSystemPartition( device ) && uid != 0 )
 		return zuluExit( 13,stm ) ;
 	
 	/*
@@ -175,7 +175,7 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 			case 2 : return zuluExit( 15,stm ) ;
 		}
 		
-		if( StringCompare( *newKey_1,*newKey_2 ) != 0 )			
+		if( !StringEqualString( *newKey_1,*newKey_2 ) )			
 			status = 7 ;
 		else{	
 			key1 = StringContent( *presentKey ) ;

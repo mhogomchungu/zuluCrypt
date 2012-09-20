@@ -36,7 +36,7 @@ int zuluCryptOpenPlain( const char * device,const char * mapper,const char * mod
 		.offset = 0,
 	};
 		
-	if( zuluCryptIsPathValid( device ) != 0 )
+	if( zuluCryptPathIsNotValid( device ) )
 		return 3 ;
 
 	if( strcmp( mode,"ro" ) == 0 )

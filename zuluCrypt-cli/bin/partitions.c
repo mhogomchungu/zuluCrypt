@@ -430,7 +430,7 @@ stringList_t zuluCryptGetPartitionFromZulutab()
 	return stl_1 ;	
 }
 
-int zuluCryptCheckIfPartitionIsSystemPartition( const char * dev )
+int zuluCryptPartitionIsSystemPartition( const char * dev )
 {	
 	stringList_t stl ;
 	

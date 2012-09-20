@@ -18,6 +18,7 @@
  */
 
 #include "includes.h"
+#include "../lib/includes.h"
 
 static int zuluExit( int st,stringManage_t stm )
 {
@@ -120,7 +121,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	/*
 	 * defined in ../lib/print_mounted_volumes.c
 	 */
-	k = zuluCryptCheckIfMounted( dev ) ;
+	k = zuluCryptPartitionIsMounted( dev ) ;
 	
 	free( dev ) ;	
 	
@@ -141,8 +142,10 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	 * System partitions are defined as partitions with active entried in "/etc/fstab","/etc/crypttab" and "/etc/zuluCrypttab"
 	 * 
 	 * Active entries are entries not commented out.
+	 * 
+	 * zuluCryptPartitionIsSystemPartition() is defined in partitions.c
 	 */	
-	if( zuluCryptCheckIfPartitionIsSystemPartition( device ) == 1 )
+	if( zuluCryptPartitionIsSystemPartition( device ) )
 		if( uid != 0 )
 			return zuluExit( 10,stm ) ;
 	
@@ -159,7 +162,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	 * ZULUCRYPTmkfs is defined at "../constants.h"
 	 * File systems are created not through file systems APIs but through mkfs.xxx executables started using exec call.
 	 */
-	if( zuluCryptIsPathValid( ZULUCRYPTmkfs ) != 0 )
+	if( zuluCryptPathIsNotValid( ZULUCRYPTmkfs ) )
 		return zuluExit( 11,stm ) ;
 	
 	if( conf == -1 ){			
@@ -171,9 +174,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		if( *confirm == StringVoid )
 			return zuluExit( 21,stm ) ;
 		else{
-			k = StringEqual( *confirm,"YES" ) ;			
-		
-			if( k == 1 )
+			if( !StringEqual( *confirm,"YES" ) )
 				return zuluExit( 12,stm ) ;
 		}
 	}
@@ -199,7 +200,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		
 		printf( "\n" ) ;
 		
-		if( StringCompare( *pass_1,*pass_2 ) != 0 ){				
+		if( !StringEqualString( *pass_1,*pass_2 ) ){				
 			st = 7 ;
 		}else{				
 			st = zuluCryptCreateVolume( device,fs,type,StringContent( *pass_1 ),StringLength( *pass_1 ),rng ) ;
