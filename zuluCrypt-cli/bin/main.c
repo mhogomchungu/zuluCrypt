@@ -103,7 +103,6 @@ static int zuluExit( int st,stringManage_t stm,const char * msg )
 	
 	if( msg != NULL )
 		printf( "%s\n",msg ) ;
-	
 	return st ;
 }
 
@@ -116,7 +115,7 @@ int main( int argc,char * argv[] )
 	int st ;
 	uid_t uid ;
 	string_t q = StringVoid ;
-	stringManage_t stm = StringManage( 3 ) ;
+	stringManage_t stm = StringManage( 5 ) ;
 	struct_opts clargs ;
 	
 	uid = getuid();
@@ -180,6 +179,14 @@ int main( int argc,char * argv[] )
 		memset( ( char * )clargs.existing_key,'\0',StringLength( q ) );
 		strcpy( ( char * )clargs.existing_key,"xxxx" ) ;		
 		clargs.existing_key = StringContent( q ) ;
+		StringManageInsertAtLast( stm,&q ) ;
+	}		
+	
+	if( clargs.device != NULL ){
+		q = String( clargs.device ) ;
+		memset( ( char * )clargs.device,'\0',StringLength( q ) );
+		strcpy( ( char * )clargs.device,"xxxx" ) ;		
+		clargs.device = StringContent( q ) ;
 		StringManageInsertAtLast( stm,&q ) ;
 	}	
 	

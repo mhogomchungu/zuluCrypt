@@ -107,6 +107,7 @@ void StringManageRemoveAt( stringManage_t stm,size_t index )
 {	
 	size_t s ;
 	string_t * p ;
+	
 	if( stm == StringManageVoid )
 		return ;
 	if( index < 0 || index >= stm->index )
@@ -128,11 +129,9 @@ string_t * StringManageInsertAt( stringManage_t stm,string_t * st,size_t index )
 	size_t s ;
 	string_t * p ;
 	
-	if( stm == StringManageVoid )
+	if( stm == StringManageVoid || index >= stm->size )
 		return StringVoid ;
-	if( index < 0 || index >= stm->index + 1 )
-		return StringVoid ;
-	
+		
 	s = sizeof( string_t ) ;
 	
 	p = stm->stp ;
