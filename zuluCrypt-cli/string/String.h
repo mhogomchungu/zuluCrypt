@@ -310,6 +310,12 @@ const char * StringStringAt( string_t st,size_t p ) ;
  */
 int StringEndsWithString( string_t st,const char * s ) ;
 
+/*
+ * check to see if the string handled by handle st starts with a string s
+ * return 1 if it does
+ * return 0 if it doesnt 
+ */
+int StringStartsWith( string_t st,const char * s ) ;
 
 /*
  *Check to see if the string pointer by st ends with char s. 

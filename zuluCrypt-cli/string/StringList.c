@@ -431,6 +431,24 @@ ssize_t StringListContains( stringList_t stl,const char * cstring )
 	return -1 ;
 }
 
+ssize_t StringListHasSequence( stringList_t stl,const char * str ) 
+{	
+	ssize_t index  ;
+	size_t size ;
+	
+	if( stl == StringListVoid )
+		return -1 ;
+	size = stl->size ;
+	
+	if( size == 0 )
+		return -1 ;
+	
+	for( index = 0 ; index < size ; index++ )	
+		if( strstr( stl->stp[index]->string,str ) != NULL )
+			return index ;	
+	return -1 ;
+}
+
 stringList_t StringListRemoveAt( stringList_t stl, size_t index ) 
 {
 	size_t size ;

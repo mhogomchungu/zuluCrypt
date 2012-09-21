@@ -416,6 +416,13 @@ int StringEndsWithString( string_t st,const char * s )
 	return strncmp( st->string + st->size - j,s,j ) == 0 ? 1 : 0 ;	
 }
 
+int StringStartsWith( string_t st,const char * s ) 
+{
+	if( st == StringVoid || s == NULL )
+		return 0 ;
+	return strncmp( st->string,s,strlen( s ) ) == 0 ? 1 : 0 ;
+}
+
 int StringEndsWithChar( string_t st,char s )
 {	
 	if( st == StringVoid )

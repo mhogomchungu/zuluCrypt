@@ -18,6 +18,7 @@
  */
 
 #include "includes.h"
+#include "../string/StringList.h"
 
 #include <sys/mount.h>
 #include <mntent.h>
@@ -41,53 +42,180 @@ typedef struct{
 	const char * m_point ;
 	const char * mode ;
 	const char * fs ;
+	const char * opts ;
 	uid_t uid ;
 	unsigned long m_flags ;
 }m_struct;
 
-static int mount_fs( int type,const m_struct * mst, string_t * st )
+static string_t resolveUUIDAndLabel( string_t st )
 {
-	string_t opt = String( mst->mode ) ;
+	char * e ;
+	string_t xt ;
+	if( StringStartsWith( st,"LABEL=" ) ) {
+		e = blkid_evaluate_tag( "LABEL",StringContent( st ) + 6,NULL ) ;
+		if( e != NULL ){
+			xt = StringInherit( &e ) ;
+		}else{
+			xt = StringCopy( st ) ;			
+		}
+	}else if( StringStartsWith( st,"UUID=" ) ){
+		e = blkid_evaluate_tag( "UUID",StringContent( st ) + 5,NULL ) ;
+		if( e != NULL ){
+			xt = StringInherit( &e ) ;		
+		}else{
+			xt = StringCopy( st ) ;			
+		}
+	}else{
+		xt = StringCopy( st ) ;
+	}
 	
-	string_t uid = StringIntToString( mst->uid ) ;
+	return xt ;		
+}
+
+static string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos )
+{
+	string_t options = StringVoid ;
+	string_t entry = StringVoid;	
+	string_t fstab = StringGetFromFile( "/etc/fstab" );
 	
-	const char * copt = StringContent( uid ) ;	
+	stringList_t fstabList  ;
+	stringList_t entryList  ;
 	
-	if( type == FAT_FAMILY_FS )
-		StringAppend( opt,",dmask=0000,fmask=0000,uid=UID,gid=UID,shortname=mixed,flush" ) ;
+	size_t i ;
+	size_t j ;
+	
+	int st ;
+	
+	if( fstab == StringVoid )
+		return StringVoid ;
+	
+	fstabList = StringListStringSplit( fstab,'\n' ) ;
+	
+	StringDelete( &fstab ) ;
+	
+	if( fstabList == StringListVoid )
+		return StringListVoid ;
+		
+	j = StringListSize( fstabList ) ;
+	
+	for( i = 0 ; i < j ; i++ ){		
+		
+		entry = StringListStringAt( fstabList,i ) ;		
+		entryList = StringListStringSplit( entry,' ' ) ;
+		
+		if( entryList == StringListVoid )
+			continue ;
+		
+		entry = StringListStringAt( entryList,0 ) ;
+		
+		entry = resolveUUIDAndLabel( entry ) ;
+
+		st = StringEqual( entry,device ) ;
+		
+		StringDelete( &entry ) ;
+		
+		if( st == 1 ){			
+			options = StringListDetachAt( entryList,pos ) ;
+			StringListDelete( &entryList ) ;
+			break ;			
+		}else{
+			StringListDelete( &entryList ) ;			
+		}
+	}		
+	
+	StringListDelete( &fstabList ) ;
+	
+	return options ;	
+}
+
+static int ms_family( const char * fs )
+{
+	if( strcmp( fs,"ntfs" ) == 0 || strcmp( fs,"vfat" ) == 0 || strcmp( fs,"fat" ) == 0 || strcmp( fs,"msdos" ) == 0 || strcmp( fs,"umsdos" ) == 0 )
+		return 1 ;
 	else
-		StringAppend( opt,",uid=UID,gid=UID" ) ;
+		return 0 ;		
+}
+
+static int other_fs( const char * fs )
+{
+	if( strcmp( fs,"affs" ) == 0 || strcmp( fs,"hfs" ) == 0 || strcmp( fs,"iso9660" ) == 0 )
+		return 1 ;
+	else
+		return 0 ;
+}
+
+static string_t set_mount_options( m_struct * mst )
+{
+	string_t opt = zuluCryptGetMountOptionsFromFstab( mst->device,3 ) ;
+	string_t uid = StringIntToString( mst->uid );		
 	
-	copt = StringReplaceString( opt,"UID",copt ) + 3 ;
+	if( opt == StringVoid ){
+		opt = String( mst->mode ) ;
+		StringAppend( opt,"," ) ;
+	}else{
+		StringMultiplePrepend( opt,",",mst->mode,'\0' ) ;
+	}
+	
+	if( ms_family( mst->fs ) ){	
+		if( !StringContains( opt,"dmask=" ) )
+			StringAppend( opt,",dmask=0000" ) ;
+		if( !StringContains( opt,"umask=" ) )
+			StringAppend( opt,",umask=0000" ) ;
+		if( !StringContains( opt,"uid=" ) )
+			StringAppend( opt,",uid=UID" ) ;
+		if( !StringContains( opt,"gid=" ) )
+			StringAppend( opt,",gid=UID" ) ;			
+		if( !StringContains( opt,"fmask=" ) )
+			StringAppend( opt,",fmask=0000" ) ;
+		if( strcmp( mst->fs,"vfat" ) ){
+			if( !StringContains( opt,"flush" ) )
+				StringAppend( opt,",flush" ) ;
+			if( !StringContains( opt,"shortname=" ) )
+				StringAppend( opt,",shortname=mixed" ) ;			
+		}
+		
+	}else if( other_fs( mst->fs ) ){ 
+		
+		if( !StringContains( opt,"uid=" ) )
+			StringAppend( opt,"uid=UID" ) ;
+		if( !StringContains( opt,"gid=" ) )
+			StringAppend( opt,"gid=UID" ) ;			
+	}else{
+		
+		/*
+		 * ext file systems and raiserfs among others go here
+		 * we dont set any options for them.
+		 */
+		;
+	}
+	
+	StringReplaceString( opt,"UID",StringContent( uid ) );
+	StringReplaceString( opt,",,","," );
+	
+	StringRemoveString( opt,"user" ) ;
+	StringRemoveString( opt,"users" ) ;
+	StringRemoveString( opt,"default" ) ;
+		
+	if( StringEndsWithChar( opt,',' ) )
+		StringSubChar( opt,StringLength( opt ) - 1,'\0' ) ;		
 	
 	StringDelete( &uid ) ;
 	
-	*st = opt ;
+	if( strcmp( mst->fs,"ntfs" ) == 0 )		
+		mst->opts = StringContent( opt ) ;
+	else
+		mst->opts = StringContent( opt ) + 3 ;
 	
-	return mount( mst->device,mst->m_point,mst->fs,mst->m_flags,copt ) ;
+	return opt;	
 }
 
 static int mount_ntfs( const m_struct * mst )
 {
-	const char * copt ;
-	
 	int status ;	
 	
-	process_t p ;
+	process_t p = Process( ZULUCRYPTmount ) ;
 	
-	string_t uid = StringIntToString( mst->uid );		
-	string_t q ;
-	
-	if( strcmp( mst->mode,"ro" ) == 0 )
-		q = String( "dmask=077,umask=077,ro,uid=UID,gid=UID" ) ;
-	else
-		q = String( "dmask=077,umask=077,rw,uid=UID,gid=UID" ) ;
-	
-	copt = StringReplaceString( q,"UID",StringContent( uid ) ) ;
-		
-	p = Process( ZULUCRYPTmount ) ;
-	
-	ProcessSetArgumentList( p,"-t","ntfs-3g","-o",copt,mst->device,mst->m_point,'\0' ) ;
+	ProcessSetArgumentList( p,"-t","ntfs-3g","-o",mst->opts,mst->device,mst->m_point,'\0' ) ;
 
 	ProcessSetOption( p,CLOSE_BOTH_STD_OUT ) ;
 
@@ -97,27 +225,16 @@ static int mount_ntfs( const m_struct * mst )
 	
 	ProcessDelete( &p ) ;
 	
-	StringMultipleDelete( &q,&uid,'\0' ) ;
-	
 	return status ;
 }
 
-static int mount_mapper( const m_struct * mst, string_t * st )
+static int mount_mapper( const m_struct * mst )
 {
-	int h ;
-	const char * fs = mst->fs ;
-
-	if( strcmp( fs,"vfat" ) == 0 || strcmp( fs,"fat" ) == 0 || strcmp( fs,"msdos" ) == 0 || strcmp( fs,"umsdos" ) == 0 ){
-		h = mount_fs( FAT_FAMILY_FS,mst,st ) ;
-	}else if( strcmp( fs,"affs" ) == 0 || strcmp( fs,"hfs" ) == 0 || strcmp( fs,"iso9660" ) == 0 ){
-		h = mount_fs( OTHER_FAMILY_FS,mst,st ) ;		
-	}else{
-		*st = String( mst->mode ) ;
-		h = mount( mst->device,mst->m_point,mst->fs,mst->m_flags,NULL ) ;
-		if( h == 0 && mst->m_flags != MS_RDONLY ){
-			chmod( mst->m_point,S_IRWXU|S_IRWXG|S_IRWXO ) ;
-		}
-	}
+	int h = mount( mst->device,mst->m_point,mst->fs,mst->m_flags,mst->opts ) ;
+	
+	if( h == 0 && mst->m_flags != MS_RDONLY && ms_family( mst->fs ) == 0 && other_fs( mst->fs ) == 0 )
+		chmod( mst->m_point,S_IRWXU|S_IRWXG|S_IRWXO ) ;	
+	
 	return h ;
 }
 
@@ -162,21 +279,24 @@ int zuluCryptMountVolume( const char * mapper,const char * m_point,const char * 
 	fs = String( cf ) ;
 	blkid_free_probe( blkid );
 	
+	mst.fs = StringContent( fs ) ;
+	
+	options = set_mount_options( &mst ) ;
+	
 	/*
 	 * Currently, i dont know how to use mount system call to use ntfs-3g instead of ntfs to mount ntfs file systems.
 	 * Use fork to use mount executable as a temporary solution.
 	*/
 	if( StringEqual( fs,"ntfs" ) ){
-		StringDelete( &fs ) ;
-		switch( mount_ntfs( &mst ) ){
+		h = mount_ntfs( &mst ) ;
+		StringMultipleDelete( &fs,&options,'\0' ) ;		
+		switch( h ){
 			case 0  : return 0 ;
 			case 16 : return 12 ;
 			default : return 1 ;
 		}
 	}
 	 
-	mst.fs = StringContent( fs ) ;
-
 	/*
 	 * mtab_is_at_etc() is defined in print_mounted_volumes.c
 	 * 1 is return if "mtab" is found to be a file located at "/etc/"
@@ -184,7 +304,7 @@ int zuluCryptMountVolume( const char * mapper,const char * m_point,const char * 
 	 */
 	
 	if( !zuluCryptMtabIsAtEtc() ){
-		h = mount_mapper( &mst,&options ) ;
+		h = mount_mapper( &mst ) ;
 	}else{
 		/* 
 		 * "/etc/mtab" is not a symbolic link to /proc/mounts, manually,add an entry to it since 
@@ -194,7 +314,7 @@ int zuluCryptMountVolume( const char * mapper,const char * m_point,const char * 
 		if( mnt_lock_file( m_lock ) != 0 ){
 			h = 12 ;
 		}else{		
-			h = mount_mapper( &mst,&options ) ;
+			h = mount_mapper( &mst ) ;
 			if( h == 0 ){
 				f = setmntent( "/etc/mtab","a" ) ;	
 				mt.mnt_fsname = ( char * ) mapper ;

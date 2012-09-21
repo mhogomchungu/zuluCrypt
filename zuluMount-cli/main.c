@@ -248,7 +248,7 @@ static int zuluMountMount( const char * device,const char * m_point,const char *
 	if( status == 0 ){		
 		return zuluExit( 0,z,path,"SUCCESS: mount complete successfully" ) ;		
 	}else{
-		rmdir( m_point ) ;
+		rmdir( path ) ;
 		switch( status ){
 			case 1 : return zuluExit( 108,z,path,"ERROR: failed to mount ntfs file system using ntfs-3g,is ntfs-3g package installed?" ) ;
 			case 4 : return zuluExit( 109,z,path,"ERROR: mount failed,no or unrecognized file system" )	; 

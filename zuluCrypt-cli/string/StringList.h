@@ -112,6 +112,13 @@ string_t StringListStringAtLast( stringList_t stl ) ;
 ssize_t StringListContains( stringList_t stl,const char * cstring );
 
 /*
+ * return an index position of the first element on the list with a character
+ * sequence str ;
+ * return -1 if no such sequence exist 
+ */
+ssize_t StringListHasSequence( stringList_t stl,const char * str ) ;
+
+/*
  * append an entry into the list.
  * if stl == NULL, then the function call is the same as "StringList( cstring )" 
  */
