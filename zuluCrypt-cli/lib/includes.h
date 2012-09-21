@@ -63,3 +63,9 @@ int zuluCryptMtabIsAtEtc( void ) ;
  * this is defined in print_mounted_volumes.c
  */
 int zuluCryptPartitionIsMounted( const char * device ) ;
+
+/*
+ *  parse "/etc/fstab" and return a field at position "pos" on a line
+ *  that corresponds to device "device".  
+ */
+string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos ) ;

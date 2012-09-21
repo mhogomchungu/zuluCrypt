@@ -72,7 +72,7 @@ static string_t resolveUUIDAndLabel( string_t st )
 	return xt ;		
 }
 
-static string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos )
+string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos )
 {
 	string_t options = StringVoid ;
 	string_t entry = StringVoid;	

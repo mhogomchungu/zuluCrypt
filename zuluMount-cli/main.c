@@ -99,71 +99,32 @@ static int zuluExit( int st,string_t * z,char * q,const char * msg )
 	return st ;
 }
 
-static int zuluMountNormalUserCanManagePartition( const char * device )
+static int zuluMountNormalUserCanNotManagePartition( const char * device )
 {
-	string_t p = StringGetFromFile( "/etc/fstab" ) ;	
-	string_t f ;
+	/*
+	 * this function is defined in ../zuluCrypt-cli/lib/mount_volume.c
+	 */
+	string_t p = zuluCryptGetMountOptionsFromFstab( device,3 ) ;
 	
-	stringList_t q ;
-	stringList_t z ;
-	
-	const char * e ;
-	
-	size_t i ;
-	size_t j ;
-	int st = 1 ;
-	
+	int st ;
 	if( p == StringVoid )
-		return 1 ;	
-	
-	q = StringListStringSplit( p,'\n' ) ;
-	StringDelete( &p ) ;
-	
-	if( q == StringListVoid )
 		return 1 ;
 	
-	j = StringListSize( q ) ;
-	
-	for( i = 0 ; i < j ; i++ ){
-		
-		e = StringListContentAt( q,i ) ;
-		
-		z = StringListSplit( e,' ' ) ;
-		
-		if( z == StringListVoid ){
-			StringListDelete( &q ) ;
-			return 1 ;
-		}
-		
-		f = StringListStringAt( z,0 ) ;
-		
-		if( StringEqual( f,device ) && StringCharAt( f,0 ) != '#' ){
-			
-			f = StringListStringAt( z,3 ) ;
-				
-			if( StringContains( f,"nouser" ) ){
-				st = 1 ;
-			}else if( StringContains( f,"user" ) ){
-				st = 0 ;
-			}else{
-				/*
-				 * not having either option means "nouser" since its
-				 * the default option
-				 */
-				st = 1 ;
-			}
-			
-			StringListMultipleDelete( &q,&z,'\0' ) ;
-			
-			return st ;
-		}
-		
-		StringListDelete( &z ) ;		
+	if( StringContains( p,"nouser" ) ){
+		st = 1 ;
+	}else if( StringContains( p,"user" ) ){
+		st = 0 ;
+	}else{
+		/*
+		 * not having either option means "nouser" since its
+		 * the default option
+		 */
+		st = 1 ;
 	}
 	
-	StringListDelete( &q ) ;		
+	StringDelete( &p ) ;
 	
-	return 1 ;	
+	return st ;	
 }
 
 static int zuluMountCheckDevicePermissions( const char * device,uid_t uid )
@@ -172,7 +133,7 @@ static int zuluMountCheckDevicePermissions( const char * device,uid_t uid )
 	 * zuluCryptPartitionIsSystemPartition() is defined in ../zuluCrypt-cli/bin/partitions.c
 	 */
 	if( zuluCryptPartitionIsSystemPartition( device ) ){
-		if( zuluMountNormalUserCanManagePartition( device ) ){
+		if( zuluMountNormalUserCanNotManagePartition( device ) ){
 			if( uid != 0 ){
 				return 1 ;
 			}
@@ -204,7 +165,7 @@ static int zuluMountMount( const char * device,const char * m_point,const char *
 	if( zuluCryptPartitionIsMounted( device ) )
 		return zuluExit( 101,z,NULL,"ERROR: device already mounted" ) ;
 	
-	if( zuluMountCheckDevicePermissions( device,uid ) == 1 )
+	if( zuluMountCheckDevicePermissions( device,uid ) )
 		return zuluExit( 100,z,NULL,"ERROR: could not mount a system partition because it does not have \"user\" option in \"/etc/fstab\"" ) ;
 	
 	if( m_point != NULL ){
@@ -267,10 +228,10 @@ static int zuluMountUMount( const char * device,uid_t uid )
 	/*
 	 * zuluCryptPartitionIsMounted()  is defined in defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c 	 
 	 */
-	if( zuluCryptPartitionIsMounted( device ) == 0 )
+	if( !zuluCryptPartitionIsMounted( device ) )
 		return zuluExit( 127,NULL,NULL,"ERROR: device does appear to be mounted as it does not have an entry in \"/etc/mtab\"" ) ;
 	
-	if( zuluMountCheckDevicePermissions( device,uid ) == 1 )
+	if( zuluMountCheckDevicePermissions( device,uid ) )
 		return zuluExit( 112,NULL,NULL,"ERROR: could not unmount a system partition because it does not have \"user\" option in \"/etc/fstab\"" ) ;
 		
 	/*
