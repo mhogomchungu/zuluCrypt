@@ -61,6 +61,28 @@ void zuluCrypt::initFont()
 	setUserFont( f.getFont() );
 }
 
+void zuluCrypt::raiseWindow()
+{
+	if( !this->isVisible() )
+		this->setVisible( true );
+	else if( this->isMinimized() ){
+		this->raise();
+		this->setWindowState( Qt::WindowActive ) ;
+		this->show(); ;
+	}else{
+		this->raise();
+		this->setWindowState( Qt::WindowActive ) ;
+		this->show();
+	}
+}
+
+void zuluCrypt::start()
+{
+	QString sockpath = QDir::homePath() + QString( "/" ) + QString( ".zuluCrypt-gui.socket" ) ;
+	oneinstance * instance = new oneinstance( this,sockpath,"raiseWindow" ) ;
+	connect( instance,SIGNAL( raise() ),this,SLOT( raiseWindow() ) ) ;
+}
+
 void zuluCrypt::initTray()
 {
 	QString home = QDir::homePath() + QString( "/.zuluCrypt/" ) ;

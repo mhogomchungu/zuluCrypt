@@ -40,6 +40,7 @@
 #include "../zuluCrypt-gui/tablewidget.h"
 #include "mountpartition.h"
 #include "../zuluCrypt-gui/openvolumereadonly.h"
+#include "oneinstance.h"
 
 namespace Ui {
 class MainWindow;
@@ -51,10 +52,11 @@ class MainWindow : public QMainWindow
 public:
 	explicit MainWindow( QWidget * parent = 0 );
 	~MainWindow();
-
+	void start( void ) ;
 signals:
 	void result( int,QString ) ;
-
+public slots:
+	void raiseWindow( void ) ;
 private slots:
 	void mounted( QString ) ;
 	void volumeMiniProperties( QString );
@@ -87,6 +89,7 @@ private:
 	void setUpFont( void ) ;
 	void setUpShortCuts( void ) ;
 	bool m_justMounted ;
+	QSystemTrayIcon * m_trayIcon ;
 };
 
 #endif // MAINWINDOW_H

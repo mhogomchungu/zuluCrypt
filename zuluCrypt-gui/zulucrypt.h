@@ -32,6 +32,7 @@
 
 #include "../zuluCrypt-cli/constants.h"
 #include "../zuluCrypt-cli/version.h"
+#include "../zuluMount-gui/oneinstance.h"
 #include "password_dialog.h"
 #include "openpartition.h"
 #include "luksaddkey.h"
@@ -67,7 +68,10 @@ class zuluCrypt : public QMainWindow
 public:
 	zuluCrypt( QWidget * parent = 0 );
 	void removeRowFromTable( int row ) ;
+	void start( void ) ;
 	~zuluCrypt();
+public slots:
+	void raiseWindow( void ) ;
 signals:
 	void showManageFavorites( void ) ;
 	void favClickedVolume( QString volume_path,QString mount_point_path );

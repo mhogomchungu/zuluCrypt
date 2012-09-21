@@ -11,6 +11,14 @@ find_package( Qt4 REQUIRED )
 set( KDEINCLUDE $ENV{KDEDIR}/include )
 set( KDELIB $ENV{KDEDIR}/lib )
 
+find_library( qtNetwork libQtNetwork.so )
+
+if( qtNetwork )
+	message( STATUS "Found QtNetwork.so  : " ${qtNetwork} )
+else( qtNetwork )
+	message( FATAL_ERROR "could not find QtNetwork shared library" )
+endif( qtNetwork )
+
 find_file( blkid.h blkid/blkid.h PATHS /usr/lib /usr/lib64 /usr/lib/include /usr/lib64/include /usr/include/gnome-keyring-1 /usr/include /usr/local/include /usr/local/include/glib-2.0 /usr/include/glib-2.0 /usr/lib/glib-2.0/include /usr/lib64/glib-2.0/include )
  
 if(NOT blkid.h)

@@ -52,16 +52,16 @@ MainWindow::MainWindow( QWidget * parent ) :
 
 	this->setUpFont();
 
-	QSystemTrayIcon * tray_icon = new QSystemTrayIcon( this ) ;
-	tray_icon->setIcon( QIcon( QString( ":/zuluMount.png" ) ) );
+	m_trayIcon = new QSystemTrayIcon( this ) ;
+	m_trayIcon->setIcon( QIcon( QString( ":/zuluMount.png" ) ) );
 
 	QMenu * trayMenu = new QMenu( this ) ;
 	trayMenu->addAction( tr( "quit" ),this,SLOT( slotCloseApplication() ) );
-	tray_icon->setContextMenu( trayMenu );
+	m_trayIcon->setContextMenu( trayMenu );
 
-	connect( tray_icon,SIGNAL( activated( QSystemTrayIcon::ActivationReason ) ),this,SLOT( slotTrayClicked( QSystemTrayIcon::ActivationReason ) ) );
+	connect( m_trayIcon,SIGNAL( activated( QSystemTrayIcon::ActivationReason ) ),this,SLOT( slotTrayClicked( QSystemTrayIcon::ActivationReason ) ) );
 
-	tray_icon->show();
+	m_trayIcon->show();
 
 	managepartitionthread * part = new managepartitionthread() ;
 
@@ -73,6 +73,39 @@ MainWindow::MainWindow( QWidget * parent ) :
 
 	m_working = false ;
 	m_justMounted = false ;
+}
+
+void MainWindow::raiseWindow()
+{
+	if( !this->isVisible() )
+		this->setVisible( true );
+	else if( this->isMinimized()){
+		this->raise();
+		this->setWindowState( Qt::WindowActive ) ;
+		this->show();
+	}else{
+		this->raise();
+		this->setWindowState( Qt::WindowActive ) ;
+		this->show();
+	}
+}
+
+void MainWindow::start()
+{
+	QString sockpath = QDir::homePath() + QString( "/" ) + QString( ".zuluMount-gui.socket" ) ;
+	oneinstance * instance = new oneinstance( this,sockpath,"raiseWindow" ) ;
+	connect( instance,SIGNAL( raise() ),this,SLOT( raiseWindow() ) ) ;
+}
+
+void MainWindow::pbClose()
+{
+	this->slotCloseApplication();
+}
+
+void MainWindow::slotCloseApplication()
+{
+	if( m_working == false )
+		QCoreApplication::quit();
 }
 
 void MainWindow::itemClicked( QTableWidgetItem * item )
@@ -192,17 +225,6 @@ void MainWindow::closeEvent( QCloseEvent * e )
 {
 	e->ignore();
 	this->hide();
-}
-
-void MainWindow::pbClose()
-{
-	this->slotCloseApplication();
-}
-
-void MainWindow::slotCloseApplication()
-{
-	if( m_working == false )
-		QCoreApplication::quit();
 }
 
 void MainWindow::slotTrayClicked( QSystemTrayIcon::ActivationReason e )

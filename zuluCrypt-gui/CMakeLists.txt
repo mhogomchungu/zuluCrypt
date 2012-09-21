@@ -50,6 +50,7 @@ set( MOC_FILES createfile.h
 		managesystemvolumes.h
 		kwalletconfig.h
 		socketsendkey.h
+		../zuluMount-gui/oneinstance.h
  )
 	
 set (SRC createfile.cpp
@@ -88,6 +89,7 @@ set (SRC createfile.cpp
 	tablewidget.cpp
 	socketsendkey.cpp
 	openvolumereadonly.cpp
+	../zuluMount-gui/oneinstance.cpp	
 )
 
 INCLUDE( ${QT_USE_FILE} )
@@ -102,19 +104,19 @@ INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
 				
 add_executable( zuluCrypt-gui ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
 
-target_link_libraries( zuluCrypt-gui ${zuluPluginManager} ) 
+target_link_libraries( zuluCrypt-gui ${zuluPluginManager} -lQtNetwork ) 
 
 if( library_pwquality )
 	if( kwallet_library )
-		TARGET_LINK_LIBRARIES( zuluCrypt-gui ${QT_LIBRARIES} ${blkid} ${library_pwquality} ${kwallet_library} -lQtNetwork )
+		TARGET_LINK_LIBRARIES( zuluCrypt-gui ${QT_LIBRARIES} ${blkid} ${library_pwquality} ${kwallet_library} )
 	else( kwallet_library )
-		TARGET_LINK_LIBRARIES( zuluCrypt-gui ${QT_LIBRARIES} ${blkid} ${library_pwquality} -lQtNetwork )		
+		TARGET_LINK_LIBRARIES( zuluCrypt-gui ${QT_LIBRARIES} ${blkid} ${library_pwquality} )
 	endif( kwallet_library )
 else( library_pwquality )
 	if( kwallet_library )
-		TARGET_LINK_LIBRARIES( zuluCrypt-gui ${QT_LIBRARIES} ${blkid} ${kwallet_library} -lQtNetwork)
+		TARGET_LINK_LIBRARIES( zuluCrypt-gui ${QT_LIBRARIES} ${blkid} ${kwallet_library} )
 	else( kwallet_library )
-		TARGET_LINK_LIBRARIES( zuluCrypt-gui ${QT_LIBRARIES} ${blkid} -lQtNetwork )
+		TARGET_LINK_LIBRARIES( zuluCrypt-gui ${QT_LIBRARIES} ${blkid} )
 	endif( kwallet_library )
 endif( library_pwquality )			
 		
