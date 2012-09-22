@@ -50,32 +50,32 @@ typedef struct{
 static string_t resolveUUIDAndLabel( string_t st )
 {
 	char * e ;
-	string_t xt ;
+	string_t xt = StringVoid ;
 	if( StringStartsWith( st,"LABEL=" ) ) {
 		e = blkid_evaluate_tag( "LABEL",StringContent( st ) + 6,NULL ) ;
 		if( e != NULL ){
 			xt = StringInherit( &e ) ;
 		}else{
-			xt = StringCopy( st ) ;			
+			xt = StringCopy( st ) ;
 		}
 	}else if( StringStartsWith( st,"UUID=" ) ){
 		e = blkid_evaluate_tag( "UUID",StringContent( st ) + 5,NULL ) ;
 		if( e != NULL ){
-			xt = StringInherit( &e ) ;		
+			xt = StringInherit( &e ) ;
 		}else{
-			xt = StringCopy( st ) ;			
+			xt = StringCopy( st ) ;
 		}
 	}else{
 		xt = StringCopy( st ) ;
 	}
 	
-	return xt ;		
+	return xt ;
 }
 
 string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos )
 {
 	string_t options = StringVoid ;
-	string_t entry = StringVoid;	
+	string_t entry = StringVoid;
 	string_t fstab = StringGetFromFile( "/etc/fstab" );
 	
 	stringList_t fstabList  ;
@@ -94,13 +94,13 @@ string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos )
 	StringDelete( &fstab ) ;
 	
 	if( fstabList == StringListVoid )
-		return StringListVoid ;
+		return StringVoid ;
 		
 	j = StringListSize( fstabList ) ;
 	
-	for( i = 0 ; i < j ; i++ ){		
+	for( i = 0 ; i < j ; i++ ){
 		
-		entry = StringListStringAt( fstabList,i ) ;		
+		entry = StringListStringAt( fstabList,i ) ;
 		entryList = StringListStringSplit( entry,' ' ) ;
 		
 		if( entryList == StringListVoid )
@@ -108,24 +108,27 @@ string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos )
 		
 		entry = StringListStringAt( entryList,0 ) ;
 		
-		entry = resolveUUIDAndLabel( entry ) ;
-
-		st = StringEqual( entry,device ) ;
+		if( !StringStartsWith( entry,"#" ) ){
 		
-		StringDelete( &entry ) ;
+			entry = resolveUUIDAndLabel( entry ) ;
 		
-		if( st == 1 ){			
-			options = StringListDetachAt( entryList,pos ) ;
-			StringListDelete( &entryList ) ;
-			break ;			
-		}else{
-			StringListDelete( &entryList ) ;			
+			st = StringEqual( entry,device ) ;
+		
+			StringDelete( &entry ) ;
+		
+			if( st == 1 ){
+				options = StringListDetachAt( entryList,pos ) ;
+				StringListDelete( &entryList ) ;
+				break ;	
+			}
 		}
-	}		
+		
+		StringListDelete( &entryList ) ;
+	}
 	
 	StringListDelete( &fstabList ) ;
 	
-	return options ;	
+	return options ;
 }
 
 static int ms_family( const char * fs )
@@ -133,7 +136,7 @@ static int ms_family( const char * fs )
 	if( strcmp( fs,"ntfs" ) == 0 || strcmp( fs,"vfat" ) == 0 || strcmp( fs,"fat" ) == 0 || strcmp( fs,"msdos" ) == 0 || strcmp( fs,"umsdos" ) == 0 )
 		return 1 ;
 	else
-		return 0 ;		
+		return 0 ;
 }
 
 static int other_fs( const char * fs )
@@ -147,7 +150,7 @@ static int other_fs( const char * fs )
 static string_t set_mount_options( m_struct * mst )
 {
 	string_t opt = zuluCryptGetMountOptionsFromFstab( mst->device,3 ) ;
-	string_t uid = StringIntToString( mst->uid );		
+	string_t uid = StringIntToString( mst->uid ) ;
 	
 	if( opt == StringVoid ){
 		opt = String( mst->mode ) ;
@@ -164,14 +167,14 @@ static string_t set_mount_options( m_struct * mst )
 		if( !StringContains( opt,"uid=" ) )
 			StringAppend( opt,",uid=UID" ) ;
 		if( !StringContains( opt,"gid=" ) )
-			StringAppend( opt,",gid=UID" ) ;			
+			StringAppend( opt,",gid=UID" ) ;
 		if( !StringContains( opt,"fmask=" ) )
 			StringAppend( opt,",fmask=0000" ) ;
 		if( strcmp( mst->fs,"vfat" ) ){
 			if( !StringContains( opt,"flush" ) )
 				StringAppend( opt,",flush" ) ;
 			if( !StringContains( opt,"shortname=" ) )
-				StringAppend( opt,",shortname=mixed" ) ;			
+				StringAppend( opt,",shortname=mixed" ) ;
 		}
 		
 	}else if( other_fs( mst->fs ) ){ 
@@ -179,9 +182,8 @@ static string_t set_mount_options( m_struct * mst )
 		if( !StringContains( opt,"uid=" ) )
 			StringAppend( opt,"uid=UID" ) ;
 		if( !StringContains( opt,"gid=" ) )
-			StringAppend( opt,"gid=UID" ) ;			
+			StringAppend( opt,"gid=UID" ) ;
 	}else{
-		
 		/*
 		 * ext file systems and raiserfs among others go here
 		 * we dont set any options for them.
@@ -190,23 +192,32 @@ static string_t set_mount_options( m_struct * mst )
 	}
 	
 	StringReplaceString( opt,"UID",StringContent( uid ) );
+	
+	/*
+	 * Below options are not file system options and are rejectected by mount() command and hence we are removing them.
+	 */
+	StringRemoveString( opt,"nouser" ) ;
+	StringRemoveString( opt,"users" ) ;	
+	StringRemoveString( opt,"user" ) ;
+	StringRemoveString( opt,"default" ) ;
+	StringRemoveString( opt,"auto" ) ;
+	StringRemoveString( opt,"noauto" ) ;
+	StringRemoveStringPos( opt,"ro",3 ) ;
+	StringRemoveStringPos( opt,"rw",3 ) ;
+	
 	StringReplaceString( opt,",,","," );
 	
-	StringRemoveString( opt,"user" ) ;
-	StringRemoveString( opt,"users" ) ;
-	StringRemoveString( opt,"default" ) ;
-		
 	if( StringEndsWithChar( opt,',' ) )
-		StringSubChar( opt,StringLength( opt ) - 1,'\0' ) ;		
+		StringSubChar( opt,StringLength( opt ) - 1,'\0' ) ;
 	
 	StringDelete( &uid ) ;
 	
-	if( strcmp( mst->fs,"ntfs" ) == 0 )		
+	if( strcmp( mst->fs,"ntfs" ) == 0 )
 		mst->opts = StringContent( opt ) ;
 	else
 		mst->opts = StringContent( opt ) + 3 ;
 	
-	return opt;	
+	return opt;
 }
 
 static int mount_ntfs( const m_struct * mst )

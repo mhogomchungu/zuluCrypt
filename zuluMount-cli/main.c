@@ -99,7 +99,7 @@ static int zuluExit( int st,string_t * z,char * q,const char * msg )
 	return st ;
 }
 
-static int zuluMountNormalUserCanNotManagePartition( const char * device )
+static int zuluMountPartitionAccess( const char * device,const char * mode,uid_t uid )
 {
 	/*
 	 * this function is defined in ../zuluCrypt-cli/lib/mount_volume.c
@@ -108,39 +108,25 @@ static int zuluMountNormalUserCanNotManagePartition( const char * device )
 	
 	int st ;
 	if( p == StringVoid )
-		return 1 ;
+		return 0 ;
 	
-	if( StringContains( p,"nouser" ) ){
+	if( StringContains( p,"ro" ) && strcmp( mode,"rw" ) == 0 )
 		st = 1 ;
+	else if( StringContains( p,"nouser" ) &&uid != 0 ){
+		st = 2 ;
 	}else if( StringContains( p,"user" ) ){
-		st = 0 ;
+		st = 3 ;
 	}else{
 		/*
 		 * not having either option means "nouser" since its
 		 * the default option
 		 */
-		st = 1 ;
+		st = 2 ;
 	}
 	
 	StringDelete( &p ) ;
 	
 	return st ;	
-}
-
-static int zuluMountCheckDevicePermissions( const char * device,uid_t uid )
-{	
-	/*
-	 * zuluCryptPartitionIsSystemPartition() is defined in ../zuluCrypt-cli/bin/partitions.c
-	 */
-	if( zuluCryptPartitionIsSystemPartition( device ) ){
-		if( zuluMountNormalUserCanNotManagePartition( device ) ){
-			if( uid != 0 ){
-				return 1 ;
-			}
-		}
-	}
-	
-	return 0 ;
 }
 
 static int zuluMountMount( const char * device,const char * m_point,const char * mode,uid_t uid )
@@ -165,8 +151,10 @@ static int zuluMountMount( const char * device,const char * m_point,const char *
 	if( zuluCryptPartitionIsMounted( device ) )
 		return zuluExit( 101,z,NULL,"ERROR: device already mounted" ) ;
 	
-	if( zuluMountCheckDevicePermissions( device,uid ) )
-		return zuluExit( 100,z,NULL,"ERROR: could not mount a system partition because it does not have \"user\" option in \"/etc/fstab\"" ) ;
+	switch( zuluMountPartitionAccess( device,mode,uid ) ){
+		case 1 : return zuluExit( 128,z,NULL,"ERROR: \"/etc/fstab\" entry for this partition requires it to be mounted read only" ) ;
+		case 2 : return zuluExit( 129,z,NULL,"ERROR: \"/etc/fstab\" entry for this partition requires only root user to mount it" ) ;		
+	}
 	
 	if( m_point != NULL ){
 		*z = String( m_point ) ;
@@ -219,7 +207,7 @@ static int zuluMountMount( const char * device,const char * m_point,const char *
 	}
 }
 
-static int zuluMountUMount( const char * device,uid_t uid )
+static int zuluMountUMount( const char * device,uid_t uid,const char * mode )
 {
 	char * m_point = NULL ;
 
@@ -231,7 +219,7 @@ static int zuluMountUMount( const char * device,uid_t uid )
 	if( !zuluCryptPartitionIsMounted( device ) )
 		return zuluExit( 127,NULL,NULL,"ERROR: device does appear to be mounted as it does not have an entry in \"/etc/mtab\"" ) ;
 	
-	if( zuluMountCheckDevicePermissions( device,uid ) )
+	if( zuluMountPartitionAccess( device,mode,uid ) == 2 )
 		return zuluExit( 112,NULL,NULL,"ERROR: could not unmount a system partition because it does not have \"user\" option in \"/etc/fstab\"" ) ;
 		
 	/*
@@ -406,7 +394,7 @@ static int zuluMountExe( const char * device, const char * action,const char * m
 	if( strcmp( action,"-m" ) == 0 )
 		return zuluMountMount( device,m_point,mode,uid ) ;
 	else if( strcmp( action,"-u" ) == 0 )
-		return zuluMountUMount( device,uid ) ;
+		return zuluMountUMount( device,uid,mode ) ;
 	else if( strcmp( action,"-M" ) == 0 )
 		return zuluMountCryptoMount( device,mode,uid,key,key_source,m_point ) ;
 	else if( strcmp( action,"-U" ) == 0 )
