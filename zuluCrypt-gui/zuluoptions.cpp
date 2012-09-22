@@ -40,13 +40,13 @@ QString zuluOptions::wallet()
 	QFile f( path ) ;
 
 	if( !f.exists() )
-		return QString( WALLET_NAME )  ;
-	else{
-		f.open( QIODevice::ReadOnly ) ;
-		QString name = QString( f.readAll() );
-		f.close();
-		return name ;
-	}
+		zuluOptions::setWalletToKDEDefaultName() ;
+
+	f.open( QIODevice::ReadOnly ) ;
+	QString name = QString( f.readAll() );
+	f.close();
+	return name ;
+
 }
 
 QString zuluOptions::walletPath()
