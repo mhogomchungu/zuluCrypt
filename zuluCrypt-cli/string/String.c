@@ -47,7 +47,7 @@ struct StringType
 
 static inline char * __StringExpandMemory( string_t st,size_t new_size )
 {
-	if( new_size + 1 > st->length ) {
+	if( new_size >= st->length ) {
 		st->length = new_size * FACTOR ; 
 		return realloc( st->string,st->length ) ;
 	}else
@@ -186,7 +186,7 @@ void StringReadToBuffer( string_t st,char * buffer,size_t size )
 
 string_t StringInherit( char ** data )
 {
-	return StringInheritWithSize( data,strlen( *data ) ) ;
+	return *data == NULL ? StringVoid : StringInheritWithSize( data,strlen( *data ) ) ;
 }
 
 void StringPrint( string_t st )
@@ -211,7 +211,12 @@ int StringContains( string_t st,const char * str )
 
 string_t StringInheritWithSize( char ** data,size_t s )
 {
-	string_t st = ( string_t ) malloc ( sizeof( struct StringType ) ) ;
+	string_t st ;
+	
+	if( *data == NULL )
+		return StringVoid ;
+	
+	st = ( string_t ) malloc ( sizeof( struct StringType ) ) ;
 	
 	if( st == NULL )
 		return StringVoid ;

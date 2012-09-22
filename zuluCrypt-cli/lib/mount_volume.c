@@ -51,22 +51,13 @@ static string_t resolveUUIDAndLabel( string_t st )
 {
 	char * e ;
 	string_t xt = StringVoid ;
+	
 	if( StringStartsWith( st,"LABEL=" ) ) {
 		e = blkid_evaluate_tag( "LABEL",StringContent( st ) + 6,NULL ) ;
-		if( e != NULL ){
-			xt = StringInherit( &e ) ;
-		}else{
-			xt = StringCopy( st ) ;
-		}
+		xt = StringInherit( &e ) ;		
 	}else if( StringStartsWith( st,"UUID=" ) ){
 		e = blkid_evaluate_tag( "UUID",StringContent( st ) + 5,NULL ) ;
-		if( e != NULL ){
-			xt = StringInherit( &e ) ;
-		}else{
-			xt = StringCopy( st ) ;
-		}
-	}else{
-		xt = StringCopy( st ) ;
+		xt = StringInherit( &e ) ;		
 	}
 	
 	return xt ;
@@ -110,11 +101,13 @@ string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos )
 		
 		if( !StringStartsWith( entry,"#" ) ){
 		
-			entry = resolveUUIDAndLabel( entry ) ;
-		
-			st = StringEqual( entry,device ) ;
-		
-			StringDelete( &entry ) ;
+			if( StringStartsWith( entry,"/dev/" ) ){
+				st = StringEqual( entry,device ) ;
+			}else{
+				entry = resolveUUIDAndLabel( entry ) ;
+				st = StringEqual( entry,device ) ;
+				StringDelete( &entry ) ;
+			}
 		
 			if( st == 1 ){
 				options = StringListDetachAt( entryList,pos ) ;
@@ -170,7 +163,8 @@ static string_t set_mount_options( m_struct * mst )
 			StringAppend( opt,",gid=UID" ) ;
 		if( !StringContains( opt,"fmask=" ) )
 			StringAppend( opt,",fmask=0000" ) ;
-		if( strcmp( mst->fs,"vfat" ) ){
+		
+		if( strcmp( mst->fs,"vfat" ) == 0 ){	
 			if( !StringContains( opt,"flush" ) )
 				StringAppend( opt,",flush" ) ;
 			if( !StringContains( opt,"shortname=" ) )
