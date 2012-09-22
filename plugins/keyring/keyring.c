@@ -36,7 +36,7 @@ static GnomeKeyringPasswordSchema lps =
 	}
 };
 
-int main( int argc,char * argv[] )
+int main( int argc __attribute__(( unused )),char * argv[] )
 {
 	/*
 	 * const char * exe    = argv[ 0 ] ;

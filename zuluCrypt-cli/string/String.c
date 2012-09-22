@@ -340,6 +340,7 @@ const char * StringRemoveLeft( string_t st,size_t x )
 
 const char * StringCrop( string_t st,size_t x,size_t y ) 
 {
+	ssize_t s ;
 	if( st == StringVoid )
 		return NULL ;
 	if( x >= st->size )
@@ -348,10 +349,12 @@ const char * StringCrop( string_t st,size_t x,size_t y )
 		y = st->size - 1 ;
 	memmove( st->string,st->string + x,st->size - x + 1 ) ;
 	
-	st->size = st->size - x - y ;
-	
-	if( st->size < 0 )
+	s = st->size - x - y ;
+	if( s < 0  )
 		st->size = 0 ;
+	else
+		st->size = s ;
+	
 	*( st->string + st->size ) = '\0';
 	
 	return st->string ;
@@ -530,9 +533,7 @@ const char * StringInsertAndDelete( string_t st,size_t x,const char * s )
 	size_t len ;
 	char * c   ; 
 	
-	if( st == StringVoid )
-		return NULL ;
-	if( x < 0 || x > st->size )
+	if( st == StringVoid || x > st->size )
 		return NULL ;
 	
 	len = strlen( s ) ;
@@ -1132,7 +1133,7 @@ string_t StringGetFromVirtualFile( const char * path )
 	
 	ssize_t i = -1 ;
 	ssize_t j ;
-	size_t size = SIZE ;
+	ssize_t size = SIZE ;
 	
 	FILE * f = fopen( path,"r" ) ;
 	

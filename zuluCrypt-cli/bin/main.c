@@ -90,8 +90,8 @@ static int zuluCryptEXE( struct_opts * clargs, const char * mapping_name,uid_t u
 		case 'c' : return zuluCryptEXECreateVolume( clargs,mapping_name,uid ) ;
 		case 'a' : return zuluCryptEXEAddKey( clargs,uid ) ;
 		case 'r' : return zuluCryptEXERemoveKey( clargs,uid );
-		case 'E' : return zuluCryptExeFileEncrypt( clargs,mapping_name,uid ) ;
-		case 'D' : return zuluCryptExeFileDecrypt( clargs,mapping_name,uid ) ;
+		case 'E' : return zuluCryptExeFileEncrypt( clargs,uid ) ;
+		case 'D' : return zuluCryptExeFileDecrypt( clargs,uid ) ;
 	}
 	printf("ERROR!!!!!!!!!!: cli option missed!\n" );
 	return 200 ; /* shouldnt get here */	

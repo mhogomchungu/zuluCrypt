@@ -152,12 +152,12 @@ int zuluCryptCheckIfPartitionIsSystemPartition( const char * device ) ;
 /*
  * defined in crypt_file.c
  */
-int zuluCryptExeFileEncrypt( const struct_opts *,const char *,uid_t uid ) ;
+int zuluCryptExeFileEncrypt( const struct_opts *,uid_t uid ) ;
 
 /*
  * defined in crypt_file.c
  */
-int zuluCryptExeFileDecrypt( const struct_opts *,const char *,uid_t uid ) ;
+int zuluCryptExeFileDecrypt( const struct_opts *,uid_t uid ) ;
 
 /*
  * defined in check_opened_mapper.c

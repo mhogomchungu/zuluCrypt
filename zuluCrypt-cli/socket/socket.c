@@ -289,7 +289,7 @@ ssize_t SocketSendData( socket_t s,const char * buffer,size_t len )
 	size_t sent = 0 ;
 	size_t remain = len ;
 	
-	if( s == SocketVoid || buffer == NULL || len < 0 )
+	if( s == SocketVoid || buffer == NULL )
 		return -1 ;		
 	do{
 		sent = sent + write( s->fd,buffer + sent,remain ) ;

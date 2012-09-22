@@ -85,7 +85,7 @@ static int back_up_is_luks( const char * path )
 	return st ;
 }
 
-static int restore_header( struct crypt_device * cd,const char * device,const char * path,int k,uid_t uid )
+static int restore_header( struct crypt_device * cd,const char * device,const char * path,int k )
 {
 	char * p ;
 	char * q ;
@@ -182,7 +182,7 @@ int zuluCryptEXESaveAndRestoreLuksHeader( const struct_opts * opts,uid_t uid,int
 		return zuluExit( 3,NULL ) ;
 	
 	switch( option ){
-		case LUKS_HEADER_RESTORE : return restore_header( cd,device,path,opts->dont_ask_confirmation,uid ) ;
+		case LUKS_HEADER_RESTORE : return restore_header( cd,device,path,opts->dont_ask_confirmation ) ;
 		case LUKS_HEADER_SAVE    : return save_header( cd,device,path,uid ) ;
 	}
 	

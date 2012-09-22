@@ -33,17 +33,12 @@ int StringManageMaxSize( stringManage_t stm )
 
 ssize_t StringManageSize( stringManage_t stm ) 
 {
-	if( stm == StringManageVoid )
-		return -1 ;
-	else
-		return stm->index ;
+	return stm == StringManageVoid ? -1 : ( ssize_t )stm->index ;
 }
 
 string_t StringManageStringAt( stringManage_t stm,size_t index )
 {
-	if( stm == StringManageVoid )
-		return StringVoid ;
-	if( index < 0 || index >= stm->size )
+	if( stm == StringManageVoid || index >= stm->size )
 		return StringVoid ;
 	
 	return stm->stp[ index ] ;
@@ -108,9 +103,7 @@ void StringManageRemoveAt( stringManage_t stm,size_t index )
 	size_t s ;
 	string_t * p ;
 	
-	if( stm == StringManageVoid )
-		return ;
-	if( index < 0 || index >= stm->index )
+	if( stm == StringManageVoid || index >= stm->index )
 		return ;
 		
 	s = sizeof( string_t ) ;
@@ -155,9 +148,7 @@ string_t * StringManageInsertAtLast( stringManage_t stm,string_t * st )
 string_t * StringManageReplaceAt( stringManage_t stm,string_t * st,size_t index ) 
 {	
 	string_t * p ;
-	if( stm == StringManageVoid )
-		return StringVoid ;
-	if( index < 0 || index >= stm->index )
+	if( stm == StringManageVoid || index >= stm->index )
 		return StringVoid ;
 	
 	p = &stm->stp[ index ] ;

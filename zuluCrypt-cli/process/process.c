@@ -100,8 +100,8 @@ static void ProcessSetArguments_1( process_t p )
 	 * find out to how many pieces we should break the string
 	 */
 	while( *++d ){
-		if( *d == delimiter ) ;
-		k++ ;
+		if( *d == delimiter )
+			k++ ;
 	}
 	
 	/*
@@ -172,7 +172,7 @@ pid_t ProcessStart( process_t p )
 	
 	if( p->pid == 0 ){
 				
-		if( p->uid != -1 ){
+		if( p->uid != ( uid_t )-1 ){
 			setuid( p->uid ) ;			
 			seteuid( p->uid ) ;
 			setgid( p->pid ) ;
@@ -491,7 +491,9 @@ void ProcessSetArguments( process_t p,char * const s[] )
 	p->args_source = 1 ;
 }
 
+/*
 int ProcessSetSearchPaths( const char * s ) 
 {
 	return -1 ;
 }
+*/

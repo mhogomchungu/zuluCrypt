@@ -83,8 +83,8 @@ pid_t ProcessStart( process_t p ) ;
 /*
  * pass data to the child process,the child process will get the data from reading its stdin.
  * ProcessSetOption( p,WRITE_STD_IN ) must be called first for this to work. * 
- */
-size_t ProcessWrite( process_t p,const char * data,size_t len ) ;
+ * size_t ProcessWrite( process_t p,const char * data,size_t len ) ;
+*/
 
 /*
  * default delimiter is ' '( space character ),set another character with this function to change it

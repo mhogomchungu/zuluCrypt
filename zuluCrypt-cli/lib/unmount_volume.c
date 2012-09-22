@@ -28,7 +28,7 @@
  * */
 #include "libmount_header.h"
 
-static int entry_found( const char * map, const char * m_dir, char ** m_point )
+static int entry_found( const char * m_dir,char ** m_point )
 {
 	string_t st ;
 	int h ;
@@ -54,7 +54,7 @@ static int entry_found( const char * map, const char * m_dir, char ** m_point )
 	return h ;
 }
 
-int zuluCryptUnmountVolume( const char * map, char ** m_point )
+int zuluCryptUnmountVolume( const char * map,char ** m_point )
 {
 	struct stat st ;	
 	FILE * f ;	
@@ -86,7 +86,7 @@ int zuluCryptUnmountVolume( const char * map, char ** m_point )
 		while( ( mt = getmntent( f ) ) != NULL ){
 
 			if( strncmp( mt->mnt_fsname,map,map_len ) == 0 ){
-				h = entry_found( mt->mnt_fsname,mt->mnt_dir,m_point ) ;
+				h = entry_found( mt->mnt_dir,m_point ) ;
 				break ;
 			}		
 		}
@@ -105,7 +105,7 @@ int zuluCryptUnmountVolume( const char * map, char ** m_point )
 			g = setmntent( "/etc/mtab-zC","w" ) ;
 			while( ( mt = getmntent( f ) ) != NULL ){
 				if( strncmp( mt->mnt_fsname,map,map_len ) == 0 ){
-					h = entry_found( mt->mnt_fsname,mt->mnt_dir,m_point ) ;				
+					h = entry_found( mt->mnt_dir,m_point ) ;				
 				}else{			
 					addmntent( g,mt ) ;
 				}

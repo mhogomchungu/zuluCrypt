@@ -46,7 +46,7 @@ static int msg( int st )
 	return st ;
 }
 
-static int crypt_opt( const struct_opts * opts,const char * mapper,uid_t uid,int opt )
+static int crypt_opt( const struct_opts * opts,uid_t uid,int opt )
 {
 	string_t q = StringVoid ;
 	string_t p = StringVoid ;
@@ -137,12 +137,12 @@ static int crypt_opt( const struct_opts * opts,const char * mapper,uid_t uid,int
 		return msg( 0 ) ;
 }
 
-int zuluCryptExeFileDecrypt( const struct_opts * opts,const char * mapper,uid_t uid ) 
+int zuluCryptExeFileDecrypt( const struct_opts * opts,uid_t uid ) 
 {
-	return crypt_opt( opts,mapper,uid,DECRYPT ) ;
+	return crypt_opt( opts,uid,DECRYPT ) ;
 }
 
-int zuluCryptExeFileEncrypt( const struct_opts * opts,const char * mapper,uid_t uid )
+int zuluCryptExeFileEncrypt( const struct_opts * opts,uid_t uid )
 {
-	return crypt_opt( opts,mapper,uid,ENCRYPT ) ;		
+	return crypt_opt( opts,uid,ENCRYPT ) ;		
 }
