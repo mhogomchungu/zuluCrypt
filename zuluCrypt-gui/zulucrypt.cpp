@@ -34,14 +34,18 @@
 #include <QMetaType>
 #include <QDebug>
 #include <QKeySequence>
-zuluCrypt::zuluCrypt( QWidget * parent ) :QMainWindow( parent ),m_ui( new Ui::zuluCrypt )
+zuluCrypt::zuluCrypt( QWidget * parent ) :QMainWindow( parent ),m_ui( new Ui::zuluCrypt ),m_trayIcon( 0 )
+{
+}
+
+void zuluCrypt::setUpApp()
 {
 	setupUIElements();
 	setupConnections();
 	StartUpAddOpenedVolumesToTableThread();
-	initTray();
 	initFont();
 	initKeyCombo();
+	initTray();
 }
 
 void zuluCrypt::initKeyCombo()
@@ -78,9 +82,20 @@ void zuluCrypt::raiseWindow()
 
 void zuluCrypt::start()
 {
+	/*
+	 * Entry point is here, the "instance" class checks if there is already a running zuluCrypt-gui process.
+	 * If yes,this instance tells the existing instance to get focus and then it exits.
+	 *
+	 * If no,then it knowns it is the only running instance and it calls "setUpApp() to set up the GUI and
+	 * runs.
+	 */
+
 	QString sockpath = QDir::homePath() + QString( "/" ) + QString( ".zuluCrypt-gui.socket" ) ;
 	oneinstance * instance = new oneinstance( this,sockpath,"raiseWindow" ) ;
 	connect( instance,SIGNAL( raise() ),this,SLOT( raiseWindow() ) ) ;
+
+	if( !instance->instanceExist() )
+		this->setUpApp();
 }
 
 void zuluCrypt::initTray()
@@ -182,9 +197,16 @@ void zuluCrypt::setupConnections()
 	connect( m_ui->actionLuks_header_backup,SIGNAL( triggered() ),this,SLOT( HelpLuksHeaderBackUp() ) );
 	connect( m_ui->actionManage_system_partitions,SIGNAL( triggered() ),this,SLOT( ShowManageSystemPartitions() ) ) ;
 	connect( m_ui->actionManage_kwallet,SIGNAL( triggered() ),this,SLOT( manageWallet() ) ) ;
+	connect( m_ui->actionUse_kde_default_wallet,SIGNAL( triggered() ),this,SLOT( setDefaultWallet() ) ) ;
 
-	if( !kwalletplugin::hasFunctionality() )
+	m_ui->actionUse_kde_default_wallet->setCheckable( true );
+
+	m_ui->actionUse_kde_default_wallet->setChecked( zuluOptions::walletIsKDEWallet() );
+
+	if( !kwalletplugin::hasFunctionality() ){
 		m_ui->actionManage_kwallet->setEnabled( false ) ;
+		m_ui->actionUse_kde_default_wallet->setEnabled( false );
+	}
 
 	m_ui->actionManage_system_partitions->setEnabled( miscfunctions::userIsRoot() );
 }
@@ -352,6 +374,7 @@ void zuluCrypt::setUserFont( QFont Font )
 	m_ui->actionLuks_header_backup->setFont( this->font() );
 	m_ui->actionManage_system_partitions->setFont( this->font() );
 	m_ui->actionManage_kwallet->setFont( this->font() );
+	m_ui->actionUse_kde_default_wallet->setFont( this->font() );
 }
 
 void zuluCrypt::info()
@@ -552,6 +575,19 @@ void zuluCrypt::itemClicked( QTableWidgetItem * item, bool clicked )
 		m.addAction( tr( "cancel" ) ) ;
 		m.exec( m_ui->tableWidget->mapToGlobal( QPoint( x,y ) ) ) ;
 	}
+}
+
+void zuluCrypt::setDefaultWallet()
+{
+	m_ui->actionUse_kde_default_wallet->setEnabled( false );
+
+	if( m_ui->actionUse_kde_default_wallet->isChecked() ){
+		zuluOptions::setWalletToKDEDefaultName() ;
+	}else{
+		zuluOptions::setWalletToDefaultName() ;
+	}
+
+	m_ui->actionUse_kde_default_wallet->setEnabled( true );
 }
 
 void zuluCrypt::luksAddKeyContextMenu( void )
@@ -772,11 +808,18 @@ void zuluCrypt::decryptFile()
 	setUpCryptFiles()->decrypt();
 }
 
+void zuluCrypt::failedToOpenWallet()
+{
+	//DialogMsg msg( this ) ;
+	//msg.ShowUIOK( QString( "ERROR" ),QString( "could not open selected wallet" ) ) ;
+}
+
 void zuluCrypt::manageWallet()
 {
 	if( kwalletplugin::KwalletIsEnabled() ){
 		kwalletconfig * cfg = new kwalletconfig( this ) ;
 		connect( cfg,SIGNAL( HideUISignal() ),cfg,SLOT( deleteLater() ) ) ;
+		connect( cfg,SIGNAL( couldNotOpenWallet() ),this,SLOT( failedToOpenWallet() ) ) ;
 		cfg->ShowUI();
 	}else{
 		DialogMsg msg( this ) ;
@@ -786,6 +829,8 @@ void zuluCrypt::manageWallet()
 
 zuluCrypt::~zuluCrypt()
 {
-	delete m_ui;
-	delete m_trayIcon;
+	if( m_ui )
+		delete m_ui;
+	if( m_trayIcon )
+		delete m_trayIcon ;
 }

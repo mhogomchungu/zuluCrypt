@@ -35,6 +35,11 @@ bool kwalletplugin::hasFunctionality()
 	return true ;
 }
 
+QString kwalletplugin::KDEKwalletDefaultName( void )
+{
+	return KWallet::Wallet::LocalWallet() ;
+}
+
 bool kwalletplugin::open()
 {
 	QWidget * aW = QApplication::activeWindow() ;
@@ -54,6 +59,8 @@ bool kwalletplugin::open()
 
 bool kwalletplugin::setFolder( QString folder )
 {
+	if( !m_wallet->hasFolder( folder ) )
+		m_wallet->createFolder( folder ) ;
 	return m_wallet->setFolder( folder ) ;
 }
 

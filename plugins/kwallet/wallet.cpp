@@ -46,8 +46,6 @@ void wallet::SendKey()
 void wallet::readKwallet()
 {
 	QString formData = zuluOptions::formData() ;
-	if( !m_wallet->hasFolder( formData ) )
-		m_wallet->createFolder( formData ) ;
 
 	m_wallet->setFolder( formData ) ;
 

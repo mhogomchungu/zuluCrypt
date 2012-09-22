@@ -21,23 +21,22 @@
 #define ZULUOPTIONS_H
 
 #include <QString>
+#include <QFile>
+#include <QByteArray>
 #include <QDir>
-#include <QTime>
+
+#include "kwalletplugin.h"
 
 class zuluOptions{
 public:
-	static QString wallet( void )  { return QString( "zuluCrypt")  ; }
-	static QString key( void )     { return QString( "LUKS" )      ; }
-	static QString formData( void ){ return QString( "Form Data" ) ; }
-	static QString getSocketPath( void )
-	{
-		QTime T = QTime::currentTime() ;
-		QString h  = QString::number( T.hour() )   ;
-		QString m  = QString::number( T.minute() ) ;
-		QString s  = QString::number( T.second() ) ;
-		QString ms = QString::number( T.msec() )   ;
-		return QString( QDir::homePath() + QString( "/.zuluCrypt-socket/" ) + h + m + s + ms  ) ;
-	}
+	static bool walletIsKDEWallet( void ) ;
+	static void setWalletToKDEDefaultName( void ) ;
+	static void setWalletToDefaultName( void )    ;
+	static void setWalletName( QString )          ;
+	static QString walletPath( void )             ;
+	static QString wallet( void )                 ;
+	static QString key( void )                    ;
+	static QString formData( void )               ;
 };
 
 #endif

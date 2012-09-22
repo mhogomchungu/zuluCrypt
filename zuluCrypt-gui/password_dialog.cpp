@@ -340,7 +340,7 @@ void passwordDialog::buttonOpenClicked( void )
 
 	if( passtype == QString( "-p" ) ){
 		passtype = QString( "-f" ) ;
-		passPhraseField = zuluOptions::getSocketPath() ;
+		passPhraseField = socketSendKey::getSocketPath() ;
 		this->sendKey( passPhraseField );
 	}
 

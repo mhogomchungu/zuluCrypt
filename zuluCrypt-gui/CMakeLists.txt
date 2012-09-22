@@ -89,6 +89,7 @@ set (SRC createfile.cpp
 	tablewidget.cpp
 	socketsendkey.cpp
 	openvolumereadonly.cpp
+	zuluoptions.cpp
 	../zuluMount-gui/oneinstance.cpp	
 )
 

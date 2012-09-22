@@ -18,6 +18,7 @@
 
 #include "socketsendkey.h"
 #include <QDebug>
+
 socketSendKey::socketSendKey( QObject * parent,QString sockpath,QByteArray key )
 {
 	Q_UNUSED( parent ) ;
@@ -31,6 +32,16 @@ socketSendKey::socketSendKey( QObject * parent,QString sockpath,QByteArray key )
 void socketSendKey::sendKey( void )
 {
 	this->start();
+}
+
+QString socketSendKey::getSocketPath()
+{
+	QTime T = QTime::currentTime() ;
+	QString h  = QString::number( T.hour() )   ;
+	QString m  = QString::number( T.minute() ) ;
+	QString s  = QString::number( T.second() ) ;
+	QString ms = QString::number( T.msec() )   ;
+	return QString( QDir::homePath() + QString( "/.zuluCrypt-socket/" ) + h + m + s + ms  ) ;
 }
 
 void socketSendKey::run()

@@ -151,7 +151,13 @@ void kwalletconfig::ShowUI()
 {
 	m_wallet = new kwalletplugin( this ) ;
 
-	m_wallet->open() ? this->ShowWalletEntries() : this->HideUI() ;
+	m_wallet->open() ? this->ShowWalletEntries() : this->failedToOpenWallet(); ;
+}
+
+void kwalletconfig::failedToOpenWallet()
+{
+	emit couldNotOpenWallet();
+	this->HideUI();
 }
 
 void kwalletconfig::ReShowUI()
@@ -161,12 +167,9 @@ void kwalletconfig::ReShowUI()
 
 void kwalletconfig::ShowWalletEntries()
 {
-	if( !m_wallet->setFolder( zuluOptions::formData() ) )
-		return ;
+	m_wallet->setFolder( zuluOptions::formData() ) ;
 
-	if( m_wallet->readMap( m_map ) )
-		return ;
-
+	m_wallet->readMap( m_map ) ;
 
 	if( m_map.empty() )
 		return this->show();

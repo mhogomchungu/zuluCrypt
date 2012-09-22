@@ -14,6 +14,8 @@
 #include "../zuluCrypt-cli/constants.h"
 #include "plugin_path.h"
 #include "../zuluCrypt-gui/zuluoptions.h"
+
+#define ZULUMOUNT 1
 #include "../zuluCrypt-gui/socketsendkey.h"
 
 namespace Ui {

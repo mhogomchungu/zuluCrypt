@@ -199,7 +199,7 @@ void luksdeletekey::pbDelete()
 		passType = QString( "-f" ) ;
 	}else{
 		passType = QString( "-f" ) ;
-		passphrase = zuluOptions::getSocketPath() ;
+		passphrase = socketSendKey::getSocketPath() ;
 
 		socketSendKey * s = new socketSendKey( this,passphrase,m_ui->lineEditPassphrase->text().toAscii() ) ;
 		s->sendKey();

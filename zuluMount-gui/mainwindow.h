@@ -88,6 +88,7 @@ private:
 	void closeEvent( QCloseEvent * e );
 	void setUpFont( void ) ;
 	void setUpShortCuts( void ) ;
+	void setUpApp( void ) ;
 	bool m_justMounted ;
 	QSystemTrayIcon * m_trayIcon ;
 };

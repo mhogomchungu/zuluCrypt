@@ -295,7 +295,7 @@ void createpartition::pbCreateClicked()
 			return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "passphrases do not match" ) );
 
 		source = QString( "-f" ) ;
-		passphrase_1 = zuluOptions::getSocketPath() ;
+		passphrase_1 = socketSendKey::getSocketPath() ;
 		socketSendKey * s = new socketSendKey( this,passphrase_1,m_ui->lineEditPassphrase1->text().toAscii() ) ;
 		s->sendKey();
 	}

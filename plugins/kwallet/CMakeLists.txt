@@ -8,7 +8,7 @@ INCLUDE( ${QT_USE_FILE} )
 
 QT4_WRAP_CPP( MOC wallet.h ../../zuluCrypt-gui/socketsendkey.h )
 
-add_executable( kwallet ${MOC} main.cpp wallet.cpp ../../zuluCrypt-gui/socketsendkey.cpp )
+add_executable( kwallet ${MOC} main.cpp wallet.cpp ../../zuluCrypt-gui/socketsendkey.cpp ../../zuluCrypt-gui/zuluoptions.cpp ../../zuluCrypt-gui/kwalletplugin.cpp )
 
 TARGET_LINK_LIBRARIES( kwallet ${kwallet_library} ${zuluPluginManager} ) 
 

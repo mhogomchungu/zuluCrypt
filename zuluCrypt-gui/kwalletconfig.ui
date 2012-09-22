@@ -160,7 +160,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>&amp;close</string>
+    <string>do&amp;ne</string>
    </property>
   </widget>
   <widget class="QLineEdit" name="lineEditRepeatPassphrase">

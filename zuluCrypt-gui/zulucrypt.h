@@ -132,6 +132,8 @@ private slots :
 	void decryptFile( void );
 	void HelpLuksHeaderBackUp( void );
 	void manageWallet( void ) ;
+	void setDefaultWallet( void ) ;
+	void failedToOpenWallet( void ) ;
 private:
 	passwordDialog * setUpPasswordDialog( void );
 	openpartition * setUpOpenpartition( void );
@@ -150,7 +152,7 @@ private:
 	void initFont( void );
 	void initKeyCombo( void );
 	void closeStatusErrorMessage( int );
-
+	void setUpApp( void ) ;
 	Ui::zuluCrypt * m_ui;
 	QSystemTrayIcon * m_trayIcon ;
 };

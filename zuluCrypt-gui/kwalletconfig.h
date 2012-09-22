@@ -50,7 +50,7 @@ public:
 	void HideUI( void ) ;
 signals:
 	void HideUISignal( void ) ;
-
+	void couldNotOpenWallet( void ) ;
 private slots:
 	void pbGetUUIDFromFile( void ) ;
 	void selectedVolume( QString ) ;
@@ -60,6 +60,7 @@ private slots:
 	void pbClose( void ) ;
 	void pbGetUUIDFromDevices( void ) ;
 private:
+	void failedToOpenWallet( void ) ;
 	void SetFocus();
 	void ShowWalletEntries( void );
 	Ui::kwalletconfig * m_ui;

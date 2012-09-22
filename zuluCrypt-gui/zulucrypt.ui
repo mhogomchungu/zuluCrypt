@@ -143,6 +143,7 @@
     <addaction name="actionTray_icon"/>
     <addaction name="actionFonts"/>
     <addaction name="actionManage_names"/>
+    <addaction name="actionUse_kde_default_wallet"/>
     <addaction name="actionManage_kwallet"/>
     <addaction name="actionManage_system_partitions"/>
    </widget>
@@ -408,10 +409,18 @@
   </action>
   <action name="actionManage_kwallet">
    <property name="text">
-    <string>manage kwallet</string>
+    <string>manage volumes in wallet</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionUse_kde_default_wallet">
+   <property name="text">
+    <string>use kde default wallet</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+V</string>
    </property>
   </action>
  </widget>

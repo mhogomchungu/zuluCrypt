@@ -24,6 +24,8 @@
 #include <QObject>
 #include <QByteArray>
 #include <QByteArray>
+#include <QTime>
+#include <QDir>
 
 #include "../zuluCrypt-cli/pluginManager/libzuluCryptPluginManager.h"
 
@@ -37,6 +39,7 @@ public:
 	static void * zuluCryptPluginManagerOpenConnection( QString ) ;
 	static ssize_t zuluCryptPluginManagerSendKey( void * handle,QByteArray ) ;
 	static void zuluCryptPluginManagerCloseConnection( void * handle ) ;
+	static QString getSocketPath( void ) ;
 signals:
 	emit void gotConnected( void ) ;
 	emit void keySent( void ) ;

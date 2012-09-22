@@ -20,7 +20,7 @@ SOURCES += main.cpp\
     mountpartition.cpp \
     ../zuluCrypt-gui/openvolumereadonly.cpp \
     ../zuluCrypt-gui/socketsendkey.cpp \
-    oneinstance.cpp
+    oneinstance.cpp \
 
 HEADERS  += mainwindow.h\
     keydialog.h \
@@ -28,7 +28,6 @@ HEADERS  += mainwindow.h\
     managepartitionthread.h \
     ../zuluCrypt-gui/userfont.h \
     ../zuluCrypt-gui/tablewidget.h \
-    ../zuluCrypt-gui/zuluoptions.h \
     mountpartition.h \
     ../zuluCrypt-gui/openvolumereadonly.h \
     ../zuluCrypt-gui/socketsendkey.h \
@@ -42,6 +41,6 @@ FORMS    += mainwindow.ui\
 RESOURCES += \
     icon.qrc
 
-INCLUDEPATH +=/home/ink/build
+INCLUDEPATH +=/home/ink/build /home/local/KDE4/include
 
 LIBS += -lzuluCryptPluginManager -lQtNetwork

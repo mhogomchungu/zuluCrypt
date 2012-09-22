@@ -184,7 +184,7 @@ void keyDialog::pbOpen()
 
 	QString m ;
 	if( m_ui->rbKey->isChecked() ){
-		QString addr = zuluOptions::getSocketPath() ;
+		QString addr = socketSendKey::getSocketPath() ;
 		m = QString( "-f ") + addr ;
 
 		socketSendKey * s = new socketSendKey( this,addr,m_ui->lineEditKey->text().toAscii() ) ;

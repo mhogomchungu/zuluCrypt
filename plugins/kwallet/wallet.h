@@ -32,8 +32,7 @@
 #include "wallet.h"
 
 #include "../../zuluCrypt-gui/socketsendkey.h"
-
-#include <cstdlib>
+#include "../../zuluCrypt-gui/zuluoptions.h"
 
 using namespace KWallet ;
 

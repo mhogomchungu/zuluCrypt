@@ -46,7 +46,8 @@ SOURCES += main.cpp\
     tablewidget.cpp \
     socketsendkey.cpp \
     openvolumereadonly.cpp \
-    ../zuluMount-gui/oneinstance.cpp
+    ../zuluMount-gui/oneinstance.cpp \
+    zuluoptions.cpp
 
 HEADERS  += zulucrypt.h password_dialog.h \
     openpartition.h \

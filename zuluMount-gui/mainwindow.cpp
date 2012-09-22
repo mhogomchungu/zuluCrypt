@@ -20,10 +20,13 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QDebug>
-MainWindow::MainWindow( QWidget * parent ) :
-	QMainWindow( parent ),
-	m_ui(new Ui::MainWindow)
+MainWindow::MainWindow( QWidget * parent ) :QMainWindow( parent ),m_ui( 0 )
 {
+}
+
+void MainWindow::setUpApp()
+{
+	m_ui = new Ui::MainWindow ;
 	m_ui->setupUi(this);
 
 	this->setFixedSize( this->size() ) ;
@@ -61,8 +64,6 @@ MainWindow::MainWindow( QWidget * parent ) :
 
 	connect( m_trayIcon,SIGNAL( activated( QSystemTrayIcon::ActivationReason ) ),this,SLOT( slotTrayClicked( QSystemTrayIcon::ActivationReason ) ) );
 
-	m_trayIcon->show();
-
 	managepartitionthread * part = new managepartitionthread() ;
 
 	this->disableAll();
@@ -73,6 +74,8 @@ MainWindow::MainWindow( QWidget * parent ) :
 
 	m_working = false ;
 	m_justMounted = false ;
+	m_trayIcon->show();
+	this->show();
 }
 
 void MainWindow::raiseWindow()
@@ -95,6 +98,9 @@ void MainWindow::start()
 	QString sockpath = QDir::homePath() + QString( "/" ) + QString( ".zuluMount-gui.socket" ) ;
 	oneinstance * instance = new oneinstance( this,sockpath,"raiseWindow" ) ;
 	connect( instance,SIGNAL( raise() ),this,SLOT( raiseWindow() ) ) ;
+
+	if( !instance->instanceExist() )
+		this->setUpApp();
 }
 
 void MainWindow::pbClose()
@@ -462,5 +468,6 @@ void MainWindow::enableAll()
 
 MainWindow::~MainWindow()
 {
-	delete m_ui;
+	if( m_ui )
+		delete m_ui ;
 }

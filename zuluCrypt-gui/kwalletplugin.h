@@ -48,6 +48,7 @@ public:
 	static bool folderDoesNotExist( void ) ;
 	static bool keyDoesNotExist( QString key ) ;
 	static bool KwalletIsEnabled( void ) ;
+	static QString KDEKwalletDefaultName( void ) ;
 private:
 	KWallet::Wallet * m_wallet ;
 	QWidget * m_parent ;
@@ -73,6 +74,8 @@ public:
 	static bool folderDoesNotExist( void ){ return false ; }
 	static bool keyDoesNotExist( QString key ){ return true ; }
 	static bool KwalletIsEnabled( void ) { return false ; }
+	static QString KDEKwalletDefaultName( void ) { return QString( "kdewallet" ) ;  }
+
 private:
 	//KWallet::Wallet * m_wallet ;
 	QWidget * m_parent ;
