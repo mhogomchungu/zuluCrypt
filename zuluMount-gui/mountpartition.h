@@ -14,6 +14,7 @@
 #include "managepartitionthread.h"
 #include "../zuluCrypt-gui/dialogmsg.h"
 #include "../zuluCrypt-gui/userfont.h"
+#include "../zuluCrypt-gui/openvolumereadonly.h"
 
 namespace Ui {
 class mountPartition;
@@ -24,7 +25,7 @@ class mountPartition : public QWidget
 	Q_OBJECT
 public:
 	explicit mountPartition( QWidget * parent = 0 );
-	void ShowUI( QString path,QString mode,QString label ) ;
+	void ShowUI( QString path,QString label ) ;
 	void HideUI( void ) ;
 	~mountPartition();
 signals:
@@ -36,13 +37,13 @@ private slots:
 	void pbCancel( void ) ;
 	void pbOpenMountPath( void ) ;
 	void slotMountComplete( int,QString ) ;
+	void checkBoxReadOnlyStateChanged( int ) ;
 private:
 	void closeEvent( QCloseEvent * );
 	void saveOptions( QString,bool ) ;
 	QStringList readOptions( void ) ;
 	Ui::mountPartition * m_ui;
 	QString m_path ;
-	QString m_mode ;
 	QString m_label ;
 };
 

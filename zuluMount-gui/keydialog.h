@@ -14,9 +14,8 @@
 #include "../zuluCrypt-cli/constants.h"
 #include "plugin_path.h"
 #include "../zuluCrypt-gui/zuluoptions.h"
-
-#define ZULUMOUNT 1
 #include "../zuluCrypt-gui/socketsendkey.h"
+#include "../zuluCrypt-gui/openvolumereadonly.h"
 
 namespace Ui {
 class keyDialog;
@@ -26,7 +25,7 @@ class keyDialog : public QDialog
 {
 	Q_OBJECT
 public:
-	keyDialog( QWidget * parent,QString path,QString mode );
+	keyDialog( QWidget * parent,QString path );
 	~keyDialog();
 	void ShowUI( void );
 	void HideUI( void ) ;
@@ -47,13 +46,13 @@ private slots:
 	void pbCancel( void ) ;
 	void pbPlugin( void );
 	void pbKeyFile( void ) ;
+	void cbMountReadOnlyStateChanged( int ) ;
 private:
 	void enableAll( void ) ;
 	void disableAll( void ) ;
 	void closeEvent( QCloseEvent * );
 	Ui::keyDialog * m_ui;
 	QString m_path ;
-	QString m_mode ;
 	QMenu * m_menu ;
 };
 

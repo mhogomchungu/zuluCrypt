@@ -49,7 +49,7 @@ void MainWindow::setUpApp()
 	connect( m_ui->tableWidget,SIGNAL( itemClicked( QTableWidgetItem * ) ),this,SLOT( itemClicked( QTableWidgetItem * ) ) ) ;
 	connect( m_ui->cbReadOnly,SIGNAL( stateChanged( int ) ),this,SLOT( stateChanged( int ) ) ) ;
 
-	m_ui->cbReadOnly->setCheckState( openvolumereadonly::getOption() );
+	m_ui->cbReadOnly->setVisible( false );
 
 	this->setUpShortCuts();
 
@@ -276,7 +276,7 @@ void MainWindow::pbMount()
 
 	if( type == QString( "crypto_LUKS" ) ){
 
-		keyDialog * kd = new keyDialog( this,path,mode ) ;
+		keyDialog * kd = new keyDialog( this,path ) ;
 		connect( kd,SIGNAL( hideUISignal() ),kd,SLOT( deleteLater() ) ) ;
 		connect( kd,SIGNAL( hideUISignal() ),this,SLOT( enableAll() ) ) ;
 		connect( kd,SIGNAL( mounted( QString ) ),this,SLOT( mounted( QString ) ) ) ;
@@ -287,7 +287,7 @@ void MainWindow::pbMount()
 		connect( mp,SIGNAL( hideUISignal() ),this,SLOT( enableAll() ) ) ;
 		connect( mp,SIGNAL( mounted( QString ) ),this,SLOT( mounted( QString ) ) ) ;
 		QString label = m_ui->tableWidget->item( row,3 )->text() ;
-		mp->ShowUI( m_device,mode,label );
+		mp->ShowUI( m_device,label );
 	}
 }
 
@@ -388,10 +388,10 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 			tablewidget::addRowToTable( table,entries ) ;
 	}
 
-	if( m_ui->tableWidget->rowCount() > 9 )
+	if( m_ui->tableWidget->rowCount() > 10 )
 		m_ui->tableWidget->setColumnWidth( 1,226 );
 	else
-		m_ui->tableWidget->setColumnWidth( 1,250 );
+		m_ui->tableWidget->setColumnWidth( 1,240 );
 
 	this->enableAll();
 	this->disableCommand();

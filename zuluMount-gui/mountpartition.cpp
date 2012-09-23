@@ -11,15 +11,24 @@ mountPartition::mountPartition(QWidget *parent) :
 	this->setWindowFlags( Qt::Window | Qt::Dialog );
 	this->setFont( parent->font() );
 
+	m_ui->checkBoxMountReadOnly->setCheckState( openvolumereadonly::getOption() );
+
 	connect( m_ui->pbMount,SIGNAL( clicked() ),this,SLOT(pbMount() ) ) ;
 	connect( m_ui->pbMountFolder,SIGNAL( clicked() ),this,SLOT( pbOpenMountPath() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->checkBox,SIGNAL( stateChanged( int ) ),this,SLOT( stateChanged( int ) ) ) ;
-
+	connect( m_ui->checkBoxMountReadOnly,SIGNAL( stateChanged(int) ),this,SLOT( checkBoxReadOnlyStateChanged( int ) ) ) ;
 	m_ui->pbMountFolder->setIcon( QIcon( QString( ":/folder.png" ) ) );
 
 	userfont F( this ) ;
 	this->setFont( F.getFont() );
+}
+
+void mountPartition::checkBoxReadOnlyStateChanged( int state )
+{
+	m_ui->checkBoxMountReadOnly->setEnabled( false );
+	m_ui->checkBoxMountReadOnly->setChecked( openvolumereadonly::setOption( this,state) );
+	m_ui->checkBoxMountReadOnly->setEnabled( true );
 }
 
 void mountPartition::pbCancel()
@@ -31,7 +40,10 @@ void mountPartition::pbMount()
 {
 	managepartitionthread * part = new managepartitionthread() ;
 	part->setDevice( m_path );
-	part->setMode( m_mode );
+	if( m_ui->checkBoxMountReadOnly->isChecked() )
+		part->setMode( QString( "ro" ) );
+	else
+		part->setMode( QString( "rw" ) );
 	part->setMountPoint( m_ui->lineEdit->text() );
 	connect( part,SIGNAL( signalMountComplete( int,QString ) ),this,SLOT( slotMountComplete( int,QString ) ) ) ;
 
@@ -49,10 +61,9 @@ void mountPartition::pbOpenMountPath()
 	}
 }
 
-void mountPartition::ShowUI( QString path,QString mode,QString label )
+void mountPartition::ShowUI( QString path,QString label )
 {
 	m_path = path ;
-	m_mode = mode ;
 	m_label = label ;
 
 	QStringList opt = this->readOptions() ;
@@ -150,7 +161,9 @@ QStringList mountPartition::readOptions()
 
 	f.open( QIODevice::ReadOnly ) ;
 
-	return QString( f.readAll() ).split( "\n") ;
+	QStringList data = QString( f.readAll() ).split( "\n" ) ;
+	f.close();
+	return data ;
 }
 
 mountPartition::~mountPartition()

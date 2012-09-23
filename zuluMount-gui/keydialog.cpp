@@ -1,14 +1,13 @@
 #include "keydialog.h"
 #include "ui_keydialog.h"
 
-keyDialog::keyDialog( QWidget * parent,QString path,QString mode ) :
+keyDialog::keyDialog( QWidget * parent,QString path ) :
 	QDialog( parent ),
 	m_ui(new Ui::keyDialog)
 {
 	m_ui->setupUi(this);
 
 	m_path = path ;
-	m_mode = mode ;
 
 	QString msg = tr( "unlock and mount a luks volume in \"%1\"").arg( m_path ) ;
 
@@ -27,6 +26,8 @@ keyDialog::keyDialog( QWidget * parent,QString path,QString mode ) :
 
 	m_ui->lineEditKey->setFocus();
 
+	m_ui->checkBoxOpenReadOnly->setChecked( openvolumereadonly::getOption() );
+
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->pbOpen,SIGNAL( clicked() ),this,SLOT( pbOpen() ) ) ;
 	connect( m_ui->pbPlugin,SIGNAL( clicked() ),this,SLOT( pbPlugin() ) ) ;
@@ -36,7 +37,15 @@ keyDialog::keyDialog( QWidget * parent,QString path,QString mode ) :
 	connect( m_ui->lineEditKey,SIGNAL( textChanged( QString ) ),this,SLOT( keyTextChanged( QString ) ) ) ;
 	connect( m_ui->pbOpenMountPoint,SIGNAL( clicked() ),this,SLOT( pbMountPointPath() ) ) ;
 	connect( m_ui->pbkeyFile,SIGNAL( clicked() ),this,SLOT( pbKeyFile() ) ) ;
+	connect( m_ui->checkBoxOpenReadOnly,SIGNAL( stateChanged( int ) ),this,SLOT( cbMountReadOnlyStateChanged( int ) ) ) ;
 	m_ui->rbKey->setChecked( true ) ;
+}
+
+void keyDialog::cbMountReadOnlyStateChanged( int state )
+{
+	m_ui->checkBoxOpenReadOnly->setEnabled( false );
+	m_ui->checkBoxOpenReadOnly->setChecked( openvolumereadonly::setOption( this,state) );
+	m_ui->checkBoxOpenReadOnly->setEnabled( true );
 }
 
 void keyDialog::keyTextChanged( QString txt )
@@ -198,7 +207,10 @@ void keyDialog::pbOpen()
 	connect( part,SIGNAL( signalMountComplete( int,QString ) ),this,SLOT( slotMountComplete( int,QString ) ) ) ;
 
 	part->setDevice( m_path );
-	part->setMode( m_mode );
+	if( m_ui->checkBoxOpenReadOnly->isChecked() )
+		part->setMode( QString( "ro" ) );
+	else
+		part->setMode( QString( "rw" )) ;
 	part->setKeySource( m );
 	part->setMountPoint( m_ui->lineEditMountPoint->text().replace( "\"","\"\"\"" ) );
 

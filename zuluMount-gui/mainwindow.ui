@@ -23,7 +23,7 @@
       <x>10</x>
       <y>10</y>
       <width>781</width>
-      <height>321</height>
+      <height>341</height>
      </rect>
     </property>
     <property name="editTriggers">
@@ -129,9 +129,9 @@
    <widget class="QCheckBox" name="cbReadOnly">
     <property name="geometry">
      <rect>
-      <x>310</x>
-      <y>330</y>
-      <width>271</width>
+      <x>590</x>
+      <y>350</y>
+      <width>171</width>
       <height>31</height>
      </rect>
     </property>
