@@ -463,7 +463,6 @@ void MainWindow::enableAll()
 		m_ui->pbunmount->setEnabled( true );
 
 	m_ui->tableWidget->setFocus();
-
 }
 
 MainWindow::~MainWindow()

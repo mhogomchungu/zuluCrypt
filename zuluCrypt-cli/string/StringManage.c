@@ -26,7 +26,7 @@ struct StringManage_t
 	string_t * stp ;
 };
 
-int StringManageMaxSize( stringManage_t stm ) 
+size_t StringManageMaxSize( stringManage_t stm ) 
 {
 	return stm->size ;
 }
@@ -117,45 +117,38 @@ void StringManageRemoveAt( stringManage_t stm,size_t index )
 	stm->index = stm->index - 1 ;	
 }
 
-string_t * StringManageInsertAt( stringManage_t stm,string_t * st,size_t index ) 
+string_t StringManageInsertAt( stringManage_t stm,string_t * st,size_t index ) 
 {
 	size_t s ;
-	string_t * p ;
-	
+	string_t p ;
 	if( stm == StringManageVoid || index >= stm->size )
 		return StringVoid ;
 		
 	s = sizeof( string_t ) ;
-	
-	p = stm->stp ;
-	
-	memmove( &p[ index + 1 ],&p[ index ],( stm->index - index ) * s ) ;
-	
-	p = &stm->stp[ index ] ;
-	*p = *st ;
-	*st = StringVoid ;
 
-	stm->index = stm->index + 1 ;
+	memmove( &stm->stp[ index + 1 ],&stm->stp[ index ],( stm->index - index ) * s ) ;
 	
-	return p ;
+	p = stm->stp[ index ] = *st ;	
+	*st = StringVoid ;
+	stm->index = stm->index + 1 ;	
+	return p ; ;
 }
 
-string_t * StringManageInsertAtLast( stringManage_t stm,string_t * st ) 
+string_t StringManageInsertAtLast( stringManage_t stm,string_t * st ) 
 {
 	return StringManageInsertAt( stm,st,stm->index ) ;
 }
 
-string_t * StringManageReplaceAt( stringManage_t stm,string_t * st,size_t index ) 
+string_t StringManageReplaceAt( stringManage_t stm,string_t * st,size_t index ) 
 {	
-	string_t * p ;
 	if( stm == StringManageVoid || index >= stm->index )
 		return StringVoid ;
 	
-	p = &stm->stp[ index ] ;
-	StringDelete( p ) ;
-	*p = *st ;
+	StringDelete( &stm->stp[ index ] );
+	
+	stm->stp[ index ] = *st ;
 	*st = StringVoid ;
-	return p ;
+	return stm->stp[ index ] ;
 }
 
 void StringManageClearDelete( stringManage_t * s ) 
@@ -177,17 +170,4 @@ void StringManageClearDelete( stringManage_t * s )
 		
 	free( stm->stp ) ;
 	free( stm ) ;
-}
-
-string_t * StringManageString( void ) 
-{
-	string_t * st = ( string_t * )malloc( sizeof( string_t ) ) ;	
-	*st = StringVoid ;
-	return st ;
-}
-
-void StringManageStringDelete( string_t * st ) 
-{	
-	StringDelete( st ) ;
-	free( st ) ;
 }
