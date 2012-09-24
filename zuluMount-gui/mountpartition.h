@@ -42,6 +42,8 @@ private slots:
 	void checkBoxReadOnlyStateChanged( int ) ;
 	void volumeMiniProperties( QString ) ;
 private:
+	void enableAll( void ) ;
+	void disableAll( void ) ;
 	void closeEvent( QCloseEvent * );
 	void saveOptions( QString,bool ) ;
 	QStringList readOptions( void ) ;

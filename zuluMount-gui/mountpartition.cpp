@@ -30,6 +30,28 @@ void mountPartition::checkBoxReadOnlyStateChanged( int state )
 	m_ui->checkBoxMountReadOnly->setEnabled( true );
 }
 
+void mountPartition::enableAll()
+{
+	m_ui->checkBox->setEnabled( true );
+	m_ui->checkBoxMountReadOnly->setEnabled( true );
+	m_ui->labelMountPoint->setEnabled( true );
+	m_ui->lineEdit->setEnabled( true );
+	m_ui->pbCancel->setEnabled( true );
+	m_ui->pbMount->setEnabled( true );
+	m_ui->pbMountFolder->setEnabled( true );
+}
+
+void mountPartition::disableAll()
+{
+	m_ui->pbMount->setEnabled( false );
+	m_ui->checkBox->setEnabled( false );
+	m_ui->checkBoxMountReadOnly->setEnabled( false );
+	m_ui->labelMountPoint->setEnabled( false );
+	m_ui->lineEdit->setEnabled( false );
+	m_ui->pbCancel->setEnabled( false );
+	m_ui->pbMountFolder->setEnabled( false );
+}
+
 void mountPartition::pbCancel()
 {
 	this->HideUI();
@@ -37,6 +59,7 @@ void mountPartition::pbCancel()
 
 void mountPartition::pbMount()
 {
+	this->disableAll();
 	managepartitionthread * part = new managepartitionthread() ;
 	part->setDevice( m_path );
 	if( m_ui->checkBoxMountReadOnly->isChecked() )
@@ -112,6 +135,7 @@ void mountPartition::slotMountComplete( int status,QString msg )
 	if( status ){
 		DialogMsg m( this ) ;
 		m.ShowUIOK( QString( "ERROR" ),msg );
+		this->enableAll();
 	}else{
 		this->saveOptions( m_ui->lineEdit->text(),m_ui->checkBox->isChecked() );
 
