@@ -1,12 +1,11 @@
 #include "mountpartition.h"
 #include "ui_mountpartition.h"
 
-mountPartition::mountPartition(QWidget *parent) :
-	QWidget(parent),
-	m_ui(new Ui::mountPartition)
+mountPartition::mountPartition( QWidget * parent,QTableWidget * table ) :
+	QWidget( parent ),m_ui(new Ui::mountPartition)
 {
 	m_ui->setupUi(this);
-
+	m_table = table ;
 	this->setFixedSize( this->size() );
 	this->setWindowFlags( Qt::Window | Qt::Dialog );
 	this->setFont( parent->font() );
@@ -102,15 +101,24 @@ void mountPartition::stateChanged( int i )
 	}
 }
 
+void mountPartition::volumeMiniProperties( QString prp )
+{
+	MainWindow::volumeMiniProperties( m_table,prp,m_ui->lineEdit->text() ) ;
+	this->HideUI();
+}
+
 void mountPartition::slotMountComplete( int status,QString msg )
 {
 	if( status ){
 		DialogMsg m( this ) ;
 		m.ShowUIOK( QString( "ERROR" ),msg );
 	}else{
-		emit mounted( m_ui->lineEdit->text() );
 		this->saveOptions( m_ui->lineEdit->text(),m_ui->checkBox->isChecked() );
-		this->HideUI();
+
+		managepartitionthread * mpt = new managepartitionthread() ;
+		mpt->setDevice( m_table->item( m_table->currentRow(),0 )->text() );
+		connect( mpt,SIGNAL( signalProperties( QString ) ),this,SLOT( volumeMiniProperties( QString ) ) ) ;
+		mpt->startAction( QString( "volumeMiniProperties" ) ) ;
 	}
 }
 void mountPartition::HideUI()

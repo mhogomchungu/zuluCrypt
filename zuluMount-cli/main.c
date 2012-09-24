@@ -174,12 +174,10 @@ static int zuluMountMount( const char * device,const char * m_point,const char *
 			StringAppend( z,q + 1 ) ;
 	}
 		
-	path = ( char * ) StringContent( z ) ;
-	
-	if( zuluCryptCreateMountPoint( path,uid ) != 0 )
-		return zuluExit( 105,z,path,"ERROR: mount point path already taken or insuffienct privilege to create a folder at it" ) ;
-	
-	path = realpath( path,NULL ) ;
+	if( zuluCryptCreateMountPoint( StringContent( z ),uid ) != 0 )
+		return zuluExit( 105,z,path,"ERROR: could not create mount point,invalid path or path already taken" ) ;
+
+	path = realpath( StringContent( z ),NULL ) ;
 	
 	if( path == NULL ){
 		rmdir( path ) ;
@@ -216,7 +214,7 @@ static int zuluMountUMount( const char * device,uid_t uid,const char * mode )
 	 * zuluCryptPartitionIsMounted()  is defined in defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c 	 
 	 */
 	if( !zuluCryptPartitionIsMounted( device ) )
-		return zuluExit( 127,StringVoid,m_point,"ERROR: device does appear to be mounted as it does not have an entry in \"/etc/mtab\"" ) ;
+		return zuluExit( 127,StringVoid,m_point,"ERROR: device does not appear to be mounted as it does not have an entry in \"/etc/mtab\"" ) ;
 	
 	if( zuluMountPartitionAccess( device,mode,uid ) == 2 )
 		return zuluExit( 112,StringVoid,m_point,"ERROR: could not unmount a system partition because it does not have \"user\" option in \"/etc/fstab\"" ) ;

@@ -7,6 +7,7 @@
 #include <QFileDialog>
 #include <QDir>
 #include <QMenu>
+#include <QTableWidget>
 
 #include "../zuluCrypt-gui/dialogmsg.h"
 #include "managepartitionthread.h"
@@ -16,6 +17,7 @@
 #include "../zuluCrypt-gui/zuluoptions.h"
 #include "../zuluCrypt-gui/socketsendkey.h"
 #include "../zuluCrypt-gui/openvolumereadonly.h"
+#include "mainwindow.h"
 
 namespace Ui {
 class keyDialog;
@@ -25,7 +27,7 @@ class keyDialog : public QDialog
 {
 	Q_OBJECT
 public:
-	keyDialog( QWidget * parent,QString path );
+	keyDialog( QWidget * parent,QTableWidget *,QString path );
 	~keyDialog();
 	void ShowUI( void );
 	void HideUI( void ) ;
@@ -47,6 +49,7 @@ private slots:
 	void pbPlugin( void );
 	void pbKeyFile( void ) ;
 	void cbMountReadOnlyStateChanged( int ) ;
+	void volumeMiniProperties( QString ) ;
 private:
 	void enableAll( void ) ;
 	void disableAll( void ) ;
@@ -54,6 +57,7 @@ private:
 	Ui::keyDialog * m_ui;
 	QString m_path ;
 	QMenu * m_menu ;
+	QTableWidget * m_table ;
 };
 
 #endif // KEYDIALOG_H

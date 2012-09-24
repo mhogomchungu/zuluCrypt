@@ -53,13 +53,12 @@ public:
 	explicit MainWindow( QWidget * parent = 0 );
 	~MainWindow();
 	void start( void ) ;
+	static void volumeMiniProperties( QTableWidget *,QString,QString );
 signals:
 	void result( int,QString ) ;
 public slots:
 	void raiseWindow( void ) ;
 private slots:
-	void mounted( QString ) ;
-	void volumeMiniProperties( QString );
 	void volumeProperties( QString );
 	void volumeProperties( void ) ;
 	void enterKeyPressed( void ) ;

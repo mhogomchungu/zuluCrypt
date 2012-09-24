@@ -276,22 +276,20 @@ void MainWindow::pbMount()
 
 	if( type == QString( "crypto_LUKS" ) ){
 
-		keyDialog * kd = new keyDialog( this,path ) ;
+		keyDialog * kd = new keyDialog( this,m_ui->tableWidget,path ) ;
 		connect( kd,SIGNAL( hideUISignal() ),kd,SLOT( deleteLater() ) ) ;
 		connect( kd,SIGNAL( hideUISignal() ),this,SLOT( enableAll() ) ) ;
-		connect( kd,SIGNAL( mounted( QString ) ),this,SLOT( mounted( QString ) ) ) ;
 		kd->ShowUI();
 	}else{
-		mountPartition * mp = new mountPartition( this ) ;
+		mountPartition * mp = new mountPartition( this,m_ui->tableWidget ) ;
 		connect( mp,SIGNAL( hideUISignal() ),mp,SLOT( deleteLater() ) ) ;
 		connect( mp,SIGNAL( hideUISignal() ),this,SLOT( enableAll() ) ) ;
-		connect( mp,SIGNAL( mounted( QString ) ),this,SLOT( mounted( QString ) ) ) ;
 		QString label = m_ui->tableWidget->item( row,3 )->text() ;
 		mp->ShowUI( m_device,label );
 	}
 }
 
-void MainWindow::volumeMiniProperties( QString p )
+void MainWindow::volumeMiniProperties( QTableWidget * table,QString p,QString mountPointPath )
 {
 	QStringList l ;
 	QString total ;
@@ -310,25 +308,12 @@ void MainWindow::volumeMiniProperties( QString p )
 		perc.remove( QChar( '\n' ) ) ;
 	}
 
-	QTableWidget * table = m_ui->tableWidget ;
 	int row = table->currentRow() ;
 
+	tablewidget::setText( table,row,1,mountPointPath ) ;
 	tablewidget::setText( table,row,3,label ) ;
 	tablewidget::setText( table,row,4,total ) ;
 	tablewidget::setText( table,row,5,perc ) ;
-}
-
-void MainWindow::mounted( QString m_point )
-{
-	QTableWidget * table = m_ui->tableWidget ;
-	int row = table->currentRow() ;
-
-	tablewidget::setText( table,row,1,m_point ) ;
-
-	managepartitionthread * mpt = new managepartitionthread() ;
-	mpt->setDevice( m_ui->tableWidget->item( m_ui->tableWidget->currentRow(),0 )->text() );
-	connect( mpt,SIGNAL( signalProperties( QString ) ),this,SLOT( volumeMiniProperties( QString ) ) ) ;
-	mpt->startAction( QString( "volumeMiniProperties" ) ) ;
 }
 
 void MainWindow::pbUmount()

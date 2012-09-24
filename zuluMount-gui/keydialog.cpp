@@ -1,12 +1,11 @@
 #include "keydialog.h"
 #include "ui_keydialog.h"
 
-keyDialog::keyDialog( QWidget * parent,QString path ) :
-	QDialog( parent ),
-	m_ui(new Ui::keyDialog)
+keyDialog::keyDialog( QWidget * parent,QTableWidget * table,QString path ) :
+	QDialog( parent ),m_ui(new Ui::keyDialog)
 {
 	m_ui->setupUi(this);
-
+	m_table = table ;
 	m_path = path ;
 
 	QString msg = tr( "unlock and mount a luks volume in \"%1\"").arg( m_path ) ;
@@ -85,6 +84,7 @@ void keyDialog::enableAll()
 		m_ui->pbPlugin->setEnabled( true );
 	else if( m_ui->rbKeyFile->isChecked() )
 		m_ui->pbkeyFile->setEnabled( true );
+	m_ui->checkBoxOpenReadOnly->setEnabled( true );
 }
 
 void keyDialog::disableAll()
@@ -100,6 +100,7 @@ void keyDialog::disableAll()
 	m_ui->rbKey->setEnabled( false );
 	m_ui->rbKeyFile->setEnabled( false );
 	m_ui->rbPlugIn->setEnabled( false );
+	m_ui->checkBoxOpenReadOnly->setEnabled( false );
 }
 
 void keyDialog::pbKeyFile()
@@ -166,11 +167,20 @@ void keyDialog::closeEvent( QCloseEvent * e )
 	this->HideUI();
 }
 
+void keyDialog::volumeMiniProperties( QString prp )
+{
+	MainWindow::volumeMiniProperties( m_table,prp,m_ui->lineEditMountPoint->text() ) ;
+	this->HideUI();
+}
+
 void keyDialog::slotMountComplete( int st,QString m )
 {
 	if( st == 0 ){
-		emit mounted( m_ui->lineEditMountPoint->text() );
-		this->HideUI();
+
+		managepartitionthread * mpt = new managepartitionthread() ;
+		mpt->setDevice( m_table->item( m_table->currentRow(),0 )->text() );
+		connect( mpt,SIGNAL( signalProperties( QString ) ),this,SLOT( volumeMiniProperties( QString ) ) ) ;
+		mpt->startAction( QString( "volumeMiniProperties" ) ) ;
 	}else{
 		DialogMsg msg( this ) ;
 
