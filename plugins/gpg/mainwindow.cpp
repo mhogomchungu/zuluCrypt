@@ -27,7 +27,7 @@
 #include <stdio.h>
 #include <sys/wait.h>
 #include <string.h>
-
+#include <QDebug>
 MainWindow::MainWindow( QWidget * parent ) : QMainWindow( parent ),m_ui( new Ui::MainWindow )
 {
 	m_ui->setupUi( this );
@@ -110,10 +110,15 @@ QByteArray MainWindow::getGPGKey( QString EXE,QString key,QString path )
 		dup2( fd_read_from_gpg[ 1 ],1 ) ;
 		::close( 2 ) ;
 
-		QString sfd = QString::number( fd_write_to_gpg[ 0 ] ) ;
-		const char * fd = sfd.toAscii().constData() ;
+		QByteArray fdb = QString::number( fd_write_to_gpg[ 0 ] ).toAscii() ;
+		const char * fd = fdb.constData() ;
 
-		execl( EXE.toAscii().constData(),
+		QDir dir( path ) ;
+		QByteArray patharray = dir.canonicalPath().toAscii() ;
+		const char * pathChar = patharray.constData() ;
+
+		QByteArray exe = EXE.toAscii() ;
+		execl( exe.constData(),
 		       "--bash",
 			"--no-tty",
 			"--yes",
@@ -122,7 +127,7 @@ QByteArray MainWindow::getGPGKey( QString EXE,QString key,QString path )
 			"--passphrase-fd",
 			fd,
 			"-d",
-			path.toAscii().constData(),
+			pathChar,
 			( void *)0 ) ;
 		_Exit( 1 ); // shouldnt get here
 	}else{
@@ -158,17 +163,17 @@ QByteArray MainWindow::getGPGKey( QString EXE,QString key,QString path )
 
 void MainWindow::pbOpen()
 {
-	QString path = m_ui->lineEditKeyFile->text().replace( "\"","\"\"\"" ) ;
+	QString path = m_ui->lineEditKeyFile->text() ;
 
 	DialogMsg msg( this ) ;
 
 	if( path.isEmpty() )
-		return msg.ShowUIOK( tr( "ERROR" ),tr( "path gpg key is empty" ) ) ;
+		return msg.ShowUIOK( tr( "ERROR" ),tr( "path to gpg keyfile is empty" ) ) ;
 
 	if( !QFile::exists( path ) )
 		return msg.ShowUIOK( tr( "ERROR" ),tr( "invalid path to gpg keyfile" ) ) ;
 
-	QString key = m_ui->lineEditKey->text().replace( "\"","\"\"\"" ) ;
+	QString key = m_ui->lineEditKey->text() ;
 
 	this->disableAll();
 	QString EXE = this->FindGPG() ;
@@ -190,13 +195,12 @@ void MainWindow::pbOpen()
 
 	if( !data.isEmpty() ){
 		socketSendKey::zuluCryptPluginManagerSendKey( m_handle,data ) ;
+		this->doneWritingData();
 	}else{
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR" ),tr("could not decrept the gpg keyfile,wrong key?" ) );
 		this->enableAlll();
 	}
-
-	this->doneWritingData();
 }
 
 void MainWindow::doneWritingData()

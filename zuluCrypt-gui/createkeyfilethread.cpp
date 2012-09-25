@@ -41,7 +41,9 @@ void createkeyfilethread::run()
 	else
 		m_qfread = open( "/dev/random",O_RDONLY ) ;
 
-	m_qfwrite = open( m_path.toAscii().data(),O_WRONLY|O_CREAT ) ;
+	QByteArray path = m_path.toAscii() ;
+
+	m_qfwrite = open( path.constData(),O_WRONLY|O_CREAT ) ;
 
 	for( int i = 0 ; i < 64 ; i++ ){
 		do{

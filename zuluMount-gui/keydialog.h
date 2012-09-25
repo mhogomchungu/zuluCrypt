@@ -58,6 +58,7 @@ private:
 	QString m_path ;
 	QMenu * m_menu ;
 	QTableWidget * m_table ;
+	bool m_working ;
 };
 
 #endif // KEYDIALOG_H

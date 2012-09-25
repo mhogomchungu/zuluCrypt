@@ -17,13 +17,11 @@
  */
 
 #include "socketsendkey.h"
-#include <QDebug>
 
 socketSendKey::socketSendKey( QObject * parent,QString sockpath,QByteArray key )
 {
 	Q_UNUSED( parent ) ;
 	m_connectionHandle = 0 ;
-	//this->setParent( parent );
 	m_sockpath = sockpath ;
 	m_key = key ;
 	connect( this,SIGNAL( finished() ),this,SLOT( deleteLater() ) ) ;
@@ -46,31 +44,24 @@ QString socketSendKey::getSocketPath()
 
 void socketSendKey::run()
 {
-	m_connectionHandle = ::zuluCryptPluginManagerOpenConnection( m_sockpath.toAscii().constData() ) ;
+	QByteArray sockpath = m_sockpath.toAscii() ;
+	m_connectionHandle = ::zuluCryptPluginManagerOpenConnection( sockpath.constData() ) ;
 
 	if( !m_connectionHandle ){
-		//qDebug() << "failed to connect";
 		emit keyNotSent();
 	}else{
-		//sleep( 1 ) ;
-		//qDebug() << "got coonnected";
-
 		emit gotConnected() ;
-
 		::zuluCryptPluginManagerSendKey( m_connectionHandle,m_key.constData(),m_key.size() ) ;
-
 		::zuluCryptPluginManagerCloseConnection( m_connectionHandle );
-
 		m_connectionHandle = 0 ;
-		//qDebug() << "connection closed";
-
 		emit keySent() ;
 	}
 }
 
 void * socketSendKey::zuluCryptPluginManagerOpenConnection( QString sockpath )
 {
-	return ::zuluCryptPluginManagerOpenConnection( sockpath.toAscii().constData() ) ;
+	QByteArray path = sockpath.toAscii() ;
+	return ::zuluCryptPluginManagerOpenConnection( path.constData() ) ;
 }
 
 ssize_t socketSendKey::zuluCryptPluginManagerSendKey( void * handle,QByteArray data )
@@ -85,8 +76,4 @@ void socketSendKey::zuluCryptPluginManagerCloseConnection( void * handle )
 
 socketSendKey::~socketSendKey()
 {
-	//if( m_connectionHandle )
-	//	zuluCryptPluginManagerCloseConnection( m_connectionHandle );
-
-	//qDebug() << "~socketSendKey()";
 }

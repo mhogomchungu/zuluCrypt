@@ -2,7 +2,7 @@
 #include "ui_managesystemvolumes.h"
 
 manageSystemVolumes::manageSystemVolumes( QWidget * parent ) :
-        QDialog(parent),
+	QDialog(parent),
 	m_ui(new Ui::manageSystemVolumes)
 {
 	m_ui->setupUi( this ) ;
@@ -166,7 +166,7 @@ void manageSystemVolumes::addItemsToTable( QStringList paths )
 	int row = m_ui->tableWidget->rowCount() ;
 	int i ;
 	int j = paths.size() ;
-	
+
 	QTableWidgetItem * it ;
 
 	for( i = 0 ; i < j ; i++ ){

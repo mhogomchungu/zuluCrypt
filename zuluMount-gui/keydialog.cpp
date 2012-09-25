@@ -7,6 +7,7 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,QString path ) :
 	m_ui->setupUi(this);
 	m_table = table ;
 	m_path = path ;
+	m_working = false ;
 
 	QString msg = tr( "unlock and mount a luks volume in \"%1\"").arg( m_path ) ;
 
@@ -89,6 +90,7 @@ void keyDialog::enableAll()
 
 void keyDialog::disableAll()
 {
+	m_ui->pbPlugin->setEnabled( false );
 	m_ui->label_2->setEnabled( false );
 	m_ui->lineEditMountPoint->setEnabled( false );
 	m_ui->pbOpenMountPoint->setEnabled( false );
@@ -175,6 +177,7 @@ void keyDialog::volumeMiniProperties( QString prp )
 
 void keyDialog::slotMountComplete( int st,QString m )
 {
+	m_working = false ;
 	if( st == 0 ){
 
 		managepartitionthread * mpt = new managepartitionthread() ;
@@ -194,6 +197,8 @@ void keyDialog::slotMountComplete( int st,QString m )
 
 void keyDialog::pbOpen()
 {
+	m_working = true ;
+
 	if( m_ui->lineEditKey->text().isEmpty() ){
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR" ),tr( "passphrase field is empty" ) ) ;
@@ -273,8 +278,10 @@ void keyDialog::ShowUI()
 
 void keyDialog::HideUI()
 {
-	emit hideUISignal();
-	this->hide();
+	if( !m_working ){
+		emit hideUISignal();
+		this->hide();
+	}
 }
 
 keyDialog::~keyDialog()

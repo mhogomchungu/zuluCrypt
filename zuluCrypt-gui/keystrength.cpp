@@ -20,8 +20,8 @@ int keystrength::quality( QString key )
 {
 #if BUILD_PWQUALITY
 	void * auxerror ;
-	const char * p = key.toAscii().constData() ;
-	int st = pwquality_check( m_handle,p,NULL,NULL,&auxerror);
+	QByteArray keyArray = key.toAscii() ;
+	int st = pwquality_check( m_handle,keyArray.constData(),NULL,NULL,&auxerror);
 	pwquality_strerror( NULL,0,st,auxerror);
 	return st ;
 #else

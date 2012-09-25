@@ -89,14 +89,15 @@ bool miscfunctions::exists( QString path )
 
 bool miscfunctions::canCreateFile( QString path )
 {
-	char * p = path.toAscii().data() ;
-	int i = open( p,O_WRONLY|O_CREAT ) ;
+	QByteArray q = path.toAscii() ;
+
+	int i = open( q.constData(),O_WRONLY|O_CREAT ) ;
 
 	if( i == -1 )
 		return false ;
 	else{
 		close( i ) ;
-		remove( p );
+		remove( q );
 		return true ;
 	}
 }
@@ -124,7 +125,8 @@ QStringList miscfunctions::deviceProperties( QString device )
 	QString size ;
 	prp << device ;
 
-	blkid_probe dp = blkid_new_probe_from_filename( device.toAscii().data() ) ;
+	QByteArray dev = device.toAscii() ;
+	blkid_probe dp = blkid_new_probe_from_filename( dev.constData() ) ;
 	blkid_do_probe( dp ) ;
 
 	i = blkid_probe_get_size( dp ) ;
@@ -256,7 +258,9 @@ QString miscfunctions::getUUIDFromPath( QString device )
 	QString uuid ;
 	const char * e ;
 
-	blkid_probe dp = blkid_new_probe_from_filename( device.toAscii().data() ) ;
+	QByteArray dev = device.toAscii() ;
+
+	blkid_probe dp = blkid_new_probe_from_filename( dev.constData() ) ;
 
 	blkid_do_probe( dp ) ;
 
