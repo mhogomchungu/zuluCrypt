@@ -38,6 +38,7 @@ signals:
 public slots:
 	void slotMountComplete( int,QString ) ;
 private slots:
+	void pbkeyOption( void ) ;
 	void pbMountPointPath( void ) ;
 	void pbPluginEntryClicked( QAction * ) ;
 	void keyTextChanged( QString ) ;
@@ -46,8 +47,8 @@ private slots:
 	void rbKeyFile( bool ) ;
 	void pbOpen( void ) ;
 	void pbCancel( void ) ;
-	void pbPlugin( void );
-	void pbKeyFile( void ) ;
+	void Plugin( void );
+	void KeyFile( void ) ;
 	void cbMountReadOnlyStateChanged( int ) ;
 	void volumeMiniProperties( QString ) ;
 private:

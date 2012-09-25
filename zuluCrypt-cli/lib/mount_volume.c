@@ -49,17 +49,17 @@ typedef struct{
 
 static string_t resolveUUIDAndLabel( string_t st )
 {
-	char * e ;
-	string_t xt = StringVoid ;
+	char * e = NULL ;
+	string_t xt = StringVoid ;	
 	
 	if( StringStartsWith( st,"LABEL=" ) ) {
 		e = blkid_evaluate_tag( "LABEL",StringContent( st ) + 6,NULL ) ;
-		xt = StringInherit( &e ) ;		
+		xt = StringInherit( &e ) ;
 	}else if( StringStartsWith( st,"UUID=" ) ){
 		e = blkid_evaluate_tag( "UUID",StringContent( st ) + 5,NULL ) ;
-		xt = StringInherit( &e ) ;		
+		xt = StringInherit( &e ) ;
 	}
-	
+		
 	return xt ;
 }
 

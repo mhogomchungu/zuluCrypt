@@ -123,11 +123,11 @@ stringList_t zuluCryptPartitionList( void )
 
 char * zuluCryptDeviceFromUUID( const char * uuid )
 {
-	return blkid_evaluate_tag( "UUID",uuid,NULL ) ;
+	return blkid_evaluate_tag( "UUID",uuid,NULL) ;
 }
 
 char * zuluCryptDeviceFromLabel( const char * label )
-{
+{	
 	return blkid_evaluate_tag( "LABEL",label,NULL ) ;
 }
 
