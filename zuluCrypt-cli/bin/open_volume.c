@@ -127,11 +127,11 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	if( mode == NULL )
 		mode = "rw" ;
 	
-	if( strncmp( mode,"ro",2 ) != 0 )
-		if ( strncmp( mode,"rw",2 ) != 0 )
+	if( strstr( mode,"ro" ) == NULL )
+		if ( strstr( mode,"rw" ) == NULL )
 			return zuluExit( 13,device,cpoint,stm ) ;
 		
-	if( strcmp( mode,"rw" ) == 0 ){
+	if( strstr( mode,"rw" ) != NULL ){
 		switch( zuluCryptCanOpenPathForWriting( dev,uid ) ){
 			case 0 : break ;
 			case 1 : return zuluExit( 23,device,cpoint,stm ) ;

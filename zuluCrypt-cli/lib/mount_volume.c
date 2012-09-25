@@ -144,12 +144,12 @@ static string_t set_mount_options( m_struct * mst )
 {
 	string_t opt = zuluCryptGetMountOptionsFromFstab( mst->device,3 ) ;
 	string_t uid = StringIntToString( mst->uid ) ;
-	
+
 	if( opt == StringVoid ){
 		opt = String( mst->mode ) ;
 		StringAppend( opt,"," ) ;
 	}else{
-		StringMultiplePrepend( opt,",",mst->mode,'\0' ) ;
+		StringMultipleAppend( opt,",",mst->mode,'\0' ) ;
 	}
 	
 	if( ms_family( mst->fs ) ){	
@@ -196,9 +196,7 @@ static string_t set_mount_options( m_struct * mst )
 	StringRemoveString( opt,"default" ) ;
 	StringRemoveString( opt,"auto" ) ;
 	StringRemoveString( opt,"noauto" ) ;
-	StringRemoveStringPos( opt,"ro",3 ) ;
-	StringRemoveStringPos( opt,"rw",3 ) ;
-	
+		
 	StringReplaceString( opt,",,","," );
 	
 	if( StringEndsWithChar( opt,',' ) )
@@ -206,10 +204,33 @@ static string_t set_mount_options( m_struct * mst )
 	
 	StringDelete( &uid ) ;
 	
-	if( strcmp( mst->fs,"ntfs" ) == 0 )
-		mst->opts = StringContent( opt ) ;
-	else
+	if( strcmp( mst->fs,"ntfs" ) != 0 ){
+		if( StringContains( opt,"ro" ) ) {
+			if( StringContains( opt,"ro," ) )
+				StringRemoveString( opt,"ro," ) ;
+			else if( StringContains( opt,",ro" ) ) 
+				StringRemoveString( opt,",ro" ) ;
+			else
+				StringRemoveString( opt,"ro" ) ;
+			
+			StringPrepend( opt,"ro," ) ;
+		}
+		if( StringContains( opt,"rw" ) ){
+			if( StringContains( opt,"rw," ) )
+				StringRemoveString( opt,"rw," ) ;
+			else if( StringContains( opt,",rw" ) ) 
+				StringRemoveString( opt,",rw" ) ;
+			else
+				StringRemoveString( opt,"rw" ) ;
+			
+			StringPrepend( opt,"rw," ) ;
+		}
+		
 		mst->opts = StringContent( opt ) + 3 ;
+		
+	}else{	
+		mst->opts = StringContent( opt ) ;
+	}
 	
 	return opt;
 }
@@ -264,7 +285,7 @@ int zuluCryptMountVolume( const char * mapper,const char * m_point,const char * 
 	mst.mode = mode ;
 	mst.uid = id ;
 	
-	if( strcmp( mode,"ro" ) == 0 )
+	if( strstr( mode,"ro" ) != NULL )
 		mst.m_flags = MS_RDONLY ;
 	else
 		mst.m_flags = 0 ;

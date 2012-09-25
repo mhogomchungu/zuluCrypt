@@ -189,6 +189,7 @@ static int zuluMountMount( const char * device,const char * m_point,const char *
 	/*
 	 * zuluCryptMountVolume() defined in ../zuluCrypt-cli/lib/mount_volume.c
 	 */
+
 	status = zuluCryptMountVolume( device,path,mode,uid )	;
 	
 	if( status == 0 ){		
@@ -478,11 +479,6 @@ int main( int argc,char * argv[] )
 		
 	if( mode == NULL )
 		mode = "rw" ;
-	else{
-		if( strcmp( mode,"ro" ) != 0 )
-			if( strcmp( mode,"rw" ) != 0 )
-				mode = "rw" ;
-	}
 	
 	if( strncmp( dev,"UUID=",5 ) == 0 ){
 		device = zuluCryptDeviceFromUUID( dev + 5 ) ;
