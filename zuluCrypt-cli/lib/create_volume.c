@@ -24,6 +24,12 @@
  */
 #include "../process/process.h"
 
+#include <sys/syscall.h>
+
+#ifdef __STDC__
+int syscall(int number, ...) ;
+#endif
+
 static int zuluExit( int st,string_t m )
 {
 	StringDelete( &m ) ;
@@ -35,6 +41,7 @@ int zuluCryptCreateVolume( const char * dev,const char * fs,const char * type,co
 	int status ;
 	process_t p ;
 	
+	string_t id ;	
 	string_t m = StringVoid ;
 		
 	const char * device_mapper ;
@@ -58,7 +65,12 @@ int zuluCryptCreateVolume( const char * dev,const char * fs,const char * type,co
 	
 	free( device ) ;
 
-	device_mapper = StringMultiplePrepend( m,"/new-",crypt_get_dir(),'\0' ) ;
+	id = StringIntToString( syscall( SYS_gettid ) ) ;
+	
+	StringAppendString( m,id ) ;
+	StringDelete( &id ) ;
+	
+	device_mapper = StringMultiplePrepend( m,"/",crypt_get_dir(),'\0' ) ;
 	
 	mapper = strrchr( device_mapper,'/' ) + 1 ;
 
