@@ -81,18 +81,21 @@ void StringManageDelete( stringManage_t * s )
 {
 	size_t i ;
 	size_t j ;
+	string_t * p ;
+	stringManage_t stm ;
 	
 	if( s == NULL )
 		return ;
 		
-	stringManage_t stm = * s ;
+	stm = *s ;
 	*s = StringManageVoid ;
 	
-	j = stm->index ;
+	j = stm->index ;	
+	p = stm->stp ;
 	
 	if( j > 0 )
 		for( i = 0 ; i < j ; i++ )
-			StringDelete( &stm->stp[ i ] ) ;		
+			StringDelete( &p[ i ] ) ;
 	
 	free( stm->stp ) ;
 	free( stm ) ;
@@ -155,18 +158,21 @@ void StringManageClearDelete( stringManage_t * s )
 {
 	size_t i ;
 	size_t j ;
-		
+	string_t * p ;
+	stringManage_t stm ;
+	
 	if( s == NULL )
 		return ;
 	
-	stringManage_t stm = * s ;
+	stm = *s ;
 	*s = StringManageVoid ;
 	
 	j = stm->index ;
+	p = stm->stp ;
 	
 	if( j > 0 )
 		for( i = 0 ; i < j ; i++ )
-			StringClearDelete( &stm->stp[ i ] ) ;		
+			StringClearDelete( &p[ i ] ) ;		
 		
 	free( stm->stp ) ;
 	free( stm ) ;
