@@ -135,7 +135,8 @@ QByteArray MainWindow::getGPGKey( QString EXE,QString key,QString path )
 		::close( fd_write_to_gpg[ 0 ] );
 		::close( fd_read_from_gpg[ 1 ] ) ;
 
-		write( fd_write_to_gpg[ 1 ],key.toAscii().constData(),key.size() ) ;
+		QByteArray keyData = key.toAscii() ;
+		write( fd_write_to_gpg[ 1 ],keyData.constData(),keyData.size() ) ;
 		::close( fd_write_to_gpg[ 1 ] ) ;
 
 		char * buffer = NULL ;
