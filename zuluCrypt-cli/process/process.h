@@ -93,6 +93,11 @@ size_t ProcessWrite( process_t p,const char * data,size_t len ) ;
 void ProcessCloseStdWrite( process_t p ) ;
 
 /*
+ * call this function to open standard input/output channels if you want to read from or write to the child process.
+ */
+void ProcessOptionOpenStdIO( process_t ) ;
+
+/*
  * default delimiter is ' '( space character ),set another character with this function to change it 
  */
 void ProcessSetOptionDelimiter( process_t,char ) ;

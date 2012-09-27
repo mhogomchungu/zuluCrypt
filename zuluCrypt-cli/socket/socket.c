@@ -46,17 +46,17 @@ socket_t Socket( const char * domain )
 		return SocketVoid ;
 	
 	if( strcmp( domain,"local" ) == 0 ){
-		s->domain = AF_UNIX ;		
-		s->size = sizeof( struct sockaddr_un ) ;		
+		s->domain = AF_UNIX ;
+		s->size = sizeof( struct sockaddr_un ) ;
 		s->local = ( struct sockaddr_un * ) malloc( s->size ) ;
-		memset( s->local,'\0',s->size ) ;			
+		memset( s->local,'\0',s->size ) ;
 		s->local->sun_family = AF_UNIX ;
 	}else{
 		s->domain = AF_INET ;
 		s->size = sizeof( struct sockaddr_in ) ;
 		s->net = ( struct sockaddr_in  * ) malloc( s->size ) ;
-		memset( s->net,'\0',s->size ) ;		
-		s->net->sin_family = AF_INET ;		
+		memset( s->net,'\0',s->size ) ;
+		s->net->sin_family = AF_INET ;
 	}
 	
 	s->type = SOCK_STREAM ;
@@ -75,24 +75,27 @@ void SocketSetOptionType( socket_t s,int option )
 
 void SocketSetProtocolType( socket_t s,int protocol ) 
 {
-	if( s != SocketVoid )		
+	if( s != SocketVoid )
 		s->protocol = protocol ;
 }
 
 void SocketDelete( socket_t * x )
 {
+	socket_t s ;
+	
 	if( x == NULL )
 		return ;
 	if( *x == SocketVoid )
 		return ;
 	
-	socket_t s = *x ;
+	s = *x ;
 	*x = SocketVoid ;
 	
-	if( s->domain == AF_UNIX )
+	if( s->domain == AF_UNIX ){
 		free( s->local ) ;
-	else
+	}else{
 		free( s->net ) ;
+	}
 	
 	free( s ) ;
 }
@@ -132,9 +135,9 @@ void SocketSetHostAddress( socket_t s,const char * address )
 		s->local->sun_path[ size - 1 ] = '\0' ;
 	}else{
 		if( getaddrinfo( address,NULL,NULL,&addr ) == 0 ){
-			addr_in = ( struct sockaddr_in * ) addr->ai_addr ;		
-			s->net->sin_addr.s_addr = addr_in->sin_addr.s_addr ;		
-			freeaddrinfo( addr ) ;		
+			addr_in = ( struct sockaddr_in * ) addr->ai_addr ;
+			s->net->sin_addr.s_addr = addr_in->sin_addr.s_addr ;
+			freeaddrinfo( addr ) ;
 		}
 	}
 }
@@ -147,7 +150,7 @@ const char * SocketAddress( socket_t s )
 	if( s->domain == AF_UNIX )
 		return s->local->sun_path ;
 	else
-		return inet_ntoa( s->net->sin_addr ) ;	
+		return inet_ntoa( s->net->sin_addr ) ;
 }
 
 void SocketSetHostIPAddress( socket_t s,const char * address ) 
@@ -175,17 +178,29 @@ socket_t SocketAccept( socket_t s )
 	
 	if( x == NULL )
 		return SocketVoid ;
+	
+	memset( x,'\0',sizeof( struct Socket_t ) ) ;
+	
 	if( s->domain == AF_UNIX ){
 		x->local = ( struct sockaddr_un * ) malloc( sizeof( struct sockaddr_un ) ) ;
 		if( x->local == NULL ){
 			free( x ) ;
 			x = SocketVoid ;
 		}else{
+			memset( x->local,'\0',sizeof( struct sockaddr_un ) ) ;
 			x->fd = accept( s->fd,( struct sockaddr * )x->local,&x->size ) ;
 			if( x->fd == -1 ){
 				free( x->local ) ;
 				free( x ) ;
 				x = SocketVoid ;
+			}else{
+				x->domain = AF_UNIX ;
+				/*
+					x->local->sun_family = AF_UNIX ;
+				*/
+				x->type = SOCK_STREAM ;
+				x->protocol = 0 ;
+				x->cmax = 1 ;
 			}
 		}
 	}else{
@@ -194,11 +209,20 @@ socket_t SocketAccept( socket_t s )
 			free( x ) ;
 			x = SocketVoid ;
 		}else{
+			memset( x->local,'\0',sizeof( struct sockaddr_in ) ) ;	
 			x->fd = accept( s->fd,( struct sockaddr * )x->net,&x->size ) ;
 			if( x->fd == -1 ){
 				free( x->net ) ;
 				free( x ) ;
-				x = SocketVoid ;			
+				x = SocketVoid ;
+			}else{
+				x->domain = AF_INET ;
+				/*
+					x->net->sin_family = AF_INET ;
+				*/	
+				x->type = SOCK_STREAM ;
+				x->protocol = 0 ;
+				x->cmax = 1 ;
 			}
 		}
 	}
@@ -219,7 +243,7 @@ int SocketConnect( socket_t s )
 	if( s->domain == AF_UNIX )
 		return connect( s->fd,( struct sockaddr * )s->local,s->size ) ;
 	else
-		return connect( s->fd,( struct sockaddr * )s->net,s->size ) ;	
+		return connect( s->fd,( struct sockaddr * )s->net,s->size ) ;
 }
 
 int SocketListen( socket_t s ) 
@@ -290,7 +314,7 @@ ssize_t SocketSendData( socket_t s,const char * buffer,size_t len )
 	size_t remain = len ;
 	
 	if( s == SocketVoid || buffer == NULL )
-		return -1 ;		
+		return -1 ;
 	do{
 		sent = sent + write( s->fd,buffer + sent,remain ) ;
 		remain = remain - sent ;
@@ -303,6 +327,7 @@ int SocketClose( socket_t s )
 {
 	if( s == SocketVoid )
 		return -1 ;
+	
 	shutdown( s->fd,SHUT_RDWR ) ;
 	return close( s->fd ) ;
 }

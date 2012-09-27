@@ -115,7 +115,7 @@ int main( int argc,char * argv[] )
 	int st ;
 	uid_t uid ;
 	string_t q = StringVoid ;
-	stringManage_t stm = StringManage( 5 ) ;
+	stringManage_t stm ;
 	struct_opts clargs ;
 	
 	uid = getuid();
@@ -140,6 +140,8 @@ int main( int argc,char * argv[] )
 			return 0 ;
 		}
 	}
+	
+	stm = StringManage( 5 ) ;
 	
 	zuluCryptEXEGetOpts( argc,argv,&clargs );
 	

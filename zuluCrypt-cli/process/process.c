@@ -22,7 +22,7 @@
 struct Process_t{
 	size_t len ;
 	pid_t pid ;
-	
+	int open_std_io ;
 	int fd_0[ 2 ] ; /* this pipe is used to write to child process      */
 	int fd_1[ 2 ] ; /* this pipe is used to read from child's std out   */
 	int fd_2[ 2 ] ; /* this pipe is used to read from child's std error */	
@@ -158,10 +158,12 @@ pid_t ProcessStart( process_t p )
 	if( p == NULL )
 		return -1 ;
 			
-	pipe( p->fd_0 ) ;
-	pipe( p->fd_1 ) ;	
-	pipe( p->fd_2 ) ;
-		
+	if( p->open_std_io == 1 ){
+		pipe( p->fd_0 ) ;
+		pipe( p->fd_1 ) ;
+		pipe( p->fd_2 ) ;
+	}
+	
 	p->pid = fork() ;
 	
 	if( p->pid == -1 )
@@ -177,14 +179,16 @@ pid_t ProcessStart( process_t p )
 			setgid( p->pid )   ;
 			setegid( p->pid )  ;
 		}		
-				
-		dup2( p->fd_0[ 0 ],0 )    ;
-		dup2( p->fd_1[ 1 ],1 )    ;
-		dup2( p->fd_2[ 1 ],2 )    ;
 		
-		close( p->fd_1[ 0 ] )     ;
-		close( p->fd_0[ 1 ] )     ;
-		close( p->fd_2[ 0 ] )     ;
+		if( p->open_std_io == 1 ){
+			dup2( p->fd_0[ 0 ],0 )    ;
+			dup2( p->fd_1[ 1 ],1 )    ;
+			dup2( p->fd_2[ 1 ],2 )    ;
+		
+			close( p->fd_1[ 0 ] )     ;
+			close( p->fd_0[ 1 ] )     ;
+			close( p->fd_2[ 0 ] )     ;
+		}
 		
 		execv( p->args[0],p->args ) ;
 		/*
@@ -199,11 +203,12 @@ pid_t ProcessStart( process_t p )
 	/*
 	 * parent process continues from here
 	 */		
+	if( p->open_std_io == 1 ){
+		close( p->fd_0[ 0 ] ) ;
+		close( p->fd_1[ 1 ] ) ;
+		close( p->fd_2[ 1 ] ) ;
+	}
 	
-	close( p->fd_0[ 0 ] ) ;
-	close( p->fd_1[ 1 ] ) ;
-	close( p->fd_2[ 1 ] ) ;
-		
 	p->state = RUNNING ;
 		
 	if( p->timeout != -1 )
@@ -315,7 +320,7 @@ process_t Process( const char * path )
 	p->uid = -1 ;
 	p->thread = NULL ;
 	p->fd_0[ 0 ] = -1 ;
-	
+	p->open_std_io = -1 ;
 	return p ;
 }
 
@@ -334,6 +339,12 @@ void ProcessSetOptionDelimiter( process_t p,char s )
 		p->delimiter = s ;
 }
 
+void ProcessOptionOpenStdIO( process_t p ) 
+{
+	if( p != NULL )
+		p->open_std_io = 1 ;
+}
+
 void ProcessDelete( process_t * p ) 
 {
 	if( p == NULL )
@@ -347,11 +358,13 @@ void ProcessDelete( process_t * p )
 		free( px->thread ) ;
 	}	
 	
-	close( px->fd_2[ 1 ] ) ;
-	close( px->fd_1[ 1 ] ) ;
+	if( px->open_std_io == 1 ){
+		close( px->fd_2[ 1 ] ) ;
+		close( px->fd_1[ 1 ] ) ;
 	
-	if( px->fd_0[ 0 ] != -1 )
-		close( px->fd_0[ 0 ] ) ;
+		if( px->fd_0[ 0 ] != -1 )
+			close( px->fd_0[ 0 ] ) ;
+	}
 	
 	if( px->wait_status == -1 )
 		waitpid( px->pid,0,WNOHANG ) ;

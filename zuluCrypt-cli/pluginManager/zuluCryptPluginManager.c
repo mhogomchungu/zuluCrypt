@@ -66,26 +66,26 @@ size_t zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid
 	
 	socket_t client ;
 	
-	socket_t server = SocketLocal( sockpath ) ;	
+	socket_t server = SocketLocal( sockpath ) ;
 	
 	/*
 	 * SocketBind() will unlink the "sockpath" address automatically
 	 */
 	SocketBind( server ) ;
 	
-	chown( sockpath,uid,uid ) ;	
+	chown( sockpath,uid,uid ) ;
 	chmod( sockpath,S_IRWXU | S_IRWXG | S_IRWXO ) ;
 	
 	SocketListen( server ) ;
 	
 	client = zuluCryptSocketAccept( server ) ;
 	
-	dataLength = SocketGetData( client,&buffer,INTMAXKEYZISE ) ;	
+	dataLength = SocketGetData( client,&buffer,INTMAXKEYZISE ) ;
 	
 	SocketClose( server ) ;
 	SocketClose( client ) ;
 	
-	SocketDelete( &server ) ;	
+	SocketDelete( &server ) ;
 	SocketDelete( &client ) ;
 	
 	if( dataLength > 0 )
@@ -93,7 +93,7 @@ size_t zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid
 	
 	unlink( sockpath ) ;
 	
-	return dataLength ;	
+	return dataLength ;
 }
 
 void * zuluCryptPluginManagerOpenConnection( const char * sockpath )
@@ -108,10 +108,10 @@ void * zuluCryptPluginManagerOpenConnection( const char * sockpath )
 			SocketDelete( &client ) ;
 			break ;
 		}else
-			sleep( 1 ) ;	
+			sleep( 1 ) ;
 	}
 	
-	return NULL ;	
+	return NULL ;
 }
 
 ssize_t zuluCryptPluginManagerSendKey( void * client,const char * key,size_t length )
@@ -124,7 +124,7 @@ void zuluCryptPluginManagerCloseConnection( void * p )
 	if( p != NULL ){
 		socket_t client = ( socket_t ) p;
 		SocketClose( client ) ;
-		SocketDelete( &client ) ;	
+		SocketDelete( &client ) ;
 	}
 }
 
@@ -145,27 +145,27 @@ static string_t zuluCryptGetDeviceUUID( const char * device )
 	
 	blkid_free_probe( blkid );
 	
-	return p ;		
+	return p ;
 }
 
 string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * name,uid_t uid,const char * argv )
 {
-	struct passwd * pass ;	
+	struct passwd * pass ;
 	
 	socket_t server ;
 	socket_t client ;
 	
-	char * buffer ;	
-	process_t p ;	
+	char * buffer ;
+	process_t p ;
 	
-	int i ;	
-	const char * sockpath ;	
-	string_t key   = StringVoid ;	
-	string_t mpath = StringVoid ;	
+	int i ;
+	const char * sockpath ;
+	string_t key   = StringVoid ;
+	string_t mpath = StringVoid ;
 	string_t path  = StringVoid ;
 	string_t id    = StringVoid ;
 	string_t uuid  = StringVoid ;
-	const char * cpath ;	
+	const char * cpath ;
 	struct stat st ;
 	pass = getpwuid( uid ) ;
 		
@@ -176,7 +176,7 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		/*
 		 * ZULUCRYPTpluginPath is set at config time at it equals $prefix/lib(64)/zuluCrypt/
 		 */
-		mpath = String( ZULUCRYPTpluginPath ) ;	
+		mpath = String( ZULUCRYPTpluginPath ) ;
 		StringAppend( mpath,name ) ;
 	}else{
 		/*
@@ -197,7 +197,7 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	
 	mkdir( sockpath,S_IRWXU | S_IRWXG | S_IRWXO ) ;
 	chown( sockpath,uid,uid ) ;
-	chmod( sockpath,S_IRWXU ) ;		
+	chmod( sockpath,S_IRWXU ) ;
 	
 	id = StringIntToString( syscall( SYS_gettid ) ) ;
 	
@@ -205,17 +205,17 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	
 	uuid = zuluCryptGetDeviceUUID( device ) ;
 
-	p = Process( cpath ) ;		
-	ProcessSetUser( p,uid ) ;
+	p = Process( cpath ) ;
 
-	ProcessSetArgumentList( p,device,StringContent( uuid ),sockpath,CHARMAXKEYZISE,argv,'\0' ) ;	
-	ProcessStart( p ) ;		
+	ProcessSetUser( p,uid ) ;
+	ProcessSetArgumentList( p,device,StringContent( uuid ),sockpath,CHARMAXKEYZISE,argv,'\0' ) ;
+	ProcessStart( p ) ;
 	
 	server = SocketLocal( sockpath ) ;
 	
 	SocketBind( server ) ;
 	
-	chown( sockpath,uid,uid ) ;	
+	chown( sockpath,uid,uid ) ;
 	chmod( sockpath,S_IRWXU | S_IRWXG | S_IRWXO ) ;
 	
 	SocketListen( server ) ;
@@ -230,8 +230,8 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	if( i > 0 )
 		key = StringInheritWithSize( &buffer,i ) ;
 	
-	SocketDelete( &server ) ;
 	SocketDelete( &client ) ;
+	SocketDelete( &server ) ;
 
 	unlink( sockpath ) ;
 	
