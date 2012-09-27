@@ -25,7 +25,7 @@ int keystrength::quality( QString key )
 	pwquality_strerror( NULL,0,st,auxerror);
 	return st ;
 #else
-	Q_UNUSED( key ) ;
+	key = QString( "silence compiler warning" ) ;
 	return NOT_USED ;
 #endif
 }
