@@ -80,17 +80,10 @@ void MainWindow::setUpApp()
 
 void MainWindow::raiseWindow()
 {
-	if( !this->isVisible() )
-		this->setVisible( true );
-	else if( this->isMinimized()){
-		this->raise();
-		this->setWindowState( Qt::WindowActive ) ;
-		this->show();
-	}else{
-		this->raise();
-		this->setWindowState( Qt::WindowActive ) ;
-		this->show();
-	}
+	this->setVisible( true );
+	this->raise();
+	this->show();	
+	this->setWindowState( Qt::WindowActive ) ;
 }
 
 void MainWindow::start()

@@ -25,6 +25,7 @@ int keystrength::quality( QString key )
 	pwquality_strerror( NULL,0,st,auxerror);
 	return st ;
 #else
+	Q_UNUSED( key ) ;
 	return NOT_USED ;
 #endif
 }

@@ -67,17 +67,10 @@ void zuluCrypt::initFont()
 
 void zuluCrypt::raiseWindow()
 {
-	if( !this->isVisible() )
-		this->setVisible( true );
-	else if( this->isMinimized() ){
-		this->raise();
-		this->setWindowState( Qt::WindowActive ) ;
-		this->show(); ;
-	}else{
-		this->raise();
-		this->setWindowState( Qt::WindowActive ) ;
-		this->show();
-	}
+	this->setVisible( true );
+	this->show(); ;	
+	this->raise();
+	this->setWindowState( Qt::WindowActive ) ;
 }
 
 void zuluCrypt::start()
