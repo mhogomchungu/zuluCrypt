@@ -87,7 +87,6 @@ int zuluCryptCreateVolume( const char * dev,const char * fs,const char * type,co
 	}		
 
 	p = Process( ZULUCRYPTmkfs ) ;
-	ProcessSetOption( p,CLOSE_BOTH_STD_OUT ) ;
 	
 	if( strcmp( fs,"ext2" ) == 0 || strcmp( fs,"ext3" ) == 0 || strcmp( fs,"ext4" ) == 0 ){
 		

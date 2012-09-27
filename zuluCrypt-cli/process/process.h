@@ -83,12 +83,17 @@ pid_t ProcessStart( process_t p ) ;
 /*
  * pass data to the child process,the child process will get the data from reading its stdin.
  * ProcessSetOption( p,WRITE_STD_IN ) must be called first for this to work. * 
- * size_t ProcessWrite( process_t p,const char * data,size_t len ) ;
-*/
+ */
+size_t ProcessWrite( process_t p,const char * data,size_t len ) ;
 
 /*
- * default delimiter is ' '( space character ),set another character with this function to change it
- * 
+ * close the writing connection to the child process.This maybe necessary if a child process
+ * blocks waiting for more data in its std in until EOF is received. 
+ */
+void ProcessCloseStdWrite( process_t p ) ;
+
+/*
+ * default delimiter is ' '( space character ),set another character with this function to change it 
  */
 void ProcessSetOptionDelimiter( process_t,char ) ;
 
@@ -128,6 +133,7 @@ void ProcessSetArguments( process_t p,char * const argv[] ) ;
  * ProcessDelete( &p ) ;
  */
 void ProcessSetArgumentList( process_t p,... ) ;
+
 /*
  * get state of the process handled by handle p 
  */
@@ -136,16 +142,6 @@ void ProcessSetArgumentList( process_t p,... ) ;
 #define FINISHED 3
 #define CANCELLED 4
 int ProcessState( process_t p ) ;
-
-/*
- * Set how the forked process is to behave.
- */
-#define CLOSE_STD_OUT 		1
-#define CLOSE_STD_ERROR		2
-#define CLOSE_BOTH_STD_OUT 	3
-#define READ_STD_OUT 		4
-#define READ_STD_ERROR 		8
-#define WRITE_STD_IN 		12
 
 void ProcessSetOption( process_t,int ) ;
 
@@ -168,12 +164,15 @@ int ProcessExitStatus( process_t ) ;
  * return value is the size of the data.  
  * this function must be called after ProcessStart()
  */
-size_t ProcessGetOutPut( process_t,char ** data ) ;
+
+#define STDOUT 1 
+#define STDERROR 2
+size_t ProcessGetOutPut( process_t,char ** data,int stdio ) ;
 
 /*
  * read size number of bytes from the ourput of the forket process.
  */
-int ProcessGetOutPut_1( process_t,char * buffer,int size ) ;
+int ProcessGetOutPut_1( process_t,char * buffer,int size,int stdio ) ;
 
 #ifdef __cplusplus
 }

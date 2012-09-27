@@ -243,8 +243,6 @@ static int mount_ntfs( const m_struct * mst )
 	
 	ProcessSetArgumentList( p,"-t","ntfs-3g","-o",mst->opts,mst->device,mst->m_point,'\0' ) ;
 
-	ProcessSetOption( p,CLOSE_BOTH_STD_OUT ) ;
-
 	ProcessStart( p ) ;
 	
 	status = ProcessExitStatus( p ) ; 

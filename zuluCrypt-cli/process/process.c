@@ -22,8 +22,10 @@
 struct Process_t{
 	size_t len ;
 	pid_t pid ;
-	int pd[2] ;
-	int pdw[2] ;
+	
+	int fd_0[ 2 ] ; /* this pipe is used to write to child process      */
+	int fd_1[ 2 ] ; /* this pipe is used to read from child's std out   */
+	int fd_2[ 2 ] ; /* this pipe is used to read from child's std error */	
 	int state ;
 	int std_io ;
 	char * exe ;
@@ -109,7 +111,7 @@ static void ProcessSetArguments_1( process_t p )
 	 */
 	f = ( char ** ) malloc( sizeof( char * ) * ( k + 2 ) ) ;
 
-	*f = p->exe ;
+	f[ 0 ] = p->exe ;
 	
 	c = p->exe - 1;
 
@@ -155,14 +157,11 @@ pid_t ProcessStart( process_t p )
 {
 	if( p == NULL )
 		return -1 ;
-	
-	if( p->std_io >= 4 ){
-		if( pipe( p->pd ) != 0 ) 
-			return -1 ;
-		if( pipe( p->pdw ) != 0 )
-			return -1 ;
-	}
-
+			
+	pipe( p->fd_0 ) ;
+	pipe( p->fd_1 ) ;	
+	pipe( p->fd_2 ) ;
+		
 	p->pid = fork() ;
 	
 	if( p->pid == -1 )
@@ -173,92 +172,20 @@ pid_t ProcessStart( process_t p )
 	if( p->pid == 0 ){
 				
 		if( p->uid != ( uid_t )-1 ){
-			setuid( p->uid ) ;			
-			seteuid( p->uid ) ;
-			setgid( p->pid ) ;
-			setegid( p->pid ) ;
-		}
-		
-		/*
-		#define CLOSE_STD_OUT 		1
-		#define CLOSE_STD_ERROR		2
-		#define CLOSE_BOTH_STD_OUT 	3
-		#define READ_STD_OUT 		4
-						5 = 4 + 1
-						6 = 4 + 2
-						7 = 4 + 3
-		#define READ_STD_ERROR 		8
-						9 = 8 + 1
-						..
-						..
-		#define WRITE_STD_IN 		12
-						13 = 12 + 1
-						..
-						..
-		*/
-		
-		switch( p->std_io ){
-			case 1     : close( 1 ) ; 
-				     break ;
-			case 2     : close( 2 ) ; 
-				     break ;
-			case 3     : close( 1 ) ;
-				     close( 2 ) ; 
-				     break ;
-			
-			case 4     :	     
-			case 5     : close( 1 ) ;
-				     close( p->pd[ 0 ] ) ;
-				     dup2( p->pd[ 1 ],1 ) ;
-				     break ;
+			setuid( p->uid )   ;
+			seteuid( p->uid )  ;
+			setgid( p->pid )   ;
+			setegid( p->pid )  ;
+		}		
 				
-			case 6     :	     
-			case 7     : close( 2 ) ;
-				     close( 1 ) ;
-			             close( p->pd[ 0 ] ) ;
-			             dup2( p->pd[ 1 ],1 ) ;
-			             break ;				     
-			case 10    :	     
-			case 8     : close( 2 ) ;
-				     close( p->pd[ 0 ] ) ;
-			             dup2( p->pd[ 1 ],2 ) ;
-			             break ;	
-			case 11    :	     
-			case 9     : close( 1 ) ;
-				     close( 2 ) ;
-				     close( p->pd[ 0 ] ) ;
-				     dup2( p->pd[ 1 ],2 ) ;
-			       	     break ;
-
-			case 12    : close( 0 ) ;
-				     close( p->pd[ 1 ] ) ;
-			             dup2( p->pd[ 0 ],0 ) ;
-				     break ;
-			case 13    : close( 1 ) ;
-				     close( 0 ) ;
-				     close( p->pd[ 1 ] ) ;
-				     dup2( p->pd[ 0 ],0 ) ;
-				     break ;
-			case 14    : close( 1 ) ;
-				     close( 0 ) ;
-			             close( p->pd[ 1 ] ) ;
-			             dup2( p->pd[ 0 ],0 ) ;
-			             break ;
-			case 15:
-			case 16:
-			case 17:     break ;			
-			case 18:     
-				     //printf("abc\n" ) ;
-				     //  close( 2 ) ;
-				     close( 1 ) ;
-				     dup2( p->pd[ 1 ],1 ) ;				     
-				     close( p->pd[ 0 ] ) ;
-				     close( 0 ) ;
-				     dup2( p->pdw[ 0 ],0 ) ;				     
-				     close( p->pdw[ 1 ] ) ;				     
-				     break ;
-		}
-				
+		dup2( p->fd_0[ 0 ],0 )    ;
+		dup2( p->fd_1[ 1 ],1 )    ;
+		dup2( p->fd_2[ 1 ],2 )    ;
+		
+		close( p->fd_1[ 0 ] )     ;
+		close( p->fd_0[ 1 ] )     ;
+		close( p->fd_2[ 0 ] )     ;
+		
 		execv( p->args[0],p->args ) ;
 		/*
 		 * execv has failed :-( 
@@ -271,26 +198,21 @@ pid_t ProcessStart( process_t p )
 		
 	/*
 	 * parent process continues from here
-	 */
+	 */		
 	
+	close( p->fd_0[ 0 ] ) ;
+	close( p->fd_1[ 1 ] ) ;
+	close( p->fd_2[ 1 ] ) ;
+		
 	p->state = RUNNING ;
 		
 	if( p->timeout != -1 )
 		__ProcessStartTimer( p ) ;
 	
-	if( p->std_io <= 3 )
-		;
-	else if ( p->std_io < 12 )
-		close( p->pd[ 1 ] ) ;
-	else{
-		close( p->pd[ 1 ] ) ;
-		close( p->pdw[ 0 ] ) ;		
-	}
-	
 	return p->pid ;
 }
 
-size_t ProcessGetOutPut( process_t p,char ** data ) 
+size_t ProcessGetOutPut( process_t p,char ** data,int std_io ) 
 {
 	#define SIZE 64
 	char * buffer = NULL ;
@@ -298,11 +220,19 @@ size_t ProcessGetOutPut( process_t p,char ** data )
 	size_t size = 0 ;
 	size_t count ;
 
+	int fd ;
+	
 	if( p == NULL )
 		return 0 ;
 	
+	if( std_io == STDOUT )
+		fd = p->fd_1[ 0 ] ;
+	else
+		fd = p->fd_2[ 0 ] ;
+	
 	while( 1 ) {
-		count = read( p->pd[ 0 ],buff,SIZE ) ;
+		
+		count = read( fd,buff,SIZE ) ;
 		if( count == SIZE ){
 			buffer = ( char * ) realloc( buffer,size + SIZE + 1 ) ;
 			memcpy( buffer + size,buff,SIZE ) ;
@@ -314,8 +244,8 @@ size_t ProcessGetOutPut( process_t p,char ** data )
 			buffer[ size + count ] = '\0' ;
 			size += count ;
 		}else
-			break ;	
-	}	
+			break ;
+	}
 
 	*data = buffer ;
 	return size ;	
@@ -329,20 +259,28 @@ int ProcessState( process_t p )
 		return -1 ;
 }
 
-int ProcessGetOutPut_1( process_t p,char * buffer,int size ) 
+int ProcessGetOutPut_1( process_t p,char * buffer,int size,int std_io ) 
 {
 	if( p != NULL )		
-		return read( p->pd[ 0 ],buffer,size ) ;
+		if( std_io == 1 )
+			return read( p->fd_1[ 1 ],buffer,size ) ;
+		else if( std_io == 2 )
+			return read( p->fd_2[ 1 ],buffer,size ) ;
+		else
+			return -1 ;
 	else
 		return -1 ;
 }
 
 size_t ProcessWrite( process_t p,const char * data,size_t len ) 
 {	
-	if( p != NULL )
-		return write( p->pdw[ 1 ],data,len ) ;
-	else
-		return 0 ;
+	return p != NULL ? write( p->fd_0[ 0 ],data,len ) : 0 ;
+}
+
+void ProcessCloseStdWrite( process_t p )
+{
+	close( p->fd_0[ 0 ] ) ;
+	p->fd_0[ 0 ] = -1 ;
 }
 
 process_t Process( const char * path ) 
@@ -376,14 +314,9 @@ process_t Process( const char * path )
 	p->args_source = -1 ;
 	p->uid = -1 ;
 	p->thread = NULL ;
+	p->fd_0[ 0 ] = -1 ;
 	
 	return p ;
-}
-
-void ProcessSetOption( process_t p,int opt ) 
-{
-	if( p != NULL )
-		p->std_io += opt ;	
 }
 
 void ProcessSetOptionTimeout( process_t p,int timeout,int signal ) 
@@ -414,12 +347,11 @@ void ProcessDelete( process_t * p )
 		free( px->thread ) ;
 	}	
 	
-	if( px->std_io <= 3 )
-		;
-	else if( px->std_io < 12 )
-		close( px->pd[ 0 ] ) ;
-	else
-		close( px->pd[ 1 ] ) ;	
+	close( px->fd_2[ 1 ] ) ;
+	close( px->fd_1[ 1 ] ) ;
+	
+	if( px->fd_0[ 0 ] != -1 )
+		close( px->fd_0[ 0 ] ) ;
 	
 	if( px->wait_status == -1 )
 		waitpid( px->pid,0,WNOHANG ) ;
@@ -490,10 +422,3 @@ void ProcessSetArguments( process_t p,char * const s[] )
 	p->args = ( char ** ) s ;
 	p->args_source = 1 ;
 }
-
-/*
-int ProcessSetSearchPaths( const char * s ) 
-{
-	return -1 ;
-}
-*/
