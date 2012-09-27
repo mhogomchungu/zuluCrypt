@@ -72,7 +72,7 @@ public:
 	int writeMap( QMap<QString,QString> & ) { return 0 ; }
 	bool isOpen( void ) { return false ; }
 	static bool folderDoesNotExist( void ){ return false ; }
-	static bool keyDoesNotExist( QString key ){ return true ; }
+	static bool keyDoesNotExist( QString key ){ key = QString( "silence compiler warning" ) ; return true ; }
 	static bool KwalletIsEnabled( void ) { return false ; }
 	static QString KDEKwalletDefaultName( void ) { return QString( "kdewallet" ) ;  }
 

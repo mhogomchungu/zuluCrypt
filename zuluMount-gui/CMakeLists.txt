@@ -80,5 +80,4 @@ X-DBUS-ServiceName=
 X-DBUS-StartupType=
 X-KDE-SubstituteUID=false
 X-KDE-Username=
-Categories=Utility;Qt;\n")
-#Categories=Utility;Qt;X-MandrivaLinux-System-FileTools;\n")
+Categories=Security;Utility;Qt;X-MandrivaLinux-System-FileTools;\n")
