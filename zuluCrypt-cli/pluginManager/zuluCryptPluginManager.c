@@ -164,7 +164,6 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	string_t id    = StringVoid ;
 	string_t uuid  = StringVoid ;
 	const char * cpath ;
-	struct stat st ;
 	pass = getpwuid( uid ) ;
 		
 	if( pass == NULL )
@@ -184,11 +183,6 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	}
 	
 	cpath = StringContent( mpath ) ;
-	
-	if( stat( cpath,&st ) != 0 ){
-		StringDelete( &mpath ) ;
-		return StringVoid ;
-	}	
 	
 	path = String( pass->pw_dir ) ;
 	sockpath = StringAppend( path,"/.zuluCrypt-socket/" ) ;

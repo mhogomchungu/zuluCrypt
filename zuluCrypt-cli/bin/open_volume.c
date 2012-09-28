@@ -189,7 +189,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 				return zuluExit_1( 28,opts,device,cpoint,stm ) ;
 				
 		/*
-		 * zuluCryptPluginManagerGetKeyFromModule is defined in zuluCryptPluginManager.c
+		 * zuluCryptPluginManagerGetKeyFromModule is defined in ../pluginManager/zuluCryptPluginManager.c
 		 */
 		*passphrase = zuluCryptPluginManagerGetKeyFromModule( device,plugin_path,uid,argv ) ;
 		
