@@ -68,7 +68,7 @@ void zuluCrypt::initFont()
 void zuluCrypt::raiseWindow()
 {
 	this->setVisible( true );
-	this->show(); ;	
+	this->show(); ;
 	this->raise();
 	this->setWindowState( Qt::WindowActive ) ;
 }
@@ -83,7 +83,7 @@ void zuluCrypt::start()
 	 * runs.
 	 */
 
-	QString sockpath = QDir::homePath() + QString( "/" ) + QString( ".zuluCrypt-gui.socket" ) ;
+	QString sockpath = QString( "zuluCrypt-gui.socket" ) ;
 	oneinstance * instance = new oneinstance( this,sockpath,"raiseWindow" ) ;
 	connect( instance,SIGNAL( raise() ),this,SLOT( raiseWindow() ) ) ;
 

@@ -91,8 +91,6 @@ size_t zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid
 	if( dataLength > 0 )
 		*key = StringInheritWithSize( &buffer,dataLength ) ;
 	
-	unlink( sockpath ) ;
-	
 	return dataLength ;
 }
 
@@ -233,8 +231,6 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	SocketDelete( &client ) ;
 	SocketDelete( &server ) ;
 
-	unlink( sockpath ) ;
-	
 	ProcessExitStatus( p ) ;
 	ProcessDelete( &p ) ;
 	

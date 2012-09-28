@@ -82,13 +82,13 @@ void MainWindow::raiseWindow()
 {
 	this->setVisible( true );
 	this->raise();
-	this->show();	
+	this->show();
 	this->setWindowState( Qt::WindowActive ) ;
 }
 
 void MainWindow::start()
 {
-	QString sockpath = QDir::homePath() + QString( "/" ) + QString( ".zuluMount-gui.socket" ) ;
+	QString sockpath = QString( "zuluMount-gui.socket" ) ;
 	oneinstance * instance = new oneinstance( this,sockpath,"raiseWindow" ) ;
 	connect( instance,SIGNAL( raise() ),this,SLOT( raiseWindow() ) ) ;
 

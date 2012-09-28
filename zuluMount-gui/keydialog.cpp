@@ -14,8 +14,6 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,QString path ) :
 	this->setWindowTitle( msg );
 
 	m_ui->lineEditMountPoint->setText( QDir::homePath() + QString( "/" ) + m_path.split( "/" ).last() );
-	//m_ui->pbkeyOption->setIcon( QIcon( QString( ":/module.png" ) ) );
-	//m_ui->pbkeyFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) );
 	m_ui->pbkeyFile->setVisible( false );
 	m_ui->pbOpenMountPoint->setIcon( QIcon( QString( ":/folder.png" ) ) );
 

@@ -10,6 +10,7 @@
 #include <QMainWindow>
 #include <QString>
 #include <QMetaObject>
+#include <QDir>
 
 class oneinstance : public QObject
 {
@@ -26,11 +27,13 @@ public slots:
 private slots:
 	void Exit( void ) ;
 private:
+	void startInstance( void ) ;
 	void killProcess( void ) ;
 	QLocalServer * m_localServer ;
 	QLocalSocket * m_localSocket ;
 	QString m_serverPath ;
 	bool m_instanceExist ;
+	const char * m_methodName ;
 };
 
 #endif // ONEINSTANCE_H

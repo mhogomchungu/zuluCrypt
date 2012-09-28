@@ -21,6 +21,7 @@
 
 struct Socket_t
 {
+	int socket_server ;
 	int type ;
 	int protocol ;
 	int cmax ;
@@ -62,7 +63,7 @@ socket_t Socket( const char * domain )
 	s->type = SOCK_STREAM ;
 	s->protocol = 0 ;
 	s->cmax = 1 ;
-	
+	s->socket_server = 0 ;
 	s->fd = socket( s->domain,s->type,s->protocol ) ;
 	return s ;	
 }
@@ -165,6 +166,7 @@ int SocketBind( socket_t s )
 	if( s == SocketVoid )
 		return -1 ;
 	if( s->domain == AF_UNIX ){
+		s->socket_server = 1 ;		
 		unlink( s->local->sun_path ) ;
 		return bind( s->fd,( struct sockaddr * )s->local,s->size ) ;
 	}else{
@@ -201,6 +203,7 @@ socket_t SocketAccept( socket_t s )
 				x->type = SOCK_STREAM ;
 				x->protocol = 0 ;
 				x->cmax = 1 ;
+				x->socket_server = 0 ;
 			}
 		}
 	}else{
@@ -223,6 +226,7 @@ socket_t SocketAccept( socket_t s )
 				x->type = SOCK_STREAM ;
 				x->protocol = 0 ;
 				x->cmax = 1 ;
+				x->socket_server = 0 ;
 			}
 		}
 	}
@@ -325,10 +329,14 @@ ssize_t SocketSendData( socket_t s,const char * buffer,size_t len )
 
 int SocketClose( socket_t s ) 
 {
+	int st ;
 	if( s == SocketVoid )
 		return -1 ;
-	
+		
 	shutdown( s->fd,SHUT_RDWR ) ;
-	return close( s->fd ) ;
+	st = close( s->fd ) ;
+	if( s->domain == AF_UNIX && s->socket_server )
+		unlink( s->local->sun_path ) ;
+	return st ;	
 }
 
