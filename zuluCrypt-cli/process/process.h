@@ -43,6 +43,8 @@ extern "C" {
 	
 typedef struct Process_t * process_t ;
 
+#define ProcessVoid ( ( void * ) 0 ) 
+
 /*
  * An example of how to use the library to call ls with arguments and get its output while closing its std error 
  * 
@@ -93,11 +95,6 @@ size_t ProcessWrite( process_t p,const char * data,size_t len ) ;
 void ProcessCloseStdWrite( process_t p ) ;
 
 /*
- * call this function to open standard input/output channels if you want to read from or write to the child process.
- */
-void ProcessOptionOpenStdIO( process_t ) ;
-
-/*
  * default delimiter is ' '( space character ),set another character with this function to change it 
  */
 void ProcessSetOptionDelimiter( process_t,char ) ;
@@ -115,7 +112,7 @@ int ProcessTerminate( process_t ) ;
 /*
  * run the child process with privileges of a user with UID of uid
  */
-void ProcessSetUser( process_t,uid_t uid ) ;
+void ProcessSetOptionUser( process_t,uid_t uid ) ;
 
 /*
  * send a forked process sigkill to kill it

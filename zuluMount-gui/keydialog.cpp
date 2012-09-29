@@ -25,12 +25,10 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,QString path ) :
 
 	m_ui->lineEditKey->setFocus();
 
-	m_ui->checkBoxOpenReadOnly->setChecked( openvolumereadonly::getOption() );
+	m_ui->checkBoxOpenReadOnly->setChecked( openvolumereadonly::getOption( QString( "zuluMount-gui ") ) );
 
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->pbOpen,SIGNAL( clicked() ),this,SLOT( pbOpen() ) ) ;
-	//connect( m_ui->pbPlugin,SIGNAL( clicked() ),this,SLOT( pbPlugin() ) ) ;
-	//connect( m_ui->pbkeyFile,SIGNAL( clicked() ),this,SLOT( pbKeyFile() ) ) ;
 	connect( m_ui->pbkeyOption,SIGNAL( clicked() ),this,SLOT( pbkeyOption() ) ) ;
 	connect( m_ui->rbKey,SIGNAL( toggled( bool ) ),this,SLOT( rbKey( bool ) ) ) ;
 	connect( m_ui->rbKeyFile,SIGNAL( toggled( bool ) ),this,SLOT( rbKeyFile( bool ) ) ) ;
@@ -44,8 +42,14 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,QString path ) :
 void keyDialog::cbMountReadOnlyStateChanged( int state )
 {
 	m_ui->checkBoxOpenReadOnly->setEnabled( false );
-	m_ui->checkBoxOpenReadOnly->setChecked( openvolumereadonly::setOption( this,state ) );
+	m_ui->checkBoxOpenReadOnly->setChecked( openvolumereadonly::setOption( this,state,QString( "zuluMount-gui" ) ) );
 	m_ui->checkBoxOpenReadOnly->setEnabled( true );
+	if( m_ui->lineEditKey->text().isEmpty() )
+		m_ui->lineEditKey->setFocus();
+	else if( m_ui->lineEditMountPoint->text().isEmpty() )
+		m_ui->lineEditMountPoint->setFocus();
+	else
+		m_ui->pbOpen->setFocus();
 }
 
 void keyDialog::keyTextChanged( QString txt )

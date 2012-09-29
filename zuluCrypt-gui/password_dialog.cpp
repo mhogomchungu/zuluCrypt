@@ -133,13 +133,13 @@ void passwordDialog::pbPluginEntryClicked( QAction * e )
 void passwordDialog::cbStateChanged( int state )
 {
 	m_ui->checkBoxReadOnly->setEnabled( false );
-	m_ui->checkBoxReadOnly->setChecked( openvolumereadonly::setOption( this,state ) );
+	m_ui->checkBoxReadOnly->setChecked( openvolumereadonly::setOption( this,state,QString( "zuluCrypt-gui" ) ) );
 	m_ui->checkBoxReadOnly->setEnabled( true );
 }
 
 void passwordDialog::setDefaultOpenMode()
 {
-	m_ui->checkBoxReadOnly->setCheckState( openvolumereadonly::getOption() );
+	m_ui->checkBoxReadOnly->setCheckState( openvolumereadonly::getOption( QString( "zuluCrypt-gui" ) ) );
 }
 
 void passwordDialog::closeEvent( QCloseEvent * e )

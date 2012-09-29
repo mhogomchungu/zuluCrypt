@@ -10,7 +10,7 @@ mountPartition::mountPartition( QWidget * parent,QTableWidget * table ) :
 	this->setWindowFlags( Qt::Window | Qt::Dialog );
 	this->setFont( parent->font() );
 
-	m_ui->checkBoxMountReadOnly->setCheckState( openvolumereadonly::getOption() );
+	m_ui->checkBoxMountReadOnly->setCheckState( openvolumereadonly::getOption( QString( "zuluMount-gui" ) ) );
 
 	connect( m_ui->pbMount,SIGNAL( clicked() ),this,SLOT(pbMount() ) ) ;
 	connect( m_ui->pbMountFolder,SIGNAL( clicked() ),this,SLOT( pbOpenMountPath() ) ) ;
@@ -26,8 +26,12 @@ mountPartition::mountPartition( QWidget * parent,QTableWidget * table ) :
 void mountPartition::checkBoxReadOnlyStateChanged( int state )
 {
 	m_ui->checkBoxMountReadOnly->setEnabled( false );
-	m_ui->checkBoxMountReadOnly->setChecked( openvolumereadonly::setOption( this,state) );
+	m_ui->checkBoxMountReadOnly->setChecked( openvolumereadonly::setOption( this,state,QString( "zuluMount-gui" ) ) );
 	m_ui->checkBoxMountReadOnly->setEnabled( true );
+	if( m_ui->lineEdit->text().isEmpty() )
+		m_ui->lineEdit->setFocus();
+	else
+		m_ui->pbMount->setFocus();
 }
 
 void mountPartition::enableAll()

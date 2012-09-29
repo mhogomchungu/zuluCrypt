@@ -46,18 +46,31 @@ socket_t Socket( const char * domain )
 	if( s == NULL )
 		return SocketVoid ;
 	
-	if( strcmp( domain,"local" ) == 0 ){
-		s->domain = AF_UNIX ;
-		s->size = sizeof( struct sockaddr_un ) ;
-		s->local = ( struct sockaddr_un * ) malloc( s->size ) ;
-		memset( s->local,'\0',s->size ) ;
-		s->local->sun_family = AF_UNIX ;
+	if( strcmp( domain,"local" ) == 0 ){		
+		s->local = ( struct sockaddr_un * ) malloc( sizeof( struct sockaddr_un ) ) ;
+		if( s->local == NULL ){
+			free( s ) ;
+			return SocketVoid ;
+		}else{
+			s->domain = AF_UNIX ;
+			s->size = sizeof( struct sockaddr_un ) ;
+			memset( s->local,'\0',s->size ) ;
+			s->local->sun_family = AF_UNIX ;
+		}
+	}else if( strcmp( domain,"net" ) == 0 ){
+		s->net = ( struct sockaddr_in  * ) malloc( sizeof( struct sockaddr_in ) ) ;
+		if( s->net == NULL ){
+			free( s ) ;
+			return SocketVoid ;
+		}else{
+			s->domain = AF_INET ;
+			s->size = sizeof( struct sockaddr_in ) ;
+			memset( s->net,'\0',s->size ) ;
+			s->net->sin_family = AF_INET ;
+		}
 	}else{
-		s->domain = AF_INET ;
-		s->size = sizeof( struct sockaddr_in ) ;
-		s->net = ( struct sockaddr_in  * ) malloc( s->size ) ;
-		memset( s->net,'\0',s->size ) ;
-		s->net->sin_family = AF_INET ;
+		free( s ) ;
+		return SocketVoid ;
 	}
 	
 	s->type = SOCK_STREAM ;

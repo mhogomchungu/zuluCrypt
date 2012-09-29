@@ -68,9 +68,6 @@ size_t zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid
 	
 	socket_t server = SocketLocal( sockpath ) ;
 	
-	/*
-	 * SocketBind() will unlink the "sockpath" address automatically
-	 */
 	SocketBind( server ) ;
 	
 	chown( sockpath,uid,uid ) ;
@@ -147,24 +144,24 @@ static string_t zuluCryptGetDeviceUUID( const char * device )
 }
 
 string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * name,uid_t uid,const char * argv )
-{
-	struct passwd * pass ;
-	
+{	
 	socket_t server ;
 	socket_t client ;
 	
 	char * buffer ;
+	
 	process_t p ;
 	
 	int i ;
 	const char * sockpath ;
+	
 	string_t key   = StringVoid ;
 	string_t mpath = StringVoid ;
 	string_t path  = StringVoid ;
 	string_t id    = StringVoid ;
 	string_t uuid  = StringVoid ;
-	const char * cpath ;
-	pass = getpwuid( uid ) ;
+
+	struct passwd * pass = getpwuid( uid ) ;
 		
 	if( pass == NULL )
 		return NULL ;	
@@ -182,8 +179,6 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		mpath = String( name ) ;
 	}
 	
-	cpath = StringContent( mpath ) ;
-	
 	path = String( pass->pw_dir ) ;
 	sockpath = StringAppend( path,"/.zuluCrypt-socket/" ) ;
 	
@@ -197,9 +192,9 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	
 	uuid = zuluCryptGetDeviceUUID( device ) ;
 
-	p = Process( cpath ) ;
+	p = Process( StringContent( mpath ) ) ;
 
-	ProcessSetUser( p,uid ) ;
+	ProcessSetOptionUser( p,uid ) ;
 	ProcessSetArgumentList( p,device,StringContent( uuid ),sockpath,CHARMAXKEYZISE,argv,'\0' ) ;
 	ProcessStart( p ) ;
 	

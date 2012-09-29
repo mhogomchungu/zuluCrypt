@@ -24,9 +24,10 @@
 //	this->setParent( parent );
 //}
 
-int openvolumereadonly::setOption( QWidget * parent, int state )
+int openvolumereadonly::setOption( QWidget * parent, int state,QString app )
 {
-	QFile f( QDir::homePath() + QString( "/.zuluCrypt/open_mode" ) ) ;
+	QString Path = QDir::homePath() + QString( "/.zuluCrypt/" ) + app ;
+	QFile f( Path + QString( "-openMode" ) ) ;
 	f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
 	f.write( QString::number( state ).toAscii() ) ;
 	f.close();
@@ -34,7 +35,7 @@ int openvolumereadonly::setOption( QWidget * parent, int state )
 	DialogMsg msg( parent ) ;
 	QString m = tr( "setting this option will cause the volume to open in read only mode" ) ;
 
-	QString path = QDir::homePath() + QString( "/.zuluCrypt/readOnlyOption" ) ;
+	QString path = Path + QString( "-readOnlyOption" ) ;
 
 	f.setFileName( path ) ;
 
@@ -64,14 +65,14 @@ int openvolumereadonly::setOption( QWidget * parent, int state )
 	return state ;
 }
 
-Qt::CheckState openvolumereadonly::getOption()
+Qt::CheckState openvolumereadonly::getOption( QString app )
 {
 	QString home = QDir::homePath() + QString( "/.zuluCrypt/" ) ;
 	QDir d( home ) ;
 	if( d.exists() == false )
 		d.mkdir( home ) ;
 
-	QFile f( home + QString( "open_mode" ) ) ;
+	QFile f( home + app + QString( "-openMode" ) ) ;
 
 	if( f.exists() == false ){
 		f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;

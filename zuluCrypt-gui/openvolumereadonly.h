@@ -33,8 +33,8 @@ class openvolumereadonly : public QObject
 public:
 	//openvolumereadonly( QObject * parent );
 
-	static int setOption( QWidget * parent, int state ) ;
-	static Qt::CheckState getOption( void ) ;
+	static int setOption( QWidget * parent, int state,QString app ) ;
+	static Qt::CheckState getOption( QString app ) ;
 };
 
 #endif // OPENVOLUMEREADONLY_H

@@ -247,7 +247,7 @@ void MainWindow::slotcbReadOnly()
 void MainWindow::stateChanged( int state )
 {
 	m_ui->cbReadOnly->setEnabled( false );
-	m_ui->cbReadOnly->setChecked( openvolumereadonly::setOption( this,state) );
+	m_ui->cbReadOnly->setChecked( openvolumereadonly::setOption( this,state,QString( "zuluMount-gui" ) ) );
 	m_ui->cbReadOnly->setEnabled( true );
 }
 
