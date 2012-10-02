@@ -157,24 +157,24 @@ int zuluCryptEXESaveAndRestoreLuksHeader( const struct_opts * opts,uid_t uid,int
 	}
 	
 	if( option == LUKS_HEADER_RESTORE ){
-		switch( zuluCryptCanOpenPathForReading( path,uid ) ){
+		switch( zuluCryptSecurityCanOpenPathForReading( path,uid ) ){
 			case 1 : return zuluExit( 8,NULL ) ;
 			case 2 : return zuluExit( 9,NULL ) ;		
 		}
 		
-		switch( zuluCryptCanOpenPathForWriting( device,uid ) ){
+		switch( zuluCryptSecurityCanOpenPathForWriting( device,uid ) ){
 			case 1 : return zuluExit( 15,NULL ) ;
 			case 2 : return zuluExit( 11,NULL ) ;
 		}
 	}else{
-		switch( zuluCryptCanOpenPathForReading( device,uid ) ){
+		switch( zuluCryptSecurityCanOpenPathForReading( device,uid ) ){
 			case 1 : return zuluExit( 18,NULL ) ;
 			case 2 : return zuluExit( 11,NULL ) ;		
 		}
 		if( zuluCryptPathIsValid( path ) )
 			return zuluExit( 6,NULL ) ;
 		
-		if( zuluCryptCanOpenPathForWriting( path,uid ) == 1 )
+		if( zuluCryptSecurityCanOpenPathForWriting( path,uid ) == 1 )
 			return zuluExit( 10,NULL ) ;
 	}	
 		

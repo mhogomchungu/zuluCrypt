@@ -1,6 +1,6 @@
 /*
  * 
- *  Copyright (c) 2011
+ *  Copyright (c) 2012
  *  name : mhogo mchungu 
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
@@ -64,17 +64,17 @@ static int has_access( const char * path,int c,uid_t uid )
 	}
 }
 
-int zuluCryptCanOpenPathForReading( const char * path,uid_t uid )
+int zuluCryptSecurityCanOpenPathForReading( const char * path,uid_t uid )
 {
 	return has_access( path,READ,uid ) ;
 }
 
-int zuluCryptCanOpenPathForWriting( const char * path,uid_t uid )
+int zuluCryptSecurityCanOpenPathForWriting( const char * path,uid_t uid )
 {
 	return has_access( path,WRITE,uid ) ;
 }
 
-int zuluCryptCreateMountPoint( const char * path,uid_t uid )
+int zuluCryptSecurityCreateMountPoint( const char * path,uid_t uid )
 {
 	int st ;
 	
@@ -105,7 +105,7 @@ int zuluCryptCreateMountPoint( const char * path,uid_t uid )
  *  2  insufficient memory to open file
  *  0  success * 
  */
-int zuluCryptGetPassFromFile( const char * path,uid_t uid,string_t * st )
+int zuluCryptSecurityGetPassFromFile( const char * path,uid_t uid,string_t * st )
 {
 	/*
 	 * zuluCryptGetUserHomePath() is defined in ../lib/user_get_home_path.c
@@ -127,7 +127,7 @@ int zuluCryptGetPassFromFile( const char * path,uid_t uid,string_t * st )
 	
 	StringDelete( &p ) ;
 	
-	switch ( zuluCryptCanOpenPathForReading( path,uid ) ){
+	switch ( zuluCryptSecurityCanOpenPathForReading( path,uid ) ){
 		case 1 : return 4 ;
 		case 2 : return 1 ;
 	}

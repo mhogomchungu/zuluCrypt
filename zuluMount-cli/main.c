@@ -140,7 +140,7 @@ static int zuluMountMount( const char * device,const char * m_point,const char *
 	/*
 	 * below function is defined in ../zuluCrypt-cli/bin/security.c
 	 */
-	if( zuluCryptCanOpenPathForReading( device,uid ) != 0 )
+	if( zuluCryptSecurityCanOpenPathForReading( device,uid ) != 0 )
 		return zuluExit( 106,z,path,"ERROR: invalid path to device or insuffienct previlege to access it" ) ;
 	
 	/*
@@ -174,7 +174,7 @@ static int zuluMountMount( const char * device,const char * m_point,const char *
 			StringAppend( z,q + 1 ) ;
 	}
 		
-	if( zuluCryptCreateMountPoint( StringContent( z ),uid ) != 0 )
+	if( zuluCryptSecurityCreateMountPoint( StringContent( z ),uid ) != 0 )
 		return zuluExit( 105,z,path,"ERROR: could not create mount point,invalid path or path already taken" ) ;
 
 	path = realpath( StringContent( z ),NULL ) ;

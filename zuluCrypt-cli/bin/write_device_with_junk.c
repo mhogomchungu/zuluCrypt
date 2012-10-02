@@ -115,12 +115,12 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	
 	const char * cmapper ;
 	
-	switch( zuluCryptCanOpenPathForReading( device,uid ) ){
+	switch( zuluCryptSecurityCanOpenPathForReading( device,uid ) ){
 		case 1 : return zuluExit( NULL,8 ) ;
 		case 2 : return zuluExit( NULL,9 ) ;		
 	}
 	
-	switch( zuluCryptCanOpenPathForWriting( device,uid ) ){
+	switch( zuluCryptSecurityCanOpenPathForWriting( device,uid ) ){
 		case 1 : return zuluExit( NULL,8 ) ;
 		case 2 : return zuluExit( NULL,9 ) ;		
 	}
@@ -192,7 +192,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 			/*
 			 * function is defined at "security.c"
 			 */
-			switch( zuluCryptGetPassFromFile( pass,uid,&passphrase ) ){
+			switch( zuluCryptSecurityGetPassFromFile( pass,uid,&passphrase ) ){
 				case 1 : return zuluExit( &mapper,10 ) ; 
 				case 2 : return zuluExit( &mapper,11 ) ; 				
 				case 4 : return zuluExit( &mapper,12 ) ;

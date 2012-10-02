@@ -16,7 +16,7 @@
   *  You should have received a copy of the GNU General Public License
   *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
   */
- 
+  
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <stdio.h>
@@ -34,6 +34,7 @@
 #include "../lib/libzuluCrypt.h"
 #include "../socket/socket.h"
 #include "libzuluCrypt-exe.h"
+#include "security.h"
 
 #ifdef __STDC__
 char * realpath( const char * path, char * resolved_path ) ;
@@ -58,7 +59,7 @@ string_t zuluCryptCreateMapperName( const char * device,const char * mapping_nam
  * tool had reading access to the file.
  * It is defined in security.c
  */
-int zuluCryptGetPassFromFile( const char * path,uid_t uid,string_t * st ) ;
+int zuluCryptSecurityGetPassFromFile( const char * path,uid_t uid,string_t * st ) ;
 
 /*
  * this function is defined in module_system.c

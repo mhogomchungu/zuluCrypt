@@ -153,7 +153,7 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 	 * 
 	 * The importance of the function is explained where it is defined.
 	 */
-	switch( zuluCryptCanOpenPathForWriting( device,uid ) ){
+	switch( zuluCryptSecurityCanOpenPathForWriting( device,uid ) ){
 		case 1 : return zuluExit( 11,stm ) ; break ;
 		case 2 : return zuluExit( 4,stm )  ; break ;		
 	}
@@ -191,7 +191,7 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 			/*
 			 * this function is defined at "security.c"
 			 */
-			switch( zuluCryptGetPassFromFile( existingKey,uid,ek ) ){
+			switch( zuluCryptSecurityGetPassFromFile( existingKey,uid,ek ) ){
 				case 1 : return zuluExit( 8,stm ) ; 
 				case 4 : return zuluExit( 12,stm ) ;
 				case 2 : return zuluExit( 9,stm );				
@@ -203,7 +203,7 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 			/*
 			 * this function is defined at "security.c.c"
 			 */
-			switch( zuluCryptGetPassFromFile( newKey,uid,nk ) ){
+			switch( zuluCryptSecurityGetPassFromFile( newKey,uid,nk ) ){
 				case 1 : return zuluExit( 8,stm ) ; 
 				case 4 : return zuluExit( 12,stm ) ;
 				case 2 : return zuluExit( 9,stm );				

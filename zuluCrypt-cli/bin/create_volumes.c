@@ -104,7 +104,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	 * 
 	 * The importance of the function is explained where it is defined.
 	 */
-	switch( zuluCryptCanOpenPathForWriting( device,uid ) ){
+	switch( zuluCryptSecurityCanOpenPathForWriting( device,uid ) ){
 		case 2 : return zuluExit( 1,stm ) ; break ;
 		case 1 : return zuluExit( 13,stm ); break ;		
 	}
@@ -223,7 +223,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 			/*
 			 * function is defined at "security.c"
 			 */
-			switch( zuluCryptGetPassFromFile( pass,uid,content ) ){
+			switch( zuluCryptSecurityGetPassFromFile( pass,uid,content ) ){
 				case 1 : return zuluExit( 8,stm ) ; 
 				case 4 : return zuluExit( 15,stm ) ;
 				case 2 : return zuluExit( 6,stm ) ;

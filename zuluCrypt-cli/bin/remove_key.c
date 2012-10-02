@@ -99,7 +99,7 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 	 * 
 	 * The importance of the function is explained where it is defined.
 	 */
-	switch( zuluCryptCanOpenPathForWriting( device,uid ) ){
+	switch( zuluCryptSecurityCanOpenPathForWriting( device,uid ) ){
 		case 2 : return zuluExit( 10,stm ); break ;
 		case 1 : return zuluExit( 12,stm ); break ;		
 	}
@@ -135,7 +135,7 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 			/*
 			 * function is defined at security.c"
 			 */
-			switch( zuluCryptGetPassFromFile( keytoremove,uid,pass ) ){
+			switch( zuluCryptSecurityGetPassFromFile( keytoremove,uid,pass ) ){
 				case 1 : return zuluExit( 5,stm )  ; 
 				case 2 : return zuluExit( 7,stm )  ;
 				case 4 : return zuluExit( 13,stm ) ;				

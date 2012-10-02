@@ -71,10 +71,10 @@ static int crypt_opt( const struct_opts * opts,uid_t uid,int opt )
 	if( zuluCryptPathIsNotValid( source ) )
 		return msg( 6 ) ;
 	
-	if( zuluCryptCanOpenPathForWriting( dest,uid ) == 1 )
+	if( zuluCryptSecurityCanOpenPathForWriting( dest,uid ) == 1 )
 		return msg( 10 ) ;		
 	
-	if( zuluCryptCanOpenPathForReading( source,uid ) == 1 )
+	if( zuluCryptSecurityCanOpenPathForReading( source,uid ) == 1 )
 		return msg( 15 ) ;
 	
 	if( i == 1 || type == NULL ){

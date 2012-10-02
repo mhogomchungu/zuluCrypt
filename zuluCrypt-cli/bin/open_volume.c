@@ -118,7 +118,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	 * 
 	 * The importance of the function is explained where it is defined.
 	 */
-	switch( zuluCryptCanOpenPathForReading( dev,uid ) ){
+	switch( zuluCryptSecurityCanOpenPathForReading( dev,uid ) ){
 		case 0 : break ;
 		case 1 : return zuluExit( 20,device,cpoint,stm ) ;
 		default: return zuluExit( 3,device,cpoint,stm ) ;
@@ -132,7 +132,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 			return zuluExit( 13,device,cpoint,stm ) ;
 		
 	if( strstr( mode,"rw" ) != NULL ){
-		switch( zuluCryptCanOpenPathForWriting( dev,uid ) ){
+		switch( zuluCryptSecurityCanOpenPathForWriting( dev,uid ) ){
 			case 0 : break ;
 			case 1 : return zuluExit( 23,device,cpoint,stm ) ;
 			default: return zuluExit( 3,device,cpoint,stm ) ;
@@ -153,7 +153,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		/*
 		 * defined in security.c
 		 */
-		switch( zuluCryptCreateMountPoint( mount_point,uid ) ){
+		switch( zuluCryptSecurityCreateMountPoint( mount_point,uid ) ){
 			case 2 : return zuluExit( 5,device,cpoint,stm ) ;
 			case 1 : return zuluExit( 21,device,cpoint,stm ) ;
 		}
@@ -185,7 +185,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	if( plugin_path != NULL ){
 		
 		if( strstr( plugin_path,"/" ) != NULL )
-			if( zuluCryptCanOpenPathForReading( plugin_path,uid ) != 0 )
+			if( zuluCryptSecurityCanOpenPathForReading( plugin_path,uid ) != 0 )
 				return zuluExit_1( 28,opts,device,cpoint,stm ) ;
 				
 		/*
@@ -224,7 +224,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 			/*
 			 * function is defined at "security.c"
 			 */
-			switch( zuluCryptGetPassFromFile( pass,uid,data ) ){
+			switch( zuluCryptSecurityGetPassFromFile( pass,uid,data ) ){
 				case 1 : return zuluExit_1( 6,opts,device,cpoint,stm ) ;
 				case 2 : return zuluExit_1( 14,opts,device,cpoint,stm ) ; 				
 				case 4 : return zuluExit_1( 22,opts,device,cpoint,stm ) ;
