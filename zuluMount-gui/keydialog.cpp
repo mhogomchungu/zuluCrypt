@@ -25,7 +25,7 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,QString path ) :
 
 	m_ui->lineEditKey->setFocus();
 
-	m_ui->checkBoxOpenReadOnly->setChecked( openvolumereadonly::getOption( QString( "zuluMount-gui ") ) );
+	m_ui->checkBoxOpenReadOnly->setChecked( openvolumereadonly::getOption( QString( "zuluMount-gui" ) ) );
 
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->pbOpen,SIGNAL( clicked() ),this,SLOT( pbOpen() ) ) ;
@@ -56,9 +56,9 @@ void keyDialog::keyTextChanged( QString txt )
 {
 	if( m_ui->rbPlugIn->isChecked() ){
 		if( txt.contains( QString( "/") ) )
-			m_ui->label->setText( tr( "plugin path") );
+			m_ui->label->setText( tr( "plugin path" ) );
 		else
-			m_ui->label->setText( tr( "plugin name") );
+			m_ui->label->setText( tr( "plugin name" ) );
 	}
 }
 
