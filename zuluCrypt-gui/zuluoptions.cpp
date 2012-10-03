@@ -46,12 +46,11 @@ QString zuluOptions::wallet()
 	QString name = QString( f.readAll() );
 	f.close();
 	return name ;
-
 }
 
 QString zuluOptions::walletPath()
 {
-	return QDir::homePath() + QString( "/" ) + QString( ".zuluCrypt/walletName" ) ;
+	return QDir::homePath() + QString( "/.zuluCrypt/walletName" ) ;
 }
 
 bool zuluOptions::walletIsKDEWallet()

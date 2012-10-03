@@ -57,12 +57,9 @@ void MainWindow::pbCancel()
 	this->done();
 }
 
-#include<QDebug>
-
 void MainWindow::done()
 {
 	this->hide();
-	//qDebug() << "exiting";
 	QCoreApplication::exit() ;
 }
 void MainWindow::pbOpen()
