@@ -36,7 +36,8 @@ void mountPartition::checkBoxReadOnlyStateChanged( int state )
 
 void mountPartition::enableAll()
 {
-	m_ui->checkBox->setEnabled( true );
+	if( m_label != QString( "Nil" ) )
+		m_ui->checkBox->setEnabled( true );
 	m_ui->checkBoxMountReadOnly->setEnabled( true );
 	m_ui->labelMountPoint->setEnabled( true );
 	m_ui->lineEdit->setEnabled( true );
