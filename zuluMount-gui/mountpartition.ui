@@ -41,6 +41,12 @@
    <property name="text">
     <string>&amp;mount</string>
    </property>
+   <property name="autoDefault">
+    <bool>true</bool>
+   </property>
+   <property name="default">
+    <bool>true</bool>
+   </property>
   </widget>
   <widget class="QPushButton" name="pbMountFolder">
    <property name="geometry">
@@ -109,6 +115,7 @@
   <tabstop>lineEdit</tabstop>
   <tabstop>pbMountFolder</tabstop>
   <tabstop>checkBox</tabstop>
+  <tabstop>checkBoxMountReadOnly</tabstop>
   <tabstop>pbMount</tabstop>
   <tabstop>pbCancel</tabstop>
  </tabstops>

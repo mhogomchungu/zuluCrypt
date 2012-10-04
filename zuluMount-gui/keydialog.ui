@@ -25,6 +25,9 @@
    <property name="text">
     <string>&amp;open</string>
    </property>
+   <property name="default">
+    <bool>true</bool>
+   </property>
   </widget>
   <widget class="QPushButton" name="pbCancel">
    <property name="geometry">
@@ -201,6 +204,7 @@
   <tabstop>pbkeyFile</tabstop>
   <tabstop>lineEditMountPoint</tabstop>
   <tabstop>pbOpenMountPoint</tabstop>
+  <tabstop>checkBoxOpenReadOnly</tabstop>
   <tabstop>rbKey</tabstop>
   <tabstop>rbPlugIn</tabstop>
   <tabstop>rbKeyFile</tabstop>

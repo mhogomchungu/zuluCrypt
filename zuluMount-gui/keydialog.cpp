@@ -206,8 +206,6 @@ void keyDialog::slotMountComplete( int st,QString m )
 
 void keyDialog::pbOpen()
 {
-	m_working = true ;
-
 	if( m_ui->lineEditKey->text().isEmpty() ){
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR" ),tr( "passphrase field is empty" ) ) ;
@@ -237,6 +235,8 @@ void keyDialog::pbOpen()
 		part->setMode( QString( "rw" )) ;
 	part->setKeySource( m );
 	part->setMountPoint( m_ui->lineEditMountPoint->text().replace( "\"","\"\"\"" ) );
+
+	m_working = true ;
 
 	part->startAction( QString( "cryptoOpen" ) ) ;
 	this->disableAll();

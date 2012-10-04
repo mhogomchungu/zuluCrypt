@@ -10,6 +10,8 @@ mountPartition::mountPartition( QWidget * parent,QTableWidget * table ) :
 	this->setWindowFlags( Qt::Window | Qt::Dialog );
 	this->setFont( parent->font() );
 
+	m_ui->pbMount->setFocus();
+
 	m_ui->checkBoxMountReadOnly->setCheckState( openvolumereadonly::getOption( QString( "zuluMount-gui" ) ) );
 
 	connect( m_ui->pbMount,SIGNAL( clicked() ),this,SLOT(pbMount() ) ) ;
