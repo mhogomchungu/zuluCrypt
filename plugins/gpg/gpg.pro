@@ -12,11 +12,13 @@ TEMPLATE = app
 SOURCES += main.cpp\
 	mainwindow.cpp \
     ../../zuluCrypt-gui/dialogmsg.cpp \
-    ../../zuluCrypt-gui/socketsendkey.cpp
+    ../../zuluCrypt-gui/socketsendkey.cpp \
+    getgpgkey.cpp
 
 HEADERS  += mainwindow.h \
     ../../zuluCrypt-gui/dialogmsg.h \
-    ../../zuluCrypt-gui/socketsendkey.h
+    ../../zuluCrypt-gui/socketsendkey.h \
+    getgpgkey.h
 
 FORMS    += mainwindow.ui ../../zuluCrypt-gui/dialogmsg.ui
 

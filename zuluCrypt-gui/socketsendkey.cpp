@@ -27,6 +27,21 @@ socketSendKey::socketSendKey( QObject * parent,QString sockpath,QByteArray key )
 	connect( this,SIGNAL( finished() ),this,SLOT( deleteLater() ) ) ;
 }
 
+socketSendKey::socketSendKey( QObject * parent )
+{
+	Q_UNUSED( parent ) ;
+}
+
+void socketSendKey::setAddr( QString addr )
+{
+	m_sockpath = addr ;
+}
+
+void socketSendKey::setKey( QByteArray key )
+{
+	m_key = key ;
+}
+
 void socketSendKey::sendKey( void )
 {
 	this->start();
@@ -52,10 +67,18 @@ void socketSendKey::run()
 	}else{
 		emit gotConnected() ;
 		::zuluCryptPluginManagerSendKey( m_connectionHandle,m_key.constData(),m_key.size() ) ;
-		::zuluCryptPluginManagerCloseConnection( m_connectionHandle );
-		m_connectionHandle = 0 ;
 		emit keySent() ;
+		::zuluCryptPluginManagerCloseConnection( m_connectionHandle );
 	}
+
+	emit finished();
+}
+
+void socketSendKey::openAndCloseConnection( QString sockAddr )
+{
+	QByteArray sockpath = sockAddr.toAscii() ;
+	void * connection = ::zuluCryptPluginManagerOpenConnection( sockpath.constData() ) ;
+	::zuluCryptPluginManagerCloseConnection( connection );
 }
 
 void * socketSendKey::zuluCryptPluginManagerOpenConnection( QString sockpath )

@@ -22,6 +22,7 @@
 
 #include <QMainWindow>
 
+#include <QMessageBox>
 #include <QObject>
 #include <QString>
 #include <QByteArray>
@@ -30,9 +31,9 @@
 #include <QDir>
 #include <QProcess>
 #include <QCloseEvent>
-
 #include "../../zuluCrypt-gui/socketsendkey.h"
 #include "../../zuluCrypt-gui/dialogmsg.h"
+#include "getgpgkey.h"
 
 namespace Ui {
 class MainWindow;
@@ -41,19 +42,23 @@ class MainWindow;
 class MainWindow : public QMainWindow
 {
 	Q_OBJECT
-
 public:
 	MainWindow( QWidget * parent = 0 ) ;
 	void SetAddr( QString ) ;
 	~MainWindow();
+signals:
+	void cancel( void ) ;
 private slots:
+	void doneReading( void ) ;
+	void bytesRead( int ) ;
+	void startingToreadData( void ) ;
 	void pbOpen( void ) ;
 	void pbCancel( void ) ;
 	void pbKeyFile( void ) ;
 	void gotConnected( void ) ;
 	void doneWritingData( void ) ;
+	void getGPGKey( bool,QByteArray ) ;
 private:
-	QByteArray getGPGKey( QString EXE,QString key,QString path ) ;
 	void closeEvent( QCloseEvent * );
 	void disableAll( void ) ;
 	void enableAlll( void ) ;
@@ -64,6 +69,8 @@ private:
 	QString m_addr ;
 	QString m_keyFile ;
 	void * m_handle ;
+	bool m_working ;
+	bool m_closeBackEnd ;
 };
 
 #endif // MAINWINDOW_H

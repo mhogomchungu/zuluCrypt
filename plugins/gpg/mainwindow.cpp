@@ -20,17 +20,11 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QDebug>
-#include <fcntl.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <sys/wait.h>
-#include <string.h>
-#include <QDebug>
+
 MainWindow::MainWindow( QWidget * parent ) : QMainWindow( parent ),m_ui( new Ui::MainWindow )
 {
 	m_ui->setupUi( this );
+	this->setFixedSize( this->size() );
 
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Password );
 
@@ -41,13 +35,17 @@ MainWindow::MainWindow( QWidget * parent ) : QMainWindow( parent ),m_ui( new Ui:
 	connect( m_ui->pbOpen,SIGNAL( clicked() ),this,SLOT( pbOpen() ) ) ;
 	connect( m_ui->pbKeyFile,SIGNAL( clicked() ),this,SLOT( pbKeyFile() ) ) ;
 
-	this->SetFocus();
+	m_ui->lineEditKey->setFocus();
+
+	m_working = false ;
+	m_closeBackEnd = true ;
+
+	this->setWindowTitle( QString( "gpg key module" ) );
 }
 
 void MainWindow::SetAddr( QString addr )
 {
 	m_addr = addr ;
-	m_handle = socketSendKey::zuluCryptPluginManagerOpenConnection( m_addr ) ;
 }
 
 void MainWindow::gotConnected()
@@ -66,7 +64,17 @@ void MainWindow::SetFocus()
 
 void MainWindow::pbCancel()
 {
-	this->Exit( 1 );
+	if( m_working ){
+		DialogMsg msg( this ) ;
+		int st = msg.ShowUIYesNoDefaultNo( QString( "warning"),QString( "are you sure you want to terminate this operation prematurely?" )) ;
+
+		if( st == QMessageBox::Yes ){
+			this->enableAlll();
+			emit cancel();
+		}
+	}else{
+		this->Exit( 1 );
+	}
 }
 
 void MainWindow::Exit( int st )
@@ -89,77 +97,43 @@ QString MainWindow::FindGPG()
 	}
 }
 
-QByteArray MainWindow::getGPGKey( QString EXE,QString key,QString path )
+void MainWindow::startingToreadData()
 {
-	int fd_write_to_gpg[2] ;
-	int fd_read_from_gpg[2] ;
+}
 
-	pipe( fd_write_to_gpg );
+void MainWindow::bytesRead( int bytes )
+{
+	QString msg = QString( "number of bytes read from gpg keyfile: " ) + QString::number( bytes ) ;
+	this->setWindowTitle( msg );
+}
 
-	pipe( fd_read_from_gpg ) ;
+void MainWindow::doneReading()
+{
+}
 
-	int pid = fork() ;
-
-	if( pid == -1 ){
-		QByteArray nnggrr ;
-		return nnggrr ;
+void MainWindow::getGPGKey( bool cancelled,QByteArray data )
+{
+	if( cancelled ){
+		m_working = false ;
+		return ;
 	}
 
-	if( pid == 0 ){
-		::close( fd_write_to_gpg[ 1 ] );
-		dup2( fd_read_from_gpg[ 1 ],1 ) ;
-		::close( 2 ) ;
-
-		QByteArray fdb = QString::number( fd_write_to_gpg[ 0 ] ).toAscii() ;
-		const char * fd = fdb.constData() ;
-
-		QDir dir( path ) ;
-		QByteArray patharray = dir.canonicalPath().toAscii() ;
-		const char * pathChar = patharray.constData() ;
-
-		QByteArray exe = EXE.toAscii() ;
-		execl( exe.constData(),
-		       "--bash",
-			"--no-tty",
-			"--yes",
-			"--no-mdc-warning",
-			"--no-verbose",
-			"--passphrase-fd",
-			fd,
-			"-d",
-			pathChar,
-			( void *)0 ) ;
-		_Exit( 1 ); // shouldnt get here
+	if( !data.isEmpty() ){
+		m_ui->pbCancel->setEnabled( false );
+		socketSendKey * s = new socketSendKey( this,m_addr,data ) ;
+		connect( s,SIGNAL( keySent() ),this,SLOT( doneWritingData() ) ) ;
+		s->sendKey();
+		m_closeBackEnd = false ;
 	}else{
-		::close( 2 ) ;
-		::close( fd_write_to_gpg[ 0 ] );
-		::close( fd_read_from_gpg[ 1 ] ) ;
-
-		QByteArray keyData = key.toAscii() ;
-		write( fd_write_to_gpg[ 1 ],keyData.constData(),keyData.size() ) ;
-		::close( fd_write_to_gpg[ 1 ] ) ;
-
-		char * buffer = NULL ;
-		int i = 0 ;
-		char c ;
-
-		while( read( fd_read_from_gpg[ 0 ],&c,1 ) ){
-			buffer = ( char * )realloc( buffer,i + 1 ) ;
-			buffer[ i ] = c ;
-			i++ ;
-		}
-
-		waitpid( pid,NULL,0 ) ;
-
-		QByteArray data = QByteArray( buffer,i ) ;
-
-		free( buffer ) ;
-
-		return data ;
+		DialogMsg msg( this ) ;
+		msg.ShowUIOK( tr( "ERROR" ),tr("could not decrept the gpg keyfile" ) );
+		this->Exit( 1 );
+		m_working = false ;
+		//msg.ShowUIOK( tr( "ERROR" ),tr("could not decrept the gpg keyfile,wrong key?" ) );
+		//this->enableAlll();
+		//m_ui->lineEditKey->setFocus();
+		//this->setWindowTitle( QString( "gpg key module" ) );
 	}
-
-	QByteArray shouldntGetHere ;
-	return shouldntGetHere ;
 }
 
 void MainWindow::pbOpen()
@@ -174,39 +148,25 @@ void MainWindow::pbOpen()
 	if( !QFile::exists( path ) )
 		return msg.ShowUIOK( tr( "ERROR" ),tr( "invalid path to gpg keyfile" ) ) ;
 
-	QString key = m_ui->lineEditKey->text() ;
+	QString exe = this->FindGPG() ;
 
-	this->disableAll();
-	QString EXE = this->FindGPG() ;
-
-	if( EXE.isEmpty() )
+	if( exe.isEmpty() )
 		return msg.ShowUIOK( tr( "ERROR" ),tr( "could not find \"gpg\" executable in \"/usr/local\",\"/usr/bin\" and \"/usr/sbin\"" ) ) ;
 
-	QByteArray data ;
-	if( key.isEmpty() ){
-		QProcess p ;
-		QString exe = QString( "%1 --batch -d \"%2\"" ).arg( EXE ).arg( path ) ;
-		p.start( exe );
-		p.waitForFinished() ;
-		data = p.readAll() ;
-		p.close();
-	}else{
-		data = this->getGPGKey( EXE,m_ui->lineEditKey->text(),m_ui->lineEditKeyFile->text() ) ;
-	}
+	this->disableAll();
+	m_working = true ;
 
-	if( !data.isEmpty() ){
-		socketSendKey::zuluCryptPluginManagerSendKey( m_handle,data ) ;
-		this->doneWritingData();
-	}else{
-		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "ERROR" ),tr("could not decrept the gpg keyfile,wrong key?" ) );
-		this->enableAlll();
-	}
+	getgpgkey * gpg = new getgpgkey( exe,m_ui->lineEditKey->text(),m_ui->lineEditKeyFile->text() ) ;
+	connect( gpg,SIGNAL( key( bool,QByteArray ) ),this,SLOT( getGPGKey( bool,QByteArray ) ) ) ;
+	connect( this,SIGNAL( cancel() ),gpg,SLOT( cancel() ) ) ;
+	connect( gpg,SIGNAL( bytesRead( int ) ),this,SLOT( bytesRead( int ) ) ) ;
+	connect( gpg,SIGNAL( doneReadingFromgpg() ),this,SLOT( doneReading() ) ) ;
+	gpg->start();
 }
 
 void MainWindow::doneWritingData()
 {
-	this->enableAlll();
+	m_working = false ;
 	this->Exit( 0 );
 }
 
@@ -222,7 +182,7 @@ void MainWindow::pbKeyFile()
 void MainWindow::closeEvent( QCloseEvent * e )
 {
 	e->ignore();
-	this->doneWritingData();
+	this->pbCancel();
 }
 
 void MainWindow::disableAll()
@@ -233,7 +193,6 @@ void MainWindow::disableAll()
 	m_ui->lineEditKeyFile->setEnabled( false );
 	m_ui->pbKeyFile->setEnabled( false );
 	m_ui->pbOpen->setEnabled( false );
-	m_ui->pbCancel->setEnabled( false );
 }
 
 void MainWindow::enableAlll()
@@ -249,6 +208,7 @@ void MainWindow::enableAlll()
 
 MainWindow::~MainWindow()
 {
-	socketSendKey::zuluCryptPluginManagerCloseConnection( m_handle ) ;
+	if( m_closeBackEnd )
+		socketSendKey::openAndCloseConnection( m_addr ) ;
 	delete m_ui;
 }

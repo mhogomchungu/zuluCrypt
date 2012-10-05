@@ -34,8 +34,12 @@ class socketSendKey : public QThread
 	Q_OBJECT
 public:
 	socketSendKey( QObject * parent,QString sockpath,QByteArray key );
+	socketSendKey( QObject * parent ) ;
 	~socketSendKey() ;
 	void sendKey( void ) ;
+	void setAddr( QString ) ;
+	void setKey( QByteArray );
+	static void openAndCloseConnection( QString ) ;
 	static void * zuluCryptPluginManagerOpenConnection( QString ) ;
 	static ssize_t zuluCryptPluginManagerSendKey( void * handle,QByteArray ) ;
 	static void zuluCryptPluginManagerCloseConnection( void * handle ) ;
