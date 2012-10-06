@@ -38,14 +38,19 @@ MainWindow::MainWindow( QWidget * parent ) : QMainWindow( parent ),m_ui( new Ui:
 	m_ui->lineEditKey->setFocus();
 
 	m_working = false ;
-	m_closeBackEnd = true ;
 
 	this->setWindowTitle( QString( "gpg key module" ) );
+
+	m_sendKey = new socketSendKey( this ) ;
+	connect( m_sendKey,SIGNAL( keySent() ),this,SLOT( doneWritingData() ) ) ;
 }
 
 void MainWindow::SetAddr( QString addr )
 {
 	m_addr = addr ;
+	m_sendKey->setAddr( m_addr );
+	if( !m_sendKey->openConnection() )
+		this->Exit( 1 );
 }
 
 void MainWindow::gotConnected()
@@ -114,26 +119,19 @@ void MainWindow::doneReading()
 
 void MainWindow::getGPGKey( bool cancelled,QByteArray data )
 {
-	if( cancelled ){
-		m_working = false ;
-		return ;
-	}
+	if( cancelled )
+		return this->Exit( 1 );
 
 	if( !data.isEmpty() ){
-		m_ui->pbCancel->setEnabled( false );
-		socketSendKey * s = new socketSendKey( this,m_addr,data ) ;
-		connect( s,SIGNAL( keySent() ),this,SLOT( doneWritingData() ) ) ;
-		s->sendKey();
-		m_closeBackEnd = false ;
+		this->hide();
+		m_sendKey->sendKey( data );
 	}else{
 		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "ERROR" ),tr("could not decrept the gpg keyfile" ) );
-		this->Exit( 1 );
 		m_working = false ;
-		//msg.ShowUIOK( tr( "ERROR" ),tr("could not decrept the gpg keyfile,wrong key?" ) );
-		//this->enableAlll();
-		//m_ui->lineEditKey->setFocus();
-		//this->setWindowTitle( QString( "gpg key module" ) );
+		msg.ShowUIOK( tr( "ERROR" ),tr("could not decrept the gpg keyfile,wrong key?" ) );
+		this->enableAlll();
+		m_ui->lineEditKey->setFocus();
+		this->setWindowTitle( QString( "gpg key module" ) );
 	}
 }
 
@@ -209,7 +207,5 @@ void MainWindow::enableAlll()
 
 MainWindow::~MainWindow()
 {
-	if( m_closeBackEnd )
-		socketSendKey::openAndCloseConnection( m_addr ) ;
 	delete m_ui;
 }

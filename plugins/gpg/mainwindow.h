@@ -70,7 +70,7 @@ private:
 	QString m_keyFile ;
 	void * m_handle ;
 	bool m_working ;
-	bool m_closeBackEnd ;
+	socketSendKey * m_sendKey ;
 };
 
 #endif // MAINWINDOW_H

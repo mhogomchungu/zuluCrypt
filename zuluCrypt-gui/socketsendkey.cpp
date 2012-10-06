@@ -24,6 +24,7 @@ socketSendKey::socketSendKey( QObject * parent,QString sockpath,QByteArray key )
 	m_connectionHandle = 0 ;
 	m_sockpath = sockpath ;
 	m_key = key ;
+	m_connected = false ;
 	connect( this,SIGNAL( finished() ),this,SLOT( deleteLater() ) ) ;
 }
 
@@ -35,6 +36,26 @@ socketSendKey::socketSendKey( QObject * parent )
 void socketSendKey::setAddr( QString addr )
 {
 	m_sockpath = addr ;
+}
+
+void socketSendKey::sendKey( QByteArray data )
+{
+	m_key = data ;
+	this->start();
+}
+
+bool socketSendKey::openConnection()
+{
+	QByteArray sockpath = m_sockpath.toAscii() ;
+	m_connectionHandle = ::zuluCryptPluginManagerOpenConnection( sockpath.constData() ) ;
+	if( m_connectionHandle ){
+		m_closeConnection = true ;
+		m_connected = true ;
+	}else{
+		m_connected = false ;
+	}
+
+	return m_connected ;
 }
 
 void socketSendKey::setKey( QByteArray key )
@@ -59,19 +80,18 @@ QString socketSendKey::getSocketPath()
 
 void socketSendKey::run()
 {
-	QByteArray sockpath = m_sockpath.toAscii() ;
-	m_connectionHandle = ::zuluCryptPluginManagerOpenConnection( sockpath.constData() ) ;
+	if( !m_connected )
+		this->openConnection() ;
 
-	if( !m_connectionHandle ){
+	if( !m_connected ){
 		emit keyNotSent();
 	}else{
 		emit gotConnected() ;
 		::zuluCryptPluginManagerSendKey( m_connectionHandle,m_key.constData(),m_key.size() ) ;
-		emit keySent() ;
+		m_closeConnection = false ;
 		::zuluCryptPluginManagerCloseConnection( m_connectionHandle );
+		emit keySent() ;
 	}
-
-	emit finished();
 }
 
 void socketSendKey::openAndCloseConnection( QString sockAddr )
@@ -99,4 +119,6 @@ void socketSendKey::zuluCryptPluginManagerCloseConnection( void * handle )
 
 socketSendKey::~socketSendKey()
 {
+	if( m_closeConnection )
+		::zuluCryptPluginManagerCloseConnection( m_connectionHandle );
 }

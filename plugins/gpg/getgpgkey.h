@@ -43,10 +43,7 @@ signals:
 public slots:
 	void cancel( void ) ;
 private:
-	void decrypt( int ) ;
 	void run( void ) ;
-	void decryptWithKey( void ) ;
-	void decryptWithOutKey( void );
 	QString m_gpgExe ;
 	QByteArray m_key ;
 	QString m_keyFile ;

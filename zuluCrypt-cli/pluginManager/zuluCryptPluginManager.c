@@ -220,7 +220,9 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	SocketDelete( &client ) ;
 	SocketDelete( &server ) ;
 
-	ProcessExitStatus( p ) ;
+	/*
+	 *	ProcessExitStatus( p ) ;
+	 */
 	ProcessDelete( &p ) ;
 	
 	StringMultipleDelete( &mpath,&uuid,&id,&path,'\0' ) ;      

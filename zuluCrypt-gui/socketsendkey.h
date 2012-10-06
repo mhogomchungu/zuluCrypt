@@ -36,7 +36,9 @@ public:
 	socketSendKey( QObject * parent,QString sockpath,QByteArray key );
 	socketSendKey( QObject * parent ) ;
 	~socketSendKey() ;
+	bool openConnection( void ) ;
 	void sendKey( void ) ;
+	void sendKey( QByteArray ) ;
 	void setAddr( QString ) ;
 	void setKey( QByteArray );
 	static void openAndCloseConnection( QString ) ;
@@ -45,10 +47,10 @@ public:
 	static void zuluCryptPluginManagerCloseConnection( void * handle ) ;
 	static QString getSocketPath( void ) ;
 signals:
-	emit void gotConnected( void ) ;
-	emit void keySent( void ) ;
-	emit void sendingKey( void ) ;
-	emit void keyNotSent( void ) ;
+	void gotConnected( void ) ;
+	void keySent( void ) ;
+	void sendingKey( void ) ;
+	void keyNotSent( void ) ;
 private:
 	void run( void ) ;
 	bool m_continue ;
@@ -56,6 +58,8 @@ private:
 	int m_count ;
 	void * m_connectionHandle ;
 	QByteArray m_key ;
+	bool m_connected ;
+	bool m_closeConnection ;
 };
 
 #endif // SOCKETSENDKEY_H
