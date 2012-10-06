@@ -70,6 +70,7 @@ void MainWindow::pbCancel()
 
 		if( st == QMessageBox::Yes ){
 			this->enableAlll();
+			m_working = false ;
 			emit cancel();
 		}
 	}else{
