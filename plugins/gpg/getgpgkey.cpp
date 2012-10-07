@@ -21,14 +21,6 @@
 
 #include <sys/types.h>
 #include <signal.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <sys/wait.h>
-#include <string.h>
-#include <QDebug>
 
 getgpgkey::getgpgkey( QString exe,QString key,QString keyFile )
 {
@@ -64,7 +56,8 @@ void getgpgkey::run()
 	exe.closeWriteChannel();
 	exe.waitForFinished();
 	m_key = exe.readAllStandardOutput() ;
-	exe.close();}
+	exe.close();
+}
 
 void getgpgkey::cancel()
 {
