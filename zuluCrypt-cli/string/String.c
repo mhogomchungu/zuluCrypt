@@ -69,10 +69,10 @@ void StringClearDelete( string_t * st )
 {	
 	if( *st == StringVoid )
 		return ;
-	memset( ( *st )->string,'\0',( *st )->size ) ;	
+	memset( ( *st )->string,'\0',( *st )->size ) ;
 	free( ( *st )->string ) ;
 	free( *st ) ;
-	*st = StringVoid ;	
+	*st = StringVoid ;
 }
 
 void StringMultipleDelete( string_t * xt,... )
@@ -155,7 +155,7 @@ string_t String( const char * cstring )
 	
 	if( size < STRING_INIT_SIZE / 2 ){
 		
-		st->string = ( char * ) malloc( sizeof( char ) * STRING_INIT_SIZE ) ;		
+		st->string = ( char * ) malloc( sizeof( char ) * STRING_INIT_SIZE ) ;
 		if ( st->string == NULL )
 			return StringVoid ;
 		memcpy( st->string,cstring,size + 1 ) ;
@@ -262,7 +262,7 @@ ssize_t StringLastIndexOfChar( string_t st,char s )
 		if ( *c == s )
 			return c - d ;
 		
-	return -1 ;	
+	return -1 ;
 }
 
 ssize_t StringLastIndexOfString( string_t st,const char * s ) 
@@ -390,7 +390,7 @@ char * StringCopyChar( string_t st )
 {
 	if( st == StringVoid )
 		return NULL ;
-	return StringLengthCopy( st,st->size ) ;	
+	return StringLengthCopy( st,st->size ) ;
 }
 
 char * StringLengthCopy( string_t st,size_t l )
@@ -409,7 +409,7 @@ char * StringLengthCopy( string_t st,size_t l )
 	
 	*( c + l ) = '\0' ;
 	
-	return c ;	
+	return c ;
 }
 
 int StringEndsWithString( string_t st,const char * s ) 
@@ -455,7 +455,7 @@ const char * StringStringAt( string_t st,size_t p )
 	if( p >= st->size )
 		return NULL ;
 	
-	return st->string + p ;	
+	return st->string + p ;
 }
 
 const char * StringSubChar( string_t st,size_t x,char s )
@@ -473,7 +473,7 @@ static void Stringsrcs__( string_t st,char x,const char * y,size_t p )
 	size_t i ;
 	size_t j ;
 	size_t k ;
-	size_t l = st->size ;	
+	size_t l = st->size ;
 	char * c = st->string ;
 	
 	if( st == StringVoid )
@@ -544,10 +544,10 @@ const char * StringInsertAndDelete( string_t st,size_t x,const char * s )
 	len = strlen( s ) ;
 	c = __StringExpandMemory( st,st->size + len ) ;
 	
-	if( c != NULL )	{
+	if( c != NULL ){
 		st->string = c ;
 		memcpy( st->string + x,s,len + 1 ) ;
-		st->size = x + len ;		
+		st->size = x + len ;
 	}
 	
 	return c ;
@@ -555,7 +555,7 @@ const char * StringInsertAndDelete( string_t st,size_t x,const char * s )
 
 const char * StringPrepend( string_t st,const char * s )
 {
-	char * c ;	
+	char * c ;
 	size_t len = strlen( s ) ;
 	
 	c = __StringExpandMemory( st,st->size + len ) ;
@@ -566,7 +566,7 @@ const char * StringPrepend( string_t st,const char * s )
 		memcpy( st->string,s,len ) ;
 		st->size += len ;
 	}
-	return c ;	
+	return c ;
 }
 
 const char * StringPrependString( string_t st,string_t xt ) 
@@ -723,13 +723,7 @@ static char * StringRS__( string_t st,const char * x,const char * s,size_t p )
 	size_t k = strlen( x ) ;
 	size_t len ;
 	
-	if( st == StringVoid )
-		return NULL ;
-	if( x == NULL )
-		return NULL ;
-	if( s == NULL )
-		return NULL ;
-	if( p >= st->size )
+	if( st == StringVoid || x == NULL || s == NULL || p >= st->size )
 		return NULL ;
 	
 	if( j == k )
@@ -737,7 +731,7 @@ static char * StringRS__( string_t st,const char * x,const char * s,size_t p )
 		while( ( c = strstr( e,x ) ) != NULL )
 		{
 			memcpy( c,s,j ) ;
-			e = e + j ;			
+			e = e + j ;
 		}		
 	}else if( j > k  ){
 		while( ( c = strstr( e,x ) ) != NULL )
@@ -747,10 +741,10 @@ static char * StringRS__( string_t st,const char * x,const char * s,size_t p )
 			if( d != NULL )
 			{	
 				st->string = d ;
-				c = st->string + len ;					
-				memmove( c + j,c + k,st->size - ( c - st->string ) + 1 ) ;				
+				c = st->string + len ;
+				memmove( c + j,c + k,st->size - ( c - st->string ) + 1 ) ;
 				memcpy( c,s,j ) ;
-				st->size = st->size + j - k ;		
+				st->size = st->size + j - k ;
 				e = st->string + len + j ;
 			}
 		}
@@ -758,7 +752,7 @@ static char * StringRS__( string_t st,const char * x,const char * s,size_t p )
 		while( ( c = strstr( e,x ) ) != NULL )
 		{
 			len = c - st->string ; 
-			memmove( c + j,c + k,st->size - ( c - st->string + k ) + 1 ) ;			
+			memmove( c + j,c + k,st->size - ( c - st->string + k ) + 1 ) ;
 			memcpy( c,s,j ) ;
 			if( d != NULL )
 			{
@@ -794,7 +788,7 @@ const char * StringRemoveString( string_t st,const char * s )
 
 static char * StringCRC__( string_t st, char x,char y,size_t p )
 {
-	char * c = st->string - 1 + p ;	
+	char * c = st->string - 1 + p ;
 		
 	if( st == StringVoid )
 		return NULL ;
@@ -831,7 +825,7 @@ string_t StringIntToString( uint64_t z )
 	do{
 		i-- ;
 		buffer[ i ] = z % 10 + '0' ;
-		z = z / 10 ;		
+		z = z / 10 ;
 	}while( z != 0 && i != 0 ) ;
 	
 	return String( buffer + i ) ;
@@ -854,21 +848,15 @@ char * StringIntToString_1( char * x,size_t y,uint64_t z )
 
 int StringEqualString( string_t x,string_t y ) 
 {
-	if( x == StringVoid )
+	if( x == StringVoid || y == StringVoid || x->size != y->size )
 		return 0 ;
-	if( y == StringVoid )
-		return 0 ;
-	if( x->size != y->size )
-		return 0 ;
-	return strcmp( x->string,y->string ) == 0 ? 1 : 0 ;	
+	else
+		return strcmp( x->string,y->string ) == 0 ? 1 : 0 ;
 }
 
 int StringEqual( string_t x,const char * y )
 {
-	if( x == StringVoid )
-		return 0 ;
-	else
-		return strcmp( x->string,y ) == 0 ? 1 : 0 ;	
+	return x == StringVoid ? 0 : strcmp( x->string,y ) == 0 ;
 }
 
 static char * StringICS__( string_t st,char x,const char * s,size_t p )
@@ -897,14 +885,14 @@ static char * StringICS__( string_t st,char x,const char * s,size_t p )
 				pos = f - st->string ;
 				e = __StringExpandMemory( st,st->size + 2 ) ;
 				if( e != NULL )
-				{					
+				{
 					st->string = e ;
 					memmove( e + pos + 1,e + pos,st->size - pos + 1 ) ;
 					*( e + pos ) = x ;
-					f = e + pos + 1 ;					
-					st->size++ ;					
+					f = e + pos + 1 ;
+					st->size++ ;
 				}
-			}			
+			}
 		}
 	}
 	return st->string ;
@@ -945,7 +933,7 @@ string_t StringGetFromTerminal( void )
 			if( d == NULL ){
 				StringDelete( &p ) ;
 				return StringVoid ;
-			}			
+			}
 		}
 	}
 	
@@ -987,7 +975,7 @@ string_t StringGetFromTerminal_1( size_t s )
 			if( d == NULL ){
 				StringDelete( &p ) ;
 				return StringVoid ;
-			}			
+			}
 		}
 	}
 	
@@ -1005,7 +993,7 @@ static inline int __terminalEchoOff( struct termios * old,struct termios * new )
 	if( tcsetattr ( 1,TCSAFLUSH,new ) != 0 )
 		return 1 ;
 	
-	return 0 ;	
+	return 0 ;
 }
 
 int StringSilentlyGetFromTerminal( string_t * q ) 
@@ -1057,35 +1045,47 @@ int StringGetFromFile_3( string_t * str,const char * path,size_t offset,size_t l
 {
 	int fd ;
 	char * c ;
-	size_t size ;
+	ssize_t size ;
 	
 	struct stat xt ;
 	
+	*str = StringVoid ;
+	
 	if( stat( path,&xt ) != 0 )
 		return 1 ;
-	
-	if( length < xt.st_size )
-		size = length ;
-	else
-		size = xt.st_size ;
 		
-	c = ( char * ) malloc( sizeof( char ) * ( size + 1 ) ) ; 
-	
-	if( c == NULL )  
-		return 3 ;
-	
 	if( ( fd = open( path,O_RDONLY ) ) == -1 )
 		return 2 ;	
 	
-	lseek( fd,offset,SEEK_SET ) ;
-	read( fd,c,size ) ;
+	if( lseek( fd,offset,SEEK_SET ) == -1 ){
+		close( fd ) ;
+		return 2 ;
+	}
+	
+	c = ( char * ) malloc( sizeof( char ) * ( length + 1 ) ) ; 
+	
+	if( c == NULL ) {
+		close( fd ) ;
+		return 3 ;
+	}
+	
+	size = read( fd,c,length ) ;
+	
+	if( size <= 0 ){
+		free( c ) ;
+		close( fd ) ;
+		return 2 ;
+	}else{
+		if( ( size_t ) size != length )
+			c = realloc( c,size + 1 ) ;
+	}	
 	
 	close( fd ) ;
 	
 	*( c + size ) = '\0' ;
 	
-	*str = StringInheritWithSize( &c,size ) ;
-	if( *str == NULL )
+	*str = StringInheritWithSize( &c,( size_t )size ) ;
+	if( *str == StringVoid )
 	{
 		free( c ) ;
 		return 3 ;
@@ -1160,7 +1160,7 @@ string_t StringGetFromVirtualFile( const char * path )
 		if( i < size )
 			c[ i ] = ( char ) j ;
 		else{
-			d = c ;			
+			d = c ;
 			size += SIZE ;
 			c = realloc( c,size ) ;
 			if( c == NULL ){
@@ -1174,8 +1174,8 @@ string_t StringGetFromVirtualFile( const char * path )
 	}
 	
 	fclose( f ) ;
-	c = realloc( c,i + 2 ) ;	
-	c[ i + 1 ] = '\0' ;	
+	c = realloc( c,i + 2 ) ;
+	c[ i + 1 ] = '\0' ;
 	
 	return StringInheritWithSize( &c,i ) ;
 }
