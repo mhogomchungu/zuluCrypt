@@ -373,7 +373,7 @@ int ProcessTerminate( process_t p )
 	p->state = CANCELLED ;
 	st = kill( p->pid,SIGTERM ) ;
 	waitpid( p->pid,0,WNOHANG ) ;
-	
+	p->wait_status = 1 ;
 	return st ;
 }
 
@@ -394,7 +394,7 @@ int ProcessKill( process_t p )
 	
 	st = kill( p->pid,SIGKILL ) ;
 	waitpid( p->pid,0,WNOHANG ) ;
-	
+	p->wait_status = 1 ;
 	return st ;	
 }
 

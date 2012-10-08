@@ -143,6 +143,12 @@ static string_t zuluCryptGetDeviceUUID( const char * device )
 	return p ;
 }
 
+static void _killGpgPlugin( string_t plugin_path,process_t process )
+{
+	if( StringContains( plugin_path,"zuluCrypt/gpg" ) )
+		ProcessTerminate( process ) ;
+}
+
 string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * name,uid_t uid,const char * argv )
 {	
 	socket_t server ;
@@ -156,7 +162,7 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	const char * sockpath ;
 	
 	string_t key   = StringVoid ;
-	string_t mpath = StringVoid ;
+	string_t plugin_path = StringVoid ;
 	string_t path  = StringVoid ;
 	string_t id    = StringVoid ;
 	string_t uuid  = StringVoid ;
@@ -170,13 +176,13 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		/*
 		 * ZULUCRYPTpluginPath is set at config time at it equals $prefix/lib(64)/zuluCrypt/
 		 */
-		mpath = String( ZULUCRYPTpluginPath ) ;
-		StringAppend( mpath,name ) ;
+		plugin_path = String( ZULUCRYPTpluginPath ) ;
+		StringAppend( plugin_path,name ) ;
 	}else{
 		/*
 		 * module has a backslash, assume its path to where a module is located
 		 */
-		mpath = String( name ) ;
+		plugin_path = String( name ) ;
 	}
 	
 	path = String( pass->pw_dir ) ;
@@ -192,7 +198,7 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	
 	uuid = zuluCryptGetDeviceUUID( device ) ;
 
-	p = Process( StringContent( mpath ) ) ;
+	p = Process( StringContent( plugin_path ) ) ;
 
 	ProcessSetOptionUser( p,uid ) ;
 	ProcessSetArgumentList( p,device,StringContent( uuid ),sockpath,CHARMAXKEYZISE,argv,'\0' ) ;
@@ -210,22 +216,24 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	client = zuluCryptSocketAccept( server ) ;
 	
 	SocketClose( server ) ;
+	SocketDelete( &server ) ;
 	
 	i = SocketGetData( client,&buffer,INTMAXKEYZISE ) ;
+	
 	SocketClose( client ) ;
-	
-	if( i > 0 )
-		key = StringInheritWithSize( &buffer,i ) ;
-	
 	SocketDelete( &client ) ;
-	SocketDelete( &server ) ;
-
+	
+	key = StringInheritWithSize( &buffer,i ) ;
+	
 	/*
-	 *	ProcessExitStatus( p ) ;
+	 * for reasons currently unknown to me,the gpg plugin doesnt always exit,it hangs tying up cpu circles.
+	 * send it a sigterm after it is done sending its key to make sure it exits.
 	 */
+	_killGpgPlugin( plugin_path,p ) ;
+	
 	ProcessDelete( &p ) ;
 	
-	StringMultipleDelete( &mpath,&uuid,&id,&path,'\0' ) ;      
+	StringMultipleDelete( &plugin_path,&uuid,&id,&path,'\0' ) ;      
 	
 	return key ;
 }

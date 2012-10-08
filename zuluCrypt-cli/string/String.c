@@ -213,7 +213,10 @@ string_t StringInheritWithSize( char ** data,size_t s )
 {
 	string_t st ;
 	
-	if( *data == NULL )
+	if( data == NULL )
+		return StringVoid ;
+	
+	if( *data == NULL || s == 0 )
 		return StringVoid ;
 	
 	st = ( string_t ) malloc ( sizeof( struct StringType ) ) ;
