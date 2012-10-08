@@ -19,7 +19,7 @@
 
 #include "socket.h"
 
-struct Socket_t
+struct SocketType_t
 {
 	int socket_server ;
 	int type ;
@@ -32,24 +32,26 @@ struct Socket_t
 	struct sockaddr_in * net ;
 };
 
-socket_t SocketLocal( const char * address )
+socket_t Socket( int domain,int type,int protocol ) 
 {
-	socket_t s = Socket( "local" ) ;
-	SocketSetHostAddress( s,address ) ;
-	return s ;
-}
-
-socket_t Socket( const char * domain ) 
-{
-	socket_t s = ( socket_t ) malloc( sizeof( struct Socket_t ) ) ;
+	socket_t s ;
+	int fd = socket( domain,type,protocol ) ;	
+	
+	if( fd == -1 ){
+		close( fd ) ;
+		return SocketVoid ;
+	}
+	
+	s = ( socket_t ) malloc( sizeof( struct SocketType_t ) ) ;
 	
 	if( s == NULL )
 		return SocketVoid ;
 	
-	if( strcmp( domain,"local" ) == 0 ){		
+	if( domain == AF_UNIX ){		
 		s->local = ( struct sockaddr_un * ) malloc( sizeof( struct sockaddr_un ) ) ;
 		if( s->local == NULL ){
 			free( s ) ;
+			close( fd ) ;			
 			return SocketVoid ;
 		}else{
 			s->domain = AF_UNIX ;
@@ -57,10 +59,11 @@ socket_t Socket( const char * domain )
 			memset( s->local,'\0',s->size ) ;
 			s->local->sun_family = AF_UNIX ;
 		}
-	}else if( strcmp( domain,"net" ) == 0 ){
+	}else if( domain == AF_INET ){
 		s->net = ( struct sockaddr_in  * ) malloc( sizeof( struct sockaddr_in ) ) ;
 		if( s->net == NULL ){
 			free( s ) ;
+			close( fd ) ;			
 			return SocketVoid ;
 		}else{
 			s->domain = AF_INET ;
@@ -69,28 +72,18 @@ socket_t Socket( const char * domain )
 			s->net->sin_family = AF_INET ;
 		}
 	}else{
+		close( fd ) ;		
 		free( s ) ;
 		return SocketVoid ;
 	}
 	
-	s->type = SOCK_STREAM ;
-	s->protocol = 0 ;
+	s->domain = domain ;
+	s->type = type ;
+	s->protocol = protocol ;
 	s->cmax = 1 ;
 	s->socket_server = 0 ;
-	s->fd = socket( s->domain,s->type,s->protocol ) ;
+	s->fd = fd ;	
 	return s ;	
-}
-
-void SocketSetOptionType( socket_t s,int option ) 
-{
-	if( s != SocketVoid )
-		s->type = option ;
-}
-
-void SocketSetProtocolType( socket_t s,int protocol ) 
-{
-	if( s != SocketVoid )
-		s->protocol = protocol ;
 }
 
 void SocketDelete( socket_t * x )
@@ -114,13 +107,6 @@ void SocketDelete( socket_t * x )
 	free( s ) ;
 }
 
-void SocketSetPortNumber( socket_t s,int port ) 
-{
-	if( s != SocketVoid )
-		if( s->domain == AF_INET )
-			s->net->sin_port = htons( port );
-}
-
 #ifdef __STDC__
 struct addrinfo {
 	int     ai_flags;
@@ -137,23 +123,65 @@ int getaddrinfo( const char *,const char *,const struct addrinfo *,struct addrin
 void freeaddrinfo( struct addrinfo * );
 #endif
 
-void SocketSetHostAddress( socket_t s,const char * address ) 
+socket_t SocketLocalWithOptions( const char * address,int type,int protocol ) 
 {
-	size_t size ;
+	socket_t s = Socket( AF_UNIX,type,protocol ) ;
+	if( s != SocketVoid ){
+		size_t size = sizeof( s->local->sun_path ) ;
+		strncpy( s->local->sun_path,address,size ) ;
+		s->local->sun_path[ size - 1 ] = '\0' ;
+	}
+	return s ;
+}
+
+socket_t SocketLocal( const char * address )
+{
+	return SocketLocalWithOptions( address,SOCK_STREAM,0 ) ;
+}
+
+socket_t SocketNetByNameWithOptions( const char * address,int port,int type,int protocol ) 
+{
+	socket_t s ; 
+	struct addrinfo hint ;
 	struct addrinfo * addr ;
 	struct sockaddr_in * addr_in ;
 	
-	if( s->domain == AF_UNIX ){
-		size = sizeof( s->local->sun_path ) ;
-		strncpy( s->local->sun_path,address,size ) ;
-		s->local->sun_path[ size - 1 ] = '\0' ;
-	}else{
-		if( getaddrinfo( address,NULL,NULL,&addr ) == 0 ){
-			addr_in = ( struct sockaddr_in * ) addr->ai_addr ;
-			s->net->sin_addr.s_addr = addr_in->sin_addr.s_addr ;
-			freeaddrinfo( addr ) ;
-		}
+	memset ( &hint,0,sizeof( hint ) ) ;
+	hint.ai_family = AF_INET ;
+	hint.ai_socktype = type ;
+	
+	if( getaddrinfo( address,NULL,&hint,&addr ) != 0 )
+		return SocketVoid ;
+	
+	s = Socket( AF_INET,type,protocol ) ;
+	
+	if( s == SocketVoid )
+		return SocketVoid ;
+	
+	addr_in = ( struct sockaddr_in * ) addr->ai_addr ;
+	memcpy( &s->net->sin_addr,&addr_in->sin_addr,sizeof( addr_in->sin_addr ) ) ;
+	
+	freeaddrinfo( addr ) ;
+	
+	s->net->sin_port = htons( port );
+	return s ;
+}
+
+socket_t SocketNetByName( const char * address,int port )
+{
+	return SocketNetByNameWithOptions( address,port,SOCK_STREAM,0 ) ;
+}
+
+int inet_aton( const char *,struct in_addr * ) ;
+
+socket_t SocketNetByIPAddress( const char * address,int port ) 
+{	
+	socket_t s = Socket( AF_INET,SOCK_STREAM,0 ) ;
+	if( s != SocketVoid ){
+		inet_aton( address,&s->net->sin_addr ) ;
+		s->net->sin_port = htons( port );
 	}
+	return s ;
 }
 
 const char * SocketAddress( socket_t s )
@@ -165,13 +193,6 @@ const char * SocketAddress( socket_t s )
 		return s->local->sun_path ;
 	else
 		return inet_ntoa( s->net->sin_addr ) ;
-}
-
-void SocketSetHostIPAddress( socket_t s,const char * address ) 
-{
-	if( s != SocketVoid )
-		if( s->domain == AF_INET )
-			s->net->sin_addr.s_addr = inet_addr( address ) ;
 }
 
 int SocketBind( socket_t s )
@@ -189,12 +210,12 @@ int SocketBind( socket_t s )
 
 socket_t SocketAccept( socket_t s ) 
 {
-	socket_t x = ( socket_t ) malloc( sizeof( struct Socket_t ) ) ;
+	socket_t x = ( socket_t ) malloc( sizeof( struct SocketType_t ) ) ;
 	
 	if( x == NULL )
 		return SocketVoid ;
 	
-	memset( x,'\0',sizeof( struct Socket_t ) ) ;
+	memset( x,'\0',sizeof( struct SocketType_t ) ) ;
 	
 	if( s->domain == AF_UNIX ){
 		x->local = ( struct sockaddr_un * ) malloc( sizeof( struct sockaddr_un ) ) ;
@@ -225,7 +246,7 @@ socket_t SocketAccept( socket_t s )
 			free( x ) ;
 			x = SocketVoid ;
 		}else{
-			memset( x->local,'\0',sizeof( struct sockaddr_in ) ) ;	
+			memset( x->net,'\0',sizeof( struct sockaddr_in ) ) ; 
 			x->fd = accept( s->fd,( struct sockaddr * )x->net,&x->size ) ;
 			if( x->fd == -1 ){
 				free( x->net ) ;
@@ -265,64 +286,131 @@ int SocketConnect( socket_t s )
 
 int SocketListen( socket_t s ) 
 {
-	if( s == SocketVoid )
-		return -1 ;
-	return listen( s->fd,s->cmax ) ;
+	return s == SocketVoid ? -1 : listen( s->fd,s->cmax ) ;
 }
 
-#define BUFFSIZE 64
-size_t SocketGetData( socket_t s,char ** buffer,size_t len ) 
+ssize_t SocketGetData_2( socket_t s,char * buffer,size_t len ) 
+{	
+	return s == SocketVoid ? -1 : read( s->fd,buffer,len ) ; 
+}
+
+#define BUFFSIZE 32
+#define BUFFERINIT 64
+#define FACTOR 2
+
+static inline char * __expandBuffer( char * buffer,size_t new_size,size_t * buff_size )
+{
+	if( new_size >= *buff_size ){
+		*buff_size = *buff_size * FACTOR ;
+		return realloc( buffer,*buff_size ) ;
+	}else{
+		return buffer ;
+	}
+}
+
+size_t SocketGetData_1( socket_t s,char ** e ) 
 {
 	int fd ;
-	size_t i ;
-	size_t buffCount = BUFFSIZE ;
+	ssize_t result ;
+	size_t total = 0 ;
+	size_t buff_size = BUFFERINIT ;
 	
-	char * c ;
-	char * d = NULL ;
+	char buffer[ BUFFSIZE ] ;
+	char * d ;
+	char * f ;
 	
 	if( s == SocketVoid )
 		return 0 ;
 	
+	f = ( char * ) malloc( sizeof( char ) * buff_size ) ;
+	
+	if( f == NULL )
+		return 0 ;
+	
 	fd = s->fd ;
 	
-	c = ( char * ) malloc( sizeof( char ) * BUFFSIZE ) ;
-	
-	if( c == NULL )
-		return -1 ;
-	
-	for( i = 0 ; i < len ; i++ ){
-	
-		if( i == buffCount ){
-			
-			buffCount += BUFFSIZE ;
-			d = realloc( c,buffCount ) ;
-			
-			if( d == NULL ){
-				free( c ) ;
-				return 0 ;
-			}else{
-				c = d ;
-			}
+	while( 1 ){
+		result = read( fd,buffer,BUFFSIZE ) ;
+		
+		if( result <= 0 )
+			break ;
+		
+		d = __expandBuffer( f,total + result,&buff_size ) ;
+		
+		if( d == NULL ){
+			free( f ) ;
+			return 0 ;
 		}
 		
-		if( read( fd,c + i,1 ) <= 0 )
-			break ;
-	}	
-	
-	if( i > 0 ){
-		d = realloc( c,i + 1 ) ;
-		if( d == NULL ){
-			free( c ) ;
-			return 0 ;
-		}else{
-			*( d + i ) = '\0' ;
-			*buffer = d ;
-		}
-	}else{
-		free( c ) ;
+		f = d ;
+		
+		memcpy( f + total,buffer,result ) ;
+		total = total + result ;		
 	}
+	
+	if( total ){
+		f[ total ] = '\0' ;
+		*e = f ;
+	}else{
+		free( f ) ;
+	}
+	
+	return total ;
+}
 
-	return i ;
+size_t SocketGetData( socket_t s,char ** e,size_t len ) 
+{
+	int fd ;
+	ssize_t result ;
+	size_t total = 0 ;
+	size_t buff_size = BUFFERINIT ;
+	
+	char buffer[ BUFFSIZE ] ;
+	char * d ;
+	char * f ;
+	
+	if( s == SocketVoid )
+		return 0 ;
+
+	f = ( char * ) malloc( sizeof( char ) * buff_size ) ;
+	
+	if( f == NULL )
+		return 0 ;
+	
+	fd = s->fd ;
+	
+	while( 1 ){
+		result = read( fd,buffer,BUFFSIZE ) ;
+		
+		if( result <= 0 )
+			break ;
+		
+		d = __expandBuffer( f,total + result,&buff_size ) ;
+		
+		if( d == NULL ){
+			free( f ) ;
+			return 0 ;
+		}
+		
+		f = d ;
+		
+		memcpy( f + total,buffer,result ) ;
+		total = total + result ;
+		
+		if( total >= len ){
+			total = len ;
+			break ;
+		}
+	}
+	
+	if( total ){
+		f[ total ] = '\0' ;
+		*e = f ;
+	}else{
+		free( f ) ;
+	}
+	
+	return total ;
 }
 
 ssize_t SocketSendData( socket_t s,const char * buffer,size_t len ) 

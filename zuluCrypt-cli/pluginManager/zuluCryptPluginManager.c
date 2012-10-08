@@ -63,7 +63,7 @@ size_t zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid
 {	
 	size_t dataLength = 0 ;
 	char * buffer ;
-	
+
 	socket_t client ;
 	
 	socket_t server = SocketLocal( sockpath ) ;
@@ -149,7 +149,7 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	socket_t client ;
 	
 	char * buffer ;
-	
+
 	process_t p ;
 	
 	int i ;
