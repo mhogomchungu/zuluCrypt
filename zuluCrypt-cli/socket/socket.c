@@ -141,7 +141,7 @@ socket_t SocketLocal( const char * address )
 
 socket_t SocketNetByNameWithOptions( const char * address,int port,int type,int protocol ) 
 {
-	socket_t s ; 
+	socket_t s = SocketVoid ; 
 	struct addrinfo hint ;
 	struct addrinfo * addr ;
 	struct sockaddr_in * addr_in ;
@@ -150,20 +150,19 @@ socket_t SocketNetByNameWithOptions( const char * address,int port,int type,int 
 	hint.ai_family = AF_INET ;
 	hint.ai_socktype = type ;
 	
-	if( getaddrinfo( address,NULL,&hint,&addr ) != 0 )
-		return SocketVoid ;
+	if( getaddrinfo( address,NULL,&hint,&addr ) == 0 ){
+			
+		s = Socket( AF_INET,type,protocol ) ;
 	
-	s = Socket( AF_INET,type,protocol ) ;
+		if( s != SocketVoid ){
+			addr_in = ( struct sockaddr_in * ) addr->ai_addr ;
+			memcpy( &s->net->sin_addr,&addr_in->sin_addr,sizeof( addr_in->sin_addr ) ) ;
+			s->net->sin_port = htons( port );
+		}
+		
+		freeaddrinfo( addr ) ;
+	}
 	
-	if( s == SocketVoid )
-		return SocketVoid ;
-	
-	addr_in = ( struct sockaddr_in * ) addr->ai_addr ;
-	memcpy( &s->net->sin_addr,&addr_in->sin_addr,sizeof( addr_in->sin_addr ) ) ;
-	
-	freeaddrinfo( addr ) ;
-	
-	s->net->sin_port = htons( port );
 	return s ;
 }
 
@@ -418,7 +417,7 @@ ssize_t SocketSendData( socket_t s,const char * buffer,size_t len )
 	size_t sent = 0 ;
 	size_t remain = len ;
 	
-	if( s == SocketVoid || buffer == NULL )
+	if( s == SocketVoid || buffer == NULL || len == 0 )
 		return -1 ;
 	do{
 		sent = sent + write( s->fd,buffer + sent,remain ) ;
