@@ -37,6 +37,7 @@ public:
 	socketSendKey( QObject * parent ) ;
 	~socketSendKey() ;
 	bool openConnection( void ) ;
+	void closeConnection( void ) ;
 	void sendKey( void ) ;
 	void sendKey( QByteArray ) ;
 	void setAddr( QString ) ;

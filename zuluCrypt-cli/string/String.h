@@ -308,7 +308,7 @@ const char * StringStringAt( string_t st,size_t p ) ;
  * 
  * return 0 if it doesnt * 
  */
-int StringEndsWithString( string_t st,const char * s ) ;
+int StringEndsWith( string_t st,const char * s ) ;
 
 /*
  * check to see if the string handled by handle st starts with a string s

@@ -85,8 +85,12 @@ void MainWindow::pbCancel()
 
 void MainWindow::Exit( int st )
 {
+	Q_UNUSED( st ) ;
 	this->hide();
-	QCoreApplication::exit( st );
+	/*
+	 * just close the connection, zuluCrypt-cli will SIGTERM us
+	 */
+	m_sendKey->closeConnection();
 }
 
 QString MainWindow::FindGPG()

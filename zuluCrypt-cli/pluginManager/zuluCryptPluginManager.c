@@ -85,8 +85,7 @@ size_t zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid
 	SocketDelete( &server ) ;
 	SocketDelete( &client ) ;
 	
-	if( dataLength > 0 )
-		*key = StringInheritWithSize( &buffer,dataLength ) ;
+	*key = StringInheritWithSize( &buffer,dataLength ) ;
 	
 	return dataLength ;
 }
@@ -141,12 +140,6 @@ static string_t zuluCryptGetDeviceUUID( const char * device )
 	blkid_free_probe( blkid );
 	
 	return p ;
-}
-
-static void _killGpgPlugin( string_t plugin_path,process_t process )
-{
-	if( StringContains( plugin_path,"zuluCrypt/gpg" ) )
-		ProcessTerminate( process ) ;
 }
 
 string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * name,uid_t uid,const char * argv )
@@ -229,7 +222,8 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	 * for reasons currently unknown to me,the gpg plugin doesnt always exit,it hangs tying up cpu circles.
 	 * send it a sigterm after it is done sending its key to make sure it exits.
 	 */
-	_killGpgPlugin( plugin_path,p ) ;
+	if( StringEqual( plugin_path,ZULUCRYPTpluginPath"gpg" ) )
+		ProcessTerminate( p ) ;
 	
 	ProcessDelete( &p ) ;
 	

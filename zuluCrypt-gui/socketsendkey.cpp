@@ -38,6 +38,12 @@ void socketSendKey::setAddr( QString addr )
 	m_sockpath = addr ;
 }
 
+void socketSendKey::closeConnection()
+{
+	m_closeConnection = false ;
+	::zuluCryptPluginManagerCloseConnection( m_connectionHandle );
+}
+
 void socketSendKey::sendKey( QByteArray data )
 {
 	m_key = data ;

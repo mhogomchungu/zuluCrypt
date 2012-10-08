@@ -415,16 +415,16 @@ char * StringLengthCopy( string_t st,size_t l )
 	return c ;
 }
 
-int StringEndsWithString( string_t st,const char * s ) 
+int StringEndsWith( string_t st,const char * s ) 
 {
 	size_t j ;
 		
 	if( st == StringVoid || s == NULL )
 		return 0 ;
 	
-	j = strlen(s) ;
+	j = strlen( s ) ;
 	
-	return strncmp( st->string + st->size - j,s,j ) == 0 ? 1 : 0 ;	
+	return strncmp( st->string + st->size - j,s,j ) == 0 ? 1 : 0 ;
 }
 
 int StringStartsWith( string_t st,const char * s ) 
