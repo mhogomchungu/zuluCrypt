@@ -158,7 +158,7 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 		case 2 : return zuluExit( 4,stm )  ; break ;		
 	}
 	
-	if( zuluCryptVolumeIsLuks( device ) == 1 )
+	if( zuluCryptVolumeIsNotLuks( device ) )
 		return zuluExit_1( 3,device,stm ) ;
 	
 	switch( zuluCryptCheckEmptySlots( device ) ){

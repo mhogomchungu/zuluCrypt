@@ -30,7 +30,7 @@ int zuluCryptRemoveKey( const char * device ,const char * pass,size_t pass_size 
 	int slot ;
 	struct crypt_device * cd;
 	
-	if( zuluCryptVolumeIsLuks( device ) != 0 )
+	if( zuluCryptVolumeIsNotLuks( device ) )
 		return 1 ;      
 	
 	if( crypt_init( &cd,device ) != 0 )

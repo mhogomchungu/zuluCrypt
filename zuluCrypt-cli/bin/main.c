@@ -19,6 +19,7 @@
 
 #include "includes.h"
 #include "../lib/includes.h"
+#include "../lib/libzuluCrypt.h"
 
 static int zuluCryptEXEGetDevice( const char * device )
 {
@@ -37,7 +38,7 @@ static int zuluCryptEXECheckIfLuks( const char * device )
 {
 	int status = zuluCryptVolumeIsLuks( device ) ;
 	
-	if( status == 0 )
+	if( status )
 		printf( "\"%s\" is a luks device\n",device ) ;
 	else
 		printf( "\"%s\" is not a luks device\n",device ) ;

@@ -55,7 +55,7 @@ static int zuluExit( int st,struct crypt_device * cd )
 
 static int save_header( struct crypt_device * cd,const char * device,const char * path,uid_t uid )
 {
-	if( zuluCryptVolumeIsLuks( device ) != 0 )
+	if( zuluCryptVolumeIsNotLuks( device ) )
 		return zuluExit( 2,cd ) ;
 	
 	if( crypt_header_backup( cd,NULL,path ) == 0 ){

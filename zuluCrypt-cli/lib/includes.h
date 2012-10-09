@@ -69,3 +69,8 @@ int zuluCryptPartitionIsMounted( const char * device ) ;
  *  that corresponds to device "device".  
  */
 string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos ) ;
+
+/*
+ * this function is defined in is_luks.c
+ */
+int zuluCryptVolumeIsNotLuks( const char * dev ) ;

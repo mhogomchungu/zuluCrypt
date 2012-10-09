@@ -29,7 +29,7 @@ int zuluCryptAddKey( const char * device,const char * existingkey,size_t existin
 {
 	struct crypt_device * cd;
 	
-	if( zuluCryptVolumeIsLuks( device ) != 0 )
+	if( zuluCryptVolumeIsNotLuks( device ) )
 		return 3 ;
 		
 	if( crypt_init( &cd,device ) != 0 )

@@ -34,8 +34,8 @@ const char * zuluCryptVersion ( void) ;
  * 
  * input : path to a partition/file to be checked if it is a luks device
  * return values:
- *	 0 - the device is a cryptsetup device of type "luks"
- * 	 1 - the device is not a crptsetup device of type "luks".
+ *	 1 - the device is a cryptsetup device of type "luks"
+ * 	 0 - the device is not a crptsetup device of type "luks".
  */
 int zuluCryptVolumeIsLuks( const char * device ) ;
 
