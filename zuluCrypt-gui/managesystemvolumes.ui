@@ -9,32 +9,19 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>522</width>
+    <width>631</width>
     <height>314</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>manage system volumes</string>
   </property>
-  <widget class="QPushButton" name="pbAdd">
-   <property name="geometry">
-    <rect>
-     <x>180</x>
-     <y>280</y>
-     <width>81</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>&amp;add</string>
-   </property>
-  </widget>
   <widget class="QPushButton" name="pbDone">
    <property name="geometry">
     <rect>
-     <x>260</x>
+     <x>360</x>
      <y>280</y>
-     <width>81</width>
+     <width>91</width>
      <height>31</height>
     </rect>
    </property>
@@ -42,56 +29,30 @@
     <string>&amp;done</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="volumePath">
-   <property name="geometry">
-    <rect>
-     <x>110</x>
-     <y>250</y>
-     <width>321</width>
-     <height>31</height>
-    </rect>
-   </property>
-  </widget>
   <widget class="QPushButton" name="pbFile">
    <property name="geometry">
     <rect>
-     <x>430</x>
-     <y>250</y>
-     <width>31</width>
+     <x>180</x>
+     <y>280</y>
+     <width>91</width>
      <height>31</height>
     </rect>
    </property>
    <property name="text">
-    <string/>
+    <string>add fi&amp;le</string>
    </property>
   </widget>
   <widget class="QPushButton" name="pbPartition">
    <property name="geometry">
     <rect>
-     <x>460</x>
-     <y>250</y>
-     <width>31</width>
+     <x>270</x>
+     <y>280</y>
+     <width>91</width>
      <height>31</height>
     </rect>
    </property>
    <property name="text">
-    <string/>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>250</y>
-     <width>111</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>volume path: </string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    <string>add dev&amp;ice</string>
    </property>
   </widget>
   <widget class="QTableWidget" name="tableWidget">
@@ -99,8 +60,8 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>501</width>
-     <height>241</height>
+     <width>611</width>
+     <height>271</height>
     </rect>
    </property>
    <property name="editTriggers">

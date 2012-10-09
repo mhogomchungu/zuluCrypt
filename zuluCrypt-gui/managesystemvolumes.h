@@ -23,7 +23,7 @@ class manageSystemVolumes;
 
 class manageSystemVolumes : public QDialog
 {
-	Q_OBJECT	
+	Q_OBJECT
 public:
 	explicit manageSystemVolumes( QWidget * parent = 0 );
 	~manageSystemVolumes();
@@ -32,7 +32,6 @@ public:
 signals:
 	void HideUISignal( void );
 private slots:
-	void pbAdd( void ) ;
 	void pbDone( void ) ;
 	void pbFile( void ) ;
 	void pbPartition( void ) ;
@@ -44,7 +43,6 @@ private slots:
 	void contextMenu( void ) ;
 	void setFocusTableWidget( void );
 private:
-	void highlightRow( int,bool ) ;
 	void readSystemPartitions( void ) ;
 	void writeSystemPartitions( void ) ;
 

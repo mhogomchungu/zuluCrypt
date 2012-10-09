@@ -129,7 +129,7 @@ void managedevicenames::itemClicked( QTableWidgetItem * current,bool clicked )
 	m.addSeparator() ;
 	m.addAction( tr( "cancel" ) );
 
-	if( clicked == true )
+	if( clicked )
 		m.exec( QCursor::pos() ) ;
 	else{
 		int x = m_ui->tableWidget->columnWidth( 0 ) ;

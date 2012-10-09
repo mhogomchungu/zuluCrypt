@@ -11,10 +11,8 @@ manageSystemVolumes::manageSystemVolumes( QWidget * parent ) :
 	this->setFixedSize( this->size() );
 	this->setWindowFlags( Qt::Window | Qt::Dialog );
 
-	m_ui->tableWidget->setColumnWidth( 0,505 );
-
-	m_ui->pbPartition->setIcon( QIcon( QString( ":/partition.png" ) ) );
-	m_ui->pbFile->setIcon( QIcon( QString( ":/file.png" ) ) );
+	//m_ui->pbPartition->setIcon( QIcon( QString( ":/partition.png" ) ) );
+	//m_ui->pbFile->setIcon( QIcon( QString( ":/file.png" ) ) );
 
 	m_ac = new QAction( this ) ;
 	QList<QKeySequence> keys ;
@@ -25,7 +23,6 @@ manageSystemVolumes::manageSystemVolumes( QWidget * parent ) :
 	this->addAction( m_ac );
 
 	connect( m_ac,SIGNAL( triggered() ),this,SLOT( contextMenu() ) ) ;
-	connect( m_ui->pbAdd,SIGNAL( clicked() ),this,SLOT( pbAdd() ) ) ;
 	connect( m_ui->pbDone,SIGNAL( clicked() ),this,SLOT( pbDone() ) ) ;
 	connect( m_ui->pbFile,SIGNAL( clicked() ),this,SLOT( pbFile() ) ) ;
 	connect( m_ui->pbPartition,SIGNAL( clicked() ),this,SLOT( pbPartition() ) ) ;
@@ -37,76 +34,51 @@ manageSystemVolumes::manageSystemVolumes( QWidget * parent ) :
 
 void manageSystemVolumes::currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous )
 {
-	if( current != NULL )
-		this->highlightRow( current->row(),true ) ;
-	if( previous != NULL )
-		if( current != NULL )
-			if( previous->row() != current->row() )
-				this->highlightRow( previous->row(),false ) ;
-}
-
-void manageSystemVolumes::highlightRow( int row,bool b )
-{
-	m_ui->tableWidget->item( row,0 )->setSelected( b );
-	if( b == true )
-		m_ui->tableWidget->setCurrentCell( row,0 );
+	tablewidget::selectTableRow( current,previous ) ;
 }
 
 void manageSystemVolumes::readSystemPartitions()
 {
 	QFile file( QString( "/etc/zuluCrypttab" ) ) ;
-	if( file.open( QIODevice::ReadOnly ) == false )
+	if( !file.open( QIODevice::ReadOnly ) )
 		return ;
 
 	QStringList entries = QString( file.readAll() ).split( '\n' ) ;
 
-	int p ;
-	while( true ){
-		p = entries.indexOf( QString( "" ) ) ;
-		if( p == -1 )
-			break ;
-		entries.removeAt( p );
-	}
+	file.close();
+
+	if( entries.isEmpty() )
+		return ;
 
 	entries.removeDuplicates() ;
 
-	if ( entries.size() > 0 )
-		this->addItemsToTable( entries );
+	int j = entries.size() ;
+
+	for( int i = 0 ; i < j ; i++ )
+		this->addItemsToTable( entries.at( i ) );
 }
 
 void manageSystemVolumes::writeSystemPartitions()
 {
 	QFile file( QString( "/etc/zuluCrypttab") ) ;
-	if( file.open( QIODevice::WriteOnly | QIODevice::Truncate ) == false ){
+
+	if( !file.open( QIODevice::WriteOnly | QIODevice::Truncate ) ){
 
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR" ),tr( "could not open \"/etc/zuluCrypttab\" for writing" ) );
 	}else{
+		QTableWidgetItem * it ;
+		QTableWidget * table = m_ui->tableWidget ;
 		int j = m_ui->tableWidget->rowCount() ;
-		if( j > 0 ){
-			QTableWidgetItem * it ;
-			for( int i = 0 ; i < j ; i++ ){
-				it = m_ui->tableWidget->item( i,0 ) ;
-				file.write( it->text().toAscii() ) ;
-				file.putChar( '\n' ) ;
-			}
+		for( int i = 0 ; i < j ; i++ ){
+			it = table->item( i,0 ) ;
+			file.write( it->text().toAscii() ) ;
+			file.putChar( '\n' ) ;
 		}
 
 		file.setPermissions( QFile::ReadOwner|QFile::WriteOwner ) ;
 		file.close();
 	}
-}
-
-void manageSystemVolumes::pbAdd()
-{
-	QString path = m_ui->volumePath->text() ;
-
-	if( path.isEmpty() )
-		return ;
-
-	QStringList l ;
-	l.append( path );
-	this->addItemsToTable( l );
 }
 
 void manageSystemVolumes::itemClicked( QTableWidgetItem * current )
@@ -140,14 +112,12 @@ void manageSystemVolumes::itemClicked( QTableWidgetItem * current,bool clicked )
 void manageSystemVolumes::removeCurrentRow()
 {
 	QTableWidgetItem * it = m_ui->tableWidget->currentItem() ;
-	QString m = tr( "are you sure you want to remove \"%1\" from the list?" ).arg( it->text() ) ;
+	QString m = tr( "are you sure you want to remove \n\"%1\"\n from the list?" ).arg( it->text() ) ;
 
 	DialogMsg msg( this ) ;
 
 	if( msg.ShowUIYesNoDefaultNo( tr( "WARNING"),m ) == QMessageBox::Yes )
-		m_ui->tableWidget->removeRow( it->row() ) ;
-
-	m_ui->tableWidget->setFocus();
+		tablewidget::deleteRowFromTable( m_ui->tableWidget,it->row() ) ;
 }
 
 void manageSystemVolumes::addItemsToTable( QString path )
@@ -163,25 +133,7 @@ void manageSystemVolumes::addItemsToTable( QString path )
 
 void manageSystemVolumes::addItemsToTable( QStringList paths )
 {
-	int row = m_ui->tableWidget->rowCount() ;
-	int i ;
-	int j = paths.size() ;
-
-	QTableWidgetItem * it ;
-
-	for( i = 0 ; i < j ; i++ ){
-
-		it = new QTableWidgetItem( paths.at( i ) ) ;
-
-		it->setTextAlignment( Qt::AlignCenter );
-
-		m_ui->tableWidget->insertRow( row );
-		m_ui->tableWidget->setItem( row,0,it );
-		m_ui->tableWidget->setCurrentCell( row,0 );
-		row++ ;
-	}
-
-	m_ui->tableWidget->setFocus();
+	tablewidget::addRowToTable( m_ui->tableWidget,paths ) ;
 }
 
 void manageSystemVolumes::pbDone()
@@ -231,6 +183,7 @@ void manageSystemVolumes::HideUI()
 void manageSystemVolumes::ShowUI()
 {
 	this->readSystemPartitions() ;
+	m_ui->tableWidget->setColumnWidth( 0,580 );
 	this->show();
 }
 
