@@ -164,7 +164,7 @@ void managepartitionthread::umount( QString type )
 	QProcess p ;
 	QString exe ;
 
-	if( type == QString( "crypto_LUKS" ) )
+	if( type == QString( "crypto_LUKS" ) || type == QString( "crypto_PLAIN" ) )
 		exe = QString( "%1 -U -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;
 	else
 		exe = QString( "%1 -u -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;

@@ -40,6 +40,7 @@ string_t zuluCryptGetUserHomePath( uid_t uid ) ;
 char * zuluCryptGetMountPointFromPath( const char * path ) ;
 string_t zuluCryptCreateMapperName( const char * device,const char * mapping_name,uid_t uid,int i ) ;
 void zuluMountPartitionProperties( const char * mapper,const char * device,const char * m_point ) ;
+int zuluCryptVolumeIsNotLuks( const char * dev ) ;
 
 #ifdef __STDC__
 char * realpath( const char * path, char * resolved_path ) ;
@@ -338,28 +339,12 @@ int zuluMountVolumeStatus( const char * device,uid_t uid )
 	return zuluCryptEXEVolumeInfo( strrchr( device,'/' ) + 1,device,uid ) ;
 }
 
-int zuluMiniProperties( const char * device,uid_t uid )
-{
+static int zuluMiniCryptoProperties( const char * device,uid_t uid )
+{	
+	string_t p = zuluCryptCreateMapperName( device,strrchr( device,'/' ) + 1,uid,CLOSE ) ;
 	int st ;
 	char * d ;
-	string_t p ;
 	
-	if( zuluCryptVolumeIsLuks( device ) != 0 ){
-		
-		d = zuluCryptGetMountPointFromPath( device ) ;		
-		
-		if( d != NULL ){
-			zuluMountPartitionProperties( device,device,d ) ;
-			free( d ) ;
-			return 0 ;
-		}else{
-			printf( "Nil\t0\t0\t0\t\n" ) ;
-			return 1 ;
-		}
-	}
-	
-	p = zuluCryptCreateMapperName( device,strrchr( device,'/' ) + 1,uid,CLOSE ) ;
-
 	if( p == StringVoid ){
 		printf( "Nil\t0\t0\t0\t\n" ) ;
 		st = 1 ;
@@ -374,17 +359,48 @@ int zuluMiniProperties( const char * device,uid_t uid )
 			st = 1 ;
 		}else{
 			/*
-			* this function is defined in print_mounted_volumes.c
-			*/
+			 * this function is defined in print_mounted_volumes.c
+			 */
 			zuluMountPartitionProperties( device,StringContent( p ),d ) ;
 			free( d ) ;
 			st = 0 ;
 		}
-
-		StringDelete( &p ) ;			
+		
+		StringDelete( &p ) ;
 	}	
 	
 	return st ;
+}
+
+int zuluMiniProperties( const char * device,uid_t uid )
+{
+	char * d ;
+	/*
+	 * this function is defined in ../zuluCrypt-cli/lib/is_luks.c
+	 */
+	if( zuluCryptVolumeIsNotLuks( device ) ){
+		
+		/*
+		 * volume is not LUKS, assuming its a plain type or a regular partition
+		 */
+		d = zuluCryptGetMountPointFromPath( device ) ;
+		
+		if( d != NULL ){
+			zuluMountPartitionProperties( device,device,d ) ;
+			free( d ) ;
+			return 0 ;
+		}else{
+			/*
+			 * volume is not LUKS but doesnt look like its a regular partition, assume its plain volume
+			 */
+ 			return zuluMiniCryptoProperties( device,uid ) ;	
+		}
+	}else{
+		/*
+		 * volume is LUKS
+		 */
+		return zuluMiniCryptoProperties( device,uid ) ;
+	}	
 }
 
 static int zuluMountExe( const char * device, const char * action,const char * m_point,const char * mode,uid_t uid,const char * key,const char * key_source )

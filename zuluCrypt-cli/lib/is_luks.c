@@ -34,3 +34,17 @@ int zuluCryptVolumeIsLuks( const char * dev )
 	return st ;
 }
 
+int zuluCryptVolumeIsNotLuks( const char * dev )
+{		
+	struct crypt_device * cd;
+	int st ;
+	
+	if( crypt_init( &cd,dev ) != 0 )
+		return 1 ;
+	
+	st = crypt_load( cd,NULL,NULL ) ;
+	
+	crypt_free( cd );
+	
+	return st != 0 ;
+}

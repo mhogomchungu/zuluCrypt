@@ -1,7 +1,7 @@
 #include "keydialog.h"
 #include "ui_keydialog.h"
 
-keyDialog::keyDialog( QWidget * parent,QTableWidget * table,QString path ) :
+keyDialog::keyDialog( QWidget * parent,QTableWidget * table,QString path,QString type ) :
 	QDialog( parent ),m_ui(new Ui::keyDialog)
 {
 	m_ui->setupUi(this);
@@ -9,7 +9,11 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,QString path ) :
 	m_path = path ;
 	m_working = false ;
 
-	QString msg = tr( "unlock and mount a luks volume in \"%1\"").arg( m_path ) ;
+	QString msg ;
+	if( type == QString( "crypto_LUKS" ) )
+		msg = tr( "unlock and mount a luks volume in \"%1\"").arg( m_path ) ;
+	else
+		msg = tr( "unlock and mount a plain volume in \"%1\"").arg( m_path ) ;
 
 	this->setWindowTitle( msg );
 

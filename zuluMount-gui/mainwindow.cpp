@@ -121,7 +121,7 @@ void MainWindow::itemClicked( QTableWidgetItem * item )
 	}else{
 		connect( m.addAction( tr( "unmount" ) ),SIGNAL( triggered() ),this,SLOT( pbUmount() ) ) ;
 
-		if( type == QString( "crypto_LUKS" ) ){
+		if( type == QString( "crypto_LUKS" ) || type == QString( "crypto_PLAIN" ) ) {
 			m.addSeparator() ;
 			connect( m.addAction( tr( "properties" ) ),SIGNAL( triggered() ),this,SLOT( volumeProperties() ) ) ;
 		}
@@ -149,7 +149,7 @@ void MainWindow::volumeProperties( QString properties )
 	}else{
 		int i = properties.indexOf( "\n" ) ;
 		if( i != -1 ){
-			msg.ShowUIVolumeProperties( tr("luks volume properties" ),properties.mid( i + 1 ) ) ;
+			msg.ShowUIVolumeProperties( tr("volume properties" ),properties.mid( i + 1 ) ) ;
 		}else{
 			msg.ShowUIOK( tr("ERROR"),tr("could not get volume properties" ) ) ;
 		}
@@ -229,7 +229,7 @@ void MainWindow::closeEvent( QCloseEvent * e )
 void MainWindow::slotTrayClicked( QSystemTrayIcon::ActivationReason e )
 {
 	if( e == QSystemTrayIcon::Trigger ){
-		if( this->isVisible() == true )
+		if( this->isVisible() )
 			this->hide();
 		else
 			this->show();
@@ -262,14 +262,15 @@ void MainWindow::pbMount()
 	m_device = path ;
 	m_justMounted = true ;
 	QString mode ;
+
 	if( m_ui->cbReadOnly->isChecked() )
-		mode = QString( "ro ") ;
+		mode = QString( "ro" ) ;
 	else
 		mode = QString( "rw" ) ;
 
-	if( type == QString( "crypto_LUKS" ) ){
+	if( type == QString( "crypto_LUKS" ) || type == QString( "Nil" ) ){
 
-		keyDialog * kd = new keyDialog( this,m_ui->tableWidget,path ) ;
+		keyDialog * kd = new keyDialog( this,m_ui->tableWidget,path,type ) ;
 		connect( kd,SIGNAL( hideUISignal() ),kd,SLOT( deleteLater() ) ) ;
 		connect( kd,SIGNAL( hideUISignal() ),this,SLOT( enableAll() ) ) ;
 		kd->ShowUI();
@@ -285,16 +286,19 @@ void MainWindow::pbMount()
 void MainWindow::volumeMiniProperties( QTableWidget * table,QString p,QString mountPointPath )
 {
 	QStringList l ;
+	QString fileSystem ;
 	QString total ;
 	QString perc ;
 	QString label ;
 
 	if( p.isEmpty() ){
+		fileSystem = QString( "Nil" ) ;
 		total = QString( "0" ) ;
 		perc  = QString( "0%" );
 		label = QString( "Nil" ) ;
 	}else{
 		l = p.split( "\t" ) ;
+		fileSystem = l.at( 1 ) ;
 		label = l.at( 2 ) ;
 		total = l.at( 3 ) ;
 		perc = l.at( 4 ) ;
@@ -304,6 +308,7 @@ void MainWindow::volumeMiniProperties( QTableWidget * table,QString p,QString mo
 	int row = table->currentRow() ;
 
 	tablewidget::setText( table,row,1,mountPointPath ) ;
+	tablewidget::setText( table,row,2,fileSystem ) ;
 	tablewidget::setText( table,row,3,label ) ;
 	tablewidget::setText( table,row,4,total ) ;
 	tablewidget::setText( table,row,5,perc ) ;
@@ -383,11 +388,20 @@ void MainWindow::slotUnmountComplete( int status,QString msg )
 		this->enableAll();
 	}else{
 		QTableWidget * table = m_ui->tableWidget ;
+
 		int row = table->currentRow() ;
+
+		QString type = table->item( row,2 )->text() ;
+
 		table->item( row,1 )->setText( QString( "Nil" ) );
-		if( table->item( row,2 )->text() == QString( "crypto_LUKS" ) )
+
+		if( type == QString( "crypto_LUKS" ) )
 			table->item( row,3 )->setText( QString( "Nil" ) );
-		//table->item( row,4 )->setText( QString( "Nil" ) );
+		else if( type == QString( "crypto_PLAIN" ) ){
+			table->item( row,3 )->setText( QString( "Nil" ) );
+			table->item( row,2 )->setText( QString( "Nil" ) );
+		}
+
 		table->item( row,5 )->setText( QString( "Nil" ) );
 
 		this->enableAll();

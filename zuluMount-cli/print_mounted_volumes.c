@@ -68,10 +68,14 @@ void zuluMountPartitionProperties( const char * device,const char * mapper,const
 	
 	blkid_device_size = ( int64_t ) blkid_probe_get_size( blkid ) ;
 		
-	if( blkid_probe_lookup_value( blkid,"TYPE",&g,NULL ) == 0 )
+	if( blkid_probe_lookup_value( blkid,"TYPE",&g,NULL ) == 0 ){
 		printf( "\t%s",g ) ;
-	else
-		printf( "\tNil" ) ;
+	}else{
+		if( strcmp( device,mapper ) == 0 )
+			printf( "\tNil" ) ;
+		else
+			printf( "\tcrypto_PLAIN" ) ;
+	}
 	
 	blkid_free_probe( blkid );
 	

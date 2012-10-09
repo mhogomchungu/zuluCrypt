@@ -27,7 +27,7 @@ class keyDialog : public QDialog
 {
 	Q_OBJECT
 public:
-	keyDialog( QWidget * parent,QTableWidget *,QString path );
+	keyDialog( QWidget * parent,QTableWidget *,QString path,QString type );
 	~keyDialog();
 	void ShowUI( void );
 	void HideUI( void ) ;
