@@ -110,7 +110,7 @@ static int zuluMountPartitionAccess( const char * device,const char * mode,uid_t
 	if( p == StringVoid )
 		return 0 ;
 	
-	if( StringContains( p,"ro" ) && strcmp( mode,"rw" ) == 0 )
+	if( StringContains( p,"ro" ) && strstr( mode,"rw" ) != NULL )
 		st = 1 ;
 	else if( StringContains( p,"nouser" ) &&uid != 0 ){
 		st = 2 ;

@@ -124,7 +124,7 @@ string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos )
 	return options ;
 }
 
-static int ms_family( const char * fs )
+static inline int ms_family( const char * fs )
 {
 	if( strcmp( fs,"ntfs" ) == 0 || strcmp( fs,"vfat" ) == 0 || strcmp( fs,"fat" ) == 0 || strcmp( fs,"msdos" ) == 0 || strcmp( fs,"umsdos" ) == 0 )
 		return 1 ;
@@ -132,7 +132,7 @@ static int ms_family( const char * fs )
 		return 0 ;
 }
 
-static int other_fs( const char * fs )
+static inline int other_fs( const char * fs )
 {
 	if( strcmp( fs,"affs" ) == 0 || strcmp( fs,"hfs" ) == 0 || strcmp( fs,"iso9660" ) == 0 )
 		return 1 ;
@@ -146,8 +146,10 @@ static string_t set_mount_options( m_struct * mst )
 	string_t uid = StringIntToString( mst->uid ) ;
 
 	if( opt == StringVoid )
-		opt = String( "" ) ;
-		
+		opt = String( mst->mode ) ;
+	else	
+		StringMultipleAppend( opt,",",mst->mode,'\0' ) ;
+	
 	if( ms_family( mst->fs ) ){	
 		if( !StringContains( opt,"dmask=" ) )
 			StringAppend( opt,",dmask=0000" ) ;
@@ -193,18 +195,25 @@ static string_t set_mount_options( m_struct * mst )
 	StringRemoveString( opt,"default" ) ;
 	StringRemoveString( opt,"auto" ) ;
 	StringRemoveString( opt,"noauto" ) ;
-	StringRemoveString( opt,"ro" ) ;
-	StringRemoveString( opt,"rw" ) ;
 		
-	mst->opts = StringMultiplePrepend( opt,",",mst->mode,'\0' ) ;
-	
-	StringReplaceString( opt,",,","," );
-	
 	if( StringEndsWith( opt,"," ) )
 		StringRemoveRight( opt,1 ) ;
 	
-	if( StringStartsWith( opt,"," ) )
-		StringRemoveLeft( opt,1 ) ;
+	/*
+	 * remove below two now because we are going to add them below,reason for removing them 
+	 * and readding them is because we want to make sure they are at the beginning of the string
+	 */
+	StringRemoveString( opt,"ro" ) ;
+	StringRemoveString( opt,"rw" ) ;	
+	
+	if( mst->m_flags == MS_RDONLY )
+		StringPrepend( opt,"ro," ) ;
+	else
+		StringPrepend( opt,"rw," ) ;
+	
+	StringReplaceString( opt,",,","," );
+	
+	mst->opts = StringContent( opt ) ;
 	
 	return opt;
 }
