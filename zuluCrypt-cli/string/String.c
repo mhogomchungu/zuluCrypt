@@ -146,9 +146,15 @@ string_t StringCopy( string_t st )
 
 string_t String( const char * cstring )
 {
-	size_t size = strlen( cstring ) ;
+	size_t size ;
+	string_t st ;
 	
-	string_t st = ( string_t ) malloc ( sizeof( struct StringType ) ) ;
+	if( cstring == NULL )
+		return StringVoid ;
+	
+	size = strlen( cstring ) ;
+	
+	st = ( string_t ) malloc ( sizeof( struct StringType ) ) ;
 	
 	if( st == NULL )
 		return StringVoid ;
@@ -181,7 +187,8 @@ string_t String( const char * cstring )
 
 void StringReadToBuffer( string_t st,char * buffer,size_t size )
 {
-	memcpy( buffer,st->string,size ) ;
+	if( buffer != NULL )
+		memcpy( buffer,st->string,size ) ;
 }
 
 string_t StringInherit( char ** data )
@@ -312,10 +319,7 @@ ssize_t StringIndexOfChar( string_t st,size_t p,char s )
 
 const char * StringRemoveLength( string_t st,size_t x ,size_t y ) 
 {	
-	if( st == StringVoid )
-		return NULL ;
-	
-	if( x >= st->size )
+	if( st == StringVoid || x >= st->size )
 		return NULL ;
 	
 	if( x + y >= st->size )
@@ -338,7 +342,12 @@ void StringClear( string_t st )
 
 const char * StringRemoveRight( string_t st,size_t x ) 
 {
-	return StringRemoveLength( st,x,st->size - x ) ;
+	if( x >= st->size )
+		x = st->size ;
+	
+	st->size = st->size - x ;
+	*( st->string + st->size ) = '\0' ;
+	return st->string ;
 }
 
 const char * StringRemoveLeft( string_t st,size_t x ) 

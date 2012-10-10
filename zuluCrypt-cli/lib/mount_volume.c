@@ -145,13 +145,9 @@ static string_t set_mount_options( m_struct * mst )
 	string_t opt = zuluCryptGetMountOptionsFromFstab( mst->device,3 ) ;
 	string_t uid = StringIntToString( mst->uid ) ;
 
-	if( opt == StringVoid ){
-		opt = String( mst->mode ) ;
-		StringAppend( opt,"," ) ;
-	}else{
-		StringMultipleAppend( opt,",",mst->mode,'\0' ) ;
-	}
-	
+	if( opt == StringVoid )
+		opt = String( "" ) ;
+		
 	if( ms_family( mst->fs ) ){	
 		if( !StringContains( opt,"dmask=" ) )
 			StringAppend( opt,",dmask=0000" ) ;
@@ -186,6 +182,7 @@ static string_t set_mount_options( m_struct * mst )
 	}
 	
 	StringReplaceString( opt,"UID",StringContent( uid ) );
+	StringDelete( &uid ) ;
 	
 	/*
 	 * Below options are not file system options and are rejectected by mount() command and hence we are removing them.
@@ -196,41 +193,18 @@ static string_t set_mount_options( m_struct * mst )
 	StringRemoveString( opt,"default" ) ;
 	StringRemoveString( opt,"auto" ) ;
 	StringRemoveString( opt,"noauto" ) ;
+	StringRemoveString( opt,"ro" ) ;
+	StringRemoveString( opt,"rw" ) ;
 		
+	mst->opts = StringMultiplePrepend( opt,",",mst->mode,'\0' ) ;
+	
 	StringReplaceString( opt,",,","," );
 	
-	if( StringEndsWithChar( opt,',' ) )
-		StringSubChar( opt,StringLength( opt ) - 1,'\0' ) ;
+	if( StringEndsWith( opt,"," ) )
+		StringRemoveRight( opt,1 ) ;
 	
-	StringDelete( &uid ) ;
-	
-	if( strcmp( mst->fs,"ntfs" ) != 0 ){
-		if( StringContains( opt,"ro" ) ) {
-			if( StringContains( opt,"ro," ) )
-				StringRemoveString( opt,"ro," ) ;
-			else if( StringContains( opt,",ro" ) ) 
-				StringRemoveString( opt,",ro" ) ;
-			else
-				StringRemoveString( opt,"ro" ) ;
-			
-			StringPrepend( opt,"ro," ) ;
-		}
-		if( StringContains( opt,"rw" ) ){
-			if( StringContains( opt,"rw," ) )
-				StringRemoveString( opt,"rw," ) ;
-			else if( StringContains( opt,",rw" ) ) 
-				StringRemoveString( opt,",rw" ) ;
-			else
-				StringRemoveString( opt,"rw" ) ;
-			
-			StringPrepend( opt,"rw," ) ;
-		}
-		
-		mst->opts = StringContent( opt ) + 3 ;
-		
-	}else{	
-		mst->opts = StringContent( opt ) ;
-	}
+	if( StringStartsWith( opt,"," ) )
+		StringRemoveLeft( opt,1 ) ;
 	
 	return opt;
 }
@@ -254,7 +228,7 @@ static int mount_ntfs( const m_struct * mst )
 
 static int mount_mapper( const m_struct * mst )
 {
-	int h = mount( mst->device,mst->m_point,mst->fs,mst->m_flags,mst->opts ) ;
+	int h = mount( mst->device,mst->m_point,mst->fs,mst->m_flags,mst->opts + 3 ) ;
 	
 	if( h == 0 && mst->m_flags != MS_RDONLY && ms_family( mst->fs ) == 0 && other_fs( mst->fs ) == 0 )
 		chmod( mst->m_point,S_IRWXU|S_IRWXG|S_IRWXO ) ;	
@@ -267,7 +241,7 @@ int zuluCryptMountVolume( const char * mapper,const char * m_point,const char * 
 	struct mntent mt  ;
 	blkid_probe blkid ;
 	int h ;
-	const char * cf ;
+	const char * cf = NULL ;
 	FILE * f ;
 #if USE_NEW_LIBMOUNT_API
 	struct libmnt_lock * m_lock ;
@@ -289,19 +263,27 @@ int zuluCryptMountVolume( const char * mapper,const char * m_point,const char * 
 		mst.m_flags = 0 ;
 	
 	blkid = blkid_new_probe_from_filename( mapper ) ;
-	blkid_do_probe( blkid );
+	blkid_do_probe( blkid );	
+	blkid_probe_lookup_value( blkid,"TYPE",&cf,NULL ) ;
+		
+	fs = String( cf ) ;
 	
-	if( blkid_probe_lookup_value( blkid,"TYPE",&cf,NULL ) != 0 ){
+	blkid_free_probe( blkid );
+	
+	if( fs == StringVoid ){
 		/*
-		 * Attempt to read volume file system has failed because either an attempt to open a plain based volumes with
-		 * a wrong password was made or the volume has no file system.
-		 */		
-		blkid_free_probe( blkid );
-		return 4 ;		
+		 * failed to read file system,probably because the volume does have any or is an encrypted plain volume
+		 */
+		return 4 ;
 	}
 	
-	fs = String( cf ) ;
-	blkid_free_probe( blkid );
+	if( StringEqual( fs,"crypto_LUKS" ) ){
+		/*
+		 * we cant mount an encrypted volume, exiting
+		 */
+		StringDelete( &fs ) ;
+		return 4 ;
+	}
 	
 	mst.fs = StringContent( fs ) ;
 	
@@ -313,7 +295,7 @@ int zuluCryptMountVolume( const char * mapper,const char * m_point,const char * 
 	*/
 	if( StringEqual( fs,"ntfs" ) ){
 		h = mount_ntfs( &mst ) ;
-		StringMultipleDelete( &fs,&options,'\0' ) ;		
+		StringMultipleDelete( &fs,&options,'\0' ) ;
 		switch( h ){
 			case 0  : return 0 ;
 			case 16 : return 12 ;
@@ -322,7 +304,7 @@ int zuluCryptMountVolume( const char * mapper,const char * m_point,const char * 
 	}
 	 
 	/*
-	 * mtab_is_at_etc() is defined in print_mounted_volumes.c
+	 * zuluCryptMtabIsAtEtc() is defined in print_mounted_volumes.c
 	 * 1 is return if "mtab" is found to be a file located at "/etc/"
 	 * 0 is returned otherwise,probably because "mtab" is a soft like to "/proc/mounts"
 	 */
@@ -340,14 +322,14 @@ int zuluCryptMountVolume( const char * mapper,const char * m_point,const char * 
 		}else{		
 			h = mount_mapper( &mst ) ;
 			if( h == 0 ){
-				f = setmntent( "/etc/mtab","a" ) ;	
-				mt.mnt_fsname = ( char * ) mapper ;
-				mt.mnt_dir    = ( char * ) m_point ;
-				mt.mnt_type   = ( char * ) StringContent( fs ) ;	
-				mt.mnt_opts   = ( char * ) StringContent( options ) ;
+				f = setmntent( "/etc/mtab","a" ) ;
+				mt.mnt_fsname = ( char * ) mst.device ;
+				mt.mnt_dir    = ( char * ) mst.m_point ;
+				mt.mnt_type   = ( char * ) mst.fs ;
+				mt.mnt_opts   = ( char * ) mst.opts ;
 				mt.mnt_freq   = 0 ;
 				mt.mnt_passno = 0 ;
-				addmntent( f,&mt ) ;	
+				addmntent( f,&mt ) ;
 				endmntent( f ) ;
 			}
 			

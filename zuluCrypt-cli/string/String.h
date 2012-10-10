@@ -386,7 +386,7 @@ const char * StringRemoveString( string_t st,const char * s ) ;
 const char * StringRemoveStringPos( string_t st,const char * s,size_t p ) ;
 
 /*
- * Cut the string from position x and discard all elements to the right of x. 
+ * remove the first x characters counting from the right ie,remove the last x characters from the string
  * Returns a pointer to the result,NULL on error and the original string remain intact
  */
 const char * StringRemoveRight( string_t st,size_t x ) ;
@@ -397,7 +397,7 @@ const char * StringRemoveRight( string_t st,size_t x ) ;
 void StringClear( string_t st ) ;
 
 /*
- * Cut the string from position x and discard all elements to the left of x. 
+ * remove the first x characters from the string counting from the left
  * Returns a pointer to the result,NULL on error and the original string remain intact
  */
 const char * StringRemoveLeft( string_t st,size_t x ) ;
