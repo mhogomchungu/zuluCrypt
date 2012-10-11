@@ -25,7 +25,7 @@
  * For reasons currently unknown to me,the mapper path soft link does not always get deleted
  * do it manually when that happens
  */
-static int unlink_mapper( const char * mapper )
+static inline int unlink_mapper( const char * mapper )
 {
 	unlink( mapper ) ;
 	return 0 ;

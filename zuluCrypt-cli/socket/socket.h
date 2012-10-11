@@ -100,6 +100,11 @@ const char * SocketAddress( socket_t ) ;
 int SocketBind( socket_t ) ;
 
 /*
+ * return a file descriptor associated with a socket
+ */
+int SocketFileDescriptor( socket_t ) ;
+
+/*
  * Accept a socket
  * SocketVoid is returned on error
  */

@@ -59,21 +59,22 @@ static int zuluExit( int st,stringManage_t stm )
 	StringManageClearDelete( &stm ) ;
 	
 	switch ( st ){
-		case 0  : printf( "SUCCESS: key added successfully\n" );	                              	break ;		
+		case 0  : printf( "SUCCESS: key added successfully\n" );	                              	break ;
 		case 1  : printf( "ERROR: presented key does not match any key in the volume\n" ) ;           	break ;
 		case 2  : printf( "ERROR: could not open luks device\n" ) ;		                      	break ;
 		case 4  : printf( "ERROR: device does not exist\n" ) ;	                                      	break ;
 		case 5  : printf( "ERROR: wrong arguments\n" ) ;	                                      	break ;
-		case 6  : printf( "ERROR: one or more required argument(s) for this operation is missing\n" );	break ;			
+		case 6  : printf( "ERROR: one or more required argument(s) for this operation is missing\n" );	break ;
 		case 7  : printf( "ERROR: new passphrases do not match\n" ) ;	                              	break ;
 		case 8  : printf( "ERROR: one or both keyfile(s) does not exist\n" ) ;	                      	break ;  
 		case 9  : printf( "ERROR: couldnt get enought memory to hold the key file\n" ) ;	     	break ;
 		case 10 : printf( "ERROR: all key slots are occupied, can not add any more keys\n" ) ;	      	break ;
-		case 11 : printf( "ERROR: insufficient privilege to write to the volume\n" ) ;	   		break ;	
-		case 12 : printf( "ERROR: insufficient privilege to open key file for reading\n" );		break ;	
-		case 13 : printf( "ERROR: only root user can add keys to system devices\n" );			break ;	
-		case 14 : printf( "ERROR: can not get passphrase in silent mode\n" );				break ;	
-		case 15 : printf( "ERROR: insufficient memory to hold passphrase\n" );				break ;	
+		case 11 : printf( "ERROR: insufficient privilege to write to the volume\n" ) ;	   		break ;
+		case 12 : printf( "ERROR: insufficient privilege to open key file for reading\n" );		break ;
+		case 13 : printf( "ERROR: only root user can add keys to system devices\n" );			break ;
+		case 14 : printf( "ERROR: can not get passphrase in silent mode\n" );				break ;
+		case 15 : printf( "ERROR: insufficient memory to hold passphrase\n" );				break ;
+		case 16 : printf( "ERROR: could not get a key from a socket\n" ) ;				break ;
 				 
 		default : printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
@@ -91,18 +92,18 @@ static int zuluExit_1( int st,const char * device,stringManage_t stm )
 static int zuluGetKeys( string_t * key1,string_t * key2,string_t * key3 )
 {
 	int st ;
-	printf( "Enter an existing passphrase: " ) ;		
+	printf( "Enter an existing passphrase: " ) ;
 	st = StringSilentlyGetFromTerminal_1( key1,KEY_MAX_SIZE ) ;
 	if( st != 0 )
 		return st ;
-	printf( "\nEnter the new passphrase: " ) ;		
+	printf( "\nEnter the new passphrase: " ) ;
 	st = StringSilentlyGetFromTerminal_1( key2,KEY_MAX_SIZE ) ;
 	if( st != 0 ){
 		StringClearDelete( key1 ) ;
 		return st ;
 	}
-	printf( "\nRe enter the new passphrase: " ) ;		
-	st = StringSilentlyGetFromTerminal_1( key3,KEY_MAX_SIZE ) ;	
+	printf( "\nRe enter the new passphrase: " ) ;
+	st = StringSilentlyGetFromTerminal_1( key3,KEY_MAX_SIZE ) ;
 	if( st != 0 ){
 		StringClearDelete( key1 ) ;
 		StringClearDelete( key2 ) ;
@@ -155,7 +156,7 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 	 */
 	switch( zuluCryptSecurityCanOpenPathForWriting( device,uid ) ){
 		case 1 : return zuluExit( 11,stm ) ; break ;
-		case 2 : return zuluExit( 4,stm )  ; break ;		
+		case 2 : return zuluExit( 4,stm )  ; break ;
 	}
 	
 	if( zuluCryptVolumeIsNotLuks( device ) )
@@ -175,14 +176,14 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 			case 2 : return zuluExit( 15,stm ) ;
 		}
 		
-		if( !StringEqualString( *newKey_1,*newKey_2 ) )			
+		if( !StringEqualString( *newKey_1,*newKey_2 ) )
 			status = 7 ;
 		else{	
 			key1 = StringContent( *presentKey ) ;
 			len1 = StringLength ( *presentKey ) ;
 			key2 = StringContent( *newKey_1   ) ;
 			len2 = StringLength ( *newKey_1   ) ;
-			status = zuluCryptAddKey( device,key1,len1,key2,len2 );			
+			status = zuluCryptAddKey( device,key1,len1,key2,len2 );
 		}
 	}else{		
 		if( keyType1 == NULL || keyType2 == NULL || newKey == NULL || existingKey == NULL )
@@ -194,36 +195,38 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 			switch( zuluCryptSecurityGetPassFromFile( existingKey,uid,ek ) ){
 				case 1 : return zuluExit( 8,stm ) ; 
 				case 4 : return zuluExit( 12,stm ) ;
-				case 2 : return zuluExit( 9,stm );				
+				case 2 : return zuluExit( 9,stm );
+				case 5 : return zuluExit( 16,stm ) ;
 			}
 			key1 = StringContent( *ek ) ;
 			len1 = StringLength( *ek ) ;
 		}		
-		if ( strcmp( keyType2, "-f" ) == 0 ){	
+		if ( strcmp( keyType2, "-f" ) == 0 ){
 			/*
 			 * this function is defined at "security.c.c"
 			 */
 			switch( zuluCryptSecurityGetPassFromFile( newKey,uid,nk ) ){
 				case 1 : return zuluExit( 8,stm ) ; 
 				case 4 : return zuluExit( 12,stm ) ;
-				case 2 : return zuluExit( 9,stm );				
+				case 2 : return zuluExit( 9,stm );
+				case 5 : return zuluExit( 16,stm ) ;
 			}
 			key2 = StringContent( *nk ) ;
 			len2 = StringLength( *nk ) ;
 		}		
 		if ( strcmp( keyType1,"-f" ) == 0 && strcmp( keyType2,"-f" ) == 0 ){
-			status = zuluCryptAddKey( device,key1,len1,key2,len2 ) ;			
+			status = zuluCryptAddKey( device,key1,len1,key2,len2 ) ;
 		}else if ( strcmp( keyType1,"-p" ) == 0 && strcmp( keyType2,"-p" ) == 0 ){
 			key1 = existingKey ;
 			len1 = strlen( existingKey ) ;
 			key2 = newKey ;
 			len2 = strlen( newKey ) ;
-			status = zuluCryptAddKey( device,key1,len1,key2,len2 ) ;			
+			status = zuluCryptAddKey( device,key1,len1,key2,len2 ) ;
 		}else if ( strcmp( keyType1,"-p" ) == 0 && strcmp( keyType2,"-f" ) == 0 ){
 			key1 = existingKey ;
 			len1 = strlen( existingKey ) ;
-			status = zuluCryptAddKey( device,key1,len1,key2,len2 ) ;			
-		}else if ( strcmp( keyType1,"-f" ) == 0 && strcmp( keyType2,"-p" ) == 0 ){			
+			status = zuluCryptAddKey( device,key1,len1,key2,len2 ) ;
+		}else if ( strcmp( keyType1,"-f" ) == 0 && strcmp( keyType2,"-p" ) == 0 ){
 			key2 = newKey ;
 			len2 = strlen( newKey ) ;
 			status = zuluCryptAddKey( device,key1,len1,key2,len2 ) ;

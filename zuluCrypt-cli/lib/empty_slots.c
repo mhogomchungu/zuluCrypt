@@ -19,7 +19,7 @@
 
 #include "includes.h"
 
-static char * zuluExit( char * c,struct crypt_device * cd )
+static inline char * zuluExit( char * c,struct crypt_device * cd )
 {
 	if( cd != NULL )
 		crypt_free( cd );

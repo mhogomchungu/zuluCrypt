@@ -19,7 +19,7 @@
 
 #include "includes.h"
 
-static int zuluExit( int st,struct crypt_device * cd )
+static inline int zuluExit( int st,struct crypt_device * cd )
 {
 	crypt_free( cd );
 	return st ;

@@ -58,8 +58,9 @@ static int zuluExit( int st,stringManage_t stm )
 		case 13: printf( "ERROR: insufficient privilege to open key file for reading\n" );							break ;
 		case 14: printf( "ERROR: only root user can remove keys from system devices\n" );							break ;	
 		case 15: printf( "ERROR: can not get passphrase in silent mode\n" );									break ;	
-		case 16: printf( "ERROR: insufficient memory to hold passphrase\n" );
-		case 17: printf( "ERROR: insufficient memory to hold your response\n" );
+		case 16: printf( "ERROR: insufficient memory to hold passphrase\n" );									break ;
+		case 17: printf( "ERROR: insufficient memory to hold your response\n" );								break ;
+		case 18: printf( "ERROR: could not get a key from a socket\n" ) ;									break ;
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}		
 	return st ;
@@ -101,7 +102,7 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 	 */
 	switch( zuluCryptSecurityCanOpenPathForWriting( device,uid ) ){
 		case 2 : return zuluExit( 10,stm ); break ;
-		case 1 : return zuluExit( 12,stm ); break ;		
+		case 1 : return zuluExit( 12,stm ); break ;
 	}
 	
 	if( zuluCryptExECheckEmptySlots( device ) == 3 ){
@@ -131,19 +132,20 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 		if( keyType == NULL || keytoremove == NULL )
 			return zuluExit( 6,stm ) ;
 		
-		if( strcmp( keyType,"-f" ) == 0 ){	
+		if( strcmp( keyType,"-f" ) == 0 ){
 			/*
 			 * function is defined at security.c"
 			 */
 			switch( zuluCryptSecurityGetPassFromFile( keytoremove,uid,pass ) ){
 				case 1 : return zuluExit( 5,stm )  ; 
 				case 2 : return zuluExit( 7,stm )  ;
-				case 4 : return zuluExit( 13,stm ) ;				
+				case 4 : return zuluExit( 13,stm ) ;
+				case 5 : return zuluExit( 18,stm ) ;
 			}
 			status = zuluCryptRemoveKey( device,StringContent( *pass ),StringLength( *pass ) ) ;
 		}else if( strcmp( keyType, "-p" ) == 0 ) {
 			
-			status = zuluCryptRemoveKey( device,keytoremove,strlen( keytoremove ) ) ;		
+			status = zuluCryptRemoveKey( device,keytoremove,strlen( keytoremove ) ) ;
 		}
 	}
 	

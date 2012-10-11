@@ -19,7 +19,7 @@
 
 #include "includes.h"
 
-static int zuluExit( int x,string_t p )
+static inline int zuluExit( int x,string_t p )
 {
 	StringDelete( &p ) ;
 	return x ;

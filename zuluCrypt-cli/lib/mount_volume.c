@@ -47,7 +47,13 @@ typedef struct{
 	unsigned long m_flags ;
 }m_struct;
 
-static string_t resolveUUIDAndLabel( string_t st )
+static inline int zuluExit( int st,stringManage_t stm )
+{
+	StringManageDelete( &stm ) ;
+	return st ;
+}
+
+static inline string_t resolveUUIDAndLabel( string_t st )
 {
 	char * e = NULL ;
 	string_t xt = StringVoid ;	
@@ -126,7 +132,11 @@ string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos )
 
 static inline int ms_family( const char * fs )
 {
-	if( strcmp( fs,"ntfs" ) == 0 || strcmp( fs,"vfat" ) == 0 || strcmp( fs,"fat" ) == 0 || strcmp( fs,"msdos" ) == 0 || strcmp( fs,"umsdos" ) == 0 )
+	if(     strcmp( fs,"ntfs" ) == 0  || 
+		strcmp( fs,"vfat" ) == 0  || 
+		strcmp( fs,"fat" ) == 0   ||
+		strcmp( fs,"msdos" ) == 0 ||
+		strcmp( fs,"umsdos" ) == 0 )
 		return 1 ;
 	else
 		return 0 ;
@@ -140,7 +150,7 @@ static inline int other_fs( const char * fs )
 		return 0 ;
 }
 
-static string_t set_mount_options( m_struct * mst )
+static inline string_t set_mount_options( m_struct * mst )
 {
 	string_t opt = zuluCryptGetMountOptionsFromFstab( mst->device,3 ) ;
 	string_t uid = StringIntToString( mst->uid ) ;
@@ -218,24 +228,18 @@ static string_t set_mount_options( m_struct * mst )
 	return opt;
 }
 
-static int mount_ntfs( const m_struct * mst )
+static inline int mount_ntfs( const m_struct * mst )
 {
 	int status ;	
-	
-	process_t p = Process( ZULUCRYPTmount ) ;
-	
+	process_t p = Process( ZULUCRYPTmount ) ;	
 	ProcessSetArgumentList( p,"-t","ntfs-3g","-o",mst->opts,mst->device,mst->m_point,'\0' ) ;
-
-	ProcessStart( p ) ;
-	
-	status = ProcessExitStatus( p ) ; 
-	
-	ProcessDelete( &p ) ;
-	
+	ProcessStart( p ) ;	
+	status = ProcessExitStatus( p ) ; 	
+	ProcessDelete( &p ) ;	
 	return status ;
 }
 
-static int mount_mapper( const m_struct * mst )
+static inline int mount_mapper( const m_struct * mst )
 {
 	int h = mount( mst->device,mst->m_point,mst->fs,mst->m_flags,mst->opts + 3 ) ;
 	
@@ -257,8 +261,11 @@ int zuluCryptMountVolume( const char * mapper,const char * m_point,const char * 
 #else
 	mnt_lock * m_lock ;
 #endif
-	string_t options = StringVoid ;
-	string_t fs = StringVoid ;
+	stringManage_t stm = StringManage( 2 ) ;
+	
+	string_t * opts = StringManageAssign( stm ) ;
+	string_t * pfs  = StringManageAssign( stm ) ;
+	string_t fs ;
 	
 	m_struct mst ;
 	mst.device = mapper ;
@@ -275,28 +282,27 @@ int zuluCryptMountVolume( const char * mapper,const char * m_point,const char * 
 	blkid_do_probe( blkid );	
 	blkid_probe_lookup_value( blkid,"TYPE",&cf,NULL ) ;
 		
-	fs = String( cf ) ;
-	
+	fs = *pfs = String( cf ) ;
+		
 	blkid_free_probe( blkid );
 	
 	if( fs == StringVoid ){
 		/*
 		 * failed to read file system,probably because the volume does have any or is an encrypted plain volume
 		 */
-		return 4 ;
+		return zuluExit( 4,stm ) ;
 	}
 	
 	if( StringEqual( fs,"crypto_LUKS" ) ){
 		/*
 		 * we cant mount an encrypted volume, exiting
 		 */
-		StringDelete( &fs ) ;
-		return 4 ;
+		return zuluExit( 4,stm ) ;
 	}
 	
 	mst.fs = StringContent( fs ) ;
 	
-	options = set_mount_options( &mst ) ;
+	*opts = set_mount_options( &mst ) ;
 	
 	/*
 	 * Currently, i dont know how to use mount system call to use ntfs-3g instead of ntfs to mount ntfs file systems.
@@ -304,7 +310,7 @@ int zuluCryptMountVolume( const char * mapper,const char * m_point,const char * 
 	*/
 	if( StringEqual( fs,"ntfs" ) ){
 		h = mount_ntfs( &mst ) ;
-		StringMultipleDelete( &fs,&options,'\0' ) ;
+		StringManageDelete( &stm ) ;
 		switch( h ){
 			case 0  : return 0 ;
 			case 16 : return 12 ;
@@ -348,8 +354,6 @@ int zuluCryptMountVolume( const char * mapper,const char * m_point,const char * 
 		mnt_free_lock( m_lock ) ;
 	}
 	
-	StringMultipleDelete( &fs,&options,'\0' ) ;
-
-	return h ;
+	return zuluExit( h,stm ) ;
 }
 

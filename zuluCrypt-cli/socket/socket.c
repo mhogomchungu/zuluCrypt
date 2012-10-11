@@ -86,6 +86,11 @@ socket_t Socket( int domain,int type,int protocol )
 	return s ;	
 }
 
+int SocketFileDescriptor( socket_t s ) 
+{
+	return s == SocketVoid ? -1 : s->fd ;
+}
+
 void SocketDelete( socket_t * x )
 {
 	socket_t s ;

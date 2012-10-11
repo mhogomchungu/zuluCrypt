@@ -30,7 +30,7 @@
 int syscall(int number, ...) ;
 #endif
 
-static int zuluExit( int st,string_t m )
+static inline int zuluExit( int st,string_t m )
 {
 	StringDelete( &m ) ;
 	return st ;

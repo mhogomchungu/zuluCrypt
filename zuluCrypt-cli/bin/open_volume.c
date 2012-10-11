@@ -32,16 +32,16 @@ static int zuluExit( int st,char * device,char * m_point,stringManage_t stm )
 	
 	switch ( st ){
 		case 0 : printf( "SUCCESS: Volume opened successfully\n" ) ;								break ;
-		case 1 : printf( "ERROR: failed to mount ntfs file system using ntfs-3g,is ntfs-3g package installed?\n" ) ;		break ;					
-		case 2 : printf( "ERROR: there seem to be an open volume accociated with given address\n" );				break ;				
-		case 3 : printf( "ERROR: no file or device exist on given path\n" ) ; 							break ;		
-		case 4 : printf( "ERROR: volume could not be opened with the presented key\n" );					break ;			
-		case 5 : printf( "ERROR: could not create mount point, invalid path or path already taken\n" ) ;			break ;		
-		case 6 : printf( "ERROR: invalid path to key file\n" );									break ;	
-		case 8 : printf( "ERROR: failed to open volume,device may already be in use or couldnt find a free loop device\n" );	break ;	
-		case 9 : printf( "ERROR: mount point path is already taken\n" );							break ;					 
+		case 1 : printf( "ERROR: failed to mount ntfs file system using ntfs-3g,is ntfs-3g package installed?\n" ) ;		break ;
+		case 2 : printf( "ERROR: there seem to be an open volume accociated with given address\n" );				break ;
+		case 3 : printf( "ERROR: no file or device exist on given path\n" ) ; 							break ;
+		case 4 : printf( "ERROR: volume could not be opened with the presented key\n" );					break ;
+		case 5 : printf( "ERROR: could not create mount point, invalid path or path already taken\n" ) ;			break ;
+		case 6 : printf( "ERROR: invalid path to key file\n" );									break ;
+		case 8 : printf( "ERROR: failed to open volume,device may already be in use or couldnt find a free loop device\n" );	break ;
+		case 9 : printf( "ERROR: mount point path is already taken\n" );							break ; 
 		/* case 10: currently unused */
-		case 11: printf( "ERROR: one or more required argument(s) for this operation is missing\n" );				break ;				
+		case 11: printf( "ERROR: one or more required argument(s) for this operation is missing\n" );				break ;
 		case 12: printf( "ERROR: could not get a lock on /etc/mtab~\n" );							break ;
 		case 13: printf( "ERROR: wrong argument for mode, valid options are \"rw\" or \"ro\"\n" );				break ;
 		case 14: printf( "ERROR: could not get enought memory to hold the key file\n" );					break ;
@@ -49,17 +49,17 @@ static int zuluExit( int st,char * device,char * m_point,stringManage_t stm )
 		case 16: printf( "ERROR: could not resolve full path of mount point\n" );						break ;
 		case 17: printf( "ERROR: could not resolve full path of device address\n" );						break ;
 		case 18: printf( "ERROR: -O and -m options can not be used together\n" );						break ;
-		case 19: printf( "ERROR: insufficient privilege to search mount point path\n" );					break ;	
-		case 20: printf( "ERROR: insufficient privilege to open device\n" );							break ;	
-		case 21: printf( "ERROR: insufficient privilege to create a mount point\n" );						break ;	
-		case 22: printf( "ERROR: insufficient privilege to open key file for reading\n" );					break ;	
-		case 23: printf( "ERROR: insufficient privilege to open device in read/write mode\n" );					break ;	
+		case 19: printf( "ERROR: insufficient privilege to search mount point path\n" );					break ;
+		case 20: printf( "ERROR: insufficient privilege to open device\n" );							break ;
+		case 21: printf( "ERROR: insufficient privilege to create a mount point\n" );						break ;
+		case 22: printf( "ERROR: insufficient privilege to open key file for reading\n" );					break ;
+		case 23: printf( "ERROR: insufficient privilege to open device in read/write mode\n" );					break ;
 		case 24: printf( "ERROR: there seem to be an opened mapper associated with the device\n" ) ;				break ;
 		case 25: printf( "ERROR: could not get a passphrase from the module\n" ) ;						break ;
-		case 26: printf( "ERROR: could not get passphrase in silent mode\n" );							break ;	
+		case 26: printf( "ERROR: could not get passphrase in silent mode\n" );							break ;
 		case 27: printf( "ERROR: insufficient memory to hold passphrase\n" );							break ;
-		case 28: printf( "ERROR: insufficient privilege to open plugin or path does not exist\n" );				break ;				
-		case 29: printf( "ERROR: could not get a passphrase through a local socket\n" );					break ;					
+		case 28: printf( "ERROR: insufficient privilege to open plugin or path does not exist\n" );				break ;
+		case 29: printf( "ERROR: could not get a passphrase through a local socket\n" );					break ;
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
 	
@@ -141,7 +141,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	
 	device = realpath( dev,NULL ) ;
 	if( device == NULL )
-		return zuluExit( 17,device,cpoint,stm ) ;	
+		return zuluExit( 17,device,cpoint,stm ) ;
 	
 	if( nmp == 1 && mount_point != NULL )
 		return zuluExit( 18,device,cpoint,stm ) ;
@@ -177,7 +177,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	 */
 	if( zuluCryptCheckOpenedMapper( cname ) == 1 ){
 		if( cpoint != NULL )
-			rmdir( cpoint ) ;		
+			rmdir( cpoint ) ;
 		
 		return zuluExit( 24,device,cpoint,stm ) ;
 	}
@@ -199,11 +199,11 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		cpass = StringContent( *passphrase ) ;
 		len = StringLength( *passphrase ) ;
 		
-		st = zuluCryptOpenVolume( device,cname,cpoint,uid,mode,cpass,len ) ;		
+		st = zuluCryptOpenVolume( device,cname,cpoint,uid,mode,cpass,len ) ;
 	
 	}else if( i == 1 || source == NULL ){
 		
-		printf( "Enter passphrase: " ) ;		
+		printf( "Enter passphrase: " ) ;
 		switch( StringSilentlyGetFromTerminal_1( passphrase,KEY_MAX_SIZE ) ){
 			case 1 : return zuluExit_1( 26,opts,device,cpoint,stm ) ;
 			case 2 : return zuluExit_1( 27,opts,device,cpoint,stm ) ;
@@ -216,17 +216,17 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		if( source == NULL || pass == NULL )
 			return zuluExit_1( 11,opts,device,cpoint,stm ) ;
 		
-		if( strcmp( source,"-p" ) == 0 ){			
+		if( strcmp( source,"-p" ) == 0 ){
 			cpass = pass ;
 			len = strlen( pass ) ;
-			st = zuluCryptOpenVolume( device,cname,cpoint,uid,mode,cpass,len ) ;		
-		}else if( strcmp( source,"-f" ) == 0 ){		
+			st = zuluCryptOpenVolume( device,cname,cpoint,uid,mode,cpass,len ) ;
+		}else if( strcmp( source,"-f" ) == 0 ){
 			/*
 			 * function is defined at "security.c"
 			 */
 			switch( zuluCryptSecurityGetPassFromFile( pass,uid,data ) ){
 				case 1 : return zuluExit_1( 6,opts,device,cpoint,stm ) ;
-				case 2 : return zuluExit_1( 14,opts,device,cpoint,stm ) ; 				
+				case 2 : return zuluExit_1( 14,opts,device,cpoint,stm ) ; 
 				case 4 : return zuluExit_1( 22,opts,device,cpoint,stm ) ;
 				case 5 : return zuluExit_1( 29,opts,device,cpoint,stm ) ;
 			}

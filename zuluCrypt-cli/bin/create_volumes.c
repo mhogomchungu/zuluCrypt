@@ -31,10 +31,10 @@ static int zuluExit( int st,stringManage_t stm )
 		case 0 : printf( "SUCCESS: volume created successfully\n" ) ;					break  ;
 		case 1 : printf( "ERROR: invalid path to a file or device\n" ) ;				break  ;
 		case 2 : printf( "ERROR: wrong option type\n" );						break  ;
-		case 3 : printf( "ERROR: could not create an encrypted volume in a file or device\n" );		break  ;	
+		case 3 : printf( "ERROR: could not create an encrypted volume in a file or device\n" );		break  ;
 		case 4 : printf( "ERROR: one or more required argument(s) for this operation is missing\n" );	break  ;
 		case 5 : printf( "ERROR: wrong choice, exiting\n" );						break  ;
-		case 6 : printf( "ERROR: couldnt get enought memory to hold the key file\n" ) ;			break  ;				
+		case 6 : printf( "ERROR: couldnt get enought memory to hold the key file\n" ) ;			break  ;
 		case 7 : printf( "ERROR: passphrases do not match\n" ) ;					break  ;	
 		case 8 : printf( "ERROR: invalid path to key file\n" ) ;					break  ;
 		case 9 : printf( "ERROR: container file must be bigger than 3MB\n" ) ;				break  ;
@@ -50,9 +50,10 @@ static int zuluExit( int st,stringManage_t stm )
 		case 16: printf( "ERROR: there seem to be an opened mapper associated with the device\n" ) ;	break  ;
 		case 17: printf( "ERROR: unable to resolve full path to device\n" ) ;				break  ;
 		case 18: printf( "ERROR: can not create a volume on a mounted device\n" ) ;			break  ;
-		case 19: printf( "ERROR: can not get passphrase in silent mode\n" );				break  ;	
+		case 19: printf( "ERROR: can not get passphrase in silent mode\n" );				break  ;
 		case 20: printf( "ERROR: insufficient memory to hold passphrase\n" );				break  ;
 		case 21: printf( "ERROR: insufficient memory to hold your response\n" );			break  ;
+		case 22: printf( "ERROR: could not get a key from a socket\n" ) ;				break  ;
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
 	return st ;
@@ -224,9 +225,10 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 			 * function is defined at "security.c"
 			 */
 			switch( zuluCryptSecurityGetPassFromFile( pass,uid,content ) ){
-				case 1 : return zuluExit( 8,stm ) ; 
+				case 1 : return zuluExit( 8,stm )  ; 
 				case 4 : return zuluExit( 15,stm ) ;
-				case 2 : return zuluExit( 6,stm ) ;
+				case 2 : return zuluExit( 6,stm )  ;
+				case 5 : return zuluExit( 22,stm ) ;
 			}
 			st = zuluCryptCreateVolume( device,fs,type,StringContent( *content ),StringLength( *content ),rng ) ;					
 		}else{
