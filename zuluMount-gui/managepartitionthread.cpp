@@ -29,6 +29,15 @@ void managepartitionthread::setMountPoint( QString m )
 	m_point = m ;
 }
 
+void managepartitionthread::openPathInFileManager()
+{
+	QProcess p ;
+	QString exe = QString( "xdg-open ") + m_point ;
+	p.start( exe );
+	p.waitForFinished() ;
+	p.close();
+}
+
 void managepartitionthread::run()
 {
 	if( m_action == QString( "update") ){
@@ -54,6 +63,10 @@ void managepartitionthread::run()
 	}else if( m_action == QString( "volumeMiniProperties" ) ){
 
 		this->volumeMiniProperties() ;
+
+	}else if( m_action == QString( "openPath" ) ){
+
+		this->openPathInFileManager();
 	}
 }
 

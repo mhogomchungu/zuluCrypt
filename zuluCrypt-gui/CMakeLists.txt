@@ -90,6 +90,7 @@ set (SRC createfile.cpp
 	socketsendkey.cpp
 	openvolumereadonly.cpp
 	zuluoptions.cpp
+	openmountpointinfilemanager.cpp
 	../zuluMount-gui/oneinstance.cpp	
 )
 

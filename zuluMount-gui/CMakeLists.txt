@@ -27,7 +27,8 @@ set (SRC 	main.cpp
 		../zuluCrypt-gui/userfont.cpp
 		../zuluCrypt-gui/tablewidget.cpp
 		../zuluCrypt-gui/socketsendkey.cpp 
-		../zuluCrypt-gui/openvolumereadonly.cpp 		
+		../zuluCrypt-gui/openvolumereadonly.cpp 
+		../zuluCrypt-gui/openmountpointinfilemanager.cpp
 )
 
 find_package( Qt4 REQUIRED )

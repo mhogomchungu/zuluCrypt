@@ -21,6 +21,7 @@ SOURCES += main.cpp\
     ../zuluCrypt-gui/openvolumereadonly.cpp \
     ../zuluCrypt-gui/socketsendkey.cpp \
     oneinstance.cpp \
+    ../zuluCrypt-gui/openmountpointinfilemanager.cpp
 
 HEADERS  += mainwindow.h\
     keydialog.h \
@@ -31,7 +32,8 @@ HEADERS  += mainwindow.h\
     mountpartition.h \
     ../zuluCrypt-gui/openvolumereadonly.h \
     ../zuluCrypt-gui/socketsendkey.h \
-    oneinstance.h
+    oneinstance.h \
+    ../zuluCrypt-gui/openmountpointinfilemanager.h
 
 FORMS    += mainwindow.ui\
 	    ../zuluCrypt-gui/dialogmsg.ui \

@@ -17,6 +17,8 @@
 #include "../zuluCrypt-gui/zuluoptions.h"
 #include "../zuluCrypt-gui/socketsendkey.h"
 #include "../zuluCrypt-gui/openvolumereadonly.h"
+#include "../zuluCrypt-gui/openmountpointinfilemanager.h"
+
 #include "mainwindow.h"
 
 namespace Ui {

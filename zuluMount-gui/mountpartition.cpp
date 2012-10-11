@@ -150,6 +150,9 @@ void mountPartition::slotMountComplete( int status,QString msg )
 		mpt->setDevice( m_table->item( m_table->currentRow(),0 )->text() );
 		connect( mpt,SIGNAL( signalProperties( QString ) ),this,SLOT( volumeMiniProperties( QString ) ) ) ;
 		mpt->startAction( QString( "volumeMiniProperties" ) ) ;
+
+		openmountpointinfilemanager * omp = new openmountpointinfilemanager( m_ui->lineEdit->text() ) ;
+		omp->start();
 	}
 }
 void mountPartition::HideUI()

@@ -455,6 +455,9 @@ void passwordDialog::success( void )
 	checkvolumetype * cvt = new checkvolumetype( m_ui->OpenVolumePath->text() );
 	connect( cvt,SIGNAL( done( QString ) ),this,SLOT( done( QString ) ) );
 	cvt->start();
+
+	openmountpointinfilemanager * omp = new openmountpointinfilemanager( m_ui->MountPointPath->text() ) ;
+	omp->start();
 }
 
 void passwordDialog::done( QString type )

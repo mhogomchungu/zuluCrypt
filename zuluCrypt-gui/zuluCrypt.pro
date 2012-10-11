@@ -47,7 +47,8 @@ SOURCES += main.cpp\
     socketsendkey.cpp \
     openvolumereadonly.cpp \
     ../zuluMount-gui/oneinstance.cpp \
-    zuluoptions.cpp
+    zuluoptions.cpp \
+    openmountpointinfilemanager.cpp
 
 HEADERS  += zulucrypt.h password_dialog.h \
     openpartition.h \
@@ -85,7 +86,8 @@ HEADERS  += zulucrypt.h password_dialog.h \
     zuluoptions.h \
     socketsendkey.h \
     openvolumereadonly.h \
-    ../zuluMount-gui/oneinstance.h
+    ../zuluMount-gui/oneinstance.h \
+    openmountpointinfilemanager.h
 
 
 FORMS    += zulucrypt.ui password.ui \

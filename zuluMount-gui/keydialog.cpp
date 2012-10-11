@@ -197,6 +197,9 @@ void keyDialog::slotMountComplete( int st,QString m )
 		mpt->setDevice( m_table->item( m_table->currentRow(),0 )->text() );
 		connect( mpt,SIGNAL( signalProperties( QString ) ),this,SLOT( volumeMiniProperties( QString ) ) ) ;
 		mpt->startAction( QString( "volumeMiniProperties" ) ) ;
+
+		openmountpointinfilemanager * omp = new openmountpointinfilemanager( m_ui->lineEditMountPoint->text() ) ;
+		omp->start();
 	}else{
 		DialogMsg msg( this ) ;
 

@@ -26,6 +26,7 @@
 #include <QCloseEvent>
 #include <QTableWidget>
 #include <stdlib.h>
+#include <QProcess>
 
 #include "ui_password.h"
 #include "openpartition.h"
@@ -40,6 +41,7 @@
 #include "zuluoptions.h"
 #include "socketsendkey.h"
 #include "openvolumereadonly.h"
+#include "openmountpointinfilemanager.h"
 
 class passwordDialog :  public QDialog
 {
@@ -86,6 +88,7 @@ private :
 	QMenu * m_pluginMenu ;
 	QWidget * m_parent ;
 	QString m_key ;
+	QProcess * m_qprocess ;
 };
 
 #endif // PASSWORD_DIALOG_H
