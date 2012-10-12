@@ -35,23 +35,25 @@ extern "C" {
  *  
  * The following options will be passed to the module.
  * argv[0] - the name of the module
- * argv[1] - the device path with the encrypted volume
+ * argv[1] - the device path with the encrypted volume to be opened
  * argv[2] - the UUID of the encrypted volume or "Nil" if the encrypted volume has no UUID( plain volume )
- * argv[3] - the socket path.The address to where the local socket is created.
+ * argv[3] - a token to be used for communication btw the plugin and zuluCrypt-cli.
  * argv[4] - the maximum number of bytes that will be read. 
- * argv[5] - the argument list as presented to zuluCrypt-cli  
+ * argv[5] - the command line argument list as presented to zuluCrypt-cli  
  */
 
 /*
- * The key to zuluCrypt-cli will be sent through a unix local socket.This function will create the connection on the plugin side.
- * The argument it takes is argv[3].
+ * This function opens a connection btw the plugin and zuluCrypt-cli.
  * 
- * The returned value is a handle to the connection to be used for subsequent calls.
+ * This function is expected to be called within 30 seconds or the connection will be closed.
+ * 
+ * NULL is returned if the connection can not be made.
+ * This function will block for atmost 20 seconds while trying to establish a connection. 
  */
-void * zuluCryptPluginManagerOpenConnection( const char * sockpath ) ;
+void * zuluCryptPluginManagerOpenConnection( const char * token ) ;
 
 /*
- * This function sends the key to zuluCrypt-cli through a local socket.
+ * This function sends the key to zuluCrypt-cli through a connection established by the command above.
  * The first argument is a handle returned above
  * The second argument is a buffer to the key to be sent
  * The third argument is the length of the buffer
@@ -74,11 +76,11 @@ void zuluCryptPluginManagerCloseConnection( void * handle ) ;
  * 	const char * exe    = argv[0] ;
  * 	const char * device = argv[1] ;
  *      const char * uuid   = argv[2] ;
- * 	const char * addr   = argv[3] ;
+ * 	const char * token  = argv[3] ;
  * 	int len             = atoi( argv[4] ) ;
  * 	const char * argv   = argv[ 5 ] ;
  * 
- * 	void * handle = zuluCryptPluginManagerStartConnection( addr ) ;
+ * 	void * handle = zuluCryptPluginManagerStartConnection( token ) ;
  * 
  *	zuluCryptPluginManagerSendKey( handle,"xyz",3 ) ;
  * 

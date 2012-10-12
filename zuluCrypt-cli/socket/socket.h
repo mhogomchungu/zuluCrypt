@@ -36,6 +36,7 @@ extern "C" {
 #include <arpa/inet.h>
 #include <sys/select.h>
 #include <netdb.h>
+#include <sys/time.h>
 
 #define SocketVoid     ( ( void * ) 0 )  
 

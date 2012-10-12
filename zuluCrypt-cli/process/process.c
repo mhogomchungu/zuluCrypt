@@ -154,6 +154,8 @@ static void __ProcessStartTimer( process_t p )
 
 pid_t ProcessStart( process_t p ) 
 {
+	uid_t uid ;
+	
 	if( pipe( p->fd_0 ) == -1 )
 		return -1 ;
 	if( pipe( p->fd_1 ) == -1 )
@@ -169,12 +171,12 @@ pid_t ProcessStart( process_t p )
 	ProcessSetArguments_1( p ) ;
 	
 	if( p->pid == 0 ){
-				
 		if( p->uid != -1 ){
-			setuid( p->uid )   ;
-			seteuid( p->uid )  ;
-			setgid( p->pid )   ;
-			setegid( p->pid )  ;
+			uid = p->uid ;
+			setuid( uid )   ;
+			seteuid( uid )  ;
+			setgid( uid )   ;
+			setegid( uid )  ;
 		}		
 		
 		dup2( p->fd_0[ 0 ],0 )    ;
