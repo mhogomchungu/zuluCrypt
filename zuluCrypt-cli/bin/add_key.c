@@ -51,12 +51,12 @@ static int zuluCryptCheckEmptySlots( const char * device )
 	return status ;
 }
 
-static int zuluExit( int st,stringManage_t stm )
+static int zuluExit( int st,stringList_t stl )
 {
 	/*
-	 * this function is defined in ../string/StringManage.c
+	 * this function is defined in ../string/StringList.c
 	 */
-	StringManageClearDelete( &stm ) ;
+	StringListClearDelete( &stl ) ;
 	
 	switch ( st ){
 		case 0  : printf( "SUCCESS: key added successfully\n" );	                              	break ;
@@ -82,9 +82,9 @@ static int zuluExit( int st,stringManage_t stm )
 	return st ;
 }
 
-static int zuluExit_1( int st,const char * device,stringManage_t stm )
+static int zuluExit_1( int st,const char * device,stringList_t stl )
 {
-	StringManageClearDelete( &stm ) ;	
+	StringListClearDelete( &stl ) ;	
 	printf( "ERROR: device \"%s\" is not a luks device\n",device ) ;
 	return st ;
 }
@@ -126,13 +126,13 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 	const char * keyType2    = opts->new_key_source ;
 	const char * newKey      = opts->new_key ;
 	
-	stringManage_t stm = StringManage( 5 ) ;
+	stringList_t stl = StringListInit() ;
 	
-	string_t * presentKey	= StringManageAssign( stm ) ;
-	string_t * newKey_1  	= StringManageAssign( stm ) ; 
-	string_t * newKey_2    	= StringManageAssign( stm ) ; 
-	string_t * ek          	= StringManageAssign( stm ) ; 
-	string_t * nk          	= StringManageAssign( stm ) ; 
+	string_t * presentKey	= StringListAssign( stl ) ;
+	string_t * newKey_1  	= StringListAssign( stl ) ; 
+	string_t * newKey_2    	= StringListAssign( stl ) ; 
+	string_t * ek          	= StringListAssign( stl ) ; 
+	string_t * nk          	= StringListAssign( stl ) ; 
 	
 	const char * key1 = NULL ;
 	const char * key2 = NULL ;
@@ -146,7 +146,7 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 	 * check_if_partition_is_system_partition() is defined in partition.c
 	 */
 	if( zuluCryptPartitionIsSystemPartition( device ) && uid != 0 )
-		return zuluExit( 13,stm ) ;
+		return zuluExit( 13,stl ) ;
 	
 	/*
 	 * This function is defined at "security.c"
@@ -155,16 +155,16 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 	 * The importance of the function is explained where it is defined.
 	 */
 	switch( zuluCryptSecurityCanOpenPathForWriting( device,uid ) ){
-		case 1 : return zuluExit( 11,stm ) ; break ;
-		case 2 : return zuluExit( 4,stm )  ; break ;
+		case 1 : return zuluExit( 11,stl ) ; break ;
+		case 2 : return zuluExit( 4,stl )  ; break ;
 	}
 	
 	if( zuluCryptVolumeIsNotLuks( device ) )
-		return zuluExit_1( 3,device,stm ) ;
+		return zuluExit_1( 3,device,stl ) ;
 	
 	switch( zuluCryptCheckEmptySlots( device ) ){
-		case 0 : return zuluExit( 10,stm ) ;
-		case 1 : return zuluExit( 2,stm )  ; 
+		case 0 : return zuluExit( 10,stl ) ;
+		case 1 : return zuluExit( 2,stl )  ; 
 	}
 	
 	if( keyType1 == NULL && keyType2 == NULL )
@@ -172,8 +172,8 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 	
 	if ( i == 1 ){	
 		switch( zuluGetKeys( presentKey,newKey_1,newKey_2 ) ){
-			case 1 : return zuluExit( 14,stm ) ;
-			case 2 : return zuluExit( 15,stm ) ;
+			case 1 : return zuluExit( 14,stl ) ;
+			case 2 : return zuluExit( 15,stl ) ;
 		}
 		
 		if( !StringEqualString( *newKey_1,*newKey_2 ) )
@@ -187,16 +187,16 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 		}
 	}else{		
 		if( keyType1 == NULL || keyType2 == NULL || newKey == NULL || existingKey == NULL )
-			return zuluExit( 6,stm ) ;
+			return zuluExit( 6,stl ) ;
 		if ( strcmp( keyType1, "-f" ) == 0 ){	
 			/*
 			 * this function is defined at "security.c"
 			 */
 			switch( zuluCryptSecurityGetPassFromFile( existingKey,uid,ek ) ){
-				case 1 : return zuluExit( 8,stm ) ; 
-				case 4 : return zuluExit( 12,stm ) ;
-				case 2 : return zuluExit( 9,stm );
-				case 5 : return zuluExit( 16,stm ) ;
+				case 1 : return zuluExit( 8,stl ) ; 
+				case 4 : return zuluExit( 12,stl ) ;
+				case 2 : return zuluExit( 9,stl );
+				case 5 : return zuluExit( 16,stl ) ;
 			}
 			key1 = StringContent( *ek ) ;
 			len1 = StringLength( *ek ) ;
@@ -206,10 +206,10 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 			 * this function is defined at "security.c.c"
 			 */
 			switch( zuluCryptSecurityGetPassFromFile( newKey,uid,nk ) ){
-				case 1 : return zuluExit( 8,stm ) ; 
-				case 4 : return zuluExit( 12,stm ) ;
-				case 2 : return zuluExit( 9,stm );
-				case 5 : return zuluExit( 16,stm ) ;
+				case 1 : return zuluExit( 8,stl ) ; 
+				case 4 : return zuluExit( 12,stl ) ;
+				case 2 : return zuluExit( 9,stl );
+				case 5 : return zuluExit( 16,stl ) ;
 			}
 			key2 = StringContent( *nk ) ;
 			len2 = StringLength( *nk ) ;
@@ -240,5 +240,5 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 	 */
 	zuluCryptCheckInvalidKey( opts->device ) ;
 	
-	return zuluExit( status,stm ) ;	
+	return zuluExit( status,stl ) ;	
 }

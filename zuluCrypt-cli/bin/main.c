@@ -77,8 +77,8 @@ static int zuluCryptEXE( struct_opts * clargs, const char * mapping_name,uid_t u
 {	
 	switch( clargs->action ){
 		case 'B' : return zuluCryptEXESaveAndRestoreLuksHeader( clargs,uid,LUKS_HEADER_SAVE ) ;
-		case 'R' : return zuluCryptEXESaveAndRestoreLuksHeader( clargs,uid,LUKS_HEADER_RESTORE ) ;		
-		case 'J' : return zuluCryptEXEOpenPlainAsMe( clargs,mapping_name,uid ) ;		
+		case 'R' : return zuluCryptEXESaveAndRestoreLuksHeader( clargs,uid,LUKS_HEADER_RESTORE ) ;
+		case 'J' : return zuluCryptEXEOpenPlainAsMe( clargs,mapping_name,uid ) ;
 		case 'X' : return zuluCryptEXEWriteDeviceWithJunk( clargs,mapping_name,uid ) ;
 		case 'w' : return zuluCryptEXECheckUUID( clargs->device ) ;
 		case 'b' : return zuluCryptEXECheckEmptySlots( clargs->device ) ;
@@ -98,9 +98,9 @@ static int zuluCryptEXE( struct_opts * clargs, const char * mapping_name,uid_t u
 	return 200 ; /* shouldnt get here */	
 }
 
-static int zuluExit( int st,stringManage_t stm,const char * msg )
+static int zuluExit( int st,stringList_t stl,const char * msg )
 {
-	StringManageClearDelete( &stm ) ;
+	StringListClearDelete( &stl ) ;
 	
 	if( msg != NULL )
 		printf( "%s\n",msg ) ;
@@ -116,7 +116,7 @@ int main( int argc,char * argv[] )
 	int st ;
 	uid_t uid ;
 	string_t q = StringVoid ;
-	stringManage_t stm ;
+	stringList_t stl = StringListVoid ;
 	struct_opts clargs ;
 	
 	uid = getuid();
@@ -132,65 +132,58 @@ int main( int argc,char * argv[] )
 	}
 	if( argc == 2 ){
 		ac = argv[ 1 ] ;
-		if ( strcmp( ac,"-h" ) == 0 || strcmp( ac,"--help" ) == 0 || strcmp( ac,"-help" ) == 0 ){			
+		if ( strcmp( ac,"-h" ) == 0 || strcmp( ac,"--help" ) == 0 || strcmp( ac,"-help" ) == 0 ){
 			zuluCryptEXEHelp();	
 			return 0 ;
 		}	
-		if ( strcmp( ac,"-v" ) == 0 || strcmp( ac,"-version" ) == 0 || strcmp( ac,"--version" ) == 0 ){		
+		if ( strcmp( ac,"-v" ) == 0 || strcmp( ac,"-version" ) == 0 || strcmp( ac,"--version" ) == 0 ){
 			printf( "%s\n",zuluCryptVersion() );
 			return 0 ;
 		}
 	}
 	
-	stm = StringManage( 5 ) ;
-	
 	zuluCryptEXEGetOpts( argc,argv,&clargs );
 	
-	q = String( "" ) ;	
+	stl = StringListInit() ;
+	
+	q = StringListAssignString( stl,String( "" ) ) ;
+	
 	if( argc > 0 ){
 		while( *argv ){
 			StringMultipleAppend( q,*argv," ",'\0' ) ;
-			argv++ ;			
+			argv++ ;
 		}
-			
 		StringSubChar( q,StringLength( q ) - 1,'\0' ) ;
-	}		
+	}
 	
-	StringManageInsertAtLast( stm,&q ) ;
-	
-	q = StringManageStringAt( stm,0 ) ;
-	clargs.argv = StringContent( q ) ;	
+	clargs.argv = StringListContentAt( stl,0 );	
 	
 	if( clargs.key != NULL ){
-		q = String( clargs.key ) ;
+		q = StringListAssignString( stl,String( clargs.key ) ) ;
 		memset( ( char * )clargs.key,'\0',StringLength( q ) ) ;
-		strcpy( ( char * )clargs.key,"x" ) ;		
+		strcpy( ( char * )clargs.key,"x" ) ;
 		clargs.key = StringContent( q ) ;
-		StringManageInsertAtLast( stm,&q ) ;
 	}
 	
 	if( clargs.new_key != NULL ){
-		q = String( clargs.new_key ) ;
+		q = StringListAssignString( stl,String( clargs.new_key ) ) ;
 		memset( ( char * )clargs.new_key,'\0',StringLength( q ) ) ;
 		strcpy( ( char * )clargs.new_key,"x" ) ;
 		clargs.new_key = StringContent( q ) ;
-		StringManageInsertAtLast( stm,&q ) ;
 	}
 	
 	if( clargs.existing_key != NULL ){
-		q = String( clargs.existing_key ) ;
+		q = StringListAssignString( stl,String( clargs.existing_key ) ) ;
 		memset( ( char * )clargs.existing_key,'\0',StringLength( q ) );
-		strcpy( ( char * )clargs.existing_key,"x" ) ;		
+		strcpy( ( char * )clargs.existing_key,"x" ) ;
 		clargs.existing_key = StringContent( q ) ;
-		StringManageInsertAtLast( stm,&q ) ;
 	}		
 	
 	if( clargs.device != NULL ){
-		q = String( clargs.device ) ;
+		q = StringListAssignString( stl,String( clargs.device ) ) ;
 		memset( ( char * )clargs.device,'\0',StringLength( q ) );
-		strcpy( ( char * )clargs.device,"x" ) ;		
+		strcpy( ( char * )clargs.device,"x" ) ;
 		clargs.device = StringContent( q ) ;
-		StringManageInsertAtLast( stm,&q ) ;
 	}	
 	
 	action = clargs.action ;
@@ -203,20 +196,20 @@ int main( int argc,char * argv[] )
 		case 'A':
 		case 'N':
 		case 'S': st = zuluCryptPrintPartitions( clargs.partition_number ) 	;
-			  return zuluExit( st,stm,NULL ) ;
+			  return zuluExit( st,stl,NULL ) ;
 		case 'L': st = zuluCryptPrintOpenedVolumes( uid ) 			; 
-		    	  return zuluExit( st,stm,NULL ) ;
+		    	  return zuluExit( st,stl,NULL ) ;
 	}
 	
 	if( action == '\0' )
-		return zuluExit( 130,stm,"ERROR: \"action\" argument is missing\n" ) ;	
+		return zuluExit( 130,stl,"ERROR: \"action\" argument is missing\n" ) ;	
 	
 	if( device == NULL )
-		return zuluExit( 120,stm,"ERROR: required option( device path ) is missing for this operation\n" ) ;		
+		return zuluExit( 120,stl,"ERROR: required option( device path ) is missing for this operation\n" ) ;
 	
 	if( strncmp( device,"UUID=",5 ) == 0 ){
 
-		q = String( device ) ;	
+		q = String( device ) ;
 		StringRemoveString( q,"\"" ) ;
 		StringSubChar( q,4,'-' ) ;
 		
@@ -225,24 +218,24 @@ int main( int argc,char * argv[] )
 		ac = zuluCryptDeviceFromUUID( mapping_name + 5 ) ;
 		
 		if( ac != NULL ) {		
-			clargs.device = ac ;			
-			st = zuluCryptEXE( &clargs,mapping_name,uid );			
+			clargs.device = ac ;
+			st = zuluCryptEXE( &clargs,mapping_name,uid );
 			free( ac ) ;
 			StringDelete( &q ) ;
-			return zuluExit( st,stm,NULL ) ;
+			return zuluExit( st,stl,NULL ) ;
 		}else{
 			StringDelete( &q ) ;
-			return zuluExit( 110,stm,"ERROR: could not find any partition with the presented UUID\n") ;
+			return zuluExit( 110,stl,"ERROR: could not find any partition with the presented UUID\n") ;
 		}
 	}else{
 		if ( ( ac = strrchr( device,'/' ) ) != NULL ) {
 			mapping_name =  ac + 1  ;
 		}else{
-			mapping_name =  device  ;			
+			mapping_name =  device  ;
 		}
 	}
 
-	st = zuluCryptEXE( &clargs,mapping_name,uid ) ;	
+	st = zuluCryptEXE( &clargs,mapping_name,uid ) ;
 	
-	return zuluExit( st,stm,NULL ) ;
+	return zuluExit( st,stl,NULL ) ;
 } 

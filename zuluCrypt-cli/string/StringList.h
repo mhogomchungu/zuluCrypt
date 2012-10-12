@@ -52,6 +52,10 @@ stringList_t StringList( const char * cstring ) ;
  */
 stringList_t StringListString( string_t * ) ;
 
+/*
+ * create a stringlist_t object with empty content
+ */
+stringList_t StringListInit( void ) ;
 
 /*
  * Return the number of elements in the list * 
@@ -62,6 +66,24 @@ ssize_t StringListSize( stringList_t stl ) ;
  * create a  stringlist from splitted cstring using splitter as a splitting trigger. * 
  */
 stringList_t StringListSplit( const char * cstring,char splitter ) ;
+
+/*
+ * add a new spot at the end of stringList_t object and return its position.
+ * 
+ * eg usage:
+ * string_t * p = StringListAssign( stl ) ;
+ * *p = String( "abc" ) ;
+ * 
+ * another way of doing the same thing:
+ * string_t p = StringListAssignString( stl,String( "abc" ) ) ; 
+ */
+string_t * StringListAssign( stringList_t ) ;
+
+/*
+ * add a string_t objest to the end of stringList_t object
+ * string_t object passed is returned on success,StringVoid is return otherwise
+ */
+string_t StringListAssignString( stringList_t,string_t ) ;
 
 /*
  * create a stringlist from string_t using splitter as a splitting trigger. 
@@ -198,6 +220,12 @@ string_t StringListDetachAt( stringList_t stl, size_t index ) ;
  *  when function return, stl will point to NULL
  */
 void StringListDelete( stringList_t * stl ) ;
+
+/*
+ * remember to clean after yourself
+ * overwite string objects as they are cleaned up
+ */
+void StringListClearDelete( stringList_t * stl ) ;
 
 /*
  * delete multiple stringList_t * objects.

@@ -38,12 +38,12 @@ static int zuluCryptExECheckEmptySlots( const char * device )
 	return status ;
 }
 
-static int zuluExit( int st,stringManage_t stm )
+static int zuluExit( int st,stringList_t stl )
 {
 	/*
-	 * this function is defined in ../string/StringManage.c
+	 * this function is defined in ../string/StringList.c
 	 */
-	StringManageClearDelete( &stm ) ;
+	StringListClearDelete( &stl ) ;
 	
 	switch ( st ){
 		case 0 : printf( "SUCCESS: key removed successfully\n" );										break ;
@@ -66,9 +66,9 @@ static int zuluExit( int st,stringManage_t stm )
 	return st ;
 }
 
-static int zuluExit_1( int st,const char * device,stringManage_t stm )
+static int zuluExit_1( int st,const char * device,stringList_t stl )
 {
-	StringManageClearDelete( &stm ) ;	
+	StringListClearDelete( &stl ) ;	
 	printf( "ERROR: device \"%s\" is not a luks device\n",device ) ;
 	return st ;
 }
@@ -81,10 +81,10 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 	const char * keyType     = opts->key_source ;
 	const char * keytoremove = opts->key ;
 		
-	stringManage_t stm = StringManage( 2 ) ;
+	stringList_t stl = StringListInit() ;
 	
-	string_t * pass    =  StringManageAssign( stm ) ;
-	string_t * confirm =  StringManageAssign( stm ) ;
+	string_t * pass    =  StringListAssign( stl ) ;
+	string_t * confirm =  StringListAssign( stl ) ;
 	
 	int status = 0 ;
 	
@@ -92,7 +92,7 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 	* check_partition is defined in partitions.c
 	*/
 	if( zuluCryptPartitionIsSystemPartition( device ) && uid != 0 )
-		return zuluExit( 14,stm ) ;
+		return zuluExit( 14,stl ) ;
 
 	/*
 	 * This function is defined at "is_path_valid.c"
@@ -101,8 +101,8 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 	 * The importance of the function is explained where it is defined.
 	 */
 	switch( zuluCryptSecurityCanOpenPathForWriting( device,uid ) ){
-		case 2 : return zuluExit( 10,stm ); break ;
-		case 1 : return zuluExit( 12,stm ); break ;
+		case 2 : return zuluExit( 10,stl ); break ;
+		case 1 : return zuluExit( 12,stl ); break ;
 	}
 	
 	if( zuluCryptExECheckEmptySlots( device ) == 3 ){
@@ -111,9 +111,9 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 			printf( "Do you still want to continue? Type \"YES\" if you do: " );
 			*confirm = StringGetFromTerminal_1( 3 ) ;
 			if( *confirm == StringVoid )
-				return zuluExit( 17,stm ) ;
+				return zuluExit( 17,stl ) ;
 			if( !StringEqual( *confirm,"YES" ) )
-				return zuluExit( 11,stm ) ;
+				return zuluExit( 11,stl ) ;
 		}
 	}
 	
@@ -121,8 +121,8 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 	
 		printf( "Enter a key to be removed: " ) ;
 		switch( StringSilentlyGetFromTerminal_1( pass,KEY_MAX_SIZE ) ){
-			case 1 : return zuluExit( 15,stm ) ;
-			case 2 : return zuluExit( 16,stm ) ;
+			case 1 : return zuluExit( 15,stl ) ;
+			case 2 : return zuluExit( 16,stl ) ;
 		}
 		
 		printf( "\n" ) ;
@@ -130,17 +130,17 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 		status = zuluCryptRemoveKey( device,StringContent( *pass ),StringLength( *pass ) ) ;
 	}else{
 		if( keyType == NULL || keytoremove == NULL )
-			return zuluExit( 6,stm ) ;
+			return zuluExit( 6,stl ) ;
 		
 		if( strcmp( keyType,"-f" ) == 0 ){
 			/*
 			 * function is defined at security.c"
 			 */
 			switch( zuluCryptSecurityGetPassFromFile( keytoremove,uid,pass ) ){
-				case 1 : return zuluExit( 5,stm )  ; 
-				case 2 : return zuluExit( 7,stm )  ;
-				case 4 : return zuluExit( 13,stm ) ;
-				case 5 : return zuluExit( 18,stm ) ;
+				case 1 : return zuluExit( 5,stl )  ; 
+				case 2 : return zuluExit( 7,stl )  ;
+				case 4 : return zuluExit( 13,stl ) ;
+				case 5 : return zuluExit( 18,stl ) ;
 			}
 			status = zuluCryptRemoveKey( device,StringContent( *pass ),StringLength( *pass ) ) ;
 		}else if( strcmp( keyType, "-p" ) == 0 ) {
@@ -150,9 +150,9 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 	}
 	
 	if( status == 1 )
-		status = zuluExit_1( status,device,stm ) ;
+		status = zuluExit_1( status,device,stl ) ;
 	else
-		status = zuluExit( status,stm ) ; 
+		status = zuluExit( status,stl ) ; 
 	
 	zuluCryptCheckInvalidKey( opts->device ) ;
 	

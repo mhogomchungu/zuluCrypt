@@ -20,12 +20,12 @@
 #include "includes.h"
 #include "../lib/includes.h"
 
-static int zuluExit( int st,stringManage_t stm )
+static int zuluExit( int st,stringList_t stl )
 {
 	/*
-	 * this function is defined in ../string/StringManage.c
+	 * this function is defined in ../string/StringList.c
 	 */
-	StringManageClearDelete( &stm ) ;
+	StringListClearDelete( &stl ) ;
 	
 	switch ( st ){
 		case 0 : printf( "SUCCESS: volume created successfully\n" ) ;					break  ;
@@ -59,9 +59,9 @@ static int zuluExit( int st,stringManage_t stm )
 	return st ;
 }
 
-static int zuluExit_1( const char * type,stringManage_t stm )
+static int zuluExit_1( const char * type,stringList_t stl )
 {
-	StringManageClearDelete( &stm ) ;
+	StringListClearDelete( &stl ) ;
 	
 	printf( "SUCCESS: volume created successfully\n" ) ;
 	
@@ -83,13 +83,13 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	const char * pass    = opts->key ;
 	const char * rng     = opts->rng ;
 		
-	stringManage_t stm = StringManage( 5 ) ;
+	stringList_t stl = StringListInit() ;
 	
-	string_t * pass_1  = StringManageAssign( stm ) ;
-	string_t * pass_2  = StringManageAssign( stm ) ;
-	string_t * content = StringManageAssign( stm ) ;
-	string_t * confirm = StringManageAssign( stm ) ;
-	string_t * mapper  = StringManageAssign( stm ) ;
+	string_t * pass_1  = StringListAssign( stl ) ;
+	string_t * pass_2  = StringListAssign( stl ) ;
+	string_t * content = StringListAssign( stl ) ;
+	string_t * confirm = StringListAssign( stl ) ;
+	string_t * mapper  = StringListAssign( stl ) ;
 		
 	int st  ;
 	struct stat xt ;
@@ -106,14 +106,14 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	 * The importance of the function is explained where it is defined.
 	 */
 	switch( zuluCryptSecurityCanOpenPathForWriting( device,uid ) ){
-		case 2 : return zuluExit( 1,stm ) ; break ;
-		case 1 : return zuluExit( 13,stm ); break ;		
+		case 2 : return zuluExit( 1,stl ) ; break ;
+		case 1 : return zuluExit( 13,stl ); break ;		
 	}
 	
 	dev = realpath( device,NULL ) ;
 	
 	if( dev == NULL )
-		return zuluExit( 17,stm ) ;
+		return zuluExit( 17,stl ) ;
 	
 	*mapper = zuluCryptCreateMapperName( dev,mapping_name,uid,CLOSE ) ;
 	
@@ -127,15 +127,15 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	free( dev ) ;	
 	
 	if( j == 1 )
-		return zuluExit( 16,stm ) ;
+		return zuluExit( 16,stl ) ;
 	
 	if( k == 1 )
-		return zuluExit( 18,stm ) ;
+		return zuluExit( 18,stl ) ;
 			
 	if( strncmp( device,"/dev/",5 ) != 0 ){
 		stat( device,&xt ) ;
 		if( xt.st_size < 3145728 )
-			return zuluExit( 9,stm ) ;
+			return zuluExit( 9,stl ) ;
 	}
 	
 	/*
@@ -148,7 +148,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	 */	
 	if( zuluCryptPartitionIsSystemPartition( device ) )
 		if( uid != 0 )
-			return zuluExit( 10,stm ) ;
+			return zuluExit( 10,stl ) ;
 	
 	/*
 	 * root's privileges required to create volumes in devices located in "/dev/" other than /dev/sdX and /dev/hdX
@@ -157,14 +157,14 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		if( strncmp( device,"/dev/hd",7 ) != 0 )
 			if( strncmp( device,"/dev/sd",7 ) != 0 )
 				if( uid != 0 )
-					return zuluExit( 14,stm ) ;
+					return zuluExit( 14,stl ) ;
 
 	/*
 	 * ZULUCRYPTmkfs is defined at "../constants.h"
 	 * File systems are created not through file systems APIs but through mkfs.xxx executables started using exec call.
 	 */
 	if( zuluCryptPathIsNotValid( ZULUCRYPTmkfs ) )
-		return zuluExit( 11,stm ) ;
+		return zuluExit( 11,stl ) ;
 	
 	if( conf == -1 ){			
 		printf( "\nThis operation will destroy all data in a device at: \"%s\"\n",device ) ;
@@ -173,10 +173,10 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		
 		*confirm = StringGetFromTerminal_1( 3 ) ;	
 		if( *confirm == StringVoid )
-			return zuluExit( 21,stm ) ;
+			return zuluExit( 21,stl ) ;
 		else{
 			if( !StringEqual( *confirm,"YES" ) )
-				return zuluExit( 12,stm ) ;
+				return zuluExit( 12,stl ) ;
 		}
 	}
 	
@@ -185,18 +185,18 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		 * Make sure the user has provided all required options
 		 */
 		if( fs == NULL || type == NULL || rng == NULL )
-			return zuluExit( 4,stm ) ;
+			return zuluExit( 4,stl ) ;
 		
 		printf( "Enter passphrase: " ) ;
 		switch( StringSilentlyGetFromTerminal_1( pass_1,KEY_MAX_SIZE ) ){
-			case 1 : return zuluExit( 19,stm ) ;
-			case 2 : return zuluExit( 20,stm ) ;
+			case 1 : return zuluExit( 19,stl ) ;
+			case 2 : return zuluExit( 20,stl ) ;
 		}
 		
 		printf( "\nRe enter passphrase: " ) ;
 		switch( StringSilentlyGetFromTerminal_1( pass_2,KEY_MAX_SIZE ) ){
-			case 1 : return zuluExit( 19,stm ) ;
-			case 2 : return zuluExit( 20,stm ) ;
+			case 1 : return zuluExit( 19,stl ) ;
+			case 2 : return zuluExit( 20,stl ) ;
 		}
 		
 		printf( "\n" ) ;
@@ -211,7 +211,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		 * Make sure the user has provided all required options
 		 */
 		if( fs == NULL || type == NULL || pass == NULL || rng == NULL || keyType == NULL )
-			return zuluExit( 4,stm ) ;
+			return zuluExit( 4,stl ) ;
 		
 		/*
 		 * "-p" options means a user has provided the passphrase
@@ -225,10 +225,10 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 			 * function is defined at "security.c"
 			 */
 			switch( zuluCryptSecurityGetPassFromFile( pass,uid,content ) ){
-				case 1 : return zuluExit( 8,stm )  ; 
-				case 4 : return zuluExit( 15,stm ) ;
-				case 2 : return zuluExit( 6,stm )  ;
-				case 5 : return zuluExit( 22,stm ) ;
+				case 1 : return zuluExit( 8,stl )  ; 
+				case 4 : return zuluExit( 15,stl ) ;
+				case 2 : return zuluExit( 6,stl )  ;
+				case 5 : return zuluExit( 22,stl ) ;
 			}
 			st = zuluCryptCreateVolume( device,fs,type,StringContent( *content ),StringLength( *content ),rng ) ;					
 		}else{
@@ -237,8 +237,8 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	}
 	
 	if( st == 0 )
-		return zuluExit_1( type,stm ) ;
+		return zuluExit_1( type,stl ) ;
 	else
-		return zuluExit( st,stm ) ;
+		return zuluExit( st,stl ) ;
 }
 

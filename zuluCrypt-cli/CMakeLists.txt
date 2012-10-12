@@ -110,7 +110,8 @@
  	 
  add_library( Socket STATIC socket/socket.c ) 
  
- add_library( String STATIC string/String.c string/StringManage.c ) 
+ #add_library( String STATIC string/String.c string/StringManage.c ) 
+ add_library( String STATIC string/String.c ) 
  
  add_library( StringList STATIC string/StringList.c )
  

@@ -47,9 +47,9 @@ typedef struct{
 	unsigned long m_flags ;
 }m_struct;
 
-static inline int zuluExit( int st,stringManage_t stm )
+static inline int zuluExit( int st,stringList_t stl )
 {
-	StringManageDelete( &stm ) ;
+	StringListDelete( &stl ) ;
 	return st ;
 }
 
@@ -261,10 +261,9 @@ int zuluCryptMountVolume( const char * mapper,const char * m_point,const char * 
 #else
 	mnt_lock * m_lock ;
 #endif
-	stringManage_t stm = StringManage( 2 ) ;
+	stringList_t stl = StringListInit() ;
 	
-	string_t * opts = StringManageAssign( stm ) ;
-	string_t * pfs  = StringManageAssign( stm ) ;
+	string_t * opts ;
 	string_t fs ;
 	
 	m_struct mst ;
@@ -282,7 +281,7 @@ int zuluCryptMountVolume( const char * mapper,const char * m_point,const char * 
 	blkid_do_probe( blkid );	
 	blkid_probe_lookup_value( blkid,"TYPE",&cf,NULL ) ;
 		
-	fs = *pfs = String( cf ) ;
+	fs = StringListAssignString( stl,String( cf ) );
 		
 	blkid_free_probe( blkid );
 	
@@ -290,18 +289,19 @@ int zuluCryptMountVolume( const char * mapper,const char * m_point,const char * 
 		/*
 		 * failed to read file system,probably because the volume does have any or is an encrypted plain volume
 		 */
-		return zuluExit( 4,stm ) ;
+		return zuluExit( 4,stl ) ;
 	}
 	
 	if( StringEqual( fs,"crypto_LUKS" ) ){
 		/*
 		 * we cant mount an encrypted volume, exiting
 		 */
-		return zuluExit( 4,stm ) ;
+		return zuluExit( 4,stl ) ;
 	}
 	
 	mst.fs = StringContent( fs ) ;
 	
+	opts = StringListAssign( stl ) ;
 	*opts = set_mount_options( &mst ) ;
 	
 	/*
@@ -310,7 +310,7 @@ int zuluCryptMountVolume( const char * mapper,const char * m_point,const char * 
 	*/
 	if( StringEqual( fs,"ntfs" ) ){
 		h = mount_ntfs( &mst ) ;
-		StringManageDelete( &stm ) ;
+		StringListDelete( &stl ) ;
 		switch( h ){
 			case 0  : return 0 ;
 			case 16 : return 12 ;
@@ -354,6 +354,6 @@ int zuluCryptMountVolume( const char * mapper,const char * m_point,const char * 
 		mnt_free_lock( m_lock ) ;
 	}
 	
-	return zuluExit( h,stm ) ;
+	return zuluExit( h,stl ) ;
 }
 
