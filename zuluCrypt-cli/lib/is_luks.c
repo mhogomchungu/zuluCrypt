@@ -25,7 +25,7 @@ int zuluCryptVolumeIsLuks( const char * dev )
 	int st ;
 	
 	if( crypt_init( &cd,dev ) != 0 )
-		return 1 ;
+		return 0 ;
 	
 	st = crypt_load( cd,NULL,NULL ) ;
 	

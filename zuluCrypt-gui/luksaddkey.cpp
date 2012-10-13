@@ -306,6 +306,7 @@ void luksaddkey::threadfinished( int status )
 			return HideUI();
 		case 1  : msg.ShowUIOK( tr( "ERROR!" ),tr( "presented key does not match any key in the volume" ) ) ;		      	break ;
 		case 2  : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open luks device" ) ) ;					     	break ;
+		case 3  : msg.ShowUIOK( tr( "ERROR!" ),tr( "device is not a luks device" ) ) ;					     	break ;
 		case 4  : msg.ShowUIOK( tr( "ERROR!" ),tr( "device does not exist" ) ) ;	                                      	break ;
 		case 5  : msg.ShowUIOK( tr( "ERROR!" ),tr( "wrong arguments" ) ) ;							break ;
 		case 6  : msg.ShowUIOK( tr( "ERROR!" ),tr( "one or more required argument( s ) for this operation is missing" ) );	break ;

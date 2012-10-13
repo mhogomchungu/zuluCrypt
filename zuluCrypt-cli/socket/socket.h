@@ -95,8 +95,8 @@ const char * SocketAddress( socket_t ) ;
 
 /*
  * bind a socket. This will make a socket a server socket
- * 0 is returned on success
- * -1 is returned on error
+ * 1 is returned on success
+ * 0 is returned on error
  */
 int SocketBind( socket_t ) ;
 
@@ -113,15 +113,15 @@ socket_t SocketAccept( socket_t ) ;
 
 /*
  * connect to a server
- * 0 is returned on success
- * -1 is returned on error
+ * 1 is returned on success
+ * 0 is returned on error
  */
 int SocketConnect( socket_t ) ;
 
 /*
  * listen for an incomming connection
- * 0 is returned on success
- * -1 is returned on error
+ * 1 is returned on success
+ * 0 is returned on error
  */
 int SocketListen( socket_t ) ;
 
@@ -179,8 +179,8 @@ ssize_t SocketSendData( socket_t,const char * buffer,size_t len ) ;
 
 /*
  * close the connection
- * 0 is returned on success
- * -1 is returned on error
+ * 1 is returned on success
+ * 0 is returned on error
  */
 int SocketClose( socket_t ) ;
 

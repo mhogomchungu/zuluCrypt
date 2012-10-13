@@ -36,6 +36,9 @@ static int zuluCryptEXEGetDevice( const char * device )
 
 static int zuluCryptEXECheckIfLuks( const char * device )
 {
+	/*
+	 * this zuluCryptVolumeIsLuks() is defined in ../lib/is_luks.c
+	 */
 	int status = zuluCryptVolumeIsLuks( device ) ;
 	
 	if( status )

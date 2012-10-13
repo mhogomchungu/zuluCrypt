@@ -193,7 +193,7 @@ bool miscfunctions::isLuks( QString volumePath )
 	int i = p.exitCode() ;
 	p.close();
 
-	return i == 0 ? true : false ;
+	return i == 1 ? true : false ;
 }
 
 QStringList miscfunctions::luksEmptySlots( QString volumePath )

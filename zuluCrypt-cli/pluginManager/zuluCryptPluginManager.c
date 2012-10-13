@@ -45,14 +45,13 @@ int syscall(int number, ...) ;
 static socket_t zuluCryptSocketAccept( socket_t server ) 
 {
 	int i ;
-	int fd ;
 	
 	socket_t client = SocketVoid ;
 	
-	if( server == SocketVoid )
-		return SocketVoid ;
+	int fd = SocketFileDescriptor( server ) ;
 	
-	fd = SocketFileDescriptor( server ) ;
+	if( fd < 0 )
+		return SocketVoid ;
 	
 	fcntl( fd,F_SETFL,O_NONBLOCK );
 	
@@ -105,7 +104,7 @@ void * zuluCryptPluginManagerOpenConnection( const char * sockpath )
 	socket_t client = SocketLocal( sockpath ) ;
 		
 	for( i = 0 ;  ; i++ ){
-		if( SocketConnect( client ) == 0 )
+		if( SocketConnect( client ) )
 			return ( void * ) client ;
 		else if( i == 20 ){
 			SocketDelete( &client ) ;
@@ -208,24 +207,29 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	
 	server = SocketLocal( sockpath ) ;
 	
-	SocketBind( server ) ;
+	if( server != SocketVoid ){
+		
+		if( SocketBind( server ) ){
 	
-	chown( sockpath,uid,uid ) ;
-	chmod( sockpath,S_IRWXU | S_IRWXG | S_IRWXO ) ;
+			chown( sockpath,uid,uid ) ;
+			chmod( sockpath,S_IRWXU | S_IRWXG | S_IRWXO ) ;
 	
-	SocketListen( server ) ;
+			if( SocketListen( server ) ){
 	
-	client = zuluCryptSocketAccept( server ) ;
+				client = zuluCryptSocketAccept( server ) ;
 	
-	SocketClose( server ) ;
-	SocketDelete( &server ) ;
-	
-	i = SocketGetData( client,&buffer,INTMAXKEYZISE ) ;
-	
-	SocketClose( client ) ;
-	SocketDelete( &client ) ;
-	
-	key = StringInheritWithSize( &buffer,i ) ;
+				if( client != SocketVoid ){
+					i = SocketGetData( client,&buffer,INTMAXKEYZISE ) ;
+					SocketClose( client ) ;
+					SocketDelete( &client ) ;
+					key = StringInheritWithSize( &buffer,i ) ;
+				}
+			}
+		}
+		
+		SocketClose( server ) ;
+		SocketDelete( &server ) ;
+	}
 	
 	/*
 	 * for reasons currently unknown to me,the gpg plugin doesnt always exit,it hangs tying up cpu circles.

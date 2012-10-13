@@ -202,13 +202,13 @@ const char * SocketAddress( socket_t s )
 int SocketBind( socket_t s )
 {
 	if( s == SocketVoid )
-		return -1 ;
+		return 0 ;
 	if( s->domain == AF_UNIX ){
 		s->socket_server = 1 ;		
 		unlink( s->local->sun_path ) ;
-		return bind( s->fd,( struct sockaddr * )s->local,s->size ) ;
+		return bind( s->fd,( struct sockaddr * )s->local,s->size ) == 0 ? 1 : 0 ;
 	}else{
-		return bind( s->fd,( struct sockaddr * )s->net,s->size ) ;
+		return bind( s->fd,( struct sockaddr * )s->net,s->size ) == 0 ? 1 : 0 ;
 	}
 }
 
@@ -281,16 +281,19 @@ void SocketSetListenMaximum( socket_t s,int m )
 int SocketConnect( socket_t s ) 
 {
 	if( s == SocketVoid )
-		return -1 ;
+		return 0 ;
 	if( s->domain == AF_UNIX )
-		return connect( s->fd,( struct sockaddr * )s->local,s->size ) ;
+		return connect( s->fd,( struct sockaddr * )s->local,s->size ) == 0 ? 1 : 0 ;
 	else
-		return connect( s->fd,( struct sockaddr * )s->net,s->size ) ;
+		return connect( s->fd,( struct sockaddr * )s->net,s->size ) == 0 ? 1 : 0 ;
 }
 
 int SocketListen( socket_t s ) 
 {
-	return s == SocketVoid ? -1 : listen( s->fd,s->cmax ) ;
+	if( s == SocketVoid )
+		return 0 ;
+	else
+		return listen( s->fd,s->cmax ) == 0 ? 1 : 0 ;
 }
 
 ssize_t SocketGetData_2( socket_t s,char * buffer,size_t len ) 
@@ -436,12 +439,12 @@ int SocketClose( socket_t s )
 {
 	int st ;
 	if( s == SocketVoid )
-		return -1 ;
+		return 0 ;
 		
 	shutdown( s->fd,SHUT_RDWR ) ;
 	st = close( s->fd ) ;
 	if( s->domain == AF_UNIX && s->socket_server )
 		unlink( s->local->sun_path ) ;
-	return st ;	
+	return st == 0 ? 1 : 0 ;	
 }
 
