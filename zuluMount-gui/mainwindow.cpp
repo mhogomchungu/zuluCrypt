@@ -75,6 +75,13 @@ void MainWindow::setUpApp()
 	m_working = false ;
 	m_justMounted = false ;
 	m_trayIcon->show();
+
+	QString dirPath = QDir::homePath() + QString( "/.zuluCrypt/" ) ;
+	QDir dir( dirPath ) ;
+
+	if( !dir.exists() )
+		dir.mkdir( dirPath ) ;
+
 	this->show();
 }
 
@@ -378,6 +385,39 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 
 	this->enableAll();
 	this->disableCommand();
+}
+
+void MainWindow::saveMountPointPath( QString path )
+{
+	QString p = QDir::homePath() + QString( "/.zuluCrypt/zuluMount-MountPointPath" ) ;
+	QFile f( p ) ;
+
+	f.open( QIODevice::WriteOnly ) ;
+
+	int index = path.lastIndexOf( "/") ;
+	if( index != -1 ){
+		path = path.mid( 0,index + 1 ) ;
+		f.write( path.toAscii() ) ;
+	}
+	f.close();
+}
+
+QString MainWindow::getMountPointPath( QString path )
+{
+	QString p = QDir::homePath() + QString( "/.zuluCrypt/zuluMount-MountPointPath" ) ;
+	QFile f( p ) ;
+
+	path = path.split( "/" ).last() ;
+
+	QString e ;
+	if( f.exists() ){
+		f.open( QIODevice::ReadOnly ) ;
+		e = QString( f.readAll() ) + path ;
+		f.close();
+	}else{
+		e = QDir::homePath() + QString( "/" ) + path ;
+	}
+	return e ;
 }
 
 void MainWindow::slotUnmountComplete( int status,QString msg )

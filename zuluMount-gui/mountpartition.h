@@ -47,8 +47,6 @@ private:
 	void enableAll( void ) ;
 	void disableAll( void ) ;
 	void closeEvent( QCloseEvent * );
-	void saveOptions( QString,bool ) ;
-	QStringList readOptions( void ) ;
 	Ui::mountPartition * m_ui;
 	QString m_path ;
 	QString m_label ;

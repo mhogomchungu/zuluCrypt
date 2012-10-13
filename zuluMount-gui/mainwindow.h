@@ -54,6 +54,8 @@ public:
 	~MainWindow();
 	void start( void ) ;
 	static void volumeMiniProperties( QTableWidget *,QString,QString );
+	static void saveMountPointPath( QString ) ;
+	static QString getMountPointPath( QString ) ;
 signals:
 	void result( int,QString ) ;
 public slots:

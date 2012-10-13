@@ -17,7 +17,7 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,QString path,QString
 
 	this->setWindowTitle( msg );
 
-	m_ui->lineEditMountPoint->setText( QDir::homePath() + QString( "/" ) + m_path.split( "/" ).last() );
+	m_ui->lineEditMountPoint->setText( MainWindow::getMountPointPath( path ) );
 	m_ui->pbkeyFile->setVisible( false );
 	m_ui->pbOpenMountPoint->setIcon( QIcon( QString( ":/folder.png" ) ) );
 
@@ -192,7 +192,7 @@ void keyDialog::slotMountComplete( int st,QString m )
 {
 	m_working = false ;
 	if( st == 0 ){
-
+		MainWindow::saveMountPointPath( m_ui->lineEditMountPoint->text() ) ;
 		managepartitionthread * mpt = new managepartitionthread() ;
 		mpt->setDevice( m_table->item( m_table->currentRow(),0 )->text() );
 		connect( mpt,SIGNAL( signalProperties( QString ) ),this,SLOT( volumeMiniProperties( QString ) ) ) ;
