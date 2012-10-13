@@ -25,8 +25,6 @@
 #include <QObject>
 #include <QString>
 
-#include "miscfunctions.h"
-
 class startupupdateopenedvolumes : public QObject, public QRunnable
 {
 	Q_OBJECT

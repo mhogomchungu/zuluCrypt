@@ -19,7 +19,7 @@
 
 #include "createkeyfile.h"
 #include "ui_createkeyfile.h"
-#include "miscfunctions.h"
+#include "utility.h"
 #include "../zuluCrypt-cli/constants.h"
 
 #include <QFileDialog>
@@ -130,10 +130,10 @@ void createkeyfile::pbCreate()
 	if( path.isEmpty() )
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "folder path to where the key will be created is empty" ) );
 
-	if( miscfunctions::exists( path ) == true )
+	if( utility::exists( path ) == true )
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "file with the same name and at the destination folder already exist" ) );
 
-	if( miscfunctions::canCreateFile( path ) == false ){
+	if( utility::canCreateFile( path ) == false ){
 		msg.ShowUIOK( tr( "ERROR!" ),tr( "you dont seem to have writing access to the destination folder" ) );
 		m_ui->lineEditPath->setFocus();
 		return ;

@@ -28,9 +28,7 @@
 
 #include "../zuluCrypt-cli/constants.h"
 #include "../zuluCrypt-cli/bin/libzuluCrypt-exe.h"
-#include "../zuluCrypt-cli/string/String.h"
-#include "../zuluCrypt-cli/string/StringManage.h"
-#include "../zuluCrypt-cli/string/StringList.h"
+#include "../zuluCrypt-cli/bin/includes.h"
 #include "../zuluCrypt-cli/lib/libzuluCrypt.h"
 #include "../zuluCrypt-cli/lib/includes.h"
 #include "../zuluCrypt-cli/bin/includes.h"

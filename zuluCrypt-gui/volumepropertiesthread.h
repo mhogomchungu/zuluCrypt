@@ -22,12 +22,12 @@
 
 #include <QThreadPool>
 #include <QRunnable>
-#include "miscfunctions.h"
 #include <QString>
 #include <QStringList>
 #include <sys/types.h>
 #include <unistd.h>
-
+#include <QProcess>
+#include "../zuluCrypt-cli/constants.h"
 #include "../zuluCrypt-cli/bin/bash_special_chars.h"
 
 class volumePropertiesThread : public QObject,public QRunnable

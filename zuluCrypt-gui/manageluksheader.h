@@ -26,7 +26,7 @@
 
 #include "ui_manageluksheader.h"
 #include "runinthread.h"
-#include "miscfunctions.h"
+#include "utility.h"
 #include "openpartition.h"
 #include "dialogmsg.h"
 

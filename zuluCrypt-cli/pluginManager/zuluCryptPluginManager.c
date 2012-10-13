@@ -26,10 +26,9 @@
 #include <fcntl.h>
 
 #include "libzuluCryptPluginManager.h"
-#include "../process/process.h"
-#include "../socket/socket.h"
-#include "../string/String.h"
-#include "../string/StringManage.h"
+#include "../utility/process/process.h"
+#include "../utility/socket/socket.h"
+#include "../utility/string/String.h"
 #include "../constants.h"
 #include "../bin/includes.h"
 
@@ -42,7 +41,7 @@ int syscall(int number, ...) ;
 #include "plugin_path.h"
 #include <stdio.h>
 
-static socket_t zuluCryptSocketAccept( socket_t server ) 
+static inline socket_t zuluCryptSocketAccept( socket_t server ) 
 {
 	int i ;
 	
@@ -71,30 +70,27 @@ size_t zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid
 {	
 	size_t dataLength = 0 ;
 	char * buffer ;
-
-	socket_t client ;
 	
+	socket_t client ;
 	socket_t server = SocketLocal( sockpath ) ;
 	
-	SocketBind( server ) ;
-	
-	chown( sockpath,uid,uid ) ;
-	chmod( sockpath,S_IRWXU | S_IRWXG | S_IRWXO ) ;
-	
-	SocketListen( server ) ;
-	
-	client = zuluCryptSocketAccept( server ) ;
-	
-	dataLength = SocketGetData( client,&buffer,INTMAXKEYZISE ) ;
-	
-	SocketClose( server ) ;
-	SocketClose( client ) ;
-	
-	SocketDelete( &server ) ;
-	SocketDelete( &client ) ;
-	
-	*key = StringInheritWithSize( &buffer,dataLength ) ;
-	
+	if( server != SocketVoid ){
+		if( SocketBind( server ) ){
+			chown( sockpath,uid,uid ) ;
+			chmod( sockpath,S_IRWXU | S_IRWXG | S_IRWXO ) ;
+			if( SocketListen( server ) ){
+				client = zuluCryptSocketAccept( server ) ;
+				if( client != SocketVoid ){
+					dataLength = SocketGetData( client,&buffer,INTMAXKEYZISE ) ;
+					*key = StringInheritWithSize( &buffer,dataLength ) ;
+					SocketClose( client ) ;
+					SocketDelete( &client ) ;
+				}
+			}
+		}	
+		SocketClose( server ) ;
+		SocketDelete( &server ) ;
+	}
 	return dataLength ;
 }
 
@@ -123,8 +119,9 @@ ssize_t zuluCryptPluginManagerSendKey( void * client,const char * key,size_t len
 
 void zuluCryptPluginManagerCloseConnection( void * p )
 {	
+	socket_t client ;
 	if( p != NULL ){
-		socket_t client = ( socket_t ) p;
+		client = ( socket_t ) p;
 		SocketClose( client ) ;
 		SocketDelete( &client ) ;
 	}
@@ -152,14 +149,8 @@ static string_t zuluCryptGetDeviceUUID( const char * device )
 
 string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * name,uid_t uid,const char * argv )
 {	
-	socket_t server ;
-	socket_t client ;
-	
-	char * buffer ;
-
 	process_t p ;
 	
-	int i ;
 	const char * sockpath ;
 	
 	string_t key   = StringVoid ;
@@ -205,32 +196,8 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	ProcessSetArgumentList( p,device,StringContent( uuid ),sockpath,CHARMAXKEYZISE,argv,'\0' ) ;
 	ProcessStart( p ) ;
 	
-	server = SocketLocal( sockpath ) ;
-	
-	if( server != SocketVoid ){
+	zuluCryptGetKeyFromSocket( sockpath,&key,uid ) ;
 		
-		if( SocketBind( server ) ){
-	
-			chown( sockpath,uid,uid ) ;
-			chmod( sockpath,S_IRWXU | S_IRWXG | S_IRWXO ) ;
-	
-			if( SocketListen( server ) ){
-	
-				client = zuluCryptSocketAccept( server ) ;
-	
-				if( client != SocketVoid ){
-					i = SocketGetData( client,&buffer,INTMAXKEYZISE ) ;
-					SocketClose( client ) ;
-					SocketDelete( &client ) ;
-					key = StringInheritWithSize( &buffer,i ) ;
-				}
-			}
-		}
-		
-		SocketClose( server ) ;
-		SocketDelete( &server ) ;
-	}
-	
 	/*
 	 * for reasons currently unknown to me,the gpg plugin doesnt always exit,it hangs tying up cpu circles.
 	 * send it a sigterm after it is done sending its key to make sure it exits.

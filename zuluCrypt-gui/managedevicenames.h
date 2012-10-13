@@ -30,7 +30,7 @@
 #include <QMenu>
 
 #include "openpartition.h"
-#include "miscfunctions.h"
+#include "utility.h"
 #include "dialogmsg.h"
 #include "tablewidget.h"
 

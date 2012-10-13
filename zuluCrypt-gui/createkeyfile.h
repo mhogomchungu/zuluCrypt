@@ -24,7 +24,7 @@
 #include <QFile>
 
 #include "createfilethread.h"
-#include "miscfunctions.h"
+#include "utility.h"
 #include "createkeyfilethread.h"
 #include "dialogmsg.h"
 

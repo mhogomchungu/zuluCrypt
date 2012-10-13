@@ -104,7 +104,7 @@ void erasedevicethread::run()
 
 void erasedevicethread::writeJunkThroughMapper()
 {
-	QFile fd( miscfunctions::mapperPath( m_path ) ) ;
+	QFile fd( utility::mapperPath( m_path ) ) ;
 	if( fd.open( QIODevice::WriteOnly ) == false )
 		return ;
 

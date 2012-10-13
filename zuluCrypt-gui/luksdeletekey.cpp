@@ -20,7 +20,7 @@
 #include "luksdeletekey.h"
 #include "zulucrypt.h"
 #include "../zuluCrypt-cli/constants.h"
-#include "miscfunctions.h"
+#include "utility.h"
 
 #include <QObject>
 #include <Qt>
@@ -171,7 +171,7 @@ void luksdeletekey::pbDelete()
 	DialogMsg msg( this ) ;
 
 	QString path = m_ui->lineEditVolumePath->text() ;
-	m_volumePath = miscfunctions::resolvePath( path ) ;
+	m_volumePath = utility::resolvePath( path ) ;
 
 	QString passphrase = m_ui->lineEditPassphrase->text() ;
 
@@ -181,7 +181,7 @@ void luksdeletekey::pbDelete()
 	m_volumePath.replace( "\"","\"\"\"" ) ;
 	passphrase.replace( "\"","\"\"\"" ) ;
 
-	QStringList l = miscfunctions::luksEmptySlots( m_volumePath ) ;
+	QStringList l = utility::luksEmptySlots( m_volumePath ) ;
 	if( l.isEmpty() )
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "volume is not a luks volume" ) );
 	else if( l.at( 0 ) == QString( "1" ) ){
@@ -195,7 +195,7 @@ void luksdeletekey::pbDelete()
 
 	QString passType ;
 	if (  m_ui->rbPassphraseFromFile->isChecked() == true ){
-		passphrase = miscfunctions::resolvePath( passphrase ) ;
+		passphrase = utility::resolvePath( passphrase ) ;
 		passType = QString( "-f" ) ;
 	}else{
 		passType = QString( "-f" ) ;
@@ -224,7 +224,7 @@ void luksdeletekey::threadfinished( int status )
 	QString success;
 	switch(  status ){
 		case 0 :
-			l = miscfunctions::luksEmptySlots( m_volumePath ) ;
+			l = utility::luksEmptySlots( m_volumePath ) ;
 			if( l.isEmpty() == false )
 				success = tr( "key removed successfully.\n%1 / %2 slots are now in use" ).arg( l.at( 0 ) ).arg( l.at( 1 ) );
 			else

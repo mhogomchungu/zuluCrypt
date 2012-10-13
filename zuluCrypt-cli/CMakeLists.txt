@@ -108,14 +108,14 @@
  lib/user_home_path.c 
 )
  	 
- add_library( Socket STATIC socket/socket.c ) 
+ add_library( Socket STATIC utility/socket/socket.c ) 
  
  #add_library( String STATIC string/String.c string/StringManage.c ) 
- add_library( String STATIC string/String.c ) 
+ add_library( String STATIC utility/string/String.c ) 
  
- add_library( StringList STATIC string/StringList.c )
+ add_library( StringList STATIC utility/string/StringList.c )
  
- add_library( Process STATIC process/process.c )
+ add_library( Process STATIC utility/process/process.c )
  
  TARGET_LINK_LIBRARIES( Process -pthread ) 
  

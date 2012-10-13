@@ -27,7 +27,7 @@
 #include <QFile>
 #include <QTextStream>
 
-#include "miscfunctions.h"
+#include "utility.h"
 #include "../zuluCrypt-cli/constants.h"
 #include "../zuluCrypt-cli/bin/bash_special_chars.h"
 

@@ -19,11 +19,6 @@
 
 #include "includes.h"
 
-/*
- * provides Process API to call mkfs.xxx tools through fork()/execl() to create file systems in encrypted volumes
- */
-#include "../process/process.h"
-
 #include <sys/syscall.h>
 
 #ifdef __STDC__

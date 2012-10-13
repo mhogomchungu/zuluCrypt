@@ -27,7 +27,7 @@
 #include <QMessageBox>
 #include "createfilethread.h"
 
-#include "miscfunctions.h"
+#include "utility.h"
 #include "dialogmsg.h"
 
 namespace Ui {

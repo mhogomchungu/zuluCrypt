@@ -26,7 +26,7 @@
 #include <QThreadPool>
 
 #include "runinthread.h"
-#include "miscfunctions.h"
+#include "utility.h"
 #include "erasedevice.h"
 #include "createvolumedialog.h"
 #include "dialogmsg.h"

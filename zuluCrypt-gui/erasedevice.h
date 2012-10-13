@@ -23,7 +23,7 @@
 #include <QCloseEvent>
 #include <QFileDialog>
 
-#include "miscfunctions.h"
+#include "utility.h"
 #include "erasedevicethread.h"
 #include "openpartition.h"
 #include "dialogmsg.h"

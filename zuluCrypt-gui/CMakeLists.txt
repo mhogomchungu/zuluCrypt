@@ -66,7 +66,7 @@ set (SRC createfile.cpp
 	zulucrypt.cpp
 	closeallvolumesthread.cpp
 	runinthread.cpp
-	miscfunctions.cpp
+	utility.cpp
 	managedevicenames.cpp
 	partitionproperties.cpp
 	volumepropertiesthread.cpp

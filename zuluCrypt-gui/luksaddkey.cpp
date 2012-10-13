@@ -21,7 +21,7 @@
 #include "luksaddkey.h"
 #include "../zuluCrypt-cli/constants.h"
 #include "zulucrypt.h"
-#include "miscfunctions.h"
+#include "utility.h"
 
 #include <Qt>
 #include <QObject>
@@ -218,7 +218,7 @@ void luksaddkey::pbAdd( void )
 {
 	DialogMsg msg( this ) ;
 	QString path = m_ui->textEditPathToVolume->text() ;
-	m_volumePath = miscfunctions::resolvePath( path ) ;
+	m_volumePath = utility::resolvePath( path ) ;
 	QString ExistingKey = m_ui->textEditExistingPassphrase->text() ;
 
 	QString NewKey = m_ui->textEditPassphraseToAdd->text() ;
@@ -247,7 +247,7 @@ void luksaddkey::pbAdd( void )
 	QString existingPassType ;
 
 	if ( m_ui->radioButtonPassphraseInVolumeFromFile->isChecked() ){
-		ExistingKey = miscfunctions::resolvePath( ExistingKey );
+		ExistingKey = utility::resolvePath( ExistingKey );
 		existingPassType = QString( "-u" ) ;
 	}else{
 		existingPassType = QString( "-u" ) ;
@@ -259,7 +259,7 @@ void luksaddkey::pbAdd( void )
 
 	QString newPassType ;
 	if ( m_ui->radioButtonNewPassphraseFromFile->isChecked() ){
-		NewKey = miscfunctions::resolvePath( NewKey );
+		NewKey = utility::resolvePath( NewKey );
 		newPassType = QString( "-n" ) ;
 	}else{
 		newPassType = QString( "-n" ) ;
@@ -297,7 +297,7 @@ void luksaddkey::threadfinished( int status )
 	QString success;
 	switch( status ){
 		case 0 :
-			x = miscfunctions::luksEmptySlots( m_volumePath );
+			x = utility::luksEmptySlots( m_volumePath );
 			if( x.isEmpty() == false )
 				success = tr( "key added successfully.\n%1 / %2 slots are now in use" ).arg( x.at( 0 ) ).arg( x.at( 1 ) );
 			else

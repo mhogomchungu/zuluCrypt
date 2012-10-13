@@ -22,7 +22,7 @@
 
 #include "../zuluCrypt-cli/constants.h"
 #include "ui_openpartition.h"
-#include "miscfunctions.h"
+#include "utility.h"
 
 #include <QObject>
 #include <QProcess>

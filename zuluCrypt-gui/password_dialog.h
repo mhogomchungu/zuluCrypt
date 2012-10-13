@@ -30,7 +30,7 @@
 #include "ui_password.h"
 #include "openpartition.h"
 #include "runinthread.h"
-#include "miscfunctions.h"
+#include "utility.h"
 #include "checkvolumetype.h"
 #include "dialogmsg.h"
 #include "kwalletplugin.h"

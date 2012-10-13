@@ -49,7 +49,7 @@ void partitionproperties::run()
 	p.close();
 
 	for ( int i = 0 ; i < l.size() - 1 ; i++ )
-		emit partitionProperties( miscfunctions::deviceProperties( l.at( i ) ) );
+		emit partitionProperties( utility::deviceProperties( l.at( i ) ) );
 }
 
 partitionproperties::~partitionproperties()

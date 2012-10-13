@@ -24,10 +24,12 @@
 #include <stdint.h>
 #include <libcryptsetup.h>
 
+/*
+ * below header file is generated at configure time
+ */
 #include "libmount_header.h"
-#include "../zuluCrypt-cli/string/String.h"
-#include "../zuluCrypt-cli/string/StringList.h"
-#include "../zuluCrypt-cli/process/process.h"
+
+#include "../zuluCrypt-cli/bin/includes.h"
 
 stringList_t zuluCryptPartitionList( void ) ;
 

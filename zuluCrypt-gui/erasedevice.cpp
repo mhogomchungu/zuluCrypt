@@ -113,14 +113,14 @@ void erasedevice::pbStart()
 {
 	this->setWindowTitle( QString( "writing random data over existing data" ) );
 
-	QString path = miscfunctions::resolvePath( m_ui->lineEdit->text() ) ;
+	QString path = utility::resolvePath( m_ui->lineEdit->text() ) ;
 
 	DialogMsg msg( this );
 	
 	if( path.isEmpty() )
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "device path field is empty" ) );
 	
-	if( miscfunctions::exists( path ) == false )
+	if( utility::exists( path ) == false )
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "invalid path to device" ) );
 	
 	if( m_option == 0 ){

@@ -255,7 +255,7 @@ void createFileThread::openVolume()
 
 void createFileThread::writeVolume()
 {
-	QFile path( miscfunctions::mapperPath( m_file ) ) ;
+	QFile path( utility::mapperPath( m_file ) ) ;
 
 	path.open( QIODevice::WriteOnly ) ;
 

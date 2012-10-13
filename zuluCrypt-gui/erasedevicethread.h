@@ -27,7 +27,7 @@
 #include <QThreadPool>
 #include <QFile>
 
-#include "miscfunctions.h"
+#include "utility.h"
 #include "runinthread.h"
 #include "../zuluCrypt-cli/constants.h"
 #include "createfilethread.h"

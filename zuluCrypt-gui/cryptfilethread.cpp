@@ -149,7 +149,7 @@ int cryptfilethread::encrypt()
 
 int cryptfilethread::decrypt()
 {
-	if( miscfunctions::exists( m_dest ) )
+	if( utility::exists( m_dest ) )
 		return 5 ;
 
 	QFile fd_1( m_mapperPath ) ;
@@ -213,7 +213,7 @@ int cryptfilethread::decrypt()
 
 int cryptfilethread::openMapper( QString path )
 {
-	m_mapperPath = miscfunctions::mapperPath( path ) ;
+	m_mapperPath = utility::mapperPath( path ) ;
 
 	path.replace( "\"","\"\"\"" ) ;
 	m_key.replace( "\"","\"\"\"" ) ;

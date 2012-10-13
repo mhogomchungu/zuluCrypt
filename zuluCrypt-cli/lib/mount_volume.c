@@ -18,7 +18,6 @@
  */
 
 #include "includes.h"
-#include "../string/StringList.h"
 
 #include <sys/mount.h>
 #include <mntent.h>
@@ -28,7 +27,6 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
-#include "../process/process.h"
 /*
  * below header file does not ship with the source code, it is created at configure time
  * */

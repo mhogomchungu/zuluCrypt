@@ -25,7 +25,7 @@
 #include <QString>
 #include <QThreadPool>
 
-#include "miscfunctions.h"
+#include "utility.h"
 
 class checkvolumetype : public QObject,public QRunnable
 {

@@ -25,7 +25,7 @@
 #include <QProcess>
 #include <QString>
 #include <QStringList>
-#include "miscfunctions.h"
+#include "utility.h"
 #include <QThreadPool>
 
 #include <unistd.h>

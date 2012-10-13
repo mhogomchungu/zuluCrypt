@@ -19,7 +19,7 @@
 
 #include "zulucrypt.h"
 #include "ui_zulucrypt.h"
-#include "miscfunctions.h"
+#include "utility.h"
 
 #include <QProcess>
 #include <QStringList>
@@ -201,7 +201,7 @@ void zuluCrypt::setupConnections()
 		m_ui->actionUse_kde_default_wallet->setEnabled( false );
 	}
 
-	m_ui->actionManage_system_partitions->setEnabled( miscfunctions::userIsRoot() );
+	m_ui->actionManage_system_partitions->setEnabled( utility::userIsRoot() );
 }
 
 void zuluCrypt::permissionExplanation()
@@ -428,7 +428,7 @@ void zuluCrypt::addItemToTable( QString device,QString m_point )
 	QString dev = device ;
 	dev.replace( "\"","\"\"\"" ) ;
 
-	if( miscfunctions::isLuks( dev ) )
+	if( utility::isLuks( dev ) )
 		type = tr( "luks" ) ;
 	else
 		type = tr( "plain" ) ;
@@ -480,7 +480,7 @@ void zuluCrypt::readFavorites()
 {
 	QAction * ac ;
 	m_ui->menuFavorites->clear();
-	QStringList l = miscfunctions::readFavorites() ;
+	QStringList l = utility::readFavorites() ;
 	if( l.isEmpty() == false ){
 		for( int i = 0 ; i < l.size() - 1 ; i++ ){
 			ac = new QAction( l.at( i ),m_ui->menuFavorites ) ;
@@ -498,7 +498,7 @@ void zuluCrypt::addToFavorite()
 	QTableWidgetItem * item = m_ui->tableWidget->currentItem();
 	QString x = m_ui->tableWidget->item( item->row(),0 )->text() ;
 	QString y = m_ui->tableWidget->item( item->row(),1 )->text() ;
-	miscfunctions::addToFavorite( x,y );
+	utility::addToFavorite( x,y );
 }
 
 void zuluCrypt::menuKeyPressed()

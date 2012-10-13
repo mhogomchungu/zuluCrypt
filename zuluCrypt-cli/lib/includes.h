@@ -25,8 +25,9 @@
 #include <libcryptsetup.h>   
 #include <stdlib.h>
 
-#include "../string/String.h"
-#include "../string/StringManage.h"
+#include "../utility/string/String.h"
+#include "../utility/string/StringList.h"
+#include "../utility/process/process.h"
 #include "../constants.h"
 #include "../version.h"
 #include "libzuluCrypt.h"

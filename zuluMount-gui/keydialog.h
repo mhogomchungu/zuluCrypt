@@ -11,7 +11,6 @@
 
 #include "../zuluCrypt-gui/dialogmsg.h"
 #include "managepartitionthread.h"
-#include "../zuluCrypt-gui/miscfunctions.h"
 #include "../zuluCrypt-cli/constants.h"
 #include "plugin_path.h"
 #include "../zuluCrypt-gui/zuluoptions.h"

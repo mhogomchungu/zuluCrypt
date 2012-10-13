@@ -129,7 +129,7 @@ void kwalletconfig::pbGetUUIDFromFile()
 	if( Z.isEmpty() )
 		return ;
 
-	Z = miscfunctions::getUUIDFromPath( Z ) ;
+	Z = utility::getUUIDFromPath( Z ) ;
 
 	if( Z.isEmpty() ){
 		DialogMsg msg( this ) ;

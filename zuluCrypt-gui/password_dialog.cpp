@@ -29,7 +29,7 @@
 #include <QPushButton>
 #include <QMessageBox>
 
-#include "miscfunctions.h"
+#include "utility.h"
 
 passwordDialog::passwordDialog( QTableWidget * table,QWidget * parent ) : QDialog( parent )
 {
@@ -290,8 +290,8 @@ void passwordDialog::HideUI()
 
 void passwordDialog::buttonOpenClicked( void )
 {
-	QString mountPointPath = miscfunctions::resolvePath( m_ui->MountPointPath->text() ) ;
-	QString vp = miscfunctions::resolvePath( m_ui->OpenVolumePath->text() ) ;
+	QString mountPointPath = utility::resolvePath( m_ui->MountPointPath->text() ) ;
+	QString vp = utility::resolvePath( m_ui->OpenVolumePath->text() ) ;
 
 	QString passPhraseField = m_ui->PassPhraseField->text() ;
 	m_key = m_ui->PassPhraseField->text() ;
@@ -315,7 +315,7 @@ void passwordDialog::buttonOpenClicked( void )
 
 	if ( m_ui->radioButtonPassPhraseFromFile->isChecked() ){
 		passtype = QString( "-f" ) ;
-		passPhraseField = miscfunctions::resolvePath( passPhraseField );
+		passPhraseField = utility::resolvePath( passPhraseField );
 	}else if( m_ui->radioButtonPassPhrase->isChecked() ){
 		passtype = QString( "-p" );
 	}else if( m_ui->radioButtonPlugin->isChecked() ){
@@ -381,7 +381,7 @@ QString passwordDialog::getKeyFromKWallet()
 	QString uuid = m_ui->OpenVolumePath->text() ;
 
 	if( uuid.mid( 0,5 ) != QString( "UUID=") )
-		uuid = miscfunctions::getUUIDFromPath( uuid ) ;
+		uuid = utility::getUUIDFromPath( uuid ) ;
 
 	if( uuid.isEmpty() ){
 		msg.ShowUIOK( tr( "ERROR" ),tr( "can store and retrieve passphrases only for LUKS volumes" ) ) ;
@@ -464,8 +464,8 @@ void passwordDialog::done( QString type )
 {
 	QStringList list ;
 
-	list.append( miscfunctions::resolvePath( m_ui->OpenVolumePath->text() ) ) ;
-	list.append( miscfunctions::resolvePath( m_ui->MountPointPath->text() ) ) ;
+	list.append( utility::resolvePath( m_ui->OpenVolumePath->text() ) ) ;
+	list.append( utility::resolvePath( m_ui->MountPointPath->text() ) ) ;
 	list.append( type );
 
 	tablewidget::addRowToTable( m_table,list ) ;

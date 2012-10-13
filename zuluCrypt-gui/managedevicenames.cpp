@@ -84,7 +84,7 @@ void managedevicenames::ShowUI()
 	while( m_ui->tableWidget->rowCount() > 0 )
 		m_ui->tableWidget->removeRow( 0 );
 
-	QStringList entries = miscfunctions::readFavorites() ;
+	QStringList entries = utility::readFavorites() ;
 	QStringList line ;
 	int j = entries.size() - 1 ;
 
@@ -151,7 +151,7 @@ void managedevicenames::removeEntryFromFavoriteList()
 
 	QString entry = QString( "%1\t%2\n" ).arg( txt1 ).arg( txt2 ) ;
 
-	miscfunctions::removeFavoriteEntry( entry );
+	utility::removeFavoriteEntry( entry );
 
 	tablewidget::deleteRowFromTable( table,row ) ;
 
@@ -179,7 +179,7 @@ void managedevicenames::add()
 	m_ui->tableWidget->setEnabled( false );
 	this->addEntries( dev,mount_point );
 
-	miscfunctions::addToFavorite( dev,mount_point );
+	utility::addToFavorite( dev,mount_point );
 
 	m_ui->lineEditDeviceAddress->clear(); ;
 	m_ui->lineEditMountPath->clear() ;

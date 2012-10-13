@@ -19,7 +19,7 @@
 
 #include "ui_createfile.h"
 #include "createfile.h"
-#include "miscfunctions.h"
+#include "utility.h"
 #include "../zuluCrypt-cli/constants.h"
 #include "createfilethread.h"
 
@@ -152,10 +152,10 @@ void createfile::pbCreate()
 
 	m_path = filePath ;
 
-	if( miscfunctions::exists( m_path ) == true )
+	if( utility::exists( m_path ) == true )
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "file with the same name and at the destination folder already exist" ) );
 
-	if( miscfunctions::canCreateFile( m_path ) == false ){
+	if( utility::canCreateFile( m_path ) == false ){
 		msg.ShowUIOK( tr( "ERROR!" ),tr( "you dont seem to have writing access to the destination folder" ) );
 		m_ui->lineEditFilePath->setFocus();
 		return ;

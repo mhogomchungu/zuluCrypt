@@ -18,7 +18,7 @@
  */
 
 #include "cryptfiles.h"
-#include "miscfunctions.h"
+#include "utility.h"
 #include "../zuluCrypt-cli/constants.h"
 
 #include <QFileDialog>
@@ -207,17 +207,17 @@ void cryptfiles::pbCreate()
 {
 	DialogMsg msg( this );
 
-	QString source = miscfunctions::resolvePath( m_ui->lineEditSourcePath->text() );
+	QString source = utility::resolvePath( m_ui->lineEditSourcePath->text() );
 
 	if( source.isEmpty() )
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "path to source field is empty" ) );
 
-	QString dest = miscfunctions::resolvePath( m_ui->lineEditDestinationPath->text() ) ;
+	QString dest = utility::resolvePath( m_ui->lineEditDestinationPath->text() ) ;
 
-	if( miscfunctions::exists( source ) == false )
+	if( utility::exists( source ) == false )
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "invalid path to source file" ) );
 
-	if( miscfunctions::exists( dest ) == true )
+	if( utility::exists( dest ) == true )
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "destination path already taken" ) );
 
 	QString key_1 = m_ui->lineEditPass_1->text() ;
@@ -236,7 +236,7 @@ void cryptfiles::pbCreate()
 		}
 		keySource = QString( "-p" ) ;
 	}else{
-		if( miscfunctions::exists( key_1 ) == false )
+		if( utility::exists( key_1 ) == false )
 			return msg.ShowUIOK( tr( "ERROR!" ),tr( "invalid path to key file" ) );
 
 		keySource = QString( "-f" ) ;

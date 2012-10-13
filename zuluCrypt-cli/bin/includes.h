@@ -27,11 +27,11 @@
 #include <sys/wait.h>
 #include <libcryptsetup.h>
 
-#include "../string/String.h" 
-#include "../string/StringList.h" 
+#include "../utility/string/String.h" 
+#include "../utility/string/StringList.h" 
 #include "../constants.h"
 #include "../lib/libzuluCrypt.h"
-#include "../socket/socket.h"
+#include "../utility/socket/socket.h"
 #include "libzuluCrypt-exe.h"
 #include "security.h"
 

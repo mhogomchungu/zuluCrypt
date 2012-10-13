@@ -32,7 +32,7 @@ void checkvolumetype::start()
 
 void checkvolumetype::run()
 {
-	if( miscfunctions::isLuks( m_device ) )
+	if( utility::isLuks( m_device ) )
 		m_type = tr( "luks" ) ;
 	else
 		m_type = tr( "plain" ) ;

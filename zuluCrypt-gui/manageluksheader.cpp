@@ -18,7 +18,7 @@
  */
 
 #include "manageluksheader.h"
-#include "miscfunctions.h"
+#include "utility.h"
 #include "../zuluCrypt-cli/constants.h"
 
 #include <QFileDialog>
@@ -207,7 +207,7 @@ void manageluksheader::pbCreate()
 {
 	DialogMsg msg( this ) ;
 
-	QString device = miscfunctions::resolvePath( m_ui->lineEditDevicePath->text() );
+	QString device = utility::resolvePath( m_ui->lineEditDevicePath->text() );
 
 	if(  device.isEmpty() )
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "path to device field is empty" ) );
