@@ -217,7 +217,7 @@ static int zuluMountUMount( const char * device,uid_t uid,const char * mode )
 		return zuluExit( 127,StringVoid,m_point,"ERROR: device does not appear to be mounted as it does not have an entry in \"/etc/mtab\"" ) ;
 	
 	if( zuluMountPartitionAccess( device,mode,uid ) == 2 )
-		return zuluExit( 112,StringVoid,m_point,"ERROR: could not unmount a system partition because it does not have \"user\" option in \"/etc/fstab\"" ) ;
+		return zuluExit( 112,StringVoid,m_point,"ERROR: \"/etc/fstab\" entry for this partition requires only root user to unmount it" ) ;
 		
 	/*
 	 * below function is defined in ../zuluCrypt-cli/lib/unmount_volume.c
