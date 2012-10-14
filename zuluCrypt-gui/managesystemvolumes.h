@@ -32,6 +32,7 @@ public:
 signals:
 	void HideUISignal( void );
 private slots:
+	void defaultButton( void ) ;
 	void pbDone( void ) ;
 	void pbFile( void ) ;
 	void pbPartition( void ) ;

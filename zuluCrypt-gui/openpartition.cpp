@@ -28,7 +28,6 @@ openpartition::openpartition( QWidget * parent ) :
 	m_ui = new Ui::PartitionView() ;
 	m_ui->setupUi( this );
 	this->setFixedSize( this->size() );
-	this->setWindowFlags( Qt::Window | Qt::Dialog );
 	this->setFont( parent->font() );
 
 	connect( m_ui->tableWidget,SIGNAL( itemDoubleClicked( QTableWidgetItem * ) ),this,SLOT( tableEntryDoubleClicked( QTableWidgetItem * ) ) ) ;

@@ -16,6 +16,9 @@
   <property name="windowTitle">
    <string>select a partition to open</string>
   </property>
+  <property name="modal">
+   <bool>true</bool>
+  </property>
   <widget class="QTableWidget" name="tableWidget">
    <property name="geometry">
     <rect>

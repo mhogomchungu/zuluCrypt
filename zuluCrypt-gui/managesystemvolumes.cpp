@@ -1,26 +1,14 @@
 #include "managesystemvolumes.h"
 #include "ui_managesystemvolumes.h"
 
-manageSystemVolumes::manageSystemVolumes( QWidget * parent ) :
-	QDialog(parent),
-	m_ui(new Ui::manageSystemVolumes)
+manageSystemVolumes::manageSystemVolumes( QWidget * parent ) :QDialog(parent)
 {
+	m_ui = new Ui::manageSystemVolumes() ;
 	m_ui->setupUi( this ) ;
 
 	this->setFont( parent->font() );
 	this->setFixedSize( this->size() );
 
-	//m_ui->pbPartition->setIcon( QIcon( QString( ":/partition.png" ) ) );
-	//m_ui->pbFile->setIcon( QIcon( QString( ":/file.png" ) ) );
-
-	m_ac = new QAction( this ) ;
-	QList<QKeySequence> keys ;
-	//keys.append( Qt::Key_Enter );
-	keys.append( Qt::Key_Menu );
-	m_ac->setShortcuts( keys ) ;
-	this->addAction( m_ac );
-
-	connect( m_ac,SIGNAL( triggered() ),this,SLOT( contextMenu() ) ) ;
 	connect( m_ui->pbDone,SIGNAL( clicked() ),this,SLOT( pbDone() ) ) ;
 	connect( m_ui->pbFile,SIGNAL( clicked() ),this,SLOT( pbFile() ) ) ;
 	connect( m_ui->pbPartition,SIGNAL( clicked() ),this,SLOT( pbPartition() ) ) ;
@@ -28,6 +16,27 @@ manageSystemVolumes::manageSystemVolumes( QWidget * parent ) :
 		SLOT( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ) );
 	connect( m_ui->tableWidget,SIGNAL( itemClicked( QTableWidgetItem * ) ),this,
 		SLOT( itemClicked( QTableWidgetItem * ) ) );
+
+	m_ac = new QAction( this ) ;
+	QList<QKeySequence> keys ;
+	keys.append( Qt::Key_Enter );
+	keys.append( Qt::Key_Return );
+	keys.append( Qt::Key_Menu );
+	m_ac->setShortcuts( keys ) ;
+	connect( m_ac,SIGNAL( triggered() ),this,SLOT( defaultButton() ) ) ;
+	this->addAction( m_ac );
+}
+
+void manageSystemVolumes::defaultButton()
+{
+	if( m_ui->pbDone->hasFocus() )
+		this->pbDone();
+	else if( m_ui->pbFile->hasFocus() )
+		this->pbFile();
+	else if( m_ui->pbPartition->hasFocus() )
+		this->pbPartition();
+	else
+		this->contextMenu();
 }
 
 void manageSystemVolumes::currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous )
@@ -92,6 +101,8 @@ void manageSystemVolumes::contextMenu()
 
 void manageSystemVolumes::itemClicked( QTableWidgetItem * current,bool clicked )
 {
+	if( !current )
+		return ;
 	QMenu m ;
 	m.setFont( this->font() );
 	connect( m.addAction( tr( "remove selected entry" ) ),SIGNAL( triggered() ),this,SLOT( removeCurrentRow() ) ) ;
