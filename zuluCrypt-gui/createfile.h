@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -20,7 +20,7 @@
 #ifndef CREATEFILE_H
 #define CREATEFILE_H
 
-#include <QWidget>
+#include <QDialog>
 #include <QProcess>
 #include <QTimer>
 #include <QCloseEvent>
@@ -34,7 +34,7 @@ namespace Ui {
     class createfile;
 }
 
-class createfile : public QWidget
+class createfile : public QDialog
 {
 	Q_OBJECT
 public:

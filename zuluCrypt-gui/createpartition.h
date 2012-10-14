@@ -20,7 +20,7 @@
 #ifndef CREATEPARTITION_H
 #define CREATEPARTITION_H
 
-#include <QWidget>
+#include <QDialog>
 #include <QString>
 #include <QCloseEvent>
 #include <QThreadPool>
@@ -38,7 +38,7 @@ namespace Ui {
     class createpartition;
 }
 
-class createpartition : public QWidget
+class createpartition : public QDialog
 {
 	Q_OBJECT
 public:

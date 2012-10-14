@@ -20,14 +20,13 @@
 #include "ui_erasedevice.h"
 
 erasedevice::erasedevice( QWidget * parent ) :
-        QWidget( parent ),
+	QDialog( parent ),
 	m_ui( new Ui::erasedevice )
 {
 	m_ui->setupUi( this );
 
 	this->setFixedSize( this->size() );
 	this->setFont( parent->font() );
-	this->setWindowFlags( Qt::Window | Qt::Dialog );
 
 	m_ui->progressBar->setValue( 0 );
 	m_ui->progressBar->setMaximum( 100 );
@@ -111,18 +110,18 @@ void erasedevice::HideUI()
 
 void erasedevice::pbStart()
 {
-	this->setWindowTitle( QString( "writing random data over existing data" ) );
-
-	QString path = utility::resolvePath( m_ui->lineEdit->text() ) ;
+	QString path = m_ui->lineEdit->text() ;
 
 	DialogMsg msg( this );
-	
+
 	if( path.isEmpty() )
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "device path field is empty" ) );
-	
+
+	path = utility::resolvePath( path ) ;
+
 	if( utility::exists( path ) == false )
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "invalid path to device" ) );
-	
+
 	if( m_option == 0 ){
 		QString x_1 = tr( "Are you really sure you want to write random data to \"%1\"" ).arg( path )	;
 		QString x_2 = tr( " effectively destroying all contents in it?" );
@@ -135,12 +134,15 @@ void erasedevice::pbStart()
 	this->disableAll();
 
 	path.replace( "\"","\"\"\"" );
-	
+
 	m_cancelClicked = false ;
 
 	m_dt = new erasedevicethread( path ) ;
 	connect( m_dt,SIGNAL( progress( int ) ),this,SLOT( setProgress( int ) ) );
 	connect( m_dt,SIGNAL( exitStatus( int ) ),this,SLOT( threadExitStatus( int ) ) );
+
+	this->setWindowTitle( QString( "writing random data over existing data" ) );
+
 	m_dt->start();
 }
 

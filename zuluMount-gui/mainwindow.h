@@ -33,6 +33,7 @@
 #include <QCloseEvent>
 #include <QFont>
 #include <QCursor>
+#include <QAction>
 
 #include "keydialog.h"
 #include "../zuluCrypt-gui/dialogmsg.h"
@@ -46,7 +47,7 @@ namespace Ui {
 class MainWindow;
 }
 
-class MainWindow : public QMainWindow
+class MainWindow : public QWidget
 {
 	Q_OBJECT
 public:
@@ -61,9 +62,9 @@ signals:
 public slots:
 	void raiseWindow( void ) ;
 private slots:
+	void defaultButton( void ) ;
 	void volumeProperties( QString );
 	void volumeProperties( void ) ;
-	void enterKeyPressed( void ) ;
 	void itemClicked( QTableWidgetItem * ) ;
 	void pbUpdate( void ) ;
 	void pbMount( void ) ;

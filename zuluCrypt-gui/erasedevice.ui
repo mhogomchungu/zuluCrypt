@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>erasedevice</class>
- <widget class="QWidget" name="erasedevice">
+ <widget class="QDialog" name="erasedevice">
   <property name="windowModality">
    <enum>Qt::ApplicationModal</enum>
   </property>
@@ -99,6 +99,9 @@
    <property name="text">
     <string>&amp;start</string>
    </property>
+   <property name="default">
+    <bool>true</bool>
+   </property>
   </widget>
   <widget class="QPushButton" name="pushButtonCancel">
    <property name="geometry">
@@ -111,6 +114,12 @@
    </property>
    <property name="text">
     <string>&amp;cancel</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+   <property name="default">
+    <bool>false</bool>
    </property>
   </widget>
   <widget class="QLineEdit" name="lineEdit">

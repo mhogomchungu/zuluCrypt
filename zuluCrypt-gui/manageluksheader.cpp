@@ -29,11 +29,10 @@
 #include <QKeyEvent>
 
 manageluksheader::manageluksheader( QWidget * parent ) :
-    QWidget( parent ),
+    QDialog( parent ),
     m_ui( new Ui::manageluksheader )
 {
 	m_ui->setupUi( this );
-	this->setWindowFlags( Qt::Window | Qt::Dialog );
 	this->setFont( parent->font() );
 	this->setFixedSize( this->size() );
 
@@ -207,10 +206,10 @@ void manageluksheader::pbCreate()
 {
 	DialogMsg msg( this ) ;
 
-	QString device = utility::resolvePath( m_ui->lineEditDevicePath->text() );
+	if( m_ui->lineEditBackUpName->text().isEmpty() || m_ui->lineEditDevicePath->text().isEmpty() )
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) );
 
-	if(  device.isEmpty() )
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "path to device field is empty" ) );
+	QString device = utility::resolvePath( m_ui->lineEditDevicePath->text() );
 
 	device.replace( "\"","\"\"\"" ) ;
 

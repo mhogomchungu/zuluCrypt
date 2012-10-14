@@ -45,7 +45,6 @@ luksdeletekey::luksdeletekey( QWidget * parent ) :
 	m_ui->setupUi( this );
 
 	this->setFixedSize( this->size() );
-	this->setWindowFlags( Qt::Window | Qt::Dialog );
 	this->setFont( parent->font() );
 
 	m_ui->lineEditVolumePath->clear();
@@ -109,7 +108,6 @@ void luksdeletekey::ShowUI()
 	else
 		m_ui->lineEditPassphrase->setFocus();
 
-	m_ui->pushButtonCancel->setDefault( true );
 	m_ui->pushButtonOpenPartition->setIcon( QIcon( QString( ":/partition.png" ) ) );
 	m_ui->pushButtonOpenVolume->setIcon( QIcon( QString( ":/file.png" ) ) );
 	this->show();
@@ -188,6 +186,11 @@ void luksdeletekey::pbDelete()
 		QString s = tr( "There is only one last key in the volume." );
 		s = s + tr( "\nDeleting it will make the volume unopenable and lost forever." ) ;
 		s = s + tr( "\nAre you sure you want to delete this key?" );
+
+		if(  msg.ShowUIYesNoDefaultNo( tr( "WARNING" ),s ) == QMessageBox::No )
+			return ;
+	}else{
+		QString s = tr( "are you sure you want to delete a key from this volume?" ) ;
 
 		if(  msg.ShowUIYesNoDefaultNo( tr( "WARNING" ),s ) == QMessageBox::No )
 			return ;

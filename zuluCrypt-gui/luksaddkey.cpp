@@ -48,7 +48,6 @@ luksaddkey::luksaddkey( QWidget * parent ) :
 	m_ui->textEditPassphraseToAdd->setEchoMode( QLineEdit::Password );
 
 	this->setFixedSize( this->size() );
-	this->setWindowFlags( Qt::Window | Qt::Dialog );
 	this->setFont( parent->font() );
 
 	connect( m_ui->pushButtonOpenFile,SIGNAL( clicked() ),this,SLOT( pbOpenFile() ) ) ;

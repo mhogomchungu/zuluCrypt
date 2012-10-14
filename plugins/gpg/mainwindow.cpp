@@ -21,7 +21,7 @@
 #include "ui_mainwindow.h"
 #include <QDebug>
 
-MainWindow::MainWindow( QWidget * parent ) : QMainWindow( parent ),m_ui( new Ui::MainWindow )
+MainWindow::MainWindow( QWidget * parent ) : QWidget( parent ),m_ui( new Ui::MainWindow )
 {
 	m_ui->setupUi( this );
 	this->setFixedSize( this->size() );
@@ -41,8 +41,24 @@ MainWindow::MainWindow( QWidget * parent ) : QMainWindow( parent ),m_ui( new Ui:
 
 	this->setWindowTitle( QString( "gpg key module" ) );
 
+	QAction * ac = new QAction( this ) ;
+	QList<QKeySequence> keys ;
+	keys.append( Qt::Key_Enter );
+	keys.append( Qt::Key_Return );
+	ac->setShortcuts( keys ) ;
+	connect( ac,SIGNAL( triggered() ),this,SLOT( defaultButton() ) ) ;
+	this->addAction( ac );
+
 	m_sendKey = new socketSendKey( this ) ;
 	connect( m_sendKey,SIGNAL( keySent() ),this,SLOT( doneWritingData() ) ) ;
+}
+
+void MainWindow::defaultButton()
+{
+	if( m_ui->pbCancel->hasFocus() )
+		this->pbCancel();
+	else
+		this->pbOpen();
 }
 
 void MainWindow::SetAddr( QString addr )

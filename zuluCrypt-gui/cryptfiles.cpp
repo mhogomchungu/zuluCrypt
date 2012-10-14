@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -28,10 +28,9 @@
 #include <QFile>
 #include <QKeyEvent>
 
-cryptfiles::cryptfiles( QWidget * parent ) :QWidget( parent ),m_ui( new Ui::cryptfiles )
+cryptfiles::cryptfiles( QWidget * parent ) :QDialog( parent ),m_ui( new Ui::cryptfiles )
 {
 	m_ui->setupUi( this );
-	this->setWindowFlags( Qt::Window | Qt::Dialog );
 	this->setFont( parent->font() );
 	this->setFixedSize( this->size() );
 
@@ -71,7 +70,7 @@ void cryptfiles::rbKeyChecked()
 	m_ui->pushButtonKeyFile->setEnabled( false );
 	m_ui->lineEditPass_1->clear();
 	m_ui->lineEditPass_2->clear();
-	m_ui->lineEditPass_1->setEchoMode( QLineEdit::Password );	
+	m_ui->lineEditPass_1->setEchoMode( QLineEdit::Password );
 	m_ui->lineEditPass_1->setFocus();
 	m_ui->labelKey->setText( QString( "key" ) );
 	m_ui->labelKey2->setText( QString( "repeat key" ) );

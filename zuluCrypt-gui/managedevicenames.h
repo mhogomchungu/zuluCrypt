@@ -20,7 +20,7 @@
 #ifndef MANAGEDEVICENAMES_H
 #define MANAGEDEVICENAMES_H
 
-#include <QWidget>
+#include <QDialog>
 #include <QString>
 #include <QTableWidgetItem>
 #include <QCloseEvent>
@@ -38,7 +38,7 @@ namespace Ui {
 class managedevicenames;
 }
 
-class managedevicenames : public QWidget
+class managedevicenames : public QDialog
 {
 	Q_OBJECT
 public:

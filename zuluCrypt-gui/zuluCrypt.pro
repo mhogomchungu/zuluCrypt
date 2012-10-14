@@ -22,7 +22,7 @@ SOURCES += main.cpp\
     startupupdateopenedvolumes.cpp \
     closeallvolumesthread.cpp \
     runinthread.cpp \
-    miscfunctions.cpp \
+    utility.cpp \
     managedevicenames.cpp \
     partitionproperties.cpp \
     volumepropertiesthread.cpp \
@@ -50,7 +50,8 @@ SOURCES += main.cpp\
     zuluoptions.cpp \
     openmountpointinfilemanager.cpp
 
-HEADERS  += zulucrypt.h password_dialog.h \
+HEADERS  += zulucrypt.h \
+    password_dialog.h \
     openpartition.h \
     luksaddkey.h \
     luksdeletekey.h \
@@ -60,7 +61,7 @@ HEADERS  += zulucrypt.h password_dialog.h \
     startupupdateopenedvolumes.h \
     closeallvolumesthread.h \
     runinthread.h \
-    miscfunctions.h \
+    utility.h \
     managedevicenames.h \
     partitionproperties.h \
     volumepropertiesthread.h \
@@ -82,7 +83,6 @@ HEADERS  += zulucrypt.h password_dialog.h \
     kwalletplugin.h \
     kwalletconfig.h \
     tablewidget.h \
-    miscfunctions.h \
     zuluoptions.h \
     socketsendkey.h \
     openvolumereadonly.h \

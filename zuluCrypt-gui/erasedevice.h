@@ -19,7 +19,7 @@
 #ifndef ERASEDEVICE_H
 #define ERASEDEVICE_H
 
-#include <QWidget>
+#include <QDialog>
 #include <QCloseEvent>
 #include <QFileDialog>
 
@@ -32,9 +32,9 @@ namespace Ui {
 class erasedevice;
 }
 
-class erasedevice : public QWidget
+class erasedevice : public QDialog
 {
-	Q_OBJECT	
+	Q_OBJECT
 public:
 	explicit erasedevice( QWidget * parent = 0 );
 	~erasedevice();

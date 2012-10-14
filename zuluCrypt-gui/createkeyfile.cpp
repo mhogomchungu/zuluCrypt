@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -30,11 +30,10 @@
 #include <QKeyEvent>
 
 createkeyfile::createkeyfile( QWidget * parent ) :
-    QWidget( parent ),
+    QDialog( parent ),
     m_ui( new Ui::createkeyfile )
 {
 	m_ui->setupUi( this );
-	this->setWindowFlags( Qt::Window | Qt::Dialog );
 	this->setFont( parent->font() );
 
 	m_ckt = NULL ;

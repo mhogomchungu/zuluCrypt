@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -20,7 +20,7 @@
 #ifndef MANAGELUKSHEADER_H
 #define MANAGELUKSHEADER_H
 
-#include <QWidget>
+#include <QDialog>
 #include <QThreadPool>
 #include <QFileDialog>
 
@@ -34,7 +34,7 @@ namespace Ui {
     class manageluksheader;
 }
 
-class manageluksheader : public QWidget
+class manageluksheader : public QDialog
 {
 	Q_OBJECT
 public:

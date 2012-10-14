@@ -9,15 +9,13 @@ manageSystemVolumes::manageSystemVolumes( QWidget * parent ) :
 
 	this->setFont( parent->font() );
 	this->setFixedSize( this->size() );
-	this->setWindowFlags( Qt::Window | Qt::Dialog );
 
 	//m_ui->pbPartition->setIcon( QIcon( QString( ":/partition.png" ) ) );
 	//m_ui->pbFile->setIcon( QIcon( QString( ":/file.png" ) ) );
 
 	m_ac = new QAction( this ) ;
 	QList<QKeySequence> keys ;
-	keys.append( Qt::Key_Enter );
-	keys.append( Qt::Key_Return );
+	//keys.append( Qt::Key_Enter );
 	keys.append( Qt::Key_Menu );
 	m_ac->setShortcuts( keys ) ;
 	this->addAction( m_ac );
@@ -70,12 +68,13 @@ void manageSystemVolumes::writeSystemPartitions()
 		QTableWidgetItem * it ;
 		QTableWidget * table = m_ui->tableWidget ;
 		int j = m_ui->tableWidget->rowCount() ;
-		for( int i = 0 ; i < j ; i++ ){
-			it = table->item( i,0 ) ;
-			file.write( it->text().toAscii() ) ;
-			file.putChar( '\n' ) ;
+		if( j > 0 ){
+			for( int i = 0 ; i < j ; i++ ){
+				it = table->item( i,0 ) ;
+				file.write( it->text().toAscii() ) ;
+				file.putChar( '\n' ) ;
+			}
 		}
-
 		file.setPermissions( QFile::ReadOwner|QFile::WriteOwner ) ;
 		file.close();
 	}
@@ -189,6 +188,5 @@ void manageSystemVolumes::ShowUI()
 
 manageSystemVolumes::~manageSystemVolumes()
 {
-	delete m_ac ;
 	delete m_ui;
 }

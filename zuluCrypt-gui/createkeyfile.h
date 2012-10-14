@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -20,7 +20,7 @@
 #ifndef CREATEKEYFILE_H
 #define CREATEKEYFILE_H
 
-#include <QWidget>
+#include <QDialog>
 #include <QFile>
 
 #include "createfilethread.h"
@@ -32,7 +32,7 @@ namespace Ui {
     class createkeyfile;
 }
 
-class createkeyfile : public QWidget
+class createkeyfile : public QDialog
 {
 	Q_OBJECT
 public:

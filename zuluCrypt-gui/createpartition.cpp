@@ -30,12 +30,11 @@
 #include "../zuluCrypt-cli/constants.h"
 
 createpartition::createpartition( QWidget * parent ) :
-    QWidget( parent ),
+    QDialog( parent ),
     m_ui( new Ui::createpartition )
 {
 	m_ui->setupUi( this );
 	this->setFixedSize( this->size() );
-	this->setWindowFlags( Qt::Window | Qt::Dialog );
 	this->setFont( parent->font() );
 
 	m_ui->lineEditVolumePath->setEnabled( false );

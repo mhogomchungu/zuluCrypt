@@ -1,13 +1,11 @@
 #include "kwalletconfig.h"
 #include "ui_kwalletconfig.h"
 
-#include <QDebug>
-kwalletconfig::kwalletconfig( QWidget * parent ) : QWidget( parent ),m_ui( new Ui::kwalletconfig )
+kwalletconfig::kwalletconfig( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::kwalletconfig )
 {
 	m_ui->setupUi( this );
 
 	this->setFixedSize( this->size() );
-	this->setWindowFlags( Qt::Window | Qt::Dialog );
 	this->setFont( parent->font() );
 
 	m_ui->tableWidget->setColumnWidth( 0,386 );
@@ -47,14 +45,10 @@ void kwalletconfig::pbAdd()
 
 	DialogMsg msg( this ) ;
 
+	if( rpass.isEmpty() || pass.isEmpty() || uuid.isEmpty() )
+		return msg.ShowUIOK( tr( "ERROR" ),tr( "atleast one required field is empty\n(comment field can be empty)" ) ) ;
 	if( rpass != pass )
 		return msg.ShowUIOK( tr( "ERROR"),tr( "passphrases do not match" ) ) ;
-
-	if( pass.isEmpty() )
-		return msg.ShowUIOK( tr( "ERROR"),tr( "passphrase field is empty" ) ) ;
-
-	if( uuid.isEmpty() )
-		return msg.ShowUIOK( tr( "ERROR"),tr( "volume UUID field is empty" ) ) ;
 
 	//read comment on ShowWalletEntries() function below to understand why there are two inserts.
 	QString m = uuid + QString( "-comment") ;

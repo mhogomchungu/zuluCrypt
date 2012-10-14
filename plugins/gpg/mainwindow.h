@@ -20,8 +20,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
-
+#include <QWidget>
+#include <QAction>
 #include <QMessageBox>
 #include <QObject>
 #include <QString>
@@ -39,7 +39,7 @@ namespace Ui {
 class MainWindow;
 }
 
-class MainWindow : public QMainWindow
+class MainWindow : public QWidget
 {
 	Q_OBJECT
 public:
@@ -49,6 +49,7 @@ public:
 signals:
 	void cancel( void ) ;
 private slots:
+	void defaultButton( void ) ;
 	void doneReading( void ) ;
 	void bytesRead( int ) ;
 	void startingToreadData( void ) ;

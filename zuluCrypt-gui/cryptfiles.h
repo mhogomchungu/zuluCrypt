@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -20,7 +20,7 @@
 #ifndef CRYPTFILES_H
 #define CRYPTFILES_H
 
-#include <QWidget>
+#include <QDialog>
 #include <QThreadPool>
 #include <QFileDialog>
 #include <QDir>
@@ -36,7 +36,7 @@ namespace Ui {
     class cryptfiles;
 }
 
-class cryptfiles : public QWidget
+class cryptfiles : public QDialog
 {
 	Q_OBJECT
 public:
@@ -47,8 +47,6 @@ signals:
 public slots:
 	void encrypt( void );
 	void decrypt( void );
-
-
 private slots:
 	void pbCancel( void );
 	void pbCreate( void );

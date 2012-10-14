@@ -20,7 +20,7 @@
 #ifndef KWALLETCONFIG_H
 #define KWALLETCONFIG_H
 
-#include <QWidget>
+#include <QDialog>
 #include <QCloseEvent>
 
 #include "kwalletplugin.h"
@@ -38,7 +38,7 @@ namespace Ui {
 class kwalletconfig;
 }
 
-class kwalletconfig : public QWidget
+class kwalletconfig : public QDialog
 {
 	Q_OBJECT
 

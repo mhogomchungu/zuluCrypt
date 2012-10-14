@@ -20,7 +20,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QDebug>
-MainWindow::MainWindow( QWidget * parent ) :QMainWindow( parent ),m_ui( 0 )
+MainWindow::MainWindow( QWidget * parent ) :QWidget( parent )
 {
 }
 
@@ -83,6 +83,17 @@ void MainWindow::setUpApp()
 		dir.mkdir( dirPath ) ;
 
 	this->show();
+}
+
+void MainWindow::defaultButton()
+{
+	int row = m_ui->tableWidget->currentRow() ;
+	QString mt = m_ui->tableWidget->item( row,1 )->text() ;
+
+	if( mt == QString( "Nil" ) )
+		this->pbMount();
+	else
+		this->pbUmount();
 }
 
 void MainWindow::raiseWindow()
@@ -166,6 +177,14 @@ void MainWindow::volumeProperties( QString properties )
 
 void MainWindow::setUpShortCuts()
 {
+	QAction * ac = new QAction( this ) ;
+	QList<QKeySequence> keys ;
+	keys.append( Qt::Key_Enter );
+	keys.append( Qt::Key_Return );
+	ac->setShortcuts( keys ) ;
+	connect( ac,SIGNAL( triggered() ),this,SLOT( defaultButton() ) ) ;
+	this->addAction( ac );
+
 	QAction * qa = new QAction( this ) ;
 	QList<QKeySequence> z ;
 	z.append( Qt::Key_M );
@@ -200,25 +219,6 @@ void MainWindow::setUpShortCuts()
 	qa->setShortcuts( e ) ;
 	connect( qa,SIGNAL( triggered() ),this,SLOT( slotCloseApplication() ) );
 	this->addAction( qa ) ;
-
-	qa = new QAction( this ) ;
-	QList<QKeySequence> n ;
-	n.append( Qt::Key_Space );
-	//n.append( Qt::Key_Enter );
-	qa->setShortcuts( n ) ;
-	connect( qa,SIGNAL( triggered() ),this,SLOT( enterKeyPressed() ) );
-	this->addAction( qa ) ;
-}
-
-void MainWindow::enterKeyPressed()
-{
-	int row = m_ui->tableWidget->currentRow() ;
-	QString mt = m_ui->tableWidget->item( row,1 )->text() ;
-
-	if( mt == QString( "Nil" ) )
-		this->pbMount();
-	else
-		this->pbUmount();
 }
 
 void MainWindow::setUpFont()

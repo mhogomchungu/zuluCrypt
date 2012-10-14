@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>managedevicenames</class>
- <widget class="QWidget" name="managedevicenames">
+ <widget class="QDialog" name="managedevicenames">
   <property name="windowModality">
    <enum>Qt::ApplicationModal</enum>
   </property>
@@ -27,6 +27,9 @@
    </property>
    <property name="text">
     <string>&amp;add</string>
+   </property>
+   <property name="default">
+    <bool>true</bool>
    </property>
   </widget>
   <widget class="QTableWidget" name="tableWidget">

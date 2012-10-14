@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>createkeyfile</class>
- <widget class="QWidget" name="createkeyfile">
+ <widget class="QDialog" name="createkeyfile">
   <property name="windowModality">
    <enum>Qt::ApplicationModal</enum>
   </property>
@@ -84,7 +84,7 @@
     <string>c&amp;reate</string>
    </property>
    <property name="autoDefault">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="default">
     <bool>true</bool>

@@ -21,7 +21,7 @@
 #define OPEN_PARTITION_H
 
 #include <QCloseEvent>
-
+#include <QDialog>
 #include "ui_openpartition.h"
 #include "partitionproperties.h"
 #include <QProcess>

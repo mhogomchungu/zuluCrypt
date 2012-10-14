@@ -11,11 +11,14 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
 	mainwindow.cpp \
-    ../../zuluCrypt-gui/socketsendkey.cpp
+    ../../zuluCrypt-gui/socketsendkey.cpp \
+    ../../zuluCrypt-gui/dialogmsg.cpp
 
 HEADERS  += mainwindow.h \
-    ../../zuluCrypt-gui/socketsendkey.h
+    ../../zuluCrypt-gui/socketsendkey.h \
+    ../../zuluCrypt-gui/dialogmsg.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui  ../../zuluCrypt-gui/dialogmsg.ui
+
 
 LIBS += -lzuluCryptPluginManager

@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright (c) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -28,11 +28,10 @@
 
 #include <iostream>
 
-createfile::createfile(QWidget * parent) :QWidget( parent ),m_ui( new Ui::createfile )
+createfile::createfile(QWidget * parent) :QDialog( parent ),m_ui( new Ui::createfile )
 {
 	m_ui->setupUi( this );
 	this->setFixedSize( this->size() );
-	this->setWindowFlags( Qt::Window | Qt::Dialog );
 	this->setFont( parent->font() );
 
 	m_msg = new DialogMsg( this ) ;
@@ -70,7 +69,7 @@ void createfile::fileTextChange( QString txt )
 	m_ui->lineEditFilePath->setText( p ) ;
 }
 
-void createfile::closeEvent( QCloseEvent * e ) 
+void createfile::closeEvent( QCloseEvent * e )
 {
 	e->ignore();
 	if( m_cft != NULL )
@@ -114,7 +113,7 @@ void createfile::showUI()
 	m_ui->lineEditFileSize->clear();
 	m_ui->progressBar->setValue( 0 );
 	m_ui->lineEditFileName->setFocus();
-	
+
 	/*
 	 * RANDOM_SOURCE is defined at createfilethread.h
 	 */
@@ -172,7 +171,7 @@ void createfile::pbCreate()
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "container file must be bigger than 3MB" ) );
 
 	disableAll();
-	
+
 	m_cft = new createFileThread( m_path,m_fileSize ) ;
 
 	connect( m_cft,SIGNAL( doneCreatingFile() ),this,SLOT( doneCreatingFile() ) );
@@ -223,7 +222,7 @@ void createfile::pbCancel()
 void createfile::HideUI()
 {
 	emit HideUISignal();
-	this->hide();	
+	this->hide();
 }
 
 void createfile::progress( int p )

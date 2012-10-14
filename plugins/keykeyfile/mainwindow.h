@@ -20,29 +20,31 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
+#include <QWidget>
 
 #include <QObject>
 #include <QString>
 #include <QFileDialog>
 #include <QFile>
 #include <QDir>
+#include <QAction>
 
 #include "../../zuluCrypt-gui/socketsendkey.h"
+#include "../../zuluCrypt-gui/dialogmsg.h"
 
 namespace Ui {
 class MainWindow;
 }
 
-class MainWindow : public QMainWindow
+class MainWindow : public QWidget
 {
 	Q_OBJECT
-
 public:
 	MainWindow( QWidget * parent = 0 ) ;
 	void SetAddr( QString ) ;
 	~MainWindow();
 private slots:
+	void defaultButton( void ) ;
 	void pbOpen( void ) ;
 	void pbCancel( void ) ;
 	void pbKeyFile( void ) ;

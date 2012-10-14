@@ -22,7 +22,7 @@
 #include <iostream>
 
 managedevicenames::managedevicenames( QWidget * parent ) :
-	QWidget( parent ),
+	QDialog( parent ),
 	m_ui( new Ui::managedevicenames )
 {
 	m_ui->setupUi( this );

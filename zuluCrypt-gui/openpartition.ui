@@ -150,6 +150,9 @@
    <property name="text">
     <string>&amp;cancel</string>
    </property>
+   <property name="default">
+    <bool>true</bool>
+   </property>
   </widget>
  </widget>
  <tabstops>
