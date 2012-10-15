@@ -464,6 +464,7 @@ ssize_t StringListContains( stringList_t stl,const char * cstring )
 {
 	size_t index  ;
 	size_t size ;
+	string_t * ind ;
 	
 	if( stl == StringListVoid )
 		return -1 ;
@@ -472,8 +473,9 @@ ssize_t StringListContains( stringList_t stl,const char * cstring )
 	if( size == 0 )
 		return -1 ;
 	
+	ind = stl->stp ;
 	for( index = 0 ; index < size ; index++ )	
-		if( strcmp( stl->stp[index]->string,cstring ) == 0 )
+		if( strcmp( ind[index]->string,cstring ) == 0 )
 			return index ;	
 	return -1 ;
 }
@@ -482,6 +484,7 @@ ssize_t StringListHasSequence( stringList_t stl,const char * str )
 {	
 	size_t index  ;
 	size_t size ;
+	string_t * ind ;
 	
 	if( stl == StringListVoid )
 		return -1 ;
@@ -489,9 +492,10 @@ ssize_t StringListHasSequence( stringList_t stl,const char * str )
 	
 	if( size == 0 )
 		return -1 ;
+	ind = stl->stp ;
 	
 	for( index = 0 ; index < size ; index++ )
-		if( strstr( stl->stp[index]->string,str ) != NULL )
+		if( strstr( ind[index]->string,str ) != NULL )
 			return index ;
 	return -1 ;
 }
@@ -547,6 +551,8 @@ void StringListDelete( stringList_t * stl )
 	size_t index ;
 	stringList_t stx ;
 	size_t size ;
+	string_t * entry ;
+	string_t ent ;
 	
 	if( *stl == StringListVoid )
 		return ;
@@ -555,10 +561,17 @@ void StringListDelete( stringList_t * stl )
 	size  = stx->size ;
 	*stl = StringListVoid ;
 	
-	if( size > 0 )
-		for( index = 0 ; index < size ; index++ )
-			StringDelete( &stx->stp[index] ) ;
+	entry = stx->stp ;
 	
+	if( size > 0 ){
+		for( index = 0 ; index < size ; index++ ){
+			ent = entry[ index ] ;
+			if( ent != StringVoid ){
+				free( ent->string ) ;
+				free( ent ) ;
+			}
+		}
+	}
 	free( stx->stp ) ;
 	free( stx );
 }
@@ -568,6 +581,8 @@ void StringListClearDelete( stringList_t * stl )
 	size_t index ;
 	stringList_t stx ;
 	size_t size ;
+	string_t * entry ;
+	string_t ent ;
 	
 	if( *stl == StringListVoid )
 		return ;
@@ -576,11 +591,20 @@ void StringListClearDelete( stringList_t * stl )
 	size  = stx->size ;
 	*stl = StringListVoid ;
 	
-	if( size > 0 )
-		for( index = 0 ; index < size ; index++ )
-			StringClearDelete( &stx->stp[index] ) ;
-		
-		free( stx->stp ) ;
+	entry = stx->stp ;
+	
+	if( size > 0 ){
+		for( index = 0 ; index < size ; index++ ){
+			ent = entry[ index ] ;
+			
+			if( ent != StringVoid ){ 
+				memset( ent->string,'\0',ent->size ) ;
+				free( ent->string ) ;
+				free( ent ) ;
+			}
+		}
+	}
+	free( stx->stp ) ;
 	free( stx );	
 }
 

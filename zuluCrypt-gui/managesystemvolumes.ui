@@ -53,6 +53,9 @@
    <property name="autoDefault">
     <bool>false</bool>
    </property>
+   <property name="default">
+    <bool>false</bool>
+   </property>
   </widget>
   <widget class="QPushButton" name="pbPartition">
    <property name="geometry">
@@ -67,6 +70,9 @@
     <string>add dev&amp;ice</string>
    </property>
    <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+   <property name="default">
     <bool>false</bool>
    </property>
   </widget>

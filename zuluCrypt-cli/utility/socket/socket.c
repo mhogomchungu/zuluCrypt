@@ -356,6 +356,7 @@ size_t SocketGetData_1( socket_t s,char ** e )
 	}
 	
 	if( total ){
+		f = ( char * ) realloc( f,total + 1 ) ;
 		f[ total ] = '\0' ;
 		*e = f ;
 	}else{
@@ -411,6 +412,7 @@ size_t SocketGetData( socket_t s,char ** e,size_t len )
 	}
 	
 	if( total ){
+		f = ( char * ) realloc( f,total + 1 ) ;
 		f[ total ] = '\0' ;
 		*e = f ;
 	}else{

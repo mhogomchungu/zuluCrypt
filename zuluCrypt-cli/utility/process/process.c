@@ -212,17 +212,36 @@ pid_t ProcessStart( process_t p )
 	return p->pid ;
 }
 
+#define FACTOR 2 
+static inline char * __StringExpandMemory( char * buffer,size_t new_size,size_t * buffer_size )
+{	
+	if( new_size >= *buffer_size ) {
+		*buffer_size = new_size * FACTOR ; 
+		return realloc( buffer,*buffer_size ) ;
+	}else{
+		return buffer ;
+	}
+}
+
 size_t ProcessGetOutPut( process_t p,char ** data,int std_io ) 
 {
 	#define SIZE 64
-	char * buffer = NULL ;
+	#define BUFFER_SIZE 128
+	char * buffer ;
+	char * e ;
 	char buff[ SIZE ] ;
 	size_t size = 0 ;
 	size_t count ;
-
+	size_t buffer_size = BUFFER_SIZE ;
+	
 	int fd ;
 	
 	if( p == ProcessVoid )
+		return 0 ;
+	
+	buffer = ( char * ) malloc( sizeof( char ) * BUFFER_SIZE ) ;
+	
+	if( buffer == NULL )
 		return 0 ;
 	
 	if( std_io == STDOUT )
@@ -231,23 +250,29 @@ size_t ProcessGetOutPut( process_t p,char ** data,int std_io )
 		fd = p->fd_2[ 0 ] ;
 	
 	while( 1 ) {
-		
 		count = read( fd,buff,SIZE ) ;
-		if( count == SIZE ){
-			buffer = ( char * ) realloc( buffer,size + SIZE + 1 ) ;
-			memcpy( buffer + size,buff,SIZE ) ;
-			buffer[ size + SIZE ] = '\0' ;
-			size += SIZE ;
-		}else if( count < SIZE && count != 0 ){
-			buffer = ( char * ) realloc( buffer,size + count + 1 ) ;
+		e = __StringExpandMemory( buffer,size + count,&buffer_size ) ;
+		
+		if( e == NULL ){
+			free( buffer ) ;
+			return 0 ;
+		}else{
+			buffer = e ;
 			memcpy( buffer + size,buff,count ) ;
-			buffer[ size + count ] = '\0' ;
-			size += count ;
-		}else
+		}
+		
+		size += count ;
+		
+		if( count < SIZE )
 			break ;
 	}
-
-	*data = buffer ;
+	
+	if( size > 0 ){
+		e = realloc( buffer,size + 1 ) ;
+		buffer[ size ] = '\0' ;	
+		*data = e ;
+	}
+	
 	return size ;	
 }
 

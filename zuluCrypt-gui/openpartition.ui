@@ -127,6 +127,9 @@
    <property name="text">
     <string>&amp;help</string>
    </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
   </widget>
   <widget class="QPushButton" name="pbUUID">
    <property name="geometry">
@@ -139,6 +142,9 @@
    </property>
    <property name="text">
     <string>use &amp;uuid</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
    </property>
   </widget>
   <widget class="QPushButton" name="pbCancel">
@@ -153,8 +159,11 @@
    <property name="text">
     <string>&amp;cancel</string>
    </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
    <property name="default">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
   </widget>
  </widget>
