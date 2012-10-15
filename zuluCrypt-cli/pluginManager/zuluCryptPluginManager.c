@@ -23,7 +23,6 @@
 #include <pwd.h>
 #include <blkid/blkid.h>
 #include <sys/syscall.h>
-#include <fcntl.h>
 
 #include "libzuluCryptPluginManager.h"
 #include "../utility/process/process.h"
@@ -47,12 +46,7 @@ static inline socket_t zuluCryptSocketAccept( socket_t server )
 	
 	socket_t client = SocketVoid ;
 	
-	int fd = SocketFileDescriptor( server ) ;
-	
-	if( fd < 0 )
-		return SocketVoid ;
-	
-	fcntl( fd,F_SETFL,O_NONBLOCK );
+	SocketSetDoNotBlock( server ) ;
 	
 	for( i = 0 ; i < 30 ; i++ ){
 		client = SocketAccept( server ) ;

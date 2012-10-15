@@ -288,6 +288,28 @@ int SocketConnect( socket_t s )
 		return connect( s->fd,( struct sockaddr * )s->net,s->size ) == 0 ? 1 : 0 ;
 }
 
+int SocketSetDoNotBlock( socket_t s ) 
+{
+	int flags ;
+	if( s == SocketVoid )
+		return -1 ;
+	flags = fcntl( s->fd,F_GETFL,0 );
+	if( flags == -1 )
+		flags = 0 ;
+	return fcntl( s->fd,F_SETFL,flags | O_NONBLOCK ) ;
+}
+
+int SocketSetBlock( socket_t s )
+{
+	int flags ;
+	if( s == SocketVoid )
+		return -1 ;
+	flags = fcntl( s->fd,F_GETFL,0 );
+	if( flags == -1 )
+		flags = 0 ;
+	return fcntl( s->fd,F_SETFL,flags & ~O_NONBLOCK ) ;
+}
+ 
 int SocketListen( socket_t s ) 
 {
 	if( s == SocketVoid )

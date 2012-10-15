@@ -37,6 +37,7 @@ extern "C" {
 #include <sys/select.h>
 #include <netdb.h>
 #include <sys/time.h>
+#include <fcntl.h>
 
 #define SocketVoid     ( ( void * ) 0 )  
 
@@ -176,6 +177,19 @@ ssize_t SocketGetData_2( socket_t,char * buffer,size_t len ) ;
  * return number of bytes sent or -1 on error
  */
 ssize_t SocketSendData( socket_t,const char * buffer,size_t len ) ;
+
+/*
+ * set the socket to not block the calling thread waiting for events over the socket
+ * -1 is returned on error, other numbers on success
+ */
+int SocketSetDoNotBlock( socket_t ) ;
+
+/*
+ * set the socket to a block the calling thread waiting for events over the socket
+ * This is the default setting.
+ * -1 is returned on error, other numbers on success
+ */
+int SocketSetBlock( socket_t ) ;
 
 /*
  * close the connection
