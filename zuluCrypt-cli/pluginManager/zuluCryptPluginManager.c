@@ -121,7 +121,7 @@ void zuluCryptPluginManagerCloseConnection( void * p )
 	}
 }
 
-static string_t zuluCryptGetDeviceUUID( const char * device )
+static inline string_t zuluCryptGetDeviceUUID( const char * device )
 {
 	string_t p ;
 	blkid_probe blkid ;
@@ -144,8 +144,9 @@ static string_t zuluCryptGetDeviceUUID( const char * device )
 string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * name,uid_t uid,const char * argv )
 {	
 	process_t p ;
-	
+	struct stat st ;
 	const char * sockpath ;
+	const char * pluginPath ;
 	
 	string_t key   = StringVoid ;
 	string_t plugin_path = StringVoid ;
@@ -156,50 +157,53 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	struct passwd * pass = getpwuid( uid ) ;
 		
 	if( pass == NULL )
-		return NULL ;	
+		return key ;
 	
 	if( strrchr( name,'/' ) == NULL ){
 		/*
 		 * ZULUCRYPTpluginPath is set at config time at it equals $prefix/lib(64)/zuluCrypt/
 		 */
 		plugin_path = String( ZULUCRYPTpluginPath ) ;
-		StringAppend( plugin_path,name ) ;
+		pluginPath = StringAppend( plugin_path,name ) ;
 	}else{
 		/*
 		 * module has a backslash, assume its path to where a module is located
 		 */
-		plugin_path = String( name ) ;
+		pluginPath = name ;
 	}
 	
-	path = String( pass->pw_dir ) ;
-	sockpath = StringAppend( path,"/.zuluCrypt-socket/" ) ;
+	if( stat( pluginPath,&st ) == 0 ) {
 	
-	mkdir( sockpath,S_IRWXU | S_IRWXG | S_IRWXO ) ;
-	chown( sockpath,uid,uid ) ;
-	chmod( sockpath,S_IRWXU ) ;
+		path = String( pass->pw_dir ) ;
+		sockpath = StringAppend( path,"/.zuluCrypt-socket/" ) ;
 	
-	id = StringIntToString( syscall( SYS_gettid ) ) ;
+		mkdir( sockpath,S_IRWXU | S_IRWXG | S_IRWXO ) ;
+		chown( sockpath,uid,uid ) ;
+		chmod( sockpath,S_IRWXU ) ;
 	
-	sockpath = StringAppendString( path,id ) ;
+		id = StringIntToString( syscall( SYS_gettid ) ) ;
 	
-	uuid = zuluCryptGetDeviceUUID( device ) ;
+		sockpath = StringAppendString( path,id ) ;
+	
+		uuid = zuluCryptGetDeviceUUID( device ) ;
 
-	p = Process( StringContent( plugin_path ) ) ;
+		p = Process( pluginPath ) ;
 
-	ProcessSetOptionUser( p,uid ) ;
-	ProcessSetArgumentList( p,device,StringContent( uuid ),sockpath,CHARMAXKEYZISE,argv,'\0' ) ;
-	ProcessStart( p ) ;
+		ProcessSetOptionUser( p,uid ) ;
+		ProcessSetArgumentList( p,device,StringContent( uuid ),sockpath,CHARMAXKEYZISE,argv,'\0' ) ;
+		ProcessStart( p ) ;
 	
-	zuluCryptGetKeyFromSocket( sockpath,&key,uid ) ;
+		zuluCryptGetKeyFromSocket( sockpath,&key,uid ) ;
 		
-	/*
-	 * for reasons currently unknown to me,the gpg plugin doesnt always exit,it hangs tying up cpu circles.
-	 * send it a sigterm after it is done sending its key to make sure it exits.
-	 */
-	if( StringEqual( plugin_path,ZULUCRYPTpluginPath"gpg" ) )
-		ProcessTerminate( p ) ;
+		/*
+		 * for reasons currently unknown to me,the gpg plugin doesnt always exit,it hangs tying up cpu circles.
+		 * send it a sigterm after it is done sending its key to make sure it exits.
+		 */
+		if( StringEqual( plugin_path,ZULUCRYPTpluginPath"gpg" ) )
+			ProcessTerminate( p ) ;
 	
-	ProcessDelete( &p ) ;
+		ProcessDelete( &p ) ;
+	}
 	
 	StringMultipleDelete( &plugin_path,&uuid,&id,&path,'\0' ) ;      
 	
