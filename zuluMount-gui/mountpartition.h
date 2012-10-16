@@ -17,6 +17,7 @@
 #include "../zuluCrypt-gui/openvolumereadonly.h"
 #include "../zuluCrypt-gui/tablewidget.h"
 #include "../zuluCrypt-gui/openmountpointinfilemanager.h"
+#include "../zuluCrypt-gui/savemountpointpath.h"
 
 #include "mainwindow.h"
 

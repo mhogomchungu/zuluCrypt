@@ -156,7 +156,8 @@ void passwordDialog::ShowUI( QString volumePath, QString mount_point )
 	m_ui->OpenVolumePath->setText( volumePath );
 	m_ui->OpenVolumePath->setEnabled( false );
 	m_ui->PushButtonVolumePath->setEnabled( false );
-	m_ui->MountPointPath->setText( mount_point );
+	QString mp = savemountpointpath::getPath( mount_point,QString( "zuluCrypt-MountPointPath" ) ) ;
+	m_ui->MountPointPath->setText( mp );
 	m_ui->PassPhraseField->setFocus();
 	QString vp = volumePath.mid( 0,5 );
 	if( vp == QString( "/dev/" ) || vp == QString( "UUID=" ) )
@@ -343,6 +344,8 @@ void passwordDialog::buttonOpenClicked( void )
 		passPhraseField = socketSendKey::getSocketPath() ;
 		this->sendKey( passPhraseField );
 	}
+
+	savemountpointpath::savePath( m_ui->MountPointPath->text(),QString( "zuluCrypt-MountPointPath" ) ) ;
 
 	QString a = QString( ZULUCRYPTzuluCrypt ) ;
 	QString b = vp;

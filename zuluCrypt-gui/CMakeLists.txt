@@ -91,6 +91,7 @@ set (SRC createfile.cpp
 	openvolumereadonly.cpp
 	zuluoptions.cpp
 	openmountpointinfilemanager.cpp
+	savemountpointpath.cpp
 	../zuluMount-gui/oneinstance.cpp	
 )
 

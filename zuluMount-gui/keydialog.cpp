@@ -17,7 +17,9 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,QString path,QString
 
 	this->setWindowTitle( msg );
 
-	m_ui->lineEditMountPoint->setText( MainWindow::getMountPointPath( path ) );
+	path = savemountpointpath::getPath( path,QString( "zuluMount-MountPointPath" ) ) ;
+
+	m_ui->lineEditMountPoint->setText( path );
 	m_ui->pbkeyFile->setVisible( false );
 	m_ui->pbOpenMountPoint->setIcon( QIcon( QString( ":/folder.png" ) ) );
 
@@ -192,7 +194,6 @@ void keyDialog::slotMountComplete( int st,QString m )
 {
 	m_working = false ;
 	if( st == 0 ){
-		MainWindow::saveMountPointPath( m_ui->lineEditMountPoint->text() ) ;
 		managepartitionthread * mpt = new managepartitionthread() ;
 		mpt->setDevice( m_table->item( m_table->currentRow(),0 )->text() );
 		connect( mpt,SIGNAL( signalProperties( QString ) ),this,SLOT( volumeMiniProperties( QString ) ) ) ;
@@ -244,6 +245,7 @@ void keyDialog::pbOpen()
 	part->setMountPoint( m_ui->lineEditMountPoint->text().replace( "\"","\"\"\"" ) );
 
 	m_working = true ;
+	savemountpointpath::savePath( m_ui->lineEditMountPoint->text(),QString( "zuluMount-MountPointPath" ) ) ;
 
 	part->startAction( QString( "cryptoOpen" ) ) ;
 	this->disableAll();

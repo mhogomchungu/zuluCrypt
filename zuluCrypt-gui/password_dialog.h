@@ -41,6 +41,7 @@
 #include "socketsendkey.h"
 #include "openvolumereadonly.h"
 #include "openmountpointinfilemanager.h"
+#include "savemountpointpath.h"
 
 class passwordDialog :  public QDialog
 {

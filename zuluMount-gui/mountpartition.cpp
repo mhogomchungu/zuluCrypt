@@ -77,6 +77,7 @@ void mountPartition::pbMount()
 	connect( part,SIGNAL( signalMountComplete( int,QString ) ),this,SLOT( slotMountComplete( int,QString ) ) ) ;
 
 	part->startAction( QString( "mount" ) ) ;
+	savemountpointpath::savePath( m_ui->lineEdit->text(),QString( "zuluMount-MountPointPath" ) ) ;
 }
 
 void mountPartition::pbOpenMountPath()
@@ -95,7 +96,7 @@ void mountPartition::ShowUI( QString path,QString label )
 	m_path = path ;
 	m_label = label ;
 
-	m_ui->lineEdit->setText( MainWindow::getMountPointPath( path ) );
+	m_ui->lineEdit->setText( savemountpointpath::getPath( path,QString( "zuluMount-MountPointPath" ) ) ) ;
 
 	if( label == QString( "Nil" ) )
 		m_ui->checkBox->setEnabled( false );
@@ -133,8 +134,6 @@ void mountPartition::slotMountComplete( int status,QString msg )
 		m.ShowUIOK( QString( "ERROR" ),msg );
 		this->enableAll();
 	}else{
-		MainWindow::saveMountPointPath( m_ui->lineEdit->text() ) ;
-
 		managepartitionthread * mpt = new managepartitionthread() ;
 		mpt->setDevice( m_table->item( m_table->currentRow(),0 )->text() );
 		connect( mpt,SIGNAL( signalProperties( QString ) ),this,SLOT( volumeMiniProperties( QString ) ) ) ;
