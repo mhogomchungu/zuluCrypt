@@ -26,7 +26,7 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 static int zuluExit( int st,char * device,char * m_point,stringList_t stl )
 {
 	/*
-	 * this function is defined in ../string/StringManage.c
+	 * this function is defined in ../utility/string/StringList.c
 	 */
 	StringListClearDelete( &stl ) ;
 	

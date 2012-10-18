@@ -100,7 +100,7 @@
     <string/>
    </property>
    <property name="autoDefault">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
   </widget>
   <widget class="QPushButton" name="pushButtonDelete">
@@ -183,7 +183,7 @@
     <string/>
    </property>
    <property name="autoDefault">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
   </widget>
   <widget class="QPushButton" name="pushButtonOpenPartition">
@@ -202,7 +202,7 @@
     <string/>
    </property>
    <property name="autoDefault">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
   </widget>
  </widget>

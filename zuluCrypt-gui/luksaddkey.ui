@@ -140,7 +140,7 @@
      <string/>
     </property>
     <property name="autoDefault">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QLineEdit" name="textEditExistingPassphrase">
@@ -259,7 +259,7 @@
      <string/>
     </property>
     <property name="autoDefault">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QLabel" name="labelNewPassphrase">
