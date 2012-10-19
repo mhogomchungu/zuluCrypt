@@ -37,16 +37,16 @@ socket_t Socket( int domain,int type,int protocol )
 	socket_t s ;
 	int fd = socket( domain,type,protocol ) ;	
 	
-	if( fd == -1 ){
+	if( fd == -1 )
+		return SocketVoid ;
+
+	s = ( socket_t ) malloc( sizeof( struct SocketType_t ) ) ;
+	
+	if( s == NULL ){
 		close( fd ) ;
 		return SocketVoid ;
 	}
-	
-	s = ( socket_t ) malloc( sizeof( struct SocketType_t ) ) ;
-	
-	if( s == NULL )
-		return SocketVoid ;
-	
+
 	if( domain == AF_UNIX ){		
 		s->local = ( struct sockaddr_un * ) malloc( sizeof( struct sockaddr_un ) ) ;
 		if( s->local == NULL ){
