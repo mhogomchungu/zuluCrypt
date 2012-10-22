@@ -40,26 +40,6 @@ int syscall(int number, ...) ;
 #include "plugin_path.h"
 #include <stdio.h>
 
-static inline socket_t zuluCryptSocketAccept( socket_t server ) 
-{
-	int i ;
-	
-	socket_t client = SocketVoid ;
-	
-	SocketSetDoNotBlock( server ) ;
-	
-	for( i = 0 ; i < 30 ; i++ ){
-		client = SocketAccept( server ) ;
-		if( client != SocketVoid ){
-			break ;	
-		}else{
-			sleep( 1 ) ;
-		}
-	}	
-	
-	return client ;
-}
-
 size_t zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid )
 {	
 	size_t dataLength = 0 ;
@@ -73,7 +53,7 @@ size_t zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid
 			chown( sockpath,uid,uid ) ;
 			chmod( sockpath,S_IRWXU | S_IRWXG | S_IRWXO ) ;
 			if( SocketListen( server ) ){
-				client = zuluCryptSocketAccept( server ) ;
+				client = SocketAcceptWithTimeOut( server,30 ) ;
 				if( client != SocketVoid ){
 					dataLength = SocketGetData( client,&buffer,INTMAXKEYZISE ) ;
 					*key = StringInheritWithSize( &buffer,dataLength ) ;
@@ -90,17 +70,21 @@ size_t zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid
 
 void * zuluCryptPluginManagerOpenConnection( const char * sockpath )
 {
-	int i ;	
-	socket_t client = SocketLocal( sockpath ) ;
+	int i ;
+	
+	socket_t client = SocketVoid ;
 		
-	for( i = 0 ;  ; i++ ){
-		if( SocketConnect( client ) )
+	for( i = 30 ; i > 0 ; i-- ){
+		
+		client = SocketLocal( sockpath ) ;
+		
+		if( SocketConnect( client ) ){
 			return ( void * ) client ;
-		else if( i == 20 ){
+		}else{
+			SocketClose( client ) ;
 			SocketDelete( &client ) ;
-			break ;
-		}else
 			sleep( 1 ) ;
+		}
 	}
 	
 	return NULL ;

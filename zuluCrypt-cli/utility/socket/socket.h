@@ -113,6 +113,13 @@ int SocketFileDescriptor( socket_t ) ;
 socket_t SocketAccept( socket_t ) ;
 
 /*
+ *  Wait for upto time seconds for an attempt to connect.
+ *  SocketVoid is returned if time time expire or on error.
+ *  A socket_t object is returned on success.
+ */
+socket_t SocketAcceptWithTimeOut( socket_t,int time ) ;
+
+/*
  * connect to a server
  * 1 is returned on success
  * 0 is returned on error
@@ -190,6 +197,13 @@ int SocketSetDoNotBlock( socket_t ) ;
  * -1 is returned on error, other numbers on success
  */
 int SocketSetBlock( socket_t ) ;
+
+/*
+ * return 1 if a socket is a blocking socket
+ * return 0 if a socket is a non blocking socket 
+ * return -1 on error( if socket is SocketVoid ).
+ */
+int SocketIsBlocking( socket_t ) ;
 
 /*
  * close the connection

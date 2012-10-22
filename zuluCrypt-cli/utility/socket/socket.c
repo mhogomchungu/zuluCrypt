@@ -272,6 +272,51 @@ socket_t SocketAccept( socket_t s )
 	return x ;
 }
 
+int SocketIsBlocking( socket_t s ) 
+{
+	int flags ;
+	
+	if( s == SocketVoid )
+		return -1 ;
+	
+	flags = fcntl( s->fd,F_GETFL,0 ) ;
+	return flags != ( flags | O_NONBLOCK ) ;
+}
+
+static inline socket_t __SocketAccept( socket_t s,int time )
+{
+	socket_t c = SocketVoid ;
+	int i ;
+	
+	for( i = 0 ; i < time ; i++ ){
+		c = SocketAccept( s ) ;
+		if( c != SocketVoid ){
+			break ;
+		}else{
+			sleep( 1 ) ;
+		}
+	}   
+	
+	return c ;
+}
+
+socket_t SocketAcceptWithTimeOut( socket_t s,int time ) 
+{
+	socket_t c = SocketVoid ;
+	
+	if( s != SocketVoid ){
+		if( SocketIsBlocking( s ) ){
+			SocketSetDoNotBlock( s ) ;
+			c = __SocketAccept( s,time ) ;
+			SocketSetBlock( s ) ;
+		}else{
+			c = __SocketAccept( s,time ) ;
+		}
+	}
+	
+	return c ;
+}
+
 void SocketSetListenMaximum( socket_t s,int m ) 
 {
 	if( s != SocketVoid )
