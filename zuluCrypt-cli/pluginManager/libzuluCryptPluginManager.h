@@ -48,7 +48,7 @@ extern "C" {
  * This function is expected to be called within 30 seconds or the connection will be closed.
  * 
  * NULL is returned if the connection can not be made.
- * This function will block for atmost 20 seconds while trying to establish a connection. 
+ * This function will block while trying to establish a connection. 
  */
 void * zuluCryptPluginManagerOpenConnection( const char * token ) ;
 
