@@ -119,6 +119,14 @@ static inline string_t zuluCryptGetDeviceUUID( const char * device )
 	return p ;
 }
 
+static inline int pluginIsGpG( const char * plugin_path )
+{
+	char * path = realpath( plugin_path,NULL ) ;
+	int st = strcmp( path,ZULUCRYPTpluginPath"gpg" ) ;
+	free( path ) ;
+	return st == 0 ;
+}
+
 string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * name,uid_t uid,const char * argv )
 {	
 	process_t p ;
@@ -174,10 +182,10 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		zuluCryptGetKeyFromSocket( sockpath,&key,uid ) ;
 		
 		/*
-		 * for reasons currently unknown to me,the gpg plugin doesnt always exit,it hangs tying up cpu circles.
-		 * send it a sigterm after it is done sending its key to make sure it exits.
+		 * for reasons currently unknown to me,the gpg plugin doesnt always exit,it hangs consuming massive amount of cpu circles.
+		 * we terminate it here by sending it a sigterm after it is done sending its key to make sure it exits.
 		 */
-		if( StringEqual( plugin_path,ZULUCRYPTpluginPath"gpg" ) )
+		if( pluginIsGpG( pluginPath ) )
 			ProcessTerminate( p ) ;
 	
 		ProcessDelete( &p ) ;

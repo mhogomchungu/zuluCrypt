@@ -110,7 +110,7 @@ static int zuluMountPartitionAccess( const char * device,const char * mode,uid_t
 	
 	if( StringContains( p,"ro" ) && strstr( mode,"rw" ) != NULL )
 		st = 1 ;
-	else if( StringContains( p,"nouser" ) &&uid != 0 ){
+	else if( StringContains( p,"nouser" ) && uid != 0 ){
 		st = 2 ;
 	}else if( StringContains( p,"user" ) ){
 		st = 3 ;
@@ -172,7 +172,10 @@ static int zuluMountMount( const char * device,const char * m_point,const char *
 		else
 			StringAppend( z,q + 1 ) ;
 	}
-		
+	
+	/*
+	 * zuluCryptSecurityCreateMountPoint() defined in ../zuluCrypt-cli/bin/security.c
+	 */
 	if( zuluCryptSecurityCreateMountPoint( StringContent( z ),uid ) != 0 )
 		return zuluExit( 105,z,path,"ERROR: could not create mount point,invalid path or path already taken" ) ;
 
