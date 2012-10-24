@@ -161,6 +161,10 @@ int main( int argc,char * argv[] )
 	
 	clargs.argv = StringListContentAt( stl,0 );	
 	
+	/*
+	 * Hide "sensitive" command line arguments from ps comamnd and related tools.
+	 * Best way to pass keys to zuluCrypt-cli is to directly use the socket or use libzuluCryptPluginManager API
+	 */
 	if( clargs.key != NULL ){
 		q = StringListAssignString( stl,String( clargs.key ) ) ;
 		memset( ( char * )clargs.key,'\0',StringLength( q ) ) ;
