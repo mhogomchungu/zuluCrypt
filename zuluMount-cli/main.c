@@ -460,39 +460,39 @@ int main( int argc,char * argv[] )
 	if( key_argv != NULL ){
 		k = String( key_argv ) ;
 		e = ( char * ) key_argv ;
-		memset( e,'\0',StringLength( k ) ) ;		
+		memset( e,'\0',StringLength( k ) ) ;
 		e[ 0 ] = 'x' ;
 		key = StringContent( k ) ;
 	}
 	
 	if( setuid( 0 ) != 0 )
-		return zuluExit( 120,StringVoid,NULL,"ERROR: setuid(0) failed,check executable permissions" ) ;
+		return zuluExit( 120,k,NULL,"ERROR: setuid(0) failed,check executable permissions" ) ;
 	
 	if( argc < 2 )
-		return zuluExit( 121,StringVoid,NULL,"wrong number of arguments" ) ;
+		return zuluExit( 121,k,NULL,"wrong number of arguments" ) ;
 	
 	if( action == NULL )
-		return zuluExit( 122,StringVoid,NULL,"ERROR: action not specified" ) ;
+		return zuluExit( 122,k,NULL,"ERROR: action not specified" ) ;
 	
 	if( strcmp( action,"-S" ) == 0 ){
 		/*
 		 * function is defined in ../zuluCrypt-cli/bin/partitions.c
 		 * it printf() devices with entries in "/etc/fstab","/etc/crypttab", and "/etc/zuluCrypttab"
 		 */
-		return zuluCryptPrintPartitions( SYSTEM_PARTITIONS ) ;		
+		return zuluExit( zuluCryptPrintPartitions( SYSTEM_PARTITIONS ),k,NULL,NULL ) ;
 	}
 		
 	if( strcmp( action,"-l" ) == 0 )
-		return zuluMountMmountedList( uid ) ;
+		return zuluExit( zuluMountMmountedList( uid ),k,NULL,NULL ) ;
 	
 	if( strcmp( action,"-P" ) == 0 )
-		return zuluMountDeviceList() ;	
+		return zuluExit( zuluMountDeviceList(),k,NULL,NULL ) ;
 	
 	if( strcmp( action,"-h" ) == 0 )
-		return mount_help() ;	
+		return zuluExit( mount_help(),k,NULL,NULL ) ;
 	
 	if( dev == NULL )
-		return zuluExit( 123,StringVoid,NULL,"ERROR: device argument missing" ) ;
+		return zuluExit( 123,k,NULL,"ERROR: device argument missing" ) ;
 		
 	if( mode == NULL )
 		mode = "rw" ;
@@ -516,17 +516,15 @@ int main( int argc,char * argv[] )
 			status = 125 ;
 		}
 	}else{
-		device = realpath( dev,NULL ) ;	
+		device = realpath( dev,NULL ) ;
 		if( device != NULL ){
 			status = zuluMountExe( device,action,m_point,mode,uid,key,key_source ) ;		
-			free( device ) ;		
+			free( device ) ;
 		}else{
 			printf( "could not resolve path to device\n" ) ;
 			status = 126 ;
 		}
 	}	
 	
-	StringDelete( &k ) ;
-	
-	return status ;
+	return zuluExit( status,k,NULL,NULL ) ;
 }
