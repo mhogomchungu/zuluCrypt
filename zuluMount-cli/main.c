@@ -57,7 +57,7 @@ static int mount_get_opts( int argc,char * argv[],const char ** action,const cha
 			   const char ** m_point, const char ** mode,const char ** key,const char ** key_source )
 {
 	int c ;
-	while ( ( c = getopt( argc,argv,"tSshlMmUud:z:e:p:f:G:" ) ) != -1 ) {
+	while ( ( c = getopt( argc,argv,"tSshlPMmUud:z:e:p:f:G:" ) ) != -1 ) {
 		switch( c ){
 			case 't' : *action  = "-t"   ; break ;
 			case 's' : *action  = "-s"   ; break ;
@@ -430,7 +430,7 @@ options:\n\
 -p -- print a list of partitions\n\
 -m -- mount a partitions : arguments: -d partition_path -z mount_point -e mode(rw/ro)\n\
 -u -- unmount a partition: arguments: -d partition_path\n\
--M -- mount a LUKS volume: arguments: -d partition_path -z mount_point -e mode(rw/ro) (-p passphrase/-f keyfile) \n\
+-M -- mount a LUKS/PLAIN volume: arguments: -d partition_path -z mount_point -e mode(rw/ro) (-p passphrase/-f keyfile) \n\
 -U -- unmount a LUKS volume: arguments: -d partition_path\n" ;
 
 	printf( doc ) ;
