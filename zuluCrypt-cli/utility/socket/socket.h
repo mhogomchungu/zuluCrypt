@@ -171,9 +171,9 @@ size_t SocketGetData_1( socket_t,char ** buffer ) ;
 
 /*
  * get data from a socket and put in a user managed buffer "buffer" of size len
- * 
- * This function will block until len bytes are read on the other side close the connection 
- * 
+ * The buffer will be null terminated and hence must have additional space to accomodate null character.
+ * If you expect to read a maximum of 32 bytes from the socket for example, you must have a buffer with atleast 33 blocks in size
+ * and you must pass 33 to the function. 
  * returned value is the number of bytes read or -1 on error
  * The buffer is not NULL terminated 
  */
@@ -206,22 +206,15 @@ int SocketSetBlock( socket_t ) ;
 int SocketIsBlocking( socket_t ) ;
 
 /*
- * close the connection
- * 1 is returned on success
- * 0 is returned on error
+ * close a socket and free up all used resources
  */
-int SocketClose( socket_t ) ;
+void SocketClose( socket_t * ) ;
 
 /*
  * set the maximum number of connections to accept.
  * This function must be called before SocketListen() to change the default from 1.
  */
 void SocketSetListenMaximum( socket_t,int ) ;
-
-/*
- * clean up all resources used by the socket
- */
-void SocketDelete( socket_t * ) ;
 
 /*
 examples:
@@ -242,28 +235,23 @@ int main( void )
 	SocketBind( server ) ;
 	
 	char data[ 33 ] ;
-	int p ;
 	while( 1 ){
 		SocketListen( server ) ;
 	
 		client = SocketAccept( server ) ;
 	
-		p = SocketGetData_2( client,data,32 ) ;
-		data[ p ] = '\0' ;
+		SocketGetData_2( client,data,sizeof( data ) ) ;
 		if( strcmp( data,"exit" ) == 0 ){
 			printf( "exit command received, exiting\n" ) ;
-			SocketClose( client ) ;
-			SocketDelete( &client ) ;
+			SocketClose( &client ) ;
 			break ;
 		}else{	
 			printf( "message received: %s\n",data ) ;
-			SocketClose( client ) ;
-			SocketDelete( &client ) ;
+			SocketClose( &client ) ;
 		}
 	}
 	
-	SocketClose( server ) ;	
-	SocketDelete( &server ) ;
+	SocketClose( &server ) ;	
 	
 	return 0 ;
 }
@@ -284,14 +272,11 @@ int main( int argc,char * argv[] )
 	//socket_t client = SocketLocal( "/tmpt/socketLocal" ) ;	
 	socket_t client = SocketNetByName( "localhost",4000 ) ;
 	
-	SocketConnect( client ) ;	
+	SocketConnect( client ) ;
 	
 	SocketSendData( client,data,strlen( data ) ) ;
 	
-	SocketClose( client ) ;
-	
-	SocketDelete( &client ) ;
-	
+	SocketClose( &client ) ;
 	return 0 ;
 }
 */

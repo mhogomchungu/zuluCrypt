@@ -56,23 +56,31 @@ static inline char * __StringExpandMemory( string_t st,size_t new_size )
 
 void StringDelete( string_t * st )
 {
-	if( st == NULL )
-		return ;
-	if( *st == StringVoid )
-		return ;
-	free( ( *st )->string ) ;
-	free( *st ) ;
-	*st = StringVoid ;
+	string_t s ;
+	if( st != NULL ){
+		s = *st ;
+		*st = StringVoid ;
+		if( s != StringVoid ){
+			free( s->string ) ;
+			free( s ) ;
+		}
+	}
 }
 
 void StringClearDelete( string_t * st ) 
 {	
-	if( *st == StringVoid )
-		return ;
-	memset( ( *st )->string,'\0',( *st )->size ) ;
-	free( ( *st )->string ) ;
-	free( *st ) ;
-	*st = StringVoid ;
+	string_t s ;
+	char * e ;
+	if( st != NULL ){
+		s = *st ;
+		*st = StringVoid ;
+		if( s != StringVoid ){
+			e = s->string ;
+			memset( e,'\0',s->length ) ;
+			free( e ) ;
+			free( s ) ;
+		}
+	}
 }
 
 void StringMultipleDelete( string_t * xt,... )
@@ -231,11 +239,11 @@ string_t StringInheritWithSize( char ** data,size_t s )
 	if( st == NULL )
 		return StringVoid ;
 	
-	st->size = s ;	
+	st->size = s ;
 	st->length = s ;
 	st->string = *data ;
 	*data = NULL ;
-	return st ;	
+	return st ;
 }
 
 string_t StringWithSize( const char * s,size_t len )

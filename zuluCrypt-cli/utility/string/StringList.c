@@ -251,7 +251,7 @@ stringList_t StringListSplit( const char * cstring,char splitter )
 			if( *b != '\0' )
 				if( b == cstring || *b != splitter )
 					stl = StringListAppend( stl,b ) ;
-			 break ;			
+			 break ;
 		}else{
 			len = d - b ;
 			if( len > 0 ){

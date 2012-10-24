@@ -57,13 +57,11 @@ size_t zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid
 				if( client != SocketVoid ){
 					dataLength = SocketGetData( client,&buffer,INTMAXKEYZISE ) ;
 					*key = StringInheritWithSize( &buffer,dataLength ) ;
-					SocketClose( client ) ;
-					SocketDelete( &client ) ;
+					SocketClose( &client ) ;
 				}
 			}
 		}	
-		SocketClose( server ) ;
-		SocketDelete( &server ) ;
+		SocketClose( &server ) ;
 	}
 	return dataLength ;
 }
@@ -72,7 +70,7 @@ void * zuluCryptPluginManagerOpenConnection( const char * sockpath )
 {
 	int i ;
 	
-	socket_t client = SocketVoid ;
+	socket_t client ;
 		
 	for( i = 30 ; i > 0 ; i-- ){
 		
@@ -81,8 +79,7 @@ void * zuluCryptPluginManagerOpenConnection( const char * sockpath )
 		if( SocketConnect( client ) ){
 			return ( void * ) client ;
 		}else{
-			SocketClose( client ) ;
-			SocketDelete( &client ) ;
+			SocketClose( &client ) ;
 			sleep( 1 ) ;
 		}
 	}
@@ -97,12 +94,9 @@ ssize_t zuluCryptPluginManagerSendKey( void * client,const char * key,size_t len
 
 void zuluCryptPluginManagerCloseConnection( void * p )
 {	
-	socket_t client ;
-	if( p != NULL ){
-		client = ( socket_t ) p;
-		SocketClose( client ) ;
-		SocketDelete( &client ) ;
-	}
+	socket_t client = ( socket_t ) p;
+	if( p != NULL )
+		SocketClose( &client ) ;
 }
 
 static inline string_t zuluCryptGetDeviceUUID( const char * device )

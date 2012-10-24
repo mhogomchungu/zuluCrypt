@@ -149,7 +149,6 @@ stringList_t zuluCryptPartitions( int option )
 {
 	string_t st  ;
 	
-	const char * entry ;
 	const char * device ;
 	char * ac ;
 	
@@ -195,31 +194,29 @@ stringList_t zuluCryptPartitions( int option )
 		
 		st = StringListStringAt( stl,i ) ;
 
-		entry = StringContent( st ) ;
-		
-		if( entry[0] == '#' )
+		if( StringStartsWith( st,"#" ) )
 			continue ;
 		
 		index = StringIndexOfChar( st,0,' ' ) ;
 		
-		if( index == - 1 )
+		if( index == -1 )
 			continue ;
 		
 		StringSubChar( st,index,'\0' ) ;
-				
-		device = StringRemoveString( st,"\"" ) ;		
+
+		device = StringRemoveString( st,"\"" ) ;
 		
-		if ( strncmp( device,"/dev/",5 ) == 0 ){			
+		if ( StringStartsWith( st,"/dev/" ) ){
 			system = StringListAppend( system,device ) ;
 			StringListRemoveString( non_system,device ) ;
-		}else if( strncmp( entry,"UUID",4 ) == 0 ){
+		}else if( StringStartsWith( st,"UUID" ) ){
 			ac = zuluCryptDeviceFromUUID( device + 5 ) ;
 			if( ac != NULL ){
 				system = StringListAppend( system,ac ) ;
 				StringListRemoveString( non_system,ac ) ;
 				free( ac ) ;
 			}
-		}else if( strncmp( entry,"LABEL",5 ) == 0 ){
+		}else if( StringStartsWith( st,"LABEL" ) ){
 			ac = zuluCryptDeviceFromLabel( device + 6 ) ;
 			if( ac != NULL ){
 				system = StringListAppend( system,ac ) ;
@@ -229,7 +226,7 @@ stringList_t zuluCryptPartitions( int option )
 		}		
 	}
 	
-	StringListDelete( &stl ) ;	
+	StringListDelete( &stl ) ;
 	
 	p = zuluCryptGetPartitionFromCrypttab() ;
 	appendSystemList( system,p ) ;
@@ -243,7 +240,7 @@ stringList_t zuluCryptPartitions( int option )
 		return system  ;
 	}else{
 		StringListDelete( &system ) ;
-		return non_system  ;		
+		return non_system  ;
 	}
 }
 
@@ -267,7 +264,7 @@ int zuluCryptPrintPartitions( int option )
 	
 	j = StringListSize( stl ) ;
 	
-	for( i = 0 ; i < j ; i++ )	
+	for( i = 0 ; i < j ; i++ )
 		StringListPrintLineAt( stl,i ) ;
 	
 	StringListDelete( &stl ) ;
@@ -291,7 +288,6 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 	stringList_t stl_1 = StringListVoid ;
 	string_t st  ;
 
-	const char * entry ;
 	char * ac ;
 	
 	ssize_t index ;
@@ -310,20 +306,15 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 	StringDelete( &st ) ;
 	
 	if( stl == StringListVoid )
-		return StringListVoid ;	
-	
-	j = StringListSize( stl ) ;
-	
-	if( j == 0 )
 		return StringListVoid ;
 	
+	j = StringListSize( stl ) ;
+		
 	for( i = 0 ; i < j ; i++ ){
 			
 		st = StringListStringAt( stl,i ) ;
 	
-		entry = StringContent( st ) ;			
-
-		if( entry[0] == '#' || entry[0] == '\n' )
+		if( StringStartsWith( st,"#" ) )
 			continue ;
 		 
 		index = StringIndexOfChar( st,0,'/' ) ;
@@ -369,7 +360,7 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 			StringSubChar( st,index_1,'\0' ) ;
 		 
 			stl_1 = StringListAppend( stl_1,StringContent( st ) + index ) ;
-		}			
+		}
 	}
 	
 	StringListDelete( &stl ) ;
@@ -381,7 +372,6 @@ stringList_t zuluCryptGetPartitionFromZulutab()
 	size_t i ;
 	size_t j ;
 	
-	const char * entry ;
 	char * ac ;
 	
 	stringList_t stl ;
@@ -397,7 +387,7 @@ stringList_t zuluCryptGetPartitionFromZulutab()
 	StringDelete( &st ) ;
 	
 	if( stl == StringListVoid )
-		return StringListVoid ;	
+		return StringListVoid ;
 	
 	j = StringListSize( stl ) ;
 	
@@ -407,14 +397,9 @@ stringList_t zuluCryptGetPartitionFromZulutab()
 		
 		StringRemoveString( st,"\"" ) ;
 		
-		entry = StringContent( st ) ;
-		
-		if( entry[ 0 ] == '#' )
-			continue ;
-		
-		if( strncmp( entry,"UUID=",5 ) == 0 ){			
-			
-			ac = zuluCryptDeviceFromUUID( entry + 5 ) ;
+		if( StringStartsWith( st,"UUID=" ) ){
+
+			ac = zuluCryptDeviceFromUUID( StringContent( st ) + 5 ) ;
 			
 			if( ac != NULL ){
 
@@ -422,12 +407,12 @@ stringList_t zuluCryptGetPartitionFromZulutab()
 				free( ac ) ;
 			}
 		}else
-			stl_1 = StringListAppend( stl_1,entry ) ;		
+			stl_1 = StringListAppendString( stl_1,st ) ;
 	}
 	
 	StringListDelete( &stl ) ;
 	
-	return stl_1 ;	
+	return stl_1 ;
 }
 
 int zuluCryptPartitionIsSystemPartition( const char * dev )
@@ -446,7 +431,7 @@ int zuluCryptPartitionIsSystemPartition( const char * dev )
 	if( stl != StringListVoid ){
 		index = StringListContains( stl,device );
 		StringListDelete( &stl ) ;
-	}	
+	}
 	
 	free( device ) ;
 	

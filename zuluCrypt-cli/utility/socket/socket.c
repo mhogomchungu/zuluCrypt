@@ -365,7 +365,15 @@ int SocketListen( socket_t s )
 
 ssize_t SocketGetData_2( socket_t s,char * buffer,size_t len ) 
 {	
-	return s == SocketVoid ? -1 : read( s->fd,buffer,len ) ; 
+	ssize_t e ;
+	if( s == SocketVoid )
+		return -1 ;
+		
+	len = len - 1 ;
+	e = read( s->fd,buffer,len ) ; 
+	if( e >= 0 )
+		buffer[ e ] = '\0' ;
+	return e ;
 }
 
 #define BUFFSIZE 32
@@ -504,16 +512,21 @@ ssize_t SocketSendData( socket_t s,const char * buffer,size_t len )
 	return sent ;
 }
 
-int SocketClose( socket_t s ) 
+void SocketClose( socket_t * p ) 
 {
-	int st ;
-	if( s == SocketVoid )
-		return 0 ;
-		
-	shutdown( s->fd,SHUT_RDWR ) ;
-	st = close( s->fd ) ;
-	if( s->domain == AF_UNIX && s->socket_server )
-		unlink( s->local->sun_path ) ;
-	return st == 0 ? 1 : 0 ;	
+	socket_t s = *p ;
+	if( s != SocketVoid ){
+		*p = SocketVoid ;
+		shutdown( s->fd,SHUT_RDWR ) ;
+		close( s->fd ) ;
+		if( s->domain == AF_UNIX ) {
+			if( s->socket_server )
+				unlink( s->local->sun_path ) ;
+			free( s->local ) ;
+		}else{
+			free( s->net ) ;
+		}
+		free( s ) ;
+	}
 }
 
