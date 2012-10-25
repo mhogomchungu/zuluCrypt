@@ -96,7 +96,7 @@ ADD_SUBDIRECTORY( zuluMount-gui )
 ADD_SUBDIRECTORY( zuluCrypt-gui )
 ADD_SUBDIRECTORY( plugins )
 
-ADD_SUBDIRECTORY( test )
+#ADD_SUBDIRECTORY( test )
 
 message ( STATUS "---------------------------------------------------------------------------" )
 message ( STATUS "optional functionality that will be build" )
