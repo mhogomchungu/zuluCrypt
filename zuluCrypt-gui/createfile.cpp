@@ -159,6 +159,10 @@ void createfile::pbCreate()
 		m_ui->lineEditFilePath->setFocus();
 		return ;
 	}
+
+	/*
+	 * BLOCK_SIZE is defined in createfilethread.h
+	 */
 	switch( m_ui ->comboBox->currentIndex() ){
 		case 0 :m_fileSize = fileSize.toDouble() * BLOCK_SIZE ;
 			break ;
