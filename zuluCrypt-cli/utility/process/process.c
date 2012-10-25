@@ -269,11 +269,16 @@ size_t ProcessGetOutPut( process_t p,char ** data,int std_io )
 	
 	if( size > 0 ){
 		e = realloc( buffer,size + 1 ) ;
-		buffer[ size ] = '\0' ;	
-		*data = e ;
+		if( e == NULL ){
+			free( buffer ) ;
+			return 0 ;
+		}else{
+			e[ size ] = '\0' ;
+			*data = e ;
+		}
 	}
 	
-	return size ;	
+	return size ;
 }
 
 int ProcessState( process_t p ) 

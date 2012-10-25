@@ -52,7 +52,8 @@ void EXIT( int st,char * msg )
 		puts( msg ) ;
 		free( msg ) ;
 	}
-	_Exit( st ) ;
+	
+	exit( st ) ;
 }
 
 void createKeyFiles( void )
@@ -290,11 +291,11 @@ void checkForOpenedMappers( void )
 		d = strstr( entry->d_name,"zuluCrypt-" ) ;
 		if( d != NULL ){
 			if( st ){
-				printf( "FAILED" ) ;
+				printf( "FAILED\n" ) ;
 				st = 0 ;
 			}
 			st = 0 ;
-			printf( "found opened mapper: %s\n",entry->d_name ) ;
+			printf( "found opened mapper: /dev/mapper/%s\n",entry->d_name ) ;
 		}
 	}
 	
