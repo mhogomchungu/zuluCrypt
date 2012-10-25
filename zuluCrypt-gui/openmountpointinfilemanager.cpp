@@ -31,10 +31,13 @@ void openmountpointinfilemanager::start()
 
 void openmountpointinfilemanager::run()
 {
-	QProcess exe ;
-	exe.start( QString( "xdg-open " ) + m_path );
-	exe.waitForFinished() ;
-	exe.close();
+	QDir dir( m_path ) ;
+	if( dir.exists() ){
+		QProcess exe ;
+		exe.start( QString( "xdg-open " ) + m_path );
+		exe.waitForFinished() ;
+		exe.close();
+	}
 }
 
 openmountpointinfilemanager::~openmountpointinfilemanager()

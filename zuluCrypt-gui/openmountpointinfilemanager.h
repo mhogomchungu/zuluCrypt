@@ -24,6 +24,7 @@
 #include <QProcess>
 #include <QString>
 #include <QThreadPool>
+#include <QDir>
 
 class openmountpointinfilemanager :public QRunnable
 {
