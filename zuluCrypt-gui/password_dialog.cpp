@@ -500,7 +500,7 @@ void passwordDialog::threadfinished( int status )
 		case 17: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not resolve full path of device address" ) );						break ;
 		case 18: msg.ShowUIOK( tr( "ERROR!" ),tr( "-O and -m options can not be used together" ) );						break ;
 		case 19: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to create mount point" ) );						break ;
-		case 20: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open device" ) );							break ;
+		case 20: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open device\nconsult help->permissions for more information" ) );	break ;
 		case 21: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to create mount point" ) );						break ;
 		case 22: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open keyfile for reading" ) );					break ;
 		case 23: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open device in read/write mode" ) );				break ;

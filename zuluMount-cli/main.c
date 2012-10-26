@@ -143,12 +143,16 @@ static int _zuluMountMount( const char * device,const char * m_point,const char 
 	/*
 	 * below function is defined in ../zuluCrypt-cli/bin/security.c
 	 */
-	if( zuluCryptSecurityCanOpenPathForReading( device,uid ) != 0 )
-		return _zuluExit( 109,z,path,"ERROR: invalid path to device or insuffienct previlege to access it" ) ;
+	switch( zuluCryptSecurityCanOpenPathForReading( device,uid ) ){
+		case 0 : break ;
+		case 1 : return _zuluExit( 100,z,path,"ERROR: insuffienct privilege to access the device,\nconsult section 2 of the FAQ  at http://code.google.com/p/zulucrypt/wiki/FAQ for more information" ) ;
+		case 2 : return _zuluExit( 101,z,path,"ERROR: invalid path to device" ) ;
+		default: return _zuluExit( 113,z,path,"ERROR: insuffienct access to access the device" ) ;
+	}
 	
 	/*
 	 * Below function is defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c
-	 * It checks if a device has an entry in "/etc/mtab" and return 1 if it does and 0 is it doesnt	 * 
+	 * It checks if a device has an entry in "/etc/mtab" and return 1 if it does and 0 is it doesnt
 	 */
 	if( zuluCryptPartitionIsMounted( device ) )
 		return _zuluExit( 101,z,path,"ERROR: device already mounted" ) ;

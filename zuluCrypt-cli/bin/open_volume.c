@@ -18,6 +18,7 @@
  */
 
 #include "includes.h"
+#include "../lib/includes.h"
 #include <sys/types.h>
 #include <string.h>
  
@@ -60,6 +61,7 @@ static int zuluExit( int st,char * device,char * m_point,stringList_t stl )
 		case 27: printf( "ERROR: insufficient memory to hold passphrase\n" );							break ;
 		case 28: printf( "ERROR: insufficient privilege to open plugin or path does not exist\n" );				break ;
 		case 29: printf( "ERROR: could not get a passphrase through a local socket\n" );					break ;
+		case 30: printf( "ERROR: mount point error" ) ;									        break ; 		
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
 	
@@ -96,7 +98,8 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	const char * pass        = opts->key ;
 	const char * plugin_path = opts->plugin_path ;
 	const char * argv      	 = opts->argv ;
-		
+	int mount_point_option	 = opts->mount_point_option ;
+
 	stringList_t stl = StringListInit() ;
 	
 	string_t * passphrase =  StringListAssign( stl ) ;	
@@ -151,13 +154,21 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 			return zuluExit( 11,device,cpoint,stl ) ;
 	
 		/*
-		 * defined in security.c
+		 * zuluCryptSecurityCreateMountPoint() is defined in security.c
 		 */
-		switch( zuluCryptSecurityCreateMountPoint( mount_point,uid ) ){
-			case 2 : return zuluExit( 5,device,cpoint,stl ) ;
-			case 1 : return zuluExit( 21,device,cpoint,stl ) ;
+		if( zuluCryptPathIsNotValid( mount_point ) ){
+			switch( zuluCryptSecurityCreateMountPoint( mount_point,uid ) ){
+				case 2 : return zuluExit( 5,device,cpoint,stl ) ;
+				case 1 : return zuluExit( 21,device,cpoint,stl ) ;
+			}
+		}else{
+			/*
+			 * This section of the code is currently not in use
+			 */
+			if( !mount_point_option )
+				return zuluExit( 30,device,cpoint,stl ) ;
 		}
-		
+	
 		cpoint = realpath( mount_point,NULL ) ;
 		if( cpoint == NULL )
 			return zuluExit_1( 16,opts,device,cpoint,stl ) ;
