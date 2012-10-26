@@ -104,22 +104,22 @@ static int zuluMountPartitionAccess( const char * device,const char * mode,uid_t
 	 */
 	string_t p = zuluCryptGetMountOptionsFromFstab( device,3 ) ;
 	
-	int st ;
+	int st = 0 ;
 	if( p == StringVoid )
 		return 0 ;
 	
 	if( StringContains( p,"ro" ) && strstr( mode,"rw" ) != NULL )
 		st = 1 ;
-	else if( StringContains( p,"nouser" ) && uid != 0 ){
-		st = 2 ;
+	else if( StringContains( p,"nouser" ) || StringContains( p,"default" ) ){
+		if( uid != 0 ){
+			st = 2 ;
+		}
 	}else if( StringContains( p,"user" ) ){
 		st = 3 ;
-	}else{
-		/*
-		 * not having either option means "nouser" since its
-		 * the default option
-		 */
-		st = 2 ;
+	}else if( !StringContains( p,"nouser" ) && !StringContains( p,"default" ) && !StringContains( p,"user" ) ) {
+		if( uid != 0 ){
+			st = 2 ;
+		}
 	}
 	
 	StringDelete( &p ) ;

@@ -70,7 +70,7 @@ void ProcessSetArgumentList( process_t p,... )
 	p->args_source = 0 ;	
 }
 
-static void ProcessSetArguments_1( process_t p ) 
+static void __ProcessSetArguments_1( process_t p ) 
 {
 	/*
 	 * this function converts a one dimentional array into a two dimentional array as expected by the second argument of execl
@@ -168,7 +168,7 @@ pid_t ProcessStart( process_t p )
 	if( p->pid == -1 )
 		return -1 ;
 	
-	ProcessSetArguments_1( p ) ;
+	__ProcessSetArguments_1( p ) ;
 	
 	if( p->pid == 0 ){
 		if( p->uid != -1 ){
