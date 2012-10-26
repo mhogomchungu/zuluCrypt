@@ -41,6 +41,18 @@ const char * zuluCryptTest   = ZULUCRYPTTest ;
 const char * keyfile         = "/tmp/zuluCrypt-KeyFile" ;
 const char * keyfile1        = "/tmp/zuluCrypt-KeyFile1" ;
 
+void __print( const char * msg )
+{
+	printf( msg ) ;
+	fflush( stdout );
+}
+
+void __printLine( void )
+{
+	sleep( 1 ) ;
+	__print( "\n" ) ;
+}
+
 void EXIT( int st,char * msg )
 {
 	unlink( luksTestVolume ) ;
@@ -157,22 +169,10 @@ void __ProcessGetResultANDPrint( process_t p )
 		EXIT( 1,e ) ;
 	}else{
 		if( e ){
-			puts( e ) ;
+			__print( e ) ;
 			free( e ) ;
 		}
 	}
-}
-
-void __print( const char * msg )
-{
-	printf( msg ) ;
-	fflush( stdout );
-}
-
-void __printLine( void )
-{
-	sleep( 1 ) ;
-	__print( "\n" ) ;
 }
 
 void createVolume( const char * device,const char * msg,const char * keysource,const char * type )
@@ -326,13 +326,29 @@ void openVolumeWithPlugIn( const char * device,const char * msg )
 	__ProcessGetResult( p ) ;
 }
 
+void checkIfDeviceIsLuks( const char * device )
+{
+	process_t p = Process( zuluCryptExe ) ;
+	ProcessSetArgumentList( p,"-i","-d",device,'\0' ) ;
+	ProcessStart( p ) ;
+	int st = ProcessExitStatus( p ) ;
+	ProcessDelete( &p ) ;
+	
+	if( st )
+		__print( "check if a luks volume is a luks volume: PASSED\n" ) ;
+}
+
 int runTest( void )
 {	
 	createTestImages() ;
 	createKeyFiles() ;
 	
+	__printLine() ;
 	createVolume( plainTestVolume,"create a plain type volume using a key: ","-p","plain" ) ;
 	createVolume( luksTestVolume,"create a luks type volume using a key: ","-p","luks" ) ;
+	
+	__printLine() ;
+	checkIfDeviceIsLuks( luksTestVolume ) ;
 	
 	__printLine() ;
 	openVolume( plainTestVolume,"open a plain volume with a key: ","-p" );
