@@ -54,11 +54,12 @@ char * zuluCryptDeviceFromLabel( const char * ) ;
 int _zuluMountMountVolume( const char * mapper,const char * m_point,const char * mode,uid_t id ) ;
 
 static int _mount_get_opts( int argc,char * argv[],const char ** action,const char ** device,
-			   const char ** m_point, const char ** mode,const char ** key,const char ** key_source )
+			   const char ** m_point, const char ** mode,const char ** key,const char ** key_source,int * mpo )
 {
 	int c ;
-	while ( ( c = getopt( argc,argv,"tSshlPMmUud:z:e:p:f:G:" ) ) != -1 ) {
+	while ( ( c = getopt( argc,argv,"ntSshlPMmUud:z:e:p:f:G:" ) ) != -1 ) {
 		switch( c ){
+			case 'n' : *mpo     = 1      ; break ;
 			case 't' : *action  = "-t"   ; break ;
 			case 's' : *action  = "-s"   ; break ;
 			case 'S' : *action  = "-S"   ; break ;
@@ -129,7 +130,7 @@ static int _zuluMountPartitionAccess( const char * device,const char * mode,uid_
 	return st ;
 }
 
-static int _zuluMountMount( const char * device,const char * m_point,const char * mode,uid_t uid )
+static int _zuluMountMount( const char * device,const char * m_point,const char * mode,uid_t uid,int mount_point_option )
 {
 	int status ;
 	
@@ -137,6 +138,7 @@ static int _zuluMountMount( const char * device,const char * m_point,const char 
 
 	char * path = NULL ;
 	char * q ;
+	const char * m_path ;
 		
 	/*
 	 * below function is defined in ../zuluCrypt-cli/bin/security.c
@@ -177,11 +179,20 @@ static int _zuluMountMount( const char * device,const char * m_point,const char 
 	
 	/*
 	 * zuluCryptSecurityCreateMountPoint() defined in ../zuluCrypt-cli/bin/security.c
+	 * zuluCryptPathIsNotValid() is defined in ../zuluCrypt-cli/lib/is_path_valid.c
 	 */
-	if( zuluCryptSecurityCreateMountPoint( StringContent( z ),uid ) != 0 )
-		return _zuluExit( 105,z,path,"ERROR: could not create mount point,invalid path or path already taken" ) ;
-
-	path = realpath( StringContent( z ),NULL ) ;
+	
+	m_path = StringContent( z ) ;
+	
+	if( zuluCryptPathIsNotValid( m_path ) ){
+		if( zuluCryptSecurityCreateMountPoint( m_path,uid ) != 0 )
+			return _zuluExit( 105,z,path,"ERROR: could not create mount point,invalid path" ) ;
+	}else{
+		if( !mount_point_option )
+			return _zuluExit( 105,z,path,"ERROR: could not create mount point,invalid path or path already taken" ) ;
+	}
+	
+	path = realpath( m_path,NULL ) ;
 	
 	if( path == NULL ){
 		rmdir( path ) ;
@@ -209,7 +220,7 @@ static int _zuluMountMount( const char * device,const char * m_point,const char 
 	}
 }
 
-static int _zuluMountUMount( const char * device,uid_t uid,const char * mode )
+static int _zuluMountUMount( const char * device,uid_t uid,const char * mode,int mount_point_option )
 {
 	char * m_point = NULL ;
 
@@ -230,8 +241,9 @@ static int _zuluMountUMount( const char * device,uid_t uid,const char * mode )
 	status = zuluCryptUnmountVolume( device,&m_point ) ;
 	if( status == 0 ){
 		if( m_point != NULL )
-			if( !zuluCryptPartitionIsSystemPartition( device ) )
-				rmdir( m_point ) ;
+			if( !mount_point_option )
+				if( !zuluCryptPartitionIsSystemPartition( device ) )
+					rmdir( m_point ) ;
 		return _zuluExit( 0,StringVoid,m_point,"SUCCESS: umount complete successfully" ) ;
 	}else{
 		switch( status ) {
@@ -261,7 +273,9 @@ static int _zuluMountMmountedList( uid_t uid )
 	return zuluMountPrintMountedVolumes( uid ) ;
 }
 
-static int _zuluMountCryptoMount( const char * device,const char * mode,uid_t uid,const char * key,const char * key_source,const char * m_point )
+static int _zuluMountCryptoMount( const char * device,const char * mode,uid_t uid,
+				  const char * key,const char * key_source,
+				  const char * m_point,int mount_point_option )
 {
 	string_t p = StringVoid ;
 	
@@ -308,6 +322,7 @@ static int _zuluMountCryptoMount( const char * device,const char * mode,uid_t ui
 	opts.mode = mode ;
 	opts.key = key ;
 	opts.key_source = key_source ;
+	opts.mount_point_option = mount_point_option ;
 	
 	/*
 	 * the function is defined in ../zuluCrypt-cli/bin/open_volume.c
@@ -319,8 +334,9 @@ static int _zuluMountCryptoMount( const char * device,const char * mode,uid_t ui
 	return st ;
 }
 
-static int _zuluMountCryptoUMount( const char * device,uid_t uid )
+static int _zuluMountCryptoUMount( const char * device,uid_t uid,int mount_point_option )
 {
+	mount_point_option = 0 ;
 	const char * mapping_name ;
 	const char * e = strrchr( device,'/' ) ;
 	/*
@@ -407,16 +423,18 @@ static int _zuluMiniProperties( const char * device,uid_t uid )
 	}	
 }
 
-static int _zuluMountExe( const char * device, const char * action,const char * m_point,const char * mode,uid_t uid,const char * key,const char * key_source )
+static int _zuluMountExe( const char * device,const char * action,const char * m_point,
+			  const char * mode,uid_t uid,const char * key,const char * key_source,
+			  int mount_point_option )
 {	
 	if( strcmp( action,"-m" ) == 0 )
-		return _zuluMountMount( device,m_point,mode,uid ) ;
+		return _zuluMountMount( device,m_point,mode,uid,mount_point_option ) ;
 	else if( strcmp( action,"-u" ) == 0 )
-		return _zuluMountUMount( device,uid,mode ) ;
+		return _zuluMountUMount( device,uid,mode,mount_point_option ) ;
 	else if( strcmp( action,"-M" ) == 0 )
-		return _zuluMountCryptoMount( device,mode,uid,key,key_source,m_point ) ;
+		return _zuluMountCryptoMount( device,mode,uid,key,key_source,m_point,mount_point_option ) ;
 	else if( strcmp( action,"-U" ) == 0 )
-		return _zuluMountCryptoUMount( device,uid ) ;
+		return _zuluMountCryptoUMount( device,uid,mount_point_option ) ;
 	else if( strcmp( action,"-s" ) == 0 )
 		return zuluMountVolumeStatus( device,uid ) ;
 	else if( strcmp( action,"-t" ) == 0 )
@@ -429,6 +447,9 @@ static int _mount_help()
 {
 	const char * doc = "\
 options:\n\
+-n -- when the option is used with -m,the mount point will be auto created if absent\
+   -- error willl be produced if the mount point is present and the option is ommited\
+   -- when used with -u,the mount point will not get auto deleted\
 -l -- print a list of mounted partitions\n\
 -p -- print a list of partitions\n\
 -m -- mount a partitions : arguments: -d partition_path -z mount_point -e mode(rw/ro)\n\
@@ -449,6 +470,7 @@ int main( int argc,char * argv[] )
 	const char * key        = NULL ;
 	const char * key_source = NULL ;
 	const char * key_argv   = NULL ;
+	int mount_point_option = 0 ;
 	char * device ;
 	char * e ;
 	uid_t uid = getuid() ;
@@ -457,7 +479,7 @@ int main( int argc,char * argv[] )
 	
 	string_t k = StringVoid ;
 	
-	if( _mount_get_opts( argc,argv,&action,&dev,&m_point,&mode,&key_argv,&key_source ) != 0 )
+	if( _mount_get_opts( argc,argv,&action,&dev,&m_point,&mode,&key_argv,&key_source,&mount_point_option ) != 0 )
 		return _mount_help() ;
 	
 	if( key_argv != NULL ){
@@ -503,7 +525,7 @@ int main( int argc,char * argv[] )
 	if( strncmp( dev,"UUID=",5 ) == 0 ){
 		device = zuluCryptDeviceFromUUID( dev + 5 ) ;
 		if( device != NULL ){
-			status = _zuluMountExe( device,action,m_point,mode,uid,key,key_source ) ;
+			status = _zuluMountExe( device,action,m_point,mode,uid,key,key_source,mount_point_option ) ;
 			free( device ) ;
 		}else{
 			printf( "could not resolve UUID\n" ) ;
@@ -512,7 +534,7 @@ int main( int argc,char * argv[] )
 	}else if( strncmp( dev,"LABEL=",6 ) == 0 ){
 		device = zuluCryptDeviceFromLabel( dev + 6 ) ;
 		if( device != NULL ){
-			status = _zuluMountExe( device,action,m_point,mode,uid,key,key_source ) ;
+			status = _zuluMountExe( device,action,m_point,mode,uid,key,key_source,mount_point_option ) ;
 			free( device ) ;
 		}else{
 			printf( "could not resolve LABEL\n" ) ;
@@ -521,7 +543,7 @@ int main( int argc,char * argv[] )
 	}else{
 		device = realpath( dev,NULL ) ;
 		if( device != NULL ){
-			status = _zuluMountExe( device,action,m_point,mode,uid,key,key_source ) ;
+			status = _zuluMountExe( device,action,m_point,mode,uid,key,key_source,mount_point_option ) ;
 			free( device ) ;
 		}else{
 			printf( "could not resolve path to device\n" ) ;
