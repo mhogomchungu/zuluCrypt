@@ -131,20 +131,6 @@ char * zuluCryptDeviceFromLabel( const char * label )
 	return blkid_evaluate_tag( "LABEL",label,NULL ) ;
 }
 
-static void appendSystemList( stringList_t system,stringList_t stl )
-{
-	size_t j ;
-	size_t i ;
-	
-	if( stl == StringListVoid )
-		return ;
-	
-	j = StringListSize( stl ) ;
-	
-	for( i = 0 ; i < j ; i++ )
-		StringListAppend( system,StringListContentAt( stl,i ) ) ;
-}
-
 stringList_t zuluCryptPartitions( int option )
 {
 	string_t st  ;
@@ -229,10 +215,10 @@ stringList_t zuluCryptPartitions( int option )
 	StringListDelete( &stl ) ;
 	
 	p = zuluCryptGetPartitionFromCrypttab() ;
-	appendSystemList( system,p ) ;
+	StringListAppendList( system,p ) ;
 	StringListDelete( &p ) ;
 	p = zuluCryptGetPartitionFromZulutab() ;
-	appendSystemList( system,p ) ;
+	StringListAppendList( system,p ) ;
 	StringListDelete( &p ) ;
 	
 	if( option == SYSTEM_PARTITIONS ){

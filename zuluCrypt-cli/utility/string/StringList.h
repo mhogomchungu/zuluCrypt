@@ -158,6 +158,11 @@ stringList_t StringListAppendString( stringList_t stl,string_t ) ;
  */
 stringList_t StringListAppendSize( stringList_t stl,const char * cstring,size_t len ) ;
 
+/*
+ * Append a stringList_t on the second argument to stringList_t on the first argument
+ * return the stringList_t on the first argument
+ */
+stringList_t StringListAppendList( stringList_t,stringList_t ) ;
 
 /*
  * prepend an entry into the list

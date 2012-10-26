@@ -220,6 +220,26 @@ stringList_t StringListAppendSize( stringList_t stl,const char * cstring,size_t 
 		return p ;
 }
 
+stringList_t StringListAppendList( stringList_t p,stringList_t q )
+{
+	size_t j ;
+	size_t i ;
+	string_t * z ;
+	
+	if( q == StringListVoid )
+		return p ;
+	
+	if( p == StringListVoid )
+		return StringListCopy( q ) ;
+	
+	j = StringListSize( q ) ;
+	z = q->stp ;
+	
+	for( i = 0 ; i < j ; i++ )
+		StringListAppendSize( p,z[i]->string,z[i]->size ) ;
+	return p ;
+}
+
 stringList_t StringListAppendString( stringList_t stl,string_t st ) 
 {
 	if( st == StringVoid )
