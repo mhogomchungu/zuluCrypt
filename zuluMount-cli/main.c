@@ -230,8 +230,9 @@ static int zuluMountUMount( const char * device,uid_t uid,const char * mode )
 	status = zuluCryptUnmountVolume( device,&m_point ) ;
 	if( status == 0 ){
 		if( m_point != NULL )
-			rmdir( m_point ) ;					
-		return zuluExit( 0,StringVoid,m_point,"SUCCESS: umount complete successfully" ) ;		
+			if( !zuluCryptPartitionIsSystemPartition( device ) )
+				rmdir( m_point ) ;
+		return zuluExit( 0,StringVoid,m_point,"SUCCESS: umount complete successfully" ) ;
 	}else{
 		switch( status ) {
 			case 1 : return zuluExit( 113,StringVoid,m_point,"ERROR: device does not exist" )  ;
