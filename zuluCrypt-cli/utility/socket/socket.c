@@ -91,27 +91,6 @@ int SocketFileDescriptor( socket_t s )
 	return s == SocketVoid ? -1 : s->fd ;
 }
 
-void SocketDelete( socket_t * x )
-{
-	socket_t s ;
-	
-	if( x == NULL )
-		return ;
-	if( *x == SocketVoid )
-		return ;
-	
-	s = *x ;
-	*x = SocketVoid ;
-	
-	if( s->domain == AF_UNIX ){
-		free( s->local ) ;
-	}else{
-		free( s->net ) ;
-	}
-	
-	free( s ) ;
-}
-
 #ifdef __STDC__
 struct addrinfo {
 	int     ai_flags;
@@ -513,20 +492,23 @@ ssize_t SocketSendData( socket_t s,const char * buffer,size_t len )
 }
 
 void SocketClose( socket_t * p ) 
-{
-	socket_t s = *p ;
-	if( s != SocketVoid ){
-		*p = SocketVoid ;
-		shutdown( s->fd,SHUT_RDWR ) ;
-		close( s->fd ) ;
-		if( s->domain == AF_UNIX ) {
-			if( s->socket_server )
-				unlink( s->local->sun_path ) ;
-			free( s->local ) ;
-		}else{
-			free( s->net ) ;
+{	
+	socket_t s ;
+	if( p != NULL ){
+		s = *p ;
+		if( s != SocketVoid ){
+			*p = SocketVoid ;
+			shutdown( s->fd,SHUT_RDWR ) ;
+			close( s->fd ) ;
+			if( s->domain == AF_UNIX ) {
+				if( s->socket_server )
+					unlink( s->local->sun_path ) ;
+				free( s->local ) ;
+			}else{
+				free( s->net ) ;
+			}
+			free( s ) ;
 		}
-		free( s ) ;
 	}
 }
 
