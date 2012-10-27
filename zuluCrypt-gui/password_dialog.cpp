@@ -146,7 +146,7 @@ void passwordDialog::closeEvent( QCloseEvent * e )
 {
 	e->ignore();
 	if( m_isWindowClosable == true )
-		HideUI() ;
+		this->HideUI() ;
 }
 
 void passwordDialog::ShowUI( QString volumePath, QString mount_point )
@@ -258,7 +258,7 @@ void passwordDialog::clickedPassPhraseFromFileButton()
 void passwordDialog::clickedPartitionOption( QString dev )
 {
 	QString m_point = QDir::homePath() + QString( "/" ) + dev.split( "/" ).last();
-	ShowUI( dev,m_point ) ;
+	this->ShowUI( dev,m_point ) ;
 }
 
 void passwordDialog::mount_point( void )
@@ -359,7 +359,7 @@ void passwordDialog::buttonOpenClicked( void )
 	runInThread * ovt = new runInThread( exe ) ;
 	connect( ovt,SIGNAL( finished( int ) ),this,SLOT( threadfinished( int ) ) ) ;
 	m_isWindowClosable = false ;
-	disableAll();
+	this->disableAll();
 	ovt->start();
 }
 
@@ -451,6 +451,14 @@ void passwordDialog::enableAll()
 		m_ui->OpenVolumePath->setEnabled( false );
 		m_ui->PushButtonVolumePath->setEnabled( false );
 	}
+
+	if( m_ui->radioButtonPassPhrase->isChecked() ){
+		m_ui->pushButtonPassPhraseFromFile->setEnabled( false );
+		m_ui->pushButtonPlugin->setEnabled( false );
+	}
+
+	if( m_ui->radioButtonPassPhraseFromFile->isChecked() )
+		m_ui->pushButtonPlugin->setEnabled( false );
 }
 
 void passwordDialog::success( void )
@@ -473,7 +481,7 @@ void passwordDialog::done( QString type )
 
 	tablewidget::addRowToTable( m_table,list ) ;
 
-	HideUI();
+	this->HideUI();
 }
 
 void passwordDialog::threadfinished( int status )
@@ -510,7 +518,9 @@ void passwordDialog::threadfinished( int status )
 		case 110:msg.ShowUIOK( tr( "ERROR!" ),tr( "can not find a partition that match presented UUID" ) );					break ;
 		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR with status number %1 encountered" ).arg( status ) );
 	}
-	enableAll();
+
+	this->enableAll();
+
 	if( status == 4 ){
 		m_ui->PassPhraseField->clear();
 		m_ui->PassPhraseField->setFocus();
