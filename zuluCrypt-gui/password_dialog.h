@@ -88,6 +88,7 @@ private :
 	QMenu * m_pluginMenu ;
 	QWidget * m_parent ;
 	QString m_key ;
+	QString m_device ;
 };
 
 #endif // PASSWORD_DIALOG_H

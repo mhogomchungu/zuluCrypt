@@ -53,11 +53,22 @@ void utility::debug( int s )
 	std::cout << s << std::endl ;
 }
 
+bool utility::mapperPathExists( QString path )
+{
+	return utility::exists( utility::mapperPath( path ) ) ;
+}
+
 QString utility::mapperPath( QString rpath )
 {
 	QString path = utility::cryptMapperPath() + QString( "zuluCrypt-" ) + QString::number( getuid() ) ;
 
-	path += QString( "-NAAN-" ) + rpath.split( "/" ).last() + utility::hashPath( rpath );
+	if( rpath.startsWith( QString( "UUID=" ) ) ){
+		rpath.remove( QChar( '\"' ) ) ;
+		rpath.replace( QString( "UUID=" ),QString( "UUID-" ) ) ;
+		path += QString( "-" ) + rpath + utility::hashPath( rpath );
+	}else{
+		path += QString( "-NAAN-" ) + rpath.split( "/" ).last() + utility::hashPath( rpath );
+	}
 
 	QString z = QString( BASH_SPECIAL_CHARS );
 

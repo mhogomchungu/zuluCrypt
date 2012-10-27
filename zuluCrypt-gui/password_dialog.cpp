@@ -292,18 +292,15 @@ void passwordDialog::HideUI()
 void passwordDialog::buttonOpenClicked( void )
 {
 	QString mountPointPath = utility::resolvePath( m_ui->MountPointPath->text() ) ;
-	QString vp = utility::resolvePath( m_ui->OpenVolumePath->text() ) ;
+	m_device = utility::resolvePath( m_ui->OpenVolumePath->text() ) ;
 
 	QString passPhraseField = m_ui->PassPhraseField->text() ;
 	m_key = m_ui->PassPhraseField->text() ;
 
-	if( mountPointPath.isEmpty() || passPhraseField.isEmpty() || vp.isEmpty() ){
+	if( mountPointPath.isEmpty() || passPhraseField.isEmpty() || m_device.isEmpty() ){
 		DialogMsg msg( this ) ;
 		return msg.ShowUIOK( QString( "ERROR!" ),tr( "atleast one required field is empty" ) );
 	}
-
-	vp.replace( "\"","\"\"\"" ) ;
-	mountPointPath.replace( "\"","\"\"\"" ) ;
 
 	QString mode ;
 
@@ -348,8 +345,10 @@ void passwordDialog::buttonOpenClicked( void )
 	savemountpointpath::savePath( m_ui->MountPointPath->text(),QString( "zuluCrypt-MountPointPath" ) ) ;
 
 	QString a = QString( ZULUCRYPTzuluCrypt ) ;
-	QString b = vp;
+	QString b = m_device ;
+	b.replace( "\"","\"\"\"" ) ;
 	QString c = mountPointPath ;
+	c.replace( "\"","\"\"\"" ) ;
 	QString d = mode ;
 	QString e = passtype ;
 	QString f = passPhraseField ;
@@ -463,12 +462,21 @@ void passwordDialog::enableAll()
 
 void passwordDialog::success( void )
 {
-	checkvolumetype * cvt = new checkvolumetype( m_ui->OpenVolumePath->text() );
-	connect( cvt,SIGNAL( done( QString ) ),this,SLOT( done( QString ) ) );
-	cvt->start();
-
-	openmountpointinfilemanager * omp = new openmountpointinfilemanager( m_ui->MountPointPath->text() ) ;
-	omp->start();
+	if( utility::mapperPathExists( m_device ) ){
+		checkvolumetype * cvt = new checkvolumetype( m_ui->OpenVolumePath->text() );
+		connect( cvt,SIGNAL( done( QString ) ),this,SLOT( done( QString ) ) );
+		cvt->start();
+		openmountpointinfilemanager * omp = new openmountpointinfilemanager( m_ui->MountPointPath->text() ) ;
+		omp->start();
+	}else{
+		/*
+		 * we arrive here if zuluCrypt-cli reports a volume was opened but it was not.
+		 * most likely reason for getting here is if it crashed.
+		 */
+		DialogMsg msg( this );
+		msg.ShowUIOK( tr( "ERROR!" ),tr( "An error has occured and the volume could not be opened" ) ) ;
+		this->HideUI();
+	}
 }
 
 void passwordDialog::done( QString type )

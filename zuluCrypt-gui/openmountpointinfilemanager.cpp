@@ -34,7 +34,8 @@ void openmountpointinfilemanager::run()
 	QDir dir( m_path ) ;
 	if( dir.exists() ){
 		QProcess exe ;
-		exe.start( QString( "xdg-open " ) + m_path );
+		m_path.replace( "\"","\"\"\"" ) ;
+		exe.start( QString( "xdg-open \"%1\"" ).arg( m_path ) );
 		exe.waitForFinished() ;
 		exe.close();
 	}
