@@ -47,11 +47,11 @@ socket_t Socket( int domain,int type,int protocol )
 		return SocketVoid ;
 	}
 
-	if( domain == AF_UNIX ){		
+	if( domain == AF_UNIX ){
 		s->local = ( struct sockaddr_un * ) malloc( sizeof( struct sockaddr_un ) ) ;
 		if( s->local == NULL ){
 			free( s ) ;
-			close( fd ) ;			
+			close( fd ) ;
 			return SocketVoid ;
 		}else{
 			s->domain = AF_UNIX ;
@@ -72,7 +72,7 @@ socket_t Socket( int domain,int type,int protocol )
 			s->net->sin_family = AF_INET ;
 		}
 	}else{
-		close( fd ) ;		
+		close( fd ) ;
 		free( s ) ;
 		return SocketVoid ;
 	}
@@ -82,8 +82,8 @@ socket_t Socket( int domain,int type,int protocol )
 	s->protocol = protocol ;
 	s->cmax = 1 ;
 	s->socket_server = 0 ;
-	s->fd = fd ;	
-	return s ;	
+	s->fd = fd ;
+	return s ;
 }
 
 int SocketFileDescriptor( socket_t s ) 
