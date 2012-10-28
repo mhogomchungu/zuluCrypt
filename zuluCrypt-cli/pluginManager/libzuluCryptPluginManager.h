@@ -45,7 +45,8 @@ extern "C" {
 /*
  * This function opens a connection btw the plugin and zuluCrypt-cli.
  * 
- * This function is expected to be called within 30 seconds or the connection will be closed.
+ * This function is expected to be called within 10 seconds of the plugin life or the connection will be closed.
+ * The time out is there to make sure the backend doesnt hang waiting for a plugin that could not be started.
  * 
  * NULL is returned if the connection can not be made.
  * This function will block while trying to establish a connection. 

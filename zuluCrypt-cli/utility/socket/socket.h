@@ -38,6 +38,7 @@ extern "C" {
 #include <netdb.h>
 #include <sys/time.h>
 #include <fcntl.h>
+#include <errno.h>
 
 #define SocketVoid     ( ( void * ) 0 )  
 
@@ -120,11 +121,12 @@ socket_t SocketAccept( socket_t ) ;
 socket_t SocketAcceptWithTimeOut( socket_t,int time ) ;
 
 /*
- * connect to a server
+ * connect to a server a client socket is to connect to
  * 1 is returned on success
- * 0 is returned on error
+ * 0 is returned on error and the socket is invalidated, a new socket will have to be create to repeat
+ * the operation 
  */
-int SocketConnect( socket_t ) ;
+int SocketConnect( socket_t * client ) ;
 
 /*
  * listen for an incomming connection

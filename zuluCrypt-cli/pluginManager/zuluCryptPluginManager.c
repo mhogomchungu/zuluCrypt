@@ -53,7 +53,7 @@ size_t zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid
 			chown( sockpath,uid,uid ) ;
 			chmod( sockpath,S_IRWXU | S_IRWXG | S_IRWXO ) ;
 			if( SocketListen( server ) ){
-				client = SocketAcceptWithTimeOut( server,30 ) ;
+				client = SocketAcceptWithTimeOut( server,10 ) ;
 				if( client != SocketVoid ){
 					dataLength = SocketGetData( client,&buffer,INTMAXKEYZISE ) ;
 					*key = StringInheritWithSize( &buffer,dataLength ) ;
@@ -69,21 +69,15 @@ size_t zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid
 void * zuluCryptPluginManagerOpenConnection( const char * sockpath )
 {
 	int i ;
-	
 	socket_t client ;
-		
-	for( i = 30 ; i > 0 ; i-- ){
-		
+	for( i = 10 ; i > 0 ; i-- ){
 		client = SocketLocal( sockpath ) ;
-		
-		if( SocketConnect( client ) ){
+		if( SocketConnect( &client ) ){
 			return ( void * ) client ;
 		}else{
-			SocketClose( &client ) ;
 			sleep( 1 ) ;
 		}
 	}
-	
 	return NULL ;
 }
 

@@ -262,38 +262,89 @@ int SocketIsBlocking( socket_t s )
 	return flags != ( flags | O_NONBLOCK ) ;
 }
 
-static inline socket_t __SocketAccept( socket_t s,int time )
+#define READ  1
+#define WRITE 0
+
+static inline int __SocketTimeOut( socket_t s,int time,int mode )
 {
-	socket_t c = SocketVoid ;
-	int i ;
+	int fd = s->fd ;
+	fd_set readfd ;
+	fd_set writefd ;
+
+	struct timeval interval ;
 	
-	for( i = 0 ; i < time ; i++ ){
-		c = SocketAccept( s ) ;
-		if( c != SocketVoid ){
-			break ;
-		}else{
-			sleep( 1 ) ;
-		}
-	}   
+	interval.tv_sec = time ;
+	interval.tv_usec = 0 ;
 	
-	return c ;
+	FD_ZERO( &readfd ) ;
+	FD_SET( fd,&readfd ) ;
+	
+	FD_ZERO( &writefd ) ;
+	FD_SET( fd,&writefd ) ;
+	
+	if( mode == READ ){
+		select( fd + 1,&readfd,NULL,NULL,&interval ) ;
+		return FD_ISSET( fd,&readfd ) ;
+	}else{
+		select( fd + 1,NULL,&writefd,NULL,&interval ) ;
+		return FD_ISSET( fd,&writefd ) ;
+	}
 }
 
 socket_t SocketAcceptWithTimeOut( socket_t s,int time ) 
-{
-	socket_t c = SocketVoid ;
+{	
+	socket_t client = SocketVoid ;
+	if( __SocketTimeOut( s,time,READ ) )
+		client = SocketAccept( s ) ;
+	return client ;	
+}
+
+static inline void __SocketClose( socket_t * p ) 
+{	
+	socket_t s = *p ;
+	int fd = s->fd ;
 	
-	if( s != SocketVoid ){
-		if( SocketIsBlocking( s ) ){
-			SocketSetDoNotBlock( s ) ;
-			c = __SocketAccept( s,time ) ;
-			SocketSetBlock( s ) ;
-		}else{
-			c = __SocketAccept( s,time ) ;
-		}
+	*p = SocketVoid ;
+	
+	shutdown( fd,SHUT_RDWR ) ;
+	close( fd ) ;
+	
+	if( s->domain == AF_UNIX ) {
+		if( s->socket_server )
+			unlink( s->local->sun_path ) ;
+		free( s->local ) ;
+	}else{
+		free( s->net ) ;
 	}
 	
-	return c ;
+	free( s ) ;
+}
+
+void SocketClose( socket_t * p ) 
+{
+	if( p != NULL && *p != SocketVoid )
+		__SocketClose( p ) ;
+}
+
+static inline int __SocketConnect( socket_t s ) 
+{
+	if( s->domain == AF_UNIX ){
+		return connect( s->fd,( struct sockaddr * )s->local,s->size ) == 0 ? 1 : 0 ;
+	}else{
+		return connect( s->fd,( struct sockaddr * )s->net,s->size ) == 0 ? 1 : 0 ;
+	}
+}
+
+int SocketConnect( socket_t * s ) 
+{
+	if( s == NULL || *s == SocketVoid )
+		return 0 ;
+	if(  __SocketConnect( *s ) ){
+		return 1 ;
+	}else{
+		__SocketClose( s ) ;
+		return 0 ;
+	}	
 }
 
 void SocketSetListenMaximum( socket_t s,int m ) 
@@ -302,25 +353,13 @@ void SocketSetListenMaximum( socket_t s,int m )
 		s->cmax = m ;
 }
 
-int SocketConnect( socket_t s ) 
-{
-	if( s == SocketVoid )
-		return 0 ;
-	if( s->domain == AF_UNIX )
-		return connect( s->fd,( struct sockaddr * )s->local,s->size ) == 0 ? 1 : 0 ;
-	else
-		return connect( s->fd,( struct sockaddr * )s->net,s->size ) == 0 ? 1 : 0 ;
-}
-
 int SocketSetDoNotBlock( socket_t s ) 
 {
 	int flags ;
 	if( s == SocketVoid )
 		return -1 ;
 	flags = fcntl( s->fd,F_GETFL,0 );
-	if( flags == -1 )
-		flags = 0 ;
-	return fcntl( s->fd,F_SETFL,flags | O_NONBLOCK ) ;
+	return flags == -1 ? -1 : fcntl( s->fd,F_SETFL,flags | O_NONBLOCK ) ;
 }
 
 int SocketSetBlock( socket_t s )
@@ -329,9 +368,8 @@ int SocketSetBlock( socket_t s )
 	if( s == SocketVoid )
 		return -1 ;
 	flags = fcntl( s->fd,F_GETFL,0 );
-	if( flags == -1 )
-		flags = 0 ;
-	return fcntl( s->fd,F_SETFL,flags & ~O_NONBLOCK ) ;
+
+	return flags == -1 ? -1 : fcntl( s->fd,F_SETFL,flags & ~O_NONBLOCK  ) ;
 }
  
 int SocketListen( socket_t s ) 
@@ -490,25 +528,3 @@ ssize_t SocketSendData( socket_t s,const char * buffer,size_t len )
 	
 	return sent ;
 }
-
-void SocketClose( socket_t * p ) 
-{	
-	socket_t s ;
-	if( p != NULL ){
-		s = *p ;
-		if( s != SocketVoid ){
-			*p = SocketVoid ;
-			shutdown( s->fd,SHUT_RDWR ) ;
-			close( s->fd ) ;
-			if( s->domain == AF_UNIX ) {
-				if( s->socket_server )
-					unlink( s->local->sun_path ) ;
-				free( s->local ) ;
-			}else{
-				free( s->net ) ;
-			}
-			free( s ) ;
-		}
-	}
-}
-
