@@ -38,16 +38,17 @@ struct Process_t{
 	pthread_t * thread ;
 };
 
+
 void ProcessSetArgumentList( process_t p,... )
-{
-	if( p == ProcessVoid )
-		return ;
-	
+{	
 	char * entry ;
 	char ** args  ;
 	size_t size = sizeof( char * ) ;
 	int index = 0 ;
 	va_list list ;
+	
+	if( p == ProcessVoid )
+		return ;
 	
 	args = ( char ** )malloc( size ) ;
 	args[ index ] = p->exe ;
@@ -58,75 +59,20 @@ void ProcessSetArgumentList( process_t p,... )
 	while( 1 ){
 		entry = va_arg( list,char * ) ;
 		args = ( char ** )realloc( args,( 1 + index ) * size ) ;
-		args[ index ] = entry ;
-		index++ ;
-		if( entry == '\0' )
+		
+		if( entry == '\0' ){
+			args[ index ] = ( char * )0 ;
 			break ;
+		}else{
+			args[ index ] = entry ;
+			index++ ;
+		}
 	}
 	
 	va_end( list ) ;
 	
 	p->args = args ;
-	p->args_source = 0 ;	
-}
-
-static void __ProcessSetArguments_1( process_t p ) 
-{
-	/*
-	 * this function converts a one dimentional array into a two dimentional array as expected by the second argument of execl
-	 * 
-	 */
-	size_t k = 0 ;
-	
-	char * c ;
-	const char * d ;
-	
-	char ** f ;
-	char delimiter ; 
-	
-	if( p->args != NULL ){
-		/*
-		 * Assuming the arments list was set by ProcessSetArguments()
-		 */
-		return ;		
-	}
-	
 	p->args_source = 0 ;
-
-	delimiter = p->delimiter ;
-	
-	d = p->exe - 1 ;
-	
-	/*
-	 * find out to how many pieces we should break the string
-	 */
-	while( *++d ){
-		if( *d == delimiter )
-			k++ ;
-	}
-	
-	/*
-	 * create an array of pointers,each slot will point to each "piece" of string creating a 2-D array
-	 */
-	f = ( char ** ) malloc( sizeof( char * ) * ( k + 2 ) ) ;
-
-	f[ 0 ] = p->exe ;
-	
-	c = p->exe - 1;
-
-	k = 1 ;
-	
-	while( *++c ){
-		if( *c == delimiter ){
-			*c = '\0' ;      /* add null to break a string into pieces */
-			f[ k ] = c + 1 ; /* point to the beginning of the next piece   */
-			k++ ;
-		}
-	}
-	
-	f[ k ] = '\0' ;
-	
-	p->args = f ;
 }
 
 static void * __timer( void * x )
@@ -168,8 +114,6 @@ pid_t ProcessStart( process_t p )
 	if( p->pid == -1 )
 		return -1 ;
 	
-	__ProcessSetArguments_1( p ) ;
-	
 	if( p->pid == 0 ){
 		if( p->uid != -1 ){
 			uid = p->uid ;
@@ -187,7 +131,7 @@ pid_t ProcessStart( process_t p )
 		close( p->fd_0[ 1 ] )     ;
 		close( p->fd_2[ 0 ] )     ;
 			
-		execv( p->args[0],p->args ) ;
+		execv( p->exe,p->args ) ;
 		/*
 		 * execv has failed :-( 
 		 */
@@ -315,10 +259,12 @@ void ProcessCloseStdWrite( process_t p )
 
 process_t Process( const char * path ) 
 {
+	process_t p  ;
+	
 	if( path == NULL )
 		return ProcessVoid;
 	
-	process_t p = ( process_t ) malloc( sizeof( struct Process_t ) ) ;
+	p =  ( process_t ) malloc( sizeof( struct Process_t ) ) ;
 	
 	if( p == NULL )
 		return ProcessVoid ;
@@ -365,10 +311,12 @@ void ProcessSetOptionDelimiter( process_t p,char s )
 
 void ProcessDelete( process_t * p ) 
 {
+	process_t px ;
+	
 	if( p == NULL )
 		return ;
 	
-	process_t px = *p ;
+	px = *p ;
 	*p = ProcessVoid ;
 
 	if( px->thread != NULL ){
@@ -392,7 +340,7 @@ void ProcessDelete( process_t * p )
 	if( px->exe != NULL )
 		free( px->exe ) ;
 	
-	free( px ) ;		
+	free( px ) ;
 }
 
 int ProcessTerminate( process_t p ) 
@@ -437,9 +385,9 @@ int ProcessExitStatus( process_t p )
 	if( p == ProcessVoid )
 		return -1;
 	
-	waitpid( p->pid,&status,0 ) ;	
-	p->state = FINISHED ;		
-	p->wait_status = 1 ;	
+	waitpid( p->pid,&status,0 ) ;
+	p->state = FINISHED ;
+	p->wait_status = 1 ;
 	return status ;
 }
 

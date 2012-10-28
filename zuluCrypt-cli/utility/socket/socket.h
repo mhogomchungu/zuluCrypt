@@ -39,6 +39,8 @@ extern "C" {
 #include <sys/time.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <sys/socket.h>
+#include <netdb.h>
 
 #define SocketVoid     ( ( void * ) 0 )  
 

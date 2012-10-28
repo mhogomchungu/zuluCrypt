@@ -62,6 +62,8 @@ void EXIT( int st,char * msg )
 	unlink( luksTestVolume ) ;
 	unlink( plainTestVolume ) ;
 	unlink( keyfile ) ;
+	unlink( keyfile1 ) ;
+	
 	rmdir( mount_point ) ;
 	
 	if( msg ){
@@ -74,11 +76,13 @@ void EXIT( int st,char * msg )
 
 void createKeyFiles( void )
 {
+	int f ;
 	char path[ 64 ] ;
+	
 	strncpy( path,keyfile,64 ) ;
 	
-	int f = open( path,O_WRONLY|O_TRUNC|O_CREAT ) ;
-	
+	f = open( path,O_WRONLY|O_TRUNC|O_CREAT ) ;
+		
 	puts( "creating a keyfile" ) ;
 	
 	if( f < 0 ){
@@ -116,16 +120,18 @@ void createKeyFiles( void )
 void createTestImages( void )
 {
 	int i ;
-	puts( "creating testing images" ) ;
-	
+	int f ;
 	char buffer[ 1024 ] ;
-	memset( buffer,'\0',1024 ) ;
 	int size = 10 * 1024 ;
 	
 	char path[ 64 ] ;
+	memset( buffer,'x',1024 ) ;
+	
 	strncpy( path,luksTestVolume,64 ) ;
 	
-	int f = open( path,O_WRONLY|O_TRUNC|O_CREAT ) ;
+	f = open( path,O_WRONLY|O_TRUNC|O_CREAT ) ;
+	
+	puts( "creating testing images" ) ;
 	
 	if( f < 0 ){
 		perror( "failed to create testing images: " ) ;
@@ -135,7 +141,7 @@ void createTestImages( void )
 			write( f,buffer,1024 ) ;
 		close( f ) ;
 		chmod( luksTestVolume,S_IRWXU ) ;
-	}		
+	}
 	
 	strncpy( path,plainTestVolume,64 ) ;
 	
@@ -155,10 +161,11 @@ void createTestImages( void )
 void __ProcessGetResult( process_t p )
 {	
 	char * e = NULL ;
+	int st ;
 	
 	ProcessGetOutPut( p,&e,STDOUT ) ;
 	
-	int st = ProcessExitStatus( p ) ;
+	st = ProcessExitStatus( p ) ;
 	
 	ProcessDelete( &p ) ;
 	
@@ -175,8 +182,9 @@ void __ProcessGetResult( process_t p )
 void __ProcessGetResultANDPrint( process_t p )
 {	
 	char * e = NULL ;
+	int st ;
 	ProcessGetOutPut( p,&e,STDOUT ) ;
-	int st = ProcessExitStatus( p ) ;
+	st = ProcessExitStatus( p ) ;
 	
 	ProcessDelete( &p ) ;
 	
@@ -193,8 +201,9 @@ void __ProcessGetResultANDPrint( process_t p )
 
 void createVolume( const char * device,const char * msg,const char * keysource,const char * type )
 {
+	process_t p ;
 	__print( msg ) ;
-	process_t p = Process( zuluCryptExe ) ;
+	p = Process( zuluCryptExe ) ;
 	if( strcmp( keysource,"-p" ) == 0 )
 		ProcessSetArgumentList( p,"-c","-k","-d",device,"-t",type,keysource,key,'\0' ) ;
 	else
@@ -204,9 +213,10 @@ void createVolume( const char * device,const char * msg,const char * keysource,c
 }
 
 void closeVolume( const char * device,const char * msg )
-{
+{	
+	process_t p ;
 	__print( msg ) ;
-	process_t p = Process( zuluCryptExe ) ;
+	p = Process( zuluCryptExe ) ;
 	ProcessSetArgumentList( p,"-q","-d",device,'\0' ) ;
 	ProcessStart( p ) ;
 	__ProcessGetResult( p ) ;
@@ -214,8 +224,9 @@ void closeVolume( const char * device,const char * msg )
 
 void openVolume( const char * device,const char * msg,const char * keysource )
 {
+	process_t p ;
 	__print( msg ) ;
-	process_t p = Process( zuluCryptExe ) ;
+	p = Process( zuluCryptExe ) ;
 	if( strcmp( keysource,"-p" ) == 0 )
 		ProcessSetArgumentList( p,"-o","-d",device,"-m",mount_point,keysource,key,'\0' ) ;
 	else
@@ -226,8 +237,9 @@ void openVolume( const char * device,const char * msg,const char * keysource )
 
 void checkKeySlotsInUse( const char * device )
 {
+	process_t p ;
 	__print( "check key slots in use: " ) ;
-	process_t p = Process( zuluCryptExe ) ;
+	p = Process( zuluCryptExe ) ;
 	ProcessSetArgumentList( p,"-b","-d",device,'\0' ) ;
 	ProcessStart( p ) ;
 	__ProcessGetResultANDPrint( p ) ;
@@ -272,8 +284,9 @@ void addKeysToLuks( const char * device )
 
 void removeKeysFromLuksVolume( const char * device )
 {
+	process_t p ;
 	__print( "remove a key from a luks volume using a key: " ) ;
-	process_t p = Process( zuluCryptExe ) ;
+	p = Process( zuluCryptExe ) ;
 	ProcessSetArgumentList( p,"-r","-d",device,"-p",key,'\0' ) ;
 	ProcessStart( p ) ;
 	__ProcessGetResult( p ) ;
@@ -291,11 +304,11 @@ void checkForOpenedMappers( void )
 	
 	int st = 1 ;
 	
-	struct dirent * entry ;
-	
-	printf( "check if there are no opened mappers: " ) ;
+	struct dirent * entry ;	
 	
 	DIR * dir = opendir( "/dev/mapper" ) ;
+	
+	printf( "check if there are no opened mappers: " ) ;	
 	
 	if( dir == NULL ){
 		printf( "failed to complete the test\n" ) ;
@@ -323,8 +336,9 @@ void checkForOpenedMappers( void )
 
 int KeyPlugin( int argc,char * argv[] ) 
 {
+	void * handle ;
 	if( argc >= 3 ){
-		void * handle = zuluCryptPluginManagerOpenConnection( argv[ 3 ] ) ;
+		handle = zuluCryptPluginManagerOpenConnection( argv[ 3 ] ) ;
 		zuluCryptPluginManagerSendKey( handle,key,strlen( key ) ) ;
 		zuluCryptPluginManagerCloseConnection( handle ) ;
 		return 0 ;
@@ -335,8 +349,9 @@ int KeyPlugin( int argc,char * argv[] )
 
 void openVolumeWithPlugIn( const char * device,const char * msg )
 {
+	process_t p ;
 	__print( msg ) ;
-	process_t p = Process( zuluCryptExe ) ;
+	p = Process( zuluCryptExe ) ;
 	ProcessSetArgumentList( p,"-o","-d",device,"-m",mount_point,"-G",zuluCryptTest,'\0' ) ;
 	ProcessStart( p ) ;
 	__ProcessGetResult( p ) ;
@@ -344,10 +359,11 @@ void openVolumeWithPlugIn( const char * device,const char * msg )
 
 void checkIfDeviceIsLuks( const char * device )
 {
+	int st ;
 	process_t p = Process( zuluCryptExe ) ;
 	ProcessSetArgumentList( p,"-i","-d",device,'\0' ) ;
 	ProcessStart( p ) ;
-	int st = ProcessExitStatus( p ) ;
+	st = ProcessExitStatus( p ) ;
 	ProcessDelete( &p ) ;
 	
 	if( st )

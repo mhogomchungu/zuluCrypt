@@ -31,9 +31,6 @@
 #include "../constants.h"
 #include "../bin/includes.h"
 
-#ifdef __STDC__
-int syscall(int number, ...) ;
-#endif
 /*
  * below header file is created at config time.
  */

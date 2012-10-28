@@ -21,10 +21,6 @@
 
 #include <sys/syscall.h>
 
-#ifdef __STDC__
-int syscall(int number, ...) ;
-#endif
-
 static inline int zuluExit( int st,string_t m )
 {
 	StringDelete( &m ) ;

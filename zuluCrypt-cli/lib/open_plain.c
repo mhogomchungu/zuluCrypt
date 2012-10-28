@@ -29,13 +29,18 @@ int zuluCryptOpenPlain( const char * device,const char * mapper,const char * mod
 {
 	int flags ;
 	struct crypt_device * cd ;
-	
+	/*
 	struct crypt_params_plain params = {
 		.hash = "ripemd160",
 		.skip = 0,
 		.offset = 0,
 	};
-		
+	*/
+	struct crypt_params_plain params ;
+	params.hash = "ripemd160";
+	params.skip = 0;
+	params.offset = 0;
+
 	if( zuluCryptPathIsNotValid( device ) )
 		return 3 ;
 

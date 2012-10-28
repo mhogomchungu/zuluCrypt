@@ -33,11 +33,6 @@
 
 #include <signal.h>
 
-#ifdef __STDC__
-#include <bits/sigaction.h>
-int sigaction( int sig,const struct sigaction *,struct sigaction * );
-#endif
-
 static int __exit_as_requested ;
 static int __sig_caught ;
 

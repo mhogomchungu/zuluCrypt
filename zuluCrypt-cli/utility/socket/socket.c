@@ -54,7 +54,6 @@ socket_t Socket( int domain,int type,int protocol )
 			close( fd ) ;
 			return SocketVoid ;
 		}else{
-			s->domain = AF_UNIX ;
 			s->size = sizeof( struct sockaddr_un ) ;
 			memset( s->local,'\0',s->size ) ;
 			s->local->sun_family = AF_UNIX ;
@@ -66,7 +65,6 @@ socket_t Socket( int domain,int type,int protocol )
 			close( fd ) ;			
 			return SocketVoid ;
 		}else{
-			s->domain = AF_INET ;
 			s->size = sizeof( struct sockaddr_in ) ;
 			memset( s->net,'\0',s->size ) ;
 			s->net->sin_family = AF_INET ;
@@ -90,22 +88,6 @@ int SocketFileDescriptor( socket_t s )
 {
 	return s == SocketVoid ? -1 : s->fd ;
 }
-
-#ifdef __STDC__
-struct addrinfo {
-	int     ai_flags;
-	int     ai_family;
-	int     ai_socktype;
-	int     ai_protocol;
-	size_t  ai_addrlen;
-	struct  sockaddr *ai_addr;
-	char    *ai_canonname;     
-	struct  addrinfo *ai_next;
-};
-
-int getaddrinfo( const char *,const char *,const struct addrinfo *,struct addrinfo ** );
-void freeaddrinfo( struct addrinfo * );
-#endif
 
 socket_t SocketLocalWithOptions( const char * address,int type,int protocol ) 
 {

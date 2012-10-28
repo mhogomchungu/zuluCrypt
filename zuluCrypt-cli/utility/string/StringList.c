@@ -670,6 +670,7 @@ stringList_t StringListCopy( stringList_t stl )
 
 stringList_t StringListSwap( stringList_t stl, size_t x,size_t y ) 
 {
+	string_t p ;
 	if( stl == StringListVoid )
 		return StringListVoid ;
 	if( x >= stl->size )
@@ -677,7 +678,7 @@ stringList_t StringListSwap( stringList_t stl, size_t x,size_t y )
 	if( y >= stl->size )
 		return StringListVoid ;
 	
-	string_t p = stl->stp[ x ] ;
+	p = stl->stp[ x ] ;
 	stl->stp[ x ] = stl->stp[ y ] ;
 	stl->stp[ y ] = p ;
 	return stl ;

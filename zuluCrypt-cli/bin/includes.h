@@ -35,13 +35,6 @@
 #include "libzuluCrypt-exe.h"
 #include "security.h"
 
-#ifdef __STDC__
-char * realpath( const char * path, char * resolved_path ) ;
-int getopt(int argc, char * const argv[], const char *optstring);
-extern char *optarg;
-extern int optind, opterr, optopt;
-#endif
-
 /*
  * These functions are here and not in libzuluCrypt-exe.h because they use string_t and the type is not supposed to be
  * seen in public API

@@ -127,11 +127,11 @@ char * StringDeleteHandle( string_t * xt )
 string_t StringCopy( string_t st )
 {	
 	string_t xt ;
-	
+	char * c ;
 	if( st == StringVoid )
 		return StringVoid ;
 	
-	char * c = ( char * ) malloc( sizeof( char ) * ( st->size + 1 ) ) ;
+	c = ( char * ) malloc( sizeof( char ) * ( st->size + 1 ) ) ;
 	
 	if( c == NULL )
 		return StringVoid ;
@@ -835,12 +835,12 @@ const char * StringReplaceChar( string_t st,char x,char y )
 
 string_t StringIntToString( uint64_t z )
 {
+	int i = 63 ;
 	/*
 	 *  2^64 has a maximum of 19 digits,64 byte buffer is more that enough
 	 */
 	char buffer[ 64 ] ;
-	buffer[ 63 ] = '\0' ;
-	int i = 63 ;
+	buffer[ 63 ] = '\0' ;	
 
 	do{
 		i-- ;
