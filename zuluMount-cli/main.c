@@ -105,14 +105,20 @@ static int _zuluMountPartitionAccess( const char * device,const char * mode,uid_
 	 */
 	string_t p = zuluCryptGetMountOptionsFromFstab( device,3 ) ;
 	
-	if( p == StringVoid )
-		return 0 ;
+	int st      ;
+	int ro      ;
+	int nouser  ;
+	int defaulT ;
+	int user    ;
 	
-	int st = 0 ;
-	int ro      = StringContains( p,"ro" ) ;
-	int nouser  = StringContains( p,"nouser" ) ;
-	int defaulT = StringContains( p,"default" ) ;
-	int user    = StringContains( p,"user" ) ;
+	if( p == StringVoid )
+		return 0 ;	
+	
+	st = 0 ;
+	ro      = StringContains( p,"ro" ) ;
+	nouser  = StringContains( p,"nouser" ) ;
+	defaulT = StringContains( p,"default" ) ;
+	user    = StringContains( p,"user" ) ;
 	
 	if( ro && strstr( mode,"rw" ) != NULL )
 		st = 1 ;
@@ -448,19 +454,22 @@ static int _zuluMountExe( const char * device,const char * action,const char * m
 
 static int _mount_help()
 {
-	const char * doc = "\
+	const char * doc2 ;
+	const char * doc1 = "\
 options:\n\
--n -- when the option is used with -m,the mount point will be auto created if absent\
-   -- error willl be produced if the mount point is present and the option is ommited\
-   -- when used with -u,the mount point will not get auto deleted\
--l -- print a list of mounted partitions\n\
+-n -- when the option is used with -m,the mount point will be auto created if absent,\n\
+      error willl be produced if the mount point is present and the option is ommited.\n\
+      when used with -u,the mount point will not get auto deleted\n\
+-l -- print a list of mounted partitions\n" ;
+
+	doc2 = "\
 -p -- print a list of partitions\n\
 -m -- mount a partitions : arguments: -d partition_path -z mount_point -e mode(rw/ro)\n\
 -u -- unmount a partition: arguments: -d partition_path\n\
 -M -- mount a LUKS/PLAIN volume: arguments: -d partition_path -z mount_point -e mode(rw/ro) (-p passphrase/-f keyfile) \n\
 -U -- unmount a LUKS volume: arguments: -d partition_path\n" ;
 
-	printf( doc ) ;
+	printf( "%s%s",doc1,doc2 ) ;
 	return 201 ;
 }
 
