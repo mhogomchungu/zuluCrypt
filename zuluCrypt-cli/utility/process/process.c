@@ -131,7 +131,11 @@ pid_t ProcessStart( process_t p )
 		close( p->fd_0[ 1 ] )     ;
 		close( p->fd_2[ 0 ] )     ;
 			
-		execv( p->exe,p->args ) ;
+		if( p->args == NULL ){
+			execl( p->exe,p->exe,( char * )0 ) ;
+		}else{
+			execv( p->exe,p->args ) ;
+		}
 		/*
 		 * execv has failed :-( 
 		 */
