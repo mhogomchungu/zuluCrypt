@@ -338,9 +338,8 @@ static int _zuluMountCryptoMount( const char * device,const char * mode,uid_t ui
 	return st ;
 }
 
-static int _zuluMountCryptoUMount( const char * device,uid_t uid,int mount_point_option )
+static int _zuluMountCryptoUMount( const char * device,uid_t uid,__attribute__((unused)) int mount_point_option )
 {
-	mount_point_option = 0 ;
 	const char * mapping_name ;
 	const char * e = strrchr( device,'/' ) ;
 	/*

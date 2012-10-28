@@ -98,7 +98,6 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	const char * pass        = opts->key ;
 	const char * plugin_path = opts->plugin_path ;
 	const char * argv      	 = opts->argv ;
-	int mount_point_option	 = opts->mount_point_option ;
 
 	stringList_t stl = StringListInit() ;
 	
@@ -156,17 +155,9 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		/*
 		 * zuluCryptSecurityCreateMountPoint() is defined in security.c
 		 */
-		if( zuluCryptPathIsNotValid( mount_point ) ){
-			switch( zuluCryptSecurityCreateMountPoint( mount_point,uid ) ){
-				case 2 : return zuluExit( 5,device,cpoint,stl ) ;
-				case 1 : return zuluExit( 21,device,cpoint,stl ) ;
-			}
-		}else{
-			/*
-			 * This section of the code is currently not in use
-			 */
-			if( !mount_point_option )
-				return zuluExit( 30,device,cpoint,stl ) ;
+		switch( zuluCryptSecurityCreateMountPoint( mount_point,uid ) ){
+			case 2 : return zuluExit( 5,device,cpoint,stl ) ;
+			case 1 : return zuluExit( 21,device,cpoint,stl ) ;
 		}
 	
 		cpoint = realpath( mount_point,NULL ) ;
