@@ -41,6 +41,10 @@ const char * zuluCryptTest   = ZULUCRYPTTest ;
 const char * keyfile         = "/tmp/zuluCrypt-KeyFile" ;
 const char * keyfile1        = "/tmp/zuluCrypt-KeyFile1" ;
 
+/*
+ * Most if not all strncpy() functions are to hide valgrind warnings
+ */
+
 void __print( const char * msg )
 {
 	printf( msg ) ;
@@ -70,7 +74,10 @@ void EXIT( int st,char * msg )
 
 void createKeyFiles( void )
 {
-	int f = open( keyfile,O_WRONLY|O_TRUNC|O_CREAT ) ;
+	char path[ 64 ] ;
+	strncpy( path,keyfile,64 ) ;
+	
+	int f = open( path,O_WRONLY|O_TRUNC|O_CREAT ) ;
 	
 	puts( "creating a keyfile" ) ;
 	
@@ -87,7 +94,9 @@ void createKeyFiles( void )
 		}
 	}
 	
-	f = open( keyfile1,O_WRONLY|O_TRUNC|O_CREAT ) ;
+	strncpy( path,keyfile1,64 ) ;
+	
+	f = open( path,O_WRONLY|O_TRUNC|O_CREAT ) ;
 	puts( "creating a keyfile" ) ;
 	
 	if( f < 0 ){
@@ -110,9 +119,13 @@ void createTestImages( void )
 	puts( "creating testing images" ) ;
 	
 	char buffer[ 1024 ] ;
+	memset( buffer,'\0',1024 ) ;
 	int size = 10 * 1024 ;
 	
-	int f = open( luksTestVolume,O_WRONLY|O_TRUNC|O_CREAT ) ;
+	char path[ 64 ] ;
+	strncpy( path,luksTestVolume,64 ) ;
+	
+	int f = open( path,O_WRONLY|O_TRUNC|O_CREAT ) ;
 	
 	if( f < 0 ){
 		perror( "failed to create testing images: " ) ;
@@ -124,7 +137,10 @@ void createTestImages( void )
 		chmod( luksTestVolume,S_IRWXU ) ;
 	}		
 	
-	f = open( plainTestVolume,O_WRONLY|O_TRUNC|O_CREAT ) ;
+	strncpy( path,plainTestVolume,64 ) ;
+	
+	f = open( path,O_WRONLY|O_TRUNC|O_CREAT ) ;
+	
 	if( f < 0 ){
 		perror( "failed to create testing images: " ) ;
 		EXIT( 1,NULL ) ;
@@ -388,6 +404,7 @@ int runTest( void )
 	__printLine() ;
 	checkForOpenedMappers() ;
 
+	EXIT( 0,NULL ) ;
 	return 0 ;
 }
 
