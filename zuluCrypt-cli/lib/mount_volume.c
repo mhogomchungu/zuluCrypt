@@ -54,7 +54,7 @@ static inline int zuluExit( int st,stringList_t stl )
 static inline string_t resolveUUIDAndLabel( string_t st )
 {
 	char * e = NULL ;
-	string_t xt = StringVoid ;	
+	string_t xt = StringVoid ;
 	
 	if( StringStartsWith( st,"LABEL=" ) ) {
 		e = blkid_evaluate_tag( "LABEL",StringContent( st ) + 6,NULL ) ;
@@ -116,7 +116,7 @@ string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos )
 			if( st == 1 ){
 				options = StringListDetachAt( entryList,pos ) ;
 				StringListDelete( &entryList ) ;
-				break ;	
+				break ;
 			}
 		}
 		
@@ -158,7 +158,7 @@ static inline string_t set_mount_options( m_struct * mst )
 	else	
 		StringMultipleAppend( opt,",",mst->mode,'\0' ) ;
 	
-	if( ms_family( mst->fs ) ){	
+	if( ms_family( mst->fs ) ){
 		if( !StringContains( opt,"dmask=" ) )
 			StringAppend( opt,",dmask=0000" ) ;
 		if( !StringContains( opt,"umask=" ) )
@@ -170,7 +170,7 @@ static inline string_t set_mount_options( m_struct * mst )
 		if( !StringContains( opt,"fmask=" ) )
 			StringAppend( opt,",fmask=0000" ) ;
 		
-		if( strcmp( mst->fs,"vfat" ) == 0 ){	
+		if( strcmp( mst->fs,"vfat" ) == 0 ){
 			if( !StringContains( opt,"flush" ) )
 				StringAppend( opt,",flush" ) ;
 			if( !StringContains( opt,"shortname=" ) )
@@ -198,21 +198,18 @@ static inline string_t set_mount_options( m_struct * mst )
 	 * Below options are not file system options and are rejectected by mount() command and hence we are removing them.
 	 */
 	StringRemoveString( opt,"nouser" ) ;
-	StringRemoveString( opt,"users" ) ;	
+	StringRemoveString( opt,"users" ) ;
 	StringRemoveString( opt,"user" ) ;
 	StringRemoveString( opt,"default" ) ;
-	StringRemoveString( opt,"auto" ) ;
 	StringRemoveString( opt,"noauto" ) ;
-		
-	if( StringEndsWith( opt,"," ) )
-		StringRemoveRight( opt,1 ) ;
+	StringRemoveString( opt,"auto" ) ;
 	
 	/*
 	 * remove below two now because we are going to add them below,reason for removing them 
 	 * and readding them is because we want to make sure they are at the beginning of the string
 	 */
 	StringRemoveString( opt,"ro" ) ;
-	StringRemoveString( opt,"rw" ) ;	
+	StringRemoveString( opt,"rw" ) ;
 	
 	if( mst->m_flags == MS_RDONLY )
 		StringPrepend( opt,"ro," ) ;
@@ -220,6 +217,9 @@ static inline string_t set_mount_options( m_struct * mst )
 		StringPrepend( opt,"rw," ) ;
 	
 	StringReplaceString( opt,",,","," );
+		
+	if( StringEndsWith( opt,"," ) )
+		StringRemoveRight( opt,1 ) ;
 	
 	mst->opts = StringContent( opt ) ;
 	
@@ -228,12 +228,12 @@ static inline string_t set_mount_options( m_struct * mst )
 
 static inline int mount_ntfs( const m_struct * mst )
 {
-	int status ;	
-	process_t p = Process( ZULUCRYPTmount ) ;	
+	int status ;
+	process_t p = Process( ZULUCRYPTmount ) ;
 	ProcessSetArgumentList( p,"-t","ntfs-3g","-o",mst->opts,mst->device,mst->m_point,'\0' ) ;
-	ProcessStart( p ) ;	
-	status = ProcessExitStatus( p ) ; 	
-	ProcessDelete( &p ) ;	
+	ProcessStart( p ) ;
+	status = ProcessExitStatus( p ) ; 
+	ProcessDelete( &p ) ;
 	return status ;
 }
 
@@ -242,7 +242,7 @@ static inline int mount_mapper( const m_struct * mst )
 	int h = mount( mst->device,mst->m_point,mst->fs,mst->m_flags,mst->opts + 3 ) ;
 	
 	if( h == 0 && mst->m_flags != MS_RDONLY && ms_family( mst->fs ) == 0 && other_fs( mst->fs ) == 0 )
-		chmod( mst->m_point,S_IRWXU|S_IRWXG|S_IRWXO ) ;	
+		chmod( mst->m_point,S_IRWXU|S_IRWXG|S_IRWXO ) ;
 	
 	return h ;
 }
