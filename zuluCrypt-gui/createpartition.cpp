@@ -329,12 +329,12 @@ void createpartition::threadfinished( int st )
 		x += tr( "\n\ncreating a backup of the luks header is strongly advised.\nPlease read documentation on why this is important." ) ;
 	switch ( st ){
 		case 0 : msg.ShowUIOK( tr( "SUCCESS!" ),x ) ;
-		HideUI();													break  ;
+		HideUI();														break  ;
 		case 1 : msg.ShowUIOK( tr( "ERROR!" ),tr( "invalid path to a file or device" ) );					break  ;
 		case 2 : msg.ShowUIOK( tr( "ERROR!" ),tr( "wrong option type" ) );							break  ;
 		case 3 : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not create an encrypted volume in a file or device" ) );		break  ;
 		case 4 : msg.ShowUIOK( tr( "ERROR!" ),tr( "one or more required argument( s ) for this operation is missing" ) );	break  ;
-		case 5 : msg.ShowUIOK( tr( "ERROR!" ),tr( "wrong choice, exiting" ) );						break  ;
+		case 5 : msg.ShowUIOK( tr( "ERROR!" ),tr( "wrong choice, exiting" ) );							break  ;
 		case 6 : msg.ShowUIOK( tr( "ERROR!" ),tr( "couldnt get enought memory to hold the key file" ) ) ;			break  ;
 		case 7 : msg.ShowUIOK( tr( "ERROR!" ),tr( "passphrases do not match" ) );						break  ;
 		case 8 : msg.ShowUIOK( tr( "ERROR!" ),tr( "invalid path to key file" ) );						break  ;
@@ -342,17 +342,17 @@ void createpartition::threadfinished( int st )
 		case 10: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to create a volume on a system partition.\
 A system partition is a partition with an active entry in \"/etc/fstab\"\
 and \"/etc/crypttab.\"\nRerun the tool from root's accout to proceed" ) ) ;
-																break  ;
+																	break  ;
 		case 11: msg.ShowUIOK( tr( "ERROR!" ),tr( "%1 not found" ).arg( ZULUCRYPTmkfs ) );					break  ;
 		case 12: msg.ShowUIOK( tr( "ERROR!" ),tr( "user chose not to proceed" ) );						break  ;
 		case 13: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to search for volume path" ) ) ;			break  ;
-		case 14: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to create a volume in this device" ) ) ;		break  ;
-		case 15: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open the file in write mode" ) ) ;		break  ;
-		case 16: msg.ShowUIOK( tr( "ERROR!" ),tr( "there seem to be an opened mapper associated with the device" ) ) ;	break  ;
-		case 17: msg.ShowUIOK( tr( "ERROR!" ),tr( "unable to resolve full path to device" ) ) ;				break  ;
-		case 18: msg.ShowUIOK( tr( "ERROR!" ),tr( "can not create a volume on a mounted device" ) ) ;			break  ;
+		case 14: msg.ShowPermissionProblem( QString( "reading" ),m_ui->lineEditVolumePath->text() );				break  ;
+		case 15: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open the file in write mode" ) ) ;			break  ;
+		case 16: msg.ShowUIOK( tr( "ERROR!" ),tr( "there seem to be an opened mapper associated with the device" ) ) ;		break  ;
+		case 17: msg.ShowUIOK( tr( "ERROR!" ),tr( "unable to resolve full path to device" ) ) ;					break  ;
+		case 18: msg.ShowUIOK( tr( "ERROR!" ),tr( "can not create a volume on a mounted device" ) ) ;				break  ;
 
-		case 110:msg.ShowUIOK( tr( "ERROR!" ),tr( "could not find any partition with the presented UUID" ) ) ;		break  ;
+		case 110:msg.ShowUIOK( tr( "ERROR!" ),tr( "could not find any partition with the presented UUID" ) ) ;			break  ;
 		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR! with status number %1 encountered" ).arg( st ) );
 	}
 

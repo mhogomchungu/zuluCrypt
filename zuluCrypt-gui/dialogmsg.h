@@ -42,6 +42,8 @@ public:
 	void ShowUIInfo( QString title,QString msg );
 	void ShowUIVolumeProperties( QString title,QString msg );
 	bool ShowUIOKDoNotShowOption( QString title,QString msg ) ;
+	void ShowPermissionProblem( QString device ) ;
+	void ShowPermissionProblem( QString,QString device ) ;
 	void HideUI( void );
 	~DialogMsg();
 

@@ -73,6 +73,34 @@ void DialogMsg::ShowUI( QString title,QString msg )
 	this->exec() ;
 }
 
+void DialogMsg::ShowPermissionProblem( QString device )
+{
+	Q_UNUSED( device ) ;
+	QString msg = tr( "\
+\"insufficent privilege to open device\" and related permission errors when\n\
+attempting to operate on a device are primarily caused by not having proper \
+privileges to open devices for reading or writing.\n\nmost systems will give necessary permission \
+when a user is a member of \"disk\" goups.If you get above errors,then check to make sure you are a member of the group and try again.\n\n\
+Some operations can not be performed on devices marked as \"system partitions\" when a user is not root.\
+Please see section 2 of the documentation at\n\nhttp://code.google.com/p/zulucrypt/wiki/FAQ\n\nfor further details." ) ;
+
+	this->ShowUIInfo( tr( "INFORMATION" ),msg );
+}
+
+void DialogMsg::ShowPermissionProblem( QString msg,QString device )
+{
+	QString msg1 ;
+	if( device.startsWith( QString( "/dev/" ) ) ){
+		 msg1 = QString( "\
+system permission policy does not give you %1 access to the device.\n\
+Add yourself to \"disk\" group or a related group dealing with giving access to devices and try again.\n" ).arg( msg ) ;
+	}else{
+		msg1 = QString( "you do not seem to have proper permissions to access the encrypted file for %1" ).arg( msg ) ;
+	}
+
+	this->ShowUIOK( QString( "INFORMATION"),msg1 );
+}
+
 void DialogMsg::setDimentions( QString msg )
 {
 	int len = msg.size() ;

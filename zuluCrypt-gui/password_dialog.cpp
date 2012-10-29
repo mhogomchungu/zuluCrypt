@@ -519,7 +519,7 @@ void passwordDialog::threadfinished( int status )
 		case 20: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open device\nconsult help->permissions for more information" ) );	break ;
 		case 21: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to create mount point" ) );						break ;
 		case 22: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open keyfile for reading" ) );					break ;
-		case 23: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open device in read/write mode" ) );				break ;
+		case 23: msg.ShowPermissionProblem( m_ui->OpenVolumePath->text() );									break ;
 		case 24: msg.ShowUIOK( tr( "ERROR!" ),tr( "there seem to be an opened mapper associated with the device" ) );				break ;
 		case 25: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get a passphrase from the module" ) );						break ;
 		case 29: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get a passphrase through a local socket" ) ) ;					break ;
