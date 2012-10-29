@@ -17,6 +17,9 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef PROCESS
+#define PROCESS
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
@@ -27,19 +30,9 @@
 #include <stdarg.h>
 #include <sys/types.h>
 
-#ifdef __STDC__
-int kill( pid_t,int );
-int seteuid( uid_t uid );
-int setegid( uid_t uid ) ;
-#endif
-
-
-#ifndef PROCESS
-#define PROCESS
-
 #ifdef __cplusplus
 extern "C" {
-#endif	
+#endif
 	
 typedef struct Process_t * process_t ;
 

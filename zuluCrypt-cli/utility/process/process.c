@@ -119,7 +119,7 @@ pid_t ProcessStart( process_t p )
 			seteuid( uid )  ;
 			setgid( uid )   ;
 			setegid( uid )  ;
-		}		
+		}
 		
 		dup2( p->fd_0[ 0 ],0 )    ;
 		dup2( p->fd_1[ 1 ],1 )    ;
@@ -229,23 +229,20 @@ size_t ProcessGetOutPut( process_t p,char ** data,int std_io )
 
 int ProcessState( process_t p ) 
 {
-	if( p != ProcessVoid )
-		return p->state ;
-	else
-		return -1 ;
+	return p != ProcessVoid ? p->state : -1 ;
 }
 
 int ProcessGetOutPut_1( process_t p,char * buffer,int size,int std_io ) 
 {
-	if( p != ProcessVoid )
-		if( std_io == 1 )
-			return read( p->fd_1[ 1 ],buffer,size ) ;
-		else if( std_io == 2 )
-			return read( p->fd_2[ 1 ],buffer,size ) ;
-		else
-			return -1 ;
-	else
+	if( p != ProcessVoid ){
+		switch( std_io ){
+			case STDOUT   : return read( p->fd_1[ 1 ],buffer,size ) ;
+			case STDERROR : return read( p->fd_2[ 1 ],buffer,size ) ;
+			default       : return -1 ;  
+		}
+	}else{
 		return -1 ;
+	}
 }
 
 size_t ProcessWrite( process_t p,const char * data,size_t len ) 

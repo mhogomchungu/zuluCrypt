@@ -165,7 +165,7 @@ int SocketBind( socket_t s )
 	if( s == SocketVoid )
 		return 0 ;
 	if( s->domain == AF_UNIX ){
-		s->socket_server = 1 ;		
+		s->socket_server = 1 ;
 		unlink( s->local->sun_path ) ;
 		return bind( s->fd,( struct sockaddr * )s->local,s->size ) == 0 ? 1 : 0 ;
 	}else{
@@ -278,7 +278,7 @@ socket_t SocketAcceptWithTimeOut( socket_t s,int time )
 	socket_t client = SocketVoid ;
 	if( __SocketTimeOut( s,time,READ ) )
 		client = SocketAccept( s ) ;
-	return client ;	
+	return client ;
 }
 
 static inline void __SocketClose( socket_t * p ) 
@@ -426,7 +426,7 @@ size_t SocketGetData_1( socket_t s,char ** e )
 		f = d ;
 		
 		memcpy( f + total,buffer,result ) ;
-		total = total + result ;		
+		total = total + result ;
 	}
 	
 	if( total ){

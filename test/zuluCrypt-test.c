@@ -422,6 +422,8 @@ int runTest( void )
 	
 	__printLine() ;
 	addKeysToLuks( luksTestVolume ) ;
+	
+	__printLine() ;
 	checkKeySlotsInUse( luksTestVolume ) ;
 	
 	__printLine() ;
