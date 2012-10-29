@@ -48,31 +48,22 @@ typedef struct Process_t * process_t ;
 /*
  * An example of how to use the library to call ls with arguments and get its output while closing its std error 
  * 
- *  process_t p = Process( "/bin/ls -l -h" ) ;
- * 
- *  ProcessSetOption( p,CLOSE_STD_ERROR ) ;
- *  ProcessSetOption( p,READ_STD_OUT ) ;
- *  
- *  ProcessStart( p ) ;
- * 
- *  char * c = ProcessGetOutPut( p ) ;
- * 
+ *  process_t p = Process( "/bin/ls" ) ; 
+ *  ProcessSetArgumentList( p,"-l","-h",'\0' ) ;  
+ *  ProcessStart( p ) ; 
+ *  char * c = NULL ;
+ *  ProcessGetOutPut( p,&c,STDOUT ) ; 
  *  ProcessDelete( &p ) ;
- * 
- *  printf("%s\n",c);
- *  free( c ) ;
+ *  if( c ){ 
+ *	  printf("%s\n",c );
+ *	  free( c ) ;
+ * }
  * 
  */
 
 /*
  * create a handle to a process that will be started.
- * Path to executable to be started must be in full path format.
- *
- * By defaults, arguments aew separated by space character,the delimiter can be changed with ProcessSetOptionDelimiter()
- * 
- * Make sure delimiter character do not exist consercutively and do not exist at the ends of the argument string.A crash
- * will most likey happen is this expectation is not obeyed.
- *  
+ * Path to executable to be started must be in full path format
  */
 process_t Process( const char * path ) ;
 
@@ -93,11 +84,6 @@ size_t ProcessWrite( process_t p,const char * data,size_t len ) ;
  * blocks waiting for more data in its std in until EOF is received. 
  */
 void ProcessCloseStdWrite( process_t p ) ;
-
-/*
- * default delimiter is ' '( space character ),set another character with this function to change it 
- */
-void ProcessSetOptionDelimiter( process_t,char ) ;
 
 /*
  * remember to clean after yourself
@@ -144,8 +130,6 @@ void ProcessSetArgumentList( process_t p,... ) ;
 #define FINISHED 3
 #define CANCELLED 4
 int ProcessState( process_t p ) ;
-
-void ProcessSetOption( process_t,int ) ;
 
 /*
  * wait for "timeout" seconds and then send the forked process a signal "signal"

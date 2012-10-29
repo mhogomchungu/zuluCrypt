@@ -28,22 +28,51 @@
 
 #include "../zuluCrypt-cli/pluginManager/libzuluCryptPluginManager.h"
 #include "../zuluCrypt-cli/utility/process/process.h"
+#include "../zuluCrypt-cli/utility/string/StringList.h"
 
 #include "bin_path.h"
 
-const char * luksTestVolume  = "/tmp/zuluCrypt-luksTestVolume" ;
-const char * plainTestVolume = "/tmp/zuluCrypt-plainTestVolume" ;
-const char * mount_point     = "/tmp/zuluCrypt-MountPoint" ;
-const char * key             = "xyz" ;
-const char * key1            = "xxx" ;
-const char * zuluCryptExe    = ZULUCRYPTzuluCrypt ;
-const char * zuluCryptTest   = ZULUCRYPTTest ;
-const char * keyfile         = "/tmp/zuluCrypt-KeyFile" ;
-const char * keyfile1        = "/tmp/zuluCrypt-KeyFile1" ;
+const char * luksTestVolume   = NULL ;
+const char * plainTestVolume  = NULL ;
+const char * mount_point      = NULL ;
+const char * key              = NULL ;
+const char * key1             = NULL ;
+const char * zuluCryptExe     = NULL ;
+const char * zuluCryptTest    = NULL ;
+const char * keyfile          = NULL ;
+const char * keyfile1         = NULL ;
+
+stringList_t stl = StringListVoid ;
 
 /*
- * Most if not all strncpy() functions are to hide valgrind warnings
+ * lots of nothing to work around valgrind warnings
  */
+void initGlobal( void )
+{
+	stl = StringList( "/tmp/zuluCrypt-luksTestVolume" ) ;
+	
+	StringListAppend( stl,"/tmp/zuluCrypt-plainTestVolume" ) ;
+	StringListAppend( stl,"/tmp/zuluCrypt-MountPoint" ) ;
+	
+	StringListAppend( stl,"xyz" ) ;
+	StringListAppend( stl,"xxx" ) ;
+	
+	StringListAppend( stl,ZULUCRYPTzuluCrypt ) ;
+	StringListAppend( stl,ZULUCRYPTTest ) ;
+	
+	StringListAppend( stl,"/tmp/zuluCrypt-KeyFile" ) ;
+	StringListAppend( stl,"/tmp/zuluCrypt-KeyFile1" ) ;
+	
+	luksTestVolume     = StringListContentAt( stl,0 ) ;
+	plainTestVolume    = StringListContentAt( stl,1 ) ;
+	mount_point        = StringListContentAt( stl,2 ) ;
+	key                = StringListContentAt( stl,3 ) ;
+	key1               = StringListContentAt( stl,4 ) ;
+	zuluCryptExe       = StringListContentAt( stl,5 ) ;
+	zuluCryptTest      = StringListContentAt( stl,6 ) ;
+	keyfile            = StringListContentAt( stl,7 ) ;
+	keyfile1           = StringListContentAt( stl,8 ) ;
+}
 
 void __print( const char * msg )
 {
@@ -71,25 +100,21 @@ void EXIT( int st,char * msg )
 		free( msg ) ;
 	}
 	
+	StringListDelete( &stl ) ;
 	exit( st ) ;
 }
 
 void createKeyFiles( void )
 {
-	int f ;
-	char path[ 64 ] ;
-	
-	strncpy( path,keyfile,64 ) ;
-	
-	f = open( path,O_WRONLY|O_TRUNC|O_CREAT ) ;
-		
+	int f = open( keyfile,O_WRONLY|O_TRUNC|O_CREAT ) ;
+	int e ;
 	puts( "creating a keyfile" ) ;
 	
 	if( f < 0 ){
 		perror( "failed to create a keyfile: " ) ;
 		EXIT( 1,NULL ) ;
 	}else{
-		int e = write( f,key,strlen( key ) ) ;
+		e = write( f,key,strlen( key ) ) ;
 		close( f ) ;
 		chmod( keyfile,S_IRWXU ) ;
 		if( e != 3 ){
@@ -98,16 +123,14 @@ void createKeyFiles( void )
 		}
 	}
 	
-	strncpy( path,keyfile1,64 ) ;
-	
-	f = open( path,O_WRONLY|O_TRUNC|O_CREAT ) ;
+	f = open( keyfile1,O_WRONLY|O_TRUNC|O_CREAT ) ;
 	puts( "creating a keyfile" ) ;
 	
 	if( f < 0 ){
 		perror( "failed to create a keyfile: " ) ;
 		EXIT( 1,NULL ) ;
 	}else{
-		int e = write( f,key1,strlen( key1 ) ) ;
+		e = write( f,key1,strlen( key1 ) ) ;
 		close( f ) ;
 		chmod( keyfile1,S_IRWXU ) ;
 		if( e != 3 ){
@@ -121,15 +144,14 @@ void createTestImages( void )
 {
 	int i ;
 	int f ;
-	char buffer[ 1024 ] ;
+	int opt = O_WRONLY|O_TRUNC|O_CREAT ;
+	char buffer[ 1024 ] = { '\0' };
 	int size = 10 * 1024 ;
-	
-	char path[ 64 ] ;
-	memset( buffer,'x',1024 ) ;
+	char path[ 64 ] = { '\0' } ;
 	
 	strncpy( path,luksTestVolume,64 ) ;
 	
-	f = open( path,O_WRONLY|O_TRUNC|O_CREAT ) ;
+	f = open( path,opt ) ;
 	
 	puts( "creating testing images" ) ;
 	
@@ -145,7 +167,7 @@ void createTestImages( void )
 	
 	strncpy( path,plainTestVolume,64 ) ;
 	
-	f = open( path,O_WRONLY|O_TRUNC|O_CREAT ) ;
+	f = open( path,opt ) ;
 	
 	if( f < 0 ){
 		perror( "failed to create testing images: " ) ;
@@ -166,7 +188,7 @@ void __ProcessGetResult( process_t p )
 	ProcessGetOutPut( p,&e,STDOUT ) ;
 	
 	st = ProcessExitStatus( p ) ;
-	
+
 	ProcessDelete( &p ) ;
 	
 	if( st ){
@@ -291,7 +313,7 @@ void removeKeysFromLuksVolume( const char * device )
 	ProcessStart( p ) ;
 	__ProcessGetResult( p ) ;
 	
-	__print( "remove a key from a luks volume using a keyfile: " ) ;	
+	__print( "remove a key from a luks volume using a keyfile: " ) ;
 	p = Process( zuluCryptExe ) ;
 	ProcessSetArgumentList( p,"-r","-d",device,"-f",keyfile,'\0' ) ;
 	ProcessStart( p ) ;
@@ -304,11 +326,11 @@ void checkForOpenedMappers( void )
 	
 	int st = 1 ;
 	
-	struct dirent * entry ;	
+	struct dirent * entry ;
 	
 	DIR * dir = opendir( "/dev/mapper" ) ;
 	
-	printf( "check if there are no opened mappers: " ) ;	
+	printf( "check if there are no opened mappers: " ) ;
 	
 	if( dir == NULL ){
 		printf( "failed to complete the test\n" ) ;
@@ -332,19 +354,6 @@ void checkForOpenedMappers( void )
 	
 	if( st )
 		printf( "PASSED\n" ) ;
-}
-
-int KeyPlugin( int argc,char * argv[] ) 
-{
-	void * handle ;
-	if( argc >= 3 ){
-		handle = zuluCryptPluginManagerOpenConnection( argv[ 3 ] ) ;
-		zuluCryptPluginManagerSendKey( handle,key,strlen( key ) ) ;
-		zuluCryptPluginManagerCloseConnection( handle ) ;
-		return 0 ;
-	}else{
-		return 1 ;
-	}
 }
 
 void openVolumeWithPlugIn( const char * device,const char * msg )
@@ -377,6 +386,8 @@ int runTest( void )
 	
 	__printLine() ;
 	createVolume( plainTestVolume,"create a plain type volume using a key: ","-p","plain" ) ;
+		
+	__printLine() ;
 	createVolume( luksTestVolume,"create a luks type volume using a key: ","-p","luks" ) ;
 	
 	__printLine() ;
@@ -389,6 +400,10 @@ int runTest( void )
 	__printLine() ;
 	openVolume( plainTestVolume,"open a plain volume with a keyfile: ","-f" );
 	closeVolume( plainTestVolume,"closing a plain volume: " ) ;
+		
+	__printLine() ;
+	openVolumeWithPlugIn( plainTestVolume,"open a plain volume using a plugin: " ) ; 
+	closeVolume( plainTestVolume,"closing a plain volume: " ) ;
 	
 	__printLine() ;
 	openVolume( luksTestVolume,"open a luks volume with a key: ","-p" );
@@ -397,11 +412,7 @@ int runTest( void )
 	__printLine() ;
 	openVolume( luksTestVolume,"open a luks volume with a keyfile: ","-f" );
 	closeVolume( luksTestVolume,"closing a luks volume: " ) ;
-	
-	__printLine() ;
-	openVolumeWithPlugIn( plainTestVolume,"open a plain volume using a plugin: " ) ; 
-	closeVolume( plainTestVolume,"closing a plain volume: " ) ;
-	
+		
 	__printLine() ;
 	openVolumeWithPlugIn( luksTestVolume,"open a luks volume using a plugin: " ) ; 
 	closeVolume( luksTestVolume,"closing a luks volume: " ) ;
@@ -419,14 +430,15 @@ int runTest( void )
 	
 	__printLine() ;
 	checkForOpenedMappers() ;
-
+	
 	EXIT( 0,NULL ) ;
 	return 0 ;
 }
 
-int main( int argc,char * argv[] )
+int main( void )
 {
-	return argc <= 1 ? runTest() : KeyPlugin( argc,argv ) ; 
+	initGlobal() ;
+	return runTest() ; 
 }
 
  

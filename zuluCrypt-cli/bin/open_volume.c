@@ -32,6 +32,7 @@ static int zuluExit( int st,char * device,char * m_point,stringList_t stl )
 	StringListClearDelete( &stl ) ;
 	
 	switch ( st ){
+		case -1: printf( "ERROR: failed to mount a filesystem\n" ) ;								break ;
 		case 0 : printf( "SUCCESS: Volume opened successfully\n" ) ;								break ;
 		case 1 : printf( "ERROR: failed to mount ntfs file system using ntfs-3g,is ntfs-3g package installed?\n" ) ;		break ;
 		case 2 : printf( "ERROR: there seem to be an open volume accociated with given address\n" );				break ;

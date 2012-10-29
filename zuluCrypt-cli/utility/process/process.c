@@ -22,13 +22,12 @@
 struct Process_t{
 	size_t len ;
 	pid_t pid ;
-	int fd_0[ 2 ] ; /* this pipe is used to write to child process      */
-	int fd_1[ 2 ] ; /* this pipe is used to read from child's std out   */
-	int fd_2[ 2 ] ; /* this pipe is used to read from child's std error */	
+	int fd_0[ 2 ] ; /* this variable is used to write to child process      */
+	int fd_1[ 2 ] ; /* this variable is used to read from child's std out   */
+	int fd_2[ 2 ] ; /* this variable is used to read from child's std error */	
 	int state ;
 	int std_io ;
 	char * exe ;
-	char delimiter ;
 	char ** args ;
 	int args_source ;
 	int signal ;
@@ -37,7 +36,6 @@ struct Process_t{
 	int uid ;
 	pthread_t * thread ;
 };
-
 
 void ProcessSetArgumentList( process_t p,... )
 {	
@@ -147,7 +145,7 @@ pid_t ProcessStart( process_t p )
 		
 	/*
 	 * parent process continues from here
-	 */		
+	 */
 	close( p->fd_0[ 0 ] ) ;
 	close( p->fd_1[ 1 ] ) ;
 	close( p->fd_2[ 1 ] ) ;
@@ -239,7 +237,7 @@ int ProcessState( process_t p )
 
 int ProcessGetOutPut_1( process_t p,char * buffer,int size,int std_io ) 
 {
-	if( p != ProcessVoid )		
+	if( p != ProcessVoid )
 		if( std_io == 1 )
 			return read( p->fd_1[ 1 ],buffer,size ) ;
 		else if( std_io == 2 )
@@ -285,7 +283,6 @@ process_t Process( const char * path )
 	strcpy( p->exe,path ) ;
 	
 	p->std_io = 0 ;
-	p->delimiter = ' '  ;
 	p->args = NULL      ;
 	p->state = HAS_NOT_START;
 	p->signal = -1 ;
@@ -305,12 +302,6 @@ void ProcessSetOptionTimeout( process_t p,int timeout,int signal )
 	
 	p->signal = signal ;
 	p->timeout = timeout ;
-}
-
-void ProcessSetOptionDelimiter( process_t p,char s ) 
-{
-	if( p != ProcessVoid )
-		p->delimiter = s ;
 }
 
 void ProcessDelete( process_t * p ) 
@@ -392,7 +383,8 @@ int ProcessExitStatus( process_t p )
 	waitpid( p->pid,&status,0 ) ;
 	p->state = FINISHED ;
 	p->wait_status = 1 ;
-	return status ;
+	
+	return WIFEXITED( status ) == 0 ? -1 : WEXITSTATUS( status ) ;
 }
 
 void ProcessSetArguments( process_t p,char * const s[] ) 

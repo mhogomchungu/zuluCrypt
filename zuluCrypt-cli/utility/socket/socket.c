@@ -62,7 +62,7 @@ socket_t Socket( int domain,int type,int protocol )
 		s->net = ( struct sockaddr_in  * ) malloc( sizeof( struct sockaddr_in ) ) ;
 		if( s->net == NULL ){
 			free( s ) ;
-			close( fd ) ;			
+			close( fd ) ;
 			return SocketVoid ;
 		}else{
 			s->size = sizeof( struct sockaddr_in ) ;

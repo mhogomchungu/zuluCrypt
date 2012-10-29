@@ -2,7 +2,7 @@
  
  file(WRITE  ${PROJECT_BINARY_DIR}/bin_path.h "\n#define ZULUCRYPTzuluCrypt      \"${CMAKE_INSTALL_PREFIX}/bin/zuluCrypt-cli\"\n")
  file(APPEND ${PROJECT_BINARY_DIR}/bin_path.h "\n#define zuluMount	         \"${CMAKE_INSTALL_PREFIX}/bin/zuluMount-cli\"\n")
- file(APPEND ${PROJECT_BINARY_DIR}/bin_path.h "\n#define ZULUCRYPTTest           \"${CMAKE_INSTALL_PREFIX}/bin/zuluCrypt-test\"\n")
+ file(APPEND ${PROJECT_BINARY_DIR}/bin_path.h "\n#define ZULUCRYPTTest           \"${CMAKE_INSTALL_PREFIX}/bin/zuluCrypt-testKey\"\n")
  
  add_definitions( -I${PROJECT_BINARY_DIR} ) 
  
@@ -196,15 +196,26 @@
 
  add_executable( zuluCrypt-test ../test/zuluCrypt-test.c )
 
+ add_executable( zuluCrypt-testKey ../test/zuluCrypt-testKey.c )
+ 
  set_target_properties( zuluCrypt-test PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIE -pthread  -pedantic " )
  set_target_properties( zuluCrypt-test PROPERTIES LINK_FLAGS "-pie" )
 
- TARGET_LINK_LIBRARIES( zuluCrypt-test zuluCryptPluginManager )
-
+ TARGET_LINK_LIBRARIES( zuluCrypt-test zuluCryptPluginManager StringList )
+ 
+ set_target_properties( zuluCrypt-testKey PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIE -pthread  -pedantic " )
+ set_target_properties( zuluCrypt-testKey PROPERTIES LINK_FLAGS "-pie" )
+ 
+ TARGET_LINK_LIBRARIES( zuluCrypt-testKey zuluCryptPluginManager )
+ 
  install(TARGETS zuluCrypt-test RUNTIME DESTINATION bin            
  PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE 
  )
 
+ install(TARGETS zuluCrypt-testKey RUNTIME DESTINATION bin            
+ PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE 
+ )
+ 
  install(TARGETS zuluCryptPluginManager LIBRARY DESTINATION lib${LIB_SUFFIX} )
  
  install(TARGETS zuluCryptPluginManager-static ARCHIVE DESTINATION lib${LIB_SUFFIX} )
