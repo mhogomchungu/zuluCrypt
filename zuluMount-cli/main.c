@@ -473,6 +473,12 @@ options:\n\
 	return 201 ;
 }
 
+static void ExitOnMemoryExaustion( void )
+{
+	printf( "unexpected exiting because you have run out of memory\n" ) ;
+	exit( 1 ) ;
+}
+
 int main( int argc,char * argv[] )
 {	
 	const char * action     = NULL ;
@@ -490,6 +496,9 @@ int main( int argc,char * argv[] )
 	int status ;
 	
 	string_t k = StringVoid ;
+		
+	StringExitOnMemoryExaustion( &ExitOnMemoryExaustion ) ;
+	StringListExitOnMemoryExaustion( &ExitOnMemoryExaustion ) ;
 	
 	if( _mount_get_opts( argc,argv,&action,&dev,&m_point,&mode,&key_argv,&key_source,&mount_point_option ) != 0 )
 		return _mount_help() ;

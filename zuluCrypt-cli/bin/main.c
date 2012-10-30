@@ -110,6 +110,12 @@ static int zuluExit( int st,stringList_t stl,const char * msg )
 	return st ;
 }
 
+static void ExitOnMemoryExaustion( void )
+{
+	printf( "unexpected exiting because you have run out of memory\n" ) ;
+	exit( 1 ) ;
+}
+
 int main( int argc,char * argv[] )
 {
 	const char * device ;
@@ -123,6 +129,9 @@ int main( int argc,char * argv[] )
 	struct_opts clargs ;
 	
 	uid = getuid();
+	
+	StringExitOnMemoryExaustion( &ExitOnMemoryExaustion ) ;
+	StringListExitOnMemoryExaustion( &ExitOnMemoryExaustion ) ;
 	
 	if( setuid( 0 ) != 0 ){
 		printf( "ERROR: could not setuid(0),check the executable permission\n" ) ;

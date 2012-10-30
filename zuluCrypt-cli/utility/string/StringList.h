@@ -42,6 +42,14 @@ typedef struct StringListType * stringList_t ;
  */
 
 /*
+ * Takes a pointer to a function to be called when memory allocation can not take place
+ * ie if the system has run out of memory and malloc() or realloc() has failed.
+ * This function is optional and "StringListVoid" will be returned on memory exaustion if the function
+ * isnt set.
+ */
+void StringListExitOnMemoryExaustion( void (*)( void ) ) ;
+
+/*
  *  create stringlist handle with a C string. All stringlist operations should happen through this handle 
  */
 stringList_t StringList( const char * cstring ) ;

@@ -43,6 +43,14 @@ extern "C" {
 #define StringVoid ( ( void * ) 0 ) 
 
 /*
+ * Takes a pointer to a function to be called when memory allocation can not take place
+ * ie if the system has run out of memory and malloc() or realloc() has failed.
+ * This function is optional and "StringVoid" will be returned on memory exaustion if the function
+ * isnt set.
+ */
+void StringExitOnMemoryExaustion( void (*)( void ) ) ;
+
+/*
  * string_t type is a  string handle,all string operation should happen through this handle.  
  */
 typedef struct StringType * string_t ;

@@ -44,36 +44,53 @@ struct StringType
 	char * string ; 
 };
 
+static void ( *__StringListErrorFunction__ )( void )  = NULL ;
+
+void StringListExitOnMemoryExaustion( void ( *f )( void ) )
+{
+	__StringListErrorFunction__ = f ;
+}
+
+static stringList_t _StringListError( void )
+{
+	if( __StringListErrorFunction__ != NULL )
+		( *__StringListErrorFunction__ )() ;
+	
+	return StringListVoid ;
+}
+
 static inline string_t * __ExpandMemory( stringList_t stl )
 {
-	string_t * p = stl->stp ;
+	string_t * p ;
 	if( stl->size >= stl->length )
 	{
-		stl->length *= FACTOR ;
-		p = realloc( p,sizeof( string_t ) * ( stl->length ) ) ; 
+		stl->length = stl->length * FACTOR ;
+		p = ( string_t * ) realloc( stl->stp,sizeof( string_t ) * ( stl->length ) ) ; 
+		return p == NULL ? ( string_t * ) _StringListError() : p ;
+	}else{
+		return stl->stp ;
 	}
-	return p ;
 }
 
 stringList_t StringList( const char * cstring )
 {
 	stringList_t stl = ( stringList_t ) malloc( sizeof( struct StringListType ) ) ;
 	if( stl == NULL )
-		return StringListVoid ;
+		return _StringListError() ;
 	
 	stl->stp = ( string_t * ) malloc( sizeof( string_t ) * INIT_SIZE ) ;
 	
 	if( stl->stp == NULL )
 	{
 		free( stl ) ;
-		return StringListVoid ;
+		return _StringListError() ;
 	}	
 	stl->stp[0] = String( cstring ) ;
 	if( stl->stp[0] == StringVoid )
 	{
 		free( stl->stp );
 		free( stl ) ;
-		return StringListVoid ;
+		return _StringListError() ;
 	}
 	
 	stl->size = 1 ;
@@ -90,10 +107,10 @@ string_t * StringListAssign( stringList_t stl )
 	
 	p = __ExpandMemory( stl ) ;
 	
-	if( p == NULL )
+	if( p == StringListVoid )
 		return StringVoid ;
 	
-	stl->stp = p ;	
+	stl->stp = p ;
 	stl->stp[ stl->size ] = StringVoid ;
 	p = &stl->stp[ stl->size ]  ;
 	
@@ -111,10 +128,10 @@ string_t StringListAssignString( stringList_t stl,string_t st )
 	
 	p = __ExpandMemory( stl ) ;
 	
-	if( p == NULL )
-		return st ;
+	if( p == StringListVoid )
+		return StringListVoid ;
 	
-	stl->stp = p ;	
+	stl->stp = p ;
 	stl->stp[ stl->size ] = st;
 	stl->size = stl->size + 1 ;
 	return st ;
@@ -124,14 +141,14 @@ stringList_t StringListInit( void )
 {	
 	stringList_t stl = ( stringList_t ) malloc( sizeof( struct StringListType ) ) ;
 	if( stl == NULL )
-		return StringListVoid ;
+		return _StringListError() ;
 	
 	stl->stp = ( string_t * ) malloc( sizeof( string_t ) * INIT_SIZE ) ;
 	
 	if( stl->stp == NULL )
 	{
 		free( stl ) ;
-		return StringListVoid ;
+		return _StringListError() ;
 	}	
 	
 	stl->size = 0 ;
@@ -143,12 +160,12 @@ stringList_t StringListString( string_t * st )
 {
 	stringList_t stl = ( stringList_t ) malloc( sizeof( struct StringListType ) ) ;
 	if( stl == NULL )
-		return StringListVoid ;
+		return _StringListError() ;
 	stl->stp = ( string_t * ) malloc( sizeof( string_t ) * INIT_SIZE ) ;
 	if( stl->stp == NULL )
 	{
 		free( stl ) ;
-		return StringListVoid ;
+		return _StringListError() ;
 	}	
 	stl->stp[0] = *st ;
 	*st = StringVoid ;
@@ -161,19 +178,19 @@ stringList_t StringListWithSize( char ** c, size_t s )
 {
 	stringList_t stl = ( stringList_t ) malloc( sizeof( struct StringListType ) ) ;	
 	if( stl == NULL )
-		return StringListVoid ;
+		return _StringListError() ;
 	stl->stp = ( string_t * ) malloc( sizeof( string_t ) * INIT_SIZE ) ;
 	if( stl->stp == NULL )
 	{
 		free( stl ) ;
-		return StringListVoid ;
+		return _StringListError() ;
 	}	
 	stl->stp[0] = StringInheritWithSize( c,s ) ;
 	if( stl->stp[0] == StringVoid )
 	{
 		free( stl->stp );
 		free( stl ) ;
-		return StringListVoid ;
+		return _StringListError() ;
 	}
 	stl->size = 1 ;
 	stl->length = INIT_SIZE ;
@@ -192,10 +209,10 @@ stringList_t StringListAppendWithSize( stringList_t stl,char ** c, size_t s )
 
 	p = __ExpandMemory( stl ) ;
 	
-	if( p == NULL )
+	if( p == StringListVoid )
 	{
 		StringDelete( &q ) ;
-		return StringListVoid ;
+		return _StringListError() ;
 	}
 	stl->stp = p ;
 	stl->stp[ stl->size ] = q ;
@@ -215,7 +232,7 @@ stringList_t StringListAppendSize( stringList_t stl,const char * cstring,size_t 
 	if( p == StringVoid )
 	{
 		free( c ) ;
-		return StringListVoid ;
+		return _StringListError() ;
 	}else
 		return p ;
 }
@@ -288,7 +305,7 @@ stringList_t StringListSplit( const char * cstring,char splitter )
 					if( stl != StringListVoid )
 						StringListDelete( &stl ) ;
 					free( e ) ;
-					return StringListVoid ;
+					return _StringListError() ;
 				}else{
 					stl = stx ;
 				}
@@ -318,7 +335,7 @@ ssize_t StringListSize( stringList_t stl )
 
 const char * StringListContentAt( stringList_t stl,size_t index )
 {
-	return index >= stl->size ? NULL : stl->stp[index]->string  ;	
+	return index >= stl->size ? NULL : stl->stp[index]->string  ;
 }
 
 int StringListContentAtEqual( stringList_t stl,size_t index,const char * cstring )
@@ -351,10 +368,10 @@ stringList_t StringListInsertAt( stringList_t stl,const char * cstring,size_t in
 	
 	p = __ExpandMemory( stl ) ;
 	
-	if( p == NULL )
+	if( p == StringListVoid )
 	{
 		StringDelete( &q ) ;
-		return StringListVoid ;
+		return _StringListError() ;
 	}
 	stl->stp = p ;
 	memmove( stl->stp + index + 1,stl->stp + index,size * ( stl->size - index ) ) ;
@@ -373,8 +390,8 @@ stringList_t StringListStringInsertAt( stringList_t stl,string_t * st,size_t ind
 	
 	p = __ExpandMemory( stl ) ;
 	
-	if( p == NULL )
-		return StringListVoid ;
+	if( p == StringListVoid )
+		return _StringListError() ;
 	
 	stl->stp = p ;
 	memmove( stl->stp + index + 1,stl->stp + index,size * ( stl->size - index ) ) ;
@@ -395,7 +412,7 @@ stringList_t StringListInsertAtSize( stringList_t stl,const char * cstring,size_
 	char * c ;
 	string_t * p ;
 	string_t q ;
-	size_t size = sizeof( string_t ) ;	
+	size_t size = sizeof( string_t ) ;
 	
 	if( index >= stl->size )
 		return stl ;
@@ -409,12 +426,12 @@ stringList_t StringListInsertAtSize( stringList_t stl,const char * cstring,size_
 	if( q == StringVoid )
 	{
 		free( c ) ;
-		return StringListVoid ;
+		return _StringListError() ;
 	}
 	
 	p = __ExpandMemory( stl ) ;
 	
-	if( p == NULL )
+	if( p == StringListVoid )
 	{
 		StringDelete( &q ) ;
 		return StringListVoid ;
@@ -433,14 +450,14 @@ stringList_t StringListPrependSize( stringList_t stl,const char * cstring,size_t
 	if( stl == StringListVoid ){
 		c = ( char * ) malloc( sizeof( char ) * ( len + 1 ) ) ;
 		if( c == NULL )
-			return StringListVoid ;
+			return _StringListError() ;
 		memcpy( c,cstring,len ) ;
 		*( c + len ) = '\0' ;
 		p = StringListWithSize( &c,len ) ;
-		if( p == StringVoid )
+		if( p == StringListVoid )
 		{
 			free( c ) ;
-			return StringListVoid ;
+			return _StringListError() ;
 		}else{
 			return p ;
 		}
@@ -468,10 +485,10 @@ stringList_t StringListAppend( stringList_t stl,const char * cstring )
 	
 	stl->stp = __ExpandMemory( stl ) ;
 	
-	if( stl->stp == NULL )
+	if( stl->stp == StringListVoid )
 	{
 		StringDelete( &q ) ;
-		return StringListVoid ;
+		return _StringListError() ;
 	}
 	
 	stl->stp[ stl->size ] = q ;
@@ -494,9 +511,9 @@ ssize_t StringListContains( stringList_t stl,const char * cstring )
 		return -1 ;
 	
 	ind = stl->stp ;
-	for( index = 0 ; index < size ; index++ )	
+	for( index = 0 ; index < size ; index++ )
 		if( strcmp( ind[index]->string,cstring ) == 0 )
-			return index ;	
+			return index ;
 	return -1 ;
 }
 
@@ -625,7 +642,7 @@ void StringListClearDelete( stringList_t * stl )
 		}
 	}
 	free( stx->stp ) ;
-	free( stx );	
+	free( stx );
 }
 
 void StringListMultipleDelete( stringList_t * stl,... ) 
@@ -655,14 +672,14 @@ stringList_t StringListCopy( stringList_t stl )
 	size_t j = stl->size ;
 	stringList_t stx = ( stringList_t ) malloc( sizeof( struct StringListType ) ) ;
 	if( stx == NULL )
-		return StringListVoid ;
+		return _StringListError() ;
 	stx->stp = ( string_t * ) malloc( sizeof( string_t ) * j ) ;
 	if( stx->stp == NULL )
 	{
 		free( stx ) ;
-		return StringListVoid ;
+		return _StringListError() ;
 	}
-	stx->size = stl->size ;	
+	stx->size = stl->size ;
 	for( i = 0 ; i < j ; i++)
 		stx->stp[i] = StringWithSize( stl->stp[i]->string,stl->stp[i]->size ) ;
 	return stx ;
@@ -695,5 +712,5 @@ void StringListPrintLineAt( stringList_t stl,size_t index )
 {
 	if( stl != StringListVoid )
 		if( index < stl->size )
-			printf("%s\n",stl->stp[ index ]->string ) ;	
+			printf("%s\n",stl->stp[ index ]->string ) ;
 }

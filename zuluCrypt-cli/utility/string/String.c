@@ -45,13 +45,31 @@ struct StringType
 	char * string ; 
 };
 
+static void ( *__StringErrorFunction__ )( void )  = NULL ;
+
+void StringExitOnMemoryExaustion( void ( *f )( void ) )
+{
+	__StringErrorFunction__ = f ;
+}
+
+static string_t _StringError( void )
+{
+	if( __StringErrorFunction__ != NULL )
+		( *__StringErrorFunction__ )() ;
+	
+	return StringVoid ;
+}
+
 static inline char * __StringExpandMemory( string_t st,size_t new_size )
 {
+	char * p ;
 	if( new_size >= st->length ) {
 		st->length = new_size * FACTOR ; 
-		return realloc( st->string,st->length ) ;
-	}else
+		p = ( char * ) realloc( st->string,st->length ) ;
+		return p == NULL ? ( char * ) _StringError() : p ;
+	}else{
 		return st->string ;
+	}
 }
 
 void StringDelete( string_t * st )
@@ -134,13 +152,13 @@ string_t StringCopy( string_t st )
 	c = ( char * ) malloc( sizeof( char ) * ( st->size + 1 ) ) ;
 	
 	if( c == NULL )
-		return StringVoid ;
+		return _StringError() ;
 	
 	xt = ( string_t ) malloc ( sizeof( struct StringType ) ) ;
 	
 	if( xt == NULL ){
 		free( c ) ;
-		return StringVoid ;
+		return _StringError() ;
 	}
 	
 	memcpy( c,st->string,st->size + 1 ) ;
@@ -165,13 +183,13 @@ string_t String( const char * cstring )
 	st = ( string_t ) malloc ( sizeof( struct StringType ) ) ;
 	
 	if( st == NULL )
-		return StringVoid ;
+		return _StringError() ;
 	
 	if( size < STRING_INIT_SIZE / 2 ){
 		
 		st->string = ( char * ) malloc( sizeof( char ) * STRING_INIT_SIZE ) ;
 		if ( st->string == NULL )
-			return StringVoid ;
+			return _StringError() ;
 		memcpy( st->string,cstring,size + 1 ) ;
 		st->size = size ;
 		st->length = STRING_INIT_SIZE ;
@@ -190,7 +208,7 @@ string_t String( const char * cstring )
 	
 		memcpy( st->string,cstring,size + 1 ) ;
 	}
-	return st ;	
+	return st ;
 }
 
 void StringReadToBuffer( string_t st,char * buffer,size_t size )
@@ -237,7 +255,7 @@ string_t StringInheritWithSize( char ** data,size_t s )
 	st = ( string_t ) malloc ( sizeof( struct StringType ) ) ;
 	
 	if( st == NULL )
-		return StringVoid ;
+		return _StringError() ;
 	
 	st->size = s ;
 	st->length = s ;
@@ -249,6 +267,8 @@ string_t StringInheritWithSize( char ** data,size_t s )
 string_t StringWithSize( const char * s,size_t len )
 {
 	char * c = ( char * ) malloc( sizeof( char ) * ( len + 1 ) ) ;
+	if( c == NULL )
+		return _StringError() ;
 	memcpy( c,s,len ) ;
 	*( c + len ) = '\0' ;
 	return StringInheritWithSize( &c,len ) ;
@@ -423,7 +443,7 @@ char * StringLengthCopy( string_t st,size_t l )
 	c = ( char * )malloc( sizeof( char ) * ( l + 1 ) ) ;
 	
 	if( c == NULL )
-		return StringVoid ;
+		return ( char * ) _StringError() ;
 	
 	strncpy( c,st->string,l ) ;
 	
@@ -506,15 +526,15 @@ static void Stringsrcs__( string_t st,char x,const char * y,size_t p )
 	k = strlen( y ) ;
 	
 	for( j = p ; j < l ; j++ )
-	{		
+	{
 		for( i = 0 ; i < k ; i++ )
-		{		
+		{
 			if( * ( c + j ) == * ( y + i ) )
-			{				
+			{
 				* ( c + j ) = x ;
 				break ;
 			}
-		}	
+		}
 	}
 }
 
@@ -580,7 +600,7 @@ const char * StringPrepend( string_t st,const char * s )
 	
 	c = __StringExpandMemory( st,st->size + len ) ;
 	
-	if( c != NULL )	{
+	if( c != NULL ){
 		st->string = c ;
 		memmove( st->string + len,st->string,st->size + 1 ) ;
 		memcpy( st->string,s,len ) ;
@@ -604,7 +624,7 @@ const char * StringPrependChar( string_t st,char c )
 
 const char * StringAppend( string_t st,const char * s ) 
 {
-	char * c ;	
+	char * c ;
 	size_t len = strlen( s ) ;
 
 	c = __StringExpandMemory( st,st->size + len ) ;
@@ -710,13 +730,13 @@ const char * StringInsertString( string_t st,size_t x,const char * s )
 	
 	c = __StringExpandMemory( st,len ) ;
 	
-	if( c != NULL )	{
+	if( c != NULL ){
 		st->string = c ;
 		memmove( st->string + len + x,st->string + x,st->size - x + 1 ) ;
 		memcpy( st->string + x,s,len ) ;
 		st->size += len ;
 	}
-	return c ;	
+	return c ;
 }
 
 string_t StringMidString( string_t st,size_t x,size_t y ) 
@@ -725,7 +745,7 @@ string_t StringMidString( string_t st,size_t x,size_t y )
 	
 	c = ( char * ) malloc ( sizeof( char ) * ( y + 1 ) ) ;
 	if( c == NULL )
-		return StringVoid ;
+		return _StringError() ;
 	strncpy( c,st->string + x, y ) ;
 	
 	*( c + y ) = '\0' ;
@@ -752,7 +772,7 @@ static char * StringRS__( string_t st,const char * x,const char * s,size_t p )
 		{
 			memcpy( c,s,j ) ;
 			e = e + j ;
-		}		
+		}
 	}else if( j > k  ){
 		while( ( c = strstr( e,x ) ) != NULL )
 		{
@@ -1086,6 +1106,7 @@ int StringGetFromFile_3( string_t * str,const char * path,size_t offset,size_t l
 	
 	if( c == NULL ) {
 		close( fd ) ;
+		_StringError() ;
 		return 3 ;
 	}
 	
@@ -1098,7 +1119,7 @@ int StringGetFromFile_3( string_t * str,const char * path,size_t offset,size_t l
 	}else{
 		if( ( size_t ) size != length )
 			c = realloc( c,size + 1 ) ;
-	}	
+	}
 	
 	close( fd ) ;
 	
@@ -1153,7 +1174,7 @@ string_t StringGetFromVirtualFile( const char * path )
 {
 	#define SIZE 64
 	
-	char * c ;	
+	char * c ;
 	char * d ;
 	
 	ssize_t i = -1 ;
@@ -1170,7 +1191,7 @@ string_t StringGetFromVirtualFile( const char * path )
 	if( c == NULL )
 	{
 		fclose( f ) ;
-		return StringVoid ;
+		return _StringError() ;
 	}		
 	
 	while( ( j = getc( f ) ) != EOF )
@@ -1186,7 +1207,7 @@ string_t StringGetFromVirtualFile( const char * path )
 			if( c == NULL ){
 				fclose( f ) ;
 				free( d ) ;
-				return StringVoid ;
+				return _StringError() ;
 			}else{
 				c[ i ] = ( char ) j ;
 			}
