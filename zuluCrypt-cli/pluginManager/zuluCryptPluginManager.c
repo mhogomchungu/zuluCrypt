@@ -166,6 +166,8 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	
 	if( stat( pluginPath,&st ) == 0 ) {
 	
+		__debug( "plug in found" ) ;
+		
 		path = String( pass->pw_dir ) ;
 		sockpath = StringAppend( path,"/.zuluCrypt-socket/" ) ;
 	
