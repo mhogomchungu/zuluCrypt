@@ -188,7 +188,7 @@ pid_t ProcessStart( process_t p )
 }
 
 #define FACTOR 2 
-static inline char * __StringExpandMemory( char * buffer,size_t new_size,size_t * buffer_size )
+static inline char * __bufferExpandMemory( char * buffer,size_t new_size,size_t * buffer_size )
 {	
 	char * e ;
 	if( new_size >= *buffer_size ) {
@@ -224,8 +224,10 @@ size_t ProcessGetOutPut( process_t p,char ** data,int std_io )
 	
 	buffer = ( char * ) malloc( sizeof( char ) * BUFFER_SIZE ) ;
 	
-	if( buffer == NULL )
+	if( buffer == NULL ){
+		_ProcessError() ;
 		return 0 ;
+	}
 	
 	if( std_io == STDOUT )
 		fd = p->fd_1[ 0 ] ;
@@ -234,7 +236,7 @@ size_t ProcessGetOutPut( process_t p,char ** data,int std_io )
 	
 	while( 1 ) {
 		count = read( fd,buff,SIZE ) ;
-		buffer = __StringExpandMemory( buffer,size + count,&buffer_size ) ;
+		buffer = __bufferExpandMemory( buffer,size + count,&buffer_size ) ;
 		
 		if( buffer == NULL ){
 			return 0 ;

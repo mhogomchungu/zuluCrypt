@@ -154,8 +154,6 @@ socket_t SocketNetByName( const char * address,int port )
 	return SocketNetByNameWithOptions( address,port,SOCK_STREAM,0 ) ;
 }
 
-int inet_aton( const char *,struct in_addr * ) ;
-
 socket_t SocketNetByIPAddress( const char * address,int port ) 
 {	
 	socket_t s = Socket( AF_INET,SOCK_STREAM,0 ) ;
@@ -430,8 +428,10 @@ size_t SocketGetData_1( socket_t s,char ** e )
 	
 	f = ( char * ) malloc( sizeof( char ) * buff_size ) ;
 	
-	if( f == NULL )
+	if( f == NULL ){
+		_SocketError() ;
 		return 0 ;
+	}
 	
 	fd = s->fd ;
 	
@@ -485,8 +485,10 @@ size_t SocketGetData( socket_t s,char ** e,size_t len )
 
 	f = ( char * ) malloc( sizeof( char ) * buff_size ) ;
 	
-	if( f == NULL )
+	if( f == NULL ){
+		_SocketError() ;
 		return 0 ;
+	}
 	
 	fd = s->fd ;
 	
