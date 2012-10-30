@@ -32,27 +32,44 @@ struct SocketType_t
 	struct sockaddr_in * net ;
 };
 
+static void ( *__SocketErrorFunction__ )( void )  = NULL ;
+
+void SocketExitOnMemoryExaustion( void ( *f )( void ) )
+{
+	__SocketErrorFunction__ = f ;
+}
+
+static socket_t _SocketError( void )
+{
+	if( __SocketErrorFunction__ != NULL )
+		( *__SocketErrorFunction__ )() ;
+	
+	return SocketVoid ;
+}
+
 socket_t Socket( int domain,int type,int protocol ) 
 {
 	socket_t s ;
-	int fd = socket( domain,type,protocol ) ;	
+	int fd = socket( domain,type,protocol ) ;
 	
 	if( fd == -1 )
 		return SocketVoid ;
 
 	s = ( socket_t ) malloc( sizeof( struct SocketType_t ) ) ;
-	
+		
 	if( s == NULL ){
 		close( fd ) ;
-		return SocketVoid ;
+		return _SocketError() ;
 	}
 
+	memset( s,'\0',sizeof( struct SocketType_t ) ) ;
+	
 	if( domain == AF_UNIX ){
 		s->local = ( struct sockaddr_un * ) malloc( sizeof( struct sockaddr_un ) ) ;
 		if( s->local == NULL ){
 			free( s ) ;
 			close( fd ) ;
-			return SocketVoid ;
+			return _SocketError() ;
 		}else{
 			s->size = sizeof( struct sockaddr_un ) ;
 			memset( s->local,'\0',s->size ) ;
@@ -63,7 +80,7 @@ socket_t Socket( int domain,int type,int protocol )
 		if( s->net == NULL ){
 			free( s ) ;
 			close( fd ) ;
-			return SocketVoid ;
+			return _SocketError() ;
 		}else{
 			s->size = sizeof( struct sockaddr_in ) ;
 			memset( s->net,'\0',s->size ) ;
@@ -178,7 +195,7 @@ socket_t SocketAccept( socket_t s )
 	socket_t x = ( socket_t ) malloc( sizeof( struct SocketType_t ) ) ;
 	
 	if( x == NULL )
-		return SocketVoid ;
+		return _SocketError() ;
 	
 	memset( x,'\0',sizeof( struct SocketType_t ) ) ;
 	
@@ -186,7 +203,7 @@ socket_t SocketAccept( socket_t s )
 		x->local = ( struct sockaddr_un * ) malloc( sizeof( struct sockaddr_un ) ) ;
 		if( x->local == NULL ){
 			free( x ) ;
-			x = SocketVoid ;
+			x = _SocketError() ;
 		}else{
 			memset( x->local,'\0',sizeof( struct sockaddr_un ) ) ;
 			x->fd = accept( s->fd,( struct sockaddr * )x->local,&x->size ) ;
@@ -209,7 +226,7 @@ socket_t SocketAccept( socket_t s )
 		x->net = ( struct sockaddr_in * ) malloc( sizeof( struct sockaddr_in ) ) ;
 		if( x->net == NULL ){
 			free( x ) ;
-			x = SocketVoid ;
+			x = _SocketError() ;
 		}else{
 			memset( x->net,'\0',sizeof( struct sockaddr_in ) ) ; 
 			x->fd = accept( s->fd,( struct sockaddr * )x->net,&x->size ) ;
@@ -381,9 +398,17 @@ ssize_t SocketGetData_2( socket_t s,char * buffer,size_t len )
 
 static inline char * __expandBuffer( char * buffer,size_t new_size,size_t * buff_size )
 {
+	char * e ;
 	if( new_size >= *buff_size ){
 		*buff_size = *buff_size * FACTOR ;
-		return realloc( buffer,*buff_size ) ;
+		e = realloc( buffer,*buff_size ) ;
+		if( e == NULL ){
+			free( buffer ) ;
+			_SocketError() ;
+			return NULL ;
+		}else{
+			return e ;
+		}
 	}else{
 		return buffer ;
 	}
@@ -418,10 +443,8 @@ size_t SocketGetData_1( socket_t s,char ** e )
 		
 		d = __expandBuffer( f,total + result,&buff_size ) ;
 		
-		if( d == NULL ){
-			free( f ) ;
+		if( d == NULL )
 			return 0 ;
-		}
 		
 		f = d ;
 		
@@ -430,9 +453,15 @@ size_t SocketGetData_1( socket_t s,char ** e )
 	}
 	
 	if( total ){
-		f = ( char * ) realloc( f,total + 1 ) ;
-		f[ total ] = '\0' ;
-		*e = f ;
+		d = ( char * ) realloc( f,total + 1 ) ;
+		if( d == NULL ){
+			free( f ) ;
+			_SocketError() ;
+			return 0 ;
+		}else{
+			d[ total ] = '\0' ;
+			*e = d ;
+		}
 	}else{
 		free( f ) ;
 	}
@@ -469,10 +498,8 @@ size_t SocketGetData( socket_t s,char ** e,size_t len )
 		
 		d = __expandBuffer( f,total + result,&buff_size ) ;
 		
-		if( d == NULL ){
-			free( f ) ;
+		if( d == NULL )
 			return 0 ;
-		}
 		
 		f = d ;
 		
@@ -486,9 +513,15 @@ size_t SocketGetData( socket_t s,char ** e,size_t len )
 	}
 	
 	if( total ){
-		f = ( char * ) realloc( f,total + 1 ) ;
-		f[ total ] = '\0' ;
-		*e = f ;
+		d = ( char * ) realloc( f,total + 1 ) ;
+		if( d == NULL ){
+			free( f ) ;
+			_SocketError() ;
+			return 0 ;
+		}else{
+			d[ total ] = '\0' ;
+			*e = d ;
+		}
 	}else{
 		free( f ) ;
 	}

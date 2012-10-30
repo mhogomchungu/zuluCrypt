@@ -47,6 +47,14 @@ extern "C" {
 typedef struct SocketType_t * socket_t ;
 
 /*
+ * Takes a pointer to a function to be called when memory allocation can not take place
+ * ie if the system has run out of memory and malloc() or realloc() has failed.
+ * This function is optional and "SocketVoid" will be returned on memory exaustion if the function
+ * isnt set.
+ */
+void SocketExitOnMemoryExaustion( void (*)( void ) ) ;
+
+/*
  * creates a local unix socket
  * SocketVoid is returned on error
  * socket is created with default type of SOCK_STREAM and protocol value of 0

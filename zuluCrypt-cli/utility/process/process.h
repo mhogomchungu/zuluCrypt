@@ -34,7 +34,7 @@
 extern "C" {
 #endif
 	
-typedef struct Process_t * process_t ;
+typedef struct ProcessType_t * process_t ;
 
 #define ProcessVoid ( ( void * ) 0 ) 
 
@@ -53,6 +53,14 @@ typedef struct Process_t * process_t ;
  * }
  * 
  */
+
+/*
+ * Takes a pointer to a function to be called when memory allocation can not take place
+ * ie if the system has run out of memory and malloc() or realloc() has failed.
+ * This function is optional and "ProcessVoid" will be returned on memory exaustion if the function
+ * isnt set.
+ */
+void ProcessExitOnMemoryExaustion( void (*)( void ) ) ;
 
 /*
  * create a handle to a process that will be started.

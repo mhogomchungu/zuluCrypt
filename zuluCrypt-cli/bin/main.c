@@ -132,6 +132,8 @@ int main( int argc,char * argv[] )
 	
 	StringExitOnMemoryExaustion( &ExitOnMemoryExaustion ) ;
 	StringListExitOnMemoryExaustion( &ExitOnMemoryExaustion ) ;
+	ProcessExitOnMemoryExaustion( &ExitOnMemoryExaustion ) ;
+	SocketExitOnMemoryExaustion( &ExitOnMemoryExaustion ) ;
 	
 	if( setuid( 0 ) != 0 ){
 		printf( "ERROR: could not setuid(0),check the executable permission\n" ) ;

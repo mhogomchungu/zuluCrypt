@@ -19,8 +19,7 @@
 
 #include "process.h"
 
-struct Process_t{
-	size_t len ;
+struct ProcessType_t{
 	pid_t pid ;
 	int fd_0[ 2 ] ; /* this variable is used to write to child process      */
 	int fd_1[ 2 ] ; /* this variable is used to read from child's std out   */
@@ -37,10 +36,26 @@ struct Process_t{
 	pthread_t * thread ;
 };
 
+static void ( *__ProcessErrorFunction__ )( void )  = NULL ;
+
+void ProcessExitOnMemoryExaustion( void ( *f )( void ) )
+{
+	__ProcessErrorFunction__ = f ;
+}
+
+static process_t _ProcessError( void )
+{
+	if( __ProcessErrorFunction__ != NULL )
+		( *__ProcessErrorFunction__ )() ;
+	
+	return ProcessVoid ;
+}
+
 void ProcessSetArgumentList( process_t p,... )
 {	
 	char * entry ;
 	char ** args  ;
+	char ** e ;
 	size_t size = sizeof( char * ) ;
 	int index = 0 ;
 	va_list list ;
@@ -49,6 +64,11 @@ void ProcessSetArgumentList( process_t p,... )
 		return ;
 	
 	args = ( char ** )malloc( size ) ;
+	if( args == NULL ){
+		_ProcessError() ;
+		return ;
+	}
+	
 	args[ index ] = p->exe ;
 	index++ ;
 	
@@ -56,7 +76,15 @@ void ProcessSetArgumentList( process_t p,... )
 	
 	while( 1 ){
 		entry = va_arg( list,char * ) ;
-		args = ( char ** )realloc( args,( 1 + index ) * size ) ;
+		e = ( char ** )realloc( args,( 1 + index ) * size ) ;
+		
+		if( e == NULL ){
+			free( args ) ;
+			_ProcessError() ;
+			return ;
+		}else{
+			args = e ;
+		}
 		
 		if( entry == '\0' ){
 			args[ index ] = ( char * )0 ;
@@ -90,10 +118,11 @@ static void __ProcessStartTimer( process_t p )
 {
 	p->thread = ( pthread_t * ) malloc( sizeof( pthread_t ) ) ;
 	
-	if( p->thread == NULL )
-		return  ;
-		
-	pthread_create( p->thread,NULL,__timer,( void * ) p );	
+	if( p->thread == NULL ){
+		_ProcessError()  ;
+	}else{
+		pthread_create( p->thread,NULL,__timer,( void * ) p );
+	}
 }
 
 pid_t ProcessStart( process_t p ) 
@@ -161,9 +190,17 @@ pid_t ProcessStart( process_t p )
 #define FACTOR 2 
 static inline char * __StringExpandMemory( char * buffer,size_t new_size,size_t * buffer_size )
 {	
+	char * e ;
 	if( new_size >= *buffer_size ) {
 		*buffer_size = new_size * FACTOR ; 
-		return realloc( buffer,*buffer_size ) ;
+		e = ( char * )realloc( buffer,*buffer_size ) ;
+		if( e == NULL ){
+			free( buffer )  ;
+			_ProcessError() ; 
+			return NULL     ;
+		}else{
+			return e ;
+		}
 	}else{
 		return buffer ;
 	}
@@ -197,13 +234,11 @@ size_t ProcessGetOutPut( process_t p,char ** data,int std_io )
 	
 	while( 1 ) {
 		count = read( fd,buff,SIZE ) ;
-		e = __StringExpandMemory( buffer,size + count,&buffer_size ) ;
+		buffer = __StringExpandMemory( buffer,size + count,&buffer_size ) ;
 		
-		if( e == NULL ){
-			free( buffer ) ;
+		if( buffer == NULL ){
 			return 0 ;
 		}else{
-			buffer = e ;
 			memcpy( buffer + size,buff,count ) ;
 		}
 		
@@ -217,6 +252,7 @@ size_t ProcessGetOutPut( process_t p,char ** data,int std_io )
 		e = realloc( buffer,size + 1 ) ;
 		if( e == NULL ){
 			free( buffer ) ;
+			_ProcessError() ;
 			return 0 ;
 		}else{
 			e[ size ] = '\0' ;
@@ -260,24 +296,26 @@ process_t Process( const char * path )
 {
 	process_t p  ;
 	
+	size_t len ; 
+	
 	if( path == NULL )
 		return ProcessVoid;
 	
-	p =  ( process_t ) malloc( sizeof( struct Process_t ) ) ;
+	len = strlen( path ) + 1 ;
+	
+	p =  ( process_t ) malloc( sizeof( struct ProcessType_t ) ) ;
 	
 	if( p == NULL )
-		return ProcessVoid ;
+		return _ProcessError() ;
 	
-	p->len = strlen( path ) ;
-	
-	p->exe = ( char * ) malloc( sizeof( char ) * ( p->len + 1 ) ) ;
+	p->exe = ( char * ) malloc( sizeof( char ) * len ) ;
 
 	if( p->exe == NULL ){
 		free( p ) ;
-		return ProcessVoid ;
+		return _ProcessError() ;
 	}
 	
-	strcpy( p->exe,path ) ;
+	memcpy( p->exe,path,len ) ;
 	
 	p->std_io = 0 ;
 	p->args = NULL      ;
