@@ -38,6 +38,12 @@
 #include "plugin_path.h"
 #include <stdio.h>
 
+void __debug( const char * msg )
+{
+	printf( "%s\n",msg ) ;
+	fflush( stdout );
+}
+
 size_t zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid )
 {	
 	size_t dataLength = 0 ;
@@ -47,14 +53,19 @@ size_t zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid
 	socket_t server = SocketLocal( sockpath ) ;
 	
 	if( server != SocketVoid ){
+		__debug( "created socketLocal server" ) ;
 		if( SocketBind( server ) ){
+			__debug( "socket is bounded" ) ;
 			chown( sockpath,uid,uid ) ;
 			chmod( sockpath,S_IRWXU | S_IRWXG | S_IRWXO ) ;
 			if( SocketListen( server ) ){
 				client = SocketAcceptWithTimeOut( server,10 ) ;
 				if( client != SocketVoid ){
+					__debug( "server received a client" ) ;
 					dataLength = SocketGetData( client,&buffer,INTMAXKEYZISE ) ;
 					*key = StringInheritWithSize( &buffer,dataLength ) ;
+					if( dataLength > 0 )
+						__debug( "key received" ) ;
 					SocketClose( &client ) ;
 				}
 			}
@@ -71,6 +82,7 @@ void * zuluCryptPluginManagerOpenConnection( const char * sockpath )
 	for( i = 10 ; i > 0 ; i-- ){
 		client = SocketLocal( sockpath ) ;
 		if( SocketConnect( &client ) ){
+			__debug( "client connected to server" ) ;
 			return ( void * ) client ;
 		}else{
 			sleep( 1 ) ;
@@ -126,6 +138,8 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	const char * sockpath ;
 	const char * pluginPath ;
 	
+	char * debug = NULL ;
+	
 	string_t key   = StringVoid ;
 	string_t plugin_path = StringVoid ;
 	string_t path  = StringVoid ;
@@ -180,6 +194,11 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		if( pluginIsGpG( pluginPath ) )
 			ProcessTerminate( p ) ;
 	
+		ProcessGetOutPut( p,&debug,STDOUT ) ;
+		if( debug ){
+			__debug( debug ) ;
+			free( debug ) ;
+		}
 		ProcessDelete( &p ) ;
 	}
 	
