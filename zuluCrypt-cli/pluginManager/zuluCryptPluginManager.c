@@ -38,7 +38,7 @@
 #include "plugin_path.h"
 #include <stdio.h>
 
-void __debug( const char * msg )
+static void __debug( const char * msg )
 {
 	printf( "%s\n",msg ) ;
 	fflush( stdout );
@@ -59,6 +59,7 @@ size_t zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid
 			chown( sockpath,uid,uid ) ;
 			chmod( sockpath,S_IRWXU | S_IRWXG | S_IRWXO ) ;
 			if( SocketListen( server ) ){
+				__debug( "socket is listening" ) ;
 				client = SocketAcceptWithTimeOut( server,10 ) ;
 				if( client != SocketVoid ){
 					__debug( "server received a client" ) ;

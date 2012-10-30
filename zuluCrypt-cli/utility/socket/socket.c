@@ -32,6 +32,12 @@ struct SocketType_t
 	struct sockaddr_in * net ;
 };
 
+static void __debug( const char * msg )
+{
+	printf( "%s\n",msg ) ;
+	fflush( stdout );
+}
+
 static void ( *__SocketErrorFunction__ )( void )  = NULL ;
 
 void SocketExitOnMemoryExaustion( void ( *f )( void ) )
@@ -196,7 +202,7 @@ socket_t SocketAccept( socket_t s )
 		return _SocketError() ;
 	
 	memset( x,'\0',sizeof( struct SocketType_t ) ) ;
-	
+	__debug( "accepting a socket" ) ;
 	if( s->domain == AF_UNIX ){
 		x->local = ( struct sockaddr_un * ) malloc( sizeof( struct sockaddr_un ) ) ;
 		if( x->local == NULL ){
@@ -206,10 +212,12 @@ socket_t SocketAccept( socket_t s )
 			memset( x->local,'\0',sizeof( struct sockaddr_un ) ) ;
 			x->fd = accept( s->fd,( struct sockaddr * )x->local,&x->size ) ;
 			if( x->fd == -1 ){
+				__debug( "failed to accept a socket" ) ;
 				free( x->local ) ;
 				free( x ) ;
 				x = SocketVoid ;
 			}else{
+				__debug( "a socket accepted" ) ;
 				x->domain = AF_UNIX ;
 				/*
 					x->local->sun_family = AF_UNIX ;
@@ -291,8 +299,13 @@ static inline int __SocketTimeOut( socket_t s,int time,int mode )
 socket_t SocketAcceptWithTimeOut( socket_t s,int time ) 
 {	
 	socket_t client = SocketVoid ;
-	if( __SocketTimeOut( s,time,READ ) )
+	int st = __SocketTimeOut( s,time,READ ) ;
+	if( st ){
+		__debug( "socket timed out with a connection request" ) ;
 		client = SocketAccept( s ) ;
+	}else{
+		__debug( "socket timed out without a connection request" ) ;
+	}
 	return client ;
 }
 
@@ -307,9 +320,14 @@ static inline void __SocketClose( socket_t * p )
 	close( fd ) ;
 	
 	if( s->domain == AF_UNIX ) {
-		if( s->socket_server )
+		if( s->socket_server ){
 			unlink( s->local->sun_path ) ;
+			__debug( "closed a server sockket" ) ;
+		}else{
+			__debug( "closed a client sockket" ) ;
+		}
 		free( s->local ) ;
+		
 	}else{
 		free( s->net ) ;
 	}
