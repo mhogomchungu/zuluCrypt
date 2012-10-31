@@ -30,6 +30,7 @@ set (SRC 	main.cpp
 		../zuluCrypt-gui/openvolumereadonly.cpp 
 		../zuluCrypt-gui/openmountpointinfilemanager.cpp
 		../zuluCrypt-gui/savemountpointpath.cpp
+		../zuluCrypt-gui/utility.cpp
 )
 
 find_package( Qt4 REQUIRED )
@@ -44,7 +45,7 @@ QT4_ADD_RESOURCES( TRAY_RC_SRCS icon.qrc)
 
 INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
 
-add_executable( zuluMount-gui ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )			
+add_executable( zuluMount-gui ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
 
 TARGET_LINK_LIBRARIES( zuluMount-gui ${QT_LIBRARIES} ${blkid} ${zuluPluginManager} -lQtNetwork )
 

@@ -194,13 +194,26 @@ void keyDialog::slotMountComplete( int st,QString m )
 {
 	m_working = false ;
 	if( st == 0 ){
-		managepartitionthread * mpt = new managepartitionthread() ;
-		mpt->setDevice( m_table->item( m_table->currentRow(),0 )->text() );
-		connect( mpt,SIGNAL( signalProperties( QString ) ),this,SLOT( volumeMiniProperties( QString ) ) ) ;
-		mpt->startAction( QString( "volumeMiniProperties" ) ) ;
+		if( utility::mapperPathExists( m_path ) ) {
+			/*
+			 * The volume is reported as opened and it actually is
+			 */
+			managepartitionthread * mpt = new managepartitionthread() ;
+			mpt->setDevice( m_table->item( m_table->currentRow(),0 )->text() );
+			connect( mpt,SIGNAL( signalProperties( QString ) ),this,SLOT( volumeMiniProperties( QString ) ) ) ;
+			mpt->startAction( QString( "volumeMiniProperties" ) ) ;
 
-		openmountpointinfilemanager * omp = new openmountpointinfilemanager( m_ui->lineEditMountPoint->text() ) ;
-		omp->start();
+			openmountpointinfilemanager * omp = new openmountpointinfilemanager( m_ui->lineEditMountPoint->text() ) ;
+			omp->start();
+		}else{
+			/*
+			 * The volume is reported as opened but it isnt,possible reason is a backe end crash
+			 */
+
+			DialogMsg m( this ) ;
+
+			m.ShowUIOK( QString( "ERROR" ),QString( "An error has occured and the volume could not be opened" ) );
+		}
 	}else{
 		DialogMsg msg( this ) ;
 

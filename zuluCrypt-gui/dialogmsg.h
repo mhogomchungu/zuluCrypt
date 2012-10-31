@@ -26,6 +26,7 @@
 #include <QCheckBox>
 
 //#include "../zuluCrypt-gui/zulucrypt.h"
+#include "../zuluCrypt-gui/utility.h"
 
 namespace Ui {
 class DialogMsg;
