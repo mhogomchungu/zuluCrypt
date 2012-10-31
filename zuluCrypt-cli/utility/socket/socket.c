@@ -200,7 +200,48 @@ int SocketBind( socket_t s )
 	}
 }
 
-socket_t SocketAccept( socket_t s ) 
+static inline socket_t _SocketAcceptLocal( socket_t s )
+{	
+	socket_t x = ( socket_t ) malloc( sizeof( struct SocketType_t ) ) ;
+	
+	__debug( "accepting a local socket" ) ;
+	
+	if( x == NULL )
+		return _SocketError() ;
+	
+	memset( x,'\0',sizeof( struct SocketType_t ) ) ;
+	
+	x->local = ( struct sockaddr_un * ) malloc( sizeof( struct sockaddr_un ) ) ;
+	
+	if( x->local == NULL ){
+		free( x ) ;
+		x = _SocketError() ;
+	}else{
+		memset( x->local,'\0',sizeof( struct sockaddr_un ) ) ;
+		x->fd = accept( s->fd,( struct sockaddr * )x->local,&x->size ) ;
+		if( x->fd == -1 ){
+			__debug1( "failed to accept a local socket" ) ;
+			free( x->local ) ;
+			free( x ) ;
+			x = SocketVoid ;
+		}else{
+			__debug( "a local socket accepted" ) ;
+			x->domain = AF_UNIX ;
+			/*
+			 *		x->local->sun_family = AF_UNIX ;
+			 */
+			x->type = SOCK_STREAM ;
+			x->protocol = 0 ;
+			x->cmax = 1 ;
+			x->socket_server = 0 ;
+		}
+	}
+	
+	return x ;
+}
+
+
+static inline socket_t _SocketAcceptNet( socket_t s )
 {
 	socket_t x = ( socket_t ) malloc( sizeof( struct SocketType_t ) ) ;
 	
@@ -208,58 +249,40 @@ socket_t SocketAccept( socket_t s )
 		return _SocketError() ;
 	
 	memset( x,'\0',sizeof( struct SocketType_t ) ) ;
-	__debug( "accepting a socket" ) ;
-	if( s->domain == AF_UNIX ){
-		x->local = ( struct sockaddr_un * ) malloc( sizeof( struct sockaddr_un ) ) ;
-		if( x->local == NULL ){
-			free( x ) ;
-			x = _SocketError() ;
-		}else{
-			memset( x->local,'\0',sizeof( struct sockaddr_un ) ) ;
-			x->fd = accept( s->fd,( struct sockaddr * )x->local,&x->size ) ;
-			if( x->fd == -1 ){
-				__debug1( "failed to accept a socket" ) ;
-				free( x->local ) ;
-				free( x ) ;
-				x = SocketVoid ;
-			}else{
-				__debug( "a socket accepted" ) ;
-				x->domain = AF_UNIX ;
-				/*
-					x->local->sun_family = AF_UNIX ;
-				*/
-				x->type = SOCK_STREAM ;
-				x->protocol = 0 ;
-				x->cmax = 1 ;
-				x->socket_server = 0 ;
-			}
-		}
+	
+	x->net = ( struct sockaddr_in * ) malloc( sizeof( struct sockaddr_in ) ) ;
+	if( x->net == NULL ){
+		free( x ) ;
+		x = _SocketError() ;
 	}else{
-		x->net = ( struct sockaddr_in * ) malloc( sizeof( struct sockaddr_in ) ) ;
-		if( x->net == NULL ){
+		memset( x->net,'\0',sizeof( struct sockaddr_in ) ) ; 
+		x->fd = accept( s->fd,( struct sockaddr * )x->net,&x->size ) ;
+		if( x->fd == -1 ){
+			free( x->net ) ;
 			free( x ) ;
-			x = _SocketError() ;
+			x = SocketVoid ;
 		}else{
-			memset( x->net,'\0',sizeof( struct sockaddr_in ) ) ; 
-			x->fd = accept( s->fd,( struct sockaddr * )x->net,&x->size ) ;
-			if( x->fd == -1 ){
-				free( x->net ) ;
-				free( x ) ;
-				x = SocketVoid ;
-			}else{
-				x->domain = AF_INET ;
-				/*
-					x->net->sin_family = AF_INET ;
-				*/	
-				x->type = SOCK_STREAM ;
-				x->protocol = 0 ;
-				x->cmax = 1 ;
-				x->socket_server = 0 ;
-			}
+			x->domain = AF_INET ;
+			/*
+			 *		x->net->sin_family = AF_INET ;
+			 */	
+			x->type = SOCK_STREAM ;
+			x->protocol = 0 ;
+			x->cmax = 1 ;
+			x->socket_server = 0 ;
 		}
 	}
 	
 	return x ;
+}
+
+socket_t SocketAccept( socket_t s ) 
+{
+	switch( s->domain ){
+		case AF_UNIX : return _SocketAcceptLocal( s ) ;
+		case AF_INET : return _SocketAcceptNet( s ) ;
+		default      : return SocketVoid ;
+	}
 }
 
 int SocketIsBlocking( socket_t s ) 
@@ -328,9 +351,9 @@ static inline void __SocketClose( socket_t * p )
 	if( s->domain == AF_UNIX ) {
 		if( s->socket_server ){
 			unlink( s->local->sun_path ) ;
-			__debug( "closed a server sockket" ) ;
+			__debug( "closed a server socket" ) ;
 		}else{
-			__debug( "closed a client sockket" ) ;
+			__debug( "closed a client socket" ) ;
 		}
 		free( s->local ) ;
 		

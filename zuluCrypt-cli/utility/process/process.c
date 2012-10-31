@@ -270,7 +270,7 @@ int ProcessState( process_t p )
 	return p != ProcessVoid ? p->state : -1 ;
 }
 
-int ProcessGetOutPut_1( process_t p,char * buffer,int size,int std_io ) 
+ssize_t ProcessGetOutPut_1( process_t p,char * buffer,int size,int std_io ) 
 {
 	if( p != ProcessVoid ){
 		switch( std_io ){

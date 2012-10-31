@@ -159,7 +159,7 @@ size_t ProcessGetOutPut( process_t,char ** data,int stdio ) ;
 /*
  * read size number of bytes from the ourput of the forket process.
  */
-int ProcessGetOutPut_1( process_t,char * buffer,int size,int stdio ) ;
+ssize_t ProcessGetOutPut_1( process_t,char * buffer,int size,int stdio ) ;
 
 #ifdef __cplusplus
 }
