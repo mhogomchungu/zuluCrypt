@@ -38,6 +38,12 @@ static void __debug( const char * msg )
 	fflush( stdout );
 }
 
+static void __debug1( const char * msg )
+{
+	perror( msg ) ;
+	fflush( stdout );
+}
+
 static void ( *__SocketErrorFunction__ )( void )  = NULL ;
 
 void SocketExitOnMemoryExaustion( void ( *f )( void ) )
@@ -212,7 +218,7 @@ socket_t SocketAccept( socket_t s )
 			memset( x->local,'\0',sizeof( struct sockaddr_un ) ) ;
 			x->fd = accept( s->fd,( struct sockaddr * )x->local,&x->size ) ;
 			if( x->fd == -1 ){
-				__debug( "failed to accept a socket" ) ;
+				__debug1( "failed to accept a socket" ) ;
 				free( x->local ) ;
 				free( x ) ;
 				x = SocketVoid ;
@@ -304,7 +310,7 @@ socket_t SocketAcceptWithTimeOut( socket_t s,int time )
 		__debug( "socket timed out with a connection request" ) ;
 		client = SocketAccept( s ) ;
 	}else{
-		__debug( "socket timed out without a connection request" ) ;
+		__debug1( "socket timed out without a connection request" ) ;
 	}
 	return client ;
 }
