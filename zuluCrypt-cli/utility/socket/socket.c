@@ -83,7 +83,7 @@ socket_t Socket( int domain,int type,int protocol )
 			close( fd ) ;
 			return _SocketError() ;
 		}else{
-			s->size = sizeof( struct sockaddr_un ) ;
+			s->size = ( socklen_t )sizeof( struct sockaddr_un ) ;
 			memset( s->local,'\0',s->size ) ;
 			s->local->sun_family = AF_UNIX ;
 		}
@@ -94,7 +94,7 @@ socket_t Socket( int domain,int type,int protocol )
 			close( fd ) ;
 			return _SocketError() ;
 		}else{
-			s->size = sizeof( struct sockaddr_in ) ;
+			s->size = ( socklen_t )sizeof( struct sockaddr_in ) ;
 			memset( s->net,'\0',s->size ) ;
 			s->net->sin_family = AF_INET ;
 		}
