@@ -423,7 +423,7 @@ int SocketIsBlocking( socket_t s )
 #define READ  1
 #define WRITE 0
 
-static inline int __SocketTimeOut( socket_t s,int time,int mode )
+static inline int __SocketTimeOut( socket_t s,time_t time,int mode )
 {
 	int fd = s->fd ;
 	fd_set readfd ;
@@ -449,7 +449,7 @@ static inline int __SocketTimeOut( socket_t s,int time,int mode )
 	}
 }
 
-socket_t SocketAcceptWithTimeOut( socket_t s,int time ) 
+socket_t SocketAcceptWithTimeOut( socket_t s,time_t time ) 
 {	
 	socket_t client = SocketVoid ;
 	int st = __SocketTimeOut( s,time,READ ) ;

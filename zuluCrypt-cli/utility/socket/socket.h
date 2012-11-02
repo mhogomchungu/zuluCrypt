@@ -143,7 +143,7 @@ socket_t SocketAccept( socket_t ) ;
  *  SocketVoid is returned if time time expire or on error.
  *  A socket_t object is returned on success.
  */
-socket_t SocketAcceptWithTimeOut( socket_t,int time ) ;
+socket_t SocketAcceptWithTimeOut( socket_t,time_t time ) ;
 
 /*
  * connect to a server a client socket is to connect to
