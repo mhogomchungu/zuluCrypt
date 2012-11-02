@@ -70,13 +70,15 @@ socket_t SocketLocal( const char * address ) ;
 socket_t SocketLocalWithOptions( const char * address,int type,int protocol ) ;
 
 /*
- * create an internet socket with an address of "address" and at port number "port"
+ * create an IPv4 internet socket with an address of "address" and at port number "port"
  * eg socket_t socket = SocketNetByName( "google.com",80 ) ;
+ * 
+ * address could be something like "google.com" or "192.168.1.1"
  * 
  * SocketVoid is returned on error 
  * socket is created with default type of SOCK_STREAM and protocol value of 0 
  */
-socket_t SocketNetByName( const char * address,int port ) ;
+socket_t SocketNet( const char * address,int port ) ;
 
 /*
  * create an internet socket with an address of "address" and at port number "port"
@@ -87,16 +89,29 @@ socket_t SocketNetByName( const char * address,int port ) ;
  * 
  * SocketVoid is returned on error 
  */
-socket_t SocketNetByNameWithOptions( const char * address,int port,int type,int protocol ) ;
+socket_t SocketNetWithOptions( const char * address,int port,int type,int protocol ) ;
 
 /*
- * create an internet socket with an IP address of "address" and at port number "port"
- * eg socket_t socket = SocketNetByName( "127.0.0.1",80 ) ; 
+ * create an IPv6 internet socket with an address of "address" and at port number "port"
+ * eg socket_t socket = SocketNet6( "google.com",80 ) ;
+ * 
+ * address could be something like "google.com" 
  * 
  * SocketVoid is returned on error 
  * socket is created with default type of SOCK_STREAM and protocol value of 0 
  */
-socket_t SocketNetByIPAddress( const char * address,int port ) ;
+socket_t SocketNet6( const char * address,int port ) ;
+
+/*
+ * create an IPv6 internet socket with an address of "address" and at port number "port"
+ * eg socket_t socket = SocketNetWithOptions6( "google.com",80,SOCK_STREAM,0 ) ;
+ * 
+ * type is the second argument to socket()
+ * protocol is the third argument to socket()
+ * 
+ * SocketVoid is returned on error 
+ */
+socket_t SocketNetWithOptions6( const char * address,int port,int type,int protocol ) ;
 
 /*
  * return an address associated with the socket.

@@ -29,7 +29,9 @@ struct SocketType_t
 	socklen_t size ;
 	int fd ;
 	struct sockaddr_un * local ;
-	struct sockaddr_in * net ;
+	struct sockaddr_in * net   ;
+	struct sockaddr_in6 * net6 ;
+	char * inetAddress ;
 };
 
 static void __debug( const char * msg )
@@ -84,19 +86,32 @@ socket_t Socket( int domain,int type,int protocol )
 			return _SocketError() ;
 		}else{
 			s->size = ( socklen_t )sizeof( struct sockaddr_un ) ;
-			memset( s->local,'\0',s->size ) ;
+			memset( s->local,'\0',( size_t )s->size ) ;
 			s->local->sun_family = AF_UNIX ;
 		}
 	}else if( domain == AF_INET ){
-		s->net = ( struct sockaddr_in  * ) malloc( sizeof( struct sockaddr_in ) ) ;
+		s->net = ( struct sockaddr_in * ) malloc( sizeof( struct sockaddr_in ) ) ;
 		if( s->net == NULL ){
 			free( s ) ;
 			close( fd ) ;
 			return _SocketError() ;
 		}else{
+			s->inetAddress = NULL ;
 			s->size = ( socklen_t )sizeof( struct sockaddr_in ) ;
-			memset( s->net,'\0',s->size ) ;
+			memset( s->net,'\0',( size_t )s->size ) ;
 			s->net->sin_family = AF_INET ;
+		}
+	}else if( domain == AF_INET6 ){
+		s->net6 = ( struct sockaddr_in6 * ) malloc( sizeof( struct sockaddr_in6 ) ) ;
+		if( s->net6 == NULL ){
+			free( s ) ;
+			close( fd ) ;
+			return _SocketError() ;
+		}else{
+			s->inetAddress = NULL ;
+			s->size = ( socklen_t )sizeof( struct sockaddr_in6 ) ;
+			memset( s->net6,'\0',( size_t )s->size ) ;
+			s->net6->sin6_family = AF_INET6 ;
 		}
 	}else{
 		close( fd ) ;
@@ -134,46 +149,101 @@ socket_t SocketLocal( const char * address )
 	return SocketLocalWithOptions( address,SOCK_STREAM,0 ) ;
 }
 
-socket_t SocketNetByNameWithOptions( const char * address,int port,int type,int protocol ) 
+socket_t SocketNetWithOptions( const char * address,int port,int type,int protocol ) 
 {
 	socket_t s = SocketVoid ; 
+	
+	struct addrinfo * info ;
 	struct addrinfo hint ;
-	struct addrinfo * addr ;
 	struct sockaddr_in * addr_in ;
 	
 	memset ( &hint,0,sizeof( hint ) ) ;
 	hint.ai_family = AF_INET ;
 	hint.ai_socktype = type ;
+	hint.ai_protocol = protocol ;
 	
-	if( getaddrinfo( address,NULL,&hint,&addr ) == 0 ){
-			
+	if( getaddrinfo( address,NULL,&hint,&info) == 0 ){
 		s = Socket( AF_INET,type,protocol ) ;
-	
 		if( s != SocketVoid ){
-			addr_in = ( struct sockaddr_in * ) addr->ai_addr ;
-			memcpy( &s->net->sin_addr,&addr_in->sin_addr,sizeof( addr_in->sin_addr ) ) ;
+			addr_in = ( struct sockaddr_in *  ) info->ai_addr ;
+			memcpy( &s->net->sin_addr,&addr_in->sin_addr,sizeof( struct in_addr ) ) ;
 			s->net->sin_port = htons( port );
 		}
 		
-		freeaddrinfo( addr ) ;
+		freeaddrinfo( info ) ;
 	}
 	
 	return s ;
 }
 
-socket_t SocketNetByName( const char * address,int port )
+socket_t SocketNet( const char * address,int port )
 {
-	return SocketNetByNameWithOptions( address,port,SOCK_STREAM,0 ) ;
+	return SocketNetWithOptions( address,port,SOCK_STREAM,0 ) ;
 }
 
-socket_t SocketNetByIPAddress( const char * address,int port ) 
-{	
-	socket_t s = Socket( AF_INET,SOCK_STREAM,0 ) ;
-	if( s != SocketVoid ){
-		inet_aton( address,&s->net->sin_addr ) ;
-		s->net->sin_port = htons( port );
+socket_t SocketNetWithOptions6( const char * address,int port,int type,int protocol ) 
+{
+	socket_t s = SocketVoid ;
+	
+	struct addrinfo hint ;
+	struct addrinfo * info ;
+	
+	char buffer[ INET6_ADDRSTRLEN ] ;
+	
+	memset ( &hint,0,sizeof( hint ) ) ;
+	hint.ai_family = AF_INET6 ;
+	hint.ai_socktype = type ;
+	hint.ai_protocol = protocol ;
+	
+	if( getaddrinfo( address,NULL,&hint,&info ) == 0 ){
+		s = Socket( AF_INET6,type,protocol ) ;
+		if( s != SocketVoid ){
+			inet_ntop( AF_INET6,address,buffer,INET6_ADDRSTRLEN ) ;
+			inet_pton( AF_INET6,buffer,&s->net6->sin6_addr ) ;
+			s->net6->sin6_port = htons( port );
+		}
+		
+		freeaddrinfo( info ) ;
 	}
+	
 	return s ;
+}
+
+socket_t SocketNet6( const char * address,int port )
+{
+	return SocketNetWithOptions6( address,port,SOCK_STREAM,0 ) ;
+}
+
+static inline const char * _SocketNetAddress( socket_t s ) 
+{
+	const char * c ;
+	if( s->domain == AF_INET ){
+		if( s->inetAddress == NULL ){
+			s->inetAddress = ( char * ) malloc( sizeof( char ) * INET_ADDRSTRLEN ) ;
+			if( s->inetAddress == NULL ){
+				_SocketError() ;
+				return NULL ;
+			}
+		}
+		c = inet_ntop( AF_INET,&s->net->sin_addr,s->inetAddress,INET_ADDRSTRLEN ) ;
+	}else{
+		if( s->inetAddress == NULL ){
+			s->inetAddress = ( char * ) malloc( sizeof( char ) * INET6_ADDRSTRLEN ) ; 
+			if( s->inetAddress == NULL ){
+				_SocketError() ;
+				return NULL ;
+			}
+		}
+		c = inet_ntop( AF_INET6,&s->net6->sin6_addr,s->inetAddress,INET6_ADDRSTRLEN ) ;
+	}
+	
+	if( c == NULL ){
+		free( s->inetAddress ) ;
+		s->inetAddress = NULL ;
+		return NULL ;
+	}else{
+		return s->inetAddress ;
+	}
 }
 
 const char * SocketAddress( socket_t s )
@@ -181,10 +251,7 @@ const char * SocketAddress( socket_t s )
 	if( s == SocketVoid )
 		return NULL ;
 	
-	if( s->domain == AF_UNIX )
-		return s->local->sun_path ;
-	else
-		return inet_ntoa( s->net->sin_addr ) ;
+	return s->domain == AF_UNIX ? s->local->sun_path : _SocketNetAddress( s ) ;
 }
 
 int SocketBind( socket_t s )
@@ -195,8 +262,12 @@ int SocketBind( socket_t s )
 		s->socket_server = 1 ;
 		unlink( s->local->sun_path ) ;
 		return bind( s->fd,( struct sockaddr * )s->local,s->size ) == 0 ? 1 : 0 ;
-	}else{
+	}else if( s->domain == AF_INET ){
 		return bind( s->fd,( struct sockaddr * )s->net,s->size ) == 0 ? 1 : 0 ;
+	}else if (s->domain == AF_INET6 ){
+		return bind( s->fd,( struct sockaddr * )s->net6,s->size ) == 0 ? 1 : 0 ;
+	}else{
+		return 0 ;
 	}
 }
 
@@ -227,9 +298,6 @@ static inline socket_t _SocketAcceptLocal( socket_t s )
 		}else{
 			__debug( "a local socket accepted" ) ;
 			x->domain = AF_UNIX ;
-			/*
-			 *		x->local->sun_family = AF_UNIX ;
-			 */
 			x->type = SOCK_STREAM ;
 			x->protocol = 0 ;
 			x->cmax = 1 ;
@@ -239,7 +307,6 @@ static inline socket_t _SocketAcceptLocal( socket_t s )
 	
 	return x ;
 }
-
 
 static inline socket_t _SocketAcceptNet( socket_t s )
 {
@@ -263,9 +330,38 @@ static inline socket_t _SocketAcceptNet( socket_t s )
 			x = SocketVoid ;
 		}else{
 			x->domain = AF_INET ;
-			/*
-			 *		x->net->sin_family = AF_INET ;
-			 */	
+			x->type = SOCK_STREAM ;
+			x->protocol = 0 ;
+			x->cmax = 1 ;
+			x->socket_server = 0 ;
+		}
+	}
+	
+	return x ;
+}
+
+static inline socket_t _SocketAcceptNet6( socket_t s )
+{
+	socket_t x = ( socket_t ) malloc( sizeof( struct SocketType_t ) ) ;
+	
+	if( x == NULL )
+		return _SocketError() ;
+	
+	memset( x,'\0',sizeof( struct SocketType_t ) ) ;
+	
+	x->net6 = ( struct sockaddr_in6 * ) malloc( sizeof( struct sockaddr_in6 ) ) ;
+	if( x->net6 == NULL ){
+		free( x ) ;
+		x = _SocketError() ;
+	}else{
+		memset( x->net6,'\0',sizeof( struct sockaddr_in6 ) ) ; 
+		x->fd = accept( s->fd,( struct sockaddr * )x->net6,&x->size ) ;
+		if( x->fd == -1 ){
+			free( x->net6 ) ;
+			free( x ) ;
+			x = SocketVoid ;
+		}else{
+			x->domain = AF_INET6 ;
 			x->type = SOCK_STREAM ;
 			x->protocol = 0 ;
 			x->cmax = 1 ;
@@ -281,6 +377,7 @@ socket_t SocketAccept( socket_t s )
 	switch( s->domain ){
 		case AF_UNIX : return _SocketAcceptLocal( s ) ;
 		case AF_INET : return _SocketAcceptNet( s ) ;
+		case AF_INET6: return _SocketAcceptNet6( s ) ;
 		default      : return SocketVoid ;
 	}
 }
@@ -356,11 +453,14 @@ static inline void __SocketClose( socket_t * p )
 			__debug( "closed a client socket" ) ;
 		}
 		free( s->local ) ;
-		
-	}else{
+	}else if( s->domain == AF_INET ){
 		free( s->net ) ;
+	}else if( s->domain == AF_INET6 ){
+		free( s->net6 ) ;
 	}
 	
+	if( s->inetAddress != NULL )
+		free( s->inetAddress ) ;
 	free( s ) ;
 }
 
@@ -372,10 +472,11 @@ void SocketClose( socket_t * p )
 
 static inline int __SocketConnect( socket_t s ) 
 {
-	if( s->domain == AF_UNIX ){
-		return connect( s->fd,( struct sockaddr * )s->local,s->size ) == 0 ? 1 : 0 ;
-	}else{
-		return connect( s->fd,( struct sockaddr * )s->net,s->size ) == 0 ? 1 : 0 ;
+	switch( s->domain ){
+		case AF_UNIX : return connect( s->fd,( struct sockaddr * )s->local,s->size ) == 0 ? 1 : 0 ;
+		case AF_INET : return connect( s->fd,( struct sockaddr * )s->net,s->size ) == 0 ? 1 : 0 ;
+		case AF_INET6: return connect( s->fd,( struct sockaddr * )s->net6,s->size ) == 0 ? 1 : 0 ;
+		default      : return 0 ;
 	}
 }
 
