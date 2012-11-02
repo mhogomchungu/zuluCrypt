@@ -568,7 +568,7 @@ static inline char * __expandBuffer( char * buffer,size_t new_size,size_t * buff
 	}
 }
 
-size_t SocketGetData_1( socket_t s,char ** e ) 
+size_t SocketGetData( socket_t s,char ** e ) 
 {
 	int fd ;
 	ssize_t result ;
@@ -625,7 +625,7 @@ size_t SocketGetData_1( socket_t s,char ** e )
 	return total ;
 }
 
-size_t SocketGetData( socket_t s,char ** e,size_t len ) 
+size_t SocketGetData_1( socket_t s,char ** e,size_t len ) 
 {
 	int fd ;
 	ssize_t result ;

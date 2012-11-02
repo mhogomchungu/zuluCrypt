@@ -161,7 +161,7 @@ int SocketConnect( socket_t * client ) ;
 int SocketListen( socket_t ) ;
 
 /*
- * get data from socket and allocate memory dynamically for it and return a pointer to the allocated memory through pointer "buffer"
+ * get bounded amount of data from socket and allocate memory dynamically for it and return a pointer to the allocated memory through pointer "buffer"
  * 
  * on success,the returned value is greater than 0 and the buffer should be free() when done with it.
  * on error,the returned value is 0 and no memory is allocated
@@ -170,13 +170,14 @@ int SocketListen( socket_t ) ;
  * 
  * The buffer is NULL terminated
  * 
+ * It is the responsibility of the caller to free() the buffer
  * This function will block until len bytes are read on the other side close the connection
  * 
  * eg
  * char * data ;
  * socket_t client = SocketNetByIPAddress( "127.0.0.1",1331 ) ;
  * SocketConnect( client ) ;
- * SocketGetData( client,&data,32 ) ;
+ * SocketGetData_1( client,&data,32 ) ;
  * puts( data ) ;
  * free( data ) ;
  * SocketClose( client ) ;
@@ -184,7 +185,7 @@ int SocketListen( socket_t ) ;
  * 
  * returned value is the number of bytes read.
  */
-size_t SocketGetData( socket_t,char ** buffer,size_t len ) ;
+size_t SocketGetData_1( socket_t,char ** buffer,size_t len ) ;
 
 /*
  * get an unbounded amount of data from socket,create memory for it dynamically and return a pointer to the allocated memory through pointer "buffer"
@@ -193,8 +194,10 @@ size_t SocketGetData( socket_t,char ** buffer,size_t len ) ;
  * on error,the returned value is 0 and no memory is allocated
  * returned value is the number of bytes read
  * The buffer is NULL terminated
+ * 
+ * It is the responsibility of the caller to free() the buffer 
  */
-size_t SocketGetData_1( socket_t,char ** buffer ) ;
+size_t SocketGetData( socket_t,char ** buffer ) ;
 
 /*
  * get data from a socket and put in a user managed buffer "buffer" of size len

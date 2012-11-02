@@ -252,8 +252,7 @@ static int _zuluMountUMount( const char * device,uid_t uid,const char * mode,int
 	if( status == 0 ){
 		if( m_point != NULL )
 			if( !mount_point_option )
-				if( !zuluCryptPartitionIsSystemPartition( device ) )
-					rmdir( m_point ) ;
+				rmdir( m_point ) ;
 		return _zuluExit( 0,StringVoid,m_point,"SUCCESS: umount complete successfully" ) ;
 	}else{
 		switch( status ) {
@@ -457,17 +456,17 @@ static int _mount_help()
 	const char * doc2 ;
 	const char * doc1 = "\
 options:\n\
--n -- when the option is used with -m,the mount point will be auto created if absent,\n\
-      error willl be produced if the mount point is present and the option is ommited.\n\
-      when used with -u,the mount point will not get auto deleted\n\
--l -- print a list of mounted partitions\n" ;
-
+-l -- print a list of mounted partitions\n\
+-M -- mount a LUKS/PLAIN volume: arguments: -d partition_path -z mount_point -e mode(rw/ro) (-p passphrase/-f keyfile) \n\
+-U -- unmount a LUKS volume: arguments: -d partition_path\n" ;
 	doc2 = "\
 -p -- print a list of partitions\n\
 -m -- mount a partitions : arguments: -d partition_path -z mount_point -e mode(rw/ro)\n\
+      -- if \"-n\" option is also set,the mount point folder will be used if present\n\
+      -- if \"-n\" option is not set,an error will be produced if mount point folder is present\n\
 -u -- unmount a partition: arguments: -d partition_path\n\
--M -- mount a LUKS/PLAIN volume: arguments: -d partition_path -z mount_point -e mode(rw/ro) (-p passphrase/-f keyfile) \n\
--U -- unmount a LUKS volume: arguments: -d partition_path\n" ;
+      -- if \"-n\" is set,the mount point folder will not be autodeleted\n\
+      -- if \"-n\" is not set the mount point folder will be autodeleted\n" ;
 
 	printf( "%s%s",doc1,doc2 ) ;
 	return 201 ;
