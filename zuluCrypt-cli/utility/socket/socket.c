@@ -136,8 +136,9 @@ int SocketFileDescriptor( socket_t s )
 socket_t SocketLocalWithOptions( const char * address,int type,int protocol ) 
 {
 	socket_t s = Socket( AF_UNIX,type,protocol ) ;
+	size_t size ;
 	if( s != SocketVoid ){
-		size_t size = sizeof( s->local->sun_path ) ;
+		size = sizeof( s->local->sun_path ) ;
 		strncpy( s->local->sun_path,address,size ) ;
 		s->local->sun_path[ size - 1 ] = '\0' ;
 	}
@@ -214,36 +215,48 @@ socket_t SocketNet6( const char * address,int port )
 	return SocketNetWithOptions6( address,port,SOCK_STREAM,0 ) ;
 }
 
-static inline const char * _SocketNetAddress( socket_t s ) 
+static inline const char * _SocketNetAddress( socket_t s )
 {
 	const char * c ;
-	if( s->domain == AF_INET ){
+	if( s->inetAddress == NULL ){
+		s->inetAddress = ( char * ) malloc( sizeof( char ) * INET_ADDRSTRLEN ) ;
 		if( s->inetAddress == NULL ){
-			s->inetAddress = ( char * ) malloc( sizeof( char ) * INET_ADDRSTRLEN ) ;
-			if( s->inetAddress == NULL ){
-				_SocketError() ;
-				return NULL ;
-			}
+			_SocketError() ;
+			return NULL ;
 		}
+		
 		c = inet_ntop( AF_INET,&s->net->sin_addr,s->inetAddress,INET_ADDRSTRLEN ) ;
-	}else{
-		if( s->inetAddress == NULL ){
-			s->inetAddress = ( char * ) malloc( sizeof( char ) * INET6_ADDRSTRLEN ) ; 
-			if( s->inetAddress == NULL ){
-				_SocketError() ;
-				return NULL ;
-			}
+		
+		if( c == NULL ){
+			free( s->inetAddress ) ;
+			s->inetAddress = NULL ;
+			return NULL ;
 		}
-		c = inet_ntop( AF_INET6,&s->net6->sin6_addr,s->inetAddress,INET6_ADDRSTRLEN ) ;
 	}
 	
-	if( c == NULL ){
-		free( s->inetAddress ) ;
-		s->inetAddress = NULL ;
-		return NULL ;
-	}else{
-		return s->inetAddress ;
+	return s->inetAddress ;
+}
+
+static inline const char * _SocketNetAddress6( socket_t s ) 
+{
+	const char * c ;
+	if( s->inetAddress == NULL ){
+		s->inetAddress = ( char * ) malloc( sizeof( char ) * INET6_ADDRSTRLEN ) ; 
+		if( s->inetAddress == NULL ){
+			_SocketError() ;
+			return NULL ;
+		}
+		
+		c = inet_ntop( AF_INET6,&s->net6->sin6_addr,s->inetAddress,INET6_ADDRSTRLEN ) ;
+		
+		if( c == NULL ){
+			free( s->inetAddress ) ;
+			s->inetAddress = NULL ;
+			return NULL ;
+		}
 	}
+	
+	return s->inetAddress ;
 }
 
 const char * SocketAddress( socket_t s )
@@ -251,7 +264,12 @@ const char * SocketAddress( socket_t s )
 	if( s == SocketVoid )
 		return NULL ;
 	
-	return s->domain == AF_UNIX ? s->local->sun_path : _SocketNetAddress( s ) ;
+	switch( s->domain ){
+		case AF_UNIX : return s->local->sun_path ;
+		case AF_INET : return _SocketNetAddress( s ) ;
+		case AF_INET6: return _SocketNetAddress6( s ) ;
+		default      : return NULL ;
+	}
 }
 
 int SocketBind( socket_t s )
@@ -298,6 +316,7 @@ static inline socket_t _SocketAcceptLocal( socket_t s )
 			free( x ) ;
 			x = SocketVoid ;
 		}else{
+			strcpy( x->local->sun_path,s->local->sun_path ) ;
 			__debug( "a local socket accepted" ) ;
 			x->inetAddress = NULL ;
 			x->domain = AF_UNIX ;
