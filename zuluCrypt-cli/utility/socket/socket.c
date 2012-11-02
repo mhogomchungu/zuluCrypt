@@ -273,6 +273,7 @@ int SocketBind( socket_t s )
 
 static inline socket_t _SocketAcceptLocal( socket_t s )
 {	
+	size_t size = sizeof( struct sockaddr_un ) ;
 	socket_t x = ( socket_t ) malloc( sizeof( struct SocketType_t ) ) ;
 	
 	__debug( "accepting a local socket" ) ;
@@ -282,13 +283,14 @@ static inline socket_t _SocketAcceptLocal( socket_t s )
 	
 	memset( x,'\0',sizeof( struct SocketType_t ) ) ;
 	
-	x->local = ( struct sockaddr_un * ) malloc( sizeof( struct sockaddr_un ) ) ;
+	x->local = ( struct sockaddr_un * ) malloc( size ) ;
 	
 	if( x->local == NULL ){
 		free( x ) ;
 		x = _SocketError() ;
 	}else{
-		memset( x->local,'\0',sizeof( struct sockaddr_un ) ) ;
+		x->size = ( socklen_t ) size ;
+		memset( x->local,'\0',size ) ;
 		x->fd = accept( s->fd,( struct sockaddr * )x->local,&x->size ) ;
 		if( x->fd == -1 ){
 			__debug1( "failed to accept a local socket" ) ;
@@ -297,6 +299,7 @@ static inline socket_t _SocketAcceptLocal( socket_t s )
 			x = SocketVoid ;
 		}else{
 			__debug( "a local socket accepted" ) ;
+			x->inetAddress = NULL ;
 			x->domain = AF_UNIX ;
 			x->type = SOCK_STREAM ;
 			x->protocol = 0 ;
@@ -304,31 +307,33 @@ static inline socket_t _SocketAcceptLocal( socket_t s )
 			x->socket_server = 0 ;
 		}
 	}
-	
 	return x ;
 }
 
 static inline socket_t _SocketAcceptNet( socket_t s )
 {
+	size_t size = sizeof( struct sockaddr_in ) ;
 	socket_t x = ( socket_t ) malloc( sizeof( struct SocketType_t ) ) ;
 	
 	if( x == NULL )
 		return _SocketError() ;
-	
+
 	memset( x,'\0',sizeof( struct SocketType_t ) ) ;
 	
-	x->net = ( struct sockaddr_in * ) malloc( sizeof( struct sockaddr_in ) ) ;
+	x->net = ( struct sockaddr_in * ) malloc( size ) ;
 	if( x->net == NULL ){
 		free( x ) ;
 		x = _SocketError() ;
 	}else{
-		memset( x->net,'\0',sizeof( struct sockaddr_in ) ) ; 
+		x->size = ( socklen_t )size ;
+		memset( x->net,'\0',size ) ; 
 		x->fd = accept( s->fd,( struct sockaddr * )x->net,&x->size ) ;
 		if( x->fd == -1 ){
 			free( x->net ) ;
 			free( x ) ;
 			x = SocketVoid ;
 		}else{
+			x->inetAddress = NULL ;
 			x->domain = AF_INET ;
 			x->type = SOCK_STREAM ;
 			x->protocol = 0 ;
@@ -342,6 +347,7 @@ static inline socket_t _SocketAcceptNet( socket_t s )
 
 static inline socket_t _SocketAcceptNet6( socket_t s )
 {
+	size_t size = sizeof( struct sockaddr_in6 ) ;
 	socket_t x = ( socket_t ) malloc( sizeof( struct SocketType_t ) ) ;
 	
 	if( x == NULL )
@@ -349,18 +355,20 @@ static inline socket_t _SocketAcceptNet6( socket_t s )
 	
 	memset( x,'\0',sizeof( struct SocketType_t ) ) ;
 	
-	x->net6 = ( struct sockaddr_in6 * ) malloc( sizeof( struct sockaddr_in6 ) ) ;
+	x->net6 = ( struct sockaddr_in6 * ) malloc( size ) ;
 	if( x->net6 == NULL ){
 		free( x ) ;
 		x = _SocketError() ;
 	}else{
-		memset( x->net6,'\0',sizeof( struct sockaddr_in6 ) ) ; 
+		x->size = ( socklen_t )size ;
+		memset( x->net6,'\0',size ) ; 
 		x->fd = accept( s->fd,( struct sockaddr * )x->net6,&x->size ) ;
 		if( x->fd == -1 ){
 			free( x->net6 ) ;
 			free( x ) ;
 			x = SocketVoid ;
 		}else{
+			x->inetAddress = NULL ;
 			x->domain = AF_INET6 ;
 			x->type = SOCK_STREAM ;
 			x->protocol = 0 ;
