@@ -60,7 +60,10 @@ size_t zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid
 			chmod( sockpath,S_IRWXU | S_IRWXG | S_IRWXO ) ;
 			if( SocketListen( server ) ){
 				__debug( "socket is listening" ) ;
+				/*
 				client = SocketAcceptWithTimeOut( server,10 ) ;
+				*/
+				client = SocketAccept( server ) ;
 				if( client != SocketVoid ){
 					__debug( "server received a client" ) ;
 					dataLength = SocketGetData_1( client,&buffer,INTMAXKEYZISE ) ;
