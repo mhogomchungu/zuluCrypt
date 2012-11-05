@@ -42,7 +42,7 @@ typedef struct ProcessType_t * process_t ;
  * An example of how to use the library to call ls with arguments and get its output while closing its std error 
  * 
  *  process_t p = Process( "/bin/ls" ) ; 
- *  ProcessSetArgumentList( p,"-l","-h",'\0' ) ;  
+ *  ProcessSetArgumentList( p,"-l","-h",NULL ) ;  
  *  ProcessStart( p ) ; 
  *  char * c = NULL ;
  *  ProcessGetOutPut( p,&c,STDOUT ) ; 
@@ -117,7 +117,7 @@ void ProcessSetArguments( process_t p,char * const argv[] ) ;
  * last entry ust be null.
  * example:
  * process_t p = Process( "/usr/bin/du" ) ;
- * ProcessSetArgumentList( p,"-s","-c","-h",'\0' ) ;
+ * ProcessSetArgumentList( p,"-s","-c","-h",NULL ) ;
  * ProcessStart( p ) ;
  * ProcessDelete( &p ) ;
  */

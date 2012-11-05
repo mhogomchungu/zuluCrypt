@@ -64,7 +64,7 @@ void zuluCryptFormatSize( char * buffer,const char * buff )
 		case 12: zuluCryptFormatSize_1( buffer,4," GB" ) ; break ;
 		case 13: zuluCryptFormatSize_1( buffer,2," TB" ) ; break ;
 		case 14: zuluCryptFormatSize_1( buffer,3," TB" ) ; break ;
-		case 15: zuluCryptFormatSize_1( buffer,4," TB" ) ; break ;			
+		case 15: zuluCryptFormatSize_1( buffer,4," TB" ) ; break ;
 	}	
 }
 
@@ -81,7 +81,7 @@ char * zuluCryptGetUUIDFromMapper( const char * mapper )
 	
 	if( blkid_probe_lookup_value( blkid,"UUID",&uuid,NULL ) == 0 ){
 		p = String( "" ) ;
-		StringMultipleAppend( p," UUID:   \t\"",uuid,"\"",'\0' ) ;
+		StringMultipleAppend( p," UUID:   \t\"",uuid,"\"",NULL ) ;
 	}else
 		p = String( " UUID:   \t\"Nil\"" ) ;
 	
@@ -89,19 +89,19 @@ char * zuluCryptGetUUIDFromMapper( const char * mapper )
 	
 	free( device ) ;
 	
-	return StringDeleteHandle( &p ) ;		
+	return StringDeleteHandle( &p ) ;
 }
 
 static void zuluCryptFileSystemProperties( string_t p,const char * mapper,const char * m_point )
 {
-	const char * e ;	
-	blkid_probe blkid ;	
+	const char * e ;
+	blkid_probe blkid ;
 	struct statvfs vfs ;
 	uint64_t total ;
 	uint64_t used ;
 	uint64_t unused ;
 	uint64_t block_size ;
-	char buff[ SIZE ] ;	
+	char buff[ SIZE ] ;
 	char * buffer = buff ;
 	char format[ SIZE ] ;
 	
@@ -109,11 +109,11 @@ static void zuluCryptFileSystemProperties( string_t p,const char * mapper,const 
 	blkid_do_probe( blkid );
 	
 	if( blkid_probe_lookup_value( blkid,"TYPE",&e,NULL ) == 0 )
-		StringMultipleAppend( p,"\n file system:\t",e,'\0' ) ;
+		StringMultipleAppend( p,"\n file system:\t",e,NULL ) ;
 	else
 		StringAppend( p,"\n file system:\tNil" ) ;
 	
-	blkid_free_probe( blkid );	
+	blkid_free_probe( blkid );
 	
 	if( statvfs( m_point,&vfs ) != 0 )
 		return ;
@@ -126,25 +126,25 @@ static void zuluCryptFileSystemProperties( string_t p,const char * mapper,const 
 	
 	e = StringIntToString_1( buffer,SIZE,total ) ;
 	zuluCryptFormatSize( format,e ) ;	
-	StringMultipleAppend( p,"\n total space:\t",format,'\0' ) ;
+	StringMultipleAppend( p,"\n total space:\t",format,NULL ) ;
 	
 	e = StringIntToString_1( buffer,SIZE,used )  ;
 	zuluCryptFormatSize( format,e ) ;
-	StringMultipleAppend( p,"\n used space:\t",format,'\0' ) ;
+	StringMultipleAppend( p,"\n used space:\t",format,NULL ) ;
 	
 	e = StringIntToString_1( buffer,SIZE,unused ) ;
 	zuluCryptFormatSize( format,e ) ;
-	StringMultipleAppend( p,"\n free space:\t",format,'\0' ) ;
+	StringMultipleAppend( p,"\n free space:\t",format,NULL ) ;
 	
 	snprintf( buff,SIZE,"%.2f%%",100 * ( ( float ) used / ( float ) total ) ) ;
-	StringMultipleAppend( p,"\n used%:   \t",buff,"\n",'\0' ) ;
+	StringMultipleAppend( p,"\n used%:   \t",buff,"\n",NULL ) ;
 		
 	buffer = zuluCryptGetUUIDFromMapper( mapper ) ;
 	StringAppend( p,buffer );
 	
 	free( buffer ) ;
 	
-	StringMultipleAppend( p,"\n mount point:\t",m_point,'\0' ) ;
+	StringMultipleAppend( p,"\n mount point:\t",m_point,NULL ) ;
 }
 
 static char * zuluCryptLoopDeviceAddress( const char * device )
@@ -173,7 +173,7 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	int luks = 0 ;
 	int i ;
 	int j ;
-	int k ;	
+	int k ;
 	
 	struct crypt_device * cd;
 	struct crypt_active_device cad ;
@@ -192,7 +192,7 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	
 	switch( crypt_status( cd,mapper ) ){
 		case CRYPT_INACTIVE :
-			StringAppend( p," is inactive.\n" ) ; 	
+			StringAppend( p," is inactive.\n" ) ;
 			crypt_free( cd );
 			return StringDeleteHandle( &p ) ;
 		case CRYPT_ACTIVE   : 
@@ -202,12 +202,12 @@ char * zuluCryptVolumeStatus( const char * mapper )
 			StringAppend( p," is active and is in use.\n" ) ;
 			break ;
 		case CRYPT_INVALID  : 
-			StringAppend( p," is invalid.\n" ) ;	
+			StringAppend( p," is invalid.\n" ) ;
 			crypt_free( cd );
-			return StringDeleteHandle( &p ) ;		
+			return StringDeleteHandle( &p ) ;
 	}	
 	
-	StringAppend( p," type:   \t" );	
+	StringAppend( p," type:   \t" );
 	type = crypt_get_type( cd ) ;
 	
 	if( strncmp( type,"LUKS",4 ) == 0 ){
@@ -225,17 +225,17 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	}else if( strcmp( type,"plain") )
 		StringAppend( p,"plain" ) ;
 	
-	StringMultipleAppend( p,"\n cipher:\t",crypt_get_cipher_mode( cd ),'\0' );
+	StringMultipleAppend( p,"\n cipher:\t",crypt_get_cipher_mode( cd ),NULL );
 	
 	z = StringIntToString_1( buffer,SIZE,8 * crypt_get_volume_key_size( cd ) ) ;
-	StringMultipleAppend( p,"\n keysize:\t",z," bits",'\0' );
+	StringMultipleAppend( p,"\n keysize:\t",z," bits",NULL );
 
-	e = crypt_get_device_name( cd ) ;	
-	StringMultipleAppend( p,"\n device:\t",e,'\0' );	
+	e = crypt_get_device_name( cd ) ;
+	StringMultipleAppend( p,"\n device:\t",e,NULL );
 		
 	if( strncmp( e,"/dev/loop",9 ) == 0 ){
 		StringAppend( p,"\n loop:   \t" );
-		path = zuluCryptLoopDeviceAddress( e ) ;		
+		path = zuluCryptLoopDeviceAddress( e ) ;
 		if( path != NULL ){
 			StringAppend( p,path ) ;
 			free( path ) ;
@@ -247,12 +247,12 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	}		
 	
 	z = StringIntToString_1( buffer,SIZE,crypt_get_data_offset( cd ) ) ;
-	StringMultipleAppend( p,"\n offset:\t",z," sectors",'\0' );
+	StringMultipleAppend( p,"\n offset:\t",z," sectors",NULL );
 	
 	if( cad.flags == 1 )
 		StringAppend( p,"\n mode:   \tread only" );
 	else
-		StringAppend( p,"\n mode:   \tread and write" );	
+		StringAppend( p,"\n mode:   \tread and write" );
 	
 	if( luks == 1 ){
 		i = 0 ;
@@ -262,13 +262,13 @@ char * zuluCryptVolumeStatus( const char * mapper )
 				case CRYPT_SLOT_INACTIVE    :     ; break ;
 				case CRYPT_SLOT_ACTIVE_LAST : i++ ; break ;
 				case CRYPT_SLOT_ACTIVE      : i++ ; break ;
-				case CRYPT_SLOT_INVALID     :     ; break ;				
+				case CRYPT_SLOT_INVALID     :     ; break ;
 			}		
 		}
 		
-		StringMultipleAppend( p,"\n active slots:\t",StringIntToString_1( buffer,SIZE,i ),'\0' );
+		StringMultipleAppend( p,"\n active slots:\t",StringIntToString_1( buffer,SIZE,i ),NULL );
 		
-		StringMultipleAppend( p," / ",StringIntToString_1( buffer,SIZE,k ),'\0' );
+		StringMultipleAppend( p," / ",StringIntToString_1( buffer,SIZE,k ),NULL );
 	}else{
 		StringAppend( p,"\n active slots:\tNil" );
 	}
@@ -302,7 +302,7 @@ char * zuluCryptVolumeDeviceName( const char * mapper )
 	if( crypt_init_by_name( &cd,mapper ) < 0 )
 		return NULL ;
 	
-	e = crypt_get_device_name( cd ) ;	
+	e = crypt_get_device_name( cd ) ;
 	
 	if( strncmp( e,"/dev/loop",9 ) == 0 ){
 		path = zuluCryptLoopDeviceAddress( e ) ;

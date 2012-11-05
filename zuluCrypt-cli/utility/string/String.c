@@ -116,7 +116,7 @@ void StringMultipleDelete( string_t * xt,... )
 	
 	while( 1 ){
 		entry = va_arg( list,string_t * ) ;
-		if( entry == '\0' )
+		if( entry == NULL )
 			break ;
 		
 		if( *entry == StringVoid )
@@ -645,7 +645,7 @@ const char * StringMultipleAppend( string_t st,... )
 	
 	while( 1 ){
 		entry = va_arg( list,const char * ) ;
-		if( entry == '\0' )
+		if( entry == NULL )
 			break ;
 		StringAppend( st,entry ) ;
 	}
@@ -662,7 +662,7 @@ const char * StringAppendMultipleString( string_t st,... )
 	
 	while( 1 ){
 		entry = va_arg( list,string_t ) ;
-		if( entry == '\0' )
+		if( entry == NULL )
 			break ;
 		StringAppend( st,entry->string ) ;
 	}
@@ -679,7 +679,7 @@ const char * StringMultiplePrepend( string_t st,... )
 	
 	while( 1 ){
 		entry = va_arg( list,const char * ) ;
-		if( entry == '\0' )
+		if( entry == NULL )
 			break ;
 		StringPrepend( st,entry ) ;
 	}
@@ -696,7 +696,7 @@ const char * StringPrependMultipleString( string_t st,... )
 	
 	while( 1 ){
 		entry = va_arg( list,string_t ) ;
-		if( entry == '\0' )
+		if( entry == NULL )
 			break ;
 		StringPrepend( st,entry->string ) ;
 	}
@@ -860,7 +860,7 @@ string_t StringIntToString( uint64_t z )
 	 *  2^64 has a maximum of 19 digits,64 byte buffer is more that enough
 	 */
 	char buffer[ 64 ] ;
-	buffer[ 63 ] = '\0' ;	
+	buffer[ 63 ] = '\0' ;
 
 	do{
 		i-- ;

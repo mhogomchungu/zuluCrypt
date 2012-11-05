@@ -52,12 +52,12 @@ static int zuluExit( int st,stringList_t stl )
 		case 5 : printf( "ERROR: keyfile does not exist\n" ) ;											break ;
 		case 6 : printf( "ERROR: one or more required argument(s) for this operation is missing\n" ) ;						break ;
 		case 7 : printf( "ERROR: could not get enough memory to open the key file\n" ) ;							break ;
-		case 10: printf( "ERROR: device does not exist\n" );											break ;	
+		case 10: printf( "ERROR: device does not exist\n" );											break ;
 		case 11: printf( "INFO: operation terminated per user request\n" );									break ;
 		case 12: printf( "ERROR: insufficient privilege to open volume for writing\n" ) ;							break ;
 		case 13: printf( "ERROR: insufficient privilege to open key file for reading\n" );							break ;
-		case 14: printf( "ERROR: only root user can remove keys from system devices\n" );							break ;	
-		case 15: printf( "ERROR: can not get passphrase in silent mode\n" );									break ;	
+		case 14: printf( "ERROR: only root user can remove keys from system devices\n" );							break ;
+		case 15: printf( "ERROR: can not get passphrase in silent mode\n" );									break ;
 		case 16: printf( "ERROR: insufficient memory to hold passphrase\n" );									break ;
 		case 17: printf( "ERROR: insufficient memory to hold your response\n" );								break ;
 		case 18: printf( "ERROR: could not get a key from a socket\n" ) ;									break ;

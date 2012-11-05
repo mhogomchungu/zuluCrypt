@@ -40,11 +40,11 @@ static int zuluExit( int st,struct crypt_device * cd )
 		case 12: printf( "ERROR: argument for path to a backup  header file is missing\n" ) 			; break ;
 		case 13: printf( "ERROR: argument for path to a backup  header file is missing\n" ) 			; break ;
 		case 14: printf( "ERROR: only root user can restore and back up luks headers on system devices\n" )	; break ;
-		case 15: printf( "ERROR: insufficient privilege to open device for writing\n" ) 			; break ;	
-		case 16: printf( "ERROR: could not resolve path to device\n" ) 						; break ;	
+		case 15: printf( "ERROR: insufficient privilege to open device for writing\n" ) 			; break ;
+		case 16: printf( "ERROR: could not resolve path to device\n" ) 						; break ;
 		case 17: printf( "ERROR: backup file does not appear to contain luks header\n" ) 			; break ;
 		case 18: printf( "ERROR: insufficient privilege to open device for reading\n" ) 			; break ;
-		case 19: printf( "ERROR: insufficient memory to hold your responce\n" )		 			; break ;					
+		case 19: printf( "ERROR: insufficient memory to hold your responce\n" )		 			; break ;
 	}
 	
 	if( cd != NULL )
@@ -132,14 +132,14 @@ int zuluCryptEXESaveAndRestoreLuksHeader( const struct_opts * opts,uid_t uid,int
 	/*
 	 * using key_key here because i do not want to introduce a key field in the structure.
 	 */
-	const char * path = opts->key ;	
+	const char * path = opts->key ;
 	
 	char * dev = realpath( device,NULL ) ;
 	
 	int k ;
 	
 	if( dev == NULL )
-		return zuluExit( 16,NULL ) ;	
+		return zuluExit( 16,NULL ) ;
 	/*
 	 * zuluCryptPartitionIsSystemPartition() is defined in partitions.c
 	 */
@@ -150,7 +150,7 @@ int zuluCryptEXESaveAndRestoreLuksHeader( const struct_opts * opts,uid_t uid,int
 		return zuluExit( 14,NULL ) ;
 		
 	if( path == NULL ){
-		if( option == LUKS_HEADER_RESTORE )			
+		if( option == LUKS_HEADER_RESTORE )
 			return zuluExit( 12,NULL ) ;
 		else
 			return zuluExit( 13,NULL ) ;
@@ -159,7 +159,7 @@ int zuluCryptEXESaveAndRestoreLuksHeader( const struct_opts * opts,uid_t uid,int
 	if( option == LUKS_HEADER_RESTORE ){
 		switch( zuluCryptSecurityCanOpenPathForReading( path,uid ) ){
 			case 1 : return zuluExit( 8,NULL ) ;
-			case 2 : return zuluExit( 9,NULL ) ;		
+			case 2 : return zuluExit( 9,NULL ) ;
 		}
 		
 		switch( zuluCryptSecurityCanOpenPathForWriting( device,uid ) ){
@@ -169,7 +169,7 @@ int zuluCryptEXESaveAndRestoreLuksHeader( const struct_opts * opts,uid_t uid,int
 	}else{
 		switch( zuluCryptSecurityCanOpenPathForReading( device,uid ) ){
 			case 1 : return zuluExit( 18,NULL ) ;
-			case 2 : return zuluExit( 11,NULL ) ;		
+			case 2 : return zuluExit( 11,NULL ) ;
 		}
 		if( zuluCryptPathIsValid( path ) )
 			return zuluExit( 6,NULL ) ;

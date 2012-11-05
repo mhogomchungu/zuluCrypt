@@ -38,7 +38,7 @@ static int msg( int st )
 		case 9 : printf( "ERROR: destination path is missing\n" )					; break ;
 		case 10: printf( "ERROR: insufficient privilege to create destination file\n" )			; break ;
 		case 11: printf( "ERROR: presented key did not match the encryption key\n" )			; break ;
-		case 12: printf( "ERROR: can not get passphrase in silent mode\n"  )				; break ;	
+		case 12: printf( "ERROR: can not get passphrase in silent mode\n"  )				; break ;
 		case 13: printf( "ERROR: insufficient memory to hold passphrase\n" )				; break ;
 		case 14: printf( "ERROR: source path is missing\n" )						; break ;
 		case 15: printf( "ERROR: insufficient privilege to open source file for reading\n" )		; break ;
@@ -107,19 +107,19 @@ static int crypt_opt( const struct_opts * opts,uid_t uid,int opt )
 			return msg( 9 ) ;
 		if( strcmp( type,"-p" ) == 0 ){
 			p = String( passphrase ) ;
-		}else if( strcmp( type,"-f" ) == 0 ){		
-			p = StringGetFromFile( passphrase ) ;		
+		}else if( strcmp( type,"-f" ) == 0 ){
+			p = StringGetFromFile( passphrase ) ;
 			if( p == NULL )
-				return msg( 2 ) ;		
+				return msg( 2 ) ;
 		}else{
 			return msg( 3 ) ;
 		}
-	}		
+	}
 	
 	if( opt == ENCRYPT )
 		st = zuluCryptEncryptFile( source,dest,StringContent( p ),StringLength( p ) ) ;
 	else
-		st = zuluCryptDecryptFile( source,dest,StringContent( p ),StringLength( p ) ) ;	
+		st = zuluCryptDecryptFile( source,dest,StringContent( p ),StringLength( p ) ) ;
 	
 	StringClearDelete( &p ) ;
 	
@@ -144,5 +144,5 @@ int zuluCryptExeFileDecrypt( const struct_opts * opts,uid_t uid )
 
 int zuluCryptExeFileEncrypt( const struct_opts * opts,uid_t uid )
 {
-	return crypt_opt( opts,uid,ENCRYPT ) ;		
+	return crypt_opt( opts,uid,ENCRYPT ) ;
 }

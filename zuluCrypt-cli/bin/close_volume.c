@@ -28,12 +28,12 @@ static int st_msg( int st,char * m_point )
 				free( m_point ) ;
 			 }
 			 break ;
-		case 1 : printf( "ERROR: close failed, encrypted volume with that name does not exist\n" );      			  break ;			
+		case 1 : printf( "ERROR: close failed, encrypted volume with that name does not exist\n" );      			  break ;
 		case 2 : printf( "ERROR: close failed, the mount point and/or one or more files are in use\n" );			  break ;
 		case 3 : printf( "ERROR: close failed, volume does not have an entry in /etc/mtab\n" ) ;        			  break ;
 		case 4 : printf( "ERROR: close failed, could not get a lock on /etc/mtab~\n" ) ;  	             			  break ;
 		case 5 : printf( "ERROR: close failed, volume is unmounted but could not close mapper,advice to close it manually\n");	  break ;
-		case 6 : printf( "ERROR: close failed, could not resolve full path of device\n");					  break ;					
+		case 6 : printf( "ERROR: close failed, could not resolve full path of device\n");					  break ;
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}	
 	return st ;
@@ -41,7 +41,7 @@ static int st_msg( int st,char * m_point )
 
 int zuluCryptEXECloseVolume( const char * device,const char * mapping_name,uid_t uid )
 {	
-	 int st ;	 
+	 int st ;
 	 string_t p ;
 	 char * m_point = NULL ;
 	 
@@ -52,13 +52,13 @@ int zuluCryptEXECloseVolume( const char * device,const char * mapping_name,uid_t
 	 /*
 	  * This function is defined at "../lib/create_mapper_name.c"
 	  * 
-	  * Explanation for what it does is explained where it is defined.	  * 
+	  * Explanation for what it does is explained where it is defined.
 	  */
 	 p = zuluCryptCreateMapperName( dev,mapping_name,uid,CLOSE ) ;
 	 
-	 st = zuluCryptCloseVolume( StringContent( p ),&m_point ) ;	 
+	 st = zuluCryptCloseVolume( StringContent( p ),&m_point ) ;
 
-	 StringDelete( &p ) ;	
+	 StringDelete( &p ) ;
 	 free( dev ) ;
-	 return st_msg( st,m_point ) ;	
+	 return st_msg( st,m_point ) ;
 }

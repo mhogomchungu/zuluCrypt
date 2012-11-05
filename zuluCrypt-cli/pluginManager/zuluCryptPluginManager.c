@@ -38,12 +38,6 @@
 #include "plugin_path.h"
 #include <stdio.h>
 
-static void __debug( const char * msg )
-{
-	printf( "%s\n",msg ) ;
-	fflush( stdout );
-}
-
 size_t zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid )
 {	
 	size_t dataLength = 0 ;
@@ -53,23 +47,14 @@ size_t zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid
 	socket_t server = SocketLocal( sockpath ) ;
 	
 	if( server != SocketVoid ){
-		__debug( "created socketLocal server" ) ;
 		if( SocketBind( server ) ){
-			__debug( "socket is bounded" ) ;
 			chown( sockpath,uid,uid ) ;
 			chmod( sockpath,S_IRWXU | S_IRWXG | S_IRWXO ) ;
 			if( SocketListen( server ) ){
-				__debug( "socket is listening" ) ;
-				/*
 				client = SocketAcceptWithTimeOut( server,10 ) ;
-				*/
-				client = SocketAccept( server ) ;
 				if( client != SocketVoid ){
-					__debug( "server received a client" ) ;
 					dataLength = SocketGetData_1( client,&buffer,INTMAXKEYZISE ) ;
 					*key = StringInheritWithSize( &buffer,dataLength ) ;
-					if( dataLength > 0 )
-						__debug( "key received" ) ;
 					SocketClose( &client ) ;
 				}
 			}
@@ -86,7 +71,6 @@ void * zuluCryptPluginManagerOpenConnection( const char * sockpath )
 	for( i = 10 ; i > 0 ; i-- ){
 		client = SocketLocal( sockpath ) ;
 		if( SocketConnect( &client ) ){
-			__debug( "client connected to server" ) ;
 			return ( void * ) client ;
 		}else{
 			sleep( 1 ) ;
@@ -142,8 +126,6 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	const char * sockpath ;
 	const char * pluginPath ;
 	
-	char * debug = NULL ;
-	
 	string_t key   = StringVoid ;
 	string_t plugin_path = StringVoid ;
 	string_t path  = StringVoid ;
@@ -169,9 +151,6 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	}
 	
 	if( stat( pluginPath,&st ) == 0 ) {
-	
-		__debug( "plugin found" ) ;
-		
 		path = String( pass->pw_dir ) ;
 		sockpath = StringAppend( path,"/.zuluCrypt-socket/" ) ;
 	
@@ -188,7 +167,7 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		p = Process( pluginPath ) ;
 
 		ProcessSetOptionUser( p,uid ) ;
-		ProcessSetArgumentList( p,device,StringContent( uuid ),sockpath,CHARMAXKEYZISE,argv,'\0' ) ;
+		ProcessSetArgumentList( p,device,StringContent( uuid ),sockpath,CHARMAXKEYZISE,argv,NULL ) ;
 		ProcessStart( p ) ;
 	
 		zuluCryptGetKeyFromSocket( sockpath,&key,uid ) ;
@@ -199,16 +178,11 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		 */
 		if( pluginIsGpG( pluginPath ) )
 			ProcessTerminate( p ) ;
-	
-		ProcessGetOutPut( p,&debug,STDOUT ) ;
-		if( debug ){
-			__debug( debug ) ;
-			free( debug ) ;
-		}
+		
 		ProcessDelete( &p ) ;
 	}
 	
-	StringMultipleDelete( &plugin_path,&uuid,&id,&path,'\0' ) ;      
+	StringMultipleDelete( &plugin_path,&uuid,&id,&path,NULL ) ;      
 	
 	return key ;
 }

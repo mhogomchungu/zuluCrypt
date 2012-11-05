@@ -37,7 +37,7 @@ int zuluCryptOpenVolume( const char * dev,const char * map,const char * m_point,
 	
 	p = String( crypt_get_dir() ) ;
 	
-	mapper = StringMultipleAppend( p,"/",map,'\0' ) ;
+	mapper = StringMultipleAppend( p,"/",map,NULL ) ;
 
 	if( zuluCryptPathIsValid( mapper ) )
 		return zuluExit( 2,p ) ;

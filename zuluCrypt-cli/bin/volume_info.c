@@ -22,7 +22,7 @@
 int zuluCryptEXEVolumeInfo( const char * mapper,const char * device,uid_t uid )
 {
 	char * dev ;
-	char * output ;	
+	char * output ;
 	int xt ;
 	
 	string_t p ;

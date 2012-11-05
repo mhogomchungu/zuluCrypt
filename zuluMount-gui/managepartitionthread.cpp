@@ -115,7 +115,7 @@ void managepartitionthread::volumeMiniProperties()
 {
 	QProcess p ;
 	QString exe ;
-
+	sleep( 1 ) ;
 	exe = QString( "%1 -t -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;
 
 	p.start( exe );

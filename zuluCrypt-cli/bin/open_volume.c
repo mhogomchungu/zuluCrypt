@@ -62,7 +62,7 @@ static int zuluExit( int st,char * device,char * m_point,stringList_t stl )
 		case 27: printf( "ERROR: insufficient memory to hold passphrase\n" );							break ;
 		case 28: printf( "ERROR: insufficient privilege to open plugin or path does not exist\n" );				break ;
 		case 29: printf( "ERROR: could not get a passphrase through a local socket\n" );					break ;
-		case 30: printf( "ERROR: mount point error" ) ;									        break ; 		
+		case 30: printf( "ERROR: mount point error" ) ;									        break ; 
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
 	
@@ -241,5 +241,5 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	
 	zuluCryptCheckInvalidKey( opts->device ) ;
 	
-	return zuluExit_1( st,opts,device,cpoint,stl );	
+	return zuluExit_1( st,opts,device,cpoint,stl );
 }

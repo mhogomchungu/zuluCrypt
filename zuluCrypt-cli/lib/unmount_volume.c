@@ -71,7 +71,7 @@ int zuluCryptUnmountVolume( const char * map,char ** m_point )
 	struct mntent * mt ;
 	
 	if( stat( map,&st ) != 0 )
-		return 1 ;		
+		return 1 ;
 	
 	/*
 	 * mtab_is_at_etc() is defined in print_mounted_volumes.c
@@ -88,7 +88,7 @@ int zuluCryptUnmountVolume( const char * map,char ** m_point )
 			if( strncmp( mt->mnt_fsname,map,map_len ) == 0 ){
 				h = entry_found( mt->mnt_dir,m_point ) ;
 				break ;
-			}		
+			}
 		}
 		
 		endmntent( f ) ;
@@ -97,23 +97,23 @@ int zuluCryptUnmountVolume( const char * map,char ** m_point )
 		f = setmntent( "/etc/mtab","r" ) ;
 		
 		lock = mnt_new_lock( "/etc/mtab~",getpid() ) ;
-		status = mnt_lock_file( lock ) ;	
+		status = mnt_lock_file( lock ) ;
 		
 		if( status != 0 ){
 			h = 4 ;
-		}else{		
+		}else{
 			g = setmntent( "/etc/mtab-zC","w" ) ;
 			while( ( mt = getmntent( f ) ) != NULL ){
 				if( strncmp( mt->mnt_fsname,map,map_len ) == 0 ){
-					h = entry_found( mt->mnt_dir,m_point ) ;				
+					h = entry_found( mt->mnt_dir,m_point ) ;
 				}else{			
 					addmntent( g,mt ) ;
 				}
 			}
 			
-			endmntent( g ) ;		
+			endmntent( g ) ;
 		
-			if( h == 0 ){			
+			if( h == 0 ){
 				rename( "/etc/mtab-zC","/etc/mtab" ) ;
 				chown( "/etc/mtab",0,0 ) ;
 			}else{
@@ -123,7 +123,7 @@ int zuluCryptUnmountVolume( const char * map,char ** m_point )
 			mnt_unlock_file( lock ) ;
 		}	
 		
-		endmntent( f ) ;		
+		endmntent( f ) ;
 		mnt_free_lock( lock ) ;
 	}
 	

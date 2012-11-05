@@ -28,7 +28,7 @@ static int zuluCryptEXEGetDevice( const char * device )
 		printf( "ERROR: could not get device address from mapper address\n" ) ;
 		return 1 ;
 	}else{
-		printf( "%s\n",c ) ;		
+		printf( "%s\n",c ) ;
 		free( c ) ;
 		return 0 ;
 	}
@@ -55,7 +55,7 @@ static int zuluCryptEXECheckEmptySlots( const char * device )
 	char * c  ;
 	if( zuluCryptPathIsNotValid( device ) ){
 		printf( "path \"%s\" does not point to a device\n",device ) ;
-		status = 1 ;			
+		status = 1 ;
 	}else{
 		c = zuluCryptEmptySlots( device ) ;
 		if( c == NULL ){
@@ -90,7 +90,7 @@ static int zuluCryptEXE( struct_opts * clargs, const char * mapping_name,uid_t u
 		case 's' : return zuluCryptEXEVolumeInfo( mapping_name,clargs->device,uid ) ;
 		case 'q' : return zuluCryptEXECloseVolume( clargs->device,mapping_name,uid ) ;
 		case 'o' : return zuluCryptEXEOpenVolume( clargs,mapping_name,uid ) ;
-		case 'O' : return zuluCryptEXEOpenVolume( clargs,mapping_name,uid ) ;		
+		case 'O' : return zuluCryptEXEOpenVolume( clargs,mapping_name,uid ) ;
 		case 'c' : return zuluCryptEXECreateVolume( clargs,mapping_name,uid ) ;
 		case 'a' : return zuluCryptEXEAddKey( clargs,uid ) ;
 		case 'r' : return zuluCryptEXERemoveKey( clargs,uid );
@@ -220,7 +220,7 @@ int main( int argc,char * argv[] )
 	}
 	
 	if( action == '\0' )
-		return zuluExit( 130,stl,"ERROR: \"action\" argument is missing\n" ) ;	
+		return zuluExit( 130,stl,"ERROR: \"action\" argument is missing\n" ) ;
 	
 	if( device == NULL )
 		return zuluExit( 120,stl,"ERROR: required option( device path ) is missing for this operation\n" ) ;

@@ -657,7 +657,7 @@ void StringListMultipleDelete( stringList_t * stl,... )
 		
 		entry = va_arg( list,stringList_t * ) ;
 		
-		if( entry == '\0' )
+		if( entry == NULL )
 			break ;
 		
 		StringListDelete( entry ) ;

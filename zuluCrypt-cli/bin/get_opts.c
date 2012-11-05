@@ -44,11 +44,11 @@ void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
 	
 	while ( (c = getopt(argc,argv,"JLORBXASNPkhocsarqwibEDs:m:d:p:f:e:z:g:y:u:l:n:j:t:G:") ) != -1 ) {
 		switch( c ){	
-			case( 'E' ) : stopts->action = 'E' 	; break ;	      
+			case( 'E' ) : stopts->action = 'E' 	; break ;  
 			case( 'D' ) : stopts->action = 'D' 	; break ; 
-			case( 'X' ) : stopts->action = 'X'      ; break ;			     
-			case( 'J' ) : stopts->action = 'J'      ; break ;			     
-			case( 'L' ) : stopts->action = 'L'      ; break ;			     
+			case( 'X' ) : stopts->action = 'X'      ; break ;
+			case( 'J' ) : stopts->action = 'J'      ; break ;
+			case( 'L' ) : stopts->action = 'L'      ; break ; 
 			case( 'o' ) : stopts->action = 'o'      ; break ;
 			case( 'c' ) : stopts->action = 'c'      ; break ;
 			case( 's' ) : stopts->action = 's'      ; break ;
@@ -102,7 +102,7 @@ void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
 			stopts->existing_key = optarg ;
 			break ;
 			case( 'u' ) : stopts->existing_key_source = "-f" ; 
-			stopts->existing_key = optarg ;			
+			stopts->existing_key = optarg ;
 			break ;
 			case( 'l' ) : stopts->new_key_source = "-p" ; 
 			stopts->new_key = optarg ;

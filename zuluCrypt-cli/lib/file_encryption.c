@@ -83,7 +83,7 @@ static string_t crypt_mapper( const char * path,const char * key,uint64_t key_le
 	if( zuluCryptOpenPlain( mpath,StringContent( p ),"rw",key,key_len ) != 0 )
 		StringDelete( &p ) ;
 	else	
-		StringMultiplePrepend( p,"/",crypt_get_dir(),'\0' ) ;
+		StringMultiplePrepend( p,"/",crypt_get_dir(),NULL ) ;
 	
 	free( mpath ) ;
 	
@@ -180,7 +180,7 @@ int zuluCryptDecryptFile( const char * source,const char * dest,const char * key
 		write( f_out,buffer,len ) ;
 	}
 	
-	return zuluExit( 0,f_in,f_out,p ) ;	
+	return zuluExit( 0,f_in,f_out,p ) ;
 }
 
 /*
@@ -268,7 +268,7 @@ int zuluCryptEncryptFile( const char * source,const char * dest,const char * key
 	read( f_in,buffer,100 ) ;
 	close( f_in ) ;
 	
-	lseek( f_out,100,SEEK_SET ) ;	
+	lseek( f_out,100,SEEK_SET ) ;
 	
 	write( f_out,buffer,100 ) ;
 	write( f_out,buffer,100 ) ;
@@ -276,7 +276,7 @@ int zuluCryptEncryptFile( const char * source,const char * dest,const char * key
 	/*
 	 * set the beginning of the payload,The cypher text will start at byte 512.
 	 */
-	lseek( f_out,SIZE,SEEK_SET ) ;	
+	lseek( f_out,SIZE,SEEK_SET ) ;
 	
 	f_in = open( source,O_RDONLY ) ;
 	
@@ -291,8 +291,8 @@ int zuluCryptEncryptFile( const char * source,const char * dest,const char * key
 	
 	zuluCryptCloseMapper( mapper ) ;
 	
-	StringMultipleDelete( &q,&p,'\0' ) ;
+	StringMultipleDelete( &q,&p,NULL ) ;
 	
-	return 0 ;	
+	return 0 ;
 }
 

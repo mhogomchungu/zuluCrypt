@@ -51,7 +51,7 @@ static string_t hash_path( const char * path )
 	uint64_t h = 0 ;
 	
 	for ( i = 0 ; i < l ; i++ ) 
-		h = h + path[ i ] ;	
+		h = h + path[ i ] ;
 	
 	return StringIntToString( h ) ;
 }
@@ -69,14 +69,14 @@ string_t zuluCryptCreateMapperName( const char * device,const char * mapping_nam
 		StringAppend( p,"/zuluCrypt-" ) ;
 	}
 	
-	q = StringIntToString( uid ) ;	
+	q = StringIntToString( uid ) ;
 	StringAppendString( p,q ) ;
 	
 	if( strncmp( mapping_name,"UUID-",5 ) == 0 ){
-		StringMultipleAppend( p,"-",mapping_name,"-",'\0' ) ;
-		z = hash_path( mapping_name ) ;		
+		StringMultipleAppend( p,"-",mapping_name,"-",NULL ) ;
+		z = hash_path( mapping_name ) ;
 	}else{
-		StringMultipleAppend( p,"-NAAN-",mapping_name,"-",'\0' ) ;			
+		StringMultipleAppend( p,"-NAAN-",mapping_name,"-",NULL ) ;
 		z = hash_path( device ) ;
 	}
 	
@@ -89,7 +89,7 @@ string_t zuluCryptCreateMapperName( const char * device,const char * mapping_nam
 	 */
 	StringReplaceCharString( p,'_',BASH_SPECIAL_CHARS ) ;
 	
-	StringMultipleDelete( &q,&z,'\0' ) ;
+	StringMultipleDelete( &q,&z,NULL ) ;
 
 	return p ;
 }

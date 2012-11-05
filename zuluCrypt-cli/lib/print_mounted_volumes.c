@@ -50,7 +50,7 @@ int zuluCryptMtabIsAtEtc( void )
 
 const char * zuluCryptDecodeMtabEntry( string_t st )
 {
-	StringReplaceString( st,"\\012","\n" ) ;			
+	StringReplaceString( st,"\\012","\n" ) ;
 	StringReplaceString( st,"\\040"," " ) ;
 	StringReplaceString( st,"\\134","\\" ) ;
 	return StringReplaceString( st,"\\011","\\t" ) ;
@@ -58,7 +58,7 @@ const char * zuluCryptDecodeMtabEntry( string_t st )
 
 static void print( uid_t uid,stringList_t stl )
 {
-	const char * c ;	
+	const char * c ;
 	const char * d ;
 	const char * e ;
 	char * f ;
@@ -74,7 +74,7 @@ static void print( uid_t uid,stringList_t stl )
 
 	string_t p = StringIntToString( uid ) ;
 	
-	e = StringMultiplePrepend( p,"/zuluCrypt-",crypt_get_dir(),'\0' ) ;
+	e = StringMultiplePrepend( p,"/zuluCrypt-",crypt_get_dir(),NULL ) ;
 	
 	len = StringLength( p ) ;
 	
@@ -97,13 +97,13 @@ static void print( uid_t uid,stringList_t stl )
 				if( k != -1 ){
 					c = StringSubChar( q,k,'\0' ) + len + 6 ;
 					d = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;
-					printf( "UUID=\"%s\"\t%s\n",c,d ) ;	
+					printf( "UUID=\"%s\"\t%s\n",c,d ) ;
 				}
 			}else{
 				f = zuluCryptVolumeDeviceName( StringListContentAt( stx,0 ) ) ;
 				
 				if( f != NULL ){
-					d = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;					
+					d = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;
 					printf( "%s\t%s\n",f,d ) ;			
 					free( f ) ;
 				}
@@ -132,11 +132,11 @@ stringList_t zuluCryptGetMtabList( void )
 		m_lock = mnt_new_lock( "/etc/mtab~",getpid() ) ;
 		
 		if( mnt_lock_file( m_lock ) == 0 ){
-			q = StringGetFromFile( "/etc/mtab" ) ;		
+			q = StringGetFromFile( "/etc/mtab" ) ;
 			mnt_unlock_file( m_lock ) ;
 		}		
 
-		mnt_free_lock( m_lock ) ;		
+		mnt_free_lock( m_lock ) ;
 	}
 	
 	if( q == StringVoid )
@@ -190,7 +190,7 @@ char * zuluCryptGetMountPointFromPath( const char * path )
 		if( StringListContentAtEqual( stx,0,path ) == 0 ){
 			entry = StringListDetachAt( stx,1 ) ;
 			zuluCryptDecodeMtabEntry( entry ) ;
-			StringListMultipleDelete( &stx,&stl,'\0' ) ;
+			StringListMultipleDelete( &stx,&stl,NULL ) ;
 			return StringDeleteHandle( &entry ) ;
 		}else{		
 			StringListDelete( &stx ) ;
@@ -199,7 +199,7 @@ char * zuluCryptGetMountPointFromPath( const char * path )
 	
 	StringListDelete( &stl ) ;
 	
-	return NULL ;	
+	return NULL ;
 }
 
 int zuluCryptPartitionIsMounted( const char * path )

@@ -50,7 +50,7 @@ int zuluCryptOpenLuks( const char * device,const char * mapper,const char * mode
 	if( st >= 0 )
 		return zuluExit( 0,cd ) ;
 	else if( st == -1 )
-		return zuluExit( 1,cd ) ;	
+		return zuluExit( 1,cd ) ;
 	else
 		return zuluExit( 2,cd ) ;
 }

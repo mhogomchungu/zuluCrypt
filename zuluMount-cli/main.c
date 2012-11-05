@@ -112,7 +112,7 @@ static int _zuluMountPartitionAccess( const char * device,const char * mode,uid_
 	int user    ;
 	
 	if( p == StringVoid )
-		return 0 ;	
+		return 0 ;
 	
 	st = 0 ;
 	ro      = StringContains( p,"ro" ) ;
@@ -421,7 +421,7 @@ static int _zuluMiniProperties( const char * device,uid_t uid )
 			/*
 			 * volume is not LUKS but doesnt look like its a regular partition, assume its plain volume
 			 */
- 			return _zuluMiniCryptoProperties( device,uid ) ;	
+ 			return _zuluMiniCryptoProperties( device,uid ) ;
 		}
 	}else{
 		/*

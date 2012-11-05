@@ -76,10 +76,10 @@ stringList_t zuluCryptPartitionList( void )
 	size_t j ;	
 	ssize_t index ;	
 	
-	stringList_t stl   = StringListVoid ;	
-	stringList_t stl_1 = StringListVoid ;	
+	stringList_t stl   = StringListVoid ;
+	stringList_t stl_1 = StringListVoid ;
 	
-	string_t st = StringGetFromVirtualFile( "/proc/partitions" ) ;	
+	string_t st = StringGetFromVirtualFile( "/proc/partitions" ) ;
 	string_t st_1 ;
 	
 	if( st == StringVoid )
@@ -110,7 +110,7 @@ stringList_t zuluCryptPartitionList( void )
 		if( strlen( device  ) <= 3  )
 			continue ;
 		
-		if( ( strncmp( device,"hd",2 ) == 0 || strncmp( device,"sd",2 ) == 0 ) ){			
+		if( ( strncmp( device,"hd",2 ) == 0 || strncmp( device,"sd",2 ) == 0 ) ){
 			StringInsertAndDelete( st_1,5,device ) ;
 			stl_1 = StringListAppendString( stl_1,st_1 ) ;
 		}	
@@ -326,13 +326,13 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 			
 			/* 
 			 * resolve the UUID to its device address 
-			 * q will have NULL  most likely if the drive with UUID is not attached				 
+			 * q will have NULL  most likely if the drive with UUID is not attached
 			 */
 			ac = zuluCryptDeviceFromUUID( strstr( StringContent( st ),"=" ) + 1 );    
 
 			if( ac != NULL ){	
 				stl_1 = StringListAppend( stl_1,ac ) ;
-				free( ac ) ;					
+				free( ac ) ;
 			}
 		}else{		
 			/*

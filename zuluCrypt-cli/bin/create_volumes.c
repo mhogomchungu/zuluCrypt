@@ -35,7 +35,7 @@ static int zuluExit( int st,stringList_t stl )
 		case 4 : printf( "ERROR: one or more required argument(s) for this operation is missing\n" );	break  ;
 		case 5 : printf( "ERROR: wrong choice, exiting\n" );						break  ;
 		case 6 : printf( "ERROR: couldnt get enought memory to hold the key file\n" ) ;			break  ;
-		case 7 : printf( "ERROR: passphrases do not match\n" ) ;					break  ;	
+		case 7 : printf( "ERROR: passphrases do not match\n" ) ;					break  ;
 		case 8 : printf( "ERROR: invalid path to key file\n" ) ;					break  ;
 		case 9 : printf( "ERROR: container file must be bigger than 3MB\n" ) ;				break  ;
 		case 10: printf( "ERROR: insufficient privilege to create a volume on a system partition.\n" );
@@ -107,7 +107,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	 */
 	switch( zuluCryptSecurityCanOpenPathForWriting( device,uid ) ){
 		case 2 : return zuluExit( 1,stl ) ; break ;
-		case 1 : return zuluExit( 13,stl ); break ;		
+		case 1 : return zuluExit( 13,stl ); break ;
 	}
 	
 	dev = realpath( device,NULL ) ;
@@ -171,7 +171,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		printf("Are you sure you want to proceed?\n" ) ;
 		printf( "Type \"YES\" and press enter if you want to process: " ) ;
 		
-		*confirm = StringGetFromTerminal_1( 3 ) ;	
+		*confirm = StringGetFromTerminal_1( 3 ) ;
 		if( *confirm == StringVoid )
 			return zuluExit( 21,stl ) ;
 		else{
@@ -201,7 +201,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		
 		printf( "\n" ) ;
 		
-		if( !StringEqualString( *pass_1,*pass_2 ) ){				
+		if( !StringEqualString( *pass_1,*pass_2 ) ){
 			st = 7 ;
 		}else{				
 			st = zuluCryptCreateVolume( device,fs,type,StringContent( *pass_1 ),StringLength( *pass_1 ),rng ) ;
@@ -216,10 +216,10 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		/*
 		 * "-p" options means a user has provided the passphrase
 		 * "-f" option means a user has provided a path to where the passphrase is stored, StringGetFromFile_1 family
-		 *  if functions are used to read files.One is used here to do that.		 * 
+		 *  if functions are used to read files.One is used here to do that.
 		 */
-		if( strcmp( keyType,"-p" ) == 0 ) 			
-			st = zuluCryptCreateVolume( device,fs,type,pass,strlen( pass ),rng ) ;			
+		if( strcmp( keyType,"-p" ) == 0 )
+			st = zuluCryptCreateVolume( device,fs,type,pass,strlen( pass ),rng ) ;
 		else if( strcmp( keyType, "-f" ) == 0 ) {
 			/*
 			 * function is defined at "security.c"
@@ -230,15 +230,12 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 				case 2 : return zuluExit( 6,stl )  ;
 				case 5 : return zuluExit( 22,stl ) ;
 			}
-			st = zuluCryptCreateVolume( device,fs,type,StringContent( *content ),StringLength( *content ),rng ) ;					
+			st = zuluCryptCreateVolume( device,fs,type,StringContent( *content ),StringLength( *content ),rng ) ;
 		}else{
-			st = 2 ;			
+			st = 2 ;
 		}
 	}
 	
-	if( st == 0 )
-		return zuluExit_1( type,stl ) ;
-	else
-		return zuluExit( st,stl ) ;
+	return st ? zuluExit( st,stl ) : zuluExit_1( type,stl ) ;
 }
 

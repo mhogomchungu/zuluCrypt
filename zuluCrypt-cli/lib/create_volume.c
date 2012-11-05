@@ -61,7 +61,7 @@ int zuluCryptCreateVolume( const char * dev,const char * fs,const char * type,co
 	StringAppendString( m,id ) ;
 	StringDelete( &id ) ;
 	
-	device_mapper = StringMultiplePrepend( m,"/",crypt_get_dir(),'\0' ) ;
+	device_mapper = StringMultiplePrepend( m,"/",crypt_get_dir(),NULL ) ;
 	
 	mapper = strrchr( device_mapper,'/' ) + 1 ;
 
@@ -72,7 +72,7 @@ int zuluCryptCreateVolume( const char * dev,const char * fs,const char * type,co
 			return zuluExit( 3,m ) ; ;
 	}else if( strcmp( type,"plain") == 0 ){
 		if( zuluCryptOpenPlain( dev,mapper,"rw",pass,pass_size ) )
-			return zuluExit( 3,m ) ; ;		
+			return zuluExit( 3,m ) ; ;
 	}else{
 		return zuluExit( 2,m ) ;
 	}		
@@ -81,22 +81,22 @@ int zuluCryptCreateVolume( const char * dev,const char * fs,const char * type,co
 	
 	if( strcmp( fs,"ext2" ) == 0 || strcmp( fs,"ext3" ) == 0 || strcmp( fs,"ext4" ) == 0 ){
 		
-		ProcessSetArgumentList( p,"-t",fs,"-m","1",device_mapper,'\0' ) ;
+		ProcessSetArgumentList( p,"-t",fs,"-m","1",device_mapper,NULL ) ;
 		
 	}else if( strcmp( fs,"reiserfs" ) == 0 ){
 		
-		ProcessSetArgumentList( p,"-t",fs,"-f","-f","-q",device_mapper,'\0' ) ;
+		ProcessSetArgumentList( p,"-t",fs,"-f","-f","-q",device_mapper,NULL ) ;
 		
 	}else if( strcmp( fs,"jfs" ) == 0 ){
 		
-		ProcessSetArgumentList( p,"-t",fs,"-q",device_mapper,'\0' ) ;
+		ProcessSetArgumentList( p,"-t",fs,"-q",device_mapper,NULL ) ;
 		
 	}else if( strcmp( fs,"ntfs" ) == 0 ){
 		
-		ProcessSetArgumentList( p,"-t",fs,"-f",device_mapper,'\0' ) ;
+		ProcessSetArgumentList( p,"-t",fs,"-f",device_mapper,NULL ) ;
 		
 	}else{		
-		ProcessSetArgumentList( p,"-t",fs,device_mapper,'\0' ) ;
+		ProcessSetArgumentList( p,"-t",fs,device_mapper,NULL ) ;
 		
 		/*
 		 * unhandled fs are processed here.They are given 60 seconds to accomplish their task

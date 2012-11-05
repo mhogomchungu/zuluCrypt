@@ -38,11 +38,11 @@ int zuluCryptCloseMapper( const char * mapper )
 	 * For reasons currently unknown to me, the mapper fail to close sometimes so give it some room when it happens
 	 */
 	for( j = 0 ; j < 10 ; j++ ) { 
-		if( crypt_deactivate( NULL,mapper ) == 0 ){			
+		if( crypt_deactivate( NULL,mapper ) == 0 ){
 			return unlink_mapper( mapper ) ;
 		}else{
 			sleep( 1 ) ;
-		}	
+		}
 	}
 	
 	return 1 ;

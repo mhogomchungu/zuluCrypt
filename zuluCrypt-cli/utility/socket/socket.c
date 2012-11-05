@@ -34,18 +34,6 @@ struct SocketType_t
 	char * inetAddress ;
 };
 
-static void __debug( const char * msg )
-{
-	printf( "%s\n",msg ) ;
-	fflush( stdout );
-}
-
-static void __debug1( const char * msg )
-{
-	perror( msg ) ;
-	fflush( stdout );
-}
-
 static void ( *__SocketErrorFunction__ )( void )  = NULL ;
 
 void SocketExitOnMemoryExaustion( void ( *f )( void ) )
@@ -294,8 +282,6 @@ static inline socket_t _SocketAcceptLocal( socket_t s )
 	size_t size = sizeof( struct sockaddr_un ) ;
 	socket_t x = ( socket_t ) malloc( sizeof( struct SocketType_t ) ) ;
 	
-	__debug( "accepting a local socket" ) ;
-	
 	if( x == NULL )
 		return _SocketError() ;
 	
@@ -311,13 +297,11 @@ static inline socket_t _SocketAcceptLocal( socket_t s )
 		memset( x->local,'\0',size ) ;
 		x->fd = accept( s->fd,( struct sockaddr * )x->local,&x->size ) ;
 		if( x->fd == -1 ){
-			__debug1( "failed to accept a local socket" ) ;
 			free( x->local ) ;
 			free( x ) ;
 			x = SocketVoid ;
 		}else{
 			strcpy( x->local->sun_path,s->local->sun_path ) ;
-			__debug( "a local socket accepted" ) ;
 			x->inetAddress = NULL ;
 			x->domain = AF_UNIX ;
 			x->type = SOCK_STREAM ;
@@ -451,15 +435,7 @@ static inline int __SocketTimeOut( socket_t s,time_t time,int mode )
 
 socket_t SocketAcceptWithTimeOut( socket_t s,time_t time ) 
 {	
-	socket_t client = SocketVoid ;
-	int st = __SocketTimeOut( s,time,READ ) ;
-	if( st ){
-		__debug( "socket timed out with a connection request" ) ;
-		client = SocketAccept( s ) ;
-	}else{
-		__debug1( "socket timed out without a connection request" ) ;
-	}
-	return client ;
+	return __SocketTimeOut( s,time,READ ) ? SocketAccept( s ) : SocketVoid ;
 }
 
 static inline void __SocketClose( socket_t * p ) 
@@ -473,12 +449,8 @@ static inline void __SocketClose( socket_t * p )
 	close( fd ) ;
 	
 	if( s->domain == AF_UNIX ) {
-		if( s->socket_server ){
+		if( s->socket_server )
 			unlink( s->local->sun_path ) ;
-			__debug( "closed a server socket" ) ;
-		}else{
-			__debug( "closed a client socket" ) ;
-		}
 		free( s->local ) ;
 	}else if( s->domain == AF_INET ){
 		free( s->net ) ;
