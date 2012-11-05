@@ -32,12 +32,13 @@ int zuluCryptCreateVolume( const char * dev,const char * fs,const char * type,co
 	int status ;
 	process_t p ;
 	
-	string_t id ;	
+	string_t id ;
 	string_t m = StringVoid ;
 		
 	const char * device_mapper ;
 	const char * mapper ;	
 	char * device ;
+	char * e = NULL ;
 	
 	if ( zuluCryptPathIsNotValid( dev ) )
 		return 1 ;
@@ -65,14 +66,14 @@ int zuluCryptCreateVolume( const char * dev,const char * fs,const char * type,co
 	
 	mapper = strrchr( device_mapper,'/' ) + 1 ;
 
-	if( strcmp( type,"luks" )  == 0 ){
+	if( strcmp( type,"luks" ) == 0 ){
 		if( zuluCryptCreateLuks( dev,pass,pass_size,rng ) != 0 )	
 			return zuluExit( 3,m ) ;
 		if( zuluCryptOpenLuks( dev,mapper,"rw",pass,pass_size ) != 0 )
-			return zuluExit( 3,m ) ; ;
+			return zuluExit( 3,m ) ; 
 	}else if( strcmp( type,"plain") == 0 ){
 		if( zuluCryptOpenPlain( dev,mapper,"rw",pass,pass_size ) )
-			return zuluExit( 3,m ) ; ;
+			return zuluExit( 3,m ) ; 
 	}else{
 		return zuluExit( 2,m ) ;
 	}		
@@ -95,7 +96,7 @@ int zuluCryptCreateVolume( const char * dev,const char * fs,const char * type,co
 		
 		ProcessSetArgumentList( p,"-t",fs,"-f",device_mapper,END ) ;
 		
-	}else{		
+	}else{
 		ProcessSetArgumentList( p,"-t",fs,device_mapper,END ) ;
 		
 		/*
@@ -111,7 +112,15 @@ int zuluCryptCreateVolume( const char * dev,const char * fs,const char * type,co
 
 	status = ProcessExitStatus( p ) ;
 	
-	zuluCryptCloseMapper( device_mapper );	
+	if( status ){
+		ProcessGetOutPut( p,&e,STDERROR ) ;
+		if( e ){
+			puts( e ) ;
+			free( e ) ;
+		}
+	}
+	
+	zuluCryptCloseMapper( device_mapper );
 	
 	ProcessDelete( &p ) ;
 	
