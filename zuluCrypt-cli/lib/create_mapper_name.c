@@ -73,10 +73,10 @@ string_t zuluCryptCreateMapperName( const char * device,const char * mapping_nam
 	StringAppendString( p,q ) ;
 	
 	if( strncmp( mapping_name,"UUID-",5 ) == 0 ){
-		StringMultipleAppend( p,"-",mapping_name,"-",NULL ) ;
+		StringMultipleAppend( p,"-",mapping_name,"-",END ) ;
 		z = hash_path( mapping_name ) ;
 	}else{
-		StringMultipleAppend( p,"-NAAN-",mapping_name,"-",NULL ) ;
+		StringMultipleAppend( p,"-NAAN-",mapping_name,"-",END ) ;
 		z = hash_path( device ) ;
 	}
 	
@@ -89,7 +89,7 @@ string_t zuluCryptCreateMapperName( const char * device,const char * mapping_nam
 	 */
 	StringReplaceCharString( p,'_',BASH_SPECIAL_CHARS ) ;
 	
-	StringMultipleDelete( &q,&z,NULL ) ;
+	StringMultipleDelete( &q,&z,END ) ;
 
 	return p ;
 }

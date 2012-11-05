@@ -81,7 +81,7 @@ char * zuluCryptGetUUIDFromMapper( const char * mapper )
 	
 	if( blkid_probe_lookup_value( blkid,"UUID",&uuid,NULL ) == 0 ){
 		p = String( "" ) ;
-		StringMultipleAppend( p," UUID:   \t\"",uuid,"\"",NULL ) ;
+		StringMultipleAppend( p," UUID:   \t\"",uuid,"\"",END ) ;
 	}else
 		p = String( " UUID:   \t\"Nil\"" ) ;
 	
@@ -109,7 +109,7 @@ static void zuluCryptFileSystemProperties( string_t p,const char * mapper,const 
 	blkid_do_probe( blkid );
 	
 	if( blkid_probe_lookup_value( blkid,"TYPE",&e,NULL ) == 0 )
-		StringMultipleAppend( p,"\n file system:\t",e,NULL ) ;
+		StringMultipleAppend( p,"\n file system:\t",e,END ) ;
 	else
 		StringAppend( p,"\n file system:\tNil" ) ;
 	
@@ -126,25 +126,25 @@ static void zuluCryptFileSystemProperties( string_t p,const char * mapper,const 
 	
 	e = StringIntToString_1( buffer,SIZE,total ) ;
 	zuluCryptFormatSize( format,e ) ;	
-	StringMultipleAppend( p,"\n total space:\t",format,NULL ) ;
+	StringMultipleAppend( p,"\n total space:\t",format,END ) ;
 	
 	e = StringIntToString_1( buffer,SIZE,used )  ;
 	zuluCryptFormatSize( format,e ) ;
-	StringMultipleAppend( p,"\n used space:\t",format,NULL ) ;
+	StringMultipleAppend( p,"\n used space:\t",format,END ) ;
 	
 	e = StringIntToString_1( buffer,SIZE,unused ) ;
 	zuluCryptFormatSize( format,e ) ;
-	StringMultipleAppend( p,"\n free space:\t",format,NULL ) ;
+	StringMultipleAppend( p,"\n free space:\t",format,END ) ;
 	
 	snprintf( buff,SIZE,"%.2f%%",100 * ( ( float ) used / ( float ) total ) ) ;
-	StringMultipleAppend( p,"\n used%:   \t",buff,"\n",NULL ) ;
+	StringMultipleAppend( p,"\n used%:   \t",buff,"\n",END ) ;
 		
 	buffer = zuluCryptGetUUIDFromMapper( mapper ) ;
 	StringAppend( p,buffer );
 	
 	free( buffer ) ;
 	
-	StringMultipleAppend( p,"\n mount point:\t",m_point,NULL ) ;
+	StringMultipleAppend( p,"\n mount point:\t",m_point,END ) ;
 }
 
 static char * zuluCryptLoopDeviceAddress( const char * device )
@@ -225,13 +225,13 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	}else if( strcmp( type,"plain") )
 		StringAppend( p,"plain" ) ;
 	
-	StringMultipleAppend( p,"\n cipher:\t",crypt_get_cipher_mode( cd ),NULL );
+	StringMultipleAppend( p,"\n cipher:\t",crypt_get_cipher_mode( cd ),END );
 	
 	z = StringIntToString_1( buffer,SIZE,8 * crypt_get_volume_key_size( cd ) ) ;
-	StringMultipleAppend( p,"\n keysize:\t",z," bits",NULL );
+	StringMultipleAppend( p,"\n keysize:\t",z," bits",END );
 
 	e = crypt_get_device_name( cd ) ;
-	StringMultipleAppend( p,"\n device:\t",e,NULL );
+	StringMultipleAppend( p,"\n device:\t",e,END );
 		
 	if( strncmp( e,"/dev/loop",9 ) == 0 ){
 		StringAppend( p,"\n loop:   \t" );
@@ -266,9 +266,9 @@ char * zuluCryptVolumeStatus( const char * mapper )
 			}		
 		}
 		
-		StringMultipleAppend( p,"\n active slots:\t",StringIntToString_1( buffer,SIZE,i ),NULL );
+		StringMultipleAppend( p,"\n active slots:\t",StringIntToString_1( buffer,SIZE,i ),END );
 		
-		StringMultipleAppend( p," / ",StringIntToString_1( buffer,SIZE,k ),NULL );
+		StringMultipleAppend( p," / ",StringIntToString_1( buffer,SIZE,k ),END );
 	}else{
 		StringAppend( p,"\n active slots:\tNil" );
 	}

@@ -86,7 +86,7 @@ void ProcessSetArgumentList( process_t p,... )
 			args = e ;
 		}
 		
-		if( entry == NULL ){
+		if( entry == END ){
 			args[ index ] = ( char * )0 ;
 			break ;
 		}else{

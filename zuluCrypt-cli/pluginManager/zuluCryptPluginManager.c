@@ -182,7 +182,7 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		ProcessDelete( &p ) ;
 	}
 	
-	StringMultipleDelete( &plugin_path,&uuid,&id,&path,NULL ) ;      
+	StringMultipleDelete( &plugin_path,&uuid,&id,&path,END ) ;      
 	
 	return key ;
 }

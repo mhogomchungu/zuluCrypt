@@ -206,7 +206,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	/*
 	 * Create a mapper path(usually at /dev/mapper) associated with opened plain mapper above.
 	 */
-	cmapper = StringMultiplePrepend( mapper,"/",crypt_get_dir(),'\0' ) ;
+	cmapper = StringMultiplePrepend( mapper,"/",crypt_get_dir(),END ) ;
 	
 	/*
 	 *  mapper path is usually a soft link to /dev/dm-X
@@ -285,7 +285,7 @@ int zuluCryptEXEWriteDeviceWithJunk( const struct_opts * opts,const char * mappi
 	
 	mapper = zuluCryptCreateMapperName( dev,mapping_name,uid,OPEN ) ;
 	
-	StringMultiplePrepend( mapper,"/",crypt_get_dir(),'\0' ) ;
+	StringMultiplePrepend( mapper,"/",crypt_get_dir(),END ) ;
 	
 	if( opts->dont_ask_confirmation == -1 ){
 		printf( "\nWARNING, device \"%s\" will be overwritten with random data destroying all present data.\n",device ) ;

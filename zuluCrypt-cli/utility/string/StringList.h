@@ -32,6 +32,12 @@ extern "C" {
  */
 #define StringListVoid ( ( void * ) 0 ) 
 
+/*
+ * use this variable to terminate variadic functions
+ * we dont use NULL here because NULL is defined simply as 0 and things break in C++
+ */
+#define END ( ( void * ) 0 )
+
 typedef struct StringListType * stringList_t ;
 
 /*
@@ -66,12 +72,12 @@ stringList_t StringListString( string_t * ) ;
 stringList_t StringListInit( void ) ;
 
 /*
- * Return the number of elements in the list * 
+ * Return the number of elements in the list
  */
 ssize_t StringListSize( stringList_t stl ) ;
 
 /*
- * create a  stringlist from splitted cstring using splitter as a splitting trigger. * 
+ * create a  stringlist from splitted cstring using splitter as a splitting trigger.
  */
 stringList_t StringListSplit( const char * cstring,char splitter ) ;
 

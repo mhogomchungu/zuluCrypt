@@ -167,7 +167,7 @@ int zuluMountPrintMountedVolumes( uid_t uid )
 	
 	mapper = StringIntToString( uid ) ;
 	
-	z = StringMultiplePrepend( mapper,"/zuluCrypt-",crypt_get_dir(),NULL ) ;
+	z = StringMultiplePrepend( mapper,"/zuluCrypt-",crypt_get_dir(),END ) ;
 	
 	k = StringLength( mapper ) ;
 	
@@ -245,7 +245,7 @@ int zuluMountPrintMountedVolumes( uid_t uid )
 	}
 	
 	StringDelete( &mapper ) ;
-	StringListMultipleDelete( &stl,&stz,NULL ) ;
+	StringListMultipleDelete( &stl,&stz,END ) ;
 	
 	return 0 ;
 }

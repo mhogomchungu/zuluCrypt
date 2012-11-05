@@ -116,7 +116,7 @@ void StringMultipleDelete( string_t * xt,... )
 	
 	while( 1 ){
 		entry = va_arg( list,string_t * ) ;
-		if( entry == NULL )
+		if( entry == END )
 			break ;
 		
 		if( *entry == StringVoid )
@@ -645,7 +645,7 @@ const char * StringMultipleAppend( string_t st,... )
 	
 	while( 1 ){
 		entry = va_arg( list,const char * ) ;
-		if( entry == NULL )
+		if( entry == END )
 			break ;
 		StringAppend( st,entry ) ;
 	}
@@ -662,7 +662,7 @@ const char * StringAppendMultipleString( string_t st,... )
 	
 	while( 1 ){
 		entry = va_arg( list,string_t ) ;
-		if( entry == NULL )
+		if( entry == END )
 			break ;
 		StringAppend( st,entry->string ) ;
 	}
@@ -679,7 +679,7 @@ const char * StringMultiplePrepend( string_t st,... )
 	
 	while( 1 ){
 		entry = va_arg( list,const char * ) ;
-		if( entry == NULL )
+		if( entry == END )
 			break ;
 		StringPrepend( st,entry ) ;
 	}
@@ -696,7 +696,7 @@ const char * StringPrependMultipleString( string_t st,... )
 	
 	while( 1 ){
 		entry = va_arg( list,string_t ) ;
-		if( entry == NULL )
+		if( entry == END )
 			break ;
 		StringPrepend( st,entry->string ) ;
 	}

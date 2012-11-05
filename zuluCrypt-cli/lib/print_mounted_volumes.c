@@ -74,7 +74,7 @@ static void print( uid_t uid,stringList_t stl )
 
 	string_t p = StringIntToString( uid ) ;
 	
-	e = StringMultiplePrepend( p,"/zuluCrypt-",crypt_get_dir(),NULL ) ;
+	e = StringMultiplePrepend( p,"/zuluCrypt-",crypt_get_dir(),END ) ;
 	
 	len = StringLength( p ) ;
 	
