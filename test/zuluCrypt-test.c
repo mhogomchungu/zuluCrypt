@@ -32,47 +32,15 @@
 
 #include "bin_path.h"
 
-const char * luksTestVolume   = NULL ;
-const char * plainTestVolume  = NULL ;
-const char * mount_point      = NULL ;
-const char * key              = NULL ;
-const char * key1             = NULL ;
-const char * zuluCryptExe     = NULL ;
-const char * zuluCryptTest    = NULL ;
-const char * keyfile          = NULL ;
-const char * keyfile1         = NULL ;
-
-stringList_t stl = StringListVoid ;
-
-/*
- * lots of nothing to work around valgrind warnings
- */
-void initGlobal( void )
-{
-	stl = StringList( "/tmp/zuluCrypt-luksTestVolume" ) ;
-	
-	StringListAppend( stl,"/tmp/zuluCrypt-plainTestVolume" ) ;
-	StringListAppend( stl,"/tmp/zuluCrypt-MountPoint" ) ;
-	
-	StringListAppend( stl,"xyz" ) ;
-	StringListAppend( stl,"xxx" ) ;
-	
-	StringListAppend( stl,ZULUCRYPTzuluCrypt ) ;
-	StringListAppend( stl,ZULUCRYPTTest ) ;
-	
-	StringListAppend( stl,"/tmp/zuluCrypt-KeyFile" ) ;
-	StringListAppend( stl,"/tmp/zuluCrypt-KeyFile1" ) ;
-	
-	luksTestVolume     = StringListContentAt( stl,0 ) ;
-	plainTestVolume    = StringListContentAt( stl,1 ) ;
-	mount_point        = StringListContentAt( stl,2 ) ;
-	key                = StringListContentAt( stl,3 ) ;
-	key1               = StringListContentAt( stl,4 ) ;
-	zuluCryptExe       = StringListContentAt( stl,5 ) ;
-	zuluCryptTest      = StringListContentAt( stl,6 ) ;
-	keyfile            = StringListContentAt( stl,7 ) ;
-	keyfile1           = StringListContentAt( stl,8 ) ;
-}
+const char * luksTestVolume   = "/tmp/zuluCrypt-luksTestVolume" ;
+const char * plainTestVolume  = "/tmp/zuluCrypt-plainTestVolume" ;
+const char * mount_point      = "/tmp/zuluCrypt-MountPoint" ;
+const char * key              = "xyz" ;
+const char * key1             = "xxx" ;
+const char * zuluCryptExe     = ZULUCRYPTzuluCrypt ;
+const char * zuluCryptTest    = ZULUCRYPTTest ;
+const char * keyfile          = "/tmp/zuluCrypt-KeyFile" ;
+const char * keyfile1         = "/tmp/zuluCrypt-KeyFile1" ;
 
 void __print( const char * msg )
 {
@@ -100,7 +68,6 @@ void EXIT( int st,char * msg )
 		free( msg ) ;
 	}
 	
-	StringListDelete( &stl ) ;
 	exit( st ) ;
 }
 
@@ -379,14 +346,14 @@ void checkIfDeviceIsLuks( const char * device )
 		__print( "check if a luks volume is a luks volume: PASSED\n" ) ;
 }
 
-int runTest( void )
-{	
+int main( void )
+{
 	createTestImages() ;
 	createKeyFiles() ;
 	
 	__printLine() ;
 	createVolume( plainTestVolume,"create a plain type volume using a key: ","-p","plain" ) ;
-		
+	
 	__printLine() ;
 	createVolume( luksTestVolume,"create a luks type volume using a key: ","-p","luks" ) ;
 	
@@ -400,7 +367,7 @@ int runTest( void )
 	__printLine() ;
 	openVolume( plainTestVolume,"open a plain volume with a keyfile: ","-f" );
 	closeVolume( plainTestVolume,"closing a plain volume: " ) ;
-		
+	
 	__printLine() ;
 	openVolumeWithPlugIn( plainTestVolume,"open a plain volume using a plugin: " ) ; 
 	closeVolume( plainTestVolume,"closing a plain volume: " ) ;
@@ -412,7 +379,7 @@ int runTest( void )
 	__printLine() ;
 	openVolume( luksTestVolume,"open a luks volume with a keyfile: ","-f" );
 	closeVolume( luksTestVolume,"closing a luks volume: " ) ;
-		
+	
 	__printLine() ;
 	openVolumeWithPlugIn( luksTestVolume,"open a luks volume using a plugin: " ) ; 
 	closeVolume( luksTestVolume,"closing a luks volume: " ) ;
@@ -435,12 +402,6 @@ int runTest( void )
 	
 	EXIT( 0,NULL ) ;
 	return 0 ;
-}
-
-int main( void )
-{
-	initGlobal() ;
-	return runTest() ; 
 }
 
  
