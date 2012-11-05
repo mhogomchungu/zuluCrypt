@@ -42,13 +42,13 @@ typedef struct ProcessType_t * process_t ;
  * use this variable to terminate variadic functions
  * we dont use NULL here because NULL is defined simply as 0 and things break in C++
  */
-#define END ( ( void * ) 0 )
+#define ENDLIST ( ( char * ) 0 )
 
 /*
  * An example of how to use the library to call ls with arguments and get its output while closing its std error 
  * 
  *  process_t p = Process( "/bin/ls" ) ; 
- *  ProcessSetArgumentList( p,"-l","-h",END ) ;  
+ *  ProcessSetArgumentList( p,"-l","-h",ENDLIST ) ;  
  *  ProcessStart( p ) ; 
  *  char * c = NULL ;
  *  ProcessGetOutPut( p,&c,STDOUT ) ; 

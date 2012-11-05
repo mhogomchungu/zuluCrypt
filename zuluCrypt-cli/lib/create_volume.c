@@ -82,22 +82,22 @@ int zuluCryptCreateVolume( const char * dev,const char * fs,const char * type,co
 	
 	if( strcmp( fs,"ext2" ) == 0 || strcmp( fs,"ext3" ) == 0 || strcmp( fs,"ext4" ) == 0 ){
 		
-		ProcessSetArgumentList( p,"-t",fs,"-m","1",device_mapper,END ) ;
+		ProcessSetArgumentList( p,"-t",fs,"-m","1",device_mapper,ENDLIST ) ;
 		
 	}else if( strcmp( fs,"reiserfs" ) == 0 ){
 		
-		ProcessSetArgumentList( p,"-t",fs,"-f","-f","-q",device_mapper,END ) ;
+		ProcessSetArgumentList( p,"-t",fs,"-f","-f","-q",device_mapper,ENDLIST ) ;
 		
 	}else if( strcmp( fs,"jfs" ) == 0 ){
 		
-		ProcessSetArgumentList( p,"-t",fs,"-q",device_mapper,END ) ;
+		ProcessSetArgumentList( p,"-t",fs,"-q",device_mapper,ENDLIST ) ;
 		
 	}else if( strcmp( fs,"ntfs" ) == 0 ){
 		
-		ProcessSetArgumentList( p,"-t",fs,"-f",device_mapper,END ) ;
+		ProcessSetArgumentList( p,"-t",fs,"-f",device_mapper,ENDLIST ) ;
 		
 	}else{
-		ProcessSetArgumentList( p,"-t",fs,device_mapper,END ) ;
+		ProcessSetArgumentList( p,"-t",fs,device_mapper,ENDLIST ) ;
 		
 		/*
 		 * unhandled fs are processed here.They are given 60 seconds to accomplish their task

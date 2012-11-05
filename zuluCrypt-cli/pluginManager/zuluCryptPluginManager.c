@@ -167,7 +167,7 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		p = Process( pluginPath ) ;
 
 		ProcessSetOptionUser( p,uid ) ;
-		ProcessSetArgumentList( p,device,StringContent( uuid ),sockpath,CHARMAXKEYZISE,argv,NULL ) ;
+		ProcessSetArgumentList( p,device,StringContent( uuid ),sockpath,CHARMAXKEYZISE,argv,ENDLIST ) ;
 		ProcessStart( p ) ;
 	
 		zuluCryptGetKeyFromSocket( sockpath,&key,uid ) ;

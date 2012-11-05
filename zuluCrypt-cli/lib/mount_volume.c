@@ -230,7 +230,7 @@ static inline int mount_ntfs( const m_struct * mst )
 {
 	int status ;
 	process_t p = Process( ZULUCRYPTmount ) ;
-	ProcessSetArgumentList( p,"-t","ntfs-3g","-o",mst->opts,mst->device,mst->m_point,NULL ) ;
+	ProcessSetArgumentList( p,"-t","ntfs-3g","-o",mst->opts,mst->device,mst->m_point,ENDLIST ) ;
 	ProcessStart( p ) ;
 	status = ProcessExitStatus( p ) ; 
 	ProcessDelete( &p ) ;
