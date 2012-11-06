@@ -5,64 +5,7 @@
  file(APPEND ${PROJECT_BINARY_DIR}/bin_path.h "\n#define ZULUCRYPTTest           \"${CMAKE_INSTALL_PREFIX}/bin/zuluCrypt-testKey\"\n")
  
  add_definitions( -I${PROJECT_BINARY_DIR} ) 
- 
- find_file ( mntent mntent.h PATHS /usr/lib /usr/lib64 /usr/lib/include /usr/lib64/include /usr/include/gnome-keyring-1 /usr/include /usr/local/include /usr/local/include/glib-2.0 /usr/include/glib-2.0 /usr/lib/glib-2.0/include /usr/lib64/glib-2.0/include ) 
   
- if(NOT mntent)
-	 message (FATAL_ERROR "ERROR: could not find mntent.h header file")
- endif(NOT mntent)
-	 
- message( STATUS "Found mntent.h  : " ${mntent} )
- 
- find_file ( mount_sys mount.h PATHS /usr/include/sys /usr/include/rpcsvc /usr/lib /usr/lib64 /usr/lib/include /usr/lib64/include /usr/include/gnome-keyring-1 /usr/include /usr/local/include /usr/local/include/glib-2.0 /usr/include/glib-2.0 /usr/lib/glib-2.0/include /usr/lib64/glib-2.0/include )
- 
- if( mount_sys)
-	message( STATUS "Found mount.h  : " ${mount_sys} )
- else( mount_sys )	 
-	message (FATAL_ERROR "ERROR: could not find mount.h?")	 
- endif( mount_sys )
-	 
-	 
- find_file ( mount_1 mount/mount.h PATHS /usr/lib /usr/lib64 /usr/lib/include /usr/lib64/include /usr/include/gnome-keyring-1 /usr/include /usr/local/include /usr/local/include/glib-2.0 /usr/include/glib-2.0 /usr/lib/glib-2.0/include /usr/lib64/glib-2.0/include ) 
-  
- find_file ( mount_2 libmount/libmount.h PATHS /usr/lib /usr/lib64 /usr/lib/include /usr/lib64/include /usr/include/gnome-keyring-1 /usr/include /usr/local/include /usr/local/include/glib-2.0 /usr/include/glib-2.0 /usr/lib/glib-2.0/include /usr/lib64/glib-2.0/include ) 
-   
- if(NOT mount_1)
-	 if(NOT mount_2)	 
-	 	message (FATAL_ERROR "ERROR: could not find libmount header file(mount/mount.h or libmount/limount.h)")
-	 else(mount_2)
-		 message( STATUS "Found libmount/libmount.h  : " ${mount_2} )	
-		 file(WRITE ${PROJECT_BINARY_DIR}/libmount_header.h "\n#define USE_UNSTABLE_LIBMOUNT_API 1\n#define USE_NEW_LIBMOUNT_API 1\n#include <libmount/libmount.h>\n")
-	 endif(NOT mount_2)
- else(mount_1)
-	 message( STATUS "Found mount/mount.h  : " ${mount_1} )	
-	 file(WRITE ${PROJECT_BINARY_DIR}/libmount_header.h "\n#define USE_UNSTABLE_LIBMOUNT_API 1\n#include <mount/mount.h>\n")	 
- endif(NOT mount_1) 
- 
- find_library( mountLibrary libmount.so )
- 
- if(NOT mountLibrary)	 
-	 message (FATAL_ERROR "ERROR: could not find libmount.so library")
- endif(NOT mountLibrary)
-	 
- message( STATUS "Found libmount.so  : " ${mountLibrary} ) 
- 
- find_file ( libcryptsetup.h libcryptsetup.h PATHS /include /usr/lib /usr/lib64 /usr/lib/include /usr/lib64/include /usr/include/gnome-keyring-1 /usr/include /usr/local/include /usr/local/include/glib-2.0 /usr/include/glib-2.0 /usr/lib/glib-2.0/include /usr/lib64/glib-2.0/include )
-  
- if(NOT libcryptsetup.h)
-	 message (FATAL_ERROR "ERROR: could not find libcryptsetup.h header file, is the development package of cryptsetup installed?")
- endif(NOT libcryptsetup.h)
-	 
- message( STATUS "Found libcryptsetup.h  : " ${libcryptsetup.h} )   
- 
- find_library( libcryptsetup libcryptsetup.so) 
- 
- if(NOT libcryptsetup)	 
-	 message (FATAL_ERROR "ERROR: could not find libcryptsetup.so library, is cryptsetup package installed?")
- endif(NOT libcryptsetup)	 
- 
- message( STATUS "Found libcryptsetup.so : " ${libcryptsetup} ) 
- 
  SET( BIN  
  bin/close_volume.c 
  bin/add_key.c
@@ -157,10 +100,10 @@
  set_target_properties( zuluCrypt     PROPERTIES SOVERSION "3.0.0" )
  set_target_properties( zuluCrypt-exe PROPERTIES SOVERSION "3.0.0" )
  
- TARGET_LINK_LIBRARIES( zuluCrypt     ${libcryptsetup} String StringList ${blkid} ${mountLibrary} Process ) 
+ TARGET_LINK_LIBRARIES( zuluCrypt     ${cryptsetup_lib} String StringList ${blkid} ${mountLibrary} Process ) 
  TARGET_LINK_LIBRARIES( zuluCrypt-exe zuluCrypt zuluCryptPluginManager ) 
  
- TARGET_LINK_LIBRARIES( zuluCrypt-static     ${libcryptsetup} String StringList ${blkid} ${mountLibrary} Process ) 
+ TARGET_LINK_LIBRARIES( zuluCrypt-static     ${cryptsetup_lib} String StringList ${blkid} ${mountLibrary} Process ) 
  TARGET_LINK_LIBRARIES( zuluCrypt-exe-static zuluCrypt-static zuluCryptPluginManager-static )
  
  TARGET_LINK_LIBRARIES( zuluCrypt-exe zuluCrypt )
@@ -183,8 +126,6 @@
 	set_target_properties( keyring PROPERTIES LINK_FLAGS "-pie" )
 	TARGET_LINK_LIBRARIES( keyring zuluCryptPluginManager ${keyring_library} )
 	install( TARGETS keyring RUNTIME DESTINATION "${PLUGINPATH}" )	
-	message( STATUS "found gnome-keyring/gnome-keyring.h  ${keyring_header}" )
-	message( STATUS "found libgnome-keyring.so  ${keyring_library}" )
  endif( KEYRINGSUPPORT )
  
  install(TARGETS zuluCrypt-cli RUNTIME DESTINATION bin            

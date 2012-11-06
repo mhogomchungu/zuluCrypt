@@ -20,6 +20,10 @@
 #ifndef PROCESS
 #define PROCESS
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
@@ -30,10 +34,6 @@
 #include <stdarg.h>
 #include <sys/types.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-	
 typedef struct ProcessType_t * process_t ;
 
 #define ProcessVoid ( ( void * ) 0 ) 

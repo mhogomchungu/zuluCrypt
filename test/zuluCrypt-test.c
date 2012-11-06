@@ -350,15 +350,15 @@ int main( void )
 {
 	createTestImages() ;
 	createKeyFiles() ;
-	
-	__printLine() ;
-	createVolume( plainTestVolume,"create a plain type volume using a key: ","-p","plain" ) ;
-	
+
 	__printLine() ;
 	createVolume( luksTestVolume,"create a luks type volume using a key: ","-p","luks" ) ;
-	
+
 	__printLine() ;
 	checkIfDeviceIsLuks( luksTestVolume ) ;
+
+	__printLine() ;
+	createVolume( plainTestVolume,"create a plain type volume using a key: ","-p","plain" ) ;
 	
 	__printLine() ;
 	openVolume( plainTestVolume,"open a plain volume with a key: ","-p" );
