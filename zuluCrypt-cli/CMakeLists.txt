@@ -186,7 +186,7 @@ Cflags: -I${CMAKE_INSTALL_PREFIX}/include
  install(FILES lib/libzuluCrypt.h              		 DESTINATION include/zuluCrypt )
  install(FILES bin/libzuluCrypt-exe.h		         DESTINATION include/zuluCrypt )
  install(FILES pluginManager/libzuluCryptPluginManager.h DESTINATION include/zuluCrypt )
- install(FILES ${PROJECT_BINARY_DIR}/libzuluCrypt.pc     DESTINATION lib/pkgconfig/    )
+ install(FILES ${PROJECT_BINARY_DIR}/libzuluCrypt.pc     DESTINATION lib${LIB_SUFFIX}/pkgconfig/ )
  
  
  
