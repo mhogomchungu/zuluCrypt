@@ -150,6 +150,19 @@
  
  TARGET_LINK_LIBRARIES( zuluCrypt-testKey zuluCryptPluginManager )
  
+ file( WRITE ${PROJECT_BINARY_DIR}/libzuluCrypt.pc 
+ "prefix=${CMAKE_INSTALL_PREFIX}
+exec_prefix=${CMAKE_INSTALL_PREFIX}
+libdir=${CMAKE_INSTALL_PREFIX}/lib
+includedir=${CMAKE_INSTALL_PREFIX}/include
+ 
+Name: libzuluCrypt
+Description: a zuluCrypt library,a front end to cryptsetup
+Version: ${PGR_VERSION}
+Libs: -L${CMAKE_INSTALL_PREFIX}/lib -lcryptsetup -lzuluCrypt -lzuluCrypt-exe -lzuluCryptPluginManager -lblkid -lmount
+Cflags: -I${CMAKE_INSTALL_PREFIX}/include
+\n")
+ 
  install(TARGETS zuluCrypt-test RUNTIME DESTINATION bin            
  PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE 
  )
@@ -173,6 +186,7 @@
  install(FILES lib/libzuluCrypt.h              		 DESTINATION include/zuluCrypt )
  install(FILES bin/libzuluCrypt-exe.h		         DESTINATION include/zuluCrypt )
  install(FILES pluginManager/libzuluCryptPluginManager.h DESTINATION include/zuluCrypt )
+ install(FILES ${PROJECT_BINARY_DIR}/libzuluCrypt.pc     DESTINATION lib/pkgconfig/    )
  
  
  

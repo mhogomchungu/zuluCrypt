@@ -31,7 +31,6 @@
 #include <QCloseEvent>
 
 #include "../zuluCrypt-cli/constants.h"
-#include "../zuluCrypt-cli/version.h"
 #include "../zuluMount-gui/oneinstance.h"
 #include "password_dialog.h"
 #include "openpartition.h"
@@ -57,6 +56,11 @@
 #include "kwalletplugin.h"
 #include "kwalletconfig.h"
 #include "tablewidget.h"
+
+/*
+ * below header is created at build time,it is set by CMakeLists.txt located in the root folder
+ */
+#include "version.h"
 
 namespace Ui {
     class zuluCrypt;

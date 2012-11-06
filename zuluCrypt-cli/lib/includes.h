@@ -29,13 +29,13 @@
 #include "../utility/string/StringList.h"
 #include "../utility/process/process.h"
 #include "../constants.h"
-#include "../version.h"
 #include "libzuluCrypt.h"
 #include "../bin/bash_special_chars.h"
 
-#ifdef __STDC__
-char * realpath( const char * path, char * resolved_path ) ;
-#endif
+/*
+ * below header is created at build time,it is set by CMakeLists.txt located in the root folder
+ */
+#include "version.h"
 
 string_t zuluCryptCreateMapperName( const char * device,const char * mapping_name,uid_t uid,int i ) ;
 

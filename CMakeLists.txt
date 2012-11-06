@@ -19,6 +19,14 @@ pkg_check_modules( BLKID blkid )
 pkg_check_modules( PWQUALITY pwquality ) 
 pkg_check_modules( LIBMOUNT mount ) 
 
+set( PGR_VERSION "4.5.3-rc2" )
+file( WRITE ${PROJECT_BINARY_DIR}/version.h "
+#ifndef ZULUCRYPT_VERSION
+#define ZULUCRYPT_VERSION
+#define VERSION_STRING \"${PGR_VERSION}\"
+#endif
+\n" )
+
 if( NOT BLKID_FOUND )
 	message ( FATAL_ERROR "ERROR: could not find blkid package" )
 else( NOT BLKID_FOUND )
