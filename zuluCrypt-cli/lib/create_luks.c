@@ -28,13 +28,11 @@ static inline int zuluExit( int st,struct crypt_device * cd )
 int zuluCryptCreateLuks( const char * dev,const char * pass,size_t pass_size,const char * rng )
 {
 	struct crypt_device * cd;
-	/*
-	struct crypt_params_luks1 params = {
-		.hash = "sha1",
-		.data_alignment = 4096,
-	};
-	*/
+		
 	struct crypt_params_luks1 params ;
+	
+	memset( &params,'\0',sizeof( struct crypt_params_luks1 ) ) ;
+	
 	params.hash = "sha1" ;
 	params.data_alignment = 4096 ;
 
