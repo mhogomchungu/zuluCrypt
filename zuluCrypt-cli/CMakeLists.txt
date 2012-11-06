@@ -153,13 +153,13 @@
  file( WRITE ${PROJECT_BINARY_DIR}/libzuluCrypt.pc 
  "prefix=${CMAKE_INSTALL_PREFIX}
 exec_prefix=${CMAKE_INSTALL_PREFIX}
-libdir=${CMAKE_INSTALL_PREFIX}/lib
+libdir=${LIB_PATH}
 includedir=${CMAKE_INSTALL_PREFIX}/include
  
 Name: libzuluCrypt
 Description: a zuluCrypt library,a front end to cryptsetup
 Version: ${PGR_VERSION}
-Libs: -L${CMAKE_INSTALL_PREFIX}/lib -lcryptsetup -lzuluCrypt -lzuluCrypt-exe -lzuluCryptPluginManager -lblkid -lmount
+Libs: -L${LIB_PATH} -lcryptsetup -lzuluCrypt -lzuluCrypt-exe -lzuluCryptPluginManager -lblkid -lmount
 Cflags: -I${CMAKE_INSTALL_PREFIX}/include
 \n")
  
@@ -171,22 +171,23 @@ Cflags: -I${CMAKE_INSTALL_PREFIX}/include
  PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE 
  )
  
- install(TARGETS zuluCryptPluginManager LIBRARY DESTINATION lib${LIB_SUFFIX} )
+ # ${LIB_PATH} is set in ../CMakeLists.txt
+ install(TARGETS zuluCryptPluginManager LIBRARY DESTINATION ${LIB_PATH} )
  
- install(TARGETS zuluCryptPluginManager-static ARCHIVE DESTINATION lib${LIB_SUFFIX} )
+ install(TARGETS zuluCryptPluginManager-static ARCHIVE DESTINATION ${LIB_PATH} )
  
- install(TARGETS zuluCrypt LIBRARY DESTINATION lib${LIB_SUFFIX} )
+ install(TARGETS zuluCrypt LIBRARY DESTINATION ${LIB_PATH} )
   
- install(TARGETS zuluCrypt-exe LIBRARY DESTINATION lib${LIB_SUFFIX} )
+ install(TARGETS zuluCrypt-exe LIBRARY DESTINATION ${LIB_PATH} )
  
- install(TARGETS zuluCrypt-exe-static ARCHIVE DESTINATION lib${LIB_SUFFIX} )
+ install(TARGETS zuluCrypt-exe-static ARCHIVE DESTINATION ${LIB_PATH} )
  
- install(TARGETS zuluCrypt-static ARCHIVE DESTINATION lib${LIB_SUFFIX} ) 
+ install(TARGETS zuluCrypt-static ARCHIVE DESTINATION ${LIB_PATH} ) 
  
  install(FILES lib/libzuluCrypt.h              		 DESTINATION include/zuluCrypt )
  install(FILES bin/libzuluCrypt-exe.h		         DESTINATION include/zuluCrypt )
  install(FILES pluginManager/libzuluCryptPluginManager.h DESTINATION include/zuluCrypt )
- install(FILES ${PROJECT_BINARY_DIR}/libzuluCrypt.pc     DESTINATION lib${LIB_SUFFIX}/pkgconfig/ )
+ install(FILES ${PROJECT_BINARY_DIR}/libzuluCrypt.pc     DESTINATION ${LIB_PATH}/pkgconfig/ )
  
  
  
