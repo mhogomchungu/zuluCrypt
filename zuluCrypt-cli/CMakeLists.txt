@@ -14,17 +14,18 @@
 	 
  message( STATUS "Found mntent.h  : " ${mntent} )
  
- find_file ( mount_sys sys/mount.h PATHS /usr/lib /usr/lib64 /usr/lib/include /usr/lib64/include /usr/include/gnome-keyring-1 /usr/include /usr/local/include /usr/local/include/glib-2.0 /usr/include/glib-2.0 /usr/lib/glib-2.0/include /usr/lib64/glib-2.0/include )
+ find_file ( mount_sys mount.h PATHS /usr/include/sys /usr/include/rpcsvc /usr/lib /usr/lib64 /usr/lib/include /usr/lib64/include /usr/include/gnome-keyring-1 /usr/include /usr/local/include /usr/local/include/glib-2.0 /usr/include/glib-2.0 /usr/lib/glib-2.0/include /usr/lib64/glib-2.0/include )
  
- if(NOT mount_sys)
-	 message (FATAL_ERROR "ERROR: could not find sys/mount.h header file")
- endif(NOT mount_sys)
+ if( mount_sys)
+	message( STATUS "Found mount.h  : " ${mount_sys} )
+ else( mount_sys )	 
+	message (FATAL_ERROR "ERROR: could not find mount.h?")	 
+ endif( mount_sys )
 	 
- message( STATUS "Found sys/mount.h  : " ${mount_sys} )
 	 
  find_file ( mount_1 mount/mount.h PATHS /usr/lib /usr/lib64 /usr/lib/include /usr/lib64/include /usr/include/gnome-keyring-1 /usr/include /usr/local/include /usr/local/include/glib-2.0 /usr/include/glib-2.0 /usr/lib/glib-2.0/include /usr/lib64/glib-2.0/include ) 
   
-  find_file ( mount_2 libmount/libmount.h PATHS /usr/lib /usr/lib64 /usr/lib/include /usr/lib64/include /usr/include/gnome-keyring-1 /usr/include /usr/local/include /usr/local/include/glib-2.0 /usr/include/glib-2.0 /usr/lib/glib-2.0/include /usr/lib64/glib-2.0/include ) 
+ find_file ( mount_2 libmount/libmount.h PATHS /usr/lib /usr/lib64 /usr/lib/include /usr/lib64/include /usr/include/gnome-keyring-1 /usr/include /usr/local/include /usr/local/include/glib-2.0 /usr/include/glib-2.0 /usr/lib/glib-2.0/include /usr/lib64/glib-2.0/include ) 
    
  if(NOT mount_1)
 	 if(NOT mount_2)	 

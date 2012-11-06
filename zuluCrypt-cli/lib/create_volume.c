@@ -67,7 +67,7 @@ int zuluCryptCreateVolume( const char * dev,const char * fs,const char * type,co
 	mapper = strrchr( device_mapper,'/' ) + 1 ;
 
 	if( strcmp( type,"luks" ) == 0 ){
-		if( zuluCryptCreateLuks( dev,pass,pass_size,rng ) != 0 )	
+		if( zuluCryptCreateLuks( dev,pass,pass_size,rng ) != 0 )
 			return zuluExit( 3,m ) ;
 		if( zuluCryptOpenLuks( dev,mapper,"rw",pass,pass_size ) != 0 )
 			return zuluExit( 3,m ) ; 
@@ -76,7 +76,7 @@ int zuluCryptCreateVolume( const char * dev,const char * fs,const char * type,co
 			return zuluExit( 3,m ) ; 
 	}else{
 		return zuluExit( 2,m ) ;
-	}		
+	}
 
 	p = Process( ZULUCRYPTmkfs ) ;
 	
