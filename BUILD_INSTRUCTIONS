@@ -3,20 +3,30 @@
 This tool depends on the following packages installed to build, their precise name may differ in your distro.
 1. libmount-devel
 2. libblkid-devel
-3. Qt-devel
+3. Qt-devel( required if building GUI components )
 4. gcc
 5. gcc-c++
 6. cryptsetup-devel
 7. cmake
 
-After you have above packages installed,run these 3 command to build and install.
+The package is made up of two components,the command line "pure C" based backend components and Qt/C++ based front end components.
+
+After you have above packages installed,run these 5 command to build and install.
 The last command depends on your distribution,go with the one recommended by disto.
 
-cmake -DCMAKE_INSTALL_PREFIX=/usr/ -DCMAKE_BUILD_TYPE=MINSIZEREL .
-	
-make
+1.0 mkdir build 
 
-make install ( or sudo make install or su -c "make install" )
+2.0 cd build
+
+To build only the backends,run the following command
+3.1 cmake -DCMAKE_INSTALL_PREFIX=/usr/ -DNOGUI=yes -DCMAKE_BUILD_TYPE=MINSIZEREL . ..
+
+To build the backends as well as front ends,run the following command
+3.2 cmake -DCMAKE_INSTALL_PREFIX=/usr/ -DCMAKE_BUILD_TYPE=MINSIZEREL . ..
+
+4.0 make
+
+5.0 make install ( or sudo make install or su -c "make install" )
 
 After you have it installed,run "zuluCrypt-test" to make sure everything is working as expected.
 

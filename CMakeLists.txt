@@ -8,7 +8,10 @@ set ( zuluPluginManager "${PROJECT_BINARY_DIR}/zuluCrypt-cli/libzuluCryptPluginM
 
 INCLUDE(FindPkgConfig)
 
+if( NOT NOGUI ) 
 find_package( Qt4 COMPONENTS QtCore QtNetwork QtGui REQUIRED )
+endif( NOT NOGUI )
+
 #add_definitions( "${Qt4_CFLAGS}" )
 
 #find_package( KDE4 )
@@ -92,6 +95,11 @@ if( GNOME_KEYRING_FOUND )
 	endif( keyring_header )
 endif( GNOME_KEYRING_FOUND )
 
+ADD_SUBDIRECTORY( zuluCrypt-cli )
+ADD_SUBDIRECTORY( plugins )
+
+if( NOT NOGUI ) 
+	
 set( KDEINCLUDE $ENV{KDEDIR}/include )
 set( KDELIB $ENV{KDEDIR}/lib )
 set( KDE4_FOUND "true" )
@@ -130,15 +138,18 @@ else( PWQUALITY_FOUND )
 	file( WRITE ${PROJECT_BINARY_DIR}/can_build_pwquality.h "#define BUILD_PWQUALITY 0\n" )
 endif( PWQUALITY_FOUND )
 
-ADD_SUBDIRECTORY( zuluCrypt-cli )
 ADD_SUBDIRECTORY( zuluMount-gui )
 ADD_SUBDIRECTORY( zuluCrypt-gui )
-ADD_SUBDIRECTORY( plugins )
 
-#ADD_SUBDIRECTORY( test )
+endif( NOT NOGUI )
 
 message ( STATUS "---------------------------------------------------------------------------" )
 message ( STATUS "optional functionality that will be build" )
+
+if( NOT NOGUI )
+	message( STATUS "GUI front ends,zuluCrypt-gui and zuluMount-gui" )
+endif( NOT NOGUI )
+	
 if( BUILDKWALLET )
 	message( STATUS "kde kwallet support" )
 endif( BUILDKWALLET )
@@ -154,6 +165,11 @@ message ( STATUS "--------------------------------------------------------------
 
 message ( STATUS "---------------------------------------------------------------------------" )
 message ( STATUS "optional functionality that will NOT be build" )
+
+if( NOGUI )
+	message( STATUS "GUI front ends,zuluCrypt-gui and zuluMount-gui" )
+endif( NOGUI )
+
 if( NOT BUILDKWALLET )
 	message( STATUS "kde kwallet support" )
 endif( NOT BUILDKWALLET )
@@ -164,7 +180,7 @@ endif( NOT KEYRINGSUPPORT )
 
 if( NOT BUILDPWQUALITY )
 	message( STATUS "pwquality library used to measure passphrase strength" )
-	message( STATUS "sources can be found at:https://fedorahosted.org/libpwquality/" )	
+	message( STATUS "sources can be found at: https://fedorahosted.org/libpwquality/" )	
 endif( NOT BUILDPWQUALITY )
 message ( STATUS "---------------------------------------------------------------------------" )
 
