@@ -36,6 +36,23 @@ static GnomeKeyringPasswordSchema lps =
 	}
 };
 
+static GnomeKeyringResult getKey( const char * UUID,gchar ** key )
+{	
+	GnomeKeyringResult r ;
+	/*
+	 * gnome2 format,uuid start with luks-UUID
+	 */
+	r = gnome_keyring_find_password_sync( &lps,key,"gvfs-luks-uuid",UUID,NULL ) ;
+	
+	if( r != GNOME_KEYRING_RESULT_OK ){
+		/*
+		 * gnome3 format,uuid start with UUID
+		 */
+		r = gnome_keyring_find_password_sync( &lps,key,"gvfs-luks-uuid",UUID + 5,NULL ) ;
+	}
+	return r ;	
+}
+
 int main( int argc __attribute__(( unused )),char * argv[] )
 {
 	/*
@@ -44,51 +61,35 @@ int main( int argc __attribute__(( unused )),char * argv[] )
 	 * int          size   = atoi( argv[ 4 ] ) ;
 	 * 
 	 * argv[ 5 ] is argument list given to zuluCrypt-cli
-	 * const char * argv   = argv[ 5 ] ;
-	 * const char * msg ;	 
+	 * const char * arg_v   = argv[ 5 ] ;
+	 * const char * msg ; 
 	 */	
 	
 	const char * uuid = argv[ 2 ] ;
 	const char * addr = argv[ 3 ] ;
 	
 	int i ;
-	
 	char UUID[ 64 ] ;
-	
-	const char * e ;	
-	
 	void * handle ;
-	
 	gchar * key ;
+	const char * e ;
+		
+	if( strcmp( uuid,"Nil" ) == 0 )
+		return 1 ;
 	
-	GnomeKeyringResult r ;
-	
+	strcpy( UUID,"luks-" ) ;
+	strncpy( UUID,uuid,64 ) ;
+
 	handle = zuluCryptPluginManagerOpenConnection( addr ) ;
 	
-	if( strcmp( uuid,"Nil" ) == 0 ){
-		i = 1 ;
-	}else{			
-		strcpy( UUID,"luks-" ) ;
-		strncat( UUID,uuid,64 ) ;
-		UUID[ 63 ] = '\0' ;
-
-		r = gnome_keyring_find_password_sync( &lps,&key,"gvfs-luks-uuid",UUID,NULL ) ;
-	
-		if( r == GNOME_KEYRING_RESULT_OK ){
+	if( handle ){
+		if( getKey( uuid,&key ) == GNOME_KEYRING_RESULT_OK ){
 			e = ( const char * ) key ;
 			zuluCryptPluginManagerSendKey( handle,e,strlen( e ) ) ;
 			gnome_keyring_free_password( key ) ;
-			i = 0 ;
-		}else{
-			/*
-			 * msg = ( const char * )gnome_keyring_result_to_message( r );
-			 * printf( "failed to get key from keyring, reason:%s\n",msg ) ;		 
-			 */
-			i = 1 ;
+			zuluCryptPluginManagerCloseConnection( handle ) ;
 		}
 	}
-	
-	zuluCryptPluginManagerCloseConnection( handle ) ;
 	
 	return i ;
 }
