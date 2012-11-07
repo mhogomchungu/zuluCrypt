@@ -128,6 +128,8 @@ int main( int argc,char * argv[] )
 	stringList_t stl = StringListVoid ;
 	struct_opts clargs ;
 	
+	memset( &clargs,'\0',sizeof( struct_opts ) ) ;
+	
 	uid = getuid();
 	
 	StringExitOnMemoryExaustion( &ExitOnMemoryExaustion ) ;
