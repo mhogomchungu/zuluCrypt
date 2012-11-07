@@ -38,6 +38,21 @@
 #include "plugin_path.h"
 #include <stdio.h>
 
+#define zuluCryptPluginManagerDebug 0
+
+#if zuluCryptPluginManagerDebug
+static void __debug( process_t p )
+{
+	char * e = NULL ;
+	ProcessGetOutPut( p,&e,STDOUT ) ;
+	if( e ){
+		puts( e ) ;
+		fflush( stdout ) ;
+		free( e ) ;
+	}
+}
+#endif
+
 size_t zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid )
 {	
 	size_t dataLength = 0 ;
@@ -179,6 +194,10 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		if( pluginIsGpG( pluginPath ) )
 			ProcessTerminate( p ) ;
 		
+		#if zuluCryptPluginManagerDebug
+			__debug( p ) ;
+		#endif
+			
 		ProcessDelete( &p ) ;
 	}
 	

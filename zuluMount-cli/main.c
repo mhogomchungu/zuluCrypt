@@ -145,13 +145,13 @@ static int _zuluMountMount( const char * device,const char * m_point,const char 
 	char * path = NULL ;
 	char * q ;
 	const char * m_path ;
-		
+	
 	/*
 	 * below function is defined in ../zuluCrypt-cli/bin/security.c
 	 */
 	switch( zuluCryptSecurityCanOpenPathForReading( device,uid ) ){
 		case 0 : break ;
-		case 1 : return _zuluExit( 100,z,path,"ERROR: insuffienct privilege to access the device,\nconsult section 2 of the FAQ  at http://code.google.com/p/zulucrypt/wiki/FAQ for more information" ) ;
+		case 1 : return _zuluExit( 100,z,path,"ERROR: insufficient privilege to access device,are you a member of group \"disk\"?" ) ;
 		case 2 : return _zuluExit( 101,z,path,"ERROR: invalid path to device" ) ;
 		default: return _zuluExit( 113,z,path,"ERROR: insuffienct access to access the device" ) ;
 	}

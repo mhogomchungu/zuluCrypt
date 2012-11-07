@@ -50,7 +50,8 @@ static GnomeKeyringResult getKey( const char * UUID,gchar ** key )
 		 */
 		r = gnome_keyring_find_password_sync( &lps,key,"gvfs-luks-uuid",UUID + 5,NULL ) ;
 	}
-	return r ;	
+	
+	return r ;
 }
 
 int main( int argc __attribute__(( unused )),char * argv[] )
@@ -78,12 +79,16 @@ int main( int argc __attribute__(( unused )),char * argv[] )
 		return 1 ;
 	
 	strcpy( UUID,"luks-" ) ;
-	strncpy( UUID,uuid,64 ) ;
+	strcat( UUID,uuid ) ;
 
+	/*
+	 * this function is to be called as soon as possible.
+	 * It will fail is called 10 seconds after the plugin is started.  
+	 */
 	handle = zuluCryptPluginManagerOpenConnection( addr ) ;
 	
 	if( handle ){
-		if( getKey( uuid,&key ) == GNOME_KEYRING_RESULT_OK ){
+		if( getKey( UUID,&key ) == GNOME_KEYRING_RESULT_OK ){
 			e = ( const char * ) key ;
 			zuluCryptPluginManagerSendKey( handle,e,strlen( e ) ) ;
 			gnome_keyring_free_password( key ) ;
