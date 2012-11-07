@@ -68,7 +68,7 @@ int main( int argc __attribute__(( unused )),char * argv[] )
 	const char * uuid = argv[ 2 ] ;
 	const char * addr = argv[ 3 ] ;
 	
-	int i ;
+	int st = 1 ;
 	char UUID[ 64 ] ;
 	void * handle ;
 	gchar * key ;
@@ -87,9 +87,15 @@ int main( int argc __attribute__(( unused )),char * argv[] )
 			e = ( const char * ) key ;
 			zuluCryptPluginManagerSendKey( handle,e,strlen( e ) ) ;
 			gnome_keyring_free_password( key ) ;
-			zuluCryptPluginManagerCloseConnection( handle ) ;
+			st = 0 ;
+		}else{
+			st = 1 ;
 		}
+		
+		zuluCryptPluginManagerCloseConnection( handle ) ;
+	}else{
+		st = 1 ;
 	}
 	
-	return i ;
+	return st ;
 }
