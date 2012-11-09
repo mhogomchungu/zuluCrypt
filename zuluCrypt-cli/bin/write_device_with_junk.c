@@ -152,7 +152,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 		return zuluExit( &mapper,14 ) ;
 	
 	if ( i == 1 ){
-		printf( "Enter passphrase: " ) ;	
+		printf( "Enter passphrase: " ) ;
 		switch( StringSilentlyGetFromTerminal_1( &passphrase,KEY_MAX_SIZE ) ){
 			case 1 : return zuluExit( &mapper,16 ) ;
 			case 2 : return zuluExit( &mapper,17 ) ;
@@ -215,7 +215,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	 * We set permission of /dev/dm-X pointing to the device to "u+rw" because we want notmal user to be able
 	 * to write to the device through the mapper.
 	 * 
-	 * Useful when a normal user want to delete content of the device by writing random data to it.	 * 
+	 * Useful when a normal user want to delete content of the device by writing random data to it.
 	 */
 	dev = realpath( cmapper,NULL ) ;
 	
@@ -254,7 +254,7 @@ int zuluCryptEXEWriteDeviceWithJunk( const struct_opts * opts,const char * mappi
 	double size ;	
 	double size_written ;
 	
-	const char * device =  opts->device ;	
+	const char * device =  opts->device ;
 	char * dev ;
 	
 	char buffer[ SIZE ] ;

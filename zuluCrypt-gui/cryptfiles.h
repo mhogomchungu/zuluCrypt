@@ -31,6 +31,7 @@
 #include "openpartition.h"
 #include "cryptfilethread.h"
 #include "dialogmsg.h"
+#include "socketsendkey.h"
 
 namespace Ui {
     class cryptfiles;

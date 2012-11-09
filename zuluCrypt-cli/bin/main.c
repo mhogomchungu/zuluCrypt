@@ -81,7 +81,7 @@ static int zuluCryptEXE( struct_opts * clargs, const char * mapping_name,uid_t u
 	switch( clargs->action ){
 		case 'B' : return zuluCryptEXESaveAndRestoreLuksHeader( clargs,uid,LUKS_HEADER_SAVE ) ;
 		case 'R' : return zuluCryptEXESaveAndRestoreLuksHeader( clargs,uid,LUKS_HEADER_RESTORE ) ;
-		case 'J' : return zuluCryptEXEOpenPlainAsMe( clargs,mapping_name,uid ) ;
+		case 'J' : return zuluCryptEXEOpenPlainAsMe( clargs,mapping_name,uid ) ; /* function is defined in write_device_with_junk.c */
 		case 'X' : return zuluCryptEXEWriteDeviceWithJunk( clargs,mapping_name,uid ) ;
 		case 'w' : return zuluCryptEXECheckUUID( clargs->device ) ;
 		case 'b' : return zuluCryptEXECheckEmptySlots( clargs->device ) ;

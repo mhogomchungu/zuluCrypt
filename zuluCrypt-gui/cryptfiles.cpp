@@ -233,13 +233,17 @@ void cryptfiles::pbCreate()
 			if( key_1 != key_2 )
 				return msg.ShowUIOK( tr( "ERROR!" ),tr( "keys do not match" ) );
 		}
-		keySource = QString( "-p" ) ;
+
+		QString sockpath = socketSendKey::getSocketPath() ;
+		socketSendKey * sk = new socketSendKey( this,sockpath,key_1.toAscii() ) ;
+		key_1 = sockpath ;
+		sk->sendKey();
 	}else{
 		if( utility::exists( key_1 ) == false )
 			return msg.ShowUIOK( tr( "ERROR!" ),tr( "invalid path to key file" ) );
-
-		keySource = QString( "-f" ) ;
 	}
+
+	keySource = QString( "-f" ) ;
 
 	this->disableAll();
 
