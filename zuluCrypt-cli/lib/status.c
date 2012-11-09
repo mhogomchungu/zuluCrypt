@@ -263,7 +263,7 @@ char * zuluCryptVolumeStatus( const char * mapper )
 				case CRYPT_SLOT_ACTIVE_LAST : i++ ; break ;
 				case CRYPT_SLOT_ACTIVE      : i++ ; break ;
 				case CRYPT_SLOT_INVALID     :     ; break ;
-			}		
+			}
 		}
 		
 		StringMultipleAppend( p,"\n active slots:\t",StringIntToString_1( buffer,SIZE,i ),END );

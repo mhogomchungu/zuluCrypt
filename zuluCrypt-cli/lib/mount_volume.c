@@ -155,8 +155,8 @@ static inline string_t set_mount_options( m_struct * mst )
 
 	if( opt == StringVoid )
 		opt = String( mst->mode ) ;
-	else	
-		StringMultipleAppend( opt,",",mst->mode,'\0' ) ;
+	else
+		StringMultipleAppend( opt,",",mst->mode,END ) ;
 	
 	if( ms_family( mst->fs ) ){
 		if( !StringContains( opt,"dmask=" ) )
