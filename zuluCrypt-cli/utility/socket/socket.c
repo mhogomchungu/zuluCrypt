@@ -267,11 +267,11 @@ int SocketBind( socket_t s )
 	if( s->domain == AF_UNIX ){
 		s->socket_server = 1 ;
 		unlink( s->local->sun_path ) ;
-		return bind( s->fd,( struct sockaddr * )s->local,s->size ) == 0 ? 1 : 0 ;
+		return bind( s->fd,( struct sockaddr * )s->local,s->size ) == 0 ;
 	}else if( s->domain == AF_INET ){
-		return bind( s->fd,( struct sockaddr * )s->net,s->size ) == 0 ? 1 : 0 ;
+		return bind( s->fd,( struct sockaddr * )s->net,s->size )   == 0 ;
 	}else if (s->domain == AF_INET6 ){
-		return bind( s->fd,( struct sockaddr * )s->net6,s->size ) == 0 ? 1 : 0 ;
+		return bind( s->fd,( struct sockaddr * )s->net6,s->size )  == 0 ;
 	}else{
 		return 0 ;
 	}
@@ -410,26 +410,22 @@ int SocketIsBlocking( socket_t s )
 static inline int __SocketTimeOut( socket_t s,time_t time,int mode )
 {
 	int fd = s->fd ;
-	fd_set readfd ;
-	fd_set writefd ;
+	fd_set fdset ;
 
 	struct timeval interval ;
 	
 	interval.tv_sec = time ;
 	interval.tv_usec = 0 ;
 	
-	FD_ZERO( &readfd ) ;
-	FD_SET( fd,&readfd ) ;
-	
-	FD_ZERO( &writefd ) ;
-	FD_SET( fd,&writefd ) ;
+	FD_ZERO( &fdset ) ;
+	FD_SET( fd,&fdset ) ;
 	
 	if( mode == READ ){
-		select( fd + 1,&readfd,NULL,NULL,&interval ) ;
-		return FD_ISSET( fd,&readfd ) ;
+		select( fd + 1,&fdset,NULL,NULL,&interval ) ;
+		return FD_ISSET( fd,&fdset ) ;
 	}else{
-		select( fd + 1,NULL,&writefd,NULL,&interval ) ;
-		return FD_ISSET( fd,&writefd ) ;
+		select( fd + 1,NULL,&fdset,NULL,&interval ) ;
+		return FD_ISSET( fd,&fdset ) ;
 	}
 }
 
@@ -472,9 +468,9 @@ void SocketClose( socket_t * p )
 static inline int __SocketConnect( socket_t s ) 
 {
 	switch( s->domain ){
-		case AF_UNIX : return connect( s->fd,( struct sockaddr * )s->local,s->size ) == 0 ? 1 : 0 ;
-		case AF_INET : return connect( s->fd,( struct sockaddr * )s->net,s->size ) == 0 ? 1 : 0 ;
-		case AF_INET6: return connect( s->fd,( struct sockaddr * )s->net6,s->size ) == 0 ? 1 : 0 ;
+		case AF_UNIX : return connect( s->fd,( struct sockaddr * )s->local,s->size ) == 0 ;
+		case AF_INET : return connect( s->fd,( struct sockaddr * )s->net,s->size )   == 0 ;
+		case AF_INET6: return connect( s->fd,( struct sockaddr * )s->net6,s->size )  == 0 ;
 		default      : return 0 ;
 	}
 }
@@ -521,7 +517,7 @@ int SocketListen( socket_t s )
 	if( s == SocketVoid )
 		return 0 ;
 	else
-		return listen( s->fd,s->cmax ) == 0 ? 1 : 0 ;
+		return listen( s->fd,s->cmax ) == 0 ;
 }
 
 ssize_t SocketGetData_2( socket_t s,char * buffer,size_t len ) 
