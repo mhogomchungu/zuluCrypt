@@ -57,7 +57,6 @@ static int crypt_opt( const struct_opts * opts,uid_t uid,int opt )
 	const char * dest  	= opts->mode ;
 	const char * passphrase = opts->key ;
 	const char * type 	= opts->key_source ;
-	int i 			= opts->interactive_passphrase ;
 	
 	if( dest == NULL )
 		return msg( 9 ) ;
@@ -77,7 +76,7 @@ static int crypt_opt( const struct_opts * opts,uid_t uid,int opt )
 	if( zuluCryptSecurityCanOpenPathForReading( source,uid ) == 1 )
 		return msg( 15 ) ;
 	
-	if( i == 1 || type == NULL ){
+	if( type == NULL ){
 
 		printf( "Enter passphrase: " ) ;
 		switch( StringSilentlyGetFromTerminal_1( &p,KEY_MAX_SIZE ) ){

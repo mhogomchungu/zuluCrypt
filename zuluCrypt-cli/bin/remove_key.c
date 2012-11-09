@@ -75,7 +75,6 @@ static int zuluExit_1( int st,const char * device,stringList_t stl )
 
 int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid ) 
 {
-	int i                    = opts->interactive_passphrase ;
 	int k                    = opts->dont_ask_confirmation ;
 	const char * device      = opts->device ;
 	const char * keyType     = opts->key_source ;
@@ -117,7 +116,7 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 		}
 	}
 	
-	if ( i == 1 || keyType == NULL ){
+	if ( keyType == NULL ){
 	
 		printf( "Enter a key to be removed: " ) ;
 		switch( StringSilentlyGetFromTerminal_1( pass,KEY_MAX_SIZE ) ){

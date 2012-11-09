@@ -84,7 +84,7 @@ static int zuluExit( int st,stringList_t stl )
 
 static int zuluExit_1( int st,const char * device,stringList_t stl )
 {
-	StringListClearDelete( &stl ) ;	
+	StringListClearDelete( &stl ) ;
 	printf( "ERROR: device \"%s\" is not a luks device\n",device ) ;
 	return st ;
 }
@@ -119,7 +119,6 @@ static int zuluGetKeys( string_t * key1,string_t * key2,string_t * key3 )
  */
 int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 {
-	int i                    = opts->interactive_passphrase ;
 	const char * device      = opts->device ;
 	const char * keyType1    = opts->existing_key_source ;
 	const char * existingKey = opts->existing_key ;
@@ -167,10 +166,7 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 		case 1 : return zuluExit( 2,stl )  ; 
 	}
 	
-	if( keyType1 == NULL && keyType2 == NULL )
-		i = 1 ;
-	
-	if ( i == 1 ){	
+	if ( keyType1 == NULL && keyType2 == NULL ){
 		switch( zuluGetKeys( presentKey,newKey_1,newKey_2 ) ){
 			case 1 : return zuluExit( 14,stl ) ;
 			case 2 : return zuluExit( 15,stl ) ;
@@ -185,10 +181,10 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 			len2 = StringLength ( *newKey_1   ) ;
 			status = zuluCryptAddKey( device,key1,len1,key2,len2 );
 		}
-	}else{		
-		if( keyType1 == NULL || keyType2 == NULL || newKey == NULL || existingKey == NULL )
+	}else{
+		if( newKey == NULL || existingKey == NULL )
 			return zuluExit( 6,stl ) ;
-		if ( strcmp( keyType1, "-f" ) == 0 ){	
+		if ( strcmp( keyType1, "-f" ) == 0 ){
 			/*
 			 * this function is defined at "security.c"
 			 */
@@ -230,7 +226,7 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 			key2 = newKey ;
 			len2 = strlen( newKey ) ;
 			status = zuluCryptAddKey( device,key1,len1,key2,len2 ) ;
-		}else{			
+		}else{
 			status = 5 ;
 		}
 	}	
@@ -240,5 +236,5 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 	 */
 	zuluCryptCheckInvalidKey( opts->device ) ;
 	
-	return zuluExit( status,stl ) ;	
+	return zuluExit( status,stl ) ;
 }

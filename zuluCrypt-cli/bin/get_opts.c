@@ -38,7 +38,6 @@ void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
 	stopts->new_key_source = NULL ;
 	stopts->partition_number = -1 ;
 	stopts->dont_ask_confirmation = -1 ;
-	stopts->interactive_passphrase = -1 ;
 	stopts->open_no_mount = -1 ;
 	stopts->argv = NULL ;
 	
@@ -109,8 +108,6 @@ void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
 			break ;
 			case( 'n' ) : stopts->new_key_source = "-f" ; 
 			stopts->new_key = optarg ;
-			break ;
-			case( 'h' ) : stopts->interactive_passphrase = 1 ;
 			break ;
 			default: printf( "run zuluCrypt-cli --help for help\n" ) ; 
 		}

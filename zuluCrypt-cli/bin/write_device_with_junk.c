@@ -50,15 +50,13 @@ void sigTERMhandler( int sig )
  */
 int zuluCryptPartitionIsSystemPartition( const char * ) ;
 
-static int zuluExit( string_t * st, int status ) 
+static int zuluExit( string_t st, int status ) 
 {
 	switch( status ){
 		case 0 : printf( "SUCCESS: mapper created successfully\n" ) ;
-			 if( st != NULL ){
-				printf( "opened mapper path: " ) ;
-				StringPrintLine( *st ) ;
-				StringDelete( st ) ;
-			 }
+			 printf( "opened mapper path: " ) ;
+			 StringPrintLine( st ) ;
+			 StringDelete( &st ) ;
 			 break ;
 		case 1 : printf( "ERROR: could not create mapper\n" )                                          ;break ;
 		case 2 : printf( "ERROR: could not resolve device path\n" )                                    ;break ;
@@ -78,7 +76,6 @@ static int zuluExit( string_t * st, int status )
 		case 16: printf( "ERROR: can not get passphrase in silent mode\n" )			       ;break ;
 		case 17: printf( "ERROR: insufficient memory to hold passphrase\n" );			       ;break ;
 		case 18: printf( "ERROR: insufficient memory to hold 3 characters?really?\n" );		       ;break ;
-				
 	}
 		
 	return status ;
@@ -92,16 +89,12 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	
 	size_t len = 0 ;
 	
-	int k ;
-	
-	int i			 = opts->interactive_passphrase ;
 	const char * source      = opts->key_source ;
 	const char * pass        = opts->key ;
 	
 	const char * cpass = NULL ;
 	
 	char * dev ;
-	char * key ; 	
 	
 	const char * device = opts->device ;
 	
@@ -146,40 +139,22 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	StringDelete( &p ) ;
 	
 	if( j == 1 )
-		return zuluExit( &mapper,13 ) ;
+		return zuluExit( mapper,13 ) ;
 	
 	if( n == 1 )
-		return zuluExit( &mapper,14 ) ;
+		return zuluExit( mapper,14 ) ;
 	
-	if ( i == 1 ){
+	if( source == NULL ){
 		printf( "Enter passphrase: " ) ;
 		switch( StringSilentlyGetFromTerminal_1( &passphrase,KEY_MAX_SIZE ) ){
-			case 1 : return zuluExit( &mapper,16 ) ;
-			case 2 : return zuluExit( &mapper,17 ) ;
+			case 1 : return zuluExit( mapper,16 ) ;
+			case 2 : return zuluExit( mapper,17 ) ;
 		}
 		printf( "\n" ) ;
 		cpass = StringContent( passphrase ) ;
 		len = StringLength( passphrase ) ;
 	}else{
-		if( source == NULL || pass == NULL ){
-			
-			printf("WARNING: getting key from \"/dev/urandom\" because atleast one required argument is missing\n" ) ;
-			
-			k = open( "/dev/urandom",O_RDONLY ) ;
-		
-			key = ( char * ) malloc( sizeof( char ) * ( KEY_SIZE + 1 ) ) ;
-			
-			read( k,key,KEY_SIZE );
-			
-			close( k );
-		
-			key[ KEY_SIZE ] = '\0' ;
-		
-			passphrase = StringInheritWithSize( &key,KEY_SIZE ) ;
-			cpass = StringContent( passphrase ) ;
-			len = StringLength( passphrase ) ;
-			
-		}else if( strcmp( source,"-p" ) == 0 ){
+		if( strcmp( source,"-p" ) == 0 ){
 			passphrase = String( pass ) ;
 			cpass = StringContent( passphrase ) ;
 			len = StringLength( passphrase ) ;
@@ -188,9 +163,9 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 			 * function is defined at "security.c"
 			 */
 			switch( zuluCryptSecurityGetPassFromFile( pass,uid,&passphrase ) ){
-				case 1 : return zuluExit( &mapper,10 ) ; 
-				case 2 : return zuluExit( &mapper,11 ) ; 
-				case 4 : return zuluExit( &mapper,12 ) ;
+				case 1 : return zuluExit( mapper,10 ) ; 
+				case 2 : return zuluExit( mapper,11 ) ; 
+				case 4 : return zuluExit( mapper,12 ) ;
 			}
 			cpass = StringContent( passphrase ) ;
 			len = StringLength( passphrase ) ;
@@ -201,7 +176,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	 * Open a plain mapper, so that we can write to device through it
 	 */
 	if( zuluCryptOpenPlain( device,StringContent( mapper ),"rw",cpass,len ) != 0 )
-		return zuluExit( &mapper,1 ) ;
+		return zuluExit( mapper,1 ) ;
 	
 	/*
 	 * Create a mapper path(usually at /dev/mapper) associated with opened plain mapper above.
@@ -228,7 +203,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	StringClearDelete( &passphrase ) ;
 	
 	if( op == 1 )
-		return zuluExit( &mapper,0 ) ;
+		return zuluExit( mapper,0 ) ;
 	else{
 		StringDelete( &mapper ) ;
 		return 0 ;
@@ -293,14 +268,14 @@ int zuluCryptEXEWriteDeviceWithJunk( const struct_opts * opts,const char * mappi
 		
 		confirm = StringGetFromTerminal_1( 3 ) ;
 		if( confirm == NULL )
-			return zuluExit( &mapper,17 ) ;
+			return zuluExit( mapper,17 ) ;
 		else{
 			k = StringEqual( confirm,"YES" ) ;
 			StringDelete( &confirm ) ;
 		
 			if( k == 0 ){
 				zuluCryptCloseMapper( StringContent( mapper ) ) ;
-				return zuluExit( &mapper,5 ) ;
+				return zuluExit( mapper,5 ) ;
 			}
 		}
 	}
@@ -335,7 +310,7 @@ int zuluCryptEXEWriteDeviceWithJunk( const struct_opts * opts,const char * mappi
 	zuluCryptCloseMapper( StringContent( mapper ) ) ;
 		
 	if( __exit_as_requested == 1 ) 
-		return zuluExit( &mapper,15 ) ;
+		return zuluExit( mapper,15 ) ;
 	else
-		return zuluExit( &mapper,3 ) ;
+		return zuluExit( mapper,3 ) ;
 }

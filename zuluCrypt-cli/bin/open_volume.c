@@ -91,7 +91,6 @@ static int zuluExit_1( int st,const struct_opts * opts,char * device,char * cpoi
 int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,uid_t uid )
 {
 	int nmp                  = opts->open_no_mount ;
-	int i                    = opts->interactive_passphrase ;
 	const char * dev         = opts->device ;
 	const char * mount_point = opts->mount_point ;
 	const char * mode        = opts->mode ;
@@ -204,7 +203,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		
 		st = zuluCryptOpenVolume( device,cname,cpoint,uid,mode,cpass,len ) ;
 	
-	}else if( i == 1 || source == NULL ){
+	}else if( source == NULL ){
 		
 		printf( "Enter passphrase: " ) ;
 		switch( StringSilentlyGetFromTerminal_1( passphrase,KEY_MAX_SIZE ) ){

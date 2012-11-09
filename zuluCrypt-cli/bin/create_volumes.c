@@ -74,7 +74,6 @@ static int zuluExit_1( const char * type,stringList_t stl )
 
 int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name,uid_t uid )
 {
-	int i                = opts->interactive_passphrase ;
 	int conf             = opts->dont_ask_confirmation ;
 	const char * device  = opts->device ;
 	const char * fs      = opts->fs ;
@@ -166,7 +165,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	if( zuluCryptPathIsNotValid( ZULUCRYPTmkfs ) )
 		return zuluExit( 11,stl ) ;
 	
-	if( conf == -1 ){			
+	if( conf == -1 ){
 		printf( "\nThis operation will destroy all data in a device at: \"%s\"\n",device ) ;
 		printf("Are you sure you want to proceed?\n" ) ;
 		printf( "Type \"YES\" and press enter if you want to process: " ) ;
@@ -180,7 +179,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		}
 	}
 	
-	if( i == 1 || keyType == NULL ){
+	if( keyType == NULL ){
 		/*
 		 * Make sure the user has provided all required options
 		 */

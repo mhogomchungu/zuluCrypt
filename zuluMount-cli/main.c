@@ -327,7 +327,6 @@ static int _zuluMountCryptoMount( const char * device,const char * mode,uid_t ui
 			opts.plugin_path = key ;
 	
 	opts.mount_point = StringContent( p ) ;
-	opts.interactive_passphrase = -1 ;
 	opts.open_no_mount = -1 ;
 	opts.device = device ;
 	opts.mode = mode ;

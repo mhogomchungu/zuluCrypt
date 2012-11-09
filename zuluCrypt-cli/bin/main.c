@@ -176,33 +176,29 @@ int main( int argc,char * argv[] )
 	
 	/*
 	 * Hide "sensitive" command line arguments from ps comamnd and related tools.
-	 * Best way to pass keys to zuluCrypt-cli is to directly use the socket or use libzuluCryptPluginManager API
+	 * Best way to pass keys to zuluCrypt-cli is to use libzuluCryptPluginManager API
 	 */
 	if( clargs.key != NULL ){
 		q = StringListAssignString( stl,String( clargs.key ) ) ;
-		memset( ( char * )clargs.key,'\0',StringLength( q ) ) ;
-		strcpy( ( char * )clargs.key,"x" ) ;
+		strncpy( ( char * )clargs.key,"x",StringLength( q ) ) ;
 		clargs.key = StringContent( q ) ;
 	}
 	
 	if( clargs.new_key != NULL ){
 		q = StringListAssignString( stl,String( clargs.new_key ) ) ;
-		memset( ( char * )clargs.new_key,'\0',StringLength( q ) ) ;
-		strcpy( ( char * )clargs.new_key,"x" ) ;
+		strncpy( ( char * )clargs.new_key,"x",StringLength( q ) ) ;
 		clargs.new_key = StringContent( q ) ;
 	}
 	
 	if( clargs.existing_key != NULL ){
 		q = StringListAssignString( stl,String( clargs.existing_key ) ) ;
-		memset( ( char * )clargs.existing_key,'\0',StringLength( q ) );
-		strcpy( ( char * )clargs.existing_key,"x" ) ;
+		strncpy( ( char * )clargs.existing_key,"x",StringLength( q ) ) ;
 		clargs.existing_key = StringContent( q ) ;
 	}		
 	
 	if( clargs.device != NULL ){
 		q = StringListAssignString( stl,String( clargs.device ) ) ;
-		memset( ( char * )clargs.device,'\0',StringLength( q ) );
-		strcpy( ( char * )clargs.device,"x" ) ;
+		strncpy( ( char * )clargs.device,"x",StringLength( q ) ) ;
 		clargs.device = StringContent( q ) ;
 	}	
 	
