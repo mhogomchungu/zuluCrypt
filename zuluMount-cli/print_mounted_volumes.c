@@ -158,7 +158,7 @@ int zuluMountPrintMountedVolumes( uid_t uid )
 	 * partitionList() is defined in ../zuluCrypt-cli/partitions.c
 	 * It returns edited contents of "/proc/partitions"
 	 */
-	stz = zuluCryptPartitionList() ;	
+	stz = zuluCryptPartitionList() ;
 	
 	if( stz == StringListVoid ){
 		StringListDelete( &stl ) ;

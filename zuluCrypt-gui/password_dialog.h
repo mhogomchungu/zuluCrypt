@@ -71,7 +71,7 @@ private slots :
 	void file_path( void  ) ;
 	void threadfinished( int ) ;
 	void mountPointPath( QString );
-	void done( QString );
+	void complete( QString );
 	void cbStateChanged( int );
 private :
 	void sendKey( QString sockpath ) ;

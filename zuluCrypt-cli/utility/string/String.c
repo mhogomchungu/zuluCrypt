@@ -1073,6 +1073,48 @@ int StringSilentlyGetFromTerminal_1( string_t * q,size_t s )
 	*q = p ;
 	return 0 ;
 }
+
+string_t StringRandomString( size_t size )
+{
+	string_t s = StringVoid ;
+	char * e ;
+	char c ;
+	int f ;
+	size_t g = 0 ;
+	
+	if( size < 1 )
+		return s ;
+	
+	e = ( char * ) malloc( sizeof( char ) * ( size + 1 ) ) ;
+	if( e == NULL )
+		return s ;
+	
+	f = open( "/dev/urandom",O_RDONLY ) ;
+	
+	if( f == -1 ){
+		free( e ) ;
+		return s ;
+	}
+		
+	while( g < size ){
+		read( f,&c,1 ) ;
+		if( c >= ' ' && c <= '~' ){
+			*( e + g ) = c ;
+			g++ ;
+		}
+	}
+		
+	*( e + size ) = '\0' ;
+		
+	close( f ) ;
+	
+	s = StringInheritWithSize( &e,size ) ;
+	
+	if( s == StringVoid )
+		free( e ) ;
+	return s ;
+}
+
 int StringGetFromFile_1( string_t * str,const char * path ) 
 {
 	struct stat st ;

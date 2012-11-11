@@ -44,7 +44,7 @@ const char * keyfile1         = "/tmp/zuluCrypt-KeyFile1" ;
 
 void __print( const char * msg )
 {
-	printf( msg ) ;
+	printf( "%s",msg ) ;
 	fflush( stdout );
 }
 

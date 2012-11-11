@@ -270,5 +270,5 @@ void cryptfilethread::run()
 
 cryptfilethread::~cryptfilethread()
 {
-	emit done( m_status ) ;
+	emit complete( m_status ) ;
 }

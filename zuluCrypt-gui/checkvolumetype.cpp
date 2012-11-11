@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright (c) 2012
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -20,14 +20,14 @@
 
 #include "checkvolumetype.h"
 
-checkvolumetype::checkvolumetype( QString path ) 
+checkvolumetype::checkvolumetype( QString path )
 {
 	m_device = path.replace( "\"","\"\"\"" ) ;
 }
 
 void checkvolumetype::start()
 {
-	QThreadPool::globalInstance()->start( this ) ;	
+	QThreadPool::globalInstance()->start( this ) ;
 }
 
 void checkvolumetype::run()
@@ -40,5 +40,5 @@ void checkvolumetype::run()
 
 checkvolumetype::~checkvolumetype()
 {
-	emit done( m_type );
+	emit complete( m_type );
 }

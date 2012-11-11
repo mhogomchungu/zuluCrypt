@@ -49,71 +49,105 @@ static socket_t _SocketError( void )
 	return SocketVoid ;
 }
 
+static inline socket_t _SocketLocal( void )
+{
+	socket_t s = ( socket_t ) malloc( sizeof( struct SocketType_t ) ) ;
+	
+	if( s == NULL )
+		return SocketVoid ;
+	
+	memset( s,'\0',sizeof( struct SocketType_t ) ) ;
+	
+	s->local = ( struct sockaddr_un * ) malloc( sizeof( struct sockaddr_un ) ) ;
+	
+	if( s->local == NULL ){
+		free( s ) ;
+		return _SocketError() ;
+	}else{
+		s->size = ( socklen_t )sizeof( struct sockaddr_un ) ;
+		memset( s->local,'\0',( size_t )s->size ) ;
+		s->local->sun_family = AF_UNIX ;
+		return s ;
+	}
+}
+
+static inline socket_t _SocketNet( void )
+{
+	socket_t s = ( socket_t ) malloc( sizeof( struct SocketType_t ) ) ;
+	
+	if( s == NULL )
+		return SocketVoid ;
+	
+	memset( s,'\0',sizeof( struct SocketType_t ) ) ;
+	
+	s->net = ( struct sockaddr_in * ) malloc( sizeof( struct sockaddr_in ) ) ;
+	
+	if( s->net == NULL ){
+		free( s ) ;
+		return _SocketError() ;
+	}else{
+		s->inetAddress = NULL ;
+		s->size = ( socklen_t )sizeof( struct sockaddr_in ) ;
+		memset( s->net,'\0',( size_t )s->size ) ;
+		s->net->sin_family = AF_INET ;
+		return s ;
+	}
+}
+
+static inline socket_t _SocketNet6( void )
+{
+	socket_t s = ( socket_t ) malloc( sizeof( struct SocketType_t ) ) ;
+	
+	if( s == NULL )
+		return SocketVoid ;
+	
+	memset( s,'\0',sizeof( struct SocketType_t ) ) ;
+	
+	s->net6 = ( struct sockaddr_in6 * ) malloc( sizeof( struct sockaddr_in6 ) ) ;
+	
+	if( s->net6 == NULL ){
+		free( s ) ;
+		return _SocketError() ;
+	}else{
+		s->inetAddress = NULL ;
+		s->size = ( socklen_t )sizeof( struct sockaddr_in6 ) ;
+		memset( s->net6,'\0',( size_t )s->size ) ;
+		s->net6->sin6_family = AF_INET6 ;
+		return s ;
+	}
+}
+
 socket_t Socket( int domain,int type,int protocol ) 
 {
-	socket_t s ;
-	int fd = socket( domain,type,protocol ) ;
+	socket_t s = SocketVoid ;
+	int fd ;
+	
+	if( domain != AF_UNIX && domain != AF_INET && domain != AF_INET6 )
+		return SocketVoid ;
+	
+	fd = socket( domain,type,protocol ) ;
 	
 	if( fd == -1 )
 		return SocketVoid ;
-
-	s = ( socket_t ) malloc( sizeof( struct SocketType_t ) ) ;
-		
-	if( s == NULL ){
-		close( fd ) ;
-		return _SocketError() ;
-	}
-
-	memset( s,'\0',sizeof( struct SocketType_t ) ) ;
 	
-	if( domain == AF_UNIX ){
-		s->local = ( struct sockaddr_un * ) malloc( sizeof( struct sockaddr_un ) ) ;
-		if( s->local == NULL ){
-			free( s ) ;
-			close( fd ) ;
-			return _SocketError() ;
-		}else{
-			s->size = ( socklen_t )sizeof( struct sockaddr_un ) ;
-			memset( s->local,'\0',( size_t )s->size ) ;
-			s->local->sun_family = AF_UNIX ;
-		}
-	}else if( domain == AF_INET ){
-		s->net = ( struct sockaddr_in * ) malloc( sizeof( struct sockaddr_in ) ) ;
-		if( s->net == NULL ){
-			free( s ) ;
-			close( fd ) ;
-			return _SocketError() ;
-		}else{
-			s->inetAddress = NULL ;
-			s->size = ( socklen_t )sizeof( struct sockaddr_in ) ;
-			memset( s->net,'\0',( size_t )s->size ) ;
-			s->net->sin_family = AF_INET ;
-		}
-	}else if( domain == AF_INET6 ){
-		s->net6 = ( struct sockaddr_in6 * ) malloc( sizeof( struct sockaddr_in6 ) ) ;
-		if( s->net6 == NULL ){
-			free( s ) ;
-			close( fd ) ;
-			return _SocketError() ;
-		}else{
-			s->inetAddress = NULL ;
-			s->size = ( socklen_t )sizeof( struct sockaddr_in6 ) ;
-			memset( s->net6,'\0',( size_t )s->size ) ;
-			s->net6->sin6_family = AF_INET6 ;
-		}
-	}else{
+	switch( domain ){
+		case AF_UNIX : s = _SocketLocal() ; break ;
+		case AF_INET : s = _SocketNet()   ; break ;
+		case AF_INET6: s = _SocketNet6()  ; break ;
+	}
+	
+	if( s == SocketVoid ){
 		close( fd ) ;
-		free( s ) ;
 		return SocketVoid ;
+	}else{
+		s->domain = domain ;
+		s->type = type ;
+		s->protocol = protocol ;
+		s->cmax = 1 ;
+		s->socket_server = 0 ;
+		s->fd = fd ;
+		return s ;
 	}
-	
-	s->domain = domain ;
-	s->type = type ;
-	s->protocol = protocol ;
-	s->cmax = 1 ;
-	s->socket_server = 0 ;
-	s->fd = fd ;
-	return s ;
 }
 
 int SocketFileDescriptor( socket_t s ) 
@@ -179,7 +213,7 @@ socket_t SocketNetWithOptions6( const char * address,int port,int type,int proto
 	
 	char buffer[ INET6_ADDRSTRLEN ] ;
 	
-	memset ( &hint,0,sizeof( hint ) ) ;
+	memset ( &hint,0,sizeof( struct addrinfo ) ) ;
 	hint.ai_family = AF_INET6 ;
 	hint.ai_socktype = type ;
 	hint.ai_protocol = protocol ;
@@ -413,6 +447,8 @@ static inline int __SocketTimeOut( socket_t s,time_t time,int mode )
 	fd_set fdset ;
 
 	struct timeval interval ;
+	
+	memset( &interval,'\0',sizeof( struct timeval ) ) ;
 	
 	interval.tv_sec = time ;
 	interval.tv_usec = 0 ;

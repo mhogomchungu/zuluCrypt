@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright (c) 2012
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -35,7 +35,7 @@ public:
 	~checkvolumetype() ;
 	void start( void );
 signals:
-	void done( QString );
+	void complete( QString );
 private:
 	QString m_device ;
 	QString m_type ;

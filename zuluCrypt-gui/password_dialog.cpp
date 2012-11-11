@@ -464,7 +464,7 @@ void passwordDialog::success( void )
 {
 	if( utility::mapperPathExists( m_device ) ){
 		checkvolumetype * cvt = new checkvolumetype( m_ui->OpenVolumePath->text() );
-		connect( cvt,SIGNAL( done( QString ) ),this,SLOT( done( QString ) ) );
+		connect( cvt,SIGNAL( complete( QString ) ),this,SLOT( complete( QString ) ) );
 		cvt->start();
 		openmountpointinfilemanager * omp = new openmountpointinfilemanager( m_ui->MountPointPath->text() ) ;
 		omp->start();
@@ -479,7 +479,7 @@ void passwordDialog::success( void )
 	}
 }
 
-void passwordDialog::done( QString type )
+void passwordDialog::complete( QString type )
 {
 	QStringList list ;
 

@@ -250,7 +250,7 @@ void cryptfiles::pbCreate()
 	m_OperationInProgress = true ;
 
 	m_cft = new cryptfilethread( source,dest,keySource,key_1,m_operation );
-	connect( m_cft,SIGNAL( done( int ) ),this,SLOT( threadExitStatus( int ) ) );
+	connect( m_cft,SIGNAL( complete( int ) ),this,SLOT( threadExitStatus( int ) ) );
 	connect( m_cft,SIGNAL( progressUpdate( int ) ),this,SLOT( progressBarUpdate( int ) ) );
 	connect( m_cft,SIGNAL( titleUpdate( QString ) ),this,SLOT( titleUpdate( QString ) ) );
 	m_cft->start() ;

@@ -40,9 +40,9 @@ public:
 	explicit cryptfilethread( QString source,QString dest,QString keySource,QString key,QString task );
 	~cryptfilethread() ;
 signals:
-	void done( int );
 	void progressUpdate( int );
 	void titleUpdate( QString );
+	void complete( int ) ;
 public slots:
 	void terminate( void );
 	void start( void );

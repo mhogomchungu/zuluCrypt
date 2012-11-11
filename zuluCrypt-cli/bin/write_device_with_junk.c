@@ -92,6 +92,8 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	const char * source      = opts->key_source ;
 	const char * pass        = opts->key ;
 	
+	int k = opts->dont_ask_confirmation ;
+	
 	const char * cpass = NULL ;
 	
 	char * dev ;
@@ -144,7 +146,11 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	if( n == 1 )
 		return zuluExit( mapper,14 ) ;
 	
-	if( source == NULL ){
+	if( k == 1 ){
+		passphrase = StringRandomString( 64 ) ;
+		cpass = StringContent( passphrase ) ;
+		len = StringLength( passphrase ) ;
+	}else if( source == NULL ){
 		printf( "Enter passphrase: " ) ;
 		switch( StringSilentlyGetFromTerminal_1( &passphrase,KEY_MAX_SIZE ) ){
 			case 1 : return zuluExit( mapper,16 ) ;

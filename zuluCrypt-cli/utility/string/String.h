@@ -564,12 +564,19 @@ int StringSilentlyGetFromTerminal( string_t * ) ;
  * 0 is returned on success. 
  */
 int StringSilentlyGetFromTerminal_1( string_t *,size_t s ) ;
+
 /*
  *  Open a file given by path and return a string_t handle 
  * 
  *  NULL is returned if the file could not be opened for reading or could not get sufficient memory to hold the file.
  */
 string_t StringGetFromFile( const char * path ) ;
+
+/*
+ * constract a string_t object with size random characters read from "/dev/urandom.
+ * StringVoid is returned on error.
+ */
+string_t StringRandomString( size_t size ) ;
 
 /*
  *  Open a file given by path and return a string_t handle through agrument st with the content of the file .  

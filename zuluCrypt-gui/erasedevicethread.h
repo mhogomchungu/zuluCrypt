@@ -31,6 +31,7 @@
 #include "runinthread.h"
 #include "../zuluCrypt-cli/constants.h"
 #include "createfilethread.h"
+#include "socketsendkey.h"
 
 #include <blkid/blkid.h>
 #include <string.h>

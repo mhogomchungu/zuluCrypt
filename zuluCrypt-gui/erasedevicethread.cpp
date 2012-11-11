@@ -155,7 +155,7 @@ void erasedevicethread::closeMapper()
 
 int erasedevicethread::openMapper()
 {
-	QString exe = QString( "%1 -J -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( m_path );
+	QString exe = QString( "%1 -k -J -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( m_path );
 
 	QProcess p ;
 	p.start( exe );

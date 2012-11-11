@@ -43,7 +43,7 @@ public:
 	void HideUI( void );
 signals:
 	void HideUISignal( void );
-	void done( QString );
+	void complete( QString );
 private slots:
 	void enableAll( void );
 	void disableAll( void );
