@@ -92,7 +92,7 @@ ADD_SUBDIRECTORY( zuluCrypt-cli )
 if( NOT NOGUI ) 
 	
 find_package( Qt4 COMPONENTS QtCore QtNetwork QtGui REQUIRED )
-find_package( KDE4 )
+find_package( KDE4 QUIET )
 
 file( WRITE  ${PROJECT_BINARY_DIR}/can_build_kwallet.h "\n#define BUILD_KWALLET 0\n" )
 
