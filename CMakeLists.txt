@@ -93,7 +93,9 @@ if( NOT NOGUI )
 	
 find_package( Qt4 COMPONENTS QtCore QtNetwork QtGui REQUIRED )
 find_package( KDE4 )
-	
+
+file( WRITE  ${PROJECT_BINARY_DIR}/can_build_kwallet.h "\n#define BUILD_KWALLET 0\n" )
+
 if( KDE4_FOUND )
 	find_file( kwallet_header kwallet.h )
 	find_path( KDEINCLUDE kwallet.h )
@@ -103,11 +105,7 @@ if( KDE4_FOUND )
 			add_definitions( -I${KDEINCLUDE} ) 
 			file( WRITE  ${PROJECT_BINARY_DIR}/can_build_kwallet.h "\n#define BUILD_KWALLET 1\n" )
 			set( BUILDKWALLET "true" )
-		else ( kwallet_header )
-			file( WRITE  ${PROJECT_BINARY_DIR}/can_build_kwallet.h "\n#define BUILD_KWALLET 0\n" )
 		endif( kwallet_header )
-	else( kwallet_library )
-		file( WRITE  ${PROJECT_BINARY_DIR}/can_build_kwallet.h "\n#define BUILD_KWALLET 0\n" )
 	endif( kwallet_library)
 endif( KDE4_FOUND )
 
