@@ -95,7 +95,7 @@ void DialogMsg::ShowPermissionProblem( QString msg,QString device )
 system permission policy does not give you %1 access to the device.\n\
 Add yourself to \"disk\" group or a related group dealing with giving access to devices and try again after you have logged out and logged back in again.\n" ).arg( msg ) ;
 	}else{
-		msg1 = QString( "you do not seem to have proper permissions to access the encrypted file for %1" ).arg( msg ) ;
+		msg1 = QString( "you do not seem to have proper permissions to access the encrypted file in %1 mode" ).arg( msg ) ;
 	}
 
 	this->ShowUIOK( QString( "INFORMATION"),msg1 );

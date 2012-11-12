@@ -550,10 +550,7 @@ int SocketSetBlock( socket_t s )
  
 int SocketListen( socket_t s ) 
 {
-	if( s == SocketVoid )
-		return 0 ;
-	else
-		return listen( s->fd,s->cmax ) == 0 ;
+	return s == SocketVoid ? 0 : listen( s->fd,s->cmax ) == 0 ;
 }
 
 ssize_t SocketGetData_2( socket_t s,char * buffer,size_t len ) 
