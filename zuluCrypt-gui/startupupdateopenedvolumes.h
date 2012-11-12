@@ -34,9 +34,10 @@ public:
 	~startupupdateopenedvolumes();
 signals:
 	void addItemToTable( QString,QString ) ;
-	void finished( void );
+	void finished( int );
 private:
 	void run( void ) ;
+	int m_status ;
 };
 
 #endif // STARTUPUPDATEOPENEDVOLUMES_H

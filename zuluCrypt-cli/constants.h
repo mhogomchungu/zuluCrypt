@@ -24,7 +24,8 @@
 
 #define ZULUCRYPTmkfs        	"/sbin/mkfs" 
 #define ZULUCRYPTmount      	"/bin/mount"  
-#define ZULUCRYPTmkfs_dir      	"/sbin"  
+#define ZULUCRYPTmkfs_dir      	"/sbin" 
+#define ZULUCRYPTgroupadd       "/usr/sbin/groupadd"
 
 #define ALL_PARTITIONS        1
 #define SYSTEM_PARTITIONS     2

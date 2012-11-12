@@ -62,6 +62,11 @@
  */
 
 /*
+ * this function is defined in ../lib/status.c
+ */
+void zuluCryptFormatSize( char * buffer,const char * buff ) ;
+
+/*
  * defined in this source file
  */
 stringList_t zuluCryptGetPartitionFromCrypttab( void ) ;
@@ -230,14 +235,84 @@ stringList_t zuluCryptPartitions( int option )
 	}
 }
 
-int zuluCryptPrintPartitions( int option )
+static inline int _printPartitions_2( int option )
+{
+	uint64_t size ;
+	int i;
+	int j;
+	const char * device ;
+	const char * e ;
+	
+	#define SIZE 64
+	char sizebuffer[ SIZE ] ;
+	char sizebuffer_1[ SIZE ] ;
+	
+	blkid_probe blkid ;
+	
+	stringList_t stl = StringListVoid ;
+	
+	switch( option ){
+		case 1 : stl = zuluCryptPartitions( ALL_PARTITIONS ) 	   ;break ;
+		case 2 : stl = zuluCryptPartitions( SYSTEM_PARTITIONS )    ;break ;
+		case 3 : stl = zuluCryptPartitions( NON_SYSTEM_PARTITIONS );break ;
+	}	
+	
+	if( stl == StringListVoid ){
+		printf( "ERROR: unable to print requested list of partitions\n" ) ;
+		return 1 ;
+	}
+	
+	j = StringListSize( stl ) ;
+	
+	for( i = 0 ; i < j ; i++ ){
+		
+		device = StringListContentAt( stl,i ) ;
+		
+		printf( "%s\t",device ) ;
+		
+		blkid = blkid_new_probe_from_filename( device ) ;
+		blkid_do_probe( blkid );
+		
+		size = blkid_probe_get_size( blkid ) ;
+		
+		e = StringIntToString_1( sizebuffer,SIZE,size ) ;
+		/*
+		 * below function is defined in ../lib/status.c
+		 */
+		zuluCryptFormatSize( sizebuffer_1,e ) ;
+		
+		printf( "%s\t",sizebuffer_1 ) ;
+		
+		if( blkid_probe_lookup_value( blkid,"LABEL",&e,NULL ) == 0 )
+			printf( "%s\t",e ) ;
+		else
+			printf( "Nil\t" ) ;
+		
+		if( blkid_probe_lookup_value( blkid,"TYPE",&e,NULL ) == 0 )
+			printf( "%s\t",e ) ;
+		else
+			printf( "Nil\t" ) ;
+		
+		if( blkid_probe_lookup_value( blkid,"UUID",&e,NULL ) == 0 )
+			printf( "%s\n",e ) ;
+		else
+			printf( "Nil\n" ) ;
+		
+		blkid_free_probe( blkid );
+	}
+	
+	StringListDelete( &stl ) ;
+	return 0 ;
+}
+
+static inline int _printPartitions_1( int option )
 {
 	size_t i ;
 	size_t j ;
 	
 	stringList_t stl = StringListVoid ;
 	
-	switch( option ){	
+	switch( option ){
 		case 1 : stl = zuluCryptPartitions( ALL_PARTITIONS ) 	   ;break ;
 		case 2 : stl = zuluCryptPartitions( SYSTEM_PARTITIONS )    ;break ;
 		case 3 : stl = zuluCryptPartitions( NON_SYSTEM_PARTITIONS );break ;
@@ -256,6 +331,11 @@ int zuluCryptPrintPartitions( int option )
 	StringListDelete( &stl ) ;
 	
 	return 0 ;
+}
+
+int zuluCryptPrintPartitions( int option,int info )
+{
+	return info ? _printPartitions_2( option ) : _printPartitions_1( option ) ;
 }
 
 /*

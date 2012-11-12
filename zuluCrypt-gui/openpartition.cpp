@@ -114,18 +114,18 @@ void openpartition::currentItemChanged( QTableWidgetItem * current, QTableWidget
 void openpartition::ShowNonSystemPartitions()
 {
 	m_option = 1 ;
-	partitionList( tr( "select a partition to create an encrypted volume in" )," -N" );
+	this->partitionList( tr( "select a partition to create an encrypted volume in" )," -N" );
 }
 
 void openpartition::ShowAllPartitions()
 {
 	m_option = 2 ;
-	partitionList( tr( "select an encrypted partition to open" )," -A" );
+	this->partitionList( tr( "select an encrypted partition to open" )," -A" );
 }
 
 void openpartition::ShowPartitionList( QString x,QString y )
 {
-	partitionList( x,y );
+	this->partitionList( x,y );
 }
 
 void openpartition::allowLUKSOnly()

@@ -41,10 +41,6 @@ const char * zuluCryptDecodeMtabEntry( string_t st ) ;
 
 char * zuluCryptVolumeDeviceName( const char * ) ;
 
-#ifdef __STDC__
-char * realpath( const char * path,char * resolved_path ) ;
-#endif
-
 void zuluMountPartitionProperties( const char * device,const char * mapper,const char * m_point )
 {
 	#define SIZE 64

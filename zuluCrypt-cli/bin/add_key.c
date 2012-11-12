@@ -69,7 +69,8 @@ static int zuluExit( int st,stringList_t stl )
 		case 8  : printf( "ERROR: one or both keyfile(s) does not exist\n" ) ;	                      	break ;  
 		case 9  : printf( "ERROR: couldnt get enought memory to hold the key file\n" ) ;	     	break ;
 		case 10 : printf( "ERROR: all key slots are occupied, can not add any more keys\n" ) ;	      	break ;
-		case 11 : printf( "ERROR: insufficient privilege to write to the volume\n" ) ;	   		break ;
+		case 11 : printf( "ERROR: insufficient privilege to write to the volume\n\
+are you a member of zulucrypt-write group?\n" ) ;								break ;
 		case 12 : printf( "ERROR: insufficient privilege to open key file for reading\n" );		break ;
 		case 13 : printf( "ERROR: only root user can add keys to system devices\n" );			break ;
 		case 14 : printf( "ERROR: can not get passphrase in silent mode\n" );				break ;

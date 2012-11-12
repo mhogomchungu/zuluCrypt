@@ -40,6 +40,13 @@ void startupupdateopenedvolumes::run()
 
 	QStringList l = QString( p.readAll() ).split( "\n" ) ;
 
+	p.close();
+
+	p.start( QString( ZULUCRYPTzuluCrypt ) + QString( " -C" ) );
+	p.waitForFinished() ;
+	m_status = p.exitCode() ;
+	p.close();
+
 	int j = l.size() - 1 ;
 
 	if( j == 0 )
@@ -55,5 +62,5 @@ void startupupdateopenedvolumes::run()
 
 startupupdateopenedvolumes::~startupupdateopenedvolumes()
 {
-	emit finished();
+	emit finished( m_status );
 }

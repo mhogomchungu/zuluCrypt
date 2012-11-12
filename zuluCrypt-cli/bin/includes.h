@@ -32,6 +32,7 @@
 #include "../constants.h"
 #include "../lib/libzuluCrypt.h"
 #include "../utility/socket/socket.h"
+#include "../utility/process/process.h"
 #include "libzuluCrypt-exe.h"
 #include "security.h"
 
@@ -62,7 +63,6 @@ string_t GetKeyFromModule( const char * path,uid_t ) ;
 /*
  * this function is defined in get_key_from_socket.c
  */
-
 size_t zuluCryptGetKeyFromSocket( const char * path,string_t *,uid_t uid ) ;
 
 /*
@@ -79,3 +79,13 @@ int zuluCryptPartitionIsSystemPartition( const char * dev ) ;
  * this function is defined in is_luks.c
  */
 int zuluCryptVolumeIsNotLuks( const char * dev ) ;
+
+/*
+ * this function is defined in partitions.c
+ */
+int zuluCryptPrintDeviceProperties( int type ) ;
+
+/*
+ * this function is defined in security.c
+ */
+int zuluCryptSecurityCheckPartitionPermissions() ;

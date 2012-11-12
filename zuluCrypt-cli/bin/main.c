@@ -207,14 +207,18 @@ int main( int argc,char * argv[] )
 	
 	/*
 	 * below tests are here because they do not use -d option
-	 */	
+	 * 
+	 * zuluCryptPrintPartitions() function is defined in partitions.c 
+	 * zuluCryptSecurityCheckPartitionPermissions() is defined in security.c
+	 */
 	switch( action ){
 		case 'A':
 		case 'N':
-		case 'S': st = zuluCryptPrintPartitions( clargs.partition_number ) 	;
+		case 'S': st = zuluCryptPrintPartitions( clargs.partition_number,clargs.print_partition_type ) ; 
 			  return zuluExit( st,stl,NULL ) ;
-		case 'L': st = zuluCryptPrintOpenedVolumes( uid ) 			; 
-		    	  return zuluExit( st,stl,NULL ) ;
+		case 'L': st = zuluCryptPrintOpenedVolumes( uid ) ; 
+			  return zuluExit( st,stl,NULL ) ;
+		case 'C': return zuluCryptSecurityCheckPartitionPermissions( uid ) ;	  
 	}
 	
 	if( action == '\0' )
@@ -233,7 +237,7 @@ int main( int argc,char * argv[] )
 
 		ac = zuluCryptDeviceFromUUID( mapping_name + 5 ) ;
 		
-		if( ac != NULL ) {		
+		if( ac != NULL ) {
 			clargs.device = ac ;
 			st = zuluCryptEXE( &clargs,mapping_name,uid );
 			free( ac ) ;

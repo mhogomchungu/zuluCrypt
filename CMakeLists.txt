@@ -97,12 +97,11 @@ find_package( KDE4 QUIET )
 file( WRITE  ${PROJECT_BINARY_DIR}/can_build_kwallet.h "\n#define BUILD_KWALLET 0\n" )
 
 if( KDE4_FOUND )
+	add_definitions( -I${KDE4_INCLUDE_DIR} )
 	find_file( kwallet_header kwallet.h )
-	find_path( KDEINCLUDE kwallet.h )
 	find_library( kwallet_library libkwalletbackend.so )
 	if( kwallet_library )
 		if( kwallet_header )
-			add_definitions( -I${KDEINCLUDE} ) 
 			file( WRITE  ${PROJECT_BINARY_DIR}/can_build_kwallet.h "\n#define BUILD_KWALLET 1\n" )
 			set( BUILDKWALLET "true" )
 		endif( kwallet_header )
@@ -177,6 +176,8 @@ message ( STATUS "--------------------------------------------------------------
 install ( FILES zuluCrypt-cli.1.bz2 DESTINATION share/man/man1 )
 install ( FILES zuluCrypt-test.1.bz2 DESTINATION share/man/man1 )
 install ( FILES zuluCrypt-gui.1.bz2 DESTINATION share/man/man1 )
+
+install ( SCRIPT "${CMAKE_SOURCE_DIR}/PostInstall.cmake")
 
 # uninstall target
 configure_file(

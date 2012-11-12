@@ -72,6 +72,10 @@ void MainWindow::setUpApp()
 
 	part->startAction( QString( "update" ) ) ;
 
+	managepartitionthread * part_1 = new managepartitionthread() ;
+	connect( part_1,SIGNAL( checkPermissions( int ) ),this,SLOT( checkPermissions( int ) ) ) ;
+	part_1->startAction( QString( "checkPermissions" ) ) ;
+
 	m_working = false ;
 	m_justMounted = false ;
 	m_trayIcon->show();
@@ -353,6 +357,22 @@ void MainWindow::pbUpdate()
 	connect( part,SIGNAL( signalMountedList( QStringList,QStringList ) ),this,SLOT( slotMountedList( QStringList,QStringList ) ) ) ;
 
 	part->startAction( QString( "update" ) ) ;
+}
+
+void MainWindow::checkPermissions( int st )
+{
+	DialogMsg msg( this ) ;
+
+	QString msg1 = tr( "you are not a member of zulucrypt-read group,you will not be able to open volumes in read mode" ) ;
+	QString msg2 = tr( "you are not a member of zulucrypt-write group,you will not be able to open volumes in write mode" ) ;
+	QString msg3 = tr( "you are not a member of both zulucrypt-read and zulucrypt-write groups,you will not be able to operate on partitions" ) ;
+
+	switch( st ){
+		//case 1 : msg.ShowUIOK( QString( "INFORMATION" ), ); break ;
+		case 2 : msg.ShowUIOK( tr( "INFORMATION" ),msg1 ); break ;
+		case 3 : msg.ShowUIOK( tr( "INFORMATION" ),msg2 ); break ;
+		case 4 : msg.ShowUIOK( tr( "INFORMATION" ),msg3 ); break ;
+	}
 }
 
 void MainWindow::slotMountedList( QStringList list,QStringList sys )

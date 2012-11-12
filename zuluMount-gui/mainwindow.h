@@ -60,6 +60,7 @@ signals:
 public slots:
 	void raiseWindow( void ) ;
 private slots:
+	void checkPermissions( int ) ;
 	void defaultButton( void ) ;
 	void volumeProperties( QString );
 	void volumeProperties( void ) ;

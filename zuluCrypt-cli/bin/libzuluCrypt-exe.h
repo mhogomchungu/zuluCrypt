@@ -47,6 +47,7 @@ typedef struct struct_opts_1{
 	int dont_ask_confirmation ;
 	int open_no_mount ;
 	int mount_point_option ;
+	int print_partition_type ;
 }struct_opts;
 
 /*
@@ -210,7 +211,7 @@ char * zuluCryptDeviceFromUUID( const char * uuid ) ;
 /*
  * defined in partitions.c
  */
-int zuluCryptPrintPartitions( int option ) ;
+int zuluCryptPrintPartitions( int option,int info ) ;
 
 /*
  * defined at print_mounted_volumes.c

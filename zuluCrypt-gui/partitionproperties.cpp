@@ -40,16 +40,16 @@ void partitionproperties::run()
 	if( m_partitionType == QString( " -N" ) && getuid() == 0 )
 		m_partitionType = QString( " -A" ) ;
 
-	p.start( QString( ZULUCRYPTzuluCrypt ) + m_partitionType );
+	p.start( QString( ZULUCRYPTzuluCrypt ) + m_partitionType + QString( " -T" ) ) ;
 
 	p.waitForFinished() ;
 
 	QStringList l = QString( p.readAllStandardOutput() ).split( "\n" ) ;
 
 	p.close();
-
-	for ( int i = 0 ; i < l.size() - 1 ; i++ )
-		emit partitionProperties( utility::deviceProperties( l.at( i ) ) );
+	int j = l.size() - 1 ;
+	for ( int i = 0 ; i < j ; i++ )
+		emit partitionProperties( l.at( i ).split( "\t" ) );
 }
 
 partitionproperties::~partitionproperties()

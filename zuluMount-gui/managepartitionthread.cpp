@@ -67,7 +67,20 @@ void managepartitionthread::run()
 	}else if( m_action == QString( "openPath" ) ){
 
 		this->openPathInFileManager();
+
+	}else if( m_action == QString( "checkPermissions" ) ){
+
+		this->checkPermissions();
 	}
+}
+
+void managepartitionthread::checkPermissions()
+{
+	QProcess p ;
+	p.start( QString( ZULUCRYPTzuluCrypt ) + QString( " -C" ) );
+	p.waitForFinished() ;
+	emit checkPermissions( p.exitCode() );
+	p.close();
 }
 
 void managepartitionthread::partitionList()

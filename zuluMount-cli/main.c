@@ -151,7 +151,7 @@ static int _zuluMountMount( const char * device,const char * m_point,const char 
 	 */
 	switch( zuluCryptSecurityCanOpenPathForReading( device,uid ) ){
 		case 0 : break ;
-		case 1 : return _zuluExit( 100,z,path,"ERROR: insufficient privilege to access device,are you a member of group \"disk\"?" ) ;
+		case 1 : return _zuluExit( 100,z,path,"ERROR: insufficient privilege to access device,are you a member of zulucrypt-read group?" ) ;
 		case 2 : return _zuluExit( 101,z,path,"ERROR: invalid path to device" ) ;
 		default: return _zuluExit( 113,z,path,"ERROR: insuffienct access to access the device" ) ;
 	}
@@ -165,7 +165,7 @@ static int _zuluMountMount( const char * device,const char * m_point,const char 
 	
 	switch( _zuluMountPartitionAccess( device,mode,uid ) ){
 		case 1 : return _zuluExit( 102,z,path,"ERROR: \"/etc/fstab\" entry for this partition requires it to be mounted read only" ) ;
-		case 2 : return _zuluExit( 103,z,path,"ERROR: \"/etc/fstab\" entry for this partition requires only root user to mount it" ) ;		
+		case 2 : return _zuluExit( 103,z,path,"ERROR: \"/etc/fstab\" entry for this partition requires only root user to mount it" ) ;
 	}
 	
 	if( m_point != NULL ){
@@ -271,7 +271,7 @@ static int _zuluMountDeviceList( void )
 	 * 
 	 * it printf() contents of "/proc/partitions" 
 	 */
-	return zuluCryptPrintPartitions( ALL_PARTITIONS ) ;
+	return zuluCryptPrintPartitions( ALL_PARTITIONS,0 ) ;
 }
 
 static int _zuluMountMmountedList( uid_t uid )
@@ -525,7 +525,7 @@ int main( int argc,char * argv[] )
 		 * function is defined in ../zuluCrypt-cli/bin/partitions.c
 		 * it printf() devices with entries in "/etc/fstab","/etc/crypttab", and "/etc/zuluCrypttab"
 		 */
-		return _zuluExit( zuluCryptPrintPartitions( SYSTEM_PARTITIONS ),k,NULL,NULL ) ;
+		return _zuluExit( zuluCryptPrintPartitions( SYSTEM_PARTITIONS,0 ),k,NULL,NULL ) ;
 	}
 		
 	if( strcmp( action,"-l" ) == 0 )

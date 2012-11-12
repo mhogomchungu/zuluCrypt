@@ -40,9 +40,11 @@ void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
 	stopts->dont_ask_confirmation = -1 ;
 	stopts->open_no_mount = -1 ;
 	stopts->argv = NULL ;
+	stopts->print_partition_type = 0 ;
 	
-	while ( (c = getopt(argc,argv,"JLORBXASNPkhocsarqwibEDs:m:d:p:f:e:z:g:y:u:l:n:j:t:G:") ) != -1 ) {
-		switch( c ){	
+	while ( (c = getopt(argc,argv,"CTJLORBXASNPkhocsarqwibEDs:m:d:p:f:e:z:g:y:u:l:n:j:t:G:") ) != -1 ) {
+		switch( c ){
+			case( 'C' ) : stopts->action = 'C' 	; break ; 
 			case( 'E' ) : stopts->action = 'E' 	; break ;  
 			case( 'D' ) : stopts->action = 'D' 	; break ; 
 			case( 'X' ) : stopts->action = 'X'      ; break ;
@@ -60,6 +62,8 @@ void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
 			case( 'P' ) : stopts->action = 'P'      ; break ;
 			case( 'O' ) : stopts->action = 'O'      ;
 			stopts->open_no_mount = 1 ; break ;
+			case( 'T' ) : stopts->print_partition_type = 1 ; 
+			break;     
 			case( 'B' ) : stopts->action = 'B' ;
 			stopts->key_source = optarg ;
 			break ;

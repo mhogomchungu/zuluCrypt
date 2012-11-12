@@ -48,7 +48,9 @@ signals:
 	void signalUnmountComplete( int,QString ) ;
 	void signalMountedList( QStringList,QStringList ) ;
 	void signalProperties( QString ) ;
+	void checkPermissions( int ) ;
 private:
+	void checkPermissions( void );
 	void openPathInFileManager( void ) ;
 	void volumeMiniProperties( void ) ;
 	void volumeProperties( void ) ;

@@ -125,7 +125,7 @@ static void zuluCryptFileSystemProperties( string_t p,const char * mapper,const 
 	used = total - unused ;
 	
 	e = StringIntToString_1( buffer,SIZE,total ) ;
-	zuluCryptFormatSize( format,e ) ;	
+	zuluCryptFormatSize( format,e ) ;
 	StringMultipleAppend( p,"\n total space:\t",format,END ) ;
 	
 	e = StringIntToString_1( buffer,SIZE,used )  ;

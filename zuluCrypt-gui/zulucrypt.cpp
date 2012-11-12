@@ -119,10 +119,23 @@ void zuluCrypt::initTray()
 	}
 }
 
-void zuluCrypt::startUpdateFinished()
+void zuluCrypt::startUpdateFinished( int st )
 {
 	m_ui->tableWidget->setEnabled( true );
 	m_ui->tableWidget->setFocus();
+
+	DialogMsg msg( this ) ;
+
+	QString msg1 = tr( "you are not a member of zulucrypt-read group,you will not be able to open volumes in read mode,go to:\nmenu->permissions\n for more information" ) ;
+	QString msg2 = tr( "you are not a member of zulucrypt-write group,you will not be able to open volumes in write mode,go to: \nmenu->permissions\n for more information" ) ;
+	QString msg3 = tr( "you are not a member of both zulucrypt-read and zulucrypt-write groups,you will not be able to operate on partitions,go to: \nmenu->help->partitions\n for more information" ) ;
+
+	switch( st ){
+		//case 1 : msg.ShowUIOK( QString( "INFORMATION" ), ); break ;
+		case 2 : msg.ShowUIOK( tr( "INFORMATION" ),msg1 ); break ;
+		case 3 : msg.ShowUIOK( tr( "INFORMATION" ),msg2 ); break ;
+		case 4 : msg.ShowUIOK( tr( "INFORMATION" ),msg3 ); break ;
+	}
 }
 
 void zuluCrypt::StartUpAddOpenedVolumesToTableThread()
@@ -130,7 +143,7 @@ void zuluCrypt::StartUpAddOpenedVolumesToTableThread()
 	m_ui->tableWidget->setEnabled( false );
 	startupupdateopenedvolumes * sov = new startupupdateopenedvolumes();
 	connect( sov,SIGNAL( addItemToTable( QString,QString ) ),this,SLOT( addItemToTable( QString,QString ) ) ) ;
-	connect( sov,SIGNAL( finished() ),this,SLOT( startUpdateFinished() ) );
+	connect( sov,SIGNAL( finished( int ) ),this,SLOT( startUpdateFinished( int ) ) );
 	sov->start();
 }
 

@@ -91,7 +91,8 @@ void zuluCryptEXEHelp( void )
 	-s         check if a device is opened and print its properties if it is\n\
 	-b         show status of each slot of luks volume.\"0\"=empty,\"1\"=occupied,\"2\"=invalid slot,\"3\"=last occupied\n\
 	-A         print the list of all partitions on the system\n\
-	-N         print a list of non system partitions on the system( partitions with no active entries in /etc/fstab and /etc/crypttab\n" ;
+	-N         print a list of non system partitions on the system( partitions with no active entries in /etc/fstab and /etc/crypttab\n\
+	-T         print a detailed list of partitions.Must be used with -A or -S or -N\n" ;
 	
 	help6 ="\
 	-S         print a list of system partitions on the system( partitions with active entries in /etc/fstab and /etc/crypttab\n\

@@ -23,11 +23,9 @@
 #include <unistd.h>
 
 #include "../constants.h"
-
-#ifdef __STDC__
-int seteuid( uid_t );
-#endif
-
+#include <sys/types.h>
+#include <grp.h>
+#include <pwd.h>
 /*
  * This source file makes sure the user who started the tool( usually non root user ) has permission 
  * to perform operations they want on paths they presented.
@@ -64,14 +62,123 @@ static int has_access( const char * path,int c,uid_t uid )
 	}
 }
 
+static int check_group( struct group ** grp1,int op )
+{
+	struct group * grp ;
+	if( op == READ )
+		grp = getgrnam( "zulucrypt-read" ) ;
+	else
+		grp = getgrnam( "zulucrypt-write" ) ;
+	
+	if( grp != NULL ){
+		*grp1 = grp ;
+		return 0 ;
+	}else{
+		return 1 ;
+	}
+}
+
+static inline void create_groups( void )
+{
+	process_t p = Process( ZULUCRYPTgroupadd ) ;
+	ProcessSetArgumentList( p,"-l","zulucrypt-read",ENDLIST ) ;
+	ProcessStart( p ) ;
+	ProcessExitStatus( p ) ;
+	ProcessDelete( &p ) ;
+	
+	p = Process( ZULUCRYPTgroupadd ) ;
+	ProcessSetArgumentList( p,"-l","zulucrypt-write",ENDLIST ) ;
+	ProcessStart( p ) ;
+	ProcessExitStatus( p ) ;
+	ProcessDelete( &p ) ;
+}
+
+static int has_access_1( int op,uid_t uid )
+{
+	int i ;
+	int st = 1 ;
+	
+	struct group * grp ;
+	struct passwd * pass ;
+	
+	const char ** entry ;
+	const char * name ;
+	
+	pass = getpwuid( uid ) ;
+	
+	if( pass == NULL )
+		return 3 ;
+	
+	name = ( const char * )pass->pw_name ;
+	
+	if( check_group( &grp,op ) )
+		create_groups() ;
+	
+	if( check_group( &grp,op ) )
+		return 1 ;
+	
+	entry = ( const char ** )grp->gr_mem ;
+	
+	for( i = 0 ; entry[ i ] != NULL ; i++ ){
+		if( strcmp( entry[ i ],name ) == 0 ){
+			st = 0 ;
+			break ;
+		}
+	}
+	
+	return st ;
+}
+
+int zuluCryptSecurityCheckPartitionPermissions( uid_t uid )
+{
+	int read ;
+	int write;
+	
+	if( uid == 0 )
+		return 1 ;
+	
+	read = has_access_1( READ,uid )   == 0 ;
+	write = has_access_1( WRITE,uid ) == 0 ;
+	
+	if( read && write ){
+		puts( "read and write" ) ;
+		return 1 ;
+	}else if( read && !write ){
+		puts( "read only" ) ;
+		return 2 ;
+	}else if( !read && write ){
+		puts( "write only" ) ;
+		return 3 ;
+	}else if( !read && !write ){
+		puts( "no read and no write" ) ;
+		return 4 ;
+	}
+	/*
+	 * shouldnt get here
+	 */
+	return 0 ;
+}
+
 int zuluCryptSecurityCanOpenPathForReading( const char * path,uid_t uid )
 {
-	return has_access( path,READ,uid ) ;
+	if( uid == 0 ){
+		return 0 ;
+	}else if( strncmp( path,"/dev/",5 ) != 0 ){
+		return has_access( path,READ,uid ) ;
+	}else{
+		return has_access_1( READ,uid ) ;
+	}
 }
 
 int zuluCryptSecurityCanOpenPathForWriting( const char * path,uid_t uid )
 {
-	return has_access( path,WRITE,uid ) ;
+	if( uid == 0 ){
+		return 0 ;
+	}else if( strncmp( path,"/dev/",5 ) != 0 ){
+		return has_access( path,WRITE,uid ) ;
+	}else{
+		return has_access_1( WRITE,uid ) ;
+	}
 }
 
 int zuluCryptSecurityCreateMountPoint( const char * path,uid_t uid )
@@ -115,7 +222,7 @@ int zuluCryptSecurityGetPassFromFile( const char * path,uid_t uid,string_t * st 
 	size_t s = StringLength( p ) ;
 	
 	if( strncmp( path,z,s ) == 0 ){
-		StringDelete( &p ) ;		
+		StringDelete( &p ) ;
 		/*
 		 * path that starts with $HOME/.zuluCrypt-socket is treated not as a path to key file but as path
 		 * to a local socket to get a passphrase 
@@ -140,4 +247,3 @@ int zuluCryptSecurityGetPassFromFile( const char * path,uid_t uid,string_t * st 
 	
 	return 0 ;
 }
-		

@@ -106,7 +106,7 @@ private slots :
 	void addItemToTable( QString pathToVolume,QString pathToMountPoint );
 	void volumePropertyThreadFinished( QString properties ) ;
 	void closeApplication( void ) ;
-	void startUpdateFinished( void ) ;
+	void startUpdateFinished( int ) ;
 	void minimize( void ) ;
 	void minimizeToTray( void );
 	void closeAllVolumes( void ) ;
