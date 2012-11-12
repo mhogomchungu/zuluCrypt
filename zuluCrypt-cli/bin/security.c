@@ -78,16 +78,16 @@ static int check_group( struct group ** grp1,int op )
 	}
 }
 
-static inline void create_groups( void )
+static void create_groups( void )
 {
 	process_t p = Process( ZULUCRYPTgroupadd ) ;
-	ProcessSetArgumentList( p,"-l","zulucrypt-read",ENDLIST ) ;
+	ProcessSetArgumentList( p,"-f","zulucrypt-read",ENDLIST ) ;
 	ProcessStart( p ) ;
 	ProcessExitStatus( p ) ;
 	ProcessDelete( &p ) ;
 	
 	p = Process( ZULUCRYPTgroupadd ) ;
-	ProcessSetArgumentList( p,"-l","zulucrypt-write",ENDLIST ) ;
+	ProcessSetArgumentList( p,"-f","zulucrypt-write",ENDLIST ) ;
 	ProcessStart( p ) ;
 	ProcessExitStatus( p ) ;
 	ProcessDelete( &p ) ;
