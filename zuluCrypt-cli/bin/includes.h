@@ -89,3 +89,8 @@ int zuluCryptPrintDeviceProperties( int type ) ;
  * this function is defined in security.c
  */
 int zuluCryptSecurityCheckPartitionPermissions() ;
+
+/*
+ * this function is defined in partitions.c
+ */
+char * zuluCryptDeviceFromLabel( const char * label ) ;

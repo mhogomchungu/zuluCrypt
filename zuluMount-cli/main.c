@@ -33,25 +33,15 @@
 #include "../zuluCrypt-cli/lib/includes.h"
 #include "../zuluCrypt-cli/bin/includes.h"
 
+/*
+ * below two functions are defined in ./print_mounted_volumes.c
+ */
 int zuluMountPrintMountedVolumes( uid_t uid ) ;
-string_t zuluCryptGetUserHomePath( uid_t uid ) ;
-char * zuluCryptGetMountPointFromPath( const char * path ) ;
-string_t zuluCryptCreateMapperName( const char * device,const char * mapping_name,uid_t uid,int i ) ;
 void zuluMountPartitionProperties( const char * mapper,const char * device,const char * m_point ) ;
-int zuluCryptVolumeIsNotLuks( const char * dev ) ;
 
-#ifdef __STDC__
-char * realpath( const char * path, char * resolved_path ) ;
-int seteuid( uid_t uid );
-int getopt(int argc, char * const argv[], const char *optstring);
-extern char *optarg;
-extern int optind, opterr, optopt;
-#endif
-
-int mount_print_mounted_volumes( uid_t uid ) ;
-char * zuluCryptDeviceFromUUID( const char * ) ;
-char * zuluCryptDeviceFromLabel( const char * ) ;
-int _zuluMountMountVolume( const char * mapper,const char * m_point,const char * mode,uid_t id ) ;
+/*
+ * All functions with "EXE" in their names are defined somewhere in ../zuluCrypt-cli/bin 
+ */
 
 static int _mount_get_opts( int argc,char * argv[],const char ** action,const char ** device,
 			   const char ** m_point, const char ** mode,const char ** key,const char ** key_source,int * mpo )
@@ -188,7 +178,7 @@ static int _zuluMountMount( const char * device,const char * m_point,const char 
 	}
 	
 	/*
-	 * zuluCryptSecurityCreateMountPoint() defined in ../zuluCrypt-cli/bin/security.c
+	 * zuluCryptSecurityCreateMountPoint() is defined in ../zuluCrypt-cli/bin/security.c
 	 * zuluCryptPathIsNotValid() is defined in ../zuluCrypt-cli/lib/is_path_valid.c
 	 */
 	
@@ -246,7 +236,7 @@ static int _zuluMountUMount( const char * device,uid_t uid,const char * mode,int
 		return _zuluExit( 101,StringVoid,m_point,"ERROR: \"/etc/fstab\" entry for this partition requires only root user to unmount it" ) ;
 		
 	/*
-	 * below function is defined in ../zuluCrypt-cli/lib/unmount_volume.c
+	 * zuluCryptUnmountVolume() is defined in ../zuluCrypt-cli/lib/unmount_volume.c
 	 */
 	status = zuluCryptUnmountVolume( device,&m_point ) ;
 	if( status == 0 ){
@@ -267,7 +257,7 @@ static int _zuluMountUMount( const char * device,uid_t uid,const char * mode,int
 static int _zuluMountDeviceList( void )
 {
 	/*
-	 * function is defined in ../zuluCrypt-cli/partitions.c
+	 * zuluCryptPrintPartitions() is defined in ../zuluCrypt-cli/partitions.c
 	 * 
 	 * it printf() contents of "/proc/partitions" 
 	 */
@@ -277,7 +267,7 @@ static int _zuluMountDeviceList( void )
 static int _zuluMountMmountedList( uid_t uid )
 {
 	/*
-	 * function is defined in print_mounted_volumes.c
+	 * zuluMountPrintMountedVolumes() is defined in ./print_mounted_volumes.c
 	 */
 	return zuluMountPrintMountedVolumes( uid ) ;
 }
@@ -335,7 +325,7 @@ static int _zuluMountCryptoMount( const char * device,const char * mode,uid_t ui
 	opts.mount_point_option = mount_point_option ;
 	
 	/*
-	 * the function is defined in ../zuluCrypt-cli/bin/open_volume.c
+	 * zuluCryptEXEOpenVolume() is defined in ../zuluCrypt-cli/bin/open_volume.c
 	 */
 	st = zuluCryptEXEOpenVolume( &opts,mapping_name,uid ) ;
 	
@@ -358,7 +348,7 @@ static int _zuluMountCryptoUMount( const char * device,uid_t uid,__attribute__((
 		mapping_name = e + 1 ;
 	
 	/*
-	 * the function is defined in ../zuluCrypt-cli/bin/close_volume.c
+	 * zuluCryptEXECloseVolume() is defined in ../zuluCrypt-cli/bin/close_volume.c
 	 */
 	return zuluCryptEXECloseVolume( device,mapping_name,uid ) ;
 }
@@ -370,6 +360,9 @@ int zuluMountVolumeStatus( const char * device,uid_t uid )
 
 static int _zuluMiniCryptoProperties( const char * device,uid_t uid )
 {	
+	/*
+	 * zuluCryptCreateMapperName() is defined in ../zuluCrypt-cli/lib/create_mapper_name.c
+	 */
 	string_t p = zuluCryptCreateMapperName( device,strrchr( device,'/' ) + 1,uid,CLOSE ) ;
 	int st ;
 	char * d ;
@@ -379,7 +372,7 @@ static int _zuluMiniCryptoProperties( const char * device,uid_t uid )
 		st = 1 ;
 	}else{
 		/*
-		 * this function is defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c
+		 * zuluCryptGetMountPointFromPath() is defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c
 		 */
 		d = zuluCryptGetMountPointFromPath( StringContent( p ) ) ;
 		
@@ -388,7 +381,7 @@ static int _zuluMiniCryptoProperties( const char * device,uid_t uid )
 			st = 1 ;
 		}else{
 			/*
-			 * this function is defined in print_mounted_volumes.c
+			 * zuluMountPartitionProperties() is defined in print_mounted_volumes.c
 			 */
 			zuluMountPartitionProperties( device,StringContent( p ),d ) ;
 			free( d ) ;
@@ -405,16 +398,23 @@ static int _zuluMiniProperties( const char * device,uid_t uid )
 {
 	char * d ;
 	/*
-	 * this function is defined in ../zuluCrypt-cli/lib/is_luks.c
+	 * zuluCryptVolumeIsNotLuks() is defined in ../zuluCrypt-cli/lib/is_luks.c
 	 */
 	if( zuluCryptVolumeIsNotLuks( device ) ){
 		
 		/*
 		 * volume is not LUKS, assuming its a plain type or a regular partition
 		 */
+		
+		/*
+		 * zuluCryptGetMountPointFromPath() is defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c
+		 */
 		d = zuluCryptGetMountPointFromPath( device ) ;
 		
 		if( d != NULL ){
+			/*
+			 * zuluMountPartitionProperties() is defined in ./print_mounted_volumes.c
+			 */
 			zuluMountPartitionProperties( device,device,d ) ;
 			free( d ) ;
 			return 0 ;
@@ -490,7 +490,7 @@ int main( int argc,char * argv[] )
 	const char * key_argv   = NULL ;
 	int mount_point_option = 0 ;
 	char * device ;
-	char * e ;
+
 	uid_t uid = getuid() ;
 	
 	int status ;
@@ -505,9 +505,7 @@ int main( int argc,char * argv[] )
 	
 	if( key_argv != NULL ){
 		k = String( key_argv ) ;
-		e = ( char * ) key_argv ;
-		memset( e,'\0',StringLength( k ) ) ;
-		e[ 0 ] = 'x' ;
+		strncpy( ( char * ) key_argv,"x",StringLength( k ) ) ;
 		key = StringContent( k ) ;
 	}
 	
@@ -522,7 +520,7 @@ int main( int argc,char * argv[] )
 	
 	if( strcmp( action,"-S" ) == 0 ){
 		/*
-		 * function is defined in ../zuluCrypt-cli/bin/partitions.c
+		 * zuluCryptPrintPartitions() is defined in ../zuluCrypt-cli/bin/partitions.c
 		 * it printf() devices with entries in "/etc/fstab","/etc/crypttab", and "/etc/zuluCrypttab"
 		 */
 		return _zuluExit( zuluCryptPrintPartitions( SYSTEM_PARTITIONS,0 ),k,NULL,NULL ) ;
@@ -543,6 +541,9 @@ int main( int argc,char * argv[] )
 	if( mode == NULL )
 		mode = "rw" ;
 	
+	/*
+	 * zuluCryptDeviceFromUUID() and zuluCryptDeviceFromLabel() are defined in ../zuluCrypt-cli/bin/partitions.c
+	 */
 	if( strncmp( dev,"UUID=",5 ) == 0 ){
 		device = zuluCryptDeviceFromUUID( dev + 5 ) ;
 		if( device != NULL ){
