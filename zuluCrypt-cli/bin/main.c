@@ -218,7 +218,7 @@ int main( int argc,char * argv[] )
 			  return zuluExit( st,stl,NULL ) ;
 		case 'L': st = zuluCryptPrintOpenedVolumes( uid ) ; 
 			  return zuluExit( st,stl,NULL ) ;
-		case 'C': return zuluCryptSecurityCheckPartitionPermissions( uid ) ;	  
+		case 'C': return zuluCryptSecurityCheckPartitionPermissions( uid ) ; 
 	}
 	
 	if( action == '\0' )

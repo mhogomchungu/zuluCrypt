@@ -88,7 +88,7 @@ int zuluCryptPrintDeviceProperties( int type ) ;
 /*
  * this function is defined in security.c
  */
-int zuluCryptSecurityCheckPartitionPermissions() ;
+int zuluCryptSecurityCheckPartitionPermissions( uid_t uid ) ;
 
 /*
  * this function is defined in partitions.c
