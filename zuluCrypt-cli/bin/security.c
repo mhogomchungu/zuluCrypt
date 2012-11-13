@@ -46,14 +46,12 @@ static int has_access( const char * path,int c,uid_t uid )
 	else
 		f = open( path,O_WRONLY );
 	
-	if( f >= 0 )
-		close( f ) ;
-	
 	seteuid( org ) ;
 	
-	if( f >= 0 )
+	if( f >= 0 ){
+		close( f ) ;
 		return 0 ;
-	else{
+	}else{
 		switch( errno ){
 			case EACCES : return 1 ; /* permission denied */
 			case ENOENT : return 2 ; /* invalid path*/
@@ -62,14 +60,10 @@ static int has_access( const char * path,int c,uid_t uid )
 	}
 }
 
-static int check_group( struct group ** grp1,int op )
+static int check_group( struct group ** grp1,const char * groupname )
 {
 	struct group * grp ;
-	if( op == READ )
-		grp = getgrnam( "zulucrypt-read" ) ;
-	else
-		grp = getgrnam( "zulucrypt-write" ) ;
-	
+	grp = getgrnam( groupname ) ;
 	if( grp != NULL ){
 		*grp1 = grp ;
 		return 0 ;
@@ -78,55 +72,52 @@ static int check_group( struct group ** grp1,int op )
 	}
 }
 
-static void create_groups( void )
+static int create_group( const char * groupname )
 {
 	process_t p = Process( ZULUCRYPTgroupadd ) ;
-	ProcessSetArgumentList( p,"-f","zulucrypt-read",ENDLIST ) ;
+	ProcessSetArgumentList( p,"-f",groupname,ENDLIST ) ;
 	ProcessStart( p ) ;
 	ProcessExitStatus( p ) ;
 	ProcessDelete( &p ) ;
-	
-	p = Process( ZULUCRYPTgroupadd ) ;
-	ProcessSetArgumentList( p,"-f","zulucrypt-write",ENDLIST ) ;
-	ProcessStart( p ) ;
-	ProcessExitStatus( p ) ;
-	ProcessDelete( &p ) ;
+	return 1 ;
 }
 
 static int has_access_1( int op,uid_t uid )
 {
-	int i ;
-	int st = 1 ;
-	
+	int i = 0 ;
 	struct group * grp ;
 	struct passwd * pass ;
 	
 	const char ** entry ;
 	const char * name ;
 	
+	const char * groupname ;
+	
+	if( op == READ )
+		groupname = "zulucrypt-read" ;
+	else
+		groupname = "zulucrypt-write";
+	
 	pass = getpwuid( uid ) ;
 	
 	if( pass == NULL )
 		return 3 ;
 	
+	if( check_group( &grp,groupname ) )
+		return create_group( groupname ) ;
+	
 	name = ( const char * )pass->pw_name ;
-	
-	if( check_group( &grp,op ) )
-		create_groups() ;
-	
-	if( check_group( &grp,op ) )
-		return 1 ;
-	
 	entry = ( const char ** )grp->gr_mem ;
 	
-	for( i = 0 ; entry[ i ] != NULL ; i++ ){
+	while( entry[ i ] != NULL ){
 		if( strcmp( entry[ i ],name ) == 0 ){
-			st = 0 ;
-			break ;
+			return 0 ;
+		}else{
+			i++ ;
 		}
 	}
 	
-	return st ;
+	return 1 ;
 }
 
 int zuluCryptSecurityCheckPartitionPermissions( uid_t uid )

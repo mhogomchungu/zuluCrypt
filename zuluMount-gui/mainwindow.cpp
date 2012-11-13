@@ -363,8 +363,8 @@ void MainWindow::checkPermissions( int st )
 {
 	DialogMsg msg( this ) ;
 
-	QString msg1 = tr( "you are not a member of zulucrypt-read group,you will not be able to open volumes in read mode" ) ;
-	QString msg2 = tr( "you are not a member of zulucrypt-write group,you will not be able to open volumes in write mode" ) ;
+	QString msg1 = tr( "you are not a member of zulucrypt-read group,you will not be able to access any partition" ) ;
+	QString msg2 = tr( "you are not a member of zulucrypt-write group,you will not be able to open volumes in read/write mode" ) ;
 	QString msg3 = tr( "you are not a member of both zulucrypt-read and zulucrypt-write groups,you will not be able to operate on partitions" ) ;
 
 	switch( st ){
