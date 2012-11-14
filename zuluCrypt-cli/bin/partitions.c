@@ -75,11 +75,12 @@ stringList_t zuluCryptGetPartitionFromZulutab( void ) ;
 
 stringList_t zuluCryptPartitionList( void )
 {
-	const char * device ;	
+	const char * device ;
 	
-	size_t i ;
-	size_t j ;	
-	ssize_t index ;	
+	ssize_t index ;
+	
+	StringListInterator it ;
+	StringListInterator end ;
 	
 	stringList_t stl   = StringListVoid ;
 	stringList_t stl_1 = StringListVoid ;
@@ -97,28 +98,23 @@ stringList_t zuluCryptPartitionList( void )
 	if( stl == StringListVoid )
 		return StringListVoid ;
 	
-	j = StringListSize( stl )  ;
-	
 	st_1 = String( "/dev/" ) ;
 	
-	for( i = 0 ; i < j ; i++ ){
-		
-		st = StringListStringAt( stl,i ) ;
-
+	it  = StringListBegin( stl ) ;
+	end = StringListEnd( stl ) ;
+	
+	for( ; it != end ; it++ ){
+		st = *it ;
 		index = StringLastIndexOfChar( st,' ' ) ;
-
-		if( index == -1 )
-			continue ;
-		
-		device = StringContent( st ) + index + 1 ;
-
-		if( strlen( device  ) <= 3  )
-			continue ;
-		
-		if( ( strncmp( device,"hd",2 ) == 0 || strncmp( device,"sd",2 ) == 0 ) ){
-			StringInsertAndDelete( st_1,5,device ) ;
-			stl_1 = StringListAppendString( stl_1,st_1 ) ;
-		}	
+		if( index != -1 ){
+			device = StringContent( st ) + index + 1 ;
+			if( strlen( device  ) > 3 ){
+				if( ( strncmp( device,"hd",2 ) == 0 || strncmp( device,"sd",2 ) == 0 ) ){
+					StringInsertAndDelete( st_1,5,device ) ;
+					stl_1 = StringListAppendString( stl_1,st_1 ) ;
+				}
+			}
+		}
 	}
 	
 	StringDelete( &st_1 ) ;
@@ -144,15 +140,15 @@ stringList_t zuluCryptPartitions( int option )
 	char * ac ;
 	
 	ssize_t index ;
-
-	size_t i ;
-	size_t j ;
 	
 	stringList_t non_system = StringListVoid ;
 	stringList_t system     = StringListVoid ;
 	
 	stringList_t p ;
 	stringList_t stl = zuluCryptPartitionList() ;
+	
+	StringListInterator it  ;
+	StringListInterator end ;
 	
 	if( stl == StringListVoid )
 		return StringListVoid ;
@@ -179,22 +175,17 @@ stringList_t zuluCryptPartitions( int option )
 		return StringListVoid ;
 	}
 	
-	j = StringListSize( stl ) ;
+	it  = StringListBegin( stl ) ;
+	end = StringListEnd( stl ) ; 
 	
-	for( i = 0 ; i < j ; i++ ){
-		
-		st = StringListStringAt( stl,i ) ;
-
+	for(  ; it != end ; it++ ){
+		st = *it ;
 		if( StringStartsWith( st,"#" ) )
 			continue ;
-		
 		index = StringIndexOfChar( st,0,' ' ) ;
-		
 		if( index == -1 )
 			continue ;
-		
 		StringSubChar( st,index,'\0' ) ;
-
 		device = StringRemoveString( st,"\"" ) ;
 		
 		if ( StringStartsWith( st,"/dev/" ) ){
@@ -214,7 +205,7 @@ stringList_t zuluCryptPartitions( int option )
 				StringListRemoveString( non_system,ac ) ;
 				free( ac ) ;
 			}
-		}		
+		}
 	}
 	
 	StringListDelete( &stl ) ;
@@ -265,9 +256,7 @@ static inline int _printPartitions_2( int option )
 	j = StringListSize( stl ) ;
 	
 	for( i = 0 ; i < j ; i++ ){
-		
 		device = StringListContentAt( stl,i ) ;
-		
 		printf( "%s\t",device ) ;
 		
 		blkid = blkid_new_probe_from_filename( device ) ;
@@ -307,29 +296,21 @@ static inline int _printPartitions_2( int option )
 
 static inline int _printPartitions_1( int option )
 {
-	size_t i ;
-	size_t j ;
-	
 	stringList_t stl = StringListVoid ;
 	
 	switch( option ){
 		case 1 : stl = zuluCryptPartitions( ALL_PARTITIONS ) 	   ;break ;
 		case 2 : stl = zuluCryptPartitions( SYSTEM_PARTITIONS )    ;break ;
 		case 3 : stl = zuluCryptPartitions( NON_SYSTEM_PARTITIONS );break ;
-	}	
+	}
 	
 	if( stl == StringListVoid ){
 		printf( "ERROR: unable to print requested list of partitions\n" ) ;
 		return 1 ;
 	}
 	
-	j = StringListSize( stl ) ;
-	
-	for( i = 0 ; i < j ; i++ )
-		StringListPrintLineAt( stl,i ) ;
-	
+	StringListPrintList( stl ) ;
 	StringListDelete( &stl ) ;
-	
 	return 0 ;
 }
 
@@ -359,8 +340,8 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 	ssize_t index ;
 	ssize_t index_1 ;
 	
-	size_t i ;
-	size_t j ;
+	StringListInterator it  ;
+	StringListInterator end ;
 	
 	st = StringGetFromFile( "/etc/crypttab" );
 	
@@ -374,36 +355,27 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 	if( stl == StringListVoid )
 		return StringListVoid ;
 	
-	j = StringListSize( stl ) ;
-		
-	for( i = 0 ; i < j ; i++ ){
-			
-		st = StringListStringAt( stl,i ) ;
+	it  = StringListBegin( stl ) ;
+	end = StringListEnd( stl ) ;
 	
+	for( ; it != end ; it++ ){
+		st = *it ;
 		if( StringStartsWith( st,"#" ) )
-			continue ;
-		 
+			continue ; 
 		index = StringIndexOfChar( st,0,'/' ) ;
-	
 		if( index == -1 ){
 			/*
 			 * check above did not find '/' character and we are in this block assuming the line uses UUID
 			 * 
 			 */
 			index = StringIndexOfChar( st,0,'U' ) ;
-				
 			if( index == -1 )
 				continue ;
-				
 			index = StringIndexOfChar( st,index,' ' ) ;
-
 			if( index == -1 )
 				continue ;
-				
 			StringSubChar( st,index,'\0' ) ;
-				
 			StringRemoveString( st,"\"" ) ;  /* remove quotes if they are used */
-			
 			/* 
 			 * resolve the UUID to its device address 
 			 * q will have NULL  most likely if the drive with UUID is not attached
@@ -414,7 +386,7 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 				stl_1 = StringListAppend( stl_1,ac ) ;
 				free( ac ) ;
 			}
-		}else{		
+		}else{
 			/*
 			 * the entry is of the first format,work to get the device address 
 			 */
@@ -422,9 +394,7 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 				
 			if ( index_1 == -1 )
 				continue ;
-				
-			StringSubChar( st,index_1,'\0' ) ;
-		 
+			StringSubChar( st,index_1,'\0' ) ; 
 			stl_1 = StringListAppend( stl_1,StringContent( st ) + index ) ;
 		}
 	}
@@ -435,8 +405,8 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 
 stringList_t zuluCryptGetPartitionFromZulutab()
 {
-	size_t i ;
-	size_t j ;
+	StringListInterator it  ;
+	StringListInterator end ;
 	
 	char * ac ;
 	
@@ -455,25 +425,21 @@ stringList_t zuluCryptGetPartitionFromZulutab()
 	if( stl == StringListVoid )
 		return StringListVoid ;
 	
-	j = StringListSize( stl ) ;
+	it  = StringListBegin( stl ) ;
+	end = StringListEnd( stl ) ;
 	
-	for( i = 0 ; i < j ; i++ ){
-		
-		st = StringListStringAt( stl,i ) ;
-		
+	for( ; it != end ; it++ ){
+		st = *it ;
 		StringRemoveString( st,"\"" ) ;
-		
 		if( StringStartsWith( st,"UUID=" ) ){
-
 			ac = zuluCryptDeviceFromUUID( StringContent( st ) + 5 ) ;
-			
 			if( ac != NULL ){
-
 				stl_1 = StringListAppend( stl_1,ac ) ;
 				free( ac ) ;
 			}
-		}else
+		}else{
 			stl_1 = StringListAppendString( stl_1,st ) ;
+		}
 	}
 	
 	StringListDelete( &stl ) ;

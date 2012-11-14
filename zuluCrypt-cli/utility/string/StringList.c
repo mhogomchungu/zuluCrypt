@@ -98,6 +98,16 @@ stringList_t StringList( const char * cstring )
 	return stl ;
 }
 
+StringListInterator StringListBegin( stringList_t stl )
+{
+	return &stl->stp[ 0 ] ;
+}
+
+StringListInterator StringListEnd( stringList_t stl ) 
+{
+	return &stl->stp[ stl->size ] ;
+}
+
 string_t * StringListAssign( stringList_t stl ) 
 {
 	string_t * p ;
@@ -714,3 +724,16 @@ void StringListPrintLineAt( stringList_t stl,size_t index )
 		if( index < stl->size )
 			printf("%s\n",stl->stp[ index ]->string ) ;
 }
+
+void StringListPrintList( stringList_t stl )
+{
+	size_t i ;
+	size_t j ;
+	
+	if( stl == StringListVoid )
+		return ;
+	j = stl->size ;
+	for( i = 0 ; i < j ; i++ )
+		printf("%s\n",stl->stp[ i ]->string ) ;
+}
+

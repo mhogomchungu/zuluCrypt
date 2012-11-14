@@ -48,6 +48,21 @@ typedef struct StringListType * stringList_t ;
  */
 
 /*
+ * an STL style iterator type
+ */
+typedef string_t * StringListInterator ;
+
+/*
+ *  returns a pointer to the memory block occupying the first element on the list
+ */
+StringListInterator StringListBegin( stringList_t ) ;
+
+/*
+ * returns a pointer to a memory block past the end of the array,STL style
+ */
+StringListInterator StringListEnd( stringList_t ) ;
+
+/*
  * Takes a pointer to a function to be called when memory allocation can not take place
  * ie if the system has run out of memory and malloc() or realloc() has failed.
  * This function is optional and "StringListVoid" will be returned on memory exaustion if the function
@@ -125,6 +140,11 @@ int StringListContentAtEqual( stringList_t stl,size_t index,const char * cstring
  * printf() string content at a given index
  */
 void StringListPrintAt( stringList_t stl,size_t index ) ;
+
+/*
+ * printf() all elements in the list,one line per element
+ */
+void StringListPrintList( stringList_t stl ) ;
 
 /*
  * printf() with a new line string content at a given index
