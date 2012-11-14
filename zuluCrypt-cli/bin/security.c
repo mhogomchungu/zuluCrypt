@@ -36,7 +36,6 @@
 static int has_access( const char * path,int c,uid_t uid )
 {
 	int f ;
-	
 	uid_t org = getuid() ;
 	
 	seteuid( uid ) ;
@@ -60,15 +59,23 @@ static int has_access( const char * path,int c,uid_t uid )
 	}
 }
 
-static int check_group( struct group ** grp1,const char * groupname )
+static int has_access_1( const char * path,int c )
 {
-	struct group * grp ;
-	grp = getgrnam( groupname ) ;
-	if( grp != NULL ){
-		*grp1 = grp ;
+	int f ;
+	if( c == READ )
+		f = open( path,O_RDONLY );
+	else
+		f = open( path,O_WRONLY );
+	
+	if( f >= 0 ){
+		close( f ) ;
 		return 0 ;
 	}else{
-		return 1 ;
+		switch( errno ){
+			case EACCES : return 1 ; /* permission denied */
+			case ENOENT : return 2 ; /* invalid path*/
+			default     : return 3 ; /* common error */    
+		}
 	}
 }
 
@@ -79,10 +86,10 @@ static int create_group( const char * groupname )
 	ProcessStart( p ) ;
 	ProcessExitStatus( p ) ;
 	ProcessDelete( &p ) ;
-	return 1 ;
+	return 0 ;
 }
 
-static int has_access_1( int op,uid_t uid )
+int zuluCryptUserIsAMemberOfAGroup( uid_t uid,const char * groupname )
 {
 	int i = 0 ;
 	struct group * grp ;
@@ -91,19 +98,14 @@ static int has_access_1( int op,uid_t uid )
 	const char ** entry ;
 	const char * name ;
 	
-	const char * groupname ;
-	
-	if( op == READ )
-		groupname = "zulucrypt-read" ;
-	else
-		groupname = "zulucrypt-write";
-	
 	pass = getpwuid( uid ) ;
 	
 	if( pass == NULL )
-		return 3 ;
+		return 0 ;
 	
-	if( check_group( &grp,groupname ) )
+	grp = getgrnam( groupname ) ;
+	
+	if( grp == NULL )
 		return create_group( groupname ) ;
 	
 	name = ( const char * )pass->pw_name ;
@@ -111,65 +113,45 @@ static int has_access_1( int op,uid_t uid )
 	
 	while( entry[ i ] != NULL ){
 		if( strcmp( entry[ i ],name ) == 0 ){
-			return 0 ;
+			return 1 ;
 		}else{
 			i++ ;
 		}
 	}
 	
-	return 1 ;
+	return 0 ;
 }
 
-int zuluCryptSecurityCheckPartitionPermissions( uid_t uid )
+static int check_permissions( const char * path,int mode,const char * groupname,uid_t uid )
 {
-	int read ;
-	int write;
-	
-	if( uid == 0 )
-		return 1 ;
-	
-	read = has_access_1( READ,uid )   == 0 ;
-	write = has_access_1( WRITE,uid ) == 0 ;
-	
-	if( read && write ){
-		puts( "read and write" ) ;
-		return 1 ;
-	}else if( read && !write ){
-		puts( "read only" ) ;
-		return 2 ;
-	}else if( !read && write ){
-		puts( "write only" ) ;
-		return 3 ;
-	}else if( !read && !write ){
-		puts( "no read and no write" ) ;
-		return 4 ;
-	}
-	/*
-	 * shouldnt get here
-	 */
-	return 0 ;
+	if( uid == 0 ){
+		return has_access_1( path,mode ) ;
+	}else if( strncmp( path,"/dev/",5 ) != 0 ){
+		return has_access( path,mode,uid ) ;
+	}else{
+		/*
+		 * zuluCryptPartitionIsSystemPartition() is defined in ./partitions.c
+		 */
+		if( zuluCryptPartitionIsSystemPartition( path ) ){
+			if( zuluCryptUserIsAMemberOfAGroup( uid,groupname ) ){
+				return has_access_1( path,mode ) ;
+			}else{
+				return 1 ;
+			}
+		}else{
+			return has_access_1( path,mode ) ;
+		}
+	}	
 }
 
 int zuluCryptSecurityCanOpenPathForReading( const char * path,uid_t uid )
 {
-	if( uid == 0 ){
-		return 0 ;
-	}else if( strncmp( path,"/dev/",5 ) != 0 ){
-		return has_access( path,READ,uid ) ;
-	}else{
-		return has_access_1( READ,uid ) ;
-	}
+	return check_permissions( path,READ,"zulucrypt",uid ) ;
 }
 
 int zuluCryptSecurityCanOpenPathForWriting( const char * path,uid_t uid )
 {
-	if( uid == 0 ){
-		return 0 ;
-	}else if( strncmp( path,"/dev/",5 ) != 0 ){
-		return has_access( path,WRITE,uid ) ;
-	}else{
-		return has_access_1( WRITE,uid ) ;
-	}
+	return check_permissions( path,WRITE,"zulucrypt-write",uid ) ;
 }
 
 int zuluCryptSecurityCreateMountPoint( const char * path,uid_t uid )

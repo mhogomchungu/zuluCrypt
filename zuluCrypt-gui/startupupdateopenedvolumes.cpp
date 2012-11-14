@@ -37,15 +37,15 @@ void startupupdateopenedvolumes::run()
 	QProcess p ;
 	p.start( QString( ZULUCRYPTzuluCrypt ) + QString( " -L" ) );
 	p.waitForFinished();
-
+	m_status = p.exitCode() ;
 	QStringList l = QString( p.readAll() ).split( "\n" ) ;
 
 	p.close();
 
-	p.start( QString( ZULUCRYPTzuluCrypt ) + QString( " -C" ) );
-	p.waitForFinished() ;
-	m_status = p.exitCode() ;
-	p.close();
+	//p.start( QString( ZULUCRYPTzuluCrypt ) + QString( " -C" ) );
+	//p.waitForFinished() ;
+	//m_status = p.exitCode() ;
+	//p.close();
 
 	int j = l.size() - 1 ;
 

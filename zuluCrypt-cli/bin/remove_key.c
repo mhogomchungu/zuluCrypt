@@ -54,7 +54,8 @@ static int zuluExit( int st,stringList_t stl )
 		case 7 : printf( "ERROR: could not get enough memory to open the key file\n" ) ;							break ;
 		case 10: printf( "ERROR: device does not exist\n" );											break ;
 		case 11: printf( "INFO: operation terminated per user request\n" );									break ;
-		case 12: printf( "ERROR: insufficient privilege to open volume for writing\n,are you a member of zulucrypt-write group?\n" ) ;		break ;
+		case 12: printf( "ERROR: insufficient privilege to open a system device in read/write mode,\
+only root user or members of group zulucrypt-write can do that\n" ) ;											break ;
 		case 13: printf( "ERROR: insufficient privilege to open key file for reading\n" );							break ;
 		case 14: printf( "ERROR: only root user can remove keys from system devices\n" );							break ;
 		case 15: printf( "ERROR: can not get passphrase in silent mode\n" );									break ;
@@ -89,10 +90,10 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 	
 	/*
 	* check_partition is defined in partitions.c
-	*/
+	
 	if( zuluCryptPartitionIsSystemPartition( device ) && uid != 0 )
 		return zuluExit( 14,stl ) ;
-
+	*/
 	/*
 	 * This function is defined at "is_path_valid.c"
 	 * It makes sure the path exists and the user has atleast reading access to the path.

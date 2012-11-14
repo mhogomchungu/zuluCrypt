@@ -95,7 +95,6 @@ static int _zuluMountPartitionAccess( const char * device,const char * mode,uid_
 	 */
 	string_t p = zuluCryptGetMountOptionsFromFstab( device,3 ) ;
 	
-	int st      ;
 	int ro      ;
 	int nouser  ;
 	int defaulT ;
@@ -104,26 +103,29 @@ static int _zuluMountPartitionAccess( const char * device,const char * mode,uid_
 	if( p == StringVoid )
 		return 0 ;
 	
-	st = 0 ;
 	ro      = StringContains( p,"ro" ) ;
 	nouser  = StringContains( p,"nouser" ) ;
 	defaulT = StringContains( p,"default" ) ;
 	user    = StringContains( p,"user" ) ;
 	
-	if( ro && strstr( mode,"rw" ) != NULL )
-		st = 1 ;
-	else if( nouser || defaulT ){
-		if( uid != 0 )
-			st = 2 ;
-	}else if( user ){
-		st = 3 ;
-	}else if( !nouser && !defaulT && !user && uid != 0 ){
-		st = 2 ;
-	}
-	
 	StringDelete( &p ) ;
 	
-	return st ;
+	if( ro && strstr( mode,"rw" ) != NULL )
+		return 1 ;
+	/*
+	 * zuluCryptUserIsAMemberOfAGroup() is defined in ../zuluCrypt-cli/bin/security.c
+	 */
+	if( uid == 0 || zuluCryptUserIsAMemberOfAGroup( uid,"zulucrypt" ) )
+		return 0 ;
+	if( nouser || defaulT ){
+		return 2 ;
+	}else if( user ){
+		return 3 ;
+	}else if( !nouser && !defaulT && !user && uid != 0 ){
+		return 2 ;
+	}
+	
+	return 0 ;
 }
 
 static int _zuluMountMount( const char * device,const char * m_point,const char * mode,uid_t uid,int mount_point_option )
@@ -137,14 +139,10 @@ static int _zuluMountMount( const char * device,const char * m_point,const char 
 	const char * m_path ;
 	
 	/*
-	 * below function is defined in ../zuluCrypt-cli/bin/security.c
+	 * zuluCryptPathIsNotValid() is defined in ../zuluCrypt-cli/lib/is_path_valid.c
 	 */
-	switch( zuluCryptSecurityCanOpenPathForReading( device,uid ) ){
-		case 0 : break ;
-		case 1 : return _zuluExit( 100,z,path,"ERROR: insufficient privilege to access device,are you a member of zulucrypt-read group?" ) ;
-		case 2 : return _zuluExit( 101,z,path,"ERROR: invalid path to device" ) ;
-		default: return _zuluExit( 113,z,path,"ERROR: insuffienct access to access the device" ) ;
-	}
+	if( zuluCryptPathIsNotValid( device ) )
+		return _zuluExit( 101,z,path,"ERROR: invalid path to device" ) ;
 	
 	/*
 	 * Below function is defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c
@@ -155,7 +153,7 @@ static int _zuluMountMount( const char * device,const char * m_point,const char 
 	
 	switch( _zuluMountPartitionAccess( device,mode,uid ) ){
 		case 1 : return _zuluExit( 102,z,path,"ERROR: \"/etc/fstab\" entry for this partition requires it to be mounted read only" ) ;
-		case 2 : return _zuluExit( 103,z,path,"ERROR: \"/etc/fstab\" entry for this partition requires only root user to mount it" ) ;
+		case 2 : return _zuluExit( 103,z,path,"ERROR: \"/etc/fstab\" entry for this partition requires only root user or members of group zulucrypt to mount it" ) ;
 	}
 	
 	if( m_point != NULL ){
@@ -233,7 +231,7 @@ static int _zuluMountUMount( const char * device,uid_t uid,const char * mode,int
 		return _zuluExit( 100,StringVoid,m_point,"ERROR: device does not appear to be mounted as it does not have an entry in \"/etc/mtab\"" ) ;
 	
 	if( _zuluMountPartitionAccess( device,mode,uid ) == 2 )
-		return _zuluExit( 101,StringVoid,m_point,"ERROR: \"/etc/fstab\" entry for this partition requires only root user to unmount it" ) ;
+		return _zuluExit( 101,StringVoid,m_point,"ERROR: \"/etc/fstab\" entry for this partition requires only root user or members of group zulucrypt to unmount it" ) ;
 		
 	/*
 	 * zuluCryptUnmountVolume() is defined in ../zuluCrypt-cli/lib/unmount_volume.c

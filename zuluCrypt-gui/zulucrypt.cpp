@@ -121,8 +121,12 @@ void zuluCrypt::initTray()
 
 void zuluCrypt::startUpdateFinished( int st )
 {
+	Q_UNUSED( st ) ;
+
 	m_ui->tableWidget->setEnabled( true );
 	m_ui->tableWidget->setFocus();
+
+	return ;
 
 	DialogMsg msg( this ) ;
 

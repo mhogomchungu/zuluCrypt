@@ -52,11 +52,12 @@ static int zuluExit( int st,char * device,char * m_point,stringList_t stl )
 		case 17: printf( "ERROR: could not resolve full path of device address\n" );						break ;
 		case 18: printf( "ERROR: -O and -m options can not be used together\n" );						break ;
 		case 19: printf( "ERROR: insufficient privilege to search mount point path\n" );					break ;
-		case 20: printf( "ERROR: insufficient privilege to access device,are you a member of zulucrypt-read group?\n" );	break ;
+		case 20: printf( "ERROR: insufficient privilege to access a system device,\
+only root user or members of group zulucrypt can access system devices\n" );								break ;
 		case 21: printf( "ERROR: insufficient privilege to create a mount point\n" );						break ;
 		case 22: printf( "ERROR: insufficient privilege to open key file for reading\n" );					break ;
-		case 23: printf( "ERROR: insufficient privilege to open device in read/write mode\n,\
-are you a member of zulucrypt-read and zulucrypt-write groups?\n" );									break ;
+		case 23: printf( "ERROR: insufficient privilege to open a system device in read/write mode\n,\
+only root user or members of group zulucrypt-write can do that\n" );									break ;
 		case 24: printf( "ERROR: there seem to be an opened mapper associated with the device\n" ) ;				break ;
 		case 25: printf( "ERROR: could not get a passphrase from the module\n" ) ;						break ;
 		case 26: printf( "ERROR: could not get passphrase in silent mode\n" );							break ;
@@ -106,7 +107,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	string_t * m_name     =  StringListAssign( stl ) ;
 	string_t * data       =  StringListAssign( stl ) ; 
 	
-	const char * cpass ;	
+	const char * cpass ;
 	const char * cname ;
 	
 	char * device = NULL ;

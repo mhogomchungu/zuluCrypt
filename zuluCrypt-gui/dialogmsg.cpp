@@ -79,9 +79,9 @@ void DialogMsg::ShowPermissionProblem( QString device )
 	QString msg = tr( "\
 \"insufficent privilege to open device\" and related permission errors when\n\
 attempting to operate on a device are primarily caused by not having proper \
-privileges to open devices for reading or writing.\n\n.If you get above errors,then add yourself to zulucrypt-read and zulucrypt-write groups,log out and log back in and try again.\n\n\
-Some operations can not be performed on devices marked as \"system partitions\" when a user is not root.\
-Please see section 2 of the documentation at\n\nhttp://code.google.com/p/zulucrypt/wiki/FAQ\n\nfor further details." ) ;
+privileges to open system devices for reading or writing.\n\nSystem devices are defined as devices with entries in /etc/fstab,/etc/crypttab and /etc/zulucrypttab.\n\n\
+Only root user or users who are members of \"zulucrypt\" group and/or \"zulucrypt-write\" group can operate on system devices.\n\n\
+Please see section 2 of the documentation at:\n\nhttp://code.google.com/p/zulucrypt/wiki/FAQ\n\nfor further details." ) ;
 
 	this->ShowUIInfo( tr( "INFORMATION" ),msg );
 }
@@ -90,14 +90,15 @@ void DialogMsg::ShowPermissionProblem( QString msg,QString device )
 {
 	QString msg1 ;
 	if( device.startsWith( QString( "/dev/" ) ) ){
-		 msg1 = QString( "\
-system permission policy does not give you %1 access to the device.\n\
-Add yourself to zulucrypt-read and zulucrypt-write groups or a related group dealing with giving access to devices and try again after you have logged out and logged back in.\n" ).arg( msg ) ;
+		if( msg == QString( "reading" ) )
+			msg1 = tr( "insufficient privilege to access a system device,\nonly root user or members of group zulucrypt can do that" ) ;
+		else
+			msg1 = tr( "insufficient privilege to access a system device in read/write mode,\nonly root user or members of group zulucrypt-write can do that" ) ;
 	}else{
-		msg1 = QString( "you do not seem to have proper permissions to access the encrypted file in %1 mode,check file permissions and try again" ).arg( msg ) ;
+		msg1 = tr( "you do not seem to have proper permissions to access the encrypted file in %1 mode,check file permissions and try again" ).arg( msg ) ;
 	}
 
-	this->ShowUIOK( QString( "INFORMATION"),msg1 );
+	this->ShowUIOK( tr( "INFORMATION"),msg1 );
 }
 
 void DialogMsg::setDimentions( QString msg )

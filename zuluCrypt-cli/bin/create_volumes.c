@@ -38,16 +38,14 @@ static int zuluExit( int st,stringList_t stl )
 		case 7 : printf( "ERROR: passphrases do not match\n" ) ;					break  ;
 		case 8 : printf( "ERROR: invalid path to key file\n" ) ;					break  ;
 		case 9 : printf( "ERROR: container file must be bigger than 3MB\n" ) ;				break  ;
-		case 10: printf( "ERROR: insufficient privilege to create a volume on a system partition.\n" );
-			 printf( "A system partition is a partition with an active entry in \"/etc/fstab\"," ) ;	
-			 printf( "\"/etc/crypttab and \"/etc/zuluCrypttab\".\"\n\
-Rerun the tool from root's accout to proceed.\n" ) ;								break  ;
+		case 10: printf( "ERROR: insufficient privilege to create a volume on a system device,\
+only root user or members of group zulucrypt-write can do that" ) ;						break  ;
 		case 11: printf( "ERROR: %s not found \n",ZULUCRYPTmkfs ) ;					break  ;
 		case 12: printf( "INFO: operation terminated per user request\n" ) ;				break  ;
-		case 13: printf( "ERROR: insufficient privilege to write to device\n\
-are you a member of zulucrypt-write group?" ) ;									break  ;
+		case 13: printf( "ERROR: insufficient privilege to open a system device in read/write mode,\n\
+only root user or members of group zulucrypt-write can do that" ) ;						break  ;
 		case 14: printf( "ERROR: insufficient privilege to create a volume in this device\n" ) ;	break  ;
-		case 15: printf( "ERROR: insufficient privilege to open the file in write mode\n" ) ;		break  ;
+		case 15: printf( "ERROR: could not get a key from a key file\n" ) ;				break  ;
 		case 16: printf( "ERROR: there seem to be an opened mapper associated with the device\n" ) ;	break  ;
 		case 17: printf( "ERROR: unable to resolve full path to device\n" ) ;				break  ;
 		case 18: printf( "ERROR: can not create a volume on a mounted device\n" ) ;			break  ;
@@ -137,18 +135,6 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		if( xt.st_size < 3145728 )
 			return zuluExit( 9,stl ) ;
 	}
-	
-	/*
-	 * Only root user can create volumes in system partitions.
-	 * System partitions are defined as partitions with active entried in "/etc/fstab","/etc/crypttab" and "/etc/zuluCrypttab"
-	 * 
-	 * Active entries are entries not commented out.
-	 * 
-	 * zuluCryptPartitionIsSystemPartition() is defined in partitions.c
-	 */	
-	if( zuluCryptPartitionIsSystemPartition( device ) )
-		if( uid != 0 )
-			return zuluExit( 10,stl ) ;
 	
 	/*
 	 * root's privileges required to create volumes in devices located in "/dev/" other than /dev/sdX and /dev/hdX

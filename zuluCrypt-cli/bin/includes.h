@@ -94,3 +94,8 @@ int zuluCryptSecurityCheckPartitionPermissions( uid_t uid ) ;
  * this function is defined in partitions.c
  */
 char * zuluCryptDeviceFromLabel( const char * label ) ;
+
+/*
+ * this function is defined in security.c
+ */
+int zuluCryptUserIsAMemberOfAGroup( uid_t uid,const char * groupname ) ;

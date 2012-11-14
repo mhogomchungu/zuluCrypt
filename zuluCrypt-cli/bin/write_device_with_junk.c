@@ -63,7 +63,7 @@ static int zuluExit( string_t st, int status )
 		case 3 : printf( "\nSUCCESS: random data successfully written\n" )                             ;break ;
 		/*4 is currently un used */
 		case 5 : printf( "INFO: user chose not to proceed\n" )                                         ;break ;
-		case 6 : printf( "ERROR: policy prevents non root user opening mapper on system partition\n" ) ;break ;
+		/*6 is currently un used */
 		case 7 : /* 7 is used when returning with no feedback */				       ;break ;
 		case 8 : printf( "ERROR: insufficitied privilege to oped device in read/write mode\n" )        ;break ;
 		case 9 : printf( "ERROR: device path is invalid\n" )                                           ;break ;
@@ -114,13 +114,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 		case 1 : return zuluExit( NULL,8 ) ;
 		case 2 : return zuluExit( NULL,9 ) ;
 	}
-	
-	if( uid != 0 ){
-		if( zuluCryptPartitionIsSystemPartition( opts->device ) ){
-			return zuluExit( NULL,6 ) ;
-		}
-	}
-	
+		
 	dev = realpath( device,NULL );
 	
 	if( dev == NULL )
