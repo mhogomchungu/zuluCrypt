@@ -100,7 +100,7 @@ string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos )
 		if( entryList == StringListVoid )
 			continue ;
 		entry = StringListStringAt( entryList,0 ) ;
-		if( !StringStartsWith( entry,"#" ) ){	
+		if( !StringStartsWith( entry,"#" ) ){
 			if( StringStartsWith( entry,"/dev/" ) ){
 				st = StringEqual( entry,device ) ;
 			}else{
