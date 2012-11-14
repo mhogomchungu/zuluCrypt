@@ -41,10 +41,8 @@ int zuluCryptMtabIsAtEtc( void )
 		return 1 ;
 	}else{
 		st = strcmp( path,mpath ) ;
-		
 		free( path ) ;
-		
-		return st == 0 ? 1 : 0 ;
+		return st == 0 ;
 	}
 }
 

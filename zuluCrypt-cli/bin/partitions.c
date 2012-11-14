@@ -79,8 +79,8 @@ stringList_t zuluCryptPartitionList( void )
 	
 	ssize_t index ;
 	
-	StringListInterator it ;
-	StringListInterator end ;
+	StringListIterator it ;
+	StringListIterator end ;
 	
 	stringList_t stl   = StringListVoid ;
 	stringList_t stl_1 = StringListVoid ;
@@ -147,8 +147,8 @@ stringList_t zuluCryptPartitions( int option )
 	stringList_t p ;
 	stringList_t stl = zuluCryptPartitionList() ;
 	
-	StringListInterator it  ;
-	StringListInterator end ;
+	StringListIterator it  ;
+	StringListIterator end ;
 	
 	if( stl == StringListVoid )
 		return StringListVoid ;
@@ -340,8 +340,8 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 	ssize_t index ;
 	ssize_t index_1 ;
 	
-	StringListInterator it  ;
-	StringListInterator end ;
+	StringListIterator it  ;
+	StringListIterator end ;
 	
 	st = StringGetFromFile( "/etc/crypttab" );
 	
@@ -405,8 +405,8 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 
 stringList_t zuluCryptGetPartitionFromZulutab()
 {
-	StringListInterator it  ;
-	StringListInterator end ;
+	StringListIterator it  ;
+	StringListIterator end ;
 	
 	char * ac ;
 	

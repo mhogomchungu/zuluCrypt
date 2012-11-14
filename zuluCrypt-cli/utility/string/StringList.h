@@ -50,17 +50,17 @@ typedef struct StringListType * stringList_t ;
 /*
  * an STL style iterator type
  */
-typedef string_t * StringListInterator ;
+typedef string_t * StringListIterator ;
 
 /*
  *  returns a pointer to the memory block occupying the first element on the list
  */
-StringListInterator StringListBegin( stringList_t ) ;
+StringListIterator StringListBegin( stringList_t ) ;
 
 /*
  * returns a pointer to a memory block past the end of the array,STL style
  */
-StringListInterator StringListEnd( stringList_t ) ;
+StringListIterator StringListEnd( stringList_t ) ;
 
 /*
  * Takes a pointer to a function to be called when memory allocation can not take place

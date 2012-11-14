@@ -76,8 +76,8 @@ string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos )
 	stringList_t fstabList  ;
 	stringList_t entryList  ;
 	
-	size_t i ;
-	size_t j ;
+	StringListIterator it  ;
+	StringListIterator end ;
 	
 	int st ;
 	
@@ -91,20 +91,16 @@ string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos )
 	if( fstabList == StringListVoid )
 		return StringVoid ;
 		
-	j = StringListSize( fstabList ) ;
+	it  = StringListBegin( fstabList ) ;
+	end = StringListEnd( fstabList ) ;
 	
-	for( i = 0 ; i < j ; i++ ){
-		
-		entry = StringListStringAt( fstabList,i ) ;
+	for( ; it != end ; it++ ){
+		entry = *it ;
 		entryList = StringListStringSplit( entry,' ' ) ;
-		
 		if( entryList == StringListVoid )
 			continue ;
-		
 		entry = StringListStringAt( entryList,0 ) ;
-		
-		if( !StringStartsWith( entry,"#" ) ){
-		
+		if( !StringStartsWith( entry,"#" ) ){	
 			if( StringStartsWith( entry,"/dev/" ) ){
 				st = StringEqual( entry,device ) ;
 			}else{
@@ -112,14 +108,12 @@ string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos )
 				st = StringEqual( entry,device ) ;
 				StringDelete( &entry ) ;
 			}
-		
 			if( st == 1 ){
 				options = StringListDetachAt( entryList,pos ) ;
 				StringListDelete( &entryList ) ;
 				break ;
 			}
 		}
-		
 		StringListDelete( &entryList ) ;
 	}
 	

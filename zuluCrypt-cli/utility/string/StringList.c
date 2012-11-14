@@ -98,12 +98,12 @@ stringList_t StringList( const char * cstring )
 	return stl ;
 }
 
-StringListInterator StringListBegin( stringList_t stl )
+StringListIterator StringListBegin( stringList_t stl )
 {
 	return &stl->stp[ 0 ] ;
 }
 
-StringListInterator StringListEnd( stringList_t stl ) 
+StringListIterator StringListEnd( stringList_t stl ) 
 {
 	return &stl->stp[ stl->size ] ;
 }
