@@ -63,6 +63,11 @@ StringListIterator StringListBegin( stringList_t ) ;
 StringListIterator StringListEnd( stringList_t ) ;
 
 /*
+ * call a function with a signature void foo( string_t ) on each entry in the list 
+ */
+void StringListForEach( stringList_t stl,void (*)( string_t ) ) ;
+
+/*
  * Takes a pointer to a function to be called when memory allocation can not take place
  * ie if the system has run out of memory and malloc() or realloc() has failed.
  * This function is optional and "StringListVoid" will be returned on memory exaustion if the function
@@ -89,7 +94,7 @@ stringList_t StringListInit( void ) ;
 /*
  * Return the number of elements in the list
  */
-ssize_t StringListSize( stringList_t stl ) ;
+size_t StringListSize( stringList_t stl ) ;
 
 /*
  * create a  stringlist from splitted cstring using splitter as a splitting trigger.
