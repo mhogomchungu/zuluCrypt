@@ -105,7 +105,7 @@ static int _zuluMountPartitionAccess( const char * device,const char * mode,uid_
 	
 	ro      = StringContains( p,"ro" ) ;
 	nouser  = StringContains( p,"nouser" ) ;
-	defaulT = StringContains( p,"default" ) ;
+	defaulT = StringContains( p,"defaults" ) ;
 	user    = StringContains( p,"user" ) ;
 	
 	StringDelete( &p ) ;
@@ -203,7 +203,7 @@ static int _zuluMountMount( const char * device,const char * m_point,const char 
 	 * zuluCryptMountVolume() defined in ../zuluCrypt-cli/lib/mount_volume.c
 	 */
 
-	status = zuluCryptMountVolume( device,path,mode,uid )	;
+	status = zuluCryptMountVolume( device,path,mode,uid ) ;
 	
 	if( status == 0 ){
 		return _zuluExit( 0,z,path,"SUCCESS: mount complete successfully" ) ;

@@ -194,7 +194,7 @@ static inline string_t set_mount_options( m_struct * mst )
 	StringRemoveString( opt,"nouser" ) ;
 	StringRemoveString( opt,"users" ) ;
 	StringRemoveString( opt,"user" ) ;
-	StringRemoveString( opt,"default" ) ;
+	StringRemoveString( opt,"defaults" ) ;
 	StringRemoveString( opt,"noauto" ) ;
 	StringRemoveString( opt,"auto" ) ;
 	
