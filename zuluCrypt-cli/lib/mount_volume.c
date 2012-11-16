@@ -122,7 +122,7 @@ string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos )
 	return options ;
 }
 
-static inline int ms_family( const char * fs )
+static inline int fs_family( const char * fs )
 {
 	if(     strcmp( fs,"ntfs" ) == 0  || 
 		strcmp( fs,"vfat" ) == 0  || 
@@ -130,29 +130,27 @@ static inline int ms_family( const char * fs )
 		strcmp( fs,"msdos" ) == 0 ||
 		strcmp( fs,"umsdos" ) == 0 )
 		return 1 ;
-	else
-		return 0 ;
-}
-
-static inline int other_fs( const char * fs )
-{
-	if( strcmp( fs,"affs" ) == 0 || strcmp( fs,"hfs" ) == 0 || strcmp( fs,"iso9660" ) == 0 )
-		return 1 ;
-	else
-		return 0 ;
+	
+	if( strcmp( fs,"affs" ) == 0 || strcmp( fs,"hfs" ) == 0 )
+		return 2 ;
+	
+	if( strcmp( fs,"iso9660" ) == 0 )
+		return 3 ;
+	
+	return 0 ;
 }
 
 static inline string_t set_mount_options( m_struct * mst )
 {
 	string_t opt = zuluCryptGetMountOptionsFromFstab( mst->device,3 ) ;
 	string_t uid = StringIntToString( mst->uid ) ;
-
+	
 	if( opt == StringVoid )
 		opt = String( mst->mode ) ;
 	else
 		StringMultipleAppend( opt,",",mst->mode,END ) ;
 	
-	if( ms_family( mst->fs ) ){
+	if( fs_family( mst->fs ) == 1 ){
 		if( !StringContains( opt,"dmask=" ) )
 			StringAppend( opt,",dmask=0000" ) ;
 		if( !StringContains( opt,"umask=" ) )
@@ -171,12 +169,13 @@ static inline string_t set_mount_options( m_struct * mst )
 				StringAppend( opt,",shortname=mixed" ) ;
 		}
 		
-	}else if( other_fs( mst->fs ) ){ 
-		
+	}else if( fs_family( mst->fs ) == 2 ){
 		if( !StringContains( opt,"uid=" ) )
 			StringAppend( opt,"uid=UID" ) ;
 		if( !StringContains( opt,"gid=" ) )
 			StringAppend( opt,"gid=UID" ) ;
+	}else if( fs_family( mst->fs ) == 3 ){
+		;
 	}else{
 		/*
 		 * ext file systems and raiserfs among others go here
@@ -234,14 +233,14 @@ static inline int mount_ntfs( const m_struct * mst )
 static inline int mount_mapper( const m_struct * mst )
 {
 	int h = mount( mst->device,mst->m_point,mst->fs,mst->m_flags,mst->opts + 3 ) ;
-	
-	if( h == 0 && mst->m_flags != MS_RDONLY && ms_family( mst->fs ) == 0 && other_fs( mst->fs ) == 0 )
+
+	if( h == 0 && mst->m_flags != MS_RDONLY )
 		chmod( mst->m_point,S_IRWXU|S_IRWXG|S_IRWXO ) ;
 	
 	return h ;
 }
 
-int zuluCryptMountVolume( const char * mapper,const char * m_point,const char * mode,uid_t id )
+int zuluCryptMountVolume( const char * path,const char * m_point,const char * mode,uid_t id )
 {
 	struct mntent mt  ;
 	blkid_probe blkid ;
@@ -257,9 +256,13 @@ int zuluCryptMountVolume( const char * mapper,const char * m_point,const char * 
 	
 	string_t * opts ;
 	string_t fs ;
+	string_t * loop ;
+	
+	int iso_image = 0 ;
+	int fd ;
 	
 	m_struct mst ;
-	mst.device = mapper ;
+	mst.device = path ;
 	mst.m_point = m_point ;
 	mst.mode = mode ;
 	mst.uid = id ;
@@ -269,8 +272,8 @@ int zuluCryptMountVolume( const char * mapper,const char * m_point,const char * 
 	else
 		mst.m_flags = 0 ;
 	
-	blkid = blkid_new_probe_from_filename( mapper ) ;
-	blkid_do_probe( blkid );	
+	blkid = blkid_new_probe_from_filename( path ) ;
+	blkid_do_probe( blkid );
 	blkid_probe_lookup_value( blkid,"TYPE",&cf,NULL ) ;
 		
 	fs = StringListAssignString( stl,String( cf ) );
@@ -289,6 +292,21 @@ int zuluCryptMountVolume( const char * mapper,const char * m_point,const char * 
 		 * we cant mount an encrypted volume, exiting
 		 */
 		return zuluExit( 4,stl ) ;
+	}
+	
+	/*
+	 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop_device.c
+	 */
+	if( StringEqual( fs,"iso9660" ) ){
+		iso_image = 1 ;
+		mst.m_flags = MS_RDONLY ;
+		mode = "ro" ;
+		loop = StringListAssign( stl ) ;
+		if( zuluCryptAttachLoopDeviceToFile( mst.device,READ,&fd,loop ) ){
+			mst.device = StringContent( *loop ) ;
+		}else{
+			return zuluExit( -1,stl ) ;
+		}
 	}
 	
 	mst.fs = StringContent( fs ) ;
@@ -326,14 +344,20 @@ int zuluCryptMountVolume( const char * mapper,const char * m_point,const char * 
 		m_lock = mnt_new_lock( "/etc/mtab~",getpid() ) ;
 		if( mnt_lock_file( m_lock ) != 0 ){
 			h = 12 ;
-		}else{		
+		}else{
 			h = mount_mapper( &mst ) ;
 			if( h == 0 ){
 				f = setmntent( "/etc/mtab","a" ) ;
-				mt.mnt_fsname = ( char * ) mst.device ;
 				mt.mnt_dir    = ( char * ) mst.m_point ;
 				mt.mnt_type   = ( char * ) mst.fs ;
-				mt.mnt_opts   = ( char * ) mst.opts ;
+				if( iso_image ){
+					mt.mnt_fsname = ( char * ) path ;
+					mt.mnt_opts = ( char * )StringMultipleAppend( *opts,",loop=",mst.device,END ) ;
+					close( fd ) ;
+				}else{
+					mt.mnt_fsname = ( char * ) mst.device ;
+					mt.mnt_opts = ( char * ) mst.opts ;
+				}
 				mt.mnt_freq   = 0 ;
 				mt.mnt_passno = 0 ;
 				addmntent( f,&mt ) ;

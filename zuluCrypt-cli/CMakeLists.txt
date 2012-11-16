@@ -51,6 +51,7 @@
  lib/unmount_volume.c
  lib/file_encryption.c 
  lib/user_home_path.c 
+ lib/create_loop_device.c
 )
  	 
  add_library( Socket STATIC utility/socket/socket.c ) 

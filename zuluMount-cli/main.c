@@ -560,7 +560,7 @@ int main( int argc,char * argv[] )
 			printf( "could not resolve path to device\n" ) ;
 			status = 216 ;
 		}
-	}	
+	}
 	
 	return _zuluExit( status,k,NULL,NULL ) ;
 }

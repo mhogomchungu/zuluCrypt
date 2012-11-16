@@ -82,3 +82,8 @@ string_t zuluCryptGetMtabEntry( const char * path ) ;
  * this function is defined in is_luks.c
  */
 int zuluCryptVolumeIsNotLuks( const char * dev ) ;
+
+/*
+ * this function is defined in ./create_loop_device.c
+ */
+int zuluCryptAttachLoopDeviceToFile( const char * path,int mode,int * fd,string_t * loop_device ) ;
