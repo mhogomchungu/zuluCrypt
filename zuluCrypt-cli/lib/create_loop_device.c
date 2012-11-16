@@ -45,8 +45,8 @@ int zuluCryptAttachLoopDeviceToFile( const char * path,int mode,int * loop_fd,st
 	if( devnr < 0 )
 		return 0 ;
 	
-	loopd = StringIntToString( devnr ) ;
-	loop = StringPrepend( loopd,"/dev/loop" ) ;
+	loopd = String( "/dev/loop" ) ;
+	loop = StringAppendInt( loopd,devnr ) ;
 
 	if( mode == READ ){
 		fd_path = open( path,O_RDONLY ) ;

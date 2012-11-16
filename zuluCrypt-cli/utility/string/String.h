@@ -81,6 +81,11 @@ string_t StringWithSize( const char * string,size_t length ) ;
 const char * StringAppend( string_t st,const  char * s )  ;
 
 /*
+ * Append a uint64_t number to the string
+ */
+const char * StringAppendInt( string_t,uint64_t ) ;
+
+/*
  * Append multitple const char * strings to a string handled by handle st.
  * NOTE: The list must be terminated a NULL character.
  * example usage

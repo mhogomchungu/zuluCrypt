@@ -32,11 +32,10 @@ int zuluCryptCreateVolume( const char * dev,const char * fs,const char * type,co
 	int status ;
 	process_t p ;
 	
-	string_t id ;
 	string_t m = StringVoid ;
 		
 	const char * device_mapper ;
-	const char * mapper ;	
+	const char * mapper ;
 	char * device ;
 	char * e = NULL ;
 	
@@ -53,19 +52,13 @@ int zuluCryptCreateVolume( const char * dev,const char * fs,const char * type,co
 	if( device == NULL )
 		return 3 ;
 	
-	m = zuluCryptCreateMapperName( device,strrchr( device,'/' ) + 1,0,OPEN ) ;
+	m = zuluCryptCreateMapperName( device,strrchr( device,'/' ) + 1,0,CLOSE ) ;
 	
 	free( device ) ;
 
-	id = StringIntToString( syscall( SYS_gettid ) ) ;
-	
-	StringAppendString( m,id ) ;
-	StringDelete( &id ) ;
-	
-	device_mapper = StringMultiplePrepend( m,"/",crypt_get_dir(),END ) ;
-	
+	device_mapper = StringAppendInt( m,syscall( SYS_gettid ) ) ;
 	mapper = strrchr( device_mapper,'/' ) + 1 ;
-
+	
 	if( strcmp( type,"luks" ) == 0 ){
 		if( zuluCryptCreateLuks( dev,pass,pass_size,rng ) != 0 )
 			return zuluExit( 3,m ) ;

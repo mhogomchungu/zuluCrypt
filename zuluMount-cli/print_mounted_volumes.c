@@ -224,10 +224,9 @@ int zuluMountPrintMountedVolumes( uid_t uid )
 		return 1;
 	}
 	
-	mapper = StringIntToString( uid ) ;
-	
-	_z = StringMultiplePrepend( mapper,"/zuluCrypt-",crypt_get_dir(),END ) ;
-	
+	mapper = String( crypt_get_dir() ) ;
+	StringAppend( mapper,"/zuluCrypt-" ) ;
+	_z = StringAppendInt( mapper,uid ) ;
 	_k = StringLength( mapper ) ;
 	
 	/*

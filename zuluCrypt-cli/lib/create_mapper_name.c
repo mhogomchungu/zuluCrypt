@@ -44,7 +44,7 @@
  * this simple hash function will make the above possible by appending hush of full path hopefully to make sure two
  * paths will always be different while using the same mapping_name
  */
-static string_t hash_path( const char * path )
+static uint64_t hash_path( const char * path )
 {
 	size_t i = 0 ;
 	size_t l = strlen( path ) ;
@@ -53,15 +53,14 @@ static string_t hash_path( const char * path )
 	for ( i = 0 ; i < l ; i++ ) 
 		h = h + path[ i ] ;
 	
-	return StringIntToString( h ) ;
+	return h ;
 }
 
 string_t zuluCryptCreateMapperName( const char * device,const char * mapping_name,uid_t uid,int i )
-{
-	string_t z ;
-	string_t q ;
+{	
 	string_t p ;
-
+	uint64_t z ;
+	
 	if( i == OPEN )
 		p = String( "zuluCrypt-" ) ;
 	else{
@@ -69,8 +68,7 @@ string_t zuluCryptCreateMapperName( const char * device,const char * mapping_nam
 		StringAppend( p,"/zuluCrypt-" ) ;
 	}
 	
-	q = StringIntToString( uid ) ;
-	StringAppendString( p,q ) ;
+	StringAppendInt( p,uid ) ;
 	
 	if( strncmp( mapping_name,"UUID-",5 ) == 0 ){
 		StringMultipleAppend( p,"-",mapping_name,"-",END ) ;
@@ -80,7 +78,7 @@ string_t zuluCryptCreateMapperName( const char * device,const char * mapping_nam
 		z = hash_path( device ) ;
 	}
 	
-	StringAppendString( p,z ) ;
+	StringAppendInt( p,z ) ;
 	
 	/*
 	 * cryptsetup 1.4.1 and previous have a bug and its triggered when the mapper has one or more bash
@@ -88,8 +86,5 @@ string_t zuluCryptCreateMapperName( const char * device,const char * mapping_nam
 	 * work around the bug. 
 	 */
 	StringReplaceCharString( p,'_',BASH_SPECIAL_CHARS ) ;
-	
-	StringMultipleDelete( &q,&z,END ) ;
-
 	return p ;
 }

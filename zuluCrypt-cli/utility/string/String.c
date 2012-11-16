@@ -874,6 +874,24 @@ string_t StringIntToString( uint64_t z )
 	return String( buffer + i ) ;
 }
 
+const char * StringAppendInt( string_t st,uint64_t z ) 
+{
+	int i = 63 ;
+	/*
+	 *  2^64 has a maximum of 19 digits,64 byte buffer is more that enough
+	 */
+	char buffer[ 64 ] ;
+	buffer[ 63 ] = '\0' ;
+	
+	do{
+		i-- ;
+		buffer[ i ] = z % 10 + '0' ;
+		z = z / 10 ;
+	}while( z != 0 && i != 0 ) ;
+	
+	return StringAppend( st,buffer + i ) ;
+}
+
 char * StringIntToString_1( char * x,size_t y,uint64_t z )
 {
 	char *c =  x + y - 1  ;

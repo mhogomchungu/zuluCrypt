@@ -30,7 +30,6 @@ int zuluCryptOpenVolume( const char * dev,const char * map,const char * m_point,
 	int h ;	
 	string_t p = StringVoid ;
 	const char * mapper ;
-	char * m ;
 	
 	if( zuluCryptPathIsNotValid( dev ) ) 
 		return 3 ;
@@ -51,13 +50,6 @@ int zuluCryptOpenVolume( const char * dev,const char * map,const char * m_point,
 		case 1 : return zuluExit( 4,p ) ;
 		case 2 : return zuluExit( 8,p ) ; 
 		case 3 : return zuluExit( 3,p ) ;
-	}
-
-	m = realpath( mapper,NULL ) ;
-	if( m != NULL ){
-		chown( m,0,0 ) ;
-		chmod( m,S_IRWXU ) ;
-		free( m ) ;
 	}
 	
 	if( m_point != NULL ){	
