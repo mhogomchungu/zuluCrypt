@@ -34,10 +34,12 @@
 #include "../zuluCrypt-cli/bin/includes.h"
 
 /*
- * below two functions are defined in ./print_mounted_volumes.c
+ * below 4 functions are defined in ./print_mounted_volumes.c
  */
 int zuluMountPrintMountedVolumes( uid_t uid ) ;
 void zuluMountPartitionProperties( const char * mapper,const char * device,const char * m_point ) ;
+void zuluMountPrintDeviceProperties( const char * entry ) ;
+void zuluMountPrintDeviceProperties_1( string_t ) ;
 
 /*
  * All functions with "EXE" in their names are defined somewhere in ../zuluCrypt-cli/bin 
@@ -47,7 +49,7 @@ static int _mount_get_opts( int argc,char * argv[],const char ** action,const ch
 			   const char ** m_point, const char ** mode,const char ** key,const char ** key_source,int * mpo )
 {
 	int c ;
-	while ( ( c = getopt( argc,argv,"ntSshlPMmUud:z:e:p:f:G:" ) ) != -1 ) {
+	while ( ( c = getopt( argc,argv,"LntSshlPMmUud:z:e:p:f:G:" ) ) != -1 ) {
 		switch( c ){
 			case 'n' : *mpo     = 1      ; break ;
 			case 't' : *action  = "-t"   ; break ;
@@ -56,6 +58,7 @@ static int _mount_get_opts( int argc,char * argv[],const char ** action,const ch
 			case 'U' : *action  = "-U"   ; break ;
 			case 'M' : *action  = "-M"   ; break ;
 			case 'l' : *action  = "-l"   ; break ;
+			case 'L' : *action  = "-L"   ; break ;
 			case 'P' : *action  = "-P"   ; break ;
 			case 'm' : *action  = "-m"   ; break ;
 			case 'u' : *action  = "-u"   ; break ;
@@ -128,6 +131,17 @@ static int _zuluMountPartitionAccess( const char * device,const char * mode,uid_
 	return 0 ;
 }
 
+static int _mountPointIsSameAsFstabEntry( const char * device,const char * mount_point )
+{
+	/*
+	 * zuluCryptGetMountOptionsFromFstab() is defined in ../zuluCrypt-cli/lib/mount_volume.c
+	 */
+	string_t p = zuluCryptGetMountOptionsFromFstab( device,1 ) ;
+	int st = StringEqual( p,mount_point ) ;
+	StringDelete( &p ) ;
+	return st ;
+}
+
 static int _zuluMountMount( const char * device,const char * m_point,const char * mode,uid_t uid,int mount_point_option )
 {
 	int status ;
@@ -183,26 +197,37 @@ static int _zuluMountMount( const char * device,const char * m_point,const char 
 	m_path = StringContent( z ) ;
 	
 	if( zuluCryptPathIsNotValid( m_path ) ){
-		if( zuluCryptSecurityCreateMountPoint( m_path,uid ) != 0 )
-			return _zuluExit( 105,z,path,"ERROR: could not create mount point,invalid path" ) ;
+		/*
+		 * Mount folder does not exit,try to create it
+		 */
+		if( zuluCryptSecurityCreateMountPoint( m_path,uid ) != 0 ){
+			return _zuluExit( 105,z,path,"ERROR: could not create mount point,invalid path or permission denied" ) ;
+		}else{
+			chown( m_path,uid,uid ) ;
+		}
 	}else{
-		if( !mount_point_option )
-			return _zuluExit( 106,z,path,"ERROR: could not create mount point,invalid path or path already taken" ) ;
+		if( _mountPointIsSameAsFstabEntry( device,m_path ) ){
+			/*
+			 * The mount point exists and we are trying to mount a system partition on a path present in fstab,just use the folder
+			 */
+			;
+		}else{
+			/*
+			 * mount folder exist when we expect it not to and a option to auto use is not set,complain and exit
+			 */
+			if( !mount_point_option ){
+				return _zuluExit( 106,z,path,"ERROR: could not create mount point,invalid path or path already taken" ) ;
+			}
+		}
 	}
 	
 	path = realpath( m_path,NULL ) ;
-	
-	if( path == NULL ){
-		rmdir( path ) ;
+	if( path == NULL )
 		return _zuluExit( 107,z,path,"ERROR: could not resolve mount point path" ) ;
-	}
-
-	chown( path,uid,uid ) ;
-		
+	
 	/*
 	 * zuluCryptMountVolume() defined in ../zuluCrypt-cli/lib/mount_volume.c
 	 */
-
 	status = zuluCryptMountVolume( device,path,mode,uid ) ;
 	
 	if( status == 0 ){
@@ -238,9 +263,13 @@ static int _zuluMountUMount( const char * device,uid_t uid,const char * mode,int
 	 */
 	status = zuluCryptUnmountVolume( device,&m_point ) ;
 	if( status == 0 ){
-		if( m_point != NULL )
-			if( !mount_point_option )
-				rmdir( m_point ) ;
+		if( m_point != NULL ){
+			if( !_mountPointIsSameAsFstabEntry( device,m_point ) ){
+				if( !mount_point_option ){
+					rmdir( m_point ) ;
+				}
+			}
+		}
 		return _zuluExit( 0,StringVoid,m_point,"SUCCESS: umount complete successfully" ) ;
 	}else{
 		switch( status ) {
@@ -356,85 +385,44 @@ int zuluMountVolumeStatus( const char * device,uid_t uid )
 	return zuluCryptEXEVolumeInfo( strrchr( device,'/' ) + 1,device,uid ) ;
 }
 
-static int _zuluMiniCryptoProperties( const char * device,uid_t uid )
+static int _zuluMountPrintDeviceProperties( const char * device,uid_t uid )
 {	
-	/*
-	 * zuluCryptCreateMapperName() is defined in ../zuluCrypt-cli/lib/create_mapper_name.c
-	 */
-	string_t p = zuluCryptCreateMapperName( device,strrchr( device,'/' ) + 1,uid,CLOSE ) ;
-	int st ;
-	char * d ;
+	string_t p ;
+	string_t q = zuluCryptCreateMapperName( device,strrchr( device,'/' ) + 1,uid,CLOSE ) ;
+	const char * e = StringContent( q ) ;
 	
-	if( p == StringVoid ){
-		printf( "Nil\t0\t0\t0\t\n" ) ;
-		st = 1 ;
+	/*
+	 * zuluCryptGetMtabEntry() is defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c
+	 */
+	
+	if( zuluCryptPathIsValid( e ) ){
+		p = zuluCryptGetMtabEntry( e ) ;
 	}else{
+		p = zuluCryptGetMtabEntry( device ) ;
+	}
+	
+	StringDelete( &q ) ;
+	
+	if( p != StringVoid ){
 		/*
-		 * zuluCryptGetMountPointFromPath() is defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c
-		 */
-		d = zuluCryptGetMountPointFromPath( StringContent( p ) ) ;
-		
-		if( d == NULL ){
-			printf( "Nil\t0\t0\t0\t\n" ) ;
-			st = 1 ;
-		}else{
-			/*
-			 * zuluMountPartitionProperties() is defined in print_mounted_volumes.c
-			 */
-			zuluMountPartitionProperties( device,StringContent( p ),d ) ;
-			free( d ) ;
-			st = 0 ;
-		}
-		
+		* zuluMountPrintDeviceProperties() is defined in ./print_mounted_volumes.c
+		*/
+		zuluMountPrintDeviceProperties_1( p ) ;
 		StringDelete( &p ) ;
-	}	
-	
-	return st ;
-}
-
-static int _zuluMiniProperties( const char * device,uid_t uid )
-{
-	char * d ;
-	/*
-	 * zuluCryptVolumeIsNotLuks() is defined in ../zuluCrypt-cli/lib/is_luks.c
-	 */
-	if( zuluCryptVolumeIsNotLuks( device ) ){
-		
-		/*
-		 * volume is not LUKS, assuming its a plain type or a regular partition
-		 */
-		
-		/*
-		 * zuluCryptGetMountPointFromPath() is defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c
-		 */
-		d = zuluCryptGetMountPointFromPath( device ) ;
-		
-		if( d != NULL ){
-			/*
-			 * zuluMountPartitionProperties() is defined in ./print_mounted_volumes.c
-			 */
-			zuluMountPartitionProperties( device,device,d ) ;
-			free( d ) ;
-			return 0 ;
-		}else{
-			/*
-			 * volume is not LUKS but doesnt look like its a regular partition, assume its plain volume
-			 */
- 			return _zuluMiniCryptoProperties( device,uid ) ;
-		}
+		return 0 ;
 	}else{
-		/*
-		 * volume is LUKS
-		 */
-		return _zuluMiniCryptoProperties( device,uid ) ;
-	}	
+		puts( "volume does not appear to be mounted as it does not have an entry in \"/etc/mtab\"" ) ;
+		return 1 ;
+	}
 }
 
 static int _zuluMountExe( const char * device,const char * action,const char * m_point,
 			  const char * mode,uid_t uid,const char * key,const char * key_source,
 			  int mount_point_option )
-{	
-	if( strcmp( action,"-m" ) == 0 )
+{
+	if( strcmp( action,"-L" ) == 0 )
+		return _zuluMountPrintDeviceProperties( device,uid ) ;
+	else if( strcmp( action,"-m" ) == 0 )
 		return _zuluMountMount( device,m_point,mode,uid,mount_point_option ) ;
 	else if( strcmp( action,"-u" ) == 0 )
 		return _zuluMountUMount( device,uid,mode,mount_point_option ) ;
@@ -444,14 +432,13 @@ static int _zuluMountExe( const char * device,const char * action,const char * m
 		return _zuluMountCryptoUMount( device,uid,mount_point_option ) ;
 	else if( strcmp( action,"-s" ) == 0 )
 		return zuluMountVolumeStatus( device,uid ) ;
-	else if( strcmp( action,"-t" ) == 0 )
-		return _zuluMiniProperties( device,uid ) ;
 	else
 		return _zuluExit( 200,StringVoid,NULL,"ERROR: unrecognized argument encountered" ) ;	
 }
 
 static int _mount_help()
 {
+	const char * doc3 ;
 	const char * doc2 ;
 	const char * doc1 = "\
 options:\n\
@@ -467,7 +454,11 @@ options:\n\
       -- if \"-n\" is set,the mount point folder will not be autodeleted\n\
       -- if \"-n\" is not set the mount point folder will be autodeleted\n" ;
 
-	printf( "%s%s",doc1,doc2 ) ;
+      doc3 = "\
+-L -- must be used with -d,print properties of a partition specified by d option\n\
+-P -- print a list of all partitions\n" ;      
+	printf( "%s%s%s",doc1,doc2,doc3 ) ;
+	
 	return 201 ;
 }
 

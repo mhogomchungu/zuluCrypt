@@ -23,6 +23,9 @@
 
 static int zuluCryptEXEGetDevice( const char * device )
 {
+	/*
+	 * zuluCryptVolumeDeviceName() is defined in ../lib/status.c
+	 */
 	char * c = zuluCryptVolumeDeviceName( device ) ;
 	if( c == NULL ){
 		printf( "ERROR: could not get device address from mapper address\n" ) ;
@@ -53,10 +56,16 @@ static int zuluCryptEXECheckEmptySlots( const char * device )
 {
 	int status ;
 	char * c  ;
+	/*
+	 * this zuluCryptPathIsNotValid() is defined in ../lib/is_path_valid.c
+	 */
 	if( zuluCryptPathIsNotValid( device ) ){
 		printf( "path \"%s\" does not point to a device\n",device ) ;
 		status = 1 ;
 	}else{
+		/*
+		 * zuluCryptEmptySlots() is defined in ../lib/empty_slots.c
+		 */
 		c = zuluCryptEmptySlots( device ) ;
 		if( c == NULL ){
 			printf( "device \"%s\" is not a luks device\n",device ) ;
@@ -233,7 +242,10 @@ int main( int argc,char * argv[] )
 		StringSubChar( q,4,'-' ) ;
 		
 		mapping_name = StringContent( q ) ;
-
+		
+		/*
+		 * zuluCryptDeviceFromUUID() is defined in ./partitions.c
+		 */
 		ac = zuluCryptDeviceFromUUID( mapping_name + 5 ) ;
 		
 		if( ac != NULL ) {

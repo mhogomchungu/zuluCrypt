@@ -113,15 +113,20 @@ static inline string_t zuluCryptGetDeviceUUID( const char * device )
 	const char * uuid ;
 	
 	blkid = blkid_new_probe_from_filename( device ) ;
-	blkid_do_probe( blkid );
 	
-	if( blkid_probe_lookup_value( blkid,"UUID",&uuid,NULL ) == 0 ){
-		p = String( uuid ) ;
-	}else{
+	if( blkid == NULL ){
 		p = String( "Nil" ) ;
-	}
+	}else{
+		blkid_do_probe( blkid );
 	
-	blkid_free_probe( blkid );
+		if( blkid_probe_lookup_value( blkid,"UUID",&uuid,NULL ) == 0 ){
+			p = String( uuid ) ;
+		}else{
+			p = String( "Nil" ) ;
+		}
+	
+		blkid_free_probe( blkid );
+	}
 	
 	return p ;
 }

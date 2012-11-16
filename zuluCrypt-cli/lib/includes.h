@@ -72,6 +72,13 @@ int zuluCryptPartitionIsMounted( const char * device ) ;
 string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos ) ;
 
 /*
+ * this function is defined in print_mounted_volumes.c
+ * It return an entry of a partition if it is found in /etc/mtab
+ * It return StringVoid otherwise
+ */
+string_t zuluCryptGetMtabEntry( const char * path ) ;
+
+/*
  * this function is defined in is_luks.c
  */
 int zuluCryptVolumeIsNotLuks( const char * dev ) ;

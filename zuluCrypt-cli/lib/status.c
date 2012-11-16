@@ -77,13 +77,20 @@ char * zuluCryptGetUUIDFromMapper( const char * mapper )
 	char * device = zuluCryptVolumeDeviceName( mapper ) ;
 	
 	blkid = blkid_new_probe_from_filename( device ) ;
+	
+	if( blkid == NULL ){
+		p = String( " UUID:   \t\"Nil\"" ) ;
+		return StringDeleteHandle( &p ) ;
+	}
+		
 	blkid_do_probe( blkid );
 	
 	if( blkid_probe_lookup_value( blkid,"UUID",&uuid,NULL ) == 0 ){
 		p = String( "" ) ;
 		StringMultipleAppend( p," UUID:   \t\"",uuid,"\"",END ) ;
-	}else
+	}else{
 		p = String( " UUID:   \t\"Nil\"" ) ;
+	}
 	
 	blkid_free_probe( blkid );
 	
@@ -106,6 +113,10 @@ static void zuluCryptFileSystemProperties( string_t p,const char * mapper,const 
 	char format[ SIZE ] ;
 	
 	blkid = blkid_new_probe_from_filename( mapper ) ;
+	
+	if( blkid == NULL )
+		return ;
+	
 	blkid_do_probe( blkid );
 	
 	if( blkid_probe_lookup_value( blkid,"TYPE",&e,NULL ) == 0 )

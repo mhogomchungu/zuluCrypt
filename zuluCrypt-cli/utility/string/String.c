@@ -133,12 +133,15 @@ void StringMultipleDelete( string_t * xt,... )
 char * StringDeleteHandle( string_t * xt )
 {
 	char * c ;
-	if( *xt == StringVoid )
-		return StringVoid ;
-	
-	c = ( *xt )->string ;
-	free( *xt ) ;
+	string_t st ;
+	if( xt == NULL )
+		return NULL ;
+	st = *xt ;
+	if( st == StringVoid )
+		return NULL ;
 	*xt = StringVoid ;
+	c = st->string ;
+	free( st ) ;
 	return c ;
 }
 
@@ -891,7 +894,7 @@ int StringEqualString( string_t x,string_t y )
 	if( x == StringVoid || y == StringVoid || x->size != y->size )
 		return 0 ;
 	else
-		return strcmp( x->string,y->string ) == 0 ? 1 : 0 ;
+		return strcmp( x->string,y->string ) == 0 ;
 }
 
 int StringEqual( string_t x,const char * y )

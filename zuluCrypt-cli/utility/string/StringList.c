@@ -59,7 +59,7 @@ static stringList_t _StringListError( void )
 	return StringListVoid ;
 }
 
-void StringListForEach( stringList_t stl,void (*f)( string_t ) ) 
+void StringListForEach( stringList_t stl,void (*fct)( string_t ) ) 
 {
 	size_t i ;
 	size_t j ;
@@ -67,7 +67,18 @@ void StringListForEach( stringList_t stl,void (*f)( string_t ) )
 		return ;
 	j = stl->size ;
 	for( i = 0 ; i < j ; i++ )
-		(*f)( stl->stp[ i ] ) ;
+		fct( stl->stp[ i ] ) ;
+}
+
+void StringListForEachString( stringList_t stl,void (*fct)( const char * ) ) 
+{
+	size_t i ;
+	size_t j ;
+	if( stl == StringListVoid )
+		return ;
+	j = stl->size ;
+	for( i = 0 ; i < j ; i++ )
+		fct( stl->stp[ i ]->string ) ;
 }
 
 static inline string_t * __ExpandMemory( stringList_t stl )

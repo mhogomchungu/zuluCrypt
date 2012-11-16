@@ -226,20 +226,57 @@ stringList_t zuluCryptPartitions( int option )
 	}
 }
 
-static inline int _printPartitions_2( int option )
-{
-	uint64_t size ;
-	int i;
-	int j;
-	const char * device ;
-	const char * e ;
-	
+void zuluCryptPrintPartitionProperties( const char * device )
+{	
 	#define SIZE 64
 	char sizebuffer[ SIZE ] ;
 	char sizebuffer_1[ SIZE ] ;
 	
+	const char * e ;
+	
+	uint64_t size ;
+	
 	blkid_probe blkid ;
 	
+	printf( "%s\t",device ) ;
+	
+	blkid = blkid_new_probe_from_filename( device ) ;
+	
+	if( blkid == NULL )
+		return ;
+	
+	blkid_do_probe( blkid );
+	
+	size = blkid_probe_get_size( blkid ) ;
+	
+	e = StringIntToString_1( sizebuffer,SIZE,size ) ;
+	/*
+	 * below function is defined in ../lib/status.c
+	 */
+	zuluCryptFormatSize( sizebuffer_1,e ) ;
+	
+	printf( "%s\t",sizebuffer_1 ) ;
+	
+	if( blkid_probe_lookup_value( blkid,"LABEL",&e,NULL ) == 0 )
+		printf( "%s\t",e ) ;
+	else
+		printf( "Nil\t" ) ;
+	
+	if( blkid_probe_lookup_value( blkid,"TYPE",&e,NULL ) == 0 )
+		printf( "%s\t",e ) ;
+	else
+		printf( "Nil\t" ) ;
+	
+	if( blkid_probe_lookup_value( blkid,"UUID",&e,NULL ) == 0 )
+		printf( "%s\n",e ) ;
+	else
+		printf( "Nil\n" ) ;
+	
+	blkid_free_probe( blkid );
+}
+
+static inline int _printPartitions_2( int option )
+{	
 	stringList_t stl = StringListVoid ;
 	
 	switch( option ){
@@ -253,42 +290,7 @@ static inline int _printPartitions_2( int option )
 		return 1 ;
 	}
 	
-	j = StringListSize( stl ) ;
-	
-	for( i = 0 ; i < j ; i++ ){
-		device = StringListContentAt( stl,i ) ;
-		printf( "%s\t",device ) ;
-		
-		blkid = blkid_new_probe_from_filename( device ) ;
-		blkid_do_probe( blkid );
-		
-		size = blkid_probe_get_size( blkid ) ;
-		
-		e = StringIntToString_1( sizebuffer,SIZE,size ) ;
-		/*
-		 * below function is defined in ../lib/status.c
-		 */
-		zuluCryptFormatSize( sizebuffer_1,e ) ;
-		
-		printf( "%s\t",sizebuffer_1 ) ;
-		
-		if( blkid_probe_lookup_value( blkid,"LABEL",&e,NULL ) == 0 )
-			printf( "%s\t",e ) ;
-		else
-			printf( "Nil\t" ) ;
-		
-		if( blkid_probe_lookup_value( blkid,"TYPE",&e,NULL ) == 0 )
-			printf( "%s\t",e ) ;
-		else
-			printf( "Nil\t" ) ;
-		
-		if( blkid_probe_lookup_value( blkid,"UUID",&e,NULL ) == 0 )
-			printf( "%s\n",e ) ;
-		else
-			printf( "Nil\n" ) ;
-		
-		blkid_free_probe( blkid );
-	}
+	StringListForEachString( stl,zuluCryptPrintPartitionProperties ) ;
 	
 	StringListDelete( &stl ) ;
 	return 0 ;

@@ -309,10 +309,10 @@ void MainWindow::volumeMiniProperties( QTableWidget * table,QString p,QString mo
 		label = QString( "Nil" ) ;
 	}else{
 		l = p.split( "\t" ) ;
-		fileSystem = l.at( 1 ) ;
-		label = l.at( 2 ) ;
-		total = l.at( 3 ) ;
-		perc = l.at( 4 ) ;
+		fileSystem = l.at( 2 ) ;
+		label = l.at( 3 ) ;
+		total = l.at( 4 ) ;
+		perc = l.at( 5 ) ;
 		perc.remove( QChar( '\n' ) ) ;
 	}
 
