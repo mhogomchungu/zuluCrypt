@@ -18,7 +18,7 @@
  */
 
 #include "includes.h"
-#include <stropts.h>
+#include <sys/ioctl.h>
 #include <linux/loop.h>
 
 int zuluCryptAttachLoopDeviceToFile( const char * path,int mode,int * loop_fd,string_t * loop_device )
