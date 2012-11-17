@@ -95,8 +95,7 @@ string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos )
 	end = StringListEnd( fstabList ) ;
 	
 	for( ; it != end ; it++ ){
-		entry = *it ;
-		entryList = StringListStringSplit( entry,' ' ) ;
+		entryList = StringListStringSplit( *it,' ' ) ;
 		if( entryList == StringListVoid )
 			continue ;
 		entry = StringListStringAt( entryList,0 ) ;
@@ -143,7 +142,6 @@ static inline int fs_family( const char * fs )
 static inline string_t set_mount_options( m_struct * mst )
 {
 	string_t opt = zuluCryptGetMountOptionsFromFstab( mst->device,3 ) ;
-	string_t uid = StringIntToString( mst->uid ) ;
 	
 	if( opt == StringVoid )
 		opt = String( mst->mode ) ;
@@ -156,9 +154,11 @@ static inline string_t set_mount_options( m_struct * mst )
 		if( !StringContains( opt,"umask=" ) )
 			StringAppend( opt,",umask=0000" ) ;
 		if( !StringContains( opt,"uid=" ) )
-			StringAppend( opt,",uid=UID" ) ;
+			StringAppend( opt,",uid=" ) ;
+			StringAppendInt( opt,mst->uid ) ;
 		if( !StringContains( opt,"gid=" ) )
-			StringAppend( opt,",gid=UID" ) ;
+			StringAppend( opt,",gid=" ) ;
+			StringAppendInt( opt,mst->uid ) ;
 		if( !StringContains( opt,"fmask=" ) )
 			StringAppend( opt,",fmask=0000" ) ;
 		
@@ -171,9 +171,11 @@ static inline string_t set_mount_options( m_struct * mst )
 		
 	}else if( fs_family( mst->fs ) == 2 ){
 		if( !StringContains( opt,"uid=" ) )
-			StringAppend( opt,"uid=UID" ) ;
+			StringAppend( opt,",uid=" ) ;
+			StringAppendInt( opt,mst->uid ) ;
 		if( !StringContains( opt,"gid=" ) )
-			StringAppend( opt,"gid=UID" ) ;
+			StringAppend( opt,",gid=" ) ;
+			StringAppendInt( opt,mst->uid ) ;
 	}else if( fs_family( mst->fs ) == 3 ){
 		;
 	}else{
@@ -183,9 +185,6 @@ static inline string_t set_mount_options( m_struct * mst )
 		 */
 		;
 	}
-	
-	StringReplaceString( opt,"UID",StringContent( uid ) );
-	StringDelete( &uid ) ;
 	
 	/*
 	 * Below options are not file system options and are rejectected by mount() command and hence we are removing them.
@@ -215,7 +214,7 @@ static inline string_t set_mount_options( m_struct * mst )
 		StringRemoveRight( opt,1 ) ;
 	
 	mst->opts = StringContent( opt ) ;
-	
+	StringPrintLine( opt ) ;
 	return opt;
 }
 

@@ -86,6 +86,11 @@ const char * StringAppend( string_t st,const  char * s )  ;
 const char * StringAppendInt( string_t,uint64_t ) ;
 
 /*
+ * subsititue all occurance of string str with a number num
+ */
+const char * StringSubStringWithInt( string_t st,const char * str,uint64_t num ) ;
+
+/*
  * Append multitple const char * strings to a string handled by handle st.
  * NOTE: The list must be terminated a NULL character.
  * example usage

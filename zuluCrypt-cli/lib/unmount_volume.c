@@ -44,7 +44,7 @@ static int entry_found( const char * m_dir,char ** m_point )
 		if( h == 0 )
 			break ;
 		sleep( 1 ) ;
-	}	
+	}
 	
 	if( h == 0 && m_point != NULL ){
 		st = String( m_dir ) ;
@@ -56,9 +56,9 @@ static int entry_found( const char * m_dir,char ** m_point )
 
 int zuluCryptUnmountVolume( const char * map,char ** m_point )
 {
-	struct stat st ;	
-	FILE * f ;	
-	FILE * g ;	
+	struct stat st ;
+	FILE * f ;
+	FILE * g ;
 	int h = 3 ;
 	int status ;
 	size_t map_len = strlen( map ) ;
@@ -93,7 +93,7 @@ int zuluCryptUnmountVolume( const char * map,char ** m_point )
 		
 		endmntent( f ) ;
 		
-	}else{	
+	}else{
 		f = setmntent( "/etc/mtab","r" ) ;
 		
 		lock = mnt_new_lock( "/etc/mtab~",getpid() ) ;
@@ -106,7 +106,7 @@ int zuluCryptUnmountVolume( const char * map,char ** m_point )
 			while( ( mt = getmntent( f ) ) != NULL ){
 				if( strncmp( mt->mnt_fsname,map,map_len ) == 0 ){
 					h = entry_found( mt->mnt_dir,m_point ) ;
-				}else{			
+				}else{
 					addmntent( g,mt ) ;
 				}
 			}
@@ -121,7 +121,7 @@ int zuluCryptUnmountVolume( const char * map,char ** m_point )
 			}
 		
 			mnt_unlock_file( lock ) ;
-		}	
+		}
 		
 		endmntent( f ) ;
 		mnt_free_lock( lock ) ;

@@ -632,7 +632,7 @@ const char * StringAppend( string_t st,const char * s )
 
 	c = __StringExpandMemory( st,st->size + len ) ;
 	
-	if( c != NULL )	{
+	if( c != NULL ){
 		st->string = c ;
 		memcpy( st->string + st->size,s,len + 1 ) ;
 		st->size += len ;
@@ -856,54 +856,48 @@ const char * StringReplaceChar( string_t st,char x,char y )
 	return StringReplaceCharPos( st,x,y,0 ) ;
 }
 
-string_t StringIntToString( uint64_t z )
+/*
+ *  2^64 has a maximum of 19 digits,64 byte buffer is more that enough
+ */
+#define BUFFSIZE 64
+#define BUFFLIMIT 63
+static inline char * _intToString( char * buffer,uint64_t z )
 {
-	int i = 63 ;
-	/*
-	 *  2^64 has a maximum of 19 digits,64 byte buffer is more that enough
-	 */
-	char buffer[ 64 ] ;
-	buffer[ 63 ] = '\0' ;
-
+	int i = BUFFLIMIT ;
 	do{
 		i-- ;
 		buffer[ i ] = z % 10 + '0' ;
 		z = z / 10 ;
 	}while( z != 0 && i != 0 ) ;
-	
-	return String( buffer + i ) ;
+	return buffer + i ;
+}
+
+string_t StringIntToString( uint64_t z )
+{
+	char buffer[ BUFFSIZE ] = { '\0' };
+	return String( _intToString( buffer,z ) );
 }
 
 const char * StringAppendInt( string_t st,uint64_t z ) 
 {
-	int i = 63 ;
-	/*
-	 *  2^64 has a maximum of 19 digits,64 byte buffer is more that enough
-	 */
-	char buffer[ 64 ] ;
-	buffer[ 63 ] = '\0' ;
-	
-	do{
-		i-- ;
-		buffer[ i ] = z % 10 + '0' ;
-		z = z / 10 ;
-	}while( z != 0 && i != 0 ) ;
-	
-	return StringAppend( st,buffer + i ) ;
+	char buffer[ BUFFSIZE ] = { '\0' };
+	return StringAppend( st,_intToString( buffer,z ) ) ;
+}
+
+const char * StringSubStringWithInt( string_t st,const char * str,uint64_t z ) 
+{
+	char buffer[ BUFFSIZE ] = { '\0' };
+	return StringReplaceString( st,str,_intToString( buffer,z ) ) ;
 }
 
 char * StringIntToString_1( char * x,size_t y,uint64_t z )
 {
-	char *c =  x + y - 1  ;
-	
-	*c-- = '\0' ;   
-	
+	char * c =  x + y - 1  ;
+	*c-- = '\0' ;
 	do{
 		*c-- = z % 10 + '0' ;
-		z = z / 10 ;            
-		
+		z = z / 10 ;
 	}while( z != 0 ) ;
-	
 	return ++c ;
 }
 
