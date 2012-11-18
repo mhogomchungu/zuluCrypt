@@ -96,7 +96,7 @@ static int _zuluMountPartitionAccess( const char * device,const char * mode,uid_
 	/*
 	 * this function is defined in ../zuluCrypt-cli/lib/mount_volume.c
 	 */
-	string_t p = zuluCryptGetMountOptionsFromFstab( device,3 ) ;
+	string_t p = zuluCryptGetMountOptionsFromFstab( device,MOUNTOPTIONS ) ;
 	
 	int ro      ;
 	int nouser  ;
@@ -145,7 +145,7 @@ static int _mountPointIsSameAsFstabEntry( const char * device,const char * mount
 static int _zuluMountMount( const char * device,const char * m_point,const char * mode,uid_t uid,int mount_point_option )
 {
 	int status ;
-	
+	int mount_point_from_fstab = 0 ;
 	string_t z = StringVoid ;
 
 	char * path = NULL ;
@@ -173,20 +173,25 @@ static int _zuluMountMount( const char * device,const char * m_point,const char 
 	if( m_point != NULL ){
 		z = String( m_point ) ;
 	}else{	
-		/*
-		 * Below function returns "$HOME/" and is defined in ../zuluCrypt-cli/lib/user_get_home_path.c
-		 */
-		z = zuluCryptGetUserHomePath( uid ) ;
+		z = zuluCryptGetMountOptionsFromFstab( device,MOUNTPOINT ) ;
+		if( z != StringVoid ){
+			mount_point_from_fstab = 1 ;
+		}else{
+			/*
+			* Below function returns "$HOME/" and is defined in ../zuluCrypt-cli/lib/user_get_home_path.c
+			*/
+			z = zuluCryptGetUserHomePath( uid ) ;
 		
-		if( z == StringVoid )
-			_zuluExit( 104,z,path,"ERROR: could not get path to current user home directory" ) ;
+			if( z == StringVoid )
+				_zuluExit( 104,z,path,"ERROR: could not get path to current user home directory" ) ;
 		
-		q = strrchr( device,'/' ) ;
+			q = strrchr( device,'/' ) ;
 		
-		if( q == NULL )
-			StringAppend( z,device ) ;
-		else
-			StringAppend( z,q + 1 ) ;
+			if( q == NULL )
+				StringAppend( z,device ) ;
+			else
+				StringAppend( z,q + 1 ) ;
+		}
 	}
 	
 	/*
@@ -206,7 +211,7 @@ static int _zuluMountMount( const char * device,const char * m_point,const char 
 			chown( m_path,uid,uid ) ;
 		}
 	}else{
-		if( _mountPointIsSameAsFstabEntry( device,m_path ) ){
+		if( mount_point_from_fstab ){
 			/*
 			 * The mount point exists and we are trying to mount a system partition on a path present in fstab,just use the folder
 			 */

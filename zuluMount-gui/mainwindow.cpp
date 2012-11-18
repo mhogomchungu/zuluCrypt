@@ -388,10 +388,14 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 	f.setItalic( !f.italic() );
 	f.setBold( !f.bold() );
 
+	QString opt ;
 	for( int i = 0 ; i < j ; i++ ){
-
 		entries = list.at( i ).split( '\t' ) ;
-
+		if( entries.at( 2 ) == QString( "swap" ) )
+			continue ;
+		opt = entries.at( 4 ) ;
+		if( opt == QString( "Nil" ) || opt == QString( "1.0 KB" ) )
+			continue ;
 		if( sys.contains( entries.at( 0 ) ) )
 			tablewidget::addRowToTable( table,entries,f ) ;
 		else

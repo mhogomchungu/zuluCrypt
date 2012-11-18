@@ -69,6 +69,11 @@ int zuluCryptPartitionIsMounted( const char * device ) ;
  *  parse "/etc/fstab" and return a field at position "pos" on a line
  *  that corresponds to device "device".  
  */
+#define MOUNTPOINT   1
+#define FILESYSTEM   2
+#define MOUNTOPTIONS 3
+#define DUMPOPTION   4
+#define FSCKOPTION   5
 string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos ) ;
 
 /*
