@@ -251,12 +251,14 @@ void zuluCryptPrintPartitionProperties( const char * device )
 	
 	blkid_probe blkid ;
 	
-	printf( "%s\t",device ) ;
-	
 	blkid = blkid_new_probe_from_filename( device ) ;
 	
-	if( blkid == NULL )
+	printf( "%s\t",device ) ;
+	
+	if( blkid == NULL ){
+		printf( "Nil\tNil\tNil\tNil" ) ;
 		return ;
+	} 
 	
 	blkid_do_probe( blkid );
 	
@@ -288,50 +290,30 @@ void zuluCryptPrintPartitionProperties( const char * device )
 	blkid_free_probe( blkid );
 }
 
-static inline int _printPartitions_2( int option )
-{	
-	stringList_t stl = StringListVoid ;
-	
-	switch( option ){
-		case 1 : stl = zuluCryptPartitions( ALL_PARTITIONS ) 	   ;break ;
-		case 2 : stl = zuluCryptPartitions( SYSTEM_PARTITIONS )    ;break ;
-		case 3 : stl = zuluCryptPartitions( NON_SYSTEM_PARTITIONS );break ;
-	}	
-	
-	if( stl == StringListVoid ){
-		printf( "ERROR: unable to print requested list of partitions\n" ) ;
-		return 1 ;
-	}
-	
-	StringListForEachString( stl,zuluCryptPrintPartitionProperties ) ;
-	
-	StringListDelete( &stl ) ;
-	return 0 ;
-}
-
-static inline int _printPartitions_1( int option )
-{
-	stringList_t stl = StringListVoid ;
-	
-	switch( option ){
-		case 1 : stl = zuluCryptPartitions( ALL_PARTITIONS ) 	   ;break ;
-		case 2 : stl = zuluCryptPartitions( SYSTEM_PARTITIONS )    ;break ;
-		case 3 : stl = zuluCryptPartitions( NON_SYSTEM_PARTITIONS );break ;
-	}
-	
-	if( stl == StringListVoid ){
-		printf( "ERROR: unable to print requested list of partitions\n" ) ;
-		return 1 ;
-	}
-	
-	StringListPrintList( stl ) ;
-	StringListDelete( &stl ) ;
-	return 0 ;
-}
-
 int zuluCryptPrintPartitions( int option,int info )
 {
-	return info ? _printPartitions_2( option ) : _printPartitions_1( option ) ;
+	stringList_t stl = StringListVoid ;
+	
+	switch( option ){
+		case 1 : stl = zuluCryptPartitions( ALL_PARTITIONS ) 	   ;break ;
+		case 2 : stl = zuluCryptPartitions( SYSTEM_PARTITIONS )    ;break ;
+		case 3 : stl = zuluCryptPartitions( NON_SYSTEM_PARTITIONS );break ;
+	}
+	
+	if( stl == StringListVoid ){
+		printf( "ERROR: unable to print requested list of partitions\n" ) ;
+		return 1 ;
+	}
+	
+	if( info ){
+		StringListForEachString( stl,zuluCryptPrintPartitionProperties ) ;
+	}else{
+		StringListPrintList( stl ) ;
+	}
+	
+	StringListDelete( &stl ) ;
+	
+	return 0 ;
 }
 
 /*
