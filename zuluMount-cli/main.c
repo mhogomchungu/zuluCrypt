@@ -291,7 +291,7 @@ static int _zuluMountDeviceList( void )
 	return zuluCryptPrintPartitions( ALL_PARTITIONS,0 ) ;
 }
 
-static int _zuluMountMmountedList( uid_t uid )
+static int _zuluMountMountedList( uid_t uid )
 {
 	/*
 	 * zuluMountPrintMountedVolumes() is defined in ./print_mounted_volumes.c
@@ -516,7 +516,7 @@ int main( int argc,char * argv[] )
 	}
 		
 	if( strcmp( action,"-l" ) == 0 )
-		return _zuluExit( _zuluMountMmountedList( uid ),k,NULL,NULL ) ;
+		return _zuluExit( _zuluMountMountedList( uid ),k,NULL,NULL ) ;
 	
 	if( strcmp( action,"-P" ) == 0 )
 		return _zuluExit( _zuluMountDeviceList(),k,NULL,NULL ) ;
@@ -552,13 +552,21 @@ int main( int argc,char * argv[] )
 			status = 215 ;
 		}
 	}else{
-		device = realpath( dev,NULL ) ;
-		if( device != NULL ){
-			status = _zuluMountExe( device,action,m_point,mode,uid,key,key_source,mount_point_option ) ;
-			free( device ) ;
+		/*
+		 * zuluCryptSecurityCanOpenPathForReading() is defined in ../zuluCrypt-cli/bin/security.c
+		 */
+		if( zuluCryptSecurityCanOpenPathForReading( dev,uid ) == 0 ){
+			device = realpath( dev,NULL ) ;
+			if( device != NULL ){
+				status = _zuluMountExe( device,action,m_point,mode,uid,key,key_source,mount_point_option ) ;
+				free( device ) ;
+			}else{
+				printf( "device not found or insuffienct privilege to access it\n" ) ;
+				status = 217 ;
+			}
 		}else{
-			printf( "could not resolve path to device\n" ) ;
-			status = 216 ;
+			printf( "device not found or insuffienct privilege to access it\n" ) ;
+			status = 217 ;
 		}
 	}
 	

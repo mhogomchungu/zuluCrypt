@@ -73,6 +73,21 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void ) ;
 
 stringList_t zuluCryptGetPartitionFromZulutab( void ) ;
 
+static inline int _allowedDevice( const char * device )
+{
+	if( strlen( device  ) > 3 ){
+		if( strncmp( device,"hd",2 ) == 0 || 
+			strncmp( device,"sd",2 ) == 0 ||
+			strncmp( device,"mmcblk",6 ) == 0 ){
+			return 1 ;
+		}
+	}else if( strncmp( device,"sr",2 ) == 0 ){
+		return 1 ;
+	}
+	
+	return 0 ;
+}
+
 stringList_t zuluCryptPartitionList( void )
 {
 	const char * device ;
@@ -108,11 +123,9 @@ stringList_t zuluCryptPartitionList( void )
 		index = StringLastIndexOfChar( st,' ' ) ;
 		if( index != -1 ){
 			device = StringContent( st ) + index + 1 ;
-			if( strlen( device  ) > 3 ){
-				if( ( strncmp( device,"hd",2 ) == 0 || strncmp( device,"sd",2 ) == 0 ) ){
-					StringInsertAndDelete( st_1,5,device ) ;
-					stl_1 = StringListAppendString( stl_1,st_1 ) ;
-				}
+			if( _allowedDevice( device ) ){
+				StringInsertAndDelete( st_1,5,device ) ;
+				stl_1 = StringListAppendString( stl_1,st_1 ) ;
 			}
 		}
 	}

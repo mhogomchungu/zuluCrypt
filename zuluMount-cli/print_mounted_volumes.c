@@ -135,10 +135,16 @@ static void _printDeviceProperties( const char * entry )
 	
 	const char * e ;
 	const char * f ;
-	if( strncmp( entry,"/dev/sd",7 ) != 0 )
-		if( strncmp( entry,"/dev/hd",7 ) != 0 )
-			if( strncmp( entry,_z,_k ) != 0 )
-				return ;
+	
+	const char * mapper_path = crypt_get_dir() ;
+	size_t mapper_length = strlen( mapper_path ) ;
+	
+	if( strncmp( entry,"/dev/",5 ) != 0 )
+		return ;
+	
+	if( strncmp( entry,mapper_path,mapper_length ) == 0 )
+		if( strncmp( entry,_z,_k ) != 0 )
+			return ;
 	
 	stx = StringListSplit( entry,' ' ) ;
 		
@@ -146,8 +152,7 @@ static void _printDeviceProperties( const char * entry )
 		return ;
 	q = StringListContentAt( stx,0 ) ;
 
-	e = crypt_get_dir() ;
-	if( strncmp( q,e,strlen( e ) )== 0 ){
+	if( strncmp( q,mapper_path,mapper_length ) == 0 ){
 		/*
 		 * volume_device_name() is defined in ../zuluCrypt-cli/lib/status.c
 		 * It takes cryptsetup path in "/dev/mapper" and return a device path associated with

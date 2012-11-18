@@ -133,7 +133,7 @@ static inline int fs_family( const char * fs )
 	if( strcmp( fs,"affs" ) == 0 || strcmp( fs,"hfs" ) == 0 )
 		return 2 ;
 	
-	if( strcmp( fs,"iso9660" ) == 0 )
+	if( strcmp( fs,"iso9660" ) == 0 || strcmp( fs,"udf" ) == 0 )
 		return 3 ;
 	
 	return 0 ;
@@ -149,35 +149,44 @@ static inline string_t set_mount_options( m_struct * mst )
 		StringMultipleAppend( opt,",",mst->mode,END ) ;
 	
 	if( fs_family( mst->fs ) == 1 ){
-		if( !StringContains( opt,"dmask=" ) )
+		if( !StringContains( opt,"dmask=" ) ){
 			StringAppend( opt,",dmask=0000" ) ;
-		if( !StringContains( opt,"umask=" ) )
+		}
+		if( !StringContains( opt,"umask=" ) ){
 			StringAppend( opt,",umask=0000" ) ;
-		if( !StringContains( opt,"uid=" ) )
+		}
+		if( !StringContains( opt,"uid=" ) ){
 			StringAppend( opt,",uid=" ) ;
 			StringAppendInt( opt,mst->uid ) ;
-		if( !StringContains( opt,"gid=" ) )
+		}
+		if( !StringContains( opt,"gid=" ) ){
 			StringAppend( opt,",gid=" ) ;
 			StringAppendInt( opt,mst->uid ) ;
-		if( !StringContains( opt,"fmask=" ) )
+		}
+		if( !StringContains( opt,"fmask=" ) ){
 			StringAppend( opt,",fmask=0000" ) ;
+		}
 		
 		if( strcmp( mst->fs,"vfat" ) == 0 ){
-			if( !StringContains( opt,"flush" ) )
+			if( !StringContains( opt,"flush" ) ){
 				StringAppend( opt,",flush" ) ;
-			if( !StringContains( opt,"shortname=" ) )
+			}
+			if( !StringContains( opt,"shortname=" ) ){
 				StringAppend( opt,",shortname=mixed" ) ;
+			}
 		}
 		
 	}else if( fs_family( mst->fs ) == 2 ){
-		if( !StringContains( opt,"uid=" ) )
+		if( !StringContains( opt,"uid=" ) ){
 			StringAppend( opt,",uid=" ) ;
 			StringAppendInt( opt,mst->uid ) ;
-		if( !StringContains( opt,"gid=" ) )
+		}
+		if( !StringContains( opt,"gid=" ) ){
 			StringAppend( opt,",gid=" ) ;
 			StringAppendInt( opt,mst->uid ) ;
+		}
 	}else if( fs_family( mst->fs ) == 3 ){
-		;
+		mst->m_flags = MS_RDONLY ;
 	}else{
 		/*
 		 * ext file systems and raiserfs among others go here
@@ -203,18 +212,19 @@ static inline string_t set_mount_options( m_struct * mst )
 	StringRemoveString( opt,"ro" ) ;
 	StringRemoveString( opt,"rw" ) ;
 	
-	if( mst->m_flags == MS_RDONLY )
+	if( mst->m_flags == MS_RDONLY ){
 		StringPrepend( opt,"ro," ) ;
-	else
+	}else{
 		StringPrepend( opt,"rw," ) ;
+	}
 	
 	StringReplaceString( opt,",,","," );
 		
-	if( StringEndsWith( opt,"," ) )
+	if( StringEndsWith( opt,"," ) ){
 		StringRemoveRight( opt,1 ) ;
+	}
 	
 	mst->opts = StringContent( opt ) ;
-	StringPrintLine( opt ) ;
 	return opt;
 }
 
@@ -232,7 +242,6 @@ static inline int mount_ntfs( const m_struct * mst )
 static inline int mount_mapper( const m_struct * mst )
 {
 	int h = mount( mst->device,mst->m_point,mst->fs,mst->m_flags,mst->opts + 3 ) ;
-
 	if( h == 0 && mst->m_flags != MS_RDONLY )
 		chmod( mst->m_point,S_IRWXU|S_IRWXG|S_IRWXO ) ;
 	
@@ -257,7 +266,7 @@ int zuluCryptMountVolume( const char * path,const char * m_point,const char * mo
 	string_t fs ;
 	string_t * loop ;
 	
-	int iso_image = 0 ;
+	int device_file = 0 ;
 	int fd ;
 	
 	m_struct mst ;
@@ -293,37 +302,31 @@ int zuluCryptMountVolume( const char * path,const char * m_point,const char * mo
 		return zuluExit( 4,stl ) ;
 	}
 	
+	mst.fs = StringContent( fs ) ;
+	opts = StringListAssign( stl ) ;
+	*opts = set_mount_options( &mst ) ;
 	/*
-	 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop_device.c
+	 * Currently, i dont know how to use mount system call to use ntfs-3g instead of ntfs to mount ntfs file systems.
+	 * use mount executable as a temporary solution.
 	 */
-	if( StringEqual( fs,"iso9660" ) ){
-		iso_image = 1 ;
-		mst.m_flags = MS_RDONLY ;
-		mode = "ro" ;
-		loop = StringListAssign( stl ) ;
-		if( zuluCryptAttachLoopDeviceToFile( mst.device,READ,&fd,loop ) ){
-			mst.device = StringContent( *loop ) ;
-		}else{
-			return zuluExit( -1,stl ) ;
+	if( StringEqual( fs,"ntfs" ) ){
+		switch( mount_ntfs( &mst ) ){
+			case 0  : return zuluExit( 0,stl )  ;
+			case 16 : return zuluExit( 12,stl ) ;
+			default : return zuluExit( 1,stl )  ;
 		}
 	}
 	
-	mst.fs = StringContent( fs ) ;
-	
-	opts = StringListAssign( stl ) ;
-	*opts = set_mount_options( &mst ) ;
-	
-	/*
-	 * Currently, i dont know how to use mount system call to use ntfs-3g instead of ntfs to mount ntfs file systems.
-	 * Use fork to use mount executable as a temporary solution.
-	*/
-	if( StringEqual( fs,"ntfs" ) ){
-		h = mount_ntfs( &mst ) ;
-		StringListDelete( &stl ) ;
-		switch( h ){
-			case 0  : return 0 ;
-			case 16 : return 12 ;
-			default : return 1 ;
+	if( strncmp( path,"/dev/",5 ) != 0 ){
+		device_file = 1 ;
+		loop = StringListAssign( stl ) ;
+		/*
+		* zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop_device.c
+		*/
+		if( zuluCryptAttachLoopDeviceToFile( mst.device,WRITE,&fd,loop ) ){
+			mst.device = StringContent( *loop ) ;
+		}else{
+			return zuluExit( -1,stl ) ;
 		}
 	}
 	 
@@ -349,7 +352,7 @@ int zuluCryptMountVolume( const char * path,const char * m_point,const char * mo
 				f = setmntent( "/etc/mtab","a" ) ;
 				mt.mnt_dir    = ( char * ) mst.m_point ;
 				mt.mnt_type   = ( char * ) mst.fs ;
-				if( iso_image ){
+				if( device_file ){
 					mt.mnt_fsname = ( char * ) path ;
 					mt.mnt_opts = ( char * )StringMultipleAppend( *opts,",loop=",mst.device,END ) ;
 					close( fd ) ;
