@@ -37,7 +37,7 @@ int zuluCryptMtabIsAtEtc( void )
 	char * path = realpath( mpath,NULL ) ;
 	int st ;
 	if( path == NULL ){
-		return 1 ;
+		return 0 ;
 	}else{
 		st = strcmp( path,mpath ) ;
 		free( path ) ;

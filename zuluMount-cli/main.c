@@ -136,7 +136,7 @@ static int _mountPointIsSameAsFstabEntry( const char * device,const char * mount
 	/*
 	 * zuluCryptGetMountOptionsFromFstab() is defined in ../zuluCrypt-cli/lib/mount_volume.c
 	 */
-	string_t p = zuluCryptGetMountOptionsFromFstab( device,1 ) ;
+	string_t p = zuluCryptGetMountOptionsFromFstab( device,MOUNTPOINT ) ;
 	int st = StringEqual( p,mount_point ) ;
 	StringDelete( &p ) ;
 	return st ;
@@ -173,6 +173,9 @@ static int _zuluMountMount( const char * device,const char * m_point,const char 
 	if( m_point != NULL ){
 		z = String( m_point ) ;
 	}else{	
+		/*
+		* zuluCryptGetMountOptionsFromFstab() is defined in ../zuluCrypt-cli/lib/mount_volume.c
+		*/
 		z = zuluCryptGetMountOptionsFromFstab( device,MOUNTPOINT ) ;
 		if( z != StringVoid ){
 			mount_point_from_fstab = 1 ;

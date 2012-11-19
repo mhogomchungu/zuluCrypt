@@ -305,11 +305,12 @@ int zuluCryptMountVolume( const char * path,const char * m_point,const char * mo
 	mst.fs = StringContent( fs ) ;
 	opts = StringListAssign( stl ) ;
 	*opts = set_mount_options( &mst ) ;
-	/*
-	 * Currently, i dont know how to use mount system call to use ntfs-3g instead of ntfs to mount ntfs file systems.
-	 * use mount executable as a temporary solution.
-	 */
+	
 	if( StringEqual( fs,"ntfs" ) ){
+		/*
+		 * Currently, i dont know how to use mount system call to use ntfs-3g instead of ntfs to mount ntfs file systems.
+		 * use mount executable as a temporary solution.
+		 */
 		switch( mount_ntfs( &mst ) ){
 			case 0  : return zuluExit( 0,stl )  ;
 			case 16 : return zuluExit( 12,stl ) ;
