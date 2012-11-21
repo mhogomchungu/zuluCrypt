@@ -22,18 +22,9 @@
 
 string_t zuluCryptGetUserHomePath( uid_t uid ) 
 {
-	string_t p = StringVoid ;
-	
-	struct passwd * pass ;
-	
-	pass = getpwuid( uid ) ;
-	
-	if( pass == NULL ){
-		return p ;
-	}else{
-		p = String( pass->pw_dir ) ;
-		StringAppend( p,"/" ) ;
-		return p ;
-	}	
+	struct passwd * pass = getpwuid( uid ) ;
+	string_t p = String( pass->pw_dir ) ;
+	StringAppend( p,"/" ) ;
+	return p ;
 }
  

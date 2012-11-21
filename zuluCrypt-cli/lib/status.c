@@ -269,7 +269,7 @@ char * zuluCryptVolumeStatus( const char * mapper )
 		i = 0 ;
 		k = crypt_keyslot_max( type ) ;
 		for( j = 0 ; j < k ; j++){
-			switch( crypt_keyslot_status(cd, j) ){
+			switch( crypt_keyslot_status( cd,j ) ){
 				case CRYPT_SLOT_INACTIVE    :     ; break ;
 				case CRYPT_SLOT_ACTIVE_LAST : i++ ; break ;
 				case CRYPT_SLOT_ACTIVE      : i++ ; break ;
@@ -317,12 +317,14 @@ char * zuluCryptVolumeDeviceName( const char * mapper )
 	
 	if( strncmp( e,"/dev/loop",9 ) == 0 ){
 		path = zuluCryptLoopDeviceAddress( e ) ;
-		if( path != NULL )
+		if( path != NULL ){
 			address = StringInherit( &path ) ;
-		else
+		}else{
 			address = String( "Nil" ) ;
-	}else
+		}
+	}else{
 		address = String( e ) ;
+	}
 	
 	crypt_free( cd ) ;
 	

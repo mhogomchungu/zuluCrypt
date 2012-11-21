@@ -145,7 +145,6 @@ int zuluCryptPrintOpenedVolumes( uid_t uid )
 
 string_t zuluCryptGetMtabEntry( const char * path )
 {
-	string_t xt ;
 	string_t entry = StringVoid ;
 	stringList_t stl = zuluCryptGetMtabList() ;
 
@@ -159,9 +158,8 @@ string_t zuluCryptGetMtabEntry( const char * path )
 	end = StringListEnd( stl ) ;
 	
 	for( ; it != end ; it++ ){
-		xt = *it ;
-		if( StringStartsWith( xt,path ) ){
-			entry = StringCopy( xt ) ;
+		if( StringStartsWith( *it,path ) ){
+			entry = StringCopy( *it ) ;
 			break ;
 		}
 	}
