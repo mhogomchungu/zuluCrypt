@@ -36,7 +36,7 @@ void runInThread::run()
 {
 	QProcess p ;
 	p.start( m_exe );
-	p.waitForFinished() ;
+	p.waitForFinished( -1 ) ;
 	m_status = p.exitCode() ;
 	p.close();
 }

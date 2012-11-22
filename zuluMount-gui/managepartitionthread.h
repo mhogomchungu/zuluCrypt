@@ -53,6 +53,7 @@ private:
 	void checkPermissions( void );
 	void openPathInFileManager( void ) ;
 	void volumeMiniProperties( void ) ;
+	QString volumeMiniProperties_1( void );
 	void volumeProperties( void ) ;
 	void cryptoMount( QString ) ;
 	void cryptoOpen( void );

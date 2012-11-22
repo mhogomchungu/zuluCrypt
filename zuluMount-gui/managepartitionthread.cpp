@@ -124,7 +124,7 @@ void managepartitionthread::volumeProperties()
 	p.close();
 }
 
-void managepartitionthread::volumeMiniProperties()
+QString managepartitionthread::volumeMiniProperties_1()
 {
 	QProcess p ;
 	QString exe ;
@@ -134,16 +134,28 @@ void managepartitionthread::volumeMiniProperties()
 	p.start( exe );
 	p.waitForFinished() ;
 
-	QString output = QString( p.readAll() ) ;
-
-	if( p.exitCode() ){
-		QString failed ;
-		emit signalProperties( failed );
-	}else{
-		emit signalProperties( output );
-	}
-
+	QString result = QString( p.readAll() ) ;
 	p.close();
+	return result ;
+}
+
+void managepartitionthread::volumeMiniProperties()
+{
+	QString result = this->volumeMiniProperties_1();
+	if( result.isEmpty() ){
+		emit signalProperties( result );
+	}else{
+		QStringList stl = result.split( QString( "\t" ) ) ;
+		if( stl.at( 2 ) == QString( "Nil" ) ){
+			/*
+			 * Wait for 1 second before trying again to read volume information if file system type
+			 * could not be determined
+			 */
+			sleep( 1 ) ;
+			result = this->volumeMiniProperties_1();
+		}
+		emit signalProperties( result );
+	}
 }
 
 void managepartitionthread::cryptoOpen()
