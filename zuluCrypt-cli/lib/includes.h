@@ -92,3 +92,8 @@ int zuluCryptVolumeIsNotLuks( const char * dev ) ;
  * this function is defined in ./create_loop_device.c
  */
 int zuluCryptAttachLoopDeviceToFile( const char * path,int mode,int * fd,string_t * loop_device ) ;
+
+/*
+ * this function is defined in ./mount_volume.c
+ */
+string_t zuluCryptGetFileSystemFromDevice( const char * device ) ;

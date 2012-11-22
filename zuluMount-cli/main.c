@@ -258,7 +258,7 @@ static int _zuluMountUMount( const char * device,uid_t uid,const char * mode,int
 	int status ;
 		
 	/*
-	 * zuluCryptPartitionIsMounted()  is defined in defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c 	 
+	 * zuluCryptPartitionIsMounted()  is defined in defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c 
 	 */
 	if( !zuluCryptPartitionIsMounted( device ) )
 		return _zuluExit( 100,StringVoid,m_point,"ERROR: device does not appear to be mounted as it does not have an entry in \"/etc/mtab\"" ) ;
@@ -424,24 +424,57 @@ static int _zuluMountPrintDeviceProperties( const char * device,uid_t uid )
 	}
 }
 
+static int _zuluPartitionHasCryptoFs( const char * device )
+{
+	int st ;
+	/*
+	 * this function is defined in ../zuluCrypt-cli/lib/mount_volume.c
+	 */
+	string_t fs = zuluCryptGetFileSystemFromDevice( device ) ;
+	
+	if( fs == StringVoid ){
+		/*
+		 * no file system is found,assuming the volume is crypto_PLAIN volume
+		 */
+		return 1 ;
+	}else{
+		/*
+		 * st == 1 means the volume is cryto_LUKS
+		 * st == 0 means the volume has a regular file system
+		 */
+		st = StringEqual( fs,"crypto_LUKS" ) ;
+		StringDelete( &fs ) ;
+		return st ;
+	}
+}
+
 static int _zuluMountExe( const char * device,const char * action,const char * m_point,
 			  const char * mode,uid_t uid,const char * key,const char * key_source,
 			  int mount_point_option )
 {
 	if( strcmp( action,"-L" ) == 0 )
 		return _zuluMountPrintDeviceProperties( device,uid ) ;
-	else if( strcmp( action,"-m" ) == 0 )
-		return _zuluMountMount( device,m_point,mode,uid,mount_point_option ) ;
-	else if( strcmp( action,"-u" ) == 0 )
-		return _zuluMountUMount( device,uid,mode,mount_point_option ) ;
-	else if( strcmp( action,"-M" ) == 0 )
-		return _zuluMountCryptoMount( device,mode,uid,key,key_source,m_point,mount_point_option ) ;
-	else if( strcmp( action,"-U" ) == 0 )
-		return _zuluMountCryptoUMount( device,uid,mount_point_option ) ;
-	else if( strcmp( action,"-s" ) == 0 )
+	
+	if( strcmp( action,"-s" ) == 0 )
 		return zuluMountVolumeStatus( device,uid ) ;
-	else
-		return _zuluExit( 200,StringVoid,NULL,"ERROR: unrecognized argument encountered" ) ;	
+	
+	if( strcmp( action,"-m" ) == 0 ){
+		if( _zuluPartitionHasCryptoFs( device ) ){
+			return _zuluMountCryptoMount( device,mode,uid,key,key_source,m_point,mount_point_option ) ;
+		}else{
+			return _zuluMountMount( device,m_point,mode,uid,mount_point_option ) ;
+		}
+	}
+	
+	if( strcmp( action,"-u" ) == 0 ){
+		if( _zuluPartitionHasCryptoFs( device ) ){
+			return _zuluMountCryptoUMount( device,uid,mount_point_option ) ;
+		}else{
+			return _zuluMountUMount( device,uid,mode,mount_point_option ) ;
+		}
+	}
+	
+	return _zuluExit( 200,StringVoid,NULL,"ERROR: unrecognized argument encountered" ) ;	
 }
 
 static int _mount_help()
@@ -450,19 +483,21 @@ static int _mount_help()
 	const char * doc2 ;
 	const char * doc1 = "\
 options:\n\
--l -- print a list of mounted partitions\n\
--M -- mount a LUKS/PLAIN volume: arguments: -d partition_path -z mount_point -e mode(rw/ro) (-p passphrase/-f keyfile) \n\
--U -- unmount a LUKS volume: arguments: -d partition_path\n" ;
+-m -- mount a volume : arguments: -d partition_path -z mount_point -e mode(rw/ro)\n\
+	-- additional arguments for crypto_LUKS and crypto_PLAIN volume, -p passphrase/-f keyfile\n\
+	-- if \"-n\" option is also set,the mount point folder will be used if present\n\
+	-- if \"-n\" option is not set,an error will be produced if mount point folder is present\n\
+	NOTE: presence or absence of -n is ineffective if the partition has an entry in fstab and the mount point is the same as that in fstab\n" ;
+	
 	doc2 = "\
--p -- print a list of partitions\n\
--m -- mount a partitions : arguments: -d partition_path -z mount_point -e mode(rw/ro)\n\
-      -- if \"-n\" option is also set,the mount point folder will be used if present\n\
-      -- if \"-n\" option is not set,an error will be produced if mount point folder is present\n\
 -u -- unmount a partition: arguments: -d partition_path\n\
-      -- if \"-n\" is set,the mount point folder will not be autodeleted\n\
-      -- if \"-n\" is not set the mount point folder will be autodeleted\n" ;
+	-- if \"-n\" is set,the mount point folder will not be autodeleted\n\
+	-- if \"-n\" is not set the mount point folder will be autodeleted\n\
+	NOTE: a mount folder will not be autodeleted if the partition has an entry in fstab and the mount point is the same as that in fstab\n";
 
       doc3 = "\
+-l -- print a list of mounted partitions\n\
+-p -- print a list of partitions\n\
 -L -- must be used with -d,print properties of a partition specified by d option\n\
 -P -- print a list of all partitions\n" ;      
 	printf( "%s%s%s",doc1,doc2,doc3 ) ;
@@ -488,12 +523,17 @@ int main( int argc,char * argv[] )
 	int mount_point_option = 0 ;
 	char * device ;
 
-	uid_t uid = getuid() ;
+	uid_t uid ;
 	
 	int status ;
 	
 	string_t k = StringVoid ;
+	
+	if( argc < 2 )
+		return _mount_help() ;
 		
+	uid = getuid() ;
+	
 	StringExitOnMemoryExaustion( &ExitOnMemoryExaustion ) ;
 	StringListExitOnMemoryExaustion( &ExitOnMemoryExaustion ) ;
 	
@@ -508,9 +548,6 @@ int main( int argc,char * argv[] )
 	
 	if( setuid( 0 ) != 0 )
 		return _zuluExit( 210,k,NULL,"ERROR: setuid(0) failed,check executable permissions" ) ;
-	
-	if( argc < 2 )
-		return _zuluExit( 211,k,NULL,"wrong number of arguments" ) ;
 	
 	if( action == NULL )
 		return _zuluExit( 212,k,NULL,"ERROR: action not specified" ) ;

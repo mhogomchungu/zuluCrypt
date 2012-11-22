@@ -309,6 +309,12 @@ stringList_t StringListWithSize( char ** cstring,size_t s ) ;
 stringList_t StringListCopy( stringList_t stl ) ;
 
 /*
+ * make a string_t copy of a string at position pos
+ * first position is at pos = 0 
+ */
+string_t StringListCopyStringAt( stringList_t,size_t pos ) ;
+
+/*
  * move entry at position x to position y and entry at position y to position x * 
  * first entry is at position 0.
  */

@@ -248,12 +248,24 @@ static inline int mount_mapper( const m_struct * mst )
 	return h ;
 }
 
+string_t zuluCryptGetFileSystemFromDevice( const char * device )
+{
+	string_t st = StringVoid ;
+	const char * cf = NULL ;
+	blkid_probe blkid = blkid_new_probe_from_filename( device ) ;
+	if( blkid != NULL ){
+		blkid_do_probe( blkid );
+		blkid_probe_lookup_value( blkid,"TYPE",&cf,NULL ) ;
+		st = String( cf ) ;
+		blkid_free_probe( blkid );
+	}
+	return st ;
+}
+
 int zuluCryptMountVolume( const char * path,const char * m_point,const char * mode,uid_t id )
 {
 	struct mntent mt  ;
-	blkid_probe blkid ;
 	int h ;
-	const char * cf = NULL ;
 	FILE * f ;
 #if USE_NEW_LIBMOUNT_API
 	struct libmnt_lock * m_lock ;
@@ -280,13 +292,10 @@ int zuluCryptMountVolume( const char * path,const char * m_point,const char * mo
 	else
 		mst.m_flags = 0 ;
 	
-	blkid = blkid_new_probe_from_filename( path ) ;
-	blkid_do_probe( blkid );
-	blkid_probe_lookup_value( blkid,"TYPE",&cf,NULL ) ;
-		
-	fs = StringListAssignString( stl,String( cf ) );
-		
-	blkid_free_probe( blkid );
+	/* 
+	 * zuluCryptGetFileSystemFromDevice() is defined in this source file
+	 */
+	fs = StringListAssignString( stl,zuluCryptGetFileSystemFromDevice( path ) );
 	
 	if( fs == StringVoid ){
 		/*

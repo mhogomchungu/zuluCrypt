@@ -72,10 +72,6 @@ void MainWindow::setUpApp()
 
 	part->startAction( QString( "update" ) ) ;
 
-	//managepartitionthread * part_1 = new managepartitionthread() ;
-	//connect( part_1,SIGNAL( checkPermissions( int ) ),this,SLOT( checkPermissions( int ) ) ) ;
-	//part_1->startAction( QString( "checkPermissions" ) ) ;
-
 	m_working = false ;
 	m_justMounted = false ;
 	m_trayIcon->show();

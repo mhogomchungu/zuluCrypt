@@ -151,7 +151,7 @@ void managepartitionthread::cryptoOpen()
 	QProcess p ;
 	QString exe ;
 
-	exe = QString( "%1 -M -d \"%2\" -z \"%3\" -e %4 %5" ).arg( zuluMount ).arg( m_device ).arg( m_point ).arg( m_mode ).arg( m_keySource ) ;
+	exe = QString( "%1 -m -d \"%2\" -z \"%3\" -e %4 %5" ).arg( zuluMount ).arg( m_device ).arg( m_point ).arg( m_mode ).arg( m_keySource ) ;
 
 	p.start( exe );
 	p.waitForFinished( -1 ) ;
@@ -187,13 +187,11 @@ void managepartitionthread::mount()
 
 void managepartitionthread::umount( QString type )
 {
+	Q_UNUSED( type ) ;
 	QProcess p ;
 	QString exe ;
 
-	if( type == QString( "crypto_LUKS" ) || type == QString( "crypto_PLAIN" ) )
-		exe = QString( "%1 -U -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;
-	else
-		exe = QString( "%1 -u -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;
+	exe = QString( "%1 -u -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;
 
 	p.start( exe );
 	p.waitForFinished() ;

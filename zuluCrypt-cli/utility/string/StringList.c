@@ -689,8 +689,12 @@ void StringListMultipleDelete( stringList_t * stl,... )
 stringList_t StringListCopy( stringList_t stl ) 
 {
 	size_t i ;
-	size_t j = stl->size ;
-	stringList_t stx = ( stringList_t ) malloc( sizeof( struct StringListType ) ) ;
+	size_t j ;
+	stringList_t stx ;
+	if( stl == StringListVoid )
+		return StringListVoid ;
+	j = stl->size ;
+	stx = ( stringList_t ) malloc( sizeof( struct StringListType ) ) ;
 	if( stx == NULL )
 		return _StringListError() ;
 	stx->stp = ( string_t * ) malloc( sizeof( string_t ) * j ) ;
@@ -703,6 +707,15 @@ stringList_t StringListCopy( stringList_t stl )
 	for( i = 0 ; i < j ; i++)
 		stx->stp[i] = StringWithSize( stl->stp[i]->string,stl->stp[i]->size ) ;
 	return stx ;
+}
+
+string_t StringListCopyStringAt( stringList_t stl,size_t pos ) 
+{
+	if( stl == StringListVoid )
+		return StringVoid ;
+	if( pos >= stl->size )
+		return StringVoid ;
+	return StringCopy( stl->stp[ pos ] ) ;
 }
 
 stringList_t StringListSwap( stringList_t stl, size_t x,size_t y ) 

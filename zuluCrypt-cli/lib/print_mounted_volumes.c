@@ -181,7 +181,7 @@ char * zuluCryptGetMountPointFromPath( const char * path )
 		if( stl == StringListVoid ){
 			return NULL ;
 		}else{
-			st = StringCopy( StringListStringAt( stl,1 ) ) ;
+			st = StringListCopyStringAt( stl,1 ) ;
 			StringListDelete( &stl ) ;
 			return StringDeleteHandle( &st ) ;
 		}
