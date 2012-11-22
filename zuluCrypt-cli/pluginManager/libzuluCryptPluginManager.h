@@ -79,7 +79,7 @@ void zuluCryptPluginManagerCloseConnection( void * handle ) ;
  *      const char * uuid   = argv[2] ;
  * 	const char * token  = argv[3] ;
  * 	int len             = atoi( argv[4] ) ;
- * 	const char * argv   = argv[ 5 ] ;
+ * 	const char * arg    = argv[ 5 ] ;
  * 
  * 	void * handle = zuluCryptPluginManagerStartConnection( token ) ;
  * 

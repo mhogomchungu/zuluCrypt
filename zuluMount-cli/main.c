@@ -49,14 +49,12 @@ static int _mount_get_opts( int argc,char * argv[],const char ** action,const ch
 			   const char ** m_point, const char ** mode,const char ** key,const char ** key_source,int * mpo )
 {
 	int c ;
-	while ( ( c = getopt( argc,argv,"LntSshlPMmUud:z:e:p:f:G:" ) ) != -1 ) {
+	while ( ( c = getopt( argc,argv,"LntSshlPmud:z:e:p:f:G:" ) ) != -1 ) {
 		switch( c ){
 			case 'n' : *mpo     = 1      ; break ;
 			case 't' : *action  = "-t"   ; break ;
 			case 's' : *action  = "-s"   ; break ;
 			case 'S' : *action  = "-S"   ; break ;
-			case 'U' : *action  = "-U"   ; break ;
-			case 'M' : *action  = "-M"   ; break ;
 			case 'l' : *action  = "-l"   ; break ;
 			case 'L' : *action  = "-L"   ; break ;
 			case 'P' : *action  = "-P"   ; break ;
