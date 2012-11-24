@@ -495,9 +495,8 @@ options:\n\
 
       doc3 = "\
 -l -- print a list of mounted partitions\n\
--p -- print a list of partitions\n\
 -L -- must be used with -d,print properties of a partition specified by d option\n\
--P -- print a list of all partitions\n" ;      
+-p -- print a list of all partitions\n" ;      
 	printf( "%s%s%s",doc1,doc2,doc3 ) ;
 	
 	return 201 ;

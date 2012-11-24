@@ -97,3 +97,18 @@ int zuluCryptAttachLoopDeviceToFile( const char * path,int mode,int * fd,string_
  * this function is defined in ./mount_volume.c
  */
 string_t zuluCryptGetFileSystemFromDevice( const char * device ) ;
+
+/*
+ * this function is defined in ./status.c
+ */
+char * zuluCryptLoopDeviceAddress( const char * device ) ;
+
+/*
+ * this function is defined in ./print_mounted_volumes.c
+ */
+stringList_t zuluCryptGetMoutedListFromMountInfo( void ) ;
+
+/*
+ * this function is defined in ./print_mounted_volumes.c
+ */
+char * zuluCryptGetMountPointFromPath( const char * path ) ;

@@ -158,7 +158,7 @@ static void zuluCryptFileSystemProperties( string_t p,const char * mapper,const 
 	StringMultipleAppend( p,"\n mount point:\t",m_point,END ) ;
 }
 
-static char * zuluCryptLoopDeviceAddress( const char * device )
+char * zuluCryptLoopDeviceAddress( const char * device )
 {
 	int fd ;
 	char * path ;

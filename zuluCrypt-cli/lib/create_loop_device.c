@@ -23,6 +23,7 @@
 
 int zuluCryptAttachLoopDeviceToFile( const char * path,int mode,int * loop_fd,string_t * loop_device )
 {
+	size_t size ;
 	string_t loopd ;
 	int fd_loop;
 	int fd_path ;
@@ -84,6 +85,10 @@ int zuluCryptAttachLoopDeviceToFile( const char * path,int mode,int * loop_fd,st
 	}
 	
 	l_info.lo_flags |= LO_FLAGS_AUTOCLEAR;
+	
+	size = sizeof( l_info.lo_file_name ) ;
+	strncpy( ( char * )l_info.lo_file_name,path,size ) ;
+	l_info.lo_file_name[ size - 1 ] = '\0' ;
 	
 	if( ioctl( fd_loop,LOOP_SET_STATUS64,&l_info ) == -1 ){
 		StringDelete( &loopd ) ;

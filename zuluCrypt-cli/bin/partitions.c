@@ -256,7 +256,7 @@ void zuluCryptPrintPartitionProperties( const char * device )
 	printf( "%s\t",device ) ;
 	
 	if( blkid == NULL ){
-		printf( "Nil\tNil\tNil\tNil" ) ;
+		printf( "Nil\tNil\tNil\tNil\n" ) ;
 		return ;
 	} 
 	

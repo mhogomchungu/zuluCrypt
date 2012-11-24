@@ -105,6 +105,66 @@ static void print( uid_t uid,stringList_t stl )
 	StringDelete( &p ) ;
 }
 
+stringList_t zuluCryptGetMoutedListFromMountInfo( void )
+{
+	const char * device ;
+	const char * mount_point ;
+	const char * file_system ;
+	const char * mount_options ;
+	char * loop_device ;
+	int index ;
+	stringList_t tmp ;
+	stringList_t stx = StringListVoid;
+	stringList_t stl ;
+	StringListIterator it ;
+	StringListIterator end;
+	string_t st = StringGetFromVirtualFile( "/proc/self/mountinfo" ) ;
+	if( st == StringVoid )
+		return StringListVoid ;
+	stl = StringListStringSplit( st,'\n' ) ;
+	StringDelete( &st ) ;
+	if( stl == StringListVoid )
+		return StringListVoid ;
+	it  = StringListBegin( stl ) ;
+	end = StringListEnd( stl )   ;
+	st = String( "" ) ;
+	for( ; it != end ; it++ ){
+		tmp = StringListStringSplit( *it,' ' ) ;
+		if( tmp == StringListVoid )
+			break ;
+		if( !StringListContentAtEqual( tmp,3,"/" ) ){
+			index = StringListContains( tmp,"-" ) ;
+			if( index != -1 ){
+				device        = StringListContentAt( tmp,index+2 ) ;
+				mount_point   = StringListContentAt( tmp,4 ) ;
+				file_system   = StringListContentAt( tmp,index+1 ) ;
+				mount_options = StringListContentAt( tmp,index+3 ) ;
+				if( strncmp( device,"/dev/loop",9 ) == 0 ){
+					/*
+					 * zuluCryptLoopDeviceAddress() is defined in ./status.c
+					 */
+					loop_device = zuluCryptLoopDeviceAddress( device ) ;
+					if( loop_device == NULL ){
+						StringMultipleAppend( st,device," ",mount_point," ",file_system," ",mount_options,END ) ;
+					}else{
+						StringMultipleAppend( st,loop_device," ",mount_point," ",file_system," ",mount_options,END ) ;
+						free( loop_device ) ;
+					}
+				}else{
+					StringMultipleAppend( st,device," ",mount_point," ",file_system," ",mount_options,END ) ;
+				}
+				stx = StringListAppendString( stx,st ) ;
+				StringClear( st ) ;
+			}
+		}
+		StringListDelete( &tmp ) ;
+	}
+	
+	StringDelete( &st ) ;
+	StringListDelete( &stl ) ;
+	return stx ;
+}
+
 stringList_t zuluCryptGetMtabList( void )
 {
 #if USE_NEW_LIBMOUNT_API
@@ -116,7 +176,7 @@ stringList_t zuluCryptGetMtabList( void )
 	stringList_t stl = StringListVoid ;
 
 	if( !zuluCryptMtabIsAtEtc() ){
-		q = StringGetFromVirtualFile( "/proc/mounts" ) ;
+		stl = zuluCryptGetMoutedListFromMountInfo() ;
 	}else{
 		m_lock = mnt_new_lock( "/etc/mtab~",getpid() ) ;
 		if( mnt_lock_file( m_lock ) == 0 ){
@@ -124,12 +184,12 @@ stringList_t zuluCryptGetMtabList( void )
 			mnt_unlock_file( m_lock ) ;
 		}
 		mnt_free_lock( m_lock ) ;
+		if( q != StringVoid ){
+			stl = StringListStringSplit( q,'\n' ) ;
+			StringDelete( &q ) ;
+		}
 	}
 	
-	if( q == StringVoid )
-		return StringListVoid ;
-	stl = StringListStringSplit( q,'\n' ) ;
-	StringDelete( &q ) ;
 	return stl ;
 }
 

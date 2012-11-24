@@ -359,22 +359,34 @@ size_t StringListSize( stringList_t stl )
 
 const char * StringListContentAt( stringList_t stl,size_t index )
 {
-	return index >= stl->size ? NULL : stl->stp[ index ]->string  ;
+	if(  stl == StringListVoid  )
+		return NULL ;
+	else
+		return index >= stl->size ? NULL : stl->stp[ index ]->string  ;
 }
 
 int StringListContentAtEqual( stringList_t stl,size_t index,const char * cstring )
 {
-	return index >= stl->size ? -1 : strcmp( stl->stp[ index ]->string,cstring ) ;
+	if(  stl == StringListVoid  )
+		return -1 ;
+	else
+		return index >= stl->size ? -1 : strcmp( stl->stp[ index ]->string,cstring ) ;
 }
 
 const char * StringListContentAtLast( stringList_t stl ) 
 {
-	return stl->size < 1 ? NULL : stl->stp[ stl->size - 1 ]->string  ;
+	if(  stl == StringListVoid  )
+		return NULL ;
+	else
+		return stl->size < 1 ? NULL : stl->stp[ stl->size - 1 ]->string  ;
 }
 
 string_t StringListStringAtLast( stringList_t stl ) 
 {
-	return stl->size < 1 ? StringVoid : stl->stp[ stl->size - 1 ] ;
+	if(  stl == StringListVoid  )
+		return StringVoid ;
+	else
+		return stl->size < 1 ? StringVoid : stl->stp[ stl->size - 1 ] ;
 }
 
 stringList_t StringListInsertAt( stringList_t stl,const char * cstring,size_t index ) 
