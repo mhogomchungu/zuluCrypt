@@ -116,7 +116,7 @@ void StringMultipleDelete( string_t * xt,... )
 	
 	while( 1 ){
 		entry = va_arg( list,string_t * ) ;
-		if( entry == END )
+		if( entry == ENDDELETE )
 			break ;
 		
 		if( *entry == StringVoid )
@@ -323,7 +323,7 @@ ssize_t StringLastIndexOfString( string_t st,const char * s )
 	while( 1 )
 	{
 		c = strstr( d,s ) ;
-		if( c != StringVoid )
+		if( c != NULL )
 		{
 			p = c - e ;
 			d = d + len ;
@@ -665,7 +665,7 @@ const char * StringAppendMultipleString( string_t st,... )
 	
 	while( 1 ){
 		entry = va_arg( list,string_t ) ;
-		if( entry == END )
+		if( entry == NULL )
 			break ;
 		StringAppend( st,entry->string ) ;
 	}
@@ -699,7 +699,7 @@ const char * StringPrependMultipleString( string_t st,... )
 	
 	while( 1 ){
 		entry = va_arg( list,string_t ) ;
-		if( entry == END )
+		if( entry == NULL )
 			break ;
 		StringPrepend( st,entry->string ) ;
 	}

@@ -37,18 +37,6 @@ extern "C" {
 #include <termios.h>
 
 /*
- * create a custom type to represent a string_t pointing to NULL while hiding the pointer nature of string_t
- * string_t is an opaque handle and NULL assignment "gives unnecessary info" about its nature.  
- */
-#define StringVoid ( ( void * ) 0 ) 
-
-/*
- * use this variable to terminate variadic functions
- * we dont use NULL here because NULL is defined simply as 0 and things break in C++
- */
-#define END ( ( void * ) 0 )
-
-/*
  * Takes a pointer to a function to be called when memory allocation can not take place
  * ie if the system has run out of memory and malloc() or realloc() has failed.
  * This function is optional and "StringVoid" will be returned on memory exaustion if the function
@@ -60,6 +48,19 @@ void StringExitOnMemoryExaustion( void (*)( void ) ) ;
  * string_t type is a  string handle,all string operation should happen through this handle.  
  */
 typedef struct StringType * string_t ;
+
+/*
+ * use this variable to terminate variadic functions
+ * we dont use NULL here because NULL is defined simply as 0 and things break in C++
+ */
+#define ENDDELETE ( ( string_t * ) 0 )
+#define END ( ( const char * ) 0 )
+
+/*
+ * create a custom type to represent a string_t pointing to NULL while hiding the pointer nature of string_t
+ * string_t is an opaque handle and NULL assignment "gives unnecessary info" about its nature.  
+ */
+#define StringVoid ( ( string_t ) 0 ) 
 
 /*
  * initialize a handle with a C string

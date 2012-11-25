@@ -61,13 +61,13 @@ size_t zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid
 	socket_t client ;
 	socket_t server = SocketLocal( sockpath ) ;
 	
-	if( server != SocketVoid ){
+	if( server ){
 		if( SocketBind( server ) ){
 			chown( sockpath,uid,uid ) ;
 			chmod( sockpath,S_IRWXU | S_IRWXG | S_IRWXO ) ;
 			if( SocketListen( server ) ){
 				client = SocketAcceptWithTimeOut( server,10 ) ;
-				if( client != SocketVoid ){
+				if( client ){
 					dataLength = SocketGetData_1( client,&buffer,INTMAXKEYZISE ) ;
 					*key = StringInheritWithSize( &buffer,dataLength ) ;
 					SocketClose( &client ) ;

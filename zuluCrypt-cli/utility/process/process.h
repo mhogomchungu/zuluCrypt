@@ -36,13 +36,13 @@ extern "C" {
 
 typedef struct ProcessType_t * process_t ;
 
-#define ProcessVoid ( ( void * ) 0 ) 
+#define ProcessVoid ( ( process_t ) 0 ) 
 
 /*
  * use this variable to terminate variadic functions
  * we dont use NULL here because NULL is defined simply as 0 and things break in C++
  */
-#define ENDLIST ( ( char * ) 0 )
+#define ENDLIST ( ( const char * ) 0 )
 
 /*
  * An example of how to use the library to call ls with arguments and get its output while closing its std error 

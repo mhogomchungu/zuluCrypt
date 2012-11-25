@@ -42,9 +42,8 @@ extern "C" {
 #include <sys/socket.h>
 #include <netdb.h>
 
-#define SocketVoid     ( ( void * ) 0 )  
-
 typedef struct SocketType_t * socket_t ;
+#define SocketVoid ( ( socket_t ) 0 )  
 
 /*
  * Takes a pointer to a function to be called when memory allocation can not take place

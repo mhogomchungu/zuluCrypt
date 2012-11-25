@@ -31,8 +31,15 @@
  */
 char * zuluCryptVolumeDeviceName( const char * ) ;
 
+char * zuluCryptDeviceFromUUID( const char * uuid ) ;
+
 int zuluCryptMtabIsAtEtc( void )
 {
+	/*
+	 * /proc/mounts is broken when volumes mounted with "-bind" options are used.Because of this,we try to avoid "/proc/mounts"
+	 * and we use either "/etc/mtab" file only when it is not a symbolic link( if it is a link,its probably to "/proc/mounts" )
+	 * or "/proc/self/mountinfo" 
+	 */
 	const char * mpath = "/etc/mtab" ;
 	char * path = realpath( mpath,NULL ) ;
 	int st ;
@@ -105,13 +112,45 @@ static void print( uid_t uid,stringList_t stl )
 	StringDelete( &p ) ;
 }
 
+char * zuluCryptResolveDevRoot( void )
+{
+	char * dev ;
+	int index ;
+	stringList_t stl ;
+	string_t st = StringGetFromVirtualFile( "/proc/cmdline" ) ;
+	string_t xt ;
+	if( st == StringVoid )
+		return NULL ;
+	stl = StringListStringSplit( st,' ' ) ;
+	StringDelete( &st ) ;
+	index = StringListHasSequence( stl,"root=/dev/" ) ;
+	if( index >= 0 ){
+		st = StringListCopyStringAt( stl,index ) ;
+		StringRemoveString( st,"root=" ) ;
+	}else{
+		index = StringListHasSequence( stl,"root=UUID=" ) ;
+		if( index >= 0 ){
+			xt = StringListCopyStringAt( stl,index ) ;
+			StringRemoveString( xt,"root=UUID=" ) ;
+			/*
+			 * zuluCryptDeviceFromUUID() is defined in ../bin/partitions.c
+			 */
+			dev = zuluCryptDeviceFromUUID( StringContent( xt ) ) ;
+			StringDelete( &xt ) ;
+			st = StringInherit( &dev ) ;
+		}
+	}
+	StringListDelete( &stl ) ;
+	return StringDeleteHandle( &st ) ;
+}
+
 stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 {
 	const char * device ;
 	const char * mount_point ;
 	const char * file_system ;
 	const char * mount_options ;
-	char * loop_device ;
+	char * dev ;
 	int index ;
 	stringList_t tmp ;
 	stringList_t stx = StringListVoid;
@@ -132,7 +171,7 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 		tmp = StringListStringSplit( *it,' ' ) ;
 		if( tmp == StringListVoid )
 			break ;
-		if( !StringListContentAtEqual( tmp,3,"/" ) ){
+		if( StringListContentAtEqual( tmp,3,"/" ) ){
 			index = StringListContains( tmp,"-" ) ;
 			if( index != -1 ){
 				device        = StringListContentAt( tmp,index+2 ) ;
@@ -143,15 +182,21 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 					/*
 					 * zuluCryptLoopDeviceAddress() is defined in ./status.c
 					 */
-					loop_device = zuluCryptLoopDeviceAddress( device ) ;
-					if( loop_device == NULL ){
+					dev = zuluCryptLoopDeviceAddress( device ) ;
+					if( dev == NULL ){
 						StringMultipleAppend( st,device," ",mount_point," ",file_system," ",mount_options,END ) ;
 					}else{
-						StringMultipleAppend( st,loop_device," ",mount_point," ",file_system," ",mount_options,END ) ;
-						free( loop_device ) ;
+						StringMultipleAppend( st,dev," ",mount_point," ",file_system," ",mount_options,END ) ;
+						free( dev ) ;
 					}
 				}else{
-					StringMultipleAppend( st,device," ",mount_point," ",file_system," ",mount_options,END ) ;
+					if( strncmp( device,"/dev/disk/by-",13 ) != 0 ){
+						StringMultipleAppend( st,device," ",mount_point," ",file_system," ",mount_options,END ) ;
+					}else{
+						dev = realpath( device,NULL ) ;
+						StringMultipleAppend( st,dev," ",mount_point," ",file_system," ",mount_options,END ) ;
+						free( dev ) ;
+					}
 				}
 				stx = StringListAppendString( stx,st ) ;
 				StringClear( st ) ;
@@ -172,11 +217,22 @@ stringList_t zuluCryptGetMtabList( void )
 #else
 	mnt_lock * m_lock ;
 #endif
+	char * dev ;
+	int index ;
 	string_t q       = StringVoid     ;
 	stringList_t stl = StringListVoid ;
 
 	if( !zuluCryptMtabIsAtEtc() ){
 		stl = zuluCryptGetMoutedListFromMountInfo() ;
+		if( stl == StringListVoid ){
+			/*
+			 * couldnt get the list from "/proc/self/mountinfo,probably because the kernel is too old
+			 * and doesnt support it,reluctantly, use,"/proc/mounts".
+			 */
+			q = StringGetFromVirtualFile( "/proc/mounts" ) ;
+			stl = StringListStringSplit( q,'\n' ) ;
+			StringDelete( &q ) ;
+		}
 	}else{
 		m_lock = mnt_new_lock( "/etc/mtab~",getpid() ) ;
 		if( mnt_lock_file( m_lock ) == 0 ){
@@ -189,8 +245,18 @@ stringList_t zuluCryptGetMtabList( void )
 			StringDelete( &q ) ;
 		}
 	}
+
+	index = StringListHasSequence( stl,"/dev/root" ) ;
+	if( index >= 0 ){
+		q = StringListStringAt( stl,index ) ;
+		if( StringStartsWith( q,"/dev/root" ) ){
+			dev = zuluCryptResolveDevRoot() ;
+			StringReplaceString( q,"/dev/root",dev ) ;
+			free( dev ) ;
+		}
+	}
 	
-	return stl ;
+	return stl ; 
 }
 
 int zuluCryptPrintOpenedVolumes( uid_t uid )

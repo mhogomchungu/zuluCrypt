@@ -54,7 +54,7 @@ int zuluCryptPathIsValid( const char * path ) ;
 int zuluCryptPathIsNotValid( const char * path ) ;
 
 /*
- * this function is deined in ../lib/print_mountd_volumes.c
+ * this function is deined in ../lib/print_mounted_volumes.c
  * return 1 if mtab is a file and is located at /etc
  * return 0 otherwise
  */
@@ -112,3 +112,8 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void ) ;
  * this function is defined in ./print_mounted_volumes.c
  */
 char * zuluCryptGetMountPointFromPath( const char * path ) ;
+
+/*
+ * this function is defined in ./print_mounted_volumes.c
+ */
+char * zuluCryptResolveDevRoot( void ) ;

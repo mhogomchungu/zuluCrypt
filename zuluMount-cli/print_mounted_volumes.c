@@ -45,6 +45,15 @@ static stringList_t _stz ;
 static const char * _z ;
 static size_t _k ;
 
+static string_t _mapper_filter( uid_t uid )
+{
+	string_t filter = String( crypt_get_dir() ) ;
+	StringAppend( filter,"/zuluCrypt-" ) ;
+	_z = StringAppendInt( filter,uid ) ;
+	_k = StringLength( filter ) ;
+	return filter ;
+}
+
 void zuluMountPartitionProperties( const char * device,const char * mapper,const char * m_point )
 {
 	#define SIZE 64
@@ -127,7 +136,7 @@ static void _printUnmountedVolumes( const char * device )
 	zuluMountPartitionProperties( device,device,NULL ) ;
 }
 
-static void _printDeviceProperties( const char * entry )
+static void _printDeviceProperties( string_t entry )
 {	
 	stringList_t stx ;
 	const char * q ;
@@ -136,13 +145,11 @@ static void _printDeviceProperties( const char * entry )
 	const char * e ;
 	const char * f ;
 
-	if( strncmp( entry,"/dev/",5 ) != 0 )
-		return ;
-		
-	stx = StringListSplit( entry,' ' ) ;
+	stx = StringListStringSplit( entry,' ' ) ;
 		
 	if( stx == StringListVoid )
 		return ;
+	
 	q = StringListContentAt( stx,0 ) ;
 	
 	if( strncmp( q,_z,_k ) == 0 ){
@@ -182,12 +189,11 @@ static void _printDeviceProperties( const char * entry )
 	StringListDelete( &stx ) ;
 }
 
-void zuluMountPrintDeviceProperties_1( string_t entry )
+void zuluMountPrintDeviceProperties_1( string_t entry,uid_t uid )
 {
-	_k = StringIndexOfChar( entry,0,' ' )  ;
-	_z = StringContent( entry ) ;
-	_stz = StringListVoid ;
-	_printDeviceProperties( _z ) ;
+	string_t filter = _mapper_filter( uid ) ;
+	_printDeviceProperties( entry ) ;
+	StringDelete( &filter ) ;
 }
 
 /*
@@ -198,9 +204,11 @@ void zuluMountPrintDeviceProperties_1( string_t entry )
  */
 int zuluMountPrintMountedVolumes( uid_t uid )
 {
-	string_t mapper ;
+	string_t filter ;
 	
 	stringList_t stl ;
+	StringListIterator it ;
+	StringListIterator end;
 	
 	/*
 	 * get_mtab_list() is  defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c
@@ -222,22 +230,25 @@ int zuluMountPrintMountedVolumes( uid_t uid )
 		return 1;
 	}
 	
-	mapper = String( crypt_get_dir() ) ;
-	StringAppend( mapper,"/zuluCrypt-" ) ;
-	_z = StringAppendInt( mapper,uid ) ;
-	_k = StringLength( mapper ) ;
+	filter = _mapper_filter( uid ) ;
 	
 	/*
 	 * prints all partitions with entries in "/etc/mtab" 
 	 */
-	StringListForEachString( stl,_printDeviceProperties ) ;
+	it  = StringListBegin( stl ) ;
+	end = StringListEnd( stl ) ;
+	
+	for( ; it != end ; it++ ){
+		if( StringStartsWith( *it,"/dev/" ) )
+			_printDeviceProperties( *it ) ;
+	}
 	
 	/*
 	 * print all entries that are not in "/etc/mtab" ie not mounted partitions. 
 	 */
 	StringListForEachString( _stz,_printUnmountedVolumes ) ;
 	
-	StringDelete( &mapper ) ;
+	StringDelete( &filter ) ;
 	StringListMultipleDelete( &stl,&_stz,END ) ;
 	
 	return 0 ;

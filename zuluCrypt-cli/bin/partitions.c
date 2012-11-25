@@ -18,6 +18,7 @@
  */
 
 #include "includes.h"
+#include "../lib/includes.h"
 
 #include <blkid/blkid.h>
 
@@ -202,8 +203,18 @@ stringList_t zuluCryptPartitions( int option )
 		device = StringRemoveString( st,"\"" ) ;
 		
 		if ( StringStartsWith( st,"/dev/" ) ){
-			system = StringListAppend( system,device ) ;
-			StringListRemoveString( non_system,device ) ;
+			if( StringEqual( st,"/dev/root" ) ){
+				/*
+				 * zuluCryptResolveDevRoot() is defined in ../lib/print_mounted_volumes.c
+				 */
+				ac = zuluCryptResolveDevRoot() ;
+				system = StringListAppend( system,ac ) ;
+				StringListRemoveString( non_system,ac ) ;
+				free( ac ) ;
+			}else{
+				system = StringListAppend( system,device ) ;
+				StringListRemoveString( non_system,device ) ;
+			}
 		}else if( StringStartsWith( st,"UUID" ) ){
 			ac = zuluCryptDeviceFromUUID( device + 5 ) ;
 			if( ac != NULL ){

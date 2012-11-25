@@ -25,27 +25,26 @@ extern "C" {
 
 #include "String.h"
 
-
-/*
- * create a custom type to represent a stringList_t pointing to NULL while hiding the pointer nature of stringList_t
- * string_t is an opaque handle and NULL assignment "gives unnecessary info" about its nature.  
- */
-#define StringListVoid ( ( void * ) 0 ) 
-
-/*
- * use this variable to terminate variadic functions
- * we dont use NULL here because NULL is defined simply as 0 and things break in C++
- */
-#define END ( ( void * ) 0 )
-
-typedef struct StringListType * stringList_t ;
-
 /*
  * stringList_t is a type to be used as a handle with these functions
  * 
  * this library implements a an array of strings_t type dynamically and add other functionality
  * 
  */
+typedef struct StringListType * stringList_t ;
+
+
+/*
+ * use this variable to terminate variadic functions
+ * we dont use NULL here because NULL is defined simply as 0 and things break in C++
+ */
+#define ENDLIST ( ( const char * ) 0 )
+#define ENDLISTDELETE ( ( stringList_t * ) 0 )
+/*
+ * create a custom type to represent a stringList_t pointing to NULL while hiding the pointer nature of stringList_t
+ * string_t is an opaque handle and NULL assignment "gives unnecessary info" about its nature.  
+ */
+#define StringListVoid ( ( stringList_t ) 0 ) 
 
 /*
  * an STL style iterator type

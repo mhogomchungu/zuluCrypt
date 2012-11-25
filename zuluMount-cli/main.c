@@ -39,7 +39,7 @@
 int zuluMountPrintMountedVolumes( uid_t uid ) ;
 void zuluMountPartitionProperties( const char * mapper,const char * device,const char * m_point ) ;
 void zuluMountPrintDeviceProperties( const char * entry ) ;
-void zuluMountPrintDeviceProperties_1( string_t ) ;
+void zuluMountPrintDeviceProperties_1( string_t,uid_t ) ;
 
 /*
  * All functions with "EXE" in their names are defined somewhere in ../zuluCrypt-cli/bin 
@@ -413,7 +413,7 @@ static int _zuluMountPrintDeviceProperties( const char * device,uid_t uid )
 		/*
 		* zuluMountPrintDeviceProperties() is defined in ./print_mounted_volumes.c
 		*/
-		zuluMountPrintDeviceProperties_1( p ) ;
+		zuluMountPrintDeviceProperties_1( p,uid ) ;
 		StringDelete( &p ) ;
 		return 0 ;
 	}else{

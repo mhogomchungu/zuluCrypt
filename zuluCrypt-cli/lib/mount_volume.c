@@ -80,6 +80,7 @@ string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos )
 	StringListIterator end ;
 	
 	int st ;
+	char * ac ;
 	
 	if( fstab == StringVoid )
 		return StringVoid ;
@@ -101,7 +102,16 @@ string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos )
 		entry = StringListStringAt( entryList,0 ) ;
 		if( !StringStartsWith( entry,"#" ) ){
 			if( StringStartsWith( entry,"/dev/" ) ){
-				st = StringEqual( entry,device ) ;
+				if( StringEqual( entry,"/dev/root" ) ){
+					/*
+					 * zuluCryptResolveDevRoot() is defined in ./print_mounted_volumes.c 
+					 */
+					ac =  zuluCryptResolveDevRoot() ;
+					st = ( strcmp( ac,device ) == 0 );
+					free( ac ) ;
+				}else{
+					st = StringEqual( entry,device ) ;
+				}
 			}else{
 				entry = resolveUUIDAndLabel( entry ) ;
 				st = StringEqual( entry,device ) ;
