@@ -325,6 +325,11 @@ ssize_t StringLastIndexOfString( string_t st,const char * s ) ;
  */
 const char * StringStringAt( string_t st,size_t p ) ;
 
+/*
+ * return 1 if a string is a part of stringlist
+ * return 0 otherwise or if StringVoid
+ */
+int StringOwned( string_t  ) ;
 
 /*
  *Check to see if the string pointer by st ends with string s. 

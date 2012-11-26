@@ -117,3 +117,8 @@ char * zuluCryptGetMountPointFromPath( const char * path ) ;
  * this function is defined in ./print_mounted_volumes.c
  */
 char * zuluCryptResolveDevRoot( void ) ;
+
+/*
+ * this function is defined in ./print_mounted_volumes.c
+ */
+stringList_t zuluCryptGetFstabEntryList( const char * device ) ;

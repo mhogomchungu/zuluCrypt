@@ -244,7 +244,7 @@ void createFileThread::openVolume()
 	 * We do not let the cli write random data to the file by using -X( we use -J )because we want to write the random data
 	 * ourselves giving us the ability to knoe exactly much data is already written
 	 */
-	QString exe = QString( "%1 -J -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( path );
+	QString exe = QString( "%1 -k -J -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( path );
 
 	QProcess p ;
 	p.start( exe );

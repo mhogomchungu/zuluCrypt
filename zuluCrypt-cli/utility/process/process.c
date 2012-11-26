@@ -36,17 +36,17 @@ struct ProcessType_t{
 	pthread_t * thread ;
 };
 
-static void ( *__ProcessErrorFunction__ )( void )  = NULL ;
+static void ( *_fcn_ )( void )  = NULL ;
 
 void ProcessExitOnMemoryExaustion( void ( *f )( void ) )
 {
-	__ProcessErrorFunction__ = f ;
+	_fcn_ = f ;
 }
 
 static process_t _ProcessError( void )
 {
-	if( __ProcessErrorFunction__ != NULL )
-		( *__ProcessErrorFunction__ )() ;
+	if( _fcn_ != NULL )
+		( *_fcn_ )() ;
 	
 	return ProcessVoid ;
 }

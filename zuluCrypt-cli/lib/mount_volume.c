@@ -51,43 +51,41 @@ static inline int zuluExit( int st,stringList_t stl )
 	return st ;
 }
 
-static inline string_t resolveUUIDAndLabel( string_t st )
+static inline char * _evaluate_tag( const char * tag,const char * entry,blkid_cache * cache )
 {
-	char * e = NULL ;
-	string_t xt = StringVoid ;
-	
-	if( StringStartsWith( st,"LABEL=" ) ) {
-		e = blkid_evaluate_tag( "LABEL",StringContent( st ) + 6,NULL ) ;
-		xt = StringInherit( &e ) ;
-	}else if( StringStartsWith( st,"UUID=" ) ){
-		e = blkid_evaluate_tag( "UUID",StringContent( st ) + 5,NULL ) ;
-		xt = StringInherit( &e ) ;
+	char * f = NULL ;
+	string_t st = String( entry ) ;
+	int index = StringIndexOfChar( st,0,' ' ) ;
+	if( index >= 0 ){
+		f = blkid_evaluate_tag( tag,StringSubChar( st,index,'\0' ),cache ) ;
 	}
-		
-	return xt ;
+	StringDelete( &st ) ;
+	return f ;
 }
 
-string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos )
+string_t zuluCryptGetFstabEntry( const char * device )
 {
-	string_t options = StringVoid ;
-	string_t entry = StringVoid;
-	string_t fstab = StringGetFromFile( "/etc/fstab" );
+	string_t xt = StringGetFromFile( "/etc/fstab" );
 	
 	stringList_t fstabList  ;
-	stringList_t entryList  ;
 	
 	StringListIterator it  ;
 	StringListIterator end ;
 	
 	int st ;
 	char * ac ;
+	const char * entry ;
 	
-	if( fstab == StringVoid )
+	size_t len = strlen( device ) ;
+	
+	blkid_cache cache = NULL ;
+
+	if( xt == StringVoid )
 		return StringVoid ;
 	
-	fstabList = StringListStringSplit( fstab,'\n' ) ;
+	fstabList = StringListStringSplit( xt,'\n' ) ;
 	
-	StringDelete( &fstab ) ;
+	StringDelete( &xt ) ;
 	
 	if( fstabList == StringListVoid )
 		return StringVoid ;
@@ -95,40 +93,74 @@ string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos )
 	it  = StringListBegin( fstabList ) ;
 	end = StringListEnd( fstabList ) ;
 	
+	if( blkid_get_cache( &cache,NULL ) != 0 )
+		cache = NULL ;
+	
 	for( ; it != end ; it++ ){
-		entryList = StringListStringSplit( *it,' ' ) ;
-		if( entryList == StringListVoid )
-			continue ;
-		entry = StringListStringAt( entryList,0 ) ;
-		if( !StringStartsWith( entry,"#" ) ){
-			if( StringStartsWith( entry,"/dev/" ) ){
-				if( StringEqual( entry,"/dev/root" ) ){
+		entry = StringContent( *it ) ;
+		if( entry[ 0 ] != '#' ){
+			if( strncmp( entry,"/dev/",5 ) == 0 ){
+				if( strncmp( entry,"/dev/root",9 ) == 0 ){
 					/*
 					 * zuluCryptResolveDevRoot() is defined in ./print_mounted_volumes.c 
 					 */
 					ac =  zuluCryptResolveDevRoot() ;
-					st = ( strcmp( ac,device ) == 0 );
+					st = strncmp( ac,device,len ) ;
 					free( ac ) ;
 				}else{
-					st = StringEqual( entry,device ) ;
+					st = strncmp( entry,device,len ) ;
+				}
+			}else if( strncmp( entry,"UUID=",5 ) == 0 ){
+				ac = _evaluate_tag( "UUID",entry + 5,&cache ) ;
+				if( ac == NULL ){
+					st = 1 ;
+				}else{
+					st = strncmp( ac,device,len ) ;
+					free( ac ) ;
+				}
+			}else if( strncmp( entry,"LABEL=",6 ) == 0 ){
+				ac = _evaluate_tag( "LABEL",entry + 6,&cache ) ;
+				if( ac == NULL ){
+					st = 1 ;
+				}else{
+					st = strncmp( ac,device,len ) ;
+					free( ac ) ;
 				}
 			}else{
-				entry = resolveUUIDAndLabel( entry ) ;
-				st = StringEqual( entry,device ) ;
-				StringDelete( &entry ) ;
+				continue ;
 			}
-			if( st == 1 ){
-				options = StringListDetachAt( entryList,pos ) ;
-				StringListDelete( &entryList ) ;
+			
+			if( st == 0 ){
+				xt = StringCopy( *it ) ;
 				break ;
 			}
 		}
-		StringListDelete( &entryList ) ;
 	}
 	
+	if( cache != NULL )
+		blkid_put_cache( cache ) ;
 	StringListDelete( &fstabList ) ;
-	
-	return options ;
+	return xt ;
+}
+
+string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos )
+{
+	stringList_t stl ;
+	string_t st = zuluCryptGetFstabEntry( device ) ;
+	stl = StringListStringSplit( st,' ' ) ;
+	StringDelete( &st ) ;
+	st = StringListCopyStringAt( stl,pos ) ;
+	StringListDelete( &stl ) ;
+	return st ;
+}
+
+stringList_t zuluCryptGetFstabEntryList( const char * device )
+{
+	stringList_t stl ;
+	string_t st = zuluCryptGetFstabEntry( device ) ;
+	stl = StringListStringSplit( st,' ' ) ;
+	StringDelete( &st ) ;
+	return stl ;
 }
 
 static inline int fs_family( const char * fs )
@@ -151,7 +183,7 @@ static inline int fs_family( const char * fs )
 
 static inline string_t set_mount_options( m_struct * mst )
 {
-	string_t opt = zuluCryptGetMountOptionsFromFstab( mst->device,3 ) ;
+	string_t opt = zuluCryptGetMountOptionsFromFstab( mst->device,MOUNTOPTIONS ) ;
 	
 	if( opt == StringVoid )
 		opt = String( mst->mode ) ;

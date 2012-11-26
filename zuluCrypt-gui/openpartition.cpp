@@ -152,6 +152,9 @@ void openpartition::partitionList( QString title,QString type )
 
 void openpartition::partitionProperties( QStringList entry )
 {
+	QString size = entry.at(1) ;
+	if( size == QString( "1.0 KB" ) || size == QString( "Nil" ) )
+		return ;
 	tablewidget::addRowToTable( m_ui->tableWidget,entry ) ;
 }
 

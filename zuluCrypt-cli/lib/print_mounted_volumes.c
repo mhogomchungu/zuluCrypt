@@ -34,12 +34,7 @@ char * zuluCryptVolumeDeviceName( const char * ) ;
 char * zuluCryptDeviceFromUUID( const char * uuid ) ;
 
 int zuluCryptMtabIsAtEtc( void )
-{
-	/*
-	 * /proc/mounts is broken when volumes mounted with "-bind" options are used.Because of this,we try to avoid "/proc/mounts"
-	 * and we use either "/etc/mtab" file only when it is not a symbolic link( if it is a link,its probably to "/proc/mounts" )
-	 * or "/proc/self/mountinfo" 
-	 */
+{	
 	const char * mpath = "/etc/mtab" ;
 	char * path = realpath( mpath,NULL ) ;
 	int st ;
@@ -170,7 +165,7 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 	for( ; it != end ; it++ ){
 		tmp = StringListStringSplit( *it,' ' ) ;
 		if( tmp == StringListVoid )
-			break ;
+			continue ;
 		if( StringListContentAtEqual( tmp,3,"/" ) ){
 			index = StringListContains( tmp,"-" ) ;
 			if( index != -1 ){
@@ -210,43 +205,30 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 	return stx ;
 }
 
+stringList_t zuluCryptGetMoutedListFromMounts( void )
+{
+	string_t q = StringGetFromVirtualFile( "/proc/self/mounts" ) ;
+	stringList_t stl = StringListStringSplit( q,'\n' ) ;
+	StringDelete( &q ) ;
+	return stl ;
+}
+
 stringList_t zuluCryptGetMtabList( void )
 {
-#if USE_NEW_LIBMOUNT_API
-	struct libmnt_lock * m_lock ;
-#else
-	mnt_lock * m_lock ;
-#endif
 	char * dev ;
 	int index ;
-	string_t q       = StringVoid     ;
-	stringList_t stl = StringListVoid ;
-
-	if( !zuluCryptMtabIsAtEtc() ){
-		stl = zuluCryptGetMoutedListFromMountInfo() ;
+	string_t q ;
+	stringList_t stl = zuluCryptGetMoutedListFromMountInfo() ;
+	
+	if( stl == StringListVoid ){
+		stl = zuluCryptGetMoutedListFromMounts() ;
 		if( stl == StringListVoid ){
-			/*
-			 * couldnt get the list from "/proc/self/mountinfo,probably because the kernel is too old
-			 * and doesnt support it,reluctantly, use,"/proc/mounts".
-			 */
-			q = StringGetFromVirtualFile( "/proc/mounts" ) ;
-			stl = StringListStringSplit( q,'\n' ) ;
-			StringDelete( &q ) ;
-		}
-	}else{
-		m_lock = mnt_new_lock( "/etc/mtab~",getpid() ) ;
-		if( mnt_lock_file( m_lock ) == 0 ){
-			q = StringGetFromFile( "/etc/mtab" ) ;
-			mnt_unlock_file( m_lock ) ;
-		}
-		mnt_free_lock( m_lock ) ;
-		if( q != StringVoid ){
-			stl = StringListStringSplit( q,'\n' ) ;
-			StringDelete( &q ) ;
+			return StringListVoid ;
 		}
 	}
-
+	
 	index = StringListHasSequence( stl,"/dev/root" ) ;
+	
 	if( index >= 0 ){
 		q = StringListStringAt( stl,index ) ;
 		if( StringStartsWith( q,"/dev/root" ) ){

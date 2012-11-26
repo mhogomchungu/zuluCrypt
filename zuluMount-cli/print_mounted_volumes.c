@@ -75,10 +75,25 @@ void zuluMountPartitionProperties( const char * device,const char * mapper,const
 	
 	blkid = blkid_new_probe_from_filename( device ) ;
 	
+	if( blkid == NULL )
+		return ;
+	
 	blkid_do_probe( blkid );
 	
 	blkid_device_size = ( int64_t ) blkid_probe_get_size( blkid ) ;
-		
+	
+	if( blkid_device_size <= 0 ){
+		blkid_free_probe( blkid );
+		return ;
+	}
+	
+	printf( "%s\t",device ) ;
+	if( m_point == NULL ){
+		printf( "Nil" ) ;
+	}else{
+		printf( "%s",m_point ) ;
+	}
+	
 	if( blkid_probe_lookup_value( blkid,"TYPE",&g,NULL ) == 0 ){
 		printf( "\t%s",g ) ;
 	}else{
@@ -132,7 +147,6 @@ void zuluMountPartitionProperties( const char * device,const char * mapper,const
 
 static void _printUnmountedVolumes( const char * device )
 {
-	printf( "%s\tNil",device ) ;
 	zuluMountPartitionProperties( device,device,NULL ) ;
 }
 
@@ -162,18 +176,11 @@ static void _printDeviceProperties( string_t entry )
 		if( x != NULL ){
 			StringListRemoveString( _stz,x ) ;
 			/*
-			 * only display partitions,no volumes in files,that zuluCrypt territory
+			 * zuluCryptDecodeMtabEntry() is defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c
+			 * it decodes space,tab,new line and backslash characters since they are written differently in "/etc/mtab" 
 			 */
-			if( strncmp( x,"/dev/",5 ) == 0 ){
-				/*
-				 * substitute_chars() is defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c
-				 * it decodes space,tab,new line and backslash characters since they are written differently in "/etc/mtab" 
-				 */
-				f = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;
-				printf( "%s\t%s",x,f ) ;
-				zuluMountPartitionProperties( x,q,f ) ;
-			}
-			
+			f = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;
+			zuluMountPartitionProperties( x,q,f ) ;	
 			free( x ) ;
 		}
 	}else{
@@ -182,7 +189,6 @@ static void _printDeviceProperties( string_t entry )
 		e = zuluCryptDecodeMtabEntry( StringListStringAt( stx,0 ) ) ;
 		f = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;
 		
-		printf( "%s\t%s",e,f ) ;
 		zuluMountPartitionProperties( e,e,f ) ;
 	}
 	
@@ -207,8 +213,6 @@ int zuluMountPrintMountedVolumes( uid_t uid )
 	string_t filter ;
 	
 	stringList_t stl ;
-	StringListIterator it ;
-	StringListIterator end;
 	
 	/*
 	 * get_mtab_list() is  defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c
@@ -231,17 +235,11 @@ int zuluMountPrintMountedVolumes( uid_t uid )
 	}
 	
 	filter = _mapper_filter( uid ) ;
-	
+		
 	/*
-	 * prints all partitions with entries in "/etc/mtab" 
+	 * print all entries that are in "/etc/mtab" ie mounted partitions. 
 	 */
-	it  = StringListBegin( stl ) ;
-	end = StringListEnd( stl ) ;
-	
-	for( ; it != end ; it++ ){
-		if( StringStartsWith( *it,"/dev/" ) )
-			_printDeviceProperties( *it ) ;
-	}
+	StringListForEach( stl,_printDeviceProperties ) ;
 	
 	/*
 	 * print all entries that are not in "/etc/mtab" ie not mounted partitions. 
@@ -249,7 +247,7 @@ int zuluMountPrintMountedVolumes( uid_t uid )
 	StringListForEachString( _stz,_printUnmountedVolumes ) ;
 	
 	StringDelete( &filter ) ;
-	StringListMultipleDelete( &stl,&_stz,END ) ;
+	StringListMultipleDelete( &stl,&_stz,ENDDELETE ) ;
 	
 	return 0 ;
 }

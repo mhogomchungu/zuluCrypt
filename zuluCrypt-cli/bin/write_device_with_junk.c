@@ -65,7 +65,7 @@ static int zuluExit( string_t st, int status )
 		case 5 : printf( "INFO: user chose not to proceed\n" )                                         ;break ;
 		/*6 is currently un used */
 		case 7 : /* 7 is used when returning with no feedback */				       ;break ;
-		case 8 : printf( "ERROR: insufficitied privilege to oped device in read/write mode\n" )        ;break ;
+		case 8 : printf( "ERROR: insufficitied privilege to oped device \n" ) 			       ;break ;
 		case 9 : printf( "ERROR: device path is invalid\n" )                                           ;break ;
 		case 10: printf( "ERROR: passphrase file does not exist\n" )				       ;break ;
 		case 11: printf( "ERROR: could not get enought memory to hold the key file\n" )  	       ;break ;
@@ -105,21 +105,18 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	
 	const char * cmapper ;
 	
-	switch( zuluCryptSecurityCanOpenPathForReading( device,uid ) ){
-		case 1 : return zuluExit( NULL,8 ) ;
-		case 2 : return zuluExit( NULL,9 ) ;
-	}
-	
-	switch( zuluCryptSecurityCanOpenPathForWriting( device,uid ) ){
-		case 1 : return zuluExit( NULL,8 ) ;
-		case 2 : return zuluExit( NULL,9 ) ;
-	}
-		
 	dev = realpath( device,NULL );
-	
+		
 	if( dev == NULL )
 		return zuluExit( NULL,2 ) ;
 	
+	if( zuluCryptPartitionIsSystemPartition( dev ) ){
+		if( uid != 0 ){
+			free( dev ) ;
+			return zuluExit( NULL,8 ) ;
+		}
+	}
+		
 	mapper = zuluCryptCreateMapperName( dev,mapping_name,uid,OPEN ) ;
 	
 	p = zuluCryptCreateMapperName( dev,mapping_name,uid,CLOSE ) ;

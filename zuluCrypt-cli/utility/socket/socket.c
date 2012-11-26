@@ -34,17 +34,17 @@ struct SocketType_t
 	char * inetAddress ;
 };
 
-static void ( *__SocketErrorFunction__ )( void )  = NULL ;
+static void ( *_fcn_ )( void )  = NULL ;
 
 void SocketExitOnMemoryExaustion( void ( *f )( void ) )
 {
-	__SocketErrorFunction__ = f ;
+	_fcn_ = f ;
 }
 
 static socket_t _SocketError( void )
 {
-	if( __SocketErrorFunction__ != NULL )
-		( *__SocketErrorFunction__ )() ;
+	if( _fcn_ != NULL )
+		( *_fcn_ )() ;
 	
 	return SocketVoid ;
 }

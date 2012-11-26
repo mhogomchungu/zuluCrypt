@@ -387,6 +387,8 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 	QString opt ;
 	for( int i = 0 ; i < j ; i++ ){
 		entries = list.at( i ).split( '\t' ) ;
+		if( !entries.at( 0 ).startsWith( QString( "/dev/" ) ) )
+			continue ;
 		if( entries.at( 2 ) == QString( "swap" ) )
 			continue ;
 		opt = entries.at( 4 ) ;

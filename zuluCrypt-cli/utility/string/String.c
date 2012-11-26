@@ -43,21 +43,31 @@ struct StringType
 	 * pointer to the string
 	 */
 	char * string ; 
+	
+	/*
+	 * contains info if the string is owned by stringlist
+	 */
+	int owned ;
 };
 
-static void ( *__StringErrorFunction__ )( void )  = NULL ;
+static void ( *_fcn_ )( void )  = NULL ;
 
 void StringExitOnMemoryExaustion( void ( *f )( void ) )
 {
-	__StringErrorFunction__ = f ;
+	_fcn_ = f ;
 }
 
 static string_t _StringError( void )
 {
-	if( __StringErrorFunction__ != NULL )
-		( *__StringErrorFunction__ )() ;
+	if( _fcn_ != NULL )
+		( *_fcn_ )() ;
 	
 	return StringVoid ;
+}
+
+int StringOwned( string_t st )
+{
+	return st == StringVoid ? 0 : st->owned ;
 }
 
 static inline char * __StringExpandMemory( string_t st,size_t new_size )
@@ -77,10 +87,12 @@ void StringDelete( string_t * st )
 	string_t s ;
 	if( st != NULL ){
 		s = *st ;
-		*st = StringVoid ;
 		if( s != StringVoid ){
-			free( s->string ) ;
-			free( s ) ;
+			if( s->owned == 0 ){
+				*st = StringVoid ;
+				free( s->string ) ;
+				free( s ) ;
+			}
 		}
 	}
 }
@@ -91,12 +103,14 @@ void StringClearDelete( string_t * st )
 	char * e ;
 	if( st != NULL ){
 		s = *st ;
-		*st = StringVoid ;
 		if( s != StringVoid ){
-			e = s->string ;
-			memset( e,'\0',s->length ) ;
-			free( e ) ;
-			free( s ) ;
+			if( s->owned == 0 ){
+				*st = StringVoid ;
+				e = s->string ;
+				memset( e,'\0',s->length ) ;
+				free( e ) ;
+				free( s ) ;
+			}
 		}
 	}
 }
@@ -105,11 +119,13 @@ void StringMultipleDelete( string_t * xt,... )
 {
 	string_t * entry ;
 	va_list list ;
-	
-	if( *xt != StringVoid ){
-		free( ( *xt )->string ) ;
-		free( *xt ) ;
-		*xt = StringVoid ;
+	string_t st = *xt ;
+	if( st != StringVoid ){ 
+		if( st->owned == 0 ){
+			free( st->string ) ;
+			free( st ) ;
+			*xt = StringVoid ;
+		}
 	}
 	
 	va_start( list,xt ) ;
@@ -118,13 +134,14 @@ void StringMultipleDelete( string_t * xt,... )
 		entry = va_arg( list,string_t * ) ;
 		if( entry == ENDDELETE )
 			break ;
-		
-		if( *entry == StringVoid )
+		st = *entry ;
+		if( st == StringVoid )
 			continue ;
-		
-		free( ( *entry )->string ) ;
-		free( *entry ) ;
-		*entry = StringVoid ;
+		if( st->owned == 0 ){
+			free( st->string ) ;
+			free( st ) ;
+			*entry = StringVoid ;
+		}
 	}
 	
 	va_end( list ) ;
@@ -132,16 +149,27 @@ void StringMultipleDelete( string_t * xt,... )
 
 char * StringDeleteHandle( string_t * xt )
 {
-	char * c ;
+	char * c = NULL ;
 	string_t st ;
 	if( xt == NULL )
 		return NULL ;
 	st = *xt ;
 	if( st == StringVoid )
 		return NULL ;
-	*xt = StringVoid ;
-	c = st->string ;
-	free( st ) ;
+	if( st->owned == 0 ){
+		*xt = StringVoid ;
+		c = st->string ;
+		free( st ) ;
+	}else{
+		c = ( char * ) malloc( sizeof( char ) * ( st->size + 1 ) ) ;
+		if( c == NULL ){
+			_StringError() ;
+			return NULL ;
+		}else{
+			memcpy( c,st->string,st->size ) ;
+		}
+	}
+	
 	return c ;
 }
 
@@ -169,6 +197,7 @@ string_t StringCopy( string_t st )
 	xt->size = st->size ;
 	xt->length = st->size ;
 	xt->string = c ;
+	xt->owned = 0 ;
 	
 	return xt ;
 }
@@ -197,7 +226,7 @@ string_t String( const char * cstring )
 		st->size = size ;
 		st->length = STRING_INIT_SIZE ;
 		
-	}else{	
+	}else{
 		st->string = NULL ;
 		st->size = size ;
 		st->length = 0 ;
@@ -211,6 +240,7 @@ string_t String( const char * cstring )
 	
 		memcpy( st->string,cstring,size + 1 ) ;
 	}
+	st->owned = 0 ;
 	return st ;
 }
 
@@ -242,7 +272,7 @@ int StringContains( string_t st,const char * str )
 	if( st == StringVoid )
 		return 0 ;
 	else
-		return strstr( st->string,str ) == NULL ?  0 : 1 ;
+		return strstr( st->string,str ) != NULL ;
 }
 
 string_t StringInheritWithSize( char ** data,size_t s )
@@ -260,6 +290,7 @@ string_t StringInheritWithSize( char ** data,size_t s )
 	if( st == NULL )
 		return _StringError() ;
 	
+	st->owned = 0 ;
 	st->size = s ;
 	st->length = s ;
 	st->string = *data ;
@@ -464,22 +495,21 @@ int StringEndsWith( string_t st,const char * s )
 	
 	j = strlen( s ) ;
 	
-	return strncmp( st->string + st->size - j,s,j ) == 0 ? 1 : 0 ;
+	return strncmp( st->string + st->size - j,s,j ) == 0 ;
 }
 
 int StringStartsWith( string_t st,const char * s ) 
 {
 	if( st == StringVoid || s == NULL )
 		return 0 ;
-	return strncmp( st->string,s,strlen( s ) ) == 0 ? 1 : 0 ;
+	return strncmp( st->string,s,strlen( s ) ) == 0 ;
 }
 
 int StringEndsWithChar( string_t st,char s )
 {	
 	if( st == StringVoid )
 		return 0 ;
-	
-	return st->string[ st->size - 1 ] == s ? 1 : 0 ;
+	return st->string[ st->size - 1 ] == s ;
 }
 
 char StringCharAt( string_t st,size_t p )
