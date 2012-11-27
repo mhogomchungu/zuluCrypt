@@ -574,14 +574,39 @@ ssize_t StringListHasSequence( stringList_t stl,const char * str )
 	
 	if( stl == StringListVoid )
 		return -1 ;
+	
 	size = stl->size ;
 	
 	if( size == 0 )
 		return -1 ;
+	
 	ind = stl->stp ;
 	
 	for( index = 0 ; index < size ; index++ )
 		if( strstr( ind[index]->string,str ) != NULL )
+			return index ;
+	return -1 ;
+}
+
+ssize_t StringListHasStartSequence( stringList_t stl,const char * str ) 
+{
+	size_t index  ;
+	size_t size ;
+	string_t * ind ;
+	size_t len = strlen( str ) ;
+	
+	if( stl == StringListVoid )
+		return -1 ;
+	
+	size = stl->size ;
+	
+	if( size == 0 )
+		return -1 ;
+	
+	ind = stl->stp ;
+	
+	for( index = 0 ; index < size ; index++ )
+		if( strncmp( ind[index]->string,str,len ) == 0 )
 			return index ;
 	return -1 ;
 }

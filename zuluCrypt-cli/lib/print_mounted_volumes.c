@@ -227,15 +227,13 @@ stringList_t zuluCryptGetMtabList( void )
 		}
 	}
 	
-	index = StringListHasSequence( stl,"/dev/root" ) ;
+	index = StringListHasStartSequence( stl,"/dev/root" ) ;
 	
 	if( index >= 0 ){
 		q = StringListStringAt( stl,index ) ;
-		if( StringStartsWith( q,"/dev/root" ) ){
-			dev = zuluCryptResolveDevRoot() ;
-			StringReplaceString( q,"/dev/root",dev ) ;
-			free( dev ) ;
-		}
+		dev = zuluCryptResolveDevRoot() ;
+		StringReplaceString( q,"/dev/root",dev ) ;
+		free( dev ) ;
 	}
 	
 	return stl ; 
