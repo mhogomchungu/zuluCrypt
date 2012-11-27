@@ -77,7 +77,7 @@ void zuluMountPartitionProperties( const char * device,const char * mapper,const
 	
 	if( blkid == NULL )
 		return ;
-	
+
 	blkid_do_probe( blkid );
 	
 	blkid_device_size = ( int64_t ) blkid_probe_get_size( blkid ) ;
@@ -106,6 +106,12 @@ void zuluMountPartitionProperties( const char * device,const char * mapper,const
 	blkid_free_probe( blkid );
 	
 	blkid = blkid_new_probe_from_filename( mapper ) ;
+	
+	if( blkid == NULL ){
+		printf( "Nil\tNil\tNil\n" ) ;
+		return ;
+	}
+	
 	blkid_do_probe( blkid );
 	
 	if( blkid_probe_lookup_value( blkid,"LABEL",&g,NULL ) == 0 )
@@ -215,7 +221,7 @@ int zuluMountPrintMountedVolumes( uid_t uid )
 	stringList_t stl ;
 	
 	/*
-	 * get_mtab_list() is  defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c
+	 * zuluCryptGetMtabList() is  defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c
 	 * It returns contents of "/etc/mtab"
 	 */
 	stl = zuluCryptGetMtabList() ;

@@ -302,7 +302,7 @@ char * zuluCryptVolumeDeviceName( const char * mapper )
 {
 	struct crypt_device * cd;
 	char * path ;
-	string_t address ;
+	string_t address = NULL ;
 	const char * e ;
 	
 	e = crypt_get_dir() ;
@@ -315,15 +315,17 @@ char * zuluCryptVolumeDeviceName( const char * mapper )
 	
 	e = crypt_get_device_name( cd ) ;
 	
-	if( strncmp( e,"/dev/loop",9 ) == 0 ){
-		path = zuluCryptLoopDeviceAddress( e ) ;
-		if( path != NULL ){
-			address = StringInherit( &path ) ;
+	if( e != NULL ){
+		if( strncmp( e,"/dev/loop",9 ) == 0 ){
+			path = zuluCryptLoopDeviceAddress( e ) ;
+			if( path != NULL ){
+				address = StringInherit( &path ) ;
+			}else{
+				address = String( "Nil" ) ;
+			}
 		}else{
-			address = String( "Nil" ) ;
+			address = String( e ) ;
 		}
-	}else{
-		address = String( e ) ;
 	}
 	
 	crypt_free( cd ) ;
