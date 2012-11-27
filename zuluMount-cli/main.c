@@ -94,7 +94,7 @@ static int _zuluMountPartitionAccess( const char * mode,uid_t uid,stringList_t s
 	/*
 	 * this function is defined in ../zuluCrypt-cli/lib/mount_volume.c
 	 */
-	string_t p = StringListStringAt( stl,3 ) ;
+	string_t p = StringListStringAt( stl,MOUNTOPTIONS ) ;
 	int ro      ;
 	int nouser  ;
 	int defaulT ;
@@ -166,7 +166,7 @@ static int _zuluMountMount( const char * device,const char * m_point,const char 
 	if( m_point != NULL ){
 		z = String( m_point ) ;
 	}else{
-		z = StringListCopyStringAt( stl,3 ) ;
+		z = StringListCopyStringAt( stl,MOUNTPOINT ) ;
 		StringListDelete( &stl ) ;
 		if( z != StringVoid ){
 			mount_point_from_fstab = 1 ;
@@ -264,7 +264,7 @@ static int _zuluMountUMount( const char * device,uid_t uid,const char * mode,int
 		return _zuluExit( 101,StringVoid,m_point,"ERROR: \"/etc/fstab\" entry for this partition requires only root user or members of group zulucrypt to unmount it" ) ;
 	}
 	
-	st = StringListCopyStringAt( stl,2 ) ;
+	st = StringListCopyStringAt( stl,MOUNTPOINT ) ;
 	StringListDelete( &stl ) ;
 	
 	/*
