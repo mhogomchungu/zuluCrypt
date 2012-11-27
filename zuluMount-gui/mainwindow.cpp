@@ -373,6 +373,14 @@ void MainWindow::checkPermissions( int st )
 
 void MainWindow::slotMountedList( QStringList list,QStringList sys )
 {
+	if( list.isEmpty() || sys.isEmpty() ){
+		DialogMsg msg( this ) ;
+		msg.ShowUIOK( tr( "ERROR" ),tr( "reading partition properties took longer than expected and operation was terminated,click refresh to try again" ) );
+		this->enableAll();
+		this->disableCommand();
+		return ;
+	}
+
 	QTableWidget * table = m_ui->tableWidget ;
 
 	QStringList entries ;
@@ -445,6 +453,9 @@ void MainWindow::slotCurrentItemChanged( QTableWidgetItem * current,QTableWidget
 
 void MainWindow::disableCommand()
 {
+	if( m_ui->tableWidget->rowCount() < 1 )
+		return ;
+
 	int row = m_ui->tableWidget->currentRow() ;
 
 	if( row < 0 )
@@ -478,10 +489,12 @@ void MainWindow::enableAll()
 	m_ui->pbupdate->setEnabled( true );
 	m_ui->tableWidget->setEnabled( true );
 	m_working = false ;
-	if( m_ui->tableWidget->item( m_ui->tableWidget->currentRow(),1 )->text() == QString( "Nil" ) )
-		m_ui->pbmount->setEnabled( true );
-	else
-		m_ui->pbunmount->setEnabled( true );
+	if( m_ui->tableWidget->rowCount() > 0 ){
+		if( m_ui->tableWidget->item( m_ui->tableWidget->currentRow(),1 )->text() == QString( "Nil" ) )
+			m_ui->pbmount->setEnabled( true );
+		else
+			m_ui->pbunmount->setEnabled( true );
+	}
 
 	m_ui->tableWidget->setFocus();
 }

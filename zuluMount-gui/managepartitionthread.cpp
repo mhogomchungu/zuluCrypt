@@ -86,17 +86,22 @@ void managepartitionthread::checkPermissions()
 void managepartitionthread::partitionList()
 {
 	QProcess p ;
+	QProcess q ;
+
+	QStringList k ;
+	QStringList j ;
 
 	p.start( QString( "%1 -l" ).arg( zuluMount ) ) ;
-	p.waitForFinished() ;
 
-	QStringList k = QString( p.readAll() ).split( '\n' ) ;
-	p.close();
+	if( p.waitForFinished( 10000 ) ){
+		k = QString( p.readAll() ).split( '\n' ) ;
+		q.start( QString( "%1 -S" ).arg( zuluMount ) ) ;
+		if( q.waitForFinished( 10000 ) ){
+			j = QString( q.readAll() ).split( '\n' ) ;
+		}
+		q.close();
+	}
 
-	p.start( QString( "%1 -S" ).arg( zuluMount ) ) ;
-	p.waitForFinished() ;
-
-	QStringList j = QString( p.readAll() ).split( '\n' ) ;
 	p.close();
 
 	emit signalMountedList( k,j ) ;
@@ -110,7 +115,7 @@ void managepartitionthread::volumeProperties()
 	exe = QString( "%1 -s -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;
 
 	p.start( exe );
-	p.waitForFinished() ;
+	p.waitForFinished( 10000 ) ;
 
 	QString output = QString( p.readAll() ) ;
 
@@ -132,7 +137,7 @@ QString managepartitionthread::volumeMiniProperties_1()
 	exe = QString( "%1 -L -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;
 
 	p.start( exe );
-	p.waitForFinished() ;
+	p.waitForFinished( 10000 ) ;
 
 	QString result = QString( p.readAll() ) ;
 	p.close();
