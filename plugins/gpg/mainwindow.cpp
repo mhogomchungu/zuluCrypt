@@ -212,6 +212,7 @@ void MainWindow::disableAll()
 	m_ui->lineEditKeyFile->setEnabled( false );
 	m_ui->pbKeyFile->setEnabled( false );
 	m_ui->pbOpen->setEnabled( false );
+	m_ui->pbCancel->setEnabled( false );
 }
 
 void MainWindow::enableAlll()

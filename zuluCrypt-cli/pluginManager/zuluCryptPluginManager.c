@@ -149,7 +149,6 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	string_t key   = StringVoid ;
 	string_t plugin_path = StringVoid ;
 	string_t path  = StringVoid ;
-	string_t id    = StringVoid ;
 	string_t uuid  = StringVoid ;
 
 	struct passwd * pass = getpwuid( uid ) ;
@@ -178,10 +177,8 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		chown( sockpath,uid,uid ) ;
 		chmod( sockpath,S_IRWXU ) ;
 	
-		id = StringIntToString( syscall( SYS_gettid ) ) ;
-	
-		sockpath = StringAppendString( path,id ) ;
-	
+		sockpath = StringAppendInt( path,syscall( SYS_gettid ) ) ;
+		
 		uuid = zuluCryptGetDeviceUUID( device ) ;
 
 		p = Process( pluginPath ) ;
@@ -206,7 +203,7 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		ProcessDelete( &p ) ;
 	}
 	
-	StringMultipleDelete( &plugin_path,&uuid,&id,&path,END ) ;      
+	StringMultipleDelete( &plugin_path,&uuid,&path,END ) ;      
 	
 	return key ;
 }

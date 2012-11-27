@@ -28,7 +28,7 @@
 /*
  * initial buffer size
  */
-#define INIT_SIZE 32
+#define INIT_SIZE 8
 
 struct StringListType
 {

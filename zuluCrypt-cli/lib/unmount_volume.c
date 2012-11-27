@@ -79,19 +79,10 @@ int zuluCryptUnmountVolume( const char * map,char ** m_point )
 	/*
 	 * zuluCryptMtabIsAtEtc() is defined in print_mounted_volumes.c
 	 * 1 is return if "mtab" is found to be a file located at "/etc/"
-	 * 0 is returned otherwise,probably because "mtab" is a soft like to "/proc/mounts"
+	 * 0 is returned otherwise,probably because "mtab" is a soft link to "/proc/mounts"
 	 */
 	
-	if( !zuluCryptMtabIsAtEtc() ){
-		/*
-		 * zuluCryptGetMountPointFromPath() is defined in ./print_mounted_volumes.c
-		 */
-		m = zuluCryptGetMountPointFromPath( map ) ;
-		if( m != NULL ){
-			h = entry_found( m,m_point ) ;
-			free( m ) ;
-		}
-	}else{
+	if( zuluCryptMtabIsAtEtc() ){
 		f = setmntent( "/etc/mtab","r" ) ;
 		
 		lock = mnt_new_lock( "/etc/mtab~",getpid() ) ;
@@ -110,19 +101,28 @@ int zuluCryptUnmountVolume( const char * map,char ** m_point )
 			}
 			
 			endmntent( g ) ;
-		
+			
 			if( h == 0 ){
 				rename( "/etc/mtab-zC","/etc/mtab" ) ;
 				chown( "/etc/mtab",0,0 ) ;
 			}else{
 				remove( "/etc/mtab-zC" ) ;
 			}
-		
+			
 			mnt_unlock_file( lock ) ;
 		}
 		
 		endmntent( f ) ;
 		mnt_free_lock( lock ) ;
+	}else{
+		/*
+		 * zuluCryptGetMountPointFromPath() is defined in ./print_mounted_volumes.c
+		 */
+		m = zuluCryptGetMountPointFromPath( map ) ;
+		if( m != NULL ){
+			h = entry_found( m,m_point ) ;
+			free( m ) ;
+		}
 	}
 	
 	if( h != 0 && h != 3 && h != 4 )
