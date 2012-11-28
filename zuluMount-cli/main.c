@@ -511,6 +511,62 @@ static void ExitOnMemoryExaustion( void )
 	exit( 1 ) ;
 }
 
+static int _zuluMountcheckifLVM( const char * path,const char * rpath )
+{
+	/*
+	 * zuluCryptGetFileSystemFromDevice() is defined in ../zuluCrypt-cli/lib/mount_volume.c 
+	 */
+	
+	/*
+	 * in this function,we are making an assumption that a /dev/dm-X path with a file system is a lvm device
+	 */
+	string_t st = zuluCryptGetFileSystemFromDevice( path ) ;
+	if( st != StringVoid ){
+		if( strncmp( rpath,"/dev/dm-",8 ) == 0 ){
+			return 1 ;
+		}
+	}
+	
+	return 0 ;
+}
+
+static int _zuluMountDoAction( const char * device,const char * action,const char * m_point,
+			      const char * mode,uid_t uid,const char * key,const char * key_source,
+			      int mount_point_option )
+{
+	int status ;
+	
+	char * dev = realpath( device,NULL ) ;
+	
+	if( dev == NULL ){
+		printf( "ERROR: failed to resolve path to device\n" ) ;
+		return 217 ;
+	}
+	
+	if( _zuluMountcheckifLVM( device,dev ) ){
+		printf( "ERROR: this device looks like an lvm device,these devices are currently not supported\n" ) ;
+		status = 218 ;
+	}else{
+		if( strncmp( device,"/dev/",5 ) != 0 ){
+			/*
+			* zuluCryptSecurityCanOpenPathForReading() is defined in ../zuluCrypt-cli/bin/security.c
+			*/
+			if( zuluCryptSecurityCanOpenPathForReading( dev,uid ) != 0 ){
+				printf( "insuffienct privilege to access a volume file\n" ) ;
+				status = 217 ;
+			}else{
+				status = _zuluMountExe( device,action,m_point,mode,uid,key,key_source,mount_point_option ) ;
+			}
+		}else{
+			status = _zuluMountExe( device,action,m_point,mode,uid,key,key_source,mount_point_option ) ;
+		}
+	}
+	
+	free( dev ) ;
+	
+	return status ;
+}
+
 int main( int argc,char * argv[] )
 {	
 	const char * action     = NULL ;
@@ -581,7 +637,7 @@ int main( int argc,char * argv[] )
 	if( strncmp( dev,"UUID=",5 ) == 0 ){
 		device = zuluCryptDeviceFromUUID( dev + 5 ) ;
 		if( device != NULL ){
-			status = _zuluMountExe( device,action,m_point,mode,uid,key,key_source,mount_point_option ) ;
+			status = _zuluMountDoAction( device,action,m_point,mode,uid,key,key_source,mount_point_option ) ;
 			free( device ) ;
 		}else{
 			printf( "could not resolve UUID\n" ) ;
@@ -590,35 +646,14 @@ int main( int argc,char * argv[] )
 	}else if( strncmp( dev,"LABEL=",6 ) == 0 ){
 		device = zuluCryptDeviceFromLabel( dev + 6 ) ;
 		if( device != NULL ){
-			status = _zuluMountExe( device,action,m_point,mode,uid,key,key_source,mount_point_option ) ;
+			status = _zuluMountDoAction( device,action,m_point,mode,uid,key,key_source,mount_point_option ) ;
 			free( device ) ;
 		}else{
 			printf( "could not resolve LABEL\n" ) ;
 			status = 215 ;
 		}
 	}else{
-		device = realpath( dev,NULL ) ;
-		
-		if( device == NULL ){
-			printf( "ERROR: failed to resolve path to device\n" ) ;
-			status = 217 ;
-		}else{
-			if( strncmp( device,"/dev/",5 ) != 0 ){
-				/*
-				 * zuluCryptSecurityCanOpenPathForReading() is defined in ../zuluCrypt-cli/bin/security.c
-				 */
-				if( zuluCryptSecurityCanOpenPathForReading( dev,uid ) != 0 ){
-					printf( "insuffienct privilege to access a volume file\n" ) ;
-					status = 217 ;
-				}else{
-					status = _zuluMountExe( device,action,m_point,mode,uid,key,key_source,mount_point_option ) ;
-				}
-			}else{
-				status = _zuluMountExe( device,action,m_point,mode,uid,key,key_source,mount_point_option ) ;
-			}
-		}
-		
-		free( device ) ;
+		status = _zuluMountDoAction( dev,action,m_point,mode,uid,key,key_source,mount_point_option ) ;
 	}
 	
 	return _zuluExit( status,k,NULL,NULL ) ;

@@ -164,7 +164,8 @@ string_t StringListAssignString( stringList_t stl,string_t st )
 		return StringVoid ;
 	
 	stl->stp = p ;
-	st->owned = 1 ;
+	if( st != NULL )
+		st->owned = 1 ;
 	stl->stp[ stl->size ] = st;
 	stl->size = stl->size + 1 ;
 	return st ;
@@ -201,7 +202,8 @@ stringList_t StringListString( string_t * st )
 		return _StringListError() ;
 	}
 	stl->stp[0] = *st ;
-	stl->stp[0]->owned = 1 ;
+	if( stl->stp[0] != StringVoid )
+		stl->stp[0]->owned = 1 ;
 	*st = StringVoid ;
 	stl->size = 1 ;
 	stl->length = INIT_SIZE ;
@@ -443,7 +445,8 @@ stringList_t StringListStringInsertAt( stringList_t stl,string_t * st,size_t ind
 	stl->stp = p ;
 	memmove( stl->stp + index + 1,stl->stp + index,size * ( stl->size - index ) ) ;
 	stl->stp[index] = *st ;
-	stl->stp[index]->owned = 1 ;
+	if( stl->stp[index] != StringVoid )
+		stl->stp[index]->owned = 1 ;
 	stl->size = stl->size + 1 ;
 	*st = StringVoid ;
 	return stl ;
@@ -622,7 +625,8 @@ stringList_t StringListRemoveAt( stringList_t stl, size_t index )
 		return StringListVoid ;
 	
 	size = sizeof( string_t ) ;
-	stl->stp[index]->owned = 0 ;
+	if( stl->stp[index] != StringVoid )
+		stl->stp[index]->owned = 0 ;
 	StringDelete( &stl->stp[index] ) ;
 	memmove( stl->stp + index,stl->stp + index + 1,size * ( stl->size - 1 - index ) ) ;
 	stl->size = stl->size - 1 ;
@@ -645,7 +649,8 @@ string_t StringListDetachAt( stringList_t stl, size_t index )
 	
 	memmove( stl->stp + index,stl->stp + index + 1,size * ( stl->size - 1 - index ) ) ;
 	stl->size = stl->size - 1 ;
-	st->owned = 0 ;
+	if( st != StringVoid )
+		st->owned = 0 ;
 	return st ;
 }
 
@@ -770,7 +775,8 @@ stringList_t StringListCopy( stringList_t stl )
 	stx->size = stl->size ;
 	for( i = 0 ; i < j ; i++){
 		stx->stp[i] = StringWithSize( stl->stp[i]->string,stl->stp[i]->size ) ;
-		stx->stp[i]->owned = 1 ;
+		if( stx->stp[i] != StringVoid )
+			stx->stp[i]->owned = 1 ;
 	}
 	return stx ;
 }
