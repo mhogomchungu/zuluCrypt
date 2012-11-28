@@ -189,6 +189,16 @@ static void _printDeviceProperties( string_t entry )
 			zuluMountPartitionProperties( x,q,f ) ;	
 			free( x ) ;
 		}
+	}else if( strncmp( q,"/dev/mapper/",12 ) == 0 ){
+		/*
+		 * 	lvm volumes and its kind goes here,do nothing for now
+		 */
+			StringListRemoveString( _stz,q ) ;
+		
+			e = zuluCryptDecodeMtabEntry( StringListStringAt( stx,0 ) ) ;
+			f = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;
+		
+			zuluMountPartitionProperties( e,e,f ) ;
 	}else{
 		StringListRemoveString( _stz,q ) ;
 		

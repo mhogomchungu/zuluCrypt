@@ -193,7 +193,7 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 							StringMultipleAppend( st,dev," ",mount_point," ",file_system," ",mount_options,END ) ;
 							free( dev ) ;
 						}else{
-							StringMultipleAppend( st,"Nil"," ",mount_point," ",file_system," ",mount_options,END ) ;
+							StringMultipleAppend( st,device," ",mount_point," ",file_system," ",mount_options,END ) ;
 						}
 					}
 				}
@@ -266,7 +266,7 @@ string_t zuluCryptGetMtabEntry( const char * path )
 	
 	it  = StringListBegin( stl ) ;
 	end = StringListEnd( stl ) ;
-	
+		
 	for( ; it != end ; it++ ){
 		if( StringStartsWith( *it,path ) ){
 			entry = StringCopy( *it ) ;

@@ -393,11 +393,13 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 	f.setBold( !f.bold() );
 
 	QString opt ;
+	QString fs ;
 	for( int i = 0 ; i < j ; i++ ){
 		entries = list.at( i ).split( '\t' ) ;
 		if( !entries.at( 0 ).startsWith( QString( "/dev/" ) ) )
 			continue ;
-		if( entries.at( 2 ) == QString( "swap" ) )
+		fs =  entries.at( 2 ) ;
+		if( fs == QString( "swap" ) || fs.contains( QString( "LVM" ) ) || fs.contains( QString( "lvm" ) ) )
 			continue ;
 		opt = entries.at( 4 ) ;
 		if( opt == QString( "Nil" ) || opt == QString( "1.0 KB" ) )
