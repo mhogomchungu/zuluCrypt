@@ -121,6 +121,9 @@
  
  TARGET_LINK_LIBRARIES( zuluCrypt-cli zuluCrypt-exe ) 
  
+ set_target_properties( zuluCrypt-cli PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
+ set_target_properties( zuluMount-cli PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
+  
  if( KEYRINGSUPPORT )
 	add_executable( keyring  ../plugins/keyring/keyring.c )
 	set_target_properties( keyring PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread  -pedantic -std=c99" )
