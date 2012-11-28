@@ -113,7 +113,7 @@
  
  set_target_properties( zuluMount-cli PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIE -pthread  -pedantic " )
  set_target_properties( zuluMount-cli PROPERTIES LINK_FLAGS "-pie" )
- TARGET_LINK_LIBRARIES( zuluMount-cli zuluCrypt-exe ) 
+ TARGET_LINK_LIBRARIES( zuluMount-cli zuluCrypt-exe zuluCrypt ) 
  
  add_executable( zuluCrypt-cli  bin/main.c  )
  set_target_properties( zuluCrypt-cli PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIE -pthread  -pedantic " )
