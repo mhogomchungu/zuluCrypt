@@ -252,7 +252,7 @@ static int _zuluMountUMount( const char * device,uid_t uid,const char * mode,int
 	 * zuluCryptPartitionIsMounted()  is defined in defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c 
 	 */
 	if( !zuluCryptPartitionIsMounted( device ) )
-		return _zuluExit( 100,StringVoid,m_point,"ERROR: device does not appear to be mounted as it does not have an entry in \"/etc/mtab\"" ) ;
+		return _zuluExit( 100,StringVoid,m_point,"ERROR: device does not appear to be mounted" ) ;
 	
 	/*
 	 * zuluCryptGetFstabEntryList() is defined in ../zuluCrypt-cli/lib/mount_volume.c
@@ -555,10 +555,10 @@ static int _zuluMountDoAction( const char * device,const char * action,const cha
 				printf( "insuffienct privilege to access a volume file\n" ) ;
 				status = 217 ;
 			}else{
-				status = _zuluMountExe( device,action,m_point,mode,uid,key,key_source,mount_point_option ) ;
+				status = _zuluMountExe( dev,action,m_point,mode,uid,key,key_source,mount_point_option ) ;
 			}
 		}else{
-			status = _zuluMountExe( device,action,m_point,mode,uid,key,key_source,mount_point_option ) ;
+			status = _zuluMountExe( dev,action,m_point,mode,uid,key,key_source,mount_point_option ) ;
 		}
 	}
 	
