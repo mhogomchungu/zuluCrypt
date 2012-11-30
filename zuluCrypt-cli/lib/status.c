@@ -175,11 +175,11 @@ char * zuluCryptLoopDeviceAddress( const char * device )
 
 char * zuluCryptVolumeStatus( const char * mapper )
 {	
-	char buff[ SIZE ] ;	
+	char buff[ SIZE ] ;
 	char * buffer = buff ;
 	const char * z ;
-	const char * e ;
 	const char * type ;
+	const char * device_name ;
 	char * path ;
 	int luks = 0 ;
 	int i ;
@@ -193,8 +193,14 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	
 	if( crypt_init_by_name( &cd,mapper ) != 0 )
 		return NULL ;
-	
+		
 	if( crypt_get_active_device( NULL,mapper,&cad ) != 0 ){
+		crypt_free( cd ) ;
+		return NULL ;
+	}
+	
+	device_name = crypt_get_device_name( cd ) ;
+	if( device_name == NULL ){
 		crypt_free( cd ) ;
 		return NULL ;
 	}
@@ -209,7 +215,7 @@ char * zuluCryptVolumeStatus( const char * mapper )
 		case CRYPT_ACTIVE   : 
 			StringAppend( p," is active.\n" ) ;
 			break ;
-		case CRYPT_BUSY     : 	
+		case CRYPT_BUSY     :
 			StringAppend( p," is active and is in use.\n" ) ;
 			break ;
 		case CRYPT_INVALID  : 
@@ -241,12 +247,11 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	z = StringIntToString_1( buffer,SIZE,8 * crypt_get_volume_key_size( cd ) ) ;
 	StringMultipleAppend( p,"\n keysize:\t",z," bits",END );
 
-	e = crypt_get_device_name( cd ) ;
-	StringMultipleAppend( p,"\n device:\t",e,END );
+	StringMultipleAppend( p,"\n device:\t",device_name,END );
 		
-	if( strncmp( e,"/dev/loop",9 ) == 0 ){
+	if( strncmp( device_name,"/dev/loop",9 ) == 0 ){
 		StringAppend( p,"\n loop:   \t" );
-		path = zuluCryptLoopDeviceAddress( e ) ;
+		path = zuluCryptLoopDeviceAddress( device_name ) ;
 		if( path != NULL ){
 			StringAppend( p,path ) ;
 			free( path ) ;
@@ -285,11 +290,14 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	}
 	
 	/*
-	 * defined in ../bin/check_mounted_volumes.c
-	 * The function returns a mount point path given a path representing a device 
+	 * zuluCryptGetMountPointFromPath() is defined in ./print_mounted_volumes.c
 	 */
+	
 	path = zuluCryptGetMountPointFromPath( mapper ) ;
 	if( path != NULL ){
+		/*
+		 * zuluCryptFileSystemProperties() is defined in this source file
+		 */
 		zuluCryptFileSystemProperties( p,mapper,path ) ; 
 		free( path ) ;
 	}

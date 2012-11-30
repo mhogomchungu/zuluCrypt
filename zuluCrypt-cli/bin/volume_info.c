@@ -36,7 +36,7 @@ int zuluCryptEXEVolumeInfo( const char * mapper,const char * device,uid_t uid )
 	/*
 	 * This function is defined at "create_mapper_name.c"
 	 * 
-	 * Explanation for what it does is explained where it is defined.	  * 
+	 * Explanation for what it does is explained where it is defined.
 	 */
 	p = zuluCryptCreateMapperName( dev,mapper,uid,CLOSE ) ;
 	
