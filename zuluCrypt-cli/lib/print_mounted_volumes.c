@@ -184,6 +184,14 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 						StringMultipleAppend( st,dev," ",mount_point," ",file_system," ",mount_options,END ) ;
 						free( dev ) ;
 					}
+				}else if( strcmp( device,"/dev/root" ) == 0 ){
+					dev = zuluCryptResolveDevRoot() ;
+					if( dev == NULL ){
+						StringMultipleAppend( st,device," ",mount_point," ",file_system," ",mount_options,END ) ;
+					}else{
+						StringMultipleAppend( st,dev," ",mount_point," ",file_system," ",mount_options,END ) ;
+						free( dev ) ;
+					}
 				}else{
 					if( strncmp( device,"/dev/disk/by-",13 ) != 0 ){
 						StringMultipleAppend( st,device," ",mount_point," ",file_system," ",mount_options,END ) ;
@@ -211,17 +219,55 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 
 stringList_t zuluCryptGetMoutedListFromMounts( void )
 {
+	ssize_t index ;
+	char * dev ;
+	StringListIterator it ;
+	StringListIterator end;
 	string_t q = StringGetFromVirtualFile( "/proc/self/mounts" ) ;
 	stringList_t stl = StringListStringSplit( q,'\n' ) ;
 	StringDelete( &q ) ;
+	if( stl == StringListVoid )
+		return StringListVoid ;
+	it  = StringListBegin( stl ) ;
+	end = StringListEnd( stl ) ;
+	for( ; it != end ;it++ ){
+		q = *it ;
+		if( StringStartsWith( q,"/dev/root" ) ){
+			dev = zuluCryptResolveDevRoot() ;
+			if( dev != NULL ){
+				StringReplaceString( q,"/dev/root",dev ) ;
+				free( dev ) ;
+			}
+		}else if( StringStartsWith( q,"/dev/disk/by-" ) ){
+			index = StringIndexOfChar( q,0,' ' ) ;
+			if( index != -1 ){
+				dev = realpath( StringSubChar( q,index,'\0' ),NULL ) ;
+				StringSubChar( q,index,' ' ) ;
+				if( dev != NULL ){
+					StringRemoveLeft( q,index ) ;
+					StringMultiplePrepend( q," ",dev,END ) ;
+					free( dev ) ;
+				}
+			}
+		}else if( StringStartsWith( q,"/dev/loop" ) ){
+			index = StringIndexOfChar( q,0,' ' ) ;
+			if( index != -1 ){
+				dev = zuluCryptLoopDeviceAddress( StringSubChar( q,index,'\0' ) ) ;
+				StringSubChar( q,index,' ' ) ;
+				if( dev != NULL ){
+					StringRemoveLeft( q,index ) ;
+					StringMultiplePrepend( q," ",dev,END ) ;
+					free( dev ) ;
+				}
+			}
+		}
+	}
+	
 	return stl ;
 }
 
 stringList_t zuluCryptGetMtabList( void )
 {
-	char * dev ;
-	int index ;
-	string_t q ;
 	stringList_t stl = zuluCryptGetMoutedListFromMountInfo() ;
 	
 	if( stl == StringListVoid ){
@@ -229,15 +275,6 @@ stringList_t zuluCryptGetMtabList( void )
 		if( stl == StringListVoid ){
 			return StringListVoid ;
 		}
-	}
-	
-	index = StringListHasStartSequence( stl,"/dev/root" ) ;
-	
-	if( index >= 0 ){
-		q = StringListStringAt( stl,index ) ;
-		dev = zuluCryptResolveDevRoot() ;
-		StringReplaceString( q,"/dev/root",dev ) ;
-		free( dev ) ;
 	}
 	
 	return stl ; 
