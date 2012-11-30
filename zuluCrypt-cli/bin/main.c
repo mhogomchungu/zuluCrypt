@@ -160,7 +160,7 @@ int main( int argc,char * argv[] )
 		if ( strcmp( ac,"-h" ) == 0 || strcmp( ac,"--help" ) == 0 || strcmp( ac,"-help" ) == 0 ){
 			zuluCryptEXEHelp();	
 			return 0 ;
-		}	
+		}
 		if ( strcmp( ac,"-v" ) == 0 || strcmp( ac,"-version" ) == 0 || strcmp( ac,"--version" ) == 0 ){
 			printf( "%s\n",zuluCryptVersion() );
 			return 0 ;

@@ -68,6 +68,10 @@
 void zuluCryptFormatSize( char * buffer,const char * buff ) ;
 
 /*
+ * NOTE:  zuluCryptDeviceFromLabel() and zuluCryptDeviceFromUUID() are moved to ./blkid_evaluate_tag.c
+ */
+
+/*
  * defined in this source file
  */
 stringList_t zuluCryptGetPartitionFromCrypttab( void ) ;
@@ -79,7 +83,7 @@ static inline int _allowedDevice( const char * device )
 	if( strlen( device  ) > 3 ){
 		if( strncmp( device,"hd",2 ) == 0 || 
 			strncmp( device,"sd",2 ) == 0 ||
-			strncmp( device,"mmcblk",6 ) == 0 ){
+			strncmp( device,"mmc",3 ) == 0 ){
 			return 1 ;
 		}
 	}else if( strncmp( device,"sr",2 ) == 0 ){
@@ -134,16 +138,6 @@ stringList_t zuluCryptPartitionList( void )
 	StringDelete( &st_1 ) ;
 	StringListDelete( &stl ) ;
 	return stl_1 ;
-}
-
-char * zuluCryptDeviceFromUUID( const char * uuid )
-{
-	return blkid_evaluate_tag( "UUID",uuid,NULL) ;
-}
-
-char * zuluCryptDeviceFromLabel( const char * label )
-{	
-	return blkid_evaluate_tag( "LABEL",label,NULL ) ;
 }
 
 stringList_t zuluCryptPartitions( int option )
@@ -216,6 +210,9 @@ stringList_t zuluCryptPartitions( int option )
 				StringListRemoveString( non_system,device ) ;
 			}
 		}else if( StringStartsWith( st,"UUID" ) ){
+			/*
+			 * zuluCryptDeviceFromUUID() is defined in ../lib/blkid_evaluate_tag.c
+			 */
 			ac = zuluCryptDeviceFromUUID( device + 5 ) ;
 			if( ac != NULL ){
 				system = StringListAppend( system,ac ) ;
@@ -223,6 +220,9 @@ stringList_t zuluCryptPartitions( int option )
 				free( ac ) ;
 			}
 		}else if( StringStartsWith( st,"LABEL" ) ){
+			/*
+			 * zuluCryptDeviceFromLabel() is defined in ../lib/blkid_evaluate_tag.c
+			 */
 			ac = zuluCryptDeviceFromLabel( device + 6 ) ;
 			if( ac != NULL ){
 				system = StringListAppend( system,ac ) ;

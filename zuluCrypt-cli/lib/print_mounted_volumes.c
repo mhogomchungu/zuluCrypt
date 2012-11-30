@@ -128,7 +128,7 @@ char * zuluCryptResolveDevRoot( void )
 			xt = StringListCopyStringAt( stl,index ) ;
 			StringRemoveString( xt,"root=UUID=" ) ;
 			/*
-			 * zuluCryptDeviceFromUUID() is defined in ../bin/partitions.c
+			 * zuluCryptDeviceFromUUID() is defined in ./blkid_evaluate_tag.c
 			 */
 			dev = zuluCryptDeviceFromUUID( StringContent( xt ) ) ;
 			StringDelete( &xt ) ;

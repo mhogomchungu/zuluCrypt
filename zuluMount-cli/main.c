@@ -535,11 +535,26 @@ static int _zuluMountDoAction( const char * device,const char * action,const cha
 			      int mount_point_option )
 {
 	int status ;
+	char * dev ;
 	
-	char * dev = realpath( device,NULL ) ;
+	if( strncmp( device,"/dev/",5 ) != 0 ){
+		/*
+		 * check if a user has permission to access a volume in a file
+		 */
+		
+		/*
+		 * zuluCryptSecurityPathIsValid() is defined in zuluCrypt-cli/bin/security.c 
+		 */
+		if( !zuluCryptSecurityPathIsValid( device,uid ) ){
+			printf( "ERROR: xfailed to resolve path to device\n" ) ;
+			return 217 ;
+		}
+	}
+	
+	dev = realpath( device,NULL ) ;
 	
 	if( dev == NULL ){
-		printf( "ERROR: failed to resolve path to device\n" ) ;
+		printf( "ERROR: yfailed to resolve path to device\n" ) ;
 		return 217 ;
 	}
 	
@@ -547,7 +562,7 @@ static int _zuluMountDoAction( const char * device,const char * action,const cha
 		printf( "ERROR: this device looks like an lvm device,these devices are currently not supported\n" ) ;
 		status = 218 ;
 	}else{
-		if( strncmp( device,"/dev/",5 ) != 0 ){
+		if( strncmp( dev,"/dev/",5 ) != 0 ){
 			/*
 			* zuluCryptSecurityCanOpenPathForReading() is defined in ../zuluCrypt-cli/bin/security.c
 			*/
@@ -587,7 +602,18 @@ int main( int argc,char * argv[] )
 	
 	if( argc < 2 )
 		return _mount_help() ;
-		
+	
+	if( argc == 2 ){
+		action = argv[ 1 ] ;
+		if ( strcmp( action,"-h" ) == 0 || strcmp( action,"--help" ) == 0 || strcmp( action,"-help" ) == 0 ){
+			return _mount_help() ;
+		}
+		if ( strcmp( action,"-v" ) == 0 || strcmp( action,"-version" ) == 0 || strcmp( action,"--version" ) == 0 ){
+			printf( "%s\n",zuluCryptVersion() );
+			return 0 ;
+		}
+	}
+	
 	uid = getuid() ;
 	
 	StringExitOnMemoryExaustion( &ExitOnMemoryExaustion ) ;

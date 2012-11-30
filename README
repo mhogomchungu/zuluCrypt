@@ -7,6 +7,7 @@ GUI and a simpler to use cli front end to cryptsetup.
 It does the same thing truecrypt does but uses(through cryptsetup) cryptographic 
 infrastructure that exist inside the kernel in linux and some bsd systems. 
 
+Copyright: (c)2011,2012 Ink Francis aka mhogomchungu
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 2 of the License, or

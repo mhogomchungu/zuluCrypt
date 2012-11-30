@@ -122,3 +122,13 @@ char * zuluCryptResolveDevRoot( void ) ;
  * this function is defined in ./print_mounted_volumes.c
  */
 stringList_t zuluCryptGetFstabEntryList( const char * device ) ;
+
+/*
+ * this function is defined in blkid_evaluate_tag.c
+ */
+char * zuluCryptDeviceFromUUID( const char * uuid ) ;
+
+/*
+ * this function is defined in blkid_evaluate_tag.c
+ */
+char * zuluCryptDeviceFromLabel( const char * label ) ;

@@ -52,6 +52,7 @@
  lib/file_encryption.c 
  lib/user_home_path.c 
  lib/create_loop_device.c
+ lib/blkid_evaluate_tag.c
 )
  	 
  add_library( Socket STATIC utility/socket/socket.c ) 
