@@ -19,9 +19,10 @@
 
 #include "includes.h"
 
-void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
+void zuluCryptEXEGetOptsSetDefault( struct_opts * stopts )
 {
-	int c ;	
+	memset( stopts,'\0',sizeof( struct_opts ) ) ;
+	
 	stopts->plugin_path = NULL ;
 	stopts->device = NULL ;
 	stopts->mount_point = NULL ;
@@ -41,6 +42,13 @@ void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
 	stopts->open_no_mount = -1 ;
 	stopts->argv = NULL ;
 	stopts->print_partition_type = 0 ;
+}
+
+void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
+{
+	int c ;
+	
+	zuluCryptEXEGetOptsSetDefault( stopts ) ;
 	
 	while ( (c = getopt(argc,argv,"TJLORBXASNPkhocsarqwibEDs:m:d:p:f:e:z:g:y:u:l:n:j:t:G:") ) != -1 ) {
 		switch( c ){

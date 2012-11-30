@@ -104,3 +104,8 @@ int zuluCryptUserIsAMemberOfAGroup( uid_t uid,const char * groupname ) ;
  * this function is defined in security.c
  */
 int zuluCryptSecurityPathIsValid( const char * path,uid_t uid ) ;
+
+/*
+ * this function is defined in get_opts.c
+ */
+void zuluCryptEXEGetOptsSetDefault( struct_opts * stopts ) ;

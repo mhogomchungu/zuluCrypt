@@ -323,7 +323,10 @@ static int _zuluMountCryptoMount( const char * device,const char * mode,uid_t ui
 	const char * mapping_name ;
 	const char * e = strrchr( device,'/' ) ;
 	
-	memset( &opts,'\0',sizeof( struct_opts ) ) ;
+	/*
+	 * zuluCryptEXEGetOptsSetDefault() is defined in ../zuluCrypt-cli/bin/get_opts.c
+	 */
+	zuluCryptEXEGetOptsSetDefault( &opts ) ;
 	
 	if( e == NULL)
 		mapping_name = device ;
@@ -345,8 +348,6 @@ static int _zuluMountCryptoMount( const char * device,const char * mode,uid_t ui
 		else
 			StringAppend( p,e + 1 ) ;
 	}
-	
-	opts.plugin_path = NULL ;
 	
 	if( key_source != NULL )
 		if( strcmp( key_source,"-G" ) == 0 )
