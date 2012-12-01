@@ -659,7 +659,7 @@ int main( int argc,char * argv[] )
 		mode = "rw" ;
 	
 	/*
-	 * zuluCryptDeviceFromUUID() and zuluCryptDeviceFromLabel() are defined in ../zuluCrypt-cli/bin/partitions.c
+	 * zuluCryptDeviceFromUUID() and zuluCryptDeviceFromLabel() are defined in ../zuluCrypt-cli/lib/blkid_evaluate_tag.c
 	 */
 	if( strncmp( dev,"UUID=",5 ) == 0 ){
 		device = zuluCryptDeviceFromUUID( dev + 5 ) ;
