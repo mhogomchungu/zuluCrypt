@@ -393,10 +393,7 @@ void zuluCrypt::createEncryptedpartitionUI()
 
 void zuluCrypt::aboutMenuOption( void )
 {
-	QString license = QString( "version %1 of zuluCrypt, a front end to cryptsetup.\n\n\
-name : mhogo mchungu\n\
-Copyright 2011,2012\n\
-email: mhogomchungu@gmail.com\n\n\
+	QString license = QString( "%1\n\n\
 This program is free software: you can redistribute it and/or modify \
 it under the terms of the GNU General Public License as published by \
 the Free Software Foundation, either version 2 of the License, or \
