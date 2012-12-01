@@ -18,7 +18,7 @@ set( PGR_VERSION "version  : 4.5.3" )
 file( WRITE ${PROJECT_BINARY_DIR}/version.h "
 #ifndef ZULUCRYPT_VERSION
 #define ZULUCRYPT_VERSION
-#define VERSION_STRING \"${PGR_VERSION}\\ncopyright: 2011,2012 Ink Francis aka mhogomchungu,mhogomchungu@gmail.com\\nlicense  : GPLv2+\"
+#define VERSION_STRING \"${PGR_VERSION}\\ncopyright: 2011,2012 Ink Francis,mhogomchungu@gmail.com\\nlicense  : GPLv2+\"
 #endif
 \n" )
 

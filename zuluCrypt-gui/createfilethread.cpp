@@ -39,7 +39,9 @@ void createFileThread::start()
 int createFileThread::createContainerFile( void )
 {
 	QFile file( m_file ) ;
-	file.open( QIODevice::WriteOnly ) ;
+
+	if( !file.open( QIODevice::WriteOnly ) )
+		return 0 ;
 
 	char buffer[ BLOCK_SIZE ] ;
 
@@ -175,7 +177,9 @@ void createFileThread::createFile()
 	double i ;
 
 	QFile file( m_file ) ;
-	file.open( QIODevice::WriteOnly ) ;
+
+	if( !file.open( QIODevice::WriteOnly ) )
+		return ;
 
 	char data[ BLOCK_SIZE ];
 
@@ -257,7 +261,8 @@ void createFileThread::writeVolume()
 {
 	QFile path( utility::mapperPath( m_file ) ) ;
 
-	path.open( QIODevice::WriteOnly ) ;
+	if( !path.open( QIODevice::WriteOnly ) )
+		return ;
 
 	int j ;
 	int k = -1 ;

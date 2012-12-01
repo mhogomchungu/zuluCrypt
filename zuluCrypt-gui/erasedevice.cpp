@@ -94,7 +94,7 @@ void erasedevice::threadExitStatus( int st )
 		case 10:msg.ShowUIOK( tr( "ERROR!" ),tr( "passphrase file does not exist" ) )					;break ;
 		case 11:msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get enought memory to hold the key file" ) )		;break ;
 		case 12:msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open key file for reading" ) )		;break ;
-		case 13:msg.ShowUIOK( tr( "ERROR!" ),tr( "can not open a mapper on a device with an opened mapper" ) )		;break ;
+		case 13:msg.ShowUIOK( tr( "ERROR!" ),tr( "this device appear to already be in use" ) )				;break ;
 		case 14:msg.ShowUIOK( tr( "ERROR!" ),tr( "can not open a mapper on a mounted device" ) )			;break ;
 		default:msg.ShowUIOK( tr( "ERROR!" ),tr( "could not write to the device" ) ) ;
 	}
