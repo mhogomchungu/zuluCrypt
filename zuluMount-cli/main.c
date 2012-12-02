@@ -155,10 +155,11 @@ static int _zuluMountMount( const char * device,const char * m_point,const char 
 	 */
 	stl = zuluCryptGetFstabEntryList( device ) ;
 	
-	if( _zuluMountPartitionAccess( mode,uid,stl ) == 1 ){
+	status = _zuluMountPartitionAccess( mode,uid,stl ) ;
+	if( status == 1 ){
 		StringListDelete( &stl ) ;
 		return _zuluExit( 102,z,path,"ERROR: \"/etc/fstab\" entry for this partition requires it to be mounted read only" ) ;
-	}else if( _zuluMountPartitionAccess( mode,uid,stl ) == 2 ){
+	}else if( status == 2 ){
 		StringListDelete( &stl ) ;
 		return _zuluExit( 103,z,path,"ERROR: \"/etc/fstab\" entry for this partition requires only root user or members of group zulucrypt to mount it" ) ;
 	}
