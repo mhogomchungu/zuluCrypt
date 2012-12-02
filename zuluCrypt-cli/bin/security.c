@@ -61,7 +61,13 @@ static int has_access( const char * path,int c,uid_t uid )
 
 int zuluCryptSecurityPathIsValid( const char * path,uid_t uid )
 {
-	return has_access( path,READ,uid ) == 0 ;
+	int r ;
+	struct stat st ;
+	uid_t org = getuid() ;
+	seteuid( uid ) ;
+	r = stat( path,&st ) ;
+	seteuid( org ) ;
+	return r == 0 ;
 }
 
 static int has_access_1( const char * path,int c )

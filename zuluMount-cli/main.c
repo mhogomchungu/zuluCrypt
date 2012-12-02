@@ -242,6 +242,25 @@ static int _zuluMountMount( const char * device,const char * m_point,const char 
 	}
 }
 
+static int _zuluMountUserHasAccessToMountPoint( const char * device,uid_t uid )
+{
+	int st ;
+	/*
+	 * zuluCryptSecurityPathIsValid() is defined in zuluCrypt-cli/lib/print_mounted_volumes.c 
+	 */
+	char * m_point = zuluCryptGetMountPointFromPath( device ) ;
+	if( m_point != NULL ){
+		/*
+		 * zuluCryptSecurityPathIsValid() is defined in zuluCrypt-cli/bin/security.c
+		 */
+		st = zuluCryptSecurityPathIsValid( m_point,uid ) ;
+		free( m_point ) ;
+	}else{
+		st = 0 ;
+	}
+	return st ;
+}
+
 static int _zuluMountUMount( const char * device,uid_t uid,const char * mode,int mount_point_option )
 {
 	char * m_point = NULL ;
@@ -266,6 +285,10 @@ static int _zuluMountUMount( const char * device,uid_t uid,const char * mode,int
 	
 	st = StringListCopyStringAt( stl,MOUNTPOINT ) ;
 	StringListDelete( &stl ) ;
+	
+	if( !_zuluMountUserHasAccessToMountPoint( device,uid ) ){
+		return _zuluExit( 106,st,m_point,"ERROR: insuffienct privilege to unmount the volume,you lack proper access to the mount point path" ) ;
+	}
 	
 	/*
 	 * zuluCryptUnmountVolume() is defined in ../zuluCrypt-cli/lib/unmount_volume.c
@@ -547,7 +570,7 @@ static int _zuluMountDoAction( const char * device,const char * action,const cha
 		 * zuluCryptSecurityPathIsValid() is defined in zuluCrypt-cli/bin/security.c 
 		 */
 		if( !zuluCryptSecurityPathIsValid( device,uid ) ){
-			printf( "ERROR: xfailed to resolve path to device\n" ) ;
+			printf( "ERROR: failed to resolve path to device\n" ) ;
 			return 217 ;
 		}
 	}
@@ -555,7 +578,7 @@ static int _zuluMountDoAction( const char * device,const char * action,const cha
 	dev = realpath( device,NULL ) ;
 	
 	if( dev == NULL ){
-		printf( "ERROR: yfailed to resolve path to device\n" ) ;
+		printf( "ERROR: failed to resolve path to device\n" ) ;
 		return 217 ;
 	}
 	
