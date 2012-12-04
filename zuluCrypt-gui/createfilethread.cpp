@@ -181,33 +181,35 @@ void createFileThread::createFile()
 	if( !file.open( QIODevice::WriteOnly ) )
 		return ;
 
-	char data[ BLOCK_SIZE ];
-
-	memset( data,0,BLOCK_SIZE );
-
-	int x = 0 ;
-	int y = -1 ;
-
-	double data_written = 0 ;
-
-	double k = m_size / SIZE ;
-
 	emit progress( 0 );
 
-	for( i = 0 ; i < k ; i++ ){
-		if( m_status == -1 )
-			break ;
+	if( !file.resize( m_size ) ){
 
-		if( x > y ){
-			emit progress( x );
-			y = x ;
+		char data[ BLOCK_SIZE ];
+
+		memset( data,0,BLOCK_SIZE );
+
+		int x = 0 ;
+		int y = -1 ;
+
+		double data_written = 0 ;
+
+		double k = m_size / SIZE ;
+
+		for( i = 0 ; i < k ; i++ ){
+			if( m_status == -1 )
+				break ;
+
+			if( x > y ){
+				emit progress( x );
+				y = x ;
+			}
+			file.write( data,BLOCK_SIZE ) ;
+			file.flush() ;
+			data_written += BLOCK_SIZE ;
+
+			x = ( int )( data_written * 100 / m_size ) ;
 		}
-		file.write( data,BLOCK_SIZE ) ;
-		file.flush() ;
-		data_written += BLOCK_SIZE ;
-
-		x = ( int )( data_written * 100 / m_size ) ;
-
 	}
 
 	emit progress( 100 );
