@@ -166,8 +166,6 @@ void createFileThread::run()
 		if( m_status != 0 )
 			return ;
 
-		emit doneCreatingFile();
-
 		this->fillCreatedFileWithRandomData();
 	}
 }
@@ -210,9 +208,10 @@ void createFileThread::createFile()
 
 			x = ( int )( data_written * 100 / m_size ) ;
 		}
-	}
 
-	emit progress( 100 );
+		emit doneCreatingFile();
+		emit progress( 100 );
+	}
 
 	file.setPermissions( QFile::ReadOwner|QFile::WriteOwner ) ;
 	file.close();
