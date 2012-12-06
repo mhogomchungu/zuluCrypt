@@ -91,11 +91,11 @@ int cryptfilethread::encrypt()
 			fd_1.write( buffer,SIZE );
 			fd_1.flush() ;
 		}
+
+		emit progressUpdate( 100 );
 	}
 
 	fd_1.close();
-
-	emit progressUpdate( 100 );
 
 	int x = this->openMapper( m_dest ) ;
 
@@ -130,6 +130,8 @@ int cryptfilethread::encrypt()
 	j = -1 ;
 
 	emit titleUpdate( tr( "copying data to the container file" ) );
+
+	emit progressUpdate( 0 );
 
 	for( qint64 size_1 = 0 ; size_1 < size ; size_1 += SIZE ){
 

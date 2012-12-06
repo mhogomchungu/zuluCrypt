@@ -165,6 +165,7 @@ static int _zuluMountMount( const char * device,const char * m_point,const char 
 	}
 		
 	if( m_point != NULL ){
+		StringListDelete( &stl ) ;
 		z = String( m_point ) ;
 	}else{
 		z = StringListCopyStringAt( stl,MOUNTPOINT ) ;

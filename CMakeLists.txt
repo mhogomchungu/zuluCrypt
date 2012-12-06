@@ -1,5 +1,6 @@
 
 cmake_minimum_required(VERSION 2.6)
+cmake_policy(SET CMP0017 OLD)
 
 #set( CMAKE_SHARED_LINKER_FLAGS "-s" )
 #set( CMAKE_EXE_LINKER_FLAGS "-s" )
