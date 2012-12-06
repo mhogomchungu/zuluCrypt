@@ -55,58 +55,6 @@ const char * zuluCryptDecodeMtabEntry( string_t st )
 	return StringReplaceString( st,"\\011","\\t" ) ;
 }
 
-static void print( uid_t uid,stringList_t stl )
-{
-	const char * c ;
-	const char * d ;
-	const char * e ;
-	char * f ;
-	
-	size_t len ;
-	size_t j ;
-	size_t i ;
-	ssize_t k ;
-	
-	stringList_t stx ;
-	
-	string_t q ; 
-	string_t p = StringIntToString( uid ) ;
-	
-	e = StringMultiplePrepend( p,"/zuluCrypt-",crypt_get_dir(),END ) ;
-	
-	len = StringLength( p ) ;
-	j = StringListSize( stl )  ;
-	
-	for( i = 0 ; i < j ; i++ ){
-		c = StringListContentAt( stl,i ) ;
-		if( strncmp( c,e,len ) == 0 ){
-			stx = StringListSplit( c,' ' ) ;
-			if( stx == StringListVoid )
-				continue ;
-			if( strncmp( c + len + 1,"UUID",4 ) == 0 ){
-				q = StringListStringAt( stx,0 ) ;
-				k = StringLastIndexOfChar( q,'-' ) ;
-				if( k != -1 ){
-					c = StringSubChar( q,k,'\0' ) + len + 6 ;
-					d = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;
-					printf( "UUID=\"%s\"\t%s\n",c,d ) ;
-				}
-			}else{
-				f = zuluCryptVolumeDeviceName( StringListContentAt( stx,0 ) ) ;
-				if( f != NULL ){
-					d = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;
-					printf( "%s\t%s\n",f,d ) ;
-					free( f ) ;
-				}
-			}
-			
-			StringListDelete( &stx ) ;
-		}
-	}
-	
-	StringDelete( &p ) ;
-}
-
 char * zuluCryptResolveDevRoot( void )
 {
 	char * dev ;
@@ -138,6 +86,8 @@ char * zuluCryptResolveDevRoot( void )
 	StringListDelete( &stl ) ;
 	return StringDeleteHandle( &st ) ;
 }
+
+#define ADD_ENTRY( d,m,f,p ) StringMultipleAppend( st,d," ",m," ",f," ",p,END ) 
 
 stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 {
@@ -179,31 +129,29 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 					 */
 					dev = zuluCryptLoopDeviceAddress( device ) ;
 					if( dev == NULL ){
-						StringMultipleAppend( st,device," ",mount_point," ",file_system," ",mount_options,END ) ;
+						ADD_ENTRY( device,mount_point,file_system,mount_options ) ;
 					}else{
-						StringMultipleAppend( st,dev," ",mount_point," ",file_system," ",mount_options,END ) ;
+						ADD_ENTRY( dev,mount_point,file_system,mount_options ) ;
 						free( dev ) ;
 					}
 				}else if( strcmp( device,"/dev/root" ) == 0 ){
 					dev = zuluCryptResolveDevRoot() ;
 					if( dev == NULL ){
-						StringMultipleAppend( st,device," ",mount_point," ",file_system," ",mount_options,END ) ;
+						ADD_ENTRY( device,mount_point,file_system,mount_options ) ;
 					}else{
-						StringMultipleAppend( st,dev," ",mount_point," ",file_system," ",mount_options,END ) ;
+						ADD_ENTRY( dev,mount_point,file_system,mount_options ) ;
+						free( dev ) ;
+					}
+				}else if( strncmp( device,"/dev/disk/by-",13 ) == 0 ){
+					dev = realpath( device,NULL ) ;
+					if( dev == NULL ){
+						ADD_ENTRY( device,mount_point,file_system,mount_options ) ;
+					}else{
+						ADD_ENTRY( dev,mount_point,file_system,mount_options ) ;
 						free( dev ) ;
 					}
 				}else{
-					if( strncmp( device,"/dev/disk/by-",13 ) != 0 ){
-						StringMultipleAppend( st,device," ",mount_point," ",file_system," ",mount_options,END ) ;
-					}else{
-						dev = realpath( device,NULL ) ;
-						if( dev != NULL ){
-							StringMultipleAppend( st,dev," ",mount_point," ",file_system," ",mount_options,END ) ;
-							free( dev ) ;
-						}else{
-							StringMultipleAppend( st,device," ",mount_point," ",file_system," ",mount_options,END ) ;
-						}
-					}
+					ADD_ENTRY( device,mount_point,file_system,mount_options ) ;
 				}
 				stx = StringListAppendString( stx,st ) ;
 				StringClear( st ) ;
@@ -278,6 +226,58 @@ stringList_t zuluCryptGetMtabList( void )
 	}
 	
 	return stl ; 
+}
+
+static void print( uid_t uid,stringList_t stl )
+{
+	const char * c ;
+	const char * d ;
+	const char * e ;
+	char * f ;
+	
+	size_t len ;
+	size_t j ;
+	size_t i ;
+	ssize_t k ;
+	
+	stringList_t stx ;
+	
+	string_t q ; 
+	string_t p = StringIntToString( uid ) ;
+	
+	e = StringMultiplePrepend( p,"/zuluCrypt-",crypt_get_dir(),END ) ;
+	
+	len = StringLength( p ) ;
+	j = StringListSize( stl )  ;
+	
+	for( i = 0 ; i < j ; i++ ){
+		c = StringListContentAt( stl,i ) ;
+		if( strncmp( c,e,len ) == 0 ){
+			stx = StringListSplit( c,' ' ) ;
+			if( stx == StringListVoid )
+				continue ;
+			if( strncmp( c + len + 1,"UUID",4 ) == 0 ){
+				q = StringListStringAt( stx,0 ) ;
+				k = StringLastIndexOfChar( q,'-' ) ;
+				if( k != -1 ){
+					c = StringSubChar( q,k,'\0' ) + len + 6 ;
+					d = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;
+					printf( "UUID=\"%s\"\t%s\n",c,d ) ;
+				}
+			}else{
+				f = zuluCryptVolumeDeviceName( StringListContentAt( stx,0 ) ) ;
+				if( f != NULL ){
+					d = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;
+					printf( "%s\t%s\n",f,d ) ;
+					free( f ) ;
+				}
+			}
+			
+			StringListDelete( &stx ) ;
+		}
+	}
+	
+	StringDelete( &p ) ;
 }
 
 int zuluCryptPrintOpenedVolumes( uid_t uid )
