@@ -26,38 +26,27 @@ static inline int zuluExit( int st,struct crypt_device * cd )
 	return st ;
 }
 
+/*
+ * 1 is returned if a volume is a truecrypt volume.
+ * 0 is returned if a volume is not a truecrypt volume or functionality is not supported
+ */
 int zuluCryptVolumeIsTcrypt( const char * device,const char * key,size_t key_len )
 {
 #ifdef CRYPT_TCRYPT
-	string_t st ;
-	const char * mapper_name  ;
-	
 	struct crypt_device * cd = NULL;
 	struct crypt_params_tcrypt params ;
 	memset( &params,'\0',sizeof( struct crypt_params_tcrypt ) ) ;
 	
-	params.passphrase = key ;
-	params.passphrase_size  = key_len ;
-	params.flags = CRYPT_TCRYPT_LEGACY_MODES ;
+	params.passphrase      = key ;
+	params.passphrase_size = key_len ;
+	params.flags           = CRYPT_TCRYPT_LEGACY_MODES ;
 	
 	if( crypt_init( &cd,device ) < 0 )
 		return 0 ;
 	
-	if( crypt_load( cd,CRYPT_TCRYPT,&params ) < 0 )
-		return zuluExit( 0,cd ) ;
-	
-	st = String( "zuluCrypt-tcrypt-test-" ) ;
-	mapper_name = StringAppendInt( st,syscall( SYS_gettid ) ) ;
-	
-	if( mapper_name == NULL )
-		mapper_name = "zuluCrypt-tcrypt-test" ;
-	
-	if( crypt_activate_by_volume_key( cd,mapper_name,NULL,0,0 ) == 0 ){
-		crypt_deactivate( NULL,mapper_name ) ;
-		StringDelete( &st ) ;
+	if( crypt_load( cd,CRYPT_TCRYPT,&params ) == 0 ){
 		return zuluExit( 1,cd ) ;
 	}else{
-		StringDelete( &st ) ;
 		return zuluExit( 0,cd ) ;
 	}
 #else
@@ -65,6 +54,10 @@ int zuluCryptVolumeIsTcrypt( const char * device,const char * key,size_t key_len
 #endif
 }
 
+/*
+ * 0 is returned if a volume was successfully opened.
+ * 1 is returned if a volume was not successfully opened or functionality is not supported 
+ */
 int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
 {
 #ifdef CRYPT_TCRYPT
