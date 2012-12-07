@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -33,9 +33,11 @@ public:
 	void start( void );
 signals:
 	void finished( int ) ;
+	void finished( int,QString ) ;
 private:
 	void run( void ) ;
 	QString m_exe ;
+	QString m_output ;
 	int m_status ;
 };
 

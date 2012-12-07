@@ -69,7 +69,7 @@ private slots :
 	void passphraseOption( void ) ;
 	void pluginOption( void ) ;
 	void file_path( void  ) ;
-	void threadfinished( int ) ;
+	void threadfinished( int,QString ) ;
 	void mountPointPath( QString );
 	void complete( QString );
 	void cbStateChanged( int );
@@ -80,7 +80,7 @@ private :
 	void disableAll( void );
 	void enableAll( void ) ;
 	void closeEvent( QCloseEvent * ) ;
-	void success( void );
+	void success( QString );
 	Ui::PasswordDialog * m_ui;
 	bool m_isWindowClosable ;
 	QTableWidget * m_table ;

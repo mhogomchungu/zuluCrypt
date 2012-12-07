@@ -356,7 +356,7 @@ void passwordDialog::buttonOpenClicked( void )
 	QString exe = QString( "%1 -o -d \"%2\" -m \"%3\" -e %4 %5 \"%6\"" ).arg( a ).arg( b ).arg( c ).arg( d ).arg( e ).arg( f ) ;
 
 	runInThread * ovt = new runInThread( exe ) ;
-	connect( ovt,SIGNAL( finished( int ) ),this,SLOT( threadfinished( int ) ) ) ;
+	connect( ovt,SIGNAL( finished( int,QString ) ),this,SLOT( threadfinished( int,QString ) ) ) ;
 	m_isWindowClosable = false ;
 	this->disableAll();
 	ovt->start();
@@ -460,12 +460,10 @@ void passwordDialog::enableAll()
 		m_ui->pushButtonPlugin->setEnabled( false );
 }
 
-void passwordDialog::success( void )
+void passwordDialog::success( QString output )
 {
 	if( utility::mapperPathExists( m_device ) ){
-		checkvolumetype * cvt = new checkvolumetype( m_ui->OpenVolumePath->text() );
-		connect( cvt,SIGNAL( complete( QString ) ),this,SLOT( complete( QString ) ) );
-		cvt->start();
+		this->complete( output );
 		openmountpointinfilemanager * omp = new openmountpointinfilemanager( m_ui->MountPointPath->text() ) ;
 		omp->start();
 	}else{
@@ -479,25 +477,29 @@ void passwordDialog::success( void )
 	}
 }
 
-void passwordDialog::complete( QString type )
+void passwordDialog::complete( QString output )
 {
 	QStringList list ;
 
 	list.append( utility::resolvePath( m_ui->OpenVolumePath->text() ) ) ;
 	list.append( utility::resolvePath( m_ui->MountPointPath->text() ) ) ;
-	list.append( type );
+
+	if( output.contains( QString( "luks" ) ) )
+		list.append( QString( "luks" ) );
+	else
+		list.append( QString( "plain" ) );
 
 	tablewidget::addRowToTable( m_table,list ) ;
 
 	this->HideUI();
 }
 
-void passwordDialog::threadfinished( int status )
+void passwordDialog::threadfinished( int status,QString output )
 {
 	m_isWindowClosable = true ;
 	DialogMsg msg( this );
 	switch ( status ){
-		case 0 : return success();
+		case 0 : return success( output );
 		case 1 : msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to mount ntfs file system using ntfs-3g,is ntfs-3g package installed?" ) ) ;		break ;
 		case 2 : msg.ShowUIOK( tr( "ERROR!" ),tr( "there seem to be an open volume accociated with given address" ) );				break ;
 		case 3 : msg.ShowUIOK( tr( "ERROR!" ),tr( "no file or device exist on given path" ) ) ; 						break ;

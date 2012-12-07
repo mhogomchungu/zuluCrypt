@@ -25,10 +25,7 @@ static inline int zuluExit( int x,string_t p )
 	return x ;
 }
 
-int zuluCryptOpenVolume( const char * dev,const char * map,
-			 const char * m_point,uid_t id,
-			 const char * mode,const char * pass,
-			 size_t pass_size,int * volume_type ) 
+int zuluCryptOpenVolume( const char * dev,const char * map,const char * m_point,uid_t id,const char * mode,const char * pass,size_t pass_size ) 
 {
 	int h ;
 	string_t p = StringVoid ;
@@ -56,12 +53,7 @@ int zuluCryptOpenVolume( const char * dev,const char * map,
 	 * zuluCryptOpenPlain()  is defined in open_plain.c
 	 * zuluCryptGetVolumeType() is defined in volume_type.c
 	 */
-	
-	h = zuluCryptGetVolumeType( dev,pass,pass_size ) ;
-	if( volume_type != NULL )
-		*volume_type = h ;
-	
-	switch( h ){
+	 switch( zuluCryptGetVolumeType( dev,pass,pass_size ) ){
 		case 1 : h = zuluCryptOpenLuks(   dev,map,mode,pass,pass_size ) ; break ;
 		case 2 : h = zuluCryptOpenTcrypt( dev,map,mode,pass,pass_size ) ; break ;
 		default: h = zuluCryptOpenPlain(  dev,map,mode,pass,pass_size ) ; break ;

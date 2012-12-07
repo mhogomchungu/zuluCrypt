@@ -61,12 +61,7 @@ int zuluCryptOpenVolume( const char * device, /* path to a file/partition to be 
 			 const char * mode,   /* "ro" or "rw",the former means open volume in read only mode,          	*/
 					      /* the latter means open in read/write mode                              	*/
 			 const char * pass,   /* encrypted volume passphrase to be used to open the volume             	*/
-			 size_t pass_size,    /* passphrase size 						      	*/
-			 int * volume_type    /* ouput argument,if not NULL:
-						1 will be returned for luks volume.
-						2 will be returned for truecrypt volume
-						3 will be returned for plain volume
-						*/
+			 size_t pass_size     /* passphrase size 						      	*/
 			) ;       
 	       
 /**

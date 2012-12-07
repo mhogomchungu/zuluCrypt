@@ -24,7 +24,16 @@
  
 string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * name,uid_t uid,const char * argv ) ;
 
-static int zuluExit( int st,int volume_type,char * device,char * m_point,stringList_t stl )
+static void _printResult( const char * device )
+{
+	if( zuluCryptVolumeIsLuks( device ) ){
+		printf( "SUCCESS: luks volume opened successfully\n" ) ;
+	}else{
+		printf( "SUCCESS: plain volume opened successfully\n" ) ;
+	}
+}
+
+static int zuluExit( int st,char * device,char * m_point,stringList_t stl )
 {
 	/*
 	 * this function is defined in ../utility/string/StringList.c
@@ -32,7 +41,7 @@ static int zuluExit( int st,int volume_type,char * device,char * m_point,stringL
 	StringListClearDelete( &stl ) ;
 	
 	switch ( st ){
-		case 0 : break ;
+		case 0 : _printResult( device ) ;											break ;
 		case -1: printf( "ERROR: failed to mount a filesystem\n" ) ;								break ;
 		case 1 : printf( "ERROR: failed to mount ntfs file system using ntfs-3g,is ntfs-3g package installed?\n" ) ;		break ;
 		case 2 : printf( "ERROR: there seem to be an open volume accociated with given address\n" );				break ;
@@ -69,11 +78,7 @@ only root user or members of group zulucrypt-write can do that\n" );									bre
 	}
 	
 	if( st == 0 ){
-		switch( volume_type ){
-			case 1 : printf( "SUCCESS: luks volume opened successfully\n" ) ;						break ;
-			case 2 : printf( "SUCCESS: tcrypt opened successfully\n" ) ;							break ;
-			default: printf( "SUCCESS: plain opened successfully\n" ) ;							break ;
-		}
+		
 	}
 	
 	if( device != NULL )
@@ -91,11 +96,11 @@ only root user or members of group zulucrypt-write can do that\n" );									bre
  * should be removed first before calling the above function.The above function is called directly when "open_volume"
  * function is to be exited before the mount point is created. * 
  */
-static int zuluExit_1( int st,const struct_opts * opts,int volume_type,char * device,char * cpoint,stringList_t stl )
+static int zuluExit_1( int st,const struct_opts * opts,char * device,char * cpoint,stringList_t stl )
 {
 	if( opts->open_no_mount == -1 && st != 0 )
 		rmdir( opts->mount_point ) ;
-	return zuluExit( st,volume_type,device,cpoint,stl ) ;
+	return zuluExit( st,device,cpoint,stl ) ;
 }
 
 int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,uid_t uid )
@@ -123,7 +128,6 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	
 	size_t len ;
 	int st = 0 ;
-	int volume_type ;
 	
 	/*
 	 * This function is defined at "is_path_valid.c"
@@ -133,8 +137,8 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	 */
 	switch( zuluCryptSecurityCanOpenPathForReading( dev,uid ) ){
 		case 0 : break ;
-		case 1 : return zuluExit( 20,volume_type,device,cpoint,stl ) ;
-		default: return zuluExit( 3,volume_type,device,cpoint,stl ) ;
+		case 1 : return zuluExit( 20,device,cpoint,stl ) ;
+		default: return zuluExit( 3,device,cpoint,stl ) ;
 	}
 	
 	if( mode == NULL )
@@ -142,38 +146,38 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	
 	if( strstr( mode,"ro" ) == NULL )
 		if ( strstr( mode,"rw" ) == NULL )
-			return zuluExit( 13,volume_type,device,cpoint,stl ) ;
+			return zuluExit( 13,device,cpoint,stl ) ;
 		
 	if( strstr( mode,"rw" ) != NULL ){
 		switch( zuluCryptSecurityCanOpenPathForWriting( dev,uid ) ){
 			case 0 : break ;
-			case 1 : return zuluExit( 23,volume_type,device,cpoint,stl ) ;
-			default: return zuluExit( 3,volume_type,device,cpoint,stl ) ;
+			case 1 : return zuluExit( 23,device,cpoint,stl ) ;
+			default: return zuluExit( 3,device,cpoint,stl ) ;
 		}
 	}
 	
 	device = realpath( dev,NULL ) ;
 	if( device == NULL )
-		return zuluExit( 17,volume_type,device,cpoint,stl ) ;
+		return zuluExit( 17,device,cpoint,stl ) ;
 	
 	if( nmp == 1 && mount_point != NULL )
-		return zuluExit( 18,volume_type,device,cpoint,stl ) ;
+		return zuluExit( 18,device,cpoint,stl ) ;
 	
 	if( nmp == -1 ){
 		if( mount_point == NULL )
-			return zuluExit( 11,volume_type,device,cpoint,stl ) ;
+			return zuluExit( 11,device,cpoint,stl ) ;
 	
 		/*
 		 * zuluCryptSecurityCreateMountPoint() is defined in security.c
 		 */
 		switch( zuluCryptSecurityCreateMountPoint( mount_point,uid ) ){
-			case 2 : return zuluExit( 5,volume_type,device,cpoint,stl ) ;
-			case 1 : return zuluExit( 21,volume_type,device,cpoint,stl ) ;
+			case 2 : return zuluExit( 5,device,cpoint,stl ) ;
+			case 1 : return zuluExit( 21,device,cpoint,stl ) ;
 		}
 	
 		cpoint = realpath( mount_point,NULL ) ;
 		if( cpoint == NULL )
-			return zuluExit_1( 16,opts,volume_type,device,cpoint,stl ) ;
+			return zuluExit_1( 16,opts,device,cpoint,stl ) ;
 	}		
 
 	/*
@@ -192,14 +196,14 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		if( cpoint != NULL )
 			rmdir( cpoint ) ;
 		
-		return zuluExit( 24,volume_type,device,cpoint,stl ) ;
+		return zuluExit( 24,device,cpoint,stl ) ;
 	}
 	
 	if( plugin_path != NULL ){
 		
 		if( strstr( plugin_path,"/" ) != NULL )
 			if( zuluCryptSecurityCanOpenPathForReading( plugin_path,uid ) != 0 )
-				return zuluExit_1( 28,opts,volume_type,device,cpoint,stl ) ;
+				return zuluExit_1( 28,opts,device,cpoint,stl ) ;
 				
 		/*
 		 * zuluCryptPluginManagerGetKeyFromModule is defined in ../pluginManager/zuluCryptPluginManager.c
@@ -207,49 +211,49 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		*passphrase = zuluCryptPluginManagerGetKeyFromModule( device,plugin_path,uid,argv ) ;
 		
 		if( *passphrase == StringVoid )
-			return zuluExit_1( 25,opts,volume_type,device,cpoint,stl ) ;
+			return zuluExit_1( 25,opts,device,cpoint,stl ) ;
 		
 		cpass = StringContent( *passphrase ) ;
 		len = StringLength( *passphrase ) ;
 		
-		st = zuluCryptOpenVolume( device,cname,cpoint,uid,mode,cpass,len,&volume_type ) ;
+		st = zuluCryptOpenVolume( device,cname,cpoint,uid,mode,cpass,len ) ;
 	
 	}else if( source == NULL ){
 		
 		printf( "Enter passphrase: " ) ;
 		switch( StringSilentlyGetFromTerminal_1( passphrase,KEY_MAX_SIZE ) ){
-			case 1 : return zuluExit_1( 26,opts,volume_type,device,cpoint,stl ) ;
-			case 2 : return zuluExit_1( 27,opts,volume_type,device,cpoint,stl ) ;
+			case 1 : return zuluExit_1( 26,opts,device,cpoint,stl ) ;
+			case 2 : return zuluExit_1( 27,opts,device,cpoint,stl ) ;
 		}
 		printf( "\n" ) ;
 		cpass = StringContent( *passphrase ) ;
 		len = StringLength( *passphrase ) ;
-		st = zuluCryptOpenVolume( device,cname,cpoint,uid,mode,cpass,len,&volume_type ) ;
+		st = zuluCryptOpenVolume( device,cname,cpoint,uid,mode,cpass,len ) ;
 	}else{
 		if( source == NULL || pass == NULL )
-			return zuluExit_1( 11,opts,volume_type,device,cpoint,stl ) ;
+			return zuluExit_1( 11,opts,device,cpoint,stl ) ;
 		
 		if( strcmp( source,"-p" ) == 0 ){
 			cpass = pass ;
 			len = strlen( pass ) ;
-			st = zuluCryptOpenVolume( device,cname,cpoint,uid,mode,cpass,len,&volume_type ) ;
+			st = zuluCryptOpenVolume( device,cname,cpoint,uid,mode,cpass,len ) ;
 		}else if( strcmp( source,"-f" ) == 0 ){
 			/*
 			 * function is defined at "security.c"
 			 */
 			switch( zuluCryptSecurityGetPassFromFile( pass,uid,data ) ){
-				case 1 : return zuluExit_1( 6,opts,volume_type,device,cpoint,stl ) ;
-				case 2 : return zuluExit_1( 14,opts,volume_type,device,cpoint,stl ) ; 
-				case 4 : return zuluExit_1( 22,opts,volume_type,device,cpoint,stl ) ;
-				case 5 : return zuluExit_1( 29,opts,volume_type,device,cpoint,stl ) ;
+				case 1 : return zuluExit_1( 6,opts,device,cpoint,stl ) ;
+				case 2 : return zuluExit_1( 14,opts,device,cpoint,stl ) ; 
+				case 4 : return zuluExit_1( 22,opts,device,cpoint,stl ) ;
+				case 5 : return zuluExit_1( 29,opts,device,cpoint,stl ) ;
 			}
 			cpass = StringContent( *data ) ;
 			len = StringLength( *data ) ;
-			st = zuluCryptOpenVolume( device,cname,cpoint,uid,mode,cpass,len,&volume_type ) ;
+			st = zuluCryptOpenVolume( device,cname,cpoint,uid,mode,cpass,len ) ;
 		}
-	}
+	}		
 	
 	zuluCryptCheckInvalidKey( opts->device ) ;
 	
-	return zuluExit_1( st,opts,volume_type,device,cpoint,stl );
+	return zuluExit_1( st,opts,device,cpoint,stl );
 }

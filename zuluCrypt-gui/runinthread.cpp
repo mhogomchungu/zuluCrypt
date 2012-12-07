@@ -38,10 +38,12 @@ void runInThread::run()
 	p.start( m_exe );
 	p.waitForFinished( -1 ) ;
 	m_status = p.exitCode() ;
+	m_output = QString( p.readAllStandardOutput() ) ;
 	p.close();
 }
 
 runInThread::~runInThread()
 {
 	emit finished( m_status );
+	emit finished( m_status,m_output ) ;
 }
