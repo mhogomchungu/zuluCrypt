@@ -52,6 +52,67 @@ static int zuluCryptEXECheckIfLuks( const char * device )
 	return status ;
 }
 
+static int zuluCryptEXECheckIfTcrypt( struct_opts * clargs,uid_t uid )
+{
+	string_t st_key     = StringVoid ;
+	const char * device = clargs->device ;
+	const char * key    = clargs->key ;
+	const char * source = clargs->key_source ;
+	size_t key_len ;
+	
+	if( key == NULL ){
+		printf( "ERROR: key argument is missing",device ) ;
+		return 1 ;
+	}
+	
+	if( source == NULL ){
+		printf( "ERROR: key source argument is missing" ) ;
+		return 1 ;
+	}
+	
+	if( strcmp( source,"-p" ) == 0 ){
+		/*
+		 * zuluCryptGetVolumeType() is defined in ../lib/volume_type.c
+		 */
+		if( zuluCryptGetVolumeType( device,key,strlen( key ) ) == 2 ){
+			printf( "\"%s\" is a tcrypt device\n",device ) ;
+			return 0 ;
+		}
+	}else if( strcmp( source,"-f" ) == 0 ){
+		/*
+		 * zuluCryptSecurityGetPassFromFile() is defined in security.c
+		 */
+		if( zuluCryptSecurityGetPassFromFile( key,uid,&st_key ) == 0 ){
+			key = StringContent( st_key ) ;
+			key_len = StringLength( st_key ) ;
+			if( zuluCryptGetVolumeType( device,key,key_len ) == 2 ){
+				printf( "\"%s\" is a tcrypt device\n",device ) ;
+				StringDelete( &st_key ) ;
+				return 0 ;
+			}else{
+				printf( "\"%s\" is a not tcrypt device\n",device ) ;
+				StringDelete( &st_key ) ;
+				return 1 ;
+			}
+		}else{
+			printf( "\"%s\" is not a tcrypt device\n",device ) ;
+			return 1 ;
+		}
+	}else{
+		/*
+		* shouldnt get here
+		*/
+		printf( "\"%s\" is not a tcrypt device\n",device ) ;
+		return 1 ;
+	}
+	
+	/*
+	 * shouldnt get here
+	 */
+	printf( "\"%s\" is not a tcrypt device\n",device ) ;
+	return 1 ;
+}
+
 static int zuluCryptEXECheckEmptySlots( const char * device )
 {
 	int status ;
@@ -85,9 +146,10 @@ static int zuluCryptEXECheckUUID( const char * device )
 	return 0 ;
 }
 
-static int zuluCryptEXE( struct_opts * clargs, const char * mapping_name,uid_t uid )
+static int zuluCryptEXE( struct_opts * clargs,const char * mapping_name,uid_t uid )
 {	
 	switch( clargs->action ){
+		case 'W' : return zuluCryptEXECheckIfTcrypt( clargs,uid ) ;
 		case 'B' : return zuluCryptEXESaveAndRestoreLuksHeader( clargs,uid,LUKS_HEADER_SAVE ) ;
 		case 'R' : return zuluCryptEXESaveAndRestoreLuksHeader( clargs,uid,LUKS_HEADER_RESTORE ) ;
 		case 'J' : return zuluCryptEXEOpenPlainAsMe( clargs,mapping_name,uid ) ; /* function is defined in write_device_with_junk.c */

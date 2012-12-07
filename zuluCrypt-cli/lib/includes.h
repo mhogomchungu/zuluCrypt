@@ -136,9 +136,9 @@ char * zuluCryptDeviceFromLabel( const char * label ) ;
 /*
  * this function is defined in volume_types.c
  */
-int zuluCryptVolumeIsType( const char * device,const char * type ) ;
+int zuluCryptGetVolumeType( const char * device,const char * pass,size_t pass_size ) ;
 
 /*
- * this function is defined in volume_types.c
+ * this function is defined in open_tcrypt.c
  */
-int zuluCryptGetVolumeType( const char * device ) ;
+int zuluCryptVolumeIsTcrypt( const char * device,const char * key,size_t key_len ) ;

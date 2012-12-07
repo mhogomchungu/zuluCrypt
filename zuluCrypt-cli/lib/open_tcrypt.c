@@ -18,6 +18,7 @@
  */
 
 #include "includes.h"
+#include <sys/syscall.h>
 
 static inline int zuluExit( int st,struct crypt_device * cd )
 {
@@ -25,32 +26,70 @@ static inline int zuluExit( int st,struct crypt_device * cd )
 	return st ;
 }
 
+int zuluCryptVolumeIsTcrypt( const char * device,const char * key,size_t key_len )
+{
+#ifdef CRYPT_TCRYPT
+	string_t st ;
+	const char * mapper_name  ;
+	
+	struct crypt_device * cd = NULL;
+	struct crypt_params_tcrypt params ;
+	memset( &params,'\0',sizeof( struct crypt_params_tcrypt ) ) ;
+	
+	params.passphrase = key ;
+	params.passphrase_size  = key_len ;
+	params.flags = CRYPT_TCRYPT_LEGACY_MODES ;
+	
+	if( crypt_init( &cd,device ) < 0 )
+		return 0 ;
+	
+	if( crypt_load( cd,CRYPT_TCRYPT,&params ) < 0 )
+		return zuluExit( 0,cd ) ;
+	
+	st = String( "zuluCrypt-tcrypt-test-" ) ;
+	mapper_name = StringAppendInt( st,syscall( SYS_gettid ) ) ;
+	
+	if( mapper_name == NULL )
+		mapper_name = "zuluCrypt-tcrypt-test" ;
+	
+	if( crypt_activate_by_volume_key( cd,mapper_name,NULL,0,0 ) == 0 ){
+		crypt_deactivate( NULL,mapper_name ) ;
+		StringDelete( &st ) ;
+		return zuluExit( 1,cd ) ;
+	}else{
+		StringDelete( &st ) ;
+		return zuluExit( 0,cd ) ;
+	}
+#else
+	return 0 ;
+#endif
+}
+
 int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
 {
-	struct crypt_device * cd;
-	uint32_t flags = 0;
-	int st ;
+#ifdef CRYPT_TCRYPT
+	uint32_t flags = 0 ;
+	struct crypt_device * cd = NULL;
+	struct crypt_params_tcrypt params ;
+	memset( &params,'\0',sizeof( struct crypt_params_tcrypt ) ) ;
 	
-	if( zuluCryptPathIsNotValid( device ) )
-		return 3 ;
-	
-	if( crypt_init( &cd,device ) != 0 )
-		return 2 ;
-	
-	if( crypt_load( cd,NULL,NULL ) != 0 )
-		return zuluExit( 2,cd ) ;
+	params.passphrase = pass ;
+	params.passphrase_size  = pass_size ;
+	params.flags = CRYPT_TCRYPT_LEGACY_MODES ;
 	
 	if( strcmp( mode,"ro" ) == 0 )
-		flags = 1 ;
-	else
-		flags = 0 ;
+		flags |= CRYPT_ACTIVATE_READONLY;
 	
-	st = crypt_activate_by_passphrase( cd,mapper,CRYPT_ANY_SLOT,pass,pass_size,flags ) ;
-	
-	if( st >= 0 )
-		return zuluExit( 0,cd ) ;
-	else if( st == -1 )
+	if( crypt_init( &cd,device ) < 0 )
+		return 1 ;
+	if( crypt_load( cd,CRYPT_TCRYPT,&params ) < 0 )
 		return zuluExit( 1,cd ) ;
-	else
-		return zuluExit( 2,cd ) ;
+	if( crypt_activate_by_volume_key( cd,mapper,NULL,0,flags ) == 0 ){
+		return zuluExit( 0,cd ) ;
+	}else{
+		return zuluExit( 1,cd ) ;
+	}
+#else
+	return 0 ;
+#endif
 }

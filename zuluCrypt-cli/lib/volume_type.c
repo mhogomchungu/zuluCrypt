@@ -19,29 +19,32 @@
 
 #include "includes.h"
 
-int zuluCryptVolumeIsType( const char * device,const char * type )
-{
-	struct crypt_device * cd;
-	int st ;
-	if( crypt_init( &cd,device ) != 0 )
-		return 0 ;
-	st = crypt_load( cd,type,NULL ) ;
-	crypt_free( cd );
-	return st == 0 ;
-}
-
-int zuluCryptGetVolumeType( const char * device )
-{
-	if( zuluCryptVolumeIsType( device,CRYPT_LUKS1 ) ){
-		return 1 ;
-	}
 #ifdef CRYPT_TCRYPT
+int zuluCryptGetVolumeType( const char * device,const char * pass,size_t pass_size )
+{
 	/*
-	if( zuluCryptVolumeIsType( device,CRYPT_TCRYPT ) ){
+	 * zuluCryptVolumeIsLuks()   is defined in is_luks.c
+	 * zuluCryptVolumeIsTcrypt() is defined in open_tcrypt.c
+	 */
+	if( zuluCryptVolumeIsLuks( device ) ){
+		return 1 ;
+	}else if( zuluCryptVolumeIsTcrypt( device,pass,pass_size ) ){
 		return 2 ;
+	}else{
+		return 3 ;
 	}
-	*/
-#endif
-	return 3 ;
 }
+#else
+int zuluCryptGetVolumeType( const char * device,const char * pass __attribute__((unused)),size_t pass_size __attribute__((unused)) )
+{
+	/*
+	 * zuluCryptVolumeIsLuks() is defined in is_luks.c
+	 */
+	if( zuluCryptVolumeIsLuks( device ) ){
+		return 1 ;
+	}else{
+		return 3 ;
+	}
+}
+#endif
 

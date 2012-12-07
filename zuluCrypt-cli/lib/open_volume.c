@@ -53,7 +53,7 @@ int zuluCryptOpenVolume( const char * dev,const char * map,const char * m_point,
 	 * zuluCryptOpenPlain()  is defined in open_plain.c
 	 * zuluCryptGetVolumeType() is defined in volume_type.c
 	 */
-	switch( zuluCryptGetVolumeType( dev ) ){
+	switch( zuluCryptGetVolumeType( dev,pass,pass_size ) ){
 		case 1 : h = zuluCryptOpenLuks(   dev,map,mode,pass,pass_size ) ; break ;
 		case 2 : h = zuluCryptOpenTcrypt( dev,map,mode,pass,pass_size ) ; break ;
 		default: h = zuluCryptOpenPlain(  dev,map,mode,pass,pass_size ) ; break ;
