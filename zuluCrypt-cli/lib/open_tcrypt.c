@@ -90,6 +90,6 @@ int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * mo
 		return zuluExit( 1,cd ) ;
 	}
 #else
-	return 0 ;
+	return 1 ;
 #endif
 }
