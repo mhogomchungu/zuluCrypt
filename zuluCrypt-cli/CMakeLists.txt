@@ -53,6 +53,8 @@
  lib/user_home_path.c 
  lib/create_loop_device.c
  lib/blkid_evaluate_tag.c
+ lib/open_tcrypt.c
+ lib/volume_type.c
 )
  	 
  add_library( Socket STATIC utility/socket/socket.c ) 

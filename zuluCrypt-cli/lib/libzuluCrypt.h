@@ -27,7 +27,7 @@ extern "C" {
 /**
  * Return the version string of the library * 
  */
-const char * zuluCryptVersion ( void) ;
+const char * zuluCryptVersion( void ) ;
 
 /**
  * This function checks to see if a volume is a luks volume or not.
@@ -256,6 +256,16 @@ int zuluCryptOpenPlain( const char * device,      /* path to encrypted file or p
 			const char * passphrase,  /* passphrase to use to open the volume			*/
 			size_t passphrase_size ); /* passphrase length  					*/
 
+/**
+ *  This function opens a truecrypt volume.
+ *  return values:
+ * 0 - success 
+ * 1 - ERROR: presented key does not exist in the volume
+ * 2 - ERROR: failed to open device
+ * 3 - ERROR: device path does not point to a device
+ * 4 - ERROR: key file does not exist
+ */
+int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size ) ;
 
 /**
  * This function returns a device address given a mapper address.

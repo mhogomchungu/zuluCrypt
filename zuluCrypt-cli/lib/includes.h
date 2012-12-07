@@ -132,3 +132,13 @@ char * zuluCryptDeviceFromUUID( const char * uuid ) ;
  * this function is defined in blkid_evaluate_tag.c
  */
 char * zuluCryptDeviceFromLabel( const char * label ) ;
+
+/*
+ * this function is defined in volume_types.c
+ */
+int zuluCryptVolumeIsType( const char * device,const char * type ) ;
+
+/*
+ * this function is defined in volume_types.c
+ */
+int zuluCryptGetVolumeType( const char * device ) ;

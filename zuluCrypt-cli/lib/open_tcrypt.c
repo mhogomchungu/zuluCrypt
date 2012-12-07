@@ -1,6 +1,6 @@
 /*
  * 
- *  Copyright (c) 2011
+ *  Copyright (c) 2012
  *  name : mhogo mchungu 
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
@@ -19,22 +19,38 @@
 
 #include "includes.h"
 
-int zuluCryptVolumeIsLuks( const char * dev )
-{		
-	struct crypt_device * cd;
-	int st ;
-	
-	if( crypt_init( &cd,dev ) != 0 )
-		return 0 ;
-	
-	st = crypt_load( cd,CRYPT_LUKS1,NULL ) ;
-	
+static inline int zuluExit( int st,struct crypt_device * cd )
+{
 	crypt_free( cd );
-	
-	return st == 0 ;
+	return st ;
 }
 
-int zuluCryptVolumeIsNotLuks( const char * dev )
-{		
-	return !zuluCryptVolumeIsLuks( dev ) ;
+int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
+{
+	struct crypt_device * cd;
+	uint32_t flags = 0;
+	int st ;
+	
+	if( zuluCryptPathIsNotValid( device ) )
+		return 3 ;
+	
+	if( crypt_init( &cd,device ) != 0 )
+		return 2 ;
+	
+	if( crypt_load( cd,NULL,NULL ) != 0 )
+		return zuluExit( 2,cd ) ;
+	
+	if( strcmp( mode,"ro" ) == 0 )
+		flags = 1 ;
+	else
+		flags = 0 ;
+	
+	st = crypt_activate_by_passphrase( cd,mapper,CRYPT_ANY_SLOT,pass,pass_size,flags ) ;
+	
+	if( st >= 0 )
+		return zuluExit( 0,cd ) ;
+	else if( st == -1 )
+		return zuluExit( 1,cd ) ;
+	else
+		return zuluExit( 2,cd ) ;
 }

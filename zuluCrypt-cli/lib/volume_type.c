@@ -1,6 +1,6 @@
-/*
+ /*
  * 
- *  Copyright (c) 2011
+ *  Copyright (c) 2012
  *  name : mhogo mchungu 
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
@@ -19,22 +19,29 @@
 
 #include "includes.h"
 
-int zuluCryptVolumeIsLuks( const char * dev )
-{		
+int zuluCryptVolumeIsType( const char * device,const char * type )
+{
 	struct crypt_device * cd;
 	int st ;
-	
-	if( crypt_init( &cd,dev ) != 0 )
+	if( crypt_init( &cd,device ) != 0 )
 		return 0 ;
-	
-	st = crypt_load( cd,CRYPT_LUKS1,NULL ) ;
-	
+	st = crypt_load( cd,type,NULL ) ;
 	crypt_free( cd );
-	
 	return st == 0 ;
 }
 
-int zuluCryptVolumeIsNotLuks( const char * dev )
-{		
-	return !zuluCryptVolumeIsLuks( dev ) ;
+int zuluCryptGetVolumeType( const char * device )
+{
+	if( zuluCryptVolumeIsType( device,CRYPT_LUKS1 ) ){
+		return 1 ;
+	}
+#ifdef CRYPT_TCRYPT
+	/*
+	if( zuluCryptVolumeIsType( device,CRYPT_TCRYPT ) ){
+		return 2 ;
+	}
+	*/
+#endif
+	return 3 ;
 }
+
