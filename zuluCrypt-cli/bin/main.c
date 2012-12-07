@@ -61,7 +61,7 @@ static int zuluCryptEXECheckIfTcrypt( struct_opts * clargs,uid_t uid )
 	size_t key_len ;
 	
 	if( key == NULL ){
-		printf( "ERROR: key argument is missing",device ) ;
+		printf( "ERROR: key argument is missing" ) ;
 		return 1 ;
 	}
 	
