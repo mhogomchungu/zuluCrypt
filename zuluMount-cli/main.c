@@ -437,7 +437,7 @@ static int _zuluMountPrintDeviceProperties( const char * device,uid_t uid )
 	}
 	
 	StringDelete( &q ) ;
-	
+
 	if( p != StringVoid ){
 		/*
 		* zuluMountPrintDeviceProperties() is defined in ./print_mounted_volumes.c
@@ -446,8 +446,11 @@ static int _zuluMountPrintDeviceProperties( const char * device,uid_t uid )
 		StringDelete( &p ) ;
 		return 0 ;
 	}else{
-		puts( "volume does not appear to be mounted as it does not have an entry in \"/etc/mtab\"" ) ;
-		return 1 ;
+		/*
+		 * zuluMountPartitionProperties is defined in ./print_mounted_volumes.c
+		 */
+		zuluMountPartitionProperties( device,device,NULL ) ;
+		return 0 ;
 	}
 }
 

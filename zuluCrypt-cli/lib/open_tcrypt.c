@@ -35,6 +35,7 @@ int zuluCryptVolumeIsTcrypt( const char * device,const char * key,size_t key_len
 #ifdef CRYPT_TCRYPT
 	struct crypt_device * cd = NULL;
 	struct crypt_params_tcrypt params ;
+	
 	memset( &params,'\0',sizeof( struct crypt_params_tcrypt ) ) ;
 	
 	params.passphrase      = key ;
@@ -62,8 +63,10 @@ int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * mo
 {
 #ifdef CRYPT_TCRYPT
 	uint32_t flags = 0 ;
+
 	struct crypt_device * cd = NULL;
 	struct crypt_params_tcrypt params ;
+	
 	memset( &params,'\0',sizeof( struct crypt_params_tcrypt ) ) ;
 	
 	params.passphrase = pass ;

@@ -222,7 +222,7 @@ char * zuluCryptVolumeStatus( const char * mapper )
 			StringAppend( p," is invalid.\n" ) ;
 			crypt_free( cd );
 			return StringDeleteHandle( &p ) ;
-	}	
+	}
 	
 	StringAppend( p," type:   \t" );
 	type = crypt_get_type( cd ) ;
@@ -239,8 +239,14 @@ char * zuluCryptVolumeStatus( const char * mapper )
 			;
 		}
 		luks = 1 ;
-	}else if( strcmp( type,"plain") )
+	}else if( strcmp( type,"plain") ){
 		StringAppend( p,"plain" ) ;
+	}else{
+		/*
+		 * truecrypt volumes maybe handled here,report them as plain for now
+		 */
+		StringAppend( p,"plain" ) ;
+	}
 	
 	StringMultipleAppend( p,"\n cipher:\t",crypt_get_cipher_mode( cd ),END );
 	
@@ -260,7 +266,7 @@ char * zuluCryptVolumeStatus( const char * mapper )
 		}
 	}else{
 		StringAppend( p,"\n loop:   \tNil" ) ;
-	}		
+	}
 	
 	z = StringIntToString_1( buffer,SIZE,crypt_get_data_offset( cd ) ) ;
 	StringMultipleAppend( p,"\n offset:\t",z," sectors",NULL );
