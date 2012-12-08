@@ -21,12 +21,25 @@
 #include <sys/ioctl.h>
 #include <linux/loop.h>
 
+static int zuluExit( int result,string_t st,int fd_loop,int fd_path )
+{
+	if( st == 0 ){
+		StringDelete( &st ) ;
+		if( fd_loop != -1 )
+			close( fd_loop ) ;
+	}
+	if( fd_path != -1 ){
+		close( fd_path ) ;
+	}
+	return result ;
+}
+
 int zuluCryptAttachLoopDeviceToFile( const char * path,int mode,int * loop_fd,string_t * loop_device )
 {
 	size_t size ;
-	string_t loopd ;
-	int fd_loop;
-	int fd_path ;
+	string_t loopd = StringVoid ;
+	int fd_loop = -1 ;
+	int fd_path = -1 ;
 	int devnr ;
 	const char * loop ;
 	
@@ -51,38 +64,25 @@ int zuluCryptAttachLoopDeviceToFile( const char * path,int mode,int * loop_fd,st
 
 	if( mode == READ ){
 		fd_path = open( path,O_RDONLY ) ;
+		if( fd_path == -1 )
+			return zuluExit( 0,loopd,fd_loop,fd_path ) ;
 		fd_loop = open( loop,O_RDONLY ) ;
+		if( fd_loop == -1 )
+			return zuluExit( 0,loopd,fd_loop,fd_path ) ;
 	}else{
 		fd_path = open( path,O_RDWR ) ;
+		if( fd_path == -1 )
+			return zuluExit( 0,loopd,fd_loop,fd_path ) ;
 		fd_loop = open( loop,O_RDWR ) ;
+		if( fd_loop == -1 )
+			return zuluExit( 0,loopd,fd_loop,fd_path ) ;
 	}
 	
-	if( fd_path < 0 && fd_loop < 0 ){
-		StringDelete( &loopd ) ;
-		return 0 ;
-	}else if( fd_path < 0 && fd_loop >= 0 ){
-		StringDelete( &loopd ) ;
-		close( fd_loop ) ;
-		return 0 ;
-	}else if( fd_path >= 0 && fd_loop < 0 ){
-		StringDelete( &loopd ) ;
-		close( fd_path ) ;
-		return 0 ;
-	}
-		
-	if( ioctl( fd_loop,LOOP_SET_FD,fd_path ) == -1 ){
-		StringDelete( &loopd ) ;
-		close( fd_loop ) ;
-		close( fd_path ) ;
-		return 0 ;
-	}
+	if( ioctl( fd_loop,LOOP_SET_FD,fd_path ) == -1 )
+		return zuluExit( 0,loopd,fd_loop,fd_path ) ;
 	
-	if( ioctl( fd_loop,LOOP_GET_STATUS64,&l_info ) == -1 ){
-		StringDelete( &loopd ) ;
-		close( fd_loop ) ;
-		close( fd_path ) ;
-		return 0 ;
-	}
+	if( ioctl( fd_loop,LOOP_GET_STATUS64,&l_info ) == -1 )
+		return zuluExit( 0,loopd,fd_loop,fd_path ) ;
 	
 	l_info.lo_flags |= LO_FLAGS_AUTOCLEAR;
 	
@@ -90,15 +90,11 @@ int zuluCryptAttachLoopDeviceToFile( const char * path,int mode,int * loop_fd,st
 	strncpy( ( char * )l_info.lo_file_name,path,size ) ;
 	l_info.lo_file_name[ size - 1 ] = '\0' ;
 	
-	if( ioctl( fd_loop,LOOP_SET_STATUS64,&l_info ) == -1 ){
-		StringDelete( &loopd ) ;
-		close( fd_loop ) ;
-		close( fd_path ) ;
-		return 0 ;
-	}
+	if( ioctl( fd_loop,LOOP_SET_STATUS64,&l_info ) == -1 )
+		return zuluExit( 0,loopd,fd_loop,fd_path ) ;
 	
-	close( fd_path ) ;
 	*loop_device = loopd ;
 	*loop_fd = fd_loop ;
-	return 1 ;
+	
+	return zuluExit( 1,loopd,fd_loop,fd_path ) ;
 }

@@ -70,7 +70,7 @@ int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * mo
 	params.passphrase_size  = pass_size ;
 	params.flags = CRYPT_TCRYPT_LEGACY_MODES ;
 	
-	if( strcmp( mode,"ro" ) == 0 )
+	if( strstr( mode,"ro" ) != NULL )
 		flags |= CRYPT_ACTIVATE_READONLY;
 	
 	if( crypt_init( &cd,device ) < 0 )

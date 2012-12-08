@@ -41,7 +41,7 @@ int zuluCryptOpenPlain( const char * device,const char * mapper,const char * mod
 	if( zuluCryptPathIsNotValid( device ) )
 		return 3 ;
 
-	if( strcmp( mode,"ro" ) == 0 )
+	if( strstr( mode,"ro" ) != NULL )
 		flags = 1 ;
 	else
 		flags = 0 ;

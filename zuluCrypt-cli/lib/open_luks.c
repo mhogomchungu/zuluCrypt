@@ -40,7 +40,7 @@ int zuluCryptOpenLuks( const char * device,const char * mapper,const char * mode
 	if( crypt_load( cd,NULL,NULL ) != 0 )
 		return zuluExit( 2,cd ) ;
 	
-	if( strcmp( mode,"ro" ) == 0 )
+	if( strstr( mode,"ro" ) != NULL )
 		flags = 1 ;
 	else
 		flags = 0 ;
