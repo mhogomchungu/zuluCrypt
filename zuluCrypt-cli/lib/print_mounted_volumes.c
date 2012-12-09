@@ -158,7 +158,6 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 		}else{
 			StringMultipleAppend( st,device," ",mount_point," ",file_system," ",mount_options,END ) ;
 		}
-		StringPrintLine( st ) ;
 		stx = StringListAppendString( stx,st ) ;
 		StringClear( st ) ;
 		StringListDelete( &tmp ) ;
