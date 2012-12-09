@@ -42,7 +42,6 @@ int zuluCryptAttachLoopDeviceToFile( const char * path,int mode,int * loop_fd,st
 	int fd_path = -1 ;
 	int devnr ;
 	const char * loop ;
-	
 	struct loop_info64 l_info ;
 	
 	memset( &l_info,'\0',sizeof( struct loop_info64 ) ) ;
@@ -61,22 +60,16 @@ int zuluCryptAttachLoopDeviceToFile( const char * path,int mode,int * loop_fd,st
 	
 	loopd = String( "/dev/loop" ) ;
 	loop = StringAppendInt( loopd,devnr ) ;
-
-	if( mode == READ ){
-		fd_path = open( path,O_RDONLY ) ;
-		if( fd_path == -1 )
-			return zuluExit( 0,loopd,fd_loop,fd_path ) ;
-		fd_loop = open( loop,O_RDONLY ) ;
-		if( fd_loop == -1 )
-			return zuluExit( 0,loopd,fd_loop,fd_path ) ;
-	}else{
-		fd_path = open( path,O_RDWR ) ;
-		if( fd_path == -1 )
-			return zuluExit( 0,loopd,fd_loop,fd_path ) ;
-		fd_loop = open( loop,O_RDWR ) ;
-		if( fd_loop == -1 )
-			return zuluExit( 0,loopd,fd_loop,fd_path ) ;
-	}
+	
+	fd_path = open( path,mode ) ;
+	
+	if( fd_path == -1 )
+		return zuluExit( 0,loopd,fd_loop,fd_path ) ;
+	
+	fd_loop = open( loop,mode ) ;
+	
+	if( fd_loop == -1 )
+		return zuluExit( 0,loopd,fd_loop,fd_path ) ;
 	
 	if( ioctl( fd_loop,LOOP_SET_FD,fd_path ) == -1 )
 		return zuluExit( 0,loopd,fd_loop,fd_path ) ;

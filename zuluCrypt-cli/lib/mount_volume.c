@@ -375,7 +375,7 @@ int zuluCryptMountVolume( const char * path,const char * m_point,const char * mo
 		/*
 		* zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop_device.c
 		*/
-		if( zuluCryptAttachLoopDeviceToFile( mst.device,WRITE,&fd,loop ) ){
+		if( zuluCryptAttachLoopDeviceToFile( mst.device,O_RDWR,&fd,loop ) ){
 			mst.device = StringContent( *loop ) ;
 		}else{
 			return zuluExit( -1,stl ) ;
