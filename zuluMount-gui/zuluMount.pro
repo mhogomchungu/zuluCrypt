@@ -6,7 +6,7 @@
 
 QT       += core gui
 
-TARGET = inkmount
+TARGET = zuluMount-gui
 TEMPLATE = app
 
 

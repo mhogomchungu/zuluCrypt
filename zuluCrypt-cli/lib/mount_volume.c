@@ -98,43 +98,41 @@ string_t zuluCryptGetFstabEntry( const char * device )
 	
 	for( ; it != end ; it++ ){
 		entry = StringContent( *it ) ;
-		if( entry[ 0 ] != '#' ){
-			if( strncmp( entry,"/dev/",5 ) == 0 ){
-				if( strncmp( entry,"/dev/root",9 ) == 0 ){
-					/*
-					 * zuluCryptResolveDevRoot() is defined in ./print_mounted_volumes.c 
-					 */
-					ac =  zuluCryptResolveDevRoot() ;
-					st = strncmp( ac,device,len ) ;
-					free( ac ) ;
-				}else{
-					st = strncmp( entry,device,len ) ;
-				}
-			}else if( strncmp( entry,"UUID=",5 ) == 0 ){
-				ac = _evaluate_tag( "UUID",entry + 5,&cache ) ;
-				if( ac == NULL ){
-					st = 1 ;
-				}else{
-					st = strncmp( ac,device,len ) ;
-					free( ac ) ;
-				}
-			}else if( strncmp( entry,"LABEL=",6 ) == 0 ){
-				ac = _evaluate_tag( "LABEL",entry + 6,&cache ) ;
-				if( ac == NULL ){
-					st = 1 ;
-				}else{
-					st = strncmp( ac,device,len ) ;
-					free( ac ) ;
-				}
+		if( strncmp( entry,"/dev/",5 ) == 0 ){
+			if( strncmp( entry,"/dev/root",9 ) == 0 ){
+				/*
+				 * zuluCryptResolveDevRoot() is defined in ./print_mounted_volumes.c 
+				 */
+				ac =  zuluCryptResolveDevRoot() ;
+				st = strncmp( ac,device,len ) ;
+				free( ac ) ;
 			}else{
-				continue ;
+				st = strncmp( entry,device,len ) ;
 			}
-			
-			if( st == 0 ){
-				xt = StringCopy( *it ) ;
-				break ;
+		}else if( strncmp( entry,"UUID=",5 ) == 0 ){
+			ac = _evaluate_tag( "UUID",entry + 5,&cache ) ;
+			if( ac == NULL ){
+				st = 1 ;
+			}else{
+				st = strncmp( ac,device,len ) ;
+				free( ac ) ;
 			}
+		}else if( strncmp( entry,"LABEL=",6 ) == 0 ){
+			ac = _evaluate_tag( "LABEL",entry + 6,&cache ) ;
+			if( ac == NULL ){
+				st = 1 ;
+			}else{
+				st = strncmp( ac,device,len ) ;
+				free( ac ) ;
+			}
+		}else{
+			continue ;
 		}
+			
+		if( st == 0 ){
+			xt = StringCopy( *it ) ;
+			break ;
+		}	
 	}
 	
 	if( cache != NULL )

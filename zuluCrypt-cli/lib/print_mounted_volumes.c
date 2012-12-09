@@ -87,8 +87,6 @@ char * zuluCryptResolveDevRoot( void )
 	return StringDeleteHandle( &st ) ;
 }
 
-#define ADD_ENTRY( d,m,f,p ) StringMultipleAppend( st,d," ",m," ",f," ",p,END ) 
-
 stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 {
 	const char * device ;
@@ -118,44 +116,44 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 			continue ;
 		if( StringListContentAtEqual( tmp,3,"/" ) ){
 			index = StringListContains( tmp,"-" ) ;
-			if( index != -1 ){
-				device        = StringListContentAt( tmp,index+2 ) ;
-				mount_point   = StringListContentAt( tmp,4 ) ;
-				file_system   = StringListContentAt( tmp,index+1 ) ;
-				mount_options = StringListContentAt( tmp,index+3 ) ;
-				if( strncmp( device,"/dev/loop",9 ) == 0 ){
-					/*
-					 * zuluCryptLoopDeviceAddress() is defined in ./status.c
-					 */
-					dev = zuluCryptLoopDeviceAddress( device ) ;
-					if( dev == NULL ){
-						ADD_ENTRY( device,mount_point,file_system,mount_options ) ;
-					}else{
-						ADD_ENTRY( dev,mount_point,file_system,mount_options ) ;
-						free( dev ) ;
-					}
-				}else if( strcmp( device,"/dev/root" ) == 0 ){
-					dev = zuluCryptResolveDevRoot() ;
-					if( dev == NULL ){
-						ADD_ENTRY( device,mount_point,file_system,mount_options ) ;
-					}else{
-						ADD_ENTRY( dev,mount_point,file_system,mount_options ) ;
-						free( dev ) ;
-					}
-				}else if( strncmp( device,"/dev/disk/by-",13 ) == 0 ){
-					dev = realpath( device,NULL ) ;
-					if( dev == NULL ){
-						ADD_ENTRY( device,mount_point,file_system,mount_options ) ;
-					}else{
-						ADD_ENTRY( dev,mount_point,file_system,mount_options ) ;
-						free( dev ) ;
-					}
+			if( index == -1 )
+				continue ;
+			device        = StringListContentAt( tmp,index+2 ) ;
+			mount_point   = StringListContentAt( tmp,4 ) ;
+			file_system   = StringListContentAt( tmp,index+1 ) ;
+			mount_options = StringListContentAt( tmp,index+3 ) ;
+			if( strncmp( device,"/dev/loop",9 ) == 0 ){	
+				/*
+				 * zuluCryptLoopDeviceAddress() is defined in ./status.c
+				 */
+				dev = zuluCryptLoopDeviceAddress( device ) ;
+				if( dev == NULL ){
+					StringMultipleAppend( st,device,mount_point,file_system,mount_options,END ) ;
 				}else{
-					ADD_ENTRY( device,mount_point,file_system,mount_options ) ;
+					StringMultipleAppend( st,dev,mount_point,file_system,mount_options,END ) ;
+					free( dev ) ;
 				}
-				stx = StringListAppendString( stx,st ) ;
-				StringClear( st ) ;
+			}else if( strcmp( device,"/dev/root" ) == 0 ){
+				dev = zuluCryptResolveDevRoot() ;
+				if( dev == NULL ){
+					StringMultipleAppend( st,device,mount_point,file_system,mount_options,END ) ;
+				}else{
+					StringMultipleAppend( st,dev,mount_point,file_system,mount_options,END ) ;
+					free( dev ) ;
+				}
+			}else if( strncmp( device,"/dev/disk/by-",13 ) == 0 ){
+				dev = realpath( device,NULL ) ;
+				if( dev == NULL ){
+					StringMultipleAppend( st,device,mount_point,file_system,mount_options,END ) ;
+				}else{
+					StringMultipleAppend( st,dev,mount_point,file_system,mount_options,END ) ;
+					free( dev ) ;
+				}
+			}else{
+				StringMultipleAppend( st,device,mount_point,file_system,mount_options,END ) ;
 			}
+			stx = StringListAppendString( stx,st ) ;
+			StringClear( st ) ;
 		}
 		StringListDelete( &tmp ) ;
 	}
