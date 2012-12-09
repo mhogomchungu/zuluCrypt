@@ -206,7 +206,7 @@ static inline string_t set_mount_options( m_struct * mst )
 			StringAppendInt( opt,mst->uid ) ;
 		}
 		if( !StringContains( opt,"fmask=" ) ){
-			StringAppend( opt,",fmask=0000" ) ;
+			StringAppend( opt,",fmask=0111" ) ;
 		}
 		
 		if( strcmp( mst->fs,"vfat" ) == 0 ){
