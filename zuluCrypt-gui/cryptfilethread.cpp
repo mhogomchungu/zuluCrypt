@@ -160,7 +160,7 @@ int cryptfilethread::decrypt()
 		return 5 ;
 
 	QFile fd_1( m_mapperPath ) ;
-	if( fd_1.open( QIODevice::ReadOnly ) == false )
+	if( !fd_1.open( QIODevice::ReadOnly ) )
 		return 4 ;
 
 	const int SIZE = 512 ;
@@ -178,7 +178,7 @@ int cryptfilethread::decrypt()
 	int k = -1 ;
 
 	QFile fd_2( m_dest ) ;
-	if( fd_2.open( QIODevice::WriteOnly) == false )
+	if( !fd_2.open( QIODevice::WriteOnly) )
 		return 10 ;
 
 	emit titleUpdate( tr( "copying data from the container file" ) );
