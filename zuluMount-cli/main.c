@@ -265,8 +265,8 @@ static int _zuluMountUserHasAccessToMountPoint( const char * device,uid_t uid )
 			 * zuluCryptSecurityPathIsValid() is defined in zuluCrypt-cli/bin/security.c
 			 */
 			st = zuluCryptSecurityPathIsValid( m_point,uid ) ;
-			free( m_point ) ;
 		}
+		free( m_point ) ;
 	}
 	
 	return st ;
