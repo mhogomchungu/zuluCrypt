@@ -94,20 +94,25 @@ static int _zuluMountPartitionAccess( const char * mode,uid_t uid,stringList_t s
 	/*
 	 * this function is defined in ../zuluCrypt-cli/lib/mount_volume.c
 	 */
+	/*
+	 * MOUNTOPTIONS constant is defined in ../zuluCrypt-cli/lib/includes.h
+	 */
 	string_t p = StringListStringAt( stl,MOUNTOPTIONS ) ;
 	int ro      ;
 	int nouser  ;
 	int defaulT ;
 	int user    ;
-	
+	int users   ;
+
 	if( p == StringVoid )
 		return 0 ;
 	
 	ro      = StringContains( p,"ro" ) ;
 	nouser  = StringContains( p,"nouser" ) ;
 	defaulT = StringContains( p,"defaults" ) ;
+	users   = StringContains( p,"users" );
 	user    = StringContains( p,"user" ) ;
-	
+
 	if( ro && strstr( mode,"rw" ) != NULL )
 		return 1 ;
 	/*
@@ -119,7 +124,7 @@ static int _zuluMountPartitionAccess( const char * mode,uid_t uid,stringList_t s
 		return 2 ;
 	}else if( user ){
 		return 3 ;
-	}else if( !nouser && !defaulT && !user && uid != 0 ){
+	}else if( !nouser && !defaulT && !user && !users && uid != 0 ){
 		return 2 ;
 	}
 	
@@ -288,12 +293,18 @@ static int _zuluMountUMount( const char * device,uid_t uid,const char * mode,int
 		return _zuluExit( 101,StringVoid,m_point,"ERROR: \"/etc/fstab\" entry for this partition requires only root user or members of group zulucrypt to unmount it" ) ;
 	}
 	
+	/*
+	 * MOUNTOPTIONS and MOUNTPOINT constants are defined in ../zuluCrypt-cli/lib/includes.h
+	 */
+	st = StringListStringAt( stl,MOUNTOPTIONS ) ;
+	if( !StringContains( st,"users" ) ){
+		if( !_zuluMountUserHasAccessToMountPoint( device,uid ) ){
+			return _zuluExit( 106,st,m_point,"ERROR: insuffienct privilege to unmount the volume,another user appear to have mount it" ) ;
+		}
+	}
+	
 	st = StringListCopyStringAt( stl,MOUNTPOINT ) ;
 	StringListDelete( &stl ) ;
-	
-	if( !_zuluMountUserHasAccessToMountPoint( device,uid ) ){
-		return _zuluExit( 106,st,m_point,"ERROR: insuffienct privilege to unmount the volume,you lack proper access to the mount point path" ) ;
-	}
 	
 	/*
 	 * zuluCryptUnmountVolume() is defined in ../zuluCrypt-cli/lib/unmount_volume.c

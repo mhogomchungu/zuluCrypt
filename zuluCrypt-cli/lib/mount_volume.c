@@ -125,6 +125,11 @@ string_t zuluCryptGetFstabEntry( const char * device )
 				st = strncmp( ac,device,len ) ;
 				free( ac ) ;
 			}
+		}else if( entry[ 0 ] == '/' ){
+			st = StringIndexOfChar( *it,0,' ' ) ;
+			if( st != -1 ){
+				st = strncmp( StringContent( *it ),device,st ) ;
+			}
 		}else{
 			continue ;
 		}

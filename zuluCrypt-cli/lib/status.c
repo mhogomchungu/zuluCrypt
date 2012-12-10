@@ -161,7 +161,7 @@ static void zuluCryptFileSystemProperties( string_t p,const char * mapper,const 
 char * zuluCryptLoopDeviceAddress( const char * device )
 {
 	int fd ;
-	char * path ;	
+	char * path ;
 	struct loop_info64 l_info ;
 	string_t xt ;
 	string_t st = String( "/sys/block/" ) ;
