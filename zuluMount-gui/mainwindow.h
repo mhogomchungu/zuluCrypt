@@ -34,6 +34,7 @@
 #include <QFont>
 #include <QCursor>
 #include <QAction>
+#include <QFileDialog>
 
 #include "keydialog.h"
 #include "../zuluCrypt-gui/dialogmsg.h"
@@ -60,13 +61,14 @@ signals:
 public slots:
 	void raiseWindow( void ) ;
 private slots:
-	void checkPermissions( int ) ;
+	void mount( QString,QString,QString ) ;
 	void defaultButton( void ) ;
 	void volumeProperties( QString );
 	void volumeProperties( void ) ;
 	void itemClicked( QTableWidgetItem * ) ;
 	void pbUpdate( void ) ;
 	void pbMount( void ) ;
+	void slotMount( void ) ;
 	void pbUmount( void ) ;
 	void pbClose( void ) ;
 	void slotUnmountComplete( int,QString ) ;
@@ -84,13 +86,11 @@ private:
 	QString m_device ;
 
 	bool m_working ;
-	void disableCommand( void ) ;
 	void disableAll( void ) ;
 	void closeEvent( QCloseEvent * e );
 	void setUpFont( void ) ;
 	void setUpShortCuts( void ) ;
 	void setUpApp( void ) ;
-	bool m_justMounted ;
 	QSystemTrayIcon * m_trayIcon ;
 };
 

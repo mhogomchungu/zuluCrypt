@@ -73,7 +73,6 @@ void MainWindow::setUpApp()
 	part->startAction( QString( "update" ) ) ;
 
 	m_working = false ;
-	m_justMounted = false ;
 	m_trayIcon->show();
 
 	QString dirPath = QDir::homePath() + QString( "/.zuluCrypt/" ) ;
@@ -82,6 +81,7 @@ void MainWindow::setUpApp()
 	if( !dir.exists() )
 		dir.mkdir( dirPath ) ;
 
+	m_ui->pbunmount->setVisible( false );
 	this->show();
 }
 
@@ -91,7 +91,7 @@ void MainWindow::defaultButton()
 	QString mt = m_ui->tableWidget->item( row,1 )->text() ;
 
 	if( mt == QString( "Nil" ) )
-		this->pbMount();
+		this->slotMount();
 	else
 		this->pbUmount();
 }
@@ -135,7 +135,7 @@ void MainWindow::itemClicked( QTableWidgetItem * item )
 	QString type = m_ui->tableWidget->item( item->row(),2 )->text() ;
 
 	if( mt == QString( "Nil" ) ){
-		connect( m.addAction( tr( "mount" ) ),SIGNAL( triggered() ),this,SLOT( pbMount() ) ) ;
+		connect( m.addAction( tr( "mount" ) ),SIGNAL( triggered() ),this,SLOT( slotMount() ) ) ;
 	}else{
 		connect( m.addAction( tr( "unmount" ) ),SIGNAL( triggered() ),this,SLOT( pbUmount() ) ) ;
 
@@ -258,26 +258,10 @@ void MainWindow::stateChanged( int state )
 	m_ui->cbReadOnly->setEnabled( true );
 }
 
-void MainWindow::pbMount()
+void MainWindow::mount( QString type,QString device,QString label )
 {
-	this->disableAll();
-
-	int row = m_ui->tableWidget->currentRow() ;
-	QString type = m_ui->tableWidget->item( row,2 )->text()  ;
-	QString path = m_ui->tableWidget->item( row,0 )->text() ;
-
-	m_device = path ;
-	m_justMounted = true ;
-	QString mode ;
-
-	if( m_ui->cbReadOnly->isChecked() )
-		mode = QString( "ro" ) ;
-	else
-		mode = QString( "rw" ) ;
-
 	if( type == QString( "crypto_LUKS" ) || type == QString( "Nil" ) ){
-
-		keyDialog * kd = new keyDialog( this,m_ui->tableWidget,path,type ) ;
+		keyDialog * kd = new keyDialog( this,m_ui->tableWidget,device,type ) ;
 		connect( kd,SIGNAL( hideUISignal() ),kd,SLOT( deleteLater() ) ) ;
 		connect( kd,SIGNAL( hideUISignal() ),this,SLOT( enableAll() ) ) ;
 		kd->ShowUI();
@@ -285,26 +269,56 @@ void MainWindow::pbMount()
 		mountPartition * mp = new mountPartition( this,m_ui->tableWidget ) ;
 		connect( mp,SIGNAL( hideUISignal() ),mp,SLOT( deleteLater() ) ) ;
 		connect( mp,SIGNAL( hideUISignal() ),this,SLOT( enableAll() ) ) ;
-		QString label = m_ui->tableWidget->item( row,3 )->text() ;
-		mp->ShowUI( m_device,label );
+		mp->ShowUI( device,label );
 	}
+}
+
+void MainWindow::slotMount()
+{
+	QTableWidget * table = m_ui->tableWidget ;
+	int row = table->currentRow() ;
+	QString device = table->item( row,0 )->text() ;
+	QString type   = table->item( row,2 )->text() ;
+	QString label  = table->item( row,3 )->text() ;
+	this->mount( type,device,label );
+}
+
+void MainWindow::pbMount()
+{
+	this->disableAll();
+
+	QString path = QFileDialog::getOpenFileName( this,tr( "select an image file to mount" ),QDir::homePath() ) ;
+	if( path.isEmpty() ){
+		this->enableAll();
+		return ;
+	}
+	QStringList prp = utility::deviceProperties( path ) ;
+
+	QString type = prp.at( 3 ) ;
+	QString label = prp.at( 2 ) ;
+
+	m_device = path ;
+	this->mount( type,m_device,label );
 }
 
 void MainWindow::volumeMiniProperties( QTableWidget * table,QString p,QString mountPointPath )
 {
 	QStringList l ;
+	QString device ;
 	QString fileSystem ;
 	QString total ;
 	QString perc ;
 	QString label ;
 
 	if( p.isEmpty() ){
+		device = QString( "Nil" ) ;
 		fileSystem = QString( "Nil" ) ;
 		total = QString( "0" ) ;
 		perc  = QString( "0%" );
 		label = QString( "Nil" ) ;
 	}else{
 		l = p.split( "\t" ) ;
+		device = l.at( 0 ) ;
 		fileSystem = l.at( 2 ) ;
 		label = l.at( 3 ) ;
 		total = l.at( 4 ) ;
@@ -312,8 +326,12 @@ void MainWindow::volumeMiniProperties( QTableWidget * table,QString p,QString mo
 		perc.remove( QChar( '\n' ) ) ;
 	}
 
-	int row = table->currentRow() ;
+	if( !device.startsWith( QString( "/dev/" ) ) ){
+		tablewidget::addEmptyRow( table ) ;
+	}
 
+	int row = table->currentRow() ;
+	tablewidget::setText( table,row,0,device ) ;
 	tablewidget::setText( table,row,1,mountPointPath ) ;
 	tablewidget::setText( table,row,2,fileSystem ) ;
 	tablewidget::setText( table,row,3,label ) ;
@@ -355,29 +373,12 @@ void MainWindow::pbUpdate()
 	part->startAction( QString( "update" ) ) ;
 }
 
-void MainWindow::checkPermissions( int st )
-{
-	DialogMsg msg( this ) ;
-
-	QString msg1 = tr( "you are not a member of zulucrypt-read group,you will not be able to access any partition" ) ;
-	QString msg2 = tr( "you are not a member of zulucrypt-write group,you will not be able to open volumes in read/write mode" ) ;
-	QString msg3 = tr( "you are not a member of both zulucrypt-read and zulucrypt-write groups,you will not be able to operate on partitions" ) ;
-
-	switch( st ){
-		//case 1 : msg.ShowUIOK( QString( "INFORMATION" ), ); break ;
-		case 2 : msg.ShowUIOK( tr( "INFORMATION" ),msg1 ); break ;
-		case 3 : msg.ShowUIOK( tr( "INFORMATION" ),msg2 ); break ;
-		case 4 : msg.ShowUIOK( tr( "INFORMATION" ),msg3 ); break ;
-	}
-}
-
 void MainWindow::slotMountedList( QStringList list,QStringList sys )
 {
 	if( list.isEmpty() || sys.isEmpty() ){
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR" ),tr( "reading partition properties took longer than expected and operation was terminated,click refresh to try again" ) );
 		this->enableAll();
-		this->disableCommand();
 		return ;
 	}
 
@@ -396,8 +397,6 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 	QString fs ;
 	for( int i = 0 ; i < j ; i++ ){
 		entries = list.at( i ).split( '\t' ) ;
-		if( !entries.at( 0 ).startsWith( QString( "/dev/" ) ) )
-			continue ;
 		fs =  entries.at( 2 ) ;
 		if( fs == QString( "swap" ) || fs.contains( QString( "LVM" ) ) || fs.contains( QString( "lvm" ) ) )
 			continue ;
@@ -416,7 +415,6 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 		m_ui->tableWidget->setColumnWidth( 1,240 );
 
 	this->enableAll();
-	this->disableCommand();
 }
 
 void MainWindow::slotUnmountComplete( int status,QString msg )
@@ -431,17 +429,22 @@ void MainWindow::slotUnmountComplete( int status,QString msg )
 		int row = table->currentRow() ;
 
 		QString type = table->item( row,2 )->text() ;
+		QString device = table->item( row,0 )->text() ;
 
-		table->item( row,1 )->setText( QString( "Nil" ) );
+		if( !device.startsWith( QString( "/dev/" ) ) ){
+			tablewidget::deleteRowFromTable( m_ui->tableWidget,row ) ;
+		}else{
+			table->item( row,1 )->setText( QString( "Nil" ) );
 
-		if( type == QString( "crypto_LUKS" ) )
-			table->item( row,3 )->setText( QString( "Nil" ) );
-		else if( type == QString( "crypto_PLAIN" ) ){
-			table->item( row,3 )->setText( QString( "Nil" ) );
-			table->item( row,2 )->setText( QString( "Nil" ) );
+			if( type == QString( "crypto_LUKS" ) )
+				table->item( row,3 )->setText( QString( "Nil" ) );
+			else if( type == QString( "crypto_PLAIN" ) ){
+				table->item( row,3 )->setText( QString( "Nil" ) );
+				table->item( row,2 )->setText( QString( "Nil" ) );
+			}
+
+			table->item( row,5 )->setText( QString( "Nil" ) );
 		}
-
-		table->item( row,5 )->setText( QString( "Nil" ) );
 
 		this->enableAll();
 	}
@@ -450,27 +453,6 @@ void MainWindow::slotUnmountComplete( int status,QString msg )
 void MainWindow::slotCurrentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous )
 {
 	tablewidget::selectTableRow( current,previous ) ;
-	this->disableCommand();
-}
-
-void MainWindow::disableCommand()
-{
-	if( m_ui->tableWidget->rowCount() < 1 )
-		return ;
-
-	int row = m_ui->tableWidget->currentRow() ;
-
-	if( row < 0 )
-		return ;
-	QString entry = m_ui->tableWidget->item( row,1 )->text() ;
-
-	if( entry == QString( "Nil" ) ){
-		m_ui->pbunmount->setEnabled( false );
-		m_ui->pbmount->setEnabled( true );
-	}else{
-		m_ui->pbmount->setEnabled( false );
-		m_ui->pbunmount->setEnabled( true );
-	}
 }
 
 void MainWindow::disableAll()
@@ -491,18 +473,10 @@ void MainWindow::enableAll()
 	m_ui->pbupdate->setEnabled( true );
 	m_ui->tableWidget->setEnabled( true );
 	m_working = false ;
-	if( m_ui->tableWidget->rowCount() > 0 ){
-		if( m_ui->tableWidget->item( m_ui->tableWidget->currentRow(),1 )->text() == QString( "Nil" ) )
-			m_ui->pbmount->setEnabled( true );
-		else
-			m_ui->pbunmount->setEnabled( true );
-	}
-
+	m_ui->pbmount->setEnabled( true );
 	m_ui->tableWidget->setFocus();
 }
 
 MainWindow::~MainWindow()
 {
-	if( m_ui )
-		delete m_ui ;
 }

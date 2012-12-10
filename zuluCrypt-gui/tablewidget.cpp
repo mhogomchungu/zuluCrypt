@@ -54,6 +54,20 @@ void tablewidget::selectTableRow( QTableWidgetItem * current,QTableWidgetItem * 
 	}
 }
 
+void tablewidget::addEmptyRow( QTableWidget * table )
+{
+	QTableWidgetItem * item ;
+	int row = table->rowCount() ;
+	int col = table->columnCount() ;
+	table->insertRow( row ) ;
+	for( int i = 0 ; i < col ; i++ ){
+		item = new QTableWidgetItem() ;
+		item->setTextAlignment( Qt::AlignCenter );
+		table->setItem( row,i,item );
+	}
+	table->setCurrentCell( row,col - 1 );
+}
+
 void tablewidget::addRowToTable( QTableWidget * table,QStringList & list )
 {
 	QTableWidgetItem * item ;

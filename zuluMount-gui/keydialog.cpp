@@ -199,7 +199,7 @@ void keyDialog::slotMountComplete( int st,QString m )
 			 * The volume is reported as opened and it actually is
 			 */
 			managepartitionthread * mpt = new managepartitionthread() ;
-			mpt->setDevice( m_table->item( m_table->currentRow(),0 )->text() );
+			mpt->setDevice( m_path );
 			connect( mpt,SIGNAL( signalProperties( QString ) ),this,SLOT( volumeMiniProperties( QString ) ) ) ;
 			mpt->startAction( QString( "volumeMiniProperties" ) ) ;
 

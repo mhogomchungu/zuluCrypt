@@ -135,7 +135,7 @@ void mountPartition::slotMountComplete( int status,QString msg )
 		this->enableAll();
 	}else{
 		managepartitionthread * mpt = new managepartitionthread() ;
-		mpt->setDevice( m_table->item( m_table->currentRow(),0 )->text() );
+		mpt->setDevice( m_path );
 		connect( mpt,SIGNAL( signalProperties( QString ) ),this,SLOT( volumeMiniProperties( QString ) ) ) ;
 		mpt->startAction( QString( "volumeMiniProperties" ) ) ;
 
