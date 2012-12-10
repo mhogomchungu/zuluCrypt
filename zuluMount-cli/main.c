@@ -252,22 +252,23 @@ static int _zuluMountMount( const char * device,const char * m_point,const char 
 static int _zuluMountUserHasAccessToMountPoint( const char * device,uid_t uid )
 {
 	char * e ;
-	int st ;
+	int st = 0 ;
 	/*
 	 * zuluCryptSecurityPathIsValid() is defined in zuluCrypt-cli/lib/print_mounted_volumes.c 
 	 */
 	char * m_point = zuluCryptGetMountPointFromPath( device ) ;
 	if( m_point != NULL ){
-		/*
-		 * zuluCryptSecurityPathIsValid() is defined in zuluCrypt-cli/bin/security.c
-		 */
 		e = strrchr( m_point,'/' ) ;
-		*e = '\0' ;
-		st = zuluCryptSecurityPathIsValid( m_point,uid ) ;
-		free( m_point ) ;
-	}else{
-		st = 0 ;
+		if( e != NULL ){
+			*e = '\0' ;
+			/*
+			 * zuluCryptSecurityPathIsValid() is defined in zuluCrypt-cli/bin/security.c
+			 */
+			st = zuluCryptSecurityPathIsValid( m_point,uid ) ;
+			free( m_point ) ;
+		}
 	}
+	
 	return st ;
 }
 
