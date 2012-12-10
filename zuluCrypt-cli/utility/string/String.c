@@ -404,11 +404,13 @@ void StringClear( string_t st )
 
 const char * StringRemoveRight( string_t st,size_t x ) 
 {
-	if( x >= st->size )
-		x = st->size ;
-	
-	st->size = st->size - x ;
-	*( st->string + st->size ) = '\0' ;
+	if( x >= st->size ){
+		st->string[ 0 ] = '\0' ;
+		st->size = 0 ;
+	}else{
+		st->size = st->size - x ;
+		*( st->string + st->size - 1 ) = '\0' ;
+	}
 	return st->string ;
 }
 
@@ -1300,10 +1302,10 @@ string_t StringGetFromVirtualFile( const char * path )
 			}
 		}
 	}
-	
+
 	fclose( f ) ;
 	c = realloc( c,i + 2 ) ;
 	c[ i + 1 ] = '\0' ;
 	
-	return StringInheritWithSize( &c,i ) ;
+	return StringInheritWithSize( &c,i + 2 ) ;
 }

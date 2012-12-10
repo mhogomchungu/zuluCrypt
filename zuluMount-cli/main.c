@@ -246,6 +246,7 @@ static int _zuluMountMount( const char * device,const char * m_point,const char 
 
 static int _zuluMountUserHasAccessToMountPoint( const char * device,uid_t uid )
 {
+	char * e ;
 	int st ;
 	/*
 	 * zuluCryptSecurityPathIsValid() is defined in zuluCrypt-cli/lib/print_mounted_volumes.c 
@@ -255,6 +256,8 @@ static int _zuluMountUserHasAccessToMountPoint( const char * device,uid_t uid )
 		/*
 		 * zuluCryptSecurityPathIsValid() is defined in zuluCrypt-cli/bin/security.c
 		 */
+		e = strrchr( m_point,'/' ) ;
+		*e = '\0' ;
 		st = zuluCryptSecurityPathIsValid( m_point,uid ) ;
 		free( m_point ) ;
 	}else{
