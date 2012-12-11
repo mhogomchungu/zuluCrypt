@@ -49,9 +49,10 @@ static int _mount_get_opts( int argc,char * argv[],const char ** action,const ch
 			   const char ** m_point, const char ** mode,const char ** key,const char ** key_source,int * mpo )
 {
 	int c ;
-	while ( ( c = getopt( argc,argv,"LntSshlPmud:z:e:p:f:G:" ) ) != -1 ) {
+	while ( ( c = getopt( argc,argv,"LntSshlPmuDd:z:e:p:f:G:" ) ) != -1 ) {
 		switch( c ){
 			case 'n' : *mpo     = 1      ; break ;
+			case 'D' : *action  = "-D"   ; break ;
 			case 't' : *action  = "-t"   ; break ;
 			case 's' : *action  = "-s"   ; break ;
 			case 'S' : *action  = "-S"   ; break ;
@@ -493,10 +494,29 @@ static int _zuluPartitionHasCryptoFs( const char * device )
 	}
 }
 
+static int _zuluMountPrintVolumeDeviceName( const char * device )
+{
+	/*
+	 * zuluCryptVolumeDeviceName() is defined in ../lib/status.c
+	 */
+	char * c = zuluCryptVolumeDeviceName( device ) ;
+	if( c == NULL ){
+		printf( "ERROR: could not get device address from mapper address\n" ) ;
+		return 1 ;
+	}else{
+		printf( "%s\n",c ) ;
+		free( c ) ;
+		return 0 ;
+	}
+}
+
 static int _zuluMountExe( const char * device,const char * action,const char * m_point,
 			  const char * mode,uid_t uid,const char * key,const char * key_source,
 			  int mount_point_option )
 {
+	if( strcmp( action,"-D" ) == 0 )
+		return _zuluMountPrintVolumeDeviceName( device ) ;
+	
 	if( strcmp( action,"-L" ) == 0 )
 		return _zuluMountPrintDeviceProperties( device,uid ) ;
 	
@@ -543,7 +563,8 @@ options:\n\
       doc3 = "\
 -l -- print a list of mounted partitions\n\
 -L -- must be used with -d,print properties of a partition specified by d option\n\
--p -- print a list of all partitions\n" ;      
+-P -- print a list of all partitions\n\
+-D -- get a device node address from its mapper path( mapper paths are usually located in /dev/mapper ). Required argument: -d\n";
 	printf( "%s%s%s",doc1,doc2,doc3 ) ;
 	
 	return 201 ;
@@ -555,21 +576,17 @@ static void ExitOnMemoryExaustion( void )
 	exit( 1 ) ;
 }
 
-static int _zuluMountcheckifLVM( const char * path,const char * rpath )
+static int _zuluMountcheckifLVM( const char * action,const char * rpath )
 {
-	/*
-	 * zuluCryptGetFileSystemFromDevice() is defined in ../zuluCrypt-cli/lib/mount_volume.c 
-	 */
+	if( strcmp( action,"-D" ) == 0 )
+		return 0 ;
 	
 	/*
-	 * in this function,we are making an assumption that a /dev/dm-X path with a file system is a lvm device
+	 * we currently dont support lvm volumes,for the moment treat paths to dev/dm-* as lvm volumes and refuse
+	 * to work with them.
 	 */
-	string_t st = zuluCryptGetFileSystemFromDevice( path ) ;
-	if( st != StringVoid ){
-		if( strncmp( rpath,"/dev/dm-",8 ) == 0 ){
-			return 1 ;
-		}
-	}
+	if( strncmp( rpath,"/dev/dm-",8 ) == 0 )
+		return 1 ;
 	
 	return 0 ;
 }
@@ -602,7 +619,7 @@ static int _zuluMountDoAction( const char * device,const char * action,const cha
 		return 217 ;
 	}
 	
-	if( _zuluMountcheckifLVM( device,dev ) ){
+	if( _zuluMountcheckifLVM( action,dev ) ){
 		printf( "ERROR: this device looks like an lvm device,these devices are currently not supported\n" ) ;
 		status = 218 ;
 	}else{
