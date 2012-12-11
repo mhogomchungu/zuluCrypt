@@ -226,7 +226,6 @@ string_t StringCopy( string_t st ) ;
  */
 void StringReadToBuffer( string_t st,char * buffer,size_t size ) ;
 
-
 /*
  * Remember to clean after yourself.
  * Always call this function when you are done with the string handled by handle st.
@@ -422,9 +421,16 @@ const char * StringRemoveStringPos( string_t st,const char * s,size_t p ) ;
 const char * StringRemoveRight( string_t st,size_t x ) ;
 
 /*
- * Clear the string by writing '\0' to a string buffer handled by handle st. Essentiall remove all elements in it.  
+ * Clear the string by writing '\0' using memset() essentiall wipe out all of its current content.
+ * This is a bit more expensive but useful if you want to start afresh with an empty string.  
  */
 void StringClear( string_t st ) ;
+
+/*
+ * forget about all content in the string and start afresh as if the string is not allocated.
+ * The old data is still there and will be overwritten by new data as the string get filled up
+ */
+void StringReset( string_t st ) ;
 
 /*
  * remove the first x characters from the string counting from the left

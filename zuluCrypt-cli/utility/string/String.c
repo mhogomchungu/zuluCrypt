@@ -396,10 +396,18 @@ const char * StringRemoveLength( string_t st,size_t x ,size_t y )
 
 void StringClear( string_t st )
 {
-	if( st == StringVoid )
-		return ;
-	memset( st->string,'\0',st->size ) ;
-	st->size = 0 ;
+	if( st != StringVoid ){
+		memset( st->string,'\0',st->size ) ;
+		st->size = 0 ;
+	}
+}
+
+void StringReset( string_t st )
+{
+	if( st != StringVoid ){
+		st->string[ 0 ] = '\0' ;
+		st->size = 0 ;
+	}
 }
 
 const char * StringRemoveRight( string_t st,size_t x ) 
