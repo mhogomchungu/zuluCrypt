@@ -26,8 +26,7 @@ MainWindow::MainWindow( QWidget * parent ) : QWidget( parent ),m_ui( new Ui::Mai
 
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Password );
 
-	this->setWindowIcon( QIcon( QString( ":/keyfile.png" ) ) );
-	m_ui->pbKeyFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) );
+	this->setWindowIcon( QIcon( QString( ":/key.png" ) ) );
 
 	QAction * ac = new QAction( this ) ;
 	QList<QKeySequence> keys ;
@@ -39,7 +38,6 @@ MainWindow::MainWindow( QWidget * parent ) : QWidget( parent ),m_ui( new Ui::Mai
 
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->pbOpen,SIGNAL( clicked() ),this,SLOT( pbOpen() ) ) ;
-	connect( m_ui->pbKeyFile,SIGNAL( clicked() ),this,SLOT( pbKeyFile() ) ) ;
 
 	this->SetFocus();
 }
@@ -62,8 +60,6 @@ void MainWindow::SetFocus()
 {
 	if( m_ui->lineEditKey->text().isEmpty() )
 		m_ui->lineEditKey->setFocus();
-	else if( m_ui->lineEditKeyFile->text().isEmpty() )
-		m_ui->lineEditKeyFile->setFocus();
 	else
 		m_ui->pbOpen->setFocus();
 }
@@ -82,39 +78,14 @@ void MainWindow::pbOpen()
 {
 	QByteArray key = m_ui->lineEditKey->text().toAscii() ;
 
-	m_keyFile = m_ui->lineEditKeyFile->text() ;
-
-	if( m_keyFile.isEmpty() || key.isEmpty() ){
+	if( key.isEmpty() ){
 		DialogMsg msg( this ) ;
-		return msg.ShowUIOK( tr( "ERROR" ),tr( "atleast one required field is empty" ) );
-	}
-
-	QString kar = m_keyFile.mid( 0,1 ) ;
-
-	if( kar == QString( "~" ) )
-		m_keyFile = QDir::homePath() + QString( "/" ) + m_keyFile.mid( 1 ) ;
-
-	QFile file( m_keyFile ) ;
-
-	if( file.open( QIODevice::ReadOnly ) )
-		key = key + file.readAll() ;
-	else{
-		DialogMsg msg( this ) ;
-		return msg.ShowUIOK( tr( "ERROR" ),tr( "could not open keyfile for reading" ) );
+		return msg.ShowUIOK( tr( "ERROR" ),tr( "key field is empty" ) );
 	}
 
 	socketSendKey::zuluCryptPluginManagerSendKey( m_handle,key ) ;
 
 	this->done();
-}
-
-void MainWindow::pbKeyFile()
-{
-	QString Z = QFileDialog::getOpenFileName( this,QString( "select a key file" ),QDir::homePath() ) ;
-
-	if( !Z.isEmpty() )
-		m_ui->lineEditKeyFile->setText( Z );
-	this->SetFocus();
 }
 
 MainWindow::~MainWindow()

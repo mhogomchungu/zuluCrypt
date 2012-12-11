@@ -4,7 +4,7 @@ if( NOT NOGUI )
 	
 add_subdirectory( gpg )
 add_subdirectory( keykeyfile )
-
+add_subdirectory( keydialog-qt )
 #keyring module is handled by CMakeLists.txt in ../zuluCrypt-cli
 #add_subdirectory( keyring )
 	
