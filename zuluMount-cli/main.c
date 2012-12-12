@@ -106,7 +106,8 @@ static int _zuluMountPartitionAccess( const char * device,const char * mode,uid_
 	int users   ;
 	
 	if( zuluCryptPartitionIsSystemPartition( device ) )
-		return 4 ;
+		if( uid != 0 )
+			return 4 ;
 	
 	p = StringListStringAt( stl,MOUNTOPTIONS ) ;
 	
