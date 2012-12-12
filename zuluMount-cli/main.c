@@ -90,7 +90,7 @@ static int _zuluExit( int st,string_t z,char * q,const char * msg )
 	return st ;
 }
 
-static int _zuluMountPartitionAccess( const char * mode,uid_t uid,stringList_t stl )
+static int _zuluMountPartitionAccess( const char * device,const char * mode,uid_t uid,stringList_t stl )
 {
 	/*
 	 * this function is defined in ../zuluCrypt-cli/lib/mount_volume.c
@@ -98,16 +98,21 @@ static int _zuluMountPartitionAccess( const char * mode,uid_t uid,stringList_t s
 	/*
 	 * MOUNTOPTIONS constant is defined in ../zuluCrypt-cli/lib/includes.h
 	 */
-	string_t p = StringListStringAt( stl,MOUNTOPTIONS ) ;
+	string_t p ;
 	int ro      ;
 	int nouser  ;
 	int defaulT ;
 	int user    ;
 	int users   ;
-
+	
+	if( zuluCryptPartitionIsSystemPartition( device ) )
+		return 4 ;
+	
+	p = StringListStringAt( stl,MOUNTOPTIONS ) ;
+	
 	if( p == StringVoid )
 		return 0 ;
-	
+
 	ro      = StringContains( p,"ro" ) ;
 	nouser  = StringContains( p,"nouser" ) ;
 	defaulT = StringContains( p,"defaults" ) ;
@@ -128,7 +133,7 @@ static int _zuluMountPartitionAccess( const char * mode,uid_t uid,stringList_t s
 	}else if( !nouser && !defaulT && !user && !users && uid != 0 ){
 		return 2 ;
 	}
-	
+
 	return 0 ;
 }
 
@@ -161,13 +166,17 @@ static int _zuluMountMount( const char * device,const char * m_point,const char 
 	 */
 	stl = zuluCryptGetFstabEntryList( device ) ;
 	
-	status = _zuluMountPartitionAccess( mode,uid,stl ) ;
+	status = _zuluMountPartitionAccess( device,mode,uid,stl ) ;
+
 	if( status == 1 ){
 		StringListDelete( &stl ) ;
 		return _zuluExit( 102,z,path,"ERROR: \"/etc/fstab\" entry for this partition requires it to be mounted read only" ) ;
 	}else if( status == 2 ){
 		StringListDelete( &stl ) ;
 		return _zuluExit( 103,z,path,"ERROR: \"/etc/fstab\" entry for this partition requires only root user or members of group zulucrypt to mount it" ) ;
+	}else if( status == 4 ){
+		StringListDelete( &stl ) ;
+		return _zuluExit( 112,z,path,"ERROR: insuffienct privilege to access a system partition,only root and zulucrypt group members can do that" ) ;
 	}
 		
 	if( m_point != NULL ){
@@ -198,12 +207,12 @@ static int _zuluMountMount( const char * device,const char * m_point,const char 
 	
 	/*
 	 * zuluCryptSecurityCreateMountPoint() is defined in ../zuluCrypt-cli/bin/security.c
-	 * zuluCryptPathIsNotValid() is defined in ../zuluCrypt-cli/lib/is_path_valid.c
+	 * zuluCryptSecurityPathIsValid() is defined in ../zuluCrypt-cli/bin/security.c
 	 */
 	
 	m_path = StringContent( z ) ;
 	
-	if( zuluCryptPathIsNotValid( m_path ) ){
+	if( !zuluCryptSecurityPathIsValid( m_path,uid ) ){
 		/*
 		 * Mount folder does not exit,try to create it
 		 */
@@ -290,9 +299,13 @@ static int _zuluMountUMount( const char * device,uid_t uid,const char * mode,int
 	 */
 	stl = zuluCryptGetFstabEntryList( device ) ;
 	
-	if( _zuluMountPartitionAccess( mode,uid,stl ) == 2 ){
+	status = _zuluMountPartitionAccess( device,mode,uid,stl ) ;
+	if( status == 2 ){
 		StringListDelete( &stl ) ;
 		return _zuluExit( 101,StringVoid,m_point,"ERROR: \"/etc/fstab\" entry for this partition requires only root user or members of group zulucrypt to unmount it" ) ;
+	}else if( status == 4 ) {
+		StringListDelete( &stl ) ;
+		return _zuluExit( 112,StringVoid,m_point,"ERROR: insuffienct privilege to access a system partition,only root and zulucrypt group members can do that" ) ;
 	}
 	
 	/*
@@ -301,7 +314,8 @@ static int _zuluMountUMount( const char * device,uid_t uid,const char * mode,int
 	st = StringListStringAt( stl,MOUNTOPTIONS ) ;
 	if( !StringContains( st,"users" ) ){
 		if( !_zuluMountUserHasAccessToMountPoint( device,uid ) ){
-			return _zuluExit( 106,st,m_point,"ERROR: insuffienct privilege to unmount the volume,another user appear to have mount it" ) ;
+			StringListDelete( &stl ) ;
+			return _zuluExit( 106,StringVoid,m_point,"ERROR: insuffienct privilege to unmount the volume,another user appear to have mount it" ) ;
 		}
 	}
 	
