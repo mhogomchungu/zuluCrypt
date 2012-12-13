@@ -266,13 +266,7 @@ static inline string_t set_mount_options( m_struct * mst )
 	}else{
 		StringPrepend( opt,"rw," ) ;
 	}
-	
-	StringReplaceString( opt,",,","," );
 		
-	if( StringEndsWith( opt,"," ) ){
-		StringRemoveRight( opt,1 ) ;
-	}
-	
 	mst->opts = StringContent( opt ) ;
 	return opt;
 }
@@ -280,7 +274,6 @@ static inline string_t set_mount_options( m_struct * mst )
 static string_t _mount_options( unsigned long flags,string_t * xt )
 {	
 	string_t st = *xt ;
-	
 	if( flags & MS_NODEV ){
 		StringAppend( st,",nodev" ) ; 
 	}
@@ -320,6 +313,9 @@ static string_t _mount_options( unsigned long flags,string_t * xt )
 	if( flags & MS_SYNCHRONOUS ){
 		StringAppend( st,",synchronous" ) ;
 	}
+	
+	StringReplaceString( st,",,","," );
+	
 	return st ;
 }
 

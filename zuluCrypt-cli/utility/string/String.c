@@ -418,6 +418,7 @@ const char * StringRemoveRight( string_t st,size_t x )
 		st->size = st->size - x ;
 		*( st->string + st->size - 1 ) = '\0' ;
 	}
+	
 	return st->string ;
 }
 
