@@ -25,11 +25,12 @@ static inline int zuluExit( int x,string_t p )
 	return x ;
 }
 
-int zuluCryptOpenVolume( const char * dev,const char * map,const char * m_point,uid_t id,const char * mode,const char * pass,size_t pass_size ) 
+int zuluCryptOpenVolume( const char * dev,const char * map,const char * m_point,uid_t id,unsigned long flags,const char * pass,size_t pass_size ) 
 {
 	int h ;
 	string_t p = StringVoid ;
 	const char * mapper ;
+	const char * mode ;
 	
 	/*
 	 * zuluCryptPathIsNotValid() is defined in is_path_valid.c
@@ -47,6 +48,11 @@ int zuluCryptOpenVolume( const char * dev,const char * map,const char * m_point,
 	if( zuluCryptPathIsValid( mapper ) )
 		return zuluExit( 2,p ) ;
 
+	if( flags & MS_RDONLY )
+		mode = "ro" ;
+	else
+		mode = "rw" ;
+	
 	/*
 	 * zuluCryptOpenLuks()   is defined in open_luks.c
 	 * zuluCryptOpenTcrypt() is defined in open_tcrypt.c
@@ -69,7 +75,7 @@ int zuluCryptOpenVolume( const char * dev,const char * map,const char * m_point,
 		/*
 		 * zuluCryptMountVolume() is defined in mount_volume.c
 		 */
-		h = zuluCryptMountVolume( mapper,m_point,mode,id ) ;
+		h = zuluCryptMountVolume( mapper,m_point,flags,id ) ;
 	
 		if( h != 0 ){
 			/*

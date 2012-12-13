@@ -277,6 +277,13 @@ string_t StringListDetachAt( stringList_t stl, size_t index ) ;
 void StringListDelete( stringList_t * stl ) ;
 
 /*
+ * returns NULL terminated array of strings( char * argv[] ) composed of strings managed by the stringlist
+ * NULL is returned on error. 
+ * NOTE: remember to free() the returned value but DONOT free its content.
+ */
+char ** StringListStringArray( stringList_t ) ;
+
+/*
  * remember to clean after yourself
  * overwite string objects as they are cleaned up
  */

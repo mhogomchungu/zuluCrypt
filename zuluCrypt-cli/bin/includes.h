@@ -16,7 +16,7 @@
   *  You should have received a copy of the GNU General Public License
   *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
   */
-  
+ 
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <stdio.h>
@@ -109,3 +109,8 @@ int zuluCryptSecurityPathIsValid( const char * path,uid_t uid ) ;
  * this function is defined in get_opts.c
  */
 void zuluCryptEXEGetOptsSetDefault( struct_opts * stopts ) ;
+
+/*
+ * this function is defined in mount_flags.c
+ */
+int zuluCryptMountFlagsAreNotCorrect( const char * mode,uid_t uid,unsigned long * flags ) ;

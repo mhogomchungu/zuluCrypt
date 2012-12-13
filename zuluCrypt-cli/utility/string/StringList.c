@@ -614,6 +614,26 @@ ssize_t StringListHasStartSequence( stringList_t stl,const char * str )
 	return -1 ;
 }
 
+char ** StringListStringArray( stringList_t stl )
+{
+	size_t i ;
+	size_t j ;
+	char ** argv ;
+	
+	if( stl == StringListVoid )
+		return NULL ;
+	
+	j = stl->size ;
+	
+	argv = ( char ** ) malloc( sizeof( char * ) * ( j + 1 ) ) ;
+	argv[ j ] = NULL ;
+	
+	for( i = 0 ; i < j ; i++ )
+		argv[ i ] = stl->stp[ i ]->string ;
+	
+	return argv ;
+}
+
 stringList_t StringListRemoveAt( stringList_t stl, size_t index ) 
 {
 	size_t size ;

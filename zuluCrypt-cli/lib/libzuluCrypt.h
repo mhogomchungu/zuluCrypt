@@ -58,7 +58,7 @@ int zuluCryptOpenVolume( const char * device, /* path to a file/partition to be 
 			 const char * mapper, /* mapper name( will show up in /dev/mapper/ )                          	*/
 			 const char * m_point,/* mount point path, opened volume will be mounted on this path          	*/
 			 uid_t id,            /* owner of the mount point will have this id with rwx------ permissions 	*/
-			 const char * mode,   /* "ro" or "rw",the former means open volume in read only mode,          	*/
+			 unsigned long flags, /* option as expected by the second from last argument of mount() command	*/
 					      /* the latter means open in read/write mode                              	*/
 			 const char * pass,   /* encrypted volume passphrase to be used to open the volume             	*/
 			 size_t pass_size     /* passphrase size 						      	*/
@@ -117,7 +117,7 @@ int zuluCryptUnmountVolume( const char * mapper, /*mapper is the full address of
  */
 int zuluCryptMountVolume( const char * mapper, /* path to a file or partition to mount                                      */
 			  const char * m_point,/* mount point								    */
-			  const char * mode,   /* mode, options are "ro" and "rw" for read only and read/write respectively */
+			  unsigned long flags,  /* mode */
 			  uid_t id ) ;         /* user id the mount point should use					    */
 
 /**

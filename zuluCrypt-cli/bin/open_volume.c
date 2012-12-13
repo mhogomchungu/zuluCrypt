@@ -74,6 +74,7 @@ only root user or members of group zulucrypt-write can do that\n" );									bre
 		case 28: printf( "ERROR: insufficient privilege to open plugin or path does not exist\n" );				break ;
 		case 29: printf( "ERROR: could not get a passphrase through a local socket\n" );					break ;
 		case 30: printf( "ERROR: mount point error" ) ;									        break ; 
+		case 31: printf( "ERROR: insufficient privilege to mount the device with given options\n" ) ;				break ;
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
 	
@@ -128,6 +129,14 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	
 	size_t len ;
 	int st = 0 ;
+	
+	unsigned long flags ;
+	
+	/*
+	 * zuluCryptMountFlagsAreNotCorrect() is defined in ./mount_flags.c
+	 */
+	if( zuluCryptMountFlagsAreNotCorrect( mode,uid,&flags ) )
+		return zuluExit( 31,device,cpoint,stl ) ; 
 	
 	/*
 	 * This function is defined at "is_path_valid.c"
@@ -216,7 +225,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		cpass = StringContent( *passphrase ) ;
 		len = StringLength( *passphrase ) ;
 		
-		st = zuluCryptOpenVolume( device,cname,cpoint,uid,mode,cpass,len ) ;
+		st = zuluCryptOpenVolume( device,cname,cpoint,uid,flags,cpass,len ) ;
 	
 	}else if( source == NULL ){
 		
@@ -228,7 +237,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		printf( "\n" ) ;
 		cpass = StringContent( *passphrase ) ;
 		len = StringLength( *passphrase ) ;
-		st = zuluCryptOpenVolume( device,cname,cpoint,uid,mode,cpass,len ) ;
+		st = zuluCryptOpenVolume( device,cname,cpoint,uid,flags,cpass,len ) ;
 	}else{
 		if( source == NULL || pass == NULL )
 			return zuluExit_1( 11,opts,device,cpoint,stl ) ;
@@ -236,7 +245,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		if( strcmp( source,"-p" ) == 0 ){
 			cpass = pass ;
 			len = strlen( pass ) ;
-			st = zuluCryptOpenVolume( device,cname,cpoint,uid,mode,cpass,len ) ;
+			st = zuluCryptOpenVolume( device,cname,cpoint,uid,flags,cpass,len ) ;
 		}else if( strcmp( source,"-f" ) == 0 ){
 			/*
 			 * function is defined at "security.c"
@@ -249,7 +258,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 			}
 			cpass = StringContent( *data ) ;
 			len = StringLength( *data ) ;
-			st = zuluCryptOpenVolume( device,cname,cpoint,uid,mode,cpass,len ) ;
+			st = zuluCryptOpenVolume( device,cname,cpoint,uid,flags,cpass,len ) ;
 		}
 	}		
 	

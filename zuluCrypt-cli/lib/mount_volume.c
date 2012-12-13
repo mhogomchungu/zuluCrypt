@@ -38,7 +38,6 @@
 typedef struct{
 	const char * device ;
 	const char * m_point ;
-	const char * mode ;
 	const char * fs ;
 	const char * opts ;
 	uid_t uid ;
@@ -187,11 +186,16 @@ static inline int fs_family( const char * fs )
 static inline string_t set_mount_options( m_struct * mst )
 {
 	string_t opt = zuluCryptGetMountOptionsFromFstab( mst->device,MOUNTOPTIONS ) ;
-	
-	if( opt == StringVoid )
-		opt = String( mst->mode ) ;
+	const char * mode ;
+	if( mst->m_flags & MS_RDONLY )
+		mode = "ro" ;
 	else
-		StringMultipleAppend( opt,",",mst->mode,END ) ;
+		mode = "rw" ;
+	
+	if( opt == StringVoid ){
+		opt = String( mode ) ;
+	}else
+		StringMultipleAppend( opt,",",mode,END ) ;
 	
 	if( fs_family( mst->fs ) == 1 ){
 		if( !StringContains( opt,"dmask=" ) ){
@@ -273,11 +277,64 @@ static inline string_t set_mount_options( m_struct * mst )
 	return opt;
 }
 
+static string_t _mount_options( unsigned long flags,string_t * xt )
+{	
+	string_t st = *xt ;
+	
+	if( flags & MS_NODEV ){
+		StringAppend( st,",nodev" ) ; 
+	}
+	if( flags & MS_NOEXEC ){
+		StringAppend( st,",noexec" ) ;
+	}
+	if( flags & MS_NOSUID ){
+		StringAppend( st,",nosuid" ) ;
+	}
+	if( flags & MS_BIND ){
+		StringAppend( st,",bind" ) ;
+	}
+	if( flags & MS_MANDLOCK ){
+		StringAppend( st,",mandlock" ) ;
+	}
+	if( flags & MS_MOVE ){
+		StringAppend( st,",move" ) ;
+	}
+	if( flags & MS_NOATIME ){
+		StringAppend( st,",noatime" ) ;
+	}
+	if( flags & MS_NODIRATIME ){
+		StringAppend( st,",nodiratime" ) ;
+	}
+	if( flags & MS_RELATIME  ){
+		StringAppend( st,",relatime" ) ;
+	}
+	if( flags & MS_REMOUNT ){
+		StringAppend( st,",remount" ) ;
+	}
+	if( flags & MS_SILENT ){
+		StringAppend( st,",silent" ) ;
+	}
+	if( flags & MS_STRICTATIME ){
+		StringAppend( st,",strictatime" ) ;
+	}
+	if( flags & MS_SYNCHRONOUS ){
+		StringAppend( st,",synchronous" ) ;
+	}
+	return st ;
+}
+
 static inline int mount_ntfs( const m_struct * mst )
 {
 	int status ;
 	process_t p = Process( ZULUCRYPTmount ) ;
-	ProcessSetArgumentList( p,"-t","ntfs-3g","-o",mst->opts,mst->device,mst->m_point,ENDLIST ) ;
+	string_t st = String( "" ) ;
+	const char * opts ;
+	_mount_options( mst->m_flags,&st ) ;
+	if( mst->m_flags & MS_RDONLY )
+		opts = StringPrepend( st,"ro" ) ;
+	else
+		opts = StringPrepend( st,"rw" ) ;
+	ProcessSetArgumentList( p,"-t","ntfs-3g","-o",opts,mst->device,mst->m_point,ENDLIST ) ;
 	ProcessStart( p ) ;
 	status = ProcessExitStatus( p ) ; 
 	ProcessDelete( &p ) ;
@@ -307,7 +364,7 @@ string_t zuluCryptGetFileSystemFromDevice( const char * device )
 	return st ;
 }
 
-int zuluCryptMountVolume( const char * path,const char * m_point,const char * mode,uid_t id )
+int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long mode ,uid_t id )
 {
 	struct mntent mt  ;
 	int h ;
@@ -329,13 +386,9 @@ int zuluCryptMountVolume( const char * path,const char * m_point,const char * mo
 	m_struct mst ;
 	mst.device = path ;
 	mst.m_point = m_point ;
-	mst.mode = mode ;
 	mst.uid = id ;
 	
-	if( strstr( mode,"ro" ) != NULL )
-		mst.m_flags = MS_RDONLY ;
-	else
-		mst.m_flags = 0 ;
+	mst.m_flags = mode ;
 	
 	/* 
 	 * zuluCryptGetFileSystemFromDevice() is defined in this source file
@@ -407,13 +460,16 @@ int zuluCryptMountVolume( const char * path,const char * m_point,const char * mo
 				f = setmntent( "/etc/mtab","a" ) ;
 				mt.mnt_dir    = ( char * ) mst.m_point ;
 				mt.mnt_type   = ( char * ) mst.fs ;
+				
+				_mount_options( mst.m_flags,opts ) ;
+				
 				if( device_file ){
 					mt.mnt_fsname = ( char * ) path ;
 					mt.mnt_opts = ( char * )StringMultipleAppend( *opts,",loop=",mst.device,END ) ;
 					close( fd ) ;
 				}else{
 					mt.mnt_fsname = ( char * ) mst.device ;
-					mt.mnt_opts = ( char * ) mst.opts ;
+					mt.mnt_opts = ( char * ) StringContent( *opts ) ;
 				}
 				mt.mnt_freq   = 0 ;
 				mt.mnt_passno = 0 ;

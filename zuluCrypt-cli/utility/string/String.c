@@ -61,7 +61,6 @@ static string_t _StringError( void )
 {
 	if( _fcn_ != NULL )
 		( *_fcn_ )() ;
-	
 	return StringVoid ;
 }
 
@@ -668,7 +667,12 @@ const char * StringPrependChar( string_t st,char c )
 const char * StringAppend( string_t st,const char * s ) 
 {
 	char * c ;
-	size_t len = strlen( s ) ;
+	size_t len ;
+	
+	if( s == NULL || st == StringVoid )
+		return NULL ;
+	
+	len = strlen( s ) ;
 
 	c = __StringExpandMemory( st,st->size + len ) ;
 	

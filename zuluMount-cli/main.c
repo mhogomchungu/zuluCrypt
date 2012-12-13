@@ -147,8 +147,16 @@ static int _zuluMountMount( const char * device,const char * m_point,const char 
 	char * path = NULL ;
 	char * q ;
 	const char * m_path ;
+	unsigned long flags ;
 	
 	stringList_t stl = StringListVoid ;
+	
+	/*
+	 * zuluCryptMountFlagsAreNotCorrect() is defined in ../zuluCrypt-cli/bin/mount_flags.c
+	 */
+	if( zuluCryptMountFlagsAreNotCorrect( mode,uid,&flags ) )
+		return _zuluExit( 112,z,path,"ERROR: insuffienct privileges to mount the volume with given mount options" ) ;
+	
 	/*
 	 * zuluCryptPathIsNotValid() is defined in ../zuluCrypt-cli/lib/is_path_valid.c
 	 */
@@ -245,7 +253,7 @@ static int _zuluMountMount( const char * device,const char * m_point,const char 
 	/*
 	 * zuluCryptMountVolume() defined in ../zuluCrypt-cli/lib/mount_volume.c
 	 */
-	status = zuluCryptMountVolume( device,path,mode,uid ) ;
+	status = zuluCryptMountVolume( device,path,flags,uid ) ;
 	
 	if( status == 0 ){
 		return _zuluExit( 0,z,path,"SUCCESS: mount complete successfully" ) ;
