@@ -27,7 +27,8 @@ void zuluCryptEXEGetOptsSetDefault( struct_opts * stopts )
 	stopts->device = NULL ;
 	stopts->mount_point = NULL ;
 	stopts->action = '\0' ;
-	stopts->mode = NULL ;
+	stopts->m_opts = NULL ;
+	stopts->fs_opts = NULL ;
 	stopts->key_source = NULL ;
 	stopts->key = NULL ;
 	stopts->fs = "ext4" ;
@@ -50,7 +51,7 @@ void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
 	
 	zuluCryptEXEGetOptsSetDefault( stopts ) ;
 	
-	while ( (c = getopt(argc,argv,"WTJLORBXASNPkhocsarqwibEDs:m:d:p:f:e:z:g:y:u:l:n:j:t:G:") ) != -1 ) {
+	while ( (c = getopt(argc,argv,"WTJLORBXASNPkhocsarqwibEDs:m:d:p:f:e:Y:i:z:g:y:u:l:n:j:t:G:") ) != -1 ) {
 		switch( c ){
 			case( 'W' ) : stopts->action = 'W' 	; break ;
 			case( 'E' ) : stopts->action = 'E' 	; break ;  
@@ -103,7 +104,9 @@ void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
 			case( 'f' ) : stopts->key_source = "-f" ;
 			stopts->key = optarg ;
 			break ;
-			case( 'e' ) : stopts->mode = optarg ; 
+			case( 'e' ) : stopts->m_opts = optarg ; 
+			break ;
+			case( 'Y' ) : stopts->fs_opts = optarg ; 
 			break ;
 			case( 'z' ) : stopts->fs = optarg ;
 			break ;

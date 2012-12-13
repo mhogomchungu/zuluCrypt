@@ -56,6 +56,7 @@
  lib/blkid_evaluate_tag.c
  lib/open_tcrypt.c
  lib/volume_type.c
+ lib/mount_fs_options.c
 )
  	 
  add_library( Socket STATIC utility/socket/socket.c ) 

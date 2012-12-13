@@ -24,6 +24,11 @@
 extern "C" {
 #endif	
 
+/*
+ * version 3.1.0
+ */
+#define ZULUCRYPT310
+
 /**
  * Return the version string of the library * 
  */
@@ -58,8 +63,8 @@ int zuluCryptOpenVolume( const char * device, /* path to a file/partition to be 
 			 const char * mapper, /* mapper name( will show up in /dev/mapper/ )                          	*/
 			 const char * m_point,/* mount point path, opened volume will be mounted on this path          	*/
 			 uid_t id,            /* owner of the mount point will have this id with rwx------ permissions 	*/
-			 unsigned long flags, /* option as expected by the second from last argument of mount() command	*/
-					      /* the latter means open in read/write mode                              	*/
+			 unsigned long m_opts, /* option as expected by the second from last argument of mount() command	*/
+			 const char * fs_opts, /* options as expected by the last command ofr mount()			*/
 			 const char * pass,   /* encrypted volume passphrase to be used to open the volume             	*/
 			 size_t pass_size     /* passphrase size 						      	*/
 			) ;       
@@ -117,7 +122,8 @@ int zuluCryptUnmountVolume( const char * mapper, /*mapper is the full address of
  */
 int zuluCryptMountVolume( const char * mapper, /* path to a file or partition to mount                                      */
 			  const char * m_point,/* mount point								    */
-			  unsigned long flags,  /* mode */
+			  unsigned long fs_opts,/* file system option as expected by the second from last argument of mount()*/
+			  const char * m_opts,  /* file system option as expected by the last command of mount()	     */
 			  uid_t id ) ;         /* user id the mount point should use					    */
 
 /**

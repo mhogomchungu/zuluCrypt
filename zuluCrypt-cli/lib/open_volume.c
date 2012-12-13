@@ -25,7 +25,9 @@ static inline int zuluExit( int x,string_t p )
 	return x ;
 }
 
-int zuluCryptOpenVolume( const char * dev,const char * map,const char * m_point,uid_t id,unsigned long flags,const char * pass,size_t pass_size ) 
+int zuluCryptOpenVolume( const char * dev,const char * map,
+			 const char * m_point,uid_t id,unsigned long m_opts,
+			 const char * fs_opts,const char * pass,size_t pass_size ) 
 {
 	int h ;
 	string_t p = StringVoid ;
@@ -48,7 +50,7 @@ int zuluCryptOpenVolume( const char * dev,const char * map,const char * m_point,
 	if( zuluCryptPathIsValid( mapper ) )
 		return zuluExit( 2,p ) ;
 
-	if( flags & MS_RDONLY )
+	if( m_opts & MS_RDONLY )
 		mode = "ro" ;
 	else
 		mode = "rw" ;
@@ -75,7 +77,7 @@ int zuluCryptOpenVolume( const char * dev,const char * map,const char * m_point,
 		/*
 		 * zuluCryptMountVolume() is defined in mount_volume.c
 		 */
-		h = zuluCryptMountVolume( mapper,m_point,flags,id ) ;
+		h = zuluCryptMountVolume( mapper,m_point,m_opts,fs_opts,id ) ;
 	
 		if( h != 0 ){
 			/*

@@ -54,7 +54,7 @@ static int crypt_opt( const struct_opts * opts,uid_t uid,int opt )
 	int st ;
 	
 	const char * source	= opts->device ;
-	const char * dest  	= opts->mode ;
+	const char * dest  	= opts->m_opts ;
 	const char * passphrase = opts->key ;
 	const char * type 	= opts->key_source ;
 	

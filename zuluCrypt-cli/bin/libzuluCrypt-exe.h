@@ -31,7 +31,8 @@ typedef struct struct_opts_1{
 	const char * plugin_path ;
 	const char * device ;
 	const char * mount_point ;
-	const char * mode ;
+	const char * m_opts ;
+	const char * fs_opts ;
 	const char * key_source ;
 	const char * key ;
 	const char * fs ;

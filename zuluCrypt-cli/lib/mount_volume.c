@@ -42,6 +42,7 @@ typedef struct{
 	const char * opts ;
 	uid_t uid ;
 	unsigned long m_flags ;
+	const char * fs_flags ;
 }m_struct;
 
 static inline int zuluExit( int st,stringList_t stl )
@@ -194,8 +195,9 @@ static inline string_t set_mount_options( m_struct * mst )
 	
 	if( opt == StringVoid ){
 		opt = String( mode ) ;
-	}else
-		StringMultipleAppend( opt,",",mode,END ) ;
+	}else{
+		StringMultipleAppend( opt,",",mode,",",mst->fs_flags,END ) ;
+	}
 	
 	if( fs_family( mst->fs ) == 1 ){
 		if( !StringContains( opt,"dmask=" ) ){
@@ -360,7 +362,7 @@ string_t zuluCryptGetFileSystemFromDevice( const char * device )
 	return st ;
 }
 
-int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long mode ,uid_t id )
+int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long mount_opts,const char * fs_opts,uid_t uid )
 {
 	struct mntent mt  ;
 	int h ;
@@ -382,10 +384,11 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 	m_struct mst ;
 	mst.device = path ;
 	mst.m_point = m_point ;
-	mst.uid = id ;
+	mst.uid = uid ;
 	
-	mst.m_flags = mode ;
-	
+	mst.m_flags = mount_opts ;
+	opts = StringListAssign( stl ) ;
+		
 	/* 
 	 * zuluCryptGetFileSystemFromDevice() is defined in this source file
 	 */
@@ -404,7 +407,14 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 		 */
 		return zuluExit( 4,stl ) ;
 	}
+		
+	/*
+	 * zuluCryptFsOptionsAreNotAllowed() is defined in ./mount_fs_options.c
+	 */
+	if( zuluCryptFsOptionsAreNotAllowed( uid,fs_opts,fs ) )
+		return zuluExit( -1,stl ) ;
 	
+	mst.fs_flags = fs_opts ;
 	mst.fs = StringContent( fs ) ;
 	opts = StringListAssign( stl ) ;
 	*opts = set_mount_options( &mst ) ;

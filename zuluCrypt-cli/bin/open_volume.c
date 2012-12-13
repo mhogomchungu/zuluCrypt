@@ -109,12 +109,13 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	int nmp                  = opts->open_no_mount ;
 	const char * dev         = opts->device ;
 	const char * mount_point = opts->mount_point ;
-	const char * mode        = opts->mode ;
+	const char * m_opts      = opts->m_opts ;
 	const char * source      = opts->key_source ;
 	const char * pass        = opts->key ;
 	const char * plugin_path = opts->plugin_path ;
 	const char * argv      	 = opts->argv ;
-
+	const char * fs_opts     = opts->fs_opts ;
+	
 	stringList_t stl = StringListInit() ;
 	
 	string_t * passphrase =  StringListAssign( stl ) ;
@@ -130,12 +131,14 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	size_t len ;
 	int st = 0 ;
 	
-	unsigned long flags ;
+	unsigned long m_flags ;
 	
+	if( m_opts == NULL )
+		m_opts = "rw" ;
 	/*
 	 * zuluCryptMountFlagsAreNotCorrect() is defined in ./mount_flags.c
 	 */
-	if( zuluCryptMountFlagsAreNotCorrect( mode,uid,&flags ) )
+	if( zuluCryptMountFlagsAreNotCorrect( m_opts,uid,&m_flags ) )
 		return zuluExit( 31,device,cpoint,stl ) ; 
 	
 	/*
@@ -149,15 +152,12 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		case 1 : return zuluExit( 20,device,cpoint,stl ) ;
 		default: return zuluExit( 3,device,cpoint,stl ) ;
 	}
-	
-	if( mode == NULL )
-		mode = "rw" ;
-	
-	if( strstr( mode,"ro" ) == NULL )
-		if ( strstr( mode,"rw" ) == NULL )
+		
+	if( strstr( m_opts,"ro" ) == NULL )
+		if ( strstr( m_opts,"rw" ) == NULL )
 			return zuluExit( 13,device,cpoint,stl ) ;
 		
-	if( strstr( mode,"rw" ) != NULL ){
+	if( strstr( m_opts,"rw" ) != NULL ){
 		switch( zuluCryptSecurityCanOpenPathForWriting( dev,uid ) ){
 			case 0 : break ;
 			case 1 : return zuluExit( 23,device,cpoint,stl ) ;
@@ -225,7 +225,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		cpass = StringContent( *passphrase ) ;
 		len = StringLength( *passphrase ) ;
 		
-		st = zuluCryptOpenVolume( device,cname,cpoint,uid,flags,cpass,len ) ;
+		st = zuluCryptOpenVolume( device,cname,cpoint,uid,m_flags,fs_opts,cpass,len ) ;
 	
 	}else if( source == NULL ){
 		
@@ -237,7 +237,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		printf( "\n" ) ;
 		cpass = StringContent( *passphrase ) ;
 		len = StringLength( *passphrase ) ;
-		st = zuluCryptOpenVolume( device,cname,cpoint,uid,flags,cpass,len ) ;
+		st = zuluCryptOpenVolume( device,cname,cpoint,uid,m_flags,fs_opts,cpass,len ) ;
 	}else{
 		if( source == NULL || pass == NULL )
 			return zuluExit_1( 11,opts,device,cpoint,stl ) ;
@@ -245,7 +245,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		if( strcmp( source,"-p" ) == 0 ){
 			cpass = pass ;
 			len = strlen( pass ) ;
-			st = zuluCryptOpenVolume( device,cname,cpoint,uid,flags,cpass,len ) ;
+			st = zuluCryptOpenVolume( device,cname,cpoint,uid,m_flags,fs_opts,cpass,len ) ;
 		}else if( strcmp( source,"-f" ) == 0 ){
 			/*
 			 * function is defined at "security.c"
@@ -258,7 +258,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 			}
 			cpass = StringContent( *data ) ;
 			len = StringLength( *data ) ;
-			st = zuluCryptOpenVolume( device,cname,cpoint,uid,flags,cpass,len ) ;
+			st = zuluCryptOpenVolume( device,cname,cpoint,uid,m_flags,fs_opts,cpass,len ) ;
 		}
 	}		
 	

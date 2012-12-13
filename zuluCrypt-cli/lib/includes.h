@@ -143,3 +143,8 @@ int zuluCryptGetVolumeType( const char * device,const char * pass,size_t pass_si
  * this function is defined in open_tcrypt.c
  */
 int zuluCryptVolumeIsTcrypt( const char * device,const char * key,size_t key_len ) ;
+
+/*
+ * this function is defined in mount_fs_options.c
+ */
+int zuluCryptFsOptionsAreNotAllowed( uid_t uid,const char * fs_opts,string_t s ) ;

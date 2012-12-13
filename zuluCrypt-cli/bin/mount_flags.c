@@ -22,6 +22,9 @@
 #include <unistd.h>
 #include <string.h>
 
+/*
+ * zuluCryptUserIsAMemberOfAGroup() is defined in ../bin/security.c
+ */
 int zuluCryptUserIsAMemberOfAGroup( uid_t uid,const char * groupname ) ;
 
 static inline int _has_no_access( uid_t uid )
@@ -55,33 +58,53 @@ int zuluCryptMountFlagsAreNotCorrect( const char * mode,uid_t uid,unsigned long 
 		flg |= MS_NOSUID ;
 	}
 	if( strstr( mode,"bind" ) != NULL ){
+		if( _has_no_access( uid ) )
+			return 1 ;
 		flg |= MS_BIND ;
 	}
 	if( strstr( mode,"mandlock" ) != NULL ){
+		if( _has_no_access( uid ) )
+			return 1 ;
 		flg |= MS_MANDLOCK ;
 	}
 	if( strstr( mode,"move" ) != NULL ){
+		if( _has_no_access( uid ) )
+			return 1 ;
 		flg |= MS_MOVE ;
 	}
 	if( strstr( mode,"noatime" ) != NULL ){
+		if( _has_no_access( uid ) )
+			return 1 ;
 		flg |= MS_NOATIME ;
 	}
 	if( strstr( mode,"nodiratime" ) != NULL ){
+		if( _has_no_access( uid ) )
+			return 1 ;
 		flg |= MS_NODIRATIME ;
 	}
-	if( strstr( mode,"relAtime" ) != NULL ){
+	if( strstr( mode,"relatime" ) != NULL ){
+		if( _has_no_access( uid ) )
+			return 1 ;
 		flg |= MS_RELATIME ;
 	}
 	if( strstr( mode,"remount" ) != NULL ){
+		if( _has_no_access( uid ) )
+			return 1 ;
 		flg |= MS_REMOUNT ;
 	}
 	if( strstr( mode,"silent" ) != NULL ){
+		if( _has_no_access( uid ) )
+			return 1 ;
 		flg |= MS_SILENT ;
 	}
 	if( strstr( mode,"strictatime" ) != NULL ){
+		if( _has_no_access( uid ) )
+			return 1 ;
 		flg |= MS_STRICTATIME ;
 	}
 	if( strstr( mode,"synchronous" ) != NULL ){
+		if( _has_no_access( uid ) )
+			return 1 ;
 		flg |= MS_SYNCHRONOUS ;
 	}
 	*flags = flg ;
