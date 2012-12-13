@@ -30,7 +30,10 @@ static inline int _fileSystemIsNotSupported( const char * fs )
 		strcmp( fs,"affs" ) == 0 || 
 		strcmp( fs,"hfs" ) == 0  ||
 		strcmp( fs,"iso9660" ) == 0 ||
-		strcmp( fs,"udf" ) == 0 ){
+		strcmp( fs,"udf" ) == 0  ||
+		strcmp( fs,"ext2" ) == 0 ||
+		strcmp( fs,"ext3" ) == 0 ||
+		strcmp( fs,"ext4" ) == 0 ){
 			return 0 ;
 		}else{
 			return 1 ;
