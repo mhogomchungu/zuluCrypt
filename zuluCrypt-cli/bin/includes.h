@@ -40,6 +40,9 @@
  * These functions are here and not in libzuluCrypt-exe.h because they use string_t and the type is not supposed to be
  * seen in public API
  */
+
+extern uid_t global_variable_user_uid ;
+
 /*
  * this function makes a unique mapper name based on user UID to make sure one user can not manage another user
  * opened volumes.
@@ -114,3 +117,18 @@ void zuluCryptEXEGetOptsSetDefault( struct_opts * stopts ) ;
  * this function is defined in mount_flags.c
  */
 int zuluCryptMountFlagsAreNotCorrect( const char * mode,uid_t uid,unsigned long * flags ) ;
+
+/*
+ * this function is defined in security.c
+ */
+int zuluCryptSecurityGainElevatedPrivileges( void ) ;
+
+/*
+ * this function is defined in security.c
+ */
+int zuluCryptSecurityDropElevatedPrivileges( void ) ;
+
+/*
+ * this function is defined in security.c
+ */
+char * zuluCryptSecurityEvaluateDeviceTags( const char * tag,const char * values ) ;

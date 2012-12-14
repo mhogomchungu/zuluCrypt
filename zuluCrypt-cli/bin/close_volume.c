@@ -19,21 +19,20 @@
 
 #include "includes.h"
 
-static int st_msg( int st,char * m_point )
+static int zuluExit( int st,char * dev,string_t p )
 {
+	StringDelete( &p ) ;
+	if( dev != NULL )
+		free( dev ) ;
 	switch( st ) {
-		case 0 : printf( "SUCCESS: volume closed successfully \n" );
-			 if( m_point != NULL ){
-				remove( m_point ) ;
-				free( m_point ) ;
-			 }
-			 break ;
+		case 0 : printf( "SUCCESS: volume closed successfully \n" );								  break ;		 
 		case 1 : printf( "ERROR: close failed, encrypted volume with that name does not exist\n" );      			  break ;
 		case 2 : printf( "ERROR: close failed, the mount point and/or one or more files are in use\n" );			  break ;
 		case 3 : printf( "ERROR: close failed, volume does not have an entry in /etc/mtab\n" ) ;        			  break ;
 		case 4 : printf( "ERROR: close failed, could not get a lock on /etc/mtab~\n" ) ;  	             			  break ;
 		case 5 : printf( "ERROR: close failed, volume is unmounted but could not close mapper,advice to close it manually\n");	  break ;
 		case 6 : printf( "ERROR: close failed, could not resolve full path of device\n");					  break ;
+		case 7 : printf( "ERROR: close failed, could not get elevated privileges,check binary permissions\n" );			  break ;
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}	
 	return st ;
@@ -42,23 +41,29 @@ static int st_msg( int st,char * m_point )
 int zuluCryptEXECloseVolume( const char * device,const char * mapping_name,uid_t uid )
 {	
 	 int st ;
-	 string_t p ;
+	 string_t p = StringVoid ;
 	 char * m_point = NULL ;
 	 
 	 char * dev = realpath( device,NULL ) ;
 	 
 	 if( dev == NULL )
-		 return st_msg( 6,NULL ) ;
+		 return zuluExit( 6,dev,p ) ;
 	 /*
 	  * This function is defined at "../lib/create_mapper_name.c"
 	  * 
 	  * Explanation for what it does is explained where it is defined.
 	  */
 	 p = zuluCryptCreateMapperName( dev,mapping_name,uid,CLOSE ) ;
-	 
+	 if( !zuluCryptSecurityGainElevatedPrivileges() )
+		 return zuluExit( 7,dev,p ) ;
 	 st = zuluCryptCloseVolume( StringContent( p ),&m_point ) ;
-
-	 StringDelete( &p ) ;
-	 free( dev ) ;
-	 return st_msg( st,m_point ) ;
+	
+	 if( st == 0 ){
+		if( m_point != NULL ){
+			remove( m_point ) ;
+			free( m_point ) ;
+		}
+	 }
+	 zuluCryptSecurityDropElevatedPrivileges() ;
+	 return zuluExit( st,dev,p ) ;
 }

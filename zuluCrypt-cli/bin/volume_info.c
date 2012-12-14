@@ -39,7 +39,11 @@ int zuluCryptEXEVolumeInfo( const char * mapper,const char * device,uid_t uid )
 	 * Explanation for what it does is explained where it is defined.
 	 */
 	p = zuluCryptCreateMapperName( dev,mapper,uid,CLOSE ) ;
-	
+	if( !zuluCryptSecurityGainElevatedPrivileges() ){
+		printf( "ERROR: could get elevated privileges,check binary permissions\n" ) ;
+		return 3 ;
+	}
+		
 	output = zuluCryptVolumeStatus( StringContent( p ) ) ;
 	
 	if( output != NULL ){
@@ -50,7 +54,7 @@ int zuluCryptEXEVolumeInfo( const char * mapper,const char * device,uid_t uid )
 		printf( "ERROR: could not get volume info,is the volume opened?\n" ) ;
 		xt = 2 ;
 	}
-	
+	zuluCryptSecurityDropElevatedPrivileges() ;
 	StringDelete( &p );
 	free( dev ) ;
 	return xt ;

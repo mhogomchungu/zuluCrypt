@@ -26,24 +26,36 @@ static int zuluCryptEXEGetDevice( const char * device )
 	/*
 	 * zuluCryptVolumeDeviceName() is defined in ../lib/status.c
 	 */
-	char * c = zuluCryptVolumeDeviceName( device ) ;
-	if( c == NULL ){
-		printf( "ERROR: could not get device address from mapper address\n" ) ;
-		return 1 ;
-	}else{
-		printf( "%s\n",c ) ;
-		free( c ) ;
-		return 0 ;
+	char * c = NULL ;
+	int st = 1 ;
+	if( zuluCryptSecurityGainElevatedPrivileges() ){
+		c = zuluCryptVolumeDeviceName( device ) ;
+		if( c == NULL ){
+			printf( "ERROR: could not get device address from mapper address\n" ) ;
+			st = 1 ;
+		}else{
+			printf( "%s\n",c ) ;
+			free( c ) ;
+			st = 0 ;
+		}
+		zuluCryptSecurityDropElevatedPrivileges() ;
 	}
+	return st ;
 }
 
 static int zuluCryptEXECheckIfLuks( const char * device )
 {
+	int status ;
+	if( !zuluCryptSecurityGainElevatedPrivileges() ){
+		printf( "ERROR: unable to gain elevated privilges,check binary permissions\n" ) ;
+		return 2 ;
+	}
+	
 	/*
 	 * this zuluCryptVolumeIsLuks() is defined in ../lib/is_luks.c
 	 */
-	int status = zuluCryptVolumeIsLuks( device ) ;
-	
+	status = zuluCryptVolumeIsLuks( device ) ;
+	zuluCryptSecurityDropElevatedPrivileges() ;
 	if( status )
 		printf( "\"%s\" is a luks device\n",device ) ;
 	else
@@ -59,7 +71,7 @@ static int zuluCryptEXECheckIfTcrypt( struct_opts * clargs,uid_t uid )
 	const char * key    = clargs->key ;
 	const char * source = clargs->key_source ;
 	size_t key_len ;
-	
+	int st = 1 ;
 	if( key == NULL ){
 		printf( "ERROR: key argument is missing\n" ) ;
 		return 1 ;
@@ -70,13 +82,18 @@ static int zuluCryptEXECheckIfTcrypt( struct_opts * clargs,uid_t uid )
 		return 1 ;
 	}
 	
+	if( !zuluCryptSecurityGainElevatedPrivileges() ){
+		printf( "ERROR: unable to gain elevated privilges,check binary permissions\n" ) ;
+		return 1 ;
+	}
+	
 	if( strcmp( source,"-p" ) == 0 ){
 		/*
 		 * zuluCryptGetVolumeType() is defined in ../lib/volume_type.c
 		 */
 		if( zuluCryptGetVolumeType( device,key,strlen( key ) ) == 2 ){
 			printf( "\"%s\" is a tcrypt device\n",device ) ;
-			return 0 ;
+			st = 0 ;
 		}
 	}else if( strcmp( source,"-f" ) == 0 ){
 		/*
@@ -88,29 +105,26 @@ static int zuluCryptEXECheckIfTcrypt( struct_opts * clargs,uid_t uid )
 			if( zuluCryptGetVolumeType( device,key,key_len ) == 2 ){
 				printf( "\"%s\" is a tcrypt device\n",device ) ;
 				StringDelete( &st_key ) ;
-				return 0 ;
+				st =  0 ;
 			}else{
 				printf( "\"%s\" is a not tcrypt device\n",device ) ;
 				StringDelete( &st_key ) ;
-				return 1 ;
+				st = 1 ;
 			}
 		}else{
 			printf( "\"%s\" is not a tcrypt device\n",device ) ;
-			return 1 ;
+			st = 1 ;
 		}
 	}else{
 		/*
 		* shouldnt get here
 		*/
 		printf( "\"%s\" is not a tcrypt device\n",device ) ;
-		return 1 ;
+		st = 1 ;
 	}
 	
-	/*
-	 * shouldnt get here
-	 */
-	printf( "\"%s\" is not a tcrypt device\n",device ) ;
-	return 1 ;
+	zuluCryptSecurityDropElevatedPrivileges() ;
+	return st  ;
 }
 
 static int zuluCryptEXECheckEmptySlots( const char * device )
@@ -118,12 +132,16 @@ static int zuluCryptEXECheckEmptySlots( const char * device )
 	int status ;
 	char * c  ;
 	/*
-	 * this zuluCryptPathIsNotValid() is defined in ../lib/is_path_valid.c
+	 * this zuluCryptSecurityPathIsValid() is defined in ../security.c
 	 */
-	if( zuluCryptPathIsNotValid( device ) ){
+	if( !zuluCryptSecurityPathIsValid( device,-1 ) ){
 		printf( "path \"%s\" does not point to a device\n",device ) ;
 		status = 1 ;
 	}else{
+		if( !zuluCryptSecurityGainElevatedPrivileges() ){
+			printf( "ERROR: unable to gain elevated privilges,check binary permissions\n" ) ;
+			return 3 ;
+		}
 		/*
 		 * zuluCryptEmptySlots() is defined in ../lib/empty_slots.c
 		 */
@@ -135,7 +153,8 @@ static int zuluCryptEXECheckEmptySlots( const char * device )
 			printf( "%s\n",c ) ;
 			status = 0 ;
 			free( c ) ;
-		}		
+		}
+		zuluCryptSecurityDropElevatedPrivileges() ;
 	}
 	return status ;
 }
@@ -194,25 +213,25 @@ int main( int argc,char * argv[] )
 	char * ac ;
 	char action ;
 	int st ;
-	uid_t uid ;
 	string_t q = StringVoid ;
 	stringList_t stl = StringListVoid ;
 	struct_opts clargs ;
 	
-	memset( &clargs,'\0',sizeof( struct_opts ) ) ;
+	global_variable_user_uid = getuid() ;
 	
-	uid = getuid();
+	memset( &clargs,'\0',sizeof( struct_opts ) ) ;
 	
 	StringExitOnMemoryExaustion( ExitOnMemoryExaustion ) ;
 	StringListExitOnMemoryExaustion( ExitOnMemoryExaustion ) ;
 	ProcessExitOnMemoryExaustion( ExitOnMemoryExaustion ) ;
 	SocketExitOnMemoryExaustion( ExitOnMemoryExaustion ) ;
 	
+	/*
 	if( setuid( 0 ) != 0 ){
 		printf( "ERROR: could not setuid(0),check the executable permission\n" ) ;
 		return 255 ;
 	}
-	
+	*/
 	if( argc == 1 ){
 		zuluCryptEXEHelp();
 		return 1;
@@ -287,7 +306,7 @@ int main( int argc,char * argv[] )
 		case 'N':
 		case 'S': st = zuluCryptPrintPartitions( clargs.partition_number,clargs.print_partition_type ) ; 
 			  return zuluExit( st,stl,NULL ) ;
-		case 'L': st = zuluCryptPrintOpenedVolumes( uid ) ; 
+		case 'L': st = zuluCryptPrintOpenedVolumes( global_variable_user_uid ) ; 
 			  return zuluExit( st,stl,NULL ) ;
 	}
 	
@@ -306,13 +325,13 @@ int main( int argc,char * argv[] )
 		mapping_name = StringContent( q ) ;
 		
 		/*
-		 * zuluCryptDeviceFromUUID() is defined in ./partitions.c
+		 * zuluCryptSecurityEvaluateDeviceTags() is defined in ./security.c
 		 */
-		ac = zuluCryptDeviceFromUUID( mapping_name + 5 ) ;
+		ac = zuluCryptSecurityEvaluateDeviceTags( "UUID",mapping_name + 5 ) ;
 		
 		if( ac != NULL ) {
 			clargs.device = ac ;
-			st = zuluCryptEXE( &clargs,mapping_name,uid );
+			st = zuluCryptEXE( &clargs,mapping_name,global_variable_user_uid );
 			free( ac ) ;
 			StringDelete( &q ) ;
 			return zuluExit( st,stl,NULL ) ;
@@ -328,7 +347,7 @@ int main( int argc,char * argv[] )
 		}
 	}
 
-	st = zuluCryptEXE( &clargs,mapping_name,uid ) ;
+	st = zuluCryptEXE( &clargs,mapping_name,global_variable_user_uid ) ;
 	
 	return zuluExit( st,stl,NULL ) ;
 } 

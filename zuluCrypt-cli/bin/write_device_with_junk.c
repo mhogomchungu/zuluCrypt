@@ -52,6 +52,7 @@ int zuluCryptPartitionIsSystemPartition( const char * ) ;
 
 static int zuluExit( string_t st, int status ) 
 {
+	int zuluCryptSecurityDropElevatedPrivileges() ;
 	switch( status ){
 		case 0 : printf( "SUCCESS: mapper created successfully\n" ) ;
 			 printf( "opened mapper path: " ) ;
@@ -209,6 +210,8 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 
 int zuluCryptEXEOpenPlainAsMe(const struct_opts * opts,const char * mapping_name,uid_t uid )
 {
+	if( !zuluCryptSecurityGainElevatedPrivileges() )
+		return 0 ;
 	return open_plain_as_me_1( opts,mapping_name,uid,1 ) ;
 }
 

@@ -116,8 +116,9 @@ int zuluCryptUnmountVolume( const char * mapper, /*mapper is the full address of
  * This function mounts a volume
  * 
  * return values:
- * 0 -  sucess
- * 4 -  ERROR: mount failed, couldnt find valid file system in the volume
+ * 0  - success
+ * -1 - failed to mount a file system,wrong file system type or option or permission denied 
+ * 4  - ERROR: mount failed, couldnt find valid file system in the volume
  * 12 - ERROR: could not get a lock on /etc/mtab~ * 
  */
 int zuluCryptMountVolume( const char * mapper, /* path to a file or partition to mount                                      */

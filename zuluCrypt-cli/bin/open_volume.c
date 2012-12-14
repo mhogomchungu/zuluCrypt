@@ -42,7 +42,7 @@ static int zuluExit( int st,char * device,char * m_point,stringList_t stl )
 	
 	switch ( st ){
 		case 0 : _printResult( device ) ;											break ;
-		case -1: printf( "ERROR: failed to mount a filesystem\n" ) ;								break ;
+		case -1: printf( "ERROR: failed to mount a filesystem,invalid mount option or permission denied\n" ) ;			break ;
 		case 1 : printf( "ERROR: failed to mount ntfs file system using ntfs-3g,is ntfs-3g package installed?\n" ) ;		break ;
 		case 2 : printf( "ERROR: there seem to be an open volume accociated with given address\n" );				break ;
 		case 3 : printf( "ERROR: no file or device exist on given path\n" ) ; 							break ;
@@ -65,7 +65,7 @@ static int zuluExit( int st,char * device,char * m_point,stringList_t stl )
 only root user or members of group zulucrypt can access system devices\n" );								break ;
 		case 21: printf( "ERROR: insufficient privilege to create a mount point\n" );						break ;
 		case 22: printf( "ERROR: insufficient privilege to open key file for reading\n" );					break ;
-		case 23: printf( "ERROR: insufficient privilege to open a system device in read/write mode\n,\
+		case 23: printf( "ERROR: insufficient privilege to open a system device in read/write mode,\n\
 only root user or members of group zulucrypt-write can do that\n" );									break ;
 		case 24: printf( "ERROR: there seem to be an opened mapper associated with the device\n" ) ;				break ;
 		case 25: printf( "ERROR: could not get a passphrase from the module\n" ) ;						break ;
@@ -75,6 +75,7 @@ only root user or members of group zulucrypt-write can do that\n" );									bre
 		case 29: printf( "ERROR: could not get a passphrase through a local socket\n" );					break ;
 		case 30: printf( "ERROR: mount point error" ) ;									        break ; 
 		case 31: printf( "ERROR: insufficient privilege to mount the device with given options\n" ) ;				break ;
+		case 32: printf( "ERROR: ERROR: could not get elevated privilege,check binary permissions\n" ) ;			break ;
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
 	
@@ -224,7 +225,8 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		
 		cpass = StringContent( *passphrase ) ;
 		len = StringLength( *passphrase ) ;
-		
+		if( !zuluCryptSecurityGainElevatedPrivileges() )
+			return zuluExit_1( 30,opts,device,cpoint,stl ) ;
 		st = zuluCryptOpenVolume( device,cname,cpoint,uid,m_flags,fs_opts,cpass,len ) ;
 	
 	}else if( source == NULL ){
@@ -237,6 +239,8 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		printf( "\n" ) ;
 		cpass = StringContent( *passphrase ) ;
 		len = StringLength( *passphrase ) ;
+		if( !zuluCryptSecurityGainElevatedPrivileges() )
+			return zuluExit_1( 30,opts,device,cpoint,stl ) ;
 		st = zuluCryptOpenVolume( device,cname,cpoint,uid,m_flags,fs_opts,cpass,len ) ;
 	}else{
 		if( source == NULL || pass == NULL )
@@ -245,6 +249,8 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		if( strcmp( source,"-p" ) == 0 ){
 			cpass = pass ;
 			len = strlen( pass ) ;
+			if( !zuluCryptSecurityGainElevatedPrivileges() )
+				return zuluExit_1( 30,opts,device,cpoint,stl ) ;
 			st = zuluCryptOpenVolume( device,cname,cpoint,uid,m_flags,fs_opts,cpass,len ) ;
 		}else if( strcmp( source,"-f" ) == 0 ){
 			/*
@@ -258,11 +264,13 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 			}
 			cpass = StringContent( *data ) ;
 			len = StringLength( *data ) ;
+			if( !zuluCryptSecurityGainElevatedPrivileges() )
+				return zuluExit_1( 30,opts,device,cpoint,stl ) ;
 			st = zuluCryptOpenVolume( device,cname,cpoint,uid,m_flags,fs_opts,cpass,len ) ;
 		}
 	}		
 	
 	zuluCryptCheckInvalidKey( opts->device ) ;
-	
+	zuluCryptSecurityDropElevatedPrivileges() ;
 	return zuluExit_1( st,opts,device,cpoint,stl );
 }

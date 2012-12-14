@@ -18,7 +18,7 @@
  */
 
 #include "includes.h"
-
+#include <blkid/blkid.h>
 #include <errno.h>
 #include <unistd.h>
 
@@ -33,40 +33,10 @@
  * This feature allows tradition unix permissions to be set on a paths to control non user access to volumes  
  */
 
-static int has_access( const char * path,int c,uid_t uid )
+static int has_access( const char * path,int c )
 {
 	int f ;
-	uid_t org = getuid() ;
 	
-	seteuid( uid ) ;
-	
-	if( c == READ )
-		f = open( path,O_RDONLY );
-	else
-		f = open( path,O_WRONLY );
-	
-	seteuid( org ) ;
-	
-	if( f >= 0 ){
-		close( f ) ;
-		return 0 ;
-	}else{
-		switch( errno ){
-			case EACCES : return 1 ; /* permission denied */
-			case ENOENT : return 2 ; /* invalid path*/
-			default     : return 3 ; /* common error */    
-		}
-	}
-}
-
-int zuluCryptSecurityPathIsValid( const char * path,uid_t uid )
-{
-	return has_access( path,READ,uid ) == 0 ;
-}
-
-static int has_access_1( const char * path,int c )
-{
-	int f ;
 	if( c == READ )
 		f = open( path,O_RDONLY );
 	else
@@ -86,12 +56,16 @@ static int has_access_1( const char * path,int c )
 
 static int create_group( const char * groupname )
 {
-	process_t p = Process( ZULUCRYPTgroupadd ) ;
-	ProcessSetArgumentList( p,"-f",groupname,ENDLIST ) ;
-	ProcessStart( p ) ;
-	ProcessExitStatus( p ) ;
-	ProcessDelete( &p ) ;
-	return 0 ;
+	process_t p ;
+	int st = 1 ;
+	if( zuluCryptSecurityGainElevatedPrivileges() ){
+		p = Process( ZULUCRYPTgroupadd ) ;
+		ProcessSetArgumentList( p,"-f",groupname,ENDLIST ) ;
+		ProcessStart( p ) ;
+		st = ProcessExitStatus( p ) ;
+		ProcessDelete( &p ) ;
+	}
+	return st == 0 ;
 }
 
 int zuluCryptUserIsAMemberOfAGroup( uid_t uid,const char * groupname )
@@ -103,6 +77,8 @@ int zuluCryptUserIsAMemberOfAGroup( uid_t uid,const char * groupname )
 	const char ** entry ;
 	const char * name ;
 	
+	if( groupname == NULL )
+		return 0 ;
 	pass = getpwuid( uid ) ;
 	
 	if( pass == NULL )
@@ -110,8 +86,10 @@ int zuluCryptUserIsAMemberOfAGroup( uid_t uid,const char * groupname )
 	
 	grp = getgrnam( groupname ) ;
 	
-	if( grp == NULL )
-		return create_group( groupname ) ;
+	if( grp == NULL ){
+		create_group( groupname )  ;
+		return 0 ;
+	}
 	
 	name = ( const char * )pass->pw_name ;
 	entry = ( const char ** )grp->gr_mem ;
@@ -130,23 +108,37 @@ int zuluCryptUserIsAMemberOfAGroup( uid_t uid,const char * groupname )
 static int check_permissions( const char * path,int mode,const char * groupname,uid_t uid )
 {
 	if( uid == 0 ){
-		return has_access_1( path,mode ) ;
-	}else if( strncmp( path,"/dev/",5 ) != 0 ){
-		return has_access( path,mode,uid ) ;
+		return has_access( path,mode ) ;
 	}else{
 		/*
 		 * zuluCryptPartitionIsSystemPartition() is defined in ./partitions.c
 		 */
 		if( zuluCryptPartitionIsSystemPartition( path ) ){
 			if( zuluCryptUserIsAMemberOfAGroup( uid,groupname ) ){
-				return has_access_1( path,mode ) ;
+				return has_access( path,mode ) ;
 			}else{
 				return 1 ;
 			}
 		}else{
-			return has_access_1( path,mode ) ;
+			return has_access( path,mode ) ;
 		}
 	}	
+}
+
+int zuluCryptSecurityPathIsValid( const char * path,uid_t uid )
+{
+	int st = 0 ;
+	if( uid == 0 ){;}
+	
+	if( strncmp( path,"/dev/",5 ) != 0 )
+		return has_access( path,READ ) == 0 ;
+	else{
+		if( zuluCryptSecurityGainElevatedPrivileges() ){
+			st = has_access( path,READ ) == 0 ;
+			zuluCryptSecurityDropElevatedPrivileges() ;
+		}
+		return st ;
+	}
 }
 
 int zuluCryptSecurityCanOpenPathForReading( const char * path,uid_t uid )
@@ -162,14 +154,8 @@ int zuluCryptSecurityCanOpenPathForWriting( const char * path,uid_t uid )
 int zuluCryptSecurityCreateMountPoint( const char * path,uid_t uid )
 {
 	int st ;
-	
-	uid_t org = geteuid();    
-	
-	seteuid( uid ) ;            
-	
+	if( uid == 0 ){;}
 	st = mkdir( path,S_IRWXU ) ;
-	
-	seteuid( org ) ;           
 	
 	if( st == 0 )
 		return 0 ;
@@ -224,4 +210,30 @@ int zuluCryptSecurityGetPassFromFile( const char * path,uid_t uid,string_t * st 
 	}
 	
 	return 0 ;
+}
+
+int zuluCryptSecurityGainElevatedPrivileges( void )
+{
+	return setuid( 0 ) == 0 ;
+}
+
+/*
+ * global_variable_user_uid is an extern variable set in main function in ./main.c
+ */
+uid_t global_variable_user_uid ;
+int zuluCryptSecurityDropElevatedPrivileges( void )
+{
+	int x = seteuid( global_variable_user_uid ) ;
+	int y = setuid( global_variable_user_uid ) ;
+	return ( x = y ) == 0 ;
+}
+
+char * zuluCryptSecurityEvaluateDeviceTags( const char * tag,const char * values )
+{
+	char * result ;
+	if( setuid( 0 ) != 0 )
+		return NULL ;
+	result = blkid_evaluate_tag( tag,values,NULL) ;
+	seteuid( global_variable_user_uid ) ;
+	return result ;
 }

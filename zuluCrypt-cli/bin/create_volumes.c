@@ -53,6 +53,7 @@ only root user or members of group zulucrypt-write can do that" ) ;						break  
 		case 20: printf( "ERROR: insufficient memory to hold passphrase\n" );				break  ;
 		case 21: printf( "ERROR: insufficient memory to hold your response\n" );			break  ;
 		case 22: printf( "ERROR: could not get a key from a socket\n" ) ;				break  ;
+		case 23: printf( "ERROR: could not get elevated privilege,check binary permissions\n" ) ;	break  ;  
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
 	return st ;
@@ -204,9 +205,12 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		 * "-f" option means a user has provided a path to where the passphrase is stored, StringGetFromFile_1 family
 		 *  if functions are used to read files.One is used here to do that.
 		 */
-		if( strcmp( keyType,"-p" ) == 0 )
+		if( strcmp( keyType,"-p" ) == 0 ){
+			if( !zuluCryptSecurityGainElevatedPrivileges() )
+				return zuluExit( 23,stl ) ;
 			st = zuluCryptCreateVolume( device,fs,type,pass,strlen( pass ),rng ) ;
-		else if( strcmp( keyType, "-f" ) == 0 ) {
+			zuluCryptSecurityDropElevatedPrivileges() ;
+		}else if( strcmp( keyType, "-f" ) == 0 ) {
 			/*
 			 * function is defined at "security.c"
 			 */
@@ -216,7 +220,10 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 				case 2 : return zuluExit( 6,stl )  ;
 				case 5 : return zuluExit( 22,stl ) ;
 			}
+			if( !zuluCryptSecurityGainElevatedPrivileges() )
+				return zuluExit( 23,stl ) ;
 			st = zuluCryptCreateVolume( device,fs,type,StringContent( *content ),StringLength( *content ),rng ) ;
+			zuluCryptSecurityDropElevatedPrivileges() ;
 		}else{
 			st = 2 ;
 		}

@@ -253,11 +253,14 @@ static int _zuluMountMount( const char * device,const char * m_point,
 	if( path == NULL )
 		return _zuluExit( 107,z,path,"ERROR: could not resolve mount point path" ) ;
 	
+	
+	if( !zuluCryptSecurityGainElevatedPrivileges() )
+		return _zuluExit( 112,z,path,"ERROR: could not get elevated privilege,check binary permissions" ) ;
 	/*
 	 * zuluCryptMountVolume() defined in ../zuluCrypt-cli/lib/mount_volume.c
 	 */
 	status = zuluCryptMountVolume( device,path,m_flags,fs_opts,uid ) ;
-	
+	zuluCryptSecurityDropElevatedPrivileges() ;
 	if( status == 0 ){
 		return _zuluExit( 0,z,path,"SUCCESS: mount complete successfully" ) ;
 	}else{
@@ -334,10 +337,13 @@ static int _zuluMountUMount( const char * device,uid_t uid,const char * mode,int
 	st = StringListCopyStringAt( stl,MOUNTPOINT ) ;
 	StringListDelete( &stl ) ;
 	
+	if( !zuluCryptSecurityGainElevatedPrivileges() )
+		return _zuluExit( 107,st,m_point,"ERROR: could not get elevated privilege,check binary permissions" ) ;
 	/*
 	 * zuluCryptUnmountVolume() is defined in ../zuluCrypt-cli/lib/unmount_volume.c
 	 */
 	status = zuluCryptUnmountVolume( device,&m_point ) ;
+	zuluCryptSecurityDropElevatedPrivileges() ;
 	if( status == 0 ){
 		if( m_point != NULL ){
 			if( !StringEqual( st,m_point ) ){
@@ -350,9 +356,9 @@ static int _zuluMountUMount( const char * device,uid_t uid,const char * mode,int
 	}else{
 		switch( status ) {
 			case 1 : return _zuluExit( 102,st,m_point,"ERROR: device does not exist" )  ;
-			case 2 : return _zuluExit( 103,st,m_point,"ERROR: failed to unmount,the mount point and/or one or more files are in use" )	;	
-			case 4 : return _zuluExit( 104,st,m_point,"ERROR: failed to unmount,could not get a lock on /etc/mtab~" ) ;	
-			default: return _zuluExit( 105,st,m_point,"ERROR: failed to unmount the partition" )	 ;			
+			case 2 : return _zuluExit( 103,st,m_point,"ERROR: failed to unmount,the mount point and/or one or more files are in use" );
+			case 4 : return _zuluExit( 104,st,m_point,"ERROR: failed to unmount,could not get a lock on /etc/mtab~" ) ;
+			default: return _zuluExit( 105,st,m_point,"ERROR: failed to unmount the partition" ) ;
 		}
 	}
 }
@@ -681,13 +687,16 @@ int main( int argc,char * argv[] )
 	const char * fs_opts    = NULL ;
 	int mount_point_option = 0 ;
 	char * device ;
-
 	uid_t uid ;
-	
+	string_t k = StringVoid ;
 	int status ;
 	
-	string_t k = StringVoid ;
-	
+	/*
+	 * global_variable_user_uid is a global variable defined in ../zuluCrypt-cli/bin/security.c 
+	 * and declared in ../zuluCrypt-cli/bin/includes.
+	 */
+	uid = global_variable_user_uid = getuid() ;
+		
 	if( argc < 2 )
 		return _mount_help() ;
 	
@@ -701,8 +710,6 @@ int main( int argc,char * argv[] )
 			return 0 ;
 		}
 	}
-	
-	uid = getuid() ;
 	
 	StringExitOnMemoryExaustion( &ExitOnMemoryExaustion ) ;
 	StringListExitOnMemoryExaustion( &ExitOnMemoryExaustion ) ;
@@ -746,10 +753,10 @@ int main( int argc,char * argv[] )
 		m_opts = "rw" ;
 	
 	/*
-	 * zuluCryptDeviceFromUUID() and zuluCryptDeviceFromLabel() are defined in ../zuluCrypt-cli/lib/blkid_evaluate_tag.c
+	 * zuluCryptSecurityEvaluateDeviceTags() is defined in ../zuluCrypt-cli/bin/security.c
 	 */
 	if( strncmp( dev,"UUID=",5 ) == 0 ){
-		device = zuluCryptDeviceFromUUID( dev + 5 ) ;
+		device = zuluCryptSecurityEvaluateDeviceTags( "UUID",dev + 5 ) ;
 		if( device != NULL ){
 			status = _zuluMountDoAction( device,action,m_point,m_opts,uid,key,key_source,mount_point_option,fs_opts ) ;
 			free( device ) ;
@@ -758,7 +765,7 @@ int main( int argc,char * argv[] )
 			status = 214 ;
 		}
 	}else if( strncmp( dev,"LABEL=",6 ) == 0 ){
-		device = zuluCryptDeviceFromLabel( dev + 6 ) ;
+		device = zuluCryptSecurityEvaluateDeviceTags( "LABEL",dev + 6 ) ;
 		if( device != NULL ){
 			status = _zuluMountDoAction( device,action,m_point,m_opts,uid,key,key_source,mount_point_option,fs_opts ) ;
 			free( device ) ;

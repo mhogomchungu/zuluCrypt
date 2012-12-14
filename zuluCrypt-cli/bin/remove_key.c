@@ -62,6 +62,7 @@ only root user or members of group zulucrypt-write can do that\n" ) ;											
 		case 16: printf( "ERROR: insufficient memory to hold passphrase\n" );									break ;
 		case 17: printf( "ERROR: insufficient memory to hold your response\n" );								break ;
 		case 18: printf( "ERROR: could not get a key from a socket\n" ) ;									break ;
+		case 19 : printf( "ERROR: could not get elevated privilege,check binary permissions\n" ) ;						break ;	 
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}		
 	return st ;
@@ -105,17 +106,25 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 		case 1 : return zuluExit( 12,stl ); break ;
 	}
 	
+	if( !zuluCryptSecurityGainElevatedPrivileges() )
+		return zuluExit( 19,stl ) ;
 	if( zuluCryptExECheckEmptySlots( device ) == 3 ){
 		if( k != 1 ){
 			printf( "WARNING: there is only one key in the volume and all data in it will be lost if you continue.\n" );
 			printf( "Do you still want to continue? Type \"YES\" if you do: " );
 			*confirm = StringGetFromTerminal_1( 3 ) ;
-			if( *confirm == StringVoid )
+			if( *confirm == StringVoid ){
+				zuluCryptSecurityDropElevatedPrivileges() ;
 				return zuluExit( 17,stl ) ;
-			if( !StringEqual( *confirm,"YES" ) )
+			}
+			if( !StringEqual( *confirm,"YES" ) ){
+				zuluCryptSecurityDropElevatedPrivileges() ;
 				return zuluExit( 11,stl ) ;
+			}
 		}
 	}
+	
+	zuluCryptSecurityDropElevatedPrivileges() ;
 	
 	if ( keyType == NULL ){
 	
@@ -142,9 +151,12 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 				case 4 : return zuluExit( 13,stl ) ;
 				case 5 : return zuluExit( 18,stl ) ;
 			}
+			if( !zuluCryptSecurityGainElevatedPrivileges() )
+				return zuluExit( 19,stl ) ;
 			status = zuluCryptRemoveKey( device,StringContent( *pass ),StringLength( *pass ) ) ;
 		}else if( strcmp( keyType, "-p" ) == 0 ) {
-			
+			if( !zuluCryptSecurityGainElevatedPrivileges() )
+				return zuluExit( 19,stl ) ;
 			status = zuluCryptRemoveKey( device,keytoremove,strlen( keytoremove ) ) ;
 		}
 	}
@@ -155,7 +167,7 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 		status = zuluExit( status,stl ) ; 
 	
 	zuluCryptCheckInvalidKey( opts->device ) ;
-	
+	zuluCryptSecurityDropElevatedPrivileges() ;
 	return status ;
 }
 

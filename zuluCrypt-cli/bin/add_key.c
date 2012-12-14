@@ -76,7 +76,7 @@ only root user or members of group zulucrypt-write can do that\n" ) ;						break
 		case 14 : printf( "ERROR: can not get passphrase in silent mode\n" );				break ;
 		case 15 : printf( "ERROR: insufficient memory to hold passphrase\n" );				break ;
 		case 16 : printf( "ERROR: could not get a key from a socket\n" ) ;				break ;
-				 
+		case 17 : printf( "ERROR: could not get elevated privilege,check binary permissions\n" ) ;	break ; 
 		default : printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
 	
@@ -153,8 +153,14 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 		case 2 : return zuluExit( 4,stl )  ; break ;
 	}
 	
-	if( zuluCryptVolumeIsNotLuks( device ) )
-		return zuluExit_1( 3,device,stl ) ;
+	if( zuluCryptSecurityGainElevatedPrivileges() ){
+		if( zuluCryptVolumeIsNotLuks( device ) ){
+			zuluCryptSecurityDropElevatedPrivileges() ;
+			return zuluExit_1( 3,device,stl ) ;
+		}
+	}else{
+		return zuluExit( 17,stl ) ;
+	}
 	
 	switch( zuluCryptCheckEmptySlots( device ) ){
 		case 0 : return zuluExit( 10,stl ) ;
@@ -174,6 +180,8 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 			len1 = StringLength ( *presentKey ) ;
 			key2 = StringContent( *newKey_1   ) ;
 			len2 = StringLength ( *newKey_1   ) ;
+			if( !zuluCryptSecurityGainElevatedPrivileges() )
+				return zuluExit( 17,stl ) ;
 			status = zuluCryptAddKey( device,key1,len1,key2,len2 );
 		}
 	}else{
@@ -206,20 +214,28 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 			len2 = StringLength( *nk ) ;
 		}		
 		if ( strcmp( keyType1,"-f" ) == 0 && strcmp( keyType2,"-f" ) == 0 ){
+			if( !zuluCryptSecurityGainElevatedPrivileges() )
+				return zuluExit( 17,stl ) ;
 			status = zuluCryptAddKey( device,key1,len1,key2,len2 ) ;
 		}else if ( strcmp( keyType1,"-p" ) == 0 && strcmp( keyType2,"-p" ) == 0 ){
 			key1 = existingKey ;
 			len1 = strlen( existingKey ) ;
 			key2 = newKey ;
 			len2 = strlen( newKey ) ;
+			if( !zuluCryptSecurityGainElevatedPrivileges() )
+				return zuluExit( 17,stl ) ;
 			status = zuluCryptAddKey( device,key1,len1,key2,len2 ) ;
 		}else if ( strcmp( keyType1,"-p" ) == 0 && strcmp( keyType2,"-f" ) == 0 ){
 			key1 = existingKey ;
 			len1 = strlen( existingKey ) ;
+			if( !zuluCryptSecurityGainElevatedPrivileges() )
+				return zuluExit( 17,stl ) ;
 			status = zuluCryptAddKey( device,key1,len1,key2,len2 ) ;
 		}else if ( strcmp( keyType1,"-f" ) == 0 && strcmp( keyType2,"-p" ) == 0 ){
 			key2 = newKey ;
 			len2 = strlen( newKey ) ;
+			if( !zuluCryptSecurityGainElevatedPrivileges() )
+				return zuluExit( 17,stl ) ;
 			status = zuluCryptAddKey( device,key1,len1,key2,len2 ) ;
 		}else{
 			status = 5 ;
@@ -230,6 +246,6 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 	 * this function is defined in check_invalid_key.c
 	 */
 	zuluCryptCheckInvalidKey( opts->device ) ;
-	
+	zuluCryptSecurityDropElevatedPrivileges() ;
 	return zuluExit( status,stl ) ;
 }
