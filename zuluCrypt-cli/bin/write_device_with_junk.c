@@ -52,7 +52,6 @@ int zuluCryptPartitionIsSystemPartition( const char * ) ;
 
 static int zuluExit( string_t st, int status ) 
 {
-	int zuluCryptSecurityDropElevatedPrivileges() ;
 	switch( status ){
 		case 0 : printf( "SUCCESS: mapper created successfully\n" ) ;
 			 printf( "opened mapper path: " ) ;
@@ -173,8 +172,14 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	/*
 	 * Open a plain mapper, so that we can write to device through it
 	 */
-	if( zuluCryptOpenPlain( device,StringContent( mapper ),"rw",cpass,len ) != 0 )
-		return zuluExit( mapper,1 ) ;
+	if( zuluCryptSecurityGainElevatedPrivileges() ){
+		if( zuluCryptOpenPlain( device,StringContent( mapper ),"rw",cpass,len ) != 0 ){
+			zuluCryptSecurityDropElevatedPrivileges() ;
+			return zuluExit( mapper,1 ) ;
+		}
+	}
+	
+	zuluCryptSecurityDropElevatedPrivileges() ;
 	
 	/*
 	 * Create a mapper path(usually at /dev/mapper) associated with opened plain mapper above.
@@ -191,12 +196,17 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	 * Useful when a normal user want to delete content of the device by writing random data to it.
 	 */
 	dev = realpath( cmapper,NULL ) ;
-	
-	if( dev != NULL ){
-		chown( dev,uid,0 ) ;
-		chmod( dev,S_IRWXU ) ;
-		free( dev ) ;
-	}	
+	if( zuluCryptSecurityGainElevatedPrivileges() ){
+		if( dev != NULL ){
+			chown( dev,uid,0 ) ;
+			chmod( dev,S_IRWXU ) ;
+			free( dev ) ;
+		}
+		zuluCryptSecurityDropElevatedPrivileges() ;
+	}else{
+		StringClearDelete( &passphrase ) ;
+		return zuluExit( mapper,1 ) ;
+	}
 	
 	StringClearDelete( &passphrase ) ;
 	
@@ -210,8 +220,6 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 
 int zuluCryptEXEOpenPlainAsMe(const struct_opts * opts,const char * mapping_name,uid_t uid )
 {
-	if( !zuluCryptSecurityGainElevatedPrivileges() )
-		return 0 ;
 	return open_plain_as_me_1( opts,mapping_name,uid,1 ) ;
 }
 
@@ -274,7 +282,10 @@ int zuluCryptEXEWriteDeviceWithJunk( const struct_opts * opts,const char * mappi
 			StringDelete( &confirm ) ;
 		
 			if( k == 0 ){
-				zuluCryptCloseMapper( StringContent( mapper ) ) ;
+				if( zuluCryptSecurityGainElevatedPrivileges() ){
+					zuluCryptCloseMapper( StringContent( mapper ) ) ;
+					zuluCryptSecurityDropElevatedPrivileges() ;
+				}
 				return zuluExit( mapper,5 ) ;
 			}
 		}
@@ -306,8 +317,10 @@ int zuluCryptEXEWriteDeviceWithJunk( const struct_opts * opts,const char * mappi
 	}	
 		
 	close( k ) ;
-	
-	zuluCryptCloseMapper( StringContent( mapper ) ) ;
+	if( zuluCryptSecurityGainElevatedPrivileges() ){
+		zuluCryptCloseMapper( StringContent( mapper ) ) ;
+		zuluCryptSecurityDropElevatedPrivileges() ;
+	}
 		
 	if( __exit_as_requested == 1 ) 
 		return zuluExit( mapper,15 ) ;

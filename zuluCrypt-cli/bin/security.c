@@ -242,7 +242,7 @@ int zuluCryptSecurityDropElevatedPrivileges( void )
 {
 	int x = seteuid( global_variable_user_uid ) ;
 	int y = setuid( global_variable_user_uid ) ;
-	return ( x = y ) == 1 ;
+	return ( x == y ) == 1 ;
 }
 
 char * zuluCryptSecurityEvaluateDeviceTags( const char * tag,const char * values )
