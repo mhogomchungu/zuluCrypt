@@ -416,7 +416,7 @@ const char * StringRemoveRight( string_t st,size_t x )
 		st->size = 0 ;
 	}else{
 		st->size = st->size - x ;
-		*( st->string + st->size - 1 ) = '\0' ;
+		*( st->string + st->size ) = '\0' ;
 	}
 	
 	return st->string ;
@@ -529,6 +529,15 @@ char StringCharAt( string_t st,size_t p )
 	if( p >= st->size )
 		return '\0' ;
 	return * ( st->string + p )  ;
+}
+
+char StringCharAtLast( string_t st )
+{
+	if( st == StringVoid )
+		return '\0' ;
+	if( st->size == 0 )
+		return '\0' ;
+	return * ( st->string + st->size - 1 )  ;
 }
 
 const char * StringStringAt( string_t st,size_t p )

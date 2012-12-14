@@ -211,9 +211,9 @@ stringList_t zuluCryptPartitions( int option )
 			}
 		}else if( StringStartsWith( st,"UUID" ) ){
 			/*
-			 * zuluCryptDeviceFromUUID() is defined in ../lib/blkid_evaluate_tag.c
+			 * zuluCryptSecurityEvaluateDeviceTags() is defined in ./security.c
 			 */
-			ac = zuluCryptDeviceFromUUID( device + 5 ) ;
+			ac = zuluCryptSecurityEvaluateDeviceTags( "UUID",device + 5 ) ;
 			if( ac != NULL ){
 				system = StringListAppend( system,ac ) ;
 				StringListRemoveString( non_system,ac ) ;
@@ -221,9 +221,9 @@ stringList_t zuluCryptPartitions( int option )
 			}
 		}else if( StringStartsWith( st,"LABEL" ) ){
 			/*
-			 * zuluCryptDeviceFromLabel() is defined in ../lib/blkid_evaluate_tag.c
+			 * zuluCryptSecurityEvaluateDeviceTags() is defined in ./security.c
 			 */
-			ac = zuluCryptDeviceFromLabel( device + 6 ) ;
+			ac = zuluCryptSecurityEvaluateDeviceTags( "LABEL",device + 6 ) ;
 			if( ac != NULL ){
 				system = StringListAppend( system,ac ) ;
 				StringListRemoveString( non_system,ac ) ;
@@ -455,14 +455,14 @@ stringList_t zuluCryptGetPartitionFromZulutab()
 	return stl_1 ;
 }
 
-int zuluCryptPartitionIsSystemPartition( const char * dev )
+int _zuluCryptPartitionIsSystemPartition( const char * dev )
 {	
 	stringList_t stl ;
 	
 	ssize_t index = -1 ;
 	
 	char * device = realpath( dev,NULL ) ;
-		
+	
 	if( device == NULL )
 		return 2 ;
 	
@@ -476,4 +476,44 @@ int zuluCryptPartitionIsSystemPartition( const char * dev )
 	free( device ) ;
 	
 	return index >= 0 ? 1 : 0 ;
+}
+
+int zuluCryptPartitionIsSystemPartition( const char * dev )
+{
+	string_t xt ;
+	string_t st ;
+	char c ;
+	const char * path ;
+	int r ;
+	
+	if( _zuluCryptPartitionIsSystemPartition( dev ) )
+		return 1 ;
+	
+	if( strncmp( dev,"/dev/",5 ) != 0 )
+		return 0 ;
+	
+	st = String( dev ) ;
+	
+	/*
+	 * this loop will convert something like: "/dev/sdc12" to "/dev/sdc"
+	 * basically,it removes digits from the end of the string
+	 */
+	while( 1 ){
+		c = StringCharAtLast( st ) ;
+		if( c >= '0' && c <= '9' ){
+			StringRemoveRight( st,1 ) ;
+		}else{
+			break ;
+		}
+	}
+	
+	StringReplaceString( st,"/dev/","/sys/block/" ) ;
+	path = StringAppend( st,"/removable" ) ;
+	xt = StringGetFromVirtualFile( path ) ;
+	StringDelete( &st ) ;
+	if( xt == StringVoid )
+		return 0 ;
+	r = StringEqual( xt,"0\n" ) ;
+	StringDelete( &xt ) ;
+	return r ;
 }

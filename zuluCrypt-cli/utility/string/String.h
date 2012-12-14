@@ -278,6 +278,11 @@ ssize_t StringLength( string_t st ) ;
  */
 char StringCharAt( string_t st,size_t p ) ;
 
+/* 
+ * Returns the last character in the string
+ */
+char StringCharAtLast( string_t st ) ;
+
 /*
  * return the position of the first occurance of character s starting from position p.
  * 

@@ -234,6 +234,6 @@ char * zuluCryptSecurityEvaluateDeviceTags( const char * tag,const char * values
 	if( setuid( 0 ) != 0 )
 		return NULL ;
 	result = blkid_evaluate_tag( tag,values,NULL) ;
-	seteuid( global_variable_user_uid ) ;
+	zuluCryptSecurityDropElevatedPrivileges() ;
 	return result ;
 }
