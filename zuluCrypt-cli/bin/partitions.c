@@ -496,8 +496,6 @@ int zuluCryptPartitionIsSystemPartition( const char * dev )
 	if( strncmp( dev,"/dev/",5 ) != 0 )
 		return 0 ;
 	
-	st = zuluCryptSecurityGetFileSystemFromDevice( dev ) ;
-
 	st = String( dev ) ;
 	
 	/*
