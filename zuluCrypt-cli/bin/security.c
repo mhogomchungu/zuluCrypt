@@ -106,9 +106,24 @@ int zuluCryptUserIsAMemberOfAGroup( uid_t uid,const char * groupname )
 	return 0 ;
 }
 
-static int check_permissions( const char * path,int mode,const char * groupname,uid_t uid )
+static int has_security_access( const char * path,int mode )
 {
 	int st ;
+	if( strncmp( path,"/dev/",5 ) != 0 ){
+		return has_access( path,mode ) ;
+	}else{
+		if( zuluCryptSecurityGainElevatedPrivileges() ){
+			st = has_access( path,mode ) ;
+			zuluCryptSecurityDropElevatedPrivileges() ;
+			return st ;
+		}else{
+			return 3 ;
+		}
+	}
+}
+
+static int check_permissions( const char * path,int mode,const char * groupname,uid_t uid )
+{
 	if( uid == 0 ){
 		return has_access( path,mode ) ;
 	}else{
@@ -117,22 +132,12 @@ static int check_permissions( const char * path,int mode,const char * groupname,
 		 */
 		if( zuluCryptPartitionIsSystemPartition( path ) ){
 			if( zuluCryptUserIsAMemberOfAGroup( uid,groupname ) ){
-				return has_access( path,mode ) ;
+				return has_security_access( path,mode ) ;
 			}else{
-				return 1 ;
+				return 3 ;
 			}
 		}else{
-			if( strncmp( path,"/dev/",5 ) != 0 ){
-				return has_access( path,mode ) ;
-			}else{
-				if( zuluCryptSecurityGainElevatedPrivileges() ){
-					st = has_access( path,mode ) ;
-					zuluCryptSecurityDropElevatedPrivileges() ;
-					return st ;
-				}else{
-					return 1 ;
-				}
-			}
+			return has_security_access( path,mode ) ;
 		}
 	}
 }

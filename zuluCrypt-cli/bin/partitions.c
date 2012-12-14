@@ -421,7 +421,11 @@ stringList_t zuluCryptGetPartitionFromZulutab()
 	stringList_t stl ;
 	stringList_t stl_1 = StringListVoid ;
 	
-	string_t st = StringGetFromFile( "/etc/zuluCrypttab" ) ;
+	string_t st = StringVoid ;
+	
+	zuluCryptSecurityGainElevatedPrivileges() ;
+	st = StringGetFromFile( "/etc/zuluCrypttab" ) ;
+	zuluCryptSecurityDropElevatedPrivileges() ;
 	
 	if( st == StringVoid )
 		return StringListVoid ;
@@ -494,19 +498,6 @@ int zuluCryptPartitionIsSystemPartition( const char * dev )
 	
 	st = zuluCryptSecurityGetFileSystemFromDevice( dev ) ;
 
-	if( StringEqual( st,"crypto_LUKS" ) ){
-		/*
-		 * my usb external hard drive is reported as internal by below code.
-		 * Without knowing any better.I am assuming crypto_LUKS volumes are labelled as internal and
-		 * hence are removed from the test.
-		 * 
-		 * Implication is all will be seen as external,even internal one.
-		 * Need to find out more about this.
-		 */
-		StringDelete( &st ) ;
-		return 0 ;
-	}
-	
 	st = String( dev ) ;
 	
 	/*
