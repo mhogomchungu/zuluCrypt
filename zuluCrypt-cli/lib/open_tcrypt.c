@@ -30,9 +30,10 @@ static inline int zuluExit( int st,struct crypt_device * cd )
  * 1 is returned if a volume is a truecrypt volume.
  * 0 is returned if a volume is not a truecrypt volume or functionality is not supported
  */
+#ifdef CRYPT_TCRYPT
 int zuluCryptVolumeIsTcrypt( const char * device,const char * key,size_t key_len )
 {
-#ifdef CRYPT_TCRYPT
+
 	struct crypt_device * cd = NULL;
 	struct crypt_params_tcrypt params ;
 	
@@ -50,18 +51,23 @@ int zuluCryptVolumeIsTcrypt( const char * device,const char * key,size_t key_len
 	}else{
 		return zuluExit( 0,cd ) ;
 	}
-#else
-	return 0 ;
-#endif
 }
+#else
+int zuluCryptVolumeIsTcrypt( const char * device __attribute__((unused)),
+			     const char * key __attribute__((unused)),
+			     size_t key_len __attribute__((unused)) )
+{
+	return 0 ;
+}
+#endif
 
 /*
  * 0 is returned if a volume was successfully opened.
  * 1 is returned if a volume was not successfully opened or functionality is not supported 
  */
+#ifdef CRYPT_TCRYPT
 int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
 {
-#ifdef CRYPT_TCRYPT
 	uint32_t flags = 0 ;
 
 	struct crypt_device * cd = NULL;
@@ -85,7 +91,14 @@ int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * mo
 	}else{
 		return zuluExit( 1,cd ) ;
 	}
-#else
-	return 1 ;
-#endif
 }
+#else
+int zuluCryptOpenTcrypt( const char * device __attribute__((unused)),
+			 const char * mapper __attribute__((unused)),
+			 const char * mode __attribute__((unused)),
+			 const char * pass __attribute__((unused)),
+			 size_t pass_size __attribute__((unused)) )
+{
+	return 1 ;
+}
+#endif
