@@ -132,3 +132,9 @@ int zuluCryptSecurityDropElevatedPrivileges( void ) ;
  * this function is defined in security.c
  */
 char * zuluCryptSecurityEvaluateDeviceTags( const char * tag,const char * values ) ;
+
+/*
+ * this function is defined in security.c
+ */
+string_t zuluCryptSecurityGetFileSystemFromDevice( const char * path ) ;
+

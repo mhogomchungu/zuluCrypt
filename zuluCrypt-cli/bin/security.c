@@ -18,6 +18,7 @@
  */
 
 #include "includes.h"
+#include "../lib/includes.h"
 #include <blkid/blkid.h>
 #include <errno.h>
 #include <unistd.h>
@@ -107,6 +108,7 @@ int zuluCryptUserIsAMemberOfAGroup( uid_t uid,const char * groupname )
 
 static int check_permissions( const char * path,int mode,const char * groupname,uid_t uid )
 {
+	int st ;
 	if( uid == 0 ){
 		return has_access( path,mode ) ;
 	}else{
@@ -120,9 +122,19 @@ static int check_permissions( const char * path,int mode,const char * groupname,
 				return 1 ;
 			}
 		}else{
-			return has_access( path,mode ) ;
+			if( strncmp( path,"/dev/",5 ) != 0 ){
+				return has_access( path,mode ) ;
+			}else{
+				if( zuluCryptSecurityGainElevatedPrivileges() ){
+					st = has_access( path,mode ) ;
+					zuluCryptSecurityDropElevatedPrivileges() ;
+					return st ;
+				}else{
+					return 1 ;
+				}
+			}
 		}
-	}	
+	}
 }
 
 int zuluCryptSecurityPathIsValid( const char * path,uid_t uid )
@@ -236,4 +248,17 @@ char * zuluCryptSecurityEvaluateDeviceTags( const char * tag,const char * values
 	result = blkid_evaluate_tag( tag,values,NULL) ;
 	zuluCryptSecurityDropElevatedPrivileges() ;
 	return result ;
+}
+
+string_t zuluCryptSecurityGetFileSystemFromDevice( const char * path )
+{
+	string_t st = StringVoid ;
+	if( zuluCryptSecurityGainElevatedPrivileges() ){
+		/*
+		 * zuluCryptGetFileSystemFromDevice() is defined in ../lib/mount_volume.c
+		 */
+		st = zuluCryptGetFileSystemFromDevice( path ) ;
+		zuluCryptSecurityDropElevatedPrivileges() ;
+	}
+	return st ;
 }
