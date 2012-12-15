@@ -23,7 +23,6 @@
  bin/get_opts.c
  bin/help.c
  bin/mount_flags.c
- bin/real_path.c
  ) 
  
  SET( BINMount
@@ -58,6 +57,7 @@
  lib/open_tcrypt.c
  lib/volume_type.c
  lib/mount_fs_options.c
+ lib/real_path.c 
 )
  	 
  add_library( Socket STATIC utility/socket/socket.c ) 

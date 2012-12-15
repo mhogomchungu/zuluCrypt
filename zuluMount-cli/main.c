@@ -147,7 +147,6 @@ static int _zuluMountMount( const char * device,const char * m_point,
 	int status ;
 	int mount_point_from_fstab = 0 ;
 	string_t z = StringVoid ;
-
 	char * path = NULL ;
 	char * q ;
 	const char * m_path ;
@@ -267,6 +266,7 @@ static int _zuluMountMount( const char * device,const char * m_point,
 	}else{
 		rmdir( path ) ;
 		switch( status ){
+			case -1: return _zuluExit( 113,z,path,"ERROR: failed to mount a filesystem,invalid mount option or permission denied" ) ;
 			case 1 : return _zuluExit( 108,z,path,"ERROR: failed to mount ntfs file system using ntfs-3g,is ntfs-3g package installed?" ) ;
 			case 4 : return _zuluExit( 109,z,path,"ERROR: mount failed,no or unrecognized file system" )	; 
 			case 12: return _zuluExit( 110,z,path,"ERROR: mount failed,could not get a lock on /etc/mtab~" ) ;	

@@ -147,4 +147,19 @@ int zuluCryptVolumeIsTcrypt( const char * device,const char * key,size_t key_len
 /*
  * this function is defined in mount_fs_options.c
  */
-int zuluCryptFsOptionsAreNotAllowed( uid_t uid,const char * fs_opts,string_t s ) ;
+int zuluCryptMountHasNotAllowedFileSystemOptions( uid_t uid,const char * fs_opts,string_t s ) ;
+
+/*
+ * this functioon is defined in ./real_path.c
+ */
+int zuluCryptPathDidNotChange( const char * path ) ;
+
+/*
+ * this functioon is defined in ./real_path.c
+ */
+int zuluCryptPathDeviceIsBlockDevice( const char * device ) ;
+
+/*
+ * this function is defined in mount_fs_options
+ */
+int zulucryptFileSystemIsSupported( const char * fs ) ;

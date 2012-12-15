@@ -29,7 +29,7 @@ int zuluCryptUserIsAMemberOfAGroup( uid_t uid,const char * groupname ) ;
 
 static inline int _has_no_access( uid_t uid )
 {
-	return uid == 0 ? 0 : !zuluCryptUserIsAMemberOfAGroup( uid,"zulucrypt-root" ) ;
+	return uid == 0 ? 0 : !zuluCryptUserIsAMemberOfAGroup( uid,"zulucrypt-mount" ) ;
 }
 
 int zuluCryptMountFlagsAreNotCorrect( const char * mode,uid_t uid,unsigned long * flags ) 

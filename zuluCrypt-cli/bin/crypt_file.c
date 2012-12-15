@@ -23,7 +23,7 @@
 #define DECRYPT 1
 #define ENCRYPT 0
 
-static int msg( int st )
+static int zuluExit( int st )
 {
 	switch( st ){
 		case 0 : printf( "SUCCESS: encrypted file created successfully\n" )				; break ;
@@ -59,37 +59,54 @@ static int crypt_opt( const struct_opts * opts,uid_t uid,int opt )
 	const char * type 	= opts->key_source ;
 	
 	if( dest == NULL )
-		return msg( 9 ) ;
+		return zuluExit( 9 ) ;
 
 	if( source == NULL )
-		return msg( 14 ) ;
+		return zuluExit( 14 ) ;
 	
+	/*
+	 * zuluCryptPathStartsWith() is defined in real_path.c
+	 */
+	if( zuluCryptPathStartsWith( dest,"/dev/" ) )
+		return zuluExit( 10 ) ;
+	
+	if( zuluCryptPathStartsWith( source,"/dev/" ) )
+		return zuluExit( 15 ) ;
+	
+	/*
+	 * zuluCryptPathIsValid() is defined in ../lib/is_path_valid.c
+	 */
 	if( zuluCryptPathIsValid( dest ) )
-		return msg( 5 ) ;
-	
+		return zuluExit( 5 ) ;
+	/*
+	 * zuluCryptPathIsNotValid() is defined in ../lib/is_path_valid.c
+	 */
 	if( zuluCryptPathIsNotValid( source ) )
-		return msg( 6 ) ;
+		return zuluExit( 6 ) ;
 	
+	/*
+	 * security functions are defined in ./security.c
+	 */
 	if( zuluCryptSecurityCanOpenPathForWriting( dest,uid ) == 1 )
-		return msg( 10 ) ;		
+		return zuluExit( 10 ) ;		
 	
 	if( zuluCryptSecurityCanOpenPathForReading( source,uid ) == 1 )
-		return msg( 15 ) ;
+		return zuluExit( 15 ) ;
 	
 	if( type == NULL ){
 
 		printf( "Enter passphrase: " ) ;
 		switch( StringSilentlyGetFromTerminal_1( &p,KEY_MAX_SIZE ) ){
-			case 1 : return msg( 12 ) ;
-			case 2 : return msg( 13 ) ;
+			case 1 : return zuluExit( 12 ) ;
+			case 2 : return zuluExit( 13 ) ;
 		}
 		
 		printf( "\nRe enter passphrase: " ) ;
 		switch( StringSilentlyGetFromTerminal_1( &q,KEY_MAX_SIZE ) ){
 			case 1 : StringClearDelete( &p ) ;
-				 return msg( 12 ) ;
+				 return zuluExit( 12 ) ;
 			case 2 : StringClearDelete( &p ) ;
-				 return msg( 13 ) ;
+				 return zuluExit( 13 ) ;
 		}
 		
 		printf( "\n" ) ;
@@ -97,21 +114,21 @@ static int crypt_opt( const struct_opts * opts,uid_t uid,int opt )
 		if( !StringEqualString( p,q ) ){
 			StringClearDelete( &p ) ;
 			StringClearDelete( &q ) ;
-			return msg( 8 ) ; 
+			return zuluExit( 8 ) ; 
 		}else{
 			StringDelete( &q ) ;
 		}
 	}else{
 		if( type == NULL )
-			return msg( 9 ) ;
+			return zuluExit( 9 ) ;
 		if( strcmp( type,"-p" ) == 0 ){
 			p = String( passphrase ) ;
 		}else if( strcmp( type,"-f" ) == 0 ){
 			p = StringGetFromFile( passphrase ) ;
 			if( p == NULL )
-				return msg( 2 ) ;
+				return zuluExit( 2 ) ;
 		}else{
-			return msg( 3 ) ;
+			return zuluExit( 3 ) ;
 		}
 	}
 	
@@ -123,17 +140,17 @@ static int crypt_opt( const struct_opts * opts,uid_t uid,int opt )
 	StringClearDelete( &p ) ;
 	
 	switch( st ){
-		case 1 : return msg( 4 ) ;
-		case 2 : return msg( 11 ) ;
+		case 1 : return zuluExit( 4 ) ;
+		case 2 : return zuluExit( 11 ) ;
 	}
 	
 	chmod( dest,S_IRUSR | S_IWUSR ) ;
 	chown( dest,uid,uid ) ;
 	
 	if( opt == 1 )
-		return msg( 1 ) ;
+		return zuluExit( 1 ) ;
 	else
-		return msg( 0 ) ;
+		return zuluExit( 0 ) ;
 }
 
 int zuluCryptExeFileDecrypt( const struct_opts * opts,uid_t uid ) 

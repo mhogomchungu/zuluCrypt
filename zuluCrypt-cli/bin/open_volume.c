@@ -137,7 +137,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	 */
 	if( zuluCryptMountFlagsAreNotCorrect( m_opts,uid,&m_flags ) )
 		return zuluExit( 31,device,cpoint,stl ) ; 
-	
+		
 	device = zuluCryptRealPath( dev ) ;
 	if( device == NULL )
 		return zuluExit( 17,device,cpoint,stl ) ;

@@ -142,3 +142,18 @@ string_t zuluCryptSecurityGetFileSystemFromDevice( const char * path ) ;
  * this function is defined in real_path.c
  */
 char * zuluCryptRealPath( const char * path ) ;
+
+/*
+ * this function is defined in real_path.c
+ */
+int zuluCryptPathStartsWith( const char * path,const char * start ) ;
+
+/*
+ * this function is defined in real_path.c
+ */
+int zuluCryptPathDoesNotStartsWith( const char * path,const char * start ) ;
+
+/*
+ * this function is defined in mount_fs_options.c
+ */
+int zulucryptFileSystemIsNotSupported( const char * fs ) ;

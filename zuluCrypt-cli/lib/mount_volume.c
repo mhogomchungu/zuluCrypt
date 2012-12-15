@@ -36,6 +36,7 @@
 #define OTHER_FAMILY_FS 2
 
 typedef struct{
+	const char * original_device ;
 	const char * device ;
 	const char * m_point ;
 	const char * fs ;
@@ -195,9 +196,9 @@ static inline string_t set_mount_options( m_struct * mst )
 	
 	if( opt == StringVoid ){
 		opt = String( mode ) ;
-	}else{
-		StringMultipleAppend( opt,",",mode,",",mst->fs_flags,END ) ;
 	}
+	
+	StringMultipleAppend( opt,",",mode,",",mst->fs_flags,END ) ;
 	
 	if( fs_family( mst->fs ) == 1 ){
 		if( !StringContains( opt,"dmask=" ) ){
@@ -316,36 +317,132 @@ static string_t _mount_options( unsigned long flags,string_t * xt )
 		StringAppend( st,",synchronous" ) ;
 	}
 	
-	StringReplaceString( st,",,","," );
-	
 	return st ;
+}
+
+static inline int crypto_paths_are_sane( const char * device,const char * m_point,uid_t uid )
+{
+	struct stat st ;
+	if( device ){;}	
+	if( chdir( m_point ) != 0 )
+		return 0 ;
+	if( stat( ".",&st ) != 0 )
+		return 0 ;
+	if( uid != st.st_uid )
+		return 0 ;
+	return 1 ;
+}
+
+static inline int paths_are_sane( const char * device,const char * m_point,uid_t uid )
+{
+	/*
+	 * in this function,we are checking if the paths we are about to pass to mount() are
+	 * paths we expect.
+	 */
+	
+	struct stat st ;
+	const char * e = crypt_get_dir() ;
+	if( strncmp( device,e,strlen( e ) ) == 0 ){
+		/*
+		 * crypto volumes are different,treat them differently.
+		 */
+		return crypto_paths_are_sane( device,m_point,uid ) ;
+	}
+	/*
+	 * all these zuluCrypt* functions are defined in ./real_path.c
+	 */
+	if( !zuluCryptPathDidNotChange( device ) )
+		return 0 ;
+	if( !zuluCryptPathDeviceIsBlockDevice( device ) )
+		return 0 ;
+	if( !zuluCryptPathDidNotChange( m_point ) )
+		return 0 ;
+	if( chdir( m_point ) != 0 )
+		return 0 ;
+	if( stat( ".",&st ) != 0 )
+		return 0 ;
+	if( uid != st.st_uid )
+		return 0 ;
+	return 1 ;
+}
+
+static inline int mount_is_were_we_expect_it_to_be( const m_struct * mst,int h )
+{
+	/*
+	 * in this function,we are checking if the volume is mounted where we expect it to be by comparing
+	 * paths we presented to mount() and paths that showed up in /proc/self/mountinfo 
+	 */
+	char * e = NULL ;
+	char * f ;
+	int result = -1 ;
+	if( h != 0 )
+		return h ;
+		
+	/*
+	 * zuluCryptGetMountPointFromPath() is defined in ./print_mounted_volumes.c
+	 */
+	f = zuluCryptGetMountPointFromPath( mst->original_device ) ;
+	if( f == NULL ){
+		zuluCryptUnmountVolume( mst->original_device,&e ) ;
+		if( e != NULL ){
+			rmdir( e ) ;
+			free( e ) ;
+		}
+	}else{
+		if( strcmp( f,mst->m_point ) == 0 ){
+			result = 0 ;
+		}else{
+			/*
+			 * mount reported the file system as being mounted but it is not where we expect it to be.Assume shenanigans and unmount
+			 */
+			zuluCryptUnmountVolume( mst->device,&e ) ;
+			if( e != NULL ){
+				rmdir( e ) ;
+				free( e ) ;
+			}	
+		}
+		free( f ) ;
+	}
+	return result ;
 }
 
 static inline int mount_ntfs( const m_struct * mst )
 {
 	int status ;
-	process_t p = Process( ZULUCRYPTmount ) ;
-	string_t st = String( "" ) ;
+	process_t p ;
+	string_t st ;
 	const char * opts ;
+	if( !paths_are_sane( mst->device,mst->m_point,mst->uid ) ) 
+		return -1 ;
+	p = Process( ZULUCRYPTmount ) ;
+	st = String( "" ) ;	
 	_mount_options( mst->m_flags,&st ) ;
 	if( mst->m_flags & MS_RDONLY )
-		opts = StringPrepend( st,"ro" ) ;
+		StringPrepend( st,"ro" ) ;
 	else
-		opts = StringPrepend( st,"rw" ) ;
+		StringPrepend( st,"rw" ) ;
+	
+	opts = StringReplaceString( st,",,","," );
+	
 	ProcessSetArgumentList( p,"-t","ntfs-3g","-o",opts,mst->device,mst->m_point,ENDLIST ) ;
 	ProcessStart( p ) ;
 	status = ProcessExitStatus( p ) ; 
 	ProcessDelete( &p ) ;
-	return status ;
+	return mount_is_were_we_expect_it_to_be( mst,status ) ;
 }
 
 static inline int mount_mapper( const m_struct * mst )
 {
-	int h = mount( mst->device,mst->m_point,mst->fs,mst->m_flags,mst->opts + 3 ) ;
-	if( h == 0 && mst->m_flags != MS_RDONLY )
-		chmod( mst->m_point,S_IRWXU|S_IRWXG|S_IRWXO ) ;
+	int h = -1;
 	
-	return h ;
+	if( paths_are_sane( mst->device,mst->m_point,mst->uid ) ){
+		h = mount( mst->device,mst->m_point,mst->fs,mst->m_flags,mst->opts + 3 ) ;
+		if( h == 0 && mst->m_flags != MS_RDONLY ){
+			chmod( mst->m_point,S_IRWXU|S_IRWXG|S_IRWXO ) ;
+		}
+	}
+	
+	return mount_is_were_we_expect_it_to_be( mst,h ) ;
 }
 
 string_t zuluCryptGetFileSystemFromDevice( const char * device )
@@ -377,12 +474,18 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 	string_t * opts ;
 	string_t fs ;
 	string_t * loop ;
-	
 	int device_file = 0 ;
 	int fd ;
-	
 	m_struct mst ;
+		
+	/*
+	 * device and original_device are initially the same but
+	 * device may change to something like /dev/loop1 if device device to be mounted is a file
+	 * or to /dev/mapper/blabla if the device is a mounted device
+	 */
 	mst.device = path ;
+	mst.original_device = path ;
+	
 	mst.m_point = m_point ;
 	mst.uid = uid ;
 	
@@ -407,11 +510,11 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 		 */
 		return zuluExit( 4,stl ) ;
 	}
-		
+	
 	/*
-	 * zuluCryptFsOptionsAreNotAllowed() is defined in ./mount_fs_options.c
+	 * zuluCryptMountHasNotAllowedFileSystemOptions() is defined in ./mount_fs_options.c
 	 */
-	if( zuluCryptFsOptionsAreNotAllowed( uid,fs_opts,fs ) )
+	if( zuluCryptMountHasNotAllowedFileSystemOptions( uid,fs_opts,fs ) )
 		return zuluExit( -1,stl ) ;
 	
 	mst.fs_flags = fs_opts ;
@@ -470,12 +573,13 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 				_mount_options( mst.m_flags,opts ) ;
 				
 				if( device_file ){
+					StringMultipleAppend( *opts,",loop=",mst.device,END ) ;
 					mt.mnt_fsname = ( char * ) path ;
-					mt.mnt_opts = ( char * )StringMultipleAppend( *opts,",loop=",mst.device,END ) ;
+					mt.mnt_opts = ( char * ) StringReplaceString( *opts,",,","," );
 					close( fd ) ;
 				}else{
 					mt.mnt_fsname = ( char * ) mst.device ;
-					mt.mnt_opts = ( char * ) StringContent( *opts ) ;
+					mt.mnt_opts = ( char * ) StringReplaceString( *opts,",,","," );
 				}
 				mt.mnt_freq   = 0 ;
 				mt.mnt_passno = 0 ;

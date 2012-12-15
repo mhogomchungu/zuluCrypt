@@ -108,6 +108,8 @@ int zuluCryptUserIsAMemberOfAGroup( uid_t uid,const char * groupname )
 static int has_security_access( const char * path,int mode )
 {
 	int st ;
+	if( strncmp( path,"/dev/shm/",9 ) == 0 )
+		return 2 ;
 	if( strncmp( path,"/dev/",5 ) != 0 ){
 		return has_access( path,mode ) ;
 	}else{
@@ -196,16 +198,16 @@ int zuluCryptSecurityGetPassFromFile( const char * path,uid_t uid,string_t * st 
 	size_t s ;
 	string_t p ; 
 	const char * z ;
+	
 	/*
-	 * whats wrong with you? :-) cant get a key from "/dev/"
+	 * zuluCryptPathStartsWith() is defined in ./real_path.c
 	 */
-	char * q = zuluCryptRealPath( path ) ;
-	if( strncmp( q,"/dev/",5 ) == 0 ){
-		free( q ) ;
+	if( zuluCryptPathStartsWith( path,"/dev/" ) ){
+		/*
+		 * whats wrong with you? :-) cant get a key from "/dev/"
+		 */
 		return 4 ;
 	}
-	
-	free( q ) ;
 	
 	p = zuluCryptGetUserHomePath( uid ) ;
 	z = StringAppend( p,".zuluCrypt-socket" ) ;
