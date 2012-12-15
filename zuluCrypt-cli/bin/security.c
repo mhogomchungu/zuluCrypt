@@ -141,11 +141,9 @@ static int check_permissions( const char * path,int mode,const char * groupname,
 	}
 }
 
-int zuluCryptSecurityPathIsValid( const char * path,uid_t uid )
+int zuluCryptSecurityPathIsValid( const char * path,uid_t uid __attribute__((unused)) )
 {
 	int st = 0 ;
-	if( uid == 0 ){;}
-	
 	if( strncmp( path,"/dev/",5 ) != 0 )
 		return has_access( path,READ ) == 0 ;
 	else{
@@ -167,15 +165,13 @@ int zuluCryptSecurityCanOpenPathForWriting( const char * path,uid_t uid )
 	return check_permissions( path,WRITE,"zulucrypt-write",uid ) ;
 }
 
-int zuluCryptSecurityCreateMountPoint( const char * path,uid_t uid )
+int zuluCryptSecurityCreateMountPoint( const char * path,uid_t uid __attribute__((unused)) )
 {
 	int st ;
-	if( uid == 0 ){;}
 	st = mkdir( path,S_IRWXU ) ;
-	
-	if( st == 0 )
+	if( st == 0 ){
 		return 0 ;
-	else{
+	}else{
 		switch( errno ){
 			case EACCES : return 1 ; 
 			case EEXIST : return 2 ; ; 
@@ -197,9 +193,23 @@ int zuluCryptSecurityGetPassFromFile( const char * path,uid_t uid,string_t * st 
 	/*
 	 * zuluCryptGetUserHomePath() is defined in ../lib/user_get_home_path.c
 	 */
-	string_t p = zuluCryptGetUserHomePath( uid ) ;
-	const char * z = StringAppend( p,".zuluCrypt-socket" ) ;
-	size_t s = StringLength( p ) ;
+	size_t s ;
+	string_t p ; 
+	const char * z ;
+	/*
+	 * whats wrong with you? :-) cant get a key from "/dev/"
+	 */
+	char * q = zuluCryptRealPath( path ) ;
+	if( strncmp( q,"/dev/",5 ) == 0 ){
+		free( q ) ;
+		return 4 ;
+	}
+	
+	free( q ) ;
+	
+	p = zuluCryptGetUserHomePath( uid ) ;
+	z = StringAppend( p,".zuluCrypt-socket" ) ;
+	s = StringLength( p ) ;
 	
 	if( strncmp( path,z,s ) == 0 ){
 		StringDelete( &p ) ;

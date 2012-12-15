@@ -262,7 +262,8 @@ static int _zuluMountMount( const char * device,const char * m_point,
 	status = zuluCryptMountVolume( device,path,m_flags,fs_opts,uid ) ;
 	zuluCryptSecurityDropElevatedPrivileges() ;
 	if( status == 0 ){
-		return _zuluExit( 0,z,path,"SUCCESS: mount complete successfully" ) ;
+		printf( "SUCCESS: mount complete successfully\nvolume mounted at: %s\n",path ) ;
+		return _zuluExit( 0,z,path,NULL ) ;
 	}else{
 		rmdir( path ) ;
 		switch( status ){
@@ -439,6 +440,9 @@ static int _zuluMountCryptoMount( const char * device,const char * mode,uid_t ui
 	 */
 	st = zuluCryptEXEOpenVolume( &opts,mapping_name,uid ) ;
 	
+	if( st == 0 ){
+		printf( "volume mounted at: %s\n",opts.mount_point ) ;
+	}
 	StringDelete( &p ) ;
 	
 	return st ;

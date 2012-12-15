@@ -73,18 +73,18 @@ static int save_header( struct crypt_device * cd,const char * device,const char 
 	return st ;
 }
 
-static int back_up_is_luks( const char * path )
+static int back_up_is_not_luks( const char * path )
 {
 	struct crypt_device * cd;
-	int st = -1 ;
+	int st = 1 ;
 	if( zuluCryptSecurityGainElevatedPrivileges() ){
 		if( crypt_init( &cd,path ) != 0 ){
-			st = 2 ;
+			st = 1 ;
 		}else{
-			if( crypt_load( cd,NULL,NULL ) != 0 ){
-				st = 1 ;
-			}else{
+			if( crypt_load( cd,NULL,NULL ) == 0 ){
 				st = 0 ;
+			}else{
+				st = 1 ;
 			}
 		}
 		crypt_free( cd ) ;
@@ -102,8 +102,8 @@ static int restore_header( struct crypt_device * cd,const char * device,const ch
 	const char * warn = "\
 Are you sure you want to replace a header on device \"%s\" with a backup copy at \"%s\"?\n\
 Type \"YES\" and press Enter to continue: " ;
-
-	if( back_up_is_luks( path ) != 0 )
+	
+	if( back_up_is_not_luks( path ) )
 		 return zuluExit( 17,cd ) ;
 	
 	if( k == -1 ){
@@ -192,9 +192,14 @@ int zuluCryptEXESaveAndRestoreLuksHeader( const struct_opts * opts,uid_t uid,int
 		if( zuluCryptSecurityCanOpenPathForWriting( path,uid ) == 1 )
 			return zuluExit( 10,NULL ) ;
 	}	
-		
-	if( crypt_init( &cd,device ) != 0 )
-		return zuluExit( 3,NULL ) ;
+	
+	if( zuluCryptSecurityGainElevatedPrivileges() ){
+		if( crypt_init( &cd,device ) != 0 ){
+			zuluCryptSecurityDropElevatedPrivileges() ;
+			return zuluExit( 3,NULL ) ;
+		}
+	}
+	zuluCryptSecurityDropElevatedPrivileges() ;
 	
 	switch( option ){
 		case LUKS_HEADER_RESTORE : return restore_header( cd,device,path,opts->dont_ask_confirmation ) ;
