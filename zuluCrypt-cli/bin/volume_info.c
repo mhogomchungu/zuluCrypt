@@ -27,7 +27,7 @@ int zuluCryptEXEVolumeInfo( const char * mapper,const char * device,uid_t uid )
 	
 	string_t p ;
 
-	dev = realpath( device,NULL ) ;
+	dev = zuluCryptRealPath( device ) ;
 	if( dev == NULL ){
 		printf( "ERROR: full device path could not get resolved\n" ) ;
 		return 1 ;

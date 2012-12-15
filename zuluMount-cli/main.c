@@ -249,7 +249,7 @@ static int _zuluMountMount( const char * device,const char * m_point,
 		}
 	}
 	
-	path = realpath( m_path,NULL ) ;
+	path = zuluCryptRealPath( m_path ) ;
 	if( path == NULL )
 		return _zuluExit( 107,z,path,"ERROR: could not resolve mount point path" ) ;
 	
@@ -644,7 +644,7 @@ static int _zuluMountDoAction( const char * device,const char * action,const cha
 		}
 	}
 	
-	dev = realpath( device,NULL ) ;
+	dev = zuluCryptRealPath( device ) ;
 	
 	if( dev == NULL ){
 		printf( "ERROR: failed to resolve path to device\n" ) ;

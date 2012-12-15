@@ -89,14 +89,21 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	string_t * content = StringListAssign( stl ) ;
 	string_t * confirm = StringListAssign( stl ) ;
 	string_t * mapper  = StringListAssign( stl ) ;
-		
+	string_t * dev_st  = StringListAssign( stl ) ;
+	
 	int st  ;
 	struct stat xt ;
 	
-	char * dev ; 
-	
 	int j ;
 	int k ;
+		
+	char * dev = zuluCryptRealPath( device ) ;
+	
+	if( dev == NULL )
+		return zuluExit( 17,stl ) ;
+	
+	*dev_st = StringInherit( &dev ) ;
+	device = StringContent( *dev_st ) ;
 	
 	/*
 	 * This function is defined at "security.c"
@@ -108,22 +115,15 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		case 2 : return zuluExit( 1,stl ) ; break ;
 		case 1 : return zuluExit( 13,stl ); break ;
 	}
-	
-	dev = realpath( device,NULL ) ;
-	
-	if( dev == NULL )
-		return zuluExit( 17,stl ) ;
-	
-	*mapper = zuluCryptCreateMapperName( dev,mapping_name,uid,CLOSE ) ;
+		
+	*mapper = zuluCryptCreateMapperName( device,mapping_name,uid,CLOSE ) ;
 	
 	j = zuluCryptCheckOpenedMapper( StringContent( *mapper ) ) ;
 	
 	/*
 	 * defined in ../lib/print_mounted_volumes.c
 	 */
-	k = zuluCryptPartitionIsMounted( dev ) ;
-	
-	free( dev ) ;	
+	k = zuluCryptPartitionIsMounted( device ) ;
 	
 	if( j == 1 )
 		return zuluExit( 16,stl ) ;

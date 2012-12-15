@@ -85,8 +85,8 @@ only root user or members of group zulucrypt-write can do that\n" ) ;						break
 
 static int zuluExit_1( int st,const char * device,stringList_t stl )
 {
-	StringListClearDelete( &stl ) ;
 	printf( "ERROR: device \"%s\" is not a luks device\n",device ) ;
+	StringListClearDelete( &stl ) ;
 	return st ;
 }
 
@@ -120,7 +120,7 @@ static int zuluGetKeys( string_t * key1,string_t * key2,string_t * key3 )
  */
 int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 {
-	const char * device      = opts->device ;
+	const char * device      ;
 	const char * keyType1    = opts->existing_key_source ;
 	const char * existingKey = opts->existing_key ;
 	const char * keyType2    = opts->new_key_source ;
@@ -133,6 +133,7 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 	string_t * newKey_2    	= StringListAssign( stl ) ; 
 	string_t * ek          	= StringListAssign( stl ) ; 
 	string_t * nk          	= StringListAssign( stl ) ; 
+	string_t * dev_st	= StringListAssign( stl ) ;
 	
 	const char * key1 = NULL ;
 	const char * key2 = NULL ;
@@ -142,6 +143,14 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 
 	int status = 0 ;
 	
+	char * e = zuluCryptRealPath( opts->device ) ;
+	
+	if( e == NULL )
+		return zuluExit( 4,stl ) ;
+	
+	*dev_st = StringInherit( &e ) ;
+	
+	device = StringContent( *dev_st ) ;
 	/*
 	 * This function is defined at "security.c"
 	 * It makes sure the path exists and the user has atleast reading access to the path.

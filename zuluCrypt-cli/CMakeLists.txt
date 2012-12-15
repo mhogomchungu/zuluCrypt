@@ -23,6 +23,7 @@
  bin/get_opts.c
  bin/help.c
  bin/mount_flags.c
+ bin/real_path.c
  ) 
  
  SET( BINMount

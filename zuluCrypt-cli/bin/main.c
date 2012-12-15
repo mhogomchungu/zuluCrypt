@@ -226,12 +226,6 @@ int main( int argc,char * argv[] )
 	ProcessExitOnMemoryExaustion( ExitOnMemoryExaustion ) ;
 	SocketExitOnMemoryExaustion( ExitOnMemoryExaustion ) ;
 	
-	/*
-	if( setuid( 0 ) != 0 ){
-		printf( "ERROR: could not setuid(0),check the executable permission\n" ) ;
-		return 255 ;
-	}
-	*/
 	if( argc == 1 ){
 		zuluCryptEXEHelp();
 		return 1;

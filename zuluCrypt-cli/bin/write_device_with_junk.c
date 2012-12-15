@@ -105,7 +105,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	
 	const char * cmapper ;
 	
-	dev = realpath( device,NULL );
+	dev = zuluCryptRealPath( device );
 		
 	if( dev == NULL )
 		return zuluExit( NULL,2 ) ;

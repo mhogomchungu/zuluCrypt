@@ -37,7 +37,6 @@
 static int has_access( const char * path,int c )
 {
 	int f ;
-	
 	if( c == READ )
 		f = open( path,O_RDONLY );
 	else

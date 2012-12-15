@@ -55,38 +55,47 @@ static int zuluExit( int st,struct crypt_device * cd )
 
 static int save_header( struct crypt_device * cd,const char * device,const char * path,uid_t uid )
 {
-	if( zuluCryptVolumeIsNotLuks( device ) )
-		return zuluExit( 2,cd ) ;
-	
-	if( crypt_header_backup( cd,NULL,path ) == 0 ){
-		chown( path,uid,uid ) ;
-		chmod( path,S_IRUSR ) ;
-		return zuluExit( 0,cd ) ;
-	}else
-		return zuluExit( 4,cd ) ;
+	int st = 4 ;
+	if( zuluCryptSecurityGainElevatedPrivileges() ){
+		if( zuluCryptVolumeIsNotLuks( device ) ){
+			st = 2 ;
+		}else{
+			if( crypt_header_backup( cd,NULL,path ) == 0 ){
+				chown( path,uid,uid ) ;
+				chmod( path,S_IRUSR ) ;
+				st = 0 ;
+			}else{
+				st = 4 ;
+			}
+		}
+		zuluCryptSecurityDropElevatedPrivileges() ;
+	}
+	return st ;
 }
 
 static int back_up_is_luks( const char * path )
 {
 	struct crypt_device * cd;
-
 	int st = -1 ;
-	
-	if( crypt_init( &cd,path ) != 0 )
-		return 2 ;
-	
-	if( crypt_load( cd,NULL,NULL ) != 0 )
-		st = 1 ;
-	else
-		st = 0 ;
-	
-	crypt_free( cd ) ;
-	
+	if( zuluCryptSecurityGainElevatedPrivileges() ){
+		if( crypt_init( &cd,path ) != 0 ){
+			st = 2 ;
+		}else{
+			if( crypt_load( cd,NULL,NULL ) != 0 ){
+				st = 1 ;
+			}else{
+				st = 0 ;
+			}
+		}
+		crypt_free( cd ) ;
+		zuluCryptSecurityDropElevatedPrivileges() ;
+	}
 	return st ;
 }
 
 static int restore_header( struct crypt_device * cd,const char * device,const char * path,int k )
 {
+	int st = 7;
 	char * p ;
 	char * q ;
 	string_t confirm ;
@@ -99,8 +108,8 @@ Type \"YES\" and press Enter to continue: " ;
 	
 	if( k == -1 ){
 		
-		p = realpath( path,NULL ) ;
-		q = realpath( device,NULL ) ;
+		p = zuluCryptRealPath( path ) ;
+		q = zuluCryptRealPath( device ) ;
 		
 		printf( warn,q,p ) ;
 		
@@ -117,10 +126,16 @@ Type \"YES\" and press Enter to continue: " ;
 			return zuluExit( 19,cd ) ;
 	}
 	
-	if( crypt_header_restore( cd,NULL,path ) == 0 )
-		return zuluExit( 1,cd ) ;
-	else
-		return zuluExit( 7,cd ) ;
+	if( zuluCryptSecurityGainElevatedPrivileges() ){
+		if( crypt_header_restore( cd,NULL,path ) == 0 ){
+			st = 1 ;
+		}else{
+			st = 7 ;
+		}
+		zuluCryptSecurityDropElevatedPrivileges() ;
+	}
+	
+	return zuluExit( st,cd ) ;
 }
 
 int zuluCryptEXESaveAndRestoreLuksHeader( const struct_opts * opts,uid_t uid,int option  )
@@ -134,7 +149,7 @@ int zuluCryptEXESaveAndRestoreLuksHeader( const struct_opts * opts,uid_t uid,int
 	 */
 	const char * path = opts->key ;
 	
-	char * dev = realpath( device,NULL ) ;
+	char * dev = zuluCryptRealPath( device ) ;
 	
 	int k ;
 	

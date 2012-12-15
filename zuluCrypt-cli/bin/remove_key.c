@@ -70,8 +70,8 @@ only root user or members of group zulucrypt-write can do that\n" ) ;											
 
 static int zuluExit_1( int st,const char * device,stringList_t stl )
 {
-	StringListClearDelete( &stl ) ;	
 	printf( "ERROR: device \"%s\" is not a luks device\n",device ) ;
+	StringListClearDelete( &stl ) ;
 	return st ;
 }
 
@@ -86,8 +86,17 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 	
 	string_t * pass    =  StringListAssign( stl ) ;
 	string_t * confirm =  StringListAssign( stl ) ;
+	string_t * dev_st  =  StringListAssign( stl ) ;
 	
 	int status = 0 ;
+	
+	char * dev = zuluCryptRealPath( device ) ;
+	
+	if( dev == NULL )
+		return zuluExit( 10,stl );
+	
+	*dev_st = StringInherit( &dev ) ;
+	device = StringContent( *dev_st );
 	
 	/*
 	* check_partition is defined in partitions.c

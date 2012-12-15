@@ -138,3 +138,7 @@ char * zuluCryptSecurityEvaluateDeviceTags( const char * tag,const char * values
  */
 string_t zuluCryptSecurityGetFileSystemFromDevice( const char * path ) ;
 
+/*
+ * this function is defined in real_path.c
+ */
+char * zuluCryptRealPath( const char * path ) ;

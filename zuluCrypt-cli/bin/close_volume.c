@@ -44,7 +44,7 @@ int zuluCryptEXECloseVolume( const char * device,const char * mapping_name,uid_t
 	 string_t p = StringVoid ;
 	 char * m_point = NULL ;
 	 
-	 char * dev = realpath( device,NULL ) ;
+	 char * dev = zuluCryptRealPath( device ) ;
 	 
 	 if( dev == NULL )
 		 return zuluExit( 6,dev,p ) ;

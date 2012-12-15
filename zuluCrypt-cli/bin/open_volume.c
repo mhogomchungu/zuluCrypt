@@ -79,10 +79,6 @@ only root user or members of group zulucrypt-write can do that\n" );									bre
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
 	
-	if( st == 0 ){
-		
-	}
-	
 	if( device != NULL )
 		free( device ) ;
 	
@@ -142,13 +138,11 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	if( zuluCryptMountFlagsAreNotCorrect( m_opts,uid,&m_flags ) )
 		return zuluExit( 31,device,cpoint,stl ) ; 
 	
-	/*
-	 * This function is defined at "is_path_valid.c"
-	 * It makes sure the path exists and the user has atleast reading access to the path.
-	 * 
-	 * The importance of the function is explained where it is defined.
-	 */
-	switch( zuluCryptSecurityCanOpenPathForReading( dev,uid ) ){
+	device = zuluCryptRealPath( dev ) ;
+	if( device == NULL )
+		return zuluExit( 17,device,cpoint,stl ) ;
+	
+	switch( zuluCryptSecurityCanOpenPathForReading( device,uid ) ){
 		case 0 : break ;
 		case 1 : return zuluExit( 20,device,cpoint,stl ) ;
 		default: return zuluExit( 3,device,cpoint,stl ) ;
@@ -159,16 +153,12 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 			return zuluExit( 13,device,cpoint,stl ) ;
 		
 	if( strstr( m_opts,"rw" ) != NULL ){
-		switch( zuluCryptSecurityCanOpenPathForWriting( dev,uid ) ){
+		switch( zuluCryptSecurityCanOpenPathForWriting( device,uid ) ){
 			case 0 : break ;
 			case 1 : return zuluExit( 23,device,cpoint,stl ) ;
 			default: return zuluExit( 3,device,cpoint,stl ) ;
 		}
 	}
-	
-	device = realpath( dev,NULL ) ;
-	if( device == NULL )
-		return zuluExit( 17,device,cpoint,stl ) ;
 	
 	if( nmp == 1 && mount_point != NULL )
 		return zuluExit( 18,device,cpoint,stl ) ;
