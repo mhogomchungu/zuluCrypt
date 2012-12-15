@@ -1329,5 +1329,5 @@ string_t StringGetFromVirtualFile( const char * path )
 	c = realloc( c,i + 2 ) ;
 	c[ i + 1 ] = '\0' ;
 	
-	return StringInheritWithSize( &c,i + 2 ) ;
+	return StringInheritWithSize( &c,i + 1 ) ;
 }

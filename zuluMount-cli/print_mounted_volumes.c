@@ -75,14 +75,17 @@ void zuluMountPartitionProperties( const char * device,const char * mapper,const
 	
 	blkid = blkid_new_probe_from_filename( device ) ;
 	
-	if( blkid == NULL )
+	if( blkid == NULL ){
+		printf( "%s\tNil\tNil\tNil\tNil\tNil\n",device ) ;
 		return ;
+	}
 
 	blkid_do_probe( blkid );
 	
 	blkid_device_size = ( int64_t ) blkid_probe_get_size( blkid ) ;
 	
 	if( blkid_device_size <= 0 ){
+		printf( "%s\tNil\tNil\tNil\tNil\tNil\n",device ) ;
 		blkid_free_probe( blkid );
 		return ;
 	}
@@ -169,7 +172,6 @@ static void _printDeviceProperties( string_t entry )
 		
 	if( stx == StringListVoid )
 		return ;
-	
 	q = StringListContentAt( stx,0 ) ;
 	
 	if( strncmp( q,_z,_k ) == 0 ){
@@ -207,7 +209,6 @@ static void _printDeviceProperties( string_t entry )
 		
 		zuluMountPartitionProperties( e,e,f ) ;
 	}
-	
 	StringListDelete( &stx ) ;
 }
 

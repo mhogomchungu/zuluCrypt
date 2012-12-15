@@ -385,7 +385,10 @@ static inline int mount_is_were_we_expect_it_to_be( const m_struct * mst,int h )
 	if( f == NULL ){
 		zuluCryptUnmountVolume( mst->original_device,&e ) ;
 		if( e != NULL ){
-			rmdir( e ) ;
+			/*
+			 * Dont delete the path because we dont know what path we got
+			 * rmdir( e ) ;
+			 */
 			free( e ) ;
 		}
 	}else{
@@ -397,7 +400,10 @@ static inline int mount_is_were_we_expect_it_to_be( const m_struct * mst,int h )
 			 */
 			zuluCryptUnmountVolume( mst->device,&e ) ;
 			if( e != NULL ){
-				rmdir( e ) ;
+				/*
+				 * Dont delete the path because we dont know what path we got
+				 * rmdir( e ) ;
+				 */				
 				free( e ) ;
 			}	
 		}
