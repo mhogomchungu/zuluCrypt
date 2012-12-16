@@ -140,6 +140,41 @@ stringList_t zuluCryptPartitionList( void )
 	return stl_1 ;
 }
 
+static int _zuluCryptCheckSYSifDeviceIsSystem( const char * device )
+{
+	char c ;
+	const char * path ;
+	int r ;	
+	string_t st = String( device ) ;
+	string_t xt ;
+	
+	/*
+	 * this loop will convert something like: "/dev/sdc12" to "/dev/sdc"
+	 * basically,it removes digits from the end of the string
+	 */
+	while( 1 ){
+		c = StringCharAtLast( st ) ;
+		if( c >= '0' && c <= '9' ){
+			StringRemoveRight( st,1 ) ;
+		}else{
+			break ;
+		}
+	}
+	
+	StringReplaceString( st,"/dev/","/sys/block/" ) ;
+	path = StringAppend( st,"/removable" ) ;
+	/*
+	 * path will be something like "/sys/block/sda/removable"
+	 */
+	xt = StringGetFromVirtualFile( path ) ;
+	StringDelete( &st ) ;
+	if( xt == StringVoid )
+		return 0 ;
+	r = StringEqual( xt,"0\n" ) ;
+	StringDelete( &xt ) ;
+	return r ;	
+}
+
 stringList_t zuluCryptPartitions( int option )
 {
 	string_t st  ;
@@ -240,6 +275,29 @@ stringList_t zuluCryptPartitions( int option )
 	p = zuluCryptGetPartitionFromZulutab() ;
 	StringListAppendList( system,p ) ;
 	StringListDelete( &p ) ;
+	
+	/*
+	 * At this point:
+	 * "system" contains system devices.
+	 * "non_system" contains non system devices.
+	 * 
+	 * now we check non_system devices agains entries in /sys/ to see if udev reported them as system as move them to system 
+	 * if it does . 
+	 */
+	it  = StringListBegin( non_system ) ;
+	end = StringListEnd( non_system ) ;
+	
+	do{
+		device = StringContent( *it ) ;
+		if( _zuluCryptCheckSYSifDeviceIsSystem( device ) ){
+			StringListAppend( system,device ) ;
+			StringListRemoveString( non_system,device ) ;
+			it  = StringListBegin( non_system ) ;
+			end = StringListEnd( non_system ) ;
+		}else{
+			it++ ;
+		}
+	}while( it != end ) ;
 	
 	if( option == SYSTEM_PARTITIONS ){
 		StringListDelete( &non_system ) ;
@@ -482,42 +540,11 @@ int _zuluCryptPartitionIsSystemPartition( const char * dev )
 	return index >= 0 ? 1 : 0 ;
 }
 
-int zuluCryptPartitionIsSystemPartition( const char * dev )
+int zuluCryptPartitionIsSystemPartition( const char * device )
 {
-	string_t xt ;
-	string_t st ;
-	char c ;
-	const char * path ;
-	int r ;
-	
-	if( _zuluCryptPartitionIsSystemPartition( dev ) )
+	if( _zuluCryptPartitionIsSystemPartition( device ) )
 		return 1 ;
-	
-	if( strncmp( dev,"/dev/",5 ) != 0 )
+	if( strncmp( device,"/dev/",5 ) != 0 )
 		return 0 ;
-	
-	st = String( dev ) ;
-	
-	/*
-	 * this loop will convert something like: "/dev/sdc12" to "/dev/sdc"
-	 * basically,it removes digits from the end of the string
-	 */
-	while( 1 ){
-		c = StringCharAtLast( st ) ;
-		if( c >= '0' && c <= '9' ){
-			StringRemoveRight( st,1 ) ;
-		}else{
-			break ;
-		}
-	}
-	
-	StringReplaceString( st,"/dev/","/sys/block/" ) ;
-	path = StringAppend( st,"/removable" ) ;
-	xt = StringGetFromVirtualFile( path ) ;
-	StringDelete( &st ) ;
-	if( xt == StringVoid )
-		return 0 ;
-	r = StringEqual( xt,"0\n" ) ;
-	StringDelete( &xt ) ;
-	return r ;
+	return _zuluCryptCheckSYSifDeviceIsSystem( device ) ;
 }
