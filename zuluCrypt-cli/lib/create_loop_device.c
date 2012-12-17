@@ -34,6 +34,29 @@ static int zuluExit( int result,string_t st,int fd_loop,int fd_path )
 	return result ;
 }
 
+char * zuluCryptLoopDeviceAddress( const char * device )
+{
+	int fd ;
+	char * path ;
+	struct loop_info64 l_info ;
+	string_t xt ;
+	string_t st = String( "/sys/block/" ) ;
+	StringMultipleAppend( st,device + 5,"/loop/backing_file",END ) ;
+	xt = StringGetFromVirtualFile( StringContent( st ) ) ;
+	StringDelete( &st ) ;
+	if( xt == StringVoid ){
+		memset( &l_info,'\0',sizeof( struct loop_info64 ) ) ;
+		fd = open( device,O_RDONLY ) ;
+		ioctl( fd,LOOP_GET_STATUS64,&l_info ) ;
+		path = zuluCryptRealPath( ( char * ) l_info.lo_file_name ) ;
+		close( fd ) ;
+		return path ;
+	}else{
+		StringRemoveRight( xt,1 ) ;
+		return StringDeleteHandle( &xt ) ;
+	}
+}
+
 int zuluCryptAttachLoopDeviceToFile( const char * path,int mode,int * loop_fd,string_t * loop_device )
 {
 	size_t size ;
@@ -42,15 +65,16 @@ int zuluCryptAttachLoopDeviceToFile( const char * path,int mode,int * loop_fd,st
 	int fd_path = -1 ;
 	int devnr ;
 	const char * loop ;
+	
 	struct loop_info64 l_info ;
 	
 	memset( &l_info,'\0',sizeof( struct loop_info64 ) ) ;
 	
 	fd_loop = open( "/dev/loop-control",O_RDONLY ) ;
-	
+
 	if( fd_loop == -1 )
 		return 0 ;
-
+	
 	devnr = ioctl( fd_loop,LOOP_CTL_GET_FREE );
 	
 	close( fd_loop ) ;

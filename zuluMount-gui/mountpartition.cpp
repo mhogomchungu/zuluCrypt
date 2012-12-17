@@ -23,6 +23,8 @@ mountPartition::mountPartition( QWidget * parent,QTableWidget * table ) :
 
 	userfont F( this ) ;
 	this->setFont( F.getFont() );
+
+	m_ui->pbMountFolder->setVisible( false );
 }
 
 void mountPartition::checkBoxReadOnlyStateChanged( int state )
@@ -66,6 +68,13 @@ void mountPartition::pbCancel()
 
 void mountPartition::pbMount()
 {
+	QString test_mount = m_ui->lineEdit->text() ;
+	if( test_mount.contains( QString( "/" ) ) ){
+		DialogMsg msg( this ) ;
+		msg.ShowUIOK( tr( "ERROR" ),tr( "\"/\" character is not allowed in the mount name field" ) ) ;
+		m_ui->lineEdit->setFocus();
+		return ;
+	}
 	this->disableAll();
 	managepartitionthread * part = new managepartitionthread() ;
 	part->setDevice( m_path );
@@ -73,11 +82,12 @@ void mountPartition::pbMount()
 		part->setMode( QString( "ro" ) );
 	else
 		part->setMode( QString( "rw" ) );
-	part->setMountPoint( m_ui->lineEdit->text() );
+	m_point = m_ui->lineEdit->text() ;
+	part->setMountPoint( utility::mountPath( m_point ) );
 	connect( part,SIGNAL( signalMountComplete( int,QString ) ),this,SLOT( slotMountComplete( int,QString ) ) ) ;
 
 	part->startAction( QString( "mount" ) ) ;
-	savemountpointpath::savePath( m_ui->lineEdit->text(),QString( "zuluMount-MountPointPath" ) ) ;
+	//savemountpointpath::savePath( m_ui->lineEdit->text(),QString( "zuluMount-MountPointPath" ) ) ;
 }
 
 void mountPartition::pbOpenMountPath()
@@ -95,8 +105,9 @@ void mountPartition::ShowUI( QString path,QString label )
 {
 	m_path = path ;
 	m_label = label ;
-
-	m_ui->lineEdit->setText( savemountpointpath::getPath( path,QString( "zuluMount-MountPointPath" ) ) ) ;
+	m_point = m_path.split( QString( "/" ) ).last() ;
+	m_ui->lineEdit->setText( m_point ) ;
+	//m_ui->lineEdit->setText( savemountpointpath::getPath( path,QString( "zuluMount-MountPointPath" ) ) ) ;
 
 	if( label == QString( "Nil" ) )
 		m_ui->checkBox->setEnabled( false );
@@ -106,24 +117,17 @@ void mountPartition::ShowUI( QString path,QString label )
 void mountPartition::stateChanged( int i )
 {
 	Q_UNUSED( i ) ;
-
-	QString path = m_ui->lineEdit->text() ;
-
-	int k = path.lastIndexOf( "/" ) ;
-
-	if( k > 0 ){
-		path = path.mid( 0,k + 1 ) ;
-
-		if( m_ui->checkBox->isChecked() )
-			m_ui->lineEdit->setText( path + m_label );
-		else
-			m_ui->lineEdit->setText( path + m_path.split( "/" ).last() );
-	}
+	m_ui->checkBox->setEnabled( false );
+	if( m_ui->checkBox->isChecked() )
+		m_ui->lineEdit->setText( m_label );
+	else
+		m_ui->lineEdit->setText( m_path.split( QString( "/" ) ).last() );
+	m_ui->checkBox->setEnabled( true );
 }
 
 void mountPartition::volumeMiniProperties( QString prp )
 {
-	MainWindow::volumeMiniProperties( m_table,prp,m_ui->lineEdit->text() ) ;
+	MainWindow::volumeMiniProperties( m_table,prp,utility::mountPath( m_point ) ) ;
 	this->HideUI();
 }
 
@@ -139,7 +143,7 @@ void mountPartition::slotMountComplete( int status,QString msg )
 		connect( mpt,SIGNAL( signalProperties( QString ) ),this,SLOT( volumeMiniProperties( QString ) ) ) ;
 		mpt->startAction( QString( "volumeMiniProperties" ) ) ;
 
-		openmountpointinfilemanager * omp = new openmountpointinfilemanager( m_ui->lineEdit->text() ) ;
+		openmountpointinfilemanager * omp = new openmountpointinfilemanager( utility::mountPath( m_point ) ) ;
 		omp->start();
 	}
 }

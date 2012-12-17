@@ -59,6 +59,7 @@ private:
 	void closeEvent( QCloseEvent * );
 	Ui::keyDialog * m_ui;
 	QString m_path ;
+	QString m_point ;
 	QMenu * m_menu ;
 	QTableWidget * m_table ;
 	bool m_working ;

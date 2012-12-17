@@ -89,6 +89,7 @@ private :
 	QWidget * m_parent ;
 	QString m_key ;
 	QString m_device ;
+	QString m_point ;
 };
 
 #endif // PASSWORD_DIALOG_H

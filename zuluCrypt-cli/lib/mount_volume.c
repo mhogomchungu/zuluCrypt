@@ -320,43 +320,47 @@ static string_t _mount_options( unsigned long flags,string_t * xt )
 	return st ;
 }
 
-static inline int crypto_paths_are_sane( const char * device,const char * m_point,uid_t uid )
-{
-	struct stat st ;
-	if( device ){;}	
-	if( chdir( m_point ) != 0 )
-		return 0 ;
-	if( stat( ".",&st ) != 0 )
-		return 0 ;
-	if( uid != st.st_uid )
-		return 0 ;
-	return 1 ;
-}
-
-static inline int paths_are_sane( const char * device,const char * m_point,uid_t uid )
+static inline int paths_are_sane( const char * device,const char * original_device __attribute__((unused)),const char * m_point,uid_t uid )
 {
 	/*
 	 * in this function,we are checking if the paths we are about to pass to mount() are
 	 * paths we expect.
 	 */
-	
+	char * dev ;
 	struct stat st ;
+	int r ;
 	const char * e = crypt_get_dir() ;
 	if( strncmp( device,e,strlen( e ) ) == 0 ){
 		/*
-		 * crypto volumes are different,treat them differently.
+		 * this part is checked in _device_is_sane() is ./open_volume.c
 		 */
-		return crypto_paths_are_sane( device,m_point,uid ) ;
+		;
+	}else if( strncmp( device,"/dev/loop",9 ) == 0 ){
+		/*
+		 * below code compares the path we gave and the path that got used to check against 
+		 * some attacks that can be used to exploit an suid program
+		 */
+		dev = zuluCryptLoopDeviceAddress( device ) ;
+		if( dev == NULL ){
+			return 0;
+		}else{
+			r = strcmp( dev,device ) ;
+			free( dev ) ;
+			if( r != 0 ){
+				return 0 ;
+			}
+		}
+	}else{
+		/*
+		* all these zuluCrypt* functions are defined in ./real_path.c
+		*/
+		if( !zuluCryptPathDidNotChange( device ) )
+			return 0 ;
+		if( !zuluCryptPathDeviceIsBlockDevice( device ) )
+			return 0 ;
+		if( !zuluCryptPathDidNotChange( m_point ) )
+			return 0 ;
 	}
-	/*
-	 * all these zuluCrypt* functions are defined in ./real_path.c
-	 */
-	if( !zuluCryptPathDidNotChange( device ) )
-		return 0 ;
-	if( !zuluCryptPathDeviceIsBlockDevice( device ) )
-		return 0 ;
-	if( !zuluCryptPathDidNotChange( m_point ) )
-		return 0 ;
 	if( chdir( m_point ) != 0 )
 		return 0 ;
 	if( stat( ".",&st ) != 0 )
@@ -418,7 +422,7 @@ static inline int mount_ntfs( const m_struct * mst )
 	process_t p ;
 	string_t st ;
 	const char * opts ;
-	if( !paths_are_sane( mst->device,mst->m_point,mst->uid ) ) 
+	if( !paths_are_sane( mst->device,mst->original_device,mst->m_point,mst->uid ) ) 
 		return -1 ;
 	p = Process( ZULUCRYPTmount ) ;
 	st = String( "" ) ;	
@@ -441,7 +445,7 @@ static inline int mount_mapper( const m_struct * mst )
 {
 	int h = -1;
 	
-	if( paths_are_sane( mst->device,mst->m_point,mst->uid ) ){
+	if( paths_are_sane( mst->device,mst->original_device,mst->m_point,mst->uid ) ){
 		h = mount( mst->device,mst->m_point,mst->fs,mst->m_flags,mst->opts + 3 ) ;
 		if( h == 0 && mst->m_flags != MS_RDONLY ){
 			chmod( mst->m_point,S_IRWXU|S_IRWXG|S_IRWXO ) ;
@@ -527,6 +531,19 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 	mst.fs = StringContent( fs ) ;
 	opts = StringListAssign( stl ) ;
 	*opts = set_mount_options( &mst ) ;
+		
+	if( strncmp( path,"/dev/",5 ) != 0 ){
+		device_file = 1 ;
+		loop = StringListAssign( stl ) ;
+		/*
+		 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop_device.c
+		 */
+		if( zuluCryptAttachLoopDeviceToFile( mst.device,O_RDWR,&fd,loop ) ){
+			mst.device = StringContent( *loop ) ;
+		}else{
+			return zuluExit( -1,stl ) ;
+		}
+	}
 	
 	if( StringEqual( fs,"ntfs" ) ){
 		/*
@@ -539,20 +556,7 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 			default : return zuluExit( 1,stl )  ;
 		}
 	}
-	
-	if( strncmp( path,"/dev/",5 ) != 0 ){
-		device_file = 1 ;
-		loop = StringListAssign( stl ) ;
-		/*
-		* zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop_device.c
-		*/
-		if( zuluCryptAttachLoopDeviceToFile( mst.device,O_RDWR,&fd,loop ) ){
-			mst.device = StringContent( *loop ) ;
-		}else{
-			return zuluExit( -1,stl ) ;
-		}
-	}
-	 
+		 
 	/*
 	 * zuluCryptMtabIsAtEtc() is defined in print_mounted_volumes.c
 	 * 1 is return if "mtab" is found to be a file located at "/etc/"

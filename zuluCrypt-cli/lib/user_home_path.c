@@ -28,3 +28,9 @@ string_t zuluCryptGetUserHomePath( uid_t uid )
 	return p ;
 }
  
+string_t zuluCryptGetUserName( uid_t uid ) 
+{
+	struct passwd * pass = getpwuid( uid ) ;
+	return String( pass->pw_name ) ;
+}
+ 

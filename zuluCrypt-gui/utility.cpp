@@ -58,6 +58,12 @@ bool utility::mapperPathExists( QString path )
 	return utility::exists( utility::mapperPath( path ) ) ;
 }
 
+QString utility::mountPath( QString name )
+{
+	struct passwd * pass = getpwuid( getuid() ) ;
+	return QString( "/run/media/%1/%2" ).arg( QString( pass->pw_dir ).split( "/" ).last() ).arg( name );
+}
+
 QString utility::mapperPath( QString rpath )
 {
 	QString path = utility::cryptMapperPath() + QString( "zuluCrypt-" ) + QString::number( getuid() ) ;

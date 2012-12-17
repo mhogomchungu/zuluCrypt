@@ -33,6 +33,11 @@
  */
 #define SIZE 64
 
+
+/*
+ * zuluCryptLoopDeviceAddress() is moved to create_loop.c
+ */
+
 char * zuluCryptGetMountPointFromPath( const char * path ) ;
 
 char * zuluCryptVolumeDeviceName( const char * mapper ) ;
@@ -156,29 +161,6 @@ static void zuluCryptFileSystemProperties( string_t p,const char * mapper,const 
 	free( buffer ) ;
 	
 	StringMultipleAppend( p,"\n mount point:\t",m_point,END ) ;
-}
-
-char * zuluCryptLoopDeviceAddress( const char * device )
-{
-	int fd ;
-	char * path ;
-	struct loop_info64 l_info ;
-	string_t xt ;
-	string_t st = String( "/sys/block/" ) ;
-	StringMultipleAppend( st,device + 5,"/loop/backing_file",END ) ;
-	xt = StringGetFromVirtualFile( StringContent( st ) ) ;
-	StringDelete( &st ) ;
-	if( xt == StringVoid ){
-		memset( &l_info,'\0',sizeof( struct loop_info64 ) ) ;
-		fd = open( device,O_RDONLY ) ;
-		ioctl( fd,LOOP_GET_STATUS64,&l_info ) ;
-		path = realpath( ( char * ) l_info.lo_file_name,NULL ) ;
-		close( fd ) ;
-		return path ;
-	}else{
-		StringRemoveRight( xt,1 ) ;
-		return StringDeleteHandle( &xt ) ;
-	}
 }
 
 char * zuluCryptVolumeStatus( const char * mapper )
@@ -339,6 +321,9 @@ char * zuluCryptVolumeDeviceName( const char * mapper )
 	
 	if( e != NULL ){
 		if( strncmp( e,"/dev/loop",9 ) == 0 ){
+			/*
+			 * zuluCryptLoopDeviceAddress() is defined in create_loop.c
+			 */
 			path = zuluCryptLoopDeviceAddress( e ) ;
 			if( path != NULL ){
 				address = StringInherit( &path ) ;

@@ -167,18 +167,79 @@ int zuluCryptSecurityCanOpenPathForWriting( const char * path,uid_t uid )
 	return check_permissions( path,WRITE,"zulucrypt-write",uid ) ;
 }
 
-int zuluCryptSecurityCreateMountPoint( const char * path,uid_t uid __attribute__((unused)) )
+static void _create_prefix_directories( void )
+{
+	mkdir( "/run",S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ) ;
+	chown( "/run/",0,0 ) ;
+	mkdir( "/run/media",S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ) ;
+	chown( "/run/media",0,0 ) ;
+}
+
+static string_t _create_default_mount_point( const char * device,uid_t uid,string_t path )
+{
+	string_t st = StringVoid ;
+	const char * p = StringContent( path ) ;
+	if( zuluCryptSecurityGainElevatedPrivileges() ){
+		_create_prefix_directories() ;
+		mkdir( p,S_IRWXU ) ;
+		chown( p,uid,uid ) ;
+		p = StringAppend( path,strrchr( device,'/' ) ) ;
+		if( mkdir( p,S_IRWXU ) == 0 ){
+			st = path ;
+			chown( p,uid,uid ) ;
+		}else{
+			StringDelete( &path ) ;
+		}
+		zuluCryptSecurityDropElevatedPrivileges() ;
+	}
+	return st ;
+}
+
+static string_t _create_custom_mount_point( const char * label,uid_t uid,string_t path )
+{
+	string_t st = StringVoid ;
+	const char * p = StringAppend( path,"/" ) ;
+	const char * q = strrchr( label,'/' ) ;
+	if( zuluCryptSecurityGainElevatedPrivileges() ){
+		_create_prefix_directories() ;
+		mkdir( p,S_IRWXU ) ;
+		chown( p,uid,uid ) ;
+		if( q == NULL ){
+			p = StringAppend( path,label ) ;
+		}else{
+			p = StringAppend( path,q + 1 ) ;
+		}
+		if( mkdir( p,S_IRWXU ) == 0 ){
+			st = path ;
+			chown( p,uid,uid ) ;
+		}else{
+			StringDelete( &path ) ;
+		}
+		zuluCryptSecurityDropElevatedPrivileges() ;
+	}
+	return st ;
+}
+
+int zuluCryptSecurityMountPointPrefixMatch( const char * m_path,uid_t uid )
 {
 	int st ;
-	st = mkdir( path,S_IRWXU ) ;
-	if( st == 0 ){
-		return 0 ;
+	int xt ;
+	string_t uname = zuluCryptGetUserName( uid ) ;
+	const char * str = StringPrepend( uname,"/run/media/" ) ;
+	xt = StringLength( uname ) ;
+	st = strncmp( str,m_path,xt ) ;
+	StringDelete( &uname ) ;
+	return st == 0 ;
+}
+
+string_t zuluCryptSecurityCreateMountPoint( const char * device,const char * label,uid_t uid )
+{
+	string_t path = zuluCryptGetUserName( uid ) ;
+	StringPrepend( path,"/run/media/" ) ;
+	if( label == NULL ){
+		return _create_default_mount_point( device,uid,path ) ;
 	}else{
-		switch( errno ){
-			case EACCES : return 1 ; 
-			case EEXIST : return 2 ; ; 
-			default     : return 3 ; ;     
-		}
+		return _create_custom_mount_point( label,uid,path ) ;
 	}
 }
 

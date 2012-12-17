@@ -32,6 +32,7 @@
 #include <QTableWidgetItem>
 
 #include <unistd.h>
+#include <pwd.h>
 
 #include "../zuluCrypt-cli/constants.h"
 #include "../zuluCrypt-cli/bin/bash_special_chars.h"
@@ -56,6 +57,7 @@ public:
 	static QString getUUIDFromPath( QString ) ;
 	static bool userIsRoot( void ) ;
 	static bool mapperPathExists( QString path ) ;
+	static QString mountPath( QString ) ;
 };
 
 #endif // MISCFUNCTIONS_H

@@ -25,6 +25,22 @@ static inline int zuluExit( int x,string_t p )
 	return x ;
 }
 
+/*
+ * here,we check if the path we send to cryptsetup is the one cryptsetup used to create
+ * a mapper.The check is there to guard against the underlying device being changed under us
+ * in an attempt to exploit an suid program using the library
+ */
+static inline int _device_is_not_sane( const char * device,const char * mapper )
+{
+	int st ;
+	char * dev = zuluCryptVolumeDeviceName( mapper ) ;
+	if( dev == NULL )
+		return 1 ;
+	st = strcmp( device,dev ) ;
+	free( dev ) ;
+	return st != 0 ;
+}
+
 int zuluCryptOpenVolume( const char * dev,const char * map,
 			 const char * m_point,uid_t id,unsigned long m_opts,
 			 const char * fs_opts,const char * pass,size_t pass_size ) 
@@ -50,10 +66,11 @@ int zuluCryptOpenVolume( const char * dev,const char * map,
 	if( zuluCryptPathIsValid( mapper ) )
 		return zuluExit( 2,p ) ;
 
-	if( m_opts & MS_RDONLY )
+	if( m_opts & MS_RDONLY ){
 		mode = "ro" ;
-	else
+	}else{
 		mode = "rw" ;
+	}
 	
 	/*
 	 * zuluCryptOpenLuks()   is defined in open_luks.c
@@ -72,6 +89,9 @@ int zuluCryptOpenVolume( const char * dev,const char * map,
 		case 2 : return zuluExit( 8,p ) ; 
 		case 3 : return zuluExit( 3,p ) ;
 	}
+	
+	if( _device_is_not_sane( dev,mapper ) )
+		return zuluExit( -1,p ) ;
 	
 	if( m_point != NULL ){
 		/*

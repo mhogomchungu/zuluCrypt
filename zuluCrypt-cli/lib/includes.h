@@ -163,3 +163,14 @@ int zuluCryptPathDeviceIsBlockDevice( const char * device ) ;
  * this function is defined in mount_fs_options
  */
 int zulucryptFileSystemIsSupported( const char * fs ) ;
+
+/*
+ * this function is defined in user_home_path.c
+ */
+string_t zuluCryptGetUserName( uid_t uid ) ;
+
+/*
+ * this function is defined in real_path.c
+ */
+char * zuluCryptRealPath( const char * path ) ;
+

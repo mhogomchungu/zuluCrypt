@@ -1,4 +1,3 @@
-
 /*
  * 
  *  Copyright (c) 2012
@@ -17,39 +16,23 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-
-#ifndef ZULUCRYPTSECURITY
-#define ZULUCRYPTSECURITY
-
-#ifdef __cplusplus
-extern "C" {
-#endif	 
-
 #include "includes.h"
-/*
- * All these functions are defined in security.c
- */
 
-/*
- * make sure the user with uid has reading permissions to path
- */
-int zuluCryptSecurityCanOpenPathForReading( const char * path,uid_t uid ) ;
-
-/*
- * make sure a user with uid has writing access to path
- */
-int zuluCryptSecurityCanOpenPathForWriting( const char * path,uid_t uid ) ;
-
-/*
- * make sure a user can create a folder at path
- */
-string_t zuluCryptSecurityCreateMountPoint( const char * device,const char * m_point,uid_t uid ) ;
-
-int zuluCryptSecurityMountPointPrefixMatch( const char * path,uid_t uid ) ;
-
-#ifdef __cplusplus
+int zuluMountCryptoUMount( const char * device,uid_t uid,__attribute__((unused)) int mount_point_option )
+{
+	const char * mapping_name ;
+	const char * e = strrchr( device,'/' ) ;
+	/*
+	 * if( is_luks( device ) == 1 && check_if_partition_is_system_partition( device ) == 1 && uid != 0 )
+	 *	return _zuluExit( 200,NULL,NULL,"ERROR: insuffienct privilege to operate on a system partition" ) ;
+	 */
+	if( e == NULL)
+		mapping_name = device ;
+	else
+		mapping_name = e + 1 ;
+	
+	/*
+	 * zuluCryptEXECloseVolume() is defined in ../zuluCrypt-cli/bin/close_volume.c
+	 */
+	return zuluCryptEXECloseVolume( device,mapping_name,uid ) ;
 }
-#endif
-
-#endif

@@ -43,6 +43,11 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,QString path,QString
 	connect( m_ui->pbOpenMountPoint,SIGNAL( clicked() ),this,SLOT( pbMountPointPath() ) ) ;
 	connect( m_ui->checkBoxOpenReadOnly,SIGNAL( stateChanged( int ) ),this,SLOT( cbMountReadOnlyStateChanged( int ) ) ) ;
 	m_ui->rbKey->setChecked( true ) ;
+
+	m_ui->pbOpenMountPoint->setVisible( false );
+
+	m_point = m_path.split( "/" ).last() ;
+	m_ui->lineEditMountPoint->setText( m_point );
 }
 
 void keyDialog::cbMountReadOnlyStateChanged( int state )
@@ -183,10 +188,11 @@ void keyDialog::closeEvent( QCloseEvent * e )
 	e->ignore();
 	this->HideUI();
 }
-
+#include<QDebug>
 void keyDialog::volumeMiniProperties( QString prp )
 {
-	MainWindow::volumeMiniProperties( m_table,prp,m_ui->lineEditMountPoint->text() ) ;
+	qDebug()<<prp;
+	MainWindow::volumeMiniProperties( m_table,prp,utility::mountPath( m_point ) ) ;
 	this->HideUI();
 }
 
@@ -203,7 +209,7 @@ void keyDialog::slotMountComplete( int st,QString m )
 			connect( mpt,SIGNAL( signalProperties( QString ) ),this,SLOT( volumeMiniProperties( QString ) ) ) ;
 			mpt->startAction( QString( "volumeMiniProperties" ) ) ;
 
-			openmountpointinfilemanager * omp = new openmountpointinfilemanager( m_ui->lineEditMountPoint->text() ) ;
+			openmountpointinfilemanager * omp = new openmountpointinfilemanager( utility::mountPath( m_point ) ) ;
 			omp->start();
 		}else{
 			/*
@@ -234,6 +240,14 @@ void keyDialog::pbOpen()
 		return ;
 	}
 
+	QString test_name = m_ui->lineEditMountPoint->text() ;
+	if( test_name.contains( QString( "/" ) ) ){
+		DialogMsg msg( this ) ;
+		msg.ShowUIOK( tr( "ERROR" ),tr( "\"/\" character is not allowed in the mount name field" ) ) ;
+		m_ui->lineEditKey->setFocus();
+		return ;
+	}
+
 	QString m ;
 	if( m_ui->rbKey->isChecked() ){
 		QString addr = socketSendKey::getSocketPath() ;
@@ -258,7 +272,7 @@ void keyDialog::pbOpen()
 	part->setMountPoint( m_ui->lineEditMountPoint->text().replace( "\"","\"\"\"" ) );
 
 	m_working = true ;
-	savemountpointpath::savePath( m_ui->lineEditMountPoint->text(),QString( "zuluMount-MountPointPath" ) ) ;
+	//savemountpointpath::savePath( m_ui->lineEditMountPoint->text(),QString( "zuluMount-MountPointPath" ) ) ;
 
 	part->startAction( QString( "cryptoOpen" ) ) ;
 	this->disableAll();

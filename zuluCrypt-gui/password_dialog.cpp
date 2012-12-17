@@ -68,6 +68,8 @@ passwordDialog::passwordDialog( QTableWidget * table,QWidget * parent ) : QDialo
 	connect( m_ui->radioButtonPlugin,SIGNAL( clicked() ),this,SLOT( pluginOption() ) ) ;
 	connect( m_ui->PassPhraseField,SIGNAL( textChanged( QString ) ),this,SLOT(keyTextChanged( QString ) ) ) ;
 	connect( m_ui->pushButtonPlugin,SIGNAL( clicked() ),this,SLOT( pbPlugin() ) ) ;
+
+	m_ui->PushButtonMountPointPath->setVisible( false );
 }
 
 void passwordDialog::pbPlugin()
@@ -151,13 +153,16 @@ void passwordDialog::closeEvent( QCloseEvent * e )
 
 void passwordDialog::ShowUI( QString volumePath, QString mount_point )
 {
+	m_point = mount_point.split( QString( "/" ) ).last() ;
+	if( m_point.isEmpty() )
+		m_point = volumePath.split( QString( "/" ) ).last() ;
 	m_open_with_path = true ;
 	this->passphraseOption();
 	m_ui->OpenVolumePath->setText( volumePath );
 	m_ui->OpenVolumePath->setEnabled( false );
 	m_ui->PushButtonVolumePath->setEnabled( false );
-	QString mp = savemountpointpath::getPath( mount_point,QString( "zuluCrypt-MountPointPath" ) ) ;
-	m_ui->MountPointPath->setText( mp );
+	//QString mp = savemountpointpath::getPath( mount_point,QString( "zuluCrypt-MountPointPath" ) ) ;
+	m_ui->MountPointPath->setText( m_point );
 	m_ui->PassPhraseField->setFocus();
 	QString vp = volumePath.mid( 0,5 );
 	if( vp == QString( "/dev/" ) || vp == QString( "UUID=" ) )
@@ -174,24 +179,18 @@ void passwordDialog::ShowUI()
 	m_ui->PushButtonVolumePath->setIcon( QIcon( QString( ":/file.png" ) ) );
 	this->show();
 }
-
+#include<QDebug>
 void passwordDialog::mountPointPath( QString path )
 {
+	qDebug()<<path;
 	QString p = m_ui->MountPointPath->text() ;
 
-	if( p.isEmpty() ){
-		QString x = QDir::homePath() + QString( "/" ) + path.split( "/" ).last() ;
-		m_ui->MountPointPath->setText( x ) ;
-		return ;
+	int x = path.lastIndexOf( QString( "/" ) ) ;
+	if( x == -1 ){
+		m_ui->MountPointPath->setText( path ) ;
+	}else{
+		m_ui->MountPointPath->setText( path.mid( x + 1 ) ) ;
 	}
-
-	int i = p.lastIndexOf( "/" ) ;
-	if( i == -1 )
-		return ;
-
-	p = p.mid( 0,i ) + QString( "/" ) + path.split( "/" ).last();
-
-	m_ui->MountPointPath->setText( p ) ;
 }
 
 void passwordDialog::keyTextChanged( QString txt )
@@ -281,6 +280,8 @@ void passwordDialog::file_path( void )
 {
 	QString Z = QFileDialog::getOpenFileName( this,tr( "Select encrypted volume" ),QDir::homePath(),0 );
 	m_ui->OpenVolumePath->setText( Z );
+	if( !Z.isEmpty() )
+		m_ui->MountPointPath->setText( Z.split( QString( "/" ) ).last() );
 }
 
 void passwordDialog::HideUI()
@@ -291,15 +292,22 @@ void passwordDialog::HideUI()
 
 void passwordDialog::buttonOpenClicked( void )
 {
-	QString mountPointPath = utility::resolvePath( m_ui->MountPointPath->text() ) ;
+	//QString mountPointPath = utility::resolvePath( m_ui->MountPointPath->text() ) ;
 	m_device = utility::resolvePath( m_ui->OpenVolumePath->text() ) ;
 
 	QString passPhraseField = m_ui->PassPhraseField->text() ;
 	m_key = m_ui->PassPhraseField->text() ;
-
-	if( mountPointPath.isEmpty() || passPhraseField.isEmpty() || m_device.isEmpty() ){
+	m_point = m_ui->MountPointPath->text() ;
+	if( m_point.isEmpty() || passPhraseField.isEmpty() || m_device.isEmpty() ){
 		DialogMsg msg( this ) ;
 		return msg.ShowUIOK( QString( "ERROR!" ),tr( "atleast one required field is empty" ) );
+	}
+
+	if( m_point.contains( QString( "/" ) ) ){
+		DialogMsg msg( this ) ;
+		msg.ShowUIOK( tr( "ERROR" ),tr( "\"/\" character is not allowed in mount name field" ) );
+		m_ui->OpenVolumePath->setFocus();
+		return ;
 	}
 
 	QString mode ;
@@ -342,12 +350,12 @@ void passwordDialog::buttonOpenClicked( void )
 		this->sendKey( passPhraseField );
 	}
 
-	savemountpointpath::savePath( m_ui->MountPointPath->text(),QString( "zuluCrypt-MountPointPath" ) ) ;
+	//savemountpointpath::savePath( m_ui->MountPointPath->text(),QString( "zuluCrypt-MountPointPath" ) ) ;
 
 	QString a = QString( ZULUCRYPTzuluCrypt ) ;
 	QString b = m_device ;
 	b.replace( "\"","\"\"\"" ) ;
-	QString c = mountPointPath ;
+	QString c = m_point ;
 	c.replace( "\"","\"\"\"" ) ;
 	QString d = mode ;
 	QString e = passtype ;
@@ -464,7 +472,7 @@ void passwordDialog::success( QString output )
 {
 	if( utility::mapperPathExists( m_device ) ){
 		this->complete( output );
-		openmountpointinfilemanager * omp = new openmountpointinfilemanager( m_ui->MountPointPath->text() ) ;
+		openmountpointinfilemanager * omp = new openmountpointinfilemanager( utility::mountPath( m_point ) ) ;
 		omp->start();
 	}else{
 		/*
@@ -482,7 +490,7 @@ void passwordDialog::complete( QString output )
 	QStringList list ;
 
 	list.append( utility::resolvePath( m_ui->OpenVolumePath->text() ) ) ;
-	list.append( utility::resolvePath( m_ui->MountPointPath->text() ) ) ;
+	list.append( utility::mountPath( m_point ) ) ;
 
 	if( output.contains( QString( "luks" ) ) )
 		list.append( QString( "luks" ) );
@@ -519,7 +527,7 @@ void passwordDialog::threadfinished( int status,QString output )
 		case 18: msg.ShowUIOK( tr( "ERROR!" ),tr( "-O and -m options can not be used together" ) );						break ;
 		case 19: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to create mount point" ) );						break ;
 		case 20: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open device\nconsult help->permissions for more information" ) );	break ;
-		case 21: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to create mount point" ) );						break ;
+	case 21: msg.ShowUIOK( tr( "ERROR!" ),tr( "mount point path \"%1\" is already taken" ).arg( utility::mountPath( m_point) ) );			break ;
 		case 22: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open keyfile for reading" ) );					break ;
 		case 23: msg.ShowPermissionProblem( QString( "writing" ),m_ui->OpenVolumePath->text() );						break ;
 		case 24: msg.ShowUIOK( tr( "ERROR!" ),tr( "there seem to be an opened mapper associated with the device" ) );				break ;

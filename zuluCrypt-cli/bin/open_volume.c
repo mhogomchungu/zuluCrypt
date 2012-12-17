@@ -24,24 +24,26 @@
  
 string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * name,uid_t uid,const char * argv ) ;
 
-static void _printResult( const char * device )
+static void _printResult( const char * device,const char * m_point )
 {
 	if( zuluCryptVolumeIsLuks( device ) ){
 		printf( "SUCCESS: luks volume opened successfully\n" ) ;
 	}else{
 		printf( "SUCCESS: plain volume opened successfully\n" ) ;
 	}
+	printf( "volume mounted at: %s\n",m_point ) ;
 }
 
 static int zuluExit( int st,char * device,char * m_point,stringList_t stl )
 {
+	zuluCryptSecurityDropElevatedPrivileges() ;
 	/*
 	 * this function is defined in ../utility/string/StringList.c
 	 */
 	StringListClearDelete( &stl ) ;
 	
 	switch ( st ){
-		case 0 : _printResult( device ) ;											break ;
+		case 0 : _printResult( device,m_point ) ;										break ;
 		case -1: printf( "ERROR: failed to mount a filesystem,invalid mount option or permission denied\n" ) ;			break ;
 		case 1 : printf( "ERROR: failed to mount ntfs file system using ntfs-3g,is ntfs-3g package installed?\n" ) ;		break ;
 		case 2 : printf( "ERROR: there seem to be an open volume accociated with given address\n" );				break ;
@@ -63,7 +65,7 @@ static int zuluExit( int st,char * device,char * m_point,stringList_t stl )
 		case 19: printf( "ERROR: insufficient privilege to search mount point path\n" );					break ;
 		case 20: printf( "ERROR: insufficient privilege to access a system device,\
 only root user or members of group zulucrypt can access system devices\n" );								break ;
-		case 21: printf( "ERROR: insufficient privilege to create a mount point\n" );						break ;
+		case 21: printf( "ERROR: mount point path already taken.\n" );						break ;
 		case 22: printf( "ERROR: insufficient privilege to open key file for reading\n" );					break ;
 		case 23: printf( "ERROR: insufficient privilege to open a system device in read/write mode,\n\
 only root user or members of group zulucrypt-write can do that\n" );									break ;
@@ -97,7 +99,7 @@ only root user or members of group zulucrypt-write can do that\n" );									bre
 static int zuluExit_1( int st,const struct_opts * opts,char * device,char * cpoint,stringList_t stl )
 {
 	if( opts->open_no_mount == -1 && st != 0 )
-		rmdir( opts->mount_point ) ;
+		rmdir( cpoint ) ;
 	return zuluExit( st,device,cpoint,stl ) ;
 }
 
@@ -118,6 +120,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	string_t * passphrase =  StringListAssign( stl ) ;
 	string_t * m_name     =  StringListAssign( stl ) ;
 	string_t * data       =  StringListAssign( stl ) ; 
+	string_t st_mpoint ;
 	
 	const char * cpass ;
 	const char * cname ;
@@ -164,21 +167,15 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		return zuluExit( 18,device,cpoint,stl ) ;
 	
 	if( nmp == -1 ){
-		if( mount_point == NULL )
-			return zuluExit( 11,device,cpoint,stl ) ;
-	
 		/*
-		 * zuluCryptSecurityCreateMountPoint() is defined in security.c
-		 */
-		switch( zuluCryptSecurityCreateMountPoint( mount_point,uid ) ){
-			case 2 : return zuluExit( 5,device,cpoint,stl ) ;
-			case 1 : return zuluExit( 21,device,cpoint,stl ) ;
-		}
-	
-		cpoint = realpath( mount_point,NULL ) ;
-		if( cpoint == NULL )
-			return zuluExit_1( 16,opts,device,cpoint,stl ) ;
-	}		
+		* zuluCryptSecurityCreateMountPoint() is defined in security.c
+		*/
+		st_mpoint = zuluCryptSecurityCreateMountPoint( device,mount_point,uid ) ;
+		cpoint = StringDeleteHandle( &st_mpoint ) ;
+		if( cpoint == NULL ){
+			return zuluExit( 21,device,cpoint,stl ) ;
+		}	
+	}
 
 	/*
 	 * This function is defined at "../lib/create_mapper_name.c"
@@ -261,6 +258,5 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	}		
 	
 	zuluCryptCheckInvalidKey( opts->device ) ;
-	zuluCryptSecurityDropElevatedPrivileges() ;
 	return zuluExit_1( st,opts,device,cpoint,stl );
 }

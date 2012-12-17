@@ -29,6 +29,10 @@
  ../zuluMount-cli/print_mounted_volumes.c
  bin/partitions.c
  ../zuluMount-cli/main.c
+ ../zuluMount-cli/mount.c
+ ../zuluMount-cli/umount.c
+ ../zuluMount-cli/crypto_mount.c
+ ../zuluMount-cli/crypto_umount.c 
  )
  
  SET( LIB 

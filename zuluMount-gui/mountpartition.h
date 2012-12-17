@@ -51,6 +51,7 @@ private:
 	Ui::mountPartition * m_ui;
 	QString m_path ;
 	QString m_label ;
+	QString m_point ;
 	QTableWidget * m_table ;
 };
 

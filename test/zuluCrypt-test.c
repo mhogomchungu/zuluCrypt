@@ -34,7 +34,7 @@
 
 const char * luksTestVolume   = "/tmp/zuluCrypt-luksTestVolume" ;
 const char * plainTestVolume  = "/tmp/zuluCrypt-plainTestVolume" ;
-const char * mount_point      = "/tmp/zuluCrypt-MountPoint" ;
+const char * mount_point      = "zuluCrypt-MountPoint" ;
 const char * key              = "xyz" ;
 const char * key1             = "xxx" ;
 const char * zuluCryptExe     = ZULUCRYPTzuluCrypt ;
@@ -55,9 +55,7 @@ void __printLine( void )
 }
 
 void EXIT( int st,char * msg )
-{
-	unlink( luksTestVolume ) ;
-	unlink( plainTestVolume ) ;
+{	
 	unlink( keyfile ) ;
 	unlink( keyfile1 ) ;
 	

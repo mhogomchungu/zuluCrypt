@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>mount point</string>
+    <string>mount name</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

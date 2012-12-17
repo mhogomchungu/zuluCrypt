@@ -173,14 +173,19 @@ static void _printDeviceProperties( string_t entry )
 	if( stx == StringListVoid )
 		return ;
 	q = StringListContentAt( stx,0 ) ;
-	
 	if( strncmp( q,_z,_k ) == 0 ){
 		/*
 		 * zuluCryptVolumeDeviceName() is defined in ../zuluCrypt-cli/lib/status.c
 		 * It takes cryptsetup path in "/dev/mapper" and return a device path associated with
 		 * the mapper
 		 */
+		/*
+		 * zuluCryptSecurityGainElevatedPrivileges() ;
+		 */
 		x = zuluCryptVolumeDeviceName( q ) ;
+		/*
+		 * zuluCryptSecurityDropElevatedPrivileges();
+		 */
 		if( x != NULL ){
 			StringListRemoveString( _stz,x ) ;
 			/*
@@ -215,7 +220,9 @@ static void _printDeviceProperties( string_t entry )
 void zuluMountPrintDeviceProperties_1( string_t entry,uid_t uid )
 {
 	string_t filter = _mapper_filter( uid ) ;
+	zuluCryptSecurityGainElevatedPrivileges();
 	_printDeviceProperties( entry ) ;
+	zuluCryptSecurityDropElevatedPrivileges();
 	StringDelete( &filter ) ;
 }
 
