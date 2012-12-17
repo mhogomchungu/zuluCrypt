@@ -27,7 +27,7 @@ static inline char * zuluExit( char * c,struct crypt_device * cd )
 	return c ;
 }
 
-char * zuluCryptEmptySlots( const char * device )
+static char * _empty_slots( const char * device )
 {
 	crypt_keyslot_info cki ;
 	struct crypt_device * cd;
@@ -37,13 +37,13 @@ char * zuluCryptEmptySlots( const char * device )
 	const char * type ;
 	
 	string_t p = StringVoid ;
-
+	
 	if( crypt_init( &cd,device ) != 0 )
 		return zuluExit( NULL,NULL ) ;
 	
 	if( crypt_load( cd,NULL,NULL ) != 0 )
 		return zuluExit( NULL,cd ) ;
-		
+	
 	type = crypt_get_type( cd ) ;
 	
 	if( type == NULL )
@@ -53,7 +53,7 @@ char * zuluCryptEmptySlots( const char * device )
 	
 	if( k < 0 )
 		return zuluExit( NULL,cd ) ;
-
+	
 	p = String( "" ) ;
 	
 	for( j = 0 ; j < k ; j++ ){
@@ -67,7 +67,27 @@ char * zuluCryptEmptySlots( const char * device )
 	}
 	
 	q = StringDeleteHandle( &p ) ;
-	
 	return zuluExit( q,cd ) ;
 }
 
+char * zuluCryptEmptySlots( const char * device )
+{
+	string_t st ;
+	int fd ;
+	char * r ;
+	if( strncmp( device,"/dev/",5 ) == 0 ){
+		return _empty_slots( device ) ;
+	}else{
+		/*
+		 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop.c
+		 */
+		if( zuluCryptAttachLoopDeviceToFile( device,O_RDWR,&fd,&st ) ){
+			r = _empty_slots( StringContent( st ) ) ;
+			StringDelete( &st ) ;
+			close( fd ) ;
+			return r ;
+		}else{
+			return NULL ;
+		}
+	}
+}

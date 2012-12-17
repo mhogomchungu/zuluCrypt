@@ -57,6 +57,46 @@ char * zuluCryptLoopDeviceAddress( const char * device )
 	}
 }
 
+char * zuluCryptGetFileNameFromFileDescriptor( int fd )
+{
+	char * c ;
+	string_t xt ;
+	struct stat st ;
+	
+	if( fstat( fd,&st ) != 0 )
+		return NULL ;
+	if( st.st_nlink == 0 || st.st_nlink > 1 )
+		return NULL ;
+	
+	xt = String( "/proc/self/fd/" ) ;
+	StringAppendInt( xt,fd ) ;
+	c = zuluCryptRealPath( StringContent( xt ) ) ;
+	StringDelete( &xt ) ;
+	return c ;
+}
+
+/*
+ * Here,we check if the path we sent to open() is the path open() used. This check is necessary to 
+ * guard against some known hypothetical exploits
+ * 
+ */
+static int _paths_are_not_sane( int fd,const char * path )
+{
+	struct stat p ;
+	struct stat q ;
+	if( fstat( fd,&p ) != 0 )
+		return 1 ;
+	if( !S_ISREG( p.st_mode ) )
+		return 1 ;
+	if( stat( path,&q ) != 0 )
+		return 1 ;
+	if( ( p.st_dev == q.st_dev ) && ( p.st_ino == q.st_ino ) ){
+		return 0 ;
+	}else{
+		return 1 ;
+	}
+}
+
 int zuluCryptAttachLoopDeviceToFile( const char * path,int mode,int * loop_fd,string_t * loop_device )
 {
 	size_t size ;
@@ -65,7 +105,6 @@ int zuluCryptAttachLoopDeviceToFile( const char * path,int mode,int * loop_fd,st
 	int fd_path = -1 ;
 	int devnr ;
 	const char * loop ;
-	
 	struct loop_info64 l_info ;
 	
 	memset( &l_info,'\0',sizeof( struct loop_info64 ) ) ;
@@ -90,6 +129,9 @@ int zuluCryptAttachLoopDeviceToFile( const char * path,int mode,int * loop_fd,st
 	if( fd_path == -1 )
 		return zuluExit( 0,loopd,fd_loop,fd_path ) ;
 	
+	if( _paths_are_not_sane( fd_path,path ) )
+		return zuluExit( 0,loopd,fd_loop,fd_path ) ;
+			
 	fd_loop = open( loop,mode ) ;
 	
 	if( fd_loop == -1 )

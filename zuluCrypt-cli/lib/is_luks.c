@@ -19,8 +19,8 @@
 
 #include "includes.h"
 
-int zuluCryptVolumeIsLuks( const char * dev )
-{		
+static int _is_luks( const char * dev )
+{
 	struct crypt_device * cd;
 	int st ;
 	
@@ -32,6 +32,28 @@ int zuluCryptVolumeIsLuks( const char * dev )
 	crypt_free( cd );
 	
 	return st == 0 ;
+}
+
+int zuluCryptVolumeIsLuks( const char * dev )
+{		
+	string_t st ;
+	int fd ;
+	int r ;
+	if( strncmp( dev,"/dev/",5 ) == 0 ){
+		return _is_luks( dev ) ;
+	}else{
+		/*
+		 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop.c
+		 */
+		if( zuluCryptAttachLoopDeviceToFile( dev,O_RDWR,&fd,&st ) ){
+			r = _is_luks( StringContent( st ) ) ;
+			StringDelete( &st ) ;
+			close( fd ) ;
+			return r ;
+		}else{
+			return 0 ;
+		}
+	}
 }
 
 int zuluCryptVolumeIsNotLuks( const char * dev )

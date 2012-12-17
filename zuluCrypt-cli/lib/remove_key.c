@@ -25,8 +25,8 @@ static int zuluExit( int st,struct crypt_device * cd )
 	return st ;
 }
 
-int zuluCryptRemoveKey( const char * device ,const char * pass,size_t pass_size )
-{       
+static int _remove_key( const char * device ,const char * pass,size_t pass_size )
+{
 	int slot ;
 	struct crypt_device * cd;
 	
@@ -48,6 +48,26 @@ int zuluCryptRemoveKey( const char * device ,const char * pass,size_t pass_size 
 		return zuluExit( 2,cd ) ;
 	else
 		return zuluExit( 0,cd ) ;
-	
 }
 
+int zuluCryptRemoveKey( const char * device ,const char * pass,size_t pass_size )
+{       
+	string_t st ;
+	int fd ;
+	int r ;
+	if( strncmp( device,"/dev/",5 ) == 0 ){
+		return _remove_key( device,pass,pass_size ) ;
+	}else{
+		/*
+		 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop.c
+		 */
+		if( zuluCryptAttachLoopDeviceToFile( device,O_RDWR,&fd,&st ) ){
+			r = _remove_key( StringContent( st ),pass,pass_size ) ;
+			StringDelete( &st ) ;
+			close( fd ) ;
+			return r ;
+		}else{
+			return 2 ;
+		}
+	}
+}

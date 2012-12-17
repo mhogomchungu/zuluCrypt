@@ -339,3 +339,53 @@ string_t zuluCryptSecurityGetFileSystemFromDevice( const char * path )
 	}
 	return st ;
 }
+
+void zuluCryptSecuritySanitizeTheEnvironment( uid_t uid )
+{
+	char * c ;
+	extern char ** environ ;
+	const char ** env = ( const char ** ) environ ;
+	string_t st ;
+	ssize_t index ;
+	stringList_t stl = StringListVoid ;
+	StringListIterator  it ;
+	StringListIterator end ;
+	
+	/*
+	 * below two functions are defined in ../lib/user_home_path.c
+	 */
+	string_t user_home = zuluCryptGetUserHomePath( uid ) ;
+	string_t user_name = zuluCryptGetUserName( uid ) ;
+	
+	/*
+	 * dont want to iterate over an array while changing it size through deleting its members,so going to 
+	 * make a copy of it and then delete its members getting them from the copy
+	 */
+	while( *env ){
+		stl = StringListAppend( stl,*env ) ;
+		env++ ;
+	}
+
+	it  = StringListBegin( stl ) ;
+	end = StringListEnd( stl ) ;
+	
+	for( ; it != end ;it++ ){
+		st = *it ;
+		index = StringIndexOfChar( st,0,'=' ) ;
+		if( index >= 0 ){
+			unsetenv( StringSubChar( st,index,'\0' ) ) ;
+		}
+	}
+	
+	putenv( "PROGRAM_NAME=zuluCrypt" ) ;
+	c = ( char * )StringPrepend( user_home,"HOME=" ) ;
+	putenv( c ) ;
+	c = ( char * )StringPrepend( user_name,"USER=" ) ;
+	putenv( c ) ;
+		
+	putenv( "PATH=/bin:/sbin/:/usr/bin:/usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin" );
+	putenv( "IFS= \t\n" );
+	
+	StringListDelete( &stl ) ;
+	StringMultipleDelete( &st,&user_home,&user_name,END ) ;
+}

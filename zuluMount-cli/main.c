@@ -407,6 +407,11 @@ int main( int argc,char * argv[] )
 	StringExitOnMemoryExaustion( &ExitOnMemoryExaustion ) ;
 	StringListExitOnMemoryExaustion( &ExitOnMemoryExaustion ) ;
 	
+	/*
+	 * zuluCryptSecuritySanitizeTheEnvironment() is defined in ../zuluCrypt-cli/bin/security.c
+	 */
+	zuluCryptSecuritySanitizeTheEnvironment( global_variable_user_uid ) ;
+	
 	if( _mount_get_opts( argc,argv,&action,&dev,&m_point,&m_opts,&key_argv,&key_source,&mount_point_option,&fs_opts ) != 0 )
 		return _mount_help() ;
 	

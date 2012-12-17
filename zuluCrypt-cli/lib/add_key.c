@@ -25,13 +25,13 @@ static inline int zuluExit( int st,struct crypt_device * cd )
 	return st ;
 }
 
-int zuluCryptAddKey( const char * device,const char * existingkey,size_t existingkey_size,const char * newkey,size_t newkey_size )
+static int _add_key( const char * device,const char * existingkey,size_t existingkey_size,const char * newkey,size_t newkey_size )
 {
 	struct crypt_device * cd;
 	
 	if( zuluCryptVolumeIsNotLuks( device ) )
 		return 3 ;
-		
+	
 	if( crypt_init( &cd,device ) != 0 )
 		return 2 ;
 	
@@ -42,4 +42,26 @@ int zuluCryptAddKey( const char * device,const char * existingkey,size_t existin
 		return zuluExit( 1,cd ) ;
 	else
 		return zuluExit( 0,cd ) ;
+}
+
+int zuluCryptAddKey( const char * device,const char * existingkey,size_t existingkey_size,const char * newkey,size_t newkey_size )
+{
+	string_t st ;
+	int fd ;
+	int r ;
+	if( strncmp( device,"/dev/",5 ) == 0 ){
+		return _add_key( device,existingkey,existingkey_size,newkey,newkey_size ) ;
+	}else{
+		/*
+		 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop.c
+		 */
+		if( zuluCryptAttachLoopDeviceToFile( device,O_RDWR,&fd,&st ) ){
+			r = _add_key( StringContent( st ),existingkey,existingkey_size,newkey,newkey_size ) ;
+			StringDelete( &st ) ;
+			close( fd ) ;
+			return r ;
+		}else{
+			return 1 ;
+		}
+	}
 }

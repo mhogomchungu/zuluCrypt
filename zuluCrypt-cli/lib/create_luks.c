@@ -55,4 +55,3 @@ int zuluCryptCreateLuks( const char * dev,const char * pass,size_t pass_size,con
 	else
 		return zuluExit( 0,cd ) ;
 }
-

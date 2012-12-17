@@ -174,3 +174,7 @@ string_t zuluCryptGetUserName( uid_t uid ) ;
  */
 char * zuluCryptRealPath( const char * path ) ;
 
+/*
+ * this function is defined in create_loop_device.c
+ */
+char * zuluCryptGetFileNameFromFileDescriptor( int fd ) ;

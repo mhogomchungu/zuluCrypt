@@ -226,6 +226,11 @@ int main( int argc,char * argv[] )
 	ProcessExitOnMemoryExaustion( ExitOnMemoryExaustion ) ;
 	SocketExitOnMemoryExaustion( ExitOnMemoryExaustion ) ;
 	
+	/*
+	 * zuluCryptSecuritySanitizeTheEnvironment() is defined in ./security.c
+	 */
+	zuluCryptSecuritySanitizeTheEnvironment( global_variable_user_uid ) ;
+	
 	if( argc == 1 ){
 		zuluCryptEXEHelp();
 		return 1;

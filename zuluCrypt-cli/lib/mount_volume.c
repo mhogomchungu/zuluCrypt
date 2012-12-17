@@ -326,9 +326,7 @@ static inline int paths_are_sane( const char * device,const char * original_devi
 	 * in this function,we are checking if the paths we are about to pass to mount() are
 	 * paths we expect.
 	 */
-	char * dev ;
 	struct stat st ;
-	int r ;
 	const char * e = crypt_get_dir() ;
 	if( strncmp( device,e,strlen( e ) ) == 0 ){
 		/*
@@ -337,19 +335,10 @@ static inline int paths_are_sane( const char * device,const char * original_devi
 		;
 	}else if( strncmp( device,"/dev/loop",9 ) == 0 ){
 		/*
-		 * below code compares the path we gave and the path that got used to check against 
-		 * some attacks that can be used to exploit an suid program
+		 * this part is checked in zuluCryptAttachLoopDeviceToFile() in create_loop_device.c
+		 * 
 		 */
-		dev = zuluCryptLoopDeviceAddress( device ) ;
-		if( dev == NULL ){
-			return 0;
-		}else{
-			r = strcmp( dev,device ) ;
-			free( dev ) ;
-			if( r != 0 ){
-				return 0 ;
-			}
-		}
+		;
 	}else{
 		/*
 		* all these zuluCrypt* functions are defined in ./real_path.c
