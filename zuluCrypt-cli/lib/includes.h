@@ -34,6 +34,11 @@
 #include "../bin/bash_special_chars.h"
 
 /*
+ * this global variable is defined in file_path_security and used in ../bin/main.c and ../../zuluMount/main.c
+ */
+extern struct stat global_variable_file_struct ;
+
+/*
  * below header is created at build time,it is set by CMakeLists.txt located in the root folder
  */
 #include "version.h"
@@ -178,3 +183,8 @@ char * zuluCryptRealPath( const char * path ) ;
  * this function is defined in create_loop_device.c
  */
 char * zuluCryptGetFileNameFromFileDescriptor( int fd ) ;
+
+/*
+ * this function is defined in file_path_security.c
+ */
+int zuluCryptGetDeviceFileProperties( const char * file,int * fd,string_t * st_dev ) ;

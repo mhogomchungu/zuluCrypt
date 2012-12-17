@@ -62,6 +62,7 @@
  lib/volume_type.c
  lib/mount_fs_options.c
  lib/real_path.c 
+ lib/file_path_security.c
 )
  	 
  add_library( Socket STATIC utility/socket/socket.c ) 

@@ -25,7 +25,7 @@ static inline int zuluExit( int st,struct crypt_device * cd )
 	return st ;
 }
 
-int zuluCryptOpenPlain( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
+int _open_plain( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
 {
 	int flags ;
 	struct crypt_device * cd ;
@@ -37,10 +37,10 @@ int zuluCryptOpenPlain( const char * device,const char * mapper,const char * mod
 	params.hash = "ripemd160";
 	params.skip = 0;
 	params.offset = 0;
-
+	
 	if( zuluCryptPathIsNotValid( device ) )
 		return 3 ;
-
+	
 	if( strstr( mode,"ro" ) != NULL )
 		flags = 1 ;
 	else
@@ -56,5 +56,33 @@ int zuluCryptOpenPlain( const char * device,const char * mapper,const char * mod
 		return zuluExit( 2,cd ) ;
 	else
 		return zuluExit( 0,cd ) ;
+}
+
+int zuluCryptOpenPlain( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
+{
+	int lmode ;
+	string_t st ;
+	int fd ;
+	int r ;
+	if( strncmp( device,"/dev/",5 ) == 0 ){
+		return _open_plain( device,mapper,mode,pass,pass_size ) ;
+	}else{
+		if( strcmp( mode,"ro" ) == 0 ){
+			lmode = O_RDONLY ;
+		}else{
+			lmode = O_RDWR ;
+		}
+		/*
+		 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop.c
+		 */
+		if( zuluCryptAttachLoopDeviceToFile( device,lmode,&fd,&st ) ){
+			r = _open_plain( device,mapper,mode,pass,pass_size ) ;
+			StringDelete( &st ) ;
+			close( fd ) ;
+			return r ;
+		}else{
+			return 2 ;
+		}
+	}
 }
 

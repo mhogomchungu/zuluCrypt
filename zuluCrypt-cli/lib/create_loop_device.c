@@ -83,12 +83,11 @@ char * zuluCryptGetFileNameFromFileDescriptor( int fd )
 static int _paths_are_not_sane( int fd,const char * path )
 {
 	struct stat p ;
-	struct stat q ;
+	struct stat q = global_variable_file_struct ;
+	if( path ){;}
 	if( fstat( fd,&p ) != 0 )
 		return 1 ;
 	if( !S_ISREG( p.st_mode ) )
-		return 1 ;
-	if( stat( path,&q ) != 0 )
 		return 1 ;
 	if( ( p.st_dev == q.st_dev ) && ( p.st_ino == q.st_ino ) ){
 		return 0 ;
@@ -106,6 +105,9 @@ int zuluCryptAttachLoopDeviceToFile( const char * path,int mode,int * loop_fd,st
 	int devnr ;
 	const char * loop ;
 	struct loop_info64 l_info ;
+	
+	if( strncmp( path,"/dev/",5 ) == 0 )
+		return zuluExit( 0,loopd,fd_loop,fd_path ) ;
 	
 	memset( &l_info,'\0',sizeof( struct loop_info64 ) ) ;
 	

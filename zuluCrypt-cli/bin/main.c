@@ -208,6 +208,7 @@ static void ExitOnMemoryExaustion( void )
 
 int main( int argc,char * argv[] )
 {
+	int fd ;
 	const char * device ;
 	const char * mapping_name ;
 	char * ac ;
@@ -216,6 +217,7 @@ int main( int argc,char * argv[] )
 	string_t q = StringVoid ;
 	stringList_t stl = StringListVoid ;
 	struct_opts clargs ;
+	string_t * st_dev ;
 	
 	global_variable_user_uid = getuid() ;
 	
@@ -310,10 +312,10 @@ int main( int argc,char * argv[] )
 	}
 	
 	if( action == '\0' )
-		return zuluExit( 130,stl,"ERROR: \"action\" argument is missing\n" ) ;
+		return zuluExit( 130,stl,"ERROR: \"action\" argument is missing" ) ;
 	
 	if( device == NULL )
-		return zuluExit( 120,stl,"ERROR: required option( device path ) is missing for this operation\n" ) ;
+		return zuluExit( 120,stl,"ERROR: required option( device path ) is missing for this operation" ) ;
 	
 	if( strncmp( device,"UUID=",5 ) == 0 ){
 
@@ -336,10 +338,22 @@ int main( int argc,char * argv[] )
 			return zuluExit( st,stl,NULL ) ;
 		}else{
 			StringDelete( &q ) ;
-			return zuluExit( 110,stl,"ERROR: could not find any partition with the presented UUID\n") ;
+			return zuluExit( 110,stl,"ERROR: could not find any partition with the presented UUID") ;
 		}
 	}else{
-		if ( ( ac = strrchr( device,'/' ) ) != NULL ) {
+		/*
+		 * this function is defined in ../zuluCrypt-lib/file_path_security.c
+		 */
+		st_dev = StringListAssign( stl ) ;
+		switch( zuluCryptGetDeviceFileProperties( device,&fd,st_dev ) ){
+			case 1 : return zuluExit( 111,stl,"ERROR: symbolic links are not allowed" ) ;
+			case 2 : return zuluExit( 112,stl,"ERROR: given path is a directory" ) ;   
+			case 3 : return zuluExit( 113,stl,"ERROR: a file can have only one hard link" ) ;
+			case 4 : return zuluExit( 113,stl,"ERROR: a non supported device encountered or device is missing" ) ;
+		}
+		
+		device = StringContent( *st_dev ) ;
+		if( ( ac = strrchr( device,'/' ) ) != NULL ){
 			mapping_name =  ac + 1  ;
 		}else{
 			mapping_name =  device  ;
@@ -348,5 +362,8 @@ int main( int argc,char * argv[] )
 
 	st = zuluCryptEXE( &clargs,mapping_name,global_variable_user_uid ) ;
 	
+	if( fd != -1 ){
+		close( fd ) ;
+	}
 	return zuluExit( st,stl,NULL ) ;
 } 

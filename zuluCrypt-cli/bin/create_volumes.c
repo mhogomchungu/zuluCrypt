@@ -90,7 +90,6 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	string_t * content = StringListAssign( stl ) ;
 	string_t * confirm = StringListAssign( stl ) ;
 	string_t * mapper  = StringListAssign( stl ) ;
-	string_t * dev_st  = StringListAssign( stl ) ;
 	
 	int st  ;
 	struct stat xt ;
@@ -104,15 +103,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	 */
 	if( !zulucryptFileSystemIsSupported( fs ) )
 		return zuluExit( 24,stl ) ;
-	
-	dev = zuluCryptRealPath( device ) ;
-	
-	if( dev == NULL )
-		return zuluExit( 17,stl ) ;
-	
-	*dev_st = StringInherit( &dev ) ;
-	device = StringContent( *dev_st ) ;
-	
+		
 	/*
 	 * This function is defined at "security.c"
 	 * It makes sure the path exists and the user has atleast reading access to the path.

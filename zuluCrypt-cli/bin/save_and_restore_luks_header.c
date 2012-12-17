@@ -149,17 +149,12 @@ int zuluCryptEXESaveAndRestoreLuksHeader( const struct_opts * opts,uid_t uid,int
 	 */
 	const char * path = opts->key ;
 	
-	char * dev = zuluCryptRealPath( device ) ;
-	
 	int k ;
 	
-	if( dev == NULL )
-		return zuluExit( 16,NULL ) ;
 	/*
 	 * zuluCryptPartitionIsSystemPartition() is defined in partitions.c
 	 */
-	k = zuluCryptPartitionIsSystemPartition( dev ) ;
-	free( dev ) ;
+	k = zuluCryptPartitionIsSystemPartition( device ) ;
 	
 	if( k == 1 && uid != 0 )
 		return zuluExit( 14,NULL ) ;

@@ -34,7 +34,7 @@ static void _printResult( const char * device,const char * m_point )
 	printf( "volume mounted at: %s\n",m_point ) ;
 }
 
-static int zuluExit( int st,char * device,char * m_point,stringList_t stl )
+static int zuluExit( int st,const char * device,char * m_point,stringList_t stl )
 {
 	zuluCryptSecurityDropElevatedPrivileges() ;
 	/*
@@ -80,10 +80,7 @@ only root user or members of group zulucrypt-write can do that\n" );									bre
 		case 32: printf( "ERROR: ERROR: could not get elevated privilege,check binary permissions\n" ) ;			break ;
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
-	
-	if( device != NULL )
-		free( device ) ;
-	
+		
 	if( m_point != NULL )
 		free( m_point ) ;
 	
@@ -96,7 +93,7 @@ only root user or members of group zulucrypt-write can do that\n" );									bre
  * should be removed first before calling the above function.The above function is called directly when "open_volume"
  * function is to be exited before the mount point is created. * 
  */
-static int zuluExit_1( int st,const struct_opts * opts,char * device,char * cpoint,stringList_t stl )
+static int zuluExit_1( int st,const struct_opts * opts,const char * device,char * cpoint,stringList_t stl )
 {
 	if( opts->open_no_mount == -1 && st != 0 )
 		rmdir( cpoint ) ;
@@ -106,7 +103,7 @@ static int zuluExit_1( int st,const struct_opts * opts,char * device,char * cpoi
 int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,uid_t uid )
 {
 	int nmp                  = opts->open_no_mount ;
-	const char * dev         = opts->device ;
+	const char * device      = opts->device ;
 	const char * mount_point = opts->mount_point ;
 	const char * m_opts      = opts->m_opts ;
 	const char * source      = opts->key_source ;
@@ -125,7 +122,6 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	const char * cpass ;
 	const char * cname ;
 	
-	char * device = NULL ;
 	char * cpoint = NULL ;
 	
 	size_t len ;
@@ -141,10 +137,6 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	if( zuluCryptMountFlagsAreNotCorrect( m_opts,uid,&m_flags ) )
 		return zuluExit( 31,device,cpoint,stl ) ; 
 		
-	device = zuluCryptRealPath( dev ) ;
-	if( device == NULL )
-		return zuluExit( 17,device,cpoint,stl ) ;
-	
 	switch( zuluCryptSecurityCanOpenPathForReading( device,uid ) ){
 		case 0 : break ;
 		case 1 : return zuluExit( 20,device,cpoint,stl ) ;

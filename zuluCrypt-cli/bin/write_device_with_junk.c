@@ -104,31 +104,24 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	int n ;
 	
 	const char * cmapper ;
-	
-	dev = zuluCryptRealPath( device );
 		
-	if( dev == NULL )
-		return zuluExit( NULL,2 ) ;
-	
-	if( zuluCryptPartitionIsSystemPartition( dev ) ){
+	if( zuluCryptPartitionIsSystemPartition( device ) ){
 		if( uid != 0 ){
-			free( dev ) ;
 			return zuluExit( NULL,8 ) ;
 		}
 	}
 		
-	mapper = zuluCryptCreateMapperName( dev,mapping_name,uid,OPEN ) ;
+	mapper = zuluCryptCreateMapperName( device,mapping_name,uid,OPEN ) ;
 	
-	p = zuluCryptCreateMapperName( dev,mapping_name,uid,CLOSE ) ;
+	p = zuluCryptCreateMapperName( device,mapping_name,uid,CLOSE ) ;
 	
 	j = zuluCryptCheckOpenedMapper( StringContent( p ) ) ;
 	
 	/*
 	 * defined in print_mounted_volumes.c
 	 */
-	n = zuluCryptPartitionIsMounted( dev ) ;
+	n = zuluCryptPartitionIsMounted( device ) ;
 	
-	free( dev ) ;
 	StringDelete( &p ) ;
 	
 	if( j == 1 )

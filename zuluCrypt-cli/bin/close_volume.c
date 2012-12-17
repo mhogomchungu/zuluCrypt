@@ -19,11 +19,10 @@
 
 #include "includes.h"
 
-static int zuluExit( int st,char * dev,string_t p )
+static int zuluExit( int st,string_t p )
 {
 	StringDelete( &p ) ;
-	if( dev != NULL )
-		free( dev ) ;
+	
 	switch( st ) {
 		case 0 : printf( "SUCCESS: volume closed successfully \n" );								  break ;		 
 		case 1 : printf( "ERROR: close failed, encrypted volume with that name does not exist\n" );      			  break ;
@@ -38,16 +37,12 @@ static int zuluExit( int st,char * dev,string_t p )
 	return st ;
 }
 
-int zuluCryptEXECloseVolume( const char * device,const char * mapping_name,uid_t uid )
+int zuluCryptEXECloseVolume( const char * dev,const char * mapping_name,uid_t uid )
 {	
 	 int st ;
 	 string_t p = StringVoid ;
 	 char * m_point = NULL ;
 	 
-	 char * dev = zuluCryptRealPath( device ) ;
-	 
-	 if( dev == NULL )
-		 return zuluExit( 6,dev,p ) ;
 	 /*
 	  * This function is defined at "../lib/create_mapper_name.c"
 	  * 
@@ -55,7 +50,7 @@ int zuluCryptEXECloseVolume( const char * device,const char * mapping_name,uid_t
 	  */
 	 p = zuluCryptCreateMapperName( dev,mapping_name,uid,CLOSE ) ;
 	 if( !zuluCryptSecurityGainElevatedPrivileges() )
-		 return zuluExit( 7,dev,p ) ;
+		 return zuluExit( 7,p ) ;
 	 st = zuluCryptCloseVolume( StringContent( p ),&m_point ) ;
 	
 	 if( st == 0 ){
@@ -65,5 +60,5 @@ int zuluCryptEXECloseVolume( const char * device,const char * mapping_name,uid_t
 		}
 	 }
 	 zuluCryptSecurityDropElevatedPrivileges() ;
-	 return zuluExit( st,dev,p ) ;
+	 return zuluExit( st,p ) ;
 }
