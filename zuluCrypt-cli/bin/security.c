@@ -242,7 +242,7 @@ string_t zuluCryptSecurityCreateMountPoint( const char * device,const char * lab
 	chown( "/run/media",0,0 ) ;
 	m_point = StringPrepend( path,"/run/media/" ) ;
 	mkdir( m_point,S_IRWXU ) ;
-	chown( "/run/media",0,0 ) ;
+	chown( m_point,uid,uid ) ;
 	zuluCryptSecurityDropElevatedPrivileges() ;
 	
 	if( label == NULL ){
