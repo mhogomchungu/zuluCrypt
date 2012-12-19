@@ -78,6 +78,19 @@ int _zuluExit( int st,string_t z,char * q,const char * msg )
 	return st ;
 }
 
+int _zuluExit_1( int st,stringList_t z,char * q,const char * msg )
+{
+	if( q != NULL )
+		free( q ) ;
+	
+	StringListDelete( &z ) ;
+	
+	if( msg != NULL )
+		printf( "%s\n",msg ) ;
+	
+	return st ;
+}
+
 static int _zuluMountDeviceList( void )
 {
 	/*
@@ -225,7 +238,7 @@ static int _zuluMountExe( const char * device,const char * action,const char * m
 		}
 	}
 	
-	return _zuluExit( 200,StringVoid,NULL,"ERROR: unrecognized argument encountered" ) ;	
+	return _zuluExit_1( 200,StringListVoid,NULL,"ERROR: unrecognized argument encountered" ) ;	
 }
 
 static int _mount_help()
@@ -354,7 +367,8 @@ int main( int argc,char * argv[] )
 	int mount_point_option = 0 ;
 	char * device ;
 	uid_t uid ;
-	string_t k = StringVoid ;
+	string_t * k ;
+	stringList_t stl ;
 	int status ;
 	int fd ;
 	
@@ -386,42 +400,44 @@ int main( int argc,char * argv[] )
 	StringExitOnMemoryExaustion( &ExitOnMemoryExaustion ) ;
 	StringListExitOnMemoryExaustion( &ExitOnMemoryExaustion ) ;
 	
+	stl = StringListInit() ; 
 	/*
 	 * zuluCryptSecuritySanitizeTheEnvironment() is defined in ../zuluCrypt-cli/bin/security.c
 	 */
-	zuluCryptSecuritySanitizeTheEnvironment( global_variable_user_uid ) ;
+	zuluCryptSecuritySanitizeTheEnvironment( global_variable_user_uid,&stl ) ;
 	
 	if( _mount_get_opts( argc,argv,&action,&dev,&m_point,&m_opts,&key_argv,&key_source,&mount_point_option,&fs_opts ) != 0 )
 		return _mount_help() ;
 	
 	if( key_argv != NULL ){
-		k = String( key_argv ) ;
-		strncpy( ( char * ) key_argv,"x",StringLength( k ) ) ;
-		key = StringContent( k ) ;
+		k = StringListAssign( stl ) ;
+		*k = String( key_argv ) ;
+		strncpy( ( char * ) key_argv,"x",StringLength( *k ) ) ;
+		key = StringContent( *k ) ;
 	}
 	
 	if( action == NULL )
-		return _zuluExit( 212,k,NULL,"ERROR: action not specified" ) ;
+		return _zuluExit_1( 212,stl,NULL,"ERROR: action not specified" ) ;
 	
 	if( strcmp( action,"-S" ) == 0 ){
 		/*
 		 * zuluCryptPrintPartitions() is defined in ../zuluCrypt-cli/bin/partitions.c
 		 * it printf() devices with entries in "/etc/fstab","/etc/crypttab", and "/etc/zuluCrypttab"
 		 */
-		return _zuluExit( zuluCryptPrintPartitions( SYSTEM_PARTITIONS,0 ),k,NULL,NULL ) ;
+		return _zuluExit_1( zuluCryptPrintPartitions( SYSTEM_PARTITIONS,0 ),stl,NULL,NULL ) ;
 	}
 		
 	if( strcmp( action,"-l" ) == 0 )
-		return _zuluExit( _zuluMountMountedList( uid ),k,NULL,NULL ) ;
+		return _zuluExit_1( _zuluMountMountedList( uid ),stl,NULL,NULL ) ;
 	
 	if( strcmp( action,"-P" ) == 0 )
-		return _zuluExit( _zuluMountDeviceList(),k,NULL,NULL ) ;
+		return _zuluExit_1( _zuluMountDeviceList(),stl,NULL,NULL ) ;
 	
 	if( strcmp( action,"-h" ) == 0 )
-		return _zuluExit( _mount_help(),k,NULL,NULL ) ;
+		return _zuluExit_1( _mount_help(),stl,NULL,NULL ) ;
 	
 	if( dev == NULL )
-		return _zuluExit( 213,k,NULL,"ERROR: device argument missing" ) ;
+		return _zuluExit_1( 213,stl,NULL,"ERROR: device argument missing" ) ;
 		
 	if( m_opts == NULL )
 		m_opts = "rw" ;
@@ -455,5 +471,5 @@ int main( int argc,char * argv[] )
 		close( fd ) ;
 	}
 		
-	return _zuluExit( status,k,NULL,NULL ) ;
+	return _zuluExit_1( status,stl,NULL,NULL ) ;
 }

@@ -130,6 +130,7 @@ Type \"YES\" and press Enter to continue: " ;
 		if( crypt_header_restore( cd,NULL,path ) == 0 ){
 			st = 1 ;
 		}else{
+			perror( "kk" ) ;
 			st = 7 ;
 		}
 		zuluCryptSecurityDropElevatedPrivileges() ;

@@ -47,4 +47,5 @@ int zuluMountCryptoMount( const char * device,const char * mode,uid_t uid,
 int zuluMountCryptoUMount( const char * device,uid_t uid,__attribute__((unused)) int mount_point_option ) ;
 
 int _zuluExit( int st,string_t z,char * q,const char * msg ) ;
-		    
+
+int _zuluExit_1( int st,stringList_t z,char * q,const char * msg ) ;

@@ -214,8 +214,10 @@ int main( int argc,char * argv[] )
 	char * ac ;
 	char action ;
 	int st ;
+	
 	string_t q = StringVoid ;
-	stringList_t stl = StringListVoid ;
+	stringList_t stl ;
+	
 	struct_opts clargs ;
 	string_t * st_dev ;
 	
@@ -227,11 +229,6 @@ int main( int argc,char * argv[] )
 	StringListExitOnMemoryExaustion( ExitOnMemoryExaustion ) ;
 	ProcessExitOnMemoryExaustion( ExitOnMemoryExaustion ) ;
 	SocketExitOnMemoryExaustion( ExitOnMemoryExaustion ) ;
-	
-	/*
-	 * zuluCryptSecuritySanitizeTheEnvironment() is defined in ./security.c
-	 */
-	zuluCryptSecuritySanitizeTheEnvironment( global_variable_user_uid ) ;
 	
 	/*
 	 * zuluCryptSecurityDropElevatedPrivileges() is defined in ./security.c 
@@ -254,9 +251,14 @@ int main( int argc,char * argv[] )
 		}
 	}
 	
-	zuluCryptEXEGetOpts( argc,argv,&clargs );
-	
 	stl = StringListInit() ;
+	
+	/*
+	 * zuluCryptSecuritySanitizeTheEnvironment() is defined in ./security.c
+	 */
+	zuluCryptSecuritySanitizeTheEnvironment( global_variable_user_uid,&stl ) ;
+	
+	zuluCryptEXEGetOpts( argc,argv,&clargs );
 	
 	q = StringListAssignString( stl,String( "" ) ) ;
 	

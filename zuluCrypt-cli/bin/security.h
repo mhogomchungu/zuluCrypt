@@ -48,7 +48,7 @@ string_t zuluCryptSecurityCreateMountPoint( const char * device,const char * m_p
 
 int zuluCryptSecurityMountPointPrefixMatch( const char * path,uid_t uid ) ;
 
-void zuluCryptSecuritySanitizeTheEnvironment( uid_t uid ) ;
+void zuluCryptSecuritySanitizeTheEnvironment( uid_t uid,stringList_t * ) ;
 
 string_t zuluCryptGetUserHomePath( uid_t uid ) ;
 

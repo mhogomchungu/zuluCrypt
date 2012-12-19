@@ -361,7 +361,7 @@ string_t zuluCryptSecurityGetFileSystemFromDevice( const char * path )
 	return st ;
 }
 
-void zuluCryptSecuritySanitizeTheEnvironment( uid_t uid )
+void zuluCryptSecuritySanitizeTheEnvironment( uid_t uid,stringList_t * stx )
 {
 	char * c ;
 	extern char ** environ ;
@@ -374,12 +374,17 @@ void zuluCryptSecuritySanitizeTheEnvironment( uid_t uid )
 	/*
 	 * below two functions are defined in ../lib/user_home_path.c
 	 */
-	string_t user_home = zuluCryptGetUserHomePath( uid ) ;
-	string_t user_name = zuluCryptGetUserName( uid ) ;
+	
+	/*
+	 * the "beauty" of C programming,these two variables are going to be expected to be around to the environment
+	 * for the duration of the program,we collect them to the main function to hold them and delete them when main returns.
+	 */
+	string_t user_home = StringListAssignString( *stx,zuluCryptGetUserHomePath( uid ) ) ;
+	string_t user_name = StringListAssignString( *stx,zuluCryptGetUserName( uid ) );
 	
 	/*
 	 * dont want to iterate over an array while changing it size through deleting its members,so going to 
-	 * make a copy of it and then delete its members getting them from the copy
+	 * make a copy of it and then delete its members reading them from the copy
 	 */
 	while( *env ){
 		stl = StringListAppend( stl,*env ) ;
@@ -406,8 +411,6 @@ void zuluCryptSecuritySanitizeTheEnvironment( uid_t uid )
 	putenv( "IFS= \t\n" );
 		
 	StringListDelete( &stl ) ;
-	StringDelete( &user_home ) ;
-	StringMultipleDelete( &user_home,&user_name,END ) ;
 }
 
 int zuluCryptSecurityUserOwnTheFile( const char * device,uid_t uid )

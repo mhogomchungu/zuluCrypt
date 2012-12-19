@@ -33,6 +33,9 @@ static inline int zuluExit( int x,string_t p )
 static inline int _device_is_not_sane( const char * device,const char * mapper )
 {
 	int st ;
+	/*
+	 * zuluCryptVolumeDeviceName() is defined in ./status.c
+	 */
 	char * dev = zuluCryptVolumeDeviceName( mapper ) ;
 	if( dev == NULL )
 		return 1 ;
