@@ -73,9 +73,14 @@ void zuluMountPartitionProperties( const char * device,const char * mapper,const
 	char * buffer = buff ;
 	char format[ SIZE ] ;
 	
+	if( !zuluCryptSecurityGainElevatedPrivileges() ){
+		printf( "%s\tNil\tNil\tNil\tNil\tNil\n",device ) ;
+		return ;
+	}
 	blkid = blkid_new_probe_from_filename( device ) ;
 	
 	if( blkid == NULL ){
+		zuluCryptSecurityDropElevatedPrivileges();
 		printf( "%s\tNil\tNil\tNil\tNil\tNil\n",device ) ;
 		return ;
 	}
@@ -85,6 +90,7 @@ void zuluMountPartitionProperties( const char * device,const char * mapper,const
 	blkid_device_size = ( int64_t ) blkid_probe_get_size( blkid ) ;
 	
 	if( blkid_device_size <= 0 ){
+		zuluCryptSecurityDropElevatedPrivileges();
 		printf( "%s\tNil\tNil\tNil\tNil\tNil\n",device ) ;
 		blkid_free_probe( blkid );
 		return ;
@@ -100,10 +106,11 @@ void zuluMountPartitionProperties( const char * device,const char * mapper,const
 	if( blkid_probe_lookup_value( blkid,"TYPE",&g,NULL ) == 0 ){
 		printf( "\t%s",g ) ;
 	}else{
-		if( strcmp( device,mapper ) == 0 )
+		if( strcmp( device,mapper ) == 0 ){
 			printf( "\tNil" ) ;
-		else
+		}else{
 			printf( "\tcrypto_PLAIN" ) ;
+		}
 	}
 	
 	blkid_free_probe( blkid );
@@ -111,16 +118,18 @@ void zuluMountPartitionProperties( const char * device,const char * mapper,const
 	blkid = blkid_new_probe_from_filename( mapper ) ;
 	
 	if( blkid == NULL ){
+		zuluCryptSecurityDropElevatedPrivileges();
 		printf( "Nil\tNil\tNil\n" ) ;
 		return ;
 	}
 	
 	blkid_do_probe( blkid );
 	
-	if( blkid_probe_lookup_value( blkid,"LABEL",&g,NULL ) == 0 )
+	if( blkid_probe_lookup_value( blkid,"LABEL",&g,NULL ) == 0 ){
 		printf( "\t%s",g ) ;
-	else
+	}else{
 		printf( "\tNil" ) ;
+	}
 	
 	blkid_free_probe( blkid );
 		
@@ -133,11 +142,13 @@ void zuluMountPartitionProperties( const char * device,const char * mapper,const
 	}
 	
 	if( m_point == NULL ){
+		zuluCryptSecurityDropElevatedPrivileges();
 		printf( "\tNil\n" ) ;
 		return ;
 	}
 		
 	if( statvfs( m_point,&vfs ) != 0 ){
+		zuluCryptSecurityDropElevatedPrivileges();
 		printf( "\tNil\n" ) ;
 		return ;
 	}
@@ -152,6 +163,7 @@ void zuluMountPartitionProperties( const char * device,const char * mapper,const
 
 	snprintf( buff,SIZE,"%.2f%%",100 * ( ( float ) used / ( float ) total ) ) ;
 	printf( "\t%s\n",buff ) ;
+	zuluCryptSecurityDropElevatedPrivileges();
 }
 
 static void _printUnmountedVolumes( const char * device )
@@ -173,6 +185,7 @@ static void _printDeviceProperties( string_t entry )
 	if( stx == StringListVoid )
 		return ;
 	q = StringListContentAt( stx,0 ) ;
+	
 	if( strncmp( q,_z,_k ) == 0 ){
 		/*
 		 * zuluCryptVolumeDeviceName() is defined in ../zuluCrypt-cli/lib/status.c
@@ -182,7 +195,9 @@ static void _printDeviceProperties( string_t entry )
 		/*
 		 * zuluCryptSecurityGainElevatedPrivileges() ;
 		 */
+		zuluCryptSecurityGainElevatedPrivileges() ;
 		x = zuluCryptVolumeDeviceName( q ) ;
+		zuluCryptSecurityDropElevatedPrivileges();
 		/*
 		 * zuluCryptSecurityDropElevatedPrivileges();
 		 */
@@ -214,15 +229,16 @@ static void _printDeviceProperties( string_t entry )
 		
 		zuluMountPartitionProperties( e,e,f ) ;
 	}
+	
+	zuluCryptSecurityDropElevatedPrivileges();
+	
 	StringListDelete( &stx ) ;
 }
 
 void zuluMountPrintDeviceProperties_1( string_t entry,uid_t uid )
 {
 	string_t filter = _mapper_filter( uid ) ;
-	zuluCryptSecurityGainElevatedPrivileges();
 	_printDeviceProperties( entry ) ;
-	zuluCryptSecurityDropElevatedPrivileges();
 	StringDelete( &filter ) ;
 }
 

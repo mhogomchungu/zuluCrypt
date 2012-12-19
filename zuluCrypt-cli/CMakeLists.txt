@@ -63,6 +63,7 @@
  lib/mount_fs_options.c
  lib/real_path.c 
  lib/file_path_security.c
+ lib/canonicalize/canonicalize.c
 )
  	 
  add_library( Socket STATIC utility/socket/socket.c ) 

@@ -52,7 +52,6 @@ static inline int _userIsAllowed( uid_t uid,const char * fs )
 	 * zuluCryptUserIsAMemberOfAGroup() is defined in ../bin/security.c
 	 */
 	if( uid == 0 || zuluCryptUserIsAMemberOfAGroup( uid,StringContent( p ) ) ){
-		
 		StringDelete( &p ) ;
 		return 1 ;
 	}else{

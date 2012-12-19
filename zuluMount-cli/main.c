@@ -78,54 +78,6 @@ int _zuluExit( int st,string_t z,char * q,const char * msg )
 	return st ;
 }
 
-int _zuluMountPartitionAccess( const char * device,const char * m_opts,uid_t uid,stringList_t stl )
-{
-	/*
-	 * this function is defined in ../zuluCrypt-cli/lib/mount_volume.c
-	 */
-	/*
-	 * MOUNTOPTIONS constant is defined in ../zuluCrypt-cli/lib/includes.h
-	 */
-	string_t p ;
-	int ro      ;
-	int nouser  ;
-	int defaulT ;
-	int user    ;
-	int users   ;
-	
-	if( zuluCryptPartitionIsSystemPartition( device ) )
-		if( uid != 0 )
-			return 4 ;
-	
-	p = StringListStringAt( stl,MOUNTOPTIONS ) ;
-	
-	if( p == StringVoid )
-		return 0 ;
-
-	ro      = StringContains( p,"ro" ) ;
-	nouser  = StringContains( p,"nouser" ) ;
-	defaulT = StringContains( p,"defaults" ) ;
-	users   = StringContains( p,"users" );
-	user    = StringContains( p,"user" ) ;
-
-	if( ro && strstr( m_opts,"rw" ) != NULL )
-		return 1 ;
-	/*
-	 * zuluCryptUserIsAMemberOfAGroup() is defined in ../zuluCrypt-cli/bin/security.c
-	 */
-	if( uid == 0 || zuluCryptUserIsAMemberOfAGroup( uid,"zulucrypt" ) )
-		return 0 ;
-	if( nouser || defaulT ){
-		return 2 ;
-	}else if( user ){
-		return 3 ;
-	}else if( !nouser && !defaulT && !user && !users && uid != 0 ){
-		return 2 ;
-	}
-
-	return 0 ;
-}
-
 static int _zuluMountDeviceList( void )
 {
 	/*
@@ -208,11 +160,20 @@ static int _zuluPartitionHasCryptoFs( const char * device )
 }
 
 static int _zuluMountPrintVolumeDeviceName( const char * device )
-{
+{	
+	char * c ;
+	/*
+	 * zuluCryptSecurityGainElevatedPrivileges() is defined in ../zuluCrypt-cli/bin/security.c
+	 */
+	zuluCryptSecurityGainElevatedPrivileges() ;
 	/*
 	 * zuluCryptVolumeDeviceName() is defined in ../lib/status.c
 	 */
-	char * c = zuluCryptVolumeDeviceName( device ) ;
+	c = zuluCryptVolumeDeviceName( device ) ;
+	/*
+	 * zuluCryptSecurityDropElevatedPrivileges() is defined in ../zuluCrypt-cli/bin/security.c
+	 */
+	zuluCryptSecurityDropElevatedPrivileges() ;
 	if( c == NULL ){
 		printf( "ERROR: could not get device address from mapper address\n" ) ;
 		return 1 ;
@@ -305,7 +266,6 @@ static int _zuluMountcheckifLVM( const char * action,const char * rpath )
 {
 	if( strcmp( action,"-D" ) == 0 )
 		return 0 ;
-	
 	/*
 	 * we currently dont support lvm volumes,for the moment treat paths to dev/dm-* as lvm volumes and refuse
 	 * to work with them.
@@ -326,17 +286,20 @@ static int _zuluMountDoAction( const char * device,const char * action,const cha
 	/*
 	 * zuluCryptGetDeviceFileProperties is defined in ../zuluCrypt-lib/file_path_security.c
 	 */
-	switch( zuluCryptGetDeviceFileProperties( device,fd,&st_dev ) ){
-		case 1 : printf( "ERROR: symbolic links are not allowed\n" ) ;
-			 return 220 ;
-		case 2 : printf( "ERROR: given path is a directory\n" ) ;  
-			 return 221 ;
-		case 3 : printf( "ERROR: a file can have only one hard link\n" ) ;
-			 return 221 ;
-		case 4 : printf( "ERROR: a non supported device encountered or device is missing\n" ) ;
-			 return 222 ;
+	switch( zuluCryptGetDeviceFileProperties( device,fd,&st_dev,uid ) ){
+		case 0 : break ;
+		case 1 : printf( "ERROR: devices in /dev/ with user access permissions are not suppored\n" ) ;	 return 220 ;
+		case 2 : printf( "ERROR: given path is a directory\n" ) ;  					 return 221 ;
+		case 3 : printf( "ERROR: a file can have only one hard link\n" ) ;				 return 222 ;
+		case 4 : printf( "ERROR: insufficient privilges to access the device" ) ;			 return 223 ;
+		default: printf( "ERROR: a non supported device encountered or device is missing\n" ) ;		 return 224 ;
 	}
 	
+	if( st_dev == StringVoid ){
+		printf( "ERROR: a non supported device encountered or device is missing\n" ) ;	
+		return 224 ;
+	}
+		
 	dev = StringContent( st_dev ) ;
 	
 	if( strncmp( dev,"/dev/",5 ) != 0 ){
@@ -350,13 +313,13 @@ static int _zuluMountDoAction( const char * device,const char * action,const cha
 		if( !zuluCryptSecurityPathIsValid( device,uid ) ){
 			printf( "ERROR: failed to resolve path to device\n" ) ;
 			StringDelete( &st_dev ) ;
-			return 217 ;
+			return 225 ;
 		}
 	}
 		
 	if( _zuluMountcheckifLVM( action,dev ) ){
 		printf( "ERROR: this device looks like an lvm device,these devices are currently not supported\n" ) ;
-		status = 218 ;
+		status = 226 ;
 	}else{
 		if( strncmp( dev,"/dev/",5 ) != 0 ){
 			/*
@@ -364,7 +327,7 @@ static int _zuluMountDoAction( const char * device,const char * action,const cha
 			*/
 			if( zuluCryptSecurityCanOpenPathForReading( dev,uid ) != 0 ){
 				printf( "insuffienct privilege to access a volume file\n" ) ;
-				status = 219 ;
+				status = 227 ;
 			}else{
 				status = _zuluMountExe( dev,action,m_point,m_opts,fs_opts,uid,key,key_source,mount_point_option ) ;
 			}
@@ -400,7 +363,12 @@ int main( int argc,char * argv[] )
 	 * and declared in ../zuluCrypt-cli/bin/includes.
 	 */
 	uid = global_variable_user_uid = getuid() ;
-		
+	
+	/*
+	 * zuluCryptSecurityDropElevatedPrivileges() is defined in ../zuluCrypt-cli/bin/security.c
+	 */
+	zuluCryptSecurityDropElevatedPrivileges() ;
+	
 	if( argc < 2 )
 		return _mount_help() ;
 	
@@ -431,9 +399,6 @@ int main( int argc,char * argv[] )
 		strncpy( ( char * ) key_argv,"x",StringLength( k ) ) ;
 		key = StringContent( k ) ;
 	}
-	
-	if( setuid( 0 ) != 0 )
-		return _zuluExit( 210,k,NULL,"ERROR: setuid(0) failed,check executable permissions" ) ;
 	
 	if( action == NULL )
 		return _zuluExit( 212,k,NULL,"ERROR: action not specified" ) ;

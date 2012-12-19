@@ -233,6 +233,11 @@ int main( int argc,char * argv[] )
 	 */
 	zuluCryptSecuritySanitizeTheEnvironment( global_variable_user_uid ) ;
 	
+	/*
+	 * zuluCryptSecurityDropElevatedPrivileges() is defined in ./security.c 
+	 */
+	zuluCryptSecurityDropElevatedPrivileges() ;
+	
 	if( argc == 1 ){
 		zuluCryptEXEHelp();
 		return 1;
@@ -301,13 +306,16 @@ int main( int argc,char * argv[] )
 	 * 
 	 * zuluCryptPrintPartitions() function is defined in partitions.c 
 	 * zuluCryptSecurityCheckPartitionPermissions() is defined in security.c
+	 * zuluCryptPrintOpenedVolumes() is defined in ../lib/print_open_volumes.c
 	 */
 	switch( action ){
 		case 'A':
 		case 'N':
 		case 'S': st = zuluCryptPrintPartitions( clargs.partition_number,clargs.print_partition_type ) ; 
 			  return zuluExit( st,stl,NULL ) ;
-		case 'L': st = zuluCryptPrintOpenedVolumes( global_variable_user_uid ) ; 
+		case 'L': zuluCryptSecurityGainElevatedPrivileges() ;
+			  st = zuluCryptPrintOpenedVolumes( global_variable_user_uid ) ; 
+			  zuluCryptSecurityDropElevatedPrivileges() ;
 			  return zuluExit( st,stl,NULL ) ;
 	}
 	
@@ -345,11 +353,13 @@ int main( int argc,char * argv[] )
 		 * this function is defined in ../zuluCrypt-lib/file_path_security.c
 		 */
 		st_dev = StringListAssign( stl ) ;
-		switch( zuluCryptGetDeviceFileProperties( device,&fd,st_dev ) ){
-			case 1 : return zuluExit( 111,stl,"ERROR: symbolic links are not allowed" ) ;
+		switch( zuluCryptGetDeviceFileProperties( device,&fd,st_dev,global_variable_user_uid ) ){
+			case 0 : break ;
+			case 1 : return zuluExit( 111,stl,"ERROR: devices in /dev/ with user access permissions are not suppored" ) ;
 			case 2 : return zuluExit( 112,stl,"ERROR: given path is a directory" ) ;   
 			case 3 : return zuluExit( 113,stl,"ERROR: a file can have only one hard link" ) ;
-			case 4 : return zuluExit( 113,stl,"ERROR: a non supported device encountered or device is missing" ) ;
+			case 4 : return zuluExit( 113,stl,"ERROR: insufficient privilges to access the device" ) ;
+			default: return zuluExit( 113,stl,"ERROR: a non supported device encountered or device is missing" ) ;
 		}
 		
 		device = StringContent( *st_dev ) ;
@@ -359,7 +369,7 @@ int main( int argc,char * argv[] )
 			mapping_name =  device  ;
 		}
 	}
-
+	
 	st = zuluCryptEXE( &clargs,mapping_name,global_variable_user_uid ) ;
 	
 	if( fd != -1 ){

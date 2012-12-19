@@ -38,7 +38,7 @@
 #include "plugin_path.h"
 #include <stdio.h>
 
-#define zuluCryptPluginManagerDebug 0
+#define zuluCryptPluginManagerDebug 1
 
 #if zuluCryptPluginManagerDebug
 static void __debug( process_t p )
@@ -106,11 +106,13 @@ void zuluCryptPluginManagerCloseConnection( void * p )
 		SocketClose( &client ) ;
 }
 
-static inline string_t zuluCryptGetDeviceUUID( const char * device )
+static inline string_t zuluCryptGetDeviceUUID( const char * device,uid_t uid )
 {
 	string_t p ;
 	blkid_probe blkid ;
 	const char * uuid ;
+	
+	seteuid( 0 ) ;
 	
 	blkid = blkid_new_probe_from_filename( device ) ;
 	
@@ -128,6 +130,7 @@ static inline string_t zuluCryptGetDeviceUUID( const char * device )
 		blkid_free_probe( blkid );
 	}
 	
+	seteuid( uid ) ;
 	return p ;
 }
 
@@ -179,10 +182,11 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	
 		sockpath = StringAppendInt( path,syscall( SYS_gettid ) ) ;
 		
-		uuid = zuluCryptGetDeviceUUID( device ) ;
+		uuid = zuluCryptGetDeviceUUID( device,uid ) ;
 
 		p = Process( pluginPath ) ;
-
+		
+		ProcessSetOptionUser( p,uid ) ;
 		ProcessSetArgumentList( p,device,StringContent( uuid ),sockpath,CHARMAXKEYZISE,argv,ENDLIST ) ;
 		ProcessStart( p ) ;
 	

@@ -68,10 +68,6 @@
 void zuluCryptFormatSize( char * buffer,const char * buff ) ;
 
 /*
- * NOTE:  zuluCryptDeviceFromLabel() and zuluCryptDeviceFromUUID() are moved to ./blkid_evaluate_tag.c
- */
-
-/*
  * defined in this source file
  */
 stringList_t zuluCryptGetPartitionFromCrypttab( void ) ;
@@ -228,9 +224,8 @@ stringList_t zuluCryptPartitions( int option )
 		index = StringIndexOfChar( st,0,' ' ) ;
 		if( index == -1 )
 			continue ;
-		StringSubChar( st,index,'\0' ) ;
 		device = StringRemoveString( st,"\"" ) ;
-		
+		StringSubChar( st,index,'\0' ) ;
 		if ( StringStartsWith( st,"/dev/" ) ){
 			if( StringEqual( st,"/dev/root" ) ){
 				/*
@@ -319,12 +314,13 @@ void zuluCryptPrintPartitionProperties( const char * device )
 	uint64_t size ;
 	
 	blkid_probe blkid ;
-	
+	zuluCryptSecurityGainElevatedPrivileges() ;
 	blkid = blkid_new_probe_from_filename( device ) ;
 	
 	printf( "%s\t",device ) ;
 	
 	if( blkid == NULL ){
+		zuluCryptSecurityDropElevatedPrivileges();
 		printf( "Nil\tNil\tNil\tNil\n" ) ;
 		return ;
 	} 
@@ -357,6 +353,7 @@ void zuluCryptPrintPartitionProperties( const char * device )
 		printf( "Nil\n" ) ;
 	
 	blkid_free_probe( blkid );
+	zuluCryptSecurityDropElevatedPrivileges();
 }
 
 int zuluCryptPrintPartitions( int option,int info )
@@ -442,15 +439,16 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 				continue ;
 			StringSubChar( st,index,'\0' ) ;
 			StringRemoveString( st,"\"" ) ;  /* remove quotes if they are used */
-			/* 
-			 * resolve the UUID to its device address 
-			 * q will have NULL  most likely if the drive with UUID is not attached
+			/*
+			 * zuluCryptSecurityEvaluateDeviceTags() is defined in ./security.c
 			 */
-			ac = zuluCryptDeviceFromUUID( strstr( StringContent( st ),"=" ) + 1 );    
-
-			if( ac != NULL ){	
-				stl_1 = StringListAppend( stl_1,ac ) ;
-				free( ac ) ;
+			ac = strstr( StringContent( st ),"=" ) ;
+			if( ac != NULL ){
+				ac = zuluCryptSecurityEvaluateDeviceTags( "UUID", ac + 1 );    
+				if( ac != NULL ){	
+					stl_1 = StringListAppend( stl_1,ac ) ;
+					free( ac ) ;
+				}
 			}
 		}else{
 			/*
@@ -502,7 +500,10 @@ stringList_t zuluCryptGetPartitionFromZulutab()
 		st = *it ;
 		StringRemoveString( st,"\"" ) ;
 		if( StringStartsWith( st,"UUID=" ) ){
-			ac = zuluCryptDeviceFromUUID( StringContent( st ) + 5 ) ;
+			/*
+			 * zuluCryptSecurityEvaluateDeviceTags() is defined in ./security.c
+			 */
+			ac = zuluCryptSecurityEvaluateDeviceTags( "UUID",StringContent( st ) + 5 ) ;
 			if( ac != NULL ){
 				stl_1 = StringListAppend( stl_1,ac ) ;
 				free( ac ) ;

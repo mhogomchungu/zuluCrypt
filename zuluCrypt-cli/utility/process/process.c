@@ -144,10 +144,8 @@ pid_t ProcessStart( process_t p )
 	if( p->pid == 0 ){
 		if( p->uid != -1 ){
 			uid = p->uid ;
-			setuid( uid )   ;
-			seteuid( uid )  ;
-			setgid( uid )   ;
-			setegid( uid )  ;
+			seteuid( 0 ) ;
+			setuid( uid );
 		}
 		
 		dup2( p->fd_0[ 0 ],0 )    ;

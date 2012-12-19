@@ -96,8 +96,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	
 	int j ;
 	int k ;
-			
-	char * dev ;
+		
 	/*
 	 * zulucryptFileSystemIsNotSupported() is defined in ../lib/mount_fs_options.c
 	 */
@@ -230,4 +229,3 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	
 	return st ? zuluExit( st,stl ) : zuluExit_1( type,stl ) ;
 }
-

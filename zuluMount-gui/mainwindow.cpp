@@ -143,9 +143,19 @@ void MainWindow::itemClicked( QTableWidgetItem * item )
 			m.addSeparator() ;
 			connect( m.addAction( tr( "properties" ) ),SIGNAL( triggered() ),this,SLOT( volumeProperties() ) ) ;
 		}
+		m.addSeparator() ;
+		connect( m.addAction( tr( "open folder" ) ),SIGNAL( triggered() ),this,SLOT( slotOpenFolder() ) ) ;
 	}
 
 	m.exec( QCursor::pos() ) ;
+}
+
+void MainWindow::slotOpenFolder()
+{
+	QTableWidgetItem * item = m_ui->tableWidget->currentItem() ;
+	QString path = m_ui->tableWidget->item( item->row(),1 )->text() ;
+	openmountpointinfilemanager * ofm = new openmountpointinfilemanager( path ) ;
+	ofm->start();
 }
 
 void MainWindow::volumeProperties()

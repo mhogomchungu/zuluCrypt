@@ -497,6 +497,14 @@ void zuluCrypt::menuKeyPressed()
 	itemClicked( it,false );
 }
 
+void zuluCrypt::openFolder()
+{
+	QTableWidgetItem * item = m_ui->tableWidget->currentItem() ;
+	QString path = m_ui->tableWidget->item( item->row(),1 )->text() ;
+	openmountpointinfilemanager * omp = new openmountpointinfilemanager( path ) ;
+	omp->start();
+}
+
 void zuluCrypt::itemClicked( QTableWidgetItem * it )
 {
 	itemClicked( it,true );
@@ -510,7 +518,13 @@ void zuluCrypt::itemClicked( QTableWidgetItem * item, bool clicked )
 
 	m.addSeparator() ;
 
+	connect( m.addAction( tr( "open folder" ) ) ,SIGNAL( triggered() ),this,SLOT( openFolder() ) ) ;
+
+	m.addSeparator() ;
+
 	connect( m.addAction( tr( "properties" ) ) ,SIGNAL( triggered() ),this,SLOT( volume_property() ) ) ;
+
+	m.addSeparator() ;
 
 	if( m_ui->tableWidget->item( item->row(),2 )->text() == QString( "luks" ) ){
 		m.addSeparator() ;

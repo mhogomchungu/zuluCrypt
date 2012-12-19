@@ -54,6 +54,10 @@ string_t zuluCryptGetUserHomePath( uid_t uid ) ;
 
 string_t zuluCryptGetUserName( uid_t uid ) ;
 
+int zuluCryptSecurityUserOwnTheFile( const char * device,uid_t uid ) ;
+
+void zuluCryptSecurityPrintPermissions( void ) ;
+
 #ifdef __cplusplus
 }
 #endif

@@ -78,6 +78,7 @@ only root user or members of group zulucrypt-write can do that\n" );									bre
 		case 30: printf( "ERROR: mount point error" ) ;									        break ; 
 		case 31: printf( "ERROR: insufficient privilege to mount the device with given options\n" ) ;				break ;
 		case 32: printf( "ERROR: ERROR: could not get elevated privilege,check binary permissions\n" ) ;			break ;
+		case 33: printf( "ERROR: only root user can perform this operation\n" ) ;						break ;
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
 		
@@ -155,8 +156,14 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		}
 	}
 	
-	if( nmp == 1 && mount_point != NULL )
-		return zuluExit( 18,device,cpoint,stl ) ;
+	if( nmp == 1 ){
+		if( uid != 0 ){
+			return zuluExit( 33,device,cpoint,stl ) ;
+		}
+		if( mount_point != NULL ){
+			return zuluExit( 18,device,cpoint,stl ) ;
+		}
+	}
 	
 	if( nmp == -1 ){
 		/*

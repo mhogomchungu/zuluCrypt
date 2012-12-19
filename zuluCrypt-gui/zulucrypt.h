@@ -56,7 +56,7 @@
 #include "kwalletplugin.h"
 #include "kwalletconfig.h"
 #include "tablewidget.h"
-
+#include "openmountpointinfilemanager.h"
 /*
  * below header is created at build time,it is set by CMakeLists.txt located in the root folder
  */
@@ -138,6 +138,7 @@ private slots :
 	void manageWallet( void ) ;
 	void setDefaultWallet( void ) ;
 	void failedToOpenWallet( void ) ;
+	void openFolder( void ) ;
 private:
 	passwordDialog * setUpPasswordDialog( void );
 	openpartition * setUpOpenpartition( void );

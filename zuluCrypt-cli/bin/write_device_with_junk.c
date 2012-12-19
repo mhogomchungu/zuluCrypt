@@ -76,6 +76,7 @@ static int zuluExit( string_t st, int status )
 		case 16: printf( "ERROR: can not get passphrase in silent mode\n" )			       ;break ;
 		case 17: printf( "ERROR: insufficient memory to hold passphrase\n" );			       ;break ;
 		case 18: printf( "ERROR: insufficient memory to hold 3 characters?really?\n" );		       ;break ;
+		case 19: printf( "ERROR: insufficient privilege to open the file with your privileges?\n" );   ;break ;
 	}
 		
 	return status ;
@@ -105,6 +106,14 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	
 	const char * cmapper ;
 		
+	if( strncmp( device,"/dev/",5 ) != 0 ){
+		if( !zuluCryptSecurityUserOwnTheFile( device,uid ) ){
+			if( uid != 0 ){
+				return zuluExit( NULL,19 ) ;
+			}
+		}
+	}
+	
 	if( zuluCryptPartitionIsSystemPartition( device ) ){
 		if( uid != 0 ){
 			return zuluExit( NULL,8 ) ;
@@ -188,7 +197,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	 * 
 	 * Useful when a normal user want to delete content of the device by writing random data to it.
 	 */
-	dev = realpath( cmapper,NULL ) ;
+	dev = zuluCryptRealPath( cmapper ) ;
 	if( zuluCryptSecurityGainElevatedPrivileges() ){
 		if( dev != NULL ){
 			chown( dev,uid,0 ) ;

@@ -18,14 +18,13 @@
  */
 #include "includes.h"
 
-int zuluMountCryptoUMount( const char * device,uid_t uid,__attribute__((unused)) int mount_point_option )
+int zuluMountCryptoUMount( const char * device,uid_t uid,int mount_point_option )
 {
 	const char * mapping_name ;
 	const char * e = strrchr( device,'/' ) ;
-	/*
-	 * if( is_luks( device ) == 1 && check_if_partition_is_system_partition( device ) == 1 && uid != 0 )
-	 *	return _zuluExit( 200,NULL,NULL,"ERROR: insuffienct privilege to operate on a system partition" ) ;
-	 */
+	
+	if( mount_point_option ) {;}
+	
 	if( e == NULL)
 		mapping_name = device ;
 	else

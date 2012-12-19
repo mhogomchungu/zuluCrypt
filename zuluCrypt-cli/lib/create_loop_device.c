@@ -21,6 +21,8 @@
 #include <sys/ioctl.h>
 #include <linux/loop.h>
 
+int global_variable_file_struct_is_set = 0 ;
+
 static int zuluExit( int result,string_t st,int fd_loop,int fd_path )
 {
 	if( st == 0 ){
@@ -84,15 +86,23 @@ static int _paths_are_not_sane( int fd,const char * path )
 {
 	struct stat p ;
 	struct stat q = global_variable_file_struct ;
-	if( path ){;}
-	if( fstat( fd,&p ) != 0 )
-		return 1 ;
-	if( !S_ISREG( p.st_mode ) )
-		return 1 ;
-	if( ( p.st_dev == q.st_dev ) && ( p.st_ino == q.st_ino ) ){
-		return 0 ;
+	char * c ;
+	int st ;
+	if( global_variable_file_struct_is_set ){
+		if( fstat( fd,&p ) != 0 )
+			return 1 ;
+		if( !S_ISREG( p.st_mode ) )
+			return 1 ;
+		if( ( p.st_dev == q.st_dev ) && ( p.st_ino == q.st_ino ) ){
+			return 0 ;
+		}else{
+			return 1 ;
+		}
 	}else{
-		return 1 ;
+		c = zuluCryptGetFileNameFromFileDescriptor( fd ) ;
+		st = strcmp( c,path ) ;
+		free( c ) ;
+		return st != 0 ;
 	}
 }
 
@@ -156,6 +166,6 @@ int zuluCryptAttachLoopDeviceToFile( const char * path,int mode,int * loop_fd,st
 	
 	*loop_device = loopd ;
 	*loop_fd = fd_loop ;
-	
+
 	return zuluExit( 1,loopd,fd_loop,fd_path ) ;
 }

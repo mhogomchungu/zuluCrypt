@@ -18,6 +18,104 @@
  */
 #include "includes.h"
 
+static int _zuluMountPartitionAccess( const char * device,const char * m_opts,uid_t uid )
+{
+	/*
+	 * this function is defined in ../zuluCrypt-cli/lib/mount_volume.c
+	 */
+	/*
+	 * MOUNTOPTIONS constant is defined in ../zuluCrypt-cli/lib/includes.h
+	 */
+	
+	int ro      ;
+	int nouser  ;
+	int defaulT ;
+	int user    ;
+	int users   ;
+	int system_partition ;
+	int st = 3  ;
+	/*
+	 * zuluCryptGetFstabEntryList() is defined in ../zuluCrypt-cli/lib/mount_volume.c
+	 */
+	stringList_t stl = zuluCryptGetFstabEntryList( device ) ;
+	
+	string_t p = StringListStringAt( stl,MOUNTOPTIONS ) ;
+	
+	ro      = StringContains( p,"ro" ) ;
+	nouser  = StringContains( p,"nouser" ) ;
+	defaulT = StringContains( p,"defaults" ) ;
+	users   = StringContains( p,"users" );
+	user    = StringContains( p,"user" ) ;
+	
+	if( defaulT ){;}
+	/*
+	 * zuluCryptPartitionIsSystemPartition() is defined in ../zuluCrypt-cli/bin/partition.c
+	 */
+	system_partition = zuluCryptPartitionIsSystemPartition( device ) ;
+	
+	if( p == StringVoid ){
+		/*
+		 * partition does not have an entry in fstab
+		 */
+		if( system_partition ){
+			/*
+			 * system partition with no entry in fstab,refuse to mount this one
+			 */
+			if( uid == 0 ){
+				/*
+				 * cant say no to root
+				 */
+				st = 0 ;
+			}else{
+				st = 1 ;
+			}
+		}else{
+			/*
+			 * no entry in fstab,not a system partition,mount this one
+			 */
+			st = 0 ;
+		}
+	}else{
+		/*
+		 * has an entry in fstab
+		 */
+		if( ro && strstr( m_opts,"rw" ) != NULL ){
+			/*
+			 * respect the option for the partition to be mounted read only
+			 */
+			st = 2 ;
+		}
+		/*
+		 * has an entry in fstab,mount it only if it has "user" or "users" or if root
+		 */
+		if( uid == 0 ){
+			/*
+			 * user is root,mount it
+			 */
+			st = 0 ;
+		}else{
+			/*
+			 * normal user.
+			 */
+			if( ( user || users ) && !nouser ){
+				/*
+				 * users are allowed, mount it,reject everything else
+				 */
+				st = 0 ;
+			}else{
+				/*
+				 * options that go here are "defaults","nouser",auto" among others.They dont allow
+				 * a normal user to mount a volume.
+				 */
+				st = 3 ;
+			}
+		}
+	}
+
+	StringListDelete( &stl ) ;
+	return st ;
+}
+
 int zuluMountMount( const char * device,const char * m_point,
 			    const char * m_opts,const char * fs_opts,uid_t uid,
 			    int mount_point_option )
@@ -28,7 +126,6 @@ int zuluMountMount( const char * device,const char * m_point,
 	char * path = NULL ;
 	const char * rm_point ;
 	unsigned long m_flags ;
-	stringList_t stl = StringListVoid ;
 	
 	if( mount_point_from_fstab ){;}
 	
@@ -36,7 +133,7 @@ int zuluMountMount( const char * device,const char * m_point,
 	 * zuluCryptMountFlagsAreNotCorrect() is defined in ../zuluCrypt-cli/bin/mount_flags.c
 	 */
 	if( zuluCryptMountFlagsAreNotCorrect( m_opts,uid,&m_flags ) )
-		return _zuluExit( 112,z,path,"ERROR: insuffienct privileges to mount the volume with given mount options" ) ;
+		return _zuluExit( 100,z,path,"ERROR: insuffienct privileges to mount the volume with given mount options" ) ;
 	
 	/*
 	 * zuluCryptPathIsNotValid() is defined in ../zuluCrypt-cli/lib/is_path_valid.c
@@ -49,24 +146,15 @@ int zuluMountMount( const char * device,const char * m_point,
 	 * It checks if a device has an entry in "/etc/mtab" and return 1 if it does and 0 is it doesnt
 	 */
 	if( zuluCryptPartitionIsMounted( device ) )
-		return _zuluExit( 101,z,path,"ERROR: device already mounted" ) ;
+		return _zuluExit( 102,z,path,"ERROR: device already mounted" ) ;
 	
-	/*
-	 * zuluCryptGetFstabEntryList() is defined in ../zuluCrypt-cli/lib/mount_volume.c
-	 */
-	stl = zuluCryptGetFstabEntryList( device ) ;
+	status = _zuluMountPartitionAccess( device,m_opts,uid ) ;
 	
-	status = _zuluMountPartitionAccess( device,m_opts,uid,stl ) ;
-
-	if( status == 1 ){
-		StringListDelete( &stl ) ;
-		return _zuluExit( 102,z,path,"ERROR: \"/etc/fstab\" entry for this partition requires it to be mounted read only" ) ;
-	}else if( status == 2 ){
-		StringListDelete( &stl ) ;
-		return _zuluExit( 103,z,path,"ERROR: \"/etc/fstab\" entry for this partition requires only root user or members of group zulucrypt to mount it" ) ;
-	}else if( status == 4 ){
-		StringListDelete( &stl ) ;
-		return _zuluExit( 112,z,path,"ERROR: insuffienct privilege to access a system partition,only root and zulucrypt group members can do that" ) ;
+	switch( status ){
+		case 0 : break ;
+		case 1 : return _zuluExit( 103,z,path,"ERROR: insuffienct privileges to mount a system partition" ) ;
+		case 2 : return _zuluExit( 104,z,path,"ERROR: \"/etc/fstab\" entry for this partition requires it to be mounted read only" ) ;
+		default: return _zuluExit( 105,z,path,"ERROR: \"/etc/fstab\" entry for this partition does not allow you to mount it" ) ;
 	}
 	
 	/*
@@ -75,11 +163,11 @@ int zuluMountMount( const char * device,const char * m_point,
 	z = zuluCryptSecurityCreateMountPoint( device,m_point,uid ) ;
 	
 	if( z == StringVoid )
-		return _zuluExit( 107,z,path,"ERROR: could not create mount point path,path already taken" ) ;
+		return _zuluExit( 106,z,path,"ERROR: could not create mount point path,path already taken" ) ;
 	
 	rm_point = StringContent( z ) ;
 	if( !zuluCryptSecurityGainElevatedPrivileges() )
-		return _zuluExit( 112,z,path,"ERROR: could not get elevated privilege,check binary permissions" ) ;
+		return _zuluExit( 107,z,path,"ERROR: could not get elevated privilege,check binary permissions" ) ;
 	/*
 	 * zuluCryptMountVolume() defined in ../zuluCrypt-cli/lib/mount_volume.c
 	 */
@@ -91,11 +179,11 @@ int zuluMountMount( const char * device,const char * m_point,
 	}else{
 		rmdir( rm_point ) ;
 		switch( status ){
-			case -1: return _zuluExit( 113,z,path,"ERROR: failed to mount a filesystem,invalid mount option or permission denied" ) ;
-			case 1 : return _zuluExit( 108,z,path,"ERROR: failed to mount ntfs file system using ntfs-3g,is ntfs-3g package installed?" ) ;
-			case 4 : return _zuluExit( 109,z,path,"ERROR: mount failed,no or unrecognized file system" )	; 
-			case 12: return _zuluExit( 110,z,path,"ERROR: mount failed,could not get a lock on /etc/mtab~" ) ;	
-			default: return _zuluExit( 111,z,path,"ERROR: failed to mount the partition" ) ;
+			case -1: return _zuluExit( 108,z,path,"ERROR: failed to mount a filesystem,invalid mount option or permission denied" ) ;
+			case 1 : return _zuluExit( 109,z,path,"ERROR: failed to mount ntfs file system using ntfs-3g,is ntfs-3g package installed?" ) ;
+			case 4 : return _zuluExit( 110,z,path,"ERROR: mount failed,no or unrecognized file system" )	; 
+			case 12: return _zuluExit( 111,z,path,"ERROR: mount failed,could not get a lock on /etc/mtab~" ) ;	
+			default: return _zuluExit( 112,z,path,"ERROR: failed to mount the partition" ) ;
 		}
 	}
 }

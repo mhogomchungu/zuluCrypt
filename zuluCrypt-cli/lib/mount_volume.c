@@ -269,7 +269,13 @@ static inline string_t set_mount_options( m_struct * mst )
 	}else{
 		StringPrepend( opt,"rw," ) ;
 	}
-		
+	
+	while( StringIndexOfString( opt,0,",," ) >= 0 )
+		StringReplaceString( opt,",,","," );
+	
+	if( StringEndsWithChar( opt,',' ) )
+		StringRemoveRight( opt,1 ) ;
+	
 	mst->opts = StringContent( opt ) ;
 	return opt;
 }
@@ -415,7 +421,7 @@ static inline int mount_ntfs( const m_struct * mst )
 		return -1 ;
 	p = Process( ZULUCRYPTmount ) ;
 	st = String( "" ) ;	
-	_mount_options( mst->m_flags,&st ) ;
+	st = _mount_options( mst->m_flags,&st ) ;
 	if( mst->m_flags & MS_RDONLY )
 		StringPrepend( st,"ro" ) ;
 	else
@@ -427,6 +433,7 @@ static inline int mount_ntfs( const m_struct * mst )
 	ProcessStart( p ) ;
 	status = ProcessExitStatus( p ) ; 
 	ProcessDelete( &p ) ;
+	StringDelete( &st ) ;
 	return mount_is_were_we_expect_it_to_be( mst,status ) ;
 }
 
@@ -572,13 +579,12 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 				_mount_options( mst.m_flags,opts ) ;
 				
 				if( device_file ){
-					StringMultipleAppend( *opts,",loop=",mst.device,END ) ;
 					mt.mnt_fsname = ( char * ) path ;
-					mt.mnt_opts = ( char * ) StringReplaceString( *opts,",,","," );
+					mt.mnt_opts = ( char * ) StringMultipleAppend( *opts,",loop=",mst.device,END ) ;
 					close( fd ) ;
 				}else{
 					mt.mnt_fsname = ( char * ) mst.device ;
-					mt.mnt_opts = ( char * ) StringReplaceString( *opts,",,","," );
+					mt.mnt_opts = ( char * ) StringContent( *opts );
 				}
 				mt.mnt_freq   = 0 ;
 				mt.mnt_passno = 0 ;
@@ -588,10 +594,9 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 			
 			mnt_unlock_file( m_lock ) ;
 		}
-		
+
 		mnt_free_lock( m_lock ) ;
 	}
 	
 	return zuluExit( h,stl ) ;
 }
-

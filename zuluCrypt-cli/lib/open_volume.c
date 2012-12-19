@@ -67,7 +67,7 @@ int zuluCryptOpenVolume( const char * dev,const char * map,
 	int fd ;
 	const char * mapper ;
 	const char * mode ;
-	
+		
 	/*
 	 * zuluCryptPathIsNotValid() is defined in is_path_valid.c
 	 */
@@ -93,6 +93,9 @@ int zuluCryptOpenVolume( const char * dev,const char * map,
 	}
 	
 	if( strncmp( dev,"/dev/",5 ) != 0 ){
+		/*
+		 * zuluCryptAttachLoopDeviceToFile() is defined in create_loop_device.c
+		 */
 		if( zuluCryptAttachLoopDeviceToFile( dev,lmode,&fd,&q ) ){
 			dev = StringContent( q ) ;
 			h = _open_mapper( dev,map,mode,pass,pass_size ) ;
@@ -103,8 +106,12 @@ int zuluCryptOpenVolume( const char * dev,const char * map,
 		}
 	}else{
 		h = _open_mapper( dev,map,mode,pass,pass_size ) ;
-		if( _device_is_not_sane( dev,mapper ) )
-			return zuluExit( -1,p ) ;
+		if( h == 0 ){
+			if( _device_is_not_sane( dev,mapper ) ){
+				zuluCryptCloseMapper( map ) ;
+				return zuluExit( -1,p ) ;
+			}
+		}
 	}
 	
 	switch( h ){

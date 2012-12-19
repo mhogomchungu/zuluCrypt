@@ -25,6 +25,7 @@ int zuluMountUMount( const char * device,uid_t uid,const char * mode,int mount_p
 	string_t st = StringVoid ;
 	
 	if( mode ) {;}
+	if( mount_point_option ) {;}
 	/*
 	 * zuluCryptGetMountPointFromPath() is defined in defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c 
 	 */
@@ -32,35 +33,43 @@ int zuluMountUMount( const char * device,uid_t uid,const char * mode,int mount_p
 	if( m_point == NULL )
 		return _zuluExit( 100,StringVoid,m_point,"ERROR: device does not appear to be mounted" ) ;
 	
+	/*
+	 * zuluCryptSecurityMountPointPrefixMatch() is defined in ../zuluCrypt-cli/bin/security.c
+	 */
 	if( !zuluCryptSecurityMountPointPrefixMatch( m_point,uid ) ){
 		if( uid != 0 ){
-			return _zuluExit( 106,StringVoid,m_point,"ERROR: you can only unmount volumes you have mounted" ) ;
+			return _zuluExit( 101,StringVoid,m_point,"ERROR: you can only unmount volumes you have mounted" ) ;
 		}
 	}
-	
+	/*
+	 * zuluCryptSecurityGainElevatedPrivileges() is defined in ../zuluCrypt-cli/bin/security.c
+	 */
 	if( !zuluCryptSecurityGainElevatedPrivileges() )
-		return _zuluExit( 107,st,m_point,"ERROR: could not get elevated privilege,check binary permissions" ) ;
+		return _zuluExit( 102,st,m_point,"ERROR: could not get elevated privilege,check binary permissions" ) ;
 	/*
 	 * zuluCryptUnmountVolume() is defined in ../zuluCrypt-cli/lib/unmount_volume.c
 	 */
+	
+	free( m_point ) ;
+	m_point = NULL ;
+	
 	status = zuluCryptUnmountVolume( device,&m_point ) ;
-	if( status == 0 ){	
+	/*
+	 * zuluCryptSecurityDropElevatedPrivileges() is defined in ../zuluCrypt-cli/bin/security.c
+	 */
+	zuluCryptSecurityDropElevatedPrivileges() ;
+	
+	if( status == 0 ){
 		if( m_point != NULL ){
-			if( !StringEqual( st,m_point ) ){
-				if( !mount_point_option ){
-					rmdir( m_point ) ;
-				}
-			}
+			rmdir( m_point ) ;
 		}
-		zuluCryptSecurityDropElevatedPrivileges() ;
 		return _zuluExit( 0,st,m_point,"SUCCESS: umount complete successfully" ) ;
 	}else{
-		zuluCryptSecurityDropElevatedPrivileges() ;
 		switch( status ) {
-			case 1 : return _zuluExit( 102,st,m_point,"ERROR: device does not exist" )  ;
-			case 2 : return _zuluExit( 103,st,m_point,"ERROR: failed to unmount,the mount point and/or one or more files are in use" );
-			case 4 : return _zuluExit( 104,st,m_point,"ERROR: failed to unmount,could not get a lock on /etc/mtab~" ) ;
-			default: return _zuluExit( 105,st,m_point,"ERROR: failed to unmount the partition" ) ;
+			case 1 : return _zuluExit( 103,st,m_point,"ERROR: device does not exist" )  ;
+			case 2 : return _zuluExit( 104,st,m_point,"ERROR: failed to unmount,the mount point and/or one or more files are in use" );
+			case 4 : return _zuluExit( 105,st,m_point,"ERROR: failed to unmount,could not get a lock on /etc/mtab~" ) ;
+			default: return _zuluExit( 106,st,m_point,"ERROR: failed to unmount the partition" ) ;
 		}
 	}
 }

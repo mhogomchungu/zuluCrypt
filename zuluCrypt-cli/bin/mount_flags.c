@@ -36,8 +36,8 @@ int zuluCryptMountFlagsAreNotCorrect( const char * mode,uid_t uid,unsigned long 
 {
 	unsigned long flg = 0 ;
 	
-	if( strstr( mode,"ro" ) == 0 )
-		flg = MS_RDONLY;
+	if( strstr( mode,"ro" ) != NULL )
+		flg |= MS_RDONLY;
 	
 	if( strstr( mode,"dev" ) != NULL ){
 		if( _has_no_access( uid ) )

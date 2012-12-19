@@ -79,6 +79,7 @@ private slots:
 	void slotCurrentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ;
 	void enableAll( void ) ;
 	void stateChanged( int ) ;
+	void slotOpenFolder( void ) ;
 private:
 	Ui::MainWindow * m_ui ;
 

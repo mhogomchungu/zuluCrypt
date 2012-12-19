@@ -23,10 +23,23 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include "includes.h"
 
+#include "canonicalize/canonicalize.h"
+
+/*
+static char * _private_real_path( const char * path )
+{
+	if( path ){;}
+	return NULL ;
+}
+*/
+/*
+ * canonicalize_path() is defined in canonicalize/canonicalize.c
+ */
 char * zuluCryptRealPath( const char * path )
 {
-	return realpath( path,NULL ) ;
+	return canonicalize_path( path ) ;
 }
 
 int zuluCryptPathStartsWith( const char * path,const char * start )
@@ -66,9 +79,7 @@ int zuluCryptPathDidNotChange( const char * path )
 
 int zuluCryptPathDeviceIsBlockDevice( const char * device )
 {
-	struct stat st ;
 	if( strncmp( device,"/dev/shm/",9 ) == 0 )
 		return 0 ;
-	stat( device,&st ) ;
-	return S_ISBLK( st.st_mode ) ;
+	return S_ISBLK( global_variable_file_struct.st_mode ) ;
 }

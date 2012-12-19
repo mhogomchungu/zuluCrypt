@@ -36,10 +36,11 @@ int zuluMountCryptoMount( const char * device,const char * mode,uid_t uid,
 	 */
 	zuluCryptEXEGetOptsSetDefault( &opts ) ;
 	
-	if( e == NULL)
+	if( e == NULL){
 		mapping_name = device ;
-	else
+	}else{
 		mapping_name = e + 1 ;
+	}
 	
 	if( key_source != NULL ){
 		if( strcmp( key_source,"-G" ) == 0 ){
