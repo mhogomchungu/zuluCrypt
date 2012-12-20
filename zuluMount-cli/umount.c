@@ -57,14 +57,15 @@ int zuluMountUMount( const char * device,uid_t uid,const char * mode,int mount_p
 	/*
 	 * zuluCryptSecurityDropElevatedPrivileges() is defined in ../zuluCrypt-cli/bin/security.c
 	 */
-	zuluCryptSecurityDropElevatedPrivileges() ;
 	
 	if( status == 0 ){
 		if( m_point != NULL ){
 			rmdir( m_point ) ;
 		}
+		zuluCryptSecurityDropElevatedPrivileges() ;
 		return _zuluExit( 0,st,m_point,"SUCCESS: umount complete successfully" ) ;
 	}else{
+		zuluCryptSecurityDropElevatedPrivileges() ;
 		switch( status ) {
 			case 1 : return _zuluExit( 103,st,m_point,"ERROR: device does not exist" )  ;
 			case 2 : return _zuluExit( 104,st,m_point,"ERROR: failed to unmount,the mount point and/or one or more files are in use" );

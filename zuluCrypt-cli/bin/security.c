@@ -136,7 +136,11 @@ static int has_device_access( const char * path,int c )
 	}else{
 		fstat( f,&st ) ;
 		close( f ) ;
+		if( strncmp( path,"/dev/",5 ) == 0 )
+			return 0 ;
 		/*
+		 * This part deals with problematic devices where user can move them around and have a potential
+		 * to pull them or substitute them under us.
 		 * global_variable_file_struct is a global variable declaired in ../lib/includes.h
 		 * and defined in ../lib/create_loop_device.c
 		 */
@@ -156,11 +160,15 @@ static int has_device_access( const char * path,int c )
  */
 int zuluCryptSecurityDeviceIsReadable( const char * device,uid_t uid )
 {
+	int st ;
 	if( uid ){;}
 	if( strncmp( device,"/dev/shm/",9 ) == 0 )
 		return 4 ;
 	if( strncmp( device,"/dev/",5 ) == 0 ){
-		return has_device_access( device,READ ) ;
+		zuluCryptSecurityGainElevatedPrivileges() ;
+		st = has_device_access( device,READ ) ;
+		zuluCryptSecurityDropElevatedPrivileges() ;
+		return st ;
 	}else{
 		zuluCryptSecurityDropElevatedPrivileges() ;
 		return has_device_access( device,READ ) ;
@@ -169,11 +177,15 @@ int zuluCryptSecurityDeviceIsReadable( const char * device,uid_t uid )
 
 int zuluCryptSecurityDeviceIsWritable( const char * device,uid_t uid )
 {	
+	int st ;
 	if( uid ){;}
 	if( strncmp( device,"/dev/shm/",9 ) == 0 )
 		return 4 ;
 	if( strncmp( device,"/dev/",5 ) == 0 ){
-		return has_device_access( device,WRITE ) ;
+		zuluCryptSecurityGainElevatedPrivileges() ;
+		st = has_device_access( device,WRITE ) ;
+		zuluCryptSecurityDropElevatedPrivileges() ;
+		return st ;
 	}else{
 		zuluCryptSecurityDropElevatedPrivileges() ;
 		return has_device_access( device,WRITE ) ;
@@ -314,7 +326,7 @@ string_t zuluCryptSecurityCreateMountPoint( const char * device,const char * lab
 	mkdir( "/run/media",S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ) ;
 	chown( "/run/media",0,0 ) ;
 	m_point = StringPrepend( path,"/run/media/" ) ;
-	mkdir( m_point,S_IRWXU ) ;
+	mkdir( m_point,S_IRUSR | S_IXUSR ) ;
 	chown( m_point,uid,uid ) ;
 	zuluCryptSecurityDropElevatedPrivileges() ;
 	
