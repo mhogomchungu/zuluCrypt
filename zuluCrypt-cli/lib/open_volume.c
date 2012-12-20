@@ -141,4 +141,3 @@ int zuluCryptOpenVolume( const char * dev,const char * map,
 	
 	return zuluExit( h,p ) ;
 }
-

@@ -88,6 +88,7 @@ static int zuluCryptEXECheckIfTcrypt( struct_opts * clargs,uid_t uid )
 	}
 	
 	if( strcmp( source,"-p" ) == 0 ){
+		zuluCryptSecurityGainElevatedPrivileges() ;
 		/*
 		 * zuluCryptGetVolumeType() is defined in ../lib/volume_type.c
 		 */
@@ -95,6 +96,7 @@ static int zuluCryptEXECheckIfTcrypt( struct_opts * clargs,uid_t uid )
 			printf( "\"%s\" is a tcrypt device\n",device ) ;
 			st = 0 ;
 		}
+		zuluCryptSecurityDropElevatedPrivileges() ;
 	}else if( strcmp( source,"-f" ) == 0 ){
 		/*
 		 * zuluCryptSecurityGetPassFromFile() is defined in security.c
@@ -102,6 +104,7 @@ static int zuluCryptEXECheckIfTcrypt( struct_opts * clargs,uid_t uid )
 		if( zuluCryptSecurityGetPassFromFile( key,uid,&st_key ) == 0 ){
 			key = StringContent( st_key ) ;
 			key_len = StringLength( st_key ) ;
+			zuluCryptSecurityGainElevatedPrivileges() ;
 			if( zuluCryptGetVolumeType( device,key,key_len ) == 2 ){
 				printf( "\"%s\" is a tcrypt device\n",device ) ;
 				StringDelete( &st_key ) ;
@@ -111,6 +114,7 @@ static int zuluCryptEXECheckIfTcrypt( struct_opts * clargs,uid_t uid )
 				StringDelete( &st_key ) ;
 				st = 1 ;
 			}
+			zuluCryptSecurityDropElevatedPrivileges() ;
 		}else{
 			printf( "\"%s\" is not a tcrypt device\n",device ) ;
 			st = 1 ;
@@ -123,7 +127,6 @@ static int zuluCryptEXECheckIfTcrypt( struct_opts * clargs,uid_t uid )
 		st = 1 ;
 	}
 	
-	zuluCryptSecurityDropElevatedPrivileges() ;
 	return st  ;
 }
 
@@ -251,6 +254,10 @@ int main( int argc,char * argv[] )
 		}
 	}
 	
+	/*
+	 * this object is used as a form of memory management.It collects all string objects to make them easily deletable
+	 * at the end of the function and allows a function to have easily managebale multiple exit points.
+	 */
 	stl = StringListInit() ;
 	
 	/*
@@ -364,7 +371,8 @@ int main( int argc,char * argv[] )
 			default: return zuluExit( 113,stl,"ERROR: a non supported device encountered or device is missing" ) ;
 		}
 		
-		device = StringContent( *st_dev ) ;
+		clargs.device = device = StringContent( *st_dev ) ;
+		
 		if( ( ac = strrchr( device,'/' ) ) != NULL ){
 			mapping_name =  ac + 1  ;
 		}else{

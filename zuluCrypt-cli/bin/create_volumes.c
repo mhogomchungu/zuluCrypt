@@ -39,11 +39,11 @@ static int zuluExit( int st,stringList_t stl )
 		case 8 : printf( "ERROR: invalid path to key file\n" ) ;					break  ;
 		case 9 : printf( "ERROR: container file must be bigger than 3MB\n" ) ;				break  ;
 		case 10: printf( "ERROR: insufficient privilege to create a volume on a system device,\
-only root user or members of group zulucrypt-write can do that" ) ;						break  ;
+only root user or members of group zulucrypt-system can do that" ) ;						break  ;
 		case 11: printf( "ERROR: %s not found \n",ZULUCRYPTmkfs ) ;					break  ;
 		case 12: printf( "INFO: operation terminated per user request\n" ) ;				break  ;
 		case 13: printf( "ERROR: insufficient privilege to open a system device in read/write mode,\n\
-only root user or members of group zulucrypt-write can do that" ) ;						break  ;
+only root user or members of group zulucrypt-system can do that" ) ;						break  ;
 		case 14: printf( "ERROR: insufficient privilege to create a volume in this device\n" ) ;	break  ;
 		case 15: printf( "ERROR: could not get a key from a key file\n" ) ;				break  ;
 		case 16: printf( "ERROR: there seem to be an opened mapper associated with the device\n" ) ;	break  ;
@@ -82,7 +82,13 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	const char * keyType = opts->key_source ;
 	const char * pass    = opts->key ;
 	const char * rng     = opts->rng ;
-		
+	
+	/*
+	 * Below is a form of memory management.All strings are collected in a stringlist object to easily delete them
+	 * when the function returns.This allows for the function to have multiple exit points without risks of leaking
+	 * memory from manually examining each exit point to make sure all strings are deleted or go with multiple goto
+	 * code deleting blocks to take into account different exit points. 
+	 */
 	stringList_t stl = StringListInit() ;
 	
 	string_t * pass_1  = StringListAssign( stl ) ;
@@ -104,16 +110,33 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		return zuluExit( 24,stl ) ;
 		
 	/*
-	 * This function is defined at "security.c"
-	 * It makes sure the path exists and the user has atleast reading access to the path.
-	 * 
-	 * The importance of the function is explained where it is defined.
+	 * zuluCryptPartitionIsSystemPartition() is defined in ./partitions.c
 	 */
-	switch( zuluCryptSecurityCanOpenPathForWriting( device,uid ) ){
-		case 2 : return zuluExit( 1,stl ) ; break ;
-		case 1 : return zuluExit( 13,stl ); break ;
+	if( zuluCryptPartitionIsSystemPartition( device ) ){
+		if( !zuluCryptUserIsAMemberOfAGroup( uid,"zulucrypt-system" ) ){
+			return zuluExit( 13,stl ) ;
+		}
 	}
-		
+	
+	/*
+	 * zuluCryptSecurityDeviceIsWritable() is defined in security.c
+	 */
+	st = zuluCryptSecurityDeviceIsWritable( device,uid ) ;
+	/*
+	 * 1-permissions denied
+	 * 2-invalid path
+	 * 3-shenanigans
+	 * 4-common error 
+	 */
+	switch( st ){
+		case 0 :				; break ;
+		case 1 : return zuluExit( 3,stl ) ;	; break ;
+		case 2 : return zuluExit( 3,stl ) ;	; break ;
+		case 3 : return zuluExit( 3,stl ) ;	; break ;
+		case 4 : return zuluExit( 3,stl ) ;	; break ;
+		default: return zuluExit( 3,stl ) ;	; break ;
+	}
+	
 	*mapper = zuluCryptCreateMapperName( device,mapping_name,uid,CLOSE ) ;
 	
 	j = zuluCryptCheckOpenedMapper( StringContent( *mapper ) ) ;
@@ -188,10 +211,10 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		
 		if( !StringEqualString( *pass_1,*pass_2 ) ){
 			st = 7 ;
-		}else{				
+		}else{
 			st = zuluCryptCreateVolume( device,fs,type,StringContent( *pass_1 ),StringLength( *pass_1 ),rng ) ;
-		}				
-	}else{	
+		}
+	}else{
 		/*
 		 * Make sure the user has provided all required options
 		 */

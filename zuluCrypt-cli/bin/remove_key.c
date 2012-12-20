@@ -54,8 +54,8 @@ static int zuluExit( int st,stringList_t stl )
 		case 7 : printf( "ERROR: could not get enough memory to open the key file\n" ) ;							break ;
 		case 10: printf( "ERROR: device does not exist\n" );											break ;
 		case 11: printf( "INFO: operation terminated per user request\n" );									break ;
-		case 12: printf( "ERROR: insufficient privilege to open a system device in read/write mode,\
-only root user or members of group zulucrypt-write can do that\n" ) ;											break ;
+		case 12: printf( "ERROR: insufficient privilege to open a system device,\
+only root user or members of group zulucrypt-system can do that\n" ) ;											break ;
 		case 13: printf( "ERROR: insufficient privilege to open key file for reading\n" );							break ;
 		case 14: printf( "ERROR: only root user can remove keys from system devices\n" );							break ;
 		case 15: printf( "ERROR: can not get passphrase in silent mode\n" );									break ;
@@ -90,20 +90,28 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 	int status = 0 ;
 		
 	/*
-	* check_partition is defined in partitions.c
-	
-	if( zuluCryptPartitionIsSystemPartition( device ) && uid != 0 )
-		return zuluExit( 14,stl ) ;
-	*/
-	/*
-	 * This function is defined at "is_path_valid.c"
-	 * It makes sure the path exists and the user has atleast reading access to the path.
-	 * 
-	 * The importance of the function is explained where it is defined.
+	 * zuluCryptPartitionIsSystemPartition() is defined in ./partitions.c
 	 */
-	switch( zuluCryptSecurityCanOpenPathForWriting( device,uid ) ){
-		case 2 : return zuluExit( 10,stl ); break ;
-		case 1 : return zuluExit( 12,stl ); break ;
+	if( zuluCryptPartitionIsSystemPartition( device ) ){
+		if( !zuluCryptUserIsAMemberOfAGroup( uid,"zulucrypt-system" ) ){
+			return zuluExit( 11,stl ) ;
+		}
+	}
+		
+	status = zuluCryptSecurityDeviceIsWritable( device,uid ) ;
+	/*
+	 * 1-permissions denied
+	 * 2-invalid path
+	 * 3-shenanigans
+	 * 4-common error 
+	 */
+	switch( status ){
+		case 0 :				; break ;
+		case 1 : return zuluExit( 3,stl )	; break ;
+		case 2 : return zuluExit( 3,stl )	; break ;
+		case 3 : return zuluExit( 3,stl )	; break ;
+		case 4 : return zuluExit( 3,stl )	; break ;
+		default: return zuluExit( 3,stl )	; break ;
 	}
 	
 	if( !zuluCryptSecurityGainElevatedPrivileges() )

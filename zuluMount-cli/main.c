@@ -151,11 +151,19 @@ static int _zuluMountPrintDeviceProperties( const char * device,uid_t uid )
 static int _zuluPartitionHasCryptoFs( const char * device )
 {
 	int st ;
+	string_t fs ;
+	/*
+	* zuluCryptSecurityGainElevatedPrivileges() is defined in ../zuluCrypt-cli/bin/security.c
+	*/
+	zuluCryptSecurityGainElevatedPrivileges() ;
 	/*
 	 * this function is defined in ../zuluCrypt-cli/lib/mount_volume.c
 	 */
-	string_t fs = zuluCryptGetFileSystemFromDevice( device ) ;
-	
+	fs = zuluCryptGetFileSystemFromDevice( device ) ;
+	/*
+	 * zuluCryptSecurityDropElevatedPrivileges() is defined in ../zuluCrypt-cli/bin/security.c
+	 */
+	zuluCryptSecurityDropElevatedPrivileges() ;
 	if( fs == StringVoid ){
 		/*
 		 * no file system is found,assuming the volume is crypto_PLAIN volume
@@ -314,39 +322,12 @@ static int _zuluMountDoAction( const char * device,const char * action,const cha
 	}
 		
 	dev = StringContent( st_dev ) ;
-	
-	if( strncmp( dev,"/dev/",5 ) != 0 ){
-		/*
-		 * check if a user has permission to access a volume in a file
-		 */
-		
-		/*
-		 * zuluCryptSecurityPathIsValid() is defined in zuluCrypt-cli/bin/security.c 
-		 */
-		if( !zuluCryptSecurityPathIsValid( device,uid ) ){
-			printf( "ERROR: failed to resolve path to device\n" ) ;
-			StringDelete( &st_dev ) ;
-			return 225 ;
-		}
-	}
 		
 	if( _zuluMountcheckifLVM( action,dev ) ){
 		printf( "ERROR: this device looks like an lvm device,these devices are currently not supported\n" ) ;
 		status = 226 ;
 	}else{
-		if( strncmp( dev,"/dev/",5 ) != 0 ){
-			/*
-			* zuluCryptSecurityCanOpenPathForReading() is defined in ../zuluCrypt-cli/bin/security.c
-			*/
-			if( zuluCryptSecurityCanOpenPathForReading( dev,uid ) != 0 ){
-				printf( "insuffienct privilege to access a volume file\n" ) ;
-				status = 227 ;
-			}else{
-				status = _zuluMountExe( dev,action,m_point,m_opts,fs_opts,uid,key,key_source,mount_point_option ) ;
-			}
-		}else{
-			status = _zuluMountExe( dev,action,m_point,m_opts,fs_opts,uid,key,key_source,mount_point_option ) ;
-		}
+		status = _zuluMountExe( dev,action,m_point,m_opts,fs_opts,uid,key,key_source,mount_point_option ) ;
 	}
 	
 	StringDelete( &st_dev ) ;

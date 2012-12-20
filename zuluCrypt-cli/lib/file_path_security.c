@@ -35,6 +35,24 @@ static void _get_path_from_file( int fd,string_t * st_dev )
 	*st_dev = StringInherit( &c ) ;
 }
 
+int zuluCryptSecureOpenFile( const char * path,int * fd,string_t * file,uid_t uid )
+{
+	int st ;
+	int f = -1 ;
+	uid_t org = geteuid() ;
+	seteuid( uid ) ;
+	f = open( path,O_RDONLY ) ;
+	if( f != -1 ){
+		_get_path_from_file( f,file ) ;
+		*fd = f ;
+		st = 1 ;
+	}else{
+		st = 0  ;
+	}
+	seteuid( org ) ;
+	return st ;
+}
+
 struct stat global_variable_file_struct  ;
 int zuluCryptGetDeviceFileProperties( const char * file,int * fd,string_t * st_dev,uid_t uid )
 {

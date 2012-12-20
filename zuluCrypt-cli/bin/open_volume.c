@@ -63,12 +63,10 @@ static int zuluExit( int st,const char * device,char * m_point,stringList_t stl 
 		case 17: printf( "ERROR: could not resolve full path of device address\n" );						break ;
 		case 18: printf( "ERROR: -O and -m options can not be used together\n" );						break ;
 		case 19: printf( "ERROR: insufficient privilege to search mount point path\n" );					break ;
-		case 20: printf( "ERROR: insufficient privilege to access a system device,\
-only root user or members of group zulucrypt can access system devices\n" );								break ;
-		case 21: printf( "ERROR: mount point path already taken.\n" );						break ;
+		case 20: printf( "ERROR: volume could not be opened\n" );								break ;
+		case 21: printf( "ERROR: mount point path already taken.\n" );								break ;
 		case 22: printf( "ERROR: insufficient privilege to open key file for reading\n" );					break ;
-		case 23: printf( "ERROR: insufficient privilege to open a system device in read/write mode,\n\
-only root user or members of group zulucrypt-write can do that\n" );									break ;
+		case 23: printf( "ERROR: volume could not be opened\n" );								break ;
 		case 24: printf( "ERROR: there seem to be an opened mapper associated with the device\n" ) ;				break ;
 		case 25: printf( "ERROR: could not get a passphrase from the module\n" ) ;						break ;
 		case 26: printf( "ERROR: could not get passphrase in silent mode\n" );							break ;
@@ -115,6 +113,12 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	
 	stringList_t stl = StringListInit() ;
 	
+	/*
+	 * Below is a form of memory management.All strings are collected in a stringlist object to easily delete them
+	 * when the function returns.This allows for the function to have multiple exit points without risks of leaking
+	 * memory from manually examining each exit point to make sure all strings are deleted or go with multiple goto
+	 * code deleting blocks to take into account different exit points. 
+	 */
 	string_t * passphrase =  StringListAssign( stl ) ;
 	string_t * m_name     =  StringListAssign( stl ) ;
 	string_t * data       =  StringListAssign( stl ) ; 
@@ -132,28 +136,42 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	
 	if( m_opts == NULL )
 		m_opts = "rw" ;
+	
+	if( strstr( m_opts,"ro" ) == NULL )
+		if ( strstr( m_opts,"rw" ) == NULL )
+			return zuluExit( 13,device,cpoint,stl ) ;
+		
 	/*
 	 * zuluCryptMountFlagsAreNotCorrect() is defined in ./mount_flags.c
 	 */
 	if( zuluCryptMountFlagsAreNotCorrect( m_opts,uid,&m_flags ) )
 		return zuluExit( 31,device,cpoint,stl ) ; 
-		
-	switch( zuluCryptSecurityCanOpenPathForReading( device,uid ) ){
-		case 0 : break ;
-		case 1 : return zuluExit( 20,device,cpoint,stl ) ;
-		default: return zuluExit( 3,device,cpoint,stl ) ;
-	}
-		
-	if( strstr( m_opts,"ro" ) == NULL )
-		if ( strstr( m_opts,"rw" ) == NULL )
-			return zuluExit( 13,device,cpoint,stl ) ;
-		
+	
 	if( strstr( m_opts,"rw" ) != NULL ){
-		switch( zuluCryptSecurityCanOpenPathForWriting( device,uid ) ){
-			case 0 : break ;
-			case 1 : return zuluExit( 23,device,cpoint,stl ) ;
-			default: return zuluExit( 3,device,cpoint,stl ) ;
-		}
+		/*
+		 * zuluCryptSecurityDeviceIsWritable() is defined in security.c
+		 */
+		st = zuluCryptSecurityDeviceIsWritable( device,uid ) ;
+	}else{
+		/*
+		 * zuluCryptSecurityDeviceIsReadable() is defined in security.c
+		 */
+		st = zuluCryptSecurityDeviceIsReadable( device,uid ) ;
+	}
+	
+	/*
+	 * 1-permissions denied
+	 * 2-invalid path
+	 * 3-shenanigans
+	 * 4-common error 
+	 */
+	switch( st ){
+		case 0 :						; break ;
+		case 1 :  return zuluExit( 20,device,cpoint,stl ) ;	; break ;
+		case 2 :  return zuluExit( 20,device,cpoint,stl ) ;	; break ;
+		case 3 :  return zuluExit( 20,device,cpoint,stl ) ;	; break ;
+		case 4 :  return zuluExit( 20,device,cpoint,stl ) ;	; break ;
+		default:  return zuluExit( 20,device,cpoint,stl ) ;	; break ;
 	}
 	
 	if( nmp == 1 ){

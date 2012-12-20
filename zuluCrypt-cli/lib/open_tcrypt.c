@@ -33,7 +33,6 @@ static inline int zuluExit( int st,struct crypt_device * cd )
 #ifdef CRYPT_TCRYPT
 int zuluCryptVolumeIsTcrypt( const char * device,const char * key,size_t key_len )
 {
-
 	struct crypt_device * cd = NULL;
 	struct crypt_params_tcrypt params ;
 	

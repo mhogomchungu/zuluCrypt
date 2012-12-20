@@ -58,6 +58,10 @@ int zuluCryptSecurityUserOwnTheFile( const char * device,uid_t uid ) ;
 
 void zuluCryptSecurityPrintPermissions( void ) ;
 
+int zuluCryptSecurityDeviceIsReadable( const char * device,uid_t uid ) ;
+
+int zuluCryptSecurityDeviceIsWritable( const char * device,uid_t uid ) ;
+
 #ifdef __cplusplus
 }
 #endif

@@ -107,6 +107,9 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	const char * cmapper ;
 		
 	if( strncmp( device,"/dev/",5 ) != 0 ){
+		/*
+		 * zuluCryptSecurityUserOwnTheFile() is defined in security.c
+		 */
 		if( !zuluCryptSecurityUserOwnTheFile( device,uid ) ){
 			if( uid != 0 ){
 				return zuluExit( NULL,19 ) ;

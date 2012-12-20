@@ -140,7 +140,7 @@ int zuluCryptAttachLoopDeviceToFile( const char * path,int mode,int * loop_fd,st
 	
 	if( fd_path == -1 )
 		return zuluExit( 0,loopd,fd_loop,fd_path ) ;
-	
+
 	if( _paths_are_not_sane( fd_path,path ) )
 		return zuluExit( 0,loopd,fd_loop,fd_path ) ;
 			

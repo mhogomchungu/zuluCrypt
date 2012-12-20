@@ -82,15 +82,20 @@ int zuluCryptUserIsAMemberOfAGroup( uid_t uid,const char * groupname )
 	
 	if( groupname == NULL )
 		return 0 ;
+	
+	zuluCryptSecurityGainElevatedPrivileges() ;
 	pass = getpwuid( uid ) ;
 	
-	if( pass == NULL )
+	if( pass == NULL ){
+		zuluCryptSecurityDropElevatedPrivileges();
 		return 0 ;
+	}
 	
 	grp = getgrnam( groupname ) ;
 	
 	if( grp == NULL ){
 		create_group( groupname )  ;
+		zuluCryptSecurityDropElevatedPrivileges();
 		return 0 ;
 	}
 	
@@ -105,7 +110,74 @@ int zuluCryptUserIsAMemberOfAGroup( uid_t uid,const char * groupname )
 		}
 	}
 	
+	zuluCryptSecurityDropElevatedPrivileges();
+	
 	return 0 ;
+}
+
+static int has_device_access( const char * path,int c )
+{
+	int f ;
+	int x ;
+	int y;
+	struct stat st;
+	if( c == READ ){
+		f = open( path,O_RDONLY );
+	}else{
+		f = open( path,O_WRONLY );
+	}
+	
+	if( f == -1 ){
+		switch( errno ){
+			case EACCES : return 1 ; /* permission denied */
+			case ENOENT : return 2 ; /* invalid path*/
+			default     : return 4 ; /* common error */    
+		}
+	}else{
+		fstat( f,&st ) ;
+		close( f ) ;
+		/*
+		 * global_variable_file_struct is a global variable declaired in ../lib/includes.h
+		 * and defined in ../lib/create_loop_device.c
+		 */
+		x = global_variable_file_struct.st_ino == st.st_ino ;
+		y = global_variable_file_struct.st_dev == st.st_dev ;
+		/* 
+		 * return of 3 means the device moved under us,in an attemp to deceive us
+		 */
+		return x && y ? 0 : 3 ;
+	}
+}
+/*
+ * 1-permissions denied
+ * 2-invalid path
+ * 3-shenanigans
+ * 4-common error 
+ */
+int zuluCryptSecurityDeviceIsReadable( const char * device,uid_t uid )
+{
+	if( uid ){;}
+	if( strncmp( device,"/dev/shm/",9 ) == 0 )
+		return 4 ;
+	if( strncmp( device,"/dev/",5 ) == 0 ){
+		return has_device_access( device,READ ) ;
+	}else{
+		zuluCryptSecurityDropElevatedPrivileges() ;
+		return has_device_access( device,READ ) ;
+	}
+}
+
+int zuluCryptSecurityDeviceIsWritable( const char * device,uid_t uid )
+{	
+	if( uid ){;}
+	if( strncmp( device,"/dev/shm/",9 ) == 0 )
+		return 4 ;
+	if( strncmp( device,"/dev/",5 ) == 0 ){
+		return has_device_access( device,WRITE ) ;
+	}else{
+		zuluCryptSecurityDropElevatedPrivileges() ;
+		return has_device_access( device,WRITE ) ;
+	}
 }
 
 static int has_security_access( const char * path,int mode )
@@ -152,9 +224,10 @@ static int check_permissions( const char * path,int mode,const char * groupname,
 int zuluCryptSecurityPathIsValid( const char * path,uid_t uid __attribute__((unused)) )
 {
 	int st = 0 ;
-	if( strncmp( path,"/dev/",5 ) != 0 )
+	if( strncmp( path,"/dev/",5 ) != 0 ){
+		zuluCryptSecurityDropElevatedPrivileges();
 		return has_access( path,READ ) == 0 ;
-	else{
+	}else{
 		if( zuluCryptSecurityGainElevatedPrivileges() ){
 			st = has_access( path,READ ) == 0 ;
 			zuluCryptSecurityDropElevatedPrivileges() ;
@@ -301,6 +374,8 @@ int zuluCryptSecurityGetPassFromFile( const char * path,uid_t uid,string_t * st 
 		case 2 : return 1 ;
 	}
 	
+	zuluCryptSecurityDropElevatedPrivileges();
+
 	switch( StringGetFromFile_3( st,path,0,KEYFILE_MAX_SIZE ) ){
 		case 1 : return 1 ;
 		case 2 : return 4 ;

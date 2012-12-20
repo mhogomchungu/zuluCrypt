@@ -69,8 +69,8 @@ static int zuluExit( int st,stringList_t stl )
 		case 8  : printf( "ERROR: one or both keyfile(s) does not exist\n" ) ;	                      	break ;  
 		case 9  : printf( "ERROR: couldnt get enought memory to hold the key file\n" ) ;	     	break ;
 		case 10 : printf( "ERROR: all key slots are occupied, can not add any more keys\n" ) ;	      	break ;
-		case 11 : printf( "ERROR: insufficient privilege to open a system device in read/write mode,\n\
-only root user or members of group zulucrypt-write can do that\n" ) ;						break ;
+		case 11 : printf( "ERROR: insufficient privilege to open a system device ,\n\
+only root user or members of group zulucrypt-system can do that\n" ) ;						break ;
 		case 12 : printf( "ERROR: insufficient privilege to open key file for reading\n" );		break ;
 		case 13 : printf( "ERROR: only root user can add keys to system devices\n" );			break ;
 		case 14 : printf( "ERROR: can not get passphrase in silent mode\n" );				break ;
@@ -126,6 +126,12 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 	const char * keyType2    = opts->new_key_source ;
 	const char * newKey      = opts->new_key ;
 	
+	/*
+	 * Below is a form of memory management.All strings are collected in a stringlist object to easily delete them
+	 * when the function returns.This allows for the function to have multiple exit points without risks of leaking
+	 * memory from manually examining each exit point to make sure all strings are deleted or go with multiple goto
+	 * code deleting blocks to take into account different exit points. 
+	 */
 	stringList_t stl = StringListInit() ;
 	
 	string_t * presentKey	= StringListAssign( stl ) ;
@@ -143,16 +149,32 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 	int status = 0 ;
 	
 	/*
-	 * This function is defined at "security.c"
-	 * It makes sure the path exists and the user has atleast reading access to the path.
-	 * 
-	 * The importance of the function is explained where it is defined.
+	 * zuluCryptPartitionIsSystemPartition() is defined in ./partitions.c
 	 */
-	switch( zuluCryptSecurityCanOpenPathForWriting( device,uid ) ){
-		case 1 : return zuluExit( 11,stl ) ; break ;
-		case 2 : return zuluExit( 4,stl )  ; break ;
+	if( zuluCryptPartitionIsSystemPartition( device ) ){
+		if( !zuluCryptUserIsAMemberOfAGroup( uid,"zulucrypt-system" ) ){
+			return zuluExit( 11,stl ) ;
+		}
 	}
-	
+	/*
+	 * zuluCryptSecurityDeviceIsWritable() is defined in security.c
+	 */
+	status = zuluCryptSecurityDeviceIsWritable( device,uid ) ;
+	/*
+	 * 1-permissions denied
+	 * 2-invalid path
+	 * 3-shenanigans
+	 * 4-common error 
+	 */
+	switch( status ){
+		case 0 :				; break ;
+		case 1 :  return zuluExit( 2,stl ) ;	; break ;
+		case 2 :  return zuluExit( 2,stl ) ;	; break ;
+		case 3 :  return zuluExit( 2,stl ) ;	; break ;
+		case 4 :  return zuluExit( 2,stl ) ;	; break ;
+		default:  return zuluExit( 2,stl ) ;	; break ;
+	}
+			
 	if( zuluCryptSecurityGainElevatedPrivileges() ){
 		if( zuluCryptVolumeIsNotLuks( device ) ){
 			zuluCryptSecurityDropElevatedPrivileges() ;

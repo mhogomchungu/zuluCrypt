@@ -189,3 +189,8 @@ char * zuluCryptGetFileNameFromFileDescriptor( int fd ) ;
  * this function is defined in file_path_security.c
  */
 int zuluCryptGetDeviceFileProperties( const char * file,int * fd,string_t * st_dev,uid_t uid ) ;
+
+/*
+ * this function is defined in file_path_security.c
+ */
+int zuluCryptSecureOpenFile( const char * path,int * fd,string_t * file,uid_t uid ) ;
