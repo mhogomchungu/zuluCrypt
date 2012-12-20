@@ -58,15 +58,15 @@ static int _zuluMountPartitionAccess( const char * device,const char * m_opts,ui
 		 * partition does not have an entry in fstab
 		 */
 		if( system_partition ){
-			/*
-			 * system partition with no entry in fstab,refuse to mount this one
-			 */
 			if( uid == 0 ){
 				/*
 				 * cant say no to root
 				 */
 				st = 0 ;
 			}else{
+				/*
+				* system partition with no entry in fstab,refuse to mount this one
+				*/
 				st = 1 ;
 			}
 		}else{
@@ -172,12 +172,13 @@ int zuluMountMount( const char * device,const char * m_point,
 	 * zuluCryptMountVolume() defined in ../zuluCrypt-cli/lib/mount_volume.c
 	 */
 	status = zuluCryptMountVolume( device,rm_point,m_flags,fs_opts,uid ) ;
-	zuluCryptSecurityDropElevatedPrivileges() ;
 	if( status == 0 ){
+		zuluCryptSecurityDropElevatedPrivileges() ;
 		printf( "SUCCESS: mount complete successfully\nvolume mounted at: %s\n",rm_point ) ;
 		return _zuluExit( 0,z,path,NULL ) ;
 	}else{
 		rmdir( rm_point ) ;
+		zuluCryptSecurityDropElevatedPrivileges() ;
 		switch( status ){
 			case -1: return _zuluExit( 108,z,path,"ERROR: failed to mount a filesystem,invalid mount option or permission denied" ) ;
 			case 1 : return _zuluExit( 109,z,path,"ERROR: failed to mount ntfs file system using ntfs-3g,is ntfs-3g package installed?" ) ;

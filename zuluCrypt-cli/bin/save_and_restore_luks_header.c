@@ -126,7 +126,7 @@ static int secure_file_path( char ** path,const char * source )
 	return 1 ;
 }
 
-static inline int _secure_file_path_1( char ** path )
+static inline int secure_file_path_1( char ** path )
 {
 	string_t st_path = String( "/dev/shm/zuluCrypt/" ) ;
 	const char * temp_path = StringContent( st_path ) ;
@@ -193,7 +193,7 @@ static int save_header( const char * device,const char * path,uid_t uid )
 	struct crypt_device * cd ;
 	char * temp_path ;
 	
-	if( !_secure_file_path_1( &temp_path ) ){
+	if( !secure_file_path_1( &temp_path ) ){
 		return 4 ;
 	}
 
@@ -228,6 +228,7 @@ Are you sure you want to replace a header on device \"%s\" with a backup copy at
 Type \"YES\" and press Enter to continue: " ;
 	if( uid ){;}
 	if( k == -1 ){
+		zuluCryptSecurityDropElevatedPrivileges() ;
 		printf( warn,device,path ) ;
 				
 		confirm = StringGetFromTerminal_1( 3 ) ;
@@ -251,7 +252,7 @@ Type \"YES\" and press Enter to continue: " ;
 		st = 7 ;
 	}else{
 		if( crypt_load( cd,NULL,NULL ) != 0 ){
-			st = 17 ;
+			st = 2 ;
 		}else{
 			if( crypt_header_restore( cd,NULL,temp_path ) == 0 ){
 				st = 1 ;
