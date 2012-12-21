@@ -306,6 +306,9 @@ int zuluCryptSecurityMountPointPrefixMatch( const char * m_path,uid_t uid )
 {
 	int st ;
 	int xt ;
+	/*
+	 * zuluCryptGetUserName() is defined in ../lib/user_home_path.c
+	 */
 	string_t uname = zuluCryptGetUserName( uid ) ;
 	const char * str = StringPrepend( uname,"/run/media/" ) ;
 	xt = StringLength( uname ) ;
@@ -347,9 +350,6 @@ string_t zuluCryptSecurityCreateMountPoint( const char * device,const char * lab
  */
 int zuluCryptSecurityGetPassFromFile( const char * path,uid_t uid,string_t * st )
 {
-	/*
-	 * zuluCryptGetUserHomePath() is defined in ../lib/user_get_home_path.c
-	 */
 	size_t s ;
 	string_t p ; 
 	const char * z ;
@@ -364,6 +364,9 @@ int zuluCryptSecurityGetPassFromFile( const char * path,uid_t uid,string_t * st 
 		return 4 ;
 	}
 	
+	/*
+	 * zuluCryptGetUserHomePath() is defined in ../lib/user_home_path.c
+	 */
 	p = zuluCryptGetUserHomePath( uid ) ;
 	z = StringAppend( p,".zuluCrypt-socket" ) ;
 	s = StringLength( p ) ;

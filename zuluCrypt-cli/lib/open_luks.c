@@ -25,7 +25,7 @@ static inline int zuluExit( int st,struct crypt_device * cd )
 	return st ;
 }
 
-int zuluCryptOpenLuks( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
+static int _open_luks( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
 {
 	struct crypt_device * cd;
 	uint32_t flags = 0;
@@ -33,7 +33,7 @@ int zuluCryptOpenLuks( const char * device,const char * mapper,const char * mode
 	
 	if( zuluCryptPathIsNotValid( device ) )
 		return 3 ;
-
+	
 	if( crypt_init( &cd,device ) != 0 )
 		return 2 ;
 	
@@ -46,7 +46,7 @@ int zuluCryptOpenLuks( const char * device,const char * mapper,const char * mode
 		flags = 0 ;
 	
 	st = crypt_activate_by_passphrase( cd,mapper,CRYPT_ANY_SLOT,pass,pass_size,flags ) ;
-
+	
 	if( st >= 0 )
 		return zuluExit( 0,cd ) ;
 	else if( st == -1 )
@@ -55,3 +55,30 @@ int zuluCryptOpenLuks( const char * device,const char * mapper,const char * mode
 		return zuluExit( 2,cd ) ;
 }
 
+int zuluCryptOpenLuks( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
+{
+	int lmode ;
+	string_t st ;
+	int fd ;
+	int r ;
+	if( strncmp( device,"/dev/",5 ) == 0 ){
+		return _open_luks( device,mapper,mode,pass,pass_size ) ;
+	}else{
+		if( strstr( mode,"ro" ) != NULL ){
+			lmode = O_RDONLY ;
+		}else{
+			lmode = O_RDWR ;
+		}
+		/*
+		 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop.c
+		 */
+		if( zuluCryptAttachLoopDeviceToFile( device,lmode,&fd,&st ) ){
+			r = _open_luks( device,mapper,mode,pass,pass_size ) ;
+			StringDelete( &st ) ;
+			close( fd ) ;
+			return r ;
+		}else{
+			return 2 ;
+		}
+	}
+}

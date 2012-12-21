@@ -117,6 +117,9 @@ int zuluMountVolumeStatus( const char * device,uid_t uid )
 static int _zuluMountPrintDeviceProperties( const char * device,uid_t uid )
 {	
 	string_t p ;
+	/*
+	 * zuluCryptCreateMapperName() is defined in ../zuluCrypt-cli/lib/create_mapper_name.c
+	 */
 	string_t q = zuluCryptCreateMapperName( device,strrchr( device,'/' ) + 1,uid,CLOSE ) ;
 	const char * e = StringContent( q ) ;
 	
@@ -256,16 +259,10 @@ static int _mount_help()
 	const char * doc1 = "\
 options:\n\
 -m -- mount a volume : arguments: -d partition_path -z mount_point -e mode(rw/ro)\n\
-	-- additional arguments for crypto_LUKS and crypto_PLAIN volume, -p passphrase/-f keyfile\n\
-	-- if \"-n\" option is also set,the mount point folder will be used if present\n\
-	-- if \"-n\" option is not set,an error will be produced if mount point folder is present\n\
-	NOTE: presence or absence of -n is ineffective if the partition has an entry in fstab and the mount point is the same as that in fstab\n" ;
+      -- additional arguments for crypto_LUKS and crypto_PLAIN volume, -p passphrase/-f keyfile\n";
 	
 	doc2 = "\
--u -- unmount a partition: arguments: -d partition_path\n\
-	-- if \"-n\" is set,the mount point folder will not be autodeleted\n\
-	-- if \"-n\" is not set the mount point folder will be autodeleted\n\
-	NOTE: a mount folder will not be autodeleted if the partition has an entry in fstab and the mount point is the same as that in fstab\n";
+-u -- unmount a partition: arguments: -d partition_path\n";
 
       doc3 = "\
 -l -- print a list of mounted partitions\n\

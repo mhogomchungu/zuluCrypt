@@ -143,7 +143,6 @@ int zuluMountMount( const char * device,const char * m_point,
 	
 	/*
 	 * zuluCryptPartitionIsMounted is defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c
-	 * It checks if a device has an entry in "/etc/mtab" and return 1 if it does and 0 is it doesnt
 	 */
 	if( zuluCryptPartitionIsMounted( device ) )
 		return _zuluExit( 102,z,path,"ERROR: device already mounted" ) ;

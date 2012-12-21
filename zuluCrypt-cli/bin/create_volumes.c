@@ -129,12 +129,12 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	 * 4-common error 
 	 */
 	switch( st ){
-		case 0 :				; break ;
-		case 1 : return zuluExit( 3,stl ) ;	; break ;
-		case 2 : return zuluExit( 3,stl ) ;	; break ;
-		case 3 : return zuluExit( 3,stl ) ;	; break ;
-		case 4 : return zuluExit( 3,stl ) ;	; break ;
-		default: return zuluExit( 3,stl ) ;	; break ;
+		case 0 : break ;
+		case 1 : return zuluExit( 3,stl ) ;
+		case 2 : return zuluExit( 3,stl ) ;
+		case 3 : return zuluExit( 3,stl ) ;
+		case 4 : return zuluExit( 3,stl ) ;
+		default: return zuluExit( 3,stl ) ;
 	}
 	
 	*mapper = zuluCryptCreateMapperName( device,mapping_name,uid,CLOSE ) ;

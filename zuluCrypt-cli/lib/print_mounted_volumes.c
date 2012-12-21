@@ -36,7 +36,7 @@ char * zuluCryptDeviceFromUUID( const char * uuid ) ;
 int zuluCryptMtabIsAtEtc( void )
 {	
 	const char * mpath = "/etc/mtab" ;
-	char * path = realpath( mpath,NULL ) ;
+	char * path = zuluCryptRealPath( mpath ) ;
 	int st ;
 	if( path == NULL ){
 		return 0 ;
@@ -148,7 +148,7 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 				free( dev ) ;
 			}
 		}else if( strncmp( device,"/dev/disk/by-",13 ) == 0 ){
-			dev = realpath( device,NULL ) ;
+			dev = zuluCryptRealPath( device ) ;
 			if( dev == NULL ){
 				StringMultipleAppend( st,device," ",mount_point," ",file_system," ",mount_options,END ) ;
 			}else{
@@ -192,7 +192,7 @@ stringList_t zuluCryptGetMoutedListFromMounts( void )
 		}else if( StringStartsWith( q,"/dev/disk/by-" ) ){
 			index = StringIndexOfChar( q,0,' ' ) ;
 			if( index != -1 ){
-				dev = realpath( StringSubChar( q,index,'\0' ),NULL ) ;
+				dev = zuluCryptRealPath( StringSubChar( q,index,'\0' ) ) ;
 				StringSubChar( q,index,' ' ) ;
 				if( dev != NULL ){
 					StringRemoveLeft( q,index ) ;

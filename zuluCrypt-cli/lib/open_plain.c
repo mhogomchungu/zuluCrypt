@@ -25,7 +25,7 @@ static inline int zuluExit( int st,struct crypt_device * cd )
 	return st ;
 }
 
-int _open_plain( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
+static int _open_plain( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
 {
 	int flags ;
 	struct crypt_device * cd ;
@@ -67,7 +67,7 @@ int zuluCryptOpenPlain( const char * device,const char * mapper,const char * mod
 	if( strncmp( device,"/dev/",5 ) == 0 ){
 		return _open_plain( device,mapper,mode,pass,pass_size ) ;
 	}else{
-		if( strcmp( mode,"ro" ) == 0 ){
+		if( strstr( mode,"ro" ) != NULL ){
 			lmode = O_RDONLY ;
 		}else{
 			lmode = O_RDWR ;
@@ -85,4 +85,3 @@ int zuluCryptOpenPlain( const char * device,const char * mapper,const char * mod
 		}
 	}
 }
-

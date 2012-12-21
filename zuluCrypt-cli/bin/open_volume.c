@@ -166,12 +166,12 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	 * 4-common error 
 	 */
 	switch( st ){
-		case 0 :						; break ;
-		case 1 :  return zuluExit( 20,device,cpoint,stl ) ;	; break ;
-		case 2 :  return zuluExit( 20,device,cpoint,stl ) ;	; break ;
-		case 3 :  return zuluExit( 20,device,cpoint,stl ) ;	; break ;
-		case 4 :  return zuluExit( 20,device,cpoint,stl ) ;	; break ;
-		default:  return zuluExit( 20,device,cpoint,stl ) ;	; break ;
+		case 0 :  break ;
+		case 1 :  return zuluExit( 20,device,cpoint,stl ) ;
+		case 2 :  return zuluExit( 20,device,cpoint,stl ) ;
+		case 3 :  return zuluExit( 20,device,cpoint,stl ) ;
+		case 4 :  return zuluExit( 20,device,cpoint,stl ) ;
+		default:  return zuluExit( 20,device,cpoint,stl ) ;
 	}
 	
 	if( nmp == 1 ){

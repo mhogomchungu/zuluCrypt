@@ -27,9 +27,12 @@
 static int zuluCryptCheckEmptySlots( const char * device )
 {
 	int status = 0 ;
-	char * c = zuluCryptEmptySlots( device ) ;
+	char * c  ;
 	char * d  ;
 	
+	zuluCryptSecurityGainElevatedPrivileges() ;
+	
+	c = zuluCryptEmptySlots( device ) ;
 	if( c == NULL ){
 		/*
 		 * we got here because the volume is either not luks based or the path is invalid
@@ -47,7 +50,7 @@ static int zuluCryptCheckEmptySlots( const char * device )
 	}
 	
 	free( c ) ;
-	
+	zuluCryptSecurityDropElevatedPrivileges() ;
 	return status ;
 }
 
@@ -167,12 +170,12 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 	 * 4-common error 
 	 */
 	switch( status ){
-		case 0 :				; break ;
-		case 1 :  return zuluExit( 2,stl ) ;	; break ;
-		case 2 :  return zuluExit( 2,stl ) ;	; break ;
-		case 3 :  return zuluExit( 2,stl ) ;	; break ;
-		case 4 :  return zuluExit( 2,stl ) ;	; break ;
-		default:  return zuluExit( 2,stl ) ;	; break ;
+		case 0 :  break ;
+		case 1 :  return zuluExit( 2,stl ) ;
+		case 2 :  return zuluExit( 2,stl ) ;
+		case 3 :  return zuluExit( 2,stl ) ;
+		case 4 :  return zuluExit( 2,stl ) ;
+		default:  return zuluExit( 2,stl ) ;
 	}
 			
 	if( zuluCryptSecurityGainElevatedPrivileges() ){
@@ -183,6 +186,8 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 	}else{
 		return zuluExit( 17,stl ) ;
 	}
+	
+	zuluCryptSecurityDropElevatedPrivileges() ;
 	
 	switch( zuluCryptCheckEmptySlots( device ) ){
 		case 0 : return zuluExit( 10,stl ) ;

@@ -22,6 +22,7 @@
 #include "../lib/includes.h"
 #include <libcryptsetup.h>
 #include <sys/syscall.h>
+#include <errno.h>
 
 #define SIZE 512
 
@@ -69,21 +70,50 @@ static int zuluExit( int st,int fd,string_t xt )
  *   backing up and restoring luks headers. 
  */
 
+static int create_work_directory( string_t * st )
+{
+	const char * temp_path = "/dev/shm/zuluCrypt/" ;
+	string_t st_path = String( temp_path ) ;
+	
+	zuluCryptSecurityGainElevatedPrivileges() ;
+	
+	if( mkdir( temp_path,S_IRWXU ) != 0 ){
+		if( errno == EEXIST ){
+			/*
+			 * directory exists,we can continue
+			 */
+			 ;
+		}else if( errno == ENOENT ){
+			/*
+			 * one of the parent directory does not exist,assume there is no tmpfs and exit
+			 */
+			zuluCryptSecurityDropElevatedPrivileges() ;
+			return 0 ;
+		}else{
+			/*
+			 * whatever it is,it cant be good,exit
+			 */
+			;
+		}
+	}
+	
+	chown( temp_path,0,0 ) ;
+	*st = st_path ;
+	zuluCryptSecurityDropElevatedPrivileges() ;
+	return 1 ;
+}
+
 static int secure_file_path( char ** path,const char * source )
 {
 	int fd_source ;
 	int fd_temp ;
 	char buffer[ SIZE ] ;
 	size_t len ;
-	string_t st_path = String( "/dev/shm/zuluCrypt/" ) ;
-	const char * temp_path = StringContent( st_path ) ;
+	string_t st_path ;
+	const char * temp_path ;
 	
-	zuluCryptSecurityGainElevatedPrivileges() ;
-	
-	mkdir( temp_path,S_IRWXU ) ;
-	chown( temp_path,0,0 ) ;
-	
-	zuluCryptSecurityDropElevatedPrivileges() ;
+	if( !create_work_directory( &st_path ) )
+		return 0 ;
 	
 	temp_path = StringAppendInt( st_path,syscall( SYS_gettid ) ) ;
 	
@@ -128,20 +158,14 @@ static int secure_file_path( char ** path,const char * source )
 
 static inline int secure_file_path_1( char ** path )
 {
-	string_t st_path = String( "/dev/shm/zuluCrypt/" ) ;
-	const char * temp_path = StringContent( st_path ) ;
-	
-	zuluCryptSecurityGainElevatedPrivileges() ;
-	
-	mkdir( temp_path,S_IRWXU ) ;
-	chown( temp_path,0,0 ) ;
-	
-	zuluCryptSecurityDropElevatedPrivileges() ;
-	
-	temp_path = StringAppendInt( st_path,syscall( SYS_gettid ) ) ;
-	
-	*path = StringDeleteHandle( &st_path ) ;
-	return 1 ;
+	string_t st_path ;
+	if( create_work_directory( &st_path ) ){
+		StringAppendInt( st_path,syscall( SYS_gettid ) ) ;
+		*path = StringDeleteHandle( &st_path ) ;
+		return 1 ;
+	}else{
+		return 0 ;
+	}
 }
 
 static inline int secure_copy_file( const char * source,const char * dest,uid_t uid )

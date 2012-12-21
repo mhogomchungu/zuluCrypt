@@ -81,7 +81,7 @@ char * zuluCryptEmptySlots( const char * device )
 		/*
 		 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop.c
 		 */
-		if( zuluCryptAttachLoopDeviceToFile( device,O_RDWR,&fd,&st ) ){
+		if( zuluCryptAttachLoopDeviceToFile( device,O_RDONLY,&fd,&st ) ){
 			r = _empty_slots( StringContent( st ) ) ;
 			StringDelete( &st ) ;
 			close( fd ) ;
