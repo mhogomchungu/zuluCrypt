@@ -34,6 +34,7 @@
 
 const char * luksTestVolume   = "/tmp/zuluCrypt-luksTestVolume" ;
 const char * plainTestVolume  = "/tmp/zuluCrypt-plainTestVolume" ;
+const char * headerBackUp     = "/tmp/zuluCrypt-HeaderBackUp" ;
 const char * mount_point      = "zuluCrypt-MountPoint" ;
 const char * key              = "xyz" ;
 const char * key1             = "xxx" ;
@@ -58,6 +59,9 @@ void EXIT( int st,char * msg )
 {	
 	unlink( keyfile ) ;
 	unlink( keyfile1 ) ;
+	unlink( luksTestVolume ) ;
+	unlink( plainTestVolume ) ;
+	unlink( headerBackUp ) ;
 	
 	rmdir( mount_point ) ;
 	
@@ -184,6 +188,26 @@ void __ProcessGetResultANDPrint( process_t p )
 			free( e ) ;
 		}
 	}
+}
+
+void createHeaderBackup( const char * device,const char * msg )
+{
+	process_t p ;
+	__print( msg ) ;
+	p = Process( zuluCryptExe ) ;
+	ProcessSetArgumentList( p,"-B","-d",device,"-f",headerBackUp,ENDLIST ) ;
+	ProcessStart( p ) ;
+	__ProcessGetResult( p ) ;
+}
+
+void restoreHeaderBackup( const char * device,const char * msg )
+{
+	process_t p ;
+	__print( msg ) ;
+	p = Process( zuluCryptExe ) ;
+	ProcessSetArgumentList( p,"-R","-k","-d",device,"-f",headerBackUp,ENDLIST ) ;
+	ProcessStart( p ) ;
+	__ProcessGetResult( p ) ;
 }
 
 void createVolume( const char * device,const char * msg,const char * keysource,const char * type )
@@ -355,6 +379,12 @@ int main( void )
 	__printLine() ;
 	checkIfDeviceIsLuks( luksTestVolume ) ;
 
+	__printLine() ;
+	createHeaderBackup( luksTestVolume,"create luks header backup: " ) ;
+	
+	__printLine() ;
+	restoreHeaderBackup( luksTestVolume,"restore luks header from backup: " ) ;
+	
 	__printLine() ;
 	createVolume( plainTestVolume,"create a plain type volume using a key: ","-p","plain" ) ;
 	

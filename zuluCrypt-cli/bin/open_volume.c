@@ -234,7 +234,6 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		st = zuluCryptOpenVolume( device,cname,cpoint,uid,m_flags,fs_opts,cpass,len ) ;
 	
 	}else if( source == NULL ){
-		
 		printf( "Enter passphrase: " ) ;
 		switch( StringSilentlyGetFromTerminal_1( passphrase,KEY_MAX_SIZE ) ){
 			case 1 : return zuluExit_1( 26,opts,device,cpoint,stl ) ;
@@ -248,8 +247,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		st = zuluCryptOpenVolume( device,cname,cpoint,uid,m_flags,fs_opts,cpass,len ) ;
 	}else{
 		if( source == NULL || pass == NULL )
-			return zuluExit_1( 11,opts,device,cpoint,stl ) ;
-		
+			return zuluExit_1( 11,opts,device,cpoint,stl ) ;		
 		if( strcmp( source,"-p" ) == 0 ){
 			cpass = pass ;
 			len = strlen( pass ) ;

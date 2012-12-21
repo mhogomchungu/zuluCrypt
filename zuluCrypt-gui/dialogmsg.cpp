@@ -79,9 +79,7 @@ void DialogMsg::ShowPermissionProblem( QString device )
 	QString msg = tr( "\
 \"insufficent privilege to open device\" and related permission errors when\n\
 attempting to operate on a device are primarily caused by not having proper \
-privileges to open system devices for reading or writing.\n\nSystem devices are defined as devices with entries in /etc/fstab,/etc/crypttab and /etc/zulucrypttab.\n\n\
-Only root user or users who are members of \"zulucrypt\" group and/or \"zulucrypt-write\" group can operate on system devices.\n\n\
-Please see section 2 of the documentation at:\n\nhttp://code.google.com/p/zulucrypt/wiki/FAQ\n\nfor further details." ) ;
+privileges to open devices for reading or writing.\nA related error for example will be generated when an attempt is made to open a volume in read/write mode when a user has read only access" ) ;
 
 	this->ShowUIInfo( tr( "INFORMATION" ),msg );
 }

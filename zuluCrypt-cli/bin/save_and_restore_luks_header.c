@@ -55,7 +55,7 @@ static int zuluExit( int st,int fd,string_t xt )
 	if( fd != -1 )
 		close( fd );
 	
-	return st ;
+	return st == 1 ? 0 : st ;
 }
 
 /*
@@ -73,7 +73,6 @@ static int zuluExit( int st,int fd,string_t xt )
 static int create_work_directory( string_t * st )
 {
 	const char * temp_path = "/dev/shm/zuluCrypt/" ;
-	string_t st_path = String( temp_path ) ;
 	
 	zuluCryptSecurityGainElevatedPrivileges() ;
 	
@@ -98,7 +97,7 @@ static int create_work_directory( string_t * st )
 	}
 	
 	chown( temp_path,0,0 ) ;
-	*st = st_path ;
+	*st = String( temp_path ) ;
 	zuluCryptSecurityDropElevatedPrivileges() ;
 	return 1 ;
 }

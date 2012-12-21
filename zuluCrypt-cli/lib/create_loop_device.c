@@ -21,7 +21,11 @@
 #include <sys/ioctl.h>
 #include <linux/loop.h>
 
+/*
+ * these two global variables are declaired in includes.h and set in file_path_security.c
+ */
 int global_variable_file_struct_is_set = 0 ;
+uid_t global_variable_user_id = 0 ;
 
 static int zuluExit( int result,string_t st,int fd_loop,int fd_path )
 {
@@ -136,7 +140,13 @@ int zuluCryptAttachLoopDeviceToFile( const char * path,int mode,int * loop_fd,st
 	loopd = String( "/dev/loop" ) ;
 	loop = StringAppendInt( loopd,devnr ) ;
 	
-	fd_path = open( path,mode ) ;
+	if( global_variable_user_id ){
+		seteuid( global_variable_user_id ) ;
+		fd_path = open( path,mode ) ;
+		seteuid( 0 ) ;
+	}else{
+		fd_path = open( path,mode ) ;
+	}
 	
 	if( fd_path == -1 )
 		return zuluExit( 0,loopd,fd_loop,fd_path ) ;

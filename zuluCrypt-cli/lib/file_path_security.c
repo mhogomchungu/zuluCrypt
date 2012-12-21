@@ -63,6 +63,10 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd,string_t * st_d
 	 * try to open the device with user privileges
 	 */
 	seteuid( uid ) ;
+	/*
+	 * global_variable_user_id is declared in includes.h,defined and used in create_loop_device.c
+	 */
+	global_variable_user_id = uid ;
 	
 	*fd = open( file,O_RDONLY ) ;
 	
