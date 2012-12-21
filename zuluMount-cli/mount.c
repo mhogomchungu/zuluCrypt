@@ -52,7 +52,7 @@ static int _zuluMountPartitionAccess( const char * device,const char * m_opts,ui
 	 * zuluCryptPartitionIsSystemPartition() is defined in ../zuluCrypt-cli/bin/partition.c
 	 */
 	system_partition = zuluCryptPartitionIsSystemPartition( device ) ;
-	
+
 	if( p == StringVoid ){
 		/*
 		 * partition does not have an entry in fstab

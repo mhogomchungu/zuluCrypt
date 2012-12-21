@@ -226,7 +226,7 @@ stringList_t zuluCryptPartitions( int option )
 			continue ;
 		device = StringRemoveString( st,"\"" ) ;
 		StringSubChar( st,index,'\0' ) ;
-		if ( StringStartsWith( st,"/dev/" ) ){
+		if( StringStartsWith( st,"/dev/" ) ){
 			if( StringEqual( st,"/dev/root" ) ){
 				/*
 				 * zuluCryptResolveDevRoot() is defined in ../lib/print_mounted_volumes.c
@@ -259,6 +259,10 @@ stringList_t zuluCryptPartitions( int option )
 				StringListRemoveString( non_system,ac ) ;
 				free( ac ) ;
 			}
+		}else if( StringStartsWith( st,"/" ) ){
+			ac = ( char * ) StringContent( st ) ;
+			system = StringListAppend( system,ac ) ;
+			StringListRemoveString( non_system,ac ) ;
 		}
 	}
 	
