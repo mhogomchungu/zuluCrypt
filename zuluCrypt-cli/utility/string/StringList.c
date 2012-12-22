@@ -74,11 +74,13 @@ void StringListForEachString( stringList_t stl,void (*fct)( const char * ) )
 {
 	size_t i ;
 	size_t j ;
+	string_t * q ;
 	if( stl == StringListVoid )
 		return ;
 	j = stl->size ;
+	q = stl->stp ;
 	for( i = 0 ; i < j ; i++ )
-		fct( stl->stp[ i ]->string ) ;
+		fct( q[ i ]->string ) ;
 }
 
 static inline string_t * __ExpandMemory( stringList_t stl )

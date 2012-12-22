@@ -306,16 +306,12 @@ stringList_t zuluCryptPartitions( int option )
 	 * the system list if present in that list
 	 */
 	p = zuluCryptGetPartitionFromConfigFile( "/etc/zuluCrypt-nonsystem" ) ;
-	StringListPrintList( p ) ;
 	if( p != StringListVoid ){
 		it  = StringListBegin( p ) ;
 		end = StringListEnd( p ) ;
 		for( ; it != end ; it++ ){
 			device = StringContent( *it ) ;
-			index = StringListContains( system,device ) ;
-			if( index >= 0 ){
-				StringListRemoveAt( system,index ) ;
-			}
+			StringListRemoveString( system,device ) ;
 		}
 		StringListDelete( &p ) ;
 	}
