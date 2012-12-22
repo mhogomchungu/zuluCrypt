@@ -72,7 +72,7 @@ void zuluCryptFormatSize( char * buffer,const char * buff ) ;
  */
 stringList_t zuluCryptGetPartitionFromCrypttab( void ) ;
 
-stringList_t zuluCryptGetPartitionFromZulutab( void ) ;
+stringList_t zuluCryptGetPartitionFromConfigFile( const char * path ) ;
 
 static inline int _allowedDevice( const char * device )
 {
@@ -268,10 +268,13 @@ stringList_t zuluCryptPartitions( int option )
 	
 	StringListDelete( &stl ) ;
 	
+	/*
+	 * Read from confi files to get additional devices to be considered as system devices
+	 */
 	p = zuluCryptGetPartitionFromCrypttab() ;
 	StringListAppendList( system,p ) ;
 	StringListDelete( &p ) ;
-	p = zuluCryptGetPartitionFromZulutab() ;
+	p = zuluCryptGetPartitionFromConfigFile( "/etc/zuluCrypt-system" ) ;
 	StringListAppendList( system,p ) ;
 	StringListDelete( &p ) ;
 	
@@ -280,7 +283,7 @@ stringList_t zuluCryptPartitions( int option )
 	 * "system" contains system devices.
 	 * "non_system" contains non system devices.
 	 * 
-	 * now we check non_system devices agains entries in /sys/ to see if udev reported them as system as move them to system 
+	 * now we check non_system devices agains entries in /sys/ to see if udev reported them as system and move them to system 
 	 * if it does . 
 	 */
 	it  = StringListBegin( non_system ) ;
@@ -297,6 +300,25 @@ stringList_t zuluCryptPartitions( int option )
 			it++ ;
 		}
 	}while( it != end ) ;
+	
+	/*
+	 * Now we read from a config file that contains devices that are not to be considered system and remove them from
+	 * the system list if present in that list
+	 */
+	p = zuluCryptGetPartitionFromConfigFile( "/etc/zuluCrypt-nonsystem" ) ;
+	StringListPrintList( p ) ;
+	if( p != StringListVoid ){
+		it  = StringListBegin( p ) ;
+		end = StringListEnd( p ) ;
+		for( ; it != end ; it++ ){
+			device = StringContent( *it ) ;
+			index = StringListContains( system,device ) ;
+			if( index >= 0 ){
+				StringListRemoveAt( system,index ) ;
+			}
+		}
+		StringListDelete( &p ) ;
+	}
 	
 	if( option == SYSTEM_PARTITIONS ){
 		StringListDelete( &non_system ) ;
@@ -471,7 +493,7 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 	return stl_1 ;
 }
 
-stringList_t zuluCryptGetPartitionFromZulutab()
+stringList_t zuluCryptGetPartitionFromConfigFile( const char * path )
 {
 	StringListIterator it  ;
 	StringListIterator end ;
@@ -484,7 +506,7 @@ stringList_t zuluCryptGetPartitionFromZulutab()
 	string_t st = StringVoid ;
 	
 	zuluCryptSecurityGainElevatedPrivileges() ;
-	st = StringGetFromFile( "/etc/zuluCrypttab" ) ;
+	st = StringGetFromFile( path ) ;
 	zuluCryptSecurityDropElevatedPrivileges() ;
 	
 	if( st == StringVoid )
