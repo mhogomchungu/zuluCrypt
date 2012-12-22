@@ -190,6 +190,7 @@ void zuluCrypt::setupConnections()
 	connect( m_ui->actionDecrypt_file,SIGNAL( triggered() ),this,SLOT( decryptFile() ) );
 	connect( m_ui->actionLuks_header_backup,SIGNAL( triggered() ),this,SLOT( HelpLuksHeaderBackUp() ) );
 	connect( m_ui->actionManage_system_partitions,SIGNAL( triggered() ),this,SLOT( ShowManageSystemPartitions() ) ) ;
+	connect( m_ui->actionManage_non_system_partitions,SIGNAL( triggered() ),this,SLOT( ShowManageNonSystemPartitions() ) ) ;
 	connect( m_ui->actionManage_kwallet,SIGNAL( triggered() ),this,SLOT( manageWallet() ) ) ;
 	connect( m_ui->actionUse_kde_default_wallet,SIGNAL( triggered() ),this,SLOT( setDefaultWallet() ) ) ;
 
@@ -203,6 +204,7 @@ void zuluCrypt::setupConnections()
 	}
 
 	m_ui->actionManage_system_partitions->setEnabled( utility::userIsRoot() );
+	m_ui->actionManage_non_system_partitions->setEnabled( utility::userIsRoot() );
 }
 
 void zuluCrypt::permissionExplanation()
@@ -215,7 +217,14 @@ void zuluCrypt::ShowManageSystemPartitions()
 {
 	manageSystemVolumes * msv = new manageSystemVolumes( this ) ;
 	connect( msv,SIGNAL( HideUISignal() ),msv,SLOT(deleteLater() ) ) ;
-	msv->ShowUI();
+	msv->ShowUI( QString( "/etc/zuluCrypt-system" ) ) ;
+}
+
+void zuluCrypt::ShowManageNonSystemPartitions()
+{
+	manageSystemVolumes * msv = new manageSystemVolumes( this ) ;
+	connect( msv,SIGNAL( HideUISignal() ),msv,SLOT(deleteLater() ) ) ;
+	msv->ShowUI( QString( "/etc/zuluCrypt-nonsystem" ) ) ;
 }
 
 void zuluCrypt::currentItemChanged( QTableWidgetItem * current, QTableWidgetItem * previous )
@@ -359,6 +368,7 @@ void zuluCrypt::setUserFont( QFont Font )
 	m_ui->actionPermission_problems->setFont( this->font() );
 	m_ui->actionLuks_header_backup->setFont( this->font() );
 	m_ui->actionManage_system_partitions->setFont( this->font() );
+	m_ui->actionManage_non_system_partitions->setFont( this->font() );
 	m_ui->actionManage_kwallet->setFont( this->font() );
 	m_ui->actionUse_kde_default_wallet->setFont( this->font() );
 }

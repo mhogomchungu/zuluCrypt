@@ -46,7 +46,7 @@ void manageSystemVolumes::currentItemChanged( QTableWidgetItem * current,QTableW
 
 void manageSystemVolumes::readSystemPartitions()
 {
-	QFile file( QString( "/etc/zuluCrypttab" ) ) ;
+	QFile file( m_path ) ;
 	if( !file.open( QIODevice::ReadOnly ) )
 		return ;
 
@@ -67,12 +67,12 @@ void manageSystemVolumes::readSystemPartitions()
 
 void manageSystemVolumes::writeSystemPartitions()
 {
-	QFile file( QString( "/etc/zuluCrypttab") ) ;
+	QFile file( m_path ) ;
 
 	if( !file.open( QIODevice::WriteOnly | QIODevice::Truncate ) ){
 
 		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "ERROR" ),tr( "could not open \"/etc/zuluCrypttab\" for writing" ) );
+		msg.ShowUIOK( tr( "ERROR" ),tr( "could not open \"%1\" for writing" ).arg( m_path ) );
 	}else{
 		QTableWidgetItem * it ;
 		QTableWidget * table = m_ui->tableWidget ;
@@ -190,8 +190,9 @@ void manageSystemVolumes::HideUI()
 	emit HideUISignal();
 }
 
-void manageSystemVolumes::ShowUI()
+void manageSystemVolumes::ShowUI( QString path )
 {
+	m_path = path ;
 	this->readSystemPartitions() ;
 	m_ui->tableWidget->setColumnWidth( 0,580 );
 	this->show();

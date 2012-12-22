@@ -98,7 +98,7 @@
      <x>0</x>
      <y>0</y>
      <width>782</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuOpen">
@@ -146,6 +146,7 @@
     <addaction name="actionUse_kde_default_wallet"/>
     <addaction name="actionManage_kwallet"/>
     <addaction name="actionManage_system_partitions"/>
+    <addaction name="actionManage_non_system_partitions"/>
    </widget>
    <widget class="QMenu" name="menuFavorites">
     <property name="title">
@@ -421,6 +422,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+V</string>
+   </property>
+  </action>
+  <action name="actionManage_non_system_partitions">
+   <property name="text">
+    <string>manage non system partitions</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+M</string>
    </property>
   </action>
  </widget>

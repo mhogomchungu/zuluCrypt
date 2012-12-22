@@ -27,7 +27,7 @@ class manageSystemVolumes : public QDialog
 public:
 	explicit manageSystemVolumes( QWidget * parent = 0 );
 	~manageSystemVolumes();
-	void ShowUI( void ) ;
+	void ShowUI( QString ) ;
 	void HideUI( void ) ;
 signals:
 	void HideUISignal( void );
@@ -51,6 +51,7 @@ private:
 	void addItemsToTable( QString );
 	void closeEvent( QCloseEvent * ) ;
 	Ui::manageSystemVolumes * m_ui;
+	QString m_path ;
 	QAction * m_ac ;
 };
 
