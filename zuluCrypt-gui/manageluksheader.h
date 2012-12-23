@@ -63,12 +63,12 @@ private:
 	void closeEvent( QCloseEvent * ) ;
 	void disableAll( void );
 	void enableAll( void ) ;
+	void success( void ) ;
 	Ui::manageluksheader * m_ui;
-
 	QString m_path ;
-
 	bool m_OperationInProgress ;
 	QString m_operation ;
+	int m_saveHeader ;
 };
 
 #endif // CREATEKEYFILE_H

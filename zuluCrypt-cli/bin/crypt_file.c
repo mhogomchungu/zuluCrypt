@@ -42,7 +42,7 @@ static int zuluExit( int st )
 		case 13: printf( "ERROR: insufficient memory to hold passphrase\n" )				; break ;
 		case 14: printf( "ERROR: source path is missing\n" )						; break ;
 		case 15: printf( "ERROR: insufficient privilege to open source file for reading\n" )		; break ;
-		case 16: printf( "INFORMATION: functionality currently\n" ) ;					; break ;
+		case 16: printf( "INFORMATION: functionality currently disabled\n" ) ;				; break ;
 	}	
 	return st ;
 }
@@ -135,10 +135,17 @@ static int crypt_opt( const struct_opts * opts,uid_t uid,int opt )
 		}
 	}
 	
-	if( opt == ENCRYPT )
+	if( opt == ENCRYPT ){
+		/*
+		 * zuluCryptEncryptFile() is defined in ./crypt_file.c
+		 */
 		st = zuluCryptEncryptFile( source,dest,StringContent( p ),StringLength( p ) ) ;
-	else
+	}else{
+		/*
+		 * zuluCryptDecryptFile() is defined in ./crypt_file.c
+		 */
 		st = zuluCryptDecryptFile( source,dest,StringContent( p ),StringLength( p ) ) ;
+	}
 	
 	StringClearDelete( &p ) ;
 	

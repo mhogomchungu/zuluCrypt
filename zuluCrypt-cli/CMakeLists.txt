@@ -22,7 +22,8 @@
  bin/check_opened_mapper.c
  bin/get_opts.c
  bin/help.c
- bin/mount_flags.c
+ bin/mount_flags.c 
+ bin/file_encryption.c
  ) 
  
  SET( BINMount
@@ -54,7 +55,6 @@
  lib/open_volume.c
  lib/mount_volume.c
  lib/unmount_volume.c
- lib/file_encryption.c 
  lib/user_home_path.c 
  lib/create_loop_device.c
  lib/blkid_evaluate_tag.c

@@ -73,7 +73,7 @@ static inline int allowed_vfat( stringList_t stl )
 	index = StringListHasSequence( stl,"shortname=" ) ;
 	if( index >= 0 )
 		StringListRemoveAt( stl,index ) ;
-	index = StringListHasSequence( stl,"dmask=" ) ;	
+	index = StringListHasSequence( stl,"dmask=" ) ;
 	if( index >= 0 )
 		StringListRemoveAt( stl,index ) ;
 	index = StringListHasSequence( stl,"umask=" ) ;
@@ -107,7 +107,7 @@ static inline int allowed_ntfs( stringList_t stl )
 	index = StringListHasSequence( stl,"fmask=" ) ;
 	if( index >= 0 )
 		StringListRemoveAt( stl,index ) ;
-	index = StringListHasSequence( stl,"locale=" ) ;	
+	index = StringListHasSequence( stl,"locale=" ) ;
 	if( index >= 0 )
 		StringListRemoveAt( stl,index ) ;
 	index = StringListHasSequence( stl,"norecover=" ) ;
@@ -143,7 +143,7 @@ static inline int allowed_iso9660( stringList_t stl )
 	index = StringListHasSequence( stl,"iocharset=" ) ;
 	if( index >= 0 )
 		StringListRemoveAt( stl,index ) ;
-	index = StringListHasSequence( stl,"mode=" ) ;	
+	index = StringListHasSequence( stl,"mode=" ) ;
 	if( index >= 0 )
 		StringListRemoveAt( stl,index ) ;
 	index = StringListHasSequence( stl,"dmode=" ) ;
@@ -161,7 +161,7 @@ static inline int allowed_udf( stringList_t stl )
 	index = StringListHasSequence( stl,"iocharset=" ) ;
 	if( index >= 0 )
 		StringListRemoveAt( stl,index ) ;
-	index = StringListHasSequence( stl,"umask=" ) ;	
+	index = StringListHasSequence( stl,"umask=" ) ;
 	if( index >= 0 )
 		StringListRemoveAt( stl,index ) ;
 	st = StringListSize( stl ) ;
@@ -222,13 +222,10 @@ static inline int _option_contain_not_allowed( const char * fs,const char * fs_o
 		return allowed_vfat( stl ) ;
 	}
 	if( strcmp( fs,"ntfs" ) == 0 ){
-		return allowed_vfat( stl ) ;
-	}
-	if( strcmp( fs,"iso9660" ) == 0 ){
-		return allowed_vfat( stl ) ;
+		return allowed_ntfs( stl ) ;
 	}
 	if( strcmp( fs,"udf" ) == 0 ){
-		return allowed_vfat( stl ) ;
+		return allowed_udf( stl ) ;
 	}
 	if( strcmp( fs,"affs" ) == 0 ){
 		return allowed_affs( stl ) ;
@@ -240,13 +237,13 @@ static inline int _option_contain_not_allowed( const char * fs,const char * fs_o
 		return allowed_iso9660( stl ) ;
 	}	
 	if( strcmp( fs,"btrfs" ) == 0 ){
-		return allowed_iso9660( stl ) ;
+		return allowed_btrfs( stl ) ;
 	}
 	if( strcmp( fs,"reiserfs" ) == 0 ){
-		return allowed_iso9660( stl ) ;
+		return allowed_reiserfs( stl ) ;
 	}
 	if( strcmp( fs,"reiser4" ) == 0 ){
-		return allowed_iso9660( stl ) ;
+		return allowed_reiser4( stl ) ;
 	}
 	return 1 ;
 }

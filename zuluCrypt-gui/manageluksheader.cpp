@@ -216,9 +216,11 @@ void manageluksheader::pbCreate()
 	QString backUp = m_ui->lineEditBackUpName->text().replace( "\"","\"\"\"" );
 
 	QString exe ;
-	if(  m_operation == QString( "backup" ) )
+	if(  m_operation == QString( "backup" ) ){
+		m_saveHeader = 1 ;
 		exe = QString( "%1 -B -d \"%2\" -f \"%3\"" ).arg( ZULUCRYPTzuluCrypt ).arg( device ).arg( backUp );
-	else{
+	}else{
+		m_saveHeader = 0 ;
 		QString x = m_ui->lineEditDevicePath->text() ;
 		QString y = m_ui->lineEditBackUpName->text() ;
 
@@ -263,34 +265,44 @@ void manageluksheader::pbOpenFile()
 	if( m_ui->lineEditBackUpName->text().isEmpty() )
 		m_ui->lineEditBackUpName->setFocus();
 	else
-		m_ui->pbCreate->setFocus();}
+		m_ui->pbCreate->setFocus();
+}
+
+void manageluksheader::success()
+{
+	DialogMsg msg( this ) ;
+	if( m_saveHeader ){
+		msg.ShowUIOK( tr( "SUCCESS" ),tr( "header saved successfully.\nif possible,store it securely." ) ) ;
+	}else{
+		msg.ShowUIOK(  tr( "SUCCESS" ),tr( "header restored successfully" ) )	;
+	}
+	return this->HideUI();
+}
 
 void manageluksheader::threadExitStatus( int st )
 {
 	m_OperationInProgress = false ;
 	DialogMsg msg( this );
-	switch(  st ){
-		case 0 : msg.ShowUIOK(  tr( "SUCCESS" ),tr( "header saved successfully.\nif possible,store it securely." ) ) ;
-			 return this->HideUI();
-		case 1 : msg.ShowUIOK(  tr( "SUCCESS" ),tr( "header restored successfully" ) )	;
-			 return this->HideUI();
-		case 2 : msg.ShowUIOK(  tr( "ERROR!" ),tr( "presented device is not a LUKS device" ) )					; break ;
-		case 3 : msg.ShowUIOK(  tr( "ERROR!" ),tr( "failed to read/write header,is the volume open?" ) )			; break ;
-		case 4 : msg.ShowUIOK(  tr( "ERROR!" ),tr( "failed to read/write header,is the volume open?" ) )			; break ;
-		case 5 : msg.ShowUIOK(  tr( "INFO!"  ),tr( "operation terminater per user request" ) )					; break ;
-		case 6 : msg.ShowUIOK(  tr( "ERROR!" ),tr( "path to be used to create a back up file is occupied" ) ) 			; break ;
-		case 7 : msg.ShowUIOK(  tr( "ERROR!" ),tr( "failed to restore" )	 )						; break ;
-		case 8 : msg.ShowUIOK(  tr( "ERROR!" ),tr( "insufficient privilege to open backup header file for reading" ) ) 		; break ;
-		case 9 : msg.ShowUIOK(  tr( "ERROR!" ),tr( "invalid path to back up header file" ) )					; break ;
-		case 10: msg.ShowUIOK(  tr( "ERROR!" ),tr( "insufficient privilege to create a backup header in a destination folder" )); break ;
-		case 11: msg.ShowUIOK(  tr( "ERROR!" ),tr( "invalid path to device" ) )							; break ;
-		case 12: msg.ShowUIOK(  tr( "ERROR!" ),tr( "argument for path to a backup  header file is missing" ) ) 			; break ;
-		case 13: msg.ShowUIOK(  tr( "ERROR!" ),tr( "argument for path to a backup  header file is missing" ) ) 			; break ;
-		case 14: msg.ShowUIOK(  tr( "ERROR!" ),tr( "only root user can restore and back up luks headers on system devices" ) )	; break ;
-		case 15: msg.ShowUIOK(  tr( "ERROR!" ),tr( "insufficient privilege to open device for writing" ) ) 			; break ;
-		case 16: msg.ShowUIOK(  tr( "ERROR!" ),tr( "could not resolve path to device" ) )					; break ;
-		case 17: msg.ShowUIOK(  tr( "ERROR!" ),tr( "backup file does not appear to contain luks header" ) )			; break ;
-		case 18: msg.ShowUIOK(  tr( "ERROR!" ),tr( "insufficient privilege to open device for reading" ) )			; break ;
+	switch( st ){
+		case 0 : return this->success();
+		case 1 : return this->success();
+		case 2 : msg.ShowUIOK( tr( "ERROR!" ),tr( "presented device is not a LUKS device" ) )					; break ;
+		case 3 : msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to read/write header,is the volume open?" ) )			; break ;
+		case 4 : msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to read/write header,is the volume open?" ) )			; break ;
+		case 5 : msg.ShowUIOK( tr( "INFO!"  ),tr( "operation terminater per user request" ) )					; break ;
+		case 6 : msg.ShowUIOK( tr( "ERROR!" ),tr( "path to be used to create a back up file is occupied" ) ) 			; break ;
+		case 7 : msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to restore" )	 )						; break ;
+		case 8 : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open backup header file for reading" ) ) 		; break ;
+		case 9 : msg.ShowUIOK( tr( "ERROR!" ),tr( "invalid path to back up header file" ) )					; break ;
+		case 10: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to create a backup header in a destination folder" )); break ;
+		case 11: msg.ShowUIOK( tr( "ERROR!" ),tr( "invalid path to device" ) )							; break ;
+		case 12: msg.ShowUIOK( tr( "ERROR!" ),tr( "argument for path to a backup  header file is missing" ) ) 			; break ;
+		case 13: msg.ShowUIOK( tr( "ERROR!" ),tr( "argument for path to a backup  header file is missing" ) ) 			; break ;
+		case 14: msg.ShowUIOK( tr( "ERROR!" ),tr( "only root user can restore and back up luks headers on system devices" ) )	; break ;
+		case 15: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open device for writing" ) ) 			; break ;
+		case 16: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not resolve path to device" ) )					; break ;
+		case 17: msg.ShowUIOK( tr( "ERROR!" ),tr( "backup file does not appear to contain luks header" ) )			; break ;
+		case 18: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open device for reading" ) )			; break ;
 	}
 	this->enableAll();
 }
