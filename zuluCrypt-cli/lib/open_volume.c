@@ -32,15 +32,28 @@ static inline int zuluExit( int x,string_t p )
  */
 static inline int _device_is_not_sane( const char * device,const char * mapper )
 {
-	int st ;
+	int st = 1 ;
 	/*
 	 * zuluCryptVolumeDeviceName() is defined in ./status.c
 	 */
 	char * dev = zuluCryptVolumeDeviceName( mapper ) ;
+	char * dev_1 ;
+	
 	if( dev == NULL )
 		return 1 ;
-	st = strcmp( device,dev ) ;
-	free( dev ) ;
+	if( strncmp( device,"/dev/loop",9 ) == 0 ){
+		/*
+		 * zuluCryptLoopDeviceAddress() is defined in create_loop_device.c
+		 */
+		dev_1 = zuluCryptLoopDeviceAddress( device ) ;
+		if( dev_1 != NULL ){
+			st = strcmp( dev_1,dev ) ;
+			free( dev_1 ) ;
+		}
+	}else{
+		st = strcmp( device,dev ) ;
+		free( dev ) ;
+	}
 	return st != 0 ;
 }
 

@@ -118,9 +118,6 @@ int zuluCryptUserIsAMemberOfAGroup( uid_t uid,const char * groupname )
 static int has_device_access( const char * path,int c )
 {
 	int f ;
-	int x ;
-	int y;
-	struct stat st;
 	if( c == READ ){
 		f = open( path,O_RDONLY );
 	}else{
@@ -134,22 +131,8 @@ static int has_device_access( const char * path,int c )
 			default     : return 4 ; /* common error */    
 		}
 	}else{
-		fstat( f,&st ) ;
 		close( f ) ;
-		if( strncmp( path,"/dev/",5 ) == 0 )
-			return 0 ;
-		/*
-		 * This part deals with problematic devices where user can move them around and have a potential
-		 * to pull them or substitute them under us.
-		 * global_variable_file_struct is a global variable declaired in ../lib/includes.h
-		 * and defined in ../lib/create_loop_device.c
-		 */
-		x = global_variable_file_struct.st_ino == st.st_ino ;
-		y = global_variable_file_struct.st_dev == st.st_dev ;
-		/* 
-		 * return of 3 means the device moved under us,in an attemp to deceive us
-		 */
-		return x && y ? 0 : 3 ;
+		return 0 ;
 	}
 }
 /*
@@ -267,7 +250,17 @@ int zuluCryptSecurityCanOpenPathForWriting( const char * path,uid_t uid )
 static string_t _create_default_mount_point( const char * device,uid_t uid,string_t path )
 {
 	string_t st = StringVoid ;
-	const char * m_point = StringAppend( path,strrchr( device,'/' ) ) ;
+	char * loop_path = NULL ;
+	const char * m_point ;
+	if( strncmp( device,"/dev/loop",9 ) == 0 ){
+		/*
+		 * zuluCryptLoopDeviceAddress() is defined in ../lib/create_loop_device.c
+		 */
+		loop_path = zuluCryptLoopDeviceAddress( device ) ;
+		device = loop_path ;
+	}
+	
+	m_point = StringAppend( path,strrchr( device,'/' ) ) ;
 	if( zuluCryptSecurityGainElevatedPrivileges() ){
 		if( mkdir( m_point,S_IRWXU ) == 0 ){
 			st = path ;
@@ -276,6 +269,9 @@ static string_t _create_default_mount_point( const char * device,uid_t uid,strin
 			StringDelete( &path ) ;
 		}
 		zuluCryptSecurityDropElevatedPrivileges() ;
+	}
+	if( loop_path != NULL ){
+		free( loop_path ) ;
 	}
 	return st ;
 }
@@ -506,13 +502,15 @@ void zuluCryptSecuritySanitizeTheEnvironment( uid_t uid,stringList_t * stx )
 int zuluCryptSecurityUserOwnTheFile( const char * device,uid_t uid )
 {
 	if( device ){ ; }
+	if( uid ){ ; }
+	
 	/*
 	 * global_variable_file_struct variable is defined in ../lib/includes.h
 	 * It is set in the main function.
 	 * 
 	 * It is set it defined and set in zuluCryptGetDeviceFileProperties() defined in ../lib/create_loop_device.c
 	 */
-	return ( uid == global_variable_file_struct.st_uid ) && S_ISREG( global_variable_file_struct.st_mode ) ;
+	return 1;
 }
 
 void zuluCryptSecurityPrintPermissions( void )

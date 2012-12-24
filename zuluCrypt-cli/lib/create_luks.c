@@ -35,12 +35,12 @@ int zuluCryptCreateLuks( const char * dev,const char * pass,size_t pass_size,con
 	
 	params.hash = "sha1" ;
 	params.data_alignment = 4096 ;
-
 	if( zuluCryptPathIsNotValid( dev ) )
 		return 4 ;
 	
-	if( crypt_init( &cd,dev ) != 0 )
+	if( crypt_init( &cd,dev ) != 0 ){
 		return 1 ;
+	}
 	
 	if( strcmp( rng,"/dev/random" ) == 0 )
 		crypt_set_rng_type( cd,CRYPT_RNG_RANDOM );

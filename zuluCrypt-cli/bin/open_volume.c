@@ -63,7 +63,7 @@ static int zuluExit( int st,const char * device,char * m_point,stringList_t stl 
 		case 17: printf( "ERROR: could not resolve full path of device address\n" );						break ;
 		case 18: printf( "ERROR: -O and -m options can not be used together\n" );						break ;
 		case 19: printf( "ERROR: insufficient privilege to search mount point path\n" );					break ;
-		case 20: printf( "ERROR: volume could not be opened\n" );								break ;
+		case 20: printf( "ERROR: insufficient privilege to open device\n" );							break ;
 		case 21: printf( "ERROR: mount point path already taken.\n" );								break ;
 		case 22: printf( "ERROR: insufficient privilege to open key file for reading\n" );					break ;
 		case 23: printf( "ERROR: volume could not be opened\n" );								break ;

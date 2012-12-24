@@ -29,12 +29,26 @@ int zuluMountCryptoMount( const char * device,const char * mode,uid_t uid,
 	struct_opts opts ;
 	
 	const char * mapping_name ;
-	const char * e = strrchr( device,'/' ) ;
-	
+	const char * e ;
+	char * path = NULL ;
 	/*
 	 * zuluCryptEXEGetOptsSetDefault() is defined in ../zuluCrypt-cli/bin/get_opts.c
 	 */
 	zuluCryptEXEGetOptsSetDefault( &opts ) ;
+	
+	if( strncmp( device,"/dev/loop",9 ) == 0 ){
+		/*
+		 * zuluCryptLoopDeviceAddress() is defined in ../zuluCrypt-cli/create_loop_device.c
+		 */
+		path = zuluCryptLoopDeviceAddress( device ) ;
+		if( path == NULL ){
+			return 20 ;
+		}else{
+			device = path ;
+		}
+	}
+	
+	e = strrchr( device,'/' ) ;
 	
 	if( e == NULL){
 		mapping_name = device ;
@@ -61,5 +75,8 @@ int zuluMountCryptoMount( const char * device,const char * mode,uid_t uid,
 	 */
 	st = zuluCryptEXEOpenVolume( &opts,mapping_name,uid ) ;
 	
+	if( path != NULL ){
+		free( path ) ;
+	}
 	return st ;
 }

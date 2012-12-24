@@ -45,7 +45,7 @@ char * zuluCryptRealPath( const char * path )
 int zuluCryptPathStartsWith( const char * path,const char * start )
 {
 	int st ;
-	char * p = realpath( path,NULL ) ;
+	char * p = canonicalize_path( path ) ;
 	if( p == NULL )
 		return 0 ;
 	st = strcmp( p,start ) ;
@@ -79,7 +79,5 @@ int zuluCryptPathDidNotChange( const char * path )
 
 int zuluCryptPathDeviceIsBlockDevice( const char * device )
 {
-	if( strncmp( device,"/dev/shm/",9 ) == 0 )
-		return 0 ;
-	return S_ISBLK( global_variable_file_struct.st_mode ) ;
+	return 1 ;
 }

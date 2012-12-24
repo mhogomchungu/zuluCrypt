@@ -56,15 +56,15 @@ static int entry_found( const char * m_dir,char ** m_point )
 	return h ;
 }
 
-int zuluCryptUnmountVolume( const char * map,char ** m_point )
+int zuluCryptUnmountVolume( const char * device,char ** m_point )
 {
 	char * m ;
-	struct stat st ;
 	FILE * f ;
 	FILE * g ;
 	int h = 3 ;
 	int status ;
-	size_t map_len = strlen( map ) ;
+	
+	size_t dev_len = strlen( device ) ;
 	
 #if USE_NEW_LIBMOUNT_API
 	struct libmnt_lock * lock ;
@@ -73,8 +73,17 @@ int zuluCryptUnmountVolume( const char * map,char ** m_point )
 #endif
 	struct mntent * mt ;
 	
-	if( stat( map,&st ) != 0 )
-		return 1 ;
+	char * loop_path = NULL ;
+	
+	if( strncmp( device,"/dev/loop",9 ) == 0 ){
+		/*
+		 * zuluCryptLoopDeviceAddress() is defined in create_loop_device.c
+		 */
+		loop_path = zuluCryptLoopDeviceAddress( device ) ;
+		if( loop_path != NULL ){
+			device = loop_path ;
+		}
+	}
 	
 	/*
 	 * zuluCryptMtabIsAtEtc() is defined in print_mounted_volumes.c
@@ -93,7 +102,7 @@ int zuluCryptUnmountVolume( const char * map,char ** m_point )
 		}else{
 			g = setmntent( "/etc/mtab-zC","w" ) ;
 			while( ( mt = getmntent( f ) ) != NULL ){
-				if( strncmp( mt->mnt_fsname,map,map_len ) == 0 ){
+				if( strncmp( mt->mnt_fsname,device,dev_len ) == 0 ){
 					h = entry_found( mt->mnt_dir,m_point ) ;
 				}else{
 					addmntent( g,mt ) ;
@@ -118,7 +127,7 @@ int zuluCryptUnmountVolume( const char * map,char ** m_point )
 		/*
 		 * zuluCryptGetMountPointFromPath() is defined in ./print_mounted_volumes.c
 		 */
-		m = zuluCryptGetMountPointFromPath( map ) ;
+		m = zuluCryptGetMountPointFromPath( device ) ;
 		if( m != NULL ){
 			h = entry_found( m,m_point ) ;
 			free( m ) ;
@@ -128,5 +137,9 @@ int zuluCryptUnmountVolume( const char * map,char ** m_point )
 	if( h != 0 && h != 3 && h != 4 )
 		h = 2 ;
 
+	if( loop_path != NULL ){
+		free( loop_path ) ;
+	}
+	
 	return h ;
 }

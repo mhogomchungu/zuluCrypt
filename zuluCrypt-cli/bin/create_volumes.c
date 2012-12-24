@@ -164,6 +164,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	if( strncmp( device,"/dev/",5 ) == 0 )
 		if( strncmp( device,"/dev/hd",7 ) != 0 )
 			if( strncmp( device,"/dev/sd",7 ) != 0 )
+				if( strncmp( device,"/dev/loop",9 ) != 0 )
 				if( uid != 0 )
 					return zuluExit( 14,stl ) ;
 

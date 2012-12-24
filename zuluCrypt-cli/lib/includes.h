@@ -34,25 +34,11 @@
 #include "../bin/bash_special_chars.h"
 
 /*
- * global_variable_file_struct global variable is defined in file_path_security and used in ../bin/main.c and ../../zuluMount/main.c
- */
-extern struct stat global_variable_file_struct ;
-/*
- * global_variable_file_struct_is_set global variable is defined and used in create_loop_device.c
- * it is set in file_path_security.c
- */
-extern int global_variable_file_struct_is_set ;
-
-/*
- * global_variable_user_id global variable is defined and used in create_loop_device.c
- * it is set in file_path_security.c
- */
-extern uid_t global_variable_user_id ;
-
-/*
  * below header is created at build time,it is set by CMakeLists.txt located in the root folder
  */
 #include "version.h"
+
+int zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( int fd_path,int mode,string_t * loop_device ) ;
 
 string_t zuluCryptCreateMapperName( const char * device,const char * mapping_name,uid_t uid,int i ) ;
 

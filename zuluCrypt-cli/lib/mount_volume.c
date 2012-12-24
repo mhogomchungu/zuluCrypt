@@ -333,29 +333,9 @@ static inline int paths_are_sane( const char * device,const char * original_devi
 	 * paths we expect.
 	 */
 	struct stat st ;
-	const char * e = crypt_get_dir() ;
-	if( strncmp( device,e,strlen( e ) ) == 0 ){
-		/*
-		 * this part is checked in _device_is_sane() is ./open_volume.c
-		 */
-		;
-	}else if( strncmp( device,"/dev/loop",9 ) == 0 ){
-		/*
-		 * this part is checked in zuluCryptAttachLoopDeviceToFile() in create_loop_device.c
-		 * 
-		 */
-		;
-	}else{
-		/*
-		* all these zuluCrypt* functions are defined in ./real_path.c
-		*/
-		if( !zuluCryptPathDidNotChange( device ) )
-			return 0 ;
-		if( !zuluCryptPathDeviceIsBlockDevice( device ) )
-			return 0 ;
-		if( !zuluCryptPathDidNotChange( m_point ) )
-			return 0 ;
-	}
+	if( device ){;}
+	if( original_device ){;}
+	
 	if( chdir( m_point ) != 0 )
 		return 0 ;
 	if( stat( ".",&st ) != 0 )
@@ -374,6 +354,7 @@ static inline int mount_is_were_we_expect_it_to_be( const m_struct * mst,int h )
 	char * e = NULL ;
 	char * f ;
 	int result = -1 ;
+	
 	if( h != 0 )
 		return h ;
 		
@@ -480,17 +461,16 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 	string_t * opts ;
 	string_t fs ;
 	string_t * loop ;
-	int device_file = 0 ;
-	int fd ;
+	int fd = -1 ;
 	m_struct mst ;
+	char * e ;
 		
 	/*
 	 * device and original_device are initially the same but
-	 * device may change to something like /dev/loop1 if device device to be mounted is a file
-	 * or to /dev/mapper/blabla if the device is a mounted device
+	 * device may change to something like /dev/loop1 if device to be mounted is a file
 	 */
 	mst.device = path ;
-	mst.original_device = path ;
+	mst.original_device = path  ;
 	
 	mst.m_point = m_point ;
 	mst.uid = uid ;
@@ -516,7 +496,7 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 		 */
 		return zuluExit( 4,stl ) ;
 	}
-	
+
 	/*
 	 * zuluCryptMountHasNotAllowedFileSystemOptions() is defined in ./mount_fs_options.c
 	 */
@@ -527,9 +507,8 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 	mst.fs = StringContent( fs ) ;
 	opts = StringListAssign( stl ) ;
 	*opts = set_mount_options( &mst ) ;
-		
+	
 	if( strncmp( path,"/dev/",5 ) != 0 ){
-		device_file = 1 ;
 		loop = StringListAssign( stl ) ;
 		/*
 		 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop_device.c
@@ -541,6 +520,18 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 		}
 	}
 	
+	if( strncmp( mst.device,"/dev/loop",9 ) == 0 ){
+		loop = StringListAssign( stl ) ;
+		/*
+		 * zuluCryptLoopDeviceAddress() is defined in ./create_loop_device.c
+		 */
+		e = zuluCryptLoopDeviceAddress( mst.device ) ;
+		*loop = StringInherit( &e ) ;
+		mst.original_device = StringContent( *loop ) ;
+		if( mst.original_device == NULL )
+			return zuluExit( -1,stl ) ;
+	}
+		
 	if( StringEqual( fs,"ntfs" ) ){
 		/*
 		 * Currently, i dont know how to use mount system call to use ntfs-3g instead of ntfs to mount ntfs file systems.
@@ -578,10 +569,12 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 				
 				_mount_options( mst.m_flags,opts ) ;
 				
-				if( device_file ){
-					mt.mnt_fsname = ( char * ) path ;
+				if( strncmp( mst.device,"/dev/loop",9 ) == 0 ){
+					mt.mnt_fsname = ( char * ) mst.original_device ;
 					mt.mnt_opts = ( char * ) StringMultipleAppend( *opts,",loop=",mst.device,END ) ;
-					close( fd ) ;
+					if( fd != -1 ){
+						close( fd ) ;
+					}
 				}else{
 					mt.mnt_fsname = ( char * ) mst.device ;
 					mt.mnt_opts = ( char * ) StringContent( *opts );

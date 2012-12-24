@@ -371,7 +371,7 @@ int main( int argc,char * argv[] )
 			default: return zuluExit( 113,stl,"ERROR: a non supported device encountered or device is missing" ) ;
 		}
 		
-		clargs.device = device = StringContent( *st_dev ) ;
+		clargs.device = StringContent( *st_dev ) ;
 		
 		if( ( ac = strrchr( device,'/' ) ) != NULL ){
 			mapping_name =  ac + 1  ;

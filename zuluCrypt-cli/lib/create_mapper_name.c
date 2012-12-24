@@ -60,7 +60,7 @@ string_t zuluCryptCreateMapperName( const char * device,const char * mapping_nam
 {	
 	string_t p ;
 	uint64_t z ;
-	
+	char * e ;
 	if( i == OPEN )
 		p = String( "zuluCrypt-" ) ;
 	else{
@@ -75,7 +75,16 @@ string_t zuluCryptCreateMapperName( const char * device,const char * mapping_nam
 		z = hash_path( mapping_name ) ;
 	}else{
 		StringMultipleAppend( p,"-NAAN-",mapping_name,"-",END ) ;
-		z = hash_path( device ) ;
+		/*
+		 * zuluCryptLoopDeviceAddress() is defined in ./create_loop_device.c
+		 */
+		e = zuluCryptLoopDeviceAddress( device ) ;
+		if( e != NULL ){
+			z = hash_path( e ) ;
+			free( e ) ;
+		}else{
+			z = hash_path( device ) ;
+		}
 	}
 	
 	StringAppendInt( p,z ) ;

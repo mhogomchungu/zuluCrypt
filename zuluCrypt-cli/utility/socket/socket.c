@@ -130,6 +130,8 @@ socket_t Socket( int domain,int type,int protocol )
 	if( fd == -1 )
 		return SocketVoid ;
 	
+	fcntl( fd,F_SETFD,FD_CLOEXEC ) ;
+	
 	switch( domain ){
 		case AF_UNIX : s = _SocketLocal() ; break ;
 		case AF_INET : s = _SocketNet()   ; break ;

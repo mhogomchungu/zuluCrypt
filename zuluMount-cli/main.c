@@ -309,7 +309,7 @@ static int _zuluMountDoAction( const char * device,const char * action,const cha
 		case 1 : printf( "ERROR: devices in /dev/ with user access permissions are not suppored\n" ) ;	 return 220 ;
 		case 2 : printf( "ERROR: given path is a directory\n" ) ;  					 return 221 ;
 		case 3 : printf( "ERROR: a file can have only one hard link\n" ) ;				 return 222 ;
-		case 4 : printf( "ERROR: insufficient privilges to access the device" ) ;			 return 223 ;
+		case 4 : printf( "ERROR: insufficient privilges to access the device\n" ) ;			 return 223 ;
 		default: printf( "ERROR: a non supported device encountered or device is missing\n" ) ;		 return 224 ;
 	}
 	
@@ -319,7 +319,7 @@ static int _zuluMountDoAction( const char * device,const char * action,const cha
 	}
 		
 	dev = StringContent( st_dev ) ;
-		
+
 	if( _zuluMountcheckifLVM( action,dev ) ){
 		printf( "ERROR: this device looks like an lvm device,these devices are currently not supported\n" ) ;
 		status = 226 ;
