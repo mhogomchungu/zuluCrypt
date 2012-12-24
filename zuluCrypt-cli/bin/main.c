@@ -29,6 +29,9 @@ static int zuluCryptEXEGetDevice( const char * device )
 	char * c = NULL ;
 	int st = 1 ;
 	if( zuluCryptSecurityGainElevatedPrivileges() ){
+		/*
+		 * zuluCryptVolumeDeviceName() is defined in ../lib/status.c
+		 */
 		c = zuluCryptVolumeDeviceName( device ) ;
 		if( c == NULL ){
 			printf( "ERROR: could not get device address from mapper address\n" ) ;
@@ -57,9 +60,9 @@ static int zuluCryptEXECheckIfLuks( const char * device )
 	status = zuluCryptVolumeIsLuks( device ) ;
 	zuluCryptSecurityDropElevatedPrivileges() ;
 	if( status )
-		printf( "\"%s\" is a luks device\n",device ) ;
+		printf( "device is a luks volume\n" ) ;
 	else
-		printf( "\"%s\" is not a luks device\n",device ) ;
+		printf( "device is not a luks volume\n" ) ;
 	
 	return status ;
 }
@@ -215,6 +218,7 @@ int main( int argc,char * argv[] )
 	const char * device ;
 	const char * mapping_name ;
 	char * ac ;
+	char * dev ;
 	char action ;
 	int st ;
 	
@@ -222,7 +226,6 @@ int main( int argc,char * argv[] )
 	stringList_t stl ;
 	
 	struct_opts clargs ;
-	string_t * st_dev ;
 	
 	global_variable_user_uid = getuid() ;
 	
@@ -361,8 +364,7 @@ int main( int argc,char * argv[] )
 		/*
 		 * this function is defined in ../zuluCrypt-lib/file_path_security.c
 		 */
-		st_dev = StringListAssign( stl ) ;
-		switch( zuluCryptGetDeviceFileProperties( device,&fd,st_dev,global_variable_user_uid ) ){
+		switch( zuluCryptGetDeviceFileProperties( device,&fd,&dev,global_variable_user_uid ) ){
 			case 0 : break ;
 			case 1 : return zuluExit( 111,stl,"ERROR: devices in /dev/ with user access permissions are not suppored" ) ;
 			case 2 : return zuluExit( 112,stl,"ERROR: given path is a directory" ) ;   
@@ -371,7 +373,11 @@ int main( int argc,char * argv[] )
 			default: return zuluExit( 113,stl,"ERROR: a non supported device encountered or device is missing" ) ;
 		}
 		
-		clargs.device = StringContent( *st_dev ) ;
+		if( dev == NULL ){
+			return zuluExit( 114,stl,"ERROR: could not resolve path to device" ) ; 
+		}
+		
+		clargs.device = dev ;
 		
 		if( ( ac = strrchr( device,'/' ) ) != NULL ){
 			mapping_name =  ac + 1  ;
@@ -381,6 +387,8 @@ int main( int argc,char * argv[] )
 	}
 	
 	st = zuluCryptEXE( &clargs,mapping_name,global_variable_user_uid ) ;
+	
+	free( dev ) ;
 	
 	if( fd != -1 ){
 		close( fd ) ;

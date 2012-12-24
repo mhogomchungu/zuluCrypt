@@ -117,11 +117,26 @@ int zuluMountVolumeStatus( const char * device,uid_t uid )
 static int _zuluMountPrintDeviceProperties( const char * device,uid_t uid )
 {	
 	string_t p ;
+	string_t q ;
+	
+	char * dev = NULL ;
+	const char * e ;
+	
+	if( strncmp( device,"/dev/loop",9 ) == 0 ){
+		/*
+		 * zuluCryptLoopDeviceAddress() is defined in ../zuluCrypt-cli/lib/create_loop_device.c
+		 */
+		dev = zuluCryptLoopDeviceAddress( device ) ;
+		if( dev != NULL ){
+			device = dev ;
+		}
+	}
+	
 	/*
 	 * zuluCryptCreateMapperName() is defined in ../zuluCrypt-cli/lib/create_mapper_name.c
 	 */
-	string_t q = zuluCryptCreateMapperName( device,strrchr( device,'/' ) + 1,uid,CLOSE ) ;
-	const char * e = StringContent( q ) ;
+	q = zuluCryptCreateMapperName( device,strrchr( device,'/' ) + 1,uid,CLOSE ) ;
+	e = StringContent( q ) ;
 	
 	/*
 	 * zuluCryptGetMtabEntry() is defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c
@@ -141,12 +156,18 @@ static int _zuluMountPrintDeviceProperties( const char * device,uid_t uid )
 		*/
 		zuluMountPrintDeviceProperties_1( p,uid ) ;
 		StringDelete( &p ) ;
+		if( dev != NULL ){
+			free( dev ) ;
+		}
 		return 0 ;
 	}else{
 		/*
 		 * zuluMountPartitionProperties is defined in ./print_mounted_volumes.c
 		 */
 		zuluMountPartitionProperties( device,device,NULL ) ;
+		if( dev != NULL ){
+			free( dev ) ;
+		}
 		return 0 ;
 	}
 }
@@ -155,14 +176,27 @@ static int _zuluPartitionHasCryptoFs( const char * device )
 {
 	int st ;
 	string_t fs ;
+	char * e = NULL ;
 	/*
 	* zuluCryptSecurityGainElevatedPrivileges() is defined in ../zuluCrypt-cli/bin/security.c
 	*/
 	zuluCryptSecurityGainElevatedPrivileges() ;
+	
+	if( strncmp( device,"/dev/loop",9 ) == 0 ){
+		/*
+		 * zuluCryptLoopDeviceAddress() is defined in ../zuluCrypt-cli/lib/create_loop_device.c
+		 */
+		e = zuluCryptLoopDeviceAddress( device ) ;
+		if( e != NULL )
+			device = e ;
+	}
 	/*
 	 * this function is defined in ../zuluCrypt-cli/lib/mount_volume.c
 	 */
 	fs = zuluCryptGetFileSystemFromDevice( device ) ;
+	if( e != NULL ){
+		free( e ) ;
+	}
 	/*
 	 * zuluCryptSecurityDropElevatedPrivileges() is defined in ../zuluCrypt-cli/bin/security.c
 	 */
@@ -170,7 +204,7 @@ static int _zuluPartitionHasCryptoFs( const char * device )
 	if( fs == StringVoid ){
 		/*
 		 * no file system is found,assuming the volume is crypto_PLAIN volume
-		 */
+		 */	
 		return 1 ;
 	}else{
 		/*
@@ -186,14 +220,29 @@ static int _zuluPartitionHasCryptoFs( const char * device )
 static int _zuluMountPrintVolumeDeviceName( const char * device )
 {	
 	char * c ;
+	char * e ;
 	/*
 	 * zuluCryptSecurityGainElevatedPrivileges() is defined in ../zuluCrypt-cli/bin/security.c
 	 */
 	zuluCryptSecurityGainElevatedPrivileges() ;
-	/*
-	 * zuluCryptVolumeDeviceName() is defined in ../lib/status.c
-	 */
-	c = zuluCryptVolumeDeviceName( device ) ;
+	
+	if( strncmp( device,"/dev/loop",9 ) == 0 ){
+		/*
+		 * zuluCryptLoopDeviceAddress() is defined in ../zuluCrypt-cli/lib/create_loop_device.c
+		 */
+		e = zuluCryptLoopDeviceAddress( device ) ;
+		if( e != NULL ){
+			c = zuluCryptVolumeDeviceName( e ) ;
+			free( e ) ;
+		}else{
+			c = zuluCryptVolumeDeviceName( device ) ;
+		}
+	}else{
+		/*
+		* zuluCryptVolumeDeviceName() is defined in ../lib/status.c
+		*/
+		c = zuluCryptVolumeDeviceName( device ) ;
+	}
 	/*
 	 * zuluCryptSecurityDropElevatedPrivileges() is defined in ../zuluCrypt-cli/bin/security.c
 	 */
@@ -299,12 +348,11 @@ static int _zuluMountDoAction( const char * device,const char * action,const cha
 			      int mount_point_option,const char * fs_opts,int * fd )
 {
 	int status ;
-	const char * dev ;
-	string_t st_dev = StringVoid ;
+	char * dev ;
 	/*
 	 * zuluCryptGetDeviceFileProperties is defined in ../zuluCrypt-lib/file_path_security.c
 	 */
-	switch( zuluCryptGetDeviceFileProperties( device,fd,&st_dev,uid ) ){
+	switch( zuluCryptGetDeviceFileProperties( device,fd,&dev,uid ) ){
 		case 0 : break ;
 		case 1 : printf( "ERROR: devices in /dev/ with user access permissions are not suppored\n" ) ;	 return 220 ;
 		case 2 : printf( "ERROR: given path is a directory\n" ) ;  					 return 221 ;
@@ -313,13 +361,11 @@ static int _zuluMountDoAction( const char * device,const char * action,const cha
 		default: printf( "ERROR: a non supported device encountered or device is missing\n" ) ;		 return 224 ;
 	}
 	
-	if( st_dev == StringVoid ){
+	if( dev == NULL ){
 		printf( "ERROR: a non supported device encountered or device is missing\n" ) ;	
 		return 224 ;
 	}
 		
-	dev = StringContent( st_dev ) ;
-
 	if( _zuluMountcheckifLVM( action,dev ) ){
 		printf( "ERROR: this device looks like an lvm device,these devices are currently not supported\n" ) ;
 		status = 226 ;
@@ -327,7 +373,7 @@ static int _zuluMountDoAction( const char * device,const char * action,const cha
 		status = _zuluMountExe( dev,action,m_point,m_opts,fs_opts,uid,key,key_source,mount_point_option ) ;
 	}
 	
-	StringDelete( &st_dev ) ;
+	free( dev ) ;
 	
 	return status ;
 }

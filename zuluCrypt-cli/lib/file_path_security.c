@@ -40,13 +40,14 @@ int zuluCryptSecureOpenFile( const char * path,int * fd,string_t * file,uid_t ui
 	return st ;
 }
 
-int zuluCryptGetDeviceFileProperties( const char * file,int * fd,string_t * st_dev,uid_t uid )
+int zuluCryptGetDeviceFileProperties( const char * file,int * fd,char ** dev,uid_t uid )
 {
 	int st = 100 ;
 	int xt = 0 ;
 	int lfd ;
 	
-	char * dev ;
+	string_t st_dev = StringVoid ;
+	
 	struct stat stat_st ;
 	struct stat stat_st_1 ;
 	/*
@@ -84,10 +85,11 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd,string_t * st_d
 					/*
 					 * zuluCryptAttachLoopDeviceToFileUsingFileDescriptor() is defined in ./create_loop_device.c
 					 */
-					xt = zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( lfd,O_RDWR,st_dev ) ;
+					xt = zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( lfd,O_RDWR,&st_dev ) ;
 					seteuid( uid ) ;
 					close( *fd ) ;
 					*fd = lfd ;
+					*dev = StringDeleteHandle( &st_dev ) ;
 				}
 			}else{
 				/*
@@ -97,8 +99,9 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd,string_t * st_d
 				/*
 				 * zuluCryptAttachLoopDeviceToFileUsingFileDescriptor() is defined in ./create_loop_device.c
 				 */
-				xt = zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( *fd,O_RDONLY,st_dev ) ;
+				xt = zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( *fd,O_RDONLY,&st_dev ) ;
 				seteuid( uid ) ;
+				*dev = StringDeleteHandle( &st_dev ) ;
 			}
 			
 			if( xt != 1 ){
@@ -146,29 +149,30 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd,string_t * st_d
 			/*
 			 * zuluCryptGetFileNameFromFileDescriptor() is defined in ./create_loop_device.c
 			 */
-			dev = zuluCryptGetFileNameFromFileDescriptor( *fd ) ;
-			*st_dev = StringInherit( &dev ) ;
+			*dev = zuluCryptGetFileNameFromFileDescriptor( *fd ) ;
 			/*
 			 * A user has access to the device.
 			 * we close the file when we are done examining them because they can not be moved under us and we dont have to
 			 * hold on to them.Besides,we cant even if we want to as cryptsetup will demand exclusive access to them. 
 			 */
 			if( S_ISBLK( stat_st.st_mode ) ){
-				if( StringStartsWith( *st_dev,"/dev/shm" ) ){
-					/*
-					 * we do not support this path
-					 */
-					st = 1 ;
-				}else if( StringStartsWith( *st_dev,"/dev/" ) ){
-					/*
-					 * got the block device we want,accept it
-					 */
-					st = 0 ;
-				}else{
-					/*
-					 * reject others
-					 */
-					st = 100 ;
+				if( *dev != NULL ){
+					if( strncmp( *dev,"/dev/shm/",9 ) == 0 ){
+						/*
+						* we do not support this path
+						*/
+						st = 1 ;
+					}else if( strncmp( *dev,"/dev/",5 ) == 0 ){
+						/*
+						* got the block device we want,accept it
+						*/
+						st = 0 ;
+					}else{
+						/*
+						* reject others
+						*/
+						st = 100 ;
+					}
 				}
 			}else if( S_ISDIR( stat_st.st_mode ) ){
 				st = 2 ;
@@ -181,7 +185,6 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd,string_t * st_d
 			close( *fd ) ;
 			*fd = -1 ;
 		}else{
-			perror( "jjj" ) ;
 			/*
 			 * invalid path or something i dont know,reject
 			 */
