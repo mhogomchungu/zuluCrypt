@@ -20,18 +20,40 @@
 
 int zuluMountUMount( const char * device,uid_t uid,const char * mode,int mount_point_option )
 {
+	char * loop_device ;
 	char * m_point = NULL ;
 	int status ;
 	string_t st = StringVoid ;
 	
 	if( mode ) {;}
 	if( mount_point_option ) {;}
-	/*
-	 * zuluCryptGetMountPointFromPath() is defined in defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c 
-	 */
-	m_point = zuluCryptGetMountPointFromPath( device ) ;
-	if( m_point == NULL )
-		return _zuluExit( 100,StringVoid,m_point,"ERROR: device does not appear to be mounted" ) ;
+	
+	if( strncmp( device,"/dev/loop",9 ) == 0 ){
+		/*
+		 * zuluCryptLoopDeviceAddress() is defined in ../zuluCrypt-cli/lib/create_loop_devices.c
+		 */
+		loop_device = zuluCryptLoopDeviceAddress( device ) ;
+		if( loop_device == NULL ){
+			return _zuluExit( 100,StringVoid,m_point,"ERROR: device does not appear to be mounted" ) ;
+		}else{
+			/*
+			 * zuluCryptGetMountPointFromPath() is defined in defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c 
+			 */
+			m_point = zuluCryptGetMountPointFromPath( loop_device ) ;
+			if( m_point == NULL ){
+				free( loop_device ) ;
+				return _zuluExit( 100,StringVoid,m_point,"ERROR: device does not appear to be mounted" ) ;
+			}
+			free( loop_device ) ;
+		}
+	}else{
+		/*
+		* zuluCryptGetMountPointFromPath() is defined in defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c 
+		*/
+		m_point = zuluCryptGetMountPointFromPath( device ) ;
+		if( m_point == NULL )
+			return _zuluExit( 100,StringVoid,m_point,"ERROR: device does not appear to be mounted" ) ;
+	}
 	
 	/*
 	 * zuluCryptSecurityMountPointPrefixMatch() is defined in ../zuluCrypt-cli/bin/security.c
@@ -41,6 +63,10 @@ int zuluMountUMount( const char * device,uid_t uid,const char * mode,int mount_p
 			return _zuluExit( 101,StringVoid,m_point,"ERROR: you can only unmount volumes you have mounted" ) ;
 		}
 	}
+	
+	free( m_point ) ;
+	m_point = NULL ;
+	
 	/*
 	 * zuluCryptSecurityGainElevatedPrivileges() is defined in ../zuluCrypt-cli/bin/security.c
 	 */
@@ -49,10 +75,7 @@ int zuluMountUMount( const char * device,uid_t uid,const char * mode,int mount_p
 	/*
 	 * zuluCryptUnmountVolume() is defined in ../zuluCrypt-cli/lib/unmount_volume.c
 	 */
-	
-	free( m_point ) ;
-	m_point = NULL ;
-	
+		
 	status = zuluCryptUnmountVolume( device,&m_point ) ;
 	/*
 	 * zuluCryptSecurityDropElevatedPrivileges() is defined in ../zuluCrypt-cli/bin/security.c

@@ -38,8 +38,16 @@ static int _zuluMountPartitionAccess( const char * device,const char * m_opts,ui
 	 * zuluCryptGetFstabEntryList() is defined in ../zuluCrypt-cli/lib/mount_volume.c
 	 */
 	stringList_t stl = zuluCryptGetFstabEntryList( device ) ;
+	string_t p ;
 	
-	string_t p = StringListStringAt( stl,MOUNTOPTIONS ) ;
+	if( stl != StringListVoid ){
+		if( StringListSize( stl ) != 6 ){
+			StringListDelete( &stl ) ;
+			return 3 ;
+		}
+	}
+	
+	p = StringListStringAt( stl,MOUNTOPTIONS ) ;
 	
 	ro      = StringContains( p,"ro" ) ;
 	nouser  = StringContains( p,"nouser" ) ;
@@ -129,17 +137,23 @@ int zuluMountMount( const char * device,const char * m_point,
 	
 	if( mount_point_from_fstab ){;}
 	
+	if( strncmp( device,"/dev/loop",9 ) == 0 ){
+		/*
+		 * zuluCryptLoopDeviceAddress() is defined in ../zuluCrypt-cli/lib/create_loop_devices.c
+		 */
+		path = zuluCryptLoopDeviceAddress( device ) ;
+		if( path == NULL ){
+			return _zuluExit( 112,z,path,"ERROR: insuffienct privileges to mount the volume with given mount options" ) ;
+		}else{
+			device = path ;
+		}
+	}
+	
 	/*
 	 * zuluCryptMountFlagsAreNotCorrect() is defined in ../zuluCrypt-cli/bin/mount_flags.c
 	 */
 	if( zuluCryptMountFlagsAreNotCorrect( m_opts,uid,&m_flags ) )
 		return _zuluExit( 100,z,path,"ERROR: insuffienct privileges to mount the volume with given mount options" ) ;
-	
-	/*
-	 * zuluCryptPathIsNotValid() is defined in ../zuluCrypt-cli/lib/is_path_valid.c
-	 */
-	if( zuluCryptPathIsNotValid( device ) )
-		return _zuluExit( 101,z,path,"ERROR: invalid path to device" ) ;
 	
 	/*
 	 * zuluCryptPartitionIsMounted is defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c
@@ -153,6 +167,7 @@ int zuluMountMount( const char * device,const char * m_point,
 		case 0 : break ;
 		case 1 : return _zuluExit( 103,z,path,"ERROR: insuffienct privileges to mount a system partition" ) ;
 		case 2 : return _zuluExit( 104,z,path,"ERROR: \"/etc/fstab\" entry for this partition requires it to be mounted read only" ) ;
+		case 3 : return _zuluExit( 113,z,path,"ERROR: \"/etc/fstab\" entry for this partition is malformed" ) ;
 		default: return _zuluExit( 105,z,path,"ERROR: \"/etc/fstab\" entry for this partition does not allow you to mount it" ) ;
 	}
 	
