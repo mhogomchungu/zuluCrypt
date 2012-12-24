@@ -52,7 +52,6 @@ static uint64_t hash_path( const char * path )
 	
 	for ( i = 0 ; i < l ; i++ ) 
 		h = h + path[ i ] ;
-	
 	return h ;
 }
 
@@ -75,13 +74,17 @@ string_t zuluCryptCreateMapperName( const char * device,const char * mapping_nam
 		z = hash_path( mapping_name ) ;
 	}else{
 		StringMultipleAppend( p,"-NAAN-",mapping_name,"-",END ) ;
-		/*
-		 * zuluCryptLoopDeviceAddress() is defined in ./create_loop_device.c
-		 */
-		e = zuluCryptLoopDeviceAddress( device ) ;
-		if( e != NULL ){
-			z = hash_path( e ) ;
-			free( e ) ;
+		if( strncmp( device,"/dev/loop",9 ) == 0 ){
+			/*
+			* zuluCryptLoopDeviceAddress() is defined in ./create_loop_device.c
+			*/
+			e = zuluCryptLoopDeviceAddress( device ) ;
+			if( e != NULL ){
+				z = hash_path( e ) ;
+				free( e ) ;
+			}else{
+				z = hash_path( device ) ;
+			}
 		}else{
 			z = hash_path( device ) ;
 		}

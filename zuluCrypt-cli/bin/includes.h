@@ -17,6 +17,10 @@
   *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
   */
  
+ 
+#ifndef ZULUCRYPT_BIN
+#define ZULUCRYPT_BIN
+
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <stdio.h>
@@ -157,3 +161,5 @@ int zulucryptFileSystemIsNotSupported( const char * fs ) ;
  * this function is defined in ../lib/real_path.c
  */
 char * zuluCryptRealPath( const char * path ) ;
+
+#endif 

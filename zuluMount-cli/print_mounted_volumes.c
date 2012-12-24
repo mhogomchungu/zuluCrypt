@@ -41,6 +41,8 @@ const char * zuluCryptDecodeMtabEntry( string_t st ) ;
 
 char * zuluCryptVolumeDeviceName( const char * ) ;
 
+char * zuluCryptLoopDeviceAddress( const char * device ) ;
+
 static stringList_t _stz ;
 static const char * _z ;
 static size_t _k ;
@@ -65,13 +67,14 @@ void zuluMountPartitionProperties( const char * device,const char * mapper,const
 	struct statvfs vfs ;
 	uint64_t total ;
 	uint64_t used ;
-	uint64_t free ;
+	uint64_t free_space ;
 	uint32_t block_size ;
 	int64_t blkid_device_size ;
 	
 	char buff[ SIZE ] ;
 	char * buffer = buff ;
 	char format[ SIZE ] ;
+	char * loop_device ;
 	
 	if( !zuluCryptSecurityGainElevatedPrivileges() ){
 		printf( "%s\tNil\tNil\tNil\tNil\tNil\n",device ) ;
@@ -96,7 +99,22 @@ void zuluMountPartitionProperties( const char * device,const char * mapper,const
 		return ;
 	}
 	
-	printf( "%s\t",device ) ;
+	if( strncmp( device,"/dev/loop",9 ) == 0 ){
+		/*
+		 * zuluCryptLoopDeviceAddress() is defined in ../zuluCrypt-cli/lib/create_loop_device.c
+		 */
+		loop_device = zuluCryptLoopDeviceAddress( device ) ;
+		if( loop_device != NULL ){
+			printf( "%s\t",loop_device ) ;
+			free( loop_device ) ;
+		}else{
+			printf( "%s\t",device ) ;
+		}
+		
+	}else{
+		printf( "%s\t",device ) ;
+	}
+	
 	if( m_point == NULL ){
 		printf( "Nil" ) ;
 	}else{
@@ -157,9 +175,9 @@ void zuluMountPartitionProperties( const char * device,const char * mapper,const
 	
 	total = block_size * vfs.f_blocks  ;
 	
-	free =  block_size * vfs.f_bavail  ;
+	free_space = block_size * vfs.f_bavail  ;
 		
-	used = total - free ;
+	used = total - free_space ;
 
 	snprintf( buff,SIZE,"%.2f%%",100 * ( ( float ) used / ( float ) total ) ) ;
 	printf( "\t%s\n",buff ) ;

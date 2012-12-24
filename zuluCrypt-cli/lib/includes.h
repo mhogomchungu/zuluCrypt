@@ -17,6 +17,10 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
+#ifndef ZULUCRYPT_LIB
+#define ZULUCRYPT_LIB
+
 #include <sys/mount.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -190,3 +194,5 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd,string_t * st_d
  * this function is defined in file_path_security.c
  */
 int zuluCryptSecureOpenFile( const char * path,int * fd,string_t * file,uid_t uid ) ;
+
+#endif 

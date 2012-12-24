@@ -56,10 +56,10 @@ int zuluCryptPathStartsWith( const char * path,const char * start )
 int zuluCryptPathDoesNotStartsWith( const char * path,const char * start )
 {
 	int st ;
-	char * p = realpath( path,NULL ) ;
+	char * p = canonicalize_path( path ) ;
 	if( p == NULL )
 		return 0 ;
-	st = strcmp( p,start ) ;
+	st = strncmp( p,start,strlen( start ) ) ;
 	free( p ) ;
 	return st != 0 ;
 }
@@ -79,5 +79,6 @@ int zuluCryptPathDidNotChange( const char * path )
 
 int zuluCryptPathDeviceIsBlockDevice( const char * device )
 {
-	return 1 ;
+	if( device ){;}
+	return 0 ;
 }

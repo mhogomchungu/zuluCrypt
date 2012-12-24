@@ -188,10 +188,9 @@ void keyDialog::closeEvent( QCloseEvent * e )
 	e->ignore();
 	this->HideUI();
 }
-#include<QDebug>
+
 void keyDialog::volumeMiniProperties( QString prp )
 {
-	qDebug()<<prp;
 	MainWindow::volumeMiniProperties( m_table,prp,utility::mountPath( m_point ) ) ;
 	this->HideUI();
 }
@@ -219,6 +218,7 @@ void keyDialog::slotMountComplete( int st,QString m )
 			DialogMsg m( this ) ;
 
 			m.ShowUIOK( QString( "ERROR" ),QString( "An error has occured and the volume could not be opened" ) );
+			this->HideUI();
 		}
 	}else{
 		DialogMsg msg( this ) ;
