@@ -24,7 +24,7 @@ int zuluMountUMount( const char * device,uid_t uid,const char * mode,int mount_p
 	char * m_point = NULL ;
 	int status ;
 	string_t st = StringVoid ;
-	
+	const char * dev = NULL ;
 	if( mode ) {;}
 	if( mount_point_option ) {;}
 	
@@ -36,15 +36,15 @@ int zuluMountUMount( const char * device,uid_t uid,const char * mode,int mount_p
 		if( loop_device == NULL ){
 			return _zuluExit( 100,StringVoid,m_point,"ERROR: device does not appear to be mounted" ) ;
 		}else{
+			st = StringInherit( &loop_device ) ;
+			dev = StringContent( st ) ;
 			/*
 			 * zuluCryptGetMountPointFromPath() is defined in defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c 
 			 */
-			m_point = zuluCryptGetMountPointFromPath( loop_device ) ;
+			m_point = zuluCryptGetMountPointFromPath( dev ) ;
 			if( m_point == NULL ){
-				free( loop_device ) ;
-				return _zuluExit( 100,StringVoid,m_point,"ERROR: device does not appear to be mounted" ) ;
+				return _zuluExit( 100,st,m_point,"ERROR: device does not appear to be mounted" ) ;
 			}
-			free( loop_device ) ;
 		}
 	}else{
 		/*
@@ -52,7 +52,7 @@ int zuluMountUMount( const char * device,uid_t uid,const char * mode,int mount_p
 		*/
 		m_point = zuluCryptGetMountPointFromPath( device ) ;
 		if( m_point == NULL )
-			return _zuluExit( 100,StringVoid,m_point,"ERROR: device does not appear to be mounted" ) ;
+			return _zuluExit( 100,st,m_point,"ERROR: device does not appear to be mounted" ) ;
 	}
 	
 	/*
@@ -60,7 +60,7 @@ int zuluMountUMount( const char * device,uid_t uid,const char * mode,int mount_p
 	 */
 	if( !zuluCryptSecurityMountPointPrefixMatch( m_point,uid ) ){
 		if( uid != 0 ){
-			return _zuluExit( 101,StringVoid,m_point,"ERROR: you can only unmount volumes you have mounted" ) ;
+			return _zuluExit( 101,st,m_point,"ERROR: you can only unmount volumes you have mounted" ) ;
 		}
 	}
 	

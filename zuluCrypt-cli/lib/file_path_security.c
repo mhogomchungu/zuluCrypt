@@ -20,30 +20,17 @@
 #include "includes.h"
 #include <errno.h>
 
-/*
- * global_variable_file_struct is a global variable declared in ../lib/includes.h
- * and defined in ../lib/create_loop_device.c
- */
-
-static void _get_path_from_file( int fd,string_t * st_dev )
-{
-	char * c ;
-	string_t st = String( "/proc/self/fd/" ) ;
-	StringAppendInt( st,fd ) ;
-	c = zuluCryptRealPath( StringContent( st ) ) ;
-	StringDelete( &st ) ;
-	*st_dev = StringInherit( &c ) ;
-}
-
 int zuluCryptSecureOpenFile( const char * path,int * fd,string_t * file,uid_t uid )
 {
 	int st ;
 	int f = -1 ;
 	uid_t org = geteuid() ;
+	char * dev ;
 	seteuid( uid ) ;
 	f = open( path,O_RDONLY ) ;
 	if( f != -1 ){
-		_get_path_from_file( f,file ) ;
+		dev = zuluCryptGetFileNameFromFileDescriptor( f ) ;
+		*file = StringInherit( &dev ) ;
 		*fd = f ;
 		st = 1 ;
 	}else{
@@ -59,6 +46,7 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd,string_t * st_d
 	int xt = 0 ;
 	int lfd ;
 	
+	char * dev ;
 	struct stat stat_st ;
 	struct stat stat_st_1 ;
 	/*
@@ -138,12 +126,10 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd,string_t * st_d
 			}else if( S_ISDIR( stat_st.st_mode ) ){
 				st = 2 ;
 			}else{
-				switch( errno ){
-					case EACCES : st = 4 ; break ;
-					/*
-					 * more may follow
-					 */
-				}
+				/*
+				 * whatever it is,it cant be good,reject it
+				 */
+				st = 100 ;
 			}
 		}
 	}else{
@@ -156,6 +142,12 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd,string_t * st_d
 		*fd = open( file,O_RDONLY ) ;
 		
 		if( *fd != -1 ){
+			fstat( *fd,&stat_st ) ;
+			/*
+			 * zuluCryptGetFileNameFromFileDescriptor() is defined in ./create_loop_device.c
+			 */
+			dev = zuluCryptGetFileNameFromFileDescriptor( *fd ) ;
+			*st_dev = StringInherit( &dev ) ;
 			/*
 			 * A user has access to the device.
 			 * we close the file when we are done examining them because they can not be moved under us and we dont have to
@@ -181,16 +173,15 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd,string_t * st_d
 			}else if( S_ISDIR( stat_st.st_mode ) ){
 				st = 2 ;
 			}else{
-				switch( errno ){
-					case EACCES : st = 4 ; break ;
-					/*
-					 * more may follow
-					 */
-				}
+				/*
+				 * whatever it is,it cant be good,reject it
+				 */
+				st = 100 ;
 			}
 			close( *fd ) ;
 			*fd = -1 ;
 		}else{
+			perror( "jjj" ) ;
 			/*
 			 * invalid path or something i dont know,reject
 			 */
