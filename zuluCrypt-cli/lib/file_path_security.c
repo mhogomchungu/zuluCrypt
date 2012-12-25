@@ -54,7 +54,9 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd,char ** dev,uid
 	 * try to open the device with user privileges
 	 */
 	seteuid( uid ) ;
-		
+	
+	*dev = NULL ;
+	
 	*fd = open( file,O_RDONLY ) ;
 	
 	if( *fd != -1 ){
@@ -112,19 +114,26 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd,char ** dev,uid
 				st = 0 ;
 			}
 		}else{
-			close( *fd ) ;
-			*fd = -1 ;
 			if( S_ISBLK( stat_st.st_mode ) ){
 				if( uid == 0 ) {
 					/*
 					 * we got a block device and we are root,accept it
 					 */
+					*dev = zuluCryptGetFileNameFromFileDescriptor( *fd ) ;
 					st = 0 ;
 				}else{
 					/*
-					 * user has access to block device,odd,reject
+					 * normal user has access to block device,it could be a writeble cdrom,accept it only 
+					 * if its in /dev/ but not in /dev/shm
 					 */
-					st = 1 ;
+					*dev = zuluCryptGetFileNameFromFileDescriptor( *fd ) ;
+					if( *dev != NULL ){
+						if( strncmp( *dev,"/dev/shm/",9 ) == 0 ){
+							st = 4 ;
+						}else if( strncmp( *dev,"/dev/",5 ) == 0 ){
+							st = 0 ;
+						}
+					}
 				}
 			}else if( S_ISDIR( stat_st.st_mode ) ){
 				st = 2 ;
@@ -134,6 +143,8 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd,char ** dev,uid
 				 */
 				st = 100 ;
 			}
+			close( *fd ) ;
+			*fd = -1 ;
 		}
 	}else{
 		/*
