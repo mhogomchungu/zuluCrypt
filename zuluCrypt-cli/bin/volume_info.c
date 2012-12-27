@@ -21,29 +21,21 @@
 
 int zuluCryptEXEVolumeInfo( const char * mapper,const char * device,uid_t uid )
 {
-	char * dev ;
 	char * output ;
 	int xt ;
 	
 	string_t p ;
-
-	dev = zuluCryptRealPath( device ) ;
-	if( dev == NULL ){
-		printf( "ERROR: full device path could not get resolved\n" ) ;
-		return 1 ;
-	}
-		
 	/*
-	 * This function is defined at "create_mapper_name.c"
-	 * 
-	 * Explanation for what it does is explained where it is defined.
+	 * zuluCryptCreateMapperName() is defined at "../lib/create_mapper_name.c
 	 */
-	p = zuluCryptCreateMapperName( dev,mapper,uid,CLOSE ) ;
+	p = zuluCryptCreateMapperName( device,mapper,uid,CLOSE ) ;
 	if( !zuluCryptSecurityGainElevatedPrivileges() ){
-		printf( "ERROR: could get elevated privileges,check binary permissions\n" ) ;
+		printf( "ERROR: could not get elevated privileges,check binary permissions\n" ) ;
 		return 3 ;
 	}
-		
+	/*
+	 *zuluCryptVolumeStatus() is defined in ../lib/status.c
+	 */	
 	output = zuluCryptVolumeStatus( StringContent( p ) ) ;
 	
 	if( output != NULL ){
@@ -56,7 +48,6 @@ int zuluCryptEXEVolumeInfo( const char * mapper,const char * device,uid_t uid )
 	}
 	zuluCryptSecurityDropElevatedPrivileges() ;
 	StringDelete( &p );
-	free( dev ) ;
 	return xt ;
 }
 

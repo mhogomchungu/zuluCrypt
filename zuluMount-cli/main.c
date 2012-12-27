@@ -111,7 +111,24 @@ static int _zuluMountMountedList( uid_t uid )
 
 int zuluMountVolumeStatus( const char * device,uid_t uid )
 {
-	return zuluCryptEXEVolumeInfo( strrchr( device,'/' ) + 1,device,uid ) ;
+	char * dev = NULL ;
+	int st ;
+	if( strncmp( device,"/dev/loop",9 ) == 0 ){
+		/*
+		 * zuluCryptLoopDeviceAddress() is defined in ../zuluCrypt-cli/lib/create_loop_device.c
+		 */
+		dev = zuluCryptLoopDeviceAddress( device ) ;
+		if( dev != NULL ){
+			st = zuluCryptEXEVolumeInfo( strrchr( dev,'/' ) + 1,dev,uid ) ;
+			free( dev ) ;		
+		}else{
+			printf( "ERROR: could not get volume info,is the volume opened?\n" ) ;
+			st = 1 ;
+		}
+	}else{
+		st = zuluCryptEXEVolumeInfo( strrchr( device,'/' ) + 1,device,uid ) ;
+	}
+	return st ;
 }
 
 static int _zuluMountPrintDeviceProperties( const char * device,uid_t uid )
@@ -311,7 +328,8 @@ options:\n\
       -- additional arguments for crypto_LUKS and crypto_PLAIN volume, -p passphrase/-f keyfile\n";
 	
 	doc2 = "\
--u -- unmount a partition: arguments: -d partition_path\n";
+-u -- unmount a partition: arguments: -d partition_path\n\
+-s -- print properties of an encrypted volume: arguments: -d partition_path\n";
 
       doc3 = "\
 -l -- print a list of mounted partitions\n\
