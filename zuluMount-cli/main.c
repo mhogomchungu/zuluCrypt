@@ -348,7 +348,7 @@ static int _zuluMountDoAction( const char * device,const char * action,const cha
 			      int mount_point_option,const char * fs_opts,int * fd )
 {
 	int status ;
-	char * dev ;
+	char * dev = NULL ;
 	/*
 	 * zuluCryptGetDeviceFileProperties is defined in ../zuluCrypt-lib/file_path_security.c
 	 */
@@ -394,7 +394,7 @@ int main( int argc,char * argv[] )
 	string_t * k ;
 	stringList_t stl ;
 	int status ;
-	int fd ;
+	int fd = -1 ;
 	
 	/*
 	 * global_variable_user_uid is a global variable defined in ../zuluCrypt-cli/bin/security.c 

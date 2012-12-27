@@ -297,23 +297,10 @@ string_t zuluCryptGetMtabEntry( const char * path )
 {
 	string_t entry = StringVoid ;
 	stringList_t stl = zuluCryptGetMtabList() ;
-	
-	StringListIterator it  ;
-	StringListIterator end ;
-	
-	if( stl == StringListVoid )
-		return StringVoid ;
-	
-	it  = StringListBegin( stl ) ;
-	end = StringListEnd( stl ) ;
-	
-	for( ; it != end ; it++ ){
-		if( StringStartsWith( *it,path ) ){
-			entry = StringCopy( *it ) ;
-			break ;
-		}
+	ssize_t index = StringListHasStartSequence( stl,path ) ;
+	if( index >= 0 ){
+		entry = StringListCopyStringAt( stl,index ) ;
 	}
-	
 	StringListDelete( &stl ) ;
 	return entry ;
 }

@@ -83,14 +83,14 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd,char ** dev,uid
 				 * ie check to make sure the file wasnt swapped btw calls.
 				 */
 				if( stat_st.st_dev == stat_st_1.st_dev && stat_st.st_ino == stat_st_1.st_ino ){
+					close( *fd ) ;
+					*fd = lfd ;
 					seteuid( 0 ) ;
 					/*
 					 * zuluCryptAttachLoopDeviceToFileUsingFileDescriptor() is defined in ./create_loop_device.c
 					 */
-					xt = zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( lfd,O_RDWR,&st_dev ) ;
+					xt = zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( *fd,O_RDWR,&st_dev ) ;
 					seteuid( uid ) ;
-					close( *fd ) ;
-					*fd = lfd ;
 					*dev = StringDeleteHandle( &st_dev ) ;
 				}
 			}else{

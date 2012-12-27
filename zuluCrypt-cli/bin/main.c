@@ -214,7 +214,7 @@ static void ExitOnMemoryExaustion( void )
 
 int main( int argc,char * argv[] )
 {
-	int fd ;
+	int fd = -1;
 	const char * device ;
 	const char * mapping_name ;
 	char * ac ;
@@ -373,6 +373,9 @@ int main( int argc,char * argv[] )
 			default: return zuluExit( 113,stl,"ERROR: a non supported device encountered or device is missing" ) ;
 		}
 		
+		if( fd != -1 ){
+			close( fd ) ;
+		}
 		if( dev == NULL ){
 			return zuluExit( 114,stl,"ERROR: could not resolve path to device" ) ; 
 		}
@@ -390,8 +393,5 @@ int main( int argc,char * argv[] )
 	
 	free( dev ) ;
 	
-	if( fd != -1 ){
-		close( fd ) ;
-	}
 	return zuluExit( st,stl,NULL ) ;
 } 

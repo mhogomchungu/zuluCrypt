@@ -52,8 +52,8 @@ static inline int _device_is_not_sane( const char * device,const char * mapper )
 		}
 	}else{
 		st = strcmp( device,dev ) ;
-		free( dev ) ;
 	}
+	free( dev ) ;
 	return st != 0 ;
 }
 
