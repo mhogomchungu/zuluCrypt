@@ -40,7 +40,7 @@ int zuluCryptSecureOpenFile( const char * path,int * fd,string_t * file,uid_t ui
 	return st ;
 }
 
-int zuluCryptGetDeviceFileProperties( const char * file,int * fd,char ** dev,uid_t uid )
+int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_loop,char ** dev,uid_t uid )
 {
 	int st = 100 ;
 	int xt = 0 ;
@@ -57,11 +57,11 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd,char ** dev,uid
 	
 	*dev = NULL ;
 	
-	*fd = open( file,O_RDONLY ) ;
+	*fd_path = open( file,O_RDONLY ) ;
 	
-	if( *fd != -1 ){
-		fstat( *fd,&stat_st ) ;
-		fcntl( *fd,F_SETFD,FD_CLOEXEC ) ;
+	if( *fd_path != -1 ){
+		fstat( *fd_path,&stat_st ) ;
+		fcntl( *fd_path,F_SETFD,FD_CLOEXEC ) ;
 		/*
 		 * A user has access to the device.They should get here only with paths to files they have access to. 
 		 * Allow access to files only
@@ -83,13 +83,13 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd,char ** dev,uid
 				 * ie check to make sure the file wasnt swapped btw calls.
 				 */
 				if( stat_st.st_dev == stat_st_1.st_dev && stat_st.st_ino == stat_st_1.st_ino ){
-					close( *fd ) ;
-					*fd = lfd ;
+					close( *fd_path ) ;
+					*fd_path = lfd ;
 					seteuid( 0 ) ;
 					/*
 					 * zuluCryptAttachLoopDeviceToFileUsingFileDescriptor() is defined in ./create_loop_device.c
 					 */
-					xt = zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( *fd,O_RDWR,&st_dev ) ;
+					xt = zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( *fd_path,fd_loop,O_RDWR,&st_dev ) ;
 					seteuid( uid ) ;
 					*dev = StringDeleteHandle( &st_dev ) ;
 				}
@@ -101,15 +101,15 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd,char ** dev,uid
 				/*
 				 * zuluCryptAttachLoopDeviceToFileUsingFileDescriptor() is defined in ./create_loop_device.c
 				 */
-				xt = zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( *fd,O_RDONLY,&st_dev ) ;
+				xt = zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( *fd_path,fd_loop,O_RDONLY,&st_dev ) ;
 				seteuid( uid ) ;
 				*dev = StringDeleteHandle( &st_dev ) ;
 			}
 			
 			if( xt != 1 ){
 				st = 100 ;
-				close( *fd ) ;
-				*fd = -1 ;
+				close( *fd_path ) ;
+				*fd_path = -1 ;
 			}else{
 				st = 0 ;
 			}
@@ -119,14 +119,14 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd,char ** dev,uid
 					/*
 					 * we got a block device and we are root,accept it
 					 */
-					*dev = zuluCryptGetFileNameFromFileDescriptor( *fd ) ;
+					*dev = zuluCryptGetFileNameFromFileDescriptor( *fd_path ) ;
 					st = 0 ;
 				}else{
 					/*
 					 * normal user has access to block device,it could be a writeble cdrom,accept it only 
 					 * if its in /dev/ but not in /dev/shm
 					 */
-					*dev = zuluCryptGetFileNameFromFileDescriptor( *fd ) ;
+					*dev = zuluCryptGetFileNameFromFileDescriptor( *fd_path ) ;
 					if( *dev != NULL ){
 						if( strncmp( *dev,"/dev/shm/",9 ) == 0 ){
 							st = 4 ;
@@ -143,8 +143,8 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd,char ** dev,uid
 				 */
 				st = 100 ;
 			}
-			close( *fd ) ;
-			*fd = -1 ;
+			close( *fd_path ) ;
+			*fd_path = -1 ;
 		}
 	}else{
 		/*
@@ -153,14 +153,14 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd,char ** dev,uid
 		
 		seteuid( 0 ) ;
 		
-		*fd = open( file,O_RDONLY ) ;
+		*fd_path = open( file,O_RDONLY ) ;
 		
-		if( *fd != -1 ){
-			fstat( *fd,&stat_st ) ;
+		if( *fd_path != -1 ){
+			fstat( *fd_path,&stat_st ) ;
 			/*
 			 * zuluCryptGetFileNameFromFileDescriptor() is defined in ./create_loop_device.c
 			 */
-			*dev = zuluCryptGetFileNameFromFileDescriptor( *fd ) ;
+			*dev = zuluCryptGetFileNameFromFileDescriptor( *fd_path ) ;
 			/*
 			 * A user has access to the device.
 			 * we close the file when we are done examining them because they can not be moved under us and we dont have to
@@ -193,8 +193,8 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd,char ** dev,uid
 				 */
 				st = 100 ;
 			}
-			close( *fd ) ;
-			*fd = -1 ;
+			close( *fd_path ) ;
+			*fd_path = -1 ;
 		}else{
 			/*
 			 * invalid path or something i dont know,reject

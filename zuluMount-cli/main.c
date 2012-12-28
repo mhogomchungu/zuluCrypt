@@ -363,14 +363,16 @@ static int _zuluMountcheckifLVM( const char * action,const char * rpath )
 
 static int _zuluMountDoAction( const char * device,const char * action,const char * m_point,
 			      const char * m_opts,uid_t uid,const char * key,const char * key_source,
-			      int mount_point_option,const char * fs_opts,int * fd )
+			      int mount_point_option,const char * fs_opts )
 {
+	int fd = -1 ;
+	int fd1 = -1 ;
 	int status ;
 	char * dev = NULL ;
 	/*
 	 * zuluCryptGetDeviceFileProperties is defined in ../zuluCrypt-lib/file_path_security.c
 	 */
-	switch( zuluCryptGetDeviceFileProperties( device,fd,&dev,uid ) ){
+	switch( zuluCryptGetDeviceFileProperties( device,&fd,&fd1,&dev,uid ) ){
 		case 0 : break ;
 		case 1 : printf( "ERROR: devices in /dev/ with user access permissions are not suppored\n" ) ;	 return 220 ;
 		case 2 : printf( "ERROR: given path is a directory\n" ) ;  					 return 221 ;
@@ -393,6 +395,12 @@ static int _zuluMountDoAction( const char * device,const char * action,const cha
 	
 	free( dev ) ;
 	
+	if( fd1 != -1 ){
+		close( fd ) ;
+	}
+	if( fd != -1 ){
+		close( fd ) ;
+	}
 	return status ;
 }
 
@@ -412,7 +420,6 @@ int main( int argc,char * argv[] )
 	string_t * k ;
 	stringList_t stl ;
 	int status ;
-	int fd = -1 ;
 	
 	/*
 	 * global_variable_user_uid is a global variable defined in ../zuluCrypt-cli/bin/security.c 
@@ -490,7 +497,7 @@ int main( int argc,char * argv[] )
 	if( strncmp( dev,"UUID=",5 ) == 0 ){
 		device = zuluCryptSecurityEvaluateDeviceTags( "UUID",dev + 5 ) ;
 		if( device != NULL ){
-			status = _zuluMountDoAction( device,action,m_point,m_opts,uid,key,key_source,mount_point_option,fs_opts,&fd ) ;
+			status = _zuluMountDoAction( device,action,m_point,m_opts,uid,key,key_source,mount_point_option,fs_opts ) ;
 			free( device ) ;
 		}else{
 			printf( "could not resolve UUID\n" ) ;
@@ -499,19 +506,15 @@ int main( int argc,char * argv[] )
 	}else if( strncmp( dev,"LABEL=",6 ) == 0 ){
 		device = zuluCryptSecurityEvaluateDeviceTags( "LABEL",dev + 6 ) ;
 		if( device != NULL ){
-			status = _zuluMountDoAction( device,action,m_point,m_opts,uid,key,key_source,mount_point_option,fs_opts,&fd ) ;
+			status = _zuluMountDoAction( device,action,m_point,m_opts,uid,key,key_source,mount_point_option,fs_opts ) ;
 			free( device ) ;
 		}else{
 			printf( "could not resolve LABEL\n" ) ;
 			status = 215 ;
 		}
 	}else{
-		status = _zuluMountDoAction( dev,action,m_point,m_opts,uid,key,key_source,mount_point_option,fs_opts,&fd ) ;
+		status = _zuluMountDoAction( dev,action,m_point,m_opts,uid,key,key_source,mount_point_option,fs_opts ) ;
 	}
-	
-	if( fd != -1 ){
-		close( fd ) ;
-	}
-		
+			
 	return _zuluExit_1( status,stl,NULL,NULL ) ;
 }

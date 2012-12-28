@@ -42,7 +42,7 @@
  */
 #include "version.h"
 
-int zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( int fd_path,int mode,string_t * loop_device ) ;
+int zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( int fd_path,int * fd_loop,int mode,string_t * loop_device ) ;
 
 string_t zuluCryptCreateMapperName( const char * device,const char * mapping_name,uid_t uid,int i ) ;
 
@@ -188,11 +188,11 @@ char * zuluCryptGetFileNameFromFileDescriptor( int fd ) ;
 /*
  * this function is defined in file_path_security.c
  */
-int zuluCryptGetDeviceFileProperties( const char * file,int * fd,char ** dev,uid_t uid ) ;
+int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_loop,char ** dev,uid_t uid ) ;
 
 /*
  * this function is defined in file_path_security.c
  */
-int zuluCryptSecureOpenFile( const char * path,int * fd,string_t * file,uid_t uid ) ;
+int zuluCryptSecureOpenFile( const char * path,int * fd_path,string_t * file,uid_t uid ) ;
 
 #endif 

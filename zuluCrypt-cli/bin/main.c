@@ -214,6 +214,7 @@ static void ExitOnMemoryExaustion( void )
 
 int main( int argc,char * argv[] )
 {
+	int fd1 = -1 ;
 	int fd = -1;
 	const char * device ;
 	const char * mapping_name ;
@@ -365,7 +366,7 @@ int main( int argc,char * argv[] )
 		/*
 		 * this function is defined in ../zuluCrypt-lib/file_path_security.c
 		 */
-		switch( zuluCryptGetDeviceFileProperties( device,&fd,&dev,uid ) ){
+		switch( zuluCryptGetDeviceFileProperties( device,&fd,&fd1,&dev,uid ) ){
 			case 0 : break ;
 			case 1 : return zuluExit( 111,stl,"ERROR: devices in /dev/ with user access permissions are not suppored" ) ;
 			case 2 : return zuluExit( 112,stl,"ERROR: given path is a directory" ) ;   
@@ -374,10 +375,12 @@ int main( int argc,char * argv[] )
 			default: return zuluExit( 113,stl,"ERROR: a non supported device encountered or device is missing" ) ;
 		}
 		
-		if( fd != -1 ){
-			close( fd ) ;
-		}
 		if( dev == NULL ){
+			if( fd1 != -1 )
+				close( fd1 ) ;
+			if( fd != -1 ){
+				close( fd ) ;
+			}
 			return zuluExit( 114,stl,"ERROR: could not resolve path to device" ) ; 
 		}
 		
@@ -393,6 +396,10 @@ int main( int argc,char * argv[] )
 	st = zuluCryptEXE( &clargs,mapping_name,uid ) ;
 	
 	free( dev ) ;
-	
+	if( fd1 != -1 )
+		close( fd1 ) ;
+	if( fd != -1 ){
+		close( fd ) ;
+	}
 	return zuluExit( st,stl,NULL ) ;
 } 

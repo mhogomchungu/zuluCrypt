@@ -134,6 +134,7 @@ int zuluMountMount( const char * device,const char * m_point,
 	char * path = NULL ;
 	const char * rm_point ;
 	unsigned long m_flags ;
+	const char * dev = device ;
 	
 	if( mount_point_from_fstab ){;}
 	
@@ -145,7 +146,7 @@ int zuluMountMount( const char * device,const char * m_point,
 		if( path == NULL ){
 			return _zuluExit( 112,z,path,"ERROR: insuffienct privileges to mount the volume with given mount options" ) ;
 		}else{
-			device = path ;
+			dev = path ;
 		}
 	}
 	
@@ -158,10 +159,10 @@ int zuluMountMount( const char * device,const char * m_point,
 	/*
 	 * zuluCryptPartitionIsMounted is defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c
 	 */
-	if( zuluCryptPartitionIsMounted( device ) )
+	if( zuluCryptPartitionIsMounted( dev ) )
 		return _zuluExit( 102,z,path,"ERROR: device already mounted" ) ;
 	
-	status = _zuluMountPartitionAccess( device,m_opts,uid ) ;
+	status = _zuluMountPartitionAccess( dev,m_opts,uid ) ;
 	
 	switch( status ){
 		case 0 : break ;

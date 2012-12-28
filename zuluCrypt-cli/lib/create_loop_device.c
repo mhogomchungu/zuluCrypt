@@ -20,6 +20,7 @@
 #include "includes.h"
 #include <sys/ioctl.h>
 #include <linux/loop.h>
+#include <errno.h>
 
 static int zuluExit( int result,string_t st,int fd_loop,int fd_path )
 {
@@ -78,7 +79,6 @@ char * zuluCryptGetFileNameFromFileDescriptor( int fd )
 /*
  * Here,we check if the path we sent to open() is the path open() used. This check is necessary to 
  * guard against some known hypothetical exploits
- * 
  */
 static int _paths_are_not_sane( int fd,const char * path )
 {
@@ -93,25 +93,45 @@ static int _paths_are_not_sane( int fd,const char * path )
 	}
 }
 
-int zuluCryptAttachLoopDeviceToFile( const char * path,int mode,int * loop_fd,string_t * loop_device )
+static int open_loop_device_1( string_t * loop_device )
 {
-	size_t size ;
-	string_t loopd = StringVoid ;
-	int fd_loop = -1 ;
-	int fd_path = -1 ;
-	int devnr ;
-	const char * loop ;
+	string_t st = String( "" ) ;
+	int i ;
+	int fd ;
+	const char * path ;
 	struct loop_info64 l_info ;
 	
-	if( strncmp( path,"/dev/",5 ) == 0 )
-		return zuluExit( 0,loopd,fd_loop,fd_path ) ;
-	
-	memset( &l_info,'\0',sizeof( struct loop_info64 ) ) ;
+	for( i = 0 ; i < 255 ; i++ ){
+		StringAppend( st,"/dev/loop" ) ;
+		path = StringAppendInt( st,i ) ;
+		fd = open( path,O_RDONLY );
+		if( fd == -1 ){
+			StringDelete( &st ) ;
+			return 0 ;
+		}
+		if( ioctl( fd,LOOP_GET_STATUS64,&l_info ) != 0 ){
+			if( errno == ENXIO) {
+				*loop_device = st ;
+				close( fd ) ;
+				return 1 ;
+			}
+		}
+		StringReset( st ) ;
+		close( fd ) ;
+	}
+	StringDelete( &st ) ;
+	return 0 ;
+}
+
+static int open_loop_device( string_t * loop_device )
+{
+	int devnr ;
+	int fd_loop ;
 	
 	fd_loop = open( "/dev/loop-control",O_RDONLY ) ;
-
+	
 	if( fd_loop == -1 )
-		return 0 ;
+		return open_loop_device_1( loop_device ) ;
 	
 	devnr = ioctl( fd_loop,LOOP_CTL_GET_FREE );
 	
@@ -120,8 +140,57 @@ int zuluCryptAttachLoopDeviceToFile( const char * path,int mode,int * loop_fd,st
 	if( devnr < 0 )
 		return 0 ;
 	
-	loopd = String( "/dev/loop" ) ;
-	loop = StringAppendInt( loopd,devnr ) ;
+	*loop_device = String( "/dev/loop" ) ;
+	StringAppendInt( *loop_device,devnr ) ;
+	
+	return 1 ;
+}
+
+static int attach_device_to_loop( int fd_path,int * fd_loop,string_t loop_device,int mode )
+{
+	char * path ;
+	size_t size ;
+	
+	struct loop_info64 l_info ;
+	
+	*fd_loop = open( StringContent( loop_device ),mode ) ;
+	
+	memset( &l_info,'\0',sizeof( struct loop_info64 ) ) ;
+	
+	if( *fd_loop == -1 )
+		return 0 ;
+	
+	if( ioctl( *fd_loop,LOOP_SET_FD,fd_path ) == -1 )
+		return 0 ;
+	
+	if( ioctl( *fd_loop,LOOP_GET_STATUS64,&l_info ) == -1 )
+		return 0;
+	
+	l_info.lo_flags |= LO_FLAGS_AUTOCLEAR;
+	
+	path = zuluCryptGetFileNameFromFileDescriptor( fd_path ) ;
+	if( path == NULL )
+		return 0 ;
+	size = sizeof( l_info.lo_file_name ) ;
+	strncpy( ( char * )l_info.lo_file_name,path,size ) ;
+	l_info.lo_file_name[ size - 1 ] = '\0' ;
+	free( path ) ;
+	
+	if( ioctl( *fd_loop,LOOP_SET_STATUS64,&l_info ) == -1 )
+		return 0 ;
+	
+	return 1 ;
+}
+
+int zuluCryptAttachLoopDeviceToFile( const char * path,int mode,int * loop_fd,string_t * loop_device )
+{
+	string_t loopd = StringVoid ;
+	
+	int fd_loop = -1 ;
+	int fd_path = -1 ;
+	
+	if( !open_loop_device( &loopd ) )
+		return zuluExit( 0,loopd,fd_loop,fd_path ) ;
 	
 	fd_path = open( path,mode ) ;
 	
@@ -132,84 +201,27 @@ int zuluCryptAttachLoopDeviceToFile( const char * path,int mode,int * loop_fd,st
 	
 	if( _paths_are_not_sane( fd_path,path ) )
 		return zuluExit( 0,loopd,fd_loop,fd_path ) ;
-			
-	fd_loop = open( loop,mode ) ;
 	
-	if( fd_loop == -1 )
+	if( attach_device_to_loop( fd_path,&fd_loop,loopd,mode ) ){
+		*loop_device = loopd ;
+		*loop_fd = fd_loop ;
+		return zuluExit( 1,loopd,fd_loop,fd_path ) ;
+	}else{
 		return zuluExit( 0,loopd,fd_loop,fd_path ) ;
-	
-	if( ioctl( fd_loop,LOOP_SET_FD,fd_path ) == -1 )
-		return zuluExit( 0,loopd,fd_loop,fd_path ) ;
-	
-	if( ioctl( fd_loop,LOOP_GET_STATUS64,&l_info ) == -1 )
-		return zuluExit( 0,loopd,fd_loop,fd_path ) ;
-	
-	l_info.lo_flags |= LO_FLAGS_AUTOCLEAR;
-	
-	size = sizeof( l_info.lo_file_name ) ;
-	strncpy( ( char * )l_info.lo_file_name,path,size ) ;
-	l_info.lo_file_name[ size - 1 ] = '\0' ;
-	
-	if( ioctl( fd_loop,LOOP_SET_STATUS64,&l_info ) == -1 )
-		return zuluExit( 0,loopd,fd_loop,fd_path ) ;
-	
-	*loop_device = loopd ;
-	*loop_fd = fd_loop ;
-
-	return zuluExit( 1,loopd,fd_loop,fd_path ) ;
+	}
 }
 
-int zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( int fd_path,int mode,string_t * loop_device )
+int zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( int fd_path,int * fd_loop,int mode,string_t * loop_device )
 {
-	size_t size ;
 	string_t loopd = StringVoid ;
-	int fd_loop = -1 ;
-	int devnr ;
-	const char * loop ;
-	char * path ;
-	struct loop_info64 l_info ;
-	
-	memset( &l_info,'\0',sizeof( struct loop_info64 ) ) ;
-	
-	fd_loop = open( "/dev/loop-control",O_RDONLY ) ;
-	
-	if( fd_loop == -1 )
+
+	if( !open_loop_device( &loopd ) )
 		return 0 ;
 	
-	devnr = ioctl( fd_loop,LOOP_CTL_GET_FREE );
-	
-	close( fd_loop ) ;
-	
-	if( devnr < 0 )
+	if( attach_device_to_loop( fd_path,fd_loop,loopd,mode ) ){
+		*loop_device = loopd ;
+		return 1 ;
+	}else{
 		return 0 ;
-	
-	loopd = String( "/dev/loop" ) ;
-	loop = StringAppendInt( loopd,devnr ) ;
-		
-	fd_loop = open( loop,mode ) ;
-	
-	if( fd_loop == -1 )
-		return zuluExit( 0,loopd,fd_loop,fd_path ) ;
-	
-	if( ioctl( fd_loop,LOOP_SET_FD,fd_path ) == -1 )
-		return zuluExit( 0,loopd,fd_loop,fd_path ) ;
-	
-	if( ioctl( fd_loop,LOOP_GET_STATUS64,&l_info ) == -1 )
-		return zuluExit( 0,loopd,fd_loop,fd_path ) ;
-	
-	l_info.lo_flags |= LO_FLAGS_AUTOCLEAR;
-	
-	size = sizeof( l_info.lo_file_name ) ;
-	
-	path = zuluCryptGetFileNameFromFileDescriptor( fd_path ) ;
-	
-	strncpy( ( char * )l_info.lo_file_name,path,size ) ;
-	l_info.lo_file_name[ size - 1 ] = '\0' ;
-	free( path ) ;
-	
-	if( ioctl( fd_loop,LOOP_SET_STATUS64,&l_info ) == -1 )
-		return zuluExit( 0,loopd,fd_loop,fd_path ) ;
-	
-	*loop_device = loopd ;
-	return zuluExit( 1,loopd,fd_loop,fd_path ) ;
+	}	
 }
