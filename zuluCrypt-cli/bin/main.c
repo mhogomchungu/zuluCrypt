@@ -227,7 +227,8 @@ int main( int argc,char * argv[] )
 	
 	struct_opts clargs ;
 	
-	global_variable_user_uid = getuid() ;
+	uid_t uid = getuid() ;
+	global_variable_user_uid = uid ;
 	
 	memset( &clargs,'\0',sizeof( struct_opts ) ) ;
 	
@@ -266,7 +267,7 @@ int main( int argc,char * argv[] )
 	/*
 	 * zuluCryptSecuritySanitizeTheEnvironment() is defined in ./security.c
 	 */
-	zuluCryptSecuritySanitizeTheEnvironment( global_variable_user_uid,&stl ) ;
+	zuluCryptSecuritySanitizeTheEnvironment( uid,&stl ) ;
 	
 	zuluCryptEXEGetOpts( argc,argv,&clargs );
 	
@@ -326,7 +327,7 @@ int main( int argc,char * argv[] )
 		case 'S': st = zuluCryptPrintPartitions( clargs.partition_number,clargs.print_partition_type ) ; 
 			  return zuluExit( st,stl,NULL ) ;
 		case 'L': zuluCryptSecurityGainElevatedPrivileges() ;
-			  st = zuluCryptPrintOpenedVolumes( global_variable_user_uid ) ; 
+			  st = zuluCryptPrintOpenedVolumes( uid ) ; 
 			  zuluCryptSecurityDropElevatedPrivileges() ;
 			  return zuluExit( st,stl,NULL ) ;
 	}
@@ -352,7 +353,7 @@ int main( int argc,char * argv[] )
 		
 		if( ac != NULL ) {
 			clargs.device = ac ;
-			st = zuluCryptEXE( &clargs,mapping_name,global_variable_user_uid );
+			st = zuluCryptEXE( &clargs,mapping_name,uid );
 			free( ac ) ;
 			StringDelete( &q ) ;
 			return zuluExit( st,stl,NULL ) ;
@@ -364,7 +365,7 @@ int main( int argc,char * argv[] )
 		/*
 		 * this function is defined in ../zuluCrypt-lib/file_path_security.c
 		 */
-		switch( zuluCryptGetDeviceFileProperties( device,&fd,&dev,global_variable_user_uid ) ){
+		switch( zuluCryptGetDeviceFileProperties( device,&fd,&dev,uid ) ){
 			case 0 : break ;
 			case 1 : return zuluExit( 111,stl,"ERROR: devices in /dev/ with user access permissions are not suppored" ) ;
 			case 2 : return zuluExit( 112,stl,"ERROR: given path is a directory" ) ;   
@@ -389,7 +390,7 @@ int main( int argc,char * argv[] )
 		}
 	}
 	
-	st = zuluCryptEXE( &clargs,mapping_name,global_variable_user_uid ) ;
+	st = zuluCryptEXE( &clargs,mapping_name,uid ) ;
 	
 	free( dev ) ;
 	

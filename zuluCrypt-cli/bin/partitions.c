@@ -543,31 +543,38 @@ stringList_t zuluCryptGetPartitionFromConfigFile( const char * path )
 int _zuluCryptPartitionIsSystemPartition( const char * dev )
 {	
 	stringList_t stl ;
-	
 	ssize_t index = -1 ;
-	
-	char * device = realpath( dev,NULL ) ;
-	
-	if( device == NULL )
-		return 2 ;
-	
 	stl = zuluCryptPartitions( SYSTEM_PARTITIONS ) ;
-	
 	if( stl != StringListVoid ){
-		index = StringListContains( stl,device );
+		index = StringListContains( stl,dev );
 		StringListDelete( &stl ) ;
 	}
-	
-	free( device ) ;
-	
 	return index >= 0 ? 1 : 0 ;
 }
 
 int zuluCryptPartitionIsSystemPartition( const char * device )
 {
-	if( _zuluCryptPartitionIsSystemPartition( device ) )
-		return 1 ;
-	if( strncmp( device,"/dev/",5 ) != 0 )
-		return 0 ;
-	return _zuluCryptCheckSYSifDeviceIsSystem( device ) ;
+	char * dev ;
+	if( strncmp( device,"/dev/loop",9 ) != 0 ){
+		if( _zuluCryptPartitionIsSystemPartition( device ) ){
+			return 1 ;
+		}else{
+			return _zuluCryptCheckSYSifDeviceIsSystem( device ) ;
+		}
+	}else{
+		/*
+		* zuluCryptLoopDeviceAddress() is defined in ../lib/create_loop_device.c
+		*/
+		dev = zuluCryptLoopDeviceAddress( device ) ;
+		if( dev == NULL )
+			return 0 ;
+		if( _zuluCryptPartitionIsSystemPartition( dev ) ){
+			free( dev ) ;
+			return 1 ;
+		}else if( _zuluCryptCheckSYSifDeviceIsSystem( dev ) ){
+			free( dev ) ;
+			return 1 ;
+		}
+	}
+	return 0 ;
 }
