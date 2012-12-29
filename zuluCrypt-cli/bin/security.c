@@ -410,10 +410,12 @@ int zuluCryptSecurityGainElevatedPrivileges( void )
 	return  0  ;
 }
 
-/*
- * global_variable_user_uid is an extern variable set in main function in ./main.c
- */
 uid_t global_variable_user_uid ;
+void zuluCryptGetUserUIDForPrivilegeManagement( uid_t uid ) 
+{
+	global_variable_user_uid = uid ;
+}
+
 int zuluCryptSecurityDropElevatedPrivileges( void )
 {	
 	if( seteuid( global_variable_user_uid ) != 0 ){
@@ -469,7 +471,7 @@ void zuluCryptSecuritySanitizeTheEnvironment( uid_t uid,stringList_t * stx )
 	string_t user_name = StringListAssignString( *stx,zuluCryptGetUserName( uid ) );
 	
 	/*
-	 * dont want to iterate over an array while changing it size through deleting its members,so going to 
+	 * dont want to iterate over an array while changing its size through deleting its members,so going to 
 	 * make a copy of it and then delete its members reading them from the copy
 	 */
 	while( *env ){
@@ -510,7 +512,7 @@ int zuluCryptSecurityUserOwnTheFile( const char * device,uid_t uid )
 	 * 
 	 * It is set it defined and set in zuluCryptGetDeviceFileProperties() defined in ../lib/create_loop_device.c
 	 */
-	return 1;
+	return 0 ;
 }
 
 void zuluCryptSecurityPrintPermissions( void )

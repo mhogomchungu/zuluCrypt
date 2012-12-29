@@ -229,7 +229,10 @@ int main( int argc,char * argv[] )
 	struct_opts clargs ;
 	
 	uid_t uid = getuid() ;
-	global_variable_user_uid = uid ;
+	/*
+	 * zuluCryptGetUserUIDForPrivilegeManagement() is defined in ./security.c
+	 */
+	zuluCryptGetUserUIDForPrivilegeManagement( uid ) ;
 	
 	memset( &clargs,'\0',sizeof( struct_opts ) ) ;
 	

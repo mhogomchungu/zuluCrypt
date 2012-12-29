@@ -26,6 +26,7 @@
 #include <fcntl.h>
 #include <blkid/blkid.h>
 #include <sys/statvfs.h>
+#include <dirent.h>
 
 /*
  * 64 byte buffer is more than enough because the API that will produce the largest number is crypt_get_data_offset()
@@ -302,11 +303,70 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	return StringDeleteHandle( &p ) ;
 }
 
+static char * zuluCryptVolumeDeviceName_1( const char * mapper )
+{
+	ssize_t len ;
+	string_t st ;
+	DIR * dir ;
+	struct dirent * entry ;
+	const char * path ;
+	string_t xt ;
+	#define MAPPER_SIZE 1032
+	char buffer[ MAPPER_SIZE ] ;
+	char * result = NULL ;
+
+	len = readlink( mapper,buffer,MAPPER_SIZE - 1 ) ;
+	
+	if( len < 0 ){
+		return NULL ;
+	}else{
+		buffer[ len ] = '\0' ;
+	}
+	
+	st = String( buffer ) ;
+	StringReplaceString( st,"../","/sys/block/" ) ;
+	StringAppend( st,"/slaves" ) ;
+	
+	dir = opendir( StringContent( st ) ) ;
+	if( dir == NULL ){
+		StringDelete( &st ) ;
+		return NULL ;
+	}
+	entry = readdir( dir ) ;
+	if( entry == NULL ){
+		closedir( dir ) ;
+		StringDelete( &st ) ;
+		return NULL ;
+	}
+	
+	while( ( entry = readdir( dir ) ) != NULL ){
+		path = entry->d_name ;
+		if( strcmp( path,"." ) == 0 )
+			continue ;
+		if( strcmp( path,".." ) == 0 )
+			continue ;
+		if( strstr( path,"loop" ) != 0 ){
+			path = StringMultipleAppend( st,"/",path,"/loop/backing_file",END ) ;
+			xt = StringGetFromVirtualFile( path ) ;
+			StringRemoveRight( xt,1 ) ;
+			StringDelete( &st ) ;
+			result = StringDeleteHandle( &xt ) ;
+		}else{
+			StringReset( st ) ;
+			StringMultipleAppend( st,"/dev/",path,END ) ;
+			result = StringDeleteHandle( &st ) ;
+		}
+	}
+	
+	closedir( dir ) ;
+	return result ;
+}
+
 char * zuluCryptVolumeDeviceName( const char * mapper )
 {
 	struct crypt_device * cd;
 	char * path ;
-	string_t address = NULL ;
+	string_t address = StringVoid ;
 	const char * e ;
 	
 	e = crypt_get_dir() ;
@@ -314,11 +374,15 @@ char * zuluCryptVolumeDeviceName( const char * mapper )
 	if( e == NULL )
 		return NULL ;
 	
-	if( strncmp( mapper,e,strlen( e ) != 0 ) )
+	if( strncmp( mapper,e,strlen( e ) != 0 ) ){
 		return NULL ;
-	
-	if( crypt_init_by_name( &cd,mapper ) < 0 )
-		return NULL ;
+	}
+	if( crypt_init_by_name( &cd,mapper ) < 0 ){
+		/*
+		 * truecrypt volumes fail the above test,work around the fail for now just in case its an upstream bug
+		 */
+		return zuluCryptVolumeDeviceName_1( mapper ) ;
+	}
 	
 	e = crypt_get_device_name( cd ) ;
 	
@@ -336,6 +400,8 @@ char * zuluCryptVolumeDeviceName( const char * mapper )
 		}else{
 			address = String( e ) ;
 		}
+	}else{
+		;
 	}
 	
 	crypt_free( cd ) ;

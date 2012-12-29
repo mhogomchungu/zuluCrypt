@@ -162,4 +162,9 @@ int zulucryptFileSystemIsNotSupported( const char * fs ) ;
  */
 char * zuluCryptRealPath( const char * path ) ;
 
+/*
+ * this function is defined in ,.security.c
+ */
+void zuluCryptGetUserUIDForPrivilegeManagement( uid_t ) ;
+
 #endif 

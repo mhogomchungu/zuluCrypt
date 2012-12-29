@@ -421,12 +421,11 @@ int main( int argc,char * argv[] )
 	stringList_t stl ;
 	int status ;
 	
+	uid = getuid() ;
 	/*
-	 * global_variable_user_uid is a global variable defined in ../zuluCrypt-cli/bin/security.c 
-	 * and declared in ../zuluCrypt-cli/bin/includes.
+	 * zuluCryptGetUserUIDForPrivilegeManagement() is defined in ../zuluCrypt-bin/security.c
 	 */
-	uid = global_variable_user_uid = getuid() ;
-	
+	zuluCryptGetUserUIDForPrivilegeManagement( uid ) ;
 	/*
 	 * zuluCryptSecurityDropElevatedPrivileges() is defined in ../zuluCrypt-cli/bin/security.c
 	 */
