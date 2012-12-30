@@ -306,12 +306,12 @@ char * zuluCryptVolumeStatus( const char * mapper )
 static char * zuluCryptVolumeDeviceName_1( const char * mapper )
 {
 	ssize_t len ;
-	string_t st ;
+	string_t st = StringVoid ;
 	DIR * dir ;
 	struct dirent * entry ;
 	const char * path ;
 	string_t xt ;
-	#define MAPPER_SIZE 1032
+	#define MAPPER_SIZE 32
 	char buffer[ MAPPER_SIZE ] ;
 	char * result = NULL ;
 
@@ -325,16 +325,10 @@ static char * zuluCryptVolumeDeviceName_1( const char * mapper )
 	
 	st = String( buffer ) ;
 	StringReplaceString( st,"../","/sys/block/" ) ;
-	StringAppend( st,"/slaves" ) ;
+	path = StringAppend( st,"/slaves" ) ;
 	
-	dir = opendir( StringContent( st ) ) ;
+	dir = opendir( path ) ;
 	if( dir == NULL ){
-		StringDelete( &st ) ;
-		return NULL ;
-	}
-	entry = readdir( dir ) ;
-	if( entry == NULL ){
-		closedir( dir ) ;
 		StringDelete( &st ) ;
 		return NULL ;
 	}
@@ -345,11 +339,11 @@ static char * zuluCryptVolumeDeviceName_1( const char * mapper )
 			continue ;
 		if( strcmp( path,".." ) == 0 )
 			continue ;
-		if( strstr( path,"loop" ) != 0 ){
+		if( strstr( path,"loop" ) != NULL ){
 			path = StringMultipleAppend( st,"/",path,"/loop/backing_file",END ) ;
 			xt = StringGetFromVirtualFile( path ) ;
-			StringRemoveRight( xt,1 ) ;
 			StringDelete( &st ) ;
+			StringRemoveRight( xt,1 ) ;
 			result = StringDeleteHandle( &xt ) ;
 		}else{
 			StringReset( st ) ;
@@ -379,7 +373,7 @@ char * zuluCryptVolumeDeviceName( const char * mapper )
 	}
 	if( crypt_init_by_name( &cd,mapper ) < 0 ){
 		/*
-		 * truecrypt volumes fail the above test,work around the fail for now just in case its an upstream bug
+		 * just in case crypt_init_by_name() fail for some reason.
 		 */
 		return zuluCryptVolumeDeviceName_1( mapper ) ;
 	}
@@ -395,7 +389,7 @@ char * zuluCryptVolumeDeviceName( const char * mapper )
 			if( path != NULL ){
 				address = StringInherit( &path ) ;
 			}else{
-				address = String( "Nil" ) ;
+				address = String( e ) ;
 			}
 		}else{
 			address = String( e ) ;
