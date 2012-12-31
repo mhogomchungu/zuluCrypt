@@ -18,6 +18,12 @@
  */
 #include "includes.h"
 
+static inline const char * _mapping_name( const char * m )
+{
+	const char * e = strrchr( m,'/' ) ;
+	return e == NULL ? m : e + 1 ;
+}
+
 int zuluMountCryptoMount( const char * device,const char * mode,uid_t uid,
 				  const char * key,const char * key_source,
 				  const char * m_point,int mount_point_option )
@@ -29,7 +35,6 @@ int zuluMountCryptoMount( const char * device,const char * mode,uid_t uid,
 	struct_opts opts ;
 	
 	const char * mapping_name ;
-	const char * e ;
 	char * path = NULL ;
 	/*
 	 * zuluCryptEXEGetOptsSetDefault() is defined in ../zuluCrypt-cli/bin/get_opts.c
@@ -44,16 +49,10 @@ int zuluMountCryptoMount( const char * device,const char * mode,uid_t uid,
 		if( path == NULL ){
 			return 20 ;
 		}else{
-			device = path ;
+			mapping_name = _mapping_name( path ) ;
 		}
-	}
-	
-	e = strrchr( device,'/' ) ;
-	
-	if( e == NULL){
-		mapping_name = device ;
 	}else{
-		mapping_name = e + 1 ;
+		mapping_name = _mapping_name( device ) ;
 	}
 	
 	if( key_source != NULL ){
