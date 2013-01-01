@@ -272,25 +272,16 @@ void utility::removeFavoriteEntry( QString entry )
 
 QString utility::getUUIDFromPath( QString device )
 {
+	device = device.replace( QString( "\"" ),QString( "\"\"\"" ) ) ;
+	QString exe = QString( "%1 -U -d %2" ).arg( ZULUCRYPTzuluCrypt ).arg( device ) ;
+	QProcess p ;
+	p.start( exe );
+	p.waitForFinished() ;
 	QString uuid ;
-	const char * e ;
-
-	QByteArray dev = device.toAscii() ;
-
-	blkid_probe dp = blkid_new_probe_from_filename( dev.constData() ) ;
-
-	blkid_do_probe( dp ) ;
-
-	if( blkid_probe_lookup_value( dp,"TYPE",&e,NULL ) == 0 ){
-		if( strcmp( e,"crypto_LUKS") == 0 ){
-			if( blkid_probe_lookup_value( dp,"UUID",&e,NULL ) == 0 ){
-				uuid = QString( "UUID=\"%1\"" ).arg( QString( e ) ) ;
-			}
-		}
+	if( p.exitCode() == 0 ){
+		uuid = QString( p.readAll() ) ;
+		uuid.remove( QString( "\n" ) ) ;
 	}
-
-	blkid_free_probe( dp ) ;
-
+	p.close();
 	return uuid ;
 }
-

@@ -62,6 +62,8 @@ int zuluCryptSecurityDeviceIsReadable( const char * device,uid_t uid ) ;
 
 int zuluCryptSecurityDeviceIsWritable( const char * device,uid_t uid ) ;
 
+char * zuluCryptSecurityUUIDFromPath( const char * device ) ;
+
 #ifdef __cplusplus
 }
 #endif

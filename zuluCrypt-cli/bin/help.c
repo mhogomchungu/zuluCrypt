@@ -103,7 +103,8 @@ void zuluCryptEXEHelp( void )
 	-X         open a device pointed by argument -d and write random data to it hiding data previously written to device\n" ;
 	
 	help7 = "\
-	-W         check if a device is a truecrypt device or not,required argument are -p or -f\n" ;
+	-W         check if a device is a truecrypt device or not,required argument are -p or -f\n\
+	-U         print UUID of a given device,required argument: -d\n";
 	
 	help8 ="\
 	-J         create a plain mapper owned by the user who run the command on a device pointed by argument -d\n\

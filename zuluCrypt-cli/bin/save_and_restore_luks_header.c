@@ -92,6 +92,7 @@ static int create_work_directory( string_t * st )
 			/*
 			 * whatever it is,it cant be good,exit
 			 */
+			zuluCryptSecurityDropElevatedPrivileges() ;
 			return 0 ;
 		}
 	}

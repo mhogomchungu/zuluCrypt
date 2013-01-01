@@ -212,6 +212,22 @@ static void ExitOnMemoryExaustion( void )
 	exit( 1 ) ;
 }
 
+static int _print_uuid_from_path( const char * device )
+{
+	/*
+	 * zuluCryptSecurityUUIDFromPath() is defined in ./security.c
+	 */
+	char * e = zuluCryptSecurityUUIDFromPath( device ) ;
+	if( e == NULL ){
+		puts( "UUID=\"Nil\"" ) ;
+		return 1 ;
+	}else{
+		printf( "UUID=\"%s\"\n",e ) ;
+		free( e ) ;
+		return 0 ;
+	}
+}
+
 int main( int argc,char * argv[] )
 {
 	int fd1 = -1 ;
@@ -341,6 +357,9 @@ int main( int argc,char * argv[] )
 	
 	if( device == NULL )
 		return zuluExit( 120,stl,"ERROR: required option( device path ) is missing for this operation" ) ;
+	
+	if( action == 'U' )
+		return _print_uuid_from_path( device ) ;
 	
 	if( strncmp( device,"UUID=",5 ) == 0 ){
 

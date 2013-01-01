@@ -158,20 +158,19 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		
 	if( pass == NULL )
 		return key ;
+	/*
+	 * ZULUCRYPTpluginPath is set at config time at it equals $prefix/lib(64)/zuluCrypt/
+	 */
+	plugin_path = String( ZULUCRYPTpluginPath ) ;
 	
-	if( strrchr( name,'/' ) == NULL ){
-		/*
-		 * ZULUCRYPTpluginPath is set at config time at it equals $prefix/lib(64)/zuluCrypt/
-		 */
-		plugin_path = String( ZULUCRYPTpluginPath ) ;
+	pluginPath = strrchr( name,'/' ) ;
+	
+	if( pluginPath == NULL ){
 		pluginPath = StringAppend( plugin_path,name ) ;
 	}else{
-		/*
-		 * module has a backslash, assume its path to where a module is located
-		 */
-		pluginPath = name ;
+		pluginPath = StringAppend( plugin_path,pluginPath + 1 ) ;
 	}
-	
+
 	if( stat( pluginPath,&st ) == 0 ) {
 		path = String( pass->pw_dir ) ;
 		sockpath = StringAppend( path,"/.zuluCrypt-socket/" ) ;

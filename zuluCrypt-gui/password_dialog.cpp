@@ -179,10 +179,9 @@ void passwordDialog::ShowUI()
 	m_ui->PushButtonVolumePath->setIcon( QIcon( QString( ":/file.png" ) ) );
 	this->show();
 }
-#include<QDebug>
+
 void passwordDialog::mountPointPath( QString path )
 {
-	qDebug()<<path;
 	QString p = m_ui->MountPointPath->text() ;
 
 	int x = path.lastIndexOf( QString( "/" ) ) ;
@@ -210,7 +209,7 @@ void passwordDialog::pluginOption()
 	m_ui->PassPhraseField->setToolTip( tr( "enter a module name to use to get passphrase" ) );
 	m_ui->PassPhraseField->setEchoMode( QLineEdit::Normal );
 	m_ui->PassPhraseField->clear();
-	m_ui->pushButtonPassPhraseFromFile->setEnabled( true ) ;
+	m_ui->pushButtonPassPhraseFromFile->setEnabled( false ) ;
 	m_ui->labelPassphrase->setText( tr( "plugin name" ) );
 	m_ui->pushButtonPassPhraseFromFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) );
 	m_ui->pushButtonPlugin->setEnabled( true );
@@ -488,7 +487,6 @@ void passwordDialog::success( QString output )
 void passwordDialog::complete( QString output )
 {
 	QStringList list ;
-
 	list.append( utility::resolvePath( m_ui->OpenVolumePath->text() ) ) ;
 	list.append( utility::mountPath( m_point ) ) ;
 

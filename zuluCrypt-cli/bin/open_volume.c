@@ -26,11 +26,13 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 
 static void _printResult( const char * device,const char * m_point )
 {
+	zuluCryptSecurityGainElevatedPrivileges() ;
 	if( zuluCryptVolumeIsLuks( device ) ){
 		printf( "SUCCESS: luks volume opened successfully\n" ) ;
 	}else{
 		printf( "SUCCESS: plain volume opened successfully\n" ) ;
 	}
+	zuluCryptSecurityDropElevatedPrivileges() ;
 	printf( "volume mounted at: %s\n",m_point ) ;
 }
 
@@ -94,8 +96,11 @@ static int zuluExit( int st,const char * device,char * m_point,stringList_t stl 
  */
 static int zuluExit_1( int st,const struct_opts * opts,const char * device,char * cpoint,stringList_t stl )
 {
-	if( opts->open_no_mount == -1 && st != 0 )
+	if( opts->open_no_mount == -1 && st != 0 ){
+		zuluCryptSecurityGainElevatedPrivileges() ;
 		rmdir( cpoint ) ;
+		zuluCryptSecurityDropElevatedPrivileges() ;
+	}
 	return zuluExit( st,device,cpoint,stl ) ;
 }
 
@@ -210,7 +215,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		if( cpoint != NULL )
 			rmdir( cpoint ) ;
 		
-		return zuluExit( 24,device,cpoint,stl ) ;
+		return zuluExit_1( 24,opts,device,cpoint,stl ) ;
 	}
 	
 	if( plugin_path != NULL ){

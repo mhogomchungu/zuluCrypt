@@ -74,6 +74,7 @@ private slots :
 	void complete( QString );
 	void cbStateChanged( int );
 private :
+	QString getUUIDFromPath( QString ) ;
 	void sendKey( QString sockpath ) ;
 	QString getKeyFromKWallet( void ) ;
 	void setDefaultOpenMode( void );

@@ -369,6 +369,7 @@ int zuluCryptSecurityGetPassFromFile( const char * path,uid_t uid,string_t * st 
 	
 	if( strncmp( path,z,s ) == 0 ){
 		StringDelete( &p ) ;
+		zuluCryptSecurityDropElevatedPrivileges();
 		/*
 		 * path that starts with $HOME/.zuluCrypt-socket is treated not as a path to key file but as path
 		 * to a local socket to get a passphrase 
@@ -513,6 +514,28 @@ int zuluCryptSecurityUserOwnTheFile( const char * device,uid_t uid )
 	 * It is set it defined and set in zuluCryptGetDeviceFileProperties() defined in ../lib/create_loop_device.c
 	 */
 	return 0 ;
+}
+
+char * zuluCryptSecurityUUIDFromPath( const char * device )
+{
+	blkid_probe blkid ;
+	const char * c = NULL ;
+	char * d = NULL;
+	
+	zuluCryptSecurityGainElevatedPrivileges() ;
+	blkid = blkid_new_probe_from_filename( device ) ;
+	
+	if( blkid != NULL ){
+		blkid_do_probe( blkid );
+		blkid_probe_lookup_value( blkid,"UUID",&c,NULL ) ;
+		if( c != NULL ){
+			d = strdup( c ) ;
+		}
+		blkid_free_probe( blkid );
+	}
+	
+	zuluCryptSecurityDropElevatedPrivileges() ;
+	return d ;
 }
 
 void zuluCryptSecurityPrintPermissions( void )
