@@ -452,7 +452,6 @@ string_t zuluCryptSecurityGetFileSystemFromDevice( const char * path )
 
 void zuluCryptSecuritySanitizeTheEnvironment( uid_t uid,stringList_t * stx )
 {
-	char * c ;
 	extern char ** environ ;
 	const char ** env = ( const char ** ) environ ;
 	ssize_t index ;
@@ -460,31 +459,12 @@ void zuluCryptSecuritySanitizeTheEnvironment( uid_t uid,stringList_t * stx )
 	StringListIterator  it ;
 	StringListIterator end ;
 	
+	if( uid ){;}
 	/*
-	 * below two functions are defined in ../lib/user_home_path.c
-	 */
-	
-	/*
-	 * the "beauty" of C programming,these two variables are going to be expected to be around to the environment
-	 * for the duration of the program,we collect them to the main function to hold them and delete them when main returns.
-	 */
-	string_t user_home = StringListAssignString( *stx,zuluCryptGetUserHomePath( uid ) ) ;
-	string_t user_name = StringListAssignString( *stx,zuluCryptGetUserName( uid ) );
-	
-	
-	/*
-	 * return early, qt based gui plugins look bad for some reason
-	 * They must be looking for an environmental variable i am skipping
-	 */
-	
-	return ;
-	
-	
-	
-	
-	/*
-	 * dont want to iterate over an array while changing its size through deleting its members,so going to 
-	 * make a copy of it and then delete its members reading them from the copy
+	 * First,we make a copy of the enviromental varibales
+	 * Second,we clear the enviromental variable because we dont want it
+	 * Third,we return a copy of the enviromental variable because we want to pass it along
+	 * the plugins 
 	 */
 	while( *env ){
 		stl = StringListAppend( stl,*env ) ;
@@ -495,50 +475,14 @@ void zuluCryptSecuritySanitizeTheEnvironment( uid_t uid,stringList_t * stx )
 	end = StringListEnd( stl ) ;
 	
 	for( ; it != end ;it++ ){
-		if( StringStartsWith( *it,"DISPLAY=" ) )
-			continue ;
-		if( StringStartsWith( *it,"LS_COLORS=" ) )
-			continue ;
-		if( StringStartsWith( *it,"XDG_" ) )
-			continue ;
-		if( StringStartsWith( *it,"GTK" ) )
-			continue ;
-		if( StringStartsWith( *it,"DBUS_" ) )
-			continue ;
-		if( StringStartsWith( *it,"QTDIR=" ) )
-			continue ;
-		if( StringStartsWith( *it,"SESSION_MANAGER=" ) )
-			continue ;
-		if( StringStartsWith( *it,"LC_" ) )
-			continue ;
-		if( StringStartsWith( *it,"KDEDIR=" ) )
-			continue ;
-		if( StringStartsWith( *it,"LANG=" ) )
-			continue ;
-		if( StringStartsWith( *it,"XCURSOR_" ) )
-			continue ;
-		if( StringStartsWith( *it,"PYTHONPATH=" ) )
-			continue ;
-		if( StringStartsWith( *it,"DESKTOP_SESSION=" ) )
-			continue ;
-		if( StringStartsWith( *it,"GS_LIB=" ) )
-			continue ;
 		index = StringIndexOfChar( *it,0,'=' ) ;
 		if( index >= 0 ){
 			unsetenv( StringSubChar( *it,index,'\0' ) ) ;
+			StringSubChar( *it,index,'=' ) ;
 		}
 	}
 	
-	putenv( "PROGRAM_NAME=zuluCrypt" ) ;
-	c = ( char * )StringPrepend( user_home,"HOME=" ) ;
-	putenv( c ) ;
-	c = ( char * )StringPrepend( user_name,"USER=" ) ;
-	putenv( c ) ;
-		
-	putenv( "PATH=/bin:/sbin/:/usr/bin:/usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin" );
-	putenv( "IFS= \t\n" );
-		
-	StringListDelete( &stl ) ;
+	*stx = stl ;
 }
 
 int zuluCryptSecurityUserOwnTheFile( const char * device,uid_t uid )

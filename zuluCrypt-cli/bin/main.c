@@ -197,10 +197,13 @@ static int zuluCryptEXE( struct_opts * clargs,const char * mapping_name,uid_t ui
 	return 200 ; /* shouldnt get here */	
 }
 
-static int zuluExit( int st,stringList_t stl,const char * msg )
+static int zuluExit( int st,stringList_t stl,stringList_t stx,char * const * env,const char * msg )
 {
 	StringListClearDelete( &stl ) ;
+	StringListDelete( &stx ) ;
 	
+	if( env != NULL )
+		free( ( char * )env ) ;
 	if( msg != NULL )
 		printf( "%s\n",msg ) ;
 	return st ;
@@ -238,9 +241,12 @@ int main( int argc,char * argv[] )
 	char * dev ;
 	char action ;
 	int st ;
+	char * const * env ;
 	
 	string_t q = StringVoid ;
+	
 	stringList_t stl ;
+	stringList_t stx ;
 	
 	struct_opts clargs ;
 	
@@ -279,6 +285,11 @@ int main( int argc,char * argv[] )
 	}
 	
 	/*
+	 * zuluCryptEXEGetOpts() is defined in ./get_opts.c
+	 */
+	zuluCryptEXEGetOpts( argc,argv,&clargs );
+	
+	/*
 	 * this object is used as a form of memory management.It collects all string objects to make them easily deletable
 	 * at the end of the function and allows a function to have easily managebale multiple exit points.
 	 */
@@ -287,9 +298,9 @@ int main( int argc,char * argv[] )
 	/*
 	 * zuluCryptSecuritySanitizeTheEnvironment() is defined in ./security.c
 	 */
-	zuluCryptSecuritySanitizeTheEnvironment( uid,&stl ) ;
+	zuluCryptSecuritySanitizeTheEnvironment( uid,&stx ) ;
 	
-	zuluCryptEXEGetOpts( argc,argv,&clargs );
+	clargs.env = env = StringListStringArray( stx ) ;
 	
 	q = StringListAssignString( stl,String( "" ) ) ;
 	
@@ -301,7 +312,7 @@ int main( int argc,char * argv[] )
 		StringSubChar( q,StringLength( q ) - 1,'\0' ) ;
 	}
 	
-	clargs.argv = StringListContentAt( stl,0 );	
+	clargs.argv = StringListContentAt( stl,0 );
 	
 	/*
 	 * Hide "sensitive" command line arguments from ps comamnd and related tools.
@@ -345,21 +356,23 @@ int main( int argc,char * argv[] )
 		case 'A':
 		case 'N':
 		case 'S': st = zuluCryptPrintPartitions( clargs.partition_number,clargs.print_partition_type ) ; 
-			  return zuluExit( st,stl,NULL ) ;
+			  return zuluExit( st,stl,stx,env,NULL ) ;
 		case 'L': zuluCryptSecurityGainElevatedPrivileges() ;
 			  st = zuluCryptPrintOpenedVolumes( uid ) ; 
 			  zuluCryptSecurityDropElevatedPrivileges() ;
-			  return zuluExit( st,stl,NULL ) ;
+			  return zuluExit( st,stl,stx,env,NULL ) ;
 	}
 	
 	if( action == '\0' )
-		return zuluExit( 130,stl,"ERROR: \"action\" argument is missing" ) ;
+		return zuluExit( 130,stl,stx,env,"ERROR: \"action\" argument is missing" ) ;
 	
 	if( device == NULL )
-		return zuluExit( 120,stl,"ERROR: required option( device path ) is missing for this operation" ) ;
+		return zuluExit( 120,stl,stx,env,"ERROR: required option( device path ) is missing for this operation" ) ;
 	
-	if( action == 'U' )
-		return _print_uuid_from_path( device ) ;
+	if( action == 'U' ){
+		st = _print_uuid_from_path( device ) ;
+		return zuluExit( st,stl,stx,env,NULL ) ;
+	}
 	
 	if( strncmp( device,"UUID=",5 ) == 0 ){
 
@@ -379,10 +392,10 @@ int main( int argc,char * argv[] )
 			st = zuluCryptEXE( &clargs,mapping_name,uid );
 			free( ac ) ;
 			StringDelete( &q ) ;
-			return zuluExit( st,stl,NULL ) ;
+			return zuluExit( st,stl,stx,env,NULL ) ;
 		}else{
 			StringDelete( &q ) ;
-			return zuluExit( 110,stl,"ERROR: could not find any partition with the presented UUID") ;
+			return zuluExit( 110,stl,stx,env,"ERROR: could not find any partition with the presented UUID") ;
 		}
 	}else{
 		/*
@@ -390,11 +403,11 @@ int main( int argc,char * argv[] )
 		 */
 		switch( zuluCryptGetDeviceFileProperties( device,&fd,&fd1,&dev,uid ) ){
 			case 0 : break ;
-			case 1 : return zuluExit( 111,stl,"ERROR: devices in /dev/ with user access permissions are not suppored" ) ;
-			case 2 : return zuluExit( 112,stl,"ERROR: given path is a directory" ) ;   
-			case 3 : return zuluExit( 113,stl,"ERROR: a file can have only one hard link" ) ;
-			case 4 : return zuluExit( 113,stl,"ERROR: insufficient privilges to access the device" ) ;
-			default: return zuluExit( 113,stl,"ERROR: a non supported device encountered or device is missing" ) ;
+			case 1 : return zuluExit( 111,stl,stx,env,"ERROR: devices in /dev/ with user access permissions are not suppored" ) ;
+			case 2 : return zuluExit( 112,stl,stx,env,"ERROR: given path is a directory" ) ;   
+			case 3 : return zuluExit( 113,stl,stx,env,"ERROR: a file can have only one hard link" ) ;
+			case 4 : return zuluExit( 113,stl,stx,env,"ERROR: insufficient privilges to access the device" ) ;
+			default: return zuluExit( 113,stl,stx,env,"ERROR: a non supported device encountered or device is missing" ) ;
 		}
 		
 		if( dev == NULL ){
@@ -403,7 +416,7 @@ int main( int argc,char * argv[] )
 			if( fd != -1 ){
 				close( fd ) ;
 			}
-			return zuluExit( 114,stl,"ERROR: could not resolve path to device" ) ; 
+			return zuluExit( 114,stl,stx,env,"ERROR: could not resolve path to device" ) ; 
 		}
 		
 		clargs.device = dev ;
@@ -423,5 +436,5 @@ int main( int argc,char * argv[] )
 	if( fd != -1 ){
 		close( fd ) ;
 	}
-	return zuluExit( st,stl,NULL ) ;
+	return zuluExit( st,stl,stx,env,NULL ) ;
 } 

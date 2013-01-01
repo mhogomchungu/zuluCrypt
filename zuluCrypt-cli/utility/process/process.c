@@ -33,6 +33,7 @@ struct ProcessType_t{
 	int timeout ;
 	int wait_status ;
 	int uid ;
+	char * const * env ;
 	pthread_t * thread ;
 };
 
@@ -41,6 +42,13 @@ static void ( *_fcn_ )( void )  = NULL ;
 void ProcessExitOnMemoryExaustion( void ( *f )( void ) )
 {
 	_fcn_ = f ;
+}
+
+void ProcessSetEnvironmentalVariable( process_t p,char * const * env ) 
+{
+	if( p != ProcessVoid ){
+		p->env = env ;
+	}
 }
 
 static process_t _ProcessError( void )
@@ -157,9 +165,18 @@ pid_t ProcessStart( process_t p )
 		close( p->fd_2[ 0 ] )     ;
 			
 		if( p->args == NULL ){
-			execl( p->exe,p->exe,( char * )0 ) ;
+			if( p->env != NULL ){
+				execle( p->exe,p->exe,( char * )0,p->env ) ;
+			}else{
+				execl( p->exe,p->exe,( char * )0 ) ;
+			}
 		}else{
-			execv( p->exe,p->args ) ;
+			if( p->env != NULL ){
+				execve( p->exe,p->args,p->env ) ;
+			}else{
+				execv( p->exe,p->args ) ;
+			}
+			
 		}
 		/*
 		 * execv has failed :-( 
@@ -327,6 +344,7 @@ process_t Process( const char * path )
 	p->uid = -1 ;
 	p->thread = NULL ;
 	p->fd_0[ 0 ] = -1 ;
+	p->env = NULL ;
 	return p ;
 }
 

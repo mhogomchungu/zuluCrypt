@@ -130,6 +130,11 @@ void ProcessSetArguments( process_t p,char * const argv[] ) ;
 void ProcessSetArgumentList( process_t p,... ) ;
 
 /*
+ * set the child process to start with the given enviromental variables
+ */
+void ProcessSetEnvironmentalVariable( process_t p,char * const * env ) ;
+
+/*
  * get state of the process handled by handle p 
  */
 #define HAS_NOT_START 1

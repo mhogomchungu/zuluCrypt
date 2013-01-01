@@ -42,6 +42,7 @@ void zuluCryptEXEGetOptsSetDefault( struct_opts * stopts )
 	stopts->dont_ask_confirmation = -1 ;
 	stopts->open_no_mount = -1 ;
 	stopts->argv = NULL ;
+	stopts->env  = NULL ;
 	stopts->print_partition_type = 0 ;
 }
 

@@ -42,7 +42,8 @@ typedef struct struct_opts_1{
 	const char * existing_key ;
 	const char * new_key ;
 	const char * new_key_source ;
-	const char * argv ;	
+	const char * argv ;
+	char * const * env ;
 	char action ;
 	int partition_number ;
 	int dont_ask_confirmation ;

@@ -78,10 +78,22 @@ int _zuluExit( int st,string_t z,char * q,const char * msg )
 	return st ;
 }
 
+static int _zuluExit_2( int st,stringList_t z,stringList_t q,const char * msg )
+{
+	StringListDelete( &q ) ;
+	StringListDelete( &z ) ;
+	
+	if( msg != NULL )
+		printf( "%s\n",msg ) ;
+	
+	return st ;
+}
+
 int _zuluExit_1( int st,stringList_t z,char * q,const char * msg )
 {
-	if( q != NULL )
+	if( q != NULL ){
 		free( q ) ;
+	}
 	
 	StringListDelete( &z ) ;
 	
@@ -276,7 +288,7 @@ static int _zuluMountPrintVolumeDeviceName( const char * device )
 
 static int _zuluMountExe( const char * device,const char * action,const char * m_point,
 			  const char * m_opts,const char * fs_opts,uid_t uid,const char * key,const char * key_source,
-			  int mount_point_option )
+			  int mount_point_option,stringList_t stx )
 {
 	if( strcmp( action,"-D" ) == 0 )
 		return _zuluMountPrintVolumeDeviceName( device ) ;
@@ -292,7 +304,7 @@ static int _zuluMountExe( const char * device,const char * action,const char * m
 			/*
 			 * zuluMountMount() is defined in crypto_mount.c
 			 */
-			return zuluMountCryptoMount( device,m_opts,uid,key,key_source,m_point,mount_point_option ) ;
+			return zuluMountCryptoMount( device,m_opts,uid,key,key_source,m_point,mount_point_option,stx ) ;
 		}else{
 			/*
 			 * zuluMountMount() is defined in mount.c
@@ -363,7 +375,7 @@ static int _zuluMountcheckifLVM( const char * action,const char * rpath )
 
 static int _zuluMountDoAction( const char * device,const char * action,const char * m_point,
 			      const char * m_opts,uid_t uid,const char * key,const char * key_source,
-			      int mount_point_option,const char * fs_opts )
+			      int mount_point_option,const char * fs_opts,stringList_t stx )
 {
 	int fd = -1 ;
 	int fd1 = -1 ;
@@ -390,7 +402,7 @@ static int _zuluMountDoAction( const char * device,const char * action,const cha
 		printf( "ERROR: this device looks like an lvm device,these devices are currently not supported\n" ) ;
 		status = 226 ;
 	}else{
-		status = _zuluMountExe( dev,action,m_point,m_opts,fs_opts,uid,key,key_source,mount_point_option ) ;
+		status = _zuluMountExe( dev,action,m_point,m_opts,fs_opts,uid,key,key_source,mount_point_option,stx ) ;
 	}
 	
 	free( dev ) ;
@@ -419,6 +431,7 @@ int main( int argc,char * argv[] )
 	uid_t uid ;
 	string_t * k ;
 	stringList_t stl ;
+	stringList_t stx ;
 	int status ;
 	
 	uid = getuid() ;
@@ -452,7 +465,7 @@ int main( int argc,char * argv[] )
 	/*
 	 * zuluCryptSecuritySanitizeTheEnvironment() is defined in ../zuluCrypt-cli/bin/security.c
 	 */
-	zuluCryptSecuritySanitizeTheEnvironment( global_variable_user_uid,&stl ) ;
+	zuluCryptSecuritySanitizeTheEnvironment( global_variable_user_uid,&stx ) ;
 	
 	if( _mount_get_opts( argc,argv,&action,&dev,&m_point,&m_opts,&key_argv,&key_source,&mount_point_option,&fs_opts ) != 0 )
 		return _mount_help() ;
@@ -465,27 +478,27 @@ int main( int argc,char * argv[] )
 	}
 	
 	if( action == NULL )
-		return _zuluExit_1( 212,stl,NULL,"ERROR: action not specified" ) ;
+		return _zuluExit_2( 212,stl,stx,"ERROR: action not specified" ) ;
 	
 	if( strcmp( action,"-S" ) == 0 ){
 		/*
 		 * zuluCryptPrintPartitions() is defined in ../zuluCrypt-cli/bin/partitions.c
 		 * it printf() devices with entries in "/etc/fstab","/etc/crypttab", and "/etc/zuluCrypttab"
 		 */
-		return _zuluExit_1( zuluCryptPrintPartitions( SYSTEM_PARTITIONS,0 ),stl,NULL,NULL ) ;
+		return _zuluExit_2( zuluCryptPrintPartitions( SYSTEM_PARTITIONS,0 ),stl,stx,NULL ) ;
 	}
 		
 	if( strcmp( action,"-l" ) == 0 )
-		return _zuluExit_1( _zuluMountMountedList( uid ),stl,NULL,NULL ) ;
+		return _zuluExit_2( _zuluMountMountedList( uid ),stl,stx,NULL ) ;
 	
 	if( strcmp( action,"-P" ) == 0 )
-		return _zuluExit_1( _zuluMountDeviceList(),stl,NULL,NULL ) ;
+		return _zuluExit_2( _zuluMountDeviceList(),stl,stx,NULL ) ;
 	
 	if( strcmp( action,"-h" ) == 0 )
-		return _zuluExit_1( _mount_help(),stl,NULL,NULL ) ;
+		return _zuluExit_2( _mount_help(),stl,stx,NULL ) ;
 	
 	if( dev == NULL )
-		return _zuluExit_1( 213,stl,NULL,"ERROR: device argument missing" ) ;
+		return _zuluExit_2( 213,stl,stx,"ERROR: device argument missing" ) ;
 		
 	if( m_opts == NULL )
 		m_opts = "rw" ;
@@ -496,7 +509,7 @@ int main( int argc,char * argv[] )
 	if( strncmp( dev,"UUID=",5 ) == 0 ){
 		device = zuluCryptSecurityEvaluateDeviceTags( "UUID",dev + 5 ) ;
 		if( device != NULL ){
-			status = _zuluMountDoAction( device,action,m_point,m_opts,uid,key,key_source,mount_point_option,fs_opts ) ;
+			status = _zuluMountDoAction( device,action,m_point,m_opts,uid,key,key_source,mount_point_option,fs_opts,stx ) ;
 			free( device ) ;
 		}else{
 			printf( "could not resolve UUID\n" ) ;
@@ -505,15 +518,15 @@ int main( int argc,char * argv[] )
 	}else if( strncmp( dev,"LABEL=",6 ) == 0 ){
 		device = zuluCryptSecurityEvaluateDeviceTags( "LABEL",dev + 6 ) ;
 		if( device != NULL ){
-			status = _zuluMountDoAction( device,action,m_point,m_opts,uid,key,key_source,mount_point_option,fs_opts ) ;
+			status = _zuluMountDoAction( device,action,m_point,m_opts,uid,key,key_source,mount_point_option,fs_opts,stx ) ;
 			free( device ) ;
 		}else{
 			printf( "could not resolve LABEL\n" ) ;
 			status = 215 ;
 		}
 	}else{
-		status = _zuluMountDoAction( dev,action,m_point,m_opts,uid,key,key_source,mount_point_option,fs_opts ) ;
+		status = _zuluMountDoAction( dev,action,m_point,m_opts,uid,key,key_source,mount_point_option,fs_opts,stx ) ;
 	}
 			
-	return _zuluExit_1( status,stl,NULL,NULL ) ;
+	return _zuluExit_2( status,stl,stx,NULL ) ;
 }

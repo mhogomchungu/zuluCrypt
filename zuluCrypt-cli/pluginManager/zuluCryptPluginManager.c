@@ -31,6 +31,7 @@
 #include "../utility/string/String.h"
 #include "../constants.h"
 #include "../bin/includes.h"
+#include "../bin/libzuluCrypt-exe.h"
 
 /*
  * below header file is created at config time.
@@ -151,12 +152,15 @@ static inline int pluginIsGpG( const char * plugin_path )
 	return st == 0 ;
 }
 
-string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * name,uid_t uid,const char * argv )
+string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * name,uid_t uid,const struct_opts * opts )
 {	
 	process_t p ;
 	struct stat st ;
+	
 	const char * sockpath ;
 	const char * pluginPath ;
+	const char * argv = opts->argv ;
+	char * const * env = opts->env ;
 	
 	string_t key   = StringVoid ;
 	string_t plugin_path = StringVoid ;
@@ -193,7 +197,7 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		uuid = zuluCryptGetDeviceUUID( device,uid ) ;
 		
 		p = Process( pluginPath ) ;
-		
+		ProcessSetEnvironmentalVariable( p,env ) ;
 		ProcessSetOptionUser( p,uid ) ;
 		ProcessSetArgumentList( p,device,StringContent( uuid ),sockpath,CHARMAXKEYZISE,argv,ENDLIST ) ;
 		ProcessStart( p ) ;

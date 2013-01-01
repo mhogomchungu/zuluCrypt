@@ -22,7 +22,7 @@
 #include <sys/types.h>
 #include <string.h>
  
-string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * name,uid_t uid,const char * argv ) ;
+string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * name,uid_t uid,const struct_opts * opts ) ;
 
 static void _printResult( const char * device,const char * m_point )
 {
@@ -113,7 +113,6 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	const char * source      = opts->key_source ;
 	const char * pass        = opts->key ;
 	const char * plugin_path = opts->plugin_path ;
-	const char * argv      	 = opts->argv ;
 	const char * fs_opts     = opts->fs_opts ;
 	
 	stringList_t stl = StringListInit() ;
@@ -227,7 +226,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		/*
 		 * zuluCryptPluginManagerGetKeyFromModule is defined in ../pluginManager/zuluCryptPluginManager.c
 		 */
-		*passphrase = zuluCryptPluginManagerGetKeyFromModule( device,plugin_path,uid,argv ) ;
+		*passphrase = zuluCryptPluginManagerGetKeyFromModule( device,plugin_path,uid,opts ) ;
 		
 		if( *passphrase == StringVoid )
 			return zuluExit_1( 25,opts,device,cpoint,stl ) ;

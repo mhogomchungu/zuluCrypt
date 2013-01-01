@@ -616,7 +616,7 @@ ssize_t StringListHasStartSequence( stringList_t stl,const char * str )
 	return -1 ;
 }
 
-char ** StringListStringArray( stringList_t stl )
+char * const * StringListStringArray( stringList_t stl )
 {
 	size_t i ;
 	size_t j ;

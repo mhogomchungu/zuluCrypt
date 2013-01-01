@@ -37,12 +37,15 @@ int zuluMountUMount( const char * device,uid_t uid,const char * mode,int mount_p
 
 int zuluMountMount( const char * device,const char * m_point,
 		    const char * m_opts,const char * fs_opts,uid_t uid,
-		    int mount_point_option ) ;
+		    int mount_point_option 
+		  ) ;
 		    
 
 int zuluMountCryptoMount( const char * device,const char * mode,uid_t uid,
 				  const char * key,const char * key_source,
-				  const char * m_point,int mount_point_option ) ;
+				  const char * m_point,int mount_point_option,
+				  stringList_t
+			) ;
 				  
 int zuluMountCryptoUMount( const char * device,uid_t uid,__attribute__((unused)) int mount_point_option ) ;
 
