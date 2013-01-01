@@ -78,8 +78,8 @@ void managedevicenames::deviceAddress()
 
 void managedevicenames::ShowUI()
 {
-	m_ui->tableWidget->setColumnWidth( 0,296 );
-	m_ui->tableWidget->setColumnWidth( 1,296 );
+	m_ui->tableWidget->setColumnWidth( 0,285 );
+	m_ui->tableWidget->setColumnWidth( 1,285 );
 
 	while( m_ui->tableWidget->rowCount() > 0 )
 		m_ui->tableWidget->removeRow( 0 );

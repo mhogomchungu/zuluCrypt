@@ -68,8 +68,11 @@ passwordDialog::passwordDialog( QTableWidget * table,QWidget * parent ) : QDialo
 	connect( m_ui->radioButtonPlugin,SIGNAL( clicked() ),this,SLOT( pluginOption() ) ) ;
 	connect( m_ui->PassPhraseField,SIGNAL( textChanged( QString ) ),this,SLOT(keyTextChanged( QString ) ) ) ;
 	connect( m_ui->pushButtonPlugin,SIGNAL( clicked() ),this,SLOT( pbPlugin() ) ) ;
+	connect( m_ui->pbKeyOption,SIGNAL( clicked() ),this,SLOT( pbKeyOption() ) ) ;
 
 	m_ui->PushButtonMountPointPath->setVisible( false );
+	m_ui->pushButtonPassPhraseFromFile->setVisible( false ) ;
+	m_ui->pushButtonPlugin->setVisible( false );
 }
 
 void passwordDialog::pbPlugin()
@@ -90,6 +93,7 @@ void passwordDialog::pbPlugin()
 	}else{
 		list = dir.entryList() ;
 
+		list.removeOne( QString( "zuluCrypt-testKey" ) ) ;
 		list.removeOne( QString( ".") ) ;
 		list.removeOne( QString( "..") ) ;
 
@@ -124,6 +128,15 @@ void passwordDialog::pbPlugin()
 	connect( m_pluginMenu,SIGNAL( triggered( QAction * ) ),this,SLOT( pbPluginEntryClicked( QAction * ) ) ) ;
 
 	m_pluginMenu->exec( QCursor::pos() ) ;
+}
+
+void passwordDialog::pbKeyOption()
+{
+	if( m_ui->radioButtonPlugin->isChecked() ){
+		this->pbPlugin();
+	}else{
+		this->clickedPassPhraseFromFileButton();
+	}
 }
 
 void passwordDialog::pbPluginEntryClicked( QAction * e )
@@ -212,8 +225,10 @@ void passwordDialog::pluginOption()
 	m_ui->pushButtonPassPhraseFromFile->setEnabled( false ) ;
 	m_ui->labelPassphrase->setText( tr( "plugin name" ) );
 	m_ui->pushButtonPassPhraseFromFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) );
+	m_ui->pbKeyOption->setIcon( QIcon( QString( ":/module.png" ) ) );
 	m_ui->pushButtonPlugin->setEnabled( true );
 	m_ui->pushButtonPlugin->setToolTip( tr( "select a key module" ) ) ;
+	m_ui->pbKeyOption->setEnabled( true );
 }
 
 void passwordDialog::passphraseOption()
@@ -225,6 +240,8 @@ void passwordDialog::passphraseOption()
 	m_ui->labelPassphrase->setText( tr( "key" ) );
 	m_ui->pushButtonPassPhraseFromFile->setIcon( QIcon( QString( ":/passphrase.png" ) ) );
 	m_ui->pushButtonPlugin->setEnabled( false );
+	m_ui->pbKeyOption->setIcon( QIcon( QString( "" ) ) );
+	m_ui->pbKeyOption->setEnabled( false );
 }
 
 void passwordDialog::passphraseFromFileOption()
@@ -237,6 +254,9 @@ void passwordDialog::passphraseFromFileOption()
 	m_ui->labelPassphrase->setText( tr( "keyfile path" ) );
 	m_ui->pushButtonPassPhraseFromFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) );
 	m_ui->pushButtonPlugin->setEnabled( false );
+	m_ui->pbKeyOption->setIcon( QIcon( QString( ":/keyfile.png" ) ) );
+	m_ui->pushButtonPlugin->setEnabled( true );
+	m_ui->pbKeyOption->setEnabled( true );
 }
 
 void passwordDialog::clickedPassPhraseFromFileButton()
@@ -430,6 +450,7 @@ void passwordDialog::disableAll()
 	m_ui->radioButtonPassPhraseFromFile->setEnabled( false );
 	m_ui->radioButtonPassPhrase->setEnabled( false );
 	m_ui->radioButtonPlugin->setEnabled( false );
+	m_ui->pbKeyOption->setEnabled( false );
 }
 
 void passwordDialog::enableAll()
@@ -461,6 +482,8 @@ void passwordDialog::enableAll()
 	if( m_ui->radioButtonPassPhrase->isChecked() ){
 		m_ui->pushButtonPassPhraseFromFile->setEnabled( false );
 		m_ui->pushButtonPlugin->setEnabled( false );
+	}else{
+		m_ui->pbKeyOption->setEnabled( true );
 	}
 
 	if( m_ui->radioButtonPassPhraseFromFile->isChecked() )

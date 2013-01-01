@@ -150,6 +150,7 @@ void keyDialog::Plugin()
 
 	list = dir.entryList() ;
 
+	list.removeOne( QString( "zuluCrypt-testKey" ) ) ;
 	list.removeOne( QString( ".") ) ;
 	list.removeOne( QString( "..") ) ;
 

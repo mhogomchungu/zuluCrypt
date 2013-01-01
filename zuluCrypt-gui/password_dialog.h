@@ -59,6 +59,7 @@ public slots:
 	void ShowUI( QString volumePath,QString mount_point ) ;
 	void clickedPartitionOption( QString );
 private slots :
+	void pbKeyOption( void ) ;
 	void pbPluginEntryClicked( QAction * ) ;
 	void pbPlugin( void ) ;
 	void keyTextChanged( QString ) ;

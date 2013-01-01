@@ -471,6 +471,17 @@ void zuluCryptSecuritySanitizeTheEnvironment( uid_t uid,stringList_t * stx )
 	string_t user_home = StringListAssignString( *stx,zuluCryptGetUserHomePath( uid ) ) ;
 	string_t user_name = StringListAssignString( *stx,zuluCryptGetUserName( uid ) );
 	
+	
+	/*
+	 * return early, qt based gui plugins look bad for some reason
+	 * They must be looking for an environmental variable i am skipping
+	 */
+	
+	return ;
+	
+	
+	
+	
 	/*
 	 * dont want to iterate over an array while changing its size through deleting its members,so going to 
 	 * make a copy of it and then delete its members reading them from the copy
@@ -484,6 +495,34 @@ void zuluCryptSecuritySanitizeTheEnvironment( uid_t uid,stringList_t * stx )
 	end = StringListEnd( stl ) ;
 	
 	for( ; it != end ;it++ ){
+		if( StringStartsWith( *it,"DISPLAY=" ) )
+			continue ;
+		if( StringStartsWith( *it,"LS_COLORS=" ) )
+			continue ;
+		if( StringStartsWith( *it,"XDG_" ) )
+			continue ;
+		if( StringStartsWith( *it,"GTK" ) )
+			continue ;
+		if( StringStartsWith( *it,"DBUS_" ) )
+			continue ;
+		if( StringStartsWith( *it,"QTDIR=" ) )
+			continue ;
+		if( StringStartsWith( *it,"SESSION_MANAGER=" ) )
+			continue ;
+		if( StringStartsWith( *it,"LC_" ) )
+			continue ;
+		if( StringStartsWith( *it,"KDEDIR=" ) )
+			continue ;
+		if( StringStartsWith( *it,"LANG=" ) )
+			continue ;
+		if( StringStartsWith( *it,"XCURSOR_" ) )
+			continue ;
+		if( StringStartsWith( *it,"PYTHONPATH=" ) )
+			continue ;
+		if( StringStartsWith( *it,"DESKTOP_SESSION=" ) )
+			continue ;
+		if( StringStartsWith( *it,"GS_LIB=" ) )
+			continue ;
 		index = StringIndexOfChar( *it,0,'=' ) ;
 		if( index >= 0 ){
 			unsetenv( StringSubChar( *it,index,'\0' ) ) ;

@@ -38,13 +38,22 @@
 #include "plugin_path.h"
 #include <stdio.h>
 
-#define zuluCryptPluginManagerDebug 1
+#define zuluCryptPluginManagerDebug 0
 
 #if zuluCryptPluginManagerDebug
 static void __debug( process_t p )
 {
 	char * e = NULL ;
+	puts( "--------stdout------------" ) ;
 	ProcessGetOutPut( p,&e,STDOUT ) ;
+	if( e ){
+		puts( e ) ;
+		fflush( stdout ) ;
+		free( e ) ;
+	}
+	puts( "--------stderror----------" ) ;
+	e = NULL ;
+	ProcessGetOutPut( p,&e,STDERROR ) ;
 	if( e ){
 		puts( e ) ;
 		fflush( stdout ) ;
@@ -182,7 +191,7 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		sockpath = StringAppendInt( path,syscall( SYS_gettid ) ) ;
 		
 		uuid = zuluCryptGetDeviceUUID( device,uid ) ;
-
+		
 		p = Process( pluginPath ) ;
 		
 		ProcessSetOptionUser( p,uid ) ;
