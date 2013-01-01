@@ -53,16 +53,16 @@ int zuluMountCryptoMount( const char * device,const char * mode,uid_t uid,
 		mapping_name = _mapping_name( device ) ;
 	}
 	
+	/*
+	 * zuluCryptEXEGetOptsSetDefault() is defined in ../zuluCrypt-cli/bin/get_opts.c
+	 */
+	zuluCryptEXEGetOptsSetDefault( &opts ) ;
+	
 	if( key_source != NULL ){
 		if( strcmp( key_source,"-G" ) == 0 ){
 			opts.plugin_path = key ;
 		}
 	}
-	
-	/*
-	 * zuluCryptEXEGetOptsSetDefault() is defined in ../zuluCrypt-cli/bin/get_opts.c
-	 */
-	zuluCryptEXEGetOptsSetDefault( &opts ) ;
 	
 	opts.mount_point = m_point ;
 	opts.open_no_mount = -1 ;

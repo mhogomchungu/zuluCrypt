@@ -152,6 +152,9 @@ pid_t ProcessStart( process_t p )
 	if( p->pid == 0 ){
 		if( p->uid != -1 ){
 			uid = p->uid ;
+			/*
+			 * drop privileges permanently
+			 */
 			seteuid( 0 ) ;
 			setuid( uid );
 		}

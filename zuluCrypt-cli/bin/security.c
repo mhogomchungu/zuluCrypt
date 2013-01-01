@@ -22,7 +22,7 @@
 #include <blkid/blkid.h>
 #include <errno.h>
 #include <unistd.h>
-
+#include <grp.h> 
 #include "../constants.h"
 #include <sys/types.h>
 #include <grp.h>
@@ -419,12 +419,21 @@ void zuluCryptGetUserUIDForPrivilegeManagement( uid_t uid )
 
 int zuluCryptSecurityDropElevatedPrivileges( void )
 {	
-	if( seteuid( global_variable_user_uid ) != 0 ){
-		puts( "WARNING: failed to seteuid user" ) ;
-		return 0 ;
-	}else{
-		return 1 ;
+	gid_t gid = getgid() ;
+	/*
+	 * setgroups() requires seteuid(0) ;
+	 */
+	seteuid( 0 ) ;
+	if( setgroups( 1,&gid ) != 0 ){
+		perror( "setgroups() fail" ) ;
 	}
+	if( setegid( global_variable_user_uid ) != 0 ){
+		perror( "setegid() fail" ) ;
+	}
+	if( seteuid( global_variable_user_uid ) != 0 ){
+		perror( "seteuid() fail" ) ;
+	}
+	return 1 ;
 }
 
 char * zuluCryptSecurityEvaluateDeviceTags( const char * tag,const char * path )
