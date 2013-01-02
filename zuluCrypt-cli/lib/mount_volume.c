@@ -188,17 +188,12 @@ static inline int fs_family( const char * fs )
 static inline string_t set_mount_options( m_struct * mst )
 {
 	string_t opt = zuluCryptGetMountOptionsFromFstab( mst->device,MOUNTOPTIONS ) ;
-	const char * mode ;
-	if( mst->m_flags & MS_RDONLY )
-		mode = "ro" ;
-	else
-		mode = "rw" ;
 	
 	if( opt == StringVoid ){
-		opt = String( mode ) ;
-	}
-	
-	StringMultipleAppend( opt,",",mode,",",mst->fs_flags,END ) ;
+		opt = String( "" ) ;
+	}else{
+		StringMultipleAppend( opt,",",mst->fs_flags,END ) ;
+	}	
 	
 	if( fs_family( mst->fs ) == 1 ){
 		if( !StringContains( opt,"dmask=" ) ){
@@ -238,7 +233,7 @@ static inline string_t set_mount_options( m_struct * mst )
 			StringAppendInt( opt,mst->uid ) ;
 		}
 	}else if( fs_family( mst->fs ) == 3 ){
-		mst->m_flags = MS_RDONLY ;
+		mst->m_flags |= MS_RDONLY ;
 	}else{
 		/*
 		 * ext file systems and raiserfs among others go here
@@ -264,7 +259,7 @@ static inline string_t set_mount_options( m_struct * mst )
 	StringRemoveString( opt,"ro" ) ;
 	StringRemoveString( opt,"rw" ) ;
 	
-	if( mst->m_flags == MS_RDONLY ){
+	if( mst->m_flags & MS_RDONLY ){
 		StringPrepend( opt,"ro," ) ;
 	}else{
 		StringPrepend( opt,"rw," ) ;
