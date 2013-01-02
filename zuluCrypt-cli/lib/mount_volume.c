@@ -192,6 +192,9 @@ static inline string_t set_mount_options( m_struct * mst )
 	if( opt == StringVoid ){
 		opt = String( "" ) ;
 	}else{
+		if( StringContains( opt,"ro" ) ){
+			mst->m_flags |= MS_RDONLY ;
+		}
 		StringMultipleAppend( opt,",",mst->fs_flags,END ) ;
 	}	
 	
