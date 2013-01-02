@@ -84,7 +84,8 @@ string_t zuluCryptGetFstabEntry( const char * device )
 	StringListIterator it  ;
 	StringListIterator end ;
 	
-	int st ;
+	ssize_t index ;
+	
 	char * ac ;
 	const char * entry ;
 	
@@ -116,48 +117,80 @@ string_t zuluCryptGetFstabEntry( const char * device )
 				 * zuluCryptResolveDevRoot() is defined in ./print_mounted_volumes.c 
 				 */
 				ac =  zuluCryptResolveDevRoot() ;
-				st = strncmp( ac,device,len ) ;
-				free( ac ) ;
+				if( ac != NULL ){
+					if( strncmp( ac,device,len ) == 0 ){
+						xt = StringCopy( *it ) ;
+						StringReplaceString( xt,"/dev/root",ac ) ;
+						free( ac ) ;
+						break ;
+					}else{
+						free( ac ) ;
+					}
+				}
 			}else if( strncmp( entry,"/dev/disk/by",12 ) == 0 ){
 				ac = _evaluate_tag_by_id( *it ) ;
-				if( ac == NULL ){
-					st = 1 ;
-				}else{
-					st = strncmp( ac,device,len ) ;
-					free( ac ) ;
+				if( ac != NULL ){
+					if( strncmp( ac,device,len ) == 0 ){
+						xt = StringCopy( *it ) ;
+						index = StringIndexOfChar( xt,0,' ' ) ;
+						if( index >= 0 ){
+							StringRemoveLeft( xt,index ) ;
+							StringPrepend( xt,ac ) ;
+						}
+						free( ac ) ;
+						break ;
+					}else{
+						free( ac ) ;
+					}
 				}
 			}else{
-				st = strncmp( entry,device,len ) ;
+				if( strncmp( entry,device,len ) == 0 ){
+					xt = StringCopy( *it ) ;
+					break ;
+				}
 			}
 		}else if( strncmp( entry,"UUID=",5 ) == 0 ){
+			entry = StringRemoveString( *it,"\"" ) ;
 			ac = _evaluate_tag( "UUID",entry + 5,&cache ) ;
-			if( ac == NULL ){
-				st = 1 ;
-			}else{
-				st = strncmp( ac,device,len ) ;
-				free( ac ) ;
+			if( ac != NULL ){
+				if( strncmp( ac,device,len ) == 0 ){
+					xt = StringCopy( *it ) ;
+					index = StringIndexOfChar( xt,0,' ' ) ;
+					if( index >= 0 ){
+						StringRemoveLeft( xt,index ) ;
+						StringPrepend( xt,ac ) ;
+					}
+					free( ac ) ;
+					break ;
+				}else{
+					free( ac ) ;
+				}
 			}
 		}else if( strncmp( entry,"LABEL=",6 ) == 0 ){
+			entry = StringRemoveString( *it,"\"" ) ;
 			ac = _evaluate_tag( "LABEL",entry + 6,&cache ) ;
-			if( ac == NULL ){
-				st = 1 ;
-			}else{
-				st = strncmp( ac,device,len ) ;
-				free( ac ) ;
+			if( ac != NULL ){
+				if( strncmp( ac,device,len ) == 0 ){
+					xt = StringCopy( *it ) ;
+					index = StringIndexOfChar( xt,0,' ' ) ;
+					if( index >= 0 ){
+						StringRemoveLeft( xt,index ) ;
+						StringPrepend( xt,ac ) ;
+					}
+					free( ac ) ;
+					break ;
+				}else{
+					free( ac ) ;
+				}
 			}
 		}else if( entry[ 0 ] == '/' ){
-			st = StringIndexOfChar( *it,0,' ' ) ;
-			if( st != -1 ){
-				st = strncmp( StringContent( *it ),device,st ) ;
+			if( StringStartsWith( *it,device ) ){
+				xt = StringCopy( *it ) ;
+				break ;
 			}
 		}else{
 			continue ;
 		}
-			
-		if( st == 0 ){
-			xt = StringCopy( *it ) ;
-			break ;
-		}	
 	}
 	
 	if( cache != NULL )

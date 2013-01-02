@@ -33,13 +33,13 @@ static int _zuluMountPartitionAccess( const char * device,const char * m_opts,ui
 	int user    ;
 	int users   ;
 	int system_partition ;
-	int st = 3  ;
+	int st = 1  ;
 	/*
 	 * zuluCryptGetFstabEntryList() is defined in ../zuluCrypt-cli/lib/mount_volume.c
 	 */
 	stringList_t stl = zuluCryptGetFstabEntryList( device ) ;
 	string_t p ;
-	
+
 	if( stl != StringListVoid ){
 		if( StringListSize( stl ) != 6 ){
 			StringListDelete( &stl ) ;
@@ -115,7 +115,7 @@ static int _zuluMountPartitionAccess( const char * device,const char * m_opts,ui
 				 * options that go here are "defaults","nouser",auto" among others.They dont allow
 				 * a normal user to mount a volume.
 				 */
-				st = 3 ;
+				st = 1 ;
 			}
 		}
 	}

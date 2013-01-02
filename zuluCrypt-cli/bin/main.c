@@ -300,6 +300,13 @@ int main( int argc,char * argv[] )
 	 */
 	zuluCryptSecuritySanitizeTheEnvironment( uid,&stx ) ;
 	
+	/*
+	 * clargs.env contains a copy of the inherited environment because the above function clears it because we dont need it.
+	 * The copy will ultimately be passed to a plugin architecture system just in case a plugin needs it. 
+	 * 
+	 * The plugin system is managed by code in ../pluginManager/zuluCryptPluginManager.c
+	 * 
+	 */
 	clargs.env = env = StringListStringArray( stx ) ;
 	
 	q = StringListAssignString( stl,String( "" ) ) ;
