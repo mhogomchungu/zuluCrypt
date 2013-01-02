@@ -235,6 +235,15 @@ stringList_t zuluCryptPartitions( int option )
 				system = StringListAppend( system,ac ) ;
 				StringListRemoveString( non_system,ac ) ;
 				free( ac ) ;
+			}else if( StringStartsWith( st,"/dev/disk/by" ) ){
+				index = StringIndexOfChar( st,0,' ' ) ;
+				if( index >= 0 ){
+					ac = zuluCryptRealPath( StringSubChar( st,index,'\0' ) ) ;
+					StringSubChar( st,index,' ' ) ;
+					system = StringListAppend( system,ac ) ;
+					StringListRemoveString( non_system,ac ) ;
+					free( ac ) ;
+				}
 			}else{
 				system = StringListAppend( system,device ) ;
 				StringListRemoveString( non_system,device ) ;

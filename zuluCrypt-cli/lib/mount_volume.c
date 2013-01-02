@@ -64,6 +64,17 @@ static inline char * _evaluate_tag( const char * tag,const char * entry,blkid_ca
 	return f ;
 }
 
+static inline char * _evaluate_tag_by_id( string_t st )
+{
+	char * r = NULL ;
+	ssize_t index = StringIndexOfChar( st,0,' ' ) ;
+	if( index >= 0 ){
+		r = zuluCryptRealPath( StringSubChar( st,index,'\0' ) ) ;
+		StringSubChar( st,index,' ' ) ;
+	}
+	return r ;
+}
+
 string_t zuluCryptGetFstabEntry( const char * device )
 {
 	string_t xt = StringGetFromFile( "/etc/fstab" );
@@ -107,6 +118,14 @@ string_t zuluCryptGetFstabEntry( const char * device )
 				ac =  zuluCryptResolveDevRoot() ;
 				st = strncmp( ac,device,len ) ;
 				free( ac ) ;
+			}else if( strncmp( entry,"/dev/disk/by",12 ) == 0 ){
+				ac = _evaluate_tag_by_id( *it ) ;
+				if( ac == NULL ){
+					st = 1 ;
+				}else{
+					st = strncmp( ac,device,len ) ;
+					free( ac ) ;
+				}
 			}else{
 				st = strncmp( entry,device,len ) ;
 			}
