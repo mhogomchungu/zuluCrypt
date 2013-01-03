@@ -111,6 +111,9 @@ string_t zuluCryptGetFstabEntry( const char * device )
 	
 	for( ; it != end ; it++ ){
 		entry = StringContent( *it ) ;
+		if( entry == NULL ){
+			continue ;
+		}
 		if( strncmp( entry,"/dev/",5 ) == 0 ){
 			if( strncmp( entry,"/dev/root",9 ) == 0 ){
 				/*
