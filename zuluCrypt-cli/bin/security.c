@@ -83,6 +83,10 @@ int zuluCryptUserIsAMemberOfAGroup( uid_t uid,const char * groupname )
 	if( groupname == NULL )
 		return 0 ;
 	
+	if( uid == 0 ){
+		return 1 ;
+	}
+	
 	zuluCryptSecurityGainElevatedPrivileges() ;
 	pass = getpwuid( uid ) ;
 	

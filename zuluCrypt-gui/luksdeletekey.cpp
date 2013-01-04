@@ -240,9 +240,8 @@ void luksdeletekey::threadfinished( int status )
 		case 6 : msg.ShowUIOK( tr( "ERROR!" ),tr( "one or more required argument( s ) for this operation is missing" ) ) ;			break ;
 		case 7 : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get enough memory to open the key file" ) ) ;					break ;
 		case 10: msg.ShowUIOK( tr( "ERROR!" ),tr( "device does not exist" ) );									break ;
-		case 11: msg.ShowUIOK( tr( "WARNING" ),tr( "there is only one key in the volume left and all data in the volume \
-will be lost if you continue.\nif you want to continue,rerun the command with -k option" ) );								break;
-		case 12 :msg.ShowPermissionProblem( QString( "writing" ),m_volumePath ) ;							        break ;
+		case 11: msg.ShowUIOK( tr( "WARNING" ),tr( "there is only one key in the volume left and all data in the volume \nwill be lost if you continue.\nif you want to continue,rerun the command with -k option" ) );	break;
+		case 12: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to remove a key from a system device,\nonly root user or members of group \"zulucrypt\" can do that\n")	);break ;
 		case 13: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open key file for reading" ) );					break ;
 		case 14: msg.ShowUIOK( tr( "ERROR!" ),tr( "only root user or members of group \"zuluCrypt-write\" can remove keys from system devices" ) );					break ;
 		case 110:msg.ShowUIOK( tr( "ERROR!" ),tr( "can not find a partition that match presented UUID" ) );					break ;

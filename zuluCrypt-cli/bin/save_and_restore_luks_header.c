@@ -43,7 +43,7 @@ static int zuluExit( int st,int fd,string_t xt )
 		case 11: printf( "ERROR: invalid path to device\n" ) 							; break ;
 		case 12: printf( "ERROR: argument for path to a backup  header file is missing\n" ) 			; break ;
 		case 13: printf( "ERROR: argument for path to a backup  header file is missing\n" ) 			; break ;
-		case 14: printf( "ERROR: only root and zulucrypt-system members can restore and back up luks headers on system devices\n" )	; break ;
+		case 14: printf( "ERROR: only root and \"zulucrypt\" members can restore and back up luks headers on system devices\n" )	; break ;
 		case 15: printf( "ERROR: insufficient privilege to open device for writing\n" ) 			; break ;
 		case 16: printf( "ERROR: could not resolve path to device\n" ) 						; break ;
 		case 17: printf( "ERROR: backup file does not appear to contain luks header\n" ) 			; break ;

@@ -77,9 +77,13 @@ void DialogMsg::ShowPermissionProblem( QString device )
 {
 	Q_UNUSED( device ) ;
 	QString msg = tr( "\
-\"insufficent privilege to open device\" and related permission errors when\n\
-attempting to operate on a device are primarily caused by not having proper \
-privileges to open devices for reading or writing.\nA related error for example will be generated when an attempt is made to open a volume in read/write mode when a user has read only access" ) ;
+\"insufficent privilege to open device\" and related permission errors when\n\n\
+attempting to operate on devices are primarily caused by not having proper\n\n\
+privileges to manage a system device.\n\n\n\
+If you prefer for a device not to be considered a system device,start the tool\n\n\
+from root account and then go to \"menu->options->manage non system partitions\"\n\n\
+and add the device to the list and the device will stop being considered as \"system\".\n\n\
+Alternatively,you can add yourself to group \"zulucrypt\" and all restrictions will be gone" ) ;
 
 	this->ShowUIInfo( tr( "INFORMATION" ),msg );
 }

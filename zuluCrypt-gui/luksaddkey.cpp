@@ -313,7 +313,7 @@ void luksaddkey::threadfinished( int status )
 		case 8  : msg.ShowUIOK( tr( "ERROR!" ),tr( "one or both keyfile( s ) does not exist" ) ) ;	                      	break ;
 		case 9  : msg.ShowUIOK( tr( "ERROR!" ),tr( "couldnt get enought memory to hold the key file" ) ) ;			break ;
 		case 10 : msg.ShowUIOK( tr( "ERROR!" ),tr( "all key slots are occupied, can not add any more keys" ) ) ;	      	break ;
-		case 11 : msg.ShowPermissionProblem( QString( "writing" ),m_volumePath ) ;					        break ;
+		case 11 : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to add a key to a system device,\nonly root user or members of group \"zulucrypt\" can do that\n") )	;break ;
 		case 12 : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open key file for reading" ) );			break ;
 		case 13 : msg.ShowUIOK( tr( "ERROR!" ),tr( "only root user can add keys to system devices" ) );				break ;
 		case 110: msg.ShowUIOK( tr( "ERROR!" ),tr( "can not find a partition that match presented UUID" ) );			break ;

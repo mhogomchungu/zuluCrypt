@@ -75,6 +75,9 @@ static int _zuluMountPartitionAccess( const char * device,const char * m_opts,ui
 		 * partition does not have an entry in fstab
 		 */
 		if( system_partition ){
+			/*
+			 * partition is system partition
+			 */
 			if( uid == 0 ){
 				/*
 				 * cant say no to root
@@ -102,29 +105,38 @@ static int _zuluMountPartitionAccess( const char * device,const char * m_opts,ui
 			 */
 			st = 2 ;
 		}
-		/*
-		 * has an entry in fstab,mount it only if it has "user" or "users" or if root
-		 */
+		
 		if( uid == 0 ){
 			/*
 			 * user is root,mount it
 			 */
 			st = 0 ;
 		}else{
-			/*
-			 * normal user.
-			 */
 			if( ( user || users ) && !nouser ){
 				/*
-				 * users are allowed, mount it,reject everything else
+				 * the partition has option to allow normal user to mount it,mount it
 				 */
 				st = 0 ;
 			}else{
 				/*
-				 * options that go here are "defaults","nouser",auto" among others.They dont allow
-				 * a normal user to mount a volume.
+				 * The entry for the partition does not allow a normal user to mount it
 				 */
-				st = 1 ;
+				
+				/*
+				 * zuluCryptUserIsAMemberOfAGroup() is defined in ../zuluCrypt/bin/security.c
+				 */
+				if( zuluCryptUserIsAMemberOfAGroup( uid,"zulumount" ) ){
+					/*
+					 * user is a member is zulumount group,mount it 
+					 */
+					st = 0 ;
+				}else{
+					/*
+					* options that go here are "defaults","nouser",auto" among others.They dont allow
+					* a normal user to mount a volume.
+					*/
+					st = 1 ;
+				}
 			}
 		}
 	}
