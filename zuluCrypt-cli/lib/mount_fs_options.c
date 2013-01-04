@@ -46,12 +46,21 @@ int zulucryptFileSystemIsSupported( const char * fs )
 
 static inline int _userIsAllowed( uid_t uid,const char * fs )
 {
-	string_t p = String( "zulucrypt-" ) ;
-	StringAppend( p,fs ) ;
+	string_t p ;
+	const char * q ;
+	
+	if( uid == 0 ){
+		return 1 ;
+	}
+	if( !zulucryptFileSystemIsSupported( fs ) ){
+		return 0 ;
+	}
+	p = String( "zulucrypt-" ) ;
+	q = StringAppend( p,fs ) ;
 	/*
 	 * zuluCryptUserIsAMemberOfAGroup() is defined in ../bin/security.c
 	 */
-	if( uid == 0 || zuluCryptUserIsAMemberOfAGroup( uid,StringContent( p ) ) ){
+	if( zuluCryptUserIsAMemberOfAGroup( uid,q ) ){
 		StringDelete( &p ) ;
 		return 1 ;
 	}else{

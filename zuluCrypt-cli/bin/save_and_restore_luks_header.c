@@ -316,7 +316,7 @@ int zuluCryptEXESaveAndRestoreLuksHeader( const struct_opts * opts,uid_t uid,int
 	k = zuluCryptPartitionIsSystemPartition( device ) ;
 		
 	if( k == 1 ){
-		if( uid != 0 || !zuluCryptUserIsAMemberOfAGroup( uid,"zulucrypt-system" ) )
+		if( uid != 0 || !zuluCryptUserIsAMemberOfAGroup( uid,"zulucrypt" ) )
 		return zuluExit( 14,fd,sec_file ) ;
 	}
 		
