@@ -504,7 +504,7 @@ int _zuluCryptPartitionIsSystemPartition( const char * dev )
 		index = StringListContains( stl,dev );
 		StringListDelete( &stl ) ;
 	}
-	return index >= 0 ? 1 : 0 ;
+	return index >= 0 ;
 }
 
 int zuluCryptPartitionIsSystemPartition( const char * device )
@@ -529,6 +529,8 @@ int zuluCryptPartitionIsSystemPartition( const char * device )
 		}else if( _zuluCryptCheckSYSifDeviceIsSystem( dev ) ){
 			free( dev ) ;
 			return 1 ;
+		}else{
+			free( dev ) ;
 		}
 	}
 	return 0 ;
