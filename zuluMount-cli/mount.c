@@ -65,7 +65,7 @@ static int _zuluMountPartitionAccess( const char * device,const char * m_opts,ui
 		/*
 		 * zuluCryptUserIsAMemberOfAGroup() is defined in ../zuluCrypt/bin/security.c
 		 */
-		if( zuluCryptUserIsAMemberOfAGroup( uid,"zulucrypt-system" ) ){
+		if( zuluCryptUserIsAMemberOfAGroup( uid,"zulumount" ) ){
 			system_partition = 0 ;
 		}
 	}
@@ -145,9 +145,9 @@ int zuluMountMount( const char * device,const char * m_point,
 	unsigned long m_flags ;
 	const char * dev = device ;
 	const char * msg ="\
-ERROR: insuffienct privilege to manage a system partition.\nnecessary privileges can be attained by:\n\
+ERROR: insuffienct privilege to manage a system partition.\nnecessary privileges can be acquired by:\n\
 1. adding an entry for the partition in fstab with \"user\" mount option\n\
-2. add yourself to \"zulucrypt-system\" group";
+2. add yourself to \"zulumount\" group";
 	
 	if( mount_point_from_fstab ){;}
 	
