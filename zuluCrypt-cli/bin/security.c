@@ -104,6 +104,7 @@ int zuluCryptUserIsAMemberOfAGroup( uid_t uid,const char * groupname )
 	
 	while( entry[ i ] != NULL ){
 		if( strcmp( entry[ i ],name ) == 0 ){
+			zuluCryptSecurityDropElevatedPrivileges();
 			return 1 ;
 		}else{
 			i++ ;

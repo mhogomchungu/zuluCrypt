@@ -61,6 +61,15 @@ static int _zuluMountPartitionAccess( const char * device,const char * m_opts,ui
 	 */
 	system_partition = zuluCryptPartitionIsSystemPartition( device ) ;
 
+	if( system_partition ){
+		/*
+		 * zuluCryptUserIsAMemberOfAGroup() is defined in ../zuluCrypt/bin/security.c
+		 */
+		if( zuluCryptUserIsAMemberOfAGroup( uid,"zulucrypt-system" ) ){
+			system_partition = 0 ;
+		}
+	}
+	
 	if( p == StringVoid ){
 		/*
 		 * partition does not have an entry in fstab
@@ -135,6 +144,10 @@ int zuluMountMount( const char * device,const char * m_point,
 	const char * rm_point ;
 	unsigned long m_flags ;
 	const char * dev = device ;
+	const char * msg ="\
+ERROR: insuffienct privilege to manage a system partition.\nnecessary privileges can be attained by:\n\
+1. adding an entry for the partition in fstab with \"user\" mount option\n\
+2. add yourself to \"zulucrypt-system\" group";
 	
 	if( mount_point_from_fstab ){;}
 	
@@ -144,7 +157,7 @@ int zuluMountMount( const char * device,const char * m_point,
 		 */
 		path = zuluCryptLoopDeviceAddress( device ) ;
 		if( path == NULL ){
-			return _zuluExit( 112,z,path,"ERROR: insuffienct privileges to mount the volume with given mount options" ) ;
+			return _zuluExit( 112,z,path,"ERROR: could not resolve path to device" ) ;
 		}else{
 			dev = path ;
 		}
@@ -166,7 +179,7 @@ int zuluMountMount( const char * device,const char * m_point,
 	
 	switch( status ){
 		case 0 : break ;
-		case 1 : return _zuluExit( 103,z,path,"ERROR: insuffienct privileges to mount a system partition" ) ;
+		case 1 : return _zuluExit( 103,z,path,msg ) ;
 		case 2 : return _zuluExit( 104,z,path,"ERROR: \"/etc/fstab\" entry for this partition requires it to be mounted read only" ) ;
 		case 3 : return _zuluExit( 113,z,path,"ERROR: \"/etc/fstab\" entry for this partition is malformed" ) ;
 		default: return _zuluExit( 105,z,path,"ERROR: \"/etc/fstab\" entry for this partition does not allow you to mount it" ) ;
