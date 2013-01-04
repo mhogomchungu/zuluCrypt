@@ -195,4 +195,9 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
  */
 int zuluCryptSecureOpenFile( const char * path,int * fd_path,string_t * file,uid_t uid ) ;
 
+/*
+ * this function is defined in mount_volume.c
+ */
+stringList_t zuluCryptGetFstabList( void ) ;
+
 #endif 

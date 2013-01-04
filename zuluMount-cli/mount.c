@@ -46,7 +46,7 @@ static int _zuluMountPartitionAccess( const char * device,const char * m_opts,ui
 			return 3 ;
 		}
 	}
-	
+
 	p = StringListStringAt( stl,MOUNTOPTIONS ) ;
 	
 	ro      = StringContains( p,"ro" ) ;

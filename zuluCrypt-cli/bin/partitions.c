@@ -173,15 +173,14 @@ static int _zuluCryptCheckSYSifDeviceIsSystem( const char * device )
 
 stringList_t zuluCryptPartitions( int option )
 {
-	string_t st  ;
+	ssize_t index ;
 	
 	const char * device ;
-	char * ac ;
-	
-	ssize_t index ;
 	
 	stringList_t non_system = StringListVoid ;
 	stringList_t system     = StringListVoid ;
+	
+	string_t st ;
 	
 	stringList_t p ;
 	stringList_t stl = zuluCryptPartitionList() ;
@@ -196,19 +195,12 @@ stringList_t zuluCryptPartitions( int option )
 		return stl ;
 	
 	non_system = stl ;
-	system = StringListVoid ;
 
-	st = StringGetFromFile( "/etc/fstab" );
-	
-	if( st == StringVoid ){
-		StringListDelete( &non_system ) ;
-		return StringListVoid ;
-	}
-	
-	stl = StringListStringSplit( st,'\n' ) ;
-	
-	StringDelete( &st ) ;
-	
+	/*
+	 * zuluCryptGetFstabList() is defined in ../lib/mount_volume.c
+	 */
+	stl = zuluCryptGetFstabList() ;
+		
 	if( stl == StringListVoid ){
 		StringListDelete( &non_system ) ;
 		return StringListVoid ;
@@ -219,62 +211,16 @@ stringList_t zuluCryptPartitions( int option )
 	
 	for(  ; it != end ; it++ ){
 		st = *it ;
-		if( StringStartsWith( st,"#" ) )
-			continue ;
-		index = StringIndexOfChar( st,0,' ' ) ;
-		if( index == -1 )
-			continue ;
-		device = StringRemoveString( st,"\"" ) ;
-		StringSubChar( st,index,'\0' ) ;
-		if( StringStartsWith( st,"/dev/" ) ){
-			if( StringEqual( st,"/dev/root" ) ){
-				/*
-				 * zuluCryptResolveDevRoot() is defined in ../lib/print_mounted_volumes.c
-				 */
-				ac = zuluCryptResolveDevRoot() ;
-				system = StringListAppend( system,ac ) ;
-				StringListRemoveString( non_system,ac ) ;
-				free( ac ) ;
-			}else if( StringStartsWith( st,"/dev/disk/by" ) ){
-				index = StringIndexOfChar( st,0,' ' ) ;
-				if( index >= 0 ){
-					ac = zuluCryptRealPath( StringSubChar( st,index,'\0' ) ) ;
-					StringSubChar( st,index,' ' ) ;
-					system = StringListAppend( system,ac ) ;
-					StringListRemoveString( non_system,ac ) ;
-					free( ac ) ;
-				}
-			}else{
+		if( StringStartsWith( st,"/" ) ){
+			index = StringIndexOfChar( st,0,' ' ) ;
+			if( index != -1 ){
+				device = StringSubChar( st,index,'\0' ) ;
 				system = StringListAppend( system,device ) ;
 				StringListRemoveString( non_system,device ) ;
 			}
-		}else if( StringStartsWith( st,"UUID" ) ){
-			/*
-			 * zuluCryptSecurityEvaluateDeviceTags() is defined in ./security.c
-			 */
-			ac = zuluCryptSecurityEvaluateDeviceTags( "UUID",device + 5 ) ;
-			if( ac != NULL ){
-				system = StringListAppend( system,ac ) ;
-				StringListRemoveString( non_system,ac ) ;
-				free( ac ) ;
-			}
-		}else if( StringStartsWith( st,"LABEL" ) ){
-			/*
-			 * zuluCryptSecurityEvaluateDeviceTags() is defined in ./security.c
-			 */
-			ac = zuluCryptSecurityEvaluateDeviceTags( "LABEL",device + 6 ) ;
-			if( ac != NULL ){
-				system = StringListAppend( system,ac ) ;
-				StringListRemoveString( non_system,ac ) ;
-				free( ac ) ;
-			}
-		}else if( StringStartsWith( st,"/" ) ){
-			ac = ( char * ) StringContent( st ) ;
-			system = StringListAppend( system,ac ) ;
-			StringListRemoveString( non_system,ac ) ;
 		}
 	}
-	
+
 	StringListDelete( &stl ) ;
 	
 	/*

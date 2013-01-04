@@ -75,7 +75,7 @@ static inline char * _evaluate_tag_by_id( string_t st )
 	return r ;
 }
 
-string_t zuluCryptGetFstabEntry( const char * device )
+stringList_t zuluCryptGetFstabList( void )
 {
 	string_t xt = StringGetFromFile( "/etc/fstab" );
 	
@@ -89,20 +89,27 @@ string_t zuluCryptGetFstabEntry( const char * device )
 	char * ac ;
 	const char * entry ;
 	
-	size_t len = strlen( device ) ;
-	
 	blkid_cache cache = NULL ;
-
+	
 	if( xt == StringVoid )
-		return StringVoid ;
+		return StringListVoid ;
 	
 	fstabList = StringListStringSplit( xt,'\n' ) ;
 	
 	StringDelete( &xt ) ;
 	
 	if( fstabList == StringListVoid )
-		return StringVoid ;
-		
+		return StringListVoid ;
+	
+	while( 1 ){
+		index = StringListHasStartSequence( fstabList,"#" ) ;
+		if( index == -1 ){
+			break ;
+		}else{
+			StringListRemoveAt( fstabList,index ) ;
+		}
+	}
+	
 	it  = StringListBegin( fstabList ) ;
 	end = StringListEnd( fstabList ) ;
 	
@@ -110,10 +117,8 @@ string_t zuluCryptGetFstabEntry( const char * device )
 		cache = NULL ;
 	
 	for( ; it != end ; it++ ){
-		entry = StringContent( *it ) ;
-		if( entry == NULL ){
-			continue ;
-		}
+		xt = *it ;
+		entry = StringContent( xt ) ;
 		if( strncmp( entry,"/dev/",5 ) == 0 ){
 			if( strncmp( entry,"/dev/root",9 ) == 0 ){
 				/*
@@ -121,85 +126,61 @@ string_t zuluCryptGetFstabEntry( const char * device )
 				 */
 				ac =  zuluCryptResolveDevRoot() ;
 				if( ac != NULL ){
-					if( strncmp( ac,device,len ) == 0 ){
-						xt = StringCopy( *it ) ;
-						StringReplaceString( xt,"/dev/root",ac ) ;
-						free( ac ) ;
-						break ;
-					}else{
-						free( ac ) ;
-					}
+					StringReplaceString( xt,"/dev/root",ac ) ;
+					free( ac ) ;
 				}
 			}else if( strncmp( entry,"/dev/disk/by",12 ) == 0 ){
-				ac = _evaluate_tag_by_id( *it ) ;
+				ac = _evaluate_tag_by_id( xt ) ;
 				if( ac != NULL ){
-					if( strncmp( ac,device,len ) == 0 ){
-						xt = StringCopy( *it ) ;
-						index = StringIndexOfChar( xt,0,' ' ) ;
-						if( index >= 0 ){
-							StringRemoveLeft( xt,index ) ;
-							StringPrepend( xt,ac ) ;
-						}
-						free( ac ) ;
-						break ;
-					}else{
-						free( ac ) ;
+					index = StringIndexOfChar( xt,0,' ' ) ;
+					if( index >= 0 ){
+						StringRemoveLeft( xt,index ) ;
+						StringPrepend( xt,ac ) ;
 					}
-				}
-			}else{
-				if( strncmp( entry,device,len ) == 0 ){
-					xt = StringCopy( *it ) ;
-					break ;
+					free( ac ) ;
 				}
 			}
 		}else if( strncmp( entry,"UUID=",5 ) == 0 ){
-			entry = StringRemoveString( *it,"\"" ) ;
+			entry = StringRemoveString( xt,"\"" ) ;
 			ac = _evaluate_tag( "UUID",entry + 5,&cache ) ;
 			if( ac != NULL ){
-				if( strncmp( ac,device,len ) == 0 ){
-					xt = StringCopy( *it ) ;
-					index = StringIndexOfChar( xt,0,' ' ) ;
-					if( index >= 0 ){
-						StringRemoveLeft( xt,index ) ;
-						StringPrepend( xt,ac ) ;
-					}
-					free( ac ) ;
-					break ;
-				}else{
-					free( ac ) ;
+				index = StringIndexOfChar( xt,0,' ' ) ;
+				if( index >= 0 ){
+					StringRemoveLeft( xt,index ) ;
+					StringPrepend( xt,ac ) ;
 				}
+				free( ac ) ;
 			}
 		}else if( strncmp( entry,"LABEL=",6 ) == 0 ){
-			entry = StringRemoveString( *it,"\"" ) ;
+			entry = StringRemoveString( xt,"\"" ) ;
 			ac = _evaluate_tag( "LABEL",entry + 6,&cache ) ;
 			if( ac != NULL ){
-				if( strncmp( ac,device,len ) == 0 ){
-					xt = StringCopy( *it ) ;
-					index = StringIndexOfChar( xt,0,' ' ) ;
-					if( index >= 0 ){
-						StringRemoveLeft( xt,index ) ;
-						StringPrepend( xt,ac ) ;
-					}
-					free( ac ) ;
-					break ;
-				}else{
-					free( ac ) ;
+				index = StringIndexOfChar( xt,0,' ' ) ;
+				if( index >= 0 ){
+					StringRemoveLeft( xt,index ) ;
+					StringPrepend( xt,ac ) ;
 				}
+				free( ac ) ;
 			}
-		}else if( entry[ 0 ] == '/' ){
-			if( StringStartsWith( *it,device ) ){
-				xt = StringCopy( *it ) ;
-				break ;
-			}
-		}else{
-			continue ;
 		}
 	}
 	
-	if( cache != NULL )
+	if( cache != NULL ){
 		blkid_put_cache( cache ) ;
-	StringListDelete( &fstabList ) ;
-	return xt ;
+	}
+	return fstabList ;
+}
+
+string_t zuluCryptGetFstabEntry( const char * device )
+{
+	string_t st = StringVoid ;
+	stringList_t stl = zuluCryptGetFstabList() ;
+	ssize_t index = StringListHasStartSequence( stl,device ) ;
+	if( index >= 0 ){
+		st = StringListCopyStringAt( stl,index ) ;
+	}
+	StringListDelete( &stl ) ;
+	return st ;
 }
 
 string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos )
