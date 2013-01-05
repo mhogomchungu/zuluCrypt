@@ -97,7 +97,7 @@
  
  set_target_properties( zuluCryptPluginManager-static PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -pedantic " )
  
- set_target_properties( zuluCryptPluginManager PROPERTIES SOVERSION "1.0.0" )
+ set_target_properties( zuluCryptPluginManager PROPERTIES SOVERSION ${LIB_PLUGIN_VERSION} )
  
  set_target_properties( Socket        PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIC -pthread  -pedantic " )
  
@@ -110,8 +110,8 @@
  set_target_properties( zuluCrypt-exe-static PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIC -pthread  -pedantic " )
  set_target_properties( zuluCrypt-static     PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIC -pthread  -pedantic " )
  
- set_target_properties( zuluCrypt     PROPERTIES SOVERSION "3.1.0" )
- set_target_properties( zuluCrypt-exe PROPERTIES SOVERSION "3.1.0" )
+ set_target_properties( zuluCrypt     PROPERTIES SOVERSION ${LIB_VERSION} )
+ set_target_properties( zuluCrypt-exe PROPERTIES SOVERSION ${LIB_VERSION} )
  
  TARGET_LINK_LIBRARIES( zuluCrypt     ${cryptsetup_lib} String StringList ${blkid} ${mountLibrary} Process ) 
  TARGET_LINK_LIBRARIES( zuluCrypt-exe zuluCrypt zuluCryptPluginManager ) 
@@ -174,7 +174,7 @@ includedir=${CMAKE_INSTALL_PREFIX}/include
  
 Name: libzuluCrypt
 Description: a zuluCrypt library,a front end to cryptsetup
-Version: ${PGR_VERSION}
+Version: ${LIB_VERSION}
 Libs: -L${LIB_PATH} -lcryptsetup -lzuluCrypt -lzuluCrypt-exe -lzuluCryptPluginManager -lblkid -lmount
 Cflags: -I${CMAKE_INSTALL_PREFIX}/include
 \n")

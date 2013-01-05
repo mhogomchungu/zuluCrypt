@@ -83,7 +83,7 @@ size_t zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid
 					SocketClose( &client ) ;
 				}
 			}
-		}	
+		}
 		SocketClose( &server ) ;
 	}
 	return dataLength ;

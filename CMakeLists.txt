@@ -15,11 +15,14 @@ pkg_check_modules( BLKID blkid )
 pkg_check_modules( PWQUALITY pwquality ) 
 pkg_check_modules( LIBMOUNT mount ) 
 
-set( PGR_VERSION "version  : 4.6.0" )
+set( PGR_VERSION "4.6.0" )
+set( LIB_VERSION "1.1.0" )
+set( LIB_PLUGIN_VERSION "1.0.0" )
+
 file( WRITE ${PROJECT_BINARY_DIR}/version.h "
 #ifndef ZULUCRYPT_VERSION
 #define ZULUCRYPT_VERSION
-#define VERSION_STRING \"${PGR_VERSION}\\ncopyright: 2011,2012 Ink Francis,mhogomchungu@gmail.com\\nlicense  : GPLv2+\"
+#define VERSION_STRING \"version  : ${PGR_VERSION}\\ncopyright: 2011,2012 Ink Francis,mhogomchungu@gmail.com\\nlicense  : GPLv2+\"
 #endif
 \n" )
 
