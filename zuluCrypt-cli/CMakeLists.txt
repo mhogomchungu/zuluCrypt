@@ -110,8 +110,8 @@
  set_target_properties( zuluCrypt-exe-static PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIC -pthread  -pedantic " )
  set_target_properties( zuluCrypt-static     PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIC -pthread  -pedantic " )
  
- set_target_properties( zuluCrypt     PROPERTIES SOVERSION "3.0.0" )
- set_target_properties( zuluCrypt-exe PROPERTIES SOVERSION "3.0.0" )
+ set_target_properties( zuluCrypt     PROPERTIES SOVERSION "3.1.0" )
+ set_target_properties( zuluCrypt-exe PROPERTIES SOVERSION "3.1.0" )
  
  TARGET_LINK_LIBRARIES( zuluCrypt     ${cryptsetup_lib} String StringList ${blkid} ${mountLibrary} Process ) 
  TARGET_LINK_LIBRARIES( zuluCrypt-exe zuluCrypt zuluCryptPluginManager ) 
