@@ -510,16 +510,10 @@ int _zuluCryptPartitionIsSystemPartition( const char * dev )
 int zuluCryptPartitionIsSystemPartition( const char * device )
 {
 	char * dev ;
-	if( strncmp( device,"/dev/loop",9 ) != 0 ){
-		if( _zuluCryptPartitionIsSystemPartition( device ) ){
-			return 1 ;
-		}else{
-			return _zuluCryptCheckSYSifDeviceIsSystem( device ) ;
-		}
-	}else{
+	if( strncmp( device,"/dev/loop",9 ) == 0 ){
 		/*
-		* zuluCryptLoopDeviceAddress() is defined in ../lib/create_loop_device.c
-		*/
+		 * zuluCryptLoopDeviceAddress() is defined in ../lib/create_loop_device.c
+		 */
 		dev = zuluCryptLoopDeviceAddress( device ) ;
 		if( dev == NULL )
 			return 0 ;
@@ -531,6 +525,12 @@ int zuluCryptPartitionIsSystemPartition( const char * device )
 			return 1 ;
 		}else{
 			free( dev ) ;
+		}
+	}else{
+		if( _zuluCryptPartitionIsSystemPartition( device ) ){
+			return 1 ;
+		}else{
+			return _zuluCryptCheckSYSifDeviceIsSystem( device ) ;
 		}
 	}
 	return 0 ;

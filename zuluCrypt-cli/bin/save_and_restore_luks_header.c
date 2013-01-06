@@ -115,7 +115,7 @@ static int secure_file_path( char ** path,const char * source )
 	if( !create_work_directory( &st_path ) )
 		return 0 ;
 	
-	temp_path = StringAppendInt( st_path,syscall( SYS_gettid ) ) ;	
+	temp_path = StringAppendInt( st_path,syscall( SYS_gettid ) ) ;
 	
 	zuluCryptSecurityDropElevatedPrivileges() ;
 	

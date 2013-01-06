@@ -270,7 +270,7 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	if( luks == 1 ){
 		i = 0 ;
 		k = crypt_keyslot_max( type ) ;
-		for( j = 0 ; j < k ; j++){
+		for( j = 0 ; j < k ; j++ ){
 			switch( crypt_keyslot_status( cd,j ) ){
 				case CRYPT_SLOT_INACTIVE    :     ; break ;
 				case CRYPT_SLOT_ACTIVE_LAST : i++ ; break ;
