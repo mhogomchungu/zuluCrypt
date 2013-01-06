@@ -141,9 +141,15 @@ static int _zuluCryptCheckSYSifDeviceIsSystem( const char * device )
 	char c ;
 	const char * path ;
 	int r ;	
-	string_t st = String( device ) ;
+	string_t st ;
 	string_t xt ;
 	
+	/*
+	 * turn off udev for now,it does not seem to detect external usb based devices reliably. 
+	 */
+	return 0 ;
+	
+	st = String( device ) ;
 	/*
 	 * this loop will convert something like: "/dev/sdc12" to "/dev/sdc"
 	 * basically,it removes digits from the end of the string
