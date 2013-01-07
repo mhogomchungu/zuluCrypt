@@ -231,6 +231,12 @@ static int _print_uuid_from_path( const char * device )
 	}
 }
 
+static void _privilegeEvelationError( const char * msg )
+{
+	puts( msg ) ;
+	exit( 255 ) ;
+}
+
 int main( int argc,char * argv[] )
 {
 	int fd1 = -1 ;
@@ -251,6 +257,23 @@ int main( int argc,char * argv[] )
 	struct_opts clargs ;
 	
 	uid_t uid = getuid() ;
+	gid_t gid = getgid() ;
+	/*
+	 * setgroups() requires seteuid(0) ;
+	 */
+	
+	seteuid( 0 ) ;
+	if( setgroups( 1,&gid ) != 0 ){
+		_privilegeEvelationError( "ERROR: setgroups() fail" ) ;
+	}
+	seteuid( uid ) ;
+	
+	/*
+	 * zuluCryptSecuritySetPrivilegeElevationErrorFunction() is defined in ./security.c
+	 * _privilegeEvelationError() function will be called when functions that elevate or drop privilges fail
+	 */
+	zuluCryptSecuritySetPrivilegeElevationErrorFunction( _privilegeEvelationError ) ;
+	
 	/*
 	 * zuluCryptGetUserUIDForPrivilegeManagement() is defined in ./security.c
 	 */

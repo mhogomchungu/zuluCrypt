@@ -25,7 +25,6 @@
 #include <grp.h> 
 #include "../constants.h"
 #include <sys/types.h>
-#include <grp.h>
 #include <pwd.h>
 /*
  * This source file makes sure the user who started the tool( usually non root user ) has permission 
@@ -408,10 +407,14 @@ int zuluCryptSecurityGainElevatedPrivileges( void )
 		if( setuid( 0 ) == 0 ){
 			return 1 ;
 		}else{
-			puts( "WARNING: failed to seteuid root" ) ;
+			if( zuluCryptSecurityPrivilegeElevationError ){
+				zuluCryptSecurityPrivilegeElevationError( "WARNING: failed to seteuid root" ) ;
+			}
 		}
 	}else{
-		puts( "WARNING: failed to setuid root" ) ;
+		if( zuluCryptSecurityPrivilegeElevationError ){
+			zuluCryptSecurityPrivilegeElevationError( "WARNING: failed to setuid root" ) ;
+		}
 	}
 	return  0  ;
 }
@@ -422,21 +425,24 @@ void zuluCryptGetUserUIDForPrivilegeManagement( uid_t uid )
 	global_variable_user_uid = uid ;
 }
 
+void ( *zuluCryptSecurityPrivilegeElevationError )( const char * ) = NULL ;
+
+void zuluCryptSecuritySetPrivilegeElevationErrorFunction( void ( *f ) ( const char * ) ) 
+{
+	zuluCryptSecurityPrivilegeElevationError = f ;
+}
+
 int zuluCryptSecurityDropElevatedPrivileges( void )
-{	
-	gid_t gid = getgid() ;
-	/*
-	 * setgroups() requires seteuid(0) ;
-	 */
-	seteuid( 0 ) ;
-	if( setgroups( 1,&gid ) != 0 ){
-		perror( "setgroups() fail" ) ;
-	}
+{		
 	if( setegid( global_variable_user_uid ) != 0 ){
-		perror( "setegid() fail" ) ;
+		if( zuluCryptSecurityPrivilegeElevationError ){
+			zuluCryptSecurityPrivilegeElevationError( "ERROR: setegid() fail" ) ;
+		}
 	}
 	if( seteuid( global_variable_user_uid ) != 0 ){
-		perror( "seteuid() fail" ) ;
+		if( zuluCryptSecurityPrivilegeElevationError ){
+			zuluCryptSecurityPrivilegeElevationError( "ERROR: seteuid() fail" ) ;
+		}
 	}
 	return 1 ;
 }

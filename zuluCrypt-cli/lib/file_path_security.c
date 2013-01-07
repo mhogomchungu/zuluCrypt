@@ -95,7 +95,7 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 				}
 			}else{
 				/*
-				 * we can not open the file in read write mode
+				 * we can not open the file in read only mode
 				 */
 				seteuid( 0 ) ;
 				/*

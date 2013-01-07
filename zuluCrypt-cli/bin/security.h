@@ -32,6 +32,14 @@ extern "C" {
  */
 
 /*
+ * set the function to be called when an attempt to evelate or downgrade privileges fail
+ * zuluCryptSecurityPrivilegeElevationError global variable is defined in security.c
+ */
+void ( *zuluCryptSecurityPrivilegeElevationError )( const char * ) ;
+
+void zuluCryptSecuritySetPrivilegeElevationErrorFunction( void ( * ) ( const char * ) ) ;
+
+/*
  * make sure the user with uid has reading permissions to path
  */
 int zuluCryptSecurityCanOpenPathForReading( const char * path,uid_t uid ) ;

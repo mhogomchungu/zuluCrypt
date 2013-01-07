@@ -30,6 +30,7 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 #include <libcryptsetup.h>
+#include <grp.h>
 
 #include "../utility/string/String.h" 
 #include "../utility/string/StringList.h" 
@@ -45,6 +46,9 @@
  * seen in public API
  */
 
+/*
+ * global_variable_user_uid global variable is defined in security.c
+ */
 extern uid_t global_variable_user_uid ;
 
 /*

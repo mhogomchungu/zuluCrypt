@@ -289,12 +289,8 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	/*
 	 * zuluCryptGetMountPointFromPath() is defined in ./print_mounted_volumes.c
 	 */
-	
 	path = zuluCryptGetMountPointFromPath( mapper ) ;
 	if( path != NULL ){
-		/*
-		 * zuluCryptFileSystemProperties() is defined in this source file
-		 */
 		zuluCryptFileSystemProperties( p,mapper,path ) ; 
 		free( path ) ;
 	}

@@ -416,6 +416,12 @@ static int _zuluMountDoAction( const char * device,const char * action,const cha
 	return status ;
 }
 
+static void _privilegeEvelationError( const char * msg )
+{
+	puts( msg ) ;
+	exit( 255 ) ;
+}
+
 int main( int argc,char * argv[] )
 {	
 	const char * action     = NULL ;
@@ -428,13 +434,29 @@ int main( int argc,char * argv[] )
 	const char * fs_opts    = NULL ;
 	int mount_point_option = 0 ;
 	char * device ;
-	uid_t uid ;
 	string_t * k ;
 	stringList_t stl ;
 	stringList_t stx ;
 	int status ;
 	
-	uid = getuid() ;
+	uid_t uid = getuid() ;
+	gid_t gid = getgid() ;
+	
+	/*
+	 * setgroups() requires seteuid(0) ;
+	 */
+	seteuid( 0 ) ;
+	if( setgroups( 1,&gid ) != 0 ){
+		_privilegeEvelationError( "ERROR: setgroups() fail" ) ;
+	}
+	seteuid( uid ) ;
+	
+	/*
+	 * zuluCryptSecuritySetPrivilegeElevationErrorFunction() is defined in ../zuluCrypt-cli/bin/security.c
+	 * _privilegeEvelationError() function will be called when functions that elevate or drop privilges fail
+	 */
+	zuluCryptSecuritySetPrivilegeElevationErrorFunction( _privilegeEvelationError ) ;
+	
 	/*
 	 * zuluCryptGetUserUIDForPrivilegeManagement() is defined in ../zuluCrypt-bin/security.c
 	 */
