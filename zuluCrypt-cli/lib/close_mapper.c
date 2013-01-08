@@ -21,25 +21,19 @@
 
 #include <unistd.h>
 
-/*
- * For reasons currently unknown to me,the mapper path soft link does not always get deleted
- * do it manually when that happens
- */
-static inline int unlink_mapper( const char * mapper )
-{
-	unlink( mapper ) ;
-	return 0 ;
-}
-
 int zuluCryptCloseMapper( const char * mapper )
 {
 	int j ;
-	/*
-	 * For reasons currently unknown to me, the mapper fail to close sometimes so give it some room when it happens
-	 */
+	struct stat st ;
+	if( stat( mapper,&st ) != 0 )
+		return 1 ;
+	
 	for( j = 0 ; j < 10 ; j++ ) { 
+		/*
+		 * try multiple types to close the mapper just in case its hang up on something
+		 */
 		if( crypt_deactivate( NULL,mapper ) == 0 ){
-			return unlink_mapper( mapper ) ;
+			return 0 ;
 		}else{
 			sleep( 1 ) ;
 		}

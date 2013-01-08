@@ -452,6 +452,11 @@ int main( int argc,char * argv[] )
 	seteuid( uid ) ;
 	
 	/*
+	 * zuluCryptClearDeadMappers() is defined in ../zuluCrypt-cli/bin/clear_dead_mapper.c
+	 */
+	zuluCryptClearDeadMappers( uid ) ;
+	
+	/*
 	 * zuluCryptSecuritySetPrivilegeElevationErrorFunction() is defined in ../zuluCrypt-cli/bin/security.c
 	 * _privilegeEvelationError() function will be called when functions that elevate or drop privilges fail
 	 */
