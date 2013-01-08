@@ -55,7 +55,6 @@ static int _zuluMountPartitionAccess( const char * device,const char * m_opts,ui
 	users   = StringContains( p,"users" );
 	user    = StringContains( p,"user" ) ;
 	
-	if( defaulT ){;}
 	/*
 	 * zuluCryptPartitionIsSystemPartition() is defined in ../zuluCrypt-cli/bin/partition.c
 	 */
@@ -110,17 +109,22 @@ static int _zuluMountPartitionAccess( const char * device,const char * m_opts,ui
 			 */
 			st = 0 ;
 		}else{
-			if( ( user || users ) && !nouser ){
+			if( nouser ){
+				/*
+				 * normal user is not allowed to mount it
+				 */
+				st = 1 ;
+			}else if( user || users ){
 				/*
 				 * the partition has option to allow normal user to mount it,mount it
 				 */
 				st = 0 ;
 			}else{
 				/*
-				 * options that go here are "defaults","nouser",auto" among others.They dont allow
+				 * options that go here are "defaults" among others.They dont allow
 				 * a normal user to mount a volume.
 				 */
-				
+				if( defaulT ){;}
 				/*
 				 * zuluCryptUserIsAMemberOfAGroup() is defined in ../zuluCrypt/bin/security.c
 				 */
