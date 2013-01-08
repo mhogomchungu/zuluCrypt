@@ -237,6 +237,12 @@ static void _privilegeEvelationError( const char * msg )
 	exit( 255 ) ;
 }
 
+static int _clear_dead_mappers( uid_t uid )
+{
+	zuluCryptClearDeadMappers( uid ) ;
+	return 0 ;
+}
+
 int main( int argc,char * argv[] )
 {
 	int fd1 = -1 ;
@@ -383,6 +389,7 @@ int main( int argc,char * argv[] )
 	 * zuluCryptPrintOpenedVolumes() is defined in ../lib/print_open_volumes.c
 	 */
 	switch( action ){
+		case 'C': return zuluExit( _clear_dead_mappers( uid ),stl,stx,env,NULL ) ;
 		case 'A':
 		case 'N':
 		case 'S': st = zuluCryptPrintPartitions( clargs.partition_number,clargs.print_partition_type ) ; 

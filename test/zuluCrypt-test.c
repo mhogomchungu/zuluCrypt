@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <dirent.h>
+#include <libcryptsetup.h>
 
 #include "../zuluCrypt-cli/pluginManager/libzuluCryptPluginManager.h"
 #include "../zuluCrypt-cli/utility/process/process.h"
@@ -317,7 +318,7 @@ void checkForOpenedMappers( void )
 	
 	struct dirent * entry ;
 	
-	DIR * dir = opendir( "/dev/mapper" ) ;
+	DIR * dir = opendir( crypt_get_dir() ) ;
 	
 	printf( "check if there are no opened mappers: " ) ;
 	

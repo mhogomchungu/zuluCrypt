@@ -171,4 +171,9 @@ char * zuluCryptRealPath( const char * path ) ;
  */
 void zuluCryptGetUserUIDForPrivilegeManagement( uid_t ) ;
 
+/*
+ * this function is defined in clear_dead_mapper.c
+ */
+void zuluCryptClearDeadMappers( uid_t uid ) ;
+
 #endif 

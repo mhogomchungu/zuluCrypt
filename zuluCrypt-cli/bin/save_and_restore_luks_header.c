@@ -309,7 +309,12 @@ int zuluCryptEXESaveAndRestoreLuksHeader( const struct_opts * opts,uid_t uid,int
 	int st ;
 	int k ;
 	string_t sec_file = StringVoid ;
-		
+	
+	/*
+	 * zuluCryptClearDeadMappers() is defined in clear_dead_mapper.c
+	 */
+	zuluCryptClearDeadMappers( uid ) ;
+	
 	/*
 	 * zuluCryptPartitionIsSystemPartition() is defined in partitions.c
 	 */

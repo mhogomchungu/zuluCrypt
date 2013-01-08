@@ -44,9 +44,12 @@ int zuluCryptEXECloseVolume( const char * dev,const char * mapping_name,uid_t ui
 	 char * m_point = NULL ;
 	 
 	 /*
-	  * This function is defined at "../lib/create_mapper_name.c"
-	  * 
-	  * Explanation for what it does is explained where it is defined.
+	  * zuluCryptClearDeadMappers() is defined in clear_dead_mapper.c
+	  */
+	 zuluCryptClearDeadMappers( uid ) ;
+	 
+	 /*
+	  * zuluCryptCreateMapperName() defined in "../lib/create_mapper_name.c" 
 	  */
 	 p = zuluCryptCreateMapperName( dev,mapping_name,uid,CLOSE ) ;
 	 

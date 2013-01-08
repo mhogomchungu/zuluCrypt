@@ -24,6 +24,7 @@
  bin/help.c
  bin/mount_flags.c 
  bin/file_encryption.c
+ bin/clear_dead_mappers.c
  ) 
  
  SET( BINMount
@@ -159,7 +160,7 @@
  set_target_properties( zuluCrypt-test PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIE -pthread  -pedantic " )
  set_target_properties( zuluCrypt-test PROPERTIES LINK_FLAGS "-pie" )
 
- TARGET_LINK_LIBRARIES( zuluCrypt-test zuluCryptPluginManager StringList )
+ TARGET_LINK_LIBRARIES( zuluCrypt-test zuluCryptPluginManager StringList ${cryptsetup_lib} )
  
  set_target_properties( zuluCrypt-testKey PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIE -pthread  -pedantic " )
  set_target_properties( zuluCrypt-testKey PROPERTIES LINK_FLAGS "-pie" )

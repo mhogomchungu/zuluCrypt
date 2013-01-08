@@ -25,12 +25,17 @@ int zuluCryptEXEVolumeInfo( const char * mapper,const char * device,uid_t uid )
 	int xt ;
 	
 	string_t p ;
+		
+	/*
+	 * zuluCryptClearDeadMappers() is defined in clear_dead_mapper.c
+	 */
+	zuluCryptClearDeadMappers( uid ) ;
 	
 	if( !zuluCryptSecurityGainElevatedPrivileges() ){
 		printf( "ERROR: could not get elevated privileges,check binary permissions\n" ) ;
 		return 3 ;
 	}
-	
+		
 	/*
 	 * zuluCryptCreateMapperName() is defined at "../lib/create_mapper_name.c
 	 */
