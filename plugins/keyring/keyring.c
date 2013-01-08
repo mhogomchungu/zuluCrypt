@@ -83,7 +83,7 @@ int main( int argc __attribute__(( unused )),char * argv[] )
 
 	/*
 	 * this function is to be called as soon as possible.
-	 * It will fail is called 10 seconds after the plugin is started.  
+	 * It will fail if called 10 seconds after the plugin is started.  
 	 */
 	handle = zuluCryptPluginManagerOpenConnection( addr ) ;
 	

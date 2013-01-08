@@ -104,9 +104,7 @@ static int _zuluMountPartitionAccess( const char * device,const char * m_opts,ui
 			 * respect the option for the partition to be mounted read only
 			 */
 			st = 2 ;
-		}
-		
-		if( uid == 0 ){
+		}else if( uid == 0 ){
 			/*
 			 * user is root,mount it
 			 */
@@ -119,7 +117,8 @@ static int _zuluMountPartitionAccess( const char * device,const char * m_opts,ui
 				st = 0 ;
 			}else{
 				/*
-				 * The entry for the partition does not allow a normal user to mount it
+				 * options that go here are "defaults","nouser",auto" among others.They dont allow
+				 * a normal user to mount a volume.
 				 */
 				
 				/*
@@ -131,10 +130,6 @@ static int _zuluMountPartitionAccess( const char * device,const char * m_opts,ui
 					 */
 					st = 0 ;
 				}else{
-					/*
-					* options that go here are "defaults","nouser",auto" among others.They dont allow
-					* a normal user to mount a volume.
-					*/
 					st = 1 ;
 				}
 			}
