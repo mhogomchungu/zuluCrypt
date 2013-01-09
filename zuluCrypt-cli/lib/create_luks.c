@@ -47,8 +47,11 @@ int zuluCryptCreateLuks( const char * dev,const char * pass,size_t pass_size,con
 	else 
 		crypt_set_rng_type( cd,CRYPT_RNG_URANDOM );
 	
-	if( crypt_format( cd,CRYPT_LUKS1,"aes","cbc-essiv:sha256",NULL,NULL,32,&params ) != 0 )
-		return zuluExit( 2,cd ) ;
+	if( crypt_format( cd,CRYPT_LUKS1,"aes","xts-plain64",NULL,NULL,32,&params ) != 0 ){
+		if( crypt_format( cd,CRYPT_LUKS1,"aes","cbc-essiv:sha256",NULL,NULL,32,&params ) != 0 ){
+			return zuluExit( 2,cd ) ;
+		}
+	}
 	
 	if( crypt_keyslot_add_by_volume_key( cd,CRYPT_ANY_SLOT,NULL,32,pass,pass_size ) < 0 )
 		return zuluExit( 3,cd ) ;

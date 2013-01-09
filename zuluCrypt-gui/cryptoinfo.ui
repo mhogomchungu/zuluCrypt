@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>482</width>
-    <height>245</height>
+    <height>261</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,7 +20,7 @@
    <property name="geometry">
     <rect>
      <x>200</x>
-     <y>210</y>
+     <y>220</y>
      <width>91</width>
      <height>31</height>
     </rect>
@@ -33,13 +33,13 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>30</y>
+     <y>20</y>
      <width>481</width>
      <height>31</height>
     </rect>
    </property>
    <property name="text">
-    <string>options for volumes of type plain:</string>
+    <string>default options for plain volumes</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
@@ -93,22 +93,6 @@
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
-  <widget class="QLabel" name="label_9">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>481</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>all volumes are created and opened with the following options:</string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignCenter</set>
-   </property>
-  </widget>
   <widget class="QLabel" name="label_10">
    <property name="geometry">
     <rect>
@@ -119,7 +103,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>options for volumes of type luks1</string>
+    <string>default creation options for luks volumes</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
@@ -129,7 +113,7 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>160</y>
+     <y>170</y>
      <width>481</width>
      <height>31</height>
     </rect>
@@ -144,9 +128,9 @@
   <widget class="Line" name="line">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>0</x>
      <y>110</y>
-     <width>461</width>
+     <width>481</width>
      <height>21</height>
     </rect>
    </property>
@@ -158,7 +142,7 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>180</y>
+     <y>190</y>
      <width>481</width>
      <height>31</height>
     </rect>
@@ -173,10 +157,10 @@
   <widget class="Line" name="line_2">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>20</y>
-     <width>461</width>
-     <height>16</height>
+     <x>0</x>
+     <y>10</y>
+     <width>481</width>
+     <height>20</height>
     </rect>
    </property>
    <property name="orientation">
@@ -187,16 +171,42 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>140</y>
+     <y>150</y>
      <width>481</width>
      <height>31</height>
     </rect>
    </property>
    <property name="text">
-    <string>cipher: aes-cbc-essiv:sha256</string>
+    <string>cipher: aes-xts-plain64</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="Line" name="line_3">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>40</y>
+     <width>481</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+  </widget>
+  <widget class="Line" name="line_4">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>140</y>
+     <width>481</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
    </property>
   </widget>
  </widget>
