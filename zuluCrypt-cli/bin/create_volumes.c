@@ -104,11 +104,6 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	int k ;
 	
 	/*
-	 * zuluCryptClearDeadMappers() is defined in clear_dead_mapper.c
-	 */
-	zuluCryptClearDeadMappers( uid ) ;
-	
-	/*
 	 * zulucryptFileSystemIsNotSupported() is defined in ../lib/mount_fs_options.c
 	 */
 	if( !zulucryptFileSystemIsSupported( fs ) )

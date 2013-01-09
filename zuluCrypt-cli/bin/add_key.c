@@ -152,11 +152,6 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 	int status = 0 ;
 	
 	/*
-	 * zuluCryptClearDeadMappers() is defined in clear_dead_mapper.c
-	 */
-	zuluCryptClearDeadMappers( uid ) ;
-	
-	/*
 	 * zuluCryptPartitionIsSystemPartition() is defined in ./partitions.c
 	 */
 	if( zuluCryptPartitionIsSystemPartition( device ) ){

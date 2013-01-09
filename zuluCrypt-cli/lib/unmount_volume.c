@@ -114,6 +114,7 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 			if( h == 0 ){
 				rename( "/etc/mtab-zC","/etc/mtab" ) ;
 				chown( "/etc/mtab",0,0 ) ;
+				chmod( "/etc/mtab",S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH ) ;
 			}else{
 				remove( "/etc/mtab-zC" ) ;
 			}

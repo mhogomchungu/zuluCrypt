@@ -200,4 +200,9 @@ int zuluCryptSecureOpenFile( const char * path,int * fd_path,string_t * file,uid
  */
 stringList_t zuluCryptGetFstabList( void ) ;
 
+/*
+ * this function is defined in print_mounted_volumes.c
+ */
+stringList_t zuluCryptGetMtabList( void ) ;
+
 #endif 

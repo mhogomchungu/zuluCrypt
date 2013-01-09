@@ -138,11 +138,6 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	
 	unsigned long m_flags ;
 	
-	/*
-	 * zuluCryptClearDeadMappers() is defined in clear_dead_mapper.c
-	 */
-	zuluCryptClearDeadMappers( uid ) ;
-	
 	if( m_opts == NULL )
 		m_opts = "rw" ;
 	

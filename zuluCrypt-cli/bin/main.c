@@ -273,7 +273,7 @@ int main( int argc,char * argv[] )
 		_privilegeEvelationError( "ERROR: setgroups() fail" ) ;
 	}
 	seteuid( uid ) ;
-	
+		
 	/*
 	 * zuluCryptSecuritySetPrivilegeElevationErrorFunction() is defined in ./security.c
 	 * _privilegeEvelationError() function will be called when functions that elevate or drop privilges fail
@@ -399,6 +399,11 @@ int main( int argc,char * argv[] )
 			  zuluCryptSecurityDropElevatedPrivileges() ;
 			  return zuluExit( st,stl,stx,env,NULL ) ;
 	}
+	
+	/*
+	 * zuluCryptClearDeadMappers() is defined in clear_dead_mapper.c
+	 */
+	zuluCryptClearDeadMappers( uid ) ;
 	
 	if( action == '\0' )
 		return zuluExit( 130,stl,stx,env,"ERROR: \"action\" argument is missing" ) ;
