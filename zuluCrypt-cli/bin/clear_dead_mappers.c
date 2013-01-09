@@ -68,10 +68,11 @@ static void mtab_remove_entry( const char * path )
 		chown( "/etc/mtab",0,0 ) ;
 		chmod( "/etc/mtab",S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH ) ;
 		mnt_unlock_file( lock ) ;
-		mnt_free_lock( lock ) ;
 	}else{
 		endmntent( f ) ;
 	}	
+	
+	mnt_free_lock( lock ) ;
 }
 
 static void delete_mount_point_with_no_device( const char * path,uid_t uid,stringList_t stl )
