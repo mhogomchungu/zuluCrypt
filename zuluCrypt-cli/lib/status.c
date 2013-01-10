@@ -164,6 +164,42 @@ static void zuluCryptFileSystemProperties( string_t p,const char * mapper,const 
 	StringMultipleAppend( p,"\n mount point:\t",m_point,END ) ;
 }
 
+char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper )
+{
+	struct crypt_device * cd;
+	const char * type ;
+	char * volType = NULL ;
+	
+	type = crypt_get_dir() ;
+	
+	if( strncmp( mapper,type,strlen( type ) != 0 ) ){
+		return strdup( "Nil" ) ;
+	}
+	
+	if( crypt_init_by_name( &cd,mapper ) < 0 ){
+		return strdup( "Nil" ) ;
+	}
+	
+	type = crypt_get_type( cd ) ;
+	
+	if( type == NULL ){
+		volType = strdup( "Nil" ) ;
+	}else{
+		if( strstr( type,"LUKS" ) != NULL ){
+			volType = strdup( "crypto_LUKS" ) ;
+		}else if( strstr( type,"PLAIN" ) != NULL ){
+			volType = strdup( "crypto_PLAIN" ) ;
+		}else if( strstr( type,"TCRYPT" ) != NULL ){
+			volType = strdup( "crypto_TCRYPT" ) ;
+		}else{
+			volType = strdup( "Nil" ) ;
+		}
+	}
+	
+	crypt_free( cd ) ;
+	return volType ;
+}
+
 char * zuluCryptVolumeStatus( const char * mapper )
 {	
 	char buff[ SIZE ] ;
@@ -216,27 +252,31 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	}
 	
 	StringAppend( p," type:   \t" );
+	
 	type = crypt_get_type( cd ) ;
 	
-	if( strncmp( type,"LUKS",4 ) == 0 ){
-		if( strcmp( type,"LUKS1" ) == 0 )
-			StringAppend( p,"luks1" ) ;
-		else{
-			/*
-			 * future versions of luks will go here.
-			 * "LUKS" in capital letters sticks out when displaying volume properties in the GUI.
-			 *  Thats why they are converted to small letters in this conditional block.
-			 */
-			;
-		}
-		luks = 1 ;
-	}else if( strcmp( type,"plain") ){
-		StringAppend( p,"plain" ) ;
+	if( type == NULL ){
+		StringAppend( p,"Nil" ) ;
 	}else{
-		/*
-		 * truecrypt volumes maybe handled here,report them as plain for now
-		 */
-		StringAppend( p,"plain" ) ;
+		if( strncmp( type,"LUKS",4 ) == 0 ){
+			luks = 1 ;
+			if( strcmp( type,"LUKS1" ) == 0 )
+				StringAppend( p,"luks1" ) ;
+			else{
+				/*
+				* future versions of luks will go here.
+				* "LUKS" in capital letters sticks out when displaying volume properties in the GUI.
+				*  Thats why they are converted to small letters in this conditional block.
+				*/
+				;
+			}
+		}else if( strcmp( type,"PLAIN" ) == 0 ){
+			StringAppend( p,"plain" ) ;
+		}else if( strcmp( type,"TCRYPT" ) == 0 ){
+			StringAppend( p,"tcrypt" ) ;
+		}else{
+			StringAppend( p,"Nil" ) ;
+		}
 	}
 	
 	StringMultipleAppend( p,"\n cipher:\t",crypt_get_cipher_mode( cd ),END );

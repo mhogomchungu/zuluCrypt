@@ -130,7 +130,7 @@ void zuluCrypt::StartUpAddOpenedVolumesToTableThread()
 {
 	m_ui->tableWidget->setEnabled( false );
 	startupupdateopenedvolumes * sov = new startupupdateopenedvolumes();
-	connect( sov,SIGNAL( addItemToTable( QString,QString ) ),this,SLOT( addItemToTable( QString,QString ) ) ) ;
+	connect( sov,SIGNAL( addItemToTable( QString,QString,QString ) ),this,SLOT( addItemToTable( QString,QString,QString ) ) ) ;
 	connect( sov,SIGNAL( finished( int ) ),this,SLOT( startUpdateFinished( int ) ) );
 	sov->start();
 }
@@ -420,22 +420,21 @@ For more information, please read the FAQ at: http://code.google.com/p/cryptsetu
 	m.ShowUIInfo( tr( "important information on luks header" ),msg );
 }
 
-void zuluCrypt::addItemToTable( QString device,QString m_point )
+void zuluCrypt::addItemToTable( QString device,QString m_point,QString type )
 {
 	QStringList s ;
-	QString type ;
 
 	QString dev = device ;
 	dev.replace( "\"","\"\"\"" ) ;
 
-	if( utility::isLuks( dev ) )
-		type = tr( "luks" ) ;
-	else
-		type = tr( "plain" ) ;
-
 	s.append( device );
 	s.append( m_point );
-	s.append( type );
+	if( type == QString( "crypto_LUKS" ) )
+		s.append( QString( "luks" ) );
+	else if( type == QString( "crypto_PLAIN" ) )
+		s.append( QString( "plain" ) );
+	else if( type == QString( "crypto_TCRYPT" ) )
+		s.append( QString( "tcrypt" ) );
 
 	tablewidget::addRowToTable( m_ui->tableWidget,s );
 }

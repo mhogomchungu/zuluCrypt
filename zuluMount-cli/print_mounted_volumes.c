@@ -23,6 +23,7 @@
 #include <blkid/blkid.h>
 #include <stdint.h>
 #include <libcryptsetup.h>
+#include "../zuluCrypt-cli/lib/includes.h"
 
 /*
  * below header file is generated at configure time
@@ -76,6 +77,8 @@ void zuluMountPartitionProperties( const char * device,const char * mapper,const
 	char format[ SIZE ] ;
 	char * loop_device ;
 	
+	char * volType ;
+	
 	if( !zuluCryptSecurityGainElevatedPrivileges() ){
 		printf( "%s\tNil\tNil\tNil\tNil\tNil\n",device ) ;
 		return ;
@@ -121,13 +124,22 @@ void zuluMountPartitionProperties( const char * device,const char * mapper,const
 		printf( "%s",m_point ) ;
 	}
 	
-	if( blkid_probe_lookup_value( blkid,"TYPE",&g,NULL ) == 0 ){
-		printf( "\t%s",g ) ;
+	if( strcmp( device,mapper ) != 0 ){
+		/*
+		 * zuluCryptGetVolumeTypeFromMapperPath() is defined in ../zuluCrypt-cli/lib/status.c
+		 */
+		volType = zuluCryptGetVolumeTypeFromMapperPath( mapper ) ;
+		printf( "\t%s",volType ) ;
+		free( volType ) ;
 	}else{
-		if( strcmp( device,mapper ) == 0 ){
-			printf( "\tNil" ) ;
+		if( blkid_probe_lookup_value( blkid,"TYPE",&g,NULL ) == 0 ){
+			printf( "\t%s",g ) ;
 		}else{
-			printf( "\tcrypto_PLAIN" ) ;
+			if( strcmp( device,mapper ) == 0 ){
+				printf( "\tNil" ) ;
+			}else{
+				printf( "\tcrypto_PLAIN" ) ;
+			}
 		}
 	}
 	

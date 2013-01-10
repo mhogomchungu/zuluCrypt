@@ -515,8 +515,12 @@ void passwordDialog::complete( QString output )
 
 	if( output.contains( QString( "luks" ) ) )
 		list.append( QString( "luks" ) );
-	else
+	else if( output.contains( QString( "plain" ) ) )
 		list.append( QString( "plain" ) );
+	else if( output.contains( QString( "tcrypt" ) ) )
+		list.append( QString( "tcrypt" ) );
+	else
+		list.append( QString( "Nil" ) );
 
 	tablewidget::addRowToTable( m_table,list ) ;
 

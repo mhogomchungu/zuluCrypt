@@ -210,7 +210,7 @@ bool utility::isLuks( QString volumePath )
 	int i = p.exitCode() ;
 	p.close();
 
-	return i == 1 ? true : false ;
+	return i == 0 ;
 }
 
 QStringList utility::luksEmptySlots( QString volumePath )

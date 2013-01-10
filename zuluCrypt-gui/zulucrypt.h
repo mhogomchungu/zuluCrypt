@@ -103,7 +103,7 @@ private slots :
 	void favAboutToHide( void ) ;
 	void trayClicked( QSystemTrayIcon::ActivationReason  ) ;
 	void trayProperty( void ) ;
-	void addItemToTable( QString pathToVolume,QString pathToMountPoint );
+	void addItemToTable( QString pathToVolume,QString pathToMountPoint,QString volumeType );
 	void volumePropertyThreadFinished( QString properties ) ;
 	void closeApplication( void ) ;
 	void startUpdateFinished( int ) ;

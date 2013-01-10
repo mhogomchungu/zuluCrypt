@@ -33,7 +33,7 @@ public:
 	void start( void );
 	~startupupdateopenedvolumes();
 signals:
-	void addItemToTable( QString,QString ) ;
+	void addItemToTable( QString,QString,QString ) ;
 	void finished( int );
 private:
 	void run( void ) ;

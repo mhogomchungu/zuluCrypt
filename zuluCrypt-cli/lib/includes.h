@@ -205,4 +205,9 @@ stringList_t zuluCryptGetFstabList( void ) ;
  */
 stringList_t zuluCryptGetMtabList( void ) ;
 
+/*
+ * this function is defined in status.c
+ */
+char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper ) ;
+
 #endif 

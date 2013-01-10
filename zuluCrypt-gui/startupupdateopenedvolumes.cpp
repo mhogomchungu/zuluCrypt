@@ -51,7 +51,7 @@ void startupupdateopenedvolumes::run()
 
 	for( int i = 0 ; i < j ; i++ ){
 		entry = l.at( i ).split( "\t" );
-		emit addItemToTable( entry.at( 0 ),entry.at( 1 ) ) ;
+		emit addItemToTable( entry.at( 0 ),entry.at( 1 ),entry.at( 2 ) ) ;
 	}
 }
 

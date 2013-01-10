@@ -265,13 +265,25 @@ static void print( uid_t uid,stringList_t stl )
 				if( k != -1 ){
 					c = StringSubChar( q,k,'\0' ) + len + 6 ;
 					d = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;
-					printf( "UUID=\"%s\"\t%s\n",c,d ) ;
+					printf( "UUID=\"%s\"\t%s\t",c,d ) ;
+					/*
+					 * zuluCryptGetVolumeTypeFromMapperPath() is defined in status.c
+					 */
+					f = zuluCryptGetVolumeTypeFromMapperPath( StringListContentAt( stx,0 ) ) ;
+					puts( f ) ;
+					free( f ) ;
 				}
 			}else{
 				f = zuluCryptVolumeDeviceName( StringListContentAt( stx,0 ) ) ;
 				if( f != NULL ){
 					d = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;
-					printf( "%s\t%s\n",f,d ) ;
+					printf( "%s\t%s\t",f,d ) ;
+					free( f ) ;
+					/*
+					 * zuluCryptGetVolumeTypeFromMapperPath() is defined in status.c
+					 */
+					f = zuluCryptGetVolumeTypeFromMapperPath( StringListContentAt( stx,0 ) ) ;
+					puts( f ) ;
 					free( f ) ;
 				}
 			}

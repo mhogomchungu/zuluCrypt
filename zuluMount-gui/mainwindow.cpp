@@ -451,8 +451,10 @@ void MainWindow::slotUnmountComplete( int status,QString msg )
 			else if( type == QString( "crypto_PLAIN" ) ){
 				table->item( row,3 )->setText( QString( "Nil" ) );
 				table->item( row,2 )->setText( QString( "Nil" ) );
+			}else if( type == QString( "crypto_TCRYPT" ) ){
+				table->item( row,3 )->setText( QString( "Nil" ) );
+				table->item( row,2 )->setText( QString( "Nil" ) );
 			}
-
 			table->item( row,5 )->setText( QString( "Nil" ) );
 		}
 
