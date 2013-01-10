@@ -139,7 +139,7 @@ void MainWindow::itemClicked( QTableWidgetItem * item )
 	}else{
 		connect( m.addAction( tr( "unmount" ) ),SIGNAL( triggered() ),this,SLOT( pbUmount() ) ) ;
 
-		if( type == QString( "crypto_LUKS" ) || type == QString( "crypto_PLAIN" ) ) {
+		if( type.contains( QString( "crypto" ) ) ) {
 			m.addSeparator() ;
 			connect( m.addAction( tr( "properties" ) ),SIGNAL( triggered() ),this,SLOT( volumeProperties() ) ) ;
 		}

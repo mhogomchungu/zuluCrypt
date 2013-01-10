@@ -287,14 +287,14 @@ void manageluksheader::threadExitStatus( int st )
 		case 0 : return this->success();
 		case 1 : return this->success();
 		case 2 : msg.ShowUIOK( tr( "ERROR!" ),tr( "presented device is not a LUKS device" ) )					; break ;
-		case 3 : msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to read/write header,is the volume open?" ) )			; break ;
-		case 4 : msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to read/write header,is the volume open?" ) )			; break ;
+		case 3 : msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to perform requested operation" ) )					; break ;
+		case 4 : msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to perform requested operation" ) )					; break ;
 		case 5 : msg.ShowUIOK( tr( "INFO!"  ),tr( "operation terminater per user request" ) )					; break ;
 		case 6 : msg.ShowUIOK( tr( "ERROR!" ),tr( "path to be used to create a back up file is occupied" ) ) 			; break ;
-		case 7 : msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to restore" )	 )						; break ;
+		case 7 : msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to perform requested operation" ) )					; break ;
 		case 8 : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open backup header file for reading" ) ) 		; break ;
 		case 9 : msg.ShowUIOK( tr( "ERROR!" ),tr( "invalid path to back up header file" ) )					; break ;
-		case 10: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to create a backup header in a destination folder" )); break ;
+		case 10: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to create a backup header in a destination folder" )) ; break ;
 		case 11: msg.ShowUIOK( tr( "ERROR!" ),tr( "invalid path to device" ) )							; break ;
 		case 12: msg.ShowUIOK( tr( "ERROR!" ),tr( "argument for path to a backup  header file is missing" ) ) 			; break ;
 		case 13: msg.ShowUIOK( tr( "ERROR!" ),tr( "argument for path to a backup  header file is missing" ) ) 			; break ;
