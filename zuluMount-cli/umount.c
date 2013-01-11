@@ -25,6 +25,7 @@ int zuluMountUMount( const char * device,uid_t uid,const char * mode,int mount_p
 	int status ;
 	string_t st = StringVoid ;
 	const char * dev = NULL ;
+	string_t xt ;
 	if( mode ) {;}
 	if( mount_point_option ) {;}
 	
@@ -34,6 +35,9 @@ int zuluMountUMount( const char * device,uid_t uid,const char * mode,int mount_p
 		 */
 		loop_device = zuluCryptLoopDeviceAddress( device ) ;
 		if( loop_device == NULL ){
+			/*
+			 * the error msg is a lie,but its harmless since the user will most likely never see it
+			 */
 			return _zuluExit( 100,StringVoid,m_point,"ERROR: device does not appear to be mounted" ) ;
 		}else{
 			st = StringInherit( &loop_device ) ;
@@ -58,12 +62,16 @@ int zuluMountUMount( const char * device,uid_t uid,const char * mode,int mount_p
 	/*
 	 * zuluCryptSecurityMountPointPrefixMatch() is defined in ../zuluCrypt-cli/bin/security.c
 	 */
-	if( !zuluCryptSecurityMountPointPrefixMatch( m_point,uid ) ){
-		if( uid != 0 ){
-			return _zuluExit( 101,st,m_point,"ERROR: you can only unmount volumes you have mounted" ) ;
+	if( !zuluCryptSecurityMountPointPrefixMatch( m_point,uid,&xt ) ){
+		if( !zuluCryptUserIsAMemberOfAGroup( uid,"zulumount" ) ){
+			printf( "ERROR: insufficient privilege to unmount a volume that has a mount point \
+outside of \"%s\"\n",StringContent( xt ) ) ;
+			StringDelete( &xt ) ;
+			return _zuluExit( 101,st,m_point,NULL ) ;
 		}
 	}
 	
+	StringDelete( &xt ) ;
 	free( m_point ) ;
 	m_point = NULL ;
 	

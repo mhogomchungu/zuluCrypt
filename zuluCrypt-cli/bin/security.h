@@ -54,7 +54,7 @@ int zuluCryptSecurityCanOpenPathForWriting( const char * path,uid_t uid ) ;
  */
 string_t zuluCryptSecurityCreateMountPoint( const char * device,const char * m_point,uid_t uid ) ;
 
-int zuluCryptSecurityMountPointPrefixMatch( const char * path,uid_t uid ) ;
+int zuluCryptSecurityMountPointPrefixMatch( const char * path,uid_t uid,string_t * m_point ) ;
 
 void zuluCryptSecuritySanitizeTheEnvironment( uid_t uid,stringList_t * ) ;
 

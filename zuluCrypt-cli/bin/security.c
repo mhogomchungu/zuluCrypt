@@ -302,7 +302,7 @@ static string_t _create_custom_mount_point( const char * label,uid_t uid,string_
 	return st ;
 }
 
-int zuluCryptSecurityMountPointPrefixMatch( const char * m_path,uid_t uid )
+int zuluCryptSecurityMountPointPrefixMatch( const char * m_path,uid_t uid,string_t * m_point )
 {
 	int st ;
 	int xt ;
@@ -313,7 +313,11 @@ int zuluCryptSecurityMountPointPrefixMatch( const char * m_path,uid_t uid )
 	const char * str = StringPrepend( uname,"/run/media/" ) ;
 	xt = StringLength( uname ) ;
 	st = strncmp( str,m_path,xt ) ;
-	StringDelete( &uname ) ;
+	if( m_point ){
+		*m_point = uname ;
+	}else{
+		StringDelete( &uname ) ;
+	}
 	return st == 0 ;
 }
 
