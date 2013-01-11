@@ -552,13 +552,14 @@ void passwordDialog::threadfinished( int status,QString output )
 		case 18: msg.ShowUIOK( tr( "ERROR!" ),tr( "-O and -m options can not be used together" ) );						break ;
 		case 19: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to create mount point" ) );						break ;
 		case 20: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open device\nconsult help->permissions for more information" ) );	break ;
-	case 21: msg.ShowUIOK( tr( "ERROR!" ),tr( "mount point path \"%1\" is already taken" ).arg( utility::mountPath( m_point) ) );			break ;
+		case 21: msg.ShowUIOK( tr( "ERROR!" ),tr( "mount point path \"%1\" is already taken" ).arg( utility::mountPath( m_point) ) );			break ;
 		case 22: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open keyfile for reading" ) );					break ;
 		case 23: msg.ShowPermissionProblem( QString( "writing" ),m_ui->OpenVolumePath->text() );						break ;
 		case 24: msg.ShowUIOK( tr( "ERROR!" ),tr( "there seem to be an opened mapper associated with the device" ) );				break ;
 		case 25: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get a passphrase from the module" ) );						break ;
 		case 29: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get a passphrase through a local socket" ) ) ;					break ;
 		case 110:msg.ShowUIOK( tr( "ERROR!" ),tr( "can not find a partition that match presented UUID" ) );					break ;
+		case 113:msg.ShowUIOK( tr( "ERROR!" ),tr( "a non supported device encountered,device is missing or permission denied" ) );		break ;
 		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR with status number %1 encountered" ).arg( status ) );
 	}
 

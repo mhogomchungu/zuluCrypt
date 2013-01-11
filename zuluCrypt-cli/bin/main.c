@@ -451,7 +451,7 @@ int main( int argc,char * argv[] )
 			case 2 : return zuluExit( 112,stl,stx,env,"ERROR: given path is a directory" ) ;   
 			case 3 : return zuluExit( 113,stl,stx,env,"ERROR: a file can have only one hard link" ) ;
 			case 4 : return zuluExit( 113,stl,stx,env,"ERROR: insufficient privilges to access the device" ) ;
-			default: return zuluExit( 113,stl,stx,env,"ERROR: a non supported device encountered or device is missing" ) ;
+			default: return zuluExit( 113,stl,stx,env,"ERROR: a non supported device encountered,device is missing or permission denied" ) ;
 		}
 		
 		if( dev == NULL ){
