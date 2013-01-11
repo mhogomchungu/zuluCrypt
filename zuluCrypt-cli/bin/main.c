@@ -264,10 +264,10 @@ int main( int argc,char * argv[] )
 	
 	uid_t uid = getuid() ;
 	gid_t gid = getgid() ;
+	
 	/*
 	 * setgroups() requires seteuid(0) ;
 	 */
-	
 	seteuid( 0 ) ;
 	if( setgroups( 1,&gid ) != 0 ){
 		_privilegeEvelationError( "ERROR: setgroups() failed" ) ;
@@ -275,6 +275,7 @@ int main( int argc,char * argv[] )
 	if( setegid( uid ) != 0 ){
 		_privilegeEvelationError( "ERROR: setegid() failed" ) ;
 	}
+	setuid( 0 ) ;
 	seteuid( uid ) ;
 	
 	/*

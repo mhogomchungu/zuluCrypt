@@ -452,6 +452,7 @@ int main( int argc,char * argv[] )
 	if( setegid( uid ) != 0 ){
 		_privilegeEvelationError( "ERROR: setegid() failed" ) ;
 	}
+	setuid( 0 ) ;
 	seteuid( uid ) ;
 	
 	/*

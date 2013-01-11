@@ -403,17 +403,14 @@ int zuluCryptSecurityGetPassFromFile( const char * path,uid_t uid,string_t * st 
 
 int zuluCryptSecurityGainElevatedPrivileges( void )
 {	
+	/*
+	printf( "GAINING:uid=%d:euid=%d\n",getuid(),geteuid() ) ;
+	*/
 	if( seteuid( 0 ) == 0 ){
-		if( setuid( 0 ) == 0 ){
-			return 1 ;
-		}else{
-			if( zuluCryptSecurityPrivilegeElevationError ){
-				zuluCryptSecurityPrivilegeElevationError( "WARNING: failed to seteuid root" ) ;
-			}
-		}
+		return 1 ;
 	}else{
 		if( zuluCryptSecurityPrivilegeElevationError ){
-			zuluCryptSecurityPrivilegeElevationError( "WARNING: failed to setuid root" ) ;
+			zuluCryptSecurityPrivilegeElevationError( "WARNING: failed to seteuid root" ) ;
 		}
 	}
 	return  0  ;
@@ -434,6 +431,9 @@ void zuluCryptSecuritySetPrivilegeElevationErrorFunction( void ( *f ) ( const ch
 
 int zuluCryptSecurityDropElevatedPrivileges( void )
 {		
+	/*
+	 printf( "DROPPING:uid=%d:euid=%d\n",getuid(),geteuid() ) ;
+	 */
 	if( seteuid( global_variable_user_uid ) != 0 ){
 		if( zuluCryptSecurityPrivilegeElevationError ){
 			zuluCryptSecurityPrivilegeElevationError( "ERROR: seteuid() failed" ) ;
