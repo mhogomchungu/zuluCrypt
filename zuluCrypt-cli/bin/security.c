@@ -324,10 +324,14 @@ string_t zuluCryptSecurityCreateMountPoint( const char * device,const char * lab
 	if( !zuluCryptSecurityGainElevatedPrivileges() )
 		return StringVoid ;
 	path = zuluCryptGetUserName( uid ) ;
+	
 	mkdir( "/run",S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ) ;
 	chown( "/run/",0,0 ) ;
+	chmod( "/run/",S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ) ;
 	mkdir( "/run/media",S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ) ;
 	chown( "/run/media",0,0 ) ;
+	chmod( "/run/media",S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ) ;
+	
 	m_point = StringPrepend( path,"/run/media/" ) ;
 	mkdir( m_point,S_IRUSR | S_IXUSR ) ;
 	chown( m_point,uid,uid ) ;
