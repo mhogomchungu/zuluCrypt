@@ -38,7 +38,11 @@ void startupupdateopenedvolumes::run()
 	p.start( QString( ZULUCRYPTzuluCrypt ) + QString( " -L" ) );
 	p.waitForFinished();
 	m_status = p.exitCode() ;
+
 	QStringList l = QString( p.readAll() ).split( "\n" ) ;
+
+	if( m_status )
+		return ;
 
 	p.close();
 

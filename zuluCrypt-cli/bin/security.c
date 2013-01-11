@@ -434,14 +434,9 @@ void zuluCryptSecuritySetPrivilegeElevationErrorFunction( void ( *f ) ( const ch
 
 int zuluCryptSecurityDropElevatedPrivileges( void )
 {		
-	if( setegid( global_variable_user_uid ) != 0 ){
-		if( zuluCryptSecurityPrivilegeElevationError ){
-			zuluCryptSecurityPrivilegeElevationError( "ERROR: setegid() fail" ) ;
-		}
-	}
 	if( seteuid( global_variable_user_uid ) != 0 ){
 		if( zuluCryptSecurityPrivilegeElevationError ){
-			zuluCryptSecurityPrivilegeElevationError( "ERROR: seteuid() fail" ) ;
+			zuluCryptSecurityPrivilegeElevationError( "ERROR: seteuid() failed" ) ;
 		}
 	}
 	return 1 ;
