@@ -249,11 +249,6 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	}
 	
 	if( plugin_path != NULL ){
-		
-		if( strstr( plugin_path,"/" ) != NULL )
-			if( zuluCryptSecurityCanOpenPathForReading( plugin_path,uid ) != 0 )
-				return zuluExit_1( 28,opts,device,cpoint,stl,uid ) ;
-				
 		/*
 		 * zuluCryptPluginManagerGetKeyFromModule is defined in ../pluginManager/zuluCryptPluginManager.c
 		 */
