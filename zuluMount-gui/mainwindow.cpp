@@ -407,6 +407,10 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 	QString fs ;
 	for( int i = 0 ; i < j ; i++ ){
 		entries = list.at( i ).split( '\t' ) ;
+		if( entries.size() < 6 ){
+			continue ;
+		}
+
 		fs =  entries.at( 2 ) ;
 		if( fs == QString( "swap" ) || fs.contains( QString( "LVM" ) ) || fs.contains( QString( "lvm" ) ) )
 			continue ;
