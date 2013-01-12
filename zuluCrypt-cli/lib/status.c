@@ -85,6 +85,7 @@ char * zuluCryptGetUUIDFromMapper( const char * mapper )
 	blkid = blkid_new_probe_from_filename( device ) ;
 	
 	if( blkid == NULL ){
+		free( device ) ;
 		p = String( " UUID:   \t\"Nil\"" ) ;
 		return StringDeleteHandle( &p ) ;
 	}
