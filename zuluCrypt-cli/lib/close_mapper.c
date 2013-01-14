@@ -24,11 +24,8 @@
 int zuluCryptCloseMapper( const char * mapper )
 {
 	int j ;
-	struct stat st ;
-	if( stat( mapper,&st ) != 0 )
-		return 1 ;
 	
-	for( j = 0 ; j < 10 ; j++ ) { 
+	for( j = 0 ; j < 3 ; j++ ) { 
 		/*
 		 * try multiple types to close the mapper just in case its hang up on something
 		 */
