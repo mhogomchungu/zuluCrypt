@@ -99,3 +99,6 @@ version 4.5.3
 -- passphrases are sent to the back end in a more secure way using unix local socket.
 -- small attempt to hide passphrases from ps command if they are passed through the command line argument.
 -- passphrases stored in kde kwallet can be managed from within zulucrypt-gui if their support is enabled at build time.
+
+version 4.6.0
+-- add support for opening and closing of truecrypt volumes,this feature need cryptsetup >= 1.6.0
