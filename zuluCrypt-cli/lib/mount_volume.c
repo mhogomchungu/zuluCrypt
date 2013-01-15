@@ -110,6 +110,11 @@ stringList_t zuluCryptGetFstabList( void )
 		}
 	}
 	
+	if( StringListSize( fstabList ) < 1 ){
+		StringListDelete( &fstabList ) ;
+		return StringListVoid ;
+	}
+	
 	it  = StringListBegin( fstabList ) ;
 	end = StringListEnd( fstabList ) ;
 	
