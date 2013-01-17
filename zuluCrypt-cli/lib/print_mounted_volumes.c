@@ -266,10 +266,11 @@ static void print( uid_t uid,stringList_t stl )
 					c = StringSubChar( q,k,'\0' ) + len + 6 ;
 					d = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;
 					printf( "UUID=\"%s\"\t%s\t",c,d ) ;
+					
 					/*
 					 * zuluCryptGetVolumeTypeFromMapperPath() is defined in status.c
 					 */
-					f = zuluCryptGetVolumeTypeFromMapperPath( StringListContentAt( stx,0 ) ) ;
+					f = zuluCryptGetVolumeTypeFromMapperPath( StringSubChar( q,k,'-' ) ) ;
 					puts( f ) ;
 					free( f ) ;
 				}
