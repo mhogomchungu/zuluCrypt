@@ -76,34 +76,22 @@ void zuluCryptFormatSize( char * buffer,const char * buff )
 
 char * zuluCryptGetUUIDFromMapper( const char * mapper )
 {
-	string_t p ;
-	blkid_probe blkid ;
-	const char * uuid ;
-	
-	char * device = zuluCryptVolumeDeviceName( mapper ) ;
-	
-	blkid = blkid_new_probe_from_filename( device ) ;
-	
-	if( blkid == NULL ){
-		free( device ) ;
-		p = String( " UUID:   \t\"Nil\"" ) ;
-		return StringDeleteHandle( &p ) ;
-	}
-		
-	blkid_do_probe( blkid );
-	
-	if( blkid_probe_lookup_value( blkid,"UUID",&uuid,NULL ) == 0 ){
-		p = String( "" ) ;
-		StringMultipleAppend( p," UUID:   \t\"",uuid,"\"",END ) ;
+	string_t uuid ;
+	struct crypt_device * cd;
+	const char * id ;
+	if( crypt_init_by_name( &cd,mapper ) < 0 ){
+		uuid = String( " UUID:   \t\"Nil\"" ) ;
 	}else{
-		p = String( " UUID:   \t\"Nil\"" ) ;
+		id = crypt_get_uuid( cd ) ;
+		if( id == NULL ){
+			uuid = String( " UUID:   \t\"Nil\"" ) ;
+		}else{
+			uuid = String( "" ) ;
+			StringMultipleAppend( uuid," UUID:   \t\"",id,"\"",END ) ;
+		}
+		crypt_free( cd ) ;
 	}
-	
-	blkid_free_probe( blkid );
-	
-	free( device ) ;
-	
-	return StringDeleteHandle( &p ) ;
+	return StringDeleteHandle( &uuid ) ;
 }
 
 static void zuluCryptFileSystemProperties( string_t p,const char * mapper,const char * m_point )
