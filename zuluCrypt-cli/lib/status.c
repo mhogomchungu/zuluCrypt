@@ -79,15 +79,21 @@ char * zuluCryptGetUUIDFromMapper( const char * mapper )
 	string_t uuid ;
 	struct crypt_device * cd;
 	const char * id ;
+	const char * type ;
 	if( crypt_init_by_name( &cd,mapper ) < 0 ){
 		uuid = String( " UUID:   \t\"Nil\"" ) ;
 	}else{
-		id = crypt_get_uuid( cd ) ;
-		if( id == NULL ){
+		type = crypt_get_type( cd ) ;
+		if( strstr( type,"LUKS" ) == NULL ){
 			uuid = String( " UUID:   \t\"Nil\"" ) ;
 		}else{
-			uuid = String( "" ) ;
-			StringMultipleAppend( uuid," UUID:   \t\"",id,"\"",END ) ;
+			id = crypt_get_uuid( cd ) ;
+			if( id == NULL ){
+				uuid = String( " UUID:   \t\"Nil\"" ) ;
+			}else{
+				uuid = String( "" ) ;
+				StringMultipleAppend( uuid," UUID:   \t\"",id,"\"",END ) ;
+			}
 		}
 		crypt_free( cd ) ;
 	}
