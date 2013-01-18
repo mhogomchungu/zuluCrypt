@@ -216,39 +216,39 @@ static void _printDeviceProperties( string_t entry )
 
 	size_t index ;
 	
-	string_t st ;
+	string_t st = StringVoid ;
 	
 	stx = StringListStringSplit( entry,' ' ) ;
 		
 	if( stx == StringListVoid )
 		return ;
+	
 	q = StringListContentAt( stx,0 ) ;
 	
 	if( strncmp( q,_z,_k ) == 0 ){
-		
 		/*
-		 * zuluCryptVolumeDeviceName() is defined in ../zuluCrypt-cli/lib/status.c
-		 * It takes cryptsetup path in "/dev/mapper" and return a device path associated with
-		 * the mapper
-		 */
-		/*
-		 * zuluCryptSecurityGainElevatedPrivileges() ;
+		 * zuluCryptSecurityGainElevatedPrivileges() and zuluCryptSecurityDropElevatedPrivileges()
+		 * are defined in ../zuluCrypt-cli/bin/security.c 
 		 */
 		zuluCryptSecurityGainElevatedPrivileges() ;
+		/*
+		 * zuluCryptVolumeDeviceName() is defined in ../zuluCrypt-cli/lib/status.c
+		 */
 		x = zuluCryptVolumeDeviceName( q ) ;
 		zuluCryptSecurityDropElevatedPrivileges();
 		
-		st = String( q ) ;
-		StringRemoveLeft( st,_k + 6 ) ;
-		StringPrepend( st,"UUID=\"" ) ;
-		index = StringLastIndexOfChar( st,'-' ) ;
-		StringSubChar( st,index,'\"' ) ;
-		e = StringSubChar( st,index+1,'\0' ) ;
-		
-		/*
-		 * zuluCryptSecurityDropElevatedPrivileges();
-		 */
 		if( x != NULL ){
+			if( strncmp( q + _k,"-UUID-",6 ) == 0 ){
+				st = String( q ) ;
+				StringRemoveLeft( st,_k + 6 ) ;
+				StringPrepend( st,"UUID=\"" ) ;
+				index = StringLastIndexOfChar( st,'-' ) ;
+				StringSubChar( st,index,'\"' ) ;
+				e = StringSubChar( st,index+1,'\0' ) ;
+			}else{
+				e = x ;
+			}
+				
 			StringListRemoveString( _stz,x ) ;
 			/*
 			 * zuluCryptDecodeMtabEntry() is defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c
@@ -257,8 +257,8 @@ static void _printDeviceProperties( string_t entry )
 			f = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;
 			zuluMountPartitionProperties( x,e,q,f ) ;
 			free( x ) ;
+			StringDelete( &st ) ;
 		}
-		StringDelete( &st ) ;
 	}else if( strncmp( q,crypt_get_dir(),strlen( crypt_get_dir() ) ) == 0 ){
 		/*
 		 * path that start with /dev/mapper and belong to another user,skip it
