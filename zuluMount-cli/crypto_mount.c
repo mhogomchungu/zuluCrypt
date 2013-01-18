@@ -24,7 +24,7 @@ static inline const char * _mapping_name( const char * m )
 	return e == NULL ? m : e + 1 ;
 }
 
-int zuluMountCryptoMount( const char * device,const char * mode,uid_t uid,
+int zuluMountCryptoMount( const char * device,const char * UUID,const char * mode,uid_t uid,
 			  const char * key,const char * key_source,
 			  const char * m_point,int mount_point_option,
 			  stringList_t stx 
@@ -39,18 +39,26 @@ int zuluMountCryptoMount( const char * device,const char * mode,uid_t uid,
 	const char * mapping_name ;
 	char * path = NULL ;
 	
-	if( strncmp( device,"/dev/loop",9 ) == 0 ){
-		/*
-		 * zuluCryptLoopDeviceAddress() is defined in ../zuluCrypt-cli/create_loop_device.c
-		 */
-		path = zuluCryptLoopDeviceAddress( device ) ;
-		if( path == NULL ){
-			return 20 ;
+	string_t str = StringVoid ;
+	
+	if( UUID == NULL ){
+		if( strncmp( device,"/dev/loop",9 ) == 0 ){
+			/*
+			* zuluCryptLoopDeviceAddress() is defined in ../zuluCrypt-cli/create_loop_device.c
+			*/
+			path = zuluCryptLoopDeviceAddress( device ) ;
+			if( path == NULL ){
+				return 20 ;
+			}else{
+				mapping_name = _mapping_name( path ) ;
+			}
 		}else{
-			mapping_name = _mapping_name( path ) ;
+			mapping_name = _mapping_name( device ) ;
 		}
 	}else{
-		mapping_name = _mapping_name( device ) ;
+		str = String( UUID ) ;
+		StringRemoveString( str,"\"" ) ;
+		mapping_name = StringReplaceString( str,"UUID=","UUID-" ) ;
 	}
 	
 	/*
@@ -77,6 +85,8 @@ int zuluMountCryptoMount( const char * device,const char * mode,uid_t uid,
 	 * zuluCryptEXEOpenVolume() is defined in ../zuluCrypt-cli/bin/open_volume.c
 	 */
 	st = zuluCryptEXEOpenVolume( &opts,mapping_name,uid ) ;
+	
+	StringDelete( &str ) ;
 	
 	if( path != NULL ){
 		free( path ) ;

@@ -41,14 +41,16 @@ int zuluMountMount( const char * device,const char * m_point,
 		  ) ;
 		    
 
-int zuluMountCryptoMount( const char * device,const char * mode,uid_t uid,
+int zuluMountCryptoMount( const char * device,const char * UUID,const char * mode,uid_t uid,
 				  const char * key,const char * key_source,
 				  const char * m_point,int mount_point_option,
 				  stringList_t
 			) ;
 				  
-int zuluMountCryptoUMount( const char * device,uid_t uid,__attribute__((unused)) int mount_point_option ) ;
+int zuluMountCryptoUMount( const char * device,const char * UUID,uid_t uid,__attribute__((unused)) int mount_point_option ) ;
 
 int _zuluExit( int st,string_t z,char * q,const char * msg ) ;
 
 int _zuluExit_1( int st,stringList_t z,char * q,const char * msg ) ;
+
+void zuluMountPartitionProperties( const char * mapper,const char * UUID,const char * device,const char * m_point ) ;

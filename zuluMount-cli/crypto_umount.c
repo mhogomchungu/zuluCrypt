@@ -18,37 +18,49 @@
  */
 #include "includes.h"
 
-int zuluMountCryptoUMount( const char * device,uid_t uid,int mount_point_option )
+int zuluMountCryptoUMount( const char * device,const char * UUID,uid_t uid,int mount_point_option )
 {
 	const char * mapping_name ;
 	const char * e ;
 	char * path = NULL ;
 	int st  ;
+	
+	string_t str = StringVoid ;
+	
 	if( mount_point_option ) {;}
-	
-	if( strncmp( device,"/dev/loop",9 ) == 0 ){
-		/*
-		 * zuluCryptLoopDeviceAddress() is defined in ../zuluCrypt-cli/create_loop_device.c
-		 */
-		path = zuluCryptLoopDeviceAddress( device ) ;
-		if( path == NULL ){
-			return 20 ;
-		}else{
-			device = path ;
+
+	if( UUID == NULL ){
+		if( strncmp( device,"/dev/loop",9 ) == 0 ){
+			/*
+			* zuluCryptLoopDeviceAddress() is defined in ../zuluCrypt-cli/create_loop_device.c
+			*/
+			path = zuluCryptLoopDeviceAddress( device ) ;
+			if( path == NULL ){
+				return 20 ;
+			}else{
+				device = path ;
+			}
 		}
+		
+		e = strrchr( device,'/' ) ;
+		
+		if( e == NULL){
+			mapping_name = device ;
+		}else{
+			mapping_name = e + 1 ;
+		}
+	}else{
+		str = String( UUID ) ;
+		StringRemoveString( str,"\"" ) ;
+		mapping_name = StringSubChar( str,4,'-' ) ;
 	}
-	
-	e = strrchr( device,'/' ) ;
-	
-	if( e == NULL)
-		mapping_name = device ;
-	else
-		mapping_name = e + 1 ;
 	
 	/*
 	 * zuluCryptEXECloseVolume() is defined in ../zuluCrypt-cli/bin/close_volume.c
 	 */
 	st = zuluCryptEXECloseVolume( device,mapping_name,uid ) ;
+	
+	StringDelete( &str ) ;
 	
 	if( path != NULL ){
 		free( path ) ;

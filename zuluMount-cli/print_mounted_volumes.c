@@ -57,7 +57,7 @@ static string_t _mapper_filter( uid_t uid )
 	return filter ;
 }
 
-void zuluMountPartitionProperties( const char * device,const char * mapper,const char * m_point )
+void zuluMountPartitionProperties( const char * device,const char * UUID,const char * mapper,const char * m_point )
 {
 	#define SIZE 64
 	
@@ -78,11 +78,12 @@ void zuluMountPartitionProperties( const char * device,const char * mapper,const
 	char * loop_device ;
 	
 	char * volType ;
-	
+		
 	if( !zuluCryptSecurityGainElevatedPrivileges() ){
 		printf( "%s\tNil\tNil\tNil\tNil\tNil\n",device ) ;
 		return ;
 	}
+	
 	blkid = blkid_new_probe_from_filename( device ) ;
 	
 	if( blkid == NULL ){
@@ -102,26 +103,29 @@ void zuluMountPartitionProperties( const char * device,const char * mapper,const
 		return ;
 	}
 	
-	if( strncmp( device,"/dev/loop",9 ) == 0 ){
-		/*
-		 * zuluCryptLoopDeviceAddress() is defined in ../zuluCrypt-cli/lib/create_loop_device.c
-		 */
-		loop_device = zuluCryptLoopDeviceAddress( device ) ;
-		if( loop_device != NULL ){
-			printf( "%s\t",loop_device ) ;
-			free( loop_device ) ;
+	if( UUID != NULL ){
+		printf( "%s\t",UUID ) ;
+	}else{
+		if( strncmp( device,"/dev/loop",9 ) == 0 ){
+			/*
+			* zuluCryptLoopDeviceAddress() is defined in ../zuluCrypt-cli/lib/create_loop_device.c
+			*/
+			loop_device = zuluCryptLoopDeviceAddress( device ) ;
+			if( loop_device != NULL ){
+				printf( "%s\t",loop_device ) ;
+				free( loop_device ) ;
+			}else{
+				printf( "%s\t",device ) ;
+			}
 		}else{
 			printf( "%s\t",device ) ;
 		}
-		
-	}else{
-		printf( "%s\t",device ) ;
 	}
 	
 	if( m_point == NULL ){
-		printf( "Nil" ) ;
+		printf( "Nil\t" ) ;
 	}else{
-		printf( "%s",m_point ) ;
+		printf( "%s\t",m_point ) ;
 	}
 	
 	if( strcmp( device,mapper ) != 0 ){
@@ -129,16 +133,16 @@ void zuluMountPartitionProperties( const char * device,const char * mapper,const
 		 * zuluCryptGetVolumeTypeFromMapperPath() is defined in ../zuluCrypt-cli/lib/status.c
 		 */
 		volType = zuluCryptGetVolumeTypeFromMapperPath( mapper ) ;
-		printf( "\t%s",volType ) ;
+		printf( "%s",volType ) ;
 		free( volType ) ;
 	}else{
 		if( blkid_probe_lookup_value( blkid,"TYPE",&g,NULL ) == 0 ){
-			printf( "\t%s",g ) ;
+			printf( "%s",g ) ;
 		}else{
 			if( strcmp( device,mapper ) == 0 ){
-				printf( "\tNil" ) ;
+				printf( "Nil" ) ;
 			}else{
-				printf( "\tcrypto_PLAIN" ) ;
+				printf( "crypto_PLAIN" ) ;
 			}
 		}
 	}
@@ -149,7 +153,7 @@ void zuluMountPartitionProperties( const char * device,const char * mapper,const
 	
 	if( blkid == NULL ){
 		zuluCryptSecurityDropElevatedPrivileges();
-		printf( "Nil\tNil\tNil\n" ) ;
+		printf( "\tNil\tNil\tNil\n" ) ;
 		return ;
 	}
 	
@@ -198,7 +202,7 @@ void zuluMountPartitionProperties( const char * device,const char * mapper,const
 
 static void _printUnmountedVolumes( const char * device )
 {
-	zuluMountPartitionProperties( device,device,NULL ) ;
+	zuluMountPartitionProperties( device,NULL,device,NULL ) ;
 }
 
 static void _printDeviceProperties( string_t entry )
@@ -210,6 +214,10 @@ static void _printDeviceProperties( string_t entry )
 	const char * e ;
 	const char * f ;
 
+	size_t index ;
+	
+	string_t st ;
+	
 	stx = StringListStringSplit( entry,' ' ) ;
 		
 	if( stx == StringListVoid )
@@ -217,6 +225,7 @@ static void _printDeviceProperties( string_t entry )
 	q = StringListContentAt( stx,0 ) ;
 	
 	if( strncmp( q,_z,_k ) == 0 ){
+		
 		/*
 		 * zuluCryptVolumeDeviceName() is defined in ../zuluCrypt-cli/lib/status.c
 		 * It takes cryptsetup path in "/dev/mapper" and return a device path associated with
@@ -228,6 +237,14 @@ static void _printDeviceProperties( string_t entry )
 		zuluCryptSecurityGainElevatedPrivileges() ;
 		x = zuluCryptVolumeDeviceName( q ) ;
 		zuluCryptSecurityDropElevatedPrivileges();
+		
+		st = String( q ) ;
+		StringRemoveLeft( st,_k + 6 ) ;
+		StringPrepend( st,"UUID=\"" ) ;
+		index = StringLastIndexOfChar( st,'-' ) ;
+		StringSubChar( st,index,'\"' ) ;
+		e = StringSubChar( st,index+1,'\0' ) ;
+		
 		/*
 		 * zuluCryptSecurityDropElevatedPrivileges();
 		 */
@@ -238,26 +255,20 @@ static void _printDeviceProperties( string_t entry )
 			 * it decodes space,tab,new line and backslash characters since they are written differently in "/etc/mtab" 
 			 */
 			f = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;
-			zuluMountPartitionProperties( x,q,f ) ;	
+			zuluMountPartitionProperties( x,e,q,f ) ;
 			free( x ) ;
 		}
-	}else if( strncmp( q,"/dev/mapper/",12 ) == 0 ){
+		StringDelete( &st ) ;
+	}else if( strncmp( q,crypt_get_dir(),strlen( crypt_get_dir() ) ) == 0 ){
 		/*
-		 * 	lvm volumes and its kind goes here,do nothing for now
+		 * path that start with /dev/mapper and belong to another user,skip it
 		 */
-			StringListRemoveString( _stz,q ) ;
-		
-			e = zuluCryptDecodeMtabEntry( StringListStringAt( stx,0 ) ) ;
-			f = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;
-		
-			zuluMountPartitionProperties( e,e,f ) ;
 	}else{
 		StringListRemoveString( _stz,q ) ;
-		
 		e = zuluCryptDecodeMtabEntry( StringListStringAt( stx,0 ) ) ;
 		f = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;
 		
-		zuluMountPartitionProperties( e,e,f ) ;
+		zuluMountPartitionProperties( e,NULL,e,f ) ;
 	}
 	
 	zuluCryptSecurityDropElevatedPrivileges();
@@ -321,4 +332,3 @@ int zuluMountPrintMountedVolumes( uid_t uid )
 	
 	return 0 ;
 }
-

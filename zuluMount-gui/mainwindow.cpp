@@ -436,7 +436,6 @@ void MainWindow::slotUnmountComplete( int status,QString msg )
 	if( status ){
 		DialogMsg m( this ) ;
 		m.ShowUIOK( QString( "ERROR" ),msg );
-		this->enableAll();
 	}else{
 		QTableWidget * table = m_ui->tableWidget ;
 
@@ -445,9 +444,7 @@ void MainWindow::slotUnmountComplete( int status,QString msg )
 		QString type = table->item( row,2 )->text() ;
 		QString device = table->item( row,0 )->text() ;
 
-		if( !device.startsWith( QString( "/dev/" ) ) ){
-			tablewidget::deleteRowFromTable( m_ui->tableWidget,row ) ;
-		}else{
+		if( device.startsWith( QString( "/dev/" ) ) || device.startsWith( "UUID=" ) ){
 			table->item( row,1 )->setText( QString( "Nil" ) );
 
 			if( type == QString( "crypto_LUKS" ) )
@@ -460,10 +457,12 @@ void MainWindow::slotUnmountComplete( int status,QString msg )
 				table->item( row,2 )->setText( QString( "Nil" ) );
 			}
 			table->item( row,5 )->setText( QString( "Nil" ) );
+		}else{
+			tablewidget::deleteRowFromTable( m_ui->tableWidget,row ) ;
 		}
-
-		this->enableAll();
 	}
+
+	this->enableAll();
 }
 
 void MainWindow::slotCurrentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous )
