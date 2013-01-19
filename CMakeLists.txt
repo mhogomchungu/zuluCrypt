@@ -15,7 +15,7 @@ pkg_check_modules( BLKID blkid )
 pkg_check_modules( PWQUALITY pwquality ) 
 pkg_check_modules( LIBMOUNT mount ) 
 
-set( PGR_VERSION "4.6.0+git" )
+set( PGR_VERSION "4.6.1" )
 set( LIB_VERSION "1.1.0" )
 set( LIB_PLUGIN_VERSION "1.0.0" )
 
