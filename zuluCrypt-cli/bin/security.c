@@ -494,6 +494,14 @@ void zuluCryptSecuritySanitizeTheEnvironment( uid_t uid,stringList_t * stx )
 		env++ ;
 	}
 
+	if( stl == StringListVoid ){
+		/*
+		 * have atleast one entry in the enviromental variable if its not set for some reason
+		 */
+		*stx = StringList( "AppName=zuluCrypt" ) ;
+		return ;
+	}
+	
 	it  = StringListBegin( stl ) ;
 	end = StringListEnd( stl ) ;
 	

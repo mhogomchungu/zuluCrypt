@@ -194,7 +194,7 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 		case 1 : return zuluExit( 2,stl )  ; 
 	}
 	
-	if ( keyType1 == NULL && keyType2 == NULL ){
+	if( keyType1 == NULL && keyType2 == NULL ){
 		switch( zuluGetKeys( presentKey,newKey_1,newKey_2 ) ){
 			case 1 : return zuluExit( 14,stl ) ;
 			case 2 : return zuluExit( 15,stl ) ;
@@ -214,7 +214,7 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 	}else{
 		if( newKey == NULL || existingKey == NULL )
 			return zuluExit( 6,stl ) ;
-		if ( strcmp( keyType1, "-f" ) == 0 ){
+		if( strcmp( keyType1, "-f" ) == 0 ){
 			/*
 			 * this function is defined at "security.c"
 			 */
@@ -227,7 +227,7 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 			key1 = StringContent( *ek ) ;
 			len1 = StringLength( *ek ) ;
 		}		
-		if ( strcmp( keyType2, "-f" ) == 0 ){
+		if( strcmp( keyType2, "-f" ) == 0 ){
 			/*
 			 * this function is defined at "security.c.c"
 			 */
@@ -240,7 +240,7 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 			key2 = StringContent( *nk ) ;
 			len2 = StringLength( *nk ) ;
 		}		
-		if ( strcmp( keyType1,"-f" ) == 0 && strcmp( keyType2,"-f" ) == 0 ){
+		if( strcmp( keyType1,"-f" ) == 0 && strcmp( keyType2,"-f" ) == 0 ){
 			if( !zuluCryptSecurityGainElevatedPrivileges() )
 				return zuluExit( 17,stl ) ;
 			status = zuluCryptAddKey( device,key1,len1,key2,len2 ) ;
