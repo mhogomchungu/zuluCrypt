@@ -287,8 +287,8 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 				return zuluExit_1( 30,opts,device,cpoint,stl,uid,mapping_name ) ;
 			st = zuluCryptOpenVolume( device,cname,cpoint,uid,m_flags,fs_opts,cpass,len ) ;
 		}
-	}		
-	
+	}
+	puts( opts->device ) ;
 	zuluCryptCheckInvalidKey( opts->device ) ;
 	return zuluExit_1( st,opts,device,cpoint,stl,uid,mapping_name );
 }

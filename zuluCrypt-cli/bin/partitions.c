@@ -19,6 +19,7 @@
 
 #include "includes.h"
 #include "../lib/includes.h"
+#include <dirent.h>
 
 #include <blkid/blkid.h>
 
@@ -89,6 +90,38 @@ static inline int _allowedDevice( const char * device )
 	return 0 ;
 }
 
+static stringList_t _zuluCryptAddLVMVolumes( stringList_t stl )
+{
+	const char * path = "/dev/mapper/" ;
+	DIR * dir = opendir( path ) ;
+	struct dirent * entry ;
+	const char * m_path ;
+	string_t st = StringVoid ;
+	
+	if( dir != NULL ){
+		st = String( path ) ;
+		while( ( entry = readdir( dir ) ) != NULL ){
+			m_path = entry->d_name ;
+			if( strcmp( m_path,"." ) == 0 ){
+				continue ;
+			}
+			if( strcmp( m_path,".." ) == 0 ){
+				continue ;
+			}
+			if( strcmp( m_path,"control" ) == 0 ){
+				continue ;
+			}
+			if( strstr( m_path,"zuluCrypt" ) != NULL ){
+				continue ;
+			}
+			StringInsertAndDelete( st,12,m_path ) ;
+			stl = StringListAppendString( stl,st ) ;
+		}
+	}
+	StringDelete( &st ) ;
+	return stl ;
+}
+
 stringList_t zuluCryptPartitionList( void )
 {
 	const char * device ;
@@ -133,7 +166,7 @@ stringList_t zuluCryptPartitionList( void )
 	
 	StringDelete( &st_1 ) ;
 	StringListDelete( &stl ) ;
-	return stl_1 ;
+	return _zuluCryptAddLVMVolumes( stl_1 ) ;
 }
 
 static int _zuluCryptCheckSYSifDeviceIsSystem( const char * device )

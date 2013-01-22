@@ -159,16 +159,6 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	}
 	
 	/*
-	 * root's privileges required to create volumes in devices located in "/dev/" other than /dev/sdX and /dev/hdX
-	 */
-	if( strncmp( device,"/dev/",5 ) == 0 )
-		if( strncmp( device,"/dev/hd",7 ) != 0 )
-			if( strncmp( device,"/dev/sd",7 ) != 0 )
-				if( strncmp( device,"/dev/loop",9 ) != 0 )
-				if( uid != 0 )
-					return zuluExit( 14,stl ) ;
-
-	/*
 	 * ZULUCRYPTmkfs is defined at "../constants.h"
 	 * File systems are created not through file systems APIs but through mkfs.xxx executables started using exec call.
 	 */

@@ -390,20 +390,6 @@ static void ExitOnMemoryExaustion( void )
 	exit( 1 ) ;
 }
 
-static int _zuluMountcheckifLVM( const char * action,const char * rpath )
-{
-	if( strcmp( action,"-D" ) == 0 )
-		return 0 ;
-	/*
-	 * we currently dont support lvm volumes,for the moment treat paths to dev/dm-* as lvm volumes and refuse
-	 * to work with them.
-	 */
-	if( strncmp( rpath,"/dev/dm-",8 ) == 0 )
-		return 1 ;
-	
-	return 0 ;
-}
-
 static int _zuluMountDoAction( const char * device,const char * UUID,const char * action,const char * m_point,
 			      const char * m_opts,uid_t uid,const char * key,const char * key_source,
 			      int mount_point_option,const char * fs_opts,stringList_t stx )
@@ -427,11 +413,6 @@ static int _zuluMountDoAction( const char * device,const char * UUID,const char 
 	if( dev == NULL ){
 		printf( "ERROR: a non supported device encountered,device is missing or permission denied\n" ) ;
 		return 224 ;
-	}
-		
-	if( _zuluMountcheckifLVM( action,dev ) ){
-		printf( "ERROR: this device looks like an lvm device,these devices are currently not supported\n" ) ;
-		status = 226 ;
 	}else{
 		status = _zuluMountExe( dev,UUID,action,m_point,m_opts,fs_opts,uid,key,key_source,mount_point_option,stx ) ;
 	}

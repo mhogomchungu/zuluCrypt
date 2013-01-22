@@ -259,10 +259,6 @@ static void _printDeviceProperties( string_t entry )
 			free( x ) ;
 			StringDelete( &st ) ;
 		}
-	}else if( strncmp( q,crypt_get_dir(),strlen( crypt_get_dir() ) ) == 0 ){
-		/*
-		 * path that start with /dev/mapper and belong to another user,skip it
-		 */
 	}else{
 		StringListRemoveString( _stz,q ) ;
 		e = zuluCryptDecodeMtabEntry( StringListStringAt( stx,0 ) ) ;

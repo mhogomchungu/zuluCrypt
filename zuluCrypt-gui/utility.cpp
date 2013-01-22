@@ -121,13 +121,15 @@ bool utility::canCreateFile( QString path )
 
 QString utility::resolvePath( QString path )
 {
-	if( path.size() == 1 && path.at( 0 ) == QChar( '~' ) )
+	if( path.size() == 1 && path.at( 0 ) == QChar( '~' ) ){
 		return QDir::homePath() + QString( "/" );
-	else if( path.mid( 0,2 ) == QString( "~/" ) )
+	}else if( path.mid( 0,2 ) == QString( "~/" ) ){
 		return QDir::homePath() + QString( "/" ) + path.mid( 2 );
-	else if( path.mid( 0,5 ) == QString( "UUID=") )
+	}else if( path.mid( 0,5 ) == QString( "UUID=") ){
 		return path ;
-	else{
+	}else if( path.startsWith( QString( "/dev/mapper") ) ){
+		return path ;
+	}else{
 		QDir r( path ) ;
 		QString rp = r.canonicalPath() ;
 		return rp.isEmpty() == false ? rp : path ;
