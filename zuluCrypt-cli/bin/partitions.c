@@ -118,6 +118,7 @@ static stringList_t _zuluCryptAddLVMVolumes( stringList_t stl )
 			stl = StringListAppendString( stl,st ) ;
 		}
 		StringDelete( &st ) ;
+		closedir( dir ) ;
 	}
 	
 	return stl ;
