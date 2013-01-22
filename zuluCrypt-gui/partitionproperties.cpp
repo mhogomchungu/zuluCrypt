@@ -48,8 +48,20 @@ void partitionproperties::run()
 
 	p.close();
 	int j = l.size() - 1 ;
-	for ( int i = 0 ; i < j ; i++ )
-		emit partitionProperties( l.at( i ).split( "\t" ) );
+	if( j < 1 )
+		return ;
+
+	QStringList list ;
+	QString entry ;
+	for ( int i = 0 ; i < j ; i++ ){
+		list = l.at( i ).split( "\t" ) ;
+		entry = list.at( 3 ) ;
+		if( entry.contains( QString( "LVM" ) ) || entry.contains( QString( "lvm" ) ) ){
+			;
+		}else{
+			emit partitionProperties( list );
+		}
+	}
 }
 
 partitionproperties::~partitionproperties()
