@@ -18,10 +18,12 @@
  */
 
 #include "openmountpointinfilemanager.h"
+#include <QMetaType>
 
 openmountpointinfilemanager::openmountpointinfilemanager( QString path )
 {
 	m_path = path ;
+	m_startError = 0 ;
 }
 
 void openmountpointinfilemanager::start()
@@ -29,18 +31,30 @@ void openmountpointinfilemanager::start()
 	QThreadPool::globalInstance()->start( this );
 }
 
+void openmountpointinfilemanager::startError( QProcess::ProcessError error )
+{
+	Q_UNUSED( error ) ;
+	m_startError = 1 ;
+}
+
 void openmountpointinfilemanager::run()
 {
 	QDir dir( m_path ) ;
 	if( dir.exists() ){
-		QProcess exe ;
+		QProcess * exe = new QProcess();
 		m_path.replace( "\"","\"\"\"" ) ;
-		exe.start( QString( "xdg-open \"%1\"" ).arg( m_path ) );
-		exe.waitForFinished() ;
-		exe.close();
+		//qRegisterMetaType<QProcess::ProcessError>( "QProcess::ProcessError" );
+		//connect( exe,SIGNAL( error( QProcess::ProcessError ) ),this,SLOT( startError( QProcess::ProcessError ) ) ) ;
+		exe->start( QString( "xdg-open \"%1\"" ).arg( m_path ) );
+		exe->waitForFinished() ;
+		m_exitCode = exe->exitCode() ;
+		m_exitStatus = exe->exitStatus() ;
+		exe->close();
+		exe->deleteLater();
 	}
 }
 
 openmountpointinfilemanager::~openmountpointinfilemanager()
 {
+	emit errorStatus( m_exitCode,m_exitStatus,m_startError );
 }

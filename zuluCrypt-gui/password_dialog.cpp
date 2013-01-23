@@ -493,11 +493,21 @@ void passwordDialog::enableAll()
 		m_ui->pushButtonPlugin->setEnabled( false );
 }
 
+void passwordDialog::fileManagerOpenStatus( int exitCode, int exitStatus,int startError )
+{
+	Q_UNUSED( startError ) ;
+	if( exitCode != 0 || exitStatus != 0 ){
+		DialogMsg msg( this ) ;
+		msg.ShowUIOK( tr( "warning" ),tr( "could not open mount point because \"xdg-open\" tool does not appear to be working correctly") );
+	}
+}
+
 void passwordDialog::success( QString output )
 {
 	if( utility::mapperPathExists( m_device ) ){
 		this->complete( output );
 		openmountpointinfilemanager * omp = new openmountpointinfilemanager( utility::mountPath( m_point ) ) ;
+		connect( omp,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
 		omp->start();
 	}else{
 		/*

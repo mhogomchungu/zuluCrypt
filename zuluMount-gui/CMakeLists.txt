@@ -15,6 +15,7 @@ set(MOC_FILES 	mainwindow.h
 		oneinstance.h
 		../zuluCrypt-gui/dialogmsg.h
 		../zuluCrypt-gui/socketsendkey.h 
+		../zuluCrypt-gui/openmountpointinfilemanager.h
  )
 	
 set (SRC 	main.cpp

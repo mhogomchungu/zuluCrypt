@@ -51,6 +51,7 @@ set( MOC_FILES createfile.h
 		kwalletconfig.h
 		socketsendkey.h
 		../zuluMount-gui/oneinstance.h
+		openmountpointinfilemanager.h
  )
 	
 set (SRC createfile.cpp

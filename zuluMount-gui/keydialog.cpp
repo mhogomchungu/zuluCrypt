@@ -196,6 +196,15 @@ void keyDialog::volumeMiniProperties( QString prp )
 	this->HideUI();
 }
 
+void keyDialog::fileManagerOpenStatus( int exitCode, int exitStatus,int startError )
+{
+	Q_UNUSED( startError ) ;
+	if( exitCode != 0 || exitStatus != 0 ){
+		DialogMsg msg( this ) ;
+		msg.ShowUIOK( tr( "warning" ),tr( "could not open mount point because \"xdg-open\" tool does not appear to be working correctly") );
+	}
+}
+
 void keyDialog::slotMountComplete( int st,QString m )
 {
 	m_working = false ;
@@ -210,6 +219,7 @@ void keyDialog::slotMountComplete( int st,QString m )
 			mpt->startAction( QString( "volumeMiniProperties" ) ) ;
 
 			openmountpointinfilemanager * omp = new openmountpointinfilemanager( utility::mountPath( m_point ) ) ;
+			connect( omp,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
 			omp->start();
 		}else{
 			/*

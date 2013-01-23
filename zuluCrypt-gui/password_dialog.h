@@ -74,6 +74,7 @@ private slots :
 	void mountPointPath( QString );
 	void complete( QString );
 	void cbStateChanged( int );
+	void fileManagerOpenStatus( int exitCode,int exitStatus,int startError ) ;
 private :
 	QString getUUIDFromPath( QString ) ;
 	void sendKey( QString sockpath ) ;

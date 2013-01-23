@@ -506,11 +506,21 @@ void zuluCrypt::menuKeyPressed()
 	itemClicked( it,false );
 }
 
+void zuluCrypt::fileManagerOpenStatus( int exitCode, int exitStatus,int startError )
+{
+	Q_UNUSED( startError ) ;
+	if( exitCode != 0 || exitStatus != 0 ){
+		DialogMsg msg( this ) ;
+		msg.ShowUIOK( tr( "warning" ),tr( "could not open mount point because \"xdg-open\" tool does not appear to be working correctly") );
+	}
+}
+
 void zuluCrypt::openFolder()
 {
 	QTableWidgetItem * item = m_ui->tableWidget->currentItem() ;
 	QString path = m_ui->tableWidget->item( item->row(),1 )->text() ;
 	openmountpointinfilemanager * omp = new openmountpointinfilemanager( path ) ;
+	connect( omp,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
 	omp->start();
 }
 

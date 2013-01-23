@@ -44,6 +44,7 @@ private slots:
 	void slotMountComplete( int,QString ) ;
 	void checkBoxReadOnlyStateChanged( int ) ;
 	void volumeMiniProperties( QString ) ;
+	void fileManagerOpenStatus( int exitCode, int exitStatus,int startError ) ;
 private:
 	void enableAll( void ) ;
 	void disableAll( void ) ;

@@ -150,11 +150,21 @@ void MainWindow::itemClicked( QTableWidgetItem * item )
 	m.exec( QCursor::pos() ) ;
 }
 
+void MainWindow::fileManagerOpenStatus( int exitCode, int exitStatus,int startError )
+{
+	Q_UNUSED( startError ) ;
+	if( exitCode != 0 || exitStatus != 0 ){
+		DialogMsg msg( this ) ;
+		msg.ShowUIOK( tr( "warning" ),tr( "could not open mount point because \"xdg-open\" tool does not appear to be working correctly") );
+	}
+}
+
 void MainWindow::slotOpenFolder()
 {
 	QTableWidgetItem * item = m_ui->tableWidget->currentItem() ;
 	QString path = m_ui->tableWidget->item( item->row(),1 )->text() ;
 	openmountpointinfilemanager * ofm = new openmountpointinfilemanager( path ) ;
+	connect( ofm,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
 	ofm->start();
 }
 

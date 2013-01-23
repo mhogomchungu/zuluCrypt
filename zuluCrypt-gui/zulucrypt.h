@@ -140,6 +140,7 @@ private slots :
 	void setDefaultWallet( void ) ;
 	void failedToOpenWallet( void ) ;
 	void openFolder( void ) ;
+	void fileManagerOpenStatus( int exitCode, int exitStatus,int startError ) ;
 private:
 	passwordDialog * setUpPasswordDialog( void );
 	openpartition * setUpOpenpartition( void );

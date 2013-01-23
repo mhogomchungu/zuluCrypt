@@ -80,6 +80,7 @@ private slots:
 	void enableAll( void ) ;
 	void stateChanged( int ) ;
 	void slotOpenFolder( void ) ;
+	void fileManagerOpenStatus( int exitCode, int exitStatus,int startError ) ;
 private:
 	Ui::MainWindow * m_ui ;
 

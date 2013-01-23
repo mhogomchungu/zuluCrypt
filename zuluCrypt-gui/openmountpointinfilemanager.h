@@ -25,16 +25,25 @@
 #include <QString>
 #include <QThreadPool>
 #include <QDir>
+#include <QObject>
 
-class openmountpointinfilemanager :public QRunnable
+class openmountpointinfilemanager :public QObject,public QRunnable
 {
+	Q_OBJECT
 public:
 	explicit openmountpointinfilemanager( QString path ) ;
 	~openmountpointinfilemanager();
 	void start( void ) ;
+signals:
+	void errorStatus( int exitCode,int exitStatus,int startError ) ;
+private slots:
+	void startError(  QProcess::ProcessError ) ;
 private:
 	void run( void ) ;
 	QString m_path ;
+	int m_exitCode ;
+	int m_exitStatus ;
+	int m_startError ;
 };
 
 #endif // OPENMOUNTPOINTINFILEMANAGER_H
