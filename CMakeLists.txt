@@ -177,6 +177,11 @@ if( NOT BUILDPWQUALITY )
 endif( NOT BUILDPWQUALITY )
 message ( STATUS "---------------------------------------------------------------------------" )
 
+message ( STATUS "\n\n----------------------------IMPORTANT!!!!!---------------------------------" )
+message ( STATUS "Please read section 5.0 of the FAQ located at: http://code.google.com/p/zulucrypt/wiki/FAQ" )
+message ( STATUS "before continuing.It very important to make sure all partitions that are to be considered system" )
+message ( STATUS "have an entry in fstab before continuing.If you are a distributor,then please make this known to your users\n" )
+
 install ( FILES zuluCrypt-cli.1.bz2 DESTINATION share/man/man1 )
 install ( FILES zuluCrypt-test.1.bz2 DESTINATION share/man/man1 )
 install ( FILES zuluCrypt-gui.1.bz2 DESTINATION share/man/man1 )
