@@ -38,8 +38,19 @@ zuluCrypt::zuluCrypt( QWidget * parent ) :QMainWindow( parent ),m_ui( new Ui::zu
 {
 }
 
+void zuluCrypt::setFolderOpener()
+{
+	QStringList argv = QCoreApplication::arguments() ;
+	if( argv.size() < 2 ){
+		m_folderOpener = QString( "xdg-open" ) ;
+	}else{
+		m_folderOpener = argv.at( 1 ) ;
+	}
+}
+
 void zuluCrypt::setUpApp()
 {
+	setFolderOpener() ;
 	setupUIElements();
 	setupConnections();
 	StartUpAddOpenedVolumesToTableThread();
@@ -511,7 +522,7 @@ void zuluCrypt::fileManagerOpenStatus( int exitCode, int exitStatus,int startErr
 	Q_UNUSED( startError ) ;
 	if( exitCode != 0 || exitStatus != 0 ){
 		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "warning" ),tr( "could not open mount point because \"xdg-open\" tool does not appear to be working correctly") );
+		msg.ShowUIOK( tr( "warning" ),tr( "could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) );
 	}
 }
 
@@ -519,7 +530,7 @@ void zuluCrypt::openFolder()
 {
 	QTableWidgetItem * item = m_ui->tableWidget->currentItem() ;
 	QString path = m_ui->tableWidget->item( item->row(),1 )->text() ;
-	openmountpointinfilemanager * omp = new openmountpointinfilemanager( path ) ;
+	openmountpointinfilemanager * omp = new openmountpointinfilemanager( m_folderOpener,path ) ;
 	connect( omp,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
 	omp->start();
 }
@@ -781,7 +792,7 @@ void zuluCrypt::ShowOpenPartition()
 
 passwordDialog * zuluCrypt::setUpPasswordDialog()
 {
-	passwordDialog * pd = new passwordDialog( m_ui->tableWidget,this ) ;
+	passwordDialog * pd = new passwordDialog( m_ui->tableWidget,m_folderOpener,this ) ;
 	connect( pd,SIGNAL( HideUISignal() ),pd,SLOT( deleteLater() ) );
 	return pd ;
 }

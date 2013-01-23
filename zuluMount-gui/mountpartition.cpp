@@ -1,7 +1,7 @@
 #include "mountpartition.h"
 #include "ui_mountpartition.h"
 
-mountPartition::mountPartition( QWidget * parent,QTableWidget * table ) :
+mountPartition::mountPartition( QWidget * parent,QTableWidget * table,QString folderOpener ) :
 	QWidget( parent ),m_ui(new Ui::mountPartition)
 {
 	m_ui->setupUi(this);
@@ -25,6 +25,7 @@ mountPartition::mountPartition( QWidget * parent,QTableWidget * table ) :
 	this->setFont( F.getFont() );
 
 	m_ui->pbMountFolder->setVisible( false );
+	m_folderOpener = folderOpener ;
 }
 
 void mountPartition::checkBoxReadOnlyStateChanged( int state )
@@ -136,7 +137,7 @@ void mountPartition::fileManagerOpenStatus( int exitCode, int exitStatus,int sta
 	Q_UNUSED( startError ) ;
 	if( exitCode != 0 || exitStatus != 0 ){
 		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "warning" ),tr( "could not open mount point because \"xdg-open\" tool does not appear to be working correctly") );
+		msg.ShowUIOK( tr( "warning" ),tr( "could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) );
 	}
 }
 
@@ -152,7 +153,7 @@ void mountPartition::slotMountComplete( int status,QString msg )
 		connect( mpt,SIGNAL( signalProperties( QString ) ),this,SLOT( volumeMiniProperties( QString ) ) ) ;
 		mpt->startAction( QString( "volumeMiniProperties" ) ) ;
 
-		openmountpointinfilemanager * omp = new openmountpointinfilemanager( utility::mountPath( m_point ) ) ;
+		openmountpointinfilemanager * omp = new openmountpointinfilemanager( m_folderOpener,utility::mountPath( m_point ) ) ;
 		connect( omp,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
 		omp->start();
 	}

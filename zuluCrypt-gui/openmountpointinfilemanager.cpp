@@ -20,10 +20,11 @@
 #include "openmountpointinfilemanager.h"
 #include <QMetaType>
 
-openmountpointinfilemanager::openmountpointinfilemanager( QString path )
+openmountpointinfilemanager::openmountpointinfilemanager( QString folderOpener,QString path )
 {
 	m_path = path ;
 	m_startError = 0 ;
+	m_folderOpener = folderOpener ;
 }
 
 void openmountpointinfilemanager::start()
@@ -45,7 +46,7 @@ void openmountpointinfilemanager::run()
 		m_path.replace( "\"","\"\"\"" ) ;
 		//qRegisterMetaType<QProcess::ProcessError>( "QProcess::ProcessError" );
 		//connect( exe,SIGNAL( error( QProcess::ProcessError ) ),this,SLOT( startError( QProcess::ProcessError ) ) ) ;
-		exe->start( QString( "xdg-open \"%1\"" ).arg( m_path ) );
+		exe->start( QString( "%1 \"%2\"" ).arg( m_folderOpener ).arg( m_path ) );
 		exe->waitForFinished() ;
 		m_exitCode = exe->exitCode() ;
 		m_exitStatus = exe->exitStatus() ;

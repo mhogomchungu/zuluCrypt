@@ -29,7 +29,7 @@ class keyDialog : public QDialog
 {
 	Q_OBJECT
 public:
-	keyDialog( QWidget * parent,QTableWidget *,QString path,QString type );
+	keyDialog( QWidget * parent,QTableWidget *,QString path,QString type,QString folderOpener );
 	~keyDialog();
 	void ShowUI( void );
 	void HideUI( void ) ;
@@ -61,6 +61,7 @@ private:
 	Ui::keyDialog * m_ui;
 	QString m_path ;
 	QString m_point ;
+	QString m_folderOpener ;
 	QMenu * m_menu ;
 	QTableWidget * m_table ;
 	bool m_working ;

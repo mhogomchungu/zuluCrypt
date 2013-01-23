@@ -31,7 +31,7 @@
 
 #include "utility.h"
 
-passwordDialog::passwordDialog( QTableWidget * table,QWidget * parent ) : QDialog( parent )
+passwordDialog::passwordDialog( QTableWidget * table,QString folderOpener,QWidget * parent ) : QDialog( parent )
 {
 	m_ui = new Ui::PasswordDialog() ;
 	m_ui->setupUi( this );
@@ -50,6 +50,8 @@ passwordDialog::passwordDialog( QTableWidget * table,QWidget * parent ) : QDialo
 	m_open_with_path = false ;
 
 	m_table = table ;
+
+	m_folderOpener = folderOpener ;
 
 	m_pluginMenu = new QMenu( this ) ;
 	m_pluginMenu->setFont( this->font() );
@@ -498,7 +500,7 @@ void passwordDialog::fileManagerOpenStatus( int exitCode, int exitStatus,int sta
 	Q_UNUSED( startError ) ;
 	if( exitCode != 0 || exitStatus != 0 ){
 		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "warning" ),tr( "could not open mount point because \"xdg-open\" tool does not appear to be working correctly") );
+		msg.ShowUIOK( tr( "warning" ),tr( "could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) );
 	}
 }
 
@@ -506,7 +508,7 @@ void passwordDialog::success( QString output )
 {
 	if( utility::mapperPathExists( m_device ) ){
 		this->complete( output );
-		openmountpointinfilemanager * omp = new openmountpointinfilemanager( utility::mountPath( m_point ) ) ;
+		openmountpointinfilemanager * omp = new openmountpointinfilemanager( m_folderOpener,utility::mountPath( m_point ) ) ;
 		connect( omp,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
 		omp->start();
 	}else{

@@ -86,6 +86,7 @@ private:
 
 	QString m_action ;
 	QString m_device ;
+	QString m_folderOpener ;
 
 	bool m_working ;
 	void disableAll( void ) ;

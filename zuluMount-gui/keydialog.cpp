@@ -1,13 +1,14 @@
 #include "keydialog.h"
 #include "ui_keydialog.h"
 
-keyDialog::keyDialog( QWidget * parent,QTableWidget * table,QString path,QString type ) :
+keyDialog::keyDialog( QWidget * parent,QTableWidget * table,QString path,QString type,QString folderOpener ) :
 	QDialog( parent ),m_ui(new Ui::keyDialog)
 {
 	m_ui->setupUi(this);
 	m_table = table ;
 	m_path = path ;
 	m_working = false ;
+	m_folderOpener = folderOpener ;
 
 	QString msg ;
 	if( type == QString( "crypto_LUKS" ) )
@@ -201,7 +202,7 @@ void keyDialog::fileManagerOpenStatus( int exitCode, int exitStatus,int startErr
 	Q_UNUSED( startError ) ;
 	if( exitCode != 0 || exitStatus != 0 ){
 		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "warning" ),tr( "could not open mount point because \"xdg-open\" tool does not appear to be working correctly") );
+		msg.ShowUIOK( tr( "warning" ),tr( "could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) );
 	}
 }
 
@@ -218,7 +219,7 @@ void keyDialog::slotMountComplete( int st,QString m )
 			connect( mpt,SIGNAL( signalProperties( QString ) ),this,SLOT( volumeMiniProperties( QString ) ) ) ;
 			mpt->startAction( QString( "volumeMiniProperties" ) ) ;
 
-			openmountpointinfilemanager * omp = new openmountpointinfilemanager( utility::mountPath( m_point ) ) ;
+			openmountpointinfilemanager * omp = new openmountpointinfilemanager( m_folderOpener,utility::mountPath( m_point ) ) ;
 			connect( omp,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
 			omp->start();
 		}else{

@@ -31,7 +31,7 @@ class openmountpointinfilemanager :public QObject,public QRunnable
 {
 	Q_OBJECT
 public:
-	explicit openmountpointinfilemanager( QString path ) ;
+	explicit openmountpointinfilemanager( QString folderOpener,QString path ) ;
 	~openmountpointinfilemanager();
 	void start( void ) ;
 signals:
@@ -41,6 +41,7 @@ private slots:
 private:
 	void run( void ) ;
 	QString m_path ;
+	QString m_folderOpener ;
 	int m_exitCode ;
 	int m_exitStatus ;
 	int m_startError ;

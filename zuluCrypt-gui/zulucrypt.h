@@ -160,8 +160,10 @@ private:
 	void initKeyCombo( void );
 	void closeStatusErrorMessage( int );
 	void setUpApp( void ) ;
+	void setFolderOpener( void ) ;
 	Ui::zuluCrypt * m_ui;
 	QSystemTrayIcon * m_trayIcon ;
+	QString m_folderOpener ;
 };
 
 #endif // ZULUCRYPT_H

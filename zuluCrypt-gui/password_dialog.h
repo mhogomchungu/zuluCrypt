@@ -47,7 +47,7 @@ class passwordDialog :  public QDialog
 {
 	Q_OBJECT
 public:
-	passwordDialog( QTableWidget * table,QWidget * parent = 0 );
+	passwordDialog( QTableWidget * table,QString folderOpener,QWidget * parent = 0 );
 	virtual ~passwordDialog();
 signals :
 	void addItemToTable( QString,QString,QString ) ;
@@ -93,6 +93,7 @@ private :
 	QString m_key ;
 	QString m_device ;
 	QString m_point ;
+	QString m_folderOpener ;
 };
 
 #endif // PASSWORD_DIALOG_H

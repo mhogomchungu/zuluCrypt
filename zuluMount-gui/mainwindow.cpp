@@ -82,6 +82,14 @@ void MainWindow::setUpApp()
 		dir.mkdir( dirPath ) ;
 
 	m_ui->pbunmount->setVisible( false );
+
+	QStringList argv = QCoreApplication::arguments() ;
+	if( argv.size() < 2 ){
+		m_folderOpener = QString( "xdg-open" ) ;
+	}else{
+		m_folderOpener = argv.at( 1 ) ;
+	}
+
 	this->show();
 }
 
@@ -155,7 +163,7 @@ void MainWindow::fileManagerOpenStatus( int exitCode, int exitStatus,int startEr
 	Q_UNUSED( startError ) ;
 	if( exitCode != 0 || exitStatus != 0 ){
 		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "warning" ),tr( "could not open mount point because \"xdg-open\" tool does not appear to be working correctly") );
+		msg.ShowUIOK( tr( "warning" ),tr( "could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) );
 	}
 }
 
@@ -163,7 +171,7 @@ void MainWindow::slotOpenFolder()
 {
 	QTableWidgetItem * item = m_ui->tableWidget->currentItem() ;
 	QString path = m_ui->tableWidget->item( item->row(),1 )->text() ;
-	openmountpointinfilemanager * ofm = new openmountpointinfilemanager( path ) ;
+	openmountpointinfilemanager * ofm = new openmountpointinfilemanager( m_folderOpener,path ) ;
 	connect( ofm,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
 	ofm->start();
 }
@@ -281,12 +289,12 @@ void MainWindow::stateChanged( int state )
 void MainWindow::mount( QString type,QString device,QString label )
 {
 	if( type == QString( "crypto_LUKS" ) || type == QString( "Nil" ) ){
-		keyDialog * kd = new keyDialog( this,m_ui->tableWidget,device,type ) ;
+		keyDialog * kd = new keyDialog( this,m_ui->tableWidget,device,type,m_folderOpener ) ;
 		connect( kd,SIGNAL( hideUISignal() ),kd,SLOT( deleteLater() ) ) ;
 		connect( kd,SIGNAL( hideUISignal() ),this,SLOT( enableAll() ) ) ;
 		kd->ShowUI();
 	}else{
-		mountPartition * mp = new mountPartition( this,m_ui->tableWidget ) ;
+		mountPartition * mp = new mountPartition( this,m_ui->tableWidget,m_folderOpener ) ;
 		connect( mp,SIGNAL( hideUISignal() ),mp,SLOT( deleteLater() ) ) ;
 		connect( mp,SIGNAL( hideUISignal() ),this,SLOT( enableAll() ) ) ;
 		mp->ShowUI( device,label );
