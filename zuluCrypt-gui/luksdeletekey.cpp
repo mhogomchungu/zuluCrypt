@@ -159,6 +159,7 @@ void luksdeletekey::pbCancel()
 void luksdeletekey::pbOpenPartition()
 {
 	openpartition * openPartition = new openpartition( this );
+	openPartition->showLuksOnly();
 	connect( openPartition,SIGNAL( clickedPartition( QString ) ),this,SLOT( ShowUI( QString ) ) );
 	connect( openPartition,SIGNAL( HideUISignal() ),openPartition,SLOT( deleteLater() ) );
 	openPartition->ShowAllPartitions();

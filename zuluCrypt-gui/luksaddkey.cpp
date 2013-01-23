@@ -158,6 +158,7 @@ void luksaddkey::pbOpenFile( void )
 void luksaddkey::pbOpenPartition( void )
 {
 	openpartition * openPartition = new openpartition( this );
+	openPartition->showLuksOnly();
 	connect( openPartition,SIGNAL( clickedPartition( QString ) ),this,SLOT( ShowUI( QString ) ) );
 	connect( openPartition,SIGNAL( HideUISignal() ),openPartition,SLOT( deleteLater() ) );
 	connect( openPartition,SIGNAL( HideUISignal() ),this,SLOT( setFieldFocus() ) ) ;

@@ -46,6 +46,9 @@ class openpartition :  public QDialog
 public:
 	openpartition( QWidget *parent = 0 );
 	virtual ~openpartition();
+	void showEncryptedOnly( void ) ;
+	void showLuksOnly( void ) ;
+
 signals :
 	void HideUISignal( void );
 	void clickedPartition( QString ) ;
@@ -71,6 +74,8 @@ private:
 	QAction * m_action ;
 	int m_option ;
 	bool m_diableNonLUKS ;
+	bool m_showEncryptedOnly ;
+	bool m_showLuksOnly ;
 };
 
 #endif

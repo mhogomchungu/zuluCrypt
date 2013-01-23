@@ -63,6 +63,18 @@ openpartition::openpartition( QWidget * parent ) :
 
 	m_diableNonLUKS = false ;
 	//m_ui->pbUUID->setVisible( false );
+	m_showEncryptedOnly = false ;
+	m_showLuksOnly = false ;
+}
+
+void openpartition::showEncryptedOnly()
+{
+	m_showEncryptedOnly = true ;
+}
+
+void openpartition::showLuksOnly()
+{
+	m_showEncryptedOnly = true ;
 }
 
 void openpartition::pbHelp()
@@ -155,7 +167,19 @@ void openpartition::partitionProperties( QStringList entry )
 	QString size = entry.at(1) ;
 	if( size == QString( "1.0 KB" ) || size == QString( "Nil" ) )
 		return ;
-	tablewidget::addRowToTable( m_ui->tableWidget,entry ) ;
+	if( m_showEncryptedOnly ){
+		QString e = entry.at( 3 ) ;
+		if( e.contains( QString( "crypto" ) ) || e.contains( QString( "Nil" ) ) ){
+			tablewidget::addRowToTable( m_ui->tableWidget,entry ) ;
+		}
+	}else if( m_showLuksOnly ){
+		QString e = entry.at( 3 ) ;
+		if( e.contains( QString( "crypto" ) ) ){
+			tablewidget::addRowToTable( m_ui->tableWidget,entry ) ;
+		}
+	}else{
+		tablewidget::addRowToTable( m_ui->tableWidget,entry ) ;
+	}
 }
 
 void openpartition::partitionpropertiesThreadFinished()

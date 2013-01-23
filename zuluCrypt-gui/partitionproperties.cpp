@@ -40,7 +40,7 @@ void partitionproperties::run()
 	if( m_partitionType == QString( " -N" ) && getuid() == 0 )
 		m_partitionType = QString( " -A" ) ;
 
-	p.start( QString( ZULUCRYPTzuluCrypt ) + m_partitionType + QString( " -T" ) ) ;
+	p.start( QString( ZULUCRYPTzuluCrypt ) + m_partitionType + QString( " -Z" ) ) ;
 
 	p.waitForFinished() ;
 

@@ -92,17 +92,18 @@ void zuluCryptEXEHelp( void )
 	-s         check if a device is opened and print its properties if it is\n\
 	-b         show status of each slot of luks volume.\"0\"=empty,\"1\"=occupied,\"2\"=invalid slot,\"3\"=last occupied\n\
 	-A         print the list of all partitions on the system\n\
-	-N         print a list of non system partitions on the system( partitions with no active entries in /etc/fstab and /etc/crypttab\n\
-	-T         print a detailed list of partitions.Must be used with -A or -S or -N\n" ;
+	-N         print a list of non system partitions on the system( partitions with no active entries in /etc/fstab and /etc/crypttab\n";
 	
 	help6 ="\
+	-T         print a detailed list of mounted partitions.Must be used with -A or -S or -N\n\
+	-Z         print a detailed list of unmounted partitions.Must be used with -A or -S or -N\n\
 	-S         print a list of system partitions on the system( partitions with active entries in /etc/fstab and /etc/crypttab\n\
 	-w         check if UUID matches UUID of any partition\n\
-	-P         get device path from mapper( located at /dev/mapper )\n\
-	-L         print a list of all opened volumes and their mount point.The list is not formatted\n\
-	-X         open a device pointed by argument -d and write random data to it hiding data previously written to device\n" ;
+	-P         get device path from mapper( located at /dev/mapper )\n";
 	
 	help7 = "\
+	-L         print a list of all opened volumes and their mount point.The list is not formatted\n\
+	-X         open a device pointed by argument -d and write random data to it hiding data previously written to device\n\
 	-W         check if a device is a truecrypt device or not,required argument are -p or -f\n\
 	-U         print UUID of a given device,required argument: -d\n";
 	

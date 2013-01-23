@@ -774,6 +774,7 @@ void zuluCrypt::ShowNonSystemPartitions()
 void zuluCrypt::ShowOpenPartition()
 {
 	openpartition * ap = setUpOpenpartition() ;
+	ap->showEncryptedOnly();
 	connect( ap,SIGNAL( clickedPartition( QString ) ),this,SLOT( partitionClicked( QString ) ) );
 	ap->ShowAllPartitions();
 }
