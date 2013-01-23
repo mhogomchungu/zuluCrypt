@@ -30,6 +30,11 @@ To build frontends without KDE(kwallet) support, add "-DNOKDE=true". eg cmake -D
 3.4
 To build frontends without gnome(gnome-keyring) support, add "-DNOGNOME=true". eg cmake -DCMAKE_INSTALL_PREFIX=/usr/ -DNOGNOME=true -DCMAKE_BUILD_TYPE=MINSIZEREL . ..
 
+3.5
+udev is not consulted when deciding if a volume is system or not,only fstab is.To also include udev,add the following config option: "-DUDEVSUPPORT=true"
+If the option is set,section 7 of the FAQ talks about removing volumes from a list of system partitions udev considers them as system and the user prefer
+them not to( udev is known to identify some external hard drives as system )
+
 4.0 make
 
 5.0 make install ( or sudo make install or su -c "make install" )

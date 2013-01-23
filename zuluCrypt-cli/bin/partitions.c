@@ -23,6 +23,8 @@
 
 #include <blkid/blkid.h>
 
+#include "udev_support.h"
+
 /*
  * This source file deals with parsing partition list from "/proc/partitions,"/etc/fstab" and "/etc/mtab".
  * 
@@ -179,11 +181,16 @@ static int _zuluCryptCheckSYSifDeviceIsSystem( const char * device )
 	string_t st ;
 	string_t xt ;
 	
+#if NO_UDEV_SUPPORT
+	/*
+	 * NO_UDEV_SUPPORT is set at configure time by "-DUDEVSUPPORT=true" option,the option being absent equals "-DUDEVSUPPORT=false"
+	 */
+	
 	/*
 	 * turn off udev for now,it does not seem to detect external usb based devices reliably. 
 	 */
 	return 0 ;
-	
+#endif
 	st = String( device ) ;
 	/*
 	 * this loop will convert something like: "/dev/sdc12" to "/dev/sdc"

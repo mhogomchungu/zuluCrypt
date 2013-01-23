@@ -29,6 +29,12 @@ file( WRITE ${PROJECT_BINARY_DIR}/version.h "
 #endif
 \n" )
 
+if( UDEVSUPPORT STREQUAL "true" )
+	file( WRITE ${PROJECT_BINARY_DIR}/udev_support.h "\n#define NO_UDEV_SUPPORT 0\n")
+else( UDEVSUPPORT STREQUAL "true" )
+	file( WRITE ${PROJECT_BINARY_DIR}/udev_support.h "\n#define NO_UDEV_SUPPORT 1\n")
+endif( UDEVSUPPORT STREQUAL "true" )
+
 if( NOT BLKID_FOUND )
 	message ( FATAL_ERROR "ERROR: could not find blkid package" )
 else( NOT BLKID_FOUND )
@@ -160,8 +166,12 @@ endif( KEYRINGSUPPORT )
 if( BUILDPWQUALITY )
 	message( STATUS "pwquality library support to give passphrase strength measure" )
 endif( BUILDPWQUALITY )
-message ( STATUS "---------------------------------------------------------------------------" )
 
+if( UDEVSUPPORT STREQUAL "true" )
+	message ( STATUS "udev will be consulted when deciding if a volume is system or not" )
+endif( UDEVSUPPORT STREQUAL "true" )
+	
+message ( STATUS "---------------------------------------------------------------------------" )		
 message ( STATUS "---------------------------------------------------------------------------" )
 message ( STATUS "optional functionality that will NOT be build" )
 
