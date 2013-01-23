@@ -175,6 +175,12 @@ stringList_t zuluCryptPartitionList( void )
 
 static int _zuluCryptCheckSYSifDeviceIsSystem( const char * device )
 {
+	char c ;
+	const char * path ;
+	int r ;	
+	string_t st ;
+	string_t xt ;
+	
 #if NO_UDEV_SUPPORT
 	/*
 	 * NO_UDEV_SUPPORT is set at configure time by "-DUDEVSUPPORT=true" option,the option being absent equals "-DUDEVSUPPORT=false"
@@ -185,11 +191,7 @@ static int _zuluCryptCheckSYSifDeviceIsSystem( const char * device )
 	 */
 	return 0 ;
 #endif
-	char c ;
-	const char * path ;
-	int r ;	
-	string_t xt ;
-	string_t st = String( device ) ;
+	st = String( device ) ;
 	/*
 	 * this loop will convert something like: "/dev/sdc12" to "/dev/sdc"
 	 * basically,it removes digits from the end of the string
