@@ -381,13 +381,29 @@ void zuluCryptPrintPartitionProperties( const char * device )
 	zuluCryptSecurityDropElevatedPrivileges();
 }
 
-void zuluCryptPrintPartitionProperties_1( const char * device )
-{	/*
-	*zuluCryptPartitionIsMounted() is defined in ../lib/print_mounted_volumes.c
+static void _zuluCryptPrintUnMountedPartitionProperties( stringList_t stl )
+{
+	/*
+	 * zuluCryptGetMtabList() is defined in ../lib/print_mounted_volumes.c
 	 */
-	if( !zuluCryptPartitionIsMounted( device ) ){
-		zuluCryptPrintPartitionProperties( device ) ;
+	stringList_t stx = zuluCryptGetMtabList() ;
+	
+	StringListIterator it  ;
+	StringListIterator end ;
+	
+	const char * entry ;
+
+	it  = StringListBegin( stl ) ;
+	end = StringListEnd( stl ) ;
+	
+	while( it != end ){
+		entry = StringContent( *it ) ;
+		it++ ;
+		if( StringListHasStartSequence( stx,entry ) == -1 ){
+			zuluCryptPrintPartitionProperties( entry ) ;
+		}
 	}
+	StringListDelete( &stx ) ;
 }
 
 int zuluCryptPrintPartitions( int option,int info )
@@ -407,7 +423,7 @@ int zuluCryptPrintPartitions( int option,int info )
 	
 	switch( info ){
 		case 1 : StringListForEachString( stl,zuluCryptPrintPartitionProperties )   ; break ;
-		case 2 : StringListForEachString( stl,zuluCryptPrintPartitionProperties_1 ) ; break ;
+		case 2 : _zuluCryptPrintUnMountedPartitionProperties( stl ) 	   	    ; break ;
 		default: StringListPrintList( stl ) ;
 	}
 	

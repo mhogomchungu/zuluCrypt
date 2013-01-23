@@ -102,8 +102,9 @@ int _zuluExit_1( int st,stringList_t z,char * q,const char * msg )
 	return st ;
 }
 
-static int _zuluMountDeviceList( void )
+static int _zuluMountDeviceList( uid_t uid )
 {
+	if( uid ){;}
 	/*
 	 * zuluCryptPrintPartitions() is defined in ../zuluCrypt-cli/partitions.c
 	 * 
@@ -535,7 +536,7 @@ int main( int argc,char * argv[] )
 		return _zuluExit_2( _zuluMountMountedList( uid ),stl,stx,NULL ) ;
 	
 	if( strcmp( action,"-P" ) == 0 )
-		return _zuluExit_2( _zuluMountDeviceList(),stl,stx,NULL ) ;
+		return _zuluExit_2( _zuluMountDeviceList( uid ),stl,stx,NULL ) ;
 	
 	if( strcmp( action,"-h" ) == 0 )
 		return _zuluExit_2( _mount_help(),stl,stx,NULL ) ;
