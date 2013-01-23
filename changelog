@@ -102,3 +102,11 @@ version 4.5.3
 
 version 4.6.0
 -- add support for opening and closing of truecrypt volumes,this feature need cryptsetup >= 1.6.0
+
+version 4.6.1
+-- fix a regression that caused volumes presented by their UUID not to working
+
+version 4.6.2
+-- add config option to not build KDE and/or GNOME support even when the system has support for them
+-- add support for LVM volumes
+-- add support for consulting udev in addition to fstab when deciding if a system is system or not
