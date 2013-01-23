@@ -24,6 +24,12 @@ To build only the backends,run the following command
 To build the backends as well as front ends,run the following command
 3.2 cmake -DCMAKE_INSTALL_PREFIX=/usr/ -DCMAKE_BUILD_TYPE=MINSIZEREL . ..
 
+3.3 
+To build frontends without KDE(kwallet) support, add "-DNOKDE=true". eg cmake -DCMAKE_INSTALL_PREFIX=/usr/ -DNOKDE=true -DCMAKE_BUILD_TYPE=MINSIZEREL . ..
+
+3.4
+To build frontends without gnome(gnome-keyring) support, add "-DNOGNOME=true". eg cmake -DCMAKE_INSTALL_PREFIX=/usr/ -DNOGNOME=true -DCMAKE_BUILD_TYPE=MINSIZEREL . ..
+
 4.0 make
 
 5.0 make install ( or sudo make install or su -c "make install" )

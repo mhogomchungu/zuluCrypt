@@ -9,7 +9,10 @@ set ( zuluPluginManager "${PROJECT_BINARY_DIR}/zuluCrypt-cli/libzuluCryptPluginM
 
 INCLUDE(FindPkgConfig)
 
-pkg_check_modules( GNOME_KEYRING gnome-keyring-1 )
+if( NOT NOGNOME ) 
+	pkg_check_modules( GNOME_KEYRING gnome-keyring-1 )
+endif( NOT NOGNOME )
+
 pkg_check_modules( CRYPTSETUP libcryptsetup )
 pkg_check_modules( BLKID blkid ) 
 pkg_check_modules( PWQUALITY pwquality ) 
@@ -96,7 +99,10 @@ ADD_SUBDIRECTORY( zuluCrypt-cli )
 if( NOT NOGUI ) 
 	
 find_package( Qt4 COMPONENTS QtCore QtNetwork QtGui REQUIRED )
-find_package( KDE4 QUIET )
+
+if( NOT NOKDE ) 
+	find_package( KDE4 QUIET )
+endif( NOT NOKDE )
 
 file( WRITE  ${PROJECT_BINARY_DIR}/can_build_kwallet.h "\n#define BUILD_KWALLET 0\n" )
 
