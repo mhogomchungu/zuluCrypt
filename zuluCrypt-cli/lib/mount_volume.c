@@ -144,6 +144,12 @@ stringList_t zuluCryptGetFstabList( void )
 					}
 					free( ac ) ;
 				}
+			}else if( strncmp( entry,"/dev/mapper/",12 ) == 0 ){
+				index = StringLastIndexOfChar( xt,'-' ) ;
+				if( index != -1 ){
+					StringSubChar( xt,index,'/' ) ;
+					StringReplaceString( xt,"/dev/mapper/","/dev/" ) ;
+				}
 			}
 		}else if( strncmp( entry,"UUID=",5 ) == 0 ){
 			entry = StringRemoveString( xt,"\"" ) ;

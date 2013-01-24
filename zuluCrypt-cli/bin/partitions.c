@@ -99,7 +99,8 @@ static stringList_t _zuluCryptAddLVMVolumes( stringList_t stl )
 	struct dirent * entry ;
 	const char * m_path ;
 	string_t st = StringVoid ;
-	
+	string_t xt ;
+	ssize_t index ;
 	if( dir != NULL ){
 		st = String( path ) ;
 		while( ( entry = readdir( dir ) ) != NULL ){
@@ -117,7 +118,14 @@ static stringList_t _zuluCryptAddLVMVolumes( stringList_t stl )
 				continue ;
 			}
 			StringInsertAndDelete( st,12,m_path ) ;
-			stl = StringListAppendString( stl,st ) ;
+			xt = StringCopy( st ) ;
+			index = StringLastIndexOfChar( xt,'-' ) ;
+			if( index != -1 ){
+				StringSubChar( xt,index,'/' ) ;
+				StringReplaceString( xt,"/dev/mapper/","/dev/" ) ;
+				stl = StringListAppendString( stl,xt ) ;
+			}
+			StringDelete( &xt ) ;
 		}
 		StringDelete( &st ) ;
 		closedir( dir ) ;
