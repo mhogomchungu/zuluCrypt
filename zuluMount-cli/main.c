@@ -314,6 +314,7 @@ static int _zuluMountPrintVolumeDeviceName( const char * device )
 		* zuluCryptVolumeDeviceName() is defined in ../lib/status.c
 		*/
 		c = zuluCryptVolumeDeviceName( device ) ;
+		StringDelete( &st ) ;
 	}
 	
 	/*
@@ -321,12 +322,10 @@ static int _zuluMountPrintVolumeDeviceName( const char * device )
 	 */
 	zuluCryptSecurityDropElevatedPrivileges() ;
 	if( c == NULL ){
-		StringDelete( &st ) ;
 		return 1 ;
 	}else{
 		printf( "%s\n",c ) ;
 		free( c ) ;
-		StringDelete( &st ) ;
 		return 0 ;
 	}
 }
