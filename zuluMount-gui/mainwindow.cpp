@@ -430,8 +430,9 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 		}
 
 		fs =  entries.at( 2 ) ;
-		if( fs == QString( "swap" ) || fs.contains( QString( "LVM" ) ) || fs.contains( QString( "lvm" ) ) )
+		if( fs == QString( "swap" ) || fs.contains( QString( "LVM" ) ) || fs.contains( QString( "lvm" ) ) || fs.contains( QString( "mdraid" ) ) ){
 			continue ;
+		}
 		opt = entries.at( 4 ) ;
 		if( opt == QString( "Nil" ) || opt == QString( "1.0 KB" ) )
 			continue ;

@@ -40,6 +40,26 @@ int zuluCryptSecureOpenFile( const char * path,int * fd,string_t * file,uid_t ui
 	return st ;
 }
 
+static int _check_if_device_is_supported( int st,uid_t uid,const char * dev )
+{
+	const char * cfs ;
+	string_t fs ;
+	seteuid( 0 ) ;
+	/*
+	 * zuluCryptGetFileSystemFromDevice() is defined in mount_volume.c
+	 */
+	fs = zuluCryptGetFileSystemFromDevice( dev ) ;
+	seteuid( uid ) ;
+	if( fs != StringVoid ){
+		cfs = StringContent( fs ) ;
+		if( strncmp( cfs,"LVM",3 ) == 0 || strncmp( cfs,"mdraid",6 ) == 0 ){
+			st = 100 ;
+		}	
+		StringDelete( &fs ) ;
+	}
+	return st ;
+}
+
 static char * device_path( string_t st )
 {
 	ssize_t index ;
@@ -218,5 +238,6 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 		
 		seteuid( uid ) ;
 	}
-	return st ;
+	
+	return _check_if_device_is_supported( st,uid,*dev ) ;
 }

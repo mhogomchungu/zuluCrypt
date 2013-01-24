@@ -411,6 +411,8 @@ static int _zuluMountDoAction( const char * device,const char * UUID,const char 
 	int fd1 = -1 ;
 	int status ;
 	char * dev = NULL ;
+	const char * msg = "ERROR: a non supported device encountered,device is missing or permission denied\n\
+Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The device has LVM or MDRAID signature\n" ;
 	/*
 	 * zuluCryptGetDeviceFileProperties is defined in ../zuluCrypt-lib/file_path_security.c
 	 */
@@ -419,8 +421,8 @@ static int _zuluMountDoAction( const char * device,const char * UUID,const char 
 		case 1 : printf( "ERROR: devices in /dev/ with user access permissions are not suppored\n" ) ;			return 220 ;
 		case 2 : printf( "ERROR: given path is a directory\n" ) ;  					 		return 221 ;
 		case 3 : printf( "ERROR: a file can have only one hard link\n" ) ;				 		return 222 ;
-		case 4 : printf( "ERROR: a non supported device encountered,device is missing or permission denied\n" ) ; 	return 223 ;
-		default: printf( "ERROR: a non supported device encountered,device is missing or permission denied\n" ) ; 	return 224 ;
+		case 4 : printf( "ERROR: insufficient privilges to access the device\n" ) ; 					return 223 ;
+		default: printf( msg ) ; 											return 224 ;
 	}
 	
 	if( dev == NULL ){

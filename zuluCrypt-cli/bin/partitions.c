@@ -94,8 +94,8 @@ static inline int _allowedDevice( const char * device )
 
 static stringList_t _zuluCryptAddLVMVolumes( stringList_t stl )
 {
-	const char * path = "/dev/mapper/" ;
-	DIR * dir = opendir( path ) ;
+	struct stat lvm ;
+	DIR * dir = opendir( "/dev/mapper/" ) ;
 	struct dirent * entry ;
 	const char * m_path ;
 	string_t st = StringVoid ;
@@ -104,26 +104,20 @@ static stringList_t _zuluCryptAddLVMVolumes( stringList_t stl )
 		st = String( "/dev/" ) ;
 		while( ( entry = readdir( dir ) ) != NULL ){
 			m_path = entry->d_name ;
-			if( strcmp( m_path,"." ) == 0 ){
-				continue ;
-			}
-			if( strcmp( m_path,".." ) == 0 ){
-				continue ;
-			}
-			if( strcmp( m_path,"control" ) == 0 ){
-				continue ;
-			}
 			/*
-			 * TODO: Have a way to check if a volume is LVM or not
-			 */
-			if( strstr( m_path,"zuluCrypt" ) != NULL ){
-				continue ;
-			}
+			 * LVM volumes have two paths,one has a format of "/dev/mapper/ABC-DEF" and the 
+			 * other has a format of "/dev/ABC/DEF". 
+			 * 
+			 * below code converts the former format to the latter one and assume the volume is LVM
+			 * if the converted path is found in "/dev"
+			 */	
 			if( strchr( m_path,'-' ) != NULL ){
 				StringInsertAndDelete( st,5,m_path ) ;
 				index = StringLastIndexOfChar( st,'-' ) ;
-				StringSubChar( st,index,'/' ) ;
-				stl = StringListAppendString( stl,st ) ;
+				m_path = StringSubChar( st,index,'/' ) ;
+				if( stat( m_path,&lvm ) == 0 ){
+					stl = StringListAppendString( stl,st ) ;
+				}
 			}
 		}
 		StringDelete( &st ) ;

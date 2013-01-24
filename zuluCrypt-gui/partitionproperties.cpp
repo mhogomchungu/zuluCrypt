@@ -56,7 +56,7 @@ void partitionproperties::run()
 	for ( int i = 0 ; i < j ; i++ ){
 		list = l.at( i ).split( "\t" ) ;
 		entry = list.at( 3 ) ;
-		if( entry.contains( QString( "LVM" ) ) || entry.contains( QString( "lvm" ) ) ){
+		if( entry.contains( QString( "LVM" ) ) || entry.contains( QString( "lvm" ) ) || entry.contains( QString( "mdraid" ) ) ){
 			;
 		}else{
 			emit partitionProperties( list );
