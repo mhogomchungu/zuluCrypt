@@ -393,7 +393,7 @@ char * zuluCryptVolumeDeviceName( const char * mapper )
 	char * path ;
 	string_t address = StringVoid ;
 	const char * e ;
-	
+	ssize_t index ;
 	e = crypt_get_dir() ;
 	
 	if( e == NULL )
@@ -421,6 +421,17 @@ char * zuluCryptVolumeDeviceName( const char * mapper )
 				address = StringInherit( &path ) ;
 			}else{
 				address = String( e ) ;
+			}
+		}else if( strncmp( e,"/dev/mapper/",12 ) == 0 ){
+			/*
+			 * An assumption is made here that the volume is an LVM volume in "/dev/mapper/ABC-DEF"
+			 * format and the path is converted to "/dev/ABC/DEF" format
+			 */
+			address = String( e ) ;
+			index = StringLastIndexOfChar( address,'-' ) ;
+			if( index != -1 ){
+				StringSubChar( address,index,'/' ) ;
+				StringReplaceString( address,"/dev/mapper/","/dev/" ) ; 
 			}
 		}else{
 			address = String( e ) ;
