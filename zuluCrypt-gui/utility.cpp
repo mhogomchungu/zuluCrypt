@@ -127,7 +127,7 @@ QString utility::resolvePath( QString path )
 		return QDir::homePath() + QString( "/" ) + path.mid( 2 );
 	}else if( path.mid( 0,5 ) == QString( "UUID=") ){
 		return path ;
-	}else if( path.startsWith( QString( "/dev/mapper") ) ){
+	}else if( path.startsWith( QString( "/dev/") ) ){
 		return path ;
 	}else{
 		QDir r( path ) ;
