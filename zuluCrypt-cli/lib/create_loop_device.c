@@ -63,13 +63,26 @@ char * zuluCryptGetFileNameFromFileDescriptor( int fd )
 	char * c ;
 	string_t xt ;
 	struct stat st ;
-	
+	ssize_t index ;
 	if( fstat( fd,&st ) != 0 )
 		return NULL ;
 	xt = String( "/proc/self/fd/" ) ;
 	StringAppendInt( xt,fd ) ;
 	c = zuluCryptRealPath( StringContent( xt ) ) ;
 	StringDelete( &xt ) ;
+	if( strncmp( c,"/dev/mapper/",12 ) == 0 ){
+		/*
+		 * An assumption is made here that the volume is an LVM volume in "/dev/mapper/ABC-DEF"
+		 * format and the path is converted to "/dev/ABC/DEF" format
+		 */
+		xt = StringInherit( &c ) ;
+		index = StringLastIndexOfChar( xt,'-' ) ;
+		if( index != -1 ){
+			StringSubChar( xt,index,'/' ) ;
+			StringReplaceString( xt,"/dev/mapper/","/dev/" ) ;
+		}
+		c = StringDeleteHandle( &xt ) ;
+	}
 	return c ;
 }
 

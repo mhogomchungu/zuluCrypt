@@ -40,6 +40,20 @@ int zuluCryptSecureOpenFile( const char * path,int * fd,string_t * file,uid_t ui
 	return st ;
 }
 
+static char * device_path( string_t st )
+{
+	ssize_t index ;
+	if( StringStartsWith( st,"/dev/mapper/" ) ){
+		index = StringLastIndexOfChar( st,'-' ) ;
+		if( index != -1 ){
+			StringSubChar( st,index,'/' ) ;
+			StringReplaceString( st,"/dev/mapper","/dev/" ) ;
+		}
+	}
+	
+	return StringDeleteHandle( &st ) ;
+}
+
 int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_loop,char ** dev,uid_t uid )
 {
 	int st = 100 ;
@@ -91,7 +105,7 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 					 */
 					xt = zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( *fd_path,fd_loop,O_RDWR,&st_dev ) ;
 					seteuid( uid ) ;
-					*dev = StringDeleteHandle( &st_dev ) ;
+					*dev = device_path( st_dev ) ;
 				}
 			}else{
 				/*
@@ -103,7 +117,7 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 				 */
 				xt = zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( *fd_path,fd_loop,O_RDONLY,&st_dev ) ;
 				seteuid( uid ) ;
-				*dev = StringDeleteHandle( &st_dev ) ;
+				*dev = device_path( st_dev ) ;
 			}
 			
 			if( xt != 1 ){
