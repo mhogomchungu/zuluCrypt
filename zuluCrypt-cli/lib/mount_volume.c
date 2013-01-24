@@ -145,6 +145,10 @@ stringList_t zuluCryptGetFstabList( void )
 					free( ac ) ;
 				}
 			}else if( strncmp( entry,"/dev/mapper/",12 ) == 0 ){
+				/*
+				 * An assumption is made here that the volume is an LVM volume in "/dev/mapper/ABC-DEF"
+				 * format and the path is converted to "/dev/ABC/DEF" format
+				 */
 				index = StringLastIndexOfChar( xt,'-' ) ;
 				if( index != -1 ){
 					StringSubChar( xt,index,'/' ) ;
