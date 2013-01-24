@@ -280,6 +280,8 @@ static int _zuluPartitionHasCryptoFs( const char * device )
 
 static int _zuluMountPrintVolumeDeviceName( const char * device )
 {	
+	ssize_t index ;
+	string_t st = StringVoid ;
 	char * c ;
 	char * e ;
 	/*
@@ -288,6 +290,9 @@ static int _zuluMountPrintVolumeDeviceName( const char * device )
 	zuluCryptSecurityGainElevatedPrivileges() ;
 	
 	if( strncmp( device,"/dev/loop",9 ) == 0 ){
+		/*
+		 * Dont see how we would get in here but lets keep it just in case
+		 */
 		/*
 		 * zuluCryptLoopDeviceAddress() is defined in ../zuluCrypt-cli/lib/create_loop_device.c
 		 */
@@ -299,21 +304,29 @@ static int _zuluMountPrintVolumeDeviceName( const char * device )
 			c = zuluCryptVolumeDeviceName( device ) ;
 		}
 	}else{
+		st = String( device ) ;
+		StringReplaceString( st,"/dev/","/dev/mapper/" ) ;
+		index = StringLastIndexOfChar( st,'/' ) ;
+		if( index != -1 ){
+			device = StringSubChar( st,index,'-' ) ;
+		}
 		/*
 		* zuluCryptVolumeDeviceName() is defined in ../lib/status.c
 		*/
 		c = zuluCryptVolumeDeviceName( device ) ;
 	}
+	
 	/*
 	 * zuluCryptSecurityDropElevatedPrivileges() is defined in ../zuluCrypt-cli/bin/security.c
 	 */
 	zuluCryptSecurityDropElevatedPrivileges() ;
 	if( c == NULL ){
-		printf( "ERROR: could not get device address from mapper address\n" ) ;
+		StringDelete( &st ) ;
 		return 1 ;
 	}else{
 		printf( "%s\n",c ) ;
 		free( c ) ;
+		StringDelete( &st ) ;
 		return 0 ;
 	}
 }
