@@ -119,12 +119,22 @@ static int _zuluMountPartitionAccess( const char * device,const char * m_opts,ui
 				 * the partition has option to allow normal user to mount it,mount it
 				 */
 				st = 0 ;
+			}else if( defaulT ){
+				/*
+				 * zuluCryptUserIsAMemberOfAGroup() is defined in ../zuluCrypt/bin/security.c
+				 */
+				if( zuluCryptUserIsAMemberOfAGroup( uid,"zulumount" ) ){
+					/*
+					 * user is a member is zulumount group,mount it 
+					 */
+					st = 0 ;
+				}else{
+					st = 1 ;
+				}
 			}else{
 				/*
-				 * options that go here are "defaults" among others.They dont allow
-				 * a normal user to mount a volume.
+				 * remaining options go there
 				 */
-				if( defaulT ){;}
 				/*
 				 * zuluCryptUserIsAMemberOfAGroup() is defined in ../zuluCrypt/bin/security.c
 				 */

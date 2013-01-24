@@ -113,6 +113,9 @@ static stringList_t _zuluCryptAddLVMVolumes( stringList_t stl )
 			if( strcmp( m_path,"control" ) == 0 ){
 				continue ;
 			}
+			/*
+			 * TODO: Have a way to check if a volume is LVM or not
+			 */
 			if( strstr( m_path,"zuluCrypt" ) != NULL ){
 				continue ;
 			}
