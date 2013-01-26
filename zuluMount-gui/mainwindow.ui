@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>901</width>
-    <height>463</height>
+    <height>477</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,7 +22,7 @@
      <x>10</x>
      <y>0</y>
      <width>881</width>
-     <height>401</height>
+     <height>431</height>
     </rect>
    </property>
    <widget class="QTableWidget" name="tableWidget">
@@ -31,7 +31,7 @@
       <x>0</x>
       <y>10</y>
       <width>881</width>
-      <height>401</height>
+      <height>421</height>
      </rect>
     </property>
     <property name="editTriggers">
@@ -146,7 +146,7 @@
    <property name="geometry">
     <rect>
      <x>280</x>
-     <y>420</y>
+     <y>440</y>
      <width>111</width>
      <height>31</height>
     </rect>
@@ -165,7 +165,7 @@
    <property name="geometry">
     <rect>
      <x>390</x>
-     <y>420</y>
+     <y>440</y>
      <width>121</width>
      <height>31</height>
     </rect>
@@ -178,7 +178,7 @@
    <property name="geometry">
     <rect>
      <x>510</x>
-     <y>420</y>
+     <y>440</y>
      <width>111</width>
      <height>31</height>
     </rect>

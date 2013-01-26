@@ -31,12 +31,12 @@ void MainWindow::setUpApp()
 
 	this->setFixedSize( this->size() ) ;
 
-	m_ui->tableWidget->setColumnWidth( 0,230 );
-	//m_ui->tableWidget->setColumnWidth( 1,226 );
-	m_ui->tableWidget->setColumnWidth( 2,100 );
-	m_ui->tableWidget->setColumnWidth( 3,100 );
-	m_ui->tableWidget->setColumnWidth( 4,90 );
-	m_ui->tableWidget->setColumnWidth( 5,90 );
+	m_ui->tableWidget->setColumnWidth( 0,228 );
+	m_ui->tableWidget->setColumnWidth( 1,226 );
+	m_ui->tableWidget->setColumnWidth( 2,98 );
+	m_ui->tableWidget->setColumnWidth( 3,98 );
+	m_ui->tableWidget->setColumnWidth( 4,87 );
+	m_ui->tableWidget->setColumnWidth( 5,87 );
 
 	this->setWindowIcon( QIcon( QString( ":/zuluMount.png" ) ) );
 
@@ -510,8 +510,7 @@ void MainWindow::enableAll()
 	m_ui->pbmount->setEnabled( true );
 	m_ui->tableWidget->setFocus();
 }
-#include<QDebug>
+
 MainWindow::~MainWindow()
 {
-	qDebug() << m_ui->tableWidget->columnWidth(0);
 }
