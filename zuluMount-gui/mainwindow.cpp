@@ -31,7 +31,7 @@ void MainWindow::setUpApp()
 
 	this->setFixedSize( this->size() ) ;
 
-	m_ui->tableWidget->setColumnWidth( 0,120 );
+	m_ui->tableWidget->setColumnWidth( 0,230 );
 	//m_ui->tableWidget->setColumnWidth( 1,226 );
 	m_ui->tableWidget->setColumnWidth( 2,100 );
 	m_ui->tableWidget->setColumnWidth( 3,100 );
@@ -510,7 +510,8 @@ void MainWindow::enableAll()
 	m_ui->pbmount->setEnabled( true );
 	m_ui->tableWidget->setFocus();
 }
-
+#include<QDebug>
 MainWindow::~MainWindow()
 {
+	qDebug() << m_ui->tableWidget->columnWidth(0);
 }
