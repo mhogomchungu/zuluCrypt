@@ -79,16 +79,46 @@ stringList_t zuluCryptGetPartitionFromConfigFile( const char * path ) ;
 
 static inline int _allowedDevice( const char * device )
 {
+	const char * fsType ;
+	int st ;
+	blkid_probe blkid ;
+	string_t str ;
+	
+	if( strncmp( device,"sr",2 ) == 0 ){
+		/*
+		 * device is probably a cdrom or dvdrom,allow them
+		 */
+		return 1 ;
+	}
+	if( strlen( device  ) == 3 ){
+		/*
+		 * we will get here with a device with an address of "/dev/sdc".
+		 * This device is either not partitioned or is a root address of a partitioned device
+		 * Support it only if it has a recognizable file system.
+		 */
+		str = String( "/dev/" ) ;
+		blkid = blkid_new_probe_from_filename( StringAppend( str,device ) ) ;
+		StringDelete( &str ) ;
+		if( blkid == NULL ){
+			return 0 ;
+		}else{
+			blkid_do_probe( blkid );
+			if( blkid_probe_lookup_value( blkid,"TYPE",&fsType,NULL ) != 0 ){
+				st = 0 ;
+			}else{
+				st = 1 ;
+			}
+			blkid_free_probe( blkid );
+			return st ;
+		}
+	}
 	if( strlen( device  ) > 3 ){
 		if( strncmp( device,"hd",2 ) == 0 || 
 			strncmp( device,"sd",2 ) == 0 ||
 			strncmp( device,"mmc",3 ) == 0 ){
 			return 1 ;
 		}
-	}else if( strncmp( device,"sr",2 ) == 0 ){
-		return 1 ;
 	}
-	
 	return 0 ;
 }
 
@@ -157,6 +187,7 @@ stringList_t zuluCryptPartitionList( void )
 	it  = StringListBegin( stl ) ;
 	end = StringListEnd( stl ) ;
 	
+	zuluCryptSecurityGainElevatedPrivileges() ;
 	for( ; it != end ; it++ ){
 		st = *it ;
 		index = StringLastIndexOfChar( st,' ' ) ;
@@ -168,7 +199,7 @@ stringList_t zuluCryptPartitionList( void )
 			}
 		}
 	}
-	
+	zuluCryptSecurityDropElevatedPrivileges() ;
 	StringDelete( &st_1 ) ;
 	StringListDelete( &stl ) ;
 	return _zuluCryptAddLVMVolumes( stl_1 ) ;
