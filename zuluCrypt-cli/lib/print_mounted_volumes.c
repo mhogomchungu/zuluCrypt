@@ -36,8 +36,11 @@ char * zuluCryptDeviceFromUUID( const char * uuid ) ;
 int zuluCryptMtabIsAtEtc( void )
 {
 	struct stat st ;
-	stat( "/etc/mtab",&st ) ;
-	return S_ISREG( st.st_mode ) ;
+	if( stat( "/etc/mtab",&st ) == 0 ){
+		return S_ISREG( st.st_mode ) ;
+	}else{
+		return 0 ;
+	}
 }
 
 const char * zuluCryptDecodeMtabEntry( string_t st )
