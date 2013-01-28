@@ -34,17 +34,10 @@ char * zuluCryptVolumeDeviceName( const char * ) ;
 char * zuluCryptDeviceFromUUID( const char * uuid ) ;
 
 int zuluCryptMtabIsAtEtc( void )
-{	
-	const char * mpath = "/etc/mtab" ;
-	char * path = zuluCryptRealPath( mpath ) ;
-	int st ;
-	if( path == NULL ){
-		return 0 ;
-	}else{
-		st = strcmp( path,mpath ) ;
-		free( path ) ;
-		return st == 0 ;
-	}
+{
+	struct stat st ;
+	stat( "/etc/mtab",&st ) ;
+	return S_ISREG( st.st_mode ) ;
 }
 
 const char * zuluCryptDecodeMtabEntry( string_t st )
