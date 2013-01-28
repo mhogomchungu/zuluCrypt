@@ -369,7 +369,7 @@ void checkIfDeviceIsLuks( const char * device )
 		__print( "check if a luks volume is a luks volume: PASSED\n" ) ;
 }
 
-int _loop_device_is_not_present( void )
+int _loop_device_module_is_not_present( void )
 {
 	struct stat stlsmod ;
 	int st = 0 ;
@@ -393,10 +393,9 @@ int _loop_device_is_not_present( void )
 
 int main( void )
 {	
-	if( _loop_device_is_not_present() ){
-		printf( "ERROR: \"loop\" kernel module is not loaded\n" ) ;
-		printf( "run as root \"modprobe loop\" to load it up and try again\n" ) ;
-		return 1 ;
+	if( _loop_device_module_is_not_present() ){
+		printf( "\nERROR: \"loop\" kernel module does not appear to be loaded and some tests may fail without it\n" ) ;
+		printf( "run as root \"modprobe loop\" to load it up and try again\n\n" ) ;
 	}
 	
 	createTestImages() ;
