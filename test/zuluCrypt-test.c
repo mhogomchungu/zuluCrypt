@@ -369,8 +369,36 @@ void checkIfDeviceIsLuks( const char * device )
 		__print( "check if a luks volume is a luks volume: PASSED\n" ) ;
 }
 
-int main( void )
+int _loop_device_is_not_present( void )
 {
+	struct stat stlsmod ;
+	int st = 0 ;
+	process_t p ;
+	const char * lsmod = "/sbin/lsmod" ;
+	char * output = NULL ;
+	if( stat( lsmod,&stlsmod ) != 0 )
+		return 0 ;
+	p = Process( lsmod ) ;
+	ProcessStart( p ) ;
+	ProcessGetOutPut( p,&output,STDOUT ) ;
+	if( output ){
+		if( strstr( output,"\nloop" ) == NULL ){
+			st = 1 ;
+		}
+		free( output ) ;
+	}
+	ProcessDelete( &p ) ;
+	return st ;
+}
+
+int main( void )
+{	
+	if( _loop_device_is_not_present() ){
+		printf( "ERROR: \"loop\" kernel module is not loaded\n" ) ;
+		printf( "run as root \"modprobe loop\" to load it up and try again\n" ) ;
+		return 1 ;
+	}
+	
 	createTestImages() ;
 	createKeyFiles() ;
 
