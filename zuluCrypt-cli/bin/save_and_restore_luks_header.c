@@ -425,15 +425,10 @@ static int _save_tmp_header( const char * device,const char * backup )
 {
 	struct crypt_device * cd  ;
 	int st = 1 ;
-	
-	zuluCryptSecurityGainElevatedPrivileges() ;
-	
 	if( crypt_init( &cd,device ) == 0 ){
 		st = crypt_header_backup( cd,NULL,backup ) ;
 		crypt_free( cd ) ;
-	}	
-	
-	zuluCryptSecurityDropElevatedPrivileges() ;
+	}
 	return st == 0 ;
 }
 
@@ -459,17 +454,16 @@ int zuluCryptHeaderMatchBackUpHeader( const char * device,const char * header_ba
 		return 0 ;
 	}
 	
+	zuluCryptSecurityGainElevatedPrivileges() ;
+	
 	if( _save_tmp_header( device,device_header ) ){
-		
-		zuluCryptSecurityGainElevatedPrivileges() ;
-	
 		st = files_are_equal( header_path,device_header ) ;
-	
-		unlink( header_path ) ;
-		unlink( device_header ) ;
-	
-		zuluCryptSecurityDropElevatedPrivileges() ;
 	}
+	
+	unlink( header_path ) ;
+	unlink( device_header ) ;
+	
+	zuluCryptSecurityDropElevatedPrivileges() ;
 	
 	free( header_path ) ;
 	free( device_header ) ;
