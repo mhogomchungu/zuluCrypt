@@ -105,7 +105,8 @@ void zuluCryptEXEHelp( void )
 	-L         print a list of all opened volumes and their mount point.The list is not formatted\n\
 	-X         open a device pointed by argument -d and write random data to it hiding data previously written to device\n\
 	-W         check if a device is a truecrypt device or not,required argument are -p or -f\n\
-	-U         print UUID of a given device,required argument: -d\n";
+	-U         print UUID of a given device,required argument: -d\n\
+	-H         compare a header on a luks device to a backup header,required arg: -d and -f\n";
 	
 	help8 ="\
 	-J         create a plain mapper owned by the user who run the command on a device pointed by argument -d\n\

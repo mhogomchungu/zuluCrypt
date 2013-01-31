@@ -171,9 +171,36 @@ static int zuluCryptEXECheckUUID( const char * device )
 	return 0 ;
 }
 
+static int zuluCryptEXEHeaderMatchBackUpHeader( const char * device,const char * header_backup,uid_t uid )
+{
+	/*
+	 * zuluCryptPartitionIsSystemPartition() is defined in partitions.c
+	 */
+	int r = zuluCryptPartitionIsSystemPartition( device ) ;
+	
+	if( r == 1 ){
+		if( uid != 0 || !zuluCryptUserIsAMemberOfAGroup( uid,"zulucrypt" ) ){
+			printf( "ERROR: insufficient privilges to operate on a system device\n" ) ;
+			return 1 ;
+		}
+	}
+	/*
+	 * zuluCryptHeaderMatchBackUpHeader() is defined in save_and_restore_luks_header.c
+	 */
+	r = zuluCryptHeaderMatchBackUpHeader( device,header_backup,uid ) ;
+	if( r ){
+		printf( "header backup match the one on the device\n" ) ;
+		return 0 ;
+	}else{
+		printf( "header backup does not match the one on the device\n" ) ;
+		return 1 ;
+	}
+}
+
 static int zuluCryptEXE( struct_opts * clargs,const char * mapping_name,uid_t uid )
 {	
 	switch( clargs->action ){
+		case 'H' : return zuluCryptEXEHeaderMatchBackUpHeader( clargs->device,clargs->key,uid ) ;
 		case 'W' : return zuluCryptEXECheckIfTcrypt( clargs,uid ) ;
 		case 'B' : return zuluCryptEXESaveAndRestoreLuksHeader( clargs,uid,LUKS_HEADER_SAVE ) ;
 		case 'R' : return zuluCryptEXESaveAndRestoreLuksHeader( clargs,uid,LUKS_HEADER_RESTORE ) ;
