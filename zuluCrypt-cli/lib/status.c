@@ -202,16 +202,21 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	const char * z ;
 	const char * type ;
 	const char * device_name ;
+	const char * device_name_1 ;
 	char * path ;
 	int luks = 0 ;
 	int i ;
 	int j ;
 	int k ;
 	
+	ssize_t index ;
+	
 	struct crypt_device * cd;
 	struct crypt_active_device cad ;
 	
+	struct stat st ;
 	string_t p ;
+	string_t q ;
 	
 	if( crypt_init_by_name( &cd,mapper ) != 0 )
 		return NULL ;
@@ -278,9 +283,30 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	
 	z = StringIntToString_1( buffer,SIZE,8 * crypt_get_volume_key_size( cd ) ) ;
 	StringMultipleAppend( p,"\n keysize:\t",z," bits",END );
-
-	StringMultipleAppend( p,"\n device:\t",device_name,END );
-		
+	
+	if( strncmp( device_name,"/dev/mapper/",12 ) == 0 ){
+		/*
+		 * An assumption is made here that the volume is an LVM volume in "/dev/mapper/ABC-DEF"
+		 * format and the path is converted to "/dev/ABC/DEF" format
+		 */
+		q = String( device_name ) ;
+		index = StringLastIndexOfChar( q,'-' ) ;
+		if( index != -1 ){
+			StringSubChar( q,index,'/' ) ;
+			device_name_1 = StringReplaceString( q,"/dev/mapper/","/dev/" ) ;
+			if( stat( device_name_1,&st ) == 0 ){
+				StringMultipleAppend( p,"\n device:\t",device_name_1,END );
+			}else{
+				StringMultipleAppend( p,"\n device:\t",device_name,END );
+			}
+		}else{
+			StringMultipleAppend( p,"\n device:\t",device_name,END );
+		}
+		StringDelete( &q ) ;
+	}else{
+		StringMultipleAppend( p,"\n device:\t",device_name,END );
+	}	
+	
 	if( strncmp( device_name,"/dev/loop",9 ) == 0 ){
 		StringAppend( p,"\n loop:   \t" );
 		path = zuluCryptLoopDeviceAddress( device_name ) ;

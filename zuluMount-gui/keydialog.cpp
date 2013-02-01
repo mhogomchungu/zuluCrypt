@@ -281,7 +281,8 @@ void keyDialog::pbOpen()
 	else
 		part->setMode( QString( "rw" )) ;
 	part->setKeySource( m );
-	part->setMountPoint( m_ui->lineEditMountPoint->text().replace( "\"","\"\"\"" ) );
+	m_point = m_ui->lineEditMountPoint->text().replace( "\"","\"\"\"" ) ;
+	part->setMountPoint( m_point );
 
 	m_working = true ;
 	//savemountpointpath::savePath( m_ui->lineEditMountPoint->text(),QString( "zuluMount-MountPointPath" ) ) ;
