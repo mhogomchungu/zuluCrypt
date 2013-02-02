@@ -22,8 +22,6 @@
 #include "can_build_kwallet.h"
 #include "zuluoptions.h"
 
-#if BUILD_KWALLET
-#include <kwallet.h>
 #include <QObject>
 #include <QString>
 #include <QStringList>
@@ -31,6 +29,8 @@
 #include <QDebug>
 #include <QWidget>
 #include <QApplication>
+
+class KWallet_Handle ;
 
 class kwalletplugin : public QObject
 {
@@ -40,7 +40,6 @@ public:
 	QString getKey( QString uuid ) ;
 	void close( void ) ;
 	bool open( void ) ;
-	static bool hasFunctionality( void ) ;
 	bool setFolder( QString ) ;
 	int readMap( QMap<QString,QString> & ) ;
 	int writeMap( QMap<QString,QString> & ) ;
@@ -49,38 +48,11 @@ public:
 	static bool keyDoesNotExist( QString key ) ;
 	static bool KwalletIsEnabled( void ) ;
 	static QString KDEKwalletDefaultName( void ) ;
+	static bool hasFunctionality( void ) ;
 private:
-	KWallet::Wallet * m_wallet ;
-	QWidget * m_parent ;
-	bool m_walletOpened ;
-};
-#else
-#include <QObject>
-#include <QString>
-#include <QStringList>
-class kwalletplugin : public QObject
-{
-public:
-	kwalletplugin( QWidget * p ){ m_parent = p ; m_walletOpened = false ; }
-	~kwalletplugin(){}
-	QString getKey( QString uuid ){ return uuid ; }
-	void close( void ){}
-	bool open( void ){ return false ; }
-	static bool hasFunctionality( void ) { return false ; }
-	bool setFolder( QString ){ return false ; }
-	int readMap( QMap<QString,QString> & ) { return 0 ; }
-	int writeMap( QMap<QString,QString> & ) { return 0 ; }
-	bool isOpen( void ) { return false ; }
-	static bool folderDoesNotExist( void ){ return false ; }
-	static bool keyDoesNotExist( QString key ){ key = QString( "silence compiler warning" ) ; return true ; }
-	static bool KwalletIsEnabled( void ) { return false ; }
-	static QString KDEKwalletDefaultName( void ) { return QString( "kdewallet" ) ;  }
-
-private:
-	//KWallet::Wallet * m_wallet ;
+	KWallet_Handle * m_walletHandle ;
 	QWidget * m_parent ;
 	bool m_walletOpened ;
 };
 
-#endif
 #endif // KWALLETPLUGIN_H
