@@ -76,7 +76,7 @@ static int zuluExit( int st,int fd,string_t xt )
  */
 static int create_work_directory( string_t * st )
 {
-	const char * temp_path = "/dev/shm/zuluCrypt/" ;
+	const char * temp_path = "/run/zuluCrypt/" ;
 	
 	zuluCryptSecurityGainElevatedPrivileges() ;
 	
@@ -87,11 +87,9 @@ static int create_work_directory( string_t * st )
 			 */
 			 ;
 		}else if( errno == ENOENT ){
-			/*
-			 * one of the parent directory does not exist,assume there is no tmpfs and exit
-			 */
-			zuluCryptSecurityDropElevatedPrivileges() ;
-			return 0 ;
+			mkdir( "/run/",S_IRWXU ) ;
+			chown( "/run/",0,0 ) ;
+			mkdir( temp_path,S_IRWXU ) ;
 		}else{
 			/*
 			 * whatever it is,it cant be good,exit
