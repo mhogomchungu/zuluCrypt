@@ -133,6 +133,7 @@ PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_
 )
 
 install (FILES zuluCrypt.png DESTINATION share/icons)
+#install (FILES zuluCrypt.png DESTINATION share/icons/hicolor/32x32/apps)
 
 # desktop file section
 file(WRITE zuluCrypt.desktop

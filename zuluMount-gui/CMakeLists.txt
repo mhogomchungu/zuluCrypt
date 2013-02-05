@@ -57,6 +57,7 @@ PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_
 )
 
 install ( FILES zuluMount.png DESTINATION share/icons )
+#install ( FILES zuluMount.png DESTINATION share/icons/hicolor/32x32/apps )
 
 # desktop file section
 file( WRITE zuluMount.desktop
