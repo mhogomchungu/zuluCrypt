@@ -226,10 +226,12 @@ QStringList utility::luksEmptySlots( QString volumePath )
 	QByteArray s = N.readAllStandardOutput() ;
 	N.close();
 	int i = 0 ;
-	for ( int j = 0 ; j < s.size() ; j++ )
-		if( s.at( j ) == '1' || s.at( j ) == '3' )
+	for ( int j = 0 ; j < s.size() ; j++ ){
+		if( s.at( j ) == '1' || s.at( j ) == '3' ){
 			i++ ;
-		list << QString::number( i ) ;
+		}
+	}
+	list << QString::number( i ) ;
 	list << QString::number(  s.size() - 1 ) ;
 	return list ;
 }
