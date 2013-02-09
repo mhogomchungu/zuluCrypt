@@ -231,7 +231,7 @@ int cryptfilethread::openMapper( QString path )
 	exe.start( e );
 	exe.waitForFinished();
 
-	int st = exe.exitStatus() ;
+	int st = exe.exitCode() ;
 	exe.close();
 	return st ;
 }
