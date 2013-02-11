@@ -142,7 +142,7 @@ static stringList_t _zuluCryptAddLVMVolumes( stringList_t stl )
 			 * if the converted path is found in "/dev"
 			 */	
 			if( strchr( m_path,'-' ) != NULL ){
-				StringInsertAndDelete( st,5,m_path ) ;
+				StringAppendAt( st,5,m_path ) ;
 				index = StringLastIndexOfChar( st,'-' ) ;
 				m_path = StringSubChar( st,index,'/' ) ;
 				if( stat( m_path,&lvm ) == 0 ){
@@ -194,7 +194,7 @@ stringList_t zuluCryptPartitionList( void )
 		if( index != -1 ){
 			device = StringContent( st ) + index + 1 ;
 			if( _allowedDevice( device ) ){
-				StringInsertAndDelete( st_1,5,device ) ;
+				StringAppendAt( st_1,5,device ) ;
 				stl_1 = StringListAppendString( stl_1,st_1 ) ;
 			}
 		}

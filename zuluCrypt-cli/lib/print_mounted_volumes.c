@@ -124,7 +124,7 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 		mount_point   = StringListContentAt( tmp,4 ) ;
 		file_system   = StringListContentAt( tmp,index+1 ) ;
 		mount_options = StringListContentAt( tmp,index+3 ) ;
-		if( strncmp( device,"/dev/loop",9 ) == 0 ){	
+		if( strncmp( device,"/dev/loop",9 ) == 0 ){
 			/*
 			 * zuluCryptLoopDeviceAddress() is defined in ./status.c
 			 */

@@ -197,7 +197,7 @@ void zuluCryptClearDeadMappers( uid_t uid )
 	while( ( entry = readdir( dir ) ) != NULL ){
 		
 		if( strncmp( entry->d_name,m,len ) == 0 ){
-			e = StringInsertAndDelete( z,len1,entry->d_name ) ;
+			e = StringAppendAt( z,len1,entry->d_name ) ;
 			if( crypt_init_by_name( &cd,e ) == 0 ){
 				if( crypt_get_device_name( cd ) == NULL ){
 					remove_mapper( e,stl,uid ) ;

@@ -625,7 +625,7 @@ const char * StringInsertChar( string_t st,size_t x,char s )
 	return StringInsertString( st,x,c ) ;
 }
 
-const char * StringInsertAndDelete( string_t st,size_t x,const char * s ) 
+const char * StringAppendAt( string_t st,size_t x,const char * s ) 
 {
 	size_t len ;
 	char * c   ; 
