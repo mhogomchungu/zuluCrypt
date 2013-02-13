@@ -26,8 +26,9 @@ static int zuluExit( int result,string_t st,int fd_loop,int fd_path )
 {
 	if( st == 0 ){
 		StringDelete( &st ) ;
-		if( fd_loop != -1 )
+		if( fd_loop != -1 ){
 			close( fd_loop ) ;
+		}
 	}
 	if( fd_path != -1 ){
 		close( fd_path ) ;
@@ -40,10 +41,8 @@ char * zuluCryptLoopDeviceAddress( const char * device )
 	int fd ;
 	char * path ;
 	struct loop_info64 l_info ;
-	string_t xt ;
 	string_t st = String( "/sys/block/" ) ;
-	StringMultipleAppend( st,device + 5,"/loop/backing_file",END ) ;
-	xt = StringGetFromVirtualFile( StringContent( st ) ) ;
+	string_t xt = StringGetFromVirtualFile( StringMultipleAppend( st,device + 5,"/loop/backing_file",END ) ) ;
 	StringDelete( &st ) ;
 	if( xt == StringVoid ){
 		memset( &l_info,'\0',sizeof( struct loop_info64 ) ) ;
@@ -70,7 +69,7 @@ char * zuluCryptGetFileNameFromFileDescriptor( int fd )
 	StringAppendInt( xt,fd ) ;
 	c = zuluCryptRealPath( StringContent( xt ) ) ;
 	StringDelete( &xt ) ;
-	if( strncmp( c,"/dev/mapper/",12 ) == 0 ){
+	if( StringPrefixMatch( c,"/dev/mapper/",12 ) ){
 		/*
 		 * An assumption is made here that the volume is an LVM volume in "/dev/mapper/ABC-DEF"
 		 * format and the path is converted to "/dev/ABC/DEF" format

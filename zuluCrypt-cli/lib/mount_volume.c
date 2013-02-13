@@ -124,8 +124,8 @@ stringList_t zuluCryptGetFstabList( void )
 	for( ; it != end ; it++ ){
 		xt = *it ;
 		entry = StringContent( xt ) ;
-		if( strncmp( entry,"/dev/",5 ) == 0 ){
-			if( strncmp( entry,"/dev/root",9 ) == 0 ){
+		if( StringPrefixMatch( entry,"/dev/",5 ) ){
+			if( StringPrefixMatch( entry,"/dev/root",9 ) ){
 				/*
 				 * zuluCryptResolveDevRoot() is defined in ./print_mounted_volumes.c 
 				 */
@@ -134,7 +134,7 @@ stringList_t zuluCryptGetFstabList( void )
 					StringReplaceString( xt,"/dev/root",ac ) ;
 					free( ac ) ;
 				}
-			}else if( strncmp( entry,"/dev/disk/by",12 ) == 0 ){
+			}else if( StringPrefixMatch( entry,"/dev/disk/by",12 ) ){
 				ac = _evaluate_tag_by_id( xt ) ;
 				if( ac != NULL ){
 					index = StringIndexOfChar( xt,0,' ' ) ;
@@ -144,7 +144,7 @@ stringList_t zuluCryptGetFstabList( void )
 					}
 					free( ac ) ;
 				}
-			}else if( strncmp( entry,"/dev/mapper/",12 ) == 0 ){
+			}else if( StringPrefixMatch( entry,"/dev/mapper/",12 ) ){
 				/*
 				 * An assumption is made here that the volume is an LVM volume in "/dev/mapper/ABC-DEF"
 				 * format and the path is converted to "/dev/ABC/DEF" format
@@ -155,7 +155,7 @@ stringList_t zuluCryptGetFstabList( void )
 					StringReplaceString( xt,"/dev/mapper/","/dev/" ) ;
 				}
 			}
-		}else if( strncmp( entry,"UUID=",5 ) == 0 ){
+		}else if( StringPrefixMatch( entry,"UUID=",5 ) ){
 			entry = StringRemoveString( xt,"\"" ) ;
 			ac = _evaluate_tag( "UUID",entry + 5,&cache ) ;
 			if( ac != NULL ){
@@ -166,7 +166,7 @@ stringList_t zuluCryptGetFstabList( void )
 				}
 				free( ac ) ;
 			}
-		}else if( strncmp( entry,"LABEL=",6 ) == 0 ){
+		}else if( StringPrefixMatch( entry,"LABEL=",6 ) ){
 			entry = StringRemoveString( xt,"\"" ) ;
 			ac = _evaluate_tag( "LABEL",entry + 6,&cache ) ;
 			if( ac != NULL ){
@@ -220,17 +220,17 @@ stringList_t zuluCryptGetFstabEntryList( const char * device )
 
 static inline int fs_family( const char * fs )
 {
-	if(     strcmp( fs,"ntfs" ) == 0  || 
-		strcmp( fs,"vfat" ) == 0  || 
-		strcmp( fs,"fat" ) == 0   ||
-		strcmp( fs,"msdos" ) == 0 ||
-		strcmp( fs,"umsdos" ) == 0 )
+	if(     StringsAreEqual( fs,"ntfs" ) || 
+		StringsAreEqual( fs,"vfat" ) || 
+		StringsAreEqual( fs,"fat" )  ||
+		StringsAreEqual( fs,"msdos" ) ||
+		StringsAreEqual( fs,"umsdos" ) )
 		return 1 ;
 	
-	if( strcmp( fs,"affs" ) == 0 || strcmp( fs,"hfs" ) == 0 )
+	if( StringsAreEqual( fs,"affs" ) || StringsAreEqual( fs,"hfs" ) )
 		return 2 ;
 	
-	if( strcmp( fs,"iso9660" ) == 0 || strcmp( fs,"udf" ) == 0 )
+	if( StringsAreEqual( fs,"iso9660" ) || StringsAreEqual( fs,"udf" ) )
 		return 3 ;
 	
 	return 0 ;
@@ -319,12 +319,12 @@ static inline string_t set_mount_options( m_struct * mst )
 		StringPrepend( opt,"rw," ) ;
 	}
 	
-	while( StringIndexOfString( opt,0,",," ) >= 0 )
+	while( StringIndexOfString( opt,0,",," ) >= 0 ){
 		StringReplaceString( opt,",,","," );
-	
-	if( StringEndsWithChar( opt,',' ) )
+	}
+	if( StringEndsWithChar( opt,',' ) ){
 		StringRemoveRight( opt,1 ) ;
-	
+	}
 	mst->opts = StringContent( opt ) ;
 	return opt;
 }
@@ -385,12 +385,15 @@ static inline int paths_are_sane( const char * device,const char * original_devi
 	if( device ){;}
 	if( original_device ){;}
 	
-	if( chdir( m_point ) != 0 )
+	if( chdir( m_point ) != 0 ){
 		return 0 ;
-	if( stat( ".",&st ) != 0 )
+	}
+	if( stat( ".",&st ) != 0 ){
 		return 0 ;
-	if( uid != st.st_uid )
+	}
+	if( uid != st.st_uid ){
 		return 0 ;
+	}
 	return 1 ;
 }
 
@@ -404,8 +407,9 @@ static inline int mount_is_were_we_expect_it_to_be( const m_struct * mst,int h )
 	char * f ;
 	int result = -1 ;
 	
-	if( h != 0 )
+	if( h != 0 ){
 		return h ;
+	}
 		
 	/*
 	 * zuluCryptGetMountPointFromPath() is defined in ./print_mounted_volumes.c
@@ -432,9 +436,9 @@ static inline int mount_is_were_we_expect_it_to_be( const m_struct * mst,int h )
 				/*
 				 * Dont delete the path because we dont know what path we got
 				 * rmdir( e ) ;
-				 */				
+				 */
 				free( e ) ;
-			}	
+			}
 		}
 		free( f ) ;
 	}
@@ -447,16 +451,17 @@ static inline int mount_ntfs( const m_struct * mst )
 	process_t p ;
 	string_t st ;
 	const char * opts ;
-	if( !paths_are_sane( mst->device,mst->original_device,mst->m_point,mst->uid ) ) 
+	if( !paths_are_sane( mst->device,mst->original_device,mst->m_point,mst->uid ) ) {
 		return -1 ;
+	}
 	p = Process( ZULUCRYPTmount ) ;
 	st = String( "" ) ;	
 	st = _mount_options( mst->m_flags,&st ) ;
-	if( mst->m_flags & MS_RDONLY )
+	if( mst->m_flags & MS_RDONLY ){
 		StringPrepend( st,"ro" ) ;
-	else
+	}else{
 		StringPrepend( st,"rw" ) ;
-	
+	}
 	opts = StringReplaceString( st,",,","," );
 	
 	ProcessSetArgumentList( p,"-t","ntfs-3g","-o",opts,mst->device,mst->m_point,ENDLIST ) ;
@@ -577,8 +582,9 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 		e = zuluCryptLoopDeviceAddress( mst.device ) ;
 		*loop = StringInherit( &e ) ;
 		mst.original_device = StringContent( *loop ) ;
-		if( mst.original_device == NULL )
+		if( mst.original_device == NULL ){
 			return zuluExit( -1,stl ) ;
+		}
 	}
 		
 	if( StringEqual( fs,"ntfs" ) ){

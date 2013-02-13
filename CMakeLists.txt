@@ -25,15 +25,9 @@ set( LIB_PLUGIN_VERSION "1.0.0" )
 file( WRITE ${PROJECT_BINARY_DIR}/version.h "
 #ifndef ZULUCRYPT_VERSION
 #define ZULUCRYPT_VERSION
-#define VERSION_STRING \"version  : ${PGR_VERSION}\\ncopyright: 2011,2012 Ink Francis,mhogomchungu@gmail.com\\nlicense  : GPLv2+\"
+#define VERSION_STRING \"version  : ${PGR_VERSION}\\ncopyright: 2011-2013 Ink Francis,mhogomchungu@gmail.com\\nlicense  : GPLv2+\"
 #endif
 \n" )
-
-if( UDEVSUPPORT STREQUAL "true" )
-	file( WRITE ${PROJECT_BINARY_DIR}/udev_support.h "\n#define NO_UDEV_SUPPORT 0\n")
-else( UDEVSUPPORT STREQUAL "true" )
-	file( WRITE ${PROJECT_BINARY_DIR}/udev_support.h "\n#define NO_UDEV_SUPPORT 1\n")
-endif( UDEVSUPPORT STREQUAL "true" )
 
 if( NOT BLKID_FOUND )
 	message ( FATAL_ERROR "ERROR: could not find blkid package" )
@@ -115,6 +109,9 @@ file( WRITE  ${PROJECT_BINARY_DIR}/can_build_kwallet.h "\n#define BUILD_KWALLET 
 if( KDE4_FOUND )
 	add_definitions( -I${KDE4_INCLUDE_DIR} )
 	find_file( kwallet_header kwallet.h )
+	#
+	# alternative way to set the wallet library is by using -L${KDE4_LIB_DIR} -lkwalletbackend
+	#
 	find_library( kwallet_library libkwalletbackend.so )
 	if( kwallet_library )
 		if( kwallet_header )
@@ -166,10 +163,6 @@ endif( KEYRINGSUPPORT )
 if( BUILDPWQUALITY )
 	message( STATUS "pwquality library support to give passphrase strength measure" )
 endif( BUILDPWQUALITY )
-
-if( UDEVSUPPORT STREQUAL "true" )
-	message ( STATUS "udev will be consulted when deciding if a volume is system or not" )
-endif( UDEVSUPPORT STREQUAL "true" )
 	
 message ( STATUS "---------------------------------------------------------------------------" )		
 message ( STATUS "---------------------------------------------------------------------------" )
@@ -191,12 +184,30 @@ if( NOT BUILDPWQUALITY )
 	message( STATUS "pwquality library used to measure passphrase strength" )
 	message( STATUS "sources can be found at: https://fedorahosted.org/libpwquality/" )	
 endif( NOT BUILDPWQUALITY )
-message ( STATUS "---------------------------------------------------------------------------" )
 
-message ( STATUS "\n\n----------------------------IMPORTANT!!!!!---------------------------------" )
-message ( STATUS "Please read section 5.0 of the FAQ located at: http://code.google.com/p/zulucrypt/wiki/FAQ" )
-message ( STATUS "before continuing.It very important to make sure all partitions that are to be considered system" )
-message ( STATUS "have an entry in fstab before continuing.If you are a distributor,then please make this known to your users\n" )
+message ( STATUS "---------------------------------------------------------------------------" )
+message ( STATUS "\n\n\n" )
+
+if( UDEVSUPPORT STREQUAL "true" )
+	
+	file( WRITE ${PROJECT_BINARY_DIR}/udev_support.h "\n#define NO_UDEV_SUPPORT 0\n")
+	
+	message ( STATUS "udev will be consulted when deciding if a volume is system or not" )
+	message ( STATUS "if a partition does not have an entry in fstab,udev will be consulted before a partition is considered non system" )
+	message ( STATUS "udev has a bad habit of identifiying partitions as internal when they are not,please read its documentation" )
+	message ( STATUS "when it happens" )	
+else( UDEVSUPPORT STREQUAL "true" )
+	
+	file( WRITE ${PROJECT_BINARY_DIR}/udev_support.h "\n#define NO_UDEV_SUPPORT 1\n")
+	
+	message ( STATUS "udev will NOT be consulted when deciding if a volume is system or not." )	
+	message ( STATUS "This means ONLY partitions with an entry in fstab will be considered as system partition" )
+	message ( STATUS "Please read section 5.0 of the FAQ located at: http://code.google.com/p/zulucrypt/wiki/FAQ" )
+	message ( STATUS "before continuing.It is very important to make sure all partitions that are to be considered system" )
+	message ( STATUS "have an entry in fstab before continuing." )
+	message ( STATUS "Please make this known to your users if you are a distributor and udev support is off\n" )	
+endif( UDEVSUPPORT STREQUAL "true" )
+
 
 install ( FILES zuluCrypt-cli.1.bz2 DESTINATION share/man/man1 )
 install ( FILES zuluCrypt-test.1.bz2 DESTINATION share/man/man1 )

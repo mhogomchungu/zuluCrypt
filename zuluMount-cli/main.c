@@ -30,33 +30,31 @@ void zuluMountPrintDeviceProperties_1( string_t,uid_t ) ;
  * All functions with "EXE" in their names are defined somewhere in ../zuluCrypt-cli/bin 
  */
 
-static int _mount_get_opts( int argc,char * argv[],const char ** action,const char ** device,
-			   const char ** m_point, const char ** fs_mode,const char ** key,
-			    const char ** key_source,int * mpo,const char ** fs_opts )
-{
+static int _mount_get_opts( int argc,char * argv[],ARGS * args ) 
+{	
 	int c ;
 	while ( ( c = getopt( argc,argv,"LntSshlPmuDd:z:e:y:p:f:G:" ) ) != -1 ) {
 		switch( c ){
-			case 'n' : *mpo     = 1      ; break ;
-			case 'D' : *action  = "-D"   ; break ;
-			case 't' : *action  = "-t"   ; break ;
-			case 's' : *action  = "-s"   ; break ;
-			case 'S' : *action  = "-S"   ; break ;
-			case 'l' : *action  = "-l"   ; break ;
-			case 'L' : *action  = "-L"   ; break ;
-			case 'P' : *action  = "-P"   ; break ;
-			case 'm' : *action  = "-m"   ; break ;
-			case 'u' : *action  = "-u"   ; break ;
-			case 'd' : *device  = optarg ; break ;
-			case 'z' : *m_point = optarg ; break ;
-			case 'e' : *fs_mode = optarg ; break ;
-			case 'y' : *fs_opts = optarg ; break ;
-			case 'p' : *key     = optarg ; 
-				   *key_source = "-p"; break ;
-			case 'f' : *key     = optarg ;
-				   *key_source = "-f"; break ;
-			case 'G' : *key     = optarg ;
-				   *key_source = "-G"; break ;
+			case 'n' : args->mpo     = 1      ; break ;
+			case 'D' : args->action  = "-D"   ; break ;
+			case 't' : args->action  = "-t"   ; break ;
+			case 's' : args->action  = "-s"   ; break ;
+			case 'S' : args->action  = "-S"   ; break ;
+			case 'l' : args->action  = "-l"   ; break ;
+			case 'L' : args->action  = "-L"   ; break ;
+			case 'P' : args->action  = "-P"   ; break ;
+			case 'm' : args->action  = "-m"   ; break ;
+			case 'u' : args->action  = "-u"   ; break ;
+			case 'd' : args->device  = optarg ; break ;
+			case 'z' : args->m_point = optarg ; break ;
+			case 'e' : args->m_opts  = optarg ; break ;
+			case 'y' : args->fs_opts = optarg ; break ;
+			case 'p' : args->key     = optarg ; 
+				   args->key_source = "-p"; break ;
+			case 'f' : args->key     = optarg ;
+				   args->key_source = "-f"; break ;
+			case 'G' : args->key     = optarg ;
+				   args->key_source = "-G";break ;
 			default  : return -1 ;
 		}
 	}
@@ -66,14 +64,13 @@ static int _mount_get_opts( int argc,char * argv[],const char ** action,const ch
 
 int _zuluExit( int st,string_t z,char * q,const char * msg )
 {
-	if( q != NULL )
+	if( q != NULL ){
 		free( q ) ;
-	
-	StringDelete( &z ) ;
-	
-	if( msg != NULL )
+	}
+	StringDelete( &z ) ;	
+	if( msg != NULL ){
 		printf( "%s\n",msg ) ;
-	
+	}
 	return st ;
 }
 
@@ -82,9 +79,9 @@ static int _zuluExit_2( int st,stringList_t z,stringList_t q,const char * msg )
 	StringListDelete( &q ) ;
 	StringListDelete( &z ) ;
 	
-	if( msg != NULL )
+	if( msg != NULL ){
 		printf( "%s\n",msg ) ;
-	
+	}
 	return st ;
 }
 
@@ -93,12 +90,10 @@ int _zuluExit_1( int st,stringList_t z,char * q,const char * msg )
 	if( q != NULL ){
 		free( q ) ;
 	}
-	
 	StringListDelete( &z ) ;
-	
-	if( msg != NULL )
+	if( msg != NULL ){
 		printf( "%s\n",msg ) ;
-	
+	}
 	return st ;
 }
 
@@ -129,7 +124,7 @@ int zuluMountVolumeStatus( const char * device,const char * UUID,uid_t uid )
 	const char * e ;
 	
 	if( UUID == NULL ){
-		if( strncmp( device,"/dev/loop",9 ) == 0 ){
+		if( StringPrefixEqual( device,"/dev/loop" ) ){
 			/*
 			* zuluCryptLoopDeviceAddress() is defined in ../zuluCrypt-cli/lib/create_loop_device.c
 			*/
@@ -148,7 +143,7 @@ int zuluMountVolumeStatus( const char * device,const char * UUID,uid_t uid )
 		p = String( UUID ) ;
 		StringRemoveString( p,"\"" ) ;
 		e = StringSubChar( p,4,'-' ) ;
-		if( strncmp( device,"/dev/loop",9 ) == 0 ){
+		if( StringPrefixEqual( device,"/dev/loop" ) ){
 			/*
 			 * zuluCryptLoopDeviceAddress() is defined in ../zuluCrypt-cli/lib/create_loop_device.c
 			 */
@@ -178,7 +173,7 @@ static int _zuluMountPrintDeviceProperties( const char * device,const char * UUI
 	const char * e ;
 	
 	if( UUID == NULL ){
-		if( strncmp( device,"/dev/loop",9 ) == 0 ){
+		if( StringPrefixEqual( device,"/dev/loop" ) ){
 			/*
 			* zuluCryptLoopDeviceAddress() is defined in ../zuluCrypt-cli/lib/create_loop_device.c
 			*/
@@ -243,13 +238,14 @@ static int _zuluPartitionHasCryptoFs( const char * device )
 	*/
 	zuluCryptSecurityGainElevatedPrivileges() ;
 	
-	if( strncmp( device,"/dev/loop",9 ) == 0 ){
+	if( StringPrefixEqual( device,"/dev/loop" ) ){
 		/*
 		 * zuluCryptLoopDeviceAddress() is defined in ../zuluCrypt-cli/lib/create_loop_device.c
 		 */
 		e = zuluCryptLoopDeviceAddress( device ) ;
-		if( e != NULL )
+		if( e != NULL ){
 			device = e ;
+		}
 	}
 	/*
 	 * this function is defined in ../zuluCrypt-cli/lib/mount_volume.c
@@ -289,7 +285,7 @@ static int _zuluMountPrintVolumeDeviceName( const char * device )
 	 */
 	zuluCryptSecurityGainElevatedPrivileges() ;
 	
-	if( strncmp( device,"/dev/loop",9 ) == 0 ){
+	if( StringPrefixEqual( device,"/dev/loop" ) ){
 		/*
 		 * Dont see how we would get in here but lets keep it just in case
 		 */
@@ -330,44 +326,45 @@ static int _zuluMountPrintVolumeDeviceName( const char * device )
 	}
 }
 
-static int _zuluMountExe( const char * device,const char * UUID,const char * action,const char * m_point,
-			  const char * m_opts,const char * fs_opts,uid_t uid,const char * key,const char * key_source,
-			  int mount_point_option,stringList_t stx )
+static int _zuluMountExe( ARGS * args )
 {
-	if( strcmp( action,"-D" ) == 0 )
-		return _zuluMountPrintVolumeDeviceName( device ) ;
+	const char * device = args->device ;
+	const char * action = args->action ;
 	
-	if( strcmp( action,"-L" ) == 0 )
-		return _zuluMountPrintDeviceProperties( device,UUID,uid ) ;
-	
-	if( strcmp( action,"-s" ) == 0 )
-		return zuluMountVolumeStatus( device,UUID,uid ) ;
-	
-	if( strcmp( action,"-m" ) == 0 ){
-		if( _zuluPartitionHasCryptoFs( device ) ){
+	if( StringsAreEqual( action,"-D" ) ){
+		return _zuluMountPrintVolumeDeviceName( args->device ) ;
+	}
+	if( StringsAreEqual( action,"-L" ) ){
+		return _zuluMountPrintDeviceProperties( args->device,args->uuid,args->uid ) ;
+	}
+	if( StringsAreEqual( action,"-s" ) ){
+		return zuluMountVolumeStatus( args->device,args->uuid,args->uid ) ;
+	}
+	if( StringsAreEqual( action,"-m" ) ){
+		if( _zuluPartitionHasCryptoFs( args->device ) ){
 			/*
 			 * zuluMountMount() is defined in crypto_mount.c
 			 */
-			return zuluMountCryptoMount( device,UUID,m_opts,uid,key,key_source,m_point,mount_point_option,stx ) ;
+			return zuluMountCryptoMount( args ) ;
 		}else{
 			/*
 			 * zuluMountMount() is defined in mount.c
 			 */
-			return zuluMountMount( device,m_point,m_opts,fs_opts,uid,mount_point_option ) ;
+			return zuluMountMount( args ) ;
 		}
 	}
 	
-	if( strcmp( action,"-u" ) == 0 ){
+	if( StringsAreEqual( action,"-u" ) ){
 		if( _zuluPartitionHasCryptoFs( device ) ){
 			/*
 			 * zuluMountMount() is defined in crypto_umount.c
 			 */
-			return zuluMountCryptoUMount( device,UUID,uid,mount_point_option ) ;
+			return zuluMountCryptoUMount( args ) ;
 		}else{
 			/*
 			 * zuluMountMount() is defined in umount.c
 			 */
-			return zuluMountUMount( device,uid,m_opts,mount_point_option ) ;
+			return zuluMountUMount( args ) ;
 		}
 	}
 	
@@ -376,12 +373,13 @@ static int _zuluMountExe( const char * device,const char * UUID,const char * act
 
 static int _mount_help()
 {
+	const char * doc4 ;
 	const char * doc3 ;
 	const char * doc2 ;
 	const char * doc1 = "\
 options:\n\
 -m -- mount a volume : arguments: -d partition_path -z mount_point -e mode(rw/ro)\n\
-      -- additional arguments for crypto_LUKS and crypto_PLAIN volume, -p passphrase/-f keyfile\n";
+      -- additional arguments for crypto_LUKS,crypto_PLAIN,crypto_TCRYPT volumes, -p passphrase/-f keyfile\n";
 	
 	doc2 = "\
 -u -- unmount a partition: arguments: -d partition_path\n\
@@ -392,7 +390,14 @@ options:\n\
 -L -- must be used with -d,print properties of a partition specified by d option\n\
 -P -- print a list of all partitions\n\
 -D -- get a device node address from its mapper path( mapper paths are usually located in /dev/mapper ). Required argument: -d\n";
-	printf( "%s%s%s",doc1,doc2,doc3 ) ;
+	
+      doc4= "\
+examples:\n\
+mount a volume  : zuluMount-cli -m -d /dev/sdc1\n\
+unmount a volume: zuluMount-cli -u -d /dev/sdc1\n\
+mount and encrypted volume with a key \"xyz\" : zuluMount-cli -m -d /dev/sdc2 -p xyz\n" ;
+      
+      printf( "%s%s%s%s",doc1,doc2,doc3,doc4 ) ;
 	
 	return 201 ;
 }
@@ -403,10 +408,8 @@ static void ExitOnMemoryExaustion( void )
 	exit( 1 ) ;
 }
 
-static int _zuluMountDoAction( const char * device,const char * UUID,const char * action,const char * m_point,
-			      const char * m_opts,uid_t uid,const char * key,const char * key_source,
-			      int mount_point_option,const char * fs_opts,stringList_t stx )
-{
+static int _zuluMountDoAction( ARGS * args )
+{	
 	int fd = -1 ;
 	int fd1 = -1 ;
 	int status ;
@@ -416,7 +419,7 @@ Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The de
 	/*
 	 * zuluCryptGetDeviceFileProperties is defined in ../zuluCrypt-lib/file_path_security.c
 	 */
-	switch( zuluCryptGetDeviceFileProperties( device,&fd,&fd1,&dev,uid ) ){
+	switch( zuluCryptGetDeviceFileProperties( args->device,&fd,&fd1,&dev,args->uid ) ){
 		case 0 : break ;
 		case 1 : printf( "ERROR: devices in /dev/ with user access permissions are not suppored\n" ) ;			return 220 ;
 		case 2 : printf( "ERROR: given path is a directory\n" ) ;  					 		return 221 ;
@@ -429,7 +432,7 @@ Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The de
 		printf( "ERROR: a non supported device encountered,device is missing or permission denied\n" ) ;
 		return 224 ;
 	}else{
-		status = _zuluMountExe( dev,UUID,action,m_point,m_opts,fs_opts,uid,key,key_source,mount_point_option,stx ) ;
+		status = _zuluMountExe( args ) ;
 	}
 	
 	free( dev ) ;
@@ -451,15 +454,7 @@ static void _privilegeEvelationError( const char * msg )
 
 int main( int argc,char * argv[] )
 {	
-	const char * action     = NULL ;
-	const char * dev        = NULL ;
-	const char * m_point    = NULL ;
-	const char * m_opts     = NULL ;
-	const char * key        = NULL ;
-	const char * key_source = NULL ;
-	const char * key_argv   = NULL ;
-	const char * fs_opts    = NULL ;
-	int mount_point_option = 0 ;
+	char * action ;
 	char * device ;
 	string_t * k ;
 	stringList_t stl ;
@@ -468,6 +463,33 @@ int main( int argc,char * argv[] )
 	
 	uid_t uid = getuid() ;
 	gid_t gid = getgid() ;
+	
+	/*
+	 * ARGS structure is declared in ./includes.h
+	 */
+	ARGS args ;
+	
+	if( argc < 2 ){
+		return _mount_help() ;
+	}
+	if( argc == 2 ){
+		action = argv[ 1 ] ;
+		if ( StringsAreEqual( action,"-h" ) || 
+			StringsAreEqual( action,"--help" ) || 
+			StringsAreEqual( action,"-help" ) ){
+			return _mount_help() ;
+		}
+		if ( StringsAreEqual( action,"-v" ) || 
+			StringsAreEqual( action,"-version" ) || 
+			StringsAreEqual( action,"--version" ) ){
+			printf( "%s\n",zuluCryptVersion() );
+			return 0 ;
+		}
+	}
+	
+	memset( &args,'\0',sizeof( args ) ) ;
+	
+	args.uid = uid ;
 	
 	/*
 	 * setgroups() requires seteuid(0) ;
@@ -501,23 +523,13 @@ int main( int argc,char * argv[] )
 	 * zuluCryptSecurityDropElevatedPrivileges() is defined in ../zuluCrypt-cli/bin/security.c
 	 */
 	zuluCryptSecurityDropElevatedPrivileges() ;
-	
-	if( argc < 2 )
-		return _mount_help() ;
-	
-	if( argc == 2 ){
-		action = argv[ 1 ] ;
-		if ( strcmp( action,"-h" ) == 0 || strcmp( action,"--help" ) == 0 || strcmp( action,"-help" ) == 0 ){
-			return _mount_help() ;
-		}
-		if ( strcmp( action,"-v" ) == 0 || strcmp( action,"-version" ) == 0 || strcmp( action,"--version" ) == 0 ){
-			printf( "%s\n",zuluCryptVersion() );
-			return 0 ;
-		}
-	}
-	
+		
 	StringExitOnMemoryExaustion( &ExitOnMemoryExaustion ) ;
 	StringListExitOnMemoryExaustion( &ExitOnMemoryExaustion ) ;
+	
+	if( _mount_get_opts( argc,argv,&args ) != 0 ){
+		return _mount_help() ;
+	}
 	
 	stl = StringListInit() ; 
 	/*
@@ -525,66 +537,68 @@ int main( int argc,char * argv[] )
 	 */
 	zuluCryptSecuritySanitizeTheEnvironment( global_variable_user_uid,&stx ) ;
 	
-	if( _mount_get_opts( argc,argv,&action,&dev,&m_point,&m_opts,&key_argv,&key_source,&mount_point_option,&fs_opts ) != 0 )
-		return _mount_help() ;
+	args.env = StringListStringArray( stx ) ;
 	
-	if( key_argv != NULL ){
+	if( args.key != NULL ){
 		k = StringListAssign( stl ) ;
-		*k = String( key_argv ) ;
-		strncpy( ( char * ) key_argv,"x",StringLength( *k ) ) ;
-		key = StringContent( *k ) ;
+		*k = String( args.key ) ;
+		strncpy( ( char * ) args.key,"x",StringLength( *k ) ) ;
+		args.key = StringContent( *k ) ;
 	}
 	
-	if( action == NULL )
+	if( args.action == NULL ){
 		return _zuluExit_2( 212,stl,stx,"ERROR: action not specified" ) ;
-	
-	if( strcmp( action,"-S" ) == 0 ){
+	}
+	if( StringsAreEqual( args.action,"-S" ) ){
 		/*
 		 * zuluCryptPrintPartitions() is defined in ../zuluCrypt-cli/bin/partitions.c
 		 * it printf() devices with entries in "/etc/fstab","/etc/crypttab", and "/etc/zuluCrypttab"
 		 */
 		return _zuluExit_2( zuluCryptPrintPartitions( SYSTEM_PARTITIONS,0 ),stl,stx,NULL ) ;
 	}
-		
-	if( strcmp( action,"-l" ) == 0 )
+	
+	if( StringsAreEqual( args.action,"-l" ) ){
 		return _zuluExit_2( _zuluMountMountedList( uid ),stl,stx,NULL ) ;
-	
-	if( strcmp( action,"-P" ) == 0 )
+	}
+	if( StringsAreEqual( args.action,"-P" ) ){
 		return _zuluExit_2( _zuluMountDeviceList( uid ),stl,stx,NULL ) ;
-	
-	if( strcmp( action,"-h" ) == 0 )
+	}
+	if( StringsAreEqual( args.action,"-h" ) ){
 		return _zuluExit_2( _mount_help(),stl,stx,NULL ) ;
-	
-	if( dev == NULL )
+	}
+	if( args.device == NULL ){
 		return _zuluExit_2( 213,stl,stx,"ERROR: device argument missing" ) ;
-		
-	if( m_opts == NULL )
-		m_opts = "rw" ;
-	
+	}
+	if( args.m_opts == NULL ){
+		args.m_opts = "rw" ;
+	}
 	/*
 	 * zuluCryptSecurityEvaluateDeviceTags() is defined in ../zuluCrypt-cli/bin/security.c
 	 */
-	if( strncmp( dev,"UUID=",5 ) == 0 ){
-		device = zuluCryptSecurityEvaluateDeviceTags( "UUID",dev + 5 ) ;
+	if( StringPrefixEqual( args.device,"UUID=" ) ){
+		device = zuluCryptSecurityEvaluateDeviceTags( "UUID",args.device + 5 ) ;
 		if( device != NULL ){
-			status = _zuluMountDoAction( device,dev,action,m_point,m_opts,uid,key,key_source,mount_point_option,fs_opts,stx ) ;
+			args.uuid = args.device ;
+			args.device = device ;
+			status = _zuluMountDoAction( &args ) ;
 			free( device ) ;
 		}else{
 			printf( "could not resolve UUID\n" ) ;
 			status = 214 ;
 		}
-	}else if( strncmp( dev,"LABEL=",6 ) == 0 ){
-		device = zuluCryptSecurityEvaluateDeviceTags( "LABEL",dev + 6 ) ;
+	}else if( StringPrefixEqual( args.device,"LABEL=" ) ){
+		device = zuluCryptSecurityEvaluateDeviceTags( "LABEL",args.device + 6 ) ;
 		if( device != NULL ){
-			status = _zuluMountDoAction( device,NULL,action,m_point,m_opts,uid,key,key_source,mount_point_option,fs_opts,stx ) ;
+			args.device = device ;
+			status = _zuluMountDoAction( &args ) ;
 			free( device ) ;
 		}else{
 			printf( "could not resolve LABEL\n" ) ;
 			status = 215 ;
 		}
 	}else{
-		status = _zuluMountDoAction( dev,NULL,action,m_point,m_opts,uid,key,key_source,mount_point_option,fs_opts,stx ) ;
+		status = _zuluMountDoAction( &args ) ;
 	}
-			
+	
 	return _zuluExit_2( status,stl,stx,NULL ) ;
 }

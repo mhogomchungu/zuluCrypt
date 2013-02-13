@@ -31,28 +31,30 @@ static int _open_luks( const char * device,const char * mapper,const char * mode
 	uint32_t flags = 0;
 	int st ;
 	
-	if( zuluCryptPathIsNotValid( device ) )
+	if( zuluCryptPathIsNotValid( device ) ){
 		return 3 ;
-	
-	if( crypt_init( &cd,device ) != 0 )
+	}
+	if( crypt_init( &cd,device ) != 0 ){
 		return 2 ;
-	
-	if( crypt_load( cd,NULL,NULL ) != 0 )
+	}
+	if( crypt_load( cd,NULL,NULL ) != 0 ){
 		return zuluExit( 2,cd ) ;
-	
-	if( strstr( mode,"ro" ) != NULL )
+	}
+	if( StringHasComponent( mode,"ro" ) ){
 		flags = 1 ;
-	else
+	}else{
 		flags = 0 ;
+	}
 	
 	st = crypt_activate_by_passphrase( cd,mapper,CRYPT_ANY_SLOT,pass,pass_size,flags ) ;
 	
-	if( st >= 0 )
+	if( st >= 0 ){
 		return zuluExit( 0,cd ) ;
-	else if( st == -1 )
+	}else if( st == -1 ){
 		return zuluExit( 1,cd ) ;
-	else
+	}else{
 		return zuluExit( 2,cd ) ;
+	}
 }
 
 int zuluCryptOpenLuks( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
@@ -61,10 +63,10 @@ int zuluCryptOpenLuks( const char * device,const char * mapper,const char * mode
 	string_t st ;
 	int fd ;
 	int r ;
-	if( strncmp( device,"/dev/",5 ) == 0 ){
+	if( StringPrefixMatch( device,"/dev/",5 ) ){
 		return _open_luks( device,mapper,mode,pass,pass_size ) ;
 	}else{
-		if( strstr( mode,"ro" ) != NULL ){
+		if( StringHasComponent( mode,"ro" ) ){
 			lmode = O_RDONLY ;
 		}else{
 			lmode = O_RDWR ;

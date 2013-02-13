@@ -97,12 +97,14 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 	StringListIterator it ;
 	StringListIterator end;
 	string_t st = StringGetFromVirtualFile( "/proc/self/mountinfo" ) ;
-	if( st == StringVoid )
+	if( st == StringVoid ){
 		return StringListVoid ;
+	}
 	stl = StringListStringSplit( st,'\n' ) ;
 	StringDelete( &st ) ;
-	if( stl == StringListVoid )
+	if( stl == StringListVoid ){
 		return StringListVoid ;
+	}
 	it  = StringListBegin( stl ) ;
 	end = StringListEnd( stl )   ;
 	st = String( "" ) ;
@@ -124,7 +126,7 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 		mount_point   = StringListContentAt( tmp,4 ) ;
 		file_system   = StringListContentAt( tmp,index+1 ) ;
 		mount_options = StringListContentAt( tmp,index+3 ) ;
-		if( strncmp( device,"/dev/loop",9 ) == 0 ){
+		if( StringPrefixMatch( device,"/dev/loop",9 ) ){
 			/*
 			 * zuluCryptLoopDeviceAddress() is defined in ./status.c
 			 */
@@ -135,7 +137,7 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 				StringMultipleAppend( st,dev," ",mount_point," ",file_system," ",mount_options,END ) ;
 				free( dev ) ;
 			}
-		}else if( strcmp( device,"/dev/root" ) == 0 ){
+		}else if( StringsAreEqual( device,"/dev/root" ) ){
 			dev = zuluCryptResolveDevRoot() ;
 			if( dev == NULL ){
 				StringMultipleAppend( st,device," ",mount_point," ",file_system," ",mount_options,END ) ;
@@ -143,7 +145,7 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 				StringMultipleAppend( st,dev," ",mount_point," ",file_system," ",mount_options,END ) ;
 				free( dev ) ;
 			}
-		}else if( strncmp( device,"/dev/disk/by-",13 ) == 0 ){
+		}else if( StringPrefixMatch( device,"/dev/disk/by-",13 ) ){
 			dev = zuluCryptRealPath( device ) ;
 			if( dev == NULL ){
 				StringMultipleAppend( st,device," ",mount_point," ",file_system," ",mount_options,END ) ;
@@ -173,8 +175,9 @@ stringList_t zuluCryptGetMoutedListFromMounts( void )
 	string_t q = StringGetFromVirtualFile( "/proc/self/mounts" ) ;
 	stringList_t stl = StringListStringSplit( q,'\n' ) ;
 	StringDelete( &q ) ;
-	if( stl == StringListVoid )
+	if( stl == StringListVoid ){
 		return StringListVoid ;
+	}
 	it  = StringListBegin( stl ) ;
 	end = StringListEnd( stl ) ;
 	for( ; it != end ;it++ ){
@@ -218,12 +221,8 @@ stringList_t zuluCryptGetMtabList( void )
 	stringList_t stl = zuluCryptGetMoutedListFromMountInfo() ;
 	
 	if( stl == StringListVoid ){
-		stl = zuluCryptGetMoutedListFromMounts() ;
-		if( stl == StringListVoid ){
-			return StringListVoid ;
-		}
+		stl = zuluCryptGetMoutedListFromMounts() ;		
 	}
-	
 	return stl ; 
 }
 
@@ -251,11 +250,12 @@ static void print( uid_t uid,stringList_t stl )
 	
 	for( i = 0 ; i < j ; i++ ){
 		c = StringListContentAt( stl,i ) ;
-		if( strncmp( c,e,len ) == 0 ){
+		if( StringPrefixMatch( c,e,len ) ){
 			stx = StringListSplit( c,' ' ) ;
-			if( stx == StringListVoid )
+			if( stx == StringListVoid ){
 				continue ;
-			if( strncmp( c + len + 1,"UUID",4 ) == 0 ){
+			}
+			if( StringPrefixMatch( c + len + 1,"UUID",4 ) ){
 				q = StringListStringAt( stx,0 ) ;
 				k = StringLastIndexOfChar( q,'-' ) ;
 				if( k != -1 ){
@@ -295,11 +295,13 @@ static void print( uid_t uid,stringList_t stl )
 int zuluCryptPrintOpenedVolumes( uid_t uid )
 {
 	stringList_t stl = zuluCryptGetMtabList() ;
-	if( stl == StringListVoid )
+	if( stl == StringListVoid ){
 		return 1 ;
-	print( uid,stl ) ;
-	StringListDelete( &stl ) ;
-	return 0 ;
+	}else{
+		print( uid,stl ) ;
+		StringListDelete( &stl ) ;
+		return 0 ;
+	}
 }
 
 string_t zuluCryptGetMtabEntry( const char * path )

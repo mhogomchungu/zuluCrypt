@@ -106,9 +106,9 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	/*
 	 * zulucryptFileSystemIsNotSupported() is defined in ../lib/mount_fs_options.c
 	 */
-	if( !zulucryptFileSystemIsSupported( fs ) )
+	if( !zulucryptFileSystemIsSupported( fs ) ){
 		return zuluExit( 24,stl ) ;
-		
+	}
 	/*
 	 * zuluCryptPartitionIsSystemPartition() is defined in ./partitions.c
 	 */
@@ -146,36 +146,38 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	 */
 	k = zuluCryptPartitionIsMounted( device ) ;
 	
-	if( j == 1 )
+	if( j == 1 ){
 		return zuluExit( 16,stl ) ;
-	
-	if( k == 1 )
+	}
+	if( k == 1 ){
 		return zuluExit( 18,stl ) ;
-			
-	if( strncmp( device,"/dev/",5 ) != 0 ){
+	}
+	if( !StringPrefixMatch( device,"/dev/",5 ) ){
 		stat( device,&xt ) ;
-		if( xt.st_size < 3145728 )
+		if( xt.st_size < 3145728 ){
 			return zuluExit( 9,stl ) ;
+		}
 	}
 	
 	/*
 	 * ZULUCRYPTmkfs is defined at "../constants.h"
 	 * File systems are created not through file systems APIs but through mkfs.xxx executables started using exec call.
 	 */
-	if( zuluCryptPathIsNotValid( ZULUCRYPTmkfs ) )
+	if( zuluCryptPathIsNotValid( ZULUCRYPTmkfs ) ){
 		return zuluExit( 11,stl ) ;
-	
+	}
 	if( conf == -1 ){
 		printf( "\nThis operation will destroy all data in a device at: \"%s\"\n",device ) ;
 		printf("Are you sure you want to proceed?\n" ) ;
 		printf( "Type \"YES\" and press enter if you want to process: " ) ;
 		
 		*confirm = StringGetFromTerminal_1( 3 ) ;
-		if( *confirm == StringVoid )
+		if( *confirm == StringVoid ){
 			return zuluExit( 21,stl ) ;
-		else{
-			if( !StringEqual( *confirm,"YES" ) )
+		}else{
+			if( !StringEqual( *confirm,"YES" ) ){
 				return zuluExit( 12,stl ) ;
+			}
 		}
 	}
 	
@@ -183,9 +185,9 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		/*
 		 * Make sure the user has provided all required options
 		 */
-		if( fs == NULL || type == NULL || rng == NULL )
+		if( fs == NULL || type == NULL || rng == NULL ){
 			return zuluExit( 4,stl ) ;
-		
+		}
 		printf( "Enter passphrase: " ) ;
 		switch( StringSilentlyGetFromTerminal_1( pass_1,KEY_MAX_SIZE ) ){
 			case 1 : return zuluExit( 19,stl ) ;
@@ -209,20 +211,21 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		/*
 		 * Make sure the user has provided all required options
 		 */
-		if( fs == NULL || type == NULL || pass == NULL || rng == NULL || keyType == NULL )
+		if( fs == NULL || type == NULL || pass == NULL || rng == NULL || keyType == NULL ){
 			return zuluExit( 4,stl ) ;
-		
+		}
 		/*
 		 * "-p" options means a user has provided the passphrase
 		 * "-f" option means a user has provided a path to where the passphrase is stored, StringGetFromFile_1 family
 		 *  if functions are used to read files.One is used here to do that.
 		 */
-		if( strcmp( keyType,"-p" ) == 0 ){
-			if( !zuluCryptSecurityGainElevatedPrivileges() )
+		if( StringsAreEqual( keyType,"-p" ) ){
+			if( !zuluCryptSecurityGainElevatedPrivileges() ){
 				return zuluExit( 23,stl ) ;
+			}
 			st = zuluCryptCreateVolume( device,fs,type,pass,strlen( pass ),rng ) ;
 			zuluCryptSecurityDropElevatedPrivileges() ;
-		}else if( strcmp( keyType, "-f" ) == 0 ) {
+		}else if( StringsAreEqual( keyType, "-f" ) ) {
 			/*
 			 * function is defined at "security.c"
 			 */

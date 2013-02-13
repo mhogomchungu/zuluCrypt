@@ -39,12 +39,12 @@ static int _create_volume( const char * dev,const char * fs,const char * type,co
 	char * device ;
 	char * e = NULL ;
 	
-	if ( zuluCryptPathIsNotValid( dev ) )
+	if ( zuluCryptPathIsNotValid( dev ) ){
 		return 1 ;
-	
-	if( strcmp( type,"luks" ) == 0 ){
-		if( strcmp( rng,"/dev/random" ) != 0 ){
-			if( strcmp( rng,"/dev/urandom" ) != 0 ){
+	}
+	if( StringsAreEqual( type,"luks" ) ){
+		if( StringsAreNotEqual( rng,"/dev/random" ) ){
+			if( StringsAreNotEqual( rng,"/dev/urandom" ) ){
 				return 2 ;
 			}
 		}
@@ -52,9 +52,10 @@ static int _create_volume( const char * dev,const char * fs,const char * type,co
 	
 	device = zuluCryptRealPath( dev ) ;
 		
-	if( device == NULL )
+	if( device == NULL ){
 		return 3 ;
-		
+	}
+	
 	m = zuluCryptCreateMapperName( device,strrchr( device,'/' ) + 1,0,CLOSE ) ;
 	
 	free( device ) ;
@@ -62,33 +63,36 @@ static int _create_volume( const char * dev,const char * fs,const char * type,co
 	device_mapper = StringAppendInt( m,syscall( SYS_gettid ) ) ;
 	mapper = strrchr( device_mapper,'/' ) + 1 ;
 	
-	if( strcmp( type,"luks" ) == 0 ){
-		if( zuluCryptCreateLuks( dev,pass,pass_size,rng ) != 0 )
+	if( StringsAreEqual( type,"luks" ) ){
+		if( zuluCryptCreateLuks( dev,pass,pass_size,rng ) != 0 ){
 			return zuluExit( 3,m ) ;
-		if( zuluCryptOpenLuks( dev,mapper,"rw",pass,pass_size ) != 0 )
+		}
+		if( zuluCryptOpenLuks( dev,mapper,"rw",pass,pass_size ) != 0 ){
 			return zuluExit( 3,m ) ; 
-	}else if( strcmp( type,"plain") == 0 ){
-		if( zuluCryptOpenPlain( dev,mapper,"rw",pass,pass_size ) )
+		}
+	}else if( StringsAreEqual( type,"plain") ){
+		if( zuluCryptOpenPlain( dev,mapper,"rw",pass,pass_size ) ){
 			return zuluExit( 3,m ) ; 
+		}
 	}else{
 		return zuluExit( 2,m ) ;
 	}
 	
 	p = Process( ZULUCRYPTmkfs ) ;
 	
-	if( strcmp( fs,"ext2" ) == 0 || strcmp( fs,"ext3" ) == 0 || strcmp( fs,"ext4" ) == 0 ){
+	if( StringsAreEqual( fs,"ext2" ) || StringsAreEqual( fs,"ext3" ) || StringsAreEqual( fs,"ext4" ) ){
 		
 		ProcessSetArgumentList( p,"-t",fs,"-m","1",device_mapper,ENDLIST ) ;
 		
-	}else if( strcmp( fs,"reiserfs" ) == 0 ){
+	}else if( StringsAreEqual( fs,"reiserfs" ) ){
 		
 		ProcessSetArgumentList( p,"-t",fs,"-f","-f","-q",device_mapper,ENDLIST ) ;
 		
-	}else if( strcmp( fs,"jfs" ) == 0 ){
+	}else if( StringsAreEqual( fs,"jfs" ) ){
 		
 		ProcessSetArgumentList( p,"-t",fs,"-q",device_mapper,ENDLIST ) ;
 		
-	}else if( strcmp( fs,"ntfs" ) == 0 ){
+	}else if( StringsAreEqual( fs,"ntfs" ) ){
 		
 		ProcessSetArgumentList( p,"-t",fs,"-f",device_mapper,ENDLIST ) ;
 		

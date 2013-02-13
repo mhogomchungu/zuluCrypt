@@ -24,12 +24,17 @@ static inline const char * _mapping_name( const char * m )
 	return e == NULL ? m : e + 1 ;
 }
 
-int zuluMountCryptoMount( const char * device,const char * UUID,const char * mode,uid_t uid,
-			  const char * key,const char * key_source,
-			  const char * m_point,int mount_point_option,
-			  stringList_t stx 
-			)
+int zuluMountCryptoMount( ARGS * args )
 {
+	const char * device     = args->device     ;
+	const char * UUID       = args->uuid       ;
+	const char * mode       = args->m_opts     ;
+	uid_t        uid        = args->uid        ;
+	const char * key        = args->key        ;
+	const char * key_source = args->key_source ;
+	const char * m_point    = args->m_point    ;
+	int mount_point_option  = args->mpo        ;
+	char * const * env      = args->env        ;
 	int st ;
 	/*
 	 * the struct is declared in ../zuluCrypt-cli/bin/libzuluCrypt-exe.h
@@ -42,7 +47,7 @@ int zuluMountCryptoMount( const char * device,const char * UUID,const char * mod
 	string_t str = StringVoid ;
 	
 	if( UUID == NULL ){
-		if( strncmp( device,"/dev/loop",9 ) == 0 ){
+		if( StringPrefixEqual( device,"/dev/loop" ) ){
 			/*
 			* zuluCryptLoopDeviceAddress() is defined in ../zuluCrypt-cli/create_loop_device.c
 			*/
@@ -79,7 +84,7 @@ int zuluMountCryptoMount( const char * device,const char * UUID,const char * mod
 	opts.key = key ;
 	opts.key_source = key_source ;
 	opts.mount_point_option = mount_point_option ;
-	opts.env = StringListStringArray( stx ) ;
+	opts.env = env ;
 	
 	/*
 	 * zuluCryptEXEOpenVolume() is defined in ../zuluCrypt-cli/bin/open_volume.c

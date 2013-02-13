@@ -52,9 +52,9 @@ static int _check_if_device_is_supported( int st,uid_t uid,const char * dev )
 	seteuid( uid ) ;
 	if( fs != StringVoid ){
 		cfs = StringContent( fs ) ;
-		if( strncmp( cfs,"LVM",3 ) == 0 || strncmp( cfs,"mdraid",6 ) == 0 ){
+		if( StringPrefixMatch( cfs,"LVM",3 ) || StringPrefixMatch( cfs,"mdraid",6 ) ){
 			st = 100 ;
-		}	
+		}
 		StringDelete( &fs ) ;
 	}
 	return st ;
@@ -162,9 +162,9 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 					 */
 					*dev = zuluCryptGetFileNameFromFileDescriptor( *fd_path ) ;
 					if( *dev != NULL ){
-						if( strncmp( *dev,"/dev/shm/",9 ) == 0 ){
+						if( StringPrefixMatch( *dev,"/dev/shm/",9 ) ){
 							st = 4 ;
-						}else if( strncmp( *dev,"/dev/",5 ) == 0 ){
+						}else if( StringPrefixMatch( *dev,"/dev/",5 ) ){
 							st = 0 ;
 						}
 					}
@@ -202,12 +202,12 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 			 */
 			if( S_ISBLK( stat_st.st_mode ) ){
 				if( *dev != NULL ){
-					if( strncmp( *dev,"/dev/shm/",9 ) == 0 ){
+					if( StringPrefixMatch( *dev,"/dev/shm/",9 ) ){
 						/*
 						* we do not support this path
 						*/
 						st = 1 ;
-					}else if( strncmp( *dev,"/dev/",5 ) == 0 ){
+					}else if( StringPrefixMatch( *dev,"/dev/",5 ) ){
 						/*
 						* got the block device we want,accept it
 						*/

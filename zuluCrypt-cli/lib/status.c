@@ -84,7 +84,7 @@ char * zuluCryptGetUUIDFromMapper( const char * mapper )
 		uuid = String( " UUID:   \t\"Nil\"" ) ;
 	}else{
 		type = crypt_get_type( cd ) ;
-		if( strstr( type,"LUKS" ) == NULL ){
+		if( StringHasNoComponent( type,"LUKS" ) ){
 			uuid = String( " UUID:   \t\"Nil\"" ) ;
 		}else{
 			id = crypt_get_uuid( cd ) ;
@@ -115,20 +115,23 @@ static void zuluCryptFileSystemProperties( string_t p,const char * mapper,const 
 	
 	blkid = blkid_new_probe_from_filename( mapper ) ;
 	
-	if( blkid == NULL )
+	if( blkid == NULL ){
 		return ;
+	}
 	
 	blkid_do_probe( blkid );
 	
-	if( blkid_probe_lookup_value( blkid,"TYPE",&e,NULL ) == 0 )
+	if( blkid_probe_lookup_value( blkid,"TYPE",&e,NULL ) == 0 ){
 		StringMultipleAppend( p,"\n file system:\t",e,END ) ;
-	else
+	}else{
 		StringAppend( p,"\n file system:\tNil" ) ;
+	}
 	
 	blkid_free_probe( blkid );
 	
-	if( statvfs( m_point,&vfs ) != 0 )
+	if( statvfs( m_point,&vfs ) != 0 ){
 		return ;
+	}
 	
 	block_size = vfs.f_frsize ;
 	total = block_size * vfs.f_blocks  ;
@@ -218,9 +221,9 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	string_t p ;
 	string_t q ;
 	
-	if( crypt_init_by_name( &cd,mapper ) != 0 )
+	if( crypt_init_by_name( &cd,mapper ) != 0 ){
 		return NULL ;
-		
+	}
 	if( crypt_get_active_device( NULL,mapper,&cad ) != 0 ){
 		crypt_free( cd ) ;
 		return NULL ;
@@ -323,10 +326,11 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	z = StringIntToString_1( buffer,SIZE,crypt_get_data_offset( cd ) ) ;
 	StringMultipleAppend( p,"\n offset:\t",z," sectors",NULL );
 	
-	if( cad.flags == 1 )
+	if( cad.flags == 1 ){
 		StringAppend( p,"\n mode:   \tread only" );
-	else
+	}else{
 		StringAppend( p,"\n mode:   \tread and write" );
+	}
 	
 	if( luks == 1 ){
 		i = 0 ;
@@ -420,11 +424,12 @@ char * zuluCryptVolumeDeviceName( const char * mapper )
 	string_t address = StringVoid ;
 	const char * e ;
 	ssize_t index ;
+	
 	e = crypt_get_dir() ;
 	
-	if( e == NULL )
+	if( e == NULL ){
 		return NULL ;
-	
+	}
 	if( strncmp( mapper,e,strlen( e ) != 0 ) ){
 		return NULL ;
 	}

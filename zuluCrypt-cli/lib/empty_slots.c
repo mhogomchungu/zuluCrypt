@@ -21,53 +21,53 @@
 
 static inline char * zuluExit( char * c,struct crypt_device * cd )
 {
-	if( cd != NULL )
+	if( cd != NULL ){
 		crypt_free( cd );
-	
+	}
 	return c ;
 }
 
 static char * _empty_slots( const char * device )
 {
-	crypt_keyslot_info cki ;
 	struct crypt_device * cd;
+	
 	int j ;
 	int k ;
-	char * q ;
 	const char * type ;
 	
-	string_t p = StringVoid ;
+	string_t p ;
 	
-	if( crypt_init( &cd,device ) != 0 )
+	if( crypt_init( &cd,device ) != 0 ){
 		return zuluExit( NULL,NULL ) ;
-	
-	if( crypt_load( cd,NULL,NULL ) != 0 )
+	}
+	if( crypt_load( cd,NULL,NULL ) != 0 ){
 		return zuluExit( NULL,cd ) ;
+	}
 	
 	type = crypt_get_type( cd ) ;
 	
-	if( type == NULL )
+	if( type == NULL ){
 		return zuluExit( NULL,cd ) ;
+	}
 	
 	k = crypt_keyslot_max( type ) ;
 	
-	if( k < 0 )
+	if( k < 0 ){
 		return zuluExit( NULL,cd ) ;
+	}
 	
 	p = String( "" ) ;
 	
 	for( j = 0 ; j < k ; j++ ){
-		cki = crypt_keyslot_status( cd,j );
-		switch ( cki ){
+		switch ( crypt_keyslot_status( cd,j ) ){
 			case CRYPT_SLOT_INACTIVE   : StringAppend( p,"0" ) ; break ;
 			case CRYPT_SLOT_ACTIVE     : StringAppend( p,"1" ) ; break ;
 			case CRYPT_SLOT_INVALID    : StringAppend( p,"2" ) ; break ;
 			case CRYPT_SLOT_ACTIVE_LAST: StringAppend( p,"3" ) ; break ;
-		}		
+		}
 	}
 	
-	q = StringDeleteHandle( &p ) ;
-	return zuluExit( q,cd ) ;
+	return zuluExit( StringDeleteHandle( &p ),cd ) ;
 }
 
 char * zuluCryptEmptySlots( const char * device )
@@ -75,7 +75,7 @@ char * zuluCryptEmptySlots( const char * device )
 	string_t st ;
 	int fd ;
 	char * r ;
-	if( strncmp( device,"/dev/",5 ) == 0 ){
+	if( StringPrefixMatch( device,"/dev/",5 ) ){
 		return _empty_slots( device ) ;
 	}else{
 		/*

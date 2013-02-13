@@ -90,7 +90,7 @@ static int zuluCryptEXECheckIfTcrypt( struct_opts * clargs,uid_t uid )
 		return 1 ;
 	}
 	
-	if( strcmp( source,"-p" ) == 0 ){
+	if( StringsAreEqual( source,"-p" ) ){
 		zuluCryptSecurityGainElevatedPrivileges() ;
 		/*
 		 * zuluCryptGetVolumeType() is defined in ../lib/volume_type.c
@@ -100,7 +100,7 @@ static int zuluCryptEXECheckIfTcrypt( struct_opts * clargs,uid_t uid )
 			st = 0 ;
 		}
 		zuluCryptSecurityDropElevatedPrivileges() ;
-	}else if( strcmp( source,"-f" ) == 0 ){
+	}else if( StringsAreEqual( source,"-f" ) ){
 		/*
 		 * zuluCryptSecurityGetPassFromFile() is defined in security.c
 		 */
@@ -447,7 +447,7 @@ int main( int argc,char * argv[] )
 		return zuluExit( st,stl,stx,env,NULL ) ;
 	}
 	
-	if( strncmp( device,"UUID=",5 ) == 0 ){
+	if( StringPrefixMatch( device,"UUID=",5 ) ){
 
 		q = String( device ) ;
 		StringRemoveString( q,"\"" ) ;

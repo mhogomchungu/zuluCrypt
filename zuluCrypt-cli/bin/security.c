@@ -38,11 +38,11 @@
 static int has_access( const char * path,int c )
 {
 	int f ;
-	if( c == READ )
+	if( c == READ ){
 		f = open( path,O_RDONLY );
-	else
+	}else{
 		f = open( path,O_WRONLY );
-	
+	}
 	if( f >= 0 ){
 		close( f ) ;
 		return 0 ;
@@ -79,9 +79,9 @@ int zuluCryptUserIsAMemberOfAGroup( uid_t uid,const char * groupname )
 	const char ** entry ;
 	const char * name ;
 	
-	if( groupname == NULL )
+	if( groupname == NULL ){
 		return 0 ;
-	
+	}
 	if( uid == 0 ){
 		return 1 ;
 	}
@@ -149,9 +149,10 @@ int zuluCryptSecurityDeviceIsReadable( const char * device,uid_t uid )
 {
 	int st ;
 	if( uid ){;}
-	if( strncmp( device,"/dev/shm/",9 ) == 0 )
+	if( StringPrefixMatch( device,"/dev/shm/",9 ) ){
 		return 4 ;
-	if( strncmp( device,"/dev/",5 ) == 0 ){
+	}
+	if( StringPrefixMatch( device,"/dev/",5 ) ){
 		zuluCryptSecurityGainElevatedPrivileges() ;
 		st = has_device_access( device,READ ) ;
 		zuluCryptSecurityDropElevatedPrivileges() ;
@@ -166,9 +167,10 @@ int zuluCryptSecurityDeviceIsWritable( const char * device,uid_t uid )
 {	
 	int st ;
 	if( uid ){;}
-	if( strncmp( device,"/dev/shm/",9 ) == 0 )
+	if( StringPrefixMatch( device,"/dev/shm/",9 ) ){
 		return 4 ;
-	if( strncmp( device,"/dev/",5 ) == 0 ){
+	}
+	if( StringPrefixMatch( device,"/dev/",5 ) ){
 		zuluCryptSecurityGainElevatedPrivileges() ;
 		st = has_device_access( device,WRITE ) ;
 		zuluCryptSecurityDropElevatedPrivileges() ;
@@ -182,9 +184,10 @@ int zuluCryptSecurityDeviceIsWritable( const char * device,uid_t uid )
 static int has_security_access( const char * path,int mode )
 {
 	int st ;
-	if( strncmp( path,"/dev/shm/",9 ) == 0 )
+	if( StringPrefixMatch( path,"/dev/shm/",9 ) ){
 		st = 2 ;
-	if( strncmp( path,"/dev/",5 ) != 0 ){
+	}
+	if( !StringPrefixMatch( path,"/dev/",5 ) ){
 		st = has_access( path,mode ) ;
 	}else{
 		if( zuluCryptSecurityGainElevatedPrivileges() ){
@@ -223,7 +226,7 @@ static int check_permissions( const char * path,int mode,const char * groupname,
 int zuluCryptSecurityPathIsValid( const char * path,uid_t uid __attribute__((unused)) )
 {
 	int st = 0 ;
-	if( strncmp( path,"/dev/",5 ) != 0 ){
+	if( !StringPrefixMatch( path,"/dev/",5 ) ){
 		zuluCryptSecurityDropElevatedPrivileges();
 		return has_access( path,READ ) == 0 ;
 	}else{
@@ -256,7 +259,7 @@ static string_t _create_default_mount_point( const char * device,uid_t uid,strin
 	string_t st = StringVoid ;
 	char * loop_path = NULL ;
 	const char * m_point ;
-	if( strncmp( device,"/dev/loop",9 ) == 0 ){
+	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
 		/*
 		 * zuluCryptLoopDeviceAddress() is defined in ../lib/create_loop_device.c
 		 */

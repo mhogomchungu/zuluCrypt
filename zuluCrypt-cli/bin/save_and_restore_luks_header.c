@@ -53,9 +53,9 @@ static int zuluExit( int st,int fd,string_t xt )
 	}
 	
 	StringDelete( &xt ) ;
-	if( fd != -1 )
+	if( fd != -1 ){
 		close( fd );
-	
+	}
 	return st == 1 ? 0 : st ;
 }
 
@@ -119,9 +119,9 @@ static int secure_file_path( char ** path,const char * source )
 	string_t st_path ;
 	const char * temp_path ;
 	
-	if( !create_work_directory( &st_path ) )
+	if( !create_work_directory( &st_path ) ){
 		return 0 ;
-	
+	}
 	StringAppend( st_path,"0-" ) ;
 	temp_path = StringAppendInt( st_path,syscall( SYS_gettid ) ) ;
 	
@@ -337,10 +337,11 @@ int zuluCryptEXESaveAndRestoreLuksHeader( const struct_opts * opts,uid_t uid,int
 	}
 		
 	if( path == NULL ){
-		if( option == LUKS_HEADER_RESTORE )
+		if( option == LUKS_HEADER_RESTORE ){
 			return zuluExit( 12,fd,sec_file ) ;
-		else
+		}else{
 			return zuluExit( 13,fd,sec_file ) ;
+		}
 	}
 	
 	if( strncmp( device,"/dev/",5 ) != 0 ){
@@ -438,9 +439,9 @@ int zuluCryptHeaderMatchBackUpHeader( const char * device,const char * header_ba
 	int st = 0 ;
 	
 	if( uid ){;}
-	if( device == NULL || header_backup == NULL )
+	if( device == NULL || header_backup == NULL ){
 		return 0 ;
-	
+	}
 	secure_file_path( &header_path,header_backup ) ;
 	if( header_path == NULL ){
 		return 0 ;

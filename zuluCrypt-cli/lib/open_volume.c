@@ -39,9 +39,10 @@ static inline int _device_is_not_sane( const char * device,const char * mapper )
 	char * dev = zuluCryptVolumeDeviceName( mapper ) ;
 	char * dev_1 ;
 	
-	if( dev == NULL )
+	if( dev == NULL ){
 		return 1 ;
-	if( strncmp( device,"/dev/loop",9 ) == 0 ){
+	}
+	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
 		/*
 		 * zuluCryptLoopDeviceAddress() is defined in create_loop_device.c
 		 */
@@ -87,8 +88,9 @@ int zuluCryptOpenVolume( const char * dev,const char * map,
 	/*
 	 * zuluCryptPathIsNotValid() is defined in is_path_valid.c
 	 */
-	if( zuluCryptPathIsNotValid( dev ) ) 
+	if( zuluCryptPathIsNotValid( dev ) ){
 		return 3 ;
+	}
 	
 	p = String( crypt_get_dir() ) ;
 	
@@ -97,9 +99,9 @@ int zuluCryptOpenVolume( const char * dev,const char * map,
 	/*
 	 * zuluCryptPathIsValid() is defined in is_path_valid.c
 	 */
-	if( zuluCryptPathIsValid( mapper ) )
+	if( zuluCryptPathIsValid( mapper ) ){
 		return zuluExit( 2,p ) ;
-
+	}
 	if( m_opts & MS_RDONLY ){
 		lmode = O_RDONLY ;
 		mode = "ro" ;
@@ -108,7 +110,7 @@ int zuluCryptOpenVolume( const char * dev,const char * map,
 		mode = "rw" ;
 	}
 	
-	if( strncmp( dev,"/dev/",5 ) != 0 ){
+	if( !StringPrefixMatch( dev,"/dev/",5 ) ){
 		/*
 		 * zuluCryptAttachLoopDeviceToFile() is defined in create_loop_device.c
 		 */

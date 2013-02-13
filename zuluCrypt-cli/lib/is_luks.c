@@ -24,8 +24,9 @@ static int _is_luks( const char * dev )
 	struct crypt_device * cd;
 	int st ;
 	
-	if( crypt_init( &cd,dev ) != 0 )
+	if( crypt_init( &cd,dev ) != 0 ){
 		return 0 ;
+	}
 	
 	st = crypt_load( cd,NULL,NULL ) ;
 	

@@ -106,7 +106,7 @@ void zuluMountPartitionProperties( const char * device,const char * UUID,const c
 	if( UUID != NULL ){
 		printf( "%s\t",UUID ) ;
 	}else{
-		if( strncmp( device,"/dev/loop",9 ) == 0 ){
+		if( StringPrefixEqual( device,"/dev/loop" ) ){
 			/*
 			* zuluCryptLoopDeviceAddress() is defined in ../zuluCrypt-cli/lib/create_loop_device.c
 			*/
@@ -225,7 +225,7 @@ static void _printDeviceProperties( string_t entry )
 	
 	q = StringListContentAt( stx,0 ) ;
 	
-	if( strncmp( q,_z,_k ) == 0 ){
+	if( StringPrefixMatch( q,_z,_k ) ){
 		/*
 		 * zuluCryptSecurityGainElevatedPrivileges() and zuluCryptSecurityDropElevatedPrivileges()
 		 * are defined in ../zuluCrypt-cli/bin/security.c 
@@ -238,7 +238,7 @@ static void _printDeviceProperties( string_t entry )
 		zuluCryptSecurityDropElevatedPrivileges();
 		
 		if( x != NULL ){
-			if( strncmp( q + _k,"-UUID-",6 ) == 0 ){
+			if( StringPrefixEqual( q + _k,"-UUID-" ) ){
 				st = String( q ) ;
 				StringRemoveLeft( st,_k + 6 ) ;
 				StringPrepend( st,"UUID=\"" ) ;

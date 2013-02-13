@@ -22,21 +22,21 @@
 
 int zulucryptFileSystemIsSupported( const char * fs )
 {
-	if(     strcmp( fs,"ntfs" ) == 0  || 
-		strcmp( fs,"vfat" ) == 0  || 
-		strcmp( fs,"fat" ) == 0   ||
-		strcmp( fs,"msdos" ) == 0 ||
-		strcmp( fs,"umsdos" ) == 0 ||
-		strcmp( fs,"affs" ) == 0 || 
-		strcmp( fs,"hfs" ) == 0  ||
-		strcmp( fs,"iso9660" ) == 0 ||
-		strcmp( fs,"udf" ) == 0  ||
-		strcmp( fs,"ext2" ) == 0 ||
-		strcmp( fs,"ext3" ) == 0 ||
-		strcmp( fs,"ext4" ) == 0 ||
-		strcmp( fs,"reiserfs" ) == 0 ||
-		strcmp( fs,"reiser4" ) == 0 ||
-		strcmp( fs,"btrfs" ) == 0 ) 
+	if(     StringsAreEqual( fs,"ntfs" )  || 
+		StringsAreEqual( fs,"vfat" )  || 
+		StringsAreEqual( fs,"fat" )   ||
+		StringsAreEqual( fs,"msdos" ) ||
+		StringsAreEqual( fs,"umsdos" )||
+		StringsAreEqual( fs,"affs" )  || 
+		StringsAreEqual( fs,"hfs" )   ||
+		StringsAreEqual( fs,"iso9660" )||
+		StringsAreEqual( fs,"udf" )    ||
+		StringsAreEqual( fs,"ext2" )   ||
+		StringsAreEqual( fs,"ext3" )   ||
+		StringsAreEqual( fs,"ext4" )   ||
+		StringsAreEqual( fs,"reiserfs" )  ||
+		StringsAreEqual( fs,"reiser4" )   ||
+		StringsAreEqual( fs,"btrfs" ) ) 
 		{
 			return 1 ;
 		}else{
@@ -210,34 +210,34 @@ static inline int _option_contain_not_allowed( const char * fs,const char * fs_o
 	
 	if( stl == StringListVoid )
 		return 0 ;
-	if( strcmp( fs,"ext2" ) == 0 || strcmp( fs,"ext3" ) == 0 || strcmp( fs,"ext4" ) == 0 ){
+	if( StringsAreEqual( fs,"ext2" ) || StringsAreEqual( fs,"ext3" ) || StringsAreEqual( fs,"ext4" ) ){
 		return allowed_extX( stl ) ;
 	}
-	if( strcmp( fs,"vfat" ) == 0 || strcmp( fs,"fat" ) == 0 || strcmp( fs,"msdos" ) == 0 || strcmp( fs,"msudos" ) == 0 ){
+	if( StringsAreEqual( fs,"vfat" ) || StringsAreEqual( fs,"fat" ) || StringsAreEqual( fs,"msdos" ) || StringsAreEqual( fs,"msudos" ) ){
 		return allowed_vfat( stl ) ;
 	}
-	if( strcmp( fs,"ntfs" ) == 0 ){
+	if( StringsAreEqual( fs,"ntfs" ) ){
 		return allowed_ntfs( stl ) ;
 	}
-	if( strcmp( fs,"udf" ) == 0 ){
+	if( StringsAreEqual( fs,"udf" ) ){
 		return allowed_udf( stl ) ;
 	}
-	if( strcmp( fs,"affs" ) == 0 ){
+	if( StringsAreEqual( fs,"affs" ) ){
 		return allowed_affs( stl ) ;
 	}
-	if( strcmp( fs,"hfs" ) == 0 ){
+	if( StringsAreEqual( fs,"hfs" ) ){
 		return allowed_hfs( stl ) ;
 	}
-	if( strcmp( fs,"iso9660" ) == 0 ){
+	if( StringsAreEqual( fs,"iso9660" ) ){
 		return allowed_iso9660( stl ) ;
 	}	
-	if( strcmp( fs,"btrfs" ) == 0 ){
+	if( StringsAreEqual( fs,"btrfs" ) ){
 		return allowed_btrfs( stl ) ;
 	}
-	if( strcmp( fs,"reiserfs" ) == 0 ){
+	if( StringsAreEqual( fs,"reiserfs" ) ){
 		return allowed_reiserfs( stl ) ;
 	}
-	if( strcmp( fs,"reiser4" ) == 0 ){
+	if( StringsAreEqual( fs,"reiser4" ) ){
 		return allowed_reiser4( stl ) ;
 	}
 	return 1 ;

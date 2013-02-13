@@ -22,7 +22,7 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif	
+#endif
 #include <sys/types.h>
 #include <stdio.h>
 #include <string.h>
@@ -647,6 +647,39 @@ void StringWriteToFile( string_t st,const char * path,int mode ) ;
  * Virtual files are like those in /proc,you cab read stuff from them but their sizes are always zero
  */
 string_t StringGetFromVirtualFile( const char * path ) ;
+
+/*
+ * a few convenient functions 
+ */
+static __inline__ int StringsAreEqual( const char * x,const char * y )
+{
+	return strcmp( x,y ) == 0 ;
+}
+
+static __inline__ int StringsAreNotEqual( const char * x,const char * y )
+{
+	return strcmp( x,y ) != 0 ;
+}
+
+static __inline__ int StringPrefixMatch( const char * x,const char * y,size_t z )
+{
+	return strncmp( x,y,z ) == 0 ;
+}
+
+static __inline__ int StringPrefixEqual( const char * x,const char * y )
+{
+	return strncmp( x,y,strlen( y ) ) == 0 ;
+}
+
+static __inline__ int StringHasComponent( const char * x,const char * y )
+{
+	return strstr( x,y ) != NULL ;
+}
+
+static inline int StringHasNoComponent( const char * x,const char * y )
+{
+	return strstr( x,y ) == NULL ;
+}
 
 #ifdef __cplusplus
 }

@@ -28,13 +28,13 @@ static inline int zuluExit( int st,struct crypt_device * cd )
 int zuluCryptCreateLuks( const char * dev,const char * pass,size_t pass_size,const char * rng )
 {
 	struct crypt_device * cd;
-		
 	struct crypt_params_luks1 params ;
 	
 	memset( &params,'\0',sizeof( struct crypt_params_luks1 ) ) ;
 	
 	params.hash = "sha1" ;
 	params.data_alignment = 4096 ;
+	
 	if( zuluCryptPathIsNotValid( dev ) )
 		return 4 ;
 	
@@ -42,10 +42,11 @@ int zuluCryptCreateLuks( const char * dev,const char * pass,size_t pass_size,con
 		return 1 ;
 	}
 	
-	if( strcmp( rng,"/dev/random" ) == 0 )
+	if( StringsAreEqual( rng,"/dev/random" ) ){
 		crypt_set_rng_type( cd,CRYPT_RNG_RANDOM );
-	else 
+	}else{
 		crypt_set_rng_type( cd,CRYPT_RNG_URANDOM );
+	}
 	
 	if( crypt_format( cd,CRYPT_LUKS1,"aes","xts-plain64",NULL,NULL,32,&params ) != 0 ){
 		if( crypt_format( cd,CRYPT_LUKS1,"aes","cbc-essiv:sha256",NULL,NULL,32,&params ) != 0 ){
@@ -53,8 +54,9 @@ int zuluCryptCreateLuks( const char * dev,const char * pass,size_t pass_size,con
 		}
 	}
 	
-	if( crypt_keyslot_add_by_volume_key( cd,CRYPT_ANY_SLOT,NULL,32,pass,pass_size ) < 0 )
+	if( crypt_keyslot_add_by_volume_key( cd,CRYPT_ANY_SLOT,NULL,32,pass,pass_size ) < 0 ){
 		return zuluExit( 3,cd ) ;
-	else
+	}else{
 		return zuluExit( 0,cd ) ;
+	}
 }

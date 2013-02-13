@@ -61,41 +61,43 @@ static int crypt_opt( const struct_opts * opts,uid_t uid,int opt )
 	
 	return zuluExit( 16 ) ;
 	
-	if( dest == NULL )
+	if( dest == NULL ){
 		return zuluExit( 9 ) ;
-
-	if( source == NULL )
+	}
+	if( source == NULL ){
 		return zuluExit( 14 ) ;
-	
+	}
 	/*
 	 * zuluCryptPathStartsWith() is defined in real_path.c
 	 */
-	if( zuluCryptPathStartsWith( dest,"/dev/" ) )
+	if( zuluCryptPathStartsWith( dest,"/dev/" ) ){
 		return zuluExit( 10 ) ;
-	
-	if( zuluCryptPathStartsWith( source,"/dev/" ) )
+	}
+	if( zuluCryptPathStartsWith( source,"/dev/" ) ){
 		return zuluExit( 15 ) ;
-	
+	}
 	/*
 	 * zuluCryptPathIsValid() is defined in ../lib/is_path_valid.c
 	 */
-	if( zuluCryptPathIsValid( dest ) )
+	if( zuluCryptPathIsValid( dest ) ){
 		return zuluExit( 5 ) ;
+	}
 	/*
 	 * zuluCryptPathIsNotValid() is defined in ../lib/is_path_valid.c
 	 */
-	if( zuluCryptPathIsNotValid( source ) )
+	if( zuluCryptPathIsNotValid( source ) ){
 		return zuluExit( 6 ) ;
+	}
 	
 	/*
 	 * security functions are defined in ./security.c
 	 */
-	if( zuluCryptSecurityCanOpenPathForWriting( dest,uid ) == 1 )
+	if( zuluCryptSecurityCanOpenPathForWriting( dest,uid ) == 1 ){
 		return zuluExit( 10 ) ;		
-	
-	if( zuluCryptSecurityCanOpenPathForReading( source,uid ) == 1 )
+	}
+	if( zuluCryptSecurityCanOpenPathForReading( source,uid ) == 1 ){
 		return zuluExit( 15 ) ;
-	
+	}
 	if( type == NULL ){
 
 		printf( "Enter passphrase: " ) ;
@@ -122,14 +124,16 @@ static int crypt_opt( const struct_opts * opts,uid_t uid,int opt )
 			StringDelete( &q ) ;
 		}
 	}else{
-		if( type == NULL )
+		if( type == NULL ){
 			return zuluExit( 9 ) ;
-		if( strcmp( type,"-p" ) == 0 ){
+		}
+		if( StringsAreEqual( type,"-p" ) ){
 			p = String( passphrase ) ;
-		}else if( strcmp( type,"-f" ) == 0 ){
+		}else if( StringsAreEqual( type,"-f" ) ){
 			p = StringGetFromFile( passphrase ) ;
-			if( p == NULL )
+			if( p == NULL ){
 				return zuluExit( 2 ) ;
+			}
 		}else{
 			return zuluExit( 3 ) ;
 		}
@@ -157,10 +161,11 @@ static int crypt_opt( const struct_opts * opts,uid_t uid,int opt )
 	chmod( dest,S_IRUSR | S_IWUSR ) ;
 	chown( dest,uid,uid ) ;
 	
-	if( opt == 1 )
+	if( opt == 1 ){
 		return zuluExit( 1 ) ;
-	else
+	}else{
 		return zuluExit( 0 ) ;
+	}
 }
 
 int zuluCryptExeFileDecrypt( const struct_opts * opts,uid_t uid ) 

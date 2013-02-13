@@ -33,21 +33,27 @@
 #include "../zuluCrypt-cli/lib/includes.h"
 #include "../zuluCrypt-cli/bin/includes.h"
 
-int zuluMountUMount( const char * device,uid_t uid,const char * mode,int mount_point_option ) ;
+typedef struct{
+	const char * device     ;
+	const char * action     ;
+	const char * m_point    ;
+	const char * m_opts     ;
+	const char * key        ;
+	const char * key_source ;
+	const char * fs_opts    ;
+	const char * uuid       ;
+	char * const * env      ;
+	int          mpo        ;
+	uid_t        uid        ;
+}ARGS;
 
-int zuluMountMount( const char * device,const char * m_point,
-		    const char * m_opts,const char * fs_opts,uid_t uid,
-		    int mount_point_option 
-		  ) ;
-		    
+int zuluMountUMount( ARGS * args ) ;
 
-int zuluMountCryptoMount( const char * device,const char * UUID,const char * mode,uid_t uid,
-				  const char * key,const char * key_source,
-				  const char * m_point,int mount_point_option,
-				  stringList_t
-			) ;
-				  
-int zuluMountCryptoUMount( const char * device,const char * UUID,uid_t uid,__attribute__((unused)) int mount_point_option ) ;
+int zuluMountMount( ARGS * args ) ;    
+
+int zuluMountCryptoMount( ARGS * args ) ;
+
+int zuluMountCryptoUMount( ARGS * args ) ;
 
 int _zuluExit( int st,string_t z,char * q,const char * msg ) ;
 

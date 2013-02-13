@@ -64,7 +64,7 @@ only root user or members of group zulucrypt-system can do that\n" ) ;										
 		case 18: printf( "ERROR: could not get a key from a socket\n" ) ;									break ;
 		case 19 : printf( "ERROR: could not get elevated privilege,check binary permissions\n" ) ;						break ;	 
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
-	}		
+	}
 	return st ;
 }
 
@@ -114,8 +114,9 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 		default: return zuluExit( 3,stl ) ;
 	}
 	
-	if( !zuluCryptSecurityGainElevatedPrivileges() )
+	if( !zuluCryptSecurityGainElevatedPrivileges() ){
 		return zuluExit( 19,stl ) ;
+	}
 	if( zuluCryptExECheckEmptySlots( device ) == 3 ){
 		if( k != 1 ){
 			printf( "WARNING: there is only one key in the volume and all data in it will be lost if you continue.\n" );
@@ -149,7 +150,7 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 		if( keyType == NULL || keytoremove == NULL )
 			return zuluExit( 6,stl ) ;
 		
-		if( strcmp( keyType,"-f" ) == 0 ){
+		if( StringsAreEqual( keyType,"-f" ) ){
 			/*
 			 * function is defined at security.c"
 			 */
@@ -159,20 +160,23 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 				case 4 : return zuluExit( 13,stl ) ;
 				case 5 : return zuluExit( 18,stl ) ;
 			}
-			if( !zuluCryptSecurityGainElevatedPrivileges() )
+			if( !zuluCryptSecurityGainElevatedPrivileges() ){
 				return zuluExit( 19,stl ) ;
+			}
 			status = zuluCryptRemoveKey( device,StringContent( *pass ),StringLength( *pass ) ) ;
-		}else if( strcmp( keyType, "-p" ) == 0 ) {
-			if( !zuluCryptSecurityGainElevatedPrivileges() )
+		}else if( StringsAreEqual( keyType, "-p" ) ) {
+			if( !zuluCryptSecurityGainElevatedPrivileges() ){
 				return zuluExit( 19,stl ) ;
+			}
 			status = zuluCryptRemoveKey( device,keytoremove,strlen( keytoremove ) ) ;
 		}
 	}
 	
-	if( status == 1 )
+	if( status == 1 ){
 		status = zuluExit_1( status,device,stl ) ;
-	else
+	}else{
 		status = zuluExit( status,stl ) ; 
+	}
 	
 	zuluCryptCheckInvalidKey( opts->device ) ;
 	zuluCryptSecurityDropElevatedPrivileges() ;

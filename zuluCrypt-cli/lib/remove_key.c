@@ -30,24 +30,26 @@ static int _remove_key( const char * device ,const char * pass,size_t pass_size 
 	int slot ;
 	struct crypt_device * cd;
 	
-	if( zuluCryptVolumeIsNotLuks( device ) )
+	if( zuluCryptVolumeIsNotLuks( device ) ){
 		return 1 ;      
-	
-	if( crypt_init( &cd,device ) != 0 )
+	}
+	if( crypt_init( &cd,device ) != 0 ){
 		return 3 ;
-	
-	if( crypt_load( cd,NULL,NULL ) != 0 )
+	}
+	if( crypt_load( cd,NULL,NULL ) != 0 ){
 		return zuluExit( 3,cd ) ;
+	}
 	
 	slot = crypt_activate_by_passphrase( cd,NULL,CRYPT_ANY_SLOT,pass,pass_size,0 );
 	
-	if ( slot < 0 )
+	if ( slot < 0 ){
 		return zuluExit( 2,cd ) ;
-	
-	if( crypt_keyslot_destroy( cd,slot ) < 0 )
+	}
+	if( crypt_keyslot_destroy( cd,slot ) < 0 ){
 		return zuluExit( 2,cd ) ;
-	else
+	}else{
 		return zuluExit( 0,cd ) ;
+	}
 }
 
 int zuluCryptRemoveKey( const char * device ,const char * pass,size_t pass_size )
@@ -55,7 +57,8 @@ int zuluCryptRemoveKey( const char * device ,const char * pass,size_t pass_size 
 	string_t st ;
 	int fd ;
 	int r ;
-	if( strncmp( device,"/dev/",5 ) == 0 ){
+	
+	if( StringPrefixMatch( device,"/dev/",5 ) ){
 		return _remove_key( device,pass,pass_size ) ;
 	}else{
 		/*

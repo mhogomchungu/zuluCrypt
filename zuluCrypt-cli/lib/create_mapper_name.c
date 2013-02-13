@@ -60,21 +60,21 @@ string_t zuluCryptCreateMapperName( const char * device,const char * mapping_nam
 	string_t p ;
 	uint64_t z ;
 	char * e ;
-	if( i == OPEN )
+	if( i == OPEN ){
 		p = String( "zuluCrypt-" ) ;
-	else{
+	}else{
 		p = String( crypt_get_dir() ) ;
 		StringAppend( p,"/zuluCrypt-" ) ;
 	}
 	
 	StringAppendInt( p,uid ) ;
 	
-	if( strncmp( mapping_name,"UUID-",5 ) == 0 ){
+	if( StringPrefixMatch( mapping_name,"UUID-",5 ) ){
 		StringMultipleAppend( p,"-",mapping_name,"-",END ) ;
 		z = hash_path( mapping_name ) ;
 	}else{
 		StringMultipleAppend( p,"-NAAN-",mapping_name,"-",END ) ;
-		if( strncmp( device,"/dev/loop",9 ) == 0 ){
+		if( StringPrefixMatch( device,"/dev/loop",9 ) ){
 			/*
 			* zuluCryptLoopDeviceAddress() is defined in ./create_loop_device.c
 			*/

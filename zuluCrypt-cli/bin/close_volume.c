@@ -48,12 +48,15 @@ int zuluCryptEXECloseVolume( const char * dev,const char * mapping_name,uid_t ui
 	  */
 	 p = zuluCryptCreateMapperName( dev,mapping_name,uid,CLOSE ) ;
 	 
-	 if( !zuluCryptSecurityPathIsValid( StringContent( p ),uid ) )
+	 if( !zuluCryptSecurityPathIsValid( StringContent( p ),uid ) ){
 		 return zuluExit( 1,p ) ;
-	 
-	 if( !zuluCryptSecurityGainElevatedPrivileges() )
+	 }
+	 if( !zuluCryptSecurityGainElevatedPrivileges() ){
 		 return zuluExit( 7,p ) ;
-	 
+	 }
+	 /*
+	  * zuluCryptCloseVolume() is defined in ../lib/close_volume.c
+	  */
 	 st = zuluCryptCloseVolume( StringContent( p ),&m_point ) ;
 	
 	 if( st == 0 ){

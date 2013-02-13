@@ -28,8 +28,8 @@ static inline int zuluExit( int st,struct crypt_device * cd )
 static int _open_plain( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
 {
 	int flags ;
-	struct crypt_device * cd ;
 	
+	struct crypt_device * cd ;
 	struct crypt_params_plain params ;
 	
 	memset( &params,'\0',sizeof( struct crypt_params_plain ) ) ;
@@ -38,24 +38,25 @@ static int _open_plain( const char * device,const char * mapper,const char * mod
 	params.skip = 0;
 	params.offset = 0;
 	
-	if( zuluCryptPathIsNotValid( device ) )
+	if( zuluCryptPathIsNotValid( device ) ){
 		return 3 ;
-	
-	if( strstr( mode,"ro" ) != NULL )
+	}
+	if( StringHasComponent( mode,"ro" ) ){
 		flags = 1 ;
-	else
+	}else{
 		flags = 0 ;
-	
-	if( crypt_init( &cd,device ) != 0 )
+	}
+	if( crypt_init( &cd,device ) != 0 ){
 		return 2 ;
-	
-	if( crypt_format( cd,CRYPT_PLAIN,"aes","cbc-essiv:sha256",NULL,NULL,32,&params ) != 0 )
+	}
+	if( crypt_format( cd,CRYPT_PLAIN,"aes","cbc-essiv:sha256",NULL,NULL,32,&params ) != 0 ){
 		return zuluExit( 2,cd ) ;
-	
-	if( crypt_activate_by_passphrase( cd,mapper,CRYPT_ANY_SLOT,pass,pass_size,flags ) < 0 )
+	}
+	if( crypt_activate_by_passphrase( cd,mapper,CRYPT_ANY_SLOT,pass,pass_size,flags ) < 0 ){
 		return zuluExit( 2,cd ) ;
-	else
+	}else{
 		return zuluExit( 0,cd ) ;
+	}
 }
 
 int zuluCryptOpenPlain( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
@@ -64,10 +65,10 @@ int zuluCryptOpenPlain( const char * device,const char * mapper,const char * mod
 	string_t st ;
 	int fd ;
 	int r ;
-	if( strncmp( device,"/dev/",5 ) == 0 ){
+	if( StringPrefixMatch( device,"/dev/",5 ) ){
 		return _open_plain( device,mapper,mode,pass,pass_size ) ;
 	}else{
-		if( strstr( mode,"ro" ) != NULL ){
+		if( StringHasComponent( mode,"ro" ) ){
 			lmode = O_RDONLY ;
 		}else{
 			lmode = O_RDWR ;

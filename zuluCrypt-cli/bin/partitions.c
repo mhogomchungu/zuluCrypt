@@ -84,7 +84,7 @@ static inline int _allowedDevice( const char * device )
 	blkid_probe blkid ;
 	string_t str ;
 	
-	if( strncmp( device,"sr",2 ) == 0 ){
+	if( StringPrefixMatch( device,"sr",2 ) ){
 		/*
 		 * device is probably a cdrom or dvdrom,allow them
 		 */
@@ -394,21 +394,21 @@ void zuluCryptPrintPartitionProperties( const char * device )
 	
 	printf( "%s\t",sizebuffer_1 ) ;
 	
-	if( blkid_probe_lookup_value( blkid,"LABEL",&e,NULL ) == 0 )
+	if( blkid_probe_lookup_value( blkid,"LABEL",&e,NULL ) == 0 ){
 		printf( "%s\t",e ) ;
-	else
+	}else{
 		printf( "Nil\t" ) ;
-	
-	if( blkid_probe_lookup_value( blkid,"TYPE",&e,NULL ) == 0 )
+	}
+	if( blkid_probe_lookup_value( blkid,"TYPE",&e,NULL ) == 0 ){
 		printf( "%s\t",e ) ;
-	else
+	}else{
 		printf( "Nil\t" ) ;
-	
-	if( blkid_probe_lookup_value( blkid,"UUID",&e,NULL ) == 0 )
+	}
+	if( blkid_probe_lookup_value( blkid,"UUID",&e,NULL ) == 0 ){
 		printf( "%s\n",e ) ;
-	else
+	}else{
 		printf( "Nil\n" ) ;
-	
+	}
 	blkid_free_probe( blkid );
 	zuluCryptSecurityDropElevatedPrivileges();
 }
@@ -490,23 +490,26 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 	
 	st = StringGetFromFile( "/etc/crypttab" );
 	
-	if( st == StringVoid )
+	if( st == StringVoid ){
 		return StringListVoid ;
+	}
 	
 	stl = StringListStringSplit( st,'\n' ) ;
 	
 	StringDelete( &st ) ;
 	
-	if( stl == StringListVoid )
+	if( stl == StringListVoid ){
 		return StringListVoid ;
+	}
 	
 	it  = StringListBegin( stl ) ;
 	end = StringListEnd( stl ) ;
 	
 	for( ; it != end ; it++ ){
 		st = *it ;
-		if( StringStartsWith( st,"#" ) )
+		if( StringStartsWith( st,"#" ) ){
 			continue ; 
+		}
 		index = StringIndexOfChar( st,0,'/' ) ;
 		if( index == -1 ){
 			/*
@@ -514,11 +517,13 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 			 * 
 			 */
 			index = StringIndexOfChar( st,0,'U' ) ;
-			if( index == -1 )
+			if( index == -1 ){
 				continue ;
+			}
 			index = StringIndexOfChar( st,index,' ' ) ;
-			if( index == -1 )
+			if( index == -1 ){
 				continue ;
+			}
 			StringSubChar( st,index,'\0' ) ;
 			StringRemoveString( st,"\"" ) ;  /* remove quotes if they are used */
 			/*
@@ -538,8 +543,9 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 			 */
 			index_1 = StringIndexOfChar( st,index,' ' ) ; /*index is set before the conditional statement above */
 				
-			if ( index_1 == -1 )
+			if ( index_1 == -1 ){
 				continue ;
+			}
 			StringSubChar( st,index_1,'\0' ) ; 
 			stl_1 = StringListAppend( stl_1,StringContent( st ) + index ) ;
 		}
@@ -565,15 +571,17 @@ stringList_t zuluCryptGetPartitionFromConfigFile( const char * path )
 	st = StringGetFromFile( path ) ;
 	zuluCryptSecurityDropElevatedPrivileges() ;
 	
-	if( st == StringVoid )
+	if( st == StringVoid ){
 		return StringListVoid ;
-
+	}
+	
 	stl = StringListStringSplit( st,'\n' ) ;
 	
 	StringDelete( &st ) ;
 	
-	if( stl == StringListVoid )
+	if( stl == StringListVoid ){
 		return StringListVoid ;
+	}
 	
 	it  = StringListBegin( stl ) ;
 	end = StringListEnd( stl ) ;
@@ -620,8 +628,9 @@ int zuluCryptPartitionIsSystemPartition( const char * device )
 		 * zuluCryptLoopDeviceAddress() is defined in ../lib/create_loop_device.c
 		 */
 		dev = zuluCryptLoopDeviceAddress( device ) ;
-		if( dev == NULL )
+		if( dev == NULL ){
 			return 0 ;
+		}
 		if( _zuluCryptPartitionIsSystemPartition( dev ) ){
 			free( dev ) ;
 			return 1 ;

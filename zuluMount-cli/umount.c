@@ -18,18 +18,23 @@
  */
 #include "includes.h"
 
-int zuluMountUMount( const char * device,uid_t uid,const char * mode,int mount_point_option )
+int zuluMountUMount( ARGS * args )
 {
+	const char * device    = args->device ;
+	uid_t        uid       = args->uid    ;
+	const char * mode      = args->m_opts   ;
+	int mount_point_option = args->mpo    ;
 	char * loop_device ;
 	char * m_point = NULL ;
 	int status ;
 	string_t st = StringVoid ;
 	const char * dev = NULL ;
 	string_t xt ;
+	
 	if( mode ) {;}
 	if( mount_point_option ) {;}
 	
-	if( strncmp( device,"/dev/loop",9 ) == 0 ){
+	if( StringPrefixEqual( device,"/dev/loop" ) ){
 		/*
 		 * zuluCryptLoopDeviceAddress() is defined in ../zuluCrypt-cli/lib/create_loop_devices.c
 		 */
@@ -55,8 +60,9 @@ int zuluMountUMount( const char * device,uid_t uid,const char * mode,int mount_p
 		* zuluCryptGetMountPointFromPath() is defined in defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c 
 		*/
 		m_point = zuluCryptGetMountPointFromPath( device ) ;
-		if( m_point == NULL )
+		if( m_point == NULL ){
 			return _zuluExit( 100,st,m_point,"ERROR: device does not appear to be mounted" ) ;
+		}
 	}
 	
 	/*
@@ -78,8 +84,9 @@ outside of \"%s\"\n",StringContent( xt ) ) ;
 	/*
 	 * zuluCryptSecurityGainElevatedPrivileges() is defined in ../zuluCrypt-cli/bin/security.c
 	 */
-	if( !zuluCryptSecurityGainElevatedPrivileges() )
+	if( !zuluCryptSecurityGainElevatedPrivileges() ){
 		return _zuluExit( 102,st,m_point,"ERROR: could not get elevated privilege,check binary permissions" ) ;
+	}
 	/*
 	 * zuluCryptUnmountVolume() is defined in ../zuluCrypt-cli/lib/unmount_volume.c
 	 */

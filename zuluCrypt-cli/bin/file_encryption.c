@@ -75,26 +75,27 @@ static string_t crypt_mapper( const char * path,const char * key,uint64_t key_le
 	
 	char * mpath = realpath( path,NULL ) ;
 	
-	if( mpath == NULL )
+	if( mpath == NULL ){
 		return StringVoid ;
+	}
 	
 	p = zuluCryptCreateMapperName( mpath,strrchr( mpath,'/' ) + 1,0,OPEN ) ;
 
-	if( zuluCryptOpenPlain( mpath,StringContent( p ),"rw",key,key_len ) != 0 )
+	if( zuluCryptOpenPlain( mpath,StringContent( p ),"rw",key,key_len ) != 0 ){
 		StringDelete( &p ) ;
-	else	
+	}else{
 		StringMultiplePrepend( p,"/",crypt_get_dir(),END ) ;
+	}
 	
 	free( mpath ) ;
-	
 	return p ;
 }
 
 static int zuluExit( int st,int f_in,int f_out,string_t p )
 {
-	if( f_out != -1 )
+	if( f_out != -1 ){
 		close( f_out ) ;
-	
+	}
 	close( f_in ) ;
 	
 	zuluCryptCloseMapper( StringContent( p ) ) ;
@@ -127,9 +128,9 @@ int zuluCryptDecryptFile( const char * source,const char * dest,const char * key
 	 */
 	string_t p = crypt_mapper( source,key,key_len ) ;
 	
-	if( p == StringVoid )
+	if( p == StringVoid ){
 		return 1 ;
-	
+	}
 	f_in = open( StringContent( p ),O_RDONLY ) ;
 	
 	/*
@@ -138,8 +139,9 @@ int zuluCryptDecryptFile( const char * source,const char * dest,const char * key
 	 */
 	read( f_in,buffer,SIZE ) ;
 	
-	if( memcmp( buffer + 100,buffer + 200,100 ) != 0 )
+	if( memcmp( buffer + 100,buffer + 200,100 ) != 0 ){
 		return zuluExit( 2,f_in,f_out,p ) ;
+	}
 		
 	/*
 	 * get the size of encrypted data
@@ -157,8 +159,9 @@ int zuluCryptDecryptFile( const char * source,const char * dest,const char * key
 	
 	test = st.st_size - size ;
 	
-	if( test < SIZE || test >= ( SIZE * 2 ) )
+	if( test < SIZE || test >= ( SIZE * 2 ) ){
 		return zuluExit( 2,f_in,f_out,p ) ;
+	}
 	
 	f_out = open( dest,O_WRONLY | O_CREAT ) ;
 	
@@ -210,8 +213,9 @@ int zuluCryptEncryptFile( const char * source,const char * dest,const char * key
 	/*
 	 * make sure the encrypted file is a multiple of 512, important because data will be read/written in chunks of 512 bytes.
 	 */
-	while( size % SIZE != 0 )
+	while( size % SIZE != 0 ){
 		size++ ;
+	}
 	
 	/*
 	 * add 512 bytes to encrypted file, the exta space will be used to store the content size of the data to be encrypted.
@@ -232,8 +236,9 @@ int zuluCryptEncryptFile( const char * source,const char * dest,const char * key
 		
 		size_1 += SIZE ;
 		
-		if( size_1 == size )
+		if( size_1 == size ){
 			break ;
+		}
 	}
 	
 	close( f_out ) ;
@@ -283,9 +288,9 @@ int zuluCryptEncryptFile( const char * source,const char * dest,const char * key
 	/*
 	 * Copy over plain text data to the "shell" file through the mapper, creating an encrypted file.
 	 */	
-	while( read( f_in,buffer,SIZE ) > 0 )
+	while( read( f_in,buffer,SIZE ) > 0 ){
 		write( f_out,buffer,SIZE ) ;
-	
+	}
 	close( f_in ) ;
 	close( f_out ) ;
 	

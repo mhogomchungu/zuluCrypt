@@ -113,7 +113,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	
 	const char * cmapper ;
 	
-	if( strncmp( device,"/dev/loop",9 ) == 0 ){
+	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
 		/*
 		 * zuluCryptLoopDeviceAddress() is defined in ../lib/create_loop_device.c
 		 */
@@ -142,12 +142,12 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	 */
 	n = zuluCryptPartitionIsMounted( device ) ;
 	
-	if( j == 1 )
+	if( j == 1 ){
 		return zuluExit( stl,13 ) ;
-	
-	if( n == 1 )
+	}
+	if( n == 1 ){
 		return zuluExit( stl,14 ) ;
-	
+	}
 	if( k == 1 ){
 		*passphrase = StringRandomString( 64 ) ;
 		cpass = StringContent( *passphrase ) ;
@@ -218,9 +218,9 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 		return zuluExit( stl,1 ) ;
 	}
 	
-	if( op == 1 )
+	if( op == 1 ){
 		return zuluExit( stl,0 ) ;
-	else{
+	}else{
 		StringListClearDelete( &stl ) ;
 		return 0 ;
 	}
@@ -243,7 +243,7 @@ int zuluCryptEXEWriteDeviceWithJunk( const struct_opts * opts,const char * mappi
 	string_t * mapper  = StringListAssign( stl ) ;
 	string_t * confirm = StringListAssign( stl );
 	
-	double size ;	
+	double size ;
 	double size_written ;
 	
 	const char * device =  opts->device ;
@@ -252,7 +252,7 @@ int zuluCryptEXEWriteDeviceWithJunk( const struct_opts * opts,const char * mappi
 	
 	int ratio ;
 	int prev_ratio ;
-	int k ;	
+	int k ;
 	
 	struct sigaction sigac;
 	
@@ -266,9 +266,9 @@ int zuluCryptEXEWriteDeviceWithJunk( const struct_opts * opts,const char * mappi
 	
 	__exit_as_requested = 0 ;
 		
-	if( ( k = open_plain_as_me_1( opts,mapping_name,uid,0 ) ) != 0 ) 
+	if( ( k = open_plain_as_me_1( opts,mapping_name,uid,0 ) ) != 0 ){
 		return k ;
-	
+	}
 	*mapper = zuluCryptCreateMapperName( device,mapping_name,uid,OPEN ) ;
 	
 	StringMultiplePrepend( *mapper,"/",crypt_get_dir(),END ) ;
@@ -278,9 +278,9 @@ int zuluCryptEXEWriteDeviceWithJunk( const struct_opts * opts,const char * mappi
 		printf( "Are you sure you want to proceed? Type \"YES\" and press enter if you are sure: " ) ;
 		
 		*confirm = StringGetFromTerminal_1( 3 ) ;
-		if( *confirm == StringVoid )
+		if( *confirm == StringVoid ){
 			return zuluExit( stl,17 ) ;
-		else{
+		}else{
 			k = StringEqual( *confirm,"YES" ) ;
 		
 			if( k == 0 ){
@@ -304,9 +304,9 @@ int zuluCryptEXEWriteDeviceWithJunk( const struct_opts * opts,const char * mappi
 	
 	while( write( k,buffer,SIZE ) > 0 ){
 
-		if( __exit_as_requested == 1 )
+		if( __exit_as_requested == 1 ){
 			break ;
-		
+		}
 		size_written += SIZE ;
 		
 		ratio = ( int ) ( ( size_written / size ) * 100 ) ;
@@ -316,7 +316,7 @@ int zuluCryptEXEWriteDeviceWithJunk( const struct_opts * opts,const char * mappi
 			fflush( stdout );
 			prev_ratio = ratio ;
 		}
-	}	
+	}
 		
 	close( k ) ;
 	if( zuluCryptSecurityGainElevatedPrivileges() ){
@@ -324,8 +324,9 @@ int zuluCryptEXEWriteDeviceWithJunk( const struct_opts * opts,const char * mappi
 		zuluCryptSecurityDropElevatedPrivileges() ;
 	}
 		
-	if( __exit_as_requested == 1 ) 
+	if( __exit_as_requested == 1 ){
 		return zuluExit( stl,15 ) ;
-	else
+	}else{
 		return zuluExit( stl,3 ) ;
+	}
 }

@@ -42,9 +42,9 @@ int zuluCryptVolumeIsTcrypt( const char * device,const char * key,size_t key_len
 	params.passphrase_size = key_len ;
 	params.flags           = CRYPT_TCRYPT_LEGACY_MODES ;
 	
-	if( crypt_init( &cd,device ) < 0 )
+	if( crypt_init( &cd,device ) < 0 ){
 		return 0 ;
-	
+	}
 	if( crypt_load( cd,CRYPT_TCRYPT,&params ) == 0 ){
 		return zuluExit( 1,cd ) ;
 	}else{
@@ -52,10 +52,11 @@ int zuluCryptVolumeIsTcrypt( const char * device,const char * key,size_t key_len
 	}
 }
 #else
-int zuluCryptVolumeIsTcrypt( const char * device __attribute__((unused)),
-			     const char * key __attribute__((unused)),
-			     size_t key_len __attribute__((unused)) )
+int zuluCryptVolumeIsTcrypt( const char * device,const char * key,size_t key_len )
 {
+	if( device ){;}
+	if( key ){;}
+	if( key_len ){;}
 	return 0 ;
 }
 #endif
@@ -78,13 +79,15 @@ int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * mo
 	params.passphrase_size  = pass_size ;
 	params.flags = CRYPT_TCRYPT_LEGACY_MODES ;
 	
-	if( strstr( mode,"ro" ) != NULL )
+	if( strstr( mode,"ro" ) != NULL ){
 		flags |= CRYPT_ACTIVATE_READONLY;
-	
-	if( crypt_init( &cd,device ) < 0 )
+	}
+	if( crypt_init( &cd,device ) < 0 ){
 		return 1 ;
-	if( crypt_load( cd,CRYPT_TCRYPT,&params ) < 0 )
+	}
+	if( crypt_load( cd,CRYPT_TCRYPT,&params ) < 0 ){
 		return zuluExit( 1,cd ) ;
+	}
 	if( crypt_activate_by_volume_key( cd,mapper,NULL,0,flags ) == 0 ){
 		return zuluExit( 0,cd ) ;
 	}else{
@@ -92,12 +95,13 @@ int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * mo
 	}
 }
 #else
-int zuluCryptOpenTcrypt( const char * device __attribute__((unused)),
-			 const char * mapper __attribute__((unused)),
-			 const char * mode __attribute__((unused)),
-			 const char * pass __attribute__((unused)),
-			 size_t pass_size __attribute__((unused)) )
+int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
 {
+	if( device ){;}
+	if( mapper ){;}
+	if( mode )  {;}
+	if( pass )  {;}
+	if( pass_size ) {;}
 	return 1 ;
 }
 #endif

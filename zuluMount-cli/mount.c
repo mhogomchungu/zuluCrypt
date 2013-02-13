@@ -154,10 +154,14 @@ static int _zuluMountPartitionAccess( const char * device,const char * m_opts,ui
 	return st ;
 }
 
-int zuluMountMount( const char * device,const char * m_point,
-			    const char * m_opts,const char * fs_opts,uid_t uid,
-			    int mount_point_option )
+int zuluMountMount( ARGS * args )
 {
+	const char * device    = args->device  ;
+	const char * m_point   = args->m_point ;
+	const char * m_opts    = args->m_opts  ;
+	const char * fs_opts   = args->fs_opts ;
+	uid_t        uid       = args->uid     ;
+	int mount_point_option = args->mpo;
 	int status ;
 	int mount_point_from_fstab = mount_point_option ;
 	string_t z = StringVoid ;
@@ -172,7 +176,7 @@ ERROR: insuffienct privilege to manage a system partition.\nnecessary privileges
 	
 	if( mount_point_from_fstab ){;}
 	
-	if( strncmp( device,"/dev/loop",9 ) == 0 ){
+	if( StringPrefixEqual( device,"/dev/loop" ) ){
 		/*
 		 * zuluCryptLoopDeviceAddress() is defined in ../zuluCrypt-cli/lib/create_loop_devices.c
 		 */
@@ -187,14 +191,15 @@ ERROR: insuffienct privilege to manage a system partition.\nnecessary privileges
 	/*
 	 * zuluCryptMountFlagsAreNotCorrect() is defined in ../zuluCrypt-cli/bin/mount_flags.c
 	 */
-	if( zuluCryptMountFlagsAreNotCorrect( m_opts,uid,&m_flags ) )
+	if( zuluCryptMountFlagsAreNotCorrect( m_opts,uid,&m_flags ) ){
 		return _zuluExit( 100,z,path,"ERROR: insuffienct privileges to mount the volume with given mount options" ) ;
-	
+	}
 	/*
 	 * zuluCryptPartitionIsMounted is defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c
 	 */
-	if( zuluCryptPartitionIsMounted( dev ) )
+	if( zuluCryptPartitionIsMounted( dev ) ){
 		return _zuluExit( 102,z,path,"ERROR: device already mounted" ) ;
+	}
 	
 	status = _zuluMountPartitionAccess( dev,m_opts,uid ) ;
 	
@@ -211,10 +216,12 @@ ERROR: insuffienct privilege to manage a system partition.\nnecessary privileges
 	 */
 	z = zuluCryptSecurityCreateMountPoint( device,m_point,uid ) ;
 	
-	if( z == StringVoid )
+	if( z == StringVoid ){
 		return _zuluExit( 106,z,path,"ERROR: could not create mount point path,path already taken" ) ;
+	}
 	
 	rm_point = StringContent( z ) ;
+	
 	if( !zuluCryptSecurityGainElevatedPrivileges() )
 		return _zuluExit( 107,z,path,"ERROR: could not get elevated privilege,check binary permissions" ) ;
 	/*
