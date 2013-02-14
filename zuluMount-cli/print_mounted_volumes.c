@@ -215,7 +215,7 @@ static void _printDeviceProperties( string_t entry )
 	const char * e ;
 	const char * f ;
 
-	size_t index ;
+	ssize_t index ;
 	
 	string_t st = StringVoid ;
 	
@@ -243,10 +243,12 @@ static void _printDeviceProperties( string_t entry )
 			if( StringPrefixEqual( q + _k,"-UUID-" ) ){
 				st = String( q ) ;
 				StringRemoveLeft( st,_k + 6 ) ;
-				StringPrepend( st,"UUID=\"" ) ;
+				e = StringPrepend( st,"UUID=\"" ) ;
 				index = StringLastIndexOfChar( st,'-' ) ;
-				StringSubChar( st,index,'\"' ) ;
-				e = StringSubChar( st,index+1,'\0' ) ;
+				if( index >= 0 ){
+					StringSubChar( st,index,'\"' ) ;
+					e = StringSubChar( st,index+1,'\0' ) ;
+				}
 			}else{
 				e = x ;
 			}

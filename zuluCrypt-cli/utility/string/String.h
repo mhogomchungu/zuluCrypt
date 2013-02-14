@@ -544,7 +544,6 @@ const char * StringInsertCharString( string_t st,char x,const char * y ) ;
  */
 const char * StringInsertCharStringPos( string_t st,char x,const char * y,size_t p ) ;
 
-
 /*
  * Insert character x infront of every character y in a string handled by handle st.
  * Retun a poiter to the final string on success and NULL on error and the original string remain intact
