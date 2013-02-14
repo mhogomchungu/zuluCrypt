@@ -558,9 +558,9 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 	/*
 	 * zuluCryptMountHasNotAllowedFileSystemOptions() is defined in ./mount_fs_options.c
 	 */
-	if( zuluCryptMountHasNotAllowedFileSystemOptions( uid,fs_opts,fs ) )
+	if( zuluCryptMountHasNotAllowedFileSystemOptions( uid,fs_opts,fs ) ){
 		return zuluExit( -1,stl ) ;
-	
+	}
 	mst.fs_flags = fs_opts ;
 	mst.fs = StringContent( fs ) ;
 	opts = StringListAssign( stl ) ;

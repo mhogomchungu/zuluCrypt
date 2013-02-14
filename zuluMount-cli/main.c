@@ -432,6 +432,7 @@ Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The de
 		printf( "ERROR: a non supported device encountered,device is missing or permission denied\n" ) ;
 		return 224 ;
 	}else{
+		args->device = dev ;
 		status = _zuluMountExe( args ) ;
 	}
 	
