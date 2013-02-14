@@ -86,9 +86,9 @@ QString socketSendKey::getSocketPath()
 
 void socketSendKey::run()
 {
-	if( !m_connected )
+	if( !m_connected ){
 		this->openConnection() ;
-
+	}
 	if( !m_connected ){
 		emit keyNotSent();
 	}else{
@@ -125,6 +125,7 @@ void socketSendKey::zuluCryptPluginManagerCloseConnection( void * handle )
 
 socketSendKey::~socketSendKey()
 {
-	if( m_closeConnection )
+	if( m_closeConnection ){
 		::zuluCryptPluginManagerCloseConnection( m_connectionHandle );
+	}
 }

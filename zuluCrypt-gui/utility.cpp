@@ -80,9 +80,9 @@ QString utility::mapperPath( QString rpath )
 
 	int g = z.size() ;
 
-	for( int i = 0 ; i < g ; i++ )
+	for( int i = 0 ; i < g ; i++ ){
 		path.replace( z.at( i ),QChar( '_' ) );
-
+	}
 	return path ;
 }
 
@@ -92,9 +92,9 @@ QString utility::hashPath( QString p )
 	size_t l = p.size() ;
 	double h = 0 ;
 
-	for ( i = 0 ; i < l ; i++ )
+	for ( i = 0 ; i < l ; i++ ){
 		h = h + p.at( i ).toAscii() ;
-
+	}
 	return QString( "-" ) + QString::number( h );
 }
 
@@ -110,9 +110,9 @@ bool utility::canCreateFile( QString path )
 
 	int i = open( q.constData(),O_WRONLY|O_CREAT ) ;
 
-	if( i == -1 )
+	if( i == -1 ){
 		return false ;
-	else{
+	}else{
 		close( i ) ;
 		remove( q );
 		return true ;
@@ -178,25 +178,25 @@ QStringList utility::deviceProperties( QString device )
 
 	i = blkid_probe_lookup_value( dp,"LABEL",&buffer,NULL );
 
-	if( i == 0 )
+	if( i == 0 ){
 		prp << QString( buffer ) ;
-	else
+	}else{
 		prp << QString( "Nil" ) ;
-
+	}
 	i = blkid_probe_lookup_value( dp,"TYPE",&buffer,NULL );
 
-	if( i == 0 )
+	if( i == 0 ){
 		prp << QString( buffer ) ;
-	else
+	}else{
 		prp << QString( "Nil" ) ;
-
+	}
 	i = blkid_probe_lookup_value( dp,"UUID",&buffer,NULL );
 
-	if( i == 0 )
+	if( i == 0 ){
 		prp << QString( buffer ) ;
-	else
+	}else{
 		prp << QString( "Nil" ) ;
-
+	}
 	blkid_free_probe( dp ) ;
 
 	return prp ;
@@ -221,8 +221,9 @@ QStringList utility::luksEmptySlots( QString volumePath )
 	QProcess N ;
 	N.start( QString( ZULUCRYPTzuluCrypt ) + QString( " -b -d \"" ) + volumePath + QString( "\"" ) );
 	N.waitForFinished() ;
-	if( N.exitCode() != 0 )
+	if( N.exitCode() != 0 ){
 		return list ;
+	}
 	QByteArray s = N.readAllStandardOutput() ;
 	N.close();
 	int i = 0 ;
@@ -248,17 +249,14 @@ void utility::addToFavorite( QString dev,QString m_point )
 QStringList utility::readFavorites()
 {
 	QFile f( QDir::homePath() + QString( "/.zuluCrypt/favorites" ) ) ;
-
 	QStringList list ;
-
 	if( f.open( QIODevice::ReadOnly ) ){
 		QString data( f.readAll() ) ;
 		f.close();
-
-		if( data.isEmpty() == false )
+		if( !data.isEmpty() ){
 			list = data.split( "\n" ) ;
+		}
 	}
-
 	return list ;
 }
 

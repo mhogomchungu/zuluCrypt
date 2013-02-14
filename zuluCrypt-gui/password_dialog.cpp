@@ -100,8 +100,9 @@ void passwordDialog::pbPlugin()
 		list.removeOne( QString( "..") ) ;
 
 		if( kwalletplugin::hasFunctionality() ){
-			if( !list.contains( QString( "kwallet" ) ) )
+			if( !list.contains( QString( "kwallet" ) ) ){
 				list.append( QString( "kwallet" ) ) ;
+			}
 		}
 	}
 
@@ -115,14 +116,13 @@ void passwordDialog::pbPlugin()
 	int j = list.size()  ;
 
 	if( j == 0 ){
-
 		DialogMsg msg( this ) ;
 		return	msg.ShowUIOK( tr( "ERROR" ),tr( "could not find any plugin installed" ) ) ;
 	}
 
-	for( int i = 0 ; i < j ; i++ )
+	for( int i = 0 ; i < j ; i++ ){
 		m_pluginMenu->addAction( list.at( i ) ) ;
-
+	}
 	m_pluginMenu->addSeparator() ;
 
 	m_pluginMenu->addAction( tr( "cancel" ) ) ;
@@ -143,8 +143,9 @@ void passwordDialog::pbKeyOption()
 
 void passwordDialog::pbPluginEntryClicked( QAction * e )
 {
-	if( e->text() != tr( "cancel" ) )
+	if( e->text() != tr( "cancel" ) ){
 		m_ui->PassPhraseField->setText( e->text() ) ;
+	}
 }
 
 void passwordDialog::cbStateChanged( int state )
@@ -162,16 +163,17 @@ void passwordDialog::setDefaultOpenMode()
 void passwordDialog::closeEvent( QCloseEvent * e )
 {
 	e->ignore();
-	if( m_isWindowClosable == true )
+	if( m_isWindowClosable ){
 		this->HideUI() ;
+	}
 }
 
 void passwordDialog::ShowUI( QString volumePath, QString mount_point )
 {
 	m_point = mount_point.split( QString( "/" ) ).last() ;
-	if( m_point.isEmpty() )
+	if( m_point.isEmpty() ){
 		m_point = volumePath.split( QString( "/" ) ).last() ;
-
+	}
 	m_point.remove( QString( "\"" ) ) ;
 
 	m_open_with_path = true ;
@@ -183,10 +185,11 @@ void passwordDialog::ShowUI( QString volumePath, QString mount_point )
 	m_ui->MountPointPath->setText( m_point );
 	m_ui->PassPhraseField->setFocus();
 	QString vp = volumePath.mid( 0,5 );
-	if( vp == QString( "/dev/" ) || vp == QString( "UUID=" ) )
+	if( vp == QString( "/dev/" ) || vp == QString( "UUID=" ) ){
 		m_ui->PushButtonVolumePath->setIcon( QIcon( QString( ":/partition.png" ) ) );
-	else
+	}else{
 		m_ui->PushButtonVolumePath->setIcon( QIcon( QString( ":/file.png" ) ) );
+	}
 	this->show();
 }
 
@@ -213,11 +216,11 @@ void passwordDialog::mountPointPath( QString path )
 void passwordDialog::keyTextChanged( QString txt )
 {
 	if( m_ui->radioButtonPlugin->isChecked() ){
-
-		if( txt.contains( QString( "/") ) )
+		if( txt.contains( QString( "/") ) ){
 			m_ui->labelPassphrase->setText( tr( "plugin path" ) ) ;
-		else
+		}else{
 			m_ui->labelPassphrase->setText( tr( "plugin name" ) ) ;
+		}
 	}
 }
 
@@ -274,8 +277,9 @@ void passwordDialog::clickedPassPhraseFromFileButton()
 	}
 
 	QString Z = QFileDialog::getOpenFileName( this,msg,QDir::homePath(),0 );
-	if( !Z.isEmpty() )
+	if( !Z.isEmpty() ){
 		m_ui->PassPhraseField->setText( Z );
+	}
 }
 
 void passwordDialog::clickedPartitionOption( QString dev )
@@ -294,18 +298,20 @@ void passwordDialog::mount_point( void )
 		m_ui->MountPointPath->setText( Z );
 	}
 
-	if( m_ui->MountPointPath->text().isEmpty() )
+	if( m_ui->MountPointPath->text().isEmpty() ){
 		m_ui->MountPointPath->setFocus();
-	else if( m_ui->PassPhraseField->text().isEmpty() )
+	}else if( m_ui->PassPhraseField->text().isEmpty() ){
 		m_ui->PassPhraseField->setFocus();
+	}
 }
 
 void passwordDialog::file_path( void )
 {
 	QString Z = QFileDialog::getOpenFileName( this,tr( "Select encrypted volume" ),QDir::homePath(),0 );
 	m_ui->OpenVolumePath->setText( Z );
-	if( !Z.isEmpty() )
+	if( !Z.isEmpty() ){
 		m_ui->MountPointPath->setText( Z.split( QString( "/" ) ).last() );
+	}
 }
 
 void passwordDialog::HideUI()
@@ -336,11 +342,11 @@ void passwordDialog::buttonOpenClicked( void )
 
 	QString mode ;
 
-	if ( m_ui->checkBoxReadOnly->isChecked() )
+	if ( m_ui->checkBoxReadOnly->isChecked() ){
 		mode = QString( "ro" ) ;
-	else
+	}else{
 		mode = QString( "rw" ) ;
-
+	}
 	QString passtype ;
 
 	if ( m_ui->radioButtonPassPhraseFromFile->isChecked() ){
@@ -356,8 +362,9 @@ void passwordDialog::buttonOpenClicked( void )
 				passtype = QString( "-p" );
 				m_key = this->getKeyFromKWallet() ;
 
-				if( m_key.isEmpty() )
+				if( m_key.isEmpty() ){
 					return ;
+				}
 			}else{
 				passtype = QString( "-G" ) ;
 			}
@@ -414,9 +421,9 @@ QString passwordDialog::getKeyFromKWallet()
 
 	QString uuid = m_ui->OpenVolumePath->text() ;
 
-	if( uuid.mid( 0,5 ) != QString( "UUID=") )
+	if( uuid.mid( 0,5 ) != QString( "UUID=") ){
 		uuid = utility::getUUIDFromPath( uuid ) ;
-
+	}
 	if( uuid.isEmpty() ){
 		msg.ShowUIOK( tr( "ERROR" ),tr( "can store and retrieve passphrases only for LUKS volumes" ) ) ;
 	}else{
@@ -491,8 +498,9 @@ void passwordDialog::enableAll()
 		m_ui->pbKeyOption->setEnabled( true );
 	}
 
-	if( m_ui->radioButtonPassPhraseFromFile->isChecked() )
+	if( m_ui->radioButtonPassPhraseFromFile->isChecked() ){
 		m_ui->pushButtonPlugin->setEnabled( false );
+	}
 }
 
 void passwordDialog::fileManagerOpenStatus( int exitCode, int exitStatus,int startError )
@@ -528,15 +536,15 @@ void passwordDialog::complete( QString output )
 	list.append( utility::resolvePath( m_ui->OpenVolumePath->text() ) ) ;
 	list.append( utility::mountPath( m_point ) ) ;
 
-	if( output.contains( QString( "luks" ) ) )
+	if( output.contains( QString( "luks" ) ) ){
 		list.append( QString( "luks" ) );
-	else if( output.contains( QString( "plain" ) ) )
+	}else if( output.contains( QString( "plain" ) ) ){
 		list.append( QString( "plain" ) );
-	else if( output.contains( QString( "tcrypt" ) ) )
+	}else if( output.contains( QString( "tcrypt" ) ) ){
 		list.append( QString( "tcrypt" ) );
-	else
+	}else{
 		list.append( QString( "Nil" ) );
-
+	}
 	tablewidget::addRowToTable( m_table,list ) ;
 
 	this->HideUI();

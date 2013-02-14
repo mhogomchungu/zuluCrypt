@@ -29,14 +29,15 @@ manageSystemVolumes::manageSystemVolumes( QWidget * parent ) :QDialog(parent)
 
 void manageSystemVolumes::defaultButton()
 {
-	if( m_ui->pbDone->hasFocus() )
+	if( m_ui->pbDone->hasFocus() ){
 		this->pbDone();
-	else if( m_ui->pbFile->hasFocus() )
+	}else if( m_ui->pbFile->hasFocus() ){
 		this->pbFile();
-	else if( m_ui->pbPartition->hasFocus() )
+	}else if( m_ui->pbPartition->hasFocus() ){
 		this->pbPartition();
-	else
+	}else{
 		this->contextMenu();
+	}
 }
 
 void manageSystemVolumes::currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous )
@@ -47,22 +48,23 @@ void manageSystemVolumes::currentItemChanged( QTableWidgetItem * current,QTableW
 void manageSystemVolumes::readSystemPartitions()
 {
 	QFile file( m_path ) ;
-	if( !file.open( QIODevice::ReadOnly ) )
+	if( !file.open( QIODevice::ReadOnly ) ){
 		return ;
-
+	}
 	QStringList entries = QString( file.readAll() ).split( '\n' ) ;
 
 	file.close();
 
-	if( entries.isEmpty() )
+	if( entries.isEmpty() ){
 		return ;
-
+	}
 	entries.removeDuplicates() ;
 
 	int j = entries.size() ;
 
-	for( int i = 0 ; i < j ; i++ )
+	for( int i = 0 ; i < j ; i++ ){
 		this->addItemsToTable( entries.at( i ) );
+	}
 }
 
 void manageSystemVolumes::writeSystemPartitions()
@@ -110,9 +112,9 @@ void manageSystemVolumes::itemClicked( QTableWidgetItem * current,bool clicked )
 	m.addSeparator() ;
 	m.addAction( tr( "cancel" ) );
 
-	if( clicked == true )
+	if( clicked == true ){
 		m.exec( QCursor::pos() ) ;
-	else{
+	}else{
 		int x = m_ui->tableWidget->columnWidth( 0 ) / 2 ;
 		int y = m_ui->tableWidget->rowHeight( current->row() ) * current->row() + 20 ;
 		m.exec( m_ui->tableWidget->mapToGlobal( QPoint( x,y ) ) ) ;
@@ -126,15 +128,16 @@ void manageSystemVolumes::removeCurrentRow()
 
 	DialogMsg msg( this ) ;
 
-	if( msg.ShowUIYesNoDefaultNo( tr( "WARNING"),m ) == QMessageBox::Yes )
+	if( msg.ShowUIYesNoDefaultNo( tr( "WARNING"),m ) == QMessageBox::Yes ){
 		tablewidget::deleteRowFromTable( m_ui->tableWidget,it->row() ) ;
+	}
 }
 
 void manageSystemVolumes::addItemsToTable( QString path )
 {
-	if( path.isEmpty() )
+	if( path.isEmpty() ){
 		m_ui->tableWidget->setFocus();
-	else{
+	}else{
 		QStringList l ;
 		l.append( path );
 		this->addItemsToTable( l );

@@ -41,16 +41,16 @@ void startupupdateopenedvolumes::run()
 
 	QStringList l = QString( p.readAll() ).split( "\n" ) ;
 
-	if( m_status )
+	if( m_status ){
 		return ;
-
+	}
 	p.close();
 
 	int j = l.size() - 1 ;
 
-	if( j == 0 )
+	if( j == 0 ){
 		return ;
-
+	}
 	QStringList entry ;
 
 	for( int i = 0 ; i < j ; i++ ){

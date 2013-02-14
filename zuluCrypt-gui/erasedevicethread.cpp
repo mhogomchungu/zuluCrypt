@@ -38,15 +38,16 @@ int erasedevicethread::writeJunk()
 	const int ZSIZE = 512 ;
 	QByteArray arraypath = m_path.toAscii() ;
 	int f = open( arraypath.constData(),O_RDONLY ) ;
-	if( f == -1 )
+	if( f == -1 ){
 		return 8;
+	}
 	qint64 size = ( qint64 ) blkid_get_dev_size( f )   ;
 	close( f ) ;
 
 	QFile file( m_path ) ;
-	if( !file.open( QIODevice::WriteOnly ) )
+	if( !file.open( QIODevice::WriteOnly ) ){
 		return 8 ;
-
+	}
 	char buffer[ SIZE ] ;
 
 	QFile random( QString( "/dev/urandom" ) ) ;
@@ -57,8 +58,9 @@ int erasedevicethread::writeJunk()
 	int j = 0 ;
 	int k ;
 	do{
-		if( m_status == 5 )
+		if( m_status == 5 ){
 			break ;
+		}
 		random.read( buffer,ZSIZE ) ;
 		file.write( buffer,ZSIZE ) ;
 		file.flush() ;
@@ -67,8 +69,9 @@ int erasedevicethread::writeJunk()
 
 		k = ( int ) ( size_written * 100 / size ) ;
 
-		if( k > j )
+		if( k > j ){
 			emit progress( k );
+		}
 		j = k ;
 	}while( size_written < size ) ;
 
@@ -96,9 +99,9 @@ void erasedevicethread::run()
 		 */
 		m_status = this->openMapper() ;
 
-		if( m_status != 0 )
+		if( m_status != 0 ){
 			return ;
-
+		}
 		this->writeJunkThroughMapper();
 		this->closeMapper();
 	}
@@ -108,9 +111,9 @@ void erasedevicethread::writeJunkThroughMapper()
 {
 	QString path = utility::mapperPath( m_path ) ;
 	QFile fd( path ) ;
-	if( !fd.open( QIODevice::WriteOnly ) )
+	if( !fd.open( QIODevice::WriteOnly ) ){
 		return ;
-
+	}
 	const int ZSIZE = 1024 ;
 
 	qint64 size_written = 0 ;
@@ -124,17 +127,17 @@ void erasedevicethread::writeJunkThroughMapper()
 
 	QByteArray arraypath = path.toAscii() ;
 	int f = open( arraypath.constData(),O_RDONLY ) ;
-	if( f == -1 )
+	if( f == -1 ){
 		return ;
-
+	}
 	qint64 dev_size = ( qint64 ) blkid_get_dev_size( f )  ;
 	close( f ) ;
 
 	while( fd.write( buffer,ZSIZE ) > 0 ){
 
-		if( m_status == 5 )
+		if( m_status == 5 ){
 			break ;
-
+		}
 		fd.flush() ;
 
 		size_written += ZSIZE ;

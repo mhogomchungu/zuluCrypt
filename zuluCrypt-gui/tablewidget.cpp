@@ -29,8 +29,9 @@ void tablewidget::selectTableRow( QTableWidgetItem * current,QTableWidgetItem * 
 			col = table->columnCount() ;
 			j = current->row() ;
 
-			for( i = 0 ; i < col ; i++ )
+			for( i = 0 ; i < col ; i++ ){
 				table->item( j,i )->setSelected( true );
+			}
 		}
 
 		table->setCurrentCell( j,table->columnCount() -1 );
@@ -46,8 +47,9 @@ void tablewidget::selectTableRow( QTableWidgetItem * current,QTableWidgetItem * 
 			col = table->columnCount() ;
 			j = previous->row() ;
 
-			for( i = 0 ; i < col ; i++ )
+			for( i = 0 ; i < col ; i++ ){
 				table->item( j,i )->setSelected( false );
+			}
 		}
 
 		table->setFocus();
@@ -125,8 +127,9 @@ void tablewidget::addRowToTable( QTableWidget * table,QStringList & list,QFont &
 void tablewidget::deleteRowFromTable( QTableWidget * table,int row )
 {
 	table->removeRow( row );
-	if( table->rowCount() > 0 )
+	if( table->rowCount() > 0 ){
 		table->setCurrentCell( table->rowCount() - 1,table->columnCount() -  1 );
+	}
 	table->setFocus();
 }
 

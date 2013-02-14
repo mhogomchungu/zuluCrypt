@@ -59,43 +59,17 @@ void managepartitionthread::openPathInFileManager()
 
 void managepartitionthread::run()
 {
-	if( m_action == QString( "update") ){
-
-		this->partitionList();
-
-	}else if( m_action == QString( "mount" ) ){
-
-		this->mount();
-
-	}else if( m_action == QString( "umount" ) ){
-
-		this->umount( m_type );
-
-	}else if( m_action == QString( "cryptoOpen" ) ){
-
-		this->cryptoOpen();
-
-	}else if( m_action == QString( "volumeProperties" ) ){
-
-		this->volumeProperties();
-
-	}else if( m_action == QString( "volumeMiniProperties" ) ){
-
-		this->volumeMiniProperties() ;
-
-	}else if( m_action == QString( "openPath" ) ){
-
-		this->openPathInFileManager();
-
-	}else if( m_action == QString( "checkPermissions" ) ){
-
-		this->checkPermissions();
-
-	}else if( m_action == QString( "volumeType" ) ){
-
-		this->getVolumeType();
+	switch( m_action ){
+		case managepartitionthread::Update              : return this->partitionList();
+		case managepartitionthread::Mount               : return this->mount();
+		case managepartitionthread::Unmount             : return this->umount( m_type );
+		case managepartitionthread::CryptoOpen          : return this->cryptoOpen();
+		case managepartitionthread::VolumeProperties    : return this->volumeProperties();
+		case managepartitionthread::VolumeMiniProperties: return this->volumeMiniProperties() ;
+		case managepartitionthread::OpenPath            : return this->openPathInFileManager();
+		case managepartitionthread::CheckPermissions    : return this->checkPermissions();
+		case managepartitionthread::VolumeType          : return this->getVolumeType();
 	}
-
 }
 
 void managepartitionthread::getVolumeType()
@@ -269,7 +243,7 @@ void managepartitionthread::umount( QString type )
 	p.close();
 }
 
-void managepartitionthread::startAction( QString action )
+void managepartitionthread::startAction( managepartitionthread::Action action )
 {
 	m_action = action ;
 	QThreadPool::globalInstance()->start( this ) ;

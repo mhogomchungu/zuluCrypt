@@ -46,11 +46,11 @@ of all present data in \"%1\".\n\nAre you sure you want to continue?" ).arg( m_p
 
 void CreateVolumeDialog::pbNo()
 {
-	if( m_opt_count == 0 )
+	if( m_opt_count == 0 ){
 		m_opt = 0 ;
-	else
+	}else{
 		m_opt = 1 ;
-
+	}
 	this->hide();
 	this->deleteLater();
 }

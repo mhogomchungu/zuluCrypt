@@ -37,8 +37,18 @@ class managepartitionthread : public QObject,public QRunnable
 	Q_OBJECT
 public:
 	managepartitionthread( void ) ;
-
-	void startAction( QString action ) ;
+	enum Action{
+		Update,
+		Mount,
+		Unmount,
+		CryptoOpen,
+		VolumeProperties,
+		VolumeMiniProperties,
+		OpenPath,
+		CheckPermissions,
+		VolumeType
+	};
+	void startAction( managepartitionthread::Action ) ;
 	void setMode( QString ) ;
 	void setDevice( QString ) ;
 	void setType( QString ) ;
@@ -64,7 +74,7 @@ private:
 	void mount( void ) ;
 	void umount( QString ) ;
 	void getVolumeType( void );
-	QString m_action ;
+	managepartitionthread::Action m_action ;
 	QString m_device ;
 	QString m_point ;
 	QString m_keySource ;

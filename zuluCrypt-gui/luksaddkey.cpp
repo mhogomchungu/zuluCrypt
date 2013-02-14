@@ -80,10 +80,11 @@ void luksaddkey::keyChanged( QString key )
 {
 	if( m_ui->radioButtonNewPassphrase && m_keystrength->canCheckQuality() ){
 		int st = m_keystrength->quality( key ) ;
-		if(  st < 0 )
+		if(  st < 0 ){
 			this->setWindowTitle( tr( "passphrase quality: 0/100" ) ) ;
-		else
+		}else{
 			this->setWindowTitle( tr( "passphrase quality: %1/100" ).arg( st ) ) ;
+		}
 	}else{
 		this->setWindowTitle( tr( "add a key to a luks volume" ) ) ;
 	}
@@ -92,8 +93,9 @@ void luksaddkey::keyChanged( QString key )
 void luksaddkey::closeEvent( QCloseEvent * e )
 {
 	e->ignore();
-	if( m_isWindowClosable == true )
+	if( m_isWindowClosable ){
 		HideUI();
+	}
 }
 
 void luksaddkey::ShowUI( QString path )
@@ -110,19 +112,21 @@ void luksaddkey::ShowUI()
 
 void luksaddkey::setFieldFocus()
 {
-	if( m_ui->textEditPathToVolume->text().isEmpty() )
+	if( m_ui->textEditPathToVolume->text().isEmpty() ){
 		m_ui->textEditPathToVolume->setFocus();
-	else if( m_ui->textEditExistingPassphrase->text().isEmpty() )
+	}else if( m_ui->textEditExistingPassphrase->text().isEmpty() ){
 		m_ui->textEditExistingPassphrase->setFocus();
-	else if( m_ui->textEditPassphraseToAdd->text().isEmpty() )
+	}else if( m_ui->textEditPassphraseToAdd->text().isEmpty() ){
 		m_ui->textEditPassphraseToAdd->setFocus();
-	else if( m_ui->radioButtonNewPassphrase->isChecked() )
-		if( m_ui->lineEditReEnterPassphrase->text().isEmpty() )
+	}else if( m_ui->radioButtonNewPassphrase->isChecked() ){
+		if( m_ui->lineEditReEnterPassphrase->text().isEmpty() ){
 			m_ui->lineEditReEnterPassphrase->setFocus();
-		else
+		}else{
 			m_ui->pushButtonAdd->setFocus();
-	else
+		}
+	}else{
 		m_ui->pushButtonAdd->setFocus();
+	}
 }
 
 void luksaddkey::HideUI()
@@ -134,24 +138,27 @@ void luksaddkey::HideUI()
 void luksaddkey::pbOpenExisitingKeyFile( void )
 {
 	QString Z = QFileDialog::getOpenFileName( this,tr( "existing key file" ),QDir::homePath(),0 );
-	if( Z.isEmpty() == false )
+	if( !Z.isEmpty() ){
 		m_ui->textEditExistingPassphrase->setText( Z ) ;
+	}
 	this->setFieldFocus();
 }
 
 void luksaddkey::pbOpenNewKeyFile( void )
 {
 	QString Z = QFileDialog::getOpenFileName( this,tr( "new key file" ),QDir::homePath(),0 );
-	if( Z.isEmpty() == false )
+	if( !Z.isEmpty() ){
 		m_ui->textEditPassphraseToAdd->setText( Z ) ;
+	}
 	this->setFieldFocus();
 }
 
 void luksaddkey::pbOpenFile( void )
 {
 	QString Z = QFileDialog::getOpenFileName( this,tr( "encrypted volume path" ),QDir::homePath(),0 );
-	if( Z.isEmpty() == false )
+	if( !Z.isEmpty() ){
 		m_ui->textEditPathToVolume->setText( Z ) ;
+	}
 	this->setFieldFocus();
 }
 
@@ -225,12 +232,13 @@ void luksaddkey::pbAdd( void )
 	QString NewKey_1 = m_ui->lineEditReEnterPassphrase->text() ;
 
 	if( m_ui->radioButtonNewPassphraseFromFile->isChecked() ){
-		if( m_volumePath.isEmpty() || ExistingKey.isEmpty() || NewKey.isEmpty() )
+		if( m_volumePath.isEmpty() || ExistingKey.isEmpty() || NewKey.isEmpty() ){
 			return msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) );
+		}
 	}else{
-		if( m_volumePath.isEmpty() || ExistingKey.isEmpty() || NewKey.isEmpty() || NewKey_1.isEmpty() )
+		if( m_volumePath.isEmpty() || ExistingKey.isEmpty() || NewKey.isEmpty() || NewKey_1.isEmpty() ){
 			return msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) );
-
+		}
 		if( NewKey != NewKey_1 ){
 			msg.ShowUIOK( tr( "ERROR!" ),tr( "keys do not match" ) );
 			m_ui->textEditPassphraseToAdd->clear();
@@ -298,10 +306,11 @@ void luksaddkey::threadfinished( int status )
 	switch( status ){
 		case 0 :
 			x = utility::luksEmptySlots( m_volumePath );
-			if( x.isEmpty() == false )
+			if( !x.isEmpty() ){
 				success = tr( "key added successfully.\n%1 / %2 slots are now in use" ).arg( x.at( 0 ) ).arg( x.at( 1 ) );
-			else
+			}else{
 				success = tr( "key added successfully." ) ;
+			}
 			msg.ShowUIOK( tr( "SUCCESS!" ),success );
 			return HideUI();
 		case 1  : msg.ShowUIOK( tr( "ERROR!" ),tr( "presented key does not match any key in the volume" ) ) ;		      	break ;
@@ -370,10 +379,12 @@ void luksaddkey::enableAll()
 	m_ui->radioButtonNewPassphraseFromFile->setEnabled( true );
 	m_ui->radioButtonPassphraseinVolume->setEnabled( true );
 	m_ui->radioButtonPassphraseInVolumeFromFile->setEnabled( true );
-	if( m_ui->radioButtonNewPassphrase->isChecked() == true )
+	if( m_ui->radioButtonNewPassphrase->isChecked() ){
 		m_ui->labelReEnterPassphrase->setEnabled( true ) ;
-	if( m_ui->radioButtonNewPassphraseFromFile->isChecked() == false )
+	}
+	if( !m_ui->radioButtonNewPassphraseFromFile->isChecked() ){
 		m_ui->lineEditReEnterPassphrase->setEnabled( true );
+	}
 }
 
 void luksaddkey::pbCancel( void )

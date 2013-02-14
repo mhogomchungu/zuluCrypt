@@ -61,8 +61,9 @@ luksdeletekey::luksdeletekey( QWidget * parent ) :
 void luksdeletekey::closeEvent( QCloseEvent * e )
 {
 	e->ignore();
-	if(  m_isWindowClosable == true )
+	if(  m_isWindowClosable ){
 		pbCancel();
+	}
 }
 
 void luksdeletekey::rbPassphrase()
@@ -90,10 +91,11 @@ void luksdeletekey::pbOpenKeyFile()
 {
 	QString Z = QFileDialog::getOpenFileName( this,tr( "key file with a passphrase to delete" ),QDir::homePath(),0 );
 	m_ui->lineEditPassphrase->setText( Z );
-	if( m_ui->lineEditVolumePath->text().isEmpty() )
+	if( m_ui->lineEditVolumePath->text().isEmpty() ){
 		m_ui->lineEditVolumePath->setFocus();
-	else
+	}else{
 		m_ui->pushButtonDelete->setFocus();
+	}
 }
 
 void luksdeletekey::ShowUI()
@@ -103,11 +105,11 @@ void luksdeletekey::ShowUI()
 	m_ui->labelPassphrase->setText( tr( "key" ) );
 	m_ui->rbPassphrase->setChecked( true );
 
-	if( m_ui->lineEditVolumePath->text().isEmpty() )
+	if( m_ui->lineEditVolumePath->text().isEmpty() ){
 		m_ui->lineEditVolumePath->setFocus();
-	else
+	}else{
 		m_ui->lineEditPassphrase->setFocus();
-
+	}
 	m_ui->pushButtonOpenPartition->setIcon( QIcon( QString( ":/partition.png" ) ) );
 	m_ui->pushButtonOpenVolume->setIcon( QIcon( QString( ":/file.png" ) ) );
 	this->show();
@@ -174,16 +176,16 @@ void luksdeletekey::pbDelete()
 
 	QString passphrase = m_ui->lineEditPassphrase->text() ;
 
-	if(  m_volumePath.isEmpty() || passphrase.isEmpty() )
+	if(  m_volumePath.isEmpty() || passphrase.isEmpty() ){
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) );
-
+	}
 	m_volumePath.replace( "\"","\"\"\"" ) ;
 	passphrase.replace( "\"","\"\"\"" ) ;
 
 	QStringList l = utility::luksEmptySlots( m_volumePath ) ;
-	if( l.isEmpty() )
+	if( l.isEmpty() ){
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "volume is not a luks volume" ) );
-	else if( l.at( 0 ) == QString( "1" ) ){
+	}else if( l.at( 0 ) == QString( "1" ) ){
 		QString s = tr( "There is only one last key in the volume." );
 		s = s + tr( "\nDeleting it will make the volume unopenable and lost forever." ) ;
 		s = s + tr( "\nAre you sure you want to delete this key?" );
@@ -192,9 +194,9 @@ void luksdeletekey::pbDelete()
 			return ;
 	}else{
 		QString s = tr( "are you sure you want to delete a key from this volume?" ) ;
-
-		if(  msg.ShowUIYesNoDefaultNo( tr( "WARNING" ),s ) == QMessageBox::No )
+		if(  msg.ShowUIYesNoDefaultNo( tr( "WARNING" ),s ) == QMessageBox::No ){
 			return ;
+		}
 	}
 
 	QString passType ;
@@ -229,10 +231,11 @@ void luksdeletekey::threadfinished( int status )
 	switch(  status ){
 		case 0 :
 			l = utility::luksEmptySlots( m_volumePath ) ;
-			if( l.isEmpty() == false )
+			if( !l.isEmpty() ){
 				success = tr( "key removed successfully.\n%1 / %2 slots are now in use" ).arg( l.at( 0 ) ).arg( l.at( 1 ) );
-			else
+			}else{
 				success = tr( "key removed successfully." ) ;
+			}
 			msg.ShowUIOK( tr( "SUCCESS!" ),success );
 			return HideUI() ;
 		case 2 : msg.ShowUIOK( tr( "ERROR!" ),tr( "there is no key in the volume that match the presented key" ) ) ;				break ;
@@ -261,10 +264,11 @@ void luksdeletekey::pbOpenVolume()
 {
 	QString Z = QFileDialog::getOpenFileName( this,tr( "volume path" ),QDir::homePath(),0 );
 	m_ui->lineEditVolumePath->setText( Z );
-	if( m_ui->lineEditPassphrase->text().isEmpty() )
+	if( m_ui->lineEditPassphrase->text().isEmpty() ){
 		m_ui->lineEditPassphrase->setFocus();
-	else
+	}else{
 		m_ui->pushButtonDelete->setFocus() ;
+	}
 }
 
 void luksdeletekey::HideUI()

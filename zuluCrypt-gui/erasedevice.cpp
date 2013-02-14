@@ -57,10 +57,11 @@ void erasedevice::ShowUI()
 	QString msg_3 = tr( "Are you sure you want to continue?" );
 	QString msg_4 = msg_1 + msg_2 + msg_3 ;
 
-	if( msg.ShowUIYesNoDefaultNo( tr( "WARNING" ),msg_4 ) == QMessageBox::Yes )
+	if( msg.ShowUIYesNoDefaultNo( tr( "WARNING" ),msg_4 ) == QMessageBox::Yes ){
 		this->show();
-	else
+	}else{
 		this->HideUI();
+	}
 }
 
 void erasedevice::ShowUI( QString path )
@@ -114,21 +115,22 @@ void erasedevice::pbStart()
 
 	DialogMsg msg( this );
 
-	if( path.isEmpty() )
+	if( path.isEmpty() ){
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "device path field is empty" ) );
-
+	}
 	path = utility::resolvePath( path ) ;
 
-	if( utility::exists( path ) == false )
+	if( !utility::exists( path ) ){
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "invalid path to device" ) );
-
+	}
 	if( m_option == 0 ){
 		QString x_1 = tr( "Are you really sure you want to write random data to \"%1\"" ).arg( path )	;
 		QString x_2 = tr( " effectively destroying all contents in it?" );
 		QString x_3 = x_1 + x_2 ;
 
-		if( msg.ShowUIYesNoDefaultNo( tr( "WARNING!" ),x_3 ) == QMessageBox::No )
+		if( msg.ShowUIYesNoDefaultNo( tr( "WARNING!" ),x_3 ) == QMessageBox::No ){
 			return ;
+		}
 	}
 
 	this->disableAll();
@@ -177,10 +179,11 @@ void erasedevice::pbCancel()
 {
 	m_cancelClicked = true ;
 
-	if( m_dt == NULL )
+	if( m_dt == NULL ){
 		this->HideUI();
-	else
+	}else{
 		m_dt->cancel();
+	}
 }
 
 void erasedevice::pbFile()

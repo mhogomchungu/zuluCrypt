@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright (c) 2012
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -241,7 +241,7 @@ void keyDialog::slotMountComplete( int st,QString m )
 			managepartitionthread * mpt = new managepartitionthread() ;
 			mpt->setDevice( m_path );
 			connect( mpt,SIGNAL( signalProperties( QString ) ),this,SLOT( volumeMiniProperties( QString ) ) ) ;
-			mpt->startAction( QString( "volumeMiniProperties" ) ) ;
+			mpt->startAction( managepartitionthread::VolumeMiniProperties ) ;
 
 			openmountpointinfilemanager * omp = new openmountpointinfilemanager( m_folderOpener,utility::mountPath( m_point ) ) ;
 			connect( omp,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
@@ -310,9 +310,8 @@ void keyDialog::pbOpen()
 	part->setMountPoint( m_point );
 
 	m_working = true ;
-	//savemountpointpath::savePath( m_ui->lineEditMountPoint->text(),QString( "zuluMount-MountPointPath" ) ) ;
 
-	part->startAction( QString( "cryptoOpen" ) ) ;
+	part->startAction( managepartitionthread::CryptoOpen ) ;
 	this->disableAll();
 }
 

@@ -98,18 +98,20 @@ void zuluCrypt::start()
 	oneinstance * instance = new oneinstance( this,sockpath,"raiseWindow" ) ;
 	connect( instance,SIGNAL( raise() ),this,SLOT( raiseWindow() ) ) ;
 
-	if( !instance->instanceExist() )
+	if( !instance->instanceExist() ){
 		this->setUpApp();
+	}
 }
 
 void zuluCrypt::initTray()
 {
 	QString home = QDir::homePath() + QString( "/.zuluCrypt/" ) ;
 	QDir d( home ) ;
-	if( d.exists() == false )
+	if( !d.exists() ){
 		d.mkdir( home ) ;
+	}
 	QFile f( QDir::homePath() + QString( "/.zuluCrypt/tray" ) ) ;
-	if( f.exists() == false ){
+	if( !f.exists() ){
 		f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
 		f.write( "1" ) ;
 		f.close();
@@ -244,10 +246,11 @@ void zuluCrypt::currentItemChanged( QTableWidgetItem * current, QTableWidgetItem
 
 	int rowCount = m_ui->tableWidget->rowCount() ;
 
-	if( rowCount > 12 )
+	if( rowCount > 12 ){
 		m_ui->tableWidget->setColumnWidth( 2,70 );
-	else
+	}else{
 		m_ui->tableWidget->setColumnWidth( 2,95 );
+	}
 }
 
 void zuluCrypt::closeAllVolumes()
@@ -299,10 +302,11 @@ void zuluCrypt::closeApplication()
 void zuluCrypt::trayClicked( QSystemTrayIcon::ActivationReason e )
 {
 	if( e == QSystemTrayIcon::Trigger ){
-		if( this->isVisible() == true )
+		if( this->isVisible() == true ){
 			this->hide();
-		else
+		}else{
 			this->show();
+		}
 	}
 }
 
@@ -440,13 +444,13 @@ void zuluCrypt::addItemToTable( QString device,QString m_point,QString type )
 
 	s.append( device );
 	s.append( m_point );
-	if( type == QString( "crypto_LUKS" ) )
+	if( type == QString( "crypto_LUKS" ) ){
 		s.append( QString( "luks" ) );
-	else if( type == QString( "crypto_PLAIN" ) )
+	}else if( type == QString( "crypto_PLAIN" ) ){
 		s.append( QString( "plain" ) );
-	else if( type == QString( "crypto_TCRYPT" ) )
+	}else if( type == QString( "crypto_TCRYPT" ) ){
 		s.append( QString( "tcrypt" ) );
-
+	}
 	tablewidget::addRowToTable( m_ui->tableWidget,s );
 }
 
@@ -469,10 +473,11 @@ void zuluCrypt::volume_property()
 void zuluCrypt::volumePropertyThreadFinished( QString properties )
 {
 	DialogMsg msg( this ) ;
-	if( properties.isEmpty() )
+	if( properties.isEmpty() ){
 		msg.ShowUIOK( tr( "ERROR!"),tr( "volume doesnt seem to be accessible" ) );
-	else
+	}else{
 		msg.ShowUIVolumeProperties( tr( "volume properties" ),properties );
+	}
 	m_ui->tableWidget->setEnabled(true );
 }
 
@@ -589,12 +594,12 @@ void zuluCrypt::itemClicked( QTableWidgetItem * item, bool clicked )
 		a.setEnabled( true );
 		a.connect( ( QObject * )&a,SIGNAL( triggered() ),this,SLOT( addToFavorite() ) ) ;
 
-	}else
+	}else{
 		a.setEnabled( false );
-
-	if( clicked == true )
+	}
+	if( clicked ){
 		m.exec( QCursor::pos() ) ;
-	else{
+	}else{
 		int x = m_ui->tableWidget->columnWidth( 0 ) ;
 		int y = m_ui->tableWidget->rowHeight( item->row() ) * item->row() + 20 ;
 
@@ -638,10 +643,11 @@ void zuluCrypt::UIMessage( QString title, QString message )
 void zuluCrypt::closeStatus( int st )
 {
 	m_ui->tableWidget->setEnabled( true );
-	if( st == 0 )
+	if( st == 0 ){
 		removeRowFromTable( m_ui->tableWidget->currentItem()->row() ) ;
-	else
+	}else{
 		closeStatusErrorMessage( st );
+	}
 }
 
 void zuluCrypt::closeStatusErrorMessage( int st )
@@ -687,11 +693,8 @@ void zuluCrypt::luksHeaderBackUp()
 
 void zuluCrypt::luksHeaderBackUpContextMenu()
 {
-	QTableWidgetItem * item = m_ui->tableWidget->currentItem();
-	if( item == NULL )
-		return ;
+	QTableWidgetItem * item = m_ui->tableWidget->currentItem();	
 	QString device = m_ui->tableWidget->item( item->row(),0 )->text() ;
-
 	this->setUpManageLuksHeader()->backUpHeader( device );
 }
 
@@ -857,8 +860,10 @@ void zuluCrypt::manageWallet()
 
 zuluCrypt::~zuluCrypt()
 {
-	if( m_ui )
+	if( m_ui ){
 		delete m_ui;
-	if( m_trayIcon )
+	}
+	if( m_trayIcon ){
 		delete m_trayIcon ;
+	}
 }

@@ -70,7 +70,7 @@ void MainWindow::setUpApp()
 
 	connect( part,SIGNAL( signalMountedList( QStringList,QStringList ) ),this,SLOT( slotMountedList( QStringList,QStringList ) ) ) ;
 
-	part->startAction( QString( "update" ) ) ;
+	part->startAction( managepartitionthread::Update ) ;
 
 	m_working = false ;
 	m_trayIcon->show();
@@ -186,7 +186,7 @@ void MainWindow::volumeProperties()
 	part->setDevice( m_ui->tableWidget->item( m_ui->tableWidget->currentRow(),0 )->text() );
 	connect( part,SIGNAL( signalProperties( QString ) ),this,SLOT( volumeProperties( QString ) ) ) ;
 
-	part->startAction( QString( "volumeProperties" ) ) ;
+	part->startAction( managepartitionthread::VolumeProperties ) ;
 }
 
 void MainWindow::volumeProperties( QString properties )
@@ -333,7 +333,7 @@ void MainWindow::pbMount()
 		managepartitionthread * m = new managepartitionthread() ;
 		connect( m,SIGNAL( getVolumeInfo( QString,QString ) ),this,SLOT( getVolumeInfo( QString,QString ) ) ) ;
 		m->setDevice( m_device );
-		m->startAction( QString( "volumeType" ) ) ;
+		m->startAction( managepartitionthread::VolumeType ) ;
 	}
 }
 
@@ -391,7 +391,7 @@ void MainWindow::pbUmount()
 
 	connect( part,SIGNAL( signalUnmountComplete( int,QString ) ),this,SLOT( slotUnmountComplete( int,QString ) ) ) ;
 
-	part->startAction( QString( "umount" ) ) ;
+	part->startAction( managepartitionthread::Unmount ) ;
 }
 
 void MainWindow::pbUpdate()
@@ -406,7 +406,7 @@ void MainWindow::pbUpdate()
 	m_ui->tableWidget->setEnabled( false );
 	connect( part,SIGNAL( signalMountedList( QStringList,QStringList ) ),this,SLOT( slotMountedList( QStringList,QStringList ) ) ) ;
 
-	part->startAction( QString( "update" ) ) ;
+	part->startAction( managepartitionthread::Update ) ;
 }
 
 void MainWindow::slotMountedList( QStringList list,QStringList sys )

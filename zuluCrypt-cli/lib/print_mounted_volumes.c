@@ -331,7 +331,7 @@ char * zuluCryptGetMountPointFromPath( const char * path )
 		}else{
 			st = StringListCopyStringAt( stl,1 ) ;
 			StringListDelete( &stl ) ;
-			zuluCryptDecodeMtabEntry( st ) ;	
+			zuluCryptDecodeMtabEntry( st ) ;
 			return StringDeleteHandle( &st ) ;
 		}
 	}

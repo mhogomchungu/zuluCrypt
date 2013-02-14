@@ -66,12 +66,13 @@ void manageluksheader::closeEvent( QCloseEvent * e )
 
 void manageluksheader::ShowUI()
 {
-	if( m_ui->lineEditDevicePath->text().isEmpty() )
+	if( m_ui->lineEditDevicePath->text().isEmpty() ){
 		m_ui->lineEditDevicePath->setFocus();
-	else if( m_ui->lineEditBackUpName->text().isEmpty() )
+	}else if( m_ui->lineEditBackUpName->text().isEmpty() ){
 		m_ui->lineEditBackUpName->setFocus();
-	else
+	}else{
 		m_ui->pbCreate->setFocus();
+	}
 	this->show();
 }
 
@@ -106,28 +107,28 @@ void manageluksheader::backUpHeader( QString device )
 
 void manageluksheader::backUpHeaderNameChange( QString name )
 {
-	if(  m_operation == QString( "restore" ) )
+	if(  m_operation == QString( "restore" ) ){
 		return ;
-
+	}
 	if(  m_ui->lineEditDevicePath->text().isEmpty() ){
 		;
 	}else{
 		QString p = name.split( "/" ).last() ;
 
-		if( p.isEmpty() )
+		if( p.isEmpty() ){
 			m_ui->lineEditBackUpName->clear();
-		else{
+		}else{
 			QString path = m_ui->lineEditBackUpName->text() ;
 
-			if( path.isEmpty() )
+			if( path.isEmpty() ){
 				path = QDir::homePath() + QString( "/" ) ;
-
+			}
 			QStringList q = path.split( "/" ) ;
 			path.clear();
 			int j = q.size() - 1 ;
-			for(  int i = 0 ; i < j ; i++ )
+			for(  int i = 0 ; i < j ; i++ ){
 				path += q.at( i ) +  QString( "/" ) ;
-
+			}
 			path += p + QString( ".luksHeaderBackUp" );
 			m_ui->lineEditBackUpName->setText( path );
 		}
@@ -145,35 +146,39 @@ void manageluksheader::pbOpenLuksHeaderBackUp()
 	}else{
 		Z = QFileDialog::getExistingDirectory( this,tr( "select a folder to store the header" ),QDir::homePath(),0 );
 
-		if( Z.isEmpty() )
+		if( Z.isEmpty() ){
 			return ;
+		}
 		QString p = m_ui->lineEditDevicePath->text().split( "/" ).last() ;
 
 		if( !p.isEmpty() ){
 			QString q = m_ui->lineEditBackUpName->text() ;
-			if( q.isEmpty() )
+			if( q.isEmpty() ){
 				Z += QString( "/" ) + p + QString( ".luksHeaderBackUp" );
-			else{
+			}else{
 				q = q.split( "/" ).last() ;
-				if( q.isEmpty() )
+				if( q.isEmpty() ){
 					Z += QString( "/" ) + p + QString( ".luksHeaderBackUp" );
-				else
+				}else{
 					Z += QString( "/" ) + q ;
+				}
 			}
 		}
 	}
 
 	m_ui->lineEditBackUpName->setText( Z );
-	if( m_ui->lineEditDevicePath->text().isEmpty() )
+	if( m_ui->lineEditDevicePath->text().isEmpty() ){
 		m_ui->lineEditDevicePath->setFocus();
-	else
+	}else{
 		m_ui->pbCreate->setFocus();
+	}
 }
 
 void manageluksheader::pbCancel()
 {
-	if(  m_OperationInProgress == false )
+	if(  !m_OperationInProgress ){
 		this->HideUI();
+	}
 }
 
 void manageluksheader::enableAll()
@@ -206,9 +211,9 @@ void manageluksheader::pbCreate()
 {
 	DialogMsg msg( this ) ;
 
-	if( m_ui->lineEditBackUpName->text().isEmpty() || m_ui->lineEditDevicePath->text().isEmpty() )
+	if( m_ui->lineEditBackUpName->text().isEmpty() || m_ui->lineEditDevicePath->text().isEmpty() ){
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) );
-
+	}
 	QString device = utility::resolvePath( m_ui->lineEditDevicePath->text() );
 
 	device.replace( "\"","\"\"\"" ) ;
@@ -226,8 +231,9 @@ void manageluksheader::pbCreate()
 
 		QString warn = tr( "Are you sure you want to replace a header on device \"%1\" with a backup copy at \"%2\"?" ).arg( x ).arg( y );
 
-		if( msg.ShowUIYesNoDefaultNo( tr( "WARNING!" ),warn ) == QMessageBox::No )
+		if( msg.ShowUIYesNoDefaultNo( tr( "WARNING!" ),warn ) == QMessageBox::No ){
 			return ;
+		}
 		exe = QString( "%1 -kR -d \"%2\" -f \"%3\"" ).arg( ZULUCRYPTzuluCrypt ).arg( device ).arg( backUp );
 	}
 
@@ -252,20 +258,22 @@ void manageluksheader::pbOpenPartition()
 void manageluksheader::selectedPartition( QString p )
 {
 	m_ui->lineEditDevicePath->setText( p );
-	if( m_ui->lineEditBackUpName->text().isEmpty() )
+	if( m_ui->lineEditBackUpName->text().isEmpty() ){
 		m_ui->lineEditBackUpName->setFocus();
-	else
+	}else{
 		m_ui->pbCreate->setFocus();
+	}
 }
 
 void manageluksheader::pbOpenFile()
 {
 	QString Z = QFileDialog::getOpenFileName( this,tr( "select luks container you want to backup its header" ),QDir::homePath(),0 );
 	m_ui->lineEditDevicePath->setText( Z );
-	if( m_ui->lineEditBackUpName->text().isEmpty() )
+	if( m_ui->lineEditBackUpName->text().isEmpty() ){
 		m_ui->lineEditBackUpName->setFocus();
-	else
+	}else{
 		m_ui->pbCreate->setFocus();
+	}
 }
 
 void manageluksheader::success()

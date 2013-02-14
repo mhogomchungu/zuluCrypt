@@ -81,9 +81,9 @@ void managedevicenames::ShowUI()
 	m_ui->tableWidget->setColumnWidth( 0,285 );
 	m_ui->tableWidget->setColumnWidth( 1,285 );
 
-	while( m_ui->tableWidget->rowCount() > 0 )
+	while( m_ui->tableWidget->rowCount() > 0 ){
 		m_ui->tableWidget->removeRow( 0 );
-
+	}
 	QStringList entries = utility::readFavorites() ;
 	QStringList line ;
 	int j = entries.size() - 1 ;
@@ -129,9 +129,9 @@ void managedevicenames::itemClicked( QTableWidgetItem * current,bool clicked )
 	m.addSeparator() ;
 	m.addAction( tr( "cancel" ) );
 
-	if( clicked )
+	if( clicked ){
 		m.exec( QCursor::pos() ) ;
-	else{
+	}else{
 		int x = m_ui->tableWidget->columnWidth( 0 ) ;
 		int y = m_ui->tableWidget->rowHeight( current->row() ) * current->row() + 20 ;
 		m.exec( m_ui->tableWidget->mapToGlobal( QPoint( x,y ) ) ) ;
@@ -170,12 +170,12 @@ void managedevicenames::add()
 	QString dev = m_ui->lineEditDeviceAddress->text() ;
 	QString mount_point = m_ui->lineEditMountPath->text() ;
 
-	if( dev.isEmpty() )
+	if( dev.isEmpty() ){
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "device address field is empty" ) );
-
-	if( mount_point.isEmpty() )
+	}
+	if( mount_point.isEmpty() ){
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "mount point path field is empty" ) );
-
+	}
 	m_ui->tableWidget->setEnabled( false );
 	this->addEntries( dev,mount_point );
 

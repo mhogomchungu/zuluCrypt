@@ -24,9 +24,9 @@ DialogMsg::DialogMsg( QWidget * parent ) :
 	m_ui( new Ui::DialogMsg )
 {
 	m_ui->setupUi( this );
-	if( parent != 0 )
+	if( parent  ){
 		this->setFont( parent->font() );
-
+	}
 	connect( m_ui->pbNo,SIGNAL( clicked() ),this,SLOT( pbNo() ) );
 	connect( m_ui->pbYes,SIGNAL( clicked() ),this,SLOT( pbYes() ) );
 	connect( m_ui->pbOk,SIGNAL( clicked() ),this,SLOT( pbOK() ) );
@@ -92,10 +92,11 @@ void DialogMsg::ShowPermissionProblem( QString msg,QString device )
 {
 	QString msg1 ;
 	if( device.startsWith( QString( "/dev/" ) ) ){
-		if( msg == QString( "reading" ) )
+		if( msg == QString( "reading" ) ){
 			msg1 = tr( "insufficient privilege to access a system device,\nonly root user or members of group zulucrypt can do that" ) ;
-		else
+		}else{
 			msg1 = tr( "insufficient privilege to access a system device in read/write mode,\nonly root user or members of group zulucrypt-write can do that" ) ;
+		}
 	}else{
 		msg1 = tr( "you do not seem to have proper permissions to access the encrypted file in %1 mode,check file permissions and try again" ).arg( msg ) ;
 	}

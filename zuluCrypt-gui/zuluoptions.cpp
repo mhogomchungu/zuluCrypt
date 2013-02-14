@@ -39,9 +39,9 @@ QString zuluOptions::wallet()
 
 	QFile f( path ) ;
 
-	if( !f.exists() )
+	if( !f.exists() ){
 		zuluOptions::setWalletToKDEDefaultName() ;
-
+	}
 	f.open( QIODevice::ReadOnly ) ;
 	QString name = QString( f.readAll() );
 	f.close();
@@ -72,10 +72,7 @@ void zuluOptions::setWalletName( QString name )
 {
 	QString path = zuluOptions::walletPath() ;
 	QFile f ( path ) ;
-
 	f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
-
 	f.write( name.toAscii() ) ;
-
 	f.close();
 }

@@ -79,8 +79,9 @@ bool KWallet_Handle::close( void )
 
 bool KWallet_Handle::setFolder( QString folder )
 {
-	if( !m_wallet->hasFolder( folder ) )
+	if( !m_wallet->hasFolder( folder ) ){
 		m_wallet->createFolder( folder ) ;
+	}
 	return m_wallet->setFolder( folder ) ;
 }
 
@@ -104,9 +105,11 @@ QString KWallet_Handle::getKey( QString uuid )
 	QString key ;
 
 	QString fd = zuluOptions::formData() ;
-	if( !m_wallet->hasFolder( fd ) )
-		if( !m_wallet->createFolder( fd ) )
+	if( !m_wallet->hasFolder( fd ) ){
+		if( !m_wallet->createFolder( fd ) ){
 			return key ;
+		}
+	}
 
 	m_wallet->setFolder( fd )  ;
 

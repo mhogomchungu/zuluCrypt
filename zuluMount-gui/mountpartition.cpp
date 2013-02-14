@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright (c) 2012
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -110,8 +110,7 @@ void mountPartition::pbMount()
 	part->setMountPoint( utility::mountPath( m_point ) );
 	connect( part,SIGNAL( signalMountComplete( int,QString ) ),this,SLOT( slotMountComplete( int,QString ) ) ) ;
 
-	part->startAction( QString( "mount" ) ) ;
-	//savemountpointpath::savePath( m_ui->lineEdit->text(),QString( "zuluMount-MountPointPath" ) ) ;
+	part->startAction( managepartitionthread::Mount ) ;
 }
 
 void mountPartition::pbOpenMountPath()
@@ -176,7 +175,7 @@ void mountPartition::slotMountComplete( int status,QString msg )
 		managepartitionthread * mpt = new managepartitionthread() ;
 		mpt->setDevice( m_path );
 		connect( mpt,SIGNAL( signalProperties( QString ) ),this,SLOT( volumeMiniProperties( QString ) ) ) ;
-		mpt->startAction( QString( "volumeMiniProperties" ) ) ;
+		mpt->startAction( managepartitionthread::VolumeMiniProperties ) ;
 
 		openmountpointinfilemanager * omp = new openmountpointinfilemanager( m_folderOpener,utility::mountPath( m_point ) ) ;
 		connect( omp,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;

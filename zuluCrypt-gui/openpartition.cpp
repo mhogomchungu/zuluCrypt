@@ -54,9 +54,9 @@ openpartition::openpartition( QWidget * parent ) :
 	tw->setColumnWidth( 3,90 );
 	tw->setColumnWidth( 4,309 );
 
-	for( int i = 0 ; i < 5 ; i++ )
+	for( int i = 0 ; i < 5 ; i++ ){
 		tw->horizontalHeaderItem( i )->setFont( this->font() );
-
+	}
 	tw->horizontalHeader()->setVisible( true );
 
 	m_ui->checkBoxUUID->setVisible( false );
@@ -98,10 +98,11 @@ void openpartition::pbHelp()
 
 void openpartition::pbUUID()
 {
-	if( m_ui->pbUUID->isFlat() )
+	if( m_ui->pbUUID->isFlat() ){
 		m_ui->pbUUID->setFlat( false );
-	else
+	}else{
 		m_ui->pbUUID->setFlat( true );
+	}
 }
 
 void openpartition::pbCancel()
@@ -113,8 +114,9 @@ void openpartition::EnterKeyPressed()
 {
 	QTableWidget *tw = m_ui->tableWidget ;
 	QTableWidgetItem *it = tw->currentItem() ;
-	if( it == NULL )
+	if( it == NULL ){
 		return ;
+	}
 	tableEntryDoubleClicked( tw->item( it->row(),0 ) );
 }
 
@@ -150,9 +152,9 @@ void openpartition::partitionList( QString title,QString type )
 {
 	this->setWindowTitle( title );
 
-	while ( m_ui->tableWidget->rowCount() > 0 )
+	while ( m_ui->tableWidget->rowCount() > 0 ){
 		m_ui->tableWidget->removeRow( 0 );
-
+	}
 	partitionproperties * op = new partitionproperties( type );
 
 	connect( op,SIGNAL( finished() ),this,SLOT( partitionpropertiesThreadFinished() ) );
@@ -165,8 +167,9 @@ void openpartition::partitionList( QString title,QString type )
 void openpartition::partitionProperties( QStringList entry )
 {
 	QString size = entry.at(1) ;
-	if( size == QString( "1.0 KB" ) || size == QString( "Nil" ) )
+	if( size == QString( "1.0 KB" ) || size == QString( "Nil" ) ){
 		return ;
+	}
 	if( m_showEncryptedOnly ){
 		QString e = entry.at( 3 ) ;
 		if( e.contains( QString( "crypto" ) ) || e.contains( QString( "Nil" ) ) ){
@@ -209,12 +212,11 @@ void openpartition::tableEntryDoubleClicked( QTableWidgetItem * item )
 		}
 
 	}
-	//if( m_ui->checkBoxUUID->isChecked() == true )
-	if( m_ui->pbUUID->isFlat() )
+	if( m_ui->pbUUID->isFlat() ){
 		dev = QString( "UUID=\"" ) + tw->item( item->row(),4 )->text() + QString( "\"" ) ;
-	else
+	}else{
 		dev = tw->item( item->row(),0 )->text() ;
-
+	}
 	emit clickedPartition( dev ) ;
 	HideUI();
 }

@@ -69,9 +69,9 @@ Qt::CheckState openvolumereadonly::getOption( QString app )
 {
 	QString home = QDir::homePath() + QString( "/.zuluCrypt/" ) ;
 	QDir d( home ) ;
-	if( d.exists() == false )
+	if( !d.exists() ){
 		d.mkdir( home ) ;
-
+	}
 	QFile f( home + app + QString( "-openMode" ) ) ;
 
 	if( f.exists() == false ){

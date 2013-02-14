@@ -101,23 +101,25 @@ void cryptfiles::sourceTextChanged( QString source )
 {
 	QString dest ;
 
-	if( m_operation == QString( "-E" ) )
+	if( m_operation == QString( "-E" ) ){
 		dest = source.split( "/" ).last() + QString( ".zc" );
-	else
+	}else{
 		dest = source.split( "/" ).last() ;
-
+	}
 	QStringList p = m_ui->lineEditDestinationPath->text().split( "/" );
 
 	int size = p.size() ;
 	QString path = QString( "" );
-	for( int i = 0 ; i < size - 1 ; i++ )
+	for( int i = 0 ; i < size - 1 ; i++ ){
 		path += p.at( i ) + QString( "/" ) ;
-
+	}
 	path += dest ;
 
-	if( m_operation == QString( "-D" ) )
-		if( path.endsWith( QString( ".zc" ) ) )
+	if( m_operation == QString( "-D" ) ){
+		if( path.endsWith( QString( ".zc" ) ) ){
 			path = path.mid( 0,path.size() - 3 ) ;
+		}
+	}
 
 	m_ui->lineEditDestinationPath->setText( path );
 
@@ -152,9 +154,9 @@ void cryptfiles::pbCancel()
 
 void cryptfiles::HideUI()
 {
-	if( m_OperationInProgress )
+	if( m_OperationInProgress ){
 		m_cft->terminate();
-	else{
+	}else{
 		emit this->HideUISignal();
 		this->hide();
 	}
@@ -208,30 +210,32 @@ void cryptfiles::pbCreate()
 
 	QString source = utility::resolvePath( m_ui->lineEditSourcePath->text() );
 
-	if( source.isEmpty() )
+	if( source.isEmpty() ){
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "path to source field is empty" ) );
-
+	}
 	QString dest = utility::resolvePath( m_ui->lineEditDestinationPath->text() ) ;
 
-	if( utility::exists( source ) == false )
+	if( !utility::exists( source ) ){
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "invalid path to source file" ) );
-
-	if( utility::exists( dest ) == true )
+	}
+	if( utility::exists( dest ) ){
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "destination path already taken" ) );
-
+	}
 	QString key_1 = m_ui->lineEditPass_1->text() ;
 	QString key_2 = m_ui->lineEditPass_2->text() ;
 
 	QString keySource ;
 	if( m_ui->rbKey->isChecked() ){
-		if( key_1.isEmpty() )
+		if( key_1.isEmpty() ){
 			return msg.ShowUIOK( tr( "ERROR!" ),tr( "first key field is empty" ) );
-
+		}
 		if( m_operation == QString( "-E" ) ){
-			if( key_2.isEmpty() )
+			if( key_2.isEmpty() ){
 				return msg.ShowUIOK( tr( "ERROR!" ),tr( "second key field is empty" ) );
-			if( key_1 != key_2 )
+			}
+			if( key_1 != key_2 ){
 				return msg.ShowUIOK( tr( "ERROR!" ),tr( "keys do not match" ) );
+			}
 		}
 
 		QString sockpath = socketSendKey::getSocketPath() ;
@@ -239,8 +243,9 @@ void cryptfiles::pbCreate()
 		key_1 = sockpath ;
 		sk->sendKey();
 	}else{
-		if( utility::exists( key_1 ) == false )
+		if( !utility::exists( key_1 ) ){
 			return msg.ShowUIOK( tr( "ERROR!" ),tr( "invalid path to key file" ) );
+		}
 	}
 
 	keySource = QString( "-f" ) ;
@@ -272,29 +277,31 @@ void cryptfiles::pbOpenFolder( void )
 	QString p = tr( "Select Path to put destination file" ) ;
 	QString Z = QFileDialog::getExistingDirectory( this,p,QDir::homePath(),QFileDialog::ShowDirsOnly ) ;
 
-	if( Z.isEmpty() )
+	if( Z.isEmpty() ){
 		Z = QDir::homePath() ;
+	}
 	QString path ;
-	if( m_operation == QString( "-E" ) )
+	if( m_operation == QString( "-E" ) ){
 		path = Z + QString( "/" ) + m_ui->lineEditSourcePath->text().split( "/" ).last() + QString( ".zc" );
-	else{
+	}else{
 		path = Z + QString( "/" ) + m_ui->lineEditSourcePath->text().split( "/" ).last() ;
 		path.chop( 3 );
 	}
 
 	m_ui->lineEditDestinationPath->setText( path );
-	if( m_ui->lineEditSourcePath->text().isEmpty() == true )
+	if( m_ui->lineEditSourcePath->text().isEmpty() ){
 		m_ui->lineEditSourcePath->setFocus();
-	else
+	}else{
 		m_ui->pbCreate->setFocus();
+	}
 }
 
 void cryptfiles::pbOpenFile()
 {
 	QString Z ;
-	if( m_operation == QString( "-E" ) )
+	if( m_operation == QString( "-E" ) ){
 		Z = QFileDialog::getOpenFileName( this,tr( "select a file you want to encrypt" ),QDir::homePath(),0 );
-	else{
+	}else{
 		QString x = tr( "zuluCrypt encrypted files ( *.zc ) ;; All Files ( * )" ) ;
 		Z = QFileDialog::getOpenFileName( this,tr( "select a file you want to decrypt" ),QDir::homePath(),x );
 	}
@@ -307,10 +314,11 @@ void cryptfiles::pbKeyFile()
 	QString Z = QFileDialog::getOpenFileName( this,tr( "select a keyfile" ),QDir::homePath(),0 );
 
 	m_ui->lineEditPass_1->setText( Z );
-	if( m_ui->lineEditSourcePath->text().isEmpty() )
+	if( m_ui->lineEditSourcePath->text().isEmpty() ){
 		m_ui->lineEditSourcePath->setFocus();
-	else
+	}else{
 		m_ui->pbCreate->setFocus();
+	}
 }
 
 void cryptfiles::threadExitStatus( int st )

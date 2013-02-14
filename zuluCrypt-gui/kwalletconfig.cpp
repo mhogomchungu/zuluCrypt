@@ -40,15 +40,17 @@ void kwalletconfig::pbAdd()
 	QString rpass = m_ui->lineEditRepeatPassphrase->text() ;
 	QString comm  = m_ui->lineEditComment->text() ;
 
-	if( comm.isEmpty() )
+	if( comm.isEmpty() ){
 		comm = QString( "Nil" ) ;
-
+	}
 	DialogMsg msg( this ) ;
 
-	if( rpass.isEmpty() || pass.isEmpty() || uuid.isEmpty() )
+	if( rpass.isEmpty() || pass.isEmpty() || uuid.isEmpty() ){
 		return msg.ShowUIOK( tr( "ERROR" ),tr( "atleast one required field is empty\n(comment field can be empty)" ) ) ;
-	if( rpass != pass )
+	}
+	if( rpass != pass ){
 		return msg.ShowUIOK( tr( "ERROR"),tr( "passphrases do not match" ) ) ;
+	}
 
 	//read comment on ShowWalletEntries() function below to understand why there are two inserts.
 	QString m = uuid + QString( "-comment") ;
@@ -104,25 +106,26 @@ void kwalletconfig::pbGetUUIDFromDevices()
 
 void kwalletconfig::SetFocus()
 {
-	if( m_ui->lineEditUUID->text().isEmpty() )
+	if( m_ui->lineEditUUID->text().isEmpty() ){
 		m_ui->lineEditUUID->setFocus();
-	else if( m_ui->lineEditComment->text().isEmpty() )
+	}else if( m_ui->lineEditComment->text().isEmpty() ){
 		m_ui->lineEditComment->setFocus();
-	else if( m_ui->lineEditPassphrase->text().isEmpty() )
+	}else if( m_ui->lineEditPassphrase->text().isEmpty() ){
 		m_ui->lineEditPassphrase->setFocus();
-	else if( m_ui->lineEditRepeatPassphrase->text().isEmpty() )
+	}else if( m_ui->lineEditRepeatPassphrase->text().isEmpty() ){
 		m_ui->lineEditRepeatPassphrase->setFocus();
-	else
+	}else{
 		m_ui->pbAdd->setFocus();
+	}
 }
 
 void kwalletconfig::pbGetUUIDFromFile()
 {
 	QString Z = QFileDialog::getOpenFileName( this,tr( "select a luks volume" ),QDir::homePath(),0 );
 
-	if( Z.isEmpty() )
+	if( Z.isEmpty() ){
 		return ;
-
+	}
 	Z = utility::getUUIDFromPath( Z ) ;
 
 	if( Z.isEmpty() ){
@@ -165,9 +168,9 @@ void kwalletconfig::ShowWalletEntries()
 
 	m_wallet->readMap( m_map ) ;
 
-	if( m_map.empty() )
+	if( m_map.empty() ){
 		return this->show();
-
+	}
 	QTableWidget * table = m_ui->tableWidget ;
 
 	QMap< QString,QString >::const_iterator i = m_map.constBegin() ;
@@ -191,9 +194,9 @@ void kwalletconfig::ShowWalletEntries()
 	for( ; i != j ; i++ ){
 
 		uuid = i.key() ;
-		if( uuid.contains( QString( "-comment" ) ) )
+		if( uuid.contains( QString( "-comment" ) ) ){
 			continue ;
-
+		}
 		s.clear();
 		s.append( uuid );
 		s.append( QString( "" ) );
@@ -211,9 +214,9 @@ void kwalletconfig::ShowWalletEntries()
 
 			uuid = i.key() ;
 
-			if( !uuid.contains( QString( "-comment" ) ) )
+			if( !uuid.contains( QString( "-comment" ) ) ){
 				continue ;
-
+			}
 			uuid.remove( QString( "-comment" ) ) ;
 
 			for( p = 0 ; p < q ; p++ ){

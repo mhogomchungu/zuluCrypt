@@ -45,10 +45,11 @@ void volumePropertiesThread::run()
 
 	p.close();
 
-	if( st != 0 )
+	if( st != 0 ){
 		m_volumeProperties = QString( "" ) ;
-	else
+	}else{
 		m_volumeProperties = QString( " " ) + QString( data.mid( data.indexOf( '\n' ) + 2 ) );
+	}
 }
 
 volumePropertiesThread::~volumePropertiesThread()
