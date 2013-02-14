@@ -44,10 +44,11 @@ MainWindow::MainWindow( QWidget * parent ) : QWidget( parent ),m_ui( new Ui::Mai
 
 void MainWindow::defaultButton()
 {
-	if( m_ui->pbCancel->hasFocus() )
+	if( m_ui->pbCancel->hasFocus() ){
 		this->pbCancel();
-	else
+	}else{
 		this->pbOpen();
+	}
 }
 
 void MainWindow::SetAddr( QString addr )
@@ -58,10 +59,11 @@ void MainWindow::SetAddr( QString addr )
 
 void MainWindow::SetFocus()
 {
-	if( m_ui->lineEditKey->text().isEmpty() )
+	if( m_ui->lineEditKey->text().isEmpty() ){
 		m_ui->lineEditKey->setFocus();
-	else
+	}else{
 		m_ui->pbOpen->setFocus();
+	}
 }
 
 void MainWindow::pbCancel()

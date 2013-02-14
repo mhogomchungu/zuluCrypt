@@ -31,10 +31,11 @@ void wallet::openWallet()
 {
 	m_wallet = Wallet::openWallet( zuluOptions::wallet(),0,KWallet::Wallet::Synchronous ) ;
 
-	if( m_wallet )
+	if( m_wallet ){
 		this->readKwallet();
-	else
+	}else{
 		QCoreApplication::exit( 1 ) ;
+	}
 }
 
 void wallet::SendKey()

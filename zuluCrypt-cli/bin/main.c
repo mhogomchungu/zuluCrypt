@@ -20,6 +20,7 @@
 #include "includes.h"
 #include "../lib/includes.h"
 #include "../lib/libzuluCrypt.h"
+#include <signal.h>
 
 static int zuluCryptEXEGetDevice( const char * device )
 {
@@ -264,6 +265,13 @@ static void _privilegeEvelationError( const char * msg )
 	exit( 255 ) ;
 }
 
+static void _forceTerminateOnSeriousError( int sig )
+{
+	if( sig ){;}
+	puts( "SIGSEGV caught,exiting" ) ;
+	exit( 255 ) ;
+}
+
 static int _clear_dead_mappers( uid_t uid )
 {
 	zuluCryptClearDeadMappers( uid ) ;
@@ -291,6 +299,11 @@ int main( int argc,char * argv[] )
 	
 	uid_t uid = getuid() ;
 	gid_t gid = getgid() ;
+	
+	struct sigaction sa ;
+	memset( &sa,'\0',sizeof( struct sigaction ) ) ;
+	sa.sa_handler = _forceTerminateOnSeriousError ;
+	sigaction( SIGSEGV,&sa,NULL ) ;
 	
 	/*
 	 * setgroups() requires seteuid(0) ;

@@ -112,8 +112,9 @@ ssize_t zuluCryptPluginManagerSendKey( void * client,const char * key,size_t len
 void zuluCryptPluginManagerCloseConnection( void * p )
 {	
 	socket_t client = ( socket_t ) p;
-	if( p != NULL )
+	if( p != NULL ){
 		SocketClose( &client ) ;
+	}
 }
 
 static inline string_t zuluCryptGetDeviceUUID( const char * device,uid_t uid )
@@ -169,8 +170,9 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 
 	struct passwd * pass = getpwuid( uid ) ;
 		
-	if( pass == NULL )
+	if( pass == NULL ){
 		return key ;
+	}
 	/*
 	 * ZULUCRYPTpluginPath is set at config time at it equals $prefix/lib(64)/zuluCrypt/
 	 */
@@ -208,9 +210,9 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		 * for reasons currently unknown to me,the gpg plugin doesnt always exit,it hangs consuming massive amount of cpu circles.
 		 * we terminate it here by sending it a sigterm after it is done sending its key to make sure it exits.
 		 */
-		if( pluginIsGpG( pluginPath ) )
+		if( pluginIsGpG( pluginPath ) ){
 			ProcessTerminate( p ) ;
-		
+		}
 		#if zuluCryptPluginManagerDebug
 			__debug( p ) ;
 		#endif

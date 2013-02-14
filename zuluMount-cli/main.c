@@ -18,6 +18,7 @@
  */
 
 #include "includes.h"
+#include <signal.h>
 
 /*
  * below 4 functions are defined in ./print_mounted_volumes.c
@@ -453,6 +454,13 @@ static void _privilegeEvelationError( const char * msg )
 	exit( 255 ) ;
 }
 
+static void _forceTerminateOnSeriousError( int sig )
+{
+	if( sig ){;}
+	puts( "SIGSEGV caught,exiting" ) ;
+	exit( 255 ) ;
+}
+
 int main( int argc,char * argv[] )
 {	
 	char * action ;
@@ -469,6 +477,11 @@ int main( int argc,char * argv[] )
 	 * ARGS structure is declared in ./includes.h
 	 */
 	ARGS args ;
+	
+	struct sigaction sa ;
+	memset( &sa,'\0',sizeof( struct sigaction ) ) ;
+	sa.sa_handler = _forceTerminateOnSeriousError ;
+	sigaction( SIGSEGV,&sa,NULL ) ;
 	
 	if( argc < 2 ){
 		return _mount_help() ;

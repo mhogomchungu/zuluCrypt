@@ -55,18 +55,20 @@ MainWindow::MainWindow( QWidget * parent ) : QWidget( parent ),m_ui( new Ui::Mai
 
 void MainWindow::defaultButton()
 {
-	if( m_ui->pbCancel->hasFocus() )
+	if( m_ui->pbCancel->hasFocus() ){
 		this->pbCancel();
-	else
+	}else{
 		this->pbOpen();
+	}
 }
 
 void MainWindow::SetAddr( QString addr )
 {
 	m_addr = addr ;
 	m_sendKey->setAddr( m_addr );
-	if( !m_sendKey->openConnection() )
+	if( !m_sendKey->openConnection() ){
 		this->Exit( 1 );
+	}
 }
 
 void MainWindow::gotConnected()
@@ -75,12 +77,13 @@ void MainWindow::gotConnected()
 
 void MainWindow::SetFocus()
 {
-	if( m_ui->lineEditKey->text().isEmpty() )
+	if( m_ui->lineEditKey->text().isEmpty() ){
 		m_ui->lineEditKey->setFocus();
-	else if( m_ui->lineEditKeyFile->text().isEmpty() )
+	}else if( m_ui->lineEditKeyFile->text().isEmpty() ){
 		m_ui->lineEditKeyFile->setFocus();
-	else
+	}else{
 		m_ui->pbOpen->setFocus();
+	}
 }
 
 void MainWindow::pbCancel()
@@ -111,13 +114,13 @@ void MainWindow::Exit( int st )
 
 QString MainWindow::FindGPG()
 {
-	if( QFile::exists( QString( "/usr/local/bin/gpg" ) ) )
+	if( QFile::exists( QString( "/usr/local/bin/gpg" ) ) ){
 		return QString( "/usr/local/bin/gpg" ) ;
-	else if( QFile::exists( QString( "/usr/bin/gpg" ) ) )
+	}else if( QFile::exists( QString( "/usr/bin/gpg" ) ) ){
 		return QString( "/usr/bin/gpg" ) ;
-	else if( QFile::exists( QString( "/usr/sbin/gpg") ) )
+	}else if( QFile::exists( QString( "/usr/sbin/gpg") ) ){
 		return QString( "/usr/sbin/gpg" ) ;
-	else{
+	}else{
 		QString m ;
 		return m ;
 	}
@@ -139,9 +142,9 @@ void MainWindow::doneReading()
 
 void MainWindow::getGPGKey( bool cancelled,QByteArray data )
 {
-	if( cancelled )
+	if( cancelled ){
 		return this->Exit( 1 );
-
+	}
 	if( !data.isEmpty() ){
 		this->hide();
 		m_sendKey->sendKey( data );
@@ -161,17 +164,18 @@ void MainWindow::pbOpen()
 
 	DialogMsg msg( this ) ;
 
-	if( path.isEmpty() )
+	if( path.isEmpty() ){
 		return msg.ShowUIOK( tr( "ERROR" ),tr( "path to gpg keyfile is empty" ) ) ;
-
-	if( !QFile::exists( path ) )
+	}
+	if( !QFile::exists( path ) ){
 		return msg.ShowUIOK( tr( "ERROR" ),tr( "invalid path to gpg keyfile" ) ) ;
-
+	}
+	
 	QString exe = this->FindGPG() ;
 
-	if( exe.isEmpty() )
+	if( exe.isEmpty() ){
 		return msg.ShowUIOK( tr( "ERROR" ),tr( "could not find \"gpg\" executable in \"/usr/local\",\"/usr/bin\" and \"/usr/sbin\"" ) ) ;
-
+	}
 	this->disableAll();
 	m_working = true ;
 
@@ -193,8 +197,9 @@ void MainWindow::pbKeyFile()
 {
 	QString Z = QFileDialog::getOpenFileName( this,QString( "select a key file" ),QDir::homePath() ) ;
 
-	if( !Z.isEmpty() )
+	if( !Z.isEmpty() ){
 		m_ui->lineEditKeyFile->setText( Z );
+	}
 	this->SetFocus();
 }
 
