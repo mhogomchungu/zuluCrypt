@@ -179,8 +179,9 @@ stringList_t zuluCryptPartitionList( void )
 	
 	StringDelete( &st ) ;
 	
-	if( stl == StringListVoid )
+	if( stl == StringListVoid ){
 		return StringListVoid ;
+	}
 	
 	st_1 = String( "/dev/" ) ;
 	
@@ -207,28 +208,27 @@ stringList_t zuluCryptPartitionList( void )
 
 static int _zuluCryptCheckSYSifDeviceIsSystem( const char * device )
 {
-	char c ;
-	const char * path ;
-	int r ;	
-	string_t st ;
-	string_t xt ;
-	
-#if NO_UDEV_SUPPORT
 	/*
 	 * NO_UDEV_SUPPORT is set at configure time by "-DUDEVSUPPORT=true" option,the option being absent equals "-DUDEVSUPPORT=false"
 	 */
-	
+#if NO_UDEV_SUPPORT
+	if( device ){;}
 	/*
-	 * turn off udev for now,it does not seem to detect external usb based devices reliably. 
+	 * udev support is off 
 	 */
 	return 0 ;
-#endif
-	st = String( device ) ;
-	/*
-	 * this loop will convert something like: "/dev/sdc12" to "/dev/sdc"
-	 * basically,it removes digits from the end of the string
-	 */
+#else
+	char c ;
+	const char * path ;
+	int r ;
+	string_t xt ;
+	string_t st = String( device ) ;
+	
 	while( 1 ){
+		/*
+		 * this loop will convert something like: "/dev/sdc12" to "/dev/sdc"
+		 * basically,it removes digits from the end of the string
+		 */
 		c = StringCharAtLast( st ) ;
 		if( c >= '0' && c <= '9' ){
 			StringRemoveRight( st,1 ) ;
@@ -244,11 +244,13 @@ static int _zuluCryptCheckSYSifDeviceIsSystem( const char * device )
 	 */
 	xt = StringGetFromVirtualFile( path ) ;
 	StringDelete( &st ) ;
-	if( xt == StringVoid )
+	if( xt == StringVoid ){
 		return 0 ;
+	}
 	r = StringEqual( xt,"0\n" ) ;
 	StringDelete( &xt ) ;
-	return r ;	
+	return r ;
+#endif
 }
 
 stringList_t zuluCryptPartitions( int option )
@@ -268,11 +270,12 @@ stringList_t zuluCryptPartitions( int option )
 	StringListIterator it  ;
 	StringListIterator end ;
 	
-	if( stl == StringListVoid )
+	if( stl == StringListVoid ){
 		return StringListVoid ;
-	
-	if( option == ALL_PARTITIONS )
+	}
+	if( option == ALL_PARTITIONS ){
 		return stl ;
+	}
 	
 	non_system = stl ;
 
@@ -623,7 +626,7 @@ int _zuluCryptPartitionIsSystemPartition( const char * dev )
 int zuluCryptPartitionIsSystemPartition( const char * device )
 {
 	char * dev ;
-	if( strncmp( device,"/dev/loop",9 ) == 0 ){
+	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
 		/*
 		 * zuluCryptLoopDeviceAddress() is defined in ../lib/create_loop_device.c
 		 */

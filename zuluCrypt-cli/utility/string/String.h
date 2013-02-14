@@ -648,36 +648,64 @@ void StringWriteToFile( string_t st,const char * path,int mode ) ;
 string_t StringGetFromVirtualFile( const char * path ) ;
 
 /*
- * a few convenient functions 
+ * a few convenient "safe" functions 
  */
 static __inline__ int StringsAreEqual( const char * x,const char * y )
 {
-	return strcmp( x,y ) == 0 ;
+	if( x == NULL && y == NULL ){
+		return 1 ;
+	}else if( x == NULL || y == NULL ){
+		return 0 ;
+	}else{
+		return strcmp( x,y ) == 0 ;
+	}
 }
 
 static __inline__ int StringsAreNotEqual( const char * x,const char * y )
 {
-	return strcmp( x,y ) != 0 ;
+	if( x == NULL && y == NULL ){
+		return 0 ;
+	}else if( x == NULL || y == NULL ){
+		return 1 ;
+	}else{
+		return strcmp( x,y ) != 0 ;
+	}
 }
 
 static __inline__ int StringPrefixMatch( const char * x,const char * y,size_t z )
 {
-	return strncmp( x,y,z ) == 0 ;
+	if( x == NULL || y == NULL ){
+		return 0 ;
+	}else{
+		return memcmp( x,y,z ) == 0 ;
+	}
 }
 
 static __inline__ int StringPrefixEqual( const char * x,const char * y )
 {
-	return strncmp( x,y,strlen( y ) ) == 0 ;
+	if( x == NULL || y == NULL ){
+		return 0 ;
+	}else{
+		return memcmp( x,y,strlen( y ) ) == 0 ;
+	}
 }
 
 static __inline__ int StringHasComponent( const char * x,const char * y )
 {
-	return strstr( x,y ) != NULL ;
+	if( x == NULL || y == NULL ){
+		return 0 ;
+	}else{
+		return strstr( x,y ) != NULL ;
+	}
 }
 
 static inline int StringHasNoComponent( const char * x,const char * y )
 {
-	return strstr( x,y ) == NULL ;
+	if( x == NULL || y == NULL ){
+		return 0 ;
+	}else{
+		return strstr( x,y ) == NULL ;
+	}
 }
 
 #ifdef __cplusplus

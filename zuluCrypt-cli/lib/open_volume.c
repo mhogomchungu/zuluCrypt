@@ -60,17 +60,28 @@ static inline int _device_is_not_sane( const char * device,const char * mapper )
 
 static int _open_mapper( const char * dev,const char * map,const char * mode,const char * pass,size_t pass_size )
 {	
+	int st ;
 	/*
-	 * zuluCryptOpenLuks()   is defined in open_luks.c
-	 * zuluCryptOpenTcrypt() is defined in open_tcrypt.c
-	 * zuluCryptOpenPlain()  is defined in open_plain.c
-	 * zuluCryptGetVolumeType() is defined in volume_type.c
+	 * zuluCryptVolumeIsLuks() is defined in is_luks.c
 	 */
-	switch( zuluCryptGetVolumeType( dev,pass,pass_size ) ){
-		case 1 : return zuluCryptOpenLuks(   dev,map,mode,pass,pass_size ) ; 
-		case 2 : return zuluCryptOpenTcrypt( dev,map,mode,pass,pass_size ) ; 
-		default: return zuluCryptOpenPlain(  dev,map,mode,pass,pass_size ) ; 
+	if( zuluCryptVolumeIsLuks( dev ) ){
+		/*
+		 * zuluCryptOpenLuks() is defined in open_luks.c
+		 */
+		st = zuluCryptOpenLuks( dev,map,mode,pass,pass_size ) ; 
+	}else{
+		/*
+		 * zuluCryptOpenTcrypt() is defined in open_tcrypt.c
+		 */
+		st = zuluCryptOpenTcrypt( dev,map,mode,pass,pass_size ) ;
+		if( st != 0 ){
+			/*
+			 * zuluCryptOpenPlain() is defined in open_plain.c
+			 */
+			st = zuluCryptOpenPlain( dev,map,mode,pass,pass_size ) ; 
+		}
 	}
+	return st ;
 }
 
 int zuluCryptOpenVolume( const char * dev,const char * map,

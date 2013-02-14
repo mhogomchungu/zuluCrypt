@@ -27,7 +27,7 @@ public:
 	bool close( void );
 	bool setFolder( QString folder ) ;
 	int readMap( QMap<QString,QString> & map ) ;
-	int writeMap( QMap<QString, QString> & map ) ;
+	int writeMap( QMap<QString,QString> & map ) ;
 	QString getKey( QString uuid ) ;
 
 	static bool keyDoesNotExist( QString key ) ;
