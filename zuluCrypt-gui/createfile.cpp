@@ -61,9 +61,9 @@ void createfile::fileTextChange( QString txt )
 	}
 
 	int i = p.lastIndexOf( "/" ) ;
-	if( i == -1 )
+	if( i == -1 ){
 		return ;
-
+	}
 	p = p.mid( 0,i ) + QString( "/" ) + txt.split( "/" ).last();
 
 	m_ui->lineEditFilePath->setText( p ) ;
@@ -72,8 +72,9 @@ void createfile::fileTextChange( QString txt )
 void createfile::closeEvent( QCloseEvent * e )
 {
 	e->ignore();
-	if( m_cft != NULL )
+	if( m_cft != NULL ){
 		return ;
+	}
 	pbCancel() ;
 }
 
@@ -117,11 +118,11 @@ void createfile::showUI()
 	/*
 	 * RANDOM_SOURCE is defined at createfilethread.h
 	 */
-	if( RANDOM_SOURCE == 0 )
+	if( RANDOM_SOURCE == 0 ){
 		this->setWindowTitle( tr( "1/2 create a container file" ) );
-	else
+	}else{
 		this->setWindowTitle( tr( "create a container file" ) );
-
+	}
 	this->show();
 }
 
@@ -133,28 +134,28 @@ void createfile::pbCreate()
 	QString filePath = m_ui->lineEditFilePath->text() ;
 	QString fileSize = m_ui->lineEditFileSize->text() ;
 
-	if( fileName.isEmpty())
+	if( fileName.isEmpty()){
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "file name field is empty" ) );
-
-	if( filePath.isEmpty())
+	}
+	if( filePath.isEmpty()){
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "file path field is empty" ) );
-
-	if( fileSize.isEmpty())
+	}
+	if( fileSize.isEmpty()){
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "file size field is empty" ) );
-
+	}
 	bool test ;
 
 	fileSize.toInt( &test ) ;
 
-	if( test == false )
+	if( test == false ){
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Illegal character in the file size field.Only digits are allowed" ) );
-
+	}
 	m_path = filePath ;
 
-	if( utility::exists( m_path ) == true )
+	if( utility::exists( m_path ) ){
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "file with the same name and at the destination folder already exist" ) );
-
-	if( utility::canCreateFile( m_path ) == false ){
+	}
+	if( !utility::canCreateFile( m_path ) ){
 		msg.ShowUIOK( tr( "ERROR!" ),tr( "you dont seem to have writing access to the destination folder" ) );
 		m_ui->lineEditFilePath->setFocus();
 		return ;
@@ -171,9 +172,9 @@ void createfile::pbCreate()
 		case 2 :m_fileSize = fileSize.toDouble() * BLOCK_SIZE * BLOCK_SIZE  * BLOCK_SIZE;
 			break ;
 	}
-	if( m_fileSize < 3145728 )
+	if( m_fileSize < 3145728 ){
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "container file must be bigger than 3MB" ) );
-
+	}
 	disableAll();
 
 	m_cft = new createFileThread( m_path,m_fileSize ) ;
@@ -199,12 +200,12 @@ void createfile::exitStatus( int status )
 		QFile::remove( m_path ) ;
 		return HideUI() ;
 	}else if( status == 0 ){
-		if( m_msg->isVisible() )
+		if( m_msg->isVisible() ){
 			m_msg->HideUI();
+		}
 	}else{
 		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "ERROR" ),
-			      tr( "could not open cryptographic back end to generate random data" ) ) ;
+		msg.ShowUIOK( tr( "ERROR" ),tr( "could not open cryptographic back end to generate random data" ) ) ;
 	}
 
 	emit fileCreated( m_path ) ;
@@ -213,14 +214,14 @@ void createfile::exitStatus( int status )
 
 void createfile::pbCancel()
 {
-	if( m_cft == NULL )
+	if( m_cft == NULL ){
 		return HideUI();
-
+	}
 	QString x = tr( "terminating file creation process" ) ;
 	QString y = tr( "are you sure you want to stop file creation process?" ) ;
-
-	if( m_msg->ShowUIYesNoDefaultNo( x,y ) == QMessageBox::Yes )
+	if( m_msg->ShowUIYesNoDefaultNo( x,y ) == QMessageBox::Yes ){
 		emit cancelOperation();
+	}
 }
 
 void createfile::HideUI()

@@ -40,9 +40,9 @@ int createFileThread::createContainerFile( void )
 {
 	QFile file( m_file ) ;
 
-	if( !file.open( QIODevice::WriteOnly ) )
+	if( !file.open( QIODevice::WriteOnly ) ){
 		return 0 ;
-
+	}
 	char buffer[ BLOCK_SIZE ] ;
 
 	QFile random( QString( "/dev/urandom" ) ) ;
@@ -53,8 +53,9 @@ int createFileThread::createContainerFile( void )
 	int j = 0 ;
 	int k ;
 	do{
-		if( m_status == -1 )
+		if( m_status == -1 ){
 			break ;
+		}
 		random.read( buffer,BLOCK_SIZE ) ;
 		file.write( buffer,BLOCK_SIZE ) ;
 		file.flush() ;
@@ -63,8 +64,9 @@ int createFileThread::createContainerFile( void )
 
 		k = ( int ) ( size_written * 100 / m_size ) ;
 
-		if( k > j )
+		if( k > j ){
 			emit progress( k );
+		}
 		j = k ;
 	}while( size_written < m_size ) ;
 
@@ -163,9 +165,9 @@ void createFileThread::run()
 		 */
 		this->createFile();
 
-		if( m_status != 0 )
+		if( m_status != 0 ){
 			return ;
-
+		}
 		this->fillCreatedFileWithRandomData();
 	}
 }
@@ -176,9 +178,9 @@ void createFileThread::createFile()
 
 	QFile file( m_file ) ;
 
-	if( !file.open( QIODevice::WriteOnly ) )
+	if( !file.open( QIODevice::WriteOnly ) ){
 		return ;
-
+	}
 	emit progress( 0 );
 
 	if( !file.resize( m_size ) ){
@@ -195,9 +197,9 @@ void createFileThread::createFile()
 		double k = m_size / SIZE ;
 
 		for( i = 0 ; i < k ; i++ ){
-			if( m_status == -1 )
+			if( m_status == -1 ){
 				break ;
-
+			}
 			if( x > y ){
 				emit progress( x );
 				y = x ;
@@ -220,12 +222,10 @@ void createFileThread::createFile()
 void createFileThread::fillCreatedFileWithRandomData()
 {
 	this->openVolume()  ;
-
-	if( m_status != 0 )
+	if( m_status != 0 ){
 		return ;
-
+	}
 	this->writeVolume() ;
-
 	this->closeVolume() ;
 }
 
@@ -234,7 +234,6 @@ void createFileThread::closeVolume()
 	QString path = m_file ;
 	path.replace( "\"","\"\"\"" ) ;
 	QString exe = QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( path );
-
 	QProcess p ;
 	p.start( exe );
 	p.waitForFinished();
@@ -262,9 +261,9 @@ void createFileThread::writeVolume()
 {
 	QFile path( utility::mapperPath( m_file ) ) ;
 
-	if( !path.open( QIODevice::WriteOnly ) )
+	if( !path.open( QIODevice::WriteOnly ) ){
 		return ;
-
+	}
 	int j ;
 	int k = -1 ;
 
@@ -288,8 +287,9 @@ void createFileThread::writeVolume()
 			k = j ;
 		}
 
-		if( m_status == -1 )
+		if( m_status == -1 ){
 			break ;
+		}
 	}
 
 	emit progress( 100 );

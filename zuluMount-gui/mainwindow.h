@@ -61,6 +61,7 @@ signals:
 public slots:
 	void raiseWindow( void ) ;
 private slots:
+	void getVolumeInfo( QString,QString );
 	void mount( QString,QString,QString ) ;
 	void defaultButton( void ) ;
 	void volumeProperties( QString );

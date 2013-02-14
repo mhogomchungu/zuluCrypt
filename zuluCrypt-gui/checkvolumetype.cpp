@@ -32,10 +32,11 @@ void checkvolumetype::start()
 
 void checkvolumetype::run()
 {
-	if( utility::isLuks( m_device ) )
+	if( utility::isLuks( m_device ) ){
 		m_type = tr( "luks" ) ;
-	else
+	}else{
 		m_type = tr( "plain" ) ;
+	}
 }
 
 checkvolumetype::~checkvolumetype()

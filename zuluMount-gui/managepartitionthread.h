@@ -30,6 +30,7 @@
 
 #include "bin_path.h"
 #include <unistd.h>
+#include <blkid/blkid.h>
 
 class managepartitionthread : public QObject,public QRunnable
 {
@@ -49,6 +50,7 @@ signals:
 	void signalMountedList( QStringList,QStringList ) ;
 	void signalProperties( QString ) ;
 	void checkPermissions( int ) ;
+	void getVolumeInfo( QString,QString ) ;
 private:
 	void checkPermissions( void );
 	void openPathInFileManager( void ) ;
@@ -61,6 +63,7 @@ private:
 	void partitionList( void ) ;
 	void mount( void ) ;
 	void umount( QString ) ;
+	void getVolumeType( void );
 	QString m_action ;
 	QString m_device ;
 	QString m_point ;

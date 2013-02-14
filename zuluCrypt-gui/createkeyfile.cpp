@@ -56,9 +56,9 @@ void createkeyfile::keyTextChange( QString txt )
 	}
 
 	int i = p.lastIndexOf( "/" ) ;
-	if( i == -1 )
+	if( i == -1 ){
 		return ;
-
+	}
 	p = p.mid( 0,i ) + QString( "/" ) + txt.split( "/" ).last();
 
 	m_ui->lineEditPath->setText( p ) ;
@@ -86,10 +86,11 @@ void createkeyfile::ShowUI()
 
 void createkeyfile::pbCancel()
 {
-	if( m_ckt == NULL )
+	if( m_ckt == NULL ){
 		HideUI();
-	else
+	}else{
 		m_ckt->cancelOperation();
+	}
 }
 
 void createkeyfile::enableAll()
@@ -123,16 +124,16 @@ void createkeyfile::pbCreate()
 	QString fileName = m_ui->lineEditFileName->text() ;
 	QString path = m_ui->lineEditPath->text() ;
 
-	if( fileName.isEmpty() )
+	if( fileName.isEmpty() ){
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "the key name field is empth" ) );
-
-	if( path.isEmpty() )
+	}
+	if( path.isEmpty() ){
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "folder path to where the key will be created is empty" ) );
-
-	if( utility::exists( path ) == true )
+	}
+	if( utility::exists( path ) ){
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "file with the same name and at the destination folder already exist" ) );
-
-	if( utility::canCreateFile( path ) == false ){
+	}
+	if( !utility::canCreateFile( path ) ){
 		msg.ShowUIOK( tr( "ERROR!" ),tr( "you dont seem to have writing access to the destination folder" ) );
 		m_ui->lineEditPath->setFocus();
 		return ;

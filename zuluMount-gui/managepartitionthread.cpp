@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright (c) 2012
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -90,7 +90,33 @@ void managepartitionthread::run()
 	}else if( m_action == QString( "checkPermissions" ) ){
 
 		this->checkPermissions();
+
+	}else if( m_action == QString( "volumeType" ) ){
+
+		this->getVolumeType();
 	}
+
+}
+
+void managepartitionthread::getVolumeType()
+{
+	QString type( "Nil" ) ;
+	QString label( "Nil") ;
+	const char * t ;
+	const char * l ;
+	QByteArray dev = m_device.toAscii() ;
+	blkid_probe dp = blkid_new_probe_from_filename( dev.constData() ) ;
+	if( dp ){
+		blkid_do_probe( dp ) ;
+		if( blkid_probe_lookup_value( dp,"TYPE",&t,NULL ) == 0 ){
+			type = QString( t ) ;
+		}
+		if( blkid_probe_lookup_value( dp,"LABEL",&l,NULL ) == 0 ){
+			label = QString( l) ;
+		}
+		blkid_free_probe( dp ) ;
+	}
+	emit getVolumeInfo( type,label );
 }
 
 void managepartitionthread::checkPermissions()
@@ -194,8 +220,9 @@ void managepartitionthread::cryptoOpen()
 
 	QString output = QString( p.readAll() ) ;
 	int index = output.indexOf( QChar( ':') ) ;
-	if( index != -1 )
-	output = output.mid( index + 1 ) ;
+	if( index != -1 ){
+		output = output.mid( index + 1 ) ;
+	}
 	emit signalMountComplete( p.exitCode(),output ) ;
 	p.close();
 }
@@ -205,9 +232,9 @@ void managepartitionthread::mount()
 	QProcess p ;
 	QString exe ;
 
-	if( m_point.isEmpty() )
+	if( m_point.isEmpty() ){
 		m_point = QDir::homePath() + QString( "/" ) + m_device.split( "/" ).last() ;
-
+	}
 	exe = QString( "%1 -m -d \"%2\" -e %3 -z \"%4\"" ).arg( zuluMount ).arg( m_device ).arg( m_mode ).arg( m_point ) ;
 
 	p.start( exe );
@@ -215,8 +242,9 @@ void managepartitionthread::mount()
 
 	QString output = QString( p.readAll() ) ;
 	int index = output.indexOf( QChar( ':') ) ;
-	if( index != -1 )
+	if( index != -1 ){
 		output = output.mid( index + 1 ) ;
+	}
 	emit signalMountComplete( p.exitCode(),output ) ;
 	p.close();
 }

@@ -47,9 +47,9 @@ void closeAllVolumesThread::run()
 
 	QTableWidgetItem * deviceItem ;
 
-	while( ++j < i )
+	while( ++j < i ){
 		tableItems.append( m_table->item( j,0 ) );
-
+	}
 	QProcess p ;
 	QString exe ;
 	QString device ;

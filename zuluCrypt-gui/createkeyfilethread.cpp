@@ -35,11 +35,11 @@ void createkeyfilethread::run()
 {
 	char data ;
 
-	if( m_rng == 0 )
+	if( m_rng == 0 ){
 		m_qfread = open( "/dev/urandom",O_RDONLY ) ;
-	else
+	}else{
 		m_qfread = open( "/dev/random",O_RDONLY ) ;
-
+	}
 	QByteArray path = m_path.toAscii() ;
 
 	m_qfwrite = open( path.constData(),O_WRONLY|O_CREAT ) ;
@@ -64,8 +64,8 @@ createkeyfilethread::~createkeyfilethread()
 {
 	close( m_qfread ) ;
 	close( m_qfwrite ) ;
-	if( m_cancelled != 1 )
+	if( m_cancelled != 1 ){
 		QFile::setPermissions( m_path,QFile::ReadOwner|QFile::WriteOwner ) ;
-
+	}
 	emit exitStatus( m_cancelled );
 }

@@ -78,9 +78,9 @@ void MainWindow::setUpApp()
 	QString dirPath = QDir::homePath() + QString( "/.zuluCrypt/" ) ;
 	QDir dir( dirPath ) ;
 
-	if( !dir.exists() )
+	if( !dir.exists() ){
 		dir.mkdir( dirPath ) ;
-
+	}
 	m_ui->pbunmount->setVisible( false );
 
 	QStringList argv = QCoreApplication::arguments() ;
@@ -98,10 +98,11 @@ void MainWindow::defaultButton()
 	int row = m_ui->tableWidget->currentRow() ;
 	QString mt = m_ui->tableWidget->item( row,1 )->text() ;
 
-	if( mt == QString( "Nil" ) )
+	if( mt == QString( "Nil" ) ){
 		this->slotMount();
-	else
+	}else{
 		this->pbUmount();
+	}
 }
 
 void MainWindow::raiseWindow()
@@ -118,8 +119,9 @@ void MainWindow::start()
 	oneinstance * instance = new oneinstance( this,sockpath,"raiseWindow" ) ;
 	connect( instance,SIGNAL( raise() ),this,SLOT( raiseWindow() ) ) ;
 
-	if( !instance->instanceExist() )
+	if( !instance->instanceExist() ){
 		this->setUpApp();
+	}
 }
 
 void MainWindow::pbClose()
@@ -129,8 +131,9 @@ void MainWindow::pbClose()
 
 void MainWindow::slotCloseApplication()
 {
-	if( m_working == false )
+	if( m_working == false ){
 		QCoreApplication::quit();
+	}
 }
 
 void MainWindow::itemClicked( QTableWidgetItem * item )
@@ -264,19 +267,21 @@ void MainWindow::closeEvent( QCloseEvent * e )
 void MainWindow::slotTrayClicked( QSystemTrayIcon::ActivationReason e )
 {
 	if( e == QSystemTrayIcon::Trigger ){
-		if( this->isVisible() )
+		if( this->isVisible() ){
 			this->hide();
-		else
+		}else{
 			this->show();
+		}
 	}
 }
 
 void MainWindow::slotcbReadOnly()
 {
-	if( m_ui->cbReadOnly->isChecked() )
+	if( m_ui->cbReadOnly->isChecked() ){
 		m_ui->cbReadOnly->setChecked( false );
-	else
+	}else{
 		m_ui->cbReadOnly->setChecked( true );
+	}
 }
 
 void MainWindow::stateChanged( int state )
@@ -311,6 +316,11 @@ void MainWindow::slotMount()
 	this->mount( type,device,label );
 }
 
+void MainWindow::getVolumeInfo( QString type,QString label )
+{
+	this->mount( type,m_device,label );
+}
+
 void MainWindow::pbMount()
 {
 	this->disableAll();
@@ -318,15 +328,13 @@ void MainWindow::pbMount()
 	QString path = QFileDialog::getOpenFileName( this,tr( "select an image file to mount" ),QDir::homePath() ) ;
 	if( path.isEmpty() ){
 		this->enableAll();
-		return ;
+	}else{
+		m_device = path ;
+		managepartitionthread * m = new managepartitionthread() ;
+		connect( m,SIGNAL( getVolumeInfo( QString,QString ) ),this,SLOT( getVolumeInfo( QString,QString ) ) ) ;
+		m->setDevice( m_device );
+		m->startAction( QString( "volumeType" ) ) ;
 	}
-	QStringList prp = utility::deviceProperties( path ) ;
-
-	QString type = prp.at( 3 ) ;
-	QString label = prp.at( 2 ) ;
-
-	m_device = path ;
-	this->mount( type,m_device,label );
 }
 
 void MainWindow::volumeMiniProperties( QTableWidget * table,QString p,QString mountPointPath )
@@ -390,9 +398,9 @@ void MainWindow::pbUpdate()
 {
 	this->disableAll();
 
-	while( m_ui->tableWidget->rowCount() )
+	while( m_ui->tableWidget->rowCount() ){
 		m_ui->tableWidget->removeRow( 0 ) ;
-
+	}
 	managepartitionthread * part = new managepartitionthread() ;
 
 	m_ui->tableWidget->setEnabled( false );
@@ -436,17 +444,18 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 		opt = entries.at( 4 ) ;
 		if( opt == QString( "Nil" ) || opt == QString( "1.0 KB" ) )
 			continue ;
-		if( sys.contains( entries.at( 0 ) ) )
+		if( sys.contains( entries.at( 0 ) ) ){
 			tablewidget::addRowToTable( table,entries,f ) ;
-		else
+		}else{
 			tablewidget::addRowToTable( table,entries ) ;
+		}
 	}
 
-	if( m_ui->tableWidget->rowCount() > 10 )
+	if( m_ui->tableWidget->rowCount() > 10 ){
 		m_ui->tableWidget->setColumnWidth( 1,226 );
-	else
+	}else{
 		m_ui->tableWidget->setColumnWidth( 1,240 );
-
+	}
 	this->enableAll();
 }
 
@@ -466,9 +475,9 @@ void MainWindow::slotUnmountComplete( int status,QString msg )
 		if( device.startsWith( QString( "/dev/" ) ) || device.startsWith( "UUID=" ) ){
 			table->item( row,1 )->setText( QString( "Nil" ) );
 
-			if( type == QString( "crypto_LUKS" ) )
+			if( type == QString( "crypto_LUKS" ) ){
 				table->item( row,3 )->setText( QString( "Nil" ) );
-			else if( type == QString( "crypto_PLAIN" ) ){
+			}else if( type == QString( "crypto_PLAIN" ) ){
 				table->item( row,3 )->setText( QString( "Nil" ) );
 				table->item( row,2 )->setText( QString( "Nil" ) );
 			}else if( type == QString( "crypto_TCRYPT" ) ){

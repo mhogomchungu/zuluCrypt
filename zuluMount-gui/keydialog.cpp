@@ -31,11 +31,11 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,QString path,QString
 	m_folderOpener = folderOpener ;
 
 	QString msg ;
-	if( type == QString( "crypto_LUKS" ) )
+	if( type == QString( "crypto_LUKS" ) ){
 		msg = tr( "unlock and mount a luks volume in \"%1\"").arg( m_path ) ;
-	else
+	}else{
 		msg = tr( "unlock and mount a plain volume in \"%1\"").arg( m_path ) ;
-
+	}
 	this->setWindowTitle( msg );
 
 	path = savemountpointpath::getPath( path,QString( "zuluMount-MountPointPath" ) ) ;
@@ -76,21 +76,23 @@ void keyDialog::cbMountReadOnlyStateChanged( int state )
 	m_ui->checkBoxOpenReadOnly->setEnabled( false );
 	m_ui->checkBoxOpenReadOnly->setChecked( openvolumereadonly::setOption( this,state,QString( "zuluMount-gui" ) ) );
 	m_ui->checkBoxOpenReadOnly->setEnabled( true );
-	if( m_ui->lineEditKey->text().isEmpty() )
+	if( m_ui->lineEditKey->text().isEmpty() ){
 		m_ui->lineEditKey->setFocus();
-	else if( m_ui->lineEditMountPoint->text().isEmpty() )
+	}else if( m_ui->lineEditMountPoint->text().isEmpty() ){
 		m_ui->lineEditMountPoint->setFocus();
-	else
+	}else{
 		m_ui->pbOpen->setFocus();
+	}
 }
 
 void keyDialog::keyTextChanged( QString txt )
 {
 	if( m_ui->rbPlugIn->isChecked() ){
-		if( txt.contains( QString( "/") ) )
+		if( txt.contains( QString( "/") ) ){
 			m_ui->label->setText( tr( "plugin path" ) );
-		else
+		}else{
 			m_ui->label->setText( tr( "plugin name" ) );
+		}
 	}
 }
 
@@ -152,10 +154,11 @@ void keyDialog::KeyFile()
 
 void keyDialog::pbkeyOption()
 {
-	if( m_ui->rbPlugIn->isChecked() )
+	if( m_ui->rbPlugIn->isChecked() ){
 		this->Plugin();
-	else if( m_ui->rbKeyFile->isChecked() )
+	}else if( m_ui->rbKeyFile->isChecked() ){
 		this->KeyFile();
+	}
 }
 
 void keyDialog::Plugin()
@@ -166,9 +169,9 @@ void keyDialog::Plugin()
 
 	QDir dir( QString( ZULUCRYPTpluginPath ) ) ;
 
-	if( !dir.exists() )
+	if( !dir.exists() ){
 		return ;
-
+	}
 	list = dir.entryList() ;
 
 	list.removeOne( QString( "zuluCrypt-testKey" ) ) ;
@@ -184,12 +187,12 @@ void keyDialog::Plugin()
 
 	int j = list.size()  ;
 
-	if( j == 0 )
+	if( j == 0 ){
 		return ;
-
-	for( int i = 0 ; i < j ; i++ )
+	}
+	for( int i = 0 ; i < j ; i++ ){
 		m_menu->addAction( list.at( i ) ) ;
-
+	}
 	m_menu->addSeparator() ;
 
 	m_menu->addAction( tr( "cancel" ) ) ;
@@ -201,8 +204,9 @@ void keyDialog::Plugin()
 
 void keyDialog::pbPluginEntryClicked( QAction * e )
 {
-	if( e->text() != tr( "cancel" ) )
+	if( e->text() != tr( "cancel" ) ){
 		m_ui->lineEditKey->setText( e->text() ) ;
+	}
 }
 
 void keyDialog::closeEvent( QCloseEvent * e )
@@ -287,19 +291,20 @@ void keyDialog::pbOpen()
 
 		socketSendKey * s = new socketSendKey( this,addr,m_ui->lineEditKey->text().toAscii() ) ;
 		s->sendKey();
-	}else if( m_ui->rbKeyFile->isChecked() )
+	}else if( m_ui->rbKeyFile->isChecked() ){
 		m = QString( "-f ") + m_ui->lineEditKey->text().replace( "\"","\"\"\"" ) ;
-	else if( m_ui->rbPlugIn->isChecked() )
+	}else if( m_ui->rbPlugIn->isChecked() ){
 		m = QString( "-G ") + m_ui->lineEditKey->text().replace( "\"","\"\"\"" ) ;
-
+	}
 	managepartitionthread * part = new managepartitionthread() ;
 	connect( part,SIGNAL( signalMountComplete( int,QString ) ),this,SLOT( slotMountComplete( int,QString ) ) ) ;
 
 	part->setDevice( m_path );
-	if( m_ui->checkBoxOpenReadOnly->isChecked() )
+	if( m_ui->checkBoxOpenReadOnly->isChecked() ){
 		part->setMode( QString( "ro" ) );
-	else
-		part->setMode( QString( "rw" )) ;
+	}else{
+		part->setMode( QString( "rw" ) ) ;
+	}
 	part->setKeySource( m );
 	m_point = m_ui->lineEditMountPoint->text().replace( "\"","\"\"\"" ) ;
 	part->setMountPoint( m_point );

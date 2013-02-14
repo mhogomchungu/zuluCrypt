@@ -53,16 +53,18 @@ void mountPartition::checkBoxReadOnlyStateChanged( int state )
 	m_ui->checkBoxMountReadOnly->setEnabled( false );
 	m_ui->checkBoxMountReadOnly->setChecked( openvolumereadonly::setOption( this,state,QString( "zuluMount-gui" ) ) );
 	m_ui->checkBoxMountReadOnly->setEnabled( true );
-	if( m_ui->lineEdit->text().isEmpty() )
+	if( m_ui->lineEdit->text().isEmpty() ){
 		m_ui->lineEdit->setFocus();
-	else
+	}else{
 		m_ui->pbMount->setFocus();
+	}
 }
 
 void mountPartition::enableAll()
 {
-	if( m_label != QString( "Nil" ) )
+	if( m_label != QString( "Nil" ) ){
 		m_ui->checkBox->setEnabled( true );
+	}
 	m_ui->checkBoxMountReadOnly->setEnabled( true );
 	m_ui->labelMountPoint->setEnabled( true );
 	m_ui->lineEdit->setEnabled( true );
@@ -99,10 +101,11 @@ void mountPartition::pbMount()
 	this->disableAll();
 	managepartitionthread * part = new managepartitionthread() ;
 	part->setDevice( m_path );
-	if( m_ui->checkBoxMountReadOnly->isChecked() )
+	if( m_ui->checkBoxMountReadOnly->isChecked() ){
 		part->setMode( QString( "ro" ) );
-	else
+	}else{
 		part->setMode( QString( "rw" ) );
+	}
 	m_point = m_ui->lineEdit->text() ;
 	part->setMountPoint( utility::mountPath( m_point ) );
 	connect( part,SIGNAL( signalMountComplete( int,QString ) ),this,SLOT( slotMountComplete( int,QString ) ) ) ;
@@ -130,8 +133,9 @@ void mountPartition::ShowUI( QString path,QString label )
 	m_ui->lineEdit->setText( m_point ) ;
 	//m_ui->lineEdit->setText( savemountpointpath::getPath( path,QString( "zuluMount-MountPointPath" ) ) ) ;
 
-	if( label == QString( "Nil" ) )
+	if( label == QString( "Nil" ) ){
 		m_ui->checkBox->setEnabled( false );
+	}
 	this->show();
 }
 
@@ -139,10 +143,11 @@ void mountPartition::stateChanged( int i )
 {
 	Q_UNUSED( i ) ;
 	m_ui->checkBox->setEnabled( false );
-	if( m_ui->checkBox->isChecked() )
+	if( m_ui->checkBox->isChecked() ){
 		m_ui->lineEdit->setText( m_label );
-	else
+	}else{
 		m_ui->lineEdit->setText( m_path.split( QString( "/" ) ).last() );
+	}
 	m_ui->checkBox->setEnabled( true );
 }
 
