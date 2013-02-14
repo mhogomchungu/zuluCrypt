@@ -128,7 +128,12 @@ void zuluMountPartitionProperties( const char * device,const char * UUID,const c
 		printf( "%s\t",m_point ) ;
 	}
 	
-	if( strcmp( device,mapper ) != 0 ){
+	if( StringsAreNotEqual( device,mapper ) ){
+		/*
+		 * We will get here when a volume is encrypted.
+		 * device will contain something like /dev/sdc1
+		 * mapper will contain something like /dev/mapper/XYZ
+		 */
 		/*
 		 * zuluCryptGetVolumeTypeFromMapperPath() is defined in ../zuluCrypt-cli/lib/status.c
 		 */
@@ -139,11 +144,7 @@ void zuluMountPartitionProperties( const char * device,const char * UUID,const c
 		if( blkid_probe_lookup_value( blkid,"TYPE",&g,NULL ) == 0 ){
 			printf( "%s",g ) ;
 		}else{
-			if( strcmp( device,mapper ) == 0 ){
-				printf( "Nil" ) ;
-			}else{
-				printf( "crypto_PLAIN" ) ;
-			}
+			printf( "crypto_PLAIN" ) ;
 		}
 	}
 	
@@ -220,8 +221,9 @@ static void _printDeviceProperties( string_t entry )
 	
 	stx = StringListStringSplit( entry,' ' ) ;
 		
-	if( stx == StringListVoid )
+	if( stx == StringListVoid ){
 		return ;
+	}
 	
 	q = StringListContentAt( stx,0 ) ;
 	
@@ -297,9 +299,9 @@ int zuluMountPrintMountedVolumes( uid_t uid )
 	 */
 	stl = zuluCryptGetMtabList() ;
 		
-	if( stl == StringListVoid )
+	if( stl == StringListVoid ){
 		return 1;
-	
+	}
 	/*
 	 * zuluCryptPartitionList() is defined in ../zuluCrypt-cli/partitions.c
 	 * It returns partition list read from /proc/partitions"
