@@ -144,7 +144,11 @@ void zuluMountPartitionProperties( const char * device,const char * UUID,const c
 		if( blkid_probe_lookup_value( blkid,"TYPE",&g,NULL ) == 0 ){
 			printf( "%s",g ) ;
 		}else{
-			printf( "crypto_PLAIN" ) ;
+			/*
+			 * couldnt read a file system,assuming the partition has no file system 
+			 * since we cant get here with an encrypted volume
+			 */
+			printf( "Nil" ) ;
 		}
 	}
 	

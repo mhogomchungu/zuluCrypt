@@ -202,19 +202,23 @@ string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos )
 {
 	stringList_t stl ;
 	string_t st = zuluCryptGetFstabEntry( device ) ;
-	stl = StringListStringSplit( st,' ' ) ;
-	StringDelete( &st ) ;
-	st = StringListCopyStringAt( stl,pos ) ;
-	StringListDelete( &stl ) ;
+	if( st != StringVoid ){
+		stl = StringListStringSplit( st,' ' ) ;
+		StringDelete( &st ) ;
+		st = StringListCopyStringAt( stl,pos ) ;
+		StringListDelete( &stl ) ;
+	}
 	return st ;
 }
 
 stringList_t zuluCryptGetFstabEntryList( const char * device )
 {
-	stringList_t stl ;
+	stringList_t stl = StringListVoid;
 	string_t st = zuluCryptGetFstabEntry( device ) ;
-	stl = StringListStringSplit( st,' ' ) ;
-	StringDelete( &st ) ;
+	if( st != StringVoid ){
+		stl = StringListStringSplit( st,' ' ) ;
+		StringDelete( &st ) ;
+	}
 	return stl ;
 }
 
@@ -562,7 +566,7 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 	opts = StringListAssign( stl ) ;
 	*opts = set_mount_options( &mst ) ;
 	
-	if( strncmp( path,"/dev/",5 ) != 0 ){
+	if( !StringPrefixMatch( path,"/dev/",5 ) ){
 		loop = StringListAssign( stl ) ;
 		/*
 		 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop_device.c
@@ -574,7 +578,7 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 		}
 	}
 	
-	if( strncmp( mst.device,"/dev/loop",9 ) == 0 ){
+	if( StringPrefixMatch( mst.device,"/dev/loop",9 ) ){
 		loop = StringListAssign( stl ) ;
 		/*
 		 * zuluCryptLoopDeviceAddress() is defined in ./create_loop_device.c

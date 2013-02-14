@@ -328,8 +328,9 @@ string_t zuluCryptSecurityCreateMountPoint( const char * device,const char * lab
 {
 	const char * m_point ;
 	string_t path ;
-	if( !zuluCryptSecurityGainElevatedPrivileges() )
-		return StringVoid ;
+	
+	zuluCryptSecurityGainElevatedPrivileges() ;
+
 	path = zuluCryptGetUserName( uid ) ;
 	
 	mkdir( "/run",S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ) ;
@@ -340,8 +341,10 @@ string_t zuluCryptSecurityCreateMountPoint( const char * device,const char * lab
 	chmod( "/run/media",S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ) ;
 	
 	m_point = StringPrepend( path,"/run/media/" ) ;
+	
 	mkdir( m_point,S_IRUSR | S_IXUSR ) ;
 	chown( m_point,uid,uid ) ;
+	
 	zuluCryptSecurityDropElevatedPrivileges() ;
 	
 	if( label == NULL ){
