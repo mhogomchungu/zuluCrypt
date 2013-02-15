@@ -20,6 +20,11 @@
 #include "includes.h"
 #include <sys/syscall.h>
 
+/*
+ * maximum length of a truecrypt volume key is 64 bytes,trim to this size if the key is longer
+ */
+#define KEY_MAX_LEN 64
+
 static inline int zuluExit( int st,struct crypt_device * cd )
 {
 	crypt_free( cd );
@@ -35,20 +40,35 @@ int zuluCryptVolumeIsTcrypt( const char * device,const char * key,size_t key_len
 {
 	struct crypt_device * cd = NULL;
 	struct crypt_params_tcrypt params ;
+	string_t st ;
+	int xt ;
 	
 	memset( &params,'\0',sizeof( struct crypt_params_tcrypt ) ) ;
 	
-	params.passphrase      = key ;
-	params.passphrase_size = key_len ;
-	params.flags           = CRYPT_TCRYPT_LEGACY_MODES ;
+	params.flags = CRYPT_TCRYPT_LEGACY_MODES ;
 	
 	if( crypt_init( &cd,device ) < 0 ){
 		return 0 ;
 	}
-	if( crypt_load( cd,CRYPT_TCRYPT,&params ) == 0 ){
-		return zuluExit( 1,cd ) ;
+	if( key_len <= KEY_MAX_LEN ){
+		params.passphrase      = key ;
+		params.passphrase_size = key_len ;
+		if( crypt_load( cd,CRYPT_TCRYPT,&params ) == 0 ){
+			return zuluExit( 1,cd ) ;
+		}else{
+			return zuluExit( 0,cd ) ;
+		}
 	}else{
-		return zuluExit( 0,cd ) ;
+		st = StringWithSize( key,KEY_MAX_LEN ) ;
+		params.passphrase_size = KEY_MAX_LEN ;
+		params.passphrase = StringContent( st ) ;
+		xt = crypt_load( cd,CRYPT_TCRYPT,&params ) ;
+		StringClearDelete( &st ) ;
+		if( xt == 0 ){
+			return zuluExit( 1,cd ) ;
+		}else{
+			return zuluExit( 0,cd ) ;
+		}
 	}
 }
 #else
@@ -69,14 +89,13 @@ int zuluCryptVolumeIsTcrypt( const char * device,const char * key,size_t key_len
 int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
 {
 	uint32_t flags = 0 ;
-
 	struct crypt_device * cd = NULL;
 	struct crypt_params_tcrypt params ;
+	string_t st ;
+	int xt ;
 	
 	memset( &params,'\0',sizeof( struct crypt_params_tcrypt ) ) ;
 	
-	params.passphrase = pass ;
-	params.passphrase_size  = pass_size ;
 	params.flags = CRYPT_TCRYPT_LEGACY_MODES ;
 	
 	if( strstr( mode,"ro" ) != NULL ){
@@ -85,7 +104,18 @@ int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * mo
 	if( crypt_init( &cd,device ) < 0 ){
 		return 1 ;
 	}
-	if( crypt_load( cd,CRYPT_TCRYPT,&params ) < 0 ){
+	if( pass_size <= KEY_MAX_LEN ){
+		params.passphrase = pass ;
+		params.passphrase_size  = pass_size ;
+		xt = crypt_load( cd,CRYPT_TCRYPT,&params ) ;
+	}else{
+		st = StringWithSize( pass,KEY_MAX_LEN ) ;
+		params.passphrase_size = KEY_MAX_LEN ;
+		params.passphrase = StringContent( st ) ;
+		xt = crypt_load( cd,CRYPT_TCRYPT,&params ) ;
+		StringClearDelete( &st ) ;
+	}
+	if( xt < 0 ){
 		return zuluExit( 1,cd ) ;
 	}
 	if( crypt_activate_by_volume_key( cd,mapper,NULL,0,flags ) == 0 ){
