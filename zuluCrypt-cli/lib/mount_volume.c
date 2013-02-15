@@ -543,7 +543,8 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 	
 	if( fs == StringVoid ){
 		/*
-		 * failed to read file system,probably because the volume does have any or is an encrypted plain volume
+		 * failed to read file system,probably because the volume does have any or 
+		 * a plain volume was opened with a wrong key
 		 */
 		return zuluExit( 4,stl ) ;
 	}

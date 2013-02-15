@@ -63,8 +63,9 @@ char * zuluCryptGetFileNameFromFileDescriptor( int fd )
 	string_t xt ;
 	struct stat st ;
 	ssize_t index ;
-	if( fstat( fd,&st ) != 0 )
+	if( fstat( fd,&st ) != 0 ){
 		return NULL ;
+	}
 	xt = String( "/proc/self/fd/" ) ;
 	StringAppendInt( xt,fd ) ;
 	c = zuluCryptRealPath( StringContent( xt ) ) ;
