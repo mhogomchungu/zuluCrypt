@@ -25,6 +25,8 @@
  */
 #define KEY_MAX_LEN 64
 
+#ifdef CRYPT_TCRYPT
+
 static inline int zuluExit( int st,struct crypt_device * cd )
 {
 	crypt_free( cd );
@@ -35,7 +37,6 @@ static inline int zuluExit( int st,struct crypt_device * cd )
  * 1 is returned if a volume is a truecrypt volume.
  * 0 is returned if a volume is not a truecrypt volume or functionality is not supported
  */
-#ifdef CRYPT_TCRYPT
 int zuluCryptVolumeIsTcrypt( const char * device,const char * key,size_t key_len )
 {
 	struct crypt_device * cd = NULL;
@@ -71,21 +72,11 @@ int zuluCryptVolumeIsTcrypt( const char * device,const char * key,size_t key_len
 		}
 	}
 }
-#else
-int zuluCryptVolumeIsTcrypt( const char * device,const char * key,size_t key_len )
-{
-	if( device ){;}
-	if( key ){;}
-	if( key_len ){;}
-	return 0 ;
-}
-#endif
 
 /*
  * 0 is returned if a volume was successfully opened.
  * 1 is returned if a volume was not successfully opened or functionality is not supported 
  */
-#ifdef CRYPT_TCRYPT
 int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
 {
 	uint32_t flags = 0 ;
@@ -125,6 +116,22 @@ int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * mo
 	}
 }
 #else
+/*
+ * 1 is returned if a volume is a truecrypt volume.
+ * 0 is returned if a volume is not a truecrypt volume or functionality is not supported
+ */
+int zuluCryptVolumeIsTcrypt( const char * device,const char * key,size_t key_len )
+{
+	if( device ){;}
+	if( key ){;}
+	if( key_len ){;}
+	return 0 ;
+}
+
+/*
+ * 0 is returned if a volume was successfully opened.
+ * 1 is returned if a volume was not successfully opened or functionality is not supported 
+ */
 int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
 {
 	if( device ){;}
