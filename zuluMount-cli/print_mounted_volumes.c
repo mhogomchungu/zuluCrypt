@@ -139,7 +139,6 @@ void zuluMountPartitionProperties( const char * device,const char * UUID,const c
 		}else{
 			/*
 			 * couldnt read a file system,assuming the partition has no file system 
-			 * since we cant get here with an encrypted volume
 			 */
 			printf( "Nil" ) ;
 		}

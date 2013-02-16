@@ -390,7 +390,7 @@ options:\n\
 -s -- print properties of an encrypted volume: arguments: -d partition_path\n";
 
       doc3 = "\
--l -- print a list of mounted partitions\n\
+-l -- print expanded list of all partitions\n\
 -L -- must be used with -d,print properties of a partition specified by d option\n\
 -P -- print a list of all partitions\n\
 -D -- get a device node address from its mapper path( mapper paths are usually located in /dev/mapper ). Required argument: -d\n";
