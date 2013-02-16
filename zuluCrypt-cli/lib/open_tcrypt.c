@@ -58,9 +58,11 @@ int zuluCryptVolumeIsTcrypt( const char * device,const char * key,size_t key_len
  * 0 is returned if a volume was successfully opened.
  * 1 is returned if a volume was not successfully opened or functionality is not supported 
  */
-int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
+
+static int _tcrypt_open_using_key( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
 {
 	uint32_t flags = 0 ;
+	
 	struct crypt_device * cd = NULL;
 	struct crypt_params_tcrypt params ;
 	
@@ -85,6 +87,74 @@ int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * mo
 	}else{
 		return zuluExit( 1,cd ) ;
 	}
+}
+
+static int _tcrypt_open_using_keyfile( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
+{
+	string_t st ;
+	int xt ;
+	int fd ;
+	const char * file ;
+	uint32_t flags = 0 ;
+	
+	struct crypt_device * cd = NULL;
+	struct crypt_params_tcrypt params ;
+	
+	if( strstr( mode,"ro" ) != NULL ){
+		flags |= CRYPT_ACTIVATE_READONLY;
+	}
+	if( crypt_init( &cd,device ) < 0 ){
+		return 1 ;
+	}
+	
+	mkdir( "/run/zuluCrypt",S_IRWXU ) ;
+	chown( "/run/zuluCrypt",0,0 ) ;
+	
+	st = String( "/run/zuluCrypt/open_tcrypt-" ) ;
+	file = StringAppendInt( st,syscall( SYS_gettid ) ) ;
+	fd = open( file,O_WRONLY | O_CREAT ) ;
+	
+	if( fd == -1 ){
+		return zuluExit( 1,cd ) ;
+	}
+
+	write( fd,pass,pass_size ) ;
+	close( fd ) ;
+	
+	memset( &params,'\0',sizeof( struct crypt_params_tcrypt ) ) ;
+
+	params.keyfiles_count = 1 ;
+	params.keyfiles = &file ;
+	params.flags = CRYPT_TCRYPT_LEGACY_MODES ;
+	
+	xt = crypt_load( cd,CRYPT_TCRYPT,&params ) ;
+	
+	unlink( file ) ;
+	StringDelete( &st ) ;
+	
+	if( xt != 0 ){
+		return zuluExit( 1,cd ) ;
+	}
+	if( crypt_activate_by_volume_key( cd,mapper,NULL,0,flags ) == 0 ){
+		return zuluExit( 0,cd ) ;
+	}else{
+		return zuluExit( 1,cd ) ;
+	}
+}
+
+int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
+{	
+	/*
+	 * An explanation for the below branches is explained in open_volume.c
+	 */
+	if( strlen( mapper ) > 20 ){
+		if( StringPrefixMatch( mapper,"zuluCryptKeyFromPass",20 ) ){
+			return _tcrypt_open_using_key( device,mapper+20,mode,pass,pass_size ) ;
+		}else if( StringPrefixMatch( mapper,"zuluCryptKeyFromFile",20 ) ){
+			return _tcrypt_open_using_keyfile( device,mapper+20,mode,pass,pass_size ) ;
+		}
+	}
+	return _tcrypt_open_using_key( device,mapper,mode,pass,pass_size ) ;
 }
 #else
 /*

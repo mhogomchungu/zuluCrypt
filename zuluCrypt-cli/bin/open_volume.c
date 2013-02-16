@@ -22,6 +22,10 @@
 #include <sys/types.h>
 #include <string.h>
  
+/*
+ * An explanation for the "zuluCryptKeyFromFile" and "zuluCryptKeyFromPass" entries is in ../lib/open_volume.c
+ *
+ */ 
 string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * name,uid_t uid,const struct_opts * opts ) ;
 
 static void _printResult( const char * device,const char * m_point,uid_t uid,const char * mapping_name )
@@ -147,7 +151,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	string_t st_mpoint ;
 	
 	const char * cpass ;
-	const char * cname ;
+	const char ** mapper_name ;
 	
 	char * cpoint = NULL ;
 	
@@ -225,12 +229,12 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	 */
 	*m_name = zuluCryptCreateMapperName( device,mapping_name,uid,OPEN ) ;
 
-	cname = StringContent( *m_name ) ;
+	mapper_name = StringPointer( *m_name ) ;
 	
 	/*
 	 *  zuluCryptCheckOpenedMapper() is defined in check_opened_mapper.c 
 	 */
-	if( zuluCryptCheckOpenedMapper( cname ) == 1 ){
+	if( zuluCryptCheckOpenedMapper( *mapper_name ) == 1 ){
 		if( cpoint != NULL ){
 			rmdir( cpoint ) ;
 		}
@@ -251,7 +255,8 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		if( !zuluCryptSecurityGainElevatedPrivileges() ){
 			return zuluExit_1( 30,opts,device,cpoint,stl,uid,mapping_name ) ;
 		}
-		st = zuluCryptOpenVolume( device,cname,cpoint,uid,m_flags,fs_opts,cpass,len ) ;
+		StringPrepend( *m_name,"zuluCryptKeyFromPass" ) ;
+		st = zuluCryptOpenVolume( device,*mapper_name,cpoint,uid,m_flags,fs_opts,cpass,len ) ;
 	
 	}else if( source == NULL ){
 		printf( "Enter passphrase: " ) ;
@@ -265,7 +270,8 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		if( !zuluCryptSecurityGainElevatedPrivileges() ){
 			return zuluExit_1( 30,opts,device,cpoint,stl,uid,mapping_name ) ;
 		}
-		st = zuluCryptOpenVolume( device,cname,cpoint,uid,m_flags,fs_opts,cpass,len ) ;
+		StringPrepend( *m_name,"zuluCryptKeyFromPass" ) ;
+		st = zuluCryptOpenVolume( device,*mapper_name,cpoint,uid,m_flags,fs_opts,cpass,len ) ;
 	}else{
 		if( source == NULL || pass == NULL ){
 			return zuluExit_1( 11,opts,device,cpoint,stl,uid,mapping_name ) ;
@@ -276,7 +282,8 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 			if( !zuluCryptSecurityGainElevatedPrivileges() ){
 				return zuluExit_1( 30,opts,device,cpoint,stl,uid,mapping_name ) ;
 			}
-			st = zuluCryptOpenVolume( device,cname,cpoint,uid,m_flags,fs_opts,cpass,len ) ;
+			StringPrepend( *m_name,"zuluCryptKeyFromPass" ) ;
+			st = zuluCryptOpenVolume( device,*mapper_name,cpoint,uid,m_flags,fs_opts,cpass,len ) ;
 		}else if( StringsAreEqual( source,"-f" ) ){
 			/*
 			 * function is defined at "security.c"
@@ -292,7 +299,8 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 			if( !zuluCryptSecurityGainElevatedPrivileges() ){
 				return zuluExit_1( 30,opts,device,cpoint,stl,uid,mapping_name ) ;
 			}
-			st = zuluCryptOpenVolume( device,cname,cpoint,uid,m_flags,fs_opts,cpass,len ) ;
+			StringPrepend( *m_name,"zuluCryptKeyFromFile" ) ;
+			st = zuluCryptOpenVolume( device,*mapper_name,cpoint,uid,m_flags,fs_opts,cpass,len ) ;
 		}
 	}
 

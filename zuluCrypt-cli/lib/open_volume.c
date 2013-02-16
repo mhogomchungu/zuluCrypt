@@ -26,6 +26,29 @@ static inline int zuluExit( int x,string_t p )
 }
 
 /*
+ * TrueCrypt volumes seem to handle keys in keyfiles differently from "naked keys".
+ * This hack is there to pass on the information about the origin of the key withount introducing an additional argument to the API
+ * A "naked" key will be accompanied with "zuluCryptKeyFromPass" prepended to the mapper argument.
+ * A key in kefile will be accompanied with "zuluCryptKeyFromFile" prepended to the mapper argument.
+ * The above two properties are used only in truecrypt code path.
+ * The above two properties are set in ../bin/open_volume.c 
+ */
+const char * zuluCryptTcryptHack( const char * mapper )
+{
+	/*
+	 * this function removes the hack explained above where its not needed
+	 */
+	if( strlen( mapper ) > 20 ){
+		if( StringPrefixMatch( mapper,"zuluCryptKeyFromPass",20 ) ){
+			return mapper + 20 ;
+		}else if( StringPrefixMatch( mapper,"zuluCryptKeyFromFile",20 ) ){
+			return mapper + 20 ;
+		}
+	}
+	return mapper ;
+}
+
+/*
  * here,we check if the path we send to cryptsetup is the one cryptsetup used to create
  * a mapper.The check is there to guard against the underlying device being changed under us
  * in an attempt to exploit an suid program using the library
@@ -58,9 +81,12 @@ static inline int _device_is_not_sane( const char * device,const char * mapper )
 	return st != 0 ;
 }
 
-static int _open_mapper( const char * dev,const char * map,const char * mode,const char * pass,size_t pass_size )
+static int _open_mapper( const char * dev,const char * mapper,const char * mode,const char * pass,size_t pass_size )
 {	
 	int st ;
+	
+	const char * map = zuluCryptTcryptHack( mapper ) ;
+	
 	/*
 	 * zuluCryptVolumeIsLuks() is defined in is_luks.c
 	 */
@@ -73,7 +99,7 @@ static int _open_mapper( const char * dev,const char * map,const char * mode,con
 		/*
 		 * zuluCryptOpenTcrypt() is defined in open_tcrypt.c
 		 */
-		st = zuluCryptOpenTcrypt( dev,map,mode,pass,pass_size ) ;
+		st = zuluCryptOpenTcrypt( dev,mapper,mode,pass,pass_size ) ;
 		if( st != 0 ){
 			/*
 			 * zuluCryptOpenPlain() is defined in open_plain.c
@@ -93,9 +119,12 @@ int zuluCryptOpenVolume( const char * dev,const char * map,
 	string_t q = StringVoid ;
 	int lmode ;
 	int fd ;
-	const char * mapper ;
 	const char * mode ;
-		
+	/*
+	 * zuluCryptTcryptHack() is defined in this source file
+	 */
+	const char * mapper = zuluCryptTcryptHack( map ) ;
+	
 	/*
 	 * zuluCryptPathIsNotValid() is defined in is_path_valid.c
 	 */
@@ -105,7 +134,7 @@ int zuluCryptOpenVolume( const char * dev,const char * map,
 	
 	p = String( crypt_get_dir() ) ;
 	
-	mapper = StringMultipleAppend( p,"/",map,END ) ;
+	mapper = StringMultipleAppend( p,"/",mapper,END ) ;
 
 	/*
 	 * zuluCryptPathIsValid() is defined in is_path_valid.c
