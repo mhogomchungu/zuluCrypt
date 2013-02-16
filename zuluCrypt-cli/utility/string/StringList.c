@@ -72,6 +72,19 @@ void StringListForEach( stringList_t stl,void (*fct)( string_t ) )
 		fct( q[ i ] ) ;
 }
 
+void StringListForEach_1( stringList_t stl,void (*fct)( string_t,void * ),void * arg ) 
+{
+	size_t i ;
+	size_t j ;
+	string_t * q ;
+	if( stl == StringListVoid )
+		return ;
+	j = stl->size ;
+	q = stl->stp ;
+	for( i = 0 ; i < j ; i++ )
+		fct( q[ i ],arg ) ;
+}
+
 void StringListForEachString( stringList_t stl,void (*fct)( const char * ) ) 
 {
 	size_t i ;
@@ -83,6 +96,19 @@ void StringListForEachString( stringList_t stl,void (*fct)( const char * ) )
 	q = stl->stp ;
 	for( i = 0 ; i < j ; i++ )
 		fct( q[ i ]->string ) ;
+}
+
+void StringListForEachString_1( stringList_t stl,void (*fct)( const char *,void * ),void * arg ) 
+{
+	size_t i ;
+	size_t j ;
+	string_t * q ;
+	if( stl == StringListVoid )
+		return ;
+	j = stl->size ;
+	q = stl->stp ;
+	for( i = 0 ; i < j ; i++ )
+		fct( q[ i ]->string,arg ) ;
 }
 
 static inline string_t * __ExpandMemory( stringList_t stl )

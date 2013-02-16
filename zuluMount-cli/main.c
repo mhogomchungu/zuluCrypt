@@ -554,8 +554,6 @@ int main( int argc,char * argv[] )
 	 */
 	zuluCryptSecuritySanitizeTheEnvironment( global_variable_user_uid,&stx ) ;
 	
-	args.env = StringListStringArray( stx ) ;
-	
 	if( args.key != NULL ){
 		k = StringListAssign( stl ) ;
 		*k = String( args.key ) ;
@@ -590,6 +588,9 @@ int main( int argc,char * argv[] )
 	if( args.m_opts == NULL ){
 		args.m_opts = "rw" ;
 	}
+	
+	args.env = StringListStringArray( stx ) ;
+	
 	/*
 	 * zuluCryptSecurityEvaluateDeviceTags() is defined in ../zuluCrypt-cli/bin/security.c
 	 */
@@ -617,6 +618,6 @@ int main( int argc,char * argv[] )
 	}else{
 		status = _zuluMountDoAction( &args ) ;
 	}
-	
+	free( ( char * )args.env ) ;
 	return _zuluExit_2( status,stl,stx,NULL ) ;
 }

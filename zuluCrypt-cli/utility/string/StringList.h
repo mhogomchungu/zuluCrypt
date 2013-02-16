@@ -67,6 +67,18 @@ StringListIterator StringListEnd( stringList_t ) ;
 void StringListForEach( stringList_t stl,void (*)( string_t ) ) ;
 
 /*
+ * call a function with a signature void foo( string_t,void * ) on each entry in the list 
+ * The third argument will be passed on to the function specified in the second argument 
+ */
+void StringListForEach_1( stringList_t stl,void (*)( string_t,void * ),void * ) ;
+
+/*
+ * call a function with a signature void foo( const char *,void * ) on each entry in the list 
+ * The third argument will be passed on to the function specified in the second argument
+ */
+void StringListForEachString_1( stringList_t stl,void (*)( const char *,void * ),void * ) ;
+
+/*
  * call a function with a signature void foo( const char * ) on each entry in the list 
  */
 void StringListForEachString( stringList_t stl,void (*)( const char * ) ) ;

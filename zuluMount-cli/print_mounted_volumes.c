@@ -44,18 +44,11 @@ char * zuluCryptVolumeDeviceName( const char * ) ;
 
 char * zuluCryptLoopDeviceAddress( const char * device ) ;
 
-static stringList_t _stz ;
-static const char * _z ;
-static size_t _k ;
-
-static string_t _mapper_filter( uid_t uid )
-{
-	string_t filter = String( crypt_get_dir() ) ;
-	StringAppend( filter,"/zuluCrypt-" ) ;
-	_z = StringAppendInt( filter,uid ) ;
-	_k = StringLength( filter ) ;
-	return filter ;
-}
+typedef struct{
+	stringList_t stz ;
+	const char * z ;
+	size_t k ;
+}ARGS;
 
 void zuluMountPartitionProperties( const char * device,const char * UUID,const char * mapper,const char * m_point )
 {
@@ -210,11 +203,16 @@ static void _printUnmountedVolumes( const char * device )
 	zuluMountPartitionProperties( device,NULL,device,NULL ) ;
 }
 
-static void _printDeviceProperties( string_t entry )
+static void _printDeviceProperties( string_t entry,void * arg )
 {	
 	stringList_t stx ;
 	const char * q ;
 	char * x ;
+	
+	ARGS * args = ( ARGS * ) arg ;
+	size_t  _k = args->k ;
+	const char * _z = args->z ;
+	stringList_t _stz = args->stz ;
 	
 	const char * e ;
 	const char * f ;
@@ -232,6 +230,13 @@ static void _printDeviceProperties( string_t entry )
 	q = StringListContentAt( stx,0 ) ;
 	
 	if( StringPrefixMatch( q,_z,_k ) ){
+		/*
+		 * we will get in here only with encrypted volumes,
+		 * q will contain something like /dev/mapper/zuluCrypt-500-NAAN-plain-1688
+		 * _z will contain something like /dev/mapper/zuluCrypt-500
+		 * _k is the length of _z
+		 */
+		
 		/*
 		 * zuluCryptSecurityGainElevatedPrivileges() and zuluCryptSecurityDropElevatedPrivileges()
 		 * are defined in ../zuluCrypt-cli/bin/security.c 
@@ -282,8 +287,13 @@ static void _printDeviceProperties( string_t entry )
 
 void zuluMountPrintDeviceProperties_1( string_t entry,uid_t uid )
 {
-	string_t filter = _mapper_filter( uid ) ;
-	_printDeviceProperties( entry ) ;
+	ARGS args ;
+	string_t filter = String( crypt_get_dir() ) ;
+	StringAppend( filter,"/zuluCrypt-" ) ;
+	args.z = StringAppendInt( filter,uid ) ;
+	args.k = StringLength( filter ) ;
+	args.stz = StringListVoid ;
+	_printDeviceProperties( entry,( void * )&args ) ;
 	StringDelete( &filter ) ;
 }
 
@@ -296,6 +306,8 @@ void zuluMountPrintDeviceProperties_1( string_t entry,uid_t uid )
 int zuluMountPrintMountedVolumes( uid_t uid )
 {
 	string_t filter ;
+	
+	ARGS args ;
 	
 	stringList_t stl ;
 	
@@ -312,27 +324,31 @@ int zuluMountPrintMountedVolumes( uid_t uid )
 	 * zuluCryptPartitionList() is defined in ../zuluCrypt-cli/partitions.c
 	 * It returns partition list read from /proc/partitions"
 	 */
-	_stz = zuluCryptPartitionList() ;
+	args.stz = zuluCryptPartitionList() ;
 	
-	if( _stz == StringListVoid ){
+	if( args.stz == StringListVoid ){
 		StringListDelete( &stl ) ;
 		return 1;
 	}
 	
-	filter = _mapper_filter( uid ) ;
+	filter = String( crypt_get_dir() ) ;
+	StringAppend( filter,"/zuluCrypt-" ) ;
+	
+	args.z = StringAppendInt( filter,uid ) ;
+	args.k = StringLength( filter ) ;
 		
 	/*
 	 * print all entries that are in "/etc/mtab" ie mounted partitions. 
 	 */
-	StringListForEach( stl,_printDeviceProperties ) ;
+	StringListForEach_1( stl,_printDeviceProperties,( void * )&args ) ;
 	
 	/*
 	 * print all entries that are not in "/etc/mtab" ie not mounted partitions. 
 	 */
-	StringListForEachString( _stz,_printUnmountedVolumes ) ;
+	StringListForEachString( args.stz,_printUnmountedVolumes ) ;
 	
 	StringDelete( &filter ) ;
-	StringListMultipleDelete( &stl,&_stz,ENDDELETE ) ;
+	StringListMultipleDelete( &stl,&args.stz,ENDDELETE ) ;
 	
 	return 0 ;
 }
