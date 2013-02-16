@@ -45,7 +45,7 @@ int zuluCryptVolumeIsTcrypt( const char * device,const char * key,size_t key_len
 	
 	params.passphrase      = key ;
 	params.passphrase_size = key_len ;
-	params.flags = CRYPT_TCRYPT_LEGACY_MODES ;
+	params.flags           = CRYPT_TCRYPT_LEGACY_MODES ;
 	
 	if( crypt_load( cd,CRYPT_TCRYPT,&params ) == 0 ){
 		return zuluExit( 1,cd ) ;
@@ -75,9 +75,9 @@ static int _tcrypt_open_using_key( const char * device,const char * mapper,const
 		return 1 ;
 	}
 	
-	params.passphrase = pass ;
+	params.passphrase       = pass ;
 	params.passphrase_size  = pass_size ;
-	params.flags = CRYPT_TCRYPT_LEGACY_MODES ;
+	params.flags            = CRYPT_TCRYPT_LEGACY_MODES ;
 	
 	if( crypt_load( cd,CRYPT_TCRYPT,&params ) != 0 ){
 		return zuluExit( 1,cd ) ;

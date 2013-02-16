@@ -189,7 +189,7 @@ int zuluCryptOpenVolume( const char * dev,const char * map,
 			/*
 			 * zuluCryptCloseMapper() is defined in close_mapper.c
 			 */
-			if( zuluCryptCloseMapper( map ) != 0 ){
+			if( zuluCryptCloseMapper( mapper ) != 0 ){
 				h = 15 ;
 			}
 		}
