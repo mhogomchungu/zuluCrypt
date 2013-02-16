@@ -32,9 +32,10 @@ int zuluCryptEXEVolumeInfo( const char * mapper,const char * device,uid_t uid )
 	}
 		
 	/*
-	 * zuluCryptCreateMapperName() is defined at "../lib/create_mapper_name.c
+	 * ZULUCRYPTlongMapperPath is set in ../constants.h
+	 * zuluCryptCreateMapperName() is defined at ../lib/create_mapper_name.c
 	 */
-	p = zuluCryptCreateMapperName( device,mapper,uid,CLOSE ) ;
+	p = zuluCryptCreateMapperName( device,mapper,uid,ZULUCRYPTlongMapperPath ) ;
 	
 	/*
 	 *zuluCryptVolumeStatus() is defined in ../lib/status.c

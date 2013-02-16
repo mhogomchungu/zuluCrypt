@@ -130,10 +130,13 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 			return zuluExit( stl,8 ) ;
 		}
 	}
-		
-	*mapper = zuluCryptCreateMapperName( device,mapping_name,uid,OPEN ) ;
+	/*
+	 * ZULUCRYPTlongMapperPath and ZULUCRYPTshortMapperPath are in ../constants.h
+	 * zuluCryptCreateMapperName() is defined at ../lib/create_mapper_name.c
+	 */	
+	*mapper = zuluCryptCreateMapperName( device,mapping_name,uid,ZULUCRYPTshortMapperPath ) ;
 	
-	*p = zuluCryptCreateMapperName( device,mapping_name,uid,CLOSE ) ;
+	*p = zuluCryptCreateMapperName( device,mapping_name,uid,ZULUCRYPTlongMapperPath ) ;
 	
 	j = zuluCryptCheckOpenedMapper( StringContent( *p ) ) ;
 	
@@ -154,7 +157,10 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 		len = StringLength( *passphrase ) ;
 	}else if( source == NULL ){
 		printf( "Enter passphrase: " ) ;
-		switch( StringSilentlyGetFromTerminal_1( passphrase,KEY_MAX_SIZE ) ){
+		/*
+		 * ZULUCRYPT_KEY_MAX_SIZE is set in ../constants.h
+		 */
+		switch( StringSilentlyGetFromTerminal_1( passphrase,ZULUCRYPT_KEY_MAX_SIZE ) ){
 			case 1 : return zuluExit( stl,16 ) ;
 			case 2 : return zuluExit( stl,17 ) ;
 		}
@@ -269,7 +275,7 @@ int zuluCryptEXEWriteDeviceWithJunk( const struct_opts * opts,const char * mappi
 	if( ( k = open_plain_as_me_1( opts,mapping_name,uid,0 ) ) != 0 ){
 		return k ;
 	}
-	*mapper = zuluCryptCreateMapperName( device,mapping_name,uid,OPEN ) ;
+	*mapper = zuluCryptCreateMapperName( device,mapping_name,uid,ZULUCRYPTshortMapperPath ) ;
 	
 	StringMultiplePrepend( *mapper,"/",crypt_get_dir(),END ) ;
 	

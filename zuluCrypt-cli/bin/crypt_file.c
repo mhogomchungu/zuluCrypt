@@ -101,13 +101,16 @@ static int crypt_opt( const struct_opts * opts,uid_t uid,int opt )
 	if( type == NULL ){
 
 		printf( "Enter passphrase: " ) ;
-		switch( StringSilentlyGetFromTerminal_1( &p,KEY_MAX_SIZE ) ){
+		/*
+		 * ZULUCRYPT_KEY_MAX_SIZE is set in ../constants.h
+		 */
+		switch( StringSilentlyGetFromTerminal_1( &p,ZULUCRYPT_KEY_MAX_SIZE ) ){
 			case 1 : return zuluExit( 12 ) ;
 			case 2 : return zuluExit( 13 ) ;
 		}
 		
 		printf( "\nRe enter passphrase: " ) ;
-		switch( StringSilentlyGetFromTerminal_1( &q,KEY_MAX_SIZE ) ){
+		switch( StringSilentlyGetFromTerminal_1( &q,ZULUCRYPT_KEY_MAX_SIZE ) ){
 			case 1 : StringClearDelete( &p ) ;
 				 return zuluExit( 12 ) ;
 			case 2 : StringClearDelete( &p ) ;

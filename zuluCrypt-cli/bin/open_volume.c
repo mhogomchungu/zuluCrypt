@@ -35,7 +35,11 @@ static void _printResult( const char * device,const char * m_point,uid_t uid,con
 	
 	zuluCryptSecurityGainElevatedPrivileges() ;
 	
-	p = zuluCryptCreateMapperName( device,mapping_name,uid,CLOSE ) ;
+	/*
+	 * ZULUCRYPTlongMapperPath is set in ../constants.h
+	 * zuluCryptCreateMapperName() is defined at ../lib/create_mapper_name.c
+	 */
+	p = zuluCryptCreateMapperName( device,mapping_name,uid,ZULUCRYPTlongMapperPath ) ;
 	
 	/*
 	 * zuluCryptGetVolumeTypeFromMapperPath() is defined in ../lib/status.c
@@ -223,11 +227,10 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	}
 
 	/*
-	 * This function is defined at "../lib/create_mapper_name.c"
-	 * 
-	 * Explanation for what it does is explained where it is defined. 
+	 * ZULUCRYPTshortMapperPath is set in ../constants.h
+	 * zuluCryptCreateMapperName() is defined at ../lib/create_mapper_name.c
 	 */
-	*m_name = zuluCryptCreateMapperName( device,mapping_name,uid,OPEN ) ;
+	*m_name = zuluCryptCreateMapperName( device,mapping_name,uid,ZULUCRYPTshortMapperPath ) ;
 
 	mapper_name = StringPointer( *m_name ) ;
 	
@@ -260,7 +263,10 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	
 	}else if( source == NULL ){
 		printf( "Enter passphrase: " ) ;
-		switch( StringSilentlyGetFromTerminal_1( passphrase,KEY_MAX_SIZE ) ){
+		/*
+		 * ZULUCRYPT_KEY_MAX_SIZE is set in ../constants.h
+		 */
+		switch( StringSilentlyGetFromTerminal_1( passphrase,ZULUCRYPT_KEY_MAX_SIZE ) ){
 			case 1 : return zuluExit_1( 26,opts,device,cpoint,stl,uid,mapping_name ) ;
 			case 2 : return zuluExit_1( 27,opts,device,cpoint,stl,uid,mapping_name ) ;
 		}

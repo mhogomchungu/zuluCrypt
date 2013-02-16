@@ -273,7 +273,7 @@ stringList_t zuluCryptPartitions( int option )
 	if( stl == StringListVoid ){
 		return StringListVoid ;
 	}
-	if( option == ALL_PARTITIONS ){
+	if( option == ZULUCRYPTallPartitions ){
 		return stl ;
 	}
 	
@@ -354,7 +354,7 @@ stringList_t zuluCryptPartitions( int option )
 		StringListDelete( &p ) ;
 	}
 	
-	if( option == SYSTEM_PARTITIONS ){
+	if( option == ZULUCRYPTsystemPartitions ){
 		StringListDelete( &non_system ) ;
 		return system  ;
 	}else{
@@ -446,9 +446,9 @@ int zuluCryptPrintPartitions( int option,int info )
 	stringList_t stl = StringListVoid ;
 	
 	switch( option ){
-		case 1 : stl = zuluCryptPartitions( ALL_PARTITIONS ) 	   ;break ;
-		case 2 : stl = zuluCryptPartitions( SYSTEM_PARTITIONS )    ;break ;
-		case 3 : stl = zuluCryptPartitions( NON_SYSTEM_PARTITIONS );break ;
+		case 1 : stl = zuluCryptPartitions( ZULUCRYPTallPartitions ) 	   ;break ;
+		case 2 : stl = zuluCryptPartitions( ZULUCRYPTsystemPartitions )    ;break ;
+		case 3 : stl = zuluCryptPartitions( ZULUCRYPTnonSystemPartitions ) ;break ;
 	}
 	
 	if( stl == StringListVoid ){
@@ -615,7 +615,7 @@ int _zuluCryptPartitionIsSystemPartition( const char * dev )
 {	
 	stringList_t stl ;
 	ssize_t index = -1 ;
-	stl = zuluCryptPartitions( SYSTEM_PARTITIONS ) ;
+	stl = zuluCryptPartitions( ZULUCRYPTsystemPartitions ) ;
 	if( stl != StringListVoid ){
 		index = StringListContains( stl,dev );
 		StringListDelete( &stl ) ;

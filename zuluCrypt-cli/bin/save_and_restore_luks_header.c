@@ -76,7 +76,10 @@ static int zuluExit( int st,int fd,string_t xt )
  */
 static int create_work_directory( string_t * st )
 {
-	const char * temp_path = "/run/zuluCrypt/" ;
+	/*
+	 * ZULUCRYPTtempFolder and ZULUCRYPtmountMiniPath are set in ../constants.h
+	 */
+	const char * temp_path = ZULUCRYPTtempFolder"/" ;
 	
 	zuluCryptSecurityGainElevatedPrivileges() ;
 	
@@ -87,8 +90,8 @@ static int create_work_directory( string_t * st )
 			 */
 			 ;
 		}else if( errno == ENOENT ){
-			mkdir( "/run/",S_IRWXU ) ;
-			chown( "/run/",0,0 ) ;
+			mkdir( ZULUCRYPtmountMiniPath"/",S_IRWXU ) ;
+			chown( ZULUCRYPtmountMiniPath"/",0,0 ) ;
 			mkdir( temp_path,S_IRWXU ) ;
 		}else{
 			/*
@@ -367,8 +370,9 @@ int zuluCryptEXESaveAndRestoreLuksHeader( const struct_opts * opts,uid_t uid,int
 		}
 	}
 	
-	if( dev_fd != -1 )
+	if( dev_fd != -1 ){
 		close( dev_fd ) ;
+	}
 	StringDelete( &sec_dev ) ;
 	
 	return zuluExit( st,fd,sec_file ) ;

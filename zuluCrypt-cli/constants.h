@@ -22,30 +22,31 @@
 
 #include "bin_path.h"
 
-#define ZULUCRYPTmkfs        	"/sbin/mkfs" 
-#define ZULUCRYPTmount      	"/bin/mount"  
+#define ZULUCRYPTmkfs           "/sbin/mkfs" 
+#define ZULUCRYPTmount          "/bin/mount"  
 #define ZULUCRYPTmkfs_dir      	"/sbin" 
 #define ZULUCRYPTgroupadd       "/usr/sbin/groupadd"
 
-#define ALL_PARTITIONS        1
-#define SYSTEM_PARTITIONS     2
-#define NON_SYSTEM_PARTITIONS 3
+#define ZULUCRYPTallPartitions        1
+#define ZULUCRYPTsystemPartitions     2
+#define ZULUCRYPTnonSystemPartitions  3
 
-#define UUID_LENGTH 36
-#define DEVICE_LENGHT 12
+#define ZULUCRYPTshortMapperPath 1
+#define ZULUCRYPTlongMapperPath  0
 
-#define OPEN 1
-#define CLOSE 2
+#define ZULUCRYPTread  1
+#define ZULUCRYPTwrite 0
 
-#define READ 1
-#define WRITE 0
+#define ZULUCRYPTtempFolder     "/run/zuluCrypt"
+#define ZULUCRYPTmountPath      "/run/media"
+#define ZULUCRYPtmountMiniPath  "/run"
 
 /*
  * The below numbers are cryptsetup default numbers.
  */
-#define KEY_MAX_SIZE 512
-#define KEYFILE_MAX_SIZE 8192000
-#define INTMAXKEYZISE  8192000
-#define CHARMAXKEYZISE "8192000"
+#define ZULUCRYPT_KEY_MAX_SIZE      512
+#define ZULUCRYPT_KEYFILE_MAX_SIZE  8192000
+#define ZULUCRYPT_INT_MAX_KEYSIZE   8192000
+#define ZULUCRYPT_CHAR_MAX_KEYSIZE "8192000"
 
 #endif

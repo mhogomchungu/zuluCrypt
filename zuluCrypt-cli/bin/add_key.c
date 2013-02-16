@@ -96,18 +96,21 @@ static int zuluExit_1( int st,const char * device,stringList_t stl )
 static int zuluGetKeys( string_t * key1,string_t * key2,string_t * key3 )
 {
 	int st ;
+	/*
+	 * ZULUCRYPT_KEY_MAX_SIZE is set in ../constants.h
+	 */
 	printf( "Enter an existing passphrase: " ) ;
-	st = StringSilentlyGetFromTerminal_1( key1,KEY_MAX_SIZE ) ;
+	st = StringSilentlyGetFromTerminal_1( key1,ZULUCRYPT_KEY_MAX_SIZE ) ;
 	if( st != 0 )
 		return st ;
 	printf( "\nEnter the new passphrase: " ) ;
-	st = StringSilentlyGetFromTerminal_1( key2,KEY_MAX_SIZE ) ;
+	st = StringSilentlyGetFromTerminal_1( key2,ZULUCRYPT_KEY_MAX_SIZE ) ;
 	if( st != 0 ){
 		StringClearDelete( key1 ) ;
 		return st ;
 	}
 	printf( "\nRe enter the new passphrase: " ) ;
-	st = StringSilentlyGetFromTerminal_1( key3,KEY_MAX_SIZE ) ;
+	st = StringSilentlyGetFromTerminal_1( key3,ZULUCRYPT_KEY_MAX_SIZE ) ;
 	if( st != 0 ){
 		StringClearDelete( key1 ) ;
 		StringClearDelete( key2 ) ;

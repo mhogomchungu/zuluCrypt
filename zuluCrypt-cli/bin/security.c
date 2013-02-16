@@ -38,7 +38,7 @@
 static int has_access( const char * path,int c )
 {
 	int f ;
-	if( c == READ ){
+	if( c == ZULUCRYPTread ){
 		f = open( path,O_RDONLY );
 	}else{
 		f = open( path,O_WRONLY );
@@ -122,7 +122,7 @@ int zuluCryptUserIsAMemberOfAGroup( uid_t uid,const char * groupname )
 static int has_device_access( const char * path,int c )
 {
 	int f ;
-	if( c == READ ){
+	if( c == ZULUCRYPTread ){
 		f = open( path,O_RDONLY );
 	}else{
 		f = open( path,O_WRONLY );
@@ -154,12 +154,12 @@ int zuluCryptSecurityDeviceIsReadable( const char * device,uid_t uid )
 	}
 	if( StringPrefixMatch( device,"/dev/",5 ) ){
 		zuluCryptSecurityGainElevatedPrivileges() ;
-		st = has_device_access( device,READ ) ;
+		st = has_device_access( device,ZULUCRYPTread ) ;
 		zuluCryptSecurityDropElevatedPrivileges() ;
 		return st ;
 	}else{
 		zuluCryptSecurityDropElevatedPrivileges() ;
-		return has_device_access( device,READ ) ;
+		return has_device_access( device,ZULUCRYPTread ) ;
 	}
 }
 
@@ -172,12 +172,12 @@ int zuluCryptSecurityDeviceIsWritable( const char * device,uid_t uid )
 	}
 	if( StringPrefixMatch( device,"/dev/",5 ) ){
 		zuluCryptSecurityGainElevatedPrivileges() ;
-		st = has_device_access( device,WRITE ) ;
+		st = has_device_access( device,ZULUCRYPTwrite ) ;
 		zuluCryptSecurityDropElevatedPrivileges() ;
 		return st ;
 	}else{
 		zuluCryptSecurityDropElevatedPrivileges() ;
-		return has_device_access( device,WRITE ) ;
+		return has_device_access( device,ZULUCRYPTwrite ) ;
 	}
 }
 
@@ -228,10 +228,10 @@ int zuluCryptSecurityPathIsValid( const char * path,uid_t uid __attribute__((unu
 	int st = 0 ;
 	if( !StringPrefixMatch( path,"/dev/",5 ) ){
 		zuluCryptSecurityDropElevatedPrivileges();
-		return has_access( path,READ ) == 0 ;
+		return has_access( path,ZULUCRYPTread ) == 0 ;
 	}else{
 		if( zuluCryptSecurityGainElevatedPrivileges() ){
-			st = has_access( path,READ ) == 0 ;
+			st = has_access( path,ZULUCRYPTread ) == 0 ;
 			zuluCryptSecurityDropElevatedPrivileges() ;
 		}
 		return st ;
@@ -243,7 +243,7 @@ int zuluCryptSecurityCanOpenPathForReading( const char * path,uid_t uid )
 #if ZULUDEBUG
 	printf( "check_read_permissions for: \"%s\":uid=%d:euid=%d\n",path,(int)getuid(),(int)geteuid() ) ;
 #endif
-	return check_permissions( path,READ,"zulucrypt",uid ) ;
+	return check_permissions( path,ZULUCRYPTread,"zulucrypt",uid ) ;
 }
 
 int zuluCryptSecurityCanOpenPathForWriting( const char * path,uid_t uid )
@@ -251,7 +251,7 @@ int zuluCryptSecurityCanOpenPathForWriting( const char * path,uid_t uid )
 #if ZULUDEBUG
 	printf( "check_write_permissions for: \"%s\":uid=%d:euid=%d\n",path,(int)getuid(),(int)geteuid() ) ;
 #endif
-	return check_permissions( path,WRITE,"zulucrypt-write",uid ) ;
+	return check_permissions( path,ZULUCRYPTwrite,"zulucrypt-write",uid ) ;
 }
 
 static string_t _create_default_mount_point( const char * device,uid_t uid,string_t path )
@@ -313,7 +313,10 @@ int zuluCryptSecurityMountPointPrefixMatch( const char * m_path,uid_t uid,string
 	 * zuluCryptGetUserName() is defined in ../lib/user_home_path.c
 	 */
 	string_t uname = zuluCryptGetUserName( uid ) ;
-	const char * str = StringPrepend( uname,"/run/media/" ) ;
+	/*
+	 * below constant are set in ../constants.h
+	 */
+	const char * str = StringPrepend( uname,ZULUCRYPTmountPath"/" ) ;
 	xt = StringLength( uname ) ;
 	st = strncmp( str,m_path,xt ) ;
 	if( m_point ){
@@ -333,14 +336,17 @@ string_t zuluCryptSecurityCreateMountPoint( const char * device,const char * lab
 
 	path = zuluCryptGetUserName( uid ) ;
 	
-	mkdir( "/run",S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ) ;
-	chown( "/run/",0,0 ) ;
-	chmod( "/run/",S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ) ;
-	mkdir( "/run/media",S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ) ;
-	chown( "/run/media",0,0 ) ;
-	chmod( "/run/media",S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ) ;
+	/*
+	 * below constants are set in ../constants.h
+	 */
+	mkdir( ZULUCRYPtmountMiniPath,S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ) ;
+	chown( ZULUCRYPtmountMiniPath,0,0 ) ;
+	chmod( ZULUCRYPtmountMiniPath,S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ) ;
+	mkdir( ZULUCRYPTmountPath,S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ) ;
+	chown( ZULUCRYPTmountPath,0,0 ) ;
+	chmod( ZULUCRYPTmountPath,S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ) ;
 	
-	m_point = StringPrepend( path,"/run/media/" ) ;
+	m_point = StringPrepend( path,ZULUCRYPTmountPath"/" ) ;
 	
 	mkdir( m_point,S_IRUSR | S_IXUSR ) ;
 	chown( m_point,uid,uid ) ;
@@ -406,7 +412,10 @@ int zuluCryptSecurityGetPassFromFile( const char * path,uid_t uid,string_t * st 
 	
 	zuluCryptSecurityDropElevatedPrivileges();
 
-	switch( StringGetFromFile_3( st,path,0,KEYFILE_MAX_SIZE ) ){
+	/*
+	 * ZULUCRYPT_KEY_MAX_SIZE is set in ../constants.h
+	 */
+	switch( StringGetFromFile_3( st,path,0,ZULUCRYPT_KEY_MAX_SIZE ) ){
 		case 1 : return 1 ;
 		case 2 : return 4 ;
 		case 3 : return 2 ;

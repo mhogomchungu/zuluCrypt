@@ -56,7 +56,11 @@ static int _create_volume( const char * dev,const char * fs,const char * type,co
 		return 3 ;
 	}
 	
-	m = zuluCryptCreateMapperName( device,strrchr( device,'/' ) + 1,0,CLOSE ) ;
+	/*
+	 * ZULUCRYPTlongMapperPath is set in ../constants.h
+	 * zuluCryptCreateMapperName() is defined in create_mapper_name.c
+	 */
+	m = zuluCryptCreateMapperName( device,strrchr( device,'/' ) + 1,0,ZULUCRYPTlongMapperPath ) ;
 	
 	free( device ) ;
 	

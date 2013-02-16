@@ -78,7 +78,10 @@ size_t zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid
 			if( SocketListen( server ) ){
 				client = SocketAcceptWithTimeOut( server,10 ) ;
 				if( client ){
-					dataLength = SocketGetData_1( client,&buffer,INTMAXKEYZISE ) ;
+					/*
+					 * ZULUCRYPT_INT_MAX_KEYSIZE is set in ../constants.h
+					 */
+					dataLength = SocketGetData_1( client,&buffer,ZULUCRYPT_INT_MAX_KEYSIZE ) ;
 					*key = StringInheritWithSize( &buffer,dataLength ) ;
 					SocketClose( &client ) ;
 				}
@@ -201,7 +204,10 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		p = Process( pluginPath ) ;
 		ProcessSetEnvironmentalVariable( p,env ) ;
 		ProcessSetOptionUser( p,uid ) ;
-		ProcessSetArgumentList( p,device,StringContent( uuid ),sockpath,CHARMAXKEYZISE,argv,ENDLIST ) ;
+		/*
+		 * ZULUCRYPT_CHAR_MAX_KEYSIZE is set in ../constants.h
+		 */
+		ProcessSetArgumentList( p,device,StringContent( uuid ),sockpath,ZULUCRYPT_CHAR_MAX_KEYSIZE,argv,ENDLIST ) ;
 		ProcessStart( p ) ;
 	
 		zuluCryptGetKeyFromSocket( sockpath,&key,uid ) ;

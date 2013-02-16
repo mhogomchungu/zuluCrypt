@@ -137,7 +137,11 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		default: return zuluExit( 3,stl ) ;
 	}
 	
-	*mapper = zuluCryptCreateMapperName( device,mapping_name,uid,CLOSE ) ;
+	/*
+	 * ZULUCRYPTlongMapperPath is set in ../constants.h
+	 * zuluCryptCreateMapperName() is defined at ../lib/create_mapper_name.c
+	 */
+	*mapper = zuluCryptCreateMapperName( device,mapping_name,uid,ZULUCRYPTlongMapperPath ) ;
 	
 	j = zuluCryptCheckOpenedMapper( StringContent( *mapper ) ) ;
 	
@@ -189,13 +193,16 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 			return zuluExit( 4,stl ) ;
 		}
 		printf( "Enter passphrase: " ) ;
-		switch( StringSilentlyGetFromTerminal_1( pass_1,KEY_MAX_SIZE ) ){
+		/*
+		 * ZULUCRYPT_KEY_MAX_SIZE is set in ../constants.h
+		 */
+		switch( StringSilentlyGetFromTerminal_1( pass_1,ZULUCRYPT_KEY_MAX_SIZE ) ){
 			case 1 : return zuluExit( 19,stl ) ;
 			case 2 : return zuluExit( 20,stl ) ;
 		}
 		
 		printf( "\nRe enter passphrase: " ) ;
-		switch( StringSilentlyGetFromTerminal_1( pass_2,KEY_MAX_SIZE ) ){
+		switch( StringSilentlyGetFromTerminal_1( pass_2,ZULUCRYPT_KEY_MAX_SIZE ) ){
 			case 1 : return zuluExit( 19,stl ) ;
 			case 2 : return zuluExit( 20,stl ) ;
 		}

@@ -89,13 +89,17 @@ void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
 			break ;
 			case( 'k' ) : stopts->dont_ask_confirmation = 1 ;
 			break ;
-			case( 'A' ) : stopts->partition_number = ALL_PARTITIONS ;
+			/*
+			 * ZULUCRYPTallPartitions,ZULUCRYPTsystemPartitions and ZULUCRYPTnonSystemPartitions
+			 * are set in ../constants.h
+			 */
+			case( 'A' ) : stopts->partition_number = ZULUCRYPTallPartitions ;
 			stopts->action = 'A' ;
 			break ;
-			case( 'S' ) : stopts->partition_number = SYSTEM_PARTITIONS ;
+			case( 'S' ) : stopts->partition_number = ZULUCRYPTsystemPartitions ;
 			stopts->action = 'S' ;
 			break ;
-			case( 'N' ) : stopts->partition_number = NON_SYSTEM_PARTITIONS ;
+			case( 'N' ) : stopts->partition_number = ZULUCRYPTnonSystemPartitions ;
 			stopts->action = 'N' ;
 			break ;
 			case( 't' ) : stopts->type = optarg ;

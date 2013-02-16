@@ -107,10 +107,13 @@ static int _tcrypt_open_using_keyfile( const char * device,const char * mapper,c
 		return 1 ;
 	}
 	
-	mkdir( "/run/zuluCrypt",S_IRWXU ) ;
-	chown( "/run/zuluCrypt",0,0 ) ;
+	/*
+	 * ZULUCRYPTtempFolder is set in ../constants.h
+	 */
+	mkdir( ZULUCRYPTtempFolder,S_IRWXU ) ;
+	chown( ZULUCRYPTtempFolder,0,0 ) ;
 	
-	st = String( "/run/zuluCrypt/open_tcrypt-" ) ;
+	st = String( ZULUCRYPTtempFolder"/open_tcrypt-" ) ;
 	file = StringAppendInt( st,syscall( SYS_gettid ) ) ;
 	fd = open( file,O_WRONLY | O_CREAT ) ;
 	

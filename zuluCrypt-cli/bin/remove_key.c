@@ -138,7 +138,10 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 	if ( keyType == NULL ){
 	
 		printf( "Enter a key to be removed: " ) ;
-		switch( StringSilentlyGetFromTerminal_1( pass,KEY_MAX_SIZE ) ){
+		/*
+		 * ZULUCRYPT_KEY_MAX_SIZE is set in ../constants.h
+		 */
+		switch( StringSilentlyGetFromTerminal_1( pass,ZULUCRYPT_KEY_MAX_SIZE ) ){
 			case 1 : return zuluExit( 15,stl ) ;
 			case 2 : return zuluExit( 16,stl ) ;
 		}

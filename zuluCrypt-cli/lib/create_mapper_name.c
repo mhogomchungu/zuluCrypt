@@ -60,7 +60,10 @@ string_t zuluCryptCreateMapperName( const char * device,const char * mapping_nam
 	string_t p ;
 	uint64_t z ;
 	char * e ;
-	if( i == OPEN ){
+	/*
+	 * ZULUCRYPTshortMapperPath is set in ../constants.h
+	 */
+	if( i == ZULUCRYPTshortMapperPath ){
 		p = String( "zuluCrypt-" ) ;
 	}else{
 		p = String( crypt_get_dir() ) ;

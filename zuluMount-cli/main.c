@@ -105,8 +105,10 @@ static int _zuluMountDeviceList( uid_t uid )
 	 * zuluCryptPrintPartitions() is defined in ../zuluCrypt-cli/partitions.c
 	 * 
 	 * it printf() contents of "/proc/partitions" 
+	 * ZULUCRYPTallPartitions is set in ../zuluCrypt-cli/constants.h
+	 * 
 	 */
-	return zuluCryptPrintPartitions( ALL_PARTITIONS,0 ) ;
+	return zuluCryptPrintPartitions( ZULUCRYPTallPartitions,0 ) ;
 }
 
 static int _zuluMountMountedList( uid_t uid )
@@ -185,14 +187,15 @@ static int _zuluMountPrintDeviceProperties( const char * device,const char * UUI
 		}
 	
 		/*
-		* zuluCryptCreateMapperName() is defined in ../zuluCrypt-cli/lib/create_mapper_name.c
+		* ZULUCRYPTlongMapperPath is set in ../zuluCrypt-cli/constants.h
+		* zuluCryptCreateMapperName() is defined at ../zuluCrypt-cli/lib/create_mapper_name.c
 		*/
-		q = zuluCryptCreateMapperName( device,strrchr( device,'/' ) + 1,uid,CLOSE ) ;
+		q = zuluCryptCreateMapperName( device,strrchr( device,'/' ) + 1,uid,ZULUCRYPTlongMapperPath ) ;
 	}else{
 		p = String( UUID ) ;
 		StringRemoveString( p,"\"" ) ;
 		e = StringReplaceString( p,"UUID=","UUID-" ) ;
-		q = zuluCryptCreateMapperName( device,e,uid,CLOSE ) ;
+		q = zuluCryptCreateMapperName( device,e,uid,ZULUCRYPTlongMapperPath ) ;
 		StringDelete( &p ) ;
 	}
 	
@@ -567,8 +570,9 @@ int main( int argc,char * argv[] )
 		/*
 		 * zuluCryptPrintPartitions() is defined in ../zuluCrypt-cli/bin/partitions.c
 		 * it printf() devices with entries in "/etc/fstab","/etc/crypttab", and "/etc/zuluCrypttab"
+		 * ZULUCRYPTsystemPartitions is set in ../zuluCrypt-cli/constants.h
 		 */
-		return _zuluExit_2( zuluCryptPrintPartitions( SYSTEM_PARTITIONS,0 ),stl,stx,NULL ) ;
+		return _zuluExit_2( zuluCryptPrintPartitions( ZULUCRYPTsystemPartitions,0 ),stl,stx,NULL ) ;
 	}
 	
 	if( StringsAreEqual( args.action,"-l" ) ){

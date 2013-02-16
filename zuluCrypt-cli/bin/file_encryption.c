@@ -79,7 +79,11 @@ static string_t crypt_mapper( const char * path,const char * key,uint64_t key_le
 		return StringVoid ;
 	}
 	
-	p = zuluCryptCreateMapperName( mpath,strrchr( mpath,'/' ) + 1,0,OPEN ) ;
+	/*
+	 * ZULUCRYPTshortMapperPath is set in ../constants.h
+	 * zuluCryptCreateMapperName() is defined at ../lib/create_mapper_name.c
+	 */
+	p = zuluCryptCreateMapperName( mpath,strrchr( mpath,'/' ) + 1,0,ZULUCRYPTshortMapperPath ) ;
 
 	if( zuluCryptOpenPlain( mpath,StringContent( p ),"rw",key,key_len ) != 0 ){
 		StringDelete( &p ) ;
