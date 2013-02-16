@@ -127,8 +127,8 @@ static int _tcrypt_open_using_keyfile( const char * device,const char * mapper,c
 	memset( &params,'\0',sizeof( struct crypt_params_tcrypt ) ) ;
 
 	params.keyfiles_count = 1 ;
-	params.keyfiles = &file ;
-	params.flags = CRYPT_TCRYPT_LEGACY_MODES ;
+	params.keyfiles       = &file ;
+	params.flags          = CRYPT_TCRYPT_LEGACY_MODES ;
 	
 	xt = crypt_load( cd,CRYPT_TCRYPT,&params ) ;
 	

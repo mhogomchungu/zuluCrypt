@@ -413,9 +413,9 @@ int zuluCryptSecurityGetPassFromFile( const char * path,uid_t uid,string_t * st 
 	zuluCryptSecurityDropElevatedPrivileges();
 
 	/*
-	 * ZULUCRYPT_KEY_MAX_SIZE is set in ../constants.h
+	 * ZULUCRYPT_KEYFILE_MAX_SIZE is set in ../constants.h
 	 */
-	switch( StringGetFromFile_3( st,path,0,ZULUCRYPT_KEY_MAX_SIZE ) ){
+	switch( StringGetFromFile_3( st,path,0,ZULUCRYPT_KEYFILE_MAX_SIZE ) ){
 		case 1 : return 1 ;
 		case 2 : return 4 ;
 		case 3 : return 2 ;
