@@ -302,8 +302,8 @@ ssize_t ProcessGetOutPut_1( process_t p,char * buffer,int size,int std_io )
 }
 
 size_t ProcessWrite( process_t p,const char * data,size_t len ) 
-{	
-	return p != ProcessVoid ? write( p->fd_0[ 0 ],data,len ) : 0 ;
+{
+	return p != ProcessVoid ? write( p->fd_0[ 1 ],data,len ) : 0 ;
 }
 
 void ProcessCloseStdWrite( process_t p )

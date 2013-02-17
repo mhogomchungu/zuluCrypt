@@ -72,6 +72,7 @@ private:
 	Ui::createpartition * m_ui;
 	bool m_isWindowClosable ;
 	keystrength * m_keyStrength ;
+	QString m_volumeType ;
 };
 
 #endif // CREATEPARTITION_H

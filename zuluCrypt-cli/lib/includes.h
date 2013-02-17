@@ -210,4 +210,9 @@ stringList_t zuluCryptGetMtabList( void ) ;
  */
 char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper ) ;
 
+/*
+ * this function is defined in create_tcrypt.c
+ */
+int zuluCryptCreateTCrypt( const char * dev,const char * pass,size_t pass_size,const char * rng ) ;
+
 #endif 

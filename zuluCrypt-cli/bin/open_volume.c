@@ -305,7 +305,11 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 			if( !zuluCryptSecurityGainElevatedPrivileges() ){
 				return zuluExit_1( 30,opts,device,cpoint,stl,uid,mapping_name ) ;
 			}
-			StringPrepend( *m_name,"zuluCryptKeyFromFile" ) ;
+			if( StringHasComponent( pass,"/.zuluCrypt-socket/" ) ){
+				StringPrepend( *m_name,"zuluCryptKeyFromPass" ) ;
+			}else{
+				StringPrepend( *m_name,"zuluCryptKeyFromFile" ) ;
+			}
 			st = zuluCryptOpenVolume( device,*mapper_name,cpoint,uid,m_flags,fs_opts,cpass,len ) ;
 		}
 	}

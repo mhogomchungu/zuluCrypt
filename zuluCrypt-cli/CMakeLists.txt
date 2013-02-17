@@ -65,6 +65,7 @@
  lib/real_path.c 
  lib/file_path_security.c
  lib/canonicalize/canonicalize.c
+ lib/create_tcrypt.c
 )
  	 
  add_library( Socket STATIC utility/socket/socket.c ) 

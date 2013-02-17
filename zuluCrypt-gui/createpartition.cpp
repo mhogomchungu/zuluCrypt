@@ -51,16 +51,21 @@ createpartition::createpartition( QWidget * parent ) :
 	connect( m_ui->rbPassphraseFromFile,SIGNAL( clicked() ),this,SLOT( rbPasssphraseFromFileClicked() ) );
 	connect( m_ui->comboBoxVolumeType,SIGNAL( currentIndexChanged( int ) ),this,SLOT( rng( int ) ) ) ;
 	connect( m_ui->lineEditPassphrase1,SIGNAL( textChanged( QString ) ),this,SLOT( keyChanged( QString ) ) ) ;
+
+	if( utility::exists( QString( ZULUCRYPTtcrypt ) ) ){
+		m_ui->comboBoxVolumeType->addItem( QString( "truecrypt" ) ) ;
+	}
 }
 
 void createpartition::keyChanged( QString key )
 {
 	if( m_ui->rbPassphrase->isChecked() && m_keyStrength->canCheckQuality() ){
 		int st = m_keyStrength->quality( key ) ;
-		if( st < 0 )
+		if( st < 0 ){
 			this->setWindowTitle( tr( "passphrase quality: 0/100" ) ) ;
-		else
+		}else{
 			this->setWindowTitle( tr( "passphrase quality: %1/100" ).arg( st ) ) ;
+		}
 	}else{
 		this->setWindowTitle( QString( "create a new volume" ) ) ;
 	}
@@ -81,21 +86,25 @@ void createpartition::findInstalledFs()
 	}
 
 	int index = mkfsList.indexOf( QString( "mkfs.ext2" ) ) ;
-	if( index != -1 )
+	if( index != -1 ){
 		mkfsList.move( index,0 );
+	}
 	index = mkfsList.indexOf( QString( "mkfs.ntfs" ) ) ;
-	if( index != -1 )
+	if( index != -1 ){
 		mkfsList.move( index,0 );
+	}
 	index = mkfsList.indexOf( QString( "mkfs.vfat" ) ) ;
-	if( index != -1 )
+	if( index != -1 ){
 		mkfsList.move( index,0 );
+	}
 	index = mkfsList.indexOf( QString( "mkfs.ext3" ) ) ;
-	if( index != -1 )
+	if( index != -1 ){
 		mkfsList.move( index,0 );
+	}
 	index = mkfsList.indexOf( QString( "mkfs.ext4" ) ) ;
-	if( index != -1 )
+	if( index != -1 ){
 		mkfsList.move( index,0 );
-
+	}
 	int j = mkfsList.size() ;
 	QStringList mkfs ;
 	QString entry ;
@@ -108,17 +117,27 @@ void createpartition::findInstalledFs()
 
 void createpartition::rng( int s )
 {
-	if( s == 1 )
-		m_ui->comboBoxRNG->setEnabled( false );
-	else
-		m_ui->comboBoxRNG->setEnabled( true );
+	switch( s ){
+		case 0 : m_volumeType = QString( "luks" ) ;
+			 m_ui->comboBoxRNG->setEnabled( true );
+			 break ;
+		case 1 :
+			 m_volumeType = QString( "plain" ) ;
+			 m_ui->comboBoxRNG->setEnabled( false );
+			 break ;
+		case 2:
+			 m_volumeType = QString( "tcrypt" ) ;
+			 m_ui->comboBoxRNG->setEnabled( false );
+			 break ;
+	}
 }
 
 void createpartition::closeEvent( QCloseEvent *e )
 {
 	e->ignore();
-	if( m_isWindowClosable == true )
+	if( m_isWindowClosable ){
 		pbCancelClicked() ;
+	}
 }
 
 void createpartition::ShowPartition( QString volume )
@@ -135,8 +154,9 @@ void createpartition::eraseDataPartition()
 {
 	QString path = m_ui->lineEditVolumePath->text() ;
 
-	if( path.left( 5 ) != QString( "/dev/" ) )
+	if( path.left( 5 ) != QString( "/dev/" ) ){
 		return ;
+	}
 
 	CreateVolumeDialog * cpd = new CreateVolumeDialog( path,this ) ;
 	connect( cpd,SIGNAL( dialogResult( int ) ),this,SLOT( dialogResult( int ) ) );
@@ -145,11 +165,11 @@ void createpartition::eraseDataPartition()
 
 void createpartition::dialogResult( int result )
 {
-	if( result == 0 )
+	if( result == 0 ){
 		this->HideUI() ;
-	else if( result == 1 )
+	}else if( result == 1 ){
 		;
-	else if( result == 2 ){
+	}else if( result == 2 ){
 		erasedevice * ed = new erasedevice( this ) ;
 		connect( ed,SIGNAL( HideUISignal() ),ed,SLOT( deleteLater() ) );
 		ed->ShowUI( m_ui->lineEditVolumePath->text() );
@@ -186,8 +206,9 @@ void createpartition::pbCancelClicked()
 {
 	if( m_created == false ){
 		QString s = m_ui->lineEditVolumePath->text() ;
-		if( s.left( 5 ) != QString( "/dev/" ) )
+		if( s.left( 5 ) != QString( "/dev/" ) ){
 			QFile::remove( s ) ;
+		}
 	}
 	HideUI() ;
 }
@@ -204,8 +225,9 @@ void createpartition::enableAll()
 	m_ui->labelVolumePath->setEnabled( true );
 	m_ui->labelRepeatPassPhrase->setEnabled( true );
 	m_ui->lineEditPassphrase1->setEnabled( true );
-	if( m_ui->rbPassphrase->isChecked() )
+	if( m_ui->rbPassphrase->isChecked() ){
 		m_ui->lineEditPassPhrase2->setEnabled( true );
+	}
 	//m_ui->lineEditVolumePath->setEnabled( true );
 	m_ui->pbCancel->setEnabled( true );
 	m_ui->pbCreate->setEnabled( true );
@@ -215,8 +237,9 @@ void createpartition::enableAll()
 	m_ui->labelrng->setEnabled( true );
 	m_ui->comboBoxFS->setEnabled( true );
 	m_ui->comboBoxVolumeType->setEnabled( true );
-	if( m_ui->comboBoxVolumeType->currentIndex() == 0 )
+	if( m_ui->comboBoxVolumeType->currentIndex() == 0 ){
 		m_ui->comboBoxRNG->setEnabled( true );
+	}
 	m_ui->rbPassphrase->setEnabled( true );
 	m_ui->rbPassphraseFromFile->setEnabled( true );
 }
@@ -277,22 +300,23 @@ void createpartition::pbCreateClicked()
 	QString passphrase_1 = m_ui->lineEditPassphrase1->text() ;
 	QString passphrase_2 = m_ui->lineEditPassPhrase2->text();
 
-	if( volumePath.isEmpty() )
+	if( volumePath.isEmpty() ){
 		return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "volume path field is empty" ) );
-
+	}
 	QString source ;
 
 	if ( m_ui->rbPassphraseFromFile->isChecked() == true ){
-		if( passphrase_1.isEmpty() )
+		if( passphrase_1.isEmpty() ){
 			return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) );
-
+		}
 		source = QString( "-f" ) ;
 	}else{
-		if( passphrase_1.isEmpty() || passphrase_2.isEmpty() )
+		if( passphrase_1.isEmpty() || passphrase_2.isEmpty() ){
 			return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) );
-		if( passphrase_1 != passphrase_2 )
+		}
+		if( passphrase_1 != passphrase_2 ){
 			return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "passphrases do not match" ) );
-
+		}
 		source = QString( "-f" ) ;
 		passphrase_1 = socketSendKey::getSocketPath() ;
 		socketSendKey * s = new socketSendKey( this,passphrase_1,m_ui->lineEditPassphrase1->text().toAscii() ) ;
@@ -304,7 +328,7 @@ void createpartition::pbCreateClicked()
 	QString a = QString( ZULUCRYPTzuluCrypt ) ;
 	QString b = volumePath ;
 	QString c = m_ui->comboBoxFS->currentText() ;
-	QString d = m_ui->comboBoxVolumeType->currentText() ;
+	QString d = m_volumeType;
 	QString e = source ;
 	QString f = passphrase_1 ;
 	QString g = m_ui->comboBoxRNG->currentText();
@@ -325,8 +349,9 @@ void createpartition::threadfinished( int st )
 	DialogMsg msg( this ) ;
 	m_isWindowClosable = true ;
 	QString x = tr( "volume created successfully" ) ;
-	if( m_ui->comboBoxVolumeType->currentText() == QString( "luks" ) )
+	if( m_volumeType == QString( "luks" ) ){
 		x += tr( "\n\ncreating a backup of the luks header is strongly advised.\nPlease read documentation on why this is important." ) ;
+	}
 	switch ( st ){
 		case 0 : msg.ShowUIOK( tr( "SUCCESS!" ),x ) ;
 		HideUI();														break  ;
