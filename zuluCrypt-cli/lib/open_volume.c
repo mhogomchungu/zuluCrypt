@@ -149,8 +149,9 @@ int zuluCryptOpenVolume( const char * dev,const char * map,
 		mode = "rw" ;
 	}
 	
-	if( !StringPrefixMatch( dev,"/dev/",5 ) ){
-		/*
+	if( StringPrefixMatch( dev,"/dev/",5 ) ){
+		h = _open_mapper( dev,map,mode,pass,pass_size ) ;
+	}else{		/*
 		 * zuluCryptAttachLoopDeviceToFile() is defined in create_loop_device.c
 		 */
 		if( zuluCryptAttachLoopDeviceToFile( dev,lmode,&fd,&q ) ){
@@ -161,8 +162,6 @@ int zuluCryptOpenVolume( const char * dev,const char * map,
 		}else{
 			h = 1 ;
 		}
-	}else{
-		h = _open_mapper( dev,map,mode,pass,pass_size ) ;
 	}
 	
 	switch( h ){
