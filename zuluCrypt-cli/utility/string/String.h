@@ -650,6 +650,16 @@ string_t StringGetFromVirtualFile( const char * path ) ;
 /*
  * a few convenient "safe" functions 
  */
+
+static __inline__ ssize_t StringSize( const char * str )
+{
+	if( str == NULL ){
+		return -1 ;
+	}else{
+		return strlen( str ) ;
+	}
+}
+
 static __inline__ int StringsAreEqual( const char * x,const char * y )
 {
 	if( x == NULL && y == NULL ){
@@ -677,7 +687,7 @@ static __inline__ int StringPrefixMatch( const char * x,const char * y,size_t z 
 	if( x == NULL || y == NULL ){
 		return 0 ;
 	}else{
-		return memcmp( x,y,z ) == 0 ;
+		return strncmp( x,y,z ) == 0 ;
 	}
 }
 
@@ -686,7 +696,7 @@ static __inline__ int StringPrefixEqual( const char * x,const char * y )
 	if( x == NULL || y == NULL ){
 		return 0 ;
 	}else{
-		return memcmp( x,y,strlen( y ) ) == 0 ;
+		return strncmp( x,y,strlen( y ) ) == 0 ;
 	}
 }
 

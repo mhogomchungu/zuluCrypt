@@ -589,7 +589,7 @@ int main( int argc,char * argv[] )
 		args.m_opts = "rw" ;
 	}
 	
-	args.env = StringListStringArray( stx ) ;
+	args.env = stx ;
 	
 	/*
 	 * zuluCryptSecurityEvaluateDeviceTags() is defined in ../zuluCrypt-cli/bin/security.c
@@ -618,6 +618,6 @@ int main( int argc,char * argv[] )
 	}else{
 		status = _zuluMountDoAction( &args ) ;
 	}
-	free( ( char * )args.env ) ;
+	
 	return _zuluExit_2( status,stl,stx,NULL ) ;
 }

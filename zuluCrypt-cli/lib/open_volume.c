@@ -38,14 +38,13 @@ const char * zuluCryptTcryptHack( const char * mapper )
 	/*
 	 * this function removes the hack explained above where its not needed
 	 */
-	if( strlen( mapper ) > 20 ){
-		if( StringPrefixMatch( mapper,"zuluCryptKeyFromPass",20 ) ){
-			return mapper + 20 ;
-		}else if( StringPrefixMatch( mapper,"zuluCryptKeyFromFile",20 ) ){
-			return mapper + 20 ;
-		}
+	if( StringPrefixMatch( mapper,"zuluCryptKeyFromPass",20 ) ){
+		return mapper + 20 ;
+	}else if( StringPrefixMatch( mapper,"zuluCryptKeyFromFile",20 ) ){
+		return mapper + 20 ;
+	}else{
+		return mapper ;
 	}
-	return mapper ;
 }
 
 /*

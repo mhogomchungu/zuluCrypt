@@ -34,7 +34,6 @@ int zuluMountCryptoMount( ARGS * args )
 	const char * key_source = args->key_source ;
 	const char * m_point    = args->m_point    ;
 	int mount_point_option  = args->mpo        ;
-	char * const * env      = args->env        ;
 	int st ;
 	/*
 	 * the struct is declared in ../zuluCrypt-cli/bin/libzuluCrypt-exe.h
@@ -84,18 +83,21 @@ int zuluMountCryptoMount( ARGS * args )
 	opts.key = key ;
 	opts.key_source = key_source ;
 	opts.mount_point_option = mount_point_option ;
-	opts.env = env ;
+	
+	opts.env = StringListStringArray( args->env ) ;
 	
 	/*
 	 * zuluCryptEXEOpenVolume() is defined in ../zuluCrypt-cli/bin/open_volume.c
 	 */
 	st = zuluCryptEXEOpenVolume( &opts,mapping_name,uid ) ;
 	
+	free( ( char * ) opts.env ) ;
+	
 	StringDelete( &str ) ;
 	
 	if( path != NULL ){
 		free( path ) ;
 	}
-	free( ( char * )opts.env ) ;
+
 	return st ;
 }
