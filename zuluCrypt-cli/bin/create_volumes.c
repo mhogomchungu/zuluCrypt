@@ -67,7 +67,7 @@ static int zuluExit_1( const char * type,stringList_t stl )
 	printf( "SUCCESS: volume created successfully\n" ) ;
 	
 	if( strcmp( type,"luks" ) == 0 ){
-		printf( "\ncreating a backup of the volume luks header is strongly adviced.\n" ) ;
+		printf( "\ncreating a backup of the luks header is strongly adviced.\n" ) ;
 		printf( "Please read documentation on why this is important\n\n" ) ;
 	}
 	return 0 ;

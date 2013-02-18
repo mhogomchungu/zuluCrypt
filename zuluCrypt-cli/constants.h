@@ -26,7 +26,7 @@
 #define ZULUCRYPTmount          "/bin/mount"  
 #define ZULUCRYPTmkfs_dir      	"/sbin" 
 #define ZULUCRYPTgroupadd       "/usr/sbin/groupadd"
-#define ZULUCRYPTtcrypt         "/usr/bin/zuluCryptTcPlay"
+#define ZULUCRYPTtcrypt         "/usr/lib/libtcplay.so"
 
 #define ZULUCRYPTallPartitions        1
 #define ZULUCRYPTsystemPartitions     2
