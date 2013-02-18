@@ -65,9 +65,11 @@
  lib/real_path.c 
  lib/file_path_security.c
  lib/canonicalize/canonicalize.c
- lib/create_tcrypt.c
 )
- 	 
+ 
+ # build below source file separately because it uses dlopen and -pedantic option complains about it
+ add_library( tcrypt_create STATIC lib/create_tcrypt.c )
+ 
  add_library( Socket STATIC utility/socket/socket.c ) 
  
  #add_library( String STATIC string/String.c string/StringManage.c ) 
@@ -109,13 +111,15 @@
  set_target_properties( zuluCrypt-exe PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIC -pthread  -pedantic " )
  set_target_properties( zuluCrypt     PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIC -pthread  -pedantic " )
  
+ set_target_properties( tcrypt_create        PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIC -pthread " )
+ 
  set_target_properties( zuluCrypt-exe-static PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIC -pthread  -pedantic " )
  set_target_properties( zuluCrypt-static     PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIC -pthread  -pedantic " )
  
  set_target_properties( zuluCrypt     PROPERTIES SOVERSION ${LIB_VERSION} )
  set_target_properties( zuluCrypt-exe PROPERTIES SOVERSION ${LIB_VERSION} )
  
- TARGET_LINK_LIBRARIES( zuluCrypt     ${cryptsetup_lib} String StringList ${blkid} ${mountLibrary} Process ) 
+ TARGET_LINK_LIBRARIES( zuluCrypt     ${cryptsetup_lib} String StringList ${blkid} ${mountLibrary} Process tcrypt_create ) 
  TARGET_LINK_LIBRARIES( zuluCrypt-exe zuluCrypt zuluCryptPluginManager ) 
  
  TARGET_LINK_LIBRARIES( zuluCrypt-static     ${cryptsetup_lib} String StringList ${blkid} ${mountLibrary} Process ) 
