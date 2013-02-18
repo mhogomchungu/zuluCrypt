@@ -22,72 +22,20 @@
 #include <dlfcn.h>
 
 /*
- * tcplay data structure
- * 
+ * this header is created at config time
  */
-typedef struct tc_api_opts {
-	/* Common fields */
-	char		*tc_device;
-	char		*tc_passphrase;
-	const char	**tc_keyfiles;
-	
-	/* Fields for mapping */
-	char		*tc_map_name;
-	int		tc_password_retries;
-	int		tc_interactive_prompt;
-	unsigned long	tc_prompt_timeout;
-	
-	/* Fields for creation */
-	char		*tc_cipher;
-	char		*tc_prf_hash;
-	char		*tc_cipher_hidden;
-	char		*tc_prf_hash_hidden;
-	size_t		tc_size_hidden_in_bytes;
-	char		*tc_passphrase_hidden;
-	const char	**tc_keyfiles_hidden;
-} tc_api_opts;
+#include "build_tcplay.h"
 
-static inline int zuluExit( int st,void * handle )
-{
-	dlclose( handle ) ;
-	return st ;
-}
 int zuluCryptCreateTCrypt( const char * dev,const char * pass,size_t pass_size,const char * rng )
 {
-	struct stat st ;
-	tc_api_opts api_opts ;
-	void * handle ;
-	int r ;
+#ifdef FOUND_TCPLAY	
 	
-	int (*tc_init)( int ) ;
-	int (*tc_uninit)( void ) ;
-	int (*tc_create) ( tc_api_opts * ) ;
+	tc_api_opts api_opts ;
+	int r ;
 	
 	if( pass_size ){;}
 	if( rng ){;}
-	
-	if( stat( ZULUCRYPTtcrypt,&st ) != 0 ){
-		return 1 ;
-	}
-	
-	handle = dlopen( ZULUCRYPTtcrypt,RTLD_LAZY ) ;
-	
-	if( handle == NULL ){
-		return 1 ;
-	}	
-	tc_init   = dlsym( handle,"tc_api_init" ) ;
-	if( tc_init == NULL ){
-		return zuluExit( 1,handle ) ; 
-	}
-	tc_uninit = dlsym( handle,"tc_api_uninit" ) ;
-	if( tc_uninit == NULL ){
-		return zuluExit( 1,handle ) ;
-	}
-	tc_create = dlsym( handle,"tc_api_create_volume" ) ;
-	if( tc_create == NULL ){
-		return zuluExit( 1,handle ) ;
-	}
-	
+		
 	memset( &api_opts,'\0',sizeof( api_opts ) ) ;
 	
 	api_opts.tc_device = ( char * ) dev;
@@ -97,9 +45,17 @@ int zuluCryptCreateTCrypt( const char * dev,const char * pass,size_t pass_size,c
 	api_opts.tc_prf_hash = "whirlpool";
 	api_opts.tc_prf_hash_hidden = "RIPEMD160";
 	
-	tc_init( 0 ) ;
-	r = tc_create( &api_opts );
-	tc_uninit() ;
+	tc_api_init( 0 ) ;
+	r = tc_api_create_volume( &api_opts );
+	tc_api_uninit() ;
+		
+	return r ;
+#else
+	if( dev ) {;}
+	if( pass ){;}
+	if( pass_size ){;}
+	if( rng ){;}
+	return 1 ;
+#endif	
 	
-	return zuluExit( r,handle ) ;
 }

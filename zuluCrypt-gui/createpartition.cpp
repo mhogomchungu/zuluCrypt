@@ -52,9 +52,9 @@ createpartition::createpartition( QWidget * parent ) :
 	connect( m_ui->comboBoxVolumeType,SIGNAL( currentIndexChanged( int ) ),this,SLOT( rng( int ) ) ) ;
 	connect( m_ui->lineEditPassphrase1,SIGNAL( textChanged( QString ) ),this,SLOT( keyChanged( QString ) ) ) ;
 
-	if( utility::exists( QString( ZULUCRYPTtcrypt ) ) ){
-		m_ui->comboBoxVolumeType->addItem( QString( "truecrypt" ) ) ;
-	}
+#ifdef FOUND_TCPLAY	
+	m_ui->comboBoxVolumeType->addItem( QString( "truecrypt" ) ) ;
+#endif
 }
 
 void createpartition::keyChanged( QString key )

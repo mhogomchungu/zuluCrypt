@@ -34,6 +34,8 @@
 #include "zuluoptions.h"
 #include "socketsendkey.h"
 
+#include "build_tcplay.h"
+
 namespace Ui {
     class createpartition;
 }

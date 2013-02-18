@@ -17,6 +17,7 @@ pkg_check_modules( CRYPTSETUP libcryptsetup )
 pkg_check_modules( BLKID blkid ) 
 pkg_check_modules( PWQUALITY pwquality ) 
 pkg_check_modules( LIBMOUNT mount ) 
+pkg_check_modules( TCPLAY tcplay ) 
 
 set( PGR_VERSION "4.6.1" )
 set( LIB_VERSION "1.1.0" )
@@ -83,6 +84,15 @@ set( PLUGINPATH "${LIB_PATH}/zuluCrypt" )
 
 file( WRITE ${PROJECT_BINARY_DIR}/plugin_path.h "\n#define ZULUCRYPTpluginPath      \"${PLUGINPATH}/\"\n" )
 
+if( TCPLAY_FOUND )
+	file( WRITE ${PROJECT_BINARY_DIR}/build_tcplay.h "\n#define FOUND_TCPLAY 1\n#include <tcplay_api.h>\n" )
+	add_definitions( -I${TCPLAY_INCLUDEDIR} ) 
+	add_definitions( -I${TCPLAY_CFLAGS} ) 
+	SET( TCPLAY_LIB "-ltcplay" )
+else( TCPLAY_FOUND )	
+	file( WRITE ${PROJECT_BINARY_DIR}/build_tcplay.h "\n#define FOUND_TCPLAY 0\n" )	
+endif( TCPLAY_FOUND )	
+	
 if( GNOME_KEYRING_FOUND )
 	find_file( keyring_header gnome-keyring.h PATHS ${GNOME_KEYRING_INCLUDE_DIRS} )
 	find_library( keyring_library libgnome-keyring.so )
@@ -163,6 +173,18 @@ endif( KEYRINGSUPPORT )
 if( BUILDPWQUALITY )
 	message( STATUS "pwquality library support to give passphrase strength measure" )
 endif( BUILDPWQUALITY )
+
+if( UDEVSUPPORT STREQUAL "true" )
+	message( STATUS "udev support will be enabled" )
+endif( UDEVSUPPORT STREQUAL "true" )
+		
+if( TCPLAY_FOUND )
+	message( STATUS "tcplay adds the ability to create truecrypt compatible encrypted containers" )	
+endif( TCPLAY_FOUND )
+
+if( CRYPTSETUP_VERSION VERSION_GREATER "1.6.0" )
+	message( STATUS "version of cryptsetup is greater than 1.6.0 and hence support for opening of truecrypt compatible containers is enabled" )
+endif( CRYPTSETUP_VERSION VERSION_GREATER "1.6.0" )
 	
 message ( STATUS "---------------------------------------------------------------------------" )		
 message ( STATUS "---------------------------------------------------------------------------" )
@@ -185,8 +207,21 @@ if( NOT BUILDPWQUALITY )
 	message( STATUS "sources can be found at: https://fedorahosted.org/libpwquality/" )	
 endif( NOT BUILDPWQUALITY )
 
+if( NOT UDEVSUPPORT STREQUAL "true" )
+	message( STATUS "udev support is disabled,please see build instructions on how to enable it" )
+endif( NOT UDEVSUPPORT STREQUAL "true" )
+		
+if( NOT TCPLAY_FOUND )
+	message( STATUS "tcplay support.You wont be able to create truecrypt compatible encrypted containers" )	
+	message( STATUS "tcplay project is hosted at: https://github.com/bwalex/tc-play" )	
+endif( NOT TCPLAY_FOUND )
+
+if( NOT CRYPTSETUP_VERSION VERSION_GREATER "1.6.0" )
+	message( STATUS "version of cryptsetup is less than 1.6.0 and hence support for opening of truecrypt compatible containers is disabled" )
+endif( NOT CRYPTSETUP_VERSION VERSION_GREATER "1.6.0" )
+	
 message ( STATUS "---------------------------------------------------------------------------" )
-message ( STATUS "\n\n\n" )
+message ( STATUS "\n" )
 
 if( UDEVSUPPORT STREQUAL "true" )
 	
@@ -207,7 +242,6 @@ else( UDEVSUPPORT STREQUAL "true" )
 	message ( STATUS "have an entry in fstab before continuing." )
 	message ( STATUS "Please make this known to your users if you are a distributor and udev support is off\n" )	
 endif( UDEVSUPPORT STREQUAL "true" )
-
 
 install ( FILES zuluCrypt-cli.1.bz2 DESTINATION share/man/man1 )
 install ( FILES zuluCrypt-test.1.bz2 DESTINATION share/man/man1 )
