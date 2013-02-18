@@ -74,21 +74,17 @@ int zuluCryptCreateTCrypt( const char * dev,const char * pass,size_t pass_size,c
 	
 	if( handle == NULL ){
 		return 1 ;
-	}
-	
+	}	
 	tc_init   = dlsym( handle,"tc_api_init" ) ;
 	if( tc_init == NULL ){
-		puts( "tc_api_init failed" ) ;
 		return zuluExit( 1,handle ) ; 
 	}
 	tc_uninit = dlsym( handle,"tc_api_uninit" ) ;
 	if( tc_uninit == NULL ){
-		puts( "tc_api_uninit failed " ) ;
 		return zuluExit( 1,handle ) ;
 	}
 	tc_create = dlsym( handle,"tc_api_create_volume" ) ;
 	if( tc_create == NULL ){
-		puts( "tc_api_create_volume failed" ) ;
 		return zuluExit( 1,handle ) ;
 	}
 	
@@ -96,10 +92,6 @@ int zuluCryptCreateTCrypt( const char * dev,const char * pass,size_t pass_size,c
 	
 	api_opts.tc_device = ( char * ) dev;
 	api_opts.tc_passphrase = ( char * )pass ;
-	api_opts.tc_keyfiles = NULL;
-	api_opts.tc_keyfiles_hidden = NULL;
-	api_opts.tc_size_hidden_in_bytes = 0 ;
-	api_opts.tc_passphrase_hidden = NULL ;
 	api_opts.tc_cipher = "AES-256-XTS";
 	api_opts.tc_cipher_hidden = "SERPENT-256-XTS";
 	api_opts.tc_prf_hash = "whirlpool";
