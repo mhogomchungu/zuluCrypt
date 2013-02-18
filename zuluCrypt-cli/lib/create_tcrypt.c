@@ -40,16 +40,16 @@ int zuluCryptCreateTCrypt( const char * dev,const char * pass,size_t pass_size,c
 	
 	api_opts.tc_device = ( char * ) dev;
 	api_opts.tc_passphrase = ( char * )pass ;
-	api_opts.tc_cipher = "AES-256-XTS";
-	api_opts.tc_cipher_hidden = "SERPENT-256-XTS";
-	api_opts.tc_prf_hash = "whirlpool";
-	api_opts.tc_prf_hash_hidden = "RIPEMD160";
+	api_opts.tc_cipher   = "AES-256-XTS";
+	api_opts.tc_prf_hash = "RIPEMD160"  ;
 	
-	tc_api_init( 0 ) ;
-	r = tc_api_create_volume( &api_opts );
-	tc_api_uninit() ;
-		
-	return r ;
+	if( tc_api_init( 0 ) == TC_OK ){
+		r = tc_api_create_volume( &api_opts );
+		tc_api_uninit() ;
+		return r ;
+	}else{
+		return 1 ;
+	}
 #else
 	if( dev ) {;}
 	if( pass ){;}
