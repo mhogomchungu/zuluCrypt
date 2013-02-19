@@ -61,7 +61,7 @@ private slots:
 	void rbPasssphraseFromFileClicked( void );
 	void pbOpenKeyFile( void );
 	void threadfinished( int );
-	void rng( int ) ;
+	void volumeType( int ) ;
 	void dialogResult( int );
 private:
 	void eraseDataPartition( void );

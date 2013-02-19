@@ -18,39 +18,21 @@
  */
 
 #include "includes.h"
-#include <dirent.h>
 #include <unistd.h>
-
-/*
- * truecrypt volumes have create multiple mappers,when a mapper is unmapped,
- * go through /dev/mapper and remove if there are more mappers associated with the removed one
- */
-static void _remove_remaining( const char * mapper,size_t len,const char * d )
-{
-	struct dirent * entry ;
-	DIR * dir = opendir( d ) ;
-	if( dir != NULL ){
-		while( ( entry = readdir( dir ) ) != NULL ){
-			if( StringPrefixMatch( mapper,entry->d_name,len ) ){
-				crypt_deactivate( NULL,entry->d_name ) ;
-			}
-		}
-		closedir( dir ) ;
-	}
-}
 
 int zuluCryptCloseMapper( const char * mapper )
 {
 	int j ;
-	const char * d = crypt_get_dir() ;
-	size_t len = StringSize( crypt_get_dir() ) ;
-	size_t len1 = StringSize( mapper ) ;
+	struct crypt_device * cd;
+	if( crypt_init_by_name( &cd,mapper ) < 0 ){
+		return 1 ;
+	}
 	for( j = 0 ; j < 3 ; j++ ) { 
 		/*
 		 * try multiple types to close the mapper just in case its hang up on something
 		 */
-		if( crypt_deactivate( NULL,mapper ) == 0 ){
-			_remove_remaining( mapper + len + 1,len1 - ( len + 1 ),d ) ;
+		if( crypt_deactivate( cd,mapper ) == 0 ){
+			crypt_free( cd ) ;
 			return 0 ;
 		}else{
 			sleep( 1 ) ;

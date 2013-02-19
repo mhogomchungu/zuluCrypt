@@ -49,10 +49,10 @@ createpartition::createpartition( QWidget * parent ) :
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancelClicked() ) );
 	connect( m_ui->rbPassphrase,SIGNAL( clicked() ),this,SLOT( rbPassphraseClicked() ) );
 	connect( m_ui->rbPassphraseFromFile,SIGNAL( clicked() ),this,SLOT( rbPasssphraseFromFileClicked() ) );
-	connect( m_ui->comboBoxVolumeType,SIGNAL( currentIndexChanged( int ) ),this,SLOT( rng( int ) ) ) ;
+	connect( m_ui->comboBoxVolumeType,SIGNAL( currentIndexChanged( int ) ),this,SLOT( volumeType( int ) ) ) ;
 	connect( m_ui->lineEditPassphrase1,SIGNAL( textChanged( QString ) ),this,SLOT( keyChanged( QString ) ) ) ;
 
-#ifdef FOUND_TCPLAY	
+#if FOUND_TCPLAY
 	m_ui->comboBoxVolumeType->addItem( QString( "truecrypt" ) ) ;
 #endif
 }
@@ -115,19 +115,28 @@ void createpartition::findInstalledFs()
 	m_ui->comboBoxFS->addItems( mkfs );
 }
 
-void createpartition::rng( int s )
+void createpartition::volumeType( int s )
 {
+	/*
+	 * currently,we dont support creating truecrypt volumes using a keyfile
+	 */
 	switch( s ){
 		case 0 : m_volumeType = QString( "luks" ) ;
 			 m_ui->comboBoxRNG->setEnabled( true );
+			 m_ui->rbPassphraseFromFile->setEnabled( true );
 			 break ;
 		case 1 :
 			 m_volumeType = QString( "plain" ) ;
 			 m_ui->comboBoxRNG->setEnabled( false );
+			 m_ui->rbPassphraseFromFile->setEnabled( true );
 			 break ;
 		case 2:
 			 m_volumeType = QString( "tcrypt" ) ;
 			 m_ui->comboBoxRNG->setEnabled( false );
+			 m_ui->rbPassphraseFromFile->setEnabled( false );
+			 m_ui->rbPassphrase->click();
+			 m_ui->lineEditPassphrase1->clear();
+			 m_ui->lineEditPassPhrase2->clear();
 			 break ;
 	}
 }
