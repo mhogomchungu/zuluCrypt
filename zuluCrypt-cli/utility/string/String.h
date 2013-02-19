@@ -651,10 +651,10 @@ string_t StringGetFromVirtualFile( const char * path ) ;
  * a few convenient "safe" functions 
  */
 
-static __inline__ ssize_t StringSize( const char * str )
+static __inline__ size_t StringSize( const char * str )
 {
 	if( str == NULL ){
-		return -1 ;
+		return 0 ;
 	}else{
 		return strlen( str ) ;
 	}

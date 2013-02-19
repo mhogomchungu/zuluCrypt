@@ -166,36 +166,38 @@ char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper )
 {
 	struct crypt_device * cd;
 	const char * type ;
-	char * volType = NULL ;
+	string_t volType ;
 	
 	type = crypt_get_dir() ;
 	
-	if( strncmp( mapper,type,strlen( type ) != 0 ) ){
-		return strdup( "Nil" ) ;
+	if( !StringPrefixEqual( mapper,type ) ){
+		volType = String( "Nil" ) ;
+		return StringDeleteHandle( &volType ) ;
 	}
 	
 	if( crypt_init_by_name( &cd,mapper ) < 0 ){
-		return strdup( "Nil" ) ;
+		volType = String( "Nil" ) ;
+		return StringDeleteHandle( &volType ) ;
 	}
 	
 	type = crypt_get_type( cd ) ;
 	
 	if( type == NULL ){
-		volType = strdup( "Nil" ) ;
+		volType = String( "Nil" ) ;
 	}else{
-		if( strstr( type,"LUKS" ) != NULL ){
-			volType = strdup( "crypto_LUKS" ) ;
-		}else if( strstr( type,"PLAIN" ) != NULL ){
-			volType = strdup( "crypto_PLAIN" ) ;
-		}else if( strstr( type,"TCRYPT" ) != NULL ){
-			volType = strdup( "crypto_TCRYPT" ) ;
+		if( StringHasComponent( type,"LUKS" ) ){
+			volType = String( "crypto_LUKS" ) ;
+		}else if( StringHasComponent( type,"PLAIN" ) ){
+			volType = String( "crypto_PLAIN" ) ;
+		}else if( StringHasComponent( type,"TCRYPT" ) ){
+			volType = String( "crypto_TCRYPT" ) ;
 		}else{
-			volType = strdup( "Nil" ) ;
+			volType = String( "Nil" ) ;
 		}
 	}
 	
 	crypt_free( cd ) ;
-	return volType ;
+	return StringDeleteHandle( &volType ) ;
 }
 
 char * zuluCryptVolumeStatus( const char * mapper )
@@ -261,11 +263,11 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	if( type == NULL ){
 		StringAppend( p,"Nil" ) ;
 	}else{
-		if( strncmp( type,"LUKS",4 ) == 0 ){
+		if( StringPrefixMatch( type,"LUKS",4 ) ){
 			luks = 1 ;
-			if( strcmp( type,"LUKS1" ) == 0 )
+			if( StringsAreEqual( type,"LUKS1" ) ){
 				StringAppend( p,"luks1" ) ;
-			else{
+			}else{
 				/*
 				* future versions of luks will go here.
 				* "LUKS" in capital letters sticks out when displaying volume properties in the GUI.
@@ -273,9 +275,9 @@ char * zuluCryptVolumeStatus( const char * mapper )
 				*/
 				;
 			}
-		}else if( strcmp( type,"PLAIN" ) == 0 ){
+		}else if( StringsAreEqual( type,"PLAIN" ) ){
 			StringAppend( p,"plain" ) ;
-		}else if( strcmp( type,"TCRYPT" ) == 0 ){
+		}else if( StringsAreEqual( type,"TCRYPT" ) ){
 			StringAppend( p,"tcrypt" ) ;
 		}else{
 			StringAppend( p,"Nil" ) ;
@@ -287,7 +289,7 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	z = StringIntToString_1( buffer,SIZE,8 * crypt_get_volume_key_size( cd ) ) ;
 	StringMultipleAppend( p,"\n keysize:\t",z," bits",END );
 	
-	if( strncmp( device_name,"/dev/mapper/",12 ) == 0 ){
+	if( StringPrefixMatch( device_name,"/dev/mapper/",12 ) ){
 		/*
 		 * An assumption is made here that the volume is an LVM volume in "/dev/mapper/ABC-DEF"
 		 * format and the path is converted to "/dev/ABC/DEF" format
@@ -310,7 +312,7 @@ char * zuluCryptVolumeStatus( const char * mapper )
 		StringMultipleAppend( p,"\n device:\t",device_name,END );
 	}	
 	
-	if( strncmp( device_name,"/dev/loop",9 ) == 0 ){
+	if( StringPrefixMatch( device_name,"/dev/loop",9 ) ){
 		StringAppend( p,"\n loop:   \t" );
 		path = zuluCryptLoopDeviceAddress( device_name ) ;
 		if( path != NULL ){
@@ -396,11 +398,11 @@ static char * zuluCryptVolumeDeviceName_1( const char * mapper )
 	
 	while( ( entry = readdir( dir ) ) != NULL ){
 		path = entry->d_name ;
-		if( strcmp( path,"." ) == 0 )
+		if( StringsAreEqual( path,"." ) )
 			continue ;
-		if( strcmp( path,".." ) == 0 )
+		if( StringsAreEqual( path,".." ) )
 			continue ;
-		if( strstr( path,"loop" ) != NULL ){
+		if( StringHasComponent( path,"loop" ) ){
 			path = StringMultipleAppend( st,"/",path,"/loop/backing_file",END ) ;
 			xt = StringGetFromVirtualFile( path ) ;
 			StringDelete( &st ) ;
@@ -427,10 +429,7 @@ char * zuluCryptVolumeDeviceName( const char * mapper )
 	
 	e = crypt_get_dir() ;
 	
-	if( e == NULL ){
-		return NULL ;
-	}
-	if( strncmp( mapper,e,strlen( e ) != 0 ) ){
+	if( !StringPrefixEqual( mapper,e ) ){
 		return NULL ;
 	}
 	if( crypt_init_by_name( &cd,mapper ) < 0 ){
