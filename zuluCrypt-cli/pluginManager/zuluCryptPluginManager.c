@@ -96,7 +96,7 @@ void * zuluCryptPluginManagerOpenConnection( const char * sockpath )
 {
 	int i ;
 	socket_t client ;
-	for( i = 10 ; i > 0 ; i-- ){
+	for( i = 0 ; i < 10 ; i++ ){
 		client = SocketLocal( sockpath ) ;
 		if( SocketConnect( &client ) ){
 			return ( void * ) client ;
@@ -165,6 +165,9 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	const char * pluginPath ;
 	const char * argv = opts->argv ;
 	char * const * env = opts->env ;
+	const char * args[ 7 ] ;
+	
+	ProcessStructure * str ;
 	
 	string_t key   = StringVoid ;
 	string_t plugin_path = StringVoid ;
@@ -202,16 +205,25 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		uuid = zuluCryptGetDeviceUUID( device,uid ) ;
 		
 		p = Process( pluginPath ) ;
-		ProcessSetEnvironmentalVariable( p,env ) ;
-		ProcessSetOptionUser( p,uid ) ;
+		str = ProcessArgumentStructure( p ) ;
+		args[0] = pluginPath ;
+		args[1] = device ;
+		args[2] = StringContent( uuid ) ;
+		args[3] = sockpath ;
 		/*
 		 * ZULUCRYPT_CHAR_MAX_KEYSIZE is set in ../constants.h
 		 */
-		ProcessSetArgumentList( p,device,StringContent( uuid ),sockpath,ZULUCRYPT_CHAR_MAX_KEYSIZE,argv,ENDLIST ) ;
+		args[4] = ZULUCRYPT_CHAR_MAX_KEYSIZE ;
+		args[5] = argv ;
+		args[6] = NULL ;
+		
+		str->args    = ( char * const * )args ;
+		str->env     = env ;
+		str->user_id = uid ;
+		
 		ProcessStart( p ) ;
 	
 		zuluCryptGetKeyFromSocket( sockpath,&key,uid ) ;
-		
 		/*
 		 * for reasons currently unknown to me,the gpg plugin doesnt always exit,it hangs consuming massive amount of cpu circles.
 		 * we terminate it here by sending it a sigterm after it is done sending its key to make sure it exits.
@@ -219,6 +231,7 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		if( pluginIsGpG( pluginPath ) ){
 			ProcessTerminate( p ) ;
 		}
+		
 		#if zuluCryptPluginManagerDebug
 			__debug( p ) ;
 		#endif

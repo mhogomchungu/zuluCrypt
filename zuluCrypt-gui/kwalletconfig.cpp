@@ -98,7 +98,7 @@ void kwalletconfig::pbClose()
 
 void kwalletconfig::pbGetUUIDFromDevices()
 {
-	openpartition * op = new openpartition( this ) ;
+	openvolume * op = new openvolume( this ) ;
 	connect( op,SIGNAL( HideUISignal() ),op,SLOT( deleteLater() ) ) ;
 	connect( op,SIGNAL( clickedPartition( QString ) ),this,SLOT( selectedVolume( QString ) ) ) ;
 	op->allowLUKSOnly();

@@ -21,7 +21,7 @@
 #define ZULUCRYPTTHREADS_H
 
 #include "../zuluCrypt-cli/constants.h"
-#include "ui_openpartition.h"
+#include "ui_openvolume.h"
 #include "utility.h"
 
 #include <QObject>

@@ -17,8 +17,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "utility.h"
-#include "createpartition.h"
-#include "ui_createpartition.h"
+#include "createvolume.h"
+#include "ui_createvolume.h"
 #include <QMessageBox>
 #include <QFileDialog>
 #include <iostream>
@@ -29,9 +29,9 @@
 #include <QDebug>
 #include "../zuluCrypt-cli/constants.h"
 
-createpartition::createpartition( QWidget * parent ) :
+createvolume::createvolume( QWidget * parent ) :
     QDialog( parent ),
-    m_ui( new Ui::createpartition )
+    m_ui( new Ui::createvolume )
 {
 	m_ui->setupUi( this );
 	this->setFixedSize( this->size() );
@@ -57,7 +57,7 @@ createpartition::createpartition( QWidget * parent ) :
 #endif
 }
 
-void createpartition::keyChanged( QString key )
+void createvolume::keyChanged( QString key )
 {
 	if( m_ui->rbPassphrase->isChecked() && m_keyStrength->canCheckQuality() ){
 		int st = m_keyStrength->quality( key ) ;
@@ -71,7 +71,7 @@ void createpartition::keyChanged( QString key )
 	}
 }
 
-void createpartition::findInstalledFs()
+void createvolume::findInstalledFs()
 {
 	DialogMsg msg( this );
 
@@ -115,7 +115,7 @@ void createpartition::findInstalledFs()
 	m_ui->comboBoxFS->addItems( mkfs );
 }
 
-void createpartition::volumeType( int s )
+void createvolume::volumeType( int s )
 {
 	/*
 	 * currently,we dont support creating truecrypt volumes using a keyfile
@@ -134,14 +134,15 @@ void createpartition::volumeType( int s )
 			 m_volumeType = QString( "tcrypt" ) ;
 			 m_ui->comboBoxRNG->setEnabled( false );
 			 m_ui->rbPassphraseFromFile->setEnabled( false );
-			 m_ui->rbPassphrase->click();
-			 m_ui->lineEditPassphrase1->clear();
-			 m_ui->lineEditPassPhrase2->clear();
+			 if( m_ui->rbPassphraseFromFile->isChecked() ){
+				m_ui->rbPassphrase->click();
+				m_ui->lineEditPassphrase1->clear();
+			 }
 			 break ;
 	}
 }
 
-void createpartition::closeEvent( QCloseEvent *e )
+void createvolume::closeEvent( QCloseEvent *e )
 {
 	e->ignore();
 	if( m_isWindowClosable ){
@@ -149,17 +150,17 @@ void createpartition::closeEvent( QCloseEvent *e )
 	}
 }
 
-void createpartition::ShowPartition( QString volume )
+void createvolume::ShowPartition( QString volume )
 {
 	ShowUI( tr( "path to device" ),volume );
 }
 
-void createpartition::ShowFile( QString volume )
+void createvolume::ShowFile( QString volume )
 {
 	ShowUI( tr( "path to file" ),volume );
 }
 
-void createpartition::eraseDataPartition()
+void createvolume::eraseDataPartition()
 {
 	QString path = m_ui->lineEditVolumePath->text() ;
 
@@ -172,7 +173,7 @@ void createpartition::eraseDataPartition()
 	cpd->ShowUI() ;
 }
 
-void createpartition::dialogResult( int result )
+void createvolume::dialogResult( int result )
 {
 	if( result == 0 ){
 		this->HideUI() ;
@@ -185,7 +186,7 @@ void createpartition::dialogResult( int result )
 	}
 }
 
-void createpartition::ShowUI( QString l,QString v )
+void createvolume::ShowUI( QString l,QString v )
 {
 	enableAll();
 	m_ui->labelVolumePath->setText( l );
@@ -205,13 +206,13 @@ void createpartition::ShowUI( QString l,QString v )
 	findInstalledFs() ;
 }
 
-void createpartition::pbOpenKeyFile()
+void createvolume::pbOpenKeyFile()
 {
 	QString Z = QFileDialog::getOpenFileName( this,tr( "key file path" ),QDir::homePath(),0 );
 	m_ui->lineEditPassphrase1->setText( Z );
 }
 
-void createpartition::pbCancelClicked()
+void createvolume::pbCancelClicked()
 {
 	if( m_created == false ){
 		QString s = m_ui->lineEditVolumePath->text() ;
@@ -222,13 +223,13 @@ void createpartition::pbCancelClicked()
 	HideUI() ;
 }
 
-void createpartition::HideUI()
+void createvolume::HideUI()
 {
 	this->hide();
 	emit HideUISignal();
 }
 
-void createpartition::enableAll()
+void createvolume::enableAll()
 {
 	m_ui->labelPassPhrase->setEnabled( true );
 	m_ui->labelVolumePath->setEnabled( true );
@@ -253,7 +254,7 @@ void createpartition::enableAll()
 	m_ui->rbPassphraseFromFile->setEnabled( true );
 }
 
-void createpartition::disableAll()
+void createvolume::disableAll()
 {
 	m_ui->labelPassPhrase->setEnabled( false );
 	m_ui->labelVolumePath->setEnabled( false );
@@ -274,7 +275,7 @@ void createpartition::disableAll()
 	m_ui->rbPassphraseFromFile->setEnabled( false );
 }
 
-void createpartition::rbPassphraseClicked()
+void createvolume::rbPassphraseClicked()
 {
 	m_ui->pbOpenKeyFile->setEnabled( false );
 	m_ui->lineEditPassPhrase2->setEnabled( true );
@@ -288,7 +289,7 @@ void createpartition::rbPassphraseClicked()
 	this->setWindowTitle( QString( "create a new volume" ) ) ;
 }
 
-void createpartition::rbPasssphraseFromFileClicked()
+void createvolume::rbPasssphraseFromFileClicked()
 {
 	m_ui->pbOpenKeyFile->setEnabled( true );
 	m_ui->lineEditPassphrase1->clear();
@@ -301,7 +302,7 @@ void createpartition::rbPasssphraseFromFileClicked()
 	this->setWindowTitle( QString( "create a new volume" ) ) ;
 }
 
-void createpartition::pbCreateClicked()
+void createvolume::pbCreateClicked()
 {
 	DialogMsg msg( this ) ;
 
@@ -334,13 +335,27 @@ void createpartition::pbCreateClicked()
 
 	volumePath.replace( "\"","\"\"\"" ) ;
 
+	switch( m_ui->comboBoxVolumeType->currentIndex() ){
+		case 0 : m_volumeType = QString( "luks" )      ; break ;
+		case 1 : m_volumeType = QString( "plain" )     ; break ;
+		case 2 : m_volumeType = QString( "truecrypt" ) ; break ;
+		default: m_volumeType = QString( "luks " )     ;
+	}
+
+	QString g ;
+
+	switch( m_ui->comboBoxFS->currentIndex() ){
+		case 0 : g = QString( "/dev/urandom" ) ; break ;
+		case 1 : g = QString( "/dev/random" )  ; break ;
+		default: g = QString( "/dev/urandom" ) ;
+	}
+
 	QString a = QString( ZULUCRYPTzuluCrypt ) ;
 	QString b = volumePath ;
 	QString c = m_ui->comboBoxFS->currentText() ;
 	QString d = m_volumeType;
 	QString e = source ;
 	QString f = passphrase_1 ;
-	QString g = m_ui->comboBoxRNG->currentText();
 
 	QString exe = QString( "%1 -c -k -d \"%2\" -z %3 -t %4 %5 \"%6\" -g %7" ).arg( a ).arg( b ).arg( c ).arg( d ).arg( e ).arg( f ).arg( g );
 
@@ -353,7 +368,7 @@ void createpartition::pbCreateClicked()
 	cvt->start() ;
 }
 
-void createpartition::threadfinished( int st )
+void createvolume::threadfinished( int st )
 {
 	DialogMsg msg( this ) ;
 	m_isWindowClosable = true ;
@@ -385,7 +400,7 @@ and \"/etc/crypttab.\"\nRerun the tool from root's accout to proceed" ) ) ;
 		case 16: msg.ShowUIOK( tr( "ERROR!" ),tr( "there seem to be an opened mapper associated with the device" ) ) ;		break  ;
 		case 17: msg.ShowUIOK( tr( "ERROR!" ),tr( "unable to resolve full path to device" ) ) ;					break  ;
 		case 18: msg.ShowUIOK( tr( "ERROR!" ),tr( "can not create a volume on a mounted device" ) ) ;				break  ;
-
+		case 24: msg.ShowUIOK( tr( "ERROR!" ),tr( "presented file system is not supported,see documentation for more information") );
 		case 110:msg.ShowUIOK( tr( "ERROR!" ),tr( "could not find any partition with the presented UUID" ) ) ;			break  ;
 		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR! with status number %1 encountered" ).arg( st ) );
 	}
@@ -393,7 +408,7 @@ and \"/etc/crypttab.\"\nRerun the tool from root's accout to proceed" ) ) ;
 	enableAll();
 }
 
-createpartition::~createpartition()
+createvolume::~createvolume()
 {
 	m_keyStrength->~keystrength() ;
 	delete m_ui;

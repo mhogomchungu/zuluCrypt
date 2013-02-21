@@ -33,10 +33,10 @@
 #include "../zuluCrypt-cli/constants.h"
 #include "../zuluMount-gui/oneinstance.h"
 #include "password_dialog.h"
-#include "openpartition.h"
+#include "openvolume.h"
 #include "luksaddkey.h"
 #include "luksdeletekey.h"
-#include "createpartition.h"
+#include "createvolume.h"
 #include "createfile.h"
 #include "createkeyfile.h"
 #include "startupupdateopenedvolumes.h"
@@ -143,8 +143,8 @@ private slots :
 	void fileManagerOpenStatus( int exitCode, int exitStatus,int startError ) ;
 private:
 	passwordDialog * setUpPasswordDialog( void );
-	openpartition * setUpOpenpartition( void );
-	createpartition * setUpCreatepartition( void );
+	openvolume * setUpOpenpartition( void );
+	createvolume * setUpCreatepartition( void );
 	luksdeletekey * setUpluksdeletekey( void );
 	luksaddkey * setUpluksaddkey( void );
 	manageluksheader * setUpManageLuksHeader( void );

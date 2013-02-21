@@ -78,7 +78,7 @@ static int _create_volume( const char * dev,const char * fs,const char * type,co
 		if( zuluCryptOpenPlain( dev,mapper,"rw",pass,pass_size ) ){
 			return zuluExit( 3,m ) ; 
 		}
-	}else if( StringsAreEqual( type,"tcrypt" ) ){
+	}else if( StringsAreEqual( type,"tcrypt" ) || StringsAreEqual( type,"truecrypt" ) ){
 		if( zuluCryptCreateTCrypt( dev,pass,pass_size,rng ) != 0 ){
 			return zuluExit( 3,m ) ;
 		}

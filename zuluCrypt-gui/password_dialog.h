@@ -28,7 +28,7 @@
 #include <stdlib.h>
 
 #include "ui_password.h"
-#include "openpartition.h"
+#include "openvolume.h"
 #include "runinthread.h"
 #include "utility.h"
 #include "checkvolumetype.h"

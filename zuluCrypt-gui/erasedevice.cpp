@@ -194,10 +194,10 @@ void erasedevice::pbFile()
 
 void erasedevice::pbPartition()
 {
-	openpartition * openPartition = new openpartition( this );
-	connect( openPartition,SIGNAL( clickedPartition( QString ) ),this,SLOT( setPath( QString ) ) );
-	connect( openPartition,SIGNAL( HideUISignal() ),openPartition,SLOT( deleteLater() ) );
-	openPartition->partitionList( tr( "select a non system partition to erase its contents" ),QString( " -N" ) );
+	openvolume * op = new openvolume( this );
+	connect( op,SIGNAL( clickedPartition( QString ) ),this,SLOT( setPath( QString ) ) );
+	connect( op,SIGNAL( HideUISignal() ),op,SLOT( deleteLater() ) );
+	op->partitionList( tr( "select a non system partition to erase its contents" ),QString( " -N" ) );
 }
 
 void erasedevice::setPath( QString p )

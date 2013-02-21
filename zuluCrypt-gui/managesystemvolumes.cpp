@@ -164,7 +164,7 @@ void manageSystemVolumes::pbFile()
 
 void manageSystemVolumes::pbPartition()
 {
-	openpartition * op = new openpartition( this ) ;
+	openvolume * op = new openvolume( this ) ;
 	connect( op,SIGNAL( HideUISignal() ),op,SLOT( deleteLater() ) ) ;
 	connect( op,SIGNAL( HideUISignal() ),this,SLOT( setFocusTableWidget() ) ) ;
 	connect( op,SIGNAL( clickedPartition( QString ) ),this,SLOT( clickedPartition( QString ) ) ) ;

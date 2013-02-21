@@ -24,7 +24,7 @@
 #include <QCloseEvent>
 
 #include "ui_luksaddkey.h"
-#include "openpartition.h"
+#include "openvolume.h"
 #include "runinthread.h"
 #include "dialogmsg.h"
 #include "keystrength.h"

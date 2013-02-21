@@ -25,7 +25,7 @@
 
 #include "kwalletplugin.h"
 #include "dialogmsg.h"
-#include "openpartition.h"
+#include "openvolume.h"
 #include "tablewidget.h"
 
 #include <Qt>

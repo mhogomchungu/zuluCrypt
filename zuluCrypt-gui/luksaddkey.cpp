@@ -164,12 +164,12 @@ void luksaddkey::pbOpenFile( void )
 
 void luksaddkey::pbOpenPartition( void )
 {
-	openpartition * openPartition = new openpartition( this );
-	openPartition->showLuksOnly();
-	connect( openPartition,SIGNAL( clickedPartition( QString ) ),this,SLOT( ShowUI( QString ) ) );
-	connect( openPartition,SIGNAL( HideUISignal() ),openPartition,SLOT( deleteLater() ) );
-	connect( openPartition,SIGNAL( HideUISignal() ),this,SLOT( setFieldFocus() ) ) ;
-	openPartition->ShowAllPartitions();
+	openvolume * op = new openvolume( this );
+	op->showLuksOnly();
+	connect( op,SIGNAL( clickedPartition( QString ) ),this,SLOT( ShowUI( QString ) ) );
+	connect( op,SIGNAL( HideUISignal() ),op,SLOT( deleteLater() ) );
+	connect( op,SIGNAL( HideUISignal() ),this,SLOT( setFieldFocus() ) ) ;
+	op->ShowAllPartitions();
 }
 
 void luksaddkey::rbExistingPassphrase( void )

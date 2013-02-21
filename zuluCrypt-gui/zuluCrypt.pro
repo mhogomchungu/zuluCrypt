@@ -13,10 +13,10 @@ TEMPLATE = app
 SOURCES += main.cpp\
 	zulucrypt.cpp\
 	password_dialog.cpp \
-    openpartition.cpp \
+    openvolume.cpp \
     luksaddkey.cpp \
     luksdeletekey.cpp \
-    createpartition.cpp \
+    createvolume.cpp \
     createfile.cpp \
     createkeyfile.cpp \
     startupupdateopenedvolumes.cpp \
@@ -53,10 +53,10 @@ SOURCES += main.cpp\
 
 HEADERS  += zulucrypt.h \
     password_dialog.h \
-    openpartition.h \
+    openvolume.h \
     luksaddkey.h \
     luksdeletekey.h \
-    createpartition.h \
+    createvolume.h \
     createfile.h \
     createkeyfile.h \
     startupupdateopenedvolumes.h \
@@ -93,10 +93,10 @@ HEADERS  += zulucrypt.h \
 
 
 FORMS    += zulucrypt.ui password.ui \
-    openpartition.ui \
+    openvolume.ui \
     luksaddkey.ui \
     luksdeletekey.ui \
-    createpartition.ui \
+    createvolume.ui \
     createfile.ui \
     createkeyfile.ui \
     managedevicenames.ui \
@@ -113,7 +113,7 @@ TRANSLATIONS =
 
 RESOURCES = icon.qrc
 
-LIBS += -lblkid -lpwquality /home/local/KDE4/lib/libkwalletbackend.so -lgcrypt -lzuluCryptPluginManager
+LIBS += -lblkid -lpwquality -L/home/local/KDE4/lib/ -lkwalletbackend -lgcrypt -lzuluCryptPluginManager
 
 QMAKE_CXXFLAGS += -D_FILE_OFFSET_BITS=64 -Wall
 

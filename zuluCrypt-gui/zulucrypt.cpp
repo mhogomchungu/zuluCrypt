@@ -754,9 +754,9 @@ void zuluCrypt::ShowCreateFile()
 	cf->showUI();
 }
 
-createpartition * zuluCrypt::setUpCreatepartition()
+createvolume * zuluCrypt::setUpCreatepartition()
 {
-	createpartition * cp = new createpartition( this );
+	createvolume * cp = new createvolume( this );
 	connect( cp,SIGNAL( HideUISignal() ),cp,SLOT( deleteLater() ) );
 	return cp;
 }
@@ -771,23 +771,23 @@ void zuluCrypt::FileCreated( QString file )
 	setUpCreatepartition()->ShowFile( file );
 }
 
-openpartition * zuluCrypt::setUpOpenpartition()
+openvolume * zuluCrypt::setUpOpenpartition()
 {
-	openpartition * op = new openpartition( this );
+	openvolume * op = new openvolume( this );
 	connect( op,SIGNAL( HideUISignal() ),op,SLOT( deleteLater() ) );
 	return op ;
 }
 
 void zuluCrypt::ShowNonSystemPartitions()
 {
-	openpartition * nsp = setUpOpenpartition() ;
+	openvolume * nsp = setUpOpenpartition() ;
 	connect( nsp,SIGNAL( clickedPartition( QString ) ),this,SLOT( createPartition( QString ) ) );
 	nsp->ShowNonSystemPartitions();
 }
 
 void zuluCrypt::ShowOpenPartition()
 {
-	openpartition * ap = setUpOpenpartition() ;
+	openvolume * ap = setUpOpenpartition() ;
 	ap->showEncryptedOnly();
 	connect( ap,SIGNAL( clickedPartition( QString ) ),this,SLOT( partitionClicked( QString ) ) );
 	ap->ShowAllPartitions();

@@ -249,10 +249,10 @@ void manageluksheader::pbCreate()
 
 void manageluksheader::pbOpenPartition()
 {
-	openpartition * openPartition = new openpartition( this );
-	connect( openPartition,SIGNAL( clickedPartition( QString ) ),this,SLOT( selectedPartition( QString ) ) );
-	connect( openPartition,SIGNAL( HideUISignal() ),openPartition,SLOT( deleteLater() ) );
-	openPartition->ShowNonSystemPartitions();
+	openvolume * op = new openvolume( this );
+	connect( op,SIGNAL( clickedPartition( QString ) ),this,SLOT( selectedPartition( QString ) ) );
+	connect( op,SIGNAL( HideUISignal() ),op,SLOT( deleteLater() ) );
+	op->ShowNonSystemPartitions();
 }
 
 void manageluksheader::selectedPartition( QString p )

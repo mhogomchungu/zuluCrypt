@@ -29,7 +29,7 @@
 #include <QAction>
 #include <QMenu>
 
-#include "openpartition.h"
+#include "openvolume.h"
 #include "utility.h"
 #include "dialogmsg.h"
 #include "tablewidget.h"

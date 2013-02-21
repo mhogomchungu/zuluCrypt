@@ -28,13 +28,10 @@ struct ProcessType_t{
 	int std_io ;
 	char * exe ;
 	char ** args ;
-	int args_source ;
 	int signal ;
-	int timeout ;
 	int wait_status ;
-	int uid ;
-	char * const * env ;
 	pthread_t * thread ;
+	ProcessStructure str ;
 };
 
 static void ( *_fcn_ )( void )  = NULL ;
@@ -44,18 +41,27 @@ void ProcessExitOnMemoryExaustion( void ( *f )( void ) )
 	_fcn_ = f ;
 }
 
+ProcessStructure * ProcessArgumentStructure( process_t p ) 
+{
+	if( p == ProcessVoid ){
+		return NULL ;
+	}else{
+		return &p->str ;
+	}
+}
+
 void ProcessSetEnvironmentalVariable( process_t p,char * const * env ) 
 {
 	if( p != ProcessVoid ){
-		p->env = env ;
+		p->str.env = env ;
 	}
 }
 
 static process_t _ProcessError( void )
 {
-	if( _fcn_ != NULL )
+	if( _fcn_ != NULL ){
 		( *_fcn_ )() ;
-	
+	}
 	return ProcessVoid ;
 }
 
@@ -68,10 +74,12 @@ void ProcessSetArgumentList( process_t p,... )
 	int index = 0 ;
 	va_list list ;
 	
-	if( p == ProcessVoid )
+	if( p == ProcessVoid ){
 		return ;
+	}
 	
 	args = ( char ** )malloc( size ) ;
+	
 	if( args == NULL ){
 		_ProcessError() ;
 		return ;
@@ -105,15 +113,14 @@ void ProcessSetArgumentList( process_t p,... )
 	
 	va_end( list ) ;
 	
-	p->args = args ;
-	p->args_source = 0 ;
+	p->str.args = p->args = args ;
 }
 
 static void * __timer( void * x )
 {
 	process_t  p = ( process_t ) x ;
 	
-	sleep( p->timeout ) ;
+	sleep( p->str.timeout ) ;
 	
 	kill( p->pid,p->signal ) ;
 	
@@ -135,28 +142,28 @@ static void __ProcessStartTimer( process_t p )
 
 pid_t ProcessStart( process_t p ) 
 {
-	uid_t uid ;
-	
-	if( pipe( p->fd_0 ) == -1 )
+	if( pipe( p->fd_0 ) == -1 ){
 		return -1 ;
-	if( pipe( p->fd_1 ) == -1 )
+	}
+	if( pipe( p->fd_1 ) == -1 ){
 		return -1 ;
-	if( pipe( p->fd_2 ) == -1 )
+	}
+	if( pipe( p->fd_2 ) == -1 ){
 		return -1 ;
+	}
 		
 	p->pid = fork() ;
 	
-	if( p->pid == -1 )
+	if( p->pid == -1 ){
 		return -1 ;
-	
+	}
 	if( p->pid == 0 ){
-		if( p->uid != -1 ){
-			uid = p->uid ;
+		if( p->str.user_id != ( uid_t )-1 ){
 			/*
 			 * drop privileges permanently
 			 */
 			seteuid( 0 ) ;
-			setuid( uid );
+			setuid( p->str.user_id );
 		}
 		
 		dup2( p->fd_0[ 0 ],0 )    ;
@@ -167,19 +174,18 @@ pid_t ProcessStart( process_t p )
 		close( p->fd_0[ 1 ] )     ;
 		close( p->fd_2[ 0 ] )     ;
 			
-		if( p->args == NULL ){
-			if( p->env != NULL ){
-				execle( p->exe,p->exe,( char * )0,p->env ) ;
+		if( p->str.args == NULL ){
+			if( p->str.env != NULL ){
+				execle( p->exe,p->exe,( char * )NULL,p->str.env ) ;
 			}else{
-				execl( p->exe,p->exe,( char * )0 ) ;
+				execl( p->exe,p->exe,( char * )NULL ) ;
 			}
 		}else{
-			if( p->env != NULL ){
-				execve( p->exe,p->args,p->env ) ;
+			if( p->str.env != NULL ){
+				execve( p->exe,p->str.args,p->str.env ) ;
 			}else{
-				execv( p->exe,p->args ) ;
-			}
-			
+				execv( p->exe,p->str.args ) ;
+			}	
 		}
 		/*
 		 * execv has failed :-( 
@@ -199,8 +205,9 @@ pid_t ProcessStart( process_t p )
 	
 	p->state = RUNNING ;
 		
-	if( p->timeout != -1 )
+	if( p->str.timeout != -1 ){
 		__ProcessStartTimer( p ) ;
+	}
 	
 	return p->pid ;
 }
@@ -237,8 +244,9 @@ size_t ProcessGetOutPut( process_t p,char ** data,int std_io )
 	
 	int fd ;
 	
-	if( p == ProcessVoid )
+	if( p == ProcessVoid ){
 		return 0 ;
+	}
 	
 	buffer = ( char * ) malloc( sizeof( char ) * BUFFER_SIZE ) ;
 	
@@ -247,10 +255,11 @@ size_t ProcessGetOutPut( process_t p,char ** data,int std_io )
 		return 0 ;
 	}
 	
-	if( std_io == STDOUT )
+	if( std_io == STDOUT ){
 		fd = p->fd_1[ 0 ] ;
-	else
+	}else{
 		fd = p->fd_2[ 0 ] ;
+	}
 	
 	while( 1 ) {
 		count = read( fd,buff,SIZE ) ;
@@ -264,8 +273,9 @@ size_t ProcessGetOutPut( process_t p,char ** data,int std_io )
 		
 		size += count ;
 		
-		if( count < SIZE )
+		if( count < SIZE ){
 			break ;
+		}
 	}
 	
 	if( size > 0 ){
@@ -318,15 +328,17 @@ process_t Process( const char * path )
 	
 	size_t len ; 
 	
-	if( path == NULL )
+	if( path == NULL ){
 		return ProcessVoid;
+	}
 	
 	len = strlen( path ) + 1 ;
 	
 	p =  ( process_t ) malloc( sizeof( struct ProcessType_t ) ) ;
 	
-	if( p == NULL )
+	if( p == NULL ){
 		return _ProcessError() ;
+	}
 	
 	p->exe = ( char * ) malloc( sizeof( char ) * len ) ;
 
@@ -337,35 +349,37 @@ process_t Process( const char * path )
 	
 	memcpy( p->exe,path,len ) ;
 	
-	p->std_io = 0 ;
-	p->args = NULL      ;
-	p->state = HAS_NOT_START;
-	p->signal = -1 ;
-	p->timeout = -1 ;
+	p->std_io = 0       ;
+	p->signal = -1      ;
 	p->wait_status = -1 ;
-	p->args_source = -1 ;
-	p->uid = -1 ;
-	p->thread = NULL ;
-	p->fd_0[ 0 ] = -1 ;
-	p->env = NULL ;
+	p->thread = NULL    ;
+	p->fd_0[ 0 ] = -1   ;
+	p->args     = NULL  ;
+	p->str.args = NULL  ;
+	p->str.timeout = -1 ;
+	p->str.env = NULL   ;
+	p->str.user_id = -1 ;
+	p->state = HAS_NOT_START ;
 	return p ;
 }
 
 void ProcessSetOptionTimeout( process_t p,int timeout,int signal ) 
 {
-	if( p == ProcessVoid )
+	if( p == ProcessVoid ){
 		return ;
+	}
 	
 	p->signal = signal ;
-	p->timeout = timeout ;
+	p->str.timeout = timeout ;
 }
 
 void ProcessDelete( process_t * p ) 
 {
 	process_t px ;
 	
-	if( p == NULL )
+	if( p == NULL ){
 		return ;
+	}
 	
 	px = *p ;
 	*p = ProcessVoid ;
@@ -378,19 +392,18 @@ void ProcessDelete( process_t * p )
 	close( px->fd_2[ 1 ] ) ;
 	close( px->fd_1[ 1 ] ) ;
 	
-	if( px->fd_0[ 0 ] != -1 )
+	if( px->fd_0[ 0 ] != -1 ){
 		close( px->fd_0[ 0 ] ) ;
-		
-	if( px->wait_status == -1 )
+	}
+	if( px->wait_status == -1 ){
 		waitpid( px->pid,0,WNOHANG ) ;
-		
-	if( px->args != NULL )
-		if( px->args_source == 0 )
-			free( px->args ) ;
-	
-	if( px->exe != NULL )
+	}
+	if( px->args != NULL ){
+		free( px->args ) ;
+	}
+	if( px->exe != NULL ){
 		free( px->exe ) ;
-	
+	}
 	free( px ) ;
 }
 
@@ -398,34 +411,39 @@ int ProcessTerminate( process_t p )
 {
 	int st ;
 	
-	if( p == ProcessVoid )
+	if( p == ProcessVoid ){
 		return -1;
+	}
 	
 	p->state = CANCELLED ;
 	st = kill( p->pid,SIGTERM ) ;
 	waitpid( p->pid,0,WNOHANG ) ;
 	p->wait_status = 1 ;
+	
 	return st ;
 }
 
 void ProcessSetOptionUser( process_t p,uid_t uid ) 
 {
-	if( p != ProcessVoid )
-		p->uid = uid ;
+	if( p != ProcessVoid ){
+		p->str.user_id = uid ;
+	}
 }
 
 int ProcessKill( process_t p ) 
 {
 	int st ;
 	
-	if( p == ProcessVoid )
+	if( p == ProcessVoid ){
 		return -1;
+	}
 	
 	p->state = CANCELLED ;
 	
 	st = kill( p->pid,SIGKILL ) ;
 	waitpid( p->pid,0,WNOHANG ) ;
 	p->wait_status = 1 ;
+	
 	return st ;	
 }
 
@@ -433,8 +451,9 @@ int ProcessExitStatus( process_t p )
 {
 	int status ;
 	
-	if( p == ProcessVoid )
+	if( p == ProcessVoid ){
 		return -1;
+	}
 	
 	waitpid( p->pid,&status,0 ) ;
 	p->state = FINISHED ;
@@ -445,9 +464,9 @@ int ProcessExitStatus( process_t p )
 
 void ProcessSetArguments( process_t p,char * const s[] ) 
 {
-	if( p == ProcessVoid )
+	if( p == ProcessVoid ){
 		return ;
+	}
 	
-	p->args = ( char ** ) s ;
-	p->args_source = 1 ;
+	p->str.args = ( char * const * ) s ;
 }

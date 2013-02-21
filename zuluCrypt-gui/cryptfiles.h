@@ -28,7 +28,7 @@
 #include "ui_cryptfiles.h"
 #include "runinthread.h"
 #include "utility.h"
-#include "openpartition.h"
+#include "openvolume.h"
 #include "cryptfilethread.h"
 #include "dialogmsg.h"
 #include "socketsendkey.h"

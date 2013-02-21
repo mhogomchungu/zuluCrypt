@@ -37,15 +37,15 @@
 #include "build_tcplay.h"
 
 namespace Ui {
-    class createpartition;
+    class createvolume;
 }
 
-class createpartition : public QDialog
+class createvolume : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit createpartition( QWidget * parent = 0 );
-	~createpartition();
+	explicit createvolume( QWidget * parent = 0 );
+	~createvolume();
 signals:
 	void CreateVolume( QString fileSystem,QString containterType,QString volumePath,QString passphrase,bool passphraseFromFile ) ;
 	void HideUISignal( void );
@@ -71,7 +71,7 @@ private:
 	void closeEvent( QCloseEvent * ) ;
 	void ShowUI( QString,QString );
 	bool m_created ;
-	Ui::createpartition * m_ui;
+	Ui::createvolume * m_ui;
 	bool m_isWindowClosable ;
 	keystrength * m_keyStrength ;
 	QString m_volumeType ;

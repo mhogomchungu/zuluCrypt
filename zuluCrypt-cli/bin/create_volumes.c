@@ -54,7 +54,7 @@ only root user or members of group zulucrypt-system can do that" ) ;						break 
 		case 21: printf( "ERROR: insufficient memory to hold your response\n" );			break  ;
 		case 22: printf( "ERROR: could not get a key from a socket\n" ) ;				break  ;
 		case 23: printf( "ERROR: could not get elevated privilege,check binary permissions\n" ) ;	break  ;  
-		case 24: printf( "ERROR: presented file system is not supported,see documentation for mire information\n" ) ;	break  ;  			
+		case 24: printf( "ERROR: presented file system is not supported,see documentation for more information\n" ) ;	break  ;  			
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
 	return st ;

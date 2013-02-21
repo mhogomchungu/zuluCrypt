@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>PartitionView</class>
- <widget class="QDialog" name="PartitionView">
+<class>openvolume</class>
+<widget class="QDialog" name="openvolume">
   <property name="windowModality">
    <enum>Qt::ApplicationModal</enum>
   </property>

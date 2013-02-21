@@ -27,7 +27,7 @@
 #include "ui_manageluksheader.h"
 #include "runinthread.h"
 #include "utility.h"
-#include "openpartition.h"
+#include "openvolume.h"
 #include "dialogmsg.h"
 
 namespace Ui {

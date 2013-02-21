@@ -34,6 +34,13 @@ extern "C" {
 #include <stdarg.h>
 #include <sys/types.h>
 
+typedef struct{
+	char * const * args ;
+	uid_t user_id ;
+	char * const * env ;
+	int timeout ;
+}ProcessStructure ;
+
 typedef struct ProcessType_t * process_t ;
 
 #define ProcessVoid ( ( process_t ) 0 ) 
@@ -73,6 +80,12 @@ void ProcessExitOnMemoryExaustion( void (*)( void ) ) ;
  * Path to executable to be started must be in full path format
  */
 process_t Process( const char * path ) ;
+
+/*
+ * This structure can be used an an alternative way to set various options.
+ * There exist a separate function to set each one of them
+ */
+ProcessStructure * ProcessArgumentStructure( process_t ) ;
 
 /*
  * call fork() and then exec and run a program specified when handle p was created.

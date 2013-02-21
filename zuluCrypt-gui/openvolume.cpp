@@ -17,15 +17,15 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "openpartition.h"
+#include "openvolume.h"
 
 #define ALL_PARTITIONS 1
 #define NON_SYSTEM_PARTITIONS 3
 
-openpartition::openpartition( QWidget * parent ) :
+openvolume::openvolume( QWidget * parent ) :
 	QDialog( parent )
 {
-	m_ui = new Ui::PartitionView() ;
+	m_ui = new Ui::openvolume() ;
 	m_ui->setupUi( this );
 	this->setFixedSize( this->size() );
 	this->setFont( parent->font() );
@@ -67,17 +67,17 @@ openpartition::openpartition( QWidget * parent ) :
 	m_showLuksOnly = false ;
 }
 
-void openpartition::showEncryptedOnly()
+void openvolume::showEncryptedOnly()
 {
 	m_showEncryptedOnly = true ;
 }
 
-void openpartition::showLuksOnly()
+void openvolume::showLuksOnly()
 {
 	m_showEncryptedOnly = true ;
 }
 
-void openpartition::pbHelp()
+void openvolume::pbHelp()
 {
 	DialogMsg msg( this ) ;
 
@@ -96,7 +96,7 @@ void openpartition::pbHelp()
 	msg.ShowUIOK( tr( "info" ),m );
 }
 
-void openpartition::pbUUID()
+void openvolume::pbUUID()
 {
 	if( m_ui->pbUUID->isFlat() ){
 		m_ui->pbUUID->setFlat( false );
@@ -105,12 +105,12 @@ void openpartition::pbUUID()
 	}
 }
 
-void openpartition::pbCancel()
+void openvolume::pbCancel()
 {
 	this->HideUI();
 }
 
-void openpartition::EnterKeyPressed()
+void openvolume::EnterKeyPressed()
 {
 	QTableWidget *tw = m_ui->tableWidget ;
 	QTableWidgetItem *it = tw->currentItem() ;
@@ -120,35 +120,35 @@ void openpartition::EnterKeyPressed()
 	tableEntryDoubleClicked( tw->item( it->row(),0 ) );
 }
 
-void openpartition::currentItemChanged( QTableWidgetItem * current, QTableWidgetItem * previous )
+void openvolume::currentItemChanged( QTableWidgetItem * current, QTableWidgetItem * previous )
 {
 	tablewidget::selectTableRow( current,previous ) ;
 }
 
-void openpartition::ShowNonSystemPartitions()
+void openvolume::ShowNonSystemPartitions()
 {
 	m_option = 1 ;
 	this->partitionList( tr( "select a partition to create an encrypted volume in" )," -N" );
 }
 
-void openpartition::ShowAllPartitions()
+void openvolume::ShowAllPartitions()
 {
 	m_option = 2 ;
 	this->partitionList( tr( "select an encrypted partition to open" )," -A" );
 }
 
-void openpartition::ShowPartitionList( QString x,QString y )
+void openvolume::ShowPartitionList( QString x,QString y )
 {
 	this->partitionList( x,y );
 }
 
-void openpartition::allowLUKSOnly()
+void openvolume::allowLUKSOnly()
 {
 	m_diableNonLUKS = true ;
 	this->ShowAllPartitions();
 }
 
-void openpartition::partitionList( QString title,QString type )
+void openvolume::partitionList( QString title,QString type )
 {
 	this->setWindowTitle( title );
 
@@ -164,7 +164,7 @@ void openpartition::partitionList( QString title,QString type )
 	this->show();
 }
 
-void openpartition::partitionProperties( QStringList entry )
+void openvolume::partitionProperties( QStringList entry )
 {
 	QString size = entry.at(1) ;
 	if( size == QString( "1.0 KB" ) || size == QString( "Nil" ) ){
@@ -185,19 +185,19 @@ void openpartition::partitionProperties( QStringList entry )
 	}
 }
 
-void openpartition::partitionpropertiesThreadFinished()
+void openvolume::partitionpropertiesThreadFinished()
 {
 	m_ui->tableWidget->setEnabled( true );
 	m_ui->tableWidget->setFocus();
 }
 
-void openpartition::HideUI()
+void openvolume::HideUI()
 {
 	this->hide();
 	emit HideUISignal();
 }
 
-void openpartition::tableEntryDoubleClicked( QTableWidgetItem * item )
+void openvolume::tableEntryDoubleClicked( QTableWidgetItem * item )
 {
 	QString dev ;
 	QTableWidget * tw = m_ui->tableWidget ;
@@ -221,13 +221,13 @@ void openpartition::tableEntryDoubleClicked( QTableWidgetItem * item )
 	HideUI();
 }
 
-void openpartition::closeEvent( QCloseEvent * e )
+void openvolume::closeEvent( QCloseEvent * e )
 {
 	e->ignore();
 	HideUI();
 }
 
-openpartition::~openpartition()
+openvolume::~openvolume()
 {
 	delete m_ui ;
 	delete m_action ;

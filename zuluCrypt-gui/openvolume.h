@@ -22,7 +22,7 @@
 
 #include <QCloseEvent>
 #include <QDialog>
-#include "ui_openpartition.h"
+#include "ui_openvolume.h"
 #include "partitionproperties.h"
 #include <QProcess>
 #include <iostream>
@@ -40,12 +40,12 @@
 
 #include <unistd.h>
 
-class openpartition :  public QDialog
+class openvolume :  public QDialog
 {
 	Q_OBJECT
 public:
-	openpartition( QWidget *parent = 0 );
-	virtual ~openpartition();
+	openvolume( QWidget *parent = 0 );
+	virtual ~openvolume();
 	void showEncryptedOnly( void ) ;
 	void showLuksOnly( void ) ;
 
@@ -70,7 +70,7 @@ private slots:
 	void partitionProperties( QStringList );
 private:
 	void closeEvent( QCloseEvent * ) ;
-	Ui::PartitionView * m_ui ;
+	Ui::openvolume * m_ui ;
 	QAction * m_action ;
 	int m_option ;
 	bool m_diableNonLUKS ;

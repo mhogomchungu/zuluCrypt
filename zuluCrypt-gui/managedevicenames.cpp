@@ -70,10 +70,10 @@ void managedevicenames::shortcutPressed()
 
 void managedevicenames::deviceAddress()
 {
-	openpartition * openPartition = new openpartition( this ) ;
-	connect( openPartition,SIGNAL( clickedPartition( QString ) ),this,SLOT( PartitionEntry( QString ) ) );
-	connect( openPartition,SIGNAL( HideUISignal() ),openPartition,SLOT( deleteLater() ) );
-	openPartition->ShowAllPartitions();
+	openvolume * op = new openvolume( this ) ;
+	connect( op,SIGNAL( clickedPartition( QString ) ),this,SLOT( PartitionEntry( QString ) ) );
+	connect( op,SIGNAL( HideUISignal() ),op,SLOT( deleteLater() ) );
+	op->ShowAllPartitions();
 }
 
 void managedevicenames::ShowUI()

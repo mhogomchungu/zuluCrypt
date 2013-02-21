@@ -14,7 +14,7 @@
 #include <QMenu>
 #include <QCursor>
 
-#include "openpartition.h"
+#include "openvolume.h"
 #include "dialogmsg.h"
 
 namespace Ui {

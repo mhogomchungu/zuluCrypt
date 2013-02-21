@@ -21,8 +21,8 @@
 #define LUKSDELETEKEY_H
 
 #include <QDialog>
-#include "ui_openpartition.h"
-#include "openpartition.h"
+#include "ui_openvolume.h"
+#include "openvolume.h"
 #include "ui_luksdeletekey.h"
 #include "runinthread.h"
 #include "dialogmsg.h"

@@ -3,13 +3,13 @@ cmake_minimum_required(VERSION 2.6)
 add_definitions( -D_FILE_OFFSET_BITS=64 -Wextra -Wall -pedantic -std=c++0x -I${PROJECT_BINARY_DIR}/zuluCrypt-gui/ ) 
 
 set (UI_FILES createfile.ui
-		createpartition.ui
+		createvolume.ui
 		luksdeletekey.ui
 		password.ui
 		zulucrypt.ui
 		createkeyfile.ui
 		luksaddkey.ui
-		openpartition.ui
+		createvolume.ui
 		cryptoinfo.ui
 		manageluksheader.ui
 		cryptfiles.ui
@@ -19,6 +19,7 @@ set (UI_FILES createfile.ui
 		managedevicenames.ui
 		erasedevice.ui	
 		kwalletconfig.ui
+		openvolume.ui
 )
 
 set( MOC_FILES createfile.h
@@ -26,8 +27,8 @@ set( MOC_FILES createfile.h
 		createkeyfile.h
 		createkeyfilethread.h		
 		luksdeletekey.h 
-		createpartition.h
-		openpartition.h
+		createvolume.h
+		openvolume.h
 		password_dialog.h
 		zulucrypt.h
 		startupupdateopenedvolumes.h
@@ -55,9 +56,9 @@ set( MOC_FILES createfile.h
  )
 	
 set (SRC createfile.cpp
-	createpartition.cpp
+	createvolume.cpp
 	luksdeletekey.cpp
-	openpartition.cpp
+	openvolume.cpp
 	createkeyfile.cpp
 	createkeyfilethread.cpp	
 	luksaddkey.cpp
