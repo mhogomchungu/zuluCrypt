@@ -24,7 +24,7 @@
  *
  * This function checks if a volume is luks and if it has atleast one empty slot.
  */
-static int zuluCryptCheckEmptySlots( const char * device )
+static int _zuluCryptCheckEmptySlots( const char * device )
 {
 	int status = 0 ;
 	char * c  ;
@@ -33,23 +33,23 @@ static int zuluCryptCheckEmptySlots( const char * device )
 	zuluCryptSecurityGainElevatedPrivileges() ;
 	
 	c = zuluCryptEmptySlots( device ) ;
+	
 	if( c == NULL ){
 		/*
 		 * we got here because the volume is either not luks based or the path is invalid
 		 */
-		return 1 ;
-	}
-	
-	d = c - 1 ;
-	
-	while( *++d ){
-		if( *d == '0' ){
-			status = 2 ;
-			break ;
+		status = 1 ;
+	}else{
+		d = c - 1 ;
+		while( *++d ){
+			if( *d == '0' ){
+				status = 2 ;
+				break ;
+			}
 		}
+		free( c ) ;
 	}
 	
-	free( c ) ;
 	zuluCryptSecurityDropElevatedPrivileges() ;
 	return status ;
 }
@@ -180,19 +180,21 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 		case 4 :  return zuluExit( 2,stl ) ;
 		default:  return zuluExit( 2,stl ) ;
 	}
-			
-	if( zuluCryptSecurityGainElevatedPrivileges() ){
-		if( zuluCryptVolumeIsNotLuks( device ) ){
-			zuluCryptSecurityDropElevatedPrivileges() ;
-			return zuluExit_1( 3,device,stl ) ;
-		}
-	}else{
-		return zuluExit( 17,stl ) ;
-	}
+	
+	zuluCryptSecurityGainElevatedPrivileges() ;
+	
+	/*
+	 * zuluCryptVolumeIsNotLuks() is defined in ../lib/is_luks.c
+	 */
+	status = zuluCryptVolumeIsNotLuks( device ) ;
 	
 	zuluCryptSecurityDropElevatedPrivileges() ;
 	
-	switch( zuluCryptCheckEmptySlots( device ) ){
+	if( status ){
+		return zuluExit_1( 3,device,stl ) ;
+	}
+	
+	switch( _zuluCryptCheckEmptySlots( device ) ){
 		case 0 : return zuluExit( 10,stl ) ;
 		case 1 : return zuluExit( 2,stl )  ; 
 	}
@@ -203,20 +205,20 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 			case 2 : return zuluExit( 15,stl ) ;
 		}
 		
-		if( !StringEqualString( *newKey_1,*newKey_2 ) )
+		if( !StringEqualString( *newKey_1,*newKey_2 ) ){
 			status = 7 ;
-		else{
+		}else{
 			key1 = StringContent( *presentKey ) ;
 			len1 = StringLength ( *presentKey ) ;
 			key2 = StringContent( *newKey_1   ) ;
 			len2 = StringLength ( *newKey_1   ) ;
-			if( !zuluCryptSecurityGainElevatedPrivileges() )
-				return zuluExit( 17,stl ) ;
+			zuluCryptSecurityGainElevatedPrivileges() ;
 			status = zuluCryptAddKey( device,key1,len1,key2,len2 );
 		}
 	}else{
-		if( newKey == NULL || existingKey == NULL )
+		if( newKey == NULL || existingKey == NULL ){
 			return zuluExit( 6,stl ) ;
+		}
 		if( StringsAreEqual( keyType1,"-f" ) ){
 			/*
 			 * this function is defined at "security.c"
@@ -244,28 +246,24 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 			len2 = StringLength( *nk ) ;
 		}
 		if( StringsAreEqual( keyType1,"-f" ) && StringsAreEqual( keyType2,"-f" ) ){
-			if( !zuluCryptSecurityGainElevatedPrivileges() )
-				return zuluExit( 17,stl ) ;
+			zuluCryptSecurityGainElevatedPrivileges() ;
 			status = zuluCryptAddKey( device,key1,len1,key2,len2 ) ;
 		}else if( StringsAreEqual( keyType1,"-p" ) && StringsAreEqual( keyType2,"-p" ) ){
 			key1 = existingKey ;
 			len1 = strlen( existingKey ) ;
 			key2 = newKey ;
 			len2 = strlen( newKey ) ;
-			if( !zuluCryptSecurityGainElevatedPrivileges() )
-				return zuluExit( 17,stl ) ;
+			zuluCryptSecurityGainElevatedPrivileges() ;
 			status = zuluCryptAddKey( device,key1,len1,key2,len2 ) ;
 		}else if( StringsAreEqual( keyType1,"-p" ) && StringsAreEqual( keyType2,"-f" ) ){
 			key1 = existingKey ;
 			len1 = strlen( existingKey ) ;
-			if( !zuluCryptSecurityGainElevatedPrivileges() )
-				return zuluExit( 17,stl ) ;
+			zuluCryptSecurityGainElevatedPrivileges() ;
 			status = zuluCryptAddKey( device,key1,len1,key2,len2 ) ;
 		}else if ( StringsAreEqual( keyType1,"-f" ) && StringsAreEqual( keyType2,"-p" ) ){
 			key2 = newKey ;
 			len2 = strlen( newKey ) ;
-			if( !zuluCryptSecurityGainElevatedPrivileges() )
-				return zuluExit( 17,stl ) ;
+			zuluCryptSecurityGainElevatedPrivileges() ;
 			status = zuluCryptAddKey( device,key1,len1,key2,len2 ) ;
 		}else{
 			status = 5 ;

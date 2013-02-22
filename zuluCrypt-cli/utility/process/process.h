@@ -35,10 +35,27 @@ extern "C" {
 #include <sys/types.h>
 
 typedef struct{
+	/*
+	 * if this variable is set,then it is expect to be in the same format the last argument of execv() expect
+	 */
 	char * const * args ;
+	/*
+	 * this variable is set will cause the program to be executed will run with the identify of this user.
+	 */
 	uid_t user_id ;
+	/*
+	 * If this variable is set,then it is expected to be in the format the last argument of execve() expect
+	 */
 	char * const * env ;
+	/*
+	 * If this variable is set,the process will be terminate if its still running after timeout seconds
+	 * The default signal sent is sigterm
+	 */
 	int timeout ;
+	/*
+	 * if this variable is set,then this signal will be sent when the timeout above expires
+	 */
+	int signal ;
 }ProcessStructure ;
 
 typedef struct ProcessType_t * process_t ;

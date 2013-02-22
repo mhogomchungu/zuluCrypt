@@ -122,7 +122,7 @@ static void * __timer( void * x )
 	
 	sleep( p->str.timeout ) ;
 	
-	kill( p->pid,p->signal ) ;
+	kill( p->pid,p->str.signal ) ;
 	
 	p->state = CANCELLED ;
 	
@@ -350,7 +350,6 @@ process_t Process( const char * path )
 	memcpy( p->exe,path,len ) ;
 	
 	p->std_io = 0       ;
-	p->signal = -1      ;
 	p->wait_status = -1 ;
 	p->thread = NULL    ;
 	p->fd_0[ 0 ] = -1   ;
@@ -359,6 +358,7 @@ process_t Process( const char * path )
 	p->str.timeout = -1 ;
 	p->str.env = NULL   ;
 	p->str.user_id = -1 ;
+	p->str.signal = SIGTERM  ;
 	p->state = HAS_NOT_START ;
 	return p ;
 }
@@ -369,7 +369,7 @@ void ProcessSetOptionTimeout( process_t p,int timeout,int signal )
 		return ;
 	}
 	
-	p->signal = signal ;
+	p->str.signal  = signal ;
 	p->str.timeout = timeout ;
 }
 

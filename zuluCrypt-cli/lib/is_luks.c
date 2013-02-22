@@ -40,7 +40,7 @@ int zuluCryptVolumeIsLuks( const char * dev )
 	string_t st ;
 	int fd ;
 	int r ;
-	if( strncmp( dev,"/dev/",5 ) == 0 ){
+	if( StringPrefixMatch( dev,"/dev/",5 ) ){
 		return _is_luks( dev ) ;
 	}else{
 		/*

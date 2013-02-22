@@ -91,9 +91,9 @@
  
  add_library( zuluCryptPluginManager-static STATIC pluginManager/zuluCryptPluginManager.c )
  
- TARGET_LINK_LIBRARIES( zuluCryptPluginManager Socket Process String ${blkid} )
+ TARGET_LINK_LIBRARIES( zuluCryptPluginManager Socket Process String )
  
- TARGET_LINK_LIBRARIES( zuluCryptPluginManager-static Socket Process String ${blkid} )
+ TARGET_LINK_LIBRARIES( zuluCryptPluginManager-static Socket Process String )
  
  set_target_properties( zuluCryptPluginManager PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIC -pthread -pedantic " )
  
@@ -115,10 +115,10 @@
  set_target_properties( zuluCrypt     PROPERTIES SOVERSION ${LIB_VERSION} )
  set_target_properties( zuluCrypt-exe PROPERTIES SOVERSION ${LIB_VERSION} )
  
- TARGET_LINK_LIBRARIES( zuluCrypt     ${cryptsetup_lib} String StringList ${blkid} ${mountLibrary} Process ${TCPLAY_LIB} ${TCPLAY_LIBRARIES} ) 
+ TARGET_LINK_LIBRARIES( zuluCrypt     String StringList Process ) 
  TARGET_LINK_LIBRARIES( zuluCrypt-exe zuluCrypt zuluCryptPluginManager ) 
  
- TARGET_LINK_LIBRARIES( zuluCrypt-static     ${cryptsetup_lib} String StringList ${blkid} ${mountLibrary} Process ${TCPLAY_LIB} ${TCPLAY_LIBRARIES} ) 
+ TARGET_LINK_LIBRARIES( zuluCrypt-static String StringList Process ) 
  TARGET_LINK_LIBRARIES( zuluCrypt-exe-static zuluCrypt-static zuluCryptPluginManager-static )
  
  TARGET_LINK_LIBRARIES( zuluCrypt-exe zuluCrypt )
@@ -127,13 +127,13 @@
  
  set_target_properties( zuluMount-cli PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIE -pthread  -pedantic " )
  set_target_properties( zuluMount-cli PROPERTIES LINK_FLAGS "-pie" )
- TARGET_LINK_LIBRARIES( zuluMount-cli zuluCrypt-exe zuluCrypt ) 
+ TARGET_LINK_LIBRARIES( zuluMount-cli zuluCrypt-exe zuluCrypt ${cryptsetup_lib} ${blkid} ${mountLibrary} ${TCPLAY_LIB} ${TCPLAY_LIBRARIES} ) 
  
  add_executable( zuluCrypt-cli  bin/main.c  )
  set_target_properties( zuluCrypt-cli PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIE -pthread  -pedantic " )
  set_target_properties( zuluCrypt-cli PROPERTIES LINK_FLAGS "-pie" )
  
- TARGET_LINK_LIBRARIES( zuluCrypt-cli zuluCrypt-exe ) 
+ TARGET_LINK_LIBRARIES( zuluCrypt-cli zuluCrypt-exe zuluCrypt  ${cryptsetup_lib} ${blkid} ${mountLibrary} ${TCPLAY_LIB} ${TCPLAY_LIBRARIES} ) 
  
  set_target_properties( zuluCrypt-cli PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
  set_target_properties( zuluMount-cli PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
@@ -142,8 +142,8 @@
 	add_executable( keyring  ../plugins/keyring/keyring.c )
 	set_target_properties( keyring PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread  -pedantic -std=c99" )
 	set_target_properties( keyring PROPERTIES LINK_FLAGS "-pie" )
-	TARGET_LINK_LIBRARIES( keyring zuluCryptPluginManager ${keyring_library} )
-	install( TARGETS keyring RUNTIME DESTINATION "${PLUGINPATH}" )	
+	TARGET_LINK_LIBRARIES( keyring zuluCryptPluginManager ${keyring_library} ${blkid} )
+	install( TARGETS keyring RUNTIME DESTINATION "${PLUGINPATH}" )
  endif( KEYRINGSUPPORT )
  
  install(TARGETS zuluCrypt-cli RUNTIME DESTINATION bin            
@@ -161,23 +161,23 @@
  set_target_properties( zuluCrypt-test PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIE -pthread  -pedantic " )
  set_target_properties( zuluCrypt-test PROPERTIES LINK_FLAGS "-pie" )
 
- TARGET_LINK_LIBRARIES( zuluCrypt-test zuluCryptPluginManager StringList ${cryptsetup_lib} )
+ TARGET_LINK_LIBRARIES( zuluCrypt-test zuluCryptPluginManager ${cryptsetup_lib} ${blkid} )
  
  set_target_properties( zuluCrypt-testKey PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIE -pthread  -pedantic " )
  set_target_properties( zuluCrypt-testKey PROPERTIES LINK_FLAGS "-pie" )
  
- TARGET_LINK_LIBRARIES( zuluCrypt-testKey zuluCryptPluginManager )
+ TARGET_LINK_LIBRARIES( zuluCrypt-testKey zuluCryptPluginManager ${blkid} )
  
  file( WRITE ${PROJECT_BINARY_DIR}/libzuluCrypt.pc 
  "prefix=${CMAKE_INSTALL_PREFIX}
 exec_prefix=${CMAKE_INSTALL_PREFIX}
 libdir=${LIB_PATH}
-includedir=${CMAKE_INSTALL_PREFIX}/include
+includedir=${CMAKE_INSTALL_PREFIX}/include 
  
 Name: libzuluCrypt
 Description: a zuluCrypt library,a front end to cryptsetup
 Version: ${LIB_VERSION}
-Libs: -L${LIB_PATH} -lcryptsetup -lzuluCrypt -lzuluCrypt-exe -lzuluCryptPluginManager -lblkid -lmount
+Libs: -L${LIB_PATH} -lcryptsetup -lzuluCrypt -lzuluCrypt-exe -lzuluCryptPluginManager -lblkid -lmount ${TCPLAY_LIB} -L${TCPLAY_LIBDIR} -L${BLKID_LIBDIR} -L${CRYPTSETUP_LIBDIR} -L${LIBMOUNT_LIBDIR}
 Cflags: -I${CMAKE_INSTALL_PREFIX}/include
 \n")
  
