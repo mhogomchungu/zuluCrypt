@@ -91,15 +91,17 @@ stringList_t zuluCryptGetFstabList( void )
 	
 	blkid_cache cache = NULL ;
 	
-	if( xt == StringVoid )
+	if( xt == StringVoid ){
 		return StringListVoid ;
+	}
 	
 	fstabList = StringListStringSplit( xt,'\n' ) ;
 	
 	StringDelete( &xt ) ;
 	
-	if( fstabList == StringListVoid )
+	if( fstabList == StringListVoid ){
 		return StringListVoid ;
+	}
 	
 	while( 1 ){
 		index = StringListHasStartSequence( fstabList,"#" ) ;
@@ -118,8 +120,9 @@ stringList_t zuluCryptGetFstabList( void )
 	it  = StringListBegin( fstabList ) ;
 	end = StringListEnd( fstabList ) ;
 	
-	if( blkid_get_cache( &cache,NULL ) != 0 )
+	if( blkid_get_cache( &cache,NULL ) != 0 ){
 		cache = NULL ;
+	}
 	
 	for( ; it != end ; it++ ){
 		xt = *it ;
@@ -231,12 +234,12 @@ static inline int fs_family( const char * fs )
 		StringsAreEqual( fs,"umsdos" ) )
 		return 1 ;
 	
-	if( StringsAreEqual( fs,"affs" ) || StringsAreEqual( fs,"hfs" ) )
+	if( StringsAreEqual( fs,"affs" ) || StringsAreEqual( fs,"hfs" ) ){
 		return 2 ;
-	
-	if( StringsAreEqual( fs,"iso9660" ) || StringsAreEqual( fs,"udf" ) )
+	}
+	if( StringsAreEqual( fs,"iso9660" ) || StringsAreEqual( fs,"udf" ) ){
 		return 3 ;
-	
+	}
 	return 0 ;
 }
 
@@ -280,7 +283,6 @@ static inline string_t set_mount_options( m_struct * mst )
 				StringAppend( opt,",shortname=mixed" ) ;
 			}
 		}
-		
 	}else if( fs_family( mst->fs ) == 2 ){
 		if( !StringContains( opt,"uid=" ) ){
 			StringAppend( opt,",uid=" ) ;

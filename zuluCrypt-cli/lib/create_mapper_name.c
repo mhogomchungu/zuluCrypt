@@ -50,8 +50,9 @@ static uint64_t hash_path( const char * path )
 	size_t l = strlen( path ) ;
 	uint64_t h = 0 ;
 	
-	for ( i = 0 ; i < l ; i++ ) 
+	for ( i = 0 ; i < l ; i++ ){
 		h = h + path[ i ] ;
+	}
 	return h ;
 }
 

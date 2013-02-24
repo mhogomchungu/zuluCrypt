@@ -68,7 +68,7 @@ static int _tcrypt_open_using_key( const char * device,const char * mapper,const
 	
 	memset( &params,'\0',sizeof( struct crypt_params_tcrypt ) ) ;
 	
-	if( strstr( mode,"ro" ) != NULL ){
+	if( StringHasComponent( mode,"ro" ) ){
 		flags |= CRYPT_ACTIVATE_READONLY;
 	}
 	if( crypt_init( &cd,device ) < 0 ){
@@ -100,7 +100,7 @@ static int _tcrypt_open_using_keyfile( const char * device,const char * mapper,c
 	struct crypt_device * cd = NULL;
 	struct crypt_params_tcrypt params ;
 	
-	if( strstr( mode,"ro" ) != NULL ){
+	if( StringHasComponent( mode,"ro" ) ){
 		flags |= CRYPT_ACTIVATE_READONLY;
 	}
 	if( crypt_init( &cd,device ) < 0 ){
@@ -150,7 +150,7 @@ int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * mo
 	/*
 	 * An explanation for the below branches is explained in open_volume.c
 	 */
-	if( strlen( mapper ) > 20 ){
+	if( StringSize( mapper ) > 20 ){
 		if( StringPrefixMatch( mapper,"zuluCryptKeyFromPass",20 ) ){
 			return _tcrypt_open_using_key( device,mapper+20,mode,pass,pass_size ) ;
 		}else if( StringPrefixMatch( mapper,"zuluCryptKeyFromFile",20 ) ){

@@ -140,15 +140,17 @@ static int open_loop_device( string_t * loop_device )
 	
 	fd_loop = open( "/dev/loop-control",O_RDONLY ) ;
 	
-	if( fd_loop == -1 )
+	if( fd_loop == -1 ){
 		return open_loop_device_1( loop_device ) ;
+	}
 	
 	devnr = ioctl( fd_loop,LOOP_CTL_GET_FREE );
 	
 	close( fd_loop ) ;
 	
-	if( devnr < 0 )
+	if( devnr < 0 ){
 		return 0 ;
+	}
 	
 	*loop_device = String( "/dev/loop" ) ;
 	StringAppendInt( *loop_device,devnr ) ;
@@ -167,27 +169,30 @@ static int attach_device_to_loop( int fd_path,int * fd_loop,string_t loop_device
 	
 	memset( &l_info,'\0',sizeof( struct loop_info64 ) ) ;
 	
-	if( *fd_loop == -1 )
+	if( *fd_loop == -1 ){
 		return 0 ;
-	
-	if( ioctl( *fd_loop,LOOP_SET_FD,fd_path ) == -1 )
+	}
+	if( ioctl( *fd_loop,LOOP_SET_FD,fd_path ) == -1 ){
 		return 0 ;
-	
-	if( ioctl( *fd_loop,LOOP_GET_STATUS64,&l_info ) == -1 )
+	}
+	if( ioctl( *fd_loop,LOOP_GET_STATUS64,&l_info ) == -1 ){
 		return 0;
+	}
 	
 	l_info.lo_flags |= LO_FLAGS_AUTOCLEAR;
 	
 	path = zuluCryptGetFileNameFromFileDescriptor( fd_path ) ;
-	if( path == NULL )
+	if( path == NULL ){
 		return 0 ;
+	}
 	size = sizeof( l_info.lo_file_name ) ;
 	strncpy( ( char * )l_info.lo_file_name,path,size ) ;
 	l_info.lo_file_name[ size - 1 ] = '\0' ;
 	free( path ) ;
 	
-	if( ioctl( *fd_loop,LOOP_SET_STATUS64,&l_info ) == -1 )
+	if( ioctl( *fd_loop,LOOP_SET_STATUS64,&l_info ) == -1 ){
 		return 0 ;
+	}
 	
 	return 1 ;
 }
@@ -199,19 +204,21 @@ int zuluCryptAttachLoopDeviceToFile( const char * path,int mode,int * loop_fd,st
 	int fd_loop = -1 ;
 	int fd_path = -1 ;
 	
-	if( !open_loop_device( &loopd ) )
+	if( !open_loop_device( &loopd ) ){
 		return zuluExit( 0,loopd,fd_loop,fd_path ) ;
+	}
 	
 	fd_path = open( path,mode ) ;
 	
-	if( fd_path == -1 )
+	if( fd_path == -1 ){
 		return zuluExit( 0,loopd,fd_loop,fd_path ) ;
+	}
 	
 	fcntl( fd_path,F_SETFD,FD_CLOEXEC ) ;
 	
-	if( _paths_are_not_sane( fd_path,path ) )
+	if( _paths_are_not_sane( fd_path,path ) ){
 		return zuluExit( 0,loopd,fd_loop,fd_path ) ;
-	
+	}
 	if( attach_device_to_loop( fd_path,&fd_loop,loopd,mode ) ){
 		*loop_device = loopd ;
 		*loop_fd = fd_loop ;
@@ -225,9 +232,9 @@ int zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( int fd_path,int * fd_loo
 {
 	string_t loopd = StringVoid ;
 
-	if( !open_loop_device( &loopd ) )
+	if( !open_loop_device( &loopd ) ){
 		return 0 ;
-	
+	}
 	if( attach_device_to_loop( fd_path,fd_loop,loopd,mode ) ){
 		*loop_device = loopd ;
 		return 1 ;

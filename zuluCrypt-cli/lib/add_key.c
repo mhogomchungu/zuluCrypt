@@ -29,19 +29,20 @@ static int _add_key( const char * device,const char * existingkey,size_t existin
 {
 	struct crypt_device * cd;
 	
-	if( zuluCryptVolumeIsNotLuks( device ) )
+	if( zuluCryptVolumeIsNotLuks( device ) ){
 		return 3 ;
-	
-	if( crypt_init( &cd,device ) != 0 )
+	}
+	if( crypt_init( &cd,device ) != 0 ){
 		return 2 ;
-	
-	if( crypt_load( cd,NULL,NULL ) != 0 )
+	}
+	if( crypt_load( cd,NULL,NULL ) != 0 ){
 		return zuluExit( 2,cd ) ;
-	
-	if( crypt_keyslot_add_by_passphrase( cd,CRYPT_ANY_SLOT,existingkey,existingkey_size,newkey,newkey_size ) < 0 )
+	}
+	if( crypt_keyslot_add_by_passphrase( cd,CRYPT_ANY_SLOT,existingkey,existingkey_size,newkey,newkey_size ) < 0 ){
 		return zuluExit( 1,cd ) ;
-	else
+	}else{
 		return zuluExit( 0,cd ) ;
+	}
 }
 
 int zuluCryptAddKey( const char * device,const char * existingkey,size_t existingkey_size,const char * newkey,size_t newkey_size )
@@ -49,7 +50,7 @@ int zuluCryptAddKey( const char * device,const char * existingkey,size_t existin
 	string_t st ;
 	int fd ;
 	int r ;
-	if( strncmp( device,"/dev/",5 ) == 0 ){
+	if( StringPrefixMatch( device,"/dev/",5 ) ){
 		return _add_key( device,existingkey,existingkey_size,newkey,newkey_size ) ;
 	}else{
 		/*

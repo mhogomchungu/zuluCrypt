@@ -67,12 +67,12 @@ file( WRITE zuluMount.desktop
 Comment[en_US]=
 Comment=
 Exec=${CMAKE_INSTALL_PREFIX}/bin/zuluMount-gui
-GenericName[en_US]=partition mounter
-GenericName=partition mounter
+GenericName[en_US]=Encrypted volume and Partition mounter
+GenericName=Encrypted volumes and partition mounter
 Icon=${CMAKE_INSTALL_PREFIX}/share/icons/zuluMount.png
 MimeType=
-Name[en_US]=zuluMount
-Name=zuluMount
+Name[en_US]=ZuluMount
+Name=ZuluMount
 NoDisplay=false
 Path=
 StartupNotify=true

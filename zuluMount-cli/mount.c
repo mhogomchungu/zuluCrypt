@@ -222,8 +222,9 @@ ERROR: insuffienct privilege to manage a system partition.\nnecessary privileges
 	
 	rm_point = StringContent( z ) ;
 	
-	if( !zuluCryptSecurityGainElevatedPrivileges() )
+	if( !zuluCryptSecurityGainElevatedPrivileges() ){
 		return _zuluExit( 107,z,path,"ERROR: could not get elevated privilege,check binary permissions" ) ;
+	}
 	/*
 	 * zuluCryptMountVolume() defined in ../zuluCrypt-cli/lib/mount_volume.c
 	 */

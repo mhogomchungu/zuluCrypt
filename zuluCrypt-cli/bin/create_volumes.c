@@ -53,8 +53,9 @@ only root user or members of group zulucrypt-system can do that" ) ;						break 
 		case 20: printf( "ERROR: insufficient memory to hold passphrase\n" );				break  ;
 		case 21: printf( "ERROR: insufficient memory to hold your response\n" );			break  ;
 		case 22: printf( "ERROR: could not get a key from a socket\n" ) ;				break  ;
-		case 23: printf( "ERROR: could not get elevated privilege,check binary permissions\n" ) ;	break  ;  
-		case 24: printf( "ERROR: presented file system is not supported,see documentation for more information\n" ) ;	break  ;  			
+		case 23: /*currently unused*/								 ;	break  ;  
+		case 24: printf( "ERROR: presented file system is not supported,see documentation for more information\n" ) ; break ;
+		case 25: printf( "ERROR: creating of truecrypt volumes using keyfiles is currently not supported\n" )       ; break ;
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
 	return st ;
@@ -102,6 +103,10 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	
 	int j ;
 	int k ;
+	
+	if( StringPrefixMatch( type,"tcrypt",6 ) || StringPrefixMatch( type,"truecrypt",9 ) ){
+		return zuluExit( 25,stl ) ;
+	}
 	
 	/*
 	 * zulucryptFileSystemIsNotSupported() is defined in ../lib/mount_fs_options.c
@@ -227,9 +232,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		 *  if functions are used to read files.One is used here to do that.
 		 */
 		if( StringsAreEqual( keyType,"-p" ) ){
-			if( !zuluCryptSecurityGainElevatedPrivileges() ){
-				return zuluExit( 23,stl ) ;
-			}
+			zuluCryptSecurityGainElevatedPrivileges() ;
 			st = zuluCryptCreateVolume( device,fs,type,pass,strlen( pass ),rng ) ;
 			zuluCryptSecurityDropElevatedPrivileges() ;
 		}else if( StringsAreEqual( keyType, "-f" ) ) {
@@ -242,8 +245,8 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 				case 2 : return zuluExit( 6,stl )  ;
 				case 5 : return zuluExit( 22,stl ) ;
 			}
-			if( !zuluCryptSecurityGainElevatedPrivileges() )
-				return zuluExit( 23,stl ) ;
+			
+			zuluCryptSecurityGainElevatedPrivileges() ;
 			st = zuluCryptCreateVolume( device,fs,type,StringContent( *content ),StringLength( *content ),rng ) ;
 			zuluCryptSecurityDropElevatedPrivileges() ;
 		}else{

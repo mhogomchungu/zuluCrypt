@@ -72,6 +72,7 @@ static int create_group( const char * groupname )
 
 int zuluCryptUserIsAMemberOfAGroup( uid_t uid,const char * groupname )
 {
+	int st = 0 ;
 	int i = 0 ;
 	struct group * grp ;
 	struct passwd * pass ;
@@ -106,9 +107,9 @@ int zuluCryptUserIsAMemberOfAGroup( uid_t uid,const char * groupname )
 	entry = ( const char ** )grp->gr_mem ;
 	
 	while( entry[ i ] != NULL ){
-		if( strcmp( entry[ i ],name ) == 0 ){
-			zuluCryptSecurityDropElevatedPrivileges();
-			return 1 ;
+		if( StringsAreEqual( entry[ i ],name ) ){
+			st = 1 ;
+			break ;
 		}else{
 			i++ ;
 		}
@@ -116,7 +117,7 @@ int zuluCryptUserIsAMemberOfAGroup( uid_t uid,const char * groupname )
 	
 	zuluCryptSecurityDropElevatedPrivileges();
 	
-	return 0 ;
+	return st ;
 }
 
 static int has_device_access( const char * path,int c )
@@ -268,6 +269,7 @@ static string_t _create_default_mount_point( const char * device,uid_t uid,strin
 	}
 	
 	m_point = StringAppend( path,strrchr( device,'/' ) ) ;
+	
 	if( zuluCryptSecurityGainElevatedPrivileges() ){
 		if( mkdir( m_point,S_IRWXU ) == 0 ){
 			st = path ;
@@ -318,19 +320,20 @@ int zuluCryptSecurityMountPointPrefixMatch( const char * m_path,uid_t uid,string
 	 */
 	const char * str = StringPrepend( uname,ZULUCRYPTmountPath"/" ) ;
 	xt = StringLength( uname ) ;
-	st = strncmp( str,m_path,xt ) ;
+	st = StringPrefixMatch( str,m_path,xt ) ;
 	if( m_point ){
 		*m_point = uname ;
 	}else{
 		StringDelete( &uname ) ;
 	}
-	return st == 0 ;
+	return st ;
 }
 
 string_t zuluCryptSecurityCreateMountPoint( const char * device,const char * label,uid_t uid )
 {
 	const char * m_point ;
 	string_t path ;
+	struct stat st ;
 	
 	zuluCryptSecurityGainElevatedPrivileges() ;
 
@@ -338,18 +341,26 @@ string_t zuluCryptSecurityCreateMountPoint( const char * device,const char * lab
 	
 	/*
 	 * below constants are set in ../constants.h
+	 * ZULUCRYPtmountMiniPath contains "/run"
+	 * ZULUCRYPTmountPath contains "/run/media"
 	 */
-	mkdir( ZULUCRYPtmountMiniPath,S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ) ;
-	chown( ZULUCRYPtmountMiniPath,0,0 ) ;
-	chmod( ZULUCRYPtmountMiniPath,S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ) ;
-	mkdir( ZULUCRYPTmountPath,S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ) ;
-	chown( ZULUCRYPTmountPath,0,0 ) ;
-	chmod( ZULUCRYPTmountPath,S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ) ;
+	if( stat( ZULUCRYPtmountMiniPath,&st ) != 0 ){
+		mkdir( ZULUCRYPtmountMiniPath,S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ) ;
+		chown( ZULUCRYPtmountMiniPath,0,0 ) ;
+		chmod( ZULUCRYPtmountMiniPath,S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ) ;
+	}
+	if( stat( ZULUCRYPTmountPath,&st ) != 0 ){
+		mkdir( ZULUCRYPTmountPath,S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ) ;
+		chown( ZULUCRYPTmountPath,0,0 ) ;
+		chmod( ZULUCRYPTmountPath,S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ) ;
+	}
 	
 	m_point = StringPrepend( path,ZULUCRYPTmountPath"/" ) ;
 	
-	mkdir( m_point,S_IRUSR | S_IXUSR ) ;
-	chown( m_point,uid,uid ) ;
+	if( stat( m_point,&st ) != 0 ){
+		mkdir( m_point,S_IRUSR | S_IXUSR ) ;
+		chown( m_point,uid,uid ) ;
+	}
 	
 	zuluCryptSecurityDropElevatedPrivileges() ;
 	
@@ -391,7 +402,7 @@ int zuluCryptSecurityGetPassFromFile( const char * path,uid_t uid,string_t * st 
 	z = StringAppend( p,".zuluCrypt-socket" ) ;
 	s = StringLength( p ) ;
 	
-	if( strncmp( path,z,s ) == 0 ){
+	if( StringPrefixMatch( path,z,s ) ){
 		StringDelete( &p ) ;
 		zuluCryptSecurityDropElevatedPrivileges();
 		/*

@@ -203,8 +203,9 @@ static inline int allowed_btrfs( stringList_t stl )
 static inline int _option_contain_not_allowed( const char * fs,const char * fs_opts )
 {
 	stringList_t stl ;
-	if( fs == NULL || fs_opts == NULL )
+	if( fs == NULL || fs_opts == NULL ){
 		return 0 ;
+	}
 	
 	stl = StringListSplit( fs_opts,',' ) ;
 	
@@ -247,8 +248,9 @@ int zuluCryptMountHasNotAllowedFileSystemOptions( uid_t uid,const char * fs_opts
 {
 	const char * fs = StringContent( s ) ;
 	
-	if( fs == NULL )
+	if( fs == NULL ){
 		return 0 ;
+	}
 	if( !zulucryptFileSystemIsSupported( fs ) ){
 		if( _userIsAllowed( uid,fs ) ){
 			return 0 ;

@@ -144,12 +144,12 @@ file(WRITE zuluCrypt.desktop
 Comment[en_US]=
 Comment=
 Exec=${CMAKE_INSTALL_PREFIX}/bin/zuluCrypt-gui
-GenericName[en_US]=manage encypted volumes
-GenericName=manage encypted volumes
+GenericName[en_US]=Encrypted volumes manager
+GenericName=Encrypted volumes manager
 Icon=${CMAKE_INSTALL_PREFIX}/share/icons/zuluCrypt.png
 MimeType=
-Name[en_US]=zuluCrypt
-Name=zuluCrypt
+Name[en_US]=ZuluCrypt
+Name=ZuluCrypt
 NoDisplay=false
 Path=
 StartupNotify=true

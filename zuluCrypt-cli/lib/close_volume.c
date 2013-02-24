@@ -23,8 +23,9 @@ int zuluCryptCloseVolume( const char * map,char ** mount_point )
 {
 	int i = zuluCryptUnmountVolume( map,mount_point ) ;
 	
-	if( i == 0 || i == 3 )
+	if( i == 0 || i == 3 ){
 		return zuluCryptCloseMapper( map ) == 0 ? 0 : 5 ;
-	else
+	}else{
 		return i ;
+	}
 }

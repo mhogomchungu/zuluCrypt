@@ -83,6 +83,7 @@ static inline int _allowedDevice( const char * device )
 	int st ;
 	blkid_probe blkid ;
 	string_t str ;
+	int sts ;
 	
 	if( StringPrefixMatch( device,"sr",2 ) ){
 		/*
@@ -90,7 +91,10 @@ static inline int _allowedDevice( const char * device )
 		 */
 		return 1 ;
 	}
-	if( strlen( device  ) == 3 ){
+	
+	sts = StringSize( device ) ;
+	
+	if( sts == 3 ){
 		/*
 		 * we will get here with a device with an address of "/dev/sdc".
 		 * This device is either not partitioned or is a root address of a partitioned device
@@ -111,11 +115,10 @@ static inline int _allowedDevice( const char * device )
 			blkid_free_probe( blkid );
 			return st ;
 		}
-	}
-	if( strlen( device  ) > 3 ){
-		if( strncmp( device,"hd",2 ) == 0 || 
-			strncmp( device,"sd",2 ) == 0 ||
-			strncmp( device,"mmc",3 ) == 0 ){
+	}else if( sts > 3 ){
+		if(	StringPrefixMatch( device,"hd",2 ) || 
+			StringPrefixMatch( device,"sd",2 ) ||
+			StringPrefixMatch( device,"mmc",3 ) ){
 			return 1 ;
 		}
 	}
@@ -172,8 +175,9 @@ stringList_t zuluCryptPartitionList( void )
 	string_t st = StringGetFromVirtualFile( "/proc/partitions" ) ;
 	string_t st_1 ;
 	
-	if( st == StringVoid )
+	if( st == StringVoid ){
 		return StringListVoid ;
+	}
 	
 	stl = StringListStringSplit( st,'\n' ) ;
 	
@@ -546,7 +550,7 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 			 */
 			index_1 = StringIndexOfChar( st,index,' ' ) ; /*index is set before the conditional statement above */
 				
-			if ( index_1 == -1 ){
+			if( index_1 == -1 ){
 				continue ;
 			}
 			StringSubChar( st,index_1,'\0' ) ; 

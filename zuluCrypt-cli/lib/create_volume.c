@@ -143,7 +143,7 @@ int zuluCryptCreateVolume( const char * dev,const char * fs,const char * type,co
 	string_t st ;
 	int fd ;
 	int r ;
-	if( strncmp( dev,"/dev/",5 ) == 0 ){
+	if( StringPrefixMatch( dev,"/dev/",5 ) ){
 		return _create_volume( dev,fs,type,pass,pass_size,rng ) ;
 	}else{
 		/*
