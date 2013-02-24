@@ -384,16 +384,6 @@ int zuluCryptSecurityGetPassFromFile( const char * path,uid_t uid,string_t * st 
 	size_t s ;
 	string_t p ; 
 	const char * z ;
-
-	/*
-	 * zuluCryptPathStartsWith() is defined in ./real_path.c
-	 */
-	if( zuluCryptPathStartsWith( path,"/dev/" ) ){
-		/*
-		 * whats wrong with you? :-) cant get a key from "/dev/"
-		 */
-		return 4 ;
-	}
 	
 	/*
 	 * zuluCryptGetUserHomePath() is defined in ../lib/user_home_path.c
@@ -415,11 +405,6 @@ int zuluCryptSecurityGetPassFromFile( const char * path,uid_t uid,string_t * st 
 	}
 	
 	StringDelete( &p ) ;
-	
-	switch ( zuluCryptSecurityCanOpenPathForReading( path,uid ) ){
-		case 1 : return 4 ;
-		case 2 : return 1 ;
-	}
 	
 	zuluCryptSecurityDropElevatedPrivileges();
 

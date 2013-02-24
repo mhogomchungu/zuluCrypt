@@ -44,37 +44,35 @@ char * zuluCryptRealPath( const char * path )
 
 int zuluCryptPathStartsWith( const char * path,const char * start )
 {
-	int st ;
+	int st = 0 ;
 	char * p = canonicalize_path( path ) ;
-	if( p == NULL )
-		return 0 ;
-	st = strcmp( p,start ) ;
-	free( p ) ;
-	return st == 0 ;
+	if( p != NULL ){
+		st = StringPrefixEqual( p,start ) ;
+		free( p ) ;
+	}
+	return st ;
 }
 
 int zuluCryptPathDoesNotStartsWith( const char * path,const char * start )
 {
-	int st ;
+	int st = 0;
 	char * p = canonicalize_path( path ) ;
-	if( p == NULL )
-		return 0 ;
-	st = strncmp( p,start,strlen( start ) ) ;
-	free( p ) ;
-	return st != 0 ;
+	if( p != NULL ){
+		st = StringPrefixEqual( p,start ) ;
+		free( p ) ;
+	}
+	return st == 0 ;
 }
 
 int zuluCryptPathDidNotChange( const char * path )
 {
-	char * p = realpath( path,NULL ) ;
+	char * p = canonicalize_path( path ) ;
 	int st = 0 ;
-	if( p == NULL ){
-		return 0 ;
-	}else{
-		st = strcmp( path,p ) ;
+	if( p != NULL ){
+		st = StringsAreEqual( path,p ) ;
 		free( p ) ;
 	}
-	return st == 0 ;
+	return st ;
 }
 
 int zuluCryptPathDeviceIsBlockDevice( const char * device )
