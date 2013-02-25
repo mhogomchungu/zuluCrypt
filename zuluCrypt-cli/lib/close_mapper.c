@@ -23,21 +23,22 @@
 int zuluCryptCloseMapper( const char * mapper )
 {
 	int j ;
+	int st = 1;
 	struct crypt_device * cd;
-	if( crypt_init_by_name( &cd,mapper ) < 0 ){
-		return 1 ;
-	}
-	for( j = 0 ; j < 3 ; j++ ) { 
-		/*
-		 * try multiple types to close the mapper just in case its hang up on something
-		 */
-		if( crypt_deactivate( cd,mapper ) == 0 ){
-			crypt_free( cd ) ;
-			return 0 ;
-		}else{
-			sleep( 1 ) ;
+	if( crypt_init_by_name( &cd,mapper ) == 0 ){
+		for( j = 0 ; j < 3 ; j++ ) { 
+			/*
+			* try multiple types to close the mapper just in case
+			*/
+			if( crypt_deactivate( cd,mapper ) == 0 ){
+				st = 0 ;
+				break ;
+			}else{
+				sleep( 1 ) ;
+			}
 		}
+		crypt_free( cd ) ;
 	}
 	
-	return 1 ;
+	return st ;
 }
