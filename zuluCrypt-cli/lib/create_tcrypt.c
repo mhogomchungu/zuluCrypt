@@ -19,7 +19,6 @@
   */
  
 #include "includes.h"
-#include <dlfcn.h>
 
 /*
  * this header is created at config time

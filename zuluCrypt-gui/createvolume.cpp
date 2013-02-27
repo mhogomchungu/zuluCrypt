@@ -117,23 +117,15 @@ void createvolume::findInstalledFs()
 
 void createvolume::volumeType( int s )
 {
-	/*
-	 * currently,we dont support creating truecrypt volumes using a keyfile
-	 */
 	switch( s ){
-		case 0 : m_volumeType = QString( "luks" ) ;
+		case 0 : m_volumeType = QString( "luks" )   ;
 			 m_ui->comboBoxRNG->setEnabled( true );
-			 m_ui->rbPassphraseFromFile->setEnabled( true );
 			 break ;
-		case 1 :
-			 m_volumeType = QString( "plain" ) ;
+		case 1 : m_volumeType = QString( "plain" )  ;
 			 m_ui->comboBoxRNG->setEnabled( false );
-			 m_ui->rbPassphraseFromFile->setEnabled( true );
 			 break ;
-		case 2:
-			 m_volumeType = QString( "tcrypt" ) ;
-			 m_ui->comboBoxRNG->setEnabled( false );
-			 m_ui->rbPassphraseFromFile->setEnabled( false );
+		case 2 : m_volumeType = QString( "tcrypt" ) ;
+			 m_ui->comboBoxRNG->setEnabled( true );
 			 break ;
 	}
 }

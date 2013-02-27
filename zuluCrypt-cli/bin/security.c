@@ -392,9 +392,10 @@ int zuluCryptSecurityGetPassFromFile( const char * path,uid_t uid,string_t * st 
 	z = StringAppend( p,".zuluCrypt-socket" ) ;
 	s = StringLength( p ) ;
 	
+	zuluCryptSecurityDropElevatedPrivileges();
+	
 	if( StringPrefixMatch( path,z,s ) ){
 		StringDelete( &p ) ;
-		zuluCryptSecurityDropElevatedPrivileges();
 		/*
 		 * path that starts with $HOME/.zuluCrypt-socket is treated not as a path to key file but as path
 		 * to a local socket to get a passphrase 
@@ -406,7 +407,6 @@ int zuluCryptSecurityGetPassFromFile( const char * path,uid_t uid,string_t * st 
 	
 	StringDelete( &p ) ;
 	
-	zuluCryptSecurityDropElevatedPrivileges();
 
 	/*
 	 * ZULUCRYPT_KEYFILE_MAX_SIZE is set in ../constants.h
@@ -531,13 +531,6 @@ int zuluCryptSecurityUserOwnTheFile( const char * device,uid_t uid )
 {
 	if( device ){ ; }
 	if( uid ){ ; }
-	
-	/*
-	 * global_variable_file_struct variable is defined in ../lib/includes.h
-	 * It is set in the main function.
-	 * 
-	 * It is set it defined and set in zuluCryptGetDeviceFileProperties() defined in ../lib/create_loop_device.c
-	 */
 	return 0 ;
 }
 
