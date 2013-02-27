@@ -34,19 +34,22 @@ int zuluCryptCreateTCrypt( const char * dev,const char * pass,size_t pass_size,c
 	int r ;
 	
 	if( pass_size ){;}
-	if( rng ){;}
 		
 	memset( &api_opts,'\0',sizeof( api_opts ) ) ;
 	
-	api_opts.tc_device = ( char * ) dev;
-	api_opts.tc_passphrase = ( char * )pass ;
-	api_opts.tc_cipher   = "AES-256-XTS";
-	api_opts.tc_prf_hash = "RIPEMD160"  ;
+	api_opts.tc_device          = dev;
+	api_opts.tc_passphrase      = pass ;
+	api_opts.tc_cipher          = "AES-256-XTS";
+	api_opts.tc_prf_hash        = "RIPEMD160"  ;
+	api_opts.tc_no_secure_erase = 1 ;
 	
+	if( StringPrefixMatch( rng,"/dev/urandom",12 ) ){
+		api_opts.tc_use_weak_keys = 1 ;
+	}
 	if( tc_api_init( 0 ) == TC_OK ){
 		r = tc_api_create_volume( &api_opts );
 		tc_api_uninit() ;
-		return r ;
+		return r == TC_OK ? 0 : 1 ;
 	}else{
 		return 1 ;
 	}

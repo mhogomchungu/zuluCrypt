@@ -213,16 +213,10 @@ stringList_t zuluCryptPartitionList( void )
 static int _zuluCryptCheckSYSifDeviceIsSystem( const char * device )
 {
 	/*
-	 * NO_UDEV_SUPPORT is set at configure time by "-DUDEVSUPPORT=false" option,the option being absent equals "-DUDEVSUPPORT=false"
+	 * UDEV_SUPPORT is set at configure time by "-DUDEVSUPPORT=true" option,the option being absent equals "-DUDEVSUPPORT=false"
 	 * To set the option, configure with "-DUDEVSUPPORT=true"
 	 */
-#if NO_UDEV_SUPPORT
-	if( device ){;}
-	/*
-	 * udev support is disabled 
-	 */
-	return 0 ;
-#else
+#if UDEV_SUPPORT
 	/*
 	 * udev support is enabled
 	 */
@@ -258,6 +252,12 @@ static int _zuluCryptCheckSYSifDeviceIsSystem( const char * device )
 	r = StringEqual( xt,"0\n" ) ;
 	StringDelete( &xt ) ;
 	return r ;
+#else
+	if( device ){;}
+	/*
+	 * udev support is disabled 
+	 */
+	return 0 ;
 #endif
 }
 

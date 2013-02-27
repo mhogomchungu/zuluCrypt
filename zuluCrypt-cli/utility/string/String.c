@@ -280,7 +280,7 @@ void StringPrintLine( string_t st )
 
 int StringContains( string_t st,const char * str )
 {
-	if( st == StringVoid ){
+	if( st == StringVoid || str == NULL ){
 		return 0 ;
 	}else{
 		return strstr( st->string,str ) != NULL ;
@@ -313,7 +313,11 @@ string_t StringInheritWithSize( char ** data,size_t s )
 
 string_t StringWithSize( const char * s,size_t len )
 {
-	char * c = ( char * ) malloc( sizeof( char ) * ( len + 1 ) ) ;
+	char * c ;
+	if( s == NULL ){
+		return StringVoid ;
+	}
+	c = ( char * ) malloc( sizeof( char ) * ( len + 1 ) ) ;
 	if( c == NULL ){
 		return _StringError() ;
 	}
@@ -326,7 +330,7 @@ ssize_t StringIndexOfString( string_t st,size_t p,const char * s )
 {
 	char * c ;
 	
-	if( st == StringVoid ){
+	if( st == StringVoid || s == NULL ){
 		return -1 ;
 	}
 	if( p >= st->size ){
@@ -364,7 +368,13 @@ ssize_t StringLastIndexOfString( string_t st,const char * s )
 	char * d = st->string ;
 	char * e = st->string ;
 
-	size_t len = strlen( s ) ;
+	size_t len ;
+	
+	if( s == NULL ){
+		return -1 ;
+	}
+	
+	len = strlen( s ) ;
 	
 	if( len == 0 ){
 		return -1 ;
@@ -684,7 +694,7 @@ const char * StringAppendAt( string_t st,size_t x,const char * s )
 	size_t len ;
 	char * c   ; 
 	
-	if( st == StringVoid || x > st->size ){
+	if( st == StringVoid || x > st->size || s == NULL ){
 		return NULL ;
 	}
 	
@@ -703,7 +713,13 @@ const char * StringAppendAt( string_t st,size_t x,const char * s )
 const char * StringPrepend( string_t st,const char * s )
 {
 	char * c ;
-	size_t len = strlen( s ) ;
+	size_t len ;
+	
+	if( st == StringVoid || s == NULL ){
+		return NULL ;
+	}
+	
+	len = strlen( s ) ;
 	
 	c = __StringExpandMemory( st,st->size + len ) ;
 	
@@ -842,8 +858,14 @@ const char * StringAppendChar( string_t st,char c )
 
 const char * StringInsertString( string_t st,size_t x,const char * s )
 {
-	char * c ;	
-	size_t len = strlen( s ) ;
+	char * c ;
+	size_t len ;
+	
+	if( s == NULL ){
+		return NULL ;
+	}
+	
+	len = strlen( s ) ;
 	
 	c = __StringExpandMemory( st,len ) ;
 	
@@ -881,9 +903,9 @@ static char * StringRS__( string_t st,const char * x,const char * s,size_t p )
 	size_t k = strlen( x ) ;
 	size_t len ;
 	
-	if( st == StringVoid || x == NULL || s == NULL || p >= st->size )
+	if( st == StringVoid || x == NULL || s == NULL || p >= st->size ){
 		return NULL ;
-	
+	}
 	if( j == k ){
 		while( ( c = strstr( e,x ) ) != NULL ){
 			memcpy( c,s,j ) ;
@@ -1003,7 +1025,11 @@ const char * StringSubStringWithInt( string_t st,const char * str,uint64_t z )
 
 char * StringIntToString_1( char * x,size_t y,uint64_t z )
 {
-	char * c =  x + y - 1  ;
+	char * c ;
+	if( x == NULL ){
+		return NULL ;
+	}
+	c =  x + y - 1  ;
 	*c-- = '\0' ;
 	do{
 		*c-- = z % 10 + '0' ;
@@ -1085,9 +1111,6 @@ string_t StringGetFromTerminal( void )
 	const char * d ;
 	string_t p = String( "" ) ;
 	
-	if( p == NULL ){
-		return StringVoid ;
-	}
 	while( 1 ){
 		c = getchar() ;
 		if( c == '\n' || c == EOF ){
@@ -1110,9 +1133,6 @@ string_t StringGetFromTerminal_1( size_t s )
 	const char * d ;
 	string_t p = String( "" ) ;
 	
-	if( p == NULL ){
-		return StringVoid ;
-	}
 	while( 1 ){
 		if( s == 0 ){
 			/*
@@ -1267,7 +1287,9 @@ int StringGetFromFile_3( string_t * str,const char * path,size_t offset,size_t l
 	struct stat xt ;
 	
 	*str = StringVoid ;
-	
+	if( path == NULL ){
+		return 1 ;
+	}
 	if( stat( path,&xt ) != 0 ){
 		return 1 ;
 	}
@@ -1294,8 +1316,9 @@ int StringGetFromFile_3( string_t * str,const char * path,size_t offset,size_t l
 		close( fd ) ;
 		return 2 ;
 	}else{
-		if( ( size_t ) size != length )
+		if( ( size_t ) size != length ){
 			c = realloc( c,size + 1 ) ;
+		}
 	}
 	
 	close( fd ) ;

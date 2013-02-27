@@ -105,7 +105,11 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	int k ;
 	
 	if( StringPrefixMatch( type,"tcrypt",6 ) || StringPrefixMatch( type,"truecrypt",9 ) ){
-		return zuluExit( 25,stl ) ;
+		if( StringsAreEqual( keyType,"-f" ) ){
+			if( !StringHasComponent( pass,"/.zuluCrypt-socket" ) ){
+				return zuluExit( 25,stl ) ;
+			}
+		}
 	}
 	
 	/*

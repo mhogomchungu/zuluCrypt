@@ -146,6 +146,9 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 				free( dev ) ;
 			}
 		}else if( StringPrefixMatch( device,"/dev/disk/by-",13 ) ){
+			/*
+			 * zuluCryptRealPath() is defined in ./real_path.c
+			 */
 			dev = zuluCryptRealPath( device ) ;
 			if( dev == NULL ){
 				StringMultipleAppend( st,device," ",mount_point," ",file_system," ",mount_options,END ) ;
@@ -221,9 +224,10 @@ stringList_t zuluCryptGetMtabList( void )
 	stringList_t stl = zuluCryptGetMoutedListFromMountInfo() ;
 	
 	if( stl == StringListVoid ){
-		stl = zuluCryptGetMoutedListFromMounts() ;		
+		return zuluCryptGetMoutedListFromMounts() ;
+	}else{
+		return stl ; 
 	}
-	return stl ; 
 }
 
 static void print( uid_t uid,stringList_t stl )

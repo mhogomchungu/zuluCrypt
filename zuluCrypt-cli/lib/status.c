@@ -442,7 +442,7 @@ char * zuluCryptVolumeDeviceName( const char * mapper )
 	e = crypt_get_device_name( cd ) ;
 	
 	if( e != NULL ){
-		if( strncmp( e,"/dev/loop",9 ) == 0 ){
+		if( StringPrefixMatch( e,"/dev/loop",9 ) ){
 			/*
 			 * zuluCryptLoopDeviceAddress() is defined in create_loop.c
 			 */
@@ -452,7 +452,7 @@ char * zuluCryptVolumeDeviceName( const char * mapper )
 			}else{
 				address = String( e ) ;
 			}
-		}else if( strncmp( e,"/dev/mapper/",12 ) == 0 ){
+		}else if( StringPrefixMatch( e,"/dev/mapper/",12 ) ){
 			/*
 			 * An assumption is made here that the volume is an LVM volume in "/dev/mapper/ABC-DEF"
 			 * format and the path is converted to "/dev/ABC/DEF" format

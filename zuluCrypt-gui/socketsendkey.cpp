@@ -26,6 +26,8 @@ socketSendKey::socketSendKey( QObject * parent,QString sockpath,QByteArray key )
 	m_key = key ;
 	m_connected = false ;
 	connect( this,SIGNAL( finished() ),this,SLOT( deleteLater() ) ) ;
+	QDir d ;
+	d.mkdir( QDir::homePath() + QString( "/.zuluCrypt-socket/" ) ) ;
 }
 
 socketSendKey::socketSendKey( QObject * parent )
@@ -76,12 +78,8 @@ void socketSendKey::sendKey( void )
 
 QString socketSendKey::getSocketPath()
 {
-	QTime T = QTime::currentTime() ;
-	QString h  = QString::number( T.hour() )   ;
-	QString m  = QString::number( T.minute() ) ;
-	QString s  = QString::number( T.second() ) ;
-	QString ms = QString::number( T.msec() )   ;
-	return QString( QDir::homePath() + QString( "/.zuluCrypt-socket/" ) + h + m + s + ms  ) ;
+	u_int64_t x = static_cast<u_int64_t>( QDateTime::currentDateTime().toMSecsSinceEpoch() );
+	return QString( QDir::homePath() + QString( "/.zuluCrypt-socket/" ) + QString::number( x ) ) ;
 }
 
 void socketSendKey::run()
