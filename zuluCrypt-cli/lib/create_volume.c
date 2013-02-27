@@ -30,44 +30,32 @@ static inline int zuluExit( int st,string_t m )
 static int _create_volume( const char * dev,const char * fs,const char * type,const char * pass,size_t pass_size,const char * rng )
 {
 	int status ;
+	size_t len ;
 	process_t p ;
 	
 	string_t m = StringVoid ;
 	
 	const char * device_mapper ;
 	const char * mapper ;
-	char * device ;
 	char * e = NULL ;
 	
 	if ( zuluCryptPathIsNotValid( dev ) ){
 		return 1 ;
 	}
+		
+	m = String( crypt_get_dir() ) ;
+	len = StringLength( m )   ;
+	
+	StringAppend( m,"/zuluCrypt-" ) ;
+	device_mapper = StringAppendInt( m,syscall( SYS_gettid ) ) ;
+	mapper = device_mapper + len + 1 ;
+		
 	if( StringsAreEqual( type,"luks" ) ){
 		if( StringsAreNotEqual( rng,"/dev/random" ) ){
 			if( StringsAreNotEqual( rng,"/dev/urandom" ) ){
-				return 2 ;
+				return zuluExit( 2,m ) ; 
 			}
 		}
-	}
-	
-	device = zuluCryptRealPath( dev ) ;
-		
-	if( device == NULL ){
-		return 3 ;
-	}
-	
-	/*
-	 * ZULUCRYPTlongMapperPath is set in ../constants.h
-	 * zuluCryptCreateMapperName() is defined in create_mapper_name.c
-	 */
-	m = zuluCryptCreateMapperName( device,strrchr( device,'/' ) + 1,0,ZULUCRYPTlongMapperPath ) ;
-	
-	free( device ) ;
-	
-	device_mapper = StringAppendInt( m,syscall( SYS_gettid ) ) ;
-	mapper = strrchr( device_mapper,'/' ) + 1 ;
-	
-	if( StringsAreEqual( type,"luks" ) ){
 		if( zuluCryptCreateLuks( dev,pass,pass_size,rng ) != 0 ){
 			return zuluExit( 3,m ) ;
 		}
@@ -79,6 +67,11 @@ static int _create_volume( const char * dev,const char * fs,const char * type,co
 			return zuluExit( 3,m ) ; 
 		}
 	}else if( StringsAreEqual( type,"tcrypt" ) || StringsAreEqual( type,"truecrypt" ) ){
+		if( StringsAreNotEqual( rng,"/dev/random" ) ){
+			if( StringsAreNotEqual( rng,"/dev/urandom" ) ){
+				return zuluExit( 2,m ) ; 
+			}
+		}
 		if( zuluCryptCreateTCrypt( dev,pass,pass_size,rng ) != 0 ){
 			return zuluExit( 3,m ) ;
 		}
