@@ -20,7 +20,12 @@
 #include "includes.h"
 #include <sys/syscall.h>
 
-#ifdef CRYPT_TCRYPT
+/*
+ * this header is created at config time
+ */
+#include "truecrypt_support.h"
+
+#if TRUECRYPT_CRYPTSETUP
 
 static inline int zuluExit( int st,struct crypt_device * cd )
 {
@@ -159,6 +164,125 @@ int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * mo
 	}
 	return _tcrypt_open_using_key( device,mapper,mode,pass,pass_size ) ;
 }
+#else 
+
+#if TRUECRYPT_TCPLAY
+
+static int _tcrypt_open_using_key( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
+{
+	tc_api_opts api_opts ;
+	int r ;
+	
+	if( pass_size ){;}
+	if( mode ){;}
+	
+	memset( &api_opts,'\0',sizeof( api_opts ) ) ;
+	
+	api_opts.tc_device      = device ;
+	api_opts.tc_passphrase  = pass   ;
+	api_opts.tc_map_name    = mapper ;
+	
+	if( tc_api_init( 0 ) == TC_OK ){
+		r = tc_api_map_volume( &api_opts );
+		tc_api_uninit() ;
+		return r == TC_OK ? 0 : 1 ;
+	}else{
+		return 1 ;
+	}
+}
+
+
+static int _tcrypt_open_using_keyfile( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
+{
+	string_t st ;
+	int fd ;
+	const char * file ;
+	const char * keyfiles[ 2 ] ;
+	
+	tc_api_opts api_opts ;
+	int r = TC_ERR;
+	
+	if( pass_size ){;}
+	if( mode ){;}
+	
+	/*
+	 * ZULUCRYPTtempFolder is set in ../constants.h
+	 */
+	mkdir( ZULUCRYPTtempFolder,S_IRWXU ) ;
+	chown( ZULUCRYPTtempFolder,0,0 ) ;
+	
+	st = String( ZULUCRYPTtempFolder"/open_tcrypt-" ) ;
+	file = StringAppendInt( st,syscall( SYS_gettid ) ) ;
+	fd = open( file,O_WRONLY | O_CREAT ) ;
+	
+	if( fd == -1 ){
+		return 1 ;
+	}
+	
+	write( fd,pass,pass_size ) ;
+	close( fd ) ;
+	
+	memset( &api_opts,'\0',sizeof( api_opts ) ) ;
+	api_opts.tc_device      = device ;
+	api_opts.tc_map_name    = mapper ;
+	api_opts.tc_keyfiles    = keyfiles ;
+	keyfiles[ 0 ] = file ;
+	keyfiles[ 1 ] = NULL ;
+	
+	if( tc_api_init( 0 ) == TC_OK ){
+		r = tc_api_map_volume( &api_opts );
+		tc_api_uninit() ;
+	}
+	
+	unlink( file ) ;
+	StringDelete( &st ) ;
+	
+	return r == TC_OK ? 0 : 1 ;
+}
+
+/*
+ * 1 is returned if a volume is a truecrypt volume.
+ * 0 is returned if a volume is not a truecrypt volume or functionality is not supported
+ */
+int zuluCryptVolumeIsTcrypt( const char * device,const char * key,size_t key_len )
+{
+	tc_api_opts api_opts ;
+	tc_api_volinfo volinfo ;
+	int r = TC_ERR;
+	
+	if( key_len ) {;}
+	
+	memset( &api_opts,'\0',sizeof( api_opts ) ) ;
+	
+	api_opts.tc_device      = device ;
+	api_opts.tc_passphrase  = key   ;
+	
+	if( tc_api_init( 0 ) == TC_OK ){
+		r = tc_api_info_volume( &api_opts,&volinfo ) ;
+		tc_api_uninit() ;
+	}
+	return r == TC_OK ;
+}
+
+/*
+ * 0 is returned if a volume was successfully opened.
+ * 1 is returned if a volume was not successfully opened or functionality is not supported 
+ */
+int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
+{	
+	/*
+	 * An explanation for the below branches is explained in open_volume.c
+	 */
+	if( StringSize( mapper ) > 20 ){
+		if( StringPrefixMatch( mapper,"zuluCryptKeyFromPass",20 ) ){
+			return _tcrypt_open_using_key( device,mapper+20,mode,pass,pass_size ) ;
+		}else if( StringPrefixMatch( mapper,"zuluCryptKeyFromFile",20 ) ){
+			return _tcrypt_open_using_keyfile( device,mapper+20,mode,pass,pass_size ) ;
+		}
+	}
+	return _tcrypt_open_using_key( device,mapper,mode,pass,pass_size ) ;
+}
+
 #else
 /*
  * 1 is returned if a volume is a truecrypt volume.
@@ -185,4 +309,5 @@ int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * mo
 	if( pass_size ) {;}
 	return 1 ;
 }
+#endif
 #endif

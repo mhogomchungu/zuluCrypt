@@ -23,12 +23,11 @@
 /*
  * this header is created at config time
  */
-#include "build_tcplay.h"
+#include "truecrypt_support_1.h"
 
 int zuluCryptCreateTCrypt( const char * dev,const char * pass,size_t pass_size,const char * rng )
 {
-#if FOUND_TCPLAY
-	
+#if TRUECRYPT_CREATE
 	tc_api_opts api_opts ;
 	int r ;
 	

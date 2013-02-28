@@ -179,9 +179,19 @@ void zuluCryptClearDeadMappers( uid_t uid )
 	/*
 	 * zuluCryptGetMtabList() is defined in ../lib/print_mounted_volumes.c
 	 */
-	stringList_t stl = zuluCryptGetMtabList() ;
+	stringList_t stl ;
 	string_t p ;
-	string_t z = String( dir_path ) ;
+	string_t z ;
+#if TRUECRYPT_TCPLAY
+	/*
+	 * return pematurely because crypt_get_device_name() does not work
+	 * as expected with truecrypt volumes opened with tcplay
+	 */
+	return ;
+#endif	
+	stl = zuluCryptGetMtabList() ;
+	z = String( dir_path ) ;
+	
 	StringAppend( z,"/" ) ;
 	len1 = StringLength( z ) ;
 	

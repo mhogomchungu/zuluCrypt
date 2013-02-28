@@ -34,7 +34,10 @@
 #include "zuluoptions.h"
 #include "socketsendkey.h"
 
-#include "build_tcplay.h"
+/*
+ * this header is created at config time
+ */
+#include "truecrypt_support_1.h"
 
 namespace Ui {
     class createvolume;

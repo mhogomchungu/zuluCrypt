@@ -52,7 +52,7 @@ createvolume::createvolume( QWidget * parent ) :
 	connect( m_ui->comboBoxVolumeType,SIGNAL( currentIndexChanged( int ) ),this,SLOT( volumeType( int ) ) ) ;
 	connect( m_ui->lineEditPassphrase1,SIGNAL( textChanged( QString ) ),this,SLOT( keyChanged( QString ) ) ) ;
 
-#if FOUND_TCPLAY
+#if TRUECRYPT_CREATE
 	m_ui->comboBoxVolumeType->addItem( QString( "truecrypt" ) ) ;
 #endif
 }

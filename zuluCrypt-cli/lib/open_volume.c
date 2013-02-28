@@ -169,14 +169,14 @@ int zuluCryptOpenVolume( const char * dev,const char * map,
 		case 2 : return zuluExit( 8,p ) ; 
 		case 3 : return zuluExit( 3,p ) ;
 	}
-	
+	/*
 	if( h == 0 ){
 		if( _device_is_not_sane( dev,mapper ) ){
 			zuluCryptCloseMapper( map ) ;
 			return zuluExit( -1,p ) ;
 		}
 	}
-	
+	*/
 	if( m_point != NULL ){
 		/*
 		 * zuluCryptMountVolume() is defined in mount_volume.c

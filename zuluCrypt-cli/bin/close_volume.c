@@ -42,14 +42,16 @@ int zuluCryptEXECloseVolume( const char * dev,const char * mapping_name,uid_t ui
 	 int st ;
 	 string_t p = StringVoid ;
 	 char * m_point = NULL ;
+	 struct stat xt ;
 	 
+	 if( uid ){;}
 	 /* 
 	  * ZULUCRYPTlongMapperPath is set in ../constants.h
 	  * zuluCryptCreateMapperName() defined in ../lib/create_mapper_name.c
 	  */
 	 p = zuluCryptCreateMapperName( dev,mapping_name,uid,ZULUCRYPTlongMapperPath ) ;
 	 
-	 if( !zuluCryptSecurityPathIsValid( StringContent( p ),uid ) ){
+	 if( stat( StringContent( p ),&xt ) != 0 ){
 		 return zuluExit( 1,p ) ;
 	 }
 	 if( !zuluCryptSecurityGainElevatedPrivileges() ){
