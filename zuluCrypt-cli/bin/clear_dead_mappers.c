@@ -32,6 +32,11 @@
  * */
 #include "libmount_header.h"
 
+/*
+ * This source file attempts to "clear a dead mapper".A dead mapper happens when a user opens
+ * an encrypted volume and then just unplugs it without properly closing the mapper 
+ */
+
 static void mtab_remove_entry( const char * path )
 {
 	FILE * f ;
@@ -133,7 +138,11 @@ static void remove_mapper( const char * path,stringList_t stl,uid_t uid )
 		 * this happens when a mapper is already "unmount2()" below.Just deactivate it
 		 * and return 
 		 */
-		if( crypt_deactivate( NULL,path ) == 0 ){
+		
+		/*
+		 * zuluCryptCloseMapper() is defined in ../lib/close_mapper.c
+		 */
+		if( zuluCryptCloseMapper( path ) == 0 ){
 			/*
 			 * mount point is no longer busy and not in /proc/self/mountinfo.
 			 * Search the user mount point prefix to see if there is a mount point
@@ -146,24 +155,27 @@ static void remove_mapper( const char * path,stringList_t stl,uid_t uid )
 			 */
 			;
 		}
-		return ;
-	}
-	
-	stx = StringListSplit( StringListContentAt( stl,index ),' ' ) ;
-	
-	m_point = StringListContentAt( stx,1 ) ;
-	
-	if( umount( m_point ) == 0 ){
-		rmdir( m_point ) ;
-		crypt_deactivate( NULL,path ) ;
-		mtab_remove_entry( path ) ;
 	}else{
-		if( umount2( m_point,MNT_DETACH ) == 0 ){
-			mtab_remove_entry( path ) ;
-		}
-	}
+		/*
+		 * First attempt to close a mapper,try to unmount it and then deactivate the mapper if 
+		 * the operation succeed
+		 */
+		stx = StringListSplit( StringListContentAt( stl,index ),' ' ) ;
 	
-	StringListDelete( &stx ) ;
+		m_point = StringListContentAt( stx,1 ) ;
+	
+		if( umount( m_point ) == 0 ){
+			rmdir( m_point ) ;
+			zuluCryptCloseMapper( path ) ;
+			mtab_remove_entry( path ) ;
+		}else{
+			if( umount2( m_point,MNT_DETACH ) == 0 ){
+				mtab_remove_entry( path ) ;
+			}
+		}
+		
+		StringListDelete( &stx ) ;
+	}
 }
 
 void zuluCryptClearDeadMappers( uid_t uid )
@@ -210,10 +222,16 @@ void zuluCryptClearDeadMappers( uid_t uid )
 			e = StringAppendAt( z,len1,entry->d_name ) ;
 			if( crypt_init_by_name( &cd,e ) == 0 ){
 				if( crypt_get_device_name( cd ) == NULL ){
+					/*
+					 * we will get here is the mapper is "active" but the underlying device is gone
+					 */
 					remove_mapper( e,stl,uid ) ;
 				}
 				crypt_free( cd ) ;
 			}else{
+				/*
+				 * we shouldnt get here
+				 */
 				remove_mapper( e,stl,uid ) ;
 			}
 		}

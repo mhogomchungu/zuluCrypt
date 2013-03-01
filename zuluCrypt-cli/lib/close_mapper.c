@@ -79,6 +79,9 @@ int zuluCryptCloseMapper( const char * mapper )
 		}
 		crypt_free( cd ) ;
 	}else{
+		/*
+		 * we shouldnt get here
+		 */
 		return _close_mapper( mapper ) ;
 	}
 	
