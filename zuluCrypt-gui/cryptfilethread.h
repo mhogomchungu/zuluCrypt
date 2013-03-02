@@ -30,6 +30,8 @@
 #include "utility.h"
 #include "../zuluCrypt-cli/constants.h"
 #include "../zuluCrypt-cli/bin/bash_special_chars.h"
+#include "md5/md5.h"
+#include <sys/mman.h>
 
 #include <string.h>
 
@@ -43,10 +45,14 @@ signals:
 	void progressUpdate( int );
 	void titleUpdate( QString );
 	void complete( int ) ;
+	void md5mismach( void ) ;
+	void enableCancel( void ) ;
+	void disableCancel( void ) ;
 public slots:
 	void terminate( void );
 	void start( void );
 private:
+	void calculateMd5( QString path,char * result ) ;
 	void run( void );
 	int encrypt( void );
 	int decrypt( void );

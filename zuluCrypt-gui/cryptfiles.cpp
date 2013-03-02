@@ -258,8 +258,19 @@ void cryptfiles::pbCreate()
 	connect( m_cft,SIGNAL( complete( int ) ),this,SLOT( threadExitStatus( int ) ) );
 	connect( m_cft,SIGNAL( progressUpdate( int ) ),this,SLOT( progressBarUpdate( int ) ) );
 	connect( m_cft,SIGNAL( titleUpdate( QString ) ),this,SLOT( titleUpdate( QString ) ) );
+	connect( m_cft,SIGNAL( enableCancel() ),this,SLOT( enableCancel() ) ) ;
+	connect( m_cft,SIGNAL( disableCancel() ),this,SLOT( disableCancel() ) ) ;
 	m_cft->start() ;
+}
 
+void cryptfiles::disableCancel()
+{
+	m_ui->pushButtonCancel->setEnabled( false );
+}
+
+void cryptfiles::enableCancel()
+{
+	m_ui->pushButtonCancel->setEnabled( true );
 }
 
 void cryptfiles::titleUpdate( QString title )
@@ -345,6 +356,8 @@ void cryptfiles::threadExitStatus( int st )
 		case 12: msg.ShowUIOK( tr( "INFO!" ),tr( "operation terminated per user request" ) ) ;
 			 return this->HideUI();
 		case 13: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open source file for reading" ) )		; break ;
+		case 1000: msg.ShowUIOK( tr( "WARNING"),tr( "decrypted file created successfully but md5 checksum failed,file maybe corrupted" ) ) ;
+		return this->HideUI();
 	}
 	this->enableAll();
 	if( st == 11 || st == 2 ){

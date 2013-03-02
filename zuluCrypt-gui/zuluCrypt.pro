@@ -49,7 +49,8 @@ SOURCES += main.cpp\
     ../zuluMount-gui/oneinstance.cpp \
     zuluoptions.cpp \
     openmountpointinfilemanager.cpp \
-    savemountpointpath.cpp
+    savemountpointpath.cpp \
+    md5/md5.c
 
 HEADERS  += zulucrypt.h \
     password_dialog.h \

@@ -48,6 +48,8 @@ signals:
 public slots:
 	void encrypt( void );
 	void decrypt( void );
+	void enableCancel( void ) ;
+	void disableCancel( void ) ;
 private slots:
 	void pbCancel( void );
 	void pbCreate( void );

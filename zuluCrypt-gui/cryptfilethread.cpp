@@ -25,6 +25,8 @@
  * documentation for what this header file does are there.
  */
 #include <QDebug>
+#include <fcntl.h>
+#include <sys/stat.h>
 
 cryptfilethread::cryptfilethread( QString source,QString dest,QString keySource,QString key,QString task )
 {
@@ -46,6 +48,35 @@ void cryptfilethread::terminate()
 	m_status = TERM_ST ;
 }
 
+void cryptfilethread::calculateMd5( QString path,char * result )
+{
+	emit titleUpdate( tr( "calculating md5sum" ) );
+	emit disableCancel();
+	MD5_CTX ctx ;
+	MD5_Init( &ctx ) ;
+
+	QByteArray p = path.toAscii() ;
+
+	int fd = open( p.constData(),O_RDONLY ) ;
+
+	if( fd != -1 ){
+		struct stat st ;
+		fstat( fd,&st ) ;
+		void * map = mmap( 0,st.st_size,PROT_READ,MAP_PRIVATE,fd,0 ) ;
+		if( map ){
+			MD5_Update( &ctx,map,st.st_size ) ;
+			munmap( map,st.st_size ) ;
+			char digest[ 32 ] ;
+			MD5_Final( ( unsigned char * )digest,&ctx ) ;
+			for( int i = 0 ; i < 16 ; i++ ) {
+				snprintf( &(result[i*2] ),32,"%02x",( unsigned int )digest[i] );
+			}
+		}
+		close( fd ) ;
+	}
+	emit enableCancel();
+}
+
 int cryptfilethread::encrypt()
 {
 	QFile fd_4( m_source ) ;
@@ -53,11 +84,13 @@ int cryptfilethread::encrypt()
 	if( !fd_4.open( QIODevice::ReadOnly ) ){
 		return 13 ;
 	}
+
 	QFile fd_1( m_dest ) ;
 
 	if( !fd_1.open( QIODevice::WriteOnly ) ){
 		return 10 ;
 	}
+
 	const int SIZE = 512 ;
 	char buffer[ SIZE ];
 
@@ -124,6 +157,18 @@ int cryptfilethread::encrypt()
 
 	fd_2.write( bff,100 ) ;
 	fd_2.write( bff,100 ) ;
+
+	char version[ 32 ] = { 0 };
+	strcpy( version,"1.0" ) ;
+
+	fd_2.write( version,32 ) ;
+
+	char md5Data[ 32 ] ;
+
+	this->calculateMd5( m_source,md5Data );
+
+	fd_2.write( md5Data,32 ) ;
+
 	fd_2.flush() ;
 
 	fd_2.seek( SIZE ) ;
@@ -149,7 +194,7 @@ int cryptfilethread::encrypt()
 		fd_2.flush() ;
 	}
 
-	fd_2.flush() ;
+	fd_2.close();
 
 	emit progressUpdate( 100 );
 
@@ -173,6 +218,12 @@ int cryptfilethread::decrypt()
 	if( memcmp( buffer + 100,buffer + 200,100 ) != 0 ){
 		return 11 ;
 	}
+
+	char version[ 32 ] ;
+	memcpy( version,buffer + 300,32 ) ;
+	char md5sum[ 32 ] ;
+	memcpy( md5sum,buffer + 332,32 ) ;
+
 	qint64 size = atoll( buffer );
 	qint64 len ;
 	qint64 i = 0;
@@ -183,6 +234,7 @@ int cryptfilethread::decrypt()
 	if( !fd_2.open( QIODevice::WriteOnly) ){
 		return 10 ;
 	}
+
 	emit titleUpdate( tr( "copying data from the container file" ) );
 
 	if( size <= SIZE ){
@@ -195,7 +247,7 @@ int cryptfilethread::decrypt()
 		for( i = 0 ; i < len ; i++ ){
 
 			if( m_status == TERM_ST ){
-				return m_status ;
+				return 1 ;
 			}
 			j = ( int )( i * 100 / len ) ;
 
@@ -218,7 +270,25 @@ int cryptfilethread::decrypt()
 
 	emit progressUpdate( 100 );
 
-	return 1 ;
+	char md5Data[ 32 ] ;
+
+	char version_1[ 32 ] = { '\0' };
+	strcpy( version_1,"1.0" ) ;
+
+	m_status = 1 ;
+
+	if( memcmp( version,version_1,32 ) == 0 ){
+		/*
+		 * we are decrypting a volume using new format that embed md5 checksum of the data
+		 */
+		this->calculateMd5( m_dest,md5Data );
+
+		if( memcmp( md5sum,md5Data,32 ) != 0 ){
+			m_status = 1000 ;
+		}
+	}
+
+	return 0 ;
 }
 
 int cryptfilethread::openMapper( QString path )
@@ -268,11 +338,11 @@ void cryptfilethread::run()
 	}else{
 		m_status = this->openMapper( m_source ) ;
 		if( m_status == 0 ){
-			m_status = this->decrypt();
+			this->decrypt();
 			this->closeMapper( m_source ) ;
 			if( m_status == TERM_ST ){
 				QFile::remove( m_dest ) ;
-			}else if( m_status == 1 ){
+			}else if( m_status == 1 || m_status == 1000 ){
 				QFile::setPermissions( m_dest,QFile::ReadOwner|QFile::WriteOwner ) ;
 			}
 		}
