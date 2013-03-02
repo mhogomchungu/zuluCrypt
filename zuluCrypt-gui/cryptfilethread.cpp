@@ -21,9 +21,29 @@
 
 #define TERM_ST 12
 /*
- * this source file dublicated code in ../zuluCrypt-cli/bin/file_encryption.c
- * documentation for what this header file does are there.
+ * Documentation about the encrypted container file.
+ *
+ * The container file is made up of two parts,the header part and the load part.
+ *
+ * 1. The load part.
+ *    The load is stored in a container that is a multiple of 512.This is because we use 512 bytes block in encryption.
+ *    The load is padded to a multiple of 512 if it is not.
+ *
+ * 2. The header path.
+ *    The header is 512 bytes.
+ *
+ * 2.1. The first 100 bytes are used to store the size of the load in a format atoll() can understand.
+ * 2.2  The second 100 bytes and the third 100 bytes contain the same information read from "/dev/urandom".
+ *      This information is used to check if the decryption key is the same as encryption key.This is not a security
+ *      feature but a convenience one.It is used to inform a user if the decryption key if not the same as encryption key.
+ * 2.3  Now we are byte 300th.The next 32 bytes contains "1.0x" where "x" is 29 NULL bytes to form a 32 bytes block representing
+ *      the version of the header.
+ * 2.4  Now we are at byte 332th.The next 32 bytes are used to store md5sum of the load.The sum is used at
+ *      decrypting time to check load integrity.
+ *
+ * 3.0 The rest of the header is currently not in use.
  */
+
 #include <QDebug>
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -63,7 +83,7 @@ void cryptfilethread::calculateMd5( QString path,char * result )
 		struct stat st ;
 		fstat( fd,&st ) ;
 		void * map = mmap( 0,st.st_size,PROT_READ,MAP_PRIVATE,fd,0 ) ;
-		if( map ){
+		if( map != MAP_FAILED ){
 			MD5_Update( &ctx,map,st.st_size ) ;
 			munmap( map,st.st_size ) ;
 			char digest[ 32 ] ;
@@ -275,8 +295,6 @@ int cryptfilethread::decrypt()
 	char version_1[ 32 ] = { '\0' };
 	strcpy( version_1,"1.0" ) ;
 
-	m_status = 1 ;
-
 	if( memcmp( version,version_1,32 ) == 0 ){
 		/*
 		 * we are decrypting a volume using new format that embed md5 checksum of the data
@@ -284,11 +302,13 @@ int cryptfilethread::decrypt()
 		this->calculateMd5( m_dest,md5Data );
 
 		if( memcmp( md5sum,md5Data,32 ) != 0 ){
-			m_status = 1000 ;
+			return 1000 ;
+		}else{
+			return 1 ;
 		}
+	}else{
+		return 1 ;
 	}
-
-	return 0 ;
 }
 
 int cryptfilethread::openMapper( QString path )
@@ -338,7 +358,7 @@ void cryptfilethread::run()
 	}else{
 		m_status = this->openMapper( m_source ) ;
 		if( m_status == 0 ){
-			this->decrypt();
+			m_status = this->decrypt();
 			this->closeMapper( m_source ) ;
 			if( m_status == TERM_ST ){
 				QFile::remove( m_dest ) ;
