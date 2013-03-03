@@ -188,9 +188,7 @@ void zuluCryptClearDeadMappers( uid_t uid )
 	const char * e ;
 	size_t len ;
 	size_t len1 ;
-	/*
-	 * zuluCryptGetMtabList() is defined in ../lib/print_mounted_volumes.c
-	 */
+	
 	stringList_t stl ;
 	string_t p ;
 	string_t z ;
@@ -201,7 +199,10 @@ void zuluCryptClearDeadMappers( uid_t uid )
 	 */
 	return ;
 #endif	
-	stl = zuluCryptGetMtabList() ;
+	/*
+	 * zuluCryptGetMountInfoList()  is defined in ../lib/process_mountinfo.c
+	 */
+	stl = zuluCryptGetMountInfoList() ;
 	z = String( dir_path ) ;
 	
 	StringAppend( z,"/" ) ;

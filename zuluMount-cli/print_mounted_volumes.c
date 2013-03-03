@@ -34,15 +34,7 @@
 
 stringList_t zuluCryptPartitionList( void ) ;
 
-stringList_t zuluCryptGetMtabList( void ) ;
-
 void zuluCryptFormatSize( char * buffer,const char * buff ) ;
-
-const char * zuluCryptDecodeMtabEntry( string_t st ) ;
-
-char * zuluCryptVolumeDeviceName( const char * ) ;
-
-char * zuluCryptLoopDeviceAddress( const char * device ) ;
 
 typedef struct{
 	stringList_t stz ;
@@ -263,7 +255,7 @@ static void _printDeviceProperties( string_t entry,void * arg )
 				
 			StringListRemoveString( _stz,x ) ;
 			/*
-			 * zuluCryptDecodeMtabEntry() is defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c
+			 * zuluCryptDecodeMtabEntry() is defined in ../zuluCrypt-cli/lib/mount_volume.c.c
 			 * it decodes space,tab,new line and backslash characters since they are written differently in "/etc/mtab" 
 			 */
 			f = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;
@@ -311,10 +303,10 @@ int zuluMountPrintMountedVolumes( uid_t uid )
 	stringList_t stl ;
 	
 	/*
-	 * zuluCryptGetMtabList() is  defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c
+	 * zuluCryptGetMountInfoList() is  defined in ../zuluCrypt-cli/lib/process_mountinfo.c
 	 * It returns contents of "/etc/mtab"
 	 */
-	stl = zuluCryptGetMtabList() ;
+	stl = zuluCryptGetMountInfoList() ;
 		
 	if( stl == StringListVoid ){
 		return 1;

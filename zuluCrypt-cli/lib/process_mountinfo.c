@@ -26,31 +26,6 @@
  */
 #include "libmount_header.h"
 
-/*
- * defined at ../lib/status.c 
- */
-char * zuluCryptVolumeDeviceName( const char * ) ;
-
-char * zuluCryptDeviceFromUUID( const char * uuid ) ;
-
-int zuluCryptMtabIsAtEtc( void )
-{
-	struct stat st ;
-	if( stat( "/etc/mtab",&st ) == 0 ){
-		return S_ISREG( st.st_mode ) ;
-	}else{
-		return 0 ;
-	}
-}
-
-const char * zuluCryptDecodeMtabEntry( string_t st )
-{
-	StringReplaceString( st,"\\012","\n" ) ;
-	StringReplaceString( st,"\\040"," " ) ;
-	StringReplaceString( st,"\\134","\\" ) ;
-	return StringReplaceString( st,"\\011","\\t" ) ;
-}
-
 char * zuluCryptResolveDevRoot( void )
 {
 	char * dev ;
@@ -219,7 +194,7 @@ stringList_t zuluCryptGetMoutedListFromMounts( void )
 	return stl ;
 }
 
-stringList_t zuluCryptGetMtabList( void )
+stringList_t zuluCryptGetMountInfoList( void )
 {
 	stringList_t stl = zuluCryptGetMoutedListFromMountInfo() ;
 	
@@ -230,22 +205,32 @@ stringList_t zuluCryptGetMtabList( void )
 	}
 }
 
-static void print( uid_t uid,stringList_t stl )
+stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 {
 	const char * c ;
 	const char * d ;
 	const char * e ;
 	char * f ;
+	char * g ;
 	
 	size_t len ;
 	size_t j ;
 	size_t i ;
 	ssize_t k ;
 	
-	stringList_t stx ;
-	
 	string_t q ; 
-	string_t p = StringIntToString( uid ) ;
+	string_t z ;
+	string_t p ;
+	
+	stringList_t stx ;
+	stringList_t list = StringListVoid ;
+	stringList_t stl = zuluCryptGetMountInfoList() ;
+	
+	if( stl == StringListVoid ){
+		return StringListVoid ;
+	}
+	
+	p = StringIntToString( uid ) ;
 	
 	e = StringMultiplePrepend( p,"/zuluCrypt-",crypt_get_dir(),END ) ;
 	
@@ -264,28 +249,34 @@ static void print( uid_t uid,stringList_t stl )
 				k = StringLastIndexOfChar( q,'-' ) ;
 				if( k != -1 ){
 					c = StringSubChar( q,k,'\0' ) + len + 6 ;
+					/*
+					 * zuluCryptDecodeMtabEntry() is defined in mount_volume.c
+					 */
 					d = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;
-					printf( "UUID=\"%s\"\t%s\t",c,d ) ;
-					
 					/*
 					 * zuluCryptGetVolumeTypeFromMapperPath() is defined in status.c
 					 */
 					f = zuluCryptGetVolumeTypeFromMapperPath( StringSubChar( q,k,'-' ) ) ;
-					puts( f ) ;
+					z = String( "" ) ;
+					StringMultipleAppend( z,"UUID=\"",c,"\"\t",d,"\t",f,END ) ;
+					list = StringListAppendString( list,z ) ;
+					StringDelete( &z ) ;
 					free( f ) ;
 				}
 			}else{
-				f = zuluCryptVolumeDeviceName( StringListContentAt( stx,0 ) ) ;
-				if( f != NULL ){
+				g = zuluCryptVolumeDeviceName( StringListContentAt( stx,0 ) ) ;
+				if( g != NULL ){
 					d = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;
-					printf( "%s\t%s\t",f,d ) ;
-					free( f ) ;
 					/*
 					 * zuluCryptGetVolumeTypeFromMapperPath() is defined in status.c
 					 */
 					f = zuluCryptGetVolumeTypeFromMapperPath( StringListContentAt( stx,0 ) ) ;
-					puts( f ) ;
+					z = String( "" ) ;
+					StringMultipleAppend( z,g,"\t",d,"\t",f,END ) ;
+					list = StringListAppendString( list,z ) ;
+					StringDelete( &z ) ;
 					free( f ) ;
+					free( g ) ;
 				}
 			}
 			
@@ -294,24 +285,13 @@ static void print( uid_t uid,stringList_t stl )
 	}
 	
 	StringDelete( &p ) ;
-}
-
-int zuluCryptPrintOpenedVolumes( uid_t uid )
-{
-	stringList_t stl = zuluCryptGetMtabList() ;
-	if( stl == StringListVoid ){
-		return 1 ;
-	}else{
-		print( uid,stl ) ;
-		StringListDelete( &stl ) ;
-		return 0 ;
-	}
+	return list ;
 }
 
 string_t zuluCryptGetMtabEntry( const char * path )
 {
 	string_t entry = StringVoid ;
-	stringList_t stl = zuluCryptGetMtabList() ;
+	stringList_t stl = zuluCryptGetMountInfoList() ;
 	ssize_t index = StringListHasStartSequence( stl,path ) ;
 	if( index >= 0 ){
 		entry = StringListCopyStringAt( stl,index ) ;

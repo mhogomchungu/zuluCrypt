@@ -113,13 +113,6 @@ int zuluCryptEXERemoveKey( const struct_opts *,uid_t ) ;
 int zuluCryptIsPathValid( const char * path ) ;
 
 /*
- * this function is responsibe for printing a list of opened volumes.
- * It primary purpose is for the GUI pqrt of the tool and hence the output isnt formatted.
- * It is defined in print_mounted_volumes.c
- */
-int zuluCryptPrintOpenedVolumes( uid_t ) ;
-
-/*
  * this function is responsibe for creating a mount point after it checks to make sure a user who started the tool
  * had writing access to the parent folder.
  * It is defined in security.c * 
@@ -174,7 +167,7 @@ int zuluCryptCheckOpenedMapper( const char * mapper ) ;
 /*
  * check if a  device with a path "path" as an entry in /etc/mtab.
  * 
- * defined in print_mounted_volumes.c 
+ * defined in process_mountinfo.c 
  */
 int zuluCryptCheckIfMounted( const char * path ) ;
 
@@ -216,7 +209,7 @@ char * zuluCryptDeviceFromUUID( const char * uuid ) ;
 int zuluCryptPrintPartitions( int option,int info ) ;
 
 /*
- * defined at print_mounted_volumes.c
+ * defined at process_mountinfo.c
  * remember to free() a returned pointer when done with it.
  */
 char * zuluCryptGetMountPointFromPath( const char * path ) ;

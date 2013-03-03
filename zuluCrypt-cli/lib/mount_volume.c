@@ -506,6 +506,24 @@ string_t zuluCryptGetFileSystemFromDevice( const char * device )
 	return st ;
 }
 
+int zuluCryptMtabIsAtEtc( void )
+{
+	struct stat st ;
+	if( stat( "/etc/mtab",&st ) == 0 ){
+		return S_ISREG( st.st_mode ) ;
+	}else{
+		return 0 ;
+	}
+}
+
+const char * zuluCryptDecodeMtabEntry( string_t st )
+{
+	StringReplaceString( st,"\\012","\n" ) ;
+	StringReplaceString( st,"\\040"," " ) ;
+	StringReplaceString( st,"\\134","\\" ) ;
+	return StringReplaceString( st,"\\011","\\t" ) ;
+}
+
 int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long mount_opts,const char * fs_opts,uid_t uid )
 {
 	struct mntent mt  ;
@@ -607,7 +625,6 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 	}
 		 
 	/*
-	 * zuluCryptMtabIsAtEtc() is defined in print_mounted_volumes.c
 	 * 1 is return if "mtab" is found to be a file located at "/etc/"
 	 * 0 is returned otherwise,probably because "mtab" is a soft like to "/proc/mounts"
 	 */

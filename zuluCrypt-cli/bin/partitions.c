@@ -427,9 +427,9 @@ void zuluCryptPrintPartitionProperties( const char * device )
 static void _zuluCryptPrintUnMountedPartitionProperties( stringList_t stl )
 {
 	/*
-	 * zuluCryptGetMtabList() is defined in ../lib/print_mounted_volumes.c
+	 * zuluCryptGetMountInfoList() is defined in ../lib/process_mountinfo.c
 	 */
-	stringList_t stx = zuluCryptGetMtabList() ;
+	stringList_t stx = zuluCryptGetMountInfoList() ;
 	
 	StringListIterator it  ;
 	StringListIterator end ;
@@ -524,8 +524,7 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 		index = StringIndexOfChar( st,0,'/' ) ;
 		if( index == -1 ){
 			/*
-			 * check above did not find '/' character and we are in this block assuming the line uses UUID
-			 * 
+			 * check above did not find '/' character and we are in this block assuming the line uses UUID 
 			 */
 			index = StringIndexOfChar( st,0,'U' ) ;
 			if( index == -1 ){

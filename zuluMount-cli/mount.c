@@ -195,7 +195,7 @@ ERROR: insuffienct privilege to manage a system partition.\nnecessary privileges
 		return _zuluExit( 100,z,path,"ERROR: insuffienct privileges to mount the volume with given mount options" ) ;
 	}
 	/*
-	 * zuluCryptPartitionIsMounted is defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c
+	 * zuluCryptPartitionIsMounted is defined in ../zuluCrypt-cli/lib/process_mountinfo.c
 	 */
 	if( zuluCryptPartitionIsMounted( dev ) ){
 		return _zuluExit( 102,z,path,"ERROR: device already mounted" ) ;

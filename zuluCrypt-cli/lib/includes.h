@@ -61,11 +61,20 @@ int zuluCryptPathIsValid( const char * path ) ;
 int zuluCryptPathIsNotValid( const char * path ) ;
 
 /*
- * this function is deined in ../lib/print_mounted_volumes.c
+ * this function is deined in ../lib/mount_volume.c
  * return 1 if mtab is a file and is located at /etc
  * return 0 otherwise
  */
 int zuluCryptMtabIsAtEtc( void ) ;
+
+/*
+ * zuluCryptDecodeMtabEntry() is defined in mount_volume.c
+ */
+const char * zuluCryptDecodeMtabEntry( string_t ) ;
+/*
+ *this function is deined in ../lib/process_mountinfo.c 
+ */
+stringList_t zuluCryptOpenedVolumesList( uid_t ) ;
 
 /*
  * this is defined in print_mounted_volumes.c
@@ -84,7 +93,7 @@ int zuluCryptPartitionIsMounted( const char * device ) ;
 string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos ) ;
 
 /*
- * this function is defined in print_mounted_volumes.c
+ * this function is defined in process_mountinfo.c
  * It return an entry of a partition if it is found in /etc/mtab
  * It return StringVoid otherwise
  */
@@ -111,22 +120,22 @@ string_t zuluCryptGetFileSystemFromDevice( const char * device ) ;
 char * zuluCryptLoopDeviceAddress( const char * device ) ;
 
 /*
- * this function is defined in ./print_mounted_volumes.c
+ * this function is defined in ./process_mountinfo.c
  */
 stringList_t zuluCryptGetMoutedListFromMountInfo( void ) ;
 
 /*
- * this function is defined in ./print_mounted_volumes.c
+ * this function is defined in ./process_mountinfo.c
  */
 char * zuluCryptGetMountPointFromPath( const char * path ) ;
 
 /*
- * this function is defined in ./print_mounted_volumes.c
+ * this function is defined in ./process_mountinfo.c
  */
 char * zuluCryptResolveDevRoot( void ) ;
 
 /*
- * this function is defined in ./print_mounted_volumes.c
+ * this function is defined in ./process_mountinfo.c
  */
 stringList_t zuluCryptGetFstabEntryList( const char * device ) ;
 
@@ -201,9 +210,9 @@ int zuluCryptSecureOpenFile( const char * path,int * fd_path,string_t * file,uid
 stringList_t zuluCryptGetFstabList( void ) ;
 
 /*
- * this function is defined in print_mounted_volumes.c
+ * this function is defined in process_mountinfo.c
  */
-stringList_t zuluCryptGetMtabList( void ) ;
+stringList_t zuluCryptGetMountInfoList( void ) ;
 
 /*
  * this function is defined in status.c

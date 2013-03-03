@@ -278,6 +278,20 @@ static int _clear_dead_mappers( uid_t uid )
 	return 0 ;
 }
 
+static int _printOpenedVolumes( uid_t uid )
+{
+	/*
+	 * zuluCryptOpenedVolumesList() is defined in ../lib/process_mountinfo.c
+	 */
+	stringList_t stl ;
+	zuluCryptSecurityGainElevatedPrivileges() ;
+	stl = zuluCryptOpenedVolumesList( uid ) ;
+	zuluCryptSecurityDropElevatedPrivileges() ;
+	StringListPrintList( stl ) ;
+	StringListDelete( &stl ) ;
+	return 0 ;
+}
+
 int main( int argc,char * argv[] )
 {
 	int fd1 = -1 ;
@@ -430,7 +444,6 @@ int main( int argc,char * argv[] )
 	 * 
 	 * zuluCryptPrintPartitions() function is defined in partitions.c 
 	 * zuluCryptSecurityCheckPartitionPermissions() is defined in security.c
-	 * zuluCryptPrintOpenedVolumes() is defined in ../lib/print_open_volumes.c
 	 */
 	switch( action ){
 		case 'C': return zuluExit( _clear_dead_mappers( uid ),stl,stx,env,NULL ) ;
@@ -438,9 +451,7 @@ int main( int argc,char * argv[] )
 		case 'N':
 		case 'S': st = zuluCryptPrintPartitions( clargs.partition_number,clargs.print_partition_type ) ; 
 			  return zuluExit( st,stl,stx,env,NULL ) ;
-		case 'L': zuluCryptSecurityGainElevatedPrivileges() ;
-			  st = zuluCryptPrintOpenedVolumes( uid ) ; 
-			  zuluCryptSecurityDropElevatedPrivileges() ;
+		case 'L': st = _printOpenedVolumes( uid ) ; 
 			  return zuluExit( st,stl,stx,env,NULL ) ;
 	}
 	

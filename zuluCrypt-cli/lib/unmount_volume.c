@@ -86,7 +86,7 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 	}
 	
 	/*
-	 * zuluCryptMtabIsAtEtc() is defined in print_mounted_volumes.c
+	 * zuluCryptMtabIsAtEtc() is defined in mount_volume.c
 	 * 1 is return if "mtab" is found to be a file located at "/etc/"
 	 * 0 is returned otherwise,probably because "mtab" is a soft link to "/proc/mounts"
 	 */

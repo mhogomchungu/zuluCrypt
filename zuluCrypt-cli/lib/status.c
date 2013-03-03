@@ -169,7 +169,7 @@ char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper )
 	string_t volType ;
 	
 	type = crypt_get_dir() ;
-	
+
 	if( !StringPrefixEqual( mapper,type ) ){
 		volType = String( "Nil" ) ;
 		return StringDeleteHandle( &volType ) ;
