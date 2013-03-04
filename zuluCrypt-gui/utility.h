@@ -58,6 +58,7 @@ public:
 	static bool userIsRoot( void ) ;
 	static bool mapperPathExists( QString path ) ;
 	static QString mountPath( QString ) ;
+	static QString userName( void ) ;
 };
 
 #endif // MISCFUNCTIONS_H

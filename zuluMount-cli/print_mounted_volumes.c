@@ -194,16 +194,12 @@ static void _printUnmountedVolumes( const char * device )
 	zuluMountPartitionProperties( device,NULL,device,NULL ) ;
 }
 
-static void _printDeviceProperties( string_t entry,void * arg )
+static void _printDeviceProperties( string_t entry,void * s )
 {	
 	stringList_t stx ;
+	stringList_t stz = ( stringList_t ) s ;
 	const char * q ;
 	char * x ;
-	
-	ARGS * args = ( ARGS * ) arg ;
-	size_t  _k = args->k ;
-	const char * _z = args->z ;
-	stringList_t _stz = args->stz ;
 	
 	const char * e ;
 	const char * f ;
@@ -221,14 +217,7 @@ static void _printDeviceProperties( string_t entry,void * arg )
 	
 	q = StringListContentAt( stx,0 ) ;
 	
-	if( StringPrefixMatch( q,_z,_k ) ){
-		/*
-		 * we will get in here only with encrypted volumes,
-		 * q will contain something like /dev/mapper/zuluCrypt-500-NAAN-plain-1688
-		 * _z will contain something like /dev/mapper/zuluCrypt-500
-		 * _k is the length of _z
-		 */
-		
+	if( StringPrefixMatch( q,"/dev/mapper/zuluCrypt-",22 ) ){
 		/*
 		 * zuluCryptSecurityGainElevatedPrivileges() and zuluCryptSecurityDropElevatedPrivileges()
 		 * are defined in ../zuluCrypt-cli/bin/security.c 
@@ -241,9 +230,10 @@ static void _printDeviceProperties( string_t entry,void * arg )
 		zuluCryptSecurityDropElevatedPrivileges();
 		
 		if( x != NULL ){
-			if( StringPrefixEqual( q + _k,"-UUID-" ) ){
+			index = StringHasComponent_1( q,"-UUID-" ) ;
+			if( index != -1 ){
 				st = String( q ) ;
-				StringRemoveLeft( st,_k + 6 ) ;
+				StringRemoveLeft( st,index + 6 ) ;
 				e = StringPrepend( st,"UUID=\"" ) ;
 				index = StringLastIndexOfChar( st,'-' ) ;
 				if( index >= 0 ){
@@ -254,7 +244,7 @@ static void _printDeviceProperties( string_t entry,void * arg )
 				e = x ;
 			}
 				
-			StringListRemoveString( _stz,x ) ;
+			StringListRemoveString( stz,x ) ;
 			/*
 			 * zuluCryptDecodeMtabEntry() is defined in ../zuluCrypt-cli/lib/mount_volume.c.c
 			 * it decodes space,tab,new line and backslash characters since they are written differently in "/etc/mtab" 
@@ -265,7 +255,7 @@ static void _printDeviceProperties( string_t entry,void * arg )
 			StringDelete( &st ) ;
 		}
 	}else{
-		StringListRemoveString( _stz,q ) ;
+		StringListRemoveString( stz,q ) ;
 		
 		e = zuluCryptDecodeMtabEntry( StringListStringAt( stx,0 ) ) ;
 		f = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;
@@ -280,14 +270,8 @@ static void _printDeviceProperties( string_t entry,void * arg )
 
 void zuluMountPrintDeviceProperties_1( string_t entry,uid_t uid )
 {
-	ARGS args ;
-	string_t filter = String( crypt_get_dir() ) ;
-	StringAppend( filter,"/zuluCrypt-" ) ;
-	args.z = StringAppendInt( filter,uid ) ;
-	args.k = StringLength( filter ) ;
-	args.stz = StringListVoid ;
-	_printDeviceProperties( entry,( void * )&args ) ;
-	StringDelete( &filter ) ;
+	if( uid ){;}
+	_printDeviceProperties( entry,( void * )StringListVoid ) ;
 }
 
 /*
@@ -298,12 +282,10 @@ void zuluMountPrintDeviceProperties_1( string_t entry,uid_t uid )
  */
 int zuluMountPrintMountedVolumes( uid_t uid )
 {
-	string_t filter ;
-	
-	ARGS args ;
-	
 	stringList_t stl ;
+	stringList_t stz ;
 	
+	if( uid ){;}
 	/*
 	 * zuluCryptGetMountInfoList() is  defined in ../zuluCrypt-cli/lib/process_mountinfo.c
 	 * It returns contents of "/etc/mtab"
@@ -317,31 +299,24 @@ int zuluMountPrintMountedVolumes( uid_t uid )
 	 * zuluCryptPartitionList() is defined in ../zuluCrypt-cli/partitions.c
 	 * It returns partition list read from /proc/partitions"
 	 */
-	args.stz = zuluCryptPartitionList() ;
+	stz = zuluCryptPartitionList() ;
 	
-	if( args.stz == StringListVoid ){
+	if( stz == StringListVoid ){
 		StringListDelete( &stl ) ;
 		return 1;
 	}
 	
-	filter = String( crypt_get_dir() ) ;
-	StringAppend( filter,"/zuluCrypt-" ) ;
-	
-	args.z = StringAppendInt( filter,uid ) ;
-	args.k = StringLength( filter ) ;
-		
 	/*
 	 * print all entries that are in "/etc/mtab" ie mounted partitions. 
 	 */
-	StringListForEach_1( stl,_printDeviceProperties,( void * )&args ) ;
+	StringListForEach_1( stl,_printDeviceProperties,( void * )stz ) ;
 	
 	/*
 	 * print all entries that are not in "/etc/mtab" ie not mounted partitions. 
 	 */
-	StringListForEachString( args.stz,_printUnmountedVolumes ) ;
+	StringListForEachString( stz,_printUnmountedVolumes ) ;
 	
-	StringDelete( &filter ) ;
-	StringListMultipleDelete( &stl,&args.stz,ENDDELETE ) ;
+	StringListMultipleDelete( &stl,&stz,ENDDELETE ) ;
 	
 	return 0 ;
 }

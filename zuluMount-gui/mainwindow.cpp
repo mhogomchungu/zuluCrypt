@@ -431,6 +431,9 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 
 	QString opt ;
 	QString fs ;
+	QString x = QString( "/run/media/" ) + utility::userName() ;
+	QString y ;
+
 	for( int i = 0 ; i < j ; i++ ){
 		entries = list.at( i ).split( '\t' ) ;
 		if( entries.size() < 6 ){
@@ -441,9 +444,22 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 		if( fs == QString( "swap" ) || fs.contains( QString( "LVM" ) ) || fs.contains( QString( "lvm" ) ) || fs.contains( QString( "mdraid" ) ) ){
 			continue ;
 		}
+
+		y = entries.at( 1 ) ;
+
+		if( y.startsWith( QString( "/run/media/" ) ) ){
+			if( !y.startsWith( x ) ){
+				/*
+				 * dont show mount other user specific mounts
+				 */
+				continue ;
+			}
+		}
+
 		opt = entries.at( 4 ) ;
 		if( opt == QString( "Nil" ) || opt == QString( "1.0 KB" ) )
 			continue ;
+
 		if( sys.contains( entries.at( 0 ) ) ){
 			tablewidget::addRowToTable( table,entries,f ) ;
 		}else{

@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <QObject>
 #include <QDir>
+#include <pwd.h>
 
 #include <QDebug>
 
@@ -41,6 +42,12 @@ QString utility::cryptMapperPath()
 bool utility::userIsRoot()
 {
 	return getuid() == 0 ? true : false ;
+}
+
+QString utility::userName()
+{
+	struct passwd * pass = getpwuid( getuid() ) ;
+	return QString( pass->pw_name ) ;
 }
 
 void utility::debug( QString s )

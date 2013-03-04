@@ -700,7 +700,18 @@ static __inline__ int StringPrefixEqual( const char * x,const char * y )
 	}
 }
 
-static __inline__ int StringHasComponent( const char * x,const char * y )
+static __inline__ ssize_t StringHasComponent_1( const char * x,const char * y )
+{
+	char * e ;
+	if( x == NULL || y == NULL ){
+		return -1 ;
+	}else{
+		e = strstr( x,y ) ;
+		return e == NULL ? -1 : e - x ;
+	}
+}
+
+static inline int StringHasComponent( const char * x,const char * y )
 {
 	if( x == NULL || y == NULL ){
 		return 0 ;
