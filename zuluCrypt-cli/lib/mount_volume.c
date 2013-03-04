@@ -46,7 +46,7 @@ typedef struct{
 	const char * fs_flags ;
 }m_struct;
 
-static int _add_entry_to_mtab( m_struct * mst,string_t * opts ) __attribute__((unused)) ;
+static int _add_entry_to_mtab( m_struct * mst,string_t * opts ) ;
 
 static inline int zuluExit( int st,int fd,stringList_t stl )
 {

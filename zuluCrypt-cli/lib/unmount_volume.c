@@ -56,10 +56,6 @@ static int entry_found( const char * m_dir,char ** m_point )
 	return h ;
 }
 
-/*
-	static int _remove_entry_from_mtab( const char * device ) __attribute__((unused)) ;
-*/
-
 static int _remove_entry_from_mtab( const char * device ) 
 {
 #if USE_NEW_LIBMOUNT_API
@@ -147,7 +143,7 @@ static int _remove_entry_from_mtab( const char * device )
 					chmod( "/etc/mtab",S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH ) ;
 				}else{
 					/*
-					 * volume doesnt seem to have an entry in fstab
+					 * volume doesnt seem to have an entry in mtab
 					 */
 					;
 				}
