@@ -205,12 +205,16 @@ static void _printDeviceProperties( string_t entry,void * arg )
 	const char * _z = args->z ;
 	stringList_t _stz = args->stz ;
 	
+	struct stat str ;
+	
 	const char * e ;
 	const char * f ;
-
+	const char * g ;
+	
 	ssize_t index ;
 	
 	string_t st = StringVoid ;
+	string_t n  = StringVoid ;
 	
 	stx = StringListStringSplit( entry,' ' ) ;
 		
@@ -264,15 +268,39 @@ static void _printDeviceProperties( string_t entry,void * arg )
 			StringDelete( &st ) ;
 		}
 	}else{
-		StringListRemoveString( _stz,q ) ;
-		e = zuluCryptDecodeMtabEntry( StringListStringAt( stx,0 ) ) ;
+		if( StringPrefixMatch( q,"/dev/mapper/",12 ) ){
+			n = StringListCopyStringAt( stx,0 ) ;
+			index = StringLastIndexOfChar( n,'-' ) ;
+			if( index != -1 ){
+				StringSubChar( n,index,'/' ) ;
+				g = StringReplaceString( n,"/dev/mapper/","/dev/" ) ;
+				if( stat( g,&str ) == 0 ){
+					/*
+					 * We will get here if q is a path that look like "/dev/mapper/abc-def"
+					 * and there is another path at "/dev/abc/def".
+					 */
+					StringListRemoveString( _stz,g ) ;
+					e = zuluCryptDecodeMtabEntry( n ) ;
+				}else{
+					StringListRemoveString( _stz,q ) ;
+					e = zuluCryptDecodeMtabEntry( StringListStringAt( stx,0 ) ) ;
+				}
+			}else{
+				StringListRemoveString( _stz,q ) ;
+				e = zuluCryptDecodeMtabEntry( StringListStringAt( stx,0 ) ) ;
+			}
+		}else{
+			StringListRemoveString( _stz,q ) ;
+			e = zuluCryptDecodeMtabEntry( StringListStringAt( stx,0 ) ) ;
+		}
+		
 		f = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;
 		
 		zuluMountPartitionProperties( e,NULL,e,f ) ;
 	}
 	
 	zuluCryptSecurityDropElevatedPrivileges();
-	
+	StringDelete( &n ) ;
 	StringListDelete( &stx ) ;
 }
 

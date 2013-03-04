@@ -46,9 +46,14 @@ typedef struct{
 	const char * fs_flags ;
 }m_struct;
 
-static inline int zuluExit( int st,stringList_t stl )
+static int _add_entry_to_mtab( m_struct * mst,string_t * opts ) __attribute__((unused)) ;
+
+static inline int zuluExit( int st,int fd,stringList_t stl )
 {
 	StringListDelete( &stl ) ;
+	if( fd != -1 ){
+		close( fd ) ;
+	}
 	return st ;
 }
 
@@ -526,14 +531,8 @@ const char * zuluCryptDecodeMtabEntry( string_t st )
 
 int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long mount_opts,const char * fs_opts,uid_t uid )
 {
-	struct mntent mt  ;
 	int h ;
-	FILE * f ;
-#if USE_NEW_LIBMOUNT_API
-	struct libmnt_lock * m_lock ;
-#else
-	mnt_lock * m_lock ;
-#endif
+
 	stringList_t stl = StringListInit() ;
 	
 	string_t * opts ;
@@ -566,21 +565,21 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 		 * failed to read file system,probably because the volume does have any or 
 		 * a plain volume was opened with a wrong key
 		 */
-		return zuluExit( 4,stl ) ;
+		return zuluExit( 4,fd,stl ) ;
 	}
 	
 	if( StringEqual( fs,"crypto_LUKS" ) ){
 		/*
 		 * we cant mount an encrypted volume, exiting
 		 */
-		return zuluExit( 4,stl ) ;
+		return zuluExit( 4,fd,stl ) ;
 	}
 
 	/*
 	 * zuluCryptMountHasNotAllowedFileSystemOptions() is defined in ./mount_fs_options.c
 	 */
 	if( zuluCryptMountHasNotAllowedFileSystemOptions( uid,fs_opts,fs ) ){
-		return zuluExit( -1,stl ) ;
+		return zuluExit( -1,fd,stl ) ;
 	}
 	mst.fs_flags = fs_opts ;
 	mst.fs = StringContent( fs ) ;
@@ -595,7 +594,7 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 		if( zuluCryptAttachLoopDeviceToFile( mst.device,O_RDWR,&fd,loop ) ){
 			mst.device = StringContent( *loop ) ;
 		}else{
-			return zuluExit( -1,stl ) ;
+			return zuluExit( -1,fd,stl ) ;
 		}
 	}
 	
@@ -608,7 +607,7 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 		*loop = StringInherit( &e ) ;
 		mst.original_device = StringContent( *loop ) ;
 		if( mst.original_device == NULL ){
-			return zuluExit( -1,stl ) ;
+			return zuluExit( -1,fd,stl ) ;
 		}
 	}
 		
@@ -618,57 +617,59 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 		 * use mount executable as a temporary solution.
 		 */
 		switch( mount_ntfs( &mst ) ){
-			case 0  : return zuluExit( 0,stl )  ;
-			case 16 : return zuluExit( 12,stl ) ;
-			default : return zuluExit( 1,stl )  ;
+			case 0  : return zuluExit( 0,fd,stl )  ;
+			case 16 : return zuluExit( 12,fd,stl ) ;
+			default : return zuluExit( 1,fd,stl )  ;
 		}
 	}
 		 
-	/*
-	 * 1 is return if "mtab" is found to be a file located at "/etc/"
-	 * 0 is returned otherwise,probably because "mtab" is a soft like to "/proc/mounts"
-	 */
+	h = mount_mapper( &mst ) ;
 	
-	if( !zuluCryptMtabIsAtEtc() ){
-		h = mount_mapper( &mst ) ;
-	}else{
-		/* 
-		 * "/etc/mtab" is not a symbolic link to /proc/mounts, manually,add an entry to it since 
-		 * mount API does not
-		 */		
-		m_lock = mnt_new_lock( "/etc/mtab~",getpid() ) ;
-		if( mnt_lock_file( m_lock ) != 0 ){
-			h = 12 ;
-		}else{
-			h = mount_mapper( &mst ) ;
-			if( h == 0 ){
-				f = setmntent( "/etc/mtab","a" ) ;
-				mt.mnt_dir    = ( char * ) mst.m_point ;
-				mt.mnt_type   = ( char * ) mst.fs ;
-				
-				_mount_options( mst.m_flags,opts ) ;
-				
-				if( strncmp( mst.device,"/dev/loop",9 ) == 0 ){
-					mt.mnt_fsname = ( char * ) mst.original_device ;
-					mt.mnt_opts = ( char * ) StringMultipleAppend( *opts,",loop=",mst.device,END ) ;
-					if( fd != -1 ){
-						close( fd ) ;
-					}
-				}else{
-					mt.mnt_fsname = ( char * ) mst.device ;
-					mt.mnt_opts = ( char * ) StringContent( *opts );
-				}
-				mt.mnt_freq   = 0 ;
-				mt.mnt_passno = 0 ;
-				addmntent( f,&mt ) ;
-				endmntent( f ) ;
-			}
-			
-			mnt_unlock_file( m_lock ) ;
+	if( h == 0 ){
+		if( zuluCryptMtabIsAtEtc() ){
+			_add_entry_to_mtab( &mst,opts ) ;
 		}
-
-		mnt_free_lock( m_lock ) ;
 	}
+
+	return zuluExit( h,fd,stl ) ;
+}
+
+static int _add_entry_to_mtab( m_struct * mst,string_t * opts )
+{
+	int h ;
+	struct mntent mt  ;
 	
-	return zuluExit( h,stl ) ;
+	FILE * f ;
+#if USE_NEW_LIBMOUNT_API
+	struct libmnt_lock * m_lock ;
+#else
+	mnt_lock * m_lock ;
+#endif		
+	m_lock = mnt_new_lock( "/etc/mtab~",getpid() ) ;
+	
+	if( mnt_lock_file( m_lock ) != 0 ){
+		h = 12 ;
+	}else{
+		f = setmntent( "/etc/mtab","a" ) ;
+		mt.mnt_dir    = ( char * ) mst->m_point ;
+		mt.mnt_type   = ( char * ) mst->fs ;
+			
+		_mount_options( mst->m_flags,opts ) ;
+				
+		if( StringPrefixMatch( mst->device,"/dev/loop",9 ) ){
+			mt.mnt_fsname = ( char * ) mst->original_device ;
+			mt.mnt_opts = ( char * ) StringMultipleAppend( *opts,",loop=",mst->device,END ) ;
+		}else{
+			mt.mnt_fsname = ( char * ) mst->device ;
+			mt.mnt_opts = ( char * ) StringContent( *opts );
+		}
+		mt.mnt_freq   = 0 ;
+		mt.mnt_passno = 0 ;
+		addmntent( f,&mt ) ;
+		endmntent( f ) ;
+		mnt_unlock_file( m_lock ) ;
+		h = 0 ;
+	}
+	mnt_free_lock( m_lock ) ;
+	return h ;
 }

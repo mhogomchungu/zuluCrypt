@@ -33,8 +33,9 @@ char * zuluCryptResolveDevRoot( void )
 	stringList_t stl ;
 	string_t st = StringGetFromVirtualFile( "/proc/cmdline" ) ;
 	string_t xt ;
-	if( st == StringVoid )
+	if( st == StringVoid ){
 		return NULL ;
+	}
 	stl = StringListStringSplit( st,' ' ) ;
 	StringDelete( &st ) ;
 	index = StringListHasSequence( stl,"root=/dev/" ) ;
@@ -64,13 +65,16 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 	const char * mount_point ;
 	const char * file_system ;
 	const char * mount_options ;
+	const char * g ;
 	char * dev ;
 	int index ;
+	struct stat str ;
 	stringList_t tmp ;
 	stringList_t stx = StringListVoid;
 	stringList_t stl ;
 	StringListIterator it ;
 	StringListIterator end;
+	string_t n ;
 	string_t st = StringGetFromVirtualFile( "/proc/self/mountinfo" ) ;
 	if( st == StringVoid ){
 		return StringListVoid ;
@@ -131,6 +135,25 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 				StringMultipleAppend( st,dev," ",mount_point," ",file_system," ",mount_options,END ) ;
 				free( dev ) ;
 			}
+		}else if( StringPrefixMatch( device,"/dev/mapper/",12 ) ){
+			/*
+			 * If the entry is an LVM volume and its in /dev/mapper/abc-def format,then convert it to
+			 * /dev/abc/def format as this is the internal format of the tool
+			 */
+			n = StringListCopyStringAt( tmp,index+2 ) ;
+			index = StringLastIndexOfChar( n,'-' ) ;
+			if( index != -1 ){
+				StringSubChar( n,index,'/' ) ;
+				g = StringReplaceString( n,"/dev/mapper/","/dev/" ) ;
+				if( stat( g,&str ) == 0 ){
+					StringMultipleAppend( st,g," ",mount_point," ",file_system," ",mount_options,END ) ;
+				}else{
+					StringMultipleAppend( st,device," ",mount_point," ",file_system," ",mount_options,END ) ;
+				}
+			}else{
+				StringMultipleAppend( st,device," ",mount_point," ",file_system," ",mount_options,END ) ;
+			}
+			StringDelete( &n ) ;
 		}else{
 			StringMultipleAppend( st,device," ",mount_point," ",file_system," ",mount_options,END ) ;
 		}
@@ -148,6 +171,9 @@ stringList_t zuluCryptGetMoutedListFromMounts( void )
 {
 	ssize_t index ;
 	char * dev ;
+	const char * g ;
+	string_t n ;
+	struct stat str ;
 	StringListIterator it ;
 	StringListIterator end;
 	string_t q = StringGetFromVirtualFile( "/proc/self/mounts" ) ;
@@ -188,6 +214,29 @@ stringList_t zuluCryptGetMoutedListFromMounts( void )
 					free( dev ) ;
 				}
 			}
+		}else if( StringStartsWith( q,"/dev/mapper/" ) ){
+			n = StringCopy( *it ) ;
+			index = StringLastIndexOfChar( n,'-' ) ;
+			if( index != -1 ){
+				StringSubChar( n,index,'/' ) ;
+				StringReplaceString( n,"/dev/mapper/","/dev/" ) ;
+				index = StringIndexOfChar( n,index,' ' ) ;
+				if( index != -1 ){
+					g = StringSubChar( n,index,'\0' ) ;
+					if( stat( g,&str ) == 0 ){
+						StringSubChar( n,index,' ' ) ;
+						StringReset( *it ) ;
+						StringAppendString( *it,n ) ;
+					}else{
+						;
+					}
+				}else{
+					;
+				}
+			}else{
+				;
+			}
+			StringDelete( &n ) ;
 		}
 	}
 	
@@ -259,8 +308,7 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 					f = zuluCryptGetVolumeTypeFromMapperPath( StringSubChar( q,k,'-' ) ) ;
 					z = String( "" ) ;
 					StringMultipleAppend( z,"UUID=\"",c,"\"\t",d,"\t",f,END ) ;
-					list = StringListAppendString( list,z ) ;
-					StringDelete( &z ) ;
+					list = StringListAppendString_1( list,&z ) ;
 					free( f ) ;
 				}
 			}else{
@@ -273,8 +321,7 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 					f = zuluCryptGetVolumeTypeFromMapperPath( StringListContentAt( stx,0 ) ) ;
 					z = String( "" ) ;
 					StringMultipleAppend( z,g,"\t",d,"\t",f,END ) ;
-					list = StringListAppendString( list,z ) ;
-					StringDelete( &z ) ;
+					list = StringListAppendString_1( list,&z ) ;
 					free( f ) ;
 					free( g ) ;
 				}
@@ -290,9 +337,32 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 
 string_t zuluCryptGetMtabEntry( const char * path )
 {
+	const char * g ;
+	struct stat str ;
+	string_t st ;
 	string_t entry = StringVoid ;
 	stringList_t stl = zuluCryptGetMountInfoList() ;
-	ssize_t index = StringListHasStartSequence( stl,path ) ;
+	ssize_t index ;
+	
+	if( StringPrefixMatch( path,"/dev/mapper/",12 ) ){
+		st = String( path ) ;
+		index = StringLastIndexOfChar( st,'-' ) ;
+		if( index != -1 ){
+			StringSubChar( st,index,'/' ) ;
+			g = StringReplaceString( st,"/dev/mapper/","/dev/" ) ;
+			if( stat( g,&str ) == 0 ){
+				index = StringListHasStartSequence( stl,g ) ;
+			}else{
+				index = StringListHasStartSequence( stl,path ) ;
+			}
+		}else{
+			index = StringListHasStartSequence( stl,path ) ;
+		}
+		StringDelete( &st ) ;
+	}else{
+		index = StringListHasStartSequence( stl,path ) ;
+	}
+	
 	if( index >= 0 ){
 		entry = StringListCopyStringAt( stl,index ) ;
 	}

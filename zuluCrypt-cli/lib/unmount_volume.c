@@ -56,22 +56,117 @@ static int entry_found( const char * m_dir,char ** m_point )
 	return h ;
 }
 
-int zuluCryptUnmountVolume( const char * device,char ** m_point )
+/*
+	static int _remove_entry_from_mtab( const char * device ) __attribute__((unused)) ;
+*/
+
+static int _remove_entry_from_mtab( const char * device ) 
 {
-	char * m ;
-	FILE * f ;
-	FILE * g ;
-	int h = 3 ;
-	int status ;
-	
-	size_t dev_len = strlen( device ) ;
-	
 #if USE_NEW_LIBMOUNT_API
 	struct libmnt_lock * lock ;
 #else
 	mnt_lock * lock ;
 #endif
 	struct mntent * mt ;
+	
+	struct stat str ;
+	
+	FILE * f ;
+	FILE * g ;
+	
+	int found = 0 ;
+	const char * e ;
+	
+	string_t st ;
+	
+	size_t dev_len = strlen( device ) ;
+	ssize_t index ;
+	
+	int h ;
+		
+	lock = mnt_new_lock( "/etc/mtab~",getpid() ) ;
+	
+	f = setmntent( "/etc/mtab","r" ) ;
+	
+	if( mnt_lock_file( lock ) != 0 ){
+		h = 4 ;
+	}else{
+		g = setmntent( "/etc/mtab-zuluCrypt","w" ) ;
+		while( ( mt = getmntent( f ) ) != NULL ){
+			if( StringPrefixMatch( mt->mnt_fsname,device,dev_len ) ){
+				found = 1 ;
+			}else{
+				addmntent( g,mt ) ;
+			}
+		}
+		
+		endmntent( g ) ;
+		if( found ){
+			rename( "/etc/mtab-zuluCrypt","/etc/mtab" ) ;
+			chown( "/etc/mtab",0,0 ) ;
+			chmod( "/etc/mtab",S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH ) ;
+		}else{
+			if( StringPrefixMatch( device,"/dev/",5 ) ){
+				/*
+				 * entry not found,assuming the entry is an LVM volume,in /dev/abc/def format while mtab has it in 
+				 * /dev/mapper/abc-def format convert it and try again 
+				 */
+				found = 0 ;
+				endmntent( f ) ;
+				f = setmntent( "/etc/mtab","r" ) ;
+				unlink( "/etc/mtab-zuluCryp" ) ;
+				g = setmntent( "/etc/mtab-zuluCrypt","w" ) ;
+				
+				st = String( device ) ;
+				index = StringLastIndexOfChar( st,'/' ) ;
+				if( index != -1 ){
+					StringSubChar( st,index,'-' ) ;
+					e = StringReplaceString( st,"/dev/","/dev/mapper/" ) ;
+					if( stat( e,&str ) == 0 ){
+						index = StringIndexOfChar( st,0,' ' ) ;
+						/*
+						 * yap,volume is an LVM volume
+						 */
+						while( ( mt = getmntent( f ) ) != NULL ){
+							if( StringPrefixMatch( mt->mnt_fsname,e,index ) ){
+								found = 1 ;
+							}else{
+								addmntent( g,mt ) ;
+							}
+						}
+					}
+				}
+			
+				endmntent( g ) ;
+			
+				StringDelete( &st ) ;
+				
+				if( found ){
+					rename( "/etc/mtab-zuluCrypt","/etc/mtab" ) ;
+					chown( "/etc/mtab",0,0 ) ;
+					chmod( "/etc/mtab",S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH ) ;
+				}else{
+					/*
+					 * volume doesnt seem to have an entry in fstab
+					 */
+					;
+				}
+			}
+		}
+			
+		mnt_unlock_file( lock ) ;
+		h = 0 ;
+	}
+	
+	endmntent( f ) ;
+	mnt_free_lock( lock ) ;
+	return h ;
+}
+
+int zuluCryptUnmountVolume( const char * device,char ** m_point )
+{
+	char * m ;
+	int h = 3 ;
 	
 	char * loop_path = NULL ;
 	
@@ -86,55 +181,22 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 	}
 	
 	/*
-	 * zuluCryptMtabIsAtEtc() is defined in mount_volume.c
-	 * 1 is return if "mtab" is found to be a file located at "/etc/"
-	 * 0 is returned otherwise,probably because "mtab" is a soft link to "/proc/mounts"
+	 * zuluCryptGetMountPointFromPath() is defined in ./print_mounted_volumes.c
 	 */
-	
-	if( zuluCryptMtabIsAtEtc() ){
-		f = setmntent( "/etc/mtab","r" ) ;
-		
-		lock = mnt_new_lock( "/etc/mtab~",getpid() ) ;
-		status = mnt_lock_file( lock ) ;
-		
-		if( status != 0 ){
-			h = 4 ;
-		}else{
-			g = setmntent( "/etc/mtab-zC","w" ) ;
-			while( ( mt = getmntent( f ) ) != NULL ){
-				if( strncmp( mt->mnt_fsname,device,dev_len ) == 0 ){
-					h = entry_found( mt->mnt_dir,m_point ) ;
-				}else{
-					addmntent( g,mt ) ;
-				}
-			}
-			
-			endmntent( g ) ;
-			
-			if( h == 0 ){
-				rename( "/etc/mtab-zC","/etc/mtab" ) ;
-				chown( "/etc/mtab",0,0 ) ;
-				chmod( "/etc/mtab",S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH ) ;
-			}else{
-				remove( "/etc/mtab-zC" ) ;
-			}
-			
-			mnt_unlock_file( lock ) ;
-		}
-		
-		endmntent( f ) ;
-		mnt_free_lock( lock ) ;
-	}else{
-		/*
-		 * zuluCryptGetMountPointFromPath() is defined in ./print_mounted_volumes.c
-		 */
-		m = zuluCryptGetMountPointFromPath( device ) ;
-		if( m != NULL ){
-			h = entry_found( m,m_point ) ;
-			free( m ) ;
+	m = zuluCryptGetMountPointFromPath( device ) ;
+	if( m != NULL ){
+		h = entry_found( m,m_point ) ;
+		free( m ) ;
+		if( h == 0 ){
+			/*
+			 *zuluCryptMtabIsAtEtc() is defined in ./mount_volume.c 
+			 */
+			if( zuluCryptMtabIsAtEtc() ){
+				h = _remove_entry_from_mtab( device ) ;
+			}	
 		}
 	}
-	
+		
 	if( h != 0 && h != 3 && h != 4 )
 		h = 2 ;
 

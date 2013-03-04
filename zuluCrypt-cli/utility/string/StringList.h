@@ -209,6 +209,12 @@ ssize_t StringListHasStartSequence( stringList_t stl,const char * str ) ;
 stringList_t StringListAppend( stringList_t stl,const char * cstring ) ;
 
 /*
+ * append an entry into the list and take ownership of it.
+ * if stl == NULL, then the function call is the same as "StringList( cstring )" 
+ */
+stringList_t StringListAppendString_1( stringList_t stl,string_t * ) ;
+
+/*
  * append an entry into the list.
  * if stl == NULL, then the function call is the same as "StringList( cstring )"  
  */
@@ -233,15 +239,6 @@ stringList_t StringListAppendList( stringList_t,stringList_t ) ;
 stringList_t StringListPrepend( stringList_t stl,const char * cstring ) ;
 
 /*
- * prepend an entry into the list
- * if stl == NULL then the function is the same as "StringList( cstring )" 
- * 
- * this function will take ownership of st,invalidating the handle after auto deleting its contents
- * 
- */
-stringList_t StringListPrependString( stringList_t stl,string_t * st ) ;
-
-/*
  * prepend an entry into the list by taking len characters from the string.
  * if stl == NULL then the function is the same as "StringList( cstring )" 
  */
@@ -250,23 +247,23 @@ stringList_t StringListPrependSize( stringList_t stl,const char * cstring,size_t
 /*
  * insert an element as position index.
  * the first position is at position 0
- * the program will most likely crash is stl == NULL
+ * if index == size of the list,the operations will have the same effect as appending the entry to the end of the list
  */
 stringList_t StringListInsertAt( stringList_t stl,const char * cstring,size_t index ) ;
 
 /*
  * insert string_t as position index.
  * the first position is at position 0
- * the program will most likely crash is stl == NULL
  * 
- * this function will take ownership of st,invalidating the handle after auto deleting its contents * 
+ * this function will take ownership of st,invalidating the handle after auto deleting its contents 
+ *  * if index == size of the list,the operations will have the same effect as appending the entry to the end of the list 
  */
 stringList_t StringListStringInsertAt( stringList_t stl,string_t *,size_t index ) ;
 
 /*
  * insert an element as position index by taking only len characters from the string
  * the first position is at position 0
- * the program will most likely crash is stl == NULL
+ * if index == size of the list,the operations will have the same effect as appending the entry to the end of the list
  */
 stringList_t StringListInsertAtSize( stringList_t stl,const char * cstring,size_t len, size_t index ) ;
 

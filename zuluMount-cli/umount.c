@@ -48,7 +48,7 @@ int zuluMountUMount( ARGS * args )
 			st = StringInherit( &loop_device ) ;
 			dev = StringContent( st ) ;
 			/*
-			 * zuluCryptGetMountPointFromPath() is defined in defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c 
+			 * zuluCryptGetMountPointFromPath() is defined in defined in ../zuluCrypt-cli/lib/process_mountinfo.c 
 			 */
 			m_point = zuluCryptGetMountPointFromPath( dev ) ;
 			if( m_point == NULL ){
@@ -57,7 +57,7 @@ int zuluMountUMount( ARGS * args )
 		}
 	}else{
 		/*
-		* zuluCryptGetMountPointFromPath() is defined in defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c 
+		 * zuluCryptGetMountPointFromPath() is defined in defined in ../zuluCrypt-cli/lib/process_mountinfo.c 
 		*/
 		m_point = zuluCryptGetMountPointFromPath( device ) ;
 		if( m_point == NULL ){
