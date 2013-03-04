@@ -87,6 +87,7 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 	it  = StringListBegin( stl ) ;
 	end = StringListEnd( stl )   ;
 	st = String( "" ) ;
+	n  = String( "" ) ;
 	for( ; it != end ; it++ ){
 		tmp = StringListStringSplit( *it,' ' ) ;
 		if( tmp == StringListVoid ){
@@ -140,7 +141,7 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 			 * If the entry is an LVM volume and its in /dev/mapper/abc-def format,then convert it to
 			 * /dev/abc/def format as this is the internal format of the tool
 			 */
-			n = StringListCopyStringAt( tmp,index+2 ) ;
+			StringAppend( n,device ) ;
 			index = StringLastIndexOfChar( n,'-' ) ;
 			if( index != -1 ){
 				StringSubChar( n,index,'/' ) ;
@@ -153,7 +154,7 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 			}else{
 				StringMultipleAppend( st,device," ",mount_point," ",file_system," ",mount_options,END ) ;
 			}
-			StringDelete( &n ) ;
+			StringReset( n ) ;
 		}else{
 			StringMultipleAppend( st,device," ",mount_point," ",file_system," ",mount_options,END ) ;
 		}
@@ -162,6 +163,7 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 		StringListDelete( &tmp ) ;
 	}
 	
+	StringDelete( &n ) ;
 	StringDelete( &st ) ;
 	StringListDelete( &stl ) ;
 	return stx ;
