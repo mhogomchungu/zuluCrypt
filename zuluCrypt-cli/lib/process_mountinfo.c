@@ -163,8 +163,7 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 		StringListDelete( &tmp ) ;
 	}
 	
-	StringDelete( &n ) ;
-	StringDelete( &st ) ;
+	StringMultipleDelete( &st,&n,END ) ;
 	StringListDelete( &stl ) ;
 	return stx ;
 }
