@@ -217,7 +217,7 @@ static void _printDeviceProperties( string_t entry,void * s )
 	
 	q = StringListContentAt( stx,0 ) ;
 	
-	if( StringPrefixMatch( q,"/dev/mapper/zuluCrypt-",22 ) ){
+	if( StringPrefixEqual( q,crypt_get_dir() ) ){
 		/*
 		 * zuluCryptSecurityGainElevatedPrivileges() and zuluCryptSecurityDropElevatedPrivileges()
 		 * are defined in ../zuluCrypt-cli/bin/security.c 
