@@ -22,63 +22,13 @@
 #include <sys/types.h>
 #include <string.h>
 #include <dirent.h>
-
-#include <mntent.h>
-#include <sys/mount.h>
 #include <stdlib.h>
 
-/*
- * below header file does not ship with the source code, it is created at configure time
- * */
-#include "libmount_header.h"
 
 /*
  * This source file attempts to "clear a dead mapper".A dead mapper happens when a user opens
  * an encrypted volume and then just unplugs it without properly closing the mapper 
  */
-
-static void mtab_remove_entry( const char * path )
-{
-	FILE * f ;
-	FILE * g ;
-	
-#if USE_NEW_LIBMOUNT_API
-	struct libmnt_lock * lock ;
-#else
-	mnt_lock * lock ;
-#endif
-	struct mntent * mt ;
-	
-	size_t path_len ;
-	
-	if( !zuluCryptMtabIsAtEtc() )
-		return ;
-	
-	path_len = strlen( path ) ;
-	
-	f = setmntent( "/etc/mtab","r" ) ;
-	
-	lock = mnt_new_lock( "/etc/mtab~",getpid() ) ;
-	
-	if( mnt_lock_file( lock ) == 0 ){
-		g = setmntent( "/etc/mtab-zC","w" ) ;
-		while( ( mt = getmntent( f ) ) != NULL ){
-			if( strncmp( mt->mnt_fsname,path,path_len ) != 0 ){
-				addmntent( g,mt ) ;
-			}
-		}
-		endmntent( g ) ;
-		endmntent( f ) ;
-		rename( "/etc/mtab-zC","/etc/mtab" ) ;
-		chown( "/etc/mtab",0,0 ) ;
-		chmod( "/etc/mtab",S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH ) ;
-		mnt_unlock_file( lock ) ;
-	}else{
-		endmntent( f ) ;
-	}	
-	
-	mnt_free_lock( lock ) ;
-}
 
 static void delete_mount_point_with_no_device( const char * path,uid_t uid,stringList_t stl )
 {
@@ -105,12 +55,8 @@ static void delete_mount_point_with_no_device( const char * path,uid_t uid,strin
 			continue ;
 		if( StringListHasSequence( stl,m_path ) != 0 ){
 			/*
-			 * TODO: there maybe collisions here if more that one path starts with the same character sequence
-			 */
-			/*
 			 * folder exists at mount point prefix but it is not mounted,this is one we want to delete
 			 */
-			
 			m_path = StringMultipleAppend( p,"/",m_path,END ) ;
 			rmdir( m_path ) ;
 		}
@@ -118,7 +64,10 @@ static void delete_mount_point_with_no_device( const char * path,uid_t uid,strin
 	
 	closedir( dir ) ;
 	StringDelete( &p ) ;
-	mtab_remove_entry( path ) ;
+	/*
+	 * zuluCrypRemoveEntryFromMtab() is defined in ../lib/unmount_volume.c
+	 */
+	zuluCrypRemoveEntryFromMtab( path ) ;
 }
 
 /*
@@ -167,10 +116,20 @@ static void remove_mapper( const char * path,stringList_t stl,uid_t uid )
 		if( umount( m_point ) == 0 ){
 			rmdir( m_point ) ;
 			zuluCryptCloseMapper( path ) ;
-			mtab_remove_entry( path ) ;
+			/*
+			 * zuluCryptMtabIsAtEtc() is defined in ../lib/mount_volume.c
+			 */
+			if( zuluCryptMtabIsAtEtc() ){
+				/*
+				* zuluCrypRemoveEntryFromMtab() is defined in ../lib/unmount_volume.c
+				*/
+				zuluCrypRemoveEntryFromMtab( path ) ;
+			}
 		}else{
 			if( umount2( m_point,MNT_DETACH ) == 0 ){
-				mtab_remove_entry( path ) ;
+				if( zuluCryptMtabIsAtEtc() ){
+					zuluCrypRemoveEntryFromMtab( path ) ;
+				}
 			}
 		}
 		
@@ -218,8 +177,7 @@ void zuluCryptClearDeadMappers( uid_t uid )
 	zuluCryptSecurityGainElevatedPrivileges() ;
 	
 	while( ( entry = readdir( dir ) ) != NULL ){
-		
-		if( strncmp( entry->d_name,m,len ) == 0 ){
+		if( StringPrefixMatch( entry->d_name,m,len ) ){
 			e = StringAppendAt( z,len1,entry->d_name ) ;
 			if( crypt_init_by_name( &cd,e ) == 0 ){
 				if( crypt_get_device_name( cd ) == NULL ){

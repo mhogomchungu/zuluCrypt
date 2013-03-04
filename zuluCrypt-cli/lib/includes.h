@@ -93,6 +93,11 @@ int zuluCryptPartitionIsMounted( const char * device ) ;
 string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos ) ;
 
 /*
+ * zuluCrypRemoveEntryFromMtab() is defined in ./unmount_volume.c
+ */
+int zuluCrypRemoveEntryFromMtab( const char * device ) ;
+
+/*
  * this function is defined in process_mountinfo.c
  * It return an entry of a partition if it is found in /etc/mtab
  * It return StringVoid otherwise

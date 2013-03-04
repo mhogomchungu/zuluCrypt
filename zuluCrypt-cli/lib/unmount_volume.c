@@ -56,7 +56,7 @@ static int entry_found( const char * m_dir,char ** m_point )
 	return h ;
 }
 
-static int _remove_entry_from_mtab( const char * device ) 
+int zuluCrypRemoveEntryFromMtab( const char * device ) 
 {
 #if USE_NEW_LIBMOUNT_API
 	struct libmnt_lock * lock ;
@@ -79,7 +79,7 @@ static int _remove_entry_from_mtab( const char * device )
 	ssize_t index ;
 	
 	int h ;
-		
+
 	lock = mnt_new_lock( "/etc/mtab~",getpid() ) ;
 	
 	f = setmntent( "/etc/mtab","r" ) ;
@@ -188,7 +188,7 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 			 *zuluCryptMtabIsAtEtc() is defined in ./mount_volume.c 
 			 */
 			if( zuluCryptMtabIsAtEtc() ){
-				h = _remove_entry_from_mtab( device ) ;
+				h = zuluCrypRemoveEntryFromMtab( device ) ;
 			}	
 		}
 	}
