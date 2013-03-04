@@ -331,7 +331,7 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 			StringListDelete( &stx ) ;
 		}
 	}
-	
+	StringListDelete( &stl ) ;
 	StringDelete( &p ) ;
 	return list ;
 }
