@@ -66,7 +66,7 @@ file( WRITE zuluMount.desktop
 [Desktop Entry]
 Comment[en_US]=
 Comment=
-Exec=${CMAKE_INSTALL_PREFIX}/bin/zuluMount-gui
+Exec=${CMAKE_INSTALL_PREFIX}/bin/zuluMount-gui -d %U
 GenericName[en_US]=Encrypted volume and Partition mounter
 GenericName=Encrypted volumes and partition mounter
 Icon=${CMAKE_INSTALL_PREFIX}/share/icons/zuluMount.png

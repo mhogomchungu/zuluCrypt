@@ -93,13 +93,13 @@ void MainWindow::setUpApp()
 void MainWindow::processArgumentList()
 {
 	QStringList argv = QCoreApplication::arguments() ;
-	int size = argv.size() ;
+	int last_spot = argv.size() - 1 ;
 	int index = argv.indexOf( "-d" ) ;
 
 	m_device = QString( "" ) ;
 
 	if( index != -1 ){
-		if( index < size ){
+		if( index < last_spot ){
 			m_device = argv.at( index + 1 ) ;
 		}
 	}
@@ -108,7 +108,7 @@ void MainWindow::processArgumentList()
 	m_folderOpener = QString( "xdg-open" ) ;
 
 	if( index != -1 ){
-		if( index < size ){
+		if( index < last_spot ){
 			m_folderOpener = argv.at( index + 1 ) ;
 		}
 	}

@@ -2,7 +2,7 @@
 [Desktop Entry]
 Comment[en_US]=
 Comment=
-Exec=/usr/bin/zuluCrypt-gui
+Exec=/usr/bin/zuluCrypt-gui -d %U
 GenericName[en_US]=Encrypted volumes manager
 GenericName=Encrypted volumes manager
 Icon=/usr/share/icons/zuluCrypt.png

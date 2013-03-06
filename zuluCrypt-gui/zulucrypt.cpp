@@ -64,11 +64,11 @@ void zuluCrypt::processArgumentList()
 {
 	QStringList argv = QCoreApplication::arguments() ;
 
-	int size = argv.size() ;
+	int last_spot = argv.size() -1  ;
 	int index = argv.indexOf( "-m" ) ;
 
 	if( index != -1 ){
-		if( index < size ){
+		if( index < last_spot ){
 			m_folderOpener = argv.at( index + 1 ) ;
 		}
 	}
@@ -76,10 +76,10 @@ void zuluCrypt::processArgumentList()
 	index = argv.indexOf( "-d" ) ;
 
 	if( index != -1 ){
-		if( index < size ){
+		if( index < last_spot ){
 			QString x = argv.at( index + 1 ) ;
 			QString y = x.split( "/" ).last() ;
-			this->ShowPasswordDialogFromFavorite( x,y ) ;
+			this->ShowPasswordDialog( x,y ) ;
 		}
 	}
 }
@@ -201,7 +201,7 @@ void zuluCrypt::setupUIElements()
 void zuluCrypt::setupConnections()
 {
 	connect( m_ui->actionErase_data_on_device,SIGNAL( triggered() ),this,SLOT( ShowEraseDataDialog() ) );
-	connect( this,SIGNAL( favClickedVolume( QString,QString ) ),this,SLOT( ShowPasswordDialogFromFavorite( QString,QString ) ) ) ;
+	connect( this,SIGNAL( favClickedVolume( QString,QString ) ),this,SLOT( ShowPasswordDialog( QString,QString ) ) ) ;
 	connect( m_ui->actionPartitionOpen,SIGNAL( triggered() ),this,SLOT( ShowOpenPartition() ) );
 	connect( m_ui->actionFileOpen,SIGNAL( triggered() ),this,SLOT( ShowPasswordDialog() ) ) ;
 	connect( m_ui->actionFileCreate,SIGNAL( triggered() ),this,SLOT( ShowCreateFile() ) );
@@ -836,7 +836,7 @@ void zuluCrypt::ShowPasswordDialog()
 	setUpPasswordDialog()->ShowUI();
 }
 
-void zuluCrypt::ShowPasswordDialogFromFavorite( QString x, QString y )
+void zuluCrypt::ShowPasswordDialog( QString x, QString y )
 {
 	setUpPasswordDialog()->ShowUI( x,y );
 }

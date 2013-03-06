@@ -125,7 +125,7 @@ private slots :
 	void ShowOpenPartition( void );
 	void ShowManageSystemPartitions( void ) ;
 	void ShowManageNonSystemPartitions( void ) ;
-	void ShowPasswordDialogFromFavorite( QString,QString );
+	void ShowPasswordDialog( QString,QString );
 	void ShowEraseDataDialog( void );
 	void partitionClicked( QString );
 	void createPartition( QString );

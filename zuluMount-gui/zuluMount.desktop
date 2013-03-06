@@ -2,7 +2,7 @@
 [Desktop Entry]
 Comment[en_US]=
 Comment=
-Exec=/usr/bin/zuluMount-gui
+Exec=/usr/bin/zuluMount-gui -d %U
 GenericName[en_US]=Encrypted volume and Partition mounter
 GenericName=Encrypted volumes and partition mounter
 Icon=/usr/share/icons/zuluMount.png

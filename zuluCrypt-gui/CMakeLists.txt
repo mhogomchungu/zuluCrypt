@@ -144,7 +144,7 @@ file(WRITE zuluCrypt.desktop
 [Desktop Entry]
 Comment[en_US]=
 Comment=
-Exec=${CMAKE_INSTALL_PREFIX}/bin/zuluCrypt-gui
+Exec=${CMAKE_INSTALL_PREFIX}/bin/zuluCrypt-gui -d %U
 GenericName[en_US]=Encrypted volumes manager
 GenericName=Encrypted volumes manager
 Icon=${CMAKE_INSTALL_PREFIX}/share/icons/zuluCrypt.png
