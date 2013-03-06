@@ -36,6 +36,7 @@
 
 #include "../zuluCrypt-cli/constants.h"
 #include "../zuluCrypt-cli/bin/bash_special_chars.h"
+#include "version.h"
 
 class utility
 {
@@ -59,6 +60,7 @@ public:
 	static bool mapperPathExists( QString path ) ;
 	static QString mountPath( QString ) ;
 	static QString userName( void ) ;
+	static void help( QString app ) ;
 };
 
 #endif // MISCFUNCTIONS_H

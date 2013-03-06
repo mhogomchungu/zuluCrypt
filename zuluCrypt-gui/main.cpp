@@ -21,12 +21,25 @@
 #include <QtGui/QApplication>
 #include "zulucrypt.h"
 #include <QCoreApplication>
-
+#include <QStringList>
 int main( int argc,char * argv[] )
 {
 	QApplication a( argc,argv );
+
 	QCoreApplication::setApplicationName( QString( "zuluCrypt" ) ) ;
-	zuluCrypt zc ;
-	zc.start();
-	return a.exec();
+
+	QStringList q = QCoreApplication::arguments() ;
+	if( q.contains( QString( "-h" ) ) ||
+	    q.contains( QString( "-help" ) ) ||
+	    q.contains( QString( "--help" ) ) ||
+	    q.contains( QString( "-v" ) ) ||
+	    q.contains( QString( "-version" ) ) ||
+	    q.contains( QString( "--version" ) ) ){
+		utility::help( QString( "zuluCrypt" ) ) ;
+		return 0 ;
+	}else{
+		zuluCrypt zc ;
+		zc.start();
+		return a.exec();
+	}
 }

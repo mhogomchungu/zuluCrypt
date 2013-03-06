@@ -69,6 +69,7 @@ void MainWindow::setUpApp()
 	this->disableAll();
 
 	connect( part,SIGNAL( signalMountedList( QStringList,QStringList ) ),this,SLOT( slotMountedList( QStringList,QStringList ) ) ) ;
+	connect( part,SIGNAL( done() ),this,SLOT( openVolumeFromArgumentList() ) ) ;
 
 	part->startAction( managepartitionthread::Update ) ;
 
@@ -81,16 +82,36 @@ void MainWindow::setUpApp()
 	if( !dir.exists() ){
 		dir.mkdir( dirPath ) ;
 	}
+
 	m_ui->pbunmount->setVisible( false );
 
-	QStringList argv = QCoreApplication::arguments() ;
-	if( argv.size() < 2 ){
-		m_folderOpener = QString( "xdg-open" ) ;
-	}else{
-		m_folderOpener = argv.at( 1 ) ;
-	}
+	this->processArgumentList();
 
 	this->show();
+}
+
+void MainWindow::processArgumentList()
+{
+	QStringList argv = QCoreApplication::arguments() ;
+	int size = argv.size() ;
+	int index = argv.indexOf( "-d" ) ;
+
+	m_device = QString( "" ) ;
+
+	if( index != -1 ){
+		if( index < size ){
+			m_device = argv.at( index + 1 ) ;
+		}
+	}
+
+	index = argv.indexOf( "-m" ) ;
+	m_folderOpener = QString( "xdg-open" ) ;
+
+	if( index != -1 ){
+		if( index < size ){
+			m_folderOpener = argv.at( index + 1 ) ;
+		}
+	}
 }
 
 void MainWindow::defaultButton()
@@ -303,6 +324,16 @@ void MainWindow::mount( QString type,QString device,QString label )
 		connect( mp,SIGNAL( hideUISignal() ),mp,SLOT( deleteLater() ) ) ;
 		connect( mp,SIGNAL( hideUISignal() ),this,SLOT( enableAll() ) ) ;
 		mp->ShowUI( device,label );
+	}
+}
+
+void MainWindow::openVolumeFromArgumentList()
+{
+	if( !m_device.isEmpty() ){
+		managepartitionthread * m = new managepartitionthread() ;
+		connect( m,SIGNAL( getVolumeInfo( QString,QString ) ),this,SLOT( getVolumeInfo( QString,QString ) ) ) ;
+		m->setDevice( m_device );
+		m->startAction( managepartitionthread::VolumeType ) ;
 	}
 }
 

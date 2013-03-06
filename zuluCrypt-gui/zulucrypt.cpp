@@ -57,6 +57,36 @@ void zuluCrypt::setUpApp()
 	initFont();
 	initKeyCombo();
 	initTray();
+	processArgumentList();
+}
+
+void zuluCrypt::processArgumentList()
+{
+	QStringList argv = QCoreApplication::arguments() ;
+	int size = argv.size() ;
+	int index = argv.indexOf( "-d" ) ;
+
+	if( index != -1 ){
+		if( index < size ){
+			QString x = argv.at( index + 1 ) ;
+			QString y = x.split( "/" ).last() ;
+			this->ShowPasswordDialogFromFavorite( x,y ) ;
+		}
+	}
+
+	index = argv.indexOf( "-m" ) ;
+	m_folderOpener = QString( "xdg-open" ) ;
+
+	if( index != -1 ){
+		if( index < size ){
+			m_folderOpener = argv.at( index + 1 ) ;
+		}
+	}
+}
+
+void zuluCrypt::openVolumeFromArgumentList()
+{
+
 }
 
 void zuluCrypt::initKeyCombo()
@@ -693,7 +723,7 @@ void zuluCrypt::luksHeaderBackUp()
 
 void zuluCrypt::luksHeaderBackUpContextMenu()
 {
-	QTableWidgetItem * item = m_ui->tableWidget->currentItem();	
+	QTableWidgetItem * item = m_ui->tableWidget->currentItem();
 	QString device = m_ui->tableWidget->item( item->row(),0 )->text() ;
 	this->setUpManageLuksHeader()->backUpHeader( device );
 }

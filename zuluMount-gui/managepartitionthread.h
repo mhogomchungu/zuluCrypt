@@ -37,6 +37,7 @@ class managepartitionthread : public QObject,public QRunnable
 	Q_OBJECT
 public:
 	managepartitionthread( void ) ;
+	~managepartitionthread() ;
 	enum Action{
 		Update,
 		Mount,
@@ -61,6 +62,7 @@ signals:
 	void signalProperties( QString ) ;
 	void checkPermissions( int ) ;
 	void getVolumeInfo( QString,QString ) ;
+	void done( void ) ;
 private:
 	void checkPermissions( void );
 	void openPathInFileManager( void ) ;

@@ -29,6 +29,7 @@
 #include <QDir>
 #include <pwd.h>
 
+#include <iostream>
 #include <QDebug>
 
 //#include <libcryptsetup.h>
@@ -48,6 +49,19 @@ QString utility::userName()
 {
 	struct passwd * pass = getpwuid( getuid() ) ;
 	return QString( pass->pw_name ) ;
+}
+
+void utility::help( QString app )
+{
+	Q_UNUSED( app ) ;
+
+	const char * verInfo= "\n\
+options:\n\
+	-d   path to device to open manage\n\
+	-m   tool to use to open a default file manager(default tool is xdg-open)\n" ;
+
+	std::cout << VERSION_STRING << std::endl ;
+	std::cout << verInfo << std::endl ;
 }
 
 void utility::debug( QString s )

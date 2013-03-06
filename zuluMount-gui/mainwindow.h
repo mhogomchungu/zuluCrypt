@@ -82,6 +82,8 @@ private slots:
 	void stateChanged( int ) ;
 	void slotOpenFolder( void ) ;
 	void fileManagerOpenStatus( int exitCode, int exitStatus,int startError ) ;
+	void processArgumentList( void ) ;
+	void openVolumeFromArgumentList( void ) ;
 private:
 	Ui::MainWindow * m_ui ;
 

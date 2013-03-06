@@ -141,6 +141,7 @@ private slots :
 	void failedToOpenWallet( void ) ;
 	void openFolder( void ) ;
 	void fileManagerOpenStatus( int exitCode, int exitStatus,int startError ) ;
+	void openVolumeFromArgumentList( void ) ;
 private:
 	passwordDialog * setUpPasswordDialog( void );
 	openvolume * setUpOpenpartition( void );
@@ -161,6 +162,8 @@ private:
 	void closeStatusErrorMessage( int );
 	void setUpApp( void ) ;
 	void setFolderOpener( void ) ;
+	void processArgumentList( void ) ;
+
 	Ui::zuluCrypt * m_ui;
 	QSystemTrayIcon * m_trayIcon ;
 	QString m_folderOpener ;

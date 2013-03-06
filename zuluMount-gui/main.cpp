@@ -19,11 +19,24 @@
 
 #include <QtGui/QApplication>
 #include "mainwindow.h"
+#include <QStringList>
 
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
-	MainWindow w ;
-	w.start();
-	return a.exec();
+
+	QStringList q = QCoreApplication::arguments() ;
+	if( q.contains( QString( "-h" ) ) ||
+	    q.contains( QString( "-help" ) ) ||
+	    q.contains( QString( "--help" ) ) ||
+	    q.contains( QString( "-v" ) ) ||
+	    q.contains( QString( "-version" ) ) ||
+	    q.contains( QString( "--version" ) ) ){
+		utility::help( QString( "zuluCrypt" ) ) ;
+		return 0 ;
+	}else{
+		MainWindow w ;
+		w.start();
+		return a.exec();
+	}
 }

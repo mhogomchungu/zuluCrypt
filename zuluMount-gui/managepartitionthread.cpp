@@ -248,3 +248,8 @@ void managepartitionthread::startAction( managepartitionthread::Action action )
 	m_action = action ;
 	QThreadPool::globalInstance()->start( this ) ;
 }
+
+managepartitionthread::~managepartitionthread()
+{
+	emit done();
+}
