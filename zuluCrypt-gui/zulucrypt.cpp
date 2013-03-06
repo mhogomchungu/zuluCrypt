@@ -36,10 +36,12 @@
 #include <QKeySequence>
 zuluCrypt::zuluCrypt( QWidget * parent ) :QMainWindow( parent ),m_ui( new Ui::zuluCrypt ),m_trayIcon( 0 )
 {
+	m_folderOpener = QString( "xdg-open" ) ;
 }
 
 void zuluCrypt::setFolderOpener()
 {
+	//currently not used
 	QStringList argv = QCoreApplication::arguments() ;
 	if( argv.size() < 2 ){
 		m_folderOpener = QString( "xdg-open" ) ;
@@ -50,36 +52,34 @@ void zuluCrypt::setFolderOpener()
 
 void zuluCrypt::setUpApp()
 {
-	setFolderOpener() ;
 	setupUIElements();
 	setupConnections();
 	StartUpAddOpenedVolumesToTableThread();
 	initFont();
 	initKeyCombo();
 	initTray();
-	processArgumentList();
 }
 
 void zuluCrypt::processArgumentList()
 {
 	QStringList argv = QCoreApplication::arguments() ;
+
 	int size = argv.size() ;
-	int index = argv.indexOf( "-d" ) ;
+	int index = argv.indexOf( "-m" ) ;
+
+	if( index != -1 ){
+		if( index < size ){
+			m_folderOpener = argv.at( index + 1 ) ;
+		}
+	}
+
+	index = argv.indexOf( "-d" ) ;
 
 	if( index != -1 ){
 		if( index < size ){
 			QString x = argv.at( index + 1 ) ;
 			QString y = x.split( "/" ).last() ;
 			this->ShowPasswordDialogFromFavorite( x,y ) ;
-		}
-	}
-
-	index = argv.indexOf( "-m" ) ;
-	m_folderOpener = QString( "xdg-open" ) ;
-
-	if( index != -1 ){
-		if( index < size ){
-			m_folderOpener = argv.at( index + 1 ) ;
 		}
 	}
 }
@@ -167,6 +167,7 @@ void zuluCrypt::startUpdateFinished( int st )
 	Q_UNUSED( st ) ;
 	m_ui->tableWidget->setEnabled( true );
 	m_ui->tableWidget->setFocus();
+	processArgumentList();
 }
 
 void zuluCrypt::StartUpAddOpenedVolumesToTableThread()
