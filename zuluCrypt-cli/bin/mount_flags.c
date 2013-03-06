@@ -48,12 +48,24 @@ int zuluCryptMountFlagsAreNotCorrect( const char * mode,uid_t uid,unsigned long 
 	}else{
 		flg |= MS_NODEV ;
 	}
-	if( StringHasComponent( mode,"exec" ) ){
-		if( user_has_no_access ){
-			return 1 ;
+	if( zuluCryptUserIsAMemberOfAGroup( uid,"zulumount-exec" ) ){
+		/*
+		 * user is a member of a group,mount volume with exec option by default
+		 */
+		if( StringHasComponent( mode,"noexec" ) ){
+			/*
+			 * user with access wish to mount a volume without it
+			 */
+			flg |= MS_NOEXEC ;
 		}
 	}else{
-		flg |= MS_NOEXEC ;
+		if( StringHasComponent( mode,"exec" ) ){
+			if( user_has_no_access ){
+				return 1 ;
+			}
+		}else{
+			flg |= MS_NOEXEC ;
+		}
 	}
 	if( StringHasComponent( mode,"suid" ) ){
 		if( user_has_no_access ){
