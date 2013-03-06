@@ -72,8 +72,9 @@ void cryptfilethread::calculateMd5( QString path,char * result )
 {
 	emit titleUpdate( tr( "calculating md5sum" ) );
 	emit disableCancel();
-	MD5_CTX ctx ;
-	MD5_Init( &ctx ) ;
+	
+	zuluCryptMD5_CTX ctx ;
+	zuluCryptMD5_Init( &ctx ) ;
 
 	QByteArray p = path.toAscii() ;
 
@@ -84,10 +85,10 @@ void cryptfilethread::calculateMd5( QString path,char * result )
 		fstat( fd,&st ) ;
 		void * map = mmap( 0,st.st_size,PROT_READ,MAP_PRIVATE,fd,0 ) ;
 		if( map != MAP_FAILED ){
-			MD5_Update( &ctx,map,st.st_size ) ;
+			zuluCryptMD5_Update( &ctx,map,st.st_size ) ;
 			munmap( map,st.st_size ) ;
 			char digest[ 32 ] ;
-			MD5_Final( ( unsigned char * )digest,&ctx ) ;
+			zuluCryptMD5_Final( ( unsigned char * )digest,&ctx ) ;
 			for( int i = 0 ; i < 16 ; i++ ) {
 				snprintf( &(result[i*2] ),32,"%02x",( unsigned int )digest[i] );
 			}

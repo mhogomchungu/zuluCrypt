@@ -107,9 +107,9 @@ QT4_ADD_RESOURCES( TRAY_RC_SRCS icon.qrc )
 
 INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
 
-add_executable( zuluCrypt-gui ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} ${MD5} )
+add_executable( zuluCrypt-gui ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS}  )
 
-target_link_libraries( zuluCrypt-gui ${zuluPluginManager} -lQtNetwork ) 
+target_link_libraries( zuluCrypt-gui ${zuluPluginManager} -lQtNetwork -lzuluCryptMD5 -L${PROJECT_BINARY_DIR}/lib) 
 
 if( library_pwquality )
 	if( kwallet_library )

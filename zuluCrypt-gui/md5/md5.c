@@ -34,8 +34,10 @@
  * optimizations are not included to reduce source code size and avoid
  * compile-time configuration.
  */
-
+/*
 #ifndef HAVE_OPENSSL
+*/
+#if 1
 
 #include <string.h>
 
@@ -71,16 +73,16 @@
  */
 #if defined(__i386__) || defined(__x86_64__) || defined(__vax__)
 #define SET(n) \
-	(*(MD5_u32plus *)&ptr[(n) * 4])
+	(*(zuluCryptMD5_u32plus *)&ptr[(n) * 4])
 #define GET(n) \
 	SET(n)
 #else
 #define SET(n) \
 	(ctx->block[(n)] = \
-	(MD5_u32plus)ptr[(n) * 4] | \
-	((MD5_u32plus)ptr[(n) * 4 + 1] << 8) | \
-	((MD5_u32plus)ptr[(n) * 4 + 2] << 16) | \
-	((MD5_u32plus)ptr[(n) * 4 + 3] << 24))
+	(zuluCryptMD5_u32plus)ptr[(n) * 4] | \
+	((zuluCryptMD5_u32plus)ptr[(n) * 4 + 1] << 8) | \
+	((zuluCryptMD5_u32plus)ptr[(n) * 4 + 2] << 16) | \
+	((zuluCryptMD5_u32plus)ptr[(n) * 4 + 3] << 24))
 #define GET(n) \
 	(ctx->block[(n)])
 #endif
@@ -89,11 +91,11 @@
  * This processes one or more 64-byte data blocks, but does NOT update
  * the bit counters.  There are no alignment requirements.
  */
-static void *body(MD5_CTX *ctx, void *data, unsigned long size)
+static void *body(zuluCryptMD5_CTX *ctx, void *data, unsigned long size)
 {
 	unsigned char *ptr;
-	MD5_u32plus a, b, c, d;
-	MD5_u32plus saved_a, saved_b, saved_c, saved_d;
+	zuluCryptMD5_u32plus a, b, c, d;
+	zuluCryptMD5_u32plus saved_a, saved_b, saved_c, saved_d;
 
 	ptr = data;
 
@@ -196,7 +198,7 @@ static void *body(MD5_CTX *ctx, void *data, unsigned long size)
 	return ptr;
 }
 
-void MD5_Init(MD5_CTX *ctx)
+void zuluCryptMD5_Init(zuluCryptMD5_CTX *ctx)
 {
 	ctx->a = 0x67452301;
 	ctx->b = 0xefcdab89;
@@ -207,9 +209,9 @@ void MD5_Init(MD5_CTX *ctx)
 	ctx->hi = 0;
 }
 
-void MD5_Update(MD5_CTX *ctx, void *data, unsigned long size)
+void zuluCryptMD5_Update(zuluCryptMD5_CTX *ctx, void *data, unsigned long size)
 {
-	MD5_u32plus saved_lo;
+	zuluCryptMD5_u32plus saved_lo;
 	unsigned long used, free;
 
 	saved_lo = ctx->lo;
@@ -241,7 +243,7 @@ void MD5_Update(MD5_CTX *ctx, void *data, unsigned long size)
 	memcpy(ctx->buffer, data, size);
 }
 
-void MD5_Final(unsigned char *result, MD5_CTX *ctx)
+void zuluCryptMD5_Final(unsigned char *result, zuluCryptMD5_CTX *ctx)
 {
 	unsigned long used, free;
 
