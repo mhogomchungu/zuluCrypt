@@ -168,7 +168,7 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 	
 	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
 		/*
-		 * zuluCryptLoopDeviceAddress() is defined in create_loop_device.c
+		 * zuluCryptLoopDeviceAddress() is defined in ./create_loop_device.c
 		 */
 		loop_path = zuluCryptLoopDeviceAddress( device ) ;
 		if( loop_path != NULL ){
@@ -177,7 +177,7 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 	}
 	
 	/*
-	 * zuluCryptGetMountPointFromPath() is defined in ./print_mounted_volumes.c
+	 * zuluCryptGetMountPointFromPath() is defined in ./process_mountinfo.c
 	 */
 	m = zuluCryptGetMountPointFromPath( device ) ;
 	if( m != NULL ){

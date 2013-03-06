@@ -136,7 +136,6 @@ static stringList_t _zuluCryptAddLVMVolumes( stringList_t stl )
 	if( dir != NULL ){
 		st = String( "/dev/" ) ;
 		while( ( entry = readdir( dir ) ) != NULL ){
-			m_path = entry->d_name ;
 			/*
 			 * LVM volumes have two paths,one has a format of "/dev/mapper/ABC-DEF" and the 
 			 * other has a format of "/dev/ABC/DEF". 
@@ -144,9 +143,9 @@ static stringList_t _zuluCryptAddLVMVolumes( stringList_t stl )
 			 * below code converts the former format to the latter one and assume the volume is LVM
 			 * if the converted path is found in "/dev"
 			 */	
-			if( strchr( m_path,'-' ) != NULL ){
-				StringAppendAt( st,5,m_path ) ;
-				index = StringLastIndexOfChar( st,'-' ) ;
+			StringAppendAt( st,5,entry->d_name ) ;
+			index = StringLastIndexOfChar( st,'-' ) ;
+			if( index != -1 ){
 				m_path = StringSubChar( st,index,'/' ) ;
 				if( stat( m_path,&lvm ) == 0 ){
 					stl = StringListAppendString( stl,st ) ;

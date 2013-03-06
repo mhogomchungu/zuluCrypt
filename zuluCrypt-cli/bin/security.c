@@ -55,18 +55,19 @@ static int has_access( const char * path,int c )
 	}
 }
 
+static int create_group( const char * groupname ) __attribute__((unused)) ;
+
 static int create_group( const char * groupname )
 {
 	process_t p ;
 	int st = 1 ;
-	if( zuluCryptSecurityGainElevatedPrivileges() ){
-		p = Process( ZULUCRYPTgroupadd ) ;
-		ProcessSetArgumentList( p,"-f",groupname,ENDLIST ) ;
-		ProcessStart( p ) ;
-		st = ProcessExitStatus( p ) ;
-		ProcessDelete( &p ) ;
-		zuluCryptSecurityDropElevatedPrivileges();
-	}
+	zuluCryptSecurityGainElevatedPrivileges() ;
+	p = Process( ZULUCRYPTgroupadd ) ;
+	ProcessSetArgumentList( p,"-f",groupname,ENDLIST ) ;
+	ProcessStart( p ) ;
+	st = ProcessExitStatus( p ) ;
+	ProcessDelete( &p ) ;
+	zuluCryptSecurityDropElevatedPrivileges();
 	return st == 0 ;
 }
 
@@ -98,7 +99,10 @@ int zuluCryptUserIsAMemberOfAGroup( uid_t uid,const char * groupname )
 	grp = getgrnam( groupname ) ;
 	
 	if( grp == NULL ){
-		create_group( groupname )  ;
+		/*
+		 * 	dont autocreate groups
+		 *	create_group( groupname )  ;
+		 */
 		zuluCryptSecurityDropElevatedPrivileges();
 		return 0 ;
 	}

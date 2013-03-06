@@ -113,3 +113,6 @@ version 4.6.2
 -- add tcplay as an optional dependency to allow creation of truecrypt volumes
 -- fix bug:truecrypt volumes with multiple ciphers did not close properly
 -- fix bug:volumes did not close properly if mount point had a space character among others in it
+-- feature added:users who are members of "zulumount-exec" group will have their volumes opened with "exec" mount option.
+   This will allow them to be able to execute commands from the mount point.The default and recommended option is not mount with "noexec" option.
+   
