@@ -6,3 +6,4 @@ add_definitions( -D_FILE_OFFSET_BITS=64 -Wextra -Wall -pedantic -I${PROJECT_BINA
 
 add_library( zuluCryptMD5 STATIC md5.c )
 set_target_properties( zuluCryptMD5 PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -pedantic " ) 
+set_target_properties( zuluCryptMD5 PROPERTIES LINK_FLAGS "-pie" )
