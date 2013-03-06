@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
-add_definitions( -D_FILE_OFFSET_BITS=64 -Wextra -Wall -pedantic -I${PROJECT_BINARY_DIR}/zuluCrypt-gui/ ) 
+add_definitions( -D_FILE_OFFSET_BITS=64 -Wextra -Wall -pedantic -std=c++0x -I${PROJECT_BINARY_DIR}/zuluCrypt-gui/ ) 
 
 set (UI_FILES createfile.ui
 		createvolume.ui
@@ -95,7 +95,6 @@ set (SRC createfile.cpp
 	openmountpointinfilemanager.cpp
 	savemountpointpath.cpp
 	../zuluMount-gui/oneinstance.cpp	
-	md5/md5.c
 )
 
 INCLUDE( ${QT_USE_FILE} )
@@ -108,7 +107,7 @@ QT4_ADD_RESOURCES( TRAY_RC_SRCS icon.qrc )
 
 INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
 
-add_executable( zuluCrypt-gui ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
+add_executable( zuluCrypt-gui ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} ${MD5} )
 
 target_link_libraries( zuluCrypt-gui ${zuluPluginManager} -lQtNetwork ) 
 
