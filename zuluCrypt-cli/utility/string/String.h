@@ -35,6 +35,7 @@ extern "C" {
 #include <unistd.h>
 #include <stdarg.h>
 #include <termios.h>
+#include <sys/mman.h>
 
 /*
  * Takes a pointer to a function to be called when memory allocation can not take place
@@ -333,7 +334,17 @@ const char * StringStringAt( string_t st,size_t p ) ;
  * return 1 if a string is a part of stringlist
  * return 0 otherwise or if StringVoid
  */
-int StringOwned( string_t  ) ;
+int StringOwned( string_t ) ;
+
+/*
+ * call mlock() on the string
+ */
+int StringLock( string_t ) ;
+
+/*
+ * call munlock() on the string
+ */
+int StringUnlock( string_t ) ;
 
 /*
  *Check to see if the string pointer by st ends with string s. 

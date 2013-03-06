@@ -71,7 +71,7 @@ int zuluMountCryptoMount( ARGS * args )
 	zuluCryptEXEGetOptsSetDefault( &opts ) ;
 	
 	if( key_source != NULL ){
-		if( strcmp( key_source,"-G" ) == 0 ){
+		if( StringPrefixEqual( key_source,"-G" ) ){
 			opts.plugin_path = key ;
 		}
 	}

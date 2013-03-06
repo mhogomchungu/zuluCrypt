@@ -710,22 +710,28 @@ char * const * StringListStringArray( stringList_t stl )
 {
 	size_t i ;
 	size_t j ;
-	char ** argv ;
+	char ** q ;
+	string_t * p ;
 	
 	if( stl == StringListVoid ){
-		return NULL ;
+		q = ( char ** ) malloc( sizeof( char * ) ) ;
+		if( q == NULL ){
+			return ( char * const * ) _StringListError() ;
+		}
+		q[ 0 ] = '\0' ;
+	}else{
+		j = stl->size ;
+		p = stl->stp ;
+		q = ( char ** ) malloc( sizeof( char * ) * ( j + 1 ) ) ;
+		if( q == NULL ){
+			return ( char * const * ) _StringListError() ;
+		}
+		q[ j ] = '\0' ;
+		for( i = 0 ; i < j ; i++ ){
+			q[ i ] = p[ i ]->string ;
+		}
 	}
-	
-	j = stl->size ;
-	
-	argv = ( char ** ) malloc( sizeof( char * ) * ( j + 1 ) ) ;
-	argv[ j ] = NULL ;
-	
-	for( i = 0 ; i < j ; i++ ){
-		argv[ i ] = stl->stp[ i ]->string ;
-	}
-	
-	return argv ;
+	return q ;
 }
 
 stringList_t StringListRemoveAt( stringList_t stl, size_t index ) 

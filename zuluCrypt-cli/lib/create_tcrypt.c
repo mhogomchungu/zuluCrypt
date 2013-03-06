@@ -28,6 +28,7 @@
 int zuluCryptCreateTCrypt( const char * dev,const char * pass,size_t pass_size,const char * rng )
 {
 #if TRUECRYPT_CREATE
+
 	tc_api_opts api_opts ;
 	int r ;
 	

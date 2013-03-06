@@ -111,5 +111,5 @@ version 4.6.2
 -- add support for LVM volumes
 -- add support for consulting udev in addition to fstab when deciding if a system is system or not
 -- add tcplay as an optional dependency to allow creation of truecrypt volumes
--- fix bug:not all mappers where closed when a truecrypt volume uses more than one.
+-- fix bug:truecrypt volumes with multiple ciphers did not close properly
 -- fix bug:volumes did not close properly if mount point had a space character among others in it

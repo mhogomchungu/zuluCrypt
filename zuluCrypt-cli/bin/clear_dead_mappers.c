@@ -202,7 +202,6 @@ void zuluCryptClearDeadMappers( uid_t uid )
 	zuluCryptSecurityDropElevatedPrivileges() ;
 	
 	StringListDelete( &stl ) ;
-	StringDelete( &p ) ;
-	StringDelete( &z ) ;
+	StringMultipleDelete( &p,&z,END ) ;
 	closedir( dir ) ;
 }

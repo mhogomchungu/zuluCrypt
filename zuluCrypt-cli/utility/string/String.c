@@ -82,6 +82,16 @@ static inline char * __StringExpandMemory( string_t st,size_t new_size )
 	}
 }
 
+int StringLock( string_t st )
+{
+	return st == StringVoid ? -1 : mlock( ( const void * )st->string,st->size ) ;
+}
+
+int StringUnlock( string_t st )
+{
+	return st == StringVoid ? -1 : munlock( ( const void * )st->string,st->size ) ;
+}
+
 void StringDelete( string_t * st )
 {
 	string_t s ;

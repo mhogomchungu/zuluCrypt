@@ -106,6 +106,7 @@ void cryptfiles::sourceTextChanged( QString source )
 	}else{
 		dest = source.split( "/" ).last() ;
 	}
+
 	QStringList p = m_ui->lineEditDestinationPath->text().split( "/" );
 
 	int size = p.size() ;
@@ -201,7 +202,7 @@ void cryptfiles::disableAll()
 	m_ui->rbKey->setEnabled( false );
 	m_ui->rbKeyFile->setEnabled( false );
 	m_ui->labelProgressBar->setEnabled( false );
-
+	m_ui->pushButtonCancel->setEnabled( false );
 }
 
 void cryptfiles::pbCreate()
