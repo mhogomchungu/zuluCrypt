@@ -84,7 +84,7 @@ static int zuluExit( int st,const char * device,char * m_point,stringList_t stl,
 		/* case 10: currently unused */
 		case 11: printf( "ERROR: one or more required argument(s) for this operation is missing\n" );				break ;
 		case 12: printf( "ERROR: could not get a lock on /etc/mtab~\n" );							break ;
-		case 13: printf( "ERROR: wrong argument for mode, valid options are \"rw\" or \"ro\"\n" );				break ;
+		/* case 13: currently unused */
 		case 14: printf( "ERROR: could not get enought memory to hold the key file\n" );					break ;
 		case 15: printf( "ERROR: failed to open volume and failed to close the mapper, advice to do it manunally\n" );		break ;
 		case 16: printf( "ERROR: could not resolve full path of mount point\n" );						break ;
@@ -164,15 +164,6 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	
 	unsigned long m_flags ;
 	
-	if( m_opts == NULL ){
-		m_opts = "rw" ;
-	}
-	if( strstr( m_opts,"ro" ) == NULL ){
-		if ( strstr( m_opts,"rw" ) == NULL ){
-			return zuluExit( 13,device,cpoint,stl,uid,mapping_name ) ;
-		}
-	}
-		
 	/*
 	 * zuluCryptMountFlagsAreNotCorrect() is defined in ./mount_flags.c
 	 */

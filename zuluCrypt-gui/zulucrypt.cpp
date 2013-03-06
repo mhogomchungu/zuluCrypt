@@ -64,7 +64,7 @@ void zuluCrypt::processArgumentList()
 {
 	QStringList argv = QCoreApplication::arguments() ;
 
-	int last_spot = argv.size() -1  ;
+	int last_spot = argv.size() - 1 ;
 	int index = argv.indexOf( "-m" ) ;
 
 	if( index != -1 ){

@@ -21,90 +21,105 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <string.h>
-
-/*
- * zuluCryptUserIsAMemberOfAGroup() is defined in ../bin/security.c
- */
-int zuluCryptUserIsAMemberOfAGroup( uid_t uid,const char * groupname ) ;
-
-static inline int _has_no_access( uid_t uid )
-{
-	return uid == 0 ? 0 : !zuluCryptUserIsAMemberOfAGroup( uid,"zulumount" ) ;
-}
+#include "includes.h"
 
 int zuluCryptMountFlagsAreNotCorrect( const char * mode,uid_t uid,unsigned long * flags ) 
 {
 	unsigned long flg = 0 ;
 	
-	if( strstr( mode,"ro" ) != NULL )
+	int user_has_no_access ;
+	if( uid == 0 ){
+		user_has_no_access = 0 ;
+	}else{
+		user_has_no_access = !zuluCryptUserIsAMemberOfAGroup( uid,"zulumount" ) ;
+	}
+	if( mode == NULL ){
+		flg = MS_NODEV | MS_NOSUID | MS_NOEXEC ;
+		*flags = flg ;
+		return 0 ;
+	}
+	if( StringHasComponent( mode,"ro" ) ){
 		flg |= MS_RDONLY;
-	
-	if( strstr( mode,"dev" ) != NULL ){
-		if( _has_no_access( uid ) )
+	}
+	if( StringHasComponent( mode,"dev" ) ){
+		if( user_has_no_access ){
 			return 1 ;
+		}
 	}else{
 		flg |= MS_NODEV ;
 	}
-	if( strstr( mode,"exec" ) != NULL ){
-		if( _has_no_access( uid ) ) 
+	if( StringHasComponent( mode,"exec" ) ){
+		if( user_has_no_access ){
 			return 1 ;
+		}
 	}else{
 		flg |= MS_NOEXEC ;
 	}
-	if( strstr( mode,"suid" ) != NULL ){
-		if( _has_no_access( uid ) )
+	if( StringHasComponent( mode,"suid" ) ){
+		if( user_has_no_access ){
 			return 1 ;
+		}
 	}else{
 		flg |= MS_NOSUID ;
 	}
 	if( strstr( mode,"bind" ) != NULL ){
-		if( _has_no_access( uid ) )
+		if( user_has_no_access ){
 			return 1 ;
+		}
 		flg |= MS_BIND ;
 	}
-	if( strstr( mode,"mandlock" ) != NULL ){
-		if( _has_no_access( uid ) )
+	if( StringHasComponent( mode,"mandlock" ) ){
+		if( user_has_no_access ){
 			return 1 ;
+		}
 		flg |= MS_MANDLOCK ;
 	}
-	if( strstr( mode,"move" ) != NULL ){
-		if( _has_no_access( uid ) )
+	if( StringHasComponent( mode,"move" ) ){
+		if( user_has_no_access ){
 			return 1 ;
+		}
 		flg |= MS_MOVE ;
 	}
-	if( strstr( mode,"noatime" ) != NULL ){
-		if( _has_no_access( uid ) )
+	if( StringHasComponent( mode,"noatime" ) ){
+		if( user_has_no_access ){
 			return 1 ;
+		}
 		flg |= MS_NOATIME ;
 	}
-	if( strstr( mode,"nodiratime" ) != NULL ){
-		if( _has_no_access( uid ) )
+	if( StringHasComponent( mode,"nodiratime" ) ){
+		if( user_has_no_access ){
 			return 1 ;
+		}
 		flg |= MS_NODIRATIME ;
 	}
-	if( strstr( mode,"relatime" ) != NULL ){
-		if( _has_no_access( uid ) )
+	if( StringHasComponent( mode,"relatime" ) ){
+		if( user_has_no_access ){
 			return 1 ;
+		}
 		flg |= MS_RELATIME ;
 	}
-	if( strstr( mode,"remount" ) != NULL ){
-		if( _has_no_access( uid ) )
+	if( StringHasComponent( mode,"remount" ) ){
+		if( user_has_no_access ){
 			return 1 ;
+		}
 		flg |= MS_REMOUNT ;
 	}
-	if( strstr( mode,"silent" ) != NULL ){
-		if( _has_no_access( uid ) )
+	if( StringHasComponent( mode,"silent" ) ){
+		if( user_has_no_access ){
 			return 1 ;
+		}
 		flg |= MS_SILENT ;
 	}
-	if( strstr( mode,"strictatime" ) != NULL ){
-		if( _has_no_access( uid ) )
+	if( StringHasComponent( mode,"strictatime" ) ){
+		if( user_has_no_access ){
 			return 1 ;
+		}
 		flg |= MS_STRICTATIME ;
 	}
-	if( strstr( mode,"synchronous" ) != NULL ){
-		if( _has_no_access( uid ) )
+	if( StringHasComponent( mode,"synchronous" ) ){
+		if( user_has_no_access ){
 			return 1 ;
+		}
 		flg |= MS_SYNCHRONOUS ;
 	}
 	*flags = flg ;
