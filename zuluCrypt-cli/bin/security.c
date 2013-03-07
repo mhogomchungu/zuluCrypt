@@ -195,12 +195,9 @@ static int has_security_access( const char * path,int mode )
 	if( !StringPrefixMatch( path,"/dev/",5 ) ){
 		st = has_access( path,mode ) ;
 	}else{
-		if( zuluCryptSecurityGainElevatedPrivileges() ){
-			st = has_access( path,mode ) ;
-			zuluCryptSecurityDropElevatedPrivileges() ;
-		}else{
-			st = 3 ;
-		}
+		zuluCryptSecurityGainElevatedPrivileges() ;
+		st = has_access( path,mode ) ;
+		zuluCryptSecurityDropElevatedPrivileges() ;
 	}
 	return st ;
 }
@@ -274,15 +271,17 @@ static string_t _create_default_mount_point( const char * device,uid_t uid,strin
 	
 	m_point = StringAppend( path,strrchr( device,'/' ) ) ;
 	
-	if( zuluCryptSecurityGainElevatedPrivileges() ){
-		if( mkdir( m_point,S_IRWXU ) == 0 ){
-			st = path ;
-			chown( m_point,uid,uid ) ;
-		}else{
-			StringDelete( &path ) ;
-		}
-		zuluCryptSecurityDropElevatedPrivileges() ;
+	zuluCryptSecurityGainElevatedPrivileges() ;
+	
+	if( mkdir( m_point,S_IRWXU ) == 0 ){
+		st = path ;
+		chown( m_point,uid,uid ) ;
+	}else{
+		StringDelete( &path ) ;
 	}
+	
+	zuluCryptSecurityDropElevatedPrivileges() ;
+
 	if( loop_path != NULL ){
 		free( loop_path ) ;
 	}
@@ -338,6 +337,7 @@ string_t zuluCryptSecurityCreateMountPoint( const char * device,const char * lab
 	const char * m_point ;
 	string_t path ;
 	struct stat st ;
+	mode_t mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ;
 	
 	zuluCryptSecurityGainElevatedPrivileges() ;
 
@@ -349,14 +349,14 @@ string_t zuluCryptSecurityCreateMountPoint( const char * device,const char * lab
 	 * ZULUCRYPTmountPath contains "/run/media"
 	 */
 	if( stat( ZULUCRYPtmountMiniPath,&st ) != 0 ){
-		mkdir( ZULUCRYPtmountMiniPath,S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ) ;
+		mkdir( ZULUCRYPtmountMiniPath,mode ) ;
 		chown( ZULUCRYPtmountMiniPath,0,0 ) ;
-		chmod( ZULUCRYPtmountMiniPath,S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ) ;
+		chmod( ZULUCRYPtmountMiniPath,mode ) ;
 	}
 	if( stat( ZULUCRYPTmountPath,&st ) != 0 ){
-		mkdir( ZULUCRYPTmountPath,S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ) ;
+		mkdir( ZULUCRYPTmountPath,mode ) ;
 		chown( ZULUCRYPTmountPath,0,0 ) ;
-		chmod( ZULUCRYPTmountPath,S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ) ;
+		chmod( ZULUCRYPTmountPath,mode ) ;
 	}
 	
 	m_point = StringPrepend( path,ZULUCRYPTmountPath"/" ) ;
@@ -468,23 +468,21 @@ int zuluCryptSecurityDropElevatedPrivileges( void )
 char * zuluCryptSecurityEvaluateDeviceTags( const char * tag,const char * path )
 {
 	char * result = NULL ;
-	if( zuluCryptSecurityGainElevatedPrivileges() ){
-		result = blkid_evaluate_tag( tag,path,NULL) ;
-		zuluCryptSecurityDropElevatedPrivileges() ;
-	}
+	zuluCryptSecurityGainElevatedPrivileges() ;
+	result = blkid_evaluate_tag( tag,path,NULL ) ;
+	zuluCryptSecurityDropElevatedPrivileges() ;
 	return result ;
 }
 
 string_t zuluCryptSecurityGetFileSystemFromDevice( const char * path )
 {
 	string_t st = StringVoid ;
-	if( zuluCryptSecurityGainElevatedPrivileges() ){
-		/*
-		 * zuluCryptGetFileSystemFromDevice() is defined in ../lib/mount_volume.c
-		 */
-		st = zuluCryptGetFileSystemFromDevice( path ) ;
-		zuluCryptSecurityDropElevatedPrivileges() ;
-	}
+	zuluCryptSecurityGainElevatedPrivileges() ;
+	/*
+	 * zuluCryptGetFileSystemFromDevice() is defined in ../lib/mount_volume.c
+	 */
+	st = zuluCryptGetFileSystemFromDevice( path ) ;
+	zuluCryptSecurityDropElevatedPrivileges() ;
 	return st ;
 }
 
@@ -509,18 +507,10 @@ void zuluCryptSecuritySanitizeTheEnvironment( uid_t uid,stringList_t * stx )
 		env++ ;
 	}
 
-	if( stl == StringListVoid ){
-		/*
-		 * have atleast one entry in the enviromental variable if its not set for some reason
-		 */
-		*stx = StringList( "AppName=zuluCrypt" ) ;
-		return ;
-	}
-	
 	it  = StringListBegin( stl ) ;
 	end = StringListEnd( stl ) ;
 	
-	for( ; it != end ;it++ ){
+	for( ; it != end ; it++ ){
 		index = StringIndexOfChar( *it,0,'=' ) ;
 		if( index >= 0 ){
 			unsetenv( StringSubChar( *it,index,'\0' ) ) ;
@@ -542,22 +532,20 @@ char * zuluCryptSecurityUUIDFromPath( const char * device )
 {
 	blkid_probe blkid ;
 	const char * c = NULL ;
-	char * d = NULL;
+	string_t st = StringVoid ;
 	
 	zuluCryptSecurityGainElevatedPrivileges() ;
+	
 	blkid = blkid_new_probe_from_filename( device ) ;
 	
 	if( blkid != NULL ){
 		blkid_do_probe( blkid );
 		blkid_probe_lookup_value( blkid,"UUID",&c,NULL ) ;
-		if( c != NULL ){
-			d = strdup( c ) ;
-		}
-		blkid_free_probe( blkid );
+		st = String( c ) ;
 	}
 	
 	zuluCryptSecurityDropElevatedPrivileges() ;
-	return d ;
+	return StringDeleteHandle( &st ) ;
 }
 
 void zuluCryptSecurityPrintPermissions( void )
