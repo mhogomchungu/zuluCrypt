@@ -31,6 +31,9 @@ int zuluCryptMountFlagsAreNotCorrect( const char * mode,uid_t uid,unsigned long 
 	if( uid == 0 ){
 		user_has_no_access = 0 ;
 	}else{
+		/*
+		 * zuluCryptUserIsAMemberOfAGroup() is defined in security.c
+		 */
 		user_has_no_access = !zuluCryptUserIsAMemberOfAGroup( uid,"zulumount" ) ;
 	}
 	if( mode == NULL ){
