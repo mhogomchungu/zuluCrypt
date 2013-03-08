@@ -34,7 +34,7 @@ int zuluCryptMountFlagsAreNotCorrect( const char * mode,uid_t uid,unsigned long 
 		user_has_no_access = !zuluCryptUserIsAMemberOfAGroup( uid,"zulumount" ) ;
 	}
 	if( mode == NULL ){
-		flg = MS_NODEV | MS_NOSUID | MS_NOEXEC ;
+		flg |= MS_NODEV | MS_NOSUID | MS_NOEXEC | MS_RELATIME ;
 		*flags = flg ;
 		return 0 ;
 	}
@@ -98,17 +98,45 @@ int zuluCryptMountFlagsAreNotCorrect( const char * mode,uid_t uid,unsigned long 
 		}
 		flg |= MS_NOATIME ;
 	}
+	if( StringHasComponent( mode,"strictatime" ) ){
+		if( user_has_no_access ){
+			return 1 ;
+		}
+		flg |= MS_STRICTATIME ;
+	}
+	if( flg & MS_NOATIME ){
+		/*
+		 * MS_NOATIME flag is set by user,use it instead of MS_RELATIME
+		 */
+		;
+	}else if( flg & MS_STRICTATIME ){
+		/*
+		 *  MS_STRICTATIME flag is set by user,use it instead of MS_RELATIME 
+		 */
+		;
+	}else{
+		/*
+		 * MS_NOATIME flag not set,autoset MS_RELATIME flag as the default flag
+		 */
+		flg |= MS_RELATIME ;
+	}
+#if 0
+	/*
+	 * done check for this one since its a default option set above
+	 */
+	if( StringHasComponent( mode,"relatime" ) ){
+		
+		if( user_has_no_access ){
+			return 1 ;
+		}
+		flg |= MS_RELATIME ;
+	}
+#endif	
 	if( StringHasComponent( mode,"nodiratime" ) ){
 		if( user_has_no_access ){
 			return 1 ;
 		}
 		flg |= MS_NODIRATIME ;
-	}
-	if( StringHasComponent( mode,"relatime" ) ){
-		if( user_has_no_access ){
-			return 1 ;
-		}
-		flg |= MS_RELATIME ;
 	}
 	if( StringHasComponent( mode,"remount" ) ){
 		if( user_has_no_access ){
@@ -121,12 +149,6 @@ int zuluCryptMountFlagsAreNotCorrect( const char * mode,uid_t uid,unsigned long 
 			return 1 ;
 		}
 		flg |= MS_SILENT ;
-	}
-	if( StringHasComponent( mode,"strictatime" ) ){
-		if( user_has_no_access ){
-			return 1 ;
-		}
-		flg |= MS_STRICTATIME ;
 	}
 	if( StringHasComponent( mode,"synchronous" ) ){
 		if( user_has_no_access ){

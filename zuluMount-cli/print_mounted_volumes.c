@@ -36,11 +36,8 @@ stringList_t zuluCryptPartitionList( void ) ;
 
 void zuluCryptFormatSize( char * buffer,const char * buff ) ;
 
-typedef struct{
-	stringList_t stz ;
-	const char * z ;
-	size_t k ;
-}ARGS;
+static const char * _mapper_path ;
+static size_t _mapper_length ;
 
 void zuluMountPartitionProperties( const char * device,const char * UUID,const char * mapper,const char * m_point )
 {
@@ -217,7 +214,7 @@ static void _printDeviceProperties( string_t entry,void * s )
 	
 	q = StringListContentAt( stx,0 ) ;
 	
-	if( StringPrefixEqual( q,crypt_get_dir() ) ){
+	if( StringPrefixMatch( q,_mapper_path,_mapper_length ) ){
 		/*
 		 * zuluCryptSecurityGainElevatedPrivileges() and zuluCryptSecurityDropElevatedPrivileges()
 		 * are defined in ../zuluCrypt-cli/bin/security.c 
@@ -271,6 +268,8 @@ static void _printDeviceProperties( string_t entry,void * s )
 void zuluMountPrintDeviceProperties_1( string_t entry,uid_t uid )
 {
 	if( uid ){;}
+	_mapper_path = crypt_get_dir() ;
+	_mapper_length = StringSize( _mapper_path ) ;
 	_printDeviceProperties( entry,( void * )StringListVoid ) ;
 }
 
@@ -306,13 +305,15 @@ int zuluMountPrintMountedVolumes( uid_t uid )
 		return 1;
 	}
 	
+	_mapper_path = crypt_get_dir() ;
+	_mapper_length = StringSize( _mapper_path ) ;
 	/*
-	 * print all entries that are in "/etc/mtab" ie mounted partitions. 
+	 * print a list of mounted partitions
 	 */
 	StringListForEach_1( stl,_printDeviceProperties,( void * )stz ) ;
 	
 	/*
-	 * print all entries that are not in "/etc/mtab" ie not mounted partitions. 
+	 * print a list of unmounted partitions
 	 */
 	StringListForEachString( stz,_printUnmountedVolumes ) ;
 	

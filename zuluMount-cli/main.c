@@ -114,7 +114,7 @@ static int _zuluMountDeviceList( uid_t uid )
 static int _zuluMountMountedList( uid_t uid )
 {
 	/*
-	 * zuluMountPrintMountedVolumes() is defined in ./print_mounted_volumes.c
+	 * zuluMountPrintMountedVolumes() is defined in ./process_mountinfo.c
 	 */
 	return zuluMountPrintMountedVolumes( uid ) ;
 }
@@ -202,9 +202,8 @@ static int _zuluMountPrintDeviceProperties( const char * device,const char * UUI
 	e = StringContent( q ) ;
 	
 	/*
-	 * zuluCryptGetMtabEntry() is defined in ../zuluCrypt-cli/lib/print_mounted_volumes.c
+	 * zuluCryptGetMtabEntry() is defined in ../zuluCrypt-cli/lib/process_mountinfo.c
 	 */
-	
 	if( zuluCryptPathIsValid( e ) ){
 		p = zuluCryptGetMtabEntry( e ) ;
 	}else{
@@ -235,29 +234,15 @@ static int _zuluMountPrintDeviceProperties( const char * device,const char * UUI
 static int _zuluPartitionHasCryptoFs( const char * device )
 {
 	int st ;
-	string_t fs ;
-	char * e = NULL ;
+	string_t fs = StringVoid ;
 	/*
 	* zuluCryptSecurityGainElevatedPrivileges() is defined in ../zuluCrypt-cli/bin/security.c
 	*/
 	zuluCryptSecurityGainElevatedPrivileges() ;
-	
-	if( StringPrefixEqual( device,"/dev/loop" ) ){
-		/*
-		 * zuluCryptLoopDeviceAddress() is defined in ../zuluCrypt-cli/lib/create_loop_device.c
-		 */
-		e = zuluCryptLoopDeviceAddress( device ) ;
-		if( e != NULL ){
-			device = e ;
-		}
-	}
 	/*
-	 * this function is defined in ../zuluCrypt-cli/lib/mount_volume.c
+	 * zuluCryptGetFileSystemFromDevice() is defined in ../zuluCrypt-cli/lib/mount_volume.c
 	 */
 	fs = zuluCryptGetFileSystemFromDevice( device ) ;
-	if( e != NULL ){
-		free( e ) ;
-	}
 	/*
 	 * zuluCryptSecurityDropElevatedPrivileges() is defined in ../zuluCrypt-cli/bin/security.c
 	 */
@@ -334,18 +319,20 @@ static int _zuluMountExe( ARGS * args )
 {
 	const char * device = args->device ;
 	const char * action = args->action ;
+	const char * uuid   = args->uuid   ;
+	size_t       uid    = args->uid    ;   
 	
 	if( StringsAreEqual( action,"-D" ) ){
-		return _zuluMountPrintVolumeDeviceName( args->device ) ;
+		return _zuluMountPrintVolumeDeviceName( device ) ;
 	}
 	if( StringsAreEqual( action,"-L" ) ){
-		return _zuluMountPrintDeviceProperties( args->device,args->uuid,args->uid ) ;
+		return _zuluMountPrintDeviceProperties( device,uuid,uid ) ;
 	}
 	if( StringsAreEqual( action,"-s" ) ){
-		return zuluMountVolumeStatus( args->device,args->uuid,args->uid ) ;
+		return zuluMountVolumeStatus( device,uuid,uid ) ;
 	}
 	if( StringsAreEqual( action,"-m" ) ){
-		if( _zuluPartitionHasCryptoFs( args->device ) ){
+		if( _zuluPartitionHasCryptoFs( device ) ){
 			/*
 			 * zuluMountMount() is defined in crypto_mount.c
 			 */
