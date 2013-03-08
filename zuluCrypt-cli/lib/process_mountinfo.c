@@ -28,11 +28,11 @@
 
 char * zuluCryptResolveDevRoot( void )
 {
-	char * dev ;
+	char * dev = NULL ;
+	const char * e ;
 	int index ;
 	stringList_t stl ;
 	string_t st = StringGetFromVirtualFile( "/proc/cmdline" ) ;
-	string_t xt ;
 	if( st == StringVoid ){
 		return NULL ;
 	}
@@ -41,22 +41,30 @@ char * zuluCryptResolveDevRoot( void )
 	index = StringListHasSequence( stl,"root=/dev/" ) ;
 	if( index >= 0 ){
 		st = StringListCopyStringAt( stl,index ) ;
-		StringRemoveString( st,"root=" ) ;
+		e = StringRemoveString( st,"root=" ) ;
+		if( StringPrefixMatch( e,"/dev/disk/by-",13 ) ){
+			/*
+			 * zuluCryptRealPath() is defined in ./real_path.c
+			 */
+			dev = zuluCryptRealPath( e ) ;
+			StringDelete( &st ) ;
+		}else{
+			dev = StringDeleteHandle( &st ) ;
+		}
 	}else{
 		index = StringListHasSequence( stl,"root=UUID=" ) ;
 		if( index >= 0 ){
-			xt = StringListCopyStringAt( stl,index ) ;
-			StringRemoveString( xt,"root=UUID=" ) ;
+			st = StringListCopyStringAt( stl,index ) ;
+			StringRemoveString( st,"root=UUID=" ) ;
 			/*
 			 * zuluCryptDeviceFromUUID() is defined in ./blkid_evaluate_tag.c
 			 */
-			dev = zuluCryptDeviceFromUUID( StringContent( xt ) ) ;
-			StringDelete( &xt ) ;
-			st = StringInherit( &dev ) ;
+			dev = zuluCryptDeviceFromUUID( StringContent( st ) ) ;
+			StringDelete( &st ) ;
 		}
 	}
 	StringListDelete( &stl ) ;
-	return StringDeleteHandle( &st ) ;
+	return dev ;
 }
 
 stringList_t zuluCryptGetMoutedListFromMountInfo( void )
