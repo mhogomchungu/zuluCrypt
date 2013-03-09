@@ -371,7 +371,8 @@ static int _mount_help()
 	const char * doc1 = "\
 options:\n\
 -m -- mount a volume : arguments: -d partition_path -z mount_point -e mode(rw/ro)\n\
-      -- additional arguments for crypto_LUKS,crypto_PLAIN,crypto_TCRYPT volumes, -p passphrase/-f keyfile\n";
+      -- additional arguments for crypto_LUKS,crypto_PLAIN,crypto_TCRYPT volumes, -p passphrase/-f keyfile\
+-z -- mount point component to append to \"/run/media/$USER\"\n";      
 	
 	doc2 = "\
 -u -- unmount a partition: arguments: -d partition_path\n\

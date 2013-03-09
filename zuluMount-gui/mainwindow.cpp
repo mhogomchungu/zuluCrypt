@@ -487,7 +487,7 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 			}
 		}
 
-		if( y.startsWith( QString( "/mnt/media/share" ) ) ){
+		if( y.startsWith( QString( "/run/share" ) ) ){
 			/*
 			 * dont show mirror mounts
 			 */

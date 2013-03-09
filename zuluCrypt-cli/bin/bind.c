@@ -29,9 +29,11 @@ int zuluCryptBindUnmountVolume( const char * device,const char * mapper,uid_t ui
 	stringList_t stx = zuluCryptGetMoutedListFromMountInfo() ;
 	stringList_t stl ;
 	string_t xt ;
+	string_t st ;
 	ssize_t index = -1 ;
 	const char * f ; 
 	const char * e ;
+	const char * g ;
 	int r = 1 ;
 	int k ;
 	char * dev = NULL ;
@@ -64,16 +66,21 @@ int zuluCryptBindUnmountVolume( const char * device,const char * mapper,uid_t ui
 		
 		xt = StringListCopyStringAt( stl,1 ) ;
 		StringListDelete( &stl ) ;
-
-		/*
-		 * xt object will contain something like "/run/media/$USER/sdc1"
-		 */
-		f = StringContent( xt ) ;
 		
+		st = StringCopy( xt ) ;
+		/*
+		 * zuluCryptDecodeMtabEntry() is defined in ../lib/mount_volume.c
+		 */
+		g = zuluCryptDecodeMtabEntry( st ) ;
+		
+		/*
+		 * g will contain something like "/run/media/$USER/sdc1"
+		 */
+		  
 		/*
 		 * zuluCryptSecurityMountPointPrefixMatch() is defined in ./security.c
 		 */
-		k = zuluCryptSecurityMountPointPrefixMatch( f,uid,NULL ) ;
+		k = zuluCryptSecurityMountPointPrefixMatch( g,uid,NULL ) ;
 		
 		if( k != 1 ){
 			/*
@@ -84,20 +91,14 @@ int zuluCryptBindUnmountVolume( const char * device,const char * mapper,uid_t ui
 			index = StringLastIndexOfChar( xt,'/' ) + 1 ;
 			StringRemoveLeft( xt,index ) ;
 			
-			f = StringPrepend( xt," /run/share/" ) ;
+			f = StringPrepend( xt,"/run/share/" ) ;
 
 			/*
-			 * xt object( and "f" ) will now contain something like " /media/share/sdc1"
+			 * f will now contain something like " /media/share/sdc1"
 			 */
 			
 			index = StringListHasSequence( stx,f ) ;
 			
-			/*
-			 * add one here to skip the leading space character added above.The space character was added to make sure
-			 * the string we were testing is the string at the beginning of the entry in the mountinfo and not a string in the middle of
-			 * another string
-			 */
-			f = f + 1 ;
 			if( index == -1 ){
 				/*
 				 * volume is not shared
@@ -105,9 +106,13 @@ int zuluCryptBindUnmountVolume( const char * device,const char * mapper,uid_t ui
 			}else{
 				/*
 				 * volume is shared,try to unmount it
+				 * a volume is assumed to be shared if its device path in mountinfo has two mount points,one
+				 * in /run/media/$USER and the other in /run/share
 				 */
 				e = StringListContentAt( stx,index ) ;
+				
 				if( StringPrefixEqual( e,device ) ){
+					f = zuluCryptDecodeMtabEntry( xt ) ;
 					/*
 					 * good,the device associated with the shared mount is the same as that of the
 					 * private mount,try to unmount it.
@@ -130,6 +135,7 @@ int zuluCryptBindUnmountVolume( const char * device,const char * mapper,uid_t ui
 						}
 					}
 				}else{
+					
 					/*
 					 * bad,the device associated with the shared mount is different from the private mount.
 					 * possible reason could be a collision of some sort,maybe a different tool use the mount path
@@ -140,7 +146,7 @@ int zuluCryptBindUnmountVolume( const char * device,const char * mapper,uid_t ui
 			}
 		}
 		
-		StringDelete( &xt ) ;
+		StringMultipleDelete( &xt,&st,END ) ;
 	}
 	
 	StringListDelete( &stx ) ;
