@@ -423,10 +423,12 @@ ssize_t StringIndexOfChar( string_t st,size_t p,char s )
 
 const char * StringRemoveLength( string_t st,size_t x ,size_t y ) 
 {	
-	if( st == StringVoid || x >= st->size ){
+	if( st == StringVoid ){
 		return NULL ;
 	}
-	
+	if( x >= st->size ){
+		return st->string ;
+	}
 	if( x + y >= st->size ){
 		y = st->size - x ;
 	}
@@ -624,7 +626,7 @@ const char * StringSubChar( string_t st,size_t x,char s )
 		return NULL ;
 	}
 	if( x >= st->size ){
-		return NULL ;
+		return st->string ;
 	}
 	st->string[ x ] = s ;
 	return st->string ;
@@ -677,11 +679,8 @@ const char * StringSubString( string_t st, size_t x,const char * s )
 	if( st == StringVoid ){
 		return NULL ;
 	}
-	if( x >= st->size ){
-		return NULL ;
-	}
-	if( s == NULL ){
-		return NULL ;
+	if( x >= st->size || s == NULL ){
+		return st->string ;
 	}
 	k = strlen( s ) ;
 	if( x + k >= st->size ){
@@ -704,8 +703,11 @@ const char * StringAppendAt( string_t st,size_t x,const char * s )
 	size_t len ;
 	char * c   ; 
 	
-	if( st == StringVoid || x > st->size || s == NULL ){
+	if( st == StringVoid ){
 		return NULL ;
+	}
+	if( x > st->size || s == NULL ){
+		return st->string ;
 	}
 	
 	len = strlen( s ) ;
@@ -725,8 +727,11 @@ const char * StringPrepend( string_t st,const char * s )
 	char * c ;
 	size_t len ;
 	
-	if( st == StringVoid || s == NULL ){
+	if( st == StringVoid ){
 		return NULL ;
+	}
+	if( s == NULL ){
+		return st->string ;
 	}
 	
 	len = strlen( s ) ;
@@ -760,8 +765,11 @@ const char * StringAppend( string_t st,const char * s )
 	char * c ;
 	size_t len ;
 	
-	if( s == NULL || st == StringVoid ){
+	if( st == StringVoid ){
 		return NULL ;
+	}
+	if( s == NULL ){
+		return st->string ;
 	}
 	
 	len = strlen( s ) ;
@@ -913,8 +921,11 @@ static char * StringRS__( string_t st,const char * x,const char * s,size_t p )
 	size_t k = strlen( x ) ;
 	size_t len ;
 	
-	if( st == StringVoid || x == NULL || s == NULL || p >= st->size ){
+	if( st == StringVoid ){
 		return NULL ;
+	}
+	if( x == NULL || s == NULL || p >= st->size ){
+		return st->string ;
 	}
 	if( j == k ){
 		while( ( c = strstr( e,x ) ) != NULL ){
@@ -978,7 +989,7 @@ static char * StringCRC__( string_t st, char x,char y,size_t p )
 		return NULL ;
 	}
 	if( p >= st->size ){
-		return NULL ;
+		return st->string ;
 	}
 	while ( *++c  ){
 		if( *c == x ){
@@ -1072,11 +1083,8 @@ static char * StringICS__( string_t st,char x,const char * s,size_t p )
 	if( st == StringVoid ){
 		return NULL ;
 	}
-	if( p >= st->size ){
-		return NULL ;
-	}
-	if( s == NULL ){
-		return NULL ;
+	if( p >= st->size || s == NULL ){
+		return st->string ;
 	}
 	while( *++d ){
 		f = st->string - 1 + p ;

@@ -121,6 +121,7 @@ void keyDialog::enableAll()
 	m_ui->rbPlugIn->setEnabled( true );
 	m_ui->pbkeyOption->setEnabled( true );
 	m_ui->checkBoxOpenReadOnly->setEnabled( true );
+	m_ui->checkBoxShareMountPoint->setEnabled( true );
 }
 
 void keyDialog::disableAll()
@@ -138,6 +139,7 @@ void keyDialog::disableAll()
 	m_ui->rbKeyFile->setEnabled( false );
 	m_ui->rbPlugIn->setEnabled( false );
 	m_ui->checkBoxOpenReadOnly->setEnabled( false );
+	m_ui->checkBoxShareMountPoint->setEnabled( false );
 }
 
 void keyDialog::KeyFile()
@@ -308,6 +310,8 @@ void keyDialog::pbOpen()
 	part->setKeySource( m );
 	m_point = m_ui->lineEditMountPoint->text().replace( "\"","\"\"\"" ) ;
 	part->setMountPoint( m_point );
+
+	part->setMakeMountPointPublic( m_ui->checkBoxShareMountPoint->isChecked() ) ;
 
 	m_working = true ;
 

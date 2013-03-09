@@ -55,6 +55,7 @@ public:
 	void setType( QString ) ;
 	void setKeySource( QString ) ;
 	void setMountPoint( QString ) ;
+	void setMakeMountPointPublic( bool ) ;
 signals:
 	void signalMountComplete( int,QString ) ;
 	void signalUnmountComplete( int,QString ) ;
@@ -83,6 +84,7 @@ private:
 	QString m_mode ;
 	QString m_type ;
 	QString m_properties ;
+	bool m_publicMount ;
 };
 
 #endif // MANAGEPARTITIONTHREAD_H

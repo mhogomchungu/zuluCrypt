@@ -87,10 +87,20 @@ outside of \"%s\"\n",StringContent( xt ) ) ;
 	if( !zuluCryptSecurityGainElevatedPrivileges() ){
 		return _zuluExit( 102,st,m_point,"ERROR: could not get elevated privilege,check binary permissions" ) ;
 	}
+	
+	/*
+	 * zuluCryptBindUnmountVolume() is defined in ../zuluCrypt-cli/bin/bind.c
+	 */
+	switch( zuluCryptBindUnmountVolume( device,device,uid ) ){
+		case 3 : return _zuluExit( 107,st,m_point,"ERROR: shared mount point appear to be busy" ) ;
+		case 4 : return _zuluExit( 108,st,m_point,"ERROR: shared mount point appear to belong to a different user" ) ;
+		case 5 : return _zuluExit( 109,st,m_point,"ERROR: shared mount point appear is in an ambiguous state,advice to unmount manually" ) ;  
+		default: ;
+	}
+	
 	/*
 	 * zuluCryptUnmountVolume() is defined in ../zuluCrypt-cli/lib/unmount_volume.c
 	 */
-		
 	status = zuluCryptUnmountVolume( device,&m_point ) ;
 	/*
 	 * zuluCryptSecurityDropElevatedPrivileges() is defined in ../zuluCrypt-cli/bin/security.c

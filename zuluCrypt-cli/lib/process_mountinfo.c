@@ -113,10 +113,10 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 		device        = StringListContentAt( tmp,index+2 ) ;
 		mount_point   = StringListContentAt( tmp,4 ) ;
 		file_system   = StringListContentAt( tmp,index+1 ) ;
-		mount_options = StringListContentAt( tmp,index+3 ) ;
+		mount_options = StringListContentAt( tmp,index-1 ) ;
 		if( StringPrefixMatch( device,"/dev/loop",9 ) ){
 			/*
-			 * zuluCryptLoopDeviceAddress() is defined in ./status.c
+			 * zuluCryptLoopDeviceAddress() is defined in ./create_loop_device.c
 			 */
 			dev = zuluCryptLoopDeviceAddress( device ) ;
 			if( dev == NULL ){
@@ -298,6 +298,12 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 	for( i = 0 ; i < j ; i++ ){
 		c = StringListContentAt( stl,i ) ;
 		if( StringPrefixMatch( c,e,len ) ){
+			if( StringHasComponent( c,"/media/share" ) ){
+				/*
+				 * dont show mirror images due to bind mounts
+				 */
+				continue ;
+			}
 			stx = StringListSplit( c,' ' ) ;
 			if( stx == StringListVoid ){
 				continue ;
@@ -351,7 +357,8 @@ string_t zuluCryptGetMtabEntry( const char * path )
 	string_t st ;
 	string_t entry = StringVoid ;
 	stringList_t stl = zuluCryptGetMountInfoList() ;
-	ssize_t index ;
+	ssize_t index = -1 ;
+	char * e = NULL ;
 	
 	if( StringPrefixMatch( path,"/dev/mapper/",12 ) ){
 		st = String( path ) ;
@@ -368,6 +375,15 @@ string_t zuluCryptGetMtabEntry( const char * path )
 			index = StringListHasStartSequence( stl,path ) ;
 		}
 		StringDelete( &st ) ;
+	}else if( StringPrefixMatch( path,"/dev/loop",9 ) ){
+		/*
+		 * zuluCryptLoopDeviceAddress() is defined in ./create_loop_device.c
+		 */
+		e = zuluCryptLoopDeviceAddress( path ) ;
+		if( e != NULL ){
+			index = StringListHasStartSequence( stl,e ) ;
+			free( e ) ;
+		}
 	}else{
 		index = StringListHasStartSequence( stl,path ) ;
 	}

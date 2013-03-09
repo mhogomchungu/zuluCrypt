@@ -44,6 +44,7 @@ static int entry_found( const char * m_dir,char ** m_point )
 		if( h == 0 ){
 			break ;
 		}else{
+			perror( "kk" ) ;
 			sleep( 1 ) ;
 		}
 	}
@@ -180,6 +181,7 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 	 * zuluCryptGetMountPointFromPath() is defined in ./process_mountinfo.c
 	 */
 	m = zuluCryptGetMountPointFromPath( device ) ;
+
 	if( m != NULL ){
 		h = entry_found( m,m_point ) ;
 		free( m ) ;

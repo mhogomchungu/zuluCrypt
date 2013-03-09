@@ -34,8 +34,9 @@ void zuluMountPrintDeviceProperties_1( string_t,uid_t ) ;
 static int _mount_get_opts( int argc,char * argv[],ARGS * args ) 
 {	
 	int c ;
-	while ( ( c = getopt( argc,argv,"LntSshlPmuDd:z:e:y:p:f:G:" ) ) != -1 ) {
+	while ( ( c = getopt( argc,argv,"MLntSshlPmuDd:z:e:y:p:f:G:" ) ) != -1 ) {
 		switch( c ){
+			case 'M' : args->share   = 1      ; break ;
 			case 'n' : args->mpo     = 1      ; break ;
 			case 'D' : args->action  = "-D"   ; break ;
 			case 't' : args->action  = "-t"   ; break ;
@@ -374,7 +375,8 @@ options:\n\
 	
 	doc2 = "\
 -u -- unmount a partition: arguments: -d partition_path\n\
--s -- print properties of an encrypted volume: arguments: -d partition_path\n";
+-s -- print properties of an encrypted volume: arguments: -d partition_path\n\
+-M -- this option will create a mount point in \"/run/media/$USER\" and a publicly accessible \"mirror\" in \"/mnt/media/share\'\n";
 
       doc3 = "\
 -l -- print expanded list of all partitions\n\

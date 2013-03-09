@@ -50,6 +50,7 @@ typedef struct struct_opts_1{
 	int open_no_mount ;
 	int mount_point_option ;
 	int print_partition_type ;
+	int share ;
 }struct_opts;
 
 /*

@@ -37,6 +37,17 @@
 #include "libzuluCrypt.h"
 #include "../bin/bash_special_chars.h"
 
+typedef struct{
+	const char * original_device ;
+	const char * device ;
+	const char * m_point ;
+	const char * fs ;
+	const char * opts ;
+	uid_t uid ;
+	unsigned long m_flags ;
+	const char * fs_flags ;
+}m_struct;
+
 /*
  * below header is created at build time,it is set by CMakeLists.txt located in the root folder
  */
@@ -228,5 +239,10 @@ char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper ) ;
  * this function is defined in create_tcrypt.c
  */
 int zuluCryptCreateTCrypt( const char * dev,const char * pass,size_t pass_size,const char * rng ) ;
+
+/*
+ * this function is defined in mount_volume.c
+ */
+int zuluCryptAddEntryToMtab( m_struct * mst ) ;
 
 #endif 

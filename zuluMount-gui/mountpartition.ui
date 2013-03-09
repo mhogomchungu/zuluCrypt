@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>522</width>
-    <height>127</height>
+    <height>148</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -33,7 +33,7 @@
    <property name="geometry">
     <rect>
      <x>180</x>
-     <y>90</y>
+     <y>110</y>
      <width>81</width>
      <height>31</height>
     </rect>
@@ -88,7 +88,7 @@
    <property name="geometry">
     <rect>
      <x>260</x>
-     <y>90</y>
+     <y>110</y>
      <width>81</width>
      <height>31</height>
     </rect>
@@ -111,6 +111,19 @@
    </property>
    <property name="text">
     <string>mount &amp;read only</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="checkBoxShareMountPoint">
+   <property name="geometry">
+    <rect>
+     <x>180</x>
+     <y>80</y>
+     <width>181</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&amp;share mount point</string>
    </property>
   </widget>
  </widget>

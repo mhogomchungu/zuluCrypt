@@ -36,6 +36,7 @@ void zuluCryptEXEHelp( void )
 	const char * help8 ;
 	const char * help9 ;
 	const char * help10;
+	const char * help11;
 	
 	help1 = "\
 	usage: zuluCrypt-cli < operation > < options specific to the operation >\n\
@@ -109,6 +110,9 @@ void zuluCryptEXEHelp( void )
 	-H         compare a header on a luks device to a backup header,required arg: -d and -f\n";
 	
 	help8 ="\
+	-M         create a publicly accessible \"mirror\" of the mount point in \"/mnt/media/share\" from the original\n\
+		   created in \"/run/media/$USER\"\n" ;
+	help9 ="\
 	-J         create a plain mapper owned by the user who run the command on a device pointed by argument -d\n\
 	-B         create a luks header backup\n\
 	-R         restore a luks header on a device from backup\n\
@@ -119,7 +123,7 @@ void zuluCryptEXEHelp( void )
 	-G 	   module name to use to get a passphrase to open a volume\n\
 	-e         mode for opening volumes(ro*/rw) when used with -o/-O. path to destination file when used with -E/-D\n" ;
 	
-	help9 ="\
+	help10 ="\
 	-k         do not ask for confirmation when doing dangerous operations\n\
 	-d         path to a file or partition with encrypted volume\n\
 	-m         path to where mount point folder will be created\n\
@@ -129,13 +133,13 @@ void zuluCryptEXEHelp( void )
 	-h         get passphrase interactively\n\
 	-p         passphrase \n" ;
 	
-	help10 ="\
+	help11 ="\
 	-f         path to keyfile or luks header backup\n\
 	-y         passphrase already in the volume(required by -a if -u is absent and -h is also absent)\n\
 	-u         path to keyfile with passphrase already in the volume(required by -a if -y is absent and -h is also absent)\n\
 	-l         passphrase to be added(required by -a if -n is absent and -h is also absent)\n\
 	-n         path to keyfile with a passphrase to be added (required by -a if -l is absent and -h is also absent)\n";
 	
-	printf( "%s%s%s%s%s%s%s%s%s%s\n",help1,help2,help3,help4,help5,help6,help7,help8,help9,help10 ) ;
+	printf( "%s%s%s%s%s%s%s%s%s%s%s\n",help1,help2,help3,help4,help5,help6,help7,help8,help9,help10,help11 ) ;
 }
 

@@ -31,44 +31,38 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 static void _printResult( const char * device,const char * m_point,uid_t uid,const char * mapping_name )
 {
 	char * e ;
-	string_t p ;
+	
+	if( uid ){;}
+	if( mapping_name ){;}
 	
 	zuluCryptSecurityGainElevatedPrivileges() ;
 	
 	/*
-	 * ZULUCRYPTlongMapperPath is set in ../constants.h
-	 * zuluCryptCreateMapperName() is defined at ../lib/create_mapper_name.c
-	 */
-	p = zuluCryptCreateMapperName( device,mapping_name,uid,ZULUCRYPTlongMapperPath ) ;
-	
-	/*
 	 * zuluCryptGetVolumeTypeFromMapperPath() is defined in ../lib/status.c
 	 */
-	e = zuluCryptGetVolumeTypeFromMapperPath( StringContent( p ) ) ;
+	e = zuluCryptGetVolumeTypeFromMapperPath( device ) ;
 	
-	if( strstr( e,"LUKS" ) != NULL ){
+	zuluCryptSecurityDropElevatedPrivileges() ;
+	
+	if( StringHasComponent( e,"LUKS" ) ){
 		printf( "SUCCESS: luks volume opened successfully\n" ) ;
-	}else if( strstr( e,"PLAIN" ) != NULL ){
+	}else if( StringHasComponent( e,"PLAIN" ) ){
 		printf( "SUCCESS: plain volume opened successfully\n" ) ;
-	}else if( strstr( e,"TCRYPT" ) != NULL ){
+	}else if( StringHasComponent( e,"TCRYPT" ) ){
 		printf( "SUCCESS: tcrypt volume opened successfully\n" ) ;
 	}else{
 		printf( "SUCCESS: volume opened successfully\n" ) ;
 	}
 	
 	free( e ) ;
-	StringDelete( &p ) ;
-	zuluCryptSecurityDropElevatedPrivileges() ;
 	printf( "volume mounted at: %s\n",m_point ) ;
 }
 
-static int zuluExit( int st,const char * device,char * m_point,stringList_t stl,uid_t uid,const char * mapping_name )
+static int zuluExit( int st,const char * device,const char * m_point,stringList_t stl,uid_t uid,const char * mapping_name )
 {
 	zuluCryptSecurityDropElevatedPrivileges() ;
-	/*
-	 * this function is defined in ../utility/string/StringList.c
-	 */
-	StringListClearDelete( &stl ) ;
+	
+	if( m_point ){;}
 	
 	switch ( st ){
 		case 0 : _printResult( device,m_point,uid,mapping_name ) ;								break ;
@@ -107,10 +101,9 @@ static int zuluExit( int st,const char * device,char * m_point,stringList_t stl,
 		case 33: printf( "ERROR: only root user can perform this operation\n" ) ;						break ;
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
-		
-	if( m_point != NULL ){
-		free( m_point ) ;
-	}
+	
+	StringListClearDelete( &stl ) ;
+	
 	return st ;
 }
 
@@ -120,7 +113,7 @@ static int zuluExit( int st,const char * device,char * m_point,stringList_t stl,
  * should be removed first before calling the above function.The above function is called directly when "open_volume"
  * function is to be exited before the mount point is created. * 
  */
-static int zuluExit_1( int st,const struct_opts * opts,const char * device,char * cpoint,stringList_t stl,uid_t uid,const char * mapping_name )
+static int zuluExit_1( int st,const struct_opts * opts,const char * device,const char * cpoint,stringList_t stl,uid_t uid,const char * mapping_name )
 {
 	if( opts->open_no_mount == -1 && st != 0 ){
 		zuluCryptSecurityGainElevatedPrivileges() ;
@@ -132,6 +125,7 @@ static int zuluExit_1( int st,const struct_opts * opts,const char * device,char 
 
 int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,uid_t uid )
 {
+	int share                = opts->share ;
 	int nmp                  = opts->open_no_mount ;
 	const char * device      = opts->device ;
 	const char * mount_point = opts->mount_point ;
@@ -152,12 +146,13 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	string_t * passphrase =  StringListAssign( stl ) ;
 	string_t * m_name     =  StringListAssign( stl ) ;
 	string_t * data       =  StringListAssign( stl ) ; 
-	string_t st_mpoint ;
+	string_t * m_point    =  StringListAssign( stl ) ;
+	string_t * mapper     =  StringListAssign( stl ) ;
 	
 	const char * cpass ;
 	const char ** mapper_name ;
 	
-	char * cpoint = NULL ;
+	const char * cpoint = NULL ;
 	
 	size_t len ;
 	int st = 0 ;
@@ -210,8 +205,8 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		/*
 		* zuluCryptSecurityCreateMountPoint() is defined in security.c
 		*/
-		st_mpoint = zuluCryptSecurityCreateMountPoint( device,mount_point,uid ) ;
-		cpoint = StringDeleteHandle( &st_mpoint ) ;
+		*m_point = zuluCryptSecurityCreateMountPoint( device,mount_point,uid ) ;
+		cpoint = StringContent( *m_point ) ;
 		if( cpoint == NULL ){
 			return zuluExit( 21,device,cpoint,stl,uid,mapping_name ) ;
 		}
@@ -223,6 +218,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	 */
 	*m_name = zuluCryptCreateMapperName( device,mapping_name,uid,ZULUCRYPTshortMapperPath ) ;
 
+	*mapper = StringCopy( *m_name ) ;
 	mapper_name = StringPointer( *m_name ) ;
 	
 	/*
@@ -305,6 +301,18 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		}
 	}
 
+	device = StringMultiplePrepend( *mapper,"/",crypt_get_dir(),END ) ;
+	
+	if( share ){
+		/*
+		 * user wish to share the mount point bind the mount point to a publicly accessed path of /mnt/media
+		 */
+		/*
+		 * zuluCryptBindMountVolume() is defined in ../zuluCrypt-cli/bin/bind.c
+		 */
+		zuluCryptBindMountVolume( device,*m_point,m_flags ) ;
+	}
+	
 	zuluCryptCheckInvalidKey( opts->device ) ;
 	return zuluExit_1( st,opts,device,cpoint,stl,uid,mapping_name );
 }

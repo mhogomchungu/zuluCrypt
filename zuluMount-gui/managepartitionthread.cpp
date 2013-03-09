@@ -18,6 +18,7 @@
  */
 
 #include "managepartitionthread.h"
+#include <QDebug>
 
 managepartitionthread::managepartitionthread()
 {
@@ -46,6 +47,11 @@ void managepartitionthread::setKeySource( QString key )
 void managepartitionthread::setMountPoint( QString m )
 {
 	m_point = m ;
+}
+
+void managepartitionthread::setMakeMountPointPublic( bool opt )
+{
+	m_publicMount = opt ;
 }
 
 void managepartitionthread::openPathInFileManager()
@@ -189,6 +195,10 @@ void managepartitionthread::cryptoOpen()
 
 	exe = QString( "%1 -m -d \"%2\" -z \"%3\" -e %4 %5" ).arg( zuluMount ).arg( m_device ).arg( m_point ).arg( m_mode ).arg( m_keySource ) ;
 
+	if( m_publicMount ){
+		exe = exe + QString( " -M" ) ;
+	}
+
 	p.start( exe );
 	p.waitForFinished( -1 ) ;
 
@@ -209,10 +219,15 @@ void managepartitionthread::mount()
 	if( m_point.isEmpty() ){
 		m_point = QDir::homePath() + QString( "/" ) + m_device.split( "/" ).last() ;
 	}
+
 	exe = QString( "%1 -m -d \"%2\" -e %3 -z \"%4\"" ).arg( zuluMount ).arg( m_device ).arg( m_mode ).arg( m_point ) ;
 
+	if( m_publicMount ){
+		exe = exe + QString( " -M" ) ;
+	}
+
 	p.start( exe );
-	p.waitForFinished() ;
+	p.waitForFinished( -1 ) ;
 
 	QString output = QString( p.readAll() ) ;
 	int index = output.indexOf( QChar( ':') ) ;

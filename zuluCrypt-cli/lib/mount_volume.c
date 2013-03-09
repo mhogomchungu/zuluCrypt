@@ -35,19 +35,6 @@
 #define FAT_FAMILY_FS 1
 #define OTHER_FAMILY_FS 2
 
-typedef struct{
-	const char * original_device ;
-	const char * device ;
-	const char * m_point ;
-	const char * fs ;
-	const char * opts ;
-	uid_t uid ;
-	unsigned long m_flags ;
-	const char * fs_flags ;
-}m_struct;
-
-static int _add_entry_to_mtab( m_struct * mst,string_t * opts ) ;
-
 static inline int zuluExit( int st,int fd,stringList_t stl )
 {
 	StringListDelete( &stl ) ;
@@ -466,7 +453,7 @@ static inline int mount_ntfs( const m_struct * mst )
 		return -1 ;
 	}
 	p = Process( ZULUCRYPTmount ) ;
-	st = String( "" ) ;	
+	st = String( "" ) ;
 	st = _mount_options( mst->m_flags,&st ) ;
 	if( mst->m_flags & MS_RDONLY ){
 		StringPrepend( st,"ro" ) ;
@@ -627,14 +614,21 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 	
 	if( h == 0 ){
 		if( zuluCryptMtabIsAtEtc() ){
-			_add_entry_to_mtab( &mst,opts ) ;
+			_mount_options( mst.m_flags,opts ) ;
+			
+			if( StringPrefixMatch( mst.device,"/dev/loop",9 ) ){
+				mst.opts = ( char * ) StringMultipleAppend( *opts,",loop=",mst.device,END ) ;
+			}else{
+				mst.opts = ( char * ) StringContent( *opts ) ;
+			}
+			zuluCryptAddEntryToMtab( &mst ) ;
 		}
 	}
 
 	return zuluExit( h,fd,stl ) ;
 }
 
-static int _add_entry_to_mtab( m_struct * mst,string_t * opts )
+int zuluCryptAddEntryToMtab( m_struct * mst )
 {
 	int h ;
 	struct mntent mt  ;
@@ -654,15 +648,13 @@ static int _add_entry_to_mtab( m_struct * mst,string_t * opts )
 		mt.mnt_dir    = ( char * ) mst->m_point ;
 		mt.mnt_type   = ( char * ) mst->fs ;
 			
-		_mount_options( mst->m_flags,opts ) ;
-				
 		if( StringPrefixMatch( mst->device,"/dev/loop",9 ) ){
 			mt.mnt_fsname = ( char * ) mst->original_device ;
-			mt.mnt_opts = ( char * ) StringMultipleAppend( *opts,",loop=",mst->device,END ) ;
 		}else{
 			mt.mnt_fsname = ( char * ) mst->device ;
-			mt.mnt_opts = ( char * ) StringContent( *opts );
 		}
+		
+		mt.mnt_opts   = ( char * ) mst->opts ;
 		mt.mnt_freq   = 0 ;
 		mt.mnt_passno = 0 ;
 		addmntent( f,&mt ) ;

@@ -689,6 +689,10 @@ void zuluCrypt::closeStatusErrorMessage( int st )
 		case 3 :UIMessage( tr( "ERROR!" ),tr( "close failed, volume does not have an entry in /etc/mtab" ) );					break ;
 		case 4 :UIMessage( tr( "ERROR!" ),tr( "close failed, could not get a lock on /etc/mtab~" ) );						break ;
 		case 5 :UIMessage( tr( "ERROR!" ),tr( "close failed, volume is unmounted but could not close mapper,advice to close it manually" ) );	break ;
+		case 6 :UIMessage( tr( "ERROR!" ),tr( "close failed, could not resolve full path of device\n" ) );               			break ;
+		case 7 :UIMessage( tr( "ERROR!" ),tr( "close failed, shared mount point appear to be busy\n" ) );					break ;
+		case 8 :UIMessage( tr( "ERROR!" ),tr( "close failed, shared mount point appear to belong to a different user\n" ) );			break ;
+		case 9 :UIMessage( tr( "ERROR!" ),tr( "close failed, shared mount point appear is in an ambiguous state,advice to unmount manually" )) ;break ;
 		case 110:UIMessage( tr( "ERROR!" ),tr( "close failed, could not find any partition with the presented UUID" ) );			break ;
 		default:UIMessage( tr( "ERROR!" ),tr( "unrecognized error with status number %1 encountered" ).arg( st ) );
 	}

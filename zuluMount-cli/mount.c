@@ -161,6 +161,8 @@ int zuluMountMount( ARGS * args )
 	const char * m_opts    = args->m_opts  ;
 	const char * fs_opts   = args->fs_opts ;
 	uid_t        uid       = args->uid     ;
+	int share              = args->share   ;
+	
 	int mount_point_option = args->mpo;
 	int status ;
 	int mount_point_from_fstab = mount_point_option ;
@@ -230,6 +232,15 @@ ERROR: insuffienct privilege to manage a system partition.\nnecessary privileges
 	 */
 	status = zuluCryptMountVolume( device,rm_point,m_flags,fs_opts,uid ) ;
 	if( status == 0 ){
+		if( share ){
+			/*
+			 * user wish to share the mount point bind the mount point to a publicly accessed path of /mnt/media
+			 */
+			/*
+			 * zuluCryptBindMountVolume() is defined in ../zuluCrypt-cli/bin/bind.c
+			 */
+			zuluCryptBindMountVolume( device,z,m_flags ) ;
+		}
 		zuluCryptSecurityDropElevatedPrivileges() ;
 		printf( "SUCCESS: mount complete successfully\nvolume mounted at: %s\n",rm_point ) ;
 		return _zuluExit( 0,z,path,NULL ) ;

@@ -66,6 +66,7 @@ void mountPartition::enableAll()
 		m_ui->checkBox->setEnabled( true );
 	}
 	m_ui->checkBoxMountReadOnly->setEnabled( true );
+	m_ui->checkBoxShareMountPoint->setEnabled( true );
 	m_ui->labelMountPoint->setEnabled( true );
 	m_ui->lineEdit->setEnabled( true );
 	m_ui->pbCancel->setEnabled( true );
@@ -78,6 +79,7 @@ void mountPartition::disableAll()
 	m_ui->pbMount->setEnabled( false );
 	m_ui->checkBox->setEnabled( false );
 	m_ui->checkBoxMountReadOnly->setEnabled( false );
+	m_ui->checkBoxShareMountPoint->setEnabled( false );
 	m_ui->labelMountPoint->setEnabled( false );
 	m_ui->lineEdit->setEnabled( false );
 	m_ui->pbCancel->setEnabled( false );
@@ -109,6 +111,8 @@ void mountPartition::pbMount()
 	m_point = m_ui->lineEdit->text() ;
 	part->setMountPoint( utility::mountPath( m_point ) );
 	connect( part,SIGNAL( signalMountComplete( int,QString ) ),this,SLOT( slotMountComplete( int,QString ) ) ) ;
+
+	part->setMakeMountPointPublic( m_ui->checkBoxShareMountPoint->isChecked() );
 
 	part->startAction( managepartitionthread::Mount ) ;
 }

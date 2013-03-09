@@ -44,6 +44,7 @@ void zuluCryptEXEGetOptsSetDefault( struct_opts * stopts )
 	stopts->argv = NULL ;
 	stopts->env  = NULL ;
 	stopts->print_partition_type = 0 ;
+	stopts->share = 0 ;
 }
 
 void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
@@ -52,7 +53,7 @@ void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
 	
 	zuluCryptEXEGetOptsSetDefault( stopts ) ;
 	
-	while ( ( c = getopt(argc,argv,"HZCUWTJLORBXASNPkhocsarqwibEDs:m:d:p:f:e:Y:i:z:g:y:u:l:n:j:t:G:") ) != -1 ) {
+	while ( ( c = getopt(argc,argv,"MHZCUWTJLORBXASNPkhocsarqwibEDs:m:d:p:f:e:Y:i:z:g:y:u:l:n:j:t:G:") ) != -1 ) {
 		switch( c ){
 			case( 'H' ) : stopts->action = 'H' 	; break ; 
 			case( 'C' ) : stopts->action = 'C' 	; break ; 
@@ -77,6 +78,10 @@ void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
 			stopts->open_no_mount = 1 ; break ;
 			case( 'T' ) : stopts->print_partition_type = 1 ; 
 			break;   
+			case( 'M' ) : stopts->print_partition_type = 2 ; 
+			break ;
+			stopts->share = 1 ; 
+			break ;	
 			case( 'Z' ) : stopts->print_partition_type = 2 ; 
 			break;     
 			case( 'B' ) : stopts->action = 'B' ;

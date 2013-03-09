@@ -25,6 +25,7 @@
  bin/mount_flags.c 
  bin/file_encryption.c
  bin/clear_dead_mappers.c
+ bin/bind.c
  ) 
  
  SET( BINMount

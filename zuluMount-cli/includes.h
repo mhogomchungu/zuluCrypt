@@ -45,6 +45,7 @@ typedef struct{
 	stringList_t env        ;
 	int          mpo        ;
 	uid_t        uid        ;
+	int          share      ;
 }ARGS;
 
 int zuluMountUMount( ARGS * args ) ;

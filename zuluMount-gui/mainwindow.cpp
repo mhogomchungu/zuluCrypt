@@ -487,6 +487,12 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 			}
 		}
 
+		if( y.startsWith( QString( "/mnt/media/share" ) ) ){
+			/*
+			 * dont show mirror mounts
+			 */
+			continue ;
+		}
 		opt = entries.at( 4 ) ;
 		if( opt == QString( "Nil" ) || opt == QString( "1.0 KB" ) )
 			continue ;

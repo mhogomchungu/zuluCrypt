@@ -115,4 +115,5 @@ version 4.6.2
 -- fix bug:volumes did not close properly if mount point had a space character among others in it
 -- feature added:users who are members of "zulumount-exec" group will have their volumes opened with "exec" mount option.
    This will allow them to be able to execute commands from the mount point.The default and recommended option is not mount with "noexec" option.
-   
+-- feature added:A "-M" option is added that will create a publicly accessible "mirror" of a mount point in "/run/share" from the private 
+   original one created in "/run/media/$USER.This option is there to allow a user to mount a volume and have it accessible from other users of the system.

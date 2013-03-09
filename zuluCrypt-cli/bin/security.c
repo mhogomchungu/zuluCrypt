@@ -313,7 +313,6 @@ static string_t _create_custom_mount_point( const char * label,uid_t uid,string_
 int zuluCryptSecurityMountPointPrefixMatch( const char * m_path,uid_t uid,string_t * m_point )
 {
 	int st ;
-	int xt ;
 	/*
 	 * zuluCryptGetUserName() is defined in ../lib/user_home_path.c
 	 */
@@ -322,8 +321,7 @@ int zuluCryptSecurityMountPointPrefixMatch( const char * m_path,uid_t uid,string
 	 * below constant are set in ../constants.h
 	 */
 	const char * str = StringPrepend( uname,ZULUCRYPTmountPath"/" ) ;
-	xt = StringLength( uname ) ;
-	st = StringPrefixMatch( str,m_path,xt ) ;
+	st = StringPrefixEqual( m_path,str ) ;
 	if( m_point ){
 		*m_point = uname ;
 	}else{
