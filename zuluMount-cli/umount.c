@@ -94,7 +94,7 @@ outside of \"%s\"\n",StringContent( xt ) ) ;
 	switch( zuluCryptBindUnmountVolume( device,device,uid ) ){
 		case 3 : return _zuluExit( 107,st,m_point,"ERROR: shared mount point appear to be busy" ) ;
 		case 4 : return _zuluExit( 108,st,m_point,"ERROR: shared mount point appear to belong to a different user" ) ;
-		case 5 : return _zuluExit( 109,st,m_point,"ERROR: shared mount point appear is in an ambiguous state,advice to unmount manually" ) ;  
+		case 5 : return _zuluExit( 109,st,m_point,"ERROR: shared mount point appear to be in an ambiguous state,advice to unmount manually" ) ;  
 		default: ;
 	}
 	

@@ -234,7 +234,7 @@ ERROR: insuffienct privilege to manage a system partition.\nnecessary privileges
 	if( status == 0 ){
 		if( share ){
 			/*
-			 * user wish to share the mount point bind the mount point to a publicly accessed path of /mnt/media
+			 * user wish to share the mount point publicly, bind the mount point to a publicly accessed path of /run/share
 			 */
 			/*
 			 * zuluCryptBindMountVolume() is defined in ../zuluCrypt-cli/bin/bind.c

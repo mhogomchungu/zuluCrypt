@@ -44,7 +44,6 @@ static int entry_found( const char * m_dir,char ** m_point )
 		if( h == 0 ){
 			break ;
 		}else{
-			perror( "kk" ) ;
 			sleep( 1 ) ;
 		}
 	}

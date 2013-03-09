@@ -33,7 +33,7 @@ static int zuluExit( int st,string_t p )
 		case 6 : printf( "ERROR: close failed, could not resolve full path of device\n");					  break ;
 		case 7 : printf( "ERROR: close failed, shared mount point appear to be busy\n" );					  break ;
 		case 8 : printf( "ERROR: close failed, shared mount point appear to belong to a different user\n" );			  break ;
-		case 9 : printf( "ERROR: close failed, shared mount point appear is in an ambiguous state,advice to unmount manually" ) ; break ;  
+		case 9 : printf( "ERROR: close failed, shared mount point appear to be in an ambiguous state,advice to unmount manually" ) ; break ;  
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
 	return st ;
