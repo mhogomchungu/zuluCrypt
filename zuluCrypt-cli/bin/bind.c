@@ -168,7 +168,6 @@ int zuluCryptBindMountVolume( const char * device,string_t z_path,unsigned long 
 	struct stat st ;
 	string_t path ;
 	string_t entry ;
-	
 	stringList_t stl ;
 	ssize_t index = StringLastIndexOfChar( z_path,'/' ) ;
 	const char * o_path = StringContent( z_path ) ;
@@ -214,21 +213,18 @@ int zuluCryptBindMountVolume( const char * device,string_t z_path,unsigned long 
 			 */
 			if( zuluCryptMtabIsAtEtc() ){
 				stl = StringListStringSplit( entry,' ' ) ;
-				StringDelete( &entry ) ;
 				str.device          = device ;
 				str.original_device = StringListContentAt( stl,0 ) ;
 				str.m_point         = m_path ;
 				str.fs              = StringListContentAt( stl,2 ) ;
-			
-				entry = StringListStringAt( stl,3 ) ;
-			
-				str.opts            = StringPrepend( entry,"bind," ) ;
+				str.opts            = StringPrepend( StringListStringAt( stl,3 ),"bind," ) ;
 				/*
 				* zuluCryptAddEntryToMtab() is defined in ../lib/mount_volume.c
 				*/
 				zuluCryptAddEntryToMtab( &str ) ;
 				StringListDelete( &stl ) ;
 			}
+			StringDelete( &entry ) ;
 		}
 	}
 	StringDelete( &path ) ;
