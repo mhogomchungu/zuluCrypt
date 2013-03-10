@@ -71,7 +71,7 @@ stringList_t zuluCryptGetFstabList( void )
 {
 	string_t xt = StringGetFromFile( "/etc/fstab" );
 	
-	stringList_t fstabList  ;
+	stringList_t fstabList = StringListVoid ;
 	
 	StringListIterator it  ;
 	StringListIterator end ;

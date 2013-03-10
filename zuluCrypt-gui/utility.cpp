@@ -64,6 +64,14 @@ options:\n\
 	std::cout << verInfo << std::endl ;
 }
 
+QString utility::shareMountPointToolTip()
+{
+	const char * msg ="\
+if the option is checked,a normal private mount point will be created in \"/run/media/$USER/\"\n\
+and an additional publicly accessible \"mirror\" mount point will be created in \"/run/share/\"" ;
+	return QString( msg ) ;
+}
+
 void utility::debug( QString s )
 {
 	std::cout << s.toStdString() << std::endl ;

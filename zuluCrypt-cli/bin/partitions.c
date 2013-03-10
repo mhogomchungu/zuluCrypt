@@ -107,13 +107,9 @@ static inline int _allowedDevice( const char * device )
 			return 0 ;
 		}else{
 			blkid_do_probe( blkid );
-			if( blkid_probe_lookup_value( blkid,"TYPE",&fsType,NULL ) != 0 ){
-				st = 0 ;
-			}else{
-				st = 1 ;
-			}
+			st = blkid_probe_lookup_value( blkid,"TYPE",&fsType,NULL ) ;
 			blkid_free_probe( blkid );
-			return st ;
+			return st == 0 ;
 		}
 	}else if( sts > 3 ){
 		if(	StringPrefixMatch( device,"hd",2 ) || 
@@ -290,11 +286,6 @@ stringList_t zuluCryptPartitions( int option )
 	 * zuluCryptGetFstabList() is defined in ../lib/mount_volume.c
 	 */
 	stl = zuluCryptGetFstabList() ;
-		
-	if( stl == StringListVoid ){
-		StringListDelete( &non_system ) ;
-		return StringListVoid ;
-	}
 	
 	it  = StringListBegin( stl ) ;
 	end = StringListEnd( stl ) ; 
@@ -377,11 +368,11 @@ void zuluCryptPrintPartitionProperties( const char * device )
 	char sizebuffer_1[ SIZE ] ;
 	
 	const char * e ;
-	
 	uint64_t size ;
-	
 	blkid_probe blkid ;
+	
 	zuluCryptSecurityGainElevatedPrivileges() ;
+	
 	blkid = blkid_new_probe_from_filename( device ) ;
 	
 	printf( "%s\t",device ) ;

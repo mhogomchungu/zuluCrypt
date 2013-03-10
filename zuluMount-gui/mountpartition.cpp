@@ -24,7 +24,8 @@
 mountPartition::mountPartition( QWidget * parent,QTableWidget * table,QString folderOpener ) :
 	QWidget( parent ),m_ui(new Ui::mountPartition)
 {
-	m_ui->setupUi(this);
+	m_ui->setupUi( this );
+	m_ui->checkBoxShareMountPoint->setToolTip( utility::shareMountPointToolTip() );
 	m_table = table ;
 	this->setFixedSize( this->size() );
 	this->setWindowFlags( Qt::Window | Qt::Dialog );

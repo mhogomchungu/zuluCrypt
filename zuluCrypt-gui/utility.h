@@ -61,6 +61,7 @@ public:
 	static QString mountPath( QString ) ;
 	static QString userName( void ) ;
 	static void help( QString app ) ;
+	static QString shareMountPointToolTip( void ) ;
 };
 
 #endif // MISCFUNCTIONS_H

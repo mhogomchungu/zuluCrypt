@@ -24,7 +24,8 @@
 keyDialog::keyDialog( QWidget * parent,QTableWidget * table,QString path,QString type,QString folderOpener ) :
 	QDialog( parent ),m_ui(new Ui::keyDialog)
 {
-	m_ui->setupUi(this);
+	m_ui->setupUi( this );
+	m_ui->checkBoxShareMountPoint->setToolTip( utility::shareMountPointToolTip() );
 	m_table = table ;
 	m_path = path ;
 	m_working = false ;
