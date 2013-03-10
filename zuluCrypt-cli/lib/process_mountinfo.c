@@ -76,6 +76,7 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 	const char * g ;
 	char * dev ;
 	int index ;
+	char * const * entry ;
 	struct stat str ;
 	stringList_t tmp ;
 	stringList_t stx = StringListVoid;
@@ -110,10 +111,11 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 			StringListDelete( &tmp ) ;
 			continue ;
 		}
-		device        = StringListContentAt( tmp,index+2 ) ;
-		mount_point   = StringListContentAt( tmp,4 ) ;
-		file_system   = StringListContentAt( tmp,index+1 ) ;
-		mount_options = StringListContentAt( tmp,5 ) ;
+		entry         = StringListStringArray( tmp ) ;
+		device        = entry[ index+2 ] ;
+		mount_point   = entry[ 4 ] ;
+		file_system   = entry[ index+1 ] ;
+		mount_options = entry[ 5 ] ;
 		if( StringPrefixMatch( device,"/dev/loop",9 ) ){
 			/*
 			 * zuluCryptLoopDeviceAddress() is defined in ./create_loop_device.c
@@ -168,6 +170,7 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 		}
 		stx = StringListAppendString( stx,st ) ;
 		StringReset( st ) ;
+		free( ( char * )entry ) ;
 		StringListDelete( &tmp ) ;
 	}
 	
