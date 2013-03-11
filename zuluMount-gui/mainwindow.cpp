@@ -32,9 +32,11 @@ void MainWindow::setUpApp()
 	this->setFixedSize( this->size() ) ;
 
 	m_ui->tableWidget->setColumnWidth( 0,228 );
-	m_ui->tableWidget->setColumnWidth( 1,226 );
+	//m_ui->tableWidget->setColumnWidth( 1,226 ); //original width with label column visible
+	m_ui->tableWidget->setColumnWidth( 1,328 );   // new column with label column hidden
 	m_ui->tableWidget->setColumnWidth( 2,98 );
-	m_ui->tableWidget->setColumnWidth( 3,98 );
+	//m_ui->tableWidget->setColumnWidth( 3,98 ); // hide the label column
+	m_ui->tableWidget->setColumnWidth( 3,0 );    // hide the label column
 	m_ui->tableWidget->setColumnWidth( 4,87 );
 	m_ui->tableWidget->setColumnWidth( 5,87 );
 
@@ -516,12 +518,7 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 			tablewidget::addRowToTable( table,entries ) ;
 		}
 	}
-
-	if( m_ui->tableWidget->rowCount() > 10 ){
-		m_ui->tableWidget->setColumnWidth( 1,226 );
-	}else{
-		m_ui->tableWidget->setColumnWidth( 1,240 );
-	}
+	
 	this->enableAll();
 }
 
