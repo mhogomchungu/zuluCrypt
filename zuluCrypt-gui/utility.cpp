@@ -67,8 +67,8 @@ options:\n\
 QString utility::shareMountPointToolTip()
 {
 	const char * msg ="\
-if the option is checked,a normal private mount point will be created in \"/run/media/$USER/\"\n\
-and an additional publicly accessible \"mirror\" mount point will be created in \"/run/share/\"" ;
+if the option is checked,a primary private mount point will be created in \"/run/media/private/$USER/\"\n\
+and a secondary publicly accessible \"mirror\" mount point will be created in \"/run/media/public/\"" ;
 	return QString( msg ) ;
 }
 
