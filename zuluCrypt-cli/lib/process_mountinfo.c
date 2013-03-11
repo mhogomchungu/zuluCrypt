@@ -301,7 +301,7 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 	for( i = 0 ; i < j ; i++ ){
 		c = StringListContentAt( stl,i ) ;
 		if( StringPrefixMatch( c,e,len ) ){
-			if( StringHasComponent( c,"/media/share" ) ){
+			if( StringHasComponent( c,"/run/media/public/" ) ){
 				/*
 				 * dont show mirror images due to bind mounts
 				 */

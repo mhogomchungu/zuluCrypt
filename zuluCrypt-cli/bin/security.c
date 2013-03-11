@@ -320,7 +320,7 @@ int zuluCryptSecurityMountPointPrefixMatch( const char * m_path,uid_t uid,string
 	/*
 	 * below constant are set in ../constants.h
 	 */
-	const char * str = StringPrepend( uname,ZULUCRYPTmountPath"/" ) ;
+	const char * str = StringPrepend( uname,"/run/media/private/" ) ;
 	st = StringPrefixEqual( m_path,str ) ;
 	if( m_point ){
 		*m_point = uname ;
@@ -346,18 +346,20 @@ string_t zuluCryptSecurityCreateMountPoint( const char * device,const char * lab
 	 * ZULUCRYPtmountMiniPath contains "/run"
 	 * ZULUCRYPTmountPath contains "/run/media"
 	 */
-	if( stat( ZULUCRYPtmountMiniPath,&st ) != 0 ){
-		mkdir( ZULUCRYPtmountMiniPath,mode ) ;
-		chown( ZULUCRYPtmountMiniPath,0,0 ) ;
-		chmod( ZULUCRYPtmountMiniPath,mode ) ;
+	if( stat( "/run",&st ) != 0 ){
+		mkdir( "/run/",mode ) ;
+		chown( "/run/",0,0 ) ;
 	}
-	if( stat( ZULUCRYPTmountPath,&st ) != 0 ){
-		mkdir( ZULUCRYPTmountPath,mode ) ;
-		chown( ZULUCRYPTmountPath,0,0 ) ;
-		chmod( ZULUCRYPTmountPath,mode ) ;
+	if( stat( "/run/media",&st ) != 0 ){
+		mkdir( "/run/media",mode ) ;
+		chown( "/run/media",0,0 ) ;
+	}
+	if( stat( "/run/media/private",&st ) != 0 ){
+		mkdir( "/run/media/private",mode ) ;
+		chown( "/run/media/private",0,0 ) ;
 	}
 	
-	m_point = StringPrepend( path,ZULUCRYPTmountPath"/" ) ;
+	m_point = StringPrepend( path,"/run/media/private/" ) ;
 	
 	if( stat( m_point,&st ) != 0 ){
 		mkdir( m_point,S_IRUSR | S_IXUSR ) ;

@@ -197,6 +197,10 @@ void DialogMsg::ShowUIVolumeProperties( QString title,QString msg )
 	m_ui->labelUnused->setText( stl.at( 12 ) );
 	m_ui->labelUsedPerc->setText( stl.at( 13 ) );
 
+	//QString m = stl.at( 15 ) ;
+	//m.replace( QString( "mount point2" ),QString( "public mount point" ) ) ;
+	//m_ui->labelUsedPerc->setText( m );
+
 	this->ShowUI( title,msg );
 }
 

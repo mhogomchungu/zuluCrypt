@@ -72,6 +72,20 @@ and an additional publicly accessible \"mirror\" mount point will be created in 
 	return QString( msg ) ;
 }
 
+QString utility::shareMountPointToolTip( QString path )
+{
+	struct stat st ;
+	QString s = QString( "/run/media/public/" ) + path.split( "/" ).last() ;
+	QByteArray x = s.toAscii() ;
+	const char * y = x.constData() ;
+	if( stat( y,&st ) == 0 ){
+		return QString( "public mount point: " ) + s ;
+	}else{
+		//return QString( "no public mount point" ) ;
+		return QString( "" ) ;
+	}
+}
+
 void utility::debug( QString s )
 {
 	std::cout << s.toStdString() << std::endl ;
@@ -90,7 +104,7 @@ bool utility::mapperPathExists( QString path )
 QString utility::mountPath( QString name )
 {
 	struct passwd * pass = getpwuid( getuid() ) ;
-	return QString( "/run/media/%1/%2" ).arg( QString( pass->pw_dir ).split( "/" ).last() ).arg( name );
+	return QString( "/run/media/private/%1/%2" ).arg( QString( pass->pw_dir ).split( "/" ).last() ).arg( name );
 }
 
 QString utility::mapperPath( QString rpath )

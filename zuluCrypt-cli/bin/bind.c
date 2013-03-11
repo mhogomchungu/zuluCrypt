@@ -91,7 +91,7 @@ int zuluCryptBindUnmountVolume( const char * device,const char * mapper,uid_t ui
 			index = StringLastIndexOfChar( xt,'/' ) + 1 ;
 			StringRemoveLeft( xt,index ) ;
 			
-			f = StringPrepend( xt,"/run/share/" ) ;
+			f = StringPrepend( xt,"/run/media/public/" ) ;
 
 			/*
 			 * f will now contain something like " /media/share/sdc1"
@@ -180,7 +180,7 @@ int zuluCryptBindMountVolume( const char * device,string_t z_path,unsigned long 
 		return 1 ;
 	}
 	
-	path = String( "/run/share/" ) ;
+	path = String( "/run/media/public/" ) ;
 	m_path = StringAppend( path,o_path + index + 1 ) ;
 		
 	if( stat( "/run",&st ) != 0 ){
@@ -188,11 +188,16 @@ int zuluCryptBindMountVolume( const char * device,string_t z_path,unsigned long 
 		chown( "/run",0,0 ) ;
 	}
 	
-	if( stat( "/run/share",&st ) != 0 ){
-		mkdir( "/run/share",mode ) ;
-		chown( "/run/share",0,0 ) ;
+	if( stat( "/run/media",&st ) != 0 ){
+		mkdir( "/run/media",mode ) ;
+		chown( "/run/media",0,0 ) ;
 	}
-	
+
+	if( stat( "/run/media/public",&st ) != 0 ){
+		mkdir( "/run/media/public",mode ) ;
+		chown( "/run/media/public",0,0 ) ;
+	}
+
 	if( stat( m_path,&st ) == 0 ){
 		 ;
 	}else{

@@ -112,6 +112,9 @@ static void zuluCryptFileSystemProperties( string_t p,const char * mapper,const 
 	char buff[ SIZE ] ;
 	char * buffer = buff ;
 	char format[ SIZE ] ;
+	string_t q ;
+	ssize_t index ;
+	struct stat statstr ;
 	
 	blkid = blkid_new_probe_from_filename( mapper ) ;
 	
@@ -159,7 +162,23 @@ static void zuluCryptFileSystemProperties( string_t p,const char * mapper,const 
 	
 	free( buffer ) ;
 	
-	StringMultipleAppend( p,"\n mount point:\t",m_point,END ) ;
+	StringMultipleAppend( p,"\n mount point1:\t",m_point,END ) ;
+	
+	q = String( m_point ) ;
+	index = StringLastIndexOfChar( q,'/' ) ;
+	if( index == -1 ){
+		StringAppend( p,"\n mount point2:\tNil" ) ;
+	}else{
+		StringRemoveLeft( q,index ) ;
+		e = StringPrepend( q,"/run/media/public" ) ;
+		if( stat( e,&statstr ) == 0 ){
+			StringMultipleAppend( p,"\n mount point2:\t",e,END ) ;
+		}else{
+			StringAppend( p,"\n mount point2:\tNil" ) ;
+		}
+	}
+	
+	StringDelete( &q ) ;
 }
 
 char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper )

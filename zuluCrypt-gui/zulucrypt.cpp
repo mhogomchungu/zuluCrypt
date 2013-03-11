@@ -198,8 +198,20 @@ void zuluCrypt::setupUIElements()
 	//m_ui->tableWidget->setColumnWidth( 2,70 );
 }
 
+void zuluCrypt::itemEntered( QTableWidgetItem * item )
+{
+	int row = item->row() ;
+	QTableWidget * table = item->tableWidget() ;
+	QString m_point = table->item( row,1 )->text() ;
+	if( !m_point.isEmpty() ){
+		item->setToolTip( utility::shareMountPointToolTip( m_point ) );
+	}
+}
+
 void zuluCrypt::setupConnections()
 {
+	m_ui->tableWidget->setMouseTracking( true );
+	connect( m_ui->tableWidget,SIGNAL( itemEntered( QTableWidgetItem * ) ),this,SLOT( itemEntered( QTableWidgetItem * ) ) ) ;
 	connect( m_ui->actionErase_data_on_device,SIGNAL( triggered() ),this,SLOT( ShowEraseDataDialog() ) );
 	connect( this,SIGNAL( favClickedVolume( QString,QString ) ),this,SLOT( ShowPasswordDialog( QString,QString ) ) ) ;
 	connect( m_ui->actionPartitionOpen,SIGNAL( triggered() ),this,SLOT( ShowOpenPartition() ) );

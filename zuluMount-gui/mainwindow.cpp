@@ -40,6 +40,9 @@ void MainWindow::setUpApp()
 
 	this->setWindowIcon( QIcon( QString( ":/zuluMount.png" ) ) );
 
+	m_ui->tableWidget->setMouseTracking( true );
+
+	connect( m_ui->tableWidget,SIGNAL( itemEntered( QTableWidgetItem * ) ),this,SLOT( itemEntered( QTableWidgetItem * ) ) ) ;
 	connect( m_ui->tableWidget,SIGNAL( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ),
 		 this,SLOT( slotCurrentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ) ) ;
 	connect( m_ui->pbmount,SIGNAL( clicked() ),this,SLOT( pbMount() ) ) ;
@@ -88,6 +91,16 @@ void MainWindow::setUpApp()
 	this->processArgumentList();
 
 	this->show();
+}
+
+void MainWindow::itemEntered( QTableWidgetItem * item )
+{
+	int row = item->row() ;
+	QTableWidget * table = item->tableWidget() ;
+	QString m_point = table->item( row,1 )->text() ;
+	if( !m_point.isEmpty() ){
+		item->setToolTip( utility::shareMountPointToolTip( m_point ) );
+	}
 }
 
 void MainWindow::processArgumentList()
@@ -462,7 +475,7 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 
 	QString opt ;
 	QString fs ;
-	QString x = QString( "/run/media/" ) + utility::userName() ;
+	QString x = QString( "/run/media/private/" ) + utility::userName() ;
 	QString y ;
 
 	for( int i = 0 ; i < j ; i++ ){
@@ -478,7 +491,7 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 
 		y = entries.at( 1 ) ;
 
-		if( y.startsWith( QString( "/run/media/" ) ) ){
+		if( y.startsWith( QString( "/run/media/private/" ) ) ){
 			if( !y.startsWith( x ) ){
 				/*
 				 * dont show mount other user specific mounts
@@ -487,7 +500,7 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 			}
 		}
 
-		if( y.startsWith( QString( "/run/share" ) ) ){
+		if( y.startsWith( QString( "/run/media/public/" ) ) ){
 			/*
 			 * dont show mirror mounts
 			 */

@@ -62,6 +62,8 @@ public:
 	static QString userName( void ) ;
 	static void help( QString app ) ;
 	static QString shareMountPointToolTip( void ) ;
+	static QString shareMountPointToolTip( QString ) ;
+
 };
 
 #endif // MISCFUNCTIONS_H

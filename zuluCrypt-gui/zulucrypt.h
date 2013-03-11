@@ -142,6 +142,7 @@ private slots :
 	void openFolder( void ) ;
 	void fileManagerOpenStatus( int exitCode, int exitStatus,int startError ) ;
 	void openVolumeFromArgumentList( void ) ;
+	void itemEntered( QTableWidgetItem * ) ;
 private:
 	passwordDialog * setUpPasswordDialog( void );
 	openvolume * setUpOpenpartition( void );

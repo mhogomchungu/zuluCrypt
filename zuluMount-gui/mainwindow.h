@@ -84,6 +84,7 @@ private slots:
 	void fileManagerOpenStatus( int exitCode, int exitStatus,int startError ) ;
 	void processArgumentList( void ) ;
 	void openVolumeFromArgumentList( void ) ;
+	void itemEntered( QTableWidgetItem * ) ;
 private:
 	Ui::MainWindow * m_ui ;
 
