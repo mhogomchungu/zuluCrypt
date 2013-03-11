@@ -106,7 +106,12 @@ string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos ) ;
 /*
  * zuluCrypRemoveEntryFromMtab() is defined in ./unmount_volume.c
  */
-int zuluCrypRemoveEntryFromMtab( const char * device ) ;
+int zuluCrypRemoveEntryFromMtab( const char * m_path ) ;
+
+/*
+ * zuluCrypRemoveEntryFromMtab_1() is defined in ./unmount_volume.c
+ */
+int zuluCrypRemoveEntryFromMtab_1( const char * device ) ;
 
 /*
  * this function is defined in process_mountinfo.c

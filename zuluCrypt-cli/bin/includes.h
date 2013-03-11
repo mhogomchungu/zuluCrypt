@@ -184,7 +184,7 @@ int zuluCryptHeaderMatchBackUpHeader( const char * device,const char * header_ba
 /*
  * this function is defined in bind.c
  */
-int zuluCryptBindUnmountVolume( const char * device,const char * mapper,uid_t uid ) ;
+int zuluCryptBindUnmountVolume( stringList_t mountinfo,const char * device,const char * mapper,uid_t uid ) ;
 
 /*
  * this function is defined in bind.c

@@ -28,9 +28,8 @@
  * */
 #include "libmount_header.h"
 
-static int entry_found( const char * m_dir,char ** m_point )
+static inline int _unmount_volume( const char * m_dir )
 {
-	string_t st ;
 	int h ;
 	int i ;
 	
@@ -48,15 +47,10 @@ static int entry_found( const char * m_dir,char ** m_point )
 		}
 	}
 	
-	if( h == 0 && m_point != NULL ){
-		st = String( m_dir ) ;
-		*m_point = StringDeleteHandle( &st ) ;
-	}
-	
 	return h ;
 }
 
-int zuluCrypRemoveEntryFromMtab( const char * device ) 
+int zuluCrypRemoveEntryFromMtab( const char * m_point ) 
 {
 #if USE_NEW_LIBMOUNT_API
 	struct libmnt_lock * lock ;
@@ -65,18 +59,10 @@ int zuluCrypRemoveEntryFromMtab( const char * device )
 #endif
 	struct mntent * mt ;
 	
-	struct stat str ;
-	
 	FILE * f ;
-	FILE * g ;
+	FILE * g ;	
 	
-	int found = 0 ;
-	const char * e ;
-	
-	string_t st ;
-	
-	size_t dev_len = strlen( device ) ;
-	ssize_t index ;
+	size_t dir_len = strlen( m_point ) ;
 	
 	int h ;
 
@@ -89,67 +75,20 @@ int zuluCrypRemoveEntryFromMtab( const char * device )
 	}else{
 		g = setmntent( "/etc/mtab-zuluCrypt","w" ) ;
 		while( ( mt = getmntent( f ) ) != NULL ){
-			if( StringPrefixMatch( mt->mnt_fsname,device,dev_len ) ){
-				found = 1 ;
+			if( StringPrefixMatch( mt->mnt_dir,m_point,dir_len ) ){
+				/*
+				 * an entry we want to delete,skip it
+				 */
+				;
 			}else{
 				addmntent( g,mt ) ;
 			}
 		}
-		
+
 		endmntent( g ) ;
-		if( found ){
-			rename( "/etc/mtab-zuluCrypt","/etc/mtab" ) ;
-			chown( "/etc/mtab",0,0 ) ;
-			chmod( "/etc/mtab",S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH ) ;
-		}else{
-			if( StringPrefixMatch( device,"/dev/",5 ) ){
-				/*
-				 * entry not found,assuming the entry is an LVM volume,in /dev/abc/def format while mtab has it in 
-				 * /dev/mapper/abc-def format convert it and try again 
-				 */
-				found = 0 ;
-				endmntent( f ) ;
-				f = setmntent( "/etc/mtab","r" ) ;
-				unlink( "/etc/mtab-zuluCryp" ) ;
-				g = setmntent( "/etc/mtab-zuluCrypt","w" ) ;
-				
-				st = String( device ) ;
-				index = StringLastIndexOfChar( st,'/' ) ;
-				if( index != -1 ){
-					StringSubChar( st,index,'-' ) ;
-					e = StringReplaceString( st,"/dev/","/dev/mapper/" ) ;
-					if( stat( e,&str ) == 0 ){
-						index = StringIndexOfChar( st,0,' ' ) ;
-						/*
-						 * yap,volume is an LVM volume
-						 */
-						while( ( mt = getmntent( f ) ) != NULL ){
-							if( StringPrefixMatch( mt->mnt_fsname,e,index ) ){
-								found = 1 ;
-							}else{
-								addmntent( g,mt ) ;
-							}
-						}
-					}
-				}
-			
-				endmntent( g ) ;
-			
-				StringDelete( &st ) ;
-				
-				if( found ){
-					rename( "/etc/mtab-zuluCrypt","/etc/mtab" ) ;
-					chown( "/etc/mtab",0,0 ) ;
-					chmod( "/etc/mtab",S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH ) ;
-				}else{
-					/*
-					 * volume doesnt seem to have an entry in mtab
-					 */
-					;
-				}
-			}
-		}
-			
+		rename( "/etc/mtab-zuluCrypt","/etc/mtab" ) ;
+		chown( "/etc/mtab",0,0 ) ;
+		chmod( "/etc/mtab",S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH ) ;
 		mnt_unlock_file( lock ) ;
 		h = 0 ;
 	}
@@ -157,6 +96,12 @@ int zuluCrypRemoveEntryFromMtab( const char * device )
 	endmntent( f ) ;
 	mnt_free_lock( lock ) ;
 	return h ;
+}
+
+int zuluCrypRemoveEntryFromMtab_1( const char * device ) 
+{
+	if( device ){;}
+	return 0 ;
 }
 
 int zuluCryptUnmountVolume( const char * device,char ** m_point )
@@ -182,15 +127,21 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 	m = zuluCryptGetMountPointFromPath( device ) ;
 
 	if( m != NULL ){
-		h = entry_found( m,m_point ) ;
-		free( m ) ;
+		h = _unmount_volume( m ) ;
 		if( h == 0 ){
 			/*
 			 *zuluCryptMtabIsAtEtc() is defined in ./mount_volume.c 
 			 */
 			if( zuluCryptMtabIsAtEtc() ){
-				h = zuluCrypRemoveEntryFromMtab( device ) ;
+				h = zuluCrypRemoveEntryFromMtab( m ) ;
 			}	
+			if( m_point != NULL ){
+				*m_point = m ;
+			}else{
+				free( m ) ;
+			}
+		}else{
+			free( m ) ;
 		}
 	}
 		

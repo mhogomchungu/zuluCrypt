@@ -24,116 +24,31 @@
 #include <dirent.h>
 #include <stdlib.h>
 
-
-/*
- * This source file attempts to "clear a dead mapper".A dead mapper happens when a user opens
- * an encrypted volume and then just unplugs it without properly closing the mapper 
- */
-
-static void delete_mount_point_with_no_device( const char * path,uid_t uid,stringList_t stl )
+static void _remove_mapper( const char * path,stringList_t stl,uid_t uid )
 {
+	char * m_point = NULL ;
 	/*
-	 * zuluCryptGetUserName() is defined in ../lib/user_home_path.c
+	 * zuluCryptBindUnmountVolume() is defined in ./bind.c
 	 */
-	string_t p = zuluCryptGetUserName( uid ) ;
-	DIR * dir = opendir( StringPrepend( p,"/run/media/" ) ) ;
-	struct dirent * entry ;
-	const char * m_path ;
-	
-	if( dir == NULL ){
-		StringDelete( &p ) ;
+	int r = zuluCryptBindUnmountVolume( stl,path,path,uid )  ;
+
+	if( r == 3 || r == 4 ){
+		/*
+		 * shared mount is busy or belong to another user
+		 */
 		return ;
 	}
 	
-	if( path ){;}
-	
-	while( ( entry = readdir( dir ) ) != NULL ){
-		m_path = entry->d_name ;
-		if( strcmp( m_path,"." ) == 0 )
-			continue ;
-		if( strcmp( m_path,".." ) == 0 )
-			continue ;
-		if( StringListHasSequence( stl,m_path ) != 0 ){
-			/*
-			 * folder exists at mount point prefix but it is not mounted,this is one we want to delete
-			 */
-			m_path = StringMultipleAppend( p,"/",m_path,END ) ;
-			rmdir( m_path ) ;
-		}
-	}
-	
-	closedir( dir ) ;
-	StringDelete( &p ) ;
 	/*
-	 * zuluCrypRemoveEntryFromMtab() is defined in ../lib/unmount_volume.c
+	 * zuluCryptCloseVolume() is defined in ../lib/close_volume.c
 	 */
-	zuluCrypRemoveEntryFromMtab( path ) ;
-}
-
-/*
- * This function is called when a dead mapper is noticed,a dead mapper show up when a device is removed
- * without being properly closed.
- */
-static void remove_mapper( const char * path,stringList_t stl,uid_t uid )
-{
-	const char * m_point ;
-	stringList_t stx ;
+	r = zuluCryptCloseVolume( path,&m_point ) ;
 	
-	ssize_t index = StringListHasStartSequence( stl,path ) ;
-
-	if( index == -1 ){
-		/*
-		 * path has no entry in "proc/self/mountinfo" but does in "/dev/mapper,
-		 * this happens when a mapper is already "unmount2()" below.Just deactivate it
-		 * and return 
-		 */
-		
-		/*
-		 * zuluCryptCloseMapper() is defined in ../lib/close_mapper.c
-		 */
-		if( zuluCryptCloseMapper( path ) == 0 ){
-			/*
-			 * mount point is no longer busy and not in /proc/self/mountinfo.
-			 * Search the user mount point prefix to see if there is a mount point
-			 * with no associated device and delete it
-			 */
-			delete_mount_point_with_no_device( path,uid,stl ) ;
-		}else{
-			/*
-			 * mount point is still busy
-			 */
-			;
+	if( r == 0 ){
+		if( m_point != NULL ){
+			remove( m_point ) ;
+			free( m_point ) ;
 		}
-	}else{
-		/*
-		 * First attempt to close a mapper,try to unmount it and then deactivate the mapper if 
-		 * the operation succeed
-		 */
-		stx = StringListSplit( StringListContentAt( stl,index ),' ' ) ;
-	
-		m_point = StringListContentAt( stx,1 ) ;
-	
-		if( umount( m_point ) == 0 ){
-			rmdir( m_point ) ;
-			zuluCryptCloseMapper( path ) ;
-			/*
-			 * zuluCryptMtabIsAtEtc() is defined in ../lib/mount_volume.c
-			 */
-			if( zuluCryptMtabIsAtEtc() ){
-				/*
-				* zuluCrypRemoveEntryFromMtab() is defined in ../lib/unmount_volume.c
-				*/
-				zuluCrypRemoveEntryFromMtab( path ) ;
-			}
-		}else{
-			if( umount2( m_point,MNT_DETACH ) == 0 ){
-				if( zuluCryptMtabIsAtEtc() ){
-					zuluCrypRemoveEntryFromMtab( path ) ;
-				}
-			}
-		}
-		
-		StringListDelete( &stx ) ;
 	}
 }
 
@@ -184,14 +99,14 @@ void zuluCryptClearDeadMappers( uid_t uid )
 					/*
 					 * we will get here is the mapper is "active" but the underlying device is gone
 					 */
-					remove_mapper( e,stl,uid ) ;
+					_remove_mapper( e,stl,uid ) ;
 				}
 				crypt_free( cd ) ;
 			}else{
 				/*
 				 * we shouldnt get here
 				 */
-				remove_mapper( e,stl,uid ) ;
+				_remove_mapper( e,stl,uid ) ;
 			}
 		}
 	}

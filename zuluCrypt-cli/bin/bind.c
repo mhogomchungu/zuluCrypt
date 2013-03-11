@@ -21,12 +21,8 @@
 #include <sys/mount.h>
 #include "../lib/includes.h"
 
-int zuluCryptBindUnmountVolume( const char * device,const char * mapper,uid_t uid )
+int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,const char * mapper,uid_t uid )
 {
-	/*
-	 * zuluCryptGetMoutedListFromMountInfo() is defined in ../lib/process_mountinfo.c 
-	 */
-	stringList_t stx = zuluCryptGetMoutedListFromMountInfo() ;
 	stringList_t stl ;
 	string_t xt ;
 	string_t st ;
@@ -37,6 +33,15 @@ int zuluCryptBindUnmountVolume( const char * device,const char * mapper,uid_t ui
 	int r = 1 ;
 	int k ;
 	char * dev = NULL ;
+	int delete_stx = 0 ;
+	
+	if( stx == StringListVoid ){
+		/*
+		 * zuluCryptGetMoutedListFromMountInfo() is defined in ../lib/process_mountinfo.c 
+		 */
+		stx = zuluCryptGetMoutedListFromMountInfo() ;
+		delete_stx = 1 ;
+	}
 	
 	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
 		/*
@@ -125,7 +130,7 @@ int zuluCryptBindUnmountVolume( const char * device,const char * mapper,uid_t ui
 							/*
 							 * zuluCrypRemoveEntryFromMtab() is defined in ../lib/unmount_volume.c
 							 */
-							zuluCrypRemoveEntryFromMtab( device ) ;
+							zuluCrypRemoveEntryFromMtab( f ) ;
 							rmdir( f ) ;
 							r = 0 ;
 							break ;
@@ -148,15 +153,15 @@ int zuluCryptBindUnmountVolume( const char * device,const char * mapper,uid_t ui
 		
 		StringMultipleDelete( &xt,&st,END ) ;
 	}
-	
-	StringListDelete( &stx ) ;
-	
+		
 	if( dev != NULL ){
 		free( dev ) ;
 	}
+	if( delete_stx ){
+		StringListDelete( &stx ) ;
+	}
 	
 	return r ;
-	
 }
 
 int zuluCryptBindMountVolume( const char * device,string_t z_path,unsigned long flags ) 
@@ -187,17 +192,14 @@ int zuluCryptBindMountVolume( const char * device,string_t z_path,unsigned long 
 		mkdir( "/run",mode ) ;
 		chown( "/run",0,0 ) ;
 	}
-	
 	if( stat( "/run/media",&st ) != 0 ){
 		mkdir( "/run/media",mode ) ;
 		chown( "/run/media",0,0 ) ;
 	}
-
 	if( stat( "/run/media/public",&st ) != 0 ){
 		mkdir( "/run/media/public",mode ) ;
 		chown( "/run/media/public",0,0 ) ;
 	}
-
 	if( stat( m_path,&st ) == 0 ){
 		 ;
 	}else{
