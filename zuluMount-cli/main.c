@@ -323,11 +323,7 @@ static int _zuluMountPrintVolumeDeviceName( const char * device )
  */
 static int _checkUnmount( const char * device,uid_t uid )
 {
-	/*
-	 * zuluCryptGetMoutedListFromMountInfo() is defined in ../lib/process_mountinfo.c 
-	 */
-	
-	stringList_t stx = zuluCryptGetMoutedListFromMountInfo() ;
+	stringList_t stx ;
 	stringList_t stl ;
 	ssize_t index ;
 	int r ;
@@ -335,6 +331,16 @@ static int _checkUnmount( const char * device,uid_t uid )
 	string_t st ;
 	const char * g ;
 	
+	if( StringPrefixEqual( device,"/dev/mapper/zuluCrypt-" ) ){
+		/*
+		 * encrypted volumes are handled someplace else
+		 */
+		return 0 ;
+	}
+	/*
+	 * zuluCryptGetMoutedListFromMountInfo() is defined in ../lib/process_mountinfo.c 
+	 */
+	stx = zuluCryptGetMoutedListFromMountInfo() ;
 	zuluCryptSecurityGainElevatedPrivileges() ;
 	
 	index = StringListHasStartSequence( stx,device ) ;
