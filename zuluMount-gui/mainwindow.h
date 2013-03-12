@@ -91,7 +91,9 @@ private slots:
 	void deviceRemoved( QString ) ;
 	void autoMountAddToTable( QString ) ;
 	void addEntryToTable( bool,QStringList ) ;
+	void started( void ) ;
 private:
+	void showEvent( QShowEvent * );
 	bool autoMount( void ) ;
 	Ui::MainWindow * m_ui ;
 
@@ -109,6 +111,8 @@ private:
 	bool m_autoMount ;
 	auto_mount * m_autoMountThread ;
 	QAction * m_autoMountAction ;
+	bool m_startHidden ;
+	bool m_started ;
 };
 
 #endif // MAINWINDOW_H

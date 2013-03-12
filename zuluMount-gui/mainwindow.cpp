@@ -20,7 +20,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QDebug>
-MainWindow::MainWindow( QWidget * parent ) :QWidget( parent ),m_autoMountThread( 0 ),m_autoMountAction( 0 )
+MainWindow::MainWindow( QWidget * parent ) :QWidget( parent ),m_autoMountThread( 0 ),m_autoMountAction( 0 ),m_started( false )
 {
 }
 
@@ -85,15 +85,6 @@ void MainWindow::setUpApp()
 
 	connect( m_trayIcon,SIGNAL( activated( QSystemTrayIcon::ActivationReason ) ),this,SLOT( slotTrayClicked( QSystemTrayIcon::ActivationReason ) ) );
 
-	managepartitionthread * part = new managepartitionthread() ;
-
-	this->disableAll();
-
-	connect( part,SIGNAL( signalMountedList( QStringList,QStringList ) ),this,SLOT( slotMountedList( QStringList,QStringList ) ) ) ;
-	connect( part,SIGNAL( done() ),this,SLOT( openVolumeFromArgumentList() ) ) ;
-
-	part->startAction( managepartitionthread::Update ) ;
-
 	m_working = false ;
 	m_trayIcon->show();
 
@@ -106,9 +97,30 @@ void MainWindow::setUpApp()
 
 	m_ui->pbunmount->setVisible( false );
 
-	this->processArgumentList();
+	managepartitionthread * part = new managepartitionthread() ;
 
-	this->show();
+	this->processArgumentList() ;
+
+	this->disableAll();
+
+	connect( part,SIGNAL( signalMountedList( QStringList,QStringList ) ),this,SLOT( slotMountedList( QStringList,QStringList ) ) ) ;
+	connect( part,SIGNAL( done() ),this,SLOT( openVolumeFromArgumentList() ) ) ;
+	connect( part,SIGNAL( done() ),this,SLOT( started() ) ) ;
+
+	part->startAction( managepartitionthread::Update ) ;
+}
+
+void MainWindow::started( void )
+{
+	m_started = true ;
+}
+
+void MainWindow::showEvent( QShowEvent * e )
+{
+	if( m_startHidden && !m_started ){
+		e->ignore();
+		this->hide();
+	}
 }
 
 void MainWindow::autoMountVolumeSystemInfo( QStringList l )
@@ -205,6 +217,13 @@ void MainWindow::processArgumentList()
 		if( index < last_spot ){
 			m_folderOpener = argv.at( index + 1 ) ;
 		}
+	}
+
+	index = argv.indexOf( "-e" ) ;
+	if( index == -1 ){
+		m_startHidden = false ;
+	}else{
+		m_startHidden = true ;
 	}
 }
 
@@ -694,6 +713,7 @@ MainWindow::~MainWindow()
 {
 	if( m_autoMountThread ){
 		m_autoMountThread->terminate();
+		m_autoMountThread->deleteLater(); ;
 	}
 
 	QFile f( QDir::homePath() + QString( zuluMOUNT_AUTOPATH ) );
