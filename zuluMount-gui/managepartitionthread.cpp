@@ -54,6 +54,11 @@ void managepartitionthread::setMakeMountPointPublic( bool opt )
 	m_publicMount = opt ;
 }
 
+void managepartitionthread::setList( QStringList l )
+{
+	m_list = l ;
+}
+
 void managepartitionthread::openPathInFileManager()
 {
 	QProcess p ;
@@ -75,28 +80,59 @@ void managepartitionthread::run()
 		case managepartitionthread::OpenPath            : return this->openPathInFileManager();
 		case managepartitionthread::CheckPermissions    : return this->checkPermissions();
 		case managepartitionthread::VolumeType          : return this->getVolumeType();
+		case managepartitionthread::systemdevice        : return this->checkIfSystemDevice();
+		case managepartitionthread::checkUnMount        : return this->checkUnmount();
+	}
+}
+
+void managepartitionthread::checkUnmount()
+{
+	QProcess p ;
+	QString exe = QString( "%1 -c -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;
+	p.start( exe );
+	p.waitForFinished() ;
+}
+
+void managepartitionthread::checkIfSystemDevice( void )
+{
+	QProcess p ;
+	QString exe = QString( "%1 -S" ).arg( zuluMount ) ;
+	p.start( exe );
+	p.waitForFinished() ;
+	QString s = QString( p.readAll() ) ;
+	p.close();
+	QStringList l = s.split( "\n" ) ;
+	int j = l.size() ;
+	m_systemDevice = false ;
+	for( int i = 0 ; i < j ; i++ ){
+		if( l.at( i ) == m_device ){
+			m_systemDevice = true ;
+			break ;
+		}
 	}
 }
 
 void managepartitionthread::getVolumeType()
 {
-	QString type( "Nil" ) ;
-	QString label( "Nil") ;
-	const char * t ;
-	const char * l ;
-	QByteArray dev = m_device.toAscii() ;
-	blkid_probe dp = blkid_new_probe_from_filename( dev.constData() ) ;
-	if( dp ){
-		blkid_do_probe( dp ) ;
-		if( blkid_probe_lookup_value( dp,"TYPE",&t,NULL ) == 0 ){
-			type = QString( t ) ;
+	this->checkIfSystemDevice() ;
+
+	QProcess p ;
+	QString exe = QString( "%1 -L -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;
+	p.start( exe );
+	p.waitForFinished() ;
+
+	QString m = p.readAll() ;
+
+	if( p.exitCode() == 0 ){
+		QStringList l =  m.split( "\t" ) ;
+		if( l.size() >= 4 ){
+			if( m_systemDevice ){
+				emit getVolumeSystemInfo( l ) ;
+			}else{
+				emit getVolumeInfo( l );;
+			}
 		}
-		if( blkid_probe_lookup_value( dp,"LABEL",&l,NULL ) == 0 ){
-			label = QString( l) ;
-		}
-		blkid_free_probe( dp ) ;
 	}
-	emit getVolumeInfo( type,label );
 }
 
 void managepartitionthread::checkPermissions()

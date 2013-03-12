@@ -20,7 +20,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QDebug>
-MainWindow::MainWindow( QWidget * parent ) :QWidget( parent )
+MainWindow::MainWindow( QWidget * parent ) :QWidget( parent ),m_autoMountThread( 0 ),m_autoMountAction( 0 )
 {
 }
 
@@ -64,6 +64,22 @@ void MainWindow::setUpApp()
 	m_trayIcon->setIcon( QIcon( QString( ":/zuluMount.png" ) ) );
 
 	QMenu * trayMenu = new QMenu( this ) ;
+	m_autoMountAction = new QAction( this ) ;
+
+	m_autoMountAction->setCheckable( true ) ;
+	bool autoMount = this->autoMount() ;
+	m_autoMountAction->setChecked( autoMount );
+	m_autoMountAction->setText( QString( "automanage partitions" ) ) ;
+
+	if( autoMount ){
+		m_autoMountThread = new auto_mount( this ) ;
+		connect( m_autoMountThread,SIGNAL( getVolumeSystemInfo( QStringList ) ),this,SLOT( autoMountVolumeSystemInfo( QStringList ) ) ) ;
+		connect( m_autoMountThread,SIGNAL( getVolumeInfo( QStringList ) ),this,SLOT( autoMountVolumeInfo( QStringList ) ) ) ;
+		connect( m_autoMountThread,SIGNAL( deviceRemoved( QString ) ),this,SLOT( deviceRemoved( QString ) ) ) ;
+		m_autoMountThread->start();
+	}
+
+	trayMenu->addAction( m_autoMountAction ) ;
 	trayMenu->addAction( tr( "quit" ),this,SLOT( slotCloseApplication() ) );
 	m_trayIcon->setContextMenu( trayMenu );
 
@@ -93,6 +109,69 @@ void MainWindow::setUpApp()
 	this->processArgumentList();
 
 	this->show();
+}
+
+void MainWindow::autoMountVolumeSystemInfo( QStringList l )
+{
+	QString s = QString( "got system device: device=%1,fs=%2" ).arg( l.at( 0 ) ).arg( l.at( 2 ) ) ;
+	qDebug() << s ;
+	if( l.at( 0 ).size() == strlen( "/dev/sdX" ) && l.at( 2 ) == QString( "Nil" ) ){
+		/*
+		 * root device with no file system,dont show them.This will be a bug if a user just put a plain volume
+		 * or a truecrypt volume without first partitio the drive.
+		 */
+		return ;
+	}
+
+	this->addEntryToTable( true,l ) ;
+}
+
+void MainWindow::autoMountAddToTable( QString entry )
+{
+	this->volumeMiniProperties( m_ui->tableWidget,entry,QString( "Nil" ) ) ;
+}
+
+void MainWindow::autoMountVolumeInfo( QStringList l )
+{
+	QString dev = l.at( 0 ) ;
+	QString type = l.at( 2 ) ;
+	QString s = QString( "got non system device: device=%1,fs=%2" ).arg( dev ).arg( type ) ;
+	qDebug() << s ;
+	if( dev.size() == strlen( "/dev/sdX" ) && type == QString( "Nil" ) ){
+		/*
+		 * root device with no file system,dont show them.This will be a bug if a user just put a plain volume
+		 * or a truecrypt volume without first partitio the drive.
+		 */
+		return ;
+	}
+	if( type == QString( "crypto_LUKS" ) || type == QString( "Nil" ) ){
+		this->addEntryToTable( false,l );
+	}else{
+		mountPartition * mp = new mountPartition( this,m_ui->tableWidget,m_folderOpener ) ;
+		connect( mp,SIGNAL( autoMountComplete() ),mp,SLOT( deleteLater() ) ) ;
+		connect( mp,SIGNAL( autoMountComplete() ),this,SLOT( enableAll() ) ) ;
+		mp->AutoMount( dev );
+	}
+}
+
+void MainWindow::deviceRemoved( QString dev )
+{
+	qDebug() << "device removed: " << dev ;
+	if( m_autoMount ){
+		int row = tablewidget::columnHasEntry( m_ui->tableWidget,0,dev ) ;
+		if( row != -1 ){
+			tablewidget::deleteRowFromTable( m_ui->tableWidget,row ) ;
+			if( m_autoMount ){
+				/*
+				* see if a user just removed the device without properly closing it/unmounting it
+				* and try to do so for them
+				*/
+				managepartitionthread * part = new managepartitionthread() ;
+				part->setDevice( dev );
+				part->startAction( managepartitionthread::checkUnMount ) ;
+			}
+		}
+	}
 }
 
 void MainWindow::itemEntered( QTableWidgetItem * item )
@@ -346,7 +425,7 @@ void MainWindow::openVolumeFromArgumentList()
 {
 	if( !m_device.isEmpty() ){
 		managepartitionthread * m = new managepartitionthread() ;
-		connect( m,SIGNAL( getVolumeInfo( QString,QString ) ),this,SLOT( getVolumeInfo( QString,QString ) ) ) ;
+		connect( m,SIGNAL( getVolumeInfo( QStringList ) ),this,SLOT( showMoungDialog( QStringList ) ) ) ;
 		m->setDevice( m_device );
 		m->startAction( managepartitionthread::VolumeType ) ;
 	}
@@ -362,9 +441,11 @@ void MainWindow::slotMount()
 	this->mount( type,device,label );
 }
 
-void MainWindow::getVolumeInfo( QString type,QString label )
+void MainWindow::showMoungDialog( QStringList l )
 {
-	this->mount( type,m_device,label );
+	if( l.size() >= 4  ){
+		this->mount( l.at( 2 ),l.at( 0 ),l.at( 3 ) );
+	}
 }
 
 void MainWindow::pbMount()
@@ -377,9 +458,27 @@ void MainWindow::pbMount()
 	}else{
 		m_device = path ;
 		managepartitionthread * m = new managepartitionthread() ;
-		connect( m,SIGNAL( getVolumeInfo( QString,QString ) ),this,SLOT( getVolumeInfo( QString,QString ) ) ) ;
+		connect( m,SIGNAL( getVolumeInfo( QStringList ) ),this,SLOT( showMoungDialog( QStringList ) ) ) ;
 		m->setDevice( m_device );
 		m->startAction( managepartitionthread::VolumeType ) ;
+	}
+}
+
+void MainWindow::addEntryToTable( bool b,QStringList l )
+{
+	QFont f = this->font() ;
+
+	f.setItalic( !f.italic() );
+	f.setBold( !f.bold() );
+
+	QString x = l.at( 5 ) ;
+	x = x.remove( QChar( '\n' ) ) ;
+	l.replace( 5,x );
+
+	if( b ){
+		tablewidget::addRowToTable( m_ui->tableWidget,l,f ) ;
+	}else{
+		tablewidget::addRowToTable( m_ui->tableWidget,l ) ;
 	}
 }
 
@@ -408,7 +507,7 @@ void MainWindow::volumeMiniProperties( QTableWidget * table,QString p,QString mo
 		perc.remove( QChar( '\n' ) ) ;
 	}
 
-	if( !device.startsWith( QString( "/dev/" ) ) ){
+	if( tablewidget::columnHasEntry( table,0,device ) == -1 ){
 		tablewidget::addEmptyRow( table ) ;
 	}
 
@@ -518,7 +617,7 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 			tablewidget::addRowToTable( table,entries ) ;
 		}
 	}
-	
+
 	this->enableAll();
 }
 
@@ -583,6 +682,30 @@ void MainWindow::enableAll()
 	m_ui->tableWidget->setFocus();
 }
 
+#define zuluMOUNT_AUTOPATH "/.zuluCrypt/zuluMount-gui.autoMountPartitions"
+
+bool MainWindow::autoMount()
+{
+	QFile f( QDir::homePath() + QString( zuluMOUNT_AUTOPATH ) );
+	return f.exists() ;
+}
+
 MainWindow::~MainWindow()
 {
+	if( m_autoMountThread ){
+		m_autoMountThread->terminate();
+	}
+
+	QFile f( QDir::homePath() + QString( zuluMOUNT_AUTOPATH ) );
+
+	if( m_autoMountAction ){
+		if( m_autoMountAction->isChecked() ){
+			if( !f.exists() ){
+				f.open( QIODevice::WriteOnly ) ;
+				f.close();
+			}
+		}else{
+			f.remove() ;
+		}
+	}
 }

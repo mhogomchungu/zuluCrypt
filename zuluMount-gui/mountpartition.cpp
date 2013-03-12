@@ -96,9 +96,11 @@ void mountPartition::pbMount()
 {
 	QString test_mount = m_ui->lineEdit->text() ;
 	if( test_mount.contains( QString( "/" ) ) ){
-		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "ERROR" ),tr( "\"/\" character is not allowed in the mount name field" ) ) ;
-		m_ui->lineEdit->setFocus();
+		if( this->isVisible() ){
+			DialogMsg msg( this ) ;
+			msg.ShowUIOK( tr( "ERROR" ),tr( "\"/\" character is not allowed in the mount name field" ) ) ;
+			m_ui->lineEdit->setFocus();
+		}
 		return ;
 	}
 	this->disableAll();
@@ -143,6 +145,14 @@ void mountPartition::ShowUI( QString path,QString label )
 	this->show();
 }
 
+void mountPartition::AutoMount( QString device )
+{
+	m_path = device ;
+	m_point = m_path.split( QString( "/" ) ).last() ;
+	m_ui->lineEdit->setText( m_point ) ;
+	this->pbMount();
+}
+
 void mountPartition::stateChanged( int i )
 {
 	Q_UNUSED( i ) ;
@@ -158,6 +168,7 @@ void mountPartition::stateChanged( int i )
 void mountPartition::volumeMiniProperties( QString prp )
 {
 	MainWindow::volumeMiniProperties( m_table,prp,utility::mountPath( m_point ) ) ;
+	emit autoMountComplete();
 	this->HideUI();
 }
 
@@ -173,9 +184,11 @@ void mountPartition::fileManagerOpenStatus( int exitCode, int exitStatus,int sta
 void mountPartition::slotMountComplete( int status,QString msg )
 {
 	if( status ){
-		DialogMsg m( this ) ;
-		m.ShowUIOK( QString( "ERROR" ),msg );
-		this->enableAll();
+		if( this->isVisible() ){
+			DialogMsg m( this ) ;
+			m.ShowUIOK( QString( "ERROR" ),msg );
+			this->enableAll();
+		}
 	}else{
 		managepartitionthread * mpt = new managepartitionthread() ;
 		mpt->setDevice( m_path );
@@ -187,6 +200,7 @@ void mountPartition::slotMountComplete( int status,QString msg )
 		omp->start();
 	}
 }
+
 void mountPartition::HideUI()
 {
 	emit hideUISignal();

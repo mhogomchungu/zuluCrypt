@@ -36,6 +36,7 @@ public:
 	static void selectRow( QTableWidget *,int row ) ;
 	static void setText( QTableWidget *,int row,int col,QString text ) ;
 	static void addEmptyRow( QTableWidget * ) ;
+	static int  columnHasEntry( QTableWidget *,int,QString ) ;
 };
 
 #endif // TABLEWIDGET_H

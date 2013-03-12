@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     oneinstance.cpp \
     ../zuluCrypt-gui/openmountpointinfilemanager.cpp \
     ../zuluCrypt-gui/savemountpointpath.cpp \
-    ../zuluCrypt-gui/utility.cpp
+    ../zuluCrypt-gui/utility.cpp \
+    auto_mount.cpp
 
 HEADERS  += mainwindow.h\
     keydialog.h \
@@ -37,7 +38,8 @@ HEADERS  += mainwindow.h\
     oneinstance.h \
     ../zuluCrypt-gui/openmountpointinfilemanager.h \
     ../zuluCrypt-gui/savemountpointpath.h \
-    ../zuluCrypt-gui/utility.h
+    ../zuluCrypt-gui/utility.h \
+    auto_mount.h
 
 
 FORMS    += mainwindow.ui\

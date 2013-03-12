@@ -34,7 +34,7 @@ void zuluMountPrintDeviceProperties_1( string_t,uid_t ) ;
 static int _mount_get_opts( int argc,char * argv[],ARGS * args ) 
 {	
 	int c ;
-	while ( ( c = getopt( argc,argv,"MLntSshlPmuDd:z:e:y:p:f:G:" ) ) != -1 ) {
+	while ( ( c = getopt( argc,argv,"cMLntSshlPmuDd:z:e:y:p:f:G:" ) ) != -1 ) {
 		switch( c ){
 			case 'M' : args->share   = 1      ; break ;
 			case 'n' : args->mpo     = 1      ; break ;
@@ -47,6 +47,7 @@ static int _mount_get_opts( int argc,char * argv[],ARGS * args )
 			case 'P' : args->action  = "-P"   ; break ;
 			case 'm' : args->action  = "-m"   ; break ;
 			case 'u' : args->action  = "-u"   ; break ;
+			case 'c' : args->action  = "-c"   ; break ;
 			case 'd' : args->device  = optarg ; break ;
 			case 'z' : args->m_point = optarg ; break ;
 			case 'e' : args->m_opts  = optarg ; break ;
@@ -316,6 +317,72 @@ static int _zuluMountPrintVolumeDeviceName( const char * device )
 	}
 }
 
+/*
+ * This is an emergency function,to be used when a device was unplugged uncleanly causing the device
+ * old path to be "locked" as pluggin in the device again will give it a different path 
+ */
+static int _checkUnmount( const char * device,uid_t uid )
+{
+	/*
+	 * zuluCryptGetMoutedListFromMountInfo() is defined in ../lib/process_mountinfo.c 
+	 */
+	
+	stringList_t stx = zuluCryptGetMoutedListFromMountInfo() ;
+	stringList_t stl ;
+	ssize_t index ;
+	int r ;
+	char * m_point = NULL ;
+	string_t st ;
+	const char * g ;
+	
+	zuluCryptSecurityGainElevatedPrivileges() ;
+	
+	index = StringListHasStartSequence( stx,device ) ;
+	
+	if( index != -1 ){
+		/*
+		 * zuluCryptBindUnmountVolume() is defined in ../zuluCrypt-cli/bin/bind.c
+		 */
+		r = zuluCryptBindUnmountVolume( stx,device,device,uid ) ;
+		if( r != 3 || r != 4 ){
+			st = StringListStringAt( stx,index ) ;
+			stl = StringListStringSplit( st,' ' ) ;
+			st = StringListStringAt( stl,1 ) ;
+			/*
+			 * zuluCryptDecodeMtabEntry() is defined in ../zuluCrypt-cli/lib/mount_volume.c
+			 */
+			g  = zuluCryptDecodeMtabEntry( st ) ;
+			/*
+			 * zuluCryptSecurityMountPointPrefixMatch() is defined in ./security.c
+			 */
+			r = zuluCryptSecurityMountPointPrefixMatch( g,uid,NULL ) ;
+			if( r == 1 ){
+				/*
+				* zuluCryptUnmountVolume() is defined in ../zuluCrypt-cli/lib/unmount_volume.c
+				*/
+				zuluCryptUnmountVolume( device,&m_point ) ;
+				if( m_point != NULL ){
+					rmdir( m_point ) ;
+					free( m_point ) ;
+				}
+			}
+			StringListDelete( &stl ) ;
+		}
+	}else{
+		/*
+		 * Either the volume is not mounted or is encrypted.
+		 * If it is encrypted,then it is handled someplace else
+		 */
+		;
+	}
+	
+	StringListDelete( &stx ) ;
+	
+	zuluCryptSecurityDropElevatedPrivileges() ;
+	
+	return 0 ;
+}
+
 static int _zuluMountExe( ARGS * args )
 {
 	const char * device = args->device ;
@@ -563,6 +630,10 @@ int main( int argc,char * argv[] )
 		return _zuluExit_2( zuluCryptPrintPartitions( ZULUCRYPTsystemPartitions,0 ),stl,stx,NULL ) ;
 	}
 	
+	
+	if( StringsAreEqual( args.action,"-c" ) ){
+		return _checkUnmount( args.device,uid ) ;
+	}
 	if( StringsAreEqual( args.action,"-l" ) ){
 		return _zuluExit_2( _zuluMountMountedList( uid ),stl,stx,NULL ) ;
 	}

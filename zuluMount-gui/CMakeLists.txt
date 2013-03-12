@@ -13,12 +13,14 @@ set(MOC_FILES 	mainwindow.h
 		managepartitionthread.h
 		mountpartition.h
 		oneinstance.h
+		auto_mount.h
 		../zuluCrypt-gui/dialogmsg.h
 		../zuluCrypt-gui/socketsendkey.h 
 		../zuluCrypt-gui/openmountpointinfilemanager.h
  )
 	
 set (SRC 	main.cpp
+		auto_mount.cpp
 		mainwindow.cpp
 		keydialog.cpp
 		managepartitionthread.cpp

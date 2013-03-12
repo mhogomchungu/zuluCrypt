@@ -70,6 +70,17 @@ void tablewidget::addEmptyRow( QTableWidget * table )
 	table->setCurrentCell( row,col - 1 );
 }
 
+int tablewidget::columnHasEntry( QTableWidget * table,int column,QString entry )
+{
+	int rows = table->rowCount() ;
+	for( int i = 0 ; i < rows ; i++ ){
+		if( table->item( i,column )->text() == entry ){
+			return i ;
+		}
+	}
+	return -1 ;
+}
+
 void tablewidget::addRowToTable( QTableWidget * table,QStringList & list )
 {
 	QTableWidgetItem * item ;

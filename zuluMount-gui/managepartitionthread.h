@@ -47,6 +47,8 @@ public:
 		VolumeMiniProperties,
 		OpenPath,
 		CheckPermissions,
+		systemdevice,
+		checkUnMount,
 		VolumeType
 	};
 	void startAction( managepartitionthread::Action ) ;
@@ -56,15 +58,18 @@ public:
 	void setKeySource( QString ) ;
 	void setMountPoint( QString ) ;
 	void setMakeMountPointPublic( bool ) ;
+	void setList( QStringList ) ;
 signals:
 	void signalMountComplete( int,QString ) ;
 	void signalUnmountComplete( int,QString ) ;
 	void signalMountedList( QStringList,QStringList ) ;
 	void signalProperties( QString ) ;
 	void checkPermissions( int ) ;
-	void getVolumeInfo( QString,QString ) ;
+	void getVolumeSystemInfo( QStringList ) ;
+	void getVolumeInfo( QStringList ) ;
 	void done( void ) ;
 private:
+	void checkIfSystemDevice( void );
 	void checkPermissions( void );
 	void openPathInFileManager( void ) ;
 	void volumeMiniProperties( void ) ;
@@ -77,6 +82,8 @@ private:
 	void mount( void ) ;
 	void umount( QString ) ;
 	void getVolumeType( void );
+	void getVolumeSystemType( void );
+	void checkUnmount( void ) ;
 	managepartitionthread::Action m_action ;
 	QString m_device ;
 	QString m_point ;
@@ -85,6 +92,8 @@ private:
 	QString m_type ;
 	QString m_properties ;
 	bool m_publicMount ;
+	QStringList m_list ;
+	bool m_systemDevice ;
 };
 
 #endif // MANAGEPARTITIONTHREAD_H

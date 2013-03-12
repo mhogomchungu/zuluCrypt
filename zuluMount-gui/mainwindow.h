@@ -43,6 +43,7 @@
 #include "mountpartition.h"
 #include "../zuluCrypt-gui/openvolumereadonly.h"
 #include "oneinstance.h"
+#include "auto_mount.h"
 
 namespace Ui {
 class MainWindow;
@@ -61,7 +62,9 @@ signals:
 public slots:
 	void raiseWindow( void ) ;
 private slots:
-	void getVolumeInfo( QString,QString );
+	void showMoungDialog( QStringList );
+	void autoMountVolumeSystemInfo( QStringList ) ;
+	void autoMountVolumeInfo( QStringList ) ;
 	void mount( QString,QString,QString ) ;
 	void defaultButton( void ) ;
 	void volumeProperties( QString );
@@ -85,7 +88,11 @@ private slots:
 	void processArgumentList( void ) ;
 	void openVolumeFromArgumentList( void ) ;
 	void itemEntered( QTableWidgetItem * ) ;
+	void deviceRemoved( QString ) ;
+	void autoMountAddToTable( QString ) ;
+	void addEntryToTable( bool,QStringList ) ;
 private:
+	bool autoMount( void ) ;
 	Ui::MainWindow * m_ui ;
 
 	QString m_action ;
@@ -99,6 +106,9 @@ private:
 	void setUpShortCuts( void ) ;
 	void setUpApp( void ) ;
 	QSystemTrayIcon * m_trayIcon ;
+	bool m_autoMount ;
+	auto_mount * m_autoMountThread ;
+	QAction * m_autoMountAction ;
 };
 
 #endif // MAINWINDOW_H

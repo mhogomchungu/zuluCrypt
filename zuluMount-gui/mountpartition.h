@@ -1,6 +1,6 @@
 
 /*
- * 
+ *
  *  Copyright (c) 2012
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -52,10 +52,12 @@ public:
 	explicit mountPartition( QWidget * parent = 0,QTableWidget * table = 0,QString folderOpener = QString() );
 	void ShowUI( QString path,QString label ) ;
 	void HideUI( void ) ;
+	void AutoMount( QString device ) ;
 	~mountPartition();
 signals:
 	void hideUISignal( void ) ;
 	void mounted( QString ) ;
+	void autoMountComplete( void ) ;
 private slots:
 	void stateChanged( int ) ;
 	void pbMount( void ) ;
