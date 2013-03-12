@@ -119,4 +119,4 @@ version 4.6.2
    original one created in "/run/media/$USER.This option is there to allow a user to mount a volume and have it accessible from other users of the system.
 -- give zuluMount-gui to automanage devices through a context menu on the tray icon.When the feature is enabled,volumes are auto added and autodeleted to the
    gui when they are added or removed from the system and unecrypted volumes are automounted.
-   
+-- add a command line option to zuluMount-gui to start it up without showing the GUI   

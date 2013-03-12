@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 	    q.contains( QString( "-v" ) ) ||
 	    q.contains( QString( "-version" ) ) ||
 	    q.contains( QString( "--version" ) ) ){
-		utility::help( QString( "zuluCrypt" ) ) ;
+		utility::help( QString( "zuluMount" ) ) ;
 		return 0 ;
 	}else{
 		MainWindow w ;

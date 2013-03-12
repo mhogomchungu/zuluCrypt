@@ -53,15 +53,21 @@ QString utility::userName()
 
 void utility::help( QString app )
 {
-	Q_UNUSED( app ) ;
+	std::cout << VERSION_STRING << std::endl ;
 
-	const char * verInfo= "\n\
+	QString helpMsg = "\n\
 options:\n\
-	-d   path to device to open manage\n\
+	-d   path to where a volume to be auto unlocked/mounted is located\n\
 	-m   tool to use to open a default file manager(default tool is xdg-open)\n" ;
 
-	std::cout << VERSION_STRING << std::endl ;
-	std::cout << verInfo << std::endl ;
+	if( app == QString( "zuluMount" ) ){
+		  helpMsg += ( "\
+	-e   start the application without showing the GUI\n" ) ;
+	}
+
+	QByteArray s = helpMsg.toAscii() ;
+
+	std::cout << s.constData() << std::endl ;
 }
 
 QString utility::shareMountPointToolTip()
