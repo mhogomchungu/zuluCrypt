@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright (c) 2013
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -20,8 +20,10 @@
 #include "auto_mount.h"
 #include <QDebug>
 
-auto_mount::auto_mount( QObject * parent ) : QThread( parent ),m_buffer( 0 ),m_thread_helper( 0 )
+auto_mount::auto_mount( QObject * parent ) : m_buffer( 0 ),m_thread_helper( 0 ),m_babu( parent )
 {
+	m_baba = this ;
+	m_mtoto = 0 ;
 }
 
 auto_mount::~auto_mount()
@@ -34,8 +36,25 @@ auto_mount::~auto_mount()
 	}
 }
 
+void auto_mount::stop()
+{
+	m_mtoto->terminate();
+}
+
+void auto_mount::nngrr()
+{
+	emit done();
+}
+
 void auto_mount::run()
 {
+	m_mtoto = this ;
+	connect( m_baba,SIGNAL( finished() ),m_baba,SLOT( nngrr() ) ) ;
+	connect( m_mtoto,SIGNAL( finished() ),m_mtoto,SLOT( deleteLater() ) ) ;
+	connect( m_mtoto,SIGNAL( finished() ),m_mtoto,SLOT( deleteLater() ) ) ;
+	connect( m_mtoto,SIGNAL( finished() ),m_baba, SLOT( quit() ) ) ;
+	connect( m_baba, SIGNAL( finished() ),m_baba, SLOT( deleteLater() ) ) ;
+
 	size_t offset = sizeof( struct inotify_event ) ;
 	size_t BUFF_SIZE = FILENAME_MAX + offset ;
 
@@ -57,36 +76,48 @@ void auto_mount::run()
 	struct inotify_event * pevent ;
 	QString device ;
 
-	QObject * parent = this->parent() ;
+	const char * e ;
+	const char * f ;
+	int data_read ;
+	int baseSize = sizeof( struct inotify_event ) ;
 
 	while( 1 ) {
 
-		read( m_fdDir,m_buffer,BUFF_SIZE ) ;
-		pevent = ( struct inotify_event * )m_buffer;
-
-		if( strncmp( m_device,"sg",2 ) == 0 ) {
+		data_read = read( m_fdDir,m_buffer,BUFF_SIZE ) ;
+		e = f = m_buffer ;
+		if( data_read < baseSize ){
 			continue ;
 		}
-		if( strncmp( m_device,"dm-",3 ) == 0 ) {
-			continue ;
-		}
-		if( strstr( m_buffer + offset,".dev/tmp" ) != NULL ) {
-			continue ;
-		}
+		do{
+			pevent = ( struct inotify_event * )f;
+			m_device = f + baseSize ;
 
-		device = QString( "/dev/" ) + m_device ;
+			if( strncmp( m_device,"sg",2 ) == 0 ) {
+				continue ;
+			}
+			if( strncmp( m_device,"dm-",3 ) == 0 ) {
+				continue ;
+			}
+			if( strstr( m_device,".dev/tmp" ) != NULL ) {
+				continue ;
+			}
 
-		m_thread_helper = new auto_mount_helper() ;
+			device = QString( "/dev/" ) + m_device ;
 
-		connect( m_thread_helper,SIGNAL( getVolumeSystemInfo( QStringList ) ),parent,SLOT( autoMountVolumeSystemInfo( QStringList ) ) ) ;
-		connect( m_thread_helper,SIGNAL( getVolumeInfo( QStringList ) ),parent,SLOT( autoMountVolumeInfo( QStringList ) ) ) ;
-		connect( m_thread_helper,SIGNAL( deviceRemoved( QString ) ),parent,SLOT( deviceRemoved( QString ) ) ) ;
+			m_thread_helper = new auto_mount_helper() ;
 
-		if( pevent->wd == dev ){
-			m_thread_helper->start( device,0,pevent->mask ) ;
-		}else{
-			m_thread_helper->start( device,1,pevent->mask ) ;
-		}
+			connect( m_thread_helper,SIGNAL( getVolumeSystemInfo( QStringList ) ),m_babu,SLOT( autoMountVolumeSystemInfo( QStringList ) ) ) ;
+			connect( m_thread_helper,SIGNAL( getVolumeInfo( QStringList ) ),m_babu,SLOT( autoMountVolumeInfo( QStringList ) ) ) ;
+			connect( m_thread_helper,SIGNAL( deviceRemoved( QString ) ),m_babu,SLOT( deviceRemoved( QString ) ) ) ;
+
+			if( pevent->wd == dev ){
+				m_thread_helper->start( device,0,pevent->mask ) ;
+			}else{
+				m_thread_helper->start( device,1,pevent->mask ) ;
+			}
+
+			f = f + baseSize + pevent->len ;
+		}while( f - e > data_read ) ;
 	}
 }
 

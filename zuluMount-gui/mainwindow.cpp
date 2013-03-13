@@ -260,10 +260,21 @@ void MainWindow::pbClose()
 	this->slotCloseApplication();
 }
 
+void MainWindow::close()
+{
+	QCoreApplication::quit();
+}
+
 void MainWindow::slotCloseApplication()
 {
 	if( m_working == false ){
-		QCoreApplication::quit();
+		if( m_autoMountThread ){
+			m_autoMountThread->stop();
+			connect( m_autoMountThread,SIGNAL( done() ),this,SLOT( close() ) ) ;
+			m_autoMountThread = 0 ;
+		}else{
+			qDebug() << "nnggrrr";
+		}
 	}
 }
 
@@ -708,11 +719,6 @@ bool MainWindow::autoMount()
 
 MainWindow::~MainWindow()
 {
-	if( m_autoMountThread ){
-		m_autoMountThread->terminate();
-		m_autoMountThread->deleteLater(); ;
-	}
-
 	QFile f( QDir::homePath() + QString( zuluMOUNT_AUTOPATH ) );
 
 	if( m_autoMountAction ){

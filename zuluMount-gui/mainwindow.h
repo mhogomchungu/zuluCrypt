@@ -92,6 +92,7 @@ private slots:
 	void autoMountAddToTable( QString ) ;
 	void addEntryToTable( bool,QStringList ) ;
 	void started( void ) ;
+	void close( void ) ;
 private:
 	void showEvent( QShowEvent * );
 	bool autoMount( void ) ;

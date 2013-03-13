@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright (c) 2013
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -46,15 +46,22 @@ class auto_mount : public QThread
 public:
 	explicit auto_mount( QObject * parent = 0 );
 	~auto_mount() ;
+	void stop( void ) ;
 signals:
 	void deviceFromDev( QString ) ;
 	void deviceFromDevMapper( QString ) ;
+	void done( void ) ;
+private slots:
+	void nngrr( void ) ;
 private:
 	const char * m_device ;
 	void run() ;
 	int m_fdDir ;
 	char * m_buffer ;
 	auto_mount_helper * m_thread_helper ;
+	QThread * m_baba ;
+	QThread * m_mtoto ;
+	QObject * m_babu ;
 };
 
 #endif // AUTO_MOUNT_H
