@@ -73,9 +73,6 @@ void MainWindow::setUpApp()
 
 	if( autoMount ){
 		m_autoMountThread = new auto_mount( this ) ;
-		connect( m_autoMountThread,SIGNAL( getVolumeSystemInfo( QStringList ) ),this,SLOT( autoMountVolumeSystemInfo( QStringList ) ) ) ;
-		connect( m_autoMountThread,SIGNAL( getVolumeInfo( QStringList ) ),this,SLOT( autoMountVolumeInfo( QStringList ) ) ) ;
-		connect( m_autoMountThread,SIGNAL( deviceRemoved( QString ) ),this,SLOT( deviceRemoved( QString ) ) ) ;
 		m_autoMountThread->start();
 	}
 

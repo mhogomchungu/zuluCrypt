@@ -16,45 +16,40 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef AUTO_MOUNT_H
-#define AUTO_MOUNT_H
+#ifndef AUTO_MOUNT_HELPER_H
+#define AUTO_MOUNT_HELPER_H
 
+#include <QThreadPool>
 #include <QString>
-#include <QObject>
-#include <QThread>
-#include <QProcess>
 #include <QStringList>
 #include "bin_path.h"
+#include <QProcess>
 
-#include <stdio.h>
-#include <string.h>
-#include <fcntl.h>
 #include <sys/inotify.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 
-#include "auto_mount_helper.h"
-/*
-http://linux.die.net/man/7/inotify
-http://darkeside.blogspot.com/2007/12/linux-inotify-example.html
- */
-
-class auto_mount : public QThread
+class auto_mount_helper :public QObject, public QRunnable
 {
 	Q_OBJECT
 public:
-	explicit auto_mount( QObject * parent = 0 );
-	~auto_mount() ;
+	explicit auto_mount_helper( QObject * parent = 0 );
+	~auto_mount_helper() ;
+	void start( QString device,int type,u_int32_t mask ) ;
 signals:
-	void deviceFromDev( QString ) ;
-	void deviceFromDevMapper( QString ) ;
+	void deviceRemoved( QString ) ;
+	void getVolumeSystemInfo( QStringList ) ;
+	void getVolumeInfo( QStringList ) ;
 private:
-	const char * m_device ;
-	void run() ;
-	int m_fdDir ;
-	char * m_buffer ;
-	auto_mount_helper * m_thread_helper ;
+	bool deviceIsSystem( void ) ;
+	bool deviceMatchLVMFormat( void ) ;
+	void volumeProperties( void ) ;
+	void deviceFromDev( void ) ;
+	void deviceFromDevMapper( void ) ;
+	void run( void ) ;
+	bool m_deviceFromDev ;
+	bool m_deviceFromDevMapper ;
+	QString m_device ;
+	int m_type ;
+	u_int32_t m_mask ;
 };
 
-#endif // AUTO_MOUNT_H
+#endif // AUTO_MOUNT_HELPER_H
