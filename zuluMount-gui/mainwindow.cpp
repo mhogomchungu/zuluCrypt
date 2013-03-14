@@ -67,14 +67,12 @@ void MainWindow::setUpApp()
 
 	m_autoMountAction = new QAction( this ) ;
 	m_autoMountAction->setCheckable( true ) ;
-	bool autoMount = this->autoMount() ;
-	connect( m_autoMountAction,SIGNAL( toggled( bool ) ),this,SLOT( autoStartToggled( bool ) ) ) ;
-	m_autoMountAction->setChecked( autoMount );
-	m_autoMountAction->setText( QString( "automanage partitions" ) ) ;
+	m_autoMount = this->autoMount() ;
+	connect( m_autoMountAction,SIGNAL( toggled( bool ) ),this,SLOT( autoMountToggled( bool ) ) ) ;
+	m_autoMountAction->setChecked( m_autoMount );
+	m_autoMountAction->setText( QString( "automount partitions" ) ) ;
 
-	if( autoMount ){
-		this->startAutoMonitor();
-	}
+	this->startAutoMonitor();
 
 	trayMenu->addAction( m_autoMountAction ) ;
 	trayMenu->addAction( tr( "quit" ),this,SLOT( slotCloseApplication() ) );
@@ -112,7 +110,7 @@ void MainWindow::startAutoMonitor()
 	if( !m_autoMountThread ){
 		m_autoMountThread = new auto_mount( this ) ;
 		connect( m_autoMountThread,SIGNAL( stopped() ),this,SLOT( close() ) ) ;
-		connect( m_autoMountThread,SIGNAL( suspended() ),this,SLOT( suspendAutoMonitor() ) ) ;
+		//connect( m_autoMountThread,SIGNAL( suspended() ),this,SLOT( suspendAutoMonitor() ) ) ;
 		m_autoMountThread->start();
 	}
 }
@@ -171,10 +169,14 @@ void MainWindow::autoMountVolumeInfo( QStringList l )
 	if( type == QString( "crypto_LUKS" ) || type == QString( "Nil" ) ){
 		this->addEntryToTable( false,l );
 	}else{
-		mountPartition * mp = new mountPartition( this,m_ui->tableWidget,m_folderOpener ) ;
-		connect( mp,SIGNAL( autoMountComplete() ),mp,SLOT( deleteLater() ) ) ;
-		connect( mp,SIGNAL( autoMountComplete() ),this,SLOT( enableAll() ) ) ;
-		mp->AutoMount( dev );
+		if( m_autoMount ){
+			mountPartition * mp = new mountPartition( this,m_ui->tableWidget,m_folderOpener ) ;
+			connect( mp,SIGNAL( autoMountComplete() ),mp,SLOT( deleteLater() ) ) ;
+			connect( mp,SIGNAL( autoMountComplete() ),this,SLOT( enableAll() ) ) ;
+			mp->AutoMount( dev );
+		}else{
+			this->addEntryToTable( false,l );
+		}
 	}
 }
 
@@ -427,15 +429,9 @@ void MainWindow::slotTrayClicked( QSystemTrayIcon::ActivationReason e )
 	}
 }
 
-void MainWindow::autoStartToggled( bool opt )
+void MainWindow::autoMountToggled( bool opt )
 {
-	if( opt ){
-		this->startAutoMonitor();
-	}else{
-		if( m_autoMountThread ){
-			m_autoMountThread->suspend();
-		}
-	}
+	m_autoMount = opt ;
 }
 
 void MainWindow::slotcbReadOnly()

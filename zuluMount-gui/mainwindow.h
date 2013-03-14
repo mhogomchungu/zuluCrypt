@@ -93,7 +93,7 @@ private slots:
 	void addEntryToTable( bool,QStringList ) ;
 	void started( void ) ;
 	void close( void ) ;
-	void autoStartToggled( bool ) ;
+	void autoMountToggled( bool ) ;
 	void suspendAutoMonitor( void ) ;
 private:
 	void startAutoMonitor( void ) ;
@@ -116,6 +116,7 @@ private:
 	QAction * m_autoMountAction ;
 	bool m_startHidden ;
 	bool m_started ;
+	bool m_autoMount ;
 };
 
 #endif // MAINWINDOW_H
