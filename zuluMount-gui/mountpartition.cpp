@@ -20,6 +20,7 @@
 
 #include "mountpartition.h"
 #include "ui_mountpartition.h"
+#include <QDebug>
 
 mountPartition::mountPartition( QWidget * parent,QTableWidget * table,QString folderOpener ) :
 	QWidget( parent ),m_ui(new Ui::mountPartition)
@@ -176,8 +177,10 @@ void mountPartition::fileManagerOpenStatus( int exitCode, int exitStatus,int sta
 {
 	Q_UNUSED( startError ) ;
 	if( exitCode != 0 || exitStatus != 0 ){
-		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "warning" ),tr( "could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) );
+		if( this->isVisible() ){
+			DialogMsg msg( this ) ;
+			msg.ShowUIOK( tr( "warning" ),tr( "could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) );
+		}
 	}
 }
 
