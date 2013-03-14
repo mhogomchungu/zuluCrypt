@@ -38,11 +38,22 @@ auto_mount::~auto_mount()
 void auto_mount::stop()
 {
 	m_mtoto->terminate();
+	m_stopSuspend = false ;
+}
+
+void auto_mount::suspend()
+{
+	m_mtoto->terminate();
+	m_stopSuspend = true ;
 }
 
 void auto_mount::stopping()
 {
-	emit stopped();
+	if( m_stopSuspend ){
+		emit suspended();
+	}else{
+		emit stopped();
+	}
 }
 
 void auto_mount::run()
@@ -89,12 +100,12 @@ void auto_mount::run()
 			pevent = ( struct inotify_event * )f;
 
 			m_device = f + baseSize ;
-			
+
 			if( strncmp( m_device,"sg",2 ) == 0 || strncmp( m_device,"dm-",3 ) == 0 || strstr( m_device,".dev/tmp" ) != NULL ) {
 				/*
 				 * dont care about these devices.
 				 * /dev/sgX seem to be created when a usb device is plugged in
-				 * /dev/dm-X are dm devices we dont care about since we will be dealing with them differently 
+				 * /dev/dm-X are dm devices we dont care about since we will be dealing with them differently
 				 */
 				 ;
 			}else{

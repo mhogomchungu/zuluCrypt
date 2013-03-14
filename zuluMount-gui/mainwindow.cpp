@@ -64,16 +64,16 @@ void MainWindow::setUpApp()
 	m_trayIcon->setIcon( QIcon( QString( ":/zuluMount.png" ) ) );
 
 	QMenu * trayMenu = new QMenu( this ) ;
-	m_autoMountAction = new QAction( this ) ;
 
+	m_autoMountAction = new QAction( this ) ;
 	m_autoMountAction->setCheckable( true ) ;
 	bool autoMount = this->autoMount() ;
+	connect( m_autoMountAction,SIGNAL( toggled( bool ) ),this,SLOT( autoStartToggled( bool ) ) ) ;
 	m_autoMountAction->setChecked( autoMount );
 	m_autoMountAction->setText( QString( "automanage partitions" ) ) ;
 
 	if( autoMount ){
-		m_autoMountThread = new auto_mount( this ) ;
-		m_autoMountThread->start();
+		this->startAutoMonitor();
 	}
 
 	trayMenu->addAction( m_autoMountAction ) ;
@@ -105,6 +105,21 @@ void MainWindow::setUpApp()
 	connect( part,SIGNAL( done() ),this,SLOT( started() ) ) ;
 
 	part->startAction( managepartitionthread::Update ) ;
+}
+
+void MainWindow::startAutoMonitor()
+{
+	if( !m_autoMountThread ){
+		m_autoMountThread = new auto_mount( this ) ;
+		connect( m_autoMountThread,SIGNAL( stopped() ),this,SLOT( close() ) ) ;
+		connect( m_autoMountThread,SIGNAL( suspended() ),this,SLOT( suspendAutoMonitor() ) ) ;
+		m_autoMountThread->start();
+	}
+}
+
+void MainWindow::suspendAutoMonitor()
+{
+	m_autoMountThread = 0 ;
 }
 
 void MainWindow::started( void )
@@ -166,20 +181,16 @@ void MainWindow::autoMountVolumeInfo( QStringList l )
 void MainWindow::deviceRemoved( QString dev )
 {
 	//qDebug() << "device removed: " << dev ;
-	if( m_autoMount ){
-		int row = tablewidget::columnHasEntry( m_ui->tableWidget,0,dev ) ;
-		if( row != -1 ){
-			tablewidget::deleteRowFromTable( m_ui->tableWidget,row ) ;
-			if( m_autoMount ){
-				/*
-				* see if a user just removed the device without properly closing it/unmounting it
-				* and try to do so for them
-				*/
-				managepartitionthread * part = new managepartitionthread() ;
-				part->setDevice( dev );
-				part->startAction( managepartitionthread::checkUnMount ) ;
-			}
-		}
+	int row = tablewidget::columnHasEntry( m_ui->tableWidget,0,dev ) ;
+	if( row != -1 ){
+		tablewidget::deleteRowFromTable( m_ui->tableWidget,row ) ;
+		/*
+		* see if a user just removed the device without properly closing it/unmounting it
+		* and try to do so for them
+		*/
+		managepartitionthread * part = new managepartitionthread() ;
+		part->setDevice( dev );
+		part->startAction( managepartitionthread::checkUnMount ) ;
 	}
 }
 
@@ -269,12 +280,10 @@ void MainWindow::slotCloseApplication()
 {
 	if( m_working == false ){
 		if( m_autoMountThread ){
-			this->disableAll();
 			m_autoMountThread->stop();
-			connect( m_autoMountThread,SIGNAL( stopped() ),this,SLOT( close() ) ) ;
 			m_autoMountThread = 0 ;
 		}else{
-			;
+			this->close();
 		}
 	}
 }
@@ -414,6 +423,17 @@ void MainWindow::slotTrayClicked( QSystemTrayIcon::ActivationReason e )
 			this->hide();
 		}else{
 			this->show();
+		}
+	}
+}
+
+void MainWindow::autoStartToggled( bool opt )
+{
+	if( opt ){
+		this->startAutoMonitor();
+	}else{
+		if( m_autoMountThread ){
+			m_autoMountThread->suspend();
 		}
 	}
 }

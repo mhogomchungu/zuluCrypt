@@ -47,10 +47,12 @@ public:
 	explicit auto_mount( QObject * parent = 0 );
 	~auto_mount() ;
 	void stop( void ) ;
+	void suspend( void ) ;
 signals:
 	void deviceFromDev( QString ) ;
 	void deviceFromDevMapper( QString ) ;
 	void stopped( void ) ;
+	void suspended( void ) ;
 private slots:
 	void stopping( void ) ;
 private:
@@ -62,6 +64,7 @@ private:
 	QThread * m_baba ;
 	QThread * m_mtoto ;
 	QObject * m_babu ;
+	bool m_stopSuspend ;
 };
 
 #endif // AUTO_MOUNT_H

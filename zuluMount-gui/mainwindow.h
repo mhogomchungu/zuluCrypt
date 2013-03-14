@@ -93,7 +93,10 @@ private slots:
 	void addEntryToTable( bool,QStringList ) ;
 	void started( void ) ;
 	void close( void ) ;
+	void autoStartToggled( bool ) ;
+	void suspendAutoMonitor( void ) ;
 private:
+	void startAutoMonitor( void ) ;
 	void showEvent( QShowEvent * );
 	bool autoMount( void ) ;
 	Ui::MainWindow * m_ui ;
@@ -109,7 +112,6 @@ private:
 	void setUpShortCuts( void ) ;
 	void setUpApp( void ) ;
 	QSystemTrayIcon * m_trayIcon ;
-	bool m_autoMount ;
 	auto_mount * m_autoMountThread ;
 	QAction * m_autoMountAction ;
 	bool m_startHidden ;
