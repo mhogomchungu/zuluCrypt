@@ -373,85 +373,13 @@ static string_t _mount_options( unsigned long flags,string_t * xt )
 	return st ;
 }
 
-static inline int paths_are_sane( const char * device,const char * original_device __attribute__((unused)),const char * m_point,uid_t uid )
-{
-	/*
-	 * in this function,we are checking if the paths we are about to pass to mount() are
-	 * paths we expect.
-	 */
-	struct stat st ;
-	if( device ){;}
-	if( original_device ){;}
-	
-	if( chdir( m_point ) != 0 ){
-		return 0 ;
-	}
-	if( stat( ".",&st ) != 0 ){
-		return 0 ;
-	}
-	if( uid != st.st_uid ){
-		return 0 ;
-	}
-	return 1 ;
-}
-
-static inline int mount_is_were_we_expect_it_to_be( const m_struct * mst,int h )
-{
-	/*
-	 * in this function,we are checking if the volume is mounted where we expect it to be by comparing
-	 * paths we presented to mount() and paths that showed up in /proc/self/mountinfo 
-	 */
-	char * e = NULL ;
-	char * f ;
-	int result = -1 ;
-	
-	if( h != 0 ){
-		return h ;
-	}
-		
-	/*
-	 * zuluCryptGetMountPointFromPath() is defined in ./print_mounted_volumes.c
-	 */
-	f = zuluCryptGetMountPointFromPath( mst->original_device ) ;
-	if( f == NULL ){
-		zuluCryptUnmountVolume( mst->original_device,&e ) ;
-		if( e != NULL ){
-			/*
-			 * Dont delete the path because we dont know what path we got
-			 * rmdir( e ) ;
-			 */
-			free( e ) ;
-		}
-	}else{
-		if( strcmp( f,mst->m_point ) == 0 ){
-			result = 0 ;
-		}else{
-			/*
-			 * mount reported the file system as being mounted but it is not where we expect it to be.Assume shenanigans and unmount
-			 */
-			zuluCryptUnmountVolume( mst->device,&e ) ;
-			if( e != NULL ){
-				/*
-				 * Dont delete the path because we dont know what path we got
-				 * rmdir( e ) ;
-				 */
-				free( e ) ;
-			}
-		}
-		free( f ) ;
-	}
-	return result ;
-}
-
 static inline int mount_ntfs( const m_struct * mst )
 {
 	int status ;
 	process_t p ;
 	string_t st ;
 	const char * opts ;
-	if( !paths_are_sane( mst->device,mst->original_device,mst->m_point,mst->uid ) ) {
-		return -1 ;
-	}
+	
 	p = Process( ZULUCRYPTmount ) ;
 	st = String( "" ) ;
 	st = _mount_options( mst->m_flags,&st ) ;
@@ -467,21 +395,17 @@ static inline int mount_ntfs( const m_struct * mst )
 	status = ProcessExitStatus( p ) ; 
 	ProcessDelete( &p ) ;
 	StringDelete( &st ) ;
-	return mount_is_were_we_expect_it_to_be( mst,status ) ;
+	return status ;
 }
 
 static inline int mount_mapper( const m_struct * mst )
 {
 	int h = -1;
-	
-	if( paths_are_sane( mst->device,mst->original_device,mst->m_point,mst->uid ) ){
-		h = mount( mst->device,mst->m_point,mst->fs,mst->m_flags,mst->opts + 3 ) ;
-		if( h == 0 && mst->m_flags != MS_RDONLY ){
-			chmod( mst->m_point,S_IRWXU|S_IRWXG|S_IRWXO ) ;
-		}
-	}
-	
-	return mount_is_were_we_expect_it_to_be( mst,h ) ;
+	h = mount( mst->device,mst->m_point,mst->fs,mst->m_flags,mst->opts + 3 ) ;
+	if( h == 0 && mst->m_flags != MS_RDONLY ){
+		chmod( mst->m_point,S_IRWXU|S_IRWXG|S_IRWXO ) ;
+	}		
+	return h;
 }
 
 string_t zuluCryptGetFileSystemFromDevice( const char * device )

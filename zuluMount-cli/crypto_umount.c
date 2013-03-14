@@ -37,9 +37,9 @@ int zuluMountCryptoUMount( ARGS * args )
 	if( UUID == NULL ){
 		if( StringPrefixEqual( device,"/dev/loop" ) ){
 			/*
-			* zuluCryptLoopDeviceAddress() is defined in ../zuluCrypt-cli/create_loop_device.c
+			* zuluCryptLoopDeviceAddress_1() is defined in ../zuluCrypt-cli/create_loop_device.c
 			*/
-			path = zuluCryptLoopDeviceAddress( device ) ;
+			path = zuluCryptLoopDeviceAddress_1( device ) ;
 			if( path == NULL ){
 				return 20 ;
 			}else{

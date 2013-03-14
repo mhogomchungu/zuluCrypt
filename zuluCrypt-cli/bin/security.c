@@ -263,10 +263,9 @@ static string_t _create_default_mount_point( const char * device,uid_t uid,strin
 	const char * m_point ;
 	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
 		/*
-		 * zuluCryptLoopDeviceAddress() is defined in ../lib/create_loop_device.c
+		 * zuluCryptLoopDeviceAddress_1() is defined in ../lib/create_loop_device.c
 		 */
-		loop_path = zuluCryptLoopDeviceAddress( device ) ;
-		device = loop_path ;
+		device = loop_path = zuluCryptLoopDeviceAddress_1( device ) ;
 	}
 	
 	m_point = StringAppend( path,strrchr( device,'/' ) ) ;
@@ -285,6 +284,7 @@ static string_t _create_default_mount_point( const char * device,uid_t uid,strin
 	if( loop_path != NULL ){
 		free( loop_path ) ;
 	}
+	
 	return st ;
 }
 

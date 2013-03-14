@@ -180,9 +180,9 @@ ERROR: insuffienct privilege to manage a system partition.\nnecessary privileges
 	
 	if( StringPrefixEqual( device,"/dev/loop" ) ){
 		/*
-		 * zuluCryptLoopDeviceAddress() is defined in ../zuluCrypt-cli/lib/create_loop_devices.c
+		 * zuluCryptLoopDeviceAddress_1() is defined in ../zuluCrypt-cli/lib/create_loop_devices.c
 		 */
-		path = zuluCryptLoopDeviceAddress( device ) ;
+		path = zuluCryptLoopDeviceAddress_1( device ) ;
 		if( path == NULL ){
 			return _zuluExit( 112,z,path,"ERROR: could not resolve path to device" ) ;
 		}else{

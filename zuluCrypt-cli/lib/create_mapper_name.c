@@ -80,9 +80,9 @@ string_t zuluCryptCreateMapperName( const char * device,const char * mapping_nam
 		StringMultipleAppend( p,"-NAAN-",mapping_name,"-",END ) ;
 		if( StringPrefixMatch( device,"/dev/loop",9 ) ){
 			/*
-			* zuluCryptLoopDeviceAddress() is defined in ./create_loop_device.c
+			* zuluCryptLoopDeviceAddress_1() is defined in ./create_loop_device.c
 			*/
-			e = zuluCryptLoopDeviceAddress( device ) ;
+			e = zuluCryptLoopDeviceAddress_1( device ) ;
 			if( e != NULL ){
 				z = hash_path( e ) ;
 				free( e ) ;

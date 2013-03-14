@@ -333,7 +333,7 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	
 	if( StringPrefixMatch( device_name,"/dev/loop",9 ) ){
 		StringAppend( p,"\n loop:   \t" );
-		path = zuluCryptLoopDeviceAddress( device_name ) ;
+		path = zuluCryptLoopDeviceAddress_1( device_name ) ;
 		if( path != NULL ){
 			StringAppend( p,path ) ;
 			free( path ) ;
@@ -463,9 +463,9 @@ char * zuluCryptVolumeDeviceName( const char * mapper )
 	if( e != NULL ){
 		if( StringPrefixMatch( e,"/dev/loop",9 ) ){
 			/*
-			 * zuluCryptLoopDeviceAddress() is defined in create_loop.c
+			 * zuluCryptLoopDeviceAddress_1() is defined in create_loop.c
 			 */
-			path = zuluCryptLoopDeviceAddress( e ) ;
+			path = zuluCryptLoopDeviceAddress_1( e ) ;
 			if( path != NULL ){
 				address = StringInherit( &path ) ;
 			}else{

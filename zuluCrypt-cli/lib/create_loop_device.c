@@ -50,7 +50,31 @@ char * zuluCryptLoopDeviceAddress( const char * device )
 		ioctl( fd,LOOP_GET_STATUS64,&l_info ) ;
 		path = zuluCryptRealPath( ( char * ) l_info.lo_file_name ) ;
 		close( fd ) ;
-		return path ;
+		st = StringInherit( &path ) ;
+		StringReplaceString( st," ","\\040" ) ;
+		return StringDeleteHandle( &st ) ;
+	}else{
+		StringRemoveRight( xt,1 ) ;
+		StringReplaceString( xt," ","\\040" ) ;
+		return StringDeleteHandle( &xt ) ;
+	}
+}
+
+char * zuluCryptLoopDeviceAddress_1( const char * device )
+{
+	int fd ;
+	char * path ;
+	struct loop_info64 l_info ;
+	string_t st = String( "/sys/block/" ) ;
+	string_t xt = StringGetFromVirtualFile( StringMultipleAppend( st,device + 5,"/loop/backing_file",END ) ) ;
+	StringDelete( &st ) ;
+	if( xt == StringVoid ){
+		memset( &l_info,'\0',sizeof( struct loop_info64 ) ) ;
+		fd = open( device,O_RDONLY ) ;
+		ioctl( fd,LOOP_GET_STATUS64,&l_info ) ;
+		path = zuluCryptRealPath( ( char * ) l_info.lo_file_name ) ;
+		close( fd ) ;
+		return path;
 	}else{
 		StringRemoveRight( xt,1 ) ;
 		return StringDeleteHandle( &xt ) ;

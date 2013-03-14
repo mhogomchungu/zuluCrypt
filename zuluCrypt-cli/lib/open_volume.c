@@ -47,39 +47,6 @@ const char * zuluCryptTcryptHack( const char * mapper )
 	}
 }
 
-/*
- * here,we check if the path we send to cryptsetup is the one cryptsetup used to create
- * a mapper.The check is there to guard against the underlying device being changed under us
- * in an attempt to exploit an suid program using the library
- */
-static inline int _device_is_not_sane( const char * device,const char * mapper )
-{
-	int st = 1 ;
-	/*
-	 * zuluCryptVolumeDeviceName() is defined in ./status.c
-	 */
-	char * dev = zuluCryptVolumeDeviceName( mapper ) ;
-	char * dev_1 ;
-	
-	if( dev == NULL ){
-		return 1 ;
-	}
-	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
-		/*
-		 * zuluCryptLoopDeviceAddress() is defined in create_loop_device.c
-		 */
-		dev_1 = zuluCryptLoopDeviceAddress( device ) ;
-		if( dev_1 != NULL ){
-			st = strcmp( dev_1,dev ) ;
-			free( dev_1 ) ;
-		}
-	}else{
-		st = strcmp( device,dev ) ;
-	}
-	free( dev ) ;
-	return st != 0 ;
-}
-
 static int _open_mapper( const char * dev,const char * mapper,const char * mode,const char * pass,size_t pass_size )
 {	
 	int st ;
@@ -169,14 +136,7 @@ int zuluCryptOpenVolume( const char * dev,const char * map,
 		case 2 : return zuluExit( 8,p ) ; 
 		case 3 : return zuluExit( 3,p ) ;
 	}
-	/*
-	if( h == 0 ){
-		if( _device_is_not_sane( dev,mapper ) ){
-			zuluCryptCloseMapper( map ) ;
-			return zuluExit( -1,p ) ;
-		}
-	}
-	*/
+		
 	if( m_point != NULL ){
 		/*
 		 * zuluCryptMountVolume() is defined in mount_volume.c

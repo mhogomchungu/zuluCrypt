@@ -136,9 +136,14 @@ int zuluCryptAttachLoopDeviceToFile( const char * path,int mode,int * fd,string_
 string_t zuluCryptGetFileSystemFromDevice( const char * device ) ;
 
 /*
- * this function is defined in ./status.c
+ * this function is defined in ./create_loop_device.c
  */
 char * zuluCryptLoopDeviceAddress( const char * device ) ;
+
+/*
+ *  * this function is defined in ./create_loop_device.c 
+ */
+char * zuluCryptLoopDeviceAddress_1( const char * device ) ;
 
 /*
  * this function is defined in ./process_mountinfo.c
@@ -149,6 +154,11 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void ) ;
  * this function is defined in ./process_mountinfo.c
  */
 char * zuluCryptGetMountPointFromPath( const char * path ) ;
+
+/*
+ * this function is defined in ./process_mountinfo.c 
+ */
+char * zuluCryptGetMountPointFromPath_1( const char * path ) ;
 
 /*
  * this function is defined in ./process_mountinfo.c

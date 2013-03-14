@@ -122,8 +122,8 @@ void MainWindow::showEvent( QShowEvent * e )
 
 void MainWindow::autoMountVolumeSystemInfo( QStringList l )
 {
-	QString s = QString( "got system device: device=%1,fs=%2" ).arg( l.at( 0 ) ).arg( l.at( 2 ) ) ;
-	qDebug() << s ;
+	//QString s = QString( "system device added: device=%1" ).arg( l.at( 0 ) ) ;
+	//qDebug() << s ;
 	if( l.at( 0 ).size() == strlen( "/dev/sdX" ) && l.at( 2 ) == QString( "Nil" ) ){
 		/*
 		 * root device with no file system,dont show them.This will be a bug if a user just put a plain volume
@@ -144,8 +144,8 @@ void MainWindow::autoMountVolumeInfo( QStringList l )
 {
 	QString dev = l.at( 0 ) ;
 	QString type = l.at( 2 ) ;
-	QString s = QString( "got non system device: device=%1,fs=%2" ).arg( dev ).arg( type ) ;
-	qDebug() << s ;
+	//QString s = QString( "non system device added: device=%1" ).arg( dev ) ;
+	//qDebug() << s ;
 	if( dev.size() == strlen( "/dev/sdX" ) && type == QString( "Nil" ) ){
 		/*
 		 * root device with no file system,dont show them.This will be a bug if a user just put a plain volume
@@ -165,7 +165,7 @@ void MainWindow::autoMountVolumeInfo( QStringList l )
 
 void MainWindow::deviceRemoved( QString dev )
 {
-	qDebug() << "device removed: " << dev ;
+	//qDebug() << "device removed: " << dev ;
 	if( m_autoMount ){
 		int row = tablewidget::columnHasEntry( m_ui->tableWidget,0,dev ) ;
 		if( row != -1 ){
@@ -188,7 +188,7 @@ void MainWindow::itemEntered( QTableWidgetItem * item )
 	int row = item->row() ;
 	QTableWidget * table = item->tableWidget() ;
 	QString m_point = table->item( row,1 )->text() ;
-	if( !m_point.isEmpty() ){
+	if( !m_point.isEmpty() && m_point != QString( "Nil" ) && m_point != QString( "/" ) ) {
 		item->setToolTip( utility::shareMountPointToolTip( m_point ) );
 	}
 }
@@ -269,11 +269,12 @@ void MainWindow::slotCloseApplication()
 {
 	if( m_working == false ){
 		if( m_autoMountThread ){
+			this->disableAll();
 			m_autoMountThread->stop();
-			connect( m_autoMountThread,SIGNAL( done() ),this,SLOT( close() ) ) ;
+			connect( m_autoMountThread,SIGNAL( stopped() ),this,SLOT( close() ) ) ;
 			m_autoMountThread = 0 ;
 		}else{
-			qDebug() << "nnggrrr";
+			;
 		}
 	}
 }

@@ -50,9 +50,9 @@ public:
 signals:
 	void deviceFromDev( QString ) ;
 	void deviceFromDevMapper( QString ) ;
-	void done( void ) ;
+	void stopped( void ) ;
 private slots:
-	void nngrr( void ) ;
+	void stopping( void ) ;
 private:
 	const char * m_device ;
 	void run() ;

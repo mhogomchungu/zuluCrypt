@@ -90,9 +90,9 @@ void zuluMountPartitionProperties( const char * device,const char * UUID,const c
 	}else{
 		if( StringPrefixEqual( device,"/dev/loop" ) ){
 			/*
-			* zuluCryptLoopDeviceAddress() is defined in ../zuluCrypt-cli/lib/create_loop_device.c
+			* zuluCryptLoopDeviceAddress_1() is defined in ../zuluCrypt-cli/lib/create_loop_device.c
 			*/
-			loop_device = zuluCryptLoopDeviceAddress( device ) ;
+			loop_device = zuluCryptLoopDeviceAddress_1( device ) ;
 			if( loop_device != NULL ){
 				printf( "%s\t",loop_device ) ;
 				free( loop_device ) ;

@@ -131,9 +131,9 @@ int zuluMountVolumeStatus( const char * device,const char * UUID,uid_t uid )
 	if( UUID == NULL ){
 		if( StringPrefixEqual( device,"/dev/loop" ) ){
 			/*
-			* zuluCryptLoopDeviceAddress() is defined in ../zuluCrypt-cli/lib/create_loop_device.c
+			* zuluCryptLoopDeviceAddress_1() is defined in ../zuluCrypt-cli/lib/create_loop_device.c
 			*/
-			dev = zuluCryptLoopDeviceAddress( device ) ;
+			dev = zuluCryptLoopDeviceAddress_1( device ) ;
 			if( dev != NULL ){
 				st = zuluCryptEXEVolumeInfo( strrchr( dev,'/' ) + 1,dev,uid ) ;
 				free( dev ) ;		
@@ -150,12 +150,12 @@ int zuluMountVolumeStatus( const char * device,const char * UUID,uid_t uid )
 		e = StringSubChar( p,4,'-' ) ;
 		if( StringPrefixEqual( device,"/dev/loop" ) ){
 			/*
-			 * zuluCryptLoopDeviceAddress() is defined in ../zuluCrypt-cli/lib/create_loop_device.c
+			 * zuluCryptLoopDeviceAddress_1() is defined in ../zuluCrypt-cli/lib/create_loop_device.c
 			 */
-			dev = zuluCryptLoopDeviceAddress( device ) ;
+			dev = zuluCryptLoopDeviceAddress_1( device ) ;
 			if( dev != NULL ){
 				st = zuluCryptEXEVolumeInfo( e,dev,uid ) ;
-				free( dev ) ;		
+				free( dev ) ;
 			}else{
 				printf( "ERROR: could not get volume info,is the volume opened?\n" ) ;
 				st = 1 ;
@@ -173,26 +173,34 @@ static int _zuluMountPrintDeviceProperties( const char * device,const char * UUI
 {	
 	string_t p ;
 	string_t q ;
-	
+	string_t z = StringVoid ;
 	char * dev = NULL ;
+	const char * device_1 ;
 	const char * e ;
+	
+	device_1 = device ;
 	
 	if( UUID == NULL ){
 		if( StringPrefixEqual( device,"/dev/loop" ) ){
 			/*
 			* zuluCryptLoopDeviceAddress() is defined in ../zuluCrypt-cli/lib/create_loop_device.c
 			*/
-			dev = zuluCryptLoopDeviceAddress( device ) ;
-			if( dev != NULL ){
-				device = dev ;
-			}
+			device = dev = zuluCryptLoopDeviceAddress( device ) ;
+			
+			z = String( dev ) ;
+			device_1 = StringReplaceString( z,"\\040"," " ) ;
+			/*
+			 * ZULUCRYPTlongMapperPath is set in ../zuluCrypt-cli/constants.h
+			 * zuluCryptCreateMapperName() is defined at ../zuluCrypt-cli/lib/create_mapper_name.c
+			 */
+			q = zuluCryptCreateMapperName( device_1,strrchr( device_1,'/' ) + 1,uid,ZULUCRYPTlongMapperPath ) ;
+		}else{
+			/*
+			 * ZULUCRYPTlongMapperPath is set in ../zuluCrypt-cli/constants.h
+			 * zuluCryptCreateMapperName() is defined at ../zuluCrypt-cli/lib/create_mapper_name.c
+			 */
+			q = zuluCryptCreateMapperName( device,strrchr( device,'/' ) + 1,uid,ZULUCRYPTlongMapperPath ) ;
 		}
-	
-		/*
-		* ZULUCRYPTlongMapperPath is set in ../zuluCrypt-cli/constants.h
-		* zuluCryptCreateMapperName() is defined at ../zuluCrypt-cli/lib/create_mapper_name.c
-		*/
-		q = zuluCryptCreateMapperName( device,strrchr( device,'/' ) + 1,uid,ZULUCRYPTlongMapperPath ) ;
 	}else{
 		p = String( UUID ) ;
 		StringRemoveString( p,"\"" ) ;
@@ -205,6 +213,7 @@ static int _zuluMountPrintDeviceProperties( const char * device,const char * UUI
 	
 	/*
 	 * zuluCryptGetMtabEntry() is defined in ../zuluCrypt-cli/lib/process_mountinfo.c
+	 * zuluCryptPathIsValid() is defined in ../zuluCrypt-cli/lib/is_path_valid.c
 	 */
 	if( zuluCryptPathIsValid( e ) ){
 		p = zuluCryptGetMtabEntry( e ) ;
@@ -224,12 +233,15 @@ static int _zuluMountPrintDeviceProperties( const char * device,const char * UUI
 		/*
 		 * zuluMountPartitionProperties is defined in ./print_mounted_volumes.c
 		 */
-		zuluMountPartitionProperties( device,NULL,device,NULL ) ;
+		zuluMountPartitionProperties( device_1,NULL,device_1,NULL ) ;
 	}
 	
 	if( dev != NULL ){
 		free( dev ) ;
 	}
+	
+	StringDelete( &z ) ;
+	
 	return 0 ;
 }
 
@@ -270,39 +282,22 @@ static int _zuluMountPrintVolumeDeviceName( const char * device )
 	ssize_t index ;
 	string_t st = StringVoid ;
 	char * c ;
-	char * e ;
 	/*
 	 * zuluCryptSecurityGainElevatedPrivileges() is defined in ../zuluCrypt-cli/bin/security.c
 	 */
 	zuluCryptSecurityGainElevatedPrivileges() ;
 	
-	if( StringPrefixEqual( device,"/dev/loop" ) ){
-		/*
-		 * Dont see how we would get in here but lets keep it just in case
-		 */
-		/*
-		 * zuluCryptLoopDeviceAddress() is defined in ../zuluCrypt-cli/lib/create_loop_device.c
-		 */
-		e = zuluCryptLoopDeviceAddress( device ) ;
-		if( e != NULL ){
-			c = zuluCryptVolumeDeviceName( e ) ;
-			free( e ) ;
-		}else{
-			c = zuluCryptVolumeDeviceName( device ) ;
-		}
-	}else{
-		st = String( device ) ;
-		StringReplaceString( st,"/dev/","/dev/mapper/" ) ;
-		index = StringLastIndexOfChar( st,'/' ) ;
-		if( index != -1 ){
-			device = StringSubChar( st,index,'-' ) ;
-		}
-		/*
-		* zuluCryptVolumeDeviceName() is defined in ../lib/status.c
-		*/
-		c = zuluCryptVolumeDeviceName( device ) ;
-		StringDelete( &st ) ;
+	st = String( device ) ;
+	StringReplaceString( st,"/dev/","/dev/mapper/" ) ;
+	index = StringLastIndexOfChar( st,'/' ) ;
+	if( index != -1 ){
+		device = StringSubChar( st,index,'-' ) ;
 	}
+	/*
+	* zuluCryptVolumeDeviceName() is defined in ../lib/status.c
+	*/
+	c = zuluCryptVolumeDeviceName( device ) ;
+	StringDelete( &st ) ;
 	
 	/*
 	 * zuluCryptSecurityDropElevatedPrivileges() is defined in ../zuluCrypt-cli/bin/security.c
@@ -635,8 +630,7 @@ int main( int argc,char * argv[] )
 		 */
 		return _zuluExit_2( zuluCryptPrintPartitions( ZULUCRYPTsystemPartitions,0 ),stl,stx,NULL ) ;
 	}
-	
-	
+		
 	if( StringsAreEqual( args.action,"-c" ) ){
 		return _checkUnmount( args.device,uid ) ;
 	}
