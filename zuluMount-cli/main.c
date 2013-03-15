@@ -34,7 +34,7 @@ void zuluMountPrintDeviceProperties_1( string_t,uid_t ) ;
 static int _mount_get_opts( int argc,char * argv[],ARGS * args ) 
 {	
 	int c ;
-	while ( ( c = getopt( argc,argv,"cMLntSshlPmuDd:z:e:y:p:f:G:" ) ) != -1 ) {
+	while( ( c = getopt( argc,argv,"cMLntSshlPmuDd:z:e:y:p:f:G:" ) ) != -1 ) {
 		switch( c ){
 			case 'M' : args->share   = 1      ; break ;
 			case 'n' : args->mpo     = 1      ; break ;

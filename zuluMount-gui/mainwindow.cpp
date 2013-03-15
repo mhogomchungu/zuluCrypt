@@ -20,8 +20,11 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QDebug>
-MainWindow::MainWindow( QWidget * parent ) :QWidget( parent ),m_autoMountThread( 0 ),m_autoMountAction( 0 ),m_started( false )
+MainWindow::MainWindow( int argc,char * argv[],QWidget * parent ) :QWidget( parent ),
+	m_autoMountThread( 0 ),m_autoMountAction( 0 ),m_started( false )
 {
+	m_argc = argc ;
+	m_argv = argv ;
 }
 
 void MainWindow::setUpApp()
@@ -208,32 +211,17 @@ void MainWindow::itemEntered( QTableWidgetItem * item )
 
 void MainWindow::processArgumentList()
 {
-	QStringList argv = QCoreApplication::arguments() ;
-	int last_spot = argv.size() - 1 ;
-	int index = argv.indexOf( "-d" ) ;
-
+	int c ;
+	m_startHidden = false ;
 	m_device = QString( "" ) ;
-
-	if( index != -1 ){
-		if( index < last_spot ){
-			m_device = argv.at( index + 1 ) ;
-		}
-	}
-
-	index = argv.indexOf( "-m" ) ;
 	m_folderOpener = QString( "xdg-open" ) ;
 
-	if( index != -1 ){
-		if( index < last_spot ){
-			m_folderOpener = argv.at( index + 1 ) ;
+	while( ( c = getopt( m_argc,m_argv,"ed:m:" ) ) != -1 ) {
+		switch( c ){
+			case 'e' : m_startHidden  = true               ; break ;
+			case 'd' : m_device       = QString( optarg )  ; break ;
+			case 'm' : m_folderOpener = QString( optarg )  ; break ;
 		}
-	}
-
-	index = argv.indexOf( "-e" ) ;
-	if( index == -1 ){
-		m_startHidden = false ;
-	}else{
-		m_startHidden = true ;
 	}
 }
 

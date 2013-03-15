@@ -77,7 +77,7 @@ void auto_mount::run()
 	int dev = inotify_add_watch( m_fdDir,"/dev",IN_CREATE|IN_DELETE ) ;
 	int mapper = inotify_add_watch( m_fdDir,"/dev/mapper",IN_CREATE|IN_DELETE ) ;
 
-	if( dev == -1 || mapper == - 1){
+	if( dev == -1 || mapper == -1 ){
 		return ;
 	}
 

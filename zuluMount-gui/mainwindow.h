@@ -36,6 +36,7 @@
 #include <QAction>
 #include <QFileDialog>
 
+#include <unistd.h>
 #include "keydialog.h"
 #include "../zuluCrypt-gui/dialogmsg.h"
 #include "../zuluCrypt-gui/userfont.h"
@@ -53,7 +54,7 @@ class MainWindow : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit MainWindow( QWidget * parent = 0 );
+	explicit MainWindow( int argc,char * argv[],QWidget * parent = 0 );
 	~MainWindow();
 	void start( void ) ;
 	static void volumeMiniProperties( QTableWidget *,QString,QString );
@@ -104,7 +105,8 @@ private:
 	QString m_action ;
 	QString m_device ;
 	QString m_folderOpener ;
-
+	int m_argc ;
+	char ** m_argv ;
 	bool m_working ;
 	void disableAll( void ) ;
 	void closeEvent( QCloseEvent * e );

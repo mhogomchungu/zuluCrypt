@@ -21,9 +21,9 @@
 #include "mainwindow.h"
 #include <QStringList>
 
-int main(int argc, char *argv[])
+int main( int argc,char * argv[] )
 {
-	QApplication a(argc, argv);
+	QApplication a( argc,argv );
 
 	QStringList q = QCoreApplication::arguments() ;
 	if( q.contains( QString( "-h" ) ) ||
@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
 		utility::help( QString( "zuluMount" ) ) ;
 		return 0 ;
 	}else{
-		MainWindow w ;
+		MainWindow w( argc,argv ) ;
 		w.start();
 		return a.exec();
 	}
