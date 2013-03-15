@@ -30,7 +30,7 @@ static void _remove_mapper( const char * path,stringList_t stl,uid_t uid )
 	/*
 	 * zuluCryptBindUnmountVolume() is defined in ./bind.c
 	 */
-	int r = zuluCryptBindUnmountVolume( stl,path,path,uid )  ;
+	int r = zuluCryptBindUnmountVolume( stl,path,uid )  ;
 
 	if( r == 3 || r == 4 ){
 		/*

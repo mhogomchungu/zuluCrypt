@@ -21,7 +21,7 @@
 #include <sys/mount.h>
 #include "../lib/includes.h"
 
-int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,const char * mapper,uid_t uid )
+int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 {
 	stringList_t stl ;
 	string_t xt ;
@@ -41,21 +41,6 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,const char 
 		 */
 		stx = zuluCryptGetMoutedListFromMountInfo() ;
 		delete_stx = 1 ;
-	}
-	
-	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
-		/*
-		 * zuluCryptLoopDeviceAddress() is defined in ../lib/status.c 
-		 */
-		dev = zuluCryptLoopDeviceAddress( device ) ;
-		if( dev != NULL ){
-			device = dev ;
-		}
-	}else if( StringsAreNotEqual( device,mapper ) ){
-		/*
-		 * we will get here when trying to unmount an encrypted partition
-		 */
-		device = mapper ;
 	}
 	
 	index = StringListHasStartSequence( stx,device ) ;

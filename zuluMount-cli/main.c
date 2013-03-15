@@ -344,7 +344,7 @@ static int _checkUnmount( const char * device,uid_t uid )
 		/*
 		 * zuluCryptBindUnmountVolume() is defined in ../zuluCrypt-cli/bin/bind.c
 		 */
-		r = zuluCryptBindUnmountVolume( stx,device,device,uid ) ;
+		r = zuluCryptBindUnmountVolume( stx,device,uid ) ;
 		if( r != 3 || r != 4 ){
 			st = StringListStringAt( stx,index ) ;
 			stl = StringListStringSplit( st,' ' ) ;

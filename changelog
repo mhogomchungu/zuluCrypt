@@ -117,6 +117,6 @@ version 4.6.2
    This will allow them to be able to execute commands from the mount point.The default and recommended option is not mount with "noexec" option.
 -- feature added:A "-M" option is added that will create a publicly accessible "mirror" of a mount point in "/run/share" from the private 
    original one created in "/run/media/$USER.This option is there to allow a user to mount a volume and have it accessible from other users of the system.
--- give zuluMount-gui to automanage devices through a context menu on the tray icon.When the feature is enabled,volumes are auto added and autodeleted to the
-   gui when they are added or removed from the system and unecrypted volumes are automounted.
--- add a command line option to zuluMount-gui to start it up without showing the GUI   
+-- zuluMount-gui now adds and removed from its list as devices are added and removed from the system.A right click context menu option can be set to allow 
+   unencrypted volumes to also be automounted.
+-- add a command line option to zuluMount-gui to start it up without showing the GUI 
