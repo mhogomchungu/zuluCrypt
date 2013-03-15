@@ -93,6 +93,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	string_t * passphrase = StringListAssign( stl ) ;
 	string_t * p          = StringListAssign( stl ) ;
 	string_t * dev_st     = StringListAssign( stl ) ;
+	string_t * dev_1      = StringListAssign( stl ) ;
 	
 	size_t len = 0 ;
 	
@@ -120,12 +121,14 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 		d = zuluCryptLoopDeviceAddress( device ) ;
 		*dev_st = StringInherit( &d ) ;
 		dev = StringContent( *dev_st ) ;
+		*dev_1 = StringCopy( *dev_st ) ;
+		device = StringReplaceString( * dev_1,"\\040"," " ) ;
 	}
 	
 	/*
 	 * zuluCryptPartitionIsSystemPartition() is defined in ./partition.c
 	 */
-	if( zuluCryptPartitionIsSystemPartition( dev ) ){
+	if( zuluCryptPartitionIsSystemPartition( device ) ){
 		if( uid != 0 ){
 			return zuluExit( stl,8 ) ;
 		}
@@ -143,7 +146,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	/*
 	 * defined in ../lib/print_mounted_volumes.c
 	 */
-	n = zuluCryptPartitionIsMounted( device ) ;
+	n = zuluCryptPartitionIsMounted( dev ) ;
 	
 	if( j == 1 ){
 		return zuluExit( stl,13 ) ;

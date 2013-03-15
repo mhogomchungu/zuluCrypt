@@ -625,9 +625,9 @@ int zuluCryptPartitionIsSystemPartition( const char * device )
 	char * dev ;
 	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
 		/*
-		 * zuluCryptLoopDeviceAddress() is defined in ../lib/create_loop_device.c
+		 * zuluCryptLoopDeviceAddress_1() is defined in ../lib/create_loop_device.c
 		 */
-		dev = zuluCryptLoopDeviceAddress( device ) ;
+		dev = zuluCryptLoopDeviceAddress_1( device ) ;
 		if( dev == NULL ){
 			return 0 ;
 		}

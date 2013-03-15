@@ -27,7 +27,7 @@
 
 #define SIZE 512
 
-static int zuluExit( int st,int fd,string_t xt )
+static int zuluExit( int st )
 {
 	switch( st ){
 		case 0 : printf( "SUCCESS: header saved successfully\n" ) 						; break ;
@@ -52,10 +52,6 @@ static int zuluExit( int st,int fd,string_t xt )
 		case 19: printf( "ERROR: insufficient memory to hold your responce\n" )		 			; break ;
 	}
 	
-	StringDelete( &xt ) ;
-	if( fd != -1 ){
-		close( fd );
-	}
 	return st == 1 ? 0 : st ;
 }
 
@@ -315,10 +311,6 @@ Type \"YES\" and press Enter to continue: " ;
 
 int zuluCryptEXESaveAndRestoreLuksHeader( const struct_opts * opts,uid_t uid,int option  )
 {
-	int dev_fd = -1 ;
-	string_t sec_dev = StringVoid ;
-	
-	int fd = -1 ;
 	const char * device = opts->device ;
 	
 	/*
@@ -327,55 +319,46 @@ int zuluCryptEXESaveAndRestoreLuksHeader( const struct_opts * opts,uid_t uid,int
 	const char * path = opts->key ;
 	int st ;
 	int k ;
-	string_t sec_file = StringVoid ;
 	
-	/*
-	 * zuluCryptPartitionIsSystemPartition() is defined in partitions.c
-	 */
-	k = zuluCryptPartitionIsSystemPartition( device ) ;
-		
+	char * dev ;
+	
+	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
+		/*
+		 * zuluCryptLoopDeviceAddress_1() is defined in ../lib/create_loop_device.c
+		 */
+		dev = zuluCryptLoopDeviceAddress_1( device ) ;
+		/*
+		 * zuluCryptPartitionIsSystemPartition() is defined in partitions.c
+		 */
+		k = zuluCryptPartitionIsSystemPartition( dev ) ;
+		free( dev ) ;
+	}else{
+		/*
+		 * zuluCryptPartitionIsSystemPartition() is defined in partitions.c
+		 */
+		k = zuluCryptPartitionIsSystemPartition( device ) ;
+	}
+	
 	if( k == 1 ){
 		if( uid != 0 || !zuluCryptUserIsAMemberOfAGroup( uid,"zulucrypt" ) )
-		return zuluExit( 14,fd,sec_file ) ;
+		return zuluExit( 14 ) ;
 	}
 		
 	if( path == NULL ){
 		if( option == LUKS_HEADER_RESTORE ){
-			return zuluExit( 12,fd,sec_file ) ;
+			return zuluExit( 12 ) ;
 		}else{
-			return zuluExit( 13,fd,sec_file ) ;
+			return zuluExit( 13 ) ;
 		}
 	}
 	
-	if( strncmp( device,"/dev/",5 ) != 0 ){
-		zuluCryptSecurityGainElevatedPrivileges() ;
-		/*
-		 * zuluCryptAttachLoopDeviceToFile() is defined in ../lib/create_loop_device.c 
-		 */
-		if( zuluCryptAttachLoopDeviceToFile( device,O_RDWR,&dev_fd,&sec_dev ) ){
-			device = StringContent( sec_dev ) ;
-			if( option == LUKS_HEADER_RESTORE ){
-				st = restore_header( device,path,opts->dont_ask_confirmation,uid ) ;
-			}else{
-				st = save_header( device,path,uid ) ;
-			}
-		}else{
-			st = 7 ;
-		}
+	if( option == LUKS_HEADER_RESTORE ){
+		st = restore_header( device,path,opts->dont_ask_confirmation,uid ) ;
 	}else{
-		if( option == LUKS_HEADER_RESTORE ){
-			st = restore_header( device,path,opts->dont_ask_confirmation,uid ) ;
-		}else{
-			st = save_header( device,path,uid ) ;
-		}
+		st = save_header( device,path,uid ) ;
 	}
 	
-	if( dev_fd != -1 ){
-		close( dev_fd ) ;
-	}
-	StringDelete( &sec_dev ) ;
-	
-	return zuluExit( st,fd,sec_file ) ;
+	return zuluExit( st ) ;
 }
 
 static int files_are_equal( const char * file1,const char * file2 )
