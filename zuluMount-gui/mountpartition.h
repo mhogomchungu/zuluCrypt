@@ -52,7 +52,7 @@ public:
 	explicit mountPartition( QWidget * parent = 0,QTableWidget * table = 0,QString folderOpener = QString() );
 	void ShowUI( QString path,QString label ) ;
 	void HideUI( void ) ;
-	void AutoMount( QString device ) ;
+	void AutoMount( QStringList entry ) ;
 	~mountPartition();
 signals:
 	void hideUISignal( void ) ;

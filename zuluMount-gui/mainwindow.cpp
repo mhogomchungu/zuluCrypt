@@ -176,7 +176,7 @@ void MainWindow::autoMountVolumeInfo( QStringList l )
 			mountPartition * mp = new mountPartition( this,m_ui->tableWidget,m_folderOpener ) ;
 			connect( mp,SIGNAL( autoMountComplete() ),mp,SLOT( deleteLater() ) ) ;
 			connect( mp,SIGNAL( autoMountComplete() ),this,SLOT( enableAll() ) ) ;
-			mp->AutoMount( dev );
+			mp->AutoMount( l );
 		}else{
 			this->addEntryToTable( false,l );
 		}

@@ -146,10 +146,15 @@ void mountPartition::ShowUI( QString path,QString label )
 	this->show();
 }
 
-void mountPartition::AutoMount( QString device )
+void mountPartition::AutoMount( QStringList entry )
 {
-	m_path = device ;
-	m_point = m_path.split( QString( "/" ) ).last() ;
+	m_path = entry.at( 0 ) ;
+	QString label = entry.at( 3 ) ;
+	if( label != QString( "Nil" ) ) {
+		m_point = label ;
+	}else{
+		m_point = m_path.split( QString( "/" ) ).last() ;
+	}
 	m_ui->lineEdit->setText( m_point ) ;
 	this->pbMount();
 }
