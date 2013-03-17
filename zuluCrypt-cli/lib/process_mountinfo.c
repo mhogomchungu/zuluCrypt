@@ -151,7 +151,7 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 			 * If the entry is an LVM volume and its in /dev/mapper/abc-def format,then convert it to
 			 * /dev/abc/def format as this is the internal format of the tool
 			 */
-			StringAppend( n,device ) ;
+			StringAppendAt( n,0,device ) ;
 			index = StringLastIndexOfChar( n,'-' ) ;
 			if( index != -1 ){
 				StringSubChar( n,index,'/' ) ;
@@ -164,7 +164,6 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 			}else{
 				StringMultipleAppend( st,device," ",mount_point," ",file_system," ",mount_options,END ) ;
 			}
-			StringReset( n ) ;
 		}else{
 			StringMultipleAppend( st,device," ",mount_point," ",file_system," ",mount_options,END ) ;
 		}
@@ -236,9 +235,8 @@ stringList_t zuluCryptGetMoutedListFromMounts( void )
 				if( index != -1 ){
 					g = StringSubChar( n,index,'\0' ) ;
 					if( stat( g,&str ) == 0 ){
-						StringSubChar( n,index,' ' ) ;
-						StringReset( *it ) ;
-						StringAppendString( *it,n ) ;
+						g = StringSubChar( n,index,' ' ) ;
+						StringAppendAt( *it,0,g ) ;
 					}else{
 						;
 					}
