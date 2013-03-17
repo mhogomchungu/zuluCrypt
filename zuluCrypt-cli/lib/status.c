@@ -303,7 +303,7 @@ char * zuluCryptVolumeStatus( const char * mapper )
 		}
 	}
 	
-	StringMultipleAppend( p,"\n cipher:\t",crypt_get_cipher_mode( cd ),END );
+	StringMultipleAppend( p,"\n cipher:\t",crypt_get_cipher( cd ),"-",crypt_get_cipher_mode( cd ),END );
 	
 	z = StringIntToString_1( buffer,SIZE,8 * crypt_get_volume_key_size( cd ) ) ;
 	StringMultipleAppend( p,"\n keysize:\t",z," bits",END );

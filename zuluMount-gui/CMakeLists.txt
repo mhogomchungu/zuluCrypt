@@ -50,7 +50,7 @@ INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
 
 add_executable( zuluMount-gui ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
 
-TARGET_LINK_LIBRARIES( zuluMount-gui ${QT_LIBRARIES} ${blkid} ${zuluPluginManager} -lQtNetwork )
+TARGET_LINK_LIBRARIES( zuluMount-gui ${QT_LIBRARIES} ${blkid} zuluCryptPluginManager -lQtNetwork )
 
 install( TARGETS zuluMount-gui RUNTIME DESTINATION bin )
 

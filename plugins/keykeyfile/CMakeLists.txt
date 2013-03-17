@@ -12,7 +12,7 @@ QT4_ADD_RESOURCES( ICON icon.qrc )
 
 add_executable( keykeyfile ${ICON} ${MOC} ${UI} main.cpp mainwindow.cpp ../../zuluCrypt-gui/socketsendkey.cpp ../../zuluCrypt-gui/dialogmsg.cpp )
 
-TARGET_LINK_LIBRARIES( keykeyfile ${QT_LIBRARIES} ${zuluPluginManager} ${blkid} ) 
+TARGET_LINK_LIBRARIES( keykeyfile ${QT_LIBRARIES} zuluCryptPluginManager ${blkid} ) 
 
 set_target_properties( keykeyfile PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread -pedantic " )
 

@@ -120,3 +120,7 @@ version 4.6.2
 -- zuluMount-gui now adds and removed from its list as devices are added and removed from the system.A right click context menu option can be set to allow 
    unencrypted volumes to also be automounted.
 -- add a command line option to zuluMount-gui to start it up without showing the GUI 
+
+version 4.6.3
+-- fix a build issue on some systems
+-- when automounting devices,use device LABEL is present

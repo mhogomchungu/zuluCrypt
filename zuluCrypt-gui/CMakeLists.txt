@@ -109,7 +109,7 @@ INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
 
 add_executable( zuluCrypt-gui ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS}  )
 
-target_link_libraries( zuluCrypt-gui ${zuluPluginManager} -lQtNetwork zuluCryptMD5 ) 
+target_link_libraries( zuluCrypt-gui zuluCryptPluginManager -lQtNetwork zuluCryptMD5 ) 
 
 if( library_pwquality )
 	if( kwallet_library )

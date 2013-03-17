@@ -82,23 +82,23 @@
  
  add_library( zuluCrypt-exe SHARED ${BIN} )
  
- add_library( zuluCrypt-exe-static STATIC ${BIN} )
+ #add_library( zuluCrypt-exe-static STATIC ${BIN} )
  
  add_library( zuluCrypt SHARED ${LIB} )
  
- add_library( zuluCrypt-static STATIC ${LIB} )
+ #add_library( zuluCrypt-static STATIC ${LIB} )
  
  add_library( zuluCryptPluginManager SHARED pluginManager/zuluCryptPluginManager.c )
  
- add_library( zuluCryptPluginManager-static STATIC pluginManager/zuluCryptPluginManager.c )
+ #add_library( zuluCryptPluginManager-static STATIC pluginManager/zuluCryptPluginManager.c )
  
  TARGET_LINK_LIBRARIES( zuluCryptPluginManager Socket Process String ${blkid} )
  
- TARGET_LINK_LIBRARIES( zuluCryptPluginManager-static Socket Process String )
+ #TARGET_LINK_LIBRARIES( zuluCryptPluginManager-static Socket Process String )
  
  set_target_properties( zuluCryptPluginManager PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIC -pthread -pedantic " )
  
- set_target_properties( zuluCryptPluginManager-static PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -pedantic " )
+ #set_target_properties( zuluCryptPluginManager-static PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -pedantic " )
  
  set_target_properties( zuluCryptPluginManager PROPERTIES SOVERSION ${LIB_PLUGIN_VERSION} )
  
@@ -110,8 +110,8 @@
  set_target_properties( zuluCrypt-exe PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIC -pthread  -pedantic " )
  set_target_properties( zuluCrypt     PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIC -pthread  -pedantic " )
  
- set_target_properties( zuluCrypt-exe-static PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIC -pthread  -pedantic " )
- set_target_properties( zuluCrypt-static     PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIC -pthread  -pedantic " )
+ #set_target_properties( zuluCrypt-exe-static PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIC -pthread  -pedantic " )
+ #set_target_properties( zuluCrypt-static     PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIC -pthread  -pedantic " )
  
  set_target_properties( zuluCrypt     PROPERTIES SOVERSION ${LIB_VERSION} )
  set_target_properties( zuluCrypt-exe PROPERTIES SOVERSION ${LIB_VERSION} )
@@ -119,8 +119,8 @@
  TARGET_LINK_LIBRARIES( zuluCrypt     String StringList Process ${cryptsetup_lib} ${blkid} ${mountLibrary} ${TCPLAY_LIB} ${TCPLAY_LIBRARIES} ) 
  TARGET_LINK_LIBRARIES( zuluCrypt-exe zuluCrypt zuluCryptPluginManager ) 
  
- TARGET_LINK_LIBRARIES( zuluCrypt-static String StringList Process ) 
- TARGET_LINK_LIBRARIES( zuluCrypt-exe-static zuluCrypt-static zuluCryptPluginManager-static )
+ #TARGET_LINK_LIBRARIES( zuluCrypt-static String StringList Process ) 
+ #TARGET_LINK_LIBRARIES( zuluCrypt-exe-static zuluCrypt-static zuluCryptPluginManager-static )
  
  TARGET_LINK_LIBRARIES( zuluCrypt-exe zuluCrypt )
  
@@ -191,15 +191,15 @@ Cflags: -I${CMAKE_INSTALL_PREFIX}/include
  # ${LIB_PATH} is set in ../CMakeLists.txt
  install(TARGETS zuluCryptPluginManager LIBRARY DESTINATION ${LIB_PATH} )
  
- install(TARGETS zuluCryptPluginManager-static ARCHIVE DESTINATION ${LIB_PATH} )
+ #install(TARGETS zuluCryptPluginManager-static ARCHIVE DESTINATION ${LIB_PATH} )
  
  install(TARGETS zuluCrypt LIBRARY DESTINATION ${LIB_PATH} )
   
  install(TARGETS zuluCrypt-exe LIBRARY DESTINATION ${LIB_PATH} )
  
- install(TARGETS zuluCrypt-exe-static ARCHIVE DESTINATION ${LIB_PATH} )
+ #install(TARGETS zuluCrypt-exe-static ARCHIVE DESTINATION ${LIB_PATH} )
  
- install(TARGETS zuluCrypt-static ARCHIVE DESTINATION ${LIB_PATH} ) 
+ #install(TARGETS zuluCrypt-static ARCHIVE DESTINATION ${LIB_PATH} ) 
  
  install(FILES lib/libzuluCrypt.h              		 DESTINATION include/zuluCrypt )
  install(FILES bin/libzuluCrypt-exe.h		         DESTINATION include/zuluCrypt )

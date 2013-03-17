@@ -50,7 +50,6 @@ oneinstance::oneinstance( QObject * parent,QString socketPath,const char * metho
 			QFile::remove( m_serverPath ) ;
 			this->startInstance();
 		}
-
 	}else{
 		this->startInstance();
 	}
@@ -62,6 +61,7 @@ void oneinstance::startInstance()
 
 	m_instanceExist = false ;
 	m_localServer = new QLocalServer( this ) ;
+	
 	connect( m_localServer,SIGNAL( newConnection() ),this,SLOT( gotConnection() ) ) ;
 
 	m_localServer->setMaxPendingConnections( 100 );
