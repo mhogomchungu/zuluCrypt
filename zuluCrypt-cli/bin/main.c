@@ -500,7 +500,7 @@ int main( int argc,char * argv[] )
 		 */
 		switch( zuluCryptGetDeviceFileProperties( device,&fd,&fd1,&dev,uid ) ){
 			case 0 : break ;
-			case 1 : return zuluExit( 111,stl,stx,env,"ERROR: devices in /dev/ with user access permissions are not suppored" ) ;
+			case 1 : return zuluExit( 111,stl,stx,env,"ERROR: devices in /dev/shm/ path is not suppored" ) ;
 			case 2 : return zuluExit( 112,stl,stx,env,"ERROR: given path is a directory" ) ;   
 			case 3 : return zuluExit( 113,stl,stx,env,"ERROR: a file can have only one hard link" ) ;
 			case 4 : return zuluExit( 113,stl,stx,env,"ERROR: insufficient privilges to access the device" ) ;
@@ -524,15 +524,16 @@ Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The de
 		}else{
 			mapping_name =  device  ;
 		}
+		
+		st = zuluCryptEXE( &clargs,mapping_name,uid ) ;
+		
+		free( dev ) ;
+		
+		if( fd1 != -1 )
+			close( fd1 ) ;
+		if( fd != -1 ){
+			close( fd ) ;
+		}
+		return zuluExit( st,stl,stx,env,NULL ) ;
 	}
-	
-	st = zuluCryptEXE( &clargs,mapping_name,uid ) ;
-	
-	free( dev ) ;
-	if( fd1 != -1 )
-		close( fd1 ) ;
-	if( fd != -1 ){
-		close( fd ) ;
-	}
-	return zuluExit( st,stl,stx,env,NULL ) ;
 } 

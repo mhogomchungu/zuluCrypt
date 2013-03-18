@@ -40,7 +40,7 @@ int zuluCryptSecureOpenFile( const char * path,int * fd,string_t * file,uid_t ui
 	return st ;
 }
 
-static int _check_if_device_is_supported( int st,uid_t uid,const char * dev )
+static int _check_if_device_is_supported( int st,uid_t uid,char ** dev )
 {
 	const char * cfs ;
 	string_t fs ;
@@ -48,7 +48,7 @@ static int _check_if_device_is_supported( int st,uid_t uid,const char * dev )
 	/*
 	 * zuluCryptGetFileSystemFromDevice() is defined in mount_volume.c
 	 */
-	fs = zuluCryptGetFileSystemFromDevice( dev ) ;
+	fs = zuluCryptGetFileSystemFromDevice( *dev ) ;
 	seteuid( uid ) ;
 	if( fs != StringVoid ){
 		cfs = StringContent( fs ) ;
@@ -56,6 +56,10 @@ static int _check_if_device_is_supported( int st,uid_t uid,const char * dev )
 			st = 100 ;
 		}
 		StringDelete( &fs ) ;
+	}
+	if( st != 0 ){
+		free( *dev ) ;
+		*dev = NULL ;
 	}
 	return st ;
 }
@@ -80,6 +84,7 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 	int xt = 0 ;
 	int lfd ;
 	
+	char * dev_1 ;
 	string_t st_dev = StringVoid ;
 	
 	struct stat stat_st ;
@@ -129,7 +134,7 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 				}
 			}else{
 				/*
-				 * we can not open the file in read only mode
+				 * we can not open the file in write mode,continue with read only access
 				 */
 				seteuid( 0 ) ;
 				/*
@@ -138,14 +143,21 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 				xt = zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( *fd_path,fd_loop,O_RDONLY,&st_dev ) ;
 				seteuid( uid ) ;
 				*dev = device_path( st_dev ) ;
-			}
-			
+			}				
 			if( xt != 1 ){
 				st = 100 ;
 				close( *fd_path ) ;
 				*fd_path = -1 ;
 			}else{
-				st = 0 ;
+				dev_1 = zuluCryptGetFileNameFromFileDescriptor( *fd_path ) ;
+				if( StringPrefixMatch( dev_1,"/dev/shm/",9 ) ){
+					st =1 ;
+					close( *fd_path ) ;
+					*fd_path = -1 ;
+				}else{
+					st = 0 ;
+				}
+				free( dev_1 ) ;
 			}
 		}else{
 			if( S_ISBLK( stat_st.st_mode ) ){
@@ -161,12 +173,10 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 					 * if its in /dev/ but not in /dev/shm
 					 */
 					*dev = zuluCryptGetFileNameFromFileDescriptor( *fd_path ) ;
-					if( *dev != NULL ){
-						if( StringPrefixMatch( *dev,"/dev/shm/",9 ) ){
-							st = 4 ;
-						}else if( StringPrefixMatch( *dev,"/dev/",5 ) ){
-							st = 0 ;
-						}
+					if( StringPrefixMatch( *dev,"/dev/shm/",9 ) ){
+						st = 1 ;
+					}else if( StringPrefixMatch( *dev,"/dev/",5 ) ){
+						st = 0 ;
 					}
 				}
 			}else if( S_ISDIR( stat_st.st_mode ) ){
@@ -201,24 +211,22 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 			 * hold on to them.Besides,we cant even if we want to as cryptsetup will demand exclusive access to them. 
 			 */
 			if( S_ISBLK( stat_st.st_mode ) ){
-				if( *dev != NULL ){
-					if( StringPrefixMatch( *dev,"/dev/shm/",9 ) ){
-						/*
-						* we do not support this path
-						*/
-						st = 1 ;
-					}else if( StringPrefixMatch( *dev,"/dev/",5 ) ){
-						/*
-						* got the block device we want,accept it
-						*/
-						st = 0 ;
-					}else{
-						/*
-						* reject others
-						*/
-						st = 100 ;
-					}
-				}
+				if( StringPrefixMatch( *dev,"/dev/shm/",9 ) ){
+					/*
+					* we do not support this path
+					*/
+					st = 1 ;
+				}else if( StringPrefixMatch( *dev,"/dev/",5 ) ){
+					/*
+					* got the block device we want,accept it
+					*/
+					st = 0 ;
+				}else{
+					/*
+					* reject others
+					*/
+					st = 100 ;
+				}			
 			}else if( S_ISDIR( stat_st.st_mode ) ){
 				st = 2 ;
 			}else{
@@ -239,5 +247,5 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 		seteuid( uid ) ;
 	}
 	
-	return _check_if_device_is_supported( st,uid,*dev ) ;
+	return _check_if_device_is_supported( st,uid,dev ) ;
 }
