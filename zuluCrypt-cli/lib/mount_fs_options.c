@@ -22,7 +22,8 @@
 
 int zulucryptFileSystemIsSupported( const char * fs )
 {
-	if(     StringsAreEqual( fs,"ntfs" )  || 
+	if(     StringsAreEqual( fs,"xfs" )   || 
+		StringsAreEqual( fs,"ntfs" )  || 
 		StringsAreEqual( fs,"vfat" )  || 
 		StringsAreEqual( fs,"fat" )   ||
 		StringsAreEqual( fs,"msdos" ) ||
@@ -49,9 +50,11 @@ static inline int _userIsAllowed( uid_t uid,const char * fs )
 	if( uid == 0 ){
 		return 1 ;
 	}
-	if( !zulucryptFileSystemIsSupported( fs ) ){
-		return 0 ;
-	}
+	if( fs ){;}
+	/*
+	 * we are supposed to check here is a user is allowed to mount a file system not in the list above,
+	 * we dont do this check for now. 
+	 */
 	return 0 ;
 }
 
