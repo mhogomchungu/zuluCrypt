@@ -97,14 +97,14 @@ void zuluCryptClearDeadMappers( uid_t uid )
 			if( crypt_init_by_name( &cd,e ) == 0 ){
 				if( crypt_get_device_name( cd ) == NULL ){
 					/*
-					 * we will get here is the mapper is "active" but the underlying device is gone
+					 * we will get here if PLAIN or TRUECRYPT mapper is active but the underlying device is gone
 					 */
 					_remove_mapper( e,stl,uid ) ;
 				}
 				crypt_free( cd ) ;
 			}else{
 				/*
-				 * we shouldnt get here
+				 * we will get here if the LUKS mapper is active but the underlying device is gone
 				 */
 				_remove_mapper( e,stl,uid ) ;
 			}
