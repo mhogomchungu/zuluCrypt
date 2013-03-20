@@ -32,7 +32,6 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 	const char * g ;
 	int r = 1 ;
 	int k ;
-	char * dev = NULL ;
 	int delete_stx = 0 ;
 	
 	if( stx == StringListVoid ){
@@ -84,7 +83,7 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 			f = StringPrepend( xt,"/run/media/public/" ) ;
 
 			/*
-			 * f will now contain something like " /media/share/sdc1"
+			 * f will now contain something like "/run/media/public/sdc1"
 			 */
 			
 			index = StringListHasSequence( stx,f ) ;
@@ -97,7 +96,7 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 				/*
 				 * volume is shared,try to unmount it
 				 * a volume is assumed to be shared if its device path in mountinfo has two mount points,one
-				 * in /run/media/$USER and the other in /run/share
+				 * in /run/media/private/$USER and the other in /run/media/public/
 				 */
 				e = StringListContentAt( stx,index ) ;
 				
@@ -107,6 +106,7 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 					 * good,the device associated with the shared mount is the same as that of the
 					 * private mount,try to unmount it.
 					 */
+					r = 3 ;
 					for( k = 0 ; k < 3 ; k++ ){
 						/*
 						 * try to unmount 3 times before giving up
@@ -121,11 +121,9 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 							break ;
 						}else{
 							sleep( 1 ) ;
-							r = 3 ;
 						}
 					}
 				}else{
-					
 					/*
 					 * bad,the device associated with the shared mount is different from the private mount.
 					 * possible reason could be a collision of some sort,maybe a different tool use the mount path
@@ -139,9 +137,6 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 		StringMultipleDelete( &xt,&st,END ) ;
 	}
 		
-	if( dev != NULL ){
-		free( dev ) ;
-	}
 	if( delete_stx ){
 		StringListDelete( &stx ) ;
 	}
