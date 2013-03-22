@@ -118,7 +118,8 @@ int zuluCryptOpenVolume( const char * dev,const char * map,
 	
 	if( StringPrefixMatch( dev,"/dev/",5 ) ){
 		h = _open_mapper( dev,map,mode,pass,pass_size ) ;
-	}else{		/*
+	}else{
+		/*
 		 * zuluCryptAttachLoopDeviceToFile() is defined in create_loop_device.c
 		 */
 		if( zuluCryptAttachLoopDeviceToFile( dev,lmode,&fd,&q ) ){
