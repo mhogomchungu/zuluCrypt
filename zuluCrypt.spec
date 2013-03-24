@@ -9,7 +9,7 @@ Source100:      zuluCrypt-rpmlint
 URL:            http://code.google.com/p/zulucrypt/
 BuildRoot:      %{_topdir}/%{name}-%{version}
 
-%define libversion 3_1_0
+%define libversion 3_2_0
 %define srcname zulucrypt
 %define libname %srcname%libversion
 %define libnamedev %{srcname}%{libversion}-devel

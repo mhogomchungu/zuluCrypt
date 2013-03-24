@@ -33,6 +33,13 @@ static inline int zuluExit( int st,struct crypt_device * cd )
 	return st ;
 }
 
+static inline int zuluExit_1( int st,struct crypt_device * cd,string_t xt )
+{
+	crypt_free( cd );
+	StringDelete( &xt ) ;
+	return st ;
+}
+
 /*
  * 1 is returned if a volume is a truecrypt volume.
  * 0 is returned if a volume is not a truecrypt volume or functionality is not supported
@@ -102,7 +109,7 @@ static int _tcrypt_open_using_key( const char * device,const char * mapper,unsig
 
 static int _tcrypt_open_using_keyfile( const char * device,const char * mapper,unsigned long m_opts,const char * key,int volume_type )
 {
-	string_t st ;
+	string_t st = StringVoid ;
 	int xt ;
 	int fd ;
 	const char * file ;
@@ -129,7 +136,7 @@ static int _tcrypt_open_using_keyfile( const char * device,const char * mapper,u
 	fd = open( file,O_WRONLY | O_CREAT ) ;
 	
 	if( fd == -1 ){
-		return zuluExit( 1,cd ) ;
+		return zuluExit_1( 1,cd,st ) ;
 	}
 
 	write( fd,key,StringSize( key ) ) ;
@@ -154,12 +161,12 @@ static int _tcrypt_open_using_keyfile( const char * device,const char * mapper,u
 	StringDelete( &st ) ;
 	
 	if( xt != 0 ){
-		return zuluExit( 1,cd ) ;
+		return zuluExit_1( 1,cd,st ) ;
 	}
 	if( crypt_activate_by_volume_key( cd,mapper,NULL,0,flags ) == 0 ){
-		return zuluExit( 0,cd ) ;
+		return zuluExit_1( 0,cd,st ) ;
 	}else{
-		return zuluExit( 1,cd ) ;
+		return zuluExit_1( 1,cd,st ) ;
 	}
 }
 

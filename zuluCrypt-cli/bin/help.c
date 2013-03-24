@@ -110,8 +110,8 @@ void zuluCryptEXEHelp( void )
 	-H         compare a header on a luks device to a backup header,required arg: -d and -f\n";
 	
 	help8 ="\
-	-M         create a publicly accessible \"mirror\" of the mount point in \"/mnt/media/share\" from the original\n\
-		   created in \"/run/media/$USER\"\n" ;
+	-M         create a publicly accessible \"mirror\" of the mount point in \"/run/media/public/\" from the original\n\
+		   created in \"/run/media/private/$USER/\"\n" ;
 	help9 ="\
 	-J         create a plain mapper owned by the user who run the command on a device pointed by argument -d\n\
 	-B         create a luks header backup\n\
