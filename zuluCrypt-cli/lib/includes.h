@@ -17,7 +17,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #ifndef ZULUCRYPT_LIB
 #define ZULUCRYPT_LIB
 
@@ -188,7 +187,7 @@ int zuluCryptGetVolumeType( const char * device,const char * pass,size_t pass_si
 /*
  * this function is defined in open_tcrypt.c
  */
-int zuluCryptVolumeIsTcrypt( const char * device,const char * key,size_t key_len ) ;
+int zuluCryptVolumeIsTcrypt( const char * device,const char * key,int key_source ) ;
 
 /*
  * this function is defined in mount_fs_options.c
@@ -253,11 +252,15 @@ char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper ) ;
 /*
  * this function is defined in create_tcrypt.c
  */
-int zuluCryptCreateTCrypt( const char * dev,const char * pass,size_t pass_size,const char * rng ) ;
 
 /*
  * this function is defined in mount_volume.c
  */
 int zuluCryptAddEntryToMtab( m_struct * mst ) ;
+
+/*
+ * this function is defined in create_volume.c
+ */
+int zuluCryptCreateFileSystemInAVolume( const char * fs,const char * device_mapper ) ;
 
 #endif 

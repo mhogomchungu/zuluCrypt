@@ -298,11 +298,6 @@ void createvolume::pbCreateClicked()
 	QString passphrase_1 = m_ui->lineEditPassphrase1->text() ;
 	QString passphrase_2 = m_ui->lineEditPassPhrase2->text();
 
-	if( m_ui->rbPassphraseFromFile->isChecked() && m_ui->comboBoxVolumeType->currentIndex() == 2 ){
-		msg.ShowUIOK( tr( "ERROR!"),tr( "creation of truecrypt volumes using a keyfile is currently not supported" ) );
-		return ;
-	}
-
 	if( volumePath.isEmpty() ){
 		return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "volume path field is empty" ) );
 	}

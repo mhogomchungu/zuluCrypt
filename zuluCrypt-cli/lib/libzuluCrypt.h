@@ -29,6 +29,13 @@ extern "C" {
  */
 #define ZULUCRYPT310
 
+/*
+ * This version adds zuluCryptCreateTCrypt() and zuluCryptOpenTcrypt() function
+ * These function are used specifically to handle truecrypt volumes since their functionality
+ * is too different from cryptsetup volumes necessitating different APIs 
+ */
+#define ZULUCRYPT320
+
 /**
  * Return the version string of the library * 
  */
@@ -46,7 +53,7 @@ int zuluCryptVolumeIsLuks( const char * device ) ;
 
 
 /**
- * This function openes a volume and mount it at m_point,the volume is only opened if m_point is NULL
+ * This function openes a LUKS or PLAIN volume and mount it at m_point,the volume is only opened if m_point is NULL
  * 
  * return values:
  *	0 - success, the encrypted volume was opened and mounted successfully
@@ -152,7 +159,7 @@ char * zuluCryptVolumeStatus( const char * mapper );  /* mapper is the full addr
 
 
 /**
- * This function creates an encrypted volume.
+ * This function creates an encrypted LUKS or PLAIN volume.
  * return values:
  *      0 - success
  * 	1 - ERROR: device argument does not point to a file or partition
@@ -263,16 +270,41 @@ int zuluCryptOpenPlain( const char * device,      /* path to encrypted file or p
 			const char * passphrase,  /* passphrase to use to open the volume			*/
 			size_t passphrase_size ); /* passphrase length  					*/
 
+#define TCRYPT_KEYFILE    1
+#define TCRYPT_PASSPHRASE 0
+#define TCRYPT_NORMAL 1 
+#define TCRYPT_HIDDEN 0
 /**
  *  This function opens a truecrypt volume.
  *  return values:
  * 0 - success 
  * 1 - ERROR: presented key does not exist in the volume
- * 2 - ERROR: failed to open device
- * 3 - ERROR: device path does not point to a device
- * 4 - ERROR: key file does not exist
  */
-int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size ) ;
+
+int zuluCryptOpenTcrypt( const char * device,     /* path to an encrypted file or partition                                                */
+			 const char * mapper,     /* mapper name to use                                                                    */
+			 const char * key,        /* key material                                                                          */  
+			 int          key_source, /* source of key material,could be TCRYPT_PASSPHRASE or TCRYPT_KEYFILE                   */
+			 int          volume_type,/* option could be TCRYPT_NORMAL or TCRYPT_HIDDEN ( currently not supported )            */
+			 const char * m_point,    /* mount point to mount the file system,if NULL,mapper will be opened onlu               */
+			 uid_t        uid,        /* uid of the person to associate the mount point with,not necessary if m_point == NULL  */
+			 unsigned long m_opts,    /* mount points,option is passed to second from last argument of mount()                 */
+			 const char * fs_opts     /* passed to last argument of mount()                                                    */
+		       ) ;
+			
+/**
+ * This function creates a truecrypt volume
+ * return values:
+ * 0 - success
+ * 1 - ERROR:
+ */	       
+int zuluCryptCreateTCrypt( const char * device,      /* path a device or file to put an encrypted volume                              */
+			   const char * file_system, /* file system to use in the volume                                              */
+			   const char * rng,         /* random number generator to use,either /dev/urandom or /dev/random             */
+			   const char * key,         /* key material to use                                                           */
+			   int          key_source,  /* key material source,either pass TCRYPT_KEYFILE or TCRYPT_PASSPHRASE           */
+			   int          volume_type  /* volume type is either TCRYPT_NORMAL or TCRYPT_HIDDEN( currently not supported */
+			 ) ;
 
 /**
  * This function returns a device address given a mapper address.

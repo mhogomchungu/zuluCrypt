@@ -24,9 +24,7 @@
  
 /*
  * An explanation for the "zuluCryptKeyFromFile" and "zuluCryptKeyFromPass" entries is in ../lib/open_volume.c
- *
  */ 
-string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * name,uid_t uid,const struct_opts * opts ) ;
 
 static void _printResult( const char * device,const char * m_point,uid_t uid,const char * mapping_name )
 {
@@ -95,7 +93,7 @@ static int zuluExit( int st,const char * device,const char * m_point,stringList_
 		case 27: printf( "ERROR: insufficient memory to hold passphrase\n" );							break ;
 		case 28: printf( "ERROR: insufficient privilege to open plugin or path does not exist\n" );				break ;
 		case 29: printf( "ERROR: could not get a passphrase through a local socket\n" );					break ;
-		case 30: printf( "ERROR: mount point error" ) ;									        break ; 
+		/* case 30: currently unused */
 		case 31: printf( "ERROR: insufficient privilege to mount the device with given options\n" ) ;				break ;
 		case 32: printf( "ERROR: ERROR: could not get elevated privilege,check binary permissions\n" ) ;			break ;
 		case 33: printf( "ERROR: only root user can perform this operation\n" ) ;						break ;
@@ -158,7 +156,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	int st = 0 ;
 	
 	unsigned long m_flags ;
-	
+		
 	/*
 	 * zuluCryptMountFlagsAreNotCorrect() is defined in ./mount_flags.c
 	 */
@@ -242,12 +240,8 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		}
 		cpass = StringContent( *passphrase ) ;
 		len = StringLength( *passphrase ) ;
-		if( !zuluCryptSecurityGainElevatedPrivileges() ){
-			return zuluExit_1( 30,opts,device,cpoint,stl,uid,mapping_name ) ;
-		}
-		StringPrepend( *m_name,"zuluCryptKeyFromPass" ) ;
+		zuluCryptSecurityGainElevatedPrivileges() ;
 		st = zuluCryptOpenVolume( device,*mapper_name,cpoint,uid,m_flags,fs_opts,cpass,len ) ;
-	
 	}else if( source == NULL ){
 		printf( "Enter passphrase: " ) ;
 		/*
@@ -260,10 +254,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		printf( "\n" ) ;
 		cpass = StringContent( *passphrase ) ;
 		len = StringLength( *passphrase ) ;
-		if( !zuluCryptSecurityGainElevatedPrivileges() ){
-			return zuluExit_1( 30,opts,device,cpoint,stl,uid,mapping_name ) ;
-		}
-		StringPrepend( *m_name,"zuluCryptKeyFromPass" ) ;
+		zuluCryptSecurityGainElevatedPrivileges() ;
 		st = zuluCryptOpenVolume( device,*mapper_name,cpoint,uid,m_flags,fs_opts,cpass,len ) ;
 	}else{
 		if( source == NULL || pass == NULL ){
@@ -272,10 +263,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		if( StringsAreEqual( source,"-p" ) ){
 			cpass = pass ;
 			len = strlen( pass ) ;
-			if( !zuluCryptSecurityGainElevatedPrivileges() ){
-				return zuluExit_1( 30,opts,device,cpoint,stl,uid,mapping_name ) ;
-			}
-			StringPrepend( *m_name,"zuluCryptKeyFromPass" ) ;
+			zuluCryptSecurityGainElevatedPrivileges() ;
 			st = zuluCryptOpenVolume( device,*mapper_name,cpoint,uid,m_flags,fs_opts,cpass,len ) ;
 		}else if( StringsAreEqual( source,"-f" ) ){
 			/*
@@ -289,21 +277,37 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 			}
 			cpass = StringContent( *data ) ;
 			len = StringLength( *data ) ;
-			if( !zuluCryptSecurityGainElevatedPrivileges() ){
-				return zuluExit_1( 30,opts,device,cpoint,stl,uid,mapping_name ) ;
-			}
-			if( StringHasComponent( pass,"/.zuluCrypt-socket/" ) ){
-				StringPrepend( *m_name,"zuluCryptKeyFromPass" ) ;
-			}else{
-				StringPrepend( *m_name,"zuluCryptKeyFromFile" ) ;
-			}
+			zuluCryptSecurityGainElevatedPrivileges() ;
 			st = zuluCryptOpenVolume( device,*mapper_name,cpoint,uid,m_flags,fs_opts,cpass,len ) ;
 		}
 	}
-
+	
+	if( st == 4 ){
+		/*
+		 * failed to open LUKS or PLAIN volume,assume the volume is truecrypt and try to open it as one
+		 */
+		zuluCryptSecurityGainElevatedPrivileges() ;
+		if( StringsAreEqual( source,"-f" ) ){
+			if( StringHasComponent( pass,"/.zuluCrypt-socket/" ) ){
+				/*
+				* zuluCryptOpenTcrypt() is defined in ../lib/open_tcrypt.c
+				*/
+				st = zuluCryptOpenTcrypt( device,*mapper_name,cpass,TCRYPT_PASSPHRASE,TCRYPT_NORMAL,cpoint,uid,m_flags,fs_opts ) ;
+			}else{
+				st = zuluCryptOpenTcrypt( device,*mapper_name,cpass,TCRYPT_KEYFILE,TCRYPT_NORMAL,cpoint,uid,m_flags,fs_opts ) ;
+			}
+		}else{	
+			st = zuluCryptOpenTcrypt( device,*mapper_name,cpass,TCRYPT_PASSPHRASE,TCRYPT_NORMAL,cpoint,uid,m_flags,fs_opts ) ;
+		}
+		
+		if( st != 0 ){
+			st = 4 ;
+		}
+	}
+	
 	device = StringMultiplePrepend( *mapper,"/",crypt_get_dir(),END ) ;
 	
-	if( share ){
+	if( st == 0 && share ){
 		/*
 		 * user wish to share the mount point bind the mount point to a publicly accessed path of /mnt/media
 		 */

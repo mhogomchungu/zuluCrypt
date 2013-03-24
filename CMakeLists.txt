@@ -18,7 +18,7 @@ pkg_check_modules( LIBMOUNT mount )
 pkg_check_modules( TCPLAY tcplay ) 
 
 set( PGR_VERSION "4.6.2" )
-set( LIB_VERSION "1.1.0" )
+set( LIB_VERSION "1.2.0" )
 set( LIB_PLUGIN_VERSION "1.0.0" )
 
 file( WRITE ${PROJECT_BINARY_DIR}/version.h "

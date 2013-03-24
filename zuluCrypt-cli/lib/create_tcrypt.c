@@ -19,28 +19,113 @@
   */
  
 #include "includes.h"
+#include <sys/syscall.h>
 
 /*
  * this header is created at config time
  */
 #include "truecrypt_support_1.h"
 
-int zuluCryptCreateTCrypt( const char * dev,const char * pass,size_t pass_size,const char * rng )
-{
 #if TRUECRYPT_CREATE
 
+static int _create_file_system( const char * device,const char * fs,const char * key,int key_source,int volume_type )
+{	
+	string_t m = StringVoid ;
+	
+	const char * device_mapper ;
+	const char * mapper ;
+	
+	size_t len ;
+	
+	m = String( crypt_get_dir() ) ;
+	len = StringLength( m )   ;
+	
+	StringAppend( m,"/zuluCrypt-" ) ;
+	device_mapper = StringAppendInt( m,syscall( SYS_gettid ) ) ;
+	mapper = device_mapper + len + 1 ;
+	
+	/*
+	 * zuluCryptOpenTcrypt() is defined in open_tcrypt.c
+	 */
+	if( zuluCryptOpenTcrypt( device,mapper,key,key_source,volume_type,NULL,0,0,NULL ) == 0 ){
+		/*
+		 * zuluCryptCreateFileSystemInAVolume() is defined in create_volume.c
+		 */
+		if( zuluCryptCreateFileSystemInAVolume( fs,device_mapper ) == 0 ){
+			/*
+			 * zuluCryptCloseMapper() is defined in close_mapper.c
+			 */
+			zuluCryptCloseMapper( device_mapper );
+			StringDelete( &m ) ;
+			return 0 ;
+		}else{
+			/*
+			 * zuluCryptCloseMapper() is defined in close_mapper.c
+			 */
+			zuluCryptCloseMapper( device_mapper );
+			StringDelete( &m ) ;
+			return 3 ;
+		}
+	}else{
+		StringDelete( &m ) ;
+		return 3 ;
+	}
+}
+
+static int _create_tcrypt_volume( const char * device,const char * file_system,const char * rng,const char * key,int key_source,int volume_type )
+{
+	string_t st ;
 	tc_api_opts api_opts ;
 	int r ;
+	int fd ;
+	const char * keyfiles[ 2 ] ;
+	const char * file = NULL ;
+	keyfiles[ 0 ] = NULL ;
+	keyfiles[ 1 ] = NULL ;
 	
-	if( pass_size ){;}
-		
+	/*
+	 * Below argument is for creating hidden volumes,not supporting it at the moment
+	 */
+	if( volume_type ) {;}
+	
+	if ( zuluCryptPathIsNotValid( device ) ){
+		return 1 ;
+	}
+	
 	memset( &api_opts,'\0',sizeof( api_opts ) ) ;
 	
-	api_opts.tc_device          = dev;
-	api_opts.tc_passphrase      = pass ;
+	api_opts.tc_device          = device ;
 	api_opts.tc_cipher          = "AES-256-XTS";
 	api_opts.tc_prf_hash        = "RIPEMD160"  ;
 	api_opts.tc_no_secure_erase = 1 ;
+	
+	if( key_source == TCRYPT_PASSPHRASE ){
+		api_opts.tc_passphrase  = key ;
+	}else{
+		/*
+		 * ZULUCRYPTtempFolder is set in ../constants.h
+		 */
+		mkdir( ZULUCRYPTtempFolder,S_IRWXU ) ;
+		chown( ZULUCRYPTtempFolder,0,0 ) ;
+		
+		st = String( ZULUCRYPTtempFolder"/open_tcrypt-" ) ;
+		file = StringAppendInt( st,syscall( SYS_gettid ) ) ;
+		fd = open( file,O_WRONLY|O_CREAT ) ;
+		
+		if( fd == -1 ){
+			StringDelete( &st ) ;
+			return 3 ;
+		}
+		
+		write( fd,key,StringSize( key ) ) ;
+		close( fd ) ;
+		
+		chown( file,0,0 ) ;
+		chmod( file,S_IRWXU ) ;
+		
+		api_opts.tc_keyfiles = keyfiles ;
+		keyfiles[ 0 ] = file ;
+	}
 	
 	if( StringPrefixMatch( rng,"/dev/urandom",12 ) ){
 		api_opts.tc_use_weak_keys = 1 ;
@@ -48,16 +133,52 @@ int zuluCryptCreateTCrypt( const char * dev,const char * pass,size_t pass_size,c
 	if( tc_api_init( 0 ) == TC_OK ){
 		r = tc_api_create_volume( &api_opts );
 		tc_api_uninit() ;
-		return r == TC_OK ? 0 : 1 ;
+		if( r == TC_OK ){
+			r = _create_file_system( device,file_system,key,key_source,volume_type ) ;
+		}else{
+			r = 3 ;
+		}
 	}else{
-		return 1 ;
+		r = 3 ;
 	}
-#else
-	if( dev ) {;}
-	if( pass ){;}
-	if( pass_size ){;}
-	if( rng ){;}
-	return 1 ;
-#endif	
 	
+	if( file != NULL ){
+		unlink( file ) ;
+	}
+	
+	return r ;
 }
+
+int zuluCryptCreateTCrypt( const char * device,const char * file_system,const char * rng,const char * key,int key_source,int volume_type )
+{
+	int fd ;
+	string_t q = StringVoid ;
+	
+	if( StringPrefixMatch( device,"/dev/",5 ) ){
+		return _create_tcrypt_volume( device,file_system,rng,key,key_source,volume_type ) ;
+	}else{
+		/*
+		 * zuluCryptAttachLoopDeviceToFile() is defined in create_loop_device.c
+		 */
+		if( zuluCryptAttachLoopDeviceToFile( device,O_RDWR,&fd,&q ) ){
+			device = StringContent( q ) ;
+			return _create_tcrypt_volume( device,file_system,rng,key,key_source,volume_type ) ;
+			close( fd ) ;
+			StringDelete( &q ) ;
+		}else{
+			return 1 ;
+		}
+	}
+}
+
+#else
+int zuluCryptCreateTCrypt( const char * device,const char * file_system,const char * rng,const char * key,int key_source )
+{
+	if( device ){;}
+	if( file_system ){;}
+	if( rng ){;}
+	if( key_source ){;}
+	if( key ){;}
+	return 1 ;
+}
+#endif

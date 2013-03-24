@@ -27,62 +27,12 @@ static inline int zuluExit( int st,string_t m )
 	return st ;
 }
 
-static int _create_volume( const char * dev,const char * fs,const char * type,const char * pass,size_t pass_size,const char * rng )
+int zuluCryptCreateFileSystemInAVolume( const char * fs,const char * device_mapper )
 {
 	int status ;
-	size_t len ;
-	process_t p ;
-	
-	string_t m = StringVoid ;
-	
-	const char * device_mapper ;
-	const char * mapper ;
 	char * e = NULL ;
 	
-	if ( zuluCryptPathIsNotValid( dev ) ){
-		return 1 ;
-	}
-		
-	m = String( crypt_get_dir() ) ;
-	len = StringLength( m )   ;
-	
-	StringAppend( m,"/zuluCrypt-" ) ;
-	device_mapper = StringAppendInt( m,syscall( SYS_gettid ) ) ;
-	mapper = device_mapper + len + 1 ;
-		
-	if( StringsAreEqual( type,"luks" ) ){
-		if( StringsAreNotEqual( rng,"/dev/random" ) ){
-			if( StringsAreNotEqual( rng,"/dev/urandom" ) ){
-				return zuluExit( 2,m ) ; 
-			}
-		}
-		if( zuluCryptCreateLuks( dev,pass,pass_size,rng ) != 0 ){
-			return zuluExit( 3,m ) ;
-		}
-		if( zuluCryptOpenLuks( dev,mapper,"rw",pass,pass_size ) != 0 ){
-			return zuluExit( 3,m ) ; 
-		}
-	}else if( StringsAreEqual( type,"plain") ){
-		if( zuluCryptOpenPlain( dev,mapper,"rw",pass,pass_size ) ){
-			return zuluExit( 3,m ) ; 
-		}
-	}else if( StringsAreEqual( type,"tcrypt" ) || StringsAreEqual( type,"truecrypt" ) ){
-		if( StringsAreNotEqual( rng,"/dev/random" ) ){
-			if( StringsAreNotEqual( rng,"/dev/urandom" ) ){
-				return zuluExit( 2,m ) ; 
-			}
-		}
-		if( zuluCryptCreateTCrypt( dev,pass,pass_size,rng ) != 0 ){
-			return zuluExit( 3,m ) ;
-		}
-		if( zuluCryptOpenTcrypt( dev,mapper,"rw",pass,pass_size ) != 0 ){
-			return zuluExit( 3,m ) ;
-		}
-	}else{
-		return zuluExit( 2,m ) ;
-	}
-	
-	p = Process( ZULUCRYPTmkfs ) ;
+	process_t p = Process( ZULUCRYPTmkfs ) ;
 	
 	if( StringsAreEqual( fs,"ext2" ) || StringsAreEqual( fs,"ext3" ) || StringsAreEqual( fs,"ext4" ) ){
 		
@@ -124,9 +74,56 @@ static int _create_volume( const char * dev,const char * fs,const char * type,co
 		}
 	}
 	
-	zuluCryptCloseMapper( device_mapper );
-	
 	ProcessDelete( &p ) ;
+	return status ;
+}
+
+static int _create_volume( const char * dev,const char * fs,const char * type,const char * pass,size_t pass_size,const char * rng )
+{
+	size_t len ;
+	int status ;
+	
+	string_t m = StringVoid ;
+	
+	const char * device_mapper ;
+	const char * mapper ;
+	
+	if ( zuluCryptPathIsNotValid( dev ) ){
+		return 1 ;
+	}
+		
+	m = String( crypt_get_dir() ) ;
+	len = StringLength( m )   ;
+	
+	StringAppend( m,"/zuluCrypt-" ) ;
+	device_mapper = StringAppendInt( m,syscall( SYS_gettid ) ) ;
+	mapper = device_mapper + len + 1 ;
+		
+	if( StringsAreEqual( type,"luks" ) ){
+		if( StringsAreNotEqual( rng,"/dev/random" ) ){
+			if( StringsAreNotEqual( rng,"/dev/urandom" ) ){
+				return zuluExit( 2,m ) ; 
+			}
+		}
+		if( zuluCryptCreateLuks( dev,pass,pass_size,rng ) != 0 ){
+			return zuluExit( 3,m ) ;
+		}
+		if( zuluCryptOpenLuks( dev,mapper,"rw",pass,pass_size ) != 0 ){
+			return zuluExit( 3,m ) ; 
+		}
+	}else if( StringsAreEqual( type,"plain") ){
+		if( zuluCryptOpenPlain( dev,mapper,"rw",pass,pass_size ) ){
+			return zuluExit( 3,m ) ; 
+		}
+	}else{
+		return zuluExit( 2,m ) ;
+	}
+	
+	status = zuluCryptCreateFileSystemInAVolume( fs,device_mapper ) ;
+	/*
+	 * zuluCryptCloseMapper() is defined in close_mapper.c
+	 */
+	zuluCryptCloseMapper( device_mapper );
 	
 	return status == 0 ? zuluExit( 0,m ) : zuluExit( 3,m ) ;
 }

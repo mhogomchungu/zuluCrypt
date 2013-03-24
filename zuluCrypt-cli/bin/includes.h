@@ -191,4 +191,9 @@ int zuluCryptBindUnmountVolume( stringList_t mountinfo,const char * device,uid_t
  */
 int zuluCryptBindMountVolume( const char * device,string_t,unsigned long flags ) ;
 
+/*
+ * this function is defined in ../pluginManager/zuluCryptPluginManager.c 
+ */
+string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * name,uid_t uid,const struct_opts * opts ) ;
+
 #endif 
