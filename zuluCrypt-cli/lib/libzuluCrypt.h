@@ -285,7 +285,7 @@ int zuluCryptOpenTcrypt( const char * device,     /* path to an encrypted file o
 			 const char * mapper,     /* mapper name to use                                                                    */
 			 const char * key,        /* key material                                                                          */  
 			 int          key_source, /* source of key material,could be TCRYPT_PASSPHRASE or TCRYPT_KEYFILE                   */
-			 int          volume_type,/* option could be TCRYPT_NORMAL or TCRYPT_HIDDEN ( currently not supported )            */
+			 int          volume_type,/* option could be TCRYPT_NORMAL or TCRYPT_HIDDEN 				           */
 			 const char * m_point,    /* mount point to mount the file system,if NULL,mapper will be opened onlu               */
 			 uid_t        uid,        /* uid of the person to associate the mount point with,not necessary if m_point == NULL  */
 			 unsigned long m_opts,    /* mount points,option is passed to second from last argument of mount()                 */
@@ -303,7 +303,7 @@ int zuluCryptCreateTCrypt( const char * device,      /* path a device or file to
 			   const char * rng,         /* random number generator to use,either /dev/urandom or /dev/random             */
 			   const char * key,         /* key material to use                                                           */
 			   int          key_source,  /* key material source,either pass TCRYPT_KEYFILE or TCRYPT_PASSPHRASE           */
-			   int          volume_type  /* volume type is either TCRYPT_NORMAL or TCRYPT_HIDDEN( currently not supported */
+			   int          volume_type  /* volume type is either TCRYPT_NORMAL or TCRYPT_HIDDEN			      */
 			 ) ;
 
 /**

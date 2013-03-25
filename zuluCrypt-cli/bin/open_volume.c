@@ -123,6 +123,8 @@ static int zuluExit_1( int st,const struct_opts * opts,const char * device,const
 
 int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,uid_t uid )
 {
+	int volume_type ;
+	int hidden_volume        = opts->tcrypt_hidden_volume ;
 	int share                = opts->share ;
 	int nmp                  = opts->open_no_mount ;
 	const char * device      = opts->device ;
@@ -283,6 +285,11 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	}
 	
 	if( st == 4 ){
+		if( hidden_volume ){
+			volume_type = TCRYPT_HIDDEN ;
+		}else{
+			volume_type = TCRYPT_NORMAL ;
+		}
 		/*
 		 * failed to open LUKS or PLAIN volume,assume the volume is truecrypt and try to open it as one
 		 */
@@ -292,12 +299,12 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 				/*
 				* zuluCryptOpenTcrypt() is defined in ../lib/open_tcrypt.c
 				*/
-				st = zuluCryptOpenTcrypt( device,*mapper_name,cpass,TCRYPT_PASSPHRASE,TCRYPT_NORMAL,cpoint,uid,m_flags,fs_opts ) ;
+				st = zuluCryptOpenTcrypt( device,*mapper_name,cpass,TCRYPT_PASSPHRASE,volume_type,cpoint,uid,m_flags,fs_opts ) ;
 			}else{
-				st = zuluCryptOpenTcrypt( device,*mapper_name,cpass,TCRYPT_KEYFILE,TCRYPT_NORMAL,cpoint,uid,m_flags,fs_opts ) ;
+				st = zuluCryptOpenTcrypt( device,*mapper_name,cpass,TCRYPT_KEYFILE,volume_type,cpoint,uid,m_flags,fs_opts ) ;
 			}
 		}else{	
-			st = zuluCryptOpenTcrypt( device,*mapper_name,cpass,TCRYPT_PASSPHRASE,TCRYPT_NORMAL,cpoint,uid,m_flags,fs_opts ) ;
+			st = zuluCryptOpenTcrypt( device,*mapper_name,cpass,TCRYPT_PASSPHRASE,volume_type,cpoint,uid,m_flags,fs_opts ) ;
 		}
 		
 		if( st != 0 ){

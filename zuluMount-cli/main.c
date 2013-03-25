@@ -34,7 +34,7 @@ void zuluMountPrintDeviceProperties_1( string_t,uid_t ) ;
 static int _mount_get_opts( int argc,char * argv[],ARGS * args ) 
 {	
 	int c ;
-	while( ( c = getopt( argc,argv,"cMLntSshlPmuDd:z:e:y:p:f:G:" ) ) != -1 ) {
+	while( ( c = getopt( argc,argv,"HcMLntSshlPmuDd:z:e:y:p:f:G:" ) ) != -1 ) {
 		switch( c ){
 			case 'M' : args->share   = 1      ; break ;
 			case 'n' : args->mpo     = 1      ; break ;
@@ -57,7 +57,9 @@ static int _mount_get_opts( int argc,char * argv[],ARGS * args )
 			case 'f' : args->key     = optarg ;
 				   args->key_source = "-f"; break ;
 			case 'G' : args->key     = optarg ;
-				   args->key_source = "-G";break ;
+				   args->key_source = "-G"; break ;
+			case 'H' : args->tcrypt_hidden_volume  = 1;  
+				   break ;
 			default  : return -1 ;
 		}
 	}
@@ -440,8 +442,8 @@ static int _mount_help()
 options:\n\
 -m -- mount a volume : arguments: -d partition_path -z mount_point -e mode(rw/ro)\n\
       -- additional arguments for crypto_LUKS,crypto_PLAIN,crypto_TCRYPT volumes, -p passphrase/-f keyfile\
--z -- mount point component to append to \"/run/media/$USER\"\n";      
-	
+-z -- mount point component to append to \"/run/media/private/$USER/\"\
+-H -- open a truecrypt hidden volume\n" ;	
 	doc2 = "\
 -u -- unmount a partition: arguments: -d partition_path\n\
 -s -- print properties of an encrypted volume: arguments: -d partition_path\n\

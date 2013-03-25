@@ -46,6 +46,7 @@ typedef struct{
 	int          mpo        ;
 	uid_t        uid        ;
 	int          share      ;
+	int          tcrypt_hidden_volume ;
 }ARGS;
 
 int zuluMountUMount( ARGS * args ) ;

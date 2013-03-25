@@ -85,7 +85,9 @@ static int _tcrypt_open_using_key( const char * device,const char * mapper,unsig
 	if( m_opts & MS_RDONLY ){
 		flags |= CRYPT_ACTIVATE_READONLY;
 	}
-	
+	if( volume_type == TCRYPT_HIDDEN ){
+		flags |= CRYPT_TCRYPT_HIDDEN_HEADER ;
+	}
 	if( crypt_init( &cd,device ) < 0 ){
 		return 1 ;
 	}
@@ -120,6 +122,9 @@ static int _tcrypt_open_using_keyfile( const char * device,const char * mapper,u
 	
 	if( m_opts & MS_RDONLY ){
 		flags |= CRYPT_ACTIVATE_READONLY;
+	}
+	if( volume_type == TCRYPT_HIDDEN ){
+		flags |= CRYPT_TCRYPT_HIDDEN_HEADER ;
 	}
 	if( crypt_init( &cd,device ) < 0 ){
 		return 1 ;

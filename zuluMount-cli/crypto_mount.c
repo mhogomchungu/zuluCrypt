@@ -84,6 +84,7 @@ int zuluMountCryptoMount( ARGS * args )
 	opts.mount_point_option = mount_point_option ;
 	opts.share              = share ; 
 	opts.env                = StringListStringArray( args->env ) ;
+	opts.tcrypt_hidden_volume = args->tcrypt_hidden_volume ;
 	
 	/*
 	 * zuluCryptEXEOpenVolume() is defined in ../zuluCrypt-cli/bin/open_volume.c

@@ -51,6 +51,7 @@ typedef struct struct_opts_1{
 	int mount_point_option ;
 	int print_partition_type ;
 	int share ;
+	int tcrypt_hidden_volume ;
 }struct_opts;
 
 /*
