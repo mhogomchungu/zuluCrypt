@@ -1,6 +1,6 @@
 
 /*
- * 
+ *
  *  Copyright (c) 2012
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -36,11 +36,13 @@ class oneinstance : public QObject
 {
 	Q_OBJECT
 public:
-	explicit oneinstance( QObject * parent,QString socketPath,const char * );
+	explicit oneinstance( QObject * parent,QString socketPath,const char *,QString );
 	~oneinstance() ;
 	bool instanceExist( void ) ;
+	void setDevice( QString ) ;
 signals:
 	void raise( void ) ;
+	void raiseWithDevice( QString ) ;
 public slots:
 	void connected( void ) ;
 	void gotConnection( void ) ;
@@ -54,6 +56,7 @@ private:
 	QString m_serverPath ;
 	bool m_instanceExist ;
 	const char * m_methodName ;
+	QString m_device ;
 };
 
 #endif // ONEINSTANCE_H

@@ -1,6 +1,6 @@
 
 /*
- * 
+ *
  *  Copyright (c) 2012
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -21,8 +21,9 @@
 #include "oneinstance.h"
 #include <QDebug>
 
-oneinstance::oneinstance( QObject * parent,QString socketPath,const char * methodName )
+oneinstance::oneinstance( QObject * parent,QString socketPath,const char * methodName,QString device )
 {
+	m_device = device ;
 	this->setParent( parent );
 	m_instanceExist = false ;
 	m_serverPath = QDir::homePath() + QString( "/.zuluCrypt-socket/" ) ;
@@ -61,7 +62,7 @@ void oneinstance::startInstance()
 
 	m_instanceExist = false ;
 	m_localServer = new QLocalServer( this ) ;
-	
+
 	connect( m_localServer,SIGNAL( newConnection() ),this,SLOT( gotConnection() ) ) ;
 
 	m_localServer->setMaxPendingConnections( 100 );
@@ -73,6 +74,11 @@ void oneinstance::Exit()
 	QCoreApplication::exit( 200 ) ;
 }
 
+void oneinstance::setDevice( QString device )
+{
+	m_device = device ;
+}
+
 void oneinstance::killProcess()
 {
 	QMetaObject::invokeMethod( this,"Exit",Qt::QueuedConnection ) ;
@@ -82,13 +88,24 @@ void oneinstance::gotConnection()
 {
 	QLocalSocket * s = new QLocalSocket( this ) ;
 	s = m_localServer->nextPendingConnection() ;
+	s->waitForReadyRead() ;
+	QByteArray data = s->readAll();
 	s->close();
 	s->deleteLater();
-	emit raise();
+	if( data.isEmpty() ){
+		emit raise();
+	}else{
+		emit raiseWithDevice( data );
+	}
 }
 
 void oneinstance::connected()
 {
+	if( !m_device.isEmpty() ){
+		m_localSocket->write( m_device.toAscii() ) ;
+		m_localSocket->waitForBytesWritten() ;
+	}
+
 	this->killProcess();
 }
 

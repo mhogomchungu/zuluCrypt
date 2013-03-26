@@ -37,6 +37,7 @@
 zuluCrypt::zuluCrypt( QWidget * parent ) :QMainWindow( parent ),m_ui( new Ui::zuluCrypt ),m_trayIcon( 0 )
 {
 	m_folderOpener = QString( "xdg-open" ) ;
+	processArgumentList();
 }
 
 void zuluCrypt::setFolderOpener()
@@ -75,11 +76,11 @@ void zuluCrypt::processArgumentList()
 
 	index = argv.indexOf( "-d" ) ;
 
+	m_device = QString( "" ) ;
+
 	if( index != -1 ){
 		if( index < last_spot ){
-			QString x = argv.at( index + 1 ) ;
-			QString y = x.split( "/" ).last() ;
-			this->ShowPasswordDialog( x,y ) ;
+			m_device = argv.at( index + 1 ) ;
 		}
 	}
 }
@@ -114,6 +115,16 @@ void zuluCrypt::raiseWindow()
 	this->setWindowState( Qt::WindowActive ) ;
 }
 
+void zuluCrypt::raiseWindow( QString device )
+{
+	this->setVisible( true );
+	this->show(); ;
+	this->raise();
+	this->setWindowState( Qt::WindowActive ) ;
+	QString y = device.split( "/" ).last() ;
+	this->ShowPasswordDialog( device,y ) ;
+}
+
 void zuluCrypt::start()
 {
 	/*
@@ -125,8 +136,9 @@ void zuluCrypt::start()
 	 */
 
 	QString sockpath = QString( "zuluCrypt-gui.socket" ) ;
-	oneinstance * instance = new oneinstance( this,sockpath,"raiseWindow" ) ;
+	oneinstance * instance = new oneinstance( this,sockpath,"raiseWindow",m_device ) ;
 	connect( instance,SIGNAL( raise() ),this,SLOT( raiseWindow() ) ) ;
+	connect( instance,SIGNAL( raiseWithDevice( QString ) ),this,SLOT( raiseWindow( QString ) ) ) ;
 
 	if( !instance->instanceExist() ){
 		this->setUpApp();
@@ -167,7 +179,10 @@ void zuluCrypt::startUpdateFinished( int st )
 	Q_UNUSED( st ) ;
 	m_ui->tableWidget->setEnabled( true );
 	m_ui->tableWidget->setFocus();
-	processArgumentList();
+	if( !m_device.isEmpty() ){
+		QString y = m_device.split( "/" ).last() ;
+		this->ShowPasswordDialog( m_device,y ) ;
+	}
 }
 
 void zuluCrypt::StartUpAddOpenedVolumesToTableThread()

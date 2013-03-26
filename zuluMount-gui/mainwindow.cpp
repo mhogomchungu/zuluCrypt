@@ -25,6 +25,7 @@ MainWindow::MainWindow( int argc,char * argv[],QWidget * parent ) :QWidget( pare
 {
 	m_argc = argc ;
 	m_argv = argv ;
+	this->processArgumentList() ;
 }
 
 void MainWindow::setUpApp()
@@ -96,8 +97,6 @@ void MainWindow::setUpApp()
 	m_ui->pbunmount->setVisible( false );
 
 	managepartitionthread * part = new managepartitionthread() ;
-
-	this->processArgumentList() ;
 
 	this->disableAll();
 
@@ -245,12 +244,22 @@ void MainWindow::raiseWindow()
 	this->setWindowState( Qt::WindowActive ) ;
 }
 
+void MainWindow::raiseWindow( QString device )
+{
+	this->setVisible( true );
+	this->raise();
+	this->show();
+	this->setWindowState( Qt::WindowActive ) ;
+	m_device = device ;
+	this->openVolumeFromArgumentList();
+}
+
 void MainWindow::start()
 {
 	QString sockpath = QString( "zuluMount-gui.socket" ) ;
-	oneinstance * instance = new oneinstance( this,sockpath,"raiseWindow" ) ;
+	oneinstance * instance = new oneinstance( this,sockpath,"raiseWindow",m_device ) ;
 	connect( instance,SIGNAL( raise() ),this,SLOT( raiseWindow() ) ) ;
-
+	connect( instance,SIGNAL( raiseWithDevice( QString ) ),this,SLOT( raiseWindow( QString ) ) ) ;
 	if( !instance->instanceExist() ){
 		this->setUpApp();
 	}

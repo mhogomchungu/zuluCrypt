@@ -62,6 +62,7 @@ signals:
 	void result( int,QString ) ;
 public slots:
 	void raiseWindow( void ) ;
+	void raiseWindow( QString ) ;
 private slots:
 	void showMoungDialog( QStringList );
 	void autoMountVolumeSystemInfo( QStringList ) ;

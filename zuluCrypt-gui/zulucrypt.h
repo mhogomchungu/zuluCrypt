@@ -76,6 +76,7 @@ public:
 	~zuluCrypt();
 public slots:
 	void raiseWindow( void ) ;
+	void raiseWindow( QString ) ;
 signals:
 	void showManageFavorites( void ) ;
 	void favClickedVolume( QString volume_path,QString mount_point_path );
@@ -168,6 +169,7 @@ private:
 	Ui::zuluCrypt * m_ui;
 	QSystemTrayIcon * m_trayIcon ;
 	QString m_folderOpener ;
+	QString m_device ;
 };
 
 #endif // ZULUCRYPT_H
