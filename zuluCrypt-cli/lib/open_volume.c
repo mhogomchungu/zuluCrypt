@@ -25,9 +25,8 @@ static inline int zuluExit( int x,string_t p )
 	return x ;
 }
 
-static int _open_mapper( const char * dev,const char * mapper,const char * mode,const char * pass,size_t pass_size )
+static inline int _open_mapper( const char * dev,const char * mapper,const char * mode,const char * pass,size_t pass_size )
 {	
-	int st ;
 	/*
 	 * zuluCryptVolumeIsLuks() is defined in is_luks.c
 	 */
@@ -35,14 +34,13 @@ static int _open_mapper( const char * dev,const char * mapper,const char * mode,
 		/*
 		 * zuluCryptOpenLuks() is defined in open_luks.c
 		 */
-		st = zuluCryptOpenLuks( dev,mapper,mode,pass,pass_size ) ; 
+		return zuluCryptOpenLuks( dev,mapper,mode,pass,pass_size ) ; 
 	}else{
 		/*
 		 * zuluCryptOpenPlain() is defined in open_plain.c
 		 */
-		st = zuluCryptOpenPlain( dev,mapper,mode,pass,pass_size ) ;
+		return zuluCryptOpenPlain( dev,mapper,mode,pass,pass_size ) ;
 	}
-	return st ;
 }
 
 int zuluCryptOpenVolume( const char * dev,const char * mapper,
@@ -114,8 +112,6 @@ int zuluCryptOpenVolume( const char * dev,const char * mapper,
 			 * zuluCryptCloseMapper() is defined in close_mapper.c
 			 */
 			if( zuluCryptCloseMapper( mapper_1 ) != 0 ){
-				puts( "oo" ) ;
-				puts( mapper ) ;
 				h = 15 ;
 			}
 		}
