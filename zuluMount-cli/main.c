@@ -441,13 +441,14 @@ static int _mount_help()
 	const char * doc1 = "\
 options:\n\
 -m -- mount a volume : arguments: -d partition_path -z mount_point -e mode(rw/ro)\n\
-      -- additional arguments for crypto_LUKS,crypto_PLAIN,crypto_TCRYPT volumes, -p passphrase/-f keyfile\
--z -- mount point component to append to \"/run/media/private/$USER/\"\
--H -- open a truecrypt hidden volume\n" ;	
+      -- additional arguments for crypto_LUKS,crypto_PLAIN,crypto_TCRYPT volumes, -p passphrase/-f keyfile\n\
+-z -- mount point component to append to \"/run/media/private/$USER/\n\
+-H -- open a truecrypt hidden volume\n" ;
+
 	doc2 = "\
 -u -- unmount a partition: arguments: -d partition_path\n\
 -s -- print properties of an encrypted volume: arguments: -d partition_path\n\
--M -- this option will create a mount point in \"/run/media/$USER\" and a publicly accessible \"mirror\" in \"/mnt/media/share\'\n";
+-M -- this option will create a mount point in \"/run/media/private/$USER\" and a publicly accessible \"mirror\" in \"/run/media/public/\'\n";
 
       doc3 = "\
 -l -- print expanded list of all partitions\n\
