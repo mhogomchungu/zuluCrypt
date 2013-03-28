@@ -215,16 +215,18 @@ int zuluCryptBindMountVolume( const char * device,string_t z_path,unsigned long 
 	const char * e ;
 	int xt ;
 	
-	/*
-	 * zuluCryptGetMoutedListFromMountInfo() is defined in ../lib/process_mountinfo.c
-	 */
-	stringList_t stl = zuluCryptGetMoutedListFromMountInfo() ;
+	stringList_t stl ;
 	
 	mode_t mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ;
 	
 	if( index == -1 ){
 		return 1 ;
 	}
+	
+	/*
+	 * zuluCryptGetMoutedListFromMountInfo() is defined in ../lib/process_mountinfo.c
+	 */
+	stl = zuluCryptGetMoutedListFromMountInfo() ;
 	
 	path = String( "/run/media/public/" ) ;
 	m_path = StringAppend( path,o_path + index + 1 ) ;
