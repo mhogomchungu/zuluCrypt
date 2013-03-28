@@ -151,9 +151,9 @@ static inline string_t zuluCryptGetDeviceUUID( const char * device,uid_t uid )
 static inline int pluginIsGpG( const char * plugin_path )
 {
 	char * path = realpath( plugin_path,NULL ) ;
-	int st = strcmp( path,ZULUCRYPTpluginPath"gpg" ) ;
+	int st = StringsAreEqual( path,ZULUCRYPTpluginPath"gpg" ) ;
 	free( path ) ;
-	return st == 0 ;
+	return st;
 }
 
 string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * name,uid_t uid,const struct_opts * opts )

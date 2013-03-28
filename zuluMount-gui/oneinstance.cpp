@@ -86,8 +86,7 @@ void oneinstance::killProcess()
 
 void oneinstance::gotConnection()
 {
-	QLocalSocket * s = new QLocalSocket( this ) ;
-	s = m_localServer->nextPendingConnection() ;
+	QLocalSocket * s = m_localServer->nextPendingConnection() ;
 	s->waitForReadyRead() ;
 	QByteArray data = s->readAll();
 	s->close();
