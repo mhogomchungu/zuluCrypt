@@ -114,10 +114,14 @@ int zuluCrypRemoveEntryFromMtab_1( const char * device ) ;
 
 /*
  * this function is defined in process_mountinfo.c
- * It return an entry of a partition if it is found in /etc/mtab
- * It return StringVoid otherwise
  */
+
 string_t zuluCryptGetMtabEntry( const char * path ) ;
+
+/*
+ * this function is defined in process_mountinfo.c 
+ */
+string_t zuluCryptGetMtabEntry_1( stringList_t stl,const char * path ) ;
 
 /*
  * this function is defined in is_luks.c

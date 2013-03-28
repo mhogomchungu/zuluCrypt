@@ -353,14 +353,24 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 
 string_t zuluCryptGetMtabEntry( const char * path )
 {
+	stringList_t stl = zuluCryptGetMountInfoList() ;
+	string_t st = zuluCryptGetMtabEntry_1( stl,path ) ;
+	StringListDelete( &stl ) ;
+	return st ;
+}
+
+string_t zuluCryptGetMtabEntry_1( stringList_t stl,const char * path )
+{
 	const char * g ;
 	struct stat str ;
 	string_t st ;
 	string_t entry = StringVoid ;
-	stringList_t stl = zuluCryptGetMountInfoList() ;
 	ssize_t index = -1 ;
 	char * e = NULL ;
 	
+	if( stl == StringListVoid ){
+		return StringVoid ;
+	}
 	if( StringPrefixMatch( path,"/dev/mapper/",12 ) ){
 		st = String( path ) ;
 		index = StringLastIndexOfChar( st,'-' ) ;
@@ -392,7 +402,6 @@ string_t zuluCryptGetMtabEntry( const char * path )
 	if( index >= 0 ){
 		entry = StringListCopyStringAt( stl,index ) ;
 	}
-	StringListDelete( &stl ) ;
 	return entry ;
 }
 

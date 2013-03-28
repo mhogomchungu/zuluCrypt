@@ -30,6 +30,7 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 	const char * f ; 
 	const char * e ;
 	const char * g ;
+	char * h = NULL ;
 	int r = 1 ;
 	int k ;
 	int delete_stx = 0 ;
@@ -42,7 +43,23 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 		delete_stx = 1 ;
 	}
 	
-	index = StringListHasStartSequence( stx,device ) ;
+	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
+		/*
+		 * zuluCryptLoopDeviceAddress() is defined in ../lib/create_loop_device.c
+		 */
+		device = h = zuluCryptLoopDeviceAddress( device ) ;
+	}
+
+	/*
+	 * Add a space at the end of device to avoid a possible collision when there exists two devices,one being "/dev/sdc1" 
+	 * and another "/dev/sdc12"
+	 */
+	st = String( device ) ;
+	e = StringAppend( st," " ) ;
+	
+	index = StringListHasStartSequence( stx,e ) ;
+	
+	StringDelete( &st ) ;
 	
 	if( index == -1 ){
 		/*
@@ -101,6 +118,7 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 				e = StringListContentAt( stx,index ) ;
 				
 				if( StringPrefixEqual( e,device ) ){
+					
 					f = zuluCryptDecodeMtabEntry( xt ) ;
 					/*
 					 * good,the device associated with the shared mount is the same as that of the
@@ -125,11 +143,12 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 					}
 				}else{
 					/*
-					 * bad,the device associated with the shared mount is different from the private mount.
-					 * possible reason could be a collision of some sort,maybe a different tool use the mount path
-					 * Bail out as we dont know what we are unmounting
+					 * There appear to be a collision.One user mount poit suffix collides with another
+					 * user public share mount point suffix.
+					 * 
+					 * Dont do anything,just return
 					 */
-					r = 5 ;
+					r = 0 ;
 				}
 			}
 		}
@@ -140,24 +159,66 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 	if( delete_stx ){
 		StringListDelete( &stx ) ;
 	}
-	
+	if( h != NULL ){
+		free( h ) ;
+	}
 	return r ;
 }
 
-int zuluCryptBindMountVolume( const char * device,string_t z_path,unsigned long flags ) 
+static int _bind_mount( const char * device,const char * o_path,const char * m_path,stringList_t stl,unsigned long flags )
 {
 	/*
 	 * str structure is defined in ../lib/includes.h
 	 */
 	m_struct str ;
+	string_t entry ;
+	
+	int xt = mount( o_path,m_path,"",flags|MS_BIND,"" ) ;
+	
+	if( xt == 0 ){
+		/*
+		 * zuluCryptGetMtabEntry() is defined in ../lib/process_mountinfo.c
+		 */
+		entry = zuluCryptGetMtabEntry_1( stl,device ) ;
+		if( entry != StringVoid ){
+			/*
+			 * zuluCryptMtabIsAtEtc() is defined in ../lib/mount_volume.c
+			 */
+			if( zuluCryptMtabIsAtEtc() ){
+				stl = StringListStringSplit( entry,' ' ) ;
+				str.device          = device ;
+				str.original_device = StringListContentAt( stl,0 ) ;
+				str.m_point         = m_path ;
+				str.fs              = StringListContentAt( stl,2 ) ;
+				str.opts            = StringPrepend( StringListStringAt( stl,3 ),"bind," ) ;
+				/*
+				 * zuluCryptAddEntryToMtab() is defined in ../lib/mount_volume.c
+				 */
+				zuluCryptAddEntryToMtab( &str ) ;
+				StringListDelete( &stl ) ;
+			}
+			StringDelete( &entry ) ;
+		}
+	}
+	
+	return xt ;
+}
+
+int zuluCryptBindMountVolume( const char * device,string_t z_path,unsigned long flags ) 
+{
 	struct stat st ;
 	string_t path ;
-	string_t entry ;
-	stringList_t stl ;
+	string_t tmp ;
 	ssize_t index = StringLastIndexOfChar( z_path,'/' ) ;
 	const char * o_path = StringContent( z_path ) ;
 	const char * m_path ;
+	const char * e ;
 	int xt ;
+	
+	/*
+	 * zuluCryptGetMoutedListFromMountInfo() is defined in ../lib/process_mountinfo.c
+	 */
+	stringList_t stl = zuluCryptGetMoutedListFromMountInfo() ;
 	
 	mode_t mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ;
 	
@@ -181,39 +242,33 @@ int zuluCryptBindMountVolume( const char * device,string_t z_path,unsigned long 
 		chown( "/run/media/public",0,0 ) ;
 	}
 	if( stat( m_path,&st ) == 0 ){
-		 ;
+		/*
+		 * bind mount point exists,this will happen if the mount point is already taken or a mount point folder
+		 * was not autodeleted for some reason 
+		 */
+		
+		tmp = StringCopy( path ) ;
+		e = StringAppend( tmp," " ) ;
+		
+		if( StringListHasSequence( stl,e ) != -1 ){
+			/*
+			 * An attempt is made to bind mount on a path already bind mounted path,dont attempt to mount
+			 */
+			xt = 1 ;
+		}else{
+			/*
+			 * the mount point folder is there for some reason but is not being used.
+			 */
+			xt = _bind_mount( device,o_path,m_path,stl,flags ) ;
+		}
+		StringDelete( &tmp ) ;
 	}else{
 		mkdir( m_path,S_IRWXU | S_IRWXG | S_IRWXG ) ;
 		chown( m_path,0,0 ) ;
+		xt = _bind_mount( device,o_path,m_path,stl,flags ) ;
 	}
 	
-	xt = mount( o_path,m_path,"",flags|MS_BIND,"" ) ;
-	
-	if( xt == 0 ){
-		/*
-		 * zuluCryptGetMtabEntry() is defined in ../lib/process_mountinfo.c
-		 */
-		entry = zuluCryptGetMtabEntry( device ) ;
-		if( entry != StringVoid ){
-			/*
-			 * zuluCryptMtabIsAtEtc() is defined in ../lib/mount_volume.c
-			 */
-			if( zuluCryptMtabIsAtEtc() ){
-				stl = StringListStringSplit( entry,' ' ) ;
-				str.device          = device ;
-				str.original_device = StringListContentAt( stl,0 ) ;
-				str.m_point         = m_path ;
-				str.fs              = StringListContentAt( stl,2 ) ;
-				str.opts            = StringPrepend( StringListStringAt( stl,3 ),"bind," ) ;
-				/*
-				* zuluCryptAddEntryToMtab() is defined in ../lib/mount_volume.c
-				*/
-				zuluCryptAddEntryToMtab( &str ) ;
-				StringListDelete( &stl ) ;
-			}
-			StringDelete( &entry ) ;
-		}
-	}
+	StringListDelete( &stl ) ;
 	StringDelete( &path ) ;
 	return xt ;
 }
