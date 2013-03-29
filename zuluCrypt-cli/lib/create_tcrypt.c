@@ -172,13 +172,14 @@ int zuluCryptCreateTCrypt( const char * device,const char * file_system,const ch
 }
 
 #else
-int zuluCryptCreateTCrypt( const char * device,const char * file_system,const char * rng,const char * key,int key_source )
+int zuluCryptCreateTCrypt( const char * device,const char * file_system,const char * rng,const char * key,int key_source,int volume_type )
 {
 	if( device ){;}
 	if( file_system ){;}
 	if( rng ){;}
 	if( key_source ){;}
 	if( key ){;}
+	if( volume_type ){;}
 	return 1 ;
 }
 #endif
