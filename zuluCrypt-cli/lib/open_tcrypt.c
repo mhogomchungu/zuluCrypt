@@ -254,13 +254,18 @@ int zuluCryptVolumeIsTcrypt( const char * device,const char * key,int key_source
  * 0 is returned if a volume was successfully opened.
  * 1 is returned if a volume was not successfully opened or functionality is not supported 
  */
-int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * mode,const char * key,int key_source ) ;
-{
+int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char *key, 
+			 int key_source,int volume_type,const char * m_point,
+			 uid_t id,unsigned long m_opts,const char * fs_opts ){
 	if( device ){;}
 	if( mapper ){;}
-	if( mode )  {;}
-	if( pass )  {;}
-	if( pass_size ) {;}
+	if( key )  {;}
+	if( key_source )  {;}
+	if( volume_type ) {;}
+	if( m_point ) {;}
+	if( id ) {;}
+	if( m_opts ) {;}
+	if( fs_opts ) {;}
 	return 1 ;
 }
 
