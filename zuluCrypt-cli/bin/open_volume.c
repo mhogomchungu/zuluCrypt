@@ -307,7 +307,9 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 			st = zuluCryptOpenTcrypt( device,*mapper_name,cpass,TCRYPT_PASSPHRASE,volume_type,cpoint,uid,m_flags,fs_opts ) ;
 		}
 		
-		if( st != 0 ){
+		if( st == 15 || st == 0 ){
+			;
+		}else{	
 			st = 4 ;
 		}
 	}

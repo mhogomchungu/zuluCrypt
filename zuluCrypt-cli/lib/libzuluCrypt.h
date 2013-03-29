@@ -296,7 +296,7 @@ int zuluCryptOpenTcrypt( const char * device,     /* path to an encrypted file o
  * This function creates a truecrypt volume
  * return values:
  * 0 - success
- * 1 - ERROR:
+ * 3 - ERROR: could not create a volume,possible reason: truecrypt support is not available in the library
  */	       
 int zuluCryptCreateTCrypt( const char * device,      /* path a device or file to put an encrypted volume                              */
 			   const char * file_system, /* file system to use in the volume                                              */

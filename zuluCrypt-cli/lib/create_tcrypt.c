@@ -74,7 +74,7 @@ static int _create_file_system( const char * device,const char * fs,const char *
 
 static int _create_tcrypt_volume( const char * device,const char * file_system,const char * rng,const char * key,int key_source,int volume_type )
 {
-	string_t st ;
+	string_t st = StringVoid ;
 	tc_api_opts api_opts ;
 	int r ;
 	int fd ;
@@ -144,6 +144,7 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,c
 	
 	if( file != NULL ){
 		unlink( file ) ;
+		StringDelete( &st ) ;
 	}
 	
 	return r ;
@@ -166,7 +167,7 @@ int zuluCryptCreateTCrypt( const char * device,const char * file_system,const ch
 			close( fd ) ;
 			StringDelete( &q ) ;
 		}else{
-			return 1 ;
+			return 3 ;
 		}
 	}
 }
@@ -180,6 +181,6 @@ int zuluCryptCreateTCrypt( const char * device,const char * file_system,const ch
 	if( key_source ){;}
 	if( key ){;}
 	if( volume_type ){;}
-	return 1 ;
+	return 3 ;
 }
 #endif
