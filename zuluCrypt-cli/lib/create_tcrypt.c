@@ -32,6 +32,8 @@ static int _create_file_system( const char * device,const char * fs,const char *
 {	
 	string_t m = StringVoid ;
 	
+	int r ;
+	
 	const char * device_mapper ;
 	const char * mapper ;
 	
@@ -52,34 +54,34 @@ static int _create_file_system( const char * device,const char * fs,const char *
 		 * zuluCryptCreateFileSystemInAVolume() is defined in create_volume.c
 		 */
 		if( zuluCryptCreateFileSystemInAVolume( fs,device_mapper ) == 0 ){
-			/*
-			 * zuluCryptCloseMapper() is defined in close_mapper.c
-			 */
-			zuluCryptCloseMapper( device_mapper );
-			StringDelete( &m ) ;
-			return 0 ;
+			r = 0 ;
 		}else{
-			/*
-			 * zuluCryptCloseMapper() is defined in close_mapper.c
-			 */
-			zuluCryptCloseMapper( device_mapper );
-			StringDelete( &m ) ;
-			return 3 ;
+			r = 3 ;
 		}
+		/*
+		 * zuluCryptCloseMapper() is defined in close_mapper.c
+		 */
+		zuluCryptCloseMapper( device_mapper );
 	}else{
-		StringDelete( &m ) ;
-		return 3 ;
+		r = 3 ;
 	}
+	
+	StringDelete( &m ) ;
+	return r ;
 }
 
 static int _create_tcrypt_volume( const char * device,const char * file_system,const char * rng,const char * key,int key_source,int volume_type )
 {
 	string_t st = StringVoid ;
+	
 	tc_api_opts api_opts ;
+	
 	int r ;
 	int fd ;
+	
 	const char * keyfiles[ 2 ] ;
 	const char * file = NULL ;
+	
 	keyfiles[ 0 ] = NULL ;
 	keyfiles[ 1 ] = NULL ;
 	
@@ -154,22 +156,24 @@ int zuluCryptCreateTCrypt( const char * device,const char * file_system,const ch
 {
 	int fd ;
 	string_t q = StringVoid ;
-	
+	int r ;
 	if( StringPrefixMatch( device,"/dev/",5 ) ){
-		return _create_tcrypt_volume( device,file_system,rng,key,key_source,volume_type ) ;
+		r = _create_tcrypt_volume( device,file_system,rng,key,key_source,volume_type ) ;
 	}else{
 		/*
 		 * zuluCryptAttachLoopDeviceToFile() is defined in create_loop_device.c
 		 */
 		if( zuluCryptAttachLoopDeviceToFile( device,O_RDWR,&fd,&q ) ){
 			device = StringContent( q ) ;
-			return _create_tcrypt_volume( device,file_system,rng,key,key_source,volume_type ) ;
+			r = _create_tcrypt_volume( device,file_system,rng,key,key_source,volume_type ) ;
 			close( fd ) ;
 			StringDelete( &q ) ;
 		}else{
-			return 3 ;
+			r = 3 ;
 		}
 	}
+	
+	return r ;
 }
 
 #else

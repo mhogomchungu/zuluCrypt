@@ -83,29 +83,28 @@ char * zuluCryptLoopDeviceAddress_1( const char * device )
 
 char * zuluCryptGetFileNameFromFileDescriptor( int fd )
 {
-	char * c ;
+	char * c = NULL ;
 	string_t xt ;
 	struct stat st ;
 	ssize_t index ;
-	if( fstat( fd,&st ) != 0 ){
-		return NULL ;
-	}
-	xt = String( "/proc/self/fd/" ) ;
-	StringAppendInt( xt,fd ) ;
-	c = zuluCryptRealPath( StringContent( xt ) ) ;
-	StringDelete( &xt ) ;
-	if( StringPrefixMatch( c,"/dev/mapper/",12 ) ){
-		/*
-		 * An assumption is made here that the volume is an LVM volume in "/dev/mapper/ABC-DEF"
-		 * format and the path is converted to "/dev/ABC/DEF" format
-		 */
-		xt = StringInherit( &c ) ;
-		index = StringLastIndexOfChar( xt,'-' ) ;
-		if( index != -1 ){
-			StringSubChar( xt,index,'/' ) ;
-			StringReplaceString( xt,"/dev/mapper/","/dev/" ) ;
+	if( fstat( fd,&st ) == 0 ){
+		xt = String( "/proc/self/fd/" ) ;
+		StringAppendInt( xt,fd ) ;
+		c = zuluCryptRealPath( StringContent( xt ) ) ;
+		StringDelete( &xt ) ;
+		if( StringPrefixMatch( c,"/dev/mapper/",12 ) ){
+			/*
+			* An assumption is made here that the volume is an LVM volume in "/dev/mapper/ABC-DEF"
+			* format and the path is converted to "/dev/ABC/DEF" format
+			*/
+			xt = StringInherit( &c ) ;
+			index = StringLastIndexOfChar( xt,'-' ) ;
+			if( index != -1 ){
+				StringSubChar( xt,index,'/' ) ;
+				StringReplaceString( xt,"/dev/mapper/","/dev/" ) ;
+			}
+			c = StringDeleteHandle( &xt ) ;
 		}
-		c = StringDeleteHandle( &xt ) ;
 	}
 	return c ;
 }
@@ -134,27 +133,27 @@ static int open_loop_device_1( string_t * loop_device )
 	int fd ;
 	const char * path ;
 	struct loop_info64 l_info ;
-	
+	int r = 0 ;
 	for( i = 0 ; i < 255 ; i++ ){
-		StringAppend( st,"/dev/loop" ) ;
+		StringAppendAt( st,0,"/dev/loop" ) ;
 		path = StringAppendInt( st,i ) ;
 		fd = open( path,O_RDONLY );
 		if( fd == -1 ){
-			StringDelete( &st ) ;
-			return 0 ;
+			r = 0 ;
+			break ;
 		}
 		if( ioctl( fd,LOOP_GET_STATUS64,&l_info ) != 0 ){
 			if( errno == ENXIO) {
 				*loop_device = st ;
 				close( fd ) ;
-				return 1 ;
+				r = 1 ;
+				break ;
 			}
 		}
-		StringReset( st ) ;
 		close( fd ) ;
 	}
 	StringDelete( &st ) ;
-	return 0 ;
+	return r ;
 }
 
 static int open_loop_device( string_t * loop_device )
