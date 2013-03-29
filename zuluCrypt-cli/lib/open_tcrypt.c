@@ -246,7 +246,7 @@ int zuluCryptVolumeIsTcrypt( const char * device,const char * key,int key_source
 {
 	if( device ){;}
 	if( key ){;}
-	if( key_len ){;}
+	if( key_source ){;}
 	return 0 ;
 }
 
