@@ -256,7 +256,8 @@ int zuluCryptVolumeIsTcrypt( const char * device,const char * key,int key_source
  */
 int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char *key, 
 			 int key_source,int volume_type,const char * m_point,
-			 uid_t id,unsigned long m_opts,const char * fs_opts ){
+			 uid_t id,unsigned long m_opts,const char * fs_opts )
+{
 	if( device ){;}
 	if( mapper ){;}
 	if( key )  {;}

@@ -1216,7 +1216,7 @@ int StringSilentlyGetFromTerminal( string_t * q )
 		return 2 ;
 	}
 	
-	tcsetattr ( 1,TCSAFLUSH,&old );
+	tcsetattr( 1,TCSAFLUSH,&old );
 	
 	*q = p ;
 	return 0 ;

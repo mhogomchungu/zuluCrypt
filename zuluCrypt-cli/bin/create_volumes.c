@@ -213,6 +213,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		if( !StringEqualString( *pass_1,*pass_2 ) ){
 			st = 7 ;
 		}else{
+			zuluCryptSecurityGainElevatedPrivileges() ;
 			if( StringPrefixMatch( type,"tcrypt",6 ) || StringPrefixMatch( type,"truecrypt",9 ) ){
 				/*
 				 * zuluCryptCreateTCrypt() is defined in ../lib/create_tcrypt.c
@@ -220,7 +221,8 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 				st = zuluCryptCreateTCrypt( device,fs,rng,StringContent( *pass_1 ),TCRYPT_PASSPHRASE,TCRYPT_NORMAL );
 			}else{
 				st = zuluCryptCreateVolume( device,fs,type,StringContent( *pass_1 ),StringLength( *pass_1 ),rng ) ;
-			}
+			}	
+			zuluCryptSecurityDropElevatedPrivileges() ;
 		}
 	}else{
 		/*

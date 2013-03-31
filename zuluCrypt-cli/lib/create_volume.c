@@ -50,6 +50,10 @@ int zuluCryptCreateFileSystemInAVolume( const char * fs,const char * device_mapp
 		
 		ProcessSetArgumentList( p,"-t",fs,"-f",device_mapper,ENDLIST ) ;
 		
+	}else if( StringsAreEqual( fs,"xfs" ) ){
+		
+		ProcessSetArgumentList( p,"-t",fs,"-f",device_mapper,ENDLIST ) ;
+		
 	}else{
 		ProcessSetArgumentList( p,"-t",fs,device_mapper,ENDLIST ) ;
 		
@@ -112,7 +116,7 @@ static int _create_volume( const char * dev,const char * fs,const char * type,co
 			return zuluExit( 3,m ) ; 
 		}
 	}else if( StringsAreEqual( type,"plain") ){
-		if( zuluCryptOpenPlain( dev,mapper,"rw",pass,pass_size ) ){
+		if( zuluCryptOpenPlain( dev,mapper,"rw",pass,pass_size ) != 0 ){
 			return zuluExit( 3,m ) ; 
 		}
 	}else{
