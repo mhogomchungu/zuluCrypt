@@ -23,24 +23,20 @@ int zuluCryptEXEVolumeInfo( const char * mapper,const char * device,uid_t uid )
 {
 	char * output ;
 	int xt ;
-	
-	string_t p ;
-	
-	if( !zuluCryptSecurityGainElevatedPrivileges() ){
-		printf( "ERROR: could not get elevated privileges,check binary permissions\n" ) ;
-		return 3 ;
-	}
 		
 	/*
 	 * ZULUCRYPTlongMapperPath is set in ../constants.h
 	 * zuluCryptCreateMapperName() is defined at ../lib/create_mapper_name.c
 	 */
-	p = zuluCryptCreateMapperName( device,mapper,uid,ZULUCRYPTlongMapperPath ) ;
+	string_t p = zuluCryptCreateMapperName( device,mapper,uid,ZULUCRYPTlongMapperPath ) ;
 	
+	zuluCryptSecurityGainElevatedPrivileges() ;
 	/*
 	 *zuluCryptVolumeStatus() is defined in ../lib/status.c
 	 */	
 	output = zuluCryptVolumeStatus( StringContent( p ) ) ;
+	
+	zuluCryptSecurityDropElevatedPrivileges() ;
 	
 	if( output != NULL ){
 		printf( "%s\n",output );
@@ -50,7 +46,6 @@ int zuluCryptEXEVolumeInfo( const char * mapper,const char * device,uid_t uid )
 		printf( "ERROR: could not get volume info,is the volume opened?\n" ) ;
 		xt = 2 ;
 	}
-	zuluCryptSecurityDropElevatedPrivileges() ;
 	StringDelete( &p );
 	return xt ;
 }

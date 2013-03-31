@@ -74,19 +74,15 @@ int zuluMountUMount( ARGS * args )
 outside of \"%s\"\n",StringContent( xt ) ) ;
 			StringDelete( &xt ) ;
 			return _zuluExit( 101,st,m_point,NULL ) ;
+		}else{
+			StringDelete( &xt ) ;
 		}
+	}else{
+		StringDelete( &xt ) ;
 	}
 	
-	StringDelete( &xt ) ;
 	free( m_point ) ;
 	m_point = NULL ;
-	
-	/*
-	 * zuluCryptSecurityGainElevatedPrivileges() is defined in ../zuluCrypt-cli/bin/security.c
-	 */
-	if( !zuluCryptSecurityGainElevatedPrivileges() ){
-		return _zuluExit( 102,st,m_point,"ERROR: could not get elevated privilege,check binary permissions" ) ;
-	}
 	
 	/*
 	 * zuluCryptBindUnmountVolume() is defined in ../zuluCrypt-cli/bin/bind.c
@@ -98,6 +94,11 @@ outside of \"%s\"\n",StringContent( xt ) ) ;
 		default: ;
 	}
 	
+	
+	/*
+	 * zuluCryptSecurityGainElevatedPrivileges() is defined in ../zuluCrypt-cli/bin/security.c
+	 */
+	zuluCryptSecurityGainElevatedPrivileges() ;
 	/*
 	 * zuluCryptUnmountVolume() is defined in ../zuluCrypt-cli/lib/unmount_volume.c
 	 */
@@ -105,15 +106,16 @@ outside of \"%s\"\n",StringContent( xt ) ) ;
 	/*
 	 * zuluCryptSecurityDropElevatedPrivileges() is defined in ../zuluCrypt-cli/bin/security.c
 	 */
+	zuluCryptSecurityDropElevatedPrivileges() ;
 	
 	if( status == 0 ){
 		if( m_point != NULL ){
+			zuluCryptSecurityGainElevatedPrivileges() ;
 			rmdir( m_point ) ;
+			zuluCryptSecurityDropElevatedPrivileges() ;
 		}
-		zuluCryptSecurityDropElevatedPrivileges() ;
 		return _zuluExit( 0,st,m_point,"SUCCESS: umount complete successfully" ) ;
 	}else{
-		zuluCryptSecurityDropElevatedPrivileges() ;
 		switch( status ) {
 			case 1 : return _zuluExit( 103,st,m_point,"ERROR: device does not exist" )  ;
 			case 2 : return _zuluExit( 104,st,m_point,"ERROR: failed to unmount,the mount point and/or one or more files are in use" );

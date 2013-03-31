@@ -59,8 +59,6 @@ int zuluCryptEXECloseVolume( const char * dev,const char * mapping_name,uid_t ui
 		 return zuluExit( 1,p ) ;
 	 }
 
-	 zuluCryptSecurityGainElevatedPrivileges() ;
-	 	 
 	 /*
 	  * zuluCryptBindUnmountVolume() is defined in ./bind.c
 	  */
@@ -71,6 +69,8 @@ int zuluCryptEXECloseVolume( const char * dev,const char * mapping_name,uid_t ui
 		 default: ;
 	 }
 
+	 zuluCryptSecurityGainElevatedPrivileges() ;
+	 
 	 /*
 	  * zuluCryptCloseVolume() is defined in ../lib/close_volume.c
 	  */

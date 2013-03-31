@@ -58,10 +58,6 @@ static void _printResult( const char * device,const char * m_point,uid_t uid,con
 
 static int zuluExit( int st,const char * device,const char * m_point,stringList_t stl,uid_t uid,const char * mapping_name )
 {
-	zuluCryptSecurityDropElevatedPrivileges() ;
-	
-	if( m_point ){;}
-	
 	switch ( st ){
 		case 0 : _printResult( device,m_point,uid,mapping_name ) ;								break ;
 		case -1: printf( "ERROR: failed to mount a filesystem,invalid mount option or permission denied\n" ) ;			break ;
@@ -243,7 +239,11 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		cpass = StringContent( *passphrase ) ;
 		len = StringLength( *passphrase ) ;
 		zuluCryptSecurityGainElevatedPrivileges() ;
+		/*
+		 * zuluCryptOpenVolume() is defined in ../lib/open_volume.c
+		 */
 		st = zuluCryptOpenVolume( device,*mapper_name,cpoint,uid,m_flags,fs_opts,cpass,len ) ;
+		zuluCryptSecurityDropElevatedPrivileges() ;
 	}else if( source == NULL ){
 		printf( "Enter passphrase: " ) ;
 		/*
@@ -258,6 +258,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		len = StringLength( *passphrase ) ;
 		zuluCryptSecurityGainElevatedPrivileges() ;
 		st = zuluCryptOpenVolume( device,*mapper_name,cpoint,uid,m_flags,fs_opts,cpass,len ) ;
+		zuluCryptSecurityDropElevatedPrivileges() ;
 	}else{
 		if( source == NULL || pass == NULL ){
 			return zuluExit_1( 11,opts,device,cpoint,stl,uid,mapping_name ) ;
@@ -267,6 +268,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 			len = strlen( pass ) ;
 			zuluCryptSecurityGainElevatedPrivileges() ;
 			st = zuluCryptOpenVolume( device,*mapper_name,cpoint,uid,m_flags,fs_opts,cpass,len ) ;
+			zuluCryptSecurityDropElevatedPrivileges() ;
 		}else if( StringsAreEqual( source,"-f" ) ){
 			/*
 			 * function is defined at "security.c"
@@ -281,6 +283,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 			len = StringLength( *data ) ;
 			zuluCryptSecurityGainElevatedPrivileges() ;
 			st = zuluCryptOpenVolume( device,*mapper_name,cpoint,uid,m_flags,fs_opts,cpass,len ) ;
+			zuluCryptSecurityDropElevatedPrivileges();
 		}
 	}
 	
@@ -312,6 +315,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		}else{	
 			st = 4 ;
 		}
+		zuluCryptSecurityDropElevatedPrivileges() ;
 	}
 	
 	device = StringMultiplePrepend( *mapper,"/",crypt_get_dir(),END ) ;
@@ -326,6 +330,9 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		zuluCryptBindMountVolume( device,*m_point,m_flags ) ;
 	}
 	
+	/*
+	 * zuluCryptCheckInvalidKey() is defined in check_invalid_key.c
+	 */
 	zuluCryptCheckInvalidKey( opts->device ) ;
 	return zuluExit_1( st,opts,device,cpoint,stl,uid,mapping_name );
 }

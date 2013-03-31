@@ -21,13 +21,16 @@
 
 void zuluCryptCheckInvalidKey( const char * device )
 {
-	/*
-	 * zuluCryptEmptySlots() is defined in ../lib/empty_slots.c
-	 * 
-	 */
-	char * d = zuluCryptEmptySlots( device ) ;
+	char * d   ;
 	char * c ;
 	int e = 0  ;
+	
+	zuluCryptSecurityGainElevatedPrivileges() ;
+	/*
+	 * zuluCryptEmptySlots() is defined in ../lib/empty_slots.c 
+	 */
+	d = zuluCryptEmptySlots( device ) ;
+	zuluCryptSecurityDropElevatedPrivileges() ;
 	
 	if( d == NULL ){
 		/*

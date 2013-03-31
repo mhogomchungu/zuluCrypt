@@ -31,8 +31,12 @@ static int _zuluCryptCheckEmptySlots( const char * device )
 	char * d  ;
 	
 	zuluCryptSecurityGainElevatedPrivileges() ;
-	
+	/*
+	 * zuluCryptEmptySlots() is defined in ../lib/empty_slots.c
+	 */
 	c = zuluCryptEmptySlots( device ) ;
+	
+	zuluCryptSecurityDropElevatedPrivileges() ;
 	
 	if( c == NULL ){
 		/*
@@ -50,7 +54,6 @@ static int _zuluCryptCheckEmptySlots( const char * device )
 		free( c ) ;
 	}
 	
-	zuluCryptSecurityDropElevatedPrivileges() ;
 	return status ;
 }
 
@@ -213,7 +216,11 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 			key2 = StringContent( *newKey_1   ) ;
 			len2 = StringLength ( *newKey_1   ) ;
 			zuluCryptSecurityGainElevatedPrivileges() ;
+			/*
+			 * zuluCryptAddKey() is defined in ../lib/add_key.c
+			 */
 			status = zuluCryptAddKey( device,key1,len1,key2,len2 );
+			zuluCryptSecurityDropElevatedPrivileges();
 		}
 	}else{
 		if( newKey == NULL || existingKey == NULL ){
@@ -248,6 +255,7 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 		if( StringsAreEqual( keyType1,"-f" ) && StringsAreEqual( keyType2,"-f" ) ){
 			zuluCryptSecurityGainElevatedPrivileges() ;
 			status = zuluCryptAddKey( device,key1,len1,key2,len2 ) ;
+			zuluCryptSecurityDropElevatedPrivileges() ;
 		}else if( StringsAreEqual( keyType1,"-p" ) && StringsAreEqual( keyType2,"-p" ) ){
 			key1 = existingKey ;
 			len1 = strlen( existingKey ) ;
@@ -255,16 +263,19 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 			len2 = strlen( newKey ) ;
 			zuluCryptSecurityGainElevatedPrivileges() ;
 			status = zuluCryptAddKey( device,key1,len1,key2,len2 ) ;
+			zuluCryptSecurityDropElevatedPrivileges() ;
 		}else if( StringsAreEqual( keyType1,"-p" ) && StringsAreEqual( keyType2,"-f" ) ){
 			key1 = existingKey ;
 			len1 = strlen( existingKey ) ;
 			zuluCryptSecurityGainElevatedPrivileges() ;
 			status = zuluCryptAddKey( device,key1,len1,key2,len2 ) ;
+			zuluCryptSecurityDropElevatedPrivileges() ;
 		}else if ( StringsAreEqual( keyType1,"-f" ) && StringsAreEqual( keyType2,"-p" ) ){
 			key2 = newKey ;
 			len2 = strlen( newKey ) ;
 			zuluCryptSecurityGainElevatedPrivileges() ;
 			status = zuluCryptAddKey( device,key1,len1,key2,len2 ) ;
+			zuluCryptSecurityDropElevatedPrivileges() ;
 		}else{
 			status = 5 ;
 		}
@@ -274,6 +285,5 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 	 * this function is defined in check_invalid_key.c
 	 */
 	zuluCryptCheckInvalidKey( opts->device ) ;
-	zuluCryptSecurityDropElevatedPrivileges() ;
 	return zuluExit( status,stl ) ;
 }

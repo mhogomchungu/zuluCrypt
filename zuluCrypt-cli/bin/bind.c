@@ -35,6 +35,8 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 	int k ;
 	int delete_stx = 0 ;
 	
+	zuluCryptSecurityGainElevatedPrivileges() ;
+	
 	if( stx == StringListVoid ){
 		/*
 		 * zuluCryptGetMoutedListFromMountInfo() is defined in ../lib/process_mountinfo.c 
@@ -162,6 +164,8 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 	if( h != NULL ){
 		free( h ) ;
 	}
+	
+	zuluCryptSecurityDropElevatedPrivileges() ;
 	return r ;
 }
 
@@ -223,6 +227,7 @@ int zuluCryptBindMountVolume( const char * device,string_t z_path,unsigned long 
 		return 1 ;
 	}
 	
+	zuluCryptSecurityGainElevatedPrivileges() ;
 	/*
 	 * zuluCryptGetMoutedListFromMountInfo() is defined in ../lib/process_mountinfo.c
 	 */
@@ -272,5 +277,6 @@ int zuluCryptBindMountVolume( const char * device,string_t z_path,unsigned long 
 	
 	StringListDelete( &stl ) ;
 	StringDelete( &path ) ;
+	zuluCryptSecurityDropElevatedPrivileges() ;
 	return xt ;
 }

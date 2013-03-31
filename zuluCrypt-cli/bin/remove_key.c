@@ -19,22 +19,31 @@
 
 #include "includes.h"
 
-static int zuluCryptExECheckEmptySlots( const char * device )
+static int _zuluCryptExECheckEmptySlots( const char * device )
 {
 	int status = 0 ;
-	char * c = zuluCryptEmptySlots( device ) ;
+	char * c  ;
 	char * d  ;
 	
-	if( c == NULL )
+	zuluCryptSecurityGainElevatedPrivileges() ;
+	c = zuluCryptEmptySlots( device ) ;
+	zuluCryptSecurityDropElevatedPrivileges() ;
+	
+	if( c == NULL ){
 		return 1 ;
+	}
+	
 	d = c - 1 ;
+	
 	while( *++d ){
 		if( *d == '3' ){
 			status = 3 ;
 			break ;
 		}
 	}	
+	
 	free( c ) ;
+	
 	return status ;
 }
 
@@ -113,27 +122,20 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 		case 4 : return zuluExit( 3,stl ) ;
 		default: return zuluExit( 3,stl ) ;
 	}
-	
-	if( !zuluCryptSecurityGainElevatedPrivileges() ){
-		return zuluExit( 19,stl ) ;
-	}
-	if( zuluCryptExECheckEmptySlots( device ) == 3 ){
+		
+	if( _zuluCryptExECheckEmptySlots( device ) == 3 ){
 		if( k != 1 ){
 			printf( "WARNING: there is only one key in the volume and all data in it will be lost if you continue.\n" );
 			printf( "Do you still want to continue? Type \"YES\" if you do: " );
 			*confirm = StringGetFromTerminal_1( 3 ) ;
 			if( *confirm == StringVoid ){
-				zuluCryptSecurityDropElevatedPrivileges() ;
 				return zuluExit( 17,stl ) ;
 			}
 			if( !StringEqual( *confirm,"YES" ) ){
-				zuluCryptSecurityDropElevatedPrivileges() ;
 				return zuluExit( 11,stl ) ;
 			}
 		}
 	}
-	
-	zuluCryptSecurityDropElevatedPrivileges() ;
 	
 	if ( keyType == NULL ){
 	
@@ -147,8 +149,12 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 		}
 		
 		printf( "\n" ) ;
-		
+		zuluCryptSecurityGainElevatedPrivileges() ;
+		/*
+		 * zuluCryptRemoveKey() is defined in ../lib/remove_key.c
+		 */
 		status = zuluCryptRemoveKey( device,StringContent( *pass ),StringLength( *pass ) ) ;
+		zuluCryptSecurityDropElevatedPrivileges() ;
 	}else{
 		if( keyType == NULL || keytoremove == NULL )
 			return zuluExit( 6,stl ) ;
@@ -163,15 +169,19 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 				case 4 : return zuluExit( 13,stl ) ;
 				case 5 : return zuluExit( 18,stl ) ;
 			}
-			if( !zuluCryptSecurityGainElevatedPrivileges() ){
-				return zuluExit( 19,stl ) ;
-			}
+			zuluCryptSecurityGainElevatedPrivileges() ;
+			/*
+			 * zuluCryptRemoveKey() is defined in ../lib/remove_key.c
+			 */
 			status = zuluCryptRemoveKey( device,StringContent( *pass ),StringLength( *pass ) ) ;
+			zuluCryptSecurityDropElevatedPrivileges() ;
 		}else if( StringsAreEqual( keyType, "-p" ) ) {
-			if( !zuluCryptSecurityGainElevatedPrivileges() ){
-				return zuluExit( 19,stl ) ;
-			}
+			zuluCryptSecurityGainElevatedPrivileges() ;
+			/*
+			 * zuluCryptRemoveKey() is defined in ../lib/remove_key.c
+			 */
 			status = zuluCryptRemoveKey( device,keytoremove,strlen( keytoremove ) ) ;
+			zuluCryptSecurityDropElevatedPrivileges() ;
 		}
 	}
 	
@@ -180,9 +190,10 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 	}else{
 		status = zuluExit( status,stl ) ; 
 	}
-	
+	/*
+	 * zuluCryptCheckInvalidKey() is defined in check_invalid_key.c
+	 */
 	zuluCryptCheckInvalidKey( opts->device ) ;
-	zuluCryptSecurityDropElevatedPrivileges() ;
 	return status ;
 }
 
