@@ -266,8 +266,7 @@ static inline string_t set_mount_options( m_struct * mst )
 		if( !StringContains( opt,"fmask=" ) ){
 			StringAppend( opt,",fmask=0111" ) ;
 		}
-		
-		if( strcmp( mst->fs,"vfat" ) == 0 ){
+		if( StringsAreEqual( mst->fs,"vfat" ) ){
 			if( !StringContains( opt,"flush" ) ){
 				StringAppend( opt,",flush" ) ;
 			}
@@ -398,7 +397,7 @@ static inline int mount_ntfs( const m_struct * mst )
 	return status ;
 }
 
-static inline int mount_mapper( const m_struct * mst )
+static inline int mount_volume( const m_struct * mst )
 {
 	int h = -1;
 	h = mount( mst->device,mst->m_point,mst->fs,mst->m_flags,mst->opts + 3 ) ;
@@ -534,7 +533,7 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 		}
 	}
 		 
-	h = mount_mapper( &mst ) ;
+	h = mount_volume( &mst ) ;
 	
 	if( h == 0 ){
 		if( zuluCryptMtabIsAtEtc() ){
