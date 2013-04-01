@@ -515,25 +515,25 @@ Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The de
 				close( fd ) ;
 			}
 			return zuluExit( 114,stl,stx,env,"ERROR: could not resolve path to device" ) ; 
-		}
-		
-		clargs.device = dev ;
-		
-		if( ( ac = strrchr( device,'/' ) ) != NULL ){
-			mapping_name =  ac + 1  ;
 		}else{
-			mapping_name =  device  ;
+			clargs.device = dev ;
+		
+			if( ( ac = strrchr( device,'/' ) ) != NULL ){
+				mapping_name =  ac + 1  ;
+			}else{
+				mapping_name =  device  ;
+			}
+		
+			st = zuluCryptEXE( &clargs,mapping_name,uid ) ;
+		
+			free( dev ) ;
+		
+			if( fd1 != -1 )
+				close( fd1 ) ;
+			if( fd != -1 ){
+				close( fd ) ;
+			}
+			return zuluExit( st,stl,stx,env,NULL ) ;
 		}
-		
-		st = zuluCryptEXE( &clargs,mapping_name,uid ) ;
-		
-		free( dev ) ;
-		
-		if( fd1 != -1 )
-			close( fd1 ) ;
-		if( fd != -1 ){
-			close( fd ) ;
-		}
-		return zuluExit( st,stl,stx,env,NULL ) ;
 	}
 } 
