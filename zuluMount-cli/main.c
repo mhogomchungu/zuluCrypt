@@ -595,8 +595,10 @@ int main( int argc,char * argv[] )
 	 */
 	zuluCryptSecurityDropElevatedPrivileges() ;
 		
-	StringExitOnMemoryExaustion( &ExitOnMemoryExaustion ) ;
-	StringListExitOnMemoryExaustion( &ExitOnMemoryExaustion ) ;
+	StringExitOnMemoryExaustion( ExitOnMemoryExaustion ) ;
+	StringListExitOnMemoryExaustion( ExitOnMemoryExaustion ) ;
+	SocketExitOnMemoryExaustion( ExitOnMemoryExaustion ) ;
+	ProcessExitOnMemoryExaustion( ExitOnMemoryExaustion ) ;
 	
 	if( _mount_get_opts( argc,argv,&args ) != 0 ){
 		return _mount_help() ;
