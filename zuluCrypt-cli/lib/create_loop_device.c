@@ -89,8 +89,7 @@ char * zuluCryptGetFileNameFromFileDescriptor( int fd )
 	ssize_t index ;
 	if( fstat( fd,&st ) == 0 ){
 		xt = String( "/proc/self/fd/" ) ;
-		StringAppendInt( xt,fd ) ;
-		c = zuluCryptRealPath( StringContent( xt ) ) ;
+		c = zuluCryptRealPath( StringAppendInt( xt,fd ) ) ;
 		StringDelete( &xt ) ;
 		if( StringPrefixMatch( c,"/dev/mapper/",12 ) ){
 			/*
