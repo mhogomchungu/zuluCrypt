@@ -84,26 +84,16 @@ char * zuluCryptLoopDeviceAddress_1( const char * device )
 char * zuluCryptGetFileNameFromFileDescriptor( int fd )
 {
 	char * c = NULL ;
-	string_t xt ;
-	struct stat st ;
-	ssize_t index ;
-	if( fstat( fd,&st ) == 0 ){
-		xt = String( "/proc/self/fd/" ) ;
-		c = zuluCryptRealPath( StringAppendInt( xt,fd ) ) ;
-		StringDelete( &xt ) ;
-		if( StringPrefixMatch( c,"/dev/mapper/",12 ) ){
-			/*
-			* An assumption is made here that the volume is an LVM volume in "/dev/mapper/ABC-DEF"
-			* format and the path is converted to "/dev/ABC/DEF" format
-			*/
-			xt = StringInherit( &c ) ;
-			index = StringLastIndexOfChar( xt,'-' ) ;
-			if( index != -1 ){
-				StringSubChar( xt,index,'/' ) ;
-				StringReplaceString( xt,"/dev/mapper/","/dev/" ) ;
-			}
-			c = StringDeleteHandle( &xt ) ;
-		}
+	string_t xt = String( "/proc/self/fd/" ) ;
+	c = zuluCryptRealPath( StringAppendInt( xt,fd ) ) ;
+	StringDelete( &xt ) ;
+	if( StringPrefixMatch( c,"/dev/mapper/",12 ) ){
+		/*
+		 * zuluCryptConvertIfPathIsLVM() is defined in status.c
+		 */
+		xt = zuluCryptConvertIfPathIsLVM( c ) ;
+		free( c ) ;
+		c = StringDeleteHandle( &xt ) ;
 	}
 	return c ;
 }

@@ -219,6 +219,31 @@ char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper )
 	return StringDeleteHandle( &volType ) ;
 }
 
+string_t zuluCryptConvertIfPathIsLVM( const char * path )
+{
+	/*
+	 * An assumption is made here that the path is an LVM path if "path" is in /dev/mapper/abc-def format
+	 * and there exist a path at /dev/abc/def format.
+	 */
+	string_t q = String( path ) ;
+	ssize_t index = StringLastIndexOfChar( q,'-' ) ;
+	struct stat st ;
+	if( index != -1 ){
+		StringSubChar( q,index,'/' ) ; 
+		if( stat( StringReplaceString( q,"/dev/mapper/","/dev/" ),&st ) == 0 ){
+			/*
+			 * Path appear to be an LVM path since /dev/abc/def path exists
+			 */
+			;
+		}else{
+			StringAppendAt( q,0,path ) ;
+		}
+	}else{
+		StringAppendAt( q,0,path ) ;
+	}
+	return q ;
+}
+
 char * zuluCryptVolumeStatus( const char * mapper )
 {	
 	char buff[ SIZE ] ;
@@ -226,19 +251,15 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	const char * z ;
 	const char * type ;
 	const char * device_name ;
-	const char * device_name_1 ;
 	char * path ;
 	int luks = 0 ;
 	int i ;
 	int j ;
 	int k ;
 	
-	ssize_t index ;
-	
 	struct crypt_device * cd;
 	struct crypt_active_device cad ;
 	
-	struct stat st ;
 	string_t p ;
 	string_t q ;
 	
@@ -306,30 +327,13 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	StringMultipleAppend( p,"\n cipher:\t",crypt_get_cipher( cd ),"-",crypt_get_cipher_mode( cd ),END );
 	
 	z = StringIntToString_1( buffer,SIZE,8 * crypt_get_volume_key_size( cd ) ) ;
-	StringMultipleAppend( p,"\n keysize:\t",z," bits",END );
+	StringMultipleAppend( p,"\n keysize:\t",z," bits\n device:\t",END );
 	
 	if( StringPrefixMatch( device_name,"/dev/mapper/",12 ) ){
-		/*
-		 * An assumption is made here that the volume is an LVM volume in "/dev/mapper/ABC-DEF"
-		 * format and the path is converted to "/dev/ABC/DEF" format
-		 */
-		q = String( device_name ) ;
-		index = StringLastIndexOfChar( q,'-' ) ;
-		if( index != -1 ){
-			StringSubChar( q,index,'/' ) ;
-			device_name_1 = StringReplaceString( q,"/dev/mapper/","/dev/" ) ;
-			if( stat( device_name_1,&st ) == 0 ){
-				StringMultipleAppend( p,"\n device:\t",device_name_1,END );
-			}else{
-				StringMultipleAppend( p,"\n device:\t",device_name,END );
-			}
-		}else{
-			StringMultipleAppend( p,"\n device:\t",device_name,END );
-		}
+		q = zuluCryptConvertIfPathIsLVM( device_name ) ;
+		StringAppendString( p,q );
 		StringDelete( &q ) ;
-	}else{
-		StringMultipleAppend( p,"\n device:\t",device_name,END );
-	}	
+	}
 	
 	if( StringPrefixMatch( device_name,"/dev/loop",9 ) ){
 		StringAppend( p,"\n loop:   \t" );
@@ -444,7 +448,6 @@ char * zuluCryptVolumeDeviceName( const char * mapper )
 	char * path ;
 	string_t address = StringVoid ;
 	const char * e ;
-	ssize_t index ;
 	
 	e = crypt_get_dir() ;
 	
@@ -472,16 +475,7 @@ char * zuluCryptVolumeDeviceName( const char * mapper )
 				address = String( e ) ;
 			}
 		}else if( StringPrefixMatch( e,"/dev/mapper/",12 ) ){
-			/*
-			 * An assumption is made here that the volume is an LVM volume in "/dev/mapper/ABC-DEF"
-			 * format and the path is converted to "/dev/ABC/DEF" format
-			 */
-			address = String( e ) ;
-			index = StringLastIndexOfChar( address,'-' ) ;
-			if( index != -1 ){
-				StringSubChar( address,index,'/' ) ;
-				StringReplaceString( address,"/dev/mapper/","/dev/" ) ; 
-			}
+			address = zuluCryptConvertIfPathIsLVM( e ) ;
 		}else{
 			address = String( e ) ;
 		}

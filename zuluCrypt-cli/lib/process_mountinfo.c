@@ -362,7 +362,6 @@ string_t zuluCryptGetMtabEntry( const char * path )
 string_t zuluCryptGetMtabEntry_1( stringList_t stl,const char * path )
 {
 	const char * g ;
-	struct stat str ;
 	string_t st ;
 	string_t entry = StringVoid ;
 	ssize_t index = -1 ;
@@ -372,19 +371,12 @@ string_t zuluCryptGetMtabEntry_1( stringList_t stl,const char * path )
 		return StringVoid ;
 	}
 	if( StringPrefixMatch( path,"/dev/mapper/",12 ) ){
-		st = String( path ) ;
-		index = StringLastIndexOfChar( st,'-' ) ;
-		if( index != -1 ){
-			StringSubChar( st,index,'/' ) ;
-			g = StringReplaceString( st,"/dev/mapper/","/dev/" ) ;
-			if( stat( g,&str ) == 0 ){
-				index = StringListHasStartSequence( stl,g ) ;
-			}else{
-				index = StringListHasStartSequence( stl,path ) ;
-			}
-		}else{
-			index = StringListHasStartSequence( stl,path ) ;
-		}
+		/*
+		 * zuluCryptConvertIfPathIsLVM() is defined in status.c
+		 */
+		st = zuluCryptConvertIfPathIsLVM( path ) ;
+		g = StringContent( st ) ;
+		index = StringListHasStartSequence( stl,g ) ;
 		StringDelete( &st ) ;
 	}else if( StringPrefixMatch( path,"/dev/loop",9 ) ){
 		/*

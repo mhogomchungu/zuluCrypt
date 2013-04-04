@@ -267,4 +267,9 @@ int zuluCryptAddEntryToMtab( m_struct * mst ) ;
  */
 int zuluCryptCreateFileSystemInAVolume( const char * fs,const char * device_mapper ) ;
 
+/*
+ * zuluCryptConvertIfPathIsLVM() is defined in status.c
+ */
+string_t zuluCryptConvertIfPathIsLVM( const char * path ) ;
+
 #endif 
