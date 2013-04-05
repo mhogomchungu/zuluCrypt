@@ -76,6 +76,8 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,c
 	
 	tc_api_opts api_opts ;
 	
+	struct stat statstr ;
+	
 	int r ;
 	int fd ;
 	
@@ -106,9 +108,16 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,c
 	}else{
 		/*
 		 * ZULUCRYPTtempFolder is set in ../constants.h
+		 * ZULUCRYPtmountMiniPath is set in ../constants.h
 		 */
-		mkdir( ZULUCRYPTtempFolder,S_IRWXU ) ;
-		chown( ZULUCRYPTtempFolder,0,0 ) ;
+		if( stat( ZULUCRYPtmountMiniPath,&statstr ) != 0 ){
+			mkdir( ZULUCRYPtmountMiniPath,S_IRWXU ) ;
+			chown( ZULUCRYPtmountMiniPath,0,0 ) ;
+		}
+		if( stat( ZULUCRYPTtempFolder,&statstr ) != 0 ){
+			mkdir( ZULUCRYPTtempFolder,S_IRWXU ) ;
+			chown( ZULUCRYPTtempFolder,0,0 ) ;
+		}
 		
 		st = String( ZULUCRYPTtempFolder"/open_tcrypt-" ) ;
 		file = StringAppendInt( st,syscall( SYS_gettid ) ) ;

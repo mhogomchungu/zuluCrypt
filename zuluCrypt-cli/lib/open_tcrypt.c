@@ -115,6 +115,8 @@ static int _tcrypt_open_using_keyfile( const char * device,const char * mapper,u
 	const char * file ;
 	uint32_t flags = 0 ;
 	
+	struct stat statstr ;
+	
 	struct crypt_device * cd = NULL;
 	struct crypt_params_tcrypt params ;
 
@@ -124,9 +126,16 @@ static int _tcrypt_open_using_keyfile( const char * device,const char * mapper,u
 	
 	/*
 	 * ZULUCRYPTtempFolder is set in ../constants.h
+	 * ZULUCRYPtmountMiniPath is set in ../constants.h
 	 */
-	mkdir( ZULUCRYPTtempFolder,S_IRWXU ) ;
-	chown( ZULUCRYPTtempFolder,0,0 ) ;
+	if( stat( ZULUCRYPtmountMiniPath,&statstr ) != 0 ){
+		mkdir( ZULUCRYPtmountMiniPath,S_IRWXU ) ;
+		chown( ZULUCRYPtmountMiniPath,0,0 ) ;
+	}
+	if( stat( ZULUCRYPTtempFolder,&statstr ) != 0 ){
+		mkdir( ZULUCRYPTtempFolder,S_IRWXU ) ;
+		chown( ZULUCRYPTtempFolder,0,0 ) ;
+	}
 	
 	st = String( ZULUCRYPTtempFolder"/open_tcrypt-" ) ;
 	file = StringAppendInt( st,syscall( SYS_gettid ) ) ;

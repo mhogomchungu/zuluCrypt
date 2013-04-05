@@ -70,38 +70,28 @@ static int zuluExit( int st )
 /*
  * Below function creates a secured folder path,ie a folder path a normal user has no access to
  */
-static int create_work_directory( string_t * st )
+static string_t create_work_directory( void )
 {
 	/*
 	 * ZULUCRYPTtempFolder and ZULUCRYPtmountMiniPath are set in ../constants.h
 	 */
 	const char * temp_path = ZULUCRYPTtempFolder"/" ;
+	struct stat xt ;
 	
 	zuluCryptSecurityGainElevatedPrivileges() ;
 	
-	if( mkdir( temp_path,S_IRWXU ) != 0 ){
-		if( errno == EEXIST ){
-			/*
-			 * directory exists,we can continue
-			 */
-			 ;
-		}else if( errno == ENOENT ){
-			mkdir( ZULUCRYPtmountMiniPath"/",S_IRWXU ) ;
-			chown( ZULUCRYPtmountMiniPath"/",0,0 ) ;
-			mkdir( temp_path,S_IRWXU ) ;
-		}else{
-			/*
-			 * whatever it is,it cant be good,exit
-			 */
-			zuluCryptSecurityDropElevatedPrivileges() ;
-			return 0 ;
-		}
+	if( stat( ZULUCRYPtmountMiniPath,&xt ) != 0 ){
+		mkdir( ZULUCRYPtmountMiniPath"/",S_IRWXU ) ;
+		chown( ZULUCRYPtmountMiniPath"/",0,0 ) ;
+	}
+	if( stat( temp_path,&xt ) != 0 ){
+		mkdir( temp_path,S_IRWXU ) ;
+		chown( temp_path,0,0 ) ;
 	}
 	
-	chown( temp_path,0,0 ) ;
-	*st = String( temp_path ) ;
 	zuluCryptSecurityDropElevatedPrivileges() ;
-	return 1 ;
+	
+	return String( temp_path ) ;
 }
 
 /*
@@ -115,12 +105,10 @@ static int secure_file_path( char ** path,const char * source )
 	int fd_temp ;
 	char buffer[ SIZE ] ;
 	size_t len ;
-	string_t st_path ;
 	const char * temp_path ;
 	
-	if( !create_work_directory( &st_path ) ){
-		return 0 ;
-	}
+	string_t st_path = create_work_directory() ;
+	
 	StringAppend( st_path,"0-" ) ;
 	temp_path = StringAppendInt( st_path,syscall( SYS_gettid ) ) ;
 	
@@ -168,17 +156,12 @@ static int secure_file_path( char ** path,const char * source )
 /*
  * this function return a secured file path to be used to create a file at the path
  */
-static inline int secure_file_path_1( char ** path )
+static inline char * secure_file_path_1( void )
 {
-	string_t st_path ;
-	if( create_work_directory( &st_path ) ){
-		StringAppend( st_path,"1-" ) ;
-		StringAppendInt( st_path,syscall( SYS_gettid ) ) ;
-		*path = StringDeleteHandle( &st_path ) ;
-		return 1 ;
-	}else{
-		return 0 ;
-	}
+	string_t st_path = create_work_directory() ;
+	StringAppend( st_path,"1-" ) ;
+	StringAppendInt( st_path,syscall( SYS_gettid ) ) ;
+	return StringDeleteHandle( &st_path ) ;
 }
 
 /*
@@ -232,11 +215,8 @@ static int save_header( const char * device,const char * path,uid_t uid )
 {
 	int st = 4 ;
 	struct crypt_device * cd ;
-	char * temp_path ;
 	
-	if( !secure_file_path_1( &temp_path ) ){
-		return 4 ;
-	}
+	char * temp_path = secure_file_path_1() ;
 
 	if( zuluCryptSecurityGainElevatedPrivileges() ){
 		if( crypt_init( &cd,device ) != 0 ){
@@ -434,7 +414,7 @@ int zuluCryptHeaderMatchBackUpHeader( const char * device,const char * header_ba
 		return 0 ;
 	}
 	
-	secure_file_path_1( &device_header ) ;
+	device_header = secure_file_path_1() ;
 	if( device_header == NULL ){
 		free( header_path ) ;
 		return 0 ;
