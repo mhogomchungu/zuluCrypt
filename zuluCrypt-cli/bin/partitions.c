@@ -421,21 +421,15 @@ static void _zuluCryptPrintUnMountedPartitionProperties( stringList_t stl )
 	 */
 	stringList_t stx = zuluCryptGetMountInfoList() ;
 	
-	StringListIterator it  ;
-	StringListIterator end ;
+	StringListIterator it  = StringListBegin( stl )  ;
+	StringListIterator end = StringListEnd( stl ) ;
 	
-	const char * entry ;
-
-	it  = StringListBegin( stl ) ;
-	end = StringListEnd( stl ) ;
-	
-	while( it != end ){
-		entry = StringContent( *it ) ;
-		it++ ;
-		if( StringListHasStartSequence( stx,entry ) == -1 ){
-			zuluCryptPrintPartitionProperties( entry ) ;
+	for( ; it != end ; it++ ){
+		if( StringListHasStartSequence( stx,StringAppend( *it," " ) ) == -1 ){
+			zuluCryptPrintPartitionProperties( StringRemoveRight( *it,1 ) ) ;
 		}
 	}
+	
 	StringListDelete( &stx ) ;
 }
 

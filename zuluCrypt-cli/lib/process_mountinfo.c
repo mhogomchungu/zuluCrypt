@@ -388,7 +388,9 @@ string_t zuluCryptGetMtabEntry_1( stringList_t stl,const char * path )
 			free( e ) ;
 		}
 	}else{
-		index = StringListHasStartSequence( stl,path ) ;
+		st = String( path ) ;
+		index = StringListHasStartSequence( stl,StringAppend( st," " ) ) ;
+		StringDelete( &st ) ;
 	}
 	
 	if( index >= 0 ){
