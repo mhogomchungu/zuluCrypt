@@ -288,14 +288,16 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	}
 	
 	if( st == 4 ){
+		/*
+		 * failed to open LUKS or PLAIN volume,assume the volume is truecrypt and try to open it as one
+		 */		
+		
 		if( hidden_volume ){
 			volume_type = TCRYPT_HIDDEN ;
 		}else{
 			volume_type = TCRYPT_NORMAL ;
 		}
-		/*
-		 * failed to open LUKS or PLAIN volume,assume the volume is truecrypt and try to open it as one
-		 */
+		
 		zuluCryptSecurityGainElevatedPrivileges() ;
 		if( StringsAreEqual( source,"-f" ) ){
 			if( StringHasComponent( pass,"/.zuluCrypt-socket/" ) ){
