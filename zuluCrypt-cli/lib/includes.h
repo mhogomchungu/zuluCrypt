@@ -144,9 +144,14 @@ string_t zuluCryptGetFileSystemFromDevice( const char * device ) ;
 char * zuluCryptLoopDeviceAddress( const char * device ) ;
 
 /*
- *  * this function is defined in ./create_loop_device.c 
+ * this function is defined in ./create_loop_device.c 
  */
 char * zuluCryptLoopDeviceAddress_1( const char * device ) ;
+
+/*
+ * this function is defined in ./create_loop_device.c  
+ */
+string_t zuluCryptLoopDeviceAddress_2( const char * device ) ;
 
 /*
  * this function is defined in ./process_mountinfo.c

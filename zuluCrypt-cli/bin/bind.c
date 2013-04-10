@@ -47,21 +47,25 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 	
 	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
 		/*
-		 * zuluCryptLoopDeviceAddress() is defined in ../lib/create_loop_device.c
+		 * zuluCryptLoopDeviceAddress_2() is defined in ../lib/create_loop_device.c
 		 */
-		device = h = zuluCryptLoopDeviceAddress( device ) ;
+		st = zuluCryptLoopDeviceAddress_2( device ) ;
+		/*
+		 * Add a space at the end of device to avoid a possible collision when there exists two devices,one being "/dev/sdc1" 
+		 * and another "/dev/sdc12"
+		 */
+		index = StringListHasStartSequence( stx,StringAppend( st," " ) ) ;
+		StringRemoveRight( st,1 ) ;
+		device = h = StringDeleteHandle( &st ) ;
+	}else{
+		/*
+		 * Add a space at the end of device to avoid a possible collision when there exists two devices,one being "/dev/sdc1" 
+		 * and another "/dev/sdc12"
+		 */
+		st = String( device ) ;
+		index = StringListHasStartSequence( stx,StringAppend( st," " ) ) ;
+		StringDelete( &st ) ;
 	}
-
-	/*
-	 * Add a space at the end of device to avoid a possible collision when there exists two devices,one being "/dev/sdc1" 
-	 * and another "/dev/sdc12"
-	 */
-	st = String( device ) ;
-	e = StringAppend( st," " ) ;
-	
-	index = StringListHasStartSequence( stx,e ) ;
-	
-	StringDelete( &st ) ;
 	
 	if( index == -1 ){
 		/*

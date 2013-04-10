@@ -36,7 +36,7 @@ static int zuluExit( int result,string_t st,int fd_loop,int fd_path )
 	return result ;
 }
 
-char * zuluCryptLoopDeviceAddress( const char * device )
+string_t zuluCryptLoopDeviceAddress_2( const char * device )
 {
 	int fd ;
 	char * path ;
@@ -50,14 +50,18 @@ char * zuluCryptLoopDeviceAddress( const char * device )
 		ioctl( fd,LOOP_GET_STATUS64,&l_info ) ;
 		path = zuluCryptRealPath( ( char * ) l_info.lo_file_name ) ;
 		close( fd ) ;
-		st = StringInherit( &path ) ;
-		StringReplaceString( st," ","\\040" ) ;
-		return StringDeleteHandle( &st ) ;
+		xt = StringInherit( &path ) ;
 	}else{
 		StringRemoveRight( xt,1 ) ;
-		StringReplaceString( xt," ","\\040" ) ;
-		return StringDeleteHandle( &xt ) ;
 	}
+	StringReplaceString( xt," ","\\040" ) ;
+	return xt ;
+}
+
+char * zuluCryptLoopDeviceAddress( const char * device )
+{
+	string_t st = zuluCryptLoopDeviceAddress_2( device ) ;
+	return StringDeleteHandle( &st ) ;
 }
 
 char * zuluCryptLoopDeviceAddress_1( const char * device )

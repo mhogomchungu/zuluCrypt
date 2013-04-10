@@ -361,40 +361,31 @@ string_t zuluCryptGetMtabEntry( const char * path )
 
 string_t zuluCryptGetMtabEntry_1( stringList_t stl,const char * path )
 {
-	const char * g ;
 	string_t st ;
 	string_t entry = StringVoid ;
-	ssize_t index = -1 ;
-	char * e = NULL ;
+	ssize_t index ;
 	
-	if( stl == StringListVoid ){
-		return StringVoid ;
-	}
-	if( StringPrefixMatch( path,"/dev/mapper/",12 ) ){
-		/*
-		 * zuluCryptConvertIfPathIsLVM() is defined in status.c
-		 */
-		st = zuluCryptConvertIfPathIsLVM( path ) ;
-		g = StringContent( st ) ;
-		index = StringListHasStartSequence( stl,g ) ;
-		StringDelete( &st ) ;
-	}else if( StringPrefixMatch( path,"/dev/loop",9 ) ){
-		/*
-		 * zuluCryptLoopDeviceAddress() is defined in ./create_loop_device.c
-		 */
-		e = zuluCryptLoopDeviceAddress( path ) ;
-		if( e != NULL ){
-			index = StringListHasStartSequence( stl,e ) ;
-			free( e ) ;
+	if( stl != StringListVoid ){
+		if( StringPrefixMatch( path,"/dev/mapper/",12 ) ){
+			/*
+			* zuluCryptConvertIfPathIsLVM() is defined in status.c
+			*/
+			st = zuluCryptConvertIfPathIsLVM( path ) ;
+		}else if( StringPrefixMatch( path,"/dev/loop",9 ) ){
+			/*
+			* zuluCryptLoopDeviceAddress_2() is defined in ./create_loop_device.c
+			*/
+			st = zuluCryptLoopDeviceAddress_2( path ) ;
+		}else{
+			st = String( path ) ;
 		}
-	}else{
-		st = String( path ) ;
+	
 		index = StringListHasStartSequence( stl,StringAppend( st," " ) ) ;
 		StringDelete( &st ) ;
-	}
 	
-	if( index >= 0 ){
-		entry = StringListCopyStringAt( stl,index ) ;
+		if( index >= 0 ){
+			entry = StringListCopyStringAt( stl,index ) ;
+		}
 	}
 	return entry ;
 }

@@ -129,7 +129,12 @@ void StringMultipleDelete( string_t * xt,... )
 {
 	string_t * entry ;
 	va_list list ;
-	string_t st = *xt ;
+	string_t st ;
+	
+	if( xt == NULL ){
+		return ;
+	}
+	st = *xt ;
 	if( st != StringVoid ){ 
 		if( st->owned == 0 ){
 			free( st->string ) ;
@@ -191,6 +196,7 @@ string_t StringCopy( string_t st )
 {	
 	string_t xt ;
 	char * c ;
+	
 	if( st == StringVoid ){
 		return StringVoid ;
 	}
@@ -354,12 +360,15 @@ ssize_t StringIndexOfString( string_t st,size_t p,const char * s )
 
 ssize_t StringLastIndexOfChar( string_t st,char s ) 
 {
-	char * c = st->string + st->size  ;
-	char * d = st->string ;
+	char * c ;
+	char * d ;
 	
 	if( st == StringVoid ){
 		return -1 ;
 	}
+	
+	d = st->string ;
+	c = d + st->size ;
 	
 	while( --c != d ){
 		if ( *c == s ){
@@ -375,12 +384,16 @@ ssize_t StringLastIndexOfString( string_t st,const char * s )
 	ssize_t p = -1 ;
 	
 	char * c ;
-	char * d = st->string ;
-	char * e = st->string ;
+	char * d ;
+	char * e ;
 
 	size_t len ;
 	
 	if( s == NULL ){
+		return -1 ;
+	}
+	
+	if( st == StringVoid ){
 		return -1 ;
 	}
 	
@@ -389,9 +402,9 @@ ssize_t StringLastIndexOfString( string_t st,const char * s )
 	if( len == 0 ){
 		return -1 ;
 	}
-	if( st == StringVoid ){
-		return -1 ;
-	}
+	
+	e = d = st->string ;
+
 	while( 1 )
 	{
 		c = strstr( d,s ) ;
@@ -637,8 +650,8 @@ static void Stringsrcs__( string_t st,char x,const char * y,size_t p )
 	size_t i ;
 	size_t j ;
 	size_t k ;
-	size_t l = st->size ;
-	char * c = st->string ;
+	size_t l ;
+	char * c ;
 	
 	if( st == StringVoid ){
 		return  ;
@@ -650,6 +663,8 @@ static void Stringsrcs__( string_t st,char x,const char * y,size_t p )
 		return ;
 	}
 	
+	c= st->string ;
+	l = st->size ;
 	k = strlen( y ) ;
 	
 	for( j = p ; j < l ; j++ ){
@@ -914,19 +929,27 @@ string_t StringMidString( string_t st,size_t x,size_t y )
 static char * StringRS__( string_t st,const char * x,const char * s,size_t p )
 {
 	char * c ;
-	char * d = st->string ;
-	char * e = st->string + p ;
+	char * d ;
+	char * e ;
 
-	size_t j = strlen( s ) ;
-	size_t k = strlen( x ) ;
+	size_t j  ;
+	size_t k  ;
 	size_t len ;
 	
 	if( st == StringVoid ){
 		return NULL ;
 	}
+		
 	if( x == NULL || s == NULL || p >= st->size ){
 		return st->string ;
 	}
+	
+	d = st->string ;
+	e = st->string + p ;
+	
+	j = strlen( s ) ;
+	k = strlen( x ) ;
+	
 	if( j == k ){
 		while( ( c = strstr( e,x ) ) != NULL ){
 			memcpy( c,s,j ) ;
@@ -983,14 +1006,14 @@ const char * StringRemoveString( string_t st,const char * s )
 
 static char * StringCRC__( string_t st, char x,char y,size_t p )
 {
-	char * c = st->string - 1 + p ;
-		
+	char * c ;
 	if( st == StringVoid ){
 		return NULL ;
 	}
 	if( p >= st->size ){
 		return st->string ;
 	}
+	c = st->string - 1 + p ;
 	while ( *++c  ){
 		if( *c == x ){
 			*c = y ;
@@ -1075,7 +1098,7 @@ int StringEqual( string_t x,const char * y )
 
 static char * StringICS__( string_t st,char x,const char * s,size_t p )
 {
-	const char * d = s - 1 ;
+	const char * d ;
 	char * e ;
 	char * f  ;
 	size_t pos ;
@@ -1086,6 +1109,7 @@ static char * StringICS__( string_t st,char x,const char * s,size_t p )
 	if( p >= st->size || s == NULL ){
 		return st->string ;
 	}
+	d = s - 1 ;
 	while( *++d ){
 		f = st->string - 1 + p ;
 		while( *++f ){
@@ -1377,10 +1401,18 @@ void StringWriteToFile( string_t st,const char * path,int mode )
 {
 	int fd ;
 
+	if( st == StringVoid ){
+		return ;
+	}
+	
 	if( mode == 1 ){
 		fd = open( path, O_WRONLY | O_CREAT | O_TRUNC ) ;
 	}else{
 		fd = open( path, O_WRONLY | O_CREAT | O_APPEND ) ;
+	}
+	
+	if( fd == -1 ){
+		return ;
 	}
 	
 	write( fd,st->string,st->size ) ;

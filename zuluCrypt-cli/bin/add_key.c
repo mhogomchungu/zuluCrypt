@@ -64,7 +64,7 @@ static int zuluExit( int st,stringList_t stl )
 	 */
 	StringListClearDelete( &stl ) ;
 	
-	switch ( st ){
+	switch( st ){
 		case 0  : printf( "SUCCESS: key added successfully\n" );	                              	break ;
 		case 1  : printf( "ERROR: presented key does not match any key in the volume\n" ) ;           	break ;
 		case 2  : printf( "ERROR: could not open luks device\n" ) ;		                      	break ;
@@ -104,8 +104,9 @@ static int zuluGetKeys( string_t * key1,string_t * key2,string_t * key3 )
 	 */
 	printf( "Enter an existing passphrase: " ) ;
 	st = StringSilentlyGetFromTerminal_1( key1,ZULUCRYPT_KEY_MAX_SIZE ) ;
-	if( st != 0 )
+	if( st != 0 ){
 		return st ;
+	}
 	printf( "\nEnter the new passphrase: " ) ;
 	st = StringSilentlyGetFromTerminal_1( key2,ZULUCRYPT_KEY_MAX_SIZE ) ;
 	if( st != 0 ){
