@@ -165,7 +165,7 @@ static int open_loop_device( string_t * loop_device )
 	close( fd_loop ) ;
 	
 	if( devnr < 0 ){
-		return 0 ;
+		return open_loop_device_1( loop_device ) ;
 	}
 	
 	*loop_device = String( "/dev/loop" ) ;

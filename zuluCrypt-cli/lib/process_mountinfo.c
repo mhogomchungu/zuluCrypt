@@ -55,11 +55,10 @@ char * zuluCryptResolveDevRoot( void )
 		index = StringListHasSequence( stl,"root=UUID=" ) ;
 		if( index >= 0 ){
 			st = StringListCopyStringAt( stl,index ) ;
-			StringRemoveString( st,"root=UUID=" ) ;
 			/*
 			 * zuluCryptDeviceFromUUID() is defined in ./blkid_evaluate_tag.c
 			 */
-			dev = zuluCryptDeviceFromUUID( StringContent( st ) ) ;
+			dev = zuluCryptDeviceFromUUID( StringRemoveString( st,"root=UUID=" ) ) ;
 			StringDelete( &st ) ;
 		}
 	}
