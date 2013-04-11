@@ -50,6 +50,10 @@ bool auto_mount_helper::deviceIsSystem( void )
 void auto_mount_helper::volumeProperties( void )
 {
 	QProcess p ;
+
+	if( m_device.startsWith( QString( "/dev/md" ) ) ){
+		m_device = this->mdRaidPath( m_device ) ;
+	}
 	QString exe = QString( "%1 -L -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;
 	p.start( exe );
 	p.waitForFinished() ;
@@ -67,9 +71,41 @@ void auto_mount_helper::volumeProperties( void )
 	}
 }
 
+QString auto_mount_helper::mdRaidPath( QString dev )
+{
+	QString dev_1 ;
+	QDir d( "/dev/md/" ) ;
+	QDir f ;
+
+	/*
+	 * wait for a while because things dont always happen as expect if we check too soon.
+	 */
+	sleep( 4 ) ;
+	if( d.exists() ){
+		QStringList l = d.entryList() ;
+		int j = l.size() ;
+		QString e ;
+		for( int i = 0 ; i < j ; i++ ){
+			e = l.at( i ) ;
+			if( e == QString( "." ) || e == QString( ".." ) || e.contains( QString( "/dev/.tmp" ) ) ){
+				continue ;
+			}
+			dev_1 = QString( "/dev/md/" ) + e ;
+			f.setPath( dev_1 );
+			if( f.canonicalPath() == dev ){
+				return dev_1 ;
+			}
+		}
+	}
+	return dev ;
+}
+
 void auto_mount_helper::deviceFromDev( void )
 {
-	if( m_device.startsWith( QString( "/dev/sd") ) || m_device.startsWith( QString( "/dev/hd" ) ) || m_device.startsWith( QString( "mmc" ) ) ){
+	if( m_device.startsWith( QString( "/dev/sd") ) ||
+			m_device.startsWith( QString( "/dev/hd" ) ) ||
+			m_device.startsWith( QString( "/dev/mmc" ) ) ||
+			m_device.startsWith( QString( "/dev/md" ) ) ){
 		if( m_mask & IN_CREATE ) {
 			this->volumeProperties() ;
 		}else if( m_mask & IN_DELETE ){
@@ -134,7 +170,7 @@ bool auto_mount_helper::deviceMatchLVMFormat( void )
 
 void auto_mount_helper::run()
 {
-	if( m_type == 0 ){
+	if( m_type == auto_mount_helper::dev ){
 		this->deviceFromDev();
 	}else{
 		this->deviceFromDevMapper();

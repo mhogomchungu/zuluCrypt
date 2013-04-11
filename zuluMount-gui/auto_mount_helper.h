@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright (c) 2013
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -24,7 +24,9 @@
 #include <QStringList>
 #include "bin_path.h"
 #include <QProcess>
+#include <QDir>
 
+#include <unistd.h>
 #include <sys/inotify.h>
 
 class auto_mount_helper :public QObject, public QRunnable
@@ -34,11 +36,15 @@ public:
 	explicit auto_mount_helper( QObject * parent = 0 );
 	~auto_mount_helper() ;
 	void start( QString device,int type,u_int32_t mask ) ;
+	enum{
+		dev,dev_mapper
+	};
 signals:
 	void deviceRemoved( QString ) ;
 	void getVolumeSystemInfo( QStringList ) ;
 	void getVolumeInfo( QStringList ) ;
 private:
+	QString mdRaidPath( QString ) ;
 	bool deviceIsSystem( void ) ;
 	bool deviceMatchLVMFormat( void ) ;
 	void volumeProperties( void ) ;

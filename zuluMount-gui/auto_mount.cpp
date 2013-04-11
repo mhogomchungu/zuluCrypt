@@ -76,6 +76,11 @@ void auto_mount::run()
 
 	int dev = inotify_add_watch( m_fdDir,"/dev",IN_CREATE|IN_DELETE ) ;
 	int mapper = inotify_add_watch( m_fdDir,"/dev/mapper",IN_CREATE|IN_DELETE ) ;
+	int md = -1 ;
+	QDir d( QString( "/dev/md/" ) ) ;
+	if( d.exists() ){
+		md = inotify_add_watch( m_fdDir,"/dev/md",IN_DELETE ) ;
+	}
 
 	if( dev == -1 || mapper == -1 ){
 		return ;
@@ -101,7 +106,10 @@ void auto_mount::run()
 
 			m_device = f + baseSize ;
 
-			if( strncmp( m_device,"sg",2 ) == 0 || strncmp( m_device,"dm-",3 ) == 0 || strstr( m_device,".dev/tmp" ) != NULL ) {
+			if( strncmp( m_device,"sg",2 ) == 0 ||
+					strncmp( m_device,"dm-",3 ) == 0 ||
+					strstr( m_device,".dev/tmp" ) != NULL ||
+					strstr( m_device,".tmp.md." ) != NULL ) {
 				/*
 				 * dont care about these devices.
 				 * /dev/sgX seem to be created when a usb device is plugged in
@@ -109,7 +117,11 @@ void auto_mount::run()
 				 */
 				 ;
 			}else{
-				device = QString( "/dev/" ) + m_device ;
+				if( pevent->wd == md ){
+					device = QString( "/dev/md/" ) + m_device ;
+				}else{
+					device = QString( "/dev/" ) + m_device ;
+				}
 
 				m_thread_helper = new auto_mount_helper() ;
 
@@ -120,10 +132,10 @@ void auto_mount::run()
 				connect( m_thread_helper,SIGNAL( deviceRemoved( QString ) ),
 					 m_babu,SLOT( deviceRemoved( QString ) ) ) ;
 
-				if( pevent->wd == dev ){
-					m_thread_helper->start( device,0,pevent->mask ) ;
+				if( pevent->wd == dev || pevent->wd == md ){
+					m_thread_helper->start( device,auto_mount_helper::dev,pevent->mask ) ;
 				}else{
-					m_thread_helper->start( device,1,pevent->mask ) ;
+					m_thread_helper->start( device,auto_mount_helper::dev_mapper,pevent->mask ) ;
 				}
 			}
 		}

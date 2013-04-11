@@ -24,6 +24,8 @@
 #include <QThread>
 #include <QProcess>
 #include <QStringList>
+#include <QDir>
+
 #include "bin_path.h"
 
 #include <stdio.h>
