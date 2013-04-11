@@ -299,6 +299,7 @@ int main( int argc,char * argv[] )
 	const char * device ;
 	const char * mapping_name ;
 	char * ac ;
+	char * ac_1 ;
 	char * dev ;
 	char action ;
 	int st ;
@@ -518,13 +519,28 @@ Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The de
 		}else{
 			clargs.device = dev ;
 		
-			if( ( ac = strrchr( device,'/' ) ) != NULL ){
-				mapping_name =  ac + 1  ;
+			if( StringPrefixEqual( dev,"/dev/loop" ) ){
+				/*
+				 * zuluCryptLoopDeviceAddress_1() is defined in ../zuluCrypt-cli/create_loop_device.c
+				 */
+				ac_1 = zuluCryptLoopDeviceAddress_1( dev ) ;
+				if( ( ac = strrchr( ac_1,'/' ) ) != NULL ){
+					mapping_name =  ac + 1  ;
+				}else{
+					mapping_name =  dev  ;
+				}
+				
+				st = zuluCryptEXE( &clargs,mapping_name,uid ) ;
+				free( ac_1 ) ;
 			}else{
-				mapping_name =  device  ;
+				if( ( ac = strrchr( dev,'/' ) ) != NULL ){
+					mapping_name =  ac + 1  ;
+				}else{
+					mapping_name =  dev  ;
+				}
+				
+				st = zuluCryptEXE( &clargs,mapping_name,uid ) ;
 			}
-		
-			st = zuluCryptEXE( &clargs,mapping_name,uid ) ;
 		
 			free( dev ) ;
 		

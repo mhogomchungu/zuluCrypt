@@ -155,6 +155,35 @@ static stringList_t _zuluCryptAddLVMVolumes( stringList_t stl )
 	return stl ;
 }
 
+static stringList_t _zuluCryptAddMDRAIDVolumes( stringList_t stl )
+{	
+	DIR * dir = opendir( "/dev/md/" ) ;
+	struct dirent * entry ;
+	char * e ;
+	const char * f ;
+	string_t st = StringVoid ;
+	
+	if( dir != NULL ){
+		while( ( entry = readdir( dir ) ) != NULL ){
+			f = entry->d_name ;
+			if( StringsAreEqual( f,"." ) || StringsAreEqual( f,".." ) ){
+				 ;
+			}else{
+				st = String( "/dev/md/" ) ;
+				e = zuluCryptRealPath( StringAppend( st,f ) ) ;
+				if( e != NULL ){
+					StringListRemoveString( stl,e ) ;
+					free( e ) ;
+				}
+				stl = StringListAppendString_1( stl,&st ) ;
+			}
+		}
+		closedir( dir ) ;
+	}
+	
+	return stl ;
+}
+
 stringList_t zuluCryptPartitionList( void )
 {
 	const char * device ;
@@ -202,7 +231,7 @@ stringList_t zuluCryptPartitionList( void )
 	zuluCryptSecurityDropElevatedPrivileges() ;
 	StringDelete( &st_1 ) ;
 	StringListDelete( &stl ) ;
-	return _zuluCryptAddLVMVolumes( stl_1 ) ;
+	return _zuluCryptAddLVMVolumes( _zuluCryptAddMDRAIDVolumes( stl_1 ) ) ;
 }
 
 static int _zuluCryptCheckSYSifDeviceIsSystem( const char * device )

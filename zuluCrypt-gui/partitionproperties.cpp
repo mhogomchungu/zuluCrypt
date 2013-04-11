@@ -56,7 +56,13 @@ void partitionproperties::run()
 	for ( int i = 0 ; i < j ; i++ ){
 		list = l.at( i ).split( "\t" ) ;
 		entry = list.at( 3 ) ;
-		if( entry.contains( QString( "LVM" ) ) || entry.contains( QString( "lvm" ) ) || entry.contains( QString( "mdraid" ) ) ){
+		/*
+		 * MDRAID partitions have "linux_raid_member" as their file system
+		 * LVM partitions have "LVM2_member" as their file system
+		 * 
+		 * we are not showing these partitions since we dont support them 
+		 */
+		if( entry.contains( QString( "member" ) ) ){
 			;
 		}else{
 			emit partitionProperties( list );

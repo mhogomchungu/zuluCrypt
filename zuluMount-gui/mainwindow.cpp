@@ -627,7 +627,13 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 		}
 
 		fs =  entries.at( 2 ) ;
-		if( fs == QString( "swap" ) || fs.contains( QString( "LVM" ) ) || fs.contains( QString( "lvm" ) ) || fs.contains( QString( "mdraid" ) ) ){
+		/*
+		 * MDRAID partitions have "linux_raid_member" as their file system
+		 * LVM partitions have "LVM2_member" as their file system
+		 * 
+		 * we are not showing these partitions since we dont support them 
+		 */
+		if( fs == QString( "swap" ) || fs.contains( QString( "member" ) ) ){
 			continue ;
 		}
 

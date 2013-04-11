@@ -88,6 +88,7 @@ char * zuluCryptLoopDeviceAddress_1( const char * device )
 char * zuluCryptGetFileNameFromFileDescriptor( int fd )
 {
 	char * c = NULL ;
+	char * d ;
 	string_t xt = String( "/proc/self/fd/" ) ;
 	c = zuluCryptRealPath( StringAppendInt( xt,fd ) ) ;
 	StringDelete( &xt ) ;
@@ -98,6 +99,13 @@ char * zuluCryptGetFileNameFromFileDescriptor( int fd )
 		xt = zuluCryptConvertIfPathIsLVM( c ) ;
 		free( c ) ;
 		c = StringDeleteHandle( &xt ) ;
+	}else if( StringPrefixMatch( c,"/dev/md",7 ) ){
+		/*
+		 * zuluCryptResolveMDPath() is defined in process_mountinfo.c
+		 */
+		d = zuluCryptResolveMDPath( c ) ;
+		free( c ) ;
+		c = d ;
 	}
 	return c ;
 }

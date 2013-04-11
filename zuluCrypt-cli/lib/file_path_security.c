@@ -52,7 +52,7 @@ static int _check_if_device_is_supported( int st,uid_t uid,char ** dev )
 	seteuid( uid ) ;
 	if( fs != StringVoid ){
 		cfs = StringContent( fs ) ;
-		if( StringPrefixMatch( cfs,"LVM",3 ) || StringPrefixMatch( cfs,"mdraid",6 ) ){
+		if( StringHasComponent( cfs,"member" ) ){
 			st = 100 ;
 		}
 		StringDelete( &fs ) ;
@@ -73,9 +73,15 @@ static char * device_path( string_t st )
 			StringSubChar( st,index,'/' ) ;
 			StringReplaceString( st,"/dev/mapper","/dev/" ) ;
 		}
+		return StringDeleteHandle( &st ) ;
+	}else if( StringStartsWith( st,"/dev/md" ) ){
+		/*
+		 * zuluCryptResolveMDPath() is defined in process_mountinfo.c
+		 */
+		return zuluCryptResolveMDPath( StringContent( st ) ) ;
+	}else{
+		return StringDeleteHandle( &st ) ;
 	}
-	
-	return StringDeleteHandle( &st ) ;
 }
 
 int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_loop,char ** dev,uid_t uid )

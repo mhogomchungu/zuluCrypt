@@ -149,6 +149,20 @@ stringList_t zuluCryptGetFstabList( void )
 					StringSubChar( xt,index,'/' ) ;
 					StringReplaceString( xt,"/dev/mapper/","/dev/" ) ;
 				}
+			}else if( StringPrefixMatch( entry,"/dev/md",7 ) ){
+				/*
+				 * zuluCryptResolveMDPath() is defined in process_mountinfo.c
+				 */
+				index = StringIndexOfChar( xt,0,' ' ) ;
+				if( index != -1 ){
+					ac =  zuluCryptResolveMDPath( StringSubChar( xt,index,'\0' ) ) ;
+					StringSubChar( xt,index,' ' ) ;
+					if( ac != NULL ){
+						StringRemoveLeft( xt,index ) ;
+						StringPrepend( xt,ac ) ;
+						free( ac ) ;
+					}
+				}
 			}
 		}else if( StringPrefixMatch( entry,"UUID=",5 ) ){
 			entry = StringRemoveString( xt,"\"" ) ;

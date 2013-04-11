@@ -329,14 +329,8 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	z = StringIntToString_1( buffer,SIZE,8 * crypt_get_volume_key_size( cd ) ) ;
 	StringMultipleAppend( p,"\n keysize:\t",z," bits\n device:\t",END );
 	
-	if( StringPrefixMatch( device_name,"/dev/mapper/",12 ) ){
-		q = zuluCryptConvertIfPathIsLVM( device_name ) ;
-		StringAppendString( p,q );
-		StringDelete( &q ) ;
-	}
-	
 	if( StringPrefixMatch( device_name,"/dev/loop",9 ) ){
-		StringAppend( p,"\n loop:   \t" );
+		StringMultipleAppend( p,device_name,"\n loop:   \t",END );
 		path = zuluCryptLoopDeviceAddress_1( device_name ) ;
 		if( path != NULL ){
 			StringAppend( p,path ) ;
@@ -345,6 +339,24 @@ char * zuluCryptVolumeStatus( const char * mapper )
 			StringAppend( p,"Nil" ) ;
 		}
 	}else{
+		if( StringPrefixMatch( device_name,"/dev/mapper/",12 ) ){
+			q = zuluCryptConvertIfPathIsLVM( device_name ) ;
+			StringAppendString( p,q );
+			StringDelete( &q ) ;
+		}else if( StringPrefixMatch( device_name,"/dev/md",7 ) ){
+			/*
+			 * zuluCryptResolveMDPath() is defined in process_mountinfo.c
+			 */
+			path = zuluCryptResolveMDPath( device_name ) ;
+			if( path != NULL ){
+				StringAppend( p,path ) ;
+				free( path ) ;
+			}else{
+				StringAppend( p,"Nil" ) ;
+			}
+		}else{
+			StringAppend( p,device_name ) ;
+		}
 		StringAppend( p,"\n loop:   \tNil" ) ;
 	}
 	
@@ -476,6 +488,12 @@ char * zuluCryptVolumeDeviceName( const char * mapper )
 			}
 		}else if( StringPrefixMatch( e,"/dev/mapper/",12 ) ){
 			address = zuluCryptConvertIfPathIsLVM( e ) ;
+		}else if( StringPrefixMatch( e,"/dev/md",7 ) ){
+			/*
+			 * zuluCryptResolveMDPath() is defined in process_mountinfo.c
+			 */
+			path = zuluCryptResolveMDPath( e ) ;
+			address = StringInherit( &path ) ;
 		}else{
 			address = String( e ) ;
 		}

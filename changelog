@@ -126,4 +126,5 @@ version 4.6.3
 -- when automounting devices,use device LABEL is present
 -- its now possible to create truecrypt volumes using a keyfile
 -- its now possible to open a truecrypt hidden volume( the feature is currently in zuluMount-cli only )
+-- support md raid based volumes
 -- various bug fixes.

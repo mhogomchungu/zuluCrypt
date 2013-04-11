@@ -79,7 +79,7 @@ void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
 			stopts->open_no_mount = 1 ; break ;
 			case( 'T' ) : stopts->print_partition_type = 1 ; 
 			break;   
-			case( 'M' ) : stopts->print_partition_type = 2 ; 
+			case( 'M' ) : stopts->share = 1 ; 
 			break ;
 			stopts->share = 1 ; 
 			break ;	

@@ -277,4 +277,9 @@ int zuluCryptCreateFileSystemInAVolume( const char * fs,const char * device_mapp
  */
 string_t zuluCryptConvertIfPathIsLVM( const char * path ) ;
 
+/*
+ * this function is defined in process_mountinfo.c
+ */
+char * zuluCryptResolveMDPath( const char * path ) ;
+
 #endif 

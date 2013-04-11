@@ -19,7 +19,7 @@
  */
 
 #include "includes.h"
-
+#include <dirent.h>
 #include <libcryptsetup.h>
 /*
  * below header file does not ship with the source code, it is created at configure time 
@@ -64,6 +64,42 @@ char * zuluCryptResolveDevRoot( void )
 	}
 	StringListDelete( &stl ) ;
 	return dev ;
+}
+
+/*
+ * raid path can be in format /dev/mdX or /dev/md/X.
+ * We prefer the latter and if given the former,convert it to the latter if possible
+ */
+char * zuluCryptResolveMDPath( const char * path )
+{
+	const char * f = "/dev/md/" ;
+	DIR * dir = opendir( f ) ;
+	string_t st = String( f ) ;
+	struct dirent * entry ;
+	char * e ;
+	int r ;
+	if( dir != NULL ){
+		while( ( entry = readdir( dir ) ) != NULL ){
+			f = entry->d_name ;
+			if( StringsAreEqual( f,"." ) || StringsAreEqual( f,".." ) ){
+				;
+			}else{
+				e = zuluCryptRealPath( StringAppendAt( st,8,f ) ) ;
+				if( e != NULL ){
+					r = StringsAreEqual( path,e ) ;
+					free( e ) ;
+					if( r == 1 ){
+						closedir( dir ) ;
+						return StringDeleteHandle( &st ) ;
+					}
+				}
+			}
+		}
+		closedir( dir ) ;
+	}
+	
+	StringAppendAt( st,0,path ) ;
+	return StringDeleteHandle( &st ) ;
 }
 
 stringList_t zuluCryptGetMoutedListFromMountInfo( void )
@@ -163,6 +199,14 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 			}else{
 				StringMultipleAppend( st,device," ",mount_point," ",file_system," ",mount_options,END ) ;
 			}
+		}else if( StringPrefixMatch( device,"/dev/md",7 ) ){
+			dev = zuluCryptResolveMDPath( device ) ;
+			if( dev == NULL ){
+				StringMultipleAppend( st,device," ",mount_point," ",file_system," ",mount_options,END ) ;
+			}else{
+				StringMultipleAppend( st,dev," ",mount_point," ",file_system," ",mount_options,END ) ;
+				free( dev ) ;
+			}
 		}else{
 			StringMultipleAppend( st,device," ",mount_point," ",file_system," ",mount_options,END ) ;
 		}
@@ -246,6 +290,17 @@ stringList_t zuluCryptGetMoutedListFromMounts( void )
 				;
 			}
 			StringDelete( &n ) ;
+		}else if( StringStartsWith( q,"/dev/md" ) ){
+			index = StringIndexOfChar( q,0,' ' ) ;
+			if( index != -1 ){
+				dev = zuluCryptResolveMDPath( StringSubChar( q,index,'\0' ) ) ;
+				StringSubChar( q,index,' ' ) ;
+				if( dev != NULL ){
+					StringRemoveLeft( q,index ) ;
+					StringMultiplePrepend( q," ",dev,END ) ;
+					free( dev ) ;
+				}
+			}
 		}
 	}
 	
@@ -363,7 +418,7 @@ string_t zuluCryptGetMtabEntry_1( stringList_t stl,const char * path )
 	string_t st ;
 	string_t entry = StringVoid ;
 	ssize_t index ;
-	
+	char * e ;
 	if( stl != StringListVoid ){
 		if( StringPrefixMatch( path,"/dev/mapper/",12 ) ){
 			/*
@@ -375,6 +430,12 @@ string_t zuluCryptGetMtabEntry_1( stringList_t stl,const char * path )
 			* zuluCryptLoopDeviceAddress_2() is defined in ./create_loop_device.c
 			*/
 			st = zuluCryptLoopDeviceAddress_2( path ) ;
+		}else if( StringPrefixMatch( path,"/dev/md",7 ) ){
+			/*
+			 * zuluCryptLoopDeviceAddress_2() is defined in ./create_loop_device.c
+			 */
+			e = zuluCryptResolveMDPath( path ) ;
+			st = StringInherit( &e ) ;
 		}else{
 			st = String( path ) ;
 		}
