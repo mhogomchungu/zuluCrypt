@@ -35,7 +35,7 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,QString path,QString
 	if( type == QString( "crypto_LUKS" ) ){
 		msg = tr( "unlock and mount a luks volume in \"%1\"").arg( m_path ) ;
 	}else{
-		msg = tr( "unlock and mount a plain volume in \"%1\"").arg( m_path ) ;
+		msg = tr( "unlock and mount an encrypted volume in \"%1\"").arg( m_path ) ;
 	}
 	this->setWindowTitle( msg );
 

@@ -9,7 +9,7 @@ This tool depends on the following packages installed to build, their precise na
 6. cryptsetup-devel
 7. cmake
 
-The package is made up of two components,the command line "pure C" based backend components and Qt/C++ based front end components.
+The package is made up of two components,the command line "pure C" based backend components and GUI Qt/C++ based front end components.
 
 After you have above packages installed,run these 5 command to build and install.
 The last command depends on your distribution,go with the one recommended by disto.
@@ -38,6 +38,8 @@ them not to( udev is known to identify some external hard drives as system )
 4.0 make
 
 5.0 make install ( or sudo make install or su -c "make install" )
+
+6.0 to uninstall the program,run make uninstall( or sudo make uninstall or su -c "make uninstall" )
 
 After you have it installed,run "zuluCrypt-test" to make sure everything is working as expected.
 
