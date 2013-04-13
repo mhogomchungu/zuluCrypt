@@ -117,9 +117,12 @@ static inline int _allowedDevice( const char * device )
 			StringPrefixMatch( device,"md",2 ) ||
 			StringPrefixMatch( device,"mmc",3 ) ){
 			return 1 ;
+		}else{
+			return 0 ;
 		}
+	}else{
+		return 0 ;
 	}
-	return 0 ;
 }
 
 static stringList_t _zuluCryptAddLVMVolumes( stringList_t stl )

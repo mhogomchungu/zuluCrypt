@@ -31,8 +31,9 @@ int zuluCryptCheckOpenedMapper( const char * mapper )
 	
 	DIR * dir = opendir( crypt_get_dir() ) ;
 	
-	if( dir == NULL )
+	if( dir == NULL ){
 		return 2 ;
+	}
 	
 	while( *++c != '-' ) { ; }
 	while( *++c != '-' ) { ; }
