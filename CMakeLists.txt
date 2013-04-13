@@ -187,7 +187,7 @@ if( BUILD_TCPLAY )
 endif( BUILD_TCPLAY )
 
 if( CRYPTSETUP_VERSION VERSION_GREATER "1.5.1" )
-	message( STATUS "version of cryptsetup is greater than 1.5.1,support for opening of truecrypt compatible containers is enabled" )
+	message( STATUS "version of cryptsetup is atleast 1.6.0,support for opening of truecrypt compatible containers is enabled" )
 endif( CRYPTSETUP_VERSION VERSION_GREATER "1.5.1" )
 
 message ( STATUS "---------------------------------------------------------------------------" )

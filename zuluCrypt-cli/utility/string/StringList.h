@@ -126,6 +126,8 @@ stringList_t StringListSplit( const char * cstring,char splitter ) ;
  * 
  * another way of doing the same thing:
  * string_t p = StringListAssignString( stl,String( "abc" ) ) ; 
+ * NOTE:This is a dangerous function as it does not guard against StringVoid.
+ * Assign StringVoid and segfault will surely happen sooner or later.
  */
 string_t * StringListAssign( stringList_t ) ;
 
