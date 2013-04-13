@@ -34,14 +34,16 @@ bool auto_mount_helper::deviceIsSystem( void )
 	QString exe = QString( "%1 -S" ).arg( zuluMount ) ;
 	p.start( exe );
 	p.waitForFinished() ;
-	QString s = QString( p.readAll() ) ;
-	p.close();
-	QStringList l = s.split( "\n" ) ;
-	int j = l.size() ;
+	if( p.exitCode() == 0 ){
+		QString s = QString( p.readAll() ) ;
+		p.close();
+		QStringList l = s.split( "\n" ) ;
+		int j = l.size() ;
 
-	for( int i = 0 ; i < j ; i++ ){
-		if( l.at( i ) == m_device ){
-			return true ;
+		for( int i = 0 ; i < j ; i++ ){
+			if( l.at( i ) == m_device ){
+				return true ;
+			}
 		}
 	}
 	return false ;
@@ -58,9 +60,9 @@ void auto_mount_helper::volumeProperties( void )
 	p.start( exe );
 	p.waitForFinished() ;
 	QString m = p.readAll() ;
-
+	QStringList l ;
 	if( p.exitCode() == 0 ){
-		QStringList l =  m.split( "\t" ) ;
+		l =  m.split( "\t" ) ;
 		if( l.size() >= 4 ){
 			if( this->deviceIsSystem() ){
 				emit getVolumeSystemInfo( l ) ;
@@ -68,6 +70,10 @@ void auto_mount_helper::volumeProperties( void )
 				emit getVolumeInfo( l );
 			}
 		}
+	}else{
+		/*
+		 * We will get here if the device if found to have not supported volume types ie LVM and MDRAID signatures.
+		 */
 	}
 }
 

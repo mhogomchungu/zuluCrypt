@@ -122,16 +122,19 @@ void managepartitionthread::getVolumeType()
 	p.waitForFinished() ;
 
 	QString m = p.readAll() ;
-
+	QStringList l ;
 	if( p.exitCode() == 0 ){
-		QStringList l =  m.split( "\t" ) ;
+		l =  m.split( "\t" ) ;
 		if( l.size() >= 4 ){
 			if( m_systemDevice ){
 				emit getVolumeSystemInfo( l ) ;
 			}else{
-				emit getVolumeInfo( l );;
+				emit getVolumeInfo( l );
 			}
 		}
+	}else{
+		emit getVolumeSystemInfo( l ) ;
+		emit getVolumeInfo( l );
 	}
 }
 

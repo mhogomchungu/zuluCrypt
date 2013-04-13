@@ -139,6 +139,9 @@ void MainWindow::autoMountVolumeSystemInfo( QStringList l )
 {
 	//QString s = QString( "system device added: device=%1" ).arg( l.at( 0 ) ) ;
 	//qDebug() << s ;
+	if( l.size() == 0 ){
+		return ;
+	}
 	if( l.at( 0 ).size() == strlen( "/dev/sdX" ) && l.at( 2 ) == QString( "Nil" ) ){
 		/*
 		 * root device with no file system,dont show them.This will be a bug if a user just put a plain volume
@@ -157,6 +160,9 @@ void MainWindow::autoMountAddToTable( QString entry )
 
 void MainWindow::autoMountVolumeInfo( QStringList l )
 {
+	if( l.size() == 0 ){
+		return ;
+	}
 	QString dev = l.at( 0 ) ;
 	QString type = l.at( 2 ) ;
 	//QString s = QString( "non system device added: device=%1" ).arg( dev ) ;
@@ -486,6 +492,10 @@ void MainWindow::showMoungDialog( QStringList l )
 {
 	if( l.size() >= 4  ){
 		this->mount( l.at( 2 ),l.at( 0 ),l.at( 3 ) );
+	}else{
+		DialogMsg msg( this ) ;
+		msg.ShowUIOK( QString( "ERROR" ),QString( "permission to access the volume was denied\nor\nthe volume is not supported\n(LVM/MDRAID signatures found)" ) ) ;
+		this->enableAll();
 	}
 }
 
@@ -630,8 +640,8 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 		/*
 		 * MDRAID partitions have "linux_raid_member" as their file system
 		 * LVM partitions have "LVM2_member" as their file system
-		 * 
-		 * we are not showing these partitions since we dont support them 
+		 *
+		 * we are not showing these partitions since we dont support them
 		 */
 		if( fs == QString( "swap" ) || fs.contains( QString( "member" ) ) ){
 			continue ;
@@ -655,9 +665,9 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 			continue ;
 		}
 		opt = entries.at( 4 ) ;
-		if( opt == QString( "Nil" ) || opt == QString( "1.0 KB" ) )
+		if( opt == QString( "Nil" ) || opt == QString( "1.0 KB" ) ){
 			continue ;
-
+		}
 		if( sys.contains( entries.at( 0 ) ) ){
 			tablewidget::addRowToTable( table,entries,f ) ;
 		}else{
