@@ -198,9 +198,9 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 		}
 	}else{
 		/*
-		 * failed to open it with normal user privileges,try to open it with root's
+		 * failed to open above with users privileges,try to open the device with root's privileges.
+		 * We should only accept block devices in "/dev/" but not in "/dev/shm". 
 		 */
-		
 		seteuid( 0 ) ;
 		
 		*fd_path = open( file,O_RDONLY ) ;
@@ -211,11 +211,7 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 			 * zuluCryptGetFileNameFromFileDescriptor() is defined in ./create_loop_device.c
 			 */
 			*dev = zuluCryptGetFileNameFromFileDescriptor( *fd_path ) ;
-			/*
-			 * A user has access to the device.
-			 * we close the file when we are done examining them because they can not be moved under us and we dont have to
-			 * hold on to them.Besides,we cant even if we want to as cryptsetup will demand exclusive access to them. 
-			 */
+			
 			if( S_ISBLK( stat_st.st_mode ) ){
 				if( StringPrefixMatch( *dev,"/dev/shm/",9 ) ){
 					/*
@@ -224,7 +220,7 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 					st = 1 ;
 				}else if( StringPrefixMatch( *dev,"/dev/",5 ) ){
 					/*
-					* got the block device we want,accept it
+					* got a block device,accept it
 					*/
 					st = 0 ;
 				}else{
@@ -241,6 +237,10 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 				 */
 				st = 100 ;
 			}
+			/*
+			 * We are closing the file because we dont need to hold on to it as paths in "/dev/" can not be moved under us by
+			 * normal users.
+			 */
 			close( *fd_path ) ;
 			*fd_path = -1 ;
 		}else{
