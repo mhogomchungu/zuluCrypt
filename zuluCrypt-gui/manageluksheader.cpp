@@ -311,6 +311,8 @@ void manageluksheader::threadExitStatus( int st )
 		case 16: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not resolve path to device" ) )					; break ;
 		case 17: msg.ShowUIOK( tr( "ERROR!" ),tr( "backup file does not appear to contain luks header" ) )			; break ;
 		case 18: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open device for reading" ) )			; break ;
+		case 113: msg.ShowUIOK( tr( "ERROR!" ),tr( "device is not a luks device" ) ) 						; break ;   
+		default : msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR! with status number %1 encountered" ).arg( st ) );
 	}
 	this->enableAll();
 }

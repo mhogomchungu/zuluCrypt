@@ -114,6 +114,7 @@ static inline int _allowedDevice( const char * device )
 	}else if( sts > 3 ){
 		if(	StringPrefixMatch( device,"hd",2 ) || 
 			StringPrefixMatch( device,"sd",2 ) ||
+			StringPrefixMatch( device,"md",2 ) ||
 			StringPrefixMatch( device,"mmc",3 ) ){
 			return 1 ;
 		}

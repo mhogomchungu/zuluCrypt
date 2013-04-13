@@ -327,6 +327,7 @@ void luksaddkey::threadfinished( int status )
 		case 12 : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open key file for reading" ) );			break ;
 		case 13 : msg.ShowUIOK( tr( "ERROR!" ),tr( "only root user can add keys to system devices" ) );				break ;
 		case 110: msg.ShowUIOK( tr( "ERROR!" ),tr( "can not find a partition that match presented UUID" ) );			break ;
+		case 113: msg.ShowUIOK( tr( "ERROR!" ),tr( "device is not a luks device" ) ) ;				     	break ;   
 		default : msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR! with status number %1 encountered" ).arg( status ) );
 	}
 	enableAll();
