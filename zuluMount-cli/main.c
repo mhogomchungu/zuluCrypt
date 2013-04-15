@@ -340,9 +340,12 @@ static int _checkUnmount( const char * device,uid_t uid )
 	stx = zuluCryptGetMoutedListFromMountInfo() ;
 	zuluCryptSecurityGainElevatedPrivileges() ;
 	
-	index = StringListHasStartSequence( stx,device ) ;
-	
+	st = String( device ) ;
+	index = StringListHasStartSequence( stx,StringAppend( st," " ) ) ;
+	StringDelete( &st ) ;
+
 	if( index != -1 ){
+		device = StringListContentAt( stx,index ) ;
 		/*
 		 * zuluCryptBindUnmountVolume() is defined in ../zuluCrypt-cli/bin/bind.c
 		 */
@@ -501,7 +504,7 @@ Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The de
 		case 2 : printf( "ERROR: given path is a directory\n" ) ;  					 		return 221 ;
 		case 3 : printf( "ERROR: a file can have only one hard link\n" ) ;				 		return 222 ;
 		case 4 : printf( "ERROR: insufficient privilges to access the device\n" ) ; 					return 223 ;
-		default: printf( msg ) ; 											return 224 ;
+		default: printf( "%s",msg ) ; 											return 224 ;
 	}
 }
 
