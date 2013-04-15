@@ -52,6 +52,8 @@ add_executable( zuluMount-gui ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
 
 TARGET_LINK_LIBRARIES( zuluMount-gui ${QT_LIBRARIES} ${blkid} zuluCryptPluginManager -lQtNetwork )
 
+set_target_properties( zuluMount-gui PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
+
 install( TARGETS zuluMount-gui RUNTIME DESTINATION bin )
 
 install ( FILES zuluMount.desktop 

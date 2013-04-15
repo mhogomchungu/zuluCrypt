@@ -111,6 +111,8 @@ add_executable( zuluCrypt-gui ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS}  )
 
 target_link_libraries( zuluCrypt-gui zuluCryptPluginManager -lQtNetwork zuluCryptMD5 ) 
 
+ set_target_properties( zuluCrypt-gui PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
+
 if( library_pwquality )
 	if( kwallet_library )
 		TARGET_LINK_LIBRARIES( zuluCrypt-gui ${QT_LIBRARIES} ${blkid} ${library_pwquality} ${kwallet_library} )
