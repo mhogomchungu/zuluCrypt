@@ -394,8 +394,8 @@ int _loop_device_module_is_not_present( void )
 int main( void )
 {	
 	if( _loop_device_module_is_not_present() ){
-		printf( "\nERROR: \"loop\" kernel module does not appear to be loaded and some tests may fail without it\n" ) ;
-		printf( "run as root \"modprobe loop\" to load it up and try again\n\n" ) ;
+		printf( "\nERROR: \"loop\" kernel module does not appear to be loaded\n" ) ;
+		printf( "tests and opening of encrypted containers in files will fail if the module was not built into the kernel\n\n" ) ;
 	}
 	
 	createTestImages() ;
