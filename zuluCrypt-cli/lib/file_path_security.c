@@ -229,8 +229,6 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 					*/
 					st = 100 ;
 				}			
-			}else if( S_ISDIR( stat_st.st_mode ) ){
-				st = 2 ;
 			}else{
 				/*
 				 * whatever it is,it cant be good,reject it
