@@ -144,6 +144,7 @@
 	set_target_properties( keyring PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread  -pedantic -std=c99" )
 	set_target_properties( keyring PROPERTIES LINK_FLAGS "-pie" )
 	TARGET_LINK_LIBRARIES( keyring zuluCryptPluginManager ${keyring_library} ${blkid} )
+ 	set_target_properties( keyring PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
 	install( TARGETS keyring RUNTIME DESTINATION "${PLUGINPATH}" )
  endif( KEYRINGSUPPORT )
  
@@ -168,7 +169,9 @@
  set_target_properties( zuluCrypt-testKey PROPERTIES LINK_FLAGS "-pie" )
  
  TARGET_LINK_LIBRARIES( zuluCrypt-testKey zuluCryptPluginManager ${blkid} )
- 
+ set_target_properties( zuluCrypt-testKey PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
+ set_target_properties( zuluCrypt-test PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
+
  file( WRITE ${PROJECT_BINARY_DIR}/libzuluCrypt.pc 
  "prefix=${CMAKE_INSTALL_PREFIX}
 exec_prefix=${CMAKE_INSTALL_PREFIX}

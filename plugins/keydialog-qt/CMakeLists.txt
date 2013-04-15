@@ -13,7 +13,7 @@ QT4_ADD_RESOURCES( ICON icon.qrc )
 add_executable( keydialog-qt ${ICON} ${MOC} ${UI} main.cpp mainwindow.cpp ../../zuluCrypt-gui/socketsendkey.cpp ../../zuluCrypt-gui/dialogmsg.cpp )
 
 TARGET_LINK_LIBRARIES( keydialog-qt ${QT_LIBRARIES} zuluCryptPluginManager ${blkid} ) 
-
+set_target_properties( keydialog-qt PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
 set_target_properties( keydialog-qt PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread -pedantic " )
 
 install( TARGETS keydialog-qt RUNTIME DESTINATION "${PLUGINPATH}" )

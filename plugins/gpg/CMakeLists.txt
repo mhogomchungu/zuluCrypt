@@ -13,7 +13,7 @@ QT4_ADD_RESOURCES( ICON icon.qrc )
 add_executable( gpg ${ICON} ${MOC} ${UI} main.cpp mainwindow.cpp getgpgkey.cpp ../../zuluCrypt-gui/dialogmsg.cpp ../../zuluCrypt-gui/socketsendkey.cpp )
 
 TARGET_LINK_LIBRARIES( gpg ${QT_LIBRARIES} zuluCryptPluginManager ${blkid} ) 
-
+set_target_properties( gpg PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
 set_target_properties( gpg PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread -pedantic " )
 
 install( TARGETS gpg RUNTIME DESTINATION "${PLUGINPATH}" )
