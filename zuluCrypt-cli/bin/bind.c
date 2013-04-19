@@ -277,6 +277,9 @@ int zuluCryptBindMountVolume( const char * device,string_t z_path,unsigned long 
 		mkdir( m_path,S_IRWXU | S_IRWXG | S_IRWXG ) ;
 		chown( m_path,0,0 ) ;
 		xt = _bind_mount( device,o_path,m_path,stl,flags ) ;
+		if( xt != 0 ){
+			rmdir( m_path ) ;
+		}
 	}
 	
 	StringListDelete( &stl ) ;
