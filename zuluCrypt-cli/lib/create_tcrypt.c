@@ -28,7 +28,8 @@
 
 #if TRUECRYPT_CREATE
 
-static int _create_file_system( const char * device,const char * fs,const char * key,int key_source,int volume_type )
+static int _create_file_system( const char * device,const char * fs,
+				const char * key,size_t key_len,int key_source,int volume_type )
 {	
 	string_t m = StringVoid ;
 	
@@ -49,7 +50,7 @@ static int _create_file_system( const char * device,const char * fs,const char *
 	/*
 	 * zuluCryptOpenTcrypt() is defined in open_tcrypt.c
 	 */
-	if( zuluCryptOpenTcrypt( device,mapper,key,key_source,volume_type,NULL,0,0,NULL ) == 0 ){
+	if( zuluCryptOpenTcrypt( device,mapper,key,key_len,key_source,volume_type,NULL,0,0,NULL ) == 0 ){
 		/*
 		 * zuluCryptCreateFileSystemInAVolume() is defined in create_volume.c
 		 */
@@ -70,7 +71,8 @@ static int _create_file_system( const char * device,const char * fs,const char *
 	return r ;
 }
 
-static int _create_tcrypt_volume( const char * device,const char * file_system,const char * rng,const char * key,int key_source,int volume_type )
+static int _create_tcrypt_volume( const char * device,const char * file_system,
+				  const char * rng,const char * key,size_t key_len,int key_source,int volume_type )
 {
 	string_t st = StringVoid ;
 	
@@ -119,7 +121,7 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,c
 			chown( ZULUCRYPTtempFolder,0,0 ) ;
 		}
 		
-		st = String( ZULUCRYPTtempFolder"/open_tcrypt-" ) ;
+		st = String( ZULUCRYPTtempFolder"/create_tcrypt-" ) ;
 		file = StringAppendInt( st,syscall( SYS_gettid ) ) ;
 		fd = open( file,O_WRONLY|O_CREAT ) ;
 		
@@ -128,7 +130,7 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,c
 			return 3 ;
 		}
 		
-		write( fd,key,StringSize( key ) ) ;
+		write( fd,key,key_len ) ;
 		close( fd ) ;
 		
 		chown( file,0,0 ) ;
@@ -145,7 +147,7 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,c
 		r = tc_api_create_volume( &api_opts );
 		tc_api_uninit() ;
 		if( r == TC_OK ){
-			r = _create_file_system( device,file_system,key,key_source,volume_type ) ;
+			r = _create_file_system( device,file_system,key,key_len,key_source,volume_type ) ;
 		}else{
 			r = 3 ;
 		}
@@ -161,20 +163,21 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,c
 	return r ;
 }
 
-int zuluCryptCreateTCrypt( const char * device,const char * file_system,const char * rng,const char * key,int key_source,int volume_type )
+int zuluCryptCreateTCrypt( const char * device,const char * file_system,const char * rng,
+			   const char * key,size_t key_len,int key_source,int volume_type )
 {
 	int fd ;
 	string_t q = StringVoid ;
 	int r ;
 	if( StringPrefixMatch( device,"/dev/",5 ) ){
-		r = _create_tcrypt_volume( device,file_system,rng,key,key_source,volume_type ) ;
+		r = _create_tcrypt_volume( device,file_system,rng,key,key_len,key_source,volume_type ) ;
 	}else{
 		/*
 		 * zuluCryptAttachLoopDeviceToFile() is defined in create_loop_device.c
 		 */
 		if( zuluCryptAttachLoopDeviceToFile( device,O_RDWR,&fd,&q ) ){
 			device = StringContent( q ) ;
-			r = _create_tcrypt_volume( device,file_system,rng,key,key_source,volume_type ) ;
+			r = _create_tcrypt_volume( device,file_system,rng,key,key_len,key_source,volume_type ) ;
 			close( fd ) ;
 			StringDelete( &q ) ;
 		}else{
@@ -186,7 +189,8 @@ int zuluCryptCreateTCrypt( const char * device,const char * file_system,const ch
 }
 
 #else
-int zuluCryptCreateTCrypt( const char * device,const char * file_system,const char * rng,const char * key,int key_source,int volume_type )
+int zuluCryptCreateTCrypt( const char * device,const char * file_system,const char * rng,
+			   const char * key,size_t key_len,int key_source,int volume_type )
 {
 	if( device ){;}
 	if( file_system ){;}
@@ -194,6 +198,7 @@ int zuluCryptCreateTCrypt( const char * device,const char * file_system,const ch
 	if( key_source ){;}
 	if( key ){;}
 	if( volume_type ){;}
+	if( key_len ) {;}
 	return 3 ;
 }
 #endif

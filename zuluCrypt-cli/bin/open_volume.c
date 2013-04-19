@@ -304,12 +304,12 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 				/*
 				* zuluCryptOpenTcrypt() is defined in ../lib/open_tcrypt.c
 				*/
-				st = zuluCryptOpenTcrypt( device,*mapper_name,cpass,TCRYPT_PASSPHRASE,volume_type,cpoint,uid,m_flags,fs_opts ) ;
+				st = zuluCryptOpenTcrypt( device,*mapper_name,cpass,len,TCRYPT_PASSPHRASE,volume_type,cpoint,uid,m_flags,fs_opts ) ;
 			}else{
-				st = zuluCryptOpenTcrypt( device,*mapper_name,cpass,TCRYPT_KEYFILE,volume_type,cpoint,uid,m_flags,fs_opts ) ;
+				st = zuluCryptOpenTcrypt( device,*mapper_name,cpass,len,TCRYPT_KEYFILE,volume_type,cpoint,uid,m_flags,fs_opts ) ;
 			}
 		}else{	
-			st = zuluCryptOpenTcrypt( device,*mapper_name,cpass,TCRYPT_PASSPHRASE,volume_type,cpoint,uid,m_flags,fs_opts ) ;
+			st = zuluCryptOpenTcrypt( device,*mapper_name,cpass,len,TCRYPT_PASSPHRASE,volume_type,cpoint,uid,m_flags,fs_opts ) ;
 		}
 		
 		if( st == 15 || st == 0 ){

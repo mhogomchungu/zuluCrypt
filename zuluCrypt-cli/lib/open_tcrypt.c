@@ -73,7 +73,8 @@ int zuluCryptVolumeIsTcrypt( const char * device,const char * key,int key_source
  * 1 is returned if a volume was not successfully opened or functionality is not supported 
  */
 
-static int _tcrypt_open_using_key( const char * device,const char * mapper,unsigned long m_opts,const char * key,int volume_type )
+static int _tcrypt_open_using_key( const char * device,const char * mapper,unsigned long m_opts,
+				   const char * key,size_t key_len,int volume_type )
 {
 	uint32_t flags = 0 ;
 	
@@ -87,7 +88,7 @@ static int _tcrypt_open_using_key( const char * device,const char * mapper,unsig
 	memset( &params,'\0',sizeof( struct crypt_params_tcrypt ) ) ;
 	
 	params.passphrase       = key ;
-	params.passphrase_size  = StringSize( key ) ;
+	params.passphrase_size  = key_len ;
 	
 	if( volume_type == TCRYPT_HIDDEN ){
 		params.flags = CRYPT_TCRYPT_LEGACY_MODES | CRYPT_TCRYPT_HIDDEN_HEADER ;
@@ -107,7 +108,8 @@ static int _tcrypt_open_using_key( const char * device,const char * mapper,unsig
 	}
 }
 
-static int _tcrypt_open_using_keyfile( const char * device,const char * mapper,unsigned long m_opts,const char * key,int volume_type )
+static int _tcrypt_open_using_keyfile( const char * device,const char * mapper,unsigned long m_opts,
+				       const char * key,size_t key_len,int volume_type )
 {
 	string_t st = StringVoid ;
 	int xt ;
@@ -145,7 +147,7 @@ static int _tcrypt_open_using_keyfile( const char * device,const char * mapper,u
 		return zuluExit_1( 1,cd,st ) ;
 	}
 
-	write( fd,key,StringSize( key ) ) ;
+	write( fd,key,key_len ) ;
 	close( fd ) ;
 	
 	chown( file,0,0 ) ;
@@ -179,7 +181,7 @@ static int _tcrypt_open_using_keyfile( const char * device,const char * mapper,u
 	}
 }
 
-int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char *key, 
+int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * key,size_t key_len,
 			 int key_source,int volume_type,const char * m_point,
 			 uid_t id,unsigned long m_opts,const char * fs_opts )
 {	
@@ -197,9 +199,9 @@ int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char *key
 	}
 	if( StringPrefixMatch( device,"/dev/",5 ) ){
 		if( key_source == TCRYPT_KEYFILE ){
-			h = _tcrypt_open_using_keyfile( device,mapper,m_opts,key,volume_type ) ;
+			h = _tcrypt_open_using_keyfile( device,mapper,m_opts,key,key_len,volume_type ) ;
 		}else{
-			h = _tcrypt_open_using_key( device,mapper,m_opts,key,volume_type ) ;
+			h = _tcrypt_open_using_key( device,mapper,m_opts,key,key_len,volume_type ) ;
 		}
 	}else{
 		/*
@@ -208,9 +210,9 @@ int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char *key
 		if( zuluCryptAttachLoopDeviceToFile( device,lmode,&fd,&q ) ){
 			device = StringContent( q ) ;
 			if( key_source == TCRYPT_KEYFILE ){
-				h = _tcrypt_open_using_keyfile( device,mapper,m_opts,key,volume_type ) ;
+				h = _tcrypt_open_using_keyfile( device,mapper,m_opts,key,key_len,volume_type ) ;
 			}else{
-				h = _tcrypt_open_using_key( device,mapper,m_opts,key,volume_type ) ;
+				h = _tcrypt_open_using_key( device,mapper,m_opts,key,key_len,volume_type ) ;
 			}
 			close( fd ) ;
 			StringDelete( &q ) ;
@@ -256,6 +258,7 @@ int zuluCryptVolumeIsTcrypt( const char * device,const char * key,int key_source
 	if( device ){;}
 	if( key ){;}
 	if( key_source ){;}
+	if( key_len ) {;}
 	return 0 ;
 }
 
@@ -263,7 +266,7 @@ int zuluCryptVolumeIsTcrypt( const char * device,const char * key,int key_source
  * 0 is returned if a volume was successfully opened.
  * 1 is returned if a volume was not successfully opened or functionality is not supported 
  */
-int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char *key, 
+int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * key,size_t key_len,
 			 int key_source,int volume_type,const char * m_point,
 			 uid_t id,unsigned long m_opts,const char * fs_opts )
 {
@@ -276,6 +279,7 @@ int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char *key
 	if( id ) {;}
 	if( m_opts ) {;}
 	if( fs_opts ) {;}
+	if( key_len ) {;}
 	return 1 ;
 }
 

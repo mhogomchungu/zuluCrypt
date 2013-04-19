@@ -225,7 +225,8 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 				/*
 				 * zuluCryptCreateTCrypt() is defined in ../lib/create_tcrypt.c
 				 */
-				st = zuluCryptCreateTCrypt( device,fs,rng,StringContent( *pass_1 ),TCRYPT_PASSPHRASE,TCRYPT_NORMAL );
+				st = zuluCryptCreateTCrypt( device,fs,rng,StringContent( *pass_1 ),
+							    StringLength( *pass_1 ),TCRYPT_PASSPHRASE,TCRYPT_NORMAL );
 			}else{
 				st = zuluCryptCreateVolume( device,fs,type,StringContent( *pass_1 ),StringLength( *pass_1 ),rng ) ;
 			}	
@@ -246,7 +247,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		if( StringsAreEqual( keyType,"-p" ) ){
 			zuluCryptSecurityGainElevatedPrivileges() ;
 			if( StringPrefixMatch( type,"tcrypt",6 ) || StringPrefixMatch( type,"truecrypt",9 ) ){
-				st = zuluCryptCreateTCrypt( device,fs,rng,pass,TCRYPT_PASSPHRASE,TCRYPT_NORMAL );
+				st = zuluCryptCreateTCrypt( device,fs,rng,pass,strlen( pass ),TCRYPT_PASSPHRASE,TCRYPT_NORMAL );
 			}else{
 				st = zuluCryptCreateVolume( device,fs,type,pass,strlen( pass ),rng ) ;
 			}
@@ -267,9 +268,11 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 			if( StringPrefixMatch( type,"tcrypt",6 ) || StringPrefixMatch( type,"truecrypt",9 ) ){
 				if( StringsAreEqual( keyType,"-f" ) ){
 					if( !StringHasComponent( pass,"/.zuluCrypt-socket" ) ){
-						st = zuluCryptCreateTCrypt( device,fs,rng,StringContent( *content ),TCRYPT_KEYFILE,TCRYPT_NORMAL );
+						st = zuluCryptCreateTCrypt( device,fs,rng,StringContent( *content ),
+									    StringLength( *content ),TCRYPT_KEYFILE,TCRYPT_NORMAL );
 					}else{
-						st = zuluCryptCreateTCrypt( device,fs,rng,StringContent( *content ),TCRYPT_PASSPHRASE,TCRYPT_NORMAL );
+						st = zuluCryptCreateTCrypt( device,fs,rng,StringContent( *content ),
+									    StringLength( *content ),TCRYPT_PASSPHRASE,TCRYPT_NORMAL );
 					}
 				}
 			}else{
