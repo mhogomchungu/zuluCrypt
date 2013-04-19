@@ -83,7 +83,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	const char * keyType = opts->key_source ;
 	const char * pass    = opts->key ;
 	const char * rng     = opts->rng ;
-	
+	char * e ;
 	/*
 	 * Below is a form of memory management.All strings are collected in a stringlist object to easily delete them
 	 * when the function returns.This allows for the function to have multiple exit points without risks of leaking
@@ -157,10 +157,17 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	if( k == 1 ){
 		return zuluExit( 18,stl ) ;
 	}
-	if( !StringPrefixMatch( device,"/dev/",5 ) ){
-		stat( device,&xt ) ;
-		if( xt.st_size < 3145728 ){
-			return zuluExit( 9,stl ) ;
+	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
+		/*
+		 * zuluCryptLoopDeviceAddress_1() is defined in ../lib/create_loop_device.c
+		 */
+		e = zuluCryptLoopDeviceAddress_1( device ) ;
+		if( e != NULL ){
+			stat( e,&xt ) ;
+			free( e ) ;
+			if( xt.st_size < 3145728 ){
+				return zuluExit( 9,stl ) ;
+			}
 		}
 	}
 	
