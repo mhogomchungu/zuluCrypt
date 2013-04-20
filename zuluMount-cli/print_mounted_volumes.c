@@ -152,37 +152,36 @@ void zuluMountPartitionProperties( const char * device,const char * UUID,const c
 	}
 	
 	blkid_free_probe( blkid );
-		
-	if( blkid_device_size == -1 ){
-		printf( "\tNil" ) ;
-	}else{
-		g = StringIntToString_1( buffer,SIZE,blkid_device_size ) ;
-		zuluCryptFormatSize( format,g ) ;
-		printf( "\t%s",format ) ;
-	}
 	
 	if( m_point == NULL ){
-		zuluCryptSecurityDropElevatedPrivileges();
-		printf( "\tNil\n" ) ;
-		return ;
-	}
+		if( blkid_device_size == -1 ){
+			printf( "\tNil\tNil\n" ) ;
+		}else{
+			g = StringIntToString_1( buffer,SIZE,blkid_device_size ) ;
+			zuluCryptFormatSize( format,g ) ;
+			printf( "\t%s\tNil\n",format ) ;
+		}
+	}else{
+		if( statvfs( m_point,&vfs ) != 0 ){
+			printf( "\tNil\tNil\n" ) ;
+		}else{
+			block_size = vfs.f_frsize ;
 		
-	if( statvfs( m_point,&vfs ) != 0 ){
-		zuluCryptSecurityDropElevatedPrivileges();
-		printf( "\tNil\n" ) ;
-		return ;
+			total = block_size * vfs.f_blocks  ;
+		
+			g = StringIntToString_1( buffer,SIZE,total ) ;
+			zuluCryptFormatSize( format,g ) ;
+			printf( "\t%s",format ) ;
+			
+			free_space = block_size * vfs.f_bavail  ;
+		
+			used = total - free_space ;
+		
+			snprintf( buff,SIZE,"%.2f%%",100 * ( ( float ) used / ( float ) total ) ) ;
+			printf( "\t%s\n",buff ) ;
+		}
 	}
 	
-	block_size = vfs.f_frsize ;
-	
-	total = block_size * vfs.f_blocks  ;
-	
-	free_space = block_size * vfs.f_bavail  ;
-		
-	used = total - free_space ;
-
-	snprintf( buff,SIZE,"%.2f%%",100 * ( ( float ) used / ( float ) total ) ) ;
-	printf( "\t%s\n",buff ) ;
 	zuluCryptSecurityDropElevatedPrivileges();
 }
 

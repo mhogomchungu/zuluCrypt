@@ -45,7 +45,6 @@ void zuluCryptEXEGetOptsSetDefault( struct_opts * stopts )
 	stopts->env  = NULL ;
 	stopts->print_partition_type = 0 ;
 	stopts->share = 0 ;
-	stopts->tcrypt_hidden_volume = 0 ;
 }
 
 void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )

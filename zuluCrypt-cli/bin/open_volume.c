@@ -26,6 +26,11 @@
  * An explanation for the "zuluCryptKeyFromFile" and "zuluCryptKeyFromPass" entries is in ../lib/open_volume.c
  */ 
 
+static int _open_tcrypt( const char * device,const char * mapper_name,const char * key,
+			 size_t key_len,const char * key_source,const char * key_origin,
+			 int volume_type,const char * m_point,uid_t uid,
+			 unsigned long m_flags,const char * fs_opts ) ;
+
 static void _printResult( const char * device,const char * m_point,uid_t uid,const char * mapping_name )
 {
 	char * e ;
@@ -119,8 +124,6 @@ static int zuluExit_1( int st,const struct_opts * opts,const char * device,const
 
 int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,uid_t uid )
 {
-	int volume_type ;
-	int hidden_volume        = opts->tcrypt_hidden_volume ;
 	int share                = opts->share ;
 	int nmp                  = opts->open_no_mount ;
 	const char * device      = opts->device ;
@@ -289,33 +292,15 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	
 	if( st == 4 ){
 		/*
-		 * failed to open LUKS or PLAIN volume,assume the volume is truecrypt and try to open it as one
-		 */		
-		
-		if( hidden_volume ){
-			volume_type = TCRYPT_HIDDEN ;
-		}else{
-			volume_type = TCRYPT_NORMAL ;
-		}
-		
+		 * failed to open LUKS or PLAIN volume,assume it is a normal truecrypt volume and try to open it as one
+		 */
 		zuluCryptSecurityGainElevatedPrivileges() ;
-		if( StringsAreEqual( source,"-f" ) ){
-			if( StringHasComponent( pass,"/.zuluCrypt-socket/" ) ){
-				/*
-				* zuluCryptOpenTcrypt() is defined in ../lib/open_tcrypt.c
-				*/
-				st = zuluCryptOpenTcrypt( device,*mapper_name,cpass,len,TCRYPT_PASSPHRASE,volume_type,cpoint,uid,m_flags,fs_opts ) ;
-			}else{
-				st = zuluCryptOpenTcrypt( device,*mapper_name,cpass,len,TCRYPT_KEYFILE,volume_type,cpoint,uid,m_flags,fs_opts ) ;
-			}
-		}else{	
-			st = zuluCryptOpenTcrypt( device,*mapper_name,cpass,len,TCRYPT_PASSPHRASE,volume_type,cpoint,uid,m_flags,fs_opts ) ;
-		}
-		
-		if( st == 15 || st == 0 ){
-			;
-		}else{	
-			st = 4 ;
+		st = _open_tcrypt( device,*mapper_name,cpass,len,source,pass,TCRYPT_NORMAL,cpoint,uid,m_flags,fs_opts ) ;
+		if( st == 4 ){
+			/*
+			 * failed to open normal truecrypt volume,assume it is a hidden truecrypt volume
+			 */
+			st = _open_tcrypt( device,*mapper_name,cpass,len,source,pass,TCRYPT_HIDDEN,cpoint,uid,m_flags,fs_opts ) ;
 		}
 		zuluCryptSecurityDropElevatedPrivileges() ;
 	}
@@ -337,4 +322,32 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	 */
 	zuluCryptCheckInvalidKey( opts->device ) ;
 	return zuluExit_1( st,opts,device,cpoint,stl,uid,mapping_name );
+}
+
+static int _open_tcrypt( const char * device,const char * mapper_name,const char * key,
+			 size_t key_len,const char * key_source,const char * key_origin,
+			 int volume_type,const char * m_point,uid_t uid,
+			 unsigned long m_flags,const char * fs_opts )
+{
+	int st ;
+	if( StringsAreEqual( key_source,"-f" ) ){
+		if( StringHasComponent( key_origin,"/.zuluCrypt-socket/" ) ){
+			/*
+			 * zuluCryptOpenTcrypt() is defined in ../lib/open_tcrypt.c
+			 */
+			st = zuluCryptOpenTcrypt( device,mapper_name,key,key_len,TCRYPT_PASSPHRASE,volume_type,m_point,uid,m_flags,fs_opts ) ;
+		}else{
+			st = zuluCryptOpenTcrypt( device,mapper_name,key,key_len,TCRYPT_KEYFILE,volume_type,m_point,uid,m_flags,fs_opts ) ;
+		}
+	}else{	
+		st = zuluCryptOpenTcrypt( device,mapper_name,key,key_len,TCRYPT_PASSPHRASE,volume_type,m_point,uid,m_flags,fs_opts ) ;
+	}
+	
+	if( st == 15 || st == 0 ){
+		;
+	}else{
+		st = 4 ;
+	}
+	
+	return st ;
 }
