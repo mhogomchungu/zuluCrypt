@@ -169,7 +169,7 @@ void zuluMountPartitionProperties( const char * device,const char * UUID,const c
 		
 			total = block_size * vfs.f_blocks  ;
 		
-			g = StringIntToString_1( buffer,SIZE,total ) ;
+			g = StringIntToString_1( buffer,SIZE,blkid_device_size ) ;
 			zuluCryptFormatSize( format,g ) ;
 			printf( "\t%s",format ) ;
 			
