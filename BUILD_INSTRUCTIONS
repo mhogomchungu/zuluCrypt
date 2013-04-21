@@ -8,7 +8,8 @@ This tool depends on the following packages installed to build, their precise na
 5. gcc-c++
 6. cryptsetup-devel
 7. cmake
-
+8. libtcplay-devel( optional dependency used to create truecrypt volumes )
+		    
 The package is made up of two components,the command line "pure C" based backend components and GUI Qt/C++ based front end components.
 
 After you have above packages installed,run these 5 command to build and install.
