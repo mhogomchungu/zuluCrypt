@@ -224,6 +224,18 @@ ERROR: insuffienct privilege to manage a system partition.\nnecessary privileges
 	
 	rm_point = StringContent( z ) ;
 	
+	if( share ){
+		/*
+		 * zuluCryptBindSharedMountPointPathTaken() is defined in ../zuluCrypt-cli/bin/bind.c
+		 */
+		if( zuluCryptBindSharedMountPointPathTaken( z ) ){
+			zuluCryptSecurityGainElevatedPrivileges() ;
+			rmdir( rm_point ) ;
+			zuluCryptSecurityDropElevatedPrivileges() ;
+			return _zuluExit( 113,z,path,"ERROR: shared mount point path aleady taken" ) ;
+		}
+	}
+	
 	zuluCryptSecurityGainElevatedPrivileges() ;
 	/*
 	 * zuluCryptMountVolume() defined in ../zuluCrypt-cli/lib/mount_volume.c

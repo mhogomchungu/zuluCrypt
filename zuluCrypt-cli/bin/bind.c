@@ -212,6 +212,17 @@ static int _bind_mount( const char * device,const char * o_path,const char * m_p
 	return xt ;
 }
 
+int zuluCryptBindSharedMountPointPathTaken( string_t path )
+{
+	struct stat str ;
+	ssize_t index = StringLastIndexOfChar( path,'/' ) ;
+	string_t st = String( "/run/media/public" ) ;
+	const char * e = StringAppend( st,StringContent( path ) + index ) ;
+	int r = stat( e,&str ) ;
+	StringDelete( &st ) ;
+	return r == 0 ;
+}
+
 int zuluCryptBindMountVolume( const char * device,string_t z_path,unsigned long flags ) 
 {
 	struct stat st ;

@@ -63,7 +63,7 @@ static void _printResult( const char * device,const char * m_point,uid_t uid,con
 
 static int zuluExit( int st,const char * device,const char * m_point,stringList_t stl,uid_t uid,const char * mapping_name )
 {
-	switch ( st ){
+	switch( st ){
 		case 0 : _printResult( device,m_point,uid,mapping_name ) ;								break ;
 		case -1: printf( "ERROR: failed to mount a filesystem,invalid mount option or permission denied\n" ) ;			break ;
 		case 1 : printf( "ERROR: failed to mount ntfs file system using ntfs-3g,is ntfs-3g package installed?\n" ) ;		break ;
@@ -98,6 +98,7 @@ static int zuluExit( int st,const char * device,const char * m_point,stringList_
 		case 31: printf( "ERROR: insufficient privilege to mount the device with given options\n" ) ;				break ;
 		case 32: printf( "ERROR: ERROR: could not get elevated privilege,check binary permissions\n" ) ;			break ;
 		case 33: printf( "ERROR: only root user can perform this operation\n" ) ;						break ;
+		case 34: printf( "ERROR: shared mount point path aleady taken\n" ) ;							break ;
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
 	
@@ -210,7 +211,16 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 			return zuluExit( 21,device,cpoint,stl,uid,mapping_name ) ;
 		}
 	}
-
+	
+	if( share ){
+		/*
+		 * zuluCryptBindSharedMountPointPathTaken() is defined in bind.c
+		 */
+		if( zuluCryptBindSharedMountPointPathTaken( *m_point ) ){
+			return zuluExit_1( 34,opts,device,cpoint,stl,uid,mapping_name ) ;
+		}
+	}
+	
 	/*
 	 * ZULUCRYPTshortMapperPath is set in ../constants.h
 	 * zuluCryptCreateMapperName() is defined at ../lib/create_mapper_name.c
