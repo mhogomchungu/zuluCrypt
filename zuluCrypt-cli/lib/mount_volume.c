@@ -164,7 +164,7 @@ stringList_t zuluCryptGetFstabList( void )
 					}
 				}
 			}
-		}else if( StringPrefixMatch( entry,"UUID=",5 ) ){
+		}else if( StringPrefixMatch( entry,"UUID=",5 ) || StringPrefixMatch( entry,"uuid=",5 ) ){
 			entry = StringRemoveString( xt,"\"" ) ;
 			ac = _evaluate_tag( "UUID",entry + 5,&cache ) ;
 			if( ac != NULL ){
@@ -175,7 +175,7 @@ stringList_t zuluCryptGetFstabList( void )
 				}
 				free( ac ) ;
 			}
-		}else if( StringPrefixMatch( entry,"LABEL=",6 ) ){
+		}else if( StringPrefixMatch( entry,"LABEL=",6 ) || StringPrefixMatch( entry,"label=",6 ) ){
 			entry = StringRemoveString( xt,"\"" ) ;
 			ac = _evaluate_tag( "LABEL",entry + 6,&cache ) ;
 			if( ac != NULL ){
