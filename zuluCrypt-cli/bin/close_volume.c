@@ -25,7 +25,7 @@ static int zuluExit( int st,string_t p )
 	
 	switch( st ) {
 		case 0 : printf( "SUCCESS: volume closed successfully \n" );								  break ;		 
-		case 1 : printf( "ERROR: close failed, encrypted volume with that name does not exist\n" );      			  break ;
+		case 1 : printf( "ERROR: close failed, volume is not open or was opened by a different user\n" );      			  break ;
 		case 2 : printf( "ERROR: close failed, the mount point and/or one or more files are in use\n" );			  break ;
 		case 3 : printf( "ERROR: close failed, volume does not have an entry in /etc/mtab\n" ) ;        			  break ;
 		case 4 : printf( "ERROR: close failed, could not get a lock on /etc/mtab~\n" ) ;  	             			  break ;

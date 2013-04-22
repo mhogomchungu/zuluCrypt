@@ -138,7 +138,7 @@ int zuluMountVolumeStatus( const char * device,const char * UUID,uid_t uid )
 				st = zuluCryptEXEVolumeInfo( strrchr( dev,'/' ) + 1,dev,uid ) ;
 				free( dev ) ;		
 			}else{
-				printf( "ERROR: could not get volume info,is the volume opened?\n" ) ;
+				printf( "ERROR: could not get volume properties,volume is not open or was opened by a different user\n" ) ;
 				st = 1 ;
 			}
 		}else{
@@ -157,7 +157,7 @@ int zuluMountVolumeStatus( const char * device,const char * UUID,uid_t uid )
 				st = zuluCryptEXEVolumeInfo( e,dev,uid ) ;
 				free( dev ) ;
 			}else{
-				printf( "ERROR: could not get volume info,is the volume opened?\n" ) ;
+				printf( "ERROR: could not get volume properties,volume is not open or was opened by a different user" ) ;
 				st = 1 ;
 			}
 		}else{

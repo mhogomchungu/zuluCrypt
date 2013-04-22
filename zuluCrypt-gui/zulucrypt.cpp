@@ -532,7 +532,7 @@ void zuluCrypt::volumePropertyThreadFinished( QString properties )
 {
 	DialogMsg msg( this ) ;
 	if( properties.isEmpty() ){
-		msg.ShowUIOK( tr( "ERROR!"),tr( "volume doesnt seem to be accessible" ) );
+		msg.ShowUIOK( tr( "ERROR!"),tr( "volume is not open or was opened by a different user" ) );
 	}else{
 		msg.ShowUIVolumeProperties( tr( "volume properties" ),properties );
 	}
@@ -711,7 +711,7 @@ void zuluCrypt::closeStatus( int st )
 void zuluCrypt::closeStatusErrorMessage( int st )
 {
 	switch ( st ) {
-		case 1 :UIMessage( tr( "ERROR!" ),tr( "close failed, encrypted volume with that name does not exist" ) ) ;				break ;
+		case 1 :UIMessage( tr( "ERROR!" ),tr( "close failed, volume is not open or was opened by a different user" ) ) ;			break ;
 		case 2 :UIMessage( tr( "ERROR!" ),tr( "close failed, one or more files in the volume are in use." ) );					break ;
 		case 3 :UIMessage( tr( "ERROR!" ),tr( "close failed, volume does not have an entry in /etc/mtab" ) );					break ;
 		case 4 :UIMessage( tr( "ERROR!" ),tr( "close failed, could not get a lock on /etc/mtab~" ) );						break ;

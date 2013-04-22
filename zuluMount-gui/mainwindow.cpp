@@ -351,13 +351,13 @@ void MainWindow::volumeProperties( QString properties )
 	DialogMsg msg( this ) ;
 
 	if( properties.isEmpty() ){
-		msg.ShowUIOK( tr("ERROR"),tr("could not get volume properties" ) ) ;
+		msg.ShowUIOK( tr( "ERROR" ),tr( "could not get volume properties.\nvolume is not open or was opened by a different user" ) ) ;
 	}else{
 		int i = properties.indexOf( "\n" ) ;
 		if( i != -1 ){
-			msg.ShowUIVolumeProperties( tr("volume properties" ),properties.mid( i + 1 ) ) ;
+			msg.ShowUIVolumeProperties( tr( "volume properties" ),properties.mid( i + 1 ) ) ;
 		}else{
-			msg.ShowUIOK( tr("ERROR"),tr("could not get volume properties" ) ) ;
+			msg.ShowUIOK( tr( "ERROR" ),tr( "could not get volume properties.\nvolume is not open or was opened by a different user" ) ) ;
 		}
 	}
 	this->enableAll();
@@ -652,9 +652,9 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 		if( y.startsWith( QString( "/run/media/private/" ) ) ){
 			if( !y.startsWith( x ) ){
 				/*
-				 * dont show mount other user specific mounts
+				 * dont show volumes mounted by other users
 				 */
-				continue ;
+				//continue ;
 			}
 		}
 

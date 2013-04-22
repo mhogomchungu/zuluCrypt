@@ -345,15 +345,11 @@ char * zuluCryptVolumeStatus( const char * mapper )
 			StringDelete( &q ) ;
 		}else if( StringPrefixMatch( device_name,"/dev/md",7 ) ){
 			/*
-			 * zuluCryptResolveMDPath() is defined in process_mountinfo.c
+			 * zuluCryptResolveMDPath_1() is defined in process_mountinfo.c
 			 */
-			path = zuluCryptResolveMDPath( device_name ) ;
-			if( path != NULL ){
-				StringAppend( p,path ) ;
-				free( path ) ;
-			}else{
-				StringAppend( p,"Nil" ) ;
-			}
+			q = zuluCryptResolveMDPath_1( device_name ) ;
+			StringAppendString( p,q ) ;
+			StringDelete( &q ) ;	
 		}else{
 			StringAppend( p,device_name ) ;
 		}
@@ -490,10 +486,9 @@ char * zuluCryptVolumeDeviceName( const char * mapper )
 			address = zuluCryptConvertIfPathIsLVM( e ) ;
 		}else if( StringPrefixMatch( e,"/dev/md",7 ) ){
 			/*
-			 * zuluCryptResolveMDPath() is defined in process_mountinfo.c
+			 * zuluCryptResolveMDPath_1() is defined in process_mountinfo.c
 			 */
-			path = zuluCryptResolveMDPath( e ) ;
-			address = StringInherit( &path ) ;
+			address = zuluCryptResolveMDPath_1( e ) ;
 		}else{
 			address = String( e ) ;
 		}

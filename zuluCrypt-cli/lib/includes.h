@@ -282,4 +282,9 @@ string_t zuluCryptConvertIfPathIsLVM( const char * path ) ;
  */
 char * zuluCryptResolveMDPath( const char * path ) ;
 
+/*
+ * this function is defined in process_mountinfo.c
+ */
+string_t zuluCryptResolveMDPath_1( const char * path ) ;
+
 #endif 

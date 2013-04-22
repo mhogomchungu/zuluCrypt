@@ -70,7 +70,7 @@ char * zuluCryptResolveDevRoot( void )
  * raid path can be in format /dev/mdX or /dev/md/X.
  * We prefer the latter and if given the former,convert it to the latter if possible
  */
-char * zuluCryptResolveMDPath( const char * path )
+string_t zuluCryptResolveMDPath_1( const char * path )
 {
 	const char * f = "/dev/md/" ;
 	DIR * dir = opendir( f ) ;
@@ -90,7 +90,7 @@ char * zuluCryptResolveMDPath( const char * path )
 					free( e ) ;
 					if( r == 1 ){
 						closedir( dir ) ;
-						return StringDeleteHandle( &st ) ;
+						return st ;
 					}
 				}
 			}
@@ -99,6 +99,12 @@ char * zuluCryptResolveMDPath( const char * path )
 	}
 	
 	StringAppendAt( st,0,path ) ;
+	return st ;
+}
+
+char * zuluCryptResolveMDPath( const char * path )
+{
+	string_t st = zuluCryptResolveMDPath_1( path ) ;
 	return StringDeleteHandle( &st ) ;
 }
 
@@ -201,12 +207,8 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 			}
 		}else if( StringPrefixMatch( device,"/dev/md",7 ) ){
 			dev = zuluCryptResolveMDPath( device ) ;
-			if( dev == NULL ){
-				StringMultipleAppend( st,device," ",mount_point," ",file_system," ",mount_options,END ) ;
-			}else{
-				StringMultipleAppend( st,dev," ",mount_point," ",file_system," ",mount_options,END ) ;
-				free( dev ) ;
-			}
+			StringMultipleAppend( st,dev," ",mount_point," ",file_system," ",mount_options,END ) ;
+			free( dev ) ;
 		}else{
 			StringMultipleAppend( st,device," ",mount_point," ",file_system," ",mount_options,END ) ;
 		}
@@ -320,20 +322,19 @@ stringList_t zuluCryptGetMountInfoList( void )
 
 stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 {
+	const char * e ;
 	const char * c ;
 	const char * d ;
-	const char * e ;
 	char * f ;
 	char * g ;
 	
-	size_t len ;
 	size_t j ;
 	size_t i ;
+	
 	ssize_t k ;
 	
-	string_t q ; 
+	string_t q ;
 	string_t z ;
-	string_t p ;
 	
 	stringList_t stx ;
 	stringList_t list = StringListVoid ;
@@ -343,65 +344,67 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 		return StringListVoid ;
 	}
 	
-	p = StringIntToString( uid ) ;
+	if( uid ){;}
 	
-	e = StringMultiplePrepend( p,"/zuluCrypt-",crypt_get_dir(),END ) ;
-	
-	len = StringLength( p ) ;
 	j = StringListSize( stl )  ;
 	
 	for( i = 0 ; i < j ; i++ ){
 		c = StringListContentAt( stl,i ) ;
-		if( StringPrefixMatch( c,e,len ) ){
-			if( StringHasComponent( c,"/run/media/public/" ) ){
-				/*
-				 * dont show mirror images due to bind mounts
-				 */
-				continue ;
-			}
-			stx = StringListSplit( c,' ' ) ;
-			if( stx == StringListVoid ){
-				continue ;
-			}
-			if( StringPrefixMatch( c + len + 1,"UUID",4 ) ){
-				q = StringListStringAt( stx,0 ) ;
-				k = StringLastIndexOfChar( q,'-' ) ;
-				if( k != -1 ){
-					c = StringSubChar( q,k,'\0' ) + len + 6 ;
-					/*
-					 * zuluCryptDecodeMtabEntry() is defined in mount_volume.c
-					 */
-					d = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;
-					/*
-					 * zuluCryptGetVolumeTypeFromMapperPath() is defined in status.c
-					 */
-					f = zuluCryptGetVolumeTypeFromMapperPath( StringSubChar( q,k,'-' ) ) ;
-					z = String( "" ) ;
-					StringMultipleAppend( z,"UUID=\"",c,"\"\t",d,"\t",f,END ) ;
-					list = StringListAppendString_1( list,&z ) ;
-					free( f ) ;
-				}
-			}else{
-				g = zuluCryptVolumeDeviceName( StringListContentAt( stx,0 ) ) ;
-				if( g != NULL ){
-					d = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;
-					/*
-					 * zuluCryptGetVolumeTypeFromMapperPath() is defined in status.c
-					 */
-					f = zuluCryptGetVolumeTypeFromMapperPath( StringListContentAt( stx,0 ) ) ;
-					z = String( "" ) ;
-					StringMultipleAppend( z,g,"\t",d,"\t",f,END ) ;
-					list = StringListAppendString_1( list,&z ) ;
-					free( f ) ;
-					free( g ) ;
-				}
-			}
-			
-			StringListDelete( &stx ) ;
+		if( !StringPrefixMatch( c,"/dev/mapper/zuluCrypt-",22 ) ){
+			/*
+			 * dont care about other volumes
+			 */
+			continue ;
 		}
+		if( StringHasComponent( c,"/run/media/public/" ) ){
+			/*
+			 * dont show mirror images due to bind mounts
+			 */
+			continue ;
+		}
+		
+		stx = StringListSplit( c,' ' ) ;
+		
+		if( stx == StringListVoid ){
+			continue ;
+		}
+		
+		k = StringHasComponent_1( c,"-UUID-" ) ;
+		if( k != -1 && StringHasNoComponent( c,"-NAAN-" ) ) {
+			q = StringListStringAt( stx,0 ) ;
+			/*
+			 * zuluCryptDecodeMtabEntry() is defined in mount_volume.c
+			 */
+			d = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;
+			
+			/*
+			 * zuluCryptGetVolumeTypeFromMapperPath() is defined in status.c
+			 */
+			f = zuluCryptGetVolumeTypeFromMapperPath( StringContent( q ) ) ;
+			e = StringSubChar( q,StringLastIndexOfChar( q,'-' ),'\0' ) + k + 6 ;
+			z = String( "" ) ;
+			StringMultipleAppend( z,"UUID=\"",e,"\"\t",d,"\t",f,END ) ;
+			list = StringListAppendString_1( list,&z ) ;
+			free( f ) ;
+		}else{
+			g = zuluCryptVolumeDeviceName( StringListContentAt( stx,0 ) ) ;
+			if( g != NULL ){
+				d = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;
+				/*
+				 * zuluCryptGetVolumeTypeFromMapperPath() is defined in status.c
+				 */
+				f = zuluCryptGetVolumeTypeFromMapperPath( StringListContentAt( stx,0 ) ) ;
+				z = String( "" ) ;
+				StringMultipleAppend( z,g,"\t",d,"\t",f,END ) ;
+				list = StringListAppendString_1( list,&z ) ;
+				free( f ) ;
+				free( g ) ;
+			}
+		}
+		
+		StringListDelete( &stx ) ;
 	}
 	StringListDelete( &stl ) ;
-	StringDelete( &p ) ;
 	return list ;
 }
 
