@@ -49,12 +49,6 @@ static int _zuluMountPartitionAccess( const char * device,const char * m_opts,ui
 
 	p = StringListStringAt( stl,MOUNTOPTIONS ) ;
 	
-	ro      = StringContains( p,"ro" ) ;
-	nouser  = StringContains( p,"nouser" ) ;
-	defaulT = StringContains( p,"defaults" ) ;
-	users   = StringContains( p,"users" );
-	user    = StringContains( p,"user" ) ;
-	
 	/*
 	 * zuluCryptPartitionIsSystemPartition() is defined in ../zuluCrypt-cli/bin/partition.c
 	 */
@@ -98,6 +92,13 @@ static int _zuluMountPartitionAccess( const char * device,const char * m_opts,ui
 		/*
 		 * has an entry in fstab
 		 */
+		
+		ro      = StringContains( p,"ro" ) ;
+		nouser  = StringContains( p,"nouser" ) ;
+		defaulT = StringContains( p,"defaults" ) ;
+		users   = StringContains( p,"users" );
+		user    = StringContains( p,"user" ) ;
+		
 		if( ro && strstr( m_opts,"rw" ) != NULL ){
 			/*
 			 * respect the option for the partition to be mounted read only

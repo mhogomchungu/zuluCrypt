@@ -60,11 +60,11 @@ static int zuluCryptEXECheckIfLuks( const char * device )
 	 */
 	status = zuluCryptVolumeIsLuks( device ) ;
 	zuluCryptSecurityDropElevatedPrivileges() ;
-	if( status )
+	if( status ){
 		printf( "device is a luks volume\n" ) ;
-	else
+	}else{
 		printf( "device is not a luks volume\n" ) ;
-	
+	}
 	return status ;
 }
 
@@ -362,11 +362,11 @@ int main( int argc,char * argv[] )
 	}
 	if( argc == 2 ){
 		ac = argv[ 1 ] ;
-		if ( strcmp( ac,"-h" ) == 0 || strcmp( ac,"--help" ) == 0 || strcmp( ac,"-help" ) == 0 ){
+		if( strcmp( ac,"-h" ) == 0 || strcmp( ac,"--help" ) == 0 || strcmp( ac,"-help" ) == 0 ){
 			zuluCryptEXEHelp();	
 			return 0 ;
 		}
-		if ( strcmp( ac,"-v" ) == 0 || strcmp( ac,"-version" ) == 0 || strcmp( ac,"--version" ) == 0 ){
+		if( strcmp( ac,"-v" ) == 0 || strcmp( ac,"-version" ) == 0 || strcmp( ac,"--version" ) == 0 ){
 			printf( "%s\n",zuluCryptVersion() );
 			return 0 ;
 		}
