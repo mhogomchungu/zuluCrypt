@@ -137,14 +137,21 @@ QString utility::mapperPath( QString rpath )
 
 QString utility::hashPath( QString p )
 {
-	size_t i = 0 ;
 	size_t l = p.size() ;
-	double h = 0 ;
-
-	for ( i = 0 ; i < l ; i++ ){
-		h = h + p.at( i ).toAscii() ;
+	uint32_t hash ;
+	uint32_t i ;
+	QByteArray b = p.toAscii() ;
+	const char * key = b.constData() ;
+	i = hash = 0 ;
+	for( ; i < l ; i++ ){
+		hash += key[ i ];
+		hash += ( hash << 10 );
+		hash ^= ( hash >> 6 );
 	}
-	return QString( "-" ) + QString::number( h );
+	hash += ( hash << 3 );
+	hash ^= ( hash >> 11 );
+	hash += ( hash << 15 );
+	return QString( "-" ) + QString::number( hash );
 }
 
 bool utility::exists( QString path )
