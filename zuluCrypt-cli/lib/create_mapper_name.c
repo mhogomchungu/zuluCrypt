@@ -41,25 +41,30 @@
  * the mapping_name name is taken from the last segment of volume path,this means that two volumes 
  * with the same name but from two different paths will end up with the same mapping_name making it impossible to open second volume.
  * 
- * this simple hash function will make the above possible by appending hush of full path hopefully to make sure two
- * paths will always be different while using the same mapping_name
+ * hash function modified after taken from http://en.wikipedia.org/wiki/Jenkins_hash_function
  */
-static uint64_t hash_path( const char * path )
+
+static uint32_t jenkins_one_at_a_time_hash( const char * key )
 {
-	size_t i = 0 ;
-	size_t l = strlen( path ) ;
-	uint64_t h = 0 ;
-	
-	for ( i = 0 ; i < l ; i++ ){
-		h = h + path[ i ] ;
+	size_t l = strlen( key ) ;
+	uint32_t hash ;
+	uint32_t i ;
+	i = hash = 0 ;
+	for( ; i < l ; i++ ){
+		hash += key[ i ];
+		hash += ( hash << 10 );
+		hash ^= ( hash >> 6 );
 	}
-	return h ;
+	hash += ( hash << 3 );
+	hash ^= ( hash >> 11 );
+	hash += ( hash << 15 );
+	return hash;
 }
 
 string_t zuluCryptCreateMapperName( const char * device,const char * mapping_name,uid_t uid,int i )
 {	
 	string_t p ;
-	uint64_t z ;
+	uint32_t z ;
 	char * e ;
 	/*
 	 * ZULUCRYPTshortMapperPath is set in ../constants.h
@@ -75,7 +80,7 @@ string_t zuluCryptCreateMapperName( const char * device,const char * mapping_nam
 	
 	if( StringPrefixMatch( mapping_name,"UUID-",5 ) ){
 		StringMultipleAppend( p,"-",mapping_name,"-",END ) ;
-		z = hash_path( mapping_name ) ;
+		z = jenkins_one_at_a_time_hash( mapping_name ) ;
 	}else{
 		StringMultipleAppend( p,"-NAAN-",mapping_name,"-",END ) ;
 		if( StringPrefixMatch( device,"/dev/loop",9 ) ){
@@ -84,13 +89,13 @@ string_t zuluCryptCreateMapperName( const char * device,const char * mapping_nam
 			*/
 			e = zuluCryptLoopDeviceAddress_1( device ) ;
 			if( e != NULL ){
-				z = hash_path( e ) ;
+				z = jenkins_one_at_a_time_hash( e ) ;
 				free( e ) ;
 			}else{
-				z = hash_path( device ) ;
+				z = jenkins_one_at_a_time_hash( device ) ;
 			}
 		}else{
-			z = hash_path( device ) ;
+			z = jenkins_one_at_a_time_hash( device ) ;
 		}
 	}
 	
