@@ -24,54 +24,18 @@
  */
 #include "truecrypt_support.h"
 
-static int _close_mapper( const char * mapper )
-{
-#if TRUECRYPT_TCPLAY
-	tc_api_opts api_opts ;
-	int r = TC_ERR ;
-	int j ;
-	memset( &api_opts,'\0',sizeof( api_opts ) ) ;
-	api_opts.tc_map_name = mapper ;
-	tc_api_init( 0 ) ;
-	for( j = 0 ; j < 3 ; j++ ) { 
-		/*
-		 * try multiple types to close the mapper just in case
-		 */
-		if( tc_api_unmap_volume( &api_opts ) == TC_OK ){
-			r = TC_OK ;
-			break ;
-		}else{
-			r = TC_ERR ;
-			sleep( 1 ) ;
-		}
-	}
-	tc_api_uninit() ;
-	return r == TC_OK ? 0 : 1 ;
-#else
-	if( mapper ){;}
-	return 1 ;
-#endif
-}
-
 int zuluCryptCloseMapper( const char * mapper )
 {
 	int j ;
 	int st = 1;
 	struct crypt_device * cd;
 	if( crypt_init_by_name( &cd,mapper ) == 0 ){
-		if( crypt_get_type( cd ) == NULL ){
-			/*
-			 * We will get here if the volume is truecrypt volume opened with tcplay
-			 */
-			crypt_free( cd ) ;
-			return _close_mapper( mapper ) ;
-		}
 		for( j = 0 ; j < 3 ; j++ ) { 
 			/*
 			* try multiple types to close the mapper just in case
 			*/
-			if( crypt_deactivate( cd,mapper ) == 0 ){
-				st = 0 ;
+			st = crypt_deactivate( cd,mapper ) ;
+			if( st == 0 ){
 				break ;
 			}else{
 				sleep( 1 ) ;
@@ -82,7 +46,7 @@ int zuluCryptCloseMapper( const char * mapper )
 		/*
 		 * we shouldnt get here
 		 */
-		return _close_mapper( mapper ) ;
+		;
 	}
 	
 	return st ;
