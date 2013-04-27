@@ -134,7 +134,7 @@ static int _tcrypt_open_using_keyfile( const char * device,const char * mapper,u
 		chown( "/run/zuluCrypt",0,0 ) ;
 	}
 	
-	st = String( ZULUCRYPTtempFolder"/open_tcrypt-" ) ;
+	st = String( "/run/zuluCrypt/open_tcrypt-" ) ;
 	file = StringAppendInt( st,syscall( SYS_gettid ) ) ;
 	fd = open( file,O_WRONLY | O_CREAT ) ;
 	
