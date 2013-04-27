@@ -156,9 +156,9 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 		status = zuluCryptRemoveKey( device,StringContent( *pass ),StringLength( *pass ) ) ;
 		zuluCryptSecurityDropElevatedPrivileges() ;
 	}else{
-		if( keyType == NULL || keytoremove == NULL )
+		if( keyType == NULL || keytoremove == NULL ){
 			return zuluExit( 6,stl ) ;
-		
+		}
 		if( StringsAreEqual( keyType,"-f" ) ){
 			/*
 			 * function is defined at security.c"

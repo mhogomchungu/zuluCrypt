@@ -179,7 +179,6 @@ static int _tcrypt_open_using_keyfile( const char * device,const char * mapper,u
 static int _tcrypt_open_using_keyfile_1( const char * device,const char * mapper,unsigned long m_opts,
 				       const char * keyfile,int volume_type )
 {
-	string_t st = StringVoid ;
 	uint32_t flags = 0 ;
 	
 	struct crypt_device * cd = NULL;
@@ -200,15 +199,15 @@ static int _tcrypt_open_using_keyfile_1( const char * device,const char * mapper
 		params.flags = CRYPT_TCRYPT_LEGACY_MODES ;
 	}
 	if( crypt_load( cd,CRYPT_TCRYPT,&params ) != 0 ){
-		return zuluExit_1( 1,cd,st ) ;
+		return zuluExit( 1,cd ) ;
 	}
 	if( m_opts & MS_RDONLY ){
 		flags |= CRYPT_ACTIVATE_READONLY;
 	}
 	if( crypt_activate_by_volume_key( cd,mapper,NULL,0,flags ) == 0 ){
-		return zuluExit_1( 0,cd,st ) ;
+		return zuluExit( 0,cd ) ;
 	}else{
-		return zuluExit_1( 1,cd,st ) ;
+		return zuluExit( 1,cd ) ;
 	}
 }
 
@@ -290,9 +289,7 @@ int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * ke
  */
 int zuluCryptVolumeIsTcrypt( const char * device,const char * key,int key_source )
 {
-	if( device ){;}
-	if( key ){;}
-	if( key_source ){;}
+	if( 0 && device && key && key_source ){;}
 	return 0 ;
 }
 
@@ -304,16 +301,8 @@ int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * ke
 			 int key_source,int volume_type,const char * m_point,
 			 uid_t id,unsigned long m_opts,const char * fs_opts )
 {
-	if( device ){;}
-	if( mapper ){;}
-	if( key )  {;}
-	if( key_source )  {;}
-	if( volume_type ) {;}
-	if( m_point ) {;}
-	if( id ) {;}
-	if( m_opts ) {;}
-	if( fs_opts ) {;}
-	if( key_len ) {;}
+	if( 0 && device && mapper && key && key_source && volume_type
+		&& m_point && id && m_opts && fs_opts && key_len ){;}
 	return 1 ;
 }
 

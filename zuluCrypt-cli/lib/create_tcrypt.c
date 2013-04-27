@@ -239,13 +239,7 @@ int zuluCryptCreateTCrypt( const char * device,const char * file_system,const ch
 int zuluCryptCreateTCrypt( const char * device,const char * file_system,const char * rng,
 			   const char * key,size_t key_len,int key_source,int volume_type )
 {
-	if( device ){;}
-	if( file_system ){;}
-	if( rng ){;}
-	if( key_source ){;}
-	if( key ){;}
-	if( volume_type ){;}
-	if( key_len ) {;}
+	if( 0 && device && file_system && rng && key_source && key && volume_type && key_len ){;}	
 	return 3 ;
 }
 #endif

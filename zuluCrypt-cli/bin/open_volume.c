@@ -21,10 +21,6 @@
 #include "../lib/includes.h"
 #include <sys/types.h>
 #include <string.h>
- 
-/*
- * An explanation for the "zuluCryptKeyFromFile" and "zuluCryptKeyFromPass" entries is in ../lib/open_volume.c
- */ 
 
 static int _open_tcrypt( const char * device,const char * mapper_name,const char * key,
 			 size_t key_len,const char * key_source,const char * key_origin,
