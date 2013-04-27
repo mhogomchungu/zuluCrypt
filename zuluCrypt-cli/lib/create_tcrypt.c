@@ -29,7 +29,7 @@
 #if TRUECRYPT_CREATE
 
 static int _create_file_system( const char * device,const char * fs,
-				const char * key,size_t key_len,int key_source,int volume_type )
+				const char * key,size_t key_len,int volume_type )
 {	
 	string_t m = StringVoid ;
 	
@@ -50,7 +50,50 @@ static int _create_file_system( const char * device,const char * fs,
 	/*
 	 * zuluCryptOpenTcrypt() is defined in open_tcrypt.c
 	 */
-	if( zuluCryptOpenTcrypt( device,mapper,key,key_len,key_source,volume_type,NULL,0,0,NULL ) == 0 ){
+	if( zuluCryptOpenTcrypt( device,mapper,key,key_len,TCRYPT_PASSPHRASE,volume_type,NULL,0,0,NULL ) == 0 ){
+		/*
+		 * zuluCryptCreateFileSystemInAVolume() is defined in create_volume.c
+		 */
+		if( zuluCryptCreateFileSystemInAVolume( fs,device_mapper ) == 0 ){
+			r = 0 ;
+		}else{
+			r = 3 ;
+		}
+		/*
+		 * zuluCryptCloseMapper() is defined in close_mapper.c
+		 */
+		zuluCryptCloseMapper( device_mapper );
+	}else{
+		r = 3 ;
+	}
+	
+	StringDelete( &m ) ;
+	return r ;
+}
+
+static int _create_file_system_1( const char * device,const char * fs,
+				const char * keyfile,int volume_type )
+{	
+	string_t m = StringVoid ;
+	
+	int r ;
+	
+	const char * device_mapper ;
+	const char * mapper ;
+	
+	size_t len ;
+	
+	m = String( crypt_get_dir() ) ;
+	len = StringLength( m )   ;
+	
+	StringAppend( m,"/zuluCrypt-" ) ;
+	device_mapper = StringAppendInt( m,syscall( SYS_gettid ) ) ;
+	mapper = device_mapper + len + 1 ;
+	
+	/*
+	 * zuluCryptOpenTcrypt() is defined in open_tcrypt.c
+	 */
+	if( zuluCryptOpenTcrypt( device,mapper,keyfile,0,TCRYPT_KEYFILE_FILE,volume_type,NULL,0,0,NULL ) == 0 ){
 		/*
 		 * zuluCryptCreateFileSystemInAVolume() is defined in create_volume.c
 		 */
@@ -72,7 +115,8 @@ static int _create_file_system( const char * device,const char * fs,
 }
 
 static int _create_tcrypt_volume( const char * device,const char * file_system,
-				  const char * rng,const char * key,size_t key_len,int key_source,int volume_type )
+				  const char * rng,const char * key,size_t key_len,
+				  int key_source,int volume_type )
 {
 	string_t st = StringVoid ;
 	
@@ -88,12 +132,7 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 	
 	keyfiles[ 0 ] = NULL ;
 	keyfiles[ 1 ] = NULL ;
-	
-	/*
-	 * Below argument is for creating hidden volumes,not supporting it at the moment
-	 */
-	if( volume_type ) {;}
-	
+		
 	if ( zuluCryptPathIsNotValid( device ) ){
 		return 1 ;
 	}
@@ -105,58 +144,66 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 	api_opts.tc_prf_hash        = "RIPEMD160"  ;
 	api_opts.tc_no_secure_erase = 1 ;
 	
-	if( key_source == TCRYPT_PASSPHRASE ){
-		api_opts.tc_passphrase  = key ;
-	}else{
-		/*
-		 * ZULUCRYPTtempFolder is set in ../constants.h
-		 * ZULUCRYPtmountMiniPath is set in ../constants.h
-		 */
-		if( stat( ZULUCRYPtmountMiniPath,&statstr ) != 0 ){
-			mkdir( ZULUCRYPtmountMiniPath,S_IRWXU ) ;
-			chown( ZULUCRYPtmountMiniPath,0,0 ) ;
-		}
-		if( stat( ZULUCRYPTtempFolder,&statstr ) != 0 ){
-			mkdir( ZULUCRYPTtempFolder,S_IRWXU ) ;
-			chown( ZULUCRYPTtempFolder,0,0 ) ;
-		}
-		
-		st = String( ZULUCRYPTtempFolder"/create_tcrypt-" ) ;
-		file = StringAppendInt( st,syscall( SYS_gettid ) ) ;
-		fd = open( file,O_WRONLY|O_CREAT ) ;
-		
-		if( fd == -1 ){
-			StringDelete( &st ) ;
-			return 3 ;
-		}
-		
-		write( fd,key,key_len ) ;
-		close( fd ) ;
-		
-		chown( file,0,0 ) ;
-		chmod( file,S_IRWXU ) ;
-		
-		api_opts.tc_keyfiles = keyfiles ;
-		keyfiles[ 0 ] = file ;
-	}
-	
 	if( StringPrefixMatch( rng,"/dev/urandom",12 ) ){
 		api_opts.tc_use_weak_keys = 1 ;
 	}
-	if( tc_api_init( 0 ) == TC_OK ){
-		r = tc_api_create_volume( &api_opts );
-		tc_api_uninit() ;
-		if( r == TC_OK ){
-			r = _create_file_system( device,file_system,key,key_len,key_source,volume_type ) ;
+	
+	if( key_source == TCRYPT_PASSPHRASE ){
+		
+		api_opts.tc_passphrase  = key ;
+		
+		if( tc_api_init( 0 ) == TC_OK ){
+			r = tc_api_create_volume( &api_opts );
+			tc_api_uninit() ;
+			if( r == TC_OK ){
+				r = _create_file_system( device,file_system,key,key_len,volume_type ) ;
+			}else{
+				r = 3 ;
+			}
 		}else{
 			r = 3 ;
 		}
 	}else{
-		r = 3 ;
-	}
-	
-	if( file != NULL ){
-		unlink( file ) ;
+		if( stat( "/run",&statstr ) != 0 ){
+			mkdir( "/run",S_IRWXU ) ;
+			chown( "/run",0,0 ) ;
+		}
+		if( stat( "/run/zuluCrypt",&statstr ) != 0 ){
+			mkdir( "/run/zuluCrypt",S_IRWXU ) ;
+			chown( "/run/zuluCrypt",0,0 ) ;
+		}
+		
+		st = String( "/run/zuluCrypt/create_tcrypt-" ) ;
+		file = StringAppendInt( st,syscall( SYS_gettid ) ) ;
+		fd = open( file,O_WRONLY|O_CREAT ) ;
+		
+		if( fd == -1 ){
+			r = 3 ;
+		}else{
+			write( fd,key,key_len ) ;
+			close( fd ) ;
+		
+			chown( file,0,0 ) ;
+			chmod( file,S_IRWXU ) ;
+		
+			api_opts.tc_keyfiles = keyfiles ;
+			keyfiles[ 0 ] = file ;
+		
+			if( tc_api_init( 0 ) == TC_OK ){
+				r = tc_api_create_volume( &api_opts );
+				tc_api_uninit() ;
+				if( r == TC_OK ){
+					r = _create_file_system_1( device,file_system,file,volume_type ) ;
+				}else{
+					r = 3 ;
+				}
+			}else{
+				r = 3 ;
+			}
+			
+			unlink( file ) ;
+		}
+			
 		StringDelete( &st ) ;
 	}
 	

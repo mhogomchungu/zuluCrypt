@@ -270,8 +270,20 @@ int zuluCryptOpenPlain( const char * device,      /* path to encrypted file or p
 			const char * passphrase,  /* passphrase to use to open the volume			*/
 			size_t passphrase_size ); /* passphrase length  					*/
 
-#define TCRYPT_KEYFILE    1
-#define TCRYPT_PASSPHRASE 0
+/*
+ * Below 3 constants are used in the "key_source" source argument below.
+ * TCRYPT_KEYFILE_FILE option means the "key" argument is a path to a key file,if this option is used,then
+ * use "0" for "key_len" argument,the argument is not used.
+ *
+ * TCRYPT_KEYFILE option means the "key" argument contains contents of a key file.The "key_len" is the size of the content
+ *
+ * TCRYPT_PASSPHRASE option means the "key" is contains a passphrase to be used to open the volume.  
+ * 
+ */
+#define TCRYPT_PASSPHRASE   0
+#define TCRYPT_KEYFILE      1
+#define TCRYPT_KEYFILE_FILE 2
+
 #define TCRYPT_NORMAL 1 
 #define TCRYPT_HIDDEN 0
 /**
@@ -285,7 +297,7 @@ int zuluCryptOpenTcrypt( const char * device,     /* path to an encrypted file o
 			 const char * mapper,     /* mapper name to use                                                                    */
 			 const char * key,        /* key material                                                                          */  
 			 size_t       key_len,    /* length of key                                                                         */
-			 int          key_source, /* source of key material,could be TCRYPT_PASSPHRASE or TCRYPT_KEYFILE                   */
+			 int          key_source, /* source of key material,options explained above			                   */
 			 int          volume_type,/* option could be TCRYPT_NORMAL or TCRYPT_HIDDEN 				           */
 			 const char * m_point,    /* mount point to mount the file system,if NULL,mapper will be opened onlu               */
 			 uid_t        uid,        /* uid of the person to associate the mount point with,not necessary if m_point == NULL  */

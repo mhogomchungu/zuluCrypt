@@ -125,18 +125,13 @@ static int _tcrypt_open_using_keyfile( const char * device,const char * mapper,u
 	if( crypt_init( &cd,device ) < 0 ){
 		return 1 ;
 	}
-	
-	/*
-	 * ZULUCRYPTtempFolder is set in ../constants.h
-	 * ZULUCRYPtmountMiniPath is set in ../constants.h
-	 */
-	if( stat( ZULUCRYPtmountMiniPath,&statstr ) != 0 ){
-		mkdir( ZULUCRYPtmountMiniPath,S_IRWXU ) ;
-		chown( ZULUCRYPtmountMiniPath,0,0 ) ;
+	if( stat( "/run",&statstr ) != 0 ){
+		mkdir( "/run",S_IRWXU ) ;
+		chown( "/run",0,0 ) ;
 	}
-	if( stat( ZULUCRYPTtempFolder,&statstr ) != 0 ){
-		mkdir( ZULUCRYPTtempFolder,S_IRWXU ) ;
-		chown( ZULUCRYPTtempFolder,0,0 ) ;
+	if( stat( "/run/zuluCrypt",&statstr ) != 0 ){
+		mkdir( "/run/zuluCrypt",S_IRWXU ) ;
+		chown( "/run/zuluCrypt",0,0 ) ;
 	}
 	
 	st = String( ZULUCRYPTtempFolder"/open_tcrypt-" ) ;
@@ -181,6 +176,42 @@ static int _tcrypt_open_using_keyfile( const char * device,const char * mapper,u
 	}
 }
 
+static int _tcrypt_open_using_keyfile_1( const char * device,const char * mapper,unsigned long m_opts,
+				       const char * keyfile,int volume_type )
+{
+	string_t st = StringVoid ;
+	uint32_t flags = 0 ;
+	
+	struct crypt_device * cd = NULL;
+	struct crypt_params_tcrypt params ;
+	
+	if( crypt_init( &cd,device ) < 0 ){
+		return 1 ;
+	}
+	
+	memset( &params,'\0',sizeof( struct crypt_params_tcrypt ) ) ;
+	
+	params.keyfiles_count = 1 ;
+	params.keyfiles       = &keyfile ;
+	
+	if( volume_type == TCRYPT_HIDDEN ){
+		params.flags = CRYPT_TCRYPT_LEGACY_MODES | CRYPT_TCRYPT_HIDDEN_HEADER ;
+	}else{
+		params.flags = CRYPT_TCRYPT_LEGACY_MODES ;
+	}
+	if( crypt_load( cd,CRYPT_TCRYPT,&params ) != 0 ){
+		return zuluExit_1( 1,cd,st ) ;
+	}
+	if( m_opts & MS_RDONLY ){
+		flags |= CRYPT_ACTIVATE_READONLY;
+	}
+	if( crypt_activate_by_volume_key( cd,mapper,NULL,0,flags ) == 0 ){
+		return zuluExit_1( 0,cd,st ) ;
+	}else{
+		return zuluExit_1( 1,cd,st ) ;
+	}
+}
+
 int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * key,size_t key_len,
 			 int key_source,int volume_type,const char * m_point,
 			 uid_t id,unsigned long m_opts,const char * fs_opts )
@@ -200,6 +231,8 @@ int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * ke
 	if( StringPrefixMatch( device,"/dev/",5 ) ){
 		if( key_source == TCRYPT_KEYFILE ){
 			h = _tcrypt_open_using_keyfile( device,mapper,m_opts,key,key_len,volume_type ) ;
+		}else if( key_source == TCRYPT_KEYFILE_FILE ){
+			h = _tcrypt_open_using_keyfile_1( device,mapper,m_opts,key,volume_type ) ;
 		}else{
 			h = _tcrypt_open_using_key( device,mapper,m_opts,key,key_len,volume_type ) ;
 		}
@@ -211,6 +244,8 @@ int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * ke
 			device = StringContent( q ) ;
 			if( key_source == TCRYPT_KEYFILE ){
 				h = _tcrypt_open_using_keyfile( device,mapper,m_opts,key,key_len,volume_type ) ;
+			}else if( key_source == TCRYPT_KEYFILE_FILE ){
+				h = _tcrypt_open_using_keyfile_1( device,mapper,m_opts,key,volume_type ) ;
 			}else{
 				h = _tcrypt_open_using_key( device,mapper,m_opts,key,key_len,volume_type ) ;
 			}
