@@ -1310,6 +1310,35 @@ string_t StringRandomString( size_t size )
 	return s ;
 }
 
+uint32_t StringJenkinsOneAtATimeHash( const char * key )
+{
+	size_t l ;
+	uint32_t hash = 0;
+	uint32_t i = 0;
+	
+	if( key != NULL ){
+		l = strlen( key ) ;
+		for( ; i < l ; i++ ){
+			hash += key[ i ];
+			hash += ( hash << 10 );
+			hash ^= ( hash >> 6 );
+		}
+		hash += ( hash << 3 );
+		hash ^= ( hash >> 11 );
+		hash += ( hash << 15 );
+	}
+	return hash;
+}
+
+uint32_t StringJenkinsOneAtATimeHash_1( string_t p ) 
+{
+	if( p == StringVoid ){
+		return 0 ;
+	}else{
+		return StringJenkinsOneAtATimeHash( p->string ) ;
+	}
+}
+
 int StringGetFromFile_1( string_t * str,const char * path ) 
 {
 	struct stat st ;

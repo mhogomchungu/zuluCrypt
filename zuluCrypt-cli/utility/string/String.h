@@ -659,6 +659,13 @@ void StringWriteToFile( string_t st,const char * path,int mode ) ;
 string_t StringGetFromVirtualFile( const char * path ) ;
 
 /*
+ * below two functions creates a hash of the string using junkin's one at a time hash algorithm
+ */
+uint32_t StringJenkinsOneAtATimeHash( const char * key ) ;
+
+uint32_t StringJenkinsOneAtATimeHash_1( string_t ) ;
+
+/*
  * a few convenient "safe" functions 
  */
 

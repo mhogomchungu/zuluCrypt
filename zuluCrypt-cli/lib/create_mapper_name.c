@@ -28,38 +28,20 @@
  * This function is responsible for creating a mapper name,the mapper name will show up at "/dev/mapper" if the volume
  * is successfully opened.
  * 
- * mapping_name is taken from a path to a volume presented by the user and then "zuluCrypt-XXX-YYYY is added to it to give
+ * mapping_name is taken from a path to a volume presented by the user and then "zuluCrypt-XXX-YYYY-ZZZZ-AAAA is added to it to give
  * a mapper name unique to zuluCrypt.
  * 
  * XXX is the UID of the user that run the program,YYYY tells if the volume uses UUID or not."NAAN" pads the volume length
  * to make sure the length of "zuluCrypt-XXX-YYYY" is always the same regardless of what the user provided.
  * 
  * XXX is there for security reason.It makes sure one user can not manage another user's mappers 
- */
-
-/*
- * the mapping_name name is taken from the last segment of volume path,this means that two volumes 
- * with the same name but from two different paths will end up with the same mapping_name making it impossible to open second volume.
  * 
- * hash function modified after taken from http://en.wikipedia.org/wiki/Jenkins_hash_function
+ * ZZZZ is taken from the last component of the device path.
+ * 
+ * AAAA is hash of the string to prevent collissions if two different volumes that ends with the same ZZZZ are used.
+ * 
+ * A successfully constructed "ZULUCRYPTshortMapperPath mapper path" will look like "zuluCrypt-500-NAAN-mdraid-2355849641"
  */
-
-static uint32_t jenkins_one_at_a_time_hash( const char * key )
-{
-	size_t l = strlen( key ) ;
-	uint32_t hash ;
-	uint32_t i ;
-	i = hash = 0 ;
-	for( ; i < l ; i++ ){
-		hash += key[ i ];
-		hash += ( hash << 10 );
-		hash ^= ( hash >> 6 );
-	}
-	hash += ( hash << 3 );
-	hash ^= ( hash >> 11 );
-	hash += ( hash << 15 );
-	return hash;
-}
 
 string_t zuluCryptCreateMapperName( const char * device,const char * mapping_name,uid_t uid,int i )
 {	
@@ -80,7 +62,7 @@ string_t zuluCryptCreateMapperName( const char * device,const char * mapping_nam
 	
 	if( StringPrefixMatch( mapping_name,"UUID-",5 ) ){
 		StringMultipleAppend( p,"-",mapping_name,"-",END ) ;
-		z = jenkins_one_at_a_time_hash( mapping_name ) ;
+		z = StringJenkinsOneAtATimeHash( mapping_name ) ;
 	}else{
 		StringMultipleAppend( p,"-NAAN-",mapping_name,"-",END ) ;
 		if( StringPrefixMatch( device,"/dev/loop",9 ) ){
@@ -89,13 +71,13 @@ string_t zuluCryptCreateMapperName( const char * device,const char * mapping_nam
 			*/
 			e = zuluCryptLoopDeviceAddress_1( device ) ;
 			if( e != NULL ){
-				z = jenkins_one_at_a_time_hash( e ) ;
+				z = StringJenkinsOneAtATimeHash( e ) ;
 				free( e ) ;
 			}else{
-				z = jenkins_one_at_a_time_hash( device ) ;
+				z = StringJenkinsOneAtATimeHash( device ) ;
 			}
 		}else{
-			z = jenkins_one_at_a_time_hash( device ) ;
+			z = StringJenkinsOneAtATimeHash( device ) ;
 		}
 	}
 	
