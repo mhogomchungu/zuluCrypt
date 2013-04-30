@@ -152,7 +152,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	
 	size_t len ;
 	int st = 0 ;
-	
+
 	unsigned long m_flags ;
 		
 	/*
@@ -298,15 +298,28 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	
 	if( st == 4 ){
 		/*
-		 * failed to open LUKS or PLAIN volume,assume it is a normal truecrypt volume and try to open it as one
+		 * failed to open a LUKS or PLAIN volume.
 		 */
 		zuluCryptSecurityGainElevatedPrivileges() ;
-		st = _open_tcrypt( device,*mapper_name,cpass,len,source,pass,TCRYPT_NORMAL,cpoint,uid,m_flags,fs_opts ) ;
-		if( st == 4 ){
+		/*
+		 * zuluCryptVolumeIsNotLuks() is defined in ../lib/is_luks.c
+		 */
+		if( zuluCryptVolumeIsNotLuks( device ) ){
 			/*
-			 * failed to open normal truecrypt volume,assume it is a hidden truecrypt volume
+			 * The volume is not LUKS,its either PLAIN or TRUECRYPT,we already failed to open it as PLAIN
+			 * so it must be TRUECRYPT or the key is wrong.
 			 */
-			st = _open_tcrypt( device,*mapper_name,cpass,len,source,pass,TCRYPT_HIDDEN,cpoint,uid,m_flags,fs_opts ) ;
+			
+			/*
+			 * try to open is a normal TRUECRYPT volume.
+			 */
+			st = _open_tcrypt( device,*mapper_name,cpass,len,source,pass,TCRYPT_NORMAL,cpoint,uid,m_flags,fs_opts ) ;
+			if( st == 4 ){
+				/*
+				* The attempt failed,retry to open it as a hidden TRUECRYPT volume.
+				*/
+				st = _open_tcrypt( device,*mapper_name,cpass,len,source,pass,TCRYPT_HIDDEN,cpoint,uid,m_flags,fs_opts ) ;
+			}
 		}
 		zuluCryptSecurityDropElevatedPrivileges() ;
 	}
