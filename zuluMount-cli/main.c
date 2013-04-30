@@ -34,17 +34,19 @@ void zuluMountPrintDeviceProperties_1( string_t,uid_t ) ;
 static int _mount_get_opts( int argc,char * argv[],ARGS * args ) 
 {	
 	int c ;
-	while( ( c = getopt( argc,argv,"cMLntSshlPmuDd:z:e:y:p:f:G:" ) ) != -1 ) {
+	while( ( c = getopt( argc,argv,"cMLntASNshlPmuDd:z:e:y:p:f:G:" ) ) != -1 ) {
 		switch( c ){
 			case 'M' : args->share   = 1      ; break ;
 			case 'n' : args->mpo     = 1      ; break ;
 			case 'D' : args->action  = "-D"   ; break ;
 			case 't' : args->action  = "-t"   ; break ;
 			case 's' : args->action  = "-s"   ; break ;
-			case 'S' : args->action  = "-S"   ; break ;
 			case 'l' : args->action  = "-l"   ; break ;
 			case 'L' : args->action  = "-L"   ; break ;
 			case 'P' : args->action  = "-P"   ; break ;
+			case 'A' : args->action  = "-A"   ; break ;
+			case 'S' : args->action  = "-S"   ; break ;
+			case 'N' : args->action  = "-N"   ; break ;
 			case 'm' : args->action  = "-m"   ; break ;
 			case 'u' : args->action  = "-u"   ; break ;
 			case 'c' : args->action  = "-c"   ; break ;
@@ -104,13 +106,31 @@ static int _zuluMountDeviceList( uid_t uid )
 {
 	if( uid ){;}
 	/*
-	 * zuluCryptPrintPartitions() is defined in ../zuluCrypt-cli/partitions.c
-	 * 
-	 * it printf() contents of "/proc/partitions" 
-	 * ZULUCRYPTallPartitions is set in ../zuluCrypt-cli/constants.h
-	 * 
+	 * zuluCryptPrintPartitions() is defined in ../zuluCrypt-cli/partitions.c 
+	 * ZULUCRYPTallPartitions is set in ../zuluCrypt-cli/constants.h 
 	 */
 	return zuluCryptPrintPartitions( ZULUCRYPTallPartitions,0 ) ;
+}
+
+
+static int _zuluMountNonSystemDeviceList( uid_t uid )
+{
+	if( uid ){;}
+	/*
+	 * zuluCryptPrintPartitions() is defined in ../zuluCrypt-cli/partitions.c 
+	 * ZULUCRYPTallPartitions is set in ../zuluCrypt-cli/constants.h 
+	 */
+	return zuluCryptPrintPartitions( ZULUCRYPTnonSystemPartitions,0 ) ;
+}
+
+static int _zuluMountSystemDeviceList( uid_t uid )
+{
+	if( uid ){;}
+	/*
+	 * zuluCryptPrintPartitions() is defined in ../zuluCrypt-cli/partitions.c 
+	 * ZULUCRYPTallPartitions is set in ../zuluCrypt-cli/constants.h 
+	 */
+	return zuluCryptPrintPartitions( ZULUCRYPTsystemPartitions,0 ) ;
 }
 
 static int _zuluMountMountedList( uid_t uid )
@@ -436,6 +456,7 @@ static int _zuluMountExe( ARGS * args )
 
 static int _mount_help()
 {
+	const char * doc5 ;
 	const char * doc4 ;
 	const char * doc3 ;
 	const char * doc2 ;
@@ -456,13 +477,18 @@ options:\n\
 -P -- print a list of all partitions\n\
 -D -- get a device node address from its mapper path( mapper paths are usually located in /dev/mapper ). Required argument: -d\n";
 	
-      doc4= "\
+     doc4 = "\
+-A -- print a list of all partitions\n\
+-S -- print a list of system partitions\n\
+-N -- print a list of non system partitions\n" ;
+
+      doc5= "\
 examples:\n\
 mount a volume  : zuluMount-cli -m -d /dev/sdc1\n\
 unmount a volume: zuluMount-cli -u -d /dev/sdc1\n\
 mount and encrypted volume with a key \"xyz\" : zuluMount-cli -m -d /dev/sdc2 -p xyz\n" ;
       
-      printf( "%s%s%s%s",doc1,doc2,doc3,doc4 ) ;
+      printf( "%s%s%s%s%s",doc1,doc2,doc3,doc4,doc5 ) ;
 	
 	return 201 ;
 }
@@ -620,23 +646,20 @@ int main( int argc,char * argv[] )
 	if( args.action == NULL ){
 		return _zuluExit_2( 212,stl,stx,"ERROR: action not specified" ) ;
 	}
-	if( StringsAreEqual( args.action,"-S" ) ){
-		/*
-		 * zuluCryptPrintPartitions() is defined in ../zuluCrypt-cli/bin/partitions.c
-		 * it printf() devices with entries in "/etc/fstab","/etc/crypttab", and "/etc/zuluCrypttab"
-		 * ZULUCRYPTsystemPartitions is set in ../zuluCrypt-cli/constants.h
-		 */
-		return _zuluExit_2( zuluCryptPrintPartitions( ZULUCRYPTsystemPartitions,0 ),stl,stx,NULL ) ;
-	}
-		
 	if( StringsAreEqual( args.action,"-c" ) ){
 		return _checkUnmount( args.device,uid ) ;
 	}
 	if( StringsAreEqual( args.action,"-l" ) ){
 		return _zuluExit_2( _zuluMountMountedList( uid ),stl,stx,NULL ) ;
 	}
-	if( StringsAreEqual( args.action,"-P" ) ){
+	if( StringsAreEqual( args.action,"-P" ) || StringsAreEqual( args.action,"-A" ) ){
 		return _zuluExit_2( _zuluMountDeviceList( uid ),stl,stx,NULL ) ;
+	}
+	if( StringsAreEqual( args.action,"-S" ) ){
+		return _zuluExit_2( _zuluMountSystemDeviceList( uid ),stl,stx,NULL ) ;
+	}
+	if( StringsAreEqual( args.action,"-N" ) ){
+		return _zuluExit_2( _zuluMountNonSystemDeviceList( uid ),stl,stx,NULL ) ;
 	}
 	if( StringsAreEqual( args.action,"-h" ) ){
 		return _zuluExit_2( _mount_help(),stl,stx,NULL ) ;
