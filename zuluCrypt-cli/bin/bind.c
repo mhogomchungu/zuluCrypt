@@ -35,6 +35,14 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 	int k ;
 	int delete_stx = 0 ;
 	
+	/*
+	 * zuluCryptUserIsAMemberOfAGroup() is defined in security.c
+	 */
+	/*
+	 * root user is a member of all groups and hence is allowed
+	 */
+	int allowedUser = zuluCryptUserIsAMemberOfAGroup( uid,"zulumount" ) ;
+	
 	zuluCryptSecurityGainElevatedPrivileges() ;
 	
 	if( stx == StringListVoid ){
@@ -83,20 +91,30 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 		/*
 		 * zuluCryptDecodeMtabEntry() is defined in ../lib/mount_volume.c
 		 */
+		/*
+		 * g will contain something like "/run/media/private/$USER/sdc1"
+		 */
 		g = zuluCryptDecodeMtabEntry( st ) ;
 		
-		/*
-		 * g will contain something like "/run/media/$USER/sdc1"
-		 */
-		  
-		/*
-		 * zuluCryptSecurityMountPointPrefixMatch() is defined in ./security.c
-		 */
-		k = zuluCryptSecurityMountPointPrefixMatch( g,uid,NULL ) ;
+		if( allowedUser ){
+			/*
+			 * a privileged user is attempting to unmount a shared mount point,allow them
+			 */
+			k = 1 ;
+		}else{
+			/*
+			 * a non privileged user is attempting to unmount a shared mount point,allow them only if
+			 * they are the one that created it
+			 */
+			/*
+			* zuluCryptSecurityMountPointPrefixMatch() is defined in ./security.c
+			*/
+			k = zuluCryptSecurityMountPointPrefixMatch( g,uid,NULL ) ;
+		}
 		
 		if( k != 1 ){
 			/*
-			 * One user is attempting to unmount a bind mount from another use,disallow it
+			 * One none privileged user is attempting to unmount a bind mount from another use,disallow it
 			 */
 			r = 4 ;
 		}else{
@@ -124,7 +142,6 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 				e = StringListContentAt( stx,index ) ;
 				
 				if( StringPrefixEqual( e,device ) ){
-					
 					f = zuluCryptDecodeMtabEntry( xt ) ;
 					/*
 					 * good,the device associated with the shared mount is the same as that of the
@@ -149,10 +166,7 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 					}
 				}else{
 					/*
-					 * There appear to be a collision.One user mount poit suffix collides with another
-					 * user public share mount point suffix.
-					 * 
-					 * Dont do anything,just return
+					 * i dont see how we will get here,we shouldnt
 					 */
 					r = 0 ;
 				}

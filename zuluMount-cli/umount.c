@@ -29,10 +29,11 @@ int zuluMountUMount( ARGS * args )
 	int status ;
 	string_t st = StringVoid ;
 	const char * dev = NULL ;
+	const char * errorMsg = "\
+ERROR: you can not umount volumes out of \"%s\" since you are not root and do not belong to group \"zulumount\"\n" ;
 	string_t xt ;
 	
-	if( mode ) {;}
-	if( mount_point_option ) {;}
+	if( 0 && mode && mount_point_option ) {;}
 	
 	if( StringPrefixEqual( device,"/dev/loop" ) ){
 		/*
@@ -41,7 +42,8 @@ int zuluMountUMount( ARGS * args )
 		loop_device = zuluCryptLoopDeviceAddress( device ) ;
 		if( loop_device == NULL ){
 			/*
-			 * the error msg is a lie,but its harmless since the user will most likely never see it
+			 * the error msg is a lie,but its harmless since the user will most likely never see it as
+			 * this code path will not be passed.
 			 */
 			return _zuluExit( 100,StringVoid,m_point,"ERROR: device does not appear to be mounted" ) ;
 		}else{
@@ -69,9 +71,11 @@ int zuluMountUMount( ARGS * args )
 	 * zuluCryptSecurityMountPointPrefixMatch() is defined in ../zuluCrypt-cli/bin/security.c
 	 */
 	if( !zuluCryptSecurityMountPointPrefixMatch( m_point,uid,&xt ) ){
+		/*
+		 * zuluCryptUserIsAMemberOfAGroup() is defined in ../zuluCrypt-cli/bin/security.c
+		 */
 		if( !zuluCryptUserIsAMemberOfAGroup( uid,"zulumount" ) ){
-			printf( "ERROR: insufficient privilege to unmount a volume that has a mount point \
-outside of \"%s\"\n",StringContent( xt ) ) ;
+			printf( errorMsg,StringContent( xt ) ) ;
 			StringDelete( &xt ) ;
 			return _zuluExit( 101,st,m_point,NULL ) ;
 		}else{
