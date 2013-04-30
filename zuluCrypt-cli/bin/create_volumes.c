@@ -90,13 +90,13 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	 * memory from manually examining each exit point to make sure all strings are deleted or go with multiple goto
 	 * code deleting blocks to take into account different exit points. 
 	 */
-	stringList_t stl = StringListInit() ;
-	
-	string_t * pass_1  = StringListAssign( stl ) ;
-	string_t * pass_2  = StringListAssign( stl ) ;
-	string_t * content = StringListAssign( stl ) ;
-	string_t * confirm = StringListAssign( stl ) ;
-	string_t * mapper  = StringListAssign( stl ) ;
+	stringList_t stl  ;
+	string_t * stringArray  = StringListArray( &stl,5 ) ;
+	string_t * pass_1  = &stringArray[ 0 ] ;
+	string_t * pass_2  = &stringArray[ 1 ] ;
+	string_t * content = &stringArray[ 2 ] ;
+	string_t * confirm = &stringArray[ 3 ] ;
+	string_t * mapper  = &stringArray[ 4 ] ;
 	
 	int st  ;
 	struct stat xt ;

@@ -131,19 +131,19 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	const char * plugin_path = opts->plugin_path ;
 	const char * fs_opts     = opts->fs_opts ;
 	
-	stringList_t stl = StringListInit() ;
-	
 	/*
 	 * Below is a form of memory management.All strings are collected in a stringlist object to easily delete them
 	 * when the function returns.This allows for the function to have multiple exit points without risks of leaking
 	 * memory from manually examining each exit point to make sure all strings are deleted or go with multiple goto
 	 * code deleting blocks to take into account different exit points. 
 	 */
-	string_t * passphrase =  StringListAssign( stl ) ;
-	string_t * m_name     =  StringListAssign( stl ) ;
-	string_t * data       =  StringListAssign( stl ) ; 
-	string_t * m_point    =  StringListAssign( stl ) ;
-	string_t * mapper     =  StringListAssign( stl ) ;
+	stringList_t stl ;
+	string_t * stringArray = StringListArray( &stl,5 ) ;
+	string_t * passphrase =  &stringArray[ 0 ];
+	string_t * m_name     =  &stringArray[ 1 ];
+	string_t * data       =  &stringArray[ 2 ]; 
+	string_t * m_point    =  &stringArray[ 3 ];
+	string_t * mapper     =  &stringArray[ 4 ];
 	
 	const char * cpass ;
 	const char ** mapper_name ;

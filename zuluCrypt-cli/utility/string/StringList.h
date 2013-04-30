@@ -108,6 +108,22 @@ stringList_t StringListString( string_t * ) ;
 stringList_t StringListInit( void ) ;
 
 /*
+ * Expose the string_t array for easier assignment of multiple string_t objects.
+ * 
+ * example use case
+ * stringList_t stl ;
+ * string_t * x = StringListArray( &stl,3 ) ;
+ * x[0] = String( "abc" ) ;
+ * x[1] = String( "def" ) ;
+ * x[2] = String( "ghi" ) ; 
+ * ...
+ * ...
+ * NOTE:This is a dangerous function as it does not guard against StringVoid.
+ * Assign StringVoid and segfault will surely happen sooner or later.
+ */
+string_t * StringListArray( stringList_t *,size_t arraySize ) ;
+
+/*
  * Return the number of elements in the list
  */
 size_t StringListSize( stringList_t stl ) ;

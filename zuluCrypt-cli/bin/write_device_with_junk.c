@@ -88,12 +88,19 @@ static int zuluExit( stringList_t stl, int status )
 
 static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name,uid_t uid,int op )
 {
-	stringList_t stl      = StringListInit() ;
-	string_t * mapper     = StringListAssign( stl ) ;
-	string_t * passphrase = StringListAssign( stl ) ;
-	string_t * p          = StringListAssign( stl ) ;
-	string_t * dev_st     = StringListAssign( stl ) ;
-	string_t * dev_1      = StringListAssign( stl ) ;
+	/*
+	 * Below is a form of memory management.All strings are collected in a stringlist object to easily delete them
+	 * when the function returns.This allows for the function to have multiple exit points without risks of leaking
+	 * memory from manually examining each exit point to make sure all strings are deleted or go with multiple goto
+	 * code deleting blocks to take into account different exit points. 
+	 */
+	stringList_t stl ;
+	string_t * stringArray  = StringListArray( &stl,5 ) ;
+	string_t * mapper     = &stringArray[ 0 ] ;
+	string_t * passphrase = &stringArray[ 1 ] ;
+	string_t * p          = &stringArray[ 2 ] ;
+	string_t * dev_st     = &stringArray[ 3 ] ;
+	string_t * dev_1      = &stringArray[ 4 ] ;
 	
 	size_t len = 0 ;
 	

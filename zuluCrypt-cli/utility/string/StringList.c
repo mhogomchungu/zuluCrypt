@@ -197,6 +197,30 @@ string_t * StringListAssign( stringList_t stl )
 	return p ;
 }
 
+string_t * StringListArray( stringList_t * stz,size_t arraySize )
+{
+	stringList_t stl = ( stringList_t ) malloc( sizeof( struct StringListType ) ) ;
+	
+	if( stl == NULL ){
+		return ( string_t * )_StringListError() ;
+	}
+	
+	stl->stp = ( string_t * ) malloc( sizeof( string_t ) * arraySize ) ;
+	
+	if( stl->stp == NULL ){
+		free( stl ) ;
+		return ( string_t * )_StringListError() ;
+	}
+	
+	stl->size   = arraySize ;
+	stl->length = arraySize ;
+	
+	memset( stl->stp,'\0',sizeof( string_t ) * arraySize ) ;
+	
+	*stz = stl ;
+	return stl->stp ;
+}
+
 string_t StringListAssignString( stringList_t stl,string_t st ) 
 {
 	string_t * p ;

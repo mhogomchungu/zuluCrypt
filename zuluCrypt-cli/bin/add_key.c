@@ -142,13 +142,13 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 	 * memory from manually examining each exit point to make sure all strings are deleted or go with multiple goto
 	 * code deleting blocks to take into account different exit points. 
 	 */
-	stringList_t stl = StringListInit() ;
-	
-	string_t * presentKey	= StringListAssign( stl ) ;
-	string_t * newKey_1  	= StringListAssign( stl ) ; 
-	string_t * newKey_2    	= StringListAssign( stl ) ; 
-	string_t * ek          	= StringListAssign( stl ) ; 
-	string_t * nk          	= StringListAssign( stl ) ; 
+	stringList_t stl ;
+	string_t * stringArray  = StringListArray( &stl,5 ) ;
+	string_t * presentKey	= &stringArray[ 0 ] ;
+	string_t * newKey_1  	= &stringArray[ 1 ] ; 
+	string_t * newKey_2    	= &stringArray[ 2 ] ; 
+	string_t * ek          	= &stringArray[ 3 ] ; 
+	string_t * nk          	= &stringArray[ 4 ] ; 
 	
 	const char * key1 = NULL ;
 	const char * key2 = NULL ;
