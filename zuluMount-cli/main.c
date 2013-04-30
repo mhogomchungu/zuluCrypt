@@ -136,7 +136,7 @@ static int _zuluMountSystemDeviceList( uid_t uid )
 static int _zuluMountMountedList( uid_t uid )
 {
 	/*
-	 * zuluMountPrintMountedVolumes() is defined in ./process_mountinfo.c
+	 * zuluMountPrintMountedVolumes() is defined in ./print_mounted_volumes.c
 	 */
 	return zuluMountPrintMountedVolumes( uid ) ;
 }
