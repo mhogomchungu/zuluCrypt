@@ -146,7 +146,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	string_t * mapper     =  &stringArray[ 4 ];
 	
 	const char * cpass ;
-	const char ** mapper_name ;
+	const char * mapper_name ;
 	
 	const char * cpoint = NULL ;
 	
@@ -224,12 +224,12 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	*m_name = zuluCryptCreateMapperName( device,mapping_name,uid,ZULUCRYPTshortMapperPath ) ;
 
 	*mapper = StringCopy( *m_name ) ;
-	mapper_name = StringPointer( *m_name ) ;
+	mapper_name = StringContent( *m_name ) ;
 	
 	/*
 	 *  zuluCryptCheckOpenedMapper() is defined in check_opened_mapper.c 
 	 */
-	if( zuluCryptCheckOpenedMapper( *mapper_name ) == 1 ){
+	if( zuluCryptCheckOpenedMapper( mapper_name ) == 1 ){
 		if( cpoint != NULL ){
 			rmdir( cpoint ) ;
 		}
@@ -251,7 +251,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		/*
 		 * zuluCryptOpenVolume() is defined in ../lib/open_volume.c
 		 */
-		st = zuluCryptOpenVolume( device,*mapper_name,cpoint,uid,m_flags,fs_opts,cpass,len ) ;
+		st = zuluCryptOpenVolume( device,mapper_name,cpoint,uid,m_flags,fs_opts,cpass,len ) ;
 		zuluCryptSecurityDropElevatedPrivileges() ;
 	}else if( source == NULL ){
 		printf( "Enter passphrase: " ) ;
@@ -266,7 +266,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		cpass = StringContent( *passphrase ) ;
 		len = StringLength( *passphrase ) ;
 		zuluCryptSecurityGainElevatedPrivileges() ;
-		st = zuluCryptOpenVolume( device,*mapper_name,cpoint,uid,m_flags,fs_opts,cpass,len ) ;
+		st = zuluCryptOpenVolume( device,mapper_name,cpoint,uid,m_flags,fs_opts,cpass,len ) ;
 		zuluCryptSecurityDropElevatedPrivileges() ;
 	}else{
 		if( source == NULL || pass == NULL ){
@@ -276,7 +276,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 			cpass = pass ;
 			len = strlen( pass ) ;
 			zuluCryptSecurityGainElevatedPrivileges() ;
-			st = zuluCryptOpenVolume( device,*mapper_name,cpoint,uid,m_flags,fs_opts,cpass,len ) ;
+			st = zuluCryptOpenVolume( device,mapper_name,cpoint,uid,m_flags,fs_opts,cpass,len ) ;
 			zuluCryptSecurityDropElevatedPrivileges() ;
 		}else if( StringsAreEqual( source,"-f" ) ){
 			/*
@@ -291,7 +291,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 			cpass = StringContent( *data ) ;
 			len = StringLength( *data ) ;
 			zuluCryptSecurityGainElevatedPrivileges() ;
-			st = zuluCryptOpenVolume( device,*mapper_name,cpoint,uid,m_flags,fs_opts,cpass,len ) ;
+			st = zuluCryptOpenVolume( device,mapper_name,cpoint,uid,m_flags,fs_opts,cpass,len ) ;
 			zuluCryptSecurityDropElevatedPrivileges();
 		}
 	}
@@ -313,12 +313,12 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 			/*
 			 * try to open is a normal TRUECRYPT volume.
 			 */
-			st = _open_tcrypt( device,*mapper_name,cpass,len,source,pass,TCRYPT_NORMAL,cpoint,uid,m_flags,fs_opts ) ;
+			st = _open_tcrypt( device,mapper_name,cpass,len,source,pass,TCRYPT_NORMAL,cpoint,uid,m_flags,fs_opts ) ;
 			if( st == 4 ){
 				/*
 				* The attempt failed,retry to open it as a hidden TRUECRYPT volume.
 				*/
-				st = _open_tcrypt( device,*mapper_name,cpass,len,source,pass,TCRYPT_HIDDEN,cpoint,uid,m_flags,fs_opts ) ;
+				st = _open_tcrypt( device,mapper_name,cpass,len,source,pass,TCRYPT_HIDDEN,cpoint,uid,m_flags,fs_opts ) ;
 			}
 		}
 		zuluCryptSecurityDropElevatedPrivileges() ;

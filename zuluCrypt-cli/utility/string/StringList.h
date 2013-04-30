@@ -108,7 +108,7 @@ stringList_t StringListString( string_t * ) ;
 stringList_t StringListInit( void ) ;
 
 /*
- * Expose the string_t array for easier assignment of multiple string_t objects.
+ * Create a StringList object with arraySize string_t "slots" and expose them for easier assignment of multiple string_t objects.
  * 
  * example use case
  * stringList_t stl ;
