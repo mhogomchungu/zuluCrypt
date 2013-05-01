@@ -155,6 +155,8 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 
 	unsigned long m_flags ;
 		
+	struct stat statstr ;
+	
 	/*
 	 * zuluCryptMountFlagsAreNotCorrect() is defined in ./mount_flags.c
 	 */
@@ -229,7 +231,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	/*
 	 *  zuluCryptCheckOpenedMapper() is defined in check_opened_mapper.c 
 	 */
-	if( zuluCryptCheckOpenedMapper( mapper_name ) == 1 ){
+	if( stat( mapper_name,&statstr ) == 0 ){
 		if( cpoint != NULL ){
 			rmdir( cpoint ) ;
 		}
