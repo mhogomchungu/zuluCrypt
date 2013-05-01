@@ -233,9 +233,6 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	e = StringMultipleAppend( *mapper_path,"/",mapper_name,END ) ;
 	
 	if( stat( e,&statstr ) == 0 ){
-		if( cpoint != NULL ){
-			rmdir( cpoint ) ;
-		}
 		return zuluExit_1( 24,opts,device,cpoint,stl,uid,mapping_name ) ;
 	}
 	
