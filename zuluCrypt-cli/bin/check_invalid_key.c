@@ -22,7 +22,7 @@
 void zuluCryptCheckInvalidKey( const char * device )
 {
 	char * d   ;
-	char * c ;
+	const char * c ;
 	int e = 0  ;
 	
 	zuluCryptSecurityGainElevatedPrivileges() ;
@@ -36,15 +36,15 @@ void zuluCryptCheckInvalidKey( const char * device )
 		/*
 		 * we got here because the volume is either not luks based or the path is invalid
 		 */
-		return ;
+		;
+	}else{
+		c = d - 1 ;
+		while( *++c ){
+			if( *c == '2' ){
+				fprintf( stderr,"WARNING: key slot number: %d is corrupted\n",e ) ;
+			}
+			e++ ;
+		}
+		free( d ) ;
 	}
-	
-	c = d - 1 ;
-	
-	while( *++c ){
-		if( *c == '2' )
-			printf("WARNING: key slot number: %d is corrupted\n",e ) ;
-		e++ ;
-	}	
-	free( d ) ;
 } 
