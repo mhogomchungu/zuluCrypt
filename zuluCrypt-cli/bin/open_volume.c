@@ -138,16 +138,17 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	 * code deleting blocks to take into account different exit points. 
 	 */
 	stringList_t stl ;
-	string_t * stringArray = StringListArray( &stl,5 ) ;
+	string_t * stringArray = StringListArray( &stl,6 ) ;
 	string_t * passphrase =  &stringArray[ 0 ];
 	string_t * m_name     =  &stringArray[ 1 ];
 	string_t * data       =  &stringArray[ 2 ]; 
 	string_t * m_point    =  &stringArray[ 3 ];
 	string_t * mapper     =  &stringArray[ 4 ];
+	string_t * mapper_path=  &stringArray[ 5 ];
 	
 	const char * cpass ;
 	const char * mapper_name ;
-	
+	const char * e ;
 	const char * cpoint = NULL ;
 	
 	size_t len ;
@@ -228,10 +229,10 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	*mapper = StringCopy( *m_name ) ;
 	mapper_name = StringContent( *m_name ) ;
 	
-	/*
-	 *  zuluCryptCheckOpenedMapper() is defined in check_opened_mapper.c 
-	 */
-	if( stat( mapper_name,&statstr ) == 0 ){
+	*mapper_path = String( crypt_get_dir() ) ;
+	e = StringMultipleAppend( *mapper_path,"/",mapper_name,END ) ;
+	
+	if( stat( e,&statstr ) == 0 ){
 		if( cpoint != NULL ){
 			rmdir( cpoint ) ;
 		}
