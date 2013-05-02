@@ -102,12 +102,12 @@ stringList_t zuluCryptGetFstabList( void )
 		return StringListVoid ;
 	}
 	
-	it  = StringListBegin( fstabList ) ;
-	end = StringListEnd( fstabList ) ;
-	
 	if( blkid_get_cache( &cache,NULL ) != 0 ){
 		cache = NULL ;
 	}
+	
+	it  = StringListBegin( fstabList ) ;
+	end = StringListEnd( fstabList ) ;
 	
 	for( ; it != end ; it++ ){
 		xt = *it ;
@@ -191,11 +191,13 @@ stringList_t zuluCryptGetFstabList( void )
 string_t zuluCryptGetFstabEntry( const char * device )
 {
 	string_t st = StringVoid ;
+	string_t xt = String( device ) ;
 	stringList_t stl = zuluCryptGetFstabList() ;
-	ssize_t index = StringListHasStartSequence( stl,device ) ;
+	ssize_t index = StringListHasStartSequence( stl,StringAppend( xt," " ) ) ;
 	if( index >= 0 ){
 		st = StringListCopyStringAt( stl,index ) ;
 	}
+	StringDelete( &xt ) ;
 	StringListDelete( &stl ) ;
 	return st ;
 }
