@@ -455,6 +455,7 @@ void MainWindow::stateChanged( int state )
 
 void MainWindow::mount( QString type,QString device,QString label )
 {
+	this->disableAll();
 	if( type == QString( "crypto_LUKS" ) || type == QString( "Nil" ) ){
 		keyDialog * kd = new keyDialog( this,m_ui->tableWidget,device,type,m_folderOpener ) ;
 		connect( kd,SIGNAL( hideUISignal() ),kd,SLOT( deleteLater() ) ) ;

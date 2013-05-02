@@ -786,6 +786,119 @@ char * const * StringListStringArray( stringList_t stl )
 	return q ;
 }
 
+size_t StringListRemoveIfStringStartsWith( stringList_t stl,const char * str ) 
+{
+	size_t len ;
+	size_t index ;
+	size_t size ;
+	size_t j ;
+	size_t count ;
+	
+	string_t * k ;
+	
+	if( stl == StringListVoid || str == NULL ){
+		return 0 ;
+	}
+	
+	count = 0 ;
+	size  = sizeof( string_t ) ;
+	len   = strlen( str ) ;
+	j = stl->size ;
+	k = stl->stp ;
+	index = 0 ;
+	
+	while( index < j ){
+		if( strncmp( k[ index ]->string,str,len ) == 0 ){
+			count++ ;
+			free( k[ index ]->string ) ;
+			free( k[ index ] ) ;
+			memmove( k + index,k + index + 1,size * ( j - 1 - index ) ) ;
+			j = j - 1 ;
+		}else{
+			index++ ;
+		}
+	}
+	
+	stl->size = j ;
+	return count ;
+}
+
+size_t StringListRemoveIfStringEqual_1( stringList_t stl,string_t st )
+{
+	return StringListRemoveIfStringEqual( stl,st->string ) ;
+}
+
+size_t StringListRemoveIfStringEqual( stringList_t stl,const char * str )
+{
+	size_t index ;
+	size_t size ;
+	size_t j ;
+	size_t count ;
+	
+	string_t * k ;
+	
+	if( stl == StringListVoid || str == NULL ){
+		return 0 ;
+	}
+	
+	count = 0 ;
+	size  = sizeof( string_t ) ;
+	j = stl->size ;
+	k = stl->stp ;
+	index = 0 ;
+	
+	while( index < j ){
+		if( strcmp( k[ index ]->string,str ) == 0 ){
+			count++ ;
+			free( k[ index ]->string ) ;
+			free( k[ index ] ) ;
+			memmove( k + index,k + index + 1,size * ( j - 1 - index ) ) ;
+			j = j - 1 ;
+		}else{
+			index++ ;
+		}
+	}
+	
+	stl->size = j ;
+	return count ;
+}
+
+
+size_t StringListRemoveIfStringContains( stringList_t stl,const char * str ) 
+{
+	size_t index ;
+	size_t size ;
+	size_t j ;
+	size_t count ;
+	
+	string_t * k ;
+	
+	if( stl == StringListVoid || str == NULL ){
+		return 0 ;
+	}
+	
+	count = 0 ;
+	size  = sizeof( string_t ) ;
+	j = stl->size ;
+	k = stl->stp ;
+	index = 0 ;
+	
+	while( index < j ){
+		if( strstr( k[ index ]->string,str ) != NULL ){
+			count++ ;
+			free( k[ index ]->string ) ;
+			free( k[ index ] ) ;
+			memmove( k + index,k + index + 1,size * ( j - 1 - index ) ) ;
+			j = j - 1 ;
+		}else{
+			index++ ;
+		}
+	}
+	
+	stl->size = j ;
+	return count ;
+}
+
 stringList_t StringListRemoveAt( stringList_t stl, size_t index ) 
 {
 	size_t size ;

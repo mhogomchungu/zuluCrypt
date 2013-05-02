@@ -95,14 +95,7 @@ stringList_t zuluCryptGetFstabList( void )
 		return StringListVoid ;
 	}
 	
-	while( 1 ){
-		index = StringListHasStartSequence( fstabList,"#" ) ;
-		if( index == -1 ){
-			break ;
-		}else{
-			StringListRemoveAt( fstabList,index ) ;
-		}
-	}
+	StringListRemoveIfStringStartsWith( fstabList,"#" ) ;
 	
 	if( StringListSize( fstabList ) < 1 ){
 		StringListDelete( &fstabList ) ;

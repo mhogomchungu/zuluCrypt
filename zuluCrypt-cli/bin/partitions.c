@@ -303,6 +303,7 @@ stringList_t zuluCryptPartitions( int option )
 	stringList_t p ;
 	stringList_t stl = zuluCryptPartitionList() ;
 	
+	StringListIterator start ;
 	StringListIterator it  ;
 	StringListIterator end ;
 	
@@ -355,20 +356,16 @@ stringList_t zuluCryptPartitions( int option )
 	 * now we check non_system devices agains entries in /sys/ to see if udev reported them as system and move them to system 
 	 * if it does . 
 	 */
-	it  = StringListBegin( non_system ) ;
-	end = StringListEnd( non_system ) ;
 	
-	do{
-		device = StringContent( *it ) ;
-		if( _zuluCryptCheckSYSifDeviceIsSystem( device ) ){
-			StringListAppend( system,device ) ;
-			StringListRemoveString( non_system,device ) ;
-			it  = StringListBegin( non_system ) ;
-			end = StringListEnd( non_system ) ;
+	start = it = StringListBegin( non_system ) ;
+	while( it != StringListEnd( non_system ) ){
+		if( _zuluCryptCheckSYSifDeviceIsSystem( StringContent( *it ) ) ){
+			StringListAppendString( system,*it ) ;
+			StringListRemoveAt( non_system,it - start ) ;
 		}else{
 			it++ ;
 		}
-	}while( it != end ) ;
+	}
 	
 	/*
 	 * Now we read from a config file that contains devices that are not to be considered system and remove them from

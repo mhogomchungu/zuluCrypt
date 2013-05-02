@@ -292,6 +292,30 @@ stringList_t StringListInsertAtSize( stringList_t stl,const char * cstring,size_
 stringList_t StringListRemoveAt( stringList_t stl, size_t index ) ;
 
 /*
+ * go through every string in the list and remove all strings that starts with str
+ * returned value is the number of elements removed 
+ */
+size_t StringListRemoveIfStringStartsWith( stringList_t stl,const char * str ) ;
+
+/*
+ * go through every string in the list and remove all strings has str character sequence
+ * returned value is the number of elements removed
+ */
+size_t StringListRemoveIfStringContains( stringList_t stl,const char * str ) ;
+
+/*
+ * go through every string in the list and remove all strings has string str
+ * returned value is the number of elements removed
+ */
+size_t StringListRemoveIfStringEqual( stringList_t stl,const char * str ) ;
+
+/*
+ * go through every string in the list and remove all strings has string_t str
+ * returned value is the number of elements removed
+ */
+size_t StringListRemoveIfStringEqual_1( stringList_t stl,string_t st ) ;
+
+/*
  * remove an entry from the list at position index and "let it free",the detached entry is now a fully fledged string_t object.
  * the first position is at position 0
  */
