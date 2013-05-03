@@ -33,7 +33,11 @@ auto_mount::~auto_mount()
 
 void auto_mount::stop()
 {
-	m_mtoto->terminate();
+	if( m_threadIsRunning ){
+		m_mtoto->terminate();
+	}else{
+		this->threadStopped();
+	}
 }
 
 void auto_mount::threadStopped()
@@ -52,7 +56,11 @@ void auto_mount::run()
 
 	m_fdDir = inotify_init() ;
 	if( m_fdDir == -1 ){
+		qDebug() << "inotify_init() failed to start,automounting is turned off";
+		m_threadIsRunning = false ;
 		return ;
+	}else{
+		m_threadIsRunning = true ;
 	}
 
 	int dev    = inotify_add_watch( m_fdDir,"/dev",IN_CREATE|IN_DELETE ) ;

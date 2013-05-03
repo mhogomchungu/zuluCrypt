@@ -65,6 +65,7 @@ private:
 	QThread * m_mtoto ;
 	QObject * m_babu ;
 	auto_mount * m_autoMount ;
+	bool m_threadIsRunning ;
 };
 
 #endif // AUTO_MOUNT_H
