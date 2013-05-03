@@ -96,7 +96,6 @@ private slots:
 	void started( void ) ;
 	void close( void ) ;
 	void autoMountToggled( bool ) ;
-	void suspendAutoMonitor( void ) ;
 private:
 	void startAutoMonitor( void ) ;
 	void showEvent( QShowEvent * );
@@ -108,7 +107,6 @@ private:
 	QString m_folderOpener ;
 	int m_argc ;
 	char ** m_argv ;
-	bool m_working ;
 	void disableAll( void ) ;
 	void closeEvent( QCloseEvent * e );
 	void setUpFont( void ) ;

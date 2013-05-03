@@ -20,9 +20,8 @@
 #include "auto_mount.h"
 #include <QDebug>
 
-auto_mount::auto_mount( QObject * parent ) :m_fdDir( -1 ),m_buffer( 0 ),m_thread_helper( 0 ),m_mtoto( 0 ),m_babu( parent )
+auto_mount::auto_mount( QObject * parent ) :m_fdDir( -1 ),m_thread_helper( 0 ),m_babu( parent ),m_autoMount( this )
 {
-	m_baba = this ;
 }
 
 auto_mount::~auto_mount()
@@ -30,61 +29,35 @@ auto_mount::~auto_mount()
 	if( m_fdDir != -1 ){
 		close( m_fdDir ) ;
 	}
-	if( m_buffer ){
-		delete[] m_buffer ;
-	}
 }
 
 void auto_mount::stop()
 {
 	m_mtoto->terminate();
-	m_stopSuspend = false ;
 }
 
-void auto_mount::suspend()
+void auto_mount::threadStopped()
 {
-	m_mtoto->terminate();
-	m_stopSuspend = true ;
-}
-
-void auto_mount::stopping()
-{
-	if( m_stopSuspend ){
-		emit suspended();
-	}else{
-		emit stopped();
-	}
+	emit stopped();
 }
 
 void auto_mount::run()
 {
 	m_mtoto = this ;
-	connect( m_mtoto,SIGNAL( finished() ),m_mtoto,SLOT( deleteLater() ) ) ;
-	connect( m_mtoto,SIGNAL( finished() ),m_baba, SLOT( quit() ) ) ;
-	connect( m_baba, SIGNAL( finished() ),m_baba, SLOT( deleteLater() ) ) ;
-	connect( m_baba, SIGNAL( finished() ),m_baba, SLOT( stopping() ) ) ;
+	connect( m_mtoto,SIGNAL( terminated() ),m_autoMount,SLOT( threadStopped() ) ) ;
+	connect( m_mtoto,SIGNAL( terminated() ),this,SLOT( deleteLater() ) ) ;
 
-	size_t offset = sizeof( struct inotify_event ) ;
-	size_t BUFF_SIZE = FILENAME_MAX + offset ;
-
-	m_buffer = new char[ BUFF_SIZE ];
+	#define BUFF_SIZE 4096
+	char buffer[ BUFF_SIZE ];
 
 	m_fdDir = inotify_init() ;
 	if( m_fdDir == -1 ){
 		return ;
 	}
 
-	int dev = inotify_add_watch( m_fdDir,"/dev",IN_CREATE|IN_DELETE ) ;
+	int dev    = inotify_add_watch( m_fdDir,"/dev",IN_CREATE|IN_DELETE ) ;
 	int mapper = inotify_add_watch( m_fdDir,"/dev/mapper",IN_CREATE|IN_DELETE ) ;
-	int md = -1 ;
-	QDir d( QString( "/dev/md/" ) ) ;
-	if( d.exists() ){
-		md = inotify_add_watch( m_fdDir,"/dev/md",IN_DELETE ) ;
-	}
-
-	if( dev == -1 || mapper == -1 ){
-		return ;
-	}
+	int md     =  inotify_add_watch( m_fdDir,"/dev/md",IN_DELETE ) ;
 
 	struct inotify_event * pevent ;
 	QString device ;
@@ -96,11 +69,11 @@ void auto_mount::run()
 
 	while( 1 ) {
 
-		data_read = read( m_fdDir,m_buffer,BUFF_SIZE ) ;
+		data_read = read( m_fdDir,buffer,BUFF_SIZE ) ;
 
-		z = m_buffer + data_read ;
+		z = buffer + data_read ;
 
-		for( f = m_buffer ; f < z ; f = f + baseSize + pevent->len ){
+		for( f = buffer ; f < z ; f = f + baseSize + pevent->len ){
 
 			pevent = ( struct inotify_event * )f;
 
@@ -119,8 +92,10 @@ void auto_mount::run()
 			}else{
 				if( pevent->wd == md ){
 					device = QString( "/dev/md/" ) + m_device ;
-				}else{
+				}else if( pevent->wd == dev || pevent->wd == mapper ){
 					device = QString( "/dev/" ) + m_device ;
+				}else{
+					;
 				}
 
 				m_thread_helper = new auto_mount_helper() ;
@@ -134,8 +109,10 @@ void auto_mount::run()
 
 				if( pevent->wd == dev || pevent->wd == md ){
 					m_thread_helper->start( device,auto_mount_helper::dev,pevent->mask ) ;
-				}else{
+				}else if( pevent->wd == mapper ){
 					m_thread_helper->start( device,auto_mount_helper::dev_mapper,pevent->mask ) ;
+				}else{
+					;
 				}
 			}
 		}

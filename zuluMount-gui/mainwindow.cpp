@@ -84,7 +84,6 @@ void MainWindow::setUpApp()
 
 	connect( m_trayIcon,SIGNAL( activated( QSystemTrayIcon::ActivationReason ) ),this,SLOT( slotTrayClicked( QSystemTrayIcon::ActivationReason ) ) );
 
-	m_working = false ;
 	m_trayIcon->show();
 
 	QString dirPath = QDir::homePath() + QString( "/.zuluCrypt/" ) ;
@@ -109,17 +108,9 @@ void MainWindow::setUpApp()
 
 void MainWindow::startAutoMonitor()
 {
-	if( !m_autoMountThread ){
-		m_autoMountThread = new auto_mount( this ) ;
-		connect( m_autoMountThread,SIGNAL( stopped() ),this,SLOT( close() ) ) ;
-		//connect( m_autoMountThread,SIGNAL( suspended() ),this,SLOT( suspendAutoMonitor() ) ) ;
-		m_autoMountThread->start();
-	}
-}
-
-void MainWindow::suspendAutoMonitor()
-{
-	m_autoMountThread = 0 ;
+	m_autoMountThread = new auto_mount( this ) ;
+	connect( m_autoMountThread,SIGNAL( stopped() ),this,SLOT( close() ) ) ;
+	m_autoMountThread->start();
 }
 
 void MainWindow::started( void )
@@ -283,14 +274,7 @@ void MainWindow::close()
 
 void MainWindow::slotCloseApplication()
 {
-	if( m_working == false ){
-		if( m_autoMountThread ){
-			m_autoMountThread->stop();
-			m_autoMountThread = 0 ;
-		}else{
-			this->close();
-		}
-	}
+	m_autoMountThread->stop();
 }
 
 void MainWindow::itemClicked( QTableWidgetItem * item )
@@ -726,7 +710,6 @@ void MainWindow::disableAll()
 	m_ui->pbupdate->setEnabled( false );
 	m_ui->tableWidget->setEnabled( false );
 	m_ui->pbunmount->setEnabled( false );
-	m_working = true ;
 }
 
 void MainWindow::enableAll()
@@ -735,7 +718,6 @@ void MainWindow::enableAll()
 	m_ui->pbclose->setEnabled( true );
 	m_ui->pbupdate->setEnabled( true );
 	m_ui->tableWidget->setEnabled( true );
-	m_working = false ;
 	m_ui->pbmount->setEnabled( true );
 	m_ui->tableWidget->setFocus();
 }
@@ -752,14 +734,12 @@ MainWindow::~MainWindow()
 {
 	QFile f( QDir::homePath() + QString( zuluMOUNT_AUTOPATH ) );
 
-	if( m_autoMountAction ){
-		if( m_autoMountAction->isChecked() ){
-			if( !f.exists() ){
-				f.open( QIODevice::WriteOnly ) ;
-				f.close();
-			}
-		}else{
-			f.remove() ;
+	if( m_autoMountAction->isChecked() ){
+		if( !f.exists() ){
+			f.open( QIODevice::WriteOnly ) ;
+			f.close();
 		}
+	}else{
+		f.remove() ;
 	}
 }

@@ -49,24 +49,22 @@ public:
 	explicit auto_mount( QObject * parent = 0 );
 	~auto_mount() ;
 	void stop( void ) ;
-	void suspend( void ) ;
 signals:
+	void stopped( void ) ;
+	void threadFinished( void ) ;
 	void deviceFromDev( QString ) ;
 	void deviceFromDevMapper( QString ) ;
-	void stopped( void ) ;
-	void suspended( void ) ;
 private slots:
-	void stopping( void ) ;
+	void threadStopped( void ) ;
 private:
 	const char * m_device ;
 	void run() ;
 	int m_fdDir ;
-	char * m_buffer ;
 	auto_mount_helper * m_thread_helper ;
 	QThread * m_baba ;
 	QThread * m_mtoto ;
 	QObject * m_babu ;
-	bool m_stopSuspend ;
+	auto_mount * m_autoMount ;
 };
 
 #endif // AUTO_MOUNT_H
