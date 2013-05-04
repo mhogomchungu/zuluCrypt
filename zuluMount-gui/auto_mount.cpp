@@ -43,6 +43,7 @@ void auto_mount::stop()
 void auto_mount::threadStopped()
 {
 	emit stopped();
+	m_threadIsRunning = false ;
 }
 
 void auto_mount::run()
