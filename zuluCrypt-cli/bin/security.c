@@ -71,6 +71,11 @@ static int create_group( const char * groupname )
 	return st == 0 ;
 }
 
+static int _polkitAuthenticated( void )
+{
+	return 0 ;
+}
+
 int zuluCryptUserIsAMemberOfAGroup( uid_t uid,const char * groupname )
 {
 	int st = 0 ;
@@ -82,46 +87,47 @@ int zuluCryptUserIsAMemberOfAGroup( uid_t uid,const char * groupname )
 	const char * name ;
 	
 	if( groupname == NULL ){
-		return 0 ;
-	}
-	if( uid == 0 ){
-		return 1 ;
-	}
+		st = 0 ;
+	}else if( uid == 0 ){
+		st = 1 ;
+	}else{
+		zuluCryptSecurityGainElevatedPrivileges() ;
+		
+		pass = getpwuid( uid ) ;
 	
-	zuluCryptSecurityGainElevatedPrivileges() ;
-	pass = getpwuid( uid ) ;
-	
-	if( pass == NULL ){
-		zuluCryptSecurityDropElevatedPrivileges();
-		return 0 ;
-	}
-	
-	grp = getgrnam( groupname ) ;
-	
-	if( grp == NULL ){
-		/*
-		 * 	dont autocreate groups
-		 *	create_group( groupname )  ;
-		 */
-		zuluCryptSecurityDropElevatedPrivileges();
-		return 0 ;
-	}
-	
-	name = ( const char * )pass->pw_name ;
-	entry = ( const char ** )grp->gr_mem ;
-	
-	while( entry[ i ] != NULL ){
-		if( StringsAreEqual( entry[ i ],name ) ){
-			st = 1 ;
-			break ;
+		if( pass == NULL ){
+			st = 0 ;
 		}else{
-			i++ ;
+			grp = getgrnam( groupname ) ;
+	
+			if( grp == NULL ){
+				/*
+				* 	dont autocreate groups
+				*	create_group( groupname )  ;
+				*/
+				st = 0 ;
+			}else{
+				name = ( const char * )pass->pw_name ;
+				entry = ( const char ** )grp->gr_mem ;
+	
+				while( entry[ i ] != NULL ){
+					if( StringsAreEqual( entry[ i ],name ) ){
+						st = 1 ;
+						break ;
+					}else{
+						i++ ;
+					}
+				}
+			}
 		}
+		zuluCryptSecurityDropElevatedPrivileges();
 	}
-	
-	zuluCryptSecurityDropElevatedPrivileges();
-	
-	return st ;
+		
+	if( st == 0 ){
+		return _polkitAuthenticated() ;
+	}else{
+		return st ;
+	}
 }
 
 static int has_device_access( const char * path,int c )
