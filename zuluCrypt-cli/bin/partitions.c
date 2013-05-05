@@ -585,6 +585,13 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 				}else{
 					;
 				}
+			}else if( StringPrefixMatch( e,"/dev/md",7 ) ){
+				/*
+				 * zuluCryptResolveMDPath() is defined in ../lib/process_mountinfo.c
+				 */
+				ac = zuluCryptResolveMDPath( e ) ;
+				stl_1 = StringListAppend( stl_1,ac ) ;
+				free( ac ) ;
 			}else{
 				stl_1 = StringListAppend( stl_1,e ) ;
 			}
