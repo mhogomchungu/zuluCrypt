@@ -507,6 +507,8 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 
 	char * ac ;
 	
+	const char * e ;
+	
 	ssize_t index ;
 	ssize_t index_1 ;
 	
@@ -570,8 +572,22 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 			if( index_1 == -1 ){
 				continue ;
 			}
-			StringSubChar( st,index_1,'\0' ) ; 
-			stl_1 = StringListAppend( stl_1,StringContent( st ) + index ) ;
+			
+			e = StringSubChar( st,index_1,'\0' ) + index ;
+			
+			if( StringPrefixMatch( e,"/dev/disk/by-",13 ) ){
+				ac = zuluCryptRealPath( e ) ;
+				if( ac != NULL ){
+					if( !StringPrefixMatch( ac,"/dev/disk/by-",13 ) ){
+						stl_1 = StringListAppend( stl_1,ac ) ;
+					}
+					free( ac ) ;
+				}else{
+					;
+				}
+			}else{
+				stl_1 = StringListAppend( stl_1,e ) ;
+			}
 		}
 	}
 	
