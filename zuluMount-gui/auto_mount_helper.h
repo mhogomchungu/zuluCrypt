@@ -37,19 +37,21 @@ public:
 	~auto_mount_helper() ;
 	void start( QString device,int type,u_int32_t mask ) ;
 	enum{
-		dev,dev_mapper
+		dev,dev_mapper,dev_md
 	};
 signals:
 	void deviceRemoved( QString ) ;
 	void getVolumeSystemInfo( QStringList ) ;
 	void getVolumeInfo( QStringList ) ;
 private:
+	void removeMdRaidDevice( QString ) ;
 	QString mdRaidPath( QString ) ;
 	bool deviceIsSystem( void ) ;
 	bool deviceMatchLVMFormat( void ) ;
 	void volumeProperties( void ) ;
 	void deviceFromDev( void ) ;
 	void deviceFromDevMapper( void ) ;
+	void deviceFromMdRaid( void ) ;
 	void run( void ) ;
 	bool m_deviceFromDev ;
 	bool m_deviceFromDevMapper ;

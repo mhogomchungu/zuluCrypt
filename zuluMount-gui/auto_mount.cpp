@@ -66,7 +66,12 @@ void auto_mount::run()
 
 	int dev    = inotify_add_watch( m_fdDir,"/dev",IN_CREATE|IN_DELETE ) ;
 	int mapper = inotify_add_watch( m_fdDir,"/dev/mapper",IN_CREATE|IN_DELETE ) ;
-	int md     =  inotify_add_watch( m_fdDir,"/dev/md",IN_DELETE ) ;
+	int md = -1 ;
+
+	QDir d( QString( "/dev/dm" ) ) ;
+	if( d.exists() ){
+		md = inotify_add_watch( m_fdDir,"/dev/md",IN_DELETE ) ;
+	}
 
 	struct inotify_event * pevent ;
 	QString device ;
@@ -99,14 +104,26 @@ void auto_mount::run()
 				 */
 				 ;
 			}else{
-				if( pevent->wd == md ){
-					device = QString( "/dev/md/" ) + m_device ;
-				}else if( pevent->wd == dev || pevent->wd == mapper ){
-					device = QString( "/dev/" ) + m_device ;
-				}else{
-					;
+				if( pevent->wd == dev && pevent->mask & IN_CREATE ){
+					/*
+					 * /dev/md path seem to be deleted when the last entry in it is removed and
+					 * created before the first entry is added.To account for this,monitor for the
+					 * folder created to start monitoring its contents if it get created after we have started
+					 */
+					if( strcmp( "md",m_device ) == 0 ){
+						md = inotify_add_watch( m_fdDir,"/dev/md",IN_DELETE ) ;
+						continue ;
+					}
 				}
 
+				if( pevent->wd == dev && pevent->mask & IN_DELETE ){
+					if( strcmp( "md",m_device ) == 0 ){
+						 inotify_rm_watch( md,dev );
+						continue ;
+					}
+				}
+
+				device = QString( m_device );
 				m_thread_helper = new auto_mount_helper() ;
 
 				connect( m_thread_helper,SIGNAL( getVolumeSystemInfo( QStringList ) ),
@@ -116,10 +133,12 @@ void auto_mount::run()
 				connect( m_thread_helper,SIGNAL( deviceRemoved( QString ) ),
 					 m_babu,SLOT( deviceRemoved( QString ) ) ) ;
 
-				if( pevent->wd == dev || pevent->wd == md ){
+				if( pevent->wd == dev ){
 					m_thread_helper->start( device,auto_mount_helper::dev,pevent->mask ) ;
 				}else if( pevent->wd == mapper ){
 					m_thread_helper->start( device,auto_mount_helper::dev_mapper,pevent->mask ) ;
+				}else if( pevent->wd == md ){
+					m_thread_helper->start( device,auto_mount_helper::dev_md,pevent->mask ) ;
 				}else{
 					;
 				}
