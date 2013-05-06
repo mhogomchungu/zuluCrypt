@@ -255,9 +255,9 @@ void MainWindow::start()
 {
 	QString sockpath = QString( "zuluMount-gui.socket" ) ;
 	oneinstance * instance = new oneinstance( this,sockpath,"raiseWindow",m_device ) ;
-	connect( instance,SIGNAL( raise() ),this,SLOT( raiseWindow() ) ) ;
-	connect( instance,SIGNAL( raiseWithDevice( QString ) ),this,SLOT( raiseWindow( QString ) ) ) ;
 	if( !instance->instanceExist() ){
+		connect( instance,SIGNAL( raise() ),this,SLOT( raiseWindow() ) ) ;
+		connect( instance,SIGNAL( raiseWithDevice( QString ) ),this,SLOT( raiseWindow( QString ) ) ) ;
 		this->setUpApp();
 	}
 }
@@ -734,12 +734,14 @@ MainWindow::~MainWindow()
 {
 	QFile f( QDir::homePath() + QString( zuluMOUNT_AUTOPATH ) );
 
-	if( m_autoMountAction->isChecked() ){
-		if( !f.exists() ){
-			f.open( QIODevice::WriteOnly ) ;
-			f.close();
+	if( m_autoMountAction ){
+		if( m_autoMountAction->isChecked() ){
+			if( !f.exists() ){
+				f.open( QIODevice::WriteOnly ) ;
+				f.close();
+			}
+		}else{
+			f.remove() ;
 		}
-	}else{
-		f.remove() ;
 	}
 }
