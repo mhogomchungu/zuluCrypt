@@ -578,12 +578,14 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 			if( StringPrefixMatch( e,"/dev/disk/by-",13 ) ){
 				ac = zuluCryptRealPath( e ) ;
 				if( ac != NULL ){
-					if( !StringPrefixMatch( ac,"/dev/disk/by-",13 ) ){
+					if( StringsAreEqual( ac,e ) ){
+						/*
+						 * we got the same path,the path is probably not active,skip it
+						 */
+					}else{
 						stl_1 = StringListAppend( stl_1,ac ) ;
 					}
 					free( ac ) ;
-				}else{
-					;
 				}
 			}else if( StringPrefixMatch( e,"/dev/md",7 ) ){
 				/*
@@ -592,6 +594,19 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 				ac = zuluCryptResolveMDPath( e ) ;
 				stl_1 = StringListAppend( stl_1,ac ) ;
 				free( ac ) ;
+			}else if( StringPrefixMatch( e,"/dev/mapper/",12 ) ){
+				/*
+				 * zuluCryptConvertIfPathIsLVM() is defined in ../lib/status.c
+				 */
+				st = zuluCryptConvertIfPathIsLVM( e ) ;
+				if( StringEqual( st,e ) ){
+					/*
+					 * we got the same path,the path is probably not an active LVM volume,
+					 * skip it
+					 */
+				}else{
+					stl_1 = StringListAppendString_1( stl_1,&st ) ;
+				}
 			}else{
 				stl_1 = StringListAppend( stl_1,e ) ;
 			}
