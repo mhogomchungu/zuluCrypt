@@ -604,6 +604,7 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 					 * we got the same path,the path is probably not an active LVM volume,
 					 * skip it
 					 */
+					StringDelete( &st ) ;
 				}else{
 					stl_1 = StringListAppendString_1( stl_1,&st ) ;
 				}
