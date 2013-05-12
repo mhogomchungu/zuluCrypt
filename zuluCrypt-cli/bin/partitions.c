@@ -599,15 +599,7 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 				 * zuluCryptConvertIfPathIsLVM() is defined in ../lib/status.c
 				 */
 				st = zuluCryptConvertIfPathIsLVM( e ) ;
-				if( StringEqual( st,e ) ){
-					/*
-					 * we got the same path,the path is probably not an active LVM volume,
-					 * skip it
-					 */
-					StringDelete( &st ) ;
-				}else{
-					stl_1 = StringListAppendString_1( stl_1,&st ) ;
-				}
+				stl_1 = StringListAppendString_1( stl_1,&st ) ;
 			}else{
 				stl_1 = StringListAppend( stl_1,e ) ;
 			}
