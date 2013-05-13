@@ -200,9 +200,39 @@ void MainWindow::itemEntered( QTableWidgetItem * item )
 	int row = item->row() ;
 	QTableWidget * table = item->tableWidget() ;
 	QString m_point = table->item( row,1 )->text() ;
-	if( !m_point.isEmpty() && m_point != QString( "Nil" ) && m_point != QString( "/" ) ) {
-		item->setToolTip( utility::shareMountPointToolTip( m_point ) );
+
+	QString x = table->item( row,3 )->text() ;
+	QString z ;
+	QString y ;
+
+	if( m_point == QString( "/" ) ){
+		/*
+		 * we dont check if root path is publicly shared because the path it will produce (/run/media/shared/)
+		 * will always return true,a solution is to examine /proc/self/mountinfo and thats work for another day
+		 */
+		if( x == QString( "Nil" ) ){
+			x.clear();
+		}
+		z = QString( "LABEL=\"%1\"" ).arg( x ) ;
+
+	}else if( m_point == QString( "Nil" ) ){
+		/*
+		 * volume is not mounted,cant know its LABEL value
+		 */
+		x.clear();
+		z = QString( "LABEL=\"%1\"" ).arg( x ) ;
+	}else{
+		if( x == QString( "Nil" ) ){
+			x.clear();
+		}
+		y = utility::shareMountPointToolTip( m_point ) ;
+		if( y.isEmpty() ){
+			z = QString( "LABEL=\"%1\"" ).arg( x ) ;
+		}else{
+			z = QString( "LABEL=\"%1\"\n%2" ).arg( x ).arg( y ) ;
+		}
 	}
+	item->setToolTip( z );
 }
 
 void MainWindow::processArgumentList()
