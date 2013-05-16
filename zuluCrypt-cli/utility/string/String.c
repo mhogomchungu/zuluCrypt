@@ -228,6 +228,7 @@ string_t String( const char * cstring )
 {
 	size_t size ;
 	string_t st ;
+	size_t k ;
 	
 	if( cstring == NULL ){
 		return StringVoid ;
@@ -252,18 +253,24 @@ string_t String( const char * cstring )
 		st->length = STRING_INIT_SIZE ;
 		
 	}else{
-		st->string = NULL ;
-		st->size = size ;
-		st->length = 0 ;
-	
-		st->string = __StringExpandMemory( st,size ) ;
+		k = size + 1 ; 
+		/*
+		 * create a buffer with a size a multiple of 4,this seem to keep valgrind happy
+		 */
+		while( ( k % 4 ) != 0 ){
+			k++ ;
+		}
+		
+		st->string = ( char * ) malloc( sizeof( char ) * k ) ;
 	
 		if ( st->string == NULL ){
 			free( st ) ;
 			return StringVoid ;
 		}
-	
-		memcpy( st->string,cstring,size + 1 ) ;
+		
+		strncpy( st->string,cstring,k ) ;
+		st->size = size  ;
+		st->length = k ;
 	}
 	st->owned = 0 ;
 	return st ;

@@ -23,7 +23,7 @@
 /*
  * buffer size will grow exponentially by a multiple of this number
  */
-#define FACTOR 1.5
+#define FACTOR 2
 
 /*
  * initial buffer size
@@ -414,6 +414,7 @@ stringList_t StringListSplit( const char * cstring,char splitter )
 	
 	size_t sp_len = sizeof( char ) ;
 	size_t len ; 
+	size_t k ;
 	
 	stringList_t stl = StringListVoid ;
 	stringList_t stx ;
@@ -437,14 +438,21 @@ stringList_t StringListSplit( const char * cstring,char splitter )
 		}else{
 			len = d - b ;
 			if( len > 0 ){
-				e = ( char * ) malloc( sizeof( char ) * ( len + 1 ) ) ;
+				/*
+				 * create a buffer with a size a multiple of 4,this seem to keep valgrind happy
+				 */
+				k = len + 1 ;
+				while( ( k % 4 ) != 0 ){
+					k++ ;
+				}
+				e = ( char * ) malloc( sizeof( char ) * k ) ;
 				if( e == NULL ){
 					StringListDelete( &stl ) ;
 					return _StringListError();
 				}
-				memcpy( e,b,len ) ;
+				strncpy( e,b,k ) ;
 				*( e + len ) = '\0' ;
-				stx = StringListAppendWithSize( stl,&e,len,len + 1 );
+				stx = StringListAppendWithSize( stl,&e,len,k );
 				if( stx == StringListVoid ){
 					StringListDelete( &stl ) ;
 					free( e ) ;
