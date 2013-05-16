@@ -36,10 +36,12 @@ int main( int argc,char * argv[] )
 	const char * key = "xyz" ;
 	void * handle ;
 	
-	if( argc < 3 )
+	if( argc < 3 ){
 		return 1 ;
+	}
 	
 	handle = zuluCryptPluginManagerOpenConnection( argv[ 3 ] ) ;
+	
 	if( handle ){
 		zuluCryptPluginManagerSendKey( handle,key,strlen( key ) ) ;
 		zuluCryptPluginManagerCloseConnection( handle ) ;

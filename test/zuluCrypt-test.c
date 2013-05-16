@@ -78,6 +78,7 @@ void createKeyFiles( void )
 {
 	int f = open( keyfile,O_WRONLY|O_TRUNC|O_CREAT ) ;
 	int e ;
+	
 	puts( "creating a keyfile" ) ;
 	
 	if( f < 0 ){
@@ -129,8 +130,9 @@ void createTestImages( void )
 		perror( "failed to create testing images: " ) ;
 		EXIT( 1,NULL ) ;
 	}else{
-		for( i = 0 ; i < size ; i++ )
+		for( i = 0 ; i < size ; i++ ){
 			write( f,buffer,1024 ) ;
+		}
 		close( f ) ;
 		chmod( luksTestVolume,S_IRWXU ) ;
 	}
@@ -143,8 +145,9 @@ void createTestImages( void )
 		perror( "failed to create testing images: " ) ;
 		EXIT( 1,NULL ) ;
 	}else{
-		for( i = 0 ; i < size ; i++ )
+		for( i = 0 ; i < size ; i++ ){
 			write( f,buffer,1024 ) ;
+		}
 		close( f ) ;
 		chmod( plainTestVolume,S_IRWXU ) ;
 	}
@@ -166,8 +169,9 @@ void __ProcessGetResult( process_t p )
 		EXIT( 1,e ) ;
 	}else{
 		puts( "PASSED" ) ;
-		if( e )
+		if( e ){
 			free( e ) ;
+		}
 	}
 }
 
@@ -175,6 +179,7 @@ void __ProcessGetResultANDPrint( process_t p )
 {	
 	char * e = NULL ;
 	int st ;
+	
 	ProcessGetOutPut( p,&e,STDOUT ) ;
 	st = ProcessExitStatus( p ) ;
 	
@@ -216,10 +221,11 @@ void createVolume( const char * device,const char * msg,const char * keysource,c
 	process_t p ;
 	__print( msg ) ;
 	p = Process( zuluCryptExe ) ;
-	if( strcmp( keysource,"-p" ) == 0 )
+	if( strcmp( keysource,"-p" ) == 0 ){
 		ProcessSetArgumentList( p,"-c","-k","-d",device,"-t",type,keysource,key,ENDLIST ) ;
-	else
+	}else{
 		ProcessSetArgumentList( p,"-c","-k","-d",device,"-t",type,keysource,keyfile,ENDLIST ) ;
+	}
 	ProcessStart( p ) ;
 	__ProcessGetResult( p ) ;
 }
@@ -239,10 +245,11 @@ void openVolume( const char * device,const char * msg,const char * keysource )
 	process_t p ;
 	__print( msg ) ;
 	p = Process( zuluCryptExe ) ;
-	if( strcmp( keysource,"-p" ) == 0 )
+	if( strcmp( keysource,"-p" ) == 0 ){
 		ProcessSetArgumentList( p,"-o","-d",device,"-m",mount_point,keysource,key,ENDLIST ) ;
-	else
+	}else{
 		ProcessSetArgumentList( p,"-o","-d",device,"-m",mount_point,keysource,keyfile,ENDLIST ) ;
+	}
 	ProcessStart( p ) ;
 	__ProcessGetResult( p ) ;
 }
@@ -342,8 +349,9 @@ void checkForOpenedMappers( void )
 	
 	closedir( dir ) ;
 	
-	if( st )
+	if( st ){
 		printf( "PASSED\n" ) ;
+	}
 }
 
 void openVolumeWithPlugIn( const char * device,const char * msg )
@@ -365,8 +373,9 @@ void checkIfDeviceIsLuks( const char * device )
 	st = ProcessExitStatus( p ) ;
 	ProcessDelete( &p ) ;
 	
-	if( st )
+	if( st ){
 		__print( "check if a luks volume is a luks volume: PASSED\n" ) ;
+	}
 }
 
 int _loop_device_module_is_not_present( void )
