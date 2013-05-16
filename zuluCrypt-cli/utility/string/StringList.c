@@ -294,7 +294,7 @@ stringList_t StringListString( string_t * st )
 	return stl ;
 }
 
-stringList_t StringListWithSize( char ** c, size_t s )
+stringList_t StringListWithSize( char ** c, size_t s,size_t t )
 {
 	stringList_t stl ;
 	if( c == NULL ){
@@ -309,7 +309,7 @@ stringList_t StringListWithSize( char ** c, size_t s )
 		free( stl ) ;
 		return _StringListError() ;
 	}	
-	stl->stp[0] = StringInheritWithSize( c,s ) ;
+	stl->stp[0] = StringInheritWithSize( c,s,t ) ;
 	if( stl->stp[0] == StringVoid ){
 		free( stl->stp );
 		free( stl ) ;
@@ -322,15 +322,15 @@ stringList_t StringListWithSize( char ** c, size_t s )
 	}
 }
 
-stringList_t StringListAppendWithSize( stringList_t stl,char ** c, size_t s )
+stringList_t StringListAppendWithSize( stringList_t stl,char ** c, size_t s,size_t l )
 {
 	string_t * p ;
 	string_t q ;
 	if( stl == StringListVoid ){
-		return StringListWithSize( c,s ) ;
+		return StringListWithSize( c,s,l ) ;
 	}
 	
-	q = StringInheritWithSize( c,s ) ;
+	q = StringInheritWithSize( c,s,l ) ;
 	
 	if( q == StringVoid ){
 		return stl ;
@@ -363,9 +363,9 @@ stringList_t StringListAppendSize( stringList_t stl,const char * cstring,size_t 
 	if( c == NULL ){
 		return _StringListError() ;
 	}
-	*( c + len ) = '\0' ;
 	memcpy( c,cstring,len ) ;
-	p = StringListAppendWithSize( stl,&c,len ) ;
+	*( c + len ) = '\0' ;
+	p = StringListAppendWithSize( stl,&c,len,len + 1 ) ;
 	if( p == StringListVoid ){
 		free( c ) ;
 		return _StringListError() ;
@@ -398,7 +398,11 @@ stringList_t StringListAppendList( stringList_t p,stringList_t q )
 
 stringList_t StringListAppendString( stringList_t stl,string_t st ) 
 {
-	return st == StringVoid ? stl : StringListAppendSize( stl,st->string,st->size ) ;
+	if( st == StringVoid ){
+		return stl ;
+	}else{
+		return StringListAppendSize( stl,st->string,st->size ) ;
+	}
 }
 
 stringList_t StringListSplit( const char * cstring,char splitter ) 
@@ -435,23 +439,19 @@ stringList_t StringListSplit( const char * cstring,char splitter )
 			if( len > 0 ){
 				e = ( char * ) malloc( sizeof( char ) * ( len + 1 ) ) ;
 				if( e == NULL ){
-					if( stl != StringListVoid )
-						StringListDelete( &stl ) ;
-					return StringListVoid;
+					StringListDelete( &stl ) ;
+					return _StringListError();
 				}
 				memcpy( e,b,len ) ;
 				*( e + len ) = '\0' ;
-				stx = StringListAppendWithSize( stl,&e,len );
+				stx = StringListAppendWithSize( stl,&e,len,len + 1 );
 				if( stx == StringListVoid ){
-					if( stl != StringListVoid ){
-						StringListDelete( &stl ) ;
-					}
+					StringListDelete( &stl ) ;
 					free( e ) ;
 					return _StringListError() ;
 				}else{
 					stl = stx ;
 				}
-				
 			}
 			b = d + sp_len ;
 		}
@@ -462,12 +462,20 @@ stringList_t StringListSplit( const char * cstring,char splitter )
 
 stringList_t StringListStringSplit( string_t st,char splitter ) 
 {
-	return st == StringVoid ? StringListVoid : StringListSplit( st->string,splitter ) ;
+	if( st == StringVoid ){
+		return StringListVoid ;
+	}else{
+		return StringListSplit( st->string,splitter ) ;
+	}
 }
 
 size_t StringListSize( stringList_t stl )
 {
-	return stl == StringListVoid ? 0 : stl->size ;
+	if( stl == StringListVoid ){
+		return 0 ;
+	}else{
+		return stl->size ;
+	}
 }
 
 const char * StringListContentAt( stringList_t stl,size_t index )
@@ -606,7 +614,7 @@ stringList_t StringListInsertAtSize( stringList_t stl,const char * cstring,size_
 	
 	memcpy( c,cstring,len );
 	*( c + len ) = '\0' ;
-	q = StringInheritWithSize( &c,len ) ;
+	q = StringInheritWithSize( &c,len,len + 1 ) ;
 	
 	if( q == StringVoid ){
 		free( c ) ;
@@ -642,7 +650,7 @@ stringList_t StringListPrependSize( stringList_t stl,const char * cstring,size_t
 		}
 		memcpy( c,cstring,len ) ;
 		*( c + len ) = '\0' ;
-		p = StringListWithSize( &c,len ) ;
+		p = StringListWithSize( &c,len,len + 1 ) ;
 		if( p == StringListVoid ){
 			free( c ) ;
 			return _StringListError() ;
@@ -1105,18 +1113,24 @@ stringList_t StringListSwap( stringList_t stl, size_t x,size_t y )
 
 void StringListPrintAt( stringList_t stl,size_t index )
 {
+	string_t * p ;
+	
 	if( stl != StringListVoid ){
+		p = stl->stp ;
 		if( index < stl->size ){
-			printf("%s",stl->stp[ index ]->string ) ;
+			printf("%s",p[ index ]->string ) ;
 		}
 	}
 }
 
 void StringListPrintLineAt( stringList_t stl,size_t index ) 
 {
+	string_t * p ;
+	
 	if( stl != StringListVoid ){
+		p = stl->stp ;
 		if( index < stl->size ){
-			printf("%s\n",stl->stp[ index ]->string ) ;
+			printf("%s\n",p[ index ]->string ) ;
 		}
 	}
 }
@@ -1125,13 +1139,17 @@ void StringListPrintList( stringList_t stl )
 {
 	size_t i ;
 	size_t j ;
+	string_t * p ;
 	
 	if( stl == StringListVoid ){
 		return ;
 	}
+	
 	j = stl->size ;
+	p = stl->stp ;
+	
 	for( i = 0 ; i < j ; i++ ){
-		printf("%s\n",stl->stp[ i ]->string ) ;
+		printf("%s\n",p[ i ]->string ) ;
 	}
 }
 

@@ -246,7 +246,8 @@ string_t String( const char * cstring )
 		if ( st->string == NULL ){
 			return _StringError() ;
 		}
-		memcpy( st->string,cstring,size + 1 ) ;
+		
+		strncpy( st->string,cstring,STRING_INIT_SIZE ) ;
 		st->size = size ;
 		st->length = STRING_INIT_SIZE ;
 		
@@ -277,7 +278,17 @@ void StringReadToBuffer( string_t st,char * buffer,size_t size )
 
 string_t StringInherit( char ** data )
 {	
-	return data == NULL || *data == NULL ? StringVoid : StringInheritWithSize( data,strlen( *data ) ) ;
+	size_t l ;
+	if( data != NULL ){
+		if( *data != NULL ){
+			l = strlen( *data ) ;
+			return StringInheritWithSize( data,l,l + 1 ) ;
+		}else{
+			return StringVoid ;
+		}
+	}else{
+		return StringVoid ;
+	}
 }
 
 void StringPrint( string_t st )
@@ -303,14 +314,14 @@ int StringContains( string_t st,const char * str )
 	}
 }
 
-string_t StringInheritWithSize( char ** data,size_t s )
+string_t StringInheritWithSize( char ** data,size_t size,size_t length )
 {
 	string_t st ;
 	
 	if( data == NULL ){
 		return StringVoid ;
 	}
-	if( *data == NULL || s == 0 ){
+	if( *data == NULL || size == 0 || length == 0 ){
 		return StringVoid ;
 	}
 	
@@ -320,8 +331,8 @@ string_t StringInheritWithSize( char ** data,size_t s )
 		return _StringError() ;
 	}
 	st->owned = 0 ;
-	st->size = s ;
-	st->length = s ;
+	st->size = size ;
+	st->length = length ;
 	st->string = *data ;
 	*data = NULL ;
 	return st ;
@@ -339,7 +350,7 @@ string_t StringWithSize( const char * s,size_t len )
 	}
 	memcpy( c,s,len ) ;
 	*( c + len ) = '\0' ;
-	return StringInheritWithSize( &c,len ) ;
+	return StringInheritWithSize( &c,len,len + 1 ) ;
 }
 
 ssize_t StringIndexOfString( string_t st,size_t p,const char * s )
@@ -729,8 +740,8 @@ const char * StringAppendAt( string_t st,size_t x,const char * s )
 	c = __StringExpandMemory( st,st->size + len ) ;
 	
 	if( c != NULL ){
+		memcpy( c + x,s,len + 1 ) ;
 		st->string = c ;
-		memcpy( st->string + x,s,len + 1 ) ;
 		st->size = x + len ;
 	}
 	
@@ -923,7 +934,7 @@ string_t StringMidString( string_t st,size_t x,size_t y )
 	
 	*( c + y ) = '\0' ;
 
-	return StringInheritWithSize( &c,y ) ;
+	return StringInheritWithSize( &c,y,y + 1 ) ;
 }
 
 static char * StringRS__( string_t st,const char * x,const char * s,size_t p )
@@ -1302,7 +1313,7 @@ string_t StringRandomString( size_t size )
 		
 	close( f ) ;
 	
-	s = StringInheritWithSize( &e,size ) ;
+	s = StringInheritWithSize( &e,size,size + 1 ) ;
 	
 	if( s == StringVoid ){
 		free( e ) ;
@@ -1399,17 +1410,13 @@ int StringGetFromFile_3( string_t * str,const char * path,size_t offset,size_t l
 		free( c ) ;
 		close( fd ) ;
 		return 2 ;
-	}else{
-		if( ( size_t ) size != length ){
-			c = realloc( c,size + 1 ) ;
-		}
 	}
 	
 	close( fd ) ;
 	
-	*( c + size ) = '\0' ;
+	*( c + length ) = '\0' ;
 	
-	*str = StringInheritWithSize( &c,( size_t )size ) ;
+	*str = StringInheritWithSize( &c,( size_t )size,length + 1 ) ;
 	
 	if( *str == StringVoid ){
 		free( c ) ;
@@ -1487,7 +1494,7 @@ string_t StringGetFromVirtualFile( const char * path )
 	if( c == NULL ){
 		fclose( f ) ;
 		return _StringError() ;
-	}		
+	}
 	
 	while( ( j = getc( f ) ) != EOF ){
 		i++ ;
@@ -1511,5 +1518,5 @@ string_t StringGetFromVirtualFile( const char * path )
 	c = realloc( c,i + 2 ) ;
 	c[ i + 1 ] = '\0' ;
 	
-	return StringInheritWithSize( &c,i + 1 ) ;
+	return StringInheritWithSize( &c,i + 1,i + 2 ) ;
 }

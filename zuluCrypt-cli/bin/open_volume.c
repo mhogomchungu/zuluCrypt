@@ -312,7 +312,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 			}
 		}
 	}
-	
+
 	zuluCryptSecurityDropElevatedPrivileges();
 	
 	device = StringMultiplePrepend( *mapper,"/",crypt_get_dir(),END ) ;

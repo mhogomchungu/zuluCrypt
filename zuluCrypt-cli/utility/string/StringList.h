@@ -357,15 +357,19 @@ ssize_t StringListRemoveString( stringList_t stl,const char * cstring ) ;
  * add a cstring to the list and take it over( own it )
  * cstring will be NULL on function return.
  * cstring must be created will malloc.
+ * s is the size of the string
+ * l is the size of the buffer holding the string
  */
-stringList_t StringListAppendWithSize( stringList_t stl,char ** cstring,size_t s ) ;
+stringList_t StringListAppendWithSize( stringList_t stl,char ** cstring,size_t s,size_t l ) ;
 
 /*
- *  create a stringlist with cstring and take it over( own it )
+ * create a stringlist with cstring and take it over( own it )
  * cstring will point to NULL on function return.
  * cstring must be created with malloc.
+ * s is the size of the string
+ * l is the size of the buffer holding the string
  */
-stringList_t StringListWithSize( char ** cstring,size_t s ) ;
+stringList_t StringListWithSize( char ** cstring,size_t s,size_t l ) ;
 
 /*
  * returns a copy of a string list

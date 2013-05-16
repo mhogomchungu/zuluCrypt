@@ -181,8 +181,10 @@ string_t StringInherit( char ** data ) ;
  * Inherit a string of size s pointed to by data and return a string handle to the string on success or NULL on error. 
  * This function should inherit strings only from a dynamically created memory. 
  * The original string remains intacct when the function error out. 
+ * size is the size of the string
+ * length is the size of the buffer holding the string
  */
-string_t StringInheritWithSize( char ** data,size_t s ) ;
+string_t StringInheritWithSize( char ** data,size_t size,size_t length ) ;
 
 /* 
  * Returns a const pointer to a string handled by handle st. 
