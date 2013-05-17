@@ -251,18 +251,6 @@ void MainWindow::processArgumentList()
 	}
 }
 
-void MainWindow::defaultButton()
-{
-	int row = m_ui->tableWidget->currentRow() ;
-	QString mt = m_ui->tableWidget->item( row,1 )->text() ;
-
-	if( mt == QString( "Nil" ) ){
-		this->slotMount();
-	}else{
-		this->pbUmount();
-	}
-}
-
 void MainWindow::raiseWindow()
 {
 	this->setVisible( true );
@@ -307,7 +295,7 @@ void MainWindow::slotCloseApplication()
 	m_autoMountThread->stop();
 }
 
-void MainWindow::itemClicked( QTableWidgetItem * item )
+void MainWindow::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 {
 	QMenu m ;
 
@@ -319,17 +307,61 @@ void MainWindow::itemClicked( QTableWidgetItem * item )
 	if( mt == QString( "Nil" ) ){
 		connect( m.addAction( tr( "mount" ) ),SIGNAL( triggered() ),this,SLOT( slotMount() ) ) ;
 	}else{
-		connect( m.addAction( tr( "unmount" ) ),SIGNAL( triggered() ),this,SLOT( pbUmount() ) ) ;
-
-		if( type.contains( QString( "crypto" ) ) ) {
+		QString mp = QString( "/run/media/private/%1/" ).arg( utility::userName() ) ;
+		if( mt.startsWith( mp ) ){
+			connect( m.addAction( tr( "unmount" ) ),SIGNAL( triggered() ),this,SLOT( pbUmount() ) ) ;
+			if( type.contains( QString( "crypto" ) ) ) {
+				m.addSeparator() ;
+				connect( m.addAction( tr( "properties" ) ),SIGNAL( triggered() ),this,SLOT( volumeProperties() ) ) ;
+			}
 			m.addSeparator() ;
-			connect( m.addAction( tr( "properties" ) ),SIGNAL( triggered() ),this,SLOT( volumeProperties() ) ) ;
+			m_sharedFolderPath = utility::sharedMountPointPath( mt ) ;
+			if( m_sharedFolderPath.isEmpty() ){
+				connect( m.addAction( tr( "open folder" ) ),SIGNAL( triggered() ),this,SLOT( slotOpenFolder() ) ) ;
+			}else{
+				connect( m.addAction( tr( "open private folder" ) ),SIGNAL( triggered() ),this,SLOT( slotOpenFolder() ) ) ;
+				connect( m.addAction( tr( "open shared folder" ) ),SIGNAL( triggered() ),this,SLOT( slotOpenSharedFolder() ) ) ;
+			}
+		}else{
+			m_sharedFolderPath = utility::sharedMountPointPath( mt ) ;
+			if( m_sharedFolderPath.isEmpty() ){
+				m.addAction( tr( "no available options for this volume" ) ) ;
+			}else{
+				connect( m.addAction( tr( "open shared folder" ) ),SIGNAL( triggered() ),this,SLOT( slotOpenSharedFolder() ) ) ;
+			}
 		}
-		m.addSeparator() ;
-		connect( m.addAction( tr( "open folder" ) ),SIGNAL( triggered() ),this,SLOT( slotOpenFolder() ) ) ;
 	}
 
-	m.exec( QCursor::pos() ) ;
+	m.addSeparator() ;
+	m.addAction( tr( "close menu" ) ) ;
+
+	if( itemClicked ){
+		m.exec( QCursor::pos() ) ;
+	}else{
+		QPoint p = this->pos() ;
+		int x = p.x() + 100 + m_ui->tableWidget->columnWidth( 0 ) ;
+		int y = p.y() + 50 + m_ui->tableWidget->rowHeight( 0 ) * item->row() ;
+		p.setX( x ) ;
+		p.setY( y ) ;
+		m.exec( p ) ;
+	}
+}
+
+void MainWindow::itemClicked( QTableWidgetItem * item )
+{
+	this->showContextMenu( item,true ) ;
+}
+
+void MainWindow::defaultButton()
+{
+	int row = m_ui->tableWidget->currentRow() ;
+	QString mt = m_ui->tableWidget->item( row,1 )->text() ;
+
+	if( mt == QString( "Nil" ) ){
+		this->slotMount();
+	}else{
+		this->showContextMenu( m_ui->tableWidget->currentItem(),false );
+	}
 }
 
 void MainWindow::fileManagerOpenStatus( int exitCode, int exitStatus,int startError )
@@ -339,6 +371,13 @@ void MainWindow::fileManagerOpenStatus( int exitCode, int exitStatus,int startEr
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "warning" ),tr( "could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) );
 	}
+}
+
+void MainWindow::slotOpenSharedFolder()
+{
+	openmountpointinfilemanager * ofm = new openmountpointinfilemanager( m_folderOpener,m_sharedFolderPath ) ;
+	connect( ofm,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
+	ofm->start();
 }
 
 void MainWindow::slotOpenFolder()

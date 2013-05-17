@@ -92,6 +92,19 @@ QString utility::shareMountPointToolTip( QString path )
 	}
 }
 
+QString utility::sharedMountPointPath( QString path )
+{
+	struct stat st ;
+	QString s = QString( "/run/media/public/" ) + path.split( "/" ).last() ;
+	QByteArray x = s.toAscii() ;
+	const char * y = x.constData() ;
+	if( stat( y,&st ) == 0 ){
+		return s ;
+	}else{
+		return QString( "" ) ;
+	}
+}
+
 void utility::debug( QString s )
 {
 	std::cout << s.toStdString() << std::endl ;

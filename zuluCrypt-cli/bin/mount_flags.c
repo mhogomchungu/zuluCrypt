@@ -77,7 +77,7 @@ int zuluCryptMountFlagsAreNotCorrect( const char * mode,uid_t uid,unsigned long 
 	}else{
 		flg |= MS_NOSUID ;
 	}
-	if( strstr( mode,"bind" ) != NULL ){
+	if( StringHasComponent( mode,"bind" ) ){
 		if( user_has_no_access ){
 			return 1 ;
 		}

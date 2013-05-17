@@ -86,6 +86,7 @@ private slots:
 	void enableAll( void ) ;
 	void stateChanged( int ) ;
 	void slotOpenFolder( void ) ;
+	void slotOpenSharedFolder( void ) ;
 	void fileManagerOpenStatus( int exitCode, int exitStatus,int startError ) ;
 	void processArgumentList( void ) ;
 	void openVolumeFromArgumentList( void ) ;
@@ -97,6 +98,7 @@ private slots:
 	void close( void ) ;
 	void autoMountToggled( bool ) ;
 private:
+	void showContextMenu( QTableWidgetItem *,bool ) ;
 	void startAutoMonitor( void ) ;
 	void showEvent( QShowEvent * );
 	bool autoMount( void ) ;
@@ -118,6 +120,7 @@ private:
 	bool m_startHidden ;
 	bool m_started ;
 	bool m_autoMount ;
+	QString m_sharedFolderPath ;
 };
 
 #endif // MAINWINDOW_H
