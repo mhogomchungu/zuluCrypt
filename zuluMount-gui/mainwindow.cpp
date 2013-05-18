@@ -325,7 +325,11 @@ void MainWindow::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 		}else{
 			m_sharedFolderPath = utility::sharedMountPointPath( mt ) ;
 			if( m_sharedFolderPath.isEmpty() ){
-				m.addAction( tr( "no available options for this volume" ) ) ;
+				if( mt.startsWith( QString( "/run/media/private/" ) ) ){
+					m.addAction( QString( "no available options for this volume" ) ) ;
+				}else{
+					connect( m.addAction( tr( "open folder" ) ),SIGNAL( triggered() ),this,SLOT( slotOpenFolder() ) ) ;
+				}
 			}else{
 				connect( m.addAction( tr( "open shared folder" ) ),SIGNAL( triggered() ),this,SLOT( slotOpenSharedFolder() ) ) ;
 			}
