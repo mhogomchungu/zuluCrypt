@@ -43,7 +43,6 @@ int zuluMountCryptoMount( ARGS * args )
 	
 	const char * mapping_name ;
 	char * path = NULL ;
-	char * m = NULL ;
 	
 	string_t str = StringVoid ;
 	
@@ -58,12 +57,6 @@ int zuluMountCryptoMount( ARGS * args )
 			}else{
 				mapping_name = _mapping_name( path ) ;
 			}
-		}else if( StringPrefixEqual( device,"/dev/md" ) ){
-			/*
-			 * zuluCryptResolveMDPath() is defined in ../zuluCrypt-cli/lib/process_mountinfo.c
-			 */
-			m = zuluCryptResolveMDPath( device ) ;
-			mapping_name = _mapping_name( m ) ;
 		}else{
 			mapping_name = _mapping_name( device ) ;
 		}
@@ -72,7 +65,7 @@ int zuluMountCryptoMount( ARGS * args )
 		StringRemoveString( str,"\"" ) ;
 		mapping_name = StringReplaceString( str,"UUID=","UUID-" ) ;
 	}
-	
+
 	/*
 	 * zuluCryptEXEGetOptsSetDefault() is defined in ../zuluCrypt-cli/bin/get_opts.c
 	 */
@@ -102,8 +95,6 @@ int zuluMountCryptoMount( ARGS * args )
 	StringVoidFree( opts.env ) ;
 	
 	StringFree( path ) ;
-	
-	StringFree( m ) ;
 	
 	return st ;
 }

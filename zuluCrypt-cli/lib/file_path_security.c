@@ -124,8 +124,8 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 				fcntl( lfd,F_SETFD,FD_CLOEXEC ) ;
 				
 				/*
-				 * check to make sure the file is got earlier is the same one we got now.
-				 * ie check to make sure the file wasnt swapped btw calls.
+				 * check to make sure the file we got earlier is the same one we got now.
+				 * ie check to make sure the file wasnt changed btw calls.
 				 */
 				if( stat_st.st_dev == stat_st_1.st_dev && stat_st.st_ino == stat_st_1.st_ino ){
 					close( *fd_path ) ;
@@ -175,8 +175,8 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 					st = 0 ;
 				}else{
 					/*
-					 * normal user has access to block device,it could be a writeble cdrom,accept it only 
-					 * if its in /dev/ but not in /dev/shm
+					 * odd,normal user has access to a block device,allow it only if the
+					 * device is in "/dev/" but not in "/dev/shm"
 					 */
 					*dev = zuluCryptGetFileNameFromFileDescriptor( *fd_path ) ;
 					if( StringPrefixMatch( *dev,"/dev/shm/",9 ) ){

@@ -28,7 +28,6 @@ int zuluMountCryptoUMount( ARGS * args )
 	const char * mapping_name ;
 	const char * e ;
 	char * path = NULL ;
-	char * m = NULL ;
 	
 	int st  ;
 	
@@ -47,11 +46,6 @@ int zuluMountCryptoUMount( ARGS * args )
 			}else{
 				device = path ;
 			}
-		}else if( StringPrefixEqual( device,"/dev/md" ) ){
-			/*
-			 * zuluCryptResolveMDPath() is defined in ../zuluCrypt-cli/lib/process_mountinfo.c
-			 */
-			device = m = zuluCryptResolveMDPath( device ) ;
 		}
 		
 		e = strrchr( device,'/' ) ;
@@ -66,7 +60,7 @@ int zuluMountCryptoUMount( ARGS * args )
 		StringRemoveString( str,"\"" ) ;
 		mapping_name = StringSubChar( str,4,'-' ) ;
 	}
-	
+
 	/*
 	 * zuluCryptEXECloseVolume() is defined in ../zuluCrypt-cli/bin/close_volume.c
 	 */
@@ -75,8 +69,6 @@ int zuluMountCryptoUMount( ARGS * args )
 	StringDelete( &str ) ;
 	
 	StringFree( path ) ;
-	
-	StringFree( m ) ;
 	
 	return st ;
 }
