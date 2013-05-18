@@ -137,7 +137,7 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 		}
 	}
 	
-	if ( keyType == NULL ){
+	if( keyType == NULL ){
 	
 		printf( "Enter a key to be removed: " ) ;
 		/*

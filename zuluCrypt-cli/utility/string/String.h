@@ -671,6 +671,23 @@ uint32_t StringJenkinsOneAtATimeHash_1( string_t ) ;
  * a few convenient "safe" functions 
  */
 
+/*
+ * why doesnt free() take const void * ????
+ */
+static __inline__ void StringFree( const char * str )
+{
+	if( str != NULL ){
+		free( ( char * )str ) ;
+	}
+}
+
+static __inline__ void StringVoidFree( const void * str )
+{
+	if( str != NULL ){
+		free( ( void * )str ) ;
+	}
+}
+
 static __inline__ size_t StringSize( const char * str )
 {
 	if( str == NULL ){
@@ -731,7 +748,7 @@ static __inline__ ssize_t StringHasComponent_1( const char * x,const char * y )
 	}
 }
 
-static inline int StringHasComponent( const char * x,const char * y )
+static __inline__ int StringHasComponent( const char * x,const char * y )
 {
 	if( x == NULL || y == NULL ){
 		return 0 ;
@@ -740,7 +757,7 @@ static inline int StringHasComponent( const char * x,const char * y )
 	}
 }
 
-static inline int StringHasNoComponent( const char * x,const char * y )
+static __inline__ int StringHasNoComponent( const char * x,const char * y )
 {
 	if( x == NULL || y == NULL ){
 		return 0 ;

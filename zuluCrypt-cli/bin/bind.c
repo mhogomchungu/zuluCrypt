@@ -179,9 +179,8 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 	if( delete_stx ){
 		StringListDelete( &stx ) ;
 	}
-	if( h != NULL ){
-		free( h ) ;
-	}
+	
+	StringFree( h ) ;
 	
 	zuluCryptSecurityDropElevatedPrivileges() ;
 	return r ;

@@ -74,11 +74,9 @@ int zuluMountCryptoUMount( ARGS * args )
 	
 	StringDelete( &str ) ;
 	
-	if( path != NULL ){
-		free( path ) ;
-	}
-	if( m != NULL ){
-		free( m ) ;
-	}
+	StringFree( path ) ;
+	
+	StringFree( m ) ;
+	
 	return st ;
 }

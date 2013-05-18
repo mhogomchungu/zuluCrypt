@@ -85,7 +85,7 @@ ERROR: you can not umount volumes out of \"%s\" since you are not root and do no
 		StringDelete( &xt ) ;
 	}
 	
-	free( m_point ) ;
+	StringFree( m_point ) ;
 	m_point = NULL ;
 	
 	/*

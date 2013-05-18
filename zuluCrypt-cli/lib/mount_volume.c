@@ -396,6 +396,7 @@ static inline int mount_ntfs( const m_struct * mst )
 	}else{
 		StringPrepend( st,"rw" ) ;
 	}
+	
 	opts = StringReplaceString( st,",,","," );
 	
 	ProcessSetArgumentList( p,"-t","ntfs-3g","-o",opts,mst->device,mst->m_point,ENDLIST ) ;

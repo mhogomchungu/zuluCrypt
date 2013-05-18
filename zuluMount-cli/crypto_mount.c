@@ -97,15 +97,13 @@ int zuluMountCryptoMount( ARGS * args )
 	 */
 	st = zuluCryptEXEOpenVolume( &opts,mapping_name,uid ) ;
 	
-	free( ( char * ) opts.env ) ;
-	
 	StringDelete( &str ) ;
 	
-	if( path != NULL ){
-		free( path ) ;
-	}
-	if( m != NULL ){
-		free( m ) ;
-	}
+	StringVoidFree( opts.env ) ;
+	
+	StringFree( path ) ;
+	
+	StringFree( m ) ;
+	
 	return st ;
 }

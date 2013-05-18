@@ -247,7 +247,7 @@ static void _printDeviceProperties( string_t entry,void * s )
 			 */
 			f = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;
 			zuluMountPartitionProperties( x,e,q,f ) ;
-			free( x ) ;
+			StringFree( x ) ;
 			StringDelete( &st ) ;
 		}
 	}else{

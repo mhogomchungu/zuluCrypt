@@ -99,7 +99,7 @@ static string_t create_work_directory( void )
  * path returns a path to where a copy of the file is located and ready to be accessed securely
  * It is the responsibility of the called to unlink(path) when done with the copy and free(path) memory when done with it
  */
-static int secure_file_path( char ** path,const char * source )
+static int secure_file_path( const char ** path,const char * source )
 {
 	int fd_source ;
 	int fd_temp ;
@@ -156,7 +156,7 @@ static int secure_file_path( char ** path,const char * source )
 /*
  * this function return a secured file path to be used to create a file at the path
  */
-static inline char * secure_file_path_1( void )
+static inline const char * secure_file_path_1( void )
 {
 	string_t st_path = create_work_directory() ;
 	StringAppend( st_path,"1-" ) ;
@@ -216,7 +216,7 @@ static int save_header( const char * device,const char * path,uid_t uid )
 	int st = 4 ;
 	struct crypt_device * cd ;
 	
-	char * temp_path = secure_file_path_1() ;
+	const char * temp_path = secure_file_path_1() ;
 
 	if( zuluCryptSecurityGainElevatedPrivileges() ){
 		if( crypt_init( &cd,device ) != 0 ){
@@ -233,14 +233,14 @@ static int save_header( const char * device,const char * path,uid_t uid )
 		zuluCryptSecurityDropElevatedPrivileges() ;
 	}
 	
-	free( temp_path ) ;
+	StringFree( temp_path ) ;
 	return st ;
 }
 
 static int restore_header( const char * device,const char * path,int k,uid_t uid )
 {
 	struct crypt_device * cd  ;
-	char * temp_path ;
+	const char * temp_path ;
 	
 	int st = 7;
 	string_t confirm ;
@@ -283,7 +283,7 @@ Type \"YES\" and press Enter to continue: " ;
 		}
 	}
 	unlink( temp_path ) ;
-	free( temp_path ) ;
+	StringFree( temp_path ) ;
 	crypt_free( cd ) ;
 	zuluCryptSecurityDropElevatedPrivileges() ;
 	return st ;
@@ -300,7 +300,7 @@ int zuluCryptEXESaveAndRestoreLuksHeader( const struct_opts * opts,uid_t uid,int
 	int st ;
 	int k ;
 	
-	char * dev ;
+	const char * dev ;
 	
 	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
 		/*
@@ -311,7 +311,7 @@ int zuluCryptEXESaveAndRestoreLuksHeader( const struct_opts * opts,uid_t uid,int
 		 * zuluCryptPartitionIsSystemPartition() is defined in partitions.c
 		 */
 		k = zuluCryptPartitionIsSystemPartition( dev ) ;
-		free( dev ) ;
+		StringFree( dev ) ;
 	}else{
 		/*
 		 * zuluCryptPartitionIsSystemPartition() is defined in partitions.c
@@ -401,8 +401,8 @@ static int _save_tmp_header( const char * device,const char * backup )
 
 int zuluCryptHeaderMatchBackUpHeader( const char * device,const char * header_backup,uid_t uid )
 {
-	char * header_path = NULL;
-	char * device_header = NULL;
+	const char * header_path = NULL;
+	const char * device_header = NULL;
 	
 	int st = 0 ;
 	
@@ -417,7 +417,7 @@ int zuluCryptHeaderMatchBackUpHeader( const char * device,const char * header_ba
 	
 	device_header = secure_file_path_1() ;
 	if( device_header == NULL ){
-		free( header_path ) ;
+		StringFree( header_path ) ;
 		return 0 ;
 	}
 	
@@ -432,8 +432,8 @@ int zuluCryptHeaderMatchBackUpHeader( const char * device,const char * header_ba
 	
 	zuluCryptSecurityDropElevatedPrivileges() ;
 	
-	free( header_path ) ;
-	free( device_header ) ;
+	StringFree( header_path ) ;
+	StringFree( device_header ) ;
 	
 	return st ;
 }

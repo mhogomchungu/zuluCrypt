@@ -69,10 +69,8 @@ static int _mount_get_opts( int argc,char * argv[],ARGS * args )
 
 int _zuluExit( int st,string_t z,char * q,const char * msg )
 {
-	if( q != NULL ){
-		free( q ) ;
-	}
-	StringDelete( &z ) ;	
+	StringFree( q ) ;
+	StringDelete( &z ) ;
 	if( msg != NULL ){
 		printf( "%s\n",msg ) ;
 	}
@@ -92,9 +90,7 @@ static int _zuluExit_2( int st,stringList_t z,stringList_t q,const char * msg )
 
 int _zuluExit_1( int st,stringList_t z,char * q,const char * msg )
 {
-	if( q != NULL ){
-		free( q ) ;
-	}
+	StringFree( q ) ;
 	StringListDelete( &z ) ;
 	if( msg != NULL ){
 		printf( "%s\n",msg ) ;
@@ -256,10 +252,8 @@ static int _zuluMountPrintDeviceProperties( const char * device,const char * UUI
 		zuluMountPartitionProperties( device_1,NULL,device_1,NULL ) ;
 	}
 	
-	if( dev != NULL ){
-		free( dev ) ;
-	}
-	
+	StringFree( dev ) ;
+		
 	StringDelete( &z ) ;
 	
 	return 0 ;

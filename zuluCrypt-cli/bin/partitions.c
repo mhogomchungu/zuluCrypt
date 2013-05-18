@@ -563,10 +563,8 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 			ac = strstr( StringContent( st ),"=" ) ;
 			if( ac != NULL ){
 				ac = zuluCryptSecurityEvaluateDeviceTags( "UUID", ac + 1 );    
-				if( ac != NULL ){	
-					stl_1 = StringListAppend( stl_1,ac ) ;
-					free( ac ) ;
-				}
+				stl_1 = StringListAppend( stl_1,ac ) ;
+				StringFree( ac ) ;
 			}
 		}else{
 			/*
@@ -582,17 +580,15 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 			
 			if( StringPrefixMatch( e,"/dev/disk/by-",13 ) ){
 				ac = zuluCryptRealPath( e ) ;
-				if( ac != NULL ){
-					stl_1 = StringListAppend( stl_1,ac ) ;
-					free( ac ) ;
-				}
+				stl_1 = StringListAppend( stl_1,ac ) ;
+				StringFree( ac ) ;
 			}else if( StringPrefixMatch( e,"/dev/md",7 ) ){
 				/*
 				 * zuluCryptResolveMDPath() is defined in ../lib/process_mountinfo.c
 				 */
 				ac = zuluCryptResolveMDPath( e ) ;
 				stl_1 = StringListAppend( stl_1,ac ) ;
-				free( ac ) ;
+				StringFree( ac ) ;
 			}else if( StringPrefixMatch( e,"/dev/mapper/",12 ) ){
 				/*
 				 * zuluCryptConvertIfPathIsLVM() is defined in ../lib/status.c
@@ -648,10 +644,8 @@ stringList_t zuluCryptGetPartitionFromConfigFile( const char * path )
 			 * zuluCryptSecurityEvaluateDeviceTags() is defined in ./security.c
 			 */
 			ac = zuluCryptSecurityEvaluateDeviceTags( "UUID",StringContent( st ) + 5 ) ;
-			if( ac != NULL ){
-				stl_1 = StringListAppend( stl_1,ac ) ;
-				free( ac ) ;
-			}
+			stl_1 = StringListAppend( stl_1,ac ) ;
+			StringFree( ac ) ;
 		}else{
 			stl_1 = StringListAppendString( stl_1,st ) ;
 		}
@@ -693,6 +687,7 @@ int zuluCryptPartitionIsSystemPartition( const char * device )
 			return 1 ;
 		}else{
 			free( dev ) ;
+			return 0 ;
 		}
 	}else{
 		if( _zuluCryptPartitionIsSystemPartition( device ) ){
