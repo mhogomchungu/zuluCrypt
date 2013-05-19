@@ -82,7 +82,7 @@ size_t zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid
 					 * ZULUCRYPT_INT_MAX_KEYSIZE is set in ../constants.h
 					 */
 					dataLength = SocketGetData_1( client,&buffer,ZULUCRYPT_INT_MAX_KEYSIZE ) ;
-					*key = StringInheritWithSize( &buffer,dataLength,dataLength ) ;
+					*key = StringInheritWithSize( &buffer,dataLength,dataLength + 1 ) ;
 					SocketClose( &client ) ;
 				}
 			}
@@ -109,7 +109,11 @@ void * zuluCryptPluginManagerOpenConnection( const char * sockpath )
 
 ssize_t zuluCryptPluginManagerSendKey( void * client,const char * key,size_t length )
 {
-	return client == NULL ? -1 : SocketSendData( ( socket_t )client,key,length ) ;
+	if( client == NULL ){
+		return -1 ;
+	}else{
+		return SocketSendData( ( socket_t )client,key,length ) ;
+	}
 }
 
 void zuluCryptPluginManagerCloseConnection( void * p )

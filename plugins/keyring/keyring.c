@@ -54,7 +54,7 @@ static GnomeKeyringResult getKey( const char * UUID,gchar ** key )
 	return r ;
 }
 
-int main( int argc __attribute__(( unused )),char * argv[] )
+int main( int argc,char * argv[] )
 {
 	/*
 	 * const char * exe    = argv[ 0 ] ;
@@ -75,8 +75,14 @@ int main( int argc __attribute__(( unused )),char * argv[] )
 	gchar * key ;
 	const char * e ;
 		
-	if( strcmp( uuid,"Nil" ) == 0 )
+	if( strcmp( uuid,"Nil" ) == 0 ){
 		return 1 ;
+	}
+	if( argc ){
+		/*
+		 * we dont use this variable,silence compiler warning
+		 */
+	}
 	
 	strcpy( UUID,"luks-" ) ;
 	strcat( UUID,uuid ) ;
