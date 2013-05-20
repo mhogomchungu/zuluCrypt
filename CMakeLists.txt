@@ -258,10 +258,11 @@ if( UDEVSUPPORT STREQUAL "true" )
 	
 	file( WRITE ${PROJECT_BINARY_DIR}/udev_support.h "\n#define UDEV_SUPPORT 1\n")
 	
-	message ( STATUS "udev will be consulted when deciding if a volume is system or not" )
-	message ( STATUS "if a partition does not have an entry in fstab,udev will be consulted before a partition is considered non system" )
-	message ( STATUS "udev has a bad habit of identifiying partitions as internal when they are not,please read its documentation" )
-	message ( STATUS "when it happens" )	
+	message ( STATUS "udev will be consulted when deciding if a volume is system or not." )
+	message ( STATUS "If a partition does not have an entry in fstab,udev will be consulted before a partition is considered non system" )
+	message ( STATUS "and udev's deciding will be the final one." )	
+	message ( STATUS "udev has a bad habit of identifiying some volumes as internal when they are not,please read its documentation" )
+	message ( STATUS "when this happens" )	
 else( UDEVSUPPORT STREQUAL "true" )
 	
 	file( WRITE ${PROJECT_BINARY_DIR}/udev_support.h "\n#define UDEV_SUPPORT 0\n")

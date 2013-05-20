@@ -26,10 +26,10 @@ To build the backends as well as front ends,run the following command
 3.2 cmake -DCMAKE_INSTALL_PREFIX=/usr/ -DCMAKE_BUILD_TYPE=MINSIZEREL . ..
 
 3.3 
-To build frontends without KDE(kwallet) support, add "-DNOKDE=true". eg cmake -DCMAKE_INSTALL_PREFIX=/usr/ -DNOKDE=true -DCMAKE_BUILD_TYPE=MINSIZEREL . ..
+To build frontends without KDE(kwallet) support, add "-DNOKDE=true". eg cmake -DCMAKE_INSTALL_PREFIX=/usr/ -DNOKDE=true -DCMAKE_BUILD_TYPE=RELEASE . ..
 
 3.4
-To build frontends without gnome(gnome-keyring) support, add "-DNOGNOME=true". eg cmake -DCMAKE_INSTALL_PREFIX=/usr/ -DNOGNOME=true -DCMAKE_BUILD_TYPE=MINSIZEREL . ..
+To build frontends without gnome(gnome-keyring) support, add "-DNOGNOME=true". eg cmake -DCMAKE_INSTALL_PREFIX=/usr/ -DNOGNOME=true -DCMAKE_BUILD_TYPE=RELEASE . ..
 
 3.5
 udev is not consulted when deciding if a volume is system or not,only fstab is.To also include udev,add the following config option: "-DUDEVSUPPORT=true"

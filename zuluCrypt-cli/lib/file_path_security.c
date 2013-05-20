@@ -58,8 +58,10 @@ static int _check_if_device_is_supported( int st,uid_t uid,char ** dev )
 		StringDelete( &fs ) ;
 	}
 	if( st != 0 ){
-		free( *dev ) ;
-		*dev = NULL ;
+		/*
+		 * safely do free( *dev ) followed by *dev = NULL
+		 */
+		StringFree_3( dev ) ;
 	}
 	return st ;
 }
@@ -90,7 +92,7 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 	int xt = 0 ;
 	int lfd ;
 	
-	char * dev_1 ;
+	const char * dev_1 = NULL ;
 	string_t st_dev = StringVoid ;
 	
 	struct stat stat_st ;
@@ -163,7 +165,7 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 				}else{
 					st = 0 ;
 				}
-				free( dev_1 ) ;
+				StringFree( dev_1 ) ;
 			}
 		}else{
 			if( S_ISBLK( stat_st.st_mode ) ){

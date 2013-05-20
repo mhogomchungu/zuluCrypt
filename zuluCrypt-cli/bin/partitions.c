@@ -249,7 +249,7 @@ static int _zuluCryptCheckSYSifDeviceIsSystem( const char * device )
 	 * UDEV_SUPPORT is set at configure time by "-DUDEVSUPPORT=true" option,the option being absent equals "-DUDEVSUPPORT=false"
 	 * To set the option, configure with "-DUDEVSUPPORT=true"
 	 */
-#if UDEV_SUPPORT
+#if UDEVSUPPORT
 	/*
 	 * udev support is enabled
 	 */
@@ -281,10 +281,11 @@ static int _zuluCryptCheckSYSifDeviceIsSystem( const char * device )
 	StringDelete( &st ) ;
 	if( xt == StringVoid ){
 		return 0 ;
+	}else{
+		r = StringEqual( xt,"0\n" ) ;
+		StringDelete( &xt ) ;
+		return r ;
 	}
-	r = StringEqual( xt,"0\n" ) ;
-	StringDelete( &xt ) ;
-	return r ;
 #else
 	if( device ){;}
 	/*
@@ -324,11 +325,16 @@ stringList_t zuluCryptPartitions( int option )
 	/*
 	 * zuluCryptGetFstabList() is defined in ../lib/mount_volume.c
 	 */
+		
 	stl = zuluCryptGetFstabList() ;
 	
 	it  = StringListBegin( stl ) ;
 	end = StringListEnd( stl ) ; 
-	
+	/*
+	 * gather an initial list of system and non system partitions by comparing entries in "/etc/fstab" and "/proc/partitions"
+	 * fstab entries makes an initial list of system partitions.
+	 * the difference btw list in "/proc/partitions" and "/etc/fstab" makes an initial list of non system partitions.
+	 */
 	for(  ; it != end ; it++ ){
 		st = *it ;
 		if( StringStartsWith( st,"/" ) ){
@@ -344,25 +350,53 @@ stringList_t zuluCryptPartitions( int option )
 	StringListDelete( &stl ) ;
 	
 	/*
-	 * Read from confi files to get additional devices to be considered as system devices
+	 * read entried from "crypttab" and then add them to "system" if absent in that list and remove them from "non system" if present
+	 * in that list
 	 */
 	p = zuluCryptGetPartitionFromCrypttab() ;
-	StringListAppendList( system,p ) ;
-	StringListDelete( &p ) ;
+	if( p != StringListVoid ){
+		it  = StringListBegin( p ) ;
+		end = StringListEnd( p ) ;
+		for( ; it != end ; it++ ){
+			device = StringContent( *it ) ;
+			if( StringListContains( system,device ) == -1 ){
+				StringListAppend( system,device ) ;
+			}
+			StringListRemoveIfStringEqual( non_system,device ) ;
+		}
+		StringListDelete( &p ) ;
+	}
+	
+	/*
+	 * read entried from "zuluCrypt-system" and then add them to "system" if absent in that list and remove them from "non system" if present
+	 * in that list
+	 */
 	p = zuluCryptGetPartitionFromConfigFile( "/etc/zuluCrypt-system" ) ;
-	StringListAppendList( system,p ) ;
-	StringListDelete( &p ) ;
+	if( p != StringListVoid ){
+		it  = StringListBegin( p ) ;
+		end = StringListEnd( p ) ;
+		for( ; it != end ; it++ ){
+			device = StringContent( *it ) ;
+			if( StringListContains( system,device ) == -1 ){
+				StringListAppend( system,device ) ;
+			}
+			StringListRemoveIfStringEqual( non_system,device ) ;
+		}
+		StringListDelete( &p ) ;
+	}
 	
 	/*
 	 * At this point:
-	 * "system" contains system devices.
-	 * "non_system" contains non system devices.
-	 * 
-	 * now we check non_system devices agains entries in /sys/ to see if udev reported them as system and move them to system 
-	 * if it does . 
+	 * "system" contains system devices gathered from fstab,zuluCrypt-system and crypttab
+	 * "non_system" contains non system devices gathered from /proc/partitions minus system partitions. 
 	 */
 	
-	start = it = StringListBegin( non_system ) ;
+	it = StringListBegin( non_system ) ;
+	start = it ;
+	
+	/*
+	 * now we consult udev if enabled and we move partition in the "non system" list to "system" list if udev think they are system
+	 */
 	while( it != StringListEnd( non_system ) ){
 		if( _zuluCryptCheckSYSifDeviceIsSystem( StringContent( *it ) ) ){
 			StringListAppendString( system,*it ) ;
@@ -374,7 +408,7 @@ stringList_t zuluCryptPartitions( int option )
 	
 	/*
 	 * Now we read from a config file that contains devices that are not to be considered system and remove them from
-	 * the system list if present in that list
+	 * the system list if present in that list and add them to non system list if absent in that list
 	 */
 	p = zuluCryptGetPartitionFromConfigFile( "/etc/zuluCrypt-nonsystem" ) ;
 	if( p != StringListVoid ){
@@ -383,10 +417,13 @@ stringList_t zuluCryptPartitions( int option )
 		for( ; it != end ; it++ ){
 			device = StringContent( *it ) ;
 			StringListRemoveString( system,device ) ;
+			if( StringListContains( non_system,device ) == -1 ){
+				StringListAppend( non_system,device ) ;
+			}
 		}
 		StringListDelete( &p ) ;
 	}
-	
+
 	if( option == ZULUCRYPTsystemPartitions ){
 		StringListDelete( &non_system ) ;
 		return system  ;
@@ -646,6 +683,8 @@ stringList_t zuluCryptGetPartitionFromConfigFile( const char * path )
 			ac = zuluCryptSecurityEvaluateDeviceTags( "UUID",StringContent( st ) + 5 ) ;
 			stl_1 = StringListAppend( stl_1,ac ) ;
 			StringFree( ac ) ;
+		}else if( StringStartsWith( st,"#" ) ){
+			;
 		}else{
 			stl_1 = StringListAppendString( stl_1,st ) ;
 		}
