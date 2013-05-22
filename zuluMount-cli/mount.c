@@ -260,7 +260,7 @@ ERROR: insuffienct privilege to manage a system partition.\nnecessary privileges
 		rmdir( rm_point ) ;
 		zuluCryptSecurityDropElevatedPrivileges() ;
 		switch( status ){
-			case -1: return _zuluExit( 108,z,path,"ERROR: failed to mount a filesystem,invalid mount option or permission denied" ) ;
+			case -1: return _zuluExit( 108,z,path,"ERROR: failed to mount a filesystem:invalid mount option,permission denied or unsupported file system encountered" ) ;
 			case 1 : return _zuluExit( 109,z,path,"ERROR: failed to mount ntfs file system using ntfs-3g,is ntfs-3g package installed?" ) ;
 			case 4 : return _zuluExit( 110,z,path,"ERROR: mount failed,no or unrecognized file system" )	; 
 			case 12: return _zuluExit( 111,z,path,"ERROR: mount failed,could not get a lock on /etc/mtab~" ) ;	
