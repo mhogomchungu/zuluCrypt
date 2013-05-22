@@ -154,10 +154,13 @@ void MainWindow::autoMountVolumeInfo( QStringList l )
 	if( l.size() == 0 ){
 		return ;
 	}
+	if( l.at( 4 ) == QString( "1.0 KB" ) ){
+		return ;
+	}
+
 	QString dev = l.at( 0 ) ;
 	QString type = l.at( 2 ) ;
-	//QString s = QString( "non system device added: device=%1" ).arg( dev ) ;
-	//qDebug() << s ;
+	
 	if( dev.size() == strlen( "/dev/sdX" ) && type == QString( "Nil" ) ){
 		/*
 		 * root device with no file system,dont show them.This will be a bug if a user just put a plain volume
@@ -181,7 +184,6 @@ void MainWindow::autoMountVolumeInfo( QStringList l )
 
 void MainWindow::deviceRemoved( QString dev )
 {
-	//qDebug() << "device removed: " << dev ;
 	int row = tablewidget::columnHasEntry( m_ui->tableWidget,0,dev ) ;
 	if( row != -1 ){
 		tablewidget::deleteRowFromTable( m_ui->tableWidget,row ) ;

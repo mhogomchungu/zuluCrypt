@@ -334,6 +334,7 @@ static int _checkUnmount( const char * device,uid_t uid )
 {
 	stringList_t stx ;
 	stringList_t stl ;
+	
 	ssize_t index ;
 	int r ;
 	char * m_point = NULL ;
@@ -350,21 +351,23 @@ static int _checkUnmount( const char * device,uid_t uid )
 	 * zuluCryptGetMoutedListFromMountInfo() is defined in ../lib/process_mountinfo.c 
 	 */
 	stx = zuluCryptGetMoutedListFromMountInfo() ;
-	zuluCryptSecurityGainElevatedPrivileges() ;
 	
 	st = String( device ) ;
 	index = StringListHasStartSequence( stx,StringAppend( st," " ) ) ;
 	StringDelete( &st ) ;
-
+	
 	if( index != -1 ){
-		device = StringListContentAt( stx,index ) ;
+		
+		st = StringListStringAt( stx,index ) ;
+		stl = StringListStringSplit( st,' ' ) ;
+		
+		device = StringListContentAt( stl,0 ) ;
 		/*
 		 * zuluCryptBindUnmountVolume() is defined in ../zuluCrypt-cli/bin/bind.c
 		 */
 		r = zuluCryptBindUnmountVolume( stx,device,uid ) ;
 		if( r != 3 || r != 4 ){
-			st = StringListStringAt( stx,index ) ;
-			stl = StringListStringSplit( st,' ' ) ;
+			
 			st = StringListStringAt( stl,1 ) ;
 			/*
 			 * zuluCryptDecodeMtabEntry() is defined in ../zuluCrypt-cli/lib/mount_volume.c
@@ -378,14 +381,19 @@ static int _checkUnmount( const char * device,uid_t uid )
 				/*
 				* zuluCryptUnmountVolume() is defined in ../zuluCrypt-cli/lib/unmount_volume.c
 				*/
-				zuluCryptUnmountVolume( device,&m_point ) ;
-				if( m_point != NULL ){
-					rmdir( m_point ) ;
-					free( m_point ) ;
+				zuluCryptSecurityGainElevatedPrivileges() ;
+				
+				if( zuluCryptUnmountVolume( device,&m_point ) == 0 ){
+					if( m_point != NULL ){
+						rmdir( m_point ) ;
+						free( m_point ) ;
+					}
 				}
+				zuluCryptSecurityDropElevatedPrivileges() ;
 			}
-			StringListDelete( &stl ) ;
 		}
+		
+		StringListDelete( &stl ) ;
 	}else{
 		/*
 		 * Either the volume is not mounted or is encrypted.
@@ -394,9 +402,7 @@ static int _checkUnmount( const char * device,uid_t uid )
 		;
 	}
 	
-	StringListDelete( &stx ) ;
-	
-	zuluCryptSecurityDropElevatedPrivileges() ;
+	StringListDelete( &stx ) ;	
 	
 	return 0 ;
 }
