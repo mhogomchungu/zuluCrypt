@@ -35,6 +35,7 @@
 #include <QCursor>
 #include <QAction>
 #include <QFileDialog>
+#include <QUrl>
 
 #include <unistd.h>
 #include "keydialog.h"
@@ -98,6 +99,8 @@ private slots:
 	void close( void ) ;
 	void autoMountToggled( bool ) ;
 private:
+	void dragEnterEvent( QDragEnterEvent * ) ;
+	void dropEvent( QDropEvent * ) ;
 	void showContextMenu( QTableWidgetItem *,bool ) ;
 	void startAutoMonitor( void ) ;
 	void showEvent( QShowEvent * );

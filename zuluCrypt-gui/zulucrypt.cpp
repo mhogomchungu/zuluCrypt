@@ -276,6 +276,8 @@ void zuluCrypt::setupConnections()
 
 	m_ui->actionManage_system_partitions->setEnabled( utility::userIsRoot() );
 	m_ui->actionManage_non_system_partitions->setEnabled( utility::userIsRoot() );
+
+	this->setAcceptDrops( true );
 }
 
 void zuluCrypt::permissionExplanation()
@@ -347,6 +349,24 @@ void zuluCrypt::closeEvent( QCloseEvent * e )
 	}else{
 		this->hide();
 		e->accept();
+	}
+}
+
+void zuluCrypt::dragEnterEvent( QDragEnterEvent * e )
+{
+	e->accept();
+}
+
+void zuluCrypt::dropEvent( QDropEvent * e )
+{
+	const QMimeData * m = e->mimeData() ;
+	QList<QUrl> l = m->urls() ;
+	int j = l.size() ;
+
+	for( int i = 0 ; i < j ; i++ ){
+		m_device = l.at( i ).path() ;
+		QString y = m_device.split( "/" ).last() ;
+		this->ShowPasswordDialog( m_device,y ) ;
 	}
 }
 

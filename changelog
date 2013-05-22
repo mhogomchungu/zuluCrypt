@@ -128,4 +128,5 @@ version 4.6.3
 -- its now possible to open a truecrypt hidden volume
 -- add explicit support md raid based volumes
 -- add context menu entry in zuluMount-gui to open shared mount point folder
+-- its now possible to initiate volume mounting process of volumes in files by drag and drop them on zuluCrypt-gui and zuluMount-gui UI.
 -- various bug fixes.

@@ -29,6 +29,7 @@
 #include <QList>
 #include <QMessageBox>
 #include <QCloseEvent>
+#include <QUrl>
 
 #include "../zuluCrypt-cli/constants.h"
 #include "../zuluMount-gui/oneinstance.h"
@@ -145,6 +146,8 @@ private slots :
 	void openVolumeFromArgumentList( void ) ;
 	void itemEntered( QTableWidgetItem * ) ;
 private:
+	void dragEnterEvent( QDragEnterEvent * );
+	void dropEvent( QDropEvent * );
 	passwordDialog * setUpPasswordDialog( void );
 	openvolume * setUpOpenpartition( void );
 	createvolume * setUpCreatepartition( void );

@@ -44,6 +44,7 @@ void MainWindow::setUpApp()
 	m_ui->tableWidget->setColumnWidth( 4,87 );
 	m_ui->tableWidget->setColumnWidth( 5,87 );
 
+	this->setAcceptDrops( true );
 	this->setWindowIcon( QIcon( QString( ":/zuluMount.png" ) ) );
 
 	m_ui->tableWidget->setMouseTracking( true );
@@ -160,7 +161,7 @@ void MainWindow::autoMountVolumeInfo( QStringList l )
 
 	QString dev = l.at( 0 ) ;
 	QString type = l.at( 2 ) ;
-	
+
 	if( dev.size() == strlen( "/dev/sdX" ) && type == QString( "Nil" ) ){
 		/*
 		 * root device with no file system,dont show them.This will be a bug if a user just put a plain volume
@@ -494,6 +495,26 @@ void MainWindow::slotTrayClicked( QSystemTrayIcon::ActivationReason e )
 void MainWindow::autoMountToggled( bool opt )
 {
 	m_autoMount = opt ;
+}
+
+void MainWindow::dragEnterEvent( QDragEnterEvent * e )
+{
+	e->accept();
+}
+
+void MainWindow::dropEvent( QDropEvent * e )
+{
+	const QMimeData * m = e->mimeData() ;
+	QList<QUrl> l = m->urls() ;
+	int j = l.size() ;
+
+	for( int i = 0 ; i < j ; i++ ){
+		m_device = l.at( i ).path() ;
+		managepartitionthread * m = new managepartitionthread() ;
+		connect( m,SIGNAL( getVolumeInfo( QStringList ) ),this,SLOT( showMoungDialog( QStringList ) ) ) ;
+		m->setDevice( m_device );
+		m->startAction( managepartitionthread::VolumeType ) ;
+	}
 }
 
 void MainWindow::slotcbReadOnly()
