@@ -109,6 +109,18 @@ QString utility::sharedMountPointPath( QString path )
 	}
 }
 
+bool utility::pathPointsToAFile( QString path )
+{
+	struct stat st ;
+	QByteArray b = path.toAscii() ;
+	if( stat( b.constData(),&st ) == 0 ){
+		return S_ISREG( st.st_mode ) != 0 ;
+	}else{
+		return false ;
+	}
+
+}
+
 void utility::debug( QString s )
 {
 	std::cout << s.toStdString() << std::endl ;

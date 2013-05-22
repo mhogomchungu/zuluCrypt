@@ -64,6 +64,7 @@ public:
 	static QString shareMountPointToolTip( void ) ;
 	static QString shareMountPointToolTip( QString ) ;
 	static QString sharedMountPointPath( QString ) ;
+	static bool pathPointsToAFile( QString ) ;
 };
 
 #endif // MISCFUNCTIONS_H

@@ -510,10 +510,12 @@ void MainWindow::dropEvent( QDropEvent * e )
 
 	for( int i = 0 ; i < j ; i++ ){
 		m_device = l.at( i ).path() ;
-		managepartitionthread * m = new managepartitionthread() ;
-		connect( m,SIGNAL( getVolumeInfo( QStringList ) ),this,SLOT( showMoungDialog( QStringList ) ) ) ;
-		m->setDevice( m_device );
-		m->startAction( managepartitionthread::VolumeType ) ;
+		if( utility::pathPointsToAFile( m_device ) ){
+			managepartitionthread * m = new managepartitionthread() ;
+			connect( m,SIGNAL( getVolumeInfo( QStringList ) ),this,SLOT( showMoungDialog( QStringList ) ) ) ;
+			m->setDevice( m_device );
+			m->startAction( managepartitionthread::VolumeType ) ;
+		}
 	}
 }
 

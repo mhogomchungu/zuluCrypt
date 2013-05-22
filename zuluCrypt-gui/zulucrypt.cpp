@@ -365,8 +365,10 @@ void zuluCrypt::dropEvent( QDropEvent * e )
 
 	for( int i = 0 ; i < j ; i++ ){
 		m_device = l.at( i ).path() ;
-		QString y = m_device.split( "/" ).last() ;
-		this->ShowPasswordDialog( m_device,y ) ;
+		if( utility::pathPointsToAFile( m_device ) ){
+			QString y = m_device.split( "/" ).last() ;
+			this->ShowPasswordDialog( m_device,y ) ;
+		}
 	}
 }
 
