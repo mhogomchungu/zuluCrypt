@@ -22,72 +22,39 @@
 
 int zulucryptFileSystemIsSupported( const char * fs )
 {
-	if(     StringsAreEqual( fs,"xfs" )   || 
-		StringsAreEqual( fs,"ntfs" )  || 
-		StringsAreEqual( fs,"vfat" )  || 
-		StringsAreEqual( fs,"fat" )   ||
-		StringsAreEqual( fs,"msdos" ) ||
-		StringsAreEqual( fs,"umsdos" )||
-		StringsAreEqual( fs,"affs" )  || 
-		StringsAreEqual( fs,"hfs" )   ||
-		StringsAreEqual( fs,"iso9660" )||
-		StringsAreEqual( fs,"udf" )    ||
-		StringsAreEqual( fs,"ext2" )   ||
-		StringsAreEqual( fs,"ext3" )   ||
-		StringsAreEqual( fs,"ext4" )   ||
-		StringsAreEqual( fs,"reiserfs" )  ||
-		StringsAreEqual( fs,"reiser4" )   ||
-		StringsAreEqual( fs,"btrfs" ) ||
-		StringsAreEqual( fs,"squashfs" ) )
-		{
-			return 1 ;
-		}else{
-			return 0 ;
+	const char * f[] =\
+{ "xfs","ntfs","vfat","msdos","umsdos","affs","hfs","iso9660","udf","ext2","ext3","ext4","reiserfs","reiser4","btrfs","squashfs",NULL } ;
+	
+	const char ** e = f ;
+	
+	if( fs == NULL ){
+		return 0 ;
+	}else{
+		while( 1 ){
+			if( *e == NULL ){
+				return 0 ;
+			}else if( strcmp( fs,*e ) == 0 ){
+				return 1 ;
+			}else{
+				e++ ;
+			}
 		}
-}
-
-static inline int _userIsAllowed( uid_t uid,const char * fs )
-{	
-	if( uid == 0 ){
-		return 1 ;
 	}
-	if( fs ){;}
-	/*
-	 * we are supposed to check here is a user is allowed to mount a file system not in the list above,
-	 * we dont do this check for now. 
-	 */
-	return 0 ;
 }
 
 static inline int allowed_vfat( stringList_t stl )
 {
 	int st ;
-	ssize_t index ;
-	index = StringListHasSequence( stl,"uid=" ) ;
-	if( index >= 0 )
-		StringListRemoveAt( stl,index ) ;
-	index = StringListHasSequence( stl,"gid=" ) ;
-	if( index >= 0 )
-		StringListRemoveAt( stl,index ) ;
-	index = StringListHasSequence( stl,"shortname=" ) ;
-	if( index >= 0 )
-		StringListRemoveAt( stl,index ) ;
-	index = StringListHasSequence( stl,"dmask=" ) ;
-	if( index >= 0 )
-		StringListRemoveAt( stl,index ) ;
-	index = StringListHasSequence( stl,"umask=" ) ;
-	if( index >= 0 )
-		StringListRemoveAt( stl,index ) ;
-	index = StringListHasSequence( stl,"fmask=" ) ;
-	if( index >= 0 )
-		StringListRemoveAt( stl,index ) ;
-	index = StringListHasSequence( stl,"utf8=" ) ;
-	if( index >= 0 )
-		StringListRemoveAt( stl,index ) ;
-	index = StringListHasSequence( stl,"iocharset=" ) ;
-	if( index >= 0 )
-		StringListRemoveAt( stl,index ) ;
+	const char * f[] = \
+{ "uid=","gid=","shortname=","dmask=","umask=","fmask=","utf8","iocharset=",NULL } ;
 	
+	const char ** e = f ;
+
+	while( *e != NULL ){
+		StringListRemoveIfStringContains( stl,*e ) ;
+		e++ ;
+	}
+
 	st = StringListSize( stl ) ;
 	StringListDelete( &stl ) ;
 	return st > 0 ;
@@ -96,34 +63,16 @@ static inline int allowed_vfat( stringList_t stl )
 static inline int allowed_ntfs( stringList_t stl )
 {
 	int st ;
-	ssize_t index ;
-	index = StringListHasSequence( stl,"umask=" ) ;
-	if( index >= 0 )
-		StringListRemoveAt( stl,index ) ;
-	index = StringListHasSequence( stl,"dmask=" ) ;
-	if( index >= 0 )
-		StringListRemoveAt( stl,index ) ;
-	index = StringListHasSequence( stl,"fmask=" ) ;
-	if( index >= 0 )
-		StringListRemoveAt( stl,index ) ;
-	index = StringListHasSequence( stl,"locale=" ) ;
-	if( index >= 0 )
-		StringListRemoveAt( stl,index ) ;
-	index = StringListHasSequence( stl,"norecover=" ) ;
-	if( index >= 0 )
-		StringListRemoveAt( stl,index ) ;
-	index = StringListHasSequence( stl,"ignore_case=" ) ;
-	if( index >= 0 )
-		StringListRemoveAt( stl,index ) ;
-	index = StringListHasSequence( stl,"windows_names=" ) ;
-	if( index >= 0 )
-		StringListRemoveAt( stl,index ) ;
-	index = StringListHasSequence( stl,"compression=" ) ;
-	if( index >= 0 )
-		StringListRemoveAt( stl,index ) ;
-	index = StringListHasSequence( stl,"nocompression=" ) ;
-	if( index >= 0 )
-		StringListRemoveAt( stl,index ) ;
+	const char * f[] = \
+{ "umask=","dmask=","fmask=","dmask=","locale=","norecover","ignore_case","windows_names","compression","nocompression",NULL } ;
+
+	const char ** e = f ;
+
+	while( *e != NULL ){
+		StringListRemoveIfStringContains( stl,*e ) ;
+		e++ ;
+	}
+	
 	st = StringListSize( stl ) ;
 	StringListDelete( &stl ) ;
 	return st > 0 ;
@@ -132,37 +81,30 @@ static inline int allowed_ntfs( stringList_t stl )
 static inline int allowed_iso9660( stringList_t stl )
 {
 	int st ;
-	ssize_t index ;
-	index = StringListHasSequence( stl,"norock" ) ;
-	if( index >= 0 )
-		StringListRemoveAt( stl,index ) ;
-	index = StringListHasSequence( stl,"nojoliet" ) ;
-	if( index >= 0 )
-		StringListRemoveAt( stl,index ) ;
-	index = StringListHasSequence( stl,"iocharset=" ) ;
-	if( index >= 0 )
-		StringListRemoveAt( stl,index ) ;
-	index = StringListHasSequence( stl,"mode=" ) ;
-	if( index >= 0 )
-		StringListRemoveAt( stl,index ) ;
-	index = StringListHasSequence( stl,"dmode=" ) ;
-	if( index >= 0 )
-		StringListRemoveAt( stl,index ) ;
+	const char * f[] = { "norock","nojoliet","fmask=","iocharset=","mode=","dmode=",NULL } ;
+	const char ** e = f ;
+	
+	while( *e != NULL ){
+		StringListRemoveIfStringContains( stl,*e ) ;
+		e++ ;
+	}
+	
 	st = StringListSize( stl ) ;
 	StringListDelete( &stl ) ;
 	return st > 0 ;
 }
 
 static inline int allowed_udf( stringList_t stl )
-{
+{	
 	int st ;
-	ssize_t index ;
-	index = StringListHasSequence( stl,"iocharset=" ) ;
-	if( index >= 0 )
-		StringListRemoveAt( stl,index ) ;
-	index = StringListHasSequence( stl,"umask=" ) ;
-	if( index >= 0 )
-		StringListRemoveAt( stl,index ) ;
+	const char * f[] = { "iocharset=","umask=",NULL } ;
+	const char ** e = f ;
+	
+	while( *e != NULL ){
+		StringListRemoveIfStringContains( stl,*e ) ;
+		e++ ;
+	}
+	
 	st = StringListSize( stl ) ;
 	StringListDelete( &stl ) ;
 	return st > 0 ;
@@ -207,14 +149,15 @@ static inline int allowed_btrfs( stringList_t stl )
 static inline int _option_contain_not_allowed( const char * fs,const char * fs_opts )
 {
 	stringList_t stl ;
-	if( fs == NULL || fs_opts == NULL ){
-		return 0 ;
-	}
-	
+
 	stl = StringListSplit( fs_opts,',' ) ;
 	
-	if( stl == StringListVoid )
+	if( stl == StringListVoid ){
+		/*
+		 * user did not provide fs option because they are going with defaults
+		 */
 		return 0 ;
+	}
 	if( StringsAreEqual( fs,"ext2" ) || StringsAreEqual( fs,"ext3" ) || StringsAreEqual( fs,"ext4" ) ){
 		return allowed_extX( stl ) ;
 	}
@@ -248,27 +191,86 @@ static inline int _option_contain_not_allowed( const char * fs,const char * fs_o
 	return 1 ;
 }
 
+static inline int _userIsAllowed( uid_t uid,const char * fs )
+{	
+	if( fs ){;}
+	
+	if( uid == 0 ){
+		/*
+		 * cant say No to root
+		 */
+		return 1 ;
+	}else{
+		/*
+		 * user is not root,we are supposed to use other means to check if a user is allowed to useful
+		 * non default fs options or not.By policy,the way to do it is through unix group system but the
+		 * functionality is off for now 
+		 */
+		return 0 ;
+	}
+}
+
 int zuluCryptMountHasNotAllowedFileSystemOptions( uid_t uid,const char * fs_opts,string_t s )
 {
 	const char * fs = StringContent( s ) ;
 	
 	if( fs == NULL ){
-		return 0 ;
-	}
-	if( !zulucryptFileSystemIsSupported( fs ) ){
-		if( _userIsAllowed( uid,fs ) ){
-			return 0 ;
-		}else{
-			return 1 ;
-		}
-	}
-	if( _option_contain_not_allowed( fs,fs_opts ) ){
-		if( _userIsAllowed( uid,fs ) ){
-			return 0 ;
-		}else{
-			return 1 ;
-		}
+		/*
+		 * cant mount a volume with no file system,shouldnt even get here
+		 */
+		return 1 ;
 	}
 	
-	return 0 ;
+	if( zulucryptFileSystemIsSupported( fs ) ){
+		/*
+		 * file system is supported
+		 */
+		if( fs_opts == NULL ){
+			/*
+			 * file system is supported and user did not change default fs option.
+			 * return early with success
+			 */
+			return 0 ;
+		}
+		
+		if( _option_contain_not_allowed( fs,fs_opts ) ){
+			/*
+			 * file system options are not supported,only privileged users should be allowed to mount
+			 */
+			if( _userIsAllowed( uid,fs ) ){
+				/*
+				 * user is allowed to use non default fs options
+				 */
+				return 0 ;
+			}else{
+				/*
+				 * user not allowed to use non default fs options
+				 */
+				return 1 ;
+			}
+		}else{
+			/*
+			 * supported file system with default options,allow it
+			 */
+			return 0 ;
+		}
+	}else{
+		/*
+		 * not supported file system 
+		 */
+		if( _userIsAllowed( uid,fs ) ){
+			/*
+			 * user is allowed to use a not supported file system.
+			 * We cant check for supported fs options in a non supported file system so just return
+			 * with success.
+			 */
+			return 0 ;
+		}else{
+			/*
+			 * user not allowed to use the file system,return early with error since we cant support
+			 * file system options in a not supported file system
+			 */
+			return 1 ;
+		}
+	}
 }
