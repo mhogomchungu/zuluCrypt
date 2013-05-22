@@ -52,7 +52,7 @@ static int _check_if_device_is_supported( int st,uid_t uid,char ** dev )
 	seteuid( uid ) ;
 	if( fs != StringVoid ){
 		cfs = StringContent( fs ) ;
-		if( StringHasComponent( cfs,"member" ) ){
+		if( StringHasComponent( cfs,"member" ) || StringHasComponent( cfs,"swap" ) ){
 			st = 100 ;
 		}
 		StringDelete( &fs ) ;

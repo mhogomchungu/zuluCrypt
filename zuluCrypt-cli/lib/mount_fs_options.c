@@ -20,10 +20,35 @@
 
 #include "../bin/includes.h"
 
+static int _fileSystemIsSupported( const char * fs )
+{
+	string_t           st  = StringGetFromVirtualFile( "/proc/filesystems" ) ;
+	stringList_t       stl = StringListStringSplit( st,'\n' ) ;
+	StringListIterator it  = StringListBegin( stl ) ;
+	StringListIterator end = StringListEnd( stl ) ;
+	string_t xt ;
+	int r = 0 ;
+	
+	while( it != end ){
+		xt = *it ;
+		it++ ;
+		if( !StringStartsWith( xt,"nodev" ) ){
+			if( StringContains( xt,fs ) ){
+				r = 1 ;
+				break ;
+			}
+		}
+	}
+	
+	StringDelete( &st ) ;
+	StringListDelete( &stl ) ;
+	return r ;
+}
+
 int zulucryptFileSystemIsSupported( const char * fs )
 {
-	const char * f[] =\
-{ "xfs","ntfs","vfat","msdos","umsdos","affs","hfs","iso9660","udf","ext2","ext3","ext4","reiserfs","reiser4","btrfs","squashfs",NULL } ;
+	const char * f[] = { "xfs","ntfs","vfat","msdos","umsdos","affs","hfs","iso9660",
+		"udf","ext2","ext3","ext4","reiserfs","reiser4","btrfs","squashfs",NULL } ;
 	
 	const char ** e = f ;
 	
@@ -32,7 +57,7 @@ int zulucryptFileSystemIsSupported( const char * fs )
 	}else{
 		while( 1 ){
 			if( *e == NULL ){
-				return 0 ;
+				return _fileSystemIsSupported( fs );
 			}else if( strcmp( fs,*e ) == 0 ){
 				return 1 ;
 			}else{

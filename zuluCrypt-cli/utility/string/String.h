@@ -112,7 +112,7 @@ const char * StringAppendString( string_t st,string_t xt )  ;
 /*
  * check if a string handled by st has str in it
  * return 1 if str is found
- * return 9 if str is not found
+ * return 0 if str is not found
  */
 int StringContains( string_t st,const char * str ) ;
 
