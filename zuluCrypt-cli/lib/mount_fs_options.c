@@ -37,7 +37,8 @@ int zulucryptFileSystemIsSupported( const char * fs )
 		StringsAreEqual( fs,"ext4" )   ||
 		StringsAreEqual( fs,"reiserfs" )  ||
 		StringsAreEqual( fs,"reiser4" )   ||
-		StringsAreEqual( fs,"btrfs" ) ) 
+		StringsAreEqual( fs,"btrfs" ) ||
+		StringsAreEqual( fs,"squashfs" ) )
 		{
 			return 1 ;
 		}else{

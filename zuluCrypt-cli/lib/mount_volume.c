@@ -238,7 +238,7 @@ static inline int fs_family( const char * fs )
 	if( StringsAreEqual( fs,"affs" ) || StringsAreEqual( fs,"hfs" ) ){
 		return 2 ;
 	}
-	if( StringsAreEqual( fs,"iso9660" ) || StringsAreEqual( fs,"udf" ) ){
+	if( StringsAreEqual( fs,"iso9660" ) || StringsAreEqual( fs,"udf" ) || StringsAreEqual( fs,"squashfs" ) ){
 		return 3 ;
 	}
 	return 0 ;
