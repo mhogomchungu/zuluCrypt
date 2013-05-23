@@ -123,7 +123,7 @@ static int secure_file_path( const char ** path,const char * source )
 	
 	zuluCryptSecurityGainElevatedPrivileges() ;
 	
-	fd_temp = open( temp_path,O_WRONLY | O_CREAT ) ;
+	fd_temp = open( temp_path,O_WRONLY | O_CREAT,S_IRUSR | S_IWUSR | S_IRGRP |S_IROTH ) ;
 	if( fd_temp == -1 ){
 		close( fd_source ) ;
 		StringDelete( &st_path ) ;
@@ -178,7 +178,7 @@ static inline int secure_copy_file( const char * source,const char * dest,uid_t 
 	
 	zuluCryptSecurityDropElevatedPrivileges() ;
 	
-	fd_dest = open( dest,O_WRONLY | O_CREAT ) ;
+	fd_dest = open( dest,O_WRONLY | O_CREAT,S_IRUSR | S_IWUSR | S_IRGRP |S_IROTH ) ;
 	if( fd_dest == -1 ){
 		zuluCryptSecurityGainElevatedPrivileges() ;
 		unlink( source ) ;

@@ -76,7 +76,7 @@ void EXIT( int st,char * msg )
 
 void createKeyFiles( void )
 {
-	int f = open( keyfile,O_WRONLY|O_TRUNC|O_CREAT ) ;
+	int f = open( keyfile,O_WRONLY|O_TRUNC|O_CREAT,S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH ) ;
 	int e ;
 	
 	puts( "creating a keyfile" ) ;
@@ -94,7 +94,7 @@ void createKeyFiles( void )
 		}
 	}
 	
-	f = open( keyfile1,O_WRONLY|O_TRUNC|O_CREAT ) ;
+	f = open( keyfile1,O_WRONLY|O_TRUNC|O_CREAT,S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH ) ;
 	puts( "creating a keyfile" ) ;
 	
 	if( f < 0 ){
@@ -122,7 +122,7 @@ void createTestImages( void )
 	
 	strncpy( path,luksTestVolume,64 ) ;
 	
-	f = open( path,opt ) ;
+	f = open( path,opt,S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH ) ;
 	
 	puts( "creating testing images" ) ;
 	
@@ -139,7 +139,7 @@ void createTestImages( void )
 	
 	strncpy( path,plainTestVolume,64 ) ;
 	
-	f = open( path,opt ) ;
+	f = open( path,opt,S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH ) ;
 	
 	if( f < 0 ){
 		perror( "failed to create testing images: " ) ;

@@ -175,7 +175,7 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 		
 		st = String( "/run/zuluCrypt/create_tcrypt-" ) ;
 		file = StringAppendInt( st,syscall( SYS_gettid ) ) ;
-		fd = open( file,O_WRONLY|O_CREAT ) ;
+		fd = open( file,O_WRONLY|O_CREAT,S_IRUSR | S_IWUSR | S_IRGRP |S_IROTH ) ;
 		
 		if( fd == -1 ){
 			r = 3 ;

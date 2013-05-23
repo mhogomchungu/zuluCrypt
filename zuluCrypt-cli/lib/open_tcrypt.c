@@ -136,7 +136,7 @@ static int _tcrypt_open_using_keyfile( const char * device,const char * mapper,u
 	
 	st = String( "/run/zuluCrypt/open_tcrypt-" ) ;
 	file = StringAppendInt( st,syscall( SYS_gettid ) ) ;
-	fd = open( file,O_WRONLY | O_CREAT ) ;
+	fd = open( file,O_WRONLY | O_CREAT,S_IRUSR | S_IWUSR | S_IRGRP |S_IROTH ) ;
 	
 	if( fd == -1 ){
 		return zuluExit_1( 1,cd,st ) ;
@@ -218,7 +218,7 @@ int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * ke
 	int h ;
 	string_t p ;
 	string_t q ;
-	const char * mapper_1 ;	
+	const char * mapper_1 ;
 	int fd ;
 	int lmode ;
 	

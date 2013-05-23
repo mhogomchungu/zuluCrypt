@@ -167,7 +167,7 @@ int zuluCryptDecryptFile( const char * source,const char * dest,const char * key
 		return zuluExit( 2,f_in,f_out,p ) ;
 	}
 	
-	f_out = open( dest,O_WRONLY | O_CREAT ) ;
+	f_out = open( dest,O_WRONLY | O_CREAT,S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH ) ;
 	
 	if( size <= SIZE ){
 		read( f_in,buffer,size ) ;
@@ -228,7 +228,7 @@ int zuluCryptEncryptFile( const char * source,const char * dest,const char * key
 	
 	memset( buffer,0,SIZE ) ;
 	
-	f_out = open( dest,O_WRONLY | O_CREAT ) ;
+	f_out = open( dest,O_WRONLY | O_CREAT,S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH ) ;
 	
 	size_1 = 0 ;
 	

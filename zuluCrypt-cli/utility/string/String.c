@@ -1462,9 +1462,9 @@ void StringWriteToFile( string_t st,const char * path,int mode )
 	}
 	
 	if( mode == 1 ){
-		fd = open( path, O_WRONLY | O_CREAT | O_TRUNC ) ;
+		fd = open( path,O_WRONLY | O_CREAT | O_TRUNC,S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH ) ;
 	}else{
-		fd = open( path, O_WRONLY | O_CREAT | O_APPEND ) ;
+		fd = open( path,O_WRONLY | O_CREAT | O_APPEND,S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH ) ;
 	}
 	
 	if( fd == -1 ){
