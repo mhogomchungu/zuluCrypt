@@ -1,7 +1,7 @@
  
 /*
  * 
- *  Copyright (c) 2012
+ *  Copyright (c) 2013
  *  name : mhogo mchungu 
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
@@ -86,8 +86,9 @@ stringList_t zuluCryptGetFstabList( void )
 	it  = StringListBegin( fstabList ) ;
 	end = StringListEnd( fstabList ) ;
 	
-	for( ; it != end ; it++ ){
+	while( it != end  ){
 		xt = *it ;
+		it++ ;
 		entry = StringContent( xt ) ;
 		if( StringPrefixMatch( entry,"/dev/",5 ) ){
 			if( StringPrefixMatch( entry,"/dev/root",9 ) ){
