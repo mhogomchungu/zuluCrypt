@@ -33,6 +33,7 @@ int zuluMountCryptoMount( ARGS * args )
 	const char * key        = args->key        ;
 	const char * key_source = args->key_source ;
 	const char * m_point    = args->m_point    ;
+	const char * fs_opts    = args->fs_opts    ;
 	int mount_point_option  = args->mpo        ;
 	int share               = args->share      ;
 	int st ;
@@ -83,6 +84,7 @@ int zuluMountCryptoMount( ARGS * args )
 	opts.key_source         = key_source ;
 	opts.mount_point_option = mount_point_option ;
 	opts.share              = share ; 
+	opts.fs_opts            = fs_opts ;
 	opts.env                = StringListStringArray( args->env ) ;
 	
 	/*

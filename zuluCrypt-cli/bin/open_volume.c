@@ -353,7 +353,7 @@ static int _open_tcrypt( const char * device,const char * mapper_name,const char
 		st = zuluCryptOpenTcrypt( device,mapper_name,key,key_len,TCRYPT_PASSPHRASE,volume_type,m_point,uid,m_flags,fs_opts ) ;
 	}
 	
-	if( st == 15 || st == 0 ){
+	if( st == 15 || st == 0 || st == -1 ){
 		;
 	}else{
 		st = 4 ;
