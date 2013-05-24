@@ -162,9 +162,10 @@ static inline string_t set_mount_options( m_struct * mst )
 	return opt;
 }
 
-static string_t _mount_options( unsigned long flags,string_t * xt )
+static void _mount_options( unsigned long flags,string_t * xt )
 {	
 	string_t st = *xt ;
+	
 	if( flags & MS_NODEV ){
 		StringAppend( st,",nodev" ) ; 
 	}
@@ -204,33 +205,27 @@ static string_t _mount_options( unsigned long flags,string_t * xt )
 	if( flags & MS_SYNCHRONOUS ){
 		StringAppend( st,",synchronous" ) ;
 	}
-	
-	return st ;
 }
 
-static inline int mount_ntfs( const m_struct * mst )
+static inline int mount_ntfs( m_struct * mst )
 {
 	int status ;
-	process_t p ;
-	string_t st ;
 	const char * opts ;
 	
-	p = Process( ZULUCRYPTmount ) ;
-	st = String( "" ) ;
-	st = _mount_options( mst->m_flags,&st ) ;
-	if( mst->m_flags & MS_RDONLY ){
-		StringPrepend( st,"ro" ) ;
-	}else{
-		StringPrepend( st,"rw" ) ;
-	}
+	process_t p = Process( ZULUCRYPTmount ) ;
+	string_t st = set_mount_options( mst ) ;
 	
+	_mount_options( mst->m_flags,&st ) ;
 	opts = StringReplaceString( st,",,","," );
 	
 	ProcessSetArgumentList( p,"-t","ntfs-3g","-o",opts,mst->device,mst->m_point,ENDLIST ) ;
 	ProcessStart( p ) ;
+	
 	status = ProcessExitStatus( p ) ; 
+	
 	ProcessDelete( &p ) ;
 	StringDelete( &st ) ;
+	
 	return status ;
 }
 

@@ -87,7 +87,7 @@ static inline int allowed_vfat( stringList_t stl )
 
 static inline int allowed_ntfs( stringList_t stl )
 {
-	const char * f[] = { "umask=","dmask=","fmask=","dmask=","locale=","norecover",
+	const char * f[] = { "uid=","gui=","umask=","dmask=","fmask=","dmask=","locale=","norecover",
 		"ignore_case","windows_names","compression","nocompression",NULL } ;
 	return _check_options( f,stl ) ;
 }
