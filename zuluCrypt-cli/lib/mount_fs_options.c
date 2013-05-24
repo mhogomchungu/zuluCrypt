@@ -1,7 +1,7 @@
  
 /*
  * 
- *  Copyright (c) 2012
+ *  Copyright (c) 2013
  *  name : mhogo mchungu 
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
@@ -67,153 +67,67 @@ int zulucryptFileSystemIsSupported( const char * fs )
 	}
 }
 
-static inline int allowed_vfat( stringList_t stl )
-{
-	int st ;
-	const char * f[] = \
-{ "uid=","gid=","shortname=","dmask=","umask=","fmask=","utf8","iocharset=",NULL } ;
-	
-	const char ** e = f ;
-
+static inline int _check_options( const char ** e,stringList_t stl )
+{	
 	while( *e != NULL ){
 		StringListRemoveIfStringContains( stl,*e ) ;
 		e++ ;
 	}
+	return StringListSize( stl ) > 0 ;
+}
 
-	st = StringListSize( stl ) ;
-	StringListDelete( &stl ) ;
-	return st > 0 ;
+static inline int allowed_vfat( stringList_t stl )
+{
+	/*
+	 * is it ok to allow one user to mount a volume with another user as owner of files and folders?
+	 */
+	const char * f[] = { "uid=","gid=","shortname=","dmask=","umask=","fmask=","utf8","iocharset=",NULL } ;
+	return _check_options( f,stl ) ;
 }
 
 static inline int allowed_ntfs( stringList_t stl )
 {
-	int st ;
-	const char * f[] = \
-{ "umask=","dmask=","fmask=","dmask=","locale=","norecover","ignore_case","windows_names","compression","nocompression",NULL } ;
-
-	const char ** e = f ;
-
-	while( *e != NULL ){
-		StringListRemoveIfStringContains( stl,*e ) ;
-		e++ ;
-	}
-	
-	st = StringListSize( stl ) ;
-	StringListDelete( &stl ) ;
-	return st > 0 ;
+	const char * f[] = { "umask=","dmask=","fmask=","dmask=","locale=","norecover",
+		"ignore_case","windows_names","compression","nocompression",NULL } ;
+	return _check_options( f,stl ) ;
 }
 
 static inline int allowed_iso9660( stringList_t stl )
 {
-	int st ;
 	const char * f[] = { "norock","nojoliet","fmask=","iocharset=","mode=","dmode=",NULL } ;
-	const char ** e = f ;
-	
-	while( *e != NULL ){
-		StringListRemoveIfStringContains( stl,*e ) ;
-		e++ ;
-	}
-	
-	st = StringListSize( stl ) ;
-	StringListDelete( &stl ) ;
-	return st > 0 ;
+	return _check_options( f,stl ) ;
 }
 
 static inline int allowed_udf( stringList_t stl )
 {	
-	int st ;
 	const char * f[] = { "iocharset=","umask=",NULL } ;
-	const char ** e = f ;
-	
-	while( *e != NULL ){
-		StringListRemoveIfStringContains( stl,*e ) ;
-		e++ ;
-	}
-	
-	st = StringListSize( stl ) ;
-	StringListDelete( &stl ) ;
-	return st > 0 ;
-}
-
-static inline int allowed_affs( stringList_t stl )
-{
-	StringListDelete( &stl ) ;
-	return 1 ;
-}
-
-static inline int allowed_hfs( stringList_t stl )
-{
-	StringListDelete( &stl ) ;
-	return 1 ;
-}
-
-static inline int allowed_extX( stringList_t stl )
-{
-	StringListDelete( &stl ) ;
-	return 1 ;
-}
-
-static inline int allowed_reiserfs( stringList_t stl )
-{
-	StringListDelete( &stl ) ;
-	return 1 ;
-}
-
-static inline int allowed_reiser4( stringList_t stl )
-{
-	StringListDelete( &stl ) ;
-	return 1 ;
-}
-
-static inline int allowed_btrfs( stringList_t stl )
-{
-	StringListDelete( &stl ) ;
-	return 1 ;
+	return _check_options( f,stl ) ;
 }
 
 static inline int _option_contain_not_allowed( const char * fs,const char * fs_opts )
 {
-	stringList_t stl ;
-
-	stl = StringListSplit( fs_opts,',' ) ;
+	stringList_t stl = StringListSplit( fs_opts,',' ) ;
 	
-	if( stl == StringListVoid ){
-		/*
-		 * user did not provide fs option because they are going with defaults
-		 */
-		return 0 ;
+	int r = 1 ;
+	
+	if( stl != StringListVoid ){
+		if( StringHasComponent( fs,"fat" ) || StringHasComponent( fs,"dos" ) ){
+			r = allowed_vfat( stl ) ;
+		}else if( StringsAreEqual( fs,"ntfs" ) ){
+			r = allowed_ntfs( stl ) ;
+		}else if( StringsAreEqual( fs,"udf" ) ){
+			r = allowed_udf( stl ) ;
+		}else if( StringsAreEqual( fs,"iso9660" ) ){
+			r = allowed_iso9660( stl ) ;
+		}else{
+			r = 1 ;
+		}
+		StringListDelete( &stl ) ;
+	}else{
+		r = 1 ;
 	}
-	if( StringsAreEqual( fs,"ext2" ) || StringsAreEqual( fs,"ext3" ) || StringsAreEqual( fs,"ext4" ) ){
-		return allowed_extX( stl ) ;
-	}
-	if( StringsAreEqual( fs,"vfat" ) || StringsAreEqual( fs,"fat" ) || StringsAreEqual( fs,"msdos" ) || StringsAreEqual( fs,"msudos" ) ){
-		return allowed_vfat( stl ) ;
-	}
-	if( StringsAreEqual( fs,"ntfs" ) ){
-		return allowed_ntfs( stl ) ;
-	}
-	if( StringsAreEqual( fs,"udf" ) ){
-		return allowed_udf( stl ) ;
-	}
-	if( StringsAreEqual( fs,"affs" ) ){
-		return allowed_affs( stl ) ;
-	}
-	if( StringsAreEqual( fs,"hfs" ) ){
-		return allowed_hfs( stl ) ;
-	}
-	if( StringsAreEqual( fs,"iso9660" ) ){
-		return allowed_iso9660( stl ) ;
-	}	
-	if( StringsAreEqual( fs,"btrfs" ) ){
-		return allowed_btrfs( stl ) ;
-	}
-	if( StringsAreEqual( fs,"reiserfs" ) ){
-		return allowed_reiserfs( stl ) ;
-	}
-	if( StringsAreEqual( fs,"reiser4" ) ){
-		return allowed_reiser4( stl ) ;
-	}
-	return 1 ;
+	
+	return r ;
 }
 
 static inline int _userIsAllowed( uid_t uid,const char * fs )
