@@ -72,7 +72,11 @@ void zuluCryptClearDeadMappers( uid_t uid )
 	 * as expected with truecrypt volumes opened with tcplay
 	 */
 	return ;
-#endif	
+#endif
+	if( dir == NULL ){
+		return ;
+	}
+	
 	/*
 	 * zuluCryptGetMountInfoList()  is defined in ../lib/process_mountinfo.c
 	 */
