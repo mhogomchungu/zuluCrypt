@@ -172,8 +172,8 @@ int zuluMountMount( ARGS * args )
 	unsigned long m_flags ;
 	const char * dev = device ;
 	const char * msg ="\
-ERROR: insuffienct privilege to manage a system partition.\nnecessary privileges can be acquired by:\n\
-1. adding an entry for the partition in fstab with \"user\" mount option\n\
+ERROR: insuffienct privilege to manage a system volume.\nnecessary privileges can be acquired by:\n\
+1. adding an entry for the volume in fstab with \"user\" mount option\n\
 2. add yourself to \"zulumount\" group";
 	
 	if( mount_point_from_fstab ){;}
@@ -208,9 +208,9 @@ ERROR: insuffienct privilege to manage a system partition.\nnecessary privileges
 	switch( status ){
 		case 0 : break ;
 		case 1 : return _zuluExit( 103,z,path,msg ) ;
-		case 2 : return _zuluExit( 104,z,path,"ERROR: \"/etc/fstab\" entry for this partition requires it to be mounted read only" ) ;
-		case 3 : return _zuluExit( 113,z,path,"ERROR: \"/etc/fstab\" entry for this partition is malformed" ) ;
-		default: return _zuluExit( 105,z,path,"ERROR: \"/etc/fstab\" entry for this partition does not allow you to mount it" ) ;
+		case 2 : return _zuluExit( 104,z,path,"ERROR: \"/etc/fstab\" entry for this volume requires it to be mounted read only" ) ;
+		case 3 : return _zuluExit( 113,z,path,"ERROR: \"/etc/fstab\" entry for this volume is malformed" ) ;
+		default: return _zuluExit( 105,z,path,"ERROR: \"/etc/fstab\" entry for this volume does not allow you to mount it" ) ;
 	}
 	
 	/*

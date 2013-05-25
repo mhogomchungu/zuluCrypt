@@ -34,7 +34,7 @@ void zuluMountPrintDeviceProperties_1( string_t,uid_t ) ;
 static int _mount_get_opts( int argc,char * argv[],ARGS * args ) 
 {	
 	int c ;
-	while( ( c = getopt( argc,argv,"cMLntASNshlPmuDd:z:e:y:p:f:G:" ) ) != -1 ) {
+	while( ( c = getopt( argc,argv,"cMLntASNshlPmuDd:z:e:Y:p:f:G:" ) ) != -1 ) {
 		switch( c ){
 			case 'M' : args->share   = 1      ; break ;
 			case 'n' : args->mpo     = 1      ; break ;
@@ -53,7 +53,7 @@ static int _mount_get_opts( int argc,char * argv[],ARGS * args )
 			case 'd' : args->device  = optarg ; break ;
 			case 'z' : args->m_point = optarg ; break ;
 			case 'e' : args->m_opts  = optarg ; break ;
-			case 'y' : args->fs_opts = optarg ; break ;
+			case 'Y' : args->fs_opts = optarg ; break ;
 			case 'p' : args->key     = optarg ; 
 				   args->key_source = "-p"; break ;
 			case 'f' : args->key     = optarg ;
@@ -465,7 +465,7 @@ options:\n\
 -m -- mount a volume : arguments: -d partition_path -z mount_point -e mode(rw/ro)\n\
       -- additional arguments for crypto_LUKS,crypto_PLAIN,crypto_TCRYPT volumes, -p passphrase/-f keyfile\n\
 -z -- mount point component to append to \"/run/media/private/$USER/\n\
--y -- file system options\n" ;
+-Y -- file system options\n" ;
 
 	doc2 = "\
 -u -- unmount a partition: arguments: -d partition_path\n\
