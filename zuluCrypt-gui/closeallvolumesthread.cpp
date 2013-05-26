@@ -50,6 +50,7 @@ void closeAllVolumesThread::run()
 	while( ++j < i ){
 		tableItems.append( m_table->item( j,0 ) );
 	}
+	
 	QProcess p ;
 	QString exe ;
 	QString device ;
@@ -64,5 +65,6 @@ void closeAllVolumesThread::run()
 		p.close();
 		sleep( 1 ) ; // for ui effect
 	}
+	
 	m_table->setEnabled( true );
 }
