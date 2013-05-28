@@ -451,9 +451,16 @@
   <tabstop>lineEditPassphrase1</tabstop>
   <tabstop>pbOpenKeyFile</tabstop>
   <tabstop>lineEditPassPhrase2</tabstop>
+  <tabstop>comboBoxVolumeType</tabstop>
+  <tabstop>rbHiddenKey</tabstop>
+  <tabstop>rbHiddenKeyFile</tabstop>
+  <tabstop>lineEditHiddenKey</tabstop>
+  <tabstop>pbHiddenKeyFile</tabstop>
+  <tabstop>lineEditHiddenKey1</tabstop>
+  <tabstop>lineEditHiddenSize</tabstop>
+  <tabstop>comboBoxHiddenSize</tabstop>
   <tabstop>comboBoxFS</tabstop>
   <tabstop>comboBoxRNG</tabstop>
-  <tabstop>comboBoxVolumeType</tabstop>
   <tabstop>pbCreate</tabstop>
   <tabstop>pbCancel</tabstop>
  </tabstops>
