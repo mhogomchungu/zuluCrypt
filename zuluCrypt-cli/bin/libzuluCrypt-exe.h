@@ -210,7 +210,7 @@ char * zuluCryptDeviceFromUUID( const char * uuid ) ;
 /*
  * defined in partitions.c
  */
-int zuluCryptPrintPartitions( int option,int info ) ;
+int zuluCryptPrintPartitions( int option,int info,uid_t uid ) ;
 
 /*
  * defined at process_mountinfo.c

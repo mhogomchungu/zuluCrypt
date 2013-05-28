@@ -295,7 +295,7 @@ static int _zuluCryptCheckSYSifDeviceIsSystem( const char * device )
 #endif
 }
 
-stringList_t zuluCryptPartitions( int option )
+stringList_t zuluCryptPartitions( int option,uid_t uid )
 {
 	ssize_t index ;
 	
@@ -326,7 +326,7 @@ stringList_t zuluCryptPartitions( int option )
 	 * zuluCryptGetFstabList() is defined in ../lib/mount_volume.c
 	 */
 		
-	stl = zuluCryptGetFstabList() ;
+	stl = zuluCryptGetFstabList( uid ) ;
 	
 	it  = StringListBegin( stl ) ;
 	end = StringListEnd( stl ) ; 
@@ -505,14 +505,14 @@ static void _zuluCryptPrintUnMountedPartitionProperties( stringList_t stl )
 	StringListDelete( &stx ) ;
 }
 
-int zuluCryptPrintPartitions( int option,int info )
+int zuluCryptPrintPartitions( int option,int info,uid_t uid )
 {
 	stringList_t stl = StringListVoid ;
 	
 	switch( option ){
-		case 1 : stl = zuluCryptPartitions( ZULUCRYPTallPartitions ) 	   ;break ;
-		case 2 : stl = zuluCryptPartitions( ZULUCRYPTsystemPartitions )    ;break ;
-		case 3 : stl = zuluCryptPartitions( ZULUCRYPTnonSystemPartitions ) ;break ;
+		case 1 : stl = zuluCryptPartitions( ZULUCRYPTallPartitions,uid )       ;break ;
+		case 2 : stl = zuluCryptPartitions( ZULUCRYPTsystemPartitions,uid )    ;break ;
+		case 3 : stl = zuluCryptPartitions( ZULUCRYPTnonSystemPartitions,uid ) ;break ;
 	}
 	
 	if( stl == StringListVoid ){
@@ -695,11 +695,11 @@ stringList_t zuluCryptGetPartitionFromConfigFile( const char * path )
 	return stl_1 ;
 }
 
-int _zuluCryptPartitionIsSystemPartition( const char * dev )
+int _zuluCryptPartitionIsSystemPartition( const char * dev,uid_t uid )
 {	
 	stringList_t stl ;
 	ssize_t index = -1 ;
-	stl = zuluCryptPartitions( ZULUCRYPTsystemPartitions ) ;
+	stl = zuluCryptPartitions( ZULUCRYPTsystemPartitions,uid ) ;
 	if( stl != StringListVoid ){
 		index = StringListContains( stl,dev );
 		StringListDelete( &stl ) ;
@@ -707,7 +707,7 @@ int _zuluCryptPartitionIsSystemPartition( const char * dev )
 	return index >= 0 ;
 }
 
-int zuluCryptPartitionIsSystemPartition( const char * device )
+int zuluCryptPartitionIsSystemPartition( const char * device,uid_t uid )
 {
 	char * dev ;
 	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
@@ -718,7 +718,7 @@ int zuluCryptPartitionIsSystemPartition( const char * device )
 		if( dev == NULL ){
 			return 0 ;
 		}
-		if( _zuluCryptPartitionIsSystemPartition( dev ) ){
+		if( _zuluCryptPartitionIsSystemPartition( dev,uid ) ){
 			free( dev ) ;
 			return 1 ;
 		}else if( _zuluCryptCheckSYSifDeviceIsSystem( dev ) ){
@@ -729,7 +729,7 @@ int zuluCryptPartitionIsSystemPartition( const char * device )
 			return 0 ;
 		}
 	}else{
-		if( _zuluCryptPartitionIsSystemPartition( device ) ){
+		if( _zuluCryptPartitionIsSystemPartition( device,uid ) ){
 			return 1 ;
 		}else{
 			return _zuluCryptCheckSYSifDeviceIsSystem( device ) ;

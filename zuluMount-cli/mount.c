@@ -37,7 +37,7 @@ static int _zuluMountPartitionAccess( const char * device,const char * m_opts,ui
 	/*
 	 * zuluCryptGetFstabEntryList() is defined in ../zuluCrypt-cli/lib/mount_volume.c
 	 */
-	stringList_t stl = zuluCryptGetFstabEntryList( device ) ;
+	stringList_t stl = zuluCryptGetFstabEntryList( device,uid ) ;
 	string_t p ;
 
 	if( stl != StringListVoid ){
@@ -52,7 +52,7 @@ static int _zuluMountPartitionAccess( const char * device,const char * m_opts,ui
 	/*
 	 * zuluCryptPartitionIsSystemPartition() is defined in ../zuluCrypt-cli/bin/partition.c
 	 */
-	system_partition = zuluCryptPartitionIsSystemPartition( device ) ;
+	system_partition = zuluCryptPartitionIsSystemPartition( device,uid ) ;
 
 	if( system_partition ){
 		/*

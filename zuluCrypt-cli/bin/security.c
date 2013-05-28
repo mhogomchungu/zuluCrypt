@@ -219,7 +219,7 @@ static int check_permissions( const char * path,int mode,const char * groupname,
 		/*
 		 * zuluCryptPartitionIsSystemPartition() is defined in ./partitions.c
 		 */
-		if( zuluCryptPartitionIsSystemPartition( path ) ){
+		if( zuluCryptPartitionIsSystemPartition( path,uid ) ){
 			if( zuluCryptUserIsAMemberOfAGroup( uid,groupname ) ){
 				return has_security_access( path,mode ) ;
 			}else{

@@ -84,7 +84,7 @@ string_t zuluCryptGetUserHomePath( uid_t ) ;
 /*
  * this function is defined in partitions.c
  */
-int zuluCryptPartitionIsSystemPartition( const char * dev ) ;
+int zuluCryptPartitionIsSystemPartition( const char * dev,uid_t uid ) ;
 
 /*
  * this function is defined in is_luks.c

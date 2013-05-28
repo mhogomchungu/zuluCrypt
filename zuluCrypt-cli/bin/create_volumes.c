@@ -139,7 +139,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	/*
 	 * zuluCryptPartitionIsSystemPartition() is defined in ./partitions.c
 	 */
-	if( zuluCryptPartitionIsSystemPartition( device ) ){
+	if( zuluCryptPartitionIsSystemPartition( device,uid ) ){
 		if( !zuluCryptUserIsAMemberOfAGroup( uid,"zulucrypt" ) ){
 			return zuluExit( 13,stl ) ;
 		}

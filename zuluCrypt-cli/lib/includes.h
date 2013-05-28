@@ -100,7 +100,7 @@ int zuluCryptPartitionIsMounted( const char * device ) ;
 #define MOUNTOPTIONS 3
 #define DUMPOPTION   4
 #define FSCKOPTION   5
-string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos ) ;
+string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos,uid_t uid ) ;
 
 /*
  * zuluCrypRemoveEntryFromMtab() is defined in ./unmount_volume.c
@@ -176,7 +176,7 @@ char * zuluCryptResolveDevRoot( void ) ;
 /*
  * this function is defined in ./process_mountinfo.c
  */
-stringList_t zuluCryptGetFstabEntryList( const char * device ) ;
+stringList_t zuluCryptGetFstabEntryList( const char * device,uid_t uid ) ;
 
 /*
  * this function is defined in blkid_evaluate_tag.c
@@ -246,7 +246,7 @@ int zuluCryptSecureOpenFile( const char * path,int * fd_path,string_t * file,uid
 /*
  * this function is defined in mount_volume.c
  */
-stringList_t zuluCryptGetFstabList( void ) ;
+stringList_t zuluCryptGetFstabList( uid_t ) ;
 
 /*
  * this function is defined in process_mountinfo.c

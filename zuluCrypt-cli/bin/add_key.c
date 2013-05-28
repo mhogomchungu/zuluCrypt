@@ -161,7 +161,7 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 	/*
 	 * zuluCryptPartitionIsSystemPartition() is defined in ./partitions.c
 	 */
-	if( zuluCryptPartitionIsSystemPartition( device ) ){
+	if( zuluCryptPartitionIsSystemPartition( device,uid ) ){
 		if( !zuluCryptUserIsAMemberOfAGroup( uid,"zulucrypt" ) ){
 			return zuluExit( 11,stl ) ;
 		}

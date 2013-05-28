@@ -19,6 +19,8 @@
  */
 
 #include "includes.h"
+#include "../lib/includes.h"
+
 #include <blkid/blkid.h>
 
 static inline char * _evaluate_tag( const char * tag,const char * entry,blkid_cache * cache )
@@ -44,9 +46,10 @@ static inline char * _evaluate_tag_by_id( string_t st )
 	return r ;
 }
 
-stringList_t zuluCryptGetFstabList( void )
+stringList_t zuluCryptGetFstabList( uid_t uid )
 {
 	string_t xt = StringGetFromFile( "/etc/fstab" );
+	string_t st ;
 	
 	stringList_t fstabList = StringListVoid ;
 	
@@ -54,15 +57,22 @@ stringList_t zuluCryptGetFstabList( void )
 	StringListIterator end ;
 	
 	ssize_t index ;
+	ssize_t index_1 ;
 	
 	char * ac ;
 	const char * entry ;
+	const char * e ;
+	const char * f ;
 	
 	blkid_cache cache = NULL ;
+	
+	struct stat str ;
 	
 	if( xt == StringVoid ){
 		return StringListVoid ;
 	}
+	
+	if( uid ){;}
 	
 	fstabList = StringListStringSplit( xt,'\n' ) ;
 	
@@ -111,15 +121,42 @@ stringList_t zuluCryptGetFstabList( void )
 					free( ac ) ;
 				}
 			}else if( StringPrefixMatch( entry,"/dev/mapper/",12 ) ){
-				/*
-				 * An assumption is made here that the volume is an LVM volume in "/dev/mapper/ABC-DEF"
-				 * format and the path is converted to "/dev/ABC/DEF" format
-				 */
-				index = StringLastIndexOfChar( xt,'-' ) ;
-				if( index != -1 ){
-					StringSubChar( xt,index,'/' ) ;
-					StringReplaceString( xt,"/dev/mapper/","/dev/" ) ;
+				st = StringCopy( xt ) ;
+				index_1 = StringIndexOfChar( st,0,' ' ) ;
+				if( index_1 >= 0 ){
+					
+					index = StringLastIndexOfChar( st,'-' ) ;
+					
+					f = StringSubChar( st,index_1,'\0' ) ;
+					
+					if( index != -1 ){
+						StringSubChar( st,index,'/' ) ;
+						e = StringReplaceString( st,"/dev/mapper/","/dev/" ) ;
+						if( stat( e,&str ) == 0 ){
+							StringSubChar( xt,index,'/' ) ;
+							StringReplaceString( xt,"/dev/mapper/","/dev/" ) ;
+						}else{
+							zuluCryptSecurityGainElevatedPrivileges() ;
+							ac = zuluCryptVolumeDeviceName( f ) ;
+							zuluCryptSecurityDropElevatedPrivileges() ;
+							if( ac != NULL ){
+								StringRemoveLeft( xt,index_1 ) ;
+								StringPrepend( xt,ac ) ;
+								free( ac ) ;
+							}
+						}
+					}else{
+						zuluCryptSecurityGainElevatedPrivileges() ;
+						ac = zuluCryptVolumeDeviceName( f ) ;
+						zuluCryptSecurityDropElevatedPrivileges() ;
+						if( ac != NULL ){
+							StringRemoveLeft( xt,index_1 ) ;
+							StringPrepend( xt,ac ) ;
+							free( ac ) ;
+						}
+					}
 				}
+				StringDelete( &st ) ;
 			}else if( StringPrefixMatch( entry,"/dev/md",7 ) ){
 				/*
 				 * zuluCryptResolveMDPath() is defined in process_mountinfo.c
@@ -166,11 +203,11 @@ stringList_t zuluCryptGetFstabList( void )
 	return fstabList ;
 }
 
-string_t zuluCryptGetFstabEntry( const char * device )
+string_t zuluCryptGetFstabEntry( const char * device,uid_t uid )
 {
 	string_t st = StringVoid ;
 	string_t xt = String( device ) ;
-	stringList_t stl = zuluCryptGetFstabList() ;
+	stringList_t stl = zuluCryptGetFstabList( uid ) ;
 	ssize_t index = StringListHasStartSequence( stl,StringAppend( xt," " ) ) ;
 	if( index >= 0 ){
 		st = StringListCopyStringAt( stl,index ) ;
@@ -180,10 +217,10 @@ string_t zuluCryptGetFstabEntry( const char * device )
 	return st ;
 }
 
-string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos )
+string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos,uid_t uid )
 {
 	stringList_t stl ;
-	string_t st = zuluCryptGetFstabEntry( device ) ;
+	string_t st = zuluCryptGetFstabEntry( device,uid ) ;
 	if( st != StringVoid ){
 		stl = StringListStringSplit( st,' ' ) ;
 		StringDelete( &st ) ;
@@ -193,10 +230,10 @@ string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos )
 	return st ;
 }
 
-stringList_t zuluCryptGetFstabEntryList( const char * device )
+stringList_t zuluCryptGetFstabEntryList( const char * device,uid_t uid )
 {
 	stringList_t stl = StringListVoid;
-	string_t st = zuluCryptGetFstabEntry( device ) ;
+	string_t st = zuluCryptGetFstabEntry( device,uid ) ;
 	if( st != StringVoid ){
 		stl = StringListStringSplit( st,' ' ) ;
 		StringDelete( &st ) ;

@@ -310,13 +310,13 @@ int zuluCryptEXESaveAndRestoreLuksHeader( const struct_opts * opts,uid_t uid,int
 		/*
 		 * zuluCryptPartitionIsSystemPartition() is defined in partitions.c
 		 */
-		k = zuluCryptPartitionIsSystemPartition( dev ) ;
+		k = zuluCryptPartitionIsSystemPartition( dev,uid ) ;
 		StringFree( dev ) ;
 	}else{
 		/*
 		 * zuluCryptPartitionIsSystemPartition() is defined in partitions.c
 		 */
-		k = zuluCryptPartitionIsSystemPartition( device ) ;
+		k = zuluCryptPartitionIsSystemPartition( device,uid ) ;
 	}
 	
 	if( k == 1 ){

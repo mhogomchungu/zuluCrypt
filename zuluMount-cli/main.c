@@ -99,33 +99,30 @@ int _zuluExit_1( int st,stringList_t z,char * q,const char * msg )
 
 static int _zuluMountDeviceList( uid_t uid )
 {
-	if( uid ){;}
 	/*
 	 * zuluCryptPrintPartitions() is defined in ../zuluCrypt-cli/partitions.c 
 	 * ZULUCRYPTallPartitions is set in ../zuluCrypt-cli/constants.h 
 	 */
-	return zuluCryptPrintPartitions( ZULUCRYPTallPartitions,0 ) ;
+	return zuluCryptPrintPartitions( ZULUCRYPTallPartitions,0,uid ) ;
 }
 
 
 static int _zuluMountNonSystemDeviceList( uid_t uid )
 {
-	if( uid ){;}
 	/*
 	 * zuluCryptPrintPartitions() is defined in ../zuluCrypt-cli/partitions.c 
 	 * ZULUCRYPTallPartitions is set in ../zuluCrypt-cli/constants.h 
 	 */
-	return zuluCryptPrintPartitions( ZULUCRYPTnonSystemPartitions,0 ) ;
+	return zuluCryptPrintPartitions( ZULUCRYPTnonSystemPartitions,0,uid ) ;
 }
 
 static int _zuluMountSystemDeviceList( uid_t uid )
 {
-	if( uid ){;}
 	/*
 	 * zuluCryptPrintPartitions() is defined in ../zuluCrypt-cli/partitions.c 
 	 * ZULUCRYPTallPartitions is set in ../zuluCrypt-cli/constants.h 
 	 */
-	return zuluCryptPrintPartitions( ZULUCRYPTsystemPartitions,0 ) ;
+	return zuluCryptPrintPartitions( ZULUCRYPTsystemPartitions,0,uid ) ;
 }
 
 static int _zuluMountMountedList( uid_t uid )

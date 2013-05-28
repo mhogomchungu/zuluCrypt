@@ -169,7 +169,7 @@ static int zuluCryptEXEHeaderMatchBackUpHeader( const char * device,const char *
 	/*
 	 * zuluCryptPartitionIsSystemPartition() is defined in partitions.c
 	 */
-	int r = zuluCryptPartitionIsSystemPartition( device ) ;
+	int r = zuluCryptPartitionIsSystemPartition( device,uid ) ;
 	
 	if( r == 1 ){
 		if( uid != 0 || !zuluCryptUserIsAMemberOfAGroup( uid,"zulucrypt" ) ){
@@ -441,7 +441,7 @@ int main( int argc,char * argv[] )
 		case 'C': return zuluExit( _clear_dead_mappers( uid ),stl,stx,env,NULL ) ;
 		case 'A':
 		case 'N':
-		case 'S': st = zuluCryptPrintPartitions( clargs.partition_number,clargs.print_partition_type ) ; 
+		case 'S': st = zuluCryptPrintPartitions( clargs.partition_number,clargs.print_partition_type,uid ) ; 
 			  return zuluExit( st,stl,stx,env,NULL ) ;
 		case 'L': st = _printOpenedVolumes( uid ) ; 
 			  return zuluExit( st,stl,stx,env,NULL ) ;
