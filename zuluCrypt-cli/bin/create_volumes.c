@@ -326,9 +326,15 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	zuluCryptSecurityGainElevatedPrivileges() ;
 	
 	if( StringPrefixMatch( type,"tcrypt",6 ) || StringPrefixMatch( type,"truecrypt",9 ) ){
+		/*
+		 * zuluCryptCreateTCrypt() is defined in ../lib/create_tcrypt.c
+		 */
 		st = zuluCryptCreateTCrypt( device,fs,rng,volkey,volkeysize,tcrypt_source,
 					    hidden_volume_size,fs,volkey_h,volkeysize_h,tcrypt_source_h );
 	}else{
+		/*
+		 * zuluCryptCreateVolume() is defined in ../lib/create_volume.c
+		 */
 		st = zuluCryptCreateVolume( device,fs,type,volkey,volkeysize,rng ) ;
 	}
 	

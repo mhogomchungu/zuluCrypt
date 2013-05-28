@@ -136,8 +136,17 @@ stringList_t zuluCryptGetFstabList( uid_t uid )
 							StringSubChar( xt,index,'/' ) ;
 							StringReplaceString( xt,"/dev/mapper/","/dev/" ) ;
 						}else{
+							/*
+							 * zuluCryptSecurityGainElevatedPrivileges() is defined in security.c
+							 */
 							zuluCryptSecurityGainElevatedPrivileges() ;
+							/*
+							 * zuluCryptVolumeDeviceName() is defined in ../lib/status.c
+							 */
 							ac = zuluCryptVolumeDeviceName( f ) ;
+							/*
+							 * zuluCryptSecurityDropElevatedPrivileges() is defined in security.c
+							 */
 							zuluCryptSecurityDropElevatedPrivileges() ;
 							if( ac != NULL ){
 								StringRemoveLeft( xt,index_1 ) ;
@@ -147,6 +156,9 @@ stringList_t zuluCryptGetFstabList( uid_t uid )
 						}
 					}else{
 						zuluCryptSecurityGainElevatedPrivileges() ;
+						/*
+						 * zuluCryptVolumeDeviceName() is defined in ../lib/status.c
+						 */
 						ac = zuluCryptVolumeDeviceName( f ) ;
 						zuluCryptSecurityDropElevatedPrivileges() ;
 						if( ac != NULL ){
