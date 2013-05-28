@@ -45,6 +45,9 @@ void zuluCryptEXEGetOptsSetDefault( struct_opts * stopts )
 	stopts->env  = NULL ;
 	stopts->print_partition_type = 0 ;
 	stopts->share = 0 ;
+	stopts->tcrypt_hidden_volume_size = NULL;
+	stopts->tcrypt_hidden_volume_key = NULL ;
+	stopts->tcrypt_hidden_volume_key_file = NULL ;
 }
 
 void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
@@ -120,6 +123,7 @@ void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
 			stopts->key = optarg ;
 			break ;
 			case( 'e' ) : stopts->m_opts = optarg ; 
+			stopts->tcrypt_hidden_volume_size = optarg ;
 			break ;
 			case( 'Y' ) : stopts->fs_opts = optarg ; 
 			break ;
@@ -132,9 +136,11 @@ void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
 			break ;
 			case( 'u' ) : stopts->existing_key_source = "-f" ; 
 			stopts->existing_key = optarg ;
+			stopts->tcrypt_hidden_volume_key_file = &stopts->existing_key ;
 			break ;
 			case( 'l' ) : stopts->new_key_source = "-p" ; 
 			stopts->new_key = optarg ;
+			stopts->tcrypt_hidden_volume_key = &stopts->new_key ;
 			break ;
 			case( 'n' ) : stopts->new_key_source = "-f" ; 
 			stopts->new_key = optarg ;

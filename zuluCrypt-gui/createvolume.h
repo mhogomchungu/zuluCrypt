@@ -62,7 +62,10 @@ private slots:
 	void pbCancelClicked( void ) ;
 	void rbPassphraseClicked( void );
 	void rbPasssphraseFromFileClicked( void );
+	void rbHiddenPassphraseClicked( void );
+	void rbHiddenPasssphraseFromFileClicked( void );
 	void pbOpenKeyFile( void );
+	void pbOpenHiddenKeyFile( void );
 	void threadfinished( int );
 	void volumeType( int ) ;
 	void dialogResult( int );

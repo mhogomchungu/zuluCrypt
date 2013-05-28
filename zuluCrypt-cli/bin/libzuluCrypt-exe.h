@@ -43,6 +43,9 @@ typedef struct struct_opts_1{
 	const char * new_key ;
 	const char * new_key_source ;
 	const char * argv ;
+	const char * tcrypt_hidden_volume_size ;
+	const char ** tcrypt_hidden_volume_key  ;
+	const char ** tcrypt_hidden_volume_key_file ;
 	char * const * env ;
 	char action ;
 	int partition_number ;
