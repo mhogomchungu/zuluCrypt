@@ -446,7 +446,7 @@ int zuluCryptSecurityGainElevatedPrivileges( void )
 }
 
 uid_t global_variable_user_uid ;
-void zuluCryptGetUserUIDForPrivilegeManagement( uid_t uid ) 
+void zuluCryptSetUserUIDForPrivilegeManagement( uid_t uid ) 
 {
 	global_variable_user_uid = uid ;
 }

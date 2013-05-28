@@ -431,10 +431,12 @@ static char * zuluCryptVolumeDeviceName_1( const char * mapper )
 	
 	while( ( entry = readdir( dir ) ) != NULL ){
 		path = entry->d_name ;
-		if( StringsAreEqual( path,"." ) )
+		if( StringsAreEqual( path,"." ) ){
 			continue ;
-		if( StringsAreEqual( path,".." ) )
+		}
+		if( StringsAreEqual( path,".." ) ){
 			continue ;
+		}
 		if( StringHasComponent( path,"loop" ) ){
 			path = StringMultipleAppend( st,"/",path,"/loop/backing_file",END ) ;
 			xt = StringGetFromVirtualFile( path ) ;

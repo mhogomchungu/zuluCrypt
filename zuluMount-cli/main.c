@@ -79,8 +79,7 @@ int _zuluExit( int st,string_t z,char * q,const char * msg )
 
 static int _zuluExit_2( int st,stringList_t z,stringList_t q,const char * msg )
 {
-	StringListDelete( &q ) ;
-	StringListDelete( &z ) ;
+	StringListMultipleDelete( &q,&z,ENDLIST ) ;
 	
 	if( msg != NULL ){
 		printf( "%s\n",msg ) ;
@@ -296,10 +295,6 @@ static int _zuluMountPrintVolumeDeviceName( const char * device )
 	ssize_t index ;
 	string_t st = StringVoid ;
 	char * c ;
-	/*
-	 * zuluCryptSecurityGainElevatedPrivileges() is defined in ../zuluCrypt-cli/bin/security.c
-	 */
-	zuluCryptSecurityGainElevatedPrivileges() ;
 	
 	st = String( device ) ;
 	StringReplaceString( st,"/dev/","/dev/mapper/" ) ;
@@ -307,6 +302,11 @@ static int _zuluMountPrintVolumeDeviceName( const char * device )
 	if( index != -1 ){
 		device = StringSubChar( st,index,'-' ) ;
 	}
+	
+	/*
+	 * zuluCryptSecurityGainElevatedPrivileges() is defined in ../zuluCrypt-cli/bin/security.c
+	 */
+	zuluCryptSecurityGainElevatedPrivileges() ;
 	/*
 	* zuluCryptVolumeDeviceName() is defined in ../lib/status.c
 	*/
@@ -467,7 +467,7 @@ options:\n\
 -z -- mount point component to append to \"/run/media/private/$USER/\n\
 -Y -- file system options\n" ;
 
-	doc2 = "\
+      doc2 = "\
 -u -- unmount a partition: arguments: -d partition_path\n\
 -s -- print properties of an encrypted volume: arguments: -d partition_path\n\
 -M -- this option will create a mount point in \"/run/media/private/$USER\" and a publicly accessible \"mirror\" in \"/run/media/public/\'\n";
@@ -614,9 +614,9 @@ int main( int argc,char * argv[] )
 	zuluCryptSecuritySetPrivilegeElevationErrorFunction( _privilegeEvelationError ) ;
 	
 	/*
-	 * zuluCryptGetUserUIDForPrivilegeManagement() is defined in ../zuluCrypt-bin/security.c
+	 * zuluCryptSetUserUIDForPrivilegeManagement() is defined in ../zuluCrypt-bin/security.c
 	 */
-	zuluCryptGetUserUIDForPrivilegeManagement( uid ) ;
+	zuluCryptSetUserUIDForPrivilegeManagement( uid ) ;
 	/*
 	 * zuluCryptSecurityDropElevatedPrivileges() is defined in ../zuluCrypt-cli/bin/security.c
 	 */

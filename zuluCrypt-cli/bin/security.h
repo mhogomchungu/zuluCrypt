@@ -72,6 +72,8 @@ int zuluCryptSecurityDeviceIsWritable( const char * device,uid_t uid ) ;
 
 char * zuluCryptSecurityUUIDFromPath( const char * device ) ;
 
+void zuluCryptSetUserUIDForPrivilegeManagement( uid_t ) ;
+
 #ifdef __cplusplus
 }
 #endif
