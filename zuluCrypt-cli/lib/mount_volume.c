@@ -72,6 +72,9 @@ static inline int fs_family( const char * fs )
 
 static inline string_t set_mount_options( m_struct * mst )
 {
+	/*
+	 * zuluCryptGetMountOptionsFromFstab() is defined in parse_fstab.c
+	 */
 	string_t opt = zuluCryptGetMountOptionsFromFstab( mst->device,MOUNTOPTIONS,mst->uid ) ;
 	
 	if( opt == StringVoid ){

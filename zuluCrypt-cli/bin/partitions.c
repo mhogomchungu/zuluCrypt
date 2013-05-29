@@ -322,11 +322,12 @@ stringList_t zuluCryptPartitions( int option,uid_t uid )
 	
 	non_system = stl ;
 
+	zuluCryptSecurityGainElevatedPrivileges() ;
 	/*
-	 * zuluCryptGetFstabList() is defined in ../lib/mount_volume.c
+	 * zuluCryptGetFstabList() is defined in ../lib/parse_fstab.c
 	 */
-		
 	stl = zuluCryptGetFstabList( uid ) ;
+	zuluCryptSecurityDropElevatedPrivileges() ;
 	
 	it  = StringListBegin( stl ) ;
 	end = StringListEnd( stl ) ; 

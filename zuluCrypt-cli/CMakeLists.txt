@@ -26,7 +26,6 @@
  bin/file_encryption.c
  bin/clear_dead_mappers.c
  bin/bind.c
- bin/parse_fstab.c 
  ) 
  
  SET( BINMount
@@ -68,6 +67,7 @@
  lib/file_path_security.c
  lib/canonicalize/canonicalize.c
  lib/create_tcrypt.c
+ lib/parse_fstab.c 
 )
  
  add_library( Socket STATIC utility/socket/socket.c ) 

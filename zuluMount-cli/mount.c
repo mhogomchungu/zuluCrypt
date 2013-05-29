@@ -37,9 +37,13 @@ static int _zuluMountPartitionAccess( const char * device,const char * m_opts,ui
 	/*
 	 * zuluCryptGetFstabEntryList() is defined in ../zuluCrypt-cli/lib/mount_volume.c
 	 */
-	stringList_t stl = zuluCryptGetFstabEntryList( device,uid ) ;
+	stringList_t stl ; 
 	string_t p ;
-
+	
+	zuluCryptSecurityGainElevatedPrivileges() ;
+	stl = zuluCryptGetFstabEntryList( device,uid ) ;
+	zuluCryptSecurityDropElevatedPrivileges() ;
+	
 	if( stl != StringListVoid ){
 		if( StringListSize( stl ) != 6 ){
 			StringListDelete( &stl ) ;

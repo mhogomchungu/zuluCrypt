@@ -28,9 +28,11 @@ static inline char * _evaluate_tag( const char * tag,const char * entry,blkid_ca
 	char * f = NULL ;
 	string_t st = String( entry ) ;
 	int index = StringIndexOfChar( st,0,' ' ) ;
+
 	if( index >= 0 ){
 		f = blkid_evaluate_tag( tag,StringSubChar( st,index,'\0' ),cache ) ;
 	}
+
 	StringDelete( &st ) ;
 	return f ;
 }
@@ -137,17 +139,10 @@ stringList_t zuluCryptGetFstabList( uid_t uid )
 							StringReplaceString( xt,"/dev/mapper/","/dev/" ) ;
 						}else{
 							/*
-							 * zuluCryptSecurityGainElevatedPrivileges() is defined in security.c
-							 */
-							zuluCryptSecurityGainElevatedPrivileges() ;
-							/*
-							 * zuluCryptVolumeDeviceName() is defined in ../lib/status.c
+							 * zuluCryptVolumeDeviceName() is defined in status.c
 							 */
 							ac = zuluCryptVolumeDeviceName( f ) ;
-							/*
-							 * zuluCryptSecurityDropElevatedPrivileges() is defined in security.c
-							 */
-							zuluCryptSecurityDropElevatedPrivileges() ;
+							
 							if( ac != NULL ){
 								StringRemoveLeft( xt,index_1 ) ;
 								StringPrepend( xt,ac ) ;
@@ -155,12 +150,10 @@ stringList_t zuluCryptGetFstabList( uid_t uid )
 							}
 						}
 					}else{
-						zuluCryptSecurityGainElevatedPrivileges() ;
 						/*
-						 * zuluCryptVolumeDeviceName() is defined in ../lib/status.c
+						 * zuluCryptVolumeDeviceName() is defined in status.c
 						 */
 						ac = zuluCryptVolumeDeviceName( f ) ;
-						zuluCryptSecurityDropElevatedPrivileges() ;
 						if( ac != NULL ){
 							StringRemoveLeft( xt,index_1 ) ;
 							StringPrepend( xt,ac ) ;

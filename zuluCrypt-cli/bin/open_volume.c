@@ -54,7 +54,9 @@ static void _printResult( const char * device,const char * m_point,uid_t uid,con
 	}
 	
 	free( e ) ;
-	printf( "volume mounted at: %s\n",m_point ) ;
+	if( m_point != NULL ){
+		printf( "volume mounted at: %s\n",m_point ) ;
+	}
 }
 
 static int zuluExit( int st,const char * device,const char * m_point,stringList_t stl,uid_t uid,const char * mapping_name )

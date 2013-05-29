@@ -303,9 +303,10 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 							
 							r = tc_api_create_volume( &api_opts );
 							tc_api_uninit() ;
-							
+
 							if( r == TC_OK ){
 								r = _create_file_system_1( device,file_system,keyfiles[ 0 ],TCRYPT_NORMAL ) ;
+
 								if( r == TC_OK ){
 									r = _create_file_system_1( device,file_system,keyfiles_h[ 0 ],TCRYPT_HIDDEN ) ;
 								}else{
