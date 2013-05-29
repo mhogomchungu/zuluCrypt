@@ -406,7 +406,7 @@
     </item>
     <item>
      <property name="text">
-      <string>TB</string>
+      <string>GB</string>
      </property>
     </item>
    </widget>

@@ -234,7 +234,7 @@ static inline int mount_volume( const m_struct * mst )
 	int h = mount( mst->device,mst->m_point,mst->fs,mst->m_flags,mst->opts + 3 ) ;
 	if( h == 0 && mst->m_flags != MS_RDONLY ){
 		chmod( mst->m_point,S_IRWXU|S_IRWXG|S_IRWXO ) ;
-	}	
+	}
 	return h;
 }
 

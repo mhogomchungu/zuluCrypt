@@ -309,8 +309,8 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 				
 				tcrypt_source_h = TCRYPT_PASSPHRASE ;
 			}else if( tcrypt_hidden_volume_key != NULL ){
-					*pass_3 = String( tcrypt_hidden_volume_key ) ;
-					tcrypt_source_h = TCRYPT_PASSPHRASE ;
+				*pass_3 = String( tcrypt_hidden_volume_key ) ;
+				tcrypt_source_h = TCRYPT_PASSPHRASE ;
 			}else{
 				return zuluExit( 4,stl ) ;
 			}
