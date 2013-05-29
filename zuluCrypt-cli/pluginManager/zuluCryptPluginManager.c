@@ -124,34 +124,6 @@ void zuluCryptPluginManagerCloseConnection( void * p )
 	}
 }
 
-static inline string_t zuluCryptGetDeviceUUID( const char * device,uid_t uid )
-{
-	string_t p ;
-	blkid_probe blkid ;
-	const char * uuid ;
-	
-	seteuid( 0 ) ;
-	
-	blkid = blkid_new_probe_from_filename( device ) ;
-	
-	if( blkid == NULL ){
-		p = String( "Nil" ) ;
-	}else{
-		blkid_do_probe( blkid );
-	
-		if( blkid_probe_lookup_value( blkid,"UUID",&uuid,NULL ) == 0 ){
-			p = String( uuid ) ;
-		}else{
-			p = String( "Nil" ) ;
-		}
-	
-		blkid_free_probe( blkid );
-	}
-	
-	seteuid( uid ) ;
-	return p ;
-}
-
 static inline int pluginIsGpG( const char * plugin_path )
 {
 	char * path = realpath( plugin_path,NULL ) ;
@@ -163,7 +135,7 @@ static inline int pluginIsGpG( const char * plugin_path )
 	return st;
 }
 
-string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * name,uid_t uid,const struct_opts * opts )
+string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * name,const char * uuid,uid_t uid,const struct_opts * opts )
 {	
 	process_t p ;
 	struct stat st ;
@@ -179,7 +151,6 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	string_t key   = StringVoid ;
 	string_t plugin_path = StringVoid ;
 	string_t path  = StringVoid ;
-	string_t uuid  = StringVoid ;
 
 	struct passwd * pass = getpwuid( uid ) ;
 		
@@ -209,13 +180,18 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	
 		sockpath = StringAppendInt( path,syscall( SYS_gettid ) ) ;
 		
-		uuid = zuluCryptGetDeviceUUID( device,uid ) ;
-		
 		p = Process( pluginPath ) ;
 		str = ProcessArgumentStructure( p ) ;
+		
 		args[0] = pluginPath ;
 		args[1] = device ;
-		args[2] = StringContent( uuid ) ;
+		
+		if( uuid != NULL ){
+			args[2] = uuid ;
+		}else{
+			args[2] = "Nil" ;
+		}
+
 		args[3] = sockpath ;
 		/*
 		 * ZULUCRYPT_CHAR_MAX_KEYSIZE is set in ../constants.h
@@ -246,7 +222,7 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		ProcessDelete( &p ) ;
 	}
 	
-	StringMultipleDelete( &plugin_path,&uuid,&path,END ) ;      
+	StringMultipleDelete( &plugin_path,&path,END ) ;      
 	
 	return key ;
 }

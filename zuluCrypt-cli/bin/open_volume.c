@@ -157,7 +157,9 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	int st = 0 ;
 
 	unsigned long m_flags ;
-		
+	
+	const char * uuid ;
+	
 	struct stat statstr ;
 	
 	/*
@@ -239,10 +241,14 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	}
 	
 	if( plugin_path != NULL ){
+		
+		uuid = zuluCryptSecurityUUIDFromPath( device ) ;
 		/*
 		 * zuluCryptPluginManagerGetKeyFromModule is defined in ../pluginManager/zuluCryptPluginManager.c
 		 */
-		*passphrase = zuluCryptPluginManagerGetKeyFromModule( device,plugin_path,uid,opts ) ;
+		*passphrase = zuluCryptPluginManagerGetKeyFromModule( device,plugin_path,uuid,uid,opts ) ;
+		
+		StringFree( uuid ) ;
 		
 		if( *passphrase == StringVoid ){
 			return zuluExit_1( 25,opts,device,cpoint,stl,uid,mapping_name ) ;

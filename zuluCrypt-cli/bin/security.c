@@ -548,6 +548,7 @@ char * zuluCryptSecurityUUIDFromPath( const char * device )
 		blkid_do_probe( blkid );
 		blkid_probe_lookup_value( blkid,"UUID",&c,NULL ) ;
 		st = String( c ) ;
+		blkid_free_probe( blkid );
 	}
 	
 	zuluCryptSecurityDropElevatedPrivileges() ;

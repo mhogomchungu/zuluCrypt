@@ -93,7 +93,7 @@
  
  #add_library( zuluCryptPluginManager-static STATIC pluginManager/zuluCryptPluginManager.c )
  
- TARGET_LINK_LIBRARIES( zuluCryptPluginManager Socket Process String ${blkid} )
+ TARGET_LINK_LIBRARIES( zuluCryptPluginManager Socket Process String )
  
  #TARGET_LINK_LIBRARIES( zuluCryptPluginManager-static Socket Process String )
  
