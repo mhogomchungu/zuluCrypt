@@ -70,13 +70,6 @@
  */
 void zuluCryptFormatSize( char * buffer,const char * buff ) ;
 
-/*
- * defined in this source file
- */
-stringList_t zuluCryptGetPartitionFromCrypttab( void ) ;
-
-stringList_t zuluCryptGetPartitionFromConfigFile( const char * path ) ;
-
 static inline int _allowedDevice( const char * device )
 {
 	const char * fsType ;

@@ -196,5 +196,14 @@ int zuluCryptBindSharedMountPointPathTaken( string_t path ) ;
  */
 string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * name,const char * uuid,uid_t uid,const struct_opts * opts ) ;
 
+/*
+ * this function is defined in partitions.c
+ */
+stringList_t zuluCryptGetPartitionFromCrypttab( void ) ;
+
+/*
+ * this function is defined in partitions.c
+ */
+stringList_t zuluCryptGetPartitionFromConfigFile( const char * path ) ;
 
 #endif 
