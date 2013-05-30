@@ -4,15 +4,16 @@ Release: 0
 Summary:        Qt GUI front end to cryptsetup
 License:        GPL-2.0+
 Group:          Productivity/Security
-Source:         zulucrypt-%{version}.tar.bz2
+Source:         zuluCrypt-%{version}.tar.bz2
 Source100:      zuluCrypt-rpmlint
 URL:            http://code.google.com/p/zulucrypt/
 BuildRoot:      %{_topdir}/%{name}-%{version}
 
-%define libversion 3_2_0
-%define srcname zulucrypt
-%define libname %srcname%libversion
-%define libnamedev %{srcname}%{libversion}-devel
+%define zuluCrypt_plugins zuluCrypt_plugins
+%define libversion 3.2.0
+%define srcname zuluCrypt
+%define libname lib%srcname%libversion
+%define libnamedev lib%{srcname}%{libversion}-devel
 
 #You may want to add dependencies for kwallet,gnome-keyring and pwquality below
 #if you want to include optional functionality they provide.
@@ -45,8 +46,15 @@ Group:          Productivity/Security
 This package contains libraries that provide higher level access to cryptsetup API and provide mounting/unmounting API 
 to easy opening and closing of volumes
 
+%package -n %{zuluCrypt_plugins}
+Requires:       lib%{libname}
+Summary:        various zuluCrypt plugins
+
+%description -n %{zuluCrypt_plugins}
+zuluCrypt plugins
+
 %prep
-%setup -q -n zulucrypt-%{version}
+%setup -q -n zuluCrypt-%{version}
 
 %build
 mkdir build
@@ -84,14 +92,8 @@ rm -rf $RPM_BUILD_DIR/%{name}-%{version}
 %{_bindir}/zuluCrypt-gui
 %{_bindir}/zuluCrypt-cli
 %{_bindir}/zuluCrypt-test
-#It is necessary to comment in the below two lines if you want to build these optional features
-#and all dependencies are met.
-%{_libdir}/zuluCrypt/kwallet
-%{_libdir}/zuluCrypt/keyring
 %{_libdir}/zuluCrypt/zuluCrypt-testKey
-%{_libdir}/zuluCrypt/keykeyfile
-%{_libdir}/zuluCrypt/keydialog-qt
-%{_libdir}/zuluCrypt/gpg
+
 %{_datadir}/applications/zuluCrypt.desktop
 %{_datadir}/applications/zuluMount.desktop
 %defattr(0644,root,root)
@@ -99,28 +101,39 @@ rm -rf $RPM_BUILD_DIR/%{name}-%{version}
 %{_mandir}/man1/*
 %defattr(0644,root,root)
 
+%files -n %{zuluCrypt_plugins}
+%defattr(0755,root,root)
+# It maybe necessary to comment out plugins that were configured not to be build
+# Dont know how to write spec file to autodetect what plugin was not build and act accordingly
+%{_libdir}/zuluCrypt/kwallet
+%{_libdir}/zuluCrypt/keyring
+%{_libdir}/zuluCrypt/keykeyfile
+%{_libdir}/zuluCrypt/keydialog-qt
+%{_libdir}/zuluCrypt/gpg
+
 %files -n %{libname}
-%defattr(0644,root,root)
+%defattr(0755,root,root)
 %dir %{_libdir}/zuluCrypt
+%defattr(0644,root,root)
 %{_libdir}/libzuluCrypt.so.*
 %{_libdir}/libzuluCrypt-exe.so.*
 %{_libdir}/libzuluCryptPluginManager.so.*
 
 %files -n %{libnamedev}
-%defattr(0644,root,root)
+%defattr(0755,root,root)
 %dir %{_includedir}/zuluCrypt
+%defattr(0644,root,root)
 %{_includedir}/zuluCrypt/libzuluCrypt.h
 %{_includedir}/zuluCrypt/libzuluCrypt-exe.h
 %{_includedir}/zuluCrypt/libzuluCryptPluginManager.h
 %{_libdir}/libzuluCryptPluginManager.so
-#%%{_libdir}/libzuluCryptPluginManager-static.a
 %{_libdir}/libzuluCrypt.so
 %{_libdir}/libzuluCrypt-exe.so
-#%%{_libdir}/libzuluCrypt-static.a
-#%%{_libdir}/libzuluCrypt-exe-static.a
 %{_libdir}/pkgconfig/libzuluCrypt.pc
 
 %changelog
+* Thu May 30 2013 mhogomchungu@gmail.com
+ - upate to version 4.6.3
 * Fri Mar 15 2013 mhogomchungu@gmail.com
  - upate to version 4.6.2
 * Mon Jan 14 2012 mhogomchungu@gmail.com

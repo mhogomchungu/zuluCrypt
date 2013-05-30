@@ -178,12 +178,14 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 		api_opts.tc_use_weak_keys = 1 ;
 	}
 	
+	api_opts.tc_size_hidden_in_bytes = hidden_volume_size ;
+	
 	if( key_source == TCRYPT_PASSPHRASE ){
 		
 		api_opts.tc_passphrase  = key ;
 		
 		if( hidden_volume_size > 0 ){
-			api_opts.tc_size_hidden_in_bytes = hidden_volume_size ;
+			
 			if( key_source_h == TCRYPT_PASSPHRASE ){
 				api_opts.tc_passphrase_hidden = key_h ;
 				if( tc_api_init( 0 ) == TC_OK ){
