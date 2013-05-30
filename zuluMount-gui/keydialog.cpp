@@ -21,7 +21,7 @@
 #include "keydialog.h"
 #include "ui_keydialog.h"
 
-keyDialog::keyDialog( QWidget * parent,QTableWidget * table,QString path,QString type,QString folderOpener ) :
+keyDialog::keyDialog( QWidget * parent,QTableWidget * table,QString path,QString type,QString folderOpener,bool autoOpenFolderOnMount ) :
 	QDialog( parent ),m_ui(new Ui::keyDialog)
 {
 	m_ui->setupUi( this );
@@ -30,6 +30,8 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,QString path,QString
 	m_path = path ;
 	m_working = false ;
 	m_folderOpener = folderOpener ;
+
+	m_autoOpenFolderOnMount = autoOpenFolderOnMount ;
 
 	QString msg ;
 	if( type == QString( "crypto_LUKS" ) ){
@@ -246,9 +248,11 @@ void keyDialog::slotMountComplete( int st,QString m )
 			connect( mpt,SIGNAL( signalProperties( QString ) ),this,SLOT( volumeMiniProperties( QString ) ) ) ;
 			mpt->startAction( managepartitionthread::VolumeMiniProperties ) ;
 
-			openmountpointinfilemanager * omp = new openmountpointinfilemanager( m_folderOpener,utility::mountPath( m_point ) ) ;
-			connect( omp,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
-			omp->start();
+			if( m_autoOpenFolderOnMount ){
+				openmountpointinfilemanager * omp = new openmountpointinfilemanager( m_folderOpener,utility::mountPath( m_point ) ) ;
+				connect( omp,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
+				omp->start();
+			}
 		}else{
 			/*
 			 * The volume is reported as opened but it isnt,possible reason is a backe end crash

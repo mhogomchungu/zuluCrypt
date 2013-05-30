@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright (c) 2012
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -48,7 +48,7 @@ class keyDialog : public QDialog
 {
 	Q_OBJECT
 public:
-	keyDialog( QWidget * parent,QTableWidget *,QString path,QString type,QString folderOpener );
+	keyDialog( QWidget * parent,QTableWidget *,QString path,QString type,QString folderOpener,bool b = true );
 	~keyDialog();
 	void ShowUI( void );
 	void HideUI( void ) ;
@@ -84,6 +84,7 @@ private:
 	QMenu * m_menu ;
 	QTableWidget * m_table ;
 	bool m_working ;
+	bool m_autoOpenFolderOnMount ;
 };
 
 #endif // KEYDIALOG_H

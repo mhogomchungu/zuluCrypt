@@ -71,13 +71,19 @@ void MainWindow::setUpApp()
 	QMenu * trayMenu = new QMenu( this ) ;
 
 	m_autoMountAction = new QAction( this ) ;
-	m_autoMountAction->setCheckable( true ) ;
 	m_autoMount = this->autoMount() ;
 	connect( m_autoMountAction,SIGNAL( toggled( bool ) ),this,SLOT( autoMountToggled( bool ) ) ) ;
 	m_autoMountAction->setChecked( m_autoMount );
-	m_autoMountAction->setText( QString( "automount partitions" ) ) ;
+	m_autoMountAction->setText( tr( "automount partitions" ) ) ;
 
-	this->startAutoMonitor();
+	QAction * autoOpenFolderOnMount = new QAction( this ) ;
+	autoOpenFolderOnMount->setCheckable( true ) ;
+	m_autoOpenFolderOnMount = this->autoOpenFolderOnMount() ;
+	autoOpenFolderOnMount->setChecked( m_autoOpenFolderOnMount ) ;
+	autoOpenFolderOnMount->setText( tr( "auto open mount point" ) ) ;
+	connect( autoOpenFolderOnMount,SIGNAL( toggled( bool ) ),this,SLOT( autoOpenFolderOnMount( bool ) ) ) ;
+
+	trayMenu->addAction( autoOpenFolderOnMount ) ;
 
 	trayMenu->addAction( m_autoMountAction ) ;
 	trayMenu->addAction( tr( "quit" ),this,SLOT( slotCloseApplication() ) );
@@ -105,6 +111,30 @@ void MainWindow::setUpApp()
 	connect( part,SIGNAL( done() ),this,SLOT( started() ) ) ;
 
 	part->startAction( managepartitionthread::Update ) ;
+
+	this->startAutoMonitor();
+}
+
+#define zuluMOUNT_AUTO_OPEN_FOLDER "/.zuluCrypt/zuluMount-gui.NoAutoOpenFolder"
+
+void MainWindow::autoOpenFolderOnMount( bool b )
+{
+	QString x = QDir::homePath() + QString( zuluMOUNT_AUTO_OPEN_FOLDER ) ;
+
+	m_autoOpenFolderOnMount = b ;
+	if( b ){
+		QFile::remove( x ) ;
+	}else{
+		QFile f( x ) ;
+		f.open( QIODevice::WriteOnly ) ;
+		f.close();
+	}
+}
+
+bool MainWindow::autoOpenFolderOnMount( void )
+{
+	QString x = QDir::homePath() + QString( zuluMOUNT_AUTO_OPEN_FOLDER ) ;
+	return QFile::exists( x ) == false ;
 }
 
 void MainWindow::startAutoMonitor()
@@ -173,7 +203,7 @@ void MainWindow::autoMountVolumeInfo( QStringList l )
 		this->addEntryToTable( false,l );
 	}else{
 		if( m_autoMount ){
-			mountPartition * mp = new mountPartition( this,m_ui->tableWidget,m_folderOpener ) ;
+			mountPartition * mp = new mountPartition( this,m_ui->tableWidget,m_folderOpener,m_autoOpenFolderOnMount ) ;
 			connect( mp,SIGNAL( autoMountComplete() ),mp,SLOT( deleteLater() ) ) ;
 			connect( mp,SIGNAL( autoMountComplete() ),this,SLOT( enableAll() ) ) ;
 			mp->AutoMount( l );
@@ -539,12 +569,12 @@ void MainWindow::mount( QString type,QString device,QString label )
 {
 	this->disableAll();
 	if( type == QString( "crypto_LUKS" ) || type == QString( "Nil" ) ){
-		keyDialog * kd = new keyDialog( this,m_ui->tableWidget,device,type,m_folderOpener ) ;
+		keyDialog * kd = new keyDialog( this,m_ui->tableWidget,device,type,m_folderOpener,m_autoOpenFolderOnMount ) ;
 		connect( kd,SIGNAL( hideUISignal() ),kd,SLOT( deleteLater() ) ) ;
 		connect( kd,SIGNAL( hideUISignal() ),this,SLOT( enableAll() ) ) ;
 		kd->ShowUI();
 	}else{
-		mountPartition * mp = new mountPartition( this,m_ui->tableWidget,m_folderOpener ) ;
+		mountPartition * mp = new mountPartition( this,m_ui->tableWidget,m_folderOpener,m_autoOpenFolderOnMount ) ;
 		connect( mp,SIGNAL( hideUISignal() ),mp,SLOT( deleteLater() ) ) ;
 		connect( mp,SIGNAL( hideUISignal() ),this,SLOT( enableAll() ) ) ;
 		mp->ShowUI( device,label );

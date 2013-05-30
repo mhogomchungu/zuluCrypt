@@ -49,7 +49,7 @@ class mountPartition : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit mountPartition( QWidget * parent = 0,QTableWidget * table = 0,QString folderOpener = QString() );
+	explicit mountPartition( QWidget * parent = 0,QTableWidget * table = 0,QString folderOpener = QString(),bool b = true );
 	void ShowUI( QString path,QString label ) ;
 	void HideUI( void ) ;
 	void AutoMount( QStringList entry ) ;
@@ -77,6 +77,7 @@ private:
 	QString m_point ;
 	QString m_folderOpener ;
 	QTableWidget * m_table ;
+	bool m_autoOpenFolderOnMount ;
 };
 
 #endif // MOUNTPARTITION_H

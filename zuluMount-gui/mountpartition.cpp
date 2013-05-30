@@ -22,7 +22,7 @@
 #include "ui_mountpartition.h"
 #include <QDebug>
 
-mountPartition::mountPartition( QWidget * parent,QTableWidget * table,QString folderOpener ) :
+mountPartition::mountPartition( QWidget * parent,QTableWidget * table,QString folderOpener,bool autoOpenFolderOnMount ) :
 	QWidget( parent ),m_ui(new Ui::mountPartition)
 {
 	m_ui->setupUi( this );
@@ -31,6 +31,8 @@ mountPartition::mountPartition( QWidget * parent,QTableWidget * table,QString fo
 	this->setFixedSize( this->size() );
 	this->setWindowFlags( Qt::Window | Qt::Dialog );
 	this->setFont( parent->font() );
+
+	m_autoOpenFolderOnMount = autoOpenFolderOnMount ;
 
 	m_ui->pbMount->setFocus();
 
@@ -203,9 +205,11 @@ void mountPartition::slotMountComplete( int status,QString msg )
 		connect( mpt,SIGNAL( signalProperties( QString ) ),this,SLOT( volumeMiniProperties( QString ) ) ) ;
 		mpt->startAction( managepartitionthread::VolumeMiniProperties ) ;
 
-		openmountpointinfilemanager * omp = new openmountpointinfilemanager( m_folderOpener,utility::mountPath( m_point ) ) ;
-		connect( omp,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
-		omp->start();
+		if( m_autoOpenFolderOnMount ){
+			openmountpointinfilemanager * omp = new openmountpointinfilemanager( m_folderOpener,utility::mountPath( m_point ) ) ;
+			connect( omp,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
+			omp->start() ;
+		}
 	}
 }
 

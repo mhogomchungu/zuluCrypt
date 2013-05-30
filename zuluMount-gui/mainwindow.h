@@ -98,7 +98,9 @@ private slots:
 	void started( void ) ;
 	void close( void ) ;
 	void autoMountToggled( bool ) ;
+	void autoOpenFolderOnMount( bool ) ;
 private:
+	bool autoOpenFolderOnMount( void ) ;
 	void dragEnterEvent( QDragEnterEvent * ) ;
 	void dropEvent( QDropEvent * ) ;
 	void showContextMenu( QTableWidgetItem *,bool ) ;
@@ -124,6 +126,7 @@ private:
 	bool m_started ;
 	bool m_autoMount ;
 	QString m_sharedFolderPath ;
+	bool m_autoOpenFolderOnMount ;
 };
 
 #endif // MAINWINDOW_H

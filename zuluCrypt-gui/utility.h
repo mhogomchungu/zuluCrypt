@@ -43,7 +43,6 @@ class utility
 public:
 	static QStringList luksEmptySlots( QString volumePath ) ;
 	static bool isLuks( QString volumePath ) ;
-	static QStringList deviceProperties( QString device ) ;
 	static void addToFavorite( QString dev,QString m_point );
 	static QStringList readFavorites( void );
 	static void removeFavoriteEntry( QString );
