@@ -97,7 +97,7 @@ static string_t create_work_directory( void )
 /*
  * Below function copies a file owned and managed by a user to a secured location so that can be accessed securely.
  * path returns a path to where a copy of the file is located and ready to be accessed securely
- * It is the responsibility of the called to unlink(path) when done with the copy and free(path) memory when done with it
+ * It is the responsibility of the called to zuluCryptDeleteFile(path) when done with the copy and free(path) memory when done with it
  */
 static int secure_file_path( const char ** path,const char * source )
 {
@@ -181,7 +181,7 @@ static inline int secure_copy_file( const char * source,const char * dest,uid_t 
 	fd_dest = open( dest,O_WRONLY | O_CREAT,S_IRUSR | S_IWUSR | S_IRGRP |S_IROTH ) ;
 	if( fd_dest == -1 ){
 		zuluCryptSecurityGainElevatedPrivileges() ;
-		unlink( source ) ;
+		zuluCryptDeleteFile( source ) ;
 		zuluCryptSecurityDropElevatedPrivileges() ;
 		return 6 ;
 	}
@@ -205,7 +205,10 @@ static inline int secure_copy_file( const char * source,const char * dest,uid_t 
 		st = 0 ;
 	}
 	
-	unlink( source ) ;
+	/*
+	 * zuluCryptDeleteFile() is defined in ../lib/file_path_security.c
+	 */
+	zuluCryptDeleteFile( source ) ;
 	
 	zuluCryptSecurityDropElevatedPrivileges() ;
 	return st ;
@@ -282,7 +285,7 @@ Type \"YES\" and press Enter to continue: " ;
 			}
 		}
 	}
-	unlink( temp_path ) ;
+	zuluCryptDeleteFile( temp_path ) ;
 	StringFree( temp_path ) ;
 	crypt_free( cd ) ;
 	zuluCryptSecurityDropElevatedPrivileges() ;
@@ -427,8 +430,8 @@ int zuluCryptHeaderMatchBackUpHeader( const char * device,const char * header_ba
 		st = files_are_equal( header_path,device_header ) ;
 	}
 	
-	unlink( header_path ) ;
-	unlink( device_header ) ;
+	zuluCryptDeleteFile( header_path ) ;
+	zuluCryptDeleteFile( device_header ) ;
 	
 	zuluCryptSecurityDropElevatedPrivileges() ;
 	

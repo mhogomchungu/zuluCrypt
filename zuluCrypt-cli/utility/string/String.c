@@ -1433,6 +1433,65 @@ int StringGetFromFile_3( string_t * str,const char * path,size_t offset,size_t l
 	}
 }
 
+int StringGetFromFileLocked( string_t * str,const char * path,size_t offset,size_t length ) 
+{
+	int fd ;
+	char * c ;
+	ssize_t size ;
+	
+	struct stat xt ;
+	
+	*str = StringVoid ;
+	if( path == NULL ){
+		return 1 ;
+	}
+	if( stat( path,&xt ) != 0 ){
+		return 1 ;
+	}
+	if( ( fd = open( path,O_RDONLY ) ) == -1 ){
+		return 2 ;	
+	}
+	if( lseek( fd,offset,SEEK_SET ) == -1 ){
+		close( fd ) ;
+		return 2 ;
+	}
+	if( length == 0 ){
+		length = xt.st_size ;
+	}
+	
+	c = ( char * ) malloc( sizeof( char ) * ( length + 1 ) ) ; 
+	
+	if( c == NULL ) {
+		close( fd ) ;
+		_StringError() ;
+		return 3 ;
+	}
+	
+	mlock( c,length + 1 ) ;
+	
+	size = read( fd,c,length ) ;
+	
+	if( size <= 0 ){
+		munlock( c,length + 1 ) ;
+		free( c ) ;
+		close( fd ) ;
+		return 2 ;
+	}
+	
+	close( fd ) ;
+	
+	*( c + length ) = '\0' ;
+	
+	*str = StringInheritWithSize( &c,( size_t )size,length + 1 ) ;
+	
+	if( *str == StringVoid ){
+		free( c ) ;
+		return 3 ;
+	}else{
+		return 0 ;
+	}
+}
+
 string_t StringGetFromFile_2( const char * path,int * status ) 
 {
 	string_t st = NULL ;

@@ -40,6 +40,23 @@ int zuluCryptSecureOpenFile( const char * path,int * fd,string_t * file,uid_t ui
 	return st ;
 }
 
+void zuluCryptDeleteFile( const char * file )
+{
+	void * map ;
+	struct stat st ;
+	int fd = open( file,O_WRONLY ) ;
+	if( fd != -1 ){
+		fstat( fd,&st ) ;
+		map =  mmap( 0,st.st_size,PROT_WRITE,MAP_PRIVATE,fd,0 ) ;
+		if( map != MAP_FAILED ){
+			memset( map,'\0',st.st_size ) ;
+			munmap( map,st.st_size ) ;
+		}
+		close( fd ) ;
+	}
+	unlink( file ) ;
+}
+
 static int _check_if_device_is_supported( int st,uid_t uid,char ** dev )
 {
 	const char * cfs ;

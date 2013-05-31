@@ -287,4 +287,9 @@ char * zuluCryptResolveMDPath( const char * path ) ;
  */
 string_t zuluCryptResolveMDPath_1( const char * path ) ;
 
+/*
+ * this function is defined in file_path_security.c
+ */
+void zuluCryptDeleteFile( const char * file ) ;
+
 #endif 

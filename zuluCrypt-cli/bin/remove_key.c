@@ -49,6 +49,7 @@ static int _zuluCryptExECheckEmptySlots( const char * device )
 
 static int zuluExit( int st,stringList_t stl )
 {
+	zuluCryptSecurityUnlockMemory( stl ) ;
 	/*
 	 * this function is defined in ../string/StringList.c
 	 */
@@ -97,6 +98,9 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 	string_t * confirm =  StringListAssign( stl ) ;
 	
 	int status = 0 ;
+	
+	const char * key ;
+	size_t       key_size ;
 	
 	/*
 	 * zuluCryptPartitionIsSystemPartition() is defined in ./partitions.c
@@ -149,12 +153,9 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 		}
 		
 		printf( "\n" ) ;
-		zuluCryptSecurityGainElevatedPrivileges() ;
-		/*
-		 * zuluCryptRemoveKey() is defined in ../lib/remove_key.c
-		 */
-		status = zuluCryptRemoveKey( device,StringContent( *pass ),StringLength( *pass ) ) ;
-		zuluCryptSecurityDropElevatedPrivileges() ;
+		key = StringContent( *pass ) ;
+		key_size = StringLength( *pass ) ;
+		zuluCryptSecurityLockMemory_1( *pass ) ;
 	}else{
 		if( keyType == NULL || keytoremove == NULL ){
 			return zuluExit( 6,stl ) ;
@@ -169,27 +170,30 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 				case 4 : return zuluExit( 13,stl ) ;
 				case 5 : return zuluExit( 18,stl ) ;
 			}
-			zuluCryptSecurityGainElevatedPrivileges() ;
-			/*
-			 * zuluCryptRemoveKey() is defined in ../lib/remove_key.c
-			 */
-			status = zuluCryptRemoveKey( device,StringContent( *pass ),StringLength( *pass ) ) ;
-			zuluCryptSecurityDropElevatedPrivileges() ;
-		}else if( StringsAreEqual( keyType, "-p" ) ) {
-			zuluCryptSecurityGainElevatedPrivileges() ;
-			/*
-			 * zuluCryptRemoveKey() is defined in ../lib/remove_key.c
-			 */
-			status = zuluCryptRemoveKey( device,keytoremove,strlen( keytoremove ) ) ;
-			zuluCryptSecurityDropElevatedPrivileges() ;
+			key = StringContent( *pass ) ;
+			key_size = StringLength( *pass ) ;
+			zuluCryptSecurityLockMemory_1( *pass ) ;
+		}else if( StringsAreEqual( keyType, "-p" ) ){
+			key = keytoremove ;
+			key_size = StringSize( keytoremove ) ;
+		}else{
+			return zuluExit( 6,stl ) ;
 		}
 	}
+	
+	zuluCryptSecurityGainElevatedPrivileges() ;
+	/*
+	 * zuluCryptRemoveKey() is defined in ../lib/remove_key.c
+	 */
+	status = zuluCryptRemoveKey( device,key,key_size ) ;
+	zuluCryptSecurityDropElevatedPrivileges() ;
 	
 	if( status == 1 ){
 		status = zuluExit_1( status,device,stl ) ;
 	}else{
 		status = zuluExit( status,stl ) ; 
 	}
+	
 	/*
 	 * zuluCryptCheckInvalidKey() is defined in check_invalid_key.c
 	 */

@@ -647,6 +647,11 @@ int StringGetFromFile_3( string_t * st,const char * path,size_t offset,size_t le
 string_t StringGetFromFile_2( const char * path,int * status ) ;
 
 /*
+ * 
+ */
+int StringGetFromFileLocked( string_t * str,const char * path,size_t offset,size_t length ) ;
+
+/*
  *  White the string managed by handle st to a file given by path and return the number of bytes written. *  
  */
 

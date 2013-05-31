@@ -79,6 +79,8 @@ int _zuluExit( int st,string_t z,char * q,const char * msg )
 
 static int _zuluExit_2( int st,stringList_t z,stringList_t q,const char * msg )
 {
+	zuluCryptSecurityUnlockMemory( z ) ;
+	
 	StringListMultipleDelete( &q,&z,ENDLIST ) ;
 	
 	if( msg != NULL ){
@@ -90,6 +92,7 @@ static int _zuluExit_2( int st,stringList_t z,stringList_t q,const char * msg )
 int _zuluExit_1( int st,stringList_t z,char * q,const char * msg )
 {
 	StringFree( q ) ;
+	zuluCryptSecurityUnlockMemory( z ) ;
 	StringListDelete( &z ) ;
 	if( msg != NULL ){
 		printf( "%s\n",msg ) ;
@@ -640,6 +643,8 @@ int main( int argc,char * argv[] )
 		strncpy( ( char * ) args.key,"x",StringLength( *k ) ) ;
 		args.key = StringContent( *k ) ;
 	}
+	
+	zuluCryptSecurityLockMemory( stl ) ;
 	
 	if( args.action == NULL ){
 		return _zuluExit_2( 212,stl,stx,"ERROR: action not specified" ) ;

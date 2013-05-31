@@ -231,7 +231,10 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 					}else{
 						r = 3 ;
 					}
-					unlink( keyfiles_h[ 0 ] ) ;
+					/*
+					 * zuluCryptDeleteFile() is defined in file_path_security.c
+					 */
+					zuluCryptDeleteFile( keyfiles_h[ 0 ]  ) ;
 					StringDelete( & st ) ;
 				}else{
 					r = 3 ;
@@ -282,7 +285,7 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 					}else{
 						r = 3 ;
 					}
-					unlink( keyfiles[ 0 ] ) ;
+					zuluCryptDeleteFile( keyfiles[ 0 ] ) ;
 					StringDelete( &st ) ;
 				}else{
 					r = 3 ;
@@ -320,10 +323,10 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 						}else{
 							r = 3 ;
 						}
-						unlink( keyfiles_h[ 0 ] ) ;
+						zuluCryptDeleteFile( keyfiles_h[ 0 ] ) ;
 						StringDelete( &xt ) ;
 					}
-					unlink( keyfiles[ 0 ] ) ;
+					zuluCryptDeleteFile( keyfiles[ 0 ] ) ;
 					StringDelete( &st ) ;
 				}else{
 					r = 3 ;
@@ -349,7 +352,7 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 						r = 3 ;
 					}
 				}
-				unlink( keyfiles[ 0 ] ) ;
+				zuluCryptDeleteFile( keyfiles[ 0 ] ) ;
 				StringDelete( &st ) ;
 			}else{
 				r = 3 ;

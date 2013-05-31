@@ -219,6 +219,7 @@ static int zuluCryptEXE( struct_opts * clargs,const char * mapping_name,uid_t ui
 
 static int zuluExit( int st,stringList_t stl,stringList_t stx,char * const * env,const char * msg )
 {
+	zuluCryptSecurityUnlockMemory( stl ) ;
 	StringListClearDelete( &stl ) ;
 	StringListDelete( &stx ) ;
 	
@@ -427,6 +428,8 @@ int main( int argc,char * argv[] )
 		strncpy( ( char * )clargs.device,"x",StringLength( q ) ) ;
 		clargs.device = StringContent( q ) ;
 	}
+	
+	zuluCryptSecurityLockMemory( stl ) ;
 	
 	action = clargs.action ;
 	device = clargs.device ;

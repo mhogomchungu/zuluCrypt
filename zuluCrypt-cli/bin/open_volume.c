@@ -100,6 +100,7 @@ static int zuluExit( int st,const char * device,const char * m_point,stringList_
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
 	
+	zuluCryptSecurityUnlockMemory( stl ) ;
 	StringListClearDelete( &stl ) ;
 	
 	return st ;
@@ -247,7 +248,6 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		 * zuluCryptPluginManagerGetKeyFromModule is defined in ../pluginManager/zuluCryptPluginManager.c
 		 */
 		*passphrase = zuluCryptPluginManagerGetKeyFromModule( device,plugin_path,uuid,uid,opts ) ;
-		
 		StringFree( uuid ) ;
 		
 		if( *passphrase == StringVoid ){
@@ -255,6 +255,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		}
 		cpass = StringContent( *passphrase ) ;
 		len = StringLength( *passphrase ) ;
+		zuluCryptSecurityLockMemory_1( *passphrase ) ;
 	}else if( source == NULL ){
 		printf( "Enter passphrase: " ) ;
 		/*
@@ -267,6 +268,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		printf( "\n" ) ;
 		cpass = StringContent( *passphrase ) ;
 		len = StringLength( *passphrase ) ;
+		zuluCryptSecurityLockMemory_1( *passphrase ) ;
 	}else{
 		if( source == NULL || pass == NULL ){
 			return zuluExit_1( 11,opts,device,cpoint,stl,uid,mapping_name ) ;
@@ -286,6 +288,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 			}
 			cpass = StringContent( *data ) ;
 			len = StringLength( *data ) ;
+			zuluCryptSecurityLockMemory_1( *data ) ;
 		}
 	}
 	

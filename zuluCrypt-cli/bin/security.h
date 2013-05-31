@@ -74,6 +74,14 @@ char * zuluCryptSecurityUUIDFromPath( const char * device ) ;
 
 void zuluCryptSetUserUIDForPrivilegeManagement( uid_t ) ;
 
+void zuluCryptSecurityLockMemory( stringList_t stl ) ;
+
+void zuluCryptSecurityUnlockMemory( stringList_t stl ) ;
+
+void zuluCryptSecurityLockMemory_1( string_t st ) ;
+
+void zuluCryptSecurityUnlockMemory_1( string_t st ) ;
+
 #ifdef __cplusplus
 }
 #endif

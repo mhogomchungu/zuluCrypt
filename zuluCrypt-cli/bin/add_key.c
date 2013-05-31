@@ -59,6 +59,7 @@ static int _zuluCryptCheckEmptySlots( const char * device )
 
 static int zuluExit( int st,stringList_t stl )
 {
+	zuluCryptSecurityUnlockMemory( stl ) ;
 	/*
 	 * this function is defined in ../string/StringList.c
 	 */
@@ -282,6 +283,7 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 		}
 	}
 	
+	zuluCryptSecurityLockMemory( stl ) ;
 	/*
 	 * this function is defined in check_invalid_key.c
 	 */

@@ -421,11 +421,10 @@ int zuluCryptSecurityGetPassFromFile( const char * path,uid_t uid,string_t * st 
 	
 	StringDelete( &p ) ;
 	
-
 	/*
 	 * ZULUCRYPT_KEYFILE_MAX_SIZE is set in ../constants.h
 	 */
-	switch( StringGetFromFile_3( st,path,0,ZULUCRYPT_KEYFILE_MAX_SIZE ) ){
+	switch( StringGetFromFileLocked( st,path,0,0 ) ){
 		case 1 : return 1 ;
 		case 2 : return 4 ;
 		case 3 : return 2 ;
@@ -557,6 +556,56 @@ char * zuluCryptSecurityUUIDFromPath( const char * device )
 	
 	zuluCryptSecurityDropElevatedPrivileges() ;
 	return StringDeleteHandle( &st ) ;
+}
+
+void zuluCryptSecurityLockMemory_1( string_t st )
+{
+	if( st != StringVoid ){
+		mlock( StringContent( st ),StringLength( st ) ) ;
+	}
+}
+
+void zuluCryptSecurityUnlockMemory_1( string_t st )
+{
+	void * e ;
+	size_t f ;
+	if( st != StringVoid ){
+		e = ( void * )StringContent( st ) ;
+		f = StringLength( st ) ;
+		memset( e,'\0',f ) ;
+		munlock( e,f ) ;
+	}
+}
+
+void zuluCryptSecurityLockMemory( stringList_t stl )
+{
+	StringListIterator it  = StringListBegin( stl ) ;
+	StringListIterator end = StringListEnd( stl ) ;
+	string_t st ;
+	while( it != end ){
+		st = *it ;
+		it++ ;
+		mlock( StringContent( st ),StringLength( st ) ) ;
+	}
+}
+
+void zuluCryptSecurityUnlockMemory( stringList_t stl )
+{
+	StringListIterator it  = StringListBegin( stl ) ;
+	StringListIterator end = StringListEnd( stl ) ;
+	string_t st ;
+	void * e ;
+	size_t f ;
+	while( it != end ){
+		st = *it ;
+		it++ ;
+		if( st != StringVoid ){
+			e = ( void * )StringContent( st ) ;
+			f = StringLength( st ) ;
+			memset( e,'\0',f ) ;
+			munlock( e,f ) ;
+		}
+	}
 }
 
 void zuluCryptSecurityPrintPermissions( void )
