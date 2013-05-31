@@ -229,10 +229,12 @@ string_t zuluCryptConvertIfPathIsLVM( const char * path )
 	 */
 	string_t q = String( path ) ;
 	ssize_t index = StringLastIndexOfChar( q,'-' ) ;
+	const char * e ;
 	struct stat st ;
 	if( index != -1 ){
 		StringSubChar( q,index,'/' ) ; 
-		if( stat( StringReplaceString( q,"/dev/mapper/","/dev/" ),&st ) == 0 ){
+		e = StringReplaceString( q,"/dev/mapper/","/dev/" ) ;
+		if( stat( e,&st ) == 0 ){
 			/*
 			 * Path appear to be an LVM path since /dev/abc/def path exists
 			 */
@@ -241,7 +243,7 @@ string_t zuluCryptConvertIfPathIsLVM( const char * path )
 			StringAppendAt( q,0,path ) ;
 		}
 	}else{
-		StringAppendAt( q,0,path ) ;
+		;
 	}
 	return q ;
 }

@@ -85,22 +85,28 @@ static int _check_if_device_is_supported( int st,uid_t uid,char ** dev )
 
 static char * device_path( string_t st )
 {
-	ssize_t index ;
+	/*
+	 * These conversions seem to be unnecessary,leave them for now
+	 */
+	string_t xt ;
+	char * c = NULL ;
 	if( StringStartsWith( st,"/dev/mapper/" ) ){
-		index = StringLastIndexOfChar( st,'-' ) ;
-		if( index != -1 ){
-			StringSubChar( st,index,'/' ) ;
-			StringReplaceString( st,"/dev/mapper","/dev/" ) ;
-		}
-		return StringDeleteHandle( &st ) ;
+		/*
+		 * zuluCryptConvertIfPathIsLVM() is defin in status.c
+		 */
+		xt = zuluCryptConvertIfPathIsLVM( StringContent( st ) ) ;
+		StringDelete( &st ) ;
+		c = StringDeleteHandle( &xt ) ;
 	}else if( StringStartsWith( st,"/dev/md" ) ){
 		/*
 		 * zuluCryptResolveMDPath() is defined in process_mountinfo.c
 		 */
-		return zuluCryptResolveMDPath( StringContent( st ) ) ;
+		c = zuluCryptResolveMDPath( StringContent( st ) ) ;
+		StringDelete( &st ) ;
 	}else{
-		return StringDeleteHandle( &st ) ;
+		c = StringDeleteHandle( &st ) ;
 	}
+	return c ;
 }
 
 int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_loop,char ** dev,uid_t uid )

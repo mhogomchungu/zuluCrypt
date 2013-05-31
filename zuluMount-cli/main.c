@@ -292,16 +292,7 @@ static int _zuluPartitionHasCryptoFs( const char * device )
 
 static int _zuluMountPrintVolumeDeviceName( const char * device )
 {	
-	ssize_t index ;
-	string_t st = StringVoid ;
 	char * c ;
-	
-	st = String( device ) ;
-	StringReplaceString( st,"/dev/","/dev/mapper/" ) ;
-	index = StringLastIndexOfChar( st,'/' ) ;
-	if( index != -1 ){
-		device = StringSubChar( st,index,'-' ) ;
-	}
 	
 	/*
 	 * zuluCryptSecurityGainElevatedPrivileges() is defined in ../zuluCrypt-cli/bin/security.c
@@ -311,7 +302,6 @@ static int _zuluMountPrintVolumeDeviceName( const char * device )
 	* zuluCryptVolumeDeviceName() is defined in ../lib/status.c
 	*/
 	c = zuluCryptVolumeDeviceName( device ) ;
-	StringDelete( &st ) ;
 	
 	/*
 	 * zuluCryptSecurityDropElevatedPrivileges() is defined in ../zuluCrypt-cli/bin/security.c
