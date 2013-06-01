@@ -54,7 +54,7 @@ void getgpgkey::run()
 
 	exe.write( m_key ) ;
 	exe.closeWriteChannel();
-	exe.waitForFinished();
+	exe.waitForFinished( -1 );
 	m_key = exe.readAllStandardOutput() ;
 	exe.close();
 }
