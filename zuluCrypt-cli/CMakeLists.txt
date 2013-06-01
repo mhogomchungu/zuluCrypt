@@ -4,7 +4,7 @@
  file(APPEND ${PROJECT_BINARY_DIR}/bin_path.h "\n#define zuluMount	         \"${CMAKE_INSTALL_PREFIX}/bin/zuluMount-cli\"\n")
  file(APPEND ${PROJECT_BINARY_DIR}/bin_path.h "\n#define ZULUCRYPTTest           \"${CMAKE_INSTALL_PREFIX}/bin/zuluCrypt-testKey\"\n")
  
- add_definitions( -I${PROJECT_BINARY_DIR} -D_FORTIFY_SOURCE=2 -Wno-unused-result ) 
+ add_definitions( -I${PROJECT_BINARY_DIR} ) 
   
  SET( BIN  
  bin/close_volume.c 
