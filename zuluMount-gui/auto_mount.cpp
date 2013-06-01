@@ -93,10 +93,11 @@ void auto_mount::run()
 
 			m_device = f + baseSize ;
 
-			if( strncmp( m_device,"sg",2 ) == 0 ||
-					strncmp( m_device,"dm-",3 ) == 0 ||
-					strstr( m_device,".dev/tmp" ) != NULL ||
-					strstr( m_device,".tmp.md." ) != NULL ) {
+			if(     strncmp( m_device,"sg",2 ) == 0 ||
+				strncmp( m_device,"dm-",3 ) == 0 ||
+				strstr( m_device,".dev/tmp" ) != NULL ||
+				strstr( m_device,".tmp.md." ) != NULL ||
+				strstr( m_device,"md/md-device-map" ) != NULL ){
 				/*
 				 * dont care about these devices.
 				 * /dev/sgX seem to be created when a usb device is plugged in

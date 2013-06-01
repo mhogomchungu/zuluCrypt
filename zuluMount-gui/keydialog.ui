@@ -88,12 +88,12 @@
      <rect>
       <x>140</x>
       <y>0</y>
-      <width>131</width>
+      <width>151</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>key &amp;from keyfile</string>
+     <string>key &amp;from a key file</string>
     </property>
    </widget>
    <widget class="QRadioButton" name="rbPlugIn">

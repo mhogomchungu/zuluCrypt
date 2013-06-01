@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>602</width>
-    <height>313</height>
+    <height>302</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,9 +22,9 @@
   <widget class="QLabel" name="labelLuksVolume">
    <property name="geometry">
     <rect>
-     <x>0</x>
+     <x>10</x>
      <y>10</y>
-     <width>131</width>
+     <width>121</width>
      <height>31</height>
     </rect>
    </property>
@@ -71,13 +71,13 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>40</y>
+     <y>60</y>
      <width>581</width>
-     <height>111</height>
+     <height>81</height>
     </rect>
    </property>
    <property name="title">
-    <string>key already in the encrypted volume</string>
+    <string/>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
@@ -86,7 +86,7 @@
     <property name="geometry">
      <rect>
       <x>180</x>
-      <y>20</y>
+      <y>0</y>
       <width>271</width>
       <height>31</height>
      </rect>
@@ -99,20 +99,20 @@
     <property name="geometry">
      <rect>
       <x>180</x>
-      <y>40</y>
+      <y>20</y>
       <width>271</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>key from a keyfile</string>
+     <string>key from a key file</string>
     </property>
    </widget>
    <widget class="QLabel" name="labelExistingPassphrase">
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>70</y>
+      <y>50</y>
       <width>121</width>
       <height>31</height>
      </rect>
@@ -128,7 +128,7 @@
     <property name="geometry">
      <rect>
       <x>450</x>
-      <y>70</y>
+      <y>50</y>
       <width>31</width>
       <height>31</height>
      </rect>
@@ -147,7 +147,7 @@
     <property name="geometry">
      <rect>
       <x>130</x>
-      <y>70</y>
+      <y>50</y>
       <width>321</width>
       <height>31</height>
      </rect>
@@ -158,7 +158,7 @@
    <property name="geometry">
     <rect>
      <x>210</x>
-     <y>280</y>
+     <y>270</y>
      <width>91</width>
      <height>31</height>
     </rect>
@@ -177,7 +177,7 @@
    <property name="geometry">
     <rect>
      <x>300</x>
-     <y>280</y>
+     <y>270</y>
      <width>91</width>
      <height>31</height>
     </rect>
@@ -206,13 +206,13 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>150</y>
+     <y>160</y>
      <width>581</width>
-     <height>131</height>
+     <height>111</height>
     </rect>
    </property>
    <property name="title">
-    <string>         key to be added to the encrypted volume</string>
+    <string/>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
@@ -221,7 +221,7 @@
     <property name="geometry">
      <rect>
       <x>180</x>
-      <y>20</y>
+      <y>0</y>
       <width>271</width>
       <height>31</height>
      </rect>
@@ -234,20 +234,20 @@
     <property name="geometry">
      <rect>
       <x>180</x>
-      <y>40</y>
+      <y>20</y>
       <width>271</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>key from a keyfile</string>
+     <string>key from a key file</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButtonOpenNewKeyFile">
     <property name="geometry">
      <rect>
       <x>450</x>
-      <y>70</y>
+      <y>50</y>
       <width>31</width>
       <height>31</height>
      </rect>
@@ -266,7 +266,7 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>70</y>
+      <y>50</y>
       <width>121</width>
       <height>31</height>
      </rect>
@@ -282,7 +282,7 @@
     <property name="geometry">
      <rect>
       <x>130</x>
-      <y>70</y>
+      <y>50</y>
       <width>321</width>
       <height>31</height>
      </rect>
@@ -292,7 +292,7 @@
     <property name="geometry">
      <rect>
       <x>130</x>
-      <y>100</y>
+      <y>80</y>
       <width>321</width>
       <height>31</height>
      </rect>
@@ -302,7 +302,7 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>100</y>
+      <y>80</y>
       <width>121</width>
       <height>31</height>
      </rect>
@@ -314,6 +314,38 @@
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
    </widget>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>140</x>
+     <y>40</y>
+     <width>321</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>key already in the encrypted volume</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>140</x>
+     <y>140</y>
+     <width>321</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string> key to be added to the encrypted volume</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
   </widget>
  </widget>
  <tabstops>

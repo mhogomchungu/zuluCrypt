@@ -748,6 +748,13 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 		if( entries.size() < 6 ){
 			continue ;
 		}
+		if( entries.at( 0 ) == QString( "/dev/md/md-device-map" ) ){
+			/*
+			 * dont display this path as it is some sort of an accounting text file
+			 * in some distributions
+			 */
+			continue ;
+		}
 
 		fs =  entries.at( 2 ) ;
 		/*

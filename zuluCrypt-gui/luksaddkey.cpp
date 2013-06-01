@@ -327,7 +327,7 @@ void luksaddkey::threadfinished( int status )
 		case 12 : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open key file for reading" ) );			break ;
 		case 13 : msg.ShowUIOK( tr( "ERROR!" ),tr( "only root user can add keys to system devices" ) );				break ;
 		case 110: msg.ShowUIOK( tr( "ERROR!" ),tr( "can not find a partition that match presented UUID" ) );			break ;
-		case 113: msg.ShowUIOK( tr( "ERROR!" ),tr( "device is not a luks device" ) ) ;				     	break ;   
+		case 113: msg.ShowUIOK( tr( "ERROR!" ),tr( "device is not a luks device" ) ) ;				     	break ;
 		default : msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR! with status number %1 encountered" ).arg( status ) );
 	}
 	enableAll();
@@ -357,6 +357,8 @@ void luksaddkey::disableAll()
 	m_ui->radioButtonPassphraseinVolume->setEnabled( false );
 	m_ui->radioButtonPassphraseInVolumeFromFile->setEnabled( false );
 	m_ui->labelReEnterPassphrase->setEnabled( false ) ;
+	m_ui->label->setEnabled( false );
+	m_ui->label_2->setEnabled( false );
 }
 
 void luksaddkey::enableAll()
@@ -386,6 +388,8 @@ void luksaddkey::enableAll()
 	if( !m_ui->radioButtonNewPassphraseFromFile->isChecked() ){
 		m_ui->lineEditReEnterPassphrase->setEnabled( true );
 	}
+	m_ui->label->setEnabled( true );
+	m_ui->label_2->setEnabled( true );
 }
 
 void luksaddkey::pbCancel( void )
