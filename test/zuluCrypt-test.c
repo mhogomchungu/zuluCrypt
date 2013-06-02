@@ -385,8 +385,9 @@ int _loop_device_module_is_not_present( void )
 	process_t p ;
 	const char * lsmod = "/sbin/lsmod" ;
 	char * output = NULL ;
-	if( stat( lsmod,&stlsmod ) != 0 )
+	if( stat( lsmod,&stlsmod ) != 0 ){
 		return 0 ;
+	}
 	p = Process( lsmod ) ;
 	ProcessStart( p ) ;
 	ProcessGetOutPut( p,&output,STDOUT ) ;
@@ -403,7 +404,7 @@ int _loop_device_module_is_not_present( void )
 int main( void )
 {	
 	if( _loop_device_module_is_not_present() ){
-		printf( "\nERROR: \"loop\" kernel module does not appear to be loaded\n" ) ;
+		printf( "\nWARNING: \"loop\" kernel module does not appear to be loaded\n" ) ;
 		printf( "tests and opening of encrypted containers in files will fail if the module was not built into the kernel\n\n" ) ;
 	}
 	
