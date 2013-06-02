@@ -4,6 +4,8 @@ cmake_policy(SET CMP0017 OLD)
 
 #set( CMAKE_SHARED_LINKER_FLAGS "-s" )
 #set( CMAKE_EXE_LINKER_FLAGS "-s" )
+#add_definitions( -D_FORTIFY_SOURCE=2 -Wno-unused-result )
+add_definitions( -Wno-unused-result ) 
 
 INCLUDE(FindPkgConfig)
 
@@ -17,7 +19,7 @@ pkg_check_modules( PWQUALITY pwquality )
 pkg_check_modules( LIBMOUNT mount ) 
 pkg_check_modules( TCPLAY tcplay ) 
 
-set( PGR_VERSION "4.6.3" )
+set( PGR_VERSION "4.6.4" )
 set( LIB_VERSION "1.2.0" )
 set( LIB_PLUGIN_VERSION "1.0.0" )
 

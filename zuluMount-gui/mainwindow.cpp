@@ -72,9 +72,14 @@ void MainWindow::setUpApp()
 
 	m_autoMountAction = new QAction( this ) ;
 	m_autoMount = this->autoMount() ;
-	connect( m_autoMountAction,SIGNAL( toggled( bool ) ),this,SLOT( autoMountToggled( bool ) ) ) ;
+	m_autoMountAction->setCheckable( true );
 	m_autoMountAction->setChecked( m_autoMount );
-	m_autoMountAction->setText( tr( "automount partitions" ) ) ;
+
+	m_autoMountAction->setText( tr( "automount volumes" ) ) ;
+
+	connect( m_autoMountAction,SIGNAL( toggled( bool ) ),this,SLOT( autoMountToggled( bool ) ) ) ;
+
+	trayMenu->addAction( m_autoMountAction ) ;
 
 	QAction * autoOpenFolderOnMount = new QAction( this ) ;
 	autoOpenFolderOnMount->setCheckable( true ) ;
@@ -85,7 +90,6 @@ void MainWindow::setUpApp()
 
 	trayMenu->addAction( autoOpenFolderOnMount ) ;
 
-	trayMenu->addAction( m_autoMountAction ) ;
 	trayMenu->addAction( tr( "quit" ),this,SLOT( slotCloseApplication() ) );
 	m_trayIcon->setContextMenu( trayMenu );
 

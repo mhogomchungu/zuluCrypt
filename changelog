@@ -132,3 +132,5 @@ version 4.6.3
 -- various bug fixes.
 -- add ability to create and open truecrypt hidden volumes in the GUI
 
+version 4.6.4
+-- fix a build issue on some systems

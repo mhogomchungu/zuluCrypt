@@ -193,7 +193,7 @@ bool utility::canCreateFile( QString path )
 {
 	QByteArray q = path.toAscii() ;
 
-	int i = open( q.constData(),O_WRONLY|O_CREAT ) ;
+	int i = open( q.constData(),O_WRONLY|O_CREAT,S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH ) ;
 
 	if( i == -1 ){
 		return false ;

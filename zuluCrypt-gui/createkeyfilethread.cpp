@@ -42,7 +42,7 @@ void createkeyfilethread::run()
 	}
 	QByteArray path = m_path.toAscii() ;
 
-	m_qfwrite = open( path.constData(),O_WRONLY|O_CREAT ) ;
+	m_qfwrite = open( path.constData(),O_WRONLY|O_CREAT,S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH ) ;
 
 	for( int i = 0 ; i < 64 ; i++ ){
 		do{
