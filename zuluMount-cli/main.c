@@ -19,6 +19,8 @@
 
 #include "includes.h"
 #include <signal.h>
+#include "../zuluCrypt-cli/lib/includes.h"
+#include "../zuluCrypt-cli/bin/includes.h"
 
 /*
  * below 4 functions are defined in ./print_mounted_volumes.c
@@ -34,10 +36,11 @@ void zuluMountPrintDeviceProperties_1( string_t,uid_t ) ;
 static int _mount_get_opts( int argc,char * argv[],ARGS * args ) 
 {	
 	int c ;
-	while( ( c = getopt( argc,argv,"cMLntASNshlPmuDd:z:e:Y:p:f:G:" ) ) != -1 ) {
+	while( ( c = getopt( argc,argv,"cEMLntASNshlPmuDd:z:e:Y:p:f:G:" ) ) != -1 ) {
 		switch( c ){
 			case 'M' : args->share   = 1      ; break ;
 			case 'n' : args->mpo     = 1      ; break ;
+			case 'E' : args->action  = "-E"   ; break ;
 			case 'D' : args->action  = "-D"   ; break ;
 			case 't' : args->action  = "-t"   ; break ;
 			case 's' : args->action  = "-s"   ; break ;
@@ -452,26 +455,27 @@ static int _mount_help()
 	const char * doc2 ;
 	const char * doc1 = "\
 options:\n\
--m -- mount a volume : arguments: -d partition_path -z mount_point -e mode(rw/ro)\n\
+-m -- mount a volume : arguments: -d volume_path -z mount_point -e mode(rw/ro)\n\
       -- additional arguments for crypto_LUKS,crypto_PLAIN,crypto_TCRYPT volumes, -p passphrase/-f keyfile\n\
 -z -- mount point component to append to \"/run/media/private/$USER/\n\
 -Y -- file system options\n" ;
 
       doc2 = "\
--u -- unmount a partition: arguments: -d partition_path\n\
+-u -- unmount a volume: arguments: -d volume_path\n\
 -s -- print properties of an encrypted volume: arguments: -d partition_path\n\
 -M -- this option will create a mount point in \"/run/media/private/$USER\" and a publicly accessible \"mirror\" in \"/run/media/public/\'\n";
 
       doc3 = "\
--l -- print expanded list of all partitions\n\
--L -- must be used with -d,print properties of a partition specified by d option\n\
--P -- print a list of all partitions\n\
+-l -- print expanded list of all volumes\n\
+-L -- must be used with -d,print properties of a volume specified by d option\n\
+-P -- print a list of all volumes\n\
 -D -- get a device node address from its mapper path( mapper paths are usually located in /dev/mapper ). Required argument: -d\n";
 	
      doc4 = "\
--A -- print a list of all partitions\n\
--S -- print a list of system partitions\n\
--N -- print a list of non system partitions\n" ;
+-A -- print a list of all volumes\n\
+-S -- print a list of system volumes\n\
+-N -- print a list of non system volumes\n\
+-E -- print a list of mounted volumes\n" ;
 
       doc5= "\
 examples:\n\
@@ -533,6 +537,81 @@ static void _forceTerminateOnSeriousError( int sig )
 	if( sig ){;}
 	puts( "SIGSEGV caught,exiting" ) ;
 	exit( 255 ) ;
+}
+
+static int _printAListOfMountedVolumes( void )
+{
+	stringList_t stz = zuluCryptGetMountInfoList() ;
+	stringList_t stl = StringListVoid ;
+	
+	StringListIterator it  = StringListBegin( stz ) ;
+	StringListIterator end = StringListEnd( stz ) ;
+	
+	string_t st ;
+	
+	ssize_t index ;
+	
+	const char * e ;
+	const char * f ;
+	
+	while( it != end ){
+		st = *it ;
+		it++ ;
+		if( StringStartsWith( st,"/dev/" ) ){
+			
+			index = StringIndexOfChar( st,0,' ' ) ;
+			
+			if( index == -1 ){
+				continue ;
+			}
+			
+			e = StringSubChar( st,index,'\0' ) ;
+
+			if( StringListContains( stl,e ) != -1 ){
+				/*
+				 * already seen this entry,probably because its a bind mount
+				 */
+				continue ;
+			}else{
+				/*
+				 * about to process this entry,prevent reprocessing it on following loops
+				 */
+				stl = StringListAppend( stl,e ) ;
+			}
+					
+			if( StringPrefixEqual( e,"/dev/mapper/" ) ){
+						
+				st = zuluCryptConvertIfPathIsLVM( e ) ;
+						
+				if( StringStartsWith( st,"/dev/mapper/" ) ){
+							
+					StringDelete( &st ) ;
+							
+					/*
+					 * volume is probably an encrypted one
+					 */
+					zuluCryptSecurityGainElevatedPrivileges() ;
+					f = zuluCryptVolumeDeviceName( e ) ;
+					zuluCryptSecurityDropElevatedPrivileges() ;
+					if( f != NULL ){
+						puts( f ) ;
+						StringFree( f ) ;
+					}
+				}else{
+					/*
+					 * volume is probably an lvm volume
+					 */
+					puts( e ) ;
+				}
+			}else{
+				puts( e ) ;
+			}
+		}
+	}
+	
+	StringListMultipleDelete( &stz,&stl,ENDLIST ) ;
+	
+	return 0 ;
 }
 
 int main( int argc,char * argv[] )
@@ -638,6 +717,9 @@ int main( int argc,char * argv[] )
 	
 	if( args.action == NULL ){
 		return _zuluExit_2( 212,stl,stx,"ERROR: action not specified" ) ;
+	}
+	if( StringsAreEqual( args.action,"-E" ) ){
+		return _printAListOfMountedVolumes() ;
 	}
 	if( StringsAreEqual( args.action,"-c" ) ){
 		return _checkUnmount( args.device,uid ) ;

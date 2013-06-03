@@ -286,7 +286,6 @@ int zuluMountPrintMountedVolumes( uid_t uid )
 	if( uid ){;}
 	/*
 	 * zuluCryptGetMountInfoList() is  defined in ../zuluCrypt-cli/lib/process_mountinfo.c
-	 * It returns contents of "/etc/mtab"
 	 */
 	stl = zuluCryptGetMountInfoList() ;
 		

@@ -50,7 +50,7 @@ int zuluMountCryptoUMount( ARGS * args )
 		
 		e = strrchr( device,'/' ) ;
 		
-		if( e == NULL){
+		if( e == NULL ){
 			mapping_name = device ;
 		}else{
 			mapping_name = e + 1 ;

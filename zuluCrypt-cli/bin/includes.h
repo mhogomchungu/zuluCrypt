@@ -206,4 +206,9 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void ) ;
  */
 stringList_t zuluCryptGetPartitionFromConfigFile( const char * path ) ;
 
+/*
+ * this function is defined in partitions.c
+ */
+stringList_t zuluCryptPartitionList( void ) ;
+
 #endif 
