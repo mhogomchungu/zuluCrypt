@@ -541,6 +541,9 @@ static void _forceTerminateOnSeriousError( int sig )
 
 static int _printAListOfMountedVolumes( void )
 {
+	/*
+	 * zuluCryptGetMountInfoList() is defined in ../zuluCrypt-cli/lib/process_mountinfo.c
+	 */
 	stringList_t stz = zuluCryptGetMountInfoList() ;
 	stringList_t stl = StringListVoid ;
 	
@@ -580,17 +583,19 @@ static int _printAListOfMountedVolumes( void )
 			}
 					
 			if( StringPrefixEqual( e,"/dev/mapper/" ) ){
-						
+				/*
+				 * zuluCryptConvertIfPathIsLVM() is defined in ../zuluCrypt-cli/lib/status.c
+				 */
 				st = zuluCryptConvertIfPathIsLVM( e ) ;
 						
 				if( StringStartsWith( st,"/dev/mapper/" ) ){
-							
-					StringDelete( &st ) ;
-							
 					/*
 					 * volume is probably an encrypted one
 					 */
 					zuluCryptSecurityGainElevatedPrivileges() ;
+					/*
+					 * zuluCryptVolumeDeviceName() is defined in ../zuluCrypt-cli/lib/status.c
+					 */
 					f = zuluCryptVolumeDeviceName( e ) ;
 					zuluCryptSecurityDropElevatedPrivileges() ;
 					if( f != NULL ){
@@ -603,6 +608,8 @@ static int _printAListOfMountedVolumes( void )
 					 */
 					puts( e ) ;
 				}
+				
+				StringDelete( &st ) ;
 			}else{
 				puts( e ) ;
 			}
