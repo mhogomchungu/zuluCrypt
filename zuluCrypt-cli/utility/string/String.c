@@ -84,12 +84,20 @@ static inline char * __StringExpandMemory( string_t st,size_t new_size )
 
 int StringLock( string_t st )
 {
-	return st == StringVoid ? -1 : mlock( ( const void * )st->string,st->size ) ;
+	if( st != StringVoid ){
+		return mlock( ( const void * )st->string,st->size ) ;
+	}else{
+		return  -1 ;
+	}
 }
 
 int StringUnlock( string_t st )
 {
-	return st == StringVoid ? -1 : munlock( ( const void * )st->string,st->size ) ;
+	if( st != StringVoid ){
+		return munlock( ( const void * )st->string,st->size ) ;
+	}else{
+		return  -1 ;
+	}
 }
 
 void StringDelete( string_t * st )
@@ -228,7 +236,6 @@ string_t String( const char * cstring )
 {
 	size_t size ;
 	string_t st ;
-	size_t k ;
 	
 	if( cstring == NULL ){
 		return StringVoid ;
@@ -244,33 +251,27 @@ string_t String( const char * cstring )
 	if( size < STRING_INIT_SIZE / 2 ){
 		
 		st->string = ( char * ) malloc( sizeof( char ) * STRING_INIT_SIZE ) ;
-		if ( st->string == NULL ){
+		if( st->string == NULL ){
 			return _StringError() ;
 		}
 		
-		strncpy( st->string,cstring,STRING_INIT_SIZE ) ;
+		memcpy( st->string,cstring,size ) ;
+		st->string[ size ] = '\0' ;
 		st->size = size ;
 		st->length = STRING_INIT_SIZE ;
 		
 	}else{
-		k = size + 1 ; 
-		/*
-		 * create a buffer with a size a multiple of 4,this seem to keep valgrind happy
-		 */
-		while( ( k % 4 ) != 0 ){
-			k++ ;
-		}
-		
-		st->string = ( char * ) malloc( sizeof( char ) * k ) ;
+		st->string = ( char * ) malloc( sizeof( char ) * ( size + 1 ) );
 	
-		if ( st->string == NULL ){
+		if( st->string == NULL ){
 			free( st ) ;
 			return StringVoid ;
 		}
 		
-		strncpy( st->string,cstring,k ) ;
+		memcpy( st->string,cstring,size ) ;
+		st->string[ size ] = '\0' ;
 		st->size = size  ;
-		st->length = k ;
+		st->length = size + 1 ;
 	}
 	st->owned = 0 ;
 	return st ;
@@ -389,7 +390,7 @@ ssize_t StringLastIndexOfChar( string_t st,char s )
 	c = d + st->size ;
 	
 	while( --c != d ){
-		if ( *c == s ){
+		if( *c == s ){
 			return c - d ;
 		}
 	}

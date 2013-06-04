@@ -560,59 +560,61 @@ static int _printAListOfMountedVolumes( void )
 	while( it != end ){
 		st = *it ;
 		it++ ;
-		if( StringStartsWith( st,"/dev/" ) ){
+		
+		if( !StringStartsWith( st,"/dev/" ) ){
+			continue ;
+		}
 			
-			index = StringIndexOfChar( st,0,' ' ) ;
+		index = StringIndexOfChar( st,0,' ' ) ;
 			
-			if( index == -1 ){
-				continue ;
-			}
+		if( index == -1 ){
+			continue ;
+		}
 			
-			e = StringSubChar( st,index,'\0' ) ;
+		e = StringSubChar( st,index,'\0' ) ;
 
-			if( StringListContains( stl,e ) != -1 ){
-				/*
-				 * already seen this entry,probably because its a bind mount
-				 */
-				continue ;
-			}else{
-				/*
-				 * about to process this entry,prevent reprocessing it on following loops
-				 */
-				stl = StringListAppend( stl,e ) ;
-			}
+		if( StringListContains( stl,e ) != -1 ){
+			/*
+			 * already seen this entry,probably because its a bind mount
+			 */
+			continue ;
+		}else{
+			/*
+			 * about to process this entry,prevent reprocessing it on following loops
+			 */
+			stl = StringListAppend( stl,e ) ;
+		}
 					
-			if( StringPrefixEqual( e,"/dev/mapper/" ) ){
-				/*
-				 * zuluCryptConvertIfPathIsLVM() is defined in ../zuluCrypt-cli/lib/status.c
-				 */
-				st = zuluCryptConvertIfPathIsLVM( e ) ;
+		if( StringPrefixEqual( e,"/dev/mapper/" ) ){
+			/*
+			 * zuluCryptConvertIfPathIsLVM() is defined in ../zuluCrypt-cli/lib/status.c
+			 */
+			st = zuluCryptConvertIfPathIsLVM( e ) ;
 						
-				if( StringStartsWith( st,"/dev/mapper/" ) ){
-					/*
-					 * volume is probably an encrypted one
-					 */
-					zuluCryptSecurityGainElevatedPrivileges() ;
-					/*
-					 * zuluCryptVolumeDeviceName() is defined in ../zuluCrypt-cli/lib/status.c
-					 */
-					f = zuluCryptVolumeDeviceName( e ) ;
-					zuluCryptSecurityDropElevatedPrivileges() ;
-					if( f != NULL ){
-						puts( f ) ;
-						StringFree( f ) ;
-					}
-				}else{
-					/*
-					 * volume is probably an lvm volume
-					 */
-					puts( e ) ;
+			if( StringStartsWith( st,"/dev/mapper/" ) ){
+				/*
+				 * volume is probably an encrypted one
+				 */
+				zuluCryptSecurityGainElevatedPrivileges() ;
+				/*
+				 * zuluCryptVolumeDeviceName() is defined in ../zuluCrypt-cli/lib/status.c
+				 */
+				f = zuluCryptVolumeDeviceName( e ) ;
+				zuluCryptSecurityDropElevatedPrivileges() ;
+				if( f != NULL ){
+					puts( f ) ;
+					StringFree( f ) ;
 				}
-				
-				StringDelete( &st ) ;
 			}else{
+				/*
+				 * volume is probably an lvm volume
+				 */
 				puts( e ) ;
 			}
+			
+			StringDelete( &st ) ;
+		}else{
+			puts( e ) ;
 		}
 	}
 	
