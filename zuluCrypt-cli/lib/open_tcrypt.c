@@ -161,7 +161,10 @@ static int _tcrypt_open_using_keyfile( const char * device,const char * mapper,u
 	
 	xt = crypt_load( cd,CRYPT_TCRYPT,&params ) ;
 	
-	unlink( file ) ;
+	/*
+	 * zuluCryptDeleteFile() is defined in open_path_security.c
+	 */
+	zuluCryptDeleteFile( file ) ;
 	
 	if( xt != 0 ){
 		return zuluExit_1( 1,cd,st ) ;
