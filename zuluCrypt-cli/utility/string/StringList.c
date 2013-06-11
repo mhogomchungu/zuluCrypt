@@ -65,13 +65,12 @@ void StringListForEach( stringList_t stl,void (*fct)( string_t ) )
 	size_t i ;
 	size_t j ;
 	string_t * q ;
-	if( stl == StringListVoid ){
-		return ;
-	}
-	j = stl->size ;
-	q = stl->stp ;
-	for( i = 0 ; i < j ; i++ ){
-		fct( q[ i ] ) ;
+	if( stl != StringListVoid ){
+		j = stl->size ;
+		q = stl->stp ;
+		for( i = 0 ; i < j ; i++ ){
+			fct( q[ i ] ) ;
+		}
 	}
 }
 
@@ -391,7 +390,9 @@ stringList_t StringListAppendList( stringList_t p,stringList_t q )
 	z = q->stp ;
 	
 	for( i = 0 ; i < j ; i++ ){
-		StringListAppendSize( p,z[i]->string,z[i]->size ) ;
+		if( z[i] != StringVoid ){
+			StringListAppendSize( p,z[i]->string,z[i]->size ) ;
+		}
 	}
 	return p ;
 }
@@ -483,7 +484,11 @@ const char * StringListContentAt( stringList_t stl,size_t index )
 	if( stl == StringListVoid ){
 		return NULL ;
 	}else{
-		return index >= stl->size ? NULL : stl->stp[ index ]->string  ;
+		if( index >= stl->size ){
+			return NULL ;
+		}else{
+			return stl->stp[ index ]->string ;
+		}
 	}
 }
 
@@ -492,7 +497,11 @@ int StringListContentAtEqual( stringList_t stl,size_t index,const char * cstring
 	if( stl == StringListVoid || cstring == NULL ){
 		return 0 ;
 	}else{
-		return index >= stl->size ? 0 : strcmp( stl->stp[ index ]->string,cstring ) == 0 ;
+		if( index >= stl->size ){
+			return 0 ;
+		}else{
+			return strcmp( stl->stp[ index ]->string,cstring ) == 0 ;
+		}
 	}
 }
 
@@ -501,7 +510,11 @@ const char * StringListContentAtLast( stringList_t stl )
 	if( stl == StringListVoid ){
 		return NULL ;
 	}else{
-		return stl->size < 1 ? NULL : stl->stp[ stl->size - 1 ]->string  ;
+		if( stl->size < 1 ){
+			return NULL ;
+		}else{
+			return stl->stp[ stl->size - 1 ]->string ;
+		}
 	}
 }
 
@@ -510,7 +523,11 @@ string_t StringListStringAtLast( stringList_t stl )
 	if( stl == StringListVoid ){
 		return StringVoid ;
 	}else{
-		return stl->size < 1 ? StringVoid : stl->stp[ stl->size - 1 ] ;
+		if( stl->size < 1 ){
+			return StringVoid ;
+		}else{
+			return stl->stp[ stl->size - 1 ] ;
+		}
 	}
 }
 
@@ -664,7 +681,11 @@ stringList_t StringListPrependSize( stringList_t stl,const char * cstring,size_t
 
 stringList_t StringListPrepend( stringList_t stl,const char * cstring ) 
 {
-	return stl == StringListVoid ? StringList( cstring ) : StringListInsertAt( stl,cstring,0 ) ;
+	if( stl == StringListVoid ){
+		return StringList( cstring ) ;
+	}else{
+		return StringListInsertAt( stl,cstring,0 ) ;
+	}
 }
 
 stringList_t StringListAppend( stringList_t stl,const char * cstring ) 
@@ -713,8 +734,10 @@ ssize_t StringListContains( stringList_t stl,const char * cstring )
 	ind = stl->stp ;
 	
 	for( index = 0 ; index < size ; index++ ){
-		if( strcmp( ind[index]->string,cstring ) == 0 ){
-			return index ;
+		if( ind[index] != StringVoid ){
+			if( strcmp( ind[index]->string,cstring ) == 0 ){
+				return index ;
+			}
 		}
 	}
 	return -1 ;
@@ -734,8 +757,10 @@ ssize_t StringListHasSequence( stringList_t stl,const char * str )
 	ind = stl->stp ;
 	
 	for( index = 0 ; index < size ; index++ ){
-		if( strstr( ind[index]->string,str ) != NULL ){
-			return index ;
+		if( ind[index] != StringVoid ){
+			if( strstr( ind[index]->string,str ) != NULL ){
+				return index ;
+			}
 		}
 	}
 	
@@ -758,8 +783,10 @@ ssize_t StringListHasStartSequence( stringList_t stl,const char * str )
 	ind = stl->stp ;
 	
 	for( index = 0 ; index < size ; index++ ){
-		if( strncmp( ind[index]->string,str,len ) == 0 ){
-			return index ;
+		if( ind[index] != StringVoid ){
+			if( strncmp( ind[index]->string,str,len ) == 0 ){
+				return index ;
+			}
 		}
 	}
 	
@@ -788,7 +815,11 @@ char * const * StringListStringArray( stringList_t stl )
 		}
 		q[ j ] = '\0' ;
 		for( i = 0 ; i < j ; i++ ){
-			q[ i ] = p[ i ]->string ;
+			if( p[ i ] != StringVoid ){
+				q[ i ] = p[ i ]->string ;
+			}else{
+				q[ i ] = NULL ;
+			}
 		}
 	}
 	return q ;
@@ -816,12 +847,16 @@ size_t StringListRemoveIfStringStartsWith( stringList_t stl,const char * str )
 	index = 0 ;
 	
 	while( index < j ){
-		if( strncmp( k[ index ]->string,str,len ) == 0 ){
-			count++ ;
-			free( k[ index ]->string ) ;
-			free( k[ index ] ) ;
-			memmove( k + index,k + index + 1,size * ( j - 1 - index ) ) ;
-			j = j - 1 ;
+		if( k[ index ] != StringVoid ){
+			if( strncmp( k[ index ]->string,str,len ) == 0 ){
+				count++ ;
+				free( k[ index ]->string ) ;
+				free( k[ index ] ) ;
+				memmove( k + index,k + index + 1,size * ( j - 1 - index ) ) ;
+				j = j - 1 ;
+			}else{
+				index++ ;
+			}
 		}else{
 			index++ ;
 		}
@@ -856,12 +891,16 @@ size_t StringListRemoveIfStringEqual( stringList_t stl,const char * str )
 	index = 0 ;
 	
 	while( index < j ){
-		if( strcmp( k[ index ]->string,str ) == 0 ){
-			count++ ;
-			free( k[ index ]->string ) ;
-			free( k[ index ] ) ;
-			memmove( k + index,k + index + 1,size * ( j - 1 - index ) ) ;
-			j = j - 1 ;
+		if( k[ index ] != StringVoid ){
+			if( strcmp( k[ index ]->string,str ) == 0 ){
+				count++ ;
+				free( k[ index ]->string ) ;
+				free( k[ index ] ) ;
+				memmove( k + index,k + index + 1,size * ( j - 1 - index ) ) ;
+				j = j - 1 ;
+			}else{
+				index++ ;
+			}
 		}else{
 			index++ ;
 		}
@@ -892,12 +931,16 @@ size_t StringListRemoveIfStringContains( stringList_t stl,const char * str )
 	index = 0 ;
 	
 	while( index < j ){
-		if( strstr( k[ index ]->string,str ) != NULL ){
-			count++ ;
-			free( k[ index ]->string ) ;
-			free( k[ index ] ) ;
-			memmove( k + index,k + index + 1,size * ( j - 1 - index ) ) ;
-			j = j - 1 ;
+		if( k[ index ] != StringVoid ){
+			if( strstr( k[ index ]->string,str ) != NULL ){
+				count++ ;
+				free( k[ index ]->string ) ;
+				free( k[ index ] ) ;
+				memmove( k + index,k + index + 1,size * ( j - 1 - index ) ) ;
+				j = j - 1 ;
+			}else{
+				index++ ;
+			}
 		}else{
 			index++ ;
 		}

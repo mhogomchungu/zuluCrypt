@@ -193,7 +193,7 @@ char * StringDeleteHandle( string_t * xt )
 			_StringError() ;
 			return NULL ;
 		}else{
-			memcpy( c,st->string,st->size ) ;
+			memcpy( c,st->string,st->size + 1 ) ;
 		}
 	}
 	
@@ -255,11 +255,9 @@ string_t String( const char * cstring )
 			return _StringError() ;
 		}
 		
-		memcpy( st->string,cstring,size ) ;
-		st->string[ size ] = '\0' ;
+		memcpy( st->string,cstring,size + 1 ) ;
 		st->size = size ;
 		st->length = STRING_INIT_SIZE ;
-		
 	}else{
 		st->string = ( char * ) malloc( sizeof( char ) * ( size + 1 ) );
 	
@@ -268,8 +266,7 @@ string_t String( const char * cstring )
 			return StringVoid ;
 		}
 		
-		memcpy( st->string,cstring,size ) ;
-		st->string[ size ] = '\0' ;
+		memcpy( st->string,cstring,size + 1 ) ;
 		st->size = size  ;
 		st->length = size + 1 ;
 	}
