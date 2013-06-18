@@ -23,7 +23,12 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#define _POSIX_SOURCE
+	
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+
+#include <sys/types.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>

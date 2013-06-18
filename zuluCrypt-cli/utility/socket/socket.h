@@ -23,7 +23,11 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif	
+#endif
+
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
 
 #include <sys/types.h>         
 #include <sys/socket.h>
