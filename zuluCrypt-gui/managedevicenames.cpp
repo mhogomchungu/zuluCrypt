@@ -57,7 +57,7 @@ void managedevicenames::devicePathTextChange( QString txt )
 	if( txt.isEmpty() ){
 		m_ui->lineEditMountPath->clear(); ;
 	}else{
-		QString ed = QDir::homePath() + QString( "/" ) + txt.split( "/" ).last() ;
+		QString ed = QString( "/run/media/private/%1/%2" ).arg( utility::userName() ).arg( txt.split( "/" ).last() ) ;
 		m_ui->lineEditMountPath->setText( ed );
 	}
 }

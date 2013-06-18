@@ -19,6 +19,7 @@
 
 #include "process.h"
 
+
 struct ProcessType_t{
 	pid_t pid ;
 	int fd_0[ 2 ] ; /* this variable is used to write to child process      */
@@ -377,7 +378,7 @@ void ProcessDelete( process_t * p )
 {
 	process_t px ;
 	
-	if( p == NULL ){
+	if( p == NULL || *p == ProcessVoid ){
 		return ;
 	}
 	
