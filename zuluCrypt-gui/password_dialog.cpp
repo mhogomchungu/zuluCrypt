@@ -560,31 +560,21 @@ void passwordDialog::threadfinished( int status,QString output )
 		case 2 : msg.ShowUIOK( tr( "ERROR!" ),tr( "there seem to be an open volume accociated with given address" ) );				break ;
 		case 3 : msg.ShowUIOK( tr( "ERROR!" ),tr( "no file or device exist on given path" ) ) ; 						break ;
 		case 4 : msg.ShowUIOK( tr( "ERROR!" ),tr( "volume could not be opened with the presented key" ) );					break ;
-		case 5 : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not create mount point, invalid path or path already taken" ) ) ;			break ;
-		case 6 : msg.ShowUIOK( tr( "ERROR!" ),tr( "invalid path to keyfile" ) );								break ;
-		case 8 : msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to open volume.\ndevice may already be in use or couldnt find a free loop device" ) );break ;
-		case 9 : msg.ShowUIOK( tr( "ERROR!" ),tr( "mount point path is already taken" ) );							break ;
-		/*case 10: msg.ShowUIOK( tr( "ERROR!" ),tr( "\",\" ( comma ) is not a valid mount point" ) );						break ;*/
-		case 11: msg.ShowUIOK( tr( "ERROR!" ),tr( "one or more required argument( s ) for this operation is missing\n" ) );			break ;
-		case 12: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get a lock on /etc/mtab~" ) );							break ;
-		case 13: msg.ShowUIOK( tr( "ERROR!" ),tr( "wrong argument for mode, valid options are \"rw\" or \"ro\"" ) );				break ;
-		case 14: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get enought memory to hold the key file" ) );					break ;
-		case 15: msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to open volume and failed to close the mapper, advice to do it manunally" ) );	break ;
-		case 16: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not resolve full path of mount point" ) );						break ;
-		case 17: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not resolve full path of device address" ) );						break ;
-		case 18: msg.ShowUIOK( tr( "ERROR!" ),tr( "-O and -m options can not be used together" ) );						break ;
-		case 19: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to create mount point" ) );						break ;
-		case 20: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open device\nconsult help->permissions for more information" ) );	break ;
-		case 21: msg.ShowUIOK( tr( "ERROR!" ),tr( "mount point path \"%1\" is already taken" ).arg( utility::mountPath( m_point) ) );			break ;
-		case 22: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open keyfile for reading" ) );					break ;
-		case 23: msg.ShowPermissionProblem( QString( "writing" ),m_ui->OpenVolumePath->text() );						break ;
-		case 24: msg.ShowUIOK( tr( "ERROR!" ),tr( "there seem to be an opened mapper associated with the device" ) );				break ;
-		case 25: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get a passphrase from the module" ) );						break ;
-		case 29: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get a passphrase through a local socket" ) ) ;					break ;
-		case 34: msg.ShowUIOK( tr( "ERROR!" ),tr( "shared mount point path aleady taken" ) ) ;							break ;
-		case 110:msg.ShowUIOK( tr( "ERROR!" ),tr( "can not find a partition that match presented UUID" ) );					break ;
-		case 113:msg.ShowUIOK( tr( "ERROR!" ),tr( "a non supported device encountered,device is missing or permission denied" ) );		break ;
-		case 255:msg.ShowUIOK( tr( "ERROR!" ),tr( "a non supported device encountered,device is missing or permission denied" ) );		break ;
+		case 5 : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to mount the device with given options" ) ) ;				break ;
+		case 6 : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open device" ) );							break ;
+		case 7 : msg.ShowUIOK( tr( "ERROR!" ),tr( "only root user can perform this operation" ) );						break ;
+		case 8 : msg.ShowUIOK( tr( "ERROR!" ),tr( "-O and -m options can not be used together" ) ) ;						break ;
+		case 9 : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not create mount point, invalid path or path already taken" ) );			break ;
+		case 10: msg.ShowUIOK( tr( "ERROR!" ),tr( "shared mount point path aleady taken" ) );							break ;
+		case 11: msg.ShowUIOK( tr( "ERROR!" ),tr( "there seem to be an opened mapper associated with the device" ) );				break ;
+		case 12: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get a passphrase from the module" ) );						break ;
+		case 13: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get passphrase in silent mode" ) );						break ;
+		case 14: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient memory to hold passphrase" ) );							break ;
+		case 15: msg.ShowUIOK( tr( "ERROR!" ),tr( "one or more required argument(s) for this operation is missing" ) );				break ;
+		case 16: msg.ShowUIOK( tr( "ERROR!" ),tr( "invalid path to key file" ) );								break ;
+		case 17: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get enought memory to hold the key file" ) );					break ;
+		case 18: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open key file for reading" ) );					break ;
+		case 19: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get a passphrase through a local socket" ) );					break ;
 		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR with status number %1 encountered" ).arg( status ) );
 	}
 

@@ -129,7 +129,11 @@ static int _create_volume( const char * dev,const char * fs,const char * type,co
 	 */
 	zuluCryptCloseMapper( device_mapper );
 	
-	return status == 0 ? zuluExit( 0,m ) : zuluExit( 3,m ) ;
+	if( status == 0 ){
+		return zuluExit( 0,m ) ;
+	}else{
+		return zuluExit( 3,m ) ;
+	}
 }
 
 int zuluCryptCreateVolume( const char * dev,const char * fs,const char * type,const char * pass,size_t pass_size,const char * rng )

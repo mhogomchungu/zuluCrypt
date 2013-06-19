@@ -190,8 +190,9 @@ void luksdeletekey::pbDelete()
 		s = s + tr( "\nDeleting it will make the volume unopenable and lost forever." ) ;
 		s = s + tr( "\nAre you sure you want to delete this key?" );
 
-		if(  msg.ShowUIYesNoDefaultNo( tr( "WARNING" ),s ) == QMessageBox::No )
+		if(  msg.ShowUIYesNoDefaultNo( tr( "WARNING" ),s ) == QMessageBox::No ){
 			return ;
+		}
 	}else{
 		QString s = tr( "are you sure you want to delete a key from this volume?" ) ;
 		if(  msg.ShowUIYesNoDefaultNo( tr( "WARNING" ),s ) == QMessageBox::No ){
@@ -231,23 +232,27 @@ void luksdeletekey::threadfinished( int status )
 	switch(  status ){
 		case 0 :
 			l = utility::luksEmptySlots( m_volumePath ) ;
-			if( !l.isEmpty() ){
-				success = tr( "key removed successfully.\n%1 / %2 slots are now in use" ).arg( l.at( 0 ) ).arg( l.at( 1 ) );
-			}else{
+			if( l.isEmpty() ){
 				success = tr( "key removed successfully." ) ;
+			}else{
+				success = tr( "key removed successfully.\n%1 / %2 slots are now in use" ).arg( l.at( 0 ) ).arg( l.at( 1 ) );
 			}
 			msg.ShowUIOK( tr( "SUCCESS!" ),success );
 			return HideUI() ;
 		case 2 : msg.ShowUIOK( tr( "ERROR!" ),tr( "there is no key in the volume that match the presented key" ) ) ;				break ;
-		case 3 : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open device\n" ) ) ;								break ;
-		case 5 : msg.ShowUIOK( tr( "ERROR!" ),tr( "keyfile does not exist\n" ) ) ;								break ;
-		case 6 : msg.ShowUIOK( tr( "ERROR!" ),tr( "one or more required argument( s ) for this operation is missing" ) ) ;			break ;
-		case 7 : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get enough memory to open the key file" ) ) ;					break ;
-		case 10: msg.ShowUIOK( tr( "ERROR!" ),tr( "device does not exist" ) );									break ;
-		case 11: msg.ShowUIOK( tr( "WARNING" ),tr( "there is only one key in the volume left and all data in the volume \nwill be lost if you continue.\nif you want to continue,rerun the command with -k option" ) );	break;
-		case 12: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to remove a key from a system device,\nonly root user or members of group \"zulucrypt\" can do that\n")	);break ;
+		case 3 : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open the volume" ) ) ;								break ;
+		case 4 : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open a system device,\
+only root user or members of group zulucrypt-system can do that" ) ) ;											break ;
+		case 5 : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open the volume in write mode" ) ) ;						break ;
+		case 6 : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient memory to hold your response" ) ) ;						break ;
+		case 7 : msg.ShowUIOK( tr( "ERROR!" ),tr( "operation terminated per user request" ) ) ;							break ;
+		case 8 : msg.ShowUIOK( tr( "ERROR!" ),tr( "can not get passphrase in silent mode" ) ) ;							break ;
+		case 9 : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient memory to hold passphrase" ) ) ;						break ;
+		case 10: msg.ShowUIOK( tr( "ERROR!" ),tr( "one or more required argument(s) for this operation is missing" ) );				break ;
+		case 11: msg.ShowUIOK( tr( "ERROR!" ),tr( "keyfile does not exist" ) );									break;
+		case 12: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get enough memory to open the key file") );					break ;
 		case 13: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open key file for reading" ) );					break ;
-		case 14: msg.ShowUIOK( tr( "ERROR!" ),tr( "only root user or members of group \"zuluCrypt-write\" can remove keys from system devices" ) );					break ;
+		case 14: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get a key from a socket" ) );							break ;
 		case 110:msg.ShowUIOK( tr( "ERROR!" ),tr( "can not find a partition that match presented UUID" ) );					break ;
 		default :msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR! with status number %1 encountered" ).arg( status ) );
 	}

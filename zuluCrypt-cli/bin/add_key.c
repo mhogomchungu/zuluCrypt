@@ -68,22 +68,22 @@ static int zuluExit( int st,stringList_t stl )
 	switch( st ){
 		case 0  : printf( "SUCCESS: key added successfully\n" );	                              	break ;
 		case 1  : printf( "ERROR: presented key does not match any key in the volume\n" ) ;           	break ;
-		case 2  : printf( "ERROR: could not open luks device\n" ) ;		                      	break ;
-		case 4  : printf( "ERROR: device does not exist\n" ) ;	                                      	break ;
-		case 5  : printf( "ERROR: wrong arguments\n" ) ;	                                      	break ;
-		case 6  : printf( "ERROR: one or more required argument(s) for this operation is missing\n" );	break ;
-		case 7  : printf( "ERROR: new passphrases do not match\n" ) ;	                              	break ;
-		case 8  : printf( "ERROR: one or both keyfile(s) does not exist\n" ) ;	                      	break ;  
-		case 9  : printf( "ERROR: couldnt get enought memory to hold the key file\n" ) ;	     	break ;
-		case 10 : printf( "ERROR: all key slots are occupied, can not add any more keys\n" ) ;	      	break ;
-		case 11 : printf( "ERROR: insufficient privilege to open a system device ,\n\
+		case 2  : printf( "ERROR: could not open luks volume\n" ) ;		                      	break ;
+		case 3  : printf( "ERROR: volume is not a luks volume\n" ) ;		                      	break ; 
+		case 4  : printf( "ERROR: insufficient privilege to open a system device,\n\
 only root user or members of group \"zulucrypt\" can do that\n" ) ;						break ;
-		case 12 : printf( "ERROR: insufficient privilege to open key file for reading\n" );		break ;
-		case 13 : printf( "ERROR: only root user can add keys to system devices\n" );			break ;
-		case 14 : printf( "ERROR: can not get passphrase in silent mode\n" );				break ;
-		case 15 : printf( "ERROR: insufficient memory to hold passphrase\n" );				break ;
-		case 16 : printf( "ERROR: could not get a key from a socket\n" ) ;				break ;
-		case 17 : printf( "ERROR: could not get elevated privilege,check binary permissions\n" ) ;	break ; 
+		
+		case 5  : printf( "ERROR: could not open volume in write mode\n" ) ;                           	break ;
+		case 6  : printf( "ERROR: all key slots are occupied, can not add any more keys\n" ) ;	      	break ;
+		case 7  : printf( "ERROR: can not get passphrase in silent mode\n" );				break ;
+		case 8  : printf( "ERROR: insufficient memory to hold passphrase\n" );				break ;
+		case 9  : printf( "ERROR: new passphrases do not match\n" ) ;	                              	break ;
+		case 10 : printf( "ERROR: one or more required argument(s) for this operation is missing\n" );	break ;
+		case 11 : printf( "ERROR: one or both keyfile(s) does not exist\n" ) ;	                      	break ;
+		case 12 : printf( "ERROR: insufficient privilege to open key file for reading\n" );		break ; 
+		case 13 : printf( "ERROR: couldnt get enought memory to hold the key file\n" ) ;	     	break ;
+		case 14 : printf( "ERROR: could not get a key from a socket\n" ) ;				break ;
+		case 15 : printf( "ERROR: could not get elevated privilege,check binary permissions\n" ) ;	break ; 
 		default : printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
 	
@@ -164,7 +164,7 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 	 */
 	if( zuluCryptPartitionIsSystemPartition( device,uid ) ){
 		if( !zuluCryptUserIsAMemberOfAGroup( uid,"zulucrypt" ) ){
-			return zuluExit( 11,stl ) ;
+			return zuluExit( 4,stl ) ;
 		}
 	}
 	/*
@@ -179,11 +179,11 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 	 */
 	switch( status ){
 		case 0 :  break ;
-		case 1 :  return zuluExit( 2,stl ) ;
-		case 2 :  return zuluExit( 2,stl ) ;
-		case 3 :  return zuluExit( 2,stl ) ;
-		case 4 :  return zuluExit( 2,stl ) ;
-		default:  return zuluExit( 2,stl ) ;
+		case 1 :  return zuluExit( 5,stl ) ;
+		case 2 :  return zuluExit( 5,stl ) ;
+		case 3 :  return zuluExit( 5,stl ) ;
+		case 4 :  return zuluExit( 5,stl ) ;
+		default:  return zuluExit( 5,stl ) ;
 	}
 	
 	zuluCryptSecurityGainElevatedPrivileges() ;
@@ -200,43 +200,37 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 	}
 	
 	switch( _zuluCryptCheckEmptySlots( device ) ){
-		case 0 : return zuluExit( 10,stl ) ;
+		case 0 : return zuluExit( 6,stl ) ;
 		case 1 : return zuluExit( 2,stl )  ; 
 	}
 	
 	if( keyType1 == NULL && keyType2 == NULL ){
 		switch( zuluGetKeys( presentKey,newKey_1,newKey_2 ) ){
-			case 1 : return zuluExit( 14,stl ) ;
-			case 2 : return zuluExit( 15,stl ) ;
+			case 1 : return zuluExit( 7,stl ) ;
+			case 2 : return zuluExit( 8,stl ) ;
 		}
 		
 		if( !StringEqualString( *newKey_1,*newKey_2 ) ){
-			status = 7 ;
+			status = 9 ;
 		}else{
 			key1 = StringContent( *presentKey ) ;
 			len1 = StringLength ( *presentKey ) ;
 			key2 = StringContent( *newKey_1   ) ;
 			len2 = StringLength ( *newKey_1   ) ;
-			zuluCryptSecurityGainElevatedPrivileges() ;
-			/*
-			 * zuluCryptAddKey() is defined in ../lib/add_key.c
-			 */
-			status = zuluCryptAddKey( device,key1,len1,key2,len2 );
-			zuluCryptSecurityDropElevatedPrivileges();
 		}
 	}else{
 		if( newKey == NULL || existingKey == NULL ){
-			return zuluExit( 6,stl ) ;
+			return zuluExit( 10,stl ) ;
 		}
 		if( StringsAreEqual( keyType1,"-f" ) ){
 			/*
 			 * this function is defined at "security.c"
 			 */
 			switch( zuluCryptSecurityGetPassFromFile( existingKey,uid,ek ) ){
-				case 1 : return zuluExit( 8,stl ) ; 
+				case 1 : return zuluExit( 11,stl ) ; 
 				case 4 : return zuluExit( 12,stl ) ;
-				case 2 : return zuluExit( 9,stl );
-				case 5 : return zuluExit( 16,stl ) ;
+				case 2 : return zuluExit( 13,stl ) ;
+				case 5 : return zuluExit( 14,stl ) ;
 			}
 			key1 = StringContent( *ek ) ;
 			len1 = StringLength( *ek ) ;
@@ -246,47 +240,45 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 			 * this function is defined at "security.c.c"
 			 */
 			switch( zuluCryptSecurityGetPassFromFile( newKey,uid,nk ) ){
-				case 1 : return zuluExit( 8,stl ) ; 
+				case 1 : return zuluExit( 11,stl ) ; 
 				case 4 : return zuluExit( 12,stl ) ;
-				case 2 : return zuluExit( 9,stl );
-				case 5 : return zuluExit( 16,stl ) ;
+				case 2 : return zuluExit( 13,stl ) ;
+				case 5 : return zuluExit( 14,stl ) ;
 			}
 			key2 = StringContent( *nk ) ;
 			len2 = StringLength( *nk ) ;
 		}
 		if( StringsAreEqual( keyType1,"-f" ) && StringsAreEqual( keyType2,"-f" ) ){
-			zuluCryptSecurityGainElevatedPrivileges() ;
-			status = zuluCryptAddKey( device,key1,len1,key2,len2 ) ;
-			zuluCryptSecurityDropElevatedPrivileges() ;
+			;
 		}else if( StringsAreEqual( keyType1,"-p" ) && StringsAreEqual( keyType2,"-p" ) ){
 			key1 = existingKey ;
-			len1 = strlen( existingKey ) ;
+			len1 = StringSize( existingKey ) ;
 			key2 = newKey ;
-			len2 = strlen( newKey ) ;
-			zuluCryptSecurityGainElevatedPrivileges() ;
-			status = zuluCryptAddKey( device,key1,len1,key2,len2 ) ;
-			zuluCryptSecurityDropElevatedPrivileges() ;
+			len2 = StringSize( newKey ) ;
 		}else if( StringsAreEqual( keyType1,"-p" ) && StringsAreEqual( keyType2,"-f" ) ){
 			key1 = existingKey ;
-			len1 = strlen( existingKey ) ;
-			zuluCryptSecurityGainElevatedPrivileges() ;
-			status = zuluCryptAddKey( device,key1,len1,key2,len2 ) ;
-			zuluCryptSecurityDropElevatedPrivileges() ;
-		}else if ( StringsAreEqual( keyType1,"-f" ) && StringsAreEqual( keyType2,"-p" ) ){
+			len1 = StringSize( existingKey ) ;
+		}else if( StringsAreEqual( keyType1,"-f" ) && StringsAreEqual( keyType2,"-p" ) ){
 			key2 = newKey ;
 			len2 = strlen( newKey ) ;
-			zuluCryptSecurityGainElevatedPrivileges() ;
-			status = zuluCryptAddKey( device,key1,len1,key2,len2 ) ;
-			zuluCryptSecurityDropElevatedPrivileges() ;
 		}else{
-			status = 5 ;
+			return zuluExit( 10,stl ) ;
 		}
 	}
 	
 	zuluCryptSecurityLockMemory( stl ) ;
+	
+	zuluCryptSecurityGainElevatedPrivileges() ;
+	/*
+	 * zuluCryptAddKey() is defined in ../lib/add_key.c
+	 */
+	status = zuluCryptAddKey( device,key1,len1,key2,len2 );
+	
+	zuluCryptSecurityDropElevatedPrivileges();
+	
 	/*
 	 * this function is defined in check_invalid_key.c
 	 */
-	zuluCryptCheckInvalidKey( opts->device ) ;
+	zuluCryptCheckInvalidKey( device ) ;
 	return zuluExit( status,stl ) ;
 }

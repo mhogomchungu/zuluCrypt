@@ -52,7 +52,11 @@ static int zuluExit( int st )
 		case 19: printf( "ERROR: insufficient memory to hold your responce\n" )		 			; break ;
 	}
 	
-	return st == 1 ? 0 : st ;
+	if( st == 1 ){
+		return 0 ;
+	}else{
+		return st ;
+	}
 }
 
 /*
