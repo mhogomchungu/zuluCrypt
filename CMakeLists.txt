@@ -283,8 +283,6 @@ install ( FILES zuluMount-cli.1.bz2 DESTINATION share/man/man1 )
 install ( FILES zuluMount-gui.1.bz2 DESTINATION share/man/man1 )
 install ( FILES zuluCrypt-test.1.bz2 DESTINATION share/man/man1 )
 
-install ( SCRIPT "${CMAKE_SOURCE_DIR}/PostInstall.cmake")
-
 # uninstall target
 configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
