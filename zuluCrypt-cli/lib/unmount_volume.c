@@ -138,19 +138,18 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 			if( m_point != NULL ){
 				*m_point = m ;
 			}else{
-				free( m ) ;
+				StringFree( m ) ;
 			}
 		}else{
-			free( m ) ;
+			StringFree( m ) ;
 		}
 	}
 		
-	if( h != 0 && h != 3 && h != 4 )
+	if( h != 0 && h != 3 && h != 4 ){
 		h = 2 ;
-
-	if( loop_path != NULL ){
-		free( loop_path ) ;
 	}
+	
+	StringFree( loop_path ) ;
 	
 	return h ;
 }

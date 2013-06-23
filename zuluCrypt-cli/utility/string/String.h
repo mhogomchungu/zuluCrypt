@@ -790,7 +790,11 @@ static __inline__ ssize_t StringHasComponent_1( const char * x,const char * y )
 		return -1 ;
 	}else{
 		e = strstr( x,y ) ;
-		return e == NULL ? -1 : e - x ;
+		if( e == NULL ){
+			return -1 ;
+		}else{
+			return e - x ;
+		}
 	}
 }
 
