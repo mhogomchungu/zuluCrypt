@@ -63,7 +63,6 @@ static int zuluExit( int st,const char * device,const char * m_point,stringList_
 {
 	switch( st ){
 		case 0 : _printResult( device,m_point,uid,mapping_name ) ;								break ;
-		case -1: printf( "ERROR: failed to mount a filesystem:invalid/unsupported mount option or unsupported file system encountered\n" ) ;break ;
 		case 1 : printf( "ERROR: failed to mount ntfs file system using ntfs-3g,is ntfs-3g package installed?\n" ) ;		break ;
 		case 2 : printf( "ERROR: there seem to be an open volume accociated with given address\n" );				break ;
 		case 3 : printf( "ERROR: no file or device exist on given path\n" ) ; 							break ;
@@ -83,6 +82,8 @@ static int zuluExit( int st,const char * device,const char * m_point,stringList_
 		case 17: printf( "ERROR: could not get enought memory to hold the key file\n" );					break ;
 		case 18: printf( "ERROR: insufficient privilege to open key file for reading\n" );					break ;
 		case 19: printf( "ERROR: could not get a passphrase through a local socket\n" );					break ;
+		case 20: printf( "ERROR: failed to mount a filesystem:invalid/unsupported mount option or unsupported file system encountered\n" ) ;break ;
+		case 21: printf( "ERROR: could not create a lock on /etc/mtab\n" ) ;							break ;
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
 	
@@ -311,6 +312,16 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		}
 	}
 
+	/*
+	 * below two return values comes from ../lib/mount_volume.c
+	 */
+	if( st == -1 ){
+		st = 20 ;
+	}
+	if( st == 12 ){
+		st = 21 ;
+	}
+	
 	zuluCryptSecurityDropElevatedPrivileges();
 	
 	device = StringMultiplePrepend( *mapper,"/",crypt_get_dir(),END ) ;

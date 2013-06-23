@@ -575,6 +575,8 @@ void passwordDialog::threadfinished( int status,QString output )
 		case 17: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get enought memory to hold the key file" ) );					break ;
 		case 18: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open key file for reading" ) );					break ;
 		case 19: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get a passphrase through a local socket" ) );					break ;
+		case 20: msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to mount a filesystem:invalid/unsupported mount option or unsupported file system encountered" ) );	break ;
+		case 21: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not create a lock on /etc/mtab" ) );							break ;
 		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR with status number %1 encountered" ).arg( status ) );
 	}
 
