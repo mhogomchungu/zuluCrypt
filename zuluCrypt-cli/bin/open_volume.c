@@ -321,6 +321,9 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	if( st == 12 ){
 		st = 21 ;
 	}
+	if( st == 8 || st == 3 ){
+		st = 3 ;
+	}
 	
 	zuluCryptSecurityDropElevatedPrivileges();
 	

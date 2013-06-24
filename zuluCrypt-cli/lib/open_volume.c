@@ -28,19 +28,21 @@ static inline int zuluExit( int x,string_t p )
 static inline int _open_mapper( const char * dev,const char * mapper,const char * mode,const char * pass,size_t pass_size )
 {	
 	/*
-	 * zuluCryptVolumeIsLuks() is defined in is_luks.c
+	 * zuluCryptOpenLuks() is defined in open_luks.c
 	 */
-	if( zuluCryptVolumeIsLuks( dev ) ){
+	int st = zuluCryptOpenLuks( dev,mapper,mode,pass,pass_size ) ;
+	
+	if( st == 2 ){
 		/*
-		 * zuluCryptOpenLuks() is defined in open_luks.c
+		 * volume is not a LUKS volume,assume its a PLAIN volume
 		 */
-		return zuluCryptOpenLuks( dev,mapper,mode,pass,pass_size ) ; 
-	}else{
 		/*
 		 * zuluCryptOpenPlain() is defined in open_plain.c
 		 */
-		return zuluCryptOpenPlain( dev,mapper,mode,pass,pass_size ) ;
+		st = zuluCryptOpenPlain( dev,mapper,mode,pass,pass_size ) ;
 	}
+	
+	return st ;
 }
 
 int zuluCryptOpenVolume( const char * dev,const char * mapper,
