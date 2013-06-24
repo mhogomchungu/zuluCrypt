@@ -39,10 +39,10 @@ static inline int _open_mapper( const char * dev,const char * mapper,const char 
 		/*
 		 * zuluCryptOpenPlain() is defined in open_plain.c
 		 */
-		st = zuluCryptOpenPlain( dev,mapper,mode,pass,pass_size ) ;
+		return zuluCryptOpenPlain( dev,mapper,mode,pass,pass_size ) ;
+	}else{
+		return st ;
 	}
-	
-	return st ;
 }
 
 int zuluCryptOpenVolume( const char * dev,const char * mapper,
