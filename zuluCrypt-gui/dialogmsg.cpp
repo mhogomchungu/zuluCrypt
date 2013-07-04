@@ -77,9 +77,14 @@ void DialogMsg::ShowPermissionProblem( QString device )
 {
 	Q_UNUSED( device ) ;
 	QString msg = tr( "\
-\"insufficent privilege to open device\" and related permission errors when\n\n\
-attempting to operate on devices are primarily caused by not having proper\n\n\
-privileges to manage a system device.\n\n\n\
+By default,volumes are mounted with \"noexec\" option and hence its not possible to run \n\
+programs or scripts from them.To do so,create a group called \"zulumount-exec\" and \
+add yourself to the group and volumes will start to be mounted with \"exec\" option and ability to run\
+programs or scripts from the volume will be enabled.\n\
+\n\
+\"system volumes\" are volumes that either udev has identify them as such if udev is enabled \
+or have an entry in \"/etc/fstab\",\"/etc/crypttab\" or \"/etc/zuluCrypt-system\".\n\
+\n\
 If you prefer for a device not to be considered a system device,start the tool\n\n\
 from root account and then go to \"menu->options->manage non system partitions\"\n\n\
 and add the device to the list and the device will stop being considered as \"system\".\n\n\

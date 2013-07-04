@@ -121,11 +121,13 @@ static string_t _create_key_file( const char * key,size_t key_len,const char * e
 	const char * file ;
 	int fd ;
 	
-	if( stat( "/run",&statstr ) != 0 ){
+	#define PATH_DOES_NOT_EXIST( x ) stat( x,&statstr ) != 0
+	
+	if( PATH_DOES_NOT_EXIST( "/run" ) ){
 		mkdir( "/run",S_IRWXU ) ;
 		chown( "/run",0,0 ) ;
 	}
-	if( stat( "/run/zuluCrypt",&statstr ) != 0 ){
+	if( PATH_DOES_NOT_EXIST( "/run/zuluCrypt" ) ){
 		mkdir( "/run/zuluCrypt",S_IRWXU ) ;
 		chown( "/run/zuluCrypt",0,0 ) ;
 	}

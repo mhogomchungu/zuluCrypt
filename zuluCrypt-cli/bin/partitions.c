@@ -89,7 +89,7 @@ static inline int _allowedDevice( const char * device )
 	
 	if( sts == 3 ){
 		/*
-		 * we will get here with a device with an address of "/dev/sdc".
+		 * we will get here with a device with an address of "/dev/XYZ".
 		 * This device is either not partitioned or is a root address of a partitioned device
 		 * Support it only if it has a recognizable file system.
 		 */

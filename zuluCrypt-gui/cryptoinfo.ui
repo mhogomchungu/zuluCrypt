@@ -261,7 +261,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>cipher: aes-xts-plain</string>
+    <string>cipher: aes-xts-plain64</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>

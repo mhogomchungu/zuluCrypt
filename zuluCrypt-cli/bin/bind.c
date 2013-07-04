@@ -263,20 +263,23 @@ int zuluCryptBindMountVolume( const char * device,string_t z_path,unsigned long 
 	
 	path = String( "/run/media/public/" ) ;
 	m_path = StringAppend( path,o_path + index + 1 ) ;
-		
-	if( stat( "/run",&st ) != 0 ){
+	
+	#define PATH_DOES_NOT_EXIST( x ) stat( x,&st ) != 0
+	#define PATH_DOES_EXIST( x ) stat( x,&st ) == 0
+	
+	if( PATH_DOES_NOT_EXIST( "/run" ) ){
 		mkdir( "/run",mode ) ;
 		chown( "/run",0,0 ) ;
 	}
-	if( stat( "/run/media",&st ) != 0 ){
+	if( PATH_DOES_NOT_EXIST( "/run/media" ) ){
 		mkdir( "/run/media",mode ) ;
 		chown( "/run/media",0,0 ) ;
 	}
-	if( stat( "/run/media/public",&st ) != 0 ){
+	if( PATH_DOES_NOT_EXIST( "/run/media/public" ) ){
 		mkdir( "/run/media/public",mode ) ;
 		chown( "/run/media/public",0,0 ) ;
 	}
-	if( stat( m_path,&st ) == 0 ){
+	if( PATH_DOES_EXIST( m_path ) ){
 		/*
 		 * bind mount point exists,this will happen if the mount point is already taken or a mount point folder
 		 * was not autodeleted for some reason 

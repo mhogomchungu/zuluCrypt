@@ -79,16 +79,18 @@ static string_t create_work_directory( void )
 	/*
 	 * ZULUCRYPTtempFolder and ZULUCRYPtmountMiniPath are set in ../constants.h
 	 */
-	const char * temp_path = ZULUCRYPTtempFolder"/" ;
+	const char * temp_path = "/run/zuluCrypt/" ;
 	struct stat xt ;
 	
 	zuluCryptSecurityGainElevatedPrivileges() ;
 	
-	if( stat( ZULUCRYPtmountMiniPath,&xt ) != 0 ){
-		mkdir( ZULUCRYPtmountMiniPath"/",S_IRWXU ) ;
-		chown( ZULUCRYPtmountMiniPath"/",0,0 ) ;
+	#define PATH_DOES_NOT_EXIST( x ) stat( x,&xt ) != 0
+	
+	if( PATH_DOES_NOT_EXIST( "/run" ) ){
+		mkdir( "/run",S_IRWXU ) ;
+		chown( "/run",0,0 ) ;
 	}
-	if( stat( temp_path,&xt ) != 0 ){
+	if( PATH_DOES_NOT_EXIST( temp_path ) ){
 		mkdir( temp_path,S_IRWXU ) ;
 		chown( temp_path,0,0 ) ;
 	}
