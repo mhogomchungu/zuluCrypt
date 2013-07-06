@@ -58,8 +58,8 @@ createvolume::createvolume( QWidget * parent ) :
 	m_ui->groupBox->setEnabled( false ) ;
 
 #if TRUECRYPT_CREATE
-	m_ui->comboBoxVolumeType->addItem( QString( "truecrypt" ) ) ;
-	m_ui->comboBoxVolumeType->addItem( QString( "truecrypt-hidden" ) ) ;
+	m_ui->comboBoxVolumeType->addItem( QString( "normal truecrypt" ) ) ;
+	m_ui->comboBoxVolumeType->addItem( QString( "normal+hidden truecrypt" ) ) ;
 #endif
 }
 
@@ -362,6 +362,30 @@ void createvolume::pbCreateClicked()
 		return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "volume path field is empty" ) );
 	}
 
+	if( m_ui->comboBoxVolumeType->currentIndex() == 3 ){
+
+		QString x = m_ui->lineEditHiddenSize->text() ;
+
+		if( x.isEmpty() ){
+			return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) );
+		}
+
+		bool ok ;
+		x.toUInt( &ok ) ;
+
+		if( !ok ){
+			return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "illegal character detected in the hidden volume size field" ) );
+		}
+		if( m_ui->lineEditHiddenKey->text().isEmpty() ){
+			return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) );
+		}
+		if( m_ui->rbHiddenKey->isChecked() ){
+			if( m_ui->lineEditHiddenKey->text() != m_ui->lineEditHiddenKey1->text() ){
+				return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "hidden passphrases do not match" ) );
+			}
+		}
+	}
+
 	QString source ;
 
 	if ( m_ui->rbPassphraseFromFile->isChecked() == true ){
@@ -380,17 +404,6 @@ void createvolume::pbCreateClicked()
 		passphrase_1 = socketSendKey::getSocketPath() + QString( "-2" ) ;
 		socketSendKey * s = new socketSendKey( this,passphrase_1,m_ui->lineEditPassphrase1->text().toAscii() ) ;
 		s->sendKey();
-	}
-
-	if( m_ui->comboBoxVolumeType->currentIndex() == 3 ){
-		if( m_ui->lineEditHiddenKey->text().isEmpty() ){
-			return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) );
-		}
-		if( m_ui->rbHiddenKey->isChecked() ){
-			if( m_ui->lineEditHiddenKey->text() != m_ui->lineEditHiddenKey1->text() ){
-				return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "hidden passphrases do not match" ) );
-			}
-		}
 	}
 
 	volumePath.replace( "\"","\"\"\"" ) ;
@@ -423,7 +436,7 @@ void createvolume::pbCreateClicked()
 
 		QString x = m_ui->lineEditHiddenKey->text() ;
 		QString y ;
-		QString z ;
+		QString z = m_ui->lineEditHiddenSize->text() ;
 
 		if( m_ui->rbHiddenKey->isChecked() ){
 			y = socketSendKey::getSocketPath() + QString( "-1" ) ;
@@ -433,17 +446,11 @@ void createvolume::pbCreateClicked()
 			y = x ;
 		}
 
-		z = m_ui->lineEditHiddenSize->text() ;
-
-		if( z.toUInt() == 0 ){
-			return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "illegal character detected in the hidden volume size field" ) );
-		}
-
 		switch( m_ui->comboBoxHiddenSize->currentIndex() ){
-			case 0 : z = z + QString( "000000" )      ; break ;
-			case 1 : z = z + QString( "000" )         ; break ;
-			case 2 : z = z + QString( "000000000" )   ; break ;
-			default: z = z + QString( "000000" )      ; break ;
+			case 0 : z +=  QString( "000000" )      ; break ;
+			case 1 : z +=  QString( "000" )         ; break ;
+			case 2 : z +=  QString( "000000000" )   ; break ;
+			default: z +=  QString( "000000" )      ; break ;
 		}
 
 		const char * arg = "%1 -c -k -d \"%2\" -z %3 -t %4 %5 \"%6\" -g %7 -e %8 -u %9" ;
