@@ -102,7 +102,7 @@ const char * StringSubStringWithInt( string_t st,const char * str,uint64_t num )
  * NOTE: The list must be terminated a NULL character.
  * example usage
  *  string_t st = String( "abc" ) ;
- *  StringMultipleAppend( st,"def","ghi",'\0' ) ; 
+ *  StringMultipleAppend( st,"def","ghi",NULL ) ; 
  */
 const char * StringMultipleAppend( string_t st,... )  ;
 
@@ -149,7 +149,7 @@ const char * StringPrepend( string_t st,const char * s )  ;
  * NOTE: a list of entries must be NULL terminated
  *  example usage
  *  string_t st = String( "ghi" ) ;
- *  StringMultipleAppend( st,"def","abc",'\0' ) ;
+ *  StringMultipleAppend( st,"def","abc",NULL ) ;
  */
 const char * StringMultiplePrepend( string_t st,... )  ;
 
