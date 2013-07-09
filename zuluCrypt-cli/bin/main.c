@@ -325,6 +325,12 @@ int main( int argc,char * argv[] )
 	if( setegid( uid ) != 0 ){
 		_privilegeEvelationError( "ERROR: setegid() failed" ) ;
 	}
+	
+	/*
+	 * Run with higher priority to speed things up 
+	 */
+	setpriority( PRIO_PROCESS,0,-15 ) ;
+	
 	setuid( 0 ) ;
 	seteuid( uid ) ;
 	
