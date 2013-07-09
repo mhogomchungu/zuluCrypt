@@ -39,6 +39,9 @@ extern "C" {
 #include <stdarg.h>
 #include <sys/types.h>
 
+#include <sys/time.h>
+#include <sys/resource.h>
+	
 typedef struct{
 	/*
 	 * if this variable is set,then it is expect to be in the same format the last argument of execv() expect
@@ -61,6 +64,10 @@ typedef struct{
 	 * if this variable is set,then this signal will be sent when the timeout above expires
 	 */
 	int signal ;
+	/*
+	 * priority of forked process will run with
+	 */
+	int priority ;
 }ProcessStructure ;
 
 typedef struct ProcessType_t * process_t ;
@@ -141,6 +148,11 @@ int ProcessTerminate( process_t ) ;
  * run the child process with privileges of a user with UID of uid
  */
 void ProcessSetOptionUser( process_t,uid_t uid ) ;
+
+/*
+ * set the nice value the forked process will run with 
+ */
+void ProcessSetOptionPriority( process_t,int priority ) ;
 
 /*
  * send a forked process sigkill to kill it

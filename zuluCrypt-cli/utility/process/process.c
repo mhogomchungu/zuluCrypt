@@ -141,6 +141,13 @@ static void __ProcessStartTimer( process_t p )
 	}
 }
 
+void ProcessSetOptionPriority( process_t p,int priority )
+{
+	if( p != ProcessVoid ){
+		p->str.priority = priority ;
+	}
+}
+
 pid_t ProcessStart( process_t p ) 
 {
 	if( pipe( p->fd_0 ) == -1 ){
@@ -174,7 +181,11 @@ pid_t ProcessStart( process_t p )
 		close( p->fd_1[ 0 ] )     ;
 		close( p->fd_0[ 1 ] )     ;
 		close( p->fd_2[ 0 ] )     ;
-			
+		
+		if( p->str.priority != 0 ){
+			setpriority( PRIO_PROCESS,0,p->str.priority ) ;
+		}
+		
 		if( p->str.args == NULL ){
 			if( p->str.env != NULL ){
 				execle( p->exe,p->exe,( char * )NULL,p->str.env ) ;
@@ -359,6 +370,7 @@ process_t Process( const char * path )
 	p->str.timeout = -1 ;
 	p->str.env = NULL   ;
 	p->str.user_id = -1 ;
+	p->str.priority = 0 ;
 	p->str.signal = SIGTERM  ;
 	p->state = HAS_NOT_START ;
 	return p ;
