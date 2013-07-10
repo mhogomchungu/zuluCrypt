@@ -74,7 +74,7 @@ int zuluCryptVolumeIsTcrypt( const char * device,const char * key,int key_source
  */
 
 static int _tcrypt_open_using_key( const char * device,const char * mapper,unsigned long m_opts,
-				   const char * key,size_t key_len,int volume_type )
+				   const char * key,size_t key_len,int volume_type,int system_header )
 {
 	uint32_t flags = 0 ;
 	
@@ -89,11 +89,12 @@ static int _tcrypt_open_using_key( const char * device,const char * mapper,unsig
 	
 	params.passphrase       = key ;
 	params.passphrase_size  = key_len ;
+	params.flags            = system_header ;
 	
 	if( volume_type == TCRYPT_HIDDEN ){
-		params.flags = CRYPT_TCRYPT_LEGACY_MODES | CRYPT_TCRYPT_HIDDEN_HEADER ;
+		params.flags |= CRYPT_TCRYPT_LEGACY_MODES | CRYPT_TCRYPT_HIDDEN_HEADER ;
 	}else{
-		params.flags = CRYPT_TCRYPT_LEGACY_MODES ;
+		params.flags |= CRYPT_TCRYPT_LEGACY_MODES ;
 	}
 	if( crypt_load( cd,CRYPT_TCRYPT,&params ) != 0 ){
 		return zuluExit( 1,cd ) ;
@@ -109,7 +110,7 @@ static int _tcrypt_open_using_key( const char * device,const char * mapper,unsig
 }
 
 static int _tcrypt_open_using_keyfile( const char * device,const char * mapper,unsigned long m_opts,
-				       const char * key,size_t key_len,int volume_type )
+				       const char * key,size_t key_len,int volume_type,int system_header )
 {
 	string_t st = StringVoid ;
 	int xt ;
@@ -155,11 +156,12 @@ static int _tcrypt_open_using_keyfile( const char * device,const char * mapper,u
 
 	params.keyfiles_count = 1 ;
 	params.keyfiles       = &file ;
+	params.flags          = system_header ;
 	
 	if( volume_type == TCRYPT_HIDDEN ){
-		params.flags = CRYPT_TCRYPT_LEGACY_MODES | CRYPT_TCRYPT_HIDDEN_HEADER ;
+		params.flags |= CRYPT_TCRYPT_LEGACY_MODES | CRYPT_TCRYPT_HIDDEN_HEADER ;
 	}else{
-		params.flags = CRYPT_TCRYPT_LEGACY_MODES ;
+		params.flags |= CRYPT_TCRYPT_LEGACY_MODES ;
 	}
 	
 	xt = crypt_load( cd,CRYPT_TCRYPT,&params ) ;
@@ -183,7 +185,7 @@ static int _tcrypt_open_using_keyfile( const char * device,const char * mapper,u
 }
 
 static int _tcrypt_open_using_keyfile_1( const char * device,const char * mapper,unsigned long m_opts,
-				       const char * keyfile,int volume_type )
+				       const char * keyfile,int volume_type,int system_header )
 {
 	uint32_t flags = 0 ;
 	
@@ -198,11 +200,12 @@ static int _tcrypt_open_using_keyfile_1( const char * device,const char * mapper
 	
 	params.keyfiles_count = 1 ;
 	params.keyfiles       = &keyfile ;
+	params.flags          = system_header ;
 	
 	if( volume_type == TCRYPT_HIDDEN ){
-		params.flags = CRYPT_TCRYPT_LEGACY_MODES | CRYPT_TCRYPT_HIDDEN_HEADER ;
+		params.flags |= CRYPT_TCRYPT_LEGACY_MODES | CRYPT_TCRYPT_HIDDEN_HEADER ;
 	}else{
-		params.flags = CRYPT_TCRYPT_LEGACY_MODES ;
+		params.flags |= CRYPT_TCRYPT_LEGACY_MODES ;
 	}
 	if( crypt_load( cd,CRYPT_TCRYPT,&params ) != 0 ){
 		return zuluExit( 1,cd ) ;
@@ -215,6 +218,34 @@ static int _tcrypt_open_using_keyfile_1( const char * device,const char * mapper
 	}else{
 		return zuluExit( 1,cd ) ;
 	}
+}
+
+static int _open_tcrypt( const char * device,const char * mapper,unsigned long m_opts,
+			 const char * key,size_t key_len,int volume_type,int key_source )
+{
+	int h ;
+	if( key_source == TCRYPT_KEYFILE ){
+		h = _tcrypt_open_using_keyfile( device,mapper,m_opts,key,key_len,volume_type,0 ) ;
+	}else if( key_source == TCRYPT_KEYFILE_FILE ){
+		h = _tcrypt_open_using_keyfile_1( device,mapper,m_opts,key,volume_type,0 ) ;
+	}else{
+		h = _tcrypt_open_using_key( device,mapper,m_opts,key,key_len,volume_type,0 ) ;
+	}
+	
+	if( h != 0 ){
+		/*
+		 * failed to opened the volume,assuming its because its a system volume and try again
+		 */
+		if( key_source == TCRYPT_KEYFILE ){
+			h = _tcrypt_open_using_keyfile( device,mapper,m_opts,key,key_len,volume_type,CRYPT_TCRYPT_SYSTEM_HEADER ) ;
+		}else if( key_source == TCRYPT_KEYFILE_FILE ){
+			h = _tcrypt_open_using_keyfile_1( device,mapper,m_opts,key,volume_type,CRYPT_TCRYPT_SYSTEM_HEADER ) ;
+		}else{
+			h = _tcrypt_open_using_key( device,mapper,m_opts,key,key_len,volume_type,CRYPT_TCRYPT_SYSTEM_HEADER ) ;
+		}
+	}
+	
+	return h ;
 }
 
 int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * key,size_t key_len,
@@ -234,26 +265,16 @@ int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * ke
 		lmode = O_RDWR ;
 	}
 	if( StringPrefixMatch( device,"/dev/",5 ) ){
-		if( key_source == TCRYPT_KEYFILE ){
-			h = _tcrypt_open_using_keyfile( device,mapper,m_opts,key,key_len,volume_type ) ;
-		}else if( key_source == TCRYPT_KEYFILE_FILE ){
-			h = _tcrypt_open_using_keyfile_1( device,mapper,m_opts,key,volume_type ) ;
-		}else{
-			h = _tcrypt_open_using_key( device,mapper,m_opts,key,key_len,volume_type ) ;
-		}
+		h = _open_tcrypt( device,mapper,m_opts,key,key_len,volume_type,key_source ) ;
 	}else{
 		/*
 		 * zuluCryptAttachLoopDeviceToFile() is defined in create_loop_device.c
 		 */
 		if( zuluCryptAttachLoopDeviceToFile( device,lmode,&fd,&q ) ){
 			device = StringContent( q ) ;
-			if( key_source == TCRYPT_KEYFILE ){
-				h = _tcrypt_open_using_keyfile( device,mapper,m_opts,key,key_len,volume_type ) ;
-			}else if( key_source == TCRYPT_KEYFILE_FILE ){
-				h = _tcrypt_open_using_keyfile_1( device,mapper,m_opts,key,volume_type ) ;
-			}else{
-				h = _tcrypt_open_using_key( device,mapper,m_opts,key,key_len,volume_type ) ;
-			}
+			
+			h = _open_tcrypt( device,mapper,m_opts,key,key_len,volume_type,key_source ) ;
+			
 			close( fd ) ;
 			StringDelete( &q ) ;
 		}else{
