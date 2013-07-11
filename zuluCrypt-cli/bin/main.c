@@ -414,24 +414,25 @@ int main( int argc,char * argv[] )
 	 * Hide "sensitive" command line arguments from ps comamnd and related tools.
 	 * Best way to pass keys to zuluCrypt-cli is to use libzuluCryptPluginManager API
 	 */
+	#define hide( z ) strncpy( ( char * )z,"x",StringLength( q ) ) ;
 	if( clargs.key != NULL ){
 		q = StringListAssignString( stl,String( clargs.key ) ) ;
-		strncpy( ( char * )clargs.key,"x",StringLength( q ) ) ;
+		hide( clargs.key ) ;
 		clargs.key = StringContent( q ) ;
 	}
 	if( clargs.new_key != NULL ){
 		q = StringListAssignString( stl,String( clargs.new_key ) ) ;
-		strncpy( ( char * )clargs.new_key,"x",StringLength( q ) ) ;
+		hide( clargs.new_key ) ;
 		clargs.new_key = StringContent( q ) ;
 	}
 	if( clargs.existing_key != NULL ){
 		q = StringListAssignString( stl,String( clargs.existing_key ) ) ;
-		strncpy( ( char * )clargs.existing_key,"x",StringLength( q ) ) ;
+		hide( clargs.existing_key ) ;
 		clargs.existing_key = StringContent( q ) ;
 	}
 	if( clargs.device != NULL ){
 		q = StringListAssignString( stl,String( clargs.device ) ) ;
-		strncpy( ( char * )clargs.device,"x",StringLength( q ) ) ;
+		hide( clargs.device ) ;
 		clargs.device = StringContent( q ) ;
 	}
 	
