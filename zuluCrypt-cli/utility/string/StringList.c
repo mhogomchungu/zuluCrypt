@@ -69,7 +69,9 @@ void StringListForEach( stringList_t stl,void (*fct)( string_t ) )
 		j = stl->size ;
 		q = stl->stp ;
 		for( i = 0 ; i < j ; i++ ){
-			fct( q[ i ] ) ;
+			if( q[ i ] != StringVoid ){
+				fct( q[ i ] ) ;
+			}
 		}
 	}
 }
@@ -83,7 +85,9 @@ void StringListForEach_1( stringList_t stl,void (*fct)( string_t,void * ),void *
 		j = stl->size ;
 		q = stl->stp ;
 		for( i = 0 ; i < j ; i++ ){
-			fct( q[ i ],arg ) ;
+			if( q[ i ] != StringVoid ){
+				fct( q[ i ],arg ) ;
+			}
 		}
 	}
 }
@@ -97,7 +101,9 @@ void StringListForEachString( stringList_t stl,void (*fct)( const char * ) )
 		j = stl->size ;
 		q = stl->stp ;
 		for( i = 0 ; i < j ; i++ ){
-			fct( q[ i ]->string ) ;
+			if( q[ i ] != StringVoid ){
+				fct( q[ i ]->string ) ;
+			}
 		}
 	}
 }
@@ -111,7 +117,9 @@ void StringListForEachString_1( stringList_t stl,void (*fct)( const char *,void 
 		j = stl->size ;
 		q = stl->stp ;
 		for( i = 0 ; i < j ; i++ ){
-			fct( q[ i ]->string,arg ) ;
+			if( q[ i ] != StringVoid ){
+				fct( q[ i ]->string,arg ) ;
+			}
 		}
 	}
 }
@@ -122,7 +130,11 @@ static inline string_t * __ExpandMemory( stringList_t stl )
 	if( stl->size >= stl->length ){
 		stl->length = stl->length * FACTOR ;
 		p = ( string_t * ) realloc( stl->stp,sizeof( string_t ) * ( stl->length ) ) ; 
-		return p == NULL ? ( string_t * ) _StringListError() : p ;
+		if( p == NULL ){
+			return ( string_t * ) _StringListError() ;
+		}else{
+			return p ;
+		}
 	}else{
 		return stl->stp ;
 	}
@@ -165,12 +177,20 @@ stringList_t StringList( const char * cstring )
 
 StringListIterator StringListBegin( stringList_t stl )
 {
-	return stl == StringListVoid ? ( StringListIterator )StringListVoid : &stl->stp[ 0 ] ;
+	if( stl == StringListVoid ){
+		return ( StringListIterator )StringListVoid ;
+	}else{
+		return &stl->stp[ 0 ] ;
+	}
 }
 
 StringListIterator StringListEnd( stringList_t stl ) 
 {
-	return stl == StringListVoid ? ( StringListIterator )StringListVoid : &stl->stp[ stl->size ] ;
+	if( stl == StringListVoid ){
+		return ( StringListIterator )StringListVoid ;
+	}else{
+		return &stl->stp[ stl->size ] ;
+	}
 }
 
 string_t * StringListAssign( stringList_t stl ) 
@@ -1011,7 +1031,11 @@ string_t StringListStringAt( stringList_t stl,size_t index )
 	if( stl == StringListVoid ){
 		return StringVoid ;
 	}else{
-		return index >= stl->size ? StringVoid : stl->stp[index] ;
+		if( index >= stl->size ){
+			return StringVoid ;
+		}else{
+			return stl->stp[index] ;
+		}
 	}
 }
 

@@ -67,7 +67,11 @@ static string_t _StringError( void )
 
 int StringOwned( string_t st )
 {
-	return st == StringVoid ? 0 : st->owned ;
+	if( st == StringVoid ){
+		return 0 ;
+	}else{
+		return st->owned ;
+	}
 }
 
 static inline char * __StringExpandMemory( string_t st,size_t new_size )
@@ -76,7 +80,11 @@ static inline char * __StringExpandMemory( string_t st,size_t new_size )
 	if( new_size >= st->length ) {
 		st->length = new_size * FACTOR ; 
 		p = ( char * ) realloc( st->string,st->length ) ;
-		return p == NULL ? ( char * ) _StringError() : p ;
+		if( p == NULL ){
+			return ( char * ) _StringError() ;
+		}else{
+			return p ;
+		}
 	}else{
 		return st->string ;
 	}
@@ -225,7 +233,7 @@ string_t StringCopy( string_t st )
 	memcpy( c,st->string,st->size + 1 ) ;
 	
 	xt->size = st->size ;
-	xt->length = st->size ;
+	xt->length = st->size + 1 ;
 	xt->string = c ;
 	xt->owned = 0 ;
 	
@@ -371,7 +379,11 @@ ssize_t StringIndexOfString( string_t st,size_t p,const char * s )
 	
 	c = strstr( st->string + p,s ) ;
 	
-	return c == NULL ? -1 : c - st->string;	
+	if( c == NULL ){
+		return -1 ;
+	}else{
+		return c - st->string ;
+	}
 }
 
 ssize_t StringLastIndexOfChar( string_t st,char s ) 
@@ -447,7 +459,11 @@ ssize_t StringIndexOfChar( string_t st,size_t p,char s )
 	
 	c = strstr( st->string + p,d ) ;
 	
-	return c == NULL ? -1 : c - st->string ;
+	if( c == NULL ){
+		return -1 ;
+	}else{
+		return c - st->string ;
+	}
 }
 
 const char * StringRemoveLength( string_t st,size_t x ,size_t y ) 
@@ -1109,7 +1125,11 @@ int StringEqualString( string_t x,string_t y )
 
 int StringEqual( string_t x,const char * y )
 {
-	return x == StringVoid ? 0 : strcmp( x->string,y ) == 0 ;
+	if( x == StringVoid ){
+		return 0 ;
+	}else{
+		return strcmp( x->string,y ) == 0 ;
+	}
 }
 
 static char * StringICS__( string_t st,char x,const char * s,size_t p )
