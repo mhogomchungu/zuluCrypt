@@ -31,7 +31,9 @@
 #include <sys/wait.h>
 #include <libcryptsetup.h>
 #include <grp.h>
-
+#include <locale.h>
+#include <libintl.h>
+#include <locale.h>
 #include "../utility/string/String.h" 
 #include "../utility/string/StringList.h" 
 #include "../constants.h"
@@ -40,7 +42,9 @@
 #include "../utility/process/process.h"
 #include "libzuluCrypt-exe.h"
 #include "security.h"
+#include "locale_path.h"
 
+#define tr( string ) gettext( string )
 /*
  * These functions are here and not in libzuluCrypt-exe.h because they use string_t and the type is not supposed to be
  * seen in public API

@@ -644,6 +644,10 @@ int main( int argc,char * argv[] )
 	memset( &sa,'\0',sizeof( struct sigaction ) ) ;
 	sa.sa_handler = _forceTerminateOnSeriousError ;
 	sigaction( SIGSEGV,&sa,NULL ) ;
+		
+	setlocale( LC_ALL, "" );
+	bindtextdomain( "zuluMount",LOCALE_PATH ) ;
+	textdomain( "zuluMount" );
 	
 	if( argc < 2 ){
 		return _mount_help() ;

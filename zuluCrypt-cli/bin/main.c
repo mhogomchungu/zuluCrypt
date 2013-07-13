@@ -326,6 +326,9 @@ int main( int argc,char * argv[] )
 		_privilegeEvelationError( "ERROR: setegid() failed" ) ;
 	}
 	
+	setlocale( LC_ALL, "" );
+	bindtextdomain( "zuluCrypt",LOCALE_PATH ) ;
+	textdomain( "zuluCrypt" );
 	/*
 	 * Run with higher priority to speed things up 
 	 */
