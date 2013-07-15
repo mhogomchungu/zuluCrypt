@@ -10,3 +10,23 @@ xgettext  -d zuluMount-cli -s -o zuluMount-cli.pot ../../zuluMount-cli/main.c ..
 msginit -l en_US -o zuluMount-cli.po -i zuluMount-cli.pot 
 msgfmt -c -v -o zuluMount-cli.mo zuluMount-cli.po
 
+zuluCrypt-gui localization files are Qt translation files ending in ".qm" and they must be placed at $PREFIX/share/zuluCrypt/translations/zuluCrypt-gui/
+
+zuluCrypt-cli localization files are gettext translation files ending in ".mo" and they must be placed at $PREFIX/zuluCrypt/translations/LANGUAGE/LC_MESSAGES 
+
+zuluMount-gui localization files are Qt translation files ending in ".qm" and they must be placed at $PREFIX/share/zuluCrypt/translations/zuluMount-gui/
+
+zuluMount-cli localization files are gettext translation files ending in ".mo" and they must be placed at $PREFIX/zuluCrypt/translations/LANGUAGE/LC_MESSAGES 
+
+let PATH = "$PREFIX/zuluCrypt/translations/"
+
+localization files may be something like below
+$PATH/en_US/zuluMount.mo
+$PATH/en_GB/zuluMount.mo
+
+$PATH/en_US/zuluCrypt.mo
+$PATH/en_GB/zuluCrypt.mo
+
+NOTE:
+the "LANGUAGE" path components allows for the same translation filename to be used with different translations.I do not know if it is intended to be
+used this way but it worked on my first attempt and i am sticking with it until i know of a better way
