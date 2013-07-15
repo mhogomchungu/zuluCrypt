@@ -335,6 +335,19 @@ void StringListDelete( stringList_t * stl ) ;
 char * const * StringListStringArray( stringList_t ) ;
 
 /*
+ * It does what the above does but it reuses the buffer and hence its better if the function is called
+ * multiple times.
+ * second argument will hold the size of the buffer without counting the NULL terminator
+ * The two first arguments must be initilized to example values
+ * Example usage
+ * char * const * buffer = NULL ;
+ * size_t buffer_size = 0 ;
+ * stringList_t stl = StringList( "abc" ) ;
+ * buffer = StringListStringArray_1( buffer,&buffer_size,stl ) ;
+ */
+char * const * StringListStringArray_1( char * const *,size_t *,stringList_t ) ;
+
+/*
  * remember to clean after yourself
  * overwite string objects as they are cleaned up
  */

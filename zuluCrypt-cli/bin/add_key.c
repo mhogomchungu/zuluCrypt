@@ -66,25 +66,24 @@ static int zuluExit( int st,stringList_t stl )
 	StringListClearDelete( &stl ) ;
 	
 	switch( st ){
-		case 0  : printf( "SUCCESS: key added successfully\n" );	                              	break ;
-		case 1  : printf( "ERROR: presented key does not match any key in the volume\n" ) ;           	break ;
-		case 2  : printf( "ERROR: could not open luks volume\n" ) ;		                      	break ;
-		case 3  : printf( "ERROR: volume is not a luks volume\n" ) ;		                      	break ; 
-		case 4  : printf( "ERROR: insufficient privilege to open a system device,\n\
-only root user or members of group \"zulucrypt\" can do that\n" ) ;						break ;
-		
-		case 5  : printf( "ERROR: could not open volume in write mode\n" ) ;                           	break ;
-		case 6  : printf( "ERROR: all key slots are occupied, can not add any more keys\n" ) ;	      	break ;
-		case 7  : printf( "ERROR: can not get passphrase in silent mode\n" );				break ;
-		case 8  : printf( "ERROR: insufficient memory to hold passphrase\n" );				break ;
-		case 9  : printf( "ERROR: new passphrases do not match\n" ) ;	                              	break ;
-		case 10 : printf( "ERROR: one or more required argument(s) for this operation is missing\n" );	break ;
-		case 11 : printf( "ERROR: one or both keyfile(s) does not exist\n" ) ;	                      	break ;
-		case 12 : printf( "ERROR: insufficient privilege to open key file for reading\n" );		break ; 
-		case 13 : printf( "ERROR: couldnt get enought memory to hold the key file\n" ) ;	     	break ;
-		case 14 : printf( "ERROR: could not get a key from a socket\n" ) ;				break ;
-		case 15 : printf( "ERROR: could not get elevated privilege,check binary permissions\n" ) ;	break ; 
-		default : printf( "ERROR: unrecognized error with status number %d encountered\n",st );
+		case 0  : printf( gettext( "SUCCESS: key added successfully\n" ) ) ;	                              	break ;
+		case 1  : printf( gettext( "ERROR: presented key does not match any key in the volume\n" ) ) ;         	break ;
+		case 2  : printf( gettext( "ERROR: could not open luks volume\n" ) ) ;		                      	break ;
+		case 3  : printf( gettext( "ERROR: volume is not a luks volume\n" ) );		                      	break ; 
+		case 4  : printf( gettext( "ERROR: insufficient privilege to open a system device,\n\
+only root user or members of group \"zulucrypt\" can do that\n" ) ) ;							break ;
+		case 5  : printf( gettext( "ERROR: could not open volume in write mode\n" ) ) ;                        	break ;
+		case 6  : printf( gettext( "ERROR: all key slots are occupied, can not add any more keys\n" ) ) ;      	break ;
+		case 7  : printf( gettext( "ERROR: can not get passphrase in silent mode\n" ) ) ;			break ;
+		case 8  : printf( gettext( "ERROR: insufficient memory to hold passphrase\n" ) ) ;			break ;
+		case 9  : printf( gettext( "ERROR: new passphrases do not match\n" ) ) ;                              	break ;
+		case 10 : printf( gettext( "ERROR: one or more required argument(s) for this operation is missing\n" ));break ;
+		case 11 : printf( gettext( "ERROR: one or both keyfile(s) does not exist\n" ) ) ;                      	break ;
+		case 12 : printf( gettext( "ERROR: insufficient privilege to open key file for reading\n" ) ) ;		break ; 
+		case 13 : printf( gettext( "ERROR: couldnt get enought memory to hold the key file\n" ) ) ;	     	break ;
+		case 14 : printf( gettext( "ERROR: could not get a key from a socket\n" ) ) ;				break ;
+		case 15 : printf( gettext( "ERROR: could not get elevated privilege,check binary permissions\n" ) ) ;	break ; 
+		default : printf( gettext( "ERROR: unrecognized error with status number %d encountered\n" ),st ) ;
 	}
 	
 	return st ;
@@ -92,7 +91,7 @@ only root user or members of group \"zulucrypt\" can do that\n" ) ;						break ;
 
 static int zuluExit_1( int st,const char * device,stringList_t stl )
 {
-	printf( "ERROR: device \"%s\" is not a luks device\n",device ) ;
+	printf( gettext( "ERROR: device \"%s\" is not a luks device\n" ),device ) ;
 	StringListClearDelete( &stl ) ;
 	return st ;
 }
@@ -103,18 +102,18 @@ static int zuluGetKeys( string_t * key1,string_t * key2,string_t * key3 )
 	/*
 	 * ZULUCRYPT_KEY_MAX_SIZE is set in ../constants.h
 	 */
-	printf( "Enter an existing passphrase: " ) ;
+	printf( gettext( "Enter an existing passphrase: " ) ) ;
 	st = StringSilentlyGetFromTerminal_1( key1,ZULUCRYPT_KEY_MAX_SIZE ) ;
 	if( st != 0 ){
 		return st ;
 	}
-	printf( "\nEnter the new passphrase: " ) ;
+	printf( gettext( "\nEnter the new passphrase: " ) ) ;
 	st = StringSilentlyGetFromTerminal_1( key2,ZULUCRYPT_KEY_MAX_SIZE ) ;
 	if( st != 0 ){
 		StringClearDelete( key1 ) ;
 		return st ;
 	}
-	printf( "\nRe enter the new passphrase: " ) ;
+	printf( gettext( "\nRe enter the new passphrase: " ) ) ;
 	st = StringSilentlyGetFromTerminal_1( key3,ZULUCRYPT_KEY_MAX_SIZE ) ;
 	if( st != 0 ){
 		StringClearDelete( key1 ) ;

@@ -37,6 +37,7 @@
 #include "../zuluCrypt-cli/constants.h"
 #include "../zuluCrypt-cli/bin/bash_special_chars.h"
 #include "version.h"
+#include "locale_path.h"
 
 class utility
 {
@@ -64,6 +65,9 @@ public:
 	static QString shareMountPointToolTip( QString ) ;
 	static QString sharedMountPointPath( QString ) ;
 	static bool pathPointsToAFile( QString ) ;
+	static QString localizationLanguage( QString ) ;
+	static QString localizationLanguagePath( void ) ;
+	static void setLocalizationLanguage( QString,QString ) ;
 };
 
 #endif // MISCFUNCTIONS_H

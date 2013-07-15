@@ -121,6 +121,23 @@ bool utility::pathPointsToAFile( QString path )
 
 }
 
+QString utility::localizationLanguage( QString program )
+{
+	Q_UNUSED( program ) ;
+	return QString( "english_US" ) ;
+}
+
+QString utility::localizationLanguagePath()
+{
+	return QString( TRANSLATION_PATH ) ;
+}
+
+void utility::setLocalizationLanguage( QString program, QString language )
+{
+	Q_UNUSED( program ) ;
+	Q_UNUSED( language ) ;
+}
+
 void utility::debug( QString s )
 {
 	std::cout << s.toStdString() << std::endl ;

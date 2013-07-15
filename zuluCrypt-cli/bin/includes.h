@@ -44,7 +44,6 @@
 #include "security.h"
 #include "locale_path.h"
 
-#define tr( string ) gettext( string )
 /*
  * These functions are here and not in libzuluCrypt-exe.h because they use string_t and the type is not supposed to be
  * seen in public API

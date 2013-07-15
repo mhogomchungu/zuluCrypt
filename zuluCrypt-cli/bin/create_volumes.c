@@ -28,30 +28,30 @@ static int zuluExit( int st,stringList_t stl )
 	StringListClearDelete( &stl ) ;
 	
 	switch ( st ){
-		case 0 : printf( "SUCCESS: volume created successfully\n" ) ;					break  ;
-		case 1 : printf( "ERROR: presented file system is not supported,see documentation for more information\n" ) ; break ;
-		case 2 : printf( "ERROR: insufficient privilege to open a system device in read/write mode,\n\
-only root user or members of group zulucrypt-system can do that" ) ;						break  ;
-		case 3 : printf( "ERROR: could not create an encrypted volume\n" ) ;				break  ;
-		case 4 : printf( "ERROR: could not open volume for writing\n" );				break  ;
-		case 5 : printf( "ERROR: there seem to be an opened mapper associated with the device\n" ) ;	break  ;
-		case 6 : printf( "ERROR: can not create a volume on a mounted device\n" ) ;			break  ;
-		case 7 : printf( "ERROR: container file must be bigger than 3MB\n" ) ;				break  ;
-		case 8 : printf( "ERROR: %s not found \n",ZULUCRYPTmkfs ) ;					break  ;
-		case 9 : printf( "ERROR: insufficient memory to hold your response\n" );			break  ;
-		case 10: printf( "INFO: operation terminated per user request\n" ) ;				break  ;
-		case 11: printf( "ERROR: could not get passphrase in silent mode\n" );				break  ;
-		case 12: printf( "ERROR: insufficient memory to hold the passphrase\n" );			break  ;
-		case 13: printf( "ERROR: passphrases do not match\n" ) ;					break  ;
-		case 14: printf( "ERROR: invalid path to key file\n" ) ;					break  ;
-		case 15: printf( "ERROR: could not get a key from a key file\n" ) ;				break  ;
-		case 16: printf( "ERROR: couldnt get enought memory to hold the key file\n" ) ;			break  ;
-		case 17: printf( "ERROR: could not get a key from a socket\n" ) ;				break  ;
-		case 18: printf( "ERROR: one or more required argument(s) for this operation is missing\n" );	break  ;
-		case 19: printf( "ERROR: can not get passphrase in silent mode\n" );				break  ;
-		case 20: printf( "ERROR: insufficient memory to hold passphrase\n" );				break  ;
-		case 21: printf( "ERROR: passphrases do not match\n" );						break  ; 
-		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
+		case 0 : printf( gettext( "SUCCESS: volume created successfully\n" ) ) ;						break  ;
+		case 1 : printf( gettext( "ERROR: presented file system is not supported,see documentation for more information\n" ) ) ;break ;
+		case 2 : printf( gettext( "ERROR: insufficient privilege to open a system device in read/write mode,\n\
+only root user or members of group zulucrypt-system can do that" ) ) ;							break  ;
+		case 3 : printf( gettext( "ERROR: could not create an encrypted volume\n" ) ) ;				break  ;
+		case 4 : printf( gettext( "ERROR: could not open volume for writing\n" ) ) ;				break  ;
+		case 5 : printf( gettext( "ERROR: there seem to be an opened mapper associated with the device\n" ) );	break  ;
+		case 6 : printf( gettext( "ERROR: can not create a volume on a mounted device\n" ) ) ;			break  ;
+		case 7 : printf( gettext( "ERROR: container file must be bigger than 3MB\n" ) ) ;			break  ;
+		case 8 : printf( "ERROR: %s not found \n",ZULUCRYPTmkfs ) ;						break  ;
+		case 9 : printf( gettext( "ERROR: insufficient memory to hold your response\n" ) ) ;			break  ;
+		case 10: printf( gettext( "INFO: operation terminated per user request\n" ) ) ;				break  ;
+		case 11: printf( gettext( "ERROR: could not get passphrase in silent mode\n" ) ) ;			break  ;
+		case 12: printf( gettext( "ERROR: insufficient memory to hold the passphrase\n" ) ) ;			break  ;
+		case 13: printf( gettext( "ERROR: passphrases do not match\n" ) ) ;					break  ;
+		case 14: printf( gettext( "ERROR: invalid path to key file\n" ) ) ;					break  ;
+		case 15: printf( gettext( "ERROR: could not get a key from a key file\n" ) ) ;				break  ;
+		case 16: printf( gettext( "ERROR: couldnt get enought memory to hold the key file\n" ) ) ;		break  ;
+		case 17: printf( gettext( "ERROR: could not get a key from a socket\n" ) ) ;				break  ;
+		case 18: printf( gettext( "ERROR: one or more required argument(s) for this operation is missing\n" ));	break  ;
+		case 19: printf( gettext( "ERROR: can not get passphrase in silent mode\n" ) ) ;			break  ;
+		case 20: printf( gettext( "ERROR: insufficient memory to hold passphrase\n" ) ) ;			break  ;
+		case 21: printf( gettext( "ERROR: passphrases do not match\n" ) ) ;					break  ; 
+		default: printf( gettext( "ERROR: unrecognized error with status number %d encountered\n" ),st );
 	}
 	return st ;
 }
@@ -60,11 +60,11 @@ static int zuluExit_1( const char * type,stringList_t stl )
 {
 	StringListClearDelete( &stl ) ;
 	
-	printf( "SUCCESS: volume created successfully\n" ) ;
+	printf( gettext( "SUCCESS: volume created successfully\n" ) ) ;
 	
 	if( StringsAreEqual( type,"luks" ) ){
-		printf( "\ncreating a backup of the luks header is strongly adviced.\n" ) ;
-		printf( "Please read documentation on why this is important\n\n" ) ;
+		printf( gettext( "\ncreating a backup of the luks header is strongly adviced.\n" ) ) ;
+		printf( gettext( "Please read documentation on why this is important\n\n" ) ) ;
 	}
 	return 0 ;
 }
@@ -200,21 +200,21 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		return zuluExit( 8,stl ) ;
 	}
 	if( conf == -1 ){
-		printf( "\nThis operation will destroy all data in a device at: \"%s\"\n",device ) ;
-		printf("Are you sure you want to proceed?\n" ) ;
-		printf( "Type \"YES\" and press enter if you want to process: " ) ;
+		printf( gettext( "\nThis operation will destroy all data in a device at: \"%s\"\n" ),device ) ;
+		printf( gettext( "Are you sure you want to proceed?\n" ) ) ;
+		printf( gettext( "Type \"YES\" and press enter if you want to process: " ) ) ;
 		
 		*confirm = StringGetFromTerminal_1( 3 ) ;
 		if( *confirm == StringVoid ){
 			return zuluExit( 9,stl ) ;
 		}else{
-			if( !StringEqual( *confirm,"YES" ) ){
+			if( !StringEqual( *confirm,gettext( "YES" ) ) ){
 				return zuluExit( 10,stl ) ;
 			}
 		}
 	}
 	if( key_source == NULL ){
-		printf( "Enter passphrase: " ) ;
+		printf( gettext( "Enter passphrase: " ) ) ;
 		/*
 		 * ZULUCRYPT_KEY_MAX_SIZE is set in ../constants.h
 		 */
@@ -223,7 +223,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 			case 2 : return zuluExit( 12,stl ) ;
 		}
 		
-		printf( "\nRe enter passphrase: " ) ;
+		printf( gettext( "\nRe enter passphrase: " ) ) ;
 		switch( StringSilentlyGetFromTerminal_1( pass_2,ZULUCRYPT_KEY_MAX_SIZE ) ){
 			case 1 : return zuluExit( 11,stl ) ;
 			case 2 : return zuluExit( 12,stl ) ;
@@ -281,7 +281,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 					tcrypt_source_h = TCRYPT_KEYFILE;
 				}
 			}else if( tcrypt_hidden_volume_key == NULL ){
-				printf( "Enter tcrypt hidden passphrase: " ) ;
+				printf( gettext( "Enter tcrypt hidden passphrase: " ) ) ;
 				/*
 				 * ZULUCRYPT_KEY_MAX_SIZE is set in ../constants.h
 				 */
@@ -290,7 +290,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 					case 2 : return zuluExit( 20,stl ) ;
 				}
 				
-				printf( "\nRe enter tcrypt hidden passphrase: " ) ;
+				printf( gettext( "\nRe enter tcrypt hidden passphrase: " ) ) ;
 				switch( StringSilentlyGetFromTerminal_1( pass_4,ZULUCRYPT_KEY_MAX_SIZE ) ){
 					case 1 : return zuluExit( 19,stl ) ;
 					case 2 : return zuluExit( 20,stl ) ;

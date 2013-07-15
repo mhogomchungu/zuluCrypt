@@ -119,6 +119,26 @@ void MainWindow::setUpApp()
 	this->startAutoMonitor();
 }
 
+void MainWindow::setLocalizationLanguage()
+{
+	QTranslator * translator = new QTranslator( this ) ;
+	
+	QString lang     = utility::localizationLanguage( QString( "zuluMount-gui" ) ) ;
+	QString langPath = utility::localizationLanguagePath() ;
+	
+	QByteArray r = lang.toAscii() ;
+	
+	QByteArray e( "english_US" ) ;
+	if( e == r ){
+		/*
+		 * english_US language,its the default and hence dont load anything
+		 */
+	}else{
+		translator->load( r.constData(),langPath ) ;
+		QCoreApplication::installTranslator( translator ) ;
+	}
+}
+
 #define zuluMOUNT_AUTO_OPEN_FOLDER "/.zuluCrypt/zuluMount-gui.NoAutoOpenFolder"
 
 void MainWindow::autoOpenFolderOnMount( bool b )

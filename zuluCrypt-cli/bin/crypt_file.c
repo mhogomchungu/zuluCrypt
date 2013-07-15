@@ -26,23 +26,23 @@
 static int zuluExit( int st )
 {
 	switch( st ){
-		case 0 : printf( "SUCCESS: encrypted file created successfully\n" )				; break ;
-		case 1 : printf( "SUCCESS: decrypted file created successfully\n" )  				; break ;
-		case 2 : printf( "ERROR: could not open key file for reading\n" )  				; break ;
-		case 3 : printf( "ERROR: missing key source\n" )						; break ;
-		case 4 : printf( "ERROR: could not open encryption routines\n" )				; break ;
-		case 5 : printf( "ERROR: file or folder already exist at destination address\n" )		; break ; 
-		case 6 : printf( "ERROR: invalid path to source\n" )						; break ;
-		case 7 : printf( "ERROR: could not resolve path to destination file\n" )			; break ;
-		case 8 : printf( "ERROR: passphrases do not match\n" )						; break ;
-		case 9 : printf( "ERROR: destination path is missing\n" )					; break ;
-		case 10: printf( "ERROR: insufficient privilege to create destination file\n" )			; break ;
-		case 11: printf( "ERROR: presented key did not match the encryption key\n" )			; break ;
-		case 12: printf( "ERROR: can not get passphrase in silent mode\n"  )				; break ;
-		case 13: printf( "ERROR: insufficient memory to hold passphrase\n" )				; break ;
-		case 14: printf( "ERROR: source path is missing\n" )						; break ;
-		case 15: printf( "ERROR: insufficient privilege to open source file for reading\n" )		; break ;
-		case 16: printf( "INFORMATION: functionality currently disabled\n" ) ;				; break ;
+		case 0 : printf( gettext( "SUCCESS: encrypted file created successfully\n" ) )				; break ;
+		case 1 : printf( gettext( "SUCCESS: decrypted file created successfully\n" ) ) 				; break ;
+		case 2 : printf( gettext( "ERROR: could not open key file for reading\n" ) )   				; break ;
+		case 3 : printf( gettext( "ERROR: missing key source\n" ) )						; break ;
+		case 4 : printf( gettext( "ERROR: could not open encryption routines\n" ) )				; break ;
+		case 5 : printf( gettext( "ERROR: file or folder already exist at destination address\n" ) )		; break ; 
+		case 6 : printf( gettext( "ERROR: invalid path to source\n" ) )						; break ;
+		case 7 : printf( gettext( "ERROR: could not resolve path to destination file\n" ) )			; break ;
+		case 8 : printf( gettext( "ERROR: passphrases do not match\n" )	)					; break ;
+		case 9 : printf( gettext( "ERROR: destination path is missing\n" ) )					; break ;
+		case 10: printf( gettext( "ERROR: insufficient privilege to create destination file\n" ) )		; break ;
+		case 11: printf( gettext( "ERROR: presented key did not match the encryption key\n" ) )			; break ;
+		case 12: printf( gettext( "ERROR: can not get passphrase in silent mode\n"  ) )				; break ;
+		case 13: printf( gettext( "ERROR: insufficient memory to hold passphrase\n" ) )				; break ;
+		case 14: printf( gettext( "ERROR: source path is missing\n" ) )						; break ;
+		case 15: printf( gettext( "ERROR: insufficient privilege to open source file for reading\n" ) )		; break ;
+		case 16: printf( gettext( "INFORMATION: functionality currently disabled\n" ) ) ;			; break ;
 	}	
 	return st ;
 }
@@ -100,7 +100,7 @@ static int crypt_opt( const struct_opts * opts,uid_t uid,int opt )
 	}
 	if( type == NULL ){
 
-		printf( "Enter passphrase: " ) ;
+		printf( gettext( "Enter passphrase: " ) ) ;
 		/*
 		 * ZULUCRYPT_KEY_MAX_SIZE is set in ../constants.h
 		 */
@@ -109,7 +109,7 @@ static int crypt_opt( const struct_opts * opts,uid_t uid,int opt )
 			case 2 : return zuluExit( 13 ) ;
 		}
 		
-		printf( "\nRe enter passphrase: " ) ;
+		printf( gettext( "\nRe enter passphrase: " ) ) ;
 		switch( StringSilentlyGetFromTerminal_1( &q,ZULUCRYPT_KEY_MAX_SIZE ) ){
 			case 1 : StringClearDelete( &p ) ;
 				 return zuluExit( 12 ) ;

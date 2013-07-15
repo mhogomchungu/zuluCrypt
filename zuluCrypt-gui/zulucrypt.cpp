@@ -34,10 +34,34 @@
 #include <QMetaType>
 #include <QDebug>
 #include <QKeySequence>
-zuluCrypt::zuluCrypt( QWidget * parent ) :QMainWindow( parent ),m_ui( new Ui::zuluCrypt ),m_trayIcon( 0 )
+#include <QTranslator>
+
+zuluCrypt::zuluCrypt( QWidget * parent ) :QMainWindow( parent ),m_trayIcon( 0 )
 {
+	this->setLocalizationLanguage() ;
+	m_ui = new Ui::zuluCrypt ;
 	m_folderOpener = QString( "xdg-open" ) ;
 	processArgumentList();
+}
+
+void zuluCrypt::setLocalizationLanguage()
+{
+	QTranslator * translator = new QTranslator( this ) ;
+
+	QString lang     = utility::localizationLanguage( QString( "zuluCrypt-gui" ) ) ;
+	QString langPath = utility::localizationLanguagePath() ;
+
+	QByteArray r = lang.toAscii() ;
+
+	QByteArray e( "english_US" ) ;
+	if( e == r ){
+		/*
+		 *english_US language,its the default and hence dont load anything
+		 */
+	}else{
+		translator->load( r.constData(),langPath ) ;
+		QCoreApplication::installTranslator( translator ) ;
+	}
 }
 
 void zuluCrypt::setFolderOpener()

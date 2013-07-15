@@ -24,17 +24,17 @@ static int zuluExit( int st,string_t p )
 	StringDelete( &p ) ;
 	
 	switch( st ) {
-		case 0 : printf( "SUCCESS: volume closed successfully \n" );								  break ;		 
-		case 1 : printf( "ERROR: close failed, volume is not open or was opened by a different user\n" );      			  break ;
-		case 2 : printf( "ERROR: close failed, the mount point and/or one or more files are in use\n" );			  break ;
-		case 3 : printf( "ERROR: close failed, volume does not have an entry in /etc/mtab\n" ) ;        			  break ;
-		case 4 : printf( "ERROR: close failed, could not get a lock on /etc/mtab~\n" ) ;  	             			  break ;
-		case 5 : printf( "ERROR: close failed, volume is unmounted but could not close mapper,advice to close it manually\n");	  break ;
-		case 6 : printf( "ERROR: close failed, could not resolve full path of device\n");					  break ;
-		case 7 : printf( "ERROR: close failed, shared mount point appear to be busy\n" );					  break ;
-		case 8 : printf( "ERROR: close failed, shared mount point appear to belong to a different user\n" );			  break ;
-		case 9 : printf( "ERROR: close failed, shared mount point appear to be in an ambiguous state,advice to unmount manually" ) ; break ;  
-		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
+		case 0 : printf( gettext( "SUCCESS: volume closed successfully \n" ) ) ;							  break ;		 
+		case 1 : printf( gettext( "ERROR: close failed, volume is not open or was opened by a different user\n" ) ) ;  			  break ;
+		case 2 : printf( gettext( "ERROR: close failed, the mount point and/or one or more files are in use\n" ) ) ;			  break ;
+		case 3 : printf( gettext( "ERROR: close failed, volume does not have an entry in /etc/mtab\n" ) ) ;        			  break ;
+		case 4 : printf( gettext( "ERROR: close failed, could not get a lock on /etc/mtab~\n" ) ) ;  	             			  break ;
+		case 5 : printf( gettext( "ERROR: close failed, volume is unmounted but could not close mapper,advice to close it manually\n") ); break ;
+		case 6 : printf( gettext( "ERROR: close failed, could not resolve full path of device\n") ) ;					  break ;
+		case 7 : printf( gettext( "ERROR: close failed, shared mount point appear to be busy\n" ) ) ;					  break ;
+		case 8 : printf( gettext( "ERROR: close failed, shared mount point appear to belong to a different user\n" ) ) ;		  break ;
+		case 9 : printf( gettext( "ERROR: close failed, shared mount point appear to be in an ambiguous state,advice to unmount manually" ) ) ; break ;  
+		default: printf( gettext( "ERROR: unrecognized error with status number %d encountered\n" ),st );
 	}
 	return st ;
 }

@@ -36,6 +36,7 @@
 #include <QAction>
 #include <QFileDialog>
 #include <QUrl>
+#include <QTranslator>
 
 #include <unistd.h>
 #include "keydialog.h"
@@ -100,6 +101,7 @@ private slots:
 	void autoMountToggled( bool ) ;
 	void autoOpenFolderOnMount( bool ) ;
 private:
+	void setLocalizationLanguage( void ) ;
 	bool autoOpenFolderOnMount( void ) ;
 	void dragEnterEvent( QDragEnterEvent * ) ;
 	void dropEvent( QDropEvent * ) ;

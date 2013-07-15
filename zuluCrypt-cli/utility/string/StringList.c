@@ -824,8 +824,9 @@ char * const * StringListStringArray( stringList_t stl )
 		q = ( char ** ) malloc( sizeof( char * ) ) ;
 		if( q == NULL ){
 			return ( char * const * ) _StringListError() ;
+		}else{
+			q[ 0 ] =  NULL ;
 		}
-		q[ 0 ] = '\0' ;
 	}else{
 		j = stl->size ;
 		p = stl->stp ;
@@ -833,7 +834,7 @@ char * const * StringListStringArray( stringList_t stl )
 		if( q == NULL ){
 			return ( char * const * ) _StringListError() ;
 		}
-		q[ j ] = '\0' ;
+		q[ j ] = NULL ;
 		for( i = 0 ; i < j ; i++ ){
 			if( p[ i ] != StringVoid ){
 				q[ i ] = p[ i ]->string ;
@@ -843,6 +844,46 @@ char * const * StringListStringArray( stringList_t stl )
 		}
 	}
 	return q ;
+}
+
+char * const * StringListStringArray_1( char * const * buffer,size_t * size ,stringList_t stl ) 
+{
+	size_t i ;
+	size_t j ;
+	string_t * p ;
+	char ** e = ( char ** )buffer ;
+	
+	if( stl == StringListVoid ){
+		e = ( char ** ) malloc( sizeof( char * ) ) ;
+		if( e == NULL ){
+			return ( char * const * ) _StringListError() ;
+		}else{
+			*e = NULL ;
+		}
+	}else{
+		j = stl->size ;
+		p = stl->stp ;
+		if( *size < j ){
+			e = ( char ** )realloc( e,sizeof( char * ) * ( j + 1 ) ) ;
+			if( e == NULL ){
+				return ( char * const * ) _StringListError() ;
+				*size = 0 ;
+			}else{
+				*size = j ;
+				e[ j ] = NULL ;
+			}
+		}		
+		
+		for( i = 0 ; i < j ; i++ ){
+			if( p[ i ] != StringVoid ){
+				e[ i ] = p[ i ]->string ;
+			}else{
+				e[ i ] = NULL ;
+			}
+		}
+	}
+	
+	return e ;
 }
 
 size_t StringListRemoveIfStringStartsWith( stringList_t stl,const char * str ) 

@@ -117,7 +117,8 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 	const char * g ;
 	char * dev ;
 	int index ;
-	char * const * entry ;
+	char * const * entry = NULL ;
+	size_t entry_len = 0 ;
 	struct stat str ;
 	stringList_t tmp ;
 	stringList_t stx = StringListVoid;
@@ -140,9 +141,6 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 	n  = String( "" ) ;
 	for( ; it != end ; it++ ){
 		tmp = StringListStringSplit( *it,' ' ) ;
-		if( tmp == StringListVoid ){
-			continue ;
-		}
 		if( !StringListContentAtEqual( tmp,3,"/" ) ){
 			StringListDelete( &tmp ) ;
 			continue ;
@@ -152,7 +150,7 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 			StringListDelete( &tmp ) ;
 			continue ;
 		}
-		entry         = StringListStringArray( tmp ) ;
+		entry         = StringListStringArray_1( entry,&entry_len,tmp ) ;
 		device        = entry[ index+2 ] ;
 		mount_point   = entry[ 4 ] ;
 		file_system   = entry[ index+1 ] ;
@@ -214,10 +212,12 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 		}
 		stx = StringListAppendString( stx,st ) ;
 		StringReset( st ) ;
-		free( ( char * )entry ) ;
 		StringListDelete( &tmp ) ;
 	}
 	
+	if( entry != NULL ){
+		free( ( void * )entry ) ;
+	}
 	StringMultipleDelete( &st,&n,END ) ;
 	StringListDelete( &stl ) ;
 	return stx ;

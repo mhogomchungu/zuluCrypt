@@ -1,0 +1,24 @@
+
+/*
+ * read translation strings from all source files
+ */
+xgettext  -d zuluCrypt-cli -s -o zuluCrypt-cli.pot ../zuluCrypt-cli/bin/add_key.c ../zuluCrypt-cli/bin/close_volume.c ../zuluCrypt-cli/bin/create_volumes.c ../zuluCrypt-cli/bin/crypt_file.c ../zuluCrypt-cli/bin/main.c ../zuluCrypt-cli/bin/open_volume.c ../zuluCrypt-cli/bin/remove_key.c ../zuluCrypt-cli/bin/save_and_restore_luks_header.c ../zuluCrypt-cli/bin/volume_info.c ../zuluCrypt-cli/bin/write_device_with_junk.c
+msginit -l en_US -o zuluCrypt-cli.po -i zuluCrypt-cli.pot 
+msgfmt -c -v -o zuluCrypt-cli.mo zuluCrypt-cli.po 
+
+/*
+ * create a translation file to a particular language
+ * 
+ */
+msginit -l LOCALE -o zuluCrypt-cli.po -i zuluCrypt-cli.pot 
+
+/*
+ * create a language file used by the program
+ * this .mo file is the language placed at some place like "/usr/share/locale/LOCALE/LC_MESSAGES"
+ */
+msgfmt -c -v -o zuluCrypt-cli.mo zuluCrypt-cli.po 
+
+
+xgettext  -d zuluMount-cli -s -o zuluMount-cli.pot ../zuluMount-cli/main.c ../zuluMount-cli/mount.c ../zuluMount-cli/umount.c
+msginit -l en_US -o zuluMount-cli.po -i zuluMount-cli.pot 
+msgfmt -c -v -o zuluMount-cli.mo zuluMount-cli.po 

@@ -156,7 +156,7 @@ int zuluMountVolumeStatus( const char * device,const char * UUID,uid_t uid )
 				st = zuluCryptEXEVolumeInfo( strrchr( dev,'/' ) + 1,dev,uid ) ;
 				free( dev ) ;		
 			}else{
-				printf( "ERROR: could not get volume properties,volume is not open or was opened by a different user\n" ) ;
+				printf( gettext( "ERROR: could not get volume properties,volume is not open or was opened by a different user\n" ) ) ;
 				st = 1 ;
 			}
 		}else{
@@ -175,7 +175,7 @@ int zuluMountVolumeStatus( const char * device,const char * UUID,uid_t uid )
 				st = zuluCryptEXEVolumeInfo( e,dev,uid ) ;
 				free( dev ) ;
 			}else{
-				printf( "ERROR: could not get volume properties,volume is not open or was opened by a different user" ) ;
+				printf( gettext( "ERROR: could not get volume properties,volume is not open or was opened by a different user" ) ) ;
 				st = 1 ;
 			}
 		}else{
@@ -453,35 +453,35 @@ static int _mount_help()
 	const char * doc4 ;
 	const char * doc3 ;
 	const char * doc2 ;
-	const char * doc1 = "\
+	const char * doc1 = gettext( "\
 options:\n\
 -m -- mount a volume : arguments: -d volume_path -z mount_point -e mode(rw/ro)\n\
       -- additional arguments for crypto_LUKS,crypto_PLAIN,crypto_TCRYPT volumes, -p passphrase/-f keyfile\n\
 -z -- mount point component to append to \"/run/media/private/$USER/\n\
--Y -- file system options\n" ;
+-Y -- file system options\n" ) ;
 
-      doc2 = "\
+	doc2 = gettext( "\
 -u -- unmount a volume: arguments: -d volume_path\n\
 -s -- print properties of an encrypted volume: arguments: -d partition_path\n\
--M -- this option will create a mount point in \"/run/media/private/$USER\" and a publicly accessible \"mirror\" in \"/run/media/public/\'\n";
+-M -- this option will create a mount point in \"/run/media/private/$USER\" and a publicly accessible \"mirror\" in \"/run/media/public/\'\n" ) ;
 
-      doc3 = "\
+	doc3 = gettext( "\
 -l -- print expanded list of all volumes\n\
 -L -- must be used with -d,print properties of a volume specified by d option\n\
 -P -- print a list of all volumes\n\
--D -- get a device node address from its mapper path( mapper paths are usually located in /dev/mapper ). Required argument: -d\n";
+-D -- get a device node address from its mapper path( mapper paths are usually located in /dev/mapper ). Required argument: -d\n" ) ;
 	
-     doc4 = "\
+	doc4 = gettext( "\
 -A -- print a list of all volumes\n\
 -S -- print a list of system volumes\n\
 -N -- print a list of non system volumes\n\
--E -- print a list of mounted volumes\n" ;
+-E -- print a list of mounted volumes\n" ) ;
 
-      doc5= "\
+	doc5= gettext( "\
 examples:\n\
 mount a volume  : zuluMount-cli -m -d /dev/sdc1\n\
 unmount a volume: zuluMount-cli -u -d /dev/sdc1\n\
-mount and encrypted volume with a key \"xyz\" : zuluMount-cli -m -d /dev/sdc2 -p xyz\n" ;
+mount and encrypted volume with a key \"xyz\" : zuluMount-cli -m -d /dev/sdc2 -p xyz\n" ) ;
       
       printf( "%s%s%s%s%s",doc1,doc2,doc3,doc4,doc5 ) ;
 	
@@ -490,7 +490,7 @@ mount and encrypted volume with a key \"xyz\" : zuluMount-cli -m -d /dev/sdc2 -p
 
 static void ExitOnMemoryExaustion( void )
 {
-	printf( "unexpected exiting because you have run out of memory\n" ) ;
+	printf( gettext( "unexpected exiting because you have run out of memory\n" ) ) ;
 	exit( 1 ) ;
 }
 
@@ -500,8 +500,8 @@ static int _zuluMountDoAction( ARGS * args )
 	int fd1 = -1 ;
 	int status ;
 	char * dev = NULL ;
-	const char * msg = "ERROR: a non supported device encountered,device is missing or permission denied\n\
-Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The device has LVM or MDRAID signature\n" ;
+	const char * msg = gettext( "ERROR: a non supported device encountered,device is missing or permission denied\n\
+Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The device has LVM or MDRAID signature\n"  ) ;
 	/*
 	 * zuluCryptGetDeviceFileProperties is defined in ../zuluCrypt-lib/file_path_security.c
 	 */
@@ -518,11 +518,11 @@ Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The de
 				 close( fd ) ;
 			 }
 			 return status ;
-		case 1 : printf( "ERROR: devices in /dev/shm path is not suppored\n" ) ;					return 220 ;
-		case 2 : printf( "ERROR: given path is a directory\n" ) ;  					 		return 221 ;
-		case 3 : printf( "ERROR: a file can have only one hard link\n" ) ;				 		return 222 ;
-		case 4 : printf( "ERROR: insufficient privilges to access the device\n" ) ; 					return 223 ;
-		default: printf( "%s",msg ) ; 											return 224 ;
+		case 1 : printf( gettext( "ERROR: devices in /dev/shm path is not suppored\n" ) ) ;	return 220 ;
+		case 2 : printf( gettext( "ERROR: given path is a directory\n" ) ) ;  			return 221 ;
+		case 3 : printf( gettext( "ERROR: a file can have only one hard link\n" ) ) ;		return 222 ;
+		case 4 : printf( gettext( "ERROR: insufficient privilges to access the device\n" ) ) ; 	return 223 ;
+		default: printf( "%s",msg ) ; 								return 224 ;
 	}
 }
 
@@ -646,8 +646,8 @@ int main( int argc,char * argv[] )
 	sigaction( SIGSEGV,&sa,NULL ) ;
 		
 	setlocale( LC_ALL, "" );
-	bindtextdomain( "zuluMount",LOCALE_PATH ) ;
-	textdomain( "zuluMount" );
+	bindtextdomain( "zuluMount-cli",TRANSLATION_PATH ) ;
+	textdomain( "zuluMount-cli" );
 	
 	if( argc < 2 ){
 		return _mount_help() ;
@@ -734,7 +734,7 @@ int main( int argc,char * argv[] )
 	zuluCryptSecurityLockMemory( stl ) ;
 	
 	if( args.action == NULL ){
-		return _zuluExit_2( 212,stl,stx,"ERROR: action not specified" ) ;
+		return _zuluExit_2( 212,stl,stx,gettext( "ERROR: action not specified" ) ) ;
 	}
 	if( StringsAreEqual( args.action,"-E" ) ){
 		return _printAListOfMountedVolumes() ;
@@ -758,7 +758,7 @@ int main( int argc,char * argv[] )
 		return _zuluExit_2( _mount_help(),stl,stx,NULL ) ;
 	}
 	if( args.device == NULL ){
-		return _zuluExit_2( 213,stl,stx,"ERROR: device argument missing" ) ;
+		return _zuluExit_2( 213,stl,stx,gettext( "ERROR: device argument missing" ) ) ;
 	}
 	if( args.m_opts == NULL ){
 		args.m_opts = "rw" ;
@@ -777,7 +777,7 @@ int main( int argc,char * argv[] )
 			status = _zuluMountDoAction( &args ) ;
 			free( device ) ;
 		}else{
-			printf( "could not resolve UUID\n" ) ;
+			printf( gettext( "could not resolve UUID\n" ) ) ;
 			status = 214 ;
 		}
 	}else if( StringPrefixEqual( args.device,"LABEL=" ) ){
@@ -787,7 +787,7 @@ int main( int argc,char * argv[] )
 			status = _zuluMountDoAction( &args ) ;
 			free( device ) ;
 		}else{
-			printf( "could not resolve LABEL\n" ) ;
+			printf( gettext( "could not resolve LABEL\n" ) ) ;
 			status = 215 ;
 		}
 	}else{

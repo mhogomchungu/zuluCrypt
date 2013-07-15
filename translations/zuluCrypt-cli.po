@@ -1,0 +1,966 @@
+# English translations for PACKAGE package.
+# Copyright (C) 2013 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# ink <mhogomchungu@gmail.com>, 2013.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-07-15 02:49-0400\n"
+"PO-Revision-Date: 2013-07-15 02:49-0400\n"
+"Last-Translator: ink <mhogomchungu@gmail.com>\n"
+"Language-Team: English\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../zuluCrypt-cli/bin/add_key.c:110
+#, c-format
+msgid ""
+"\n"
+"Enter the new passphrase: "
+msgstr ""
+"\n"
+"Enter the new passphrase: "
+
+#: ../zuluCrypt-cli/bin/create_volumes.c:226
+#: ../zuluCrypt-cli/bin/crypt_file.c:112
+#, c-format
+msgid ""
+"\n"
+"Re enter passphrase: "
+msgstr ""
+"\n"
+"Re enter passphrase: "
+
+#: ../zuluCrypt-cli/bin/create_volumes.c:293
+#, c-format
+msgid ""
+"\n"
+"Re enter tcrypt hidden passphrase: "
+msgstr ""
+"\n"
+"Re enter tcrypt hidden passphrase: "
+
+#: ../zuluCrypt-cli/bin/add_key.c:116
+#, c-format
+msgid ""
+"\n"
+"Re enter the new passphrase: "
+msgstr ""
+"\n"
+"Re enter the new passphrase: "
+
+#: ../zuluCrypt-cli/bin/write_device_with_junk.c:65
+#, c-format
+msgid ""
+"\n"
+"SUCCESS: random data successfully written\n"
+msgstr ""
+"\n"
+"SUCCESS: random data successfully written\n"
+
+#: ../zuluCrypt-cli/bin/create_volumes.c:203
+#, c-format
+msgid ""
+"\n"
+"This operation will destroy all data in a device at: \"%s\"\n"
+msgstr ""
+"\n"
+"This operation will destroy all data in a device at: \"%s\"\n"
+
+#: ../zuluCrypt-cli/bin/write_device_with_junk.c:289
+#, c-format
+msgid ""
+"\n"
+"WARNING, device \"%s\" will be overwritten with random data destroying all "
+"present data.\n"
+msgstr ""
+"\n"
+"WARNING, device \"%s\" will be overwritten with random data destroying all "
+"present data.\n"
+
+#: ../zuluCrypt-cli/bin/create_volumes.c:66
+#, c-format
+msgid ""
+"\n"
+"creating a backup of the luks header is strongly adviced.\n"
+msgstr ""
+"\n"
+"creating a backup of the luks header is strongly adviced.\n"
+
+#: ../zuluCrypt-cli/bin/main.c:111
+#, c-format
+msgid "\"%s\" is a not tcrypt device\n"
+msgstr "\"%s\" is a not tcrypt device\n"
+
+#: ../zuluCrypt-cli/bin/main.c:95 ../zuluCrypt-cli/bin/main.c:108
+#, c-format
+msgid "\"%s\" is a tcrypt device\n"
+msgstr "\"%s\" is a tcrypt device\n"
+
+#: ../zuluCrypt-cli/bin/main.c:117 ../zuluCrypt-cli/bin/main.c:124
+#, c-format
+msgid "\"%s\" is not a tcrypt device\n"
+msgstr "\"%s\" is not a tcrypt device\n"
+
+#: ../zuluCrypt-cli/bin/create_volumes.c:204
+#, c-format
+msgid "Are you sure you want to proceed?\n"
+msgstr "Are you sure you want to proceed?\n"
+
+#: ../zuluCrypt-cli/bin/write_device_with_junk.c:290
+#, c-format
+msgid ""
+"Are you sure you want to proceed? Type \"YES\" and press enter if you are "
+"sure: "
+msgstr ""
+"Are you sure you want to proceed? Type \"YES\" and press enter if you are "
+"sure: "
+
+#: ../zuluCrypt-cli/bin/save_and_restore_luks_header.c:256
+#, c-format
+msgid ""
+"Are you sure you want to replace a header on device \"%s\" with a backup "
+"copy at \"%s\"?\n"
+"Type \"YES\" and press Enter to continue: "
+msgstr ""
+"Are you sure you want to replace a header on device \"%s\" with a backup "
+"copy at \"%s\"?\n"
+"Type \"YES\" and press Enter to continue: "
+
+#: ../zuluCrypt-cli/bin/remove_key.c:131
+#, c-format
+msgid "Do you still want to continue? Type \"YES\" if you do: "
+msgstr "Do you still want to continue? Type \"YES\" if you do: "
+
+#: ../zuluCrypt-cli/bin/main.c:216
+#, c-format
+msgid "ERROR!!!!!!!!!!: cli option missed!\n"
+msgstr "ERROR!!!!!!!!!!: cli option missed!\n"
+
+#: ../zuluCrypt-cli/bin/main.c:470
+msgid "ERROR: \"action\" argument is missing"
+msgstr "ERROR: \"action\" argument is missing"
+
+#: ../zuluCrypt-cli/bin/open_volume.c:73
+#, c-format
+msgid "ERROR: -O and -m options can not be used together\n"
+msgstr "ERROR: -O and -m options can not be used together\n"
+
+#: ../zuluCrypt-cli/bin/main.c:510
+msgid "ERROR: a file can have only one hard link"
+msgstr "ERROR: a file can have only one hard link"
+
+#: ../zuluCrypt-cli/bin/main.c:512
+msgid ""
+"ERROR: a non supported device encountered,device is missing or permission "
+"denied\n"
+"Possible reasons for getting the error are:\n"
+"1.Device path is invalid.\n"
+"2.The device has LVM or MDRAID signature"
+msgstr ""
+"ERROR: a non supported device encountered,device is missing or permission "
+"denied\n"
+"Possible reasons for getting the error are:\n"
+"1.Device path is invalid.\n"
+"2.The device has LVM or MDRAID signature"
+
+#: ../zuluCrypt-cli/bin/add_key.c:76
+#, c-format
+msgid "ERROR: all key slots are occupied, can not add any more keys\n"
+msgstr "ERROR: all key slots are occupied, can not add any more keys\n"
+
+#: ../zuluCrypt-cli/bin/save_and_restore_luks_header.c:45
+#: ../zuluCrypt-cli/bin/save_and_restore_luks_header.c:46
+#, c-format
+msgid "ERROR: argument for path to a backup  header file is missing\n"
+msgstr "ERROR: argument for path to a backup  header file is missing\n"
+
+#: ../zuluCrypt-cli/bin/save_and_restore_luks_header.c:50
+#, c-format
+msgid "ERROR: backup file does not appear to contain luks header\n"
+msgstr "ERROR: backup file does not appear to contain luks header\n"
+
+#: ../zuluCrypt-cli/bin/create_volumes.c:38
+#, c-format
+msgid "ERROR: can not create a volume on a mounted device\n"
+msgstr "ERROR: can not create a volume on a mounted device\n"
+
+#: ../zuluCrypt-cli/bin/add_key.c:77 ../zuluCrypt-cli/bin/create_volumes.c:51
+#: ../zuluCrypt-cli/bin/crypt_file.c:41 ../zuluCrypt-cli/bin/remove_key.c:67
+#: ../zuluCrypt-cli/bin/write_device_with_junk.c:75
+#, c-format
+msgid "ERROR: can not get passphrase in silent mode\n"
+msgstr "ERROR: can not get passphrase in silent mode\n"
+
+#: ../zuluCrypt-cli/bin/write_device_with_junk.c:72
+#, c-format
+msgid "ERROR: can not open a mapper on a device with an opened mapper\n"
+msgstr "ERROR: can not open a mapper on a device with an opened mapper\n"
+
+#: ../zuluCrypt-cli/bin/write_device_with_junk.c:73
+#, c-format
+msgid "ERROR: can not open a mapper on a mounted device\n"
+msgstr "ERROR: can not open a mapper on a mounted device\n"
+
+#: ../zuluCrypt-cli/bin/close_volume.c:31
+#, c-format
+msgid "ERROR: close failed, could not get a lock on /etc/mtab~\n"
+msgstr "ERROR: close failed, could not get a lock on /etc/mtab~\n"
+
+#: ../zuluCrypt-cli/bin/close_volume.c:33
+#, c-format
+msgid "ERROR: close failed, could not resolve full path of device\n"
+msgstr "ERROR: close failed, could not resolve full path of device\n"
+
+#: ../zuluCrypt-cli/bin/close_volume.c:34
+#, c-format
+msgid "ERROR: close failed, shared mount point appear to be busy\n"
+msgstr "ERROR: close failed, shared mount point appear to be busy\n"
+
+#: ../zuluCrypt-cli/bin/close_volume.c:36
+#, c-format
+msgid ""
+"ERROR: close failed, shared mount point appear to be in an ambiguous state,"
+"advice to unmount manually"
+msgstr ""
+"ERROR: close failed, shared mount point appear to be in an ambiguous state,"
+"advice to unmount manually"
+
+#: ../zuluCrypt-cli/bin/close_volume.c:35
+#, c-format
+msgid ""
+"ERROR: close failed, shared mount point appear to belong to a different "
+"user\n"
+msgstr ""
+"ERROR: close failed, shared mount point appear to belong to a different "
+"user\n"
+
+#: ../zuluCrypt-cli/bin/close_volume.c:29
+#, c-format
+msgid ""
+"ERROR: close failed, the mount point and/or one or more files are in use\n"
+msgstr ""
+"ERROR: close failed, the mount point and/or one or more files are in use\n"
+
+#: ../zuluCrypt-cli/bin/close_volume.c:30
+#, c-format
+msgid "ERROR: close failed, volume does not have an entry in /etc/mtab\n"
+msgstr "ERROR: close failed, volume does not have an entry in /etc/mtab\n"
+
+#: ../zuluCrypt-cli/bin/close_volume.c:28
+#, c-format
+msgid ""
+"ERROR: close failed, volume is not open or was opened by a different user\n"
+msgstr ""
+"ERROR: close failed, volume is not open or was opened by a different user\n"
+
+#: ../zuluCrypt-cli/bin/close_volume.c:32
+#, c-format
+msgid ""
+"ERROR: close failed, volume is unmounted but could not close mapper,advice "
+"to close it manually\n"
+msgstr ""
+"ERROR: close failed, volume is unmounted but could not close mapper,advice "
+"to close it manually\n"
+
+#: ../zuluCrypt-cli/bin/create_volumes.c:39
+#, c-format
+msgid "ERROR: container file must be bigger than 3MB\n"
+msgstr "ERROR: container file must be bigger than 3MB\n"
+
+#: ../zuluCrypt-cli/bin/open_volume.c:86
+#, c-format
+msgid "ERROR: could not create a lock on /etc/mtab\n"
+msgstr "ERROR: could not create a lock on /etc/mtab\n"
+
+#: ../zuluCrypt-cli/bin/create_volumes.c:35
+#, c-format
+msgid "ERROR: could not create an encrypted volume\n"
+msgstr "ERROR: could not create an encrypted volume\n"
+
+#: ../zuluCrypt-cli/bin/write_device_with_junk.c:63
+#, c-format
+msgid "ERROR: could not create mapper\n"
+msgstr "ERROR: could not create mapper\n"
+
+#: ../zuluCrypt-cli/bin/open_volume.c:74
+#, c-format
+msgid ""
+"ERROR: could not create mount point, invalid path or path already taken\n"
+msgstr ""
+"ERROR: could not create mount point, invalid path or path already taken\n"
+
+#: ../zuluCrypt-cli/bin/main.c:500
+msgid "ERROR: could not find any partition with the presented UUID"
+msgstr "ERROR: could not find any partition with the presented UUID"
+
+#: ../zuluCrypt-cli/bin/create_volumes.c:47
+#, c-format
+msgid "ERROR: could not get a key from a key file\n"
+msgstr "ERROR: could not get a key from a key file\n"
+
+#: ../zuluCrypt-cli/bin/add_key.c:84 ../zuluCrypt-cli/bin/create_volumes.c:49
+#: ../zuluCrypt-cli/bin/remove_key.c:73
+#, c-format
+msgid "ERROR: could not get a key from a socket\n"
+msgstr "ERROR: could not get a key from a socket\n"
+
+#: ../zuluCrypt-cli/bin/open_volume.c:77
+#, c-format
+msgid "ERROR: could not get a passphrase from the module\n"
+msgstr "ERROR: could not get a passphrase from the module\n"
+
+#: ../zuluCrypt-cli/bin/open_volume.c:84
+#, c-format
+msgid "ERROR: could not get a passphrase through a local socket\n"
+msgstr "ERROR: could not get a passphrase through a local socket\n"
+
+#: ../zuluCrypt-cli/bin/main.c:42
+#, c-format
+msgid "ERROR: could not get device address from mapper address\n"
+msgstr "ERROR: could not get device address from mapper address\n"
+
+#: ../zuluCrypt-cli/bin/add_key.c:85
+#, c-format
+msgid "ERROR: could not get elevated privilege,check binary permissions\n"
+msgstr "ERROR: could not get elevated privilege,check binary permissions\n"
+
+#: ../zuluCrypt-cli/bin/remove_key.c:71
+#, c-format
+msgid "ERROR: could not get enough memory to open the key file\n"
+msgstr "ERROR: could not get enough memory to open the key file\n"
+
+#: ../zuluCrypt-cli/bin/open_volume.c:82
+#: ../zuluCrypt-cli/bin/write_device_with_junk.c:70
+#, c-format
+msgid "ERROR: could not get enought memory to hold the key file\n"
+msgstr "ERROR: could not get enought memory to hold the key file\n"
+
+#: ../zuluCrypt-cli/bin/create_volumes.c:43
+#: ../zuluCrypt-cli/bin/open_volume.c:78
+#, c-format
+msgid "ERROR: could not get passphrase in silent mode\n"
+msgstr "ERROR: could not get passphrase in silent mode\n"
+
+#: ../zuluCrypt-cli/bin/volume_info.c:46
+#, c-format
+msgid ""
+"ERROR: could not get volume properties,volume is not open or was opened by a "
+"different user\n"
+msgstr ""
+"ERROR: could not get volume properties,volume is not open or was opened by a "
+"different user\n"
+
+#: ../zuluCrypt-cli/bin/crypt_file.c:33
+#, c-format
+msgid "ERROR: could not open encryption routines\n"
+msgstr "ERROR: could not open encryption routines\n"
+
+#: ../zuluCrypt-cli/bin/crypt_file.c:31
+#, c-format
+msgid "ERROR: could not open key file for reading\n"
+msgstr "ERROR: could not open key file for reading\n"
+
+#: ../zuluCrypt-cli/bin/add_key.c:71
+#, c-format
+msgid "ERROR: could not open luks volume\n"
+msgstr "ERROR: could not open luks volume\n"
+
+#: ../zuluCrypt-cli/bin/remove_key.c:61
+#, c-format
+msgid "ERROR: could not open the volume\n"
+msgstr "ERROR: could not open the volume\n"
+
+#: ../zuluCrypt-cli/bin/remove_key.c:64
+#, c-format
+msgid "ERROR: could not open the volume in write mode\n"
+msgstr "ERROR: could not open the volume in write mode\n"
+
+#: ../zuluCrypt-cli/bin/create_volumes.c:36
+#, c-format
+msgid "ERROR: could not open volume for writing\n"
+msgstr "ERROR: could not open volume for writing\n"
+
+#: ../zuluCrypt-cli/bin/add_key.c:75
+#, c-format
+msgid "ERROR: could not open volume in write mode\n"
+msgstr "ERROR: could not open volume in write mode\n"
+
+#: ../zuluCrypt-cli/bin/write_device_with_junk.c:64
+#, c-format
+msgid "ERROR: could not resolve device path\n"
+msgstr "ERROR: could not resolve device path\n"
+
+#: ../zuluCrypt-cli/bin/crypt_file.c:36
+#, c-format
+msgid "ERROR: could not resolve path to destination file\n"
+msgstr "ERROR: could not resolve path to destination file\n"
+
+#: ../zuluCrypt-cli/bin/main.c:523
+msgid "ERROR: could not resolve path to device"
+msgstr "ERROR: could not resolve path to device"
+
+#: ../zuluCrypt-cli/bin/save_and_restore_luks_header.c:49
+#, c-format
+msgid "ERROR: could not resolve path to device\n"
+msgstr "ERROR: could not resolve path to device\n"
+
+#: ../zuluCrypt-cli/bin/add_key.c:83 ../zuluCrypt-cli/bin/create_volumes.c:48
+#, c-format
+msgid "ERROR: couldnt get enought memory to hold the key file\n"
+msgstr "ERROR: couldnt get enought memory to hold the key file\n"
+
+#: ../zuluCrypt-cli/bin/crypt_file.c:38
+#, c-format
+msgid "ERROR: destination path is missing\n"
+msgstr "ERROR: destination path is missing\n"
+
+#: ../zuluCrypt-cli/bin/add_key.c:94 ../zuluCrypt-cli/bin/remove_key.c:81
+#, c-format
+msgid "ERROR: device \"%s\" is not a luks device\n"
+msgstr "ERROR: device \"%s\" is not a luks device\n"
+
+#: ../zuluCrypt-cli/bin/write_device_with_junk.c:68
+#, c-format
+msgid "ERROR: device path is invalid\n"
+msgstr "ERROR: device path is invalid\n"
+
+#: ../zuluCrypt-cli/bin/main.c:508
+msgid "ERROR: devices in /dev/shm/ path is not suppored"
+msgstr "ERROR: devices in /dev/shm/ path is not suppored"
+
+#: ../zuluCrypt-cli/bin/open_volume.c:85
+#, c-format
+msgid ""
+"ERROR: failed to mount a filesystem:invalid/unsupported mount option or "
+"unsupported file system encountered\n"
+msgstr ""
+"ERROR: failed to mount a filesystem:invalid/unsupported mount option or "
+"unsupported file system encountered\n"
+
+#: ../zuluCrypt-cli/bin/open_volume.c:66
+#, c-format
+msgid ""
+"ERROR: failed to mount ntfs file system using ntfs-3g,is ntfs-3g package "
+"installed?\n"
+msgstr ""
+"ERROR: failed to mount ntfs file system using ntfs-3g,is ntfs-3g package "
+"installed?\n"
+
+#: ../zuluCrypt-cli/bin/save_and_restore_luks_header.c:36
+#: ../zuluCrypt-cli/bin/save_and_restore_luks_header.c:37
+#: ../zuluCrypt-cli/bin/save_and_restore_luks_header.c:40
+#, c-format
+msgid "ERROR: failed to perform requested operation\n"
+msgstr "ERROR: failed to perform requested operation\n"
+
+#: ../zuluCrypt-cli/bin/crypt_file.c:34
+#, c-format
+msgid "ERROR: file or folder already exist at destination address\n"
+msgstr "ERROR: file or folder already exist at destination address\n"
+
+#: ../zuluCrypt-cli/bin/main.c:509
+msgid "ERROR: given path is a directory"
+msgstr "ERROR: given path is a directory"
+
+#: ../zuluCrypt-cli/bin/write_device_with_junk.c:77
+#, c-format
+msgid "ERROR: insufficient memory to hold 3 characters?really?\n"
+msgstr "ERROR: insufficient memory to hold 3 characters?really?\n"
+
+#: ../zuluCrypt-cli/bin/add_key.c:78 ../zuluCrypt-cli/bin/create_volumes.c:52
+#: ../zuluCrypt-cli/bin/crypt_file.c:42 ../zuluCrypt-cli/bin/open_volume.c:79
+#: ../zuluCrypt-cli/bin/remove_key.c:68
+#: ../zuluCrypt-cli/bin/write_device_with_junk.c:76
+#, c-format
+msgid "ERROR: insufficient memory to hold passphrase\n"
+msgstr "ERROR: insufficient memory to hold passphrase\n"
+
+#: ../zuluCrypt-cli/bin/create_volumes.c:44
+#, c-format
+msgid "ERROR: insufficient memory to hold the passphrase\n"
+msgstr "ERROR: insufficient memory to hold the passphrase\n"
+
+#: ../zuluCrypt-cli/bin/save_and_restore_luks_header.c:52
+#, c-format
+msgid "ERROR: insufficient memory to hold your responce\n"
+msgstr "ERROR: insufficient memory to hold your responce\n"
+
+#: ../zuluCrypt-cli/bin/create_volumes.c:41
+#: ../zuluCrypt-cli/bin/remove_key.c:65
+#, c-format
+msgid "ERROR: insufficient memory to hold your response\n"
+msgstr "ERROR: insufficient memory to hold your response\n"
+
+#: ../zuluCrypt-cli/bin/save_and_restore_luks_header.c:43
+#, c-format
+msgid ""
+"ERROR: insufficient privilege to create a backup header in a destination "
+"folder\n"
+msgstr ""
+"ERROR: insufficient privilege to create a backup header in a destination "
+"folder\n"
+
+#: ../zuluCrypt-cli/bin/crypt_file.c:39
+#, c-format
+msgid "ERROR: insufficient privilege to create destination file\n"
+msgstr "ERROR: insufficient privilege to create destination file\n"
+
+#: ../zuluCrypt-cli/bin/open_volume.c:70
+#, c-format
+msgid "ERROR: insufficient privilege to mount the device with given options\n"
+msgstr "ERROR: insufficient privilege to mount the device with given options\n"
+
+#: ../zuluCrypt-cli/bin/create_volumes.c:33
+#, c-format
+msgid ""
+"ERROR: insufficient privilege to open a system device in read/write mode,\n"
+"only root user or members of group zulucrypt-system can do that"
+msgstr ""
+"ERROR: insufficient privilege to open a system device in read/write mode,\n"
+"only root user or members of group zulucrypt-system can do that"
+
+#: ../zuluCrypt-cli/bin/add_key.c:73
+#, c-format
+msgid ""
+"ERROR: insufficient privilege to open a system device,\n"
+"only root user or members of group \"zulucrypt\" can do that\n"
+msgstr ""
+"ERROR: insufficient privilege to open a system device,\n"
+"only root user or members of group \"zulucrypt\" can do that\n"
+
+#: ../zuluCrypt-cli/bin/remove_key.c:62
+#, c-format
+msgid ""
+"ERROR: insufficient privilege to open a system device,only root user or "
+"members of group zulucrypt-system can do that\n"
+msgstr ""
+"ERROR: insufficient privilege to open a system device,only root user or "
+"members of group zulucrypt-system can do that\n"
+
+#: ../zuluCrypt-cli/bin/save_and_restore_luks_header.c:41
+#, c-format
+msgid "ERROR: insufficient privilege to open backup header file for reading\n"
+msgstr "ERROR: insufficient privilege to open backup header file for reading\n"
+
+#: ../zuluCrypt-cli/bin/open_volume.c:71
+#, c-format
+msgid "ERROR: insufficient privilege to open device\n"
+msgstr "ERROR: insufficient privilege to open device\n"
+
+#: ../zuluCrypt-cli/bin/save_and_restore_luks_header.c:51
+#, c-format
+msgid "ERROR: insufficient privilege to open device for reading\n"
+msgstr "ERROR: insufficient privilege to open device for reading\n"
+
+#: ../zuluCrypt-cli/bin/save_and_restore_luks_header.c:48
+#, c-format
+msgid "ERROR: insufficient privilege to open device for writing\n"
+msgstr "ERROR: insufficient privilege to open device for writing\n"
+
+#: ../zuluCrypt-cli/bin/add_key.c:82 ../zuluCrypt-cli/bin/open_volume.c:83
+#: ../zuluCrypt-cli/bin/remove_key.c:72
+#: ../zuluCrypt-cli/bin/write_device_with_junk.c:71
+#, c-format
+msgid "ERROR: insufficient privilege to open key file for reading\n"
+msgstr "ERROR: insufficient privilege to open key file for reading\n"
+
+#: ../zuluCrypt-cli/bin/crypt_file.c:44
+#, c-format
+msgid "ERROR: insufficient privilege to open source file for reading\n"
+msgstr "ERROR: insufficient privilege to open source file for reading\n"
+
+#: ../zuluCrypt-cli/bin/write_device_with_junk.c:78
+#, c-format
+msgid "ERROR: insufficient privilege to open the file with your privileges?\n"
+msgstr "ERROR: insufficient privilege to open the file with your privileges?\n"
+
+#: ../zuluCrypt-cli/bin/main.c:511
+msgid "ERROR: insufficient privilges to access the device"
+msgstr "ERROR: insufficient privilges to access the device"
+
+#: ../zuluCrypt-cli/bin/main.c:176
+#, c-format
+msgid "ERROR: insufficient privilges to operate on a system device\n"
+msgstr "ERROR: insufficient privilges to operate on a system device\n"
+
+#: ../zuluCrypt-cli/bin/write_device_with_junk.c:67
+#, c-format
+msgid "ERROR: insufficitied privilege to oped device \n"
+msgstr "ERROR: insufficitied privilege to oped device \n"
+
+#: ../zuluCrypt-cli/bin/save_and_restore_luks_header.c:42
+#, c-format
+msgid "ERROR: invalid path to back up header file\n"
+msgstr "ERROR: invalid path to back up header file\n"
+
+#: ../zuluCrypt-cli/bin/save_and_restore_luks_header.c:44
+#, c-format
+msgid "ERROR: invalid path to device\n"
+msgstr "ERROR: invalid path to device\n"
+
+#: ../zuluCrypt-cli/bin/create_volumes.c:46
+#: ../zuluCrypt-cli/bin/open_volume.c:81
+#, c-format
+msgid "ERROR: invalid path to key file\n"
+msgstr "ERROR: invalid path to key file\n"
+
+#: ../zuluCrypt-cli/bin/crypt_file.c:35
+#, c-format
+msgid "ERROR: invalid path to source\n"
+msgstr "ERROR: invalid path to source\n"
+
+#: ../zuluCrypt-cli/bin/main.c:82
+#, c-format
+msgid "ERROR: key argument is missing\n"
+msgstr "ERROR: key argument is missing\n"
+
+#: ../zuluCrypt-cli/bin/main.c:86
+#, c-format
+msgid "ERROR: key source argument is missing\n"
+msgstr "ERROR: key source argument is missing\n"
+
+#: ../zuluCrypt-cli/bin/remove_key.c:70
+#, c-format
+msgid "ERROR: keyfile does not exist\n"
+msgstr "ERROR: keyfile does not exist\n"
+
+#: ../zuluCrypt-cli/bin/crypt_file.c:32
+#, c-format
+msgid "ERROR: missing key source\n"
+msgstr "ERROR: missing key source\n"
+
+#: ../zuluCrypt-cli/bin/add_key.c:79
+#, c-format
+msgid "ERROR: new passphrases do not match\n"
+msgstr "ERROR: new passphrases do not match\n"
+
+#: ../zuluCrypt-cli/bin/open_volume.c:68
+#, c-format
+msgid "ERROR: no file or device exist on given path\n"
+msgstr "ERROR: no file or device exist on given path\n"
+
+#: ../zuluCrypt-cli/bin/add_key.c:81
+#, c-format
+msgid "ERROR: one or both keyfile(s) does not exist\n"
+msgstr "ERROR: one or both keyfile(s) does not exist\n"
+
+#: ../zuluCrypt-cli/bin/add_key.c:80 ../zuluCrypt-cli/bin/create_volumes.c:50
+#: ../zuluCrypt-cli/bin/open_volume.c:80 ../zuluCrypt-cli/bin/remove_key.c:69
+#, c-format
+msgid "ERROR: one or more required argument(s) for this operation is missing\n"
+msgstr ""
+"ERROR: one or more required argument(s) for this operation is missing\n"
+
+#: ../zuluCrypt-cli/bin/save_and_restore_luks_header.c:47
+#, c-format
+msgid ""
+"ERROR: only root and \"zulucrypt\" group members can restore and back up "
+"luks headers on system devices\n"
+msgstr ""
+"ERROR: only root and \"zulucrypt\" group members can restore and back up "
+"luks headers on system devices\n"
+
+#: ../zuluCrypt-cli/bin/open_volume.c:72
+#, c-format
+msgid "ERROR: only root user can perform this operation\n"
+msgstr "ERROR: only root user can perform this operation\n"
+
+#: ../zuluCrypt-cli/bin/write_device_with_junk.c:69
+#, c-format
+msgid "ERROR: passphrase file does not exist\n"
+msgstr "ERROR: passphrase file does not exist\n"
+
+#: ../zuluCrypt-cli/bin/create_volumes.c:45
+#: ../zuluCrypt-cli/bin/create_volumes.c:53
+#: ../zuluCrypt-cli/bin/crypt_file.c:37
+#, c-format
+msgid "ERROR: passphrases do not match\n"
+msgstr "ERROR: passphrases do not match\n"
+
+#: ../zuluCrypt-cli/bin/save_and_restore_luks_header.c:39
+#, c-format
+msgid ""
+"ERROR: path to be used to create a back up file is occupied or permission "
+"denied\n"
+msgstr ""
+"ERROR: path to be used to create a back up file is occupied or permission "
+"denied\n"
+
+#: ../zuluCrypt-cli/bin/save_and_restore_luks_header.c:35
+#, c-format
+msgid "ERROR: presented device is not a LUKS device\n"
+msgstr "ERROR: presented device is not a LUKS device\n"
+
+#: ../zuluCrypt-cli/bin/create_volumes.c:32
+#, c-format
+msgid ""
+"ERROR: presented file system is not supported,see documentation for more "
+"information\n"
+msgstr ""
+"ERROR: presented file system is not supported,see documentation for more "
+"information\n"
+
+#: ../zuluCrypt-cli/bin/crypt_file.c:40
+#, c-format
+msgid "ERROR: presented key did not match the encryption key\n"
+msgstr "ERROR: presented key did not match the encryption key\n"
+
+#: ../zuluCrypt-cli/bin/add_key.c:70
+#, c-format
+msgid "ERROR: presented key does not match any key in the volume\n"
+msgstr "ERROR: presented key does not match any key in the volume\n"
+
+#: ../zuluCrypt-cli/bin/main.c:473
+msgid "ERROR: required option( device path ) is missing for this operation"
+msgstr "ERROR: required option( device path ) is missing for this operation"
+
+#: ../zuluCrypt-cli/bin/main.c:326
+msgid "ERROR: setegid() failed"
+msgstr "ERROR: setegid() failed"
+
+#: ../zuluCrypt-cli/bin/main.c:323
+msgid "ERROR: setgroups() failed"
+msgstr "ERROR: setgroups() failed"
+
+#: ../zuluCrypt-cli/bin/open_volume.c:75
+#, c-format
+msgid "ERROR: shared mount point path aleady taken\n"
+msgstr "ERROR: shared mount point path aleady taken\n"
+
+#: ../zuluCrypt-cli/bin/crypt_file.c:43
+#, c-format
+msgid "ERROR: source path is missing\n"
+msgstr "ERROR: source path is missing\n"
+
+#: ../zuluCrypt-cli/bin/remove_key.c:60
+#, c-format
+msgid "ERROR: there is no key in the volume that match the presented key\n"
+msgstr "ERROR: there is no key in the volume that match the presented key\n"
+
+#: ../zuluCrypt-cli/bin/open_volume.c:67
+#, c-format
+msgid "ERROR: there seem to be an open volume accociated with given address\n"
+msgstr "ERROR: there seem to be an open volume accociated with given address\n"
+
+#: ../zuluCrypt-cli/bin/create_volumes.c:37
+#: ../zuluCrypt-cli/bin/open_volume.c:76
+#, c-format
+msgid "ERROR: there seem to be an opened mapper associated with the device\n"
+msgstr "ERROR: there seem to be an opened mapper associated with the device\n"
+
+#: ../zuluCrypt-cli/bin/add_key.c:86 ../zuluCrypt-cli/bin/close_volume.c:37
+#: ../zuluCrypt-cli/bin/create_volumes.c:54
+#: ../zuluCrypt-cli/bin/remove_key.c:74
+#, c-format
+msgid "ERROR: unrecognized error with status number %d encountered\n"
+msgstr "ERROR: unrecognized error with status number %d encountered\n"
+
+#: ../zuluCrypt-cli/bin/open_volume.c:69
+#, c-format
+msgid "ERROR: volume could not be opened with the presented key\n"
+msgstr "ERROR: volume could not be opened with the presented key\n"
+
+#: ../zuluCrypt-cli/bin/add_key.c:72
+#, c-format
+msgid "ERROR: volume is not a luks volume\n"
+msgstr "ERROR: volume is not a luks volume\n"
+
+#: ../zuluCrypt-cli/bin/remove_key.c:144
+#, c-format
+msgid "Enter a key to be removed: "
+msgstr "Enter a key to be removed: "
+
+#: ../zuluCrypt-cli/bin/add_key.c:105
+#, c-format
+msgid "Enter an existing passphrase: "
+msgstr "Enter an existing passphrase: "
+
+#: ../zuluCrypt-cli/bin/create_volumes.c:217
+#: ../zuluCrypt-cli/bin/crypt_file.c:103
+#: ../zuluCrypt-cli/bin/open_volume.c:248
+#: ../zuluCrypt-cli/bin/write_device_with_junk.c:165
+#, c-format
+msgid "Enter passphrase: "
+msgstr "Enter passphrase: "
+
+#: ../zuluCrypt-cli/bin/create_volumes.c:284
+#, c-format
+msgid "Enter tcrypt hidden passphrase: "
+msgstr "Enter tcrypt hidden passphrase: "
+
+#: ../zuluCrypt-cli/bin/create_volumes.c:42
+#: ../zuluCrypt-cli/bin/remove_key.c:66
+#, c-format
+msgid "INFO: operation terminated per user request\n"
+msgstr "INFO: operation terminated per user request\n"
+
+#: ../zuluCrypt-cli/bin/save_and_restore_luks_header.c:38
+#, c-format
+msgid "INFO: operation terminater per user request\n"
+msgstr "INFO: operation terminater per user request\n"
+
+#: ../zuluCrypt-cli/bin/write_device_with_junk.c:74
+#, c-format
+msgid "INFO: signal caught,exiting prematurely\n"
+msgstr "INFO: signal caught,exiting prematurely\n"
+
+#: ../zuluCrypt-cli/bin/write_device_with_junk.c:66
+#, c-format
+msgid "INFO: user chose not to proceed\n"
+msgstr "INFO: user chose not to proceed\n"
+
+#: ../zuluCrypt-cli/bin/crypt_file.c:45
+#, c-format
+msgid "INFORMATION: functionality currently disabled\n"
+msgstr "INFORMATION: functionality currently disabled\n"
+
+#: ../zuluCrypt-cli/bin/create_volumes.c:67
+#, c-format
+msgid ""
+"Please read documentation on why this is important\n"
+"\n"
+msgstr ""
+"Please read documentation on why this is important\n"
+"\n"
+
+#: ../zuluCrypt-cli/bin/crypt_file.c:30
+#, c-format
+msgid "SUCCESS: decrypted file created successfully\n"
+msgstr "SUCCESS: decrypted file created successfully\n"
+
+#: ../zuluCrypt-cli/bin/crypt_file.c:29
+#, c-format
+msgid "SUCCESS: encrypted file created successfully\n"
+msgstr "SUCCESS: encrypted file created successfully\n"
+
+#: ../zuluCrypt-cli/bin/save_and_restore_luks_header.c:34
+#, c-format
+msgid "SUCCESS: header restored successfully\n"
+msgstr "SUCCESS: header restored successfully\n"
+
+#: ../zuluCrypt-cli/bin/save_and_restore_luks_header.c:33
+#, c-format
+msgid "SUCCESS: header saved successfully\n"
+msgstr "SUCCESS: header saved successfully\n"
+
+#: ../zuluCrypt-cli/bin/add_key.c:69
+#, c-format
+msgid "SUCCESS: key added successfully\n"
+msgstr "SUCCESS: key added successfully\n"
+
+#: ../zuluCrypt-cli/bin/remove_key.c:59
+#, c-format
+msgid "SUCCESS: key removed successfully\n"
+msgstr "SUCCESS: key removed successfully\n"
+
+#: ../zuluCrypt-cli/bin/open_volume.c:47
+#, c-format
+msgid "SUCCESS: luks volume opened successfully\n"
+msgstr "SUCCESS: luks volume opened successfully\n"
+
+#: ../zuluCrypt-cli/bin/write_device_with_junk.c:56
+#, c-format
+msgid "SUCCESS: mapper created successfully\n"
+msgstr "SUCCESS: mapper created successfully\n"
+
+#: ../zuluCrypt-cli/bin/open_volume.c:49
+#, c-format
+msgid "SUCCESS: plain volume opened successfully\n"
+msgstr "SUCCESS: plain volume opened successfully\n"
+
+#: ../zuluCrypt-cli/bin/open_volume.c:51
+#, c-format
+msgid "SUCCESS: tcrypt volume opened successfully\n"
+msgstr "SUCCESS: tcrypt volume opened successfully\n"
+
+#: ../zuluCrypt-cli/bin/close_volume.c:27
+#, c-format
+msgid "SUCCESS: volume closed successfully \n"
+msgstr "SUCCESS: volume closed successfully \n"
+
+#: ../zuluCrypt-cli/bin/create_volumes.c:31
+#: ../zuluCrypt-cli/bin/create_volumes.c:63
+#, c-format
+msgid "SUCCESS: volume created successfully\n"
+msgstr "SUCCESS: volume created successfully\n"
+
+#: ../zuluCrypt-cli/bin/open_volume.c:53
+#, c-format
+msgid "SUCCESS: volume opened successfully\n"
+msgstr "SUCCESS: volume opened successfully\n"
+
+#: ../zuluCrypt-cli/bin/create_volumes.c:205
+#, c-format
+msgid "Type \"YES\" and press enter if you want to process: "
+msgstr "Type \"YES\" and press enter if you want to process: "
+
+#: ../zuluCrypt-cli/bin/remove_key.c:130
+#, c-format
+msgid ""
+"WARNING: there is only one key in the volume and all data in it will be lost "
+"if you continue.\n"
+msgstr ""
+"WARNING: there is only one key in the volume and all data in it will be lost "
+"if you continue.\n"
+
+#: ../zuluCrypt-cli/bin/create_volumes.c:211
+#: ../zuluCrypt-cli/bin/remove_key.c:136
+#: ../zuluCrypt-cli/bin/save_and_restore_luks_header.c:266
+#: ../zuluCrypt-cli/bin/write_device_with_junk.c:296
+msgid "YES"
+msgstr "YES"
+
+#: ../zuluCrypt-cli/bin/main.c:150
+#, c-format
+msgid "device \"%s\" is not a luks device\n"
+msgstr "device \"%s\" is not a luks device\n"
+
+#: ../zuluCrypt-cli/bin/main.c:66
+#, c-format
+msgid "device is a luks volume\n"
+msgstr "device is a luks volume\n"
+
+#: ../zuluCrypt-cli/bin/main.c:68
+#, c-format
+msgid "device is not a luks volume\n"
+msgstr "device is not a luks volume\n"
+
+#: ../zuluCrypt-cli/bin/main.c:188
+#, c-format
+msgid "header backup does not match the one on the device\n"
+msgstr "header backup does not match the one on the device\n"
+
+#: ../zuluCrypt-cli/bin/main.c:185
+#, c-format
+msgid "header backup match the one on the device\n"
+msgstr "header backup match the one on the device\n"
+
+#: ../zuluCrypt-cli/bin/write_device_with_junk.c:59
+#, c-format
+msgid "opened mapper path: "
+msgstr "opened mapper path: "
+
+#: ../zuluCrypt-cli/bin/main.c:139
+#, c-format
+msgid "path \"%s\" does not point to a device\n"
+msgstr "path \"%s\" does not point to a device\n"
+
+#: ../zuluCrypt-cli/bin/write_device_with_junk.c:327
+msgid "percentage complete: "
+msgstr "percentage complete: "
+
+#: ../zuluCrypt-cli/bin/main.c:237
+#, c-format
+msgid "unexpected exiting because you have run out of memory\n"
+msgstr "unexpected exiting because you have run out of memory\n"
+
+#: ../zuluCrypt-cli/bin/open_volume.c:58
+#, c-format
+msgid "volume mounted at: %s\n"
+msgstr "volume mounted at: %s\n"

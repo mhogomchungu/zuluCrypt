@@ -159,7 +159,7 @@ ADD_SUBDIRECTORY( zuluCrypt-gui )
 ADD_SUBDIRECTORY( plugins )
 ADD_SUBDIRECTORY( zuluMount-gui )
 
-file( WRITE ${PROJECT_BINARY_DIR}/locale_path.h "\n#define LOCALE_PATH \"${CMAKE_INSTALL_PREFIX}/share/locale/\"\n")
+file( WRITE ${PROJECT_BINARY_DIR}/locale_path.h "\n#define TRANSLATION_PATH \"${CMAKE_INSTALL_PREFIX}/share/zuluCrypt/translations/\"\n")
 
 endif( NOT NOGUI )
 

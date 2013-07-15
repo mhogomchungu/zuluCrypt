@@ -30,26 +30,26 @@
 static int zuluExit( int st )
 {
 	switch( st ){
-		case 0 : printf( "SUCCESS: header saved successfully\n" ) 						; break ;
-		case 1 : printf( "SUCCESS: header restored successfully\n" ) 						; break ;
-		case 2 : printf( "ERROR: presented device is not a LUKS device\n" ) 					; break ;
-		case 3 : printf( "ERROR: failed to perform requested operation\n" ) 					; break ;
-		case 4 : printf( "ERROR: failed to perform requested operation\n" )					; break ;
-		case 5 : printf( "INFO: operation terminater per user request\n" ) 					; break ;
-		case 6 : printf( "ERROR: path to be used to create a back up file is occupied or permission denied\n" )	; break ;
-		case 7 : printf( "ERROR: failed to perform requested operation\n" ) 					; break ;
-		case 8 : printf( "ERROR: insufficient privilege to open backup header file for reading\n" ) 		; break ;
-		case 9 : printf( "ERROR: invalid path to back up header file\n" ) 					; break ;
-		case 10: printf( "ERROR: insufficient privilege to create a backup header in a destination folder\n" ) 	; break ;
-		case 11: printf( "ERROR: invalid path to device\n" ) 							; break ;
-		case 12: printf( "ERROR: argument for path to a backup  header file is missing\n" ) 			; break ;
-		case 13: printf( "ERROR: argument for path to a backup  header file is missing\n" ) 			; break ;
-		case 14: printf( "ERROR: only root and \"zulucrypt\" group members can restore and back up luks headers on system devices\n" )	; break ;
-		case 15: printf( "ERROR: insufficient privilege to open device for writing\n" ) 			; break ;
-		case 16: printf( "ERROR: could not resolve path to device\n" ) 						; break ;
-		case 17: printf( "ERROR: backup file does not appear to contain luks header\n" ) 			; break ;
-		case 18: printf( "ERROR: insufficient privilege to open device for reading\n" ) 			; break ;
-		case 19: printf( "ERROR: insufficient memory to hold your responce\n" )		 			; break ;
+		case 0 : printf( gettext( "SUCCESS: header saved successfully\n" ) )						; break ;
+		case 1 : printf( gettext( "SUCCESS: header restored successfully\n" ) )						; break ;
+		case 2 : printf( gettext( "ERROR: presented device is not a LUKS device\n" ) ) 					; break ;
+		case 3 : printf( gettext( "ERROR: failed to perform requested operation\n" ) )					; break ;
+		case 4 : printf( gettext( "ERROR: failed to perform requested operation\n" ) )					; break ;
+		case 5 : printf( gettext( "INFO: operation terminater per user request\n" ) )					; break ;
+		case 6 : printf( gettext( "ERROR: path to be used to create a back up file is occupied or permission denied\n" ) ); break ;
+		case 7 : printf( gettext( "ERROR: failed to perform requested operation\n" ) )					; break ;
+		case 8 : printf( gettext( "ERROR: insufficient privilege to open backup header file for reading\n" ) )		; break ;
+		case 9 : printf( gettext( "ERROR: invalid path to back up header file\n" ) )					; break ;
+		case 10: printf( gettext( "ERROR: insufficient privilege to create a backup header in a destination folder\n" )); break ;
+		case 11: printf( gettext( "ERROR: invalid path to device\n" ) )							; break ;
+		case 12: printf( gettext( "ERROR: argument for path to a backup  header file is missing\n" ) )			; break ;
+		case 13: printf( gettext( "ERROR: argument for path to a backup  header file is missing\n" ) )			; break ;
+		case 14: printf( gettext( "ERROR: only root and \"zulucrypt\" group members can restore and back up luks headers on system devices\n" )	); break ;
+		case 15: printf( gettext( "ERROR: insufficient privilege to open device for writing\n" ) )			; break ;
+		case 16: printf( gettext( "ERROR: could not resolve path to device\n" ) )					; break ;
+		case 17: printf( gettext( "ERROR: backup file does not appear to contain luks header\n" ) )			; break ;
+		case 18: printf( gettext( "ERROR: insufficient privilege to open device for reading\n" ) )			; break ;
+		case 19: printf( gettext( "ERROR: insufficient memory to hold your responce\n" ) )	 			; break ;
 	}
 	
 	if( st == 1 ){
@@ -253,9 +253,9 @@ static int restore_header( const char * device,const char * path,int k,uid_t uid
 	
 	int st = 7;
 	string_t confirm ;
-	const char * warn = "\
+	const char * warn = gettext( "\
 Are you sure you want to replace a header on device \"%s\" with a backup copy at \"%s\"?\n\
-Type \"YES\" and press Enter to continue: " ;
+Type \"YES\" and press Enter to continue: " ) ;
 	if( uid ){;}
 	if( k == -1 ){
 		zuluCryptSecurityDropElevatedPrivileges() ;
@@ -263,7 +263,7 @@ Type \"YES\" and press Enter to continue: " ;
 				
 		confirm = StringGetFromTerminal_1( 3 ) ;
 		if( confirm != StringVoid ){
-			k = StringEqual( confirm,"YES" ) ;
+			k = StringEqual( confirm,gettext( "YES" ) );
 			StringDelete( &confirm ) ;
 			if( k == 0 ){
 				return 5 ;

@@ -156,6 +156,7 @@ private:
 	manageluksheader * setUpManageLuksHeader( void );
 	cryptfiles * setUpCryptFiles( void );
 
+	void setLocalizationLanguage( void ) ;
 	void StartUpAddOpenedVolumesToTableThread( void );
 	void setupConnections( void ) ;
 	void setupUIElements( void ) ;
