@@ -510,7 +510,7 @@ int zuluCryptPrintPartitions( int option,int info,uid_t uid )
 	}
 	
 	if( stl == StringListVoid ){
-		printf( "ERROR: unable to print requested list of partitions\n" ) ;
+		printf( gettext( "ERROR: unable to print requested list of partitions\n" ) ) ;
 		return 1 ;
 	}
 	

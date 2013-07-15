@@ -47,13 +47,13 @@ zuluCrypt::zuluCrypt( QWidget * parent ) :QMainWindow( parent ),m_trayIcon( 0 )
 void zuluCrypt::setLocalizationLanguage()
 {
 	QTranslator * translator = new QTranslator( this ) ;
-
-	QString lang     = utility::localizationLanguage( QString( "zuluCrypt-gui" ) ) ;
-	QString langPath = utility::localizationLanguagePath() ;
+	QString program = QString( "zuluCrypt-gui" ) ;
+	QString lang     = utility::localizationLanguage( program ) ;
+	QString langPath = utility::localizationLanguagePath( program ) ;
 
 	QByteArray r = lang.toAscii() ;
 
-	QByteArray e( "english_US" ) ;
+	QByteArray e( "en_US" ) ;
 	if( e == r ){
 		/*
 		 *english_US language,its the default and hence dont load anything

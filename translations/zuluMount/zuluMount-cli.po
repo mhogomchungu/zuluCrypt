@@ -1,15 +1,15 @@
 # English translations for PACKAGE package.
 # Copyright (C) 2013 THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# ink <mhogomchungu@gmail.com>, 2013.
+# ink <ink@mtz>, 2013.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-07-15 02:53-0400\n"
-"PO-Revision-Date: 2013-07-15 02:54-0400\n"
-"Last-Translator: ink <mhogomchungu@gmail.com>\n"
+"PO-Revision-Date: 2013-07-15 06:08-0400\n"
+"Last-Translator: ink <ink@mtz>\n"
 "Language-Team: English\n"
 "Language: en_US\n"
 "MIME-Version: 1.0\n"

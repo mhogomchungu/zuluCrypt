@@ -193,7 +193,7 @@ int zuluMountMount( ARGS * args )
 	const char * rm_point ;
 	unsigned long m_flags ;
 	const char * dev = device ;
-	const char * msg =gettext( "\
+	const char * msg = gettext( "\
 ERROR: insuffienct privilege to manage a system volume.\nnecessary privileges can be acquired by:\n\
 1. adding an entry for the volume in fstab with \"user\" mount option\n\
 2. add yourself to \"zulumount\" group" ) ;

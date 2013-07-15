@@ -645,7 +645,7 @@ int main( int argc,char * argv[] )
 	sa.sa_handler = _forceTerminateOnSeriousError ;
 	sigaction( SIGSEGV,&sa,NULL ) ;
 		
-	setlocale( LC_ALL, "" );
+	setlocale( LC_ALL,"" ) ;
 	bindtextdomain( "zuluMount-cli",TRANSLATION_PATH ) ;
 	textdomain( "zuluMount-cli" );
 	

@@ -30,6 +30,7 @@ MainWindow::MainWindow( int argc,char * argv[],QWidget * parent ) :QWidget( pare
 
 void MainWindow::setUpApp()
 {
+	this->setLocalizationLanguage();
 	m_ui = new Ui::MainWindow ;
 	m_ui->setupUi(this);
 
@@ -122,13 +123,13 @@ void MainWindow::setUpApp()
 void MainWindow::setLocalizationLanguage()
 {
 	QTranslator * translator = new QTranslator( this ) ;
-	
-	QString lang     = utility::localizationLanguage( QString( "zuluMount-gui" ) ) ;
-	QString langPath = utility::localizationLanguagePath() ;
-	
+	QString pgr      = QString( "zuluMount-gui" ) ;
+	QString lang     = utility::localizationLanguage( pgr ) ;
+	QString langPath = utility::localizationLanguagePath( pgr ) ;
+
 	QByteArray r = lang.toAscii() ;
-	
-	QByteArray e( "english_US" ) ;
+
+	QByteArray e( "en_US" ) ;
 	if( e == r ){
 		/*
 		 * english_US language,its the default and hence dont load anything
@@ -383,7 +384,7 @@ void MainWindow::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 			m_sharedFolderPath = utility::sharedMountPointPath( mt ) ;
 			if( m_sharedFolderPath.isEmpty() ){
 				if( mt.startsWith( QString( "/run/media/private/" ) ) ){
-					m.addAction( QString( "no available options for this volume" ) ) ;
+					m.addAction( tr( "no available options for this volume" ) ) ;
 				}else{
 					connect( m.addAction( tr( "open folder" ) ),SIGNAL( triggered() ),this,SLOT( slotOpenFolder() ) ) ;
 				}
@@ -631,7 +632,7 @@ void MainWindow::showMoungDialog( QStringList l )
 		this->mount( l.at( 2 ),l.at( 0 ),l.at( 3 ) );
 	}else{
 		DialogMsg msg( this ) ;
-		msg.ShowUIOK( QString( "ERROR" ),QString( "permission to access the volume was denied\nor\nthe volume is not supported\n(LVM/MDRAID signatures found)" ) ) ;
+		msg.ShowUIOK( tr( "ERROR" ),tr( "permission to access the volume was denied\nor\nthe volume is not supported\n(LVM/MDRAID signatures found)" ) ) ;
 		this->enableAll();
 	}
 }
@@ -826,7 +827,7 @@ void MainWindow::slotUnmountComplete( int status,QString msg )
 {
 	if( status ){
 		DialogMsg m( this ) ;
-		m.ShowUIOK( QString( "ERROR" ),msg );
+		m.ShowUIOK( tr( "ERROR" ),msg );
 	}else{
 		QTableWidget * table = m_ui->tableWidget ;
 

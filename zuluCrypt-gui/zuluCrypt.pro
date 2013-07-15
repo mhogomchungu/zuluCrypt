@@ -110,7 +110,7 @@ FORMS    += zulucrypt.ui password.ui \
     managesystemvolumes.ui \
     kwalletconfig.ui
 
-TRANSLATIONS =
+TRANSLATIONS = ../translations/zuluCrypt/en_US.ts
 
 RESOURCES = icon.qrc
 

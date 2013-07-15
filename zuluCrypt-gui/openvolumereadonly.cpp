@@ -33,7 +33,7 @@ int openvolumereadonly::setOption( QWidget * parent, int state,QString app )
 	f.close();
 
 	DialogMsg msg( parent ) ;
-	QString m = tr( "setting this option will cause the volume to open in read only mode" ) ;
+	QString m = QObject::tr( "setting this option will cause the volume to open in read only mode" ) ;
 
 	QString path = Path + QString( "-readOnlyOption" ) ;
 
@@ -46,14 +46,14 @@ int openvolumereadonly::setOption( QWidget * parent, int state,QString app )
 		if( opt == QByteArray( "0" ) && state == 2 ) {
 			f.seek( 0 ) ;
 
-			st = msg.ShowUIOKDoNotShowOption( tr( "info" ),m ) ;
+			st = msg.ShowUIOKDoNotShowOption( QObject::tr( "info" ),m ) ;
 
 			st ? f.write( "1" ) : f.write( "0" ) ;
 
 			f.close();
 		}
 	}else{
-		st = msg.ShowUIOKDoNotShowOption( tr( "info" ),m ) ;
+		st = msg.ShowUIOKDoNotShowOption( QObject::tr( "info" ),m ) ;
 
 		f.open( QIODevice::WriteOnly ) ;
 

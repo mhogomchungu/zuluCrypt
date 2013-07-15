@@ -30,7 +30,7 @@
 #include <QTableWidget>
 #include <QMessageBox>
 #include <QTableWidgetItem>
-
+#include <QProcessEnvironment>
 #include <unistd.h>
 #include <pwd.h>
 
@@ -66,7 +66,7 @@ public:
 	static QString sharedMountPointPath( QString ) ;
 	static bool pathPointsToAFile( QString ) ;
 	static QString localizationLanguage( QString ) ;
-	static QString localizationLanguagePath( void ) ;
+	static QString localizationLanguagePath( QString ) ;
 	static void setLocalizationLanguage( QString,QString ) ;
 };
 

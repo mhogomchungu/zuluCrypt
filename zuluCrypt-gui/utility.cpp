@@ -55,13 +55,13 @@ void utility::help( QString app )
 {
 	std::cout << VERSION_STRING << std::endl ;
 
-	QString helpMsg = "\n\
+	QString helpMsg = QObject::tr( "\n\
 options:\n\
 	-d   path to where a volume to be auto unlocked/mounted is located\n\
-	-m   tool to use to open a default file manager(default tool is xdg-open)\n" ;
+	-m   tool to use to open a default file manager(default tool is xdg-open)\n" ) ;
 
 	if( app == QString( "zuluMount" ) ){
-		  helpMsg += ( "\
+		  helpMsg += QObject::tr( "\
 	-e   start the application without showing the GUI\n" ) ;
 	}
 
@@ -72,10 +72,10 @@ options:\n\
 
 QString utility::shareMountPointToolTip()
 {
-	const char * msg ="\
+	QString s = QObject::tr( "\
 if the option is checked,a primary private mount point will be created in \"/run/media/private/$USER/\"\n\
-and a secondary publicly accessible \"mirror\" mount point will be created in \"/run/media/public/\"" ;
-	return QString( msg ) ;
+and a secondary publicly accessible \"mirror\" mount point will be created in \"/run/media/public/\"" ) ;
+	return s ;
 }
 
 QString utility::shareMountPointToolTip( QString path )
@@ -123,16 +123,55 @@ bool utility::pathPointsToAFile( QString path )
 
 QString utility::localizationLanguage( QString program )
 {
-	Q_UNUSED( program ) ;
-	return QString( "english_US" ) ;
+	QString langPath = utility::localizationLanguagePath( program ) ;
+	QProcessEnvironment env = QProcessEnvironment::systemEnvironment() ;
+	QString value = env.value( QString( "LANG" ) ) ;
+
+	QString ext = QString( ".qm" ) ;
+	if( !value.isEmpty() ){
+		QStringList values = value.split( ":" ) ;
+
+		QDir dir( langPath ) ;
+
+		QStringList dirList = dir.entryList() ;
+		dirList.removeOne( QString( "." ) ) ;
+		dirList.removeOne( QString( ".." ) ) ;
+		int j = values.size() ;
+
+		for( int i = 0 ; i < j ; i++ ){
+			if( dirList.contains( values.at( i ) + ext ) ){
+				return values.at( i ) ;
+			}
+		}
+	}
+
+	value = env.value( QString( "LANGUAGE" ) ) ;
+
+	if( !value.isEmpty() ){
+		QStringList values = value.split( ":" ) ;
+
+		QDir dir( langPath ) ;
+
+		QStringList dirList = dir.entryList() ;
+		dirList.removeOne( QString( "." ) ) ;
+		dirList.removeOne( QString( ".." ) ) ;
+		int j = values.size() ;
+		for( int i = 0 ; i < j ; i++ ){
+			if( dirList.contains( values.at( i ) + ext ) ){
+				return values.at( i ) ;
+			}
+		}
+	}
+
+	return QString( "en_US" ) ;
 }
 
-QString utility::localizationLanguagePath()
+QString utility::localizationLanguagePath( QString program )
 {
-	return QString( TRANSLATION_PATH ) ;
+	return QString( TRANSLATION_PATH ) + program ;
 }
 
-void utility::setLocalizationLanguage( QString program, QString language )
+void utility::setLocalizationLanguage( QString program,QString language )
 {
 	Q_UNUSED( program ) ;
 	Q_UNUSED( language ) ;

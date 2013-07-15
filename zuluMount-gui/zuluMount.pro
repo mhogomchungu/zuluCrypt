@@ -43,6 +43,7 @@ HEADERS  += mainwindow.h\
     auto_mount.h \
     auto_mount_helper.h
 
+TRANSLATIONS = ../translations/zuluMount/en_US.ts
 
 FORMS    += mainwindow.ui\
 	    ../zuluCrypt-gui/dialogmsg.ui \
