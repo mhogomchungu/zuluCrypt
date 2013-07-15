@@ -65,15 +65,15 @@ cryptfiles::cryptfiles( QWidget * parent ) :QDialog( parent ),m_ui( new Ui::cryp
 
 void cryptfiles::rbKeyChecked()
 {
-	m_ui->lineEditPass_1->setToolTip( QString( "enter a key" ) );
+	m_ui->lineEditPass_1->setToolTip( tr( "enter a key" ) );
 	m_ui->pushButtonKeyFile->setIcon( QIcon( QString( ":/passphrase.png" ) ) );
 	m_ui->pushButtonKeyFile->setEnabled( false );
 	m_ui->lineEditPass_1->clear();
 	m_ui->lineEditPass_2->clear();
 	m_ui->lineEditPass_1->setEchoMode( QLineEdit::Password );
 	m_ui->lineEditPass_1->setFocus();
-	m_ui->labelKey->setText( QString( "key" ) );
-	m_ui->labelKey2->setText( QString( "repeat key" ) );
+	m_ui->labelKey->setText( tr( "key" ) );
+	m_ui->labelKey2->setText( tr( "repeat key" ) );
 
 	if( m_operation == QString( "-E" ) ){
 		m_ui->labelKey2->setEnabled( true );
@@ -84,8 +84,8 @@ void cryptfiles::rbKeyChecked()
 
 void cryptfiles::rbKeyFileChecked()
 {
-	m_ui->lineEditPass_1->setToolTip( QString( "enter a path to a keyfile location" ) );
-	m_ui->labelKey->setText( QString( "keyfile path" ) );
+	m_ui->lineEditPass_1->setToolTip( tr( "enter a path to a keyfile location" ) );
+	m_ui->labelKey->setText( tr( "keyfile path" ) );
 	m_ui->pushButtonKeyFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) );
 	m_ui->lineEditPass_2->setEnabled( false );
 	m_ui->pushButtonKeyFile->setEnabled( true );

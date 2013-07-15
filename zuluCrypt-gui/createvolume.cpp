@@ -58,8 +58,8 @@ createvolume::createvolume( QWidget * parent ) :
 	m_ui->groupBox->setEnabled( false ) ;
 
 #if TRUECRYPT_CREATE
-	m_ui->comboBoxVolumeType->addItem( QString( "normal truecrypt" ) ) ;
-	m_ui->comboBoxVolumeType->addItem( QString( "normal+hidden truecrypt" ) ) ;
+	m_ui->comboBoxVolumeType->addItem( tr( "normal truecrypt" ) ) ;
+	m_ui->comboBoxVolumeType->addItem( tr( "normal+hidden truecrypt" ) ) ;
 #endif
 }
 
@@ -73,7 +73,7 @@ void createvolume::keyChanged( QString key )
 			this->setWindowTitle( tr( "passphrase quality: %1/100" ).arg( st ) ) ;
 		}
 	}else{
-		this->setWindowTitle( QString( "create a new volume" ) ) ;
+		this->setWindowTitle( tr( "create a new volume" ) ) ;
 	}
 }
 

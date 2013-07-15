@@ -32,7 +32,7 @@ erasedevice::erasedevice( QWidget * parent ) :
 	m_ui->progressBar->setMaximum( 100 );
 	m_ui->progressBar->setMinimum( 0 );
 
-	this->setWindowTitle( QString( "write random data over existing data" ) );
+	this->setWindowTitle( tr( "write random data over existing data" ) );
 
 	connect( m_ui->pushButtonFile,SIGNAL( clicked() ),this,SLOT( pbFile() ) );
 	connect( m_ui->pushButtonPartition,SIGNAL( clicked() ),this,SLOT( pbPartition() ) );
@@ -74,7 +74,7 @@ void erasedevice::ShowUI( QString path )
 
 void erasedevice::threadExitStatus( int st )
 {
-	this->setWindowTitle( QString( "write random data over existing data" ) );
+	this->setWindowTitle( tr( "write random data over existing data" ) );
 
 	m_dt = NULL ;
 
@@ -143,7 +143,7 @@ void erasedevice::pbStart()
 	connect( m_dt,SIGNAL( progress( int ) ),this,SLOT( setProgress( int ) ) );
 	connect( m_dt,SIGNAL( exitStatus( int ) ),this,SLOT( threadExitStatus( int ) ) );
 
-	this->setWindowTitle( QString( "writing random data over existing data" ) );
+	this->setWindowTitle( tr( "writing random data over existing data" ) );
 
 	m_dt->start();
 }

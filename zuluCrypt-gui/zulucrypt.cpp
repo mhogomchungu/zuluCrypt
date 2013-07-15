@@ -346,7 +346,11 @@ void zuluCrypt::closeAllVolumes()
 
 void zuluCrypt::closeAll( QTableWidgetItem * i,int st )
 {
-	st ? closeStatusErrorMessage( st ) : removeRowFromTable( i->row() );
+	if( st ){
+		closeStatusErrorMessage( st ) ;
+	}else{
+		removeRowFromTable( i->row() ) ;
+	}
 }
 
 void zuluCrypt::minimize()
@@ -356,7 +360,7 @@ void zuluCrypt::minimize()
 
 void zuluCrypt::minimizeToTray()
 {
-	if( m_ui->actionTray_icon->isChecked() == true ){
+	if( m_ui->actionTray_icon->isChecked() ){
 		this->hide();
 	}else{
 		m_ui->actionTray_icon->setChecked( true );
@@ -367,7 +371,7 @@ void zuluCrypt::minimizeToTray()
 
 void zuluCrypt::closeEvent( QCloseEvent * e )
 {
-	if( m_trayIcon->isVisible() == true ){
+	if( m_trayIcon->isVisible() ){
 		this->hide();
 		e->ignore();
 	}else{
@@ -406,7 +410,7 @@ void zuluCrypt::closeApplication()
 void zuluCrypt::trayClicked( QSystemTrayIcon::ActivationReason e )
 {
 	if( e == QSystemTrayIcon::Trigger ){
-		if( this->isVisible() == true ){
+		if( this->isVisible() ){
 			this->hide();
 		}else{
 			this->show();
@@ -526,7 +530,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>." ).arg( VE
 
 void zuluCrypt::HelpLuksHeaderBackUp()
 {
-	QString msg = QString( "\nAll luks based encrypted volumes have what is called a \"luks header\".\n\n\
+	QString msg = tr( "\nAll luks based encrypted volumes have what is called a \"luks header\".\n\n\
 A luks header is responsible for storing information necessary to open a luks based volume and any damage \
 to it will makes it impossible to open the volume causing permanent loss of encrypted data.\n\n\
 The damage to the header is usually caused by accidental formatting of the device or use of \
@@ -582,7 +586,7 @@ void zuluCrypt::volumePropertyThreadFinished( QString properties )
 	}else{
 		msg.ShowUIVolumeProperties( tr( "volume properties" ),properties );
 	}
-	m_ui->tableWidget->setEnabled(true );
+	m_ui->tableWidget->setEnabled( true );
 }
 
 void zuluCrypt::favAboutToHide()
@@ -600,7 +604,7 @@ void zuluCrypt::readFavorites()
 	QAction * ac ;
 	m_ui->menuFavorites->clear();
 	QStringList l = utility::readFavorites() ;
-	if( l.isEmpty() == false ){
+	if( !l.isEmpty() ){
 		for( int i = 0 ; i < l.size() - 1 ; i++ ){
 			ac = new QAction( l.at( i ),m_ui->menuFavorites ) ;
 			m_ui->menuFavorites->addAction( ac );
@@ -690,16 +694,16 @@ void zuluCrypt::itemClicked( QTableWidgetItem * item, bool clicked )
 
 	QByteArray data = f.readAll() ;
 
-	QAction a( tr( "add to favorite" ),( QObject * )&m ) ;
+	QAction a( tr( "add to favorite" ),static_cast<QObject *>( &m ) ) ;
+	QAction * ac = static_cast<QAction *>( &a ) ;
 
-	m.addAction( &a );
+	m.addAction( ac ) ;
 
-	if( strstr( data.data() , fav.toAscii().data() ) == NULL ){
-		a.setEnabled( true );
-		a.connect( ( QObject * )&a,SIGNAL( triggered() ),this,SLOT( addToFavorite() ) ) ;
-
+	if( data.contains( fav.toAscii() ) ){
+		a.setEnabled( false ) ;
 	}else{
-		a.setEnabled( false );
+		a.setEnabled( true );
+		a.connect( ac,SIGNAL( triggered() ),this,SLOT( addToFavorite() ) ) ;
 	}
 	if( clicked ){
 		m.exec( QCursor::pos() ) ;
