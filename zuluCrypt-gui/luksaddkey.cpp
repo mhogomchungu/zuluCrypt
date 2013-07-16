@@ -174,7 +174,7 @@ void luksaddkey::pbOpenPartition( void )
 
 void luksaddkey::rbExistingPassphrase( void )
 {
-	m_ui->textEditExistingPassphrase->setToolTip( QString( "enter a key" ) );
+	m_ui->textEditExistingPassphrase->setToolTip( tr( "enter a key" ) );
 	m_ui->textEditExistingPassphrase->setEchoMode( QLineEdit::Password );
 	m_ui->pushButtonOpenExistingKeyFile->setEnabled( false );
 	m_ui->labelExistingPassphrase->setText( tr( "key" ) ) ;
@@ -185,7 +185,7 @@ void luksaddkey::rbExistingPassphrase( void )
 
 void luksaddkey::rbExistingPassphraseFromFile( void )
 {
-	m_ui->textEditExistingPassphrase->setToolTip( QString( "enter a path to a keyfile location" ) );
+	m_ui->textEditExistingPassphrase->setToolTip( tr( "enter a path to a keyfile location" ) );
 	m_ui->textEditExistingPassphrase->setEchoMode( QLineEdit::Normal );
 	m_ui->pushButtonOpenExistingKeyFile->setEnabled( true );
 	m_ui->labelExistingPassphrase->setText( tr( "keyfile path" ) ) ;
@@ -197,7 +197,7 @@ void luksaddkey::rbExistingPassphraseFromFile( void )
 
 void luksaddkey::rbNewPassphrase( void )
 {
-	m_ui->textEditPassphraseToAdd->setToolTip( QString( "enter a key" ) );
+	m_ui->textEditPassphraseToAdd->setToolTip( tr( "enter a key" ) );
 	m_ui->textEditPassphraseToAdd->setEchoMode( QLineEdit::Password );
 	m_ui->pushButtonOpenNewKeyFile->setEnabled( false );
 	m_ui->labelNewPassphrase->setText( tr( "key" ) ) ;
@@ -210,7 +210,7 @@ void luksaddkey::rbNewPassphrase( void )
 
 void luksaddkey::rbNewPassphraseFromFile()
 {
-	m_ui->textEditPassphraseToAdd->setToolTip( QString( "enter a path to a keyfile location" ) );
+	m_ui->textEditPassphraseToAdd->setToolTip( tr( "enter a path to a keyfile location" ) );
 	m_ui->textEditPassphraseToAdd->setEchoMode( QLineEdit::Normal );
 	m_ui->pushButtonOpenNewKeyFile->setEnabled( true );
 	m_ui->labelNewPassphrase->setText( tr( "keyfile path" ) ) ;

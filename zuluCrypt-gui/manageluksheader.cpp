@@ -79,18 +79,18 @@ void manageluksheader::ShowUI()
 void manageluksheader::restoreHeader()
 {
 	m_operation = QString( "restore" ) ;
-	this->setWindowTitle( QString( "restore luks header" ) );
+	this->setWindowTitle( tr( "restore luks header" ) );
 	m_ui->labelBackUpHeader->setText( QString( "backup path" ) );
-	m_ui->pbCreate->setText( QString( "&restore" ) );
+	m_ui->pbCreate->setText( tr( "&restore" ) );
 	this->ShowUI();
 }
 
 void manageluksheader::headerBackUp()
 {
 	m_operation = QString( "backup" ) ;
-	this->setWindowTitle( QString( "back up luks header" ) );
+	this->setWindowTitle( tr( "back up luks header" ) );
 	m_ui->labelBackUpHeader->setText( QString( "backup path" ) );
-	m_ui->pbCreate->setText( QString( "&backup" ) );
+	m_ui->pbCreate->setText( tr( "&backup" ) );
 	this->ShowUI();
 }
 
@@ -311,7 +311,7 @@ void manageluksheader::threadExitStatus( int st )
 		case 16: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not resolve path to device" ) )					; break ;
 		case 17: msg.ShowUIOK( tr( "ERROR!" ),tr( "backup file does not appear to contain luks header" ) )			; break ;
 		case 18: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open device for reading" ) )			; break ;
-		case 113: msg.ShowUIOK( tr( "ERROR!" ),tr( "device is not a luks device" ) ) 						; break ;   
+		case 113: msg.ShowUIOK( tr( "ERROR!" ),tr( "device is not a luks device" ) ) 						; break ;
 		default : msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR! with status number %1 encountered" ).arg( st ) );
 	}
 	this->enableAll();

@@ -260,13 +260,13 @@ void keyDialog::slotMountComplete( int st,QString m )
 
 			DialogMsg m( this ) ;
 
-			m.ShowUIOK( QString( "ERROR" ),QString( "An error has occured and the volume could not be opened" ) );
+			m.ShowUIOK( tr( "ERROR" ),tr( "An error has occured and the volume could not be opened" ) );
 			this->HideUI();
 		}
 	}else{
 		DialogMsg msg( this ) ;
 
-		msg.ShowUIOK( QString( "ERROR" ),m ) ;
+		msg.ShowUIOK( tr( "ERROR" ),m ) ;
 		m_ui->lineEditKey->clear();
 		m_ui->rbKey->setChecked( true );
 		this->enableAll();

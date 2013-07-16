@@ -271,23 +271,23 @@ void MainWindow::itemEntered( QTableWidgetItem * item )
 		if( x == QString( "Nil" ) ){
 			x.clear();
 		}
-		z = QString( "LABEL=\"%1\"" ).arg( x ) ;
+		z = tr( "LABEL=\"%1\"" ).arg( x ) ;
 
 	}else if( m_point == QString( "Nil" ) ){
 		/*
 		 * volume is not mounted,cant know its LABEL value
 		 */
 		x.clear();
-		z = QString( "LABEL=\"%1\"" ).arg( x ) ;
+		z = tr( "LABEL=\"%1\"" ).arg( x ) ;
 	}else{
 		if( x == QString( "Nil" ) ){
 			x.clear();
 		}
 		y = utility::shareMountPointToolTip( m_point ) ;
 		if( y.isEmpty() ){
-			z = QString( "LABEL=\"%1\"" ).arg( x ) ;
+			z = tr( "LABEL=\"%1\"" ).arg( x ) ;
 		}else{
-			z = QString( "LABEL=\"%1\"\n%2" ).arg( x ).arg( y ) ;
+			z = tr( "LABEL=\"%1\"\n%2" ).arg( x ).arg( y ) ;
 		}
 	}
 	item->setToolTip( z );

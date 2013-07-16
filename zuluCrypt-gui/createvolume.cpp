@@ -308,7 +308,7 @@ void createvolume::rbPassphraseClicked()
 	m_ui->labelPassPhrase->setText( tr( "key" ) );
 	m_ui->labelRepeatPassPhrase->setEnabled( true );
 	m_ui->pbOpenKeyFile->setIcon( QIcon( QString( ":/passphrase.png" ) ) );
-	this->setWindowTitle( QString( "create a new volume" ) ) ;
+	this->setWindowTitle( tr( "create a new volume" ) ) ;
 }
 
 void createvolume::rbPasssphraseFromFileClicked()
@@ -321,7 +321,7 @@ void createvolume::rbPasssphraseFromFileClicked()
 	m_ui->labelPassPhrase->setText( tr( "keyfile" ) );
 	m_ui->labelRepeatPassPhrase->setEnabled( false );
 	m_ui->pbOpenKeyFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) );
-	this->setWindowTitle( QString( "create a new volume" ) ) ;
+	this->setWindowTitle( tr( "create a new volume" ) ) ;
 }
 
 void createvolume::rbHiddenPassphraseClicked()
@@ -335,7 +335,7 @@ void createvolume::rbHiddenPassphraseClicked()
 	m_ui->lineEditHiddenKey1->setEchoMode( QLineEdit::Password );
 	m_ui->labelHidden->setText( tr( "key" ) );
 	m_ui->pbHiddenKeyFile->setIcon( QIcon( QString( ":/passphrase.png" ) ) );
-	this->setWindowTitle( QString( "create a new volume" ) ) ;
+	this->setWindowTitle( tr( "create a new volume" ) ) ;
 }
 
 void createvolume::rbHiddenPasssphraseFromFileClicked()
@@ -347,7 +347,7 @@ void createvolume::rbHiddenPasssphraseFromFileClicked()
 	m_ui->lineEditHiddenKey1->setEnabled( false );
 	m_ui->labelHidden->setText( tr( "keyfile" ) ) ;
 	m_ui->pbHiddenKeyFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) );
-	this->setWindowTitle( QString( "create a new volume" ) ) ;
+	this->setWindowTitle( tr( "create a new volume" ) ) ;
 }
 
 void createvolume::pbCreateClicked()
@@ -388,7 +388,7 @@ void createvolume::pbCreateClicked()
 
 	QString source ;
 
-	if ( m_ui->rbPassphraseFromFile->isChecked() == true ){
+	if ( m_ui->rbPassphraseFromFile->isChecked() ){
 		if( passphrase_1.isEmpty() ){
 			return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) );
 		}
@@ -413,7 +413,7 @@ void createvolume::pbCreateClicked()
 		case 1 : m_volumeType = QString( "plain" )     ; break ;
 		case 2 : m_volumeType = QString( "truecrypt" ) ; break ;
 		case 3 : m_volumeType = QString( "truecrypt" ) ; break ;
-	default: m_volumeType = QString( "luks " )     ;
+		default: m_volumeType = QString( "luks " )     ;
 	}
 
 	QString g ;

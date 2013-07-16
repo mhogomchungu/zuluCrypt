@@ -68,7 +68,7 @@ void luksdeletekey::closeEvent( QCloseEvent * e )
 
 void luksdeletekey::rbPassphrase()
 {
-	m_ui->lineEditPassphrase->setToolTip( QString( "enter a key" ) );
+	m_ui->lineEditPassphrase->setToolTip( tr( "enter a key" ) );
 	m_ui->labelPassphrase->setText( tr( "key" ) );
 	m_ui->lineEditPassphrase->setEchoMode( QLineEdit::Password );
 	m_ui->lineEditPassphrase->clear();
@@ -79,7 +79,7 @@ void luksdeletekey::rbPassphrase()
 
 void luksdeletekey::rbPassphraseFromFile()
 {
-	m_ui->lineEditPassphrase->setToolTip( QString( "enter a path to a keyfile location" ) );
+	m_ui->lineEditPassphrase->setToolTip( tr( "enter a path to a keyfile location" ) );
 	m_ui->labelPassphrase->setText( tr( "keyfile path" ) );
 	m_ui->lineEditPassphrase->setEchoMode( QLineEdit::Normal );
 	m_ui->lineEditPassphrase->clear();

@@ -63,7 +63,7 @@ void kwalletconfig::pbAdd()
 	entry.append( uuid );
 	entry.append( comm );
 	//entry.append( pass );
-	entry.append( QString( "<redacted>" ) );
+	entry.append( tr( "<redacted>" ) );
 
 	tablewidget::addRowToTable( m_ui->tableWidget,entry ) ;
 

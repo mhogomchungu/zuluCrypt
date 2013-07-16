@@ -51,13 +51,11 @@ void erasedevice::ShowUI()
 	m_option = 0 ;
 
 	DialogMsg msg( this );
+	QString x = tr ( "\
+The next dialog will write random data to a device leading to permanent loss of all contents on the device.\n\n\
+Are you sure you want to continue? " ) ;
 
-	QString msg_1 = tr( "The next dialog will write random data to a device " );
-	QString msg_2 = tr( "leading to permanent loss of all contents on the device.\n\n" );
-	QString msg_3 = tr( "Are you sure you want to continue?" );
-	QString msg_4 = msg_1 + msg_2 + msg_3 ;
-
-	if( msg.ShowUIYesNoDefaultNo( tr( "WARNING" ),msg_4 ) == QMessageBox::Yes ){
+	if( msg.ShowUIYesNoDefaultNo( tr( "WARNING" ),x ) == QMessageBox::Yes ){
 		this->show();
 	}else{
 		this->HideUI();
@@ -124,11 +122,10 @@ void erasedevice::pbStart()
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "invalid path to device" ) );
 	}
 	if( m_option == 0 ){
-		QString x_1 = tr( "Are you really sure you want to write random data to \"%1\"" ).arg( path )	;
-		QString x_2 = tr( " effectively destroying all contents in it?" );
-		QString x_3 = x_1 + x_2 ;
+		QString x = tr( "\
+Are you really sure you want to write random data to \"%1\" effectively destroying all contents in it?" ).arg( path ) ;
 
-		if( msg.ShowUIYesNoDefaultNo( tr( "WARNING!" ),x_3 ) == QMessageBox::No ){
+		if( msg.ShowUIYesNoDefaultNo( tr( "WARNING!" ),x ) == QMessageBox::No ){
 			return ;
 		}
 	}

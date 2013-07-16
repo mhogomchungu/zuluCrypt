@@ -196,7 +196,7 @@ void mountPartition::slotMountComplete( int status,QString msg )
 	if( status ){
 		if( this->isVisible() ){
 			DialogMsg m( this ) ;
-			m.ShowUIOK( QString( "ERROR" ),msg );
+			m.ShowUIOK( tr( "ERROR" ),msg );
 			this->enableAll();
 		}
 	}else{

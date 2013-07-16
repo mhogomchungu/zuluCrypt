@@ -330,7 +330,7 @@ void passwordDialog::buttonOpenClicked( void )
 	m_point = m_ui->MountPointPath->text() ;
 	if( m_point.isEmpty() || passPhraseField.isEmpty() || m_device.isEmpty() ){
 		DialogMsg msg( this ) ;
-		return msg.ShowUIOK( QString( "ERROR!" ),tr( "atleast one required field is empty" ) );
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) );
 	}
 
 	if( m_point.contains( QString( "/" ) ) ){
