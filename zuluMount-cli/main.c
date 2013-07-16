@@ -561,10 +561,11 @@ static int _printAListOfMountedVolumes( void )
 		st = *it ;
 		it++ ;
 		
-		if( !StringStartsWith( st,"/dev/" ) ){
+		if( !StringStartsWith( st,"/" ) || StringStartsWith( st,"/proc" ) ||
+			StringStartsWith( st,"/sys" ) || StringStartsWith( st,"/dev " ) ){
 			continue ;
 		}
-			
+		
 		index = StringIndexOfChar( st,0,' ' ) ;
 			
 		if( index == -1 ){
