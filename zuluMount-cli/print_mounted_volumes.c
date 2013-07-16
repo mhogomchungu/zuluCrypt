@@ -61,10 +61,7 @@ void zuluMountPartitionProperties( const char * device,const char * UUID,const c
 	
 	char * volType ;
 		
-	if( !zuluCryptSecurityGainElevatedPrivileges() ){
-		printf( "%s\tNil\tNil\tNil\tNil\tNil\n",device ) ;
-		return ;
-	}
+	zuluCryptSecurityGainElevatedPrivileges() ;
 	
 	blkid = blkid_new_probe_from_filename( device ) ;
 	
@@ -192,20 +189,18 @@ static void _printUnmountedVolumes( const char * device )
 
 static void _printDeviceProperties( string_t entry,void * s )
 {	
-	stringList_t stx ;
-	stringList_t stz = ( stringList_t ) s ;
-	const char * q ;
 	char * x ;
 	
+	const char * q ;
 	const char * e ;
 	const char * f ;
 	
 	ssize_t index ;
 	
 	string_t st = StringVoid ;
-	string_t n  = StringVoid ;
 	
-	stx = StringListStringSplit( entry,' ' ) ;
+	stringList_t stz = ( stringList_t ) s ;
+	stringList_t stx = StringListStringSplit( entry,' ' ) ;
 		
 	if( stx == StringListVoid ){
 		return ;
@@ -247,7 +242,7 @@ static void _printDeviceProperties( string_t entry,void * s )
 			 */
 			f = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;
 			zuluMountPartitionProperties( x,e,q,f ) ;
-			StringFree( x ) ;
+			free( x ) ;
 			StringDelete( &st ) ;
 		}
 	}else{
@@ -260,7 +255,6 @@ static void _printDeviceProperties( string_t entry,void * s )
 	}
 	
 	zuluCryptSecurityDropElevatedPrivileges();
-	StringDelete( &n ) ;
 	StringListDelete( &stx ) ;
 }
 
