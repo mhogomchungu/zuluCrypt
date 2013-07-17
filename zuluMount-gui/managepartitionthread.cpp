@@ -297,7 +297,10 @@ void managepartitionthread::umount( QString type )
 
 		p.start( exe );
 		p.waitForFinished() ;
-		output_2 = QString( p.readAll() ).split( "\t" ).at( 4 ) ;
+		QStringList l = QString( p.readAll() ).split( "\t" ) ;
+		if( l.size() >= 4 ){
+			output_2 = l.at( 4 ) ;
+		}
 		p.close() ;
 	}
 

@@ -851,21 +851,22 @@ void MainWindow::slotUnmountComplete( int status,QString msg,QString deviceSize 
 		QString device = table->item( row,0 )->text() ;
 
 		if( device.startsWith( QString( "/dev/" ) ) || device.startsWith( "UUID=" ) ){
+			QString nil = QString( "Nil" ) ;
 			table->item( row,1 )->setText( QString( "Nil" ) );
 
 			if( type.startsWith( QString( "crypto_LUKS" ) ) ){
-				table->item( row,3 )->setText( QString( "Nil" ) );
+				table->item( row,3 )->setText( nil );
 				table->item( row,2 )->setText( QString( "crypto_LUKS" ) );
 			}else if( type.startsWith( QString( "crypto_PLAIN" ) ) ){
-				table->item( row,3 )->setText( QString( "Nil" ) );
-				table->item( row,2 )->setText( QString( "Nil" ) );
+				table->item( row,3 )->setText( nil );
+				table->item( row,2 )->setText( nil );
 			}else if( type.startsWith( QString( "crypto_TCRYPT" ) ) ){
-				table->item( row,3 )->setText( QString( "Nil" ) );
-				table->item( row,2 )->setText( QString( "Nil" ) );
+				table->item( row,3 )->setText( nil );
+				table->item( row,2 )->setText( nil );
 			}
 
 			table->item( row,4 )->setText( deviceSize );
-			table->item( row,5 )->setText( QString( "Nil" ) );
+			table->item( row,5 )->setText( nil );
 		}else{
 			tablewidget::deleteRowFromTable( m_ui->tableWidget,row ) ;
 		}
