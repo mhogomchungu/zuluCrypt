@@ -217,7 +217,7 @@ void keyDialog::pbPluginEntryClicked( QAction * e )
 void keyDialog::closeEvent( QCloseEvent * e )
 {
 	e->ignore();
-	this->HideUI();
+	this->pbCancel();
 }
 
 void keyDialog::fileManagerOpenStatus( int exitCode, int exitStatus,int startError )

@@ -213,7 +213,7 @@ void mountPartition::HideUI()
 void mountPartition::closeEvent( QCloseEvent * e )
 {
 	e->ignore();
-	this->HideUI();
+	this->pbCancel();
 }
 
 mountPartition::~mountPartition()
