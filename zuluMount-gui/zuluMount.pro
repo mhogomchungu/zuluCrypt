@@ -25,7 +25,8 @@ SOURCES += main.cpp\
     ../zuluCrypt-gui/savemountpointpath.cpp \
     ../zuluCrypt-gui/utility.cpp \
     auto_mount.cpp \
-    auto_mount_helper.cpp
+    auto_mount_helper.cpp \
+    monitor_mountinfo.cpp
 
 HEADERS  += mainwindow.h\
     keydialog.h \
@@ -41,7 +42,8 @@ HEADERS  += mainwindow.h\
     ../zuluCrypt-gui/savemountpointpath.h \
     ../zuluCrypt-gui/utility.h \
     auto_mount.h \
-    auto_mount_helper.h
+    auto_mount_helper.h \
+    monitor_mountinfo.h
 
 TRANSLATIONS = ../translations/zuluMount/en_US.ts
 

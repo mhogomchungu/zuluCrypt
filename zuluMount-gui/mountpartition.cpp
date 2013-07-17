@@ -173,13 +173,6 @@ void mountPartition::stateChanged( int i )
 	m_ui->checkBox->setEnabled( true );
 }
 
-void mountPartition::volumeMiniProperties( QString prp )
-{
-	MainWindow::volumeMiniProperties( m_table,prp,utility::mountPath( m_point ) ) ;
-	emit autoMountComplete();
-	this->HideUI();
-}
-
 void mountPartition::fileManagerOpenStatus( int exitCode, int exitStatus,int startError )
 {
 	Q_UNUSED( startError ) ;
@@ -200,23 +193,20 @@ void mountPartition::slotMountComplete( int status,QString msg )
 			this->enableAll();
 		}
 	}else{
-		managepartitionthread * mpt = new managepartitionthread() ;
-		mpt->setDevice( m_path );
-		connect( mpt,SIGNAL( signalProperties( QString ) ),this,SLOT( volumeMiniProperties( QString ) ) ) ;
-		mpt->startAction( managepartitionthread::VolumeMiniProperties ) ;
-
 		if( m_autoOpenFolderOnMount ){
 			openmountpointinfilemanager * omp = new openmountpointinfilemanager( m_folderOpener,utility::mountPath( m_point ) ) ;
 			connect( omp,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
 			omp->start() ;
 		}
+		emit autoMountComplete();
+		this->HideUI();
 	}
 }
 
 void mountPartition::HideUI()
 {
-	emit hideUISignal();
 	this->hide();
+	this->deleteLater();
 }
 
 void mountPartition::closeEvent( QCloseEvent * e )

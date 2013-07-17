@@ -201,7 +201,7 @@ QString managepartitionthread::volumeMiniProperties_1()
 	exe = QString( "%1 -L -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;
 
 	p.start( exe );
-	p.waitForFinished( 10000 ) ;
+	p.waitForFinished( -1 ) ;
 
 	QString result = QString( p.readAll() ) ;
 	p.close();
@@ -284,29 +284,14 @@ void managepartitionthread::umount( QString type )
 	QString exe = QString( "%1 -u -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;
 
 	p.start( exe );
-	p.waitForFinished() ;
+	p.waitForFinished( -1 ) ;
 
 	QString output_1 = QString( p.readAll() ) ;
 	int index = output_1.indexOf( QChar( ':' ) ) ;
 	output_1 = output_1.mid( index + 1 ) ;
 	p.close();
 
-	QString output_2 ;
-	if( m_device.startsWith( QString( "/dev/" ) ) ){
-		exe = QString( "%1 -L -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;
-
-		p.start( exe );
-		p.waitForFinished() ;
-		QStringList l = QString( p.readAll() ).split( "\t" ) ;
-		if( l.size() >= 4 ){
-			output_2 = l.at( 4 ) ;
-		}
-		p.close() ;
-	}
-
-	sleep( 1 ) ; // sleep one second to give a nice UI effect
-
-	emit signalUnmountComplete( p.exitCode(),output_1,output_2 ) ;
+	emit signalUnmountComplete( p.exitCode(),output_1 ) ;
 }
 
 void managepartitionthread::startAction( managepartitionthread::Action action )

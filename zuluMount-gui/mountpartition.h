@@ -55,7 +55,6 @@ public:
 	void AutoMount( QStringList entry ) ;
 	~mountPartition();
 signals:
-	void hideUISignal( void ) ;
 	void mounted( QString ) ;
 	void autoMountComplete( void ) ;
 private slots:
@@ -65,7 +64,6 @@ private slots:
 	void pbOpenMountPath( void ) ;
 	void slotMountComplete( int,QString ) ;
 	void checkBoxReadOnlyStateChanged( int ) ;
-	void volumeMiniProperties( QString ) ;
 	void fileManagerOpenStatus( int exitCode, int exitStatus,int startError ) ;
 private:
 	void enableAll( void ) ;

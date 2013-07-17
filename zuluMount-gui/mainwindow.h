@@ -47,6 +47,7 @@
 #include "../zuluCrypt-gui/openvolumereadonly.h"
 #include "oneinstance.h"
 #include "auto_mount.h"
+#include "monitor_mountinfo.h"
 
 namespace Ui {
 class MainWindow;
@@ -59,13 +60,14 @@ public:
 	explicit MainWindow( int argc,char * argv[],QWidget * parent = 0 );
 	~MainWindow();
 	void start( void ) ;
-	static void volumeMiniProperties( QTableWidget *,QString,QString );
+	//static void volumeMiniProperties( QTableWidget *,QString,QString );
 signals:
 	void result( int,QString ) ;
 public slots:
 	void raiseWindow( void ) ;
 	void raiseWindow( QString ) ;
 private slots:
+	void volumeMiniProperties( QString );
 	void showMoungDialog( QStringList );
 	void autoMountVolumeSystemInfo( QStringList ) ;
 	void autoMountVolumeInfo( QStringList ) ;
@@ -79,7 +81,7 @@ private slots:
 	void slotMount( void ) ;
 	void pbUmount( void ) ;
 	void pbClose( void ) ;
-	void slotUnmountComplete( int,QString,QString ) ;
+	void slotUnmountComplete( int,QString ) ;
 	void slotMountedList( QStringList,QStringList ) ;
 	void slotcbReadOnly( void ) ;
 	void slotCloseApplication( void ) ;
@@ -94,12 +96,13 @@ private slots:
 	void openVolumeFromArgumentList( void ) ;
 	void itemEntered( QTableWidgetItem * ) ;
 	void deviceRemoved( QString ) ;
-	void autoMountAddToTable( QString ) ;
 	void addEntryToTable( bool,QStringList ) ;
 	void started( void ) ;
 	void close( void ) ;
+	void close_1( void ) ;
 	void autoMountToggled( bool ) ;
 	void autoOpenFolderOnMount( bool ) ;
+	void removeEntryFromTable( QString ) ;
 private:
 	void setLocalizationLanguage( void ) ;
 	bool autoOpenFolderOnMount( void ) ;
@@ -123,6 +126,7 @@ private:
 	void setUpApp( void ) ;
 	QSystemTrayIcon * m_trayIcon ;
 	auto_mount * m_autoMountThread ;
+	monitor_mountinfo * m_mountInfo ;
 	QAction * m_autoMountAction ;
 	bool m_startHidden ;
 	bool m_started ;

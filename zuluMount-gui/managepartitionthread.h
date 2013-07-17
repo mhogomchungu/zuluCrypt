@@ -61,7 +61,7 @@ public:
 	void setList( QStringList ) ;
 signals:
 	void signalMountComplete( int,QString ) ;
-	void signalUnmountComplete( int,QString,QString ) ;
+	void signalUnmountComplete( int,QString ) ;
 	void signalMountedList( QStringList,QStringList ) ;
 	void signalProperties( QString ) ;
 	void checkPermissions( int ) ;

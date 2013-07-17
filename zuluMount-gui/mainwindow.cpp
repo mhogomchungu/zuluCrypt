@@ -168,7 +168,12 @@ void MainWindow::startAutoMonitor()
 {
 	m_autoMountThread = new auto_mount( this ) ;
 	connect( m_autoMountThread,SIGNAL( stopped() ),this,SLOT( close() ) ) ;
-	m_autoMountThread->start();
+	m_autoMountThread->start() ;
+
+	m_mountInfo = new monitor_mountinfo( this ) ;
+	connect( m_mountInfo,SIGNAL( stopped() ),this,SLOT( close_1() ) ) ;
+	connect( m_mountInfo,SIGNAL( volumeRemoved( QString ) ),this,SLOT( removeEntryFromTable( QString ) ) ) ;
+	m_mountInfo->start() ;
 }
 
 void MainWindow::started( void )
@@ -202,16 +207,8 @@ void MainWindow::autoMountVolumeSystemInfo( QStringList l )
 	this->addEntryToTable( true,l ) ;
 }
 
-void MainWindow::autoMountAddToTable( QString entry )
-{
-	this->volumeMiniProperties( m_ui->tableWidget,entry,QString( "Nil" ) ) ;
-}
-
 void MainWindow::autoMountVolumeInfo( QStringList l )
 {
-	if( l.size() == 0 ){
-		return ;
-	}
 	if( l.at( 4 ) == QString( "1.0 KB" ) ){
 		return ;
 	}
@@ -346,6 +343,11 @@ void MainWindow::pbClose()
 }
 
 void MainWindow::close()
+{
+	m_mountInfo->stop();
+}
+
+void MainWindow::close_1()
 {
 	QCoreApplication::quit();
 }
@@ -597,13 +599,9 @@ void MainWindow::mount( QString type,QString device,QString label )
 	this->disableAll();
 	if( type.startsWith( QString( "crypto" ) ) || type == QString( "Nil" ) ){
 		keyDialog * kd = new keyDialog( this,m_ui->tableWidget,device,type,m_folderOpener,m_autoOpenFolderOnMount ) ;
-		connect( kd,SIGNAL( hideUISignal() ),kd,SLOT( deleteLater() ) ) ;
-		connect( kd,SIGNAL( hideUISignal() ),this,SLOT( enableAll() ) ) ;
 		kd->ShowUI();
 	}else{
 		mountPartition * mp = new mountPartition( this,m_ui->tableWidget,m_folderOpener,m_autoOpenFolderOnMount ) ;
-		connect( mp,SIGNAL( hideUISignal() ),mp,SLOT( deleteLater() ) ) ;
-		connect( mp,SIGNAL( hideUISignal() ),this,SLOT( enableAll() ) ) ;
 		mp->ShowUI( device,label );
 	}
 }
@@ -673,7 +671,21 @@ void MainWindow::addEntryToTable( bool b,QStringList l )
 	}
 }
 
-void MainWindow::volumeMiniProperties( QTableWidget * table,QString p,QString mountPointPath )
+void MainWindow::removeEntryFromTable( QString volume )
+{
+	QTableWidget * table = m_ui->tableWidget ;
+	int j = table->rowCount() ;
+	for( int i = 0 ; i < j ; i++ ){
+		if( table->item( i,0 )->text() == volume ){
+			tablewidget::deleteRowFromTable( table,i ) ;
+			break ;
+		}
+	}
+
+	this->enableAll() ;
+}
+
+void MainWindow::volumeMiniProperties( QString volumeInfo )
 {
 	QStringList l ;
 	QString device ;
@@ -681,16 +693,18 @@ void MainWindow::volumeMiniProperties( QTableWidget * table,QString p,QString mo
 	QString total ;
 	QString perc ;
 	QString label ;
-
-	if( p.isEmpty() ){
+	QString mountPointPath ;
+	if( volumeInfo.isEmpty() ){
 		device = QString( "Nil" ) ;
+		mountPointPath = QString( "Nil" ) ;
 		fileSystem = QString( "Nil" ) ;
 		total = QString( "0" ) ;
 		perc  = QString( "0%" );
 		label = QString( "Nil" ) ;
 	}else{
-		l = p.split( "\t" ) ;
+		l = volumeInfo.split( "\t" ) ;
 		device = l.at( 0 ) ;
+		mountPointPath = l.at( 1 ) ;
 		fileSystem = l.at( 2 ) ;
 		int index = fileSystem.indexOf( QString( "/" ) ) ;
 		if( index != -1 ){
@@ -701,6 +715,8 @@ void MainWindow::volumeMiniProperties( QTableWidget * table,QString p,QString mo
 		perc = l.at( 5 ) ;
 		perc.remove( QChar( '\n' ) ) ;
 	}
+
+	QTableWidget * table = m_ui->tableWidget ;
 
 	if( tablewidget::columnHasEntry( table,0,device ) == -1 ){
 		tablewidget::addEmptyRow( table ) ;
@@ -713,6 +729,8 @@ void MainWindow::volumeMiniProperties( QTableWidget * table,QString p,QString mo
 	tablewidget::setText( table,row,3,label ) ;
 	tablewidget::setText( table,row,4,total ) ;
 	tablewidget::setText( table,row,5,perc ) ;
+
+	this->enableAll() ;
 }
 
 void MainWindow::pbUmount()
@@ -729,7 +747,7 @@ void MainWindow::pbUmount()
 	part->setDevice( path );
 	part->setType( type );
 
-	connect( part,SIGNAL( signalUnmountComplete( int,QString,QString ) ),this,SLOT( slotUnmountComplete( int,QString,QString ) ) ) ;
+	connect( part,SIGNAL( signalUnmountComplete( int,QString) ),this,SLOT( slotUnmountComplete( int,QString ) ) ) ;
 
 	part->startAction( managepartitionthread::Unmount ) ;
 }
@@ -837,42 +855,13 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 	this->enableAll();
 }
 
-void MainWindow::slotUnmountComplete( int status,QString msg,QString deviceSize )
+void MainWindow::slotUnmountComplete( int status,QString msg )
 {
 	if( status ){
 		DialogMsg m( this ) ;
 		m.ShowUIOK( tr( "ERROR" ),msg );
-	}else{
-		QTableWidget * table = m_ui->tableWidget ;
-
-		int row = table->currentRow() ;
-
-		QString type = table->item( row,2 )->text() ;
-		QString device = table->item( row,0 )->text() ;
-
-		if( device.startsWith( QString( "/dev/" ) ) || device.startsWith( "UUID=" ) ){
-			QString nil = QString( "Nil" ) ;
-			table->item( row,1 )->setText( QString( "Nil" ) );
-
-			if( type.startsWith( QString( "crypto_LUKS" ) ) ){
-				table->item( row,3 )->setText( nil );
-				table->item( row,2 )->setText( QString( "crypto_LUKS" ) );
-			}else if( type.startsWith( QString( "crypto_PLAIN" ) ) ){
-				table->item( row,3 )->setText( nil );
-				table->item( row,2 )->setText( nil );
-			}else if( type.startsWith( QString( "crypto_TCRYPT" ) ) ){
-				table->item( row,3 )->setText( nil );
-				table->item( row,2 )->setText( nil );
-			}
-
-			table->item( row,4 )->setText( deviceSize );
-			table->item( row,5 )->setText( nil );
-		}else{
-			tablewidget::deleteRowFromTable( m_ui->tableWidget,row ) ;
-		}
+		this->enableAll();
 	}
-
-	this->enableAll();
 }
 
 void MainWindow::slotCurrentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous )

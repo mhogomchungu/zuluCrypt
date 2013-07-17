@@ -220,12 +220,6 @@ void keyDialog::closeEvent( QCloseEvent * e )
 	this->HideUI();
 }
 
-void keyDialog::volumeMiniProperties( QString prp )
-{
-	MainWindow::volumeMiniProperties( m_table,prp,utility::mountPath( m_point ) ) ;
-	this->HideUI();
-}
-
 void keyDialog::fileManagerOpenStatus( int exitCode, int exitStatus,int startError )
 {
 	Q_UNUSED( startError ) ;
@@ -243,11 +237,6 @@ void keyDialog::slotMountComplete( int st,QString m )
 			/*
 			 * The volume is reported as opened and it actually is
 			 */
-			managepartitionthread * mpt = new managepartitionthread() ;
-			mpt->setDevice( m_path );
-			connect( mpt,SIGNAL( signalProperties( QString ) ),this,SLOT( volumeMiniProperties( QString ) ) ) ;
-			mpt->startAction( managepartitionthread::VolumeMiniProperties ) ;
-
 			if( m_autoOpenFolderOnMount ){
 				openmountpointinfilemanager * omp = new openmountpointinfilemanager( m_folderOpener,utility::mountPath( m_point ) ) ;
 				connect( omp,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
@@ -261,8 +250,9 @@ void keyDialog::slotMountComplete( int st,QString m )
 			DialogMsg m( this ) ;
 
 			m.ShowUIOK( tr( "ERROR" ),tr( "An error has occured and the volume could not be opened" ) );
-			this->HideUI();
 		}
+		this->HideUI();
+
 	}else{
 		DialogMsg msg( this ) ;
 
@@ -371,8 +361,8 @@ void keyDialog::ShowUI()
 void keyDialog::HideUI()
 {
 	if( !m_working ){
-		emit hideUISignal();
 		this->hide();
+		this->deleteLater();
 	}
 }
 

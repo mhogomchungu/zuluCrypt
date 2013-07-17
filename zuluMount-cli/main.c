@@ -578,7 +578,13 @@ static int _printAListOfMountedVolumes( void )
 			/*
 			 * already seen this entry,probably because its a bind mount
 			 */
-			continue ;
+			
+			/*
+			 * allow bind mounts because we want to get the same device list "zuluMount-cli -l" gives
+			 * 
+			 * continue ;
+			 */
+			;
 		}else{
 			/*
 			 * about to process this entry,prevent reprocessing it on following loops

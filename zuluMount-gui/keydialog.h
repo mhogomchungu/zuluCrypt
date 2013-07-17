@@ -55,7 +55,6 @@ public:
 signals:
 	void mounted( QString ) ;
 	void cryptoOpen( QString ) ;
-	void hideUISignal( void ) ;
 public slots:
 	void slotMountComplete( int,QString ) ;
 private slots:
@@ -71,7 +70,6 @@ private slots:
 	void Plugin( void );
 	void KeyFile( void ) ;
 	void cbMountReadOnlyStateChanged( int ) ;
-	void volumeMiniProperties( QString ) ;
 	void fileManagerOpenStatus( int exitCode, int exitStatus,int startError ) ;
 private:
 	void enableAll( void ) ;
