@@ -351,6 +351,7 @@ void keyDialog::rbKeyFile( bool opt )
 void keyDialog::pbCancel()
 {
 	this->HideUI();
+	emit cancel();
 }
 
 void keyDialog::ShowUI()

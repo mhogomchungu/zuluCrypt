@@ -57,6 +57,7 @@ public:
 signals:
 	void mounted( QString ) ;
 	void autoMountComplete( void ) ;
+	void cancel( void ) ;
 private slots:
 	void stateChanged( int ) ;
 	void pbMount( void ) ;

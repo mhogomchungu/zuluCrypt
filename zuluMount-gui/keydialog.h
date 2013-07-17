@@ -55,6 +55,7 @@ public:
 signals:
 	void mounted( QString ) ;
 	void cryptoOpen( QString ) ;
+	void cancel( void ) ;
 public slots:
 	void slotMountComplete( int,QString ) ;
 private slots:

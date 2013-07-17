@@ -93,6 +93,7 @@ void mountPartition::disableAll()
 void mountPartition::pbCancel()
 {
 	this->HideUI();
+	emit cancel();
 }
 
 void mountPartition::pbMount()

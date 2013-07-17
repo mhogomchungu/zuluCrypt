@@ -599,9 +599,11 @@ void MainWindow::mount( QString type,QString device,QString label )
 	this->disableAll();
 	if( type.startsWith( QString( "crypto" ) ) || type == QString( "Nil" ) ){
 		keyDialog * kd = new keyDialog( this,m_ui->tableWidget,device,type,m_folderOpener,m_autoOpenFolderOnMount ) ;
+		connect( kd,SIGNAL( cancel() ),this,SLOT( enableAll() ) ) ;
 		kd->ShowUI();
 	}else{
 		mountPartition * mp = new mountPartition( this,m_ui->tableWidget,m_folderOpener,m_autoOpenFolderOnMount ) ;
+		connect( mp,SIGNAL( cancel() ),this,SLOT( enableAll() ) ) ;
 		mp->ShowUI( device,label );
 	}
 }
