@@ -128,6 +128,8 @@ QString utility::localizationLanguage( QString program )
 	QString value = env.value( QString( "LANG" ) ) ;
 
 	QString ext = QString( ".qm" ) ;
+	QString s ;
+	int index ;
 	if( !value.isEmpty() ){
 		QStringList values = value.split( ":" ) ;
 
@@ -139,8 +141,14 @@ QString utility::localizationLanguage( QString program )
 		int j = values.size() ;
 
 		for( int i = 0 ; i < j ; i++ ){
-			if( dirList.contains( values.at( i ) + ext ) ){
-				return values.at( i ) ;
+			s = values.at( i ) ;
+			index = s.indexOf( "." ) ;
+			if( index != -1 ){
+				s.truncate( index ) ;
+			}
+
+			if( dirList.contains( s + ext ) ){
+				return s ;
 			}
 		}
 	}
@@ -157,8 +165,13 @@ QString utility::localizationLanguage( QString program )
 		dirList.removeOne( QString( ".." ) ) ;
 		int j = values.size() ;
 		for( int i = 0 ; i < j ; i++ ){
-			if( dirList.contains( values.at( i ) + ext ) ){
-				return values.at( i ) ;
+			s = values.at( i ) ;
+			index = s.indexOf( "." ) ;
+			if( index != -1 ){
+				s.truncate( index ) ;
+			}
+			if( dirList.contains( s + ext ) ){
+				return s ;
 			}
 		}
 	}
