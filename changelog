@@ -139,3 +139,4 @@ version 4.6.5
 -- maintanance release
 -- add support for opening truecrypt system volumes
 -- add internatiolization support
+-- zuluMount-gui is now aware of volumes that are mounted or unmounted outside of it
