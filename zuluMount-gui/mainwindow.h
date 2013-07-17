@@ -79,7 +79,7 @@ private slots:
 	void slotMount( void ) ;
 	void pbUmount( void ) ;
 	void pbClose( void ) ;
-	void slotUnmountComplete( int,QString ) ;
+	void slotUnmountComplete( int,QString,QString ) ;
 	void slotMountedList( QStringList,QStringList ) ;
 	void slotcbReadOnly( void ) ;
 	void slotCloseApplication( void ) ;

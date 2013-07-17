@@ -40,8 +40,10 @@ void MainWindow::setUpApp()
 	//m_ui->tableWidget->setColumnWidth( 1,226 ); //original width with label column visible
 	m_ui->tableWidget->setColumnWidth( 1,328 );   // new column with label column hidden
 	m_ui->tableWidget->setColumnWidth( 2,98 );
+	//m_ui->tableWidget->hideColumn( 2 ) ;
 	//m_ui->tableWidget->setColumnWidth( 3,98 ); // hide the label column
-	m_ui->tableWidget->setColumnWidth( 3,0 );    // hide the label column
+	//m_ui->tableWidget->setColumnWidth( 3,0 );    // hide the label column
+	m_ui->tableWidget->hideColumn( 3 ) ;
 	m_ui->tableWidget->setColumnWidth( 4,87 );
 	m_ui->tableWidget->setColumnWidth( 5,87 );
 
@@ -224,7 +226,7 @@ void MainWindow::autoMountVolumeInfo( QStringList l )
 		 */
 		return ;
 	}
-	if( type == QString( "crypto_LUKS" ) || type == QString( "Nil" ) ){
+	if( type.startsWith( QString( "crypto" ) ) || type == QString( "Nil" ) ){
 		this->addEntryToTable( false,l );
 	}else{
 		if( m_autoMount ){
@@ -271,23 +273,23 @@ void MainWindow::itemEntered( QTableWidgetItem * item )
 		if( x == QString( "Nil" ) ){
 			x.clear();
 		}
-		z = tr( "LABEL=\"%1\"" ).arg( x ) ;
+		z += tr( "LABEL=\"%1\"" ).arg( x ) ;
 
 	}else if( m_point == QString( "Nil" ) ){
 		/*
 		 * volume is not mounted,cant know its LABEL value
 		 */
 		x.clear();
-		z = tr( "LABEL=\"%1\"" ).arg( x ) ;
+		z += tr( "LABEL=\"%1\"" ).arg( x ) ;
 	}else{
 		if( x == QString( "Nil" ) ){
 			x.clear();
 		}
 		y = utility::shareMountPointToolTip( m_point ) ;
 		if( y.isEmpty() ){
-			z = tr( "LABEL=\"%1\"" ).arg( x ) ;
+			z += tr( "LABEL=\"%1\"" ).arg( x ) ;
 		}else{
-			z = tr( "LABEL=\"%1\"\n%2" ).arg( x ).arg( y ) ;
+			z += tr( "LABEL=\"%1\"\n%2" ).arg( x ).arg( y ) ;
 		}
 	}
 	item->setToolTip( z );
@@ -368,7 +370,7 @@ void MainWindow::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 		QString mp = QString( "/run/media/private/%1/" ).arg( utility::userName() ) ;
 		if( mt.startsWith( mp ) ){
 			connect( m.addAction( tr( "unmount" ) ),SIGNAL( triggered() ),this,SLOT( pbUmount() ) ) ;
-			if( type.contains( QString( "crypto" ) ) ) {
+			if( type.startsWith( QString( "crypto" ) ) ) {
 				m.addSeparator() ;
 				connect( m.addAction( tr( "properties" ) ),SIGNAL( triggered() ),this,SLOT( volumeProperties() ) ) ;
 			}
@@ -593,7 +595,7 @@ void MainWindow::stateChanged( int state )
 void MainWindow::mount( QString type,QString device,QString label )
 {
 	this->disableAll();
-	if( type == QString( "crypto_LUKS" ) || type == QString( "Nil" ) ){
+	if( type.startsWith( QString( "crypto" ) ) || type == QString( "Nil" ) ){
 		keyDialog * kd = new keyDialog( this,m_ui->tableWidget,device,type,m_folderOpener,m_autoOpenFolderOnMount ) ;
 		connect( kd,SIGNAL( hideUISignal() ),kd,SLOT( deleteLater() ) ) ;
 		connect( kd,SIGNAL( hideUISignal() ),this,SLOT( enableAll() ) ) ;
@@ -690,6 +692,10 @@ void MainWindow::volumeMiniProperties( QTableWidget * table,QString p,QString mo
 		l = p.split( "\t" ) ;
 		device = l.at( 0 ) ;
 		fileSystem = l.at( 2 ) ;
+		int index = fileSystem.indexOf( QString( "/" ) ) ;
+		if( index != -1 ){
+			fileSystem = fileSystem.replace( QString( "/" ),QString( "\n(" ) ) + QString( ")" ) ;
+		}
 		label = l.at( 3 ) ;
 		total = l.at( 4 ) ;
 		perc = l.at( 5 ) ;
@@ -723,7 +729,7 @@ void MainWindow::pbUmount()
 	part->setDevice( path );
 	part->setType( type );
 
-	connect( part,SIGNAL( signalUnmountComplete( int,QString ) ),this,SLOT( slotUnmountComplete( int,QString ) ) ) ;
+	connect( part,SIGNAL( signalUnmountComplete( int,QString,QString ) ),this,SLOT( slotUnmountComplete( int,QString,QString ) ) ) ;
 
 	part->startAction( managepartitionthread::Unmount ) ;
 }
@@ -768,6 +774,7 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 	QString x = QString( "/run/media/private/" ) + utility::userName() ;
 	QString y ;
 
+	int index ;
 	for( int i = 0 ; i < j ; i++ ){
 		entries = list.at( i ).split( '\t' ) ;
 		if( entries.size() < 6 ){
@@ -782,6 +789,7 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 		}
 
 		fs =  entries.at( 2 ) ;
+
 		/*
 		 * MDRAID partitions have "linux_raid_member" as their file system
 		 * LVM partitions have "LVM2_member" as their file system
@@ -790,6 +798,12 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 		 */
 		if( fs == QString( "swap" ) || fs.contains( QString( "member" ) ) ){
 			continue ;
+		}
+
+		index = fs.indexOf( QString( "/" ) ) ;
+		if( index != -1 ){
+			fs = fs.replace( QString( "/" ),QString( "\n(" ) ) + QString( ")" ) ;
+			entries.replace( 2,fs ) ;
 		}
 
 		y = entries.at( 1 ) ;
@@ -823,7 +837,7 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 	this->enableAll();
 }
 
-void MainWindow::slotUnmountComplete( int status,QString msg )
+void MainWindow::slotUnmountComplete( int status,QString msg,QString deviceSize )
 {
 	if( status ){
 		DialogMsg m( this ) ;
@@ -839,15 +853,18 @@ void MainWindow::slotUnmountComplete( int status,QString msg )
 		if( device.startsWith( QString( "/dev/" ) ) || device.startsWith( "UUID=" ) ){
 			table->item( row,1 )->setText( QString( "Nil" ) );
 
-			if( type == QString( "crypto_LUKS" ) ){
+			if( type.startsWith( QString( "crypto_LUKS" ) ) ){
 				table->item( row,3 )->setText( QString( "Nil" ) );
-			}else if( type == QString( "crypto_PLAIN" ) ){
+				table->item( row,2 )->setText( QString( "crypto_LUKS" ) );
+			}else if( type.startsWith( QString( "crypto_PLAIN" ) ) ){
 				table->item( row,3 )->setText( QString( "Nil" ) );
 				table->item( row,2 )->setText( QString( "Nil" ) );
-			}else if( type == QString( "crypto_TCRYPT" ) ){
+			}else if( type.startsWith( QString( "crypto_TCRYPT" ) ) ){
 				table->item( row,3 )->setText( QString( "Nil" ) );
 				table->item( row,2 )->setText( QString( "Nil" ) );
 			}
+
+			table->item( row,4 )->setText( deviceSize );
 			table->item( row,5 )->setText( QString( "Nil" ) );
 		}else{
 			tablewidget::deleteRowFromTable( m_ui->tableWidget,row ) ;

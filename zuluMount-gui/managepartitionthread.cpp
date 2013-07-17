@@ -281,20 +281,29 @@ void managepartitionthread::umount( QString type )
 {
 	Q_UNUSED( type ) ;
 	QProcess p ;
-	QString exe ;
-
-	exe = QString( "%1 -u -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;
+	QString exe = QString( "%1 -u -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;
 
 	p.start( exe );
 	p.waitForFinished() ;
 
-	sleep( 1 );
-
-	QString output = QString( p.readAll() ) ;
-	int index = output.indexOf( QChar( ':') ) ;
-	output = output.mid( index + 1 ) ;
-	emit signalUnmountComplete( p.exitCode(),output ) ;
+	QString output_1 = QString( p.readAll() ) ;
+	int index = output_1.indexOf( QChar( ':' ) ) ;
+	output_1 = output_1.mid( index + 1 ) ;
 	p.close();
+
+	QString output_2 ;
+	if( m_device.startsWith( QString( "/dev/" ) ) ){
+		exe = QString( "%1 -L -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;
+
+		p.start( exe );
+		p.waitForFinished() ;
+		output_2 = QString( p.readAll() ).split( "\t" ).at( 4 ) ;
+		p.close() ;
+	}
+
+	sleep( 1 ) ; // sleep one second to give a nice UI effect
+
+	emit signalUnmountComplete( p.exitCode(),output_1,output_2 ) ;
 }
 
 void managepartitionthread::startAction( managepartitionthread::Action action )

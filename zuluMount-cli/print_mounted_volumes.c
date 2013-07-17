@@ -44,6 +44,7 @@ void zuluMountPartitionProperties( const char * device,const char * UUID,const c
 	#define SIZE 64
 	
 	const char * g ;
+	const char * e ;
 	
 	blkid_probe blkid ;
 	
@@ -52,15 +53,13 @@ void zuluMountPartitionProperties( const char * device,const char * UUID,const c
 	uint64_t used ;
 	uint64_t free_space ;
 	uint32_t block_size ;
-	int64_t blkid_device_size ;
+	int64_t blkid_device_size = 0 ;
 	
 	char buff[ SIZE ] ;
 	char * buffer = buff ;
 	char format[ SIZE ] ;
 	char * loop_device ;
 	
-	char * volType ;
-		
 	zuluCryptSecurityGainElevatedPrivileges() ;
 	
 	blkid = blkid_new_probe_from_filename( device ) ;
@@ -71,24 +70,13 @@ void zuluMountPartitionProperties( const char * device,const char * UUID,const c
 		return ;
 	}
 
-	blkid_do_probe( blkid );
-	
-	blkid_device_size = ( int64_t ) blkid_probe_get_size( blkid ) ;
-	
-	if( blkid_device_size <= 0 ){
-		zuluCryptSecurityDropElevatedPrivileges();
-		printf( "%s\tNil\tNil\tNil\tNil\tNil\n",device ) ;
-		blkid_free_probe( blkid );
-		return ;
-	}
-	
 	if( UUID != NULL ){
 		printf( "%s\t",UUID ) ;
 	}else{
 		if( StringPrefixEqual( device,"/dev/loop" ) ){
 			/*
-			* zuluCryptLoopDeviceAddress_1() is defined in ../zuluCrypt-cli/lib/create_loop_device.c
-			*/
+			 * zuluCryptLoopDeviceAddress_1() is defined in ../zuluCrypt-cli/lib/create_loop_device.c
+			 */
 			loop_device = zuluCryptLoopDeviceAddress_1( device ) ;
 			if( loop_device != NULL ){
 				printf( "%s\t",loop_device ) ;
@@ -107,49 +95,56 @@ void zuluMountPartitionProperties( const char * device,const char * UUID,const c
 		printf( "%s\t",m_point ) ;
 	}
 	
-	if( StringsAreNotEqual( device,mapper ) ){
-		/*
-		 * We will get here when a volume is encrypted.
-		 * device will contain something like /dev/sdc1
-		 * mapper will contain something like /dev/mapper/XYZ
-		 */
-		/*
-		 * zuluCryptGetVolumeTypeFromMapperPath() is defined in ../zuluCrypt-cli/lib/status.c
-		 */
-		volType = zuluCryptGetVolumeTypeFromMapperPath( mapper ) ;
-		printf( "%s",volType ) ;
-		free( volType ) ;
-	}else{
+	if( StringsAreEqual( device,mapper ) ){
+		
+		blkid_do_probe( blkid ) ;
+		
+		blkid_device_size = ( int64_t ) blkid_probe_get_size( blkid ) ;
+		
 		if( blkid_probe_lookup_value( blkid,"TYPE",&g,NULL ) == 0 ){
+			printf( "%s\t",g ) ;
+		}else{
+			printf( "Nil\t" ) ;
+		}
+		
+		if( blkid_probe_lookup_value( blkid,"LABEL",&g,NULL ) == 0 ){
 			printf( "%s",g ) ;
 		}else{
-			/*
-			 * couldnt read a file system,assuming the partition has no file system 
-			 */
 			printf( "Nil" ) ;
 		}
-	}
-	
-	blkid_free_probe( blkid );
-	
-	blkid = blkid_new_probe_from_filename( mapper ) ;
-	
-	if( blkid == NULL ){
-		zuluCryptSecurityDropElevatedPrivileges();
-		printf( "\tNil\tNil\tNil\n" ) ;
-		return ;
-	}
-	
-	blkid_do_probe( blkid );
-	
-	if( blkid_probe_lookup_value( blkid,"LABEL",&g,NULL ) == 0 ){
-		printf( "\t%s",g ) ;
+		
+		blkid_free_probe( blkid ) ;
 	}else{
-		printf( "\tNil" ) ;
+		blkid_free_probe( blkid ) ;
+		
+		blkid = blkid_new_probe_from_filename( mapper ) ;
+		
+		if( blkid == NULL ){
+			printf( "Nil\tNil" ) ;
+		}else{
+			blkid_do_probe( blkid ) ;
+			
+			blkid_device_size = ( int64_t ) blkid_probe_get_size( blkid ) ;
+			
+			e = zuluCryptGetVolumeTypeFromMapperPath( mapper ) ;
+			
+			if( blkid_probe_lookup_value( blkid,"TYPE",&g,NULL ) == 0 ){
+				printf( "%s/%s\t",e,g ) ;
+			}else{
+				printf( "%s/Nil\t",e ) ;
+			}
+			
+			if( blkid_probe_lookup_value( blkid,"LABEL",&g,NULL ) == 0 ){
+				printf( "%s",g ) ;
+			}else{
+				printf( "Nil" ) ;
+			}
+			
+			blkid_free_probe( blkid ) ;
+			StringFree( e ) ;
+		}
 	}
-	
-	blkid_free_probe( blkid );
-	
+
 	if( m_point == NULL ){
 		if( blkid_device_size == -1 ){
 			printf( "\tNil\tNil\n" ) ;
@@ -166,7 +161,7 @@ void zuluMountPartitionProperties( const char * device,const char * UUID,const c
 		
 			total = block_size * vfs.f_blocks  ;
 		
-			g = StringIntToString_1( buffer,SIZE,blkid_device_size ) ;
+			g = StringIntToString_1( buffer,SIZE,total ) ;
 			zuluCryptFormatSize( format,g ) ;
 			printf( "\t%s",format ) ;
 			
@@ -178,7 +173,7 @@ void zuluMountPartitionProperties( const char * device,const char * UUID,const c
 			printf( "\t%s\n",buff ) ;
 		}
 	}
-	
+		
 	zuluCryptSecurityDropElevatedPrivileges();
 }
 
