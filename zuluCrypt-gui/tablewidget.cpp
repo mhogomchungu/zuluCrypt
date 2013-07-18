@@ -56,7 +56,7 @@ void tablewidget::selectTableRow( QTableWidgetItem * current,QTableWidgetItem * 
 	}
 }
 
-void tablewidget::addEmptyRow( QTableWidget * table )
+int tablewidget::addEmptyRow( QTableWidget * table )
 {
 	QTableWidgetItem * item ;
 	int row = table->rowCount() ;
@@ -68,6 +68,7 @@ void tablewidget::addEmptyRow( QTableWidget * table )
 		table->setItem( row,i,item );
 	}
 	table->setCurrentCell( row,col - 1 );
+	return row ;
 }
 
 int tablewidget::columnHasEntry( QTableWidget * table,int column,QString entry )

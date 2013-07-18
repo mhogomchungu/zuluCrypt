@@ -704,6 +704,7 @@ void MainWindow::volumeMiniProperties( QString volumeInfo )
 		device = l.at( 0 ) ;
 		mountPointPath = l.at( 1 ) ;
 		fileSystem = l.at( 2 ) ;
+
 		int index = fileSystem.indexOf( QString( "/" ) ) ;
 
 		if( index != -1 ){
@@ -717,17 +718,25 @@ void MainWindow::volumeMiniProperties( QString volumeInfo )
 
 		QTableWidget * table = m_ui->tableWidget ;
 
-		if( tablewidget::columnHasEntry( table,0,device ) == -1 ){
-			tablewidget::addEmptyRow( table ) ;
+		int row = tablewidget::columnHasEntry( table,0,device ) ;
+		if( row == -1 ){
+			/*
+			 * volume has no entry in the list probably because its a volume based on a file.
+			 * Add an entry to the list to accomodate it
+			 */
+			row = tablewidget::addEmptyRow( table ) ;
+		}else{
+			;
 		}
 
-		int row = table->currentRow() ;
 		tablewidget::setText( table,row,0,device ) ;
 		tablewidget::setText( table,row,1,mountPointPath ) ;
 		tablewidget::setText( table,row,2,fileSystem ) ;
 		tablewidget::setText( table,row,3,label ) ;
 		tablewidget::setText( table,row,4,total ) ;
 		tablewidget::setText( table,row,5,perc ) ;
+
+		tablewidget::selectRow( table,row ) ;
 	}
 
 	this->enableAll() ;

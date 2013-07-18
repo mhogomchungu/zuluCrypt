@@ -35,7 +35,7 @@ public:
 	static void deleteRowFromTable( QTableWidget *,int row ) ;
 	static void selectRow( QTableWidget *,int row ) ;
 	static void setText( QTableWidget *,int row,int col,QString text ) ;
-	static void addEmptyRow( QTableWidget * ) ;
+	static int addEmptyRow( QTableWidget * ) ;
 	static int  columnHasEntry( QTableWidget *,int,QString ) ;
 };
 
