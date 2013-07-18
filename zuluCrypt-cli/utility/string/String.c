@@ -1060,6 +1060,24 @@ const char * StringReplaceCharPos( string_t st,char x,char y,size_t p )
 	return StringCRC__( st,x,y,p ) ;
 }
 
+const char * StringReplaceChar_1( string_t st,size_t index,char x,char y ) 
+{
+	char * e ;
+	if( st == StringVoid ){
+		return NULL ;
+	}
+	if( index >= st->size ){
+		return NULL ;
+	}
+	e = strchr( st->string + index,x ) ;
+	if( e != NULL ){
+		*e = y ;
+		return st->string ;
+	}else{
+		return NULL ;
+	}
+}
+
 const char * StringReplaceChar( string_t st,char x,char y )
 {
 	return StringReplaceCharPos( st,x,y,0 ) ;

@@ -501,6 +501,13 @@ const char * StringReplaceStringPos( string_t st,const char * x,const char * y,s
  */
 const char * StringReplaceChar( string_t st,char x,char y ) ;
 
+/*
+ * start at index z,replace the first occurance of character x by character y
+ * Only the first character will be subsituted if found
+ * NULL is returned if substitution could not take place
+ * modified string is returned if substitution took place
+ */
+const char * StringReplaceChar_1( string_t st,size_t z,char x,char y ) ;
 
 /*
  * starting at position p,replace all occurance of char x by char y  

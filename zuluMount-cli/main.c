@@ -542,17 +542,20 @@ static void _forceTerminateOnSeriousError( int sig )
 static int _printAListOfMountedVolumes( void )
 {
 	/*
+	 * This function may print the same device more than once if there exists a normal mount and atleast 
+	 * a single bind mount.This behavior is expected and is desired since the list given here must match
+	 * the list given with "zuluMount-cli -l". zuluMount-gui will go crazy if the two lists do not match 
+	 */
+	
+	/*
 	 * zuluCryptGetMountInfoList() is defined in ../zuluCrypt-cli/lib/process_mountinfo.c
 	 */
 	stringList_t stz = zuluCryptGetMountInfoList() ;
-	stringList_t stl = StringListVoid ;
 	
 	StringListIterator it  = StringListBegin( stz ) ;
 	StringListIterator end = StringListEnd( stz ) ;
 	
 	string_t st ;
-	
-	ssize_t index ;
 	
 	const char * e ;
 	const char * f ;
@@ -566,32 +569,11 @@ static int _printAListOfMountedVolumes( void )
 			continue ;
 		}
 		
-		index = StringIndexOfChar( st,0,' ' ) ;
-			
-		if( index == -1 ){
+		e = StringReplaceChar_1( st,0,' ','\0' ) ;
+		
+		if( e == NULL ){
 			continue ;
 		}
-			
-		e = StringSubChar( st,index,'\0' ) ;
-
-		if( StringListContains( stl,e ) != -1 ){
-			/*
-			 * already seen this entry,probably because its a bind mount
-			 */
-			
-			/*
-			 * allow bind mounts because we want to get the same device list "zuluMount-cli -l" gives
-			 * 
-			 * continue ;
-			 */
-			;
-		}else{
-			/*
-			 * about to process this entry,prevent reprocessing it on following loops
-			 */
-			stl = StringListAppend( stl,e ) ;
-		}
-					
 		if( StringPrefixEqual( e,"/dev/mapper/" ) ){
 			/*
 			 * zuluCryptConvertIfPathIsLVM() is defined in ../zuluCrypt-cli/lib/status.c
@@ -625,7 +607,7 @@ static int _printAListOfMountedVolumes( void )
 		}
 	}
 	
-	StringListMultipleDelete( &stz,&stl,ENDLIST ) ;
+	StringListDelete( &stz ) ;
 	
 	return 0 ;
 }
