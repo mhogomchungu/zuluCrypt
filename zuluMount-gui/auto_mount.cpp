@@ -20,8 +20,11 @@
 #include "auto_mount.h"
 #include <QDebug>
 
-auto_mount::auto_mount( QObject * parent ) :m_fdDir( -1 ),m_thread_helper( 0 ),m_babu( parent ),m_autoMount( this )
+auto_mount::auto_mount( QObject * parent )
 {
+	m_baba = static_cast< QThread * >( this ) ;
+	m_main = this ;
+	m_babu = parent ;
 }
 
 auto_mount::~auto_mount()
@@ -48,10 +51,11 @@ void auto_mount::threadStopped()
 
 void auto_mount::run()
 {
-	m_mtoto = this ;
-	connect( m_mtoto,SIGNAL( terminated() ),m_autoMount,SLOT( threadStopped() ) ) ;
+	m_mtoto = static_cast< QThread * >( this ) ;
+	connect( m_mtoto,SIGNAL( terminated() ),m_main,SLOT( threadStopped() ) ) ;
+	connect( m_mtoto,SIGNAL( terminated() ),m_mtoto,SLOT( deleteLater() ) ) ;
 	connect( m_mtoto,SIGNAL( terminated() ),this,SLOT( deleteLater() ) ) ;
-
+	
 	#define BUFF_SIZE 4096
 	char buffer[ BUFF_SIZE ];
 

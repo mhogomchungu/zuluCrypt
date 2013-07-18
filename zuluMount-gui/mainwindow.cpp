@@ -36,14 +36,10 @@ void MainWindow::setUpApp()
 
 	this->setFixedSize( this->size() ) ;
 
-	m_ui->tableWidget->setColumnWidth( 0,228 );
-	//m_ui->tableWidget->setColumnWidth( 1,226 ); //original width with label column visible
-	m_ui->tableWidget->setColumnWidth( 1,328 );   // new column with label column hidden
-	m_ui->tableWidget->setColumnWidth( 2,98 );
-	//m_ui->tableWidget->hideColumn( 2 ) ;
-	//m_ui->tableWidget->setColumnWidth( 3,98 ); // hide the label column
-	//m_ui->tableWidget->setColumnWidth( 3,0 );    // hide the label column
-	m_ui->tableWidget->hideColumn( 3 ) ;
+	m_ui->tableWidget->setColumnWidth( 0,225 );
+	m_ui->tableWidget->setColumnWidth( 1,320 );
+	m_ui->tableWidget->setColumnWidth( 2,105 );
+	m_ui->tableWidget->hideColumn( 3 );
 	m_ui->tableWidget->setColumnWidth( 4,87 );
 	m_ui->tableWidget->setColumnWidth( 5,87 );
 
@@ -93,10 +89,11 @@ void MainWindow::setUpApp()
 
 	trayMenu->addAction( autoOpenFolderOnMount ) ;
 
-	trayMenu->addAction( tr( "quit" ),this,SLOT( slotCloseApplication() ) );
+	trayMenu->addAction( tr( "quit" ),this,SLOT( pbClose() ) );
 	m_trayIcon->setContextMenu( trayMenu );
 
-	connect( m_trayIcon,SIGNAL( activated( QSystemTrayIcon::ActivationReason ) ),this,SLOT( slotTrayClicked( QSystemTrayIcon::ActivationReason ) ) );
+	connect( m_trayIcon,SIGNAL( activated( QSystemTrayIcon::ActivationReason ) ),
+		 this,SLOT( slotTrayClicked( QSystemTrayIcon::ActivationReason ) ) );
 
 	m_trayIcon->show();
 
@@ -113,7 +110,8 @@ void MainWindow::setUpApp()
 
 	this->disableAll();
 
-	connect( part,SIGNAL( signalMountedList( QStringList,QStringList ) ),this,SLOT( slotMountedList( QStringList,QStringList ) ) ) ;
+	connect( part,SIGNAL( signalMountedList( QStringList,QStringList ) ),
+		 this,SLOT( slotMountedList( QStringList,QStringList ) ) ) ;
 	connect( part,SIGNAL( done() ),this,SLOT( openVolumeFromArgumentList() ) ) ;
 	connect( part,SIGNAL( done() ),this,SLOT( started() ) ) ;
 
@@ -166,14 +164,36 @@ bool MainWindow::autoOpenFolderOnMount( void )
 
 void MainWindow::startAutoMonitor()
 {
-	m_autoMountThread = new auto_mount( this ) ;
-	connect( m_autoMountThread,SIGNAL( stopped() ),this,SLOT( close() ) ) ;
-	m_autoMountThread->start() ;
-
 	m_mountInfo = new monitor_mountinfo( this ) ;
-	connect( m_mountInfo,SIGNAL( stopped() ),this,SLOT( close_1() ) ) ;
+	m_autoMountThread = new auto_mount( this ) ;
+
+	/*
+	 * perform an ordely shut down when the application terminates to prevent an occassional crash with
+	 * a warning that says something like "an object was destroyed while a thread is still running"
+	 *
+	 * On quiting,we first shut down auto_mount object and then monitor_mountinfo object and then we
+	 * close the application
+	 */
+	connect( m_mountInfo,SIGNAL( stopped() ),this,SLOT( quitApplication() ) ) ;
+	connect( m_autoMountThread,SIGNAL( stopped() ),m_mountInfo,SLOT( stop() ) ) ;
+
 	connect( m_mountInfo,SIGNAL( volumeRemoved( QString ) ),this,SLOT( removeEntryFromTable( QString ) ) ) ;
+
 	m_mountInfo->start() ;
+	m_autoMountThread->start() ;
+}
+
+/*
+ * This should be the only function that closes the application
+ */
+void MainWindow::pbClose()
+{
+	m_autoMountThread->stop();
+}
+
+void MainWindow::quitApplication()
+{
+	QCoreApplication::quit();
 }
 
 void MainWindow::started( void )
@@ -191,12 +211,7 @@ void MainWindow::showEvent( QShowEvent * e )
 
 void MainWindow::autoMountVolumeSystemInfo( QStringList l )
 {
-	//QString s = QString( "system device added: device=%1" ).arg( l.at( 0 ) ) ;
-	//qDebug() << s ;
-	if( l.size() == 0 ){
-		return ;
-	}
-	if( l.at( 0 ).size() == strlen( "/dev/sdX" ) && l.at( 2 ) == QString( "Nil" ) ){
+	if( l.size() > 3 && l.at( 0 ).size() == strlen( "/dev/sdX" ) && l.at( 2 ) == QString( "Nil" ) ){
 		/*
 		 * root device with no file system,dont show them.This will be a bug if a user just put a plain volume
 		 * or a truecrypt volume without first partitio the drive.
@@ -337,26 +352,6 @@ void MainWindow::start()
 	}
 }
 
-void MainWindow::pbClose()
-{
-	this->slotCloseApplication();
-}
-
-void MainWindow::close()
-{
-	m_mountInfo->stop();
-}
-
-void MainWindow::close_1()
-{
-	QCoreApplication::quit();
-}
-
-void MainWindow::slotCloseApplication()
-{
-	m_autoMountThread->stop();
-}
-
 void MainWindow::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 {
 	QMenu m ;
@@ -374,15 +369,19 @@ void MainWindow::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 			connect( m.addAction( tr( "unmount" ) ),SIGNAL( triggered() ),this,SLOT( pbUmount() ) ) ;
 			if( type.startsWith( QString( "crypto" ) ) ) {
 				m.addSeparator() ;
-				connect( m.addAction( tr( "properties" ) ),SIGNAL( triggered() ),this,SLOT( volumeProperties() ) ) ;
+				connect( m.addAction( tr( "properties" ) ),SIGNAL( triggered() ),
+					 this,SLOT( volumeProperties() ) ) ;
 			}
 			m.addSeparator() ;
 			m_sharedFolderPath = utility::sharedMountPointPath( mt ) ;
 			if( m_sharedFolderPath.isEmpty() ){
-				connect( m.addAction( tr( "open folder" ) ),SIGNAL( triggered() ),this,SLOT( slotOpenFolder() ) ) ;
+				connect( m.addAction( tr( "open folder" ) ),SIGNAL( triggered() ),
+					 this,SLOT( slotOpenFolder() ) ) ;
 			}else{
-				connect( m.addAction( tr( "open private folder" ) ),SIGNAL( triggered() ),this,SLOT( slotOpenFolder() ) ) ;
-				connect( m.addAction( tr( "open shared folder" ) ),SIGNAL( triggered() ),this,SLOT( slotOpenSharedFolder() ) ) ;
+				connect( m.addAction( tr( "open private folder" ) ),SIGNAL( triggered() ),
+					 this,SLOT( slotOpenFolder() ) ) ;
+				connect( m.addAction( tr( "open shared folder" ) ),SIGNAL( triggered() ),
+					 this,SLOT( slotOpenSharedFolder() ) ) ;
 			}
 		}else{
 			m_sharedFolderPath = utility::sharedMountPointPath( mt ) ;
@@ -390,10 +389,12 @@ void MainWindow::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 				if( mt.startsWith( QString( "/run/media/private/" ) ) ){
 					m.addAction( tr( "no available options for this volume" ) ) ;
 				}else{
-					connect( m.addAction( tr( "open folder" ) ),SIGNAL( triggered() ),this,SLOT( slotOpenFolder() ) ) ;
+					connect( m.addAction( tr( "open folder" ) ),SIGNAL( triggered() ),
+						 this,SLOT( slotOpenFolder() ) ) ;
 				}
 			}else{
-				connect( m.addAction( tr( "open shared folder" ) ),SIGNAL( triggered() ),this,SLOT( slotOpenSharedFolder() ) ) ;
+				connect( m.addAction( tr( "open shared folder" ) ),SIGNAL( triggered() ),
+					 this,SLOT( slotOpenSharedFolder() ) ) ;
 			}
 		}
 	}
@@ -432,10 +433,12 @@ void MainWindow::defaultButton()
 
 void MainWindow::fileManagerOpenStatus( int exitCode, int exitStatus,int startError )
 {
+	QString x = tr( "could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) ;
 	Q_UNUSED( startError ) ;
 	if( exitCode != 0 || exitStatus != 0 ){
 		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "warning" ),tr( "could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) );
+		msg.ShowUIOK( tr( "warning" ),x ) ;
+
 	}
 }
 
@@ -470,13 +473,15 @@ void MainWindow::volumeProperties( QString properties )
 	DialogMsg msg( this ) ;
 
 	if( properties.isEmpty() ){
-		msg.ShowUIOK( tr( "ERROR" ),tr( "could not get volume properties.\nvolume is not open or was opened by a different user" ) ) ;
+		msg.ShowUIOK( tr( "ERROR" ),
+			      tr( "could not get volume properties.\nvolume is not open or was opened by a different user" ) ) ;
 	}else{
 		int i = properties.indexOf( "\n" ) ;
 		if( i != -1 ){
 			msg.ShowUIVolumeProperties( tr( "volume properties" ),properties.mid( i + 1 ) ) ;
 		}else{
-			msg.ShowUIOK( tr( "ERROR" ),tr( "could not get volume properties.\nvolume is not open or was opened by a different user" ) ) ;
+			msg.ShowUIOK( tr( "ERROR" ),
+				      tr( "could not get volume properties.\nvolume is not open or was opened by a different user" ) ) ;
 		}
 	}
 	this->enableAll();
@@ -524,7 +529,7 @@ void MainWindow::setUpShortCuts()
 	QList<QKeySequence> e ;
 	e.append( Qt::Key_C );
 	qa->setShortcuts( e ) ;
-	connect( qa,SIGNAL( triggered() ),this,SLOT( slotCloseApplication() ) );
+	connect( qa,SIGNAL( triggered() ),this,SLOT( pbClose() ) );
 	this->addAction( qa ) ;
 }
 
@@ -571,7 +576,8 @@ void MainWindow::dropEvent( QDropEvent * e )
 		m_device = l.at( i ).path() ;
 		if( utility::pathPointsToAFile( m_device ) ){
 			managepartitionthread * m = new managepartitionthread() ;
-			connect( m,SIGNAL( getVolumeInfo( QStringList ) ),this,SLOT( showMoungDialog( QStringList ) ) ) ;
+			connect( m,SIGNAL( getVolumeInfo( QStringList ) ),
+				 this,SLOT( showMoungDialog( QStringList ) ) ) ;
 			m->setDevice( m_device );
 			m->startAction( managepartitionthread::VolumeType ) ;
 		}
@@ -634,7 +640,8 @@ void MainWindow::showMoungDialog( QStringList l )
 		this->mount( l.at( 2 ),l.at( 0 ),l.at( 3 ) );
 	}else{
 		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "ERROR" ),tr( "permission to access the volume was denied\nor\nthe volume is not supported\n(LVM/MDRAID signatures found)" ) ) ;
+		msg.ShowUIOK( tr( "ERROR" ),
+			      tr( "permission to access the volume was denied\nor\nthe volume is not supported\n(LVM/MDRAID signatures found)" ) ) ;
 		this->enableAll();
 	}
 }
@@ -780,7 +787,8 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 {
 	if( list.isEmpty() || sys.isEmpty() ){
 		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "ERROR" ),tr( "reading partition properties took longer than expected and operation was terminated,click refresh to try again" ) );
+		msg.ShowUIOK( tr( "ERROR" ),
+			      tr( "reading partition properties took longer than expected and operation was terminated,click refresh to try again" ) );
 		this->enableAll();
 		return ;
 	}

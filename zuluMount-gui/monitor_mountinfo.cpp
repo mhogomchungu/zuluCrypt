@@ -22,7 +22,8 @@
 monitor_mountinfo::monitor_mountinfo( QObject * parent ) : QThread( parent )
 {
 	m_babu = parent ;
-	m_baba = this ;
+	m_baba = static_cast< QThread * >( this ) ;
+	m_main = this ;
 }
 
 void monitor_mountinfo::stop()
@@ -47,10 +48,11 @@ void monitor_mountinfo::removeEntry( QString device )
 
 void monitor_mountinfo::run()
 {
-	m_mtoto = this ;
-	connect( m_mtoto,SIGNAL( terminated() ),m_baba,SLOT( threadStopped() ) ) ;
+	m_mtoto = static_cast< QThread * >( this ) ;
+	connect( m_mtoto,SIGNAL( terminated() ),m_main,SLOT( threadStopped() ) ) ;
+	connect( m_mtoto,SIGNAL( terminated() ),m_mtoto,SLOT( deleteLater() ) ) ;
 	connect( m_mtoto,SIGNAL( terminated() ),this,SLOT( deleteLater() ) ) ;
-	connect( this,SIGNAL( volumeRemoved( QString ) ),m_babu,SLOT( removeEntryFromTable( QString ) ) ) ;
+	
 	m_threadIsRunning = true ;
 
 	struct pollfd fds[ 1 ] ;
@@ -101,7 +103,7 @@ void monitor_mountinfo::run()
 					mpt->startAction( managepartitionthread::VolumeMiniProperties ) ;
 				}else{
 					sleep( 1 ) ; //sleep for one second for UI effect
-					removeEntry( device ) ;
+					m_main->removeEntry( device ) ;
 				}
 			}
 
@@ -117,7 +119,7 @@ void monitor_mountinfo::run()
 			}
 
 			j = newList.size() ;
-			for( int i = 0 ; i < j ;i++ ){
+			for( int i = 0 ; i < j ; i++ ){
 				const QString& device = newList.at( i ) ;
 				managepartitionthread * mpt = new managepartitionthread() ;
 				mpt->setDevice( device ) ;

@@ -181,19 +181,18 @@ void managepartitionthread::volumeProperties()
 	p.start( exe );
 	p.waitForFinished( -1 ) ;
 
-	QString output = QString( p.readAll() ) ;
+	QString r ;
 
-	if( p.exitCode() ){
-		QString failed ;
-		emit signalProperties( failed );
+	if( p.exitCode() == 0 ){
+		r = p.readAll() ;
 	}else{
-		emit signalProperties( output );
+		;
 	}
 
-	p.close();
+	emit signalProperties( r );
 }
 
-QString managepartitionthread::volumeMiniProperties_1()
+void managepartitionthread::volumeMiniProperties()
 {
 	QProcess p ;
 	QString exe ;
@@ -203,16 +202,14 @@ QString managepartitionthread::volumeMiniProperties_1()
 	p.start( exe );
 	p.waitForFinished( -1 ) ;
 
+	QString r ;
 	if( p.exitCode() == 0 ){
-		return QString( p.readAll() ) ;
+		r = p.readAll() ;
 	}else{
-		return QString( "" ) ;
+		;
 	}
-}
 
-void managepartitionthread::volumeMiniProperties()
-{
-	signalProperties( this->volumeMiniProperties_1() ) ;
+	emit signalProperties( r ) ;
 }
 
 void managepartitionthread::cryptoOpen()

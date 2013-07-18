@@ -64,7 +64,7 @@ private:
 	QThread * m_baba ;
 	QThread * m_mtoto ;
 	QObject * m_babu ;
-	auto_mount * m_autoMount ;
+	auto_mount * m_main ;
 	bool m_threadIsRunning ;
 };
 

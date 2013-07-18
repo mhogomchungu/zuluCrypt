@@ -84,7 +84,6 @@ private slots:
 	void slotUnmountComplete( int,QString ) ;
 	void slotMountedList( QStringList,QStringList ) ;
 	void slotcbReadOnly( void ) ;
-	void slotCloseApplication( void ) ;
 	void slotTrayClicked( QSystemTrayIcon::ActivationReason ) ;
 	void slotCurrentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ;
 	void enableAll( void ) ;
@@ -98,8 +97,7 @@ private slots:
 	void deviceRemoved( QString ) ;
 	void addEntryToTable( bool,QStringList ) ;
 	void started( void ) ;
-	void close( void ) ;
-	void close_1( void ) ;
+	void quitApplication( void ) ;
 	void autoMountToggled( bool ) ;
 	void autoOpenFolderOnMount( bool ) ;
 	void removeEntryFromTable( QString ) ;

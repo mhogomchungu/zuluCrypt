@@ -38,7 +38,6 @@ class monitor_mountinfo : public QThread
 	Q_OBJECT
 public:
 	explicit monitor_mountinfo( QObject *parent = 0 ) ;
-	void stop( void ) ;
 signals:
 	void stopped( void ) ;
 	void threadFinished( void ) ;
@@ -46,6 +45,7 @@ signals:
 	void volumeRemoved( QString ) ;
 private slots:
 	void threadStopped( void ) ;
+	void stop( void ) ;
 private:
 	void removeEntry( QString ) ;
 	void run( void ) ;
@@ -54,6 +54,7 @@ private:
 	QThread * m_baba ;
 	QThread * m_mtoto ;
 	QObject * m_babu ;
+	monitor_mountinfo * m_main ;
 	bool m_threadIsRunning ;
 };
 
