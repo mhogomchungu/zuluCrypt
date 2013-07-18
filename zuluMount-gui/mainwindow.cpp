@@ -696,41 +696,39 @@ void MainWindow::volumeMiniProperties( QString volumeInfo )
 	QString perc ;
 	QString label ;
 	QString mountPointPath ;
+
 	if( volumeInfo.isEmpty() ){
-		device = QString( "Nil" ) ;
-		mountPointPath = QString( "Nil" ) ;
-		fileSystem = QString( "Nil" ) ;
-		total = QString( "0" ) ;
-		perc  = QString( "0%" );
-		label = QString( "Nil" ) ;
+		;
 	}else{
 		l = volumeInfo.split( "\t" ) ;
 		device = l.at( 0 ) ;
 		mountPointPath = l.at( 1 ) ;
 		fileSystem = l.at( 2 ) ;
 		int index = fileSystem.indexOf( QString( "/" ) ) ;
+
 		if( index != -1 ){
 			fileSystem = fileSystem.replace( QString( "/" ),QString( "\n(" ) ) + QString( ")" ) ;
 		}
+
 		label = l.at( 3 ) ;
 		total = l.at( 4 ) ;
 		perc = l.at( 5 ) ;
 		perc.remove( QChar( '\n' ) ) ;
+
+		QTableWidget * table = m_ui->tableWidget ;
+
+		if( tablewidget::columnHasEntry( table,0,device ) == -1 ){
+			tablewidget::addEmptyRow( table ) ;
+		}
+
+		int row = table->currentRow() ;
+		tablewidget::setText( table,row,0,device ) ;
+		tablewidget::setText( table,row,1,mountPointPath ) ;
+		tablewidget::setText( table,row,2,fileSystem ) ;
+		tablewidget::setText( table,row,3,label ) ;
+		tablewidget::setText( table,row,4,total ) ;
+		tablewidget::setText( table,row,5,perc ) ;
 	}
-
-	QTableWidget * table = m_ui->tableWidget ;
-
-	if( tablewidget::columnHasEntry( table,0,device ) == -1 ){
-		tablewidget::addEmptyRow( table ) ;
-	}
-
-	int row = table->currentRow() ;
-	tablewidget::setText( table,row,0,device ) ;
-	tablewidget::setText( table,row,1,mountPointPath ) ;
-	tablewidget::setText( table,row,2,fileSystem ) ;
-	tablewidget::setText( table,row,3,label ) ;
-	tablewidget::setText( table,row,4,total ) ;
-	tablewidget::setText( table,row,5,perc ) ;
 
 	this->enableAll() ;
 }

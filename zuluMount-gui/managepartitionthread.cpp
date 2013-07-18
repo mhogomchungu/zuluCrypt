@@ -179,7 +179,7 @@ void managepartitionthread::volumeProperties()
 	exe = QString( "%1 -s -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;
 
 	p.start( exe );
-	p.waitForFinished( 10000 ) ;
+	p.waitForFinished( -1 ) ;
 
 	QString output = QString( p.readAll() ) ;
 
@@ -197,34 +197,22 @@ QString managepartitionthread::volumeMiniProperties_1()
 {
 	QProcess p ;
 	QString exe ;
-	sleep( 1 ) ;
+	//sleep( 1 ) ; for UI effect
 	exe = QString( "%1 -L -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;
 
 	p.start( exe );
 	p.waitForFinished( -1 ) ;
 
-	QString result = QString( p.readAll() ) ;
-	p.close();
-	return result ;
+	if( p.exitCode() == 0 ){
+		return QString( p.readAll() ) ;
+	}else{
+		return QString( "" ) ;
+	}
 }
 
 void managepartitionthread::volumeMiniProperties()
 {
-	QString result = this->volumeMiniProperties_1();
-	if( result.isEmpty() ){
-		emit signalProperties( result );
-	}else{
-		QStringList stl = result.split( QString( "\t" ) ) ;
-		if( stl.at( 2 ) == QString( "Nil" ) ){
-			/*
-			 * Wait for 1 second before trying again to read volume information if file system type
-			 * could not be determined
-			 */
-			sleep( 1 ) ;
-			result = this->volumeMiniProperties_1();
-		}
-		emit signalProperties( result );
-	}
+	signalProperties( this->volumeMiniProperties_1() ) ;
 }
 
 void managepartitionthread::cryptoOpen()
