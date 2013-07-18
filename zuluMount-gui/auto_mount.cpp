@@ -51,11 +51,15 @@ void auto_mount::threadStopped()
 
 void auto_mount::run()
 {
+	/*
+	 * Not exactly sure what i am doing here but this kind of thing seem to be necessary to prevent
+	 * an occassional crash on exit with an error that reads something like "object deleted while thread is still running"
+	 */
 	m_mtoto = static_cast< QThread * >( this ) ;
 	connect( m_mtoto,SIGNAL( terminated() ),m_main,SLOT( threadStopped() ) ) ;
 	connect( m_mtoto,SIGNAL( terminated() ),m_mtoto,SLOT( deleteLater() ) ) ;
 	connect( m_mtoto,SIGNAL( terminated() ),this,SLOT( deleteLater() ) ) ;
-	
+
 	#define BUFF_SIZE 4096
 	char buffer[ BUFF_SIZE ];
 
@@ -97,11 +101,15 @@ void auto_mount::run()
 
 			m_device = f + baseSize ;
 
-			if(     strncmp( m_device,"sg",2 ) == 0 ||
-				strncmp( m_device,"dm-",3 ) == 0 ||
-				strstr( m_device,".dev/tmp" ) != NULL ||
-				strstr( m_device,".tmp.md." ) != NULL ||
-				strstr( m_device,"md/md-device-map" ) != NULL ){
+			#define stringPrefixMatch( x,y,z ) strncmp( x,y,z ) == 0
+			#define stringEqual( x,y ) strcmp( x,y ) == 0
+			#define stringHasComponent( x,y ) strstr( x,y ) != NULL
+
+			if(     stringPrefixMatch( m_device,"sg",2 ) ||
+				stringPrefixMatch( m_device,"dm-",3 ) ||
+				stringHasComponent( m_device,".dev/tmp" ) ||
+				stringHasComponent( m_device,".tmp.md." ) ||
+				stringHasComponent( m_device,"md/md-device-map" ) ){
 				/*
 				 * dont care about these devices.
 				 * /dev/sgX seem to be created when a usb device is plugged in
@@ -115,15 +123,15 @@ void auto_mount::run()
 					 * created before the first entry is added.To account for this,monitor for the
 					 * folder created to start monitoring its contents if it get created after we have started
 					 */
-					if( strcmp( "md",m_device ) == 0 ){
+					if( stringEqual( "md",m_device ) ){
 						md = inotify_add_watch( m_fdDir,"/dev/md",IN_DELETE ) ;
 						continue ;
 					}
 				}
 
 				if( pevent->wd == dev && pevent->mask & IN_DELETE ){
-					if( strcmp( "md",m_device ) == 0 ){
-						 inotify_rm_watch( md,dev );
+					if( stringEqual( "md",m_device ) ){
+						inotify_rm_watch( md,dev );
 						continue ;
 					}
 				}

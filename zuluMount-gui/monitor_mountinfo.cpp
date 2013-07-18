@@ -48,6 +48,10 @@ void monitor_mountinfo::removeEntry( QString device )
 
 void monitor_mountinfo::run()
 {
+	/*
+	 * Not exactly sure what i am doing here but this kind of thing seem to be necessary to prevent
+	 * an occassional crash on exit with an error that reads something like "object deleted while thread is still running"
+	 */
 	m_mtoto = static_cast< QThread * >( this ) ;
 	connect( m_mtoto,SIGNAL( terminated() ),m_main,SLOT( threadStopped() ) ) ;
 	connect( m_mtoto,SIGNAL( terminated() ),m_mtoto,SLOT( deleteLater() ) ) ;
