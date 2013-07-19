@@ -703,7 +703,9 @@ void MainWindow::volumeMiniProperties( QString volumeInfo )
 	QString perc ;
 	QString label ;
 	QString mountPointPath ;
-
+	
+	this->disableAll();
+	
 	if( volumeInfo.isEmpty() ){
 		;
 	}else{

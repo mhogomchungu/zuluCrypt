@@ -888,42 +888,42 @@ char * const * StringListStringArray_1( char * const * buffer,size_t * size ,str
 
 size_t StringListRemoveIfStringStartsWith( stringList_t stl,const char * str ) 
 {
+	string_t z ;
+	string_t * it  ;
+	string_t * end ;
+	string_t * result  ;
+	size_t count = 0 ;
 	size_t len ;
-	size_t index ;
-	size_t size ;
-	size_t j ;
-	size_t count ;
-	
-	string_t * k ;
 	
 	if( stl == StringListVoid || str == NULL ){
 		return 0 ;
 	}
 	
-	count = 0 ;
-	size  = sizeof( string_t ) ;
-	len   = strlen( str ) ;
-	j = stl->size ;
-	k = stl->stp ;
-	index = 0 ;
+	it     = stl->stp ;
+	end    = it + stl->size ;
+	result = it ;
+	count  = 0 ;
+	len    = strlen( str ) ;
 	
-	while( index < j ){
-		if( k[ index ] != StringVoid ){
-			if( strncmp( k[ index ]->string,str,len ) == 0 ){
+	while( it != end ){
+		z = *it ;
+		it++ ;
+		if( z != StringVoid ){
+			if( strncmp( z->string,str,len ) == 0 ){
+				free( z->string ) ;
+				free( z ) ;
 				count++ ;
-				free( k[ index ]->string ) ;
-				free( k[ index ] ) ;
-				memmove( k + index,k + index + 1,size * ( j - 1 - index ) ) ;
-				j = j - 1 ;
+				stl->size-- ;
 			}else{
-				index++ ;
+				*result = z ;
+				result++ ;
 			}
 		}else{
-			index++ ;
+			*result = z ;
+			result++ ;
 		}
 	}
 	
-	stl->size = j ;
 	return count ;
 }
 
@@ -934,80 +934,80 @@ size_t StringListRemoveIfStringEqual_1( stringList_t stl,string_t st )
 
 size_t StringListRemoveIfStringEqual( stringList_t stl,const char * str )
 {
-	size_t index ;
-	size_t size ;
-	size_t j ;
-	size_t count ;
-	
-	string_t * k ;
+	string_t z ;
+	string_t * it  ;
+	string_t * end ;
+	string_t * result  ;
+	size_t count = 0 ;
 	
 	if( stl == StringListVoid || str == NULL ){
 		return 0 ;
 	}
 	
-	count = 0 ;
-	size  = sizeof( string_t ) ;
-	j = stl->size ;
-	k = stl->stp ;
-	index = 0 ;
+	it     = stl->stp ;
+	end    = it + stl->size ;
+	result = it ;
+	count  = 0 ;
 	
-	while( index < j ){
-		if( k[ index ] != StringVoid ){
-			if( strcmp( k[ index ]->string,str ) == 0 ){
+	while( it != end ){
+		z = *it ;
+		it++ ;
+		if( z != StringVoid ){
+			if( strcmp( z->string,str ) == 0 ){
+				free( z->string ) ;
+				free( z ) ;
 				count++ ;
-				free( k[ index ]->string ) ;
-				free( k[ index ] ) ;
-				memmove( k + index,k + index + 1,size * ( j - 1 - index ) ) ;
-				j = j - 1 ;
+				stl->size-- ;
 			}else{
-				index++ ;
+				*result = z ;
+				result++ ;
 			}
 		}else{
-			index++ ;
+			*result = z ;
+			result++ ;
 		}
 	}
 	
-	stl->size = j ;
 	return count ;
 }
 
 
 size_t StringListRemoveIfStringContains( stringList_t stl,const char * str ) 
 {
-	size_t index ;
-	size_t size ;
-	size_t j ;
-	size_t count ;
-	
-	string_t * k ;
-	
+	string_t z ;
+	string_t * it  ;
+	string_t * end ;
+	string_t * result  ;
+	size_t count = 0 ;
+		
 	if( stl == StringListVoid || str == NULL ){
 		return 0 ;
 	}
 	
-	count = 0 ;
-	size  = sizeof( string_t ) ;
-	j = stl->size ;
-	k = stl->stp ;
-	index = 0 ;
+	it     = stl->stp ;
+	end    = it + stl->size ;
+	result = it ;
+	count  = 0 ;
 	
-	while( index < j ){
-		if( k[ index ] != StringVoid ){
-			if( strstr( k[ index ]->string,str ) != NULL ){
+	while( it != end ){
+		z = *it ;
+		it++ ;
+		if( z != StringVoid ){
+			if( strstr( z->string,str ) != NULL ){
+				free( z->string ) ;
+				free( z ) ;
 				count++ ;
-				free( k[ index ]->string ) ;
-				free( k[ index ] ) ;
-				memmove( k + index,k + index + 1,size * ( j - 1 - index ) ) ;
-				j = j - 1 ;
+				stl->size-- ;
 			}else{
-				index++ ;
+				*result = z ;
+				result++ ;
 			}
 		}else{
-			index++ ;
+			*result = z ;
+			result++ ;
 		}
 	}
 	
-	stl->size = j ;
 	return count ;
 }
 
@@ -1257,7 +1257,9 @@ void StringListPrintList( stringList_t stl )
 	p = stl->stp ;
 	
 	for( i = 0 ; i < j ; i++ ){
-		printf("%s\n",p[ i ]->string ) ;
+		if( p[ i ] != StringVoid ){
+			printf("%s\n",p[ i ]->string ) ;
+		}
 	}
 }
 
