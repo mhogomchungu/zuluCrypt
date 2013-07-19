@@ -192,9 +192,20 @@ static int _zuluMountPrintDeviceProperties( const char * device,const char * UUI
 	string_t p ;
 	string_t q ;
 	string_t z = StringVoid ;
+	string_t f = StringVoid ;
+	
 	char * dev = NULL ;
 	const char * device_1 ;
 	const char * e ;
+	ssize_t index ;
+	
+	StringListIterator it  ;
+	StringListIterator end ;
+	
+	/*
+	 * zuluCryptGetMoutedListFromMountInfo() is defined in ../zuluCrypt-cli/lib/process_mountinfo.c
+	 */
+	stringList_t stl = zuluCryptGetMoutedListFromMountInfo() ;
 	
 	device_1 = device ;
 	
@@ -229,33 +240,76 @@ static int _zuluMountPrintDeviceProperties( const char * device,const char * UUI
 	
 	e = StringContent( q ) ;
 	
-	/*
-	 * zuluCryptGetMtabEntry() is defined in ../zuluCrypt-cli/lib/process_mountinfo.c
-	 * zuluCryptPathIsValid() is defined in ../zuluCrypt-cli/lib/is_path_valid.c
-	 */
-	if( zuluCryptPathIsValid( e ) ){
-		p = zuluCryptGetMtabEntry( e ) ;
-	}else{
-		p = zuluCryptGetMtabEntry( device ) ;
-	}
-	
-	StringDelete( &q ) ;
-
-	if( p != StringVoid ){
+	index = StringListHasStartSequence( stl,e ) ;
+	if( index != -1 ){
 		/*
-		* zuluMountPrintDeviceProperties() is defined in ./print_mounted_volumes.c
-		*/
-		zuluMountPrintDeviceProperties_1( p,uid ) ;
-		StringDelete( &p ) ;
-	}else{
-		/*
-		 * zuluMountPartitionProperties is defined in ./print_mounted_volumes.c
+		 * mounted encrypted volume opened by this user
 		 */
-		zuluMountPartitionProperties( device_1,NULL,device_1,NULL ) ;
+		p = StringListStringAt( stl,index ) ;
+		zuluMountPrintDeviceProperties_1( p,uid ) ;
+	}else{
+		/*
+		 * We will get if:
+		 * 1. The volume is not mounted.
+		 * 2. The volume is mounted,encrypted and opened by a different user 
+		 * 3. The volume is mouted and unencrypted
+		 */
+		p = String( device ) ;
+		index = StringListHasStartSequence( stl,StringAppend( p," " ) ) ;
+		StringDelete( &p ) ;
+		if( index != -1 ){
+			/*
+			 * volume is unencrypted and mounted
+			 */
+			p = StringListStringAt( stl,index ) ;
+			zuluMountPrintDeviceProperties_1( p,uid ) ;
+		}else{
+			/*
+			 * We will get here is:
+			 * 1. The volume is not mounted
+			 * 2. The volume is encrypted mounted by a different user
+			 */
+			it  = StringListBegin( stl ) ;
+			end = StringListEnd( stl ) ;
+			zuluCryptSecurityGainElevatedPrivileges() ;
+			while( it != end ){
+				p = *it ;
+				it++ ;
+				if( StringStartsWith( p,"/dev/mapper/zuluCrypt-" ) ){
+					e = StringReplaceChar_1( p,0,' ','\0' ) ;
+					/*
+					 * zuluCryptVolumeDeviceName() is defined in ../zuluCrypt-cli/lib/status.c
+					 */
+					e = zuluCryptVolumeDeviceName( e ) ;
+					
+					if( StringsAreEqual( e,device_1 ) ){
+						f = p ;
+						StringReplaceChar_1( p,0,'\0',' ' ) ;
+						StringFree( e ) ;
+						break ;
+					}else{
+						StringFree( e ) ;
+					}
+				}	
+			}
+			zuluCryptSecurityDropElevatedPrivileges() ;
+			if( f != StringVoid ){
+				/*
+				 * The volume is encrypted and mounted by a different user
+				 */
+				zuluMountPrintDeviceProperties_1( f,uid ) ;
+			}else{
+				/*
+				 * volume is not mounted
+				 */
+				zuluMountPartitionProperties( device_1,NULL,device_1,NULL ) ;
+			}
+		}
 	}
-	
-	StringFree( dev ) ;
 		
+	StringListDelete( &stl ) ;
+	StringFree( dev ) ;
+	
 	StringDelete( &z ) ;
 	
 	return 0 ;
