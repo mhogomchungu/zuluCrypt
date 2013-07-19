@@ -125,7 +125,9 @@ void zuluMountPartitionProperties( const char * device,const char * UUID,const c
 			blkid_do_probe( blkid ) ;
 			
 			blkid_device_size = ( int64_t ) blkid_probe_get_size( blkid ) ;
-			
+			/*
+			 * zuluCryptGetVolumeTypeFromMapperPath() is defined in ../zuluCrypt-cli/lib/status.c
+			 */
 			e = zuluCryptGetVolumeTypeFromMapperPath( mapper ) ;
 			
 			if( blkid_probe_lookup_value( blkid,"TYPE",&g,NULL ) == 0 ){
@@ -337,9 +339,9 @@ int printAListOfMountedVolumes( void )
 		if( !StringStartsWith( st,"/" ) || StringStartsWith( st,"/proc" ) ||
 			StringStartsWith( st,"/sys" ) || StringStartsWith( st,"/dev " ) ){
 			continue ;
-			}
+		}
 			
-			e = StringReplaceChar_1( st,0,' ','\0' ) ;
+		e = StringReplaceChar_1( st,0,' ','\0' ) ;
 		
 		if( e == NULL ){
 			continue ;
@@ -466,7 +468,7 @@ int zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t 
 		StringDelete( &p ) ;
 		if( index != -1 ){
 			/*
-			 * volume is unencrypted and mounted
+			 * volume is unencrypted and mounted by this user
 			 */
 			p = StringListStringAt( stl,index ) ;
 			zuluMountPrintDeviceProperties_1( p,uid ) ;
