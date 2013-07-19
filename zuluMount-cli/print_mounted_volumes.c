@@ -375,9 +375,20 @@ int zuluMountprintAListOfMountedVolumes( void )
 					puts( e ) ;
 				}else{
 					/*
-					 * i dont see how we would get here
+					 * Still assuming its an encrypted volume opened and outside of zuluCrypt/zuluMount 
 					 */
-					puts( e ) ;
+					zuluCryptSecurityGainElevatedPrivileges() ;
+					f = zuluCryptVolumeDeviceName( e ) ;
+					zuluCryptSecurityDropElevatedPrivileges() ;
+					if( f != NULL ){
+						puts( f ) ;
+						StringFree( f ) ;
+					}else{
+						/*
+						 * not exactly sure what this is,just print it and let the user sort it out
+						 */
+						puts( e ) ;
+					}
 				}
 			}else{
 				/*
