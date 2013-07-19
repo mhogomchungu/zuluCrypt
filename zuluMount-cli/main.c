@@ -572,10 +572,10 @@ int main( int argc,char * argv[] )
 		return _zuluExit_2( 212,stl,stx,gettext( "ERROR: action not specified" ) ) ;
 	}
 	if( StringsAreEqual( args.action,"-E" ) ){
-		return printAListOfMountedVolumes() ;
+		return _zuluExit_2(  zuluMountprintAListOfMountedVolumes(),stl,stx,NULL ) ;
 	}
 	if( StringsAreEqual( args.action,"-c" ) ){
-		return _checkUnmount( args.device,uid ) ;
+		return _zuluExit_2( _checkUnmount( args.device,uid ),stl,stx,NULL ) ;
 	}
 	if( StringsAreEqual( args.action,"-l" ) ){
 		return _zuluExit_2( _zuluMountMountedList( uid ),stl,stx,NULL ) ;

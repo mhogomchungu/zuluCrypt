@@ -401,61 +401,6 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	return StringDeleteHandle( &p ) ;
 }
 
-static char * zuluCryptVolumeDeviceName_1( const char * mapper )
-{
-	ssize_t len ;
-	string_t st = StringVoid ;
-	DIR * dir ;
-	struct dirent * entry ;
-	const char * path ;
-	string_t xt ;
-	#define MAPPER_SIZE 32
-	char buffer[ MAPPER_SIZE ] ;
-	char * result = NULL ;
-
-	len = readlink( mapper,buffer,MAPPER_SIZE - 1 ) ;
-	
-	if( len < 0 ){
-		return NULL ;
-	}else{
-		buffer[ len ] = '\0' ;
-	}
-	
-	st = String( buffer ) ;
-	StringReplaceString( st,"../","/sys/block/" ) ;
-	path = StringAppend( st,"/slaves" ) ;
-	
-	dir = opendir( path ) ;
-	if( dir == NULL ){
-		StringDelete( &st ) ;
-		return NULL ;
-	}
-	
-	while( ( entry = readdir( dir ) ) != NULL ){
-		path = entry->d_name ;
-		if( StringsAreEqual( path,"." ) ){
-			continue ;
-		}
-		if( StringsAreEqual( path,".." ) ){
-			continue ;
-		}
-		if( StringHasComponent( path,"loop" ) ){
-			path = StringMultipleAppend( st,"/",path,"/loop/backing_file",END ) ;
-			xt = StringGetFromVirtualFile( path ) ;
-			StringDelete( &st ) ;
-			StringRemoveRight( xt,1 ) ;
-			result = StringDeleteHandle( &xt ) ;
-		}else{
-			StringReset( st ) ;
-			StringMultipleAppend( st,"/dev/",path,END ) ;
-			result = StringDeleteHandle( &st ) ;
-		}
-	}
-	
-	closedir( dir ) ;
-	return result ;
-}
-
 char * zuluCryptVolumeDeviceName( const char * mapper )
 {
 	struct crypt_device * cd;
@@ -469,10 +414,7 @@ char * zuluCryptVolumeDeviceName( const char * mapper )
 		return NULL ;
 	}
 	if( crypt_init_by_name( &cd,mapper ) < 0 ){
-		/*
-		 * just in case crypt_init_by_name() fail for some reason.
-		 */
-		return zuluCryptVolumeDeviceName_1( mapper ) ;
+		return NULL ;
 	}
 	
 	e = crypt_get_device_name( cd ) ;

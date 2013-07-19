@@ -51,7 +51,7 @@ typedef struct{
 
 int zuluMountPrintMountedVolumes( uid_t uid ) ;
 
-int printAListOfMountedVolumes( void ) ;
+int zuluMountprintAListOfMountedVolumes( void ) ;
 
 int zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t uid ) ;
 

@@ -311,7 +311,7 @@ int zuluMountPrintMountedVolumes( uid_t uid )
 	return 0 ;
 }
 
-int printAListOfMountedVolumes( void )
+int zuluMountprintAListOfMountedVolumes( void )
 {
 	/*
 	 * This function may print the same device more than once if there exists a normal mount and atleast 
@@ -328,6 +328,7 @@ int printAListOfMountedVolumes( void )
 	StringListIterator end = StringListEnd( stz ) ;
 	
 	string_t st ;
+	string_t q ;
 	
 	const char * e ;
 	const char * f ;
@@ -350,13 +351,13 @@ int printAListOfMountedVolumes( void )
 			/*
 			 * zuluCryptConvertIfPathIsLVM() is defined in ../zuluCrypt-cli/lib/status.c
 			 */
-			st = zuluCryptConvertIfPathIsLVM( e ) ;
+			q = zuluCryptConvertIfPathIsLVM( e ) ;
 			
-			if( StringStartsWith( st,"/dev/mapper/" ) ){
+			if( StringStartsWith( q,"/dev/mapper/" ) ){
 				/*
 				 * volume is probably an encrypted one
 				 */
-				if( StringContains( st,"-NAAN-" ) ){
+				if( StringContains( q,"-NAAN-" ) ){
 					zuluCryptSecurityGainElevatedPrivileges() ;
 					/*
 					 * zuluCryptVolumeDeviceName() is defined in ../zuluCrypt-cli/lib/status.c
@@ -367,8 +368,8 @@ int printAListOfMountedVolumes( void )
 						puts( f ) ;
 						StringFree( f ) ;
 					}
-				}else if( StringContains( st,"-UUID-" ) ){
-					StringReplaceString( st,"-UUID-","-UUID=\"" ) ;
+				}else if( StringContains( q,"-UUID-" ) ){
+					StringReplaceString( q,"-UUID-","-UUID=\"" ) ;
 					e = StringAppend( st,"\"" ) ;
 					e = e + StringHasComponent_1( e,"UUID=" ) ;
 					puts( e ) ;
@@ -385,7 +386,7 @@ int printAListOfMountedVolumes( void )
 				puts( e ) ;
 			}
 			
-			StringDelete( &st ) ;
+			StringDelete( &q ) ;
 		}else{
 			puts( e ) ;
 		}
@@ -468,7 +469,7 @@ int zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t 
 		StringDelete( &p ) ;
 		if( index != -1 ){
 			/*
-			 * volume is unencrypted and mounted by this user
+			 * volume is unencrypted and mounted by any user
 			 */
 			p = StringListStringAt( stl,index ) ;
 			zuluMountPrintDeviceProperties_1( p,uid ) ;
@@ -499,12 +500,13 @@ int zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t 
 					}else{
 						StringFree( e ) ;
 					}
-				}	
+				}
 			}
 			zuluCryptSecurityDropElevatedPrivileges() ;
 			if( f != StringVoid ){
 				/*
-				 * The volume is encrypted and mounted by a different user
+				 * The volume is encrypted and mounted by a any user,probably a different user
+				 * since this user condition is above
 				 */
 				zuluMountPrintDeviceProperties_1( f,uid ) ;
 			}else{
@@ -520,6 +522,7 @@ int zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t 
 	StringFree( dev ) ;
 	
 	StringDelete( &z ) ;
+	StringDelete( &q ) ;
 	
 	return 0 ;
 }
