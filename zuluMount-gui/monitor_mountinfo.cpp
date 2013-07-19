@@ -56,7 +56,7 @@ void monitor_mountinfo::run()
 	connect( m_mtoto,SIGNAL( terminated() ),m_main,SLOT( threadStopped() ) ) ;
 	connect( m_mtoto,SIGNAL( terminated() ),m_mtoto,SLOT( deleteLater() ) ) ;
 	connect( m_mtoto,SIGNAL( terminated() ),this,SLOT( deleteLater() ) ) ;
-	
+
 	m_threadIsRunning = true ;
 
 	struct pollfd fds[ 1 ] ;

@@ -49,6 +49,12 @@ typedef struct{
 	int          tcrypt_hidden_volume ;
 }ARGS;
 
+int zuluMountPrintMountedVolumes( uid_t uid ) ;
+
+int printAListOfMountedVolumes( void ) ;
+
+int zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t uid ) ;
+
 int zuluMountUMount( ARGS * args ) ;
 
 int zuluMountMount( ARGS * args ) ;    

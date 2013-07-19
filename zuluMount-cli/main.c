@@ -23,13 +23,6 @@
 #include "../zuluCrypt-cli/bin/includes.h"
 
 /*
- * below 4 functions are defined in ./print_mounted_volumes.c
- */
-int zuluMountPrintMountedVolumes( uid_t uid ) ;
-void zuluMountPrintDeviceProperties( const char * entry ) ;
-void zuluMountPrintDeviceProperties_1( string_t,uid_t ) ;
-
-/*
  * All functions with "EXE" in their names are defined somewhere in ../zuluCrypt-cli/bin 
  */
 
@@ -187,134 +180,6 @@ int zuluMountVolumeStatus( const char * device,const char * UUID,uid_t uid )
 	return st ;
 }
 
-static int _zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t uid )
-{	
-	string_t p ;
-	string_t q ;
-	string_t z = StringVoid ;
-	string_t f = StringVoid ;
-	
-	char * dev = NULL ;
-	const char * device_1 ;
-	const char * e ;
-	ssize_t index ;
-	
-	StringListIterator it  ;
-	StringListIterator end ;
-	
-	/*
-	 * zuluCryptGetMoutedListFromMountInfo() is defined in ../zuluCrypt-cli/lib/process_mountinfo.c
-	 */
-	stringList_t stl = zuluCryptGetMoutedListFromMountInfo() ;
-	
-	device_1 = device ;
-	
-	if( UUID == NULL ){
-		if( StringPrefixEqual( device,"/dev/loop" ) ){
-			/*
-			* zuluCryptLoopDeviceAddress() is defined in ../zuluCrypt-cli/lib/create_loop_device.c
-			*/
-			device = dev = zuluCryptLoopDeviceAddress( device ) ;
-			
-			z = String( dev ) ;
-			device_1 = StringReplaceString( z,"\\040"," " ) ;
-			/*
-			 * ZULUCRYPTlongMapperPath is set in ../zuluCrypt-cli/constants.h
-			 * zuluCryptCreateMapperName() is defined at ../zuluCrypt-cli/lib/create_mapper_name.c
-			 */
-			q = zuluCryptCreateMapperName( device_1,strrchr( device_1,'/' ) + 1,uid,ZULUCRYPTlongMapperPath ) ;
-		}else{
-			/*
-			 * ZULUCRYPTlongMapperPath is set in ../zuluCrypt-cli/constants.h
-			 * zuluCryptCreateMapperName() is defined at ../zuluCrypt-cli/lib/create_mapper_name.c
-			 */
-			q = zuluCryptCreateMapperName( device,strrchr( device,'/' ) + 1,uid,ZULUCRYPTlongMapperPath ) ;
-		}
-	}else{
-		p = String( UUID ) ;
-		StringRemoveString( p,"\"" ) ;
-		e = StringReplaceString( p,"UUID=","UUID-" ) ;
-		q = zuluCryptCreateMapperName( device,e,uid,ZULUCRYPTlongMapperPath ) ;
-		StringDelete( &p ) ;
-	}
-	
-	e = StringContent( q ) ;
-	
-	index = StringListHasStartSequence( stl,e ) ;
-	if( index != -1 ){
-		/*
-		 * mounted encrypted volume opened by this user
-		 */
-		p = StringListStringAt( stl,index ) ;
-		zuluMountPrintDeviceProperties_1( p,uid ) ;
-	}else{
-		/*
-		 * We will get if:
-		 * 1. The volume is not mounted.
-		 * 2. The volume is mounted,encrypted and opened by a different user 
-		 * 3. The volume is mouted and unencrypted
-		 */
-		p = String( device ) ;
-		index = StringListHasStartSequence( stl,StringAppend( p," " ) ) ;
-		StringDelete( &p ) ;
-		if( index != -1 ){
-			/*
-			 * volume is unencrypted and mounted
-			 */
-			p = StringListStringAt( stl,index ) ;
-			zuluMountPrintDeviceProperties_1( p,uid ) ;
-		}else{
-			/*
-			 * We will get here is:
-			 * 1. The volume is not mounted
-			 * 2. The volume is encrypted mounted by a different user
-			 */
-			it  = StringListBegin( stl ) ;
-			end = StringListEnd( stl ) ;
-			zuluCryptSecurityGainElevatedPrivileges() ;
-			while( it != end ){
-				p = *it ;
-				it++ ;
-				if( StringStartsWith( p,"/dev/mapper/zuluCrypt-" ) ){
-					e = StringReplaceChar_1( p,0,' ','\0' ) ;
-					/*
-					 * zuluCryptVolumeDeviceName() is defined in ../zuluCrypt-cli/lib/status.c
-					 */
-					e = zuluCryptVolumeDeviceName( e ) ;
-					
-					if( StringsAreEqual( e,device_1 ) ){
-						f = p ;
-						StringReplaceChar_1( p,0,'\0',' ' ) ;
-						StringFree( e ) ;
-						break ;
-					}else{
-						StringFree( e ) ;
-					}
-				}	
-			}
-			zuluCryptSecurityDropElevatedPrivileges() ;
-			if( f != StringVoid ){
-				/*
-				 * The volume is encrypted and mounted by a different user
-				 */
-				zuluMountPrintDeviceProperties_1( f,uid ) ;
-			}else{
-				/*
-				 * volume is not mounted
-				 */
-				zuluMountPartitionProperties( device_1,NULL,device_1,NULL ) ;
-			}
-		}
-	}
-		
-	StringListDelete( &stl ) ;
-	StringFree( dev ) ;
-	
-	StringDelete( &z ) ;
-	
-	return 0 ;
-}
-
 static int _zuluPartitionHasCryptoFs( const char * device )
 {
 	int st ;
@@ -465,7 +330,7 @@ static int _zuluMountExe( ARGS * args )
 		return _zuluMountPrintVolumeDeviceName( device ) ;
 	}
 	if( StringsAreEqual( action,"-L" ) ){
-		return _zuluMountPrintDeviceProperties( device,uuid,uid ) ;
+		return zuluMountPrintDeviceProperties( device,uuid,uid ) ;
 	}
 	if( StringsAreEqual( action,"-s" ) ){
 		return zuluMountVolumeStatus( device,uuid,uid ) ;
@@ -593,79 +458,6 @@ static void _forceTerminateOnSeriousError( int sig )
 	exit( 255 ) ;
 }
 
-static int _printAListOfMountedVolumes( void )
-{
-	/*
-	 * This function may print the same device more than once if there exists a normal mount and atleast 
-	 * a single bind mount.This behavior is expected and is desired since the list given here must match
-	 * the list given with "zuluMount-cli -l". zuluMount-gui will go crazy if the two lists do not match 
-	 */
-	
-	/*
-	 * zuluCryptGetMountInfoList() is defined in ../zuluCrypt-cli/lib/process_mountinfo.c
-	 */
-	stringList_t stz = zuluCryptGetMountInfoList() ;
-	
-	StringListIterator it  = StringListBegin( stz ) ;
-	StringListIterator end = StringListEnd( stz ) ;
-	
-	string_t st ;
-	
-	const char * e ;
-	const char * f ;
-	
-	while( it != end ){
-		st = *it ;
-		it++ ;
-		
-		if( !StringStartsWith( st,"/" ) || StringStartsWith( st,"/proc" ) ||
-			StringStartsWith( st,"/sys" ) || StringStartsWith( st,"/dev " ) ){
-			continue ;
-		}
-		
-		e = StringReplaceChar_1( st,0,' ','\0' ) ;
-		
-		if( e == NULL ){
-			continue ;
-		}
-		if( StringPrefixEqual( e,"/dev/mapper/" ) ){
-			/*
-			 * zuluCryptConvertIfPathIsLVM() is defined in ../zuluCrypt-cli/lib/status.c
-			 */
-			st = zuluCryptConvertIfPathIsLVM( e ) ;
-						
-			if( StringStartsWith( st,"/dev/mapper/" ) ){
-				/*
-				 * volume is probably an encrypted one
-				 */
-				zuluCryptSecurityGainElevatedPrivileges() ;
-				/*
-				 * zuluCryptVolumeDeviceName() is defined in ../zuluCrypt-cli/lib/status.c
-				 */
-				f = zuluCryptVolumeDeviceName( e ) ;
-				zuluCryptSecurityDropElevatedPrivileges() ;
-				if( f != NULL ){
-					puts( f ) ;
-					StringFree( f ) ;
-				}
-			}else{
-				/*
-				 * volume is probably an lvm volume
-				 */
-				puts( e ) ;
-			}
-			
-			StringDelete( &st ) ;
-		}else{
-			puts( e ) ;
-		}
-	}
-	
-	StringListDelete( &stz ) ;
-	
-	return 0 ;
-}
-
 int main( int argc,char * argv[] )
 {	
 	char * action ;
@@ -780,7 +572,7 @@ int main( int argc,char * argv[] )
 		return _zuluExit_2( 212,stl,stx,gettext( "ERROR: action not specified" ) ) ;
 	}
 	if( StringsAreEqual( args.action,"-E" ) ){
-		return _printAListOfMountedVolumes() ;
+		return printAListOfMountedVolumes() ;
 	}
 	if( StringsAreEqual( args.action,"-c" ) ){
 		return _checkUnmount( args.device,uid ) ;
