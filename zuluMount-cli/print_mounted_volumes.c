@@ -496,7 +496,7 @@ int zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t 
 			while( it != end ){
 				p = *it ;
 				it++ ;
-				if( StringStartsWith( p,"/dev/mapper/zuluCrypt-" ) ){
+				if( StringStartsWith( p,"/dev/mapper/" ) ){
 					e = StringReplaceChar_1( p,0,' ','\0' ) ;
 					/*
 					 * zuluCryptVolumeDeviceName() is defined in ../zuluCrypt-cli/lib/status.c
