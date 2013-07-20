@@ -286,6 +286,7 @@ install ( FILES zuluMount-gui.1.bz2 DESTINATION share/man/man1 )
 install ( FILES zuluCrypt-test.1.bz2 DESTINATION share/man/man1 )
 
 install ( FILES translations/zuluMount/fr_FR.qm DESTINATION share/zuluCrypt/translations/zuluMount-gui )
+install ( FILES translations/zuluCrypt/fr_FR.qm DESTINATION share/zuluCrypt/translations/zuluCrypt-gui )
 
 # uninstall target
 configure_file(
