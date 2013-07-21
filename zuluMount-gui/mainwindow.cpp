@@ -43,6 +43,8 @@ void MainWindow::setUpApp()
 	m_ui->tableWidget->setColumnWidth( 4,87 );
 	m_ui->tableWidget->setColumnWidth( 5,87 );
 
+	m_ui->tableWidget->verticalHeader()->setResizeMode( QHeaderView::ResizeToContents ) ;
+
 	this->setAcceptDrops( true );
 	this->setWindowIcon( QIcon( QString( ":/zuluMount.png" ) ) );
 
@@ -703,9 +705,9 @@ void MainWindow::volumeMiniProperties( QString volumeInfo )
 	QString perc ;
 	QString label ;
 	QString mountPointPath ;
-	
+
 	this->disableAll();
-	
+
 	if( volumeInfo.isEmpty() ){
 		;
 	}else{
