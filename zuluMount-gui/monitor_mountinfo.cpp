@@ -98,7 +98,7 @@ void monitor_mountinfo::run()
 
 			j = volumeList.size() ;
 			for( int i = 0 ; i < j ; i++ ){
-				const QString device = volumeList.at( i ) ;
+				const QString& device = volumeList.at( i ) ;
 
 				if( device.startsWith( QString( "/dev/" ) ) ){
 					managepartitionthread * mpt = new managepartitionthread() ;

@@ -473,9 +473,9 @@ int zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t 
 		 * 2. The volume is mounted,encrypted and opened by a different user 
 		 * 3. The volume is mouted and unencrypted
 		 */
-		z = String( device ) ;
-		p = StringListHasStartSequence_1( stl,StringAppend( z," " ) ) ;
-		StringDelete( &z ) ;
+		f = String( device ) ;
+		p = StringListHasStartSequence_1( stl,StringAppend( f," " ) ) ;
+		StringDelete( &f ) ;
 		if( p != StringVoid ){
 			/*
 			 * volume is unencrypted and mounted by any user
