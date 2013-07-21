@@ -30,7 +30,6 @@ char * zuluCryptResolveDevRoot( void )
 {
 	char * dev = NULL ;
 	const char * e ;
-	int index ;
 	stringList_t stl ;
 	string_t st = StringGetFromVirtualFile( "/proc/cmdline" ) ;
 	if( st == StringVoid ){
@@ -38,28 +37,24 @@ char * zuluCryptResolveDevRoot( void )
 	}
 	stl = StringListStringSplit( st,' ' ) ;
 	StringDelete( &st ) ;
-	index = StringListHasSequence( stl,"root=/dev/" ) ;
-	if( index >= 0 ){
-		st = StringListCopyStringAt( stl,index ) ;
+	st = StringListHasSequence_1( stl,"root=/dev/" ) ;
+	if( st != StringVoid ){
 		e = StringRemoveString( st,"root=" ) ;
 		if( StringPrefixMatch( e,"/dev/disk/by-",13 ) ){
 			/*
 			 * zuluCryptRealPath() is defined in ./real_path.c
 			 */
 			dev = zuluCryptRealPath( e ) ;
-			StringDelete( &st ) ;
 		}else{
 			dev = StringDeleteHandle( &st ) ;
 		}
 	}else{
-		index = StringListHasSequence( stl,"root=UUID=" ) ;
-		if( index >= 0 ){
-			st = StringListCopyStringAt( stl,index ) ;
+		st = StringListHasSequence_1( stl,"root=UUID=" ) ;
+		if( st != StringVoid ){
 			/*
 			 * zuluCryptDeviceFromUUID() is defined in ./blkid_evaluate_tag.c
 			 */
 			dev = zuluCryptDeviceFromUUID( StringRemoveString( st,"root=UUID=" ) ) ;
-			StringDelete( &st ) ;
 		}
 	}
 	StringListDelete( &stl ) ;

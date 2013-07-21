@@ -214,11 +214,25 @@ ssize_t StringListContains( stringList_t stl,const char * cstring );
 ssize_t StringListHasSequence( stringList_t stl,const char * str ) ;
 
 /*
+ * return the first string_t object in the stringList_t object with a character
+ * sequence str ;
+ * return StringVoid if no such sequence exist 
+ */
+string_t StringListHasSequence_1( stringList_t stl,const char * str ) ;
+
+/*
  * return an index position of the first string_t object in the stringList_t object with a character
  * sequence that starts with str ;
  * return -1 if no such sequence exist 
  */
 ssize_t StringListHasStartSequence( stringList_t stl,const char * str ) ;
+
+/*
+ * return the first string_t object in the stringList_t object with a character
+ * sequence that starts with str ;
+ * return StringVoid if no such sequence exist 
+ */
+string_t StringListHasStartSequence_1( stringList_t stl,const char * str ) ;
 
 /*
  * append an entry into the list.

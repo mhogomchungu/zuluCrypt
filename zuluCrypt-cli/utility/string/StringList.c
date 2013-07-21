@@ -787,6 +787,30 @@ ssize_t StringListHasSequence( stringList_t stl,const char * str )
 	return -1 ;
 }
 
+string_t StringListHasSequence_1( stringList_t stl,const char * str ) 
+{
+	size_t index  ;
+	size_t size ;
+	string_t * ind ;
+	
+	if( stl == StringListVoid || str == NULL ){
+		return StringVoid ;
+	}
+	
+	size = stl->size ;
+	ind = stl->stp ;
+	
+	for( index = 0 ; index < size ; index++ ){
+		if( ind[index] != StringVoid ){
+			if( strstr( ind[index]->string,str ) != NULL ){
+				return ind[index] ;
+			}
+		}
+	}
+	
+	return StringVoid ;
+}
+
 ssize_t StringListHasStartSequence( stringList_t stl,const char * str ) 
 {
 	size_t index  ;
@@ -811,6 +835,32 @@ ssize_t StringListHasStartSequence( stringList_t stl,const char * str )
 	}
 	
 	return -1 ;
+}
+
+string_t StringListHasStartSequence_1( stringList_t stl,const char * str )
+{
+	size_t index  ;
+	size_t size ;
+	string_t * ind ;
+	size_t len  ;
+	
+	if( stl == StringListVoid || str == NULL ){
+		return StringVoid ;
+	}
+	
+	len = strlen( str ) ;
+	size = stl->size ;
+	ind = stl->stp ;
+	
+	for( index = 0 ; index < size ; index++ ){
+		if( ind[index] != StringVoid ){
+			if( strncmp( ind[index]->string,str,len ) == 0 ){
+				return ind[index] ;
+			}
+		}
+	}
+	
+	return StringVoid ;
 }
 
 char * const * StringListStringArray( stringList_t stl )

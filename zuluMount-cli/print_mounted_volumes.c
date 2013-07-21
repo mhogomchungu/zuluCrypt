@@ -418,7 +418,6 @@ int zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t 
 	char * dev = NULL ;
 	const char * device_1 ;
 	const char * e ;
-	ssize_t index ;
 	
 	StringListIterator it  ;
 	StringListIterator end ;
@@ -461,12 +460,11 @@ int zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t 
 	
 	e = StringContent( q ) ;
 	
-	index = StringListHasStartSequence( stl,e ) ;
-	if( index != -1 ){
+	p = StringListHasStartSequence_1( stl,e ) ;
+	if( p != StringVoid ){
 		/*
 		 * mounted encrypted volume opened by this user
 		 */
-		p = StringListStringAt( stl,index ) ;
 		zuluMountPrintDeviceProperties_1( p,uid ) ;
 	}else{
 		/*
@@ -475,14 +473,13 @@ int zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t 
 		 * 2. The volume is mounted,encrypted and opened by a different user 
 		 * 3. The volume is mouted and unencrypted
 		 */
-		p = String( device ) ;
-		index = StringListHasStartSequence( stl,StringAppend( p," " ) ) ;
-		StringDelete( &p ) ;
-		if( index != -1 ){
+		z = String( device ) ;
+		p = StringListHasStartSequence_1( stl,StringAppend( z," " ) ) ;
+		StringDelete( &z ) ;
+		if( p != StringVoid ){
 			/*
 			 * volume is unencrypted and mounted by any user
 			 */
-			p = StringListStringAt( stl,index ) ;
 			zuluMountPrintDeviceProperties_1( p,uid ) ;
 		}else{
 			/*
