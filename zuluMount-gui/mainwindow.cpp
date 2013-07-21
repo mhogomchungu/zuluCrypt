@@ -45,6 +45,8 @@ void MainWindow::setUpApp()
 
 	m_ui->tableWidget->verticalHeader()->setResizeMode( QHeaderView::ResizeToContents ) ;
 
+	m_ui->tableWidget->verticalHeader()->setMinimumSectionSize( 30 ) ;
+
 	this->setAcceptDrops( true );
 	this->setWindowIcon( QIcon( QString( ":/zuluMount.png" ) ) );
 
