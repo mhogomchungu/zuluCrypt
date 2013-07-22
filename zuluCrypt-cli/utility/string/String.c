@@ -334,7 +334,7 @@ string_t StringInheritWithSize( char ** data,size_t size,size_t length )
 	if( data == NULL ){
 		return StringVoid ;
 	}
-	if( *data == NULL || size == 0 || length == 0 ){
+	if( length == 0 ){
 		return StringVoid ;
 	}
 	
@@ -1574,51 +1574,73 @@ void StringWriteToFile( string_t st,const char * path,int mode )
 	chmod( path,S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH ) ;
 }
 
+static inline string_t _freeBuffer( char * buffer,int fd )
+{
+	close( fd ) ;
+	if( buffer != NULL ){
+		free( buffer );
+		return _StringError() ;
+	}else{
+		return _StringError() ;
+	}
+}
+
 string_t StringGetFromVirtualFile( const char * path ) 
 {
 	#define SIZE 64
 	
-	char * c ;
-	char * d ;
+	char * buffer = NULL ;
+	char * e ;
 	
-	ssize_t i = -1 ;
+	size_t size = SIZE ;
+	size_t size_1 = 0 ;
+	size_t strLen ;
+	size_t bufferLen ;
 	ssize_t j ;
-	ssize_t size = SIZE ;
 	
-	FILE * f = fopen( path,"r" ) ;
-	
-	if( f == NULL ){
-		return StringVoid ;
-	}
-	
-	c = ( char * ) malloc( sizeof( char ) * SIZE ) ;
-	
-	if( c == NULL ){
-		fclose( f ) ;
-		return _StringError() ;
-	}
-	
-	while( ( j = getc( f ) ) != EOF ){
-		i++ ;
-		if( i < size ){
-			c[ i ] = ( char ) j ;
+	int fd = open( path,O_RDONLY ) ;
+	if( fd == -1 ){
+		buffer = ( char * )malloc( sizeof( char ) ) ;
+		if( buffer == NULL ){
+			return _StringError() ;
 		}else{
-			d = c ;
-			size += SIZE ;
-			c = realloc( c,size ) ;
-			if( c == NULL ){
-				fclose( f ) ;
-				free( d ) ;
-				return _StringError() ;
+			buffer[0] = '\0' ;
+			return StringInheritWithSize( &buffer,0,1 ) ;
+		}
+	}
+	
+	while( 1 ){
+		e = ( char * )realloc( buffer,size ) ;
+		if( e == NULL ){
+			return _freeBuffer( buffer,fd ) ;
+		}else{
+			buffer = e ;
+			j = read( fd,buffer + size_1,SIZE ) ;
+			if( j < SIZE ){
+				if( j <= 0 ){
+					e = realloc( buffer,size_1 + 1 ) ;
+					if( e != NULL ){
+						buffer           = e ;
+						buffer[ size_1 ] = '\0' ;
+						strLen           = size_1 ;
+						bufferLen        = size_1 + 1 ;
+					}else{
+						return _freeBuffer( buffer,fd ) ;
+					}
+				}else{
+					buffer[ size_1 + j ] = '\0' ;
+					strLen               = size_1 + j ;
+					bufferLen            = size ;
+				}
+				break ;
 			}else{
-				c[ i ] = ( char ) j ;
+				size   += SIZE ;
+				size_1 += j ;
 			}
 		}
 	}
-
-	fclose( f ) ;
-	c = realloc( c,i + 2 ) ;
-	c[ i + 1 ] = '\0' ;
 	
-	return StringInheritWithSize( &c,i + 1,i + 2 ) ;
+	close( fd ) ;
+	
+	return StringInheritWithSize( &buffer,strLen,bufferLen ) ;
 }
