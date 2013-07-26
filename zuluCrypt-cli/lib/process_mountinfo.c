@@ -28,15 +28,13 @@
 
 char * zuluCryptResolveDevRoot( void )
 {
-	char * dev = NULL ;
 	const char * e ;
-	stringList_t stl ;
-	string_t st = StringGetFromVirtualFile( "/proc/cmdline" ) ;
-	if( st == StringVoid ){
-		return NULL ;
-	}
-	stl = StringListStringSplit( st,' ' ) ;
+	char * dev       = NULL ;
+	
+	string_t st      = StringGetFromVirtualFile( "/proc/cmdline" ) ;
+	stringList_t stl = StringListStringSplit( st,' ' ) ;
 	StringDelete( &st ) ;
+	
 	st = StringListHasSequence_1( stl,"root=/dev/" ) ;
 	if( st != StringVoid ){
 		e = StringRemoveString( st,"root=" ) ;
@@ -122,9 +120,7 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 	StringListIterator end;
 	string_t n ;
 	string_t st = StringGetFromVirtualFile( "/proc/self/mountinfo" ) ;
-	if( st == StringVoid ){
-		return StringListVoid ;
-	}
+	
 	stl = StringListStringSplit( st,'\n' ) ;
 	StringDelete( &st ) ;
 	if( stl == StringListVoid ){

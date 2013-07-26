@@ -134,7 +134,7 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 			 */
 			if( zuluCryptMtabIsAtEtc() ){
 				h = zuluCrypRemoveEntryFromMtab( m ) ;
-			}	
+			}
 			if( m_point != NULL ){
 				*m_point = m ;
 			}else{
