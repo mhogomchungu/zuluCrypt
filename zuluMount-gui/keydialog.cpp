@@ -182,10 +182,10 @@ void keyDialog::Plugin()
 	list.removeOne( QString( "zuluCrypt-testKey" ) ) ;
 	list.removeOne( QString( ".") ) ;
 	list.removeOne( QString( "..") ) ;
+	list.removeOne( QString( "kwallet" ) ) ;
 
-	if( list.contains( QString( "kwallet" ) ) ){
-		int index = list.indexOf( "kwallet" ) ;
-		list.move( index,0 );
+	if( kwalletplugin::hasFunctionality() ){
+		list.prepend( QString( "kwallet" ) ) ;
 	}
 
 	m_menu->clear();
@@ -264,6 +264,38 @@ void keyDialog::slotMountComplete( int st,QString m )
 	}
 }
 
+QString keyDialog::getKeyFromWallet( QString path )
+{
+	QString key ;
+
+	DialogMsg msg( this ) ;
+
+	if( kwalletplugin::folderDoesNotExist() ){
+
+		msg.ShowUIOK( tr( "ERROR"),tr( "\"zuluCrypt\" wallet is not configured,go to:\n\"menu->options->manage kwallet\"\n to configure it and then add this volume first before continuing" ) ) ;
+		return key ;
+	}
+
+	QString uuid = utility::getUUIDFromPath( path ) ;
+
+	if( uuid.isEmpty() ){
+		msg.ShowUIOK( tr( "ERROR" ),tr( "can store and retrieve passphrases only for LUKS volumes" ) ) ;
+	}else{
+		kwalletplugin kWallet( this ) ;
+
+		if( kWallet.open() ){
+			key = kWallet.getKey( uuid ) ;
+			if( key.isEmpty() ){
+				msg.ShowUIOK( tr( "ERROR" ),tr( "the volume does not appear to have an entry in the wallet" ) ) ;
+			}
+
+			kWallet.close();
+		}
+	}
+
+	return key ;
+}
+
 void keyDialog::pbOpen()
 {
 	if( m_ui->lineEditKey->text().isEmpty() ){
@@ -281,18 +313,35 @@ void keyDialog::pbOpen()
 		return ;
 	}
 
+	QString keyFromKwallet ;
+	if( m_ui->rbPlugIn->isChecked() ){
+		if( m_ui->lineEditKey->text() == QString( "kwallet" ) ){
+			 keyFromKwallet = this->getKeyFromWallet( m_path ) ;
+			 if( keyFromKwallet.isEmpty() ){
+				 return ;
+			 }
+		}
+	}
+
 	QString m ;
 	if( m_ui->rbKey->isChecked() ){
 		QString addr = socketSendKey::getSocketPath() ;
 		m = QString( "-f ") + addr ;
-
 		socketSendKey * s = new socketSendKey( this,addr,m_ui->lineEditKey->text().toAscii() ) ;
 		s->sendKey();
 	}else if( m_ui->rbKeyFile->isChecked() ){
 		m = QString( "-f ") + m_ui->lineEditKey->text().replace( "\"","\"\"\"" ) ;
 	}else if( m_ui->rbPlugIn->isChecked() ){
-		m = QString( "-G ") + m_ui->lineEditKey->text().replace( "\"","\"\"\"" ) ;
+		if( keyFromKwallet.isEmpty() ){
+			m = QString( "-G ") + m_ui->lineEditKey->text().replace( "\"","\"\"\"" ) ;
+		}else{
+			QString addr = socketSendKey::getSocketPath() ;
+			m = QString( "-f ") + addr ;
+			socketSendKey * s = new socketSendKey( this,addr,keyFromKwallet.toAscii() ) ;
+			s->sendKey();
+		}
 	}
+
 	managepartitionthread * part = new managepartitionthread() ;
 	connect( part,SIGNAL( signalMountComplete( int,QString ) ),this,SLOT( slotMountComplete( int,QString ) ) ) ;
 

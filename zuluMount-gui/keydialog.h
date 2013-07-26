@@ -37,6 +37,7 @@
 #include "../zuluCrypt-gui/openvolumereadonly.h"
 #include "../zuluCrypt-gui/openmountpointinfilemanager.h"
 #include "../zuluCrypt-gui/savemountpointpath.h"
+#include "../zuluCrypt-gui/kwalletplugin.h"
 
 #include "mainwindow.h"
 
@@ -73,6 +74,7 @@ private slots:
 	void cbMountReadOnlyStateChanged( int ) ;
 	void fileManagerOpenStatus( int exitCode, int exitStatus,int startError ) ;
 private:
+	QString getKeyFromWallet( QString ) ;
 	void enableAll( void ) ;
 	void disableAll( void ) ;
 	void closeEvent( QCloseEvent * );

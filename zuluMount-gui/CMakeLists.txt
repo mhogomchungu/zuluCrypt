@@ -38,6 +38,8 @@ set (SRC 	main.cpp
 		../zuluCrypt-gui/openmountpointinfilemanager.cpp
 		../zuluCrypt-gui/savemountpointpath.cpp
 		../zuluCrypt-gui/utility.cpp
+		../zuluCrypt-gui/kwalletplugin.cpp
+		../zuluCrypt-gui/zuluoptions.cpp
 )
 
 INCLUDE( ${QT_USE_FILE} )
@@ -52,7 +54,11 @@ INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
 
 add_executable( zuluMount-gui ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
 
-TARGET_LINK_LIBRARIES( zuluMount-gui ${QT_LIBRARIES} ${blkid} zuluCryptPluginManager -lQtNetwork )
+if( BUILDKWALLET )
+	TARGET_LINK_LIBRARIES( zuluMount-gui ${QT_LIBRARIES} ${blkid} zuluCryptPluginManager -lQtNetwork ${kwallet_library} )
+else( BUILDKWALLET )
+	TARGET_LINK_LIBRARIES( zuluMount-gui ${QT_LIBRARIES} ${blkid} zuluCryptPluginManager -lQtNetwork )
+endif( BUILDKWALLET )
 
 set_target_properties( zuluMount-gui PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
 

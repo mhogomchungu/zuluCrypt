@@ -331,7 +331,7 @@ string_t StringInheritWithSize( char ** data,size_t size,size_t length )
 {
 	string_t st ;
 	
-	if( data == NULL ){
+	if( data == NULL || *data == NULL ){
 		return StringVoid ;
 	}
 	if( length == 0 ){

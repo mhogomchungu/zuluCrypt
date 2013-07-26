@@ -66,7 +66,7 @@ static void __debug( process_t p )
 size_t zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid )
 {	
 	size_t dataLength = 0 ;
-	char * buffer ;
+	char * buffer = NULL ;
 	
 	socket_t client ;
 	socket_t server = SocketLocal( sockpath ) ;

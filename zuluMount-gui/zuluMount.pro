@@ -26,7 +26,9 @@ SOURCES += main.cpp\
     ../zuluCrypt-gui/utility.cpp \
     auto_mount.cpp \
     auto_mount_helper.cpp \
-    monitor_mountinfo.cpp
+    monitor_mountinfo.cpp \
+    ../zuluCrypt-gui/kwalletplugin.cpp \
+    ../zuluCrypt-gui/zuluoptions.cpp \
 
 HEADERS  += mainwindow.h\
     keydialog.h \
@@ -43,7 +45,9 @@ HEADERS  += mainwindow.h\
     ../zuluCrypt-gui/utility.h \
     auto_mount.h \
     auto_mount_helper.h \
-    monitor_mountinfo.h
+    monitor_mountinfo.h \
+    ../zuluCrypt-gui/kwalletplugin.h \
+    ../zuluCrypt-gui/zuluoptions.h \
 
 TRANSLATIONS = ../translations/zuluMount/en_US.ts
 
@@ -57,4 +61,4 @@ RESOURCES += \
 
 INCLUDEPATH +=/home/ink/build /home/local/KDE4/include
 
-LIBS += -lzuluCryptPluginManager -lQtNetwork
+LIBS += -lzuluCryptPluginManager -lQtNetwork -lkwalletbackend -L/home/local/KDE4/lib
