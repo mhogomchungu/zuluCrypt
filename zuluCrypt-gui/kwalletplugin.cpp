@@ -156,8 +156,8 @@ bool kwalletplugin::isOpen()
 #else
 kwalletplugin::kwalletplugin( QWidget * parent )
 {
-	m_parent = parent ;
-	m_walletHandle = 0 ;
+	d->m_parent = parent ;
+	d->m_walletOpened = false ;
 }
 bool kwalletplugin::KwalletIsEnabled()
 {
