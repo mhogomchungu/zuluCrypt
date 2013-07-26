@@ -129,7 +129,7 @@ endif( library_pwquality )
 		
 install( TARGETS zuluCrypt-gui RUNTIME DESTINATION bin )
 
-install (FILES zuluCrypt.desktop 
+install( FILES ${PROJECT_BINARY_DIR}/zuluCrypt.desktop 
 DESTINATION share/applications
 
 PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE 
@@ -139,7 +139,7 @@ install (FILES zuluCrypt.png DESTINATION share/icons)
 #install (FILES zuluCrypt.png DESTINATION share/icons/hicolor/32x32/apps)
 
 # desktop file section
-file(WRITE zuluCrypt.desktop
+file( WRITE ${PROJECT_BINARY_DIR}/zuluCrypt.desktop
 
 "#!/usr/bin/env xdg-open
 [Desktop Entry]
