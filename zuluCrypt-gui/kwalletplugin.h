@@ -30,7 +30,7 @@
 #include <QWidget>
 #include <QApplication>
 
-class KWallet_Handle ;
+class kwalletpluginPrivate ;
 
 class kwalletplugin : public QObject
 {
@@ -50,9 +50,7 @@ public:
 	static QString KDEKwalletDefaultName( void ) ;
 	static bool hasFunctionality( void ) ;
 private:
-	KWallet_Handle * m_walletHandle ;
-	QWidget * m_parent ;
-	bool m_walletOpened ;
+	kwalletpluginPrivate * d ;
 };
 
 #endif // KWALLETPLUGIN_H

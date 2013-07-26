@@ -18,11 +18,11 @@
 
 #include "kwalletplugin.h"
 
-class KWallet_Handle
+class kwalletpluginPrivate
 {
 public:
-	KWallet_Handle() ;
-	~KWallet_Handle() ;
+	kwalletpluginPrivate() ;
+	~kwalletpluginPrivate() ;
 	bool open( void ) ;
 	bool close( void );
 	bool setFolder( QString folder ) ;
@@ -33,51 +33,55 @@ public:
 	static bool keyDoesNotExist( QString key ) ;
 	static QString KDEKwalletDefaultName( void ) ;
 	static bool folderDoesNotExist( void ) ;
-
+	QWidget * m_parent ;
+	bool m_walletOpened ;
 private:
 #if BUILD_KWALLET
 	KWallet::Wallet * m_wallet ;
 #endif
 };
 
-KWallet_Handle::KWallet_Handle()
+kwalletpluginPrivate::kwalletpluginPrivate()
 {
 }
 
-KWallet_Handle::~KWallet_Handle()
+kwalletpluginPrivate::~kwalletpluginPrivate()
 {
 }
 
 #if BUILD_KWALLET
 
-bool KWallet_Handle::keyDoesNotExist( QString key )
+bool kwalletpluginPrivate::keyDoesNotExist( QString key )
 {
 	return KWallet::Wallet::keyDoesNotExist( zuluOptions::wallet(),zuluOptions::key(),key ) ;
 }
 
-QString KWallet_Handle::KDEKwalletDefaultName()
+QString kwalletpluginPrivate::KDEKwalletDefaultName()
 {
 	return KWallet::Wallet::LocalWallet() ;
 }
 
-bool KWallet_Handle::open( void )
+bool kwalletpluginPrivate::open( void )
 {
 	QWidget * aW = QApplication::activeWindow() ;
 	uint wId = 0;
 	if( aW ){
 	    wId = ( uint ) aW->winId();
 	}
+
 	m_wallet = KWallet::Wallet::openWallet( zuluOptions::wallet(),wId,KWallet::Wallet::Synchronous ) ;
 
-	return m_wallet ? true : false ;
+	m_walletOpened = m_wallet != 0 ;
+
+	return m_walletOpened ;
 }
 
-bool KWallet_Handle::close( void )
+bool kwalletpluginPrivate::close( void )
 {
 	return KWallet::Wallet::closeWallet( zuluOptions::wallet(),false ) ;
 }
 
-bool KWallet_Handle::setFolder( QString folder )
+bool kwalletpluginPrivate::setFolder( QString folder )
 {
 	if( !m_wallet->hasFolder( folder ) ){
 		m_wallet->createFolder( folder ) ;
@@ -85,22 +89,22 @@ bool KWallet_Handle::setFolder( QString folder )
 	return m_wallet->setFolder( folder ) ;
 }
 
-int KWallet_Handle::readMap( QMap<QString,QString> & map )
+int kwalletpluginPrivate::readMap( QMap<QString,QString> & map )
 {
 	return m_wallet->readMap( zuluOptions::key(),map ) ;
 }
 
-int KWallet_Handle::writeMap( QMap<QString, QString> & map )
+int kwalletpluginPrivate::writeMap( QMap<QString, QString> & map )
 {
 	return m_wallet->writeMap( zuluOptions::key(),map ) ;
 }
 
-bool KWallet_Handle::folderDoesNotExist( void )
+bool kwalletpluginPrivate::folderDoesNotExist( void )
 {
 	return KWallet::Wallet::folderDoesNotExist( zuluOptions::wallet(),zuluOptions::formData() ) ;
 }
 
-QString KWallet_Handle::getKey( QString uuid )
+QString kwalletpluginPrivate::getKey( QString uuid )
 {
 	QString key ;
 
@@ -131,8 +135,8 @@ QString KWallet_Handle::getKey( QString uuid )
 
 kwalletplugin::kwalletplugin( QWidget * parent )
 {
-	m_parent = parent ;
-	m_walletHandle = new KWallet_Handle() ;
+	d = new kwalletpluginPrivate() ;
+	d->m_parent = parent ;
 }
 
 bool kwalletplugin::KwalletIsEnabled()
@@ -147,7 +151,7 @@ bool kwalletplugin::hasFunctionality()
 
 bool kwalletplugin::isOpen()
 {
-	return m_walletOpened ;
+	return d->m_walletOpened ;
 }
 #else
 kwalletplugin::kwalletplugin( QWidget * parent )
@@ -163,43 +167,43 @@ bool kwalletplugin::hasFunctionality( void )
 {
 	return false ;
 }
-QString KWallet_Handle::getKey( QString uuid )
+QString kwalletpluginPrivate::getKey( QString uuid )
 {
 	return uuid ;
 }
-bool KWallet_Handle::close( void )
+bool kwalletpluginPrivate::close( void )
 {
 	return true ;
 }
-bool KWallet_Handle::open( void )
+bool kwalletpluginPrivate::open( void )
 {
 	return false ;
 }
-bool KWallet_Handle::setFolder( QString s )
+bool kwalletpluginPrivate::setFolder( QString s )
 {
 	Q_UNUSED( s ) ;
 	return false ;
 }
-int KWallet_Handle::readMap( QMap<QString,QString> & map )
+int kwalletpluginPrivate::readMap( QMap<QString,QString> & map )
 {
 	Q_UNUSED( map ) ;
 	return 0 ;
 }
-int KWallet_Handle::writeMap( QMap<QString,QString> & map )
+int kwalletpluginPrivate::writeMap( QMap<QString,QString> & map )
 {
 	Q_UNUSED( map ) ;
 	return 0 ;
 }
-bool KWallet_Handle::folderDoesNotExist( void )
+bool kwalletpluginPrivate::folderDoesNotExist( void )
 {
 	return false ;
 }
-bool KWallet_Handle::keyDoesNotExist( QString key )
+bool kwalletpluginPrivate::keyDoesNotExist( QString key )
 {
 	Q_UNUSED( key ) ;
 	return true ;
 }
-QString KWallet_Handle::KDEKwalletDefaultName( void )
+QString kwalletpluginPrivate::KDEKwalletDefaultName( void )
 {
 	return QString( "kdewallet" ) ;
 }
@@ -211,59 +215,58 @@ bool kwalletplugin::isOpen( void )
 
 QString kwalletplugin::KDEKwalletDefaultName( void )
 {
-	return KWallet_Handle::KDEKwalletDefaultName() ;
+	return kwalletpluginPrivate::KDEKwalletDefaultName() ;
 }
 
 bool kwalletplugin::open()
 {
-	m_walletOpened = m_walletHandle->open() ;
-	return m_walletOpened ;
+	return d->open() ;
 }
 
 bool kwalletplugin::setFolder( QString folder )
 {
-	return m_walletHandle->setFolder( folder ) ;
+	return d->setFolder( folder ) ;
 }
 
 int kwalletplugin::readMap( QMap<QString,QString> & map )
 {
-	return m_walletHandle->readMap( map ) ;
+	return d->readMap( map ) ;
 }
 
 int kwalletplugin::writeMap( QMap<QString, QString> & map )
 {
-	return m_walletHandle->writeMap( map ) ;
+	return d->writeMap( map ) ;
 }
 
 bool kwalletplugin::folderDoesNotExist()
 {
-	return KWallet_Handle::folderDoesNotExist() ;
+	return kwalletpluginPrivate::folderDoesNotExist() ;
 }
 
 QString kwalletplugin::getKey( QString uuid )
 {
-	return m_walletHandle->getKey( uuid ) ;
+	return d->getKey( uuid ) ;
 }
 
 void kwalletplugin::close()
 {
-	if( m_walletOpened ){
+	if( d->m_walletOpened ){
 		/*
 		 * We dont close the wallet to leave it open until the application is closed
 		 */
-		//m_walletHandle->close() ;
+		//d->close() ;
 		;
 	}
 }
 
 bool kwalletplugin::keyDoesNotExist( QString key )
 {
-	return KWallet_Handle::keyDoesNotExist( key ) ;
+	return kwalletpluginPrivate::keyDoesNotExist( key ) ;
 }
 
 kwalletplugin::~kwalletplugin()
 {
-	if( m_walletHandle ){
-		delete m_walletHandle ;
+	if( d ){
+		delete d ;
 	}
 }
