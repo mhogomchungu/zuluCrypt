@@ -82,7 +82,7 @@ int tablewidget::columnHasEntry( QTableWidget * table,int column,QString entry )
 	return -1 ;
 }
 
-void tablewidget::addRowToTable( QTableWidget * table,QStringList & list )
+void tablewidget::addRowToTable( QTableWidget * table,QStringList& list )
 {
 	QTableWidgetItem * item ;
 
@@ -108,7 +108,7 @@ void tablewidget::addRowToTable( QTableWidget * table,QStringList & list )
 	table->setCurrentCell( row,j - 1 );
 }
 
-void tablewidget::addRowToTable( QTableWidget * table,QStringList & list,QFont & font )
+void tablewidget::addRowToTable( QTableWidget * table,QStringList& list,QFont & font )
 {
 	QTableWidgetItem * item ;
 
@@ -140,7 +140,7 @@ void tablewidget::deleteRowFromTable( QTableWidget * table,int row )
 {
 	table->removeRow( row );
 	if( table->rowCount() > 0 ){
-		table->setCurrentCell( table->rowCount() - 1,table->columnCount() -  1 );
+		table->setCurrentCell( table->rowCount() - 1,table->columnCount() - 1 );
 	}
 	table->setFocus();
 }

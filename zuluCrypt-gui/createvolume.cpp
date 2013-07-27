@@ -145,7 +145,7 @@ void createvolume::volumeType( int s )
 	}
 }
 
-void createvolume::closeEvent( QCloseEvent *e )
+void createvolume::closeEvent( QCloseEvent * e )
 {
 	e->ignore();
 	if( m_isWindowClosable ){

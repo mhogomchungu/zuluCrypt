@@ -367,11 +367,11 @@ int main( int argc,char * argv[] )
 	}
 	if( argc == 2 ){
 		ac = argv[ 1 ] ;
-		if( strcmp( ac,"-h" ) == 0 || strcmp( ac,"--help" ) == 0 || strcmp( ac,"-help" ) == 0 ){
+		if( StringsAreEqual( ac,"-h" ) || StringsAreEqual( ac,"--help" ) || StringsAreEqual( ac,"-help" ) ){
 			zuluCryptEXEHelp();	
 			return 0 ;
 		}
-		if( strcmp( ac,"-v" ) == 0 || strcmp( ac,"-version" ) == 0 || strcmp( ac,"--version" ) == 0 ){
+		if( StringsAreEqual( ac,"-v" ) || StringsAreEqual( ac,"-version" ) || StringsAreEqual( ac,"--version" ) ){
 			printf( "%s\n",zuluCryptVersion() );
 			return 0 ;
 		}

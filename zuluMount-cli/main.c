@@ -489,12 +489,12 @@ int main( int argc,char * argv[] )
 	}
 	if( argc == 2 ){
 		action = argv[ 1 ] ;
-		if ( StringsAreEqual( action,"-h" ) || 
+		if( StringsAreEqual( action,"-h" ) || 
 			StringsAreEqual( action,"--help" ) || 
 			StringsAreEqual( action,"-help" ) ){
 			return _mount_help() ;
 		}
-		if ( StringsAreEqual( action,"-v" ) || 
+		if( StringsAreEqual( action,"-v" ) || 
 			StringsAreEqual( action,"-version" ) || 
 			StringsAreEqual( action,"--version" ) ){
 			printf( "%s\n",zuluCryptVersion() );
