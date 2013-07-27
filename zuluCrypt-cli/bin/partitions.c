@@ -329,8 +329,9 @@ stringList_t zuluCryptPartitions( int option,uid_t uid )
 	 * fstab entries makes an initial list of system partitions.
 	 * the difference btw list in "/proc/partitions" and "/etc/fstab" makes an initial list of non system partitions.
 	 */
-	for(  ; it != end ; it++ ){
+	while( it != end ){
 		st = *it ;
+		it++ ;
 		if( StringStartsWith( st,"/" ) ){
 			index = StringIndexOfChar( st,0,' ' ) ;
 			if( index != -1 ){
@@ -351,8 +352,9 @@ stringList_t zuluCryptPartitions( int option,uid_t uid )
 	if( p != StringListVoid ){
 		it  = StringListBegin( p ) ;
 		end = StringListEnd( p ) ;
-		for( ; it != end ; it++ ){
+		while( it != end ){
 			device = StringContent( *it ) ;
+			it++ ;
 			if( StringListContains( system,device ) == -1 ){
 				StringListAppend( system,device ) ;
 			}
@@ -369,8 +371,9 @@ stringList_t zuluCryptPartitions( int option,uid_t uid )
 	if( p != StringListVoid ){
 		it  = StringListBegin( p ) ;
 		end = StringListEnd( p ) ;
-		for( ; it != end ; it++ ){
+		while( it != end ){
 			device = StringContent( *it ) ;
+			it++ ;
 			if( StringListContains( system,device ) == -1 ){
 				StringListAppend( system,device ) ;
 			}
@@ -408,8 +411,9 @@ stringList_t zuluCryptPartitions( int option,uid_t uid )
 	if( p != StringListVoid ){
 		it  = StringListBegin( p ) ;
 		end = StringListEnd( p ) ;
-		for( ; it != end ; it++ ){
+		while( it != end ){
 			device = StringContent( *it ) ;
+			it++ ;
 			StringListRemoveString( system,device ) ;
 			if( StringListContains( non_system,device ) == -1 ){
 				StringListAppend( non_system,device ) ;
@@ -490,9 +494,13 @@ static void _zuluCryptPrintUnMountedPartitionProperties( stringList_t stl )
 	StringListIterator it  = StringListBegin( stl )  ;
 	StringListIterator end = StringListEnd( stl ) ;
 	
-	for( ; it != end ; it++ ){
-		if( StringListHasStartSequence( stx,StringAppend( *it," " ) ) == -1 ){
-			zuluCryptPrintPartitionProperties( StringRemoveRight( *it,1 ) ) ;
+	string_t st ;
+	
+	while( it != end ){
+		st = *it ;
+		it++ ;
+		if( StringListHasStartSequence( stx,StringAppend( st," " ) ) == -1 ){
+			zuluCryptPrintPartitionProperties( StringRemoveRight( st,1 ) ) ;
 		}
 	}
 	
@@ -568,8 +576,10 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 	it  = StringListBegin( stl ) ;
 	end = StringListEnd( stl ) ;
 	
-	for( ; it != end ; it++ ){
+	while( it != end ){
 		st = *it ;
+		it++ ;
+		
 		if( StringStartsWith( st,"#" ) ){
 			continue ; 
 		}
@@ -642,6 +652,7 @@ stringList_t zuluCryptGetPartitionFromConfigFile( const char * path )
 	StringListIterator end ;
 	
 	char * ac ;
+	const char * e ;
 	
 	stringList_t stl ;
 	stringList_t stl_1 = StringListVoid ;
@@ -667,20 +678,46 @@ stringList_t zuluCryptGetPartitionFromConfigFile( const char * path )
 	it  = StringListBegin( stl ) ;
 	end = StringListEnd( stl ) ;
 	
-	for( ; it != end ; it++ ){
+	while( it != end ){
 		st = *it ;
-		StringRemoveString( st,"\"" ) ;
+		it++ ;
+		
+		if( StringStartsWith( st,"#" ) ){
+			continue ;
+		}
+		
 		if( StringStartsWith( st,"UUID=" ) ){
+			StringRemoveString( st,"\"" ) ;
+			
 			/*
 			 * zuluCryptSecurityEvaluateDeviceTags() is defined in ./security.c
 			 */
 			ac = zuluCryptSecurityEvaluateDeviceTags( "UUID",StringContent( st ) + 5 ) ;
 			stl_1 = StringListAppend( stl_1,ac ) ;
 			StringFree( ac ) ;
-		}else if( StringStartsWith( st,"#" ) ){
-			;
 		}else{
-			stl_1 = StringListAppendString( stl_1,st ) ;
+			e = StringContent( st ) ;
+			
+			if( StringPrefixMatch( e,"/dev/disk/by-",13 ) ){
+				ac = zuluCryptRealPath( e ) ;
+				stl_1 = StringListAppend( stl_1,ac ) ;
+				StringFree( ac ) ;
+			}else if( StringPrefixMatch( e,"/dev/md",7 ) ){
+				/*
+				 * zuluCryptResolveMDPath() is defined in ../lib/process_mountinfo.c
+				 */
+				ac = zuluCryptResolveMDPath( e ) ;
+				stl_1 = StringListAppend( stl_1,ac ) ;
+				StringFree( ac ) ;
+			}else if( StringPrefixMatch( e,"/dev/mapper/",12 ) ){
+				/*
+				 * zuluCryptConvertIfPathIsLVM() is defined in ../lib/status.c
+				 */
+				st = zuluCryptConvertIfPathIsLVM( e ) ;
+				stl_1 = StringListAppendString_1( stl_1,&st ) ;
+			}else{
+				stl_1 = StringListAppend( stl_1,e ) ;
+			}
 		}
 	}
 	
