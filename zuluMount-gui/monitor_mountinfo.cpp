@@ -106,7 +106,7 @@ void monitor_mountinfo::run()
 					connect( mpt,SIGNAL( signalProperties( QString ) ),m_babu,SLOT( volumeMiniProperties( QString ) ) ) ;
 					mpt->startAction( managepartitionthread::VolumeMiniProperties ) ;
 				}else{
-					sleep( 1 ) ; //sleep for one second for UI effect
+					//sleep( 1 ) ; //sleep for one second for UI effect
 					m_main->removeEntry( device ) ;
 				}
 			}
