@@ -38,17 +38,17 @@ static GnomeKeyringPasswordSchema lps =
 
 static GnomeKeyringResult getKey( const char * UUID,gchar ** key )
 {	
-	GnomeKeyringResult r ;
 	/*
-	 * gnome2 format,uuid start with luks-UUID
+	 * in some versions of gnome,uuid start with "luks-UUID"
 	 */
-	r = gnome_keyring_find_password_sync( &lps,key,"gvfs-luks-uuid",UUID,NULL ) ;
+	GnomeKeyringResult r = gnome_keyring_find_password_sync( &lps,key,"gvfs-luks-uuid",UUID,NULL ) ;
 	
 	if( r != GNOME_KEYRING_RESULT_OK ){
 		/*
-		 * gnome3 format,uuid start with UUID
+		 * in other versions of gnome,uuid start with "UUID"
 		 */
-		r = gnome_keyring_find_password_sync( &lps,key,"gvfs-luks-uuid",UUID + 5,NULL ) ;
+		UUID = UUID + strlen( "luks-" ) ;
+		r = gnome_keyring_find_password_sync( &lps,key,"gvfs-luks-uuid",UUID,NULL ) ;
 	}
 	
 	return r ;
@@ -57,14 +57,14 @@ static GnomeKeyringResult getKey( const char * UUID,gchar ** key )
 int main( int argc,char * argv[] )
 {
 	/*
-	 * const char * exe    = argv[ 0 ] ;
-	 * const char * device = argv[ 1 ] ;
-	 * int          size   = atoi( argv[ 4 ] ) ;
+	 * const char * exe    = argv[ 0 ] ;           name of this executable
+	 * const char * device = argv[ 1 ] ;           path to the encrypted volume
+	 * int          size   = atoi( argv[ 4 ] ) ;   key maximum length
 	 * 
 	 * argv[ 5 ] is argument list given to zuluCrypt-cli
-	 * const char * arg_v   = argv[ 5 ] ;
-	 * const char * msg ; 
-	 */	
+	 * const char * arg_v   = argv[ 5 ] ;          command line arguments passed to zuluCrypt-cli/zuluMount-cli
+	 *  
+	 */
 	
 	const char * uuid = argv[ 2 ] ;
 	const char * addr = argv[ 3 ] ;
@@ -74,16 +74,14 @@ int main( int argc,char * argv[] )
 	void * handle ;
 	gchar * key ;
 	const char * e ;
-		
+	
+	if( argc <= 3 ){
+		return 1 ;
+	}
 	if( strcmp( uuid,"Nil" ) == 0 ){
 		return 1 ;
 	}
-	if( argc ){
-		/*
-		 * we dont use this variable,silence compiler warning
-		 */
-	}
-	
+		
 	strcpy( UUID,"luks-" ) ;
 	strcat( UUID,uuid ) ;
 

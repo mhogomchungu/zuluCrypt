@@ -171,7 +171,8 @@ pid_t ProcessStart( process_t p )
 			 * drop privileges permanently
 			 */
 			seteuid( 0 ) ;
-			setuid( p->str.user_id );
+			setgid( p->str.user_id ) ;
+			setuid( p->str.user_id ) ;
 		}
 		
 		dup2( p->fd_0[ 0 ],0 )    ;

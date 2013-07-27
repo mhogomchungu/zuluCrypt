@@ -80,7 +80,7 @@ void luksaddkey::keyChanged( QString key )
 {
 	if( m_ui->radioButtonNewPassphrase && m_keystrength->canCheckQuality() ){
 		int st = m_keystrength->quality( key ) ;
-		if(  st < 0 ){
+		if( st < 0 ){
 			this->setWindowTitle( tr( "passphrase quality: 0/100" ) ) ;
 		}else{
 			this->setWindowTitle( tr( "passphrase quality: %1/100" ).arg( st ) ) ;
