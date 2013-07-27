@@ -170,7 +170,7 @@ static stringList_t _zuluCryptAddMDRAIDVolumes( stringList_t stl )
 	if( dir != NULL ){
 		while( ( entry = readdir( dir ) ) != NULL ){
 			f = entry->d_name ;
-			if( StringsAreEqual( f,"." ) || StringsAreEqual( f,".." ) ){
+			if( StringsAreEqual( f,"." ) || StringsAreEqual( f,".." ) || StringsAreEqual( f,"md-device-map" ) ){
 				 ;
 			}else{
 				st = String( "/dev/md/" ) ;
