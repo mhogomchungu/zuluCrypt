@@ -74,7 +74,7 @@ string_t zuluCryptResolveMDPath_1( const char * path )
 	if( dir != NULL ){
 		while( ( entry = readdir( dir ) ) != NULL ){
 			f = entry->d_name ;
-			if( StringsAreEqual( f,"." ) || StringsAreEqual( f,".." ) ){
+			if( StringAtLeastOneMatch_1( f,".","..",NULL ) ){
 				;
 			}else{
 				e = zuluCryptRealPath( StringAppendAt( st,8,f ) ) ;

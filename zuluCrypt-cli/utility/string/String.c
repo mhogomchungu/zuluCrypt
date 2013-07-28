@@ -1150,6 +1150,82 @@ int StringEqual( string_t x,const char * y )
 	}
 }
 
+int StringAtLeastOneMatch( string_t st,... )
+{
+	va_list list ;
+	int r = 0   ;
+	const char * e   ;
+	const char * f   ;
+	
+	if( st == StringVoid ){
+		return 0 ;
+	}
+	f = st->string ;
+	va_start( list,st ) ;
+	while( 1 ){
+		e = va_arg( list,const char * ) ;
+		if( e == NULL ){
+			break ;
+		}else if( strcmp( f,e ) == 0 ){
+			r = 1 ;
+			break ;
+		}
+	}
+	
+	va_end( list ) ;
+	return r ;
+}
+
+int StringAtLeastOneMatch_1( const char * x,... )
+{
+	va_list list ;
+	int r = 0 ;
+	const char * e ;
+	
+	va_start( list,x ) ;
+	
+	if( x == NULL ){
+		return 0 ;
+	}
+	while( 1 ){
+		e = va_arg( list,const char * ) ;
+		if( e == NULL ){
+			break ;
+		}else if( strcmp( x,e ) == 0 ){
+			r = 1 ;
+			break ;
+		}
+	}
+	
+	va_end( list ) ;
+	return r ;
+}
+
+int StringAtLeastOnePrefixMatch( const char * x,... )
+{
+	va_list list ;
+	int r = 0 ;
+	const char * e ;
+	
+	va_start( list,x ) ;
+	
+	if( x == NULL ){
+		return 0 ;
+	}
+	while( 1 ){
+		e = va_arg( list,const char * ) ;
+		if( e == NULL ){
+			break ;
+		}else if( strncmp( x,e,strlen( e ) ) == 0 ){
+			r = 1 ;
+			break ;
+		}
+	}
+	
+	va_end( list ) ;
+	return r ;
+}
+
 static char * StringICS__( string_t st,char x,const char * s,size_t p )
 {
 	const char * d ;

@@ -558,6 +558,23 @@ int StringEqualString( string_t x,string_t y ) ;
 int StringEqual( string_t x,const char * y ) ;
 
 /*
+ * compare string managed by x with a series of cstrings and return true if atleast one of them match
+ * NOTE:the series of strings must be NULL terminated
+ * eg.
+ * string_t st = String( "abc" ) ;
+ * int equal = StringMatchOneAtLeastOne( st,"def","ugf",NULL ) ;
+ */
+int StringAtLeastOneMatch( string_t x,... ) ;
+
+/*
+ * compare cstring x with a series of cstrings and return true if atleast one of them match
+ * NOTE:the series of strings must be NULL terminated
+ * eg. 
+ * int equal = StringMatchOneAtLeastOne_1( "def","ugf","rrt",NULL ) ;
+ */
+int StringAtLeastOneMatch_1( const char * x,... ) ;
+
+/*
  * Insert character x infront of every character that appear in string y in a string handled by handle st.
  * Retun a poiter to the final string on success and NULL on error and the original string remain intact
  */
@@ -780,6 +797,12 @@ static __inline__ int StringPrefixMatch( const char * x,const char * y,size_t z 
 		return strncmp( x,y,z ) == 0 ;
 	}
 }
+
+/*
+ * returns true if a atleast one cstring in the series starts with x
+ * NOTE:The series must be NULL terminated.
+ */
+int StringAtLeastOnePrefixMatch( const char * x,... ) ;
 
 static __inline__ int StringPrefixEqual( const char * x,const char * y )
 {

@@ -31,7 +31,7 @@ static int zuluExit( int st,stringList_t stl )
 		case 0 : printf( gettext( "SUCCESS: volume created successfully\n" ) ) ;						break  ;
 		case 1 : printf( gettext( "ERROR: presented file system is not supported,see documentation for more information\n" ) ) ;break ;
 		case 2 : printf( gettext( "ERROR: insufficient privilege to open a system device in read/write mode,\n\
-only root user or members of group zulucrypt-system can do that" ) ) ;							break  ;
+only root user or members of group zulucrypt-system can do that\n" ) ) ;						break  ;
 		case 3 : printf( gettext( "ERROR: could not create an encrypted volume\n" ) ) ;				break  ;
 		case 4 : printf( gettext( "ERROR: could not open volume for writing\n" ) ) ;				break  ;
 		case 5 : printf( gettext( "ERROR: there seem to be an opened mapper associated with the device\n" ) );	break  ;
@@ -51,6 +51,8 @@ only root user or members of group zulucrypt-system can do that" ) ) ;							bre
 		case 19: printf( gettext( "ERROR: can not get passphrase in silent mode\n" ) ) ;			break  ;
 		case 20: printf( gettext( "ERROR: insufficient memory to hold passphrase\n" ) ) ;			break  ;
 		case 21: printf( gettext( "ERROR: passphrases do not match\n" ) ) ;					break  ; 
+		case 22: printf( gettext( "ERROR: failed to create a volume" ) ) ;					break  ;
+		case 23: printf( gettext( "ERROR: wrong argument detected for tcrypt volume" ) ) ;			break  ;
 		default: printf( gettext( "ERROR: unrecognized error with status number %d encountered\n" ),st );
 	}
 	return st ;
@@ -109,6 +111,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	int j ;
 	int k ;
 	
+	int truecrypt_volume = 0 ;
 	size_t hidden_volume_size = 0 ;
 	
 	const char * tcrypt_hidden_volume_size = opts->tcrypt_hidden_volume_size ;
@@ -260,9 +263,14 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 			return zuluExit( 18,stl ) ;
 		}
 	}
+	
+	truecrypt_volume = StringAtLeastOnePrefixMatch( type,"tcrypt","truecrypt",NULL ) ;
+	
 	if( tcrypt_hidden_volume_size != NULL ){
-		if( StringPrefixMatch( type,"tcrypt",6 ) || StringPrefixMatch( type,"truecrypt",9 ) ){
-			
+		
+		if( !truecrypt_volume ){
+			return zuluExit( 23,stl ) ;
+		}else{
 			hidden_volume_size = atol( tcrypt_hidden_volume_size ) ;
 			
 			if( tcrypt_hidden_volume_key_file != NULL ){
@@ -320,7 +328,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	
 	zuluCryptSecurityGainElevatedPrivileges() ;
 	
-	if( StringPrefixMatch( type,"tcrypt",6 ) || StringPrefixMatch( type,"truecrypt",9 ) ){
+	if( truecrypt_volume ){
 		/*
 		 * zuluCryptCreateTCrypt() is defined in ../lib/create_tcrypt.c
 		 */
@@ -332,12 +340,11 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		 */
 		st = zuluCryptCreateVolume( device,fs,type,volkey,volkeysize,rng ) ;
 	}
-	
 	zuluCryptSecurityDropElevatedPrivileges() ;
 
 	if( st == 0 ){
 		return zuluExit_1( type,stl ) ;
 	}else{
-		return zuluExit( st,stl ) ;
+		return zuluExit( 22,stl ) ;
 	}
 }

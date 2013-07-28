@@ -502,6 +502,8 @@ only root user or members of group zulucrypt-system can do that" ) );									br
 		case 19: msg.ShowUIOK( tr( "ERROR!" ),tr( "can not get passphrase in silent mode" ) ) ;					break  ;
 		case 20: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient memory to hold passphrase" ) ) ;				break  ;
 		case 21: msg.ShowUIOK( tr( "ERROR!" ),tr( "passphrases do not match") );						break  ;
+		case 22: msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to create a volume" ) ) ;						break  ;
+		case 23: msg.ShowUIOK( tr( "ERROR!" ),tr( "wrong argument detected for tcrypt volume" ) ) ;				break  ;
 		case 110:msg.ShowUIOK( tr( "ERROR!" ),tr( "could not find any partition with the presented UUID" ) ) ;			break  ;
 		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR! with status number %1 encountered" ).arg( st ) );
 	}

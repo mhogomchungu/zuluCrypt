@@ -287,9 +287,7 @@ static string_t _create_default_mount_point( const char * device,uid_t uid,strin
 	
 	zuluCryptSecurityDropElevatedPrivileges() ;
 
-	if( loop_path != NULL ){
-		free( loop_path ) ;
-	}
+	StringFree( loop_path ) ;
 	
 	return st ;
 }

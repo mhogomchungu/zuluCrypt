@@ -105,14 +105,7 @@ static inline int _allowedDevice( const char * device )
 			return st == 0 ;
 		}
 	}else if( sts > 3 ){
-		if(	StringPrefixMatch( device,"hd",2 ) || 
-			StringPrefixMatch( device,"sd",2 ) ||
-			StringPrefixMatch( device,"md",2 ) ||
-			StringPrefixMatch( device,"mmc",3 ) ){
-			return 1 ;
-		}else{
-			return 0 ;
-		}
+		return StringAtLeastOnePrefixMatch( device,"hd","sd","md","mmc",NULL ) ;
 	}else{
 		return 0 ;
 	}
@@ -131,9 +124,7 @@ static stringList_t _zuluCryptAddLVMVolumes( stringList_t stl )
 		st = String( "/dev/" ) ;
 		while( ( entry = readdir( dir ) ) != NULL ){
 			m_path = entry->d_name ;
-			if( StringsAreEqual( m_path,"." ) || 
-				StringsAreEqual( m_path,".." ) ||
-				StringsAreEqual( m_path,"control" ) ){
+			if( StringAtLeastOneMatch_1( m_path,".","..","control",NULL ) ){
 				continue ;
 			}
 			/*
@@ -170,7 +161,7 @@ static stringList_t _zuluCryptAddMDRAIDVolumes( stringList_t stl )
 	if( dir != NULL ){
 		while( ( entry = readdir( dir ) ) != NULL ){
 			f = entry->d_name ;
-			if( StringsAreEqual( f,"." ) || StringsAreEqual( f,".." ) || StringsAreEqual( f,"md-device-map" ) ){
+			if( StringAtLeastOneMatch_1( f,".","..","md-device-map",NULL ) ){
 				 ;
 			}else{
 				st = String( "/dev/md/" ) ;
@@ -741,6 +732,7 @@ int _zuluCryptPartitionIsSystemPartition( const char * dev,uid_t uid )
 int zuluCryptPartitionIsSystemPartition( const char * device,uid_t uid )
 {
 	char * dev ;
+	int st ;
 	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
 		/*
 		 * zuluCryptLoopDeviceAddress_1() is defined in ../lib/create_loop_device.c
@@ -750,15 +742,14 @@ int zuluCryptPartitionIsSystemPartition( const char * device,uid_t uid )
 			return 0 ;
 		}
 		if( _zuluCryptPartitionIsSystemPartition( dev,uid ) ){
-			free( dev ) ;
-			return 1 ;
+			st = 1 ;
 		}else if( _zuluCryptCheckSYSifDeviceIsSystem( dev ) ){
-			free( dev ) ;
-			return 1 ;
+			st = 1 ;
 		}else{
-			free( dev ) ;
-			return 0 ;
+			st = 0 ;
 		}
+		free( dev ) ;
+		return st ;
 	}else{
 		if( _zuluCryptPartitionIsSystemPartition( device,uid ) ){
 			return 1 ;

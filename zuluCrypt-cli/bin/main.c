@@ -367,11 +367,11 @@ int main( int argc,char * argv[] )
 	}
 	if( argc == 2 ){
 		ac = argv[ 1 ] ;
-		if( StringsAreEqual( ac,"-h" ) || StringsAreEqual( ac,"--help" ) || StringsAreEqual( ac,"-help" ) ){
+		if( StringAtLeastOneMatch_1( ac,"-h","--help","-help",NULL ) ){
 			zuluCryptEXEHelp();	
 			return 0 ;
 		}
-		if( StringsAreEqual( ac,"-v" ) || StringsAreEqual( ac,"-version" ) || StringsAreEqual( ac,"--version" ) ){
+		if( StringAtLeastOneMatch_1( ac,"-v","-version","--version",NULL ) ){
 			printf( "%s\n",zuluCryptVersion() );
 			return 0 ;
 		}
@@ -536,7 +536,7 @@ Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The de
 				}
 				
 				st = zuluCryptEXE( &clargs,mapping_name,uid ) ;
-				free( ac_1 ) ;
+				StringFree( ac_1 ) ;
 			}else{
 				if( ( ac = strrchr( dev,'/' ) ) != NULL ){
 					mapping_name =  ac + 1  ;
@@ -547,7 +547,7 @@ Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The de
 				st = zuluCryptEXE( &clargs,mapping_name,uid ) ;
 			}
 		
-			free( dev ) ;
+			StringFree( dev ) ;
 		
 			if( fd1 != -1 ){
 				close( fd1 ) ;
