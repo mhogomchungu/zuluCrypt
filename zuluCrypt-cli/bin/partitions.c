@@ -125,21 +125,22 @@ static stringList_t _zuluCryptAddLVMVolumes( stringList_t stl )
 		while( ( entry = readdir( dir ) ) != NULL ){
 			m_path = entry->d_name ;
 			if( StringAtLeastOneMatch_1( m_path,".","..","control",NULL ) ){
-				continue ;
-			}
-			/*
-			 * LVM volumes have two paths,one has a format of "/dev/mapper/ABC-DEF" and the 
-			 * other has a format of "/dev/ABC/DEF". 
-			 * 
-			 * below code converts the former format to the latter one and assume the volume is LVM
-			 * if the converted path is found in "/dev"
-			 */	
-			StringAppendAt( st,5,m_path ) ;
-			index = StringLastIndexOfChar( st,'-' ) ;
-			if( index != -1 ){
-				m_path = StringSubChar( st,index,'/' ) ;
-				if( stat( m_path,&lvm ) == 0 ){
-					stl = StringListAppend( stl,m_path ) ;
+				;
+			}else{
+				/*
+				* LVM volumes have two paths,one has a format of "/dev/mapper/ABC-DEF" and the 
+				* other has a format of "/dev/ABC/DEF". 
+				* 
+				* below code converts the former format to the latter one and assume the volume is LVM
+				* if the converted path is found in "/dev"
+				*/
+				StringAppendAt( st,5,m_path ) ;
+				index = StringLastIndexOfChar( st,'-' ) ;
+				if( index != -1 ){
+					m_path = StringSubChar( st,index,'/' ) ;
+					if( stat( m_path,&lvm ) == 0 ){
+						stl = StringListAppend( stl,m_path ) ;
+					}
 				}
 			}
 		}
@@ -210,8 +211,9 @@ stringList_t zuluCryptPartitionList( void )
 	end = StringListEnd( stl ) ;
 	
 	zuluCryptSecurityGainElevatedPrivileges() ;
-	for( ; it != end ; it++ ){
+	while( it != end ){
 		st = *it ;
+		it++ ;
 		index = StringLastIndexOfChar( st,' ' ) ;
 		if( index != -1 ){
 			device = StringContent( st ) + index + 1 ;
