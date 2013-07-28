@@ -34,7 +34,7 @@ int zuluCryptCreateFileSystemInAVolume( const char * fs,const char * device_mapp
 	
 	process_t p = Process( ZULUCRYPTmkfs ) ;
 	
-	if( StringsAreEqual( fs,"ext2" ) || StringsAreEqual( fs,"ext3" ) || StringsAreEqual( fs,"ext4" ) ){
+	if( StringAtLeastOneMatch_1( fs,"ext2","ext3","ext4",NULL ) ){
 		
 		ProcessSetArgumentList( p,"-t",fs,"-m","1",device_mapper,ENDLIST ) ;
 		

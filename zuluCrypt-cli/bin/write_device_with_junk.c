@@ -147,7 +147,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	j = zuluCryptCheckOpenedMapper( StringContent( *p ) ) ;
 	
 	/*
-	 * defined in ../lib/print_mounted_volumes.c
+	 * zuluCryptPartitionIsMounted() is defined in ../lib/process_mountinfo.c
 	 */
 	n = zuluCryptPartitionIsMounted( dev ) ;
 	

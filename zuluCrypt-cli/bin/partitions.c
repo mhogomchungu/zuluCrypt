@@ -572,7 +572,6 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 	while( it != end ){
 		st = *it ;
 		it++ ;
-		
 		if( StringStartsWith( st,"#" ) ){
 			continue ; 
 		}
@@ -674,11 +673,9 @@ stringList_t zuluCryptGetPartitionFromConfigFile( const char * path )
 	while( it != end ){
 		st = *it ;
 		it++ ;
-		
 		if( StringStartsWith( st,"#" ) ){
 			continue ;
 		}
-		
 		if( StringStartsWith( st,"UUID=" ) ){
 			StringRemoveString( st,"\"" ) ;
 			
