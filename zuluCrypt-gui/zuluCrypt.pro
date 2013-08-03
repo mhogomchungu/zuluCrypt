@@ -47,7 +47,6 @@ SOURCES += main.cpp\
     socketsendkey.cpp \
     openvolumereadonly.cpp \
     ../zuluMount-gui/oneinstance.cpp \
-    zuluoptions.cpp \
     openmountpointinfilemanager.cpp \
     savemountpointpath.cpp \
     md5/md5.c
@@ -85,7 +84,6 @@ HEADERS  += zulucrypt.h \
     kwalletplugin.h \
     kwalletconfig.h \
     tablewidget.h \
-    zuluoptions.h \
     socketsendkey.h \
     openvolumereadonly.h \
     ../zuluMount-gui/oneinstance.h \

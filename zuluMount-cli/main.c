@@ -363,7 +363,7 @@ static int _zuluMountExe( ARGS * args )
 		}
 	}
 	
-	return _zuluExit_1( 200,StringListVoid,NULL,"ERROR: unrecognized argument encountered" ) ;	
+	return _zuluExit_1( 200,StringListVoid,NULL,gettext( "ERROR: unrecognized argument encountered" ) ) ;
 }
 
 static int _mount_help()

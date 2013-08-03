@@ -29,7 +29,7 @@ wallet::wallet( QString uuid,QString sockAddr )
 
 void wallet::openWallet()
 {
-	m_wallet = Wallet::openWallet( zuluOptions::wallet(),0,KWallet::Wallet::Synchronous ) ;
+	m_wallet = Wallet::openWallet( kwalletplugin::wallet(),0,KWallet::Wallet::Synchronous ) ;
 
 	if( m_wallet ){
 		this->readKwallet();
@@ -46,13 +46,13 @@ void wallet::SendKey()
 
 void wallet::readKwallet()
 {
-	QString formData = zuluOptions::formData() ;
+	QString formData = kwalletplugin::formData() ;
 
 	m_wallet->setFolder( formData ) ;
 
 	QMap <QString,QString> map ;
 
-	m_wallet->readMap( zuluOptions::key(),map ) ;
+	m_wallet->readMap( kwalletplugin::key(),map ) ;
 
 	m_key = map.value( m_uuid ).toAscii() ;
 

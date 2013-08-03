@@ -32,7 +32,6 @@
 #include "managepartitionthread.h"
 #include "../zuluCrypt-cli/constants.h"
 #include "plugin_path.h"
-#include "../zuluCrypt-gui/zuluoptions.h"
 #include "../zuluCrypt-gui/socketsendkey.h"
 #include "../zuluCrypt-gui/openvolumereadonly.h"
 #include "../zuluCrypt-gui/openmountpointinfilemanager.h"

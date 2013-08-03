@@ -28,7 +28,6 @@ SOURCES += main.cpp\
     auto_mount_helper.cpp \
     monitor_mountinfo.cpp \
     ../zuluCrypt-gui/kwalletplugin.cpp \
-    ../zuluCrypt-gui/zuluoptions.cpp \
 
 HEADERS  += mainwindow.h\
     keydialog.h \
@@ -47,7 +46,6 @@ HEADERS  += mainwindow.h\
     auto_mount_helper.h \
     monitor_mountinfo.h \
     ../zuluCrypt-gui/kwalletplugin.h \
-    ../zuluCrypt-gui/zuluoptions.h \
 
 TRANSLATIONS = ../translations/zuluMount/en_US.ts
 

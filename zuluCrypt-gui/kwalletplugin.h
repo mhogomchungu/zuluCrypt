@@ -20,7 +20,6 @@
 #define KWALLETPLUGIN_H
 
 #include "can_build_kwallet.h"
-#include "zuluoptions.h"
 
 #include <QObject>
 #include <QString>
@@ -29,6 +28,8 @@
 #include <QDebug>
 #include <QWidget>
 #include <QApplication>
+#include <QFile>
+#include <QDir>
 
 class kwalletpluginPrivate ;
 
@@ -37,6 +38,11 @@ class kwalletplugin : public QObject
 public:
 	kwalletplugin( QWidget * );
 	~kwalletplugin() ;
+
+	static bool hasFunctionality( void ) ;
+	/*
+	 * below methods are valid only if hasFunctionality() returns true.
+	 */
 	QString getKey( QString uuid ) ;
 	void close( void ) ;
 	bool open( void ) ;
@@ -48,7 +54,18 @@ public:
 	static bool keyDoesNotExist( QString key ) ;
 	static bool KwalletIsEnabled( void ) ;
 	static QString KDEKwalletDefaultName( void ) ;
-	static bool hasFunctionality( void ) ;
+
+	/*
+	 * below methods are always valid
+	 */
+	static bool walletIsKDEWallet( void ) ;
+	static void setWalletToKDEDefaultName( void ) ;
+	static void setWalletToDefaultName( void )    ;
+	static void setWalletName( QString )          ;
+	static QString walletPath( void )             ;
+	static QString wallet( void )                 ;
+	static QString key( void )                    ;
+	static QString formData( void )               ;
 private:
 	kwalletpluginPrivate * d ;
 };

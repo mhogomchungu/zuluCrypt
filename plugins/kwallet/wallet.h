@@ -28,11 +28,10 @@
 #include <QtNetwork/QLocalServer>
 #include <QtNetwork/QLocalSocket>
 #include <QByteArray>
-#include "../../zuluCrypt-gui/zuluoptions.h"
 #include "wallet.h"
 
+#include "../../zuluCrypt-gui/kwalletplugin.h"
 #include "../../zuluCrypt-gui/socketsendkey.h"
-#include "../../zuluCrypt-gui/zuluoptions.h"
 
 using namespace KWallet ;
 

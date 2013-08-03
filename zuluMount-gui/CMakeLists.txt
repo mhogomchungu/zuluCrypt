@@ -39,7 +39,6 @@ set (SRC 	main.cpp
 		../zuluCrypt-gui/savemountpointpath.cpp
 		../zuluCrypt-gui/utility.cpp
 		../zuluCrypt-gui/kwalletplugin.cpp
-		../zuluCrypt-gui/zuluoptions.cpp
 )
 
 INCLUDE( ${QT_USE_FILE} )

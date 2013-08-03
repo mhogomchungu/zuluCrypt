@@ -53,7 +53,7 @@ kwalletpluginPrivate::~kwalletpluginPrivate()
 
 bool kwalletpluginPrivate::keyDoesNotExist( QString key )
 {
-	return KWallet::Wallet::keyDoesNotExist( zuluOptions::wallet(),zuluOptions::key(),key ) ;
+	return KWallet::Wallet::keyDoesNotExist( kwalletplugin::wallet(),kwalletplugin::key(),key ) ;
 }
 
 QString kwalletpluginPrivate::KDEKwalletDefaultName()
@@ -69,7 +69,7 @@ bool kwalletpluginPrivate::open( void )
 	    wId = ( uint ) aW->winId();
 	}
 
-	m_wallet = KWallet::Wallet::openWallet( zuluOptions::wallet(),wId,KWallet::Wallet::Synchronous ) ;
+	m_wallet = KWallet::Wallet::openWallet( kwalletplugin::wallet(),wId,KWallet::Wallet::Synchronous ) ;
 
 	m_walletOpened = m_wallet != 0 ;
 
@@ -78,7 +78,7 @@ bool kwalletpluginPrivate::open( void )
 
 bool kwalletpluginPrivate::close( void )
 {
-	return KWallet::Wallet::closeWallet( zuluOptions::wallet(),false ) ;
+	return KWallet::Wallet::closeWallet( kwalletplugin::wallet(),false ) ;
 }
 
 bool kwalletpluginPrivate::setFolder( QString folder )
@@ -91,24 +91,24 @@ bool kwalletpluginPrivate::setFolder( QString folder )
 
 int kwalletpluginPrivate::readMap( QMap<QString,QString> & map )
 {
-	return m_wallet->readMap( zuluOptions::key(),map ) ;
+	return m_wallet->readMap( kwalletplugin::key(),map ) ;
 }
 
 int kwalletpluginPrivate::writeMap( QMap<QString, QString> & map )
 {
-	return m_wallet->writeMap( zuluOptions::key(),map ) ;
+	return m_wallet->writeMap( kwalletplugin::key(),map ) ;
 }
 
 bool kwalletpluginPrivate::folderDoesNotExist( void )
 {
-	return KWallet::Wallet::folderDoesNotExist( zuluOptions::wallet(),zuluOptions::formData() ) ;
+	return KWallet::Wallet::folderDoesNotExist( kwalletplugin::wallet(),kwalletplugin::formData() ) ;
 }
 
 QString kwalletpluginPrivate::getKey( QString uuid )
 {
 	QString key ;
 
-	QString fd = zuluOptions::formData() ;
+	QString fd = kwalletplugin::formData() ;
 	if( !m_wallet->hasFolder( fd ) ){
 		if( !m_wallet->createFolder( fd ) ){
 			return key ;
@@ -119,7 +119,7 @@ QString kwalletpluginPrivate::getKey( QString uuid )
 
 	QMap <QString,QString> map ;
 
-	if( m_wallet->readMap( zuluOptions::key(),map ) ){
+	if( m_wallet->readMap( kwalletplugin::key(),map ) ){
 		return key ;
 	}
 
@@ -269,4 +269,62 @@ kwalletplugin::~kwalletplugin()
 	if( d ){
 		delete d ;
 	}
+}
+
+#define WALLET_NAME    "zuluCrypt"
+#define FORM_DATA_NAME "zuluCrypt"
+#define KEY_NAME       "zuluCrypt-LUKS"
+
+QString kwalletplugin::formData()
+{
+	return QString( FORM_DATA_NAME ) ;
+}
+
+QString kwalletplugin::key()
+{
+	return QString( KEY_NAME ) ;
+}
+
+QString kwalletplugin::wallet()
+{
+	QString path = kwalletplugin::walletPath() ;
+
+	QFile f( path ) ;
+
+	if( !f.exists() ){
+		kwalletplugin::setWalletToKDEDefaultName() ;
+	}
+	f.open( QIODevice::ReadOnly ) ;
+	QString name = QString( f.readAll() );
+	f.close();
+	return name ;
+}
+
+QString kwalletplugin::walletPath()
+{
+	return QDir::homePath() + QString( "/.zuluCrypt/walletName" ) ;
+}
+
+bool kwalletplugin::walletIsKDEWallet()
+{
+	return kwalletplugin::wallet() == kwalletplugin::KDEKwalletDefaultName() ;
+}
+
+void kwalletplugin::setWalletToKDEDefaultName()
+{
+	kwalletplugin::setWalletName( kwalletplugin::KDEKwalletDefaultName() ) ;
+}
+
+void kwalletplugin::setWalletToDefaultName()
+{
+	kwalletplugin::setWalletName( QString( WALLET_NAME ) ) ;
+}
+
+void kwalletplugin::setWalletName( QString name )
+{
+	QString path = kwalletplugin::walletPath() ;
+	QFile f ( path ) ;
+	f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
+	f.write( name.toAscii() ) ;
+	f.close();
 }

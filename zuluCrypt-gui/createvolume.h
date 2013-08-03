@@ -31,7 +31,6 @@
 #include "createvolumedialog.h"
 #include "dialogmsg.h"
 #include "keystrength.h"
-#include "zuluoptions.h"
 #include "socketsendkey.h"
 
 /*

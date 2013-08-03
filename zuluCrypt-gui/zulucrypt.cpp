@@ -291,7 +291,7 @@ void zuluCrypt::setupConnections()
 
 	m_ui->actionUse_kde_default_wallet->setCheckable( true );
 
-	m_ui->actionUse_kde_default_wallet->setChecked( zuluOptions::walletIsKDEWallet() );
+	m_ui->actionUse_kde_default_wallet->setChecked( kwalletplugin::walletIsKDEWallet() );
 
 	if( !kwalletplugin::hasFunctionality() ){
 		m_ui->actionManage_kwallet->setEnabled( false ) ;
@@ -722,9 +722,9 @@ void zuluCrypt::setDefaultWallet()
 	m_ui->actionUse_kde_default_wallet->setEnabled( false );
 
 	if( m_ui->actionUse_kde_default_wallet->isChecked() ){
-		zuluOptions::setWalletToKDEDefaultName() ;
+		kwalletplugin::setWalletToKDEDefaultName() ;
 	}else{
-		zuluOptions::setWalletToDefaultName() ;
+		kwalletplugin::setWalletToDefaultName() ;
 	}
 
 	m_ui->actionUse_kde_default_wallet->setEnabled( true );

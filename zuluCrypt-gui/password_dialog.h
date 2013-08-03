@@ -37,7 +37,6 @@
 #include "plugin_path.h"
 #include "tablewidget.h"
 #include "../zuluCrypt-cli/constants.h"
-#include "zuluoptions.h"
 #include "socketsendkey.h"
 #include "openvolumereadonly.h"
 #include "openmountpointinfilemanager.h"
