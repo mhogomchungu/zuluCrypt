@@ -25,7 +25,7 @@ int main( int argc,char * argv[] )
 {
 	QCoreApplication a( argc,argv );
 
-	wallet w( argv[ 2 ],argv[ 3 ] ) ;
+	wallet w( argv[ 1 ],argv[ 2 ],argv[ 3 ] ) ;
 	
 	QCoreApplication::setApplicationName( QString( "zuluCrypt kwallet plugin" ) ) ;
 	

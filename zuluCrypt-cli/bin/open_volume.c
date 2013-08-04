@@ -27,6 +27,30 @@ static int _open_tcrypt( const char * device,const char * mapper_name,const char
 			 int volume_type,const char * m_point,uid_t uid,
 			 unsigned long m_flags,const char * fs_opts ) ;
 
+static char * _device_path( const char * device )
+{
+	char * path ;
+	string_t p ;
+	
+	if( StringPrefixEqual( device,"/dev/loop" ) ){
+		zuluCryptSecurityGainElevatedPrivileges() ;
+		/*
+		 * zuluCryptLoopDeviceAddress_1() is defined in ../zuluCrypt-cli/create_loop_device.c
+		 */
+		path = zuluCryptLoopDeviceAddress_1( device ) ;
+		zuluCryptSecurityDropElevatedPrivileges() ;
+		if( path == NULL ){
+			p = String( device ) ;
+			return StringDeleteHandle( &p ) ;
+		}else{
+			return path ;
+		}
+	}else{
+		p = String( device ) ;
+		return StringDeleteHandle( &p ) ;
+	}
+}
+
 static void _printResult( const char * device,const char * m_point,uid_t uid,const char * mapping_name )
 {
 	char * e ;
@@ -147,6 +171,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	unsigned long m_flags ;
 	
 	const char * uuid ;
+	char * device_path ;
 	
 	struct stat statstr ;
 	
@@ -231,11 +256,14 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	if( plugin_path != NULL ){
 		
 		uuid = zuluCryptSecurityUUIDFromPath( device ) ;
+		
+		device_path = _device_path( device ) ;
 		/*
 		 * zuluCryptPluginManagerGetKeyFromModule is defined in ../pluginManager/zuluCryptPluginManager.c
 		 */
-		*passphrase = zuluCryptPluginManagerGetKeyFromModule( device,plugin_path,uuid,uid,opts ) ;
+		*passphrase = zuluCryptPluginManagerGetKeyFromModule( device_path,plugin_path,uuid,uid,opts ) ;
 		
+		StringFree( device_path ) ;
 		StringFree( uuid ) ;
 		
 		if( *passphrase == StringVoid ){

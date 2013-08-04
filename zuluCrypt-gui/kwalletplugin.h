@@ -43,7 +43,7 @@ public:
 	/*
 	 * below methods are valid only if hasFunctionality() returns true.
 	 */
-	QString getKey( QString uuid ) ;
+	QString getKey( QString keyId ) ;
 	void close( void ) ;
 	bool open( void ) ;
 	bool setFolder( QString ) ;

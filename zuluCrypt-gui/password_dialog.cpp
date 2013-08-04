@@ -415,28 +415,28 @@ QString passwordDialog::getKeyFromKWallet()
 
 	if( kwalletplugin::folderDoesNotExist() ){
 
-		msg.ShowUIOK( tr( "ERROR"),tr( "\"zuluCrypt\" wallet is not configured,go to:\n\"menu->options->manage kwallet\"\n to configure it and then add this volume first before continuing" ) ) ;
+		msg.ShowUIOK( tr( "ERROR"),tr( "\"%1\" wallet is not configured,go to:\n\"menu->options->manage kwallet\"\n to configure it and then add this volume first before continuing" ).arg( kwalletplugin::wallet() ) ) ;
 		return key ;
 	}
 
 	QString uuid = m_ui->OpenVolumePath->text() ;
 
+	QString keyID ;
 	if( uuid.mid( 0,5 ) != QString( "UUID=") ){
-		uuid = utility::getUUIDFromPath( uuid ) ;
-	}
-	if( uuid.isEmpty() ){
-		msg.ShowUIOK( tr( "ERROR" ),tr( "can store and retrieve passphrases only for LUKS volumes" ) ) ;
-	}else{
-		kwalletplugin kWallet( m_parent ) ;
-
-		if( kWallet.open() ){
-			key = kWallet.getKey( uuid ) ;
-			if( key.isEmpty() ){
-				msg.ShowUIOK( tr( "ERROR" ),tr( "the volume does not appear to have an entry in the wallet" ) ) ;
-			}
-
-			kWallet.close();
+		keyID = utility::getUUIDFromPath( uuid ) ;
+		if( keyID.isEmpty() ){
+			keyID = m_ui->OpenVolumePath->text() ;
 		}
+	}
+
+	kwalletplugin kWallet( m_parent ) ;
+
+	if( kWallet.open() ){
+		key = kWallet.getKey( keyID ) ;
+		if( key.isEmpty() ){
+			msg.ShowUIOK( tr( "ERROR" ),tr( "the volume does not appear to have an entry in the wallet" ) ) ;
+		}
+		kWallet.close();
 	}
 
 	return key ;

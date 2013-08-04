@@ -20,9 +20,14 @@
 #include "wallet.h"
 #include <QDebug>
 
-wallet::wallet( QString uuid,QString sockAddr )
+wallet::wallet( QString path,QString uuid,QString sockAddr )
 {
-	m_uuid = QString( "UUID=\"%1\"" ).arg( uuid ) ;
+	if( uuid == QString( "Nil" ) ){
+		m_keyID = path ;
+	}else{
+		m_keyID = QString( "UUID=\"%1\"" ).arg( uuid ) ;
+	}
+	qDebug() << m_keyID ;
 	m_sockAddr = sockAddr ;
 	m_handle = socketSendKey::zuluCryptPluginManagerOpenConnection( m_sockAddr ) ;
 }
@@ -54,8 +59,8 @@ void wallet::readKwallet()
 
 	m_wallet->readMap( kwalletplugin::key(),map ) ;
 
-	m_key = map.value( m_uuid ).toAscii() ;
-
+	m_key = map.value( m_keyID ).toAscii() ;
+	
 	this->SendKey();
 }
 

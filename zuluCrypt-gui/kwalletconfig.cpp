@@ -10,7 +10,7 @@ kwalletconfig::kwalletconfig( QWidget * parent ) : QDialog( parent ),m_ui( new U
 
 	m_ui->tableWidget->setColumnWidth( 0,386 );
 	m_ui->tableWidget->setColumnWidth( 1,173 );
-	m_ui->tableWidget->setColumnWidth( 2,109 );
+	m_ui->tableWidget->setColumnWidth( 2,100 );
 
 	m_ui->pbShowUUID->setIcon( QIcon( QString( ":/partition.png" ) ) );
 	m_ui->pbGetUUIDFromFile->setIcon( QIcon( QString( ":/file.png" ) ) );
@@ -101,7 +101,8 @@ void kwalletconfig::pbGetUUIDFromDevices()
 	openvolume * op = new openvolume( this ) ;
 	connect( op,SIGNAL( HideUISignal() ),op,SLOT( deleteLater() ) ) ;
 	connect( op,SIGNAL( clickedPartition( QString ) ),this,SLOT( selectedVolume( QString ) ) ) ;
-	op->allowLUKSOnly();
+	op->showEncryptedOnly();
+	op->ShowAllPartitions();
 }
 
 void kwalletconfig::SetFocus()
@@ -121,19 +122,19 @@ void kwalletconfig::SetFocus()
 
 void kwalletconfig::pbGetUUIDFromFile()
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "select a luks volume" ),QDir::homePath(),0 );
+	QString x = QFileDialog::getOpenFileName( this,tr( "select a luks volume" ),QDir::homePath(),0 );
 
-	if( Z.isEmpty() ){
+	if( x.isEmpty() ){
 		return ;
 	}
-	Z = utility::getUUIDFromPath( Z ) ;
 
-	if( Z.isEmpty() ){
-		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "ERROR" ),tr( "File does not appear to contain a luks volume") ) ;
-		m_ui->lineEditUUID->clear();
+	QString z = utility::getUUIDFromPath( x ) ;
+
+	if( z.isEmpty() ){
+		m_ui->lineEditUUID->setText( x ) ;
+		this->SetFocus();
 	}else{
-		m_ui->lineEditUUID->setText( Z ) ;
+		m_ui->lineEditUUID->setText( z ) ;
 		this->SetFocus();
 	}
 }

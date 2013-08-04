@@ -64,7 +64,7 @@
    </property>
    <column>
     <property name="text">
-     <string>volume uuid</string>
+     <string>volume id</string>
     </property>
    </column>
    <column>
@@ -121,7 +121,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>volume uuid</string>
+    <string>volume id</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

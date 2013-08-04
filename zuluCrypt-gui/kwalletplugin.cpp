@@ -104,7 +104,7 @@ bool kwalletpluginPrivate::folderDoesNotExist( void )
 	return KWallet::Wallet::folderDoesNotExist( kwalletplugin::wallet(),kwalletplugin::formData() ) ;
 }
 
-QString kwalletpluginPrivate::getKey( QString uuid )
+QString kwalletpluginPrivate::getKey( QString keyId )
 {
 	QString key ;
 
@@ -123,11 +123,11 @@ QString kwalletpluginPrivate::getKey( QString uuid )
 		return key ;
 	}
 
-	key = map.value( uuid ) ;
+	key = map.value( keyId ) ;
 
 	if( key.isEmpty() ){
-		uuid.remove( QChar( '\"' ) ) ;
-		key = map.value( uuid ) ;
+		keyId.remove( QChar( '\"' ) ) ;
+		key = map.value( keyId ) ;
 	}
 
 	return key ;

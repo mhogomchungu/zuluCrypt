@@ -39,7 +39,7 @@ class wallet : public QObject
 {
 	Q_OBJECT
 public:
-	wallet( QString uuid,QString sockAddr ) ;
+	wallet( QString path,QString uuid,QString sockAddr ) ;
 	~wallet();
 private slots:
 	void openWallet( void ) ;
@@ -48,7 +48,7 @@ private:
 	void SendKey( void ) ;
 	void readKwallet( void ) ;
 	Wallet * m_wallet ;
-	QString m_uuid ;
+	QString m_keyID ;
 	QString m_sockAddr ;
 	QByteArray m_key ;
 	int m_status ;
