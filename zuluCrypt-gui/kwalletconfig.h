@@ -27,6 +27,7 @@
 #include "dialogmsg.h"
 #include "openvolume.h"
 #include "tablewidget.h"
+#include "kwalletconfiginput.h"
 
 #include <Qt>
 #include <QTableWidget>
@@ -52,16 +53,14 @@ signals:
 	void HideUISignal( void ) ;
 	void couldNotOpenWallet( void ) ;
 private slots:
-	void pbGetUUIDFromFile( void ) ;
-	void selectedVolume( QString ) ;
 	void currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous );
+	void itemClicked ( QTableWidgetItem * item ) ;
 	void pbDelete( void ) ;
-	void pbAdd( void ) ;
 	void pbClose( void ) ;
-	void pbGetUUIDFromDevices( void ) ;
+	void add( QString volumeID,QString comment,QString key ) ;
+	void pbAdd( void ) ;
 private:
 	void failedToOpenWallet( void ) ;
-	void SetFocus();
 	void ShowWalletEntries( void );
 	Ui::kwalletconfig * m_ui;
 	void closeEvent( QCloseEvent * ) ;

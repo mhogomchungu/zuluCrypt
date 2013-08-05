@@ -48,9 +48,10 @@ openvolume::openvolume( QWidget * parent ) :
 	this->addAction( m_action );
 
 	QTableWidget * tw = m_ui->tableWidget ;
-	tw->setColumnWidth( 0,90 );
+	tw->setColumnWidth( 0,183 );
 	tw->setColumnWidth( 1,90 );
-	tw->setColumnWidth( 2,110 );
+	//tw->setColumnWidth( 2,110 );
+	tw->hideColumn( 2 ) ;
 	tw->setColumnWidth( 3,90 );
 	tw->setColumnWidth( 4,309 );
 

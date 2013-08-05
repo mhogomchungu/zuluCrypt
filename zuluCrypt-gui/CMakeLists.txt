@@ -19,6 +19,7 @@ set (UI_FILES createfile.ui
 		managedevicenames.ui
 		erasedevice.ui	
 		kwalletconfig.ui
+		kwalletconfiginput.ui
 		openvolume.ui
 )
 
@@ -50,6 +51,7 @@ set( MOC_FILES createfile.h
 		dialogmsg.h
 		managesystemvolumes.h
 		kwalletconfig.h
+		kwalletconfiginput.h
 		socketsendkey.h
 		../zuluMount-gui/oneinstance.h
 		openmountpointinfilemanager.h
@@ -88,6 +90,7 @@ set (SRC createfile.cpp
 	userfont.cpp
 	kwalletplugin.cpp
 	kwalletconfig.cpp
+	kwalletconfiginput.cpp
 	tablewidget.cpp
 	socketsendkey.cpp
 	openvolumereadonly.cpp

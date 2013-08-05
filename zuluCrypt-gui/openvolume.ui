@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
-<class>openvolume</class>
-<widget class="QDialog" name="openvolume">
+ <class>openvolume</class>
+ <widget class="QDialog" name="openvolume">
   <property name="windowModality">
    <enum>Qt::ApplicationModal</enum>
   </property>
@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>730</width>
-    <height>348</height>
+    <width>751</width>
+    <height>357</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,86 +19,6 @@
   <property name="modal">
    <bool>true</bool>
   </property>
-  <widget class="QTableWidget" name="tableWidget">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>10</y>
-     <width>711</width>
-     <height>291</height>
-    </rect>
-   </property>
-   <property name="editTriggers">
-    <set>QAbstractItemView::NoEditTriggers</set>
-   </property>
-   <property name="tabKeyNavigation">
-    <bool>false</bool>
-   </property>
-   <property name="showDropIndicator" stdset="0">
-    <bool>false</bool>
-   </property>
-   <property name="dragDropOverwriteMode">
-    <bool>false</bool>
-   </property>
-   <property name="selectionMode">
-    <enum>QAbstractItemView::NoSelection</enum>
-   </property>
-   <property name="selectionBehavior">
-    <enum>QAbstractItemView::SelectRows</enum>
-   </property>
-   <property name="showGrid">
-    <bool>false</bool>
-   </property>
-   <property name="columnCount">
-    <number>5</number>
-   </property>
-   <attribute name="horizontalHeaderVisible">
-    <bool>false</bool>
-   </attribute>
-   <attribute name="verticalHeaderVisible">
-    <bool>false</bool>
-   </attribute>
-   <column>
-    <property name="text">
-     <string>partition</string>
-    </property>
-    <property name="textAlignment">
-     <set>AlignHCenter|AlignVCenter|AlignCenter</set>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>size</string>
-    </property>
-    <property name="textAlignment">
-     <set>AlignHCenter|AlignVCenter|AlignCenter</set>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>label</string>
-    </property>
-    <property name="textAlignment">
-     <set>AlignHCenter|AlignVCenter|AlignCenter</set>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>type</string>
-    </property>
-    <property name="textAlignment">
-     <set>AlignHCenter|AlignVCenter|AlignCenter</set>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>uuid</string>
-    </property>
-    <property name="textAlignment">
-     <set>AlignHCenter|AlignVCenter|AlignCenter</set>
-    </property>
-   </column>
-  </widget>
   <widget class="QCheckBox" name="checkBoxUUID">
    <property name="enabled">
     <bool>true</bool>
@@ -119,7 +39,7 @@
    <property name="geometry">
     <rect>
      <x>250</x>
-     <y>310</y>
+     <y>320</y>
      <width>75</width>
      <height>31</height>
     </rect>
@@ -135,7 +55,7 @@
    <property name="geometry">
     <rect>
      <x>330</x>
-     <y>310</y>
+     <y>320</y>
      <width>75</width>
      <height>31</height>
     </rect>
@@ -151,7 +71,7 @@
    <property name="geometry">
     <rect>
      <x>410</x>
-     <y>310</y>
+     <y>320</y>
      <width>75</width>
      <height>31</height>
     </rect>
@@ -165,6 +85,99 @@
    <property name="default">
     <bool>false</bool>
    </property>
+  </widget>
+  <widget class="QGroupBox" name="groupBox">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>731</width>
+     <height>311</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string/>
+   </property>
+   <widget class="QTableWidget" name="tableWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>711</width>
+      <height>291</height>
+     </rect>
+    </property>
+    <property name="editTriggers">
+     <set>QAbstractItemView::NoEditTriggers</set>
+    </property>
+    <property name="tabKeyNavigation">
+     <bool>false</bool>
+    </property>
+    <property name="showDropIndicator" stdset="0">
+     <bool>false</bool>
+    </property>
+    <property name="dragDropOverwriteMode">
+     <bool>false</bool>
+    </property>
+    <property name="selectionMode">
+     <enum>QAbstractItemView::NoSelection</enum>
+    </property>
+    <property name="selectionBehavior">
+     <enum>QAbstractItemView::SelectRows</enum>
+    </property>
+    <property name="showGrid">
+     <bool>false</bool>
+    </property>
+    <property name="columnCount">
+     <number>5</number>
+    </property>
+    <attribute name="horizontalHeaderVisible">
+     <bool>false</bool>
+    </attribute>
+    <attribute name="verticalHeaderVisible">
+     <bool>false</bool>
+    </attribute>
+    <column>
+     <property name="text">
+      <string>partition</string>
+     </property>
+     <property name="textAlignment">
+      <set>AlignHCenter|AlignVCenter|AlignCenter</set>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>size</string>
+     </property>
+     <property name="textAlignment">
+      <set>AlignHCenter|AlignVCenter|AlignCenter</set>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>label</string>
+     </property>
+     <property name="textAlignment">
+      <set>AlignHCenter|AlignVCenter|AlignCenter</set>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>type</string>
+     </property>
+     <property name="textAlignment">
+      <set>AlignHCenter|AlignVCenter|AlignCenter</set>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>uuid</string>
+     </property>
+     <property name="textAlignment">
+      <set>AlignHCenter|AlignVCenter|AlignCenter</set>
+     </property>
+    </column>
+   </widget>
   </widget>
  </widget>
  <tabstops>

@@ -49,7 +49,8 @@ SOURCES += main.cpp\
     ../zuluMount-gui/oneinstance.cpp \
     openmountpointinfilemanager.cpp \
     savemountpointpath.cpp \
-    md5/md5.c
+    md5/md5.c \
+    kwalletconfiginput.cpp
 
 HEADERS  += zulucrypt.h \
     password_dialog.h \
@@ -88,7 +89,8 @@ HEADERS  += zulucrypt.h \
     openvolumereadonly.h \
     ../zuluMount-gui/oneinstance.h \
     openmountpointinfilemanager.h \
-    savemountpointpath.h
+    savemountpointpath.h \
+    kwalletconfiginput.h
 
 
 FORMS    += zulucrypt.ui password.ui \
@@ -106,7 +108,8 @@ FORMS    += zulucrypt.ui password.ui \
     createvolumedialog.ui \
     dialogmsg.ui \
     managesystemvolumes.ui \
-    kwalletconfig.ui
+    kwalletconfig.ui \
+    kwalletconfiginput.ui
 
 TRANSLATIONS = ../translations/zuluCrypt/en_US.ts
 

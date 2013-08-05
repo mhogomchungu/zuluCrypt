@@ -9,23 +9,16 @@ kwalletconfig::kwalletconfig( QWidget * parent ) : QDialog( parent ),m_ui( new U
 	this->setFont( parent->font() );
 
 	m_ui->tableWidget->setColumnWidth( 0,386 );
-	m_ui->tableWidget->setColumnWidth( 1,173 );
-	m_ui->tableWidget->setColumnWidth( 2,100 );
+	m_ui->tableWidget->setColumnWidth( 1,237 );
+	m_ui->tableWidget->hideColumn( 2 ) ;
 
-	m_ui->pbShowUUID->setIcon( QIcon( QString( ":/partition.png" ) ) );
-	m_ui->pbGetUUIDFromFile->setIcon( QIcon( QString( ":/file.png" ) ) );
-
-	m_ui->lineEditPassphrase->setEchoMode( QLineEdit::Password );
-	m_ui->lineEditRepeatPassphrase->setEchoMode( QLineEdit::Password );
-	m_ui->lineEditUUID->setEnabled( false );
-
-	connect( m_ui->pbGetUUIDFromFile,SIGNAL( clicked() ),this,SLOT( pbGetUUIDFromFile() ) ) ;
 	connect( m_ui->pbAdd,SIGNAL( clicked() ),this,SLOT( pbAdd() ) );
 	connect( m_ui->pbClose,SIGNAL( clicked() ),this,SLOT( pbClose() ) );
 	connect( m_ui->pbDelete,SIGNAL( clicked() ),this,SLOT( pbDelete() ) );
-	connect( m_ui->pbShowUUID,SIGNAL( clicked() ),this,SLOT( pbGetUUIDFromDevices() ) );
 	connect( m_ui->tableWidget,SIGNAL( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ),
 		 this,SLOT(currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ) ) ;
+	connect( m_ui->tableWidget,SIGNAL( itemClicked( QTableWidgetItem * ) ),
+		 this,SLOT( itemClicked( QTableWidgetItem * ) ) ) ;
 }
 
 void kwalletconfig::currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous )
@@ -33,62 +26,31 @@ void kwalletconfig::currentItemChanged( QTableWidgetItem * current,QTableWidgetI
 	tablewidget::selectTableRow( current,previous ) ;
 }
 
-void kwalletconfig::pbAdd()
+void kwalletconfig::itemClicked( QTableWidgetItem * item )
 {
-	QString uuid  = m_ui->lineEditUUID->text() ;
-	QString pass  = m_ui->lineEditPassphrase->text() ;
-	QString rpass = m_ui->lineEditRepeatPassphrase->text() ;
-	QString comm  = m_ui->lineEditComment->text() ;
-
-	if( comm.isEmpty() ){
-		comm = QString( "Nil" ) ;
-	}
 	DialogMsg msg( this ) ;
 
-	if( rpass.isEmpty() || pass.isEmpty() || uuid.isEmpty() ){
-		return msg.ShowUIOK( tr( "ERROR" ),tr( "atleast one required field is empty\n(comment field can be empty)" ) ) ;
+	QTableWidget * table = m_ui->tableWidget ;
+	QString volumeID = table->item( item->row(),0 )->text() ;
+
+	int r = msg.ShowUIYesNo( tr( "warning" ),tr( "are you sure you want to delete a volume with an id of \"%1\"?" ).arg( volumeID ) ) ;
+
+	if( r == QMessageBox::Yes ){
+		//read comment on ShowWalletEntries() function below to understand why there are two remove.
+
+		m_map.remove( volumeID ) ;
+
+		volumeID = volumeID + QString( "-comment" ) ;
+
+		m_map.remove( volumeID ) ;
+
+		tablewidget::deleteRowFromTable( table,item->row() ) ;
 	}
-	if( rpass != pass ){
-		return msg.ShowUIOK( tr( "ERROR"),tr( "passphrases do not match" ) ) ;
-	}
-
-	//read comment on ShowWalletEntries() function below to understand why there are two inserts.
-	QString m = uuid + QString( "-comment") ;
-
-	m_map.insert( m,comm ) ;
-	m_map.insert( uuid,pass ) ;
-
-	QStringList entry ;
-
-	entry.append( uuid );
-	entry.append( comm );
-	//entry.append( pass );
-	entry.append( tr( "<redacted>" ) );
-
-	tablewidget::addRowToTable( m_ui->tableWidget,entry ) ;
-
-	m_ui->lineEditUUID->clear();
-	m_ui->lineEditPassphrase->clear();
-	m_ui->lineEditRepeatPassphrase->clear();
-	m_ui->lineEditComment->clear();
 }
 
 void kwalletconfig::pbDelete()
 {
-	QTableWidget * table = m_ui->tableWidget ;
-	QTableWidgetItem * item = table->currentItem() ;
-
-	QString key = table->item( item->row(),0 )->text() ;
-
-	//read comment on ShowWalletEntries() function below to understand why there are two remove.
-
-	m_map.remove( key ) ;
-
-	key = key + QString( "-comment" ) ;
-
-	m_map.remove( key ) ;
-
-	tablewidget::deleteRowFromTable( table,item->row() ) ;
+	this->itemClicked( m_ui->tableWidget->currentItem() ) ;
 }
 
 void kwalletconfig::pbClose()
@@ -96,60 +58,39 @@ void kwalletconfig::pbClose()
 	this->HideUI();
 }
 
-void kwalletconfig::pbGetUUIDFromDevices()
+void kwalletconfig::add(QString volumeID,QString comment,QString key)
 {
-	openvolume * op = new openvolume( this ) ;
-	connect( op,SIGNAL( HideUISignal() ),op,SLOT( deleteLater() ) ) ;
-	connect( op,SIGNAL( clickedPartition( QString ) ),this,SLOT( selectedVolume( QString ) ) ) ;
-	op->showEncryptedOnly();
-	op->ShowAllPartitions();
+	//read comment on ShowWalletEntries() function below to understand why there are two inserts.
+	QString m = volumeID + QString( "-comment") ;
+
+	m_map.insert( m,comment ) ;
+	m_map.insert( volumeID,key ) ;
+
+	QStringList entry ;
+
+	entry.append( volumeID );
+	entry.append( comment );
+	//entry.append( pass );
+	entry.append( tr( "<redacted>" ) );
+
+	tablewidget::addRowToTable( m_ui->tableWidget,entry ) ;
 }
 
-void kwalletconfig::SetFocus()
+void kwalletconfig::pbAdd()
 {
-	if( m_ui->lineEditUUID->text().isEmpty() ){
-		m_ui->lineEditUUID->setFocus();
-	}else if( m_ui->lineEditComment->text().isEmpty() ){
-		m_ui->lineEditComment->setFocus();
-	}else if( m_ui->lineEditPassphrase->text().isEmpty() ){
-		m_ui->lineEditPassphrase->setFocus();
-	}else if( m_ui->lineEditRepeatPassphrase->text().isEmpty() ){
-		m_ui->lineEditRepeatPassphrase->setFocus();
-	}else{
-		m_ui->pbAdd->setFocus();
-	}
-}
-
-void kwalletconfig::pbGetUUIDFromFile()
-{
-	QString x = QFileDialog::getOpenFileName( this,tr( "select a luks volume" ),QDir::homePath(),0 );
-
-	if( x.isEmpty() ){
-		return ;
-	}
-
-	QString z = utility::getUUIDFromPath( x ) ;
-
-	if( z.isEmpty() ){
-		m_ui->lineEditUUID->setText( x ) ;
-		this->SetFocus();
-	}else{
-		m_ui->lineEditUUID->setText( z ) ;
-		this->SetFocus();
-	}
-}
-
-void kwalletconfig::selectedVolume( QString volume )
-{
-	m_ui->lineEditUUID->setText( volume );
-	this->SetFocus();
+	kwalletconfiginput * k = new kwalletconfiginput( this ) ;
+	connect( k,SIGNAL( add( QString,QString,QString ) ),this,SLOT( add( QString,QString,QString ) ) ) ;
+	k->ShowUI() ;
 }
 
 void kwalletconfig::ShowUI()
 {
 	m_wallet = new kwalletplugin( this ) ;
-
-	m_wallet->open() ? this->ShowWalletEntries() : this->failedToOpenWallet(); ;
+	if( m_wallet->open() ){
+		this->ShowWalletEntries() ;
+	}else{
+		this->failedToOpenWallet() ;
+	}
 }
 
 void kwalletconfig::failedToOpenWallet()
@@ -253,6 +194,6 @@ void kwalletconfig::closeEvent( QCloseEvent * e )
 
 kwalletconfig::~kwalletconfig()
 {
-	m_wallet->deleteLater();
+	m_wallet->deleteLater() ;
 	delete m_ui;
 }

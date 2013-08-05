@@ -2,22 +2,28 @@
 <ui version="4.0">
  <class>kwalletconfig</class>
  <widget class="QDialog" name="kwalletconfig">
+  <property name="windowModality">
+   <enum>Qt::WindowModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>723</width>
-    <height>388</height>
+    <height>375</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>manage volumes in kwallet</string>
+   <string>manage volumes in a wallet</string>
+  </property>
+  <property name="modal">
+   <bool>true</bool>
   </property>
   <widget class="QPushButton" name="pbAdd">
    <property name="geometry">
     <rect>
      <x>220</x>
-     <y>350</y>
+     <y>340</y>
      <width>91</width>
      <height>31</height>
     </rect>
@@ -32,57 +38,11 @@
     <bool>true</bool>
    </property>
   </widget>
-  <widget class="QTableWidget" name="tableWidget">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>0</y>
-     <width>701</width>
-     <height>231</height>
-    </rect>
-   </property>
-   <property name="editTriggers">
-    <set>QAbstractItemView::NoEditTriggers</set>
-   </property>
-   <property name="tabKeyNavigation">
-    <bool>false</bool>
-   </property>
-   <property name="showDropIndicator" stdset="0">
-    <bool>false</bool>
-   </property>
-   <property name="dragDropOverwriteMode">
-    <bool>false</bool>
-   </property>
-   <property name="selectionMode">
-    <enum>QAbstractItemView::NoSelection</enum>
-   </property>
-   <property name="selectionBehavior">
-    <enum>QAbstractItemView::SelectRows</enum>
-   </property>
-   <property name="gridStyle">
-    <enum>Qt::NoPen</enum>
-   </property>
-   <column>
-    <property name="text">
-     <string>volume id</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>comment</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>key</string>
-    </property>
-   </column>
-  </widget>
   <widget class="QPushButton" name="pbDelete">
    <property name="geometry">
     <rect>
      <x>310</x>
-     <y>350</y>
+     <y>340</y>
      <width>91</width>
      <height>31</height>
     </rect>
@@ -91,82 +51,11 @@
     <string>&amp;delete</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="lineEditUUID">
-   <property name="geometry">
-    <rect>
-     <x>150</x>
-     <y>230</y>
-     <width>421</width>
-     <height>31</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="lineEditPassphrase">
-   <property name="geometry">
-    <rect>
-     <x>150</x>
-     <y>290</y>
-     <width>421</width>
-     <height>31</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QLabel" name="labelvolumeUUID">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>230</y>
-     <width>131</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>volume id</string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-   </property>
-   <property name="wordWrap">
-    <bool>true</bool>
-   </property>
-  </widget>
-  <widget class="QLabel" name="labelPassphrase">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>290</y>
-     <width>131</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>key</string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-   </property>
-   <property name="wordWrap">
-    <bool>true</bool>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pbShowUUID">
-   <property name="geometry">
-    <rect>
-     <x>600</x>
-     <y>230</y>
-     <width>31</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </widget>
   <widget class="QPushButton" name="pbClose">
    <property name="geometry">
     <rect>
      <x>400</x>
-     <y>350</y>
+     <y>340</y>
      <width>101</width>
      <height>31</height>
     </rect>
@@ -175,86 +64,68 @@
     <string>do&amp;ne</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="lineEditRepeatPassphrase">
-   <property name="geometry">
-    <rect>
-     <x>150</x>
-     <y>320</y>
-     <width>421</width>
-     <height>31</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QLabel" name="labelRepeatPassphrase">
+  <widget class="QGroupBox" name="groupBox">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>320</y>
-     <width>131</width>
-     <height>31</height>
+     <y>10</y>
+     <width>701</width>
+     <height>331</height>
     </rect>
    </property>
-   <property name="text">
-    <string>repeat key</string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-   </property>
-   <property name="wordWrap">
-    <bool>true</bool>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pbGetUUIDFromFile">
-   <property name="geometry">
-    <rect>
-     <x>570</x>
-     <y>230</y>
-     <width>31</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
+   <property name="title">
     <string/>
    </property>
-  </widget>
-  <widget class="QLabel" name="label">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>260</y>
-     <width>131</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>comment</string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-   </property>
-   <property name="wordWrap">
-    <bool>true</bool>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="lineEditComment">
-   <property name="geometry">
-    <rect>
-     <x>150</x>
-     <y>260</y>
-     <width>421</width>
-     <height>31</height>
-    </rect>
-   </property>
+   <widget class="QTableWidget" name="tableWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>681</width>
+      <height>311</height>
+     </rect>
+    </property>
+    <property name="editTriggers">
+     <set>QAbstractItemView::NoEditTriggers</set>
+    </property>
+    <property name="tabKeyNavigation">
+     <bool>false</bool>
+    </property>
+    <property name="showDropIndicator" stdset="0">
+     <bool>false</bool>
+    </property>
+    <property name="dragDropOverwriteMode">
+     <bool>false</bool>
+    </property>
+    <property name="selectionMode">
+     <enum>QAbstractItemView::NoSelection</enum>
+    </property>
+    <property name="selectionBehavior">
+     <enum>QAbstractItemView::SelectRows</enum>
+    </property>
+    <property name="gridStyle">
+     <enum>Qt::NoPen</enum>
+    </property>
+    <column>
+     <property name="text">
+      <string>volume id</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>comment</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>key</string>
+     </property>
+    </column>
+   </widget>
   </widget>
  </widget>
  <tabstops>
   <tabstop>tableWidget</tabstop>
-  <tabstop>lineEditUUID</tabstop>
-  <tabstop>pbGetUUIDFromFile</tabstop>
-  <tabstop>pbShowUUID</tabstop>
-  <tabstop>lineEditComment</tabstop>
-  <tabstop>lineEditPassphrase</tabstop>
-  <tabstop>lineEditRepeatPassphrase</tabstop>
   <tabstop>pbAdd</tabstop>
   <tabstop>pbDelete</tabstop>
   <tabstop>pbClose</tabstop>
