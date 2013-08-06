@@ -572,34 +572,60 @@ const char ** StringPointer( string_t st )
 	}
 }
 
-char * StringCopyChar( string_t st )
+char * StringCopy_1( string_t st )
 {
 	if( st == StringVoid ){
 		return NULL ;
 	}else{
-		return StringLengthCopy( st,st->size ) ;
+		return StringCopy_3( st,st->size ) ;
 	}
 }
 
-char * StringLengthCopy( string_t st,size_t l )
+char * StringCopy_2( const char * str )
 {
 	char * c ;
-	
+	size_t len ;
+	if( str == NULL ){
+		c = ( char * )malloc( sizeof( char ) ) ;
+		if( c == NULL ){
+			return ( char * ) _StringError() ;
+		}else{
+			c[ 0 ] = '\0' ;
+			return c ;
+		}
+	}else{
+		len = strlen( str ) ;
+		c = ( char * )malloc( sizeof( char ) * ( len + 1 ) ) ;
+		if( c == NULL ){
+			return ( char * ) _StringError() ;
+		}else{
+			memcpy( c,str,len + 1 ) ;
+			return c ;
+		}
+	}
+}
+
+char * StringCopy_3( string_t st,size_t l )
+{
+	char * c ;
 	if( st == StringVoid ){
-		return NULL ;
+		c = ( char * )malloc( sizeof( char ) ) ;
+		if( c == NULL ){
+			return ( char * ) _StringError() ;
+		}else{
+			c[ 0 ] = '\0' ;
+			return c ;
+		}
+	}else{
+		c = ( char * )malloc( sizeof( char ) * ( l + 1 ) ) ;
+		if( c == NULL ){
+			return ( char * ) _StringError() ;
+		}else{
+			memcpy( c,st->string,l ) ;
+			*( c + l ) = '\0' ;
+			return c ;
+		}
 	}
-	
-	c = ( char * )malloc( sizeof( char ) * ( l + 1 ) ) ;
-	
-	if( c == NULL ){
-		return ( char * ) _StringError() ;
-	}
-	
-	strncpy( c,st->string,l ) ;
-	
-	*( c + l ) = '\0' ;
-	
-	return c ;
 }
 
 int StringEndsWith( string_t st,const char * s ) 

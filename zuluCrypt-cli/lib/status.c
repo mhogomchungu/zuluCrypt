@@ -186,39 +186,36 @@ static void zuluCryptFileSystemProperties( string_t p,const char * mapper,const 
 char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper )
 {
 	struct crypt_device * cd;
-	const char * type ;
-	string_t volType ;
+	char * type ;
+	char * r ;
+	const char * nil = "Nil" ;
 	
-	type = crypt_get_dir() ;
-
-	if( !StringPrefixEqual( mapper,type ) ){
-		volType = String( "Nil" ) ;
-		return StringDeleteHandle( &volType ) ;
+	if( !StringPrefixEqual( mapper,crypt_get_dir() ) ){
+		return StringCopy_2( nil ) ;
 	}
 	
 	if( crypt_init_by_name( &cd,mapper ) < 0 ){
-		volType = String( "Nil" ) ;
-		return StringDeleteHandle( &volType ) ;
+		return StringCopy_2( nil ) ;
 	}
-	
+		
 	type = crypt_get_type( cd ) ;
 	
 	if( type == NULL ){
-		volType = String( "Nil" ) ;
+		r = StringCopy_2( nil ) ;
 	}else{
 		if( StringHasComponent( type,"LUKS" ) ){
-			volType = String( "crypto_LUKS" ) ;
+			r = StringCopy_2( "crypto_LUKS" ) ;
 		}else if( StringHasComponent( type,"PLAIN" ) ){
-			volType = String( "crypto_PLAIN" ) ;
+			r = StringCopy_2( "crypto_PLAIN" ) ;
 		}else if( StringHasComponent( type,"TCRYPT" ) ){
-			volType = String( "crypto_TCRYPT" ) ;
+			r = StringCopy_2( "crypto_TCRYPT" ) ;
 		}else{
-			volType = String( "Nil" ) ;
+			r = StringCopy_2( nil ) ;
 		}
 	}
 	
 	crypt_free( cd ) ;
-	return StringDeleteHandle( &volType ) ;
+	return r ;
 }
 
 string_t zuluCryptConvertIfPathIsLVM( const char * path )

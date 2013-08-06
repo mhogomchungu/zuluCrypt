@@ -30,7 +30,6 @@ static int _open_tcrypt( const char * device,const char * mapper_name,const char
 static char * _device_path( const char * device )
 {
 	char * path ;
-	string_t p ;
 	
 	if( StringPrefixEqual( device,"/dev/loop" ) ){
 		zuluCryptSecurityGainElevatedPrivileges() ;
@@ -40,14 +39,12 @@ static char * _device_path( const char * device )
 		path = zuluCryptLoopDeviceAddress_1( device ) ;
 		zuluCryptSecurityDropElevatedPrivileges() ;
 		if( path == NULL ){
-			p = String( device ) ;
-			return StringDeleteHandle( &p ) ;
+			return StringCopy_2( device ) ;
 		}else{
 			return path ;
 		}
 	}else{
-		p = String( device ) ;
-		return StringDeleteHandle( &p ) ;
+		return StringCopy_2( device ) ;
 	}
 }
 

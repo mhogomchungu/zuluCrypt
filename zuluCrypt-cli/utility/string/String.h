@@ -221,13 +221,26 @@ void StringPrintLine( string_t st ) ;
  * Remember to free it when you are done using it.
  * NULL is returned when the copy can not be made. 
  */
-char * StringCopyChar( string_t st ) ;
+char * StringCopy_1( string_t st ) ;
 
 /*
  * Make a copy of string_t st
  * return NULL on error.
  */
 string_t StringCopy( string_t st ) ;
+
+/*
+ * returns a copy of a string.
+ * remember to free() it when done with it
+ */
+char * StringCopy_2( const char * ) ;
+
+/*
+ * Returns an editable copy of a string made up of upto x characters
+ * Remember to free string when you are done with it.
+ * returns NULL on error. * 
+ */
+char * StringCopy_3( string_t st,size_t x ) ;
 
 /*
  * Write "size" amount of content of a string handled by "st" to a buffer pointed by "buffer"  *
@@ -459,15 +472,6 @@ void StringReset( string_t st ) ;
  * Returns a pointer to the result,NULL on error and the original string remain intact
  */
 const char * StringRemoveLeft( string_t st,size_t x ) ;
-
-
-/*
- * Returns an editable copy of a string made up of upto x characters
- * Remember to free string when you are done with it.
- * returns NULL on error. * 
- */
-char * StringLengthCopy( string_t st,size_t x ) ;
-
 
 /*
  * Return a sub string starting at position x and made up of y characters
