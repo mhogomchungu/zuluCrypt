@@ -56,13 +56,9 @@ void MainWindow::setUpApp()
 	connect( m_ui->tableWidget,SIGNAL( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ),
 		 this,SLOT( slotCurrentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ) ) ;
 	connect( m_ui->pbmount,SIGNAL( clicked() ),this,SLOT( pbMount() ) ) ;
-	connect( m_ui->pbunmount,SIGNAL( clicked() ),this,SLOT( pbUmount() ) ) ;
 	connect( m_ui->pbupdate,SIGNAL( clicked()),this,SLOT(pbUpdate() ) ) ;
 	connect( m_ui->pbclose,SIGNAL( clicked() ),this,SLOT( pbClose() ) ) ;
 	connect( m_ui->tableWidget,SIGNAL( itemClicked( QTableWidgetItem * ) ),this,SLOT( itemClicked( QTableWidgetItem * ) ) ) ;
-	connect( m_ui->cbReadOnly,SIGNAL( stateChanged( int ) ),this,SLOT( stateChanged( int ) ) ) ;
-
-	m_ui->cbReadOnly->setVisible( false );
 
 	this->setUpShortCuts();
 
@@ -107,8 +103,6 @@ void MainWindow::setUpApp()
 	if( !dir.exists() ){
 		dir.mkdir( dirPath ) ;
 	}
-
-	m_ui->pbunmount->setVisible( false );
 
 	managepartitionthread * part = new managepartitionthread() ;
 
@@ -523,13 +517,6 @@ void MainWindow::setUpShortCuts()
 	this->addAction( qa ) ;
 
 	qa = new QAction( this ) ;
-	QList<QKeySequence> d ;
-	d.append( Qt::Key_O );
-	qa->setShortcuts( d ) ;
-	connect( qa,SIGNAL( triggered() ),this,SLOT( slotcbReadOnly() ) );
-	this->addAction( qa ) ;
-
-	qa = new QAction( this ) ;
 	QList<QKeySequence> e ;
 	e.append( Qt::Key_C );
 	qa->setShortcuts( e ) ;
@@ -586,22 +573,6 @@ void MainWindow::dropEvent( QDropEvent * e )
 			m->startAction( managepartitionthread::VolumeType ) ;
 		}
 	}
-}
-
-void MainWindow::slotcbReadOnly()
-{
-	if( m_ui->cbReadOnly->isChecked() ){
-		m_ui->cbReadOnly->setChecked( false );
-	}else{
-		m_ui->cbReadOnly->setChecked( true );
-	}
-}
-
-void MainWindow::stateChanged( int state )
-{
-	m_ui->cbReadOnly->setEnabled( false );
-	m_ui->cbReadOnly->setChecked( openvolumereadonly::setOption( this,state,QString( "zuluMount-gui" ) ) );
-	m_ui->cbReadOnly->setEnabled( true );
 }
 
 void MainWindow::mount( QString type,QString device,QString label )
@@ -894,17 +865,14 @@ void MainWindow::slotCurrentItemChanged( QTableWidgetItem * current,QTableWidget
 
 void MainWindow::disableAll()
 {
-	m_ui->cbReadOnly->setEnabled( false );
 	m_ui->pbclose->setEnabled( false );
 	m_ui->pbmount->setEnabled( false );
 	m_ui->pbupdate->setEnabled( false );
 	m_ui->tableWidget->setEnabled( false );
-	m_ui->pbunmount->setEnabled( false );
 }
 
 void MainWindow::enableAll()
 {
-	m_ui->cbReadOnly->setEnabled( true );
 	m_ui->pbclose->setEnabled( true );
 	m_ui->pbupdate->setEnabled( true );
 	m_ui->tableWidget->setEnabled( true );

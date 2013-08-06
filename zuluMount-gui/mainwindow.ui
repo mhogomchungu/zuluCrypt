@@ -116,32 +116,6 @@
     </rect>
    </property>
   </widget>
-  <widget class="QPushButton" name="pbunmount">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>430</y>
-     <width>91</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>&amp;unmount</string>
-   </property>
-  </widget>
-  <widget class="QCheckBox" name="cbReadOnly">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>400</y>
-     <width>171</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>mount in read &amp;only mode</string>
-   </property>
-  </widget>
   <widget class="QPushButton" name="pbmount">
    <property name="geometry">
     <rect>
@@ -191,9 +165,7 @@
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
   <tabstop>tableWidget</tabstop>
-  <tabstop>cbReadOnly</tabstop>
   <tabstop>pbmount</tabstop>
-  <tabstop>pbunmount</tabstop>
   <tabstop>pbupdate</tabstop>
   <tabstop>pbclose</tabstop>
  </tabstops>

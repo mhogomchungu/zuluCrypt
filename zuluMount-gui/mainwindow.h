@@ -83,11 +83,9 @@ private slots:
 	void pbClose( void ) ;
 	void slotUnmountComplete( int,QString ) ;
 	void slotMountedList( QStringList,QStringList ) ;
-	void slotcbReadOnly( void ) ;
 	void slotTrayClicked( QSystemTrayIcon::ActivationReason ) ;
 	void slotCurrentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ;
 	void enableAll( void ) ;
-	void stateChanged( int ) ;
 	void slotOpenFolder( void ) ;
 	void slotOpenSharedFolder( void ) ;
 	void fileManagerOpenStatus( int exitCode, int exitStatus,int startError ) ;
