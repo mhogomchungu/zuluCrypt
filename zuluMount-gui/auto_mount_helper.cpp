@@ -76,10 +76,10 @@ void auto_mount_helper::volumeProperties( const QString& device )
 
 void auto_mount_helper::deviceFromDev( const QString& device )
 {
-	if( m_device.startsWith( QString( "/dev/sd") ) ||
-			m_device.startsWith( QString( "/dev/hd" ) ) ||
-			m_device.startsWith( QString( "/dev/mmc" ) ) ||
-			m_device.startsWith( QString( "/dev/md" ) ) ){
+	if( device.startsWith( QString( "/dev/sd") ) ||
+			device.startsWith( QString( "/dev/hd" ) ) ||
+			device.startsWith( QString( "/dev/mmc" ) ) ||
+			device.startsWith( QString( "/dev/md" ) ) ){
 		if( m_mask & IN_CREATE ) {
 			this->volumeProperties( device ) ;
 		}else if( m_mask & IN_DELETE ){
@@ -109,7 +109,7 @@ bool auto_mount_helper::deviceMatchLVMFormat( const QString& device )
 void auto_mount_helper::deviceFromDevMapper( const QString& device_1 )
 {
 	QString device = device_1 ;
-	
+
 	int index1 = device.lastIndexOf( "-" ) ;
 
 	if( index1 == -1 ){
