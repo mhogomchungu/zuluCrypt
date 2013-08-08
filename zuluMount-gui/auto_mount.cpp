@@ -107,7 +107,8 @@ void auto_mount::run()
 
 			if(     stringPrefixMatch( m_device,"sg",2 ) ||
 				stringPrefixMatch( m_device,"dm-",3 ) ||
-				stringHasComponent( m_device,".dev/tmp" ) ||
+				stringHasComponent( m_device,"dev/tmp" ) ||
+				stringHasComponent( m_device,"dev-tmp" ) ||
 				stringHasComponent( m_device,".tmp.md." ) ||
 				stringHasComponent( m_device,"md/md-device-map" ) ){
 				/*
@@ -131,12 +132,13 @@ void auto_mount::run()
 
 				if( pevent->wd == dev && pevent->mask & IN_DELETE ){
 					if( stringEqual( "md",m_device ) ){
-						inotify_rm_watch( md,dev );
+						inotify_rm_watch( md,dev ) ;
 						continue ;
 					}
 				}
 
-				device = QString( m_device );
+				device = QString( m_device ) ;
+
 				m_thread_helper = new auto_mount_helper() ;
 
 				connect( m_thread_helper,SIGNAL( getVolumeSystemInfo( QStringList ) ),

@@ -29,6 +29,8 @@
 #include <unistd.h>
 #include <sys/inotify.h>
 
+#include "../zuluCrypt-gui/utility.h"
+
 class auto_mount_helper :public QObject, public QRunnable
 {
 	Q_OBJECT
@@ -44,14 +46,14 @@ signals:
 	void getVolumeSystemInfo( QStringList ) ;
 	void getVolumeInfo( QStringList ) ;
 private:
-	void removeMdRaidDevice( QString ) ;
-	QString mdRaidPath( QString ) ;
-	bool deviceIsSystem( void ) ;
-	bool deviceMatchLVMFormat( void ) ;
-	void volumeProperties( void ) ;
-	void deviceFromDev( void ) ;
-	void deviceFromDevMapper( void ) ;
-	void deviceFromMdRaid( void ) ;
+	void removeMdRaidDevice( const QString& ) ;
+	QString mdRaidPath( const QString& ) ;
+	bool deviceIsSystem( const QString& ) ;
+	bool deviceMatchLVMFormat( const QString& ) ;
+	void volumeProperties( const QString& ) ;
+	void deviceFromDev( const QString& ) ;
+	void deviceFromDevMapper( const QString& ) ;
+	void deviceFromMdRaid( const QString& ) ;
 	void run( void ) ;
 	bool m_deviceFromDev ;
 	bool m_deviceFromDevMapper ;

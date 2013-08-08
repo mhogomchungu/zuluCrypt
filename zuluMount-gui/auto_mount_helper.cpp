@@ -28,7 +28,7 @@ auto_mount_helper::~auto_mount_helper()
 {
 }
 
-bool auto_mount_helper::deviceIsSystem( void )
+bool auto_mount_helper::deviceIsSystem( const QString& device )
 {
 	QProcess p ;
 	QString exe = QString( "%1 -S" ).arg( zuluMount ) ;
@@ -41,7 +41,7 @@ bool auto_mount_helper::deviceIsSystem( void )
 		int j = l.size() ;
 
 		for( int i = 0 ; i < j ; i++ ){
-			if( l.at( i ) == m_device ){
+			if( l.at( i ) == device ){
 				return true ;
 			}
 		}
@@ -49,11 +49,11 @@ bool auto_mount_helper::deviceIsSystem( void )
 	return false ;
 }
 
-void auto_mount_helper::volumeProperties( void )
+void auto_mount_helper::volumeProperties( const QString& device )
 {
 	QProcess p ;
 
-	QString exe = QString( "%1 -L -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;
+	QString exe = QString( "%1 -L -d \"%2\"" ).arg( zuluMount ).arg( device ) ;
 	p.start( exe );
 	p.waitForFinished() ;
 	QString m = p.readAll() ;
@@ -61,7 +61,7 @@ void auto_mount_helper::volumeProperties( void )
 	if( p.exitCode() == 0 ){
 		l =  m.split( "\t" ) ;
 		if( l.size() >= 4 ){
-			if( this->deviceIsSystem() ){
+			if( this->deviceIsSystem( device ) ){
 				emit getVolumeSystemInfo( l ) ;
 			}else{
 				emit getVolumeInfo( l );
@@ -74,41 +74,14 @@ void auto_mount_helper::volumeProperties( void )
 	}
 }
 
-void auto_mount_helper::deviceFromDev( void )
+void auto_mount_helper::deviceFromDev( const QString& device )
 {
-	m_device = QString( "/dev/" ) + m_device ;
-
 	if( m_device.startsWith( QString( "/dev/sd") ) ||
 			m_device.startsWith( QString( "/dev/hd" ) ) ||
 			m_device.startsWith( QString( "/dev/mmc" ) ) ||
 			m_device.startsWith( QString( "/dev/md" ) ) ){
 		if( m_mask & IN_CREATE ) {
-			this->volumeProperties() ;
-		}else if( m_mask & IN_DELETE ){
-			emit deviceRemoved( m_device ) ;
-		}else{
-			;
-		}
-	}else{
-		;
-	}
-}
-
-void auto_mount_helper::deviceFromDevMapper( void )
-{
-	m_device = QString( "/dev/" ) + m_device ;
-
-	int index1 = m_device.lastIndexOf( "-" ) ;
-
-	if( index1 == -1 ){
-		return ;
-	}
-
-	QString device = m_device.replace( index1,1,QString( "/" ) ) ;
-
-	if( this->deviceMatchLVMFormat() ){
-		if( m_mask & IN_CREATE ) {
-			this->volumeProperties() ;
+			this->volumeProperties( device ) ;
 		}else if( m_mask & IN_DELETE ){
 			emit deviceRemoved( device ) ;
 		}else{
@@ -119,7 +92,46 @@ void auto_mount_helper::deviceFromDevMapper( void )
 	}
 }
 
-QString auto_mount_helper::mdRaidPath( QString dev )
+bool auto_mount_helper::deviceMatchLVMFormat( const QString& device )
+{
+	/*
+	 * LVM paths have two formats,"/dev/mapper/abc-def" and "/dev/abc/def/".
+	 * The pass in argument is in the form of "/dev/abc/def" and the path is assumed to be
+	 * an LVM path if a corresponding "/dev/mapper/abc-def" path is found
+	 *
+	 * We are just doing a simple test below and return true is the path is simply in "/dev/abc/def"
+	 * format by counting the number of "/"
+	 */
+	QStringList l = device.split( "/" ) ;
+	return l.size() == 4 ;
+}
+
+void auto_mount_helper::deviceFromDevMapper( const QString& device_1 )
+{
+	QString device = device_1 ;
+	
+	int index1 = device.lastIndexOf( "-" ) ;
+
+	if( index1 == -1 ){
+		return ;
+	}
+
+	device.replace( index1,1,QString( "/" ) ) ;
+
+	if( this->deviceMatchLVMFormat( device ) ){
+		if( m_mask & IN_CREATE ) {
+			this->volumeProperties( device ) ;
+		}else if( m_mask & IN_DELETE ){
+			emit deviceRemoved( device ) ;
+		}else{
+			;
+		}
+	}else{
+		;
+	}
+}
+
+QString auto_mount_helper::mdRaidPath( const QString& dev )
 {
 	QString dev_1 ;
 	QDir d( "/dev/md/" ) ;
@@ -149,16 +161,13 @@ QString auto_mount_helper::mdRaidPath( QString dev )
 	return dev ;
 }
 
-void auto_mount_helper::deviceFromMdRaid()
+void auto_mount_helper::deviceFromMdRaid( const QString& device )
 {
-	m_device = QString( "/dev/" ) + m_device ;
-
-	if( m_device.startsWith( QString( "/dev/md" ) ) ){
+	if( device.startsWith( QString( "/dev/md" ) ) ){
 		if( m_mask & IN_CREATE ){
-			this->mdRaidPath( m_device ) ;
-			this->volumeProperties() ;
+			this->volumeProperties( this->mdRaidPath( device ) ) ;
 		}else if( m_mask & IN_DELETE ){
-			emit deviceRemoved( m_device ) ;
+			emit deviceRemoved( this->mdRaidPath( device ) ) ;
 		}else{
 			;
 		}
@@ -167,50 +176,25 @@ void auto_mount_helper::deviceFromMdRaid()
 	}
 }
 
-void auto_mount_helper::removeMdRaidDevice( QString device )
+void auto_mount_helper::removeMdRaidDevice( const QString& device )
 {
 	emit deviceRemoved( device ) ;
 }
 
-bool auto_mount_helper::deviceMatchLVMFormat( void )
-{
-	if( m_device.contains( QString( ".udev/tmp" ) ) ){
-		/*
-		 * ignore what appear to be a temporary intermediate path
-		 */
-		return false ;
-	}
-
-	QByteArray b = m_device.toAscii() ;
-	const char * e = b.constData() ;
-
-	int i = 0 ;
-	/*
-	 * one of the two formats on LVM path is /dev/abc/def,below code checks if a volume is an LVM volume
-	 * by counting the numder of "/" characters and an assumption is made that the volume is LVM if
-	 * the number is 3
-	 */
-	while( *e ){
-		if( *e == '/' ){
-			i++ ;
-		}
-		e++ ;
-	}
-	return i == 3 ;
-}
-
 void auto_mount_helper::run()
 {
+	QString device = QString( "/dev/" ) + m_device ;
+
 	if( m_type == auto_mount_helper::dev ){
 		if( m_device.startsWith( QString( "md" ) ) ){
-			return this->deviceFromMdRaid();
+			return this->deviceFromMdRaid( device ) ;
 		}else{
-			return this->deviceFromDev();
+			return this->deviceFromDev( device ) ;
 		}
 	}else if( m_type == auto_mount_helper::dev_md ){
-		return this->removeMdRaidDevice( QString( "/dev/md/" ) + m_device );
+		return this->removeMdRaidDevice( QString( "/dev/md/" ) + m_device ) ;
 	}else{
-		return this->deviceFromDevMapper();
+		return this->deviceFromDevMapper( device ) ;
 	}
 }
 

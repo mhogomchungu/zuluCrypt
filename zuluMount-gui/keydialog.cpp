@@ -272,7 +272,7 @@ QString keyDialog::getKeyFromWallet( QString path )
 
 	if( kwalletplugin::folderDoesNotExist() ){
 
-		msg.ShowUIOK( tr( "ERROR"),tr( "\"%1\" wallet is not configured,go to:\n\"menu->options->manage kwallet\"\n to configure it and then add this volume first before continuing" ).arg( kwalletplugin::wallet() ) ) ;
+		msg.ShowUIOK( tr( "ERROR" ),tr( "\"%1\" wallet is not configured,go to:\n\"menu->options->manage kwallet\"\n to configure it and then add this volume first before continuing" ).arg( kwalletplugin::wallet() ) ) ;
 		return key ;
 	}
 
