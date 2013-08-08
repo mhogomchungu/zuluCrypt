@@ -59,16 +59,16 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 		 */
 		st = zuluCryptLoopDeviceAddress_2( device ) ;
 		/*
-		 * Add a space at the end of device to avoid a possible collision when there exists two devices,one being "/dev/sdc1" 
-		 * and another "/dev/sdc12"
+		 * Add a space at the end of the device name to make sure we check the full device name to avoid possible collisions
+		 * that may exist if one device is named "/home/abc" and another "/home/abcdef"
 		 */
 		index = StringListHasStartSequence( stx,StringAppend( st," " ) ) ;
 		StringRemoveRight( st,1 ) ;
 		device = h = StringDeleteHandle( &st ) ;
 	}else{
 		/*
-		 * Add a space at the end of device to avoid a possible collision when there exists two devices,one being "/dev/sdc1" 
-		 * and another "/dev/sdc12"
+		 * Add a space at the end of the device name to make sure we check the full device name to avoid possible collisions
+		 * that may exist if one device is named "/dev/sdc1" and another "/dev/sdc12"
 		 */
 		st = String( device ) ;
 		index = StringListHasStartSequence( stx,StringAppend( st," " ) ) ;
@@ -88,10 +88,9 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 		StringListDelete( &stl ) ;
 		
 		st = StringCopy( xt ) ;
+		
 		/*
 		 * zuluCryptDecodeMtabEntry() is defined in ../lib/mount_volume.c
-		 */
-		/*
 		 * g will contain something like "/run/media/private/$USER/sdc1"
 		 */
 		g = zuluCryptDecodeMtabEntry( st ) ;
@@ -121,13 +120,16 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 			index = StringLastIndexOfChar( xt,'/' ) + 1 ;
 			StringRemoveLeft( xt,index ) ;
 			
-			f = StringPrepend( xt,"/run/media/public/" ) ;
+			StringPrepend( xt,"/run/media/public/" ) ;
 
 			/*
 			 * f will now contain something like "/run/media/public/sdc1"
+			 * space character is added before checking to avoid possible collisions
+			 * as explained in above comments
 			 */
-			
+			f = StringAppend( xt," " ) ;
 			index = StringListHasSequence( stx,f ) ;
+			f = StringRemoveRight( xt,1 ) ;
 			
 			if( index == -1 ){
 				/*
