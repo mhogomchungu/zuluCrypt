@@ -406,7 +406,7 @@ int main( int argc,char * argv[] )
 	
 	if( argc > 0 ){
 		while( *argv ){
-			StringMultipleAppend( q,*argv," ",'\0' ) ;
+			StringMultipleAppend( q,*argv," ",END ) ;
 			argv++ ;
 		}
 		StringSubChar( q,StringLength( q ) - 1,'\0' ) ;

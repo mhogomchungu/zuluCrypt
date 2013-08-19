@@ -104,7 +104,7 @@ const char * StringSubStringWithInt( string_t st,const char * str,uint64_t num )
  *  string_t st = String( "abc" ) ;
  *  StringMultipleAppend( st,"def","ghi",NULL ) ; 
  */
-const char * StringMultipleAppend( string_t st,... )  ;
+const char * StringMultipleAppend( string_t st,... )  __attribute__ ( ( sentinel ) ) ;
 
 /*
  * Append a string handled by xt into a string handled by handle st 
@@ -125,7 +125,7 @@ int StringContains( string_t st,const char * str ) ;
  * Append multiple string_t to a string handled by handle st .
  * Same requirement as StringMultipleAppend apply 
  */
-const char * StringAppendMultipleString( string_t st,... )  ;
+const char * StringAppendMultipleString( string_t st,... )  __attribute__ ( ( sentinel ) ) ;
 
 /*
  * Append a char c into a string handled by handle st 
@@ -151,14 +151,14 @@ const char * StringPrepend( string_t st,const char * s )  ;
  *  string_t st = String( "ghi" ) ;
  *  StringMultipleAppend( st,"def","abc",NULL ) ;
  */
-const char * StringMultiplePrepend( string_t st,... )  ;
+const char * StringMultiplePrepend( string_t st,... )   __attribute__ ( ( sentinel ) ) ;
 
 /*
  * prepend multiple string_t to a string handled by string_t st.
  * NOTE: entries will be prepended in the order they are presented
  * NOTE: a list of entries must be NULL terminated
  */
-const char * StringMultiplePrependString( string_t st,... )  ;
+const char * StringMultiplePrependString( string_t st,... )  __attribute__ ( ( sentinel ) ) ;
 
 /*
  * Prepend a string_t xt into a string handled by handle st
@@ -269,7 +269,7 @@ void StringClearDelete( string_t * st ) ;
  * this to work,make sure your handled are NULL ininitialized.
  * NULL is assigned to each handle to invalidate them
  */
-void StringMultipleDelete( string_t * st,... );
+void StringMultipleDelete( string_t * st,... )  __attribute__ ( ( sentinel ) ) ;
 
 /*
  * input argument: String handle
@@ -568,7 +568,7 @@ int StringEqual( string_t x,const char * y ) ;
  * string_t st = String( "abc" ) ;
  * int equal = StringMatchOneAtLeastOne( st,"def","ugf",NULL ) ;
  */
-int StringAtLeastOneMatch( string_t x,... ) ;
+int StringAtLeastOneMatch( string_t x,... )  __attribute__ ( ( sentinel ) ) ;
 
 /*
  * compare cstring x with a series of cstrings and return true if atleast one of them match
@@ -576,7 +576,7 @@ int StringAtLeastOneMatch( string_t x,... ) ;
  * eg. 
  * int equal = StringMatchOneAtLeastOne_1( "def","ugf","rrt",NULL ) ;
  */
-int StringAtLeastOneMatch_1( const char * x,... ) ;
+int StringAtLeastOneMatch_1( const char * x,... )  __attribute__ ( ( sentinel ) ) ;
 
 /*
  * Insert character x infront of every character that appear in string y in a string handled by handle st.
@@ -806,7 +806,7 @@ static __inline__ int StringPrefixMatch( const char * x,const char * y,size_t z 
  * returns true if a atleast one cstring in the series starts with x
  * NOTE:The series must be NULL terminated.
  */
-int StringAtLeastOnePrefixMatch( const char * x,... ) ;
+int StringAtLeastOnePrefixMatch( const char * x,... )  __attribute__ ( ( sentinel ) ) ;
 
 static __inline__ int StringPrefixEqual( const char * x,const char * y )
 {

@@ -186,7 +186,7 @@ static void zuluCryptFileSystemProperties( string_t p,const char * mapper,const 
 char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper )
 {
 	struct crypt_device * cd;
-	char * type ;
+	const char * type ;
 	char * r ;
 	const char * nil = "Nil" ;
 	

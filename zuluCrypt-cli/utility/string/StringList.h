@@ -371,7 +371,7 @@ void StringListClearDelete( stringList_t * stl ) ;
  * delete multiple stringList_t * objects.
  * NOTE; The last element on the argument list must be '\0' 
  */
-void StringListMultipleDelete( stringList_t * stl,... ) ;
+void StringListMultipleDelete( stringList_t * stl,... )  __attribute__ ( ( sentinel ) ) ;
 
 /*
  * find the first element with cstring and remove it and return the position of where the element was.
