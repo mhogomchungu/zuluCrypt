@@ -54,20 +54,15 @@ static inline int zuluExit( int st,int fd,stringList_t stl )
 
 static inline int fs_family( const char * fs )
 {
-	if(     StringsAreEqual( fs,"ntfs" ) || 
-		StringsAreEqual( fs,"vfat" ) || 
-		StringsAreEqual( fs,"fat" )  ||
-		StringsAreEqual( fs,"msdos" ) ||
-		StringsAreEqual( fs,"umsdos" ) )
+	if( StringAtLeastOneMatch_1( fs,"ntfs,","vfat","fat","msdos","umsdos",NULL ) ){
 		return 1 ;
-	
-	if( StringsAreEqual( fs,"affs" ) || StringsAreEqual( fs,"hfs" ) ){
+	}else if( StringAtLeastOneMatch_1( fs,"affs","hfs",NULL ) ){
 		return 2 ;
-	}
-	if( StringsAreEqual( fs,"iso9660" ) || StringsAreEqual( fs,"udf" ) || StringsAreEqual( fs,"squashfs" ) ){
+	}else if( StringAtLeastOneMatch_1( fs,"iso9660","udf","squashfs",NULL ) ){
 		return 3 ;
+	}else{
+		return 0 ;
 	}
-	return 0 ;
 }
 
 static inline string_t set_mount_options( m_struct * mst )
@@ -76,6 +71,8 @@ static inline string_t set_mount_options( m_struct * mst )
 	 * zuluCryptGetMountOptionsFromFstab() is defined in parse_fstab.c
 	 */
 	string_t opt = zuluCryptGetMountOptionsFromFstab( mst->device,MOUNTOPTIONS,mst->uid ) ;
+	
+	int fsFamily = fs_family( mst->fs ) ;
 	
 	if( opt == StringVoid ){
 		opt = String( "" ) ;
@@ -87,7 +84,7 @@ static inline string_t set_mount_options( m_struct * mst )
 		StringMultipleAppend( opt,",",mst->fs_flags,END ) ;
 	}
 	
-	if( fs_family( mst->fs ) == 1 ){
+	if( fsFamily == 1 ){
 		if( !StringContains( opt,"dmask=" ) ){
 			StringAppend( opt,",dmask=0000" ) ;
 		}
@@ -113,7 +110,7 @@ static inline string_t set_mount_options( m_struct * mst )
 				StringAppend( opt,",shortname=mixed" ) ;
 			}
 		}
-	}else if( fs_family( mst->fs ) == 2 ){
+	}else if( fsFamily == 2 ){
 		if( !StringContains( opt,"uid=" ) ){
 			StringAppend( opt,",uid=" ) ;
 			StringAppendInt( opt,mst->uid ) ;
@@ -122,7 +119,7 @@ static inline string_t set_mount_options( m_struct * mst )
 			StringAppend( opt,",gid=" ) ;
 			StringAppendInt( opt,mst->uid ) ;
 		}
-	}else if( fs_family( mst->fs ) == 3 ){
+	}else if( fsFamily == 3 ){
 		mst->m_flags |= MS_RDONLY ;
 	}else{
 		/*
