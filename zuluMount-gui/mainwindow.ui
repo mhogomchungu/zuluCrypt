@@ -16,6 +16,10 @@
   <property name="windowTitle">
    <string>zuluMount</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="icon.qrc">
+    <normaloff>:/zuluMount.png</normaloff>:/zuluMount.png</iconset>
+  </property>
   <widget class="QWidget" name="centralWidget" native="true">
    <property name="geometry">
     <rect>
@@ -169,6 +173,8 @@
   <tabstop>pbupdate</tabstop>
   <tabstop>pbclose</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="icon.qrc"/>
+ </resources>
  <connections/>
 </ui>
