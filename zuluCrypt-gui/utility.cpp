@@ -363,7 +363,7 @@ void utility::removeFavoriteEntry( QString entry )
 QString utility::getUUIDFromPath( QString device )
 {
 	device = device.replace( QString( "\"" ),QString( "\"\"\"" ) ) ;
-	QString exe = QString( "%1 -U -d %2" ).arg( ZULUCRYPTzuluCrypt ).arg( device ) ;
+	QString exe = QString( "%1 -U -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( device ) ;
 	QProcess p ;
 	p.start( exe );
 	p.waitForFinished() ;
