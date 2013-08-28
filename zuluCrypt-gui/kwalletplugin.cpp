@@ -89,14 +89,19 @@ bool kwalletpluginPrivate::setFolder( QString folder )
 	return m_wallet->setFolder( folder ) ;
 }
 
-int kwalletpluginPrivate::readMap( QMap<QString,QString> & map )
+int kwalletpluginPrivate::readMap( QMap<QString,QString>& map )
 {
 	return m_wallet->readMap( kwalletplugin::key(),map ) ;
 }
 
-int kwalletpluginPrivate::writeMap( QMap<QString, QString> & map )
+int kwalletpluginPrivate::writeMap( QMap<QString,QString>& map )
 {
-	return m_wallet->writeMap( kwalletplugin::key(),map ) ;
+	if( m_wallet->writeMap( kwalletplugin::key(),map ) ){
+		m_wallet->sync() ;
+		return true ;
+	}else{
+		return false ;
+	}
 }
 
 bool kwalletpluginPrivate::folderDoesNotExist( void )

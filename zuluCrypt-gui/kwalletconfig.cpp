@@ -58,7 +58,7 @@ void kwalletconfig::pbClose()
 	this->HideUI();
 }
 
-void kwalletconfig::add(QString volumeID,QString comment,QString key)
+void kwalletconfig::add( QString volumeID,QString comment,QString key )
 {
 	//read comment on ShowWalletEntries() function below to understand why there are two inserts.
 	QString m = volumeID + QString( "-comment") ;

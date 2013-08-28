@@ -47,8 +47,8 @@ public:
 	void close( void ) ;
 	bool open( void ) ;
 	bool setFolder( QString ) ;
-	int readMap( QMap<QString,QString> & ) ;
-	int writeMap( QMap<QString,QString> & ) ;
+	int readMap( QMap<QString,QString>& ) ;
+	int writeMap( QMap<QString,QString>& ) ;
 	bool isOpen( void ) ;
 	static bool folderDoesNotExist( void ) ;
 	static bool keyDoesNotExist( QString key ) ;
