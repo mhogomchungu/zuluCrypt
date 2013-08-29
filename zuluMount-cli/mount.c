@@ -206,10 +206,29 @@ ERROR: insuffienct privilege to manage a system volume.\nnecessary privileges ca
 		 */
 		path = zuluCryptLoopDeviceAddress_1( device ) ;
 		if( path == NULL ){
-			return _zuluExit( 112,z,path,gettext( "ERROR: could not resolve path to device" ) ) ;
+			return _zuluExit( 112,z,path,gettext( "ERROR: could not resolve path to device or device could not be opened in read write mode" ) ) ;
 		}else{
 			dev = path ;
 		}
+	}
+		
+	if( m_opts == NULL ){
+		m_opts = "rw" ;
+	}
+	if( StringHasComponent( m_opts,"rw" ) ){
+		/*
+		 * zuluCryptSecurityDeviceIsWritable() is defined in ../lib/security.c
+		 */
+		status = zuluCryptSecurityDeviceIsWritable( device,uid ) ;
+	}else{
+		/*
+		 * zuluCryptSecurityDeviceIsReadable() is defined in ../lib/security.c
+		 */
+		status = zuluCryptSecurityDeviceIsReadable( device,uid ) ;
+	}
+	
+	if( status != 0 ){
+		return _zuluExit( 112,z,path,gettext( "ERROR: could not resolve path to device or device could not be opened in read write mode" ) ) ;
 	}
 	
 	/*
