@@ -561,7 +561,7 @@ void passwordDialog::threadfinished( int status,QString output )
 		case 3 : msg.ShowUIOK( tr( "ERROR!" ),tr( "no file or device exist on given path" ) ) ; 						break ;
 		case 4 : msg.ShowUIOK( tr( "ERROR!" ),tr( "volume could not be opened with the presented key" ) );					break ;
 		case 5 : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to mount the device with given options" ) ) ;				break ;
-		case 6 : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open device" ) );							break ;
+		case 6 : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open device in read write mode or device does not exist" ) );	break ;
 		case 7 : msg.ShowUIOK( tr( "ERROR!" ),tr( "only root user can perform this operation" ) );						break ;
 		case 8 : msg.ShowUIOK( tr( "ERROR!" ),tr( "-O and -m options can not be used together" ) ) ;						break ;
 		case 9 : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not create mount point, invalid path or path already taken" ) );			break ;

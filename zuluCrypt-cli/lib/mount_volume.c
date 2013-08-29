@@ -273,7 +273,7 @@ const char * zuluCryptDecodeMtabEntry( string_t st )
 int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long mount_opts,const char * fs_opts,uid_t uid )
 {
 	int h ;
-
+	
 	stringList_t stl = StringListInit() ;
 	
 	string_t * opts ;
@@ -362,12 +362,10 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 			case 16 : return zuluExit( 12,fd,stl ) ;
 			default : return zuluExit( 1,fd,stl )  ;
 		}
-	}
-		 
-	h = mount_volume( &mst ) ;
+	}else{
+		h = mount_volume( &mst ) ;
 	
-	if( h == 0 ){
-		if( zuluCryptMtabIsAtEtc() ){
+		if( h == 0 && zuluCryptMtabIsAtEtc() ){
 			_mount_options( mst.m_flags,opts ) ;
 			
 			if( StringPrefixMatch( mst.device,"/dev/loop",9 ) ){

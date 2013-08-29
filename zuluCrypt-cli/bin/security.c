@@ -159,14 +159,27 @@ static int has_device_access( const char * path,int c )
 int zuluCryptSecurityDeviceIsReadable( const char * device,uid_t uid )
 {
 	int st ;
+	char * xt ;
+	
 	if( uid ){;}
+	
 	if( StringPrefixMatch( device,"/dev/shm/",9 ) ){
 		return 4 ;
 	}
 	if( StringPrefixMatch( device,"/dev/",5 ) ){
-		zuluCryptSecurityGainElevatedPrivileges() ;
-		st = has_device_access( device,ZULUCRYPTread ) ;
-		zuluCryptSecurityDropElevatedPrivileges() ;
+		if( StringPrefixMatch( device,"/dev/loop",9 ) ){
+			xt = zuluCryptLoopDeviceAddress_1( device ) ;
+			if( xt != NULL ){
+				st = has_device_access( xt,ZULUCRYPTread ) ;
+				free( xt ) ;
+			}else{
+				return 4 ;
+			}
+		}else{
+			zuluCryptSecurityGainElevatedPrivileges() ;
+			st = has_device_access( device,ZULUCRYPTread ) ;
+			zuluCryptSecurityDropElevatedPrivileges() ;
+		}
 		return st ;
 	}else{
 		zuluCryptSecurityDropElevatedPrivileges() ;
@@ -177,14 +190,27 @@ int zuluCryptSecurityDeviceIsReadable( const char * device,uid_t uid )
 int zuluCryptSecurityDeviceIsWritable( const char * device,uid_t uid )
 {	
 	int st ;
+	char * xt ;
+	
 	if( uid ){;}
+	
 	if( StringPrefixMatch( device,"/dev/shm/",9 ) ){
 		return 4 ;
 	}
 	if( StringPrefixMatch( device,"/dev/",5 ) ){
-		zuluCryptSecurityGainElevatedPrivileges() ;
-		st = has_device_access( device,ZULUCRYPTwrite ) ;
-		zuluCryptSecurityDropElevatedPrivileges() ;
+		if( StringPrefixMatch( device,"/dev/loop",9 ) ){
+			xt = zuluCryptLoopDeviceAddress_1( device ) ;
+			if( xt != NULL ){
+				st = has_device_access( xt,ZULUCRYPTwrite ) ;
+				free( xt ) ;
+			}else{
+				return 4 ;
+			}
+		}else{
+			zuluCryptSecurityGainElevatedPrivileges() ;
+			st = has_device_access( device,ZULUCRYPTwrite ) ;
+			zuluCryptSecurityDropElevatedPrivileges() ;
+		}
 		return st ;
 	}else{
 		zuluCryptSecurityDropElevatedPrivileges() ;

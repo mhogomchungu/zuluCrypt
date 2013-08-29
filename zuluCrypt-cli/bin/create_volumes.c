@@ -340,6 +340,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		 */
 		st = zuluCryptCreateVolume( device,fs,type,volkey,volkeysize,rng ) ;
 	}
+	
 	zuluCryptSecurityDropElevatedPrivileges() ;
 
 	if( st == 0 ){
