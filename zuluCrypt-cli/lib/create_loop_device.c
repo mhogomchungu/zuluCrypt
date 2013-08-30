@@ -221,7 +221,7 @@ static int attach_device_to_loop( int fd_path,int * fd_loop,string_t loop_device
 	return 1 ;
 }
 
-int zuluCryptAttachLoopDeviceToFile( const char * path,int mode,int * loop_fd,string_t * loop_device )
+static int _attach_loop_device_to_file( const char * path,int mode,int * loop_fd,string_t * loop_device )
 {
 	string_t loopd = StringVoid ;
 	
@@ -252,10 +252,26 @@ int zuluCryptAttachLoopDeviceToFile( const char * path,int mode,int * loop_fd,st
 	}
 }
 
-int zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( int fd_path,int * fd_loop,int mode,string_t * loop_device )
+int zuluCryptAttachLoopDeviceToFile( const char * path,int mode,int * loop_fd,string_t * loop_device )
+{
+	int i = 0 ;
+	int j = 0 ;
+	while( 1 ){
+		i = _attach_loop_device_to_file( path,mode,loop_fd,loop_device ) ;
+		if( i == 0 && j < 3 ){
+			sleep( 3 ) ;
+			j++ ;
+		}else{
+			break ;
+		}
+	}
+	return i ;
+}
+
+static int _attach_loop_device_to_file_using_file_descriptor( int fd_path,int * fd_loop,int mode,string_t * loop_device )
 {
 	string_t loopd = StringVoid ;
-
+	
 	if( !open_loop_device( &loopd ) ){
 		return 0 ;
 	}
@@ -264,5 +280,21 @@ int zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( int fd_path,int * fd_loo
 		return 1 ;
 	}else{
 		return 0 ;
-	}	
+	}
+}
+
+int zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( int fd_path,int * fd_loop,int mode,string_t * loop_device )
+{
+	int i = 0 ;
+	int j = 0 ;
+	while( 1 ){
+		i = _attach_loop_device_to_file_using_file_descriptor( fd_path,fd_loop,mode,loop_device ) ;
+		if( i == 0 && j < 3 ){
+			sleep( 3 ) ;
+			j++ ;
+		}else{
+			break ;
+		}
+	}
+	return i ;
 }
