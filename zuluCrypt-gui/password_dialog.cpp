@@ -419,11 +419,14 @@ QString passwordDialog::getKeyFromKWallet()
 		return key ;
 	}
 
-	QString uuid = m_ui->OpenVolumePath->text() ;
+	QString id = m_ui->OpenVolumePath->text() ;
 
 	QString keyID ;
-	if( uuid.mid( 0,5 ) != QString( "UUID=") ){
-		keyID = utility::getUUIDFromPath( uuid ) ;
+
+	if( id.startsWith( QString( "UUID=" ) ) ){
+		keyID = id ;
+	}else{
+		keyID = utility::getUUIDFromPath( id ) ;
 		if( keyID.isEmpty() ){
 			keyID = m_ui->OpenVolumePath->text() ;
 		}
