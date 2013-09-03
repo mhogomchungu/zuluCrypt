@@ -18,6 +18,10 @@
 
 #include "socketsendkey.h"
 
+#include <QObject>
+#include <QTime>
+#include <QDir>
+
 socketSendKey::socketSendKey( QObject * parent,QString sockpath,QByteArray key )
 {
 	Q_UNUSED( parent ) ;

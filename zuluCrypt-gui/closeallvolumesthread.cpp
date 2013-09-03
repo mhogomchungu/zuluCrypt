@@ -20,6 +20,16 @@
 #include "closeallvolumesthread.h"
 #include "../zuluCrypt-cli/constants.h"
 
+#include <QTableWidgetItem>
+#include <QTableWidget>
+#include <QVector>
+#include <QThreadPool>
+
+#include <QProcess>
+#include <QString>
+
+#include <unistd.h>
+
 closeAllVolumesThread::closeAllVolumesThread( QTableWidget * table )
 {
 	m_table = table ;
@@ -50,7 +60,7 @@ void closeAllVolumesThread::run()
 	while( ++j < i ){
 		tableItems.append( m_table->item( j,0 ) );
 	}
-	
+
 	QProcess p ;
 	QString exe ;
 	QString device ;
@@ -65,6 +75,6 @@ void closeAllVolumesThread::run()
 		p.close();
 		sleep( 1 ) ; // for ui effect
 	}
-	
+
 	m_table->setEnabled( true );
 }

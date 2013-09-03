@@ -34,6 +34,14 @@
 #include <QProcess>
 #include <QIcon>
 
+#include <QCloseEvent>
+
+#include "openvolume.h"
+#include "runinthread.h"
+#include "dialogmsg.h"
+#include "keystrength.h"
+#include "socketsendkey.h"
+
 luksaddkey::luksaddkey( QWidget * parent ) :
 	QDialog( parent )
 {

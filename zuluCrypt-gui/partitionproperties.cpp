@@ -19,6 +19,17 @@
 
 #include "partitionproperties.h"
 
+#include <QTableWidget>
+#include <QProcess>
+#include <QString>
+#include <QStringList>
+#include <QThreadPool>
+
+#include <unistd.h>
+
+#include "utility.h"
+#include "../zuluCrypt-cli/constants.h"
+
 partitionproperties::partitionproperties( QString partitionType )
 {
 	m_partitionType = partitionType ;
@@ -59,8 +70,8 @@ void partitionproperties::run()
 		/*
 		 * MDRAID partitions have "linux_raid_member" as their file system
 		 * LVM partitions have "LVM2_member" as their file system
-		 * 
-		 * we are not showing these partitions since we dont support them 
+		 *
+		 * we are not showing these partitions since we dont support them
 		 */
 		if( entry.contains( QString( "member" ) ) ){
 			;

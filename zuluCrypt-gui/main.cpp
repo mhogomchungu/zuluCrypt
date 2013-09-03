@@ -20,8 +20,10 @@
 #include <QIcon>
 #include <QtGui/QApplication>
 #include "zulucrypt.h"
+#include "utility.h"
 #include <QCoreApplication>
 #include <QStringList>
+
 int main( int argc,char * argv[] )
 {
 	QApplication a( argc,argv );

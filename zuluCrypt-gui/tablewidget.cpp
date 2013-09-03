@@ -2,6 +2,10 @@
 #include "tablewidget.h"
 #include <QDebug>
 
+#include <QTableWidget>
+#include <QTableWidgetItem>
+#include <QStringList>
+
 void tablewidget::selectTableRow( QTableWidgetItem * current,QTableWidgetItem * previous )
 {
 	QTableWidget * table ;

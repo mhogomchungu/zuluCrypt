@@ -21,12 +21,13 @@
 #define LUKSDELETEKEY_H
 
 #include <QDialog>
-#include "ui_openvolume.h"
-#include "openvolume.h"
-#include "ui_luksdeletekey.h"
-#include "runinthread.h"
-#include "dialogmsg.h"
-#include "socketsendkey.h"
+#include <QString>
+
+class QWidget ;
+
+namespace Ui {
+class luksdeletekey ;
+}
 
 class luksdeletekey : public QDialog
 {

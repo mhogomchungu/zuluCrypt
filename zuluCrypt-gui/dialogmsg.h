@@ -21,12 +21,9 @@
 
 #include <QDialog>
 #include <QString>
-#include <QMessageBox>
-#include <QCloseEvent>
-#include <QCheckBox>
 
-//#include "../zuluCrypt-gui/zulucrypt.h"
-#include "../zuluCrypt-gui/utility.h"
+class QWidget ;
+class QCloseEvent ;
 
 namespace Ui {
 class DialogMsg;

@@ -23,14 +23,9 @@
 
 #include <QObject>
 #include <QString>
-#include <QStringList>
 #include <QMap>
-#include <QDebug>
-#include <QWidget>
-#include <QApplication>
-#include <QFile>
-#include <QDir>
 
+class QWidget ;
 class kwalletpluginPrivate ;
 
 class kwalletplugin : public QObject

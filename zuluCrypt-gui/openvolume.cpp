@@ -19,6 +19,26 @@
 
 #include "openvolume.h"
 
+#include <QCloseEvent>
+#include <QDialog>
+#include "ui_openvolume.h"
+#include "partitionproperties.h"
+#include <QProcess>
+#include <iostream>
+#include <QTableWidget>
+#include <QTableWidgetItem>
+#include <QObject>
+#include <QHeaderView>
+#include <QFile>
+#include <QThreadPool>
+#include <QKeySequence>
+#include "partitionproperties.h"
+#include "../zuluCrypt-cli/constants.h"
+#include "dialogmsg.h"
+#include "tablewidget.h"
+
+#include <unistd.h>
+
 #define ALL_PARTITIONS 1
 #define NON_SYSTEM_PARTITIONS 3
 

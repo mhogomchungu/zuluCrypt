@@ -22,21 +22,12 @@
 
 #include <QDialog>
 #include <QString>
-#include <QCloseEvent>
-#include <QFileDialog>
-#include <QDir>
 #include <QMenu>
-#include <QTableWidget>
 
-#include "../zuluCrypt-gui/dialogmsg.h"
-#include "managepartitionthread.h"
-#include "../zuluCrypt-cli/constants.h"
-#include "plugin_path.h"
-#include "../zuluCrypt-gui/socketsendkey.h"
-#include "../zuluCrypt-gui/openvolumereadonly.h"
-#include "../zuluCrypt-gui/openmountpointinfilemanager.h"
-#include "../zuluCrypt-gui/savemountpointpath.h"
-#include "../zuluCrypt-gui/kwalletplugin.h"
+class QCloseEvent ;
+class QAction ;
+class QTableWidgetItem ;
+class QTableWidget ;
 
 #include "mainwindow.h"
 

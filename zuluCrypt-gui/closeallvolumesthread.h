@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright ( c ) 2011
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -20,15 +20,11 @@
 #ifndef CLOSEALLVOLUMESTHREAD_H
 #define CLOSEALLVOLUMESTHREAD_H
 
-#include <QThreadPool>
 #include <QRunnable>
-#include <QTableWidgetItem>
-#include <QTableWidget>
-#include <QVector>
+#include <QObject>
 
-#include <QProcess>
-#include <QString>
-#include <unistd.h>
+class QTableWidget ;
+class QTableWidgetItem ;
 
 class closeAllVolumesThread : public QObject,public QRunnable
 {

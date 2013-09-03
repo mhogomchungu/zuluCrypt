@@ -2,8 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 
 add_definitions( -D_FILE_OFFSET_BITS=64 -Wextra -Wall -pedantic -std=c++0x -I${PROJECT_BINARY_DIR}/zuluMount-gui/ -I${PROJECT_BINARY_DIR}) 
 
-set (UI_FILES 	../zuluCrypt-gui/dialogmsg.ui
-		mainwindow.ui
+set (UI_FILES 	mainwindow.ui
 		keydialog.ui
 		mountpartition.ui
 )
@@ -16,9 +15,6 @@ set(MOC_FILES 	mainwindow.h
 		auto_mount.h
 		auto_mount_helper.h
 		monitor_mountinfo.h
-		../zuluCrypt-gui/dialogmsg.h
-		../zuluCrypt-gui/socketsendkey.h 
-		../zuluCrypt-gui/openmountpointinfilemanager.h
  )
 	
 set (SRC 	main.cpp
@@ -30,15 +26,6 @@ set (SRC 	main.cpp
 		mountpartition.cpp
 		oneinstance.cpp
 		monitor_mountinfo.cpp
-		../zuluCrypt-gui/dialogmsg.cpp
-		../zuluCrypt-gui/userfont.cpp
-		../zuluCrypt-gui/tablewidget.cpp
-		../zuluCrypt-gui/socketsendkey.cpp 
-		../zuluCrypt-gui/openvolumereadonly.cpp 
-		../zuluCrypt-gui/openmountpointinfilemanager.cpp
-		../zuluCrypt-gui/savemountpointpath.cpp
-		../zuluCrypt-gui/utility.cpp
-		../zuluCrypt-gui/kwalletplugin.cpp
 )
 
 INCLUDE( ${QT_USE_FILE} )
@@ -54,9 +41,9 @@ INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
 add_executable( zuluMount-gui ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
 
 if( BUILDKWALLET )
-	TARGET_LINK_LIBRARIES( zuluMount-gui ${QT_LIBRARIES} ${blkid} zuluCryptPluginManager -lQtNetwork ${kwallet_library} )
+	TARGET_LINK_LIBRARIES( zuluMount-gui sharedObject ${QT_LIBRARIES} ${blkid} zuluCryptPluginManager -lQtNetwork ${kwallet_library} )
 else( BUILDKWALLET )
-	TARGET_LINK_LIBRARIES( zuluMount-gui ${QT_LIBRARIES} ${blkid} zuluCryptPluginManager -lQtNetwork )
+	TARGET_LINK_LIBRARIES( zuluMount-gui sharedObject ${QT_LIBRARIES} ${blkid} zuluCryptPluginManager -lQtNetwork )
 endif( BUILDKWALLET )
 
 set_target_properties( zuluMount-gui PROPERTIES INSTALL_RPATH "${LIB_PATH}" )

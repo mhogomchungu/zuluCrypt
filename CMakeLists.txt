@@ -5,7 +5,7 @@ cmake_policy(SET CMP0017 OLD)
 #set( CMAKE_SHARED_LINKER_FLAGS "-s" )
 #set( CMAKE_EXE_LINKER_FLAGS "-s" )
 #add_definitions( -D_FORTIFY_SOURCE=2 -Wno-unused-result )
-add_definitions( -Wno-unused-result ) 
+#add_definitions( -Wno-unused-result ) 
 
 INCLUDE(FindPkgConfig)
 
@@ -155,6 +155,7 @@ else( PWQUALITY_FOUND )
 endif( PWQUALITY_FOUND )
 
 ADD_SUBDIRECTORY( zuluCrypt-gui/md5 )
+ADD_SUBDIRECTORY( zuluCrypt-gui/sharedObjects )
 ADD_SUBDIRECTORY( zuluCrypt-gui )
 ADD_SUBDIRECTORY( plugins )
 ADD_SUBDIRECTORY( zuluMount-gui )

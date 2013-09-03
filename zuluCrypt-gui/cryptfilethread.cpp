@@ -47,6 +47,7 @@
 #include <QDebug>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 cryptfilethread::cryptfilethread( QString source,QString dest,QString keySource,QString key,QString task )
 {
@@ -72,7 +73,7 @@ void cryptfilethread::calculateMd5( QString path,char * result )
 {
 	emit titleUpdate( tr( "calculating md5sum" ) );
 	emit disableCancel();
-	
+
 	zuluCryptMD5_CTX ctx ;
 	zuluCryptMD5_Init( &ctx ) ;
 

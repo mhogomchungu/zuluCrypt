@@ -19,7 +19,10 @@
 
 #include "volumepropertiesthread.h"
 
-#include <unistd.h>
+#include <QThreadPool>
+#include <QProcess>
+#include "../zuluCrypt-cli/constants.h"
+#include "../zuluCrypt-cli/bin/bash_special_chars.h"
 
 volumePropertiesThread::volumePropertiesThread( QString path,QString mpoint )
 {

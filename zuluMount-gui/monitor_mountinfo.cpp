@@ -19,6 +19,17 @@
 
 #include "monitor_mountinfo.h"
 
+#include <QString>
+#include <QStringList>
+#include <QDebug>
+#include <QProcess>
+
+#include<fcntl.h>
+#include <poll.h>
+
+#include "bin_path.h"
+#include "managepartitionthread.h"
+
 monitor_mountinfo::monitor_mountinfo( QObject * parent ) : QThread( parent )
 {
 	m_babu = parent ;

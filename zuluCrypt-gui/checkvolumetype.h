@@ -23,7 +23,6 @@
 #include <QRunnable>
 #include <QObject>
 #include <QString>
-#include <QThreadPool>
 
 #include "utility.h"
 

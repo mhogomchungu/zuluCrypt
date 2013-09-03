@@ -21,9 +21,6 @@
 
 #include <QString>
 
-#include <pwd.h>
-#include <unistd.h>
-
 #include "can_build_pwquality.h"
 
 #define NOT_USED -1234567

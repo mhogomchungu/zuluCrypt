@@ -22,11 +22,9 @@
 
 #include <QObject>
 #include <QString>
-#include <QFile>
-#include <QDir>
-#include <QWidget>
+#include <Qt>
 
-#include "dialogmsg.h"
+class QWidget ;
 
 class openvolumereadonly : public QObject
 {

@@ -19,6 +19,10 @@
 
 #include "closevolumethread.h"
 
+#include <QProcess>
+#include <unistd.h>
+#include <QThreadPool>
+
 closeVolumeThread::closeVolumeThread( QString exe )
 {
 	m_exe = exe ;

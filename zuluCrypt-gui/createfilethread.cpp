@@ -19,6 +19,11 @@
 
 #include "createfilethread.h"
 
+#include <QProcess>
+#include <QThreadPool>
+#include <QFile>
+#include "utility.h"
+
 createFileThread::createFileThread( QString file,double size )
 {
 	m_status = 0 ;

@@ -21,6 +21,18 @@
 #include "ui_managedevicenames.h"
 #include <iostream>
 
+#include <QTableWidgetItem>
+#include <QCloseEvent>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QAction>
+#include <QMenu>
+
+#include "openvolume.h"
+#include "utility.h"
+#include "dialogmsg.h"
+#include "tablewidget.h"
+
 managedevicenames::managedevicenames( QWidget * parent ) :
 	QDialog( parent ),
 	m_ui( new Ui::managedevicenames )

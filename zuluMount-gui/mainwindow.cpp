@@ -20,6 +20,38 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QDebug>
+
+#include <QMainWindow>
+
+#include <QTableWidgetItem>
+#include <QDir>
+#include <QIcon>
+#include <QAction>
+#include <QKeySequence>
+#include <QSystemTrayIcon>
+#include <QMenu>
+#include <QCloseEvent>
+#include <QFont>
+#include <QCursor>
+#include <QAction>
+#include <QFileDialog>
+#include <QUrl>
+#include <QTranslator>
+
+#include <unistd.h>
+#include "keydialog.h"
+#include "../zuluCrypt-gui/dialogmsg.h"
+#include "../zuluCrypt-gui/userfont.h"
+#include "../zuluCrypt-gui/tablewidget.h"
+#include "mountpartition.h"
+#include "../zuluCrypt-gui/openvolumereadonly.h"
+#include "oneinstance.h"
+#include "auto_mount.h"
+#include "monitor_mountinfo.h"
+#include "../zuluCrypt-gui/utility.h"
+#include "managepartitionthread.h"
+#include "../zuluCrypt-gui/openmountpointinfilemanager.h"
+
 MainWindow::MainWindow( int argc,char * argv[],QWidget * parent ) :QWidget( parent ),
 	m_autoMountThread( 0 ),m_autoMountAction( 0 ),m_started( false )
 {

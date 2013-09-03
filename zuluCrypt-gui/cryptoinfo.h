@@ -21,7 +21,8 @@
 #define CRYPTOINFO_H
 
 #include <QWidget>
-#include <QCloseEvent>
+
+class QCloseEvent ;
 
 namespace Ui {
 class cryptoinfo;
@@ -29,7 +30,7 @@ class cryptoinfo;
 
 class cryptoinfo : public QWidget
 {
-	Q_OBJECT	
+	Q_OBJECT
 public:
 	explicit cryptoinfo( QWidget * parent = 0 );
 	~cryptoinfo();

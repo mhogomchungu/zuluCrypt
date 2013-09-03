@@ -19,6 +19,15 @@
 #include "erasedevice.h"
 #include "ui_erasedevice.h"
 
+#include <QCloseEvent>
+#include <QFileDialog>
+#include <QMessageBox>
+
+#include "utility.h"
+#include "erasedevicethread.h"
+#include "openvolume.h"
+#include "dialogmsg.h"
+
 erasedevice::erasedevice( QWidget * parent ) :
 	QDialog( parent ),
 	m_ui( new Ui::erasedevice )

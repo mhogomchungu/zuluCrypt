@@ -20,13 +20,11 @@
 #define ERASEDEVICE_H
 
 #include <QDialog>
-#include <QCloseEvent>
-#include <QFileDialog>
+#include <QString>
 
-#include "utility.h"
-#include "erasedevicethread.h"
-#include "openvolume.h"
-#include "dialogmsg.h"
+class QCloseEvent ;
+class erasedevicethread ;
+class QWidget ;
 
 namespace Ui {
 class erasedevice;

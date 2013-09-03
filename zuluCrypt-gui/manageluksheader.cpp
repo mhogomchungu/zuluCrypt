@@ -24,9 +24,16 @@
 #include <QFileDialog>
 #include <QProcess>
 #include <QMessageBox>
-#include <iostream>
 #include <QFile>
 #include <QKeyEvent>
+
+#include <QFileDialog>
+
+#include "ui_manageluksheader.h"
+#include "runinthread.h"
+#include "utility.h"
+#include "openvolume.h"
+#include "dialogmsg.h"
 
 manageluksheader::manageluksheader( QWidget * parent ) :
     QDialog( parent ),

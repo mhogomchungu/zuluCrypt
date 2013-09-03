@@ -19,6 +19,13 @@
 
 #include "openvolumereadonly.h"
 #include <QDebug>
+
+#include <QFile>
+#include <QDir>
+#include <QWidget>
+
+#include "dialogmsg.h"
+
 //openvolumereadonly::openvolumereadonly( QObject * parent )
 //{
 //	this->setParent( parent );

@@ -21,14 +21,15 @@
 #define luksaddkeySUI_H
 
 #include <QDialog>
-#include <QCloseEvent>
+#include <QString>
 
-#include "ui_luksaddkey.h"
-#include "openvolume.h"
-#include "runinthread.h"
-#include "dialogmsg.h"
-#include "keystrength.h"
-#include "socketsendkey.h"
+namespace Ui {
+class luksaddkey ;
+}
+
+class QWidget ;
+class QCloseEvent ;
+class keystrength ;
 
 class luksaddkey : public QDialog
 {

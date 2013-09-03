@@ -21,14 +21,10 @@
 #define MANAGELUKSHEADER_H
 
 #include <QDialog>
-#include <QThreadPool>
-#include <QFileDialog>
+#include <QString>
 
-#include "ui_manageluksheader.h"
-#include "runinthread.h"
-#include "utility.h"
-#include "openvolume.h"
-#include "dialogmsg.h"
+class QWidget ;
+class QCloseEvent ;
 
 namespace Ui {
     class manageluksheader;

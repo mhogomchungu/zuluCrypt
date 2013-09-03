@@ -20,6 +20,13 @@
 #include "managepartitionthread.h"
 #include <QDebug>
 
+#include <QProcess>
+#include <QThreadPool>
+#include <QDir>
+
+#include "bin_path.h"
+#include <unistd.h>
+
 managepartitionthread::managepartitionthread()
 {
 }

@@ -20,17 +20,10 @@
 #ifndef MANAGEPARTITIONTHREAD_H
 #define MANAGEPARTITIONTHREAD_H
 
-#include <QProcess>
+#include <QObject>
 #include <QRunnable>
 #include <QString>
 #include <QStringList>
-#include <QThreadPool>
-#include <QObject>
-#include <QDir>
-
-#include "bin_path.h"
-#include <unistd.h>
-#include <blkid/blkid.h>
 
 class managepartitionthread : public QObject,public QRunnable
 {

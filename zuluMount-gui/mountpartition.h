@@ -22,24 +22,10 @@
 #define MOUNTPARTITION_H
 
 #include <QWidget>
-#include <QFile>
-#include <QDir>
 #include <QString>
-#include <QStringList>
-#include <QCloseEvent>
-#include <QByteArray>
-#include <QFileDialog>
-#include <QFont>
-#include <QTableWidget>
-#include "managepartitionthread.h"
-#include "../zuluCrypt-gui/dialogmsg.h"
-#include "../zuluCrypt-gui/userfont.h"
-#include "../zuluCrypt-gui/openvolumereadonly.h"
-#include "../zuluCrypt-gui/tablewidget.h"
-#include "../zuluCrypt-gui/openmountpointinfilemanager.h"
-#include "../zuluCrypt-gui/savemountpointpath.h"
 
-#include "mainwindow.h"
+class QTableWidget ;
+class QCloseEvent ;
 
 namespace Ui {
 class mountPartition;

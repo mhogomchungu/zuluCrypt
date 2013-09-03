@@ -23,10 +23,17 @@
 #include "../zuluCrypt-cli/constants.h"
 #include "createfilethread.h"
 
+#include "dialogmsg.h"
+
+#include "createfilethread.h"
+
 #include <QFileDialog>
 #include <QFile>
 
-#include <iostream>
+#include <QProcess>
+#include <QTimer>
+#include <QCloseEvent>
+#include <QMessageBox>
 
 createfile::createfile(QWidget * parent) :QDialog( parent ),m_ui( new Ui::createfile )
 {
@@ -165,11 +172,11 @@ void createfile::pbCreate()
 	 * BLOCK_SIZE is defined in createfilethread.h
 	 */
 	switch( m_ui ->comboBox->currentIndex() ){
-		case 0 :m_fileSize = fileSize.toDouble() * BLOCK_SIZE ;
+		case 0 :m_fileSize = fileSize.toLongLong() * BLOCK_SIZE ;
 			break ;
-		case 1 :m_fileSize = fileSize.toDouble() * BLOCK_SIZE * BLOCK_SIZE ;
+		case 1 :m_fileSize = fileSize.toLongLong() * BLOCK_SIZE * BLOCK_SIZE ;
 			break ;
-		case 2 :m_fileSize = fileSize.toDouble() * BLOCK_SIZE * BLOCK_SIZE  * BLOCK_SIZE;
+		case 2 :m_fileSize = fileSize.toLongLong() * BLOCK_SIZE * BLOCK_SIZE  * BLOCK_SIZE;
 			break ;
 	}
 	if( m_fileSize < 3145728 ){

@@ -29,10 +29,24 @@
 #include <QDir>
 #include <pwd.h>
 
-#include <iostream>
 #include <QDebug>
 
-//#include <libcryptsetup.h>
+#include <blkid/blkid.h>
+#include <QProcess>
+#include <QFile>
+#include <QFile>
+#include <QDir>
+#include <QTableWidget>
+#include <QMessageBox>
+#include <QTableWidgetItem>
+#include <QProcessEnvironment>
+#include <unistd.h>
+#include <pwd.h>
+
+#include "../zuluCrypt-cli/constants.h"
+#include "../zuluCrypt-cli/bin/bash_special_chars.h"
+#include "version.h"
+#include "locale_path.h"
 
 QString utility::cryptMapperPath()
 {

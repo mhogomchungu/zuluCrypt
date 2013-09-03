@@ -1,7 +1,3 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
-
-#include <QMainWindow>
 /*
  *
  *  Copyright (c) 2012
@@ -21,36 +17,22 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
+
+#include <QWidget>
 #include <QString>
 #include <QStringList>
-#include <QTableWidgetItem>
-#include <QDir>
-#include <QIcon>
-#include <QAction>
-#include <QKeySequence>
 #include <QSystemTrayIcon>
-#include <QMenu>
-#include <QCloseEvent>
-#include <QFont>
-#include <QCursor>
-#include <QAction>
-#include <QFileDialog>
-#include <QUrl>
-#include <QTranslator>
 
-#include <unistd.h>
-#include "keydialog.h"
-#include "../zuluCrypt-gui/dialogmsg.h"
-#include "../zuluCrypt-gui/userfont.h"
-#include "../zuluCrypt-gui/tablewidget.h"
-#include "mountpartition.h"
-#include "../zuluCrypt-gui/openvolumereadonly.h"
-#include "oneinstance.h"
-#include "auto_mount.h"
-#include "monitor_mountinfo.h"
+class QCloseEvent ;
+class QAction ;
+class QTableWidgetItem ;
+class auto_mount ;
+class monitor_mountinfo ;
 
 namespace Ui {
-class MainWindow;
+class MainWindow ;
 }
 
 class MainWindow : public QWidget

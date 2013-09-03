@@ -20,15 +20,9 @@
 #ifndef VOLUMEPROPERTIESTHREAD_H
 #define VOLUMEPROPERTIESTHREAD_H
 
-#include <QThreadPool>
+#include <QObject>
 #include <QRunnable>
 #include <QString>
-#include <QStringList>
-#include <sys/types.h>
-#include <unistd.h>
-#include <QProcess>
-#include "../zuluCrypt-cli/constants.h"
-#include "../zuluCrypt-cli/bin/bash_special_chars.h"
 
 class volumePropertiesThread : public QObject,public QRunnable
 {
@@ -39,7 +33,7 @@ public:
 	~volumePropertiesThread();
 signals:
 	void finished( QString ) ;
-public slots:	
+public slots:
 private:
 	void run( void );
 	QString m_fusefs ;

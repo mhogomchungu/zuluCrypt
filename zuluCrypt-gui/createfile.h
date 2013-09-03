@@ -21,14 +21,12 @@
 #define CREATEFILE_H
 
 #include <QDialog>
-#include <QProcess>
-#include <QTimer>
-#include <QCloseEvent>
-#include <QMessageBox>
-#include "createfilethread.h"
 
-#include "utility.h"
-#include "dialogmsg.h"
+class DialogMsg ;
+class QPushButton ;
+class createFileThread ;
+class QCloseEvent ;
+class createfile ;
 
 namespace Ui {
     class createfile;
@@ -60,8 +58,8 @@ private:
 	void enableAll( void ) ;
 	void disableAll( void ) ;
 	void closeEvent( QCloseEvent * ) ;
-	Ui::createfile *m_ui;
-	double m_fileSize ;
+	Ui::createfile * m_ui ;
+	qlonglong m_fileSize ;
 	QString m_path ;
 	createFileThread * m_cft ;
 	QPushButton * m_yes ;

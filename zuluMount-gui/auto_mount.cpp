@@ -20,6 +20,29 @@
 #include "auto_mount.h"
 #include <QDebug>
 
+#include <QString>
+#include <QObject>
+#include <QThread>
+#include <QProcess>
+#include <QStringList>
+#include <QDir>
+
+#include "bin_path.h"
+
+#include <stdio.h>
+#include <string.h>
+#include <fcntl.h>
+#include <sys/inotify.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
+#include "auto_mount_helper.h"
+/*
+http://linux.die.net/man/7/inotify
+http://darkeside.blogspot.com/2007/12/linux-inotify-example.html
+ */
+
 auto_mount::auto_mount( QObject * parent )
 {
 	m_baba = static_cast< QThread * >( this ) ;

@@ -22,6 +22,20 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+#include <QProcess>
+#include <QThreadPool>
+#include <QFile>
+
+#include "utility.h"
+#include "runinthread.h"
+#include "../zuluCrypt-cli/constants.h"
+#include "createfilethread.h"
+#include "socketsendkey.h"
+
+#include <blkid/blkid.h>
+#include <string.h>
+#include <unistd.h>
+
 erasedevicethread::erasedevicethread( QString path )
 {
 	m_path = path ;

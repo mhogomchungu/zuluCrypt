@@ -22,17 +22,13 @@
 
 #include "../zuluCrypt-cli/constants.h"
 #include "ui_openvolume.h"
-#include "utility.h"
 
 #include <QObject>
-#include <QProcess>
-#include <QRunnable>
 #include <QString>
-#include <QThreadPool>
-#include <QFile>
+#include <QRunnable>
 
 //#include <gcrypt.h>
-#include <cstring>
+//#include <cstring>
 
 #define BLOCK_SIZE 1000
 #define SIZE 1000

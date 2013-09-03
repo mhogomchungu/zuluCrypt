@@ -22,6 +22,24 @@
 #include "ui_mountpartition.h"
 #include <QDebug>
 
+#include <QFile>
+#include <QDir>
+#include <QString>
+#include <QStringList>
+#include <QCloseEvent>
+#include <QByteArray>
+#include <QFileDialog>
+#include <QFont>
+#include <QTableWidget>
+#include "managepartitionthread.h"
+#include "../zuluCrypt-gui/dialogmsg.h"
+#include "../zuluCrypt-gui/userfont.h"
+#include "../zuluCrypt-gui/openvolumereadonly.h"
+#include "../zuluCrypt-gui/tablewidget.h"
+#include "../zuluCrypt-gui/openmountpointinfilemanager.h"
+#include "../zuluCrypt-gui/savemountpointpath.h"
+#include "../zuluCrypt-gui/utility.h"
+
 mountPartition::mountPartition( QWidget * parent,QTableWidget * table,QString folderOpener,bool autoOpenFolderOnMount ) :
 	QWidget( parent ),m_ui(new Ui::mountPartition)
 {

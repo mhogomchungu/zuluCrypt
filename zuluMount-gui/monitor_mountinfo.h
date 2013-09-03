@@ -24,20 +24,14 @@
 #include <QThread>
 #include <QString>
 #include <QStringList>
-#include <QDebug>
-#include <QProcess>
 
-#include<fcntl.h>
-#include <poll.h>
-
-#include "bin_path.h"
-#include "managepartitionthread.h"
+class QObject ;
 
 class monitor_mountinfo : public QThread
 {
 	Q_OBJECT
 public:
-	explicit monitor_mountinfo( QObject *parent = 0 ) ;
+	explicit monitor_mountinfo( QObject * parent = 0 ) ;
 signals:
 	void stopped( void ) ;
 	void threadFinished( void ) ;

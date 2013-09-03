@@ -20,6 +20,7 @@
 #include <QtGui/QApplication>
 #include "mainwindow.h"
 #include <QStringList>
+#include "../zuluCrypt-gui/utility.h"
 
 int main( int argc,char * argv[] )
 {

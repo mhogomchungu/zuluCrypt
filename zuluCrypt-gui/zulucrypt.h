@@ -22,42 +22,23 @@
 
 #include <QMainWindow>
 #include <QString>
-#include <QTableWidgetItem>
+#include <QStringList>
 #include <QSystemTrayIcon>
-#include <QFont>
-#include <QWidget>
-#include <QList>
-#include <QMessageBox>
-#include <QCloseEvent>
-#include <QUrl>
 
-#include "../zuluCrypt-cli/constants.h"
-#include "../zuluMount-gui/oneinstance.h"
-#include "password_dialog.h"
-#include "openvolume.h"
-#include "luksaddkey.h"
-#include "luksdeletekey.h"
-#include "createvolume.h"
-#include "createfile.h"
-#include "createkeyfile.h"
-#include "startupupdateopenedvolumes.h"
-#include "closeallvolumesthread.h"
-#include "runinthread.h"
-#include "managedevicenames.h"
-#include "volumepropertiesthread.h"
-#include "closevolumethread.h"
-#include "checkvolumetype.h"
-#include "cryptoinfo.h"
-#include "erasedevice.h"
-#include "manageluksheader.h"
-#include "cryptfiles.h"
-#include "dialogmsg.h"
-#include "managesystemvolumes.h"
-#include "userfont.h"
-#include "kwalletplugin.h"
-#include "kwalletconfig.h"
-#include "tablewidget.h"
-#include "openmountpointinfilemanager.h"
+class QWidget ;
+class QTableWidgetItem ;
+class QDragEnterEvent ;
+class QDropEvent ;
+class QSystemTrayIcon ;
+class QCloseEvent ;
+class passwordDialog ;
+class openvolume ;
+class createvolume ;
+class luksdeletekey ;
+class luksaddkey ;
+class manageluksheader ;
+class cryptfiles ;
+
 /*
  * below header is created at build time,it is set by CMakeLists.txt located in the root folder
  */

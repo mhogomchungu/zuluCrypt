@@ -19,6 +19,7 @@
 
 
 #include "checkvolumetype.h"
+#include <QThreadPool>
 
 checkvolumetype::checkvolumetype( QString path )
 {

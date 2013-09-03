@@ -20,13 +20,8 @@
 #ifndef CREATEKEYFILETHREAD_H
 #define CREATEKEYFILETHREAD_H
 
-#include <QObject>
 #include <QThread>
-#include <QProcess>
-#include <QFile>
-#include <QTextStream>
-
-#include <string.h>
+#include <QString>
 
 class createkeyfilethread : public QThread
 {

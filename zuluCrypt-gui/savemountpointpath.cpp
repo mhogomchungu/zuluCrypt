@@ -19,6 +19,9 @@
 
 #include "savemountpointpath.h"
 
+#include <QFile>
+#include <QDir>
+
 savemountpointpath::savemountpointpath()
 {
 }

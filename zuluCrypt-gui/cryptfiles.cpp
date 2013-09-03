@@ -28,6 +28,18 @@
 #include <QFile>
 #include <QKeyEvent>
 
+#include <QThreadPool>
+#include <QFileDialog>
+#include <QDir>
+
+#include "ui_cryptfiles.h"
+#include "runinthread.h"
+#include "utility.h"
+#include "openvolume.h"
+#include "cryptfilethread.h"
+#include "dialogmsg.h"
+#include "socketsendkey.h"
+
 cryptfiles::cryptfiles( QWidget * parent ) :QDialog( parent ),m_ui( new Ui::cryptfiles )
 {
 	m_ui->setupUi( this );

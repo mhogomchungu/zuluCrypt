@@ -14,7 +14,6 @@ set (UI_FILES createfile.ui
 		manageluksheader.ui
 		cryptfiles.ui
 		createvolumedialog.ui
-		dialogmsg.ui
 		managesystemvolumes.ui
 		managedevicenames.ui
 		erasedevice.ui	
@@ -48,13 +47,10 @@ set( MOC_FILES createfile.h
 		cryptfiles.h
 		cryptfilethread.h
 		createvolumedialog.h
-		dialogmsg.h
 		managesystemvolumes.h
 		kwalletconfig.h
 		kwalletconfiginput.h
-		socketsendkey.h
 		../zuluMount-gui/oneinstance.h
-		openmountpointinfilemanager.h
  )
 	
 set (SRC createfile.cpp
@@ -70,7 +66,6 @@ set (SRC createfile.cpp
 	zulucrypt.cpp
 	closeallvolumesthread.cpp
 	runinthread.cpp
-	utility.cpp
 	managedevicenames.cpp
 	partitionproperties.cpp
 	volumepropertiesthread.cpp
@@ -84,18 +79,10 @@ set (SRC createfile.cpp
 	cryptfiles.cpp
 	cryptfilethread.cpp
 	createvolumedialog.cpp
-	dialogmsg.cpp
 	managesystemvolumes.cpp
 	keystrength.cpp
-	userfont.cpp
-	kwalletplugin.cpp
 	kwalletconfig.cpp
 	kwalletconfiginput.cpp
-	tablewidget.cpp
-	socketsendkey.cpp
-	openvolumereadonly.cpp
-	openmountpointinfilemanager.cpp
-	savemountpointpath.cpp
 	../zuluMount-gui/oneinstance.cpp	
 )
 
@@ -111,9 +98,9 @@ INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
 
 add_executable( zuluCrypt-gui ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS}  )
 
-target_link_libraries( zuluCrypt-gui zuluCryptPluginManager -lQtNetwork zuluCryptMD5 ) 
+target_link_libraries( zuluCrypt-gui sharedObject zuluCryptPluginManager -lQtNetwork zuluCryptMD5 ) 
 
- set_target_properties( zuluCrypt-gui PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
+set_target_properties( zuluCrypt-gui PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
 
 if( library_pwquality )
 	if( kwallet_library )

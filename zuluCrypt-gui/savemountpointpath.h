@@ -20,10 +20,7 @@
 #ifndef SAVEMOUNTPOINTPATH_H
 #define SAVEMOUNTPOINTPATH_H
 
-
 #include <QString>
-#include <QFile>
-#include <QDir>
 
 class savemountpointpath
 {

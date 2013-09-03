@@ -19,28 +19,11 @@
 #ifndef AUTO_MOUNT_H
 #define AUTO_MOUNT_H
 
-#include <QString>
-#include <QObject>
 #include <QThread>
-#include <QProcess>
-#include <QStringList>
-#include <QDir>
 
-#include "bin_path.h"
-
-#include <stdio.h>
-#include <string.h>
-#include <fcntl.h>
-#include <sys/inotify.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-
-#include "auto_mount_helper.h"
-/*
-http://linux.die.net/man/7/inotify
-http://darkeside.blogspot.com/2007/12/linux-inotify-example.html
- */
+class QObject ;
+class auto_mount ;
+class auto_mount_helper ;
 
 class auto_mount : public QThread
 {

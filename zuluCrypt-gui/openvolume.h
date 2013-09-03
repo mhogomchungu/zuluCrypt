@@ -20,25 +20,18 @@
 #ifndef OPEN_PARTITION_H
 #define OPEN_PARTITION_H
 
-#include <QCloseEvent>
-#include <QDialog>
-#include "ui_openvolume.h"
-#include "partitionproperties.h"
-#include <QProcess>
-#include <iostream>
-#include <QTableWidget>
-#include <QTableWidgetItem>
-#include <QObject>
-#include <QHeaderView>
-#include <QFile>
-#include <QThreadPool>
-#include <QKeySequence>
-#include "partitionproperties.h"
-#include "../zuluCrypt-cli/constants.h"
-#include "dialogmsg.h"
-#include "tablewidget.h"
+#include<QString>
+#include<QStringList>
+#include<QDialog>
 
-#include <unistd.h>
+class QWidget ;
+class QCloseEvent ;
+class QAction ;
+class QTableWidgetItem ;
+
+namespace Ui {
+class openvolume ;
+}
 
 class openvolume :  public QDialog
 {

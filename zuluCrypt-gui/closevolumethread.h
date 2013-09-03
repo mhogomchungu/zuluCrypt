@@ -20,11 +20,9 @@
 #ifndef CLOSEVOLUMETHREAD_H
 #define CLOSEVOLUMETHREAD_H
 
-#include <QThreadPool>
 #include <QRunnable>
 #include <QString>
-#include <QProcess>
-#include <unistd.h>
+#include <QObject>
 
 class closeVolumeThread : public QObject,public QRunnable
 {

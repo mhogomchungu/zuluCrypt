@@ -26,6 +26,17 @@
 #include <QProcess>
 #include <QThread>
 
+#include <QCloseEvent>
+#include <QThreadPool>
+
+#include "runinthread.h"
+#include "utility.h"
+#include "erasedevice.h"
+#include "createvolumedialog.h"
+#include "dialogmsg.h"
+#include "keystrength.h"
+#include "socketsendkey.h"
+
 #include <QDebug>
 #include "../zuluCrypt-cli/constants.h"
 

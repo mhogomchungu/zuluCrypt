@@ -18,6 +18,13 @@
 
 #include "kwalletplugin.h"
 
+#include <QStringList>
+#include <QDebug>
+#include <QWidget>
+#include <QApplication>
+#include <QFile>
+#include <QDir>
+
 class kwalletpluginPrivate
 {
 public:

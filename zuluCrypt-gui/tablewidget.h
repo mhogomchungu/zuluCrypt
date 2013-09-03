@@ -21,10 +21,10 @@
 #define TABLEWIDGET_H
 
 #include <QString>
-#include <QTableWidget>
-#include <QTableWidgetItem>
-#include <QStringList>
 #include <QFont>
+
+class QTableWidget ;
+class QTableWidgetItem ;
 
 class tablewidget
 {

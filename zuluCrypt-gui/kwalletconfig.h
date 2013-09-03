@@ -21,19 +21,13 @@
 #define KWALLETCONFIG_H
 
 #include <QDialog>
-#include <QCloseEvent>
-
-#include "kwalletplugin.h"
-#include "dialogmsg.h"
-#include "openvolume.h"
-#include "tablewidget.h"
-#include "kwalletconfiginput.h"
-
-#include <Qt>
-#include <QTableWidget>
-#include <QTableWidgetItem>
+#include <QString>
 #include <QMap>
-#include <QFileDialog>
+
+class QCloseEvent ;
+class QWidget ;
+class kwalletplugin ;
+class QTableWidgetItem ;
 
 namespace Ui {
 class kwalletconfig;

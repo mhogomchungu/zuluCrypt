@@ -22,16 +22,9 @@
 
 #include <QDialog>
 #include <QString>
-#include <QCloseEvent>
-#include <QThreadPool>
 
-#include "runinthread.h"
-#include "utility.h"
-#include "erasedevice.h"
-#include "createvolumedialog.h"
-#include "dialogmsg.h"
-#include "keystrength.h"
-#include "socketsendkey.h"
+class keystrength ;
+class QCloseEvent ;
 
 /*
  * this header is created at config time

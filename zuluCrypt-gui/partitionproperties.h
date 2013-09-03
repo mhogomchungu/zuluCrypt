@@ -20,15 +20,10 @@
 #ifndef PARTITIONPROPERTIES_H
 #define PARTITIONPROPERTIES_H
 
+#include <QObject>
 #include <QRunnable>
-#include <QTableWidget>
-#include <QProcess>
 #include <QString>
 #include <QStringList>
-#include "utility.h"
-#include <QThreadPool>
-
-#include <unistd.h>
 
 class partitionproperties : public QObject,public QRunnable
 {

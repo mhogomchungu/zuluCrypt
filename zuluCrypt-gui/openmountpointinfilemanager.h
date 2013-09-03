@@ -20,12 +20,10 @@
 #ifndef OPENMOUNTPOINTINFILEMANAGER_H
 #define OPENMOUNTPOINTINFILEMANAGER_H
 
-#include <QRunnable>
-#include <QProcess>
-#include <QString>
-#include <QThreadPool>
-#include <QDir>
 #include <QObject>
+#include <QRunnable>
+#include <QString>
+#include <QProcess>
 
 class openmountpointinfilemanager :public QObject,public QRunnable
 {

@@ -24,6 +24,12 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#include <QProcess>
+#include <QFile>
+#include <QTextStream>
+
+#include <string.h>
+
 createkeyfilethread::createkeyfilethread( QString path,int rng )
 {
 	m_path = path ;

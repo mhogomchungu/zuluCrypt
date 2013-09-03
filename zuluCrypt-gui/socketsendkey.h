@@ -21,11 +21,7 @@
 
 #include <QThread>
 #include <QString>
-#include <QObject>
 #include <QByteArray>
-#include <QByteArray>
-#include <QTime>
-#include <QDir>
 
 #include "../zuluCrypt-cli/pluginManager/libzuluCryptPluginManager.h"
 

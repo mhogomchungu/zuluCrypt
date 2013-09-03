@@ -19,8 +19,10 @@
 #include "cryptoinfo.h"
 #include "ui_cryptoinfo.h"
 
+#include <QCloseEvent>
+
 cryptoinfo::cryptoinfo( QWidget * parent ) :
-        QWidget( parent ),
+	QWidget( parent ),
 	m_ui( new Ui::cryptoinfo )
 {
 	m_ui->setupUi( this );

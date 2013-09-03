@@ -21,17 +21,11 @@
 #define CRYPTFILES_H
 
 #include <QDialog>
-#include <QThreadPool>
-#include <QFileDialog>
-#include <QDir>
+#include <QString>
 
-#include "ui_cryptfiles.h"
-#include "runinthread.h"
-#include "utility.h"
-#include "openvolume.h"
-#include "cryptfilethread.h"
-#include "dialogmsg.h"
-#include "socketsendkey.h"
+class QWidget ;
+class QCloseEvent ;
+class cryptfilethread ;
 
 namespace Ui {
     class cryptfiles;

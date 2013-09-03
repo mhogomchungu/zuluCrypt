@@ -22,22 +22,6 @@
 
 #include <QString>
 #include <QStringList>
-#include <blkid/blkid.h>
-#include <QProcess>
-#include <QFile>
-#include <QFile>
-#include <QDir>
-#include <QTableWidget>
-#include <QMessageBox>
-#include <QTableWidgetItem>
-#include <QProcessEnvironment>
-#include <unistd.h>
-#include <pwd.h>
-
-#include "../zuluCrypt-cli/constants.h"
-#include "../zuluCrypt-cli/bin/bash_special_chars.h"
-#include "version.h"
-#include "locale_path.h"
 
 class utility
 {

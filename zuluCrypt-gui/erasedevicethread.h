@@ -23,18 +23,6 @@
 #include <QObject>
 #include <QRunnable>
 #include <QString>
-#include <QProcess>
-#include <QThreadPool>
-#include <QFile>
-
-#include "utility.h"
-#include "runinthread.h"
-#include "../zuluCrypt-cli/constants.h"
-#include "createfilethread.h"
-#include "socketsendkey.h"
-
-#include <blkid/blkid.h>
-#include <string.h>
 
 class erasedevicethread : public QObject,public QRunnable
 {

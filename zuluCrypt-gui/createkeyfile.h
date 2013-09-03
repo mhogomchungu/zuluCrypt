@@ -21,12 +21,11 @@
 #define CREATEKEYFILE_H
 
 #include <QDialog>
-#include <QFile>
+#include <QString>
 
-#include "createfilethread.h"
-#include "utility.h"
-#include "createkeyfilethread.h"
-#include "dialogmsg.h"
+class QWidget ;
+class createkeyfilethread ;
+class QCloseEvent ;
 
 namespace Ui {
     class createkeyfile;

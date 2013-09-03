@@ -19,6 +19,12 @@
 #include "dialogmsg.h"
 #include "ui_dialogmsg.h"
 
+#include <QMessageBox>
+#include <QCloseEvent>
+#include <QCheckBox>
+
+#include "../zuluCrypt-gui/utility.h"
+
 DialogMsg::DialogMsg( QWidget * parent ) :
 	QDialog( parent ),
 	m_ui( new Ui::DialogMsg )

@@ -20,27 +20,18 @@
 #ifndef PASSWORD_DIALOG_H
 #define PASSWORD_DIALOG_H
 
+#include <QDialog>
 #include <QString>
-#include <QFileDialog>
-#include <QStringList>
-#include <QCloseEvent>
-#include <QTableWidget>
-#include <stdlib.h>
+#include <QMenu>
 
-#include "ui_password.h"
-#include "openvolume.h"
-#include "runinthread.h"
-#include "utility.h"
-#include "checkvolumetype.h"
-#include "dialogmsg.h"
-#include "kwalletplugin.h"
-#include "plugin_path.h"
-#include "tablewidget.h"
-#include "../zuluCrypt-cli/constants.h"
-#include "socketsendkey.h"
-#include "openvolumereadonly.h"
-#include "openmountpointinfilemanager.h"
-#include "savemountpointpath.h"
+namespace Ui {
+class PasswordDialog ;
+}
+
+class QWidget ;
+class QAction ;
+class QCloseEvent ;
+class QTableWidget ;
 
 class passwordDialog :  public QDialog
 {

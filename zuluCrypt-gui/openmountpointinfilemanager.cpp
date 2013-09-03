@@ -20,6 +20,10 @@
 #include "openmountpointinfilemanager.h"
 #include <QMetaType>
 
+#include <QThreadPool>
+#include <QDir>
+#include <QProcess>
+
 openmountpointinfilemanager::openmountpointinfilemanager( QString folderOpener,QString path )
 {
 	m_path = path ;

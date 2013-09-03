@@ -22,17 +22,11 @@
 
 #include <QDialog>
 #include <QString>
-#include <QTableWidgetItem>
-#include <QCloseEvent>
-#include <QFileDialog>
-#include <QMessageBox>
-#include <QAction>
-#include <QMenu>
 
-#include "openvolume.h"
-#include "utility.h"
-#include "dialogmsg.h"
-#include "tablewidget.h"
+class QAction ;
+class QWidget ;
+class QTableWidgetItem ;
+class QCloseEvent ;
 
 namespace Ui {
 class managedevicenames;

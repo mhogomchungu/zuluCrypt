@@ -19,6 +19,18 @@
 
 #include "auto_mount_helper.h"
 #include <QDebug>
+
+#include <QThreadPool>
+
+#include "bin_path.h"
+#include <QProcess>
+#include <QDir>
+
+#include <unistd.h>
+#include <sys/inotify.h>
+
+#include "../zuluCrypt-gui/utility.h"
+
 auto_mount_helper::auto_mount_helper( QObject * parent )
 {
 	Q_UNUSED( parent ) ;

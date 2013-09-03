@@ -33,9 +33,12 @@
 #include <QIcon>
 #include <QKeyEvent>
 
-namespace Ui {
-    class luksdeletekey;
-}
+#include "ui_openvolume.h"
+#include "openvolume.h"
+#include "ui_luksdeletekey.h"
+#include "runinthread.h"
+#include "dialogmsg.h"
+#include "socketsendkey.h"
 
 luksdeletekey::luksdeletekey( QWidget * parent ) :
 	QDialog( parent ),

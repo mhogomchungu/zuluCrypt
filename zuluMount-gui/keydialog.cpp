@@ -17,9 +17,24 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #include "keydialog.h"
 #include "ui_keydialog.h"
+
+#include <QCloseEvent>
+#include <QFileDialog>
+#include <QDir>
+#include <QTableWidget>
+
+#include "../zuluCrypt-gui/dialogmsg.h"
+#include "managepartitionthread.h"
+#include "../zuluCrypt-cli/constants.h"
+#include "plugin_path.h"
+#include "../zuluCrypt-gui/socketsendkey.h"
+#include "../zuluCrypt-gui/openvolumereadonly.h"
+#include "../zuluCrypt-gui/openmountpointinfilemanager.h"
+#include "../zuluCrypt-gui/savemountpointpath.h"
+#include "../zuluCrypt-gui/kwalletplugin.h"
+#include "../zuluCrypt-gui/utility.h"
 
 keyDialog::keyDialog( QWidget * parent,QTableWidget * table,QString path,QString type,QString folderOpener,bool autoOpenFolderOnMount ) :
 	QDialog( parent ),m_ui(new Ui::keyDialog)

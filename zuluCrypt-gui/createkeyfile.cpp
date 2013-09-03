@@ -29,6 +29,13 @@
 #include <QFile>
 #include <QKeyEvent>
 
+#include <QFile>
+
+#include "createfilethread.h"
+#include "utility.h"
+#include "createkeyfilethread.h"
+#include "dialogmsg.h"
+
 createkeyfile::createkeyfile( QWidget * parent ) :
     QDialog( parent ),
     m_ui( new Ui::createkeyfile )

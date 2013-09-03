@@ -19,17 +19,12 @@
 #ifndef AUTO_MOUNT_HELPER_H
 #define AUTO_MOUNT_HELPER_H
 
-#include <QThreadPool>
+#include <QObject>
+#include <QRunnable>
 #include <QString>
 #include <QStringList>
-#include "bin_path.h"
-#include <QProcess>
-#include <QDir>
 
-#include <unistd.h>
-#include <sys/inotify.h>
-
-#include "../zuluCrypt-gui/utility.h"
+#include <sys/types.h>
 
 class auto_mount_helper :public QObject, public QRunnable
 {
