@@ -21,6 +21,7 @@
 
 #include "can_build_kwallet.h"
 
+#include <QMap>
 #include <QObject>
 #include <QString>
 

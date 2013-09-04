@@ -24,7 +24,6 @@
 #include <QApplication>
 #include <QFile>
 #include <QDir>
-
 class kwalletpluginPrivate
 {
 public:
