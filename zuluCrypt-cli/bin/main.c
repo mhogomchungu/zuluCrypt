@@ -21,6 +21,14 @@
 #include "../lib/includes.h"
 #include "../lib/libzuluCrypt.h"
 #include <signal.h>
+#include <sys/resource.h>
+#include <locale.h>
+#include <libintl.h>
+#include <locale.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <grp.h>
 
 static int zuluCryptEXEGetDevice( const char * device )
 {

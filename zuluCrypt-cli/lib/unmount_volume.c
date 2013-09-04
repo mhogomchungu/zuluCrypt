@@ -22,7 +22,9 @@
 #include <mntent.h>
 #include <sys/mount.h>
 #include <stdlib.h>
-
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 /*
  * below header file does not ship with the source code, it is created at configure time
  * */

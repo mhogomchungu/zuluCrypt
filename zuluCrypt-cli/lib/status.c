@@ -19,14 +19,16 @@
 
 #include "includes.h"
 
-#include <sys/ioctl.h>
-#include <linux/loop.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <blkid/blkid.h>
 #include <sys/statvfs.h>
 #include <dirent.h>
+#include <stdio.h>
+#include <libcryptsetup.h>   
+#include <fcntl.h>
+#include <unistd.h>
 
 /*
  * 64 byte buffer is more than enough because the API that will produce the largest number is crypt_get_data_offset()

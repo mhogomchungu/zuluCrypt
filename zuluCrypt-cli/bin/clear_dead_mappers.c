@@ -23,6 +23,9 @@
 #include <string.h>
 #include <dirent.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <libintl.h>
+#include <libcryptsetup.h>
 
 static void _remove_mapper( const char * path,stringList_t stl,uid_t uid )
 {

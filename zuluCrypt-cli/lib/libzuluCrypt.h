@@ -22,7 +22,9 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif	
+#endif
+	
+#include <sys/types.h>
 
 /*
  * version 3.1.0
@@ -350,7 +352,7 @@ char * zuluCryptVolumeDeviceName( const char * mapper ) ;
  *         1 - encryption failed,could not open mapper  
  * 
  */
-int zuluCryptEncryptFile( const char * source,const char * dest,const char * key,uint64_t key_len ) ;
+int zuluCryptEncryptFile( const char * source,const char * dest,const char * key,u_int64_t key_len ) ;
 
 /**
  * This function decrypts a file given by argument source to a file given by argument dest using plain mapper
@@ -361,7 +363,7 @@ int zuluCryptEncryptFile( const char * source,const char * dest,const char * key
  * 	   2 - decryption failed,wrong passphrase
  * 
  */
-int zuluCryptDecryptFile( const char * source,const char * dest,const char * key,uint64_t key_len ) ;
+int zuluCryptDecryptFile( const char * source,const char * dest,const char * key,u_int64_t key_len ) ;
 
 #ifdef __cplusplus
 }

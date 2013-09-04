@@ -22,6 +22,8 @@
 #include "../lib/includes.h"
 
 #include <blkid/blkid.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 static inline char * _evaluate_tag( const char * tag,const char * entry,blkid_cache * cache )
 {

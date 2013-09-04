@@ -19,6 +19,12 @@
 
 #include "includes.h"
 #include <sys/syscall.h>
+#include <libcryptsetup.h>   
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/mount.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 /*
  * this header is created at config time

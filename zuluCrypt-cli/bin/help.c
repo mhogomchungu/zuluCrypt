@@ -18,6 +18,8 @@
  */
 
 #include "includes.h"
+#include <stdio.h>
+#include <libintl.h>
 
 /*
  * The string is broken up to remove a compiler warning that says:

@@ -21,6 +21,16 @@
 #include <signal.h>
 #include "../zuluCrypt-cli/lib/includes.h"
 #include "../zuluCrypt-cli/bin/includes.h"
+#include <sys/resource.h>
+#include <signal.h>
+#include <sys/resource.h>
+#include <locale.h>
+#include <libintl.h>
+#include <locale.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <grp.h>
 
 /*
  * All functions with "EXE" in their names are defined somewhere in ../zuluCrypt-cli/bin 

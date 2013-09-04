@@ -27,9 +27,6 @@
 #include <QString>
 #include <QRunnable>
 
-//#include <gcrypt.h>
-//#include <cstring>
-
 #define BLOCK_SIZE 1000
 #define SIZE 1000
 
@@ -47,7 +44,7 @@ class createFileThread : public QObject,public QRunnable
 {
 	Q_OBJECT
 public :
-	createFileThread( QString destination,double size ) ;
+	createFileThread( QString destination,qulonglong size ) ;
 	void start( void );
 	~createFileThread();
 signals:
@@ -67,7 +64,7 @@ private:
 	void run( void ) ;
 
 	QString m_file ;
-	double m_size ;
+	qulonglong m_size ;
 	int m_status ;
 };
 

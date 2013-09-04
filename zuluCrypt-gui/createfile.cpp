@@ -172,16 +172,17 @@ void createfile::pbCreate()
 	 * BLOCK_SIZE is defined in createfilethread.h
 	 */
 	switch( m_ui ->comboBox->currentIndex() ){
-		case 0 :m_fileSize = fileSize.toLongLong() * BLOCK_SIZE ;
+		case 0 :m_fileSize = fileSize.toULongLong() * BLOCK_SIZE ;
 			break ;
-		case 1 :m_fileSize = fileSize.toLongLong() * BLOCK_SIZE * BLOCK_SIZE ;
+		case 1 :m_fileSize = fileSize.toULongLong() * BLOCK_SIZE * BLOCK_SIZE ;
 			break ;
-		case 2 :m_fileSize = fileSize.toLongLong() * BLOCK_SIZE * BLOCK_SIZE  * BLOCK_SIZE;
+		case 2 :m_fileSize = fileSize.toULongLong() * BLOCK_SIZE * BLOCK_SIZE  * BLOCK_SIZE ;
 			break ;
 	}
 	if( m_fileSize < 3145728 ){
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "container file must be bigger than 3MB" ) );
 	}
+
 	disableAll();
 
 	m_cft = new createFileThread( m_path,m_fileSize ) ;

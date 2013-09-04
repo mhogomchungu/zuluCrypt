@@ -21,6 +21,9 @@
 #include <sys/mount.h>
 #include "../lib/includes.h"
 
+#include <sys/stat.h>
+#include <unistd.h>
+
 int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 {
 	stringList_t stl ;

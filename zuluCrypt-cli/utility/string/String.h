@@ -23,25 +23,10 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-	
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif
 
-#include <sys/types.h>
-#include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdio.h>
 #include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <stdarg.h>
-#include <termios.h>
-#include <sys/mman.h>
-
+#include <stdlib.h>
 /*
  * Takes a pointer to a function to be called when memory allocation can not take place
  * ie if the system has run out of memory and malloc() or realloc() has failed.
@@ -88,14 +73,14 @@ string_t StringWithSize( const char * string,size_t length ) ;
 const char * StringAppend( string_t st,const  char * s )  ;
 
 /*
- * Append a uint64_t number to the string
+ * Append a u_int64_t number to the string
  */
-const char * StringAppendInt( string_t,uint64_t ) ;
+const char * StringAppendInt( string_t,u_int64_t ) ;
 
 /*
  * subsititue all occurance of string str with a number num
  */
-const char * StringSubStringWithInt( string_t st,const char * str,uint64_t num ) ;
+const char * StringSubStringWithInt( string_t st,const char * str,u_int64_t num ) ;
 
 /*
  * Append multitple const char * strings to a string handled by handle st.
@@ -540,12 +525,12 @@ const char * StringReplaceCharStringPos( string_t st,char x,const char * y,size_
  * takes the last spot.  
  */
 
-char * StringIntToString_1( char * x,size_t y,uint64_t z ) ;
+char * StringIntToString_1( char * x,size_t y,u_int64_t z ) ;
 
 /*
  * convert a number z into a string
  */
-string_t StringIntToString( uint64_t ) ;
+string_t StringIntToString( u_int64_t ) ;
 
 /*
  * Compare a string handled by handle x to a string handled by handle y.
@@ -701,9 +686,9 @@ string_t StringGetFromVirtualFile( const char * path ) ;
 /*
  * below two functions creates a hash of the string using junkin's one at a time hash algorithm
  */
-uint32_t StringJenkinsOneAtATimeHash( const char * key ) ;
+u_int32_t StringJenkinsOneAtATimeHash( const char * key ) ;
 
-uint32_t StringJenkinsOneAtATimeHash_1( string_t ) ;
+u_int32_t StringJenkinsOneAtATimeHash_1( string_t ) ;
 
 /*
  * a few convenient "safe" functions 

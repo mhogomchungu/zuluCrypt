@@ -21,6 +21,11 @@
 #include <sys/ioctl.h>
 #include <linux/loop.h>
 #include <errno.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 static int zuluExit( int result,string_t st,int fd_loop,int fd_path )
 {

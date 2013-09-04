@@ -18,11 +18,7 @@
  */ 
 
 #include "includes.h"
-
-/*
- *  adding the header below because it contains prototype of crypt_get_dir()
- */
-#include <libcryptsetup.h> 
+#include <libcryptsetup.h>
 
 /*
  * This function is responsible for creating a mapper name,the mapper name will show up at "/dev/mapper" if the volume
@@ -46,7 +42,7 @@
 string_t zuluCryptCreateMapperName( const char * device,const char * mapping_name,uid_t uid,int i )
 {	
 	string_t p ;
-	uint32_t z ;
+	unsigned long z ;
 	char * e ;
 	/*
 	 * ZULUCRYPTshortMapperPath is set in ../constants.h
@@ -54,7 +50,10 @@ string_t zuluCryptCreateMapperName( const char * device,const char * mapping_nam
 	if( i == ZULUCRYPTshortMapperPath ){
 		p = String( "zuluCrypt-" ) ;
 	}else{
-		p = String( crypt_get_dir() ) ;
+		/*
+		 * zuluCryptMapperPrefix() is defined in include.h
+		 */
+		p = String( zuluCryptMapperPrefix() ) ;
 		StringAppend( p,"/zuluCrypt-" ) ;
 	}
 	
@@ -91,3 +90,16 @@ string_t zuluCryptCreateMapperName( const char * device,const char * mapping_nam
 	StringReplaceCharString( p,'_',BASH_SPECIAL_CHARS ) ;
 	return p ;
 }
+
+static const char * _zuluCryptMapperPrefix = NULL ;
+
+const char * zuluCryptMapperPrefix( void ) 
+{
+	if( _zuluCryptMapperPrefix == NULL ){
+		_zuluCryptMapperPrefix = crypt_get_dir() ;
+		return _zuluCryptMapperPrefix ;
+	}else{
+		return _zuluCryptMapperPrefix ;
+	}
+}
+

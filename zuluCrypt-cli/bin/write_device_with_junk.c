@@ -25,6 +25,10 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <blkid/blkid.h>
+#include <libintl.h>
+#include <locale.h>
+#include <stdio.h>
+#include <sys/stat.h>
 
 #include <libcryptsetup.h>
 

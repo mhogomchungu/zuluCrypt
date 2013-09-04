@@ -20,6 +20,7 @@
 #include "password_dialog.h"
 #include "zulucrypt.h"
 
+#include <QMenu>
 #include <Qt>
 #include <QObject>
 #include <QFileDialog>

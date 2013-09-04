@@ -22,7 +22,6 @@
 #include <sys/statvfs.h>
 #include <blkid/blkid.h>
 #include <stdint.h>
-#include <libcryptsetup.h>
 #include "../zuluCrypt-cli/lib/includes.h"
 
 /*
@@ -258,7 +257,7 @@ static void _printDeviceProperties( string_t entry,void * s )
 void zuluMountPrintDeviceProperties_1( string_t entry,uid_t uid )
 {
 	if( uid ){;}
-	_mapper_path = crypt_get_dir() ;
+	_mapper_path = zuluCryptMapperPrefix() ;
 	_mapper_length = StringSize( _mapper_path ) ;
 	_printDeviceProperties( entry,( void * )StringListVoid ) ;
 }
@@ -294,7 +293,11 @@ int zuluMountPrintMountedVolumes( uid_t uid )
 		return 1;
 	}
 	
-	_mapper_path = crypt_get_dir() ;
+	/*
+	 * zuluCryptMapperPrefix() is defined in ../zuluCrypt-cli/lib/create_mapper_name.c
+	 * it should return something like "/dev/mapper"
+	 */
+	_mapper_path = zuluCryptMapperPrefix() ;
 	_mapper_length = StringSize( _mapper_path ) ;
 	/*
 	 * print a list of mounted partitions

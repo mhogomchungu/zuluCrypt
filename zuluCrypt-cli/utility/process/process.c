@@ -19,6 +19,23 @@
 
 #include "process.h"
 
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <stdio.h>
+#include <string.h>
+#include <pthread.h>
+#include <signal.h>
+#include <stdarg.h>
+#include <sys/types.h>
+
+#include <sys/time.h>
+#include <sys/resource.h>
+
 
 struct ProcessType_t{
 	pid_t pid ;

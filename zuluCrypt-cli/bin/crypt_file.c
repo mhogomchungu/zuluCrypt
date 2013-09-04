@@ -19,6 +19,12 @@
 
 #include "includes.h"
 #include "../lib/includes.h"
+#include <stdio.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <libintl.h>
+#include <locale.h>
 
 #define DECRYPT 1
 #define ENCRYPT 0

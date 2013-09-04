@@ -18,6 +18,8 @@
  */
 
 #include "includes.h"
+#include <stdio.h>
+#include <libintl.h>
 
 static int _zuluCryptExECheckEmptySlots( const char * device )
 {

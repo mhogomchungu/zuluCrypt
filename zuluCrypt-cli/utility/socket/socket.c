@@ -19,6 +19,26 @@
 
 #include "socket.h"
 
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+
+#include <sys/socket.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <sys/un.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <sys/select.h>
+#include <netdb.h>
+#include <sys/time.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <sys/socket.h>
+#include <netdb.h>
+
 struct SocketType_t
 {
 	int socket_server ;

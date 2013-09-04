@@ -20,7 +20,8 @@
 
 #include "includes.h"
 #include <dirent.h>
-#include <libcryptsetup.h>
+#include <sys/stat.h>
+
 /*
  * below header file does not ship with the source code, it is created at configure time 
  */

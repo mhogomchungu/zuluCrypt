@@ -22,7 +22,6 @@
 
 #include <QDialog>
 #include <QString>
-#include <QMenu>
 
 namespace Ui {
 class PasswordDialog ;
@@ -32,6 +31,7 @@ class QWidget ;
 class QAction ;
 class QCloseEvent ;
 class QTableWidget ;
+class QMenu ;
 
 class passwordDialog :  public QDialog
 {

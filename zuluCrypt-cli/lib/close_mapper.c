@@ -23,6 +23,8 @@
  * this header is created at config time
  */
 #include "truecrypt_support.h"
+#include <libcryptsetup.h>   
+#include <unistd.h>
 
 int zuluCryptCloseMapper( const char * mapper )
 {

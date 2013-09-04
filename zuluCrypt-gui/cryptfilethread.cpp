@@ -44,10 +44,19 @@
  * 3.0 The rest of the header is currently not in use.
  */
 
+#include <QFile>
+#include <QThreadPool>
+#include <QProcess>
 #include <QDebug>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include "md5/md5.h"
+#include <sys/mman.h>
+
+#include "utility.h"
+#include "../zuluCrypt-cli/constants.h"
+#include "../zuluCrypt-cli/bin/bash_special_chars.h"
 
 cryptfilethread::cryptfilethread( QString source,QString dest,QString keySource,QString key,QString task )
 {

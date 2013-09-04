@@ -26,6 +26,11 @@
 #include "../constants.h"
 #include <sys/types.h>
 #include <pwd.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <stdio.h>
+
 /*
  * This source file makes sure the user who started the tool( usually non root user ) has permission 
  * to perform operations they want on paths they presented.

@@ -18,6 +18,7 @@
  */
 
 #include "includes.h"
+#include <stdio.h>
 
 void zuluCryptCheckInvalidKey( const char * device )
 {

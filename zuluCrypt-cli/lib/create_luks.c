@@ -19,6 +19,8 @@
 
 #include "includes.h"
 
+#include <libcryptsetup.h>   
+
 static inline int zuluExit( int st,struct crypt_device * cd )
 {
 	crypt_free( cd );

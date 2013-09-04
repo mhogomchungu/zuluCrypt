@@ -29,6 +29,9 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <stdio.h>
+
+#include <libcryptsetup.h>   
 
 #define SIZE 512
 
@@ -69,7 +72,7 @@
  * 
  */
 
-static string_t crypt_mapper( const char * path,const char * key,uint64_t key_len )
+static string_t crypt_mapper( const char * path,const char * key,u_int64_t key_len )
 {
 	string_t p ;
 	
@@ -112,15 +115,15 @@ static int zuluExit( int st,int f_in,int f_out,string_t p )
 /*
  * function responsible for creating a decrypted file
  */
-int zuluCryptDecryptFile( const char * source,const char * dest,const char * key,uint64_t key_len )
+int zuluCryptDecryptFile( const char * source,const char * dest,const char * key,u_int64_t key_len )
 {	
 	struct stat st ;
 	
 	char buffer[ SIZE ] ;
 	
-	uint64_t size ;
-	uint64_t len ;
-	uint64_t i ;
+	u_int64_t size ;
+	u_int64_t len ;
+	u_int64_t i ;
 	
 	int f_in ;
 	int f_out = -1 ;
@@ -193,7 +196,7 @@ int zuluCryptDecryptFile( const char * source,const char * dest,const char * key
 /*
  * function responsible for creating an encrypted file
  */
-int zuluCryptEncryptFile( const char * source,const char * dest,const char * key,uint64_t key_len )
+int zuluCryptEncryptFile( const char * source,const char * dest,const char * key,u_int64_t key_len )
 {
 	string_t p ;
 	string_t q ;
@@ -203,8 +206,8 @@ int zuluCryptEncryptFile( const char * source,const char * dest,const char * key
 	int f_in ;
 	int f_out ;
 	
-	uint64_t size ;
-	uint64_t size_1 ;
+	u_int64_t size ;
+	u_int64_t size_1 ;
 	
 	const char * mapper ;
 	

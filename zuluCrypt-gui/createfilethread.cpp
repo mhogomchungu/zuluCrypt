@@ -24,7 +24,7 @@
 #include <QFile>
 #include "utility.h"
 
-createFileThread::createFileThread( QString file,double size )
+createFileThread::createFileThread( QString file,qulonglong size )
 {
 	m_status = 0 ;
 	m_file = file ;
@@ -53,7 +53,7 @@ int createFileThread::createContainerFile( void )
 	QFile random( QString( "/dev/urandom" ) ) ;
 	random.open( QIODevice::ReadOnly ) ;
 
-	qint64 size_written = 0 ;
+	qulonglong size_written = 0 ;
 
 	int j = 0 ;
 	int k ;
@@ -81,7 +81,7 @@ int createFileThread::createContainerFile( void )
 
 	return m_status == -1 ? -1 : 0 ;
 }
-#include <QDebug>
+
 int createFileThread::createContainerFileUsinggCrypt( void )
 {/*
 	#define GSIZE 16

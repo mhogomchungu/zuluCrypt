@@ -18,6 +18,8 @@
  */
 
 #include "includes.h"
+#include <stdio.h>
+#include <libintl.h>
 
 int zuluCryptEXEVolumeInfo( const char * mapper,const char * device,uid_t uid )
 {

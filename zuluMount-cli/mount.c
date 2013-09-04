@@ -18,6 +18,9 @@
  */
 #include "includes.h"
 #include "../zuluCrypt-cli/bin/includes.h"
+#include <libintl.h>
+#include <stdio.h>
+#include <unistd.h>
 
 static int _zuluMountPartitionAccess( const char * device,const char * m_opts,uid_t uid )
 {

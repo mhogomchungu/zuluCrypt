@@ -24,7 +24,8 @@ extern "C" {
 #endif	
 
 #include "String.h"
-
+#include <stdarg.h>
+	
 /*
  * stringList_t is a type to be used as a handle with these functions
  * 

@@ -18,6 +18,7 @@
  */
 
 #include "includes.h"
+#include <sys/stat.h>
 
 int zuluCryptPathIsValid( const char * path ) 
 {

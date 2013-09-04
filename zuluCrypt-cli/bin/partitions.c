@@ -20,6 +20,15 @@
 #include "includes.h"
 #include "../lib/includes.h"
 #include <dirent.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <libintl.h>
+#include <locale.h>
 
 #include <blkid/blkid.h>
 

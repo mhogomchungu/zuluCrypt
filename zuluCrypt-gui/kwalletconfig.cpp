@@ -27,6 +27,7 @@
 #include "tablewidget.h"
 #include "kwalletconfiginput.h"
 
+#include <QMap>
 #include <Qt>
 #include <QTableWidget>
 #include <QTableWidgetItem>

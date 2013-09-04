@@ -59,7 +59,7 @@ private:
 	void disableAll( void ) ;
 	void closeEvent( QCloseEvent * ) ;
 	Ui::createfile * m_ui ;
-	qlonglong m_fileSize ;
+	qulonglong m_fileSize ;
 	QString m_path ;
 	createFileThread * m_cft ;
 	QPushButton * m_yes ;

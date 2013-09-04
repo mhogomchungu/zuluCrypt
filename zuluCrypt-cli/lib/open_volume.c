@@ -18,6 +18,9 @@
  */
 
 #include "includes.h"
+#include <fcntl.h>
+#include <sys/mount.h>
+#include <unistd.h>
 
 static inline int zuluExit( int x,string_t p )
 {
@@ -63,7 +66,10 @@ int zuluCryptOpenVolume( const char * dev,const char * mapper,
 		return 3 ;
 	}
 	
-	p = String( crypt_get_dir() ) ;
+	/*
+	 * zuluCryptMapperPrefix() is defined in create_mapper_name.c
+	 */
+	p = String( zuluCryptMapperPrefix() ) ;
 	
 	mapper_1 = StringMultipleAppend( p,"/",mapper,END ) ;
 

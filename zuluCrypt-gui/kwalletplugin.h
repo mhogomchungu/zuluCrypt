@@ -23,7 +23,6 @@
 
 #include <QObject>
 #include <QString>
-#include <QMap>
 
 class QWidget ;
 class kwalletpluginPrivate ;

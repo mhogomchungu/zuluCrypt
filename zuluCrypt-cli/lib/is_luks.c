@@ -19,6 +19,10 @@
 
 #include "includes.h"
 
+#include <libcryptsetup.h>   
+#include <fcntl.h>
+#include <unistd.h>
+
 static int _is_luks( const char * dev )
 {
 	struct crypt_device * cd;

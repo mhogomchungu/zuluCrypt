@@ -20,15 +20,6 @@
 #ifndef ZULUCRYPT_LIB
 #define ZULUCRYPT_LIB
 
-#include <sys/mount.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <libcryptsetup.h>   
-#include <stdlib.h>
-
 #include "../utility/string/String.h"
 #include "../utility/string/StringList.h"
 #include "../utility/process/process.h"
@@ -53,6 +44,11 @@ typedef struct{
 #include "version.h"
 
 int zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( int fd_path,int * fd_loop,int mode,string_t * loop_device ) ;
+
+/*
+ * this function is defined in create_mapper_name.c
+ */
+const char * zuluCryptMapperPrefix( void ) ;
 
 string_t zuluCryptCreateMapperName( const char * device,const char * mapping_name,uid_t uid,int i ) ;
 

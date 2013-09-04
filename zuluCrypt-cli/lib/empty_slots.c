@@ -18,6 +18,9 @@
  */
 
 #include "includes.h"
+#include <libcryptsetup.h>   
+#include <fcntl.h>
+#include <unistd.h>
 
 static inline char * zuluExit( char * c,struct crypt_device * cd )
 {

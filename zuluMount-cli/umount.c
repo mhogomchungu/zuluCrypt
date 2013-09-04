@@ -17,6 +17,9 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "includes.h"
+#include <libintl.h>
+#include <stdio.h>
+#include <unistd.h>
 
 int zuluMountUMount( ARGS * args )
 {

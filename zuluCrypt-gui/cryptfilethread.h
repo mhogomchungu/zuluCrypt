@@ -21,19 +21,7 @@
 
 #include <QObject>
 #include <QRunnable>
-#include <QProcess>
 #include <QString>
-#include <QThreadPool>
-#include <QFile>
-#include <QTextStream>
-
-#include "utility.h"
-#include "../zuluCrypt-cli/constants.h"
-#include "../zuluCrypt-cli/bin/bash_special_chars.h"
-#include "md5/md5.h"
-#include <sys/mman.h>
-
-#include <string.h>
 
 class cryptfilethread : public QObject,public QRunnable
 {

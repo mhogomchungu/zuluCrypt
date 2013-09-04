@@ -24,24 +24,8 @@
 extern "C" {
 #endif
 	
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif
-
-#include <sys/types.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/wait.h>
-#include <stdio.h>
-#include <string.h>
-#include <pthread.h>
-#include <signal.h>
-#include <stdarg.h>
 #include <sys/types.h>
 
-#include <sys/time.h>
-#include <sys/resource.h>
-	
 typedef struct{
 	/*
 	 * if this variable is set,then it is expect to be in the same format the last argument of execv() expect

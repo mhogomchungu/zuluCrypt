@@ -20,6 +20,21 @@
 
 #include "String.h"
 
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <stdarg.h>
+#include <termios.h>
+#include <sys/mman.h>
+
 /*
  * a string memory block gows by below factor when it expands
  */
@@ -1114,7 +1129,7 @@ const char * StringReplaceChar( string_t st,char x,char y )
  */
 #define BUFFSIZE 64
 #define BUFFLIMIT 63
-static inline char * _intToString( char * buffer,uint64_t z )
+static inline char * _intToString( char * buffer,u_int64_t z )
 {
 	int i = BUFFLIMIT ;
 	do{
@@ -1125,25 +1140,25 @@ static inline char * _intToString( char * buffer,uint64_t z )
 	return buffer + i ;
 }
 
-string_t StringIntToString( uint64_t z )
+string_t StringIntToString( u_int64_t z )
 {
 	char buffer[ BUFFSIZE ] = { '\0' };
 	return String( _intToString( buffer,z ) );
 }
 
-const char * StringAppendInt( string_t st,uint64_t z ) 
+const char * StringAppendInt( string_t st,u_int64_t z ) 
 {
 	char buffer[ BUFFSIZE ] = { '\0' };
 	return StringAppend( st,_intToString( buffer,z ) ) ;
 }
 
-const char * StringSubStringWithInt( string_t st,const char * str,uint64_t z ) 
+const char * StringSubStringWithInt( string_t st,const char * str,u_int64_t z ) 
 {
 	char buffer[ BUFFSIZE ] = { '\0' };
 	return StringReplaceString( st,str,_intToString( buffer,z ) ) ;
 }
 
-char * StringIntToString_1( char * x,size_t y,uint64_t z )
+char * StringIntToString_1( char * x,size_t y,u_int64_t z )
 {
 	char * c ;
 	if( x == NULL ){
@@ -1466,11 +1481,11 @@ string_t StringRandomString( size_t size )
 	return s ;
 }
 
-uint32_t StringJenkinsOneAtATimeHash( const char * key )
+u_int32_t StringJenkinsOneAtATimeHash( const char * key )
 {
 	size_t l ;
-	uint32_t hash = 0;
-	uint32_t i ;
+	u_int32_t hash = 0;
+	u_int32_t i ;
 	
 	if( key != NULL ){
 		l = strlen( key ) ;
@@ -1486,11 +1501,11 @@ uint32_t StringJenkinsOneAtATimeHash( const char * key )
 	return hash;
 }
 
-uint32_t StringJenkinsOneAtATimeHash_1( string_t st ) 
+u_int32_t StringJenkinsOneAtATimeHash_1( string_t st ) 
 {
 	size_t l ;
-	uint32_t hash = 0;
-	uint32_t i ;
+	u_int32_t hash = 0;
+	u_int32_t i ;
 	const char * e ;
 	
 	if( st != StringVoid ){

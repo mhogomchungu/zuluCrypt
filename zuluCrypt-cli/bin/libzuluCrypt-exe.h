@@ -22,7 +22,10 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif	
+#endif
+
+#include <sys/types.h>	
+	
 /*
  * this structure holds command line arguments. * 
  * It is instantiated in main.c * 

@@ -18,6 +18,10 @@
  */
 
 #include "includes.h"
+#include <locale.h>
+#include <stdio.h>
+#include <libintl.h>
+#include <sys/stat.h>
 
 /*
  * Its not possible to add more keys to a volume with no empty slots or to a non luks volume

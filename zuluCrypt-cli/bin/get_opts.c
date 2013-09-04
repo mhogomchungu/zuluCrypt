@@ -18,6 +18,8 @@
  */
 
 #include "includes.h"
+#include <unistd.h>
+#include <stdio.h>
 
 void zuluCryptEXEGetOptsSetDefault( struct_opts * stopts )
 {

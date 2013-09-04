@@ -19,6 +19,10 @@
 
 #include "includes.h"
 #include "../lib/includes.h"
+#include <libintl.h>
+#include <locale.h>
+#include <stdio.h>
+#include <sys/stat.h>
 
 static int zuluExit( int st,stringList_t stl )
 {

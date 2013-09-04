@@ -24,8 +24,10 @@
 #include <blkid/blkid.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <sys/wait.h>
+#include <fcntl.h>
 
 /*
  * below header file does not ship with the source code, it is created at configure time

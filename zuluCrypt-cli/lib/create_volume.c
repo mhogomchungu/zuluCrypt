@@ -20,6 +20,11 @@
 #include "includes.h"
 
 #include <sys/syscall.h>
+#include <libcryptsetup.h>   
+#include <fcntl.h>
+#include <unistd.h>
+#include <signal.h>
+#include <stdio.h>
 
 static inline int zuluExit( int st,string_t m )
 {

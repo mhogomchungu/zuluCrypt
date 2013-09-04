@@ -18,6 +18,10 @@
  */
 
 #include "includes.h"
+#include <locale.h>
+#include <stdio.h>
+#include <libintl.h>
+#include <sys/stat.h>
 
 static int zuluExit( int st,string_t p )
 {

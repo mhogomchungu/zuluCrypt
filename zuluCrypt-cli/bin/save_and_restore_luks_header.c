@@ -24,6 +24,12 @@
 #include <sys/syscall.h>
 #include <errno.h>
 #include <sys/mman.h>
+#include <libintl.h>
+#include <locale.h>
+#include <stdio.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 #define SIZE 512
 

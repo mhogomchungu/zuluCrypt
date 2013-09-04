@@ -21,6 +21,11 @@
 #include "../lib/includes.h"
 #include <sys/types.h>
 #include <string.h>
+#include <locale.h>
+#include <stdio.h>
+#include <libintl.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 static int _open_tcrypt( const char * device,const char * mapper_name,const char * key,
 			 size_t key_key_len,const char * key_source,const char * key_origin,
@@ -250,7 +255,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	*mapper = StringCopy( *m_name ) ;
 	mapper_name = StringContent( *m_name ) ;
 	
-	*mapper_path = String( crypt_get_dir() ) ;
+	*mapper_path = String( zuluCryptMapperPrefix() ) ;
 	e = StringMultipleAppend( *mapper_path,"/",mapper_name,END ) ;
 	
 	if( stat( e,&statstr ) == 0 ){
@@ -342,7 +347,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		st = 3 ;
 	}
 	
-	device = StringMultiplePrepend( *mapper,"/",crypt_get_dir(),END ) ;
+	device = StringMultiplePrepend( *mapper,"/",zuluCryptMapperPrefix(),END ) ;
 	
 	if( st == 0 && share ){
 		/*

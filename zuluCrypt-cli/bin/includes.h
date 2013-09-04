@@ -21,19 +21,6 @@
 #ifndef ZULUCRYPT_BIN
 #define ZULUCRYPT_BIN
 
-#include <stdlib.h>
-#include <sys/stat.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/wait.h>
-#include <libcryptsetup.h>
-#include <grp.h>
-#include <locale.h>
-#include <libintl.h>
-#include <locale.h>
 #include "../utility/string/String.h" 
 #include "../utility/string/StringList.h" 
 #include "../constants.h"
