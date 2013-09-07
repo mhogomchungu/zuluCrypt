@@ -25,23 +25,27 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <gnome-keyring.h>
 
-static GnomeKeyringPasswordSchema lps =
-{
-	GNOME_KEYRING_ITEM_GENERIC_SECRET,
-	{
-		{ "gvfs-luks-uuid", GNOME_KEYRING_ATTRIBUTE_TYPE_STRING },
-		{ NULL,0 }
-	}
-};
+#include <gnome-keyring.h>
 
 static GnomeKeyringResult getKey( const char * UUID,gchar ** key )
 {	
+	GnomeKeyringResult r ;
+	
+	GnomeKeyringPasswordSchema lps ;
+	
+	lps.item_type = GNOME_KEYRING_ITEM_GENERIC_SECRET ;
+	
+	lps.attributes[0].name = "gvfs-luks-uuid" ;
+	lps.attributes[0].type = GNOME_KEYRING_ATTRIBUTE_TYPE_STRING ;
+	
+	lps.attributes[1].name = NULL ;
+	lps.attributes[1].type = 0 ;
+	
 	/*
 	 * in some versions of gnome,uuid start with "luks-UUID"
 	 */
-	GnomeKeyringResult r = gnome_keyring_find_password_sync( &lps,key,"gvfs-luks-uuid",UUID,NULL ) ;
+	r = gnome_keyring_find_password_sync( &lps,key,"gvfs-luks-uuid",UUID,NULL ) ;
 	
 	if( r != GNOME_KEYRING_RESULT_OK ){
 		/*
