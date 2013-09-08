@@ -9,7 +9,7 @@ SET( QT_USE_QTGUI TRUE )
 
 set( LIBRARY_VERSION "1.0.0" )
 
-find_package( Qt4 COMPONENTS REQUIRED )
+find_package( Qt4 REQUIRED )
 
 add_definitions( -I${Qt4_INCLUDE_DIR} )
 add_definitions( -I${QT_HEADERS_DIR} )
@@ -50,7 +50,7 @@ if( NOKDESUPPORT )
 	SET( KWALLET_SUPPORT "false" )
 	file( APPEND  ${PROJECT_BINARY_DIR}/storage_manager.h "\n#define HAS_KWALLET_SUPPORT 0\n" )
 else()
-	find_package( KDE4 )
+	find_package( KDE4 QUIET )
 
 	include (KDE4Defaults)
 	include_directories(${KDE4_INCLUDES})
