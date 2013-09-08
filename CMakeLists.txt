@@ -16,7 +16,7 @@ configure_file(
 add_custom_target( uninstall
 COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake )
 
-add_definitions( -I"${PROJECT_BINARY_DIR}/lxqt_wallet/frontend" )
+add_definitions( -I${PROJECT_BINARY_DIR}/zuluCrypt-gui/lxqt_wallet/frontend )
 
 INCLUDE(FindPkgConfig)
 
