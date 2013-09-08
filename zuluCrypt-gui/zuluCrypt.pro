@@ -50,7 +50,16 @@ SOURCES += main.cpp\
     openmountpointinfilemanager.cpp \
     savemountpointpath.cpp \
     md5/md5.c \
-    kwalletconfiginput.cpp
+    kwalletconfiginput.cpp \
+    lxqt_wallet/backend/lxqtwallet.c \
+    lxqt_wallet/frontend/secret_service.c \
+    lxqt_wallet/frontend/password_dialog.cpp \
+    lxqt_wallet/frontend/open_wallet_thread.cpp \
+    lxqt_wallet/frontend/lxqt_wallet.cpp \
+    lxqt_wallet/frontend/lxqt_secret_service.cpp \
+    lxqt_wallet/frontend/lxqt_kwallet.cpp \
+    lxqt_wallet/frontend/lxqt_internal_wallet.cpp \
+    lxqt_wallet/frontend/changepassworddialog.cpp
 
 HEADERS  += zulucrypt.h \
     password_dialog.h \
@@ -90,7 +99,16 @@ HEADERS  += zulucrypt.h \
     ../zuluMount-gui/oneinstance.h \
     openmountpointinfilemanager.h \
     savemountpointpath.h \
-    kwalletconfiginput.h
+    kwalletconfiginput.h \
+    lxqt_wallet/backend/lxqtwallet.h \
+    lxqt_wallet/frontend/secret_service.h \
+    lxqt_wallet/frontend/password_dialog.h \
+    lxqt_wallet/frontend/open_wallet_thread.h \
+    lxqt_wallet/frontend/lxqt_wallet.h \
+    lxqt_wallet/frontend/lxqt_secret_service.h \
+    lxqt_wallet/frontend/lxqt_kwallet.h \
+    lxqt_wallet/frontend/lxqt_internal_wallet.h \
+    lxqt_wallet/frontend/changepassworddialog.h
 
 
 FORMS    += zulucrypt.ui password.ui \
@@ -109,7 +127,9 @@ FORMS    += zulucrypt.ui password.ui \
     dialogmsg.ui \
     managesystemvolumes.ui \
     kwalletconfig.ui \
-    kwalletconfiginput.ui
+    kwalletconfiginput.ui \
+    lxqt_wallet/frontend/password_dialog.ui \
+    lxqt_wallet/frontend/changepassworddialog.ui
 
 TRANSLATIONS = ../translations/zuluCrypt/en_US.ts
 
@@ -120,9 +140,22 @@ LIBS += -lblkid -lpwquality -L/home/local/KDE4/lib/ -lkwalletbackend -lgcrypt -l
 QMAKE_CXXFLAGS += -D_FILE_OFFSET_BITS=64 -Wall
 
 OTHER_FILES += \
-    backupluksheaderui
+    backupluksheaderui \
+    lxqt_wallet/SOURCE \
+    lxqt_wallet/README.md \
+    lxqt_wallet/lxqt_wallet.pro.user \
+    lxqt_wallet/lxqt_wallet.pro \
+    lxqt_wallet/LICENSE \
+    lxqt_wallet/CMakeLists.txt \
+    lxqt_wallet/changelog \
+    lxqt_wallet/BUILD_INSTRUCTIONS \
+    lxqt_wallet/backend/README \
+    lxqt_wallet/backend/CMakeLists.txt \
+    lxqt_wallet/frontend/README \
+    lxqt_wallet/frontend/CMakeLists.txt \
+    lxqt_wallet/frontend/secret_service/CMakeLists.txt
 
-INCLUDEPATH +=/home/ink/build /home/local/KDE4/include
+INCLUDEPATH +=/home/ink/build /home/local/KDE4/include /usr/include
 
 
 

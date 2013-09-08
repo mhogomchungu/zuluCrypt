@@ -33,7 +33,7 @@ volumePropertiesThread::volumePropertiesThread( QString path,QString mpoint )
 
 void volumePropertiesThread::start()
 {
-	QThreadPool::globalInstance()->start( this );
+	QThreadPool::globalInstance()->start( this ) ;
 }
 
 void volumePropertiesThread::run()
@@ -46,17 +46,17 @@ void volumePropertiesThread::run()
 	int st = p.exitCode() ;
 	QByteArray data = p.readAllStandardOutput() ;
 
-	p.close();
+	p.close() ;
 
 	if( st != 0 ){
 		m_volumeProperties = QString( "" ) ;
 	}else{
-		m_volumeProperties = QString( " " ) + QString( data.mid( data.indexOf( '\n' ) + 2 ) );
+		m_volumeProperties = QString( " " ) + QString( data.mid( data.indexOf( '\n' ) + 2 ) ) ;
 	}
 }
 
 volumePropertiesThread::~volumePropertiesThread()
 {
-	emit finished( m_volumeProperties );
+	emit finished( m_volumeProperties ) ;
 }
 

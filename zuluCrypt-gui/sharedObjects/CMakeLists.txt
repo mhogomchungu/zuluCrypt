@@ -10,7 +10,6 @@ set ( SRC
 	../openmountpointinfilemanager.cpp
 	../savemountpointpath.cpp
 	../utility.cpp
-	../kwalletplugin.cpp
 )
 
 set ( MOC_FILES

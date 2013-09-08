@@ -26,7 +26,7 @@
 
 int main( int argc,char * argv[] )
 {
-	QApplication a( argc,argv );
+	QApplication a( argc,argv ) ;
 
 	QCoreApplication::setApplicationName( QString( "zuluCrypt" ) ) ;
 
@@ -41,7 +41,7 @@ int main( int argc,char * argv[] )
 		return 0 ;
 	}else{
 		zuluCrypt zc ;
-		zc.start();
-		return a.exec();
+		zc.start() ;
+		return a.exec() ;
 	}
 }

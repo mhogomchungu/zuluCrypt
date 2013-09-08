@@ -25,23 +25,23 @@ cryptoinfo::cryptoinfo( QWidget * parent ) :
 	QWidget( parent ),
 	m_ui( new Ui::cryptoinfo )
 {
-	m_ui->setupUi( this );
-	this->setFixedSize( this->size() );
-	this->setWindowFlags( Qt::Window | Qt::Dialog );
-	this->setFont( parent->font() );
-	connect( m_ui->pbOK,SIGNAL( clicked() ),this,SLOT( pbOK() ) );
+	m_ui->setupUi( this ) ;
+	this->setFixedSize( this->size() ) ;
+	this->setWindowFlags( Qt::Window | Qt::Dialog ) ;
+	this->setFont( parent->font() ) ;
+	connect( m_ui->pbOK,SIGNAL( clicked() ),this,SLOT( pbOK() ) ) ;
 }
 
 void cryptoinfo::closeEvent( QCloseEvent *e )
 {
-	e->ignore();
-	HideUI();
+	e->ignore() ;
+	HideUI() ;
 }
 
 void cryptoinfo::HideUI()
 {
-	emit closeUISignal();
-	this->hide();
+	emit closeUISignal() ;
+	this->hide() ;
 }
 
 void cryptoinfo::pbOK()

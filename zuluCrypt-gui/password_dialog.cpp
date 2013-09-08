@@ -19,6 +19,7 @@
 
 #include "password_dialog.h"
 #include "zulucrypt.h"
+#include "lxqt_wallet/frontend/lxqt_wallet.h"
 
 #include <QMenu>
 #include <Qt>
@@ -30,6 +31,7 @@
 #include <QPushButton>
 #include <QMessageBox>
 
+#include <QDebug>
 #include <QString>
 #include <QFileDialog>
 #include <QStringList>
@@ -43,7 +45,6 @@
 #include "utility.h"
 #include "checkvolumetype.h"
 #include "dialogmsg.h"
-#include "kwalletplugin.h"
 #include "plugin_path.h"
 #include "tablewidget.h"
 #include "../zuluCrypt-cli/constants.h"
@@ -54,19 +55,23 @@
 
 #include "utility.h"
 
+#define KWALLET         "kde wallet"
+#define INTERNAL_WALLET "internal wallet"
+#define GNOME_WALLET    "gnome wallet"
+
 passwordDialog::passwordDialog( QTableWidget * table,QString folderOpener,QWidget * parent ) : QDialog( parent )
 {
 	m_ui = new Ui::PasswordDialog() ;
-	m_ui->setupUi( this );
+	m_ui->setupUi( this ) ;
 
 	m_parent = parent ;
 
-	this->setFixedSize( this->size() );
-	this->setWindowFlags( Qt::Window | Qt::Dialog );
-	this->setFont( parent->font() );
-	this->setDefaultOpenMode();
+	this->setFixedSize( this->size() ) ;
+	this->setWindowFlags( Qt::Window | Qt::Dialog ) ;
+	this->setFont( parent->font() ) ;
+	this->setDefaultOpenMode() ;
 
-	m_ui->PushButtonMountPointPath->setIcon( QIcon( QString( ":/folder.png" ) ) );
+	m_ui->PushButtonMountPointPath->setIcon( QIcon( QString( ":/folder.png" ) ) ) ;
 
 	m_isWindowClosable = true ;
 
@@ -77,27 +82,27 @@ passwordDialog::passwordDialog( QTableWidget * table,QString folderOpener,QWidge
 	m_folderOpener = folderOpener ;
 
 	m_pluginMenu = new QMenu( this ) ;
-	m_pluginMenu->setFont( this->font() );
+	m_pluginMenu->setFont( this->font() ) ;
 
-	m_ui->pushButtonPlugin->setIcon( QIcon( QString( ":/module.png" ) ) );
+	m_ui->pushButtonPlugin->setIcon( QIcon( QString( ":/module.png" ) ) ) ;
 
 	connect( m_ui->PushButtonCancel,SIGNAL( clicked() ),this,SLOT( HideUI() ) ) ;
 	connect( m_ui->PushButtonOpen,SIGNAL( clicked() ),this,SLOT( buttonOpenClicked() ) ) ;
-	connect( m_ui->PushButtonMountPointPath,SIGNAL( clicked() ),this,SLOT( mount_point() ) );
+	connect( m_ui->PushButtonMountPointPath,SIGNAL( clicked() ),this,SLOT( mount_point() ) ) ;
 	connect( m_ui->PushButtonVolumePath,SIGNAL( clicked() ),this,SLOT( file_path() ) ) ;
-	connect( m_ui->pushButtonPassPhraseFromFile,SIGNAL( clicked() ),this,SLOT( clickedPassPhraseFromFileButton() ) );
+	connect( m_ui->pushButtonPassPhraseFromFile,SIGNAL( clicked() ),this,SLOT( clickedPassPhraseFromFileButton() ) ) ;
 	connect( m_ui->radioButtonPassPhraseFromFile,SIGNAL( clicked() ),this,SLOT( passphraseFromFileOption() ) ) ;
 	connect( m_ui->radioButtonPassPhrase,SIGNAL( clicked() ),this,SLOT( passphraseOption() ) ) ;
-	connect( m_ui->OpenVolumePath,SIGNAL( textChanged( QString ) ),this,SLOT( mountPointPath( QString ) ) );
-	connect( m_ui->checkBoxReadOnly,SIGNAL( stateChanged( int ) ),this,SLOT( cbStateChanged( int ) ) );
+	connect( m_ui->OpenVolumePath,SIGNAL( textChanged( QString ) ),this,SLOT( mountPointPath( QString ) ) ) ;
+	connect( m_ui->checkBoxReadOnly,SIGNAL( stateChanged( int ) ),this,SLOT( cbStateChanged( int ) ) ) ;
 	connect( m_ui->radioButtonPlugin,SIGNAL( clicked() ),this,SLOT( pluginOption() ) ) ;
 	connect( m_ui->PassPhraseField,SIGNAL( textChanged( QString ) ),this,SLOT(keyTextChanged( QString ) ) ) ;
 	connect( m_ui->pushButtonPlugin,SIGNAL( clicked() ),this,SLOT( pbPlugin() ) ) ;
 	connect( m_ui->pbKeyOption,SIGNAL( clicked() ),this,SLOT( pbKeyOption() ) ) ;
 
-	m_ui->PushButtonMountPointPath->setVisible( false );
+	m_ui->PushButtonMountPointPath->setVisible( false ) ;
 	m_ui->pushButtonPassPhraseFromFile->setVisible( false ) ;
-	m_ui->pushButtonPlugin->setVisible( false );
+	m_ui->pushButtonPlugin->setVisible( false ) ;
 }
 
 void passwordDialog::pbPlugin()
@@ -109,32 +114,35 @@ void passwordDialog::pbPlugin()
 	QDir dir( QString( ZULUCRYPTpluginPath ) ) ;
 
 	if( !dir.exists() ){
-		if( kwalletplugin::hasFunctionality() ){
-			list.append( QString( "kwallet" ) ) ;
-		}else{
-			m_ui->pushButtonPlugin->setEnabled( false );
-			return ;
+		list.append( tr( INTERNAL_WALLET ) ) ;
+
+		if( lxqt::Wallet::backEndIsSupported( lxqt::Wallet::kwalletBackEnd ) ){
+			list.append( tr( KWALLET ) ) ;
+		}
+		if( lxqt::Wallet::backEndIsSupported( lxqt::Wallet::secretServiceBackEnd ) ){
+			list.append( tr( GNOME_WALLET ) ) ;
 		}
 	}else{
 		list = dir.entryList() ;
 
 		list.removeOne( QString( "zuluCrypt-testKey" ) ) ;
-		list.removeOne( QString( ".") ) ;
-		list.removeOne( QString( "..") ) ;
+		list.removeOne( QString( "." ) ) ;
+		list.removeOne( QString( ".." ) ) ;
+		list.removeOne( QString( "keyring" ) ) ;
+		list.removeOne( QString( "kwallet" ) ) ;
 
-		if( kwalletplugin::hasFunctionality() ){
-			if( !list.contains( QString( "kwallet" ) ) ){
-				list.append( QString( "kwallet" ) ) ;
-			}
+		list.insert( 0,tr( INTERNAL_WALLET ) ) ;
+
+		if( lxqt::Wallet::backEndIsSupported( lxqt::Wallet::kwalletBackEnd ) ){
+			list.insert( 1,tr( KWALLET ) ) ;
+		}
+
+		if( lxqt::Wallet::backEndIsSupported( lxqt::Wallet::secretServiceBackEnd ) ){
+			list.insert( 2,tr( GNOME_WALLET ) ) ;
 		}
 	}
 
-	m_pluginMenu->clear();
-
-	if( list.contains( QString( "kwallet" ) ) ){
-		int index = list.indexOf( "kwallet" ) ;
-		list.move( index,0 );
-	}
+	m_pluginMenu->clear() ;
 
 	int j = list.size()  ;
 
@@ -158,9 +166,9 @@ void passwordDialog::pbPlugin()
 void passwordDialog::pbKeyOption()
 {
 	if( m_ui->radioButtonPlugin->isChecked() ){
-		this->pbPlugin();
+		this->pbPlugin() ;
 	}else{
-		this->clickedPassPhraseFromFileButton();
+		this->clickedPassPhraseFromFileButton() ;
 	}
 }
 
@@ -173,19 +181,19 @@ void passwordDialog::pbPluginEntryClicked( QAction * e )
 
 void passwordDialog::cbStateChanged( int state )
 {
-	m_ui->checkBoxReadOnly->setEnabled( false );
-	m_ui->checkBoxReadOnly->setChecked( openvolumereadonly::setOption( this,state,QString( "zuluCrypt-gui" ) ) );
-	m_ui->checkBoxReadOnly->setEnabled( true );
+	m_ui->checkBoxReadOnly->setEnabled( false ) ;
+	m_ui->checkBoxReadOnly->setChecked( openvolumereadonly::setOption( this,state,QString( "zuluCrypt-gui" ) ) ) ;
+	m_ui->checkBoxReadOnly->setEnabled( true ) ;
 }
 
 void passwordDialog::setDefaultOpenMode()
 {
-	m_ui->checkBoxReadOnly->setCheckState( openvolumereadonly::getOption( QString( "zuluCrypt-gui" ) ) );
+	m_ui->checkBoxReadOnly->setCheckState( openvolumereadonly::getOption( QString( "zuluCrypt-gui" ) ) ) ;
 }
 
 void passwordDialog::closeEvent( QCloseEvent * e )
 {
-	e->ignore();
+	e->ignore() ;
 	if( m_isWindowClosable ){
 		this->HideUI() ;
 	}
@@ -200,28 +208,28 @@ void passwordDialog::ShowUI( QString volumePath, QString mount_point )
 	m_point.remove( QString( "\"" ) ) ;
 
 	m_open_with_path = true ;
-	this->passphraseOption();
-	m_ui->OpenVolumePath->setText( volumePath );
-	m_ui->OpenVolumePath->setEnabled( false );
-	m_ui->PushButtonVolumePath->setEnabled( false );
+	this->passphraseOption() ;
+	m_ui->OpenVolumePath->setText( volumePath ) ;
+	m_ui->OpenVolumePath->setEnabled( false ) ;
+	m_ui->PushButtonVolumePath->setEnabled( false ) ;
 	//QString mp = savemountpointpath::getPath( mount_point,QString( "zuluCrypt-MountPointPath" ) ) ;
-	m_ui->MountPointPath->setText( m_point );
-	m_ui->PassPhraseField->setFocus();
-	QString vp = volumePath.mid( 0,5 );
+	m_ui->MountPointPath->setText( m_point ) ;
+	m_ui->PassPhraseField->setFocus() ;
+	QString vp = volumePath.mid( 0,5 ) ;
 	if( vp == QString( "/dev/" ) || vp == QString( "UUID=" ) ){
-		m_ui->PushButtonVolumePath->setIcon( QIcon( QString( ":/partition.png" ) ) );
+		m_ui->PushButtonVolumePath->setIcon( QIcon( QString( ":/partition.png" ) ) ) ;
 	}else{
-		m_ui->PushButtonVolumePath->setIcon( QIcon( QString( ":/file.png" ) ) );
+		m_ui->PushButtonVolumePath->setIcon( QIcon( QString( ":/file.png" ) ) ) ;
 	}
-	this->show();
+	this->show() ;
 }
 
 void passwordDialog::ShowUI()
 {
-	this->passphraseOption();
-	m_ui->OpenVolumePath->setFocus();
-	m_ui->PushButtonVolumePath->setIcon( QIcon( QString( ":/file.png" ) ) );
-	this->show();
+	this->passphraseOption() ;
+	m_ui->OpenVolumePath->setFocus() ;
+	m_ui->PushButtonVolumePath->setIcon( QIcon( QString( ":/file.png" ) ) ) ;
+	this->show() ;
 }
 
 void passwordDialog::mountPointPath( QString path )
@@ -249,65 +257,68 @@ void passwordDialog::keyTextChanged( QString txt )
 
 void passwordDialog::pluginOption()
 {
-	m_ui->pushButtonPassPhraseFromFile->setToolTip( tr( "choose a module from the file system" ) );
-	m_ui->PassPhraseField->setToolTip( tr( "enter a module name to use to get passphrase" ) );
-	m_ui->PassPhraseField->setEchoMode( QLineEdit::Normal );
-	m_ui->PassPhraseField->clear();
+	m_ui->pushButtonPassPhraseFromFile->setToolTip( tr( "choose a module from the file system" ) ) ;
+	m_ui->PassPhraseField->setToolTip( tr( "enter a module name to use to get passphrase" ) ) ;
+	m_ui->PassPhraseField->setEchoMode( QLineEdit::Normal ) ;
+	m_ui->PassPhraseField->clear() ;
 	m_ui->pushButtonPassPhraseFromFile->setEnabled( false ) ;
-	m_ui->labelPassphrase->setText( tr( "plugin name" ) );
-	m_ui->pushButtonPassPhraseFromFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) );
-	m_ui->pbKeyOption->setIcon( QIcon( QString( ":/module.png" ) ) );
-	m_ui->pushButtonPlugin->setEnabled( true );
+	m_ui->labelPassphrase->setText( tr( "plugin name" ) ) ;
+	m_ui->pushButtonPassPhraseFromFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) ) ;
+	m_ui->pbKeyOption->setIcon( QIcon( QString( ":/module.png" ) ) ) ;
+	m_ui->pushButtonPlugin->setEnabled( true ) ;
 	m_ui->pushButtonPlugin->setToolTip( tr( "select a key module" ) ) ;
-	m_ui->pbKeyOption->setEnabled( true );
+	m_ui->pbKeyOption->setEnabled( true ) ;
+	m_ui->PassPhraseField->setEnabled( false ) ;
 }
 
 void passwordDialog::passphraseOption()
 {
-	m_ui->PassPhraseField->setToolTip( tr( "enter a key" ) );
-	m_ui->PassPhraseField->setEchoMode( QLineEdit::Password );
-	m_ui->PassPhraseField->clear();
+	m_ui->PassPhraseField->setToolTip( tr( "enter a key" ) ) ;
+	m_ui->PassPhraseField->setEchoMode( QLineEdit::Password ) ;
+	m_ui->PassPhraseField->clear() ;
 	m_ui->pushButtonPassPhraseFromFile->setEnabled( false ) ;
-	m_ui->labelPassphrase->setText( tr( "key" ) );
-	m_ui->pushButtonPassPhraseFromFile->setIcon( QIcon( QString( ":/passphrase.png" ) ) );
-	m_ui->pushButtonPlugin->setEnabled( false );
-	m_ui->pbKeyOption->setIcon( QIcon( QString( "" ) ) );
-	m_ui->pbKeyOption->setEnabled( false );
+	m_ui->labelPassphrase->setText( tr( "key" ) ) ;
+	m_ui->pushButtonPassPhraseFromFile->setIcon( QIcon( QString( ":/passphrase.png" ) ) ) ;
+	m_ui->pushButtonPlugin->setEnabled( false ) ;
+	m_ui->pbKeyOption->setIcon( QIcon( QString( "" ) ) ) ;
+	m_ui->pbKeyOption->setEnabled( false ) ;
+	m_ui->PassPhraseField->setEnabled( true ) ;
 }
 
 void passwordDialog::passphraseFromFileOption()
 {
-	m_ui->pushButtonPassPhraseFromFile->setToolTip( tr( "choose a key file from the file system" ) );
-	m_ui->PassPhraseField->setToolTip( tr( "enter a path to a keyfile location" ) );
-	m_ui->PassPhraseField->setEchoMode( QLineEdit::Normal );
-	m_ui->PassPhraseField->clear();
+	m_ui->pushButtonPassPhraseFromFile->setToolTip( tr( "choose a key file from the file system" ) ) ;
+	m_ui->PassPhraseField->setToolTip( tr( "enter a path to a keyfile location" ) ) ;
+	m_ui->PassPhraseField->setEchoMode( QLineEdit::Normal ) ;
+	m_ui->PassPhraseField->clear() ;
 	m_ui->pushButtonPassPhraseFromFile->setEnabled( true ) ;
-	m_ui->labelPassphrase->setText( tr( "keyfile path" ) );
-	m_ui->pushButtonPassPhraseFromFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) );
-	m_ui->pushButtonPlugin->setEnabled( false );
-	m_ui->pbKeyOption->setIcon( QIcon( QString( ":/keyfile.png" ) ) );
-	m_ui->pushButtonPlugin->setEnabled( true );
-	m_ui->pbKeyOption->setEnabled( true );
+	m_ui->labelPassphrase->setText( tr( "keyfile path" ) ) ;
+	m_ui->pushButtonPassPhraseFromFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) ) ;
+	m_ui->pushButtonPlugin->setEnabled( false ) ;
+	m_ui->pbKeyOption->setIcon( QIcon( QString( ":/keyfile.png" ) ) ) ;
+	m_ui->pushButtonPlugin->setEnabled( true ) ;
+	m_ui->pbKeyOption->setEnabled( true ) ;
+	m_ui->PassPhraseField->setEnabled( false ) ;
 }
 
 void passwordDialog::clickedPassPhraseFromFileButton()
 {
 	QString msg ;
 	if( m_ui->radioButtonPassPhraseFromFile->isChecked() ){
-		msg = tr( "Select a keyfile" );
+		msg = tr( "Select a keyfile" ) ;
 	}else if( m_ui->radioButtonPlugin->isChecked() ){
-		msg = tr( "Select a key module" );
+		msg = tr( "Select a key module" ) ;
 	}
 
-	QString Z = QFileDialog::getOpenFileName( this,msg,QDir::homePath(),0 );
+	QString Z = QFileDialog::getOpenFileName( this,msg,QDir::homePath(),0 ) ;
 	if( !Z.isEmpty() ){
-		m_ui->PassPhraseField->setText( Z );
+		m_ui->PassPhraseField->setText( Z ) ;
 	}
 }
 
 void passwordDialog::clickedPartitionOption( QString dev )
 {
-	QString m_point = QDir::homePath() + QString( "/" ) + dev.split( "/" ).last();
+	QString m_point = QDir::homePath() + QString( "/" ) + dev.split( "/" ).last() ;
 	this->ShowUI( dev,m_point ) ;
 }
 
@@ -318,48 +329,105 @@ void passwordDialog::mount_point( void )
 
 	if( !Z.isEmpty() ){
 		Z = Z + QString( "/" ) + m_ui->OpenVolumePath->text().split( "/" ).last() ;
-		m_ui->MountPointPath->setText( Z );
+		m_ui->MountPointPath->setText( Z ) ;
 	}
 
 	if( m_ui->MountPointPath->text().isEmpty() ){
-		m_ui->MountPointPath->setFocus();
+		m_ui->MountPointPath->setFocus() ;
 	}else if( m_ui->PassPhraseField->text().isEmpty() ){
-		m_ui->PassPhraseField->setFocus();
+		m_ui->PassPhraseField->setFocus() ;
 	}
 }
 
 void passwordDialog::file_path( void )
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "Select encrypted volume" ),QDir::homePath(),0 );
-	m_ui->OpenVolumePath->setText( Z );
+	QString Z = QFileDialog::getOpenFileName( this,tr( "Select encrypted volume" ),QDir::homePath(),0 ) ;
+	m_ui->OpenVolumePath->setText( Z ) ;
 	if( !Z.isEmpty() ){
-		m_ui->MountPointPath->setText( Z.split( QString( "/" ) ).last() );
+		m_ui->MountPointPath->setText( Z.split( QString( "/" ) ).last() ) ;
 	}
 }
 
 void passwordDialog::HideUI()
 {
-	this->hide();
-	emit HideUISignal();
+	this->hide() ;
+	emit HideUISignal() ;
+}
+
+void passwordDialog::walletIsOpen( bool opened )
+{
+	if( opened ){
+		QString key ;
+
+		QString id = m_ui->OpenVolumePath->text() ;
+
+		QString keyID ;
+
+		if( id.startsWith( QString( "UUID=" ) ) ){
+			keyID = id ;
+			key = m_wallet->readValue( keyID ) ;
+			if( key.isEmpty() ){
+				key = m_wallet->readValue( keyID.replace( "\"","" ) ) ;
+			}
+		}else{
+			keyID = utility::getUUIDFromPath( id ) ;
+			if( keyID.isEmpty() ){
+				keyID = m_ui->OpenVolumePath->text() ;
+			}
+
+			key = m_wallet->readValue( keyID ) ;
+		}
+
+		if( key.isEmpty() ){
+			DialogMsg msg( this ) ;
+			msg.ShowUIOK( tr( "ERROR" ),tr( "the volume does not appear to have an entry in the wallet" ) ) ;
+		}else{
+			m_key = key ;
+			this->openVolume( "bogus entry" ) ;
+		}
+	}else{
+		//DialogMsg msg( this ) ;
+		//msg.ShowUIOK( tr( "ERROR"),tr( "wallet could not be opened" ) ) ;
+		this->enableAll() ;
+	}
+
+	m_wallet->deleteLater() ;
 }
 
 void passwordDialog::buttonOpenClicked( void )
 {
-	//QString mountPointPath = utility::resolvePath( m_ui->MountPointPath->text() ) ;
+	this->disableAll() ;
+	if( m_ui->PassPhraseField->text() == tr( KWALLET ) ){
+		m_wallet = lxqt::Wallet::getWalletBackend( lxqt::Wallet::kwalletBackEnd ) ;
+		m_wallet->setInterfaceObject( this ) ;
+		m_wallet->open( utility::walletName(),utility::applicationName() ) ;
+	}else if( m_ui->PassPhraseField->text() == tr( INTERNAL_WALLET ) ){
+		m_wallet = lxqt::Wallet::getWalletBackend( lxqt::Wallet::internalBackEnd ) ;
+		m_wallet->setInterfaceObject( this ) ;
+		m_wallet->open( utility::walletName(),utility::applicationName() ) ;
+	}else if( m_ui->PassPhraseField->text() == tr( GNOME_WALLET ) ){
+		m_wallet = lxqt::Wallet::getWalletBackend( lxqt::Wallet::secretServiceBackEnd ) ;
+		m_wallet->setInterfaceObject( this ) ;
+		m_wallet->open( utility::walletName(),utility::applicationName() ) ;
+	}else{
+		this->openVolume( m_ui->PassPhraseField->text() ) ;
+	}
+}
+
+void passwordDialog::openVolume( QString passPhraseField )
+{
 	m_device = utility::resolvePath( m_ui->OpenVolumePath->text() ) ;
 
-	QString passPhraseField = m_ui->PassPhraseField->text() ;
-	m_key = m_ui->PassPhraseField->text() ;
 	m_point = m_ui->MountPointPath->text() ;
 	if( m_point.isEmpty() || passPhraseField.isEmpty() || m_device.isEmpty() ){
 		DialogMsg msg( this ) ;
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) );
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
 	}
 
 	if( m_point.contains( QString( "/" ) ) ){
 		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "ERROR" ),tr( "\"/\" character is not allowed in mount name field" ) );
-		m_ui->OpenVolumePath->setFocus();
+		msg.ShowUIOK( tr( "ERROR" ),tr( "\"/\" character is not allowed in mount name field" ) ) ;
+		m_ui->OpenVolumePath->setFocus() ;
 		return ;
 	}
 
@@ -374,23 +442,14 @@ void passwordDialog::buttonOpenClicked( void )
 
 	if ( m_ui->radioButtonPassPhraseFromFile->isChecked() ){
 		passtype = QString( "-f" ) ;
-		passPhraseField = utility::resolvePath( passPhraseField );
+		passPhraseField = utility::resolvePath( passPhraseField ) ;
 	}else if( m_ui->radioButtonPassPhrase->isChecked() ){
-		passtype = QString( "-p" );
+		m_key = m_ui->PassPhraseField->text() ;
+		passtype = QString( "-p" ) ;
 	}else if( m_ui->radioButtonPlugin->isChecked() ){
-
-		if( m_ui->PassPhraseField->text() == QString( "kwallet" ) ){
-
-			if( kwalletplugin::hasFunctionality() ){
-				passtype = QString( "-p" );
-				m_key = this->getKeyFromKWallet() ;
-
-				if( m_key.isEmpty() ){
-					return ;
-				}
-			}else{
-				passtype = QString( "-G" ) ;
-			}
+		QString r = m_ui->PassPhraseField->text() ;
+		if( r == tr( KWALLET ) || r == tr( INTERNAL_WALLET ) || r == tr( GNOME_WALLET ) ){
+			passtype = QString( "-p" ) ;
 		}else{
 			passtype = QString( "-G" ) ;
 		}
@@ -401,10 +460,8 @@ void passwordDialog::buttonOpenClicked( void )
 	if( passtype == QString( "-p" ) ){
 		passtype = QString( "-f" ) ;
 		passPhraseField = socketSendKey::getSocketPath() ;
-		this->sendKey( passPhraseField );
+		this->sendKey( passPhraseField ) ;
 	}
-
-	//savemountpointpath::savePath( m_ui->MountPointPath->text(),QString( "zuluCrypt-MountPointPath" ) ) ;
 
 	QString a = QString( ZULUCRYPTzuluCrypt ) ;
 	QString b = m_device ;
@@ -420,112 +477,76 @@ void passwordDialog::buttonOpenClicked( void )
 	runInThread * ovt = new runInThread( exe ) ;
 	connect( ovt,SIGNAL( finished( int,QString ) ),this,SLOT( threadfinished( int,QString ) ) ) ;
 	m_isWindowClosable = false ;
-	this->disableAll();
-	ovt->start();
+	this->disableAll() ;
+	ovt->start() ;
 }
 
 void passwordDialog::sendKey( QString sockpath )
 {
 	socketSendKey * sk = new socketSendKey( this,sockpath,m_key.toAscii() ) ;
-	sk->sendKey();
-}
-
-QString passwordDialog::getKeyFromKWallet()
-{
-	QString key ;
-
-	DialogMsg msg( this ) ;
-
-	if( kwalletplugin::folderDoesNotExist() ){
-
-		msg.ShowUIOK( tr( "ERROR"),tr( "\"%1\" wallet is not configured,go to:\n\"menu->options->manage kwallet\"\n to configure it and then add this volume first before continuing" ).arg( kwalletplugin::wallet() ) ) ;
-		return key ;
-	}
-
-	QString id = m_ui->OpenVolumePath->text() ;
-
-	QString keyID ;
-
-	if( id.startsWith( QString( "UUID=" ) ) ){
-		keyID = id ;
-	}else{
-		keyID = utility::getUUIDFromPath( id ) ;
-		if( keyID.isEmpty() ){
-			keyID = m_ui->OpenVolumePath->text() ;
-		}
-	}
-
-	kwalletplugin kWallet( m_parent ) ;
-
-	if( kWallet.open() ){
-		key = kWallet.getKey( keyID ) ;
-		if( key.isEmpty() ){
-			msg.ShowUIOK( tr( "ERROR" ),tr( "the volume does not appear to have an entry in the wallet" ) ) ;
-		}
-		kWallet.close();
-	}
-
-	return key ;
+	sk->sendKey() ;
 }
 
 void passwordDialog::disableAll()
 {
-	m_ui->pushButtonPlugin->setEnabled( false );
-	m_ui->checkBoxReadOnly->setEnabled( false );
-	m_ui->groupBox->setEnabled( false );
-	m_ui->labelMoutPointPath->setEnabled( false );
-	m_ui->labelPassphrase->setEnabled( false );
-	m_ui->labelVolumePath->setEnabled( false );
-	m_ui->MountPointPath->setEnabled( false );
-	m_ui->OpenVolumePath->setEnabled( false );
-	m_ui->PassPhraseField->setEnabled( false );
-	m_ui->PushButtonCancel->setEnabled( false );
-	m_ui->PushButtonMountPointPath->setEnabled( false );
-	m_ui->PushButtonOpen->setEnabled( false );
-	m_ui->pushButtonPassPhraseFromFile->setEnabled( false );
-	m_ui->PushButtonVolumePath->setEnabled( false );
-	m_ui->radioButtonPassPhrase->setEnabled( false );
-	m_ui->radioButtonPassPhraseFromFile->setEnabled( false );
-	m_ui->radioButtonPassPhrase->setEnabled( false );
-	m_ui->radioButtonPlugin->setEnabled( false );
-	m_ui->pbKeyOption->setEnabled( false );
+	m_ui->pushButtonPlugin->setEnabled( false ) ;
+	m_ui->checkBoxReadOnly->setEnabled( false ) ;
+	m_ui->groupBox->setEnabled( false ) ;
+	m_ui->labelMoutPointPath->setEnabled( false ) ;
+	m_ui->labelPassphrase->setEnabled( false ) ;
+	m_ui->labelVolumePath->setEnabled( false ) ;
+	m_ui->MountPointPath->setEnabled( false ) ;
+	m_ui->OpenVolumePath->setEnabled( false ) ;
+	m_ui->PassPhraseField->setEnabled( false ) ;
+	m_ui->PushButtonCancel->setEnabled( false ) ;
+	m_ui->PushButtonMountPointPath->setEnabled( false ) ;
+	m_ui->PushButtonOpen->setEnabled( false ) ;
+	m_ui->pushButtonPassPhraseFromFile->setEnabled( false ) ;
+	m_ui->PushButtonVolumePath->setEnabled( false ) ;
+	m_ui->radioButtonPassPhrase->setEnabled( false ) ;
+	m_ui->radioButtonPassPhraseFromFile->setEnabled( false ) ;
+	m_ui->radioButtonPassPhrase->setEnabled( false ) ;
+	m_ui->radioButtonPlugin->setEnabled( false ) ;
+	m_ui->pbKeyOption->setEnabled( false ) ;
 }
 
 void passwordDialog::enableAll()
 {
-	m_ui->pushButtonPlugin->setEnabled( true );
-	m_ui->checkBoxReadOnly->setEnabled( true );
-	m_ui->groupBox->setEnabled( true );
-	m_ui->labelMoutPointPath->setEnabled( true );
-	m_ui->labelPassphrase->setEnabled( true );
-	m_ui->labelVolumePath->setEnabled( true );
-	m_ui->MountPointPath->setEnabled( true );
-	m_ui->OpenVolumePath->setEnabled( true );
-	m_ui->PassPhraseField->setEnabled( true );
-	m_ui->PushButtonCancel->setEnabled( true );
-	m_ui->PushButtonMountPointPath->setEnabled( true );
-	m_ui->PushButtonOpen->setEnabled( true );
-	m_ui->pushButtonPassPhraseFromFile->setEnabled( true );
-	m_ui->PushButtonVolumePath->setEnabled( true );
-	m_ui->radioButtonPassPhrase->setEnabled( true );
-	m_ui->radioButtonPassPhraseFromFile->setEnabled( true );
-	m_ui->radioButtonPassPhrase->setEnabled( true );
-	m_ui->radioButtonPlugin->setEnabled( true );
+	m_ui->pushButtonPlugin->setEnabled( true ) ;
+	m_ui->checkBoxReadOnly->setEnabled( true ) ;
+	m_ui->groupBox->setEnabled( true ) ;
+	m_ui->labelMoutPointPath->setEnabled( true ) ;
+	m_ui->labelPassphrase->setEnabled( true ) ;
+	m_ui->labelVolumePath->setEnabled( true ) ;
+	m_ui->MountPointPath->setEnabled( true ) ;
+	m_ui->OpenVolumePath->setEnabled( true ) ;
+	m_ui->PassPhraseField->setEnabled( true ) ;
+	m_ui->PushButtonCancel->setEnabled( true ) ;
+	m_ui->PushButtonMountPointPath->setEnabled( true ) ;
+	m_ui->PushButtonOpen->setEnabled( true ) ;
+	m_ui->pushButtonPassPhraseFromFile->setEnabled( true ) ;
+	m_ui->PushButtonVolumePath->setEnabled( true ) ;
+	m_ui->radioButtonPassPhrase->setEnabled( true ) ;
+	m_ui->radioButtonPassPhraseFromFile->setEnabled( true ) ;
+	m_ui->radioButtonPassPhrase->setEnabled( true ) ;
+	m_ui->radioButtonPlugin->setEnabled( true ) ;
 
 	if( m_open_with_path ){
-		m_ui->OpenVolumePath->setEnabled( false );
-		m_ui->PushButtonVolumePath->setEnabled( false );
+		m_ui->OpenVolumePath->setEnabled( false ) ;
+		m_ui->PushButtonVolumePath->setEnabled( false ) ;
 	}
 
 	if( m_ui->radioButtonPassPhrase->isChecked() ){
-		m_ui->pushButtonPassPhraseFromFile->setEnabled( false );
-		m_ui->pushButtonPlugin->setEnabled( false );
+		m_ui->pushButtonPassPhraseFromFile->setEnabled( false ) ;
+		m_ui->pushButtonPlugin->setEnabled( false ) ;
+		m_ui->PassPhraseField->setEnabled( true ) ;
 	}else{
-		m_ui->pbKeyOption->setEnabled( true );
+		m_ui->pbKeyOption->setEnabled( true ) ;
+		m_ui->PassPhraseField->setEnabled( false ) ;
 	}
 
 	if( m_ui->radioButtonPassPhraseFromFile->isChecked() ){
-		m_ui->pushButtonPlugin->setEnabled( false );
+		m_ui->pushButtonPlugin->setEnabled( false ) ;
 	}
 }
 
@@ -534,25 +555,25 @@ void passwordDialog::fileManagerOpenStatus( int exitCode, int exitStatus,int sta
 	Q_UNUSED( startError ) ;
 	if( exitCode != 0 || exitStatus != 0 ){
 		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "warning" ),tr( "could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) );
+		msg.ShowUIOK( tr( "warning" ),tr( "could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) ) ;
 	}
 }
 
 void passwordDialog::success( QString output )
 {
 	if( utility::mapperPathExists( m_device ) ){
-		this->complete( output );
+		this->complete( output ) ;
 		openmountpointinfilemanager * omp = new openmountpointinfilemanager( m_folderOpener,utility::mountPath( m_point ) ) ;
 		connect( omp,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
-		omp->start();
+		omp->start() ;
 	}else{
 		/*
 		 * we arrive here if zuluCrypt-cli reports a volume was opened but it was not.
 		 * most likely reason for getting here is if it crashed.
 		 */
-		DialogMsg msg( this );
+		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR!" ),tr( "An error has occured and the volume could not be opened" ) ) ;
-		this->HideUI();
+		this->HideUI() ;
 	}
 }
 
@@ -563,62 +584,62 @@ void passwordDialog::complete( QString output )
 	list.append( utility::mountPath( m_point ) ) ;
 
 	if( output.contains( QString( "luks" ) ) ){
-		list.append( QString( "luks" ) );
+		list.append( QString( "luks" ) ) ;
 	}else if( output.contains( QString( "plain" ) ) ){
-		list.append( QString( "plain" ) );
+		list.append( QString( "plain" ) ) ;
 	}else if( output.contains( QString( "tcrypt" ) ) ){
-		list.append( QString( "tcrypt" ) );
+		list.append( QString( "tcrypt" ) ) ;
 	}else{
-		list.append( QString( "Nil" ) );
+		list.append( QString( "Nil" ) ) ;
 	}
 	tablewidget::addRowToTable( m_table,list ) ;
 
-	this->HideUI();
+	this->HideUI() ;
 }
 
 void passwordDialog::threadfinished( int status,QString output )
 {
 	m_isWindowClosable = true ;
-	DialogMsg msg( this );
+	DialogMsg msg( this ) ;
 	switch ( status ){
-		case 0 : return success( output );
+		case 0 : return success( output ) ;
 		case 1 : msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to mount ntfs file system using ntfs-3g,is ntfs-3g package installed?" ) ) ;		break ;
-		case 2 : msg.ShowUIOK( tr( "ERROR!" ),tr( "there seem to be an open volume accociated with given address" ) );				break ;
+		case 2 : msg.ShowUIOK( tr( "ERROR!" ),tr( "there seem to be an open volume accociated with given address" ) ) ;				break ;
 		case 3 : msg.ShowUIOK( tr( "ERROR!" ),tr( "no file or device exist on given path" ) ) ; 						break ;
-		case 4 : msg.ShowUIOK( tr( "ERROR!" ),tr( "volume could not be opened with the presented key" ) );					break ;
+		case 4 : msg.ShowUIOK( tr( "ERROR!" ),tr( "volume could not be opened with the presented key" ) ) ;					break ;
 		case 5 : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to mount the device with given options" ) ) ;				break ;
-		case 6 : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open device in read write mode or device does not exist" ) );	break ;
-		case 7 : msg.ShowUIOK( tr( "ERROR!" ),tr( "only root user can perform this operation" ) );						break ;
+		case 6 : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open device in read write mode or device does not exist" ) ) ;	break ;
+		case 7 : msg.ShowUIOK( tr( "ERROR!" ),tr( "only root user can perform this operation" ) ) ;						break ;
 		case 8 : msg.ShowUIOK( tr( "ERROR!" ),tr( "-O and -m options can not be used together" ) ) ;						break ;
-		case 9 : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not create mount point, invalid path or path already taken" ) );			break ;
-		case 10: msg.ShowUIOK( tr( "ERROR!" ),tr( "shared mount point path aleady taken" ) );							break ;
-		case 11: msg.ShowUIOK( tr( "ERROR!" ),tr( "there seem to be an opened mapper associated with the device" ) );				break ;
-		case 12: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get a passphrase from the module" ) );						break ;
-		case 13: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get passphrase in silent mode" ) );						break ;
-		case 14: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient memory to hold passphrase" ) );							break ;
-		case 15: msg.ShowUIOK( tr( "ERROR!" ),tr( "one or more required argument(s) for this operation is missing" ) );				break ;
-		case 16: msg.ShowUIOK( tr( "ERROR!" ),tr( "invalid path to key file" ) );								break ;
-		case 17: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get enought memory to hold the key file" ) );					break ;
-		case 18: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open key file for reading" ) );					break ;
-		case 19: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get a passphrase through a local socket" ) );					break ;
-		case 20: msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to mount a filesystem:invalid/unsupported mount option or unsupported file system encountered" ) );	break ;
-		case 21: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not create a lock on /etc/mtab" ) );							break ;
+		case 9 : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not create mount point, invalid path or path already taken" ) ) ;			break ;
+		case 10: msg.ShowUIOK( tr( "ERROR!" ),tr( "shared mount point path aleady taken" ) ) ;							break ;
+		case 11: msg.ShowUIOK( tr( "ERROR!" ),tr( "there seem to be an opened mapper associated with the device" ) ) ;				break ;
+		case 12: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get a passphrase from the module" ) ) ;						break ;
+		case 13: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get passphrase in silent mode" ) ) ;						break ;
+		case 14: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient memory to hold passphrase" ) ) ;							break ;
+		case 15: msg.ShowUIOK( tr( "ERROR!" ),tr( "one or more required argument(s) for this operation is missing" ) ) ;				break ;
+		case 16: msg.ShowUIOK( tr( "ERROR!" ),tr( "invalid path to key file" ) ) ;								break ;
+		case 17: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get enought memory to hold the key file" ) ) ;					break ;
+		case 18: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open key file for reading" ) ) ;					break ;
+		case 19: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get a passphrase through a local socket" ) ) ;					break ;
+		case 20: msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to mount a filesystem:invalid/unsupported mount option or unsupported file system encountered" ) ) ;	break ;
+		case 21: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not create a lock on /etc/mtab" ) ) ;							break ;
 		case 113:msg.ShowUIOK( tr( "ERROR!" ),tr( "a non supported device encountered,device is missing or permission denied\n\
 Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The device has LVM or MDRAID signature" ) ) ;					break ;
-		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR with status number %1 encountered" ).arg( status ) );
+		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR with status number %1 encountered" ).arg( status ) ) ;
 	}
 
-	this->enableAll();
+	this->enableAll() ;
 
 	if( status == 4 ){
-		m_ui->PassPhraseField->clear();
-		m_ui->PassPhraseField->setFocus();
+		m_ui->PassPhraseField->clear() ;
+		m_ui->PassPhraseField->setFocus() ;
 	}
 }
 
 passwordDialog::~passwordDialog()
 {
-	m_pluginMenu->deleteLater();
+	m_pluginMenu->deleteLater() ;
 	delete m_ui ;
 }
 

@@ -31,9 +31,9 @@ kwalletconfiginput::kwalletconfiginput( QWidget * parent ) : QDialog( parent ),m
 {
 	m_ui->setupUi( this ) ;
 
-	this->setFixedSize( this->size() );
+	this->setFixedSize( this->size() ) ;
 	if( parent ){
-		this->setFont( parent->font() );
+		this->setFont( parent->font() ) ;
 	}
 
 	m_ui->lineEditVolumeID->setEnabled( false ) ;
@@ -41,7 +41,7 @@ kwalletconfiginput::kwalletconfiginput( QWidget * parent ) : QDialog( parent ),m
 	m_ui->lineEditRepeatKey->setEchoMode( QLineEdit::Password ) ;
 
 	connect( m_ui->pushButtonAdd,SIGNAL( clicked() ),this,SLOT( pbAdd() ) ) ;
-	connect( m_ui->pushButtonCancel,SIGNAL( clicked() ),this,SLOT( HideUI() ) ) ;
+	connect( m_ui->pushButtonCancel,SIGNAL( clicked() ),this,SLOT( slotCancel() ) ) ;
 	connect( m_ui->pushButtonImageFile,SIGNAL( clicked() ),this,SLOT( pbImageFilePath() ) ) ;
 	connect( m_ui->pushButtonVolume,SIGNAL( clicked() ),this,SLOT( pbVolumePath() ) ) ;
 
@@ -61,6 +61,7 @@ void kwalletconfiginput::ShowUI()
 
 void kwalletconfiginput::HideUI()
 {
+	this->hide() ;
 	this->deleteLater() ;
 }
 
@@ -69,7 +70,7 @@ void kwalletconfiginput::pbAdd()
 	QString volumeID  = m_ui->lineEditVolumeID->text() ;
 	QString comment   = m_ui->lineEditComment->text()  ;
 	QString key       = m_ui->lineEditKey->text()      ;
-	QString repeatKey = m_ui->lineEditRepeatKey->text();
+	QString repeatKey = m_ui->lineEditRepeatKey->text() ;
 
 	if( volumeID.isEmpty() || key.isEmpty() || repeatKey.isEmpty() ){
 		DialogMsg msg( this ) ;
@@ -87,13 +88,20 @@ void kwalletconfiginput::pbAdd()
 		comment = QString( "Nil" ) ;
 	}
 
+	this->hide() ;
 	emit add( volumeID,comment,key ) ;
+	//this->HideUI() ;
+}
+
+void kwalletconfiginput::slotCancel()
+{
+	emit cancel() ;
 	this->HideUI() ;
 }
 
 void kwalletconfiginput::pbImageFilePath()
 {
-	QString x = QFileDialog::getOpenFileName( this,tr( "select a luks volume" ),QDir::homePath(),0 );
+	QString x = QFileDialog::getOpenFileName( this,tr( "select a luks volume" ),QDir::homePath(),0 ) ;
 
 	if( x.isEmpty() ){
 		return ;
@@ -113,8 +121,8 @@ void kwalletconfiginput::pbVolumePath()
 	openvolume * op = new openvolume( this ) ;
 	connect( op,SIGNAL( HideUISignal() ),op,SLOT( deleteLater() ) ) ;
 	connect( op,SIGNAL( clickedPartition( QString ) ),this,SLOT( setvolumeID( QString ) ) ) ;
-	op->showEncryptedOnly();
-	op->ShowAllPartitions();
+	op->showEncryptedOnly() ;
+	op->ShowAllPartitions() ;
 }
 
 void kwalletconfiginput::setvolumeID( QString id )
@@ -139,5 +147,6 @@ void kwalletconfiginput::focus()
 void kwalletconfiginput::closeEvent( QCloseEvent * e )
 {
 	e->ignore() ;
+	emit cancel() ;
 	this->HideUI() ;
 }

@@ -33,7 +33,7 @@ openmountpointinfilemanager::openmountpointinfilemanager( QString folderOpener,Q
 
 void openmountpointinfilemanager::start()
 {
-	QThreadPool::globalInstance()->start( this );
+	QThreadPool::globalInstance()->start( this ) ;
 }
 
 void openmountpointinfilemanager::startError( QProcess::ProcessError error )
@@ -46,20 +46,20 @@ void openmountpointinfilemanager::run()
 {
 	QDir dir( m_path ) ;
 	if( dir.exists() ){
-		QProcess * exe = new QProcess();
+		QProcess * exe = new QProcess() ;
 		m_path.replace( "\"","\"\"\"" ) ;
-		//qRegisterMetaType<QProcess::ProcessError>( "QProcess::ProcessError" );
+		//qRegisterMetaType<QProcess::ProcessError>( "QProcess::ProcessError" ) ;
 		//connect( exe,SIGNAL( error( QProcess::ProcessError ) ),this,SLOT( startError( QProcess::ProcessError ) ) ) ;
-		exe->start( QString( "%1 \"%2\"" ).arg( m_folderOpener ).arg( m_path ) );
+		exe->start( QString( "%1 \"%2\"" ).arg( m_folderOpener ).arg( m_path ) ) ;
 		exe->waitForFinished() ;
 		m_exitCode = exe->exitCode() ;
 		m_exitStatus = exe->exitStatus() ;
-		exe->close();
-		exe->deleteLater();
+		exe->close() ;
+		exe->deleteLater() ;
 	}
 }
 
 openmountpointinfilemanager::~openmountpointinfilemanager()
 {
-	emit errorStatus( m_exitCode,m_exitStatus,m_startError );
+	emit errorStatus( m_exitCode,m_exitStatus,m_startError ) ;
 }

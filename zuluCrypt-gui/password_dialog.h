@@ -33,6 +33,12 @@ class QCloseEvent ;
 class QTableWidget ;
 class QMenu ;
 
+namespace lxqt {
+namespace Wallet {
+class Wallet ;
+}
+}
+
 class passwordDialog :  public QDialog
 {
 	Q_OBJECT
@@ -54,6 +60,7 @@ private slots :
 	void pbPlugin( void ) ;
 	void keyTextChanged( QString ) ;
 	void buttonOpenClicked( void ) ;
+	void walletIsOpen( bool ) ;
 	void mount_point( void );
 	void clickedPassPhraseFromFileButton( void ) ;
 	void passphraseFromFileOption( void ) ;
@@ -66,9 +73,9 @@ private slots :
 	void cbStateChanged( int );
 	void fileManagerOpenStatus( int exitCode,int exitStatus,int startError ) ;
 private :
+	void openVolume( QString ) ;
 	QString getUUIDFromPath( QString ) ;
 	void sendKey( QString sockpath ) ;
-	QString getKeyFromKWallet( void ) ;
 	void setDefaultOpenMode( void );
 	void disableAll( void );
 	void enableAll( void ) ;
@@ -84,6 +91,7 @@ private :
 	QString m_device ;
 	QString m_point ;
 	QString m_folderOpener ;
+	lxqt::Wallet::Wallet * m_wallet ;
 };
 
 #endif // PASSWORD_DIALOG_H

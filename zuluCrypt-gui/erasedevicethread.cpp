@@ -44,7 +44,7 @@ erasedevicethread::erasedevicethread( QString path )
 
 void erasedevicethread::start()
 {
-	QThreadPool::globalInstance()->start( this );
+	QThreadPool::globalInstance()->start( this ) ;
 }
 
 int erasedevicethread::writeJunk()
@@ -84,13 +84,13 @@ int erasedevicethread::writeJunk()
 		k = ( int ) ( size_written * 100 / size ) ;
 
 		if( k > j ){
-			emit progress( k );
+			emit progress( k ) ;
 		}
 		j = k ;
 	}while( size_written < size ) ;
 
-	file.close();
-	random.close();
+	file.close() ;
+	random.close() ;
 
 	return 0 ;
 }
@@ -105,7 +105,7 @@ void erasedevicethread::run()
 		 * write random data using data from reading "/dev/urandom", slow
 		 * but dependable
 		 */
-		m_status = this->writeJunk();
+		m_status = this->writeJunk() ;
 	}else{
 		/*
 		 * write raandom data using cryptsetup,much faster but
@@ -116,8 +116,8 @@ void erasedevicethread::run()
 		if( m_status != 0 ){
 			return ;
 		}
-		this->writeJunkThroughMapper();
-		this->closeMapper();
+		this->writeJunkThroughMapper() ;
+		this->closeMapper() ;
 	}
 }
 
@@ -159,12 +159,12 @@ void erasedevicethread::writeJunkThroughMapper()
 		i = ( int ) ( size_written * 100 / dev_size ) ;
 
 		if( i > j ){
-			emit progress( i );
+			emit progress( i ) ;
 			j = i ;
 		}
 	}
 
-	fd.close();
+	fd.close() ;
 }
 
 void erasedevicethread::closeMapper()
@@ -172,20 +172,20 @@ void erasedevicethread::closeMapper()
 	QString exe = QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( m_path ) ;
 
 	QProcess p ;
-	p.start( exe );
-	p.waitForFinished();
-	p.close();
+	p.start( exe ) ;
+	p.waitForFinished() ;
+	p.close() ;
 }
 
 int erasedevicethread::openMapper()
 {
-	QString exe = QString( "%1 -k -J -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( m_path );
+	QString exe = QString( "%1 -k -J -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( m_path ) ;
 
 	QProcess p ;
-	p.start( exe );
-	p.waitForFinished();
+	p.start( exe ) ;
+	p.waitForFinished() ;
 	int st = p.exitCode() ;
-	p.close();
+	p.close() ;
 
 	return st ;
 }
@@ -197,5 +197,5 @@ void erasedevicethread::cancel()
 
 erasedevicethread::~erasedevicethread()
 {
-	emit exitStatus( m_status );
+	emit exitStatus( m_status ) ;
 }

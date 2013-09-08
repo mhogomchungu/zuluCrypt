@@ -31,32 +31,32 @@ userfont::userfont( QWidget * parent )
 QFont userfont::getFont()
 {
 	QString fontPath = QDir::homePath() + QString( "/.zuluCrypt/font" ) ;
-	QFile x( fontPath );
+	QFile x( fontPath ) ;
 	if( x.open( QIODevice::ReadOnly ) == false ){
 		return m_parent->font() ;
 		/*
 		x.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
 		QString s = QString( "Sans Serif\n8\nnormal\nnormal\n" ) ;
 		x.write( s.toAscii() ) ;
-		x.close();
+		x.close() ;
 		*/
 	}else{
 		QStringList xs = QString( x.readAll() ).split( "\n" ) ;
-		x.close();
+		x.close() ;
 		QFont F ;
-		F.setFamily( xs.at( 0 ) );
-		F.setPointSize( xs.at( 1 ).toInt() );
+		F.setFamily( xs.at( 0 ) ) ;
+		F.setPointSize( xs.at( 1 ).toInt() ) ;
 		if( xs.at( 2 ) == QString( "normal" ) ){
-			F.setStyle( QFont::StyleNormal );
+			F.setStyle( QFont::StyleNormal ) ;
 		}else if( xs.at( 2 ) == QString( "italic" ) ){
-			F.setStyle( QFont::StyleItalic );
+			F.setStyle( QFont::StyleItalic ) ;
 		}else{
-			F.setStyle( QFont::StyleOblique );
+			F.setStyle( QFont::StyleOblique ) ;
 		}
 		if( xs.at( 3 ) == QString( "normal" ) ){
-			F.setWeight( QFont::Normal );
+			F.setWeight( QFont::Normal ) ;
 		}else{
-			F.setWeight( QFont::Bold );
+			F.setWeight( QFont::Bold ) ;
 		}
 		return F ;
 	}
@@ -82,5 +82,5 @@ void userfont::saveFont( QFont Font )
 	QFile f( QDir::homePath() + QString( "/.zuluCrypt/font" ) ) ;
 	f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
 	f.write( s.toAscii() ) ;
-	f.close();
+	f.close() ;
 }

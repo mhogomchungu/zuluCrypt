@@ -38,7 +38,7 @@ void createFileThread::cancelOperation()
 
 void createFileThread::start()
 {
-	QThreadPool::globalInstance()->start( this );
+	QThreadPool::globalInstance()->start( this ) ;
 }
 
 int createFileThread::createContainerFile( void )
@@ -70,14 +70,14 @@ int createFileThread::createContainerFile( void )
 		k = ( int ) ( size_written * 100 / m_size ) ;
 
 		if( k > j ){
-			emit progress( k );
+			emit progress( k ) ;
 		}
 		j = k ;
 	}while( size_written < m_size ) ;
 
 	file.setPermissions( QFile::ReadOwner|QFile::WriteOwner ) ;
-	file.close();
-	random.close();
+	file.close() ;
+	random.close() ;
 
 	return m_status == -1 ? -1 : 0 ;
 }
@@ -98,7 +98,7 @@ int createFileThread::createContainerFileUsinggCrypt( void )
 	f.read( plaintext,GSIZE ) ;
 	f.read( iv,GSIZE ) ;
 	f.read( key,GSIZE ) ;
-	f.close();
+	f.close() ;
 
 	f.setFileName( m_file ) ;
 	f.open( QIODevice::WriteOnly ) ;
@@ -111,7 +111,7 @@ int createFileThread::createContainerFileUsinggCrypt( void )
 
 	gcry_cipher_setiv( hd,iv,GSIZE ) ;
 
-	emit progress( 0 );
+	emit progress( 0 ) ;
 
 	qint64 size_written = 0 ;
 
@@ -133,14 +133,14 @@ int createFileThread::createContainerFileUsinggCrypt( void )
 		k = ( int ) ( size_written * 100 / m_size ) ;
 
 		if( k > j )
-			emit progress( k );
+			emit progress( k ) ;
 		j = k ;
 	}while( size_written < m_size ) ;
 
-	emit progress( 100 );
+	emit progress( 100 ) ;
 
 	f.setPermissions( QFile::ReadOwner|QFile::WriteOwner ) ;
-	f.close();
+	f.close() ;
 
 	gcry_cipher_close ( hd ) ;
 
@@ -168,12 +168,12 @@ void createFileThread::run()
 		 * write raandom data using cryptsetup,much faster but
 		 * hangs on some kernels when the data to be written is large enough
 		 */
-		this->createFile();
+		this->createFile() ;
 
 		if( m_status != 0 ){
 			return ;
 		}
-		this->fillCreatedFileWithRandomData();
+		this->fillCreatedFileWithRandomData() ;
 	}
 }
 
@@ -186,13 +186,13 @@ void createFileThread::createFile()
 	if( !file.open( QIODevice::WriteOnly ) ){
 		return ;
 	}
-	emit progress( 0 );
+	emit progress( 0 ) ;
 
 	if( !file.resize( m_size ) ){
 
 		char data[ BLOCK_SIZE ];
 
-		memset( data,0,BLOCK_SIZE );
+		memset( data,0,BLOCK_SIZE ) ;
 
 		int x = 0 ;
 		int y = -1 ;
@@ -206,7 +206,7 @@ void createFileThread::createFile()
 				break ;
 			}
 			if( x > y ){
-				emit progress( x );
+				emit progress( x ) ;
 				y = x ;
 			}
 			file.write( data,BLOCK_SIZE ) ;
@@ -216,12 +216,12 @@ void createFileThread::createFile()
 			x = ( int )( data_written * 100 / m_size ) ;
 		}
 
-		emit doneCreatingFile();
-		emit progress( 100 );
+		emit doneCreatingFile() ;
+		emit progress( 100 ) ;
 	}
 
 	file.setPermissions( QFile::ReadOwner|QFile::WriteOwner ) ;
-	file.close();
+	file.close() ;
 }
 
 void createFileThread::fillCreatedFileWithRandomData()
@@ -238,11 +238,11 @@ void createFileThread::closeVolume()
 {
 	QString path = m_file ;
 	path.replace( "\"","\"\"\"" ) ;
-	QString exe = QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( path );
+	QString exe = QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( path ) ;
 	QProcess p ;
-	p.start( exe );
-	p.waitForFinished();
-	p.close();
+	p.start( exe ) ;
+	p.waitForFinished() ;
+	p.close() ;
 }
 
 void createFileThread::openVolume()
@@ -253,13 +253,13 @@ void createFileThread::openVolume()
 	 * We do not let the cli write random data to the file by using -X( we use -J )because we want to write the random data
 	 * ourselves giving us the ability to knoe exactly much data is already written
 	 */
-	QString exe = QString( "%1 -k -J -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( path );
+	QString exe = QString( "%1 -k -J -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( path ) ;
 
 	QProcess p ;
-	p.start( exe );
-	p.waitForFinished();
+	p.start( exe ) ;
+	p.waitForFinished() ;
 	m_status = p.exitCode() ;
-	p.close();
+	p.close() ;
 }
 
 void createFileThread::writeVolume()
@@ -276,9 +276,9 @@ void createFileThread::writeVolume()
 
 	char data[ SIZE ];
 
-	memset( data,0,SIZE );
+	memset( data,0,SIZE ) ;
 
-	emit progress( 0 );
+	emit progress( 0 ) ;
 
 	while( path.write( data,SIZE ) > 0 ){
 
@@ -288,7 +288,7 @@ void createFileThread::writeVolume()
 		j = ( int )( data_written * 100 / m_size ) ;
 
 		if( j > k ){
-			emit progress( j );
+			emit progress( j ) ;
 			k = j ;
 		}
 
@@ -297,11 +297,11 @@ void createFileThread::writeVolume()
 		}
 	}
 
-	emit progress( 100 );
-	path.close();
+	emit progress( 100 ) ;
+	path.close() ;
 }
 
 createFileThread::~createFileThread()
 {
-	emit exitStatus( m_status );
+	emit exitStatus( m_status ) ;
 }

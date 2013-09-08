@@ -29,6 +29,12 @@ class QAction ;
 class QTableWidgetItem ;
 class QTableWidget ;
 
+namespace lxqt {
+namespace Wallet {
+class Wallet ;
+}
+}
+
 #include "mainwindow.h"
 
 namespace Ui {
@@ -63,8 +69,9 @@ private slots:
 	void KeyFile( void ) ;
 	void cbMountReadOnlyStateChanged( int ) ;
 	void fileManagerOpenStatus( int exitCode, int exitStatus,int startError ) ;
+	void walletIsOpen( bool ) ;
 private:
-	QString getKeyFromWallet( QString ) ;
+	void openVolume( void ) ;
 	void enableAll( void ) ;
 	void disableAll( void ) ;
 	void closeEvent( QCloseEvent * );
@@ -72,10 +79,12 @@ private:
 	QString m_path ;
 	QString m_point ;
 	QString m_folderOpener ;
+	QString m_key ;
 	QMenu * m_menu ;
 	QTableWidget * m_table ;
 	bool m_working ;
 	bool m_autoOpenFolderOnMount ;
+	lxqt::Wallet::Wallet * m_wallet ;
 };
 
 #endif // KEYDIALOG_H

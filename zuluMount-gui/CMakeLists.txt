@@ -40,11 +40,7 @@ INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
 
 add_executable( zuluMount-gui ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
 
-if( BUILDKWALLET )
-	TARGET_LINK_LIBRARIES( zuluMount-gui sharedObject ${QT_LIBRARIES} ${blkid} zuluCryptPluginManager -lQtNetwork ${kwallet_library} )
-else( BUILDKWALLET )
-	TARGET_LINK_LIBRARIES( zuluMount-gui sharedObject ${QT_LIBRARIES} ${blkid} zuluCryptPluginManager -lQtNetwork )
-endif( BUILDKWALLET )
+TARGET_LINK_LIBRARIES( zuluMount-gui sharedObject lxqtwallet ${QT_LIBRARIES} ${blkid} zuluCryptPluginManager -lQtNetwork )
 
 set_target_properties( zuluMount-gui PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
 

@@ -23,43 +23,47 @@
 #include <QDialog>
 #include <QString>
 #include <QMap>
+#include "lxqt_wallet/frontend/lxqt_wallet.h"
 
 class QCloseEvent ;
 class QWidget ;
 class kwalletplugin ;
 class QTableWidgetItem ;
+class kwalletconfiginput ;
 
 namespace Ui {
-class kwalletconfig;
+class kwalletconfig ;
 }
 
 class kwalletconfig : public QDialog
 {
 	Q_OBJECT
-
 public:
-	explicit kwalletconfig( QWidget * parent = 0 );
+	explicit kwalletconfig( QWidget * parent = 0 ) ;
 	~kwalletconfig();
-	void ReShowUI( void ) ;
-	void ShowUI( void ) ;
+	void ShowUI( lxqt::Wallet::walletBackEnd ) ;
 	void HideUI( void ) ;
 signals:
 	void HideUISignal( void ) ;
 	void couldNotOpenWallet( void ) ;
 private slots:
-	void currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous );
+	void currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous ) ;
 	void itemClicked ( QTableWidgetItem * item ) ;
 	void pbDelete( void ) ;
 	void pbClose( void ) ;
 	void add( QString volumeID,QString comment,QString key ) ;
+	void cancel( void ) ;
 	void pbAdd( void ) ;
+	void walletIsOpen( bool ) ;
 private:
+	void enableAll( void ) ;
+	void disableAll( void ) ;
 	void failedToOpenWallet( void ) ;
-	void ShowWalletEntries( void );
-	Ui::kwalletconfig * m_ui;
+	void ShowWalletEntries( void ) ;
+	Ui::kwalletconfig * m_ui ;
 	void closeEvent( QCloseEvent * ) ;
-	kwalletplugin * m_wallet ;
-	QMap < QString,QString > m_map ;
+	lxqt::Wallet::Wallet * m_wallet ;
+	kwalletconfiginput * m_kwalletConfig ;
 };
 
 #endif // KWALLETCONFIG_H

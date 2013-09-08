@@ -44,11 +44,11 @@ bool auto_mount_helper::deviceIsSystem( const QString& device )
 {
 	QProcess p ;
 	QString exe = QString( "%1 -S" ).arg( zuluMount ) ;
-	p.start( exe );
+	p.start( exe ) ;
 	p.waitForFinished() ;
 	if( p.exitCode() == 0 ){
 		QString s = QString( p.readAll() ) ;
-		p.close();
+		p.close() ;
 		QStringList l = s.split( "\n" ) ;
 		int j = l.size() ;
 
@@ -66,7 +66,7 @@ void auto_mount_helper::volumeProperties( const QString& device )
 	QProcess p ;
 
 	QString exe = QString( "%1 -L -d \"%2\"" ).arg( zuluMount ).arg( device ) ;
-	p.start( exe );
+	p.start( exe ) ;
 	p.waitForFinished() ;
 	QString m = p.readAll() ;
 	QStringList l ;
@@ -76,7 +76,7 @@ void auto_mount_helper::volumeProperties( const QString& device )
 			if( this->deviceIsSystem( device ) ){
 				emit getVolumeSystemInfo( l ) ;
 			}else{
-				emit getVolumeInfo( l );
+				emit getVolumeInfo( l ) ;
 			}
 		}
 	}else{
@@ -164,7 +164,7 @@ QString auto_mount_helper::mdRaidPath( const QString& dev )
 				continue ;
 			}
 			dev_1 = QString( "/dev/md/" ) + e ;
-			f.setPath( dev_1 );
+			f.setPath( dev_1 ) ;
 			if( f.canonicalPath() == dev ){
 				return dev_1 ;
 			}
@@ -215,5 +215,5 @@ void auto_mount_helper::start( QString device,int type,u_int32_t mask )
 	m_device = device ;
 	m_type   = type ;
 	m_mask   = mask ;
-	QThreadPool::globalInstance()->start( this );
+	QThreadPool::globalInstance()->start( this ) ;
 }

@@ -24,7 +24,7 @@
 oneinstance::oneinstance( QObject * parent,QString socketPath,const char * methodName,QString device )
 {
 	m_device = device ;
-	this->setParent( parent );
+	this->setParent( parent ) ;
 	m_instanceExist = false ;
 	m_serverPath = QDir::homePath() + QString( "/.zuluCrypt-socket/" ) ;
 	m_methodName = methodName ;
@@ -37,7 +37,7 @@ oneinstance::oneinstance( QObject * parent,QString socketPath,const char * metho
 		m_instanceExist = true ;
 		m_localSocket = new QLocalSocket( this ) ;
 		connect( m_localSocket,SIGNAL( connected() ),this,SLOT( connected() ) ) ;
-		m_localSocket->connectToServer( m_serverPath );
+		m_localSocket->connectToServer( m_serverPath ) ;
 
 		if( m_localSocket->waitForConnected( 10000 ) ){
 			qDebug() << tr( "There seem to be another instance running,exiting this one" ) ;
@@ -49,10 +49,10 @@ oneinstance::oneinstance( QObject * parent,QString socketPath,const char * metho
 			 * and we are deleting it and hope the user will launch us again.
 			 */
 			QFile::remove( m_serverPath ) ;
-			this->startInstance();
+			this->startInstance() ;
 		}
 	}else{
-		this->startInstance();
+		this->startInstance() ;
 	}
 }
 
@@ -65,7 +65,7 @@ void oneinstance::startInstance()
 
 	connect( m_localServer,SIGNAL( newConnection() ),this,SLOT( gotConnection() ) ) ;
 
-	m_localServer->setMaxPendingConnections( 100 );
+	m_localServer->setMaxPendingConnections( 100 ) ;
 	m_localServer->listen( QString( m_serverPath ) ) ;
 }
 
@@ -88,13 +88,13 @@ void oneinstance::gotConnection()
 {
 	QLocalSocket * s = m_localServer->nextPendingConnection() ;
 	s->waitForReadyRead() ;
-	QByteArray data = s->readAll();
-	s->close();
-	s->deleteLater();
+	QByteArray data = s->readAll() ;
+	s->close() ;
+	s->deleteLater() ;
 	if( data.isEmpty() ){
-		emit raise();
+		emit raise() ;
 	}else{
-		emit raiseWithDevice( data );
+		emit raiseWithDevice( data ) ;
 	}
 }
 
@@ -105,7 +105,7 @@ void oneinstance::connected()
 		m_localSocket->waitForBytesWritten() ;
 	}
 
-	this->killProcess();
+	this->killProcess() ;
 }
 
 bool oneinstance::instanceExist()
@@ -116,11 +116,11 @@ bool oneinstance::instanceExist()
 oneinstance::~oneinstance()
 {
 	if( !m_instanceExist ){
-		m_localServer->close();
+		m_localServer->close() ;
 		delete m_localServer ;
 		QFile::remove( m_serverPath ) ;
 	}else{
-		m_localSocket->close();
+		m_localSocket->close() ;
 		delete m_localSocket ;
 	}
 }

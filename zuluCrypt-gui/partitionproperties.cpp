@@ -37,7 +37,7 @@ partitionproperties::partitionproperties( QString partitionType )
 
 void partitionproperties::start()
 {
-	QThreadPool::globalInstance()->start( this );
+	QThreadPool::globalInstance()->start( this ) ;
 }
 
 void partitionproperties::run()
@@ -57,7 +57,7 @@ void partitionproperties::run()
 
 	QStringList l = QString( p.readAllStandardOutput() ).split( "\n" ) ;
 
-	p.close();
+	p.close() ;
 	int j = l.size() - 1 ;
 	if( j < 1 ){
 		return ;
@@ -76,12 +76,12 @@ void partitionproperties::run()
 		if( entry.contains( QString( "member" ) ) ){
 			;
 		}else{
-			emit partitionProperties( list );
+			emit partitionProperties( list ) ;
 		}
 	}
 }
 
 partitionproperties::~partitionproperties()
 {
-	emit finished();
+	emit finished() ;
 }

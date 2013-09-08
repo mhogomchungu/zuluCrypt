@@ -18,8 +18,8 @@ void tablewidget::selectTableRow( QTableWidgetItem * current,QTableWidgetItem * 
 
 		if( previous->row() == current->row() ){
 			table = current->tableWidget() ;
-			table->setCurrentCell( current->row(),table->columnCount() - 1 );
-			table->setFocus();
+			table->setCurrentCell( current->row(),table->columnCount() - 1 ) ;
+			table->setFocus() ;
 			return ;
 		}
 	}
@@ -34,12 +34,12 @@ void tablewidget::selectTableRow( QTableWidgetItem * current,QTableWidgetItem * 
 			j = current->row() ;
 
 			for( i = 0 ; i < col ; i++ ){
-				table->item( j,i )->setSelected( true );
+				table->item( j,i )->setSelected( true ) ;
 			}
 		}
 
-		table->setCurrentCell( j,table->columnCount() -1 );
-		table->setFocus();
+		table->setCurrentCell( j,table->columnCount() -1 ) ;
+		table->setFocus() ;
 	}
 
 	if( previous ){
@@ -52,11 +52,11 @@ void tablewidget::selectTableRow( QTableWidgetItem * current,QTableWidgetItem * 
 			j = previous->row() ;
 
 			for( i = 0 ; i < col ; i++ ){
-				table->item( j,i )->setSelected( false );
+				table->item( j,i )->setSelected( false ) ;
 			}
 		}
 
-		table->setFocus();
+		table->setFocus() ;
 	}
 }
 
@@ -68,10 +68,10 @@ int tablewidget::addEmptyRow( QTableWidget * table )
 	table->insertRow( row ) ;
 	for( int i = 0 ; i < col ; i++ ){
 		item = new QTableWidgetItem() ;
-		item->setTextAlignment( Qt::AlignCenter );
-		table->setItem( row,i,item );
+		item->setTextAlignment( Qt::AlignCenter ) ;
+		table->setItem( row,i,item ) ;
 	}
-	table->setCurrentCell( row,col - 1 );
+	table->setCurrentCell( row,col - 1 ) ;
 	return row ;
 }
 
@@ -99,17 +99,17 @@ void tablewidget::addRowToTable( QTableWidget * table,QStringList& list )
 
 	int row = table->rowCount() ;
 
-	table->insertRow( row );
+	table->insertRow( row ) ;
 
 	for( int i = 0 ; i < j ; i++ ){
 
 		item = new QTableWidgetItem() ;
-		item->setText( list.at( i ) );
-		item->setTextAlignment( Qt::AlignCenter );
-		table->setItem( row,i,item );
+		item->setText( list.at( i ) ) ;
+		item->setTextAlignment( Qt::AlignCenter ) ;
+		table->setItem( row,i,item ) ;
 	}
 
-	table->setCurrentCell( row,j - 1 );
+	table->setCurrentCell( row,j - 1 ) ;
 }
 
 void tablewidget::addRowToTable( QTableWidget * table,QStringList& list,QFont & font )
@@ -125,33 +125,33 @@ void tablewidget::addRowToTable( QTableWidget * table,QStringList& list,QFont & 
 
 	int row = table->rowCount() ;
 
-	table->insertRow( row );
+	table->insertRow( row ) ;
 
 	for( int i = 0 ; i < j ; i++ ){
 
 		item = new QTableWidgetItem() ;
-		item->setText( list.at( i ) );
-		item->setTextAlignment( Qt::AlignCenter );
-		item->setFont( font );
-		table->setItem( row,i,item );
+		item->setText( list.at( i ) ) ;
+		item->setTextAlignment( Qt::AlignCenter ) ;
+		item->setFont( font ) ;
+		table->setItem( row,i,item ) ;
 	}
 
-	table->setCurrentCell( row,j - 1 );
+	table->setCurrentCell( row,j - 1 ) ;
 }
 
 
 void tablewidget::deleteRowFromTable( QTableWidget * table,int row )
 {
-	table->removeRow( row );
+	table->removeRow( row ) ;
 	if( table->rowCount() > 0 ){
-		table->setCurrentCell( table->rowCount() - 1,table->columnCount() - 1 );
+		table->setCurrentCell( table->rowCount() - 1,table->columnCount() - 1 ) ;
 	}
-	table->setFocus();
+	table->setFocus() ;
 }
 
 void tablewidget::selectRow( QTableWidget * table,int row )
 {
-	table->setCurrentCell( row,table->columnCount() - 1 );
+	table->setCurrentCell( row,table->columnCount() - 1 ) ;
 }
 
 void tablewidget::setText( QTableWidget * table,int row,int col,QString text )
@@ -159,8 +159,8 @@ void tablewidget::setText( QTableWidget * table,int row,int col,QString text )
 	QFont f = table->item( row,col )->font() ;
 
 	QTableWidgetItem * item = new QTableWidgetItem() ;
-	item->setText( text );
-	item->setTextAlignment( Qt::AlignCenter );
-	item->setFont( f );
-	table->setItem( row,col,item );
+	item->setText( text ) ;
+	item->setTextAlignment( Qt::AlignCenter ) ;
+	item->setFont( f ) ;
+	table->setItem( row,col,item ) ;
 }

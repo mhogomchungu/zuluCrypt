@@ -39,7 +39,7 @@ void savemountpointpath::savePath( QString path,QString fileName )
 		path = path.mid( 0,index + 1 ) ;
 		f.write( path.toAscii() ) ;
 	}
-	f.close();
+	f.close() ;
 }
 
 QString savemountpointpath::getPath( QString path,QString fileName )
@@ -53,7 +53,7 @@ QString savemountpointpath::getPath( QString path,QString fileName )
 	if( f.exists() ){
 		f.open( QIODevice::ReadOnly ) ;
 		e = QString( f.readAll() ) + path ;
-		f.close();
+		f.close() ;
 	}else{
 		e = QDir::homePath() + QString( "/" ) + path ;
 	}

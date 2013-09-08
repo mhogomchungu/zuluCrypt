@@ -1,0 +1,190 @@
+
+cmake_minimum_required(VERSION 2.6)
+cmake_policy(SET CMP0017 OLD)
+
+INCLUDE(FindPkgConfig)
+
+SET( QT_USE_QTCORE TRUE )
+SET( QT_USE_QTGUI TRUE )
+
+set( LIBRARY_VERSION "1.0.0" )
+
+find_package( Qt4 COMPONENTS REQUIRED )
+
+add_definitions( -I${Qt4_INCLUDE_DIR} )
+add_definitions( -I${QT_HEADERS_DIR} )
+add_definitions( -I"${PROJECT_BINARY_DIR}/frontend" )
+add_definitions( -I"${PROJECT_BINARY_DIR}/backend" )
+add_definitions( -I"${PROJECT_BINARY_DIR}" )
+
+INCLUDE( ${QT_USE_FILE} )
+
+INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
+
+INCLUDE( ${QT_USE_FILE} )
+
+INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
+
+if( NOSECRETSUPPORT )
+	SET( SECRET_SUPPORT "false" )
+	file( WRITE  ${PROJECT_BINARY_DIR}/storage_manager.h "\n#define HAS_SECRET_SUPPORT 0\n" )
+else()
+	pkg_check_modules( LIBSECRET libsecret-1 )
+
+	if( LIBSECRET_FOUND )
+		add_subdirectory( secret_service )
+		endif()
+	if( LIBSECRET_FOUND )
+		SET( SECRET_SUPPORT "true" )
+		file( WRITE  ${PROJECT_BINARY_DIR}/storage_manager.h "\n#define HAS_SECRET_SUPPORT 1\n" )
+	else()
+		SET( SECRET_SUPPORT "false" )
+		file( WRITE  ${PROJECT_BINARY_DIR}/storage_manager.h "\n#define HAS_SECRET_SUPPORT 0\n" )
+	endif()
+endif()
+
+if( NOKDESUPPORT )
+	add_definitions( -std=c++0x )
+
+	SET( KDE_SUPPORT "false" )
+	SET( KWALLET_SUPPORT "false" )
+	file( APPEND  ${PROJECT_BINARY_DIR}/storage_manager.h "\n#define HAS_KWALLET_SUPPORT 0\n" )
+else()
+	find_package( KDE4 )
+
+	include (KDE4Defaults)
+	include_directories(${KDE4_INCLUDES})
+	add_definitions( -I${KDE4_INCLUDE_DIR} )
+
+	add_definitions( -I${Qt4_INCLUDE_DIR} )
+	add_definitions( -I${QT_HEADERS_DIR} )
+
+	SET( KDE_SUPPORT "true" )
+
+	if( NOKWALLETSUPPORT )
+		SET( KWALLET_SUPPORT "false" )
+		file( APPEND  ${PROJECT_BINARY_DIR}/storage_manager.h "\n#define HAS_KWALLET_SUPPORT 0\n" )
+	else()
+		find_library( LIBKWALLETBACKEND libkwalletbackend.so )
+		if( NOT LIBKWALLETBACKEND )
+			# some distributions do not have libkwalletbackend.so for reasons i currently do not know
+			# look for libkwalletbackend.sp.4 when the above happen
+			find_library( LIBKWALLETBACKEND libkwalletbackend.so.4 )
+			file( APPEND  ${PROJECT_BINARY_DIR}/storage_manager.h "\n#define HAS_KWALLET_SUPPORT 0\n" )
+			SET( KWALLET_SUPPORT "false" )
+		else()
+			SET( KWALLET_SUPPORT "true" )
+			file( APPEND  ${PROJECT_BINARY_DIR}/storage_manager.h "\n#define HAS_KWALLET_SUPPORT 1\n" )
+		endif()
+
+		if( NOT LIBKWALLETBACKEND )
+			SET( KWALLET_SUPPORT "false" )
+			file( APPEND  ${PROJECT_BINARY_DIR}/storage_manager.h "\n#define HAS_KWALLET_SUPPORT 0\n" )
+			#message( FATAL_ERROR "could not find libkwalletbackend.so or libkwalletbackend.so.4,please make sure you have kwallet development libraries installed and try again" )
+		else()
+			SET( KWALLET_SUPPORT "true" )
+			file( APPEND  ${PROJECT_BINARY_DIR}/storage_manager.h "\n#define HAS_KWALLET_SUPPORT 1\n" )
+		endif()
+	endif()
+
+	find_library( LIBKDEUI libkdeui.so )
+	if( NOT LIBKDEUI )
+		# adding this one just in case the same case as above happen
+		find_library( LIBKDEUI libkdeui.so.5 )
+	endif()
+
+	if( NOT LIBKDEUI )
+		SET( KDE_SUPPORT "false" )
+		message( STATUS "could not find libkdeui.so or libkdeui.so.5,please make sure you have kde development libraries installed and try again" )
+	endif()
+
+	find_library( LIBKDECORE libkdecore.so )
+	if( NOT LIBKDECORE )
+		# adding this one just in case the same case as above happen
+		find_library( LIBKDECORE libkdecore.so.5 )
+	endif()
+
+	if( NOT LIBKDECORE )
+		SET( KDE_SUPPORT "false" )
+		message( STATUS "could not find libkdecore.so or libkdecore.so.5,please make sure you have kde development libraries installed and try again" )
+	endif()
+endif()
+
+if( KWALLET_SUPPORT )
+	message( STATUS "\n--------------------------------------------------------------------------" )
+	message( STATUS "kwallet support found,will build kwallet functionality" )
+	message( STATUS "-----------------------------------------------------------------------" )
+else()
+	message( STATUS "\n--------------------------------------------------------------------------" )
+	message( STATUS "kwallet support NOT found,will not build kwallet functionality" )
+	message( STATUS "-----------------------------------------------------------------------" )
+endif()
+
+if( SECRET_SUPPORT )
+	message( STATUS "\n--------------------------------------------------------------------------" )
+	message( STATUS "libsecret support found,will build libsecret functionality" )
+	message( STATUS "-----------------------------------------------------------------------" )
+else()
+	message( STATUS "\n--------------------------------------------------------------------------" )
+	message( STATUS "libsecret support NOT found,will not build libsecret functionality" )
+	message( STATUS "-----------------------------------------------------------------------" )
+endif()
+
+set( UI_FILES 	 changepassworddialog.ui password_dialog.ui )
+
+set( MOC_FILES 	 changepassworddialog.h lxqt_internal_wallet.h open_wallet_thread.h password_dialog.h )
+set( MOC_FILES_1 changepassworddialog.h lxqt_internal_wallet.h open_wallet_thread.h password_dialog.h lxqt_kwallet.h )
+set( MOC_FILES_2 changepassworddialog.h lxqt_internal_wallet.h open_wallet_thread.h password_dialog.h lxqt_kwallet.h lxqt_secret_service.h )
+set( MOC_FILES_3 changepassworddialog.h lxqt_internal_wallet.h open_wallet_thread.h password_dialog.h lxqt_secret_service.h )
+
+set( SRC 	changepassworddialog.cpp password_dialog.cpp lxqt_internal_wallet.cpp lxqt_wallet.cpp open_wallet_thread.cpp )
+set( SRC_1 	changepassworddialog.cpp password_dialog.cpp lxqt_internal_wallet.cpp lxqt_wallet.cpp open_wallet_thread.cpp lxqt_kwallet.cpp )
+set( SRC_2 	changepassworddialog.cpp password_dialog.cpp lxqt_internal_wallet.cpp lxqt_wallet.cpp open_wallet_thread.cpp lxqt_kwallet.cpp lxqt_secret_service.cpp )
+set( SRC_3 	changepassworddialog.cpp password_dialog.cpp lxqt_internal_wallet.cpp lxqt_wallet.cpp open_wallet_thread.cpp lxqt_secret_service.cpp )
+
+QT4_WRAP_UI( UI ${UI_FILES} )
+
+QT4_ADD_RESOURCES( ICONS icons.qrc )
+
+if( KDE_SUPPORT )
+	if( KWALLET_SUPPORT )
+		if( SECRET_SUPPORT )
+			QT4_WRAP_CPP( MOC ${MOC_FILES_2} )
+			add_library( lxqtwallet STATIC ${UI} ${SRC_2} ${MOC} ${ICONS} )
+			target_link_libraries( lxqtwallet secretService )
+			set( link_libraries "-L${KDE4_LIB_DIR} -L${QT_LIBRARY_DIR} ${LIBKDEUI} ${LIBKDECORE} ${LIBKWALLETBACKEND}" )
+		else()
+			QT4_WRAP_CPP( MOC ${MOC_FILES_1} )
+			add_library( lxqtwallet STATIC ${UI} ${SRC_1} ${MOC} ${ICONS} )
+			set( link_libraries "-L${KDE4_LIB_DIR} -L${QT_LIBRARY_DIR} ${LIBKDEUI} ${LIBKDECORE} ${LIBKWALLETBACKEND}" )
+		endif()
+	else()
+		if( SECRET_SUPPORT )
+			QT4_WRAP_CPP( MOC ${MOC_FILES_3} )
+			add_library( lxqtwallet STATIC ${UI} ${SRC_3} ${MOC} ${ICONS} )
+			target_link_libraries( lxqtwallet secretService )
+			set( link_libraries "-L${KDE4_LIB_DIR} -L${QT_LIBRARY_DIR}" )
+		else()
+			QT4_WRAP_CPP( MOC ${MOC_FILES} )
+			add_library( lxqtwallet STATIC ${UI} ${SRC} ${MOC} ${ICONS} )
+			set( link_libraries "-L${KDE4_LIB_DIR} -L${QT_LIBRARY_DIR} ${LIBKDEUI} ${LIBKDECORE}" )
+		endif()
+
+	endif()
+else()
+	if( SECRET_SUPPORT )
+		QT4_WRAP_CPP( MOC ${MOC_FILES_3} )
+		add_library( lxqtwallet STATIC ${UI} ${SRC_3} ${MOC} ${ICONS} )
+		target_link_libraries( lxqtwallet secretService )
+		set( link_libraries "-L${KDE4_LIB_DIR} -L${QT_LIBRARY_DIR}" )
+	else()
+		QT4_WRAP_CPP( MOC ${MOC_FILES} )
+		add_library( lxqtwallet STATIC ${UI} ${SRC} ${MOC} ${ICONS} )
+	endif()
+endif()
+
+set_target_properties( lxqtwallet PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIC -pedantic " )
+set_target_properties( lxqtwallet PROPERTIES SOVERSION "${LIBRARY_VERSION}" )
+TARGET_LINK_LIBRARIES( lxqtwallet "${link_libraries}" lxqtwallet-backend -lQtCore -lQtGui )
+
+

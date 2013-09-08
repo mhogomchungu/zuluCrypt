@@ -40,16 +40,16 @@ createkeyfile::createkeyfile( QWidget * parent ) :
     QDialog( parent ),
     m_ui( new Ui::createkeyfile )
 {
-	m_ui->setupUi( this );
-	this->setFont( parent->font() );
+	m_ui->setupUi( this ) ;
+	this->setFont( parent->font() ) ;
 
 	m_ckt = NULL ;
 
-	m_ui->pbOpenFolder->setIcon( QIcon( QString( ":/folder.png" ) ) );
+	m_ui->pbOpenFolder->setIcon( QIcon( QString( ":/folder.png" ) ) ) ;
 	connect( m_ui->pbCreate,SIGNAL( clicked() ),this,SLOT( pbCreate() ) ) ;
 	connect( m_ui->pbOpenFolder,SIGNAL( clicked() ),this,SLOT( pbOpenFolder() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
-	connect( m_ui->lineEditFileName,SIGNAL( textChanged( QString ) ),this,SLOT( keyTextChange( QString ) ) );
+	connect( m_ui->lineEditFileName,SIGNAL( textChanged( QString ) ),this,SLOT( keyTextChange( QString ) ) ) ;
 }
 
 void createkeyfile::keyTextChange( QString txt )
@@ -66,91 +66,91 @@ void createkeyfile::keyTextChange( QString txt )
 	if( i == -1 ){
 		return ;
 	}
-	p = p.mid( 0,i ) + QString( "/" ) + txt.split( "/" ).last();
+	p = p.mid( 0,i ) + QString( "/" ) + txt.split( "/" ).last() ;
 
 	m_ui->lineEditPath->setText( p ) ;
 }
 
 void createkeyfile::HideUI()
 {
-	this->hide();
-	emit HideUISignal();
+	this->hide() ;
+	emit HideUISignal() ;
 }
 
 void createkeyfile::closeEvent( QCloseEvent * e )
 {
-	e->ignore();
-	this->pbCancel();
+	e->ignore() ;
+	this->pbCancel() ;
 }
 
 void createkeyfile::ShowUI()
 {
-	m_ui->lineEditFileName->clear();
-	m_ui->lineEditPath->setText( QDir::homePath() + QString( "/" ) );
-	m_ui->comboBoxRNG->setCurrentIndex( 0 );
-	this->show();
+	m_ui->lineEditFileName->clear() ;
+	m_ui->lineEditPath->setText( QDir::homePath() + QString( "/" ) ) ;
+	m_ui->comboBoxRNG->setCurrentIndex( 0 ) ;
+	this->show() ;
 }
 
 void createkeyfile::pbCancel()
 {
 	if( m_ckt == NULL ){
-		HideUI();
+		HideUI() ;
 	}else{
-		m_ckt->cancelOperation();
+		m_ckt->cancelOperation() ;
 	}
 }
 
 void createkeyfile::enableAll()
 {
-	m_ui->label->setEnabled( true );
-	m_ui->label_2->setEnabled( true );
-	m_ui->lineEditFileName->setEnabled( true );
-	m_ui->lineEditPath->setEnabled( true );
-	m_ui->pbCreate->setEnabled( true );
-	m_ui->pbOpenFolder->setEnabled( true );
-	m_ui->labelRNG->setEnabled( true );
-	m_ui->comboBoxRNG->setEnabled( true );
+	m_ui->label->setEnabled( true ) ;
+	m_ui->label_2->setEnabled( true ) ;
+	m_ui->lineEditFileName->setEnabled( true ) ;
+	m_ui->lineEditPath->setEnabled( true ) ;
+	m_ui->pbCreate->setEnabled( true ) ;
+	m_ui->pbOpenFolder->setEnabled( true ) ;
+	m_ui->labelRNG->setEnabled( true ) ;
+	m_ui->comboBoxRNG->setEnabled( true ) ;
 }
 
 void createkeyfile::disableAll()
 {
-	m_ui->label->setEnabled( false );
-	m_ui->label_2->setEnabled( false );
-	m_ui->lineEditFileName->setEnabled( false );
-	m_ui->lineEditPath->setEnabled( false );
-	m_ui->pbCreate->setEnabled( false );
-	m_ui->pbOpenFolder->setEnabled( false );
-	m_ui->labelRNG->setEnabled( false );
-	m_ui->comboBoxRNG->setEnabled( false );
+	m_ui->label->setEnabled( false ) ;
+	m_ui->label_2->setEnabled( false ) ;
+	m_ui->lineEditFileName->setEnabled( false ) ;
+	m_ui->lineEditPath->setEnabled( false ) ;
+	m_ui->pbCreate->setEnabled( false ) ;
+	m_ui->pbOpenFolder->setEnabled( false ) ;
+	m_ui->labelRNG->setEnabled( false ) ;
+	m_ui->comboBoxRNG->setEnabled( false ) ;
 }
 
 void createkeyfile::pbCreate()
 {
-	DialogMsg msg( this );
+	DialogMsg msg( this ) ;
 
 	QString fileName = m_ui->lineEditFileName->text() ;
 	QString path = m_ui->lineEditPath->text() ;
 
 	if( fileName.isEmpty() ){
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "the key name field is empth" ) );
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "the key name field is empth" ) ) ;
 	}
 	if( path.isEmpty() ){
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "folder path to where the key will be created is empty" ) );
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "folder path to where the key will be created is empty" ) ) ;
 	}
 	if( utility::exists( path ) ){
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "file with the same name and at the destination folder already exist" ) );
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "file with the same name and at the destination folder already exist" ) ) ;
 	}
 	if( !utility::canCreateFile( path ) ){
-		msg.ShowUIOK( tr( "ERROR!" ),tr( "you dont seem to have writing access to the destination folder" ) );
-		m_ui->lineEditPath->setFocus();
+		msg.ShowUIOK( tr( "ERROR!" ),tr( "you dont seem to have writing access to the destination folder" ) ) ;
+		m_ui->lineEditPath->setFocus() ;
 		return ;
 	}
 
 	disableAll() ;
 
-	m_ckt = new createkeyfilethread( path,m_ui->comboBoxRNG->currentIndex() );
-	connect( m_ckt,SIGNAL( exitStatus( int ) ),this,SLOT( threadExitStatus( int ) ) );
-	m_ckt->start();
+	m_ckt = new createkeyfilethread( path,m_ui->comboBoxRNG->currentIndex() ) ;
+	connect( m_ckt,SIGNAL( exitStatus( int ) ),this,SLOT( threadExitStatus( int ) ) ) ;
+	m_ckt->start() ;
 }
 
 void createkeyfile::threadExitStatus( int st )
@@ -159,22 +159,22 @@ void createkeyfile::threadExitStatus( int st )
 
 	m_ckt = NULL ;
 	switch( st ){
-	case 1:	msg.ShowUIOK( tr( "WARNING!" ),tr( "process interrupted,key not fully generated" ) );
-		return this->enableAll();
-	case 0: msg.ShowUIOK( tr( "SUCCESS!" ),tr( "key file successfully created" ) );
-		return this->HideUI();
+	case 1:	msg.ShowUIOK( tr( "WARNING!" ),tr( "process interrupted,key not fully generated" ) ) ;
+		return this->enableAll() ;
+	case 0: msg.ShowUIOK( tr( "SUCCESS!" ),tr( "key file successfully created" ) ) ;
+		return this->HideUI() ;
 	}
 }
 
 void createkeyfile::pbOpenFolder()
 {
-	QString p = tr( "Select a folder to create a key file in" );
+	QString p = tr( "Select a folder to create a key file in" ) ;
 	QString q = QDir::homePath() ;
 	QString Z = QFileDialog::getExistingDirectory( this,p,q,QFileDialog::ShowDirsOnly ) ;
 
 	if( !Z.isEmpty() ){
 		Z = Z + QString( "/" ) + m_ui->lineEditPath->text().split( "/" ).last() ;
-		m_ui->lineEditPath->setText( Z );
+		m_ui->lineEditPath->setText( Z ) ;
 	}
 }
 

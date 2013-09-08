@@ -52,6 +52,8 @@ public:
 	static QString localizationLanguage( QString ) ;
 	static QString localizationLanguagePath( QString ) ;
 	static void setLocalizationLanguage( QString,QString ) ;
+	static QString walletName( void ) ;
+	static QString applicationName( void ) ;
 };
 
 #endif // MISCFUNCTIONS_H

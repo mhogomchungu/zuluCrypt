@@ -60,15 +60,15 @@ auto_mount::~auto_mount()
 void auto_mount::stop()
 {
 	if( m_threadIsRunning ){
-		m_mtoto->terminate();
+		m_mtoto->terminate() ;
 	}else{
-		this->threadStopped();
+		this->threadStopped() ;
 	}
 }
 
 void auto_mount::threadStopped()
 {
-	emit stopped();
+	emit stopped() ;
 	m_threadIsRunning = false ;
 }
 

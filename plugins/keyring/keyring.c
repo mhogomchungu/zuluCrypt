@@ -26,36 +26,59 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include <gnome-keyring.h>
+#include <libsecret-1/libsecret/secret.h>
 
-static GnomeKeyringResult getKey( const char * UUID,gchar ** key )
+static int getKey( const char * path,const char * uuid,gchar ** key )
 {	
-	GnomeKeyringResult r ;
+	gchar * c ;
+	SecretSchema lps ;
+	char UUID[ 64 ] ;
 	
-	GnomeKeyringPasswordSchema lps ;
+	memset( &lps,'\0',sizeof( SecretSchema ) ) ;
 	
-	lps.item_type = GNOME_KEYRING_ITEM_GENERIC_SECRET ;
+	lps.name  = "lxqt.Wallet.zuluCrypt.zuluCrypt" ;
+	lps.flags = SECRET_SCHEMA_NONE ;
 	
-	lps.attributes[0].name = "gvfs-luks-uuid" ;
-	lps.attributes[0].type = GNOME_KEYRING_ATTRIBUTE_TYPE_STRING ;
+	lps.attributes[0].name = "string" ;
+	lps.attributes[0].type = SECRET_SCHEMA_ATTRIBUTE_STRING ;
 	
-	lps.attributes[1].name = NULL ;
+	lps.attributes[1].name = "NULL" ;
 	lps.attributes[1].type = 0 ;
 	
-	/*
-	 * in some versions of gnome,uuid start with "luks-UUID"
-	 */
-	r = gnome_keyring_find_password_sync( &lps,key,"gvfs-luks-uuid",UUID,NULL ) ;
-	
-	if( r != GNOME_KEYRING_RESULT_OK ){
-		/*
-		 * in other versions of gnome,uuid start with "UUID"
-		 */
-		UUID = UUID + strlen( "luks-" ) ;
-		r = gnome_keyring_find_password_sync( &lps,key,"gvfs-luks-uuid",UUID,NULL ) ;
+	if( strcmp( uuid,"Nil" ) == 0 ){
+		c = secret_password_lookup_sync( &lps,NULL,NULL,"string",path,NULL ) ;
+		if( c != NULL ){
+			*key = c ;
+			return 1 ;
+		}else{
+			return 0 ;
+		}
 	}
 	
-	return r ;
+	snprintf( UUID,64,"UUID=\"%s\"",uuid ) ;
+	c = secret_password_lookup_sync( &lps,NULL,NULL,"string",UUID,NULL ) ;
+	
+	if( c != NULL ){
+		*key = c ;
+		return 1 ;
+	}else{
+		snprintf( UUID,64,"UUID=%s",uuid ) ;
+		c = secret_password_lookup_sync( &lps,NULL,NULL,"string",UUID,NULL ) ;
+		if( c != NULL ){
+			*key = c ;
+			return 1 ;
+		}else{
+			c = secret_password_lookup_sync( &lps,NULL,NULL,"string",uuid,NULL ) ;
+			if( c != NULL ){
+				*key = c ;
+				return 1 ;
+			}else{
+				return 0 ;
+			}
+		}
+	}
+	
+	return 0 ;
 }
 
 int main( int argc,char * argv[] )
@@ -70,11 +93,11 @@ int main( int argc,char * argv[] )
 	 *  
 	 */
 	
+	const char * path = argv[ 1 ] ;
 	const char * uuid = argv[ 2 ] ;
 	const char * addr = argv[ 3 ] ;
 	
 	int st = 1 ;
-	char UUID[ 64 ] ;
 	void * handle ;
 	gchar * key ;
 	const char * e ;
@@ -82,13 +105,7 @@ int main( int argc,char * argv[] )
 	if( argc <= 3 ){
 		return 1 ;
 	}
-	if( strcmp( uuid,"Nil" ) == 0 ){
-		return 1 ;
-	}
-		
-	strcpy( UUID,"luks-" ) ;
-	strcat( UUID,uuid ) ;
-
+	
 	/*
 	 * this function is to be called as soon as possible.
 	 * It will fail if called 10 seconds after the plugin is started.  
@@ -96,10 +113,10 @@ int main( int argc,char * argv[] )
 	handle = zuluCryptPluginManagerOpenConnection( addr ) ;
 	
 	if( handle ){
-		if( getKey( UUID,&key ) == GNOME_KEYRING_RESULT_OK ){
+		if( getKey( path,uuid,&key ) ){
 			e = ( const char * ) key ;
 			zuluCryptPluginManagerSendKey( handle,e,strlen( e ) ) ;
-			gnome_keyring_free_password( key ) ;
+			secret_password_free( key ) ;
 			st = 0 ;
 		}else{
 			st = 1 ;

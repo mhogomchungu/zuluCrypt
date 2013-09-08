@@ -38,10 +38,12 @@ public:
 	void ShowUI( void ) ;
 signals:
 	void add( QString volumeId,QString comment,QString key ) ;
+	void cancel( void ) ;
 public slots:
 	void HideUI( void ) ;
 private slots:
 	void pbAdd( void ) ;
+	void slotCancel( void ) ;
 	void pbImageFilePath( void ) ;
 	void pbVolumePath( void ) ;
 	void setvolumeID( QString ) ;

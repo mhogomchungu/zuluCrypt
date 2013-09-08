@@ -29,14 +29,14 @@ startupupdateopenedvolumes::startupupdateopenedvolumes()
 
 void startupupdateopenedvolumes::start()
 {
-	QThreadPool::globalInstance()->start( this );
+	QThreadPool::globalInstance()->start( this ) ;
 }
 
 void startupupdateopenedvolumes::run()
 {
 	QProcess p ;
-	p.start( QString( ZULUCRYPTzuluCrypt ) + QString( " -L" ) );
-	p.waitForFinished();
+	p.start( QString( ZULUCRYPTzuluCrypt ) + QString( " -L" ) ) ;
+	p.waitForFinished() ;
 	m_status = p.exitCode() ;
 
 	QStringList l = QString( p.readAll() ).split( "\n" ) ;
@@ -44,7 +44,7 @@ void startupupdateopenedvolumes::run()
 	if( m_status ){
 		return ;
 	}
-	p.close();
+	p.close() ;
 
 	int j = l.size() - 1 ;
 
@@ -54,7 +54,7 @@ void startupupdateopenedvolumes::run()
 	QStringList entry ;
 
 	for( int i = 0 ; i < j ; i++ ){
-		entry = l.at( i ).split( "\t" );
+		entry = l.at( i ).split( "\t" ) ;
 		if( entry.size() >= 3 ){
 			emit addItemToTable( entry.at( 0 ),entry.at( 1 ),entry.at( 2 ) ) ;
 		}
@@ -63,5 +63,5 @@ void startupupdateopenedvolumes::run()
 
 startupupdateopenedvolumes::~startupupdateopenedvolumes()
 {
-	emit finished( m_status );
+	emit finished( m_status ) ;
 }

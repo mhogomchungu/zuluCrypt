@@ -33,14 +33,18 @@
 #include "../zuluCrypt-gui/openvolumereadonly.h"
 #include "../zuluCrypt-gui/openmountpointinfilemanager.h"
 #include "../zuluCrypt-gui/savemountpointpath.h"
-#include "../zuluCrypt-gui/kwalletplugin.h"
 #include "../zuluCrypt-gui/utility.h"
+#include "../zuluCrypt-gui/lxqt_wallet/frontend/lxqt_wallet.h"
+
+#define KWALLET         "kde wallet"
+#define INTERNAL_WALLET "internal wallet"
+#define GNOME_WALLET    "gnome wallet"
 
 keyDialog::keyDialog( QWidget * parent,QTableWidget * table,QString path,QString type,QString folderOpener,bool autoOpenFolderOnMount ) :
 	QDialog( parent ),m_ui(new Ui::keyDialog)
 {
-	m_ui->setupUi( this );
-	m_ui->checkBoxShareMountPoint->setToolTip( utility::shareMountPointToolTip() );
+	m_ui->setupUi( this ) ;
+	m_ui->checkBoxShareMountPoint->setToolTip( utility::shareMountPointToolTip() ) ;
 	m_table = table ;
 	m_path = path ;
 	m_working = false ;
@@ -54,23 +58,23 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,QString path,QString
 	}else{
 		msg = tr( "unlock and mount an encrypted volume in \"%1\"").arg( m_path ) ;
 	}
-	this->setWindowTitle( msg );
+	this->setWindowTitle( msg ) ;
 
 	path = savemountpointpath::getPath( path,QString( "zuluMount-MountPointPath" ) ) ;
 
-	m_ui->lineEditMountPoint->setText( path );
-	m_ui->pbkeyFile->setVisible( false );
-	m_ui->pbOpenMountPoint->setIcon( QIcon( QString( ":/folder.png" ) ) );
+	m_ui->lineEditMountPoint->setText( path ) ;
+	m_ui->pbkeyFile->setVisible( false ) ;
+	m_ui->pbOpenMountPoint->setIcon( QIcon( QString( ":/folder.png" ) ) ) ;
 
 	m_menu = new QMenu( this ) ;
 
-	this->setFixedSize( this->size() );
-	this->setWindowFlags( Qt::Window | Qt::Dialog );
-	this->setFont( parent->font() );
+	this->setFixedSize( this->size() ) ;
+	this->setWindowFlags( Qt::Window | Qt::Dialog ) ;
+	this->setFont( parent->font() ) ;
 
-	m_ui->lineEditKey->setFocus();
+	m_ui->lineEditKey->setFocus() ;
 
-	m_ui->checkBoxOpenReadOnly->setChecked( openvolumereadonly::getOption( QString( "zuluMount-gui" ) ) );
+	m_ui->checkBoxOpenReadOnly->setChecked( openvolumereadonly::getOption( QString( "zuluMount-gui" ) ) ) ;
 
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->pbOpen,SIGNAL( clicked() ),this,SLOT( pbOpen() ) ) ;
@@ -83,23 +87,23 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,QString path,QString
 	connect( m_ui->checkBoxOpenReadOnly,SIGNAL( stateChanged( int ) ),this,SLOT( cbMountReadOnlyStateChanged( int ) ) ) ;
 	m_ui->rbKey->setChecked( true ) ;
 
-	m_ui->pbOpenMountPoint->setVisible( false );
+	m_ui->pbOpenMountPoint->setVisible( false ) ;
 
 	m_point = m_path.split( "/" ).last() ;
-	m_ui->lineEditMountPoint->setText( m_point );
+	m_ui->lineEditMountPoint->setText( m_point ) ;
 }
 
 void keyDialog::cbMountReadOnlyStateChanged( int state )
 {
-	m_ui->checkBoxOpenReadOnly->setEnabled( false );
-	m_ui->checkBoxOpenReadOnly->setChecked( openvolumereadonly::setOption( this,state,QString( "zuluMount-gui" ) ) );
-	m_ui->checkBoxOpenReadOnly->setEnabled( true );
+	m_ui->checkBoxOpenReadOnly->setEnabled( false ) ;
+	m_ui->checkBoxOpenReadOnly->setChecked( openvolumereadonly::setOption( this,state,QString( "zuluMount-gui" ) ) ) ;
+	m_ui->checkBoxOpenReadOnly->setEnabled( true ) ;
 	if( m_ui->lineEditKey->text().isEmpty() ){
-		m_ui->lineEditKey->setFocus();
+		m_ui->lineEditKey->setFocus() ;
 	}else if( m_ui->lineEditMountPoint->text().isEmpty() ){
-		m_ui->lineEditMountPoint->setFocus();
+		m_ui->lineEditMountPoint->setFocus() ;
 	}else{
-		m_ui->pbOpen->setFocus();
+		m_ui->pbOpen->setFocus() ;
 	}
 }
 
@@ -107,9 +111,9 @@ void keyDialog::keyTextChanged( QString txt )
 {
 	if( m_ui->rbPlugIn->isChecked() ){
 		if( txt.contains( QString( "/") ) ){
-			m_ui->label->setText( tr( "plugin path" ) );
+			m_ui->label->setText( tr( "plugin path" ) ) ;
 		}else{
-			m_ui->label->setText( tr( "plugin name" ) );
+			m_ui->label->setText( tr( "plugin name" ) ) ;
 		}
 	}
 }
@@ -121,43 +125,43 @@ void keyDialog::pbMountPointPath()
 
 	if( !Z.isEmpty() ){
 		Z = Z + QString( "/" ) + m_ui->lineEditMountPoint->text().split( "/" ).last() ;
-		m_ui->lineEditMountPoint->setText( Z );
+		m_ui->lineEditMountPoint->setText( Z ) ;
 	}
 }
 
 void keyDialog::enableAll()
 {
-	m_ui->label_2->setEnabled( true );
-	m_ui->lineEditMountPoint->setEnabled( true );
-	m_ui->pbOpenMountPoint->setEnabled( true );
-	m_ui->pbCancel->setEnabled( true );
-	m_ui->pbOpen->setEnabled( true );
-	m_ui->label->setEnabled( true );
-	m_ui->rbKey->setEnabled( true );
-	m_ui->rbKeyFile->setEnabled( true );
-	m_ui->lineEditKey->setEnabled( true );
-	m_ui->rbPlugIn->setEnabled( true );
-	m_ui->pbkeyOption->setEnabled( true );
-	m_ui->checkBoxOpenReadOnly->setEnabled( true );
-	m_ui->checkBoxShareMountPoint->setEnabled( true );
+	m_ui->label_2->setEnabled( true ) ;
+	m_ui->lineEditMountPoint->setEnabled( true ) ;
+	m_ui->pbOpenMountPoint->setEnabled( true ) ;
+	m_ui->pbCancel->setEnabled( true ) ;
+	m_ui->pbOpen->setEnabled( true ) ;
+	m_ui->label->setEnabled( true ) ;
+	m_ui->rbKey->setEnabled( true ) ;
+	m_ui->rbKeyFile->setEnabled( true ) ;
+	m_ui->lineEditKey->setEnabled( true ) ;
+	m_ui->rbPlugIn->setEnabled( true ) ;
+	m_ui->pbkeyOption->setEnabled( true ) ;
+	m_ui->checkBoxOpenReadOnly->setEnabled( true ) ;
+	m_ui->checkBoxShareMountPoint->setEnabled( true ) ;
 }
 
 void keyDialog::disableAll()
 {
-	m_ui->pbkeyOption->setEnabled( false );
-	m_ui->label_2->setEnabled( false );
-	m_ui->lineEditMountPoint->setEnabled( false );
-	m_ui->pbOpenMountPoint->setEnabled( false );
-	m_ui->lineEditKey->setEnabled( false );
-	m_ui->pbCancel->setEnabled( false );
-	m_ui->pbOpen->setEnabled( false );
-	m_ui->pbkeyFile->setEnabled( false );
-	m_ui->label->setEnabled( false );
-	m_ui->rbKey->setEnabled( false );
-	m_ui->rbKeyFile->setEnabled( false );
-	m_ui->rbPlugIn->setEnabled( false );
-	m_ui->checkBoxOpenReadOnly->setEnabled( false );
-	m_ui->checkBoxShareMountPoint->setEnabled( false );
+	m_ui->pbkeyOption->setEnabled( false ) ;
+	m_ui->label_2->setEnabled( false ) ;
+	m_ui->lineEditMountPoint->setEnabled( false ) ;
+	m_ui->pbOpenMountPoint->setEnabled( false ) ;
+	m_ui->lineEditKey->setEnabled( false ) ;
+	m_ui->pbCancel->setEnabled( false ) ;
+	m_ui->pbOpen->setEnabled( false ) ;
+	m_ui->pbkeyFile->setEnabled( false ) ;
+	m_ui->label->setEnabled( false ) ;
+	m_ui->rbKey->setEnabled( false ) ;
+	m_ui->rbKeyFile->setEnabled( false ) ;
+	m_ui->rbPlugIn->setEnabled( false ) ;
+	m_ui->checkBoxOpenReadOnly->setEnabled( false ) ;
+	m_ui->checkBoxShareMountPoint->setEnabled( false ) ;
 }
 
 void keyDialog::KeyFile()
@@ -167,7 +171,7 @@ void keyDialog::KeyFile()
 		QString Z = QFileDialog::getOpenFileName( this,msg,QDir::homePath() ) ;
 
 		if( !Z.isEmpty() ){
-			m_ui->lineEditKey->setText( Z );
+			m_ui->lineEditKey->setText( Z ) ;
 		}
 	}
 }
@@ -175,9 +179,9 @@ void keyDialog::KeyFile()
 void keyDialog::pbkeyOption()
 {
 	if( m_ui->rbPlugIn->isChecked() ){
-		this->Plugin();
+		this->Plugin() ;
 	}else if( m_ui->rbKeyFile->isChecked() ){
-		this->KeyFile();
+		this->KeyFile() ;
 	}
 }
 
@@ -189,21 +193,26 @@ void keyDialog::Plugin()
 
 	QDir dir( QString( ZULUCRYPTpluginPath ) ) ;
 
-	if( !dir.exists() ){
-		return ;
+	if( dir.exists() ){
+		list = dir.entryList() ;
 	}
-	list = dir.entryList() ;
 
 	list.removeOne( QString( "zuluCrypt-testKey" ) ) ;
-	list.removeOne( QString( ".") ) ;
-	list.removeOne( QString( "..") ) ;
-	list.removeOne( QString( "kwallet" ) ) ;
+	list.removeOne( QString( "." ) ) ;
+	list.removeOne( QString( ".." ) ) ;
+	list.removeOne( "keyring" ) ;
+	list.removeOne( "kwallet" ) ;
 
-	if( kwalletplugin::hasFunctionality() ){
-		list.prepend( QString( "kwallet" ) ) ;
+	if( lxqt::Wallet::backEndIsSupported( lxqt::Wallet::secretServiceBackEnd ) ){
+		list.prepend( tr( GNOME_WALLET ) ) ;
+	}
+	if( lxqt::Wallet::backEndIsSupported( lxqt::Wallet::kwalletBackEnd ) ){
+		list.prepend( tr( KWALLET ) ) ;
 	}
 
-	m_menu->clear();
+	list.prepend( tr( INTERNAL_WALLET ) ) ;
+
+	m_menu->clear() ;
 
 	int j = list.size()  ;
 
@@ -231,8 +240,8 @@ void keyDialog::pbPluginEntryClicked( QAction * e )
 
 void keyDialog::closeEvent( QCloseEvent * e )
 {
-	e->ignore();
-	this->pbCancel();
+	e->ignore() ;
+	this->pbCancel() ;
 }
 
 void keyDialog::fileManagerOpenStatus( int exitCode, int exitStatus,int startError )
@@ -240,7 +249,7 @@ void keyDialog::fileManagerOpenStatus( int exitCode, int exitStatus,int startErr
 	Q_UNUSED( startError ) ;
 	if( exitCode != 0 || exitStatus != 0 ){
 		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "warning" ),tr( "could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) );
+		msg.ShowUIOK( tr( "warning" ),tr( "could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) ) ;
 	}
 }
 
@@ -255,7 +264,7 @@ void keyDialog::slotMountComplete( int st,QString m )
 			if( m_autoOpenFolderOnMount ){
 				openmountpointinfilemanager * omp = new openmountpointinfilemanager( m_folderOpener,utility::mountPath( m_point ) ) ;
 				connect( omp,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
-				omp->start();
+				omp->start() ;
 			}
 		}else{
 			/*
@@ -264,58 +273,87 @@ void keyDialog::slotMountComplete( int st,QString m )
 
 			DialogMsg m( this ) ;
 
-			m.ShowUIOK( tr( "ERROR" ),tr( "An error has occured and the volume could not be opened" ) );
+			m.ShowUIOK( tr( "ERROR" ),tr( "An error has occured and the volume could not be opened" ) ) ;
 		}
-		this->HideUI();
+		this->HideUI() ;
 
 	}else{
 		DialogMsg msg( this ) ;
 
 		msg.ShowUIOK( tr( "ERROR" ),m ) ;
-		m_ui->lineEditKey->clear();
-		m_ui->rbKey->setChecked( true );
-		this->enableAll();
-		m_ui->lineEditKey->setFocus();
+		m_ui->lineEditKey->clear() ;
+		m_ui->rbKey->setChecked( true ) ;
+		this->enableAll() ;
+		m_ui->lineEditKey->setFocus() ;
 	}
 }
 
-QString keyDialog::getKeyFromWallet( QString path )
+void keyDialog::walletIsOpen( bool opened )
 {
-	QString key ;
+	if( opened ){
+		QString key ;
 
-	DialogMsg msg( this ) ;
+		QString id = m_path ;
 
-	if( kwalletplugin::folderDoesNotExist() ){
+		QString keyID ;
 
-		msg.ShowUIOK( tr( "ERROR" ),tr( "\"%1\" wallet is not configured,go to:\n\"menu->options->manage kwallet\"\n to configure it and then add this volume first before continuing" ).arg( kwalletplugin::wallet() ) ) ;
-		return key ;
-	}
-
-	QString keyID = utility::getUUIDFromPath( path ) ;
-
-	if( keyID.isEmpty() ){
-		keyID = path ;
-	}
-
-	kwalletplugin kWallet( this ) ;
-
-	if( kWallet.open() ){
-		key = kWallet.getKey( keyID ) ;
-		if( key.isEmpty() ){
-			msg.ShowUIOK( tr( "ERROR" ),tr( "the volume does not appear to have an entry in the wallet" ) ) ;
+		if( id.startsWith( QString( "UUID=" ) ) ){
+			keyID = id ;
+			key = m_wallet->readValue( keyID ) ;
+			if( key.isEmpty() ){
+				key = m_wallet->readValue( keyID.replace( "\"","" ) ) ;
+			}
+		}else{
+			keyID = utility::getUUIDFromPath( id ) ;
+			key = m_wallet->readValue( keyID ) ;
 		}
-		kWallet.close();
+
+		if( key.isEmpty() ){
+			DialogMsg msg( this ) ;
+			msg.ShowUIOK( tr( "ERROR" ),tr( "the volume does not appear to have an entry in the wallet" ) ) ;
+		}else{
+			m_key = key ;
+			this->openVolume() ;
+		}
+	}else{
+		DialogMsg msg( this ) ;
+		msg.ShowUIOK( tr( "ERROR" ),tr( "failed to open wallet" ) ) ;
 	}
 
-	return key ;
+	m_wallet->deleteLater() ;
 }
 
 void keyDialog::pbOpen()
 {
+	m_key.clear() ;
+	if( m_ui->rbPlugIn->isChecked() ){
+		QString r = m_ui->lineEditKey->text() ;
+		if( r == tr( KWALLET ) ){
+			m_wallet = lxqt::Wallet::getWalletBackend( lxqt::Wallet::kwalletBackEnd ) ;
+			m_wallet->setInterfaceObject( this ) ;
+			m_wallet->open( utility::walletName(),utility::applicationName() ) ;
+		}else if( r == tr( INTERNAL_WALLET ) ){
+			m_wallet = lxqt::Wallet::getWalletBackend( lxqt::Wallet::internalBackEnd ) ;
+			m_wallet->setInterfaceObject( this ) ;
+			m_wallet->open( utility::walletName(),utility::applicationName() ) ;
+		}else if( r == tr( GNOME_WALLET ) ){
+			m_wallet = lxqt::Wallet::getWalletBackend( lxqt::Wallet::secretServiceBackEnd ) ;
+			m_wallet->setInterfaceObject( this ) ;
+			m_wallet->open( utility::walletName(),utility::applicationName() ) ;
+		}else{
+			this->openVolume() ;
+		}
+	}else{
+		this->openVolume() ;
+	}
+}
+
+void keyDialog::openVolume()
+{
 	if( m_ui->lineEditKey->text().isEmpty() ){
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR" ),tr( "passphrase field is empty" ) ) ;
-		m_ui->lineEditKey->setFocus();
+		m_ui->lineEditKey->setFocus() ;
 		return ;
 	}
 
@@ -323,18 +361,8 @@ void keyDialog::pbOpen()
 	if( test_name.contains( QString( "/" ) ) ){
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR" ),tr( "\"/\" character is not allowed in the mount name field" ) ) ;
-		m_ui->lineEditKey->setFocus();
+		m_ui->lineEditKey->setFocus() ;
 		return ;
-	}
-
-	QString keyFromKwallet ;
-	if( m_ui->rbPlugIn->isChecked() ){
-		if( m_ui->lineEditKey->text() == QString( "kwallet" ) ){
-			 keyFromKwallet = this->getKeyFromWallet( m_path ) ;
-			 if( keyFromKwallet.isEmpty() ){
-				 return ;
-			 }
-		}
 	}
 
 	QString m ;
@@ -342,96 +370,99 @@ void keyDialog::pbOpen()
 		QString addr = socketSendKey::getSocketPath() ;
 		m = QString( "-f ") + addr ;
 		socketSendKey * s = new socketSendKey( this,addr,m_ui->lineEditKey->text().toAscii() ) ;
-		s->sendKey();
+		s->sendKey() ;
 	}else if( m_ui->rbKeyFile->isChecked() ){
 		m = QString( "-f ") + m_ui->lineEditKey->text().replace( "\"","\"\"\"" ) ;
 	}else if( m_ui->rbPlugIn->isChecked() ){
-		if( keyFromKwallet.isEmpty() ){
+		if( m_key.isEmpty() ){
 			m = QString( "-G ") + m_ui->lineEditKey->text().replace( "\"","\"\"\"" ) ;
 		}else{
 			QString addr = socketSendKey::getSocketPath() ;
 			m = QString( "-f ") + addr ;
-			socketSendKey * s = new socketSendKey( this,addr,keyFromKwallet.toAscii() ) ;
-			s->sendKey();
+			socketSendKey * s = new socketSendKey( this,addr,m_key.toAscii() ) ;
+			s->sendKey() ;
 		}
 	}
 
 	managepartitionthread * part = new managepartitionthread() ;
 	connect( part,SIGNAL( signalMountComplete( int,QString ) ),this,SLOT( slotMountComplete( int,QString ) ) ) ;
 
-	part->setDevice( m_path );
+	part->setDevice( m_path ) ;
 	if( m_ui->checkBoxOpenReadOnly->isChecked() ){
-		part->setMode( QString( "ro" ) );
+		part->setMode( QString( "ro" ) ) ;
 	}else{
 		part->setMode( QString( "rw" ) ) ;
 	}
-	part->setKeySource( m );
+	part->setKeySource( m ) ;
 	m_point = m_ui->lineEditMountPoint->text().replace( "\"","\"\"\"" ) ;
-	part->setMountPoint( m_point );
+	part->setMountPoint( m_point ) ;
 
 	part->setMakeMountPointPublic( m_ui->checkBoxShareMountPoint->isChecked() ) ;
 
 	m_working = true ;
 
 	part->startAction( managepartitionthread::CryptoOpen ) ;
-	this->disableAll();
+	this->disableAll() ;
 }
 
 void keyDialog::rbPlugIn( bool opt )
 {
 	if( opt ){
-		m_ui->pbkeyOption->setIcon( QIcon( QString( ":/module.png" ) ) );
-		m_ui->lineEditKey->setEchoMode( QLineEdit::Normal );
-		m_ui->label->setText( tr( "plugin name" ) );
-		m_ui->lineEditKey->clear();
-		m_ui->pbkeyOption->setEnabled( true );
+		m_ui->pbkeyOption->setIcon( QIcon( QString( ":/module.png" ) ) ) ;
+		m_ui->lineEditKey->setEchoMode( QLineEdit::Normal ) ;
+		m_ui->label->setText( tr( "plugin name" ) ) ;
+		m_ui->lineEditKey->clear() ;
+		m_ui->pbkeyOption->setEnabled( true ) ;
+		m_ui->lineEditKey->setEnabled( false ) ;
 	}
 }
 
 void keyDialog::rbKey( bool opt )
 {
 	if( opt ){
-		m_ui->pbkeyOption->setIcon( QIcon( QString( ":/passphrase.png" ) ) );
-		m_ui->pbkeyOption->setEnabled( false );
-		m_ui->label->setText( tr( "key" ) );
-		m_ui->lineEditKey->setEchoMode( QLineEdit::Password );
-		m_ui->pbkeyFile->setEnabled( false );
-		m_ui->lineEditKey->clear();
+		m_ui->pbkeyOption->setIcon( QIcon( QString( ":/passphrase.png" ) ) ) ;
+		m_ui->pbkeyOption->setEnabled( false ) ;
+		m_ui->label->setText( tr( "key" ) ) ;
+		m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
+		m_ui->pbkeyFile->setEnabled( false ) ;
+		m_ui->lineEditKey->clear() ;
+		m_ui->lineEditKey->setEnabled( true ) ;
 	}
 }
 
 void keyDialog::rbKeyFile( bool opt )
 {
 	if( opt ){
-		m_ui->pbkeyOption->setIcon( QIcon( QString( ":/keyfile.png" ) ) );
-		m_ui->lineEditKey->setEchoMode( QLineEdit::Normal );
-		m_ui->label->setText( tr( "keyfile path" ) );
-		m_ui->pbkeyOption->setEnabled( true );
-		m_ui->lineEditKey->clear();
+		m_ui->pbkeyOption->setIcon( QIcon( QString( ":/keyfile.png" ) ) ) ;
+		m_ui->lineEditKey->setEchoMode( QLineEdit::Normal ) ;
+		m_ui->label->setText( tr( "keyfile path" ) ) ;
+		m_ui->pbkeyOption->setEnabled( true ) ;
+		m_ui->lineEditKey->clear() ;
+		m_ui->lineEditKey->setEnabled( false ) ;
 	}
 }
 
 void keyDialog::pbCancel()
 {
-	this->HideUI();
-	emit cancel();
+	this->HideUI() ;
+	emit cancel() ;
 }
 
 void keyDialog::ShowUI()
 {
-	this->show();
+	this->show() ;
 }
 
 void keyDialog::HideUI()
 {
 	if( !m_working ){
-		this->hide();
-		this->deleteLater();
+		this->hide() ;
+		this->deleteLater() ;
 	}
 }
 
 keyDialog::~keyDialog()
 {
-	m_menu->deleteLater();
+	m_menu->deleteLater() ;
 	delete m_ui;
 }

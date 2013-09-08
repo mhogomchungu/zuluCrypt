@@ -28,7 +28,7 @@
 
 //openvolumereadonly::openvolumereadonly( QObject * parent )
 //{
-//	this->setParent( parent );
+//	this->setParent( parent ) ;
 //}
 
 int openvolumereadonly::setOption( QWidget * parent, int state,QString app )
@@ -37,7 +37,7 @@ int openvolumereadonly::setOption( QWidget * parent, int state,QString app )
 	QFile f( Path + QString( "-openMode" ) ) ;
 	f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
 	f.write( QString::number( state ).toAscii() ) ;
-	f.close();
+	f.close() ;
 
 	DialogMsg msg( parent ) ;
 	QString m = QObject::tr( "setting this option will cause the volume to open in read only mode" ) ;
@@ -57,7 +57,7 @@ int openvolumereadonly::setOption( QWidget * parent, int state,QString app )
 
 			st ? f.write( "1" ) : f.write( "0" ) ;
 
-			f.close();
+			f.close() ;
 		}
 	}else{
 		st = msg.ShowUIOKDoNotShowOption( QObject::tr( "info" ),m ) ;
@@ -66,7 +66,7 @@ int openvolumereadonly::setOption( QWidget * parent, int state,QString app )
 
 		st ? f.write( "1" ) : f.write( "0" ) ;
 
-		f.close();
+		f.close() ;
 	}
 
 	return state ;
@@ -84,12 +84,12 @@ Qt::CheckState openvolumereadonly::getOption( QString app )
 	if( f.exists() == false ){
 		f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
 		f.write( QString::number( Qt::Unchecked ).toAscii() ) ;
-		f.close();
+		f.close() ;
 	}
 
 	f.open( QIODevice::ReadOnly ) ;
 	int st = QString( f.readAll() ).toInt() ;
 
-	f.close();
+	f.close() ;
 	return ( Qt::CheckState ) st ;
 }

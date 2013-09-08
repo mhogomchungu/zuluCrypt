@@ -7,10 +7,19 @@ cmake_policy(SET CMP0017 OLD)
 #add_definitions( -D_FORTIFY_SOURCE=2 -Wno-unused-result )
 #add_definitions( -Wno-unused-result ) 
 
+# uninstall target
+configure_file(
+	"${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
+	"${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+	IMMEDIATE @ONLY )
+
+add_custom_target( uninstall
+COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake )
+
 INCLUDE(FindPkgConfig)
 
 if( NOT NOGNOME ) 
-	pkg_check_modules( GNOME_KEYRING gnome-keyring-1 )
+	pkg_check_modules( LIBSECRET libsecret-1 )
 endif( NOT NOGNOME )
 
 pkg_check_modules( CRYPTSETUP libcryptsetup )
@@ -97,19 +106,27 @@ if( TCPLAY_FOUND )
 else( TCPLAY_FOUND )	
 	file( WRITE ${PROJECT_BINARY_DIR}/truecrypt_support_1.h "\n#define TRUECRYPT_CREATE 0\n" )
 endif( TCPLAY_FOUND )	
-	
-if( GNOME_KEYRING_FOUND )
-	find_file( keyring_header gnome-keyring.h PATHS ${GNOME_KEYRING_INCLUDE_DIRS} )
-	find_library( keyring_library libgnome-keyring.so )
+
+set( NOSECRETSUPPORT "true" )
+
+if( LIBSECRET_FOUND )
+	find_file( keyring_header libsecret-1/libsecret/secret.h PATHS ${LIBSECRET_INCLUDE_DIRS} )
+	find_library( keyring_library libsecret-1.so )
 	if( keyring_header )
 		if( keyring_library )
-			add_definitions( ${GNOME_KEYRING_CFLAGS} )
+			add_definitions( ${LIBSECRET_CFLAGS} )
 			set( KEYRINGSUPPORT "true" )
+			set( NOSECRETSUPPORT "false" )
 		endif( keyring_library )
 	endif( keyring_header )
-endif( GNOME_KEYRING_FOUND )
+endif( LIBSECRET_FOUND )
+
+if( NOKDE ) 
+	set( NOKDESUPPORT "true" )
+endif( NOKDE )
 
 ADD_SUBDIRECTORY( zuluCrypt-cli )
+ADD_SUBDIRECTORY( zuluCrypt-gui/lxqt_wallet )
 
 if( NOT NOGUI ) 
 	
@@ -117,6 +134,8 @@ find_package( Qt4 COMPONENTS QtCore QtNetwork QtGui REQUIRED )
 
 if( NOT NOKDE ) 
 	find_package( KDE4 QUIET )
+else( NOT NOKDE )
+
 endif( NOT NOKDE )
 
 file( WRITE  ${PROJECT_BINARY_DIR}/can_build_kwallet.h "\n#define BUILD_KWALLET 0\n" )
@@ -289,11 +308,3 @@ install ( FILES zuluCrypt-test.1.bz2 DESTINATION share/man/man1 )
 #install ( FILES translations/zuluMount/fr_FR.qm DESTINATION share/zuluCrypt/translations/zuluMount-gui )
 #install ( FILES translations/zuluCrypt/fr_FR.qm DESTINATION share/zuluCrypt/translations/zuluCrypt-gui )
 
-# uninstall target
-configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
-    IMMEDIATE @ONLY )
-
-add_custom_target( uninstall
-    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake )

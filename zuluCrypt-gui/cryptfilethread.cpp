@@ -70,7 +70,7 @@ cryptfilethread::cryptfilethread( QString source,QString dest,QString keySource,
 
 void cryptfilethread::start()
 {
-	QThreadPool::globalInstance()->start( this );
+	QThreadPool::globalInstance()->start( this ) ;
 }
 
 void cryptfilethread::terminate()
@@ -80,8 +80,8 @@ void cryptfilethread::terminate()
 
 void cryptfilethread::calculateMd5( QString path,char * result )
 {
-	emit titleUpdate( tr( "calculating md5sum" ) );
-	emit disableCancel();
+	emit titleUpdate( tr( "calculating md5sum" ) ) ;
+	emit disableCancel() ;
 
 	zuluCryptMD5_CTX ctx ;
 	zuluCryptMD5_Init( &ctx ) ;
@@ -100,12 +100,12 @@ void cryptfilethread::calculateMd5( QString path,char * result )
 			char digest[ 32 ] ;
 			zuluCryptMD5_Final( ( unsigned char * )digest,&ctx ) ;
 			for( int i = 0 ; i < 16 ; i++ ) {
-				snprintf( &(result[i*2] ),32,"%02x",( unsigned int )digest[i] );
+				snprintf( &(result[i*2] ),32,"%02x",( unsigned int )digest[i] ) ;
 			}
 		}
 		close( fd ) ;
 	}
-	emit enableCancel();
+	emit enableCancel() ;
 }
 
 int cryptfilethread::encrypt()
@@ -130,7 +130,7 @@ int cryptfilethread::encrypt()
 	int i = 0 ;
 	int j = -1 ;
 
-	emit titleUpdate( tr( "creating encrypted container file" ) );
+	emit titleUpdate( tr( "creating encrypted container file" ) ) ;
 
 	while( size % SIZE != 0 ){
 		size++ ;
@@ -139,7 +139,7 @@ int cryptfilethread::encrypt()
 
 	memset( buffer,0,SIZE ) ;
 
-	emit progressUpdate( 0 );
+	emit progressUpdate( 0 ) ;
 
 	if( !fd_1.resize( size ) ){
 		for( qint64 size_1 = 0 ; size_1 < size ; size_1 += SIZE ){
@@ -149,18 +149,18 @@ int cryptfilethread::encrypt()
 			}
 			i = ( int )( size_1 * 100 / size ) ;
 			if( i > j ){
-				emit progressUpdate( i );
+				emit progressUpdate( i ) ;
 			}
 			j = i ;
 
-			fd_1.write( buffer,SIZE );
+			fd_1.write( buffer,SIZE ) ;
 			fd_1.flush() ;
 		}
 
-		emit progressUpdate( 100 );
+		emit progressUpdate( 100 ) ;
 	}
 
-	fd_1.close();
+	fd_1.close() ;
 
 	int x = this->openMapper( m_dest ) ;
 
@@ -173,7 +173,7 @@ int cryptfilethread::encrypt()
 	}
 	QString s = QString::number( source_size ) ;
 
-	fd_2.write( s.toAscii(),s.size() );
+	fd_2.write( s.toAscii(),s.size() ) ;
 
 	fd_2.putChar( '\0' ) ;
 
@@ -182,7 +182,7 @@ int cryptfilethread::encrypt()
 	QFile fd_3( QString( "/dev/urandom" ) ) ;
 	fd_3.open( QIODevice::ReadOnly ) ;
 	fd_3.read( bff,100 ) ;
-	fd_3.close();
+	fd_3.close() ;
 
 	fd_2.seek( 100 ) ;
 
@@ -196,7 +196,7 @@ int cryptfilethread::encrypt()
 
 	char md5Data[ 32 ] ;
 
-	this->calculateMd5( m_source,md5Data );
+	this->calculateMd5( m_source,md5Data ) ;
 
 	fd_2.write( md5Data,32 ) ;
 
@@ -206,9 +206,9 @@ int cryptfilethread::encrypt()
 
 	j = -1 ;
 
-	emit titleUpdate( tr( "copying data to the container file" ) );
+	emit titleUpdate( tr( "copying data to the container file" ) ) ;
 
-	emit progressUpdate( 0 );
+	emit progressUpdate( 0 ) ;
 
 	for( qint64 size_1 = 0 ; size_1 < size ; size_1 += SIZE ){
 
@@ -217,17 +217,17 @@ int cryptfilethread::encrypt()
 		}
 		i = ( int )( size_1 * 100 / size ) ;
 		if( i > j ){
-			emit progressUpdate( i );
+			emit progressUpdate( i ) ;
 		}
 		j = i ;
 		fd_4.read( buffer,SIZE ) ;
-		fd_2.write( buffer,SIZE );
+		fd_2.write( buffer,SIZE ) ;
 		fd_2.flush() ;
 	}
 
-	fd_2.close();
+	fd_2.close() ;
 
-	emit progressUpdate( 100 );
+	emit progressUpdate( 100 ) ;
 
 	return 0 ;
 }
@@ -255,7 +255,7 @@ int cryptfilethread::decrypt()
 	char md5sum[ 32 ] ;
 	memcpy( md5sum,buffer + 332,32 ) ;
 
-	qint64 size = atoll( buffer );
+	qint64 size = atoll( buffer ) ;
 	qint64 len ;
 	qint64 i = 0;
 	int j = 0;
@@ -266,7 +266,7 @@ int cryptfilethread::decrypt()
 		return 10 ;
 	}
 
-	emit titleUpdate( tr( "copying data from the container file" ) );
+	emit titleUpdate( tr( "copying data from the container file" ) ) ;
 
 	if( size <= SIZE ){
 		fd_1.read( buffer,size ) ;
@@ -283,7 +283,7 @@ int cryptfilethread::decrypt()
 			j = ( int )( i * 100 / len ) ;
 
 			if( j > k ){
-				emit progressUpdate( j );
+				emit progressUpdate( j ) ;
 			}
 			k = j ;
 
@@ -299,7 +299,7 @@ int cryptfilethread::decrypt()
 		fd_2.flush() ;
 	}
 
-	emit progressUpdate( 100 );
+	emit progressUpdate( 100 ) ;
 
 	char md5Data[ 32 ] ;
 
@@ -310,7 +310,7 @@ int cryptfilethread::decrypt()
 		/*
 		 * we are decrypting a volume using new format that embed md5 checksum of the data
 		 */
-		this->calculateMd5( m_dest,md5Data );
+		this->calculateMd5( m_dest,md5Data ) ;
 
 		if( memcmp( md5sum,md5Data,32 ) != 0 ){
 			return 1000 ;
@@ -329,33 +329,33 @@ int cryptfilethread::openMapper( QString path )
 	path.replace( "\"","\"\"\"" ) ;
 	m_key.replace( "\"","\"\"\"" ) ;
 
-	QString e = QString( "%1 -J %3 \"%4\" -d \"%5\"" ).arg( ZULUCRYPTzuluCrypt ).arg( m_keySource ).arg( m_key ).arg( path );
+	QString e = QString( "%1 -J %3 \"%4\" -d \"%5\"" ).arg( ZULUCRYPTzuluCrypt ).arg( m_keySource ).arg( m_key ).arg( path ) ;
 	QProcess exe ;
 
-	exe.start( e );
-	exe.waitForFinished();
+	exe.start( e ) ;
+	exe.waitForFinished() ;
 
 	int st = exe.exitCode() ;
-	exe.close();
+	exe.close() ;
 	return st ;
 }
 
 int cryptfilethread::closeMapper( QString path )
 {
 	path.replace( "\"","\"\"\"" ) ;
-	QString e = QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( path );
+	QString e = QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( path ) ;
 	QProcess exe ;
-	exe.start( e );
-	exe.waitForFinished();
+	exe.start( e ) ;
+	exe.waitForFinished() ;
 	int st = exe.exitStatus() ;
-	exe.close();
+	exe.close() ;
 	return st ;
 }
 
 void cryptfilethread::run()
 {
 	if( m_task == QString( "-E" ) ){
-		m_status = this->encrypt();
+		m_status = this->encrypt() ;
 
 		if( m_status == 10 || m_status == 13 ){
 			;
@@ -369,7 +369,7 @@ void cryptfilethread::run()
 	}else{
 		m_status = this->openMapper( m_source ) ;
 		if( m_status == 0 ){
-			m_status = this->decrypt();
+			m_status = this->decrypt() ;
 			this->closeMapper( m_source ) ;
 			if( m_status == TERM_ST ){
 				QFile::remove( m_dest ) ;

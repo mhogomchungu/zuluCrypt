@@ -42,8 +42,8 @@ int keystrength::quality( QString key )
 #if BUILD_PWQUALITY
 	void * auxerror ;
 	QByteArray keyArray = key.toAscii() ;
-	int st = pwquality_check( m_handle,keyArray.constData(),NULL,NULL,&auxerror);
-	pwquality_strerror( NULL,0,st,auxerror);
+	int st = pwquality_check( m_handle,keyArray.constData(),NULL,NULL,&auxerror) ;
+	pwquality_strerror( NULL,0,st,auxerror) ;
 	return st ;
 #else
 	key = QString( "silence compiler warning" ) ;
@@ -54,6 +54,6 @@ int keystrength::quality( QString key )
 keystrength::~keystrength()
 {
 #if BUILD_PWQUALITY
-	pwquality_free_settings( m_handle );
+	pwquality_free_settings( m_handle ) ;
 #endif
 }

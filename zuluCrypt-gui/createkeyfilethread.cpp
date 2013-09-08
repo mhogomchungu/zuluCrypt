@@ -56,14 +56,14 @@ void createkeyfilethread::run()
 		}while( data < 32 || data > 126 ) ;
 		write( m_qfwrite,&data,1 ) ;
 	}
-	this->deleteLater();
+	this->deleteLater() ;
 }
 
 void createkeyfilethread::cancelOperation()
 {
 	m_cancelled = 1 ;
-	this->terminate();
-	this->deleteLater();
+	this->terminate() ;
+	this->deleteLater() ;
 }
 
 createkeyfilethread::~createkeyfilethread()
@@ -73,5 +73,5 @@ createkeyfilethread::~createkeyfilethread()
 	if( m_cancelled != 1 ){
 		QFile::setPermissions( m_path,QFile::ReadOwner|QFile::WriteOwner ) ;
 	}
-	emit exitStatus( m_cancelled );
+	emit exitStatus( m_cancelled ) ;
 }

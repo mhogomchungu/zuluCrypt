@@ -47,13 +47,13 @@ void socketSendKey::setAddr( QString addr )
 void socketSendKey::closeConnection()
 {
 	m_closeConnection = false ;
-	::zuluCryptPluginManagerCloseConnection( m_connectionHandle );
+	::zuluCryptPluginManagerCloseConnection( m_connectionHandle ) ;
 }
 
 void socketSendKey::sendKey( QByteArray data )
 {
 	m_key = data ;
-	this->start();
+	this->start() ;
 }
 
 bool socketSendKey::openConnection()
@@ -77,12 +77,12 @@ void socketSendKey::setKey( QByteArray key )
 
 void socketSendKey::sendKey( void )
 {
-	this->start();
+	this->start() ;
 }
 
 QString socketSendKey::getSocketPath()
 {
-	u_int64_t x = static_cast<u_int64_t>( QDateTime::currentDateTime().toMSecsSinceEpoch() );
+	u_int64_t x = static_cast<u_int64_t>( QDateTime::currentDateTime().toMSecsSinceEpoch() ) ;
 	return QString( QDir::homePath() + QString( "/.zuluCrypt-socket/" ) + QString::number( x ) ) ;
 }
 
@@ -92,12 +92,12 @@ void socketSendKey::run()
 		this->openConnection() ;
 	}
 	if( !m_connected ){
-		emit keyNotSent();
+		emit keyNotSent() ;
 	}else{
 		emit gotConnected() ;
 		::zuluCryptPluginManagerSendKey( m_connectionHandle,m_key.constData(),m_key.size() ) ;
 		m_closeConnection = false ;
-		::zuluCryptPluginManagerCloseConnection( m_connectionHandle );
+		::zuluCryptPluginManagerCloseConnection( m_connectionHandle ) ;
 		emit keySent() ;
 	}
 }
@@ -106,7 +106,7 @@ void socketSendKey::openAndCloseConnection( QString sockAddr )
 {
 	QByteArray sockpath = sockAddr.toAscii() ;
 	void * connection = ::zuluCryptPluginManagerOpenConnection( sockpath.constData() ) ;
-	::zuluCryptPluginManagerCloseConnection( connection );
+	::zuluCryptPluginManagerCloseConnection( connection ) ;
 }
 
 void * socketSendKey::zuluCryptPluginManagerOpenConnection( QString sockpath )
@@ -128,6 +128,6 @@ void socketSendKey::zuluCryptPluginManagerCloseConnection( void * handle )
 socketSendKey::~socketSendKey()
 {
 	if( m_closeConnection ){
-		::zuluCryptPluginManagerCloseConnection( m_connectionHandle );
+		::zuluCryptPluginManagerCloseConnection( m_connectionHandle ) ;
 	}
 }

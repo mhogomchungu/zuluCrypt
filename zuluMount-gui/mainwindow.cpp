@@ -62,27 +62,27 @@ MainWindow::MainWindow( int argc,char * argv[],QWidget * parent ) :QWidget( pare
 
 void MainWindow::setUpApp()
 {
-	this->setLocalizationLanguage();
+	this->setLocalizationLanguage() ;
 	m_ui = new Ui::MainWindow ;
-	m_ui->setupUi(this);
+	m_ui->setupUi( this ) ;
 
 	this->setFixedSize( this->size() ) ;
 
-	m_ui->tableWidget->setColumnWidth( 0,225 );
-	m_ui->tableWidget->setColumnWidth( 1,320 );
-	m_ui->tableWidget->setColumnWidth( 2,105 );
-	m_ui->tableWidget->hideColumn( 3 );
-	m_ui->tableWidget->setColumnWidth( 4,87 );
-	m_ui->tableWidget->setColumnWidth( 5,87 );
+	m_ui->tableWidget->setColumnWidth( 0,225 ) ;
+	m_ui->tableWidget->setColumnWidth( 1,320 ) ;
+	m_ui->tableWidget->setColumnWidth( 2,105 ) ;
+	m_ui->tableWidget->hideColumn( 3 ) ;
+	m_ui->tableWidget->setColumnWidth( 4,87 ) ;
+	m_ui->tableWidget->setColumnWidth( 5,87 ) ;
 
 	m_ui->tableWidget->verticalHeader()->setResizeMode( QHeaderView::ResizeToContents ) ;
 
 	m_ui->tableWidget->verticalHeader()->setMinimumSectionSize( 30 ) ;
 
-	this->setAcceptDrops( true );
-	this->setWindowIcon( QIcon( QString( ":/zuluMount.png" ) ) );
+	this->setAcceptDrops( true ) ;
+	this->setWindowIcon( QIcon( QString( ":/zuluMount.png" ) ) ) ;
 
-	m_ui->tableWidget->setMouseTracking( true );
+	m_ui->tableWidget->setMouseTracking( true ) ;
 
 	connect( m_ui->tableWidget,SIGNAL( itemEntered( QTableWidgetItem * ) ),this,SLOT( itemEntered( QTableWidgetItem * ) ) ) ;
 	connect( m_ui->tableWidget,SIGNAL( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ),
@@ -92,19 +92,19 @@ void MainWindow::setUpApp()
 	connect( m_ui->pbclose,SIGNAL( clicked() ),this,SLOT( pbClose() ) ) ;
 	connect( m_ui->tableWidget,SIGNAL( itemClicked( QTableWidgetItem * ) ),this,SLOT( itemClicked( QTableWidgetItem * ) ) ) ;
 
-	this->setUpShortCuts();
+	this->setUpShortCuts() ;
 
-	this->setUpFont();
+	this->setUpFont() ;
 
 	m_trayIcon = new QSystemTrayIcon( this ) ;
-	m_trayIcon->setIcon( QIcon( QString( ":/zuluMount.png" ) ) );
+	m_trayIcon->setIcon( QIcon( QString( ":/zuluMount.png" ) ) ) ;
 
 	QMenu * trayMenu = new QMenu( this ) ;
 
 	m_autoMountAction = new QAction( this ) ;
 	m_autoMount = this->autoMount() ;
-	m_autoMountAction->setCheckable( true );
-	m_autoMountAction->setChecked( m_autoMount );
+	m_autoMountAction->setCheckable( true ) ;
+	m_autoMountAction->setChecked( m_autoMount ) ;
 
 	m_autoMountAction->setText( tr( "automount volumes" ) ) ;
 
@@ -121,13 +121,13 @@ void MainWindow::setUpApp()
 
 	trayMenu->addAction( autoOpenFolderOnMount ) ;
 
-	trayMenu->addAction( tr( "quit" ),this,SLOT( pbClose() ) );
-	m_trayIcon->setContextMenu( trayMenu );
+	trayMenu->addAction( tr( "quit" ),this,SLOT( pbClose() ) ) ;
+	m_trayIcon->setContextMenu( trayMenu ) ;
 
 	connect( m_trayIcon,SIGNAL( activated( QSystemTrayIcon::ActivationReason ) ),
-		 this,SLOT( slotTrayClicked( QSystemTrayIcon::ActivationReason ) ) );
+		 this,SLOT( slotTrayClicked( QSystemTrayIcon::ActivationReason ) ) ) ;
 
-	m_trayIcon->show();
+	m_trayIcon->show() ;
 
 	QString dirPath = QDir::homePath() + QString( "/.zuluCrypt/" ) ;
 	QDir dir( dirPath ) ;
@@ -138,7 +138,7 @@ void MainWindow::setUpApp()
 
 	managepartitionthread * part = new managepartitionthread() ;
 
-	this->disableAll();
+	this->disableAll() ;
 
 	connect( part,SIGNAL( signalMountedList( QStringList,QStringList ) ),
 		 this,SLOT( slotMountedList( QStringList,QStringList ) ) ) ;
@@ -147,7 +147,7 @@ void MainWindow::setUpApp()
 
 	part->startAction( managepartitionthread::Update ) ;
 
-	this->startAutoMonitor();
+	this->startAutoMonitor() ;
 }
 
 void MainWindow::setLocalizationLanguage()
@@ -182,7 +182,7 @@ void MainWindow::autoOpenFolderOnMount( bool b )
 	}else{
 		QFile f( x ) ;
 		f.open( QIODevice::WriteOnly ) ;
-		f.close();
+		f.close() ;
 	}
 }
 
@@ -218,12 +218,12 @@ void MainWindow::startAutoMonitor()
  */
 void MainWindow::pbClose()
 {
-	m_autoMountThread->stop();
+	m_autoMountThread->stop() ;
 }
 
 void MainWindow::quitApplication()
 {
-	QCoreApplication::quit();
+	QCoreApplication::quit() ;
 }
 
 void MainWindow::started( void )
@@ -234,8 +234,8 @@ void MainWindow::started( void )
 void MainWindow::showEvent( QShowEvent * e )
 {
 	if( m_startHidden && !m_started ){
-		e->ignore();
-		this->hide();
+		e->ignore() ;
+		this->hide() ;
 	}
 }
 
@@ -269,15 +269,15 @@ void MainWindow::autoMountVolumeInfo( QStringList l )
 		return ;
 	}
 	if( type.startsWith( QString( "crypto" ) ) || type == QString( "Nil" ) ){
-		this->addEntryToTable( false,l );
+		this->addEntryToTable( false,l ) ;
 	}else{
 		if( m_autoMount ){
 			mountPartition * mp = new mountPartition( this,m_ui->tableWidget,m_folderOpener,m_autoOpenFolderOnMount ) ;
 			connect( mp,SIGNAL( autoMountComplete() ),mp,SLOT( deleteLater() ) ) ;
 			connect( mp,SIGNAL( autoMountComplete() ),this,SLOT( enableAll() ) ) ;
-			mp->AutoMount( l );
+			mp->AutoMount( l ) ;
 		}else{
-			this->addEntryToTable( false,l );
+			this->addEntryToTable( false,l ) ;
 		}
 	}
 }
@@ -292,7 +292,7 @@ void MainWindow::deviceRemoved( QString dev )
 		* and try to do so for them
 		*/
 		managepartitionthread * part = new managepartitionthread() ;
-		part->setDevice( dev );
+		part->setDevice( dev ) ;
 		part->startAction( managepartitionthread::checkUnMount ) ;
 	}
 }
@@ -313,7 +313,7 @@ void MainWindow::itemEntered( QTableWidgetItem * item )
 		 * will always return true,a solution is to examine /proc/self/mountinfo and thats work for another day
 		 */
 		if( x == QString( "Nil" ) ){
-			x.clear();
+			x.clear() ;
 		}
 		z += tr( "LABEL=\"%1\"" ).arg( x ) ;
 
@@ -321,11 +321,11 @@ void MainWindow::itemEntered( QTableWidgetItem * item )
 		/*
 		 * volume is not mounted,cant know its LABEL value
 		 */
-		x.clear();
+		x.clear() ;
 		z += tr( "LABEL=\"%1\"" ).arg( x ) ;
 	}else{
 		if( x == QString( "Nil" ) ){
-			x.clear();
+			x.clear() ;
 		}
 		y = utility::shareMountPointToolTip( m_point ) ;
 		if( y.isEmpty() ){
@@ -334,7 +334,7 @@ void MainWindow::itemEntered( QTableWidgetItem * item )
 			z += tr( "LABEL=\"%1\"\n%2" ).arg( x ).arg( y ) ;
 		}
 	}
-	item->setToolTip( z );
+	item->setToolTip( z ) ;
 }
 
 void MainWindow::processArgumentList()
@@ -355,20 +355,20 @@ void MainWindow::processArgumentList()
 
 void MainWindow::raiseWindow()
 {
-	this->setVisible( true );
-	this->raise();
-	this->show();
+	this->setVisible( true ) ;
+	this->raise() ;
+	this->show() ;
 	this->setWindowState( Qt::WindowActive ) ;
 }
 
 void MainWindow::raiseWindow( QString device )
 {
-	this->setVisible( true );
-	this->raise();
-	this->show();
+	this->setVisible( true ) ;
+	this->raise() ;
+	this->show() ;
 	this->setWindowState( Qt::WindowActive ) ;
 	m_device = device ;
-	this->openVolumeFromArgumentList();
+	this->openVolumeFromArgumentList() ;
 }
 
 void MainWindow::start()
@@ -378,7 +378,7 @@ void MainWindow::start()
 	if( !instance->instanceExist() ){
 		connect( instance,SIGNAL( raise() ),this,SLOT( raiseWindow() ) ) ;
 		connect( instance,SIGNAL( raiseWithDevice( QString ) ),this,SLOT( raiseWindow( QString ) ) ) ;
-		this->setUpApp();
+		this->setUpApp() ;
 	}
 }
 
@@ -386,7 +386,7 @@ void MainWindow::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 {
 	QMenu m ;
 
-	m.setFont( this->font() );
+	m.setFont( this->font() ) ;
 
 	QString mt = m_ui->tableWidget->item( item->row(),1 )->text() ;
 	QString type = m_ui->tableWidget->item( item->row(),2 )->text() ;
@@ -455,9 +455,9 @@ void MainWindow::defaultButton()
 	QString mt = m_ui->tableWidget->item( row,1 )->text() ;
 
 	if( mt == QString( "Nil" ) ){
-		this->slotMount();
+		this->slotMount() ;
 	}else{
-		this->showContextMenu( m_ui->tableWidget->currentItem(),false );
+		this->showContextMenu( m_ui->tableWidget->currentItem(),false ) ;
 	}
 }
 
@@ -476,7 +476,7 @@ void MainWindow::slotOpenSharedFolder()
 {
 	openmountpointinfilemanager * ofm = new openmountpointinfilemanager( m_folderOpener,m_sharedFolderPath ) ;
 	connect( ofm,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
-	ofm->start();
+	ofm->start() ;
 }
 
 void MainWindow::slotOpenFolder()
@@ -485,14 +485,14 @@ void MainWindow::slotOpenFolder()
 	QString path = m_ui->tableWidget->item( item->row(),1 )->text() ;
 	openmountpointinfilemanager * ofm = new openmountpointinfilemanager( m_folderOpener,path ) ;
 	connect( ofm,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
-	ofm->start();
+	ofm->start() ;
 }
 
 void MainWindow::volumeProperties()
 {
-	this->disableAll();
+	this->disableAll() ;
 	managepartitionthread * part = new managepartitionthread() ;
-	part->setDevice( m_ui->tableWidget->item( m_ui->tableWidget->currentRow(),0 )->text() );
+	part->setDevice( m_ui->tableWidget->item( m_ui->tableWidget->currentRow(),0 )->text() ) ;
 	connect( part,SIGNAL( signalProperties( QString ) ),this,SLOT( volumeProperties( QString ) ) ) ;
 
 	part->startAction( managepartitionthread::VolumeProperties ) ;
@@ -514,45 +514,45 @@ void MainWindow::volumeProperties( QString properties )
 				      tr( "could not get volume properties.\nvolume is not open or was opened by a different user" ) ) ;
 		}
 	}
-	this->enableAll();
+	this->enableAll() ;
 }
 
 void MainWindow::setUpShortCuts()
 {
 	QAction * ac = new QAction( this ) ;
 	QList<QKeySequence> keys ;
-	keys.append( Qt::Key_Enter );
-	keys.append( Qt::Key_Return );
+	keys.append( Qt::Key_Enter ) ;
+	keys.append( Qt::Key_Return ) ;
 	ac->setShortcuts( keys ) ;
 	connect( ac,SIGNAL( triggered() ),this,SLOT( defaultButton() ) ) ;
-	this->addAction( ac );
+	this->addAction( ac ) ;
 
 	QAction * qa = new QAction( this ) ;
 	QList<QKeySequence> z ;
-	z.append( Qt::Key_M );
+	z.append( Qt::Key_M ) ;
 	qa->setShortcuts( z ) ;
 	connect( qa,SIGNAL( triggered() ),this,SLOT( pbMount() ) ) ;
-	this->addAction( qa );
+	this->addAction( qa ) ;
 
 	qa = new QAction( this ) ;
 	QList<QKeySequence> p ;
-	p.append( Qt::Key_U );
+	p.append( Qt::Key_U ) ;
 	qa->setShortcuts( p ) ;
 	connect( qa,SIGNAL( triggered() ),this,SLOT( pbUmount() ) ) ;
 	this->addAction( qa ) ;
 
 	qa = new QAction( this ) ;
 	QList<QKeySequence> q ;
-	q.append( Qt::Key_R );
+	q.append( Qt::Key_R ) ;
 	qa->setShortcuts( q ) ;
-	connect( qa,SIGNAL( triggered() ),this,SLOT( pbUpdate() ) );
+	connect( qa,SIGNAL( triggered() ),this,SLOT( pbUpdate() ) ) ;
 	this->addAction( qa ) ;
 
 	qa = new QAction( this ) ;
 	QList<QKeySequence> e ;
-	e.append( Qt::Key_C );
+	e.append( Qt::Key_C ) ;
 	qa->setShortcuts( e ) ;
-	connect( qa,SIGNAL( triggered() ),this,SLOT( pbClose() ) );
+	connect( qa,SIGNAL( triggered() ),this,SLOT( pbClose() ) ) ;
 	this->addAction( qa ) ;
 }
 
@@ -564,17 +564,17 @@ void MainWindow::setUpFont()
 
 void MainWindow::closeEvent( QCloseEvent * e )
 {
-	e->ignore();
-	this->hide();
+	e->ignore() ;
+	this->hide() ;
 }
 
 void MainWindow::slotTrayClicked( QSystemTrayIcon::ActivationReason e )
 {
 	if( e == QSystemTrayIcon::Trigger ){
 		if( this->isVisible() ){
-			this->hide();
+			this->hide() ;
 		}else{
-			this->show();
+			this->show() ;
 		}
 	}
 }
@@ -586,7 +586,7 @@ void MainWindow::autoMountToggled( bool opt )
 
 void MainWindow::dragEnterEvent( QDragEnterEvent * e )
 {
-	e->accept();
+	e->accept() ;
 }
 
 void MainWindow::dropEvent( QDropEvent * e )
@@ -601,7 +601,7 @@ void MainWindow::dropEvent( QDropEvent * e )
 			managepartitionthread * m = new managepartitionthread() ;
 			connect( m,SIGNAL( getVolumeInfo( QStringList ) ),
 				 this,SLOT( showMoungDialog( QStringList ) ) ) ;
-			m->setDevice( m_device );
+			m->setDevice( m_device ) ;
 			m->startAction( managepartitionthread::VolumeType ) ;
 		}
 	}
@@ -609,15 +609,15 @@ void MainWindow::dropEvent( QDropEvent * e )
 
 void MainWindow::mount( QString type,QString device,QString label )
 {
-	this->disableAll();
+	this->disableAll() ;
 	if( type.startsWith( QString( "crypto" ) ) || type == QString( "Nil" ) ){
 		keyDialog * kd = new keyDialog( this,m_ui->tableWidget,device,type,m_folderOpener,m_autoOpenFolderOnMount ) ;
 		connect( kd,SIGNAL( cancel() ),this,SLOT( enableAll() ) ) ;
-		kd->ShowUI();
+		kd->ShowUI() ;
 	}else{
 		mountPartition * mp = new mountPartition( this,m_ui->tableWidget,m_folderOpener,m_autoOpenFolderOnMount ) ;
 		connect( mp,SIGNAL( cancel() ),this,SLOT( enableAll() ) ) ;
-		mp->ShowUI( device,label );
+		mp->ShowUI( device,label ) ;
 	}
 }
 
@@ -626,7 +626,7 @@ void MainWindow::openVolumeFromArgumentList()
 	if( !m_device.isEmpty() ){
 		managepartitionthread * m = new managepartitionthread() ;
 		connect( m,SIGNAL( getVolumeInfo( QStringList ) ),this,SLOT( showMoungDialog( QStringList ) ) ) ;
-		m->setDevice( m_device );
+		m->setDevice( m_device ) ;
 		m->startAction( managepartitionthread::VolumeType ) ;
 	}
 }
@@ -638,33 +638,33 @@ void MainWindow::slotMount()
 	QString device = table->item( row,0 )->text() ;
 	QString type   = table->item( row,2 )->text() ;
 	QString label  = table->item( row,3 )->text() ;
-	this->mount( type,device,label );
+	this->mount( type,device,label ) ;
 }
 
 void MainWindow::showMoungDialog( QStringList l )
 {
 	if( l.size() >= 4  ){
-		this->mount( l.at( 2 ),l.at( 0 ),l.at( 3 ) );
+		this->mount( l.at( 2 ),l.at( 0 ),l.at( 3 ) ) ;
 	}else{
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR" ),
 			      tr( "permission to access the volume was denied\nor\nthe volume is not supported\n(LVM/MDRAID signatures found)" ) ) ;
-		this->enableAll();
+		this->enableAll() ;
 	}
 }
 
 void MainWindow::pbMount()
 {
-	this->disableAll();
+	this->disableAll() ;
 
 	QString path = QFileDialog::getOpenFileName( this,tr( "select an image file to mount" ),QDir::homePath() ) ;
 	if( path.isEmpty() ){
-		this->enableAll();
+		this->enableAll() ;
 	}else{
 		m_device = path ;
 		managepartitionthread * m = new managepartitionthread() ;
 		connect( m,SIGNAL( getVolumeInfo( QStringList ) ),this,SLOT( showMoungDialog( QStringList ) ) ) ;
-		m->setDevice( m_device );
+		m->setDevice( m_device ) ;
 		m->startAction( managepartitionthread::VolumeType ) ;
 	}
 }
@@ -673,12 +673,12 @@ void MainWindow::addEntryToTable( bool b,QStringList l )
 {
 	QFont f = this->font() ;
 
-	f.setItalic( !f.italic() );
-	f.setBold( !f.bold() );
+	f.setItalic( !f.italic() ) ;
+	f.setBold( !f.bold() ) ;
 
 	QString x = l.at( 5 ) ;
 	x = x.remove( QChar( '\n' ) ) ;
-	l.replace( 5,x );
+	l.replace( 5,x ) ;
 
 	if( b ){
 		tablewidget::addRowToTable( m_ui->tableWidget,l,f ) ;
@@ -711,7 +711,7 @@ void MainWindow::volumeMiniProperties( QString volumeInfo )
 	QString label ;
 	QString mountPointPath ;
 
-	this->disableAll();
+	this->disableAll() ;
 
 	if( volumeInfo.isEmpty() ){
 		;
@@ -760,7 +760,7 @@ void MainWindow::volumeMiniProperties( QString volumeInfo )
 
 void MainWindow::pbUmount()
 {
-	this->disableAll();
+	this->disableAll() ;
 
 	int row = m_ui->tableWidget->currentRow() ;
 
@@ -769,8 +769,8 @@ void MainWindow::pbUmount()
 
 	managepartitionthread * part = new managepartitionthread() ;
 
-	part->setDevice( path );
-	part->setType( type );
+	part->setDevice( path ) ;
+	part->setType( type ) ;
 
 	connect( part,SIGNAL( signalUnmountComplete( int,QString) ),this,SLOT( slotUnmountComplete( int,QString ) ) ) ;
 
@@ -779,14 +779,14 @@ void MainWindow::pbUmount()
 
 void MainWindow::pbUpdate()
 {
-	this->disableAll();
+	this->disableAll() ;
 
 	while( m_ui->tableWidget->rowCount() ){
 		m_ui->tableWidget->removeRow( 0 ) ;
 	}
 	managepartitionthread * part = new managepartitionthread() ;
 
-	m_ui->tableWidget->setEnabled( false );
+	m_ui->tableWidget->setEnabled( false ) ;
 	connect( part,SIGNAL( signalMountedList( QStringList,QStringList ) ),this,SLOT( slotMountedList( QStringList,QStringList ) ) ) ;
 
 	part->startAction( managepartitionthread::Update ) ;
@@ -797,8 +797,8 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 	if( list.isEmpty() || sys.isEmpty() ){
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR" ),
-			      tr( "reading partition properties took longer than expected and operation was terminated,click refresh to try again" ) );
-		this->enableAll();
+			      tr( "reading partition properties took longer than expected and operation was terminated,click refresh to try again" ) ) ;
+		this->enableAll() ;
 		return ;
 	}
 
@@ -810,8 +810,8 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 
 	QFont f = this->font() ;
 
-	f.setItalic( !f.italic() );
-	f.setBold( !f.bold() );
+	f.setItalic( !f.italic() ) ;
+	f.setBold( !f.bold() ) ;
 
 	QString opt ;
 	QString fs ;
@@ -878,15 +878,15 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 		}
 	}
 
-	this->enableAll();
+	this->enableAll() ;
 }
 
 void MainWindow::slotUnmountComplete( int status,QString msg )
 {
 	if( status ){
 		DialogMsg m( this ) ;
-		m.ShowUIOK( tr( "ERROR" ),msg );
-		this->enableAll();
+		m.ShowUIOK( tr( "ERROR" ),msg ) ;
+		this->enableAll() ;
 	}
 }
 
@@ -897,38 +897,38 @@ void MainWindow::slotCurrentItemChanged( QTableWidgetItem * current,QTableWidget
 
 void MainWindow::disableAll()
 {
-	m_ui->pbclose->setEnabled( false );
-	m_ui->pbmount->setEnabled( false );
-	m_ui->pbupdate->setEnabled( false );
-	m_ui->tableWidget->setEnabled( false );
+	m_ui->pbclose->setEnabled( false ) ;
+	m_ui->pbmount->setEnabled( false ) ;
+	m_ui->pbupdate->setEnabled( false ) ;
+	m_ui->tableWidget->setEnabled( false ) ;
 }
 
 void MainWindow::enableAll()
 {
-	m_ui->pbclose->setEnabled( true );
-	m_ui->pbupdate->setEnabled( true );
-	m_ui->tableWidget->setEnabled( true );
-	m_ui->pbmount->setEnabled( true );
-	m_ui->tableWidget->setFocus();
+	m_ui->pbclose->setEnabled( true ) ;
+	m_ui->pbupdate->setEnabled( true ) ;
+	m_ui->tableWidget->setEnabled( true ) ;
+	m_ui->pbmount->setEnabled( true ) ;
+	m_ui->tableWidget->setFocus() ;
 }
 
 #define zuluMOUNT_AUTOPATH "/.zuluCrypt/zuluMount-gui.autoMountPartitions"
 
 bool MainWindow::autoMount()
 {
-	QFile f( QDir::homePath() + QString( zuluMOUNT_AUTOPATH ) );
+	QFile f( QDir::homePath() + QString( zuluMOUNT_AUTOPATH ) ) ;
 	return f.exists() ;
 }
 
 MainWindow::~MainWindow()
 {
-	QFile f( QDir::homePath() + QString( zuluMOUNT_AUTOPATH ) );
+	QFile f( QDir::homePath() + QString( zuluMOUNT_AUTOPATH ) ) ;
 
 	if( m_autoMountAction ){
 		if( m_autoMountAction->isChecked() ){
 			if( !f.exists() ){
 				f.open( QIODevice::WriteOnly ) ;
-				f.close();
+				f.close() ;
 			}
 		}else{
 			f.remove() ;

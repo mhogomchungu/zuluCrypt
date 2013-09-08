@@ -46,44 +46,44 @@ openvolume::openvolume( QWidget * parent ) :
 	QDialog( parent )
 {
 	m_ui = new Ui::openvolume() ;
-	m_ui->setupUi( this );
-	this->setFixedSize( this->size() );
-	this->setFont( parent->font() );
+	m_ui->setupUi( this ) ;
+	this->setFixedSize( this->size() ) ;
+	this->setFont( parent->font() ) ;
 
 	connect( m_ui->tableWidget,SIGNAL( itemDoubleClicked( QTableWidgetItem * ) ),this,SLOT( tableEntryDoubleClicked( QTableWidgetItem * ) ) ) ;
 	connect( m_ui->tableWidget,SIGNAL( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ),this,
 		 SLOT( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ) ) ;
-	connect( m_ui->pbHelp,SIGNAL( clicked() ),this,SLOT( pbHelp() ) );
+	connect( m_ui->pbHelp,SIGNAL( clicked() ),this,SLOT( pbHelp() ) ) ;
 	connect( m_ui->pbUUID,SIGNAL( clicked() ),this,SLOT( pbUUID() ) ) ;
-	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) );
+	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 
 	m_action = new QAction( this ) ;
 	QList<QKeySequence> keys ;
-	keys.append( Qt::Key_Enter );
-	keys.append( Qt::Key_Return );
+	keys.append( Qt::Key_Enter ) ;
+	keys.append( Qt::Key_Return ) ;
 	m_action->setShortcuts( keys ) ;
 
-	connect( m_action,SIGNAL( triggered() ),this,SLOT( EnterKeyPressed() ) );
+	connect( m_action,SIGNAL( triggered() ),this,SLOT( EnterKeyPressed() ) ) ;
 
-	this->addAction( m_action );
+	this->addAction( m_action ) ;
 
 	QTableWidget * tw = m_ui->tableWidget ;
-	tw->setColumnWidth( 0,183 );
-	tw->setColumnWidth( 1,90 );
-	//tw->setColumnWidth( 2,110 );
+	tw->setColumnWidth( 0,183 ) ;
+	tw->setColumnWidth( 1,90 ) ;
+	//tw->setColumnWidth( 2,110 ) ;
 	tw->hideColumn( 2 ) ;
-	tw->setColumnWidth( 3,90 );
-	tw->setColumnWidth( 4,309 );
+	tw->setColumnWidth( 3,90 ) ;
+	tw->setColumnWidth( 4,309 ) ;
 
 	for( int i = 0 ; i < 5 ; i++ ){
-		tw->horizontalHeaderItem( i )->setFont( this->font() );
+		tw->horizontalHeaderItem( i )->setFont( this->font() ) ;
 	}
-	tw->horizontalHeader()->setVisible( true );
+	tw->horizontalHeader()->setVisible( true ) ;
 
-	m_ui->checkBoxUUID->setVisible( false );
+	m_ui->checkBoxUUID->setVisible( false ) ;
 
 	m_diableNonLUKS = false ;
-	//m_ui->pbUUID->setVisible( false );
+	//m_ui->pbUUID->setVisible( false ) ;
 	m_showEncryptedOnly = false ;
 	m_showLuksOnly = false ;
 }
@@ -114,21 +114,21 @@ void openvolume::pbHelp()
 			m = tr( "you are a root user and all partitions are displayed.\nDouble click an entry to use it" )	;
 		}
 	}
-	msg.ShowUIOK( tr( "info" ),m );
+	msg.ShowUIOK( tr( "info" ),m ) ;
 }
 
 void openvolume::pbUUID()
 {
 	if( m_ui->pbUUID->isFlat() ){
-		m_ui->pbUUID->setFlat( false );
+		m_ui->pbUUID->setFlat( false ) ;
 	}else{
-		m_ui->pbUUID->setFlat( true );
+		m_ui->pbUUID->setFlat( true ) ;
 	}
 }
 
 void openvolume::pbCancel()
 {
-	this->HideUI();
+	this->HideUI() ;
 }
 
 void openvolume::EnterKeyPressed()
@@ -138,7 +138,7 @@ void openvolume::EnterKeyPressed()
 	if( it == NULL ){
 		return ;
 	}
-	tableEntryDoubleClicked( tw->item( it->row(),0 ) );
+	tableEntryDoubleClicked( tw->item( it->row(),0 ) ) ;
 }
 
 void openvolume::currentItemChanged( QTableWidgetItem * current, QTableWidgetItem * previous )
@@ -149,40 +149,40 @@ void openvolume::currentItemChanged( QTableWidgetItem * current, QTableWidgetIte
 void openvolume::ShowNonSystemPartitions()
 {
 	m_option = 1 ;
-	this->partitionList( tr( "select a partition to create an encrypted volume in" )," -N" );
+	this->partitionList( tr( "select a partition to create an encrypted volume in" )," -N" ) ;
 }
 
 void openvolume::ShowAllPartitions()
 {
 	m_option = 2 ;
-	this->partitionList( tr( "select an encrypted partition to open" )," -A" );
+	this->partitionList( tr( "select an encrypted partition to open" )," -A" ) ;
 }
 
 void openvolume::ShowPartitionList( QString x,QString y )
 {
-	this->partitionList( x,y );
+	this->partitionList( x,y ) ;
 }
 
 void openvolume::allowLUKSOnly()
 {
 	m_diableNonLUKS = true ;
-	this->ShowAllPartitions();
+	this->ShowAllPartitions() ;
 }
 
 void openvolume::partitionList( QString title,QString type )
 {
-	this->setWindowTitle( title );
+	this->setWindowTitle( title ) ;
 
 	while ( m_ui->tableWidget->rowCount() > 0 ){
-		m_ui->tableWidget->removeRow( 0 );
+		m_ui->tableWidget->removeRow( 0 ) ;
 	}
-	partitionproperties * op = new partitionproperties( type );
+	partitionproperties * op = new partitionproperties( type ) ;
 
-	connect( op,SIGNAL( finished() ),this,SLOT( partitionpropertiesThreadFinished() ) );
-	connect( op,SIGNAL( partitionProperties( QStringList ) ),this,SLOT( partitionProperties( QStringList ) ) );
-	m_ui->tableWidget->setEnabled( false );
-	op->start();
-	this->show();
+	connect( op,SIGNAL( finished() ),this,SLOT( partitionpropertiesThreadFinished() ) ) ;
+	connect( op,SIGNAL( partitionProperties( QStringList ) ),this,SLOT( partitionProperties( QStringList ) ) ) ;
+	m_ui->tableWidget->setEnabled( false ) ;
+	op->start() ;
+	this->show() ;
 }
 
 void openvolume::partitionProperties( QStringList entry )
@@ -208,14 +208,14 @@ void openvolume::partitionProperties( QStringList entry )
 
 void openvolume::partitionpropertiesThreadFinished()
 {
-	m_ui->tableWidget->setEnabled( true );
-	m_ui->tableWidget->setFocus();
+	m_ui->tableWidget->setEnabled( true ) ;
+	m_ui->tableWidget->setFocus() ;
 }
 
 void openvolume::HideUI()
 {
-	this->hide();
-	emit HideUISignal();
+	this->hide() ;
+	emit HideUISignal() ;
 }
 
 void openvolume::tableEntryDoubleClicked( QTableWidgetItem * item )
@@ -229,7 +229,7 @@ void openvolume::tableEntryDoubleClicked( QTableWidgetItem * item )
 
 			return m.ShowUIOK( tr( "ERROR" ),tr( "only cryto_LUKS volumes can be selected" ) ) ;
 		}else{
-			m_ui->pbUUID->setFlat( true );
+			m_ui->pbUUID->setFlat( true ) ;
 		}
 
 	}
@@ -239,13 +239,13 @@ void openvolume::tableEntryDoubleClicked( QTableWidgetItem * item )
 		dev = tw->item( item->row(),0 )->text() ;
 	}
 	emit clickedPartition( dev ) ;
-	HideUI();
+	HideUI() ;
 }
 
 void openvolume::closeEvent( QCloseEvent * e )
 {
-	e->ignore();
-	HideUI();
+	e->ignore() ;
+	HideUI() ;
 }
 
 openvolume::~openvolume()

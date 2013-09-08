@@ -41,37 +41,37 @@ manageSystemVolumes::manageSystemVolumes( QWidget * parent ) :QDialog(parent)
 	m_ui = new Ui::manageSystemVolumes() ;
 	m_ui->setupUi( this ) ;
 
-	this->setFont( parent->font() );
-	this->setFixedSize( this->size() );
+	this->setFont( parent->font() ) ;
+	this->setFixedSize( this->size() ) ;
 
 	connect( m_ui->pbDone,SIGNAL( clicked() ),this,SLOT( pbDone() ) ) ;
 	connect( m_ui->pbFile,SIGNAL( clicked() ),this,SLOT( pbFile() ) ) ;
 	connect( m_ui->pbPartition,SIGNAL( clicked() ),this,SLOT( pbPartition() ) ) ;
 	connect( m_ui->tableWidget,SIGNAL( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ),this,
-		SLOT( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ) );
+		SLOT( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ) ) ;
 	connect( m_ui->tableWidget,SIGNAL( itemClicked( QTableWidgetItem * ) ),this,
-		SLOT( itemClicked( QTableWidgetItem * ) ) );
+		SLOT( itemClicked( QTableWidgetItem * ) ) ) ;
 
 	m_ac = new QAction( this ) ;
 	QList<QKeySequence> keys ;
-	keys.append( Qt::Key_Enter );
-	keys.append( Qt::Key_Return );
-	keys.append( Qt::Key_Menu );
+	keys.append( Qt::Key_Enter ) ;
+	keys.append( Qt::Key_Return ) ;
+	keys.append( Qt::Key_Menu ) ;
 	m_ac->setShortcuts( keys ) ;
 	connect( m_ac,SIGNAL( triggered() ),this,SLOT( defaultButton() ) ) ;
-	this->addAction( m_ac );
+	this->addAction( m_ac ) ;
 }
 
 void manageSystemVolumes::defaultButton()
 {
 	if( m_ui->pbDone->hasFocus() ){
-		this->pbDone();
+		this->pbDone() ;
 	}else if( m_ui->pbFile->hasFocus() ){
-		this->pbFile();
+		this->pbFile() ;
 	}else if( m_ui->pbPartition->hasFocus() ){
-		this->pbPartition();
+		this->pbPartition() ;
 	}else{
-		this->contextMenu();
+		this->contextMenu() ;
 	}
 }
 
@@ -88,7 +88,7 @@ void manageSystemVolumes::readSystemPartitions()
 	}
 	QStringList entries = QString( file.readAll() ).split( '\n' ) ;
 
-	file.close();
+	file.close() ;
 
 	if( entries.isEmpty() ){
 		return ;
@@ -98,7 +98,7 @@ void manageSystemVolumes::readSystemPartitions()
 	int j = entries.size() ;
 
 	for( int i = 0 ; i < j ; i++ ){
-		this->addItemsToTable( entries.at( i ) );
+		this->addItemsToTable( entries.at( i ) ) ;
 	}
 }
 
@@ -109,7 +109,7 @@ void manageSystemVolumes::writeSystemPartitions()
 	if( !file.open( QIODevice::WriteOnly | QIODevice::Truncate ) ){
 
 		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "ERROR" ),tr( "could not open \"%1\" for writing" ).arg( m_path ) );
+		msg.ShowUIOK( tr( "ERROR" ),tr( "could not open \"%1\" for writing" ).arg( m_path ) ) ;
 	}else{
 		QTableWidgetItem * it ;
 		QTableWidget * table = m_ui->tableWidget ;
@@ -122,18 +122,18 @@ void manageSystemVolumes::writeSystemPartitions()
 			}
 		}
 		file.setPermissions( QFile::ReadOwner|QFile::WriteOwner ) ;
-		file.close();
+		file.close() ;
 	}
 }
 
 void manageSystemVolumes::itemClicked( QTableWidgetItem * current )
 {
-	this->itemClicked( current,true );
+	this->itemClicked( current,true ) ;
 }
 
 void manageSystemVolumes::contextMenu()
 {
-	this->itemClicked( m_ui->tableWidget->currentItem(),false );
+	this->itemClicked( m_ui->tableWidget->currentItem(),false ) ;
 }
 
 void manageSystemVolumes::itemClicked( QTableWidgetItem * current,bool clicked )
@@ -141,11 +141,11 @@ void manageSystemVolumes::itemClicked( QTableWidgetItem * current,bool clicked )
 	if( !current )
 		return ;
 	QMenu m ;
-	m.setFont( this->font() );
+	m.setFont( this->font() ) ;
 	connect( m.addAction( tr( "remove selected entry" ) ),SIGNAL( triggered() ),this,SLOT( removeCurrentRow() ) ) ;
 
 	m.addSeparator() ;
-	m.addAction( tr( "cancel" ) );
+	m.addAction( tr( "cancel" ) ) ;
 
 	if( clicked ){
 		m.exec( QCursor::pos() ) ;
@@ -171,11 +171,11 @@ void manageSystemVolumes::removeCurrentRow()
 void manageSystemVolumes::addItemsToTable( QString path )
 {
 	if( path.isEmpty() ){
-		m_ui->tableWidget->setFocus();
+		m_ui->tableWidget->setFocus() ;
 	}else{
 		QStringList l ;
-		l.append( path );
-		this->addItemsToTable( l );
+		l.append( path ) ;
+		this->addItemsToTable( l ) ;
 	}
 }
 
@@ -186,13 +186,13 @@ void manageSystemVolumes::addItemsToTable( QStringList paths )
 
 void manageSystemVolumes::pbDone()
 {
-	this->writeSystemPartitions();
-	this->HideUI();
+	this->writeSystemPartitions() ;
+	this->HideUI() ;
 }
 
 void manageSystemVolumes::pbFile()
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "select path to system volume" ),QDir::homePath(),0 );
+	QString Z = QFileDialog::getOpenFileName( this,tr( "select path to system volume" ),QDir::homePath(),0 ) ;
 
 	this->addItemsToTable( Z ) ;
 }
@@ -203,12 +203,12 @@ void manageSystemVolumes::pbPartition()
 	connect( op,SIGNAL( HideUISignal() ),op,SLOT( deleteLater() ) ) ;
 	connect( op,SIGNAL( HideUISignal() ),this,SLOT( setFocusTableWidget() ) ) ;
 	connect( op,SIGNAL( clickedPartition( QString ) ),this,SLOT( clickedPartition( QString ) ) ) ;
-	op->ShowAllPartitions();
+	op->ShowAllPartitions() ;
 }
 
 void manageSystemVolumes::setFocusTableWidget()
 {
-	m_ui->tableWidget->setFocus();
+	m_ui->tableWidget->setFocus() ;
 }
 
 void manageSystemVolumes::clickedPartition( QString path )
@@ -218,22 +218,22 @@ void manageSystemVolumes::clickedPartition( QString path )
 
 void manageSystemVolumes::closeEvent( QCloseEvent * e )
 {
-	e->ignore();
-	this->pbDone();
+	e->ignore() ;
+	this->pbDone() ;
 }
 
 void manageSystemVolumes::HideUI()
 {
-	this->hide();
-	emit HideUISignal();
+	this->hide() ;
+	emit HideUISignal() ;
 }
 
 void manageSystemVolumes::ShowUI( QString path )
 {
 	m_path = path ;
 	this->readSystemPartitions() ;
-	m_ui->tableWidget->setColumnWidth( 0,580 );
-	this->show();
+	m_ui->tableWidget->setColumnWidth( 0,580 ) ;
+	this->show() ;
 }
 
 manageSystemVolumes::~manageSystemVolumes()

@@ -30,20 +30,20 @@ closeVolumeThread::closeVolumeThread( QString exe )
 
 void closeVolumeThread::start()
 {
-	QThreadPool::globalInstance()->start( this );
+	QThreadPool::globalInstance()->start( this ) ;
 }
 
 void closeVolumeThread::run()
 {
 	QProcess p ;
-	p.start( m_exe );
+	p.start( m_exe ) ;
 	p.waitForFinished() ;
 	m_status = p.exitCode() ;
-	p.close();
+	p.close() ;
 	sleep( 1 ) ; // for ui effect
 }
 
 closeVolumeThread::~closeVolumeThread()
 {
-	emit finished( m_status );
+	emit finished( m_status ) ;
 }

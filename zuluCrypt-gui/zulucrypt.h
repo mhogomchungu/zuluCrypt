@@ -24,6 +24,7 @@
 #include <QString>
 #include <QStringList>
 #include <QSystemTrayIcon>
+#include "lxqt_wallet/frontend/lxqt_wallet.h"
 
 class QWidget ;
 class QTableWidgetItem ;
@@ -119,13 +120,18 @@ private slots :
 	void encryptFile( void );
 	void decryptFile( void );
 	void HelpLuksHeaderBackUp( void );
-	void manageWallet( void ) ;
 	void setDefaultWallet( void ) ;
 	void failedToOpenWallet( void ) ;
 	void openFolder( void ) ;
 	void fileManagerOpenStatus( int exitCode, int exitStatus,int startError ) ;
 	void openVolumeFromArgumentList( void ) ;
 	void itemEntered( QTableWidgetItem * ) ;
+	void manageVolumesInInternalWallet( void ) ;
+	void manageVolumesInKDEWallet( void ) ;
+	void manageVolumesInGNOMEWallet( void ) ;
+	void changePassWordOfInternalWallet( void ) ;
+	void walletpassWordChanged( bool ) ;
+	void walletIsOpen( bool ) ;
 private:
 	void dragEnterEvent( QDragEnterEvent * );
 	void dropEvent( QDropEvent * );
@@ -155,6 +161,7 @@ private:
 	QSystemTrayIcon * m_trayIcon ;
 	QString m_folderOpener ;
 	QString m_device ;
+	lxqt::Wallet::Wallet * m_wallet ;
 };
 
 #endif // ZULUCRYPT_H

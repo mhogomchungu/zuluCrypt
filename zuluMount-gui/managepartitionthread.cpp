@@ -70,25 +70,25 @@ void managepartitionthread::openPathInFileManager()
 {
 	QProcess p ;
 	QString exe = QString( "xdg-open ") + m_point ;
-	p.start( exe );
+	p.start( exe ) ;
 	p.waitForFinished() ;
-	p.close();
+	p.close() ;
 }
 
 void managepartitionthread::run()
 {
 	switch( m_action ){
-		case managepartitionthread::Update              : return this->partitionList();
-		case managepartitionthread::Mount               : return this->mount();
-		case managepartitionthread::Unmount             : return this->umount( m_type );
-		case managepartitionthread::CryptoOpen          : return this->cryptoOpen();
-		case managepartitionthread::VolumeProperties    : return this->volumeProperties();
+		case managepartitionthread::Update              : return this->partitionList() ;
+		case managepartitionthread::Mount               : return this->mount() ;
+		case managepartitionthread::Unmount             : return this->umount( m_type ) ;
+		case managepartitionthread::CryptoOpen          : return this->cryptoOpen() ;
+		case managepartitionthread::VolumeProperties    : return this->volumeProperties() ;
 		case managepartitionthread::VolumeMiniProperties: return this->volumeMiniProperties() ;
-		case managepartitionthread::OpenPath            : return this->openPathInFileManager();
-		case managepartitionthread::CheckPermissions    : return this->checkPermissions();
-		case managepartitionthread::VolumeType          : return this->getVolumeType();
-		case managepartitionthread::systemdevice        : return this->checkIfSystemDevice();
-		case managepartitionthread::checkUnMount        : return this->checkUnmount();
+		case managepartitionthread::OpenPath            : return this->openPathInFileManager() ;
+		case managepartitionthread::CheckPermissions    : return this->checkPermissions() ;
+		case managepartitionthread::VolumeType          : return this->getVolumeType() ;
+		case managepartitionthread::systemdevice        : return this->checkIfSystemDevice() ;
+		case managepartitionthread::checkUnMount        : return this->checkUnmount() ;
 	}
 }
 
@@ -96,7 +96,7 @@ void managepartitionthread::checkUnmount()
 {
 	QProcess p ;
 	QString exe = QString( "%1 -c -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;
-	p.start( exe );
+	p.start( exe ) ;
 	p.waitForFinished() ;
 }
 
@@ -104,10 +104,10 @@ void managepartitionthread::checkIfSystemDevice( void )
 {
 	QProcess p ;
 	QString exe = QString( "%1 -S" ).arg( zuluMount ) ;
-	p.start( exe );
+	p.start( exe ) ;
 	p.waitForFinished() ;
 	QString s = QString( p.readAll() ) ;
-	p.close();
+	p.close() ;
 	QStringList l = s.split( "\n" ) ;
 	int j = l.size() ;
 	m_systemDevice = false ;
@@ -125,7 +125,7 @@ void managepartitionthread::getVolumeType()
 
 	QProcess p ;
 	QString exe = QString( "%1 -L -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;
-	p.start( exe );
+	p.start( exe ) ;
 	p.waitForFinished() ;
 
 	QString m = p.readAll() ;
@@ -136,22 +136,22 @@ void managepartitionthread::getVolumeType()
 			if( m_systemDevice ){
 				emit getVolumeSystemInfo( l ) ;
 			}else{
-				emit getVolumeInfo( l );
+				emit getVolumeInfo( l ) ;
 			}
 		}
 	}else{
 		emit getVolumeSystemInfo( l ) ;
-		emit getVolumeInfo( l );
+		emit getVolumeInfo( l ) ;
 	}
 }
 
 void managepartitionthread::checkPermissions()
 {
 	QProcess p ;
-	p.start( QString( ZULUCRYPTzuluCrypt ) + QString( " -C" ) );
+	p.start( QString( ZULUCRYPTzuluCrypt ) + QString( " -C" ) ) ;
 	p.waitForFinished() ;
-	emit checkPermissions( p.exitCode() );
-	p.close();
+	emit checkPermissions( p.exitCode() ) ;
+	p.close() ;
 }
 
 void managepartitionthread::partitionList()
@@ -170,10 +170,10 @@ void managepartitionthread::partitionList()
 		if( q.waitForFinished( 10000 ) ){
 			j = QString( q.readAll() ).split( '\n' ) ;
 		}
-		q.close();
+		q.close() ;
 	}
 
-	p.close();
+	p.close() ;
 
 	emit signalMountedList( k,j ) ;
 }
@@ -185,7 +185,7 @@ void managepartitionthread::volumeProperties()
 
 	exe = QString( "%1 -s -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;
 
-	p.start( exe );
+	p.start( exe ) ;
 	p.waitForFinished( -1 ) ;
 
 	QString r ;
@@ -196,7 +196,7 @@ void managepartitionthread::volumeProperties()
 		;
 	}
 
-	emit signalProperties( r );
+	emit signalProperties( r ) ;
 }
 
 void managepartitionthread::volumeMiniProperties()
@@ -206,7 +206,7 @@ void managepartitionthread::volumeMiniProperties()
 	//sleep( 1 ) ; for UI effect
 	exe = QString( "%1 -L -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;
 
-	p.start( exe );
+	p.start( exe ) ;
 	p.waitForFinished( -1 ) ;
 
 	QString r ;
@@ -230,7 +230,7 @@ void managepartitionthread::cryptoOpen()
 		exe = exe + QString( " -M" ) ;
 	}
 
-	p.start( exe );
+	p.start( exe ) ;
 	p.waitForFinished( -1 ) ;
 
 	QString output = QString( p.readAll() ) ;
@@ -239,7 +239,7 @@ void managepartitionthread::cryptoOpen()
 		output = output.mid( index + 1 ) ;
 	}
 	emit signalMountComplete( p.exitCode(),output ) ;
-	p.close();
+	p.close() ;
 }
 
 void managepartitionthread::mount()
@@ -257,7 +257,7 @@ void managepartitionthread::mount()
 		exe = exe + QString( " -M" ) ;
 	}
 
-	p.start( exe );
+	p.start( exe ) ;
 	p.waitForFinished( -1 ) ;
 
 	QString output = QString( p.readAll() ) ;
@@ -266,7 +266,7 @@ void managepartitionthread::mount()
 		output = output.mid( index + 1 ) ;
 	}
 	emit signalMountComplete( p.exitCode(),output ) ;
-	p.close();
+	p.close() ;
 }
 
 void managepartitionthread::umount( QString type )
@@ -275,13 +275,13 @@ void managepartitionthread::umount( QString type )
 	QProcess p ;
 	QString exe = QString( "%1 -u -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;
 
-	p.start( exe );
+	p.start( exe ) ;
 	p.waitForFinished( -1 ) ;
 
 	QString output_1 = QString( p.readAll() ) ;
 	int index = output_1.indexOf( QChar( ':' ) ) ;
 	output_1 = output_1.mid( index + 1 ) ;
-	p.close();
+	p.close() ;
 
 	emit signalUnmountComplete( p.exitCode(),output_1 ) ;
 }
@@ -294,5 +294,5 @@ void managepartitionthread::startAction( managepartitionthread::Action action )
 
 managepartitionthread::~managepartitionthread()
 {
-	emit done();
+	emit done() ;
 }

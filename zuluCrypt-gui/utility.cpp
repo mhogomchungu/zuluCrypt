@@ -204,6 +204,16 @@ void utility::setLocalizationLanguage( QString program,QString language )
 	Q_UNUSED( language ) ;
 }
 
+QString utility::walletName()
+{
+	return "zuluCrypt" ;
+}
+
+QString utility::applicationName()
+{
+	return "zuluCrypt" ;
+}
+
 void utility::debug( QString s )
 {
 	std::cout << s.toStdString() << std::endl ;
@@ -222,7 +232,7 @@ bool utility::mapperPathExists( QString path )
 QString utility::mountPath( QString name )
 {
 	struct passwd * pass = getpwuid( getuid() ) ;
-	return QString( "/run/media/private/%1/%2" ).arg( QString( pass->pw_dir ).split( "/" ).last() ).arg( name );
+	return QString( "/run/media/private/%1/%2" ).arg( QString( pass->pw_dir ).split( "/" ).last() ).arg( name ) ;
 }
 
 QString utility::mapperPath( QString rpath )
@@ -232,17 +242,17 @@ QString utility::mapperPath( QString rpath )
 	if( rpath.startsWith( QString( "UUID=" ) ) ){
 		rpath.remove( QChar( '\"' ) ) ;
 		rpath.replace( QString( "UUID=" ),QString( "UUID-" ) ) ;
-		path += QString( "-" ) + rpath + utility::hashPath( rpath );
+		path += QString( "-" ) + rpath + utility::hashPath( rpath ) ;
 	}else{
-		path += QString( "-NAAN-" ) + rpath.split( "/" ).last() + utility::hashPath( rpath );
+		path += QString( "-NAAN-" ) + rpath.split( "/" ).last() + utility::hashPath( rpath ) ;
 	}
 
-	QString z = QString( BASH_SPECIAL_CHARS );
+	QString z = QString( BASH_SPECIAL_CHARS ) ;
 
 	int g = z.size() ;
 
 	for( int i = 0 ; i < g ; i++ ){
-		path.replace( z.at( i ),QChar( '_' ) );
+		path.replace( z.at( i ),QChar( '_' ) ) ;
 	}
 	return path ;
 }
@@ -257,13 +267,13 @@ QString utility::hashPath( QString p )
 	i = hash = 0 ;
 	for( ; i < l ; i++ ){
 		hash += key[ i ];
-		hash += ( hash << 10 );
-		hash ^= ( hash >> 6 );
+		hash += ( hash << 10 ) ;
+		hash ^= ( hash >> 6 ) ;
 	}
-	hash += ( hash << 3 );
-	hash ^= ( hash >> 11 );
-	hash += ( hash << 15 );
-	return QString( "-" ) + QString::number( hash );
+	hash += ( hash << 3 ) ;
+	hash ^= ( hash >> 11 ) ;
+	hash += ( hash << 15 ) ;
+	return QString( "-" ) + QString::number( hash ) ;
 }
 
 bool utility::exists( QString path )
@@ -282,7 +292,7 @@ bool utility::canCreateFile( QString path )
 		return false ;
 	}else{
 		close( i ) ;
-		remove( q );
+		remove( q ) ;
 		return true ;
 	}
 }
@@ -290,9 +300,9 @@ bool utility::canCreateFile( QString path )
 QString utility::resolvePath( QString path )
 {
 	if( path.size() == 1 && path.at( 0 ) == QChar( '~' ) ){
-		return QDir::homePath() + QString( "/" );
+		return QDir::homePath() + QString( "/" ) ;
 	}else if( path.mid( 0,2 ) == QString( "~/" ) ){
-		return QDir::homePath() + QString( "/" ) + path.mid( 2 );
+		return QDir::homePath() + QString( "/" ) + path.mid( 2 ) ;
 	}else if( path.mid( 0,5 ) == QString( "UUID=") ){
 		return path ;
 	}else if( path.startsWith( QString( "/dev/") ) ){
@@ -307,12 +317,12 @@ QString utility::resolvePath( QString path )
 bool utility::isLuks( QString volumePath )
 {
 	QProcess p ;
-	QString path = utility::resolvePath( volumePath );
-	QString exe = QString( "%1 -i -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( path );
-	p.start( exe );
+	QString path = utility::resolvePath( volumePath ) ;
+	QString exe = QString( "%1 -i -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( path ) ;
+	p.start( exe ) ;
 	p.waitForFinished() ;
 	int i = p.exitCode() ;
-	p.close();
+	p.close() ;
 
 	return i == 0 ;
 }
@@ -321,13 +331,13 @@ QStringList utility::luksEmptySlots( QString volumePath )
 {
 	QStringList list ;
 	QProcess N ;
-	N.start( QString( ZULUCRYPTzuluCrypt ) + QString( " -b -d \"" ) + volumePath + QString( "\"" ) );
+	N.start( QString( ZULUCRYPTzuluCrypt ) + QString( " -b -d \"" ) + volumePath + QString( "\"" ) ) ;
 	N.waitForFinished() ;
 	if( N.exitCode() != 0 ){
 		return list ;
 	}
 	QByteArray s = N.readAllStandardOutput() ;
-	N.close();
+	N.close() ;
 	int i = 0 ;
 	for ( int j = 0 ; j < s.size() ; j++ ){
 		if( s.at( j ) == '1' || s.at( j ) == '3' ){
@@ -345,7 +355,7 @@ void utility::addToFavorite( QString dev,QString m_point )
 	QFile f( QDir::homePath() + QString( "/.zuluCrypt/favorites" ) ) ;
 	f.open( QIODevice::WriteOnly | QIODevice::Append ) ;
 	f.write( fav.toAscii() ) ;
-	f.close();
+	f.close() ;
 }
 
 QStringList utility::readFavorites()
@@ -354,7 +364,7 @@ QStringList utility::readFavorites()
 	QStringList list ;
 	if( f.open( QIODevice::ReadOnly ) ){
 		QString data( f.readAll() ) ;
-		f.close();
+		f.close() ;
 		if( !data.isEmpty() ){
 			list = data.split( "\n" ) ;
 		}
@@ -367,7 +377,7 @@ void utility::removeFavoriteEntry( QString entry )
 	QFile f( QDir::homePath() + QString( "/.zuluCrypt/favorites" ) ) ;
 	f.open( QIODevice::ReadOnly ) ;
 	QByteArray b = f.readAll() ;
-	f.close();
+	f.close() ;
 	QByteArray c = b.remove( b.indexOf( entry ),entry.length() ) ;
 	f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
 	f.write( c ) ;
@@ -379,13 +389,13 @@ QString utility::getUUIDFromPath( QString device )
 	device = device.replace( QString( "\"" ),QString( "\"\"\"" ) ) ;
 	QString exe = QString( "%1 -U -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( device ) ;
 	QProcess p ;
-	p.start( exe );
+	p.start( exe ) ;
 	p.waitForFinished() ;
 	QString uuid ;
 	if( p.exitCode() == 0 ){
 		uuid = QString( p.readAll() ) ;
 		uuid.remove( QString( "\n" ) ) ;
 	}
-	p.close();
+	p.close() ;
 	return uuid ;
 }

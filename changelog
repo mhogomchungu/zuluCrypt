@@ -141,3 +141,12 @@ version 4.6.5
 -- zuluMount-gui is now aware of volumes that are mounted or unmounted outside of it.This gives zuluMount-gui an ability to automount 
    newly attached devices.
 -- encrypted volumes that reside in files can be opened simply by drag and drop them in zuluCrypt-gui or zuluMount-gui windows
+
+version 4.6.6
+-- fix a regression,retrieving keys from kwallet using volume UUID broke.
+-- volumes in gnome are now stored in libsecret and no longer in libgnome-keyring
+-- add a GUI window in zuluCrypt-gui to manage keys in libsecret wallet,internal wallet and kde kwallet.
+-- add an internal system that can securely store keys independently of kde kwallet and gnome libsecret.Useful to those who
+   want to store keys securely but dont want gnome or kde dependencies
+-- NOTE: changes in management of wallets are not backward compatible and hence volumes will have to be readded after the update.My
+   apologies for the inconvenience.

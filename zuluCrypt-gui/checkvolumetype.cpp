@@ -42,5 +42,5 @@ void checkvolumetype::run()
 
 checkvolumetype::~checkvolumetype()
 {
-	emit complete( m_type );
+	emit complete( m_type ) ;
 }

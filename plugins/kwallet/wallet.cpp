@@ -19,6 +19,7 @@
 
 #include "wallet.h"
 #include <QDebug>
+#include "../../zuluCrypt-gui/utility.h"
 
 wallet::wallet( QString path,QString uuid,QString sockAddr )
 {
@@ -27,17 +28,18 @@ wallet::wallet( QString path,QString uuid,QString sockAddr )
 	}else{
 		m_keyID = QString( "UUID=\"%1\"" ).arg( uuid ) ;
 	}
-	qDebug() << m_keyID ;
+
 	m_sockAddr = sockAddr ;
 	m_handle = socketSendKey::zuluCryptPluginManagerOpenConnection( m_sockAddr ) ;
 }
 
 void wallet::openWallet()
 {
-	m_wallet = Wallet::openWallet( kwalletplugin::wallet(),0,KWallet::Wallet::Synchronous ) ;
+	m_wallet = Wallet::openWallet( utility::walletName(),0,KWallet::Wallet::Synchronous ) ;
 
 	if( m_wallet ){
-		this->readKwallet();
+		m_wallet->setFolder( utility::applicationName() ) ;
+		this->readKwallet() ;
 	}else{
 		QCoreApplication::exit( 1 ) ;
 	}
@@ -51,17 +53,13 @@ void wallet::SendKey()
 
 void wallet::readKwallet()
 {
-	QString formData = kwalletplugin::formData() ;
-
-	m_wallet->setFolder( formData ) ;
-
-	QMap <QString,QString> map ;
-
-	m_wallet->readMap( kwalletplugin::key(),map ) ;
-
-	m_key = map.value( m_keyID ).toAscii() ;
-	
-	this->SendKey();
+	QString key ;
+	m_wallet->readPassword( m_keyID,key ) ;
+	if( key.isEmpty() && m_keyID.startsWith( QString( "UUID=" ) ) ){
+		m_wallet->readPassword( m_keyID.replace( "\"","" ),key ) ;
+	}
+	m_key = key.toAscii() ;
+	this->SendKey() ;
 }
 
 void wallet::Exit( void )

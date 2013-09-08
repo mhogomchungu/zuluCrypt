@@ -37,17 +37,17 @@ closeAllVolumesThread::closeAllVolumesThread( QTableWidget * table )
 
 void closeAllVolumesThread::start()
 {
-	QThreadPool::globalInstance()->start( this );
+	QThreadPool::globalInstance()->start( this ) ;
 }
 
 void closeAllVolumesThread::run()
 {
-	m_table->setEnabled( false );
+	m_table->setEnabled( false ) ;
 	sleep( 1 ) ; // for ui effect
 	int i = m_table->rowCount() ;
 
 	if( i < 1 ){
-		m_table->setEnabled( true );
+		m_table->setEnabled( true ) ;
 		return ;
 	}
 
@@ -58,7 +58,7 @@ void closeAllVolumesThread::run()
 	QTableWidgetItem * deviceItem ;
 
 	while( ++j < i ){
-		tableItems.append( m_table->item( j,0 ) );
+		tableItems.append( m_table->item( j,0 ) ) ;
 	}
 
 	QProcess p ;
@@ -69,12 +69,12 @@ void closeAllVolumesThread::run()
 		deviceItem = tableItems.at( j ) ;
 		device = deviceItem->text().replace( "\"","\"\"\"" ) ;
 		exe = QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( device ) ;
-		p.start( exe );
+		p.start( exe ) ;
 		p.waitForFinished() ;
 		emit close( deviceItem,p.exitCode() ) ;
-		p.close();
+		p.close() ;
 		sleep( 1 ) ; // for ui effect
 	}
 
-	m_table->setEnabled( true );
+	m_table->setEnabled( true ) ;
 }

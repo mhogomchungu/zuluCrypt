@@ -35,19 +35,19 @@
 #include <QCloseEvent>
 #include <QMessageBox>
 
-createfile::createfile(QWidget * parent) :QDialog( parent ),m_ui( new Ui::createfile )
+createfile::createfile( QWidget * parent) :QDialog( parent ),m_ui( new Ui::createfile )
 {
-	m_ui->setupUi( this );
-	this->setFixedSize( this->size() );
-	this->setFont( parent->font() );
+	m_ui->setupUi( this ) ;
+	this->setFixedSize( this->size() ) ;
+	this->setFont( parent->font() ) ;
 
 	m_msg = new DialogMsg( this ) ;
 
-	m_ui->progressBar->setMinimum( 0 );
-	m_ui->progressBar->setMaximum( 100 );
-	m_ui->progressBar->setValue( 0 );
+	m_ui->progressBar->setMinimum( 0 ) ;
+	m_ui->progressBar->setMaximum( 100 ) ;
+	m_ui->progressBar->setValue( 0 ) ;
 
-	m_ui->pbOpenFolder->setIcon( QIcon( QString( ":/folder.png" ) ) );
+	m_ui->pbOpenFolder->setIcon( QIcon( QString( ":/folder.png" ) ) ) ;
 
 	m_cft = NULL ;
 
@@ -71,14 +71,14 @@ void createfile::fileTextChange( QString txt )
 	if( i == -1 ){
 		return ;
 	}
-	p = p.mid( 0,i ) + QString( "/" ) + txt.split( "/" ).last();
+	p = p.mid( 0,i ) + QString( "/" ) + txt.split( "/" ).last() ;
 
 	m_ui->lineEditFilePath->setText( p ) ;
 }
 
 void createfile::closeEvent( QCloseEvent * e )
 {
-	e->ignore();
+	e->ignore() ;
 	if( m_cft != NULL ){
 		return ;
 	}
@@ -87,50 +87,50 @@ void createfile::closeEvent( QCloseEvent * e )
 
 void createfile::enableAll()
 {
-	m_ui->lineEditFileName->setEnabled( true );
-	m_ui->lineEditFilePath->setEnabled( true );
-	m_ui->lineEditFileSize->setEnabled( true );
-	m_ui->pbOpenFolder->setEnabled( true );
-	m_ui->label->setEnabled( true );
-	m_ui->label_2->setEnabled( true );
-	m_ui->label_3->setEnabled( true );
-	m_ui->label_4->setEnabled( true );
-	m_ui->pbCreate->setEnabled( true );
+	m_ui->lineEditFileName->setEnabled( true ) ;
+	m_ui->lineEditFilePath->setEnabled( true ) ;
+	m_ui->lineEditFileSize->setEnabled( true ) ;
+	m_ui->pbOpenFolder->setEnabled( true ) ;
+	m_ui->label->setEnabled( true ) ;
+	m_ui->label_2->setEnabled( true ) ;
+	m_ui->label_3->setEnabled( true ) ;
+	m_ui->label_4->setEnabled( true ) ;
+	m_ui->pbCreate->setEnabled( true ) ;
 }
 
 void createfile::disableAll()
 {
-	m_ui->pbCreate->setEnabled( false );
-	m_ui->lineEditFileName->setEnabled( false );
-	m_ui->lineEditFilePath->setEnabled( false );
-	m_ui->lineEditFileSize->setEnabled( false );
-	m_ui->comboBox->setEnabled( false );
-	m_ui->pbOpenFolder->setEnabled( false );
-	m_ui->label->setEnabled( false );
-	m_ui->label_2->setEnabled( false );
-	m_ui->label_3->setEnabled( false );
-	m_ui->label_4->setEnabled( false );
+	m_ui->pbCreate->setEnabled( false ) ;
+	m_ui->lineEditFileName->setEnabled( false ) ;
+	m_ui->lineEditFilePath->setEnabled( false ) ;
+	m_ui->lineEditFileSize->setEnabled( false ) ;
+	m_ui->comboBox->setEnabled( false ) ;
+	m_ui->pbOpenFolder->setEnabled( false ) ;
+	m_ui->label->setEnabled( false ) ;
+	m_ui->label_2->setEnabled( false ) ;
+	m_ui->label_3->setEnabled( false ) ;
+	m_ui->label_4->setEnabled( false ) ;
 }
 
 void createfile::showUI()
 {
-	enableAll();
+	enableAll() ;
 	m_ui->comboBox->setCurrentIndex( 1 ) ;
-	m_ui->lineEditFileName->clear();
-	m_ui->lineEditFilePath->setText( QDir::homePath() + QString( "/") );
-	m_ui->lineEditFileSize->clear();
-	m_ui->progressBar->setValue( 0 );
-	m_ui->lineEditFileName->setFocus();
+	m_ui->lineEditFileName->clear() ;
+	m_ui->lineEditFilePath->setText( QDir::homePath() + QString( "/") ) ;
+	m_ui->lineEditFileSize->clear() ;
+	m_ui->progressBar->setValue( 0 ) ;
+	m_ui->lineEditFileName->setFocus() ;
 
 	/*
 	 * RANDOM_SOURCE is defined at createfilethread.h
 	 */
 	if( RANDOM_SOURCE == 0 ){
-		this->setWindowTitle( tr( "1/2 create a container file" ) );
+		this->setWindowTitle( tr( "1/2 create a container file" ) ) ;
 	}else{
-		this->setWindowTitle( tr( "create a container file" ) );
+		this->setWindowTitle( tr( "create a container file" ) ) ;
 	}
-	this->show();
+	this->show() ;
 }
 
 void createfile::pbCreate()
@@ -142,29 +142,29 @@ void createfile::pbCreate()
 	QString fileSize = m_ui->lineEditFileSize->text() ;
 
 	if( fileName.isEmpty()){
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "file name field is empty" ) );
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "file name field is empty" ) ) ;
 	}
 	if( filePath.isEmpty()){
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "file path field is empty" ) );
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "file path field is empty" ) ) ;
 	}
 	if( fileSize.isEmpty()){
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "file size field is empty" ) );
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "file size field is empty" ) ) ;
 	}
 	bool test ;
 
 	fileSize.toInt( &test ) ;
 
 	if( test == false ){
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Illegal character in the file size field.Only digits are allowed" ) );
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Illegal character in the file size field.Only digits are allowed" ) ) ;
 	}
 	m_path = filePath ;
 
 	if( utility::exists( m_path ) ){
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "file with the same name and at the destination folder already exist" ) );
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "file with the same name and at the destination folder already exist" ) ) ;
 	}
 	if( !utility::canCreateFile( m_path ) ){
-		msg.ShowUIOK( tr( "ERROR!" ),tr( "you dont seem to have writing access to the destination folder" ) );
-		m_ui->lineEditFilePath->setFocus();
+		msg.ShowUIOK( tr( "ERROR!" ),tr( "you dont seem to have writing access to the destination folder" ) ) ;
+		m_ui->lineEditFilePath->setFocus() ;
 		return ;
 	}
 
@@ -180,16 +180,16 @@ void createfile::pbCreate()
 			break ;
 	}
 	if( m_fileSize < 3145728 ){
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "container file must be bigger than 3MB" ) );
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "container file must be bigger than 3MB" ) ) ;
 	}
 
-	disableAll();
+	disableAll() ;
 
 	m_cft = new createFileThread( m_path,m_fileSize ) ;
 
-	connect( m_cft,SIGNAL( doneCreatingFile() ),this,SLOT( doneCreatingFile() ) );
-	connect( m_cft,SIGNAL( progress( int ) ),this,SLOT( progress( int ) ) );
-	connect( this,SIGNAL( cancelOperation()),m_cft,SLOT( cancelOperation() ) );
+	connect( m_cft,SIGNAL( doneCreatingFile() ),this,SLOT( doneCreatingFile() ) ) ;
+	connect( m_cft,SIGNAL( progress( int ) ),this,SLOT( progress( int ) ) ) ;
+	connect( this,SIGNAL( cancelOperation()),m_cft,SLOT( cancelOperation() ) ) ;
 
 	/*
 	  exitStatus will be 1 if the thread is terminated
@@ -197,7 +197,7 @@ void createfile::pbCreate()
 	  */
 	connect( m_cft,SIGNAL( exitStatus( int ) ),this,SLOT( exitStatus( int ) ) ) ;
 
-	m_cft->start();
+	m_cft->start() ;
 }
 
 void createfile::exitStatus( int status )
@@ -209,7 +209,7 @@ void createfile::exitStatus( int status )
 		return HideUI() ;
 	}else if( status == 0 ){
 		if( m_msg->isVisible() ){
-			m_msg->HideUI();
+			m_msg->HideUI() ;
 		}
 	}else{
 		DialogMsg msg( this ) ;
@@ -217,47 +217,47 @@ void createfile::exitStatus( int status )
 	}
 
 	emit fileCreated( m_path ) ;
-	HideUI();
+	HideUI() ;
 }
 
 void createfile::pbCancel()
 {
 	if( m_cft == NULL ){
-		return HideUI();
+		return HideUI() ;
 	}
 	QString x = tr( "terminating file creation process" ) ;
 	QString y = tr( "are you sure you want to stop file creation process?" ) ;
 	if( m_msg->ShowUIYesNoDefaultNo( x,y ) == QMessageBox::Yes ){
-		emit cancelOperation();
+		emit cancelOperation() ;
 	}
 }
 
 void createfile::HideUI()
 {
-	emit HideUISignal();
-	this->hide();
+	emit HideUISignal() ;
+	this->hide() ;
 }
 
 void createfile::progress( int p )
 {
-	m_ui->progressBar->setValue( p );
+	m_ui->progressBar->setValue( p ) ;
 }
 
 void createfile::doneCreatingFile()
 {
-	m_ui->progressBar->setValue( 0 );
-	this->setWindowTitle( tr( "2/2 write random data to a container file" ) );
+	m_ui->progressBar->setValue( 0 ) ;
+	this->setWindowTitle( tr( "2/2 write random data to a container file" ) ) ;
 }
 
 void createfile::pbOpenFolder()
 {
 	QString p = tr( "Select Path to where the file will be created" ) ;
-	QString q = QDir::homePath();
+	QString q = QDir::homePath() ;
 	QString Z = QFileDialog::getExistingDirectory( this,p,q,QFileDialog::ShowDirsOnly ) ;
 
 	if( !Z.isEmpty() ){
 		Z = Z + QString( "/" ) + m_ui->lineEditFilePath->text().split( "/" ).last() ;
-		m_ui->lineEditFilePath->setText( Z );
+		m_ui->lineEditFilePath->setText( Z ) ;
 	}
 }
 
