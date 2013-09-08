@@ -9,7 +9,7 @@ This tool depends on the following packages installed to build, their precise na
 6. cryptsetup-devel
 7. cmake
 8. libtcplay-devel( optional dependency used to create truecrypt volumes )
-9. gcrypt-devel
+9. libgcrypt-devel
 10.libsecret-devel( optional dependency to store keys in gnome's libsecret )
 11.kde-devel( optional dependency to store keys in kde's kwallet )
 
