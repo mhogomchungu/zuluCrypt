@@ -197,7 +197,7 @@ if( BUILDKWALLET )
 endif( BUILDKWALLET )
 
 if( KEYRINGSUPPORT )
-	message( STATUS "gnome-keyring support" )
+	message( STATUS "gnome libsecret support" )
 endif( KEYRINGSUPPORT )
 
 if( BUILDPWQUALITY )
@@ -229,7 +229,7 @@ if( NOT BUILDKWALLET )
 endif( NOT BUILDKWALLET )
 
 if( NOT KEYRINGSUPPORT )
-	message( STATUS "gnome-keyring support\n" )
+	message( STATUS "gnome libsecret support\n" )
 endif( NOT KEYRINGSUPPORT )
 
 if( NOT BUILDPWQUALITY )
