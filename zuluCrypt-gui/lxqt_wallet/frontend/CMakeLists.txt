@@ -13,9 +13,9 @@ find_package( Qt4 REQUIRED )
 
 add_definitions( -I${Qt4_INCLUDE_DIR} )
 add_definitions( -I${QT_HEADERS_DIR} )
-add_definitions( -I"${PROJECT_BINARY_DIR}/frontend" )
-add_definitions( -I"${PROJECT_BINARY_DIR}/backend" )
-add_definitions( -I"${PROJECT_BINARY_DIR}" )
+add_definitions( -I${PROJECT_BINARY_DIR}/frontend )
+add_definitions( -I${PROJECT_BINARY_DIR}/backend )
+add_definitions( -I${PROJECT_BINARY_DIR} )
 
 INCLUDE( ${QT_USE_FILE} )
 
