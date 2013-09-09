@@ -64,11 +64,6 @@
 #define IV_SIZE 16
 #define SALT_SIZE 16
 
-/*
- * gcry_kdf_derive() seem to fail with empty passwords
- */
-#define EMPTY_PASSWORD "lxqt.Wallet.EmptyPassWord._17rZ!&$Bv!hiTenCsOzW*&^%$%*HDncsdesgQED___DEEHCSAD"
-
 #define PBKDF2_ITERATIONS 10000
 
 #define NODE_HEADER_SIZE ( 2 * sizeof( u_int32_t ) )
@@ -132,6 +127,8 @@ static char * _wallet_full_path( char * path_buffer,u_int32_t path_buffer_size,c
 static void _create_application_wallet_path( const char * application_name ) ;
 
 static gcry_error_t _create_key( const char salt[ SALT_SIZE ],char output_key[ PASSWORD_SIZE ],const char * input_key,u_int32_t input_key_length ) ;
+
+static gcry_error_t _create_temp_key( char * output_key,u_int32_t output_key_size,const char * input_key,u_int32_t input_key_length ) ;
 
 static void _get_iv_from_wallet_header( char iv[ IV_SIZE ],int fd ) ;
 
@@ -199,10 +196,6 @@ lxqt_wallet_error lxqt_wallet_create( const char * password,u_int32_t password_l
 	}
 	if( lxqt_wallet_exists( wallet_name,application_name ) == 0 ){
 		return lxqt_wallet_wallet_exists ;
-	}
-	if( password[ 0 ] == '\0' || password_length == 0 ){
-		password        = EMPTY_PASSWORD ;
-		password_length = strlen( EMPTY_PASSWORD ) ;
 	}
 
 	gcry_check_version( NULL ) ;
@@ -296,11 +289,6 @@ lxqt_wallet_error lxqt_wallet_change_wallet_password( lxqt_wallet_t wallet,const
 	if( wallet == NULL || new_key == NULL ){
 		return lxqt_wallet_invalid_argument ;
 	}else{
-		if( new_key[ 0 ] == '\0' || new_key_size == 0 ){
-			new_key      = EMPTY_PASSWORD ;
-			new_key_size = strlen( EMPTY_PASSWORD ) ;
-		}
-
 		r = _create_key( wallet->salt,key,new_key,new_key_size ) ;
 		if( r != GPG_ERR_NO_ERROR ){
 			return lxqt_wallet_failed_to_create_key_hash ;
@@ -406,11 +394,6 @@ lxqt_wallet_error lxqt_wallet_open( lxqt_wallet_t * wallet,const char * password
 	}
 
 	_get_salt_from_wallet_header( w->salt,fd ) ;
-
-	if( password[ 0 ] == '\0' || password_length == 0 ){
-		password        = EMPTY_PASSWORD ;
-		password_length = strlen( EMPTY_PASSWORD ) ;
-	}
 
 	r = _create_key( w->salt,w->key,password,password_length ) ;
 
@@ -1067,11 +1050,47 @@ static void _create_application_wallet_path( const char * application_name )
 	}
 }
 
+static gcry_error_t _create_temp_key( char * output_key,u_int32_t output_key_size,const char * input_key,u_int32_t input_key_length )
+{
+	gcry_md_hd_t md ;
+	unsigned char * digest ;
+	
+	gcry_error_t r = gcry_md_open( &md,GCRY_MD_SHA256,GCRY_MD_FLAG_SECURE ) ;
+	
+	if( r == GPG_ERR_NO_ERROR ){
+		gcry_md_write( md,input_key,input_key_length ) ;
+		gcry_md_final( md ) ;
+		digest = gcry_md_read( md,0 ) ;
+		if( digest == NULL ){
+			r = !GPG_ERR_NO_ERROR ;
+		}else{
+			memcpy( output_key,digest,output_key_size ) ;
+		}
+		gcry_md_close( md ) ;
+	}else{
+		;
+	}
+	
+	return r ;
+}
+
+/*
+ * gcry_kdf_derive() doesnt seem to work with empty passphrases,to work around it,we create a temporary passphrases
+ * based on provided passphrase and then feed the temporary key to gcry_kdf_derive()
+ */
 static gcry_error_t _create_key( const char salt[ SALT_SIZE ],
 				 char output_key[ PASSWORD_SIZE ],const char * input_key,u_int32_t input_key_length )
 {
-	return gcry_kdf_derive( input_key,input_key_length,GCRY_KDF_PBKDF2,GCRY_MD_SHA256,
+	#define TEMP_KEY_SIZE 32
+	char temp_key[ TEMP_KEY_SIZE ] ;
+	gcry_error_t r = _create_temp_key( temp_key,TEMP_KEY_SIZE,input_key,input_key_length ) ;
+	
+	if( r == GPG_ERR_NO_ERROR){
+		return gcry_kdf_derive( temp_key,TEMP_KEY_SIZE,GCRY_KDF_PBKDF2,GCRY_MD_SHA256,
 				salt,SALT_SIZE,PBKDF2_ITERATIONS,PASSWORD_SIZE,output_key ) ;
+	}else{
+		return r ;
+	}
 }
 
 static void _get_iv_from_wallet_header( char iv[ IV_SIZE ],int fd )

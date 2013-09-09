@@ -2,6 +2,6 @@
  <!DOCTYPE RCC>
  <RCC version="1.0">
 	 <qresource>
-		 <file>lxqt_wallet_icon.png</file>			 
+		 <file>lxqt_wallet_icon.png</file>
 	 </qresource>
  </RCC>

@@ -30,15 +30,11 @@
 
 #include "password_dialog.h"
 #include "ui_password_dialog.h"
-#include <QIcon>
 
 password_dialog::password_dialog( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::password_dialog )
 {
 	m_ui->setupUi( this ) ;
 	this->setFixedSize( this->size() ) ;
-	this->setWindowFlags( Qt::Window | Qt::Dialog );
-
-	this->setWindowIcon( QIcon( QString( ":/lxqt_icon.png" ) ) ) ;
 
 	connect( m_ui->pushButtonSend,SIGNAL( clicked() ),this,SLOT( pbSend() ) ) ;
 	connect( m_ui->pushButtonCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
