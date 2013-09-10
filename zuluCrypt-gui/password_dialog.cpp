@@ -199,7 +199,7 @@ void passwordDialog::closeEvent( QCloseEvent * e )
 	}
 }
 
-void passwordDialog::ShowUI( QString volumePath, QString mount_point )
+void passwordDialog::ShowUI( QString volumePath,QString mount_point )
 {
 	m_point = mount_point.split( QString( "/" ) ).last() ;
 	if( m_point.isEmpty() ){

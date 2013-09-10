@@ -138,14 +138,14 @@ int lxqt_wallet_exists( const char * wallet_name,const char * application_name )
 void lxqt_wallet_application_wallet_path( char * path_buffer,u_int32_t path_buffer_size,const char * application_name ) ;
 
 /*
- * returns number of bytes keys in the volume consume
+ * returns the amount of memory the entries in the wallet consume.
  */
-int lxqt_wallet_wallet_size( lxqt_wallet_t ) ;
+u_int32_t lxqt_wallet_wallet_size( lxqt_wallet_t ) ;
 
 /*
- * returns the number of elements in the wallet
+ * returns the number of entries in the wallet
  */
-int lxqt_wallet_wallet_entry_count( lxqt_wallet_t ) ;
+u_int32_t lxqt_wallet_wallet_entry_count( lxqt_wallet_t ) ;
 
 typedef struct{
 	char * key ;
