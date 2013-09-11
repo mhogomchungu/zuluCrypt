@@ -136,7 +136,7 @@ static void _get_salt_from_wallet_header( char salt[ SALT_SIZE ],int fd ) ;
 
 static void _get_magic_string_from_header( char magic_string[ MAGIC_STRING_BUFFER_SIZE ],int fd ) ;
 
-static void _get_iv( char iv[ IV_SIZE ] ) ;
+static void _get_random_data( char * buffer,size_t buffer_size ) ;
 
 static void _create_magic_string_header( char magic_string[ MAGIC_STRING_BUFFER_SIZE ] ) ;
 
@@ -216,7 +216,7 @@ lxqt_wallet_error lxqt_wallet_create( const char * password,u_int32_t password_l
 		return _exit_create( lxqt_wallet_gcry_cipher_open_failed,gcry_cipher_handle ) ;
 	}
 
-	_get_iv( salt ) ;
+	_get_random_data( salt,SALT_SIZE ) ;
 
 	r = _create_key( salt,key,password,password_length ) ;
 
@@ -230,7 +230,7 @@ lxqt_wallet_error lxqt_wallet_create( const char * password,u_int32_t password_l
 		return _exit_create( lxqt_wallet_gcry_cipher_setkey_failed,gcry_cipher_handle ) ;
 	}
 
-	_get_iv( iv ) ;
+	_get_random_data( iv,IV_SIZE ) ;
 
 	r = gcry_cipher_setiv( gcry_cipher_handle,iv,IV_SIZE ) ;
 
@@ -880,7 +880,7 @@ lxqt_wallet_error lxqt_wallet_close( lxqt_wallet_t * w )
 		return _close_exit( lxqt_wallet_gcry_cipher_setkey_failed,w,gcry_cipher_handle ) ;
 	}
 
-	_get_iv( iv ) ;
+	_get_random_data( iv,IV_SIZE ) ;
 
 	r = gcry_cipher_setiv( gcry_cipher_handle,iv,IV_SIZE ) ;
 
@@ -1115,11 +1115,16 @@ static void _get_magic_string_from_header( char magic_string[ MAGIC_STRING_BUFFE
 	read( fd,magic_string,MAGIC_STRING_BUFFER_SIZE ) ;
 }
 
-static void _get_iv( char iv[ IV_SIZE ] )
+static void _get_random_data( char * buffer,size_t buffer_size )
 {
 	int fd ;
 	fd = open( "/dev/urandom",O_RDONLY ) ;
-	read( fd,iv,IV_SIZE ) ;
+	if( fd != -1 ){
+		read( fd,buffer,buffer_size ) ;
+		close( fd ) ;
+	}else{
+		gcry_create_nonce( buffer,buffer_size ) ;
+	}
 }
 
 static void _create_magic_string_header( char magic_string[ MAGIC_STRING_BUFFER_SIZE ] )
