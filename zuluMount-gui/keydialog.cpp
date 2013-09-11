@@ -295,17 +295,18 @@ void keyDialog::walletIsOpen( bool opened )
 
 		QString id = m_path ;
 
-		QString keyID ;
-
 		if( id.startsWith( QString( "UUID=" ) ) ){
-			keyID = id ;
-			key = m_wallet->readValue( keyID ) ;
+			key = m_wallet->readValue( id ) ;
 			if( key.isEmpty() ){
-				key = m_wallet->readValue( keyID.replace( "\"","" ) ) ;
+				key = m_wallet->readValue( id.replace( "\"","" ) ) ;
 			}
 		}else{
-			keyID = utility::getUUIDFromPath( id ) ;
-			key = m_wallet->readValue( keyID ) ;
+			id = utility::getUUIDFromPath( id ) ;
+			if( id.isEmpty() ){
+				key = m_wallet->readValue( m_path ) ;
+			}else{
+				key = m_wallet->readValue( id ) ;
+			}
 		}
 
 		if( key.isEmpty() ){
