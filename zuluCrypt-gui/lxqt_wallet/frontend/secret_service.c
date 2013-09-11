@@ -231,7 +231,7 @@ char ** lxqt_secret_get_all_keys( const void * p,const void * q,int * count )
 				i++ ;
 				k++ ;
 			}else{
-				k++;
+				k++ ;
 			}
 		}
 	}

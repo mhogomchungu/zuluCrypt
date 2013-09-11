@@ -342,7 +342,7 @@ lxqt_wallet_error lxqt_wallet_open( lxqt_wallet_t * wallet,const char * password
 
 	char * e ;
 
-	int fd;
+	int fd ;
 
 	struct lxqt_wallet_struct * w ;
 
@@ -664,7 +664,7 @@ lxqt_wallet_key_values_t * lxqt_wallet_read_all_keys( lxqt_wallet_t wallet )
 	if( wallet == NULL ){
 		return NULL ;
 	}else{
-		entries = malloc( sizeof( lxqt_wallet_key_values_t ) * wallet->wallet_data_entry_count );
+		entries = malloc( sizeof( lxqt_wallet_key_values_t ) * wallet->wallet_data_entry_count ) ;
 		if( entries == NULL ){
 			return NULL ;
 		}else{
@@ -713,7 +713,7 @@ lxqt_wallet_key_values_t * lxqt_wallet_read_all_key_values( lxqt_wallet_t wallet
 	if( wallet == NULL ){
 		return NULL ;
 	}else{
-		entries = malloc( sizeof( lxqt_wallet_key_values_t ) * wallet->wallet_data_entry_count );
+		entries = malloc( sizeof( lxqt_wallet_key_values_t ) * wallet->wallet_data_entry_count ) ;
 		if( entries == NULL ){
 			return NULL ;
 		}else{

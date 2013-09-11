@@ -43,8 +43,7 @@ bool lxqt::Wallet::internalWallet::openWallet()
 {
 	lxqt_wallet_error r = lxqt_wallet_open( &m_wallet,m_password.toAscii().constData(),m_password.size(),
 		      m_walletName.toAscii().constData(),m_applicationName.toAscii().constData() ) ;
-	bool q = ( r == lxqt_wallet_no_error ) ;
-	return q ;
+	return r == lxqt_wallet_no_error ;
 }
 
 void lxqt::Wallet::internalWallet::openWalletThreadResult( bool opened )
@@ -180,13 +179,12 @@ QVector<lxqt::Wallet::walletKeyValues> lxqt::Wallet::internalWallet::readAllKeyV
 		const char * z = e ;
 		const char * f ;
 
-		size_t k = lxqt_wallet_wallet_size( m_wallet ) ;
-		size_t i = 0 ;
+		u_int32_t k = lxqt_wallet_wallet_size( m_wallet ) ;
+		u_int32_t i = 0 ;
 
 		walletKeyValues s ;
 
 		while( i < k ){
-
 			f             = e + sizeof( u_int32_t ) ;
 			key_len       = *( u_int32_t * ) e ;
 			key_value_len = *( u_int32_t * ) f ;
@@ -218,11 +216,10 @@ QStringList lxqt::Wallet::internalWallet::readAllKeys()
 		const char * z = e ;
 		const char * f ;
 
-		size_t k = lxqt_wallet_wallet_size( m_wallet ) ;
-		size_t i = 0 ;
+		u_int32_t k = lxqt_wallet_wallet_size( m_wallet ) ;
+		u_int32_t i = 0 ;
 
 		while( i < k ){
-
 			f             = e + sizeof( u_int32_t ) ;
 			key_len       = *( u_int32_t * ) e ;
 			key_value_len = *( u_int32_t * ) f ;
