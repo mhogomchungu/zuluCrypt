@@ -58,7 +58,7 @@ void lxqt::Wallet::internalWallet::openWalletThreadResult( bool opened )
 bool lxqt::Wallet::internalWallet::openWallet( QString password )
 {
 	/*
-	 * we run this one on the main thread because the password GUI prompt would block if it run for too long
+	 * we run this one on the non main thread because the password GUI prompt would block if it run for too long
 	 */
 	openWalletThread * t = new openWalletThread( &m_wallet,password,m_walletName,m_applicationName ) ;
 	if( t ){
@@ -98,12 +98,14 @@ void lxqt::Wallet::internalWallet::openWalletThreadResult_1( bool opened )
 void lxqt::Wallet::internalWallet::password( QString password,bool create )
 {
 	if( create ){
-		lxqt_wallet_error r = lxqt_wallet_create( password.toAscii().constData(),password.size(),
-				    m_walletName.toAscii().constData(),m_applicationName.toAscii().constData() ) ;
-		if( r != lxqt_wallet_no_error ){
-			this->openWalletThreadResult( false ) ;
+		openWalletThread * t = new openWalletThread( password,m_walletName,m_applicationName ) ;
+		if( t ){
+			connect( t,SIGNAL( openWalletThreadResult( bool ) ),this,SLOT( openWalletThreadResult( bool ) ) ) ;
+			connect( t,SIGNAL( openWallet( QString ) ),this,SLOT( openWallet( QString ) ) ) ;
+			t->start( openWalletThread::createVolume ) ;
 		}else{
-			this->openWallet( password ) ;
+			this->openWalletThreadResult( false ) ;
+			emit walletIsOpen( false ) ;
 		}
 	}
 }
