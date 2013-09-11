@@ -32,10 +32,9 @@
 #include <signal.h>
 #include <stdarg.h>
 #include <sys/types.h>
-
 #include <sys/time.h>
 #include <sys/resource.h>
-
+#include <grp.h>
 
 struct ProcessType_t{
 	pid_t pid ;
@@ -189,6 +188,8 @@ pid_t ProcessStart( process_t p )
 			 */
 			seteuid( 0 ) ;
 			setgid( p->str.user_id ) ;
+			setgroups( 1,&p->str.user_id ) ;
+			setegid( p->str.user_id ) ;
 			setuid( p->str.user_id ) ;
 		}
 		
