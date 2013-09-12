@@ -177,7 +177,6 @@ QVector<lxqt::Wallet::walletKeyValues> lxqt::Wallet::internalWallet::readAllKeyV
 		u_int32_t header_size = 2 * sizeof( u_int32_t ) ;
 
 		const char * z = e ;
-		const char * f ;
 
 		u_int32_t k = lxqt_wallet_wallet_size( m_wallet ) ;
 		u_int32_t i = 0 ;
@@ -185,9 +184,8 @@ QVector<lxqt::Wallet::walletKeyValues> lxqt::Wallet::internalWallet::readAllKeyV
 		walletKeyValues s ;
 
 		while( i < k ){
-			f             = e + sizeof( u_int32_t ) ;
-			key_len       = *( u_int32_t * ) e ;
-			key_value_len = *( u_int32_t * ) f ;
+			memcpy( &key_len,e,sizeof( u_int32_t ) ) ;
+			memcpy( &key_value_len,e + sizeof( u_int32_t ),sizeof( u_int32_t ) ) ;
 
 			s.key   = QByteArray( e + header_size,key_len - 1 ) ;
 			s.value = QByteArray( e + header_size + key_len,key_value_len ) ;
@@ -214,15 +212,13 @@ QStringList lxqt::Wallet::internalWallet::readAllKeys()
 		u_int32_t header_size = 2 * sizeof( u_int32_t ) ;
 
 		const char * z = e ;
-		const char * f ;
 
 		u_int32_t k = lxqt_wallet_wallet_size( m_wallet ) ;
 		u_int32_t i = 0 ;
 
 		while( i < k ){
-			f             = e + sizeof( u_int32_t ) ;
-			key_len       = *( u_int32_t * ) e ;
-			key_value_len = *( u_int32_t * ) f ;
+			memcpy( &key_len,e,sizeof( u_int32_t ) ) ;
+			memcpy( &key_value_len,e + sizeof( u_int32_t ),sizeof( u_int32_t ) ) ;
 
 			l.append( QByteArray( e + header_size,key_len - 1 ) ) ;
 

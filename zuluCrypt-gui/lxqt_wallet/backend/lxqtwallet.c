@@ -144,18 +144,21 @@ static int _wallet_is_not_compatible( char version_buffer[ VERSION_SIZE + 1 ] ) 
 
 char * _lxqt_wallet_get_wallet_data( lxqt_wallet_t wallet )
 {
-	return wallet->wallet_data ;
+	if( wallet == NULL ){
+		return NULL ;
+	}else{
+		return wallet->wallet_data ;
+	}
 }
 
-static inline u_int32_t _get_first_header_component( const char * str )
+static void inline _get_first_header_component( u_int32_t * value, const char * str )
 {
-	return *( u_int32_t * ) str ;
+	memcpy( value,str,sizeof( u_int32_t ) ) ;
 }
 
-static inline u_int32_t _get_second_header_component( const char * str )
+static void inline _get_second_header_component( u_int32_t * value, const char * str )
 {
-	const char * e = str + sizeof( u_int32_t ) ;
-	return *( u_int32_t * ) e ;
+	memcpy( value,str + sizeof( u_int32_t ),sizeof( u_int32_t ) ) ;
 }
 
 u_int32_t lxqt_wallet_wallet_size( lxqt_wallet_t wallet )
@@ -453,8 +456,8 @@ lxqt_wallet_error lxqt_wallet_open( lxqt_wallet_t * wallet,const char * password
 
 				gcry_cipher_decrypt( gcry_cipher_handle,load_header,BLOCK_SIZE,NULL,0 ) ;
 
-				w->wallet_data_size        = _get_first_header_component( load_header ) ;
-				w->wallet_data_entry_count = _get_second_header_component( load_header ) ;
+				_get_first_header_component( &w->wallet_data_size,load_header ) ;
+				_get_second_header_component( &w->wallet_data_entry_count,load_header ) ;
 
 				e = malloc( len ) ;
 
@@ -497,8 +500,8 @@ void lxqt_wallet_read_key_value( lxqt_wallet_t wallet,const char * key,u_int32_t
 
 		while( i < k ){
 
-			key_len       = _get_first_header_component( e ) ;
-			key_value_len = _get_second_header_component( e ) ;
+			_get_first_header_component( &key_len,e ) ;
+			_get_second_header_component( &key_value_len,e ) ;
 
 			if( key_len == key_size && memcmp( key,e + NODE_HEADER_SIZE,key_size ) == 0 ){
 				r = malloc( key_value_len + 1 ) ;
@@ -537,8 +540,8 @@ int lxqt_wallet_wallet_has_key( lxqt_wallet_t wallet,const char * key,u_int32_t 
 
 		while( i < k ){
 
-			key_len       = _get_first_header_component( e ) ;
-			key_value_len = _get_second_header_component( e ) ;
+			_get_first_header_component( &key_len,e ) ;
+			_get_second_header_component( &key_value_len,e ) ;
 
 			if( key_len == key_size && memcmp( key,e + NODE_HEADER_SIZE,key_size ) == 0 ){
 				return 1 ;
@@ -574,8 +577,8 @@ int lxqt_wallet_wallet_has_value( lxqt_wallet_t wallet,char ** key,u_int32_t * k
 
 		while( i < k ){
 
-			key_len       = _get_first_header_component( e ) ;
-			key_value_len = _get_second_header_component( e ) ;
+			_get_first_header_component( &key_len,e ) ;
+			_get_second_header_component( &key_value_len,e ) ;
 
 			if( key_value_len == value_size && memcmp( value,e + NODE_HEADER_SIZE + key_len,value_size ) == 0 ){
 				if( key != NULL ){
@@ -676,8 +679,8 @@ lxqt_wallet_key_values_t * lxqt_wallet_read_all_keys( lxqt_wallet_t wallet )
 
 			while( q < k ){
 
-				key_len       = _get_first_header_component( e ) ;
-				key_value_len = _get_second_header_component( e ) ;
+				_get_first_header_component( &key_len,e ) ;
+				_get_second_header_component( &key_value_len,e ) ;
 
 				entries[ q ].key = malloc( key_len + 1 ) ;
 				if( entries[ q ].key != NULL ){
@@ -723,8 +726,8 @@ lxqt_wallet_key_values_t * lxqt_wallet_read_all_key_values( lxqt_wallet_t wallet
 
 			while( q < k ){
 
-				key_len       = _get_first_header_component( e ) ;
-				key_value_len = _get_second_header_component( e ) ;
+				_get_first_header_component( &key_len,e ) ;
+				_get_second_header_component( &key_value_len,e ) ;
 
 				entries[ q ].key = malloc( key_len + 1 ) ;
 
@@ -779,8 +782,8 @@ lxqt_wallet_error lxqt_wallet_delete_key( lxqt_wallet_t wallet,const char * key,
 
 		while( i < k ){
 
-			key_len       = _get_first_header_component( e ) ;
-			key_value_len = _get_second_header_component( e ) ;
+			_get_first_header_component( &key_len,e ) ;
+			_get_second_header_component( &key_value_len,e ) ;
 
 			if( key_len == key_size && memcmp( key,e + NODE_HEADER_SIZE,key_size ) == 0 ){
 
@@ -1058,9 +1061,9 @@ static gcry_error_t _create_temp_key( char * output_key,u_int32_t output_key_siz
 {
 	gcry_md_hd_t md ;
 	unsigned char * digest ;
-	
+
 	gcry_error_t r = gcry_md_open( &md,GCRY_MD_SHA256,GCRY_MD_FLAG_SECURE ) ;
-	
+
 	if( r == GPG_ERR_NO_ERROR ){
 		gcry_md_write( md,input_key,input_key_length ) ;
 		gcry_md_final( md ) ;
@@ -1074,7 +1077,7 @@ static gcry_error_t _create_temp_key( char * output_key,u_int32_t output_key_siz
 	}else{
 		;
 	}
-	
+
 	return r ;
 }
 
@@ -1088,7 +1091,7 @@ static gcry_error_t _create_key( const char salt[ SALT_SIZE ],
 	#define TEMP_KEY_SIZE 32
 	char temp_key[ TEMP_KEY_SIZE ] ;
 	gcry_error_t r = _create_temp_key( temp_key,TEMP_KEY_SIZE,input_key,input_key_length ) ;
-	
+
 	if( r == GPG_ERR_NO_ERROR){
 		return gcry_kdf_derive( temp_key,TEMP_KEY_SIZE,GCRY_KDF_PBKDF2,GCRY_MD_SHA256,
 				salt,SALT_SIZE,PBKDF2_ITERATIONS,PASSWORD_SIZE,output_key ) ;
