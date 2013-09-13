@@ -330,10 +330,17 @@ void zuluCrypt::setupConnections()
 	m_ui->actionManage_volumes_in_gnome_wallet->setEnabled( lxqt::Wallet::backEndIsSupported( lxqt::Wallet::secretServiceBackEnd ) ) ;
 	m_ui->actionManage_volumes_in_kde_wallet->setEnabled( lxqt::Wallet::backEndIsSupported( lxqt::Wallet::kwalletBackEnd ) ) ;
 
+	connect( m_ui->menuOptions,SIGNAL( aboutToShow() ),this,SLOT( optionMenuAboutToShow() ) ) ;
+
 	m_ui->actionManage_system_partitions->setEnabled( utility::userIsRoot() ) ;
 	m_ui->actionManage_non_system_partitions->setEnabled( utility::userIsRoot() ) ;
 
 	this->setAcceptDrops( true ) ;
+}
+
+void zuluCrypt::optionMenuAboutToShow()
+{
+	m_ui->actionChange_internal_wallet_password->setEnabled( lxqt::Wallet::walletExists( lxqt::Wallet::internalBackEnd,utility::walletName(),utility::applicationName() ) ) ;
 }
 
 void zuluCrypt::manageVolumesInGNOMEWallet()

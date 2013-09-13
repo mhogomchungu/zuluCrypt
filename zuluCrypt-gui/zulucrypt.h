@@ -132,6 +132,7 @@ private slots :
 	void changePassWordOfInternalWallet( void ) ;
 	void walletpassWordChanged( bool ) ;
 	void walletIsOpen( bool ) ;
+	void optionMenuAboutToShow( void ) ;
 private:
 	void dragEnterEvent( QDragEnterEvent * );
 	void dropEvent( QDropEvent * );
