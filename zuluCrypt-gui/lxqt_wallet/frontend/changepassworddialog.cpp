@@ -114,6 +114,8 @@ void changePassWordDialog::change()
 	m_ui->lineEditCurrentPassWord->setEnabled( false ) ;
 	m_ui->lineEditNewPassWord->setEnabled( false ) ;
 	m_ui->lineEditNewPassWord_2->setEnabled( false ) ;
+	m_ui->pushButtonChange->setEnabled( false ) ;
+	m_ui->pushButtonCancel->setEnabled( false ) ;
 	m_ui->label->setEnabled( true ) ;
 	m_ui->label_2->setEnabled( false ) ;
 	m_ui->label_2->setEnabled( false ) ;
@@ -180,12 +182,16 @@ void changePassWordDialog::openWalletThreadResult( bool opened )
 			m_walletPassWordChanged = true ;
 			this->HideUI() ;
 		}else{
+			m_ui->pushButtonChange->setEnabled( true ) ;
+			m_ui->pushButtonCancel->setEnabled( true ) ;
 			m_ui->label->setText( tr( "wallet password could not be changed" ) ) ;
 			m_ui->pushButtonCancel->setVisible( false ) ;
 			m_ui->pushButtonChange->setVisible( false ) ;
 			m_ui->pushButtonOK->setVisible( true ) ;
 		}
 	}else{
+		m_ui->pushButtonChange->setEnabled( true ) ;
+		m_ui->pushButtonCancel->setEnabled( true ) ;
 		m_ui->label->setText( tr( "wallet could not be opened with the presented key" ) ) ;
 		m_ui->pushButtonCancel->setVisible( false ) ;
 		m_ui->pushButtonChange->setVisible( false ) ;
