@@ -210,7 +210,7 @@ bool lxqt::Wallet::secretService::walletIsOpened( void )
 	}
 }
 
-void lxqt::Wallet::secretService::setInterfaceObject( QObject * interfaceObject )
+void lxqt::Wallet::secretService::setInterfaceObject( QWidget * interfaceObject )
 {
 	m_interfaceObject = interfaceObject ;
 }

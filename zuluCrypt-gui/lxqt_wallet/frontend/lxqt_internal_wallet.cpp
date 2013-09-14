@@ -82,7 +82,7 @@ void lxqt::Wallet::internalWallet::openWalletThreadResult_1( bool opened )
 		/*
 		 * passwordless opening failed,prompt a user for a password
 		 */
-		password_dialog * p = new password_dialog() ;
+		password_dialog * p = new password_dialog( this ) ;
 		if( p ){
 			connect( p,SIGNAL( password( QString ) ),this,SLOT( openWallet( QString ) ) ) ;
 			connect( this,SIGNAL( passwordIsCorrect( bool ) ),p,SLOT( passwordIsCorrect( bool ) ) ) ;
@@ -138,7 +138,7 @@ bool lxqt::Wallet::internalWallet::open( const QString& walletName,const QString
 			return this->openWallet() ;
 		}
 	}else{
-		changePassWordDialog * c = new changePassWordDialog( 0,m_walletName,m_applicationName ) ;
+		changePassWordDialog * c = new changePassWordDialog( this,m_walletName,m_applicationName ) ;
 		if( c ){
 			connect( c,SIGNAL( password( QString,bool ) ),this,SLOT( password( QString,bool ) ) ) ;
 			c->ShowUI_1() ;
@@ -266,8 +266,9 @@ bool lxqt::Wallet::internalWallet::walletIsOpened()
 	return m_wallet != 0 ;
 }
 
-void lxqt::Wallet::internalWallet::setInterfaceObject( QObject * interfaceObject )
+void lxqt::Wallet::internalWallet::setInterfaceObject( QWidget * interfaceObject )
 {
+	this->setParent( interfaceObject ) ;
 	m_interfaceObject = interfaceObject ;
 	connect( this,SIGNAL( walletIsOpen( bool ) ),m_interfaceObject,SLOT( walletIsOpen( bool ) ) ) ;
 }
@@ -284,7 +285,7 @@ QString lxqt::Wallet::internalWallet::storagePath()
 
 void lxqt::Wallet::internalWallet::changeWalletPassWord( const QString& walletName,const QString& applicationName )
 {
-	changePassWordDialog * c = new changePassWordDialog( 0,walletName,applicationName ) ;
+	changePassWordDialog * c = new changePassWordDialog( this,walletName,applicationName ) ;
 	if( c ){
 		connect( c,SIGNAL( walletpassWordChanged( bool ) ),m_interfaceObject,SLOT( walletpassWordChanged( bool ) ) ) ;
 		c->ShowUI() ;

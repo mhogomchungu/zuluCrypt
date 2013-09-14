@@ -45,6 +45,8 @@
 #include <QPushButton>
 #include <QDir>
 
+class QWidget ;
+
 namespace lxqt{
 
 namespace Wallet{
@@ -65,7 +67,7 @@ public:
 	void closeWallet( bool ) ;
 	lxqt::Wallet::walletBackEnd backEnd( void ) ;
 	bool walletIsOpened( void ) ;
-	void setInterfaceObject( QObject * parent ) ;
+	void setInterfaceObject( QWidget * parent ) ;
 	QObject * qObject( void ) ;
 	QString storagePath( void ) ;
 	void changeWalletPassWord( const QString& walletName,const QString& applicationName = QString() ) ;
@@ -86,7 +88,7 @@ private:
 	QString m_walletName ;
 	QString m_applicationName ;
 	QString m_password ;
-	QObject * m_interfaceObject ;
+	QWidget * m_interfaceObject ;
 };
 
 }

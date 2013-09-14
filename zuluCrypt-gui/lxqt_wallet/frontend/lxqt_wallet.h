@@ -34,6 +34,7 @@
 #include <QString>
 #include <QStringList>
 #include <QObject>
+#include <QWidget>
 #include <QByteArray>
 #include <QVector>
 #include <QStringList>
@@ -95,7 +96,7 @@ QStringList walletList( lxqt::Wallet::walletBackEnd ) ;
  * See example at the end of this header file to see an example of how to use the interface.
  */
 
-class Q_DECL_EXPORT Wallet : public QObject
+class Q_DECL_EXPORT Wallet : public QWidget
 {
 public:
 	Wallet() ;
@@ -190,7 +191,7 @@ public:
 	 * This method is used as a mean of communication between the backend and the user of the library.see open() method documentation above
 	 * for a use case of this API
 	 */
-	virtual void setInterfaceObject( QObject * ) = 0 ;
+	virtual void setInterfaceObject( QWidget * ) = 0 ;
 
 	/*
 	 * this method returns PasswordFolder() in kwallet backend and is undefined in other backends
