@@ -335,13 +335,17 @@ int zuluMountprintAListOfMountedVolumes( void )
 	
 	const char * e ;
 	const char * f ;
+	/*
+	 * zuluCryptMapperPrefix() is defined in ../zuluCrypt-cli/lib/create_mapper_name.c
+	 * mapper_prefix will probably contain "/dev/mapper/"
+	 */
+	const char * mapper_prefix = zuluCryptMapperPrefix() ;
 	
 	while( it != end ){
 		st = *it ;
 		it++ ;
 		
-		if( !StringStartsWith( st,"/" ) || StringStartsWith( st,"/proc" ) ||
-			StringStartsWith( st,"/sys" ) || StringStartsWith( st,"/dev " ) ){
+		if( !StringStartsWith( st,"/" ) || StringStartsWith_1( st,"/proc","/sys","/dev ",NULL ) ){
 			continue ;
 		}
 			
@@ -350,13 +354,13 @@ int zuluMountprintAListOfMountedVolumes( void )
 		if( e == NULL ){
 			continue ;
 		}
-		if( StringPrefixEqual( e,"/dev/mapper/" ) ){
+		if( StringPrefixEqual( e,mapper_prefix ) ){
 			/*
 			 * zuluCryptConvertIfPathIsLVM() is defined in ../zuluCrypt-cli/lib/status.c
 			 */
 			q = zuluCryptConvertIfPathIsLVM( e ) ;
 			
-			if( StringStartsWith( q,"/dev/mapper/" ) ){
+			if( StringStartsWith( q,mapper_prefix ) ){
 				/*
 				 * volume is probably an encrypted one
 				 */
@@ -421,6 +425,12 @@ int zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t 
 	char * dev = NULL ;
 	const char * device_1 ;
 	const char * e ;
+	
+	/*
+	 * zuluCryptMapperPrefix() is defined in ../zuluCrypt-cli/lib/create_mapper_name.c
+	 * mapper_prefix will probably contain "/dev/mapper/"
+	 */
+	const char * mapper_prefix = zuluCryptMapperPrefix() ;
 	
 	StringListIterator it  ;
 	StringListIterator end ;
@@ -496,7 +506,7 @@ int zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t 
 			while( it != end ){
 				p = *it ;
 				it++ ;
-				if( StringStartsWith( p,"/dev/mapper/" ) ){
+				if( StringStartsWith( p,mapper_prefix ) ){
 					e = StringReplaceChar_1( p,0,' ','\0' ) ;
 					/*
 					 * zuluCryptVolumeDeviceName() is defined in ../zuluCrypt-cli/lib/status.c

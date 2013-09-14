@@ -872,6 +872,29 @@ const char * StringAppend( string_t st,const char * s )
 	return c ;
 }
 
+int StringStartsWith_1( string_t st,... )
+{
+	int r = 0 ;
+	const char * entry ;
+	va_list list ;
+	va_start( list,st ) ;
+	
+	while( 1 ){
+		entry = va_arg( list,const char * ) ;
+		if( entry == NULL ){
+			break ;
+		}else{
+			if( strncmp( st->string,entry,strlen( entry ) ) == 0 ){
+				r = 1 ;
+				break ;
+			}
+		}
+	}
+	
+	va_end( list ) ;
+	return r ;
+}
+
 const char * StringMultipleAppend( string_t st,... ) 
 {
 	const char * entry ;

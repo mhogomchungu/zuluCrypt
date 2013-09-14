@@ -270,12 +270,10 @@ void StringMultipleDelete( string_t * st,... )  __attribute__ ( ( sentinel ) ) ;
  */
 char * StringDeleteHandle( string_t * st ) ;
 
-
 /*
  * Return the length of the string handled by handle st.
  */
 ssize_t StringLength( string_t st ) ;
-
 
 /*
  * Return a character at position p.First position is at "0".
@@ -298,7 +296,6 @@ char StringCharAtLast( string_t st ) ;
  */
 ssize_t StringIndexOfChar( string_t st,size_t p,char s ) ;
 
-
 /*
  * return the position of the first occurance of string s starting from position p.
  *  
@@ -308,14 +305,12 @@ ssize_t StringIndexOfChar( string_t st,size_t p,char s ) ;
  */
 ssize_t StringIndexOfString( string_t st,size_t p,const char * s ) ;
 
-
 /*
  * Return the position of the last occurance of character s
  * 
  * -1 is returned if the character isnt in the string
  */
 ssize_t StringLastIndexOfChar( string_t st,char s ) ;
-
 
 /*
  * Returns the last occurance of a string pointed by s
@@ -326,7 +321,6 @@ ssize_t StringLastIndexOfChar( string_t st,char s ) ;
  * 
  */
 ssize_t StringLastIndexOfString( string_t st,const char * s ) ;
-
 
 /*
  * Return a const string starting at position p. First position is at 0 
@@ -368,6 +362,18 @@ int StringEndsWith( string_t st,const char * s ) ;
 int StringStartsWith( string_t st,const char * s ) ;
 
 /*
+ * check to see the string_t object starts with atleast one of the arbitrary number of cstrings
+ * return 1 if it does
+ * return 0 if it does not
+ *
+ * exampe:
+ * st = String( "abcdef" ) ;
+ * int r = StringStartsWith_1( st,"rrr","www","abc",NULL ) ;
+ * r will contain "1" since "abc" argument match the beginning of the string_t object
+ */
+int StringStartsWith_1( string_t st,... ) __attribute__ ( ( sentinel ) ) ;
+
+/*
  *Check to see if the string pointer by st ends with char s. 
  * 
  * return 1 is it does
@@ -376,14 +382,12 @@ int StringStartsWith( string_t st,const char * s ) ;
  */
 int StringEndsWithChar( string_t st,char s ) ;
 
-
 /*
  * Insert a string s from position x and returns a pointer to the new string
  * 
  * on error returns NULL and the original string remains intact  
  */
 const char * StringInsertString( string_t st,size_t x,const char * s ) ;
-
 
 /*
  * Insert a char s at position x and returns a pointer to the new string
@@ -392,13 +396,11 @@ const char * StringInsertString( string_t st,size_t x,const char * s ) ;
  */
 const char * StringInsertChar( string_t st,size_t x,char s ) ;
 
-
 /*
  * subsititue whatever character is at position x by character s
  * returns a pointer to the string containing the subsititue
  */
 const char * StringSubChar( string_t st,size_t x,char s ) ;
-
 
 /*
  * start from position x and subsititue all characters in the string by string s.
@@ -467,7 +469,6 @@ const char * StringRemoveLeft( string_t st,size_t x ) ;
  */
 string_t StringMidString( string_t st,size_t x,size_t y ) ;
 
-
 /*
  * replace all occurance of string x by string y 
  * return a pointer to the resulting string on success or NULL on error and the original string
@@ -475,14 +476,12 @@ string_t StringMidString( string_t st,size_t x,size_t y ) ;
  */
 const char * StringReplaceString( string_t st,const char * x,const char * y ) ;
 
-
 /*
  * starting at position p,replace all occurance of string x by string y 
  * return a pointer to the resulting string on success or NULL on error and the original string
  * remain intact.
  */
 const char * StringReplaceStringPos( string_t st,const char * x,const char * y,size_t p ) ;
-
 
 /*
  * replace all occurance of char x by char y  
@@ -508,7 +507,6 @@ const char * StringReplaceCharPos( string_t st,char x,char y,size_t p ) ;
  *  Replace all characters in y by x in a string handled by st
  */
 const char * StringReplaceCharString( string_t st,char x,const char * y ) ;
-
 
 /*
  * Starting at position,Replace all characters in y by x in a string handled by st
@@ -645,13 +643,14 @@ int StringGetFromFile_1( string_t * st,const char * path ) ;
 
 /*
  *  Open a file given by path and return a string_t handle through agrument st with the content of the file .
- *  Strart reading the file from offset byte and read length bytes.  
+ *  Start reading the file from offset byte and read length bytes.
  *  return value: 0 - opefation succeeded.
  *                1 - path is invalid.
  *                2 - could not open file for reading.
  * 		  3 - could not allocate memory to host file content 
  */
 int StringGetFromFile_3( string_t * st,const char * path,size_t offset,size_t length ) ;
+
 /*
  *  Open a file given by path and return a string_t handle with hhe content of the file .  
  *  return value through status:
