@@ -50,7 +50,7 @@ public:
 	secretService() ;
 	~secretService() ;
 	bool addKey( const QString& key,const QByteArray& value ) ;
-	bool open( const QString& walletName,const QString& applicationName,const QString& password = QString() ) ;
+	void open( const QString& walletName,const QString& applicationName,const QString& password = QString() ) ;
 	QByteArray readValue( const QString& key ) ;
 	QVector<lxqt::Wallet::walletKeyValues> readAllKeyValues( void ) ;
 	QStringList readAllKeys( void ) ;

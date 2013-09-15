@@ -49,7 +49,7 @@ bool lxqt::Wallet::kwallet::addKey( const QString& key,const QByteArray& value )
 	return true ;
 }
 
-bool lxqt::Wallet::kwallet::open( const QString& walletName,const QString& applicationName,const QString& password )
+void lxqt::Wallet::kwallet::open( const QString& walletName,const QString& applicationName,const QString& password )
 {
 	m_walletName        = walletName ;
 	m_applicationName   = applicationName ;
@@ -58,8 +58,6 @@ bool lxqt::Wallet::kwallet::open( const QString& walletName,const QString& appli
 	m_kwallet = KWallet::Wallet::openWallet( m_walletName,0,KWallet::Wallet::Asynchronous ) ;
 
 	connect( m_kwallet,SIGNAL( walletOpened( bool ) ),this,SLOT( walletOpened( bool ) ) ) ;
-
-	return false ;
 }
 
 void lxqt::Wallet::kwallet::walletOpened( bool opened )

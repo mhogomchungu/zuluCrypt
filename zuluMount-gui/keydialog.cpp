@@ -40,6 +40,11 @@
 #define INTERNAL_WALLET "internal wallet"
 #define GNOME_WALLET    "gnome wallet"
 
+/*
+ * this ugly global variable is defined in zulucrypt.cpp to prevent multiple prompts when opening multiple volumes
+ */
+static QString _internalPassWord ;
+
 keyDialog::keyDialog( QWidget * parent,QTableWidget * table,QString path,QString type,QString folderOpener,bool autoOpenFolderOnMount ) :
 	QDialog( parent ),m_ui(new Ui::keyDialog)
 {
@@ -317,11 +322,16 @@ void keyDialog::walletIsOpen( bool opened )
 			this->openVolume() ;
 		}
 	}else{
-		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "ERROR" ),tr( "failed to open wallet" ) ) ;
+		//DialogMsg msg( this ) ;
+		//msg.ShowUIOK( tr( "ERROR" ),tr( "failed to open wallet" ) ) ;
 	}
 
 	m_wallet->deleteLater() ;
+}
+
+void keyDialog::getPassWord( QString password )
+{
+	_internalPassWord = password ;
 }
 
 void keyDialog::pbOpen()
@@ -336,7 +346,9 @@ void keyDialog::pbOpen()
 		}else if( r == tr( INTERNAL_WALLET ) ){
 			m_wallet = lxqt::Wallet::getWalletBackend( lxqt::Wallet::internalBackEnd ) ;
 			m_wallet->setInterfaceObject( this ) ;
-			m_wallet->open( utility::walletName(),utility::applicationName() ) ;
+			QObject * obj = m_wallet->qObject() ;
+			connect( obj,SIGNAL( getPassWord( QString ) ),this,SLOT( getPassWord( QString ) ) ) ;
+			m_wallet->open( utility::walletName(),utility::applicationName(),_internalPassWord ) ;
 		}else if( r == tr( GNOME_WALLET ) ){
 			m_wallet = lxqt::Wallet::getWalletBackend( lxqt::Wallet::secretServiceBackEnd ) ;
 			m_wallet->setInterfaceObject( this ) ;

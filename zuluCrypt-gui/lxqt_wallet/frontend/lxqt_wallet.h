@@ -169,23 +169,19 @@ public:
 	 *
 	 * Calling this open() method will generate a KWallet GUI prompt for a password.
 	 *
-	 * The return value of this method with KWallet backend is undefined
-	 *
 	 * internal:
 	 * walletName argument is the name of the wallet to open.
 	 * applicationName argument is the name of the program that owns the wallet.
 	 *
-	 * If password argument is given,the method will return true if the wallet is opened and false other wise."walletIsOpen" signal will not
-	 * be generated.
+	 * If password argument is given,it will be used to attempt to open the wallet
 	 * If password argument is not given,a GUI window will be generated to ask the user for the password.
-	 * If password argument is not given,the return value of the method is undefined.
 	 *
 	 * This back end requires an object to be passed using "setInterfaceObject()" method of this API and the object must have a slot named
 	 * "void walletIsOpen(bool)".The slot will be called with "true" if the wallet was opened and with "false" otherwise.
 	 *
 	 * Calling this open() method without a password will generate a GUI prompt for a password
 	 */
-	virtual bool open( const QString& walletName,const QString& applicationName = QString(),const QString& password = QString() ) = 0 ;
+	virtual void open( const QString& walletName,const QString& applicationName = QString(),const QString& password = QString() ) = 0 ;
 
 	/*
 	 * This method is used as a mean of communication between the backend and the user of the library.see open() method documentation above

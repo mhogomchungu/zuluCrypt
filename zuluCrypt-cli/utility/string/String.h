@@ -368,10 +368,10 @@ int StringStartsWith( string_t st,const char * s ) ;
  *
  * exampe:
  * st = String( "abcdef" ) ;
- * int r = StringStartsWith_1( st,"rrr","www","abc",NULL ) ;
+ * int r = StringAtLeastOneStartsWith( st,"rrr","www","abc",NULL ) ;
  * r will contain "1" since "abc" argument match the beginning of the string_t object
  */
-int StringStartsWith_1( string_t st,... ) __attribute__ ( ( sentinel ) ) ;
+int StringAtLeastOneStartsWith( string_t st,... ) __attribute__ ( ( sentinel ) ) ;
 
 /*
  *Check to see if the string pointer by st ends with char s. 

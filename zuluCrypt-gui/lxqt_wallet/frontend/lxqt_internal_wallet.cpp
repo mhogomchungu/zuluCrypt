@@ -50,6 +50,7 @@ void lxqt::Wallet::internalWallet::openWalletThreadResult( bool opened )
 {
 	emit passwordIsCorrect( opened ) ;
 	if( opened ){
+		emit getPassWord( m_password ) ;
 		emit walletIsOpen( opened ) ;
 	}
 }
@@ -61,6 +62,7 @@ bool lxqt::Wallet::internalWallet::openWallet( QString password )
 	 */
 	openWalletThread * t = new openWalletThread( &m_wallet,password,m_walletName,m_applicationName ) ;
 	if( t ){
+		m_password = password ;
 		connect( t,SIGNAL( walletOpened( bool ) ),this,SLOT( openWalletThreadResult( bool ) ) ) ;
 		t->start( openWalletThread::openInternal ) ;
 	}else{
@@ -109,7 +111,7 @@ void lxqt::Wallet::internalWallet::password( QString password,bool create )
 	}
 }
 
-bool lxqt::Wallet::internalWallet::open( const QString& walletName,const QString& applicationName,const QString& password )
+void lxqt::Wallet::internalWallet::open( const QString& walletName,const QString& applicationName,const QString& password )
 {
 	m_walletName        = walletName ;
 	m_applicationName   = applicationName ;
@@ -133,9 +135,8 @@ bool lxqt::Wallet::internalWallet::open( const QString& walletName,const QString
 			}else{
 				this->openWalletThreadResult_1( false ) ;
 			}
-			return false ;
 		}else{
-			return this->openWallet() ;
+			this->openWallet( m_password ) ;
 		}
 	}else{
 		changePassWordDialog * c = new changePassWordDialog( this,m_walletName,m_applicationName ) ;
@@ -146,8 +147,6 @@ bool lxqt::Wallet::internalWallet::open( const QString& walletName,const QString
 			this->password( QString( "" ),false ) ;
 		}
 	}
-
-	return false ;
 }
 
 QByteArray lxqt::Wallet::internalWallet::readValue( const QString& key )

@@ -64,7 +64,7 @@ void zuluMountPartitionProperties( const char * device,const char * UUID,const c
 	blkid = blkid_new_probe_from_filename( device ) ;
 	
 	if( blkid == NULL ){
-		zuluCryptSecurityDropElevatedPrivileges();
+		zuluCryptSecurityDropElevatedPrivileges() ;
 		printf( "%s\tNil\tNil\tNil\tNil\tNil\n",device ) ;
 		return ;
 	}
@@ -160,7 +160,7 @@ void zuluMountPartitionProperties( const char * device,const char * UUID,const c
 		}else{
 			block_size = vfs.f_frsize ;
 		
-			total = block_size * vfs.f_blocks  ;
+			total = block_size * vfs.f_blocks ;
 		
 			g = StringIntToString_1( buffer,SIZE,total ) ;
 			zuluCryptFormatSize( format,g ) ;
@@ -175,7 +175,7 @@ void zuluMountPartitionProperties( const char * device,const char * UUID,const c
 		}
 	}
 		
-	zuluCryptSecurityDropElevatedPrivileges();
+	zuluCryptSecurityDropElevatedPrivileges() ;
 }
 
 static void _printUnmountedVolumes( const char * device )
@@ -214,7 +214,7 @@ static void _printDeviceProperties( string_t entry,void * s )
 		 * zuluCryptVolumeDeviceName() is defined in ../zuluCrypt-cli/lib/status.c
 		 */
 		x = zuluCryptVolumeDeviceName( q ) ;
-		zuluCryptSecurityDropElevatedPrivileges();
+		zuluCryptSecurityDropElevatedPrivileges() ;
 		
 		if( x != NULL ){
 			index = StringHasComponent_1( q,"-UUID-" ) ;
@@ -250,7 +250,7 @@ static void _printDeviceProperties( string_t entry,void * s )
 		zuluMountPartitionProperties( e,NULL,e,f ) ;
 	}
 	
-	zuluCryptSecurityDropElevatedPrivileges();
+	zuluCryptSecurityDropElevatedPrivileges() ;
 	StringListDelete( &stx ) ;
 }
 
@@ -345,15 +345,12 @@ int zuluMountprintAListOfMountedVolumes( void )
 		st = *it ;
 		it++ ;
 		
-		if( !StringStartsWith( st,"/" ) || StringStartsWith_1( st,"/proc","/sys","/dev ",NULL ) ){
+		if( !StringStartsWith( st,"/" ) || StringAtLeastOneStartsWith( st,"/proc","/sys","/dev ",NULL ) ){
 			continue ;
 		}
 			
 		e = StringReplaceChar_1( st,0,' ','\0' ) ;
-		
-		if( e == NULL ){
-			continue ;
-		}
+
 		if( StringPrefixEqual( e,mapper_prefix ) ){
 			/*
 			 * zuluCryptConvertIfPathIsLVM() is defined in ../zuluCrypt-cli/lib/status.c
@@ -397,7 +394,7 @@ int zuluMountprintAListOfMountedVolumes( void )
 						puts( e ) ;
 					}
 				}
-			}else{
+			}else if( e != NULL ){
 				/*
 				 * the volume is probably an LVM volume
 				 */
@@ -405,7 +402,7 @@ int zuluMountprintAListOfMountedVolumes( void )
 			}
 			
 			StringDelete( &q ) ;
-		}else{
+		}else if( e != NULL ){
 			puts( e ) ;
 		}
 	}

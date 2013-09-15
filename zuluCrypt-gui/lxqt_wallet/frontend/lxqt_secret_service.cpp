@@ -75,7 +75,7 @@ bool lxqt::Wallet::secretService::addKey( const QString& key,const QByteArray& v
 	}
 }
 
-bool lxqt::Wallet::secretService::open( const QString& walletName,const QString& applicationName,const QString& password )
+void lxqt::Wallet::secretService::open( const QString& walletName,const QString& applicationName,const QString& password )
 {
 	/*
 	 * this backend does not use this variable
@@ -114,8 +114,6 @@ bool lxqt::Wallet::secretService::open( const QString& walletName,const QString&
 	}else{
 		this->walletOpened( false ) ;
 	}
-
-	return false ;
 }
 
 void lxqt::Wallet::secretService::walletOpened( bool opened )

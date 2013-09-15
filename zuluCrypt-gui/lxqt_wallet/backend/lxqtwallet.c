@@ -151,12 +151,12 @@ char * _lxqt_wallet_get_wallet_data( lxqt_wallet_t wallet )
 	}
 }
 
-static void inline _get_first_header_component( u_int32_t * value, const char * str )
+static void inline _get_first_header_component( u_int32_t * value,const char * str )
 {
 	memcpy( value,str,sizeof( u_int32_t ) ) ;
 }
 
-static void inline _get_second_header_component( u_int32_t * value, const char * str )
+static void inline _get_second_header_component( u_int32_t * value,const char * str )
 {
 	memcpy( value,str + sizeof( u_int32_t ),sizeof( u_int32_t ) ) ;
 }

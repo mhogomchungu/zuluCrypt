@@ -52,7 +52,7 @@ static inline char * _evaluate_tag_by_id( string_t st )
 
 stringList_t zuluCryptGetFstabList( uid_t uid )
 {
-	string_t xt = StringGetFromFile( "/etc/fstab" );
+	string_t xt = StringGetFromFile( "/etc/fstab" ) ;
 	string_t st ;
 	
 	stringList_t fstabList = StringListVoid ;

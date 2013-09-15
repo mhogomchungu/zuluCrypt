@@ -70,6 +70,7 @@ private slots:
 	void cbMountReadOnlyStateChanged( int ) ;
 	void fileManagerOpenStatus( int exitCode, int exitStatus,int startError ) ;
 	void walletIsOpen( bool ) ;
+	void getPassWord( QString ) ;
 private:
 	void openVolume( void ) ;
 	void enableAll( void ) ;

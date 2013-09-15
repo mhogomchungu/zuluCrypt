@@ -872,7 +872,7 @@ const char * StringAppend( string_t st,const char * s )
 	return c ;
 }
 
-int StringStartsWith_1( string_t st,... )
+int StringAtLeastOneStartsWith( string_t st,... )
 {
 	int r = 0 ;
 	const char * entry ;

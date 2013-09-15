@@ -128,6 +128,7 @@ void kwalletconfig::pbAdd()
 
 void kwalletconfig::ShowUI( lxqt::Wallet::walletBackEnd backEnd )
 {
+	this->show() ;
 	m_wallet = lxqt::Wallet::getWalletBackend( backEnd ) ;
 	m_wallet->setInterfaceObject( this ) ;
 	m_wallet->open( utility::walletName(),utility::applicationName() ) ;
@@ -202,8 +203,6 @@ void kwalletconfig::ShowWalletEntries()
 	}
 
 	table->setFocus() ;
-
-	this->show() ;
 }
 
 void kwalletconfig::HideUI()

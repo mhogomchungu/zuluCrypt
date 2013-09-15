@@ -59,6 +59,11 @@
 #define INTERNAL_WALLET "internal wallet"
 #define GNOME_WALLET    "gnome wallet"
 
+/*
+ * this ugly global variable is defined in zulucrypt.cpp to prevent multiple prompts when opening multiple volumes
+ */
+static QString _internalPassWord ;
+
 passwordDialog::passwordDialog( QTableWidget * table,QString folderOpener,QWidget * parent ) : QDialog( parent )
 {
 	m_ui = new Ui::PasswordDialog() ;
@@ -354,6 +359,11 @@ void passwordDialog::HideUI()
 	emit HideUISignal() ;
 }
 
+void passwordDialog::getPassWord( QString password )
+{
+	_internalPassWord = password ;
+}
+
 void passwordDialog::walletIsOpen( bool opened )
 {
 	if( opened ){
@@ -404,7 +414,9 @@ void passwordDialog::buttonOpenClicked( void )
 	}else if( m_ui->PassPhraseField->text() == tr( INTERNAL_WALLET ) ){
 		m_wallet = lxqt::Wallet::getWalletBackend( lxqt::Wallet::internalBackEnd ) ;
 		m_wallet->setInterfaceObject( this ) ;
-		m_wallet->open( utility::walletName(),utility::applicationName() ) ;
+		QObject * obj = m_wallet->qObject() ;
+		connect( obj,SIGNAL( getPassWord( QString ) ),this,SLOT( getPassWord( QString ) ) ) ;
+		m_wallet->open( utility::walletName(),utility::applicationName(),_internalPassWord ) ;
 	}else if( m_ui->PassPhraseField->text() == tr( GNOME_WALLET ) ){
 		m_wallet = lxqt::Wallet::getWalletBackend( lxqt::Wallet::secretServiceBackEnd ) ;
 		m_wallet->setInterfaceObject( this ) ;
