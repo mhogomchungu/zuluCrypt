@@ -311,6 +311,9 @@ void keyDialog::walletIsOpen( bool opened )
 				key = m_wallet->readValue( m_path ) ;
 			}else{
 				key = m_wallet->readValue( id ) ;
+				if( key.isEmpty() ){
+					key = m_wallet->readValue( m_path ) ;
+				}
 			}
 		}
 

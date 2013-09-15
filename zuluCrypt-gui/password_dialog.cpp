@@ -383,9 +383,12 @@ void passwordDialog::walletIsOpen( bool opened )
 			keyID = utility::getUUIDFromPath( id ) ;
 			if( keyID.isEmpty() ){
 				keyID = m_ui->OpenVolumePath->text() ;
+			}else{
+				key = m_wallet->readValue( keyID ) ;
+				if( key.isEmpty() ){
+					key = m_wallet->readValue( id ) ;
+				}
 			}
-
-			key = m_wallet->readValue( keyID ) ;
 		}
 
 		if( key.isEmpty() ){
