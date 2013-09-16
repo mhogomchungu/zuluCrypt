@@ -131,7 +131,11 @@ void kwalletconfig::ShowUI( lxqt::Wallet::walletBackEnd backEnd )
 	this->show() ;
 	m_wallet = lxqt::Wallet::getWalletBackend( backEnd ) ;
 	m_wallet->setInterfaceObject( this ) ;
-	m_wallet->open( utility::walletName(),utility::applicationName() ) ;
+	if( backEnd == lxqt::Wallet::kwalletBackEnd ){
+		m_wallet->open( utility::defaultKDEWalletName(),utility::applicationName() ) ;
+	}else{
+		m_wallet->open( utility::walletName(),utility::applicationName() ) ;
+	}
 }
 
 void kwalletconfig::walletIsOpen( bool opened )

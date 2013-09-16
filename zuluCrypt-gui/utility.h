@@ -53,6 +53,7 @@ public:
 	static QString localizationLanguagePath( QString ) ;
 	static void setLocalizationLanguage( QString,QString ) ;
 	static QString walletName( void ) ;
+	static QString defaultKDEWalletName( void ) ;
 	static QString applicationName( void ) ;
 };
 

@@ -48,6 +48,12 @@
 #include "version.h"
 #include "locale_path.h"
 
+#include "storage_manager.h"
+
+#if HAS_KWALLET_SUPPORT
+	#include <kwallet.h>
+#endif
+
 QString utility::cryptMapperPath()
 {
 	//return QString( crypt_get_dir() )
@@ -207,6 +213,15 @@ void utility::setLocalizationLanguage( QString program,QString language )
 QString utility::walletName()
 {
 	return "zuluCrypt" ;
+}
+
+QString utility::defaultKDEWalletName()
+{
+	#if HAS_KWALLET_SUPPORT
+		return KWallet::Wallet::LocalWallet() ;
+	#else
+		return "zuluCrypt" ;
+	#endif
 }
 
 QString utility::applicationName()

@@ -394,6 +394,7 @@ void passwordDialog::walletIsOpen( bool opened )
 		if( key.isEmpty() ){
 			DialogMsg msg( this ) ;
 			msg.ShowUIOK( tr( "ERROR" ),tr( "the volume does not appear to have an entry in the wallet" ) ) ;
+			this->enableAll() ;
 		}else{
 			m_key = key ;
 			this->openVolume( "bogus entry" ) ;
@@ -413,7 +414,7 @@ void passwordDialog::buttonOpenClicked( void )
 	if( m_ui->PassPhraseField->text() == tr( KWALLET ) ){
 		m_wallet = lxqt::Wallet::getWalletBackend( lxqt::Wallet::kwalletBackEnd ) ;
 		m_wallet->setInterfaceObject( this ) ;
-		m_wallet->open( utility::walletName(),utility::applicationName() ) ;
+		m_wallet->open( utility::defaultKDEWalletName(),utility::applicationName() ) ;
 	}else if( m_ui->PassPhraseField->text() == tr( INTERNAL_WALLET ) ){
 		m_wallet = lxqt::Wallet::getWalletBackend( lxqt::Wallet::internalBackEnd ) ;
 		m_wallet->setInterfaceObject( this ) ;

@@ -35,7 +35,7 @@ wallet::wallet( QString path,QString uuid,QString sockAddr )
 
 void wallet::openWallet()
 {
-	m_wallet = Wallet::openWallet( utility::walletName(),0,KWallet::Wallet::Synchronous ) ;
+	m_wallet = Wallet::openWallet( utility::defaultKDEWalletName(),0,KWallet::Wallet::Synchronous ) ;
 
 	if( m_wallet ){
 		m_wallet->setFolder( utility::applicationName() ) ;

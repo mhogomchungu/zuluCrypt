@@ -345,7 +345,7 @@ void keyDialog::pbOpen()
 		if( r == tr( KWALLET ) ){
 			m_wallet = lxqt::Wallet::getWalletBackend( lxqt::Wallet::kwalletBackEnd ) ;
 			m_wallet->setInterfaceObject( this ) ;
-			m_wallet->open( utility::walletName(),utility::applicationName() ) ;
+			m_wallet->open( utility::defaultKDEWalletName(),utility::applicationName() ) ;
 		}else if( r == tr( INTERNAL_WALLET ) ){
 			m_wallet = lxqt::Wallet::getWalletBackend( lxqt::Wallet::internalBackEnd ) ;
 			m_wallet->setInterfaceObject( this ) ;
