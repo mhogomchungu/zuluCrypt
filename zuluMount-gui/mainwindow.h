@@ -39,23 +39,23 @@ class MainWindow : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit MainWindow( int argc,char * argv[],QWidget * parent = 0 );
-	~MainWindow();
+	explicit MainWindow( int argc,char * argv[],QWidget * parent = 0 ) ;
+	~MainWindow() ;
 	void start( void ) ;
-	//static void volumeMiniProperties( QTableWidget *,QString,QString );
+	//static void volumeMiniProperties( QTableWidget *,QString,QString ) ;
 signals:
 	void result( int,QString ) ;
 public slots:
 	void raiseWindow( void ) ;
 	void raiseWindow( QString ) ;
 private slots:
-	void volumeMiniProperties( QString );
-	void showMoungDialog( QStringList );
+	void volumeMiniProperties( QString ) ;
+	void showMoungDialog( QStringList ) ;
 	void autoMountVolumeSystemInfo( QStringList ) ;
 	void autoMountVolumeInfo( QStringList ) ;
 	void mount( QString,QString,QString ) ;
 	void defaultButton( void ) ;
-	void volumeProperties( QString );
+	void volumeProperties( QString ) ;
 	void volumeProperties( void ) ;
 	void itemClicked( QTableWidgetItem * ) ;
 	void pbUpdate( void ) ;
@@ -88,7 +88,7 @@ private:
 	void dropEvent( QDropEvent * ) ;
 	void showContextMenu( QTableWidgetItem *,bool ) ;
 	void startAutoMonitor( void ) ;
-	void showEvent( QShowEvent * );
+	void showEvent( QShowEvent * ) ;
 	bool autoMount( void ) ;
 	Ui::MainWindow * m_ui ;
 
@@ -98,7 +98,7 @@ private:
 	int m_argc ;
 	char ** m_argv ;
 	void disableAll( void ) ;
-	void closeEvent( QCloseEvent * e );
+	void closeEvent( QCloseEvent * e ) ;
 	void setUpFont( void ) ;
 	void setUpShortCuts( void ) ;
 	void setUpApp( void ) ;

@@ -29,7 +29,7 @@ class auto_mount : public QThread
 {
 	Q_OBJECT
 public:
-	explicit auto_mount( QObject * parent = 0 );
+	explicit auto_mount( QObject * parent = 0 ) ;
 	~auto_mount() ;
 	void stop( void ) ;
 signals:

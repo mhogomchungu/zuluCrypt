@@ -30,7 +30,7 @@ class auto_mount_helper :public QObject, public QRunnable
 {
 	Q_OBJECT
 public:
-	explicit auto_mount_helper( QObject * parent = 0 );
+	explicit auto_mount_helper( QObject * parent = 0 ) ;
 	~auto_mount_helper() ;
 	void start( QString device,int type,u_int32_t mask ) ;
 	enum{

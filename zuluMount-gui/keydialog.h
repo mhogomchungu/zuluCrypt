@@ -45,9 +45,9 @@ class keyDialog : public QDialog
 {
 	Q_OBJECT
 public:
-	keyDialog( QWidget * parent,QTableWidget *,QString path,QString type,QString folderOpener,bool b = true );
-	~keyDialog();
-	void ShowUI( void );
+	keyDialog( QWidget * parent,QTableWidget *,QString path,QString type,QString folderOpener,bool b = true ) ;
+	~keyDialog() ;
+	void ShowUI( void ) ;
 	void HideUI( void ) ;
 signals:
 	void mounted( QString ) ;
@@ -65,7 +65,7 @@ private slots:
 	void rbKeyFile( bool ) ;
 	void pbOpen( void ) ;
 	void pbCancel( void ) ;
-	void Plugin( void );
+	void Plugin( void ) ;
 	void KeyFile( void ) ;
 	void cbMountReadOnlyStateChanged( int ) ;
 	void fileManagerOpenStatus( int exitCode, int exitStatus,int startError ) ;
@@ -75,7 +75,7 @@ private:
 	void openVolume( void ) ;
 	void enableAll( void ) ;
 	void disableAll( void ) ;
-	void closeEvent( QCloseEvent * );
+	void closeEvent( QCloseEvent * ) ;
 	Ui::keyDialog * m_ui;
 	QString m_path ;
 	QString m_point ;

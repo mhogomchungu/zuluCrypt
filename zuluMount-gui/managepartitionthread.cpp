@@ -80,7 +80,7 @@ void managepartitionthread::run()
 	switch( m_action ){
 		case managepartitionthread::Update              : return this->partitionList() ;
 		case managepartitionthread::Mount               : return this->mount() ;
-		case managepartitionthread::Unmount             : return this->umount( m_type ) ;
+		case managepartitionthread::Unmount             : return this->umount() ;
 		case managepartitionthread::CryptoOpen          : return this->cryptoOpen() ;
 		case managepartitionthread::VolumeProperties    : return this->volumeProperties() ;
 		case managepartitionthread::VolumeMiniProperties: return this->volumeMiniProperties() ;
@@ -269,9 +269,8 @@ void managepartitionthread::mount()
 	p.close() ;
 }
 
-void managepartitionthread::umount( QString type )
+void managepartitionthread::umount()
 {
-	Q_UNUSED( type ) ;
 	QProcess p ;
 	QString exe = QString( "%1 -u -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;
 

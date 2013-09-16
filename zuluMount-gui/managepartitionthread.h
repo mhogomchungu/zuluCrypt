@@ -62,19 +62,19 @@ signals:
 	void getVolumeInfo( QStringList ) ;
 	void done( void ) ;
 private:
-	void checkIfSystemDevice( void );
-	void checkPermissions( void );
+	void checkIfSystemDevice( void ) ;
+	void checkPermissions( void ) ;
 	void openPathInFileManager( void ) ;
 	void volumeMiniProperties( void ) ;
 	void volumeProperties( void ) ;
 	void cryptoMount( QString ) ;
-	void cryptoOpen( void );
+	void cryptoOpen( void ) ;
 	void run( void ) ;
 	void partitionList( void ) ;
 	void mount( void ) ;
-	void umount( QString ) ;
-	void getVolumeType( void );
-	void getVolumeSystemType( void );
+	void umount( void ) ;
+	void getVolumeType( void ) ;
+	void getVolumeSystemType( void ) ;
 	void checkUnmount( void ) ;
 	managepartitionthread::Action m_action ;
 	QString m_device ;
