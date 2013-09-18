@@ -320,11 +320,13 @@ void keyDialog::walletIsOpen( bool opened )
 		if( key.isEmpty() ){
 			DialogMsg msg( this ) ;
 			msg.ShowUIOK( tr( "ERROR" ),tr( "the volume does not appear to have an entry in the wallet" ) ) ;
+			this->enableAll() ;
 		}else{
 			m_key = key ;
 			this->openVolume() ;
 		}
 	}else{
+		this->enableAll() ;
 		//DialogMsg msg( this ) ;
 		//msg.ShowUIOK( tr( "ERROR" ),tr( "failed to open wallet" ) ) ;
 	}
@@ -339,6 +341,7 @@ void keyDialog::getPassWord( QString password )
 
 void keyDialog::pbOpen()
 {
+	this->disableAll() ;
 	m_key.clear() ;
 	if( m_ui->rbPlugIn->isChecked() ){
 		QString r = m_ui->lineEditKey->text() ;
@@ -418,7 +421,6 @@ void keyDialog::openVolume()
 	m_working = true ;
 
 	part->startAction( managepartitionthread::CryptoOpen ) ;
-	this->disableAll() ;
 }
 
 void keyDialog::rbPlugIn( bool opt )
