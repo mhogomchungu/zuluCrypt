@@ -40,9 +40,9 @@ monitor_mountinfo::monitor_mountinfo( QObject * parent ) : QThread( parent )
 void monitor_mountinfo::stop()
 {
 	if( m_threadIsRunning ){
-		m_mtoto->terminate();
+		m_mtoto->terminate() ;
 	}else{
-		this->threadStopped();
+		this->threadStopped() ;
 	}
 }
 
