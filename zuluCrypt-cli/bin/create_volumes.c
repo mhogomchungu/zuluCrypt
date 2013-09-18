@@ -102,7 +102,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	string_t * pass_4  = &stringArray[ 5 ] ;
 	
 	const char * volkey ;
-	size_t       volkeysize;
+	size_t       volkeysize ;
 	const char * volkey_h = NULL ;
 	size_t       volkeysize_h = 0 ;
 	
@@ -259,9 +259,9 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 			}
 			
 			if( StringHasComponent( pass,"/.zuluCrypt-socket" ) ){
-				tcrypt_source = TCRYPT_PASSPHRASE ; ;
+				tcrypt_source = TCRYPT_PASSPHRASE ;
 			}else{
-				tcrypt_source = TCRYPT_KEYFILE ; ;
+				tcrypt_source = TCRYPT_KEYFILE ;
 			}
 		}else{
 			return zuluExit( 18,stl ) ;

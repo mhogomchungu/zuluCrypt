@@ -108,9 +108,9 @@ static inline int _allowedDevice( const char * device )
 		if( blkid == NULL ){
 			return 0 ;
 		}else{
-			blkid_do_probe( blkid );
+			blkid_do_probe( blkid ) ;
 			st = blkid_probe_lookup_value( blkid,"TYPE",&fsType,NULL ) ;
-			blkid_free_probe( blkid );
+			blkid_free_probe( blkid ) ;
 			return st == 0 ;
 		}
 	}else if( sts > 3 ){

@@ -62,7 +62,7 @@ static char * _empty_slots( const char * device )
 	p = String( "" ) ;
 	
 	for( j = 0 ; j < k ; j++ ){
-		switch ( crypt_keyslot_status( cd,j ) ){
+		switch( crypt_keyslot_status( cd,j ) ){
 			case CRYPT_SLOT_INACTIVE   : StringAppend( p,"0" ) ; break ;
 			case CRYPT_SLOT_ACTIVE     : StringAppend( p,"1" ) ; break ;
 			case CRYPT_SLOT_INVALID    : StringAppend( p,"2" ) ; break ;

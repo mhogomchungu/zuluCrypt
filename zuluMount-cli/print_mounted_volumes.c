@@ -387,7 +387,7 @@ int zuluMountprintAListOfMountedVolumes( void )
 					if( f != NULL ){
 						puts( f ) ;
 						StringFree( f ) ;
-					}else{
+					}else if( e != NULL ){
 						/*
 						 * not exactly sure what this is,just print it and let the user sort it out
 						 */
