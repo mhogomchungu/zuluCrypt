@@ -132,6 +132,7 @@ void changePassWordDialog::change()
 		m_ui->pushButtonOK->setVisible( true ) ;
 		m_ui->pushButtonCancel->setVisible( false ) ;
 		m_ui->pushButtonChange->setVisible( false ) ;
+		m_ui->pushButtonOK->setFocus() ;
 	}
 }
 
@@ -144,6 +145,8 @@ void changePassWordDialog::cancel()
 void changePassWordDialog::ok()
 {
 	m_ui->lineEditCurrentPassWord->setEnabled( true ) ;
+	m_ui->lineEditCurrentPassWord->clear() ;
+	m_ui->lineEditCurrentPassWord->setFocus() ;
 	m_ui->lineEditNewPassWord->setEnabled( true ) ;
 	m_ui->lineEditNewPassWord_2->setEnabled( true ) ;
 	m_ui->label->setEnabled( true ) ;
@@ -153,7 +156,9 @@ void changePassWordDialog::ok()
 	m_ui->label_4->setEnabled( true ) ;
 	m_ui->pushButtonOK->setVisible( false ) ;
 	m_ui->pushButtonCancel->setVisible( true ) ;
-	m_ui->pushButtonChange->setVisible( true ) ;
+	m_ui->pushButtonChange->setVisible ( true ) ;
+	m_ui->pushButtonCancel->setEnabled( true ) ;
+	m_ui->pushButtonChange->setEnabled( true ) ;
 	m_ui->label->setText( m_banner ) ;
 }
 
@@ -161,6 +166,7 @@ void changePassWordDialog::ok_1()
 {
 	m_ui->lineEditCurrentPassWord->setEnabled( false ) ;
 	m_ui->lineEditNewPassWord->setEnabled( true ) ;
+	m_ui->lineEditNewPassWord->setFocus() ;
 	m_ui->lineEditNewPassWord_2->setEnabled( true ) ;
 	m_ui->label->setEnabled( true ) ;
 	m_ui->label_2->setEnabled( true ) ;
@@ -170,6 +176,8 @@ void changePassWordDialog::ok_1()
 	m_ui->pushButtonOK->setVisible( false ) ;
 	m_ui->pushButtonCancel->setVisible( true ) ;
 	m_ui->pushButtonChange->setVisible( true ) ;
+	m_ui->pushButtonCancel->setEnabled( true ) ;
+	m_ui->pushButtonChange->setEnabled( true ) ;
 	m_ui->label->setText( m_banner ) ;
 }
 
@@ -188,6 +196,7 @@ void changePassWordDialog::openWalletThreadResult( bool opened )
 			m_ui->pushButtonCancel->setVisible( false ) ;
 			m_ui->pushButtonChange->setVisible( false ) ;
 			m_ui->pushButtonOK->setVisible( true ) ;
+			m_ui->pushButtonOK->setFocus() ;
 		}
 	}else{
 		m_ui->pushButtonChange->setEnabled( true ) ;
@@ -196,6 +205,7 @@ void changePassWordDialog::openWalletThreadResult( bool opened )
 		m_ui->pushButtonCancel->setVisible( false ) ;
 		m_ui->pushButtonChange->setVisible( false ) ;
 		m_ui->pushButtonOK->setVisible( true ) ;
+		m_ui->pushButtonOK->setFocus() ;
 	}
 }
 

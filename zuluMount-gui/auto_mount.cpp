@@ -88,7 +88,7 @@ void auto_mount::run()
 
 	m_fdDir = inotify_init() ;
 	if( m_fdDir == -1 ){
-		qDebug() << "inotify_init() failed to start,automounting is turned off";
+		qDebug() << "inotify_init() failed to start,automounting is turned off" ;
 		m_threadIsRunning = false ;
 		return ;
 	}else{
@@ -120,7 +120,7 @@ void auto_mount::run()
 
 		for( f = buffer ; f < z ; f = f + baseSize + pevent->len ){
 
-			pevent = ( struct inotify_event * )f;
+			pevent = ( struct inotify_event * )f ;
 
 			m_device = f + baseSize ;
 
