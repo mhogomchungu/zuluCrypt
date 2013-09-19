@@ -296,8 +296,8 @@ void keyDialog::slotMountComplete( int st,QString m )
 void keyDialog::walletIsOpen( bool opened )
 {
 	if( opened ){
-		QString key ;
 
+		QString key ;
 		QString id = m_path ;
 
 		if( id.startsWith( QString( "UUID=" ) ) ){
@@ -306,14 +306,9 @@ void keyDialog::walletIsOpen( bool opened )
 				key = m_wallet->readValue( id.replace( "\"","" ) ) ;
 			}
 		}else{
-			id = utility::getUUIDFromPath( id ) ;
-			if( id.isEmpty() ){
-				key = m_wallet->readValue( m_path ) ;
-			}else{
+			key = utility::getUUIDFromPath( id ) ;
+			if( key.isEmpty() ){
 				key = m_wallet->readValue( id ) ;
-				if( key.isEmpty() ){
-					key = m_wallet->readValue( m_path ) ;
-				}
 			}
 		}
 

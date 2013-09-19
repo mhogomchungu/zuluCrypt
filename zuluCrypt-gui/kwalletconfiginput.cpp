@@ -26,7 +26,7 @@
 #include "dialogmsg.h"
 #include "utility.h"
 #include "openvolume.h"
-
+#include <QDebug>
 kwalletconfiginput::kwalletconfiginput( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::kwalletconfiginput )
 {
 	m_ui->setupUi( this ) ;
@@ -90,6 +90,10 @@ void kwalletconfiginput::pbAdd()
 
 	this->hide() ;
 	emit add( volumeID,comment,key ) ;
+	/*
+	 * we dont hide and delete here because if the adding of an entry in the wallet takes too long to complete,the
+	 * UI freeze will be noticeable.
+	 */
 	//this->HideUI() ;
 }
 

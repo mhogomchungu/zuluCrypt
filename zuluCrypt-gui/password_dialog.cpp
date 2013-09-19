@@ -367,27 +367,19 @@ void passwordDialog::getPassWord( QString password )
 void passwordDialog::walletIsOpen( bool opened )
 {
 	if( opened ){
-		QString key ;
 
+		QString key ;
 		QString id = m_ui->OpenVolumePath->text() ;
 
-		QString keyID ;
-
 		if( id.startsWith( QString( "UUID=" ) ) ){
-			keyID = id ;
-			key = m_wallet->readValue( keyID ) ;
+			key = m_wallet->readValue( id ) ;
 			if( key.isEmpty() ){
-				key = m_wallet->readValue( keyID.replace( "\"","" ) ) ;
+				key = m_wallet->readValue( id.replace( "\"","" ) ) ;
 			}
 		}else{
-			keyID = utility::getUUIDFromPath( id ) ;
-			if( keyID.isEmpty() ){
-				keyID = m_ui->OpenVolumePath->text() ;
-			}else{
-				key = m_wallet->readValue( keyID ) ;
-				if( key.isEmpty() ){
-					key = m_wallet->readValue( id ) ;
-				}
+			key = utility::getUUIDFromPath( id ) ;
+			if( key.isEmpty() ){
+				key = m_wallet->readValue( id ) ;
 			}
 		}
 

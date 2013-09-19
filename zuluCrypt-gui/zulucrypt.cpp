@@ -346,7 +346,6 @@ void zuluCrypt::optionMenuAboutToShow()
 void zuluCrypt::manageVolumesInGNOMEWallet()
 {
 	kwalletconfig * cfg = new kwalletconfig( this ) ;
-	connect( cfg,SIGNAL( HideUISignal() ),cfg,SLOT( deleteLater() ) ) ;
 	connect( cfg,SIGNAL( couldNotOpenWallet() ),this,SLOT( failedToOpenWallet() ) ) ;
 	cfg->ShowUI( lxqt::Wallet::secretServiceBackEnd ) ;
 }
@@ -354,7 +353,6 @@ void zuluCrypt::manageVolumesInGNOMEWallet()
 void zuluCrypt::manageVolumesInInternalWallet()
 {
 	kwalletconfig * cfg = new kwalletconfig( this ) ;
-	connect( cfg,SIGNAL( HideUISignal() ),cfg,SLOT( deleteLater() ) ) ;
 	connect( cfg,SIGNAL( couldNotOpenWallet() ),this,SLOT( failedToOpenWallet() ) ) ;
 	cfg->ShowUI( lxqt::Wallet::internalBackEnd ) ;
 }
@@ -362,7 +360,6 @@ void zuluCrypt::manageVolumesInInternalWallet()
 void zuluCrypt::manageVolumesInKDEWallet()
 {
 	kwalletconfig * cfg = new kwalletconfig( this ) ;
-	connect( cfg,SIGNAL( HideUISignal() ),cfg,SLOT( deleteLater() ) ) ;
 	connect( cfg,SIGNAL( couldNotOpenWallet() ),this,SLOT( failedToOpenWallet() ) ) ;
 	cfg->ShowUI( lxqt::Wallet::kwalletBackEnd ) ;
 }

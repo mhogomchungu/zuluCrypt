@@ -109,6 +109,11 @@ void kwalletconfig::add( QString volumeID,QString comment,QString key )
 
 	tablewidget::addRowToTable( m_ui->tableWidget,entry ) ;
 	this->enableAll() ;
+	/*
+	 * we and hide and delete this object here and not in the object itself because some backends(libsecret) takes too long
+	 * to complete and UI freeze maybe noticiable
+	 */
+	m_kwalletConfig->hide() ;
 	m_kwalletConfig->deleteLater() ;
 }
 
@@ -128,6 +133,7 @@ void kwalletconfig::pbAdd()
 
 void kwalletconfig::ShowUI( lxqt::Wallet::walletBackEnd backEnd )
 {
+	this->disableAll() ;
 	this->show() ;
 	m_wallet = lxqt::Wallet::getWalletBackend( backEnd ) ;
 	m_wallet->setInterfaceObject( this ) ;
@@ -180,6 +186,8 @@ void kwalletconfig::ShowWalletEntries()
 		return this->show() ;
 	}
 
+	this->enableAll() ;
+
 	QTableWidget * table = m_ui->tableWidget ;
 
 	/*
@@ -212,7 +220,7 @@ void kwalletconfig::ShowWalletEntries()
 void kwalletconfig::HideUI()
 {
 	this->hide() ;
-	emit HideUISignal() ;
+	this->deleteLater() ;
 }
 
 void kwalletconfig::closeEvent( QCloseEvent * e )
