@@ -309,6 +309,8 @@ void keyDialog::walletIsOpen( bool opened )
 			key = utility::getUUIDFromPath( id ) ;
 			if( key.isEmpty() ){
 				key = m_wallet->readValue( id ) ;
+			}else{
+				key = m_wallet->readValue( key ) ;
 			}
 		}
 
