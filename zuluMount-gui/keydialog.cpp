@@ -311,6 +311,9 @@ void keyDialog::walletIsOpen( bool opened )
 				key = m_wallet->readValue( id ) ;
 			}else{
 				key = m_wallet->readValue( key ) ;
+				if( key.isEmpty() ){
+					key = m_wallet->readValue( id ) ;
+				}
 			}
 		}
 
@@ -323,6 +326,7 @@ void keyDialog::walletIsOpen( bool opened )
 			this->openVolume() ;
 		}
 	}else{
+		_internalPassWord.clear() ;
 		this->enableAll() ;
 		//DialogMsg msg( this ) ;
 		//msg.ShowUIOK( tr( "ERROR" ),tr( "failed to open wallet" ) ) ;

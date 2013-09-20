@@ -328,20 +328,23 @@ static string_t _create_custom_mount_point( const char * label,uid_t uid,string_
 	string_t st = StringVoid ;
 	const char * p = StringAppend( path,"/" ) ;
 	const char * q = strrchr( label,'/' ) ;
-	if( zuluCryptSecurityGainElevatedPrivileges() ){
-		if( q == NULL ){
-			p = StringAppend( path,label ) ;
-		}else{
-			p = StringAppend( path,q + 1 ) ;
-		}
-		if( mkdir( p,S_IRWXU ) == 0 ){
-			st = path ;
-			chown( p,uid,uid ) ;
-		}else{
-			StringDelete( &path ) ;
-		}
-		zuluCryptSecurityDropElevatedPrivileges() ;
+	
+	zuluCryptSecurityGainElevatedPrivileges() ;
+	
+	if( q == NULL ){
+		p = StringAppend( path,label ) ;
+	}else{
+		p = StringAppend( path,q + 1 ) ;
 	}
+	if( mkdir( p,S_IRWXU ) == 0 ){
+		st = path ;
+		chown( p,uid,uid ) ;
+	}else{
+		StringDelete( &path ) ;
+	}
+
+	zuluCryptSecurityDropElevatedPrivileges() ;
+
 	return st ;
 }
 
