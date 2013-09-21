@@ -36,7 +36,15 @@ extern "C" {
 #endif
 
 #include <sys/types.h>
-	
+
+/*
+ * NOTE: For documentation on how to use this API,look at the end of this header file.
+ *
+ * NOTE: This API takes anything of any size,most arguments takes "char *" or "const char *" for convenience
+ *       since most typical use case will be storage of strings and these argument types will aleviate this use case
+ *       from casting if the API was using "void *" or "const void *" as some would expect.
+ */
+
 typedef struct lxqt_wallet_struct * lxqt_wallet_t ;
 
 /*
@@ -61,10 +69,7 @@ typedef enum{
 
 /*
  * key can not be NULL,
- * a NULL key_value or a key_value_length of size 0 will be taken as an empty key_value
- * 
- * If the key is a NULL terminated string,add the NULL character as part of the key by adding one to strlen( key ) in key_size argument
- * and account for the extra character when searching for the key value or when retrieving the key through its value.
+ * a NULL value or a non NULL value of size 0 will be taken as an empty value.
  */
 lxqt_wallet_error lxqt_wallet_add_key( lxqt_wallet_t,const char * key,u_int32_t key_size,const char * key_value,u_int32_t key_value_length ) ;
 
@@ -80,26 +85,6 @@ lxqt_wallet_error lxqt_wallet_open( lxqt_wallet_t *,const char * password,u_int3
  * create a new wallet named "wallet_name" owned by application "application_name" using a password "password" of size "password_length".
  */
 lxqt_wallet_error lxqt_wallet_create( const char * password,u_int32_t password_length,const char * wallet_name,const char * application_name ) ;
-
-/*
- * returns a value of a key.
- * caller of this function is responsible for the returned buffer and should free() it when done with it
- * NULL is returned if the key could not be found
- */
-void lxqt_wallet_read_key_value( lxqt_wallet_t,const char * key,u_int32_t key_size,char ** value,u_int32_t * value_size ) ;
-
-/*
- * returns 1 if a wallet has a key and 0 otherwise 
- */
-int lxqt_wallet_wallet_has_key( lxqt_wallet_t,const char * key,u_int32_t key_size ) ;
-
-/*
- * returns 1 if wallet has value and 0 otherwise.
- * if key argument is not NULL,the  key will be returned through it.
- * if key_size is not NULL,the size size will be returned through it. 
- * It is the responsibility of the caller to free() the returned key memory when done with it
- */
-int lxqt_wallet_wallet_has_value( lxqt_wallet_t,char ** key,u_int32_t * key_size,const char * value,u_int32_t value_size ) ;
 
 /*
  * give a list of all wallets that belong to a program
@@ -138,36 +123,54 @@ int lxqt_wallet_exists( const char * wallet_name,const char * application_name )
 void lxqt_wallet_application_wallet_path( char * path_buffer,u_int32_t path_buffer_size,const char * application_name ) ;
 
 /*
- * returns the amount of memory the entries in the wallet consume.
+ * returns number of bytes keys in the volume consume
  */
-u_int32_t lxqt_wallet_wallet_size( lxqt_wallet_t ) ;
+int lxqt_wallet_wallet_size( lxqt_wallet_t ) ;
 
 /*
- * returns the number of entries in the wallet
+ * returns the number of elements in the wallet
  */
-u_int32_t lxqt_wallet_wallet_entry_count( lxqt_wallet_t ) ;
+int lxqt_wallet_wallet_entry_count( lxqt_wallet_t ) ;
 
 typedef struct{
-	char * key ;
+	const char * key ;
 	u_int32_t key_size ;
-	char * key_value ;
+	const char * key_value ;
 	u_int32_t key_value_size ;
 }lxqt_wallet_key_values_t ;
 
 /*
- * get a list of all key-values in the wallet to make it easy to iterate over them.
+ * get a list of all key-values in the wallet.
  * 
- * the retured structure must be free()ed by the caller.
- * the "key" and "key_value" members must be free()ed by the caller.
+ * On error,NULL is returned
  * 
- * see "print" example in the documentation program below for an example of how to read all keys and their respective values
+ * On success,returned value is a array of lxqt_wallet_key_values_t object,each entry pointing to and entry in the node.
+ * caller of this function is responsible for the returned object and must free() it when done with it.
+ * The content of the object is undefined if an entry is added or deleted from the volume.
+ *
+ * The number of entries in the returned array will equal the value returned from lxqt_wallet_wallet_size()
  */
 lxqt_wallet_key_values_t * lxqt_wallet_read_all_key_values( lxqt_wallet_t ) ;
 
 /*
- * get a list of all keys in the wallet.The key_value member will not be filled and should not be free()ed
+ * 1 is returned if a matching key was found and key_value structure was filled up.
+ * 0 is returned if a matching key was not found.
+ * Content of the key_value returned are undefined after an entry is added or removed from the list
  */
-lxqt_wallet_key_values_t * lxqt_wallet_read_all_keys( lxqt_wallet_t ) ;
+int lxqt_wallet_read_key_value( lxqt_wallet_t,const char * key,u_int32_t key_size,lxqt_wallet_key_values_t * key_value ) ;
+
+/*
+ * returns 1 if a wallet has a key and 0 otherwise
+ */
+int lxqt_wallet_wallet_has_key( lxqt_wallet_t,const char * key,u_int32_t key_size ) ;
+
+/*
+ * returns 1 if value was found in one of the entries.
+ * returns 0 otherwise.
+ * If an entry is found,key_value argument will be filled up
+ * Content of the key_value returned are undefined after an entry is added or removed from the list
+ */
+int lxqt_wallet_wallet_has_value( lxqt_wallet_t,const char * value,u_int32_t value_size,lxqt_wallet_key_values_t * key_value ) ;
 
 /*
  * change the wallet password
@@ -187,6 +190,8 @@ char * _lxqt_wallet_get_wallet_data( lxqt_wallet_t wallet ) ;
 
 #include "lxqtwallet.h"
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 /*
  * This source file shows how the library can be used 
@@ -202,17 +207,16 @@ int main( int argc,char * argv[] )
 	lxqt_wallet_t wallet ;
 	lxqt_wallet_error r = lxqt_wallet_no_error ;
 	
-	char * e = NULL ;
 	const char * f ;
 	const char * z ;
 	const char * command ;
 	char ** p ;
 	
 	lxqt_wallet_key_values_t * values ;
+	lxqt_wallet_key_values_t value ;
 	
 	int i ;
 	int k ;
-	u_int32_t q ;
 	
 	if( argc  < 2 ){
 		printf( "wrong number of arguments\n" ) ;
@@ -255,7 +259,7 @@ int main( int argc,char * argv[] )
 		}else{
 			f = argv[ 3 ] ;
 			z = argv[ 4 ] ;
-			r = lxqt_wallet_add_key( wallet,f,strlen( f ) + 1,z,strlen( z )) ; 
+			r = lxqt_wallet_add_key( wallet,f,strlen( f ) + 1,z,strlen( z ) + 1 ) ; 
 			
 			lxqt_wallet_close( &wallet ) ;
 		}
@@ -280,12 +284,8 @@ int main( int argc,char * argv[] )
 			}
 		}else{
 			f = argv[ 3 ] ;
-			e = NULL ;
-			lxqt_wallet_read_key_value( wallet,f,strlen( f ) + 1,&e,&q ) ;
-			
-			if( e ){
-				printf( "key=%s:value=%s\n",f,e ) ;
-				free( e ) ;
+			if( lxqt_wallet_read_key_value( wallet,f,strlen( f ) + 1,&value ) ){
+				printf( "key=%s:value=%s\n",value.key,value.key_value ) ;
 			}else{
 				printf( "key=%s:value=(NULL)\n",f ) ;
 			}
@@ -313,8 +313,6 @@ int main( int argc,char * argv[] )
 				i = 0 ;
 				while( i < k ){
 					printf( "key=%s\tkey value=\"%s\"\n",values[ i ].key,values[ i ].key_value ) ;
-					free( values[ i ].key ) ;
-					free( values[ i ].key_value ) ;
 					i++ ;
 				}
 				free( values ) ;
@@ -390,10 +388,8 @@ int main( int argc,char * argv[] )
 		
 		if( r == lxqt_wallet_no_error ){
 			f = argv[ 3 ] ;
-			r = lxqt_wallet_wallet_has_value( wallet,&e,&q,f,strlen( f ) ) ;
-			if( e != NULL ){
-				printf( "key=\"%s\"\nkey size=%d\n",e,q ) ;
-				free( e ) ;
+			if( lxqt_wallet_wallet_has_value( wallet,f,strlen( f ),&value ) ){
+				printf( "key=\"%s\"\nkey size=%d\n",value.key,value.key_size ) ;
 			}else{
 				printf( "key=\"\"\n" ) ;
 			}

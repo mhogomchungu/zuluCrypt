@@ -151,13 +151,9 @@ void lxqt::Wallet::internalWallet::open( const QString& walletName,const QString
 
 QByteArray lxqt::Wallet::internalWallet::readValue( const QString& key )
 {
-	char * cvalue = NULL ;
-	u_int32_t value_size ;
-	lxqt_wallet_read_key_value( m_wallet,key.toAscii().constData(),key.size() + 1,&cvalue,&value_size ) ;
-	if( cvalue != NULL ){
-		QByteArray b = QByteArray( cvalue,value_size ) ;
-		free( cvalue ) ;
-		return b ;
+	lxqt_wallet_key_values_t key_value ;
+	if( lxqt_wallet_read_key_value( m_wallet,key.toAscii().constData(),key.size() + 1,&key_value ) ){
+		return QByteArray( key_value.key_value,key_value.key_value_size ) ;
 	}else{
 		return QByteArray() ;
 	}
