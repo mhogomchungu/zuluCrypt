@@ -47,7 +47,7 @@
 #include "../zuluCrypt-cli/bin/bash_special_chars.h"
 #include "version.h"
 #include "locale_path.h"
-
+#include "mount_prefix_path.h"
 #include "storage_manager.h"
 
 #if HAS_KWALLET_SUPPORT
@@ -244,10 +244,15 @@ bool utility::mapperPathExists( QString path )
 	return utility::exists( utility::mapperPath( path ) ) ;
 }
 
-QString utility::mountPath( QString name )
+QString utility::mountPath( QString path )
 {
 	struct passwd * pass = getpwuid( getuid() ) ;
-	return QString( "/run/media/private/%1/%2" ).arg( QString( pass->pw_dir ).split( "/" ).last() ).arg( name ) ;
+
+#if USE_HOME_PATH_AS_MOUNT_PREFIX
+	return QString( "%1/%2" ).arg( QString( pass->pw_dir ) ).arg( path ) ;
+#else
+	return QString( "/run/media/private/%1/%2" ).arg( QString( pass->pw_dir ).split( "/" ).last() ).arg( path ) ;
+#endif
 }
 
 QString utility::mapperPath( QString rpath )
