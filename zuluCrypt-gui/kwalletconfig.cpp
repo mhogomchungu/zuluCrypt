@@ -182,11 +182,11 @@ void kwalletconfig::ShowWalletEntries()
 {
 	QStringList entries = m_wallet->readAllKeys() ;
 
+	this->enableAll() ;
+
 	if( entries.empty() ){
 		return this->show() ;
 	}
-
-	this->enableAll() ;
 
 	QTableWidget * table = m_ui->tableWidget ;
 

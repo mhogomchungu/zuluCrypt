@@ -123,14 +123,14 @@ int lxqt_wallet_exists( const char * wallet_name,const char * application_name )
 void lxqt_wallet_application_wallet_path( char * path_buffer,u_int32_t path_buffer_size,const char * application_name ) ;
 
 /*
- * returns number of bytes keys in the volume consume
+ * returns the amount of memory managed data consumes.
  */
-int lxqt_wallet_wallet_size( lxqt_wallet_t ) ;
+u_int64_t lxqt_wallet_wallet_size( lxqt_wallet_t ) ;
 
 /*
  * returns the number of elements in the wallet
  */
-int lxqt_wallet_wallet_entry_count( lxqt_wallet_t ) ;
+u_int64_t lxqt_wallet_wallet_entry_count( lxqt_wallet_t ) ;
 
 typedef struct{
 	const char * key ;
@@ -215,8 +215,11 @@ int main( int argc,char * argv[] )
 	lxqt_wallet_key_values_t * values ;
 	lxqt_wallet_key_values_t value ;
 	
-	int i ;
-	int k ;
+	u_int64_t i ;
+	u_int64_t k ;
+	
+	int a ;
+	int b ;
 	
 	if( argc  < 2 ){
 		printf( "wrong number of arguments\n" ) ;
@@ -388,7 +391,7 @@ int main( int argc,char * argv[] )
 		
 		if( r == lxqt_wallet_no_error ){
 			f = argv[ 3 ] ;
-			if( lxqt_wallet_wallet_has_value( wallet,f,strlen( f ),&value ) ){
+			if( lxqt_wallet_wallet_has_value( wallet,f,strlen( f ) + 1,&value ) ){
 				printf( "key=\"%s\"\nkey size=%d\n",value.key,value.key_size ) ;
 			}else{
 				printf( "key=\"\"\n" ) ;
@@ -406,12 +409,12 @@ int main( int argc,char * argv[] )
 		 * returns a list of wallets managed by a program
 		 * eg ./wallet value xxx zzz
 		 */
-		p = lxqt_wallet_wallet_list( application_name,&k ) ;
+		p = lxqt_wallet_wallet_list( application_name,&b ) ;
 		if( p != NULL ){
 			printf( "application's wallets are: " ) ;
-			for( i = 0 ; i < k ; i++ ){
-				printf( "%s,",p[ i ] ) ;
-				free( p[ i ] ) ;
+			for( a = 0 ; a < b ; a++ ){
+				printf( "%s,",p[ a ] ) ;
+				free( p[ a ] ) ;
 			}
 			printf( "\n" ) ;
 			free( p ) ;
