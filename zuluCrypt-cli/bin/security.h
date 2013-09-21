@@ -39,38 +39,11 @@ void ( *zuluCryptSecurityPrivilegeElevationError )( const char * ) ;
 
 void zuluCryptSecuritySetPrivilegeElevationErrorFunction( void ( * ) ( const char * ) ) ;
 
-/*
- * make sure the user with uid has reading permissions to path
- */
-int zuluCryptSecurityCanOpenPathForReading( const char * path,uid_t uid ) ;
-
-/*
- * make sure a user with uid has writing access to path
- */
-int zuluCryptSecurityCanOpenPathForWriting( const char * path,uid_t uid ) ;
-
-/*
- * make sure a user can create a folder at path
- */
-string_t zuluCryptSecurityCreateMountPoint( const char * device,const char * m_point,uid_t uid ) ;
-
-int zuluCryptSecurityMountPointPrefixMatch( const char * path,uid_t uid,string_t * m_point ) ;
-
 void zuluCryptSecuritySanitizeTheEnvironment( uid_t uid,stringList_t * ) ;
-
-string_t zuluCryptGetUserHomePath( uid_t uid ) ;
-
-string_t zuluCryptGetUserName( uid_t uid ) ;
 
 int zuluCryptSecurityUserOwnTheFile( const char * device,uid_t uid ) ;
 
 void zuluCryptSecurityPrintPermissions( void ) ;
-
-int zuluCryptSecurityDeviceIsReadable( const char * device,uid_t uid ) ;
-
-int zuluCryptSecurityDeviceIsWritable( const char * device,uid_t uid ) ;
-
-char * zuluCryptSecurityUUIDFromPath( const char * device ) ;
 
 void zuluCryptSetUserUIDForPrivilegeManagement( uid_t ) ;
 

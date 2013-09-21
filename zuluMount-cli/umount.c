@@ -71,9 +71,9 @@ ERROR: you can not umount volumes out of \"%s\" since you are not root and do no
 	}
 	
 	/*
-	 * zuluCryptSecurityMountPointPrefixMatch() is defined in ../zuluCrypt-cli/bin/security.c
+	 * zuluCryptMountPointPrefixMatch() is defined in ../zuluCrypt-cli/bin/create_mount_point.c
 	 */
-	if( !zuluCryptSecurityMountPointPrefixMatch( m_point,uid,&xt ) ){
+	if( !zuluCryptMountPointPrefixMatch( m_point,uid,&xt ) ){
 		/*
 		 * zuluCryptUserIsAMemberOfAGroup() is defined in ../zuluCrypt-cli/bin/security.c
 		 */

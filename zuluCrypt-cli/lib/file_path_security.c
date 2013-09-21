@@ -70,24 +70,27 @@ static int _check_if_device_is_supported( int st,uid_t uid,char ** dev )
 	const char * cfs ;
 	string_t fs ;
 	seteuid( 0 ) ;
-	/*
-	 * zuluCryptGetFileSystemFromDevice() is defined in mount_volume.c
-	 */
-	fs = zuluCryptGetFileSystemFromDevice( *dev ) ;
-	seteuid( uid ) ;
-	if( fs != StringVoid ){
-		cfs = StringContent( fs ) ;
-		if( StringHasComponent( cfs,"member" ) || StringHasComponent( cfs,"swap" ) ){
-			st = 100 ;
+	
+	if( st == 0 ){
+		/*
+		* zuluCryptGetFileSystemFromDevice() is defined in mount_volume.c
+		*/
+		fs = zuluCryptGetFileSystemFromDevice( *dev ) ;
+		seteuid( uid ) ;
+		if( fs != StringVoid ){
+			cfs = StringContent( fs ) ;
+			if( StringHasComponent( cfs,"member" ) || StringHasComponent( cfs,"swap" ) ){
+				st = 100 ;
+			}
+			StringDelete( &fs ) ;
 		}
-		StringDelete( &fs ) ;
-	}
-	if( st != 0 ){
+	}else{
 		/*
 		 * safely do free( *dev ) followed by *dev = NULL
 		 */
 		StringFree_3( dev ) ;
 	}
+	
 	return st ;
 }
 

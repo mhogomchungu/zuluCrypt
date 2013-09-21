@@ -600,11 +600,11 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 			StringSubChar( st,index,'\0' ) ;
 			StringRemoveString( st,"\"" ) ;  /* remove quotes if they are used */
 			/*
-			 * zuluCryptSecurityEvaluateDeviceTags() is defined in ./security.c
+			 * zuluCryptEvaluateDeviceTags() is defined in path_access.c
 			 */
 			ac = strstr( StringContent( st ),"=" ) ;
 			if( ac != NULL ){
-				ac = zuluCryptSecurityEvaluateDeviceTags( "UUID", ac + 1 );    
+				ac = zuluCryptEvaluateDeviceTags( "UUID", ac + 1 ) ;
 				stl_1 = StringListAppend( stl_1,ac ) ;
 				StringFree( ac ) ;
 			}
@@ -689,9 +689,9 @@ stringList_t zuluCryptGetPartitionFromConfigFile( const char * path )
 			StringRemoveString( st,"\"" ) ;
 			
 			/*
-			 * zuluCryptSecurityEvaluateDeviceTags() is defined in ./security.c
+			 * zuluCryptEvaluateDeviceTags() is defined in path_access.c
 			 */
-			ac = zuluCryptSecurityEvaluateDeviceTags( "UUID",StringContent( st ) + 5 ) ;
+			ac = zuluCryptEvaluateDeviceTags( "UUID",StringContent( st ) + 5 ) ;
 			stl_1 = StringListAppend( stl_1,ac ) ;
 			StringFree( ac ) ;
 		}else{

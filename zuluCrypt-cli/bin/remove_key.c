@@ -110,8 +110,11 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 			return zuluExit( 4,stl ) ;
 		}
 	}
-		
-	status = zuluCryptSecurityDeviceIsWritable( device,uid ) ;
+	
+	/*
+	 * zuluCryptCanOpenPathForWriting is defined in path_access.c
+	 */
+	status = zuluCryptCanOpenPathForWriting( device,uid ) ;
 	/*
 	 * 1-permissions denied
 	 * 2-invalid path
@@ -162,9 +165,9 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 		}
 		if( StringsAreEqual( keyType,"-f" ) ){
 			/*
-			 * function is defined at security.c"
+			 * zuluCryptGetPassFromFile() is defined at path_access.c"
 			 */
-			switch( zuluCryptSecurityGetPassFromFile( keytoremove,uid,pass ) ){
+			switch( zuluCryptGetPassFromFile( keytoremove,uid,pass ) ){
 				case 1 : return zuluExit( 11,stl )  ; 
 				case 2 : return zuluExit( 12,stl )  ;
 				case 4 : return zuluExit( 13,stl ) ;

@@ -120,23 +120,16 @@ int zuluCryptEXERemoveKey( const struct_opts *,uid_t ) ;
 int zuluCryptIsPathValid( const char * path ) ;
 
 /*
- * this function is responsibe for creating a mount point after it checks to make sure a user who started the tool
- * had writing access to the parent folder.
- * It is defined in security.c * 
- */
-int zuluCryptCreateMountPoint( const char * path,uid_t uid ) ;
-
-/*
  * this function checks if a user who started the tool has writing access to a file or device they want this tool to 
  * write to.
- * It is defined in security.c
+ * It is defined in path_access.c
  */
 int zuluCryptCanOpenPathForWriting( const char * path,uid_t uid ) ;
 
 /*
  * this function checks if a user who started the tool has reading access to a file or device they want this tool to 
  * read from.
- * It is defined in security.c
+ * It is defined in path_access.c
  */
 int zuluCryptCanOpenPathForReading( const char * path,uid_t uid ) ;
 

@@ -192,14 +192,14 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 
 	if( StringHasComponent( m_opts,"rw" ) ){
 		/*
-		 * zuluCryptSecurityDeviceIsWritable() is defined in security.c
+		 * zuluCryptSecurityDeviceIsWritable() is defined in path_access.c
 		 */
-		st = zuluCryptSecurityDeviceIsWritable( device,uid ) ;
+		st = zuluCryptCanOpenPathForWriting( device,uid ) ;
 	}else{
 		/*
-		 * zuluCryptSecurityDeviceIsReadable() is defined in security.c
+		 * zuluCryptSecurityDeviceIsReadable() is defined in path_access.c
 		 */
-		st = zuluCryptSecurityDeviceIsReadable( device,uid ) ;
+		st = zuluCryptCanOpenPathForReading( device,uid ) ;
 	}
 	
 	/*
@@ -228,9 +228,9 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	
 	if( nmp == -1 ){
 		/*
-		* zuluCryptSecurityCreateMountPoint() is defined in security.c
+		* zuluCryptCreateMountPoint() is defined in create_mount_point.c
 		*/
-		*m_point = zuluCryptSecurityCreateMountPoint( device,mount_point,uid ) ;
+		*m_point = zuluCryptCreateMountPoint( device,mount_point,uid ) ;
 		mount_point = StringContent( *m_point ) ;
 		if( mount_point == NULL ){
 			return zuluExit( 9,device,mount_point,stl ) ;
@@ -263,8 +263,10 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	}
 	
 	if( plugin_path != NULL ){
-		
-		uuid = zuluCryptSecurityUUIDFromPath( device ) ;
+		/*
+		 * zuluCryptUUIDFromPath() is defined in path_access.c
+		 */
+		uuid = zuluCryptUUIDFromPath( device ) ;
 		
 		device_path = _device_path( device ) ;
 		/*
@@ -303,9 +305,9 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 			key_len = StringSize( pass ) ;
 		}else if( StringsAreEqual( source,"-f" ) ){
 			/*
-			 * function is defined at "security.c"
+			 * function is defined at "path_access.c"
 			 */
-			switch( zuluCryptSecurityGetPassFromFile( pass,uid,data ) ){
+			switch( zuluCryptGetPassFromFile( pass,uid,data ) ){
 				case 1 : return zuluExit_1( 16,opts,device,mount_point,stl ) ;
 				case 2 : return zuluExit_1( 17,opts,device,mount_point,stl ) ;
 				case 4 : return zuluExit_1( 18,opts,device,mount_point,stl ) ;

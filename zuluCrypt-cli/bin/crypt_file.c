@@ -96,12 +96,12 @@ static int crypt_opt( const struct_opts * opts,uid_t uid,int opt )
 	}
 	
 	/*
-	 * security functions are defined in ./security.c
+	 * below two functions are defined in path_access.c
 	 */
-	if( zuluCryptSecurityCanOpenPathForWriting( dest,uid ) == 1 ){
+	if( zuluCryptCanOpenPathForWriting( dest,uid ) == 1 ){
 		return zuluExit( 10 ) ;		
 	}
-	if( zuluCryptSecurityCanOpenPathForReading( source,uid ) == 1 ){
+	if( zuluCryptCanOpenPathForReading( source,uid ) == 1 ){
 		return zuluExit( 15 ) ;
 	}
 	if( type == NULL ){

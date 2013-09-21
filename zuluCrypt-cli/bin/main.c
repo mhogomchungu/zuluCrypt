@@ -106,9 +106,9 @@ static int zuluCryptEXECheckIfTcrypt( struct_opts * clargs,uid_t uid )
 		zuluCryptSecurityDropElevatedPrivileges() ;
 	}else if( StringsAreEqual( source,"-f" ) ){
 		/*
-		 * zuluCryptSecurityGetPassFromFile() is defined in security.c
+		 * zuluCryptGetPassFromFile() is defined in path_access.c
 		 */
-		if( zuluCryptSecurityGetPassFromFile( key,uid,&st_key ) == 0 ){
+		if( zuluCryptGetPassFromFile( key,uid,&st_key ) == 0 ){
 			key = StringContent( st_key ) ;
 			key_len = StringLength( st_key ) ;
 			zuluCryptSecurityGainElevatedPrivileges() ;
@@ -140,29 +140,22 @@ static int zuluCryptEXECheckEmptySlots( const char * device )
 {
 	int status ;
 	char * c  ;
+	zuluCryptSecurityGainElevatedPrivileges() ;
 	/*
-	 * this zuluCryptSecurityPathIsValid() is defined in ../security.c
+	 * zuluCryptEmptySlots() is defined in ../lib/empty_slots.c
 	 */
-	if( !zuluCryptSecurityPathIsValid( device,-1 ) ){
-		printf( gettext( "path \"%s\" does not point to a device\n" ),device ) ;
-		status = 1 ;
+	c = zuluCryptEmptySlots( device ) ;
+	zuluCryptSecurityDropElevatedPrivileges() ;
+	
+	if( c == NULL ){
+		printf( gettext( "device \"%s\" is not a luks device\n" ),device ) ;
+		status = 2 ;
 	}else{
-		zuluCryptSecurityGainElevatedPrivileges() ;
-		/*
-		 * zuluCryptEmptySlots() is defined in ../lib/empty_slots.c
-		 */
-		c = zuluCryptEmptySlots( device ) ;
-		zuluCryptSecurityDropElevatedPrivileges() ;
-		
-		if( c == NULL ){
-			printf( gettext( "device \"%s\" is not a luks device\n" ),device ) ;
-			status = 2 ;
-		}else{
-			printf( "%s\n",c ) ;
-			status = 0 ;
-			free( c ) ;
-		}
+		printf( "%s\n",c ) ;
+		status = 0 ;
+		free( c ) ;
 	}
+	
 	return status ;
 }
 
@@ -249,9 +242,9 @@ static void ExitOnMemoryExaustion( void )
 static int _print_uuid_from_path( const char * device )
 {
 	/*
-	 * zuluCryptSecurityUUIDFromPath() is defined in ./security.c
+	 * zuluCryptSecurityUUIDFromPath() is defined in path_access.c
 	 */
-	char * e = zuluCryptSecurityUUIDFromPath( device ) ;
+	char * e = zuluCryptUUIDFromPath( device ) ;
 	if( e == NULL ){
 		puts( "UUID=\"Nil\"" ) ;
 		return 1 ;
@@ -493,9 +486,9 @@ int main( int argc,char * argv[] )
 		mapping_name = StringContent( q ) ;
 		
 		/*
-		 * zuluCryptSecurityEvaluateDeviceTags() is defined in ./security.c
+		 * zuluCryptEvaluateDeviceTags() is defined in path_access.c
 		 */
-		ac = zuluCryptSecurityEvaluateDeviceTags( "UUID",mapping_name + 5 ) ;
+		ac = zuluCryptEvaluateDeviceTags( "UUID",mapping_name + 5 ) ;
 		
 		if( ac != NULL ) {
 			clargs.device = ac ;

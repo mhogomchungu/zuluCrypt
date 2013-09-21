@@ -148,9 +148,9 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	}
 	
 	/*
-	 * zuluCryptSecurityDeviceIsWritable() is defined in security.c
+	 * zuluCryptSecurityDeviceIsWritable() is defined in path_access.c
 	 */
-	st = zuluCryptSecurityDeviceIsWritable( device,uid ) ;
+	st = zuluCryptCanOpenPathForWriting( device,uid ) ;
 	/*
 	 * 1-permissions denied
 	 * 2-invalid path
@@ -249,9 +249,9 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 			tcrypt_source = TCRYPT_PASSPHRASE ;
 		}else if( StringsAreEqual( key_source,"-f" ) ){
 			/*
-			 * function is defined at "security.c"
+			 * function is defined at "path_access.c"
 			 */
-			switch( zuluCryptSecurityGetPassFromFile( pass,uid,pass_1 ) ){
+			switch( zuluCryptGetPassFromFile( pass,uid,pass_1 ) ){
 				case 1 : return zuluExit( 14,stl ) ; 
 				case 4 : return zuluExit( 15,stl ) ;
 				case 2 : return zuluExit( 16,stl ) ;
@@ -279,9 +279,9 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 			
 			if( tcrypt_hidden_volume_key_file != NULL ){
 				/*
-				 * function is defined at "security.c"
+				 * function is defined in "path_access.c"
 				 */
-				switch( zuluCryptSecurityGetPassFromFile( tcrypt_hidden_volume_key_file,uid,pass_3 ) ){
+				switch( zuluCryptGetPassFromFile( tcrypt_hidden_volume_key_file,uid,pass_3 ) ){
 					case 1 : return zuluExit( 14,stl ) ; 
 					case 4 : return zuluExit( 15,stl ) ;
 					case 2 : return zuluExit( 16,stl ) ;

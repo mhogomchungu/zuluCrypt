@@ -49,13 +49,6 @@ extern uid_t global_variable_user_uid ;
 string_t zuluCryptCreateMapperName( const char * device,const char * mapping_name,uid_t uid,int ) ;
 
 /*
- * thiw function reads a passphrase from a key file after it makes sure a user who started the
- * tool had reading access to the file.
- * It is defined in security.c
- */
-int zuluCryptSecurityGetPassFromFile( const char * path,uid_t uid,string_t * st ) ;
-
-/*
  * this function is defined in module_system.c
  * It gets a passphrase from a .so file as a plugin.
  */
@@ -129,11 +122,6 @@ int zuluCryptSecurityDropElevatedPrivileges( void ) ;
 /*
  * this function is defined in security.c
  */
-char * zuluCryptSecurityEvaluateDeviceTags( const char * tag,const char * values ) ;
-
-/*
- * this function is defined in security.c
- */
 string_t zuluCryptSecurityGetFileSystemFromDevice( const char * path ) ;
 
 /*
@@ -200,5 +188,30 @@ stringList_t zuluCryptGetPartitionFromConfigFile( const char * path ) ;
  * this function is defined in partitions.c
  */
 stringList_t zuluCryptPartitionList( void ) ;
+
+/*
+ * this function is defined in create_mount_point.c
+ */
+string_t zuluCryptCreateMountPoint( const char * device,const char * m_point,uid_t uid ) ;
+
+/*
+ * this function is defined in create_mount_point.c
+ */
+int zuluCryptMountPointPrefixMatch( const char * path,uid_t uid,string_t * m_point ) ;
+
+/*
+ * this function is defined in path_access.c
+ */
+int zuluCryptGetPassFromFile( const char * path,uid_t uid,string_t * st ) ;
+
+/*
+ * this function is defined in path_access.c
+ */
+char * zuluCryptUUIDFromPath( const char * device ) ;
+
+/*
+ * this function is defined in path_access.c
+ */
+char * zuluCryptEvaluateDeviceTags( const char * tag,const char * path ) ;
 
 #endif 

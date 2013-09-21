@@ -26,6 +26,8 @@
  bin/file_encryption.c
  bin/clear_dead_mappers.c
  bin/bind.c
+ bin/create_mount_point.c
+ bin/path_access.c
  ) 
  
  SET( BINMount

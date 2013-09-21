@@ -220,14 +220,14 @@ ERROR: insuffienct privilege to manage a system volume.\nnecessary privileges ca
 	}
 	if( StringHasComponent( m_opts,"rw" ) ){
 		/*
-		 * zuluCryptSecurityDeviceIsWritable() is defined in ../lib/security.c
+		 * zuluCryptCanOpenPathForWriting() is defined in ../zuluCrypt-cli/bin/path_access.c
 		 */
-		status = zuluCryptSecurityDeviceIsWritable( device,uid ) ;
+		status = zuluCryptCanOpenPathForWriting( device,uid ) ;
 	}else{
 		/*
-		 * zuluCryptSecurityDeviceIsReadable() is defined in ../lib/security.c
+		 * zuluCryptCanOpenPathForReading() is defined in ../zuluCrypt-cli/bin/path_access.c
 		 */
-		status = zuluCryptSecurityDeviceIsReadable( device,uid ) ;
+		status = zuluCryptCanOpenPathForReading( device,uid ) ;
 	}
 	
 	if( status != 0 ){
@@ -258,9 +258,9 @@ ERROR: insuffienct privilege to manage a system volume.\nnecessary privileges ca
 	}
 	
 	/*
-	 * zuluCryptSecurityCreateMountPoint() is defined in ../zuluCrypt-cli/bin/security.c
+	 * zuluCryptSecurityCreateMountPoint() is defined in ../zuluCrypt-cli/bin/create_mount_point.c
 	 */
-	z = zuluCryptSecurityCreateMountPoint( device,m_point,uid ) ;
+	z = zuluCryptCreateMountPoint( device,m_point,uid ) ;
 	
 	if( z == StringVoid ){
 		return _zuluExit( 106,z,path,gettext( "ERROR: could not create mount point path,path already taken" ) ) ;

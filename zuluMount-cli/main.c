@@ -296,9 +296,9 @@ static int _checkUnmount( const char * device,uid_t uid )
 			 */
 			g  = zuluCryptDecodeMtabEntry( st ) ;
 			/*
-			 * zuluCryptSecurityMountPointPrefixMatch() is defined in ./security.c
+			 * zuluCryptMountPointPrefixMatch() is defined in ../zuluCrypt-cli/lib/create_mount_point.c
 			 */
-			r = zuluCryptSecurityMountPointPrefixMatch( g,uid,NULL ) ;
+			r = zuluCryptMountPointPrefixMatch( g,uid,NULL ) ;
 			if( r == 1 ){
 				/*
 				* zuluCryptUnmountVolume() is defined in ../zuluCrypt-cli/lib/unmount_volume.c
@@ -608,10 +608,10 @@ int main( int argc,char * argv[] )
 	args.env = stx ;
 	
 	/*
-	 * zuluCryptSecurityEvaluateDeviceTags() is defined in ../zuluCrypt-cli/bin/security.c
+	 * zuluCryptEvaluateDeviceTags() is defined in ../zuluCrypt-cli/bin/path_access.c
 	 */
 	if( StringPrefixEqual( args.device,"UUID=" ) ){
-		device = zuluCryptSecurityEvaluateDeviceTags( "UUID",args.device + 5 ) ;
+		device = zuluCryptEvaluateDeviceTags( "UUID",args.device + 5 ) ;
 		if( device != NULL ){
 			args.uuid = args.device ;
 			args.device = device ;
@@ -622,7 +622,7 @@ int main( int argc,char * argv[] )
 			status = 214 ;
 		}
 	}else if( StringPrefixEqual( args.device,"LABEL=" ) ){
-		device = zuluCryptSecurityEvaluateDeviceTags( "LABEL",args.device + 6 ) ;
+		device = zuluCryptEvaluateDeviceTags( "LABEL",args.device + 6 ) ;
 		if( device != NULL ){
 			args.device = device ;
 			status = _zuluMountDoAction( &args ) ;

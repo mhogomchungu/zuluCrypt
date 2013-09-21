@@ -127,6 +127,13 @@ if( NOKDE )
 	set( NOKDESUPPORT "true" )
 endif( NOKDE )
 
+
+if( HOMEMOUNTPREFIX )
+	file( WRITE  ${PROJECT_BINARY_DIR}/mount_prefix_path.h "\n#define USE_HOME_PATH_AS_MOUNT_PREFIX 1\n" )
+else()
+	file( WRITE  ${PROJECT_BINARY_DIR}/mount_prefix_path.h "\n#define USE_HOME_PATH_AS_MOUNT_PREFIX 0\n" )
+endif()	
+
 ADD_SUBDIRECTORY( zuluCrypt-cli )
 ADD_SUBDIRECTORY( zuluCrypt-gui/lxqt_wallet )
 

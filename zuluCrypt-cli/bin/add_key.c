@@ -171,9 +171,9 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 		}
 	}
 	/*
-	 * zuluCryptSecurityDeviceIsWritable() is defined in security.c
+	 * zuluCryptSecurityDeviceIsWritable() is defined in path_access.c
 	 */
-	status = zuluCryptSecurityDeviceIsWritable( device,uid ) ;
+	status = zuluCryptCanOpenPathForWriting( device,uid ) ;
 	/*
 	 * 1-permissions denied
 	 * 2-invalid path
@@ -227,9 +227,9 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 		}
 		if( StringsAreEqual( keyType1,"-f" ) ){
 			/*
-			 * this function is defined at "security.c"
+			 * this function is defined at "path_access.c"
 			 */
-			switch( zuluCryptSecurityGetPassFromFile( existingKey,uid,ek ) ){
+			switch( zuluCryptGetPassFromFile( existingKey,uid,ek ) ){
 				case 1 : return zuluExit( 11,stl ) ; 
 				case 4 : return zuluExit( 12,stl ) ;
 				case 2 : return zuluExit( 13,stl ) ;
@@ -240,9 +240,9 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 		}
 		if( StringsAreEqual( keyType2,"-f" ) ){
 			/*
-			 * this function is defined at "security.c.c"
+			 * this function is defined at "path_access.c"
 			 */
-			switch( zuluCryptSecurityGetPassFromFile( newKey,uid,nk ) ){
+			switch( zuluCryptGetPassFromFile( newKey,uid,nk ) ){
 				case 1 : return zuluExit( 11,stl ) ; 
 				case 4 : return zuluExit( 12,stl ) ;
 				case 2 : return zuluExit( 13,stl ) ;
