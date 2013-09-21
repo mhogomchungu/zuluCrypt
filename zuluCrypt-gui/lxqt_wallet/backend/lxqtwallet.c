@@ -717,6 +717,7 @@ lxqt_wallet_error lxqt_wallet_delete_key( lxqt_wallet_t wallet,const char * key,
 			if( key_len == key_size && memcmp( key,e + NODE_HEADER_SIZE,key_size ) == 0 ){
 
 				if( wallet->wallet_data_entry_count == 1 ){
+					memset( wallet->wallet_data,'\0',wallet->wallet_data_size ) ;
 					free( wallet->wallet_data ) ;
 					wallet->wallet_data_size = 0 ;
 					wallet->wallet_modified = 1 ;

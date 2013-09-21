@@ -54,14 +54,45 @@ static string_t _create_default_mount_point( const char * device,uid_t uid,strin
 static string_t _create_custom_mount_point( const char * label,uid_t uid,string_t path )
 {
 	string_t st = StringVoid ;
+	
 	const char * p = StringAppend( path,"/" ) ;
 	const char * q = strrchr( label,'/' ) ;
-	
+	const char * e ;
+
 	if( q == NULL ){
 		p = StringAppend( path,label ) ;
 	}else{
-		p = StringAppend( path,q + 1 ) ;
+		if( *( q + 1 ) == '\0' ){
+			/*
+			 * -m option was given with a path that ends with "/",backtrack until you find the second "/"
+			 * from the right and use it as the last "/".
+			 */
+			e = q - 1 ;
+			if( e < label ){
+				/*
+				 * -m option was given with a single "/".
+				 */
+				StringDelete( &path ) ;
+				return st ;
+			}
+			while( 1 ){
+				if( e == label ){
+					StringAppend( path,e + 1 ) ;
+					p = StringRemoveRight( path,1 ) ;
+					break ;
+				}else if( *e == '/' ){
+					StringAppend( path,e + 1 ) ;
+					p = StringRemoveRight( path,1 ) ;
+					break ;
+				}else{
+					e-- ;
+				}
+			}
+		}else{
+			p = StringAppend( path,q + 1 ) ;
+		}
 	}
+
 	if( mkdir( p,S_IRWXU ) == 0 ){
 		st = path ;
 		chown( p,uid,uid ) ;
@@ -139,15 +170,45 @@ static string_t _create_default_mount_point( const char * device,uid_t uid,strin
 static string_t _create_custom_mount_point( const char * label,uid_t uid,string_t path )
 {
 	string_t st = StringVoid ;
+	
 	const char * p = StringAppend( path,"/" ) ;
 	const char * q = strrchr( label,'/' ) ;
-	
+	const char * e ;
+
 	zuluCryptSecurityGainElevatedPrivileges() ;
 	
 	if( q == NULL ){
 		p = StringAppend( path,label ) ;
 	}else{
-		p = StringAppend( path,q + 1 ) ;
+		if( *( q + 1 ) == '\0' ){
+			/*
+			 * -m option was given with a path that ends with "/",backtrack until you find the second "/"
+			 * from the right and use it as the last "/".
+			 */
+			e = q - 1 ;
+			if( e < label ){
+				/*
+				 * -m option was given with a single "/".
+				 */
+				StringDelete( &path ) ;
+				return st ;
+			}
+			while( 1 ){
+				if( e == label ){
+					StringAppend( path,e + 1 ) ;
+					p = StringRemoveRight( path,1 ) ;
+					break ;
+				}else if( *e == '/' ){
+					StringAppend( path,e + 1 ) ;
+					p = StringRemoveRight( path,1 ) ;
+					break ;
+				}else{
+					e-- ;
+				}
+			}
+		}else{
+			p = StringAppend( path,q + 1 ) ;
+		}
 	}
 	if( mkdir( p,S_IRWXU ) == 0 ){
 		st = path ;

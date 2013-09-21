@@ -395,7 +395,8 @@ void MainWindow::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 		connect( m.addAction( tr( "mount" ) ),SIGNAL( triggered() ),this,SLOT( slotMount() ) ) ;
 	}else{
 		QString mp = QString( "/run/media/private/%1/" ).arg( utility::userName() ) ;
-		if( mt.startsWith( mp ) ){
+		QString mp_1 = QString( "/home/%1/" ).arg( utility::userName() ) ;
+		if( mt.startsWith( mp ) || mt.startsWith( mp_1 ) ){
 			connect( m.addAction( tr( "unmount" ) ),SIGNAL( triggered() ),this,SLOT( pbUmount() ) ) ;
 			if( type.startsWith( QString( "crypto" ) ) ) {
 				m.addSeparator() ;
