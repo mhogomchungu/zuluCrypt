@@ -27,6 +27,7 @@
 #include "utility.h"
 #include "openvolume.h"
 #include <QDebug>
+
 kwalletconfiginput::kwalletconfiginput( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::kwalletconfiginput )
 {
 	m_ui->setupUi( this ) ;
@@ -108,15 +109,9 @@ void kwalletconfiginput::pbImageFilePath()
 	QString x = QFileDialog::getOpenFileName( this,tr( "select a luks volume" ),QDir::homePath(),0 ) ;
 
 	if( x.isEmpty() ){
-		return ;
-	}
-
-	QString z = utility::getUUIDFromPath( x ) ;
-
-	if( z.isEmpty() ){
-		this->setvolumeID( x ) ;
+		;
 	}else{
-		this->setvolumeID( z ) ;
+		this->setvolumeID( x ) ;
 	}
 }
 
@@ -131,7 +126,17 @@ void kwalletconfiginput::pbVolumePath()
 
 void kwalletconfiginput::setvolumeID( QString id )
 {
-	m_ui->lineEditVolumeID->setText( id ) ;
+	if( id.startsWith( QString( "UUID=") ) ){
+		m_ui->lineEditVolumeID->setText( id ) ;
+	}else{
+		QString z = utility::getUUIDFromPath( id ) ;
+		if( z.isEmpty() ){
+			m_ui->lineEditVolumeID->setText( id ) ;
+		}else{
+			m_ui->lineEditVolumeID->setText( z ) ;
+		}
+	}
+
 	this->focus() ;
 }
 
