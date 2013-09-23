@@ -51,7 +51,7 @@ lxqt::Wallet::Task::Task( int (*f)( const void * ),const void * schema )
 	m_function = f ;
 }
 
-void lxqt::Wallet::Task::start( Task::action action )
+void lxqt::Wallet::Task::start( lxqt::Wallet::Task::action action )
 {
 	m_action = action ;
 	QThreadPool::globalInstance()->start( this ) ;
@@ -59,13 +59,13 @@ void lxqt::Wallet::Task::start( Task::action action )
 
 void lxqt::Wallet::Task::run()
 {
-	if( m_action == Task::openInternal ){
+	if( m_action == lxqt::Wallet::Task::openInternal ){
 		lxqt_wallet_error r = lxqt_wallet_open( m_wallet,m_password.toAscii().constData(),m_password.size(),
 						     m_walletName.toAscii().constData(),m_applicationName.toAscii().constData() ) ;
 		emit walletOpened( r == lxqt_wallet_no_error ) ;
-	}else if( m_action == Task::openSecretService ){
+	}else if( m_action == lxqt::Wallet::Task::openSecretService ){
 		emit walletOpened( m_function( m_schema ) ) ;
-	}else if( m_action == Task::createVolume ) {
+	}else if( m_action == lxqt::Wallet::Task::createVolume ) {
 
 		lxqt_wallet_error r = lxqt_wallet_create( m_password.toAscii().constData(),m_password.size(),
 				    m_walletName.toAscii().constData(),m_applicationName.toAscii().constData() ) ;

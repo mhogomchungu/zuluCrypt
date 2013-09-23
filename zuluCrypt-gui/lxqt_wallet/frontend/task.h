@@ -55,7 +55,7 @@ public:
 	Task( lxqt_wallet_t * wallet,QString password,QString walletName,QString applicationName ) ;
 	Task( QString password,QString walletName,QString applicationName ) ;
 	Task( int (*)( const void * ),const void * ) ;
-	void start( Task::action  ) ;
+	void start( lxqt::Wallet::Task::action ) ;
 signals:
 	void walletOpened( bool ) ;
 	void taskResult( bool ) ;
@@ -66,7 +66,7 @@ private:
 	QString m_password ;
 	QString m_walletName ;
 	QString m_applicationName ;
-	Task::action m_action ;
+	lxqt::Wallet::Task::action m_action ;
 	const void * m_schema ;
 	int ( * m_function )( const void * ) ;
 };

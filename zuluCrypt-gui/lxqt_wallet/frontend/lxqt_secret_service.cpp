@@ -106,11 +106,11 @@ void lxqt::Wallet::secretService::open( const QString& walletName,const QString&
 
 	connect( this,SIGNAL( walletIsOpen( bool ) ),m_interfaceObject,SLOT( walletIsOpen( bool ) ) ) ;
 
-	Task * t = new Task( lxqt_secret_service_wallet_is_open,m_schema ) ;
+	lxqt::Wallet::Task * t = new lxqt::Wallet::Task( lxqt_secret_service_wallet_is_open,m_schema ) ;
 
 	if( t ){
 		connect( t,SIGNAL( walletOpened( bool ) ),this,SLOT( walletOpened( bool ) ) ) ;
-		t->start( Task::openSecretService ) ;
+		t->start( lxqt::Wallet::Task::openSecretService ) ;
 	}else{
 		this->walletOpened( false ) ;
 	}
