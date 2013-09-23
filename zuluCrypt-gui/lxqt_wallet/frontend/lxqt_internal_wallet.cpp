@@ -173,8 +173,8 @@ QVector<lxqt::Wallet::walletKeyValues> lxqt::Wallet::internalWallet::readAllKeyV
 
 		const char * z = e ;
 
-		u_int32_t k = lxqt_wallet_wallet_size( m_wallet ) ;
-		u_int32_t i = 0 ;
+		u_int64_t k = lxqt_wallet_wallet_size( m_wallet ) ;
+		u_int64_t i = 0 ;
 
 		walletKeyValues s ;
 
@@ -208,8 +208,8 @@ QStringList lxqt::Wallet::internalWallet::readAllKeys()
 
 		const char * z = e ;
 
-		u_int32_t k = lxqt_wallet_wallet_size( m_wallet ) ;
-		u_int32_t i = 0 ;
+		u_int64_t k = lxqt_wallet_wallet_size( m_wallet ) ;
+		u_int64_t i = 0 ;
 
 		while( i < k ){
 			memcpy( &key_len,e,sizeof( u_int32_t ) ) ;
