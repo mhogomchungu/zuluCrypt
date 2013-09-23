@@ -34,30 +34,30 @@ class manageluksheader : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit manageluksheader( QWidget * parent = 0 );
-	~manageluksheader();
+	explicit manageluksheader( QWidget * parent = 0 ) ;
+	~manageluksheader() ;
 signals:
 	void HideUISignal( void );
 public slots:
 	void ShowUI( void ) ;
 	void HideUI( void ) ;
-	void backUpHeader( void );
-	void backUpHeader( QString );
-	void restoreHeader( void );
+	void backUpHeader( void ) ;
+	void backUpHeader( QString ) ;
+	void restoreHeader( void ) ;
 
 private slots:
 	void pbCancel( void ) ;
 	void pbCreate( void ) ;
 	void pbOpenLuksHeaderBackUp( void ) ;
-	void threadExitStatus( int );
-	void pbOpenPartition( void );
-	void pbOpenFile( void );
+	void taskFinished( int ) ;
+	void pbOpenPartition( void ) ;
+	void pbOpenFile( void ) ;
 	void selectedPartition( QString );
 	void backUpHeaderNameChange( QString );
 private:
-	void headerBackUp( void );
+	void headerBackUp( void ) ;
 	void closeEvent( QCloseEvent * ) ;
-	void disableAll( void );
+	void disableAll( void ) ;
 	void enableAll( void ) ;
 	void success( void ) ;
 	Ui::manageluksheader * m_ui;

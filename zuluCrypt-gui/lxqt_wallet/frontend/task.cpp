@@ -28,9 +28,9 @@
  * SUCH DAMAGE.
  */
 
-#include "open_wallet_thread.h"
+#include "task.h"
 
-openWalletThread::openWalletThread( lxqt_wallet_t * wallet,QString password,QString walletName,QString applicationName )
+lxqt::Wallet::Task::Task( lxqt_wallet_t * wallet,QString password,QString walletName,QString applicationName )
 {
 	m_wallet          = wallet ;
 	m_password        = password ;
@@ -38,39 +38,39 @@ openWalletThread::openWalletThread( lxqt_wallet_t * wallet,QString password,QStr
 	m_applicationName = applicationName ;
 }
 
-openWalletThread::openWalletThread( QString password,QString walletName,QString applicationName )
+lxqt::Wallet::Task::Task( QString password,QString walletName,QString applicationName )
 {
 	m_password        = password ;
 	m_walletName      = walletName ;
 	m_applicationName = applicationName ;
 }
 
-openWalletThread::openWalletThread( int (*f)( const void * ),const void * schema )
+lxqt::Wallet::Task::Task( int (*f)( const void * ),const void * schema )
 {
 	m_schema   = schema ;
 	m_function = f ;
 }
 
-void openWalletThread::start( openWalletThread::action action )
+void lxqt::Wallet::Task::start( Task::action action )
 {
 	m_action = action ;
 	QThreadPool::globalInstance()->start( this ) ;
 }
 
-void openWalletThread::run()
+void lxqt::Wallet::Task::run()
 {
-	if( m_action == openWalletThread::openInternal ){
+	if( m_action == Task::openInternal ){
 		lxqt_wallet_error r = lxqt_wallet_open( m_wallet,m_password.toAscii().constData(),m_password.size(),
 						     m_walletName.toAscii().constData(),m_applicationName.toAscii().constData() ) ;
 		emit walletOpened( r == lxqt_wallet_no_error ) ;
-	}else if( m_action == openWalletThread::openSecretService ){
+	}else if( m_action == Task::openSecretService ){
 		emit walletOpened( m_function( m_schema ) ) ;
-	}else if( m_action == openWalletThread::createVolume ) {
+	}else if( m_action == Task::createVolume ) {
 
 		lxqt_wallet_error r = lxqt_wallet_create( m_password.toAscii().constData(),m_password.size(),
 				    m_walletName.toAscii().constData(),m_applicationName.toAscii().constData() ) ;
 		if( r != lxqt_wallet_no_error ){
-			emit openWalletThreadResult( false ) ;
+			emit taskResult( false ) ;
 		}else{
 			emit openWallet( m_password ) ;
 		}

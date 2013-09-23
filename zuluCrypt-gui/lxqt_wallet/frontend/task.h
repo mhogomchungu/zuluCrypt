@@ -28,8 +28,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef OPEN_WALLET_THREAD_H
-#define OPEN_WALLET_THREAD_H
+#ifndef TASK_H
+#define TASK_H
 
 #include <QRunnable>
 #include <QThreadPool>
@@ -39,7 +39,11 @@
 
 #include "../backend/lxqtwallet.h"
 
-class openWalletThread : public QObject,public QRunnable
+namespace lxqt{
+	
+namespace Wallet{
+	
+class Task : public QObject,public QRunnable
 {
 	Q_OBJECT
 public:
@@ -48,13 +52,13 @@ public:
 		openSecretService,
 		createVolume
 	}action ;
-	openWalletThread( lxqt_wallet_t * wallet,QString password,QString walletName,QString applicationName ) ;
-	openWalletThread( QString password,QString walletName,QString applicationName ) ;
-	openWalletThread( int (*)( const void * ),const void * ) ;
-	void start( openWalletThread::action  ) ;
+	Task( lxqt_wallet_t * wallet,QString password,QString walletName,QString applicationName ) ;
+	Task( QString password,QString walletName,QString applicationName ) ;
+	Task( int (*)( const void * ),const void * ) ;
+	void start( Task::action  ) ;
 signals:
 	void walletOpened( bool ) ;
-	void openWalletThreadResult( bool ) ;
+	void taskResult( bool ) ;
 	void openWallet( QString ) ;
 private:
 	void run( void ) ;
@@ -62,9 +66,12 @@ private:
 	QString m_password ;
 	QString m_walletName ;
 	QString m_applicationName ;
-	openWalletThread::action m_action ;
+	Task::action m_action ;
 	const void * m_schema ;
 	int ( * m_function )( const void * ) ;
 };
 
-#endif // OPEN_WALLET_THREAD_H
+}
+
+}
+#endif // TASK_H

@@ -9,7 +9,7 @@ set (UI_FILES 	mainwindow.ui
 
 set(MOC_FILES 	mainwindow.h
 		keydialog.h
-		managepartitionthread.h
+		task.h
 		mountpartition.h
 		oneinstance.h
 		auto_mount.h
@@ -22,7 +22,7 @@ set (SRC 	main.cpp
 		auto_mount_helper.cpp
 		mainwindow.cpp
 		keydialog.cpp
-		managepartitionthread.cpp
+		task.cpp
 		mountpartition.cpp
 		oneinstance.cpp
 		monitor_mountinfo.cpp

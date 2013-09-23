@@ -36,7 +36,7 @@
 #include "ui_openvolume.h"
 #include "openvolume.h"
 #include "ui_luksdeletekey.h"
-#include "runinthread.h"
+#include "task.h"
 #include "dialogmsg.h"
 #include "socketsendkey.h"
 
@@ -221,12 +221,12 @@ void luksdeletekey::pbDelete()
 
 	disableAll() ;
 
-	runInThread * ldk = new runInThread( exe ) ;
-	connect( ldk,SIGNAL( finished( int ) ),this,SLOT( threadfinished( int ) ) ) ;
-	ldk->start() ;
+	Task * t = new Task( exe ) ;
+	connect( t,SIGNAL( finished( int ) ),this,SLOT( taskFinished( int ) ) ) ;
+	t->start() ;
 }
 
-void luksdeletekey::threadfinished( int status )
+void luksdeletekey::taskFinished( int status )
 {
 	DialogMsg msg( this ) ;
 	m_isWindowClosable = true ;

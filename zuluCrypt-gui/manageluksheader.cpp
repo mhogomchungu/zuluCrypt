@@ -30,7 +30,7 @@
 #include <QFileDialog>
 
 #include "ui_manageluksheader.h"
-#include "runinthread.h"
+#include "task.h"
 #include "utility.h"
 #include "openvolume.h"
 #include "dialogmsg.h"
@@ -248,9 +248,9 @@ void manageluksheader::pbCreate()
 
 	m_OperationInProgress = true ;
 
-	runInThread * rt = new runInThread( exe ) ;
-	connect( rt,SIGNAL( finished( int ) ),this,SLOT( threadExitStatus( int ) ) ) ;
-	rt->start() ;
+	Task * t = new Task( exe ) ;
+	connect( t,SIGNAL( finished( int ) ),this,SLOT( taskFinished( int ) ) ) ;
+	t->start() ;
 	disableAll() ;
 }
 
@@ -294,7 +294,7 @@ void manageluksheader::success()
 	return this->HideUI() ;
 }
 
-void manageluksheader::threadExitStatus( int st )
+void manageluksheader::taskFinished( int st )
 {
 	m_OperationInProgress = false ;
 	DialogMsg msg( this ) ;

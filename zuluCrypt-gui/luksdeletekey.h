@@ -51,7 +51,7 @@ private slots:
 	void rbPassphraseFromFile( void );
 	void pbOpenKeyFile( void ) ;
 	void pbOpenVolume( void ) ;
-	void threadfinished( int ) ;
+	void taskFinished( int ) ;
 private:
 	void disableAll( void ) ;
 	void enableAll( void ) ;

@@ -37,7 +37,7 @@
 #include <QCloseEvent>
 
 #include "openvolume.h"
-#include "runinthread.h"
+#include "task.h"
 #include "dialogmsg.h"
 #include "keystrength.h"
 #include "socketsendkey.h"
@@ -299,13 +299,13 @@ void luksaddkey::pbAdd( void )
 
 	disableAll() ;
 
-	runInThread * lakt = new runInThread( exe ) ;
+	Task * t = new Task( exe ) ;
 
-	connect( lakt,SIGNAL( finished( int ) ),this,SLOT( threadfinished( int ) ) ) ;
-	lakt->start() ;
+	connect( t,SIGNAL( finished( int ) ),this,SLOT( taskFinished( int ) ) ) ;
+	t->start() ;
 }
 
-void luksaddkey::threadfinished( int status )
+void luksaddkey::taskFinished( int status )
 {
 	m_isWindowClosable = true ;
 	DialogMsg msg( this ) ;

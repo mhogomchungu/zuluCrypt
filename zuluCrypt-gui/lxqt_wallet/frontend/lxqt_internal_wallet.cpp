@@ -46,7 +46,7 @@ bool lxqt::Wallet::internalWallet::openWallet()
 	return r == lxqt_wallet_no_error ;
 }
 
-void lxqt::Wallet::internalWallet::openWalletThreadResult( bool opened )
+void lxqt::Wallet::internalWallet::taskResult( bool opened )
 {
 	emit passwordIsCorrect( opened ) ;
 	if( opened ){
@@ -60,13 +60,13 @@ bool lxqt::Wallet::internalWallet::openWallet( QString password )
 	/*
 	 * we run this one on the non main thread because the password GUI prompt would block if it run for too long
 	 */
-	openWalletThread * t = new openWalletThread( &m_wallet,password,m_walletName,m_applicationName ) ;
+	lxqt::Wallet::Task * t = new lxqt::Wallet::Task( &m_wallet,password,m_walletName,m_applicationName ) ;
 	if( t ){
 		m_password = password ;
-		connect( t,SIGNAL( walletOpened( bool ) ),this,SLOT( openWalletThreadResult( bool ) ) ) ;
-		t->start( openWalletThread::openInternal ) ;
+		connect( t,SIGNAL( walletOpened( bool ) ),this,SLOT( taskResult( bool ) ) ) ;
+		t->start( lxqt::Wallet::Task::openInternal ) ;
 	}else{
-		this->openWalletThreadResult( false ) ;
+		this->taskResult( false ) ;
 	}
 	return false ;
 }
@@ -76,10 +76,10 @@ void lxqt::Wallet::internalWallet::cancelled()
 	emit walletIsOpen( false ) ;
 }
 
-void lxqt::Wallet::internalWallet::openWalletThreadResult_1( bool opened )
+void lxqt::Wallet::internalWallet::taskResult_1( bool opened )
 {
 	if( opened ){
-		this->openWalletThreadResult( opened ) ;
+		this->taskResult( opened ) ;
 	}else{
 		/*
 		 * passwordless opening failed,prompt a user for a password
@@ -99,13 +99,13 @@ void lxqt::Wallet::internalWallet::openWalletThreadResult_1( bool opened )
 void lxqt::Wallet::internalWallet::password( QString password,bool create )
 {
 	if( create ){
-		openWalletThread * t = new openWalletThread( password,m_walletName,m_applicationName ) ;
+		lxqt::Wallet::Task * t = new lxqt::Wallet::Task( password,m_walletName,m_applicationName ) ;
 		if( t ){
-			connect( t,SIGNAL( openWalletThreadResult( bool ) ),this,SLOT( openWalletThreadResult( bool ) ) ) ;
+			connect( t,SIGNAL( taskResult( bool ) ),this,SLOT( taskResult( bool ) ) ) ;
 			connect( t,SIGNAL( openWallet( QString ) ),this,SLOT( openWallet( QString ) ) ) ;
-			t->start( openWalletThread::createVolume ) ;
+			t->start( lxqt::Wallet::Task::createVolume ) ;
 		}else{
-			this->openWalletThreadResult( false ) ;
+			this->taskResult( false ) ;
 			emit walletIsOpen( false ) ;
 		}
 	}
@@ -128,12 +128,12 @@ void lxqt::Wallet::internalWallet::open( const QString& walletName,const QString
 			 * prompt on failure,this will allow a silent opening of the wallet set without a password.
 			 */
 			QString passWordLessOpen ;
-			openWalletThread * t = new openWalletThread( &m_wallet,passWordLessOpen,m_walletName,m_applicationName ) ;
+			lxqt::Wallet::Task * t = new lxqt::Wallet::Task( &m_wallet,passWordLessOpen,m_walletName,m_applicationName ) ;
 			if( t ){
-				connect( t,SIGNAL( walletOpened( bool ) ),this,SLOT( openWalletThreadResult_1( bool ) ) ) ;
-				t->start( openWalletThread::openInternal ) ;
+				connect( t,SIGNAL( walletOpened( bool ) ),this,SLOT( taskResult_1( bool ) ) ) ;
+				t->start( lxqt::Wallet::Task::openInternal ) ;
 			}else{
-				this->openWalletThreadResult_1( false ) ;
+				this->taskResult_1( false ) ;
 			}
 		}else{
 			this->openWallet( m_password ) ;

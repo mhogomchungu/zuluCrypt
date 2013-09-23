@@ -28,7 +28,7 @@
 #include <poll.h>
 
 #include "bin_path.h"
-#include "managepartitionthread.h"
+#include "task.h"
 
 monitor_mountinfo::monitor_mountinfo( QObject * parent ) : QThread( parent )
 {
@@ -101,7 +101,6 @@ void monitor_mountinfo::run()
 			/*
 			 * unmount has just happened
 			 */
-
 			int j = newList.size() ;
 			for( int i = 0 ; i < j ; i++ ){
 				volumeList.removeOne( newList.at( i ) ) ;
@@ -112,10 +111,10 @@ void monitor_mountinfo::run()
 				const QString& device = volumeList.at( i ) ;
 
 				if( device.startsWith( QString( "/dev/" ) ) ){
-					managepartitionthread * mpt = new managepartitionthread() ;
-					mpt->setDevice( device );
-					connect( mpt,SIGNAL( signalProperties( QString ) ),m_babu,SLOT( volumeMiniProperties( QString ) ) ) ;
-					mpt->startAction( managepartitionthread::VolumeMiniProperties ) ;
+					Task * t = new Task() ;
+					t->setDevice( device );
+					connect( t,SIGNAL( signalProperties( QString ) ),m_babu,SLOT( volumeMiniProperties( QString ) ) ) ;
+					t->start( Task::VolumeMiniProperties ) ;
 				}else{
 					//sleep( 1 ) ; //sleep for one second for UI effect
 					m_main->removeEntry( device ) ;
@@ -136,10 +135,10 @@ void monitor_mountinfo::run()
 			j = newList.size() ;
 			for( int i = 0 ; i < j ; i++ ){
 				const QString& device = newList.at( i ) ;
-				managepartitionthread * mpt = new managepartitionthread() ;
-				mpt->setDevice( device ) ;
-				connect( mpt,SIGNAL( signalProperties( QString ) ),m_babu,SLOT( volumeMiniProperties( QString ) ) ) ;
-				mpt->startAction( managepartitionthread::VolumeMiniProperties ) ;
+				Task * t = new Task() ;
+				t->setDevice( device ) ;
+				connect( t,SIGNAL( signalProperties( QString ) ),m_babu,SLOT( volumeMiniProperties( QString ) ) ) ;
+				t->start( Task::VolumeMiniProperties ) ;
 				volumeList.append( device ) ;
 			}
 		}else{

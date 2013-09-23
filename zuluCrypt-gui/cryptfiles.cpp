@@ -33,7 +33,6 @@
 #include <QDir>
 
 #include "ui_cryptfiles.h"
-#include "runinthread.h"
 #include "utility.h"
 #include "openvolume.h"
 #include "cryptfilethread.h"

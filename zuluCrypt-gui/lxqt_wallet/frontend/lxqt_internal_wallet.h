@@ -34,7 +34,7 @@
 #include "lxqt_wallet.h"
 #include "../backend/lxqtwallet.h"
 #include "password_dialog.h"
-#include "open_wallet_thread.h"
+#include "task.h"
 #include "changepassworddialog.h"
 
 #include <QString>
@@ -80,8 +80,8 @@ signals:
 private slots:
 	bool openWallet( QString ) ;
 	void cancelled( void ) ;
-	void openWalletThreadResult( bool ) ;
-	void openWalletThreadResult_1( bool ) ;
+	void taskResult( bool ) ;
+	void taskResult_1( bool ) ;
 	void password( QString,bool ) ;
 private:
 	bool openWallet( void ) ;

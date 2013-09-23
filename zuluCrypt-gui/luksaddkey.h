@@ -57,7 +57,7 @@ private slots:
 	void rbNewPassphraseFromFile( void );
 	void pbAdd( void ) ;
 	void pbCancel( void ) ;
-	void threadfinished( int ) ;
+	void taskFinished( int ) ;
 	void setFieldFocus( void ) ;
 private:
 	void disableAll( void ) ;

@@ -26,7 +26,7 @@
 #include <QTableWidget>
 
 #include "../zuluCrypt-gui/dialogmsg.h"
-#include "managepartitionthread.h"
+#include "task.h"
 #include "../zuluCrypt-cli/constants.h"
 #include "plugin_path.h"
 #include "../zuluCrypt-gui/socketsendkey.h"
@@ -404,24 +404,27 @@ void keyDialog::openVolume()
 		}
 	}
 
-	managepartitionthread * part = new managepartitionthread() ;
-	connect( part,SIGNAL( signalMountComplete( int,QString ) ),this,SLOT( slotMountComplete( int,QString ) ) ) ;
+	Task * t = new Task() ;
+	connect( t,SIGNAL( signalMountComplete( int,QString ) ),this,SLOT( slotMountComplete( int,QString ) ) ) ;
 
-	part->setDevice( m_path ) ;
+	t->setDevice( m_path ) ;
+	
 	if( m_ui->checkBoxOpenReadOnly->isChecked() ){
-		part->setMode( QString( "ro" ) ) ;
+		t->setMode( QString( "ro" ) ) ;
 	}else{
-		part->setMode( QString( "rw" ) ) ;
+		t->setMode( QString( "rw" ) ) ;
 	}
-	part->setKeySource( m ) ;
+	
+	t->setKeySource( m ) ;
+	
 	m_point = m_ui->lineEditMountPoint->text().replace( "\"","\"\"\"" ) ;
-	part->setMountPoint( m_point ) ;
-
-	part->setMakeMountPointPublic( m_ui->checkBoxShareMountPoint->isChecked() ) ;
+	
+	t->setMountPoint( m_point ) ;
+	t->setMakeMountPointPublic( m_ui->checkBoxShareMountPoint->isChecked() ) ;
 
 	m_working = true ;
 
-	part->startAction( managepartitionthread::CryptoOpen ) ;
+	t->start( Task::CryptoOpen ) ;
 }
 
 void keyDialog::rbPlugIn( bool opt )

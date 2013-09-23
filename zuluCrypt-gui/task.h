@@ -17,33 +17,29 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "runinthread.h"
-#include <QProcess>
-#include <QDebug>
+#ifndef RUNINTHREAD_H
+#define RUNINTHREAD_H
 
-runInThread::runInThread( QString exe )
-{
-	m_exe = exe ;
-	m_status = -1 ;
-}
+#include <QRunnable>
+#include <QObject>
+#include <QThreadPool>
 
-void runInThread::start()
+class Task : public QObject,public QRunnable
 {
-	QThreadPool::globalInstance()->start( this ) ;
-}
+	Q_OBJECT
+public:
+	explicit Task( QString ) ;
+	~Task();
+	void start( void );
+signals:
+	void finished( int ) ;
+	void finished( int,QString ) ;
+private:
+	void run( void ) ;
+	QString m_exe ;
+	QString m_output ;
+	int m_status ;
+};
 
-void runInThread::run()
-{
-	QProcess p ;
-	p.start( m_exe ) ;
-	p.waitForFinished( -1 ) ;
-	m_status = p.exitCode() ;
-	m_output = QString( p.readAllStandardOutput() ) ;
-	p.close() ;
-}
+#endif // RUNINTHREAD_H
 
-runInThread::~runInThread()
-{
-	emit finished( m_status ) ;
-	emit finished( m_status,m_output ) ;
-}

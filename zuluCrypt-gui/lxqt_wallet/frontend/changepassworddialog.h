@@ -37,7 +37,7 @@
 #include <QCloseEvent>
 
 #include "../backend/lxqtwallet.h"
-#include "open_wallet_thread.h"
+#include "task.h"
 
 namespace Ui {
 class changePassWordDialog;
@@ -61,7 +61,7 @@ private slots:
 	void cancel( void ) ;
 	void ok( void ) ;
 	void ok_1( void ) ;
-	void openWalletThreadResult( bool ) ;
+	void taskResult( bool ) ;
 private:
 	void closeEvent( QCloseEvent * ) ;
 	Ui::changePassWordDialog * m_ui ;

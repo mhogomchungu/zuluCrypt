@@ -17,20 +17,20 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MANAGEPARTITIONTHREAD_H
-#define MANAGEPARTITIONTHREAD_H
+#ifndef ZULUMOUNTASK_H
+#define ZULUMOUNTASK_H
 
 #include <QObject>
 #include <QRunnable>
 #include <QString>
 #include <QStringList>
 
-class managepartitionthread : public QObject,public QRunnable
+class Task : public QObject,public QRunnable
 {
 	Q_OBJECT
 public:
-	managepartitionthread( void ) ;
-	~managepartitionthread() ;
+	Task( void ) ;
+	~Task() ;
 	enum Action{
 		Update,
 		Mount,
@@ -44,7 +44,7 @@ public:
 		checkUnMount,
 		VolumeType
 	};
-	void startAction( managepartitionthread::Action ) ;
+	void start( Task::Action ) ;
 	void setMode( QString ) ;
 	void setDevice( QString ) ;
 	void setType( QString ) ;
@@ -76,7 +76,7 @@ private:
 	void getVolumeType( void ) ;
 	void getVolumeSystemType( void ) ;
 	void checkUnmount( void ) ;
-	managepartitionthread::Action m_action ;
+	Task::Action m_action ;
 	QString m_device ;
 	QString m_point ;
 	QString m_keySource ;

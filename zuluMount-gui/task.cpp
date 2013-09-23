@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "managepartitionthread.h"
+#include "task.h"
 #include <QDebug>
 
 #include <QProcess>
@@ -27,46 +27,46 @@
 #include "bin_path.h"
 #include <unistd.h>
 
-managepartitionthread::managepartitionthread()
+Task::Task()
 {
 }
 
-void managepartitionthread::setMode( QString mode )
+void Task::setMode( QString mode )
 {
 	m_mode = mode ;
 }
 
-void managepartitionthread::setDevice( QString path )
+void Task::setDevice( QString path )
 {
 	m_device = path ;
 }
 
-void managepartitionthread::setType( QString type )
+void Task::setType( QString type )
 {
 	m_type = type ;
 }
 
-void managepartitionthread::setKeySource( QString key )
+void Task::setKeySource( QString key )
 {
 	m_keySource = key ;
 }
 
-void managepartitionthread::setMountPoint( QString m )
+void Task::setMountPoint( QString m )
 {
 	m_point = m ;
 }
 
-void managepartitionthread::setMakeMountPointPublic( bool opt )
+void Task::setMakeMountPointPublic( bool opt )
 {
 	m_publicMount = opt ;
 }
 
-void managepartitionthread::setList( QStringList l )
+void Task::setList( QStringList l )
 {
 	m_list = l ;
 }
 
-void managepartitionthread::openPathInFileManager()
+void Task::openPathInFileManager()
 {
 	QProcess p ;
 	QString exe = QString( "xdg-open ") + m_point ;
@@ -75,24 +75,24 @@ void managepartitionthread::openPathInFileManager()
 	p.close() ;
 }
 
-void managepartitionthread::run()
+void Task::run()
 {
 	switch( m_action ){
-		case managepartitionthread::Update              : return this->partitionList() ;
-		case managepartitionthread::Mount               : return this->mount() ;
-		case managepartitionthread::Unmount             : return this->umount() ;
-		case managepartitionthread::CryptoOpen          : return this->cryptoOpen() ;
-		case managepartitionthread::VolumeProperties    : return this->volumeProperties() ;
-		case managepartitionthread::VolumeMiniProperties: return this->volumeMiniProperties() ;
-		case managepartitionthread::OpenPath            : return this->openPathInFileManager() ;
-		case managepartitionthread::CheckPermissions    : return this->checkPermissions() ;
-		case managepartitionthread::VolumeType          : return this->getVolumeType() ;
-		case managepartitionthread::systemdevice        : return this->checkIfSystemDevice() ;
-		case managepartitionthread::checkUnMount        : return this->checkUnmount() ;
+		case Task::Update              : return this->partitionList() ;
+		case Task::Mount               : return this->mount() ;
+		case Task::Unmount             : return this->umount() ;
+		case Task::CryptoOpen          : return this->cryptoOpen() ;
+		case Task::VolumeProperties    : return this->volumeProperties() ;
+		case Task::VolumeMiniProperties: return this->volumeMiniProperties() ;
+		case Task::OpenPath            : return this->openPathInFileManager() ;
+		case Task::CheckPermissions    : return this->checkPermissions() ;
+		case Task::VolumeType          : return this->getVolumeType() ;
+		case Task::systemdevice        : return this->checkIfSystemDevice() ;
+		case Task::checkUnMount        : return this->checkUnmount() ;
 	}
 }
 
-void managepartitionthread::checkUnmount()
+void Task::checkUnmount()
 {
 	QProcess p ;
 	QString exe = QString( "%1 -c -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;
@@ -100,7 +100,7 @@ void managepartitionthread::checkUnmount()
 	p.waitForFinished() ;
 }
 
-void managepartitionthread::checkIfSystemDevice( void )
+void Task::checkIfSystemDevice( void )
 {
 	QProcess p ;
 	QString exe = QString( "%1 -S" ).arg( zuluMount ) ;
@@ -119,7 +119,7 @@ void managepartitionthread::checkIfSystemDevice( void )
 	}
 }
 
-void managepartitionthread::getVolumeType()
+void Task::getVolumeType()
 {
 	this->checkIfSystemDevice() ;
 
@@ -145,7 +145,7 @@ void managepartitionthread::getVolumeType()
 	}
 }
 
-void managepartitionthread::checkPermissions()
+void Task::checkPermissions()
 {
 	QProcess p ;
 	p.start( QString( ZULUCRYPTzuluCrypt ) + QString( " -C" ) ) ;
@@ -154,7 +154,7 @@ void managepartitionthread::checkPermissions()
 	p.close() ;
 }
 
-void managepartitionthread::partitionList()
+void Task::partitionList()
 {
 	QProcess p ;
 	QProcess q ;
@@ -178,7 +178,7 @@ void managepartitionthread::partitionList()
 	emit signalMountedList( k,j ) ;
 }
 
-void managepartitionthread::volumeProperties()
+void Task::volumeProperties()
 {
 	QProcess p ;
 	QString exe ;
@@ -199,7 +199,7 @@ void managepartitionthread::volumeProperties()
 	emit signalProperties( r ) ;
 }
 
-void managepartitionthread::volumeMiniProperties()
+void Task::volumeMiniProperties()
 {
 	QProcess p ;
 	QString exe ;
@@ -219,7 +219,7 @@ void managepartitionthread::volumeMiniProperties()
 	emit signalProperties( r ) ;
 }
 
-void managepartitionthread::cryptoOpen()
+void Task::cryptoOpen()
 {
 	QProcess p ;
 	QString exe ;
@@ -242,7 +242,7 @@ void managepartitionthread::cryptoOpen()
 	p.close() ;
 }
 
-void managepartitionthread::mount()
+void Task::mount()
 {
 	QProcess p ;
 	QString exe ;
@@ -269,7 +269,7 @@ void managepartitionthread::mount()
 	p.close() ;
 }
 
-void managepartitionthread::umount()
+void Task::umount()
 {
 	QProcess p ;
 	QString exe = QString( "%1 -u -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;
@@ -285,13 +285,13 @@ void managepartitionthread::umount()
 	emit signalUnmountComplete( p.exitCode(),output_1 ) ;
 }
 
-void managepartitionthread::startAction( managepartitionthread::Action action )
+void Task::start( Task::Action action )
 {
 	m_action = action ;
 	QThreadPool::globalInstance()->start( this ) ;
 }
 
-managepartitionthread::~managepartitionthread()
+Task::~Task()
 {
 	emit done() ;
 }

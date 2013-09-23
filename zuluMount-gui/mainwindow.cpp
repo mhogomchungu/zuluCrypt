@@ -49,7 +49,7 @@
 #include "auto_mount.h"
 #include "monitor_mountinfo.h"
 #include "../zuluCrypt-gui/utility.h"
-#include "managepartitionthread.h"
+#include "task.h"
 #include "../zuluCrypt-gui/openmountpointinfilemanager.h"
 
 MainWindow::MainWindow( int argc,char * argv[],QWidget * parent ) :QWidget( parent ),
@@ -136,16 +136,16 @@ void MainWindow::setUpApp()
 		dir.mkdir( dirPath ) ;
 	}
 
-	managepartitionthread * part = new managepartitionthread() ;
+	Task * t = new Task() ;
 
 	this->disableAll() ;
 
-	connect( part,SIGNAL( signalMountedList( QStringList,QStringList ) ),
+	connect( t,SIGNAL( signalMountedList( QStringList,QStringList ) ),
 		 this,SLOT( slotMountedList( QStringList,QStringList ) ) ) ;
-	connect( part,SIGNAL( done() ),this,SLOT( openVolumeFromArgumentList() ) ) ;
-	connect( part,SIGNAL( done() ),this,SLOT( started() ) ) ;
+	connect( t,SIGNAL( done() ),this,SLOT( openVolumeFromArgumentList() ) ) ;
+	connect( t,SIGNAL( done() ),this,SLOT( started() ) ) ;
 
-	part->startAction( managepartitionthread::Update ) ;
+	t->start( Task::Update ) ;
 
 	this->startAutoMonitor() ;
 }
@@ -291,9 +291,9 @@ void MainWindow::deviceRemoved( QString dev )
 		* see if a user just removed the device without properly closing it/unmounting it
 		* and try to do so for them
 		*/
-		managepartitionthread * part = new managepartitionthread() ;
-		part->setDevice( dev ) ;
-		part->startAction( managepartitionthread::checkUnMount ) ;
+		Task * t = new Task() ;
+		t->setDevice( dev ) ;
+		t->start( Task::checkUnMount ) ;
 	}
 }
 
@@ -492,11 +492,11 @@ void MainWindow::slotOpenFolder()
 void MainWindow::volumeProperties()
 {
 	this->disableAll() ;
-	managepartitionthread * part = new managepartitionthread() ;
-	part->setDevice( m_ui->tableWidget->item( m_ui->tableWidget->currentRow(),0 )->text() ) ;
-	connect( part,SIGNAL( signalProperties( QString ) ),this,SLOT( volumeProperties( QString ) ) ) ;
+	Task * t = new Task() ;
+	t->setDevice( m_ui->tableWidget->item( m_ui->tableWidget->currentRow(),0 )->text() ) ;
+	connect( t,SIGNAL( signalProperties( QString ) ),this,SLOT( volumeProperties( QString ) ) ) ;
 
-	part->startAction( managepartitionthread::VolumeProperties ) ;
+	t->start( Task::VolumeProperties ) ;
 }
 
 void MainWindow::volumeProperties( QString properties )
@@ -599,11 +599,11 @@ void MainWindow::dropEvent( QDropEvent * e )
 	for( int i = 0 ; i < j ; i++ ){
 		m_device = l.at( i ).path() ;
 		if( utility::pathPointsToAFile( m_device ) ){
-			managepartitionthread * m = new managepartitionthread() ;
-			connect( m,SIGNAL( getVolumeInfo( QStringList ) ),
+			Task * t = new Task() ;
+			connect( t,SIGNAL( getVolumeInfo( QStringList ) ),
 				 this,SLOT( showMoungDialog( QStringList ) ) ) ;
-			m->setDevice( m_device ) ;
-			m->startAction( managepartitionthread::VolumeType ) ;
+			t->setDevice( m_device ) ;
+			t->start( Task::VolumeType ) ;
 		}
 	}
 }
@@ -625,10 +625,10 @@ void MainWindow::mount( QString type,QString device,QString label )
 void MainWindow::openVolumeFromArgumentList()
 {
 	if( !m_device.isEmpty() ){
-		managepartitionthread * m = new managepartitionthread() ;
-		connect( m,SIGNAL( getVolumeInfo( QStringList ) ),this,SLOT( showMoungDialog( QStringList ) ) ) ;
-		m->setDevice( m_device ) ;
-		m->startAction( managepartitionthread::VolumeType ) ;
+		Task * t = new Task() ;
+		connect( t,SIGNAL( getVolumeInfo( QStringList ) ),this,SLOT( showMoungDialog( QStringList ) ) ) ;
+		t->setDevice( m_device ) ;
+		t->start( Task::VolumeType ) ;
 	}
 }
 
@@ -663,10 +663,10 @@ void MainWindow::pbMount()
 		this->enableAll() ;
 	}else{
 		m_device = path ;
-		managepartitionthread * m = new managepartitionthread() ;
-		connect( m,SIGNAL( getVolumeInfo( QStringList ) ),this,SLOT( showMoungDialog( QStringList ) ) ) ;
-		m->setDevice( m_device ) ;
-		m->startAction( managepartitionthread::VolumeType ) ;
+		Task * t = new Task() ;
+		connect( t,SIGNAL( getVolumeInfo( QStringList ) ),this,SLOT( showMoungDialog( QStringList ) ) ) ;
+		t->setDevice( m_device ) ;
+		t->start( Task::VolumeType ) ;
 	}
 }
 
@@ -768,14 +768,14 @@ void MainWindow::pbUmount()
 	QString path = m_ui->tableWidget->item( row,0 )->text() ;
 	QString type = m_ui->tableWidget->item( row,2 )->text() ;
 
-	managepartitionthread * part = new managepartitionthread() ;
+	Task * t = new Task() ;
 
-	part->setDevice( path ) ;
-	part->setType( type ) ;
+	t->setDevice( path ) ;
+	t->setType( type ) ;
 
-	connect( part,SIGNAL( signalUnmountComplete( int,QString) ),this,SLOT( slotUnmountComplete( int,QString ) ) ) ;
+	connect( t,SIGNAL( signalUnmountComplete( int,QString) ),this,SLOT( slotUnmountComplete( int,QString ) ) ) ;
 
-	part->startAction( managepartitionthread::Unmount ) ;
+	t->start( Task::Unmount ) ;
 }
 
 void MainWindow::pbUpdate()
@@ -785,12 +785,13 @@ void MainWindow::pbUpdate()
 	while( m_ui->tableWidget->rowCount() ){
 		m_ui->tableWidget->removeRow( 0 ) ;
 	}
-	managepartitionthread * part = new managepartitionthread() ;
+	
+	Task * t = new Task() ;
 
 	m_ui->tableWidget->setEnabled( false ) ;
-	connect( part,SIGNAL( signalMountedList( QStringList,QStringList ) ),this,SLOT( slotMountedList( QStringList,QStringList ) ) ) ;
+	connect( t,SIGNAL( signalMountedList( QStringList,QStringList ) ),this,SLOT( slotMountedList( QStringList,QStringList ) ) ) ;
 
-	part->startAction( managepartitionthread::Update ) ;
+	t->start( Task::Update ) ;
 }
 
 void MainWindow::slotMountedList( QStringList list,QStringList sys )

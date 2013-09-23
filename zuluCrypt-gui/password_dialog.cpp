@@ -41,7 +41,7 @@
 
 #include "ui_password.h"
 #include "openvolume.h"
-#include "runinthread.h"
+#include "task.h"
 #include "utility.h"
 #include "checkvolumetype.h"
 #include "dialogmsg.h"
@@ -488,11 +488,11 @@ void passwordDialog::openVolume( QString passPhraseField )
 
 	QString exe = QString( "%1 -o -d \"%2\" -m \"%3\" -e %4 %5 \"%6\"" ).arg( a ).arg( b ).arg( c ).arg( d ).arg( e ).arg( f ) ;
 
-	runInThread * ovt = new runInThread( exe ) ;
-	connect( ovt,SIGNAL( finished( int,QString ) ),this,SLOT( threadfinished( int,QString ) ) ) ;
+	Task * t = new Task( exe ) ;
+	connect( t,SIGNAL( finished( int,QString ) ),this,SLOT( taskFinished( int,QString ) ) ) ;
 	m_isWindowClosable = false ;
 	this->disableAll() ;
-	ovt->start() ;
+	t->start() ;
 }
 
 void passwordDialog::sendKey( QString sockpath )
@@ -611,7 +611,7 @@ void passwordDialog::complete( QString output )
 	this->HideUI() ;
 }
 
-void passwordDialog::threadfinished( int status,QString output )
+void passwordDialog::taskFinished( int status,QString output )
 {
 	m_isWindowClosable = true ;
 	DialogMsg msg( this ) ;

@@ -27,7 +27,6 @@
 #include <QFile>
 
 #include "utility.h"
-#include "runinthread.h"
 #include "../zuluCrypt-cli/constants.h"
 #include "createfilethread.h"
 #include "socketsendkey.h"

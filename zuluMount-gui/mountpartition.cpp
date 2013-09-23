@@ -31,7 +31,8 @@
 #include <QFileDialog>
 #include <QFont>
 #include <QTableWidget>
-#include "managepartitionthread.h"
+
+#include "task.h"
 #include "../zuluCrypt-gui/dialogmsg.h"
 #include "../zuluCrypt-gui/userfont.h"
 #include "../zuluCrypt-gui/openvolumereadonly.h"
@@ -46,6 +47,7 @@ mountPartition::mountPartition( QWidget * parent,QTableWidget * table,QString fo
 	m_ui->setupUi( this ) ;
 	m_ui->checkBoxShareMountPoint->setToolTip( utility::shareMountPointToolTip() ) ;
 	m_table = table ;
+	
 	this->setFixedSize( this->size() ) ;
 	this->setWindowFlags( Qt::Window | Qt::Dialog ) ;
 	this->setFont( parent->font() ) ;
@@ -61,6 +63,7 @@ mountPartition::mountPartition( QWidget * parent,QTableWidget * table,QString fo
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->checkBox,SIGNAL( stateChanged( int ) ),this,SLOT( stateChanged( int ) ) ) ;
 	connect( m_ui->checkBoxMountReadOnly,SIGNAL( stateChanged(int) ),this,SLOT( checkBoxReadOnlyStateChanged( int ) ) ) ;
+	
 	m_ui->pbMountFolder->setIcon( QIcon( QString( ":/folder.png" ) ) ) ;
 
 	userfont F( this ) ;
@@ -117,6 +120,7 @@ void mountPartition::pbCancel()
 void mountPartition::pbMount()
 {
 	QString test_mount = m_ui->lineEdit->text() ;
+	
 	if( test_mount.contains( QString( "/" ) ) ){
 		if( this->isVisible() ){
 			DialogMsg msg( this ) ;
@@ -125,21 +129,24 @@ void mountPartition::pbMount()
 		}
 		return ;
 	}
+	
 	this->disableAll() ;
-	managepartitionthread * part = new managepartitionthread() ;
-	part->setDevice( m_path ) ;
+	
+	Task * t = new Task() ;
+	t->setDevice( m_path ) ;
+	
 	if( m_ui->checkBoxMountReadOnly->isChecked() ){
-		part->setMode( QString( "ro" ) ) ;
+		t->setMode( QString( "ro" ) ) ;
 	}else{
-		part->setMode( QString( "rw" ) ) ;
+		t->setMode( QString( "rw" ) ) ;
 	}
 	m_point = m_ui->lineEdit->text() ;
-	part->setMountPoint( utility::mountPath( m_point ) ) ;
-	connect( part,SIGNAL( signalMountComplete( int,QString ) ),this,SLOT( slotMountComplete( int,QString ) ) ) ;
+	t->setMountPoint( utility::mountPath( m_point ) ) ;
+	connect( t,SIGNAL( signalMountComplete( int,QString ) ),this,SLOT( slotMountComplete( int,QString ) ) ) ;
 
-	part->setMakeMountPointPublic( m_ui->checkBoxShareMountPoint->isChecked() ) ;
+	t->setMakeMountPointPublic( m_ui->checkBoxShareMountPoint->isChecked() ) ;
 
-	part->startAction( managepartitionthread::Mount ) ;
+	t->start( Task::Mount ) ;
 }
 
 void mountPartition::pbOpenMountPath()

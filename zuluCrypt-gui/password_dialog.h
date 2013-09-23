@@ -67,7 +67,7 @@ private slots :
 	void passphraseOption( void ) ;
 	void pluginOption( void ) ;
 	void file_path( void  ) ;
-	void threadfinished( int,QString ) ;
+	void taskFinished( int,QString ) ;
 	void mountPointPath( QString );
 	void complete( QString );
 	void cbStateChanged( int );

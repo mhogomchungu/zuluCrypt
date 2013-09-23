@@ -29,7 +29,7 @@
 #include <QCloseEvent>
 #include <QThreadPool>
 
-#include "runinthread.h"
+#include "task.h"
 #include "utility.h"
 #include "erasedevice.h"
 #include "createvolumedialog.h"
@@ -473,14 +473,14 @@ void createvolume::pbCreateClicked()
 
 	m_isWindowClosable = false ;
 
-	runInThread * cvt = new runInThread( exe ) ;
+	Task * t = new Task( exe ) ;
 
-	connect( cvt,SIGNAL( finished( int ) ),this,SLOT( threadfinished( int ) ) ) ;
+	connect( t,SIGNAL( finished( int ) ),this,SLOT( taskFinished( int ) ) ) ;
 	disableAll() ;
-	cvt->start() ;
+	t->start() ;
 }
 
-void createvolume::threadfinished( int st )
+void createvolume::taskFinished( int st )
 {
 	DialogMsg msg( this ) ;
 	m_isWindowClosable = true ;

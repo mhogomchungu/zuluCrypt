@@ -30,7 +30,7 @@
 
 #include "lxqt_secret_service.h"
 
-#include "open_wallet_thread.h"
+#include "task.h"
 /*
  * adding libsecret header file together with C++ header files doesnt seem to work.
  * as a workaround,a static library that interfaces with libsecret is used and a "pure" C interface of the
@@ -106,11 +106,11 @@ void lxqt::Wallet::secretService::open( const QString& walletName,const QString&
 
 	connect( this,SIGNAL( walletIsOpen( bool ) ),m_interfaceObject,SLOT( walletIsOpen( bool ) ) ) ;
 
-	openWalletThread * t = new openWalletThread( lxqt_secret_service_wallet_is_open,m_schema ) ;
+	Task * t = new Task( lxqt_secret_service_wallet_is_open,m_schema ) ;
 
 	if( t ){
 		connect( t,SIGNAL( walletOpened( bool ) ),this,SLOT( walletOpened( bool ) ) ) ;
-		t->start( openWalletThread::openSecretService ) ;
+		t->start( Task::openSecretService ) ;
 	}else{
 		this->walletOpened( false ) ;
 	}

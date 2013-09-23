@@ -39,37 +39,37 @@ class createvolume : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit createvolume( QWidget * parent = 0 );
-	~createvolume();
+	explicit createvolume( QWidget * parent = 0 ) ;
+	~createvolume() ;
 signals:
 	void CreateVolume( QString fileSystem,QString containterType,QString volumePath,QString passphrase,bool passphraseFromFile ) ;
-	void HideUISignal( void );
+	void HideUISignal( void ) ;
 public slots:
 	void ShowPartition( QString volume ) ;
 	void ShowFile( QString volume ) ;
-	void HideUI( void );
+	void HideUI( void ) ;
 private slots:
-	void keyChanged( QString );
+	void keyChanged( QString ) ;
 	void pbCreateClicked( void ) ;
 	void pbCancelClicked( void ) ;
-	void rbPassphraseClicked( void );
-	void rbPasssphraseFromFileClicked( void );
-	void rbHiddenPassphraseClicked( void );
-	void rbHiddenPasssphraseFromFileClicked( void );
-	void pbOpenKeyFile( void );
-	void pbOpenHiddenKeyFile( void );
-	void threadfinished( int );
+	void rbPassphraseClicked( void ) ;
+	void rbPasssphraseFromFileClicked( void ) ;
+	void rbHiddenPassphraseClicked( void ) ;
+	void rbHiddenPasssphraseFromFileClicked( void ) ;
+	void pbOpenKeyFile( void ) ;
+	void pbOpenHiddenKeyFile( void ) ;
+	void taskFinished( int ) ;
 	void volumeType( int ) ;
-	void dialogResult( int );
+	void dialogResult( int ) ;
 private:
-	void eraseDataPartition( void );
-	void findInstalledFs( void );
+	void eraseDataPartition( void ) ;
+	void findInstalledFs( void ) ;
 	void enableAll( void ) ;
-	void disableAll( void );
+	void disableAll( void ) ;
 	void closeEvent( QCloseEvent * ) ;
-	void ShowUI( QString,QString );
+	void ShowUI( QString,QString ) ;
 	bool m_created ;
-	Ui::createvolume * m_ui;
+	Ui::createvolume * m_ui ;
 	bool m_isWindowClosable ;
 	keystrength * m_keyStrength ;
 	QString m_volumeType ;

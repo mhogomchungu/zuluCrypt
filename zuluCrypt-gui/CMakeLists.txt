@@ -33,7 +33,7 @@ set( MOC_FILES createfile.h
 		zulucrypt.h
 		startupupdateopenedvolumes.h
 		closeallvolumesthread.h
-		runinthread.h
+		task.h
 		managedevicenames.h
 		partitionproperties.h
 		volumepropertiesthread.h
@@ -65,7 +65,7 @@ set (SRC createfile.cpp
 	startupupdateopenedvolumes.cpp
 	zulucrypt.cpp
 	closeallvolumesthread.cpp
-	runinthread.cpp
+	task.cpp
 	managedevicenames.cpp
 	partitionproperties.cpp
 	volumepropertiesthread.cpp
