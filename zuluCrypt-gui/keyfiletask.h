@@ -17,26 +17,29 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CLOSEVOLUMETHREAD_H
-#define CLOSEVOLUMETHREAD_H
+#ifndef keyFileTask_H
+#define keyFileTask_H
 
-#include <QRunnable>
+#include <QThread>
 #include <QString>
-#include <QObject>
 
-class closeVolumeThread : public QObject,public QRunnable
+class keyFileTask : public QThread
 {
 	Q_OBJECT
 public:
-	explicit closeVolumeThread( QString );
-	void start( void );
-	~ closeVolumeThread(  ) ;
+	explicit keyFileTask( QString,int );
+	~keyFileTask();
 signals:
-	void finished( int ) ;
+	void exitStatus( int );
+public slots:
+	void cancelOperation( void );
 private:
-	void run( void ) ;
-	QString m_exe ;
-	int m_status ;
+	void run( void );
+	QString m_path ;
+	int m_rng ;
+	int m_cancelled ;
+	int m_qfread  ;
+	int m_qfwrite ;
 };
 
-#endif // CLOSEVOLUMETHREAD_H
+#endif // keyFileTask_H

@@ -40,13 +40,13 @@
  */
 #define RANDOM_SOURCE 2
 
-class createFileThread : public QObject,public QRunnable
+class FileTask : public QObject,public QRunnable
 {
 	Q_OBJECT
 public :
-	createFileThread( QString destination,qulonglong size ) ;
+	FileTask( QString destination,qulonglong size ) ;
 	void start( void );
-	~createFileThread();
+	~FileTask();
 signals:
 	void exitStatus( int );
 	void doneCreatingFile( void );

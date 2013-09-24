@@ -35,7 +35,7 @@
 #include "ui_cryptfiles.h"
 #include "utility.h"
 #include "openvolume.h"
-#include "cryptfilethread.h"
+#include "crypttask.h"
 #include "dialogmsg.h"
 #include "socketsendkey.h"
 
@@ -167,7 +167,7 @@ void cryptfiles::pbCancel()
 void cryptfiles::HideUI()
 {
 	if( m_OperationInProgress ){
-		m_cft->terminate() ;
+		m_task->terminate() ;
 	}else{
 		emit this->HideUISignal() ;
 		this->hide() ;
@@ -266,13 +266,15 @@ void cryptfiles::pbCreate()
 
 	m_OperationInProgress = true ;
 
-	m_cft = new cryptfilethread( source,dest,keySource,key_1,m_operation ) ;
-	connect( m_cft,SIGNAL( complete( int ) ),this,SLOT( threadExitStatus( int ) ) ) ;
-	connect( m_cft,SIGNAL( progressUpdate( int ) ),this,SLOT( progressBarUpdate( int ) ) ) ;
-	connect( m_cft,SIGNAL( titleUpdate( QString ) ),this,SLOT( titleUpdate( QString ) ) ) ;
-	connect( m_cft,SIGNAL( enableCancel() ),this,SLOT( enableCancel() ) ) ;
-	connect( m_cft,SIGNAL( disableCancel() ),this,SLOT( disableCancel() ) ) ;
-	m_cft->start() ;
+	m_task = new CryptTask( source,dest,keySource,key_1,m_operation ) ;
+
+	connect( m_task,SIGNAL( complete( int ) ),this,SLOT( threadExitStatus( int ) ) ) ;
+	connect( m_task,SIGNAL( progressUpdate( int ) ),this,SLOT( progressBarUpdate( int ) ) ) ;
+	connect( m_task,SIGNAL( titleUpdate( QString ) ),this,SLOT( titleUpdate( QString ) ) ) ;
+	connect( m_task,SIGNAL( enableCancel() ),this,SLOT( enableCancel() ) ) ;
+	connect( m_task,SIGNAL( disableCancel() ),this,SLOT( disableCancel() ) ) ;
+
+	m_task->start() ;
 }
 
 void cryptfiles::disableCancel()

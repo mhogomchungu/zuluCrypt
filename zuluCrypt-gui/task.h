@@ -24,21 +24,45 @@
 #include <QObject>
 #include <QThreadPool>
 
+class QTableWidget ;
+class QTableWidgetItem ;
+
 class Task : public QObject,public QRunnable
 {
 	Q_OBJECT
 public:
-	explicit Task( QString ) ;
+	typedef enum{
+		exeTask,
+		closeAllVolumeTask,
+		closeVolumeTask,
+		volumePropertiesTask
+	}action ;
+
+	explicit Task( QString exe ) ;
+	Task( QString,QString ) ;
+	explicit Task( QTableWidget * ) ;
+
 	~Task();
-	void start( void );
+	void start( Task::action = Task::exeTask ) ;
 signals:
+	void finished( QString ) ;
 	void finished( int ) ;
 	void finished( int,QString ) ;
+	void taskResult( QTableWidgetItem *,int ) ;
 private:
 	void run( void ) ;
+	void runExeTask( void ) ;
+	void runCloseAllVolumeTask( void ) ;
+	void runVolumePropertiesTask( void ) ;
 	QString m_exe ;
 	QString m_output ;
 	int m_status ;
+	QTableWidget * m_table ;
+	Task::action m_action ;
+	QString m_fusefs ;
+	QString m_path ;
+	QString m_mpoint ;
+	QString m_volumeProperties ;
 };
 
 #endif // RUNINTHREAD_H

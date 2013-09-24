@@ -24,7 +24,7 @@
 #include <QString>
 
 class QWidget ;
-class createkeyfilethread ;
+class keyFileTask ;
 class QCloseEvent ;
 
 namespace Ui {
@@ -54,7 +54,7 @@ private:
 	void disableAll( void );
 	void enableAll( void ) ;
 	Ui::createkeyfile * m_ui;
-	createkeyfilethread * m_ckt ;
+	keyFileTask * m_task ;
 };
 
 #endif // CREATEKEYFILE_H

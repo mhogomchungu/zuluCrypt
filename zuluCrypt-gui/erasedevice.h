@@ -23,7 +23,7 @@
 #include <QString>
 
 class QCloseEvent ;
-class erasedevicethread ;
+class EraseTask ;
 class QWidget ;
 
 namespace Ui {
@@ -56,7 +56,7 @@ private:
 	void run( void );
 	void closeEvent( QCloseEvent * );
 	Ui::erasedevice * m_ui;
-	erasedevicethread * m_dt  ;
+	EraseTask * m_task  ;
 	bool m_cancelClicked ;
 	int m_option ;
 };

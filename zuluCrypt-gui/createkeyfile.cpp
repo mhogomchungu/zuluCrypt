@@ -31,9 +31,9 @@
 
 #include <QFile>
 
-#include "createfilethread.h"
+#include "filetask.h"
 #include "utility.h"
-#include "createkeyfilethread.h"
+#include "keyfiletask.h"
 #include "dialogmsg.h"
 
 createkeyfile::createkeyfile( QWidget * parent ) :
@@ -43,7 +43,7 @@ createkeyfile::createkeyfile( QWidget * parent ) :
 	m_ui->setupUi( this ) ;
 	this->setFont( parent->font() ) ;
 
-	m_ckt = NULL ;
+	m_task = NULL ;
 
 	m_ui->pbOpenFolder->setIcon( QIcon( QString( ":/folder.png" ) ) ) ;
 	connect( m_ui->pbCreate,SIGNAL( clicked() ),this,SLOT( pbCreate() ) ) ;
@@ -93,10 +93,10 @@ void createkeyfile::ShowUI()
 
 void createkeyfile::pbCancel()
 {
-	if( m_ckt == NULL ){
+	if( m_task == NULL ){
 		HideUI() ;
 	}else{
-		m_ckt->cancelOperation() ;
+		m_task->cancelOperation() ;
 	}
 }
 
@@ -148,16 +148,16 @@ void createkeyfile::pbCreate()
 
 	disableAll() ;
 
-	m_ckt = new createkeyfilethread( path,m_ui->comboBoxRNG->currentIndex() ) ;
-	connect( m_ckt,SIGNAL( exitStatus( int ) ),this,SLOT( threadExitStatus( int ) ) ) ;
-	m_ckt->start() ;
+	m_task = new keyFileTask( path,m_ui->comboBoxRNG->currentIndex() ) ;
+	connect( m_task,SIGNAL( exitStatus( int ) ),this,SLOT( threadExitStatus( int ) ) ) ;
+	m_task->start() ;
 }
 
 void createkeyfile::threadExitStatus( int st )
 {
 	DialogMsg msg( this ) ;
 
-	m_ckt = NULL ;
+	m_task = NULL ;
 	switch( st ){
 	case 1:	msg.ShowUIOK( tr( "WARNING!" ),tr( "process interrupted,key not fully generated" ) ) ;
 		return this->enableAll() ;

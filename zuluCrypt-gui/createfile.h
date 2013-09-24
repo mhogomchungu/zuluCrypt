@@ -24,7 +24,7 @@
 
 class DialogMsg ;
 class QPushButton ;
-class createFileThread ;
+class FileTask ;
 class QCloseEvent ;
 class createfile ;
 
@@ -61,7 +61,7 @@ private:
 	Ui::createfile * m_ui ;
 	qulonglong m_fileSize ;
 	QString m_path ;
-	createFileThread * m_cft ;
+	FileTask * m_task ;
 	QPushButton * m_yes ;
 	QPushButton * m_no  ;
 

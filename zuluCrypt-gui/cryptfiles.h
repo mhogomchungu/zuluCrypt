@@ -25,7 +25,7 @@
 
 class QWidget ;
 class QCloseEvent ;
-class cryptfilethread ;
+class CryptTask ;
 
 namespace Ui {
     class cryptfiles;
@@ -68,7 +68,7 @@ private:
 
 	bool m_OperationInProgress ;
 	QString m_operation ;
-	cryptfilethread * m_cft ;
+	CryptTask * m_task ;
 };
 
 #endif // CREATEKEYFILE_H

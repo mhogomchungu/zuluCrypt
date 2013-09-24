@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "erasedevicethread.h"
+#include "erasetask.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -28,25 +28,25 @@
 
 #include "utility.h"
 #include "../zuluCrypt-cli/constants.h"
-#include "createfilethread.h"
+#include "filetask.h"
 #include "socketsendkey.h"
 
 #include <blkid/blkid.h>
 #include <string.h>
 #include <unistd.h>
 
-erasedevicethread::erasedevicethread( QString path )
+EraseTask::EraseTask( QString path )
 {
 	m_path = path ;
 	m_status = 0 ;
 }
 
-void erasedevicethread::start()
+void EraseTask::start()
 {
 	QThreadPool::globalInstance()->start( this ) ;
 }
 
-int erasedevicethread::writeJunk()
+int EraseTask::writeJunk()
 {
 	const int ZSIZE = 512 ;
 	QByteArray arraypath = m_path.toAscii() ;
@@ -94,7 +94,7 @@ int erasedevicethread::writeJunk()
 	return 0 ;
 }
 
-void erasedevicethread::run()
+void EraseTask::run()
 {
 	/*
 	 * RANDOM_SOURCE is set at createfilethread.h
@@ -120,7 +120,7 @@ void erasedevicethread::run()
 	}
 }
 
-void erasedevicethread::writeJunkThroughMapper()
+void EraseTask::writeJunkThroughMapper()
 {
 	QString path = utility::mapperPath( m_path ) ;
 	QFile fd( path ) ;
@@ -166,7 +166,7 @@ void erasedevicethread::writeJunkThroughMapper()
 	fd.close() ;
 }
 
-void erasedevicethread::closeMapper()
+void EraseTask::closeMapper()
 {
 	QString exe = QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( m_path ) ;
 
@@ -176,7 +176,7 @@ void erasedevicethread::closeMapper()
 	p.close() ;
 }
 
-int erasedevicethread::openMapper()
+int EraseTask::openMapper()
 {
 	QString exe = QString( "%1 -k -J -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( m_path ) ;
 
@@ -189,12 +189,12 @@ int erasedevicethread::openMapper()
 	return st ;
 }
 
-void erasedevicethread::cancel()
+void EraseTask::cancel()
 {
 	m_status = 5 ;
 }
 
-erasedevicethread::~erasedevicethread()
+EraseTask::~EraseTask()
 {
 	emit exitStatus( m_status ) ;
 }

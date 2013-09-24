@@ -16,34 +16,43 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-#ifndef ERASEDEVICETHREAD_H
-#define ERASEDEVICETHREAD_H
+#ifndef CryptTask_H
+#define CryptTask_H
 
 #include <QObject>
 #include <QRunnable>
 #include <QString>
 
-class erasedevicethread : public QObject,public QRunnable
+class CryptTask : public QObject,public QRunnable
 {
 	Q_OBJECT
 public:
-	explicit erasedevicethread( QString );
-	void start( void );
-	~erasedevicethread();
+	explicit CryptTask( QString source,QString dest,QString keySource,QString key,QString task );
+	~CryptTask() ;
 signals:
-	void progress( int );
-	void exitStatus( int ) ;
+	void progressUpdate( int );
+	void titleUpdate( QString );
+	void complete( int ) ;
+	void md5mismach( void ) ;
+	void enableCancel( void ) ;
+	void disableCancel( void ) ;
 public slots:
-	void cancel( void );
+	void terminate( void );
+	void start( void );
 private:
-	int writeJunk( void ) ;
-	int openMapper( void );
-	void writeJunkThroughMapper( void );
-	void closeMapper( void );
+	void calculateMd5( QString path,char * result ) ;
 	void run( void );
+	int encrypt( void );
+	int decrypt( void );
+	int openMapper( QString path );
+	int closeMapper( QString path );
+	QString m_source ;
+	QString m_dest ;
+	QString m_keySource ;
+	QString m_key ;
+	QString m_task ;
+	QString m_mapperPath ;
 	int m_status ;
-	QString m_path ;
 };
 
-#endif // ERASEDEVICETHREAD_H
+#endif // CryptTask_H

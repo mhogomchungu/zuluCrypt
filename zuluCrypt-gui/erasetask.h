@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright ( c ) 2011
+ *  Copyright ( c ) 2012
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
@@ -17,29 +17,33 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VOLUMEPROPERTIESTHREAD_H
-#define VOLUMEPROPERTIESTHREAD_H
+#ifndef ERASEDEVICETHREAD_H
+#define ERASEDEVICETHREAD_H
 
 #include <QObject>
 #include <QRunnable>
 #include <QString>
 
-class volumePropertiesThread : public QObject,public QRunnable
+class EraseTask : public QObject,public QRunnable
 {
 	Q_OBJECT
 public:
-	volumePropertiesThread( QString,QString );
+	explicit EraseTask( QString );
 	void start( void );
-	~volumePropertiesThread();
+	~EraseTask();
 signals:
-	void finished( QString ) ;
+	void progress( int );
+	void exitStatus( int ) ;
 public slots:
+	void cancel( void );
 private:
+	int writeJunk( void ) ;
+	int openMapper( void );
+	void writeJunkThroughMapper( void );
+	void closeMapper( void );
 	void run( void );
-	QString m_fusefs ;
+	int m_status ;
 	QString m_path ;
-	QString m_mpoint ;
-	QString m_volumeProperties ;
 };
 
-#endif // VOLUMEPROPERTIESTHREAD_H
+#endif // ERASEDEVICETHREAD_H

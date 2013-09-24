@@ -24,7 +24,7 @@
 #include <QMessageBox>
 
 #include "utility.h"
-#include "erasedevicethread.h"
+#include "erasetask.h"
 #include "openvolume.h"
 #include "dialogmsg.h"
 
@@ -51,7 +51,7 @@ erasedevice::erasedevice( QWidget * parent ) :
 	m_ui->pushButtonFile->setIcon( QIcon( QString( ":/file.png" ) ) ) ;
 	m_ui->pushButtonPartition->setIcon( QIcon( QString( ":/partition.png" ) ) ) ;
 
-	m_dt = NULL ;
+	m_task = NULL ;
 	m_ui->lineEdit->setFocus() ;
 }
 
@@ -83,7 +83,7 @@ void erasedevice::threadExitStatus( int st )
 {
 	this->setWindowTitle( tr( "write random data over existing data" ) ) ;
 
-	m_dt = NULL ;
+	m_task = NULL ;
 
 	DialogMsg msg( this ) ;
 
@@ -145,13 +145,14 @@ Are you really sure you want to write random data to \"%1\" effectively destroyi
 
 	m_cancelClicked = false ;
 
-	m_dt = new erasedevicethread( path ) ;
-	connect( m_dt,SIGNAL( progress( int ) ),this,SLOT( setProgress( int ) ) ) ;
-	connect( m_dt,SIGNAL( exitStatus( int ) ),this,SLOT( threadExitStatus( int ) ) ) ;
+	m_task = new EraseTask( path ) ;
+
+	connect( m_task,SIGNAL( progress( int ) ),this,SLOT( setProgress( int ) ) ) ;
+	connect( m_task,SIGNAL( exitStatus( int ) ),this,SLOT( threadExitStatus( int ) ) ) ;
 
 	this->setWindowTitle( tr( "writing random data over existing data" ) ) ;
 
-	m_dt->start() ;
+	m_task->start() ;
 }
 
 void erasedevice::enableAll()
@@ -185,10 +186,10 @@ void erasedevice::pbCancel()
 {
 	m_cancelClicked = true ;
 
-	if( m_dt == NULL ){
+	if( m_task == NULL ){
 		this->HideUI() ;
 	}else{
-		m_dt->cancel() ;
+		m_task->cancel() ;
 	}
 }
 

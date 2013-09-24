@@ -17,31 +17,31 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "createfilethread.h"
+#include "filetask.h"
 
 #include <QProcess>
 #include <QThreadPool>
 #include <QFile>
 #include "utility.h"
 
-createFileThread::createFileThread( QString file,qulonglong size )
+FileTask::FileTask( QString file,qulonglong size )
 {
 	m_status = 0 ;
 	m_file = file ;
 	m_size = size ;
 }
 
-void createFileThread::cancelOperation()
+void FileTask::cancelOperation()
 {
 	m_status = -1 ;
 }
 
-void createFileThread::start()
+void FileTask::start()
 {
 	QThreadPool::globalInstance()->start( this ) ;
 }
 
-int createFileThread::createContainerFile( void )
+int FileTask::createContainerFile( void )
 {
 	QFile file( m_file ) ;
 
@@ -82,7 +82,7 @@ int createFileThread::createContainerFile( void )
 	return m_status == -1 ? -1 : 0 ;
 }
 
-int createFileThread::createContainerFileUsinggCrypt( void )
+int FileTask::createContainerFileUsinggCrypt( void )
 {/*
 	#define GSIZE 16
 
@@ -148,10 +148,10 @@ int createFileThread::createContainerFileUsinggCrypt( void )
 
 }
 
-void createFileThread::run()
+void FileTask::run()
 {
 	/*
-	 * RANDOM_SOURCE is set at createfilethread.h
+	 * RANDOM_SOURCE is set at FileTask.h
 	 */
 	if( RANDOM_SOURCE == 0 ){
 
@@ -177,7 +177,7 @@ void createFileThread::run()
 	}
 }
 
-void createFileThread::createFile()
+void FileTask::createFile()
 {
 	double i ;
 
@@ -224,7 +224,7 @@ void createFileThread::createFile()
 	file.close() ;
 }
 
-void createFileThread::fillCreatedFileWithRandomData()
+void FileTask::fillCreatedFileWithRandomData()
 {
 	this->openVolume()  ;
 	if( m_status != 0 ){
@@ -234,7 +234,7 @@ void createFileThread::fillCreatedFileWithRandomData()
 	this->closeVolume() ;
 }
 
-void createFileThread::closeVolume()
+void FileTask::closeVolume()
 {
 	QString path = m_file ;
 	path.replace( "\"","\"\"\"" ) ;
@@ -245,7 +245,7 @@ void createFileThread::closeVolume()
 	p.close() ;
 }
 
-void createFileThread::openVolume()
+void FileTask::openVolume()
 {
 	QString path = m_file ;
 	path.replace( "\"","\"\"\"" ) ;
@@ -262,7 +262,7 @@ void createFileThread::openVolume()
 	p.close() ;
 }
 
-void createFileThread::writeVolume()
+void FileTask::writeVolume()
 {
 	QFile path( utility::mapperPath( m_file ) ) ;
 
@@ -301,7 +301,7 @@ void createFileThread::writeVolume()
 	path.close() ;
 }
 
-createFileThread::~createFileThread()
+FileTask::~FileTask()
 {
 	emit exitStatus( m_status ) ;
 }

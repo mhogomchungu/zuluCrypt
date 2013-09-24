@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "cryptfilethread.h"
+#include "crypttask.h"
 
 #define TERM_ST 12
 /*
@@ -58,7 +58,7 @@
 #include "../zuluCrypt-cli/constants.h"
 #include "../zuluCrypt-cli/bin/bash_special_chars.h"
 
-cryptfilethread::cryptfilethread( QString source,QString dest,QString keySource,QString key,QString task )
+CryptTask::CryptTask( QString source,QString dest,QString keySource,QString key,QString task )
 {
 	m_source = source ;
 	m_dest = dest ;
@@ -68,17 +68,17 @@ cryptfilethread::cryptfilethread( QString source,QString dest,QString keySource,
 	m_status = -1 ;
 }
 
-void cryptfilethread::start()
+void CryptTask::start()
 {
 	QThreadPool::globalInstance()->start( this ) ;
 }
 
-void cryptfilethread::terminate()
+void CryptTask::terminate()
 {
 	m_status = TERM_ST ;
 }
 
-void cryptfilethread::calculateMd5( QString path,char * result )
+void CryptTask::calculateMd5( QString path,char * result )
 {
 	emit titleUpdate( tr( "calculating md5sum" ) ) ;
 	emit disableCancel() ;
@@ -108,7 +108,7 @@ void cryptfilethread::calculateMd5( QString path,char * result )
 	emit enableCancel() ;
 }
 
-int cryptfilethread::encrypt()
+int CryptTask::encrypt()
 {
 	QFile fd_4( m_source ) ;
 
@@ -232,7 +232,7 @@ int cryptfilethread::encrypt()
 	return 0 ;
 }
 
-int cryptfilethread::decrypt()
+int CryptTask::decrypt()
 {
 	if( utility::exists( m_dest ) ){
 		return 5 ;
@@ -322,7 +322,7 @@ int cryptfilethread::decrypt()
 	}
 }
 
-int cryptfilethread::openMapper( QString path )
+int CryptTask::openMapper( QString path )
 {
 	m_mapperPath = utility::mapperPath( path ) ;
 
@@ -340,7 +340,7 @@ int cryptfilethread::openMapper( QString path )
 	return st ;
 }
 
-int cryptfilethread::closeMapper( QString path )
+int CryptTask::closeMapper( QString path )
 {
 	path.replace( "\"","\"\"\"" ) ;
 	QString e = QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( path ) ;
@@ -352,7 +352,7 @@ int cryptfilethread::closeMapper( QString path )
 	return st ;
 }
 
-void cryptfilethread::run()
+void CryptTask::run()
 {
 	if( m_task == QString( "-E" ) ){
 		m_status = this->encrypt() ;
@@ -380,7 +380,7 @@ void cryptfilethread::run()
 	}
 }
 
-cryptfilethread::~cryptfilethread()
+CryptTask::~CryptTask()
 {
 	emit complete( m_status ) ;
 }

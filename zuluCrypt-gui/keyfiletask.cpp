@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "createkeyfilethread.h"
+#include "keyfiletask.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -30,14 +30,14 @@
 
 #include <string.h>
 
-createkeyfilethread::createkeyfilethread( QString path,int rng )
+keyFileTask::keyFileTask( QString path,int rng )
 {
 	m_path = path ;
 	m_rng = rng ;
 	m_cancelled = 0 ;
 }
 
-void createkeyfilethread::run()
+void keyFileTask::run()
 {
 	char data ;
 
@@ -59,14 +59,14 @@ void createkeyfilethread::run()
 	this->deleteLater() ;
 }
 
-void createkeyfilethread::cancelOperation()
+void keyFileTask::cancelOperation()
 {
 	m_cancelled = 1 ;
 	this->terminate() ;
 	this->deleteLater() ;
 }
 
-createkeyfilethread::~createkeyfilethread()
+keyFileTask::~keyFileTask()
 {
 	close( m_qfread ) ;
 	close( m_qfwrite ) ;

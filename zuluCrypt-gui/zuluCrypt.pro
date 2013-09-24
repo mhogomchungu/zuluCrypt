@@ -25,17 +25,12 @@ SOURCES += main.cpp\
     utility.cpp \
     managedevicenames.cpp \
     partitionproperties.cpp \
-    volumepropertiesthread.cpp \
-    createfilethread.cpp \
     closevolumethread.cpp \
     checkvolumetype.cpp \
     cryptoinfo.cpp \
-    createkeyfilethread.cpp \
     erasedevice.cpp \
-    erasedevicethread.cpp \
     manageluksheader.cpp \
     cryptfiles.cpp \
-    cryptfilethread.cpp \
     createvolumedialog.cpp \
     dialogmsg.cpp \
     managesystemvolumes.cpp \
@@ -59,7 +54,12 @@ SOURCES += main.cpp\
     lxqt_wallet/frontend/lxqt_secret_service.cpp \
     lxqt_wallet/frontend/lxqt_kwallet.cpp \
     lxqt_wallet/frontend/lxqt_internal_wallet.cpp \
-    lxqt_wallet/frontend/changepassworddialog.cpp
+    lxqt_wallet/frontend/changepassworddialog.cpp \
+    task.cpp \
+    keyfiletask.cpp \
+    filetask.cpp \
+    erasetask.cpp \
+    crypttask.cpp
 
 HEADERS  += zulucrypt.h \
     password_dialog.h \
@@ -75,17 +75,12 @@ HEADERS  += zulucrypt.h \
     utility.h \
     managedevicenames.h \
     partitionproperties.h \
-    volumepropertiesthread.h \
-    createfilethread.h \
     closevolumethread.h \
     checkvolumetype.h \
     cryptoinfo.h \
-    createkeyfilethread.h \
     erasedevice.h \
-    erasedevicethread.h \
     manageluksheader.h \
     cryptfiles.h \
-    cryptfilethread.h \
     createvolumedialog.h \
     dialogmsg.h \
     managesystemvolumes.h \
@@ -108,7 +103,12 @@ HEADERS  += zulucrypt.h \
     lxqt_wallet/frontend/lxqt_secret_service.h \
     lxqt_wallet/frontend/lxqt_kwallet.h \
     lxqt_wallet/frontend/lxqt_internal_wallet.h \
-    lxqt_wallet/frontend/changepassworddialog.h
+    lxqt_wallet/frontend/changepassworddialog.h \
+    task.h \
+    filetask.h \
+    keyfiletask.h \
+    erasetask.h \
+    crypttask.h
 
 
 FORMS    += zulucrypt.ui password.ui \

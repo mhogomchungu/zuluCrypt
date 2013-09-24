@@ -25,27 +25,24 @@ set (UI_FILES createfile.ui
 set( MOC_FILES createfile.h
 		luksaddkey.h
 		createkeyfile.h
-		createkeyfilethread.h		
+		keyfiletask.h		
 		luksdeletekey.h 
 		createvolume.h
 		openvolume.h
 		password_dialog.h
 		zulucrypt.h
 		startupupdateopenedvolumes.h
-		closeallvolumesthread.h
 		task.h
 		managedevicenames.h
 		partitionproperties.h
-		volumepropertiesthread.h
-		createfilethread.h
-		closevolumethread.h
+		filetask.h
 		checkvolumetype.h
 		cryptoinfo.h	
 		erasedevice.h
-		erasedevicethread.h	
+		erasetask.h	
 		manageluksheader.h
 		cryptfiles.h
-		cryptfilethread.h
+		crypttask.h
 		createvolumedialog.h
 		managesystemvolumes.h
 		kwalletconfig.h
@@ -58,26 +55,23 @@ set (SRC createfile.cpp
 	luksdeletekey.cpp
 	openvolume.cpp
 	createkeyfile.cpp
-	createkeyfilethread.cpp	
+	keyfiletask.cpp	
 	luksaddkey.cpp
 	main.cpp
 	password_dialog.cpp
 	startupupdateopenedvolumes.cpp
 	zulucrypt.cpp
-	closeallvolumesthread.cpp
 	task.cpp
 	managedevicenames.cpp
 	partitionproperties.cpp
-	volumepropertiesthread.cpp
-	createfilethread.cpp
-	closevolumethread.cpp
+	filetask.cpp
 	checkvolumetype.cpp
 	cryptoinfo.cpp
 	erasedevice.cpp
-	erasedevicethread.cpp
+	erasetask.cpp
 	manageluksheader.cpp
 	cryptfiles.cpp
-	cryptfilethread.cpp
+	crypttask.cpp
 	createvolumedialog.cpp
 	managesystemvolumes.cpp
 	keystrength.cpp

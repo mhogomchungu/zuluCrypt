@@ -88,7 +88,7 @@ private slots :
 	void trayClicked( QSystemTrayIcon::ActivationReason  ) ;
 	void trayProperty( void ) ;
 	void addItemToTable( QString pathToVolume,QString pathToMountPoint,QString volumeType );
-	void volumePropertyThreadFinished( QString properties ) ;
+	void volumePropertyTaskFinished( QString properties ) ;
 	void closeApplication( void ) ;
 	void startUpdateFinished( int ) ;
 	void minimize( void ) ;

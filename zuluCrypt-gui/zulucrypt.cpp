@@ -54,10 +54,7 @@
 #include "createfile.h"
 #include "createkeyfile.h"
 #include "startupupdateopenedvolumes.h"
-#include "closeallvolumesthread.h"
 #include "managedevicenames.h"
-#include "volumepropertiesthread.h"
-#include "closevolumethread.h"
 #include "checkvolumetype.h"
 #include "cryptoinfo.h"
 #include "erasedevice.h"
@@ -70,6 +67,7 @@
 #include "tablewidget.h"
 #include "openmountpointinfilemanager.h"
 #include "utility.h"
+#include "task.h"
 
 zuluCrypt::zuluCrypt( QWidget * parent ) :QMainWindow( parent ),m_trayIcon( 0 )
 {
@@ -422,17 +420,17 @@ void zuluCrypt::currentItemChanged( QTableWidgetItem * current, QTableWidgetItem
 
 void zuluCrypt::closeAllVolumes()
 {
-	closeAllVolumesThread * cavt = new closeAllVolumesThread( m_ui->tableWidget ) ;
-	connect( cavt,SIGNAL( close( QTableWidgetItem *,int ) ),this,SLOT( closeAll( QTableWidgetItem *,int ) ) ) ;
-	cavt->start() ;
+	Task * t = new Task( m_ui->tableWidget ) ;
+	connect( t,SIGNAL( taskResult( QTableWidgetItem *,int ) ),this,SLOT( closeAll( QTableWidgetItem *,int ) ) ) ;
+	t->start( Task::closeAllVolumeTask ) ;
 }
 
-void zuluCrypt::closeAll( QTableWidgetItem * i,int st )
+void zuluCrypt::closeAll( QTableWidgetItem * item,int st )
 {
 	if( st ){
 		closeStatusErrorMessage( st ) ;
 	}else{
-		removeRowFromTable( i->row() ) ;
+		removeRowFromTable( item->row() ) ;
 	}
 }
 
@@ -655,15 +653,17 @@ void zuluCrypt::removeRowFromTable( int x )
 void zuluCrypt::volume_property()
 {
 	m_ui->tableWidget->setEnabled( false ) ;
+
 	QTableWidgetItem * item = m_ui->tableWidget->currentItem() ;
 	QString x = m_ui->tableWidget->item( item->row(),0 )->text() ;
 	QString y = m_ui->tableWidget->item( item->row(),1 )->text() ;
-	volumePropertiesThread * vpt = new volumePropertiesThread( x,y ) ;
-	connect( vpt,SIGNAL( finished( QString ) ),this,SLOT( volumePropertyThreadFinished( QString ) ) ) ;
-	vpt->start() ;
+
+	Task * t = new Task( x,y ) ;
+	connect( t,SIGNAL( finished( QString ) ),this,SLOT( volumePropertyTaskFinished( QString ) ) ) ;
+	t->start( Task::volumePropertiesTask ) ;
 }
 
-void zuluCrypt::volumePropertyThreadFinished( QString properties )
+void zuluCrypt::volumePropertyTaskFinished( QString properties )
 {
 	DialogMsg msg( this ) ;
 	if( properties.isEmpty() ){
@@ -859,9 +859,10 @@ void zuluCrypt::close()
 	QString vol = m_ui->tableWidget->item( item->row(),0 )->text().replace( "\"","\"\"\"" ) ;
 	QString exe = QString( ZULUCRYPTzuluCrypt ) + QString( " -q -d " ) + QString( "\"" ) + vol + QString( "\"" ) ;
 	m_ui->tableWidget->setEnabled( false ) ;
-	closeVolumeThread * cvt = new closeVolumeThread( exe ) ;
-	connect( cvt,SIGNAL( finished( int ) ),this,SLOT( closeStatus( int ) ) ) ;
-	cvt->start() ;
+
+	Task * t = new Task( exe ) ;
+	connect( t,SIGNAL( finished( int ) ),this,SLOT( closeStatus( int ) ) ) ;
+	t->start( Task::closeVolumeTask ) ;
 }
 
 manageluksheader * zuluCrypt::setUpManageLuksHeader()

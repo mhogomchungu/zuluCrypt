@@ -21,11 +21,9 @@
 #include "createfile.h"
 #include "utility.h"
 #include "../zuluCrypt-cli/constants.h"
-#include "createfilethread.h"
+#include "filetask.h"
 
 #include "dialogmsg.h"
-
-#include "createfilethread.h"
 
 #include <QFileDialog>
 #include <QFile>
@@ -49,7 +47,7 @@ createfile::createfile( QWidget * parent) :QDialog( parent ),m_ui( new Ui::creat
 
 	m_ui->pbOpenFolder->setIcon( QIcon( QString( ":/folder.png" ) ) ) ;
 
-	m_cft = NULL ;
+	m_task = NULL ;
 
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) )  ;
 	connect( m_ui->pbOpenFolder,SIGNAL( clicked() ),this,SLOT(pbOpenFolder() ) ) ;
@@ -79,7 +77,7 @@ void createfile::fileTextChange( QString txt )
 void createfile::closeEvent( QCloseEvent * e )
 {
 	e->ignore() ;
-	if( m_cft != NULL ){
+	if( m_task != NULL ){
 		return ;
 	}
 	pbCancel() ;
@@ -185,24 +183,24 @@ void createfile::pbCreate()
 
 	disableAll() ;
 
-	m_cft = new createFileThread( m_path,m_fileSize ) ;
+	m_task = new FileTask( m_path,m_fileSize ) ;
 
-	connect( m_cft,SIGNAL( doneCreatingFile() ),this,SLOT( doneCreatingFile() ) ) ;
-	connect( m_cft,SIGNAL( progress( int ) ),this,SLOT( progress( int ) ) ) ;
-	connect( this,SIGNAL( cancelOperation()),m_cft,SLOT( cancelOperation() ) ) ;
+	connect( m_task,SIGNAL( doneCreatingFile() ),this,SLOT( doneCreatingFile() ) ) ;
+	connect( m_task,SIGNAL( progress( int ) ),this,SLOT( progress( int ) ) ) ;
+	connect( this,SIGNAL( cancelOperation()),m_task,SLOT( cancelOperation() ) ) ;
 
 	/*
 	  exitStatus will be 1 if the thread is terminated
 	  exitStatus will be 0 if the thread is left to finish its work
 	  */
-	connect( m_cft,SIGNAL( exitStatus( int ) ),this,SLOT( exitStatus( int ) ) ) ;
+	connect( m_task,SIGNAL( exitStatus( int ) ),this,SLOT( exitStatus( int ) ) ) ;
 
-	m_cft->start() ;
+	m_task->start() ;
 }
 
 void createfile::exitStatus( int status )
 {
-	m_cft = NULL ;
+	m_task = NULL ;
 
 	if( status == -1 ){
 		QFile::remove( m_path ) ;
@@ -222,7 +220,7 @@ void createfile::exitStatus( int status )
 
 void createfile::pbCancel()
 {
-	if( m_cft == NULL ){
+	if( m_task == NULL ){
 		return HideUI() ;
 	}
 	QString x = tr( "terminating file creation process" ) ;
