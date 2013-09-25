@@ -20,23 +20,19 @@ SOURCES += main.cpp\
     createfile.cpp \
     createkeyfile.cpp \
     startupupdateopenedvolumes.cpp \
-    closeallvolumesthread.cpp \
-    runinthread.cpp \
     utility.cpp \
     managedevicenames.cpp \
     partitionproperties.cpp \
-    closevolumethread.cpp \
     checkvolumetype.cpp \
     cryptoinfo.cpp \
     erasedevice.cpp \
     manageluksheader.cpp \
     cryptfiles.cpp \
-    createvolumedialog.cpp \
     dialogmsg.cpp \
     managesystemvolumes.cpp \
     keystrength.cpp \
     userfont.cpp \
-    kwalletplugin.cpp \
+    kwalletconfiginput.cpp \
     kwalletconfig.cpp \
     tablewidget.cpp \
     socketsendkey.cpp \
@@ -45,11 +41,10 @@ SOURCES += main.cpp\
     openmountpointinfilemanager.cpp \
     savemountpointpath.cpp \
     md5/md5.c \
-    kwalletconfiginput.cpp \
     lxqt_wallet/backend/lxqtwallet.c \
     lxqt_wallet/frontend/secret_service.c \
     lxqt_wallet/frontend/password_dialog.cpp \
-    lxqt_wallet/frontend/open_wallet_thread.cpp \
+    lxqt_wallet/frontend/task.cpp \
     lxqt_wallet/frontend/lxqt_wallet.cpp \
     lxqt_wallet/frontend/lxqt_secret_service.cpp \
     lxqt_wallet/frontend/lxqt_kwallet.cpp \
@@ -70,12 +65,9 @@ HEADERS  += zulucrypt.h \
     createfile.h \
     createkeyfile.h \
     startupupdateopenedvolumes.h \
-    closeallvolumesthread.h \
-    runinthread.h \
     utility.h \
     managedevicenames.h \
     partitionproperties.h \
-    closevolumethread.h \
     checkvolumetype.h \
     cryptoinfo.h \
     erasedevice.h \
@@ -86,7 +78,7 @@ HEADERS  += zulucrypt.h \
     managesystemvolumes.h \
     keystrength.h \
     userfont.h \
-    kwalletplugin.h \
+    kwalletconfiginput.h \
     kwalletconfig.h \
     tablewidget.h \
     socketsendkey.h \
@@ -94,11 +86,9 @@ HEADERS  += zulucrypt.h \
     ../zuluMount-gui/oneinstance.h \
     openmountpointinfilemanager.h \
     savemountpointpath.h \
-    kwalletconfiginput.h \
     lxqt_wallet/backend/lxqtwallet.h \
-    lxqt_wallet/frontend/secret_service.h \
     lxqt_wallet/frontend/password_dialog.h \
-    lxqt_wallet/frontend/open_wallet_thread.h \
+    lxqt_wallet/frontend/task.h \
     lxqt_wallet/frontend/lxqt_wallet.h \
     lxqt_wallet/frontend/lxqt_secret_service.h \
     lxqt_wallet/frontend/lxqt_kwallet.h \
@@ -144,7 +134,7 @@ OTHER_FILES += \
     lxqt_wallet/SOURCE \
     lxqt_wallet/README.md \
     lxqt_wallet/lxqt_wallet.pro.user \
-    lxqt_wallet/lxqt_wallet.pro \
+   # lxqt_wallet/lxqt_wallet.pro \
     lxqt_wallet/LICENSE \
     lxqt_wallet/CMakeLists.txt \
     lxqt_wallet/changelog \
@@ -155,8 +145,4 @@ OTHER_FILES += \
     lxqt_wallet/frontend/CMakeLists.txt \
     lxqt_wallet/frontend/secret_service/CMakeLists.txt
 
-INCLUDEPATH +=/home/ink/build /home/local/KDE4/include /usr/include
-
-
-
-
+INCLUDEPATH +=/home/ink/build /home/local/KDE4/include /usr/include /usr/include/glib-2.0/ /usr/lib/glib-2.0/include/ /usr/include/libsecret-1 /usr/include/libsecret-1/libsecret

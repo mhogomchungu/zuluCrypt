@@ -140,6 +140,7 @@ void mountPartition::pbMount()
 	}else{
 		t->setMode( QString( "rw" ) ) ;
 	}
+	
 	m_point = m_ui->lineEdit->text() ;
 	t->setMountPoint( utility::mountPath( m_point ) ) ;
 	connect( t,SIGNAL( signalMountComplete( int,QString ) ),this,SLOT( slotMountComplete( int,QString ) ) ) ;

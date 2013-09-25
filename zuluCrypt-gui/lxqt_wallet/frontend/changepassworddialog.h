@@ -43,6 +43,10 @@ namespace Ui {
 class changePassWordDialog;
 }
 
+namespace lxqt{
+
+namespace Wallet{
+
 class changePassWordDialog : public QDialog
 {
 	Q_OBJECT
@@ -71,5 +75,9 @@ private:
 	QString m_banner ;
 	bool m_walletPassWordChanged ;
 };
+
+}
+
+}
 
 #endif // CHANGEPASSWORDDIALOG_H

@@ -31,7 +31,7 @@
 #include "changepassworddialog.h"
 #include "ui_changepassworddialog.h"
 
-changePassWordDialog::changePassWordDialog( QWidget * parent,const QString& walletName,const QString& applicationName ):
+lxqt::Wallet::changePassWordDialog::changePassWordDialog( QWidget * parent,const QString& walletName,const QString& applicationName ):
 	QDialog( parent ),m_ui( new Ui::changePassWordDialog ),m_wallet( 0 ),m_walletName( walletName ),
 	m_applicationName( applicationName )
 {
@@ -48,7 +48,7 @@ changePassWordDialog::changePassWordDialog( QWidget * parent,const QString& wall
 	m_walletPassWordChanged = false ;
 }
 
-void changePassWordDialog::ShowUI()
+void lxqt::Wallet::changePassWordDialog::ShowUI()
 {
 	m_banner = m_ui->textEdit->toHtml().arg( m_applicationName ).arg( m_walletName ) ;
 	m_ui->label->setText( m_banner ) ;
@@ -57,14 +57,14 @@ void changePassWordDialog::ShowUI()
 	this->show() ;
 }
 
-void changePassWordDialog::HideUI()
+void lxqt::Wallet::changePassWordDialog::HideUI()
 {
 	emit walletpassWordChanged( m_walletPassWordChanged ) ;
 	this->hide() ;
 	this->deleteLater() ;
 }
 
-void changePassWordDialog::ShowUI_1()
+void lxqt::Wallet::changePassWordDialog::ShowUI_1()
 {
 	this->setWindowTitle( tr( "create a new wallet" ) ) ;
 
@@ -81,13 +81,13 @@ void changePassWordDialog::ShowUI_1()
 	this->show() ;
 }
 
-changePassWordDialog::~changePassWordDialog()
+lxqt::Wallet::changePassWordDialog::~changePassWordDialog()
 {
 	delete m_ui ;
 	lxqt_wallet_close( &m_wallet ) ;
 }
 
-void changePassWordDialog::create()
+void lxqt::Wallet::changePassWordDialog::create()
 {
 	if( m_ui->lineEditNewPassWord->text() == m_ui->lineEditNewPassWord_2->text() ){
 		emit password( m_ui->lineEditNewPassWord->text(),true ) ;
@@ -109,7 +109,7 @@ void changePassWordDialog::create()
 	}
 }
 
-void changePassWordDialog::change()
+void lxqt::Wallet::changePassWordDialog::change()
 {
 	m_ui->lineEditCurrentPassWord->setEnabled( false ) ;
 	m_ui->lineEditNewPassWord->setEnabled( false ) ;
@@ -140,13 +140,13 @@ void changePassWordDialog::change()
 	}
 }
 
-void changePassWordDialog::cancel()
+void lxqt::Wallet::changePassWordDialog::cancel()
 {
 	emit password( m_ui->lineEditNewPassWord->text(),false ) ;
 	this->HideUI() ;
 }
 
-void changePassWordDialog::ok()
+void lxqt::Wallet::changePassWordDialog::ok()
 {
 	m_ui->lineEditCurrentPassWord->setEnabled( true ) ;
 	m_ui->lineEditCurrentPassWord->clear() ;
@@ -166,7 +166,7 @@ void changePassWordDialog::ok()
 	m_ui->label->setText( m_banner ) ;
 }
 
-void changePassWordDialog::ok_1()
+void lxqt::Wallet::changePassWordDialog::ok_1()
 {
 	m_ui->lineEditCurrentPassWord->setEnabled( false ) ;
 	m_ui->lineEditNewPassWord->setEnabled( true ) ;
@@ -185,7 +185,7 @@ void changePassWordDialog::ok_1()
 	m_ui->label->setText( m_banner ) ;
 }
 
-void changePassWordDialog::taskResult( bool opened )
+void lxqt::Wallet::changePassWordDialog::taskResult( bool opened )
 {
 	if( opened ){
 		QString new_password = m_ui->lineEditNewPassWord->text() ;
@@ -213,7 +213,7 @@ void changePassWordDialog::taskResult( bool opened )
 	}
 }
 
-void changePassWordDialog::closeEvent( QCloseEvent * e )
+void lxqt::Wallet::changePassWordDialog::closeEvent( QCloseEvent * e )
 {
 	emit password( m_ui->lineEditNewPassWord->text(),false ) ;
 	e->ignore() ;

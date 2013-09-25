@@ -84,7 +84,7 @@ void lxqt::Wallet::internalWallet::taskResult_1( bool opened )
 		/*
 		 * passwordless opening failed,prompt a user for a password
 		 */
-		password_dialog * p = new password_dialog( this ) ;
+		lxqt::Wallet::password_dialog * p = new lxqt::Wallet::password_dialog( this ) ;
 		if( p ){
 			connect( p,SIGNAL( password( QString ) ),this,SLOT( openWallet( QString ) ) ) ;
 			connect( this,SIGNAL( passwordIsCorrect( bool ) ),p,SLOT( passwordIsCorrect( bool ) ) ) ;
@@ -139,13 +139,25 @@ void lxqt::Wallet::internalWallet::open( const QString& walletName,const QString
 			this->openWallet( m_password ) ;
 		}
 	}else{
-		changePassWordDialog * c = new changePassWordDialog( this,m_walletName,m_applicationName ) ;
+		lxqt::Wallet::changePassWordDialog * c = new lxqt::Wallet::changePassWordDialog( this,m_walletName,m_applicationName ) ;
 		if( c ){
 			connect( c,SIGNAL( password( QString,bool ) ),this,SLOT( password( QString,bool ) ) ) ;
 			c->ShowUI_1() ;
 		}else{
 			this->password( QString( "" ),false ) ;
 		}
+	}
+}
+
+void lxqt::Wallet::internalWallet::changeWalletPassWord( const QString& walletName,const QString& applicationName )
+{
+	lxqt::Wallet::changePassWordDialog * c = new lxqt::Wallet::changePassWordDialog( this,walletName,applicationName ) ;
+	if( c ){
+		connect( c,SIGNAL( walletpassWordChanged( bool ) ),m_interfaceObject,SLOT( walletpassWordChanged( bool ) ) ) ;
+		c->ShowUI() ;
+	}else{
+		connect( this,SIGNAL( walletpassWordChanged( bool ) ),m_interfaceObject,SLOT( walletpassWordChanged( bool ) ) ) ;
+		emit walletpassWordChanged( false ) ;
 	}
 }
 
@@ -276,18 +288,6 @@ QObject * lxqt::Wallet::internalWallet::qObject()
 QString lxqt::Wallet::internalWallet::storagePath()
 {
 	return QString() ;
-}
-
-void lxqt::Wallet::internalWallet::changeWalletPassWord( const QString& walletName,const QString& applicationName )
-{
-	changePassWordDialog * c = new changePassWordDialog( this,walletName,applicationName ) ;
-	if( c ){
-		connect( c,SIGNAL( walletpassWordChanged( bool ) ),m_interfaceObject,SLOT( walletpassWordChanged( bool ) ) ) ;
-		c->ShowUI() ;
-	}else{
-		connect( this,SIGNAL( walletpassWordChanged( bool ) ),m_interfaceObject,SLOT( walletpassWordChanged( bool ) ) ) ;
-		emit walletpassWordChanged( false ) ;
-	}
 }
 
 QStringList lxqt::Wallet::internalWallet::managedWalletList()

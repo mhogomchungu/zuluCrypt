@@ -36,9 +36,13 @@
 #include <QString>
 #include <QMessageBox>
 
-namespace Ui {
+namespace Ui{
 class password_dialog;
 }
+
+namespace lxqt{
+
+namespace Wallet{
 
 class password_dialog : public QDialog
 {
@@ -68,5 +72,9 @@ private:
 	bool m_closeUIOnKeySend ;
 	QString m_banner ;
 };
+
+}
+
+}
 
 #endif // PASSWORD_DIALOG_H
