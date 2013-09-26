@@ -260,7 +260,7 @@ ERROR: insuffienct privilege to manage a system volume.\nnecessary privileges ca
 	/*
 	 * zuluCryptSecurityCreateMountPoint() is defined in ../zuluCrypt-cli/bin/create_mount_point.c
 	 */
-	z = zuluCryptCreateMountPoint( device,m_point,uid ) ;
+	z = zuluCryptCreateMountPoint( device,m_point,m_opts,uid ) ;
 	
 	if( z == StringVoid ){
 		return _zuluExit( 106,z,path,gettext( "ERROR: could not create mount point path,path already taken" ) ) ;

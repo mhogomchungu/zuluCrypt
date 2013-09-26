@@ -230,7 +230,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		/*
 		* zuluCryptCreateMountPoint() is defined in create_mount_point.c
 		*/
-		*m_point = zuluCryptCreateMountPoint( device,mount_point,uid ) ;
+		*m_point = zuluCryptCreateMountPoint( device,mount_point,m_opts,uid ) ;
 		mount_point = StringContent( *m_point ) ;
 		if( mount_point == NULL ){
 			return zuluExit( 9,device,mount_point,stl ) ;

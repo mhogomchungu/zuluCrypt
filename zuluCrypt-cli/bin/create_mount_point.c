@@ -23,9 +23,7 @@
 #include <unistd.h>
 #include "mount_prefix_path.h"
 
-#if USE_HOME_PATH_AS_MOUNT_PREFIX
-
-static string_t _create_default_mount_point( const char * device,uid_t uid,string_t path )
+static string_t _create_home_default_mount_point( const char * device,uid_t uid,string_t path )
 {
 	string_t st = StringVoid ;
 	char * loop_path = NULL ;
@@ -51,7 +49,7 @@ static string_t _create_default_mount_point( const char * device,uid_t uid,strin
 	return st ;
 }
 
-static string_t _create_custom_mount_point( const char * label,uid_t uid,string_t path )
+static string_t _create_home_custom_mount_point( const char * label,uid_t uid,string_t path )
 {
 	string_t st = StringVoid ;
 	
@@ -103,19 +101,19 @@ static string_t _create_custom_mount_point( const char * label,uid_t uid,string_
 	return st ;
 }
 
-string_t zuluCryptCreateMountPoint( const char * device,const char * label,uid_t uid )
+static string_t create_home_mount_point( const char * device,const char * label,uid_t uid )
 {
 	string_t path = zuluCryptGetUserName( uid ) ;
 	StringPrepend( path,"/home/" ) ;
 	
 	if( label == NULL ){
-		return _create_default_mount_point( device,uid,path ) ;
+		return _create_home_default_mount_point( device,uid,path ) ;
 	}else{
-		return _create_custom_mount_point( label,uid,path ) ;
+		return _create_home_custom_mount_point( label,uid,path ) ;
 	}
 }
 
-int zuluCryptMountPointPrefixMatch( const char * m_path,uid_t uid,string_t * m_point )
+static int home_mount_point_prefix_match( const char * m_path,uid_t uid,string_t * m_point )
 {
 	int st ;
 	/*
@@ -135,8 +133,6 @@ int zuluCryptMountPointPrefixMatch( const char * m_path,uid_t uid,string_t * m_p
 	return st ;
 }
 
-#else
-
 static string_t _create_default_mount_point( const char * device,uid_t uid,string_t path )
 {
 	string_t st = StringVoid ;
@@ -222,7 +218,7 @@ static string_t _create_custom_mount_point( const char * label,uid_t uid,string_
 	return st ;
 }
 
-int zuluCryptMountPointPrefixMatch( const char * m_path,uid_t uid,string_t * m_point )
+static int mount_point_prefix_match( const char * m_path,uid_t uid,string_t * m_point )
 {
 	int st ;
 	/*
@@ -242,7 +238,7 @@ int zuluCryptMountPointPrefixMatch( const char * m_path,uid_t uid,string_t * m_p
 	return st ;
 }
 
-string_t zuluCryptCreateMountPoint( const char * device,const char * label,uid_t uid )
+static string_t create_mount_point( const char * device,const char * label,uid_t uid )
 {
 	const char * m_point ;
 	string_t path ;
@@ -286,4 +282,42 @@ string_t zuluCryptCreateMountPoint( const char * device,const char * label,uid_t
 		return _create_custom_mount_point( label,uid,path ) ;
 	}
 }
-#endif
+
+static int home_mount_prefix( void )
+{
+	#if USE_HOME_PATH_AS_MOUNT_PREFIX
+		return 1 ;
+	#else
+		return 0 ;
+	#endif
+}
+
+string_t zuluCryptCreateMountPoint( const char * device,const char * label,const char * m_opts,uid_t uid )
+{
+	if( home_mount_prefix() ){
+		return create_home_mount_point( device,label,uid ) ;
+	}else{
+		if( StringHasComponent( m_opts,"mount-prefix=home" ) ){
+			if( zuluCryptUserIsAMemberOfAGroup( uid,"zulumount" ) ){
+				return create_home_mount_point( device,label,uid ) ;
+			}else{
+				return StringVoid ;
+			}
+		}else{
+			return create_mount_point( device,label,uid ) ;
+		}
+	}
+}
+
+int zuluCryptMountPointPrefixMatch( const char * m_path,uid_t uid,string_t * m_point )
+{
+	if( home_mount_prefix() ){
+		return home_mount_point_prefix_match( m_path,uid,m_point ) ;
+	}else{
+		if( mount_point_prefix_match( m_path,uid,m_point ) ){
+			return 1 ;
+		}else{
+			return home_mount_point_prefix_match( m_path,uid,m_point ) ;
+		}
+	}
+}
