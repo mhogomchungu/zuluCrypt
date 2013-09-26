@@ -128,7 +128,7 @@ void zuluCryptEXEHelp( void )
 	help10 = gettext( "\
 	-k         do not ask for confirmation when doing dangerous operations\n\
 	-d         path to a file or partition with encrypted volume\n\
-	-m         path to where mount point folder will be created\n\
+	-m         path component to be added to mount point prefix(/run/media/private/$USER)\n\
 	-z         file system type installed(ext2,ext3,ext4* etc)\n\
 	-t         type of volume (plain/luks*)\n\
 	-g         random number generator (/dev/random or /dev/urandom*)\n\

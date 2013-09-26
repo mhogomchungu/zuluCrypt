@@ -386,7 +386,7 @@ static int _mount_help()
 options:\n\
 -m -- mount a volume : arguments: -d volume_path -z mount_point -e mode(rw/ro)\n\
       -- additional arguments for crypto_LUKS,crypto_PLAIN,crypto_TCRYPT volumes, -p passphrase/-f keyfile\n\
--z -- mount point component to append to \"/run/media/private/$USER/\n\
+-z -- mount point component to append to \"/run/media/private/$USER/\"\n\
 -Y -- file system options\n" ) ;
 
 	doc2 = gettext( "\
