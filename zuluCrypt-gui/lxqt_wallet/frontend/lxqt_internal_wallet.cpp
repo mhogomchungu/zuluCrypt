@@ -179,7 +179,7 @@ QVector<lxqt::Wallet::walletKeyValues> lxqt::Wallet::internalWallet::readAllKeyV
 	if( e == 0 ){
 		return w ;
 	}else{
-		walletKeyValues s ;
+		lxqt::Wallet::walletKeyValues s ;
 		lxqt_wallet_iterator_t iter ;
 		iter.iter_pos = 0 ;
 		while( lxqt_wallet_iter_read_value( m_wallet,&iter ) ){

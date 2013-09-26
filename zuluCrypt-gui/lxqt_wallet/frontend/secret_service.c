@@ -208,35 +208,30 @@ char ** lxqt_secret_get_all_keys( const void * p,const void * q,int * count )
 	int i = 0 ;
 	int j ;
 
-	char * c  = NULL  ;
-	char ** e = NULL ;
-	char ** f ;
+	char ** c = NULL  ;
+	char * e  = NULL ;
 
 	*count = 0 ;
 
 	if( lxqt_secret_service_wallet_is_open( keyValues ) ){
 		j = _number_of_entries_in_the_wallet( keyValues ) ;
-		while( i < j ){
-			c = secret_password_lookup_sync( keyID,NULL,NULL,"integer",k,NULL ) ;
-			if( c != NULL ){
-				f = realloc( e,sizeof( char * ) * ( i + 1 ) ) ;
-				if( f != NULL ){
-					e = f ;
-					e[ i ] =  c ;
-					*count = *count + 1 ;
+		c = malloc( sizeof( char * ) * j ) ;
+		if( c != NULL ){
+			while( i < j ){
+				e = secret_password_lookup_sync( keyID,NULL,NULL,"integer",k,NULL ) ;
+				if( e != NULL ){
+					c[ i ] =  e ;
+					*count += 1 ;
+					i++ ;
+					k++ ;
 				}else{
-					free( c ) ;
-					break ;
+					k++ ;
 				}
-				i++ ;
-				k++ ;
-			}else{
-				k++ ;
 			}
 		}
 	}
 
-	return e ;
+	return c ;
 }
 
 int lxqt_secret_service_wallet_size( const void * s )
