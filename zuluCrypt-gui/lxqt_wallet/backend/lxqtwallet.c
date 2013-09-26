@@ -644,48 +644,29 @@ lxqt_wallet_error lxqt_wallet_add_key( lxqt_wallet_t wallet,const char * key,u_i
 	}
 }
 
-lxqt_wallet_key_values_t * lxqt_wallet_read_all_key_values( lxqt_wallet_t wallet )
+int lxqt_wallet_iter_read_value( lxqt_wallet_t wallet,lxqt_wallet_iterator_t * iter )
 {
-	const char * e ;
-	const char * z ;
-
-	u_int64_t k = 0 ;
-	u_int64_t q = 0 ;
-	u_int64_t i = 0 ;
-	
 	u_int32_t key_len ;
 	u_int32_t key_value_len ;
-
-	lxqt_wallet_key_values_t * entries ;
-
-	if( wallet == NULL ){
-		return NULL ;
+	
+	const char * e ;
+	
+	if( wallet == NULL || iter->iter_pos >= wallet->wallet_data_size ){
+		return 0 ;
 	}else{
-		entries = malloc( sizeof( lxqt_wallet_key_values_t ) * wallet->wallet_data_entry_count ) ;
-		if( entries == NULL ){
-			return NULL ;
-		}else{
-			e = wallet->wallet_data ;
-			z = e ;
-			k = wallet->wallet_data_entry_count ;
-
-			while( q < k ){
-
-				_get_first_header_component( &key_len,e ) ;
-				_get_second_header_component( &key_value_len,e ) ;
-
-				entries[ q ].key             = e + NODE_HEADER_SIZE ;
-				entries[ q ].key_size        = key_len ;
-				entries[ q ].key_value       = e + NODE_HEADER_SIZE + key_len ;
-				entries[ q ].key_value_size  = key_value_len ;
-				
-				i = i + NODE_HEADER_SIZE + key_len + key_value_len ;
-				e = z + i ;
-				q++ ;
-			}
-
-			return entries ;
-		}
+		e = wallet->wallet_data + iter->iter_pos ;
+	
+		_get_first_header_component( &key_len,e ) ;
+		_get_second_header_component( &key_value_len,e ) ;
+	
+		iter->entry.key             = e + NODE_HEADER_SIZE ;
+		iter->entry.key_size        = key_len ;
+		iter->entry.key_value       = e + NODE_HEADER_SIZE + key_len ;
+		iter->entry.key_value_size  = key_value_len ;
+	
+		iter->iter_pos += NODE_HEADER_SIZE + key_len + key_value_len ;
+		
+		return 1 ;
 	}
 }
 

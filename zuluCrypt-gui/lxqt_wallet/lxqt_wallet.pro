@@ -24,7 +24,7 @@ OTHER_FILES += \
 
 HEADERS += \
     frontend/password_dialog.h \
-    frontend/open_wallet_thread.h \
+    frontend/task.h \
     frontend/lxqt_wallet.h \
     frontend/lxqt_kwallet.h \
     frontend/lxqt_internal_wallet.h \
@@ -36,7 +36,7 @@ HEADERS += \
 
 SOURCES += \
     frontend/password_dialog.cpp \
-    frontend/open_wallet_thread.cpp \
+    frontend/task.cpp \
     frontend/lxqt_wallet.cpp \
     frontend/lxqt_kwallet.cpp \
     frontend/lxqt_internal_wallet.cpp \

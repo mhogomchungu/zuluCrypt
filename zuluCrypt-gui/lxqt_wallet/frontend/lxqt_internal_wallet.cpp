@@ -179,29 +179,15 @@ QVector<lxqt::Wallet::walletKeyValues> lxqt::Wallet::internalWallet::readAllKeyV
 	if( e == 0 ){
 		return w ;
 	}else{
-		u_int32_t key_len ;
-		u_int32_t key_value_len ;
-		u_int32_t header_size = 2 * sizeof( u_int32_t ) ;
-
-		const char * z = e ;
-
-		u_int64_t k = lxqt_wallet_wallet_size( m_wallet ) ;
-		u_int64_t i = 0 ;
-
 		walletKeyValues s ;
-
-		while( i < k ){
-			memcpy( &key_len,e,sizeof( u_int32_t ) ) ;
-			memcpy( &key_value_len,e + sizeof( u_int32_t ),sizeof( u_int32_t ) ) ;
-
-			s.key   = QByteArray( e + header_size,key_len - 1 ) ;
-			s.value = QByteArray( e + header_size + key_len,key_value_len ) ;
-
-			i = i + header_size + key_len + key_value_len ;
-			e = z + i ;
-
+		lxqt_wallet_iterator_t iter ;
+		iter.iter_pos = 0 ;
+		while( lxqt_wallet_iter_read_value( m_wallet,&iter ) ){
+			s.key   = QByteArray( iter.entry.key,iter.entry.key_size - 1 ) ;
+			s.value = QByteArray( iter.entry.key_value,iter.entry.key_value_size ) ;
 			w.append( s ) ;
 		}
+
 		return w ;
 	}
 }
@@ -214,23 +200,10 @@ QStringList lxqt::Wallet::internalWallet::readAllKeys()
 	if( e == 0 ){
 		return l ;
 	}else{
-		u_int32_t key_len ;
-		u_int32_t key_value_len ;
-		u_int32_t header_size = 2 * sizeof( u_int32_t ) ;
-
-		const char * z = e ;
-
-		u_int64_t k = lxqt_wallet_wallet_size( m_wallet ) ;
-		u_int64_t i = 0 ;
-
-		while( i < k ){
-			memcpy( &key_len,e,sizeof( u_int32_t ) ) ;
-			memcpy( &key_value_len,e + sizeof( u_int32_t ),sizeof( u_int32_t ) ) ;
-
-			l.append( QByteArray( e + header_size,key_len - 1 ) ) ;
-
-			i = i + header_size + key_len + key_value_len ;
-			e = z + i ;
+		lxqt_wallet_iterator_t iter ;
+		iter.iter_pos = 0 ;
+		while( lxqt_wallet_iter_read_value( m_wallet,&iter ) ){
+			l.append( QByteArray( iter.entry.key,iter.entry.key_size - 1 ) ) ;
 		}
 
 		return l ;

@@ -139,18 +139,22 @@ typedef struct{
 	u_int32_t key_value_size ;
 }lxqt_wallet_key_values_t ;
 
+typedef struct{
+	u_int64_t iter_pos ;
+	lxqt_wallet_key_values_t entry ;
+}lxqt_wallet_iterator_t ;
+
 /*
- * get a list of all key-values in the wallet.
+ * iterate over the internal data structure and return an entry at the current interator position.
+ * Any operation that modifies the internal data structure invalidates the iterator.
  * 
- * On error,NULL is returned
+ * 0 is returned when the end of the list is reached or on error
+ * 1 is returned otherwise and the info at the current iterator position is returned through the "lxqt_wallet_key_values_t"
+ * structure in the iterator.
  * 
- * On success,returned value is a array of lxqt_wallet_key_values_t object,each entry pointing to and entry in the node.
- * caller of this function is responsible for the returned object and must free() it when done with it.
- * The content of the object is undefined if an entry is added or deleted from the volume.
- *
- * The number of entries in the returned array will equal the value returned from lxqt_wallet_wallet_size()
+ * Loot at the example at the end of this header file to see how to use this function.
  */
-lxqt_wallet_key_values_t * lxqt_wallet_read_all_key_values( lxqt_wallet_t ) ;
+int lxqt_wallet_iter_read_value( lxqt_wallet_t,lxqt_wallet_iterator_t * ) ;
 
 /*
  * 1 is returned if a matching key was found and key_value structure was filled up.
@@ -188,6 +192,7 @@ char * _lxqt_wallet_get_wallet_data( lxqt_wallet_t wallet ) ;
  */
 #if 0
 
+
 #include "lxqtwallet.h"
 #include <string.h>
 #include <stdio.h>
@@ -212,11 +217,8 @@ int main( int argc,char * argv[] )
 	const char * command ;
 	char ** p ;
 	
-	lxqt_wallet_key_values_t * values ;
 	lxqt_wallet_key_values_t value ;
-	
-	u_int64_t i ;
-	u_int64_t k ;
+	lxqt_wallet_iterator_t iter ;
 	
 	int a ;
 	int b ;
@@ -310,16 +312,12 @@ int main( int argc,char * argv[] )
 
 		if( r == lxqt_wallet_no_error ){
 			
-			k = lxqt_wallet_wallet_entry_count( wallet ) ;
-			values = lxqt_wallet_read_all_key_values( wallet ) ;
-			if( values != NULL ){
-				i = 0 ;
-				while( i < k ){
-					printf( "key=%s\tkey value=\"%s\"\n",values[ i ].key,values[ i ].key_value ) ;
-					i++ ;
-				}
-				free( values ) ;
+			iter.iter_pos = 0 ;
+			
+			while( lxqt_wallet_iter_read_value( wallet,&iter ) ){
+				printf( "key=%s\tkey value=\"%s\"\n",iter.entry.key,iter.entry.key_value ) ;
 			}
+
 			lxqt_wallet_close( &wallet ) ;
 		}else{
 			if( r == lxqt_wallet_wrong_password ){
@@ -426,6 +424,7 @@ int main( int argc,char * argv[] )
 	}
 	return r ;
 }
+
 
 #endif
 
