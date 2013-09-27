@@ -16,15 +16,15 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "kwalletconfig.h"
-#include "ui_kwalletconfig.h"
+#include "walletconfig.h"
+#include "ui_walletconfig.h"
 
 #include <QCloseEvent>
 
 #include "dialogmsg.h"
 #include "openvolume.h"
 #include "tablewidget.h"
-#include "kwalletconfiginput.h"
+#include "walletconfiginput.h"
 #include "utility.h"
 #include "lxqt_wallet/frontend/lxqt_wallet.h"
 
@@ -37,7 +37,7 @@
 
 #define COMMENT "-zuluCrypt_Comment_ID"
 
-kwalletconfig::kwalletconfig( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::kwalletconfig )
+walletconfig::walletconfig( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::walletconfig )
 {
 	m_ui->setupUi( this ) ;
 
@@ -57,12 +57,12 @@ kwalletconfig::kwalletconfig( QWidget * parent ) : QDialog( parent ),m_ui( new U
 		 this,SLOT( itemClicked( QTableWidgetItem * ) ) ) ;
 }
 
-void kwalletconfig::currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous )
+void walletconfig::currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous )
 {
 	tablewidget::selectTableRow( current,previous ) ;
 }
 
-void kwalletconfig::itemClicked( QTableWidgetItem * item )
+void walletconfig::itemClicked( QTableWidgetItem * item )
 {
 	this->disableAll() ;
 
@@ -82,17 +82,17 @@ void kwalletconfig::itemClicked( QTableWidgetItem * item )
 	this->enableAll() ;
 }
 
-void kwalletconfig::pbDelete()
+void walletconfig::pbDelete()
 {
 	this->itemClicked( m_ui->tableWidget->currentItem() ) ;
 }
 
-void kwalletconfig::pbClose()
+void walletconfig::pbClose()
 {
 	this->HideUI() ;
 }
 
-void kwalletconfig::add( QString volumeID,QString comment,QString key )
+void walletconfig::add( QString volumeID,QString comment,QString key )
 {
 	if( comment.isEmpty() ){
 		comment = QString( "Nil" ) ;
@@ -113,25 +113,25 @@ void kwalletconfig::add( QString volumeID,QString comment,QString key )
 	 * we and hide and delete this object here and not in the object itself because some backends(libsecret) takes too long
 	 * to complete and UI freeze maybe noticiable
 	 */
-	m_kwalletConfig->hide() ;
-	m_kwalletConfig->deleteLater() ;
+	m_walletConfig->hide() ;
+	m_walletConfig->deleteLater() ;
 }
 
-void kwalletconfig::cancel()
+void walletconfig::cancel()
 {
 	this->enableAll() ;
 }
 
-void kwalletconfig::pbAdd()
+void walletconfig::pbAdd()
 {
 	this->disableAll() ;
-	m_kwalletConfig = new kwalletconfiginput( this ) ;
-	connect( m_kwalletConfig,SIGNAL( add( QString,QString,QString ) ),this,SLOT( add( QString,QString,QString ) ) ) ;
-	connect( m_kwalletConfig,SIGNAL( cancel() ),this,SLOT( cancel() ) ) ;
-	m_kwalletConfig->ShowUI() ;
+	m_walletConfig = new walletconfiginput( this ) ;
+	connect( m_walletConfig,SIGNAL( add( QString,QString,QString ) ),this,SLOT( add( QString,QString,QString ) ) ) ;
+	connect( m_walletConfig,SIGNAL( cancel() ),this,SLOT( cancel() ) ) ;
+	m_walletConfig->ShowUI() ;
 }
 
-void kwalletconfig::ShowUI( lxqt::Wallet::walletBackEnd backEnd )
+void walletconfig::ShowUI( lxqt::Wallet::walletBackEnd backEnd )
 {
 	this->disableAll() ;
 	this->show() ;
@@ -144,7 +144,7 @@ void kwalletconfig::ShowUI( lxqt::Wallet::walletBackEnd backEnd )
 	}
 }
 
-void kwalletconfig::walletIsOpen( bool opened )
+void walletconfig::walletIsOpen( bool opened )
 {
 	if( opened ){
 		this->ShowWalletEntries() ;
@@ -153,7 +153,7 @@ void kwalletconfig::walletIsOpen( bool opened )
 	}
 }
 
-void kwalletconfig::enableAll()
+void walletconfig::enableAll()
 {
 	m_ui->groupBox->setEnabled( true ) ;
 	m_ui->pbAdd->setEnabled( true ) ;
@@ -162,7 +162,7 @@ void kwalletconfig::enableAll()
 	m_ui->tableWidget->setEnabled( true ) ;
 }
 
-void kwalletconfig::disableAll()
+void walletconfig::disableAll()
 {
 	m_ui->groupBox->setEnabled( false ) ;
 	m_ui->pbAdd->setEnabled( false ) ;
@@ -171,14 +171,14 @@ void kwalletconfig::disableAll()
 	m_ui->tableWidget->setEnabled( false ) ;
 }
 
-void kwalletconfig::failedToOpenWallet()
+void walletconfig::failedToOpenWallet()
 {
 	this->enableAll() ;
 	emit couldNotOpenWallet() ;
 	this->HideUI() ;
 }
 
-void kwalletconfig::ShowWalletEntries()
+void walletconfig::ShowWalletEntries()
 {
 	QStringList entries = m_wallet->readAllKeys() ;
 
@@ -217,19 +217,19 @@ void kwalletconfig::ShowWalletEntries()
 	table->setFocus() ;
 }
 
-void kwalletconfig::HideUI()
+void walletconfig::HideUI()
 {
 	this->hide() ;
 	this->deleteLater() ;
 }
 
-void kwalletconfig::closeEvent( QCloseEvent * e )
+void walletconfig::closeEvent( QCloseEvent * e )
 {
 	e->ignore() ;
 	this->HideUI() ;
 }
 
-kwalletconfig::~kwalletconfig()
+walletconfig::~walletconfig()
 {
 	m_wallet->deleteLater() ;
 	delete m_ui;

@@ -17,8 +17,8 @@
  */
 
 
-#ifndef KWALLETCONFIGINPUT_H
-#define KWALLETCONFIGINPUT_H
+#ifndef WALLETCONFIGINPUT_H
+#define WALLETCONFIGINPUT_H
 
 #include <QDialog>
 #include <QString>
@@ -26,15 +26,15 @@
 class QCloseEvent ;
 
 namespace Ui {
-class kwalletconfiginput;
+class walletconfiginput;
 }
 
-class kwalletconfiginput : public QDialog
+class walletconfiginput : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit kwalletconfiginput( QWidget * parent = 0 ) ;
-	~kwalletconfiginput();
+	explicit walletconfiginput( QWidget * parent = 0 ) ;
+	~walletconfiginput();
 	void ShowUI( void ) ;
 signals:
 	void add( QString volumeId,QString comment,QString key ) ;
@@ -49,7 +49,7 @@ private slots:
 	void setvolumeID( QString ) ;
 private:
 	void focus( void ) ;
-	Ui::kwalletconfiginput * m_ui ;
+	Ui::walletconfiginput * m_ui ;
 	void closeEvent( QCloseEvent * ) ;
 };
 

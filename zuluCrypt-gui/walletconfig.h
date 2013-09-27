@@ -17,8 +17,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef KWALLETCONFIG_H
-#define KWALLETCONFIG_H
+#ifndef WALLETCONFIG_H
+#define WALLETCONFIG_H
 
 #include <QDialog>
 #include <QString>
@@ -27,20 +27,19 @@
 
 class QCloseEvent ;
 class QWidget ;
-class kwalletplugin ;
 class QTableWidgetItem ;
-class kwalletconfiginput ;
+class walletconfiginput ;
 
 namespace Ui {
-class kwalletconfig ;
+class walletconfig ;
 }
 
-class kwalletconfig : public QDialog
+class walletconfig : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit kwalletconfig( QWidget * parent = 0 ) ;
-	~kwalletconfig();
+	explicit walletconfig( QWidget * parent = 0 ) ;
+	~walletconfig();
 	void ShowUI( lxqt::Wallet::walletBackEnd ) ;
 	void HideUI( void ) ;
 signals:
@@ -60,10 +59,10 @@ private:
 	void disableAll( void ) ;
 	void failedToOpenWallet( void ) ;
 	void ShowWalletEntries( void ) ;
-	Ui::kwalletconfig * m_ui ;
+	Ui::walletconfig * m_ui ;
 	void closeEvent( QCloseEvent * ) ;
 	lxqt::Wallet::Wallet * m_wallet ;
-	kwalletconfiginput * m_kwalletConfig ;
+	walletconfiginput * m_walletConfig ;
 };
 
 #endif // KWALLETCONFIG_H

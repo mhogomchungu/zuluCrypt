@@ -63,7 +63,7 @@
 #include "dialogmsg.h"
 #include "managesystemvolumes.h"
 #include "userfont.h"
-#include "kwalletconfig.h"
+#include "walletconfig.h"
 #include "tablewidget.h"
 #include "openmountpointinfilemanager.h"
 #include "utility.h"
@@ -342,21 +342,21 @@ void zuluCrypt::optionMenuAboutToShow()
 
 void zuluCrypt::manageVolumesInGNOMEWallet()
 {
-	kwalletconfig * cfg = new kwalletconfig( this ) ;
+	walletconfig * cfg = new walletconfig( this ) ;
 	connect( cfg,SIGNAL( couldNotOpenWallet() ),this,SLOT( failedToOpenWallet() ) ) ;
 	cfg->ShowUI( lxqt::Wallet::secretServiceBackEnd ) ;
 }
 
 void zuluCrypt::manageVolumesInInternalWallet()
 {
-	kwalletconfig * cfg = new kwalletconfig( this ) ;
+	walletconfig * cfg = new walletconfig( this ) ;
 	connect( cfg,SIGNAL( couldNotOpenWallet() ),this,SLOT( failedToOpenWallet() ) ) ;
 	cfg->ShowUI( lxqt::Wallet::internalBackEnd ) ;
 }
 
 void zuluCrypt::manageVolumesInKDEWallet()
 {
-	kwalletconfig * cfg = new kwalletconfig( this ) ;
+	walletconfig * cfg = new walletconfig( this ) ;
 	connect( cfg,SIGNAL( couldNotOpenWallet() ),this,SLOT( failedToOpenWallet() ) ) ;
 	cfg->ShowUI( lxqt::Wallet::kwalletBackEnd ) ;
 }

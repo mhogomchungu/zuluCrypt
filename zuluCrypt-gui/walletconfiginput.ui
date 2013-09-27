@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>kwalletconfiginput</class>
+ <class>walletconfiginput</class>
  <widget class="QDialog" name="kwalletconfiginput">
   <property name="geometry">
    <rect>

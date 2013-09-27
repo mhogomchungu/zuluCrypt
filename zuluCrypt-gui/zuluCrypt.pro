@@ -32,8 +32,6 @@ SOURCES += main.cpp\
     managesystemvolumes.cpp \
     keystrength.cpp \
     userfont.cpp \
-    kwalletconfiginput.cpp \
-    kwalletconfig.cpp \
     tablewidget.cpp \
     socketsendkey.cpp \
     openvolumereadonly.cpp \
@@ -54,7 +52,9 @@ SOURCES += main.cpp\
     keyfiletask.cpp \
     filetask.cpp \
     erasetask.cpp \
-    crypttask.cpp
+    crypttask.cpp \
+    walletconfig.cpp \
+    walletconfiginput.cpp
 
 HEADERS  += zulucrypt.h \
     password_dialog.h \
@@ -78,8 +78,6 @@ HEADERS  += zulucrypt.h \
     managesystemvolumes.h \
     keystrength.h \
     userfont.h \
-    kwalletconfiginput.h \
-    kwalletconfig.h \
     tablewidget.h \
     socketsendkey.h \
     openvolumereadonly.h \
@@ -98,7 +96,9 @@ HEADERS  += zulucrypt.h \
     filetask.h \
     keyfiletask.h \
     erasetask.h \
-    crypttask.h
+    crypttask.h \
+    walletconfig.h \
+    walletconfiginput.h
 
 
 FORMS    += zulucrypt.ui password.ui \
@@ -116,10 +116,10 @@ FORMS    += zulucrypt.ui password.ui \
     createvolumedialog.ui \
     dialogmsg.ui \
     managesystemvolumes.ui \
-    kwalletconfig.ui \
-    kwalletconfiginput.ui \
     lxqt_wallet/frontend/password_dialog.ui \
-    lxqt_wallet/frontend/changepassworddialog.ui
+    lxqt_wallet/frontend/changepassworddialog.ui \
+    walletconfig.ui \
+    walletconfiginput.ui
 
 TRANSLATIONS = ../translations/zuluCrypt/en_US.ts
 

@@ -143,7 +143,6 @@
     <addaction name="actionTray_icon"/>
     <addaction name="actionFonts"/>
     <addaction name="actionManage_names"/>
-    <addaction name="actionUse_kde_default_wallet"/>
     <addaction name="actionManage_volumes_in_internal_wallet"/>
     <addaction name="actionManage_volumes_in_kde_wallet"/>
     <addaction name="actionManage_volumes_in_gnome_wallet"/>
@@ -416,7 +415,7 @@
     <string>manage volumes in internal wallet</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+O</string>
+    <string>Ctrl+V</string>
    </property>
   </action>
   <action name="actionUse_kde_default_wallet">
@@ -439,15 +438,24 @@
    <property name="text">
     <string>manage volumes in kde wallet</string>
    </property>
+   <property name="shortcut">
+    <string>Shift+V</string>
+   </property>
   </action>
   <action name="actionManage_volumes_in_gnome_wallet">
    <property name="text">
     <string>manage volumes in gnome wallet</string>
    </property>
+   <property name="shortcut">
+    <string>Alt+V</string>
+   </property>
   </action>
   <action name="actionChange_internal_wallet_password">
    <property name="text">
     <string>change internal wallet password</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
    </property>
   </action>
  </widget>

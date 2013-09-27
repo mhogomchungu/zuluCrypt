@@ -16,8 +16,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "kwalletconfiginput.h"
-#include "ui_kwalletconfiginput.h"
+#include "walletconfiginput.h"
+#include "ui_walletconfiginput.h"
 
 #include <QDir>
 #include <QFileDialog>
@@ -28,7 +28,7 @@
 #include "openvolume.h"
 #include <QDebug>
 
-kwalletconfiginput::kwalletconfiginput( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::kwalletconfiginput )
+walletconfiginput::walletconfiginput( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::walletconfiginput )
 {
 	m_ui->setupUi( this ) ;
 
@@ -50,23 +50,23 @@ kwalletconfiginput::kwalletconfiginput( QWidget * parent ) : QDialog( parent ),m
 	m_ui->pushButtonVolume->setIcon( QIcon( QString( ":/partition.png" ) ) ) ;
 }
 
-kwalletconfiginput::~kwalletconfiginput()
+walletconfiginput::~walletconfiginput()
 {
 	delete m_ui ;
 }
 
-void kwalletconfiginput::ShowUI()
+void walletconfiginput::ShowUI()
 {
 	this->show() ;
 }
 
-void kwalletconfiginput::HideUI()
+void walletconfiginput::HideUI()
 {
 	this->hide() ;
 	this->deleteLater() ;
 }
 
-void kwalletconfiginput::pbAdd()
+void walletconfiginput::pbAdd()
 {
 	QString volumeID  = m_ui->lineEditVolumeID->text() ;
 	QString comment   = m_ui->lineEditComment->text()  ;
@@ -98,13 +98,13 @@ void kwalletconfiginput::pbAdd()
 	//this->HideUI() ;
 }
 
-void kwalletconfiginput::slotCancel()
+void walletconfiginput::slotCancel()
 {
 	emit cancel() ;
 	this->HideUI() ;
 }
 
-void kwalletconfiginput::pbImageFilePath()
+void walletconfiginput::pbImageFilePath()
 {
 	QString x = QFileDialog::getOpenFileName( this,tr( "select a luks volume" ),QDir::homePath(),0 ) ;
 
@@ -115,7 +115,7 @@ void kwalletconfiginput::pbImageFilePath()
 	}
 }
 
-void kwalletconfiginput::pbVolumePath()
+void walletconfiginput::pbVolumePath()
 {
 	openvolume * op = new openvolume( this ) ;
 	connect( op,SIGNAL( HideUISignal() ),op,SLOT( deleteLater() ) ) ;
@@ -124,7 +124,7 @@ void kwalletconfiginput::pbVolumePath()
 	op->ShowAllPartitions() ;
 }
 
-void kwalletconfiginput::setvolumeID( QString id )
+void walletconfiginput::setvolumeID( QString id )
 {
 	if( id.startsWith( QString( "UUID=") ) ){
 		m_ui->lineEditVolumeID->setText( id ) ;
@@ -140,7 +140,7 @@ void kwalletconfiginput::setvolumeID( QString id )
 	this->focus() ;
 }
 
-void kwalletconfiginput::focus()
+void walletconfiginput::focus()
 {
 	if( m_ui->lineEditComment->text().isEmpty() ){
 		m_ui->lineEditComment->setFocus() ;
@@ -153,7 +153,7 @@ void kwalletconfiginput::focus()
 	}
 }
 
-void kwalletconfiginput::closeEvent( QCloseEvent * e )
+void walletconfiginput::closeEvent( QCloseEvent * e )
 {
 	e->ignore() ;
 	emit cancel() ;

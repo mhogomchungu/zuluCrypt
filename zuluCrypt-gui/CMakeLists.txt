@@ -17,8 +17,8 @@ set (UI_FILES createfile.ui
 		managesystemvolumes.ui
 		managedevicenames.ui
 		erasedevice.ui	
-		kwalletconfig.ui
-		kwalletconfiginput.ui
+		walletconfig.ui
+		walletconfiginput.ui
 		openvolume.ui
 )
 
@@ -45,8 +45,8 @@ set( MOC_FILES createfile.h
 		crypttask.h
 		createvolumedialog.h
 		managesystemvolumes.h
-		kwalletconfig.h
-		kwalletconfiginput.h
+		walletconfig.h
+		walletconfiginput.h
 		../zuluMount-gui/oneinstance.h
  )
 	
@@ -75,8 +75,8 @@ set (SRC createfile.cpp
 	createvolumedialog.cpp
 	managesystemvolumes.cpp
 	keystrength.cpp
-	kwalletconfig.cpp
-	kwalletconfiginput.cpp
+	walletconfig.cpp
+	walletconfiginput.cpp
 	../zuluMount-gui/oneinstance.cpp	
 )
 
