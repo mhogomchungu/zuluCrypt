@@ -134,6 +134,7 @@ private slots :
 	void walletIsOpen( bool ) ;
 	void optionMenuAboutToShow( void ) ;
 private:
+	void updateVolumeList( void ) ;
 	void dragEnterEvent( QDragEnterEvent * );
 	void dropEvent( QDropEvent * );
 	passwordDialog * setUpPasswordDialog( void );
@@ -145,7 +146,6 @@ private:
 	cryptfiles * setUpCryptFiles( void );
 
 	void setLocalizationLanguage( void ) ;
-	void StartUpAddOpenedVolumesToTableThread( void );
 	void setupConnections( void ) ;
 	void setupUIElements( void ) ;
 	void closeEvent( QCloseEvent * ) ;

@@ -19,7 +19,6 @@ SOURCES += main.cpp\
     createvolume.cpp \
     createfile.cpp \
     createkeyfile.cpp \
-    startupupdateopenedvolumes.cpp \
     utility.cpp \
     managedevicenames.cpp \
     partitionproperties.cpp \
@@ -64,7 +63,6 @@ HEADERS  += zulucrypt.h \
     createvolume.h \
     createfile.h \
     createkeyfile.h \
-    startupupdateopenedvolumes.h \
     utility.h \
     managedevicenames.h \
     partitionproperties.h \

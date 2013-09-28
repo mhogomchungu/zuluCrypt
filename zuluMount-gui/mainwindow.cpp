@@ -50,7 +50,6 @@
 #include "monitor_mountinfo.h"
 #include "../zuluCrypt-gui/utility.h"
 #include "task.h"
-#include "../zuluCrypt-gui/openmountpointinfilemanager.h"
 
 MainWindow::MainWindow( int argc,char * argv[],QWidget * parent ) :QWidget( parent ),
 	m_autoMountThread( 0 ),m_autoMountAction( 0 ),m_started( false )
@@ -475,18 +474,23 @@ void MainWindow::fileManagerOpenStatus( int exitCode, int exitStatus,int startEr
 
 void MainWindow::slotOpenSharedFolder()
 {
-	openmountpointinfilemanager * ofm = new openmountpointinfilemanager( m_folderOpener,m_sharedFolderPath ) ;
-	connect( ofm,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
-	ofm->start() ;
+	Task * t = new Task() ;
+	t->setMountPoint( m_sharedFolderPath ) ;
+	t->setMountPointOpener( m_folderOpener ) ;
+	connect( t,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
+	t->start( Task::openMountPoint ) ;
 }
 
 void MainWindow::slotOpenFolder()
 {
 	QTableWidgetItem * item = m_ui->tableWidget->currentItem() ;
 	QString path = m_ui->tableWidget->item( item->row(),1 )->text() ;
-	openmountpointinfilemanager * ofm = new openmountpointinfilemanager( m_folderOpener,path ) ;
-	connect( ofm,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
-	ofm->start() ;
+
+	Task * t = new Task() ;
+	t->setMountPoint( path ) ;
+	t->setMountPointOpener( m_folderOpener ) ;
+	connect( t,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
+	t->start( Task::openMountPoint ) ;
 }
 
 void MainWindow::volumeProperties()

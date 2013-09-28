@@ -30,6 +30,10 @@
 #include "task.h"
 #include "../zuluCrypt-cli/constants.h"
 
+Task::Task()
+{
+}
+
 Task::Task( QString exe ) : m_exe( exe ),m_status( -1 )
 {
 }
@@ -45,10 +49,56 @@ Task::Task( QString path,QString mpoint )
 	m_mpoint = mpoint ;
 }
 
+Task::Task( int st,QString folderOpener,QString path ) :
+	m_status( st ),m_path( path ),m_folderOpener( folderOpener ),m_startError( 0 )
+{
+}
+
 void Task::start( Task::action action )
 {
 	m_action = action ;
 	QThreadPool::globalInstance()->start( this ) ;
+}
+
+void Task::openMountPointTask()
+{
+	QProcess exe ;
+	m_path.replace( "\"","\"\"\"" ) ;
+	exe.start( QString( "%1 \"%2\"" ).arg( m_folderOpener ).arg( m_path ) ) ;
+	exe.waitForFinished() ;
+	m_exitCode = exe.exitCode() ;
+	m_exitStatus = exe.exitStatus() ;
+	exe.close() ;
+}
+
+void Task::updateVolumeListTask()
+{
+	QProcess p ;
+	p.start( QString( ZULUCRYPTzuluCrypt ) + QString( " -L" ) ) ;
+	p.waitForFinished() ;
+	m_status = p.exitCode() ;
+
+	QStringList l = QString( p.readAll() ).split( "\n" ) ;
+
+	if( m_status ){
+		return ;
+	}
+
+	p.close() ;
+
+	int j = l.size() - 1 ;
+
+	if( j == 0 ){
+		return ;
+	}
+	QStringList entry ;
+
+	for( int i = 0 ; i < j ; i++ ){
+		entry = l.at( i ).split( "\t" ) ;
+		if( entry.size() >= 3 ){
+			emit addItemToTable( entry.at( 0 ),entry.at( 1 ),entry.at( 2 ) ) ;
+		}
+	}
 }
 
 void Task::runExeTask()
@@ -128,6 +178,8 @@ void Task::run()
 		case Task::closeVolumeTask      : return this->runExeTask() ;
 		case Task::closeAllVolumeTask   : return this->runCloseAllVolumeTask() ;
 		case Task::volumePropertiesTask : return this->runVolumePropertiesTask() ;
+		case Task::updateVolumeList     : return this->updateVolumeListTask() ;
+		case Task::openMountPoint       : return this->openMountPointTask() ;
 	}
 }
 
@@ -136,4 +188,5 @@ Task::~Task()
 	emit finished( m_status ) ;
 	emit finished( m_status,m_output ) ;
 	emit finished( m_volumeProperties ) ;
+	emit errorStatus( m_exitCode,m_exitStatus,m_startError ) ;
 }

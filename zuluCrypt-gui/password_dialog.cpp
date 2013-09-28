@@ -50,7 +50,6 @@
 #include "../zuluCrypt-cli/constants.h"
 #include "socketsendkey.h"
 #include "openvolumereadonly.h"
-#include "openmountpointinfilemanager.h"
 #include "savemountpointpath.h"
 
 #include "utility.h"
@@ -488,10 +487,11 @@ void passwordDialog::openVolume( QString passPhraseField )
 
 	QString exe = QString( "%1 -o -d \"%2\" -m \"%3\" -e %4 %5 \"%6\"" ).arg( a ).arg( b ).arg( c ).arg( d ).arg( e ).arg( f ) ;
 
+	this->disableAll() ;
+
 	Task * t = new Task( exe ) ;
 	connect( t,SIGNAL( finished( int,QString ) ),this,SLOT( taskFinished( int,QString ) ) ) ;
 	m_isWindowClosable = false ;
-	this->disableAll() ;
 	t->start() ;
 }
 
@@ -577,9 +577,9 @@ void passwordDialog::success( QString output )
 {
 	if( utility::mapperPathExists( m_device ) ){
 		this->complete( output ) ;
-		openmountpointinfilemanager * omp = new openmountpointinfilemanager( m_folderOpener,utility::mountPath( m_point ) ) ;
-		connect( omp,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
-		omp->start() ;
+		Task * t = new Task( 0,m_folderOpener,utility::mountPath( m_point ) ) ;
+		connect( t,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
+		t->start( Task::openMountPoint ) ;
 	}else{
 		/*
 		 * we arrive here if zuluCrypt-cli reports a volume was opened but it was not.

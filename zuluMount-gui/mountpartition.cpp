@@ -37,7 +37,6 @@
 #include "../zuluCrypt-gui/userfont.h"
 #include "../zuluCrypt-gui/openvolumereadonly.h"
 #include "../zuluCrypt-gui/tablewidget.h"
-#include "../zuluCrypt-gui/openmountpointinfilemanager.h"
 #include "../zuluCrypt-gui/savemountpointpath.h"
 #include "../zuluCrypt-gui/utility.h"
 
@@ -47,7 +46,7 @@ mountPartition::mountPartition( QWidget * parent,QTableWidget * table,QString fo
 	m_ui->setupUi( this ) ;
 	m_ui->checkBoxShareMountPoint->setToolTip( utility::shareMountPointToolTip() ) ;
 	m_table = table ;
-	
+
 	this->setFixedSize( this->size() ) ;
 	this->setWindowFlags( Qt::Window | Qt::Dialog ) ;
 	this->setFont( parent->font() ) ;
@@ -63,7 +62,7 @@ mountPartition::mountPartition( QWidget * parent,QTableWidget * table,QString fo
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->checkBox,SIGNAL( stateChanged( int ) ),this,SLOT( stateChanged( int ) ) ) ;
 	connect( m_ui->checkBoxMountReadOnly,SIGNAL( stateChanged(int) ),this,SLOT( checkBoxReadOnlyStateChanged( int ) ) ) ;
-	
+
 	m_ui->pbMountFolder->setIcon( QIcon( QString( ":/folder.png" ) ) ) ;
 
 	userfont F( this ) ;
@@ -120,7 +119,7 @@ void mountPartition::pbCancel()
 void mountPartition::pbMount()
 {
 	QString test_mount = m_ui->lineEdit->text() ;
-	
+
 	if( test_mount.contains( QString( "/" ) ) ){
 		if( this->isVisible() ){
 			DialogMsg msg( this ) ;
@@ -129,18 +128,18 @@ void mountPartition::pbMount()
 		}
 		return ;
 	}
-	
+
 	this->disableAll() ;
-	
+
 	Task * t = new Task() ;
 	t->setDevice( m_path ) ;
-	
+
 	if( m_ui->checkBoxMountReadOnly->isChecked() ){
 		t->setMode( QString( "ro" ) ) ;
 	}else{
 		t->setMode( QString( "rw" ) ) ;
 	}
-	
+
 	m_point = m_ui->lineEdit->text() ;
 	t->setMountPoint( utility::mountPath( m_point ) ) ;
 	connect( t,SIGNAL( signalMountComplete( int,QString ) ),this,SLOT( slotMountComplete( int,QString ) ) ) ;
@@ -221,9 +220,11 @@ void mountPartition::slotMountComplete( int status,QString msg )
 		}
 	}else{
 		if( m_autoOpenFolderOnMount ){
-			openmountpointinfilemanager * omp = new openmountpointinfilemanager( m_folderOpener,utility::mountPath( m_point ) ) ;
-			connect( omp,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
-			omp->start() ;
+			Task * t = new Task() ;
+			t->setMountPoint( utility::mountPath( m_point ) ) ;
+			t->setMountPointOpener( m_folderOpener ) ;
+			connect( t,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
+			t->start( Task::openMountPoint ) ;
 		}
 		emit autoMountComplete() ;
 		this->HideUI() ;

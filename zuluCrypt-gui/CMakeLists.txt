@@ -31,7 +31,6 @@ set( MOC_FILES createfile.h
 		openvolume.h
 		password_dialog.h
 		zulucrypt.h
-		startupupdateopenedvolumes.h
 		task.h
 		managedevicenames.h
 		partitionproperties.h
@@ -59,7 +58,6 @@ set (SRC createfile.cpp
 	luksaddkey.cpp
 	main.cpp
 	password_dialog.cpp
-	startupupdateopenedvolumes.cpp
 	zulucrypt.cpp
 	task.cpp
 	managedevicenames.cpp

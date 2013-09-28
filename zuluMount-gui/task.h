@@ -42,7 +42,8 @@ public:
 		CheckPermissions,
 		systemdevice,
 		checkUnMount,
-		VolumeType
+		VolumeType,
+		openMountPoint
 	};
 	void start( Task::Action ) ;
 	void setMode( QString ) ;
@@ -52,7 +53,9 @@ public:
 	void setMountPoint( QString ) ;
 	void setMakeMountPointPublic( bool ) ;
 	void setList( QStringList ) ;
+	void setMountPointOpener( QString ) ;
 signals:
+	void errorStatus( int exitCode,int exitStatus,int startError ) ;
 	void signalMountComplete( int,QString ) ;
 	void signalUnmountComplete( int,QString ) ;
 	void signalMountedList( QStringList,QStringList ) ;
@@ -62,6 +65,7 @@ signals:
 	void getVolumeInfo( QStringList ) ;
 	void done( void ) ;
 private:
+	void openMountPointTask( void ) ;
 	void checkIfSystemDevice( void ) ;
 	void checkPermissions( void ) ;
 	void openPathInFileManager( void ) ;
@@ -86,6 +90,10 @@ private:
 	bool m_publicMount ;
 	QStringList m_list ;
 	bool m_systemDevice ;
+	QString m_folderOpener ;
+	int m_exitCode ;
+	int m_exitStatus ;
+	int m_startError ;
 };
 
 #endif // MANAGEPARTITIONTHREAD_H

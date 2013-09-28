@@ -53,7 +53,6 @@
 #include "createvolume.h"
 #include "createfile.h"
 #include "createkeyfile.h"
-#include "startupupdateopenedvolumes.h"
 #include "managedevicenames.h"
 #include "checkvolumetype.h"
 #include "cryptoinfo.h"
@@ -65,7 +64,6 @@
 #include "userfont.h"
 #include "walletconfig.h"
 #include "tablewidget.h"
-#include "openmountpointinfilemanager.h"
 #include "utility.h"
 #include "task.h"
 
@@ -110,12 +108,32 @@ void zuluCrypt::setFolderOpener()
 
 void zuluCrypt::setUpApp()
 {
-	setupUIElements() ;
-	setupConnections() ;
-	StartUpAddOpenedVolumesToTableThread() ;
-	initFont() ;
-	initKeyCombo() ;
-	initTray() ;
+	this->setupUIElements() ;
+	this->setupConnections() ;
+	this->initFont() ;
+	this->initKeyCombo() ;
+	this->initTray() ;
+	this->updateVolumeList() ;
+}
+
+void zuluCrypt::updateVolumeList()
+{
+	m_ui->tableWidget->setEnabled( false ) ;
+	Task * t = new Task() ;
+	connect( t,SIGNAL( addItemToTable( QString,QString,QString ) ),this,SLOT( addItemToTable( QString,QString,QString ) ) ) ;
+	connect( t,SIGNAL( finished( int ) ),this,SLOT( startUpdateFinished( int ) ) ) ;
+	t->start( Task::updateVolumeList ) ;
+}
+
+void zuluCrypt::startUpdateFinished( int st )
+{
+	Q_UNUSED( st ) ;
+	m_ui->tableWidget->setEnabled( true ) ;
+	m_ui->tableWidget->setFocus() ;
+	if( !m_device.isEmpty() ){
+		QString y = m_device.split( "/" ).last() ;
+		this->ShowPasswordDialog( m_device,y ) ;
+	}
 }
 
 void zuluCrypt::processArgumentList()
@@ -229,26 +247,6 @@ void zuluCrypt::initTray()
 		m_ui->actionTray_icon->setChecked( false ) ;
 		m_trayIcon->hide() ;
 	}
-}
-
-void zuluCrypt::startUpdateFinished( int st )
-{
-	Q_UNUSED( st ) ;
-	m_ui->tableWidget->setEnabled( true ) ;
-	m_ui->tableWidget->setFocus() ;
-	if( !m_device.isEmpty() ){
-		QString y = m_device.split( "/" ).last() ;
-		this->ShowPasswordDialog( m_device,y ) ;
-	}
-}
-
-void zuluCrypt::StartUpAddOpenedVolumesToTableThread()
-{
-	m_ui->tableWidget->setEnabled( false ) ;
-	startupupdateopenedvolumes * sov = new startupupdateopenedvolumes() ;
-	connect( sov,SIGNAL( addItemToTable( QString,QString,QString ) ),this,SLOT( addItemToTable( QString,QString,QString ) ) ) ;
-	connect( sov,SIGNAL( finished( int ) ),this,SLOT( startUpdateFinished( int ) ) ) ;
-	sov->start() ;
 }
 
 void zuluCrypt::setupUIElements()
@@ -728,9 +726,10 @@ void zuluCrypt::openFolder()
 {
 	QTableWidgetItem * item = m_ui->tableWidget->currentItem() ;
 	QString path = m_ui->tableWidget->item( item->row(),1 )->text() ;
-	openmountpointinfilemanager * omp = new openmountpointinfilemanager( m_folderOpener,path ) ;
-	connect( omp,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
-	omp->start() ;
+
+	Task * t = new Task( 0,m_folderOpener,path ) ;
+	connect( t,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
+	t->start( Task::openMountPoint ) ;
 }
 
 void zuluCrypt::itemClicked( QTableWidgetItem * it )

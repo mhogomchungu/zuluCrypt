@@ -7,7 +7,6 @@ set ( SRC
 	../tablewidget.cpp
 	../socketsendkey.cpp 
 	../openvolumereadonly.cpp 
-	../openmountpointinfilemanager.cpp
 	../savemountpointpath.cpp
 	../utility.cpp
 )
@@ -15,7 +14,6 @@ set ( SRC
 set ( MOC_FILES
 	../dialogmsg.h
 	../socketsendkey.h 
-	../openmountpointinfilemanager.h
 )
 
 add_definitions( -D_FILE_OFFSET_BITS=64 -Wextra -Wall -pedantic -std=c++0x -I${PROJECT_BINARY_DIR}/zuluCrypt-gui/sharedObjects -I${PROJECT_BINARY_DIR}) 

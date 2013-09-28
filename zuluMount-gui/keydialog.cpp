@@ -31,7 +31,6 @@
 #include "plugin_path.h"
 #include "../zuluCrypt-gui/socketsendkey.h"
 #include "../zuluCrypt-gui/openvolumereadonly.h"
-#include "../zuluCrypt-gui/openmountpointinfilemanager.h"
 #include "../zuluCrypt-gui/savemountpointpath.h"
 #include "../zuluCrypt-gui/utility.h"
 #include "../zuluCrypt-gui/lxqt_wallet/frontend/lxqt_wallet.h"
@@ -267,9 +266,11 @@ void keyDialog::slotMountComplete( int st,QString m )
 			 * The volume is reported as opened and it actually is
 			 */
 			if( m_autoOpenFolderOnMount ){
-				openmountpointinfilemanager * omp = new openmountpointinfilemanager( m_folderOpener,utility::mountPath( m_point ) ) ;
-				connect( omp,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
-				omp->start() ;
+				Task * t = new Task() ;
+				t->setMountPoint( utility::mountPath( m_point ) ) ;
+				t->setMountPointOpener( m_folderOpener ) ;
+				connect( t,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
+				t->start( Task::openMountPoint ) ;
 			}
 		}else{
 			/*
@@ -408,17 +409,17 @@ void keyDialog::openVolume()
 	connect( t,SIGNAL( signalMountComplete( int,QString ) ),this,SLOT( slotMountComplete( int,QString ) ) ) ;
 
 	t->setDevice( m_path ) ;
-	
+
 	if( m_ui->checkBoxOpenReadOnly->isChecked() ){
 		t->setMode( QString( "ro" ) ) ;
 	}else{
 		t->setMode( QString( "rw" ) ) ;
 	}
-	
+
 	t->setKeySource( m ) ;
-	
+
 	m_point = m_ui->lineEditMountPoint->text().replace( "\"","\"\"\"" ) ;
-	
+
 	t->setMountPoint( m_point ) ;
 	t->setMakeMountPointPublic( m_ui->checkBoxShareMountPoint->isChecked() ) ;
 

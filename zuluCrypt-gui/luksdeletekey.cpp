@@ -219,7 +219,7 @@ void luksdeletekey::pbDelete()
 
 	m_isWindowClosable = false ;
 
-	disableAll() ;
+	this->disableAll() ;
 
 	Task * t = new Task( exe ) ;
 	connect( t,SIGNAL( finished( int ) ),this,SLOT( taskFinished( int ) ) ) ;

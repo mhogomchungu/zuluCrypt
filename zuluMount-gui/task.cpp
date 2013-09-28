@@ -66,6 +66,11 @@ void Task::setList( QStringList l )
 	m_list = l ;
 }
 
+void Task::setMountPointOpener( QString opener )
+{
+	m_folderOpener = opener ;
+}
+
 void Task::openPathInFileManager()
 {
 	QProcess p ;
@@ -89,7 +94,19 @@ void Task::run()
 		case Task::VolumeType          : return this->getVolumeType() ;
 		case Task::systemdevice        : return this->checkIfSystemDevice() ;
 		case Task::checkUnMount        : return this->checkUnmount() ;
+		case Task::openMountPoint      : return this->openMountPointTask() ;
 	}
+}
+
+void Task::openMountPointTask()
+{
+	QProcess exe ;
+	m_point.replace( "\"","\"\"\"" ) ;
+	exe.start( QString( "%1 \"%2\"" ).arg( m_folderOpener ).arg( m_point ) ) ;
+	exe.waitForFinished() ;
+	m_exitCode = exe.exitCode() ;
+	m_exitStatus = exe.exitStatus() ;
+	exe.close() ;
 }
 
 void Task::checkUnmount()
@@ -294,4 +311,5 @@ void Task::start( Task::Action action )
 Task::~Task()
 {
 	emit done() ;
+	emit errorStatus( m_exitCode,m_exitStatus,m_startError ) ;
 }

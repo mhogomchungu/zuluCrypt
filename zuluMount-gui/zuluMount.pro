@@ -21,12 +21,12 @@ SOURCES += main.cpp\
     ../zuluCrypt-gui/openvolumereadonly.cpp \
     ../zuluCrypt-gui/socketsendkey.cpp \
     oneinstance.cpp \
-    ../zuluCrypt-gui/openmountpointinfilemanager.cpp \
     ../zuluCrypt-gui/savemountpointpath.cpp \
     ../zuluCrypt-gui/utility.cpp \
     auto_mount.cpp \
     auto_mount_helper.cpp \
     monitor_mountinfo.cpp \
+    task.cpp
 
 HEADERS  += mainwindow.h\
     keydialog.h \
@@ -38,12 +38,12 @@ HEADERS  += mainwindow.h\
     ../zuluCrypt-gui/openvolumereadonly.h \
     ../zuluCrypt-gui/socketsendkey.h \
     oneinstance.h \
-    ../zuluCrypt-gui/openmountpointinfilemanager.h \
     ../zuluCrypt-gui/savemountpointpath.h \
     ../zuluCrypt-gui/utility.h \
     auto_mount.h \
     auto_mount_helper.h \
     monitor_mountinfo.h \
+    task.h
 
 TRANSLATIONS = ../translations/zuluMount/en_US.ts
 

@@ -28,7 +28,7 @@
  * SUCH DAMAGE.
  */
 
-#include "secret_service.h"
+#include <libsecret-1/libsecret/secret.h>
 
 #include <stdlib.h>
 #include <string.h>

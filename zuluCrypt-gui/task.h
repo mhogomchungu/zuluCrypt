@@ -35,21 +35,28 @@ public:
 		exeTask,
 		closeAllVolumeTask,
 		closeVolumeTask,
-		volumePropertiesTask
+		volumePropertiesTask,
+		updateVolumeList,
+		openMountPoint
 	}action ;
 
 	explicit Task( QString exe ) ;
 	Task( QString,QString ) ;
+	Task( int,QString,QString ) ;
 	explicit Task( QTableWidget * ) ;
-
+	Task() ;
 	~Task();
 	void start( Task::action = Task::exeTask ) ;
 signals:
+	void addItemToTable( QString,QString,QString ) ;
 	void finished( QString ) ;
 	void finished( int ) ;
 	void finished( int,QString ) ;
 	void taskResult( QTableWidgetItem *,int ) ;
+	void errorStatus( int exitCode,int exitStatus,int startError ) ;
 private:
+	void openMountPointTask( void ) ;
+	void updateVolumeListTask( void ) ;
 	void run( void ) ;
 	void runExeTask( void ) ;
 	void runCloseAllVolumeTask( void ) ;
@@ -63,6 +70,10 @@ private:
 	QString m_path ;
 	QString m_mpoint ;
 	QString m_volumeProperties ;
+	QString m_folderOpener ;
+	int m_exitCode ;
+	int m_exitStatus ;
+	int m_startError ;
 };
 
 #endif // RUNINTHREAD_H

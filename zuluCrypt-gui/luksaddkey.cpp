@@ -297,7 +297,7 @@ void luksaddkey::pbAdd( void )
 
 	m_isWindowClosable = false ;
 
-	disableAll() ;
+	this->disableAll() ;
 
 	Task * t = new Task( exe ) ;
 
