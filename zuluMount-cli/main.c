@@ -208,7 +208,7 @@ static int _zuluPartitionHasCryptoFs( const char * device )
 	zuluCryptSecurityDropElevatedPrivileges() ;
 	if( fs == StringVoid ){
 		/*
-		 * no file system is found,assuming the volume is crypto_PLAIN volume
+		 * no file system is found,assuming it is a non LUKS encrypted volume
 		 */	
 		return 1 ;
 	}else{

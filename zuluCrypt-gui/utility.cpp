@@ -229,6 +229,17 @@ QString utility::applicationName()
 	return "zuluCrypt" ;
 }
 
+bool utility::pathIsReadable( QString path )
+{
+	int fd = open( path.toAscii().constData(),O_RDONLY ) ;
+	if( fd != -1 ){
+		close( fd ) ;
+		return true ;
+	}else{
+		return false ;
+	}
+}
+
 void utility::debug( QString s )
 {
 	std::cout << s.toStdString() << std::endl ;

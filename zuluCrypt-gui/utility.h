@@ -55,6 +55,7 @@ public:
 	static QString walletName( void ) ;
 	static QString defaultKDEWalletName( void ) ;
 	static QString applicationName( void ) ;
+	static bool pathIsReadable( QString ) ;
 };
 
 #endif // MISCFUNCTIONS_H

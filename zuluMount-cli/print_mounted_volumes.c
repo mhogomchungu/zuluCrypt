@@ -473,7 +473,7 @@ int zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t 
 	p = StringListHasStartSequence_1( stl,e ) ;
 	if( p != StringVoid ){
 		/*
-		 * mounted encrypted volume opened by this user
+		 * mounted and encrypted volume opened by this user
 		 */
 		zuluMountPrintDeviceProperties_1( p,uid ) ;
 	}else{
@@ -495,7 +495,7 @@ int zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t 
 			/*
 			 * We will get here is:
 			 * 1. The volume is not mounted
-			 * 2. The volume is encrypted mounted by a different user
+			 * 2. The volume is encrypted and mounted by a different user
 			 */
 			it  = StringListBegin( stl ) ;
 			end = StringListEnd( stl ) ;
