@@ -42,7 +42,6 @@ public:
 
 	explicit Task( QString exe ) ;
 	Task( QString,QString ) ;
-	Task( int,QString,QString ) ;
 	explicit Task( QTableWidget * ) ;
 	Task() ;
 	~Task();
@@ -66,7 +65,6 @@ private:
 	int m_status ;
 	QTableWidget * m_table ;
 	Task::action m_action ;
-	QString m_fusefs ;
 	QString m_path ;
 	QString m_mpoint ;
 	QString m_volumeProperties ;

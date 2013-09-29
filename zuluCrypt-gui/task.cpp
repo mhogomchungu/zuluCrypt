@@ -44,14 +44,9 @@ Task::Task( QTableWidget * table ) : m_table( table )
 
 Task::Task( QString path,QString mpoint )
 {
-	m_fusefs = path ;
 	m_path = path.replace( "\"","\"\"\"" ) ;
-	m_mpoint = mpoint ;
-}
-
-Task::Task( int st,QString folderOpener,QString path ) :
-	m_status( st ),m_path( path ),m_folderOpener( folderOpener ),m_startError( 0 )
-{
+	m_folderOpener = m_path ;
+	m_mpoint = mpoint.replace( "\"","\"\"\"" ) ;
 }
 
 void Task::start( Task::action action )
@@ -64,7 +59,7 @@ void Task::openMountPointTask()
 {
 	QProcess exe ;
 	m_path.replace( "\"","\"\"\"" ) ;
-	exe.start( QString( "%1 \"%2\"" ).arg( m_folderOpener ).arg( m_path ) ) ;
+	exe.start( QString( "%1 \"%2\"" ).arg( m_folderOpener ).arg( m_mpoint ) ) ;
 	exe.waitForFinished() ;
 	m_exitCode = exe.exitCode() ;
 	m_exitStatus = exe.exitStatus() ;

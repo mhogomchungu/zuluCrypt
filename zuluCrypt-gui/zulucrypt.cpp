@@ -727,7 +727,7 @@ void zuluCrypt::openFolder()
 	QTableWidgetItem * item = m_ui->tableWidget->currentItem() ;
 	QString path = m_ui->tableWidget->item( item->row(),1 )->text() ;
 
-	Task * t = new Task( 0,m_folderOpener,path ) ;
+	Task * t = new Task( m_folderOpener,path ) ;
 	connect( t,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
 	t->start( Task::openMountPoint ) ;
 }

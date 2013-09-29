@@ -577,7 +577,7 @@ void passwordDialog::success( QString output )
 {
 	if( utility::mapperPathExists( m_device ) ){
 		this->complete( output ) ;
-		Task * t = new Task( 0,m_folderOpener,utility::mountPath( m_point ) ) ;
+		Task * t = new Task( m_folderOpener,utility::mountPath( m_point ) ) ;
 		connect( t,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
 		t->start( Task::openMountPoint ) ;
 	}else{
