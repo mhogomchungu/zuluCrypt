@@ -34,7 +34,7 @@ Task::Task()
 {
 }
 
-Task::Task( QString exe ) : m_exe( exe ),m_status( -1 )
+Task::Task( QString exe ) : m_exe( exe ),m_status( -1 ),m_partitionType( exe )
 {
 }
 
@@ -165,6 +165,48 @@ void Task::runVolumePropertiesTask()
 	}
 }
 
+void Task::runVolumeTask()
+{
+	QProcess p ;
+
+	/*
+	  Root user can create encrypted volumes in all partitions including system partitions.
+	  Show all partitions, not only non system.
+	  */
+	if( m_partitionType == QString( " -N" ) && getuid() == 0 ){
+		m_partitionType = QString( " -A" ) ;
+	}
+
+	p.start( QString( ZULUCRYPTzuluCrypt ) + m_partitionType + QString( " -Z" ) ) ;
+
+	p.waitForFinished() ;
+
+	QStringList l = QString( p.readAllStandardOutput() ).split( "\n" ) ;
+
+	p.close() ;
+	int j = l.size() - 1 ;
+	if( j < 1 ){
+		return ;
+	}
+	QStringList list ;
+	QString entry ;
+	for ( int i = 0 ; i < j ; i++ ){
+		list = l.at( i ).split( "\t" ) ;
+		entry = list.at( 3 ) ;
+		/*
+		 * MDRAID partitions have "linux_raid_member" as their file system
+		 * LVM partitions have "LVM2_member" as their file system
+		 *
+		 * we are not showing these partitions since we dont support them
+		 */
+		if( entry.contains( QString( "member" ) ) ){
+			;
+		}else{
+			emit partitionProperties( list ) ;
+		}
+	}
+}
+
 void Task::run()
 {
 	switch( m_action ){
@@ -174,11 +216,13 @@ void Task::run()
 		case Task::volumePropertiesTask : return this->runVolumePropertiesTask() ;
 		case Task::updateVolumeList     : return this->updateVolumeListTask() ;
 		case Task::openMountPoint       : return this->openMountPointTask() ;
+		case Task::volumeTask           : return this->runVolumeTask() ;
 	}
 }
 
 Task::~Task()
 {
+	emit finished() ;
 	emit finished( m_status ) ;
 	emit finished( m_status,m_output ) ;
 	emit finished( m_volumeProperties ) ;

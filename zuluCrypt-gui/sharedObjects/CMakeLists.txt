@@ -6,8 +6,6 @@ set ( SRC
 	../userfont.cpp
 	../tablewidget.cpp
 	../socketsendkey.cpp 
-	../openvolumereadonly.cpp 
-	../savemountpointpath.cpp
 	../utility.cpp
 )
 

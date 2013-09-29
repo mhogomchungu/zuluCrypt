@@ -35,9 +35,7 @@
 #include "task.h"
 #include "../zuluCrypt-gui/dialogmsg.h"
 #include "../zuluCrypt-gui/userfont.h"
-#include "../zuluCrypt-gui/openvolumereadonly.h"
 #include "../zuluCrypt-gui/tablewidget.h"
-#include "../zuluCrypt-gui/savemountpointpath.h"
 #include "../zuluCrypt-gui/utility.h"
 
 mountPartition::mountPartition( QWidget * parent,QTableWidget * table,QString folderOpener,bool autoOpenFolderOnMount ) :
@@ -55,7 +53,7 @@ mountPartition::mountPartition( QWidget * parent,QTableWidget * table,QString fo
 
 	m_ui->pbMount->setFocus() ;
 
-	m_ui->checkBoxMountReadOnly->setCheckState( openvolumereadonly::getOption( QString( "zuluMount-gui" ) ) ) ;
+	m_ui->checkBoxMountReadOnly->setChecked( utility::getOpenVolumeReadOnlyOption( QString( "zuluMount-gui" ) ) ) ;
 
 	connect( m_ui->pbMount,SIGNAL( clicked() ),this,SLOT(pbMount() ) ) ;
 	connect( m_ui->pbMountFolder,SIGNAL( clicked() ),this,SLOT( pbOpenMountPath() ) ) ;
@@ -75,7 +73,8 @@ mountPartition::mountPartition( QWidget * parent,QTableWidget * table,QString fo
 void mountPartition::checkBoxReadOnlyStateChanged( int state )
 {
 	m_ui->checkBoxMountReadOnly->setEnabled( false ) ;
-	m_ui->checkBoxMountReadOnly->setChecked( openvolumereadonly::setOption( this,state,QString( "zuluMount-gui" ) ) ) ;
+	m_ui->checkBoxMountReadOnly->setChecked( utility::setOpenVolumeReadOnly( this,state == Qt::Checked,QString( "zuluMount-gui" ) ) ) ;
+
 	m_ui->checkBoxMountReadOnly->setEnabled( true ) ;
 	if( m_ui->lineEdit->text().isEmpty() ){
 		m_ui->lineEdit->setFocus() ;
@@ -166,7 +165,6 @@ void mountPartition::ShowUI( QString path,QString label )
 	m_label = label ;
 	m_point = m_path.split( QString( "/" ) ).last() ;
 	m_ui->lineEdit->setText( m_point ) ;
-	//m_ui->lineEdit->setText( savemountpointpath::getPath( path,QString( "zuluMount-MountPointPath" ) ) ) ;
 
 	if( label == QString( "Nil" ) ){
 		m_ui->checkBox->setEnabled( false ) ;

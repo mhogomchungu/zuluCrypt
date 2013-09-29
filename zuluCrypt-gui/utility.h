@@ -56,6 +56,8 @@ public:
 	static QString defaultKDEWalletName( void ) ;
 	static QString applicationName( void ) ;
 	static bool pathIsReadable( QString ) ;
+	static bool setOpenVolumeReadOnly( QWidget * parent,bool check,QString app ) ;
+	static bool getOpenVolumeReadOnlyOption( QString app ) ;
 };
 
 #endif // MISCFUNCTIONS_H

@@ -23,6 +23,8 @@
 #include <QRunnable>
 #include <QObject>
 #include <QThreadPool>
+#include <QString>
+#include <QStringList>
 
 class QTableWidget ;
 class QTableWidgetItem ;
@@ -37,7 +39,8 @@ public:
 		closeVolumeTask,
 		volumePropertiesTask,
 		updateVolumeList,
-		openMountPoint
+		openMountPoint,
+		volumeTask
 	}action ;
 
 	explicit Task( QString exe ) ;
@@ -47,8 +50,10 @@ public:
 	~Task();
 	void start( Task::action = Task::exeTask ) ;
 signals:
+	void partitionProperties( QStringList ) ;
 	void addItemToTable( QString,QString,QString ) ;
 	void finished( QString ) ;
+	void finished( void ) ;
 	void finished( int ) ;
 	void finished( int,QString ) ;
 	void taskResult( QTableWidgetItem *,int ) ;
@@ -60,6 +65,7 @@ private:
 	void runExeTask( void ) ;
 	void runCloseAllVolumeTask( void ) ;
 	void runVolumePropertiesTask( void ) ;
+	void runVolumeTask( void ) ;
 	QString m_exe ;
 	QString m_output ;
 	int m_status ;
@@ -69,6 +75,7 @@ private:
 	QString m_mpoint ;
 	QString m_volumeProperties ;
 	QString m_folderOpener ;
+	QString m_partitionType ;
 	int m_exitCode ;
 	int m_exitStatus ;
 	int m_startError ;

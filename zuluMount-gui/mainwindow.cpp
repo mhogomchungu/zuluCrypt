@@ -44,7 +44,6 @@
 #include "../zuluCrypt-gui/userfont.h"
 #include "../zuluCrypt-gui/tablewidget.h"
 #include "mountpartition.h"
-#include "../zuluCrypt-gui/openvolumereadonly.h"
 #include "oneinstance.h"
 #include "auto_mount.h"
 #include "monitor_mountinfo.h"

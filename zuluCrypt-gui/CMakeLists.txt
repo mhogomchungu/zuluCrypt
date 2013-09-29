@@ -33,7 +33,6 @@ set( MOC_FILES createfile.h
 		zulucrypt.h
 		task.h
 		managedevicenames.h
-		partitionproperties.h
 		filetask.h
 		checkvolumetype.h
 		cryptoinfo.h	
@@ -61,7 +60,6 @@ set (SRC createfile.cpp
 	zulucrypt.cpp
 	task.cpp
 	managedevicenames.cpp
-	partitionproperties.cpp
 	filetask.cpp
 	checkvolumetype.cpp
 	cryptoinfo.cpp

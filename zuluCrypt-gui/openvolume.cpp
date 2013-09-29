@@ -22,7 +22,7 @@
 #include <QCloseEvent>
 #include <QDialog>
 #include "ui_openvolume.h"
-#include "partitionproperties.h"
+#include "task.h"
 #include <QProcess>
 #include <iostream>
 #include <QTableWidget>
@@ -32,7 +32,6 @@
 #include <QFile>
 #include <QThreadPool>
 #include <QKeySequence>
-#include "partitionproperties.h"
 #include "../zuluCrypt-cli/constants.h"
 #include "dialogmsg.h"
 #include "tablewidget.h"
@@ -176,12 +175,14 @@ void openvolume::partitionList( QString title,QString type )
 	while ( m_ui->tableWidget->rowCount() > 0 ){
 		m_ui->tableWidget->removeRow( 0 ) ;
 	}
-	partitionproperties * op = new partitionproperties( type ) ;
 
-	connect( op,SIGNAL( finished() ),this,SLOT( partitionpropertiesThreadFinished() ) ) ;
-	connect( op,SIGNAL( partitionProperties( QStringList ) ),this,SLOT( partitionProperties( QStringList ) ) ) ;
+	Task * t = new Task( type ) ;
+
+	connect( t,SIGNAL( finished() ),this,SLOT( partitionpropertiesThreadFinished() ) ) ;
+	connect( t,SIGNAL( partitionProperties( QStringList ) ),this,SLOT( partitionProperties( QStringList ) ) ) ;
+	t->start( Task::volumeTask ) ;
+
 	m_ui->tableWidget->setEnabled( false ) ;
-	op->start() ;
 	this->show() ;
 }
 

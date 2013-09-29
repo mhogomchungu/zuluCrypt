@@ -49,8 +49,6 @@
 #include "tablewidget.h"
 #include "../zuluCrypt-cli/constants.h"
 #include "socketsendkey.h"
-#include "openvolumereadonly.h"
-#include "savemountpointpath.h"
 
 #include "utility.h"
 
@@ -186,13 +184,13 @@ void passwordDialog::pbPluginEntryClicked( QAction * e )
 void passwordDialog::cbStateChanged( int state )
 {
 	m_ui->checkBoxReadOnly->setEnabled( false ) ;
-	m_ui->checkBoxReadOnly->setChecked( openvolumereadonly::setOption( this,state,QString( "zuluCrypt-gui" ) ) ) ;
+	m_ui->checkBoxReadOnly->setChecked( utility::setOpenVolumeReadOnly( this,state == Qt::Checked,QString( "zuluCrypt-gui" ) ) ) ;
 	m_ui->checkBoxReadOnly->setEnabled( true ) ;
 }
 
 void passwordDialog::setDefaultOpenMode()
 {
-	m_ui->checkBoxReadOnly->setCheckState( openvolumereadonly::getOption( QString( "zuluCrypt-gui" ) ) ) ;
+	m_ui->checkBoxReadOnly->setChecked( utility::getOpenVolumeReadOnlyOption( QString( "zuluCrypt-gui" ) ) ) ;
 }
 
 void passwordDialog::closeEvent( QCloseEvent * e )
@@ -215,7 +213,6 @@ void passwordDialog::ShowUI( QString volumePath,QString mount_point )
 	m_ui->OpenVolumePath->setText( volumePath ) ;
 	m_ui->OpenVolumePath->setEnabled( false ) ;
 	m_ui->PushButtonVolumePath->setEnabled( false ) ;
-	//QString mp = savemountpointpath::getPath( mount_point,QString( "zuluCrypt-MountPointPath" ) ) ;
 	m_ui->MountPointPath->setText( m_point ) ;
 	m_ui->PassPhraseField->setFocus() ;
 	QString vp = volumePath.mid( 0,5 ) ;

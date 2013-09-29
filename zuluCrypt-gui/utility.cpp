@@ -49,6 +49,7 @@
 #include "locale_path.h"
 #include "mount_prefix_path.h"
 #include "storage_manager.h"
+#include "dialogmsg.h"
 
 #if HAS_KWALLET_SUPPORT
 	#include <kwallet.h>
@@ -238,6 +239,89 @@ bool utility::pathIsReadable( QString path )
 	}else{
 		return false ;
 	}
+}
+
+bool utility::setOpenVolumeReadOnly( QWidget  * parent,bool check,QString app )
+{
+	QString Path = QDir::homePath() + QString( "/.zuluCrypt/" ) + app ;
+	QFile f( Path + QString( "-openMode" ) ) ;
+
+	f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
+	if( check ){
+		f.write( "1" ) ;
+	}else{
+		f.write( "0" ) ;
+	}
+
+	f.close() ;
+
+	DialogMsg msg( parent ) ;
+	QString m = QObject::tr( "setting this option will cause the volume to open in read only mode" ) ;
+
+	QString path = Path + QString( "-readOnlyOption" ) ;
+
+	f.setFileName( path ) ;
+
+	bool st ;
+	if( f.exists() ){
+		f.open( QIODevice::ReadWrite ) ;
+		QByteArray opt = f.readAll() ;
+		if( opt == QByteArray( "0" ) && check ) {
+			f.seek( 0 ) ;
+
+			st = msg.ShowUIOKDoNotShowOption( QObject::tr( "info" ),m ) ;
+
+			if( st ){
+				f.write( "1" ) ;
+			}else{
+				f.write( "0" ) ;
+			}
+
+			f.close() ;
+		}
+	}else{
+		st = msg.ShowUIOKDoNotShowOption( QObject::tr( "info" ),m ) ;
+
+		f.open( QIODevice::WriteOnly ) ;
+
+		if( st ){
+			f.write( "1" ) ;
+		}else{
+			f.write( "0" ) ;
+		}
+
+		f.close() ;
+	}
+
+	return check ;
+}
+
+bool utility::getOpenVolumeReadOnlyOption( QString app )
+{
+	QString home = QDir::homePath() + QString( "/.zuluCrypt/" ) ;
+	QDir d( home ) ;
+
+	if( d.exists() ){
+		;
+	}else{
+		d.mkdir( home ) ;
+	}
+
+	QFile f( home + app + QString( "-openMode" ) ) ;
+
+	if( f.exists() ){
+		;
+	}else{
+		f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
+		f.write( "0" ) ;
+		f.close() ;
+	}
+
+	f.open( QIODevice::ReadOnly ) ;
+	int st = QString( f.readAll() ).toInt() ;
+
+	f.close() ;
+	return st == 1 ;
 }
 
 void utility::debug( QString s )

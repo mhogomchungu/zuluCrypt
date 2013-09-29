@@ -30,8 +30,6 @@
 #include "../zuluCrypt-cli/constants.h"
 #include "plugin_path.h"
 #include "../zuluCrypt-gui/socketsendkey.h"
-#include "../zuluCrypt-gui/openvolumereadonly.h"
-#include "../zuluCrypt-gui/savemountpointpath.h"
 #include "../zuluCrypt-gui/utility.h"
 #include "../zuluCrypt-gui/lxqt_wallet/frontend/lxqt_wallet.h"
 
@@ -64,8 +62,6 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,QString path,QString
 	}
 	this->setWindowTitle( msg ) ;
 
-	path = savemountpointpath::getPath( path,QString( "zuluMount-MountPointPath" ) ) ;
-
 	m_ui->lineEditMountPoint->setText( path ) ;
 	m_ui->pbkeyFile->setVisible( false ) ;
 	m_ui->pbOpenMountPoint->setIcon( QIcon( QString( ":/folder.png" ) ) ) ;
@@ -78,7 +74,7 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,QString path,QString
 
 	m_ui->lineEditKey->setFocus() ;
 
-	m_ui->checkBoxOpenReadOnly->setChecked( openvolumereadonly::getOption( QString( "zuluMount-gui" ) ) ) ;
+	m_ui->checkBoxOpenReadOnly->setChecked( utility::getOpenVolumeReadOnlyOption( QString( "zuluMount-gui" ) ) ) ;
 
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->pbOpen,SIGNAL( clicked() ),this,SLOT( pbOpen() ) ) ;
@@ -100,7 +96,7 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,QString path,QString
 void keyDialog::cbMountReadOnlyStateChanged( int state )
 {
 	m_ui->checkBoxOpenReadOnly->setEnabled( false ) ;
-	m_ui->checkBoxOpenReadOnly->setChecked( openvolumereadonly::setOption( this,state,QString( "zuluMount-gui" ) ) ) ;
+	m_ui->checkBoxOpenReadOnly->setChecked( utility::setOpenVolumeReadOnly( this,state == Qt::Checked,QString( "zuluMount-gui" ) ) ) ;
 	m_ui->checkBoxOpenReadOnly->setEnabled( true ) ;
 	if( m_ui->lineEditKey->text().isEmpty() ){
 		m_ui->lineEditKey->setFocus() ;
