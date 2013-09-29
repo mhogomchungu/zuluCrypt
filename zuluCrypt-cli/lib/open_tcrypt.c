@@ -61,16 +61,16 @@ int zuluCryptVolumeIsTcrypt( const char * device,const char * key,int key_source
 	
 	if( crypt_init( &cd,device ) < 0 ){
 		return 0 ;
-	}
-	
-	params.passphrase      = key ;
-	params.passphrase_size = StringSize( key );
-	params.flags           = CRYPT_TCRYPT_LEGACY_MODES ;
-	
-	if( crypt_load( cd,CRYPT_TCRYPT,&params ) == 0 ){
-		return zuluExit( 1,cd ) ;
 	}else{
-		return zuluExit( 0,cd ) ;
+		params.passphrase      = key ;
+		params.passphrase_size = StringSize( key );
+		params.flags           = CRYPT_TCRYPT_LEGACY_MODES ;
+	
+		if( crypt_load( cd,CRYPT_TCRYPT,&params ) == 0 ){
+			return zuluExit( 1,cd ) ;
+		}else{
+			return zuluExit( 0,cd ) ;
+		}
 	}
 }
 
@@ -89,29 +89,29 @@ static int _tcrypt_open_using_key( const char * device,const char * mapper,unsig
 	
 	if( crypt_init( &cd,device ) < 0 ){
 		return 1 ;
-	}
-
-	memset( &params,'\0',sizeof( struct crypt_params_tcrypt ) ) ;
-	
-	params.passphrase       = key ;
-	params.passphrase_size  = key_len ;
-	params.flags            = system_header ;
-	
-	if( volume_type == TCRYPT_HIDDEN ){
-		params.flags |= CRYPT_TCRYPT_LEGACY_MODES | CRYPT_TCRYPT_HIDDEN_HEADER ;
 	}else{
-		params.flags |= CRYPT_TCRYPT_LEGACY_MODES ;
-	}
-	if( crypt_load( cd,CRYPT_TCRYPT,&params ) != 0 ){
-		return zuluExit( 1,cd ) ;
-	}
-	if( m_opts & MS_RDONLY ){
-		flags |= CRYPT_ACTIVATE_READONLY;
-	}
-	if( crypt_activate_by_volume_key( cd,mapper,NULL,0,flags ) == 0 ){
-		return zuluExit( 0,cd ) ;
-	}else{
-		return zuluExit( 1,cd ) ;
+		memset( &params,'\0',sizeof( struct crypt_params_tcrypt ) ) ;
+	
+		params.passphrase       = key ;
+		params.passphrase_size  = key_len ;
+		params.flags            = system_header ;
+	
+		if( volume_type == TCRYPT_HIDDEN ){
+			params.flags |= CRYPT_TCRYPT_LEGACY_MODES | CRYPT_TCRYPT_HIDDEN_HEADER ;
+		}else{
+			params.flags |= CRYPT_TCRYPT_LEGACY_MODES ;
+		}
+		if( crypt_load( cd,CRYPT_TCRYPT,&params ) != 0 ){
+			return zuluExit( 1,cd ) ;
+		}
+		if( m_opts & MS_RDONLY ){
+			flags |= CRYPT_ACTIVATE_READONLY;
+		}
+		if( crypt_activate_by_volume_key( cd,mapper,NULL,0,flags ) == 0 ){
+			return zuluExit( 0,cd ) ;
+		}else{
+			return zuluExit( 1,cd ) ;
+		}
 	}
 }
 
@@ -200,29 +200,29 @@ static int _tcrypt_open_using_keyfile_1( const char * device,const char * mapper
 	
 	if( crypt_init( &cd,device ) < 0 ){
 		return 1 ;
-	}
-	
-	memset( &params,'\0',sizeof( struct crypt_params_tcrypt ) ) ;
-	
-	params.keyfiles_count = 1 ;
-	params.keyfiles       = &keyfile ;
-	params.flags          = system_header ;
-	
-	if( volume_type == TCRYPT_HIDDEN ){
-		params.flags |= CRYPT_TCRYPT_LEGACY_MODES | CRYPT_TCRYPT_HIDDEN_HEADER ;
 	}else{
-		params.flags |= CRYPT_TCRYPT_LEGACY_MODES ;
-	}
-	if( crypt_load( cd,CRYPT_TCRYPT,&params ) != 0 ){
-		return zuluExit( 1,cd ) ;
-	}
-	if( m_opts & MS_RDONLY ){
-		flags |= CRYPT_ACTIVATE_READONLY;
-	}
-	if( crypt_activate_by_volume_key( cd,mapper,NULL,0,flags ) == 0 ){
-		return zuluExit( 0,cd ) ;
-	}else{
-		return zuluExit( 1,cd ) ;
+		memset( &params,'\0',sizeof( struct crypt_params_tcrypt ) ) ;
+		
+		params.keyfiles_count = 1 ;
+		params.keyfiles       = &keyfile ;
+		params.flags          = system_header ;
+		
+		if( volume_type == TCRYPT_HIDDEN ){
+			params.flags |= CRYPT_TCRYPT_LEGACY_MODES | CRYPT_TCRYPT_HIDDEN_HEADER ;
+		}else{
+			params.flags |= CRYPT_TCRYPT_LEGACY_MODES ;
+		}
+		if( crypt_load( cd,CRYPT_TCRYPT,&params ) != 0 ){
+			return zuluExit( 1,cd ) ;
+		}
+		if( m_opts & MS_RDONLY ){
+			flags |= CRYPT_ACTIVATE_READONLY;
+		}
+		if( crypt_activate_by_volume_key( cd,mapper,NULL,0,flags ) == 0 ){
+			return zuluExit( 0,cd ) ;
+		}else{
+			return zuluExit( 1,cd ) ;
+		}
 	}
 }
 

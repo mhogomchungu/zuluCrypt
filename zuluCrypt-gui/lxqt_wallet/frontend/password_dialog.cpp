@@ -142,6 +142,7 @@ void lxqt::Wallet::password_dialog::passwordIsCorrect( bool correctPassword )
 		m_ui->pushButtonCancel->setVisible( false ) ;
 		m_ui->pushButtonOK->setVisible( false ) ;
 		m_ui->pushButtonOK_2->setVisible( true ) ;
+		m_ui->pushButtonOK_2->setFocus() ;
 	}
 }
 
