@@ -418,7 +418,7 @@ void keyDialog::openVolume()
 
 	t->setKeySource( m ) ;
 
-	m_point = m_ui->lineEditMountPoint->text().replace( "\"","\"\"\"" ) ;
+	m_point = m_ui->lineEditMountPoint->text() ;
 
 	t->setMountPoint( m_point ) ;
 	t->setMakeMountPointPublic( m_ui->checkBoxShareMountPoint->isChecked() ) ;

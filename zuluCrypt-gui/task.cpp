@@ -58,7 +58,6 @@ void Task::start( Task::action action )
 void Task::openMountPointTask()
 {
 	QProcess exe ;
-	m_path.replace( "\"","\"\"\"" ) ;
 	exe.start( QString( "%1 \"%2\"" ).arg( m_folderOpener ).arg( m_mpoint ) ) ;
 	exe.waitForFinished() ;
 	m_exitCode = exe.exitCode() ;

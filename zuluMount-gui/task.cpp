@@ -53,7 +53,7 @@ void Task::setKeySource( QString key )
 
 void Task::setMountPoint( QString m )
 {
-	m_point = m ;
+	m_point = m.replace( "\"","\"\"\"" ) ;
 }
 
 void Task::setMakeMountPointPublic( bool opt )
@@ -101,7 +101,6 @@ void Task::run()
 void Task::openMountPointTask()
 {
 	QProcess exe ;
-	m_point.replace( "\"","\"\"\"" ) ;
 	exe.start( QString( "%1 \"%2\"" ).arg( m_folderOpener ).arg( m_point ) ) ;
 	exe.waitForFinished() ;
 	m_exitCode = exe.exitCode() ;
@@ -112,7 +111,7 @@ void Task::openMountPointTask()
 void Task::checkUnmount()
 {
 	QProcess p ;
-	QString exe = QString( "%1 -c -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;
+	QString exe = QString( "%1 -c -d \"%2\"" ).arg( zuluMount ).arg( m_device.replace( "\"","\"\"\"" ) ) ;
 	p.start( exe ) ;
 	p.waitForFinished() ;
 }
@@ -141,7 +140,7 @@ void Task::getVolumeType()
 	this->checkIfSystemDevice() ;
 
 	QProcess p ;
-	QString exe = QString( "%1 -L -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;
+	QString exe = QString( "%1 -L -d \"%2\"" ).arg( zuluMount ).arg( m_device.replace( "\"","\"\"\"" ) ) ;
 	p.start( exe ) ;
 	p.waitForFinished() ;
 
@@ -200,7 +199,7 @@ void Task::volumeProperties()
 	QProcess p ;
 	QString exe ;
 
-	exe = QString( "%1 -s -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;
+	exe = QString( "%1 -s -d \"%2\"" ).arg( zuluMount ).arg( m_device.replace( "\"","\"\"\"" ) ) ;
 
 	p.start( exe ) ;
 	p.waitForFinished( -1 ) ;
@@ -221,7 +220,7 @@ void Task::volumeMiniProperties()
 	QProcess p ;
 	QString exe ;
 	//sleep( 1 ) ; for UI effect
-	exe = QString( "%1 -L -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;
+	exe = QString( "%1 -L -d \"%2\"" ).arg( zuluMount ).arg( m_device.replace( "\"","\"\"\"" ) ) ;
 
 	p.start( exe ) ;
 	p.waitForFinished( -1 ) ;
@@ -241,7 +240,9 @@ void Task::cryptoOpen()
 	QProcess p ;
 	QString exe ;
 
-	exe = QString( "%1 -m -d \"%2\" -z \"%3\" -e %4 %5" ).arg( zuluMount ).arg( m_device ).arg( m_point ).arg( m_mode ).arg( m_keySource ) ;
+	QString d = m_device.replace( "\"","\"\"\"" ) ;
+
+	exe = QString( "%1 -m -d \"%2\" -z \"%3\" -e %4 %5" ).arg( zuluMount ).arg( d ).arg( m_point ).arg( m_mode ).arg( m_keySource ) ;
 
 	if( m_publicMount ){
 		exe = exe + QString( " -M" ) ;
@@ -264,8 +265,10 @@ void Task::mount()
 	QProcess p ;
 	QString exe ;
 
+	QString d = m_device.replace( "\"","\"\"\"" ) ;
+
 	if( m_point.isEmpty() ){
-		m_point = QDir::homePath() + QString( "/" ) + m_device.split( "/" ).last() ;
+		m_point = QDir::homePath() + QString( "/" ) + d.split( "/" ).last() ;
 	}
 
 	exe = QString( "%1 -m -d \"%2\" -e %3 -z \"%4\"" ).arg( zuluMount ).arg( m_device ).arg( m_mode ).arg( m_point ) ;
@@ -289,7 +292,7 @@ void Task::mount()
 void Task::umount()
 {
 	QProcess p ;
-	QString exe = QString( "%1 -u -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;
+	QString exe = QString( "%1 -u -d \"%2\"" ).arg( zuluMount ).arg( m_device.replace( "\"","\"\"\"" ) ) ;
 
 	p.start( exe ) ;
 	p.waitForFinished( -1 ) ;

@@ -209,7 +209,6 @@ void passwordDialog::ShowUI( QString volumePath,QString mount_point )
 	if( m_point.isEmpty() ){
 		m_point = volumePath.split( QString( "/" ) ).last() ;
 	}
-	m_point.remove( QString( "\"" ) ) ;
 
 	m_open_with_path = true ;
 	this->passphraseOption() ;

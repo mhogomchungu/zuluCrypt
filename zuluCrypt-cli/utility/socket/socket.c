@@ -75,20 +75,20 @@ static inline socket_t _SocketLocal( void )
 	
 	if( s == NULL ){
 		return SocketVoid ;
-	}
-	
-	memset( s,'\0',sizeof( struct SocketType_t ) ) ;
-	
-	s->local = ( struct sockaddr_un * ) malloc( sizeof( struct sockaddr_un ) ) ;
-	
-	if( s->local == NULL ){
-		free( s ) ;
-		return _SocketError() ;
 	}else{
-		s->size = ( socklen_t )sizeof( struct sockaddr_un ) ;
-		memset( s->local,'\0',( size_t )s->size ) ;
-		s->local->sun_family = AF_UNIX ;
-		return s ;
+		memset( s,'\0',sizeof( struct SocketType_t ) ) ;
+	
+		s->local = ( struct sockaddr_un * ) malloc( sizeof( struct sockaddr_un ) ) ;
+	
+		if( s->local == NULL ){
+			free( s ) ;
+			return _SocketError() ;
+		}else{
+			s->size = ( socklen_t )sizeof( struct sockaddr_un ) ;
+			memset( s->local,'\0',( size_t )s->size ) ;
+			s->local->sun_family = AF_UNIX ;
+			return s ;
+		}
 	}
 }
 
@@ -98,21 +98,21 @@ static inline socket_t _SocketNet( void )
 	
 	if( s == NULL ){
 		return SocketVoid ;
-	}
-	
-	memset( s,'\0',sizeof( struct SocketType_t ) ) ;
-	
-	s->net = ( struct sockaddr_in * ) malloc( sizeof( struct sockaddr_in ) ) ;
-	
-	if( s->net == NULL ){
-		free( s ) ;
-		return _SocketError() ;
 	}else{
-		s->inetAddress = NULL ;
-		s->size = ( socklen_t )sizeof( struct sockaddr_in ) ;
-		memset( s->net,'\0',( size_t )s->size ) ;
-		s->net->sin_family = AF_INET ;
-		return s ;
+		memset( s,'\0',sizeof( struct SocketType_t ) ) ;
+	
+		s->net = ( struct sockaddr_in * ) malloc( sizeof( struct sockaddr_in ) ) ;
+	
+		if( s->net == NULL ){
+			free( s ) ;
+			return _SocketError() ;
+		}else{
+			s->inetAddress = NULL ;
+			s->size = ( socklen_t )sizeof( struct sockaddr_in ) ;
+			memset( s->net,'\0',( size_t )s->size ) ;
+			s->net->sin_family = AF_INET ;
+			return s ;
+		}
 	}
 }
 
@@ -122,21 +122,22 @@ static inline socket_t _SocketNet6( void )
 	
 	if( s == NULL ){
 		return SocketVoid ;
-	}
-	
-	memset( s,'\0',sizeof( struct SocketType_t ) ) ;
-	
-	s->net6 = ( struct sockaddr_in6 * ) malloc( sizeof( struct sockaddr_in6 ) ) ;
-	
-	if( s->net6 == NULL ){
-		free( s ) ;
-		return _SocketError() ;
 	}else{
-		s->inetAddress = NULL ;
-		s->size = ( socklen_t )sizeof( struct sockaddr_in6 ) ;
-		memset( s->net6,'\0',( size_t )s->size ) ;
-		s->net6->sin6_family = AF_INET6 ;
-		return s ;
+	
+		memset( s,'\0',sizeof( struct SocketType_t ) ) ;
+	
+		s->net6 = ( struct sockaddr_in6 * ) malloc( sizeof( struct sockaddr_in6 ) ) ;
+	
+		if( s->net6 == NULL ){
+			free( s ) ;
+			return _SocketError() ;
+		}else{
+			s->inetAddress = NULL ;
+			s->size = ( socklen_t )sizeof( struct sockaddr_in6 ) ;
+			memset( s->net6,'\0',( size_t )s->size ) ;
+			s->net6->sin6_family = AF_INET6 ;
+			return s ;
+		}
 	}
 }
 
@@ -148,6 +149,7 @@ socket_t Socket( int domain,int type,int protocol )
 	if( domain != AF_UNIX && domain != AF_INET && domain != AF_INET6 ){
 		return SocketVoid ;
 	}
+	
 	fd = socket( domain,type,protocol ) ;
 	
 	if( fd == -1 ){
@@ -206,7 +208,7 @@ socket_t SocketNetWithOptions( const char * address,int port,int type,int protoc
 	struct addrinfo hint ;
 	struct sockaddr_in * addr_in ;
 	
-	memset ( &hint,0,sizeof( hint ) ) ;
+	memset( &hint,0,sizeof( hint ) ) ;
 	hint.ai_family = AF_INET ;
 	hint.ai_socktype = type ;
 	hint.ai_protocol = protocol ;
@@ -239,7 +241,7 @@ socket_t SocketNetWithOptions6( const char * address,int port,int type,int proto
 	
 	char buffer[ INET6_ADDRSTRLEN ] ;
 	
-	memset ( &hint,0,sizeof( struct addrinfo ) ) ;
+	memset( &hint,0,sizeof( struct addrinfo ) ) ;
 	hint.ai_family = AF_INET6 ;
 	hint.ai_socktype = type ;
 	hint.ai_protocol = protocol ;
@@ -311,12 +313,13 @@ const char * SocketAddress( socket_t s )
 {	
 	if( s == SocketVoid ){
 		return NULL ;
-	}
-	switch( s->domain ){
-		case AF_UNIX : return s->local->sun_path ;
-		case AF_INET : return _SocketNetAddress( s ) ;
-		case AF_INET6: return _SocketNetAddress6( s ) ;
-		default      : return NULL ;
+	}else{
+		switch( s->domain ){
+			case AF_UNIX : return s->local->sun_path ;
+			case AF_INET : return _SocketNetAddress( s ) ;
+			case AF_INET6: return _SocketNetAddress6( s ) ;
+			default      : return NULL ;
+		}
 	}
 }
 
@@ -345,34 +348,34 @@ static inline socket_t _SocketAcceptLocal( socket_t s )
 	
 	if( x == NULL ){
 		return _SocketError() ;
-	}
-	
-	memset( x,'\0',sizeof( struct SocketType_t ) ) ;
-	
-	x->local = ( struct sockaddr_un * ) malloc( size ) ;
-	
-	if( x->local == NULL ){
-		free( x ) ;
-		x = _SocketError() ;
 	}else{
-		x->size = ( socklen_t ) size ;
-		memset( x->local,'\0',size ) ;
-		x->fd = accept( s->fd,( struct sockaddr * )x->local,&x->size ) ;
-		if( x->fd == -1 ){
-			free( x->local ) ;
+		memset( x,'\0',sizeof( struct SocketType_t ) ) ;
+	
+		x->local = ( struct sockaddr_un * ) malloc( size ) ;
+	
+		if( x->local == NULL ){
 			free( x ) ;
-			x = SocketVoid ;
+			x = _SocketError() ;
 		}else{
-			strcpy( x->local->sun_path,s->local->sun_path ) ;
-			x->inetAddress = NULL ;
-			x->domain = AF_UNIX ;
-			x->type = SOCK_STREAM ;
-			x->protocol = 0 ;
-			x->cmax = 1 ;
-			x->socket_server = 0 ;
+			x->size = ( socklen_t ) size ;
+			memset( x->local,'\0',size ) ;
+			x->fd = accept( s->fd,( struct sockaddr * )x->local,&x->size ) ;
+			if( x->fd == -1 ){
+				free( x->local ) ;
+				free( x ) ;
+				x = SocketVoid ;
+			}else{
+				strcpy( x->local->sun_path,s->local->sun_path ) ;
+				x->inetAddress = NULL ;
+				x->domain = AF_UNIX ;
+				x->type = SOCK_STREAM ;
+				x->protocol = 0 ;
+				x->cmax = 1 ;
+				x->socket_server = 0 ;
+			}
 		}
+		return x ;
 	}
-	return x ;
 }
 
 static inline socket_t _SocketAcceptNet( socket_t s )
@@ -382,33 +385,32 @@ static inline socket_t _SocketAcceptNet( socket_t s )
 	
 	if( x == NULL ){
 		return _SocketError() ;
-	}
-	
-	memset( x,'\0',sizeof( struct SocketType_t ) ) ;
-	
-	x->net = ( struct sockaddr_in * ) malloc( size ) ;
-	if( x->net == NULL ){
-		free( x ) ;
-		x = _SocketError() ;
 	}else{
-		x->size = ( socklen_t )size ;
-		memset( x->net,'\0',size ) ; 
-		x->fd = accept( s->fd,( struct sockaddr * )x->net,&x->size ) ;
-		if( x->fd == -1 ){
-			free( x->net ) ;
-			free( x ) ;
-			x = SocketVoid ;
-		}else{
-			x->inetAddress = NULL ;
-			x->domain = AF_INET ;
-			x->type = SOCK_STREAM ;
-			x->protocol = 0 ;
-			x->cmax = 1 ;
-			x->socket_server = 0 ;
-		}
-	}
+		memset( x,'\0',sizeof( struct SocketType_t ) ) ;
 	
-	return x ;
+		x->net = ( struct sockaddr_in * ) malloc( size ) ;
+		if( x->net == NULL ){
+			free( x ) ;
+			x = _SocketError() ;
+		}else{
+			x->size = ( socklen_t )size ;
+			memset( x->net,'\0',size ) ;
+			x->fd = accept( s->fd,( struct sockaddr * )x->net,&x->size ) ;
+			if( x->fd == -1 ){
+				free( x->net ) ;
+				free( x ) ;
+				x = SocketVoid ;
+			}else{
+				x->inetAddress = NULL ;
+				x->domain = AF_INET ;
+				x->type = SOCK_STREAM ;
+				x->protocol = 0 ;
+				x->cmax = 1 ;
+				x->socket_server = 0 ;
+			}
+		}
+		return x ;
+	}
 }
 
 static inline socket_t _SocketAcceptNet6( socket_t s )
@@ -418,33 +420,32 @@ static inline socket_t _SocketAcceptNet6( socket_t s )
 	
 	if( x == NULL ){
 		return _SocketError() ;
-	}
-	
-	memset( x,'\0',sizeof( struct SocketType_t ) ) ;
-	
-	x->net6 = ( struct sockaddr_in6 * ) malloc( size ) ;
-	if( x->net6 == NULL ){
-		free( x ) ;
-		x = _SocketError() ;
 	}else{
-		x->size = ( socklen_t )size ;
-		memset( x->net6,'\0',size ) ; 
-		x->fd = accept( s->fd,( struct sockaddr * )x->net6,&x->size ) ;
-		if( x->fd == -1 ){
-			free( x->net6 ) ;
-			free( x ) ;
-			x = SocketVoid ;
-		}else{
-			x->inetAddress = NULL ;
-			x->domain = AF_INET6 ;
-			x->type = SOCK_STREAM ;
-			x->protocol = 0 ;
-			x->cmax = 1 ;
-			x->socket_server = 0 ;
-		}
-	}
+		memset( x,'\0',sizeof( struct SocketType_t ) ) ;
 	
-	return x ;
+		x->net6 = ( struct sockaddr_in6 * ) malloc( size ) ;
+		if( x->net6 == NULL ){
+			free( x ) ;
+			x = _SocketError() ;
+		}else{
+			x->size = ( socklen_t )size ;
+			memset( x->net6,'\0',size ) ;
+			x->fd = accept( s->fd,( struct sockaddr * )x->net6,&x->size ) ;
+			if( x->fd == -1 ){
+				free( x->net6 ) ;
+				free( x ) ;
+				x = SocketVoid ;
+			}else{
+				x->inetAddress = NULL ;
+				x->domain = AF_INET6 ;
+				x->type = SOCK_STREAM ;
+				x->protocol = 0 ;
+				x->cmax = 1 ;
+				x->socket_server = 0 ;
+			}
+		}
+		return x ;
+	}
 }
 
 socket_t SocketAccept( socket_t s ) 
@@ -463,9 +464,10 @@ int SocketIsBlocking( socket_t s )
 	
 	if( s == SocketVoid ){
 		return -1 ;
+	}else{
+		flags = fcntl( s->fd,F_GETFL,0 ) ;
+		return flags != ( flags | O_NONBLOCK ) ;
 	}
-	flags = fcntl( s->fd,F_GETFL,0 ) ;
-	return flags != ( flags | O_NONBLOCK ) ;
 }
 
 #define READ  1
@@ -597,13 +599,14 @@ ssize_t SocketGetData_2( socket_t s,char * buffer,size_t len )
 	ssize_t e ;
 	if( s == SocketVoid ){
 		return -1 ;
+	}else{
+		len = len - 1 ;
+		e = read( s->fd,buffer,len ) ;
+		if( e >= 0 ){
+			buffer[ e ] = '\0' ;
+		}
+		return e ;
 	}
-	len = len - 1 ;
-	e = read( s->fd,buffer,len ) ; 
-	if( e >= 0 ){
-		buffer[ e ] = '\0' ;
-	}
-	return e ;
 }
 
 #define BUFFSIZE 32
@@ -648,44 +651,44 @@ size_t SocketGetData( socket_t s,char ** e )
 	if( f == NULL ){
 		_SocketError() ;
 		return 0 ;
-	}
-	
-	fd = s->fd ;
-	
-	while( 1 ){
-		result = read( fd,buffer,BUFFSIZE ) ;
-		
-		if( result <= 0 ){
-			break ;
-		}
-		
-		d = __expandBuffer( f,total + result,&buff_size ) ;
-		
-		if( d == NULL ){
-			return 0 ;
-		}
-		
-		f = d ;
-		
-		memcpy( f + total,buffer,result ) ;
-		total = total + result ;
-	}
-	
-	if( total ){
-		d = ( char * ) realloc( f,total + 1 ) ;
-		if( d == NULL ){
-			free( f ) ;
-			_SocketError() ;
-			return 0 ;
-		}else{
-			d[ total ] = '\0' ;
-			*e = d ;
-		}
 	}else{
-		free( f ) ;
+		fd = s->fd ;
+		
+		while( 1 ){
+			result = read( fd,buffer,BUFFSIZE ) ;
+			
+			if( result <= 0 ){
+				break ;
+			}
+			
+			d = __expandBuffer( f,total + result,&buff_size ) ;
+			
+			if( d == NULL ){
+				return 0 ;
+			}
+			
+			f = d ;
+			
+			memcpy( f + total,buffer,result ) ;
+			total = total + result ;
+		}
+		
+		if( total ){
+			d = ( char * ) realloc( f,total + 1 ) ;
+			if( d == NULL ){
+				free( f ) ;
+				_SocketError() ;
+				return 0 ;
+			}else{
+				d[ total ] = '\0' ;
+				*e = d ;
+			}
+		}else{
+			free( f ) ;
+		}
+		
+		return total ;
 	}
-	
-	return total ;
 }
 
 size_t SocketGetData_1( socket_t s,char ** e,size_t len ) 
@@ -708,49 +711,48 @@ size_t SocketGetData_1( socket_t s,char ** e,size_t len )
 	if( f == NULL ){
 		_SocketError() ;
 		return 0 ;
-	}
-	
-	fd = s->fd ;
-	
-	while( 1 ){
-		result = read( fd,buffer,BUFFSIZE ) ;
-		
-		if( result <= 0 ){
-			break ;
-		}
-		
-		d = __expandBuffer( f,total + result,&buff_size ) ;
-		
-		if( d == NULL ){
-			return 0 ;
-		}
-		
-		f = d ;
-		
-		memcpy( f + total,buffer,result ) ;
-		total = total + result ;
-		
-		if( total >= len ){
-			total = len ;
-			break ;
-		}
-	}
-	
-	if( total ){
-		d = ( char * ) realloc( f,total + 1 ) ;
-		if( d == NULL ){
-			free( f ) ;
-			_SocketError() ;
-			return 0 ;
-		}else{
-			d[ total ] = '\0' ;
-			*e = d ;
-		}
 	}else{
-		free( f ) ;
+		fd = s->fd ;
+		while( 1 ){
+			result = read( fd,buffer,BUFFSIZE ) ;
+			
+			if( result <= 0 ){
+				break ;
+			}
+			
+			d = __expandBuffer( f,total + result,&buff_size ) ;
+			
+			if( d == NULL ){
+				return 0 ;
+			}
+			
+			f = d ;
+			
+			memcpy( f + total,buffer,result ) ;
+			total = total + result ;
+			
+			if( total >= len ){
+				total = len ;
+				break ;
+			}
+		}
+		
+		if( total ){
+			d = ( char * ) realloc( f,total + 1 ) ;
+			if( d == NULL ){
+				free( f ) ;
+				_SocketError() ;
+				return 0 ;
+			}else{
+				d[ total ] = '\0' ;
+				*e = d ;
+			}
+		}else{
+			free( f ) ;
+		}
+		
+		return total ;
 	}
-	
-	return total ;
 }
 
 ssize_t SocketSendData( socket_t s,const char * buffer,size_t len ) 
@@ -760,12 +762,12 @@ ssize_t SocketSendData( socket_t s,const char * buffer,size_t len )
 	
 	if( s == SocketVoid || buffer == NULL || len == 0 ){
 		return -1 ;
+	}else{
+		do{
+			sent = sent + write( s->fd,buffer + sent,remain ) ;
+			remain = remain - sent ;
+		}while( sent != len );
+	
+		return sent ;
 	}
-	
-	do{
-		sent = sent + write( s->fd,buffer + sent,remain ) ;
-		remain = remain - sent ;
-	}while( sent != len );
-	
-	return sent ;
 }
