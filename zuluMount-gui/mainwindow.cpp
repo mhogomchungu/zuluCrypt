@@ -494,7 +494,7 @@ void MainWindow::slotOpenFolder()
 void MainWindow::volumeProperties()
 {
 	this->disableAll() ;
-	
+
 	Task * t = new Task() ;
 	t->setDevice( m_ui->tableWidget->item( m_ui->tableWidget->currentRow(),0 )->text() ) ;
 	connect( t,SIGNAL( signalProperties( QString ) ),this,SLOT( volumeProperties( QString ) ) ) ;
@@ -790,7 +790,7 @@ void MainWindow::pbUpdate()
 	}
 
 	m_ui->tableWidget->setEnabled( false ) ;
-	
+
 	Task * t = new Task() ;
 	connect( t,SIGNAL( signalMountedList( QStringList,QStringList ) ),this,SLOT( slotMountedList( QStringList,QStringList ) ) ) ;
 	t->start( Task::Update ) ;

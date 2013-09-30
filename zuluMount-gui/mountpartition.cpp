@@ -144,7 +144,6 @@ void mountPartition::pbMount()
 	connect( t,SIGNAL( signalMountComplete( int,QString ) ),this,SLOT( slotMountComplete( int,QString ) ) ) ;
 
 	t->setMakeMountPointPublic( m_ui->checkBoxShareMountPoint->isChecked() ) ;
-
 	t->start( Task::Mount ) ;
 }
 

@@ -83,9 +83,6 @@ void auto_mount::run()
 	connect( m_mtoto,SIGNAL( terminated() ),m_mtoto,SLOT( deleteLater() ) ) ;
 	connect( m_mtoto,SIGNAL( terminated() ),this,SLOT( deleteLater() ) ) ;
 
-	#define BUFF_SIZE 4096
-	char buffer[ BUFF_SIZE ];
-
 	m_fdDir = inotify_init() ;
 	if( m_fdDir == -1 ){
 		qDebug() << "inotify_init() failed to start,automounting is turned off" ;
@@ -104,29 +101,39 @@ void auto_mount::run()
 		md = inotify_add_watch( m_fdDir,"/dev/md",IN_DELETE ) ;
 	}
 
-	struct inotify_event * pevent ;
+	const struct inotify_event * pevent ;
 	QString device ;
 
 	const char * f ;
 	const char * z ;
 	int data_read ;
 	int baseSize = sizeof( struct inotify_event ) ;
-
+	
+	#define BUFF_SIZE 4096
+	char buffer[ BUFF_SIZE ];
+	
 	while( 1 ) {
 
 		data_read = read( m_fdDir,buffer,BUFF_SIZE ) ;
 
 		z = buffer + data_read ;
+		f = buffer ;
 
-		for( f = buffer ; f < z ; f = f + baseSize + pevent->len ){
+		while( f < z ){
 
-			pevent = ( struct inotify_event * )f ;
+			pevent = reinterpret_cast< const struct inotify_event * >( f ) ;
 
-			m_device = f + baseSize ;
+			if( pevent ){
+				m_device = f + baseSize ;
+				f = f + baseSize + pevent->len ;
+			}else{
+				f = f + baseSize ;
+				continue ;
+			}
 
 			#define stringPrefixMatch( x,y,z ) strncmp( x,y,z ) == 0
 			#define stringEqual( x,y ) strcmp( x,y ) == 0
-			#define stringHasComponent( x,y ) strstr( x,y ) != NULL
+			#define stringHasComponent( x,y ) strstr( x,y ) != 0
 
 			if(     stringPrefixMatch( m_device,"sg",2 ) ||
 				stringPrefixMatch( m_device,"dm-",3 ) ||
