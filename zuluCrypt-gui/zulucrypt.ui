@@ -404,7 +404,7 @@
   </action>
   <action name="actionManage_system_partitions">
    <property name="text">
-    <string>manage system partitions</string>
+    <string>manage system volumes</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+C</string>
@@ -428,7 +428,7 @@
   </action>
   <action name="actionManage_non_system_partitions">
    <property name="text">
-    <string>manage non system partitions</string>
+    <string>manage non system volumes</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+M</string>
