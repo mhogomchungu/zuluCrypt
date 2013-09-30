@@ -146,7 +146,7 @@ void createkeyfile::pbCreate()
 		return ;
 	}
 
-	disableAll() ;
+	this->disableAll() ;
 
 	m_task = new keyFileTask( path,m_ui->comboBoxRNG->currentIndex() ) ;
 	connect( m_task,SIGNAL( exitStatus( int ) ),this,SLOT( threadExitStatus( int ) ) ) ;

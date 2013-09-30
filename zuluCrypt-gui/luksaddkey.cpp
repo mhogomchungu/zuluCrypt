@@ -102,7 +102,7 @@ void luksaddkey::closeEvent( QCloseEvent * e )
 {
 	e->ignore() ;
 	if( m_isWindowClosable ){
-		HideUI() ;
+		this->HideUI() ;
 	}
 }
 

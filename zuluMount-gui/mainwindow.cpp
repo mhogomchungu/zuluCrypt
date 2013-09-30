@@ -467,7 +467,6 @@ void MainWindow::fileManagerOpenStatus( int exitCode, int exitStatus,int startEr
 	if( exitCode != 0 || exitStatus != 0 ){
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "warning" ),x ) ;
-
 	}
 }
 
@@ -495,6 +494,7 @@ void MainWindow::slotOpenFolder()
 void MainWindow::volumeProperties()
 {
 	this->disableAll() ;
+	
 	Task * t = new Task() ;
 	t->setDevice( m_ui->tableWidget->item( m_ui->tableWidget->currentRow(),0 )->text() ) ;
 	connect( t,SIGNAL( signalProperties( QString ) ),this,SLOT( volumeProperties( QString ) ) ) ;
@@ -789,11 +789,10 @@ void MainWindow::pbUpdate()
 		m_ui->tableWidget->removeRow( 0 ) ;
 	}
 
-	Task * t = new Task() ;
-
 	m_ui->tableWidget->setEnabled( false ) ;
+	
+	Task * t = new Task() ;
 	connect( t,SIGNAL( signalMountedList( QStringList,QStringList ) ),this,SLOT( slotMountedList( QStringList,QStringList ) ) ) ;
-
 	t->start( Task::Update ) ;
 }
 

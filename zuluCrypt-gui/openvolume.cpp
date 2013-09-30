@@ -240,13 +240,13 @@ void openvolume::tableEntryDoubleClicked( QTableWidgetItem * item )
 		dev = tw->item( item->row(),0 )->text() ;
 	}
 	emit clickedPartition( dev ) ;
-	HideUI() ;
+	this->HideUI() ;
 }
 
 void openvolume::closeEvent( QCloseEvent * e )
 {
 	e->ignore() ;
-	HideUI() ;
+	this->HideUI() ;
 }
 
 openvolume::~openvolume()

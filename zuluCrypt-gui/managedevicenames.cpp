@@ -219,7 +219,7 @@ managedevicenames::~managedevicenames()
 void managedevicenames::closeEvent( QCloseEvent * e )
 {
 	e->ignore() ;
-	HideUI() ;
+	this->HideUI() ;
 }
 
 void managedevicenames::currentItemChanged( QTableWidgetItem * current, QTableWidgetItem * previous )

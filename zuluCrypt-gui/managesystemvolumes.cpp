@@ -138,21 +138,21 @@ void manageSystemVolumes::contextMenu()
 
 void manageSystemVolumes::itemClicked( QTableWidgetItem * current,bool clicked )
 {
-	if( !current )
-		return ;
-	QMenu m ;
-	m.setFont( this->font() ) ;
-	connect( m.addAction( tr( "remove selected entry" ) ),SIGNAL( triggered() ),this,SLOT( removeCurrentRow() ) ) ;
+	if( current ){
+		QMenu m ;
+		m.setFont( this->font() ) ;
+		connect( m.addAction( tr( "remove selected entry" ) ),SIGNAL( triggered() ),this,SLOT( removeCurrentRow() ) ) ;
 
-	m.addSeparator() ;
-	m.addAction( tr( "cancel" ) ) ;
+		m.addSeparator() ;
+		m.addAction( tr( "cancel" ) ) ;
 
-	if( clicked ){
-		m.exec( QCursor::pos() ) ;
-	}else{
-		int x = m_ui->tableWidget->columnWidth( 0 ) / 2 ;
-		int y = m_ui->tableWidget->rowHeight( current->row() ) * current->row() + 20 ;
-		m.exec( m_ui->tableWidget->mapToGlobal( QPoint( x,y ) ) ) ;
+		if( clicked ){
+			m.exec( QCursor::pos() ) ;
+		}else{
+			int x = m_ui->tableWidget->columnWidth( 0 ) / 2 ;
+			int y = m_ui->tableWidget->rowHeight( current->row() ) * current->row() + 20 ;
+			m.exec( m_ui->tableWidget->mapToGlobal( QPoint( x,y ) ) ) ;
+		}
 	}
 }
 

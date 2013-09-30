@@ -103,7 +103,7 @@ void luksdeletekey::pbOpenKeyFile()
 
 void luksdeletekey::ShowUI()
 {
-	enableAll() ;
+	this->enableAll() ;
 	m_ui->rbPassphrase->setEnabled( true ) ;
 	m_ui->labelPassphrase->setText( tr( "key" ) ) ;
 	m_ui->rbPassphrase->setChecked( true ) ;
@@ -121,7 +121,7 @@ void luksdeletekey::ShowUI()
 void luksdeletekey::ShowUI( QString path )
 {
 	m_ui->lineEditVolumePath->setText( path ) ;
-	ShowUI() ;
+	this->ShowUI() ;
 }
 
 void luksdeletekey::disableAll()
@@ -158,7 +158,7 @@ void luksdeletekey::enableAll()
 
 void luksdeletekey::pbCancel()
 {
-	HideUI() ;
+	this->HideUI() ;
 }
 
 void luksdeletekey::pbOpenPartition()
@@ -193,18 +193,18 @@ void luksdeletekey::pbDelete()
 		s = s + tr( "\nDeleting it will make the volume unopenable and lost forever." ) ;
 		s = s + tr( "\nAre you sure you want to delete this key?" ) ;
 
-		if(  msg.ShowUIYesNoDefaultNo( tr( "WARNING" ),s ) == QMessageBox::No ){
+		if( msg.ShowUIYesNoDefaultNo( tr( "WARNING" ),s ) == QMessageBox::No ){
 			return ;
 		}
 	}else{
 		QString s = tr( "are you sure you want to delete a key from this volume?" ) ;
-		if(  msg.ShowUIYesNoDefaultNo( tr( "WARNING" ),s ) == QMessageBox::No ){
+		if( msg.ShowUIYesNoDefaultNo( tr( "WARNING" ),s ) == QMessageBox::No ){
 			return ;
 		}
 	}
 
 	QString passType ;
-	if (  m_ui->rbPassphraseFromFile->isChecked() == true ){
+	if (  m_ui->rbPassphraseFromFile->isChecked() ){
 		passphrase = utility::resolvePath( passphrase ) ;
 		passType = QString( "-f" ) ;
 	}else{
@@ -241,7 +241,7 @@ void luksdeletekey::taskFinished( int status )
 				success = tr( "key removed successfully.\n%1 / %2 slots are now in use" ).arg( l.at( 0 ) ).arg( l.at( 1 ) ) ;
 			}
 			msg.ShowUIOK( tr( "SUCCESS!" ),success ) ;
-			return HideUI() ;
+			return this->HideUI() ;
 		case 2 : msg.ShowUIOK( tr( "ERROR!" ),tr( "there is no key in the volume that match the presented key" ) ) ;				break ;
 		case 3 : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open the volume" ) ) ;								break ;
 		case 4 : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open a system device,\
@@ -260,7 +260,7 @@ only root user or members of group zulucrypt-system can do that" ) ) ;										
 		default :msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR! with status number %1 encountered" ).arg( status ) ) ;
 	}
 
-	enableAll() ;
+	this->enableAll() ;
 
 	if( status == 2 ){
 		m_ui->lineEditPassphrase->clear() ;

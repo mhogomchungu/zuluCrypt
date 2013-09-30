@@ -80,7 +80,7 @@ void createfile::closeEvent( QCloseEvent * e )
 	if( m_task != NULL ){
 		return ;
 	}
-	pbCancel() ;
+	this->pbCancel() ;
 }
 
 void createfile::enableAll()
@@ -112,7 +112,7 @@ void createfile::disableAll()
 
 void createfile::showUI()
 {
-	enableAll() ;
+	this->enableAll() ;
 	m_ui->comboBox->setCurrentIndex( 1 ) ;
 	m_ui->lineEditFileName->clear() ;
 	m_ui->lineEditFilePath->setText( QDir::homePath() + QString( "/") ) ;
@@ -148,6 +148,7 @@ void createfile::pbCreate()
 	if( fileSize.isEmpty()){
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "file size field is empty" ) ) ;
 	}
+
 	bool test ;
 
 	fileSize.toInt( &test ) ;
@@ -155,6 +156,7 @@ void createfile::pbCreate()
 	if( test == false ){
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Illegal character in the file size field.Only digits are allowed" ) ) ;
 	}
+
 	m_path = filePath ;
 
 	if( utility::exists( m_path ) ){
@@ -177,11 +179,12 @@ void createfile::pbCreate()
 		case 2 :m_fileSize = fileSize.toULongLong() * BLOCK_SIZE * BLOCK_SIZE  * BLOCK_SIZE ;
 			break ;
 	}
+
 	if( m_fileSize < 3145728 ){
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "container file must be bigger than 3MB" ) ) ;
 	}
 
-	disableAll() ;
+	this->disableAll() ;
 
 	m_task = new FileTask( m_path,m_fileSize ) ;
 
@@ -215,13 +218,13 @@ void createfile::exitStatus( int status )
 	}
 
 	emit fileCreated( m_path ) ;
-	HideUI() ;
+	this->HideUI() ;
 }
 
 void createfile::pbCancel()
 {
 	if( m_task == NULL ){
-		return HideUI() ;
+		return this->HideUI() ;
 	}
 	QString x = tr( "terminating file creation process" ) ;
 	QString y = tr( "are you sure you want to stop file creation process?" ) ;
