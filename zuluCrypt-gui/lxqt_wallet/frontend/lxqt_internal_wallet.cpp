@@ -57,9 +57,6 @@ void lxqt::Wallet::internalWallet::taskResult( bool opened )
 
 bool lxqt::Wallet::internalWallet::openWallet( QString password )
 {
-	/*
-	 * we run this one on the non main thread because the password GUI prompt would block if it run for too long
-	 */
 	lxqt::Wallet::Task * t = new lxqt::Wallet::Task( &m_wallet,password,m_walletName,m_applicationName ) ;
 	if( t ){
 		m_password = password ;
@@ -174,40 +171,29 @@ QByteArray lxqt::Wallet::internalWallet::readValue( const QString& key )
 QVector<lxqt::Wallet::walletKeyValues> lxqt::Wallet::internalWallet::readAllKeyValues( void )
 {
 	QVector<lxqt::Wallet::walletKeyValues> w ;
-
-	const char * e = _lxqt_wallet_get_wallet_data( m_wallet ) ;
-	if( e == 0 ){
-		return w ;
-	}else{
-		lxqt::Wallet::walletKeyValues s ;
-		lxqt_wallet_iterator_t iter ;
-		iter.iter_pos = 0 ;
-		while( lxqt_wallet_iter_read_value( m_wallet,&iter ) ){
-			s.key   = QByteArray( iter.entry.key,iter.entry.key_size - 1 ) ;
-			s.value = QByteArray( iter.entry.key_value,iter.entry.key_value_size ) ;
-			w.append( s ) ;
-		}
-
-		return w ;
+	lxqt::Wallet::walletKeyValues s ;
+	lxqt_wallet_iterator_t iter ;
+	
+	iter.iter_pos = 0 ;
+	
+	while( lxqt_wallet_iter_read_value( m_wallet,&iter ) ){
+		s.key   = QByteArray( iter.entry.key,iter.entry.key_size - 1 ) ;
+		s.value = QByteArray( iter.entry.key_value,iter.entry.key_value_size ) ;
+		w.append( s ) ;
 	}
+	return w ;
 }
 
 QStringList lxqt::Wallet::internalWallet::readAllKeys()
 {
 	QStringList l ;
-
-	const char * e = _lxqt_wallet_get_wallet_data( m_wallet ) ;
-	if( e == 0 ){
-		return l ;
-	}else{
-		lxqt_wallet_iterator_t iter ;
-		iter.iter_pos = 0 ;
-		while( lxqt_wallet_iter_read_value( m_wallet,&iter ) ){
-			l.append( QByteArray( iter.entry.key,iter.entry.key_size - 1 ) ) ;
-		}
-
-		return l ;
+	lxqt_wallet_iterator_t iter ;
+	
+	iter.iter_pos = 0 ;
+	while( lxqt_wallet_iter_read_value( m_wallet,&iter ) ){
+		l.append( QByteArray( iter.entry.key,iter.entry.key_size - 1 ) ) ;
 	}
+	return l ;
 }
 
 bool lxqt::Wallet::internalWallet::addKey( const QString& key,const QByteArray& value )
