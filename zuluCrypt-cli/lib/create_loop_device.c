@@ -46,8 +46,9 @@ string_t zuluCryptLoopDeviceAddress_2( const char * device )
 	int fd ;
 	char * path ;
 	struct loop_info64 l_info ;
-	string_t st = String( "/sys/block/" ) ;
-	string_t xt = StringGetFromVirtualFile( StringMultipleAppend( st,device + 5,"/loop/backing_file",END ) ) ;
+	string_t st = String( "" ) ;
+	const char * e = StringMultipleAppend( st,"/sys/block/",device + 5,"/loop/backing_file",END ) ;
+	string_t xt = StringGetFromVirtualFile( e ) ;
 	StringDelete( &st ) ;
 	if( xt == StringVoid ){
 		memset( &l_info,'\0',sizeof( struct loop_info64 ) ) ;
@@ -143,7 +144,7 @@ static int open_loop_device_1( string_t * loop_device )
 	for( i = 0 ; i < 255 ; i++ ){
 		StringAppendAt( st,0,"/dev/loop" ) ;
 		path = StringAppendInt( st,i ) ;
-		fd = open( path,O_RDONLY );
+		fd = open( path,O_RDONLY ) ;
 		if( fd == -1 ){
 			r = 0 ;
 			break ;
@@ -171,20 +172,17 @@ static int open_loop_device( string_t * loop_device )
 	
 	if( fd_loop == -1 ){
 		return open_loop_device_1( loop_device ) ;
+	}else{
+		devnr = ioctl( fd_loop,LOOP_CTL_GET_FREE ) ;
+		close( fd_loop ) ;
+		if( devnr < 0 ){
+			return open_loop_device_1( loop_device ) ;
+		}else{
+			*loop_device = String( "/dev/loop" ) ;
+			StringAppendInt( *loop_device,devnr ) ;
+			return 1 ;
+		}
 	}
-	
-	devnr = ioctl( fd_loop,LOOP_CTL_GET_FREE );
-	
-	close( fd_loop ) ;
-	
-	if( devnr < 0 ){
-		return open_loop_device_1( loop_device ) ;
-	}
-	
-	*loop_device = String( "/dev/loop" ) ;
-	StringAppendInt( *loop_device,devnr ) ;
-	
-	return 1 ;
 }
 
 static int attach_device_to_loop( int fd_path,int * fd_loop,string_t loop_device,int mode )
@@ -213,17 +211,18 @@ static int attach_device_to_loop( int fd_path,int * fd_loop,string_t loop_device
 	path = zuluCryptGetFileNameFromFileDescriptor( fd_path ) ;
 	if( path == NULL ){
 		return 0 ;
-	}
-	size = sizeof( l_info.lo_file_name ) ;
-	strncpy( ( char * )l_info.lo_file_name,path,size ) ;
-	l_info.lo_file_name[ size - 1 ] = '\0' ;
-	free( path ) ;
+	}else{
+		size = sizeof( l_info.lo_file_name ) ;
+		strncpy( ( char * )l_info.lo_file_name,path,size ) ;
+		l_info.lo_file_name[ size - 1 ] = '\0' ;
+		free( path ) ;
 	
-	if( ioctl( *fd_loop,LOOP_SET_STATUS64,&l_info ) == -1 ){
-		return 0 ;
+		if( ioctl( *fd_loop,LOOP_SET_STATUS64,&l_info ) == -1 ){
+			return 0 ;
+		}else{
+			return 1 ;
+		}
 	}
-	
-	return 1 ;
 }
 
 static int _attach_loop_device_to_file( const char * path,int mode,int * loop_fd,string_t * loop_device )
@@ -279,12 +278,13 @@ static int _attach_loop_device_to_file_using_file_descriptor( int fd_path,int * 
 	
 	if( !open_loop_device( &loopd ) ){
 		return 0 ;
-	}
-	if( attach_device_to_loop( fd_path,fd_loop,loopd,mode ) ){
-		*loop_device = loopd ;
-		return 1 ;
 	}else{
-		return 0 ;
+		if( attach_device_to_loop( fd_path,fd_loop,loopd,mode ) ){
+			*loop_device = loopd ;
+			return 1 ;
+		}else{
+			return 0 ;
+		}
 	}
 }
 
