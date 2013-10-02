@@ -115,32 +115,32 @@ void passwordDialog::pbPlugin()
 
 	QDir dir( QString( ZULUCRYPTpluginPath ) ) ;
 
-	if( !dir.exists() ){
-		list.append( tr( INTERNAL_WALLET ) ) ;
-
-		if( lxqt::Wallet::backEndIsSupported( lxqt::Wallet::kwalletBackEnd ) ){
-			list.append( tr( KWALLET ) ) ;
-		}
-		if( lxqt::Wallet::backEndIsSupported( lxqt::Wallet::secretServiceBackEnd ) ){
-			list.append( tr( GNOME_WALLET ) ) ;
-		}
-	}else{
+	if( dir.exists() ){
 		list = dir.entryList() ;
-
+		
 		list.removeOne( QString( "zuluCrypt-testKey" ) ) ;
 		list.removeOne( QString( "." ) ) ;
 		list.removeOne( QString( ".." ) ) ;
 		list.removeOne( QString( "keyring" ) ) ;
 		list.removeOne( QString( "kwallet" ) ) ;
-
+		
 		list.insert( 0,tr( INTERNAL_WALLET ) ) ;
-
+		
 		if( lxqt::Wallet::backEndIsSupported( lxqt::Wallet::kwalletBackEnd ) ){
 			list.insert( 1,tr( KWALLET ) ) ;
 		}
-
+		
 		if( lxqt::Wallet::backEndIsSupported( lxqt::Wallet::secretServiceBackEnd ) ){
 			list.insert( 2,tr( GNOME_WALLET ) ) ;
+		}
+	}else{
+		list.append( tr( INTERNAL_WALLET ) ) ;
+		
+		if( lxqt::Wallet::backEndIsSupported( lxqt::Wallet::kwalletBackEnd ) ){
+			list.append( tr( KWALLET ) ) ;
+		}
+		if( lxqt::Wallet::backEndIsSupported( lxqt::Wallet::secretServiceBackEnd ) ){
+			list.append( tr( GNOME_WALLET ) ) ;
 		}
 	}
 
@@ -156,6 +156,7 @@ void passwordDialog::pbPlugin()
 	for( int i = 0 ; i < j ; i++ ){
 		m_pluginMenu->addAction( list.at( i ) ) ;
 	}
+	
 	m_pluginMenu->addSeparator() ;
 
 	m_pluginMenu->addAction( tr( "cancel" ) ) ;
@@ -372,11 +373,11 @@ void passwordDialog::walletIsOpen( bool opened )
 				key = m_wallet->readValue( id.replace( "\"","" ) ) ;
 			}
 		}else{
-			key = utility::getUUIDFromPath( id ) ;
-			if( key.isEmpty() ){
+			QString uuid = utility::getUUIDFromPath( id ) ;
+			if( uuid.isEmpty() ){
 				key = m_wallet->readValue( id ) ;
 			}else{
-				key = m_wallet->readValue( key ) ;
+				key = m_wallet->readValue( uuid ) ;
 				if( key.isEmpty() ){
 					key = m_wallet->readValue( id ) ;
 				}

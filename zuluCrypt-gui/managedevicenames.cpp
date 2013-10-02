@@ -212,8 +212,7 @@ void managedevicenames::PartitionEntry( QString device )
 
 managedevicenames::~managedevicenames()
 {
-	delete m_ui;
-	delete m_ac;
+	delete m_ui ;
 }
 
 void managedevicenames::closeEvent( QCloseEvent * e )

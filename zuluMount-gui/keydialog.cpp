@@ -303,11 +303,11 @@ void keyDialog::walletIsOpen( bool opened )
 				key = m_wallet->readValue( id.replace( "\"","" ) ) ;
 			}
 		}else{
-			key = utility::getUUIDFromPath( id ) ;
-			if( key.isEmpty() ){
+			QString uuid = utility::getUUIDFromPath( id ) ;
+			if( uuid.isEmpty() ){
 				key = m_wallet->readValue( id ) ;
 			}else{
-				key = m_wallet->readValue( key ) ;
+				key = m_wallet->readValue( uuid ) ;
 				if( key.isEmpty() ){
 					key = m_wallet->readValue( id ) ;
 				}

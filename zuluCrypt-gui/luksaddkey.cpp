@@ -409,6 +409,6 @@ void luksaddkey::pbCancel( void )
 
 luksaddkey::~luksaddkey()
 {
-	m_keystrength->~keystrength() ;
+	delete m_keystrength ;
 	delete m_ui ;
 }

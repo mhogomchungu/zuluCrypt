@@ -252,5 +252,4 @@ void openvolume::closeEvent( QCloseEvent * e )
 openvolume::~openvolume()
 {
 	delete m_ui ;
-	delete m_action ;
 }
