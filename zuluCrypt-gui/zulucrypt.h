@@ -46,29 +46,29 @@ class cryptfiles ;
 #include "version.h"
 
 namespace Ui {
-    class zuluCrypt;
+    class zuluCrypt ;
 }
 
 class zuluCrypt : public QMainWindow
 {
 	Q_OBJECT
 public:
-	zuluCrypt( QWidget * parent = 0 );
+	zuluCrypt( QWidget * parent = 0 ) ;
 	void removeRowFromTable( int row ) ;
 	void start( void ) ;
-	~zuluCrypt();
+	~zuluCrypt() ;
 public slots:
 	void raiseWindow( void ) ;
 	void raiseWindow( QString ) ;
 signals:
 	void showManageFavorites( void ) ;
-	void favClickedVolume( QString volume_path,QString mount_point_path );
-	void SignalShowNonSystemPartitions( void );
+	void favClickedVolume( QString volume_path,QString mount_point_path ) ;
+	void SignalShowNonSystemPartitions( void ) ;
 	void luksAddKey( QString volumePath ) ;
 	void luksDeleteKey( QString passphrase ) ;
 	void redoOpen( bool boolOpenReadOnly,bool boolKeyFromFile,QString volumePath,QString mountPointPath ) ;
 private slots :
-	void currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous );
+	void currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous ) ;
 	void info( void ) ;
 	void createEncryptedpartitionUI( void ) ;
 	void luksAddKeyContextMenu( void ) ;
@@ -77,7 +77,7 @@ private slots :
 	void close(  void  ) ;
 	void closeAll( QTableWidgetItem *,int ) ;
 	void itemClicked(  QTableWidgetItem * item ) ;
-	void itemClicked( QTableWidgetItem * item,bool );
+	void itemClicked( QTableWidgetItem * item,bool ) ;
 	void volume_property( void ) ;
 	void UIMessage( QString title,QString message ) ;
 	void fonts( void ) ;
@@ -87,43 +87,43 @@ private slots :
 	void favAboutToHide( void ) ;
 	void trayClicked( QSystemTrayIcon::ActivationReason  ) ;
 	void trayProperty( void ) ;
-	void addItemToTable( QString pathToVolume,QString pathToMountPoint,QString volumeType );
+	void addItemToTable( QString pathToVolume,QString pathToMountPoint,QString volumeType ) ;
 	void volumePropertyTaskFinished( QString properties ) ;
 	void closeApplication( void ) ;
 	void startUpdateFinished( int ) ;
 	void minimize( void ) ;
-	void minimizeToTray( void );
+	void minimizeToTray( void ) ;
 	void closeAllVolumes( void ) ;
 	void closeStatus( int ) ;
 	void menuKeyPressed( void ) ;
-	void ShowCreateFile( void );
-	void FileCreated( QString );
-	void ShowFavoritesEntries( void );
-	void ShowCreateKeyFile( void );
-	void ShowDeleteKeyContextMenu( QString );
-	void ShowDeleteKey( void );
-	void ShowAddKeyContextMenu( QString );
-	void ShowAddKey( void );
-	void ShowNonSystemPartitions( void );
-	void ShowPasswordDialog( void );
-	void ShowOpenPartition( void );
+	void ShowCreateFile( void ) ;
+	void FileCreated( QString ) ;
+	void ShowFavoritesEntries( void ) ;
+	void ShowCreateKeyFile( void ) ;
+	void ShowDeleteKeyContextMenu( QString ) ;
+	void ShowDeleteKey( void ) ;
+	void ShowAddKeyContextMenu( QString ) ;
+	void ShowAddKey( void ) ;
+	void ShowNonSystemPartitions( void ) ;
+	void ShowPasswordDialog( void ) ;
+	void ShowOpenPartition( void ) ;
 	void ShowManageSystemPartitions( void ) ;
 	void ShowManageNonSystemPartitions( void ) ;
-	void ShowPasswordDialog( QString,QString );
-	void ShowEraseDataDialog( void );
-	void partitionClicked( QString );
-	void createPartition( QString );
-	void luksHeaderBackUpContextMenu( void );
-	void luksHeaderBackUp( void );
-	void luksRestoreHeader( void );
-	void permissionExplanation( void );
-	void encryptFile( void );
-	void decryptFile( void );
-	void HelpLuksHeaderBackUp( void );
+	void ShowPasswordDialog( QString,QString ) ;
+	void ShowEraseDataDialog( void ) ;
+	void partitionClicked( QString ) ;
+	void createPartition( QString ) ;
+	void luksHeaderBackUpContextMenu( void ) ;
+	void luksHeaderBackUp( void ) ;
+	void luksRestoreHeader( void ) ;
+	void permissionExplanation( void ) ;
+	void encryptFile( void ) ;
+	void decryptFile( void ) ;
+	void HelpLuksHeaderBackUp( void ) ;
 	void setDefaultWallet( void ) ;
 	void failedToOpenWallet( void ) ;
 	void openFolder( void ) ;
-	void fileManagerOpenStatus( int exitCode, int exitStatus,int startError ) ;
+	void fileManagerOpenStatus( int exitCode,int exitStatus,int startError ) ;
 	void openVolumeFromArgumentList( void ) ;
 	void itemEntered( QTableWidgetItem * ) ;
 	void manageVolumesInInternalWallet( void ) ;
@@ -135,30 +135,30 @@ private slots :
 	void optionMenuAboutToShow( void ) ;
 private:
 	void updateVolumeList( void ) ;
-	void dragEnterEvent( QDragEnterEvent * );
-	void dropEvent( QDropEvent * );
-	passwordDialog * setUpPasswordDialog( void );
-	openvolume * setUpOpenpartition( void );
-	createvolume * setUpCreatepartition( void );
-	luksdeletekey * setUpluksdeletekey( void );
-	luksaddkey * setUpluksaddkey( void );
-	manageluksheader * setUpManageLuksHeader( void );
-	cryptfiles * setUpCryptFiles( void );
+	void dragEnterEvent( QDragEnterEvent * ) ;
+	void dropEvent( QDropEvent * ) ;
+	passwordDialog * setUpPasswordDialog( void ) ;
+	openvolume * setUpOpenpartition( void ) ;
+	createvolume * setUpCreatepartition( void ) ;
+	luksdeletekey * setUpluksdeletekey( void ) ;
+	luksaddkey * setUpluksaddkey( void ) ;
+	manageluksheader * setUpManageLuksHeader( void ) ;
+	cryptfiles * setUpCryptFiles( void ) ;
 
 	void setLocalizationLanguage( void ) ;
 	void setupConnections( void ) ;
 	void setupUIElements( void ) ;
 	void closeEvent( QCloseEvent * ) ;
 	void setUserFont( QFont ) ;
-	void initTray( void );
-	void initFont( void );
-	void initKeyCombo( void );
-	void closeStatusErrorMessage( int );
+	void initTray( void ) ;
+	void initFont( void ) ;
+	void initKeyCombo( void ) ;
+	void closeStatusErrorMessage( int ) ;
 	void setUpApp( void ) ;
 	void setFolderOpener( void ) ;
 	void processArgumentList( void ) ;
 
-	Ui::zuluCrypt * m_ui;
+	Ui::zuluCrypt * m_ui ;
 	QSystemTrayIcon * m_trayIcon ;
 	QString m_folderOpener ;
 	QString m_device ;

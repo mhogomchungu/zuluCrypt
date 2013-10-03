@@ -71,7 +71,7 @@ Are you sure you want to continue? " ) ;
 	}
 }
 
-void erasedevice::ShowUI( QString path )
+void erasedevice::ShowUI( const QString& path )
 {
 	m_option = 1 ;
 	m_ui->lineEdit->setText( path ) ;

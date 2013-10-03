@@ -68,7 +68,7 @@ void DialogMsg::HideUI()
 	this->hide() ;
 }
 
-void DialogMsg::ShowUI( QString title,QString msg )
+void DialogMsg::ShowUI( const QString& title,const QString& msg )
 {
 	m_ui->label->setText( msg ) ;
 
@@ -79,7 +79,7 @@ void DialogMsg::ShowUI( QString title,QString msg )
 	this->exec() ;
 }
 
-void DialogMsg::ShowPermissionProblem( QString device )
+void DialogMsg::ShowPermissionProblem( const QString& device )
 {
 	Q_UNUSED( device ) ;
 	QString msg = tr( "\
@@ -99,7 +99,7 @@ Alternatively,you can add yourself to group \"zulucrypt\" and all restrictions w
 	this->ShowUIInfo( tr( "INFORMATION" ),msg ) ;
 }
 
-void DialogMsg::ShowPermissionProblem( QString msg,QString device )
+void DialogMsg::ShowPermissionProblem( const QString& msg,const QString& device )
 {
 	QString msg1 ;
 	if( device.startsWith( QString( "/dev/" ) ) ){
@@ -115,7 +115,7 @@ void DialogMsg::ShowPermissionProblem( QString msg,QString device )
 	this->ShowUIOK( tr( "INFORMATION"),msg1 ) ;
 }
 
-void DialogMsg::setDimentions( QString msg )
+void DialogMsg::setDimentions( const QString& msg )
 {
 	int len = msg.size() ;
 
@@ -179,14 +179,14 @@ void DialogMsg::HideLabels()
 	m_ui->labelUsedPerc->setHidden( true ) ;
 }
 
-void DialogMsg::ShowUIVolumeProperties( QString title,QString msg )
+void DialogMsg::ShowUIVolumeProperties( const QString& title,const QString& m )
 {
 	m_ui->pbYes->setHidden( true ) ;
 	m_ui->pbNo->setHidden( true ) ;
 	m_ui->pbOk->setHidden( false ) ;
 
 	m_ui->label->setHidden( true ) ;
-
+	QString msg = m ;
 	msg.replace( "   ","" ) ;
 
 	QStringList stl = msg.split("\n") ;
@@ -215,7 +215,7 @@ void DialogMsg::ShowUIVolumeProperties( QString title,QString msg )
 	this->ShowUI( title,msg ) ;
 }
 
-void DialogMsg::ShowUIInfo( QString title,QString msg )
+void DialogMsg::ShowUIInfo( const QString& title,const QString& msg )
 {
 	m_ui->pbYes->setHidden( true ) ;
 	m_ui->pbNo->setHidden( true ) ;
@@ -231,7 +231,7 @@ void DialogMsg::ShowUIInfo( QString title,QString msg )
 	this->ShowUI( title,msg ) ;
 }
 
-void DialogMsg::ShowUIOK( QString title,QString msg )
+void DialogMsg::ShowUIOK( const QString& title,const QString& msg )
 {
 	m_ui->pbYes->setHidden( true ) ;
 	m_ui->pbNo->setHidden( true ) ;
@@ -250,7 +250,7 @@ void DialogMsg::SetUpButtons()
 	this->HideLabels() ;
 }
 
-int DialogMsg::ShowUIYesNo( QString title,QString msg )
+int DialogMsg::ShowUIYesNo( const QString& title,const QString& msg )
 {
 	this->SetUpButtons() ;
 	this->setDimentions( msg ) ;
@@ -258,7 +258,7 @@ int DialogMsg::ShowUIYesNo( QString title,QString msg )
 	return m_status;
 }
 
-int  DialogMsg::ShowUIYesNoDefaultNo( QString title,QString msg )
+int  DialogMsg::ShowUIYesNoDefaultNo( const QString& title,const QString& msg )
 {
 	this->SetUpButtons() ;
 	this->setDimentions( msg ) ;
@@ -267,7 +267,7 @@ int  DialogMsg::ShowUIYesNoDefaultNo( QString title,QString msg )
 	return m_status;
 }
 
-bool DialogMsg::ShowUIOKDoNotShowOption( QString title,QString msg )
+bool DialogMsg::ShowUIOKDoNotShowOption( const QString& title,const QString& msg )
 {
 	QCheckBox * checkBox = new QCheckBox( tr( "do not show this dialog again" ),this ) ;
 
@@ -296,5 +296,5 @@ bool DialogMsg::ShowUIOKDoNotShowOption( QString title,QString msg )
 
 DialogMsg::~DialogMsg()
 {
-	delete m_ui;
+	delete m_ui ;
 }

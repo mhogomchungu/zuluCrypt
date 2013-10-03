@@ -46,14 +46,14 @@ public:
 		openMountPoint
 	};
 	void start( Task::Action ) ;
-	void setMode( QString ) ;
-	void setDevice( QString ) ;
-	void setType( QString ) ;
-	void setKeySource( QString ) ;
-	void setMountPoint( QString ) ;
+	void setMode( const QString& ) ;
+	void setDevice( const QString& ) ;
+	void setType( const QString& ) ;
+	void setKeySource( const QString& ) ;
+	void setMountPoint( const QString& ) ;
 	void setMakeMountPointPublic( bool ) ;
-	void setList( QStringList ) ;
-	void setMountPointOpener( QString ) ;
+	void setList( const QStringList& ) ;
+	void setMountPointOpener( const QString& ) ;
 signals:
 	void errorStatus( int exitCode,int exitStatus,int startError ) ;
 	void signalMountComplete( int,QString ) ;

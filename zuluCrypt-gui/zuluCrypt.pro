@@ -22,7 +22,6 @@ SOURCES += main.cpp\
     utility.cpp \
     managedevicenames.cpp \
     partitionproperties.cpp \
-    checkvolumetype.cpp \
     cryptoinfo.cpp \
     erasedevice.cpp \
     manageluksheader.cpp \
@@ -53,7 +52,8 @@ SOURCES += main.cpp\
     erasetask.cpp \
     crypttask.cpp \
     walletconfig.cpp \
-    walletconfiginput.cpp
+    walletconfiginput.cpp \
+    createvolumedialog.cpp
 
 HEADERS  += zulucrypt.h \
     password_dialog.h \
@@ -66,7 +66,6 @@ HEADERS  += zulucrypt.h \
     utility.h \
     managedevicenames.h \
     partitionproperties.h \
-    checkvolumetype.h \
     cryptoinfo.h \
     erasedevice.h \
     manageluksheader.h \

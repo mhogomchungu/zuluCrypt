@@ -43,8 +43,8 @@ public:
 		volumeTask
 	}action ;
 
-	explicit Task( QString exe ) ;
-	Task( QString,QString ) ;
+	explicit Task( const QString& exe ) ;
+	Task( const QString&,const QString& ) ;
 	explicit Task( QTableWidget * ) ;
 	Task() ;
 	~Task();

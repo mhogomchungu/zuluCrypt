@@ -19,16 +19,15 @@
 #ifndef USERFONT_H
 #define USERFONT_H
 
-#include <QFont>
-
 class QWidget ;
+class QFont ;
 
 class userfont
 {
 public:
 	userfont( QWidget * );
 	QFont getFont() ;
-	void saveFont( QFont ) ;
+	void saveFont( const QFont& ) ;
 private :
 	QWidget * m_parent ;
 };

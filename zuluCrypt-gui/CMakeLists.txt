@@ -34,7 +34,6 @@ set( MOC_FILES createfile.h
 		task.h
 		managedevicenames.h
 		filetask.h
-		checkvolumetype.h
 		cryptoinfo.h	
 		erasedevice.h
 		erasetask.h	
@@ -61,7 +60,6 @@ set (SRC createfile.cpp
 	task.cpp
 	managedevicenames.cpp
 	filetask.cpp
-	checkvolumetype.cpp
 	cryptoinfo.cpp
 	erasedevice.cpp
 	erasetask.cpp

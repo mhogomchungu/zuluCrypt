@@ -58,7 +58,8 @@
 #include "../zuluCrypt-cli/constants.h"
 #include "../zuluCrypt-cli/bin/bash_special_chars.h"
 
-CryptTask::CryptTask( QString source,QString dest,QString keySource,QString key,QString task )
+CryptTask::CryptTask( const QString& source,const QString& dest,
+		      const QString& keySource,const QString& key,const QString& task )
 {
 	m_source = source ;
 	m_dest = dest ;
@@ -78,7 +79,7 @@ void CryptTask::terminate()
 	m_status = TERM_ST ;
 }
 
-void CryptTask::calculateMd5( QString path,char * result )
+void CryptTask::calculateMd5( const QString& path,char * result )
 {
 	emit titleUpdate( tr( "calculating md5sum" ) ) ;
 	emit disableCancel() ;
@@ -322,10 +323,11 @@ int CryptTask::decrypt()
 	}
 }
 
-int CryptTask::openMapper( QString path )
+int CryptTask::openMapper( const QString& p )
 {
-	m_mapperPath = utility::mapperPath( path ) ;
+	m_mapperPath = utility::mapperPath( p ) ;
 
+	QString path = p ;
 	path.replace( "\"","\"\"\"" ) ;
 	m_key.replace( "\"","\"\"\"" ) ;
 
@@ -340,8 +342,9 @@ int CryptTask::openMapper( QString path )
 	return st ;
 }
 
-int CryptTask::closeMapper( QString path )
+int CryptTask::closeMapper( const QString& p )
 {
+	QString path = p ;
 	path.replace( "\"","\"\"\"" ) ;
 	QString e = QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( path ) ;
 	QProcess exe ;

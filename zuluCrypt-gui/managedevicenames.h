@@ -29,37 +29,37 @@ class QTableWidgetItem ;
 class QCloseEvent ;
 
 namespace Ui {
-class managedevicenames;
+class managedevicenames ;
 }
 
 class managedevicenames : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit managedevicenames( QWidget * parent = 0 );
-	~managedevicenames();
+	explicit managedevicenames( QWidget * parent = 0 ) ;
+	~managedevicenames() ;
 signals:
-	void ShowPartitionUI( void );
-	void HideUISignal( void );
+	void ShowPartitionUI( void ) ;
+	void HideUISignal( void ) ;
 public slots:
-	void ShowUI( void );
-	void HideUI( void );
-	void PartitionEntry( QString );
+	void ShowUI( void ) ;
+	void HideUI( void ) ;
+	void PartitionEntry( QString ) ;
 private slots:
-	void removeEntryFromFavoriteList( void );
-	void add( void );
-	void cancel( void );
-	void deviceAddress( void );
-	void fileAddress( void );
-	void currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous );
-	void itemClicked( QTableWidgetItem * current,bool );
-	void itemClicked( QTableWidgetItem * current );
-	void shortcutPressed( void );
-	void devicePathTextChange( QString );
+	void removeEntryFromFavoriteList( void ) ;
+	void add( void ) ;
+	void cancel( void ) ;
+	void deviceAddress( void ) ;
+	void fileAddress( void ) ;
+	void currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous ) ;
+	void itemClicked( QTableWidgetItem * current,bool ) ;
+	void itemClicked( QTableWidgetItem * current ) ;
+	void shortcutPressed( void ) ;
+	void devicePathTextChange( QString ) ;
 private:
 	void closeEvent( QCloseEvent * ) ;
 	void addEntries( QString,QString ) ;
-	Ui::managedevicenames * m_ui;
+	Ui::managedevicenames * m_ui ;
 	QAction * m_ac ;
 };
 

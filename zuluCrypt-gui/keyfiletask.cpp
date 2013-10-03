@@ -30,7 +30,7 @@
 
 #include <string.h>
 
-keyFileTask::keyFileTask( QString path,int rng )
+keyFileTask::keyFileTask( const QString& path,int rng )
 {
 	m_path = path ;
 	m_rng = rng ;

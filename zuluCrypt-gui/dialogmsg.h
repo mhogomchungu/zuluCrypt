@@ -26,38 +26,38 @@ class QWidget ;
 class QCloseEvent ;
 
 namespace Ui {
-class DialogMsg;
+class DialogMsg ;
 }
 
 class DialogMsg : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit DialogMsg( QWidget * parent = 0 );
-	void ShowUIOK( QString title,QString msg );
-	int  ShowUIYesNo( QString title,QString msg );
-	int  ShowUIYesNoDefaultNo( QString title,QString msg );
-	void ShowUIInfo( QString title,QString msg );
-	void ShowUIVolumeProperties( QString title,QString msg );
-	bool ShowUIOKDoNotShowOption( QString title,QString msg ) ;
-	void ShowPermissionProblem( QString device ) ;
-	void ShowPermissionProblem( QString,QString device ) ;
-	void HideUI( void );
-	~DialogMsg();
+	explicit DialogMsg( QWidget * parent = 0 ) ;
+	void ShowUIOK( const QString& title,const QString& msg ) ;
+	int  ShowUIYesNo( const QString& title,const QString& msg ) ;
+	int  ShowUIYesNoDefaultNo( const QString& title,const QString& msg ) ;
+	void ShowUIInfo( const QString& title,const QString& msg );
+	void ShowUIVolumeProperties( const QString& title,const QString& msg ) ;
+	bool ShowUIOKDoNotShowOption( const QString& title,const QString& msg ) ;
+	void ShowPermissionProblem( const QString& device ) ;
+	void ShowPermissionProblem( const QString&,const QString& device ) ;
+	void HideUI( void ) ;
+	~DialogMsg() ;
 
 private slots:
-	void pbOK( void );
-	void pbYes( void );
-	void pbNo( void );
+	void pbOK( void ) ;
+	void pbYes( void ) ;
+	void pbNo( void ) ;
 
 private:
 	void SetUpButtons( void ) ;
 	void ShowLabels( void ) ;
 	void HideLabels( void ) ;
-	void ShowUI( QString title,QString msg );
-	void setDimentions( QString msg );
+	void ShowUI( const QString& title,const QString& msg ) ;
+	void setDimentions( const QString& msg ) ;
 	void closeEvent( QCloseEvent * ) ;
-	Ui::DialogMsg * m_ui;
+	Ui::DialogMsg * m_ui ;
 	int m_status ;
 };
 

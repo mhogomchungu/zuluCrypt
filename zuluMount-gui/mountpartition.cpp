@@ -38,7 +38,7 @@
 #include "../zuluCrypt-gui/tablewidget.h"
 #include "../zuluCrypt-gui/utility.h"
 
-mountPartition::mountPartition( QWidget * parent,QTableWidget * table,QString folderOpener,bool autoOpenFolderOnMount ) :
+mountPartition::mountPartition( QWidget * parent,QTableWidget * table,const QString& folderOpener,bool autoOpenFolderOnMount ) :
 	QWidget( parent ),m_ui(new Ui::mountPartition)
 {
 	m_ui->setupUi( this ) ;

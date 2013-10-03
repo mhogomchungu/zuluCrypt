@@ -28,41 +28,41 @@ class QCloseEvent ;
 class CryptTask ;
 
 namespace Ui {
-    class cryptfiles;
+    class cryptfiles ;
 }
 
 class cryptfiles : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit cryptfiles( QWidget  *parent = 0 );
-	~cryptfiles();
+	explicit cryptfiles( QWidget * parent = 0 ) ;
+	~cryptfiles() ;
 signals:
-	void HideUISignal( void );
+	void HideUISignal( void ) ;
 public slots:
-	void encrypt( void );
-	void decrypt( void );
+	void encrypt( void ) ;
+	void decrypt( void ) ;
 	void enableCancel( void ) ;
 	void disableCancel( void ) ;
 private slots:
-	void pbCancel( void );
-	void pbCreate( void );
-	void pbOpenFile( void );
-	void pbKeyFile( void );
+	void pbCancel( void ) ;
+	void pbCreate( void ) ;
+	void pbOpenFile( void ) ;
+	void pbKeyFile( void ) ;
 	void pbOpenFolder( void ) ;
-	void rbKeyChecked( void );
-	void rbKeyFileChecked( void );
-	void sourceTextChanged( QString );
-	void threadExitStatus( int );
-	void progressBarUpdate( int );
-	void titleUpdate( QString );
+	void rbKeyChecked( void ) ;
+	void rbKeyFileChecked( void ) ;
+	void sourceTextChanged( QString ) ;
+	void threadExitStatus( int ) ;
+	void progressBarUpdate( int ) ;
+	void titleUpdate( QString ) ;
 private:
-	void HideUI( void );
-	void headerBackUp( void );
+	void HideUI( void ) ;
+	void headerBackUp( void ) ;
 	void closeEvent( QCloseEvent * ) ;
-	void disableAll( void );
+	void disableAll( void ) ;
 	void enableAll( void ) ;
-	Ui::cryptfiles * m_ui;
+	Ui::cryptfiles * m_ui ;
 
 	QString m_path ;
 

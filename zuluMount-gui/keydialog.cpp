@@ -42,7 +42,8 @@
  */
 static QString _internalPassWord ;
 
-keyDialog::keyDialog( QWidget * parent,QTableWidget * table,QString path,QString type,QString folderOpener,bool autoOpenFolderOnMount ) :
+keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const QString& path,
+		      const QString& type,const QString& folderOpener,bool autoOpenFolderOnMount ) :
 	QDialog( parent ),m_ui(new Ui::keyDialog)
 {
 	m_ui->setupUi( this ) ;

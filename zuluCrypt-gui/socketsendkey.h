@@ -29,18 +29,18 @@ class socketSendKey : public QThread
 {
 	Q_OBJECT
 public:
-	socketSendKey( QObject * parent,QString sockpath,QByteArray key );
+	socketSendKey( QObject * parent,const QString& sockpath,const QByteArray& key );
 	socketSendKey( QObject * parent ) ;
 	~socketSendKey() ;
 	bool openConnection( void ) ;
 	void closeConnection( void ) ;
 	void sendKey( void ) ;
-	void sendKey( QByteArray ) ;
-	void setAddr( QString ) ;
-	void setKey( QByteArray );
-	static void openAndCloseConnection( QString ) ;
-	static void * zuluCryptPluginManagerOpenConnection( QString ) ;
-	static ssize_t zuluCryptPluginManagerSendKey( void * handle,QByteArray ) ;
+	void sendKey( const QByteArray& ) ;
+	void setAddr( const QString& ) ;
+	void setKey( const QByteArray& ) ;
+	static void openAndCloseConnection( const QString& ) ;
+	static void * zuluCryptPluginManagerOpenConnection( const QString& ) ;
+	static ssize_t zuluCryptPluginManagerSendKey( void * handle,const QByteArray& ) ;
 	static void zuluCryptPluginManagerCloseConnection( void * handle ) ;
 	static QString getSocketPath( void ) ;
 signals:

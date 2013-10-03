@@ -72,7 +72,7 @@ QString utility::userName()
 	return QString( pass->pw_name ) ;
 }
 
-void utility::help( QString app )
+void utility::help( const QString& app )
 {
 	std::cout << VERSION_STRING << std::endl ;
 
@@ -99,7 +99,7 @@ and a secondary publicly accessible \"mirror\" mount point will be created in \"
 	return s ;
 }
 
-QString utility::shareMountPointToolTip( QString path )
+QString utility::shareMountPointToolTip( const QString& path )
 {
 	struct stat st ;
 	QString s = QString( "/run/media/public/" ) + path.split( "/" ).last() ;
@@ -113,7 +113,7 @@ QString utility::shareMountPointToolTip( QString path )
 	}
 }
 
-QString utility::sharedMountPointPath( QString path )
+QString utility::sharedMountPointPath( const QString& path )
 {
 	if( path == QString( "/" ) ){
 		return QString( "" ) ;
@@ -130,7 +130,7 @@ QString utility::sharedMountPointPath( QString path )
 	}
 }
 
-bool utility::pathPointsToAFile( QString path )
+bool utility::pathPointsToAFile( const QString& path )
 {
 	struct stat st ;
 	QByteArray b = path.toAscii() ;
@@ -142,7 +142,7 @@ bool utility::pathPointsToAFile( QString path )
 
 }
 
-QString utility::localizationLanguage( QString program )
+QString utility::localizationLanguage( const QString& program )
 {
 	QString langPath = utility::localizationLanguagePath( program ) ;
 	QProcessEnvironment env = QProcessEnvironment::systemEnvironment() ;
@@ -200,12 +200,12 @@ QString utility::localizationLanguage( QString program )
 	return QString( "en_US" ) ;
 }
 
-QString utility::localizationLanguagePath( QString program )
+QString utility::localizationLanguagePath( const QString& program )
 {
 	return QString( TRANSLATION_PATH ) + program ;
 }
 
-void utility::setLocalizationLanguage( QString program,QString language )
+void utility::setLocalizationLanguage( const QString& program,const QString& language )
 {
 	Q_UNUSED( program ) ;
 	Q_UNUSED( language ) ;
@@ -230,7 +230,7 @@ QString utility::applicationName()
 	return "zuluCrypt" ;
 }
 
-bool utility::pathIsReadable( QString path )
+bool utility::pathIsReadable( const QString& path )
 {
 	int fd = open( path.toAscii().constData(),O_RDONLY ) ;
 	if( fd != -1 ){
@@ -241,7 +241,7 @@ bool utility::pathIsReadable( QString path )
 	}
 }
 
-bool utility::setOpenVolumeReadOnly( QWidget  * parent,bool check,QString app )
+bool utility::setOpenVolumeReadOnly( QWidget * parent,bool check,const QString& app )
 {
 	QString Path = QDir::homePath() + QString( "/.zuluCrypt/" ) + app ;
 	QFile f( Path + QString( "-openMode" ) ) ;
@@ -296,7 +296,7 @@ bool utility::setOpenVolumeReadOnly( QWidget  * parent,bool check,QString app )
 	return check ;
 }
 
-bool utility::getOpenVolumeReadOnlyOption( QString app )
+bool utility::getOpenVolumeReadOnlyOption( const QString& app )
 {
 	QString home = QDir::homePath() + QString( "/.zuluCrypt/" ) ;
 	QDir d( home ) ;
@@ -324,7 +324,7 @@ bool utility::getOpenVolumeReadOnlyOption( QString app )
 	return st == 1 ;
 }
 
-void utility::debug( QString s )
+void utility::debug( const QString& s )
 {
 	std::cout << s.toStdString() << std::endl ;
 }
@@ -334,12 +334,12 @@ void utility::debug( int s )
 	std::cout << s << std::endl ;
 }
 
-bool utility::mapperPathExists( QString path )
+bool utility::mapperPathExists( const QString& path )
 {
 	return utility::exists( utility::mapperPath( path ) ) ;
 }
 
-QString utility::mountPath( QString path )
+QString utility::mountPath( const QString& path )
 {
 	struct passwd * pass = getpwuid( getuid() ) ;
 
@@ -350,8 +350,10 @@ QString utility::mountPath( QString path )
 #endif
 }
 
-QString utility::mapperPath( QString rpath )
+QString utility::mapperPath( const QString& r )
 {
+	QString rpath = r ;
+	
 	QString path = utility::cryptMapperPath() + QString( "zuluCrypt-" ) + QString::number( getuid() ) ;
 
 	if( rpath.startsWith( QString( "UUID=" ) ) ){
@@ -372,7 +374,7 @@ QString utility::mapperPath( QString rpath )
 	return path ;
 }
 
-QString utility::hashPath( QString p )
+QString utility::hashPath( const QString& p )
 {
 	size_t l = p.size() ;
 	uint32_t hash ;
@@ -391,13 +393,13 @@ QString utility::hashPath( QString p )
 	return QString( "-" ) + QString::number( hash ) ;
 }
 
-bool utility::exists( QString path )
+bool utility::exists( const QString& path )
 {
 	struct stat st ;
 	return stat( path.toAscii().data(),&st ) == 0 ? true : false ;
 }
 
-bool utility::canCreateFile( QString path )
+bool utility::canCreateFile( const QString& path )
 {
 	QByteArray q = path.toAscii() ;
 
@@ -412,7 +414,7 @@ bool utility::canCreateFile( QString path )
 	}
 }
 
-QString utility::resolvePath( QString path )
+QString utility::resolvePath( const QString& path )
 {
 	if( path.size() == 1 && path.at( 0 ) == QChar( '~' ) ){
 		return QDir::homePath() + QString( "/" ) ;
@@ -429,20 +431,7 @@ QString utility::resolvePath( QString path )
 	}
 }
 
-bool utility::isLuks( QString volumePath )
-{
-	QProcess p ;
-	QString path = utility::resolvePath( volumePath ) ;
-	QString exe = QString( "%1 -i -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( path ) ;
-	p.start( exe ) ;
-	p.waitForFinished() ;
-	int i = p.exitCode() ;
-	p.close() ;
-
-	return i == 0 ;
-}
-
-QStringList utility::luksEmptySlots( QString volumePath )
+QStringList utility::luksEmptySlots( const QString& volumePath )
 {
 	QStringList list ;
 	QProcess N ;
@@ -464,7 +453,7 @@ QStringList utility::luksEmptySlots( QString volumePath )
 	return list ;
 }
 
-void utility::addToFavorite( QString dev,QString m_point )
+void utility::addToFavorite( const QString& dev,const QString& m_point )
 {
 	QString fav = QString( "%1\t%2\n" ).arg( dev ).arg( m_point ) ;
 	QFile f( QDir::homePath() + QString( "/.zuluCrypt/favorites" ) ) ;
@@ -487,7 +476,7 @@ QStringList utility::readFavorites()
 	return list ;
 }
 
-void utility::removeFavoriteEntry( QString entry )
+void utility::removeFavoriteEntry( const QString& entry )
 {
 	QFile f( QDir::homePath() + QString( "/.zuluCrypt/favorites" ) ) ;
 	f.open( QIODevice::ReadOnly ) ;
@@ -499,8 +488,9 @@ void utility::removeFavoriteEntry( QString entry )
 	f.close() ;
 }
 
-QString utility::getUUIDFromPath( QString device )
+QString utility::getUUIDFromPath( const QString& dev )
 {
+	QString device = dev ;
 	device = device.replace( QString( "\"" ),QString( "\"\"\"" ) ) ;
 	QString exe = QString( "%1 -U -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( device ) ;
 	QProcess p ;

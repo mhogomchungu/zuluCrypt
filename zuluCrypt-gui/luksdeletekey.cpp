@@ -118,7 +118,7 @@ void luksdeletekey::ShowUI()
 	this->show() ;
 }
 
-void luksdeletekey::ShowUI( QString path )
+void luksdeletekey::ShowUI( const QString& path )
 {
 	m_ui->lineEditVolumePath->setText( path ) ;
 	this->ShowUI() ;

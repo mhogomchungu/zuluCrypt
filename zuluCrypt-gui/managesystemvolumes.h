@@ -29,39 +29,39 @@ class QTableWidgetItem ;
 class QWidget ;
 
 namespace Ui {
-class manageSystemVolumes;
+class manageSystemVolumes ;
 }
 
 class manageSystemVolumes : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit manageSystemVolumes( QWidget * parent = 0 );
-	~manageSystemVolumes();
-	void ShowUI( QString ) ;
+	explicit manageSystemVolumes( QWidget * parent = 0 ) ;
+	~manageSystemVolumes() ;
+	void ShowUI( const QString& ) ;
 	void HideUI( void ) ;
 signals:
-	void HideUISignal( void );
+	void HideUISignal( void ) ;
 private slots:
 	void defaultButton( void ) ;
 	void pbDone( void ) ;
 	void pbFile( void ) ;
 	void pbPartition( void ) ;
 	void clickedPartition( QString ) ;
-	void currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous );
-	void itemClicked( QTableWidgetItem * current,bool );
-	void itemClicked( QTableWidgetItem * current );
+	void currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous ) ;
+	void itemClicked( QTableWidgetItem * current,bool ) ;
+	void itemClicked( QTableWidgetItem * current ) ;
 	void removeCurrentRow( void ) ;
 	void contextMenu( void ) ;
-	void setFocusTableWidget( void );
+	void setFocusTableWidget( void ) ;
 private:
 	void readSystemPartitions( void ) ;
 	void writeSystemPartitions( void ) ;
 
-	void addItemsToTable( QStringList );
-	void addItemsToTable( QString );
+	void addItemsToTable( QStringList ) ;
+	void addItemsToTable( QString ) ;
 	void closeEvent( QCloseEvent * ) ;
-	Ui::manageSystemVolumes * m_ui;
+	Ui::manageSystemVolumes * m_ui ;
 	QString m_path ;
 	QAction * m_ac ;
 };

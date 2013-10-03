@@ -34,7 +34,7 @@ Task::Task()
 {
 }
 
-Task::Task( QString exe ) : m_exe( exe ),m_status( -1 ),m_partitionType( exe )
+Task::Task( const QString& exe ) : m_exe( exe ),m_status( -1 ),m_partitionType( exe )
 {
 }
 
@@ -42,11 +42,13 @@ Task::Task( QTableWidget * table ) : m_table( table )
 {
 }
 
-Task::Task( QString path,QString mpoint )
+Task::Task( const QString& path,const QString& mpoint )
 {
-	m_path = path.replace( "\"","\"\"\"" ) ;
-	m_folderOpener = m_path ;
-	m_mpoint = mpoint.replace( "\"","\"\"\"" ) ;
+	m_path = path ;
+	m_path.replace( "\"","\"\"\"" ) ;
+	m_mpoint = mpoint ;
+	m_mpoint.replace( "\"","\"\"\"" ) ;
+	m_folderOpener = path ;
 }
 
 void Task::start( Task::action action )

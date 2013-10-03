@@ -25,23 +25,23 @@
 class QCloseEvent ;
 
 namespace Ui {
-class cryptoinfo;
+class cryptoinfo ;
 }
 
 class cryptoinfo : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit cryptoinfo( QWidget * parent = 0 );
-	~cryptoinfo();
+	explicit cryptoinfo( QWidget * parent = 0 ) ;
+	~cryptoinfo() ;
 signals:
-	void closeUISignal( void );
+	void closeUISignal( void ) ;
 private slots:
-	void pbOK( void );
+	void pbOK( void ) ;
 private:
 	void closeEvent( QCloseEvent * ) ;
-	void HideUI( void );
-	Ui::cryptoinfo * m_ui;
+	void HideUI( void ) ;
+	Ui::cryptoinfo * m_ui ;
 };
 
 #endif // CRYPTOINFO_H

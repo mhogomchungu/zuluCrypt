@@ -27,35 +27,35 @@ class EraseTask ;
 class QWidget ;
 
 namespace Ui {
-class erasedevice;
+class erasedevice ;
 }
 
 class erasedevice : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit erasedevice( QWidget * parent = 0 );
-	~erasedevice();
-	void ShowUI( void );
-	void ShowUI( QString );
-	void HideUI( void );
+	explicit erasedevice( QWidget * parent = 0 ) ;
+	~erasedevice() ;
+	void ShowUI( void ) ;
+	void ShowUI( const QString& ) ;
+	void HideUI( void ) ;
 signals:
-	void HideUISignal( void );
-	void complete( QString );
+	void HideUISignal( void ) ;
+	void complete( QString ) ;
 private slots:
-	void enableAll( void );
-	void disableAll( void );
-	void pbStart( void );
-	void pbCancel( void );
-	void pbFile( void );
-	void pbPartition( void );
-	void setProgress( int );
-	void setPath( QString );
-	void threadExitStatus( int );
+	void enableAll( void ) ;
+	void disableAll( void ) ;
+	void pbStart( void ) ;
+	void pbCancel( void ) ;
+	void pbFile( void ) ;
+	void pbPartition( void ) ;
+	void setProgress( int ) ;
+	void setPath( QString ) ;
+	void threadExitStatus( int ) ;
 private:
-	void run( void );
-	void closeEvent( QCloseEvent * );
-	Ui::erasedevice * m_ui;
+	void run( void ) ;
+	void closeEvent( QCloseEvent * ) ;
+	Ui::erasedevice * m_ui ;
 	EraseTask * m_task  ;
 	bool m_cancelClicked ;
 	int m_option ;

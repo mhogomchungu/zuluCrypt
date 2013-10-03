@@ -44,7 +44,6 @@ public slots:
 	void backUpHeader( void ) ;
 	void backUpHeader( QString ) ;
 	void restoreHeader( void ) ;
-
 private slots:
 	void pbCancel( void ) ;
 	void pbCreate( void ) ;
@@ -60,7 +59,7 @@ private:
 	void disableAll( void ) ;
 	void enableAll( void ) ;
 	void success( void ) ;
-	Ui::manageluksheader * m_ui;
+	Ui::manageluksheader * m_ui ;
 	QString m_path ;
 	bool m_OperationInProgress ;
 	QString m_operation ;

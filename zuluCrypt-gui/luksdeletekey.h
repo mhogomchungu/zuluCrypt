@@ -41,7 +41,7 @@ signals:
 	void HideUISignal( void );
 public slots:
 	void ShowUI( void ) ;
-	void ShowUI( QString ) ;
+	void ShowUI( const QString& ) ;
 	void HideUI( void ) ;
 private slots:
 	void pbOpenPartition( void );

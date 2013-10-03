@@ -29,7 +29,7 @@ class keystrength
 public:
 	keystrength();
 	~keystrength();
-	int quality( QString ) ;
+	int quality( const QString& ) ;
 	bool canCheckQuality( void );
 private:
 #if BUILD_PWQUALITY

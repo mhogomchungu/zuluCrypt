@@ -43,17 +43,17 @@ class passwordDialog :  public QDialog
 {
 	Q_OBJECT
 public:
-	passwordDialog( QTableWidget * table,QString folderOpener,QWidget * parent = 0 );
-	virtual ~passwordDialog();
+	passwordDialog( QTableWidget * table,const QString& folderOpener,QWidget * parent = 0 ) ;
+	virtual ~passwordDialog() ;
 signals :
 	void addItemToTable( QString,QString,QString ) ;
-	void HideUISignal( void );
-	void volumeOpened( QString,QString,passwordDialog * );
+	void HideUISignal( void ) ;
+	void volumeOpened( QString,QString,passwordDialog * ) ;
 public slots:
-	void HideUI( void );
-	void ShowUI( void );
-	void ShowUI( QString volumePath,QString mount_point ) ;
-	void clickedPartitionOption( QString );
+	void HideUI( void ) ;
+	void ShowUI( void ) ;
+	void ShowUI( const QString& volumePath,const QString& mount_point ) ;
+	void clickedPartitionOption( QString ) ;
 private slots :
 	void pbKeyOption( void ) ;
 	void pbPluginEntryClicked( QAction * ) ;
@@ -61,28 +61,28 @@ private slots :
 	void keyTextChanged( QString ) ;
 	void buttonOpenClicked( void ) ;
 	void walletIsOpen( bool ) ;
-	void mount_point( void );
+	void mount_point( void ) ;
 	void clickedPassPhraseFromFileButton( void ) ;
 	void passphraseFromFileOption( void ) ;
 	void passphraseOption( void ) ;
 	void pluginOption( void ) ;
 	void file_path( void  ) ;
 	void taskFinished( int,QString ) ;
-	void mountPointPath( QString );
-	void complete( QString );
-	void cbStateChanged( int );
+	void mountPointPath( QString ) ;
+	void complete( QString ) ;
+	void cbStateChanged( int ) ;
 	void fileManagerOpenStatus( int exitCode,int exitStatus,int startError ) ;
 	void getPassWord( QString ) ;
 private :
-	void openVolume( QString ) ;
-	QString getUUIDFromPath( QString ) ;
-	void sendKey( QString sockpath ) ;
-	void setDefaultOpenMode( void );
-	void disableAll( void );
+	void openVolume( const QString& ) ;
+	QString getUUIDFromPath( const QString& ) ;
+	void sendKey( const QString& sockpath ) ;
+	void setDefaultOpenMode( void ) ;
+	void disableAll( void ) ;
 	void enableAll( void ) ;
 	void closeEvent( QCloseEvent * ) ;
-	void success( QString );
-	Ui::PasswordDialog * m_ui;
+	void success( const QString& ) ;
+	Ui::PasswordDialog * m_ui ;
 	bool m_isWindowClosable ;
 	QTableWidget * m_table ;
 	bool m_open_with_path ;

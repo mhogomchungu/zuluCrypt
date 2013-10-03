@@ -106,7 +106,7 @@ void luksaddkey::closeEvent( QCloseEvent * e )
 	}
 }
 
-void luksaddkey::ShowUI( QString path )
+void luksaddkey::ShowUI( const QString& path )
 {
 	m_ui->textEditPathToVolume->setText( path ) ;
 	this->ShowUI() ;

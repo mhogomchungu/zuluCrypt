@@ -27,14 +27,14 @@ class keyFileTask : public QThread
 {
 	Q_OBJECT
 public:
-	explicit keyFileTask( QString,int );
-	~keyFileTask();
+	explicit keyFileTask( const QString&,int ) ;
+	~keyFileTask() ;
 signals:
-	void exitStatus( int );
+	void exitStatus( int ) ;
 public slots:
-	void cancelOperation( void );
+	void cancelOperation( void ) ;
 private:
-	void run( void );
+	void run( void ) ;
 	QString m_path ;
 	int m_rng ;
 	int m_cancelled ;

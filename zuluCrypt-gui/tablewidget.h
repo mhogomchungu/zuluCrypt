@@ -30,13 +30,13 @@ class tablewidget
 {
 public:
 	static void selectTableRow( QTableWidgetItem * current,QTableWidgetItem * previous ) ;
-	static void addRowToTable( QTableWidget *,QStringList & );
-	static void addRowToTable( QTableWidget *,QStringList &,QFont & );
+	static void addRowToTable( QTableWidget *,const QStringList& ) ;
+	static void addRowToTable( QTableWidget *,const QStringList&,const QFont& ) ;
 	static void deleteRowFromTable( QTableWidget *,int row ) ;
 	static void selectRow( QTableWidget *,int row ) ;
-	static void setText( QTableWidget *,int row,int col,QString text ) ;
+	static void setText( QTableWidget *,int row,int col,const QString& text ) ;
 	static int addEmptyRow( QTableWidget * ) ;
-	static int  columnHasEntry( QTableWidget *,int,QString ) ;
+	static int  columnHasEntry( QTableWidget *,int,const QString& ) ;
 };
 
 #endif // TABLEWIDGET_H

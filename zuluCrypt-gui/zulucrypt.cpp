@@ -54,7 +54,6 @@
 #include "createfile.h"
 #include "createkeyfile.h"
 #include "managedevicenames.h"
-#include "checkvolumetype.h"
 #include "cryptoinfo.h"
 #include "erasedevice.h"
 #include "manageluksheader.h"

@@ -67,7 +67,7 @@ private:
 	void enableAll( void ) ;
 	void disableAll( void ) ;
 	void closeEvent( QCloseEvent * ) ;
-	void ShowUI( QString,QString ) ;
+	void ShowUI( const QString&,const QString& ) ;
 	bool m_created ;
 	Ui::createvolume * m_ui ;
 	bool m_isWindowClosable ;

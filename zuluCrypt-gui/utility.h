@@ -26,38 +26,37 @@
 class utility
 {
 public:
-	static QStringList luksEmptySlots( QString volumePath ) ;
-	static bool isLuks( QString volumePath ) ;
-	static void addToFavorite( QString dev,QString m_point );
-	static QStringList readFavorites( void );
-	static void removeFavoriteEntry( QString );
-	static bool exists( QString );
-	static bool canCreateFile( QString );
-	static QString resolvePath( QString );
-	static QString hashPath( QString p );
-	static QString cryptMapperPath( void );
-	static void debug( QString );
-	static void debug( int );
-	static QString mapperPath( QString );
-	static QString getUUIDFromPath( QString ) ;
+	static QStringList luksEmptySlots( const QString& volumePath ) ;
+	static void addToFavorite( const QString& dev,const QString& m_point ) ;
+	static QStringList readFavorites( void ) ;
+	static void removeFavoriteEntry( const QString& ) ;
+	static bool exists( const QString& ) ;
+	static bool canCreateFile( const QString& ) ;
+	static QString resolvePath( const QString& ) ;
+	static QString hashPath( const QString& ) ;
+	static QString cryptMapperPath( void ) ;
+	static void debug( const QString& ) ;
+	static void debug( int ) ;
+	static QString mapperPath( const QString& ) ;
+	static QString getUUIDFromPath( const QString& ) ;
 	static bool userIsRoot( void ) ;
-	static bool mapperPathExists( QString path ) ;
-	static QString mountPath( QString ) ;
+	static bool mapperPathExists( const QString& path ) ;
+	static QString mountPath( const QString& ) ;
 	static QString userName( void ) ;
-	static void help( QString app ) ;
+	static void help( const QString& app ) ;
 	static QString shareMountPointToolTip( void ) ;
-	static QString shareMountPointToolTip( QString ) ;
-	static QString sharedMountPointPath( QString ) ;
-	static bool pathPointsToAFile( QString ) ;
-	static QString localizationLanguage( QString ) ;
-	static QString localizationLanguagePath( QString ) ;
-	static void setLocalizationLanguage( QString,QString ) ;
+	static QString shareMountPointToolTip( const QString& ) ;
+	static QString sharedMountPointPath( const QString& ) ;
+	static bool pathPointsToAFile( const QString& ) ;
+	static QString localizationLanguage( const QString& ) ;
+	static QString localizationLanguagePath( const QString& ) ;
+	static void setLocalizationLanguage( const QString&,const QString& ) ;
 	static QString walletName( void ) ;
 	static QString defaultKDEWalletName( void ) ;
 	static QString applicationName( void ) ;
-	static bool pathIsReadable( QString ) ;
-	static bool setOpenVolumeReadOnly( QWidget * parent,bool check,QString app ) ;
-	static bool getOpenVolumeReadOnlyOption( QString app ) ;
+	static bool pathIsReadable( const QString& ) ;
+	static bool setOpenVolumeReadOnly( QWidget * parent,bool check,const QString& app ) ;
+	static bool getOpenVolumeReadOnlyOption( const QString& app ) ;
 };
 
 #endif // MISCFUNCTIONS_H

@@ -22,7 +22,7 @@
 #include <QTime>
 #include <QDir>
 
-socketSendKey::socketSendKey( QObject * parent,QString sockpath,QByteArray key )
+socketSendKey::socketSendKey( QObject * parent,const QString& sockpath,const QByteArray& key )
 {
 	Q_UNUSED( parent ) ;
 	m_connectionHandle = 0 ;
@@ -39,7 +39,7 @@ socketSendKey::socketSendKey( QObject * parent )
 	Q_UNUSED( parent ) ;
 }
 
-void socketSendKey::setAddr( QString addr )
+void socketSendKey::setAddr( const QString& addr )
 {
 	m_sockpath = addr ;
 }
@@ -50,7 +50,7 @@ void socketSendKey::closeConnection()
 	::zuluCryptPluginManagerCloseConnection( m_connectionHandle ) ;
 }
 
-void socketSendKey::sendKey( QByteArray data )
+void socketSendKey::sendKey( const QByteArray& data )
 {
 	m_key = data ;
 	this->start() ;
@@ -70,7 +70,7 @@ bool socketSendKey::openConnection()
 	return m_connected ;
 }
 
-void socketSendKey::setKey( QByteArray key )
+void socketSendKey::setKey( const QByteArray& key )
 {
 	m_key = key ;
 }
@@ -102,20 +102,20 @@ void socketSendKey::run()
 	}
 }
 
-void socketSendKey::openAndCloseConnection( QString sockAddr )
+void socketSendKey::openAndCloseConnection( const QString& sockAddr )
 {
 	QByteArray sockpath = sockAddr.toAscii() ;
 	void * connection = ::zuluCryptPluginManagerOpenConnection( sockpath.constData() ) ;
 	::zuluCryptPluginManagerCloseConnection( connection ) ;
 }
 
-void * socketSendKey::zuluCryptPluginManagerOpenConnection( QString sockpath )
+void * socketSendKey::zuluCryptPluginManagerOpenConnection( const QString& sockpath )
 {
 	QByteArray path = sockpath.toAscii() ;
 	return ::zuluCryptPluginManagerOpenConnection( path.constData() ) ;
 }
 
-ssize_t socketSendKey::zuluCryptPluginManagerSendKey( void * handle,QByteArray data )
+ssize_t socketSendKey::zuluCryptPluginManagerSendKey( void * handle,const QByteArray& data )
 {
 	return ::zuluCryptPluginManagerSendKey( handle,data.constData(),data.size() ) ;
 }

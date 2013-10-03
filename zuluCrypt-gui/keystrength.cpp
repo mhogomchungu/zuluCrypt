@@ -37,7 +37,7 @@ bool keystrength::canCheckQuality()
 #endif
 }
 
-int keystrength::quality( QString key )
+int keystrength::quality( const QString& key )
 {
 #if BUILD_PWQUALITY
 	void * auxerror ;

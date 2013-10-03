@@ -35,7 +35,7 @@ class mountPartition : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit mountPartition( QWidget * parent = 0,QTableWidget * table = 0,QString folderOpener = QString(),bool b = true ) ;
+	explicit mountPartition( QWidget * parent = 0,QTableWidget * table = 0,const QString& folderOpener = QString(),bool b = true ) ;
 	void ShowUI( QString path,QString label ) ;
 	void HideUI( void ) ;
 	void AutoMount( QStringList entry ) ;

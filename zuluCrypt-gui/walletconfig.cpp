@@ -92,8 +92,9 @@ void walletconfig::pbClose()
 	this->HideUI() ;
 }
 
-void walletconfig::add( QString volumeID,QString comment,QString key )
+void walletconfig::add( const QString& volumeID,const QString& comm,const QString& key )
 {
+	QString comment = comm ;
 	if( comment.isEmpty() ){
 		comment = QString( "Nil" ) ;
 	}

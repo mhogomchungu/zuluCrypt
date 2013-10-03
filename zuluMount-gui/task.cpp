@@ -31,29 +31,30 @@ Task::Task()
 {
 }
 
-void Task::setMode( QString mode )
+void Task::setMode( const QString& mode )
 {
 	m_mode = mode ;
 }
 
-void Task::setDevice( QString path )
+void Task::setDevice( const QString& path )
 {
 	m_device = path ;
 }
 
-void Task::setType( QString type )
+void Task::setType( const QString& type )
 {
 	m_type = type ;
 }
 
-void Task::setKeySource( QString key )
+void Task::setKeySource( const QString& key )
 {
 	m_keySource = key ;
 }
 
-void Task::setMountPoint( QString m )
+void Task::setMountPoint( const QString& m )
 {
-	m_point = m.replace( "\"","\"\"\"" ) ;
+	m_point = m ;
+	m_point.replace( "\"","\"\"\"" ) ;
 }
 
 void Task::setMakeMountPointPublic( bool opt )
@@ -61,12 +62,12 @@ void Task::setMakeMountPointPublic( bool opt )
 	m_publicMount = opt ;
 }
 
-void Task::setList( QStringList l )
+void Task::setList( const QStringList& l )
 {
 	m_list = l ;
 }
 
-void Task::setMountPointOpener( QString opener )
+void Task::setMountPointOpener( const QString& opener )
 {
 	m_folderOpener = opener ;
 }

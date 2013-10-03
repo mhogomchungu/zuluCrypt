@@ -27,25 +27,26 @@ class CryptTask : public QObject,public QRunnable
 {
 	Q_OBJECT
 public:
-	explicit CryptTask( QString source,QString dest,QString keySource,QString key,QString task );
+	explicit CryptTask( const QString& source,const QString& dest,
+			    const QString& keySource,const QString& key,const QString& task ) ;
 	~CryptTask() ;
 signals:
-	void progressUpdate( int );
-	void titleUpdate( QString );
+	void progressUpdate( int ) ;
+	void titleUpdate( QString ) ;
 	void complete( int ) ;
 	void md5mismach( void ) ;
 	void enableCancel( void ) ;
 	void disableCancel( void ) ;
 public slots:
-	void terminate( void );
-	void start( void );
+	void terminate( void ) ;
+	void start( void ) ;
 private:
-	void calculateMd5( QString path,char * result ) ;
-	void run( void );
-	int encrypt( void );
-	int decrypt( void );
-	int openMapper( QString path );
-	int closeMapper( QString path );
+	void calculateMd5( const QString& path,char * result ) ;
+	void run( void ) ;
+	int encrypt( void ) ;
+	int decrypt( void ) ;
+	int openMapper( const QString& path ) ;
+	int closeMapper( const QString& path ) ;
 	QString m_source ;
 	QString m_dest ;
 	QString m_keySource ;

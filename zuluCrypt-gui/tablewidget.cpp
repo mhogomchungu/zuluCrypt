@@ -75,7 +75,7 @@ int tablewidget::addEmptyRow( QTableWidget * table )
 	return row ;
 }
 
-int tablewidget::columnHasEntry( QTableWidget * table,int column,QString entry )
+int tablewidget::columnHasEntry( QTableWidget * table,int column,const QString& entry )
 {
 	int rows = table->rowCount() ;
 	for( int i = 0 ; i < rows ; i++ ){
@@ -86,7 +86,7 @@ int tablewidget::columnHasEntry( QTableWidget * table,int column,QString entry )
 	return -1 ;
 }
 
-void tablewidget::addRowToTable( QTableWidget * table,QStringList& list )
+void tablewidget::addRowToTable( QTableWidget * table,const QStringList& list )
 {
 	QTableWidgetItem * item ;
 
@@ -112,7 +112,7 @@ void tablewidget::addRowToTable( QTableWidget * table,QStringList& list )
 	table->setCurrentCell( row,j - 1 ) ;
 }
 
-void tablewidget::addRowToTable( QTableWidget * table,QStringList& list,QFont & font )
+void tablewidget::addRowToTable( QTableWidget * table,const QStringList& list,const QFont& font )
 {
 	QTableWidgetItem * item ;
 
@@ -154,7 +154,7 @@ void tablewidget::selectRow( QTableWidget * table,int row )
 	table->setCurrentCell( row,table->columnCount() - 1 ) ;
 }
 
-void tablewidget::setText( QTableWidget * table,int row,int col,QString text )
+void tablewidget::setText( QTableWidget * table,int row,int col,const QString& text )
 {
 	QFont f = table->item( row,col )->font() ;
 

@@ -22,6 +22,7 @@
 #include <QDir>
 #include <QWidget>
 #include <QString>
+#include <QFont>
 
 userfont::userfont( QWidget * parent )
 {
@@ -62,7 +63,7 @@ QFont userfont::getFont()
 	}
 }
 
-void userfont::saveFont( QFont Font )
+void userfont::saveFont( const QFont& Font )
 {
 	int k = Font.pointSize() ;
 	QString s = QString( "%1\n%2\n" ).arg( Font.family() ).arg( QString::number( k ) ) ;

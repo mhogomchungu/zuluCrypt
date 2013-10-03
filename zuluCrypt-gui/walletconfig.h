@@ -50,7 +50,7 @@ private slots:
 	void itemClicked ( QTableWidgetItem * item ) ;
 	void pbDelete( void ) ;
 	void pbClose( void ) ;
-	void add( QString volumeID,QString comment,QString key ) ;
+	void add( const QString& volumeID,const QString& comment,const QString& key ) ;
 	void cancel( void ) ;
 	void pbAdd( void ) ;
 	void walletIsOpen( bool ) ;

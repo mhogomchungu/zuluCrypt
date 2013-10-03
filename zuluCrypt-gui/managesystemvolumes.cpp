@@ -228,7 +228,7 @@ void manageSystemVolumes::HideUI()
 	emit HideUISignal() ;
 }
 
-void manageSystemVolumes::ShowUI( QString path )
+void manageSystemVolumes::ShowUI( const QString& path )
 {
 	m_path = path ;
 	this->readSystemPartitions() ;

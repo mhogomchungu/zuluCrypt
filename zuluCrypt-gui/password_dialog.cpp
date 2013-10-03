@@ -43,7 +43,6 @@
 #include "openvolume.h"
 #include "task.h"
 #include "utility.h"
-#include "checkvolumetype.h"
 #include "dialogmsg.h"
 #include "plugin_path.h"
 #include "tablewidget.h"
@@ -61,7 +60,7 @@
  */
 static QString _internalPassWord ;
 
-passwordDialog::passwordDialog( QTableWidget * table,QString folderOpener,QWidget * parent ) : QDialog( parent )
+passwordDialog::passwordDialog( QTableWidget * table,const QString& folderOpener,QWidget * parent ) : QDialog( parent )
 {
 	m_ui = new Ui::PasswordDialog() ;
 	m_ui->setupUi( this ) ;
@@ -117,25 +116,25 @@ void passwordDialog::pbPlugin()
 
 	if( dir.exists() ){
 		list = dir.entryList() ;
-		
+
 		list.removeOne( QString( "zuluCrypt-testKey" ) ) ;
 		list.removeOne( QString( "." ) ) ;
 		list.removeOne( QString( ".." ) ) ;
 		list.removeOne( QString( "keyring" ) ) ;
 		list.removeOne( QString( "kwallet" ) ) ;
-		
+
 		list.insert( 0,tr( INTERNAL_WALLET ) ) ;
-		
+
 		if( lxqt::Wallet::backEndIsSupported( lxqt::Wallet::kwalletBackEnd ) ){
 			list.insert( 1,tr( KWALLET ) ) ;
 		}
-		
+
 		if( lxqt::Wallet::backEndIsSupported( lxqt::Wallet::secretServiceBackEnd ) ){
 			list.insert( 2,tr( GNOME_WALLET ) ) ;
 		}
 	}else{
 		list.append( tr( INTERNAL_WALLET ) ) ;
-		
+
 		if( lxqt::Wallet::backEndIsSupported( lxqt::Wallet::kwalletBackEnd ) ){
 			list.append( tr( KWALLET ) ) ;
 		}
@@ -156,7 +155,7 @@ void passwordDialog::pbPlugin()
 	for( int i = 0 ; i < j ; i++ ){
 		m_pluginMenu->addAction( list.at( i ) ) ;
 	}
-	
+
 	m_pluginMenu->addSeparator() ;
 
 	m_pluginMenu->addAction( tr( "cancel" ) ) ;
@@ -202,7 +201,7 @@ void passwordDialog::closeEvent( QCloseEvent * e )
 	}
 }
 
-void passwordDialog::ShowUI( QString volumePath,QString mount_point )
+void passwordDialog::ShowUI( const QString& volumePath,const QString& mount_point )
 {
 	m_point = mount_point.split( QString( "/" ) ).last() ;
 	if( m_point.isEmpty() ){
@@ -424,8 +423,10 @@ void passwordDialog::buttonOpenClicked( void )
 	}
 }
 
-void passwordDialog::openVolume( QString passPhraseField )
+void passwordDialog::openVolume( const QString& p )
 {
+	QString passPhraseField = p ;
+
 	m_device = utility::resolvePath( m_ui->OpenVolumePath->text() ) ;
 
 	m_point = m_ui->MountPointPath->text() ;
@@ -492,7 +493,7 @@ void passwordDialog::openVolume( QString passPhraseField )
 	t->start() ;
 }
 
-void passwordDialog::sendKey( QString sockpath )
+void passwordDialog::sendKey( const QString& sockpath )
 {
 	socketSendKey * sk = new socketSendKey( this,sockpath,m_key.toAscii() ) ;
 	sk->sendKey() ;
@@ -570,7 +571,7 @@ void passwordDialog::fileManagerOpenStatus( int exitCode, int exitStatus,int sta
 	}
 }
 
-void passwordDialog::success( QString output )
+void passwordDialog::success( const QString& output )
 {
 	if( utility::mapperPathExists( m_device ) ){
 		this->complete( output ) ;

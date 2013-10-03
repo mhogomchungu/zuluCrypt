@@ -200,7 +200,7 @@ void createvolume::dialogResult( int result )
 	}
 }
 
-void createvolume::ShowUI( QString l,QString v )
+void createvolume::ShowUI( const QString& l,const QString& v )
 {
 	enableAll() ;
 	m_ui->labelVolumePath->setText( l ) ;

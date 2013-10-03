@@ -37,30 +37,29 @@ class openvolume :  public QDialog
 {
 	Q_OBJECT
 public:
-	openvolume( QWidget *parent = 0 );
-	virtual ~openvolume();
+	openvolume( QWidget * parent = 0 ) ;
+	virtual ~openvolume() ;
 	void showEncryptedOnly( void ) ;
 	void showLuksOnly( void ) ;
-
 signals :
-	void HideUISignal( void );
+	void HideUISignal( void ) ;
 	void clickedPartition( QString ) ;
 public slots:
 	void tableEntryDoubleClicked( QTableWidgetItem * ) ;
-	void ShowAllPartitions( void );
-	void HideUI( void );
+	void ShowAllPartitions( void ) ;
+	void HideUI( void ) ;
 	void ShowNonSystemPartitions( void ) ;
-	void ShowPartitionList( QString,QString );
-	void partitionList( QString,QString );
+	void ShowPartitionList( QString,QString ) ;
+	void partitionList( QString,QString ) ;
 	void allowLUKSOnly( void ) ;
 private slots:
-	void pbHelp( void );
-	void pbUUID( void );
-	void pbCancel( void );
-	void EnterKeyPressed( void );
-	void currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous );
-	void partitionpropertiesThreadFinished( void );
-	void partitionProperties( QStringList );
+	void pbHelp( void ) ;
+	void pbUUID( void ) ;
+	void pbCancel( void ) ;
+	void EnterKeyPressed( void ) ;
+	void currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous ) ;
+	void partitionpropertiesThreadFinished( void ) ;
+	void partitionProperties( QStringList ) ;
 private:
 	void closeEvent( QCloseEvent * ) ;
 	Ui::openvolume * m_ui ;

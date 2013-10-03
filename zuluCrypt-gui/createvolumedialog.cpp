@@ -19,7 +19,7 @@
 #include "createvolumedialog.h"
 #include "ui_createvolumedialog.h"
 
-CreateVolumeDialog::CreateVolumeDialog( QString path,QWidget *parent ) :
+CreateVolumeDialog::CreateVolumeDialog( const QString& path,QWidget *parent ) :
 	QDialog( parent ),
 	m_ui( new Ui::CreateVolumeDialog )
 {
