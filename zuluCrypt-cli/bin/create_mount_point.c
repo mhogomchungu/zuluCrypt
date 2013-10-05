@@ -104,7 +104,11 @@ static string_t _create_home_custom_mount_point( const char * label,uid_t uid,st
 static string_t create_home_mount_point( const char * device,const char * label,uid_t uid )
 {
 	string_t path = zuluCryptGetUserName( uid ) ;
-	StringPrepend( path,"/home/" ) ;
+	if( uid == 0 ){
+		StringPrepend( path,"/" ) ;
+	}else{
+		StringPrepend( path,"/home/" ) ;
+	}
 	
 	if( label == NULL ){
 		return _create_home_default_mount_point( device,uid,path ) ;
@@ -123,8 +127,16 @@ static int home_mount_point_prefix_match( const char * m_path,uid_t uid,string_t
 	/*
 	 * below constant are set in ../constants.h
 	 */
-	const char * str = StringPrepend( uname,"/home/" ) ;
+	const char * str ;
+	
+	if( uid == 0 ){
+		str = StringPrepend( uname,"/" ) ;
+	}else{
+		str = StringPrepend( uname,"/home/" ) ;
+	}
+	
 	st = StringPrefixEqual( m_path,str ) ;
+
 	if( m_point ){
 		*m_point = uname ;
 	}else{
@@ -220,7 +232,6 @@ static string_t _create_custom_mount_point( const char * label,uid_t uid,string_
 
 static int mount_point_prefix_match( const char * m_path,uid_t uid,string_t * m_point )
 {
-	int st ;
 	/*
 	 * zuluCryptGetUserName() is defined in ../lib/user_home_path.c
 	 */
@@ -229,7 +240,7 @@ static int mount_point_prefix_match( const char * m_path,uid_t uid,string_t * m_
 	 * below constant are set in ../constants.h
 	 */
 	const char * str = StringPrepend( uname,"/run/media/private/" ) ;
-	st = StringPrefixEqual( m_path,str ) ;
+	int st = StringPrefixEqual( m_path,str ) ;
 	if( m_point ){
 		*m_point = uname ;
 	}else{
