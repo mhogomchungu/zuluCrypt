@@ -72,11 +72,11 @@ static void _printResult( const char * device,const char * m_point )
 	zuluCryptSecurityDropElevatedPrivileges() ;
 	
 	if( StringHasComponent( e,"LUKS" ) ){
-		printf( gettext( "SUCCESS: luks volume opened successfully\n" ) ) ;
+		printf( gettext( "SUCCESS: %s volume opened successfully\n" ),"luks" ) ;
 	}else if( StringHasComponent( e,"PLAIN" ) ){
-		printf( gettext( "SUCCESS: plain volume opened successfully\n" ) ) ;
+		printf( gettext( "SUCCESS: %s volume opened successfully\n" ),"plain" ) ;
 	}else if( StringHasComponent( e,"TCRYPT" ) ){
-		printf( gettext( "SUCCESS: tcrypt volume opened successfully\n" ) ) ;
+		printf( gettext( "SUCCESS: %s volume opened successfully\n" ),"tcrypt" ) ;
 	}else{
 		printf( gettext( "SUCCESS: volume opened successfully\n" ) ) ;
 	}
