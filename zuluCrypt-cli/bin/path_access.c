@@ -53,66 +53,45 @@ static int has_device_access( const char * path,int c )
  * 3-shenanigans
  * 4-common error
  */
-int zuluCryptCanOpenPathForReading( const char * device,uid_t uid )
+static int path_is_accessible( const char * path,uid_t uid,int action )
 {
 	int st ;
 	char * xt ;
 	
 	if( uid ){;}
 	
-	if( StringPrefixMatch( device,"/dev/shm/",9 ) ){
+	if( StringPrefixMatch( path,"/dev/shm/",9 ) ){
 		return 4 ;
 	}
-	if( StringPrefixMatch( device,"/dev/",5 ) ){
-		if( StringPrefixMatch( device,"/dev/loop",9 ) ){
-			xt = zuluCryptLoopDeviceAddress_1( device ) ;
+	if( StringPrefixMatch( path,"/dev/",5 ) ){
+		if( StringPrefixMatch( path,"/dev/loop",9 ) ){
+			xt = zuluCryptLoopDeviceAddress_1( path ) ;
 			if( xt != NULL ){
-				st = has_device_access( xt,ZULUCRYPTread ) ;
+				st = has_device_access( xt,action ) ;
 				free( xt ) ;
 			}else{
 				return 4 ;
 			}
 		}else{
 			zuluCryptSecurityGainElevatedPrivileges() ;
-			st = has_device_access( device,ZULUCRYPTread ) ;
+			st = has_device_access( path,action ) ;
 			zuluCryptSecurityDropElevatedPrivileges() ;
 		}
 		return st ;
 	}else{
 		zuluCryptSecurityDropElevatedPrivileges() ;
-		return has_device_access( device,ZULUCRYPTread ) ;
+		return has_device_access( path,action ) ;
 	}
 }
 
-int zuluCryptCanOpenPathForWriting( const char * device,uid_t uid )
+int zuluCryptCanOpenPathForReading( const char * path,uid_t uid )
+{
+	return path_is_accessible( path,uid,ZULUCRYPTread ) ;
+}
+
+int zuluCryptCanOpenPathForWriting( const char * path,uid_t uid )
 {	
-	int st ;
-	char * xt ;
-	
-	if( uid ){;}
-	
-	if( StringPrefixMatch( device,"/dev/shm/",9 ) ){
-		return 4 ;
-	}
-	if( StringPrefixMatch( device,"/dev/",5 ) ){
-		if( StringPrefixMatch( device,"/dev/loop",9 ) ){
-			xt = zuluCryptLoopDeviceAddress_1( device ) ;
-			if( xt != NULL ){
-				st = has_device_access( xt,ZULUCRYPTwrite ) ;
-				free( xt ) ;
-			}else{
-				return 4 ;
-			}
-		}else{
-			zuluCryptSecurityGainElevatedPrivileges() ;
-			st = has_device_access( device,ZULUCRYPTwrite ) ;
-			zuluCryptSecurityDropElevatedPrivileges() ;
-		}
-		return st ;
-	}else{
-		zuluCryptSecurityDropElevatedPrivileges() ;
-		return has_device_access( device,ZULUCRYPTwrite ) ;
-	}
+	return path_is_accessible( path,uid,ZULUCRYPTwrite ) ;
 }
 
 /*
@@ -125,16 +104,12 @@ int zuluCryptCanOpenPathForWriting( const char * device,uid_t uid )
  */
 int zuluCryptGetPassFromFile( const char * path,uid_t uid,string_t * st )
 {
-	size_t s ;
-	string_t p ;
-	const char * z ;
-	
 	/*
 	 * zuluCryptGetUserHomePath() is defined in ../lib/user_home_path.c
 	 */
-	p = zuluCryptGetUserHomePath( uid ) ;
-	z = StringAppend( p,".zuluCrypt-socket" ) ;
-	s = StringLength( p ) ;
+	string_t p     = zuluCryptGetUserHomePath( uid ) ;
+	const char * z = StringAppend( p,".zuluCrypt-socket" ) ;
+	size_t s       = StringLength( p ) ;
 	
 	zuluCryptSecurityDropElevatedPrivileges();
 	
