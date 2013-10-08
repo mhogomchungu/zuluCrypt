@@ -279,7 +279,6 @@ void keyDialog::slotMountComplete( int st,QString m )
 			m.ShowUIOK( tr( "ERROR" ),tr( "An error has occured and the volume could not be opened" ) ) ;
 		}
 		this->HideUI() ;
-
 	}else{
 		DialogMsg msg( this ) ;
 
@@ -372,7 +371,7 @@ void keyDialog::openVolume()
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR" ),tr( "passphrase field is empty" ) ) ;
 		m_ui->lineEditKey->setFocus() ;
-		return ;
+		return this->enableAll() ;
 	}
 
 	QString test_name = m_ui->lineEditMountPoint->text() ;
@@ -380,7 +379,7 @@ void keyDialog::openVolume()
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR" ),tr( "\"/\" character is not allowed in the mount name field" ) ) ;
 		m_ui->lineEditKey->setFocus() ;
-		return ;
+		return this->enableAll() ;
 	}
 
 	QString m ;
