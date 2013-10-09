@@ -37,7 +37,7 @@ public:
 	explicit manageluksheader( QWidget * parent = 0 ) ;
 	~manageluksheader() ;
 signals:
-	void HideUISignal( void );
+	void HideUISignal( void ) ;
 public slots:
 	void ShowUI( void ) ;
 	void HideUI( void ) ;
@@ -51,8 +51,8 @@ private slots:
 	void taskFinished( int ) ;
 	void pbOpenPartition( void ) ;
 	void pbOpenFile( void ) ;
-	void selectedPartition( QString );
-	void backUpHeaderNameChange( QString );
+	void selectedPartition( QString ) ;
+	void backUpHeaderNameChange( QString ) ;
 private:
 	void headerBackUp( void ) ;
 	void closeEvent( QCloseEvent * ) ;

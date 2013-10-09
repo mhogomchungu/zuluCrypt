@@ -277,6 +277,7 @@ void keyDialog::slotMountComplete( int st,QString m )
 			DialogMsg m( this ) ;
 
 			m.ShowUIOK( tr( "ERROR" ),tr( "An error has occured and the volume could not be opened" ) ) ;
+			emit cancel() ;
 		}
 		this->HideUI() ;
 	}else{
@@ -368,10 +369,19 @@ void keyDialog::pbOpen()
 void keyDialog::openVolume()
 {
 	if( m_ui->lineEditKey->text().isEmpty() ){
-		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "ERROR" ),tr( "passphrase field is empty" ) ) ;
-		m_ui->lineEditKey->setFocus() ;
-		return this->enableAll() ;
+		if( m_ui->rbKey->isChecked() ){
+			;
+		}else if( m_ui->rbPlugIn->isChecked() ){
+			DialogMsg msg( this ) ;
+			msg.ShowUIOK( tr( "ERROR" ),tr( "plug in name field is empty" ) ) ;
+			m_ui->lineEditKey->setFocus() ;
+			return this->enableAll() ;
+		}else if( m_ui->rbKeyFile->isChecked() ){
+			DialogMsg msg( this ) ;
+			msg.ShowUIOK( tr( "ERROR" ),tr( "keyfile field is empty" ) ) ;
+			m_ui->lineEditKey->setFocus() ;
+			return this->enableAll() ;
+		}
 	}
 
 	QString test_name = m_ui->lineEditMountPoint->text() ;

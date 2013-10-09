@@ -239,14 +239,21 @@ void luksaddkey::pbAdd( void )
 	QString NewKey = m_ui->textEditPassphraseToAdd->text() ;
 	QString NewKey_1 = m_ui->lineEditReEnterPassphrase->text() ;
 
+	if( m_volumePath.isEmpty() ){
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
+	}
+
+	if( m_ui->radioButtonPassphraseInVolumeFromFile->isChecked() ){
+		if( ExistingKey.isEmpty() ){
+			return msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
+		}
+	}
+
 	if( m_ui->radioButtonNewPassphraseFromFile->isChecked() ){
-		if( m_volumePath.isEmpty() || ExistingKey.isEmpty() || NewKey.isEmpty() ){
+		if( NewKey.isEmpty() ){
 			return msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
 		}
 	}else{
-		if( m_volumePath.isEmpty() || ExistingKey.isEmpty() || NewKey.isEmpty() || NewKey_1.isEmpty() ){
-			return msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
-		}
 		if( NewKey != NewKey_1 ){
 			msg.ShowUIOK( tr( "ERROR!" ),tr( "keys do not match" ) ) ;
 			m_ui->textEditPassphraseToAdd->clear() ;
@@ -255,9 +262,6 @@ void luksaddkey::pbAdd( void )
 			return ;
 		}
 	}
-
-	ExistingKey.replace( "\"","\"\"\"" ) ;
-	NewKey.replace( "\"","\"\"\"" ) ;
 
 	QString existingPassType ;
 

@@ -168,21 +168,21 @@ int SocketListen( socket_t ) ;
  * SocketClose( client ) ;
  * SocketDelete( &clien ) ;
  * 
- * returned value is the number of bytes read.
+ * returned value is the number of bytes read or -1 on error
  */
-size_t SocketGetData_1( socket_t,char ** buffer,size_t len ) ;
+ssize_t SocketGetData_1( socket_t,char ** buffer,size_t len ) ;
 
 /*
  * get an unbounded amount of data from socket,create memory for it dynamically and return a pointer to the allocated memory through pointer "buffer"
  * 
  * on success,the returned value is greater than 0 and the buffer should be free() when done with it.
  * on error,the returned value is 0 and no memory is allocated
- * returned value is the number of bytes read
+ * returned value is the number of bytes read or -1 on error
  * The buffer is NULL terminated
  * 
  * It is the responsibility of the caller to free() the buffer 
  */
-size_t SocketGetData( socket_t,char ** buffer ) ;
+ssize_t SocketGetData( socket_t,char ** buffer ) ;
 
 /*
  * get data from a socket and put in a user managed buffer "buffer" of size len

@@ -35,12 +35,12 @@ class luksaddkey : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit luksaddkey( QWidget * parent = 0 );
-	~luksaddkey();
+	explicit luksaddkey( QWidget * parent = 0 ) ;
+	~luksaddkey() ;
 signals :
 	void clickedpbAdd( QString PathToVolume,bool keyfile,QString ExistingKey,bool newkeyfile,QString NewKey ) ;
 	void pbOpenPartitionClicked( void ) ;
-	void HideUISignal( void );
+	void HideUISignal( void ) ;
 public slots:
 	void ShowUI( const QString& ) ;
 	void ShowUI( void ) ;
@@ -52,9 +52,9 @@ private slots:
 	void pbOpenFile( void ) ;
 	void pbOpenPartition( void ) ;
 	void rbExistingPassphrase( void ) ;
-	void rbExistingPassphraseFromFile( void );
+	void rbExistingPassphraseFromFile( void ) ;
 	void rbNewPassphrase( void ) ;
-	void rbNewPassphraseFromFile( void );
+	void rbNewPassphraseFromFile( void ) ;
 	void pbAdd( void ) ;
 	void pbCancel( void ) ;
 	void taskFinished( int ) ;

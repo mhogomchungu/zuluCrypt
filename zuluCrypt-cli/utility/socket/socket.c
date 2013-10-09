@@ -574,7 +574,11 @@ int SocketSetDoNotBlock( socket_t s )
 		return -1 ;
 	}else{
 		flags = fcntl( s->fd,F_GETFL,0 );
-		return flags == -1 ? -1 : fcntl( s->fd,F_SETFL,flags | O_NONBLOCK ) ;
+		if( flags == -1 ){
+			return -1 ;
+		}else{
+			return fcntl( s->fd,F_SETFL,flags | O_NONBLOCK ) ;
+		}
 	}
 }
 
@@ -585,13 +589,21 @@ int SocketSetBlock( socket_t s )
 		return -1 ;
 	}else{
 		flags = fcntl( s->fd,F_GETFL,0 );
-		return flags == -1 ? -1 : fcntl( s->fd,F_SETFL,flags & ~O_NONBLOCK  ) ;
+		if( flags == -1 ){
+			return -1 ;
+		}else{
+			return fcntl( s->fd,F_SETFL,flags & ~O_NONBLOCK  ) ;
+		}
 	}
 }
  
 int SocketListen( socket_t s ) 
 {
-	return s == SocketVoid ? 0 : listen( s->fd,s->cmax ) == 0 ;
+	if( s == SocketVoid ){
+		return 0 ;
+	}else{
+		return listen( s->fd,s->cmax ) == 0 ;
+	}
 }
 
 ssize_t SocketGetData_2( socket_t s,char * buffer,size_t len ) 
@@ -631,7 +643,7 @@ static inline char * __expandBuffer( char * buffer,size_t new_size,size_t * buff
 	}
 }
 
-size_t SocketGetData( socket_t s,char ** e ) 
+ssize_t SocketGetData( socket_t s,char ** e ) 
 {
 	int fd ;
 	ssize_t result ;
@@ -643,14 +655,14 @@ size_t SocketGetData( socket_t s,char ** e )
 	char * f ;
 	
 	if( s == SocketVoid ){
-		return 0 ;
+		return -1 ;
 	}
 	
 	f = ( char * ) malloc( sizeof( char ) * buff_size ) ;
 	
 	if( f == NULL ){
 		_SocketError() ;
-		return 0 ;
+		return -1 ;
 	}else{
 		fd = s->fd ;
 		
@@ -658,19 +670,25 @@ size_t SocketGetData( socket_t s,char ** e )
 			result = read( fd,buffer,BUFFSIZE ) ;
 			
 			if( result <= 0 ){
-				break ;
+				if( total ){
+					break ;
+				}else{
+					free( f ) ;
+					return -1 ;
+				}
+			}else{
+				d = __expandBuffer( f,total + result,&buff_size ) ;
+			
+				if( d == NULL ){
+					free( f ) ;
+					_SocketError() ;
+					return -1 ;
+				}else{
+					f = d ;
+					memcpy( f + total,buffer,result ) ;
+					total = total + result ;
+				}
 			}
-			
-			d = __expandBuffer( f,total + result,&buff_size ) ;
-			
-			if( d == NULL ){
-				return 0 ;
-			}
-			
-			f = d ;
-			
-			memcpy( f + total,buffer,result ) ;
-			total = total + result ;
 		}
 		
 		if( total ){
@@ -678,7 +696,7 @@ size_t SocketGetData( socket_t s,char ** e )
 			if( d == NULL ){
 				free( f ) ;
 				_SocketError() ;
-				return 0 ;
+				return -1 ;
 			}else{
 				d[ total ] = '\0' ;
 				*e = d ;
@@ -691,7 +709,7 @@ size_t SocketGetData( socket_t s,char ** e )
 	}
 }
 
-size_t SocketGetData_1( socket_t s,char ** e,size_t len ) 
+ssize_t SocketGetData_1( socket_t s,char ** e,size_t len ) 
 {
 	int fd ;
 	ssize_t result ;
@@ -703,37 +721,44 @@ size_t SocketGetData_1( socket_t s,char ** e,size_t len )
 	char * f ;
 	
 	if( s == SocketVoid ){
-		return 0 ;
+		return -1 ;
 	}
 		
 	f = ( char * ) malloc( sizeof( char ) * buff_size ) ;
 	
 	if( f == NULL ){
 		_SocketError() ;
-		return 0 ;
+		return -1 ;
 	}else{
 		fd = s->fd ;
 		while( 1 ){
 			result = read( fd,buffer,BUFFSIZE ) ;
 			
 			if( result <= 0 ){
-				break ;
-			}
-			
-			d = __expandBuffer( f,total + result,&buff_size ) ;
-			
-			if( d == NULL ){
-				return 0 ;
-			}
-			
-			f = d ;
-			
-			memcpy( f + total,buffer,result ) ;
-			total = total + result ;
-			
-			if( total >= len ){
-				total = len ;
-				break ;
+				if( total ){
+					break ;
+				}else{
+					free( f ) ;
+					return -1 ;
+				}
+			}else{
+				d = __expandBuffer( f,total + result,&buff_size ) ;
+				
+				if( d == NULL ){
+					free( f ) ;
+					_SocketError() ;
+					return -1 ;
+				}else{
+					f = d ;
+					
+					memcpy( f + total,buffer,result ) ;
+					total = total + result ;
+					
+					if( total >= len ){
+						total = len ;
+						break ;
+					}
+				}
 			}
 		}
 		

@@ -38,7 +38,7 @@ private:
 	QString m_path ;
 	int m_rng ;
 	int m_cancelled ;
-	int m_qfread  ;
+	int m_qfread ;
 	int m_qfwrite ;
 };
 

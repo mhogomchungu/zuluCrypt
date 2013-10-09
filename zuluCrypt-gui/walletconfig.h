@@ -39,7 +39,7 @@ class walletconfig : public QDialog
 	Q_OBJECT
 public:
 	explicit walletconfig( QWidget * parent = 0 ) ;
-	~walletconfig();
+	~walletconfig() ;
 	void ShowUI( lxqt::Wallet::walletBackEnd ) ;
 	void HideUI( void ) ;
 signals:

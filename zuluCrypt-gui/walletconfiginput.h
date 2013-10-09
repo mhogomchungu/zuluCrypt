@@ -34,7 +34,7 @@ class walletconfiginput : public QDialog
 	Q_OBJECT
 public:
 	explicit walletconfiginput( QWidget * parent = 0 ) ;
-	~walletconfiginput();
+	~walletconfiginput() ;
 	void ShowUI( void ) ;
 signals:
 	void add( QString volumeId,QString comment,QString key ) ;

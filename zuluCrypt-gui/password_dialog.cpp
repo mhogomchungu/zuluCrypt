@@ -389,7 +389,7 @@ void passwordDialog::walletIsOpen( bool opened )
 			this->enableAll() ;
 		}else{
 			m_key = key ;
-			this->openVolume( "bogus entry" ) ;
+			this->openVolume() ;
 		}
 	}else{
 		//DialogMsg msg( this ) ;
@@ -404,42 +404,48 @@ void passwordDialog::walletIsOpen( bool opened )
 void passwordDialog::buttonOpenClicked( void )
 {
 	this->disableAll() ;
-	if( m_ui->PassPhraseField->text() == tr( KWALLET ) ){
-		m_wallet = lxqt::Wallet::getWalletBackend( lxqt::Wallet::kwalletBackEnd ) ;
-		m_wallet->setInterfaceObject( this ) ;
-		m_wallet->open( utility::defaultKDEWalletName(),utility::applicationName() ) ;
-	}else if( m_ui->PassPhraseField->text() == tr( INTERNAL_WALLET ) ){
-		m_wallet = lxqt::Wallet::getWalletBackend( lxqt::Wallet::internalBackEnd ) ;
-		m_wallet->setInterfaceObject( this ) ;
-		QObject * obj = m_wallet->qObject() ;
-		connect( obj,SIGNAL( getPassWord( QString ) ),this,SLOT( getPassWord( QString ) ) ) ;
-		m_wallet->open( utility::walletName(),utility::applicationName(),_internalPassWord ) ;
-	}else if( m_ui->PassPhraseField->text() == tr( GNOME_WALLET ) ){
-		m_wallet = lxqt::Wallet::getWalletBackend( lxqt::Wallet::secretServiceBackEnd ) ;
-		m_wallet->setInterfaceObject( this ) ;
-		m_wallet->open( utility::walletName(),utility::applicationName() ) ;
+	if( m_ui->radioButtonPlugin->isChecked() ){
+		QString wallet = m_ui->PassPhraseField->text() ;
+		if( wallet == tr( KWALLET ) ){
+			m_wallet = lxqt::Wallet::getWalletBackend( lxqt::Wallet::kwalletBackEnd ) ;
+			m_wallet->setInterfaceObject( this ) ;
+			m_wallet->open( utility::defaultKDEWalletName(),utility::applicationName() ) ;
+		}else if( wallet == tr( INTERNAL_WALLET ) ){
+			m_wallet = lxqt::Wallet::getWalletBackend( lxqt::Wallet::internalBackEnd ) ;
+			m_wallet->setInterfaceObject( this ) ;
+			QObject * obj = m_wallet->qObject() ;
+			connect( obj,SIGNAL( getPassWord( QString ) ),this,SLOT( getPassWord( QString ) ) ) ;
+			m_wallet->open( utility::walletName(),utility::applicationName(),_internalPassWord ) ;
+		}else if( wallet == tr( GNOME_WALLET ) ){
+			m_wallet = lxqt::Wallet::getWalletBackend( lxqt::Wallet::secretServiceBackEnd ) ;
+			m_wallet->setInterfaceObject( this ) ;
+			m_wallet->open( utility::walletName(),utility::applicationName() ) ;
+		}else{
+			m_key = wallet ;
+			this->openVolume() ;
+		}
 	}else{
-		this->openVolume( m_ui->PassPhraseField->text() ) ;
+		m_key = m_ui->PassPhraseField->text() ;
+		this->openVolume() ;
 	}
 }
 
-void passwordDialog::openVolume( const QString& p )
+void passwordDialog::openVolume()
 {
-	QString passPhraseField = p ;
-
 	m_device = utility::resolvePath( m_ui->OpenVolumePath->text() ) ;
 
 	m_point = m_ui->MountPointPath->text() ;
-	if( m_point.isEmpty() || passPhraseField.isEmpty() || m_device.isEmpty() ){
+	if( m_point.isEmpty() || m_device.isEmpty() ){
 		DialogMsg msg( this ) ;
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
+		msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
+		return this->enableAll() ;
 	}
 
 	if( m_point.contains( QString( "/" ) ) ){
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR" ),tr( "\"/\" character is not allowed in mount name field" ) ) ;
 		m_ui->OpenVolumePath->setFocus() ;
-		return ;
+		return this->enableAll() ;
 	}
 
 	QString mode ;
@@ -449,29 +455,39 @@ void passwordDialog::openVolume( const QString& p )
 	}else{
 		mode = QString( "rw" ) ;
 	}
+
 	QString passtype ;
 
+	QString keyPath ;
+
 	if ( m_ui->radioButtonPassPhraseFromFile->isChecked() ){
-		passtype = QString( "-f" ) ;
-		passPhraseField = utility::resolvePath( passPhraseField ) ;
-	}else if( m_ui->radioButtonPassPhrase->isChecked() ){
-		m_key = m_ui->PassPhraseField->text() ;
-		passtype = QString( "-p" ) ;
-	}else if( m_ui->radioButtonPlugin->isChecked() ){
-		QString r = m_ui->PassPhraseField->text() ;
-		if( r == tr( KWALLET ) || r == tr( INTERNAL_WALLET ) || r == tr( GNOME_WALLET ) ){
-			passtype = QString( "-p" ) ;
+		if( m_key.isEmpty() ){
+			DialogMsg msg( this ) ;
+			msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
+			return this->enableAll() ;
 		}else{
-			passtype = QString( "-G" ) ;
+			passtype = QString( "-f" ) ;
+			keyPath = utility::resolvePath( m_key ) ;
 		}
-	}
-
-	passPhraseField.replace( "\"","\"\"\"" ) ;
-
-	if( passtype == QString( "-p" ) ){
+	}else if( m_ui->radioButtonPassPhrase->isChecked() ){
 		passtype = QString( "-f" ) ;
-		passPhraseField = socketSendKey::getSocketPath() ;
-		this->sendKey( passPhraseField ) ;
+		keyPath = socketSendKey::getSocketPath() ;
+		this->sendKey( keyPath ) ;
+	}else if( m_ui->radioButtonPlugin->isChecked() ){
+		if( m_key.isEmpty() ){
+			DialogMsg msg( this ) ;
+			msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
+			return this->enableAll() ;
+		}else{
+			QString r = m_ui->PassPhraseField->text() ;
+			if( r == tr( KWALLET ) || r == tr( INTERNAL_WALLET ) || r == tr( GNOME_WALLET ) ){
+				passtype = QString( "-f" ) ;
+				keyPath = socketSendKey::getSocketPath() ;
+				this->sendKey( keyPath ) ;
+			}else{
+				passtype = QString( "-G" ) ;
+			}
+		}
 	}
 
 	QString a = QString( ZULUCRYPTzuluCrypt ) ;
@@ -481,7 +497,7 @@ void passwordDialog::openVolume( const QString& p )
 	c.replace( "\"","\"\"\"" ) ;
 	QString d = mode ;
 	QString e = passtype ;
-	QString f = passPhraseField ;
+	QString f = keyPath ;
 
 	QString exe = QString( "%1 -o -d \"%2\" -m \"%3\" -e %4 %5 \"%6\"" ).arg( a ).arg( b ).arg( c ).arg( d ).arg( e ).arg( f ) ;
 

@@ -25,7 +25,7 @@ class QFont ;
 class userfont
 {
 public:
-	userfont( QWidget * );
+	userfont( QWidget * ) ;
 	QFont getFont() ;
 	void saveFont( const QFont& ) ;
 private :

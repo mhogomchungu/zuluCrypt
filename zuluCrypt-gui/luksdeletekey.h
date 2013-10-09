@@ -33,22 +33,22 @@ class luksdeletekey : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit luksdeletekey( QWidget *parent = 0 );
-	~luksdeletekey();
+	explicit luksdeletekey( QWidget *parent = 0 ) ;
+	~luksdeletekey() ;
 signals:
 	void pbDeleteClicked( QString volumePath,bool passPhraseIsFile,QString passPhrase ) ;
 	void pbOpenPartitionClicked( void ) ;
-	void HideUISignal( void );
+	void HideUISignal( void ) ;
 public slots:
 	void ShowUI( void ) ;
 	void ShowUI( const QString& ) ;
 	void HideUI( void ) ;
 private slots:
-	void pbOpenPartition( void );
+	void pbOpenPartition( void ) ;
 	void pbDelete( void ) ;
 	void pbCancel( void ) ;
 	void rbPassphrase( void ) ;
-	void rbPassphraseFromFile( void );
+	void rbPassphraseFromFile( void ) ;
 	void pbOpenKeyFile( void ) ;
 	void pbOpenVolume( void ) ;
 	void taskFinished( int ) ;

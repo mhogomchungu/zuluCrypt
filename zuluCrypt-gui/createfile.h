@@ -29,30 +29,30 @@ class QCloseEvent ;
 class createfile ;
 
 namespace Ui {
-    class createfile;
+    class createfile ;
 }
 
 class createfile : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit createfile( QWidget * parent = 0 );
+	explicit createfile( QWidget * parent = 0 ) ;
 	~createfile();
 signals :
 	void fileCreated( QString ) ;
-	void cancelOperation( void );
-	void HideUISignal( void );
+	void cancelOperation( void ) ;
+	void HideUISignal( void ) ;
 
 public slots:
-	void HideUI( void );
+	void HideUI( void ) ;
 	void showUI( void ) ;
 	void pbOpenFolder( void ) ;
 	void pbCancel( void ) ;
 	void pbCreate( void ) ;
 private slots:
-	void exitStatus( int );
-	void doneCreatingFile( void );
-	void progress( int );
+	void exitStatus( int ) ;
+	void doneCreatingFile( void ) ;
+	void progress( int ) ;
 	void fileTextChange( QString ) ;
 private:
 	void enableAll( void ) ;
@@ -63,7 +63,7 @@ private:
 	QString m_path ;
 	FileTask * m_task ;
 	QPushButton * m_yes ;
-	QPushButton * m_no  ;
+	QPushButton * m_no ;
 
 	DialogMsg * m_msg ;
 };

@@ -121,11 +121,7 @@ int zuluCryptGetPassFromFile( const char * path,uid_t uid,string_t * st )
 		 *
 		 * This function is defined in ../pluginManager/zuluCryptPluginManager.c
 		 */
-		if( zuluCryptGetKeyFromSocket( path,st,uid ) > 0 ){
-			return 0 ;
-		}else{
-			return 5 ;
-		}
+		return zuluCryptGetKeyFromSocket( path,st,uid ) ;
 	}
 	
 	StringDelete( &p ) ;

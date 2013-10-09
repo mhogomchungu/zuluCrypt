@@ -28,17 +28,17 @@ class keyFileTask ;
 class QCloseEvent ;
 
 namespace Ui {
-    class createkeyfile;
+    class createkeyfile ;
 }
 
 class createkeyfile : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit createkeyfile( QWidget * parent = 0 );
-	~createkeyfile();
+	explicit createkeyfile( QWidget * parent = 0 ) ;
+	~createkeyfile() ;
 signals:
-	void HideUISignal( void );
+	void HideUISignal( void ) ;
 public slots:
 	void ShowUI( void ) ;
 	void HideUI( void ) ;
@@ -47,11 +47,11 @@ private slots:
 	void pbCancel( void ) ;
 	void pbCreate( void ) ;
 	void pbOpenFolder( void ) ;
-	void threadExitStatus( int );
+	void threadExitStatus( int ) ;
 	void keyTextChange( QString ) ;
 private:
 	void closeEvent( QCloseEvent * ) ;
-	void disableAll( void );
+	void disableAll( void ) ;
 	void enableAll( void ) ;
 	Ui::createkeyfile * m_ui;
 	keyFileTask * m_task ;

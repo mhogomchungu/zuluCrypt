@@ -28,20 +28,20 @@ class EraseTask : public QObject,public QRunnable
 {
 	Q_OBJECT
 public:
-	explicit EraseTask( QString );
-	void start( void );
-	~EraseTask();
+	explicit EraseTask( QString ) ;
+	void start( void ) ;
+	~EraseTask() ;
 signals:
-	void progress( int );
+	void progress( int ) ;
 	void exitStatus( int ) ;
 public slots:
-	void cancel( void );
+	void cancel( void ) ;
 private:
 	int writeJunk( void ) ;
-	int openMapper( void );
-	void writeJunkThroughMapper( void );
-	void closeMapper( void );
-	void run( void );
+	int openMapper( void ) ;
+	void writeJunkThroughMapper( void ) ;
+	void closeMapper( void ) ;
+	void run( void ) ;
 	int m_status ;
 	QString m_path ;
 };

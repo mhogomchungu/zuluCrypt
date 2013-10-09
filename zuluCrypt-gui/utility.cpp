@@ -353,7 +353,7 @@ QString utility::mountPath( const QString& path )
 QString utility::mapperPath( const QString& r )
 {
 	QString rpath = r ;
-	
+
 	QString path = utility::cryptMapperPath() + QString( "zuluCrypt-" ) + QString::number( getuid() ) ;
 
 	if( rpath.startsWith( QString( "UUID=" ) ) ){
@@ -427,7 +427,11 @@ QString utility::resolvePath( const QString& path )
 	}else{
 		QDir r( path ) ;
 		QString rp = r.canonicalPath() ;
-		return rp.isEmpty() == false ? rp : path ;
+		if( rp.isEmpty() ) {
+			return path ;
+		}else{
+			return rp ;
+		}
 	}
 }
 

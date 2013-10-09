@@ -39,6 +39,13 @@ class createvolume : public QDialog
 {
 	Q_OBJECT
 public:
+	typedef enum{
+		plain = 0,
+		luks = 1,
+		normal_truecrypt = 2,
+		normal_and_hidden_truecrypt = 3
+	}createVolumeType ;
+
 	explicit createvolume( QWidget * parent = 0 ) ;
 	~createvolume() ;
 signals:

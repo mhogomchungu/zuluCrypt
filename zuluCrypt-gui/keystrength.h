@@ -27,10 +27,10 @@
 class keystrength
 {
 public:
-	keystrength();
-	~keystrength();
+	keystrength() ;
+	~keystrength() ;
 	int quality( const QString& ) ;
-	bool canCheckQuality( void );
+	bool canCheckQuality( void ) ;
 private:
 #if BUILD_PWQUALITY
 	pwquality_settings_t * m_handle ;

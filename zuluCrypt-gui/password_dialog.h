@@ -74,7 +74,7 @@ private slots :
 	void fileManagerOpenStatus( int exitCode,int exitStatus,int startError ) ;
 	void getPassWord( QString ) ;
 private :
-	void openVolume( const QString& ) ;
+	void openVolume( void ) ;
 	QString getUUIDFromPath( const QString& ) ;
 	void sendKey( const QString& sockpath ) ;
 	void setDefaultOpenMode( void ) ;

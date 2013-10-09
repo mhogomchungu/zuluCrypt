@@ -45,22 +45,22 @@ class FileTask : public QObject,public QRunnable
 	Q_OBJECT
 public :
 	FileTask( QString destination,qulonglong size ) ;
-	void start( void );
-	~FileTask();
+	void start( void ) ;
+	~FileTask() ;
 signals:
-	void exitStatus( int );
-	void doneCreatingFile( void );
-	void progress( int );
+	void exitStatus( int ) ;
+	void doneCreatingFile( void ) ;
+	void progress( int ) ;
 private slots:
-	void cancelOperation( void );
+	void cancelOperation( void ) ;
 private:
 	int createContainerFileUsinggCrypt( void ) ;
-	int createContainerFile( void );
-	void writeVolume( void );
-	void openVolume( void );
-	void closeVolume( void );
+	int createContainerFile( void ) ;
+	void writeVolume( void ) ;
+	void openVolume( void ) ;
+	void closeVolume( void ) ;
 	void createFile( void ) ;
-	void fillCreatedFileWithRandomData( void );
+	void fillCreatedFileWithRandomData( void ) ;
 	void run( void ) ;
 
 	QString m_file ;

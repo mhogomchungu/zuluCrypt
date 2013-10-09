@@ -177,13 +177,13 @@ void luksdeletekey::pbDelete()
 	QString path = m_ui->lineEditVolumePath->text() ;
 	m_volumePath = utility::resolvePath( path ) ;
 
-	QString passphrase = m_ui->lineEditPassphrase->text() ;
+	QString keypath = m_ui->lineEditPassphrase->text() ;
 
-	if(  m_volumePath.isEmpty() || passphrase.isEmpty() ){
+	if(  m_volumePath.isEmpty() ){
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
 	}
+
 	m_volumePath.replace( "\"","\"\"\"" ) ;
-	passphrase.replace( "\"","\"\"\"" ) ;
 
 	QStringList l = utility::luksEmptySlots( m_volumePath ) ;
 	if( l.isEmpty() ){
@@ -203,19 +203,15 @@ void luksdeletekey::pbDelete()
 		}
 	}
 
-	QString passType ;
 	if (  m_ui->rbPassphraseFromFile->isChecked() ){
-		passphrase = utility::resolvePath( passphrase ) ;
-		passType = QString( "-f" ) ;
+		keypath = utility::resolvePath( keypath ) ;
 	}else{
-		passType = QString( "-f" ) ;
-		passphrase = socketSendKey::getSocketPath() ;
-
-		socketSendKey * s = new socketSendKey( this,passphrase,m_ui->lineEditPassphrase->text().toAscii() ) ;
+		keypath = socketSendKey::getSocketPath() ;
+		socketSendKey * s = new socketSendKey( this,keypath,m_ui->lineEditPassphrase->text().toAscii() ) ;
 		s->sendKey() ;
 	}
 
-	QString exe = QString( "%1 -k -r -d \"%2\" %3 \"%4\"" ).arg( QString( ZULUCRYPTzuluCrypt ) ).arg( m_volumePath ).arg( passType ).arg( passphrase ) ;
+	QString exe = QString( "%1 -k -r -d \"%2\" -f \"%3\"" ).arg( QString( ZULUCRYPTzuluCrypt ) ).arg( m_volumePath ).arg( keypath ) ;
 
 	m_isWindowClosable = false ;
 
