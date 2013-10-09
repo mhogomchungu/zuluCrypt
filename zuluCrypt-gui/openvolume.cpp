@@ -172,12 +172,11 @@ void openvolume::partitionList( QString title,QString type )
 {
 	this->setWindowTitle( title ) ;
 
-	while ( m_ui->tableWidget->rowCount() > 0 ){
+	while( m_ui->tableWidget->rowCount() > 0 ){
 		m_ui->tableWidget->removeRow( 0 ) ;
 	}
 
 	Task * t = new Task( type ) ;
-
 	connect( t,SIGNAL( finished() ),this,SLOT( partitionpropertiesThreadFinished() ) ) ;
 	connect( t,SIGNAL( partitionProperties( QStringList ) ),this,SLOT( partitionProperties( QStringList ) ) ) ;
 	t->start( Task::volumeTask ) ;

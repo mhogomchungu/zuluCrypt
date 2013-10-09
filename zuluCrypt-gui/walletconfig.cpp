@@ -174,7 +174,7 @@ void walletconfig::disableAll()
 
 void walletconfig::failedToOpenWallet()
 {
-	this->enableAll() ;
+	//this->enableAll() ;
 	emit couldNotOpenWallet() ;
 	this->HideUI() ;
 }

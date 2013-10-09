@@ -65,6 +65,7 @@
 #include "tablewidget.h"
 #include "utility.h"
 #include "task.h"
+#include "lxqt_wallet/frontend/lxqt_wallet.h"
 
 zuluCrypt::zuluCrypt( QWidget * parent ) :QMainWindow( parent ),m_trayIcon( 0 )
 {
@@ -334,28 +335,30 @@ void zuluCrypt::setupConnections()
 
 void zuluCrypt::optionMenuAboutToShow()
 {
-	m_ui->actionChange_internal_wallet_password->setEnabled( lxqt::Wallet::walletExists( lxqt::Wallet::internalBackEnd,utility::walletName(),utility::applicationName() ) ) ;
+	bool b = lxqt::Wallet::walletExists( lxqt::Wallet::internalBackEnd,utility::walletName(),utility::applicationName() ) ;
+	m_ui->actionChange_internal_wallet_password->setEnabled( b ) ;
+}
+
+walletconfig * zuluCrypt::setUpWalletConfig()
+{
+	walletconfig * cfg = new walletconfig( this ) ;
+	connect( cfg,SIGNAL( couldNotOpenWallet() ),this,SLOT( failedToOpenWallet() ) ) ;
+	return cfg ;
 }
 
 void zuluCrypt::manageVolumesInGNOMEWallet()
 {
-	walletconfig * cfg = new walletconfig( this ) ;
-	connect( cfg,SIGNAL( couldNotOpenWallet() ),this,SLOT( failedToOpenWallet() ) ) ;
-	cfg->ShowUI( lxqt::Wallet::secretServiceBackEnd ) ;
+	setUpWalletConfig()->ShowUI( lxqt::Wallet::secretServiceBackEnd ) ;
 }
 
 void zuluCrypt::manageVolumesInInternalWallet()
 {
-	walletconfig * cfg = new walletconfig( this ) ;
-	connect( cfg,SIGNAL( couldNotOpenWallet() ),this,SLOT( failedToOpenWallet() ) ) ;
-	cfg->ShowUI( lxqt::Wallet::internalBackEnd ) ;
+	setUpWalletConfig()->ShowUI( lxqt::Wallet::internalBackEnd ) ;
 }
 
 void zuluCrypt::manageVolumesInKDEWallet()
 {
-	walletconfig * cfg = new walletconfig( this ) ;
-	connect( cfg,SIGNAL( couldNotOpenWallet() ),this,SLOT( failedToOpenWallet() ) ) ;
-	cfg->ShowUI( lxqt::Wallet::kwalletBackEnd ) ;
+	setUpWalletConfig()->ShowUI( lxqt::Wallet::kwalletBackEnd ) ;
 }
 
 void zuluCrypt::failedToOpenWallet()
@@ -402,7 +405,7 @@ void zuluCrypt::ShowManageNonSystemPartitions()
 	msv->ShowUI( QString( "/etc/zuluCrypt-nonsystem" ) ) ;
 }
 
-void zuluCrypt::currentItemChanged( QTableWidgetItem * current, QTableWidgetItem * previous )
+void zuluCrypt::currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous )
 {
 	tablewidget::selectTableRow( current,previous ) ;
 
@@ -531,7 +534,7 @@ void zuluCrypt::fonts()
 			UIMessage( tr( "info" ),tr( "resetting font size to %1 because larger font sizes do not fit" ).arg( QString::number( size ) ) ) ;
 		}
 
-		setUserFont( Font ) ;
+		this->setUserFont( Font ) ;
 		userfont f( this ) ;
 		f.saveFont( Font ) ;
 	}
@@ -545,35 +548,36 @@ void zuluCrypt::setUserFont( QFont Font )
 	m_ui->tableWidget->horizontalHeaderItem( 1 )->setFont( Font ) ;
 	m_ui->tableWidget->horizontalHeaderItem( 2 )->setFont( Font ) ;
 
-	m_ui->actionAbout->setFont( this->font() ) ;
-	m_ui->actionAddKey->setFont( this->font() ) ;
-	m_ui->actionCreatekeyFile->setFont( this->font() ) ;
-	m_ui->actionDeleteKey->setFont( this->font() ) ;
-	m_ui->actionFavorite_volumes->setFont( this->font() ) ;
-	m_ui->actionFileCreate->setFont( this->font() ) ;
-	m_ui->actionFileOpen->setFont( this->font() ) ;
-	m_ui->actionFonts->setFont( this->font() ) ;
-	m_ui->actionInfo->setFont( this->font() ) ;
-	m_ui->actionManage_favorites->setFont( this->font() ) ;
-	m_ui->actionPartitionCreate->setFont( this->font() ) ;
-	m_ui->actionPartitionOpen->setFont( this->font() ) ;
-	m_ui->actionSelect_random_number_generator->setFont( this->font() ) ;
-	m_ui->actionTray_icon->setFont( this->font() ) ;
-	m_ui->menuFavorites->setFont( this->font() ) ;
-	m_ui->actionManage_names->setFont( this->font() ) ;
-	m_ui->actionBackup_header->setFont( this->font() ) ;
-	m_ui->actionRestore_header->setFont( this->font() ) ;
-	m_ui->actionEncrypt_file->setFont( this->font() ) ;
-	m_ui->actionDecrypt_file->setFont( this->font() ) ;
-	m_ui->menu_zc->setFont( this->font() ) ;
-	m_ui->actionPermission_problems->setFont( this->font() ) ;
-	m_ui->actionLuks_header_backup->setFont( this->font() ) ;
-	m_ui->actionManage_system_partitions->setFont( this->font() ) ;
-	m_ui->actionManage_non_system_partitions->setFont( this->font() ) ;
-	m_ui->actionManage_volumes_in_gnome_wallet->setFont( this->font() ) ;
-	m_ui->actionManage_volumes_in_internal_wallet->setFont( this->font() ) ;
-	m_ui->actionManage_volumes_in_kde_wallet->setFont( this->font() ) ;
-	m_ui->actionUse_kde_default_wallet->setFont( this->font() ) ;
+	m_ui->actionAbout->setFont( Font ) ;
+	m_ui->actionAddKey->setFont( Font ) ;
+	m_ui->actionCreatekeyFile->setFont( Font ) ;
+	m_ui->actionDeleteKey->setFont( Font ) ;
+	m_ui->actionFavorite_volumes->setFont( Font ) ;
+	m_ui->actionFileCreate->setFont( Font ) ;
+	m_ui->actionFileOpen->setFont( Font ) ;
+	m_ui->actionFonts->setFont( Font ) ;
+	m_ui->actionInfo->setFont( Font ) ;
+	m_ui->actionManage_favorites->setFont( Font ) ;
+	m_ui->actionPartitionCreate->setFont( Font ) ;
+	m_ui->actionPartitionOpen->setFont( Font ) ;
+	m_ui->actionSelect_random_number_generator->setFont( Font ) ;
+	m_ui->actionTray_icon->setFont( Font ) ;
+	m_ui->menuFavorites->setFont( Font ) ;
+	m_ui->actionManage_names->setFont( Font ) ;
+	m_ui->actionBackup_header->setFont( Font ) ;
+	m_ui->actionRestore_header->setFont( Font ) ;
+	m_ui->actionEncrypt_file->setFont( Font ) ;
+	m_ui->actionDecrypt_file->setFont( Font ) ;
+	m_ui->menu_zc->setFont( Font ) ;
+	m_ui->actionPermission_problems->setFont( Font ) ;
+	m_ui->actionLuks_header_backup->setFont( Font ) ;
+	m_ui->actionManage_system_partitions->setFont( Font ) ;
+	m_ui->actionManage_non_system_partitions->setFont( Font ) ;
+	m_ui->actionManage_volumes_in_gnome_wallet->setFont( Font ) ;
+	m_ui->actionManage_volumes_in_internal_wallet->setFont( Font ) ;
+	m_ui->actionManage_volumes_in_kde_wallet->setFont( Font ) ;
+	m_ui->actionUse_kde_default_wallet->setFont( Font ) ;
+	m_ui->actionChange_internal_wallet_password->setFont( Font ) ;
 }
 
 void zuluCrypt::info()
@@ -712,7 +716,7 @@ void zuluCrypt::menuKeyPressed()
 	itemClicked( it,false ) ;
 }
 
-void zuluCrypt::fileManagerOpenStatus( int exitCode, int exitStatus,int startError )
+void zuluCrypt::fileManagerOpenStatus( int exitCode,int exitStatus,int startError )
 {
 	Q_UNUSED( startError ) ;
 	if( exitCode != 0 || exitStatus != 0 ){
@@ -736,7 +740,7 @@ void zuluCrypt::itemClicked( QTableWidgetItem * it )
 	itemClicked( it,true ) ;
 }
 
-void zuluCrypt::itemClicked( QTableWidgetItem * item, bool clicked )
+void zuluCrypt::itemClicked( QTableWidgetItem * item,bool clicked )
 {
 	QMenu m ;
 	m.setFont( this->font() ) ;
@@ -818,7 +822,7 @@ void zuluCrypt::luksDeleteKeyContextMenu( void )
 	emit luksDeleteKey( m_ui->tableWidget->item( item->row(),0 )->text() ) ;
 }
 
-void zuluCrypt::UIMessage( QString title, QString message )
+void zuluCrypt::UIMessage( QString title,QString message )
 {
 	DialogMsg msg( this ) ;
 	msg.ShowUIOK( title,message ) ;
@@ -994,7 +998,7 @@ void zuluCrypt::ShowPasswordDialog()
 	setUpPasswordDialog()->ShowUI() ;
 }
 
-void zuluCrypt::ShowPasswordDialog( QString x, QString y )
+void zuluCrypt::ShowPasswordDialog( QString x,QString y )
 {
 	setUpPasswordDialog()->ShowUI( x,y ) ;
 }

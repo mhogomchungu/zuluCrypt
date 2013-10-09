@@ -24,7 +24,6 @@
 #include <QString>
 #include <QStringList>
 #include <QSystemTrayIcon>
-#include "lxqt_wallet/frontend/lxqt_wallet.h"
 
 class QWidget ;
 class QTableWidgetItem ;
@@ -39,6 +38,13 @@ class luksdeletekey ;
 class luksaddkey ;
 class manageluksheader ;
 class cryptfiles ;
+class walletconfig ;
+
+namespace lxqt{
+namespace Wallet{
+class Wallet ;
+}
+}
 
 /*
  * below header is created at build time,it is set by CMakeLists.txt located in the root folder
@@ -144,6 +150,7 @@ private:
 	luksaddkey * setUpluksaddkey( void ) ;
 	manageluksheader * setUpManageLuksHeader( void ) ;
 	cryptfiles * setUpCryptFiles( void ) ;
+	walletconfig * setUpWalletConfig( void ) ;
 
 	void setLocalizationLanguage( void ) ;
 	void setupConnections( void ) ;
