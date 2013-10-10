@@ -578,7 +578,7 @@ void passwordDialog::enableAll()
 	}
 }
 
-void passwordDialog::fileManagerOpenStatus( int exitCode, int exitStatus,int startError )
+void passwordDialog::fileManagerOpenStatus( int exitCode,int exitStatus,int startError )
 {
 	Q_UNUSED( startError ) ;
 	if( exitCode != 0 || exitStatus != 0 ){

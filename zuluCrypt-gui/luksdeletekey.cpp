@@ -203,7 +203,7 @@ void luksdeletekey::pbDelete()
 		}
 	}
 
-	if (  m_ui->rbPassphraseFromFile->isChecked() ){
+	if( m_ui->rbPassphraseFromFile->isChecked() ){
 		keypath = utility::resolvePath( keypath ) ;
 	}else{
 		keypath = socketSendKey::getSocketPath() ;

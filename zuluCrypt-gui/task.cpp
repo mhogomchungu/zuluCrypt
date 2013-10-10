@@ -192,7 +192,7 @@ void Task::runVolumeTask()
 	}
 	QStringList list ;
 	QString entry ;
-	for ( int i = 0 ; i < j ; i++ ){
+	for( int i = 0 ; i < j ; i++ ){
 		list = l.at( i ).split( "\t" ) ;
 		entry = list.at( 3 ) ;
 		/*

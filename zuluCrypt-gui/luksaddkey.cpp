@@ -265,7 +265,7 @@ void luksaddkey::pbAdd( void )
 
 	QString existingPassType ;
 
-	if ( m_ui->radioButtonPassphraseInVolumeFromFile->isChecked() ){
+	if( m_ui->radioButtonPassphraseInVolumeFromFile->isChecked() ){
 		ExistingKey = utility::resolvePath( ExistingKey ) ;
 		existingPassType = QString( "-u" ) ;
 	}else{
@@ -277,7 +277,7 @@ void luksaddkey::pbAdd( void )
 	}
 
 	QString newPassType ;
-	if ( m_ui->radioButtonNewPassphraseFromFile->isChecked() ){
+	if( m_ui->radioButtonNewPassphraseFromFile->isChecked() ){
 		NewKey = utility::resolvePath( NewKey ) ;
 		newPassType = QString( "-n" ) ;
 	}else{
