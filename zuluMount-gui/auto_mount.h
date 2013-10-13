@@ -39,8 +39,8 @@ signals:
 	void deviceFromDevMapper( QString ) ;
 private slots:
 	void threadStopped( void ) ;
+	bool ignoreDevice( const char * device ) ;
 private:
-	const char * m_device ;
 	void run() ;
 	int m_fdDir ;
 	auto_mount_helper * m_thread_helper ;

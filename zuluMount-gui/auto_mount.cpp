@@ -43,6 +43,10 @@ http://linux.die.net/man/7/inotify
 http://darkeside.blogspot.com/2007/12/linux-inotify-example.html
  */
 
+#define stringPrefixMatch( x,y,z ) strncmp( x,y,z ) == 0
+#define stringEqual( x,y ) strcmp( x,y ) == 0
+#define stringHasComponent( x,y ) strstr( x,y ) != 0
+
 auto_mount::auto_mount( QObject * parent )
 {
 	m_baba = static_cast< QThread * >( this ) ;
@@ -70,6 +74,21 @@ void auto_mount::threadStopped()
 {
 	emit stopped() ;
 	m_threadIsRunning = false ;
+}
+
+bool auto_mount::ignoreDevice( const char * device )
+{
+	/*
+	 * dont care about these devices.
+	 * /dev/sgX seem to be created when a usb device is plugged in
+	 * /dev/dm-X are dm devices we dont care about since we will be dealing with them differently
+	 */
+	return stringPrefixMatch( device,"sg",2 )      ||
+	       stringPrefixMatch( device,"dm-",3 )     ||
+	       stringHasComponent( device,"dev/tmp" )  ||
+	       stringHasComponent( device,"dev-tmp" )  ||
+	       stringHasComponent( device,".tmp.md." ) ||
+	       stringHasComponent( device,"md/md-device-map" ) ;
 }
 
 void auto_mount::run()
@@ -102,16 +121,16 @@ void auto_mount::run()
 	}
 
 	const struct inotify_event * pevent ;
-	QString device ;
+	const char * device ;
 
 	const char * f ;
 	const char * z ;
 	int data_read ;
 	int baseSize = sizeof( struct inotify_event ) ;
-	
+
 	#define BUFF_SIZE 4096
 	char buffer[ BUFF_SIZE ];
-	
+
 	while( 1 ) {
 
 		data_read = read( m_fdDir,buffer,BUFF_SIZE ) ;
@@ -124,29 +143,15 @@ void auto_mount::run()
 			pevent = reinterpret_cast< const struct inotify_event * >( f ) ;
 
 			if( pevent ){
-				m_device = f + baseSize ;
+				device = f + baseSize ;
 				f = f + baseSize + pevent->len ;
 			}else{
 				f = f + baseSize ;
 				continue ;
 			}
 
-			#define stringPrefixMatch( x,y,z ) strncmp( x,y,z ) == 0
-			#define stringEqual( x,y ) strcmp( x,y ) == 0
-			#define stringHasComponent( x,y ) strstr( x,y ) != 0
-
-			if(     stringPrefixMatch( m_device,"sg",2 ) ||
-				stringPrefixMatch( m_device,"dm-",3 ) ||
-				stringHasComponent( m_device,"dev/tmp" ) ||
-				stringHasComponent( m_device,"dev-tmp" ) ||
-				stringHasComponent( m_device,".tmp.md." ) ||
-				stringHasComponent( m_device,"md/md-device-map" ) ){
-				/*
-				 * dont care about these devices.
-				 * /dev/sgX seem to be created when a usb device is plugged in
-				 * /dev/dm-X are dm devices we dont care about since we will be dealing with them differently
-				 */
-				 ;
+			if( this->ignoreDevice( device ) ){
+				;
 			}else{
 				if( pevent->wd == dev && pevent->mask & IN_CREATE ){
 					/*
@@ -154,20 +159,18 @@ void auto_mount::run()
 					 * created before the first entry is added.To account for this,monitor for the
 					 * folder created to start monitoring its contents if it get created after we have started
 					 */
-					if( stringEqual( "md",m_device ) ){
+					if( stringEqual( "md",device ) ){
 						md = inotify_add_watch( m_fdDir,"/dev/md",IN_DELETE ) ;
 						continue ;
 					}
 				}
 
 				if( pevent->wd == dev && pevent->mask & IN_DELETE ){
-					if( stringEqual( "md",m_device ) ){
+					if( stringEqual( "md",device ) ){
 						inotify_rm_watch( md,dev ) ;
 						continue ;
 					}
 				}
-
-				device = QString( m_device ) ;
 
 				m_thread_helper = new auto_mount_helper() ;
 

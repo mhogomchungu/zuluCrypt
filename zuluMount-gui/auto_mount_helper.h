@@ -26,7 +26,7 @@
 
 #include <sys/types.h>
 
-class auto_mount_helper :public QObject, public QRunnable
+class auto_mount_helper : public QObject,public QRunnable
 {
 	Q_OBJECT
 public:

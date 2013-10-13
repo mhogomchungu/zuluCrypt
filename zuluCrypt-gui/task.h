@@ -63,7 +63,7 @@ public:
 	Task( lxqt::Wallet::Wallet *,const QString& volumeID,const QString& key,const QString& comment ) ;
 	explicit Task( QTableWidget * ) ;
 	Task() ;
-	~Task();
+	~Task() ;
 	void start( Task::action = Task::exeTask ) ;
 signals:
 	void partitionProperties( QStringList ) ;
