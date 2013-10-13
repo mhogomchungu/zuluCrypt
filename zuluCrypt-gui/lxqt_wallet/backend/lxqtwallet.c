@@ -56,7 +56,7 @@
 #define MAGIC_STRING "lxqt_wallet"
 #define MAGIC_STRING_SIZE 11
 #define MAGIC_STRING_BUFFER_SIZE 16
-#define PASSWORD_SIZE 16
+#define PASSWORD_SIZE 32
 #define BLOCK_SIZE 16
 #define IV_SIZE 16
 #define SALT_SIZE 16
@@ -1025,12 +1025,11 @@ static gcry_error_t _create_temp_key( char * output_key,u_int32_t output_key_siz
 static gcry_error_t _create_key( const char salt[ SALT_SIZE ],
 				 char output_key[ PASSWORD_SIZE ],const char * input_key,u_int32_t input_key_length )
 {
-	#define TEMP_KEY_SIZE 32
-	char temp_key[ TEMP_KEY_SIZE ] ;
-	gcry_error_t r = _create_temp_key( temp_key,TEMP_KEY_SIZE,input_key,input_key_length ) ;
+	char temp_key[ PASSWORD_SIZE ] ;
+	gcry_error_t r = _create_temp_key( temp_key,PASSWORD_SIZE,input_key,input_key_length ) ;
 
 	if( r == GPG_ERR_NO_ERROR){
-		return gcry_kdf_derive( temp_key,TEMP_KEY_SIZE,GCRY_KDF_PBKDF2,GCRY_MD_SHA256,
+		return gcry_kdf_derive( temp_key,PASSWORD_SIZE,GCRY_KDF_PBKDF2,GCRY_MD_SHA256,
 				salt,SALT_SIZE,PBKDF2_ITERATIONS,PASSWORD_SIZE,output_key ) ;
 	}else{
 		return r ;
