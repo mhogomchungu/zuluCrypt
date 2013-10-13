@@ -26,6 +26,14 @@
 #include <QString>
 #include <QStringList>
 
+#define COMMENT "-zuluCrypt_Comment_ID"
+
+namespace lxqt{
+namespace Wallet {
+class Wallet ;
+}
+}
+
 class QTableWidget ;
 class QTableWidgetItem ;
 
@@ -40,11 +48,13 @@ public:
 		volumePropertiesTask,
 		updateVolumeList,
 		openMountPoint,
-		volumeTask
+		volumeTask,
+		addKey
 	}action ;
 
 	explicit Task( const QString& exe ) ;
 	Task( const QString&,const QString& ) ;
+	Task( lxqt::Wallet::Wallet *,const QString& volumeID,const QString& key,const QString& comment ) ;
 	explicit Task( QTableWidget * ) ;
 	Task() ;
 	~Task();
@@ -66,6 +76,7 @@ private:
 	void runCloseAllVolumeTask( void ) ;
 	void runVolumePropertiesTask( void ) ;
 	void runVolumeTask( void ) ;
+	void addKeyTask( void ) ;
 	QString m_exe ;
 	QString m_output ;
 	int m_status ;
@@ -76,6 +87,10 @@ private:
 	QString m_volumeProperties ;
 	QString m_folderOpener ;
 	QString m_partitionType ;
+	lxqt::Wallet::Wallet * m_wallet ;
+	QString m_volumeID ;
+	QString m_key ;
+	QString m_comment ;
 	int m_exitCode ;
 	int m_exitStatus ;
 	int m_startError ;

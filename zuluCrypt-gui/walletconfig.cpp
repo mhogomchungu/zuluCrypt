@@ -27,6 +27,7 @@
 #include "walletconfiginput.h"
 #include "utility.h"
 #include "lxqt_wallet/frontend/lxqt_wallet.h"
+#include "task.h"
 
 #include <Qt>
 #include <QTableWidget>
@@ -34,8 +35,6 @@
 #include <QDebug>
 #include <QFileDialog>
 #include <QMessageBox>
-
-#define COMMENT "-zuluCrypt_Comment_ID"
 
 walletconfig::walletconfig( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::walletconfig )
 {
@@ -92,30 +91,34 @@ void walletconfig::pbClose()
 	this->HideUI() ;
 }
 
-void walletconfig::add( const QString& volumeID,const QString& comm,const QString& key )
+void walletconfig::add( QString volumeID,QString comment,QString key )
 {
-	QString comment = comm ;
 	if( comment.isEmpty() ){
-		comment = QString( "Nil" ) ;
+		m_comment = QString( "Nil" ) ;
+	}else{
+		m_comment = comment ;
 	}
 
-	m_wallet->addKey( volumeID,key.toAscii() ) ;
-	m_wallet->addKey( volumeID + COMMENT,comment.toAscii() ) ;
+	m_key      = key ;
+	m_volumeID = volumeID ;
 
+	Task * t = new Task( m_wallet,m_volumeID,m_key,m_comment ) ;
+	connect( t,SIGNAL( finished() ),this,SLOT( TaskFinished() ) ) ;
+	t->start( Task::addKey ) ;
+}
+
+void walletconfig::TaskFinished()
+{
 	QStringList entry ;
 
-	entry.append( volumeID ) ;
-	entry.append( comment ) ;
+	entry.append( m_volumeID ) ;
+	entry.append( m_comment ) ;
 	entry.append( tr( "<redacted>" ) ) ;
 
 	tablewidget::addRowToTable( m_ui->tableWidget,entry ) ;
 
-	/*
-	 * we and hide and delete this object here and not in the object itself because some backends(libsecret) takes too long
-	 * to complete and UI freeze maybe noticiable
-	 */
-	m_walletConfig->hide() ;
-	m_walletConfig->deleteLater() ;
+	this->enableAll() ;
+	m_ui->tableWidget->setFocus() ;
 }
 
 void walletconfig::cancel()
@@ -126,10 +129,10 @@ void walletconfig::cancel()
 void walletconfig::pbAdd()
 {
 	this->disableAll() ;
-	m_walletConfig = new walletconfiginput( this ) ;
-	connect( m_walletConfig,SIGNAL( add( QString,QString,QString ) ),this,SLOT( add( QString,QString,QString ) ) ) ;
-	connect( m_walletConfig,SIGNAL( cancel() ),this,SLOT( cancel() ) ) ;
-	m_walletConfig->ShowUI() ;
+	walletconfiginput * w = new walletconfiginput( this ) ;
+	connect( w,SIGNAL( add( QString,QString,QString ) ),this,SLOT( add( QString,QString,QString ) ) ) ;
+	connect( w,SIGNAL( cancel() ),this,SLOT( cancel() ) ) ;
+	w->ShowUI() ;
 }
 
 void walletconfig::ShowUI( lxqt::Wallet::walletBackEnd backEnd )
@@ -196,11 +199,11 @@ void walletconfig::ShowWalletEntries()
 {
 	QVector<lxqt::Wallet::walletKeyValues> entries = m_wallet->readAllKeyValues() ;
 
+	QTableWidget * table = m_ui->tableWidget ;
+
 	if( entries.empty() ){
 		;
 	}else{
-		QTableWidget * table = m_ui->tableWidget ;
-
 		/*
 		 * each volume gets two entries in kwallet:
 		 * First one in the form of  : key<UUID="blablabla">value<uuid passphrase>
@@ -208,6 +211,7 @@ void walletconfig::ShowWalletEntries()
 		 *
 		 * This allows to store a a volume UUID, a comment about it and its passphrase.
 		 *
+		 * COMMENT is defined in task.h
 		 */
 
 		QStringList s ;
@@ -224,11 +228,10 @@ void walletconfig::ShowWalletEntries()
 				tablewidget::addRowToTable( table,s ) ;
 			}
 		}
-
-		table->setFocus() ;
 	}
 
 	this->enableAll() ;
+	table->setFocus() ;
 }
 
 void walletconfig::HideUI()

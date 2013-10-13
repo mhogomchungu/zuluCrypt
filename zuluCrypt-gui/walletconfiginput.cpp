@@ -89,13 +89,8 @@ void walletconfiginput::pbAdd()
 		comment = QString( "Nil" ) ;
 	}
 
-	this->hide() ;
 	emit add( volumeID,comment,key ) ;
-	/*
-	 * we dont hide and delete here because if the adding of an entry in the wallet takes too long to complete,the
-	 * UI freeze will be noticeable.
-	 */
-	//this->HideUI() ;
+	this->HideUI() ;
 }
 
 void walletconfiginput::slotCancel()

@@ -50,10 +50,11 @@ private slots:
 	void itemClicked ( QTableWidgetItem * item ) ;
 	void pbDelete( void ) ;
 	void pbClose( void ) ;
-	void add( const QString& volumeID,const QString& comment,const QString& key ) ;
+	void add( QString volumeID,QString comment,QString key ) ;
 	void cancel( void ) ;
 	void pbAdd( void ) ;
 	void walletIsOpen( bool ) ;
+	void TaskFinished( void ) ;
 private:
 	void enableAll( void ) ;
 	void disableAll( void ) ;
@@ -63,8 +64,10 @@ private:
 	Ui::walletconfig * m_ui ;
 	void closeEvent( QCloseEvent * ) ;
 	lxqt::Wallet::Wallet * m_wallet ;
-	walletconfiginput * m_walletConfig ;
 	QByteArray m_bogusEntry ;
+	QString m_volumeID ;
+	QString m_comment ;
+	QString m_key ;
 };
 
 #endif // KWALLETCONFIG_H

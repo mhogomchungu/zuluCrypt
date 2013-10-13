@@ -27,8 +27,10 @@
 
 #include <unistd.h>
 
+#include "tablewidget.h"
 #include "task.h"
 #include "../zuluCrypt-cli/constants.h"
+#include "lxqt_wallet/frontend/lxqt_wallet.h"
 
 Task::Task()
 {
@@ -49,6 +51,11 @@ Task::Task( const QString& path,const QString& mpoint )
 	m_mpoint = mpoint ;
 	m_mpoint.replace( "\"","\"\"\"" ) ;
 	m_folderOpener = path ;
+}
+
+Task::Task( lxqt::Wallet::Wallet * wallet,const QString& volumeID,const QString& key,const QString& comment ):
+	m_wallet( wallet ),m_volumeID( volumeID ),m_key( key ),m_comment( comment )
+{
 }
 
 void Task::start( Task::action action )
@@ -209,6 +216,12 @@ void Task::runVolumeTask()
 	}
 }
 
+void Task::addKeyTask()
+{
+	m_wallet->addKey( m_volumeID,m_key.toAscii() ) ;
+	m_wallet->addKey( m_volumeID + COMMENT,m_comment.toAscii() ) ;
+}
+
 void Task::run()
 {
 	switch( m_action ){
@@ -219,6 +232,7 @@ void Task::run()
 		case Task::updateVolumeList     : return this->updateVolumeListTask() ;
 		case Task::openMountPoint       : return this->openMountPointTask() ;
 		case Task::volumeTask           : return this->runVolumeTask() ;
+		case Task::addKey               : return this->addKeyTask() ;
 	}
 }
 
