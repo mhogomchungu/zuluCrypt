@@ -26,7 +26,6 @@
 #include "tablewidget.h"
 #include "walletconfiginput.h"
 #include "utility.h"
-#include "lxqt_wallet/frontend/lxqt_wallet.h"
 #include "task.h"
 
 #include <Qt>
@@ -107,6 +106,22 @@ void walletconfig::add( QString volumeID,QString comment,QString key )
 	t->start( Task::addKey ) ;
 }
 
+const QByteArray& walletconfig::getAccInfo( const QString& acc )
+{
+	int j = m_keys.size() ;
+
+	for( int i = 0 ; i < j ; i++ ){
+		if( m_keys.at( i ).getKey() == acc ){
+			return m_keys.at( i ).getValue() ;
+		}
+	}
+
+	/*
+	 * we are not supposed to get here
+	 */
+	return m_bogusEntry ;
+}
+
 void walletconfig::TaskFinished()
 {
 	Task::action r = Task::action( m_action ) ;
@@ -125,6 +140,37 @@ void walletconfig::TaskFinished()
 
 		tablewidget::deleteRowFromTable( m_ui->tableWidget,m_row ) ;
 
+	}else if( r == Task::getAllKeys ){
+		QTableWidget * table = m_ui->tableWidget ;
+
+		if( m_keys.empty() ){
+			;
+		}else{
+			/*
+			 * each volume gets two entries in wallet:
+			 * First one in the form of  : entry         -> entry password
+			 * Second one in the form of : entry-COMMENT -> comment
+			 *
+			 * This allows to store a a volume volume,a comment about the volume and the passphrase.
+			 *
+			 * COMMENT is defined in task.h
+			 */
+
+			QStringList s ;
+			int j = m_keys.size() ;
+			for( int i = 0 ; i < j ; i++ ){
+				const QString& acc = m_keys.at( i ).getKey() ;
+				if( acc.endsWith( COMMENT ) ){
+					;
+				}else{
+					s.clear() ;
+					s.append( acc ) ;
+					s.append( this->getAccInfo( acc + QString( COMMENT ) ) ) ;
+					s.append( tr( "<redacted>" ) ) ;
+					tablewidget::addRowToTable( table,s ) ;
+				}
+			}
+		}
 	}else{
 		/*
 		 * we dont get here
@@ -165,9 +211,14 @@ void walletconfig::ShowUI( lxqt::Wallet::walletBackEnd backEnd )
 void walletconfig::walletIsOpen( bool opened )
 {
 	if( opened ){
-		this->ShowWalletEntries() ;
+		m_action = int( Task::getAllKeys ) ;
+
+		Task * t = new Task( m_wallet,&m_keys ) ;
+		connect( t,SIGNAL( finished() ),this,SLOT( TaskFinished() ) ) ;
+		t->start( Task::getAllKeys ) ;
 	}else{
-		this->failedToOpenWallet() ;
+		emit couldNotOpenWallet() ;
+		this->HideUI() ;
 	}
 }
 
@@ -189,68 +240,6 @@ void walletconfig::disableAll()
 	m_ui->tableWidget->setEnabled( false ) ;
 }
 
-void walletconfig::failedToOpenWallet()
-{
-	//this->enableAll() ;
-	emit couldNotOpenWallet() ;
-	this->HideUI() ;
-}
-
-const QByteArray& walletconfig::getAccInfo( const QVector<lxqt::Wallet::walletKeyValues>& entries,const QString& acc )
-{
-	int j = entries.size() ;
-
-	for( int i = 0 ; i < j ; i++ ){
-		if( entries.at( i ).getKey() == acc ){
-			return entries.at( i ).getValue() ;
-		}
-	}
-
-	/*
-	 * we are not supposed to get here
-	 */
-	return m_bogusEntry ;
-}
-
-void walletconfig::ShowWalletEntries()
-{
-	QVector<lxqt::Wallet::walletKeyValues> entries = m_wallet->readAllKeyValues() ;
-
-	QTableWidget * table = m_ui->tableWidget ;
-
-	if( entries.empty() ){
-		;
-	}else{
-		/*
-		 * each volume gets two entries in kwallet:
-		 * First one in the form of  : key<UUID="blablabla">value<uuid passphrase>
-		 * Second one in the form of : key<UUID="blablabla"-comment">value<comment>
-		 *
-		 * This allows to store a a volume UUID, a comment about it and its passphrase.
-		 *
-		 * COMMENT is defined in task.h
-		 */
-
-		QStringList s ;
-		int j = entries.size() ;
-		for( int i = 0 ; i < j ; i++ ){
-			const QString& acc = entries.at( i ).getKey() ;
-			if( acc.endsWith( COMMENT ) ){
-				;
-			}else{
-				s.clear() ;
-				s.append( acc ) ;
-				s.append( this->getAccInfo( entries,acc + QString( COMMENT ) ) ) ;
-				s.append( tr( "<redacted>" ) ) ;
-				tablewidget::addRowToTable( table,s ) ;
-			}
-		}
-	}
-
-	this->enableAll() ;
-	table->setFocus() ;
-}
-
 void walletconfig::HideUI()
 {
 	this->hide() ;
@@ -266,5 +255,5 @@ void walletconfig::closeEvent( QCloseEvent * e )
 walletconfig::~walletconfig()
 {
 	m_wallet->deleteLater() ;
-	delete m_ui;
+	delete m_ui ;
 }

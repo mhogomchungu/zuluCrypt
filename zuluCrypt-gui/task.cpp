@@ -30,7 +30,6 @@
 #include "tablewidget.h"
 #include "task.h"
 #include "../zuluCrypt-cli/constants.h"
-#include "lxqt_wallet/frontend/lxqt_wallet.h"
 
 Task::Task()
 {
@@ -60,6 +59,11 @@ Task::Task( lxqt::Wallet::Wallet * wallet,const QString& volumeID,const QString&
 
 Task::Task( lxqt::Wallet::Wallet * wallet,const QString& volumeID ):
 	m_wallet( wallet ),m_volumeID( volumeID )
+{
+}
+
+Task::Task( lxqt::Wallet::Wallet * wallet,QVector<lxqt::Wallet::walletKeyValues> * keys ):
+	m_wallet( wallet ),m_keys( keys )
 {
 }
 
@@ -233,6 +237,11 @@ void Task::deleteKeyTask()
 	m_wallet->deleteKey( m_volumeID + COMMENT ) ;
 }
 
+void Task::getAllKeysTask()
+{
+	*m_keys = m_wallet->readAllKeyValues() ;
+}
+
 void Task::run()
 {
 	switch( m_action ){
@@ -245,6 +254,7 @@ void Task::run()
 		case Task::volumeTask           : return this->runVolumeTask() ;
 		case Task::addKey               : return this->addKeyTask() ;
 		case Task::deleteKey            : return this->deleteKeyTask() ;
+		case Task::getAllKeys           : return this->getAllKeysTask() ;
 	}
 }
 

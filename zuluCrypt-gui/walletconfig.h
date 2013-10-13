@@ -58,13 +58,12 @@ private slots:
 private:
 	void enableAll( void ) ;
 	void disableAll( void ) ;
-	void failedToOpenWallet( void ) ;
-	void ShowWalletEntries( void ) ;
-	const QByteArray& getAccInfo( const QVector<lxqt::Wallet::walletKeyValues>&,const QString& acc ) ;
+	const QByteArray& getAccInfo( const QString& acc ) ;
 	Ui::walletconfig * m_ui ;
 	void closeEvent( QCloseEvent * ) ;
 	lxqt::Wallet::Wallet * m_wallet ;
 	int m_action ;
+	QVector<lxqt::Wallet::walletKeyValues> m_keys ;
 	int m_row ;
 	QByteArray m_bogusEntry ;
 	QString m_volumeID ;
