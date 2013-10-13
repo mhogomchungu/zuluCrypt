@@ -139,12 +139,10 @@ QByteArray lxqt::Wallet::secretService::readValue( const QString& key )
 QVector<lxqt::Wallet::walletKeyValues> lxqt::Wallet::secretService::readAllKeyValues( void )
 {
 	QVector<lxqt::Wallet::walletKeyValues> p ;
-	lxqt::Wallet::walletKeyValues q ;
 	QStringList l = this->readAllKeys() ;
 	int k = l.size() ;
 	for( int i = 0 ; i < k ; i++ ){
-		q.key = l.at( i ) ;
-		q.value = this->readValue( l.at( i ) ) ;
+		lxqt::Wallet::walletKeyValues q( l.at( i ),this->readValue( l.at( i ) ) ) ;
 		p.append( q ) ;
 	}
 	return p ;

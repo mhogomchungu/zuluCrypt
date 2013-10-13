@@ -33,7 +33,7 @@ The second 8 bytes are a u_int64_t data type and are used to store the number of
 
 The load starts at 64th byte.
 
-The file is encrypted using CBC mode of 128 bit AES and hence may be padded to a file size larger than file contents to
+The file is encrypted using CBC mode of 256 bit AES and hence may be padded to a file size larger than file contents to
 accomodate CBC mode demanding data sizes that are divisible by 16.
 
 Key-Pair entries are stored as singly linked list nodes in an array.

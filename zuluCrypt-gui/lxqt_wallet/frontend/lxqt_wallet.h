@@ -46,8 +46,13 @@ namespace Wallet{
 
 class walletKeyValues{
 public:
-	QString key ;
-	QByteArray value ;
+	walletKeyValues(){}
+	walletKeyValues( const QString&key,const QByteArray& value ) : m_key( key ),m_value( value ){}
+	const QString& getKey( void ) const { return m_key ; }
+	const QByteArray& getValue( void ) const { return m_value ; }
+private:
+	QString m_key ;
+	QByteArray m_value ;
 };
 
 typedef enum{
@@ -135,7 +140,7 @@ public:
 	/*
 	 * close the a wallet
 	 */
-	virtual void closeWallet( bool ) = 0 ;
+	virtual void closeWallet( bool option = false ) = 0 ;
 
 	/*
 	 * return the backend in use
@@ -226,9 +231,10 @@ void TestClass::walletIsOpen( bool walletIsOpen )
 		QVector<lxqt::Wallet::walletKeyValues> s = m_wallet->readAllKeyValues() ;
 		size_t j = s.size() ;
 		for( size_t i = 0 ; i < j ; i++ ){
-			qDebug() << "key=" << s.at( i ).key << ":value=" << s.at( i ).value ;
+			const QString& key      = s.at( i ).getKey() ;
+			const QByteArray& value = s.at( i ).getValue() ;
+			qDebug() << "key=" << key << ":value=" << value ;
 		}
-		m_wallet->closeWallet( false ) ;
 	}else{
 		qDebug() << "failed to open wallet" ;
 	}

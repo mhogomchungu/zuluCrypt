@@ -791,7 +791,7 @@ ssize_t SocketSendData( socket_t s,const char * buffer,size_t len )
 		do{
 			sent = sent + write( s->fd,buffer + sent,remain ) ;
 			remain = remain - sent ;
-		}while( sent != len );
+		}while( sent != len ) ;
 	
 		return sent ;
 	}

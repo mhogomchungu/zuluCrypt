@@ -59,10 +59,12 @@ private:
 	void disableAll( void ) ;
 	void failedToOpenWallet( void ) ;
 	void ShowWalletEntries( void ) ;
+	const QByteArray& getAccInfo( const QVector<lxqt::Wallet::walletKeyValues>&,const QString& acc ) ;
 	Ui::walletconfig * m_ui ;
 	void closeEvent( QCloseEvent * ) ;
 	lxqt::Wallet::Wallet * m_wallet ;
 	walletconfiginput * m_walletConfig ;
+	QByteArray m_bogusEntry ;
 };
 
 #endif // KWALLETCONFIG_H

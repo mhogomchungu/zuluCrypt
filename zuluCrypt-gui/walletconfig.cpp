@@ -109,7 +109,7 @@ void walletconfig::add( const QString& volumeID,const QString& comm,const QStrin
 	entry.append( tr( "<redacted>" ) ) ;
 
 	tablewidget::addRowToTable( m_ui->tableWidget,entry ) ;
-	this->enableAll() ;
+
 	/*
 	 * we and hide and delete this object here and not in the object itself because some backends(libsecret) takes too long
 	 * to complete and UI freeze maybe noticiable
@@ -179,43 +179,56 @@ void walletconfig::failedToOpenWallet()
 	this->HideUI() ;
 }
 
-void walletconfig::ShowWalletEntries()
+const QByteArray& walletconfig::getAccInfo( const QVector<lxqt::Wallet::walletKeyValues>& entries,const QString& acc )
 {
-	QStringList entries = m_wallet->readAllKeys() ;
-
-	this->enableAll() ;
-
-	if( entries.empty() ){
-		return this->show() ;
-	}
-
-	QTableWidget * table = m_ui->tableWidget ;
-
-	/*
-	 * each volume gets two entries in kwallet:
-	 * First one in the form of  : key<UUID="blablabla">value<uuid passphrase>
-	 * Second one in the form of : key<UUID="blablabla"-comment">value<comment>
-	 *
-	 * This allows to store a a volume UUID, a comment about it and its passphrase.
-	 *
-	 */
-
-	QStringList s ;
 	int j = entries.size() ;
+
 	for( int i = 0 ; i < j ; i++ ){
-		const QString& e = entries.at( i ) ;
-		if( e.endsWith( COMMENT ) ){
-			;
-		}else{
-			s.clear() ;
-			s.append( e ) ;
-			s.append( m_wallet->readValue( e + QString( COMMENT ) ) ) ;
-			s.append( tr( "<redacted>" ) ) ;
-			tablewidget::addRowToTable( table,s ) ;
+		if( entries.at( i ).getKey() == acc ){
+			return entries.at( i ).getValue() ;
 		}
 	}
 
-	table->setFocus() ;
+	return m_bogusEntry ;
+}
+
+void walletconfig::ShowWalletEntries()
+{
+	QVector<lxqt::Wallet::walletKeyValues> entries = m_wallet->readAllKeyValues() ;
+
+	if( entries.empty() ){
+		;
+	}else{
+		QTableWidget * table = m_ui->tableWidget ;
+
+		/*
+		 * each volume gets two entries in kwallet:
+		 * First one in the form of  : key<UUID="blablabla">value<uuid passphrase>
+		 * Second one in the form of : key<UUID="blablabla"-comment">value<comment>
+		 *
+		 * This allows to store a a volume UUID, a comment about it and its passphrase.
+		 *
+		 */
+
+		QStringList s ;
+		int j = entries.size() ;
+		for( int i = 0 ; i < j ; i++ ){
+			const QString& acc = entries.at( i ).getKey() ;
+			if( acc.endsWith( COMMENT ) ){
+				;
+			}else{
+				s.clear() ;
+				s.append( acc ) ;
+				s.append( this->getAccInfo( entries,acc + QString( COMMENT ) ) ) ;
+				s.append( tr( "<redacted>" ) ) ;
+				tablewidget::addRowToTable( table,s ) ;
+			}
+		}
+
+		table->setFocus() ;
+	}
+
+	this->enableAll() ;
 }
 
 void walletconfig::HideUI()
