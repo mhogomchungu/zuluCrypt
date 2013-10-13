@@ -64,6 +64,8 @@ private:
 	Ui::walletconfig * m_ui ;
 	void closeEvent( QCloseEvent * ) ;
 	lxqt::Wallet::Wallet * m_wallet ;
+	int m_action ;
+	int m_row ;
 	QByteArray m_bogusEntry ;
 	QString m_volumeID ;
 	QString m_comment ;

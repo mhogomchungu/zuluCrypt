@@ -49,11 +49,13 @@ public:
 		updateVolumeList,
 		openMountPoint,
 		volumeTask,
-		addKey
+		addKey,
+		deleteKey
 	}action ;
 
 	explicit Task( const QString& exe ) ;
 	Task( const QString&,const QString& ) ;
+	Task( lxqt::Wallet::Wallet *,const QString& volumeID ) ;
 	Task( lxqt::Wallet::Wallet *,const QString& volumeID,const QString& key,const QString& comment ) ;
 	explicit Task( QTableWidget * ) ;
 	Task() ;
@@ -77,6 +79,7 @@ private:
 	void runVolumePropertiesTask( void ) ;
 	void runVolumeTask( void ) ;
 	void addKeyTask( void ) ;
+	void deleteKeyTask( void ) ;
 	QString m_exe ;
 	QString m_output ;
 	int m_status ;

@@ -67,18 +67,22 @@ void walletconfig::itemClicked( QTableWidgetItem * item )
 
 	DialogMsg msg( this ) ;
 
-	QTableWidget * table = m_ui->tableWidget ;
-	QString volumeID = table->item( item->row(),0 )->text() ;
+	m_row = item->row() ;
+
+	QString volumeID = m_ui->tableWidget->item( m_row,0 )->text() ;
 
 	int r = msg.ShowUIYesNo( tr( "warning" ),tr( "are you sure you want to delete a volume with an id of \"%1\"?" ).arg( volumeID ) ) ;
 
 	if( r == QMessageBox::Yes ){
-		m_wallet->deleteKey( volumeID ) ;
-		m_wallet->deleteKey( volumeID + COMMENT ) ;
-		tablewidget::deleteRowFromTable( table,item->row() ) ;
-	}
+		m_action = int( Task::deleteKey ) ;
 
-	this->enableAll() ;
+		Task * t = new Task( m_wallet,volumeID ) ;
+		connect( t,SIGNAL( finished() ),this,SLOT( TaskFinished() ) ) ;
+		t->start( Task::deleteKey ) ;
+	}else{
+		this->enableAll() ;
+		m_ui->tableWidget->setFocus() ;
+	}
 }
 
 void walletconfig::pbDelete()
@@ -93,29 +97,39 @@ void walletconfig::pbClose()
 
 void walletconfig::add( QString volumeID,QString comment,QString key )
 {
-	if( comment.isEmpty() ){
-		m_comment = QString( "Nil" ) ;
-	}else{
-		m_comment = comment ;
-	}
-
-	m_key      = key ;
+	m_comment  = comment ;
 	m_volumeID = volumeID ;
 
-	Task * t = new Task( m_wallet,m_volumeID,m_key,m_comment ) ;
+	m_action = int( Task::addKey ) ;
+
+	Task * t = new Task( m_wallet,m_volumeID,key,m_comment ) ;
 	connect( t,SIGNAL( finished() ),this,SLOT( TaskFinished() ) ) ;
 	t->start( Task::addKey ) ;
 }
 
 void walletconfig::TaskFinished()
 {
+	Task::action r = Task::action( m_action ) ;
+
 	QStringList entry ;
 
-	entry.append( m_volumeID ) ;
-	entry.append( m_comment ) ;
-	entry.append( tr( "<redacted>" ) ) ;
+	if( r == Task::addKey ){
 
-	tablewidget::addRowToTable( m_ui->tableWidget,entry ) ;
+		entry.append( m_volumeID ) ;
+		entry.append( m_comment ) ;
+		entry.append( tr( "<redacted>" ) ) ;
+
+		tablewidget::addRowToTable( m_ui->tableWidget,entry ) ;
+
+	}else if( r == Task::deleteKey ){
+
+		tablewidget::deleteRowFromTable( m_ui->tableWidget,m_row ) ;
+
+	}else{
+		/*
+		 * we dont get here
+		 */
+	}
 
 	this->enableAll() ;
 	m_ui->tableWidget->setFocus() ;
@@ -192,6 +206,9 @@ const QByteArray& walletconfig::getAccInfo( const QVector<lxqt::Wallet::walletKe
 		}
 	}
 
+	/*
+	 * we are not supposed to get here
+	 */
 	return m_bogusEntry ;
 }
 

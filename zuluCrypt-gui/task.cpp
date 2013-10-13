@@ -58,6 +58,11 @@ Task::Task( lxqt::Wallet::Wallet * wallet,const QString& volumeID,const QString&
 {
 }
 
+Task::Task( lxqt::Wallet::Wallet * wallet,const QString& volumeID ):
+	m_wallet( wallet ),m_volumeID( volumeID )
+{
+}
+
 void Task::start( Task::action action )
 {
 	m_action = action ;
@@ -222,6 +227,12 @@ void Task::addKeyTask()
 	m_wallet->addKey( m_volumeID + COMMENT,m_comment.toAscii() ) ;
 }
 
+void Task::deleteKeyTask()
+{
+	m_wallet->deleteKey( m_volumeID ) ;
+	m_wallet->deleteKey( m_volumeID + COMMENT ) ;
+}
+
 void Task::run()
 {
 	switch( m_action ){
@@ -233,6 +244,7 @@ void Task::run()
 		case Task::openMountPoint       : return this->openMountPointTask() ;
 		case Task::volumeTask           : return this->runVolumeTask() ;
 		case Task::addKey               : return this->addKeyTask() ;
+		case Task::deleteKey            : return this->deleteKeyTask() ;
 	}
 }
 
