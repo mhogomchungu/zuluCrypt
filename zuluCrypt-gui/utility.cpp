@@ -32,6 +32,7 @@
 #include <QDebug>
 
 #include <blkid/blkid.h>
+#include <QByteArray>
 #include <QProcess>
 #include <QFile>
 #include <QFile>
@@ -63,7 +64,7 @@ QString utility::cryptMapperPath()
 
 bool utility::userIsRoot()
 {
-	return getuid() == 0 ? true : false ;
+	return getuid() == 0 ;
 }
 
 QString utility::userName()
@@ -139,7 +140,6 @@ bool utility::pathPointsToAFile( const QString& path )
 	}else{
 		return false ;
 	}
-
 }
 
 QString utility::localizationLanguage( const QString& program )
@@ -359,9 +359,9 @@ QString utility::mapperPath( const QString& r )
 	if( rpath.startsWith( QString( "UUID=" ) ) ){
 		rpath.remove( QChar( '\"' ) ) ;
 		rpath.replace( QString( "UUID=" ),QString( "UUID-" ) ) ;
-		path += QString( "-" ) + rpath + utility::hashPath( rpath ) ;
+		path += QString( "-" ) + rpath + utility::hashPath( rpath.toAscii() ) ;
 	}else{
-		path += QString( "-NAAN-" ) + rpath.split( "/" ).last() + utility::hashPath( rpath ) ;
+		path += QString( "-NAAN-" ) + rpath.split( "/" ).last() + utility::hashPath( rpath.toAscii() ) ;
 	}
 
 	QString z = QString( BASH_SPECIAL_CHARS ) ;
@@ -374,16 +374,15 @@ QString utility::mapperPath( const QString& r )
 	return path ;
 }
 
-QString utility::hashPath( const QString& p )
+QString utility::hashPath( const QByteArray& p )
 {
 	size_t l = p.size() ;
 	uint32_t hash ;
 	uint32_t i ;
-	QByteArray b = p.toAscii() ;
-	const char * key = b.constData() ;
+	const char * key = p.constData() ;
 	i = hash = 0 ;
 	for( ; i < l ; i++ ){
-		hash += key[ i ];
+		hash += key[ i ] ;
 		hash += ( hash << 10 ) ;
 		hash ^= ( hash >> 6 ) ;
 	}
@@ -396,7 +395,7 @@ QString utility::hashPath( const QString& p )
 bool utility::exists( const QString& path )
 {
 	struct stat st ;
-	return stat( path.toAscii().data(),&st ) == 0 ? true : false ;
+	return stat( path.toAscii().data(),&st ) == 0 ;
 }
 
 bool utility::canCreateFile( const QString& path )
@@ -444,16 +443,17 @@ QStringList utility::luksEmptySlots( const QString& volumePath )
 	if( N.exitCode() != 0 ){
 		return list ;
 	}
-	QByteArray s = N.readAllStandardOutput() ;
+	QByteArray s = N.readAll() ;
 	N.close() ;
 	int i = 0 ;
-	for ( int j = 0 ; j < s.size() ; j++ ){
+	int z = s.size() ;
+	for( int j = 0 ; j < z ; j++ ){
 		if( s.at( j ) == '1' || s.at( j ) == '3' ){
 			i++ ;
 		}
 	}
 	list << QString::number( i ) ;
-	list << QString::number(  s.size() - 1 ) ;
+	list << QString::number( z - 1 ) ;
 	return list ;
 }
 

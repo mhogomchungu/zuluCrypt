@@ -22,6 +22,7 @@
 
 #include <QDialog>
 #include <QString>
+#include <QStringList>
 
 namespace Ui {
 class luksaddkey ;
@@ -59,7 +60,9 @@ private slots:
 	void pbCancel( void ) ;
 	void taskFinished( int ) ;
 	void setFieldFocus( void ) ;
+	void keyAdded( QStringList ) ;
 private:
+	void keyAdded( void ) ;
 	void disableAll( void ) ;
 	void enableAll( void ) ;
 	void closeEvent( QCloseEvent * ) ;
@@ -67,6 +70,8 @@ private:
 	QString m_volumePath ;
 	bool m_isWindowClosable ;
 	keystrength * m_keystrength ;
+	int m_keyCount ;
+	QString m_totalKeys ;
 };
 
 #endif // luksaddkeySUI_H

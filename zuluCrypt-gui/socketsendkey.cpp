@@ -17,10 +17,12 @@
  */
 
 #include "socketsendkey.h"
+#include "utility.h"
 
 #include <QObject>
 #include <QTime>
 #include <QDir>
+#include <QFile>
 
 socketSendKey::socketSendKey( QObject * parent,const QString& sockpath,const QByteArray& key )
 {
@@ -82,8 +84,10 @@ void socketSendKey::sendKey( void )
 
 QString socketSendKey::getSocketPath()
 {
-	u_int64_t x = static_cast<u_int64_t>( QDateTime::currentDateTime().toMSecsSinceEpoch() ) ;
-	return QString( QDir::homePath() + QString( "/.zuluCrypt-socket/" ) + QString::number( x ) ) ;
+	QFile f( "/dev/urandom" ) ;
+	f.open( QIODevice::ReadOnly ) ;
+	QByteArray data = f.read( 64 ) ;
+	return QString( "%1%2%3" ).arg( QDir::homePath() ).arg( QString( "/.zuluCrypt-socket/" ) ).arg( utility::hashPath( data ).mid( 1 ) ) ;
 }
 
 void socketSendKey::run()

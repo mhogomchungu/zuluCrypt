@@ -170,41 +170,35 @@ void luksdeletekey::pbOpenPartition()
 	op->ShowAllPartitions() ;
 }
 
-void luksdeletekey::pbDelete()
+void luksdeletekey::deleteKey( QStringList l )
 {
 	DialogMsg msg( this ) ;
 
-	QString path = m_ui->lineEditVolumePath->text() ;
-	m_volumePath = utility::resolvePath( path ) ;
-
-	QString keypath = m_ui->lineEditPassphrase->text() ;
-
-	if(  m_volumePath.isEmpty() ){
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
-	}
-
-	m_volumePath.replace( "\"","\"\"\"" ) ;
-
-	QStringList l = utility::luksEmptySlots( m_volumePath ) ;
 	if( l.isEmpty() ){
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "volume is not a luks volume" ) ) ;
+		msg.ShowUIOK( tr( "ERROR!" ),tr( "volume is not a luks volume" ) ) ;
+		return this->enableAll() ;
 	}else if( l.at( 0 ) == QString( "1" ) ){
 		QString s = tr( "There is only one last key in the volume." ) ;
 		s = s + tr( "\nDeleting it will make the volume unopenable and lost forever." ) ;
 		s = s + tr( "\nAre you sure you want to delete this key?" ) ;
 
 		if( msg.ShowUIYesNoDefaultNo( tr( "WARNING" ),s ) == QMessageBox::No ){
-			return ;
+			return this->enableAll() ;
 		}
 	}else{
 		QString s = tr( "are you sure you want to delete a key from this volume?" ) ;
 		if( msg.ShowUIYesNoDefaultNo( tr( "WARNING" ),s ) == QMessageBox::No ){
-			return ;
+			return this->enableAll() ;
 		}
 	}
 
+	m_keyNumber = l.at( 0 ).toInt() ;
+	m_totalKeys = l.at( 1 ) ;
+
+	QString keypath ;
+
 	if( m_ui->rbPassphraseFromFile->isChecked() ){
-		keypath = utility::resolvePath( keypath ) ;
+		keypath = utility::resolvePath( m_ui->lineEditPassphrase->text() ) ;
 	}else{
 		keypath = socketSendKey::getSocketPath() ;
 		socketSendKey * s = new socketSendKey( this,keypath,m_ui->lineEditPassphrase->text().toAscii() ) ;
@@ -215,11 +209,28 @@ void luksdeletekey::pbDelete()
 
 	m_isWindowClosable = false ;
 
-	this->disableAll() ;
-
 	Task * t = new Task( exe ) ;
 	connect( t,SIGNAL( finished( int ) ),this,SLOT( taskFinished( int ) ) ) ;
 	t->start() ;
+}
+
+void luksdeletekey::pbDelete()
+{
+	DialogMsg msg( this ) ;
+
+	m_volumePath = utility::resolvePath( m_ui->lineEditVolumePath->text() ) ;
+
+	if( m_volumePath.isEmpty() ){
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
+	}
+
+	this->disableAll() ;
+
+	m_volumePath.replace( "\"","\"\"\"" ) ;
+
+	Task * t = new Task( m_volumePath ) ;
+	connect( t,SIGNAL( finished( QStringList ) ),this,SLOT( deleteKey( QStringList ) ) ) ;
+	t->start( Task::LUKSSlotUsage ) ;
 }
 
 void luksdeletekey::taskFinished( int status )
@@ -230,12 +241,7 @@ void luksdeletekey::taskFinished( int status )
 	QString success;
 	switch(  status ){
 		case 0 :
-			l = utility::luksEmptySlots( m_volumePath ) ;
-			if( l.isEmpty() ){
-				success = tr( "key removed successfully." ) ;
-			}else{
-				success = tr( "key removed successfully.\n%1 / %2 slots are now in use" ).arg( l.at( 0 ) ).arg( l.at( 1 ) ) ;
-			}
+			success = tr( "key removed successfully.\n%1 / %2 slots are now in use" ).arg( QString::number( --m_keyNumber ) ).arg( m_totalKeys ) ;
 			msg.ShowUIOK( tr( "SUCCESS!" ),success ) ;
 			return this->HideUI() ;
 		case 2 : msg.ShowUIOK( tr( "ERROR!" ),tr( "there is no key in the volume that match the presented key" ) ) ;				break ;

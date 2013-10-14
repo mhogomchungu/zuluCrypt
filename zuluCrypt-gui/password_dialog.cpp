@@ -260,7 +260,7 @@ void passwordDialog::pluginOption()
 	m_ui->pushButtonPassPhraseFromFile->setToolTip( tr( "choose a module from the file system" ) ) ;
 	m_ui->PassPhraseField->setToolTip( tr( "enter a module name to use to get passphrase" ) ) ;
 	m_ui->PassPhraseField->setEchoMode( QLineEdit::Normal ) ;
-	m_ui->PassPhraseField->clear() ;
+	m_ui->PassPhraseField->setText( INTERNAL_WALLET ) ;
 	m_ui->pushButtonPassPhraseFromFile->setEnabled( false ) ;
 	m_ui->labelPassphrase->setText( tr( "plugin name" ) ) ;
 	m_ui->pushButtonPassPhraseFromFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) ) ;
@@ -435,7 +435,7 @@ void passwordDialog::openVolume()
 
 	QString mode ;
 
-	if ( m_ui->checkBoxReadOnly->isChecked() ){
+	if( m_ui->checkBoxReadOnly->isChecked() ){
 		mode = QString( "ro" ) ;
 	}else{
 		mode = QString( "rw" ) ;
@@ -445,7 +445,7 @@ void passwordDialog::openVolume()
 
 	QString keyPath ;
 
-	if ( m_ui->radioButtonPassPhraseFromFile->isChecked() ){
+	if( m_ui->radioButtonPassPhraseFromFile->isChecked() ){
 		if( m_key.isEmpty() ){
 			DialogMsg msg( this ) ;
 			msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;

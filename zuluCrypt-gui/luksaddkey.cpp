@@ -232,8 +232,7 @@ void luksaddkey::rbNewPassphraseFromFile()
 void luksaddkey::pbAdd( void )
 {
 	DialogMsg msg( this ) ;
-	QString path = m_ui->textEditPathToVolume->text() ;
-	m_volumePath = utility::resolvePath( path ) ;
+	m_volumePath = utility::resolvePath( m_ui->textEditPathToVolume->text() ) ;
 	QString ExistingKey = m_ui->textEditExistingPassphrase->text() ;
 
 	QString NewKey = m_ui->textEditPassphraseToAdd->text() ;
@@ -309,42 +308,55 @@ void luksaddkey::pbAdd( void )
 	t->start() ;
 }
 
+void luksaddkey::keyAdded( QStringList x )
+{
+	QString success ;
+	if( !x.isEmpty() ){
+		success = tr( "key added successfully.\n%1 / %2 slots are now in use" ).arg( x.at( 0 ) ).arg( x.at( 1 ) ) ;
+	}else{
+		success = tr( "key added successfully." ) ;
+	}
+
+	DialogMsg msg( this ) ;
+	msg.ShowUIOK( tr( "SUCCESS!" ),success ) ;
+
+	this->HideUI() ;
+}
+
+void luksaddkey::keyAdded()
+{
+	Task * t = new Task( m_volumePath ) ;
+	connect( t,SIGNAL( finished( QStringList ) ),this,SLOT( keyAdded( QStringList ) ) ) ;
+	t->start( Task::LUKSSlotUsage ) ;
+}
+
 void luksaddkey::taskFinished( int status )
 {
 	m_isWindowClosable = true ;
 	DialogMsg msg( this ) ;
-	QStringList x ;
-	QString success;
 	switch( status ){
-		case 0 :
-			x = utility::luksEmptySlots( m_volumePath ) ;
-			if( !x.isEmpty() ){
-				success = tr( "key added successfully.\n%1 / %2 slots are now in use" ).arg( x.at( 0 ) ).arg( x.at( 1 ) ) ;
-			}else{
-				success = tr( "key added successfully." ) ;
-			}
-			msg.ShowUIOK( tr( "SUCCESS!" ),success ) ;
-			return HideUI() ;
+		case 0  : return this->keyAdded() ;
 		case 1  : msg.ShowUIOK( tr( "ERROR!" ),tr( "presented key does not match any key in the volume" ) ) ;		      	break ;
 		case 2  : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open luks volume" ) ) ;					     	break ;
 		case 3  : msg.ShowUIOK( tr( "ERROR!" ),tr( "volume is not a luks volume" ) ) ;					     	break ;
 		case 4  : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to add a key to a system device,\nonly root user or members of group \"zulucrypt\" can do that\n" ) )	;break ;
 		case 5  : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open volume in write mode" ) ) ;					break ;
-		case 6  : msg.ShowUIOK( tr( "ERROR!" ),tr( "all key slots are occupied, can not add any more keys" ) ) ;			break ;
-		case 7  : msg.ShowUIOK( tr( "ERROR!" ),tr( "can not get passphrase in silent mode" ) ) ;				   	break ;
+		case 6  : msg.ShowUIOK( tr( "ERROR!" ),tr( "all key slots are occupied, can not add any more keys" ) ) ;		break ;
+		case 7  : msg.ShowUIOK( tr( "ERROR!" ),tr( "can not get passphrase in silent mode" ) ) ;			   	break ;
 		case 8  : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient memory to hold passphrase" ) ) ;	                      	break ;
 		case 9  : msg.ShowUIOK( tr( "ERROR!" ),tr( "new passphrases do not match" ) ) ;						break ;
 		case 10 : msg.ShowUIOK( tr( "ERROR!" ),tr( "one or more required argument(s) for this operation is missing" ) ) ;      	break ;
-		case 11 : msg.ShowUIOK( tr( "ERROR!" ),tr( "one or both keyfile(s) does not exist" ) ) ;					break ;
+		case 11 : msg.ShowUIOK( tr( "ERROR!" ),tr( "one or both keyfile(s) does not exist" ) ) ;				break ;
 		case 12 : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open key file for reading" ) ) ;			break ;
 		case 13 : msg.ShowUIOK( tr( "ERROR!" ),tr( "couldnt get enought memory to hold the key file" ) ) ;			break ;
 		case 14 : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get a key from a socket" ) ) ;					break ;
 		case 15 : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get elevated privilege,check binary permissions" ) ) ;		break ;
 		case 110: msg.ShowUIOK( tr( "ERROR!" ),tr( "can not find a partition that match presented UUID" ) ) ;			break ;
-		case 113: msg.ShowUIOK( tr( "ERROR!" ),tr( "device is not a luks device" ) ) ;				     	break ;
+		case 113: msg.ShowUIOK( tr( "ERROR!" ),tr( "device is not a luks device" ) ) ;						break ;
 		default : msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR! with status number %1 encountered" ).arg( status ) ) ;
 	}
-	enableAll() ;
+
+	this->enableAll() ;
 }
 
 void luksaddkey::disableAll()
@@ -408,7 +420,7 @@ void luksaddkey::enableAll()
 
 void luksaddkey::pbCancel( void )
 {
-	HideUI() ;
+	this->HideUI() ;
 }
 
 luksaddkey::~luksaddkey()

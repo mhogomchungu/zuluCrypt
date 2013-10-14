@@ -23,6 +23,8 @@
 #include <QString>
 #include <QStringList>
 
+class QByteArray ;
+
 class utility
 {
 public:
@@ -33,7 +35,7 @@ public:
 	static bool exists( const QString& ) ;
 	static bool canCreateFile( const QString& ) ;
 	static QString resolvePath( const QString& ) ;
-	static QString hashPath( const QString& ) ;
+	static QString hashPath( const QByteArray& ) ;
 	static QString cryptMapperPath( void ) ;
 	static void debug( const QString& ) ;
 	static void debug( int ) ;

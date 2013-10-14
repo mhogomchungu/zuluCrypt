@@ -36,7 +36,7 @@ Task::Task()
 {
 }
 
-Task::Task( const QString& exe ) : m_exe( exe ),m_status( -1 ),m_partitionType( exe )
+Task::Task( const QString& exe ) : m_exe( exe ),m_status( -1 ),m_path( exe ),m_partitionType( exe )
 {
 }
 
@@ -265,6 +265,11 @@ void Task::getKeyTask()
 	}
 }
 
+void Task::LUKSSlotUsageTask()
+{
+	emit finished( utility::luksEmptySlots( m_path ) ) ;
+}
+
 void Task::run()
 {
 	switch( m_action ){
@@ -279,6 +284,7 @@ void Task::run()
 		case Task::deleteKey            : return this->deleteKeyTask() ;
 		case Task::getAllKeys           : return this->getAllKeysTask() ;
 		case Task::getKey               : return this->getKeyTask() ;
+		case Task::LUKSSlotUsage        : return this->LUKSSlotUsageTask() ;
 	}
 }
 

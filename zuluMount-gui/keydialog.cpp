@@ -297,6 +297,9 @@ void keyDialog::getPassWordFromWallet( QString key )
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR" ),tr( "the volume does not appear to have an entry in the wallet" ) ) ;
 		this->enableAll() ;
+		if( m_ui->rbPlugIn->isChecked() || m_ui->rbKeyFile->isChecked() ){
+			m_ui->lineEditKey->setEnabled( false ) ;
+		}
 	}else{
 		m_key = key ;
 		this->openVolume() ;
@@ -427,7 +430,7 @@ void keyDialog::rbPlugIn( bool opt )
 		m_ui->pbkeyOption->setIcon( QIcon( QString( ":/module.png" ) ) ) ;
 		m_ui->lineEditKey->setEchoMode( QLineEdit::Normal ) ;
 		m_ui->label->setText( tr( "plugin name" ) ) ;
-		m_ui->lineEditKey->clear() ;
+		m_ui->lineEditKey->setText( INTERNAL_WALLET ) ;
 		m_ui->pbkeyOption->setEnabled( true ) ;
 		m_ui->lineEditKey->setEnabled( false ) ;
 	}

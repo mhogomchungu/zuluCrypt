@@ -54,7 +54,8 @@ public:
 		addKey,
 		deleteKey,
 		getAllKeys,
-		getKey
+		getKey,
+		LUKSSlotUsage
 	}action ;
 
 	explicit Task( const QString& exe ) ;
@@ -70,6 +71,7 @@ signals:
 	void partitionProperties( QStringList ) ;
 	void addItemToTable( QString,QString,QString ) ;
 	void finished( QString ) ;
+	void finished( QStringList ) ;
 	void finished( void ) ;
 	void finished( int ) ;
 	void finished( int,QString ) ;
@@ -87,6 +89,7 @@ private:
 	void deleteKeyTask( void ) ;
 	void getAllKeysTask( void ) ;
 	void getKeyTask( void ) ;
+	void LUKSSlotUsageTask( void ) ;
 	QString m_exe ;
 	QString m_output ;
 	int m_status ;

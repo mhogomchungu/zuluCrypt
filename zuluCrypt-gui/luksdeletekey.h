@@ -52,13 +52,16 @@ private slots:
 	void pbOpenKeyFile( void ) ;
 	void pbOpenVolume( void ) ;
 	void taskFinished( int ) ;
+	void deleteKey( QStringList ) ;
 private:
 	void disableAll( void ) ;
 	void enableAll( void ) ;
 	void closeEvent( QCloseEvent * ) ;
-	Ui::luksdeletekey * m_ui;
+	Ui::luksdeletekey * m_ui ;
 	QString m_volumePath ;
 	bool m_isWindowClosable ;
+	int m_keyNumber ;
+	QString m_totalKeys ;
 };
 
 #endif // LUKSDELETEKEY_H
