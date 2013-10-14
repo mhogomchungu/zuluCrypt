@@ -34,10 +34,36 @@ static inline int _unmount_volume( const char * m_dir )
 	/*
 	 * try 5 times on one second intervals to umount the volume.
 	 * Trying to unmount more than once seem to be necessary sometimes
-	 *  when the opened volume is accessed over samba share. 
 	 */
 	for( i = 0 ; i < 5 ; i++ ){
 		h = umount( m_dir ) ;
+		if( h == 0 ){
+			break ;
+		}else{
+			sleep( 1 ) ;
+		}
+	}
+	
+	return h ;
+}
+
+static inline int _unmount_volume_1( const char * m_dir )
+{
+	process_t p ;
+	
+	int h ;
+	int i ;
+	
+	/*
+	 * try 5 times on one second intervals to umount the volume.
+	 * Trying to unmount more than once seem to be necessary sometimes
+	 */
+	for( i = 0 ; i < 5 ; i++ ){
+		p = Process( ZULUCRYPTumount ) ;
+		ProcessSetArgumentList( p,m_dir,ENDLIST ) ;
+		ProcessStart( p ) ;
+		h = ProcessExitStatus( p ) ;
+		ProcessDelete( &p ) ;
 		if( h == 0 ){
 			break ;
 		}else{
@@ -56,8 +82,6 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 	char * loop_path = NULL ;
 	
 	string_t fs ;
-	
-	process_t p ;
 	
 	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
 		/*
@@ -84,14 +108,10 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 			/*
 			 * This is a workaround for ntfs file system.
 			 * In my system,the "mount" command seems to ignore the "-n" option and mtab
-			 * is getting updated and hence we unmount using umount command to  let it
+			 * is getting updated and we unmount using "umount" command to let it
 			 * update mtab since we currently do not support mtab.
 			 */
-			p = Process( ZULUCRYPTumount ) ;
-			ProcessSetArgumentList( p,m,ENDLIST ) ;
-			ProcessStart( p ) ;
-			h = ProcessExitStatus( p ) ;
-			ProcessDelete( &p ) ;
+			h = _unmount_volume_1( m ) ;
 		}else{
 			h = _unmount_volume( m ) ;
 		}
