@@ -77,34 +77,47 @@ static inline int _unmount_volume_1( const char * m_dir )
 int zuluCryptUnmountVolume( const char * device,char ** m_point )
 {
 	char * m ;
+	
 	int h = 3 ;
+	int ntfs ;
 	
 	char * loop_path = NULL ;
+
+	/*
+	 * zuluCryptGetFileSystemFromDevice() is defined in ./mount_volume.c
+	 */
+	string_t fs = zuluCryptGetFileSystemFromDevice( device ) ;
 	
-	string_t fs ;
+	if( fs == StringVoid ){
+		return h ;
+	}else{
+		ntfs = StringEqual( fs,"ntfs" ) ;
+		StringDelete( &fs ) ;
+	}
 	
 	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
 		/*
 		 * zuluCryptLoopDeviceAddress() is defined in ./create_loop_device.c
 		 */
 		loop_path = zuluCryptLoopDeviceAddress( device ) ;
-		if( loop_path != NULL ){
-			device = loop_path ;
+		if( loop_path == NULL ){
+			return h ;
+		}else{
+			/*
+			 * zuluCryptGetMountPointFromPath() is defined in ./process_mountinfo.c
+			 */
+			m = zuluCryptGetMountPointFromPath( loop_path ) ;
+			StringFree( loop_path ) ;
 		}
-	}
-	
-	/*
-	 * zuluCryptGetMountPointFromPath() is defined in ./process_mountinfo.c
-	 */
-	m = zuluCryptGetMountPointFromPath( device ) ;
-	
-	if( m != NULL ){
+	}else{
 		/*
-		 * zuluCryptGetFileSystemFromDevice() is defined in ./mount_volume.c
+		 * zuluCryptGetMountPointFromPath() is defined in ./process_mountinfo.c
 		 */
-		fs = zuluCryptGetFileSystemFromDevice( device ) ;
-		
-		if( StringEqual( fs,"ntfs" ) ){
+		m = zuluCryptGetMountPointFromPath( device ) ;
+	}
+
+	if( m != NULL ){
+		if( ntfs ){
 			/*
 			 * This is a workaround for ntfs file system.
 			 * In my system,the "mount" command seems to ignore the "-n" option and mtab
@@ -115,8 +128,6 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 		}else{
 			h = _unmount_volume( m ) ;
 		}
-		
-		StringDelete( &fs ) ;
 		
 		if( h == 0 ){
 			if( m_point != NULL ){
@@ -132,8 +143,6 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 	if( h != 0 && h != 3 && h != 4 ){
 		h = 2 ;
 	}
-	
-	StringFree( loop_path ) ;
 	
 	return h ;
 }
