@@ -20,7 +20,6 @@
 #include "includes.h"
 
 #include <sys/mount.h>
-#include <mntent.h>
 #include <blkid/blkid.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -254,17 +253,7 @@ string_t zuluCryptGetFileSystemFromDevice( const char * device )
 	return st ;
 }
 
-int zuluCryptMtabIsAtEtc( void )
-{
-	struct stat st ;
-	if( stat( "/etc/mtab",&st ) == 0 ){
-		return S_ISREG( st.st_mode ) ;
-	}else{
-		return 0 ;
-	}
-}
-
-const char * zuluCryptDecodeMtabEntry( string_t st )
+const char * zuluCryptDecodeMountEntry( string_t st )
 {
 	StringReplaceString( st,"\\012","\n" ) ;
 	StringReplaceString( st,"\\040"," " ) ;
@@ -366,56 +355,7 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 		}
 	}else{
 		h = mount_volume( &mst ) ;
-	
-		if( h == 0 && zuluCryptMtabIsAtEtc() ){
-			_mount_options( mst.m_flags,opts ) ;
-			
-			if( StringPrefixMatch( mst.device,"/dev/loop",9 ) ){
-				mst.opts = ( char * ) StringMultipleAppend( *opts,",loop=",mst.device,END ) ;
-			}else{
-				mst.opts = ( char * ) StringContent( *opts ) ;
-			}
-			zuluCryptAddEntryToMtab( &mst ) ;
-		}
 	}
 
 	return zuluExit( h,fd,stl ) ;
-}
-
-int zuluCryptAddEntryToMtab( m_struct * mst )
-{
-	int h ;
-	struct mntent mt  ;
-	
-	FILE * f ;
-#if USE_NEW_LIBMOUNT_API
-	struct libmnt_lock * m_lock ;
-#else
-	mnt_lock * m_lock ;
-#endif		
-	m_lock = mnt_new_lock( "/etc/mtab~",getpid() ) ;
-	
-	if( mnt_lock_file( m_lock ) != 0 ){
-		h = 12 ;
-	}else{
-		f = setmntent( "/etc/mtab","a" ) ;
-		mt.mnt_dir    = ( char * ) mst->m_point ;
-		mt.mnt_type   = ( char * ) mst->fs ;
-			
-		if( StringPrefixMatch( mst->device,"/dev/loop",9 ) ){
-			mt.mnt_fsname = ( char * ) mst->original_device ;
-		}else{
-			mt.mnt_fsname = ( char * ) mst->device ;
-		}
-		
-		mt.mnt_opts   = ( char * ) mst->opts ;
-		mt.mnt_freq   = 0 ;
-		mt.mnt_passno = 0 ;
-		addmntent( f,&mt ) ;
-		endmntent( f ) ;
-		mnt_unlock_file( m_lock ) ;
-		h = 0 ;
-	}
-	mnt_free_lock( m_lock ) ;
-	return h ;
 }

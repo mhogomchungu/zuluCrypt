@@ -119,7 +119,7 @@
  set_target_properties( zuluCrypt     PROPERTIES SOVERSION ${LIB_VERSION} )
  set_target_properties( zuluCrypt-exe PROPERTIES SOVERSION ${LIB_VERSION} )
  
- TARGET_LINK_LIBRARIES( zuluCrypt     String StringList Process ${cryptsetup_lib} ${blkid} ${mountLibrary} ${TCPLAY_LIB} ${TCPLAY_LIBRARIES} ) 
+ TARGET_LINK_LIBRARIES( zuluCrypt     String StringList Process ${cryptsetup_lib} ${blkid} ${TCPLAY_LIB} ${TCPLAY_LIBRARIES} )
  TARGET_LINK_LIBRARIES( zuluCrypt-exe zuluCrypt zuluCryptPluginManager ) 
  
  #TARGET_LINK_LIBRARIES( zuluCrypt-static String StringList Process ) 
@@ -184,7 +184,7 @@ includedir=${CMAKE_INSTALL_PREFIX}/include
 Name: libzuluCrypt
 Description: a zuluCrypt library,a front end to cryptsetup
 Version: ${LIB_VERSION}
-Libs: -L${LIB_PATH} -lcryptsetup -lzuluCrypt -lzuluCrypt-exe -lzuluCryptPluginManager -lblkid -lmount ${TCPLAY_LIB} -L${TCPLAY_LIBDIR} -L${BLKID_LIBDIR} -L${CRYPTSETUP_LIBDIR} -L${LIBMOUNT_LIBDIR}
+Libs: -L${LIB_PATH} -lcryptsetup -lzuluCrypt -lzuluCrypt-exe -lzuluCryptPluginManager -lblkid -lmount ${TCPLAY_LIB} -L${TCPLAY_LIBDIR} -L${BLKID_LIBDIR} -L${CRYPTSETUP_LIBDIR}
 Cflags: -I${CMAKE_INSTALL_PREFIX}/include
 \n")
  

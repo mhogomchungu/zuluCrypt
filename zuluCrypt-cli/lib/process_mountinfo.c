@@ -365,9 +365,9 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 		if( k != -1 && StringHasNoComponent( c,"-NAAN-" ) ) {
 			q = StringListStringAt( stx,0 ) ;
 			/*
-			 * zuluCryptDecodeMtabEntry() is defined in mount_volume.c
+			 * zuluCryptDecodeMountEntry() is defined in mount_volume.c
 			 */
-			d = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;
+			d = zuluCryptDecodeMountEntry( StringListStringAt( stx,1 ) ) ;
 			
 			/*
 			 * zuluCryptGetVolumeTypeFromMapperPath() is defined in status.c
@@ -381,7 +381,7 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 		}else{
 			g = zuluCryptVolumeDeviceName( StringListContentAt( stx,0 ) ) ;
 			if( g != NULL ){
-				d = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;
+				d = zuluCryptDecodeMountEntry( StringListStringAt( stx,1 ) ) ;
 				/*
 				 * zuluCryptGetVolumeTypeFromMapperPath() is defined in status.c
 				 */
@@ -460,7 +460,7 @@ char * zuluCryptGetMountPointFromPath( const char * path )
 		}else{
 			st = StringListCopyStringAt( stl,1 ) ;
 			StringListDelete( &stl ) ;
-			zuluCryptDecodeMtabEntry( st ) ;
+			zuluCryptDecodeMountEntry( st ) ;
 			return StringDeleteHandle( &st ) ;
 		}
 	}

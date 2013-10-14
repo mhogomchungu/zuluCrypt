@@ -52,60 +52,6 @@ static inline int _unmount_volume( const char * m_dir )
 	return h ;
 }
 
-int zuluCrypRemoveEntryFromMtab( const char * m_point ) 
-{
-#if USE_NEW_LIBMOUNT_API
-	struct libmnt_lock * lock ;
-#else
-	mnt_lock * lock ;
-#endif
-	struct mntent * mt ;
-	
-	FILE * f ;
-	FILE * g ;	
-	
-	size_t dir_len = strlen( m_point ) ;
-	
-	int h ;
-
-	lock = mnt_new_lock( "/etc/mtab~",getpid() ) ;
-	
-	f = setmntent( "/etc/mtab","r" ) ;
-	
-	if( mnt_lock_file( lock ) != 0 ){
-		h = 4 ;
-	}else{
-		g = setmntent( "/etc/mtab-zuluCrypt","w" ) ;
-		while( ( mt = getmntent( f ) ) != NULL ){
-			if( StringPrefixMatch( mt->mnt_dir,m_point,dir_len ) ){
-				/*
-				 * an entry we want to delete,skip it
-				 */
-				;
-			}else{
-				addmntent( g,mt ) ;
-			}
-		}
-
-		endmntent( g ) ;
-		rename( "/etc/mtab-zuluCrypt","/etc/mtab" ) ;
-		chown( "/etc/mtab",0,0 ) ;
-		chmod( "/etc/mtab",S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH ) ;
-		mnt_unlock_file( lock ) ;
-		h = 0 ;
-	}
-	
-	endmntent( f ) ;
-	mnt_free_lock( lock ) ;
-	return h ;
-}
-
-int zuluCrypRemoveEntryFromMtab_1( const char * device ) 
-{
-	if( device ){;}
-	return 0 ;
-}
-
 int zuluCryptUnmountVolume( const char * device,char ** m_point )
 {
 	char * m ;
@@ -131,12 +77,6 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 	if( m != NULL ){
 		h = _unmount_volume( m ) ;
 		if( h == 0 ){
-			/*
-			 *zuluCryptMtabIsAtEtc() is defined in ./mount_volume.c 
-			 */
-			if( zuluCryptMtabIsAtEtc() ){
-				h = zuluCrypRemoveEntryFromMtab( m ) ;
-			}
 			if( m_point != NULL ){
 				*m_point = m ;
 			}else{

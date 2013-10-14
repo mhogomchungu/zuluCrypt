@@ -233,10 +233,10 @@ static void _printDeviceProperties( string_t entry,void * s )
 				
 			StringListRemoveString( stz,x ) ;
 			/*
-			 * zuluCryptDecodeMtabEntry() is defined in ../zuluCrypt-cli/lib/mount_volume.c.c
+			 * zuluCryptDecodeMountEntry() is defined in ../zuluCrypt-cli/lib/mount_volume.c.c
 			 * it decodes space,tab,new line and backslash characters since they are written differently in "/etc/mtab" 
 			 */
-			f = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;
+			f = zuluCryptDecodeMountEntry( StringListStringAt( stx,1 ) ) ;
 			zuluMountPartitionProperties( x,e,q,f ) ;
 			free( x ) ;
 			StringDelete( &st ) ;
@@ -244,8 +244,8 @@ static void _printDeviceProperties( string_t entry,void * s )
 	}else{
 		StringListRemoveString( stz,q ) ;
 		
-		e = zuluCryptDecodeMtabEntry( StringListStringAt( stx,0 ) ) ;
-		f = zuluCryptDecodeMtabEntry( StringListStringAt( stx,1 ) ) ;
+		e = zuluCryptDecodeMountEntry( StringListStringAt( stx,0 ) ) ;
+		f = zuluCryptDecodeMountEntry( StringListStringAt( stx,1 ) ) ;
 		
 		zuluMountPartitionProperties( e,NULL,e,f ) ;
 	}

@@ -93,10 +93,10 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 		st = StringCopy( xt ) ;
 		
 		/*
-		 * zuluCryptDecodeMtabEntry() is defined in ../lib/mount_volume.c
+		 * zuluCryptDecodeMountEntry() is defined in ../lib/mount_volume.c
 		 * g will contain something like "/run/media/private/$USER/sdc1"
 		 */
-		g = zuluCryptDecodeMtabEntry( st ) ;
+		g = zuluCryptDecodeMountEntry( st ) ;
 		
 		if( allowedUser ){
 			/*
@@ -147,7 +147,7 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 				e = StringListContentAt( stx,index ) ;
 				
 				if( StringPrefixEqual( e,device ) ){
-					f = zuluCryptDecodeMtabEntry( xt ) ;
+					f = zuluCryptDecodeMountEntry( xt ) ;
 					/*
 					 * good,the device associated with the shared mount is the same as that of the
 					 * private mount,try to unmount it.
@@ -158,10 +158,6 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 						 * try to unmount 3 times before giving up
 						 */
 						if( umount( f ) == 0 ){
-							/*
-							 * zuluCrypRemoveEntryFromMtab() is defined in ../lib/unmount_volume.c
-							 */
-							zuluCrypRemoveEntryFromMtab( f ) ;
 							rmdir( f ) ;
 							r = 0 ;
 							break ;
@@ -189,45 +185,6 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 	
 	zuluCryptSecurityDropElevatedPrivileges() ;
 	return r ;
-}
-
-static int _bind_mount( const char * device,const char * o_path,const char * m_path,stringList_t stl,unsigned long flags )
-{
-	/*
-	 * str structure is defined in ../lib/includes.h
-	 */
-	m_struct str ;
-	string_t entry ;
-	
-	int xt = mount( o_path,m_path,"",flags|MS_BIND,"" ) ;
-	
-	if( xt == 0 ){
-		/*
-		 * zuluCryptGetMtabEntry() is defined in ../lib/process_mountinfo.c
-		 */
-		entry = zuluCryptGetMtabEntry_1( stl,device ) ;
-		if( entry != StringVoid ){
-			/*
-			 * zuluCryptMtabIsAtEtc() is defined in ../lib/mount_volume.c
-			 */
-			if( zuluCryptMtabIsAtEtc() ){
-				stl = StringListStringSplit( entry,' ' ) ;
-				str.device          = device ;
-				str.original_device = StringListContentAt( stl,0 ) ;
-				str.m_point         = m_path ;
-				str.fs              = StringListContentAt( stl,2 ) ;
-				str.opts            = StringPrepend( StringListStringAt( stl,3 ),"bind," ) ;
-				/*
-				 * zuluCryptAddEntryToMtab() is defined in ../lib/mount_volume.c
-				 */
-				zuluCryptAddEntryToMtab( &str ) ;
-				StringListDelete( &stl ) ;
-			}
-			StringDelete( &entry ) ;
-		}
-	}
-	
-	return xt ;
 }
 
 int zuluCryptBindSharedMountPointPathTaken( string_t path )
@@ -259,6 +216,7 @@ int zuluCryptBindMountVolume( const char * device,string_t z_path,unsigned long 
 	if( index == -1 ){
 		return 1 ;
 	}
+	if( device ){;}
 	
 	zuluCryptSecurityGainElevatedPrivileges() ;
 	/*
@@ -269,22 +227,22 @@ int zuluCryptBindMountVolume( const char * device,string_t z_path,unsigned long 
 	path = String( "/run/media/public/" ) ;
 	m_path = StringAppend( path,o_path + index + 1 ) ;
 	
-	#define PATH_DOES_NOT_EXIST( x ) stat( x,&st ) != 0
-	#define PATH_DOES_EXIST( x ) stat( x,&st ) == 0
+	#define path_does_not_exist( x ) stat( x,&st ) != 0
+	#define path_does_exist( x ) stat( x,&st ) == 0
 	
-	if( PATH_DOES_NOT_EXIST( "/run" ) ){
+	if( path_does_not_exist( "/run" ) ){
 		mkdir( "/run",mode ) ;
 		chown( "/run",0,0 ) ;
 	}
-	if( PATH_DOES_NOT_EXIST( "/run/media" ) ){
+	if( path_does_not_exist( "/run/media" ) ){
 		mkdir( "/run/media",mode ) ;
 		chown( "/run/media",0,0 ) ;
 	}
-	if( PATH_DOES_NOT_EXIST( "/run/media/public" ) ){
+	if( path_does_not_exist( "/run/media/public" ) ){
 		mkdir( "/run/media/public",mode ) ;
 		chown( "/run/media/public",0,0 ) ;
 	}
-	if( PATH_DOES_EXIST( m_path ) ){
+	if( path_does_exist( m_path ) ){
 		/*
 		 * bind mount point exists,this will happen if the mount point is already taken or a mount point folder
 		 * was not autodeleted for some reason 
@@ -302,13 +260,13 @@ int zuluCryptBindMountVolume( const char * device,string_t z_path,unsigned long 
 			/*
 			 * the mount point folder is there for some reason but is not being used.
 			 */
-			xt = _bind_mount( device,o_path,m_path,stl,flags ) ;
+			xt = mount( o_path,m_path,"",flags|MS_BIND,"" ) ;
 		}
 		StringDelete( &tmp ) ;
 	}else{
 		mkdir( m_path,S_IRWXU | S_IRWXG | S_IRWXG ) ;
 		chown( m_path,0,0 ) ;
-		xt = _bind_mount( device,o_path,m_path,stl,flags ) ;
+		xt = mount( o_path,m_path,"",flags|MS_BIND,"" ) ;
 		if( xt != 0 ){
 			rmdir( m_path ) ;
 		}

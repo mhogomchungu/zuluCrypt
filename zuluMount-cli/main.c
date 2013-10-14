@@ -292,9 +292,9 @@ static int _checkUnmount( const char * device,uid_t uid )
 			
 			st = StringListStringAt( stl,1 ) ;
 			/*
-			 * zuluCryptDecodeMtabEntry() is defined in ../zuluCrypt-cli/lib/mount_volume.c
+			 * zuluCryptDecodeMountEntry() is defined in ../zuluCrypt-cli/lib/mount_volume.c
 			 */
-			g  = zuluCryptDecodeMtabEntry( st ) ;
+			g  = zuluCryptDecodeMountEntry( st ) ;
 			/*
 			 * zuluCryptMountPointPrefixMatch() is defined in ../zuluCrypt-cli/lib/create_mount_point.c
 			 */

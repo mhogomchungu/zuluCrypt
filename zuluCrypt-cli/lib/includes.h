@@ -67,16 +67,9 @@ int zuluCryptPathIsValid( const char * path ) ;
 int zuluCryptPathIsNotValid( const char * path ) ;
 
 /*
- * this function is deined in ../lib/mount_volume.c
- * return 1 if mtab is a file and is located at /etc
- * return 0 otherwise
+ * zuluCryptDecodeMountEntry() is defined in mount_volume.c
  */
-int zuluCryptMtabIsAtEtc( void ) ;
-
-/*
- * zuluCryptDecodeMtabEntry() is defined in mount_volume.c
- */
-const char * zuluCryptDecodeMtabEntry( string_t ) ;
+const char * zuluCryptDecodeMountEntry( string_t ) ;
 /*
  *this function is deined in ../lib/process_mountinfo.c 
  */
@@ -253,15 +246,6 @@ stringList_t zuluCryptGetMountInfoList( void ) ;
  * this function is defined in status.c
  */
 char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper ) ;
-
-/*
- * this function is defined in create_tcrypt.c
- */
-
-/*
- * this function is defined in mount_volume.c
- */
-int zuluCryptAddEntryToMtab( m_struct * mst ) ;
 
 /*
  * this function is defined in create_volume.c

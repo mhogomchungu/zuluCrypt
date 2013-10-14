@@ -1,7 +1,7 @@
 
 
 This tool depends on the following packages installed to build, their precise name may differ in your distro.
-1. libmount-devel
+1.
 2. libblkid-devel
 3. Qt-devel( required if building GUI components )
 4. gcc

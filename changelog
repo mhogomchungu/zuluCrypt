@@ -151,3 +151,4 @@ version 4.6.6
 -- add compile time option to use mount points in user home directory instead of "/run/media/private"   
 -- NOTE: changes in management of wallets are not backward compatible and hence volumes will have to be readded after the update.My
    apologies for the inconvenience.
+-- drop support for updating /etc/mtab and remove libmount as a required dependency

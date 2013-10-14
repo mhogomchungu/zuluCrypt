@@ -133,13 +133,13 @@ static int _tcrypt_open_using_keyfile( const char * device,const char * mapper,u
 		return 1 ;
 	}
 	
-	#define PATH_DOES_NOT_EXIST( x ) stat( x,&statstr ) != 0
+	#define path_does_not_exist( x ) stat( x,&statstr ) != 0
 	
-	if( PATH_DOES_NOT_EXIST( "/run" ) ){
+	if( path_does_not_exist( "/run" ) ){
 		mkdir( "/run",S_IRWXU ) ;
 		chown( "/run",0,0 ) ;
 	}
-	if( PATH_DOES_NOT_EXIST( "/run/zuluCrypt" ) ){
+	if( path_does_not_exist( "/run/zuluCrypt" ) ){
 		mkdir( "/run/zuluCrypt",S_IRWXU ) ;
 		chown( "/run/zuluCrypt",0,0 ) ;
 	}
