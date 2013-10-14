@@ -260,7 +260,6 @@ void passwordDialog::pluginOption()
 	m_ui->pushButtonPassPhraseFromFile->setToolTip( tr( "choose a module from the file system" ) ) ;
 	m_ui->PassPhraseField->setToolTip( tr( "enter a module name to use to get passphrase" ) ) ;
 	m_ui->PassPhraseField->setEchoMode( QLineEdit::Normal ) ;
-	m_ui->PassPhraseField->setText( INTERNAL_WALLET ) ;
 	m_ui->pushButtonPassPhraseFromFile->setEnabled( false ) ;
 	m_ui->labelPassphrase->setText( tr( "plugin name" ) ) ;
 	m_ui->pushButtonPassPhraseFromFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) ) ;
@@ -269,6 +268,7 @@ void passwordDialog::pluginOption()
 	m_ui->pushButtonPlugin->setToolTip( tr( "select a key module" ) ) ;
 	m_ui->pbKeyOption->setEnabled( true ) ;
 	m_ui->PassPhraseField->setEnabled( false ) ;
+	m_ui->PassPhraseField->setText( INTERNAL_WALLET ) ;
 }
 
 void passwordDialog::passphraseOption()

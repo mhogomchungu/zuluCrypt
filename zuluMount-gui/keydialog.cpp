@@ -430,9 +430,9 @@ void keyDialog::rbPlugIn( bool opt )
 		m_ui->pbkeyOption->setIcon( QIcon( QString( ":/module.png" ) ) ) ;
 		m_ui->lineEditKey->setEchoMode( QLineEdit::Normal ) ;
 		m_ui->label->setText( tr( "plugin name" ) ) ;
-		m_ui->lineEditKey->setText( INTERNAL_WALLET ) ;
 		m_ui->pbkeyOption->setEnabled( true ) ;
 		m_ui->lineEditKey->setEnabled( false ) ;
+		m_ui->lineEditKey->setText( INTERNAL_WALLET ) ;
 	}
 }
 
