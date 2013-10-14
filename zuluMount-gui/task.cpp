@@ -24,6 +24,8 @@
 #include <QThreadPool>
 #include <QDir>
 
+#include "../zuluCrypt-gui/lxqt_wallet/frontend/lxqt_wallet.h"
+#include "../zuluCrypt-gui/utility.h"
 #include "bin_path.h"
 #include <unistd.h>
 
@@ -72,6 +74,16 @@ void Task::setMountPointOpener( const QString& opener )
 	m_folderOpener = opener ;
 }
 
+void Task::setWallet( lxqt::Wallet::Wallet * wallet )
+{
+	m_wallet = wallet ;
+}
+
+void Task::setVolumeID( const QString& id )
+{
+	m_volumeID = id ;
+}
+
 void Task::openPathInFileManager()
 {
 	QProcess p ;
@@ -96,6 +108,29 @@ void Task::run()
 		case Task::systemdevice        : return this->checkIfSystemDevice() ;
 		case Task::checkUnMount        : return this->checkUnmount() ;
 		case Task::openMountPoint      : return this->openMountPointTask() ;
+		case Task::getKey              : return this->getKeyTask() ;
+	}
+}
+
+void Task::getKeyTask()
+{
+	m_key.clear() ;
+
+	if( m_volumeID.startsWith( QString( "UUID=" ) ) ){
+		m_key = m_wallet->readValue( m_volumeID ) ;
+		if( m_key.isEmpty() ){
+			m_key = m_wallet->readValue( m_volumeID.replace( "\"","" ) ) ;
+		}
+	}else{
+		QString uuid = utility::getUUIDFromPath( m_volumeID ) ;
+		if( uuid.isEmpty() ){
+			m_key = m_wallet->readValue( m_volumeID ) ;
+		}else{
+			m_key = m_wallet->readValue( uuid ) ;
+			if( m_key.isEmpty() ){
+				m_key = m_wallet->readValue( m_volumeID ) ;
+			}
+		}
 	}
 }
 
@@ -316,4 +351,5 @@ Task::~Task()
 {
 	emit done() ;
 	emit errorStatus( m_exitCode,m_exitStatus,m_startError ) ;
+	emit key( m_key ) ;
 }

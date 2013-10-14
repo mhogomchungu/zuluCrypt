@@ -53,7 +53,8 @@ public:
 		volumeTask,
 		addKey,
 		deleteKey,
-		getAllKeys
+		getAllKeys,
+		getKey
 	}action ;
 
 	explicit Task( const QString& exe ) ;
@@ -85,6 +86,7 @@ private:
 	void addKeyTask( void ) ;
 	void deleteKeyTask( void ) ;
 	void getAllKeysTask( void ) ;
+	void getKeyTask( void ) ;
 	QString m_exe ;
 	QString m_output ;
 	int m_status ;

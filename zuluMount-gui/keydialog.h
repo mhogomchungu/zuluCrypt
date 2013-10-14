@@ -71,6 +71,7 @@ private slots:
 	void fileManagerOpenStatus( int exitCode, int exitStatus,int startError ) ;
 	void walletIsOpen( bool ) ;
 	void getPassWord( QString ) ;
+	void getPassWordFromWallet( QString ) ;
 private:
 	void openVolume( void ) ;
 	void enableAll( void ) ;

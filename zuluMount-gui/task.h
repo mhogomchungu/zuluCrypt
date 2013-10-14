@@ -25,11 +25,17 @@
 #include <QString>
 #include <QStringList>
 
+namespace lxqt{
+namespace Wallet {
+class Wallet ;
+}
+}
+
 class Task : public QObject,public QRunnable
 {
 	Q_OBJECT
 public:
-	Task( void ) ;
+	Task() ;
 	~Task() ;
 	enum Action{
 		Update,
@@ -43,9 +49,12 @@ public:
 		systemdevice,
 		checkUnMount,
 		VolumeType,
-		openMountPoint
+		openMountPoint,
+		getKey
 	};
 	void start( Task::Action ) ;
+	void setWallet( lxqt::Wallet::Wallet * ) ;
+	void setVolumeID( const QString& ) ;
 	void setMode( const QString& ) ;
 	void setDevice( const QString& ) ;
 	void setType( const QString& ) ;
@@ -64,6 +73,7 @@ signals:
 	void getVolumeSystemInfo( QStringList ) ;
 	void getVolumeInfo( QStringList ) ;
 	void done( void ) ;
+	void key( QString ) ;
 private:
 	void openMountPointTask( void ) ;
 	void checkIfSystemDevice( void ) ;
@@ -80,7 +90,11 @@ private:
 	void getVolumeType( void ) ;
 	void getVolumeSystemType( void ) ;
 	void checkUnmount( void ) ;
+	void getKeyTask( void ) ;
+	lxqt::Wallet::Wallet * m_wallet ;
 	Task::Action m_action ;
+	QString m_volumeID ;
+	QString m_key ;
 	QString m_device ;
 	QString m_point ;
 	QString m_keySource ;

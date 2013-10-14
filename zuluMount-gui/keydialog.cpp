@@ -291,46 +291,33 @@ void keyDialog::slotMountComplete( int st,QString m )
 	}
 }
 
-void keyDialog::walletIsOpen( bool opened )
+void keyDialog::getPassWordFromWallet( QString key )
 {
-	if( opened ){
-
-		QString key ;
-		QString id = m_path ;
-
-		if( id.startsWith( QString( "UUID=" ) ) ){
-			key = m_wallet->readValue( id ) ;
-			if( key.isEmpty() ){
-				key = m_wallet->readValue( id.replace( "\"","" ) ) ;
-			}
-		}else{
-			QString uuid = utility::getUUIDFromPath( id ) ;
-			if( uuid.isEmpty() ){
-				key = m_wallet->readValue( id ) ;
-			}else{
-				key = m_wallet->readValue( uuid ) ;
-				if( key.isEmpty() ){
-					key = m_wallet->readValue( id ) ;
-				}
-			}
-		}
-
-		if( key.isEmpty() ){
-			DialogMsg msg( this ) ;
-			msg.ShowUIOK( tr( "ERROR" ),tr( "the volume does not appear to have an entry in the wallet" ) ) ;
-			this->enableAll() ;
-		}else{
-			m_key = key ;
-			this->openVolume() ;
-		}
-	}else{
-		_internalPassWord.clear() ;
+	if( key.isEmpty() ){
+		DialogMsg msg( this ) ;
+		msg.ShowUIOK( tr( "ERROR" ),tr( "the volume does not appear to have an entry in the wallet" ) ) ;
 		this->enableAll() ;
-		//DialogMsg msg( this ) ;
-		//msg.ShowUIOK( tr( "ERROR" ),tr( "failed to open wallet" ) ) ;
+	}else{
+		m_key = key ;
+		this->openVolume() ;
 	}
 
 	m_wallet->deleteLater() ;
+}
+
+void keyDialog::walletIsOpen( bool opened )
+{
+	if( opened ){
+		Task * t = new Task() ;
+		t->setWallet( m_wallet ) ;
+		t->setVolumeID( m_path ) ;
+		connect( t,SIGNAL( key( QString ) ),this,SLOT( getPassWordFromWallet( QString ) ) ) ;
+		t->start( Task::getKey ) ;
+	}else{
+		_internalPassWord.clear() ;
+		this->enableAll() ;
+		m_wallet->deleteLater() ;
+	}
 }
 
 void keyDialog::getPassWord( QString password )

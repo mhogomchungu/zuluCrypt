@@ -27,6 +27,7 @@
 
 #include <unistd.h>
 
+#include "utility.h"
 #include "tablewidget.h"
 #include "task.h"
 #include "../zuluCrypt-cli/constants.h"
@@ -242,6 +243,28 @@ void Task::getAllKeysTask()
 	*m_keys = m_wallet->readAllKeyValues() ;
 }
 
+void Task::getKeyTask()
+{
+	m_key.clear() ;
+
+	if( m_volumeID.startsWith( QString( "UUID=" ) ) ){
+		m_key = m_wallet->readValue( m_volumeID ) ;
+		if( m_key.isEmpty() ){
+			m_key = m_wallet->readValue( m_volumeID.replace( "\"","" ) ) ;
+		}
+	}else{
+		QString uuid = utility::getUUIDFromPath( m_volumeID ) ;
+		if( uuid.isEmpty() ){
+			m_key = m_wallet->readValue( m_volumeID ) ;
+		}else{
+			m_key = m_wallet->readValue( uuid ) ;
+			if( m_key.isEmpty() ){
+				m_key = m_wallet->readValue( m_volumeID ) ;
+			}
+		}
+	}
+}
+
 void Task::run()
 {
 	switch( m_action ){
@@ -255,6 +278,7 @@ void Task::run()
 		case Task::addKey               : return this->addKeyTask() ;
 		case Task::deleteKey            : return this->deleteKeyTask() ;
 		case Task::getAllKeys           : return this->getAllKeysTask() ;
+		case Task::getKey               : return this->getKeyTask() ;
 	}
 }
 
@@ -263,6 +287,10 @@ Task::~Task()
 	emit finished() ;
 	emit finished( m_status ) ;
 	emit finished( m_status,m_output ) ;
-	emit finished( m_volumeProperties ) ;
+	if( m_action == Task::getKey ){
+		emit finished( m_key ) ;
+	}else if( m_action == Task::volumePropertiesTask ){
+		emit finished( m_volumeProperties ) ;
+	}
 	emit errorStatus( m_exitCode,m_exitStatus,m_startError ) ;
 }
