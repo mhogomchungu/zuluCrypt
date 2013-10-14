@@ -89,28 +89,19 @@ int zuluCryptPartitionIsMounted( const char * device ) ;
 #define MOUNTOPTIONS 3
 #define DUMPOPTION   4
 #define FSCKOPTION   5
+
 string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos,uid_t uid ) ;
-
-/*
- * zuluCrypRemoveEntryFromMtab() is defined in ./unmount_volume.c
- */
-int zuluCrypRemoveEntryFromMtab( const char * m_path ) ;
-
-/*
- * zuluCrypRemoveEntryFromMtab_1() is defined in ./unmount_volume.c
- */
-int zuluCrypRemoveEntryFromMtab_1( const char * device ) ;
 
 /*
  * this function is defined in process_mountinfo.c
  */
 
-string_t zuluCryptGetMtabEntry( const char * path ) ;
+string_t zuluCryptGetMountEntry( const char * path ) ;
 
 /*
  * this function is defined in process_mountinfo.c 
  */
-string_t zuluCryptGetMtabEntry_1( stringList_t stl,const char * path ) ;
+string_t zuluCryptGetMountEntry_1( stringList_t stl,const char * path ) ;
 
 /*
  * this function is defined in is_luks.c

@@ -22,11 +22,6 @@
 #include <dirent.h>
 #include <sys/stat.h>
 
-/*
- * below header file does not ship with the source code, it is created at configure time 
- */
-#include "libmount_header.h"
-
 char * zuluCryptResolveDevRoot( void )
 {
 	const char * e ;
@@ -400,15 +395,15 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 	return list ;
 }
 
-string_t zuluCryptGetMtabEntry( const char * path )
+string_t zuluCryptGetMountEntry( const char * path )
 {
 	stringList_t stl = zuluCryptGetMountInfoList() ;
-	string_t st = zuluCryptGetMtabEntry_1( stl,path ) ;
+	string_t st = zuluCryptGetMountEntry_1( stl,path ) ;
 	StringListDelete( &stl ) ;
 	return st ;
 }
 
-string_t zuluCryptGetMtabEntry_1( stringList_t stl,const char * path )
+string_t zuluCryptGetMountEntry_1( stringList_t stl,const char * path )
 {
 	string_t st ;
 	string_t entry = StringVoid ;
@@ -447,7 +442,7 @@ string_t zuluCryptGetMtabEntry_1( stringList_t stl,const char * path )
 
 char * zuluCryptGetMountPointFromPath( const char * path )
 {
-	string_t st = zuluCryptGetMtabEntry( path ) ;
+	string_t st = zuluCryptGetMountEntry( path ) ;
 	stringList_t stl ;
 	
 	if( st == StringVoid ){

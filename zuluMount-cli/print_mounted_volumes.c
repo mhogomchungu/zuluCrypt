@@ -22,13 +22,9 @@
 #include <sys/statvfs.h>
 #include <blkid/blkid.h>
 #include <stdint.h>
+#include <stdio.h>
+
 #include "../zuluCrypt-cli/lib/includes.h"
-
-/*
- * below header file is generated at configure time
- */
-#include "libmount_header.h"
-
 #include "../zuluCrypt-cli/bin/includes.h"
 
 stringList_t zuluCryptPartitionList( void ) ;

@@ -25,10 +25,6 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-/*
- * below header file does not ship with the source code, it is created at configure time
- * */
-#include "libmount_header.h"
 
 static inline int _unmount_volume( const char * m_dir )
 {
@@ -59,6 +55,10 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 	
 	char * loop_path = NULL ;
 	
+	string_t fs ;
+	
+	process_t p ;
+	
 	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
 		/*
 		 * zuluCryptLoopDeviceAddress() is defined in ./create_loop_device.c
@@ -73,9 +73,31 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 	 * zuluCryptGetMountPointFromPath() is defined in ./process_mountinfo.c
 	 */
 	m = zuluCryptGetMountPointFromPath( device ) ;
-
+	
 	if( m != NULL ){
-		h = _unmount_volume( m ) ;
+		/*
+		 * zuluCryptGetFileSystemFromDevice() is defined in ./mount_volume.c
+		 */
+		fs = zuluCryptGetFileSystemFromDevice( device ) ;
+		
+		if( StringEqual( fs,"ntfs" ) ){
+			/*
+			 * This is a workaround for ntfs file system.
+			 * In my system,the "mount" command seems to ignore the "-n" option and mtab
+			 * is getting updated and hence we unmount using umount command to  let it
+			 * update mtab since we currently do not support mtab.
+			 */
+			p = Process( ZULUCRYPTumount ) ;
+			ProcessSetArgumentList( p,m,ENDLIST ) ;
+			ProcessStart( p ) ;
+			h = ProcessExitStatus( p ) ;
+			ProcessDelete( &p ) ;
+		}else{
+			h = _unmount_volume( m ) ;
+		}
+		
+		StringDelete( &fs ) ;
+		
 		if( h == 0 ){
 			if( m_point != NULL ){
 				*m_point = m ;
@@ -86,7 +108,7 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 			StringFree( m ) ;
 		}
 	}
-		
+	
 	if( h != 0 && h != 3 && h != 4 ){
 		h = 2 ;
 	}

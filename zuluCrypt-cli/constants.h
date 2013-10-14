@@ -22,9 +22,10 @@
 
 #include "bin_path.h"
 
-#define ZULUCRYPTmkfs           "/sbin/mkfs" 
-#define ZULUCRYPTmount          "/bin/mount"  
-#define ZULUCRYPTmkfs_dir      	"/sbin" 
+#define ZULUCRYPTmkfs           "/sbin/mkfs"
+#define ZULUCRYPTmount          "/bin/mount"
+#define ZULUCRYPTumount         "/bin/umount"
+#define ZULUCRYPTmkfs_dir      	"/sbin"
 #define ZULUCRYPTgroupadd       "/usr/sbin/groupadd"
 
 #define ZULUCRYPTallPartitions        1

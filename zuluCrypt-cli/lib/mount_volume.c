@@ -28,11 +28,6 @@
 #include <sys/wait.h>
 #include <fcntl.h>
 
-/*
- * below header file does not ship with the source code, it is created at configure time
- * */
-#include "libmount_header.h"
-
 #define FAT_FAMILY_FS 1
 #define OTHER_FAMILY_FS 2
 
@@ -217,12 +212,12 @@ static inline int mount_ntfs( m_struct * mst )
 	string_t st = set_mount_options( mst ) ;
 	
 	_mount_options( mst->m_flags,&st ) ;
-	opts = StringReplaceString( st,",,","," );
+	opts = StringReplaceString( st,",,","," ) ;
 	
-	ProcessSetArgumentList( p,"-t","ntfs-3g","-o",opts,mst->device,mst->m_point,ENDLIST ) ;
+	ProcessSetArgumentList( p,"-n","-t","ntfs-3g","-o",opts,mst->device,mst->m_point,ENDLIST ) ;
 	ProcessStart( p ) ;
 	
-	status = ProcessExitStatus( p ) ; 
+	status = ProcessExitStatus( p ) ;
 	
 	ProcessDelete( &p ) ;
 	StringDelete( &st ) ;
