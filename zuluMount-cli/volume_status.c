@@ -23,6 +23,8 @@
 #include <blkid/blkid.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <locale.h>
+#include <libintl.h>
 
 #include "../zuluCrypt-cli/lib/includes.h"
 #include "../zuluCrypt-cli/bin/includes.h"
@@ -539,4 +541,127 @@ int zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t 
 	StringDelete( &q ) ;
 	
 	return 0 ;
+}
+
+int zuluMountUnEncryptedVolumeStatus( const char * device )
+{
+	char * e ;
+	
+	stringList_t stl ;
+		
+	string_t p ;
+	string_t q ;
+
+	int ro ;
+		
+	/*
+	 * zuluCryptGetMountEntry() is defined in ../zuluCrypt/cli/lib/process_mountinfo.c
+	 */
+	p = zuluCryptGetMountEntry( device ) ;
+	
+	stl = StringListStringSplit( p,' ' ) ;
+	
+	StringDelete( &p ) ;
+
+	p = String( "\n type:   \tNil\n cipher:   \tNil\n keysize:   \tNil\n" ) ;
+	
+	if( StringPrefixEqual( device,"/dev/loop" ) ){
+		/*
+		 * zuluCryptLoopDeviceAddress_1() is defined in ../zuluCrypt-cli/lib/create_loop_device.c
+		 */
+		e = zuluCryptLoopDeviceAddress_1( device ) ;
+		if( e != NULL ){
+			StringMultipleAppend( p," device:   \t",device,"\n loop:   \t",e,"\n offset:    \tNil",NULL ) ;
+			free( e ) ;
+		}else{
+			StringMultipleAppend( p," device:   \t",device,"\n loop:   \t",device,"\n offset:    \tNil",NULL ) ;
+		}
+	}else{
+		StringMultipleAppend( p," device:   \t",device," \n loop:   \tNil\n offset:    \tNil",NULL ) ;
+	}
+	
+	ro = StringAtLeastOneMatch_1( StringListContentAt( stl,3 ),"ro,",",ro",",ro,",NULL ) ;
+	
+	if( ro ){
+		StringAppend( p," \n mode:   \tread only\n active slots:\tNil" ) ;
+	}else{
+		StringAppend( p," \n mode:   \tread and write\n active slots:\tNil" ) ;
+	}
+	
+	zuluCryptSecurityGainElevatedPrivileges() ;
+	
+	/*
+	 * zuluCryptFileSystemProperties() is defined in ../zuluCrypt-cli/lib/status.c
+	 */
+	zuluCryptFileSystemProperties( p,device,StringListContentAt( stl,1 ) ) ;
+	
+	zuluCryptSecurityDropElevatedPrivileges() ;
+		
+	/*
+	 * zuluCryptSecurityUUIDFromPath() is defined in ../zuluCrypt/cli/bin/path_access.c
+	 */
+	e = zuluCryptUUIDFromPath( device ) ;
+	
+	if( e != NULL ){
+		q = String( "" ) ;
+		StringReplaceString( p,"\"Nil\"",StringMultipleAppend( q,"\"",e,"\"",NULL ) ) ;
+		free( e ) ;
+		StringDelete( &q ) ;
+	}
+		
+	StringPrintLine( p ) ;
+	
+	StringDelete( &p ) ;
+	
+	StringListDelete( &stl ) ;
+	
+	return 0 ;
+}
+
+int zuluMountVolumeStatus( const char * device,const char * UUID,uid_t uid )
+{
+	char * dev = NULL ;
+	int st ;
+	string_t p ;
+	const char * e ;
+	
+	if( UUID == NULL ){
+		if( StringPrefixEqual( device,"/dev/loop" ) ){
+			/*
+			 * zuluCryptLoopDeviceAddress_1() is defined in ../zuluCrypt-cli/lib/create_loop_device.c
+			 */
+			dev = zuluCryptLoopDeviceAddress_1( device ) ;
+			if( dev != NULL ){
+				st = zuluCryptEXEVolumeInfo( strrchr( dev,'/' ) + 1,dev,uid ) ;
+				free( dev ) ;		
+			}else{
+				printf( gettext( "ERROR: could not get volume properties,volume is not open or was opened by a different user\n" ) ) ;
+				st = 1 ;
+			}
+		}else{
+			st = zuluCryptEXEVolumeInfo( strrchr( device,'/' ) + 1,device,uid ) ;
+		}
+	}else{
+		p = String( UUID ) ;
+		StringRemoveString( p,"\"" ) ;
+		e = StringSubChar( p,4,'-' ) ;
+		if( StringPrefixEqual( device,"/dev/loop" ) ){
+			/*
+			 * zuluCryptLoopDeviceAddress_1() is defined in ../zuluCrypt-cli/lib/create_loop_device.c
+			 */
+			dev = zuluCryptLoopDeviceAddress_1( device ) ;
+			if( dev != NULL ){
+				st = zuluCryptEXEVolumeInfo( e,dev,uid ) ;
+				free( dev ) ;
+			}else{
+				printf( gettext( "ERROR: could not get volume properties,volume is not open or was opened by a different user" ) ) ;
+				st = 1 ;
+			}
+		}else{
+			st = zuluCryptEXEVolumeInfo( e,device,uid ) ;
+		}
+		StringDelete( &p ) ;
+	}
+	
+	return st ;
 }

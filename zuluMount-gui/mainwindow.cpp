@@ -396,11 +396,8 @@ void MainWindow::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 		QString mp_1 = QString( "/home/%1/" ).arg( utility::userName() ) ;
 		if( mt.startsWith( mp ) || mt.startsWith( mp_1 ) ){
 			connect( m.addAction( tr( "unmount" ) ),SIGNAL( triggered() ),this,SLOT( pbUmount() ) ) ;
-			if( type.startsWith( QString( "crypto" ) ) ) {
-				m.addSeparator() ;
-				connect( m.addAction( tr( "properties" ) ),SIGNAL( triggered() ),
-					 this,SLOT( volumeProperties() ) ) ;
-			}
+			m.addSeparator() ;
+			connect( m.addAction( tr( "properties" ) ),SIGNAL( triggered() ),this,SLOT( volumeProperties() ) ) ;
 			m.addSeparator() ;
 			m_sharedFolderPath = utility::sharedMountPointPath( mt ) ;
 			if( m_sharedFolderPath.isEmpty() ){

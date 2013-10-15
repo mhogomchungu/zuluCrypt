@@ -31,8 +31,8 @@
  ) 
  
  SET( BINMount
- ../zuluMount-cli/print_mounted_volumes.c
  bin/partitions.c
+ ../zuluMount-cli/volume_status.c
  ../zuluMount-cli/main.c
  ../zuluMount-cli/mount.c
  ../zuluMount-cli/umount.c

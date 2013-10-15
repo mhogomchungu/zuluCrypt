@@ -142,54 +142,6 @@ static int _zuluMountMountedList( uid_t uid )
 	return zuluMountPrintMountedVolumes( uid ) ;
 }
 
-int zuluMountVolumeStatus( const char * device,const char * UUID,uid_t uid )
-{
-	char * dev = NULL ;
-	int st ;
-	string_t p ;
-	const char * e ;
-	
-	if( UUID == NULL ){
-		if( StringPrefixEqual( device,"/dev/loop" ) ){
-			/*
-			* zuluCryptLoopDeviceAddress_1() is defined in ../zuluCrypt-cli/lib/create_loop_device.c
-			*/
-			dev = zuluCryptLoopDeviceAddress_1( device ) ;
-			if( dev != NULL ){
-				st = zuluCryptEXEVolumeInfo( strrchr( dev,'/' ) + 1,dev,uid ) ;
-				free( dev ) ;		
-			}else{
-				printf( gettext( "ERROR: could not get volume properties,volume is not open or was opened by a different user\n" ) ) ;
-				st = 1 ;
-			}
-		}else{
-			st = zuluCryptEXEVolumeInfo( strrchr( device,'/' ) + 1,device,uid ) ;
-		}
-	}else{
-		p = String( UUID ) ;
-		StringRemoveString( p,"\"" ) ;
-		e = StringSubChar( p,4,'-' ) ;
-		if( StringPrefixEqual( device,"/dev/loop" ) ){
-			/*
-			 * zuluCryptLoopDeviceAddress_1() is defined in ../zuluCrypt-cli/lib/create_loop_device.c
-			 */
-			dev = zuluCryptLoopDeviceAddress_1( device ) ;
-			if( dev != NULL ){
-				st = zuluCryptEXEVolumeInfo( e,dev,uid ) ;
-				free( dev ) ;
-			}else{
-				printf( gettext( "ERROR: could not get volume properties,volume is not open or was opened by a different user" ) ) ;
-				st = 1 ;
-			}
-		}else{
-			st = zuluCryptEXEVolumeInfo( e,device,uid ) ;
-		}
-		StringDelete( &p ) ;
-	}
-	
-	return st ;
-}
-
 static int _zuluPartitionHasCryptoFs( const char * device )
 {
 	int st ;
@@ -343,7 +295,11 @@ static int _zuluMountExe( ARGS * args )
 		return zuluMountPrintDeviceProperties( device,uuid,uid ) ;
 	}
 	if( StringsAreEqual( action,"-s" ) ){
-		return zuluMountVolumeStatus( device,uuid,uid ) ;
+		if( _zuluPartitionHasCryptoFs( device ) ){
+			return zuluMountVolumeStatus( device,uuid,uid ) ;
+		}else{
+			return zuluMountUnEncryptedVolumeStatus( device ) ;
+		}
 	}
 	if( StringsAreEqual( action,"-m" ) ){
 		if( _zuluPartitionHasCryptoFs( device ) ){
@@ -391,7 +347,8 @@ options:\n\
 
 	doc2 = gettext( "\
 -u -- unmount a volume: arguments: -d volume_path\n\
--s -- print properties of an encrypted volume: arguments: -d partition_path\n\
+-s -- print properties of a volume: arguments: -d partition_path\n\
+-k -- print properties of an un encrypted volume: arguments: -d partition_path\n\
 -M -- this option will create a mount point in \"/run/media/private/$USER\" and a publicly accessible \"mirror\" in \"/run/media/public/\'\n" ) ;
 
 	doc3 = gettext( "\

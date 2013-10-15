@@ -104,7 +104,7 @@ char * zuluCryptGetUUIDFromMapper( const char * mapper )
 	return StringDeleteHandle( &uuid ) ;
 }
 
-static void zuluCryptFileSystemProperties( string_t p,const char * mapper,const char * m_point )
+void zuluCryptFileSystemProperties( string_t p,const char * mapper,const char * m_point )
 {
 	const char * e ;
 	blkid_probe blkid ;

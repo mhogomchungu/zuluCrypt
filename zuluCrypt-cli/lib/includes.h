@@ -46,6 +46,11 @@ typedef struct{
 int zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( int fd_path,int * fd_loop,int mode,string_t * loop_device ) ;
 
 /*
+ * this function is defined in status.c
+ */
+void zuluCryptFileSystemProperties( string_t p,const char * mapper,const char * m_point ) ;
+
+/*
  * this function is defined in create_mapper_name.c
  */
 const char * zuluCryptMapperPrefix( void ) ;

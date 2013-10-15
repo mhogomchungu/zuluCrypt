@@ -148,8 +148,9 @@ void manageluksheader::pbOpenLuksHeaderBackUp()
 	QString Y ;
 	if( m_operation == QString( "restore" ) ){
 		Z = QFileDialog::getOpenFileName( this,tr( "select a file with a luks backup header" ),QDir::homePath(),0 ) ;
-		if( Z.isEmpty() )
+		if( Z.isEmpty() ){
 			return ;
+		}
 	}else{
 		Z = QFileDialog::getExistingDirectory( this,tr( "select a folder to store the header" ),QDir::homePath(),0 ) ;
 
