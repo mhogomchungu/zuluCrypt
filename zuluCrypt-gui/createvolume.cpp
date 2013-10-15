@@ -64,6 +64,7 @@ createvolume::createvolume( QWidget * parent ) :
 	connect( m_ui->rbHiddenKeyFile,SIGNAL( clicked() ),this,SLOT( rbHiddenPasssphraseFromFileClicked() ) ) ;
 	connect( m_ui->comboBoxVolumeType,SIGNAL( currentIndexChanged( int ) ),this,SLOT( volumeType( int ) ) ) ;
 	connect( m_ui->lineEditPassphrase1,SIGNAL( textChanged( QString ) ),this,SLOT( keyChanged( QString ) ) ) ;
+	connect( m_ui->lineEditHiddenKey,SIGNAL( textChanged( QString ) ),this,SLOT( keyChanged( QString ) ) ) ;
 	connect( m_ui->pbHiddenKeyFile,SIGNAL( clicked() ),this,SLOT( pbOpenHiddenKeyFile() ) ) ;
 
 	m_ui->groupBox->setEnabled( false ) ;
