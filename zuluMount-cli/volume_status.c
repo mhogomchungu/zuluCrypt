@@ -578,14 +578,13 @@ int zuluMountUnEncryptedVolumeStatus( const char * device )
 		StringMultipleAppend( p," device:   \t",device," \n loop:   \tNil\n offset:    \tNil",NULL ) ;
 	}
 	
-	if( StringPrefixEqual( StringListContentAt( stl,3 ),"ro" ) ){
+	if( StringHasAtLeastOneComponent( StringListStringAt( stl,3 ),"ro,",",ro,",",ro",NULL ) ){
 		StringAppend( p," \n mode:   \tread only\n active slots:\tNil" ) ;
 	}else{
 		StringAppend( p," \n mode:   \tread and write\n active slots:\tNil" ) ;
 	}
 	
 	zuluCryptSecurityGainElevatedPrivileges() ;
-	
 	/*
 	 * zuluCryptFileSystemProperties() is defined in ../zuluCrypt-cli/lib/status.c
 	 */

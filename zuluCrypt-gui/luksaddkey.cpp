@@ -304,7 +304,6 @@ void luksaddkey::pbAdd( void )
 	this->disableAll() ;
 
 	Task * t = new Task( exe ) ;
-
 	connect( t,SIGNAL( finished( int ) ),this,SLOT( taskFinished( int ) ) ) ;
 	t->start() ;
 }
@@ -312,10 +311,10 @@ void luksaddkey::pbAdd( void )
 void luksaddkey::keyAdded( QStringList x )
 {
 	QString success ;
-	if( !x.isEmpty() ){
-		success = tr( "key added successfully.\n%1 / %2 slots are now in use" ).arg( x.at( 0 ) ).arg( x.at( 1 ) ) ;
-	}else{
+	if( x.isEmpty() ){
 		success = tr( "key added successfully." ) ;
+	}else{
+		success = tr( "key added successfully.\n%1 / %2 slots are now in use" ).arg( x.at( 0 ) ).arg( x.at( 1 ) ) ;
 	}
 
 	DialogMsg msg( this ) ;

@@ -1110,7 +1110,7 @@ static char * StringCRC__( string_t st, char x,char y,size_t p )
 		return st->string ;
 	}
 	c = st->string - 1 + p ;
-	while ( *++c  ){
+	while( *++c ){
 		if( *c == x ){
 			*c = y ;
 		}
@@ -1186,14 +1186,15 @@ char * StringIntToString_1( char * x,size_t y,u_int64_t z )
 	char * c ;
 	if( x == NULL ){
 		return NULL ;
+	}else{
+		c =  x + y - 1  ;
+		*c-- = '\0' ;
+		do{
+			*c-- = z % 10 + '0' ;
+			z = z / 10 ;
+		}while( z != 0 ) ;
+		return ++c ;
 	}
-	c =  x + y - 1  ;
-	*c-- = '\0' ;
-	do{
-		*c-- = z % 10 + '0' ;
-		z = z / 10 ;
-	}while( z != 0 ) ;
-	return ++c ;
 }
 
 int StringEqualString( string_t x,string_t y ) 
@@ -1218,24 +1219,24 @@ int StringAtLeastOneMatch( string_t st,... )
 {
 	va_list list ;
 	int r = 0   ;
-	const char * e   ;
-	const char * f   ;
+	const char * e ;
+	const char * f ;
 	
-	if( st == StringVoid ){
-		return 0 ;
-	}
-	f = st->string ;
 	va_start( list,st ) ;
-	while( 1 ){
-		e = va_arg( list,const char * ) ;
-		if( e == NULL ){
-			break ;
-		}else if( strcmp( f,e ) == 0 ){
-			r = 1 ;
-			break ;
+	
+	if( st != StringVoid ){
+		f = st->string ;
+		while( 1 ){
+			e = va_arg( list,const char * ) ;
+			if( e == NULL ){
+				break ;
+			}else if( strcmp( f,e ) == 0 ){
+				r = 1 ;
+				break ;
+			}
 		}
 	}
-	
+
 	va_end( list ) ;
 	return r ;
 }
@@ -1248,16 +1249,65 @@ int StringAtLeastOneMatch_1( const char * x,... )
 	
 	va_start( list,x ) ;
 	
-	if( x == NULL ){
-		return 0 ;
+	if( x != NULL ){
+		while( 1 ){
+			e = va_arg( list,const char * ) ;
+			if( e == NULL ){
+				break ;
+			}else if( strcmp( x,e ) == 0 ){
+				r = 1 ;
+				break ;
+			}
+		}
 	}
-	while( 1 ){
-		e = va_arg( list,const char * ) ;
-		if( e == NULL ){
-			break ;
-		}else if( strcmp( x,e ) == 0 ){
-			r = 1 ;
-			break ;
+	
+	va_end( list ) ;
+	return r ;
+}
+
+int StringHasAtLeastOneComponent_1( const char * x,... )
+{
+	va_list list ;
+	int r = 0 ;
+	const char * e ;
+	
+	va_start( list,x ) ;
+	
+	if( x != NULL ){
+		while( 1 ){
+			e = va_arg( list,const char * ) ;
+			if( e == NULL ){
+				break ;
+			}else if( strstr( x,e ) != NULL ){
+				r = 1 ;
+				break ;
+			}
+		}
+	}
+	
+	va_end( list ) ;
+	return r ;
+}
+
+int StringHasAtLeastOneComponent( string_t st,... )
+{
+	va_list list ;
+	int r = 0 ;
+	const char * e ;
+	const char * f ;
+	
+	va_start( list,st ) ;
+	
+	if( st != StringVoid ){
+		f = st->string ;
+		while( 1 ){
+			e = va_arg( list,const char * ) ;
+			if( e == NULL ){
+				break ;
+			}else if( strstr( f,e ) != NULL ){
+				r = 1 ;
+				break ;
+			}
 		}
 	}
 	
@@ -1273,19 +1323,18 @@ int StringAtLeastOnePrefixMatch( const char * x,... )
 	
 	va_start( list,x ) ;
 	
-	if( x == NULL ){
-		return 0 ;
-	}
-	while( 1 ){
-		e = va_arg( list,const char * ) ;
-		if( e == NULL ){
-			break ;
-		}else if( strncmp( x,e,strlen( e ) ) == 0 ){
-			r = 1 ;
-			break ;
+	if( x != NULL ){
+		while( 1 ){
+			e = va_arg( list,const char * ) ;
+			if( e == NULL ){
+				break ;
+			}else if( strncmp( x,e,strlen( e ) ) == 0 ){
+				r = 1 ;
+				break ;
+			}
 		}
 	}
-	
+
 	va_end( list ) ;
 	return r ;
 }

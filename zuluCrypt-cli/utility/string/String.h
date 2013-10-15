@@ -792,6 +792,16 @@ static __inline__ int StringPrefixMatch( const char * x,const char * y,size_t z 
  */
 int StringAtLeastOnePrefixMatch( const char * x,... )  __attribute__ ( ( sentinel ) ) ;
 
+/*
+ * returns true if atleast one cstring is a component of x
+ */
+int StringHasAtLeastOneComponent_1( const char * x,... ) __attribute__ ( ( sentinel ) ) ;
+
+/*
+ * returns true if atleast one cstring is a component of a string managed by object st
+ */
+int StringHasAtLeastOneComponent( string_t st,... ) __attribute__ ( ( sentinel ) ) ;
+
 static __inline__ int StringPrefixEqual( const char * x,const char * y )
 {
 	if( x == NULL || y == NULL ){
