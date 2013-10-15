@@ -348,7 +348,6 @@ options:\n\
 	doc2 = gettext( "\
 -u -- unmount a volume: arguments: -d volume_path\n\
 -s -- print properties of a volume: arguments: -d partition_path\n\
--k -- print properties of an un encrypted volume: arguments: -d partition_path\n\
 -M -- this option will create a mount point in \"/run/media/private/$USER\" and a publicly accessible \"mirror\" in \"/run/media/public/\'\n" ) ;
 
 	doc3 = gettext( "\

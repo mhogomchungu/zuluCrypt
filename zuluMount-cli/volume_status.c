@@ -552,8 +552,6 @@ int zuluMountUnEncryptedVolumeStatus( const char * device )
 	string_t p ;
 	string_t q ;
 
-	int ro ;
-		
 	/*
 	 * zuluCryptGetMountEntry() is defined in ../zuluCrypt/cli/lib/process_mountinfo.c
 	 */
@@ -580,9 +578,7 @@ int zuluMountUnEncryptedVolumeStatus( const char * device )
 		StringMultipleAppend( p," device:   \t",device," \n loop:   \tNil\n offset:    \tNil",NULL ) ;
 	}
 	
-	ro = StringAtLeastOneMatch_1( StringListContentAt( stl,3 ),"ro,",",ro",",ro,",NULL ) ;
-	
-	if( ro ){
+	if( StringPrefixEqual( StringListContentAt( stl,3 ),"ro" ) ){
 		StringAppend( p," \n mode:   \tread only\n active slots:\tNil" ) ;
 	}else{
 		StringAppend( p," \n mode:   \tread and write\n active slots:\tNil" ) ;
