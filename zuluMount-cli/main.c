@@ -252,11 +252,10 @@ static int _checkUnmount( const char * device,uid_t uid )
 			 */
 			r = zuluCryptMountPointPrefixMatch( g,uid,NULL ) ;
 			if( r == 1 ){
-				/*
-				* zuluCryptUnmountVolume() is defined in ../zuluCrypt-cli/lib/unmount_volume.c
-				*/
 				zuluCryptSecurityGainElevatedPrivileges() ;
-				
+				/*
+				 * zuluCryptUnmountVolume() is defined in ../zuluCrypt-cli/lib/unmount_volume.c
+				 */
 				if( zuluCryptUnmountVolume( device,&m_point ) == 0 ){
 					if( m_point != NULL ){
 						rmdir( m_point ) ;

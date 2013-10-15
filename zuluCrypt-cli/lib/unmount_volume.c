@@ -79,7 +79,6 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 	char * m ;
 	
 	int h = 3 ;
-	int ntfs ;
 	
 	char * loop_path = NULL ;
 
@@ -88,13 +87,10 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 	 */
 	string_t fs = zuluCryptGetFileSystemFromDevice( device ) ;
 	
-	if( fs == StringVoid ){
-		return h ;
-	}else{
-		ntfs = StringEqual( fs,"ntfs" ) ;
-		StringDelete( &fs ) ;
-	}
+	int ntfs = StringEqual( fs,"ntfs" ) ;
 	
+	StringDelete( &fs ) ;
+		
 	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
 		/*
 		 * zuluCryptLoopDeviceAddress() is defined in ./create_loop_device.c
