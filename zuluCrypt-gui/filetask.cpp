@@ -227,11 +227,10 @@ void FileTask::createFile()
 void FileTask::fillCreatedFileWithRandomData()
 {
 	this->openVolume()  ;
-	if( m_status != 0 ){
-		return ;
+	if( m_status == 0 ){
+		this->writeVolume() ;
+		this->closeVolume() ;
 	}
-	this->writeVolume() ;
-	this->closeVolume() ;
 }
 
 void FileTask::closeVolume()

@@ -82,7 +82,7 @@ void createvolume::keyChanged( QString key )
 		if( st < 0 ){
 			this->setWindowTitle( tr( "passphrase quality: 0/100" ) ) ;
 		}else{
-			this->setWindowTitle( tr( "passphrase quality: %1/100" ).arg( st ) ) ;
+			this->setWindowTitle( tr( "passphrase quality: %1/100" ).arg( QString::number( st ) ) ) ;
 		}
 	}else{
 		this->setWindowTitle( tr( "create a new volume" ) ) ;
@@ -246,7 +246,7 @@ void createvolume::pbCancelClicked()
 			QFile::remove( s ) ;
 		}
 	}
-	HideUI() ;
+	this->HideUI() ;
 }
 
 void createvolume::HideUI()
@@ -406,16 +406,18 @@ void createvolume::pbCreateClicked()
 	if ( m_ui->rbPassphraseFromFile->isChecked() ){
 		if( passphrase_1.isEmpty() ){
 			return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
+		}else{
+			source = QString( "-f" ) ;
 		}
-		source = QString( "-f" ) ;
 	}else{
 		if( passphrase_1 != passphrase_2 ){
 			return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "passphrases do not match" ) ) ;
+		}else{
+			source = QString( "-f" ) ;
+			passphrase_1 = socketSendKey::getSocketPath() + QString( "-2" ) ;
+			socketSendKey * s = new socketSendKey( this,passphrase_1,m_ui->lineEditPassphrase1->text().toAscii() ) ;
+			s->sendKey() ;
 		}
-		source = QString( "-f" ) ;
-		passphrase_1 = socketSendKey::getSocketPath() + QString( "-2" ) ;
-		socketSendKey * s = new socketSendKey( this,passphrase_1,m_ui->lineEditPassphrase1->text().toAscii() ) ;
-		s->sendKey() ;
 	}
 
 	createvolume::createVolumeType type = createvolume::createVolumeType( m_ui->comboBoxVolumeType->currentIndex() ) ;
@@ -430,7 +432,7 @@ void createvolume::pbCreateClicked()
 		case createvolume::normal_and_hidden_truecrypt :
 			m_volumeType = QString( "truecrypt" ) ;
 			break ;
-		default: m_volumeType = QString( "luks " ) ;
+		default: m_volumeType = QString( "luks" ) ;
 	}
 
 	QString g ;
@@ -482,9 +484,8 @@ void createvolume::pbCreateClicked()
 	m_isWindowClosable = false ;
 
 	Task * t = new Task( exe ) ;
-
 	connect( t,SIGNAL( finished( int ) ),this,SLOT( taskFinished( int ) ) ) ;
-	disableAll() ;
+	this->disableAll() ;
 	t->start() ;
 }
 
@@ -498,7 +499,7 @@ void createvolume::taskFinished( int st )
 	}
 	switch ( st ){
 		case 0 : msg.ShowUIOK( tr( "SUCCESS!" ),x ) ;
-		return HideUI() ;													break  ;
+		return this->HideUI() ;													break  ;
 		case 1 : msg.ShowUIOK( tr( "ERROR!" ),tr( "presented file system is not supported,see documentation for more information" ) ) ;	break  ;
 		case 2 : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open a system device in read/write mode,\n\
 only root user or members of group zulucrypt-system can do that" ) ) ;									break  ;
@@ -527,11 +528,11 @@ only root user or members of group zulucrypt-system can do that" ) ) ;									b
 		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR! with status number %1 encountered" ).arg( st ) ) ;
 	}
 
-	enableAll() ;
+	this->enableAll() ;
 }
 
 createvolume::~createvolume()
 {
-	m_keyStrength->~keystrength() ;
-	delete m_ui;
+	delete m_keyStrength ;
+	delete m_ui ;
 }

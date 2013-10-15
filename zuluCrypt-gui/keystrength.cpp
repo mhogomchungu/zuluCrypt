@@ -16,44 +16,57 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <stddef.h>
 #include "keystrength.h"
+#include "can_build_pwquality.h"
 
 #include <pwd.h>
 #include <unistd.h>
 
+#include <QString>
+
+#if BUILD_PWQUALITY
+
+#define PWQUALITY_CAST( x ) reinterpret_cast< pwquality_settings_t * >( x )
+
 keystrength::keystrength()
 {
-#if BUILD_PWQUALITY
-	m_handle = pwquality_default_settings() ;
-#endif
+	m_handle = PWQUALITY_CAST( pwquality_default_settings() ) ;
 }
 
 bool keystrength::canCheckQuality()
 {
-#if BUILD_PWQUALITY
 	return true ;
-#else
-	return false ;
-#endif
 }
 
 int keystrength::quality( const QString& key )
 {
-#if BUILD_PWQUALITY
-	void * auxerror ;
-	QByteArray keyArray = key.toAscii() ;
-	int st = pwquality_check( m_handle,keyArray.constData(),NULL,NULL,&auxerror) ;
-	pwquality_strerror( NULL,0,st,auxerror) ;
-	return st ;
-#else
-	Q_UNUSED( key ) ;
-	return NOT_USED ;
-#endif
+	return pwquality_check( PWQUALITY_CAST( m_handle ),key.toAscii().constData(),NULL,NULL,NULL ) ;
 }
 
 keystrength::~keystrength()
 {
-#if BUILD_PWQUALITY
-	pwquality_free_settings( m_handle ) ;
-#endif
+	pwquality_free_settings( PWQUALITY_CAST( m_handle ) ) ;
 }
+
+#else
+
+keystrength::keystrength()
+{
+}
+
+bool keystrength::canCheckQuality()
+{
+	return false ;
+}
+
+int keystrength::quality( const QString& key )
+{
+	Q_UNUSED( key ) ;
+	return -1 ;
+}
+
+keystrength::~keystrength()
+{
+}
+#endif

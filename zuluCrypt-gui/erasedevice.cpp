@@ -146,7 +146,6 @@ Are you really sure you want to write random data to \"%1\" effectively destroyi
 	m_cancelClicked = false ;
 
 	m_task = new EraseTask( path ) ;
-
 	connect( m_task,SIGNAL( progress( int ) ),this,SLOT( setProgress( int ) ) ) ;
 	connect( m_task,SIGNAL( exitStatus( int ) ),this,SLOT( threadExitStatus( int ) ) ) ;
 
@@ -220,5 +219,5 @@ void erasedevice::closeEvent( QCloseEvent * e )
 
 erasedevice::~erasedevice()
 {
-	delete m_ui;
+	delete m_ui ;
 }

@@ -76,5 +76,5 @@ it takes too long and you can no longer wait.\n\n" ).arg( m_path ) ;
 CreateVolumeDialog::~CreateVolumeDialog()
 {
 	emit dialogResult( m_opt ) ;
-	delete m_ui;
+	delete m_ui ;
 }

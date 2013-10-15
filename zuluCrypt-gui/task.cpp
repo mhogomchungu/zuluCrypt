@@ -91,27 +91,19 @@ void Task::updateVolumeListTask()
 	p.waitForFinished() ;
 	m_status = p.exitCode() ;
 
-	QStringList l = QString( p.readAll() ).split( "\n" ) ;
-
-	if( m_status ){
-		return ;
+	if( m_status == 0 ){
+		QStringList l = QString( p.readAll() ).split( "\n" ) ;
+		int j = l.size() - 1 ;
+		QStringList entry ;
+		for( int i = 0 ; i < j ; i++ ){
+			entry = l.at( i ).split( "\t" ) ;
+			if( entry.size() >= 3 ){
+				emit addItemToTable( entry.at( 0 ),entry.at( 1 ),entry.at( 2 ) ) ;
+			}
+		}
 	}
 
 	p.close() ;
-
-	int j = l.size() - 1 ;
-
-	if( j == 0 ){
-		return ;
-	}
-	QStringList entry ;
-
-	for( int i = 0 ; i < j ; i++ ){
-		entry = l.at( i ).split( "\t" ) ;
-		if( entry.size() >= 3 ){
-			emit addItemToTable( entry.at( 0 ),entry.at( 1 ),entry.at( 2 ) ) ;
-		}
-	}
 }
 
 void Task::runExeTask()
@@ -135,31 +127,28 @@ void Task::runCloseAllVolumeTask()
 
 	int volumeCount = m_table->rowCount() ;
 
-	if( volumeCount < 1 ){
-		m_table->setEnabled( true ) ;
-		return ;
-	}
+	if( volumeCount > 0 ){
+		QVector< QTableWidgetItem * > tableItems( volumeCount ) ;
 
-	QVector< QTableWidgetItem *> tableItems( volumeCount ) ;
+		QTableWidgetItem ** it = tableItems.data() ;
 
-	QTableWidgetItem ** it = tableItems.data() ;
+		for( int i = 0 ; i < volumeCount ; i++ ){
+			it[ i ] = m_table->item( i,0 ) ;
+		}
 
-	for( int i = 0 ; i < volumeCount ; i++ ){
-		it[ i ] = m_table->item( i,0 ) ;
-	}
+		QProcess p ;
+		QString exe ;
+		QString device ;
 
-	QProcess p ;
-	QString exe ;
-	QString device ;
-
-	for( int i = 0 ; i < volumeCount ; i++ ){
-		device = it[ i ]->text().replace( "\"","\"\"\"" ) ;
-		exe = QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( device ) ;
-		p.start( exe ) ;
-		p.waitForFinished() ;
-		emit taskResult( it[ i ],p.exitCode() ) ;
-		p.close() ;
-		sleep( 1 ) ; // for ui effect
+		for( int i = 0 ; i < volumeCount ; i++ ){
+			device = it[ i ]->text().replace( "\"","\"\"\"" ) ;
+			exe = QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( device ) ;
+			p.start( exe ) ;
+			p.waitForFinished() ;
+			emit taskResult( it[ i ],p.exitCode() ) ;
+			p.close() ;
+			sleep( 1 ) ; // for ui effect
+		}
 	}
 
 	m_table->setEnabled( true ) ;
@@ -204,9 +193,7 @@ void Task::runVolumeTask()
 
 	p.close() ;
 	int j = l.size() - 1 ;
-	if( j < 1 ){
-		return ;
-	}
+
 	QStringList list ;
 	QString entry ;
 	for( int i = 0 ; i < j ; i++ ){

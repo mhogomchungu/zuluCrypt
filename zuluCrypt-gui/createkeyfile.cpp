@@ -59,16 +59,13 @@ void createkeyfile::keyTextChange( QString txt )
 	if( p.isEmpty() ){
 		QString x = QDir::homePath() + QString( "/" ) + txt.split( "/" ).last() ;
 		m_ui->lineEditPath->setText( x ) ;
-		return ;
+	}else{
+		int i = p.lastIndexOf( "/" ) ;
+		if( i != -1 ){
+			p = p.mid( 0,i ) + QString( "/" ) + txt.split( "/" ).last() ;
+			m_ui->lineEditPath->setText( p ) ;
+		}
 	}
-
-	int i = p.lastIndexOf( "/" ) ;
-	if( i == -1 ){
-		return ;
-	}
-	p = p.mid( 0,i ) + QString( "/" ) + txt.split( "/" ).last() ;
-
-	m_ui->lineEditPath->setText( p ) ;
 }
 
 void createkeyfile::HideUI()
@@ -180,5 +177,5 @@ void createkeyfile::pbOpenFolder()
 
 createkeyfile::~createkeyfile()
 {
-	delete m_ui;
+	delete m_ui ;
 }

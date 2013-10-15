@@ -19,11 +19,8 @@
 #ifndef KEYSTRENGTH_H
 #define KEYSTRENGTH_H
 
-#include <QString>
+class QString ;
 
-#include "can_build_pwquality.h"
-
-#define NOT_USED -1234567
 class keystrength
 {
 public:
@@ -32,9 +29,7 @@ public:
 	int quality( const QString& ) ;
 	bool canCheckQuality( void ) ;
 private:
-#if BUILD_PWQUALITY
-	pwquality_settings_t * m_handle ;
-#endif  //BUILD_PWQUALITY
+	void * m_handle ;
 };
 
 #endif // KEYSTRENGTH_H

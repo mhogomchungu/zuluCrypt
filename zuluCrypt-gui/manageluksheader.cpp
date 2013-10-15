@@ -114,10 +114,10 @@ void manageluksheader::backUpHeader( QString device )
 
 void manageluksheader::backUpHeaderNameChange( QString name )
 {
-	if(  m_operation == QString( "restore" ) ){
+	if( m_operation == QString( "restore" ) ){
 		return ;
 	}
-	if(  m_ui->lineEditDevicePath->text().isEmpty() ){
+	if( m_ui->lineEditDevicePath->text().isEmpty() ){
 		;
 	}else{
 		QString p = name.split( "/" ).last() ;
@@ -326,5 +326,5 @@ void manageluksheader::taskFinished( int st )
 
 manageluksheader::~manageluksheader()
 {
-	delete m_ui;
+	delete m_ui ;
 }

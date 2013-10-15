@@ -382,5 +382,5 @@ void cryptfiles::threadExitStatus( int st )
 
 cryptfiles::~cryptfiles()
 {
-	delete m_ui;
+	delete m_ui ;
 }

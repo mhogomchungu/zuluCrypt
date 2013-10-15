@@ -33,6 +33,7 @@
 #include <QMessageBox>
 #include <QProcess>
 #include <QIcon>
+#include <QDebug>
 
 #include <QCloseEvent>
 
@@ -86,12 +87,12 @@ luksaddkey::luksaddkey( QWidget * parent ) :
 
 void luksaddkey::keyChanged( QString key )
 {
-	if( m_ui->radioButtonNewPassphrase && m_keystrength->canCheckQuality() ){
+	if( m_ui->radioButtonNewPassphrase->isChecked() && m_keystrength->canCheckQuality() ){
 		int st = m_keystrength->quality( key ) ;
 		if( st < 0 ){
 			this->setWindowTitle( tr( "passphrase quality: 0/100" ) ) ;
 		}else{
-			this->setWindowTitle( tr( "passphrase quality: %1/100" ).arg( st ) ) ;
+			this->setWindowTitle( tr( "passphrase quality: %1/100" ).arg( QString::number( st ) ) ) ;
 		}
 	}else{
 		this->setWindowTitle( tr( "add a key to a luks volume" ) ) ;

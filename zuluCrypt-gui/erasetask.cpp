@@ -112,11 +112,10 @@ void EraseTask::run()
 		 */
 		m_status = this->openMapper() ;
 
-		if( m_status != 0 ){
-			return ;
+		if( m_status == 0 ){
+			this->writeJunkThroughMapper() ;
+			this->closeMapper() ;
 		}
-		this->writeJunkThroughMapper() ;
-		this->closeMapper() ;
 	}
 }
 

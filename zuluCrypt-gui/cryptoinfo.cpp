@@ -32,7 +32,7 @@ cryptoinfo::cryptoinfo( QWidget * parent ) :
 	connect( m_ui->pbOK,SIGNAL( clicked() ),this,SLOT( pbOK() ) ) ;
 }
 
-void cryptoinfo::closeEvent( QCloseEvent *e )
+void cryptoinfo::closeEvent( QCloseEvent * e )
 {
 	e->ignore() ;
 	HideUI() ;
@@ -51,5 +51,5 @@ void cryptoinfo::pbOK()
 
 cryptoinfo::~cryptoinfo()
 {
-	delete m_ui;
+	delete m_ui ;
 }

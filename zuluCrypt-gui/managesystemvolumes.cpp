@@ -238,5 +238,5 @@ void manageSystemVolumes::ShowUI( const QString& path )
 
 manageSystemVolumes::~manageSystemVolumes()
 {
-	delete m_ui;
+	delete m_ui ;
 }

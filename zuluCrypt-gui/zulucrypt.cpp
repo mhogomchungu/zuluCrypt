@@ -1035,7 +1035,7 @@ void zuluCrypt::decryptFile()
 zuluCrypt::~zuluCrypt()
 {
 	if( m_ui ){
-		delete m_ui;
+		delete m_ui ;
 	}
 	if( m_trayIcon ){
 		delete m_trayIcon ;

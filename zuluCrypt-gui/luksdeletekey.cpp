@@ -221,16 +221,16 @@ void luksdeletekey::pbDelete()
 	m_volumePath = utility::resolvePath( m_ui->lineEditVolumePath->text() ) ;
 
 	if( m_volumePath.isEmpty() ){
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
+		msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
+	}else{
+		this->disableAll() ;
+		
+		m_volumePath.replace( "\"","\"\"\"" ) ;
+		
+		Task * t = new Task( m_volumePath ) ;
+		connect( t,SIGNAL( finished( QStringList ) ),this,SLOT( deleteKey( QStringList ) ) ) ;
+		t->start( Task::LUKSSlotUsage ) ;
 	}
-
-	this->disableAll() ;
-
-	m_volumePath.replace( "\"","\"\"\"" ) ;
-
-	Task * t = new Task( m_volumePath ) ;
-	connect( t,SIGNAL( finished( QStringList ) ),this,SLOT( deleteKey( QStringList ) ) ) ;
-	t->start( Task::LUKSSlotUsage ) ;
 }
 
 void luksdeletekey::taskFinished( int status )
