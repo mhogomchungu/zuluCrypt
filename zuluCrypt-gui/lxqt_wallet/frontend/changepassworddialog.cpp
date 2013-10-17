@@ -189,7 +189,7 @@ void lxqt::Wallet::changePassWordDialog::taskResult( bool opened )
 {
 	if( opened ){
 		QString new_password = m_ui->lineEditNewPassWord->text() ;
-		lxqt_wallet_error r = lxqt_wallet_change_wallet_password( m_wallet,new_password.toAscii().constData(),new_password.size() ) ;
+		lxqt_wallet_error r = lxqt_wallet_change_wallet_password( m_wallet,new_password.toLatin1().constData(),new_password.size() ) ;
 		if( r == lxqt_wallet_no_error ){
 			m_walletPassWordChanged = true ;
 			this->HideUI() ;

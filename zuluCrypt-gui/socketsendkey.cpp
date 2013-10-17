@@ -60,7 +60,7 @@ void socketSendKey::sendKey( const QByteArray& data )
 
 bool socketSendKey::openConnection()
 {
-	QByteArray sockpath = m_sockpath.toAscii() ;
+	QByteArray sockpath = m_sockpath.toLatin1() ;
 	m_connectionHandle = ::zuluCryptPluginManagerOpenConnection( sockpath.constData() ) ;
 	if( m_connectionHandle ){
 		m_closeConnection = true ;
@@ -108,14 +108,14 @@ void socketSendKey::run()
 
 void socketSendKey::openAndCloseConnection( const QString& sockAddr )
 {
-	QByteArray sockpath = sockAddr.toAscii() ;
+	QByteArray sockpath = sockAddr.toLatin1() ;
 	void * connection = ::zuluCryptPluginManagerOpenConnection( sockpath.constData() ) ;
 	::zuluCryptPluginManagerCloseConnection( connection ) ;
 }
 
 void * socketSendKey::zuluCryptPluginManagerOpenConnection( const QString& sockpath )
 {
-	QByteArray path = sockpath.toAscii() ;
+	QByteArray path = sockpath.toLatin1() ;
 	return ::zuluCryptPluginManagerOpenConnection( path.constData() ) ;
 }
 

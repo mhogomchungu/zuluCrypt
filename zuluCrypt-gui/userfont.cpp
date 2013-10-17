@@ -82,6 +82,6 @@ void userfont::saveFont( const QFont& Font )
 	}
 	QFile f( QDir::homePath() + QString( "/.zuluCrypt/font" ) ) ;
 	f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
-	f.write( s.toAscii() ) ;
+	f.write( s.toLatin1() ) ;
 	f.close() ;
 }

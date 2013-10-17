@@ -44,7 +44,14 @@ class FileTask : public QObject,public QRunnable
 {
 	Q_OBJECT
 public :
-	FileTask( QString destination,qulonglong size ) ;
+	typedef enum{
+		unset,
+		success,
+		cancelled,
+		openMapperFailed,
+		openFileFailed
+	}status;
+	FileTask( const QString& destination,qulonglong size ) ;
 	void start( void ) ;
 	~FileTask() ;
 signals:
@@ -54,8 +61,8 @@ signals:
 private slots:
 	void cancelOperation( void ) ;
 private:
-	int createContainerFileUsinggCrypt( void ) ;
-	int createContainerFile( void ) ;
+	FileTask::status createContainerFileUsinggCrypt( void ) ;
+	FileTask::status createContainerFile( void ) ;
 	void writeVolume( void ) ;
 	void openVolume( void ) ;
 	void closeVolume( void ) ;
@@ -65,7 +72,7 @@ private:
 
 	QString m_file ;
 	qulonglong m_size ;
-	int m_status ;
+	FileTask::status m_status ;
 };
 
 #endif // ZULUCRYPTTHREADS_H

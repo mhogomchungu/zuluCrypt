@@ -68,7 +68,7 @@ bool lxqt::Wallet::secretService::addKey( const QString& key,const QByteArray& v
 		return false ;
 	}else{
 		if( m_schema && m_schema_1 ){
-			return lxqt_secret_service_password_store_sync( key.toAscii().constBegin(),value.constData(),m_schema,m_schema_1 ) ;
+			return lxqt_secret_service_password_store_sync( key.toLatin1().constBegin(),value.constData(),m_schema,m_schema_1 ) ;
 		}else{
 			return false ;
 		}
@@ -84,21 +84,21 @@ void lxqt::Wallet::secretService::open( const QString& walletName,const QString&
 
 	if( applicationName.isEmpty() ){
 
-		m_byteArrayWalletName      = walletName.toAscii() ;
-		m_byteArrayApplicationName = walletName.toAscii() ;
+		m_byteArrayWalletName      = walletName.toLatin1() ;
+		m_byteArrayApplicationName = walletName.toLatin1() ;
 
 		m_walletName        = m_byteArrayWalletName.constData() ;
 		m_applicationName   = m_byteArrayApplicationName.constData() ;
 
-		m_byteArraySchemaName = QString( "lxqt.Wallet.%1.%2" ).arg( walletName ).arg( walletName ).toAscii() ;
+		m_byteArraySchemaName = QString( "lxqt.Wallet.%1.%2" ).arg( walletName ).arg( walletName ).toLatin1() ;
 	}else{
-		m_byteArrayWalletName      = walletName.toAscii() ;
-		m_byteArrayApplicationName = applicationName.toAscii() ;
+		m_byteArrayWalletName      = walletName.toLatin1() ;
+		m_byteArrayApplicationName = applicationName.toLatin1() ;
 
 		m_walletName        = m_byteArrayWalletName.constData() ;
 		m_applicationName   = m_byteArrayApplicationName.constData() ;
 
-		m_byteArraySchemaName = QString( "lxqt.Wallet.%1.%2" ).arg( walletName ).arg( applicationName ).toAscii() ;
+		m_byteArraySchemaName = QString( "lxqt.Wallet.%1.%2" ).arg( walletName ).arg( applicationName ).toLatin1() ;
 	}
 
 	m_schema   = lxqt_secret_service_create_schema( m_byteArraySchemaName.constData(),"string" ) ;
@@ -125,7 +125,7 @@ QByteArray lxqt::Wallet::secretService::readValue( const QString& key )
 {
 	if( m_schema ){
 		QByteArray r ;
-		char * e = lxqt_secret_service_get_value( key.toAscii().constData(),m_schema ) ;
+		char * e = lxqt_secret_service_get_value( key.toLatin1().constData(),m_schema ) ;
 		if( e ){
 			r = QByteArray( e ) ;
 			free( e ) ;
@@ -173,7 +173,7 @@ void lxqt::Wallet::secretService::deleteKey( const QString& key )
 		if( key.isEmpty() ){
 			;
 		}else{
-			lxqt_secret_service_clear_sync( key.toAscii().constData(),m_schema,m_schema_1 ) ;
+			lxqt_secret_service_clear_sync( key.toLatin1().constData(),m_schema,m_schema_1 ) ;
 		}
 	}
 }
@@ -232,3 +232,12 @@ QStringList lxqt::Wallet::secretService::managedWalletList()
 	return QStringList() ;
 }
 
+QString lxqt::Wallet::secretService::localDefaultWalletName()
+{
+	return QString() ;
+}
+
+QString lxqt::Wallet::secretService::networkDefaultWalletName()
+{
+	return QString() ;
+}

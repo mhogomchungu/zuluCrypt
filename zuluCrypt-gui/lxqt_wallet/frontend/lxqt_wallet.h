@@ -212,6 +212,16 @@ public:
 	 * This method is undefined in secretService backend
 	 */
 	virtual QStringList managedWalletList( void ) = 0 ;
+
+	/*
+	 * This medhod is defined only with kwallet backend and it returns the name of the kwallet default local wallet name
+	 */
+	virtual QString localDefaultWalletName( void ) = 0 ;
+
+	/*
+	 * This medhod is defined only with kwallet backend and it returns the name of the kwallet default network wallet name
+	 */
+	virtual QString networkDefaultWalletName( void ) = 0 ;
 };
 
 } // namespace lxqt

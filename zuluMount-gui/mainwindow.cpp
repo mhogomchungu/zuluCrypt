@@ -37,6 +37,7 @@
 #include <QFileDialog>
 #include <QUrl>
 #include <QTranslator>
+#include <QMimeData>
 
 #include <unistd.h>
 #include "keydialog.h"
@@ -73,8 +74,11 @@ void MainWindow::setUpApp()
 	m_ui->tableWidget->setColumnWidth( 4,87 ) ;
 	m_ui->tableWidget->setColumnWidth( 5,87 ) ;
 
+#if QT_VERSION < QT_VERSION_CHECK( 5,0,0 )
 	m_ui->tableWidget->verticalHeader()->setResizeMode( QHeaderView::ResizeToContents ) ;
-
+#else
+	m_ui->tableWidget->verticalHeader()->setSectionResizeMode( QHeaderView::ResizeToContents ) ;
+#endif
 	m_ui->tableWidget->verticalHeader()->setMinimumSectionSize( 30 ) ;
 
 	this->setAcceptDrops( true ) ;
@@ -155,7 +159,7 @@ void MainWindow::setLocalizationLanguage()
 	QString lang     = utility::localizationLanguage( pgr ) ;
 	QString langPath = utility::localizationLanguagePath( pgr ) ;
 
-	QByteArray r = lang.toAscii() ;
+	QByteArray r = lang.toLatin1() ;
 
 	QByteArray e( "en_US" ) ;
 	if( e == r ){

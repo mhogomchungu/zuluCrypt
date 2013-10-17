@@ -157,3 +157,13 @@ QStringList lxqt::Wallet::kwallet::managedWalletList()
 	return m_kwallet->walletList() ;
 }
 
+QString lxqt::Wallet::kwallet::localDefaultWalletName()
+{
+	return m_kwallet->LocalWallet() ;
+}
+
+QString lxqt::Wallet::kwallet::networkDefaultWalletName()
+{
+	return m_kwallet->NetworkWallet() ;
+}
+

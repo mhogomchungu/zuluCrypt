@@ -90,25 +90,6 @@ else( TCPLAY_FOUND )
 	file( WRITE ${PROJECT_BINARY_DIR}/truecrypt_support_1.h "\n#define TRUECRYPT_CREATE 0\n" )
 endif( TCPLAY_FOUND )	
 
-set( NOSECRETSUPPORT "true" )
-
-if( LIBSECRET_FOUND )
-	find_file( keyring_header libsecret-1/libsecret/secret.h PATHS ${LIBSECRET_INCLUDE_DIRS} )
-	find_library( keyring_library libsecret-1.so )
-	if( keyring_header )
-		if( keyring_library )
-			add_definitions( ${LIBSECRET_CFLAGS} )
-			set( KEYRINGSUPPORT "true" )
-			set( NOSECRETSUPPORT "false" )
-		endif( keyring_library )
-	endif( keyring_header )
-endif( LIBSECRET_FOUND )
-
-if( NOKDE ) 
-	set( NOKDESUPPORT "true" )
-endif( NOKDE )
-
-
 if( HOMEMOUNTPREFIX )
 	file( WRITE  ${PROJECT_BINARY_DIR}/mount_prefix_path.h "\n#define USE_HOME_PATH_AS_MOUNT_PREFIX 1\n" )
 else()
@@ -119,31 +100,6 @@ ADD_SUBDIRECTORY( zuluCrypt-cli )
 ADD_SUBDIRECTORY( zuluCrypt-gui/lxqt_wallet )
 
 if( NOT NOGUI ) 
-	
-find_package( Qt4 COMPONENTS QtCore QtNetwork QtGui REQUIRED )
-
-if( NOT NOKDE ) 
-	find_package( KDE4 QUIET )
-else( NOT NOKDE )
-
-endif( NOT NOKDE )
-
-file( WRITE  ${PROJECT_BINARY_DIR}/can_build_kwallet.h "\n#define BUILD_KWALLET 0\n" )
-
-if( KDE4_FOUND )
-	add_definitions( -I${KDE4_INCLUDE_DIR} )
-	find_file( kwallet_header kwallet.h )
-	#
-	# alternative way to set the wallet library is by using -L${KDE4_LIB_DIR} -lkwalletbackend
-	#
-	find_library( kwallet_library libkwalletbackend.so )
-	if( kwallet_library )
-		if( kwallet_header )
-			file( WRITE  ${PROJECT_BINARY_DIR}/can_build_kwallet.h "\n#define BUILD_KWALLET 1\n#include<kwallet.h>\n" )
-			set( BUILDKWALLET "true" )
-		endif( kwallet_header )
-	endif( kwallet_library)
-endif( KDE4_FOUND )
 
 if( PWQUALITY_FOUND )
 	find_file ( header_pwquality pwquality.h PATHS ${PWQUALITY_INCLUDE_DIRS} )
@@ -163,6 +119,24 @@ else( PWQUALITY_FOUND )
 	file( WRITE ${PROJECT_BINARY_DIR}/can_build_pwquality.h "#define BUILD_PWQUALITY 0\n" )
 endif( PWQUALITY_FOUND )
 
+if( QT5 )
+	find_package( Qt5Widgets REQUIRED )
+	find_package( Qt5Core REQUIRED )
+
+	set( CMAKE_INCLUDE_CURRENT_DIR ON )
+	include_directories( ${Qt5Widgets_INCLUDE_DIRS} )
+	
+	add_definitions( ${Qt5Widgets_DEFINITIONS} )
+else()
+	find_package( Qt4 REQUIRED )
+
+	add_definitions( -I${Qt4_INCLUDE_DIR} )
+	add_definitions( -I${QT_HEADERS_DIR} )
+
+	INCLUDE( ${QT_USE_FILE} )
+	INCLUDE( ${QT_USE_FILE} )
+endif()
+
 ADD_SUBDIRECTORY( zuluCrypt-gui/md5 )
 ADD_SUBDIRECTORY( zuluCrypt-gui/sharedObjects )
 ADD_SUBDIRECTORY( zuluCrypt-gui )
@@ -180,14 +154,6 @@ if( NOT NOGUI )
 	message( STATUS "GUI front ends,zuluCrypt-gui and zuluMount-gui" )
 endif( NOT NOGUI )
 	
-if( BUILDKWALLET )
-	message( STATUS "kde kwallet support" )
-endif( BUILDKWALLET )
-
-if( KEYRINGSUPPORT )
-	message( STATUS "gnome libsecret support" )
-endif( KEYRINGSUPPORT )
-
 if( BUILDPWQUALITY )
 	message( STATUS "pwquality library support to give passphrase strength measure" )
 endif( BUILDPWQUALITY )
@@ -211,14 +177,6 @@ message ( STATUS "optional functionality that will NOT be build" )
 if( NOGUI )
 	message( STATUS "GUI front ends,zuluCrypt-gui and zuluMount-gui\n" )
 endif( NOGUI )
-
-if( NOT BUILDKWALLET )
-	message( STATUS "kde kwallet support\n" )
-endif( NOT BUILDKWALLET )
-
-if( NOT KEYRINGSUPPORT )
-	message( STATUS "gnome libsecret support\n" )
-endif( NOT KEYRINGSUPPORT )
 
 if( NOT BUILDPWQUALITY )
 	message( STATUS "pwquality library used to measure passphrase strength" )

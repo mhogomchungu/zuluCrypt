@@ -19,7 +19,6 @@
 
 #include "crypttask.h"
 
-#define TERM_ST 12
 /*
  * Documentation about the encrypted container file.
  *
@@ -66,7 +65,7 @@ CryptTask::CryptTask( const QString& source,const QString& dest,
 	m_keySource = keySource ;
 	m_key = key ;
 	m_task = task ;
-	m_status = -1 ;
+	m_status = CryptTask::unset ;
 }
 
 void CryptTask::start()
@@ -76,7 +75,7 @@ void CryptTask::start()
 
 void CryptTask::terminate()
 {
-	m_status = TERM_ST ;
+	m_status = CryptTask::quit ;
 }
 
 void CryptTask::calculateMd5( const QString& path,char * result )
@@ -87,7 +86,7 @@ void CryptTask::calculateMd5( const QString& path,char * result )
 	zuluCryptMD5_CTX ctx ;
 	zuluCryptMD5_Init( &ctx ) ;
 
-	QByteArray p = path.toAscii() ;
+	QByteArray p = path.toLatin1() ;
 
 	int fd = open( p.constData(),O_RDONLY ) ;
 
@@ -109,22 +108,22 @@ void CryptTask::calculateMd5( const QString& path,char * result )
 	emit enableCancel() ;
 }
 
-int CryptTask::encrypt()
+CryptTask::status CryptTask::encrypt()
 {
 	QFile fd_4( m_source ) ;
 
 	if( !fd_4.open( QIODevice::ReadOnly ) ){
-		return 13 ;
+		return CryptTask::OpenSourceFail ;
 	}
 
 	QFile fd_1( m_dest ) ;
 
 	if( !fd_1.open( QIODevice::WriteOnly ) ){
-		return 10 ;
+		return CryptTask::OpenDestinationFail ;
 	}
 
 	const int SIZE = 512 ;
-	char buffer[ SIZE ];
+	char buffer[ SIZE ] ;
 
 	qint64 size = fd_4.size() ;
 	qint64 source_size = size ;
@@ -145,17 +144,18 @@ int CryptTask::encrypt()
 	if( !fd_1.resize( size ) ){
 		for( qint64 size_1 = 0 ; size_1 < size ; size_1 += SIZE ){
 
-			if( m_status == TERM_ST ){
-				return TERM_ST ;
-			}
-			i = ( int )( size_1 * 100 / size ) ;
-			if( i > j ){
-				emit progressUpdate( i ) ;
-			}
-			j = i ;
+			if( m_status == CryptTask::quit ){
+				return CryptTask::quit ;
+			}else{
+				i = ( int )( size_1 * 100 / size ) ;
+				if( i > j ){
+					emit progressUpdate( i ) ;
+				}
+				j = i ;
 
-			fd_1.write( buffer,SIZE ) ;
-			fd_1.flush() ;
+				fd_1.write( buffer,SIZE ) ;
+				fd_1.flush() ;
+			}
 		}
 
 		emit progressUpdate( 100 ) ;
@@ -163,18 +163,18 @@ int CryptTask::encrypt()
 
 	fd_1.close() ;
 
-	int x = this->openMapper( m_dest ) ;
-
-	if( x != 0 ){
-		return x ;
+	if( this->openMapper( m_dest ) != CryptTask::success ){
+		return CryptTask::openMapperFail ;
 	}
+
 	QFile fd_2( m_mapperPath ) ;
 	if( !fd_2.open(QIODevice::WriteOnly ) ){
-		return 4 ;
+		return CryptTask::openMapperWriteFail ;
 	}
+
 	QString s = QString::number( source_size ) ;
 
-	fd_2.write( s.toAscii(),s.size() ) ;
+	fd_2.write( s.toLatin1(),s.size() ) ;
 
 	fd_2.putChar( '\0' ) ;
 
@@ -213,8 +213,8 @@ int CryptTask::encrypt()
 
 	for( qint64 size_1 = 0 ; size_1 < size ; size_1 += SIZE ){
 
-		if( m_status == TERM_ST ){
-			return TERM_ST;
+		if( m_status == CryptTask::quit ){
+			return CryptTask::quit ;
 		}
 		i = ( int )( size_1 * 100 / size ) ;
 		if( i > j ){
@@ -230,17 +230,17 @@ int CryptTask::encrypt()
 
 	emit progressUpdate( 100 ) ;
 
-	return 0 ;
+	return CryptTask::success ;
 }
 
-int CryptTask::decrypt()
+CryptTask::status CryptTask::decrypt()
 {
 	if( utility::exists( m_dest ) ){
-		return 5 ;
+		return CryptTask::destinationFileExists ;
 	}
 	QFile fd_1( m_mapperPath ) ;
 	if( !fd_1.open( QIODevice::ReadOnly ) ){
-		return 4 ;
+		return CryptTask::openMapperReadFail ;
 	}
 	const int SIZE = 512 ;
 	char buffer[SIZE] ;
@@ -248,7 +248,7 @@ int CryptTask::decrypt()
 	fd_1.read( buffer,SIZE ) ;
 
 	if( memcmp( buffer + 100,buffer + 200,100 ) != 0 ){
-		return 11 ;
+		return CryptTask::wrongKey ;
 	}
 
 	char version[ 32 ] ;
@@ -263,8 +263,8 @@ int CryptTask::decrypt()
 	int k = -1 ;
 
 	QFile fd_2( m_dest ) ;
-	if( !fd_2.open( QIODevice::WriteOnly) ){
-		return 10 ;
+	if( !fd_2.open( QIODevice::WriteOnly ) ){
+		return CryptTask::createFileFail ;
 	}
 
 	emit titleUpdate( tr( "copying data from the container file" ) ) ;
@@ -278,8 +278,8 @@ int CryptTask::decrypt()
 
 		for( i = 0 ; i < len ; i++ ){
 
-			if( m_status == TERM_ST ){
-				return 1 ;
+			if( m_status == CryptTask::quit ){
+				return CryptTask::quit ;
 			}
 			j = ( int )( i * 100 / len ) ;
 
@@ -314,16 +314,16 @@ int CryptTask::decrypt()
 		this->calculateMd5( m_dest,md5Data ) ;
 
 		if( memcmp( md5sum,md5Data,32 ) != 0 ){
-			return 1000 ;
+			return CryptTask::md5Fail ;
 		}else{
-			return 1 ;
+			return CryptTask::md5Pass ;
 		}
 	}else{
-		return 1 ;
+		return CryptTask::md5Pass ;
 	}
 }
 
-int CryptTask::openMapper( const QString& p )
+CryptTask::status CryptTask::openMapper( const QString& p )
 {
 	m_mapperPath = utility::mapperPath( p ) ;
 
@@ -339,10 +339,14 @@ int CryptTask::openMapper( const QString& p )
 
 	int st = exe.exitCode() ;
 	exe.close() ;
-	return st ;
+	if( st == 0 ){
+		return CryptTask::success ;
+	}else{
+		return CryptTask::openMapperFail ;
+	}
 }
 
-int CryptTask::closeMapper( const QString& p )
+CryptTask::status CryptTask::closeMapper( const QString& p )
 {
 	QString path = p ;
 	path.replace( "\"","\"\"\"" ) ;
@@ -352,7 +356,11 @@ int CryptTask::closeMapper( const QString& p )
 	exe.waitForFinished() ;
 	int st = exe.exitStatus() ;
 	exe.close() ;
-	return st ;
+	if( st == 0 ){
+		return CryptTask::success ;
+	}else{
+		return CryptTask::closeMapperFail ;
+	}
 }
 
 void CryptTask::run()
@@ -360,24 +368,31 @@ void CryptTask::run()
 	if( m_task == QString( "-E" ) ){
 		m_status = this->encrypt() ;
 
-		if( m_status == 10 || m_status == 13 ){
+		if( m_status == CryptTask::OpenSourceFail || m_status == CryptTask::OpenDestinationFail || CryptTask::openMapperFail ){
 			;
-		}else if( m_status == 0 ){
+		}else if( m_status == CryptTask::success ){
+			m_status = CryptTask::encryptSuccess ;
 			this->closeMapper( m_dest ) ;
 			QFile::setPermissions( m_dest,QFile::ReadOwner|QFile::WriteOwner ) ;
+		}else if( m_status == CryptTask::openMapperWriteFail ){
+			this->closeMapper( m_dest ) ;
 		}else{
 			this->closeMapper( m_dest ) ;
 			QFile::remove( m_dest ) ;
 		}
 	}else{
 		m_status = this->openMapper( m_source ) ;
-		if( m_status == 0 ){
+		if( m_status == CryptTask::success ){
 			m_status = this->decrypt() ;
 			this->closeMapper( m_source ) ;
-			if( m_status == TERM_ST ){
+			if( m_status == CryptTask::quit ){
 				QFile::remove( m_dest ) ;
-			}else if( m_status == 1 || m_status == 1000 ){
+			}else if( m_status == CryptTask::md5Pass || m_status == CryptTask::md5Fail ){
 				QFile::setPermissions( m_dest,QFile::ReadOwner|QFile::WriteOwner ) ;
+			}else if( m_status == CryptTask::wrongKey ){
+				;
+			}else{
+				m_status = CryptTask::decryptSuccess ;
 			}
 		}
 	}
@@ -385,5 +400,5 @@ void CryptTask::run()
 
 CryptTask::~CryptTask()
 {
-	emit complete( m_status ) ;
+	emit complete( int( m_status ) ) ;
 }

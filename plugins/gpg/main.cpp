@@ -17,15 +17,15 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QtGui/QApplication>
+#include <QApplication>
 #include "mainwindow.h"
 
 int main( int argc,char * argv[] )
 {
-	QApplication a( argc,argv );
-	MainWindow w;
+	QApplication a( argc,argv ) ;
+	MainWindow w ;
 	w.SetAddr( QString( argv[ 3 ] ) ) ;
-	w.show();
+	w.show() ;
 
-	return a.exec();
+	return a.exec() ;
 }

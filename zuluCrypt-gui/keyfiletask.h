@@ -27,6 +27,10 @@ class keyFileTask : public QThread
 {
 	Q_OBJECT
 public:
+	typedef enum{
+		unset,
+		cancelled
+	}status ;
 	explicit keyFileTask( const QString&,int ) ;
 	~keyFileTask() ;
 signals:
@@ -37,7 +41,7 @@ private:
 	void run( void ) ;
 	QString m_path ;
 	int m_rng ;
-	int m_cancelled ;
+	keyFileTask::status m_status ;
 	int m_qfread ;
 	int m_qfwrite ;
 };

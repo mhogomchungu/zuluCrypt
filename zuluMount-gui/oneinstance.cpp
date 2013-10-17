@@ -101,7 +101,7 @@ void oneinstance::gotConnection()
 void oneinstance::connected()
 {
 	if( !m_device.isEmpty() ){
-		m_localSocket->write( m_device.toAscii() ) ;
+		m_localSocket->write( m_device.toLatin1() ) ;
 		m_localSocket->waitForBytesWritten() ;
 	}
 

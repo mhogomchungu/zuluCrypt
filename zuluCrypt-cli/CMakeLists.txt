@@ -142,14 +142,20 @@
  set_target_properties( zuluCrypt-cli PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
  set_target_properties( zuluMount-cli PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
   
- if( KEYRINGSUPPORT )
-	add_executable( keyring  ../plugins/keyring/keyring.c )
-	set_target_properties( keyring PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread  -pedantic -std=c99" )
-	set_target_properties( keyring PROPERTIES LINK_FLAGS "-pie" )
-	TARGET_LINK_LIBRARIES( keyring zuluCryptPluginManager ${keyring_library} ${blkid} )
- 	set_target_properties( keyring PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
-	install( TARGETS keyring RUNTIME DESTINATION "${PLUGINPATH}" )
- endif( KEYRINGSUPPORT )
+ if( NOT NOSECRETSUPPORT )
+
+	pkg_check_modules( LIBSECRET libsecret-1 )
+
+	if( LIBSECRET_FOUND )
+		add_definitions( ${LIBSECRET_CFLAGS} )
+		add_executable( keyring  ../plugins/keyring/keyring.c )
+		set_target_properties( keyring PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread  -pedantic" )
+		set_target_properties( keyring PROPERTIES LINK_FLAGS "-pie" )
+		TARGET_LINK_LIBRARIES( keyring zuluCryptPluginManager ${keyring_library} ${blkid} ${LIBSECRET_LIBRARIES} )
+		set_target_properties( keyring PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
+		install( TARGETS keyring RUNTIME DESTINATION "${PLUGINPATH}" )
+	endif()
+ endif()
  
  install(TARGETS zuluCrypt-cli RUNTIME DESTINATION bin            
             PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE SETUID

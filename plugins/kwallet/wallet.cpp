@@ -33,6 +33,11 @@ wallet::wallet( QString path,QString uuid,QString sockAddr )
 	m_handle = socketSendKey::zuluCryptPluginManagerOpenConnection( m_sockAddr ) ;
 }
 
+QString wallet::KDELocalWallet( void )
+{
+	return KWallet::Wallet::LocalWallet() ;
+}
+
 void wallet::openWallet()
 {
 	m_wallet = Wallet::openWallet( utility::defaultKDEWalletName(),0,KWallet::Wallet::Synchronous ) ;

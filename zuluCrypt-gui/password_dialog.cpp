@@ -394,7 +394,7 @@ void passwordDialog::buttonOpenClicked( void )
 		if( wallet == tr( KWALLET ) ){
 			m_wallet = lxqt::Wallet::getWalletBackend( lxqt::Wallet::kwalletBackEnd ) ;
 			m_wallet->setInterfaceObject( this ) ;
-			m_wallet->open( utility::defaultKDEWalletName(),utility::applicationName() ) ;
+			m_wallet->open( m_wallet->localDefaultWalletName(),utility::applicationName() ) ;
 		}else if( wallet == tr( INTERNAL_WALLET ) ){
 			m_wallet = lxqt::Wallet::getWalletBackend( lxqt::Wallet::internalBackEnd ) ;
 			m_wallet->setInterfaceObject( this ) ;
@@ -496,7 +496,7 @@ void passwordDialog::openVolume()
 
 void passwordDialog::sendKey( const QString& sockpath )
 {
-	socketSendKey * sk = new socketSendKey( this,sockpath,m_key.toAscii() ) ;
+	socketSendKey * sk = new socketSendKey( this,sockpath,m_key.toLatin1() ) ;
 	sk->sendKey() ;
 }
 

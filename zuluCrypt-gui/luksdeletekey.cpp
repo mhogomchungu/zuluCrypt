@@ -201,7 +201,7 @@ void luksdeletekey::deleteKey( QStringList l )
 		keypath = utility::resolvePath( m_ui->lineEditPassphrase->text() ) ;
 	}else{
 		keypath = socketSendKey::getSocketPath() ;
-		socketSendKey * s = new socketSendKey( this,keypath,m_ui->lineEditPassphrase->text().toAscii() ) ;
+		socketSendKey * s = new socketSendKey( this,keypath,m_ui->lineEditPassphrase->text().toLatin1() ) ;
 		s->sendKey() ;
 	}
 
@@ -224,9 +224,9 @@ void luksdeletekey::pbDelete()
 		msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
 	}else{
 		this->disableAll() ;
-		
+
 		m_volumePath.replace( "\"","\"\"\"" ) ;
-		
+
 		Task * t = new Task( m_volumePath ) ;
 		connect( t,SIGNAL( finished( QStringList ) ),this,SLOT( deleteKey( QStringList ) ) ) ;
 		t->start( Task::LUKSSlotUsage ) ;

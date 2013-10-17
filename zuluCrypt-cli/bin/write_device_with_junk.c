@@ -64,7 +64,7 @@ static int zuluExit( stringList_t stl, int status )
 				 StringListPrintLineAt( stl,index ) ;
 			 }
 			 break ;
-		case 1 : printf( gettext(  "ERROR: could not create mapper\n" ) )					;break ;
+		case 1 : printf( gettext( "ERROR: could not create mapper\n" ) )					;break ;
 		case 2 : printf( gettext( "ERROR: could not resolve device path\n" ) )					;break ;
 		case 3 : printf( gettext( "\nSUCCESS: random data successfully written\n" ) )				;break ;
 		case 5 : printf( gettext( "INFO: user chose not to proceed\n" ) ) 					;break ;

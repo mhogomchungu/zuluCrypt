@@ -52,10 +52,6 @@
 #include "storage_manager.h"
 #include "dialogmsg.h"
 
-#if HAS_KWALLET_SUPPORT
-	#include <kwallet.h>
-#endif
-
 QString utility::cryptMapperPath()
 {
 	//return QString( crypt_get_dir() )
@@ -87,7 +83,7 @@ options:\n\
 	-e   start the application without showing the GUI\n" ) ;
 	}
 
-	QByteArray s = helpMsg.toAscii() ;
+	QByteArray s = helpMsg.toLatin1() ;
 
 	std::cout << s.constData() << std::endl ;
 }
@@ -104,7 +100,7 @@ QString utility::shareMountPointToolTip( const QString& path )
 {
 	struct stat st ;
 	QString s = QString( "/run/media/public/" ) + path.split( "/" ).last() ;
-	QByteArray x = s.toAscii() ;
+	QByteArray x = s.toLatin1() ;
 	const char * y = x.constData() ;
 	if( stat( y,&st ) == 0 ){
 		return QString( "public mount point: " ) + s ;
@@ -121,7 +117,7 @@ QString utility::sharedMountPointPath( const QString& path )
 	}else{
 		struct stat st ;
 		QString s = QString( "/run/media/public/" ) + path.split( "/" ).last() ;
-		QByteArray x = s.toAscii() ;
+		QByteArray x = s.toLatin1() ;
 		const char * y = x.constData() ;
 		if( stat( y,&st ) == 0 ){
 			return s ;
@@ -134,7 +130,7 @@ QString utility::sharedMountPointPath( const QString& path )
 bool utility::pathPointsToAFile( const QString& path )
 {
 	struct stat st ;
-	QByteArray b = path.toAscii() ;
+	QByteArray b = path.toLatin1() ;
 	if( stat( b.constData(),&st ) == 0 ){
 		return S_ISREG( st.st_mode ) != 0 ;
 	}else{
@@ -216,15 +212,6 @@ QString utility::walletName()
 	return "zuluCrypt" ;
 }
 
-QString utility::defaultKDEWalletName()
-{
-	#if HAS_KWALLET_SUPPORT
-		return KWallet::Wallet::LocalWallet() ;
-	#else
-		return "zuluCrypt" ;
-	#endif
-}
-
 QString utility::applicationName()
 {
 	return "zuluCrypt" ;
@@ -232,7 +219,7 @@ QString utility::applicationName()
 
 bool utility::pathIsReadable( const QString& path )
 {
-	int fd = open( path.toAscii().constData(),O_RDONLY ) ;
+	int fd = open( path.toLatin1().constData(),O_RDONLY ) ;
 	if( fd != -1 ){
 		close( fd ) ;
 		return true ;
@@ -359,9 +346,9 @@ QString utility::mapperPath( const QString& r )
 	if( rpath.startsWith( QString( "UUID=" ) ) ){
 		rpath.remove( QChar( '\"' ) ) ;
 		rpath.replace( QString( "UUID=" ),QString( "UUID-" ) ) ;
-		path += QString( "-" ) + rpath + utility::hashPath( rpath.toAscii() ) ;
+		path += QString( "-" ) + rpath + utility::hashPath( rpath.toLatin1() ) ;
 	}else{
-		path += QString( "-NAAN-" ) + rpath.split( "/" ).last() + utility::hashPath( rpath.toAscii() ) ;
+		path += QString( "-NAAN-" ) + rpath.split( "/" ).last() + utility::hashPath( rpath.toLatin1() ) ;
 	}
 
 	QString z = QString( BASH_SPECIAL_CHARS ) ;
@@ -395,12 +382,12 @@ QString utility::hashPath( const QByteArray& p )
 bool utility::exists( const QString& path )
 {
 	struct stat st ;
-	return stat( path.toAscii().data(),&st ) == 0 ;
+	return stat( path.toLatin1().data(),&st ) == 0 ;
 }
 
 bool utility::canCreateFile( const QString& path )
 {
-	QByteArray q = path.toAscii() ;
+	QByteArray q = path.toLatin1() ;
 
 	int i = open( q.constData(),O_WRONLY|O_CREAT,S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH ) ;
 
@@ -462,7 +449,7 @@ void utility::addToFavorite( const QString& dev,const QString& m_point )
 	QString fav = QString( "%1\t%2\n" ).arg( dev ).arg( m_point ) ;
 	QFile f( QDir::homePath() + QString( "/.zuluCrypt/favorites" ) ) ;
 	f.open( QIODevice::WriteOnly | QIODevice::Append ) ;
-	f.write( fav.toAscii() ) ;
+	f.write( fav.toLatin1() ) ;
 	f.close() ;
 }
 

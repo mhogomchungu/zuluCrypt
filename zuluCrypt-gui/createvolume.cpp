@@ -416,7 +416,7 @@ void createvolume::pbCreateClicked()
 		}else{
 			source = QString( "-f" ) ;
 			passphrase_1 = socketSendKey::getSocketPath() + QString( "-2" ) ;
-			socketSendKey * s = new socketSendKey( this,passphrase_1,m_ui->lineEditPassphrase1->text().toAscii() ) ;
+			socketSendKey * s = new socketSendKey( this,passphrase_1,m_ui->lineEditPassphrase1->text().toLatin1() ) ;
 			s->sendKey() ;
 		}
 	}
@@ -462,7 +462,7 @@ void createvolume::pbCreateClicked()
 
 		if( m_ui->rbHiddenKey->isChecked() ){
 			y = socketSendKey::getSocketPath() + QString( "-1" ) ;
-			socketSendKey * s = new socketSendKey( this,y,x.toAscii() ) ;
+			socketSendKey * s = new socketSendKey( this,y,x.toLatin1() ) ;
 			s->sendKey() ;
 		}else{
 			y = x ;

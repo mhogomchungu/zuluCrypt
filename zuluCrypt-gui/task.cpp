@@ -215,8 +215,8 @@ void Task::runVolumeTask()
 
 void Task::addKeyTask()
 {
-	m_wallet->addKey( m_volumeID,m_key.toAscii() ) ;
-	m_wallet->addKey( m_volumeID + COMMENT,m_comment.toAscii() ) ;
+	m_wallet->addKey( m_volumeID,m_key.toLatin1() ) ;
+	m_wallet->addKey( m_volumeID + COMMENT,m_comment.toLatin1() ) ;
 }
 
 void Task::deleteKeyTask()

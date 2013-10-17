@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 
 add_definitions( -D_FILE_OFFSET_BITS=64 -Wextra -Wall -pedantic -std=c++0x -I${PROJECT_BINARY_DIR}/zuluCrypt-gui/ ) 
 
-set (UI_FILES createfile.ui
+set( UI_FILES createfile.ui
 		createvolume.ui
 		luksdeletekey.ui
 		password.ui
@@ -47,7 +47,7 @@ set( MOC_FILES createfile.h
 		../zuluMount-gui/oneinstance.h
  )
 	
-set (SRC createfile.cpp
+set( SRC createfile.cpp
 	createvolume.cpp
 	luksdeletekey.cpp
 	openvolume.cpp
@@ -71,16 +71,19 @@ set (SRC createfile.cpp
 	keystrength.cpp
 	walletconfig.cpp
 	walletconfiginput.cpp
-	../zuluMount-gui/oneinstance.cpp	
+	../zuluMount-gui/oneinstance.cpp
 )
 
-INCLUDE( ${QT_USE_FILE} )
-
-QT4_WRAP_UI( UI ${UI_FILES} )
-
-QT4_WRAP_CPP( MOC ${MOC_FILES} )
-
-QT4_ADD_RESOURCES( TRAY_RC_SRCS icon.qrc )
+if( QT5 )
+	Qt5_WRAP_UI( UI ${UI_FILES} )
+	Qt5_WRAP_CPP( MOC ${MOC_FILES} )
+	Qt5_ADD_RESOURCES( TRAY_RC_SRCS icon.qrc )
+else()
+	INCLUDE( ${QT_USE_FILE} )
+	Qt4_WRAP_UI( UI ${UI_FILES} )
+	Qt4_WRAP_CPP( MOC ${MOC_FILES} )
+	Qt4_ADD_RESOURCES( TRAY_RC_SRCS icon.qrc )
+endif()
 
 INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
 
@@ -89,6 +92,22 @@ add_executable( zuluCrypt-gui ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS}  )
 target_link_libraries( zuluCrypt-gui sharedObject zuluCryptPluginManager -lQtNetwork zuluCryptMD5 ) 
 
 set_target_properties( zuluCrypt-gui PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
+
+set_target_properties( zuluCrypt-gui PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIC -pedantic" )
+
+if( QT5 )
+	if( library_pwquality )
+		TARGET_LINK_LIBRARIES( zuluCrypt-gui lxqtwallet ${Qt5Widgets_LIBRARIES} ${QtCore_LIBRARIES} ${blkid} ${library_pwquality} )
+	else( library_pwquality )
+		TARGET_LINK_LIBRARIES( zuluCrypt-gui lxqtwallet ${Qt5Widgets_LIBRARIES} ${QtCore_LIBRARIES} ${blkid} ${kwallet_library} )
+	endif( library_pwquality )
+else()
+	if( library_pwquality )
+		TARGET_LINK_LIBRARIES( zuluCrypt-gui lxqtwallet ${QT_LIBRARIES} ${blkid} ${library_pwquality} )
+	else( library_pwquality )
+		TARGET_LINK_LIBRARIES( zuluCrypt-gui lxqtwallet ${QT_LIBRARIES} ${blkid} ${kwallet_library} )
+	endif( library_pwquality )
+endif()
 
 if( library_pwquality )
 	TARGET_LINK_LIBRARIES( zuluCrypt-gui lxqtwallet ${QT_LIBRARIES} ${blkid} ${library_pwquality} )

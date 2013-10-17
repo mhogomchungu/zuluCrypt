@@ -18,18 +18,18 @@
  */
 
 
-#include <QtCore/QCoreApplication>
+#include <QCoreApplication>
 #include "wallet.h"
 
 int main( int argc,char * argv[] )
 {
-	QCoreApplication a( argc,argv );
+	QCoreApplication a( argc,argv ) ;
 
 	wallet w( argv[ 1 ],argv[ 2 ],argv[ 3 ] ) ;
 	
 	QCoreApplication::setApplicationName( QString( "zuluCrypt kwallet plugin" ) ) ;
 	
-	QMetaObject::invokeMethod( &w,"openWallet",Qt::QueuedConnection );
+	QMetaObject::invokeMethod( &w,"openWallet",Qt::QueuedConnection ) ;
 
 	return a.exec() ;
 }

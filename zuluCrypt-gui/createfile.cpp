@@ -191,11 +191,6 @@ void createfile::pbCreate()
 	connect( m_task,SIGNAL( doneCreatingFile() ),this,SLOT( doneCreatingFile() ) ) ;
 	connect( m_task,SIGNAL( progress( int ) ),this,SLOT( progress( int ) ) ) ;
 	connect( this,SIGNAL( cancelOperation()),m_task,SLOT( cancelOperation() ) ) ;
-
-	/*
-	  exitStatus will be 1 if the thread is terminated
-	  exitStatus will be 0 if the thread is left to finish its work
-	  */
 	connect( m_task,SIGNAL( exitStatus( int ) ),this,SLOT( exitStatus( int ) ) ) ;
 
 	m_task->start() ;
@@ -205,13 +200,17 @@ void createfile::exitStatus( int status )
 {
 	m_task = NULL ;
 
-	if( status == -1 ){
+	FileTask::status st = FileTask::status( status ) ;
+	if( st == FileTask::cancelled ){
 		QFile::remove( m_path ) ;
 		return HideUI() ;
-	}else if( status == 0 ){
+	}else if( st == FileTask::success ){
 		if( m_msg->isVisible() ){
 			m_msg->HideUI() ;
 		}
+	}else if( st == FileTask::openMapperFailed ){
+		DialogMsg msg( this ) ;
+		msg.ShowUIOK( tr( "ERROR" ),tr( "could not open cryptographic back end to generate random data" ) ) ;
 	}else{
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR" ),tr( "could not open cryptographic back end to generate random data" ) ) ;

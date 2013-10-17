@@ -41,8 +41,8 @@ lxqt::Wallet::internalWallet::~internalWallet()
 
 bool lxqt::Wallet::internalWallet::openWallet()
 {
-	lxqt_wallet_error r = lxqt_wallet_open( &m_wallet,m_password.toAscii().constData(),m_password.size(),
-		      m_walletName.toAscii().constData(),m_applicationName.toAscii().constData() ) ;
+	lxqt_wallet_error r = lxqt_wallet_open( &m_wallet,m_password.toLatin1().constData(),m_password.size(),
+		      m_walletName.toLatin1().constData(),m_applicationName.toLatin1().constData() ) ;
 	return r == lxqt_wallet_no_error ;
 }
 
@@ -161,7 +161,7 @@ void lxqt::Wallet::internalWallet::changeWalletPassWord( const QString& walletNa
 QByteArray lxqt::Wallet::internalWallet::readValue( const QString& key )
 {
 	lxqt_wallet_key_values_t key_value ;
-	if( lxqt_wallet_read_key_value( m_wallet,key.toAscii().constData(),key.size() + 1,&key_value ) ){
+	if( lxqt_wallet_read_key_value( m_wallet,key.toLatin1().constData(),key.size() + 1,&key_value ) ){
 		return QByteArray( key_value.key_value,key_value.key_value_size ) ;
 	}else{
 		return QByteArray() ;
@@ -202,13 +202,13 @@ bool lxqt::Wallet::internalWallet::addKey( const QString& key,const QByteArray& 
 	 * For the key,we add +1 to the key size to include the '\0' character in the key to
 	 * avoid possible collisions if our keys prefix match
 	 */
-	lxqt_wallet_error r = lxqt_wallet_add_key( m_wallet,key.toAscii().constData(),key.size() + 1,value.constData(),value.size() ) ;
+	lxqt_wallet_error r = lxqt_wallet_add_key( m_wallet,key.toLatin1().constData(),key.size() + 1,value.constData(),value.size() ) ;
 	return r == lxqt_wallet_no_error ;
 }
 
 void lxqt::Wallet::internalWallet::deleteKey( const QString& key )
 {
-	lxqt_wallet_delete_key( m_wallet,key.toAscii().constData(),key.size() + 1 ) ;
+	lxqt_wallet_delete_key( m_wallet,key.toLatin1().constData(),key.size() + 1 ) ;
 }
 
 int lxqt::Wallet::internalWallet::walletSize( void )
@@ -252,7 +252,7 @@ QString lxqt::Wallet::internalWallet::storagePath()
 QStringList lxqt::Wallet::internalWallet::managedWalletList()
 {
 	char path[ 4096 ] ;
-	lxqt_wallet_application_wallet_path( path,4096,m_applicationName.toAscii().constData() ) ;
+	lxqt_wallet_application_wallet_path( path,4096,m_applicationName.toLatin1().constData() ) ;
 	QDir d( path ) ;
 	QStringList l = d.entryList() ;
 	l.removeOne( "." ) ;
@@ -267,4 +267,14 @@ QStringList lxqt::Wallet::internalWallet::managedWalletList()
 	}
 
 	return l ;
+}
+
+QString lxqt::Wallet::internalWallet::localDefaultWalletName()
+{
+	return QString() ;
+}
+
+QString lxqt::Wallet::internalWallet::networkDefaultWalletName()
+{
+	return QString() ;
 }

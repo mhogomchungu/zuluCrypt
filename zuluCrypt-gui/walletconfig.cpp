@@ -202,7 +202,7 @@ void walletconfig::ShowUI( lxqt::Wallet::walletBackEnd backEnd )
 	m_wallet = lxqt::Wallet::getWalletBackend( backEnd ) ;
 	m_wallet->setInterfaceObject( this ) ;
 	if( backEnd == lxqt::Wallet::kwalletBackEnd ){
-		m_wallet->open( utility::defaultKDEWalletName(),utility::applicationName() ) ;
+		m_wallet->open( m_wallet->localDefaultWalletName(),utility::applicationName() ) ;
 	}else{
 		m_wallet->open( utility::walletName(),utility::applicationName() ) ;
 	}

@@ -25,14 +25,14 @@
 getgpgkey::getgpgkey( QString exe,QString key,QString keyFile )
 {
 	m_gpgExe = exe ;
-	m_key = key.toAscii() ;
+	m_key = key.toLatin1() ;
 	m_keyFile = keyFile ;
 	m_stop = false ;
 }
 
 void getgpgkey::start()
 {
-	QThreadPool::globalInstance()->start( this );
+	QThreadPool::globalInstance()->start( this ) ;
 }
 
 void getgpgkey::run()
@@ -46,15 +46,15 @@ void getgpgkey::run()
 		arg = m_gpgExe + QString( " --no-tty --yes --no-mdc-warning --no-verbose --passphrase-fd 0 -d " ) + m_keyFile ;
 	}
 
-	exe.start( arg );
+	exe.start( arg ) ;
 
 	exe.waitForStarted() ;
 
 	m_pid = exe.pid() ;
 
 	exe.write( m_key ) ;
-	exe.closeWriteChannel();
-	exe.waitForFinished( -1 );
+	exe.closeWriteChannel() ;
+	exe.waitForFinished( -1 ) ;
 	m_key = exe.readAllStandardOutput() ;
 	exe.close();
 }

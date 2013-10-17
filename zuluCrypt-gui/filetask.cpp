@@ -24,16 +24,16 @@
 #include <QFile>
 #include "utility.h"
 
-FileTask::FileTask( QString file,qulonglong size )
+FileTask::FileTask( const QString& file,qulonglong size )
 {
-	m_status = 0 ;
+	m_status = FileTask::unset ;
 	m_file = file ;
 	m_size = size ;
 }
 
 void FileTask::cancelOperation()
 {
-	m_status = -1 ;
+	m_status = FileTask::cancelled ;
 }
 
 void FileTask::start()
@@ -41,12 +41,12 @@ void FileTask::start()
 	QThreadPool::globalInstance()->start( this ) ;
 }
 
-int FileTask::createContainerFile( void )
+FileTask::status FileTask::createContainerFile( void )
 {
 	QFile file( m_file ) ;
 
 	if( !file.open( QIODevice::WriteOnly ) ){
-		return 0 ;
+		return FileTask::openFileFailed ;
 	}
 	char buffer[ BLOCK_SIZE ] ;
 
@@ -58,31 +58,37 @@ int FileTask::createContainerFile( void )
 	int j = 0 ;
 	int k ;
 	do{
-		if( m_status == -1 ){
+		if( m_status == FileTask::cancelled ){
 			break ;
+		}else{
+			random.read( buffer,BLOCK_SIZE ) ;
+			file.write( buffer,BLOCK_SIZE ) ;
+			file.flush() ;
+
+			size_written += BLOCK_SIZE ;
+
+			k = ( int ) ( size_written * 100 / m_size ) ;
+
+			if( k > j ){
+				emit progress( k ) ;
+			}
+			j = k ;
 		}
-		random.read( buffer,BLOCK_SIZE ) ;
-		file.write( buffer,BLOCK_SIZE ) ;
-		file.flush() ;
 
-		size_written += BLOCK_SIZE ;
-
-		k = ( int ) ( size_written * 100 / m_size ) ;
-
-		if( k > j ){
-			emit progress( k ) ;
-		}
-		j = k ;
 	}while( size_written < m_size ) ;
 
 	file.setPermissions( QFile::ReadOwner|QFile::WriteOwner ) ;
 	file.close() ;
 	random.close() ;
 
-	return m_status == -1 ? -1 : 0 ;
+	if( m_status != FileTask::cancelled ){
+		return FileTask::success ;
+	}else{
+		return FileTask::cancelled ;
+	}
 }
 
-int FileTask::createContainerFileUsinggCrypt( void )
+FileTask::status FileTask::createContainerFileUsinggCrypt( void )
 {/*
 	#define GSIZE 16
 
@@ -170,10 +176,9 @@ void FileTask::run()
 		 */
 		this->createFile() ;
 
-		if( m_status != 0 ){
-			return ;
+		if( m_status != FileTask::cancelled ){
+			this->fillCreatedFileWithRandomData() ;
 		}
-		this->fillCreatedFileWithRandomData() ;
 	}
 }
 
@@ -202,18 +207,19 @@ void FileTask::createFile()
 		double k = m_size / SIZE ;
 
 		for( i = 0 ; i < k ; i++ ){
-			if( m_status == -1 ){
+			if( m_status == FileTask::cancelled ){
 				break ;
-			}
-			if( x > y ){
-				emit progress( x ) ;
-				y = x ;
-			}
-			file.write( data,BLOCK_SIZE ) ;
-			file.flush() ;
-			data_written += BLOCK_SIZE ;
+			}else{
+				if( x > y ){
+					emit progress( x ) ;
+					y = x ;
+				}
+				file.write( data,BLOCK_SIZE ) ;
+				file.flush() ;
+				data_written += BLOCK_SIZE ;
 
-			x = ( int )( data_written * 100 / m_size ) ;
+				x = ( int )( data_written * 100 / m_size ) ;
+			}
 		}
 
 		emit doneCreatingFile() ;
@@ -222,12 +228,13 @@ void FileTask::createFile()
 
 	file.setPermissions( QFile::ReadOwner|QFile::WriteOwner ) ;
 	file.close() ;
+	m_status = FileTask::success ;
 }
 
 void FileTask::fillCreatedFileWithRandomData()
 {
 	this->openVolume()  ;
-	if( m_status == 0 ){
+	if( m_status == FileTask::success ){
 		this->writeVolume() ;
 		this->closeVolume() ;
 	}
@@ -257,8 +264,12 @@ void FileTask::openVolume()
 	QProcess p ;
 	p.start( exe ) ;
 	p.waitForFinished() ;
-	m_status = p.exitCode() ;
-	p.close() ;
+
+	if( p.exitCode() == 0 ){
+		m_status = FileTask::success ;
+	}else{
+		m_status = FileTask::openMapperFailed ;
+	}
 }
 
 void FileTask::writeVolume()
@@ -291,16 +302,17 @@ void FileTask::writeVolume()
 			k = j ;
 		}
 
-		if( m_status == -1 ){
+		if( m_status == FileTask::cancelled ){
 			break ;
 		}
 	}
 
 	emit progress( 100 ) ;
+	m_status = FileTask::success ;
 	path.close() ;
 }
 
 FileTask::~FileTask()
 {
-	emit exitStatus( m_status ) ;
+	emit exitStatus( int( m_status ) ) ;
 }

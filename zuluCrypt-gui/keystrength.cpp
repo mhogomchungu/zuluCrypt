@@ -41,7 +41,7 @@ bool keystrength::canCheckQuality()
 
 int keystrength::quality( const QString& key )
 {
-	return pwquality_check( PWQUALITY_CAST( m_handle ),key.toAscii().constData(),NULL,NULL,NULL ) ;
+	return pwquality_check( PWQUALITY_CAST( m_handle ),key.toLatin1().constData(),NULL,NULL,NULL ) ;
 }
 
 keystrength::~keystrength()

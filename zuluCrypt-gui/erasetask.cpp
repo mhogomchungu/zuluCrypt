@@ -49,7 +49,7 @@ void EraseTask::start()
 int EraseTask::writeJunk()
 {
 	const int ZSIZE = 512 ;
-	QByteArray arraypath = m_path.toAscii() ;
+	QByteArray arraypath = m_path.toLatin1() ;
 	int f = open( arraypath.constData(),O_RDONLY ) ;
 	if( f == -1 ){
 		return 8;
@@ -137,7 +137,7 @@ void EraseTask::writeJunkThroughMapper()
 	int i ;
 	int j = -1 ;
 
-	QByteArray arraypath = path.toAscii() ;
+	QByteArray arraypath = path.toLatin1() ;
 	int f = open( arraypath.constData(),O_RDONLY ) ;
 	if( f == -1 ){
 		return ;

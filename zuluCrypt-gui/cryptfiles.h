@@ -53,7 +53,7 @@ private slots:
 	void rbKeyChecked( void ) ;
 	void rbKeyFileChecked( void ) ;
 	void sourceTextChanged( QString ) ;
-	void threadExitStatus( int ) ;
+	void taskFinished( int ) ;
 	void progressBarUpdate( int ) ;
 	void titleUpdate( QString ) ;
 private:

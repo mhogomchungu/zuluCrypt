@@ -22,32 +22,32 @@
 
 MainWindow::MainWindow( QWidget * parent ) : QWidget( parent ),m_ui( new Ui::MainWindow )
 {
-	m_ui->setupUi( this );
+	m_ui->setupUi( this ) ;
 
-	m_ui->lineEditKey->setEchoMode( QLineEdit::Password );
+	m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
 
-	this->setWindowIcon( QIcon( QString( ":/key.png" ) ) );
+	this->setWindowIcon( QIcon( QString( ":/key.png" ) ) ) ;
 
 	QAction * ac = new QAction( this ) ;
 	QList<QKeySequence> keys ;
-	keys.append( Qt::Key_Enter );
-	keys.append( Qt::Key_Return );
+	keys.append( Qt::Key_Enter ) ;
+	keys.append( Qt::Key_Return ) ;
 	ac->setShortcuts( keys ) ;
 	connect( ac,SIGNAL( triggered() ),this,SLOT( defaultButton() ) ) ;
-	this->addAction( ac );
+	this->addAction( ac ) ;
 
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->pbOpen,SIGNAL( clicked() ),this,SLOT( pbOpen() ) ) ;
 
-	this->SetFocus();
+	this->SetFocus() ;
 }
 
 void MainWindow::defaultButton()
 {
 	if( m_ui->pbCancel->hasFocus() ){
-		this->pbCancel();
+		this->pbCancel() ;
 	}else{
-		this->pbOpen();
+		this->pbOpen() ;
 	}
 }
 
@@ -60,38 +60,38 @@ void MainWindow::SetAddr( QString addr )
 void MainWindow::SetFocus()
 {
 	if( m_ui->lineEditKey->text().isEmpty() ){
-		m_ui->lineEditKey->setFocus();
+		m_ui->lineEditKey->setFocus() ;
 	}else{
-		m_ui->pbOpen->setFocus();
+		m_ui->pbOpen->setFocus() ;
 	}
 }
 
 void MainWindow::pbCancel()
 {
-	this->done();
+	this->done() ;
 }
 
 void MainWindow::done()
 {
-	this->hide();
+	this->hide() ;
 	QCoreApplication::exit() ;
 }
 void MainWindow::pbOpen()
 {
-	QByteArray key = m_ui->lineEditKey->text().toAscii() ;
+	QByteArray key = m_ui->lineEditKey->text().toLatin1() ;
 
 	if( key.isEmpty() ){
 		DialogMsg msg( this ) ;
-		return msg.ShowUIOK( tr( "ERROR" ),tr( "key field is empty" ) );
+		return msg.ShowUIOK( tr( "ERROR" ),tr( "key field is empty" ) ) ;
 	}
 
 	socketSendKey::zuluCryptPluginManagerSendKey( m_handle,key ) ;
 
-	this->done();
+	this->done() ;
 }
 
 MainWindow::~MainWindow()
 {
 	socketSendKey::zuluCryptPluginManagerCloseConnection( m_handle ) ;
-	delete m_ui;
+	delete m_ui ;
 }

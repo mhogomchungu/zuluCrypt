@@ -39,7 +39,8 @@ class wallet : public QObject
 	Q_OBJECT
 public:
 	wallet( QString path,QString uuid,QString sockAddr ) ;
-	~wallet();
+	~wallet() ;
+	static QString KDELocalWallet( void ) ;
 private slots:
 	void openWallet( void ) ;
 	void Exit( void ) ;

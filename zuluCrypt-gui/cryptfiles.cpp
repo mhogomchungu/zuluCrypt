@@ -251,7 +251,7 @@ void cryptfiles::pbCreate()
 		}
 
 		QString sockpath = socketSendKey::getSocketPath() ;
-		socketSendKey * sk = new socketSendKey( this,sockpath,key_1.toAscii() ) ;
+		socketSendKey * sk = new socketSendKey( this,sockpath,key_1.toLatin1() ) ;
 		key_1 = sockpath ;
 		sk->sendKey() ;
 	}else{
@@ -268,7 +268,7 @@ void cryptfiles::pbCreate()
 
 	m_task = new CryptTask( source,dest,keySource,key_1,m_operation ) ;
 
-	connect( m_task,SIGNAL( complete( int ) ),this,SLOT( threadExitStatus( int ) ) ) ;
+	connect( m_task,SIGNAL( complete( int ) ),this,SLOT( taskFinished( int ) ) ) ;
 	connect( m_task,SIGNAL( progressUpdate( int ) ),this,SLOT( progressBarUpdate( int ) ) ) ;
 	connect( m_task,SIGNAL( titleUpdate( QString ) ),this,SLOT( titleUpdate( QString ) ) ) ;
 	connect( m_task,SIGNAL( enableCancel() ),this,SLOT( enableCancel() ) ) ;
@@ -346,35 +346,51 @@ void cryptfiles::pbKeyFile()
 	}
 }
 
-void cryptfiles::threadExitStatus( int st )
+void cryptfiles::taskFinished( int st )
 {
 	DialogMsg msg( this ) ;
 
 	m_OperationInProgress = false ;
 
-	switch( st ){
-		case 0 : msg.ShowUIOK( tr( "SUCCESS" ),tr( "encrypted file created successfully" ) ) ;
+	CryptTask::status status = CryptTask::status( st ) ;
+
+	switch( status ){
+		case CryptTask::encryptSuccess        : msg.ShowUIOK( tr( "SUCCESS" ),tr( "encrypted file created successfully" ) )     ;
 			 return this->HideUI() ;
-		case 1 : msg.ShowUIOK( tr( "SUCCESS" ),tr( "decrypted file created successfully" ) )	;
+		case CryptTask::md5Pass               :
+		case CryptTask::decryptSuccess        : msg.ShowUIOK( tr( "SUCCESS" ),tr( "decrypted file created successfully" ) )	;
 			 return this->HideUI() ;
-		case 2 : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open keyfile for reading" ) )				; break ;
-		case 3 : msg.ShowUIOK( tr( "ERROR!" ),tr( "missing key source" ) )						; break ;
-		case 4 : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open encryption routines" ) )				; break ;
-		case 5 : msg.ShowUIOK( tr( "ERROR!" ),tr( "file or folder already exist at destination address" ) )		; break ;
-		case 6 : msg.ShowUIOK( tr( "ERROR!" ),tr( "invalid path to source" ) )						; break ;
-		case 7 : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not resolve path to destination file" ) )			; break ;
-		case 8 : msg.ShowUIOK( tr( "ERROR!" ),tr( "keys do not match" ) )						; break ;
-		case 9 : msg.ShowUIOK( tr( "ERROR!" ),tr( "required argument is missing" ) )					; break ;
-		case 10: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to create destination file" ) )		; break ;
-		case 11: msg.ShowUIOK( tr( "ERROR!" ),tr( "presented key did not match the encryption key" ) )			; break ;
-		case 12: msg.ShowUIOK( tr( "INFO!" ),tr( "operation terminated per user request" ) ) ;
-			 return this->HideUI() ;
-		case 13: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open source file for reading" ) )		; break ;
-		case 1000: msg.ShowUIOK( tr( "WARNING"),tr( "decrypted file created successfully but md5 checksum failed,file maybe corrupted" ) ) ;
-		return this->HideUI() ;
+		case CryptTask::openKeyFileReadFail   : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open keyfile for reading" ) )	;
+			 break ;
+		case CryptTask::CryptTask::openMapperFail : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open encryption routines" ) )	;
+			break ;
+		case CryptTask::destinationFileExists : msg.ShowUIOK( tr( "ERROR!" ),tr( "file or folder already exist at destination address" ) )    ;
+			break ;
+		case CryptTask::OpenDestinationFail   :
+		case CryptTask::createFileFail        : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to create destination file" ) )      ;
+			break ;
+		case CryptTask::wrongKey              : msg.ShowUIOK( tr( "ERROR!" ),tr( "presented key did not match the encryption key" ) )         ;
+			break ;
+		case CryptTask::quit                  : msg.ShowUIOK( tr( "INFO!" ),tr( "operation terminated per user request" ) )                   ;
+			return this->HideUI() ;
+		case CryptTask::OpenSourceFail        : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open source file for reading" ) ) ;
+			break ;
+		case CryptTask::md5Fail               : msg.ShowUIOK( tr( "WARNING"),tr( "decrypted file created successfully but md5 checksum failed,file maybe corrupted" ) ) ;
+			return this->HideUI() ;
+		case CryptTask::openMapperReadFail    : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open reading encryption routines" ) )	;
+			break ;
+		case CryptTask::openMapperWriteFail   : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open writing encryption routines" ) )	;
+			break ;
+		case CryptTask::unset                 :
+		case CryptTask::success               :
+		case CryptTask::closeMapperFail       :
+		case CryptTask::QProcessFail          :
+			break ;
 	}
+
 	this->enableAll() ;
-	if( st == 11 || st == 2 ){
+
+	if( status == CryptTask::wrongKey  ){
 		m_ui->lineEditPass_1->clear() ;
 		m_ui->lineEditPass_1->setFocus() ;
 	}

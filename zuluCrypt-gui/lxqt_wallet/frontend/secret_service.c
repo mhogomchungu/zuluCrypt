@@ -87,7 +87,7 @@ int lxqt_secret_service_wallet_is_open( const void * s )
 
 char * lxqt_secret_service_get_value( const char * key,const void * s )
 {
-	return secret_password_lookup_sync( ( SecretSchema * )s,NULL,NULL,"string",key,NULL ) ;
+	return secret_password_lookup_sync( CAST_SCHEMA( s ),NULL,NULL,"string",key,NULL ) ;
 }
 
 void * lxqt_secret_service_create_schema( const char * schemaName,const char * type )

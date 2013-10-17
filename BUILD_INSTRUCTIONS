@@ -44,6 +44,9 @@ Volumes by default are mounted in "/run/media/private/$USER".A compile time opti
 instead in user's home directory.
 eg: cmake -DCMAKE_INSTALL_PREFIX=/usr/ -DHOMEMOUNTPREFIX=true -DCMAKE_BUILD_TYPE=RELEASE . ..
 
+3.7
+Qt4 is the default Qt dependency,to build against Qt5,pass "-DQT5=true" to cmake
+
 4.0 make
 
 5.0 make install ( or sudo make install or su -c "make install" )

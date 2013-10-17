@@ -27,6 +27,26 @@ class CryptTask : public QObject,public QRunnable
 {
 	Q_OBJECT
 public:
+	typedef enum{
+		unset,
+		quit,
+		success,
+		openMapperReadFail,
+		openMapperWriteFail,
+		openMapperFail,
+		closeMapperFail,
+		openKeyFileReadFail,
+		QProcessFail,
+		md5Fail,
+		md5Pass,
+		wrongKey,
+		encryptSuccess,
+		decryptSuccess,
+		destinationFileExists,
+		createFileFail,
+		OpenSourceFail,
+		OpenDestinationFail
+	}status;
 	explicit CryptTask( const QString& source,const QString& dest,
 			    const QString& keySource,const QString& key,const QString& task ) ;
 	~CryptTask() ;
@@ -43,17 +63,17 @@ public slots:
 private:
 	void calculateMd5( const QString& path,char * result ) ;
 	void run( void ) ;
-	int encrypt( void ) ;
-	int decrypt( void ) ;
-	int openMapper( const QString& path ) ;
-	int closeMapper( const QString& path ) ;
+	CryptTask::status encrypt( void ) ;
+	CryptTask::status decrypt( void ) ;
+	CryptTask::status openMapper( const QString& path ) ;
+	CryptTask::status closeMapper( const QString& path ) ;
 	QString m_source ;
 	QString m_dest ;
 	QString m_keySource ;
 	QString m_key ;
 	QString m_task ;
 	QString m_mapperPath ;
-	int m_status ;
+	CryptTask::status m_status ;
 };
 
 #endif // CryptTask_H

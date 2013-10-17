@@ -60,15 +60,15 @@ void lxqt::Wallet::Task::start( lxqt::Wallet::Task::action action )
 void lxqt::Wallet::Task::run()
 {
 	if( m_action == lxqt::Wallet::Task::openInternal ){
-		lxqt_wallet_error r = lxqt_wallet_open( m_wallet,m_password.toAscii().constData(),m_password.size(),
-						     m_walletName.toAscii().constData(),m_applicationName.toAscii().constData() ) ;
+		lxqt_wallet_error r = lxqt_wallet_open( m_wallet,m_password.toLatin1().constData(),m_password.size(),
+						     m_walletName.toLatin1().constData(),m_applicationName.toLatin1().constData() ) ;
 		emit walletOpened( r == lxqt_wallet_no_error ) ;
 	}else if( m_action == lxqt::Wallet::Task::openSecretService ){
 		emit walletOpened( m_function( m_schema ) ) ;
 	}else if( m_action == lxqt::Wallet::Task::createVolume ) {
 
-		lxqt_wallet_error r = lxqt_wallet_create( m_password.toAscii().constData(),m_password.size(),
-				    m_walletName.toAscii().constData(),m_applicationName.toAscii().constData() ) ;
+		lxqt_wallet_error r = lxqt_wallet_create( m_password.toLatin1().constData(),m_password.size(),
+				    m_walletName.toLatin1().constData(),m_applicationName.toLatin1().constData() ) ;
 		if( r != lxqt_wallet_no_error ){
 			emit taskResult( false ) ;
 		}else{

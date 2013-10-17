@@ -117,7 +117,7 @@ void manageSystemVolumes::writeSystemPartitions()
 		if( j > 0 ){
 			for( int i = 0 ; i < j ; i++ ){
 				it = table->item( i,0 ) ;
-				file.write( it->text().toAscii() ) ;
+				file.write( it->text().toLatin1() ) ;
 				file.putChar( '\n' ) ;
 			}
 		}

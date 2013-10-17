@@ -272,7 +272,7 @@ void luksaddkey::pbAdd( void )
 		existingPassType = QString( "-u" ) ;
 		ExistingKey = socketSendKey::getSocketPath() + QString( "-existingKey" ) ;
 
-		socketSendKey * s = new socketSendKey( this,ExistingKey,m_ui->textEditExistingPassphrase->text().toAscii() ) ;
+		socketSendKey * s = new socketSendKey( this,ExistingKey,m_ui->textEditExistingPassphrase->text().toLatin1() ) ;
 		s->sendKey() ;
 	}
 
@@ -285,7 +285,7 @@ void luksaddkey::pbAdd( void )
 
 		NewKey = socketSendKey::getSocketPath() + QString( "-newKey" ) ;
 
-		socketSendKey * s = new socketSendKey( this,NewKey,m_ui->textEditPassphraseToAdd->text().toAscii() ) ;
+		socketSendKey * s = new socketSendKey( this,NewKey,m_ui->textEditPassphraseToAdd->text().toLatin1() ) ;
 		s->sendKey() ;
 	}
 

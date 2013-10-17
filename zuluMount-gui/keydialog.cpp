@@ -337,7 +337,7 @@ void keyDialog::pbOpen()
 		if( r == tr( KWALLET ) ){
 			m_wallet = lxqt::Wallet::getWalletBackend( lxqt::Wallet::kwalletBackEnd ) ;
 			m_wallet->setInterfaceObject( this ) ;
-			m_wallet->open( utility::defaultKDEWalletName(),utility::applicationName() ) ;
+			m_wallet->open( m_wallet->localDefaultWalletName(),utility::applicationName() ) ;
 		}else if( r == tr( INTERNAL_WALLET ) ){
 			m_wallet = lxqt::Wallet::getWalletBackend( lxqt::Wallet::internalBackEnd ) ;
 			m_wallet->setInterfaceObject( this ) ;
@@ -386,7 +386,7 @@ void keyDialog::openVolume()
 	if( m_ui->rbKey->isChecked() ){
 		QString addr = socketSendKey::getSocketPath() ;
 		m = QString( "-f ") + addr ;
-		socketSendKey * s = new socketSendKey( this,addr,m_ui->lineEditKey->text().toAscii() ) ;
+		socketSendKey * s = new socketSendKey( this,addr,m_ui->lineEditKey->text().toLatin1() ) ;
 		s->sendKey() ;
 	}else if( m_ui->rbKeyFile->isChecked() ){
 		m = QString( "-f ") + m_ui->lineEditKey->text().replace( "\"","\"\"\"" ) ;
@@ -396,7 +396,7 @@ void keyDialog::openVolume()
 		}else{
 			QString addr = socketSendKey::getSocketPath() ;
 			m = QString( "-f ") + addr ;
-			socketSendKey * s = new socketSendKey( this,addr,m_key.toAscii() ) ;
+			socketSendKey * s = new socketSendKey( this,addr,m_key.toLatin1() ) ;
 			s->sendKey() ;
 		}
 	}

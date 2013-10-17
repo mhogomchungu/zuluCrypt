@@ -34,7 +34,7 @@ keyFileTask::keyFileTask( const QString& path,int rng )
 {
 	m_path = path ;
 	m_rng = rng ;
-	m_cancelled = 0 ;
+	m_status = keyFileTask::unset ;
 }
 
 void keyFileTask::run()
@@ -46,7 +46,7 @@ void keyFileTask::run()
 	}else{
 		m_qfread = open( "/dev/random",O_RDONLY ) ;
 	}
-	QByteArray path = m_path.toAscii() ;
+	QByteArray path = m_path.toLatin1() ;
 
 	m_qfwrite = open( path.constData(),O_WRONLY|O_CREAT,S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH ) ;
 
@@ -61,7 +61,7 @@ void keyFileTask::run()
 
 void keyFileTask::cancelOperation()
 {
-	m_cancelled = 1 ;
+	m_status = keyFileTask::cancelled ;
 	this->terminate() ;
 	this->deleteLater() ;
 }
@@ -70,8 +70,8 @@ keyFileTask::~keyFileTask()
 {
 	close( m_qfread ) ;
 	close( m_qfwrite ) ;
-	if( m_cancelled != 1 ){
+	if( m_status != keyFileTask::cancelled ){
 		QFile::setPermissions( m_path,QFile::ReadOwner|QFile::WriteOwner ) ;
 	}
-	emit exitStatus( m_cancelled ) ;
+	emit exitStatus( m_status ) ;
 }

@@ -43,6 +43,7 @@
 #include <QMessageBox>
 #include <QCloseEvent>
 #include <QUrl>
+#include <QMimeData>
 
 #include "../zuluCrypt-cli/constants.h"
 #include "../zuluMount-gui/oneinstance.h"
@@ -82,7 +83,7 @@ void zuluCrypt::setLocalizationLanguage()
 	QString lang     = utility::localizationLanguage( program ) ;
 	QString langPath = utility::localizationLanguagePath( program ) ;
 
-	QByteArray r = lang.toAscii() ;
+	QByteArray r = lang.toLatin1() ;
 
 	QByteArray e( "en_US" ) ;
 	if( e == r ){
@@ -786,7 +787,7 @@ void zuluCrypt::itemClicked( QTableWidgetItem * item,bool clicked )
 
 	m.addAction( ac ) ;
 
-	if( data.contains( fav.toAscii() ) ){
+	if( data.contains( fav.toLatin1() ) ){
 		a.setEnabled( false ) ;
 	}else{
 		a.setEnabled( true ) ;

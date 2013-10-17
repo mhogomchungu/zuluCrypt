@@ -47,7 +47,7 @@ private slots:
 	void pbCancel( void ) ;
 	void pbCreate( void ) ;
 	void pbOpenFolder( void ) ;
-	void threadExitStatus( int ) ;
+	void taskStatus( int ) ;
 	void keyTextChange( QString ) ;
 private:
 	void closeEvent( QCloseEvent * ) ;

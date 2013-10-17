@@ -115,7 +115,7 @@ bool lxqt::Wallet::deleteWallet( lxqt::Wallet::walletBackEnd bk,const QString& w
 	}
 
 	if( bk == lxqt::Wallet::internalBackEnd ){
-		return lxqt_wallet_delete_wallet( walletName.toAscii().constData(),appName.toAscii().constData() ) == lxqt_wallet_no_error ;
+		return lxqt_wallet_delete_wallet( walletName.toLatin1().constData(),appName.toLatin1().constData() ) == lxqt_wallet_no_error ;
 	}
 
 	if( bk == lxqt::Wallet::kwalletBackEnd ){
@@ -147,7 +147,7 @@ bool lxqt::Wallet::walletExists( lxqt::Wallet::walletBackEnd bk,const QString& w
 	}
 
 	if( bk == lxqt::Wallet::internalBackEnd ){
-		return lxqt_wallet_exists( walletName.toAscii().constData(),appName.toAscii().constData() ) == 0 ;
+		return lxqt_wallet_exists( walletName.toLatin1().constData(),appName.toLatin1().constData() ) == 0 ;
 	}
 
 	if( bk == lxqt::Wallet::kwalletBackEnd ){

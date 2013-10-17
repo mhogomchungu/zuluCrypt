@@ -146,19 +146,19 @@ void createkeyfile::pbCreate()
 	this->disableAll() ;
 
 	m_task = new keyFileTask( path,m_ui->comboBoxRNG->currentIndex() ) ;
-	connect( m_task,SIGNAL( exitStatus( int ) ),this,SLOT( threadExitStatus( int ) ) ) ;
+	connect( m_task,SIGNAL( exitStatus( int ) ),this,SLOT( taskStatus( int ) ) ) ;
 	m_task->start() ;
 }
 
-void createkeyfile::threadExitStatus( int st )
+void createkeyfile::taskStatus( int st )
 {
 	DialogMsg msg( this ) ;
 
 	m_task = NULL ;
-	switch( st ){
-	case 1:	msg.ShowUIOK( tr( "WARNING!" ),tr( "process interrupted,key not fully generated" ) ) ;
+	switch( keyFileTask::status( st )  ){
+	case keyFileTask::cancelled : msg.ShowUIOK( tr( "WARNING!" ),tr( "process interrupted,key not fully generated" ) ) ;
 		return this->enableAll() ;
-	case 0: msg.ShowUIOK( tr( "SUCCESS!" ),tr( "key file successfully created" ) ) ;
+	case keyFileTask::unset     : msg.ShowUIOK( tr( "SUCCESS!" ),tr( "key file successfully created" ) ) ;
 		return this->HideUI() ;
 	}
 }

@@ -66,6 +66,8 @@ public:
 	QString storagePath( void ) ;
 	void changeWalletPassWord( const QString& walletName,const QString& applicationName = QString() ) ;
 	QStringList managedWalletList( void ) ;
+	QString localDefaultWalletName( void ) ;
+	QString networkDefaultWalletName( void ) ;
 signals:
 	void walletpassWordChanged( bool ) ;
 	void walletOpened_1( bool ) ;

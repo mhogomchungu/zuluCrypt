@@ -54,7 +54,6 @@ public:
 	static QString localizationLanguagePath( const QString& ) ;
 	static void setLocalizationLanguage( const QString&,const QString& ) ;
 	static QString walletName( void ) ;
-	static QString defaultKDEWalletName( void ) ;
 	static QString applicationName( void ) ;
 	static bool pathIsReadable( const QString& ) ;
 	static bool setOpenVolumeReadOnly( QWidget * parent,bool check,const QString& app ) ;
