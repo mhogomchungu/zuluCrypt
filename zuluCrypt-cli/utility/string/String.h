@@ -664,9 +664,19 @@ int StringGetFromFile_3( string_t * st,const char * path,size_t offset,size_t le
 string_t StringGetFromFile_2( const char * path,int * status ) ;
 
 /*
+ * reads a maximum of "length" bytes from a file given by "path" argument starting at "offset" offset
+ * and then lock the memory buffer.
+ * return values:
+ * 0 - success
+ * 1 - file operation failed
+ * 2 - memory operation failed
+ *
+ * The mlock()ed string object will be returned through str argument
+ * negative value of length means reads the entire file content
  * 
+ * warning memory may or may not lock
  */
-int StringGetFromFileLocked( string_t * str,const char * path,size_t offset,size_t length ) ;
+int StringGetFromFileMemoryLocked( string_t * str,const char * path,size_t offset,ssize_t length ) ;
 
 /*
  *  White the string managed by handle st to a file given by path and return the number of bytes written. *  

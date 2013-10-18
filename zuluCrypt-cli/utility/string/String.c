@@ -1658,15 +1658,18 @@ int StringGetFromFile_3( string_t * str,const char * path,size_t offset,size_t l
 	}
 }
 
-int StringGetFromFileLocked( string_t * str,const char * path,size_t offset,size_t length ) 
+int StringGetFromFileMemoryLocked( string_t * str,const char * path,size_t offset,ssize_t length )
 {
 	int fd ;
 	char * c ;
+	
 	ssize_t size ;
+	ssize_t file_size ;
+	
+	size_t reserve_memory_size ;
 	
 	struct stat xt ;
 	
-	*str = StringVoid ;
 	if( path == NULL ){
 		return 1 ;
 	}
@@ -1674,44 +1677,54 @@ int StringGetFromFileLocked( string_t * str,const char * path,size_t offset,size
 		return 1 ;
 	}
 	if( ( fd = open( path,O_RDONLY ) ) == -1 ){
-		return 2 ;	
+		return 1 ;
 	}
 	if( lseek( fd,offset,SEEK_SET ) == -1 ){
 		close( fd ) ;
-		return 2 ;
-	}
-	if( length == 0 ){
-		length = xt.st_size ;
+		return 1 ;
 	}
 	
-	c = ( char * ) malloc( sizeof( char ) * ( length + 1 ) ) ; 
+	file_size = xt.st_size - offset ;
+	
+	if( file_size <= 0 ){
+		close( fd ) ;
+		return 1 ;
+	}
+	if( length <= 0 ){
+		reserve_memory_size = xt.st_size ;
+	}else if( file_size > length ){
+		reserve_memory_size = length ;
+	}else{
+		reserve_memory_size = file_size ;
+	}
+	
+	c = ( char * ) malloc( sizeof( char ) * ( reserve_memory_size + 1 ) ) ;
 	
 	if( c == NULL ) {
 		close( fd ) ;
 		_StringError() ;
-		return 3 ;
-	}
-	
-	mlock( c,length + 1 ) ;
-	
-	size = read( fd,c,length ) ;
-	
-	if( size <= 0 ){
-		munlock( c,length + 1 ) ;
-		free( c ) ;
-		close( fd ) ;
 		return 2 ;
 	}
 	
+	mlock( c,reserve_memory_size + 1 ) ;
+	
+	size = read( fd,c,reserve_memory_size ) ;
+	
 	close( fd ) ;
 	
-	*( c + length ) = '\0' ;
+	if( size <= 0 ){
+		munlock( c,reserve_memory_size + 1 ) ;
+		free( c ) ;
+		return 1 ;
+	}
 	
-	*str = StringInheritWithSize( &c,( size_t )size,length + 1 ) ;
+	*( c + reserve_memory_size ) = '\0' ;
+	
+	*str = StringInheritWithSize( &c,( size_t )size,reserve_memory_size + 1 ) ;
 	
 	if( *str == StringVoid ){
 		free( c ) ;
-		return 3 ;
+		return 2 ;
 	}else{
 		return 0 ;
 	}

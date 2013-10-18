@@ -21,6 +21,8 @@
 #ifndef ZULUCRYPT_BIN
 #define ZULUCRYPT_BIN
 
+#define STRING_MEMORY_HACK 1
+
 #include "../utility/string/String.h" 
 #include "../utility/string/StringList.h" 
 #include "../constants.h"

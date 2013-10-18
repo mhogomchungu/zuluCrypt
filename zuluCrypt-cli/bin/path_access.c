@@ -124,17 +124,26 @@ int zuluCryptGetPassFromFile( const char * path,uid_t uid,string_t * st )
 		/*
 		 * path that starts with $HOME/.zuluCrypt-socket is treated not as a path to key file but as path
 		 * to a local socket to get a passphrase
-		 *
+		 */
+		/*
 		 * zuluCryptGetKeyFromSocket() is defined in ../pluginManager/zuluCryptPluginManager.c
 		 */
 		return zuluCryptGetKeyFromSocket( path,st,uid ) ;
 	}else{
-		switch( StringGetFromFileLocked( st,path,0,0 ) ){
-			case 1 : return 1 ;
-			case 2 : return 4 ;
-			case 3 : return 2 ;
+		/*
+		 * 8192000 bytes is the default cryptsetup maximum keyfile size
+		 */
+		m = StringGetFromFileMemoryLocked( st,path,0,8192000 ) ;
+		
+		switch( m ){
+			case 0 : return 0 ;
+			case 1 : return 4 ;
+			case 2 : return 2 ;
 		}
-		return 0 ;
+		/*
+		 * not supposed to get here
+		 */
+		return -1 ;
 	}
 }
 
