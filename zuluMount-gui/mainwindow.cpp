@@ -417,12 +417,16 @@ void MainWindow::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 			m_sharedFolderPath = utility::sharedMountPointPath( mt ) ;
 			if( m_sharedFolderPath.isEmpty() ){
 				if( utility::pathIsReadable( mt ) ){
+					connect( m.addAction( tr( "properties" ) ),SIGNAL( triggered() ),this,SLOT( volumeProperties() ) ) ;
+					m.addSeparator() ;
 					connect( m.addAction( tr( "open folder" ) ),SIGNAL( triggered() ),
 						 this,SLOT( slotOpenFolder() ) ) ;
 				}else{
-					m.addAction( tr( "no available options for this volume" ) ) ;
+					connect( m.addAction( tr( "properties" ) ),SIGNAL( triggered() ),this,SLOT( volumeProperties() ) ) ;
 				}
 			}else{
+				connect( m.addAction( tr( "properties" ) ),SIGNAL( triggered() ),this,SLOT( volumeProperties() ) ) ;
+				m.addSeparator() ;
 				connect( m.addAction( tr( "open shared folder" ) ),SIGNAL( triggered() ),
 					 this,SLOT( slotOpenSharedFolder() ) ) ;
 			}
