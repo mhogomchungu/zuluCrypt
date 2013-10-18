@@ -275,9 +275,9 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 	/*
 	 * zuluCryptAddKey() is defined in ../lib/add_key.c
 	 */
-	status = zuluCryptAddKey( device,key1,len1,key2,len2 );
+	status = zuluCryptAddKey( device,key1,len1,key2,len2 ) ;
 	
-	zuluCryptSecurityDropElevatedPrivileges();
+	zuluCryptSecurityDropElevatedPrivileges() ;
 	
 	/*
 	 * this function is defined in check_invalid_key.c

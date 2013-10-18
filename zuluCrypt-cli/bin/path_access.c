@@ -29,6 +29,7 @@
 static int has_device_access( const char * path,int c )
 {
 	int f ;
+	
 	if( c == ZULUCRYPTread ){
 		f = open( path,O_RDONLY ) ;
 	}else{
@@ -65,6 +66,9 @@ static int path_is_accessible( const char * path,uid_t uid,int action )
 	}
 	if( StringPrefixMatch( path,"/dev/",5 ) ){
 		if( StringPrefixMatch( path,"/dev/loop",9 ) ){
+			/*
+			 * zuluCryptLoopDeviceAddress_1() is defined in ../zuluCrypt-cli/create_loop_device.c
+			 */
 			xt = zuluCryptLoopDeviceAddress_1( path ) ;
 			if( xt != NULL ){
 				st = has_device_access( xt,action ) ;
@@ -110,32 +114,28 @@ int zuluCryptGetPassFromFile( const char * path,uid_t uid,string_t * st )
 	string_t p     = zuluCryptGetUserHomePath( uid ) ;
 	const char * z = StringAppend( p,".zuluCrypt-socket" ) ;
 	size_t s       = StringLength( p ) ;
+	int m          = StringPrefixMatch( path,z,s ) ;
 	
-	zuluCryptSecurityDropElevatedPrivileges();
+	StringDelete( &p ) ;
 	
-	if( StringPrefixMatch( path,z,s ) ){
-		StringDelete( &p ) ;
+	zuluCryptSecurityDropElevatedPrivileges() ;
+	
+	if( m ){
 		/*
 		 * path that starts with $HOME/.zuluCrypt-socket is treated not as a path to key file but as path
 		 * to a local socket to get a passphrase
 		 *
-		 * This function is defined in ../pluginManager/zuluCryptPluginManager.c
+		 * zuluCryptGetKeyFromSocket() is defined in ../pluginManager/zuluCryptPluginManager.c
 		 */
 		return zuluCryptGetKeyFromSocket( path,st,uid ) ;
+	}else{
+		switch( StringGetFromFileLocked( st,path,0,0 ) ){
+			case 1 : return 1 ;
+			case 2 : return 4 ;
+			case 3 : return 2 ;
+		}
+		return 0 ;
 	}
-	
-	StringDelete( &p ) ;
-	
-	/*
-	 * ZULUCRYPT_KEYFILE_MAX_SIZE is set in ../constants.h
-	 */
-	switch( StringGetFromFileLocked( st,path,0,0 ) ){
-		case 1 : return 1 ;
-		case 2 : return 4 ;
-		case 3 : return 2 ;
-	}
-	
-	return 0 ;
 }
 
 char * zuluCryptEvaluateDeviceTags( const char * tag,const char * path )

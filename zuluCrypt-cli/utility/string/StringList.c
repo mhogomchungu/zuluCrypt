@@ -461,11 +461,11 @@ stringList_t StringListSplit( const char * cstring,char splitter )
 				e = ( char * ) malloc( sizeof( char ) * ( len + 1 ) ) ;
 				if( e == NULL ){
 					StringListDelete( &stl ) ;
-					return _StringListError();
+					return _StringListError() ;
 				}
 				memcpy( e,b,len ) ;
 				*( e + len ) = '\0' ;
-				stx = StringListAppendWithSize( stl,&e,len,len + 1 );
+				stx = StringListAppendWithSize( stl,&e,len,len + 1 ) ;
 				if( stx == StringListVoid ){
 					StringListDelete( &stl ) ;
 					free( e ) ;

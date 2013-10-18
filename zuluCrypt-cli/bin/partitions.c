@@ -450,7 +450,7 @@ void zuluCryptPrintPartitionProperties( const char * device )
 	printf( "%s\t",device ) ;
 	
 	if( blkid == NULL ){
-		zuluCryptSecurityDropElevatedPrivileges();
+		zuluCryptSecurityDropElevatedPrivileges() ;
 		printf( "Nil\tNil\tNil\tNil\n" ) ;
 		return ;
 	} 
@@ -731,7 +731,7 @@ int _zuluCryptPartitionIsSystemPartition( const char * dev,uid_t uid )
 	ssize_t index = -1 ;
 	stl = zuluCryptPartitions( ZULUCRYPTsystemPartitions,uid ) ;
 	if( stl != StringListVoid ){
-		index = StringListContains( stl,dev );
+		index = StringListContains( stl,dev ) ;
 		StringListDelete( &stl ) ;
 	}
 	return index >= 0 ;

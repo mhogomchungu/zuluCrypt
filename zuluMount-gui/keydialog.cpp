@@ -483,5 +483,5 @@ void keyDialog::HideUI()
 keyDialog::~keyDialog()
 {
 	m_menu->deleteLater() ;
-	delete m_ui;
+	delete m_ui ;
 }

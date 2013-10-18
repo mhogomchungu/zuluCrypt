@@ -236,10 +236,9 @@ static int mount_point_prefix_match( const char * m_path,uid_t uid,string_t * m_
 	 * zuluCryptGetUserName() is defined in ../lib/user_home_path.c
 	 */
 	string_t uname = zuluCryptGetUserName( uid ) ;
-	/*
-	 * below constant are set in ../constants.h
-	 */
+
 	const char * str = StringPrepend( uname,"/run/media/private/" ) ;
+	
 	int st = StringPrefixEqual( m_path,str ) ;
 	if( m_point ){
 		*m_point = uname ;
@@ -260,20 +259,17 @@ static string_t create_mount_point( const char * device,const char * label,uid_t
 	
 	path = zuluCryptGetUserName( uid ) ;
 	
-	/*
-	 * below constants are set in ../constants.h
-	 * ZULUCRYPtmountMiniPath contains "/run"
-	 * ZULUCRYPTmountPath contains "/run/media"
-	 */
-	if( stat( "/run",&st ) != 0 ){
+	#define path_does_not_exist( x ) stat( x,&st ) != 0
+	
+	if( path_does_not_exist( "/run" ) ){
 		mkdir( "/run/",mode ) ;
 		chown( "/run/",0,0 ) ;
 	}
-	if( stat( "/run/media",&st ) != 0 ){
+	if( path_does_not_exist( "/run/media" ) ){
 		mkdir( "/run/media",mode ) ;
 		chown( "/run/media",0,0 ) ;
 	}
-	if( stat( "/run/media/private",&st ) != 0 ){
+	if( path_does_not_exist( "/run/media/private" ) ){
 		mkdir( "/run/media/private",mode ) ;
 		chown( "/run/media/private",0,0 ) ;
 	}

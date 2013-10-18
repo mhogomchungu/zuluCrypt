@@ -247,7 +247,6 @@ int zuluCryptBindMountVolume( const char * device,string_t z_path,unsigned long 
 		 * bind mount point exists,this will happen if the mount point is already taken or a mount point folder
 		 * was not autodeleted for some reason 
 		 */
-		
 		tmp = StringCopy( path ) ;
 		e = StringAppend( tmp," " ) ;
 		
