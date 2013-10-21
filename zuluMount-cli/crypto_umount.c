@@ -33,7 +33,7 @@ int zuluMountCryptoUMount( ARGS * args )
 	
 	string_t str = StringVoid ;
 	
-	if( mount_point_option ) {;}
+	if( mount_point_option ){;}
 
 	if( UUID == NULL ){
 		if( StringPrefixEqual( device,"/dev/loop" ) ){

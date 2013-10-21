@@ -52,8 +52,8 @@ public:
 		openSecretService,
 		createVolume
 	}action ;
-	Task( lxqt_wallet_t * wallet,QString password,QString walletName,QString applicationName ) ;
-	Task( QString password,QString walletName,QString applicationName ) ;
+	Task( lxqt_wallet_t * wallet,const QString& password,const QString& walletName,const QString& applicationName ) ;
+	Task( const QString& password,const QString& walletName,const QString& applicationName ) ;
 	Task( int (*)( const void * ),const void * ) ;
 	void start( lxqt::Wallet::Task::action ) ;
 signals:

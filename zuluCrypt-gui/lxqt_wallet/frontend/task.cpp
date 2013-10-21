@@ -30,7 +30,7 @@
 
 #include "task.h"
 
-lxqt::Wallet::Task::Task( lxqt_wallet_t * wallet,QString password,QString walletName,QString applicationName )
+lxqt::Wallet::Task::Task( lxqt_wallet_t * wallet,const QString& password,const QString& walletName,const QString& applicationName )
 {
 	m_wallet          = wallet ;
 	m_password        = password ;
@@ -38,7 +38,7 @@ lxqt::Wallet::Task::Task( lxqt_wallet_t * wallet,QString password,QString wallet
 	m_applicationName = applicationName ;
 }
 
-lxqt::Wallet::Task::Task( QString password,QString walletName,QString applicationName )
+lxqt::Wallet::Task::Task( const QString& password,const QString& walletName,const QString& applicationName )
 {
 	m_password        = password ;
 	m_walletName      = walletName ;
