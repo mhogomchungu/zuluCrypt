@@ -49,6 +49,6 @@ FORMS    += mainwindow.ui\
 RESOURCES += \
     icon.qrc
 
-INCLUDEPATH +=/home/ink/build /home/local/KDE4/include /home/local/QT/include
+INCLUDEPATH +=/home/ink/projects/build/zuluCrypt /home/local/KDE4/include /home/local/QT/include
 
 LIBS += -lzuluCryptPluginManager -lQtNetwork -lkwalletbackend -L/home/local/KDE4/lib -llxqtwallet

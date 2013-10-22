@@ -231,7 +231,7 @@ static void _printDeviceProperties( string_t entry,void * s )
 				
 			StringListRemoveString( stz,x ) ;
 			/*
-			 * zuluCryptDecodeMountEntry() is defined in ../zuluCrypt-cli/lib/mount_volume.c.c
+			 * zuluCryptDecodeMountEntry() is defined in ../zuluCrypt-cli/lib/mount_volume.c
 			 * it decodes space,tab,new line and backslash characters since they are written differently in "/etc/mtab" 
 			 */
 			f = zuluCryptDecodeMountEntry( StringListStringAt( stx,1 ) ) ;
@@ -385,23 +385,26 @@ int zuluMountprintAListOfMountedVolumes( void )
 					if( f != NULL ){
 						puts( f ) ;
 						StringFree( f ) ;
-					}else if( e != NULL ){
+					}else{
 						/*
 						 * not exactly sure what this is,just print it and let the user sort it out
 						 */
-						puts( e ) ;
+						zuluCryptDecodeMountEntry( st ) ;
+						StringPrintLine( st ) ;
 					}
 				}
-			}else if( e != NULL ){
+			}else{
 				/*
 				 * the volume is probably an LVM volume
 				 */
-				puts( e ) ;
+				zuluCryptDecodeMountEntry( st ) ;
+				StringPrintLine( st ) ;
 			}
 			
 			StringDelete( &q ) ;
-		}else if( e != NULL ){
-			puts( e ) ;
+		}else{
+			zuluCryptDecodeMountEntry( st ) ;
+			StringPrintLine( st ) ;
 		}
 	}
 	
@@ -591,10 +594,13 @@ int zuluMountUnEncryptedVolumeStatus( const char * device )
 	}
 	
 	zuluCryptSecurityGainElevatedPrivileges() ;
+
+	q = StringListStringAt( stl,1 ) ;
 	/*
 	 * zuluCryptFileSystemProperties() is defined in ../zuluCrypt-cli/lib/status.c
+	 * zuluCryptDecodeMountEntry() is defined in ../zuluCrypt-cli/lib/mount_volume.c
 	 */
-	zuluCryptFileSystemProperties( p,device,StringListContentAt( stl,1 ) ) ;
+	zuluCryptFileSystemProperties( p,device,zuluCryptDecodeMountEntry( q ) ) ;
 	
 	zuluCryptSecurityDropElevatedPrivileges() ;
 		
