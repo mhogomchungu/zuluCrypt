@@ -546,6 +546,7 @@ int zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t 
 int zuluMountUnEncryptedVolumeStatus( const char * device )
 {
 	char * e ;
+	char * z ;
 	
 	stringList_t stl ;
 		
@@ -568,9 +569,14 @@ int zuluMountUnEncryptedVolumeStatus( const char * device )
 		 * zuluCryptLoopDeviceAddress_1() is defined in ../zuluCrypt-cli/lib/create_loop_device.c
 		 */
 		e = zuluCryptLoopDeviceAddress_1( device ) ;
-		if( e != NULL ){
-			StringMultipleAppend( p," device:   \t",device,"\n loop:   \t",e,"\n offset:    \tNil",NULL ) ;
+		/*
+		 * zuluCryptGetLoopDeviceAddress() is defined in ../zuluCrypt-cli/lib/create_loop_device.c
+		 */
+		z = zuluCryptGetLoopDeviceAddress( device ) ;
+		if( e != NULL && z != NULL ){
+			StringMultipleAppend( p," device:   \t",z,"\n loop:   \t",e,"\n offset:    \tNil",NULL ) ;
 			free( e ) ;
+			free( z ) ;
 		}else{
 			StringMultipleAppend( p," device:   \t",device,"\n loop:   \t",device,"\n offset:    \tNil",NULL ) ;
 		}

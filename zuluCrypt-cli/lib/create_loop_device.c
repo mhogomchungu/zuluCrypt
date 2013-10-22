@@ -91,6 +91,55 @@ char * zuluCryptLoopDeviceAddress_1( const char * device )
 	}
 }
 
+char * zuluCryptGetLoopDeviceAddress( const char * device )
+{
+	char * z = NULL ;
+	const char * e ;
+	
+	string_t st = StringVoid ;
+	string_t xt = StringVoid ;
+	
+	int i ;
+	int r ;
+	
+	z = zuluCryptLoopDeviceAddress_1( device ) ;
+	
+	if( z == NULL ){
+		return NULL ;
+	}else{
+		st = String( "" ) ;
+		for( i = 0 ; i < 255 ; i++ ){
+			StringAppendAt( st,0,"/sys/block/loop" ) ;
+			StringAppendInt( st,i ) ;
+			e = StringAppend( st,"/loop/backing_file" ) ;
+			xt = StringGetFromVirtualFile( e ) ;
+			e = StringRemoveRight( xt,1 ) ;
+			r = StringsAreEqual( e,z ) ;
+			StringDelete( &xt ) ;
+			if( r ){
+				StringAppendAt( st,0,"/dev/loop" ) ;
+				e = StringAppendInt( st,i ) ;
+				if( StringsAreEqual( device,e ) ){
+					;
+				}else{
+					break ;
+				}
+			}else{
+				StringAppendAt( st,0,"" ) ;
+			}
+		}
+		
+		StringFree( z ) ;
+		
+		if( StringEqual( st,"" ) ){
+			StringDelete( &st ) ;
+			return NULL ;
+		}else{
+			return StringDeleteHandle( &st ) ;
+		}
+	}
+}
+
 char * zuluCryptGetFileNameFromFileDescriptor( int fd )
 {
 	char * c = NULL ;

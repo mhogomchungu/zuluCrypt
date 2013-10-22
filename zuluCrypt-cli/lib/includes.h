@@ -139,6 +139,11 @@ char * zuluCryptLoopDeviceAddress_1( const char * device ) ;
 string_t zuluCryptLoopDeviceAddress_2( const char * device ) ;
 
 /*
+ * this function is defined in ./create_loop_device.c  
+ */
+char * zuluCryptGetLoopDeviceAddress( const char * device ) ;
+
+/*
  * this function is defined in ./process_mountinfo.c
  */
 stringList_t zuluCryptGetMoutedListFromMountInfo( void ) ;
