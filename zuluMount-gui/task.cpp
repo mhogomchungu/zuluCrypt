@@ -240,15 +240,11 @@ void Task::volumeProperties()
 	p.start( exe ) ;
 	p.waitForFinished( -1 ) ;
 
-	QString r ;
-
 	if( p.exitCode() == 0 ){
-		r = p.readAll() ;
+		emit signalProperties( p.readAll() ) ;
 	}else{
 		;
 	}
-
-	emit signalProperties( r ) ;
 }
 
 void Task::volumeMiniProperties()
@@ -261,14 +257,11 @@ void Task::volumeMiniProperties()
 	p.start( exe ) ;
 	p.waitForFinished( -1 ) ;
 
-	QString r ;
 	if( p.exitCode() == 0 ){
-		r = p.readAll() ;
+		emit signalProperties( p.readAll() ) ;
 	}else{
 		;
 	}
-
-	emit signalProperties( r ) ;
 }
 
 void Task::cryptoOpen()
@@ -278,10 +271,10 @@ void Task::cryptoOpen()
 
 	QString d = m_device.replace( "\"","\"\"\"" ) ;
 
-	exe = QString( "%1 -m -d \"%2\" -z \"%3\" -e %4 %5" ).arg( zuluMount ).arg( d ).arg( m_point ).arg( m_mode ).arg( m_keySource ) ;
-
 	if( m_publicMount ){
-		exe = exe + QString( " -M" ) ;
+		exe = QString( "%1 -M -m -d \"%2\" -z \"%3\" -e %4 %5" ).arg( zuluMount ).arg( d ).arg( m_point ).arg( m_mode ).arg( m_keySource ) ;
+	}else{
+		exe = QString( "%1 -m -d \"%2\" -z \"%3\" -e %4 %5" ).arg( zuluMount ).arg( d ).arg( m_point ).arg( m_mode ).arg( m_keySource ) ;
 	}
 
 	p.start( exe ) ;
@@ -307,10 +300,10 @@ void Task::mount()
 		m_point = QDir::homePath() + QString( "/" ) + d.split( "/" ).last() ;
 	}
 
-	exe = QString( "%1 -m -d \"%2\" -e %3 -z \"%4\"" ).arg( zuluMount ).arg( m_device ).arg( m_mode ).arg( m_point ) ;
-
 	if( m_publicMount ){
-		exe = exe + QString( " -M" ) ;
+		exe = QString( "%1 -M -m -d \"%2\" -e %3 -z \"%4\"" ).arg( zuluMount ).arg( m_device ).arg( m_mode ).arg( m_point ) ;
+	}else{
+		exe = QString( "%1 -m -d \"%2\" -e %3 -z \"%4\"" ).arg( zuluMount ).arg( m_device ).arg( m_mode ).arg( m_point ) ;
 	}
 
 	p.start( exe ) ;
