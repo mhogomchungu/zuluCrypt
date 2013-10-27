@@ -362,7 +362,7 @@ void cryptfiles::taskFinished( int st )
 			 return this->HideUI() ;
 		case CryptTask::openKeyFileReadFail   : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open keyfile for reading" ) )	;
 			 break ;
-		case CryptTask::CryptTask::openMapperFail : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open encryption routines" ) )	;
+		case CryptTask::openMapperFail : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open encryption routines" ) )	;
 			break ;
 		case CryptTask::destinationFileExists : msg.ShowUIOK( tr( "ERROR!" ),tr( "file or folder already exist at destination address" ) )    ;
 			break ;
@@ -381,9 +381,10 @@ void cryptfiles::taskFinished( int st )
 			break ;
 		case CryptTask::openMapperWriteFail   : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open writing encryption routines" ) )	;
 			break ;
+		case CryptTask::closeMapperFail       : msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to close encryption routine" ) )		;
+			break ;
 		case CryptTask::unset                 :
 		case CryptTask::success               :
-		case CryptTask::closeMapperFail       :
 		case CryptTask::QProcessFail          :
 			break ;
 	}
