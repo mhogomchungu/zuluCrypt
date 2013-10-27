@@ -25,7 +25,7 @@
 char * zuluCryptResolveDevRoot( void )
 {
 	const char * e ;
-	char * dev       = NULL ;
+	char * dev = NULL ;
 	
 	string_t st      = StringGetFromVirtualFile( "/proc/cmdline" ) ;
 	stringList_t stl = StringListStringSplit( st,' ' ) ;
@@ -39,8 +39,19 @@ char * zuluCryptResolveDevRoot( void )
 			 * zuluCryptRealPath() is defined in ./real_path.c
 			 */
 			dev = zuluCryptRealPath( e ) ;
-		}else{
+		}else if( StringPrefixMatch( e,"/dev/mapper/",12 ) ){
+			/*
+			 * zuluCryptConvertIfPathIsLVM() is defined in status.c
+			 */
+			st = zuluCryptConvertIfPathIsLVM( e ) ;
 			dev = StringDeleteHandle( &st ) ;
+		}else if( StringPrefixMatch( e,"/dev/md",7 ) ){
+			/*
+			 * zuluCryptResolveMDPath() is defined in this source file
+			 */
+			dev = zuluCryptResolveMDPath( e ) ;
+		}else{
+			dev = StringCopy_2( e ) ;
 		}
 	}else{
 		st = StringListHasSequence_1( stl,"root=UUID=" ) ;
@@ -408,7 +419,7 @@ string_t zuluCryptGetMountEntry_1( stringList_t stl,const char * path )
 	string_t st ;
 	string_t entry = StringVoid ;
 	ssize_t index ;
-	char * e ;
+	
 	if( stl != StringListVoid ){
 		if( StringPrefixMatch( path,"/dev/mapper/",12 ) ){
 			/*
@@ -422,10 +433,9 @@ string_t zuluCryptGetMountEntry_1( stringList_t stl,const char * path )
 			st = zuluCryptLoopDeviceAddress_2( path ) ;
 		}else if( StringPrefixMatch( path,"/dev/md",7 ) ){
 			/*
-			 * zuluCryptLoopDeviceAddress_2() is defined in ./create_loop_device.c
+			 * zuluCryptResolveMDPath() is defined in this source file
 			 */
-			e = zuluCryptResolveMDPath( path ) ;
-			st = StringInherit( &e ) ;
+			st = zuluCryptResolveMDPath_1( path ) ;
 		}else{
 			st = String( path ) ;
 		}
