@@ -51,7 +51,7 @@ char * zuluCryptResolveDevRoot( void )
 			 */
 			dev = zuluCryptResolveMDPath( e ) ;
 		}else{
-			dev = StringCopy_2( e ) ;
+			dev = StringCopy_1( st ) ;
 		}
 	}else{
 		st = StringListHasSequence_1( stl,"root=UUID=" ) ;
