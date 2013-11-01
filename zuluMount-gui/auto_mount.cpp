@@ -172,14 +172,7 @@ void auto_mount::run()
 					}
 				}
 
-				m_thread_helper = new auto_mount_helper() ;
-
-				connect( m_thread_helper,SIGNAL( getVolumeSystemInfo( QStringList ) ),
-					 m_babu,SLOT( autoMountVolumeSystemInfo( QStringList ) ) ) ;
-				connect( m_thread_helper,SIGNAL( getVolumeInfo( QStringList ) ),
-					 m_babu,SLOT( autoMountVolumeInfo( QStringList ) ) ) ;
-				connect( m_thread_helper,SIGNAL( deviceRemoved( QString ) ),
-					 m_babu,SLOT( deviceRemoved( QString ) ) ) ;
+				m_thread_helper = new auto_mount_helper( m_babu ) ;
 
 				if( pevent->wd == dev ){
 					m_thread_helper->start( device,auto_mount_helper::dev,pevent->mask ) ;

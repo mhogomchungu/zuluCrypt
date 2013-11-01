@@ -263,7 +263,7 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 			len1 = StringSize( existingKey ) ;
 		}else if( StringsAreEqual( keyType1,"-f" ) && StringsAreEqual( keyType2,"-p" ) ){
 			key2 = newKey ;
-			len2 = strlen( newKey ) ;
+			len2 = StringSize( newKey ) ;
 		}else{
 			return zuluExit( 10,stl ) ;
 		}

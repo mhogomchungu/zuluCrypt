@@ -33,7 +33,9 @@
 
 auto_mount_helper::auto_mount_helper( QObject * parent )
 {
-	Q_UNUSED( parent ) ;
+	connect( this,SIGNAL( getVolumeSystemInfo( QStringList ) ),parent,SLOT( autoMountVolumeSystemInfo( QStringList ) ) ) ;
+	connect( this,SIGNAL( getVolumeInfo( QStringList ) ),parent,SLOT( autoMountVolumeInfo( QStringList ) ) ) ;
+	connect( this,SIGNAL( deviceRemoved( QString ) ),parent,SLOT( deviceRemoved( QString ) ) ) ;
 }
 
 auto_mount_helper::~auto_mount_helper()
