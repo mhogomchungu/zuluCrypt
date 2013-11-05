@@ -67,19 +67,16 @@ void zuluCryptDeleteFile( const char * file )
 
 static int _check_if_device_is_supported( int st,uid_t uid,char ** dev )
 {
-	const char * cfs ;
 	string_t fs ;
-	seteuid( 0 ) ;
-	
 	if( st == 0 ){
+		seteuid( 0 ) ;
 		/*
 		* zuluCryptGetFileSystemFromDevice() is defined in mount_volume.c
 		*/
 		fs = zuluCryptGetFileSystemFromDevice( *dev ) ;
 		seteuid( uid ) ;
 		if( fs != StringVoid ){
-			cfs = StringContent( fs ) ;
-			if( StringHasComponent( cfs,"member" ) || StringHasComponent( cfs,"swap" ) ){
+			if( StringHasAtLeastOneComponent( fs,"member","swap",NULL ) ){
 				st = 100 ;
 			}
 			StringDelete( &fs ) ;

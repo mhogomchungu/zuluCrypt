@@ -184,7 +184,7 @@ if( NOT BUILDPWQUALITY )
 endif( NOT BUILDPWQUALITY )
 
 if( NOT UDEVSUPPORT STREQUAL "true" )
-	message( STATUS "udev support,please see build instructions on how to enable it\n" )
+	message( STATUS "udev support\n" )
 endif( NOT UDEVSUPPORT STREQUAL "true" )
 		
 if( NOT BUILD_TCPLAY )
@@ -231,20 +231,16 @@ if( UDEVSUPPORT STREQUAL "true" )
 	file( WRITE ${PROJECT_BINARY_DIR}/udev_support.h "\n#define UDEV_SUPPORT 1\n")
 	
 	message ( STATUS "udev will be consulted when deciding if a volume is system or not." )
-	message ( STATUS "If a partition does not have an entry in fstab,udev will be consulted before a partition is considered non system" )
-	message ( STATUS "and udev's deciding will be the final one." )	
-	message ( STATUS "udev has a bad habit of identifiying some volumes as internal when they are not,please read its documentation" )
-	message ( STATUS "when this happens" )	
+	message ( STATUS "please read \"udev_support\" file for more information about udev support and associated problems.\n\n" )
+	
 else( UDEVSUPPORT STREQUAL "true" )
 	
 	file( WRITE ${PROJECT_BINARY_DIR}/udev_support.h "\n#define UDEV_SUPPORT 0\n")
 	
-	message ( STATUS "udev will NOT be consulted when deciding if a volume is system or not." )	
-	message ( STATUS "This means ONLY partitions with an entry in fstab will be considered as system partition" )
-	message ( STATUS "Please read section 5.0 of the FAQ located at: http://code.google.com/p/zulucrypt/wiki/FAQ" )
-	message ( STATUS "before continuing.It is very important to make sure all partitions that are to be considered system" )
-	message ( STATUS "have an entry in fstab before continuing." )
-	message ( STATUS "Please make this known to your users if you are a distributor and udev support is off\n" )	
+	message ( STATUS "udev will NOT be consulted when deciding if a volume is system or not." )
+	message ( STATUS "please read \"udev_support\" file for more information about udev support and how to enable it." )
+	message ( STATUS "It is probably a good idea to enable it if you are creating a package for distribution.\n\n" )
+	
 endif( UDEVSUPPORT STREQUAL "true" )
 
 install ( FILES zuluCrypt-cli.1.bz2 DESTINATION share/man/man1 )

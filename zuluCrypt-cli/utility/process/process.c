@@ -114,13 +114,14 @@ void ProcessSetArgumentList( process_t p,... )
 		if( e == NULL ){
 			free( args ) ;
 			_ProcessError() ;
+			va_end( list ) ;
 			return ;
 		}else{
 			args = e ;
 		}
 		
 		if( entry == ENDLIST ){
-			args[ index ] = ( char * )0 ;
+			args[ index ] = NULL ;
 			break ;
 		}else{
 			args[ index ] = entry ;
@@ -193,13 +194,13 @@ pid_t ProcessStart( process_t p )
 			setuid( p->str.user_id ) ;
 		}
 		
-		dup2( p->fd_0[ 0 ],0 )    ;
-		dup2( p->fd_1[ 1 ],1 )    ;
-		dup2( p->fd_2[ 1 ],2 )    ;
+		dup2( p->fd_0[ 0 ],0 ) ;
+		dup2( p->fd_1[ 1 ],1 ) ;
+		dup2( p->fd_2[ 1 ],2 ) ;
 		
-		close( p->fd_1[ 0 ] )     ;
-		close( p->fd_0[ 1 ] )     ;
-		close( p->fd_2[ 0 ] )     ;
+		close( p->fd_1[ 0 ] ) ;
+		close( p->fd_0[ 1 ] ) ;
+		close( p->fd_2[ 0 ] ) ;
 		
 		if( p->str.priority != 0 ){
 			setpriority( PRIO_PROCESS,0,p->str.priority ) ;
