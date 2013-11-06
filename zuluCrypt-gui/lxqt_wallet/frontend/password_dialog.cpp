@@ -65,8 +65,8 @@ void LxQt::Wallet::password_dialog::ShowUI( const QString& walletName )
 	m_ui->labelWalletDoesNotExist->setText( m_ui->textEdit_2->toHtml().arg( walletName ) ) ;
 	m_ui->labelHeader->setVisible( false ) ;
 	m_ui->lineEditKey->setVisible( false ) ;
-	m_ui->pushButtonSend->setText( tr( "yes" ) ) ;
-	m_ui->pushButtonCancel->setText( tr( "no" ) ) ;
+	m_ui->pushButtonSend->setText( tr( "Yes" ) ) ;
+	m_ui->pushButtonCancel->setText( tr( "No" ) ) ;
 	this->show() ;
 }
 
@@ -132,7 +132,7 @@ void LxQt::Wallet::password_dialog::passwordIsCorrect( bool correctPassword )
 	if( correctPassword ){
 		this->HideUI() ;
 	}else{
-		m_ui->labelHeader->setText( tr( "wallet could not be opened with the presented key" ) ) ;
+		m_ui->labelHeader->setText( tr( "Wallet could not be opened with the presented key" ) ) ;
 		m_ui->textEdit->setVisible( false ) ;
 		m_ui->labelWalletDoesNotExist->setVisible( false ) ;
 		m_ui->labelHeader->setVisible( true ) ;

@@ -66,9 +66,9 @@ void LxQt::Wallet::changePassWordDialog::HideUI()
 
 void LxQt::Wallet::changePassWordDialog::ShowUI_1()
 {
-	this->setWindowTitle( tr( "create a new wallet" ) ) ;
+	this->setWindowTitle( tr( "Create a new wallet" ) ) ;
 
-	m_ui->pushButtonChange->setText( tr( "create" ) ) ;
+	m_ui->pushButtonChange->setText( tr( "Create" ) ) ;
 
 	connect( m_ui->pushButtonChange,SIGNAL( clicked() ),this,SLOT( create() ) ) ;
 	connect( m_ui->pushButtonOK,SIGNAL( clicked() ),this,SLOT( ok_1() ) ) ;
@@ -93,7 +93,7 @@ void LxQt::Wallet::changePassWordDialog::create()
 		emit password( m_ui->lineEditNewPassWord->text(),true ) ;
 		this->HideUI() ;
 	}else{
-		m_ui->label->setText( tr( "passwords do not match" ) ) ;
+		m_ui->label->setText( tr( "Passwords do not match" ) ) ;
 		m_ui->pushButtonOK->setVisible( true ) ;
 		m_ui->pushButtonCancel->setVisible( false ) ;
 		m_ui->pushButtonChange->setVisible( false ) ;
@@ -132,7 +132,7 @@ void LxQt::Wallet::changePassWordDialog::change()
 			this->taskResult( false ) ;
 		}
 	}else{
-		m_ui->label->setText( tr( "new passwords do not match" ) ) ;
+		m_ui->label->setText( tr( "New passwords do not match" ) ) ;
 		m_ui->pushButtonOK->setVisible( true ) ;
 		m_ui->pushButtonCancel->setVisible( false ) ;
 		m_ui->pushButtonChange->setVisible( false ) ;
@@ -196,7 +196,7 @@ void LxQt::Wallet::changePassWordDialog::taskResult( bool opened )
 		}else{
 			m_ui->pushButtonChange->setEnabled( true ) ;
 			m_ui->pushButtonCancel->setEnabled( true ) ;
-			m_ui->label->setText( tr( "wallet password could not be changed" ) ) ;
+			m_ui->label->setText( tr( "Wallet password could not be changed" ) ) ;
 			m_ui->pushButtonCancel->setVisible( false ) ;
 			m_ui->pushButtonChange->setVisible( false ) ;
 			m_ui->pushButtonOK->setVisible( true ) ;
@@ -205,7 +205,7 @@ void LxQt::Wallet::changePassWordDialog::taskResult( bool opened )
 	}else{
 		m_ui->pushButtonChange->setEnabled( true ) ;
 		m_ui->pushButtonCancel->setEnabled( true ) ;
-		m_ui->label->setText( tr( "wallet could not be opened with the presented key" ) ) ;
+		m_ui->label->setText( tr( "Wallet could not be opened with the presented key" ) ) ;
 		m_ui->pushButtonCancel->setVisible( false ) ;
 		m_ui->pushButtonChange->setVisible( false ) ;
 		m_ui->pushButtonOK->setVisible( true ) ;
