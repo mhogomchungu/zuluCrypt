@@ -204,10 +204,10 @@ void keyDialog::Plugin()
 	list.removeOne( "keyring" ) ;
 	list.removeOne( "kwallet" ) ;
 
-	if( lxqt::Wallet::backEndIsSupported( lxqt::Wallet::secretServiceBackEnd ) ){
+	if( LxQt::Wallet::backEndIsSupported( LxQt::Wallet::secretServiceBackEnd ) ){
 		list.prepend( tr( GNOME_WALLET ) ) ;
 	}
-	if( lxqt::Wallet::backEndIsSupported( lxqt::Wallet::kwalletBackEnd ) ){
+	if( LxQt::Wallet::backEndIsSupported( LxQt::Wallet::kwalletBackEnd ) ){
 		list.prepend( tr( KWALLET ) ) ;
 	}
 
@@ -335,17 +335,17 @@ void keyDialog::pbOpen()
 	if( m_ui->rbPlugIn->isChecked() ){
 		QString r = m_ui->lineEditKey->text() ;
 		if( r == tr( KWALLET ) ){
-			m_wallet = lxqt::Wallet::getWalletBackend( lxqt::Wallet::kwalletBackEnd ) ;
+			m_wallet = LxQt::Wallet::getWalletBackend( LxQt::Wallet::kwalletBackEnd ) ;
 			m_wallet->setInterfaceObject( this ) ;
 			m_wallet->open( m_wallet->localDefaultWalletName(),utility::applicationName() ) ;
 		}else if( r == tr( INTERNAL_WALLET ) ){
-			m_wallet = lxqt::Wallet::getWalletBackend( lxqt::Wallet::internalBackEnd ) ;
+			m_wallet = LxQt::Wallet::getWalletBackend( LxQt::Wallet::internalBackEnd ) ;
 			m_wallet->setInterfaceObject( this ) ;
 			QObject * obj = m_wallet->qObject() ;
 			connect( obj,SIGNAL( getPassWord( QString ) ),this,SLOT( getPassWord( QString ) ) ) ;
 			m_wallet->open( utility::walletName(),utility::applicationName(),_internalPassWord ) ;
 		}else if( r == tr( GNOME_WALLET ) ){
-			m_wallet = lxqt::Wallet::getWalletBackend( lxqt::Wallet::secretServiceBackEnd ) ;
+			m_wallet = LxQt::Wallet::getWalletBackend( LxQt::Wallet::secretServiceBackEnd ) ;
 			m_wallet->setInterfaceObject( this ) ;
 			m_wallet->open( utility::walletName(),utility::applicationName() ) ;
 		}else{

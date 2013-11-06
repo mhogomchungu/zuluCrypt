@@ -40,7 +40,7 @@ class walletconfig : public QDialog
 public:
 	explicit walletconfig( QWidget * parent = 0 ) ;
 	~walletconfig() ;
-	void ShowUI( lxqt::Wallet::walletBackEnd ) ;
+	void ShowUI( LxQt::Wallet::walletBackEnd ) ;
 	void HideUI( void ) ;
 signals:
 	void HideUISignal( void ) ;
@@ -61,9 +61,9 @@ private:
 	const QByteArray& getAccInfo( const QString& acc ) ;
 	Ui::walletconfig * m_ui ;
 	void closeEvent( QCloseEvent * ) ;
-	lxqt::Wallet::Wallet * m_wallet ;
+	LxQt::Wallet::Wallet * m_wallet ;
 	int m_action ;
-	QVector<lxqt::Wallet::walletKeyValues> m_keys ;
+	QVector<LxQt::Wallet::walletKeyValues> m_keys ;
 	int m_row ;
 	QByteArray m_bogusEntry ;
 	QString m_volumeID ;

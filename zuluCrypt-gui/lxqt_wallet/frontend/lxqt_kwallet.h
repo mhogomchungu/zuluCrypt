@@ -41,11 +41,11 @@
 
 class QWidget ;
 
-namespace lxqt{
+namespace LxQt{
 
 namespace Wallet{
 
-class kwallet : public lxqt::Wallet::Wallet
+class kwallet : public LxQt::Wallet::Wallet
 {
 	Q_OBJECT
 public:
@@ -54,12 +54,12 @@ public:
 	bool addKey( const QString& key,const QByteArray& value ) ;
 	void open( const QString& walletName,const QString& applicationName,const QString& password = QString() ) ;
 	QByteArray readValue( const QString& key ) ;
-	QVector<lxqt::Wallet::walletKeyValues> readAllKeyValues( void ) ;
+	QVector<LxQt::Wallet::walletKeyValues> readAllKeyValues( void ) ;
 	QStringList readAllKeys( void ) ;
 	void deleteKey( const QString& key ) ;
 	int walletSize( void )  ;
 	void closeWallet( bool ) ;
-	lxqt::Wallet::walletBackEnd backEnd( void ) ;
+	LxQt::Wallet::walletBackEnd backEnd( void ) ;
 	bool walletIsOpened( void ) ;
 	void setInterfaceObject( QWidget * parent ) ;
 	QObject * qObject( void ) ;

@@ -323,8 +323,8 @@ void zuluCrypt::setupConnections()
 	connect( m_ui->actionManage_volumes_in_gnome_wallet,SIGNAL( triggered() ),this,SLOT( manageVolumesInGNOMEWallet() ) ) ;
 	connect( m_ui->actionManage_volumes_in_internal_wallet,SIGNAL( triggered() ),this,SLOT( manageVolumesInInternalWallet() ) ) ;
 
-	m_ui->actionManage_volumes_in_gnome_wallet->setEnabled( lxqt::Wallet::backEndIsSupported( lxqt::Wallet::secretServiceBackEnd ) ) ;
-	m_ui->actionManage_volumes_in_kde_wallet->setEnabled( lxqt::Wallet::backEndIsSupported( lxqt::Wallet::kwalletBackEnd ) ) ;
+	m_ui->actionManage_volumes_in_gnome_wallet->setEnabled( LxQt::Wallet::backEndIsSupported( LxQt::Wallet::secretServiceBackEnd ) ) ;
+	m_ui->actionManage_volumes_in_kde_wallet->setEnabled( LxQt::Wallet::backEndIsSupported( LxQt::Wallet::kwalletBackEnd ) ) ;
 
 	connect( m_ui->menuOptions,SIGNAL( aboutToShow() ),this,SLOT( optionMenuAboutToShow() ) ) ;
 
@@ -336,7 +336,7 @@ void zuluCrypt::setupConnections()
 
 void zuluCrypt::optionMenuAboutToShow()
 {
-	bool b = lxqt::Wallet::walletExists( lxqt::Wallet::internalBackEnd,utility::walletName(),utility::applicationName() ) ;
+	bool b = LxQt::Wallet::walletExists( LxQt::Wallet::internalBackEnd,utility::walletName(),utility::applicationName() ) ;
 	m_ui->actionChange_internal_wallet_password->setEnabled( b ) ;
 }
 
@@ -349,17 +349,17 @@ walletconfig * zuluCrypt::setUpWalletConfig()
 
 void zuluCrypt::manageVolumesInGNOMEWallet()
 {
-	setUpWalletConfig()->ShowUI( lxqt::Wallet::secretServiceBackEnd ) ;
+	setUpWalletConfig()->ShowUI( LxQt::Wallet::secretServiceBackEnd ) ;
 }
 
 void zuluCrypt::manageVolumesInInternalWallet()
 {
-	setUpWalletConfig()->ShowUI( lxqt::Wallet::internalBackEnd ) ;
+	setUpWalletConfig()->ShowUI( LxQt::Wallet::internalBackEnd ) ;
 }
 
 void zuluCrypt::manageVolumesInKDEWallet()
 {
-	setUpWalletConfig()->ShowUI( lxqt::Wallet::kwalletBackEnd ) ;
+	setUpWalletConfig()->ShowUI( LxQt::Wallet::kwalletBackEnd ) ;
 }
 
 void zuluCrypt::failedToOpenWallet()
@@ -370,7 +370,7 @@ void zuluCrypt::failedToOpenWallet()
 
 void zuluCrypt::changePassWordOfInternalWallet()
 {
-	m_wallet = lxqt::Wallet::getWalletBackend() ;
+	m_wallet = LxQt::Wallet::getWalletBackend() ;
 	m_wallet->setInterfaceObject( this ) ;
 	m_wallet->changeWalletPassWord( utility::walletName(),utility::applicationName() ) ;
 }

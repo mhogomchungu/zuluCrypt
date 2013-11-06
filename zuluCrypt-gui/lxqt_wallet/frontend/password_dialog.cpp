@@ -31,7 +31,7 @@
 #include "password_dialog.h"
 #include "ui_password_dialog.h"
 
-lxqt::Wallet::password_dialog::password_dialog( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::password_dialog )
+LxQt::Wallet::password_dialog::password_dialog( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::password_dialog )
 {
 	m_ui->setupUi( this ) ;
 	this->setFixedSize( this->size() ) ;
@@ -48,7 +48,7 @@ lxqt::Wallet::password_dialog::password_dialog( QWidget * parent ) : QDialog( pa
 	m_closeUIOnKeySend = false ;
 }
 
-void lxqt::Wallet::password_dialog::ShowUI( const QString& walletName,const QString& applicationName )
+void LxQt::Wallet::password_dialog::ShowUI( const QString& walletName,const QString& applicationName )
 {
 	m_createWallet = false ;
 	m_banner = m_ui->textEdit->toHtml().arg( applicationName ).arg( walletName ) ;
@@ -57,7 +57,7 @@ void lxqt::Wallet::password_dialog::ShowUI( const QString& walletName,const QStr
 	this->show() ;
 }
 
-void lxqt::Wallet::password_dialog::ShowUI( const QString& walletName )
+void LxQt::Wallet::password_dialog::ShowUI( const QString& walletName )
 {
 	m_createWallet = true ;
 	m_ui->textEdit->setVisible( false ) ;
@@ -70,7 +70,7 @@ void lxqt::Wallet::password_dialog::ShowUI( const QString& walletName )
 	this->show() ;
 }
 
-void lxqt::Wallet::password_dialog::ShowUI()
+void LxQt::Wallet::password_dialog::ShowUI()
 {
 	m_createWallet = true ;
 	m_ui->textEdit->setVisible( false ) ;
@@ -85,17 +85,17 @@ void lxqt::Wallet::password_dialog::ShowUI()
 	this->show() ;
 }
 
-void lxqt::Wallet::password_dialog::closeUIOnKeySend()
+void LxQt::Wallet::password_dialog::closeUIOnKeySend()
 {
 	m_closeUIOnKeySend = true ;
 }
 
-lxqt::Wallet::password_dialog::~password_dialog()
+LxQt::Wallet::password_dialog::~password_dialog()
 {
 	delete m_ui;
 }
 
-void lxqt::Wallet::password_dialog::pbSend()
+void LxQt::Wallet::password_dialog::pbSend()
 {
 	if( m_createWallet ){
 		emit createWallet( true ) ;
@@ -116,7 +116,7 @@ void lxqt::Wallet::password_dialog::pbSend()
 	}
 }
 
-void lxqt::Wallet::password_dialog::pbCancel()
+void LxQt::Wallet::password_dialog::pbCancel()
 {
 	if( m_createWallet ){
 		emit createWallet( false ) ;
@@ -127,7 +127,7 @@ void lxqt::Wallet::password_dialog::pbCancel()
 	}
 }
 
-void lxqt::Wallet::password_dialog::passwordIsCorrect( bool correctPassword )
+void LxQt::Wallet::password_dialog::passwordIsCorrect( bool correctPassword )
 {
 	if( correctPassword ){
 		this->HideUI() ;
@@ -146,12 +146,12 @@ void lxqt::Wallet::password_dialog::passwordIsCorrect( bool correctPassword )
 	}
 }
 
-void lxqt::Wallet::password_dialog::pbOK()
+void LxQt::Wallet::password_dialog::pbOK()
 {
 	this->HideUI() ;
 }
 
-void lxqt::Wallet::password_dialog::pbOK_2()
+void LxQt::Wallet::password_dialog::pbOK_2()
 {
 	m_ui->labelHeader->setText( m_banner ) ;
 	m_ui->textEdit->setVisible( false ) ;
@@ -175,12 +175,12 @@ void lxqt::Wallet::password_dialog::pbOK_2()
 	m_ui->pushButtonOK_2->setEnabled( true ) ;
 }
 
-void lxqt::Wallet::password_dialog::HideUI()
+void LxQt::Wallet::password_dialog::HideUI()
 {
 	this->deleteLater() ;
 }
 
-void lxqt::Wallet::password_dialog::closeEvent( QCloseEvent * e )
+void LxQt::Wallet::password_dialog::closeEvent( QCloseEvent * e )
 {
 	e->ignore() ;
 	this->HideUI() ;

@@ -53,17 +53,17 @@ Task::Task( const QString& path,const QString& mpoint )
 	m_folderOpener = path ;
 }
 
-Task::Task( lxqt::Wallet::Wallet * wallet,const QString& volumeID,const QString& key,const QString& comment ):
+Task::Task( LxQt::Wallet::Wallet * wallet,const QString& volumeID,const QString& key,const QString& comment ):
 	m_wallet( wallet ),m_volumeID( volumeID ),m_key( key ),m_comment( comment )
 {
 }
 
-Task::Task( lxqt::Wallet::Wallet * wallet,const QString& volumeID ):
+Task::Task( LxQt::Wallet::Wallet * wallet,const QString& volumeID ):
 	m_wallet( wallet ),m_volumeID( volumeID )
 {
 }
 
-Task::Task( lxqt::Wallet::Wallet * wallet,QVector<lxqt::Wallet::walletKeyValues> * keys ):
+Task::Task( LxQt::Wallet::Wallet * wallet,QVector<LxQt::Wallet::walletKeyValues> * keys ):
 	m_wallet( wallet ),m_keys( keys )
 {
 }

@@ -39,7 +39,7 @@
 
 #include "../backend/lxqtwallet.h"
 
-namespace lxqt{
+namespace LxQt{
 	
 namespace Wallet{
 	
@@ -55,7 +55,7 @@ public:
 	Task( lxqt_wallet_t * wallet,const QString& password,const QString& walletName,const QString& applicationName ) ;
 	Task( const QString& password,const QString& walletName,const QString& applicationName ) ;
 	Task( int (*)( const void * ),const void * ) ;
-	void start( lxqt::Wallet::Task::action ) ;
+	void start( LxQt::Wallet::Task::action ) ;
 signals:
 	void walletOpened( bool ) ;
 	void taskResult( bool ) ;
@@ -66,7 +66,7 @@ private:
 	QString m_password ;
 	QString m_walletName ;
 	QString m_applicationName ;
-	lxqt::Wallet::Task::action m_action ;
+	LxQt::Wallet::Task::action m_action ;
 	const void * m_schema ;
 	int ( * m_function )( const void * ) ;
 };

@@ -30,7 +30,7 @@
 
 #include "task.h"
 
-lxqt::Wallet::Task::Task( lxqt_wallet_t * wallet,const QString& password,const QString& walletName,const QString& applicationName )
+LxQt::Wallet::Task::Task( lxqt_wallet_t * wallet,const QString& password,const QString& walletName,const QString& applicationName )
 {
 	m_wallet          = wallet ;
 	m_password        = password ;
@@ -38,34 +38,34 @@ lxqt::Wallet::Task::Task( lxqt_wallet_t * wallet,const QString& password,const Q
 	m_applicationName = applicationName ;
 }
 
-lxqt::Wallet::Task::Task( const QString& password,const QString& walletName,const QString& applicationName )
+LxQt::Wallet::Task::Task( const QString& password,const QString& walletName,const QString& applicationName )
 {
 	m_password        = password ;
 	m_walletName      = walletName ;
 	m_applicationName = applicationName ;
 }
 
-lxqt::Wallet::Task::Task( int (*f)( const void * ),const void * schema )
+LxQt::Wallet::Task::Task( int (*f)( const void * ),const void * schema )
 {
 	m_schema   = schema ;
 	m_function = f ;
 }
 
-void lxqt::Wallet::Task::start( lxqt::Wallet::Task::action action )
+void LxQt::Wallet::Task::start( LxQt::Wallet::Task::action action )
 {
 	m_action = action ;
 	QThreadPool::globalInstance()->start( this ) ;
 }
 
-void lxqt::Wallet::Task::run()
+void LxQt::Wallet::Task::run()
 {
-	if( m_action == lxqt::Wallet::Task::openInternal ){
+	if( m_action == LxQt::Wallet::Task::openInternal ){
 		lxqt_wallet_error r = lxqt_wallet_open( m_wallet,m_password.toLatin1().constData(),m_password.size(),
 						     m_walletName.toLatin1().constData(),m_applicationName.toLatin1().constData() ) ;
 		emit walletOpened( r == lxqt_wallet_no_error ) ;
-	}else if( m_action == lxqt::Wallet::Task::openSecretService ){
+	}else if( m_action == LxQt::Wallet::Task::openSecretService ){
 		emit walletOpened( m_function( m_schema ) ) ;
-	}else if( m_action == lxqt::Wallet::Task::createVolume ) {
+	}else if( m_action == LxQt::Wallet::Task::createVolume ) {
 
 		lxqt_wallet_error r = lxqt_wallet_create( m_password.toLatin1().constData(),m_password.size(),
 				    m_walletName.toLatin1().constData(),m_applicationName.toLatin1().constData() ) ;

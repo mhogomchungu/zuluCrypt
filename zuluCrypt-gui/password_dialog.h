@@ -33,7 +33,7 @@ class QCloseEvent ;
 class QTableWidget ;
 class QMenu ;
 
-namespace lxqt {
+namespace LxQt {
 namespace Wallet {
 class Wallet ;
 }
@@ -93,7 +93,7 @@ private :
 	QString m_device ;
 	QString m_point ;
 	QString m_folderOpener ;
-	lxqt::Wallet::Wallet * m_wallet ;
+	LxQt::Wallet::Wallet * m_wallet ;
 };
 
 #endif // PASSWORD_DIALOG_H

@@ -170,14 +170,10 @@ char * _lxqt_wallet_get_wallet_data( lxqt_wallet_t wallet )
 	}
 }
 
-inline static void _get_first_header_component( u_int32_t * value,const char * str )
+inline static void  _get_header_components( u_int32_t * first,u_int32_t * second,const char * str )
 {
-	memcpy( value,str,sizeof( u_int32_t ) ) ;
-}
-
-inline static void  _get_second_header_component( u_int32_t * value,const char * str )
-{
-	memcpy( value,str + sizeof( u_int32_t ),sizeof( u_int32_t ) ) ;
+	memcpy( first,str,sizeof( u_int32_t ) ) ;
+	memcpy( second,str + sizeof( u_int32_t ),sizeof( u_int32_t ) ) ;
 }
 
 u_int64_t lxqt_wallet_wallet_size( lxqt_wallet_t wallet )
@@ -215,7 +211,7 @@ lxqt_wallet_error lxqt_wallet_create( const char * password,u_int32_t password_l
 	char key[ PASSWORD_SIZE ] ;
 	char salt[ SALT_SIZE ] ;
 	char buffer[ MAGIC_STRING_BUFFER_SIZE + BLOCK_SIZE ] = { '\0' } ;
-	
+
 	gcry_error_t r ;
 
 	gcry_cipher_hd_t handle = 0 ;
@@ -269,11 +265,11 @@ lxqt_wallet_error lxqt_wallet_create( const char * password,u_int32_t password_l
 		return lxqt_wallet_gcry_cipher_encrypt_failed ;
 	}else{
 		_create_application_wallet_path( application_name ) ;
-		
+
 		_wallet_full_path( path,PATH_MAX,wallet_name,application_name ) ;
-		
+
 		fd = open( path,O_WRONLY|O_CREAT,0600 ) ;
-		
+
 		if( fd == -1 ){
 			return _exit_create( lxqt_wallet_failed_to_open_file,handle ) ;
 		}else{
@@ -293,7 +289,7 @@ lxqt_wallet_error lxqt_wallet_create( const char * password,u_int32_t password_l
 			 * fourth 16 bytes block that holds information about data load sizes
 			 */
 			write( fd,buffer + MAGIC_STRING_BUFFER_SIZE,BLOCK_SIZE ) ;
-			
+
 			close( fd ) ;
 			return lxqt_wallet_no_error ;
 		}
@@ -559,8 +555,7 @@ int lxqt_wallet_read_key_value( lxqt_wallet_t wallet,const char * key,u_int32_t 
 
 		while( i < k ){
 
-			_get_first_header_component( &key_len,e ) ;
-			_get_second_header_component( &key_value_len,e ) ;
+			_get_header_components( &key_len,&key_value_len,e ) ;
 
 			if( key_len == key_size && memcmp( key,e + NODE_HEADER_SIZE,key_size ) == 0 ){
 				key_value->key            = e + NODE_HEADER_SIZE ;
@@ -604,8 +599,7 @@ int lxqt_wallet_wallet_has_value( lxqt_wallet_t wallet,const char * value,u_int3
 
 		while( i < k ){
 
-			_get_first_header_component( &key_len,e ) ;
-			_get_second_header_component( &key_value_len,e ) ;
+			_get_header_components( &key_len,&key_value_len,e ) ;
 
 			if( key_value_len == value_size && memcmp( value,e + NODE_HEADER_SIZE + key_len,value_size ) == 0 ){
 				key_value->key            = e + NODE_HEADER_SIZE ;
@@ -680,8 +674,7 @@ int lxqt_wallet_iter_read_value( lxqt_wallet_t wallet,lxqt_wallet_iterator_t * i
 	}else{
 		e = wallet->wallet_data + iter->iter_pos ;
 
-		_get_first_header_component( &key_len,e ) ;
-		_get_second_header_component( &key_value_len,e ) ;
+		_get_header_components( &key_len,&key_value_len,e ) ;
 
 		iter->entry.key             = e + NODE_HEADER_SIZE ;
 		iter->entry.key_size        = key_len ;
@@ -698,22 +691,22 @@ int lxqt_wallet_read_value_at( lxqt_wallet_t wallet,u_int64_t pos,lxqt_wallet_ke
 {
 	char * e ;
 	char * z ;
-	
+
 	u_int64_t k = 0 ;
 	u_int64_t i = 0 ;
-	
+
 	u_int32_t key_len = 0 ;
 	u_int32_t key_value_len = 0 ;
-	
+
 	if( wallet == NULL || wallet->wallet_data_entry_count == 0 || pos > wallet->wallet_data_entry_count ){
 		return 0 ;
 	}else{
 		e = wallet->wallet_data ;
 		z = e ;
 		while( 1 ){
-			_get_first_header_component( &key_len,e ) ;
-			_get_second_header_component( &key_value_len,e ) ;
-			
+
+			_get_header_components( &key_len,&key_value_len,e ) ;
+
 			if( k == pos ){
 				key_value->key            = e + NODE_HEADER_SIZE ;
 				key_value->key_size       = key_len ;
@@ -752,8 +745,7 @@ lxqt_wallet_error lxqt_wallet_delete_key( lxqt_wallet_t wallet,const char * key,
 
 		while( i < k ){
 
-			_get_first_header_component( &key_len,e ) ;
-			_get_second_header_component( &key_value_len,e ) ;
+			_get_header_components( &key_len,&key_value_len,e ) ;
 
 			if( key_len == key_size && memcmp( key,e + NODE_HEADER_SIZE,key_size ) == 0 ){
 
@@ -876,7 +868,7 @@ lxqt_wallet_error lxqt_wallet_close( lxqt_wallet_t * w )
 
 	_wallet_full_path( path,PATH_MAX,wallet->wallet_name,wallet->application_name ) ;
 	snprintf( path_1,PATH_MAX,"%s.tmp",path ) ;
-	
+
 	k = wallet->wallet_data_size ;
 
 	if( k == 0 ){

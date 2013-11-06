@@ -25,7 +25,7 @@
 #include <QString>
 #include <QStringList>
 
-namespace lxqt{
+namespace LxQt{
 namespace Wallet {
 class Wallet ;
 }
@@ -53,7 +53,7 @@ public:
 		getKey
 	};
 	void start( Task::Action ) ;
-	void setWallet( lxqt::Wallet::Wallet * ) ;
+	void setWallet( LxQt::Wallet::Wallet * ) ;
 	void setVolumeID( const QString& ) ;
 	void setMode( const QString& ) ;
 	void setDevice( const QString& ) ;
@@ -91,7 +91,7 @@ private:
 	void getVolumeSystemType( void ) ;
 	void checkUnmount( void ) ;
 	void getKeyTask( void ) ;
-	lxqt::Wallet::Wallet * m_wallet ;
+	LxQt::Wallet::Wallet * m_wallet ;
 	Task::Action m_action ;
 	QString m_volumeID ;
 	QString m_key ;

@@ -40,7 +40,7 @@ namespace Ui{
 class password_dialog;
 }
 
-namespace lxqt{
+namespace LxQt{
 
 namespace Wallet{
 

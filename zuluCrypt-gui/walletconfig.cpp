@@ -195,13 +195,13 @@ void walletconfig::pbAdd()
 	w->ShowUI() ;
 }
 
-void walletconfig::ShowUI( lxqt::Wallet::walletBackEnd backEnd )
+void walletconfig::ShowUI( LxQt::Wallet::walletBackEnd backEnd )
 {
 	this->disableAll() ;
 	this->show() ;
-	m_wallet = lxqt::Wallet::getWalletBackend( backEnd ) ;
+	m_wallet = LxQt::Wallet::getWalletBackend( backEnd ) ;
 	m_wallet->setInterfaceObject( this ) ;
-	if( backEnd == lxqt::Wallet::kwalletBackEnd ){
+	if( backEnd == LxQt::Wallet::kwalletBackEnd ){
 		m_wallet->open( m_wallet->localDefaultWalletName(),utility::applicationName() ) ;
 	}else{
 		m_wallet->open( utility::walletName(),utility::applicationName() ) ;

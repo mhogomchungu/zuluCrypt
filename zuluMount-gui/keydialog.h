@@ -29,7 +29,7 @@ class QAction ;
 class QTableWidgetItem ;
 class QTableWidget ;
 
-namespace lxqt {
+namespace LxQt{
 namespace Wallet {
 class Wallet ;
 }
@@ -86,7 +86,7 @@ private:
 	QTableWidget * m_table ;
 	bool m_working ;
 	bool m_autoOpenFolderOnMount ;
-	lxqt::Wallet::Wallet * m_wallet ;
+	LxQt::Wallet::Wallet * m_wallet ;
 };
 
 #endif // KEYDIALOG_H

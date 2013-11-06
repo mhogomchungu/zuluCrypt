@@ -125,20 +125,20 @@ void passwordDialog::pbPlugin()
 
 		list.insert( 0,tr( INTERNAL_WALLET ) ) ;
 
-		if( lxqt::Wallet::backEndIsSupported( lxqt::Wallet::kwalletBackEnd ) ){
+		if( LxQt::Wallet::backEndIsSupported( LxQt::Wallet::kwalletBackEnd ) ){
 			list.insert( 1,tr( KWALLET ) ) ;
 		}
 
-		if( lxqt::Wallet::backEndIsSupported( lxqt::Wallet::secretServiceBackEnd ) ){
+		if( LxQt::Wallet::backEndIsSupported( LxQt::Wallet::secretServiceBackEnd ) ){
 			list.insert( 2,tr( GNOME_WALLET ) ) ;
 		}
 	}else{
 		list.append( tr( INTERNAL_WALLET ) ) ;
 
-		if( lxqt::Wallet::backEndIsSupported( lxqt::Wallet::kwalletBackEnd ) ){
+		if( LxQt::Wallet::backEndIsSupported( LxQt::Wallet::kwalletBackEnd ) ){
 			list.append( tr( KWALLET ) ) ;
 		}
-		if( lxqt::Wallet::backEndIsSupported( lxqt::Wallet::secretServiceBackEnd ) ){
+		if( LxQt::Wallet::backEndIsSupported( LxQt::Wallet::secretServiceBackEnd ) ){
 			list.append( tr( GNOME_WALLET ) ) ;
 		}
 	}
@@ -392,17 +392,17 @@ void passwordDialog::buttonOpenClicked( void )
 	if( m_ui->radioButtonPlugin->isChecked() ){
 		QString wallet = m_ui->PassPhraseField->text() ;
 		if( wallet == tr( KWALLET ) ){
-			m_wallet = lxqt::Wallet::getWalletBackend( lxqt::Wallet::kwalletBackEnd ) ;
+			m_wallet = LxQt::Wallet::getWalletBackend( LxQt::Wallet::kwalletBackEnd ) ;
 			m_wallet->setInterfaceObject( this ) ;
 			m_wallet->open( m_wallet->localDefaultWalletName(),utility::applicationName() ) ;
 		}else if( wallet == tr( INTERNAL_WALLET ) ){
-			m_wallet = lxqt::Wallet::getWalletBackend( lxqt::Wallet::internalBackEnd ) ;
+			m_wallet = LxQt::Wallet::getWalletBackend( LxQt::Wallet::internalBackEnd ) ;
 			m_wallet->setInterfaceObject( this ) ;
 			QObject * obj = m_wallet->qObject() ;
 			connect( obj,SIGNAL( getPassWord( QString ) ),this,SLOT( getPassWord( QString ) ) ) ;
 			m_wallet->open( utility::walletName(),utility::applicationName(),_internalPassWord ) ;
 		}else if( wallet == tr( GNOME_WALLET ) ){
-			m_wallet = lxqt::Wallet::getWalletBackend( lxqt::Wallet::secretServiceBackEnd ) ;
+			m_wallet = LxQt::Wallet::getWalletBackend( LxQt::Wallet::secretServiceBackEnd ) ;
 			m_wallet->setInterfaceObject( this ) ;
 			m_wallet->open( utility::walletName(),utility::applicationName() ) ;
 		}else{

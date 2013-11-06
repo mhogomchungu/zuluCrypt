@@ -45,33 +45,33 @@
 #include "lxqt_secret_service.h"
 #endif
 
-lxqt::Wallet::Wallet::Wallet()
+LxQt::Wallet::Wallet::Wallet()
 {
 
 }
 
-lxqt::Wallet::Wallet::~Wallet()
+LxQt::Wallet::Wallet::~Wallet()
 {
 
 }
 
-lxqt::Wallet::Wallet * lxqt::Wallet::getWalletBackend( lxqt::Wallet::walletBackEnd bk )
+LxQt::Wallet::Wallet * LxQt::Wallet::getWalletBackend( LxQt::Wallet::walletBackEnd bk )
 {
-	if( bk == lxqt::Wallet::internalBackEnd ){
-		return new lxqt::Wallet::internalWallet() ;
+	if( bk == LxQt::Wallet::internalBackEnd ){
+		return new LxQt::Wallet::internalWallet() ;
 	}
 
-	if( bk == lxqt::Wallet::kwalletBackEnd ){
+	if( bk == LxQt::Wallet::kwalletBackEnd ){
 		#if HAS_KWALLET_SUPPORT
-			return new lxqt::Wallet::kwallet() ;
+			return new LxQt::Wallet::kwallet() ;
 		#else
 			return NULL ;
 		#endif
 	}
 
-	if( bk == lxqt::Wallet::secretServiceBackEnd ){
+	if( bk == LxQt::Wallet::secretServiceBackEnd ){
 		#if HAS_SECRET_SUPPORT
-			return new lxqt::Wallet::secretService() ;
+			return new LxQt::Wallet::secretService() ;
 		#else
 			return NULL ;
 		#endif
@@ -80,13 +80,13 @@ lxqt::Wallet::Wallet * lxqt::Wallet::getWalletBackend( lxqt::Wallet::walletBackE
 	return NULL ;
 }
 
-bool lxqt::Wallet::backEndIsSupported( lxqt::Wallet::walletBackEnd bk )
+bool LxQt::Wallet::backEndIsSupported( LxQt::Wallet::walletBackEnd bk )
 {
-	if( bk == lxqt::Wallet::internalBackEnd ){
+	if( bk == LxQt::Wallet::internalBackEnd ){
 		return true ;
 	}
 
-	if( bk == lxqt::Wallet::kwalletBackEnd ){
+	if( bk == LxQt::Wallet::kwalletBackEnd ){
 		#if HAS_KWALLET_SUPPORT
 			return true ;
 		#else
@@ -94,7 +94,7 @@ bool lxqt::Wallet::backEndIsSupported( lxqt::Wallet::walletBackEnd bk )
 		#endif
 	}
 
-	if( bk == lxqt::Wallet::secretServiceBackEnd ){
+	if( bk == LxQt::Wallet::secretServiceBackEnd ){
 		#if HAS_SECRET_SUPPORT
 			return true ;
 		#else
@@ -105,7 +105,7 @@ bool lxqt::Wallet::backEndIsSupported( lxqt::Wallet::walletBackEnd bk )
 	return false ;
 }
 
-bool lxqt::Wallet::deleteWallet( lxqt::Wallet::walletBackEnd bk,const QString& walletName,const QString& applicationName )
+bool LxQt::Wallet::deleteWallet( LxQt::Wallet::walletBackEnd bk,const QString& walletName,const QString& applicationName )
 {
 	QString appName ;
 	if( applicationName.isEmpty() ){
@@ -114,11 +114,11 @@ bool lxqt::Wallet::deleteWallet( lxqt::Wallet::walletBackEnd bk,const QString& w
 		appName = applicationName ;
 	}
 
-	if( bk == lxqt::Wallet::internalBackEnd ){
+	if( bk == LxQt::Wallet::internalBackEnd ){
 		return lxqt_wallet_delete_wallet( walletName.toLatin1().constData(),appName.toLatin1().constData() ) == lxqt_wallet_no_error ;
 	}
 
-	if( bk == lxqt::Wallet::kwalletBackEnd ){
+	if( bk == LxQt::Wallet::kwalletBackEnd ){
 		#if HAS_KWALLET_SUPPORT
 			return KWallet::Wallet::deleteWallet( walletName ) == 0 ;
 		#else
@@ -126,7 +126,7 @@ bool lxqt::Wallet::deleteWallet( lxqt::Wallet::walletBackEnd bk,const QString& w
 		#endif
 	}
 
-	if( bk == lxqt::Wallet::secretServiceBackEnd ){
+	if( bk == LxQt::Wallet::secretServiceBackEnd ){
 		#if HAS_SECRET_SUPPORT
 			return false ;
 		#else
@@ -137,7 +137,7 @@ bool lxqt::Wallet::deleteWallet( lxqt::Wallet::walletBackEnd bk,const QString& w
 	return false ;
 }
 
-bool lxqt::Wallet::walletExists( lxqt::Wallet::walletBackEnd bk,const QString& walletName,const QString& applicationName )
+bool LxQt::Wallet::walletExists( LxQt::Wallet::walletBackEnd bk,const QString& walletName,const QString& applicationName )
 {
 	QString appName ;
 	if( applicationName.isEmpty() ){
@@ -146,11 +146,11 @@ bool lxqt::Wallet::walletExists( lxqt::Wallet::walletBackEnd bk,const QString& w
 		appName = applicationName ;
 	}
 
-	if( bk == lxqt::Wallet::internalBackEnd ){
+	if( bk == LxQt::Wallet::internalBackEnd ){
 		return lxqt_wallet_exists( walletName.toLatin1().constData(),appName.toLatin1().constData() ) == 0 ;
 	}
 
-	if( bk == lxqt::Wallet::kwalletBackEnd ){
+	if( bk == LxQt::Wallet::kwalletBackEnd ){
 		#if HAS_KWALLET_SUPPORT
 			return !KWallet::Wallet::folderDoesNotExist( walletName,appName ) ;
 		#else
@@ -158,7 +158,7 @@ bool lxqt::Wallet::walletExists( lxqt::Wallet::walletBackEnd bk,const QString& w
 		#endif
 	}
 
-	if( bk == lxqt::Wallet::secretServiceBackEnd ){
+	if( bk == LxQt::Wallet::secretServiceBackEnd ){
 		#if HAS_SECRET_SUPPORT
 			return false ;
 		#else
@@ -169,9 +169,9 @@ bool lxqt::Wallet::walletExists( lxqt::Wallet::walletBackEnd bk,const QString& w
 	return false ;
 }
 
-QStringList lxqt::Wallet::walletList( lxqt::Wallet::walletBackEnd bk )
+QStringList LxQt::Wallet::walletList( LxQt::Wallet::walletBackEnd bk )
 {
-	if( bk == lxqt::Wallet::internalBackEnd ){
+	if( bk == LxQt::Wallet::internalBackEnd ){
 		char path[ 4096 ] ;
 		lxqt_wallet_application_wallet_path( path,4096,"" ) ;
 		QDir d( path ) ;
@@ -179,13 +179,13 @@ QStringList lxqt::Wallet::walletList( lxqt::Wallet::walletBackEnd bk )
 		l.removeOne( "." ) ;
 		l.removeOne( ".." ) ;
 		return l ;
-	}else if( bk == lxqt::Wallet::kwalletBackEnd ){
+	}else if( bk == LxQt::Wallet::kwalletBackEnd ){
 		#if HAS_KWALLET_SUPPORT
 			return KWallet::Wallet::walletList() ;
 		#else
 			return QStringList() ;
 		#endif
-	}else if( bk == lxqt::Wallet::secretServiceBackEnd ){
+	}else if( bk == LxQt::Wallet::secretServiceBackEnd ){
 		return QStringList() ;
 	}else{
 		return QStringList() ;

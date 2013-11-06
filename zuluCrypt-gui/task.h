@@ -30,7 +30,7 @@
 
 #define COMMENT "-zuluCrypt_Comment_ID"
 
-namespace lxqt{
+namespace LxQt{
 namespace Wallet {
 class Wallet ;
 }
@@ -60,9 +60,9 @@ public:
 
 	explicit Task( const QString& exe ) ;
 	Task( const QString&,const QString& ) ;
-	Task( lxqt::Wallet::Wallet *,QVector<lxqt::Wallet::walletKeyValues> * ) ;
-	Task( lxqt::Wallet::Wallet *,const QString& volumeID ) ;
-	Task( lxqt::Wallet::Wallet *,const QString& volumeID,const QString& key,const QString& comment ) ;
+	Task( LxQt::Wallet::Wallet *,QVector<LxQt::Wallet::walletKeyValues> * ) ;
+	Task( LxQt::Wallet::Wallet *,const QString& volumeID ) ;
+	Task( LxQt::Wallet::Wallet *,const QString& volumeID,const QString& key,const QString& comment ) ;
 	explicit Task( QTableWidget * ) ;
 	Task() ;
 	~Task() ;
@@ -100,8 +100,8 @@ private:
 	QString m_volumeProperties ;
 	QString m_folderOpener ;
 	QString m_partitionType ;
-	lxqt::Wallet::Wallet * m_wallet ;
-	QVector<lxqt::Wallet::walletKeyValues> * m_keys ;
+	LxQt::Wallet::Wallet * m_wallet ;
+	QVector<LxQt::Wallet::walletKeyValues> * m_keys ;
 	QString m_volumeID ;
 	QString m_key ;
 	QString m_comment ;

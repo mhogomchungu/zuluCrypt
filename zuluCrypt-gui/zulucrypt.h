@@ -40,7 +40,7 @@ class manageluksheader ;
 class cryptfiles ;
 class walletconfig ;
 
-namespace lxqt{
+namespace LxQt{
 namespace Wallet{
 class Wallet ;
 }
@@ -169,7 +169,7 @@ private:
 	QSystemTrayIcon * m_trayIcon ;
 	QString m_folderOpener ;
 	QString m_device ;
-	lxqt::Wallet::Wallet * m_wallet ;
+	LxQt::Wallet::Wallet * m_wallet ;
 };
 
 #endif // ZULUCRYPT_H

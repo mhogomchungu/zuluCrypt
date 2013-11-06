@@ -74,7 +74,7 @@ void Task::setMountPointOpener( const QString& opener )
 	m_folderOpener = opener ;
 }
 
-void Task::setWallet( lxqt::Wallet::Wallet * wallet )
+void Task::setWallet( LxQt::Wallet::Wallet * wallet )
 {
 	m_wallet = wallet ;
 }

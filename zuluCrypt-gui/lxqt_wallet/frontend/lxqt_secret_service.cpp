@@ -46,13 +46,13 @@ int lxqt_secret_service_wallet_is_open( const void * ) ;
 void * lxqt_secret_service_create_schema( const char * schemaName,const char * type ) ;
 }
 
-lxqt::Wallet::secretService::secretService()
+LxQt::Wallet::secretService::secretService()
 {
 	m_schema   = 0 ;
 	m_schema_1 = 0 ;
 }
 
-lxqt::Wallet::secretService::~secretService()
+LxQt::Wallet::secretService::~secretService()
 {
 	if( m_schema ){
 		free( m_schema ) ;
@@ -62,7 +62,7 @@ lxqt::Wallet::secretService::~secretService()
 	}
 }
 
-bool lxqt::Wallet::secretService::addKey( const QString& key,const QByteArray& value )
+bool LxQt::Wallet::secretService::addKey( const QString& key,const QByteArray& value )
 {
 	if( key.isEmpty() ){
 		return false ;
@@ -75,7 +75,7 @@ bool lxqt::Wallet::secretService::addKey( const QString& key,const QByteArray& v
 	}
 }
 
-void lxqt::Wallet::secretService::open( const QString& walletName,const QString& applicationName,const QString& password )
+void LxQt::Wallet::secretService::open( const QString& walletName,const QString& applicationName,const QString& password )
 {
 	/*
 	 * this backend does not use this variable
@@ -106,22 +106,22 @@ void lxqt::Wallet::secretService::open( const QString& walletName,const QString&
 
 	connect( this,SIGNAL( walletIsOpen( bool ) ),m_interfaceObject,SLOT( walletIsOpen( bool ) ) ) ;
 
-	lxqt::Wallet::Task * t = new lxqt::Wallet::Task( lxqt_secret_service_wallet_is_open,m_schema ) ;
+	LxQt::Wallet::Task * t = new LxQt::Wallet::Task( lxqt_secret_service_wallet_is_open,m_schema ) ;
 
 	if( t ){
 		connect( t,SIGNAL( walletOpened( bool ) ),this,SLOT( walletOpened( bool ) ) ) ;
-		t->start( lxqt::Wallet::Task::openSecretService ) ;
+		t->start( LxQt::Wallet::Task::openSecretService ) ;
 	}else{
 		this->walletOpened( false ) ;
 	}
 }
 
-void lxqt::Wallet::secretService::walletOpened( bool opened )
+void LxQt::Wallet::secretService::walletOpened( bool opened )
 {
 	emit walletIsOpen( opened ) ;
 }
 
-QByteArray lxqt::Wallet::secretService::readValue( const QString& key )
+QByteArray LxQt::Wallet::secretService::readValue( const QString& key )
 {
 	if( m_schema ){
 		QByteArray r ;
@@ -136,19 +136,19 @@ QByteArray lxqt::Wallet::secretService::readValue( const QString& key )
 	}
 }
 
-QVector<lxqt::Wallet::walletKeyValues> lxqt::Wallet::secretService::readAllKeyValues( void )
+QVector<LxQt::Wallet::walletKeyValues> LxQt::Wallet::secretService::readAllKeyValues( void )
 {
-	QVector<lxqt::Wallet::walletKeyValues> p ;
+	QVector<LxQt::Wallet::walletKeyValues> p ;
 	QStringList l = this->readAllKeys() ;
 	int k = l.size() ;
 	for( int i = 0 ; i < k ; i++ ){
-		lxqt::Wallet::walletKeyValues q( l.at( i ),this->readValue( l.at( i ) ) ) ;
+		LxQt::Wallet::walletKeyValues q( l.at( i ),this->readValue( l.at( i ) ) ) ;
 		p.append( q ) ;
 	}
 	return p ;
 }
 
-QStringList lxqt::Wallet::secretService::readAllKeys( void )
+QStringList LxQt::Wallet::secretService::readAllKeys( void )
 {
 	if( m_schema && m_schema_1 ){
 		int count ;
@@ -167,7 +167,7 @@ QStringList lxqt::Wallet::secretService::readAllKeys( void )
 	}
 }
 
-void lxqt::Wallet::secretService::deleteKey( const QString& key )
+void LxQt::Wallet::secretService::deleteKey( const QString& key )
 {
 	if( m_schema && m_schema_1 ){
 		if( key.isEmpty() ){
@@ -178,7 +178,7 @@ void lxqt::Wallet::secretService::deleteKey( const QString& key )
 	}
 }
 
-int lxqt::Wallet::secretService::walletSize( void )
+int LxQt::Wallet::secretService::walletSize( void )
 {
 	if( m_schema ){
 		return lxqt_secret_service_wallet_size( m_schema ) ;
@@ -187,17 +187,17 @@ int lxqt::Wallet::secretService::walletSize( void )
 	}
 }
 
-void lxqt::Wallet::secretService::closeWallet( bool b )
+void LxQt::Wallet::secretService::closeWallet( bool b )
 {
 	Q_UNUSED( b ) ;
 }
 
-lxqt::Wallet::walletBackEnd lxqt::Wallet::secretService::backEnd( void )
+LxQt::Wallet::walletBackEnd LxQt::Wallet::secretService::backEnd( void )
 {
-	return lxqt::Wallet::secretServiceBackEnd ;
+	return LxQt::Wallet::secretServiceBackEnd ;
 }
 
-bool lxqt::Wallet::secretService::walletIsOpened( void )
+bool LxQt::Wallet::secretService::walletIsOpened( void )
 {
 	if( m_schema ){
 		return lxqt_secret_service_wallet_is_open( m_schema ) ;
@@ -206,38 +206,38 @@ bool lxqt::Wallet::secretService::walletIsOpened( void )
 	}
 }
 
-void lxqt::Wallet::secretService::setInterfaceObject( QWidget * interfaceObject )
+void LxQt::Wallet::secretService::setInterfaceObject( QWidget * interfaceObject )
 {
 	m_interfaceObject = interfaceObject ;
 }
 
-QObject * lxqt::Wallet::secretService::qObject( void )
+QObject * LxQt::Wallet::secretService::qObject( void )
 {
 	return static_cast< QObject * >( this ) ;
 }
 
-QString lxqt::Wallet::secretService::storagePath()
+QString LxQt::Wallet::secretService::storagePath()
 {
 	return QString() ;
 }
 
-void lxqt::Wallet::secretService::changeWalletPassWord( const QString& walletName,const QString& applicationName )
+void LxQt::Wallet::secretService::changeWalletPassWord( const QString& walletName,const QString& applicationName )
 {
 	Q_UNUSED( applicationName ) ;
 	Q_UNUSED( walletName ) ;
 }
 
-QStringList lxqt::Wallet::secretService::managedWalletList()
+QStringList LxQt::Wallet::secretService::managedWalletList()
 {
 	return QStringList() ;
 }
 
-QString lxqt::Wallet::secretService::localDefaultWalletName()
+QString LxQt::Wallet::secretService::localDefaultWalletName()
 {
 	return QString() ;
 }
 
-QString lxqt::Wallet::secretService::networkDefaultWalletName()
+QString LxQt::Wallet::secretService::networkDefaultWalletName()
 {
 	return QString() ;
 }
