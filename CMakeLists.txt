@@ -22,7 +22,13 @@ INCLUDE(FindPkgConfig)
 
 if( NOT NOGNOME ) 
 	pkg_check_modules( LIBSECRET libsecret-1 )
+else( NOT NOGNOME )
+	set( NOSECRETSUPPORT "true" )
 endif( NOT NOGNOME )
+
+if( NOKDE )
+	set( NOKDESUPPORT "true" )
+endif( NOKDE )
 
 pkg_check_modules( CRYPTSETUP libcryptsetup )
 pkg_check_modules( BLKID blkid ) 

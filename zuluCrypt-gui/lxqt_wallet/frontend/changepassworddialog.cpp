@@ -39,6 +39,10 @@ LxQt::Wallet::changePassWordDialog::changePassWordDialog( QWidget * parent,const
 
 	this->setFixedSize( this->size() ) ;
 
+	if( parent ){
+		this->setWindowIcon( parent->windowIcon() ) ;
+	}
+	
 	connect( m_ui->pushButtonCancel,SIGNAL( clicked() ),this,SLOT( cancel() ) ) ;
 
 	m_ui->pushButtonOK->setVisible( false ) ;

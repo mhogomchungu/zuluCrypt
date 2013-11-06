@@ -195,6 +195,12 @@ public:
 	virtual void setInterfaceObject( QWidget * ) = 0 ;
 
 	/*
+	 * This method is defined only with internal backend.
+	 * This method is used to set an icon image to be used when the backend produces GUI windows.
+	 */
+	virtual void setImage( const QString& ) = 0 ;
+
+	/*
 	 * this method returns PasswordFolder() in kwallet backend and is undefined in other backends
 	 */
 	virtual QString storagePath( void ) = 0 ;

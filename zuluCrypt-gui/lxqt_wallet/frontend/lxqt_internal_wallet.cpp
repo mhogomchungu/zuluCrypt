@@ -55,6 +55,12 @@ void LxQt::Wallet::internalWallet::taskResult( bool opened )
 	}
 }
 
+void LxQt::Wallet::internalWallet::setImage( const QString& image )
+{
+	m_image = image ;
+	this->setWindowIcon( QIcon( image ) ) ;
+}
+
 bool LxQt::Wallet::internalWallet::openWallet( QString password )
 {
 	LxQt::Wallet::Task * t = new LxQt::Wallet::Task( &m_wallet,password,m_walletName,m_applicationName ) ;

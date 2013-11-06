@@ -62,6 +62,11 @@ LxQt::Wallet::secretService::~secretService()
 	}
 }
 
+void LxQt::Wallet::secretService::setImage( const QString& image )
+{
+	Q_UNUSED( image ) ;
+}
+
 bool LxQt::Wallet::secretService::addKey( const QString& key,const QByteArray& value )
 {
 	if( key.isEmpty() ){

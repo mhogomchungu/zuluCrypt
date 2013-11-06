@@ -35,7 +35,11 @@ LxQt::Wallet::password_dialog::password_dialog( QWidget * parent ) : QDialog( pa
 {
 	m_ui->setupUi( this ) ;
 	this->setFixedSize( this->size() ) ;
-
+	
+	if( parent ){
+		this->setWindowIcon( parent->windowIcon() ) ;
+	}
+	
 	connect( m_ui->pushButtonSend,SIGNAL( clicked() ),this,SLOT( pbSend() ) ) ;
 	connect( m_ui->pushButtonCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->pushButtonOK_2,SIGNAL( clicked() ),this,SLOT( pbOK_2() ) ) ;

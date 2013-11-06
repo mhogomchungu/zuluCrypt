@@ -66,6 +66,7 @@ public:
 	QStringList managedWalletList( void ) ;
 	QString localDefaultWalletName( void ) ;
 	QString networkDefaultWalletName( void ) ;
+	void setImage( const QString& ) ;
 signals:
 	void walletIsOpen( bool ) ;
 private slots:

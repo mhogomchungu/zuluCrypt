@@ -43,6 +43,11 @@ LxQt::Wallet::kwallet::~kwallet()
 	}
 }
 
+void LxQt::Wallet::kwallet::setImage( const QString& image )
+{
+	Q_UNUSED( image ) ;
+}
+
 bool LxQt::Wallet::kwallet::addKey( const QString& key,const QByteArray& value )
 {
 	m_kwallet->writePassword( key,value ) ;
