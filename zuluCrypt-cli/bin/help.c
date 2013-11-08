@@ -84,12 +84,12 @@ void zuluCryptEXEHelp( void )
 	get device path from mapper  : zuluCrypt-cli -P -d /dev/mapper/zuluCrypt-sdc1\n\
 	check if partition with UUID is present : zuluCrypt-cli -w -d UUID=\"d2d210b8-0b1f-419f-9172-9d509ea9af0c\"\n\
 	operation list\n\n\
+	--test     run a test program\n\
 	-c         create an encrypted volume\n\
 	-o         open and encrypted volume\n\
 	-O         open an encrypted volume but do not mount it( -m therefore not needed )\n\
 	-q         close an opened encrypted volume\n\
-	-r         remove a key from luks volume\n\
-	-a         add a key to luks volume\n" ) ;
+	-r         remove a key from luks volume\n" ) ;
 	
 	help5 = gettext( "\
 	-i         check if a device contain a luks volume\n\
@@ -114,7 +114,9 @@ void zuluCryptEXEHelp( void )
 	
 	help8 = gettext( "\
 	-M         create a publicly accessible \"mirror\" of the mount point in \"/run/media/public/\" from the original\n\
-		   created in \"/run/media/private/$USER/\"\n" ) ;
+		   created in \"/run/media/private/$USER/\"\n\
+	-a         add a key to luks volume\n" ) ;
+		   
 	help9 = gettext( "\
 	-J         create a plain mapper owned by the user who run the command on a device pointed by argument -d\n\
 	-B         create a luks header backup\n\

@@ -2,7 +2,6 @@
  
  file(WRITE  ${PROJECT_BINARY_DIR}/bin_path.h "\n#define ZULUCRYPTzuluCrypt      \"${CMAKE_INSTALL_PREFIX}/bin/zuluCrypt-cli\"\n")
  file(APPEND ${PROJECT_BINARY_DIR}/bin_path.h "\n#define zuluMount	         \"${CMAKE_INSTALL_PREFIX}/bin/zuluMount-cli\"\n")
- file(APPEND ${PROJECT_BINARY_DIR}/bin_path.h "\n#define ZULUCRYPTTest           \"${CMAKE_INSTALL_PREFIX}/bin/zuluCrypt-testKey\"\n")
  
  add_definitions( -I${PROJECT_BINARY_DIR} ) 
   
@@ -28,6 +27,7 @@
  bin/bind.c
  bin/create_mount_point.c
  bin/path_access.c
+ bin/test.c
  ) 
  
  SET( BINMount
@@ -165,21 +165,14 @@
 	PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE SETUID
  )
 
- add_executable( zuluCrypt-test ../test/zuluCrypt-test.c )
-
- add_executable( zuluCrypt-testKey ../test/zuluCrypt-testKey.c )
- 
- set_target_properties( zuluCrypt-test PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIE -pthread  -pedantic " )
- set_target_properties( zuluCrypt-test PROPERTIES LINK_FLAGS "-pie" )
-
- TARGET_LINK_LIBRARIES( zuluCrypt-test zuluCryptPluginManager ${cryptsetup_lib} ${blkid} )
+ add_executable( zuluCrypt-testKey ../plugins/test/zuluCrypt-testKey.c )
  
  set_target_properties( zuluCrypt-testKey PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIE -pthread  -pedantic " )
  set_target_properties( zuluCrypt-testKey PROPERTIES LINK_FLAGS "-pie" )
  
  TARGET_LINK_LIBRARIES( zuluCrypt-testKey zuluCryptPluginManager ${blkid} )
  set_target_properties( zuluCrypt-testKey PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
- set_target_properties( zuluCrypt-test PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
+ #set_target_properties( zuluCrypt-test PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
 
  file( WRITE ${PROJECT_BINARY_DIR}/libzuluCrypt.pc 
  "prefix=${CMAKE_INSTALL_PREFIX}
@@ -194,9 +187,9 @@ Libs: -L${LIB_PATH} -lcryptsetup -lzuluCrypt -lzuluCrypt-exe -lzuluCryptPluginMa
 Cflags: -I${CMAKE_INSTALL_PREFIX}/include
 \n")
  
- install(TARGETS zuluCrypt-test RUNTIME DESTINATION bin            
- PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE 
- )
+ #install(TARGETS zuluCrypt-test RUNTIME DESTINATION bin            
+ #PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE 
+ #)
  
  install( TARGETS zuluCrypt-testKey RUNTIME DESTINATION "${PLUGINPATH}" )
  

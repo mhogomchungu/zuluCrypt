@@ -578,11 +578,11 @@ int zuluMountUnEncryptedVolumeStatus( const char * device )
 		z = zuluCryptGetLoopDeviceAddress( device ) ;
 		if( e != NULL && z != NULL ){
 			StringMultipleAppend( p," device:   \t",z,"\n loop:   \t",e,"\n offset:    \tNil",NULL ) ;
-			free( e ) ;
-			free( z ) ;
 		}else{
-			StringMultipleAppend( p," device:   \t",device,"\n loop:   \t",device,"\n offset:    \tNil",NULL ) ;
+			StringMultipleAppend( p," device:   \t","Nil","\n loop:   \t","Nil","\n offset:    \tNil",NULL ) ;
 		}
+		StringFree( e ) ;
+		StringFree( z ) ;
 	}else{
 		StringMultipleAppend( p," device:   \t",device," \n loop:   \tNil\n offset:    \tNil",NULL ) ;
 	}

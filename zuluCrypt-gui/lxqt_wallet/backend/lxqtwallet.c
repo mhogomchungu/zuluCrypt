@@ -271,7 +271,7 @@ lxqt_wallet_error lxqt_wallet_create( const char * password,u_int32_t password_l
 		fd = open( path,O_WRONLY|O_CREAT,0600 ) ;
 
 		if( fd == -1 ){
-			return _exit_create( lxqt_wallet_failed_to_open_file,handle ) ;
+			return lxqt_wallet_failed_to_open_file ;
 		}else{
 			/*
 			 * first 16 bytes are for PBKDF2 salt

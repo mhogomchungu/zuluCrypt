@@ -216,4 +216,9 @@ char * zuluCryptUUIDFromPath( const char * device ) ;
  */
 char * zuluCryptEvaluateDeviceTags( const char * tag,const char * path ) ;
 
+/*
+ * zuluCryptRunTest() is defined in test.c
+ */
+int zuluCryptRunTest( void ) ;
+
 #endif 

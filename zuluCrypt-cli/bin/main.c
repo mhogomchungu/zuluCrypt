@@ -316,6 +316,13 @@ int main( int argc,char * argv[] )
 	sa.sa_handler = _forceTerminateOnSeriousError ;
 	sigaction( SIGSEGV,&sa,NULL ) ;
 	
+	if( argc >= 2 && StringsAreEqual( argv[ 1 ],"--test" ) ){
+		/*
+		 * zuluCryptRunTest() is defined in test.c
+		 */
+		return zuluCryptRunTest() ;
+	}
+	
 	/*
 	 * setgroups() requires seteuid(0) ;
 	 */

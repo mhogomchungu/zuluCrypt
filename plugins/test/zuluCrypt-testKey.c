@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "../zuluCrypt-cli/pluginManager/libzuluCryptPluginManager.h"
+#include "../../zuluCrypt-cli/pluginManager/libzuluCryptPluginManager.h"
 #include <string.h>
 
 int main( int argc,char * argv[] )

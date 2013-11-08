@@ -1,5 +1,5 @@
 Name:           zuluCrypt
-Version: 4.6.5
+Version: 4.6.6
 Release: 0
 Summary:        Qt GUI front end to cryptsetup
 License:        GPL-2.0+
@@ -91,7 +91,6 @@ rm -rf $RPM_BUILD_DIR/%{name}-%{version}
 %{_bindir}/zuluMount-cli
 %{_bindir}/zuluCrypt-gui
 %{_bindir}/zuluCrypt-cli
-%{_bindir}/zuluCrypt-test
 %{_libdir}/zuluCrypt/zuluCrypt-testKey
 
 %{_datadir}/applications/zuluCrypt.desktop

@@ -27,9 +27,11 @@
 #include <dirent.h>
 #include <libcryptsetup.h>
 
-#include "../zuluCrypt-cli/pluginManager/libzuluCryptPluginManager.h"
-#include "../zuluCrypt-cli/utility/process/process.h"
-#include "../zuluCrypt-cli/utility/string/StringList.h"
+#include <sys/types.h>
+#include <grp.h> 
+
+#include "../pluginManager/libzuluCryptPluginManager.h"
+#include "../utility/process/process.h"
 
 #include "bin_path.h"
 
@@ -401,8 +403,17 @@ int _loop_device_module_is_not_present( void )
 	return st ;
 }
 
-int main( void )
+int zuluCryptRunTest( void )
 {	
+	uid_t uid  = getuid() ;
+	
+	seteuid( 0 ) ;
+	
+	setgid( uid ) ;
+	setgroups( 1,&uid ) ;
+	setegid( uid ) ;
+	setuid( uid ) ;
+	
 	if( _loop_device_module_is_not_present() ){
 		printf( "\nWARNING: \"loop\" kernel module does not appear to be loaded\n" ) ;
 		printf( "tests and opening of encrypted containers in files will fail if the module was not built into the kernel\n\n" ) ;
@@ -469,5 +480,3 @@ int main( void )
 	EXIT( 0,NULL ) ;
 	return 0 ;
 }
-
- 
