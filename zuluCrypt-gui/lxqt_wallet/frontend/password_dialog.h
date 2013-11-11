@@ -35,6 +35,8 @@
 #include <QCloseEvent>
 #include <QString>
 #include <QMessageBox>
+#include <QEvent>
+#include <QKeyEvent>
 
 namespace Ui{
 class password_dialog;
@@ -67,6 +69,7 @@ private slots:
 private:
 	void HideUI( void ) ;
 	void closeEvent( QCloseEvent * ) ;
+	bool eventFilter ( QObject * watched,QEvent * event ) ;
 	Ui::password_dialog * m_ui ;
 	bool m_createWallet ;
 	bool m_closeUIOnKeySend ;

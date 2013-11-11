@@ -35,6 +35,8 @@
 #include <QString>
 #include <QDebug>
 #include <QCloseEvent>
+#include <QEvent>
+#include <QKeyEvent>
 
 #include "../backend/lxqtwallet.h"
 #include "task.h"
@@ -68,6 +70,7 @@ private slots:
 	void taskResult( bool ) ;
 private:
 	void closeEvent( QCloseEvent * ) ;
+	bool eventFilter ( QObject * watched,QEvent * event ) ;
 	Ui::changePassWordDialog * m_ui ;
 	lxqt_wallet_t m_wallet ;
 	QString m_walletName ;

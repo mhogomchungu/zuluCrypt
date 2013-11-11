@@ -42,7 +42,7 @@ LxQt::Wallet::changePassWordDialog::changePassWordDialog( QWidget * parent,const
 	if( parent ){
 		this->setWindowIcon( parent->windowIcon() ) ;
 	}
-	
+
 	connect( m_ui->pushButtonCancel,SIGNAL( clicked() ),this,SLOT( cancel() ) ) ;
 
 	m_ui->pushButtonOK->setVisible( false ) ;
@@ -50,6 +50,24 @@ LxQt::Wallet::changePassWordDialog::changePassWordDialog( QWidget * parent,const
 	m_ui->textEdit_2->setVisible( false ) ;
 
 	m_walletPassWordChanged = false ;
+
+	this->installEventFilter( this ) ;
+}
+
+
+bool LxQt::Wallet::changePassWordDialog::eventFilter( QObject * watched,QEvent * event )
+{
+	if( watched == this ){
+		if( event->type() == QEvent::KeyPress ){
+			QKeyEvent * keyEvent = static_cast< QKeyEvent* >( event ) ;
+			if( keyEvent->key() == Qt::Key_Escape ){
+				this->HideUI() ;
+				return true ;
+			}
+		}
+	}
+
+	return false ;
 }
 
 void LxQt::Wallet::changePassWordDialog::ShowUI()

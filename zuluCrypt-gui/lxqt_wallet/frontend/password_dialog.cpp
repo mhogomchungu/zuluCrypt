@@ -35,11 +35,11 @@ LxQt::Wallet::password_dialog::password_dialog( QWidget * parent ) : QDialog( pa
 {
 	m_ui->setupUi( this ) ;
 	this->setFixedSize( this->size() ) ;
-	
+
 	if( parent ){
 		this->setWindowIcon( parent->windowIcon() ) ;
 	}
-	
+
 	connect( m_ui->pushButtonSend,SIGNAL( clicked() ),this,SLOT( pbSend() ) ) ;
 	connect( m_ui->pushButtonCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->pushButtonOK_2,SIGNAL( clicked() ),this,SLOT( pbOK_2() ) ) ;
@@ -50,6 +50,23 @@ LxQt::Wallet::password_dialog::password_dialog( QWidget * parent ) : QDialog( pa
 	m_ui->pushButtonOK->setVisible( false ) ;
 
 	m_closeUIOnKeySend = false ;
+
+	this->installEventFilter( this ) ;
+}
+
+bool LxQt::Wallet::password_dialog::eventFilter( QObject * watched,QEvent * event )
+{
+	if( watched == this ){
+		if( event->type() == QEvent::KeyPress ){
+			QKeyEvent * keyEvent = static_cast< QKeyEvent* >( event ) ;
+			if( keyEvent->key() == Qt::Key_Escape ){
+				this->HideUI() ;
+				return true ;
+			}
+		}
+	}
+
+	return false ;
 }
 
 void LxQt::Wallet::password_dialog::ShowUI( const QString& walletName,const QString& applicationName )
@@ -181,6 +198,7 @@ void LxQt::Wallet::password_dialog::pbOK_2()
 
 void LxQt::Wallet::password_dialog::HideUI()
 {
+	this->hide() ;
 	this->deleteLater() ;
 }
 
