@@ -7,9 +7,9 @@ add_subdirectory( keykeyfile )
 add_subdirectory( keydialog-qt )
 #keyring module is handled by CMakeLists.txt in ../zuluCrypt-cli
 #add_subdirectory( keyring )
-	
-if( BUILDKWALLET )
-	add_subdirectory( kwallet )
-endif( BUILDKWALLET )	
+
+#if( NOT NOKDESUPPORT )
+#	add_subdirectory( kwallet )
+#endif( NOT NOKDESUPPORT )	
 
 endif( NOT NOGUI ) 

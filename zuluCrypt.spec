@@ -102,13 +102,14 @@ rm -rf $RPM_BUILD_DIR/%{name}-%{version}
 
 %files -n %{zuluCrypt_plugins}
 %defattr(0755,root,root)
-# It maybe necessary to comment out plugins that were configured not to be build
-# Dont know how to write spec file to autodetect what plugin was not build and act accordingly
-%{_libdir}/zuluCrypt/kwallet
+#
+# you may need to comment plugins you dont want to build
+#
+%{_libdir}/zuluCrypt/gpg
+%{_libdir}/zuluCrypt/keydialog-qt
 %{_libdir}/zuluCrypt/keyring
 %{_libdir}/zuluCrypt/keykeyfile
-%{_libdir}/zuluCrypt/keydialog-qt
-%{_libdir}/zuluCrypt/gpg
+%{_libdir}/zuluCrypt/kwallet
 
 %files -n %{libname}
 %defattr(0755,root,root)

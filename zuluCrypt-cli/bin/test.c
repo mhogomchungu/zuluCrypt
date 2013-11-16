@@ -42,7 +42,7 @@ const char * mount_point      = "zuluCrypt-MountPoint" ;
 const char * key              = "xyz" ;
 const char * key1             = "xxx" ;
 const char * zuluCryptExe     = ZULUCRYPTzuluCrypt ;
-const char * zuluCryptTest    = ZULUCRYPTTest ;
+const char * pluginPath       = ZULUCRYPTplugInPath;
 const char * keyfile          = "/tmp/zuluCrypt-KeyFile" ;
 const char * keyfile1         = "/tmp/zuluCrypt-KeyFile1" ;
 
@@ -361,7 +361,7 @@ void openVolumeWithPlugIn( const char * device,const char * msg )
 	process_t p ;
 	__print( msg ) ;
 	p = Process( zuluCryptExe ) ;
-	ProcessSetArgumentList( p,"-o","-d",device,"-m",mount_point,"-G",zuluCryptTest,ENDLIST ) ;
+	ProcessSetArgumentList( p,"-o","-d",device,"-m",mount_point,"-G",pluginPath,ENDLIST ) ;
 	ProcessStart( p ) ;
 	__ProcessGetResult( p ) ;
 }

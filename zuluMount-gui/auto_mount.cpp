@@ -131,7 +131,7 @@ void auto_mount::run()
 	#define BUFF_SIZE 4096
 	char buffer[ BUFF_SIZE ];
 
-	while( 1 ) {
+	while( 1 ){
 
 		data_read = read( m_fdDir,buffer,BUFF_SIZE ) ;
 

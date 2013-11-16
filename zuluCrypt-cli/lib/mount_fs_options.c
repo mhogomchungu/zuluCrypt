@@ -57,7 +57,7 @@ int zulucryptFileSystemIsSupported( const char * fs )
 	}else{
 		while( 1 ){
 			if( *e == NULL ){
-				return _fileSystemIsSupported( fs );
+				return _fileSystemIsSupported( fs ) ;
 			}else if( strcmp( fs,*e ) == 0 ){
 				return 1 ;
 			}else{
@@ -111,7 +111,7 @@ static inline int _option_contain_not_allowed( const char * fs,const char * fs_o
 	int r = 1 ;
 	
 	if( stl != StringListVoid ){
-		if( StringHasComponent( fs,"fat" ) || StringHasComponent( fs,"dos" ) ){
+		if( StringHasAtLeastOneComponent_1( fs,"fat","dos",NULL ) ){
 			r = allowed_vfat( stl ) ;
 		}else if( StringsAreEqual( fs,"ntfs" ) ){
 			r = allowed_ntfs( stl ) ;

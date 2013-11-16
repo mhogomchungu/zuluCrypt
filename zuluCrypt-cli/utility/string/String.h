@@ -108,7 +108,8 @@ int StringContains( string_t st,const char * str ) ;
 
 /*
  * Append multiple string_t to a string handled by handle st .
- * Same requirement as StringMultipleAppend apply 
+ * Same requirement as StringMultipleAppend apply
+ * NOTE:The series must be NULL terminated.
  */
 const char * StringAppendMultipleString( string_t st,... )  __attribute__ ( ( sentinel ) ) ;
 
@@ -370,6 +371,7 @@ int StringStartsWith( string_t st,const char * s ) ;
  * st = String( "abcdef" ) ;
  * int r = StringAtLeastOneStartsWith( st,"rrr","www","abc",NULL ) ;
  * r will contain "1" since "abc" argument match the beginning of the string_t object
+ * NOTE:The series must be NULL terminated.
  */
 int StringAtLeastOneStartsWith( string_t st,... ) __attribute__ ( ( sentinel ) ) ;
 
@@ -804,11 +806,13 @@ int StringAtLeastOnePrefixMatch( const char * x,... )  __attribute__ ( ( sentine
 
 /*
  * returns true if atleast one cstring is a component of x
+ * NOTE:The series must be NULL terminated.
  */
 int StringHasAtLeastOneComponent_1( const char * x,... ) __attribute__ ( ( sentinel ) ) ;
 
 /*
  * returns true if atleast one cstring is a component of a string managed by object st
+ * NOTE:The series must be NULL terminated.
  */
 int StringHasAtLeastOneComponent( string_t st,... ) __attribute__ ( ( sentinel ) ) ;
 

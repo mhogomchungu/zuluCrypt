@@ -2,6 +2,7 @@
  
  file(WRITE  ${PROJECT_BINARY_DIR}/bin_path.h "\n#define ZULUCRYPTzuluCrypt      \"${CMAKE_INSTALL_PREFIX}/bin/zuluCrypt-cli\"\n")
  file(APPEND ${PROJECT_BINARY_DIR}/bin_path.h "\n#define zuluMount	         \"${CMAKE_INSTALL_PREFIX}/bin/zuluMount-cli\"\n")
+ file(APPEND ${PROJECT_BINARY_DIR}/bin_path.h "\n#define ZULUCRYPTplugInPath     \"${CMAKE_INSTALL_PREFIX}/zuluCrypt/zuluCrypt-testKey\"\n")
  
  add_definitions( -I${PROJECT_BINARY_DIR} ) 
   
