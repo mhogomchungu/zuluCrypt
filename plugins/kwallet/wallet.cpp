@@ -40,7 +40,7 @@ QString wallet::KDELocalWallet( void )
 
 void wallet::openWallet()
 {
-	m_wallet = Wallet::openWallet( utility::defaultKDEWalletName(),0,KWallet::Wallet::Synchronous ) ;
+	m_wallet = Wallet::openWallet( KWallet::Wallet::LocalWallet(),0,KWallet::Wallet::Synchronous ) ;
 
 	if( m_wallet ){
 		m_wallet->setFolder( utility::applicationName() ) ;
