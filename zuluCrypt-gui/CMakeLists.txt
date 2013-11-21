@@ -129,8 +129,7 @@ install (FILES zuluCrypt.png DESTINATION share/icons)
 # desktop file section
 file( WRITE ${PROJECT_BINARY_DIR}/zuluCrypt.desktop
 
-"#!/usr/bin/env xdg-open
-[Desktop Entry]
+"[Desktop Entry]
 Comment[en_US]=
 Comment=
 Exec=${CMAKE_INSTALL_PREFIX}/bin/zuluCrypt-gui -d %U
