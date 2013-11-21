@@ -143,7 +143,6 @@ NoDisplay=false
 Path=
 StartupNotify=true
 Terminal=false
-TerminalOptions=
 Type=Application
 X-DBUS-ServiceName=
 X-DBUS-StartupType=
