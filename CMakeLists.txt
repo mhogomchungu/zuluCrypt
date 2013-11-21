@@ -248,10 +248,10 @@ else( UDEVSUPPORT STREQUAL "true" )
 	
 endif( UDEVSUPPORT STREQUAL "true" )
 
-install ( FILES zuluCrypt-cli.1.bz2 DESTINATION share/man/man1 )
-install ( FILES zuluCrypt-gui.1.bz2 DESTINATION share/man/man1 )
-install ( FILES zuluMount-cli.1.bz2 DESTINATION share/man/man1 )
-install ( FILES zuluMount-gui.1.bz2 DESTINATION share/man/man1 )
+install ( FILES zuluCrypt-cli.1 DESTINATION share/man/man1 )
+install ( FILES zuluCrypt-gui.1 DESTINATION share/man/man1 )
+install ( FILES zuluMount-cli.1 DESTINATION share/man/man1 )
+install ( FILES zuluMount-gui.1 DESTINATION share/man/man1 )
 
 #install ( FILES translations/zuluMount/fr_FR.qm DESTINATION share/zuluCrypt/translations/zuluMount-gui )
 #install ( FILES translations/zuluCrypt/fr_FR.qm DESTINATION share/zuluCrypt/translations/zuluCrypt-gui )

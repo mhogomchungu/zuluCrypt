@@ -1,0 +1,80 @@
+
+.TH zuluMount-cli 1 
+
+.br
+.SH NAME 
+zuluMount-cli,a command line tool that manage encrypted and unencrypted volumes
+
+.SH DESCRIPTION
+zuluMount-cli is a tool that has a primary mission of opening and closing encrypted volumes as well as
+mounting and unmounting unecrypted volumes and opened encrypted ones.Its primary purpose is to do what
+tools like udisks does.
+.br
+
+.SH USAGE
+usage: see examples below
+
+.br
+options:
+.br
+-m -- mount a volume : arguments: -d volume_path -z mount_point -e mode(rw/ro)
+      -- additional arguments for crypto_LUKS,crypto_PLAIN,crypto_TCRYPT volumes, -p passphrase/-f keyfile
+.br
+-z -- mount point component to append to "/run/media/private/$USER/"
+.br
+-u -- unmount a volume: arguments: -d volume_path
+.br
+-s -- print properties of an encrypted volume: arguments: -d volume_path
+.br
+-M -- this option will create a mount point in "/run/media/private/$USER/" and a publicly accessible "mirror" in "/run/media/public/'
+.br
+-l -- print expanded list of all volumes
+.br
+-Y -- file system options
+.br
+-L -- must be used with -d,print properties of a volume specified by d option
+.br
+-P -- print a list of all volumes
+.br
+-A -- print a list of all volumes
+.br
+-S -- print a list of system volumes
+.br
+-N -- print a list of non system volumes
+.br
+-E -- print a list of mounted volumes
+.br
+-D -- get a device node address from its mapper path( mapper paths are usually located in /dev/mapper ). Required argument: -d
+.br
+examples:
+.br
+mount a volume  : zuluMount-cli -m -d /dev/sdc1
+.br
+unmount a volume: zuluMount-cli -u -d /dev/sdc1
+.br
+mount and encrypted volume with a key "xyz" : zuluMount-cli -m -d /dev/sdc2 -p xyz
+.br
+
+.SH COPYRIGHT
+Copyright (c) 2011-2013
+.br
+name : mhogo mchungu
+.br
+email: mhogomchungu@gmail.com
+.br
+.br
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 2 of the License, or
+(at your option) any later version.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+.br
+
+.SH LAST EDIT
+Last change: Mon May 27 00:07:21 EDT 2013
