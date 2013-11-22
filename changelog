@@ -153,3 +153,7 @@ version 4.6.6
    apologies for the inconvenience.
 -- drop support for updating /etc/mtab and remove libmount as a required dependency
 -- add a Qt5 port,see build instrunctions on how to build Qt5 version
+
+version 4.6.7
+-- fix packaging issues
+-- fix a regression on zuluMount-gui that caused a hang when checking for properties of an opened volume opened by a different user

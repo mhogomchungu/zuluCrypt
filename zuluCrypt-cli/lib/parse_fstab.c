@@ -25,29 +25,57 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+static char * _resolve_path( char * path )
+{
+	string_t st ;
+	if( StringPrefixMatch( path,"/dev/mapper/",12 ) ){
+		/*
+		 * zuluCryptConvertIfPathIsLVM() is defined in status.c
+		 */
+		st = zuluCryptConvertIfPathIsLVM( path ) ;
+	}else if( StringPrefixMatch( path,"/dev/loop",9 ) ){
+		/*
+		 * zuluCryptLoopDeviceAddress_2() is defined in create_loop_device.c
+		 */
+		st = zuluCryptLoopDeviceAddress_2( path ) ;
+	}else if( StringPrefixMatch( path,"/dev/md",7 ) ){
+		/*
+		 * zuluCryptResolveMDPath() is defined in this process_mountinfo.c
+		 */
+		st = zuluCryptResolveMDPath_1( path ) ;
+	}else{
+		st = String( path ) ;
+	}
+	
+	StringFree( path ) ;
+	
+	return StringDeleteHandle( &st ) ;
+}
+
 static inline char * _evaluate_tag( const char * tag,const char * entry,blkid_cache * cache )
 {
 	char * f = NULL ;
 	string_t st = String( entry ) ;
-	int index = StringIndexOfChar( st,0,' ' ) ;
-
-	if( index >= 0 ){
-		f = blkid_evaluate_tag( tag,StringSubChar( st,index,'\0' ),cache ) ;
+	const char * e = StringReplaceChar_1( st,0,' ','\0' ) ;
+	
+	if( e != NULL ){
+		f = blkid_evaluate_tag( tag,e,cache ) ;
 	}
-
+	
 	StringDelete( &st ) ;
-	return f ;
+	
+	return _resolve_path( f ) ;
 }
 
 static inline char * _evaluate_tag_by_id( string_t st )
 {
-	char * r = NULL ;
+	char * f = NULL ;
 	ssize_t index = StringIndexOfChar( st,0,' ' ) ;
 	if( index >= 0 ){
-		r = zuluCryptRealPath( StringSubChar( st,index,'\0' ) ) ;
+		f = zuluCryptRealPath( StringSubChar( st,index,'\0' ) ) ;
 		StringSubChar( st,index,' ' ) ;
 	}
-	return r ;
+	return  _resolve_path( f ) ;
 }
 
 stringList_t zuluCryptGetFstabList( uid_t uid )
@@ -179,7 +207,7 @@ stringList_t zuluCryptGetFstabList( uid_t uid )
 					}
 				}
 			}
-		}else if( StringPrefixMatch( entry,"UUID=",5 ) || StringPrefixMatch( entry,"uuid=",5 ) ){
+		}else if( StringAtLeastOnePrefixMatch( entry,"UUID=","uuid=",NULL ) ){
 			entry = StringRemoveString( xt,"\"" ) ;
 			ac = _evaluate_tag( "UUID",entry + 5,&cache ) ;
 			if( ac != NULL ){
@@ -190,7 +218,7 @@ stringList_t zuluCryptGetFstabList( uid_t uid )
 				}
 				free( ac ) ;
 			}
-		}else if( StringPrefixMatch( entry,"LABEL=",6 ) || StringPrefixMatch( entry,"label=",6 ) ){
+		}else if( StringAtLeastOnePrefixMatch( entry,"LABEL=","label=",NULL ) ){
 			entry = StringRemoveString( xt,"\"" ) ;
 			ac = _evaluate_tag( "LABEL",entry + 6,&cache ) ;
 			if( ac != NULL ){

@@ -622,7 +622,12 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 			
 			if( StringPrefixMatch( e,"/dev/disk/by-",13 ) ){
 				ac = zuluCryptRealPath( e ) ;
-				stl_1 = StringListAppend( stl_1,ac ) ;
+				if( StringPrefixMatch( ac,"/dev/mapper/",12 ) ){
+					st = zuluCryptConvertIfPathIsLVM( ac ) ;
+					stl_1 = StringListAppendString_1( stl_1,&st ) ;
+				}else{
+					stl_1 = StringListAppend( stl_1,ac ) ;
+				}
 				StringFree( ac ) ;
 			}else if( StringPrefixMatch( e,"/dev/md",7 ) ){
 				/*
@@ -699,7 +704,12 @@ stringList_t zuluCryptGetPartitionFromConfigFile( const char * path )
 			
 			if( StringPrefixMatch( e,"/dev/disk/by-",13 ) ){
 				ac = zuluCryptRealPath( e ) ;
-				stl_1 = StringListAppend( stl_1,ac ) ;
+				if( StringPrefixMatch( ac,"/dev/mapper/",12 ) ){
+					st = zuluCryptConvertIfPathIsLVM( ac ) ;
+					stl_1 = StringListAppendString_1( stl_1,&st ) ;
+				}else{
+					stl_1 = StringListAppend( stl_1,ac ) ;
+				}
 				StringFree( ac ) ;
 			}else if( StringPrefixMatch( e,"/dev/md",7 ) ){
 				/*

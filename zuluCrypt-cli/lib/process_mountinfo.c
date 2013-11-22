@@ -27,6 +27,7 @@ char * zuluCryptResolveDevRoot( void )
 	const char * e ;
 	char * dev = NULL ;
 	
+	string_t xt ;
 	string_t st      = StringGetFromVirtualFile( "/proc/cmdline" ) ;
 	stringList_t stl = StringListStringSplit( st,' ' ) ;
 	StringDelete( &st ) ;
@@ -39,6 +40,16 @@ char * zuluCryptResolveDevRoot( void )
 			 * zuluCryptRealPath() is defined in ./real_path.c
 			 */
 			dev = zuluCryptRealPath( e ) ;
+			if( StringPrefixMatch( dev,"/dev/mapper/",12 ) ){
+				/*
+				* zuluCryptConvertIfPathIsLVM() is defined in status.c
+				*/
+				xt = zuluCryptConvertIfPathIsLVM( dev ) ;
+				StringFree( dev ) ;
+				dev = StringDeleteHandle( &xt ) ;
+			}else{
+				;
+			}
 		}else if( StringPrefixMatch( e,"/dev/mapper/",12 ) ){
 			/*
 			 * zuluCryptConvertIfPathIsLVM() is defined in status.c
@@ -114,18 +125,16 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 	const char * mount_point ;
 	const char * file_system ;
 	const char * mount_options ;
-	const char * g ;
 	char * dev ;
 	int index ;
 	char * const * entry = NULL ;
 	size_t entry_len = 0 ;
-	struct stat str ;
 	stringList_t tmp ;
 	stringList_t stx = StringListVoid;
 	stringList_t stl ;
 	StringListIterator it ;
 	StringListIterator end;
-	string_t n ;
+	string_t k ;
 	string_t st = StringGetFromVirtualFile( "/proc/self/mountinfo" ) ;
 	
 	stl = StringListStringSplit( st,'\n' ) ;
@@ -136,7 +145,6 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 	it  = StringListBegin( stl ) ;
 	end = StringListEnd( stl )   ;
 	st = String( "" ) ;
-	n  = String( "" ) ;
 	for( ; it != end ; it++ ){
 		tmp = StringListStringSplit( *it,' ' ) ;
 		if( !StringListContentAtEqual( tmp,3,"/" ) ){
@@ -180,27 +188,25 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 			if( dev == NULL ){
 				StringMultipleAppend( st,device," ",mount_point," ",file_system," ",mount_options,END ) ;
 			}else{
-				StringMultipleAppend( st,dev," ",mount_point," ",file_system," ",mount_options,END ) ;
+				if( StringPrefixMatch( dev,"/dev/mapper/",12 ) ){
+					/*
+					 * zuluCryptConvertIfPathIsLVM() is defined in status.c
+					 */
+					k = zuluCryptConvertIfPathIsLVM( dev ) ;
+					StringMultipleAppend( st,StringContent( k )," ",mount_point," ",file_system," ",mount_options,END ) ;
+					StringDelete( &k ) ;
+				}else{
+					StringMultipleAppend( st,dev," ",mount_point," ",file_system," ",mount_options,END ) ;
+				}
 				free( dev ) ;
 			}
 		}else if( StringPrefixMatch( device,"/dev/mapper/",12 ) ){
 			/*
-			 * If the entry is an LVM volume and its in /dev/mapper/abc-def format,then convert it to
-			 * /dev/abc/def format as this is the internal format of the tool
+			 * zuluCryptConvertIfPathIsLVM() is defined in status.c
 			 */
-			StringAppendAt( n,0,device ) ;
-			index = StringLastIndexOfChar( n,'-' ) ;
-			if( index != -1 ){
-				StringSubChar( n,index,'/' ) ;
-				g = StringReplaceString( n,"/dev/mapper/","/dev/" ) ;
-				if( stat( g,&str ) == 0 ){
-					StringMultipleAppend( st,g," ",mount_point," ",file_system," ",mount_options,END ) ;
-				}else{
-					StringMultipleAppend( st,device," ",mount_point," ",file_system," ",mount_options,END ) ;
-				}
-			}else{
-				StringMultipleAppend( st,device," ",mount_point," ",file_system," ",mount_options,END ) ;
-			}
+			k = zuluCryptConvertIfPathIsLVM( device ) ;
+			StringMultipleAppend( st,StringContent( k )," ",mount_point," ",file_system," ",mount_options,END ) ;
+			StringDelete( &k ) ;
 		}else if( StringPrefixMatch( device,"/dev/md",7 ) ){
 			dev = zuluCryptResolveMDPath( device ) ;
 			StringMultipleAppend( st,dev," ",mount_point," ",file_system," ",mount_options,END ) ;
@@ -216,7 +222,7 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 	if( entry != NULL ){
 		free( ( void * )entry ) ;
 	}
-	StringMultipleDelete( &st,&n,END ) ;
+	StringDelete( &st ) ;
 	StringListDelete( &stl ) ;
 	return stx ;
 }
@@ -253,7 +259,13 @@ stringList_t zuluCryptGetMoutedListFromMounts( void )
 				StringSubChar( q,index,' ' ) ;
 				if( dev != NULL ){
 					StringRemoveLeft( q,index ) ;
-					StringMultiplePrepend( q," ",dev,END ) ;
+					if( StringPrefixMatch( dev,"/dev/mapper/",12 ) ){
+						n = zuluCryptConvertIfPathIsLVM( dev ) ;
+						StringMultiplePrepend( q," ",StringContent( n ),END ) ;
+						StringDelete( &n ) ;
+					}else{
+						StringMultiplePrepend( q," ",dev,END ) ;
+					}
 					free( dev ) ;
 				}
 			}
@@ -383,7 +395,7 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 			z = String( "" ) ;
 			StringMultipleAppend( z,"UUID=\"",e,"\"\t",d,"\t",f,END ) ;
 			list = StringListAppendString_1( list,&z ) ;
-			free( f ) ;
+			StringFree( f ) ;
 		}else{
 			g = zuluCryptVolumeDeviceName( StringListContentAt( stx,0 ) ) ;
 			if( g != NULL ){
@@ -395,8 +407,8 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 				z = String( "" ) ;
 				StringMultipleAppend( z,g,"\t",d,"\t",f,END ) ;
 				list = StringListAppendString_1( list,&z ) ;
-				free( f ) ;
-				free( g ) ;
+				StringFree( f ) ;
+				StringFree( g ) ;
 			}
 		}
 		
