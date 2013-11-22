@@ -260,7 +260,7 @@ void Task::volumeMiniProperties()
 	if( p.exitCode() == 0 ){
 		emit signalProperties( p.readAll() ) ;
 	}else{
-		;
+		emit signalProperties( QString( "" ) ) ;
 	}
 }
 
