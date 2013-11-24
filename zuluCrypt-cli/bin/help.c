@@ -44,38 +44,38 @@ void zuluCryptEXEHelp( void )
 	help1 = gettext( "\
 	usage: zuluCrypt-cli < operation > < options specific to the operation >\n\
 	meaning of symbols:\n\
-	[] = required option\n\
-	() = optional argument,default exists\n\
+	<> = required option\n\
+	[] = optional argument\n\
 	*  = default option\n\
-	/ *  = alternatives for the same option\n\
+	|  = alternatives for the same option\n\
 	{}  = not allowed option\n\
 	\n\
-	zuluCrypt-cli -E [ -d ] [-e ]  [ -p/-f/-h ]\n\
-	zuluCrypt-cli -D [ -d ] [-e ]  [ -p/-f/-h ]\n\
-	zuluCrypt-cli -o [ -d ] [ -m ] ( -e ) [ -p/-f/-h ]\n\
-	zuluCrypt-cli -O [ -d ] { -m } ( -e ) [ -p/-f/-h ]\n" ) ;
+	zuluCrypt-cli -E <d> <e> <p|f|h>\n\
+	zuluCrypt-cli -D <d> <e> <p|f|h>\n\
+	zuluCrypt-cli -o <d> <m> [-e] <p|f|h>\n\
+	zuluCrypt-cli -O <d> {-m} [-e] <p|f|h>\n" ) ;
 	
 	help2 = gettext( "\
-	zuluCrypt-cli -q [ -d ]\n\
-	zuluCrypt-cli -i [ -d ]\n\
-	zuluCrypt-cli -c [ -d ] [ -p/-f /-h ] ( -k ) ( -t ) ( -z  ) ( -g )\n\
-	zuluCrypt-cli -r [ -d ] [ -p/-f/-h ] \n\
-	zuluCrypt-cli -a [ -d ] [ [ -y/-u ] [ -l/-n ] ]/[ -h ]\n\
-	zuluCrypt-cli -b [ -d ]\n\
-	zuluCrypt-cli -w [ -d ]   d argument must be something like: UUID=\"2468d6a7-9a71-4312-8bd9-662f982fade5\" ( or without quotes )\n\
-	zuluCrypt-cli -P [ -d ]   d device must be mapper path at /dev/mapper/\n\
-	zuluCrypt-cli -X [ -d ]\n\
-	zuluCrypt-cli -J [ -d ]\n" ) ;
+	zuluCrypt-cli -q <d>\n\
+	zuluCrypt-cli -i <d>\n\
+	zuluCrypt-cli -c <d> <p|f|h> [ktzg]\n\
+	zuluCrypt-cli -r <d> <p|f|h> \n\
+	zuluCrypt-cli -a <d> <<y|u> <l|n>>|<h>\n\
+	zuluCrypt-cli -b <d>\n\
+	zuluCrypt-cli -w <d>   d argument must be something like: UUID=\"2468d6a7-9a71-4312-8bd9-662f982fade5\" ( or without quotes )\n\
+	zuluCrypt-cli -P <d>   d device must be mapper path at /dev/mapper/\n\
+	zuluCrypt-cli -X <d>\n\
+	zuluCrypt-cli -J <d>\n" ) ;
 	
 	help3 = gettext( "\
-	zuluCrypt-cli -R [ -d ] [ -f ]\n\
-	zuluCrypt-cli -B [ -d ] [ -f ]\n\
+	zuluCrypt-cli -R <d> <f>\n\
+	zuluCrypt-cli -B <d> <f>\n\
 	zuluCrypt-cli -A\n\
 	zuluCrypt-cli -S\n\
 	zuluCrypt-cli -N\n\
 	examples:\n\
 	create volume: zuluCrypt-cli -c -d /dev/sdc1 -z ext4 -t luks -p xxx\n\
-	open volume  : zuluCrypt-cli -o -d /dev/sdc1 -m ~/sdc1 -e ro -p xxx\n\
+	open volume  : zuluCrypt-cli -o -d /dev/sdc1 -m sdc1 -e ro -p xxx\n\
 	close volume ; zuluCrypt-cli -q -d /dev/sdc1\n\
 	remove key   ; zuluCrypt-cli -r -d /dev/sdc1 -p xxx\n\
 	add key      : zuluCrypt-cli -a -d /dev/sdc1 -y xxx -l yyy\n" ) ;
