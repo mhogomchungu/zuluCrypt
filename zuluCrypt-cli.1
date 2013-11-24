@@ -8,49 +8,49 @@ zuluCrypt-cli - command line interface frontend to cryptsetup and tcplay
 .SH SYNOPSIS
 meaning of symbols:
 .br
-[] = required option
+<> = required option
 .br
-() = optional argument,default exists
+[] = optional argument
 .br
 *  = default option
 .br
-/  = alternatives for the same option
+|  = alternatives for the same option
 .br
 {}  = not allowed option
 .br
 zuluCrypt-cli --test
 .br
-zuluCrypt-cli -E [ -d ] [-e ]  [ -p/-f/-h ]
+zuluCrypt-cli -E <-d> <-e>  <-p|-f|-h>
 .br
-zuluCrypt-cli -D [ -d ] [-e ]  [ -p/-f/-h ]
+zuluCrypt-cli -D <-d> <-e>  <-p|-f|-h>
 .br
-zuluCrypt-cli -o [ -d ] [ -m ] ( -e ) [ -p/-f/-h ]
+zuluCrypt-cli -o <-d> <-m> [-e] <-p|-f|-h>
 .br
-zuluCrypt-cli -O [ -d ] { -m } ( -e ) [ -p/-f/-h ]
+zuluCrypt-cli -O <-d> {-m} [-e] <-p|-f|-h>
 .br
-zuluCrypt-cli -q [ -d ]
+zuluCrypt-cli -q <-d>
 .br
-zuluCrypt-cli -i [ -d ]
+zuluCrypt-cli -i <-d>
 .br
-zuluCrypt-cli -c [ -d ] [ -p/-f /-h ] ( -k ) ( -t ) ( -z  ) ( -g )
+zuluCrypt-cli -c <-d> <-p|-f |-h> [-k] [-t] [-z] [-g]
 .br
-zuluCrypt-cli -r [ -d ] [ -p/-f/-h ] 
+zuluCrypt-cli -r <-d> <-p|-f|-h>
 .br
-zuluCrypt-cli -a [ -d ] [ [ -y/-u ] [ -l/-n ] ]/[ -h ]
+zuluCrypt-cli -a <-d> <<-y|-u> <-l|-n>>|<-h>
 .br
-zuluCrypt-cli -b [ -d ]
+zuluCrypt-cli -b <-d>
 .br
-zuluCrypt-cli -w [ -d ]   d argument must be something like: UUID=\"2468d6a7-9a71-4312-8bd9-662f982fade5\" ( or without quotes )
+zuluCrypt-cli -w <-d>   d argument must be something like: UUID=\"2468d6a7-9a71-4312-8bd9-662f982fade5\" ( or without quotes )
 .br
-zuluCrypt-cli -P [ -d ]   d device must be mapper path at /dev/mapper/
+zuluCrypt-cli -P <-d>   d device must be mapper path at /dev/mapper/
 .br
-zuluCrypt-cli -X [ -d ]
+zuluCrypt-cli -X <-d>
 .br
-zuluCrypt-cli -J [ -d ]
+zuluCrypt-cli -J <-d>
 .br
-zuluCrypt-cli -R [ -d ] [ -f ]
+zuluCrypt-cli -R <-d> <-f>
 .br
-zuluCrypt-cli -B [ -d ] [ -f ]
+zuluCrypt-cli -B <-d> <-f>
 .br
 zuluCrypt-cli -A
 .br
@@ -94,7 +94,7 @@ System partition is a partition with an active entry in /etc/fstab and /etc/cryp
 .br
 
 .SH USAGE
-usage: zuluCrypt-cli < operation > < options specific to the operation >
+usage: zuluCrypt-cli <operation> <options specific to the operation>
 .br
 operation list:
 .br
@@ -216,4 +216,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 .br
 
 .SH LAST EDIT
-Last change: Mon Apr  8 19:20:45 EDT 2013
+Last change: Sun Nov 24 00:55:33 EST 2013

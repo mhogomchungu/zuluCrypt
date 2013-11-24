@@ -243,16 +243,36 @@ string_t StringCopy( string_t st )
 	if( xt == NULL ){
 		free( c ) ;
 		return _StringError() ;
+	}else{
+		memcpy( c,st->string,st->size + 1 ) ;
+	
+		xt->size = st->size ;
+		xt->length = st->size + 1 ;
+		xt->string = c ;
+		xt->owned = 0 ;
+	
+		return xt ;
 	}
-	
-	memcpy( c,st->string,st->size + 1 ) ;
-	
-	xt->size = st->size ;
-	xt->length = st->size + 1 ;
-	xt->string = c ;
-	xt->owned = 0 ;
-	
-	return xt ;
+}
+
+string_t StringEmpty()
+{
+	string_t st = ( string_t ) malloc ( sizeof( struct StringType ) ) ;
+	if( st == NULL ){
+		return _StringError() ;
+	}else{
+		st->string = ( char * ) malloc( sizeof( char ) ) ;
+		if( st->string == NULL ){
+			free( st ) ;
+			return _StringError() ;
+		}else{
+			st->string[ 0 ] = '\0' ;
+			st->size = 0 ;
+			st->owned = 0 ;
+			st->length = 1 ;
+			return st ;
+		}
+	}
 }
 
 string_t String( const char * cstring )
@@ -275,26 +295,29 @@ string_t String( const char * cstring )
 		
 		st->string = ( char * ) malloc( sizeof( char ) * STRING_INIT_SIZE ) ;
 		if( st->string == NULL ){
+			free( st ) ;
 			return _StringError() ;
+		}else{
+			memcpy( st->string,cstring,size + 1 ) ;
+			st->size = size ;
+			st->length = STRING_INIT_SIZE ;
+			st->owned = 0 ;
+			return st ;
 		}
-		
-		memcpy( st->string,cstring,size + 1 ) ;
-		st->size = size ;
-		st->length = STRING_INIT_SIZE ;
 	}else{
 		st->string = ( char * ) malloc( sizeof( char ) * ( size + 1 ) );
 	
 		if( st->string == NULL ){
 			free( st ) ;
-			return StringVoid ;
+			return _StringError() ;
+		}else{	
+			memcpy( st->string,cstring,size + 1 ) ;
+			st->size = size  ;
+			st->length = size + 1 ;
+			st->owned = 0 ;
+			return st ;
 		}
-		
-		memcpy( st->string,cstring,size + 1 ) ;
-		st->size = size  ;
-		st->length = size + 1 ;
 	}
-	st->owned = 0 ;
-	return st ;
 }
 
 void StringReadToBuffer( string_t st,char * buffer,size_t size )

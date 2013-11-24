@@ -28,7 +28,6 @@
 #include "../bin/bash_special_chars.h"
 
 typedef struct{
-	const char * original_device ;
 	const char * device ;
 	const char * m_point ;
 	const char * fs ;

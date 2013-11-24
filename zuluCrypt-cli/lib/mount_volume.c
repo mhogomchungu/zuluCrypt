@@ -39,9 +39,9 @@
  * stringList_t zuluCryptGetFstabEntryList( const char * device ) 
  */
 
-static inline int zuluExit( int st,int fd,stringList_t stl )
+static inline int zuluExit( int st,int fd,string_t x,string_t y,string_t z )
 {
-	StringListDelete( &stl ) ;
+	StringMultipleDelete( &x,&y,&z,END ) ;
 	if( fd != -1 ){
 		close( fd ) ;
 	}
@@ -260,81 +260,57 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 {
 	int h ;
 	
-	stringList_t stl = StringListInit() ;
+	string_t opts = StringVoid ;
+	string_t fs   = StringVoid ;
+	string_t loop = StringVoid ;
 	
-	string_t * opts ;
-	string_t fs ;
-	string_t * loop ;
 	int fd = -1 ;
-	m_struct mst ;
-	char * e ;
-		
-	/*
-	 * device and original_device are initially the same but
-	 * device may change to something like /dev/loop1 if device to be mounted is a file
-	 */
-	mst.device = path ;
-	mst.original_device = path  ;
 	
+	m_struct mst ;
+	mst.device = path ;
 	mst.m_point = m_point ;
 	mst.uid = uid ;
-	
 	mst.m_flags = mount_opts ;
-	opts = StringListAssign( stl ) ;
-		
+	
 	/* 
 	 * zuluCryptGetFileSystemFromDevice() is defined in this source file
 	 */
-	fs = StringListAssignString( stl,zuluCryptGetFileSystemFromDevice( path ) );
+	fs = zuluCryptGetFileSystemFromDevice( path ) ;
 	
 	if( fs == StringVoid ){
 		/*
 		 * failed to read file system,probably because the volume does have any or 
 		 * a plain volume was opened with a wrong key
 		 */
-		return zuluExit( 4,fd,stl ) ;
+		return zuluExit( 4,fd,opts,fs,loop ) ;
 	}
 	
 	if( StringEqual( fs,"crypto_LUKS" ) ){
 		/*
 		 * we cant mount an encrypted volume, exiting
 		 */
-		return zuluExit( 4,fd,stl ) ;
+		return zuluExit( 4,fd,opts,fs,loop ) ;
 	}
 
 	/*
 	 * zuluCryptMountHasNotAllowedFileSystemOptions() is defined in ./mount_fs_options.c
 	 */
 	if( zuluCryptMountHasNotAllowedFileSystemOptions( uid,fs_opts,fs ) ){
-		return zuluExit( -1,fd,stl ) ;
+		return zuluExit( -1,fd,opts,fs,loop ) ;
 	}
+	
 	mst.fs_flags = fs_opts ;
 	mst.fs = StringContent( fs ) ;
-	opts = StringListAssign( stl ) ;
-	*opts = set_mount_options( &mst ) ;
+	opts = set_mount_options( &mst ) ;
 	
 	if( !StringPrefixMatch( path,"/dev/",5 ) ){
-		loop = StringListAssign( stl ) ;
 		/*
 		 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop_device.c
 		 */
-		if( zuluCryptAttachLoopDeviceToFile( mst.device,O_RDWR,&fd,loop ) ){
-			mst.device = StringContent( *loop ) ;
+		if( zuluCryptAttachLoopDeviceToFile( mst.device,O_RDWR,&fd,&loop ) ){
+			mst.device = StringContent( loop ) ;
 		}else{
-			return zuluExit( -1,fd,stl ) ;
-		}
-	}
-	
-	if( StringPrefixMatch( mst.device,"/dev/loop",9 ) ){
-		loop = StringListAssign( stl ) ;
-		/*
-		 * zuluCryptLoopDeviceAddress() is defined in ./create_loop_device.c
-		 */
-		e = zuluCryptLoopDeviceAddress( mst.device ) ;
-		*loop = StringInherit( &e ) ;
-		mst.original_device = StringContent( *loop ) ;
-		if( mst.original_device == NULL ){
-			return zuluExit( -1,fd,stl ) ;
+			return zuluExit( -1,fd,opts,fs,loop ) ;
 		}
 	}
 		
@@ -344,13 +320,13 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 		 * use mount executable as a temporary solution.
 		 */
 		switch( mount_ntfs( &mst ) ){
-			case 0  : return zuluExit( 0,fd,stl )  ;
-			case 16 : return zuluExit( 12,fd,stl ) ;
-			default : return zuluExit( 1,fd,stl )  ;
+			case 0  : return zuluExit( 0,fd,opts,fs,loop )  ;
+			case 16 : return zuluExit( 12,fd,opts,fs,loop ) ;
+			default : return zuluExit( 1,fd,opts,fs,loop )  ;
 		}
 	}else{
 		h = mount_volume( &mst ) ;
 	}
 
-	return zuluExit( h,fd,stl ) ;
+	return zuluExit( h,fd,opts,fs,loop ) ;
 }

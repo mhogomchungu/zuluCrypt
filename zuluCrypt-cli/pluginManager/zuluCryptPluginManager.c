@@ -85,7 +85,7 @@ size_t zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid
 					if( dataLength != -1 ){
 						*key = StringInheritWithSize( &buffer,dataLength,dataLength + 1 ) ;
 					}else{
-						*key = String( "" ) ;
+						*key = StringEmpty() ;
 					}
 					SocketClose( &client ) ;
 				}

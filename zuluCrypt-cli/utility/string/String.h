@@ -59,6 +59,11 @@ typedef struct StringType * string_t ;
 string_t String( const char * cstring ) ;
 
 /*
+ * initialize a handle with an empty C string
+ */
+string_t StringEmpty( void ) ;
+
+/*
  * ininitialize a string handle by memcpy() length characters from a string
  * a NULL character will be appended to the string.
  */

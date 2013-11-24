@@ -59,7 +59,7 @@ static char * _empty_slots( const char * device )
 		return zuluExit( NULL,cd ) ;
 	}
 	
-	p = String( "" ) ;
+	p = StringEmpty() ;
 	
 	for( j = 0 ; j < k ; j++ ){
 		switch( crypt_keyslot_status( cd,j ) ){

@@ -144,7 +144,7 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 	}
 	it  = StringListBegin( stl ) ;
 	end = StringListEnd( stl )   ;
-	st = String( "" ) ;
+	st = StringEmpty() ;
 	for( ; it != end ; it++ ){
 		tmp = StringListStringSplit( *it,' ' ) ;
 		if( !StringListContentAtEqual( tmp,3,"/" ) ){
