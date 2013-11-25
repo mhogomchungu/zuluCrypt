@@ -1,0 +1,258 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-11-25 17:44-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../zuluMount-cli/main.c:331
+msgid "ERROR: unrecognized argument encountered"
+msgstr ""
+
+#: ../../zuluMount-cli/main.c:340
+msgid ""
+"options:\n"
+"-m -- mount a volume : arguments: -d volume_path -z mount_point -e mode(rw/"
+"ro)\n"
+"      -- additional arguments for crypto_LUKS,crypto_PLAIN,crypto_TCRYPT "
+"volumes, -p passphrase/-f keyfile\n"
+"-z -- mount point component to append to \"/run/media/private/$USER/\"\n"
+"-Y -- file system options\n"
+msgstr ""
+
+#: ../../zuluMount-cli/main.c:347
+msgid ""
+"-u -- unmount a volume: arguments: -d volume_path\n"
+"-s -- print properties of a volume: arguments: -d partition_path\n"
+"-M -- this option will create a mount point in \"/run/media/private/$USER\" "
+"and a publicly accessible \"mirror\" in \"/run/media/public/'\n"
+msgstr ""
+
+#: ../../zuluMount-cli/main.c:352
+msgid ""
+"-l -- print expanded list of all volumes\n"
+"-L -- must be used with -d,print properties of a volume specified by d "
+"option\n"
+"-P -- print a list of all volumes\n"
+"-D -- get a device node address from its mapper path( mapper paths are "
+"usually located in /dev/mapper ). Required argument: -d\n"
+msgstr ""
+
+#: ../../zuluMount-cli/main.c:358
+msgid ""
+"-A -- print a list of all volumes\n"
+"-S -- print a list of system volumes\n"
+"-N -- print a list of non system volumes\n"
+"-E -- print a list of mounted volumes\n"
+msgstr ""
+
+#: ../../zuluMount-cli/main.c:364
+msgid ""
+"examples:\n"
+"mount a volume  : zuluMount-cli -m -d /dev/sdc1\n"
+"unmount a volume: zuluMount-cli -u -d /dev/sdc1\n"
+"mount and encrypted volume with a key \"xyz\" : zuluMount-cli -m -d /dev/"
+"sdc2 -p xyz\n"
+msgstr ""
+
+#: ../../zuluMount-cli/main.c:377
+#, c-format
+msgid "unexpected exiting because you have run out of memory\n"
+msgstr ""
+
+#: ../../zuluMount-cli/main.c:387
+msgid ""
+"ERROR: a non supported device encountered,device is missing or permission "
+"denied\n"
+"Possible reasons for getting the error are:\n"
+"1.Device path is invalid.\n"
+"2.The device has LVM or MDRAID signature\n"
+msgstr ""
+
+#: ../../zuluMount-cli/main.c:405
+#, c-format
+msgid "ERROR: devices in /dev/shm path is not suppored\n"
+msgstr ""
+
+#: ../../zuluMount-cli/main.c:406
+#, c-format
+msgid "ERROR: given path is a directory\n"
+msgstr ""
+
+#: ../../zuluMount-cli/main.c:407
+#, c-format
+msgid "ERROR: a file can have only one hard link\n"
+msgstr ""
+
+#: ../../zuluMount-cli/main.c:408
+#, c-format
+msgid "ERROR: insufficient privilges to access the device\n"
+msgstr ""
+
+#: ../../zuluMount-cli/main.c:533
+msgid "ERROR: action not specified"
+msgstr ""
+
+#: ../../zuluMount-cli/main.c:557
+msgid "ERROR: device argument missing"
+msgstr ""
+
+#: ../../zuluMount-cli/main.c:576
+#, c-format
+msgid "could not resolve UUID\n"
+msgstr ""
+
+#: ../../zuluMount-cli/main.c:586
+#, c-format
+msgid "could not resolve LABEL\n"
+msgstr ""
+
+#: ../../zuluMount-cli/mount.c:199
+msgid ""
+"ERROR: insuffienct privilege to manage a system volume.\n"
+"necessary privileges can be acquired by:\n"
+"1. adding an entry for the volume in fstab with \"user\" mount option\n"
+"2. add yourself to \"zulumount\" group"
+msgstr ""
+
+#: ../../zuluMount-cli/mount.c:212 ../../zuluMount-cli/mount.c:234
+msgid ""
+"ERROR: could not resolve path to device or device could not be opened in "
+"read write mode"
+msgstr ""
+
+#: ../../zuluMount-cli/mount.c:241
+msgid ""
+"ERROR: insuffienct privileges to mount the volume with given mount options"
+msgstr ""
+
+#: ../../zuluMount-cli/mount.c:247
+msgid "ERROR: device already mounted"
+msgstr ""
+
+#: ../../zuluMount-cli/mount.c:255
+msgid ""
+"ERROR: \"/etc/fstab\" entry for this volume requires it to be mounted read "
+"only"
+msgstr ""
+
+#: ../../zuluMount-cli/mount.c:256
+msgid "ERROR: \"/etc/fstab\" entry for this volume is malformed"
+msgstr ""
+
+#: ../../zuluMount-cli/mount.c:257
+msgid ""
+"ERROR: \"/etc/fstab\" entry for this volume does not allow you to mount it"
+msgstr ""
+
+#: ../../zuluMount-cli/mount.c:266
+msgid "ERROR: could not create mount point path,path already taken"
+msgstr ""
+
+#: ../../zuluMount-cli/mount.c:279
+msgid "ERROR: shared mount point path aleady taken"
+msgstr ""
+
+#: ../../zuluMount-cli/mount.c:300
+#, c-format
+msgid ""
+"SUCCESS: mount complete successfully\n"
+"volume mounted at: %s\n"
+msgstr ""
+
+#: ../../zuluMount-cli/mount.c:307
+msgid ""
+"ERROR: failed to mount a filesystem:invalid/unsupported mount option or "
+"unsupported file system encountered"
+msgstr ""
+
+#: ../../zuluMount-cli/mount.c:308
+msgid ""
+"ERROR: failed to mount ntfs file system using ntfs-3g,is ntfs-3g package "
+"installed?"
+msgstr ""
+
+#: ../../zuluMount-cli/mount.c:309
+msgid "ERROR: mount failed,no or unrecognized file system"
+msgstr ""
+
+#: ../../zuluMount-cli/mount.c:310
+msgid "ERROR: mount failed,could not get a lock on /etc/mtab~"
+msgstr ""
+
+#: ../../zuluMount-cli/mount.c:311
+msgid "ERROR: failed to mount the partition"
+msgstr ""
+
+#: ../../zuluMount-cli/umount.c:35
+#, c-format
+msgid ""
+"ERROR: you can not umount volumes out of \"%s\" since you are not root and "
+"do not belong to group \"zulumount\"\n"
+msgstr ""
+
+#: ../../zuluMount-cli/umount.c:51 ../../zuluMount-cli/umount.c:60
+#: ../../zuluMount-cli/umount.c:69
+msgid "ERROR: device does not appear to be mounted"
+msgstr ""
+
+#: ../../zuluMount-cli/umount.c:98
+msgid "ERROR: shared mount point appear to be busy"
+msgstr ""
+
+#: ../../zuluMount-cli/umount.c:99
+msgid "ERROR: shared mount point appear to belong to a different user"
+msgstr ""
+
+#: ../../zuluMount-cli/umount.c:100
+msgid ""
+"ERROR: shared mount point appear to be in an ambiguous state,advice to "
+"unmount manually"
+msgstr ""
+
+#: ../../zuluMount-cli/umount.c:124
+msgid "SUCCESS: umount complete successfully"
+msgstr ""
+
+#: ../../zuluMount-cli/umount.c:127
+msgid "ERROR: device does not exist"
+msgstr ""
+
+#: ../../zuluMount-cli/umount.c:128
+msgid ""
+"ERROR: failed to unmount,the mount point and/or one or more files are in use"
+msgstr ""
+
+#: ../../zuluMount-cli/umount.c:129
+msgid "ERROR: failed to unmount,could not get a lock on /etc/mtab~"
+msgstr ""
+
+#: ../../zuluMount-cli/umount.c:130
+msgid "ERROR: failed to unmount the partition"
+msgstr ""
+
+#: ../../zuluMount-cli/volume_status.c:645
+#, c-format
+msgid ""
+"ERROR: could not get volume properties,volume is not open or was opened by a "
+"different user\n"
+msgstr ""
+
+#: ../../zuluMount-cli/volume_status.c:664
+#, c-format
+msgid ""
+"ERROR: could not get volume properties,volume is not open or was opened by a "
+"different user"
+msgstr ""
