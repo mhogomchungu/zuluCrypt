@@ -39,7 +39,7 @@ HEADERS  += mainwindow.h\
     monitor_mountinfo.h \
     task.h
 
-TRANSLATIONS = ../translations/zuluMount/en_US.ts
+TRANSLATIONS = ../translations/zuluMount/messages.ts
 
 FORMS    += mainwindow.ui\
 	    ../zuluCrypt-gui/dialogmsg.ui \

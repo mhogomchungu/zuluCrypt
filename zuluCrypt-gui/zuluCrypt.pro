@@ -118,7 +118,7 @@ FORMS    += zulucrypt.ui password.ui \
     walletconfig.ui \
     walletconfiginput.ui
 
-TRANSLATIONS = ../translations/zuluCrypt/en_US.ts
+TRANSLATIONS = ../translations/zuluCrypt/messages.ts
 
 RESOURCES = icon.qrc
 
