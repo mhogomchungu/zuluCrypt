@@ -380,11 +380,6 @@ and a secondary publicly accessible &quot;mirror&quot; mount point will be creat
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/lxqt_wallet/frontend/changepassworddialog.ui" line="107"/>
-        <source>&quot;qCheckGMail&quot; want to change &quot;wallet&quot; password</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../zuluCrypt-gui/lxqt_wallet/frontend/changepassworddialog.ui" line="126"/>
         <source>Enter current password below.</source>
         <translation type="unfinished"></translation>
@@ -752,11 +747,16 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/createvolume.ui" line="442"/>
+        <source>random number generator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolume.ui" line="445"/>
         <source>rng</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/createvolume.ui" line="458"/>
+        <location filename="../../zuluCrypt-gui/createvolume.ui" line="461"/>
         <source>file system</source>
         <translation type="unfinished"></translation>
     </message>

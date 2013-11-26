@@ -438,6 +438,9 @@
      <height>31</height>
     </rect>
    </property>
+   <property name="toolTip">
+    <string>random number generator</string>
+   </property>
    <property name="text">
     <string>rng</string>
    </property>
