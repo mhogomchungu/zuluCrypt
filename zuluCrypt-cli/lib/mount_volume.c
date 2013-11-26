@@ -50,7 +50,7 @@ static inline int zuluExit( int st,int fd,string_t x,string_t y,string_t z )
 
 static inline int fs_family( const char * fs )
 {
-	if( StringAtLeastOneMatch_1( fs,"ntfs,","vfat","fat","msdos","umsdos",NULL ) ){
+	if( StringAtLeastOneMatch_1( fs,"ntfs,","vfat","fat","msdos","umsdos","exfat",NULL ) ){
 		return 1 ;
 	}else if( StringAtLeastOneMatch_1( fs,"affs","hfs",NULL ) ){
 		return 2 ;
