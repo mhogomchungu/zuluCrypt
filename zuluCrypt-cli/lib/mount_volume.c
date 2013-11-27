@@ -203,7 +203,7 @@ static void _mount_options( unsigned long flags,string_t * xt )
 	}
 }
 
-static inline int mount_ntfs( m_struct * mst )
+static inline int mount_FUSEfs( m_struct * mst )
 {
 	int status ;
 	const char * opts ;
@@ -214,7 +214,12 @@ static inline int mount_ntfs( m_struct * mst )
 	_mount_options( mst->m_flags,&st ) ;
 	opts = StringReplaceString( st,",,","," ) ;
 	
-	ProcessSetArgumentList( p,"-n","-t","ntfs-3g","-o",opts,mst->device,mst->m_point,ENDLIST ) ;
+	if( StringsAreEqual( mst->fs,"ntfs" ) ){
+		ProcessSetArgumentList( p,"-n","-t","ntfs-3g","-o",opts,mst->device,mst->m_point,ENDLIST ) ;
+	}else{
+		ProcessSetArgumentList( p,"-t",mst->fs,"-o",opts,mst->device,mst->m_point,ENDLIST ) ;
+	}
+	
 	ProcessStart( p ) ;
 	
 	status = ProcessExitStatus( p ) ;
@@ -234,16 +239,32 @@ static inline int mount_volume( const m_struct * mst )
 	return h;
 }
 
+int zuluCryptFileSystemIsFUSEbased( const char * device )
+{
+	const char * cf = NULL ;
+	int st ;
+	blkid_probe blkid = blkid_new_probe_from_filename( device ) ;
+	if( blkid != NULL ){
+		blkid_do_probe( blkid ) ;
+		blkid_probe_lookup_value( blkid,"TYPE",&cf,NULL ) ;
+		st = StringAtLeastOneMatch_1( cf,"ntfs","exfat",NULL ) ;
+		blkid_free_probe( blkid ) ;
+		return st ;
+	}else{
+		return 0 ;
+	}
+}
+
 string_t zuluCryptGetFileSystemFromDevice( const char * device )
 {
 	string_t st = StringVoid ;
 	const char * cf = NULL ;
 	blkid_probe blkid = blkid_new_probe_from_filename( device ) ;
 	if( blkid != NULL ){
-		blkid_do_probe( blkid );
+		blkid_do_probe( blkid ) ;
 		blkid_probe_lookup_value( blkid,"TYPE",&cf,NULL ) ;
 		st = String( cf ) ;
-		blkid_free_probe( blkid );
+		blkid_free_probe( blkid ) ;
 	}
 	return st ;
 }
@@ -314,12 +335,12 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 		}
 	}
 		
-	if( StringEqual( fs,"ntfs" ) ){
+	if( zuluCryptFileSystemIsFUSEbased( path ) ){
 		/*
-		 * Currently, i dont know how to use mount system call to use ntfs-3g instead of ntfs to mount ntfs file systems.
-		 * use mount executable as a temporary solution.
+		 * These file systems dont see to work with mount() command for some reason.
+		 * Them being FUSE based could be a reason.
 		 */
-		switch( mount_ntfs( &mst ) ){
+		switch( mount_FUSEfs( &mst ) ){
 			case 0  : return zuluExit( 0,fd,opts,fs,loop )  ;
 			case 16 : return zuluExit( 12,fd,opts,fs,loop ) ;
 			default : return zuluExit( 1,fd,opts,fs,loop )  ;

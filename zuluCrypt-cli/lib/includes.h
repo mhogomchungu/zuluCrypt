@@ -272,4 +272,9 @@ string_t zuluCryptResolveMDPath_1( const char * path ) ;
  */
 void zuluCryptDeleteFile( const char * file ) ;
 
+/*
+ * this function is defined in mount_volume.c
+ */
+int zuluCryptFileSystemIsFUSEbased( const char * device ) ;
+
 #endif 

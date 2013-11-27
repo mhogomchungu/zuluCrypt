@@ -81,15 +81,6 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 	int h = 3 ;
 	
 	char * loop_path = NULL ;
-
-	/*
-	 * zuluCryptGetFileSystemFromDevice() is defined in ./mount_volume.c
-	 */
-	string_t fs = zuluCryptGetFileSystemFromDevice( device ) ;
-	
-	int ntfs = StringEqual( fs,"ntfs" ) ;
-	
-	StringDelete( &fs ) ;
 		
 	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
 		/*
@@ -113,12 +104,12 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 	}
 
 	if( m != NULL ){
-		if( ntfs ){
+		/*
+		 * zuluCryptFileSystemIsFUSEbased() is defined in mount_volume.c
+		 */
+		if( zuluCryptFileSystemIsFUSEbased( device ) ){
 			/*
-			 * This is a workaround for ntfs file system.
-			 * In my system,the "mount" command seems to ignore the "-n" option and mtab
-			 * is getting updated and we unmount using "umount" command to let it
-			 * update mtab since we currently do not support mtab.
+			 * Dont know whats going on but FUSE based file systems do not seem to work with mount()
 			 */
 			h = _unmount_volume_1( m ) ;
 		}else{

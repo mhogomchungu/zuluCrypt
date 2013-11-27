@@ -47,7 +47,7 @@ static int _fileSystemIsSupported( const char * fs )
 
 int zulucryptFileSystemIsSupported( const char * fs )
 {
-	const char * f[] = { "xfs","ntfs","vfat",,"exfat""msdos","umsdos","affs","hfs","iso9660","jfs","jfs",
+	const char * f[] = { "xfs","ntfs","vfat","exfat","msdos","umsdos","affs","hfs","iso9660","jfs","jfs",
 		"romfs","udf","ext2","ext3","ext4","reiserfs","reiser4","btrfs","squashfs",NULL } ;
 	
 	const char ** e = f ;
