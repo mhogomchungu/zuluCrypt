@@ -189,30 +189,33 @@ void DialogMsg::ShowUIVolumeProperties( const QString& title,const QString& m )
 	QString msg = m ;
 	msg.replace( "   ","" ) ;
 
-	QStringList stl = msg.split("\n") ;
+	QStringList stl = msg.split( "\n" ) ;
 
-	this->setFixedSize( this->size() ) ;
+	if( stl.size() >= 14 ){
 
-	m_ui->labelType->setText( stl.at( 0 ) ) ;
-	m_ui->labelCipher->setText( stl.at( 1 ) ) ;
-	m_ui->labelKeySize->setText( stl.at( 2 ) ) ;
-	m_ui->labelDevice->setText( stl.at( 3 ) ) ;
-	m_ui->labelLoop->setText( stl.at( 4 ) ) ;
-	m_ui->labelOffset->setText( stl.at( 5 ) ) ;
-	m_ui->labelSize->setText( stl.at( 6 ) ) ;
-	m_ui->labelMode->setText( stl.at( 7 ) ) ;
-	m_ui->labelActiveSlots->setText( stl.at( 8 ) ) ;
-	m_ui->labelFs->setText( stl.at( 9 ) ) ;
-	m_ui->labelSize_2->setText( stl.at( 10 ) ) ;
-	m_ui->labelUsed->setText( stl.at( 11 ) ) ;
-	m_ui->labelUnused->setText( stl.at( 12 ) ) ;
-	m_ui->labelUsedPerc->setText( stl.at( 13 ) ) ;
+		this->setFixedSize( this->size() ) ;
 
-	//QString m = stl.at( 15 ) ;
-	//m.replace( QString( "mount point2" ),QString( "public mount point" ) ) ;
-	//m_ui->labelUsedPerc->setText( m ) ;
+		m_ui->labelType->setText( stl.at( 0 ) ) ;
+		m_ui->labelCipher->setText( stl.at( 1 ) ) ;
+		m_ui->labelKeySize->setText( stl.at( 2 ) ) ;
+		m_ui->labelDevice->setText( stl.at( 3 ) ) ;
+		m_ui->labelLoop->setText( stl.at( 4 ) ) ;
+		m_ui->labelOffset->setText( stl.at( 5 ) ) ;
+		m_ui->labelSize->setText( stl.at( 6 ) ) ;
+		m_ui->labelMode->setText( stl.at( 7 ) ) ;
+		m_ui->labelActiveSlots->setText( stl.at( 8 ) ) ;
+		m_ui->labelFs->setText( stl.at( 9 ) ) ;
+		m_ui->labelSize_2->setText( stl.at( 10 ) ) ;
+		m_ui->labelUsed->setText( stl.at( 11 ) ) ;
+		m_ui->labelUnused->setText( stl.at( 12 ) ) ;
+		m_ui->labelUsedPerc->setText( stl.at( 13 ) ) ;
 
-	this->ShowUI( title,msg ) ;
+		//QString m = stl.at( 15 ) ;
+		//m.replace( QString( "mount point2" ),QString( "public mount point" ) ) ;
+		//m_ui->labelUsedPerc->setText( m ) ;
+
+		this->ShowUI( title,msg ) ;
+	}
 }
 
 void DialogMsg::ShowUIInfo( const QString& title,const QString& msg )

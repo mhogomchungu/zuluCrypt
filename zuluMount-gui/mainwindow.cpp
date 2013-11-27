@@ -726,42 +726,44 @@ void MainWindow::volumeMiniProperties( QString volumeInfo )
 		;
 	}else{
 		l = volumeInfo.split( "\t" ) ;
-		device = l.at( 0 ) ;
-		mountPointPath = l.at( 1 ) ;
-		fileSystem = l.at( 2 ) ;
+		if( l.size() >= 6 ){
+			device = l.at( 0 ) ;
+			mountPointPath = l.at( 1 ) ;
+			fileSystem = l.at( 2 ) ;
 
-		int index = fileSystem.indexOf( QString( "/" ) ) ;
+			int index = fileSystem.indexOf( QString( "/" ) ) ;
 
-		if( index != -1 ){
-			fileSystem = fileSystem.replace( QString( "/" ),QString( "\n(" ) ) + QString( ")" ) ;
+			if( index != -1 ){
+				fileSystem = fileSystem.replace( QString( "/" ),QString( "\n(" ) ) + QString( ")" ) ;
+			}
+
+			label = l.at( 3 ) ;
+			total = l.at( 4 ) ;
+			perc = l.at( 5 ) ;
+			perc.remove( QChar( '\n' ) ) ;
+
+			QTableWidget * table = m_ui->tableWidget ;
+
+			int row = tablewidget::columnHasEntry( table,0,device ) ;
+			if( row == -1 ){
+				/*
+				 * volume has no entry in the list probably because its a volume based on a file.
+				 * Add an entry to the list to accomodate it
+				 */
+				row = tablewidget::addEmptyRow( table ) ;
+			}else{
+				;
+			}
+
+			tablewidget::setText( table,row,0,device ) ;
+			tablewidget::setText( table,row,1,mountPointPath ) ;
+			tablewidget::setText( table,row,2,fileSystem ) ;
+			tablewidget::setText( table,row,3,label ) ;
+			tablewidget::setText( table,row,4,total ) ;
+			tablewidget::setText( table,row,5,perc ) ;
+
+			tablewidget::selectRow( table,row ) ;
 		}
-
-		label = l.at( 3 ) ;
-		total = l.at( 4 ) ;
-		perc = l.at( 5 ) ;
-		perc.remove( QChar( '\n' ) ) ;
-
-		QTableWidget * table = m_ui->tableWidget ;
-
-		int row = tablewidget::columnHasEntry( table,0,device ) ;
-		if( row == -1 ){
-			/*
-			 * volume has no entry in the list probably because its a volume based on a file.
-			 * Add an entry to the list to accomodate it
-			 */
-			row = tablewidget::addEmptyRow( table ) ;
-		}else{
-			;
-		}
-
-		tablewidget::setText( table,row,0,device ) ;
-		tablewidget::setText( table,row,1,mountPointPath ) ;
-		tablewidget::setText( table,row,2,fileSystem ) ;
-		tablewidget::setText( table,row,3,label ) ;
-		tablewidget::setText( table,row,4,total ) ;
-		tablewidget::setText( table,row,5,perc ) ;
-
-		tablewidget::selectRow( table,row ) ;
 	}
 
 	this->enableAll() ;

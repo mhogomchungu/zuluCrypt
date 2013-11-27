@@ -21,6 +21,7 @@
 #include "includes.h"
 #include <dirent.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 char * zuluCryptResolveDevRoot( void )
 {
@@ -119,6 +120,53 @@ char * zuluCryptResolveMDPath( const char * path )
 	return StringDeleteHandle( &st ) ;
 }
 
+char * zuluCryptResolveDMPath( const char * path )
+{
+	char dm_path[ PATH_MAX + 1 ] = { '\0' } ;
+	DIR * dir = opendir( "/dev/mapper/" ) ;
+	string_t st = String( "/dev/mapper/" ) ;
+	string_t xt = StringVoid ;
+	struct dirent * entry ;
+	const char * e ;
+	int index ;
+	char * dev = NULL ;
+	struct stat str ;
+	if( dir != NULL ){
+		while( ( entry = readdir( dir ) ) != NULL ){
+			e = entry->d_name ;
+			if( StringAtLeastOneMatch_1( e,".","..","control",NULL ) ){
+				;
+			}else{
+				readlink( StringAppendAt( st,12,e ),dm_path,PATH_MAX ) ;
+				if( StringsAreEqual( path + 5,dm_path + 3 ) ){
+					xt = StringCopy( st ) ;
+					e = StringReplaceString( st,"/dev/mapper/","/dev/" ) ;
+					index = StringLastIndexOfChar( st,'-' ) ;
+					if( index != -1 ){
+						e = StringSubChar( st,index,'/' ) ;
+						if( stat( e,&str ) == 0 ){
+							/*
+							 * path is an LVM path
+							 */
+							dev = StringDeleteHandle( &st ) ;
+							StringDelete( &xt ) ;
+						}else{
+							dev = StringDeleteHandle( &xt ) ;
+							StringDelete( &st ) ;
+						}
+					}else{
+						dev = StringDeleteHandle( &xt ) ;
+						StringDelete( &st ) ;
+					}
+					break ;
+				}
+			}
+		}
+		closedir( dir ) ;
+	}
+	return dev ;
+}
+
 stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 {
 	const char * device ;
@@ -211,6 +259,14 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 			dev = zuluCryptResolveMDPath( device ) ;
 			StringMultipleAppend( st,dev," ",mount_point," ",file_system," ",mount_options,END ) ;
 			free( dev ) ;
+		}else if( StringPrefixMatch( device,"/dev/dm-",8 ) ){
+			dev = zuluCryptResolveDMPath( device ) ;
+			if( dev != NULL ){
+				StringMultipleAppend( st,dev," ",mount_point," ",file_system," ",mount_options,END ) ;
+				free( dev ) ;
+			}else{
+				StringMultipleAppend( st,device," ",mount_point," ",file_system," ",mount_options,END ) ;
+			}
 		}else{
 			StringMultipleAppend( st,device," ",mount_point," ",file_system," ",mount_options,END ) ;
 		}
