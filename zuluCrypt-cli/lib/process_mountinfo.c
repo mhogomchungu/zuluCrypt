@@ -122,7 +122,7 @@ char * zuluCryptResolveMDPath( const char * path )
 
 char * zuluCryptResolveDMPath( const char * path )
 {
-	char dm_path[ PATH_MAX + 1 ] = { '\0' } ;
+	char dm_path[ PATH_MAX + 1 ] ;
 	DIR * dir = opendir( "/dev/mapper/" ) ;
 	string_t st = String( "/dev/mapper/" ) ;
 	string_t xt = StringVoid ;
@@ -137,7 +137,16 @@ char * zuluCryptResolveDMPath( const char * path )
 			if( StringAtLeastOneMatch_1( e,".","..","control",NULL ) ){
 				;
 			}else{
-				readlink( StringAppendAt( st,12,e ),dm_path,PATH_MAX ) ;
+				index = readlink( StringAppendAt( st,12,e ),dm_path,PATH_MAX ) ;
+				if( index == -1 ){
+					continue ;
+				}else{
+					dm_path[ index ] = '\0' ;
+				}
+				/*
+				 * path will have something like "/dev/dm-5",skip forward to only "dm-5"
+				 * dm_path will have something like "../dm-5",skip forward to only "dm-5"
+				 */
 				if( StringsAreEqual( path + 5,dm_path + 3 ) ){
 					xt = StringCopy( st ) ;
 					e = StringReplaceString( st,"/dev/mapper/","/dev/" ) ;
