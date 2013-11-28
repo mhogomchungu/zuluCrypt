@@ -1,0 +1,5 @@
+?package(zulucrypt-gui):needs="X11" section="Applications/System/Security"\
+  title="ZuluCrypt" command="/usr/bin/zuluCrypt-gui"
+
+?package(zulucrypt-gui):needs="X11" section="Applications/System/Security"\
+  title="ZuluMount" command="/usr/bin/zuluMount-gui"

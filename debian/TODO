@@ -1,0 +1,3 @@
+split plugins to separate packages
+find a safe but comfortable way of runing *-cli as a regular user
+ - RPM package sets setuid bit, but it may be give much privilege to anyone

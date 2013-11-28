@@ -1,0 +1,78 @@
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: zulucrypt
+Source: http://code.google.com/p/zulucrypt/
+
+Files: *
+Copyright: 2011-2013 Mhogo Mchungu <mhogomchungu@gmail.com>
+License: GPL-2+
+
+Files: zuluCrypt-cli/lib/canonicalize/canonicalize.c
+Copyright: 1993 Rick Sladkey <jrs@world.std.com>
+License: GPL-2+
+
+Files: zuluCrypt-gui/md5/md5.?
+Copyright: 2001 Alexander Peslyak <solar@openwall.com>
+License: public-domain
+
+License: public-domain
+ This software was written by Alexander Peslyak in 2001.  No copyright is
+ claimed, and the software is hereby placed in the public domain.
+ In case this attempt to disclaim copyright and place the software in the
+ public domain is deemed null and void, then the software is
+ Copyright (c) 2001 Alexander Peslyak and it is hereby released to the
+ general public under the following terms:
+ .
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted.
+ .
+ There's ABSOLUTELY NO WARRANTY, express or implied.
+ .
+ (This is a heavily cut-down "BSD license".)
+
+Files: zuluCrypt-gui/lxqt_wallet/*
+Copyright: 2013 Mhogo Mchungu <mhogomchungu@gmail.com>
+License: BSD-2-clause
+ All rights reserved.
+ .
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+ 1. Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+ 2. Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+ .
+ THIS SOFTWARE IS PROVIDED BY THE CONTRIBUTORS ``AS IS'' AND
+ ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+ FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ SUCH DAMAGE.
+
+Files: debian/*
+Copyright: 2013 Balint Reczey <balint@balintreczey.hu>
+           2013 Laszlo Boszormenyi (GCS) <gcs@debian.org>
+License: GPL-2+
+
+License: GPL-2+
+ This package is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+ .
+ This package is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program. If not, see <http://www.gnu.org/licenses/>
+ .
+ On Debian systems, the complete text of the GNU General
+ Public License version 2 can be found in "/usr/share/common-licenses/GPL-2".

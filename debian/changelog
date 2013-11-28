@@ -1,0 +1,14 @@
+zulucrypt (4.6.7-1) unstable; urgency=low
+
+  [Balint Reczey]
+  * Initial release (Closes: #703911)
+  * Conversion to use multiarch
+
+  [Laszlo Boszormenyi (GCS)]
+  * Various packaging fixes
+    - Add .install files
+    - Proper install target in debian/rules
+    - Finish debian/copyright
+    - Add build dependencies and binary dependencies
+
+ -- Balint Reczey <balint@balintreczey.hu>  Sat, 23 Nov 2013 11:46:39 +0100
