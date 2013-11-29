@@ -292,6 +292,7 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 	return stx ;
 }
 
+#if 0
 stringList_t zuluCryptGetMoutedListFromMounts( void )
 {
 	ssize_t index ;
@@ -384,8 +385,11 @@ stringList_t zuluCryptGetMoutedListFromMounts( void )
 	return stl ;
 }
 
+#endif
+
 stringList_t zuluCryptGetMountInfoList( void )
 {
+#if 0
 	stringList_t stl = zuluCryptGetMoutedListFromMountInfo() ;
 	
 	if( stl == StringListVoid ){
@@ -393,6 +397,9 @@ stringList_t zuluCryptGetMountInfoList( void )
 	}else{
 		return stl ; 
 	}
+#else
+	return zuluCryptGetMoutedListFromMountInfo() ;
+#endif
 }
 
 stringList_t zuluCryptOpenedVolumesList( uid_t uid )
