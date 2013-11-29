@@ -182,13 +182,12 @@ void StringMultipleDelete( string_t * xt,... )
 			break ;
 		}
 		st = *entry ;
-		if( st == StringVoid ){
-			continue ;
-		}
-		if( st->owned == 0 ){
-			free( st->string ) ;
-			free( st ) ;
-			*entry = StringVoid ;
+		if( st != StringVoid ){
+			if( st->owned == 0 ){
+				free( st->string ) ;
+				free( st ) ;
+				*entry = StringVoid ;
+			}
 		}
 	}
 	

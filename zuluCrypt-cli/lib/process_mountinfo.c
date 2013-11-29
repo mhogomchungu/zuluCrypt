@@ -173,6 +173,8 @@ char * zuluCryptResolveDMPath( const char * path )
 		}
 		closedir( dir ) ;
 	}
+	
+	StringMultipleDelete( &st,&xt,END ) ;
 	return dev ;
 }
 
@@ -284,9 +286,7 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 		StringListDelete( &tmp ) ;
 	}
 	
-	if( entry != NULL ){
-		free( ( void * )entry ) ;
-	}
+	StringVoidFree_1( ( void * )entry ) ;
 	StringDelete( &st ) ;
 	StringListDelete( &stl ) ;
 	return stx ;
