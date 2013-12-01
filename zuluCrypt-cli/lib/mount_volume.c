@@ -247,7 +247,11 @@ int zuluCryptFileSystemIsFUSEbased( const char * device )
 	if( blkid != NULL ){
 		blkid_do_probe( blkid ) ;
 		blkid_probe_lookup_value( blkid,"TYPE",&cf,NULL ) ;
+#if 0
 		st = StringAtLeastOneMatch_1( cf,"ntfs","exfat",NULL ) ;
+#else
+		st = StringAtLeastOneMatch_1( cf,"ntfs",NULL ) ;
+#endif
 		blkid_free_probe( blkid ) ;
 		return st ;
 	}else{

@@ -721,7 +721,7 @@ static __inline__ void StringFree( const void * str )
 /*
  * safely do free( *dev ) followed by *dev = NULL
  * this function hence should take only a double pointer.
- * ie 
+ * ie
  * char * e = malloc(sizeof(char)) ;
  * ..;
  * StringFree_1(&e);
