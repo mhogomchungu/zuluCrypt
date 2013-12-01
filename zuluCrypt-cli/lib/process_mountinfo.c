@@ -124,14 +124,16 @@ char * zuluCryptResolveDMPath( const char * path )
 {
 	char dm_path[ PATH_MAX + 1 ] ;
 	DIR * dir = opendir( "/dev/mapper/" ) ;
-	string_t st = String( "/dev/mapper/" ) ;
-	string_t xt = StringVoid ;
+	string_t st ;
+	string_t xt ;
 	struct dirent * entry ;
 	const char * e ;
 	int index ;
 	char * dev = NULL ;
 	struct stat str ;
 	if( dir != NULL ){
+		st = String( "/dev/mapper/" ) ;
+		xt = StringVoid ;
 		while( ( entry = readdir( dir ) ) != NULL ){
 			e = entry->d_name ;
 			if( StringAtLeastOneMatch_1( e,".","..","control",NULL ) ){
@@ -158,24 +160,22 @@ char * zuluCryptResolveDMPath( const char * path )
 							 * path is an LVM path
 							 */
 							dev = StringDeleteHandle( &st ) ;
-							StringDelete( &xt ) ;
 						}else{
 							dev = StringDeleteHandle( &xt ) ;
-							StringDelete( &st ) ;
 						}
 					}else{
 						dev = StringDeleteHandle( &xt ) ;
-						StringDelete( &st ) ;
 					}
 					break ;
 				}
 			}
 		}
+		StringMultipleDelete( &st,&xt,NULL ) ;
 		closedir( dir ) ;
+		return dev ;
+	}else{
+		return NULL ;
 	}
-	
-	StringMultipleDelete( &st,&xt,END ) ;
-	return dev ;
 }
 
 stringList_t zuluCryptGetMoutedListFromMountInfo( void )
@@ -286,7 +286,7 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 		StringListDelete( &tmp ) ;
 	}
 	
-	StringVoidFree_1( ( void * )entry ) ;
+	StringFree( entry ) ;
 	StringDelete( &st ) ;
 	StringListDelete( &stl ) ;
 	return stx ;

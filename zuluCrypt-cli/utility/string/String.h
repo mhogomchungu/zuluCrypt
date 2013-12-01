@@ -713,53 +713,26 @@ u_int32_t StringJenkinsOneAtATimeHash_1( string_t ) ;
 /*
  * why doesnt free() take const void * ????
  */
-static __inline__ void StringFree( const char * str )
+static __inline__ void StringFree( const void * str )
 {
-	if( str != NULL ){
-		free( ( char * )str ) ;
-	}
+	free( ( void * )str ) ;
 }
 
-static __inline__ void StringFree_1( char * str )
+/*
+ * safely do free( *dev ) followed by *dev = NULL
+ * this function hence should take only a double pointer.
+ * ie 
+ * char * e = malloc(sizeof(char)) ;
+ * ..;
+ * StringFree_1(&e);
+ */
+static __inline__ void StringFree_1( const void * str )
 {
+	char ** c ;
 	if( str != NULL ){
-		free( str ) ;
-	}
-}
-
-static __inline__ void StringFree_2( const char ** str )
-{
-	char * c ;
-	if( str != NULL ){
-		c = ( char *)*str ;
-		if( c != NULL ){
-			free( c ) ;
-		}
-	}
-}
-
-static __inline__ void StringFree_3( char ** str )
-{
-	char * c ;
-	if( str != NULL ){
-		c = *str ;
-		if( c != NULL ){
-			free( c ) ;
-		}
-	}
-}
-
-static __inline__ void StringVoidFree( const void * str )
-{
-	if( str != NULL ){
-		free( ( void * )str ) ;
-	}
-}
-
-static __inline__ void StringVoidFree_1(  void * str )
-{
-	if( str != NULL ){
-		free( str ) ;
+		c = ( char ** ) str ;
+		free( c ) ;
+		*c = NULL ;
 	}
 }
 

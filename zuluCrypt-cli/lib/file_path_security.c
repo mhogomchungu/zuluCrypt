@@ -85,7 +85,7 @@ static int _check_if_device_is_supported( int st,uid_t uid,char ** dev )
 		/*
 		 * safely do free( *dev ) followed by *dev = NULL
 		 */
-		StringFree_3( dev ) ;
+		StringFree_1( dev ) ;
 	}
 	
 	return st ;

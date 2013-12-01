@@ -94,7 +94,7 @@ int zuluMountCryptoMount( ARGS * args )
 	
 	StringDelete( &str ) ;
 	
-	StringVoidFree( opts.env ) ;
+	StringFree( opts.env ) ;
 	
 	StringFree( path ) ;
 	
