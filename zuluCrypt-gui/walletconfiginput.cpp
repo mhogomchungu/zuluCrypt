@@ -126,7 +126,7 @@ void walletconfiginput::setvolumeID( QString id )
 	}else{
 		QString z = utility::getUUIDFromPath( id ) ;
 		if( z.isEmpty() ){
-			m_ui->lineEditVolumeID->setText( id ) ;
+			m_ui->lineEditVolumeID->setText( utility::getVolumeID( id ) ) ;
 		}else{
 			m_ui->lineEditVolumeID->setText( z ) ;
 		}

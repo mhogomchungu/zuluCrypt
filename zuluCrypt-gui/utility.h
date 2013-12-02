@@ -41,6 +41,7 @@ public:
 	static void debug( int ) ;
 	static QString mapperPath( const QString& ) ;
 	static QString getUUIDFromPath( const QString& ) ;
+	static QString getVolumeID( const QString& ) ;
 	static bool userIsRoot( void ) ;
 	static bool mapperPathExists( const QString& path ) ;
 	static QString mountPath( const QString& ) ;

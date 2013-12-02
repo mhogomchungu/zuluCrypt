@@ -731,7 +731,7 @@ static __inline__ void StringFree_1( const void * str )
 	char ** c ;
 	if( str != NULL ){
 		c = ( char ** ) str ;
-		free( c ) ;
+		free( *c ) ;
 		*c = NULL ;
 	}
 }

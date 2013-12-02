@@ -495,3 +495,27 @@ QString utility::getUUIDFromPath( const QString& dev )
 	p.close() ;
 	return uuid ;
 }
+
+QString utility::getVolumeID( const QString& id )
+{
+	if( id.startsWith( QString( "/dev/" ) ) ){
+		QDir d( QString( "/dev/disk/by-id" ) ) ;
+		QStringList l = d.entryList() ;
+		l.removeOne( QString( "." ) ) ;
+		l.removeOne( QString( ".." ) ) ;
+		QDir r ;
+		int j = l.size() ;
+		for( int i = 0 ; i < j ; i++ ){
+			const QString& e = l.at( i ) ;
+			if( !e.startsWith( "dm" ) ){
+				r.setPath( QString( "/dev/disk/by-id/%1" ).arg( e ) ) ;
+				if( r.canonicalPath() == id ){
+					return e ;
+				}
+			}
+		}
+		return id ;
+	}else{
+		return id ;
+	}
+}

@@ -242,7 +242,7 @@ void Task::getKeyTask()
 	}else{
 		QString uuid = utility::getUUIDFromPath( m_volumeID ) ;
 		if( uuid.isEmpty() ){
-			m_key = m_wallet->readValue( m_volumeID ) ;
+			m_key = m_wallet->readValue( utility::getVolumeID( m_volumeID ) ) ;
 		}else{
 			m_key = m_wallet->readValue( uuid ) ;
 			if( m_key.isEmpty() ){

@@ -645,8 +645,10 @@ Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The de
 	this->enableAll() ;
 
 	if( status == 4 ){
-		m_ui->PassPhraseField->clear() ;
-		m_ui->PassPhraseField->setFocus() ;
+		if( m_ui->radioButtonPassPhrase->isChecked() ){
+			m_ui->PassPhraseField->clear() ;
+			m_ui->PassPhraseField->setFocus() ;
+		}
 	}
 }
 
