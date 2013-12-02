@@ -157,3 +157,7 @@ version 4.6.6
 version 4.6.7
 -- fix packaging issues
 -- fix a regression on zuluMount-gui that caused a hang when checking for properties of an opened volume opened by a different user
+
+version 4.6.8
+-- store partition id in wallets by device hardware id on volumes that do not have UUID( non LUKS volumes )
+-- add support for exfat file system.
