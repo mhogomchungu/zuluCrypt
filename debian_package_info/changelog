@@ -1,3 +1,11 @@
+zulucrypt (4.6.7-2) UNRELEASED; urgency=low
+
+  [Balint Reczey]
+  * Hand over maintenance to Mhogo Mchungu
+    - the package is maintained outside of Debian for now
+
+ -- Mhogo Mchungu <mhogomchungu@gmail.com>  Sat, 30 Nov 2013 11:49:55 +0100
+
 zulucrypt (4.6.7-1) unstable; urgency=low
 
   [Balint Reczey]

@@ -1,13 +1,13 @@
 Source: zulucrypt
 Section: admin
 Priority: extra
-Maintainer: Balint Reczey <balint@balintreczey.hu>
+Maintainer: Mhogo Mchungu <mhogomchungu@gmail.com>
 Uploaders: Laszlo Boszormenyi (GCS) <gcs@debian.org>
 Build-Depends: debhelper (>= 9), cmake, pkg-config, libsecret-1-dev, libcryptsetup-dev, libblkid-dev, libpwquality-dev, libtcplay-dev, libdevmapper-dev, uuid-dev, libgcrypt11-dev, libqt4-dev, libudev-dev, chrpath, bzip2
 Standards-Version: 3.9.5
 Homepage: http://code.google.com/p/zulucrypt/
-Vcs-Git: git://git.debian.org/collab-maint/zulucrypt.git
-Vcs-Browser: http://git.debian.org/?p=collab-maint/zulucrypt.git;a=summary
+Vcs-Git: git://git@github.com:mhogomchungu/zuluCrypt.git
+Vcs-Browser: https://github.com/mhogomchungu/zuluCrypt
 
 Package: zulucrypt-gui
 Architecture: any
