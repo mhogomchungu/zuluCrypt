@@ -225,25 +225,65 @@ string_t zuluCryptConvertIfPathIsLVM( const char * path )
 	/*
 	 * An assumption is made here that the path is an LVM path if "path" is in /dev/mapper/abc-def format
 	 * and there exist a path at /dev/abc/def format.
+	 *
+	 * handle double dashes as explained here: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=690246
 	 */
 	string_t q = String( path ) ;
-	ssize_t index = StringLastIndexOfChar( q,'-' ) ;
+	ssize_t index ;
+	ssize_t index_1 ;
 	const char * e ;
+	const char ** z = StringPointer( q ) ;
 	struct stat st ;
+	
+	index = StringLastIndexOfString( q,"--" ) ;
 	if( index != -1 ){
-		StringSubChar( q,index,'/' ) ; 
-		e = StringReplaceString( q,"/dev/mapper/","/dev/" ) ;
-		if( stat( e,&st ) == 0 ){
-			/*
-			 * Path appear to be an LVM path since /dev/abc/def path exists
-			 */
-			;
+		index_1 = StringIndexOfString( q,index+2,"-" ) ;
+		if( index_1 != -1 ){
+			StringSubChar( q,index_1,'/' ) ;
+			while( StringHasComponent( *z,"--" ) ){
+				StringReplaceString( q,"--","-" ) ;
+			}
+			e = StringReplaceString( q,"/dev/mapper/","/dev/" ) ;
+			if( stat( e,&st ) == 0 ){
+				;
+			}else{
+				StringAppendAt( q,0,path ) ;
+			}
 		}else{
-			StringAppendAt( q,0,path ) ;
+			StringRemoveLength( q,index,2 ) ;
+			index_1 = StringLastIndexOfChar( q,'-' ) ;
+			StringInsertChar( q,index,'-' ) ;
+			while( StringHasComponent( *z,"--" ) ){
+				StringReplaceString( q,"--","-" ) ;
+			}
+			if( index_1 != -1 ){
+				StringSubChar( q,index_1,'/' ) ;
+				e = StringReplaceString( q,"/dev/mapper/","/dev/" ) ;
+				if( stat( e,&st ) == 0 ){
+					;
+				}else{
+					StringAppendAt( q,0,path ) ;
+				}
+			}
 		}
 	}else{
-		;
+		index = StringLastIndexOfChar( q,'-' ) ;
+		if( index != -1 ){
+			StringSubChar( q,index,'/' ) ;
+			e = StringReplaceString( q,"/dev/mapper/","/dev/" ) ;
+			if( stat( e,&st ) == 0 ){
+				/*
+				 * Path appear to be an LVM path since /dev/abc/def path exists
+				 */
+				;
+			}else{
+				StringAppendAt( q,0,path ) ;
+			}
+		}else{
+			;
+		}
 	}
+	
 	return q ;
 }
 

@@ -89,16 +89,12 @@ stringList_t zuluCryptGetFstabList( uid_t uid )
 	StringListIterator end ;
 	
 	ssize_t index ;
-	ssize_t index_1 ;
 	
 	char * ac ;
 	const char * entry ;
-	const char * e ;
 	const char * f ;
 	
 	blkid_cache cache = NULL ;
-	
-	struct stat str ;
 	
 	if( xt == StringVoid ){
 		return StringListVoid ;
@@ -154,41 +150,31 @@ stringList_t zuluCryptGetFstabList( uid_t uid )
 				}
 			}else if( StringPrefixMatch( entry,"/dev/mapper/",12 ) ){
 				st = StringCopy( xt ) ;
-				index_1 = StringIndexOfChar( st,0,' ' ) ;
-				if( index_1 >= 0 ){
-					
-					index = StringLastIndexOfChar( st,'-' ) ;
-					
-					f = StringSubChar( st,index_1,'\0' ) ;
-					
-					if( index != -1 ){
-						StringSubChar( st,index,'/' ) ;
-						e = StringReplaceString( st,"/dev/mapper/","/dev/" ) ;
-						if( stat( e,&str ) == 0 ){
-							StringSubChar( xt,index,'/' ) ;
-							StringReplaceString( xt,"/dev/mapper/","/dev/" ) ;
-						}else{
-							/*
-							 * zuluCryptVolumeDeviceName() is defined in status.c
-							 */
-							ac = zuluCryptVolumeDeviceName( f ) ;
-							
-							if( ac != NULL ){
-								StringRemoveLeft( xt,index_1 ) ;
-								StringPrepend( xt,ac ) ;
-								free( ac ) ;
-							}
-						}
-					}else{
+				index = StringIndexOfChar( st,0,' ' ) ;
+				if( index != -1 ){
+					f = StringSubChar( st,index,'\0' ) ;
+					/*
+					 * zuluCryptConvertIfPathIsLVM() is defined in status.c
+					 */
+					st = zuluCryptConvertIfPathIsLVM( f ) ;
+					if( StringStartsWith( st,"/dev/mapper" ) ){
+						/*
+						 * Not an LVM path,its probably encrypted,or non existent path
+						 */
 						/*
 						 * zuluCryptVolumeDeviceName() is defined in status.c
 						 */
 						ac = zuluCryptVolumeDeviceName( f ) ;
+						StringSubChar( st,index,' ' ) ;
 						if( ac != NULL ){
-							StringRemoveLeft( xt,index_1 ) ;
+							StringRemoveLeft( xt,index ) ;
 							StringPrepend( xt,ac ) ;
 							free( ac ) ;
 						}
+					}else{
+						StringSubChar( st,index,' ' ) ;
+						StringRemoveLeft( xt,index ) ;
+						StringPrepend( xt,StringContent( st ) ) ;
 					}
 				}
 				StringDelete( &st ) ;

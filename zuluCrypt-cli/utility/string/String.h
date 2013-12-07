@@ -425,7 +425,7 @@ const char * StringAppendAt( string_t st,size_t x,const char * s ) ;
  * to the new string or NULL on error and the original string remain intact.
  * Careful though,make sure you dont delete past the string length  
  */
-const char * StringRemoveLenght( string_t st,size_t x,size_t y ) ;
+const char * StringRemoveLength( string_t st,size_t x,size_t y ) ;
 
 /*
  * remove all occurances of string s in a string handled by handle st.
