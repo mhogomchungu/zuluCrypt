@@ -69,8 +69,12 @@ void managedevicenames::devicePathTextChange( QString txt )
 	if( txt.isEmpty() ){
 		m_ui->lineEditMountPath->clear() ; ;
 	}else{
-		QString ed = QString( "/run/media/private/%1/%2" ).arg( utility::userName() ).arg( txt.split( "/" ).last() ) ;
-		m_ui->lineEditMountPath->setText( ed ) ;
+		QString s = txt.split( "/" ).last() ;
+		if( s.isEmpty() ){
+			m_ui->lineEditMountPath->setText( txt ) ;
+		}else{
+			m_ui->lineEditMountPath->setText( s ) ;
+		}
 	}
 }
 
@@ -180,18 +184,20 @@ void managedevicenames::add()
 	DialogMsg msg( this ) ;
 
 	QString dev = m_ui->lineEditDeviceAddress->text() ;
-	QString mount_point = m_ui->lineEditMountPath->text() ;
+	QString m_path = m_ui->lineEditMountPath->text() ;
 
 	if( dev.isEmpty() ){
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "device address field is empty" ) ) ;
 	}
-	if( mount_point.isEmpty() ){
+	if( m_path.isEmpty() ){
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "mount point path field is empty" ) ) ;
 	}
-	m_ui->tableWidget->setEnabled( false ) ;
-	this->addEntries( dev,mount_point ) ;
 
-	utility::addToFavorite( dev,mount_point ) ;
+	m_ui->tableWidget->setEnabled( false ) ;
+
+	this->addEntries( dev,m_path ) ;
+
+	utility::addToFavorite( dev,m_path ) ;
 
 	m_ui->lineEditDeviceAddress->clear() ; ;
 	m_ui->lineEditMountPath->clear() ;
@@ -201,8 +207,12 @@ void managedevicenames::add()
 
 void managedevicenames::fileAddress()
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "path to an encrypted file" ),QDir::homePath(),0 ) ;
-	m_ui->lineEditDeviceAddress->setText( Z ) ;
+	QString Z = QFileDialog::getOpenFileName( this,tr( "path to an encrypted volume" ),QDir::homePath(),0 ) ;
+	if( Z.isEmpty() ){
+		;
+	}else{
+		m_ui->lineEditDeviceAddress->setText( Z ) ;
+	}
 }
 
 void managedevicenames::PartitionEntry( QString device )

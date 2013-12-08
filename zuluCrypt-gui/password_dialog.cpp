@@ -396,11 +396,19 @@ void passwordDialog::buttonOpenClicked( void )
 			m_wallet->setInterfaceObject( this ) ;
 			m_wallet->open( m_wallet->localDefaultWalletName(),utility::applicationName() ) ;
 		}else if( wallet == tr( INTERNAL_WALLET ) ){
-			m_wallet = LxQt::Wallet::getWalletBackend( LxQt::Wallet::internalBackEnd ) ;
-			m_wallet->setInterfaceObject( this ) ;
-			QObject * obj = m_wallet->qObject() ;
-			connect( obj,SIGNAL( getPassWord( QString ) ),this,SLOT( getPassWord( QString ) ) ) ;
-			m_wallet->open( utility::walletName(),utility::applicationName(),_internalPassWord ) ;
+			QString walletName = utility::walletName() ;
+			QString appName    = utility::applicationName() ;
+			if( LxQt::Wallet::walletExists( LxQt::Wallet::internalBackEnd,walletName,appName ) ){
+				m_wallet = LxQt::Wallet::getWalletBackend( LxQt::Wallet::internalBackEnd ) ;
+				m_wallet->setInterfaceObject( this ) ;
+				QObject * obj = m_wallet->qObject() ;
+				connect( obj,SIGNAL( getPassWord( QString ) ),this,SLOT( getPassWord( QString ) ) ) ;
+				m_wallet->open( walletName,appName,_internalPassWord ) ;
+			}else{
+				DialogMsg msg( this ) ;
+				msg.ShowUIOK( tr( "ERROR!" ),tr( "internal wallet is not configured" ) ) ;
+				this->enableAll() ;
+			}
 		}else if( wallet == tr( GNOME_WALLET ) ){
 			m_wallet = LxQt::Wallet::getWalletBackend( LxQt::Wallet::secretServiceBackEnd ) ;
 			m_wallet->setInterfaceObject( this ) ;

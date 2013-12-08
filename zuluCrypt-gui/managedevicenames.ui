@@ -61,7 +61,7 @@
    </property>
    <column>
     <property name="text">
-     <string>device address</string>
+     <string>volume id</string>
     </property>
     <property name="textAlignment">
      <set>AlignHCenter|AlignVCenter|AlignCenter</set>
@@ -69,7 +69,7 @@
    </column>
    <column>
     <property name="text">
-     <string>mount point path</string>
+     <string>mount point component</string>
     </property>
     <property name="textAlignment">
      <set>AlignHCenter|AlignVCenter|AlignCenter</set>
@@ -86,7 +86,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>device address</string>
+    <string>volume id</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -105,7 +105,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>mount point path</string>
+    <string>mount point component</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

@@ -252,18 +252,20 @@ string_t zuluCryptConvertIfPathIsLVM( const char * path )
 		}else{
 			StringRemoveLength( q,index,2 ) ;
 			index_1 = StringLastIndexOfChar( q,'-' ) ;
-			StringInsertChar( q,index,'-' ) ;
-			while( StringHasComponent( *z,"--" ) ){
-				StringReplaceString( q,"--","-" ) ;
-			}
 			if( index_1 != -1 ){
+				StringInsertChar( q,index,'-' ) ;
 				StringSubChar( q,index_1,'/' ) ;
+				while( StringHasComponent( *z,"--" ) ){
+					StringReplaceString( q,"--","-" ) ;
+				}
 				e = StringReplaceString( q,"/dev/mapper/","/dev/" ) ;
 				if( stat( e,&st ) == 0 ){
 					;
 				}else{
 					StringAppendAt( q,0,path ) ;
 				}
+			}else{
+				StringAppendAt( q,0,path ) ;
 			}
 		}
 	}else{
