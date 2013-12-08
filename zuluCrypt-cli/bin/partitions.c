@@ -271,6 +271,28 @@ stringList_t zuluCryptPartitionList( void )
 	return _zuluCryptAddLVMVolumes( _zuluCryptAddMDRAIDVolumes( stl_1 ) ) ;
 }
 
+int zuluCryptDeviceIsSupported( const char * device,uid_t uid )
+{
+	stringList_t stl ;
+	int r ;
+	
+	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
+		return 1 ;
+	}else{
+		stl = zuluCryptPartitionList() ;
+		r = StringListContains( stl,device ) ;
+		StringListDelete( &stl ) ;
+		if( r >= 0 ){
+			return 1 ;
+		}else{
+			/*
+			 * zuluCryptUserIsAMemberOfAGroup() is defined in security.c
+			 */
+			return zuluCryptUserIsAMemberOfAGroup( uid,"zulucrypt" ) ;
+		}
+	}
+}
+
 static int _zuluCryptCheckSYSifDeviceIsSystem( const char * device )
 {
 	/*

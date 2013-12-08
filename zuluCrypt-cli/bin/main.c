@@ -499,7 +499,7 @@ int main( int argc,char * argv[] )
 		
 		if( ac != NULL ) {
 			clargs.device = ac ;
-			st = zuluCryptEXE( &clargs,mapping_name,uid );
+			st = zuluCryptEXE( &clargs,mapping_name,uid ) ;
 			free( ac ) ;
 			StringDelete( &q ) ;
 			return zuluExit( st,stl,stx,env,NULL ) ;
@@ -530,29 +530,37 @@ Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The de
 			}
 			return zuluExit( 114,stl,stx,env,gettext( "ERROR: could not resolve path to device" ) ) ; 
 		}else{
-			clargs.device = dev ;
-		
-			if( StringPrefixEqual( dev,"/dev/loop" ) ){
-				/*
-				 * zuluCryptLoopDeviceAddress_1() is defined in ../zuluCrypt-cli/create_loop_device.c
-				 */
-				ac_1 = zuluCryptLoopDeviceAddress_1( dev ) ;
-				if( ( ac = strrchr( ac_1,'/' ) ) != NULL ){
-					mapping_name =  ac + 1  ;
+			/*
+			 * zuluCryptDeviceIsSupported() is defined in partitions.c
+			 */
+			if( zuluCryptDeviceIsSupported( dev,uid ) ){
+				clargs.device = dev ;
+				if( StringPrefixEqual( dev,"/dev/loop" ) ){
+					/*
+					 * zuluCryptLoopDeviceAddress_1() is defined in ../zuluCrypt-cli/create_loop_device.c
+					 */
+					ac_1 = zuluCryptLoopDeviceAddress_1( dev ) ;
+					if( ( ac = strrchr( ac_1,'/' ) ) != NULL ){
+						mapping_name =  ac + 1  ;
+					}else{
+						mapping_name =  dev  ;
+					}
+					
+					st = zuluCryptEXE( &clargs,mapping_name,uid ) ;
+					StringFree( ac_1 ) ;
 				}else{
-					mapping_name =  dev  ;
+					if( ( ac = strrchr( dev,'/' ) ) != NULL ){
+						mapping_name =  ac + 1  ;
+					}else{
+						mapping_name =  dev  ;
+					}
+					
+					st = zuluCryptEXE( &clargs,mapping_name,uid ) ;
 				}
-				
-				st = zuluCryptEXE( &clargs,mapping_name,uid ) ;
-				StringFree( ac_1 ) ;
 			}else{
-				if( ( ac = strrchr( dev,'/' ) ) != NULL ){
-					mapping_name =  ac + 1  ;
-				}else{
-					mapping_name =  dev  ;
-				}
-				
-				st = zuluCryptEXE( &clargs,mapping_name,uid ) ;
+				st = 113 ;
+				puts( gettext( "ERROR: a non supported device encountered,device is missing or permission denied\n\
+Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The device has LVM or MDRAID signature" ) ) ;
 			}
 		
 			StringFree( dev ) ;

@@ -221,4 +221,9 @@ char * zuluCryptEvaluateDeviceTags( const char * tag,const char * path ) ;
  */
 int zuluCryptRunTest( void ) ;
 
+/*
+ * int zuluCryptDeviceIsSupported() is defined in partitions.c
+ */
+int zuluCryptDeviceIsSupported( const char * device,uid_t uid ) ;
+
 #endif 
