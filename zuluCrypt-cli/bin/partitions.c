@@ -122,67 +122,26 @@ static inline int _allowedDevice( const char * device )
 
 static stringList_t _zuluCryptAddLVMVolumes( stringList_t stl )
 {
-	struct stat lvm ;
-	DIR * dir = opendir( "/dev/mapper/" ) ;
 	struct dirent * entry ;
-	const char * m_path ;
-	const char ** e ;
-	string_t st = StringVoid ;
-	ssize_t index ;
-	ssize_t index_1 ;
+
+	string_t st ;
+	string_t xt ;
+
+	DIR * dir = opendir( "/dev/mapper/" ) ;
 
 	if( dir != NULL ){
 		st = String( "/dev/" ) ;
-		e = StringPointer( st ) ;
 		while( ( entry = readdir( dir ) ) != NULL ){
-			m_path = entry->d_name ;
-			if( StringAtLeastOneMatch_1( m_path,".","..","control",NULL ) ){
-				;
-			}else{
+			if( !StringAtLeastOneMatch_1( entry->d_name,".","..","control",NULL ) ){
 				/*
-				* LVM volumes have two paths,one has a format of "/dev/mapper/ABC-DEF" and the
-				* other has a format of "/dev/ABC/DEF".
-				*
-				* below code converts the former format to the latter one and assume the volume is LVM
-				* if the converted path is found in "/dev"
-				*
-				* handle double dashes as explained here: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=690246
-				*/
-				StringAppendAt( st,5,m_path ) ;
+				 * zuluCryptConvertIfPathIsLVM() is defined in ../lib/status.c
+				 */
+				xt = zuluCryptConvertIfPathIsLVM( StringAppendAt( st,5,entry->d_name ) ) ;
 
-				index = StringLastIndexOfString( st,"--" ) ;
-				if( index != -1 ){
-					index_1 = StringIndexOfString( st,index+2,"-" ) ;
-					if( index_1 != -1 ){
-						m_path = StringSubChar( st,index_1,'/' ) ;
-						while( StringHasComponent( *e,"--" ) ){
-							m_path = StringReplaceString( st,"--","-" ) ;
-						}
-						if( stat( m_path,&lvm ) == 0 ){
-							stl = StringListAppend( stl,m_path ) ;
-						}
-					}else{
-						StringRemoveLength( st,index,2 ) ;
-						index_1 = StringLastIndexOfChar( st,'-' ) ;
-						m_path = StringInsertChar( st,index,'-' ) ;
-						while( StringHasComponent( *e,"--" ) ){
-							m_path = StringReplaceString( st,"--","-" ) ;
-						}
-						if( index_1 != -1 ){
-							m_path = StringSubChar( st,index_1,'/' ) ;
-							if( stat( m_path,&lvm ) == 0 ){
-								stl = StringListAppend( stl,m_path ) ;
-							}
-						}
-					}
+				if( StringStartsWith( xt,"/dev/mapper/" ) ){
+					StringDelete( &xt ) ;
 				}else{
-					index = StringLastIndexOfChar( st,'-' ) ;
-					if( index != -1 ){
-						m_path = StringSubChar( st,index,'/' ) ;
-						if( stat( m_path,&lvm ) == 0 ){
-							stl = StringListAppend( stl,m_path ) ;
-						}
-					}
+					stl = StringListAppendString_1( stl,&xt ) ;
 				}
 			}
 		}
