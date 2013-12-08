@@ -707,7 +707,7 @@ void zuluCrypt::addToFavorite()
 {
 	QTableWidgetItem * item = m_ui->tableWidget->currentItem() ;
 	QString x = m_ui->tableWidget->item( item->row(),0 )->text() ;
-	QString y = m_ui->tableWidget->item( item->row(),1 )->text() ;
+	QString y = x.split( "/" ).last() ;
 	utility::addToFavorite( x,y ) ;
 }
 
@@ -767,14 +767,7 @@ void zuluCrypt::itemClicked( QTableWidgetItem * item,bool clicked )
 
 	m.addSeparator() ;
 
-	QString volume_path = m_ui->tableWidget->item( item->row(),0 )->text() ;
-	QString mount_point_path = m_ui->tableWidget->item( item->row(),1 )->text() ;
-
-	int i = mount_point_path.lastIndexOf( "/" ) ;
-
-	mount_point_path = mount_point_path.left( i ) ;
-
-	QString fav = volume_path + QString( "\t" ) + mount_point_path ;
+	QString volume_id = m_ui->tableWidget->item( item->row(),0 )->text() + QString( "\t" ) ;
 
 	QFile f( QDir::homePath() + QString( "/.zuluCrypt/favorites" ) ) ;
 
@@ -782,16 +775,13 @@ void zuluCrypt::itemClicked( QTableWidgetItem * item,bool clicked )
 
 	QByteArray data = f.readAll() ;
 
-	QAction a( tr( "add to favorite" ),static_cast<QObject *>( &m ) ) ;
-	QAction * ac = static_cast<QAction *>( &a ) ;
+	QAction * ac = m.addAction( tr( "add to favorite" ) ) ;
 
-	m.addAction( ac ) ;
-
-	if( data.contains( fav.toLatin1() ) ){
-		a.setEnabled( false ) ;
+	if( data.contains( volume_id.toLatin1() ) ){
+		ac->setEnabled( false ) ;
 	}else{
-		a.setEnabled( true ) ;
-		a.connect( ac,SIGNAL( triggered() ),this,SLOT( addToFavorite() ) ) ;
+		ac->setEnabled( true ) ;
+		ac->connect( ac,SIGNAL( triggered() ),this,SLOT( addToFavorite() ) ) ;
 	}
 	if( clicked ){
 		m.exec( QCursor::pos() ) ;
