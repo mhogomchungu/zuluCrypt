@@ -1,19 +1,18 @@
- 
 /*
- * 
+ *
  *  Copyright (c) 2013
- *  name : mhogo mchungu 
+ *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -28,7 +27,7 @@ static int _fileSystemIsSupported( const char * fs )
 	StringListIterator end = StringListEnd( stl ) ;
 	string_t xt ;
 	int r = 0 ;
-	
+
 	while( it != end ){
 		xt = *it ;
 		it++ ;
@@ -39,7 +38,7 @@ static int _fileSystemIsSupported( const char * fs )
 			}
 		}
 	}
-	
+
 	StringDelete( &st ) ;
 	StringListDelete( &stl ) ;
 	return r ;
@@ -49,9 +48,9 @@ int zulucryptFileSystemIsSupported( const char * fs )
 {
 	const char * f[] = { "xfs","ntfs","vfat","exfat","msdos","umsdos","affs","hfs","iso9660","jfs","jfs",
 		"romfs","udf","ext2","ext3","ext4","reiserfs","reiser4","btrfs","squashfs",NULL } ;
-	
+
 	const char ** e = f ;
-	
+
 	if( fs == NULL ){
 		return 0 ;
 	}else{
@@ -68,7 +67,7 @@ int zulucryptFileSystemIsSupported( const char * fs )
 }
 
 static inline int _check_options( const char ** e,stringList_t stl )
-{	
+{
 	while( *e != NULL ){
 		StringListRemoveIfStringContains( stl,*e ) ;
 		e++ ;
@@ -99,7 +98,7 @@ static inline int allowed_iso9660( stringList_t stl )
 }
 
 static inline int allowed_udf( stringList_t stl )
-{	
+{
 	const char * f[] = { "iocharset=","umask=",NULL } ;
 	return _check_options( f,stl ) ;
 }
@@ -107,9 +106,9 @@ static inline int allowed_udf( stringList_t stl )
 static inline int _option_contain_not_allowed( const char * fs,const char * fs_opts )
 {
 	stringList_t stl = StringListSplit( fs_opts,',' ) ;
-	
+
 	int r = 1 ;
-	
+
 	if( stl != StringListVoid ){
 		if( StringHasAtLeastOneComponent_1( fs,"fat","dos",NULL ) ){
 			r = allowed_vfat( stl ) ;
@@ -126,14 +125,14 @@ static inline int _option_contain_not_allowed( const char * fs,const char * fs_o
 	}else{
 		r = 1 ;
 	}
-	
+
 	return r ;
 }
 
 static inline int _userIsAllowed( uid_t uid,const char * fs )
-{	
+{
 	if( fs ){;}
-	
+
 	if( uid == 0 ){
 		/*
 		 * cant say No to root
@@ -143,7 +142,7 @@ static inline int _userIsAllowed( uid_t uid,const char * fs )
 		/*
 		 * user is not root,we are supposed to use other means to check if a user is allowed to useful
 		 * non default fs options or not.By policy,the way to do it is through unix group system but the
-		 * functionality is off for now 
+		 * functionality is off for now
 		 */
 		return 0 ;
 	}
@@ -152,14 +151,14 @@ static inline int _userIsAllowed( uid_t uid,const char * fs )
 int zuluCryptMountHasNotAllowedFileSystemOptions( uid_t uid,const char * fs_opts,string_t s )
 {
 	const char * fs = StringContent( s ) ;
-	
+
 	if( fs == NULL ){
 		/*
 		 * cant mount a volume with no file system,shouldnt even get here
 		 */
 		return 1 ;
 	}
-	
+
 	if( zulucryptFileSystemIsSupported( fs ) ){
 		/*
 		 * file system is supported
@@ -171,7 +170,7 @@ int zuluCryptMountHasNotAllowedFileSystemOptions( uid_t uid,const char * fs_opts
 			 */
 			return 0 ;
 		}
-		
+
 		if( _option_contain_not_allowed( fs,fs_opts ) ){
 			/*
 			 * file system options are not supported,only privileged users should be allowed to mount
@@ -195,7 +194,7 @@ int zuluCryptMountHasNotAllowedFileSystemOptions( uid_t uid,const char * fs_opts
 		}
 	}else{
 		/*
-		 * not supported file system 
+		 * not supported file system
 		 */
 		if( _userIsAllowed( uid,fs ) ){
 			/*

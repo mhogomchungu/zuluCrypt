@@ -1,19 +1,18 @@
- 
 /*
- * 
+ *
  *  Copyright (c) 2013
- *  name : mhogo mchungu 
+ *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -46,9 +45,9 @@ static char * _resolve_path( char * path )
 	}else{
 		st = String( path ) ;
 	}
-	
+
 	StringFree( path ) ;
-	
+
 	return StringDeleteHandle( &st ) ;
 }
 
@@ -57,13 +56,13 @@ static inline char * _evaluate_tag( const char * tag,const char * entry,blkid_ca
 	char * f = NULL ;
 	string_t st = String( entry ) ;
 	const char * e = StringReplaceChar_1( st,0,' ','\0' ) ;
-	
+
 	if( e != NULL ){
 		f = blkid_evaluate_tag( tag,e,cache ) ;
 	}
-	
+
 	StringDelete( &st ) ;
-	
+
 	return _resolve_path( f ) ;
 }
 
@@ -82,48 +81,48 @@ stringList_t zuluCryptGetFstabList( uid_t uid )
 {
 	string_t xt = StringGetFromFile( "/etc/fstab" ) ;
 	string_t st ;
-	
+
 	stringList_t fstabList = StringListVoid ;
-	
+
 	StringListIterator it  ;
 	StringListIterator end ;
-	
+
 	ssize_t index ;
-	
+
 	char * ac ;
 	const char * entry ;
 	const char * f ;
-	
+
 	blkid_cache cache = NULL ;
-	
+
 	if( xt == StringVoid ){
 		return StringListVoid ;
 	}
-	
+
 	if( uid ){;}
-	
+
 	fstabList = StringListStringSplit( xt,'\n' ) ;
-	
+
 	StringDelete( &xt ) ;
-	
+
 	if( fstabList == StringListVoid ){
 		return StringListVoid ;
 	}
-	
+
 	StringListRemoveIfStringStartsWith( fstabList,"#" ) ;
-	
+
 	if( StringListSize( fstabList ) < 1 ){
 		StringListDelete( &fstabList ) ;
 		return StringListVoid ;
 	}
-	
+
 	if( blkid_get_cache( &cache,NULL ) != 0 ){
 		cache = NULL ;
 	}
-	
+
 	it  = StringListBegin( fstabList ) ;
 	end = StringListEnd( fstabList ) ;
-	
+
 	while( it != end  ){
 		xt = *it ;
 		it++ ;
@@ -131,7 +130,7 @@ stringList_t zuluCryptGetFstabList( uid_t uid )
 		if( StringPrefixMatch( entry,"/dev/",5 ) ){
 			if( StringPrefixMatch( entry,"/dev/root",9 ) ){
 				/*
-				 * zuluCryptResolveDevRoot() is defined in ./print_mounted_volumes.c 
+				 * zuluCryptResolveDevRoot() is defined in ./print_mounted_volumes.c
 				 */
 				ac =  zuluCryptResolveDevRoot() ;
 				if( ac != NULL ){
@@ -217,7 +216,7 @@ stringList_t zuluCryptGetFstabList( uid_t uid )
 			}
 		}
 	}
-	
+
 	if( cache != NULL ){
 		blkid_put_cache( cache ) ;
 	}

@@ -1,30 +1,30 @@
  /*
-  * 
+  *
   *  Copyright (c) 2011
-  *  name : mhogo mchungu 
+  *  name : mhogo mchungu
   *  email: mhogomchungu@gmail.com
   *  This program is free software: you can redistribute it and/or modify
   *  it under the terms of the GNU General Public License as published by
   *  the Free Software Foundation, either version 2 of the License, or
   *  (at your option) any later version.
-  * 
+  *
   *  This program is distributed in the hope that it will be useful,
   *  but WITHOUT ANY WARRANTY; without even the implied warranty of
   *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   *  GNU General Public License for more details.
-  * 
+  *
   *  You should have received a copy of the GNU General Public License
   *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
   */
- 
- 
+
+
 #ifndef ZULUCRYPT_BIN
 #define ZULUCRYPT_BIN
 
 #define STRING_MEMORY_HACK 1
 
-#include "../utility/string/String.h" 
-#include "../utility/string/StringList.h" 
+#include "../utility/string/String.h"
+#include "../utility/string/StringList.h"
 #include "../constants.h"
 #include "../lib/libzuluCrypt.h"
 #include "../utility/socket/socket.h"
@@ -152,7 +152,7 @@ char * zuluCryptRealPath( const char * path ) ;
 void zuluCryptClearDeadMappers( uid_t uid ) ;
 
 /*
- * this function is defined in save_and_restore_luks_header.c 
+ * this function is defined in save_and_restore_luks_header.c
  */
 int zuluCryptHeaderMatchBackUpHeader( const char * device,const char * header_backup,uid_t uid ) ;
 
@@ -172,7 +172,7 @@ int zuluCryptBindMountVolume( const char * device,string_t,unsigned long flags )
 int zuluCryptBindSharedMountPointPathTaken( string_t path ) ;
 
 /*
- * this function is defined in ../pluginManager/zuluCryptPluginManager.c 
+ * this function is defined in ../pluginManager/zuluCryptPluginManager.c
  */
 string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * name,const char * uuid,uid_t uid,const struct_opts * opts ) ;
 
@@ -226,4 +226,4 @@ int zuluCryptRunTest( void ) ;
  */
 int zuluCryptDeviceIsSupported( const char * device,uid_t uid ) ;
 
-#endif 
+#endif

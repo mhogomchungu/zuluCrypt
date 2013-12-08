@@ -1,18 +1,18 @@
 /*
- * 
+ *
  *  Copyright (c) 2011
- *  name : mhogo mchungu 
+ *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -30,7 +30,7 @@ static int zuluExit( int st,stringList_t stl )
 	 * this function is defined in ../string/StringList.c
 	 */
 	StringListClearDelete( &stl ) ;
-	
+
 	switch ( st ){
 		case 0 : printf( gettext( "SUCCESS: volume created successfully\n" ) ) ;						break  ;
 		case 1 : printf( gettext( "ERROR: presented file system is not supported,see documentation for more information\n" ) ) ;break ;
@@ -54,7 +54,7 @@ only root user or members of group zulucrypt-system can do that\n" ) ) ;						br
 		case 18: printf( gettext( "ERROR: one or more required argument(s) for this operation is missing\n" ));	break  ;
 		case 19: printf( gettext( "ERROR: can not get passphrase in silent mode\n" ) ) ;			break  ;
 		case 20: printf( gettext( "ERROR: insufficient memory to hold passphrase\n" ) ) ;			break  ;
-		case 21: printf( gettext( "ERROR: passphrases do not match\n" ) ) ;					break  ; 
+		case 21: printf( gettext( "ERROR: passphrases do not match\n" ) ) ;					break  ;
 		case 22: printf( gettext( "ERROR: failed to create a volume" ) ) ;					break  ;
 		case 23: printf( gettext( "ERROR: wrong argument detected for tcrypt volume" ) ) ;			break  ;
 		default: printf( gettext( "ERROR: unrecognized error with status number %d encountered\n" ),st );
@@ -65,9 +65,9 @@ only root user or members of group zulucrypt-system can do that\n" ) ) ;						br
 static int zuluExit_1( const char * type,stringList_t stl )
 {
 	StringListClearDelete( &stl ) ;
-	
+
 	printf( gettext( "SUCCESS: volume created successfully\n" ) ) ;
-	
+
 	if( StringsAreEqual( type,"luks" ) ){
 		printf( gettext( "\ncreating a backup of the luks header is strongly adviced.\n" ) ) ;
 		printf( gettext( "Please read documentation on why this is important\n\n" ) ) ;
@@ -84,13 +84,13 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	const char * key_source = opts->key_source ;
 	const char * pass    = opts->key ;
 	const char * rng     = opts->rng ;
-		
+
 	char * e ;
 	/*
 	 * Below is a form of memory management.All strings are collected in a stringlist object to easily delete them
 	 * when the function returns.This allows for the function to have multiple exit points without risks of leaking
 	 * memory from manually examining each exit point to make sure all strings are deleted or go with multiple goto
-	 * code deleting blocks to take into account different exit points. 
+	 * code deleting blocks to take into account different exit points.
 	 */
 	stringList_t stl  ;
 	string_t * stringArray  = StringListArray( &stl,6 ) ;
@@ -100,28 +100,28 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	string_t * mapper  = &stringArray[ 3 ] ;
 	string_t * pass_3  = &stringArray[ 4 ] ;
 	string_t * pass_4  = &stringArray[ 5 ] ;
-	
+
 	const char * volkey ;
 	size_t       volkeysize ;
 	const char * volkey_h = NULL ;
 	size_t       volkeysize_h = 0 ;
-	
+
 	int tcrypt_source   = TCRYPT_PASSPHRASE ;
 	int tcrypt_source_h = TCRYPT_PASSPHRASE ;
-	
+
 	int st  ;
 	struct stat xt ;
-	
+
 	int j ;
 	int k ;
-	
+
 	int truecrypt_volume = 0 ;
 	size_t hidden_volume_size = 0 ;
-	
+
 	const char * tcrypt_hidden_volume_size = opts->tcrypt_hidden_volume_size ;
 	const char * tcrypt_hidden_volume_key_file  ;
 	const char * tcrypt_hidden_volume_key ;
-	
+
 	if( opts->tcrypt_hidden_volume_key != NULL ){
 		tcrypt_hidden_volume_key = *( opts->tcrypt_hidden_volume_key ) ;
 	}else{
@@ -146,7 +146,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 			return zuluExit( 2,stl ) ;
 		}
 	}
-	
+
 	/*
 	 * zuluCryptSecurityDeviceIsWritable() is defined in path_access.c
 	 */
@@ -155,7 +155,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	 * 1-permissions denied
 	 * 2-invalid path
 	 * 3-shenanigans
-	 * 4-common error 
+	 * 4-common error
 	 */
 	switch( st ){
 		case 0 : break ;
@@ -165,20 +165,20 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		case 4 : return zuluExit( 4,stl ) ;
 		default: return zuluExit( 4,stl ) ;
 	}
-	
+
 	/*
 	 * ZULUCRYPTlongMapperPath is set in ../constants.h
 	 * zuluCryptCreateMapperName() is defined at ../lib/create_mapper_name.c
 	 */
 	*mapper = zuluCryptCreateMapperName( device,mapping_name,uid,ZULUCRYPTlongMapperPath ) ;
-	
+
 	j = zuluCryptCheckOpenedMapper( StringContent( *mapper ) ) ;
-	
+
 	/*
 	 * defined in ../lib/print_mounted_volumes.c
 	 */
 	k = zuluCryptPartitionIsMounted( device ) ;
-	
+
 	if( j == 1 ){
 		return zuluExit( 5,stl ) ;
 	}
@@ -198,7 +198,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 			}
 		}
 	}
-	
+
 	/*
 	 * ZULUCRYPTmkfs is defined at "../constants.h"
 	 * File systems are created not through file systems APIs but through mkfs.xxx executables started using exec call.
@@ -210,7 +210,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		printf( gettext( "\nThis operation will destroy all data in a device at: \"%s\"\n" ),device ) ;
 		printf( gettext( "Are you sure you want to proceed?\n" ) ) ;
 		printf( gettext( "Type \"YES\" and press enter if you want to process: " ) ) ;
-		
+
 		*confirm = StringGetFromTerminal_1( 3 ) ;
 		if( *confirm == StringVoid ){
 			return zuluExit( 9,stl ) ;
@@ -229,19 +229,19 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 			case 1 : return zuluExit( 11,stl ) ;
 			case 2 : return zuluExit( 12,stl ) ;
 		}
-		
+
 		printf( gettext( "\nRe enter passphrase: " ) ) ;
 		switch( StringSilentlyGetFromTerminal_1( pass_2,ZULUCRYPT_KEY_MAX_SIZE ) ){
 			case 1 : return zuluExit( 11,stl ) ;
 			case 2 : return zuluExit( 12,stl ) ;
 		}
-		
+
 		printf( "\n" ) ;
-		
+
 		if( !StringEqualString( *pass_1,*pass_2 ) ){
-			return zuluExit( 13,stl ) ; 
+			return zuluExit( 13,stl ) ;
 		}
-		
+
 		tcrypt_source = TCRYPT_PASSPHRASE ;
 	}else{
 		if( StringsAreEqual( key_source,"-p" ) ){
@@ -252,12 +252,12 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 			 * function is defined at "path_access.c"
 			 */
 			switch( zuluCryptGetPassFromFile( pass,uid,pass_1 ) ){
-				case 1 : return zuluExit( 14,stl ) ; 
+				case 1 : return zuluExit( 14,stl ) ;
 				case 4 : return zuluExit( 15,stl ) ;
 				case 2 : return zuluExit( 16,stl ) ;
 				case 5 : return zuluExit( 17,stl ) ;
 			}
-			
+
 			if( StringHasComponent( pass,"/.zuluCrypt-socket" ) ){
 				tcrypt_source = TCRYPT_PASSPHRASE ;
 			}else{
@@ -267,22 +267,22 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 			return zuluExit( 18,stl ) ;
 		}
 	}
-	
+
 	truecrypt_volume = StringAtLeastOnePrefixMatch( type,"tcrypt","truecrypt",NULL ) ;
-	
+
 	if( tcrypt_hidden_volume_size != NULL ){
-		
+
 		if( !truecrypt_volume ){
 			return zuluExit( 23,stl ) ;
 		}else{
 			hidden_volume_size = atol( tcrypt_hidden_volume_size ) ;
-			
+
 			if( tcrypt_hidden_volume_key_file != NULL ){
 				/*
 				 * function is defined in "path_access.c"
 				 */
 				switch( zuluCryptGetPassFromFile( tcrypt_hidden_volume_key_file,uid,pass_3 ) ){
-					case 1 : return zuluExit( 14,stl ) ; 
+					case 1 : return zuluExit( 14,stl ) ;
 					case 4 : return zuluExit( 15,stl ) ;
 					case 2 : return zuluExit( 16,stl ) ;
 					case 5 : return zuluExit( 17,stl ) ;
@@ -301,19 +301,19 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 					case 1 : return zuluExit( 19,stl ) ;
 					case 2 : return zuluExit( 20,stl ) ;
 				}
-				
+
 				printf( gettext( "\nRe enter tcrypt hidden passphrase: " ) ) ;
 				switch( StringSilentlyGetFromTerminal_1( pass_4,ZULUCRYPT_KEY_MAX_SIZE ) ){
 					case 1 : return zuluExit( 19,stl ) ;
 					case 2 : return zuluExit( 20,stl ) ;
 				}
-				
+
 				printf( "\n" ) ;
-				
+
 				if( !StringEqualString( *pass_3,*pass_4 ) ){
-					return zuluExit( 21,stl ) ; 
+					return zuluExit( 21,stl ) ;
 				}
-				
+
 				tcrypt_source_h = TCRYPT_PASSPHRASE ;
 			}else if( tcrypt_hidden_volume_key != NULL ){
 				*pass_3 = String( tcrypt_hidden_volume_key ) ;
@@ -321,17 +321,17 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 			}else{
 				return zuluExit( 18,stl ) ;
 			}
-			
+
 			volkey_h = StringContent( *pass_3 ) ;
 			volkeysize_h = StringLength( * pass_3 ) ;
 		}
 	}
-	
+
 	volkey     = StringContent( *pass_1 ) ;
 	volkeysize = StringLength( *pass_1 ) ;
-	
+
 	zuluCryptSecurityGainElevatedPrivileges() ;
-	
+
 	if( truecrypt_volume ){
 		/*
 		 * zuluCryptCreateTCrypt() is defined in ../lib/create_tcrypt.c
@@ -344,7 +344,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		 */
 		st = zuluCryptCreateVolume( device,fs,type,volkey,volkeysize,rng ) ;
 	}
-	
+
 	zuluCryptSecurityDropElevatedPrivileges() ;
 
 	if( st == 0 ){

@@ -1,46 +1,46 @@
 /*
- * 
+ *
  *  Copyright (c) 2011
- *  name : mhogo mchungu 
+ *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "includes.h"
-#include <libcryptsetup.h>   
+#include <libcryptsetup.h>
 #include <fcntl.h>
 #include <unistd.h>
 
 static inline int zuluExit( int st,struct crypt_device * cd )
 {
-	crypt_free( cd );
+	crypt_free( cd ) ;
 	return st ;
 }
 
 static int _open_plain( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
 {
 	int flags ;
-	
+
 	struct crypt_device * cd ;
 	struct crypt_params_plain params ;
-	
+
 	memset( &params,'\0',sizeof( struct crypt_params_plain ) ) ;
-	
+
 	params.hash = "ripemd160";
 	params.skip = 0;
 	params.offset = 0;
-	
+
 	if( zuluCryptPathIsNotValid( device ) ){
 		return 3 ;
 	}

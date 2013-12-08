@@ -1,18 +1,18 @@
 /*
- * 
+ *
  *  Copyright ( c ) 2012
- *  name : mhogo mchungu 
+ *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
  *  ( at your option ) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -24,7 +24,7 @@
 void zuluCryptEXEGetOptsSetDefault( struct_opts * stopts )
 {
 	memset( stopts,'\0',sizeof( struct_opts ) ) ;
-	
+
 	stopts->plugin_path = NULL ;
 	stopts->device = NULL ;
 	stopts->mount_point = NULL ;
@@ -55,20 +55,20 @@ void zuluCryptEXEGetOptsSetDefault( struct_opts * stopts )
 void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
 {
 	int c ;
-	
+
 	zuluCryptEXEGetOptsSetDefault( stopts ) ;
-	
+
 	while ( ( c = getopt( argc,argv,"MHZCUWTJLORBXASNPkhocsarqwibEDs:m:d:p:f:e:Y:i:z:g:y:u:l:n:j:t:G:" ) ) != -1 ) {
 		switch( c ){
-			case( 'H' ) : stopts->action = 'H' 	; break ; 
-			case( 'C' ) : stopts->action = 'C' 	; break ; 
-			case( 'U' ) : stopts->action = 'U' 	; break ;     
+			case( 'H' ) : stopts->action = 'H' 	; break ;
+			case( 'C' ) : stopts->action = 'C' 	; break ;
+			case( 'U' ) : stopts->action = 'U' 	; break ;
 			case( 'W' ) : stopts->action = 'W' 	; break ;
-			case( 'E' ) : stopts->action = 'E' 	; break ;  
-			case( 'D' ) : stopts->action = 'D' 	; break ; 
+			case( 'E' ) : stopts->action = 'E' 	; break ;
+			case( 'D' ) : stopts->action = 'D' 	; break ;
 			case( 'X' ) : stopts->action = 'X'      ; break ;
 			case( 'J' ) : stopts->action = 'J'      ; break ;
-			case( 'L' ) : stopts->action = 'L'      ; break ; 
+			case( 'L' ) : stopts->action = 'L'      ; break ;
 			case( 'o' ) : stopts->action = 'o'      ; break ;
 			case( 'c' ) : stopts->action = 'c'      ; break ;
 			case( 's' ) : stopts->action = 's'      ; break ;
@@ -81,14 +81,14 @@ void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
 			case( 'P' ) : stopts->action = 'P'      ; break ;
 			case( 'O' ) : stopts->action = 'O'      ;
 			stopts->open_no_mount = 1 ; break ;
-			case( 'T' ) : stopts->print_partition_type = 1 ; 
-			break;   
-			case( 'M' ) : stopts->share = 1 ; 
+			case( 'T' ) : stopts->print_partition_type = 1 ;
+			break;
+			case( 'M' ) : stopts->share = 1 ;
 			break ;
-			stopts->share = 1 ; 
-			break ;	
-			case( 'Z' ) : stopts->print_partition_type = 2 ; 
-			break;     
+			stopts->share = 1 ;
+			break ;
+			case( 'Z' ) : stopts->print_partition_type = 2 ;
+			break;
 			case( 'B' ) : stopts->action = 'B' ;
 			stopts->key_source = optarg ;
 			break ;
@@ -116,38 +116,38 @@ void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
 			break ;
 			case( 'm' ) : stopts->mount_point = optarg ;
 			break ;
-			case( 'd' ) : stopts->device = optarg ; 
+			case( 'd' ) : stopts->device = optarg ;
 			break ;
-			case( 'p' ) : stopts->key_source = "-p" ; 
+			case( 'p' ) : stopts->key_source = "-p" ;
 			stopts->key = optarg ;
 			break ;
 			case( 'f' ) : stopts->key_source = "-f" ;
 			stopts->key = optarg ;
 			break ;
-			case( 'e' ) : stopts->m_opts = optarg ; 
+			case( 'e' ) : stopts->m_opts = optarg ;
 			stopts->tcrypt_hidden_volume_size = optarg ;
 			break ;
-			case( 'Y' ) : stopts->fs_opts = optarg ; 
+			case( 'Y' ) : stopts->fs_opts = optarg ;
 			break ;
 			case( 'z' ) : stopts->fs = optarg ;
 			break ;
-			case( 'g' ) : stopts->rng = optarg ; 
+			case( 'g' ) : stopts->rng = optarg ;
 			break ;
-			case( 'y' ) : stopts->existing_key_source = "-p" ; 
+			case( 'y' ) : stopts->existing_key_source = "-p" ;
 			stopts->existing_key = optarg ;
 			break ;
-			case( 'u' ) : stopts->existing_key_source = "-f" ; 
+			case( 'u' ) : stopts->existing_key_source = "-f" ;
 			stopts->existing_key = optarg ;
 			stopts->tcrypt_hidden_volume_key_file = &stopts->existing_key ;
 			break ;
-			case( 'l' ) : stopts->new_key_source = "-p" ; 
+			case( 'l' ) : stopts->new_key_source = "-p" ;
 			stopts->new_key = optarg ;
 			stopts->tcrypt_hidden_volume_key = &stopts->new_key ;
 			break ;
-			case( 'n' ) : stopts->new_key_source = "-f" ; 
+			case( 'n' ) : stopts->new_key_source = "-f" ;
 			stopts->new_key = optarg ;
 			break ;
-			default: printf( "run zuluCrypt-cli --help for help\n" ) ; 
+			default: printf( "run zuluCrypt-cli --help for help\n" ) ;
 		}
 	}
 }

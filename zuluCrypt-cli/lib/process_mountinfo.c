@@ -1,19 +1,18 @@
- 
 /*
- * 
+ *
  *  Copyright (c) 2011
- *  name : mhogo mchungu 
+ *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -27,12 +26,12 @@ char * zuluCryptResolveDevRoot( void )
 {
 	const char * e ;
 	char * dev = NULL ;
-	
+
 	string_t xt ;
 	string_t st      = StringGetFromVirtualFile( "/proc/cmdline" ) ;
 	stringList_t stl = StringListStringSplit( st,' ' ) ;
 	StringDelete( &st ) ;
-	
+
 	st = StringListHasSequence_1( stl,"root=/dev/" ) ;
 	if( st != StringVoid ){
 		e = StringRemoveString( st,"root=" ) ;
@@ -109,7 +108,7 @@ string_t zuluCryptResolveMDPath_1( const char * path )
 		}
 		closedir( dir ) ;
 	}
-	
+
 	StringAppendAt( st,0,path ) ;
 	return st ;
 }
@@ -195,7 +194,7 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 	StringListIterator end;
 	string_t k ;
 	string_t st = StringGetFromVirtualFile( "/proc/self/mountinfo" ) ;
-	
+
 	stl = StringListStringSplit( st,'\n' ) ;
 	StringDelete( &st ) ;
 	if( stl == StringListVoid ){
@@ -285,7 +284,7 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 		StringReset( st ) ;
 		StringListDelete( &tmp ) ;
 	}
-	
+
 	StringFree( entry ) ;
 	StringDelete( &st ) ;
 	StringListDelete( &stl ) ;
@@ -381,7 +380,7 @@ stringList_t zuluCryptGetMoutedListFromMounts( void )
 			}
 		}
 	}
-	
+
 	return stl ;
 }
 
@@ -391,11 +390,11 @@ stringList_t zuluCryptGetMountInfoList( void )
 {
 #if 0
 	stringList_t stl = zuluCryptGetMoutedListFromMountInfo() ;
-	
+
 	if( stl == StringListVoid ){
 		return zuluCryptGetMoutedListFromMounts() ;
 	}else{
-		return stl ; 
+		return stl ;
 	}
 #else
 	return zuluCryptGetMoutedListFromMountInfo() ;
@@ -409,27 +408,27 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 	const char * d ;
 	char * f ;
 	char * g ;
-	
+
 	size_t j ;
 	size_t i ;
-	
+
 	ssize_t k ;
-	
+
 	string_t q ;
 	string_t z ;
-	
+
 	stringList_t stx ;
 	stringList_t list = StringListVoid ;
 	stringList_t stl = zuluCryptGetMountInfoList() ;
-	
+
 	if( stl == StringListVoid ){
 		return StringListVoid ;
 	}
-	
+
 	if( uid ){;}
-	
+
 	j = StringListSize( stl )  ;
-	
+
 	for( i = 0 ; i < j ; i++ ){
 		c = StringListContentAt( stl,i ) ;
 		if( !StringPrefixMatch( c,"/dev/mapper/zuluCrypt-",22 ) ){
@@ -444,13 +443,13 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 			 */
 			continue ;
 		}
-		
+
 		stx = StringListSplit( c,' ' ) ;
-		
+
 		if( stx == StringListVoid ){
 			continue ;
 		}
-		
+
 		k = StringHasComponent_1( c,"-UUID-" ) ;
 		if( k != -1 && StringHasNoComponent( c,"-NAAN-" ) ) {
 			q = StringListStringAt( stx,0 ) ;
@@ -458,7 +457,7 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 			 * zuluCryptDecodeMountEntry() is defined in mount_volume.c
 			 */
 			d = zuluCryptDecodeMountEntry( StringListStringAt( stx,1 ) ) ;
-			
+
 			/*
 			 * zuluCryptGetVolumeTypeFromMapperPath() is defined in status.c
 			 */
@@ -483,7 +482,7 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 				StringFree( g ) ;
 			}
 		}
-		
+
 		StringListDelete( &stx ) ;
 	}
 	StringListDelete( &stl ) ;
@@ -503,7 +502,7 @@ string_t zuluCryptGetMountEntry_1( stringList_t stl,const char * path )
 	string_t st ;
 	string_t entry = StringVoid ;
 	ssize_t index ;
-	
+
 	if( stl != StringListVoid ){
 		if( StringPrefixMatch( path,"/dev/mapper/",12 ) ){
 			/*
@@ -523,10 +522,10 @@ string_t zuluCryptGetMountEntry_1( stringList_t stl,const char * path )
 		}else{
 			st = String( path ) ;
 		}
-	
+
 		index = StringListHasStartSequence( stl,StringAppend( st," " ) ) ;
 		StringDelete( &st ) ;
-	
+
 		if( index >= 0 ){
 			entry = StringListCopyStringAt( stl,index ) ;
 		}
@@ -538,7 +537,7 @@ char * zuluCryptGetMountPointFromPath( const char * path )
 {
 	string_t st = zuluCryptGetMountEntry( path ) ;
 	stringList_t stl ;
-	
+
 	if( st == StringVoid ){
 		return NULL ;
 	}else{

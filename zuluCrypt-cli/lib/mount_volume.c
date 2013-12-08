@@ -1,18 +1,18 @@
 /*
- * 
+ *
  *  Copyright (c) 2011
- *  name : mhogo mchungu 
+ *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -33,10 +33,10 @@
 
 /*
  * These functions are moved to parse_fstab.c
- * 
+ *
  * string_t zuluCryptGetFstabEntry( const char * device )
  * string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos )
- * stringList_t zuluCryptGetFstabEntryList( const char * device ) 
+ * stringList_t zuluCryptGetFstabEntryList( const char * device )
  */
 
 static inline int zuluExit( int st,int fd,string_t x,string_t y,string_t z )
@@ -67,9 +67,9 @@ static inline string_t set_mount_options( m_struct * mst )
 	 * zuluCryptGetMountOptionsFromFstab() is defined in parse_fstab.c
 	 */
 	string_t opt = zuluCryptGetMountOptionsFromFstab( mst->device,MOUNTOPTIONS,mst->uid ) ;
-	
+
 	int fsFamily = fs_family( mst->fs ) ;
-	
+
 	if( opt == StringVoid ){
 		opt = String( "" ) ;
 		StringAppend( opt,mst->fs_flags ) ;
@@ -79,7 +79,7 @@ static inline string_t set_mount_options( m_struct * mst )
 		}
 		StringMultipleAppend( opt,",",mst->fs_flags,END ) ;
 	}
-	
+
 	if( fsFamily == 1 ){
 		if( !StringContains( opt,"dmask=" ) ){
 			StringAppend( opt,",dmask=0000" ) ;
@@ -124,7 +124,7 @@ static inline string_t set_mount_options( m_struct * mst )
 		 */
 		;
 	}
-	
+
 	/*
 	 * Below options are not file system options and are rejectected by mount() command and hence we are removing them.
 	 */
@@ -134,20 +134,20 @@ static inline string_t set_mount_options( m_struct * mst )
 	StringRemoveString( opt,"defaults" ) ;
 	StringRemoveString( opt,"noauto" ) ;
 	StringRemoveString( opt,"auto" ) ;
-	
+
 	/*
-	 * remove below two now because we are going to add them below,reason for removing them 
+	 * remove below two now because we are going to add them below,reason for removing them
 	 * and readding them is because we want to make sure they are at the beginning of the string
 	 */
 	StringRemoveString( opt,"ro" ) ;
 	StringRemoveString( opt,"rw" ) ;
-	
+
 	if( mst->m_flags & MS_RDONLY ){
 		StringPrepend( opt,"ro," ) ;
 	}else{
 		StringPrepend( opt,"rw," ) ;
 	}
-	
+
 	while( StringIndexOfString( opt,0,",," ) >= 0 ){
 		StringReplaceString( opt,",,","," );
 	}
@@ -159,11 +159,11 @@ static inline string_t set_mount_options( m_struct * mst )
 }
 
 static void _mount_options( unsigned long flags,string_t * xt )
-{	
+{
 	string_t st = *xt ;
-	
+
 	if( flags & MS_NODEV ){
-		StringAppend( st,",nodev" ) ; 
+		StringAppend( st,",nodev" ) ;
 	}
 	if( flags & MS_NOEXEC ){
 		StringAppend( st,",noexec" ) ;
@@ -207,26 +207,26 @@ static inline int mount_FUSEfs( m_struct * mst )
 {
 	int status ;
 	const char * opts ;
-	
+
 	process_t p = Process( ZULUCRYPTmount ) ;
 	string_t st = set_mount_options( mst ) ;
-	
+
 	_mount_options( mst->m_flags,&st ) ;
 	opts = StringReplaceString( st,",,","," ) ;
-	
+
 	if( StringsAreEqual( mst->fs,"ntfs" ) ){
 		ProcessSetArgumentList( p,"-n","-t","ntfs-3g","-o",opts,mst->device,mst->m_point,ENDLIST ) ;
 	}else{
 		ProcessSetArgumentList( p,"-t",mst->fs,"-o",opts,mst->device,mst->m_point,ENDLIST ) ;
 	}
-	
+
 	ProcessStart( p ) ;
-	
+
 	status = ProcessExitStatus( p ) ;
-	
+
 	ProcessDelete( &p ) ;
 	StringDelete( &st ) ;
-	
+
 	return status ;
 }
 
@@ -284,32 +284,32 @@ const char * zuluCryptDecodeMountEntry( string_t st )
 int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long mount_opts,const char * fs_opts,uid_t uid )
 {
 	int h ;
-	
+
 	string_t opts = StringVoid ;
 	string_t fs   = StringVoid ;
 	string_t loop = StringVoid ;
-	
+
 	int fd = -1 ;
-	
+
 	m_struct mst ;
 	mst.device = path ;
 	mst.m_point = m_point ;
 	mst.uid = uid ;
 	mst.m_flags = mount_opts ;
-	
-	/* 
+
+	/*
 	 * zuluCryptGetFileSystemFromDevice() is defined in this source file
 	 */
 	fs = zuluCryptGetFileSystemFromDevice( path ) ;
-	
+
 	if( fs == StringVoid ){
 		/*
-		 * failed to read file system,probably because the volume does have any or 
+		 * failed to read file system,probably because the volume does have any or
 		 * a plain volume was opened with a wrong key
 		 */
 		return zuluExit( 4,fd,opts,fs,loop ) ;
 	}
-	
+
 	if( StringEqual( fs,"crypto_LUKS" ) ){
 		/*
 		 * we cant mount an encrypted volume, exiting
@@ -323,11 +323,11 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 	if( zuluCryptMountHasNotAllowedFileSystemOptions( uid,fs_opts,fs ) ){
 		return zuluExit( -1,fd,opts,fs,loop ) ;
 	}
-	
+
 	mst.fs_flags = fs_opts ;
 	mst.fs = StringContent( fs ) ;
 	opts = set_mount_options( &mst ) ;
-	
+
 	if( !StringPrefixMatch( path,"/dev/",5 ) ){
 		/*
 		 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop_device.c
@@ -338,7 +338,7 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 			return zuluExit( -1,fd,opts,fs,loop ) ;
 		}
 	}
-		
+
 	if( zuluCryptFileSystemIsFUSEbased( path ) ){
 		/*
 		 * These file systems dont see to work with mount() command for some reason.

@@ -1,22 +1,22 @@
 
 /*
- * 
+ *
  *  Copyright (c) 2012
- *  name : mhogo mchungu 
+ *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */ 
+ */
 
 #include "includes.h"
 #include "../lib/includes.h"
@@ -49,18 +49,18 @@ void sigTERMhandler( int sig )
 
 /*
  * define in partition.c
- * 
- * the function is used to check is a presented path is a system partition or not * 
+ *
+ * the function is used to check is a presented path is a system partition or not *
  */
 
-static int zuluExit( stringList_t stl, int status ) 
+static int zuluExit( stringList_t stl, int status )
 {
 	ssize_t index ;
 	switch( status ){
 		case 0 : printf( gettext( "SUCCESS: mapper created successfully\n" ) ) ;
 			 index = StringListHasStartSequence( stl,crypt_get_dir() ) ;
 			 if( index >= 0 ){
-				 printf( gettext( "opened mapper path: " ) ) ; 
+				 printf( gettext( "opened mapper path: " ) ) ;
 				 StringListPrintLineAt( stl,index ) ;
 			 }
 			 break ;
@@ -81,7 +81,7 @@ static int zuluExit( stringList_t stl, int status )
 		case 18: printf( gettext( "ERROR: insufficient memory to hold 3 characters?really?\n" ) ) 		;break ;
 		case 19: printf( gettext( "ERROR: insufficient privilege to open the file with your privileges?\n" ) )  ;break ;
 	}
-	
+
 	StringListClearDelete( &stl ) ;
 	return status ;
 }
@@ -92,7 +92,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	 * Below is a form of memory management.All strings are collected in a stringlist object to easily delete them
 	 * when the function returns.This allows for the function to have multiple exit points without risks of leaking
 	 * memory from manually examining each exit point to make sure all strings are deleted or go with multiple goto
-	 * code deleting blocks to take into account different exit points. 
+	 * code deleting blocks to take into account different exit points.
 	 */
 	stringList_t stl ;
 	string_t * stringArray  = StringListArray( &stl,5 ) ;
@@ -101,26 +101,26 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	string_t * p          = &stringArray[ 2 ] ;
 	string_t * dev_st     = &stringArray[ 3 ] ;
 	string_t * dev_1      = &stringArray[ 4 ] ;
-	
+
 	size_t len = 0 ;
-	
+
 	const char * source      = opts->key_source ;
 	const char * pass        = opts->key ;
-	
+
 	int k = opts->dont_ask_confirmation ;
-	
+
 	const char * cpass = NULL ;
-	
+
 	char * d ;
-	
+
 	const char * device = opts->device ;
 	const char * dev = opts->device ;
-	
+
 	int j ;
 	int n ;
-	
+
 	const char * cmapper ;
-	
+
 	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
 		/*
 		 * zuluCryptLoopDeviceAddress() is defined in ../lib/create_loop_device.c
@@ -131,7 +131,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 		*dev_1 = StringCopy( *dev_st ) ;
 		device = StringReplaceString( * dev_1,"\\040"," " ) ;
 	}
-	
+
 	/*
 	 * zuluCryptPartitionIsSystemPartition() is defined in ./partition.c
 	 */
@@ -143,18 +143,18 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	/*
 	 * ZULUCRYPTlongMapperPath and ZULUCRYPTshortMapperPath are in ../constants.h
 	 * zuluCryptCreateMapperName() is defined at ../lib/create_mapper_name.c
-	 */	
+	 */
 	*mapper = zuluCryptCreateMapperName( device,mapping_name,uid,ZULUCRYPTshortMapperPath ) ;
-	
+
 	*p = zuluCryptCreateMapperName( device,mapping_name,uid,ZULUCRYPTlongMapperPath ) ;
-	
+
 	j = zuluCryptCheckOpenedMapper( StringContent( *p ) ) ;
-	
+
 	/*
 	 * zuluCryptPartitionIsMounted() is defined in ../lib/process_mountinfo.c
 	 */
 	n = zuluCryptPartitionIsMounted( dev ) ;
-	
+
 	if( j == 1 ){
 		return zuluExit( stl,13 ) ;
 	}
@@ -187,15 +187,15 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 			 * zuluCryptGetPassFromFile() is defined at "path_access.c"
 			 */
 			switch( zuluCryptGetPassFromFile( pass,uid,passphrase ) ){
-				case 1 : return zuluExit( stl,10 ) ; 
-				case 2 : return zuluExit( stl,11 ) ; 
+				case 1 : return zuluExit( stl,10 ) ;
+				case 2 : return zuluExit( stl,11 ) ;
 				case 4 : return zuluExit( stl,12 ) ;
 			}
 			cpass = StringContent( *passphrase ) ;
 			len = StringLength( *passphrase ) ;
 		}
 	}
-	
+
 	if( zuluCryptSecurityGainElevatedPrivileges() ){
 		/*
 		 * zuluCryptOpenPlain() is defined in ../lib/open_plain.c
@@ -205,21 +205,21 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 			return zuluExit( stl,1 ) ;
 		}
 	}
-	
+
 	zuluCryptSecurityDropElevatedPrivileges() ;
-	
+
 	/*
 	 * Create a mapper path(usually at /dev/mapper) associated with opened plain mapper above.
 	 */
 	cmapper = StringMultiplePrepend( *mapper,"/",crypt_get_dir(),END ) ;
-	
+
 	/*
 	 *  mapper path is usually a soft link to /dev/dm-X
 	 *  resolve the mapper path to its respective /dev/dm-X and set permission on it.
-	 *  
+	 *
 	 * We set permission of /dev/dm-X pointing to the device to "u+rw" because we want notmal user to be able
 	 * to write to the device through the mapper.
-	 * 
+	 *
 	 * Useful when a normal user want to delete content of the device by writing random data to it.
 	 */
 	d = zuluCryptRealPath( cmapper ) ;
@@ -233,7 +233,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	}else{
 		return zuluExit( stl,1 ) ;
 	}
-	
+
 	if( op == 1 ){
 		return zuluExit( stl,0 ) ;
 	}else{
@@ -249,56 +249,56 @@ int zuluCryptEXEOpenPlainAsMe(const struct_opts * opts,const char * mapping_name
 
 /*
  * Purpose of this function is to open a device and write random data to it as a way of hiding information on the disk.
- * 
+ *
  * The above is accomplished by opening a plain mapper against the device and then write to the device through the mapper
- * 
+ *
  */
 int zuluCryptEXEWriteDeviceWithJunk( const struct_opts * opts,const char * mapping_name,uid_t uid )
-{	
+{
 	stringList_t stl   = StringListInit() ;
 	string_t * mapper  = StringListAssign( stl ) ;
 	string_t * confirm = StringListAssign( stl );
-	
+
 	double size ;
 	double size_written ;
-	
+
 	const char * device =  opts->device ;
-	
+
 	char buffer[ SIZE ] ;
-	
+
 	int ratio ;
 	int prev_ratio ;
 	int k ;
-	
+
 	struct sigaction sigac;
-	
+
 	memset( &sigac,'\0',sizeof( struct sigaction ) ) ;
-	
+
 	sigac.sa_handler = &sigTERMhandler ;
-	
+
 	sigaction( SIGINT,&sigac,NULL ) ;
 	sigaction( SIGTERM,&sigac,NULL ) ;
 	sigaction( SIGHUP,&sigac,NULL ) ;
-	
+
 	__exit_as_requested = 0 ;
-		
+
 	if( ( k = open_plain_as_me_1( opts,mapping_name,uid,0 ) ) != 0 ){
 		return k ;
 	}
 	*mapper = zuluCryptCreateMapperName( device,mapping_name,uid,ZULUCRYPTshortMapperPath ) ;
-	
+
 	StringMultiplePrepend( *mapper,"/",crypt_get_dir(),END ) ;
-	
+
 	if( opts->dont_ask_confirmation == -1 ){
 		printf( gettext( "\nWARNING, device \"%s\" will be overwritten with random data destroying all present data.\n" ),device ) ;
 		printf( gettext( "Are you sure you want to proceed? Type \"YES\" and press enter if you are sure: " ) ) ;
-		
+
 		*confirm = StringGetFromTerminal_1( 3 ) ;
 		if( *confirm == StringVoid ){
 			return zuluExit( stl,17 ) ;
 		}else{
 			k = StringEqual( *confirm,gettext( "YES" ) ) ;
-		
+
 			if( k == 0 ){
 				if( zuluCryptSecurityGainElevatedPrivileges() ){
 					zuluCryptCloseMapper( StringContent( *mapper ) ) ;
@@ -308,23 +308,23 @@ int zuluCryptEXEWriteDeviceWithJunk( const struct_opts * opts,const char * mappi
 			}
 		}
 	}
-	
+
 	k = open( StringContent( *mapper ),O_WRONLY ) ;
 
 	size = ( double ) blkid_get_dev_size( k ) ;
-	     
+
 	memset( buffer,0,SIZE ) ;
-	
+
 	size_written = 0 ;
 	prev_ratio = -1 ;
-	
+
 	while( write( k,buffer,SIZE ) > 0 ){
 
 		if( __exit_as_requested == 1 ){
 			break ;
 		}
 		size_written += SIZE ;
-		
+
 		ratio = ( int ) ( ( size_written / size ) * 100 ) ;
 
 		if( ratio > prev_ratio ){
@@ -333,13 +333,13 @@ int zuluCryptEXEWriteDeviceWithJunk( const struct_opts * opts,const char * mappi
 			prev_ratio = ratio ;
 		}
 	}
-		
+
 	close( k ) ;
 	if( zuluCryptSecurityGainElevatedPrivileges() ){
 		zuluCryptCloseMapper( StringContent( *mapper ) ) ;
 		zuluCryptSecurityDropElevatedPrivileges() ;
 	}
-		
+
 	if( __exit_as_requested == 1 ){
 		return zuluExit( stl,15 ) ;
 	}else{

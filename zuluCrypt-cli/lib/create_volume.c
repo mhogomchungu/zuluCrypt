@@ -1,18 +1,18 @@
 /*
- * 
+ *
  *  Copyright (c) 2011
- *  name : mhogo mchungu 
+ *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -20,7 +20,7 @@
 #include "includes.h"
 
 #include <sys/syscall.h>
-#include <libcryptsetup.h>   
+#include <libcryptsetup.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <signal.h>
@@ -36,45 +36,45 @@ int zuluCryptCreateFileSystemInAVolume( const char * fs,const char * device_mapp
 {
 	int status ;
 	char * e = NULL ;
-	
+
 	process_t p = Process( ZULUCRYPTmkfs ) ;
-	
+
 	if( StringAtLeastOneMatch_1( fs,"ext2","ext3","ext4",NULL ) ){
-		
+
 		ProcessSetArgumentList( p,"-t",fs,"-m","1",device_mapper,ENDLIST ) ;
-		
+
 	}else if( StringsAreEqual( fs,"reiserfs" ) ){
-		
+
 		ProcessSetArgumentList( p,"-t",fs,"-f","-f","-q",device_mapper,ENDLIST ) ;
-		
+
 	}else if( StringsAreEqual( fs,"jfs" ) ){
-		
+
 		ProcessSetArgumentList( p,"-t",fs,"-q",device_mapper,ENDLIST ) ;
-		
+
 	}else if( StringsAreEqual( fs,"ntfs" ) ){
-		
+
 		ProcessSetArgumentList( p,"-t",fs,"-f",device_mapper,ENDLIST ) ;
-		
+
 	}else if( StringsAreEqual( fs,"xfs" ) ){
-		
+
 		ProcessSetArgumentList( p,"-t",fs,"-f",device_mapper,ENDLIST ) ;
-		
+
 	}else{
 		ProcessSetArgumentList( p,"-t",fs,device_mapper,ENDLIST ) ;
-		
+
 		/*
 		 * unhandled fs are processed here.They are given 60 seconds to accomplish their task
 		 * and are assumed to be running in interactive more and are blocked waiting for user input
-		 * when they fail to return in time and hence are killed since we cant get to them from GUI 
+		 * when they fail to return in time and hence are killed since we cant get to them from GUI
 		 */
-		
+
 		ProcessSetOptionTimeout( p,60,SIGKILL ) ;
 	}
-	
+
 	ProcessStart( p ) ;
-	
+
 	status = ProcessExitStatus( p ) ;
-	
+
 	if( status ){
 		ProcessGetOutPut( p,&e,STDERROR ) ;
 		if( e ){
@@ -82,7 +82,7 @@ int zuluCryptCreateFileSystemInAVolume( const char * fs,const char * device_mapp
 			free( e ) ;
 		}
 	}
-	
+
 	ProcessDelete( &p ) ;
 	return status ;
 }
@@ -91,49 +91,49 @@ static int _create_volume( const char * dev,const char * fs,const char * type,co
 {
 	size_t len ;
 	int status ;
-	
+
 	string_t m = StringVoid ;
-	
+
 	const char * device_mapper ;
 	const char * mapper ;
-	
+
 	if ( zuluCryptPathIsNotValid( dev ) ){
 		return 1 ;
 	}
-		
+
 	m = String( crypt_get_dir() ) ;
 	len = StringLength( m )   ;
-	
+
 	StringAppend( m,"/zuluCrypt-" ) ;
 	device_mapper = StringAppendInt( m,syscall( SYS_gettid ) ) ;
 	mapper = device_mapper + len + 1 ;
-		
+
 	if( StringsAreEqual( type,"luks" ) ){
 		if( StringsAreNotEqual( rng,"/dev/random" ) ){
 			if( StringsAreNotEqual( rng,"/dev/urandom" ) ){
-				return zuluExit( 2,m ) ; 
+				return zuluExit( 2,m ) ;
 			}
 		}
 		if( zuluCryptCreateLuks( dev,pass,pass_size,rng ) != 0 ){
 			return zuluExit( 3,m ) ;
 		}
 		if( zuluCryptOpenLuks( dev,mapper,"rw",pass,pass_size ) != 0 ){
-			return zuluExit( 3,m ) ; 
+			return zuluExit( 3,m ) ;
 		}
 	}else if( StringsAreEqual( type,"plain") ){
 		if( zuluCryptOpenPlain( dev,mapper,"rw",pass,pass_size ) != 0 ){
-			return zuluExit( 3,m ) ; 
+			return zuluExit( 3,m ) ;
 		}
 	}else{
 		return zuluExit( 2,m ) ;
 	}
-	
+
 	status = zuluCryptCreateFileSystemInAVolume( fs,device_mapper ) ;
 	/*
 	 * zuluCryptCloseMapper() is defined in close_mapper.c
 	 */
 	zuluCryptCloseMapper( device_mapper );
-	
+
 	if( status == 0 ){
 		return zuluExit( 0,m ) ;
 	}else{

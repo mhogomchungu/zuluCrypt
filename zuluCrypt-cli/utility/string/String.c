@@ -1,19 +1,18 @@
-
 /*
- * 
+ *
  *  Copyright (c) 2011
- *  name : mhogo mchungu 
+ *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -48,7 +47,7 @@
 struct StringType
 {	/*
 	 *the size of the string
-	 */	
+	 */
 	size_t size ;
 	/*
 	 * the size of the string buffer
@@ -57,8 +56,8 @@ struct StringType
 	/*
 	 * pointer to the string
 	 */
-	char * string ; 
-	
+	char * string ;
+
 	/*
 	 * contains info if the string is owned by stringlist
 	 */
@@ -93,7 +92,7 @@ static inline char * __StringExpandMemory( string_t st,size_t new_size )
 {
 	char * p ;
 	if( new_size >= st->length ) {
-		st->length = new_size * FACTOR ; 
+		st->length = new_size * FACTOR ;
 		p = ( char * ) realloc( st->string,st->length ) ;
 		if( p == NULL ){
 			return ( char * ) _StringError() ;
@@ -138,8 +137,8 @@ void StringDelete( string_t * st )
 	}
 }
 
-void StringClearDelete( string_t * st ) 
-{	
+void StringClearDelete( string_t * st )
+{
 	string_t s ;
 	char * e ;
 	if( st != NULL ){
@@ -161,21 +160,21 @@ void StringMultipleDelete( string_t * xt,... )
 	string_t * entry ;
 	va_list list ;
 	string_t st ;
-	
+
 	if( xt == NULL ){
 		return ;
 	}
 	st = *xt ;
-	if( st != StringVoid ){ 
+	if( st != StringVoid ){
 		if( st->owned == 0 ){
 			free( st->string ) ;
 			free( st ) ;
 			*xt = StringVoid ;
 		}
 	}
-	
+
 	va_start( list,xt ) ;
-	
+
 	while( 1 ){
 		entry = va_arg( list,string_t * ) ;
 		if( entry == ENDDELETE ){
@@ -190,7 +189,7 @@ void StringMultipleDelete( string_t * xt,... )
 			}
 		}
 	}
-	
+
 	va_end( list ) ;
 }
 
@@ -218,38 +217,38 @@ char * StringDeleteHandle( string_t * xt )
 			memcpy( c,st->string,st->size + 1 ) ;
 		}
 	}
-	
+
 	return c ;
 }
 
 string_t StringCopy( string_t st )
-{	
+{
 	string_t xt ;
 	char * c ;
-	
+
 	if( st == StringVoid ){
 		return StringVoid ;
 	}
-	
+
 	c = ( char * ) malloc( sizeof( char ) * ( st->size + 1 ) ) ;
-	
+
 	if( c == NULL ){
 		return _StringError() ;
 	}
-	
+
 	xt = ( string_t ) malloc ( sizeof( struct StringType ) ) ;
-	
+
 	if( xt == NULL ){
 		free( c ) ;
 		return _StringError() ;
 	}else{
 		memcpy( c,st->string,st->size + 1 ) ;
-	
+
 		xt->size = st->size ;
 		xt->length = st->size + 1 ;
 		xt->string = c ;
 		xt->owned = 0 ;
-	
+
 		return xt ;
 	}
 }
@@ -278,20 +277,20 @@ string_t String( const char * cstring )
 {
 	size_t size ;
 	string_t st ;
-	
+
 	if( cstring == NULL ){
 		return StringVoid ;
 	}
-	
+
 	size = strlen( cstring ) ;
-	
+
 	st = ( string_t ) malloc ( sizeof( struct StringType ) ) ;
-	
+
 	if( st == NULL ){
 		return _StringError() ;
 	}
 	if( size < STRING_INIT_SIZE / 2 ){
-		
+
 		st->string = ( char * ) malloc( sizeof( char ) * STRING_INIT_SIZE ) ;
 		if( st->string == NULL ){
 			free( st ) ;
@@ -305,11 +304,11 @@ string_t String( const char * cstring )
 		}
 	}else{
 		st->string = ( char * ) malloc( sizeof( char ) * ( size + 1 ) );
-	
+
 		if( st->string == NULL ){
 			free( st ) ;
 			return _StringError() ;
-		}else{	
+		}else{
 			memcpy( st->string,cstring,size + 1 ) ;
 			st->size = size  ;
 			st->length = size + 1 ;
@@ -327,7 +326,7 @@ void StringReadToBuffer( string_t st,char * buffer,size_t size )
 }
 
 string_t StringInherit( char ** data )
-{	
+{
 	size_t l ;
 	if( data != NULL ){
 		if( *data != NULL ){
@@ -348,7 +347,7 @@ void StringPrint( string_t st )
 	}
 }
 
-void StringPrintLine( string_t st ) 
+void StringPrintLine( string_t st )
 {
 	if( st != StringVoid ){
 		printf( "%s\n",st->string ) ;
@@ -367,16 +366,16 @@ int StringContains( string_t st,const char * str )
 string_t StringInheritWithSize( char ** data,size_t size,size_t length )
 {
 	string_t st ;
-	
+
 	if( data == NULL || *data == NULL ){
 		return StringVoid ;
 	}
 	if( length == 0 ){
 		return StringVoid ;
 	}
-	
+
 	st = ( string_t ) malloc ( sizeof( struct StringType ) ) ;
-	
+
 	if( st == NULL ){
 		return _StringError() ;
 	}
@@ -406,16 +405,16 @@ string_t StringWithSize( const char * s,size_t len )
 ssize_t StringIndexOfString( string_t st,size_t p,const char * s )
 {
 	char * c ;
-	
+
 	if( st == StringVoid || s == NULL ){
 		return -1 ;
 	}
 	if( p >= st->size ){
 		return -1 ;
 	}
-	
+
 	c = strstr( st->string + p,s ) ;
-	
+
 	if( c == NULL ){
 		return -1 ;
 	}else{
@@ -423,51 +422,51 @@ ssize_t StringIndexOfString( string_t st,size_t p,const char * s )
 	}
 }
 
-ssize_t StringLastIndexOfChar( string_t st,char s ) 
+ssize_t StringLastIndexOfChar( string_t st,char s )
 {
 	char * c ;
 	char * d ;
-	
+
 	if( st == StringVoid ){
 		return -1 ;
 	}
-	
+
 	d = st->string ;
 	c = d + st->size ;
-	
+
 	while( --c != d ){
 		if( *c == s ){
 			return c - d ;
 		}
 	}
-		
+
 	return -1 ;
 }
 
-ssize_t StringLastIndexOfString( string_t st,const char * s ) 
+ssize_t StringLastIndexOfString( string_t st,const char * s )
 {
 	ssize_t p = -1 ;
-	
+
 	char * c ;
 	char * d ;
 	char * e ;
 
 	size_t len ;
-	
+
 	if( s == NULL ){
 		return -1 ;
 	}
-	
+
 	if( st == StringVoid ){
 		return -1 ;
 	}
-	
+
 	len = strlen( s ) ;
-	
+
 	if( len == 0 ){
 		return -1 ;
 	}
-	
+
 	e = d = st->string ;
 
 	while( 1 )
@@ -483,8 +482,8 @@ ssize_t StringLastIndexOfString( string_t st,const char * s )
 	return p ;
 }
 
-ssize_t StringIndexOfChar( string_t st,size_t p,char s ) 
-{	
+ssize_t StringIndexOfChar( string_t st,size_t p,char s )
+{
 	char * c ;
 	char d[ 2 ] ;
 	d[ 1 ] = '\0' ;
@@ -493,9 +492,9 @@ ssize_t StringIndexOfChar( string_t st,size_t p,char s )
 	if( st == StringVoid ){
 		return -1 ;
 	}
-	
+
 	c = strstr( st->string + p,d ) ;
-	
+
 	if( c == NULL ){
 		return -1 ;
 	}else{
@@ -503,8 +502,8 @@ ssize_t StringIndexOfChar( string_t st,size_t p,char s )
 	}
 }
 
-const char * StringRemoveLength( string_t st,size_t x ,size_t y ) 
-{	
+const char * StringRemoveLength( string_t st,size_t x ,size_t y )
+{
 	if( st == StringVoid ){
 		return NULL ;
 	}
@@ -514,11 +513,11 @@ const char * StringRemoveLength( string_t st,size_t x ,size_t y )
 	if( x + y >= st->size ){
 		y = st->size - x ;
 	}
-	
+
 	memmove( st->string + x,st->string + x + y,st->size - y - x + 1 ) ;
-	
+
 	st->size -= y ;
-	
+
 	return st->string ;
 }
 
@@ -538,7 +537,7 @@ void StringReset( string_t st )
 	}
 }
 
-const char * StringRemoveRight( string_t st,size_t x ) 
+const char * StringRemoveRight( string_t st,size_t x )
 {
 	if( x >= st->size ){
 		st->string[ 0 ] = '\0' ;
@@ -547,16 +546,16 @@ const char * StringRemoveRight( string_t st,size_t x )
 		st->size = st->size - x ;
 		*( st->string + st->size ) = '\0' ;
 	}
-	
+
 	return st->string ;
 }
 
-const char * StringRemoveLeft( string_t st,size_t x ) 
+const char * StringRemoveLeft( string_t st,size_t x )
 {
 	return StringRemoveLength( st,0,x ) ;
 }
 
-const char * StringCrop( string_t st,size_t x,size_t y ) 
+const char * StringCrop( string_t st,size_t x,size_t y )
 {
 	ssize_t s ;
 	if( st == StringVoid ){
@@ -568,9 +567,9 @@ const char * StringCrop( string_t st,size_t x,size_t y )
 	if( y >= st->size ){
 		y = st->size - 1 ;
 	}
-	
+
 	memmove( st->string,st->string + x,st->size - x + 1 ) ;
-	
+
 	s = st->size - x - y ;
 	if( s < 0  ){
 		st->size = 0 ;
@@ -578,12 +577,12 @@ const char * StringCrop( string_t st,size_t x,size_t y )
 		st->size = s ;
 	}
 	*( st->string + st->size ) = '\0';
-	
+
 	return st->string ;
 }
 
 ssize_t StringLength( string_t st )
-{	
+{
 	if( st == StringVoid ){
 		return -1 ;
 	}else{
@@ -600,7 +599,7 @@ const char * StringContent( string_t st )
 	}
 }
 
-const char ** StringPointer( string_t st ) 
+const char ** StringPointer( string_t st )
 {
 	if( st == StringVoid ){
 		return NULL ;
@@ -665,10 +664,10 @@ char * StringCopy_3( string_t st,size_t l )
 	}
 }
 
-int StringEndsWith( string_t st,const char * s ) 
+int StringEndsWith( string_t st,const char * s )
 {
 	size_t j ;
-		
+
 	if( st == StringVoid || s == NULL ){
 		return 0 ;
 	}else{
@@ -677,7 +676,7 @@ int StringEndsWith( string_t st,const char * s )
 	}
 }
 
-int StringStartsWith( string_t st,const char * s ) 
+int StringStartsWith( string_t st,const char * s )
 {
 	if( st == StringVoid || s == NULL ){
 		return 0 ;
@@ -687,7 +686,7 @@ int StringStartsWith( string_t st,const char * s )
 }
 
 int StringEndsWithChar( string_t st,char s )
-{	
+{
 	if( st == StringVoid ){
 		return 0 ;
 	}else{
@@ -718,7 +717,7 @@ char StringCharAtLast( string_t st )
 }
 
 const char * StringStringAt( string_t st,size_t p )
-{	
+{
 	if( st == StringVoid ){
 		return NULL ;
 	}
@@ -729,7 +728,7 @@ const char * StringStringAt( string_t st,size_t p )
 }
 
 const char * StringSubChar( string_t st,size_t x,char s )
-{		
+{
 	if( st == StringVoid ){
 		return NULL ;
 	}
@@ -747,7 +746,7 @@ static void Stringsrcs__( string_t st,char x,const char * y,size_t p )
 	size_t k ;
 	size_t l ;
 	char * c ;
-	
+
 	if( st == StringVoid ){
 		return  ;
 	}
@@ -757,11 +756,11 @@ static void Stringsrcs__( string_t st,char x,const char * y,size_t p )
 	if( p >= st->size ){
 		return ;
 	}
-	
+
 	c= st->string ;
 	l = st->size ;
 	k = strlen( y ) ;
-	
+
 	for( j = p ; j < l ; j++ ){
 		for( i = 0 ; i < k ; i++ ){
 			if( * ( c + j ) == * ( y + i ) ){
@@ -772,18 +771,18 @@ static void Stringsrcs__( string_t st,char x,const char * y,size_t p )
 	}
 }
 
-const char * StringReplaceCharStringPos( string_t st,char x,const char * y,size_t p ) 
+const char * StringReplaceCharStringPos( string_t st,char x,const char * y,size_t p )
 {
 	Stringsrcs__( st,x,y,p ) ;
 	return st->string ;
 }
 
-const char * StringReplaceCharString( string_t st,char x,const char * y ) 
+const char * StringReplaceCharString( string_t st,char x,const char * y )
 {
 	return StringReplaceCharStringPos( st,x,y,0 )  ;
 }
 
-const char * StringSubString( string_t st, size_t x,const char * s ) 
+const char * StringSubString( string_t st, size_t x,const char * s )
 {
 	size_t k ;
 	if( st == StringVoid ){
@@ -800,7 +799,7 @@ const char * StringSubString( string_t st, size_t x,const char * s )
 	return st->string ;
 }
 
-const char * StringInsertChar( string_t st,size_t x,char s ) 
+const char * StringInsertChar( string_t st,size_t x,char s )
 {
 	char c[2] ;
 	c[0] = s ;
@@ -808,27 +807,27 @@ const char * StringInsertChar( string_t st,size_t x,char s )
 	return StringInsertString( st,x,c ) ;
 }
 
-const char * StringAppendAt( string_t st,size_t x,const char * s ) 
+const char * StringAppendAt( string_t st,size_t x,const char * s )
 {
 	size_t len ;
-	char * c   ; 
-	
+	char * c   ;
+
 	if( st == StringVoid ){
 		return NULL ;
 	}
 	if( x > st->size || s == NULL ){
 		return st->string ;
 	}
-	
+
 	len = strlen( s ) ;
 	c = __StringExpandMemory( st,st->size + len ) ;
-	
+
 	if( c != NULL ){
 		memcpy( c + x,s,len + 1 ) ;
 		st->string = c ;
 		st->size = x + len ;
 	}
-	
+
 	return c ;
 }
 
@@ -836,18 +835,18 @@ const char * StringPrepend( string_t st,const char * s )
 {
 	char * c ;
 	size_t len ;
-	
+
 	if( st == StringVoid ){
 		return NULL ;
 	}
 	if( s == NULL ){
 		return st->string ;
 	}
-	
+
 	len = strlen( s ) ;
-	
+
 	c = __StringExpandMemory( st,st->size + len ) ;
-	
+
 	if( c != NULL ){
 		st->string = c ;
 		memmove( st->string + len,st->string,st->size + 1 ) ;
@@ -857,7 +856,7 @@ const char * StringPrepend( string_t st,const char * s )
 	return c ;
 }
 
-const char * StringPrependString( string_t st,string_t xt ) 
+const char * StringPrependString( string_t st,string_t xt )
 {
 	return StringPrepend( st,xt->string ) ;
 }
@@ -870,22 +869,22 @@ const char * StringPrependChar( string_t st,char c )
 	return StringPrepend( st,s ) ;
 }
 
-const char * StringAppend( string_t st,const char * s ) 
+const char * StringAppend( string_t st,const char * s )
 {
 	char * c ;
 	size_t len ;
-	
+
 	if( st == StringVoid ){
 		return NULL ;
 	}
 	if( s == NULL ){
 		return st->string ;
 	}
-	
+
 	len = strlen( s ) ;
 
 	c = __StringExpandMemory( st,st->size + len ) ;
-	
+
 	if( c != NULL ){
 		st->string = c ;
 		memcpy( st->string + st->size,s,len + 1 ) ;
@@ -900,7 +899,7 @@ int StringAtLeastOneStartsWith( string_t st,... )
 	const char * entry ;
 	va_list list ;
 	va_start( list,st ) ;
-	
+
 	while( 1 ){
 		entry = va_arg( list,const char * ) ;
 		if( entry == NULL ){
@@ -912,17 +911,17 @@ int StringAtLeastOneStartsWith( string_t st,... )
 			}
 		}
 	}
-	
+
 	va_end( list ) ;
 	return r ;
 }
 
-const char * StringMultipleAppend( string_t st,... ) 
+const char * StringMultipleAppend( string_t st,... )
 {
 	const char * entry ;
 	va_list list ;
 	va_start( list,st ) ;
-	
+
 	while( 1 ){
 		entry = va_arg( list,const char * ) ;
 		if( entry == END ){
@@ -930,17 +929,17 @@ const char * StringMultipleAppend( string_t st,... )
 		}
 		StringAppend( st,entry ) ;
 	}
-	
+
 	va_end( list ) ;
 	return st->string ;
 }
 
-const char * StringAppendMultipleString( string_t st,... ) 
+const char * StringAppendMultipleString( string_t st,... )
 {
 	string_t entry ;
 	va_list list ;
 	va_start( list,st ) ;
-	
+
 	while( 1 ){
 		entry = va_arg( list,string_t ) ;
 		if( entry == NULL ){
@@ -948,17 +947,17 @@ const char * StringAppendMultipleString( string_t st,... )
 		}
 		StringAppend( st,entry->string ) ;
 	}
-	
+
 	va_end( list ) ;
 	return st->string ;
 }
 
-const char * StringMultiplePrepend( string_t st,... )  
+const char * StringMultiplePrepend( string_t st,... )
 {
 	const char * entry ;
 	va_list list ;
 	va_start( list,st ) ;
-	
+
 	while( 1 ){
 		entry = va_arg( list,const char * ) ;
 		if( entry == END ){
@@ -966,17 +965,17 @@ const char * StringMultiplePrepend( string_t st,... )
 		}
 		StringPrepend( st,entry ) ;
 	}
-	
+
 	va_end( list ) ;
 	return st->string ;
 }
 
-const char * StringPrependMultipleString( string_t st,... )  
+const char * StringPrependMultipleString( string_t st,... )
 {
 	string_t entry ;
 	va_list list ;
 	va_start( list,st ) ;
-	
+
 	while( 1 ){
 		entry = va_arg( list,string_t ) ;
 		if( entry == NULL ){
@@ -984,12 +983,12 @@ const char * StringPrependMultipleString( string_t st,... )
 		}
 		StringPrepend( st,entry->string ) ;
 	}
-	
+
 	va_end( list ) ;
 	return st->string ;
 }
 
-const char * StringAppendString( string_t st,string_t xt )  
+const char * StringAppendString( string_t st,string_t xt )
 {
 	return StringAppend( st,xt->string ) ;
 }
@@ -997,13 +996,13 @@ const char * StringAppendString( string_t st,string_t xt )
 const char * StringAppendChar( string_t st,char c )
 {
 	char * d = __StringExpandMemory( st,st->size + 1 ) ;
-	
+
 	if( d != NULL ){
 		st->string[ st->size ] = c ;
 		st->string[ st->size + 1 ] = '\0' ;
 		st->size += 1 ;
 	}
-	
+
 	return d ;
 }
 
@@ -1011,15 +1010,15 @@ const char * StringInsertString( string_t st,size_t x,const char * s )
 {
 	char * c ;
 	size_t len ;
-	
+
 	if( s == NULL ){
 		return NULL ;
 	}
-	
+
 	len = strlen( s ) ;
-	
+
 	c = __StringExpandMemory( st,len ) ;
-	
+
 	if( c != NULL ){
 		st->string = c ;
 		memmove( st->string + len + x,st->string + x,st->size - x + 1 ) ;
@@ -1029,16 +1028,16 @@ const char * StringInsertString( string_t st,size_t x,const char * s )
 	return c ;
 }
 
-string_t StringMidString( string_t st,size_t x,size_t y ) 
+string_t StringMidString( string_t st,size_t x,size_t y )
 {
 	char * c ;
-	
+
 	c = ( char * ) malloc ( sizeof( char ) * ( y + 1 ) ) ;
 	if( c == NULL ){
 		return _StringError() ;
 	}
 	strncpy( c,st->string + x, y ) ;
-	
+
 	*( c + y ) = '\0' ;
 
 	return StringInheritWithSize( &c,y,y + 1 ) ;
@@ -1053,21 +1052,21 @@ static char * StringRS__( string_t st,const char * x,const char * s,size_t p )
 	size_t j  ;
 	size_t k  ;
 	size_t len ;
-	
+
 	if( st == StringVoid ){
 		return NULL ;
 	}
-		
+
 	if( x == NULL || s == NULL || p >= st->size ){
 		return st->string ;
 	}
-	
+
 	d = st->string ;
 	e = st->string + p ;
-	
+
 	j = strlen( s ) ;
 	k = strlen( x ) ;
-	
+
 	if( j == k ){
 		while( ( c = strstr( e,x ) ) != NULL ){
 			memcpy( c,s,j ) ;
@@ -1077,7 +1076,7 @@ static char * StringRS__( string_t st,const char * x,const char * s,size_t p )
 		while( ( c = strstr( e,x ) ) != NULL ){
 			len = c - st->string ;
 			d = __StringExpandMemory( st,st->size + j ) ;
-			if( d != NULL ){	
+			if( d != NULL ){
 				st->string = d ;
 				c = st->string + len ;
 				memmove( c + j,c + k,st->size - ( c - st->string ) + 1 ) ;
@@ -1088,7 +1087,7 @@ static char * StringRS__( string_t st,const char * x,const char * s,size_t p )
 		}
 	}else if( k > j ){
 		while( ( c = strstr( e,x ) ) != NULL ){
-			len = c - st->string ; 
+			len = c - st->string ;
 			memmove( c + j,c + k,st->size - ( c - st->string + k ) + 1 ) ;
 			memcpy( c,s,j ) ;
 			if( d != NULL ){
@@ -1098,21 +1097,21 @@ static char * StringRS__( string_t st,const char * x,const char * s,size_t p )
 			}
 		}
 	}
-	
+
 	return d ;
 }
 
-const char * StringReplaceStringPos( string_t st,const char * x,const char * s,size_t p ) 
+const char * StringReplaceStringPos( string_t st,const char * x,const char * s,size_t p )
 {
 	return StringRS__( st,x,s,p ) ;
 }
 
-const char * StringReplaceString( string_t st,const char * x,const char * s ) 
+const char * StringReplaceString( string_t st,const char * x,const char * s )
 {
 	return StringReplaceStringPos( st,x,s,0 ) ;
 }
 
-const char * StringRemoveStringPos( string_t st,const char * s,size_t p ) 
+const char * StringRemoveStringPos( string_t st,const char * s,size_t p )
 {
 	return StringRS__( st,s,"",p ) ;
 }
@@ -1142,11 +1141,11 @@ static char * StringCRC__( string_t st, char x,char y,size_t p )
 
 
 const char * StringReplaceCharPos( string_t st,char x,char y,size_t p )
-{	
+{
 	return StringCRC__( st,x,y,p ) ;
 }
 
-const char * StringReplaceChar_1( string_t st,size_t index,char x,char y ) 
+const char * StringReplaceChar_1( string_t st,size_t index,char x,char y )
 {
 	char * e ;
 	if( st == StringVoid ){
@@ -1191,13 +1190,13 @@ string_t StringIntToString( u_int64_t z )
 	return String( _intToString( buffer,z ) );
 }
 
-const char * StringAppendInt( string_t st,u_int64_t z ) 
+const char * StringAppendInt( string_t st,u_int64_t z )
 {
 	char buffer[ BUFFSIZE ] = { '\0' };
 	return StringAppend( st,_intToString( buffer,z ) ) ;
 }
 
-const char * StringSubStringWithInt( string_t st,const char * str,u_int64_t z ) 
+const char * StringSubStringWithInt( string_t st,const char * str,u_int64_t z )
 {
 	char buffer[ BUFFSIZE ] = { '\0' };
 	return StringReplaceString( st,str,_intToString( buffer,z ) ) ;
@@ -1219,7 +1218,7 @@ char * StringIntToString_1( char * x,size_t y,u_int64_t z )
 	}
 }
 
-int StringEqualString( string_t x,string_t y ) 
+int StringEqualString( string_t x,string_t y )
 {
 	if( x == StringVoid || y == StringVoid || x->size != y->size ){
 		return 0 ;
@@ -1243,9 +1242,9 @@ int StringAtLeastOneMatch( string_t st,... )
 	int r = 0   ;
 	const char * e ;
 	const char * f ;
-	
+
 	va_start( list,st ) ;
-	
+
 	if( st != StringVoid ){
 		f = st->string ;
 		while( 1 ){
@@ -1268,9 +1267,9 @@ int StringAtLeastOneMatch_1( const char * x,... )
 	va_list list ;
 	int r = 0 ;
 	const char * e ;
-	
+
 	va_start( list,x ) ;
-	
+
 	if( x != NULL ){
 		while( 1 ){
 			e = va_arg( list,const char * ) ;
@@ -1282,7 +1281,7 @@ int StringAtLeastOneMatch_1( const char * x,... )
 			}
 		}
 	}
-	
+
 	va_end( list ) ;
 	return r ;
 }
@@ -1292,9 +1291,9 @@ int StringHasAtLeastOneComponent_1( const char * x,... )
 	va_list list ;
 	int r = 0 ;
 	const char * e ;
-	
+
 	va_start( list,x ) ;
-	
+
 	if( x != NULL ){
 		while( 1 ){
 			e = va_arg( list,const char * ) ;
@@ -1306,7 +1305,7 @@ int StringHasAtLeastOneComponent_1( const char * x,... )
 			}
 		}
 	}
-	
+
 	va_end( list ) ;
 	return r ;
 }
@@ -1317,9 +1316,9 @@ int StringHasAtLeastOneComponent( string_t st,... )
 	int r = 0 ;
 	const char * e ;
 	const char * f ;
-	
+
 	va_start( list,st ) ;
-	
+
 	if( st != StringVoid ){
 		f = st->string ;
 		while( 1 ){
@@ -1332,7 +1331,7 @@ int StringHasAtLeastOneComponent( string_t st,... )
 			}
 		}
 	}
-	
+
 	va_end( list ) ;
 	return r ;
 }
@@ -1342,9 +1341,9 @@ int StringAtLeastOnePrefixMatch( const char * x,... )
 	va_list list ;
 	int r = 0 ;
 	const char * e ;
-	
+
 	va_start( list,x ) ;
-	
+
 	if( x != NULL ){
 		while( 1 ){
 			e = va_arg( list,const char * ) ;
@@ -1367,7 +1366,7 @@ static char * StringICS__( string_t st,char x,const char * s,size_t p )
 	char * e ;
 	char * f  ;
 	size_t pos ;
-	
+
 	if( st == StringVoid ){
 		return NULL ;
 	}
@@ -1394,12 +1393,12 @@ static char * StringICS__( string_t st,char x,const char * s,size_t p )
 	return st->string ;
 }
 
-const char * StringInsertCharStringPos( string_t st,char x,const char * s,size_t p ) 
-{	
+const char * StringInsertCharStringPos( string_t st,char x,const char * s,size_t p )
+{
 	return StringICS__( st,x,s,p ) ;
 }
 
-const char * StringInsertCharString( string_t st,char x,const char * s ) 
+const char * StringInsertCharString( string_t st,char x,const char * s )
 {
  	return StringInsertCharStringPos( st,x,s,0 ) ;
 }
@@ -1412,12 +1411,12 @@ const char * StringInsertCharChar( string_t st,char x,char y )
 	return StringInsertCharString( st,x,c ) ;
 }
 
-string_t StringGetFromTerminal( void ) 
+string_t StringGetFromTerminal( void )
 {
 	int c ;
 	const char * d ;
 	string_t p = String( "" ) ;
-	
+
 	while( 1 ){
 		c = getchar() ;
 		if( c == '\n' || c == EOF ){
@@ -1430,16 +1429,16 @@ string_t StringGetFromTerminal( void )
 			}
 		}
 	}
-	
+
 	return p ;
 }
 
-string_t StringGetFromTerminal_1( size_t s ) 
+string_t StringGetFromTerminal_1( size_t s )
 {
 	int c ;
 	const char * d ;
 	string_t p = String( "" ) ;
-	
+
 	while( 1 ){
 		if( s == 0 ){
 			/*
@@ -1452,12 +1451,12 @@ string_t StringGetFromTerminal_1( size_t s )
 					break ;
 				}
 			}
-			
+
 			return p ;
 		}
-		
+
 		c = getchar() ;
-		
+
 		if( c == '\n' || c == EOF ){
 			break ;
 		}else{
@@ -1469,19 +1468,19 @@ string_t StringGetFromTerminal_1( size_t s )
 			}
 		}
 	}
-	
+
 	return p ;
 }
 
 static inline int __terminalEchoOff( struct termios * old,struct termios * new )
-{	
+{
 	if( tcgetattr ( 1,old ) != 0 ){
 		return 1 ;
 	}
-	
+
 	*new = *old;
 	new->c_lflag &= ~ECHO;
-	
+
 	if( tcsetattr ( 1,TCSAFLUSH,new ) != 0 ){
 		return 1 ;
 	}else{
@@ -1489,34 +1488,34 @@ static inline int __terminalEchoOff( struct termios * old,struct termios * new )
 	}
 }
 
-int StringSilentlyGetFromTerminal( string_t * q ) 
+int StringSilentlyGetFromTerminal( string_t * q )
 {
 	string_t p ;
 	struct termios old ;
 	struct termios new ;
-	
+
 	if( __terminalEchoOff( &old,&new ) == 1 ){
 		return 1 ;
 	}
-	
+
 	p = StringGetFromTerminal() ;
-	
+
 	if( p == StringVoid ){
 		return 2 ;
 	}
-	
+
 	tcsetattr( 1,TCSAFLUSH,&old );
-	
+
 	*q = p ;
 	return 0 ;
 }
 
-int StringSilentlyGetFromTerminal_1( string_t * q,size_t s ) 
+int StringSilentlyGetFromTerminal_1( string_t * q,size_t s )
 {
 	string_t p ;
 	struct termios old ;
 	struct termios new ;
-	
+
 	if( __terminalEchoOff( &old,&new ) == 1 ){
 		return 1 ;
 	}
@@ -1525,7 +1524,7 @@ int StringSilentlyGetFromTerminal_1( string_t * q,size_t s )
 		return 2 ;
 	}
 	tcsetattr ( 1,TCSAFLUSH,&old );
-	
+
 	*q = p ;
 	return 0 ;
 }
@@ -1537,24 +1536,24 @@ string_t StringRandomString( size_t size )
 	char c ;
 	int f ;
 	size_t g = 0 ;
-	
+
 	if( size < 1 ){
 		return s ;
 	}
-	
+
 	e = ( char * ) malloc( sizeof( char ) * ( size + 1 ) ) ;
-	
+
 	if( e == NULL ){
 		return s ;
 	}
-	
+
 	f = open( "/dev/urandom",O_RDONLY ) ;
-	
+
 	if( f == -1 ){
 		free( e ) ;
 		return s ;
 	}
-		
+
 	while( g < size ){
 		read( f,&c,1 ) ;
 		if( c >= ' ' && c <= '~' ){
@@ -1562,13 +1561,13 @@ string_t StringRandomString( size_t size )
 			g++ ;
 		}
 	}
-		
+
 	*( e + size ) = '\0' ;
-		
+
 	close( f ) ;
-	
+
 	s = StringInheritWithSize( &e,size,size + 1 ) ;
-	
+
 	if( s == StringVoid ){
 		free( e ) ;
 	}
@@ -1580,7 +1579,7 @@ u_int32_t StringJenkinsOneAtATimeHash( const char * key )
 	size_t l ;
 	u_int32_t hash = 0;
 	u_int32_t i ;
-	
+
 	if( key != NULL ){
 		l = strlen( key ) ;
 		for( i = 0 ; i < l ; i++ ){
@@ -1595,13 +1594,13 @@ u_int32_t StringJenkinsOneAtATimeHash( const char * key )
 	return hash;
 }
 
-u_int32_t StringJenkinsOneAtATimeHash_1( string_t st ) 
+u_int32_t StringJenkinsOneAtATimeHash_1( string_t st )
 {
 	size_t l ;
 	u_int32_t hash = 0;
 	u_int32_t i ;
 	const char * e ;
-	
+
 	if( st != StringVoid ){
 		e = st->string ;
 		l = st->size ;
@@ -1617,7 +1616,7 @@ u_int32_t StringJenkinsOneAtATimeHash_1( string_t st )
 	return hash ;
 }
 
-int StringGetFromFile_1( string_t * str,const char * path ) 
+int StringGetFromFile_1( string_t * str,const char * path )
 {
 	struct stat st ;
 	if( stat( path,&st ) != 0 ){
@@ -1627,14 +1626,14 @@ int StringGetFromFile_1( string_t * str,const char * path )
 	}
 }
 
-int StringGetFromFile_3( string_t * str,const char * path,size_t offset,size_t length ) 
+int StringGetFromFile_3( string_t * str,const char * path,size_t offset,size_t length )
 {
 	int fd ;
 	char * c ;
 	ssize_t size ;
-	
+
 	struct stat xt ;
-	
+
 	*str = StringVoid ;
 	if( path == NULL ){
 		return 1 ;
@@ -1643,35 +1642,35 @@ int StringGetFromFile_3( string_t * str,const char * path,size_t offset,size_t l
 		return 1 ;
 	}
 	if( ( fd = open( path,O_RDONLY ) ) == -1 ){
-		return 2 ;	
+		return 2 ;
 	}
 	if( lseek( fd,offset,SEEK_SET ) == -1 ){
 		close( fd ) ;
 		return 2 ;
 	}
-	
-	c = ( char * ) malloc( sizeof( char ) * ( length + 1 ) ) ; 
-	
+
+	c = ( char * ) malloc( sizeof( char ) * ( length + 1 ) ) ;
+
 	if( c == NULL ) {
 		close( fd ) ;
 		_StringError() ;
 		return 3 ;
 	}
-	
+
 	size = read( fd,c,length ) ;
-	
+
 	if( size <= 0 ){
 		free( c ) ;
 		close( fd ) ;
 		return 2 ;
 	}
-	
+
 	close( fd ) ;
-	
+
 	*( c + length ) = '\0' ;
-	
+
 	*str = StringInheritWithSize( &c,( size_t )size,length + 1 ) ;
-	
+
 	if( *str == StringVoid ){
 		free( c ) ;
 		return 3 ;
@@ -1684,14 +1683,14 @@ int StringGetFromFileMemoryLocked( string_t * str,const char * path,size_t offse
 {
 	int fd ;
 	char * c ;
-	
+
 	ssize_t size ;
 	ssize_t file_size ;
-	
+
 	size_t reserve_memory_size ;
-	
+
 	struct stat xt ;
-	
+
 	if( path == NULL ){
 		return 1 ;
 	}
@@ -1705,9 +1704,9 @@ int StringGetFromFileMemoryLocked( string_t * str,const char * path,size_t offse
 		close( fd ) ;
 		return 1 ;
 	}
-	
+
 	file_size = xt.st_size - offset ;
-	
+
 	if( file_size <= 0 ){
 		close( fd ) ;
 		return 1 ;
@@ -1719,31 +1718,31 @@ int StringGetFromFileMemoryLocked( string_t * str,const char * path,size_t offse
 	}else{
 		reserve_memory_size = file_size ;
 	}
-	
+
 	c = ( char * ) malloc( sizeof( char ) * ( reserve_memory_size + 1 ) ) ;
-	
+
 	if( c == NULL ) {
 		close( fd ) ;
 		_StringError() ;
 		return 2 ;
 	}
-	
+
 	mlock( c,reserve_memory_size + 1 ) ;
-	
+
 	size = read( fd,c,reserve_memory_size ) ;
-	
+
 	close( fd ) ;
-	
+
 	if( size <= 0 ){
 		munlock( c,reserve_memory_size + 1 ) ;
 		free( c ) ;
 		return 1 ;
 	}
-	
+
 	*( c + reserve_memory_size ) = '\0' ;
-	
+
 	*str = StringInheritWithSize( &c,( size_t )size,reserve_memory_size + 1 ) ;
-	
+
 	if( *str == StringVoid ){
 		free( c ) ;
 		return 2 ;
@@ -1752,7 +1751,7 @@ int StringGetFromFileMemoryLocked( string_t * str,const char * path,size_t offse
 	}
 }
 
-string_t StringGetFromFile_2( const char * path,int * status ) 
+string_t StringGetFromFile_2( const char * path,int * status )
 {
 	string_t st = NULL ;
 	struct stat xt ;
@@ -1761,7 +1760,7 @@ string_t StringGetFromFile_2( const char * path,int * status )
 		return StringVoid ;
 	}else{
 		*status = StringGetFromFile_3( &st,path,0,xt.st_size ) ;
-		return st ; 
+		return st ;
 	}
 }
 
@@ -1772,28 +1771,28 @@ string_t StringGetFromFile( const char * path )
 	return st ;
 }
 
-void StringWriteToFile( string_t st,const char * path,int mode ) 
+void StringWriteToFile( string_t st,const char * path,int mode )
 {
 	int fd ;
 
 	if( st == StringVoid ){
 		return ;
 	}
-	
+
 	if( mode == 1 ){
 		fd = open( path,O_WRONLY | O_CREAT | O_TRUNC,S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH ) ;
 	}else{
 		fd = open( path,O_WRONLY | O_CREAT | O_APPEND,S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH ) ;
 	}
-	
+
 	if( fd == -1 ){
 		return ;
 	}
-	
+
 	write( fd,st->string,st->size ) ;
-	
+
 	close( fd ) ;
-	
+
 	chown( path,getuid(),getgid() ) ;
 	chmod( path,S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH ) ;
 }
@@ -1809,19 +1808,19 @@ static inline string_t _freeBuffer( char * buffer,int fd )
 	}
 }
 
-string_t StringGetFromVirtualFile( const char * path ) 
+string_t StringGetFromVirtualFile( const char * path )
 {
 	#define SIZE 64
-	
+
 	char * buffer = NULL ;
 	char * e ;
-	
+
 	size_t size = SIZE ;
 	size_t size_1 = 0 ;
 	size_t strLen ;
 	size_t bufferLen ;
 	ssize_t j ;
-	
+
 	int fd = open( path,O_RDONLY ) ;
 	if( fd == -1 ){
 		buffer = ( char * )malloc( sizeof( char ) ) ;
@@ -1832,7 +1831,7 @@ string_t StringGetFromVirtualFile( const char * path )
 			return StringInheritWithSize( &buffer,0,1 ) ;
 		}
 	}
-	
+
 	while( 1 ){
 		e = ( char * )realloc( buffer,size ) ;
 		if( e == NULL ){
@@ -1863,8 +1862,8 @@ string_t StringGetFromVirtualFile( const char * path )
 			}
 		}
 	}
-	
+
 	close( fd ) ;
-	
+
 	return StringInheritWithSize( &buffer,strLen,bufferLen ) ;
 }

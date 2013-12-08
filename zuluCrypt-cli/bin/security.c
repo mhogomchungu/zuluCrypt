@@ -1,18 +1,18 @@
 /*
- * 
+ *
  *  Copyright (c) 2012
- *  name : mhogo mchungu 
+ *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -21,7 +21,7 @@
 #include "../lib/includes.h"
 #include <errno.h>
 #include <unistd.h>
-#include <grp.h> 
+#include <grp.h>
 #include "../constants.h"
 #include <sys/types.h>
 #include <pwd.h>
@@ -31,10 +31,10 @@
 #include <stdio.h>
 
 /*
- * This source file makes sure the user who started the tool( usually non root user ) has permission 
+ * This source file makes sure the user who started the tool( usually non root user ) has permission
  * to perform operations they want on paths they presented.
- * 
- * This feature allows tradition unix permissions to be set on a paths to control non user access to volumes  
+ *
+ * This feature allows tradition unix permissions to be set on a paths to control non user access to volumes
  */
 
 #define ZULUDEBUG 0
@@ -66,24 +66,24 @@ int zuluCryptUserIsAMemberOfAGroup( uid_t uid,const char * groupname )
 	int i = 0 ;
 	struct group * grp ;
 	struct passwd * pass ;
-	
+
 	const char ** entry ;
 	const char * name ;
-	
+
 	if( groupname == NULL ){
 		st = 0 ;
 	}else if( uid == 0 ){
 		st = 1 ;
 	}else{
 		zuluCryptSecurityGainElevatedPrivileges() ;
-		
+
 		pass = getpwuid( uid ) ;
-	
+
 		if( pass == NULL ){
 			st = 0 ;
 		}else{
 			grp = getgrnam( groupname ) ;
-	
+
 			if( grp == NULL ){
 				/*
 				* 	dont autocreate groups
@@ -93,7 +93,7 @@ int zuluCryptUserIsAMemberOfAGroup( uid_t uid,const char * groupname )
 			}else{
 				name = ( const char * )pass->pw_name ;
 				entry = ( const char ** )grp->gr_mem ;
-	
+
 				while( entry[ i ] != NULL ){
 					if( StringsAreEqual( entry[ i ],name ) ){
 						st = 1 ;
@@ -106,7 +106,7 @@ int zuluCryptUserIsAMemberOfAGroup( uid_t uid,const char * groupname )
 		}
 		zuluCryptSecurityDropElevatedPrivileges();
 	}
-		
+
 	if( st == 0 ){
 		return _polkitAuthenticated() ;
 	}else{
@@ -115,7 +115,7 @@ int zuluCryptUserIsAMemberOfAGroup( uid_t uid,const char * groupname )
 }
 
 int zuluCryptSecurityGainElevatedPrivileges( void )
-{	
+{
 	/*
 	printf( "GAINING:uid=%d:euid=%d\n",getuid(),geteuid() ) ;
 	*/
@@ -130,20 +130,20 @@ int zuluCryptSecurityGainElevatedPrivileges( void )
 }
 
 uid_t global_variable_user_uid ;
-void zuluCryptSetUserUIDForPrivilegeManagement( uid_t uid ) 
+void zuluCryptSetUserUIDForPrivilegeManagement( uid_t uid )
 {
 	global_variable_user_uid = uid ;
 }
 
 void ( *zuluCryptSecurityPrivilegeElevationError )( const char * ) = NULL ;
 
-void zuluCryptSecuritySetPrivilegeElevationErrorFunction( void ( *f ) ( const char * ) ) 
+void zuluCryptSecuritySetPrivilegeElevationErrorFunction( void ( *f ) ( const char * ) )
 {
 	zuluCryptSecurityPrivilegeElevationError = f ;
 }
 
 int zuluCryptSecurityDropElevatedPrivileges( void )
-{		
+{
 	/*
 	 printf( "DROPPING:uid=%d:euid=%d\n",getuid(),geteuid() ) ;
 	 */
@@ -163,13 +163,13 @@ void zuluCryptSecuritySanitizeTheEnvironment( uid_t uid,stringList_t * stx )
 	stringList_t stl = StringListVoid ;
 	StringListIterator  it ;
 	StringListIterator end ;
-	
+
 	if( uid ){;}
 	/*
 	 * First,we make a copy of the enviromental varibales
 	 * Second,we clear the enviromental variable because we dont want it
 	 * Third,we return a copy of the enviromental variable because we want to pass it along
-	 * the plugins 
+	 * the plugins
 	 */
 	while( *env ){
 		stl = StringListAppend( stl,*env ) ;
@@ -178,7 +178,7 @@ void zuluCryptSecuritySanitizeTheEnvironment( uid_t uid,stringList_t * stx )
 
 	it  = StringListBegin( stl ) ;
 	end = StringListEnd( stl ) ;
-	
+
 	for( ; it != end ; it++ ){
 		index = StringIndexOfChar( *it,0,'=' ) ;
 		if( index >= 0 ){
@@ -186,7 +186,7 @@ void zuluCryptSecuritySanitizeTheEnvironment( uid_t uid,stringList_t * stx )
 			StringSubChar( *it,index,'=' ) ;
 		}
 	}
-	
+
 	*stx = stl ;
 }
 

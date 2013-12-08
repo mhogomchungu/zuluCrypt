@@ -1,18 +1,18 @@
 /*
- * 
+ *
  *  Copyright (c) 2012
- *  name : mhogo mchungu 
+ *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -95,15 +95,15 @@ char * zuluCryptGetLoopDeviceAddress( const char * device )
 {
 	char * z = NULL ;
 	const char * e ;
-	
+
 	string_t st = StringVoid ;
 	string_t xt = StringVoid ;
-	
+
 	int i ;
 	int r ;
-	
+
 	z = zuluCryptLoopDeviceAddress_1( device ) ;
-	
+
 	if( z == NULL ){
 		return NULL ;
 	}else{
@@ -128,9 +128,9 @@ char * zuluCryptGetLoopDeviceAddress( const char * device )
 				StringAppendAt( st,0,"" ) ;
 			}
 		}
-		
+
 		StringFree( z ) ;
-		
+
 		if( StringEqual( st,"" ) ){
 			StringDelete( &st ) ;
 			return NULL ;
@@ -166,7 +166,7 @@ char * zuluCryptGetFileNameFromFileDescriptor( int fd )
 }
 
 /*
- * Here,we check if the path we sent to open() is the path open() used. This check is necessary to 
+ * Here,we check if the path we sent to open() is the path open() used. This check is necessary to
  * guard against some known hypothetical exploits
  */
 static int _paths_are_not_sane( int fd,const char * path )
@@ -216,9 +216,9 @@ static int open_loop_device( string_t * loop_device )
 {
 	int devnr ;
 	int fd_loop ;
-	
+
 	fd_loop = open( "/dev/loop-control",O_RDONLY ) ;
-	
+
 	if( fd_loop == -1 ){
 		return open_loop_device_1( loop_device ) ;
 	}else{
@@ -238,13 +238,13 @@ static int attach_device_to_loop( int fd_path,int * fd_loop,string_t loop_device
 {
 	char * path ;
 	size_t size ;
-	
+
 	struct loop_info64 l_info ;
-	
+
 	*fd_loop = open( StringContent( loop_device ),mode ) ;
-	
+
 	memset( &l_info,'\0',sizeof( struct loop_info64 ) ) ;
-	
+
 	if( *fd_loop == -1 ){
 		return 0 ;
 	}
@@ -254,9 +254,9 @@ static int attach_device_to_loop( int fd_path,int * fd_loop,string_t loop_device
 	if( ioctl( *fd_loop,LOOP_GET_STATUS64,&l_info ) == -1 ){
 		return 0;
 	}
-	
+
 	l_info.lo_flags |= LO_FLAGS_AUTOCLEAR;
-	
+
 	path = zuluCryptGetFileNameFromFileDescriptor( fd_path ) ;
 	if( path == NULL ){
 		return 0 ;
@@ -265,7 +265,7 @@ static int attach_device_to_loop( int fd_path,int * fd_loop,string_t loop_device
 		strncpy( ( char * )l_info.lo_file_name,path,size ) ;
 		l_info.lo_file_name[ size - 1 ] = '\0' ;
 		free( path ) ;
-	
+
 		if( ioctl( *fd_loop,LOOP_SET_STATUS64,&l_info ) == -1 ){
 			return 0 ;
 		}else{
@@ -277,22 +277,22 @@ static int attach_device_to_loop( int fd_path,int * fd_loop,string_t loop_device
 static int _attach_loop_device_to_file( const char * path,int mode,int * loop_fd,string_t * loop_device )
 {
 	string_t loopd = StringVoid ;
-	
+
 	int fd_loop = -1 ;
 	int fd_path = -1 ;
-	
+
 	if( !open_loop_device( &loopd ) ){
 		return zuluExit( 0,loopd,fd_loop,fd_path ) ;
 	}
-	
+
 	fd_path = open( path,mode ) ;
-	
+
 	if( fd_path == -1 ){
 		return zuluExit( 0,loopd,fd_loop,fd_path ) ;
 	}
-	
+
 	fcntl( fd_path,F_SETFD,FD_CLOEXEC ) ;
-	
+
 	if( _paths_are_not_sane( fd_path,path ) ){
 		return zuluExit( 0,loopd,fd_loop,fd_path ) ;
 	}
@@ -324,7 +324,7 @@ int zuluCryptAttachLoopDeviceToFile( const char * path,int mode,int * loop_fd,st
 static int _attach_loop_device_to_file_using_file_descriptor( int fd_path,int * fd_loop,int mode,string_t * loop_device )
 {
 	string_t loopd = StringVoid ;
-	
+
 	if( !open_loop_device( &loopd ) ){
 		return 0 ;
 	}else{

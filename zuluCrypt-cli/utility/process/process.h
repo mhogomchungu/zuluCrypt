@@ -1,18 +1,18 @@
 /*
- * 
+ *
  *  Copyright (c) 2012
- *  name : mhogo mchungu 
+ *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -23,7 +23,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-	
+
 #include <sys/types.h>
 
 typedef struct{
@@ -56,7 +56,7 @@ typedef struct{
 
 typedef struct ProcessType_t * process_t ;
 
-#define ProcessVoid ( ( process_t ) 0 ) 
+#define ProcessVoid ( ( process_t ) 0 )
 
 /*
  * use this variable to terminate variadic functions
@@ -65,19 +65,19 @@ typedef struct ProcessType_t * process_t ;
 #define ENDLIST ( ( const char * ) 0 )
 
 /*
- * An example of how to use the library to call ls with arguments and get its output while closing its std error 
- * 
- *  process_t p = Process( "/bin/ls" ) ; 
- *  ProcessSetArgumentList( p,"-l","-h",ENDLIST ) ;  
- *  ProcessStart( p ) ; 
+ * An example of how to use the library to call ls with arguments and get its output while closing its std error
+ *
+ *  process_t p = Process( "/bin/ls" ) ;
+ *  ProcessSetArgumentList( p,"-l","-h",ENDLIST ) ;
+ *  ProcessStart( p ) ;
  *  char * c = NULL ;
- *  ProcessGetOutPut( p,&c,STDOUT ) ; 
+ *  ProcessGetOutPut( p,&c,STDOUT ) ;
  *  ProcessDelete( &p ) ;
- *  if( c ){ 
+ *  if( c ){
  *	  printf("%s\n",c );
  *	  free( c ) ;
  * }
- * 
+ *
  */
 
 /*
@@ -102,19 +102,19 @@ ProcessStructure * ProcessArgumentStructure( process_t ) ;
 
 /*
  * call fork() and then exec and run a program specified when handle p was created.
- * return value: pid of the child process 
+ * return value: pid of the child process
  */
 pid_t ProcessStart( process_t p ) ;
 
 /*
  * pass data to the child process,the child process will get the data from reading its stdin.
- * ProcessSetOption( p,WRITE_STD_IN ) must be called first for this to work. * 
+ * ProcessSetOption( p,WRITE_STD_IN ) must be called first for this to work. *
  */
 size_t ProcessWrite( process_t p,const char * data,size_t len ) ;
 
 /*
  * close the writing connection to the child process.This maybe necessary if a child process
- * blocks waiting for more data in its std in until EOF is received. 
+ * blocks waiting for more data in its std in until EOF is received.
  */
 void ProcessCloseStdWrite( process_t p ) ;
 
@@ -134,7 +134,7 @@ int ProcessTerminate( process_t ) ;
 void ProcessSetOptionUser( process_t,uid_t uid ) ;
 
 /*
- * set the nice value the forked process will run with 
+ * set the nice value the forked process will run with
  */
 void ProcessSetOptionPriority( process_t,int priority ) ;
 
@@ -166,7 +166,7 @@ void ProcessSetArgumentList( process_t p,... ) ;
 void ProcessSetEnvironmentalVariable( process_t p,char * const * env ) ;
 
 /*
- * get state of the process handled by handle p 
+ * get state of the process handled by handle p
  */
 #define HAS_NOT_START 1
 #define RUNNING 2
@@ -189,12 +189,12 @@ int ProcessExitStatus( process_t ) ;
 /*
  * get contents of std out/std error from the process.
  * remember to free() the return buffer when done with it.
- * 
- * return value is the size of the data.  
+ *
+ * return value is the size of the data.
  * this function must be called after ProcessStart()
  */
 
-#define STDOUT 1 
+#define STDOUT 1
 #define STDERROR 2
 size_t ProcessGetOutPut( process_t,char ** data,int stdio ) ;
 

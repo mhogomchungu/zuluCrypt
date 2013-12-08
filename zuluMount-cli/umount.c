@@ -1,18 +1,18 @@
 /*
- * 
+ *
  *  Copyright (c) 2012
- *  name : mhogo mchungu 
+ *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -35,9 +35,9 @@ int zuluMountUMount( ARGS * args )
 	const char * errorMsg = gettext( "\
 ERROR: you can not umount volumes out of \"%s\" since you are not root and do not belong to group \"zulumount\"\n" ) ;
 	string_t xt ;
-	
+
 	if( 0 && mode && mount_point_option ) {;}
-	
+
 	if( StringPrefixEqual( device,"/dev/loop" ) ){
 		/*
 		 * zuluCryptLoopDeviceAddress() is defined in ../zuluCrypt-cli/lib/create_loop_devices.c
@@ -53,7 +53,7 @@ ERROR: you can not umount volumes out of \"%s\" since you are not root and do no
 			st = StringInherit( &loop_device ) ;
 			dev = StringContent( st ) ;
 			/*
-			 * zuluCryptGetMountPointFromPath() is defined in defined in ../zuluCrypt-cli/lib/process_mountinfo.c 
+			 * zuluCryptGetMountPointFromPath() is defined in defined in ../zuluCrypt-cli/lib/process_mountinfo.c
 			 */
 			m_point = zuluCryptGetMountPointFromPath( dev ) ;
 			if( m_point == NULL ){
@@ -62,14 +62,14 @@ ERROR: you can not umount volumes out of \"%s\" since you are not root and do no
 		}
 	}else{
 		/*
-		 * zuluCryptGetMountPointFromPath() is defined in defined in ../zuluCrypt-cli/lib/process_mountinfo.c 
+		 * zuluCryptGetMountPointFromPath() is defined in defined in ../zuluCrypt-cli/lib/process_mountinfo.c
 		*/
 		m_point = zuluCryptGetMountPointFromPath( device ) ;
 		if( m_point == NULL ){
 			return _zuluExit( 100,st,m_point,gettext( "ERROR: device does not appear to be mounted" ) ) ;
 		}
 	}
-	
+
 	/*
 	 * zuluCryptMountPointPrefixMatch() is defined in ../zuluCrypt-cli/bin/create_mount_point.c
 	 */
@@ -87,21 +87,21 @@ ERROR: you can not umount volumes out of \"%s\" since you are not root and do no
 			return _zuluExit( 101,st,m_point,NULL ) ;
 		}
 	}
-	
+
 	StringFree( m_point ) ;
 	m_point = NULL ;
-	
+
 	/*
 	 * zuluCryptBindUnmountVolume() is defined in ../zuluCrypt-cli/bin/bind.c
 	 */
 	switch( zuluCryptBindUnmountVolume( StringListVoid,device,uid ) ){
 		case 3 : return _zuluExit( 107,st,m_point,gettext( "ERROR: shared mount point appear to be busy" ) ) ;
 		case 4 : return _zuluExit( 108,st,m_point,gettext( "ERROR: shared mount point appear to belong to a different user" ) ) ;
-		case 5 : return _zuluExit( 109,st,m_point,gettext( "ERROR: shared mount point appear to be in an ambiguous state,advice to unmount manually" ) ) ;  
+		case 5 : return _zuluExit( 109,st,m_point,gettext( "ERROR: shared mount point appear to be in an ambiguous state,advice to unmount manually" ) ) ;
 		default: ;
 	}
-	
-	
+
+
 	/*
 	 * zuluCryptSecurityGainElevatedPrivileges() is defined in ../zuluCrypt-cli/bin/security.c
 	 */
@@ -114,7 +114,7 @@ ERROR: you can not umount volumes out of \"%s\" since you are not root and do no
 	 * zuluCryptSecurityDropElevatedPrivileges() is defined in ../zuluCrypt-cli/bin/security.c
 	 */
 	zuluCryptSecurityDropElevatedPrivileges() ;
-	
+
 	if( status == 0 ){
 		if( m_point != NULL ){
 			zuluCryptSecurityGainElevatedPrivileges() ;

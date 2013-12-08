@@ -1,24 +1,24 @@
 /*
- * 
+ *
  *  Copyright (c) 2011
- *  name : mhogo mchungu 
+ *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "includes.h"
-#include <libcryptsetup.h>   
+#include <libcryptsetup.h>
 #include <fcntl.h>
 #include <unistd.h>
 
@@ -33,34 +33,34 @@ static inline char * zuluExit( char * c,struct crypt_device * cd )
 static char * _empty_slots( const char * device )
 {
 	struct crypt_device * cd;
-	
+
 	int j ;
 	int k ;
 	const char * type ;
-	
+
 	string_t p ;
-	
+
 	if( crypt_init( &cd,device ) != 0 ){
 		return zuluExit( NULL,NULL ) ;
 	}
 	if( crypt_load( cd,NULL,NULL ) != 0 ){
 		return zuluExit( NULL,cd ) ;
 	}
-	
+
 	type = crypt_get_type( cd ) ;
-	
+
 	if( type == NULL ){
 		return zuluExit( NULL,cd ) ;
 	}
-	
+
 	k = crypt_keyslot_max( type ) ;
-	
+
 	if( k < 0 ){
 		return zuluExit( NULL,cd ) ;
 	}
-	
+
 	p = StringEmpty() ;
-	
+
 	for( j = 0 ; j < k ; j++ ){
 		switch( crypt_keyslot_status( cd,j ) ){
 			case CRYPT_SLOT_INACTIVE   : StringAppend( p,"0" ) ; break ;
@@ -69,7 +69,7 @@ static char * _empty_slots( const char * device )
 			case CRYPT_SLOT_ACTIVE_LAST: StringAppend( p,"3" ) ; break ;
 		}
 	}
-	
+
 	return zuluExit( StringDeleteHandle( &p ),cd ) ;
 }
 

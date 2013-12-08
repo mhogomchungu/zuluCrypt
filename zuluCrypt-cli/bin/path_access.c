@@ -29,13 +29,13 @@
 static int has_device_access( const char * path,int c )
 {
 	int f ;
-	
+
 	if( c == ZULUCRYPTread ){
 		f = open( path,O_RDONLY ) ;
 	}else{
 		f = open( path,O_WRONLY ) ;
 	}
-	
+
 	if( f == -1 ){
 		switch( errno ){
 			case EACCES : return 1 ; /* permission denied */
@@ -58,9 +58,9 @@ static int path_is_accessible( const char * path,uid_t uid,int action )
 {
 	int st ;
 	char * xt ;
-	
+
 	if( uid ){;}
-	
+
 	if( StringPrefixMatch( path,"/dev/shm/",9 ) ){
 		return 4 ;
 	}
@@ -94,7 +94,7 @@ int zuluCryptCanOpenPathForReading( const char * path,uid_t uid )
 }
 
 int zuluCryptCanOpenPathForWriting( const char * path,uid_t uid )
-{	
+{
 	return path_is_accessible( path,uid,ZULUCRYPTwrite ) ;
 }
 
@@ -115,11 +115,11 @@ int zuluCryptGetPassFromFile( const char * path,uid_t uid,string_t * st )
 	const char * z = StringAppend( p,".zuluCrypt-socket" ) ;
 	size_t s       = StringLength( p ) ;
 	int m          = StringPrefixMatch( path,z,s ) ;
-	
+
 	StringDelete( &p ) ;
-	
+
 	zuluCryptSecurityDropElevatedPrivileges() ;
-	
+
 	if( m ){
 		/*
 		 * path that starts with $HOME/.zuluCrypt-socket is treated not as a path to key file but as path
@@ -134,7 +134,7 @@ int zuluCryptGetPassFromFile( const char * path,uid_t uid,string_t * st )
 		 * 8192000 bytes is the default cryptsetup maximum keyfile size
 		 */
 		m = StringGetFromFileMemoryLocked( st,path,0,8192000 ) ;
-		
+
 		switch( m ){
 			case 0 : return 0 ;
 			case 1 : return 4 ;
@@ -161,18 +161,18 @@ char * zuluCryptUUIDFromPath( const char * device )
 	blkid_probe blkid ;
 	const char * c = NULL ;
 	string_t st = StringVoid ;
-	
+
 	zuluCryptSecurityGainElevatedPrivileges() ;
-	
+
 	blkid = blkid_new_probe_from_filename( device ) ;
-	
+
 	if( blkid != NULL ){
 		blkid_do_probe( blkid );
 		blkid_probe_lookup_value( blkid,"UUID",&c,NULL ) ;
 		st = String( c ) ;
 		blkid_free_probe( blkid );
 	}
-	
+
 	zuluCryptSecurityDropElevatedPrivileges() ;
 	return StringDeleteHandle( &st ) ;
 }

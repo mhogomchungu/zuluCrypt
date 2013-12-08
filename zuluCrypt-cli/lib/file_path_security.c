@@ -1,18 +1,18 @@
 /*
- * 
+ *
  *  Copyright ( c ) 2012
- *  name : mhogo mchungu 
+ *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
  *  ( at your option ) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -87,7 +87,7 @@ static int _check_if_device_is_supported( int st,uid_t uid,char ** dev )
 		 */
 		StringFree_1( dev ) ;
 	}
-	
+
 	return st ;
 }
 
@@ -122,31 +122,31 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 	int st = 100 ;
 	int xt = 0 ;
 	int lfd ;
-	
+
 	const char * dev_1 = NULL ;
 	string_t st_dev = StringVoid ;
-	
+
 	struct stat stat_st ;
 	struct stat stat_st_1 ;
 	/*
 	 * try to open the device with user privileges
 	 */
 	seteuid( uid ) ;
-	
+
 	*dev = NULL ;
-	
+
 	*fd_path = open( file,O_RDONLY ) ;
-	
+
 	if( *fd_path != -1 ){
 		fstat( *fd_path,&stat_st ) ;
 		fcntl( *fd_path,F_SETFD,FD_CLOEXEC ) ;
 		/*
-		 * A user has access to the device.They should get here only with paths to files they have access to. 
+		 * A user has access to the device.They should get here only with paths to files they have access to.
 		 * Allow access to files only
 		 */
 		if( S_ISREG( stat_st.st_mode ) ){
 			/*
-			 * we can open file in read mode,let see if we can in write mode too 
+			 * we can open file in read mode,let see if we can in write mode too
 			 */
 			lfd = open( file,O_RDWR ) ;
 			if( lfd != -1 ){
@@ -155,7 +155,7 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 				 */
 				fstat( lfd,&stat_st_1 ) ;
 				fcntl( lfd,F_SETFD,FD_CLOEXEC ) ;
-				
+
 				/*
 				 * check to make sure the file we got earlier is the same one we got now.
 				 * ie check to make sure the file wasnt changed btw calls.
@@ -182,7 +182,7 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 				xt = zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( *fd_path,fd_loop,O_RDONLY,&st_dev ) ;
 				seteuid( uid ) ;
 				*dev = device_path( st_dev ) ;
-			}				
+			}
 			if( xt != 1 ){
 				st = 100 ;
 				close( *fd_path ) ;
@@ -232,19 +232,19 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 	}else{
 		/*
 		 * failed to open above with users privileges,try to open the device with root's privileges.
-		 * We should only accept block devices in "/dev/" but not in "/dev/shm". 
+		 * We should only accept block devices in "/dev/" but not in "/dev/shm".
 		 */
 		seteuid( 0 ) ;
-		
+
 		*fd_path = open( file,O_RDONLY ) ;
-		
+
 		if( *fd_path != -1 ){
 			fstat( *fd_path,&stat_st ) ;
 			/*
 			 * zuluCryptGetFileNameFromFileDescriptor() is defined in ./create_loop_device.c
 			 */
 			*dev = zuluCryptGetFileNameFromFileDescriptor( *fd_path ) ;
-			
+
 			if( S_ISBLK( stat_st.st_mode ) ){
 				if( StringPrefixMatch( *dev,"/dev/shm/",9 ) ){
 					/*
@@ -261,7 +261,7 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 					* reject others
 					*/
 					st = 100 ;
-				}			
+				}
 			}else{
 				/*
 				 * whatever it is,it cant be good,reject it
@@ -280,9 +280,9 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 			 */
 			st = 100 ;
 		}
-		
+
 		seteuid( uid ) ;
 	}
-	
+
 	return _check_if_device_is_supported( st,uid,dev ) ;
 }

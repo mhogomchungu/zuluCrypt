@@ -1,24 +1,24 @@
 /*
- * 
+ *
  *  Copyright (c) 2013
- *  name : mhogo mchungu 
+ *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "includes.h" 
-#include "../lib/includes.h" 
+#include "includes.h"
+#include "../lib/includes.h"
 #include <sys/stat.h>
 #include <unistd.h>
 #include "mount_prefix_path.h"
@@ -34,25 +34,25 @@ static string_t _create_home_default_mount_point( const char * device,uid_t uid,
 		 */
 		device = loop_path = zuluCryptLoopDeviceAddress_1( device ) ;
 	}
-	
+
 	m_point = StringAppend( path,strrchr( device,'/' ) ) ;
-	
+
 	if( mkdir( m_point,S_IRWXU ) == 0 ){
 		st = path ;
 		chown( m_point,uid,uid ) ;
 	}else{
 		StringDelete( &path ) ;
 	}
-	
+
 	StringFree( loop_path ) ;
-	
+
 	return st ;
 }
 
 static string_t _create_home_custom_mount_point( const char * label,uid_t uid,string_t path )
 {
 	string_t st = StringVoid ;
-	
+
 	const char * p = StringAppend( path,"/" ) ;
 	const char * q = strrchr( label,'/' ) ;
 	const char * e ;
@@ -97,7 +97,7 @@ static string_t _create_home_custom_mount_point( const char * label,uid_t uid,st
 	}else{
 		StringDelete( &path ) ;
 	}
-	
+
 	return st ;
 }
 
@@ -109,7 +109,7 @@ static string_t create_home_mount_point( const char * device,const char * label,
 	}else{
 		StringPrepend( path,"/home/" ) ;
 	}
-	
+
 	if( label == NULL ){
 		return _create_home_default_mount_point( device,uid,path ) ;
 	}else{
@@ -128,13 +128,13 @@ static int home_mount_point_prefix_match( const char * m_path,uid_t uid,string_t
 	 * below constant are set in ../constants.h
 	 */
 	const char * str ;
-	
+
 	if( uid == 0 ){
 		str = StringPrepend( uname,"/" ) ;
 	}else{
 		str = StringPrepend( uname,"/home/" ) ;
 	}
-	
+
 	st = StringPrefixEqual( m_path,str ) ;
 
 	if( m_point ){
@@ -156,35 +156,35 @@ static string_t _create_default_mount_point( const char * device,uid_t uid,strin
 		 */
 		device = loop_path = zuluCryptLoopDeviceAddress_1( device ) ;
 	}
-	
+
 	m_point = StringAppend( path,strrchr( device,'/' ) ) ;
-	
+
 	zuluCryptSecurityGainElevatedPrivileges() ;
-	
+
 	if( mkdir( m_point,S_IRWXU ) == 0 ){
 		st = path ;
 		chown( m_point,uid,uid ) ;
 	}else{
 		StringDelete( &path ) ;
 	}
-	
+
 	zuluCryptSecurityDropElevatedPrivileges() ;
-	
+
 	StringFree( loop_path ) ;
-	
+
 	return st ;
 }
 
 static string_t _create_custom_mount_point( const char * label,uid_t uid,string_t path )
 {
 	string_t st = StringVoid ;
-	
+
 	const char * p = StringAppend( path,"/" ) ;
 	const char * q = strrchr( label,'/' ) ;
 	const char * e ;
 
 	zuluCryptSecurityGainElevatedPrivileges() ;
-	
+
 	if( q == NULL ){
 		p = StringAppend( path,label ) ;
 	}else{
@@ -224,9 +224,9 @@ static string_t _create_custom_mount_point( const char * label,uid_t uid,string_
 	}else{
 		StringDelete( &path ) ;
 	}
-	
+
 	zuluCryptSecurityDropElevatedPrivileges() ;
-	
+
 	return st ;
 }
 
@@ -238,7 +238,7 @@ static int mount_point_prefix_match( const char * m_path,uid_t uid,string_t * m_
 	string_t uname = zuluCryptGetUserName( uid ) ;
 
 	const char * str = StringPrepend( uname,"/run/media/private/" ) ;
-	
+
 	int st = StringPrefixEqual( m_path,str ) ;
 	if( m_point ){
 		*m_point = uname ;
@@ -254,13 +254,13 @@ static string_t create_mount_point( const char * device,const char * label,uid_t
 	string_t path ;
 	struct stat st ;
 	mode_t mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ;
-	
+
 	zuluCryptSecurityGainElevatedPrivileges() ;
-	
+
 	path = zuluCryptGetUserName( uid ) ;
-	
+
 	#define path_does_not_exist( x ) stat( x,&st ) != 0
-	
+
 	if( path_does_not_exist( "/run" ) ){
 		mkdir( "/run/",mode ) ;
 		chown( "/run/",0,0 ) ;
@@ -273,16 +273,16 @@ static string_t create_mount_point( const char * device,const char * label,uid_t
 		mkdir( "/run/media/private",mode ) ;
 		chown( "/run/media/private",0,0 ) ;
 	}
-	
+
 	m_point = StringPrepend( path,"/run/media/private/" ) ;
-	
+
 	if( stat( m_point,&st ) != 0 ){
 		mkdir( m_point,S_IRUSR | S_IXUSR ) ;
 		chown( m_point,uid,uid ) ;
 	}
-	
+
 	zuluCryptSecurityDropElevatedPrivileges() ;
-	
+
 	if( label == NULL ){
 		return _create_default_mount_point( device,uid,path ) ;
 	}else{

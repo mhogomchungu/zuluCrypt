@@ -1,21 +1,21 @@
 /*
-* 
+*
 *  Copyright (c) 2013
-*  name : mhogo mchungu 
+*  name : mhogo mchungu
 *  email: mhogomchungu@gmail.com
 *  This program is free software: you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
 *  the Free Software Foundation, either version 2 of the License, or
 *  (at your option) any later version.
-* 
+*
 *  This program is distributed in the hope that it will be useful,
 *  but WITHOUT ANY WARRANTY; without even the implied warranty of
 *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 *  GNU General Public License for more details.
-* 
+*
 *  You should have received a copy of the GNU General Public License
 *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/ 
+*/
 
 #include "includes.h"
 #include <sys/mount.h>
@@ -30,14 +30,14 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 	string_t xt ;
 	string_t st ;
 	ssize_t index = -1 ;
-	const char * f ; 
+	const char * f ;
 	const char * e ;
 	const char * g ;
 	char * h = NULL ;
 	int r = 1 ;
 	int k ;
 	int delete_stx = 0 ;
-	
+
 	/*
 	 * zuluCryptUserIsAMemberOfAGroup() is defined in security.c
 	 */
@@ -45,17 +45,17 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 	 * root user is a member of all groups and hence is allowed
 	 */
 	int allowedUser = zuluCryptUserIsAMemberOfAGroup( uid,"zulumount" ) ;
-	
+
 	zuluCryptSecurityGainElevatedPrivileges() ;
-	
+
 	if( stx == StringListVoid ){
 		/*
-		 * zuluCryptGetMoutedListFromMountInfo() is defined in ../lib/process_mountinfo.c 
+		 * zuluCryptGetMoutedListFromMountInfo() is defined in ../lib/process_mountinfo.c
 		 */
 		stx = zuluCryptGetMoutedListFromMountInfo() ;
 		delete_stx = 1 ;
 	}
-	
+
 	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
 		/*
 		 * zuluCryptLoopDeviceAddress_2() is defined in ../lib/create_loop_device.c
@@ -77,7 +77,7 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 		index = StringListHasStartSequence( stx,StringAppend( st," " ) ) ;
 		StringDelete( &st ) ;
 	}
-	
+
 	if( index == -1 ){
 		/*
 		 * The volume does not appear to be mounted
@@ -86,18 +86,18 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 	}else{
 		xt = StringListStringAt( stx,index ) ;
 		stl = StringListStringSplit( xt,' ' ) ;
-		
+
 		xt = StringListCopyStringAt( stl,1 ) ;
 		StringListDelete( &stl ) ;
-		
+
 		st = StringCopy( xt ) ;
-		
+
 		/*
 		 * zuluCryptDecodeMountEntry() is defined in ../lib/mount_volume.c
 		 * g will contain something like "/run/media/private/$USER/sdc1"
 		 */
 		g = zuluCryptDecodeMountEntry( st ) ;
-		
+
 		if( allowedUser ){
 			/*
 			 * a privileged user is attempting to unmount a shared mount point,allow them
@@ -113,7 +113,7 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 			*/
 			k = zuluCryptMountPointPrefixMatch( g,uid,NULL ) ;
 		}
-		
+
 		if( k != 1 ){
 			/*
 			 * One none privileged user is attempting to unmount a bind mount from another use,disallow it
@@ -122,7 +122,7 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 		}else{
 			index = StringLastIndexOfChar( xt,'/' ) + 1 ;
 			StringRemoveLeft( xt,index ) ;
-			
+
 			StringPrepend( xt,"/run/media/public/" ) ;
 
 			/*
@@ -133,7 +133,7 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 			f = StringAppend( xt," " ) ;
 			index = StringListHasSequence( stx,f ) ;
 			f = StringRemoveRight( xt,1 ) ;
-			
+
 			if( index == -1 ){
 				/*
 				 * volume is not shared
@@ -145,7 +145,7 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 				 * in /run/media/private/$USER and the other in /run/media/public/
 				 */
 				e = StringListContentAt( stx,index ) ;
-				
+
 				if( StringPrefixEqual( e,device ) ){
 					f = zuluCryptDecodeMountEntry( xt ) ;
 					/*
@@ -173,16 +173,16 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 				}
 			}
 		}
-		
+
 		StringMultipleDelete( &xt,&st,END ) ;
 	}
-		
+
 	if( delete_stx ){
 		StringListDelete( &stx ) ;
 	}
-	
+
 	StringFree( h ) ;
-	
+
 	zuluCryptSecurityDropElevatedPrivileges() ;
 	return r ;
 }
@@ -198,7 +198,7 @@ int zuluCryptBindSharedMountPointPathTaken( string_t path )
 	return r == 0 ;
 }
 
-int zuluCryptBindMountVolume( const char * device,string_t z_path,unsigned long flags ) 
+int zuluCryptBindMountVolume( const char * device,string_t z_path,unsigned long flags )
 {
 	struct stat st ;
 	string_t path ;
@@ -208,28 +208,28 @@ int zuluCryptBindMountVolume( const char * device,string_t z_path,unsigned long 
 	const char * m_path ;
 	const char * e ;
 	int xt ;
-	
+
 	stringList_t stl ;
-	
+
 	mode_t mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ;
-	
+
 	if( index == -1 ){
 		return 1 ;
 	}
 	if( device ){;}
-	
+
 	zuluCryptSecurityGainElevatedPrivileges() ;
 	/*
 	 * zuluCryptGetMoutedListFromMountInfo() is defined in ../lib/process_mountinfo.c
 	 */
 	stl = zuluCryptGetMoutedListFromMountInfo() ;
-	
+
 	path = String( "/run/media/public/" ) ;
 	m_path = StringAppend( path,o_path + index + 1 ) ;
-	
+
 	#define path_does_not_exist( x ) stat( x,&st ) != 0
 	#define path_does_exist( x ) stat( x,&st ) == 0
-	
+
 	if( path_does_not_exist( "/run" ) ){
 		mkdir( "/run",mode ) ;
 		chown( "/run",0,0 ) ;
@@ -245,11 +245,11 @@ int zuluCryptBindMountVolume( const char * device,string_t z_path,unsigned long 
 	if( path_does_exist( m_path ) ){
 		/*
 		 * bind mount point exists,this will happen if the mount point is already taken or a mount point folder
-		 * was not autodeleted for some reason 
+		 * was not autodeleted for some reason
 		 */
 		tmp = StringCopy( path ) ;
 		e = StringAppend( tmp," " ) ;
-		
+
 		if( StringListHasSequence( stl,e ) != -1 ){
 			/*
 			 * An attempt is made to bind mount on a path already bind mounted path,dont attempt to mount
@@ -270,7 +270,7 @@ int zuluCryptBindMountVolume( const char * device,string_t z_path,unsigned long 
 			rmdir( m_path ) ;
 		}
 	}
-	
+
 	StringListDelete( &stl ) ;
 	StringDelete( &path ) ;
 	zuluCryptSecurityDropElevatedPrivileges() ;

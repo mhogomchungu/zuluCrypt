@@ -1,18 +1,18 @@
 /*
- * 
+ *
  *  Copyright (c) 2011
- *  name : mhogo mchungu 
+ *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -36,11 +36,11 @@ static int _open_volume( const char * device,const char * mapper_name,const char
 			 size_t key_key_len,const char * key_source,const char * key_origin,
 			 const char * m_point,uid_t uid,
 			 unsigned long m_flags,const char * fs_opts ) ;
-			 
+
 static char * _device_path( const char * device )
 {
 	char * path ;
-	
+
 	if( StringPrefixEqual( device,"/dev/loop" ) ){
 		zuluCryptSecurityGainElevatedPrivileges() ;
 		/*
@@ -61,16 +61,16 @@ static char * _device_path( const char * device )
 static void _printResult( const char * device,const char * m_point )
 {
 	char * e ;
-	
+
 	zuluCryptSecurityGainElevatedPrivileges() ;
-	
+
 	/*
 	 * zuluCryptGetVolumeTypeFromMapperPath() is defined in ../lib/status.c
 	 */
 	e = zuluCryptGetVolumeTypeFromMapperPath( device ) ;
-	
+
 	zuluCryptSecurityDropElevatedPrivileges() ;
-	
+
 	if( StringHasComponent( e,"LUKS" ) ){
 		printf( gettext( "SUCCESS: %s volume opened successfully\n" ),"luks" ) ;
 	}else if( StringHasComponent( e,"PLAIN" ) ){
@@ -80,7 +80,7 @@ static void _printResult( const char * device,const char * m_point )
 	}else{
 		printf( gettext( "SUCCESS: volume opened successfully\n" ) ) ;
 	}
-	
+
 	free( e ) ;
 	if( m_point != NULL ){
 		printf( gettext( "volume mounted at: %s\n" ),m_point ) ;
@@ -114,18 +114,18 @@ static int zuluExit( int st,const char * device,const char * m_point,stringList_
 		case 21: printf( gettext( "ERROR: could not create a lock on /etc/mtab\n" ) ) ;							break ;
 		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
 	}
-	
+
 	zuluCryptSecurityUnlockMemory( stl ) ;
 	StringListClearDelete( &stl ) ;
-	
+
 	return st ;
 }
 
 /*
- * open_volume function below can be devided into two, the first part is before the mount point folder is created and the 
+ * open_volume function below can be devided into two, the first part is before the mount point folder is created and the
  * other part is after. This function is called after the mount point is created to see if it the mount point folder
  * should be removed first before calling the above function.The above function is called directly when "open_volume"
- * function is to be exited before the mount point is created. * 
+ * function is to be exited before the mount point is created. *
  */
 static int zuluExit_1( int st,const struct_opts * opts,const char * device,const char * m_point,stringList_t stl )
 {
@@ -148,12 +148,12 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	const char * pass        = opts->key ;
 	const char * plugin_path = opts->plugin_path ;
 	const char * fs_opts     = opts->fs_opts ;
-	
+
 	/*
 	 * Below is a form of memory management.All strings are collected in a stringlist object to easily delete them
 	 * when the function returns.This allows for the function to have multiple exit points without risks of leaking
 	 * memory from manually examining each exit point to make sure all strings are deleted or go with multiple goto
-	 * code deleting blocks to take into account different exit points. 
+	 * code deleting blocks to take into account different exit points.
 	 */
 	stringList_t stl ;
 	string_t * stringArray = StringListArray( &stl,6 ) ;
@@ -163,29 +163,29 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	string_t * m_point     =  &stringArray[ 3 ] ;
 	string_t * mapper      =  &stringArray[ 4 ] ;
 	string_t * mapper_path =  &stringArray[ 5 ] ;
-	
+
 	const char * key = NULL ;
 	const char * mapper_name ;
 	const char * e ;
-	
+
 	size_t key_len = 0 ;
 	int st = 0 ;
 	int i  = 0 ;
-	
+
 	unsigned long m_flags ;
-	
+
 	const char * uuid ;
 	char * device_path ;
-	
+
 	struct stat statstr ;
-	
+
 	/*
 	 * zuluCryptMountFlagsAreNotCorrect() is defined in ./mount_flags.c
 	 */
 	if( zuluCryptMountFlagsAreNotCorrect( m_opts,uid,&m_flags ) ){
 		return zuluExit( 5,device,mount_point,stl ) ;
 	}
-	
+
 	if( m_opts == NULL ){
 		m_opts = "rw" ;
 	}
@@ -201,12 +201,12 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		 */
 		st = zuluCryptCanOpenPathForReading( device,uid ) ;
 	}
-	
+
 	/*
 	 * 1-permissions denied
 	 * 2-invalid path
 	 * 3-shenanigans
-	 * 4-common error 
+	 * 4-common error
 	 */
 	switch( st ){
 		case 0 :  break ;
@@ -216,7 +216,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		case 4 :  return zuluExit( 6,device,mount_point,stl ) ;
 		default:  return zuluExit( 6,device,mount_point,stl ) ;
 	}
-	
+
 	if( nmp == 1 ){
 		if( uid != 0 ){
 			return zuluExit( 7,device,mount_point,stl ) ;
@@ -225,7 +225,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 			return zuluExit( 8,device,mount_point,stl ) ;
 		}
 	}
-	
+
 	if( nmp == -1 ){
 		/*
 		* zuluCryptCreateMountPoint() is defined in create_mount_point.c
@@ -236,7 +236,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 			return zuluExit( 9,device,mount_point,stl ) ;
 		}
 	}
-	
+
 	if( share ){
 		/*
 		 * zuluCryptBindSharedMountPointPathTaken() is defined in bind.c
@@ -245,7 +245,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 			return zuluExit_1( 10,opts,device,mount_point,stl ) ;
 		}
 	}
-	
+
 	/*
 	 * ZULUCRYPTshortMapperPath is set in ../constants.h
 	 * zuluCryptCreateMapperName() is defined at ../lib/create_mapper_name.c
@@ -254,29 +254,29 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 
 	*mapper = StringCopy( *m_name ) ;
 	mapper_name = StringContent( *m_name ) ;
-	
+
 	*mapper_path = String( zuluCryptMapperPrefix() ) ;
 	e = StringMultipleAppend( *mapper_path,"/",mapper_name,END ) ;
-	
+
 	if( stat( e,&statstr ) == 0 ){
 		return zuluExit_1( 11,opts,device,mount_point,stl ) ;
 	}
-	
+
 	if( plugin_path != NULL ){
 		/*
 		 * zuluCryptUUIDFromPath() is defined in path_access.c
 		 */
 		uuid = zuluCryptUUIDFromPath( device ) ;
-		
+
 		device_path = _device_path( device ) ;
 		/*
 		 * zuluCryptPluginManagerGetKeyFromModule is defined in ../pluginManager/zuluCryptPluginManager.c
 		 */
 		*passphrase = zuluCryptPluginManagerGetKeyFromModule( device_path,plugin_path,uuid,uid,opts ) ;
-		
+
 		StringFree( device_path ) ;
 		StringFree( uuid ) ;
-		
+
 		if( *passphrase == StringVoid ){
 			return zuluExit_1( 12,opts,device,mount_point,stl ) ;
 		}
@@ -318,9 +318,9 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 			zuluCryptSecurityLockMemory_1( *data ) ;
 		}
 	}
-	
+
 	zuluCryptSecurityGainElevatedPrivileges() ;
-	
+
 	while( 1 ){
 		/*
 		 * try to open a volume multiple times if mount fail
@@ -333,9 +333,9 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 			break ;
 		}
 	}
-	
+
 	zuluCryptSecurityDropElevatedPrivileges() ;
-	
+
 	/*
 	 * below two return values comes from ../lib/mount_volume.c
 	 */
@@ -348,9 +348,9 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	if( st == 8 || st == 3 ){
 		st = 3 ;
 	}
-	
+
 	device = StringMultiplePrepend( *mapper,"/",zuluCryptMapperPrefix(),END ) ;
-	
+
 	if( st == 0 && share ){
 		/*
 		 * user wish to share the mount point bind the mount point to a publicly accessed path at /run/media/public/
@@ -360,7 +360,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		 */
 		zuluCryptBindMountVolume( device,*m_point,m_flags ) ;
 	}
-	
+
 	/*
 	 * zuluCryptCheckInvalidKey() is defined in check_invalid_key.c
 	 */
@@ -375,7 +375,7 @@ static int _open_volume( const char * device,const char * mapper_name,const char
 	 * zuluCryptOpenVolume() is defined in ../lib/open_volume.c
 	 */
 	int st = zuluCryptOpenVolume( device,mapper_name,m_point,uid,m_flags,fs_opts,key,key_key_len ) ;
-	
+
 	if( st == 4 ){
 		/*
 		 * failed to open a LUKS or PLAIN volume.
@@ -388,7 +388,7 @@ static int _open_volume( const char * device,const char * mapper_name,const char
 			 * The volume is not LUKS,its either PLAIN or TRUECRYPT,we already failed to open it as PLAIN
 			 * so it must be TRUECRYPT or the key is wrong.
 			 */
-			
+
 			/*
 			 * try to open is a normal TRUECRYPT volume.
 			 */
@@ -401,7 +401,7 @@ static int _open_volume( const char * device,const char * mapper_name,const char
 			}
 		}
 	}
-		
+
 	return st ;
 }
 
@@ -421,12 +421,12 @@ static int _open_tcrypt( const char * device,const char * mapper_name,const char
 	}else{
 		st = zuluCryptOpenTcrypt( device,mapper_name,key,key_key_len,TCRYPT_PASSPHRASE,volume_type,m_point,uid,m_flags,fs_opts ) ;
 	}
-	
+
 	if( st == 15 || st == 0 || st == -1 ){
 		;
 	}else{
 		st = 4 ;
 	}
-	
+
 	return st ;
 }

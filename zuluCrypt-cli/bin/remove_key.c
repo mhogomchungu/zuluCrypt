@@ -1,18 +1,18 @@
 /*
- * 
+ *
  *  Copyright (c) 2011
- *  name : mhogo mchungu 
+ *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -26,26 +26,26 @@ static int _zuluCryptExECheckEmptySlots( const char * device )
 	int status = 0 ;
 	char * c  ;
 	char * d  ;
-	
+
 	zuluCryptSecurityGainElevatedPrivileges() ;
 	c = zuluCryptEmptySlots( device ) ;
 	zuluCryptSecurityDropElevatedPrivileges() ;
-	
+
 	if( c == NULL ){
 		return 1 ;
 	}
-	
+
 	d = c - 1 ;
-	
+
 	while( *++d ){
 		if( *d == '3' ){
 			status = 3 ;
 			break ;
 		}
-	}	
-	
+	}
+
 	free( c ) ;
-	
+
 	return status ;
 }
 
@@ -56,11 +56,11 @@ static int zuluExit( int st,stringList_t stl )
 	 * this function is defined in ../string/StringList.c
 	 */
 	StringListClearDelete( &stl ) ;
-	
+
 	switch ( st ){
 		case 0 : printf( gettext( "SUCCESS: key removed successfully\n" ) ) ;					break ;
 		case 2 : printf( gettext( "ERROR: there is no key in the volume that match the presented key\n" ) ) ;	break ;
-		case 3 : printf( gettext( "ERROR: could not open the volume\n" ) ) ;					break ;  
+		case 3 : printf( gettext( "ERROR: could not open the volume\n" ) ) ;					break ;
 		case 4 : printf( gettext( "ERROR: insufficient privilege to open a system device,\
 only root user or members of group zulucrypt-system can do that\n" ) ) ;						break ;
 		case 5 : printf( gettext( "ERROR: could not open the volume in write mode\n" ) ) ;			break ;
@@ -85,23 +85,23 @@ static int zuluExit_1( int st,const char * device,stringList_t stl )
 	return st ;
 }
 
-int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid ) 
+int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 {
 	int k                    = opts->dont_ask_confirmation ;
 	const char * device      = opts->device ;
 	const char * keyType     = opts->key_source ;
 	const char * keytoremove = opts->key ;
-		
+
 	stringList_t stl = StringListInit() ;
-	
+
 	string_t * pass    =  StringListAssign( stl ) ;
 	string_t * confirm =  StringListAssign( stl ) ;
-	
+
 	int status = 0 ;
-	
+
 	const char * key ;
 	size_t       key_size ;
-	
+
 	/*
 	 * zuluCryptPartitionIsSystemPartition() is defined in ./partitions.c
 	 */
@@ -110,7 +110,7 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 			return zuluExit( 4,stl ) ;
 		}
 	}
-	
+
 	/*
 	 * zuluCryptCanOpenPathForWriting is defined in path_access.c
 	 */
@@ -119,7 +119,7 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 	 * 1-permissions denied
 	 * 2-invalid path
 	 * 3-shenanigans
-	 * 4-common error 
+	 * 4-common error
 	 */
 	switch( status ){
 		case 0 : break ;
@@ -129,7 +129,7 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 		case 4 : return zuluExit( 5,stl ) ;
 		default: return zuluExit( 5,stl ) ;
 	}
-		
+
 	if( _zuluCryptExECheckEmptySlots( device ) == 3 ){
 		if( k != 1 ){
 			printf( gettext( "WARNING: there is only one key in the volume and all data in it will be lost if you continue.\n" ) ) ;
@@ -143,9 +143,9 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 			}
 		}
 	}
-	
+
 	if( keyType == NULL ){
-	
+
 		printf( gettext( "Enter a key to be removed: " ) ) ;
 		/*
 		 * ZULUCRYPT_KEY_MAX_SIZE is set in ../constants.h
@@ -154,7 +154,7 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 			case 1 : return zuluExit( 8,stl ) ;
 			case 2 : return zuluExit( 9,stl ) ;
 		}
-		
+
 		printf( "\n" ) ;
 		key = StringContent( *pass ) ;
 		key_size = StringLength( *pass ) ;
@@ -168,7 +168,7 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 			 * zuluCryptGetPassFromFile() is defined at path_access.c"
 			 */
 			switch( zuluCryptGetPassFromFile( keytoremove,uid,pass ) ){
-				case 1 : return zuluExit( 11,stl )  ; 
+				case 1 : return zuluExit( 11,stl )  ;
 				case 2 : return zuluExit( 12,stl )  ;
 				case 4 : return zuluExit( 13,stl ) ;
 				case 5 : return zuluExit( 14,stl ) ;
@@ -183,20 +183,20 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 			return zuluExit( 10,stl ) ;
 		}
 	}
-	
+
 	zuluCryptSecurityGainElevatedPrivileges() ;
 	/*
 	 * zuluCryptRemoveKey() is defined in ../lib/remove_key.c
 	 */
 	status = zuluCryptRemoveKey( device,key,key_size ) ;
 	zuluCryptSecurityDropElevatedPrivileges() ;
-	
+
 	if( status == 1 ){
 		status = zuluExit_1( status,device,stl ) ;
 	}else{
-		status = zuluExit( status,stl ) ; 
+		status = zuluExit( status,stl ) ;
 	}
-	
+
 	/*
 	 * zuluCryptCheckInvalidKey() is defined in check_invalid_key.c
 	 */
@@ -204,4 +204,3 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 	return status ;
 }
 
- 

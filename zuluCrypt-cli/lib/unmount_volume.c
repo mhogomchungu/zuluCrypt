@@ -1,18 +1,18 @@
 /*
- * 
+ *
  *  Copyright (c) 2011
- *  name : mhogo mchungu 
+ *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -30,7 +30,7 @@ static inline int _unmount_volume( const char * m_dir )
 {
 	int h ;
 	int i ;
-	
+
 	/*
 	 * try 5 times on one second intervals to umount the volume.
 	 * Trying to unmount more than once seem to be necessary sometimes
@@ -43,17 +43,17 @@ static inline int _unmount_volume( const char * m_dir )
 			sleep( 1 ) ;
 		}
 	}
-	
+
 	return h ;
 }
 
 static inline int _unmount_volume_1( const char * m_dir )
 {
 	process_t p ;
-	
+
 	int h ;
 	int i ;
-	
+
 	/*
 	 * try 5 times on one second intervals to umount the volume.
 	 * Trying to unmount more than once seem to be necessary sometimes
@@ -70,18 +70,18 @@ static inline int _unmount_volume_1( const char * m_dir )
 			sleep( 1 ) ;
 		}
 	}
-	
+
 	return h ;
 }
 
 int zuluCryptUnmountVolume( const char * device,char ** m_point )
 {
 	char * m ;
-	
+
 	int h = 3 ;
-	
+
 	char * loop_path = NULL ;
-		
+
 	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
 		/*
 		 * zuluCryptLoopDeviceAddress() is defined in ./create_loop_device.c
@@ -115,7 +115,7 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 		}else{
 			h = _unmount_volume( m ) ;
 		}
-		
+
 		if( h == 0 ){
 			if( m_point != NULL ){
 				*m_point = m ;
@@ -126,10 +126,10 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 			StringFree( m ) ;
 		}
 	}
-	
+
 	if( h != 0 && h != 3 && h != 4 ){
 		h = 2 ;
 	}
-	
+
 	return h ;
 }

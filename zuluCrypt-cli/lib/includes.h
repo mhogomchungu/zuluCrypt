@@ -1,18 +1,18 @@
 /*
- * 
+ *
  *  Copyright (c) 2011
- *  name : mhogo mchungu 
+ *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -75,7 +75,7 @@ int zuluCryptPathIsNotValid( const char * path ) ;
  */
 const char * zuluCryptDecodeMountEntry( string_t ) ;
 /*
- *this function is deined in ../lib/process_mountinfo.c 
+ *this function is deined in ../lib/process_mountinfo.c
  */
 stringList_t zuluCryptOpenedVolumesList( uid_t ) ;
 
@@ -86,7 +86,7 @@ int zuluCryptPartitionIsMounted( const char * device ) ;
 
 /*
  *  parse "/etc/fstab" and return a field at position "pos" on a line
- *  that corresponds to device "device".  
+ *  that corresponds to device "device".
  */
 #define MOUNTPOINT   1
 #define FILESYSTEM   2
@@ -103,7 +103,7 @@ string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos,uid_t ui
 string_t zuluCryptGetMountEntry( const char * path ) ;
 
 /*
- * this function is defined in process_mountinfo.c 
+ * this function is defined in process_mountinfo.c
  */
 string_t zuluCryptGetMountEntry_1( stringList_t stl,const char * path ) ;
 
@@ -128,17 +128,17 @@ string_t zuluCryptGetFileSystemFromDevice( const char * device ) ;
 char * zuluCryptLoopDeviceAddress( const char * device ) ;
 
 /*
- * this function is defined in ./create_loop_device.c 
+ * this function is defined in ./create_loop_device.c
  */
 char * zuluCryptLoopDeviceAddress_1( const char * device ) ;
 
 /*
- * this function is defined in ./create_loop_device.c  
+ * this function is defined in ./create_loop_device.c
  */
 string_t zuluCryptLoopDeviceAddress_2( const char * device ) ;
 
 /*
- * this function is defined in ./create_loop_device.c  
+ * this function is defined in ./create_loop_device.c
  */
 char * zuluCryptGetLoopDeviceAddress( const char * device ) ;
 
@@ -153,7 +153,7 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void ) ;
 char * zuluCryptGetMountPointFromPath( const char * path ) ;
 
 /*
- * this function is defined in ./process_mountinfo.c 
+ * this function is defined in ./process_mountinfo.c
  */
 char * zuluCryptGetMountPointFromPath_1( const char * path ) ;
 
@@ -277,4 +277,4 @@ void zuluCryptDeleteFile( const char * file ) ;
  */
 int zuluCryptFileSystemIsFUSEbased( const char * device ) ;
 
-#endif 
+#endif
