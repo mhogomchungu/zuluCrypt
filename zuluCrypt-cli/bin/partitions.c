@@ -563,31 +563,23 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 {
 	stringList_t stl   = StringListVoid ;
 	stringList_t stl_1 = StringListVoid ;
+	stringList_t stz ;
+
 	string_t st  ;
 
 	char * ac ;
+	char * ac_1 ;
 
 	const char * e ;
-
-	ssize_t index ;
-	ssize_t index_1 ;
 
 	StringListIterator it  ;
 	StringListIterator end ;
 
-	st = StringGetFromFile( "/etc/crypttab" );
-
-	if( st == StringVoid ){
-		return StringListVoid ;
-	}
+	st = StringGetFromFile( "/etc/crypttab" ) ;
 
 	stl = StringListStringSplit( st,'\n' ) ;
 
 	StringDelete( &st ) ;
-
-	if( stl == StringListVoid ){
-		return StringListVoid ;
-	}
 
 	it  = StringListBegin( stl ) ;
 	end = StringListEnd( stl ) ;
@@ -598,42 +590,10 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 		if( StringStartsWith( st,"#" ) ){
 			continue ;
 		}
-		index = StringIndexOfChar( st,0,'/' ) ;
-		if( index == -1 ){
-			/*
-			 * check above did not find '/' character and we are in this block assuming the line uses UUID
-			 */
-			index = StringIndexOfChar( st,0,'U' ) ;
-			if( index == -1 ){
-				continue ;
-			}
-			index = StringIndexOfChar( st,index,' ' ) ;
-			if( index == -1 ){
-				continue ;
-			}
-			StringSubChar( st,index,'\0' ) ;
-			StringRemoveString( st,"\"" ) ;  /* remove quotes if they are used */
-			/*
-			 * zuluCryptEvaluateDeviceTags() is defined in path_access.c
-			 */
-			ac = strstr( StringContent( st ),"=" ) ;
-			if( ac != NULL ){
-				ac = zuluCryptEvaluateDeviceTags( "UUID", ac + 1 ) ;
-				stl_1 = StringListAppend( stl_1,ac ) ;
-				StringFree( ac ) ;
-			}
-		}else{
-			/*
-			 * the entry is of the first format,work to get the device address
-			 */
-			index_1 = StringIndexOfChar( st,index,' ' ) ; /*index is set before the conditional statement above */
-
-			if( index_1 == -1 ){
-				continue ;
-			}
-
-			e = StringSubChar( st,index_1,'\0' ) + index ;
-
+		stz = StringListStringSplit( st,' ' ) ;
+		st = StringListStringAt( stz,1 ) ;
+		e = StringContent( st ) ;
+		if( StringPrefixMatch( e,"/",1 ) ){
 			if( StringPrefixMatch( e,"/dev/disk/by-",13 ) ){
 				ac = zuluCryptRealPath( e ) ;
 				if( StringPrefixMatch( ac,"/dev/mapper/",12 ) ){
@@ -659,7 +619,31 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 			}else{
 				stl_1 = StringListAppend( stl_1,e ) ;
 			}
+		}else if( StringPrefixMatch( e,"UUID=",5 ) ){
+			/*
+			 * check above did not find '/' character and we are in this block assuming the line uses UUID
+			 */
+			e = StringRemoveString( st,"\"" ) ;
+			/*
+			 * zuluCryptEvaluateDeviceTags() is defined in path_access.c
+			 */
+			ac = zuluCryptEvaluateDeviceTags( "UUID",e + 5 ) ;
+			if( StringPrefixMatch( ac,"/dev/mapper/",12 ) ){
+				st = zuluCryptConvertIfPathIsLVM( ac ) ;
+				stl_1 = StringListAppendString_1( stl_1,&st ) ;
+			}else if( StringPrefixMatch( e,"/dev/md",7 ) ){
+				/*
+				 * zuluCryptResolveMDPath() is defined in ../lib/process_mountinfo.c
+				 */
+				ac_1 = zuluCryptResolveMDPath( e ) ;
+				stl_1 = StringListAppend( stl_1,ac_1 ) ;
+				StringFree( ac_1 ) ;
+			}else{
+				stl_1 = StringListAppend( stl_1,ac ) ;
+			}
+			StringFree( ac ) ;
 		}
+		StringListDelete( &stz ) ;
 	}
 
 	StringListDelete( &stl ) ;
@@ -683,17 +667,9 @@ stringList_t zuluCryptGetPartitionFromConfigFile( const char * path )
 	st = StringGetFromFile( path ) ;
 	zuluCryptSecurityDropElevatedPrivileges() ;
 
-	if( st == StringVoid ){
-		return StringListVoid ;
-	}
-
 	stl = StringListStringSplit( st,'\n' ) ;
 
 	StringDelete( &st ) ;
-
-	if( stl == StringListVoid ){
-		return StringListVoid ;
-	}
 
 	it  = StringListBegin( stl ) ;
 	end = StringListEnd( stl ) ;
@@ -701,21 +677,16 @@ stringList_t zuluCryptGetPartitionFromConfigFile( const char * path )
 	while( it != end ){
 		st = *it ;
 		it++ ;
-		if( StringStartsWith( st,"#" ) ){
-			continue ;
-		}
 		if( StringStartsWith( st,"UUID=" ) ){
-			StringRemoveString( st,"\"" ) ;
-
+			e = StringRemoveString( st,"\"" ) ;
 			/*
 			 * zuluCryptEvaluateDeviceTags() is defined in path_access.c
 			 */
-			ac = zuluCryptEvaluateDeviceTags( "UUID",StringContent( st ) + 5 ) ;
+			ac = zuluCryptEvaluateDeviceTags( "UUID",e + 5 ) ;
 			stl_1 = StringListAppend( stl_1,ac ) ;
 			StringFree( ac ) ;
-		}else{
+		}else if( StringStartsWith( st,"/" ) ){
 			e = StringContent( st ) ;
-
 			if( StringPrefixMatch( e,"/dev/disk/by-",13 ) ){
 				ac = zuluCryptRealPath( e ) ;
 				if( StringPrefixMatch( ac,"/dev/mapper/",12 ) ){
@@ -780,7 +751,7 @@ int zuluCryptPartitionIsSystemPartition( const char * device,uid_t uid )
 		}else{
 			st = 0 ;
 		}
-		free( dev ) ;
+		StringFree( dev ) ;
 		return st ;
 	}else{
 		if( _zuluCryptPartitionIsSystemPartition( device,uid ) ){
