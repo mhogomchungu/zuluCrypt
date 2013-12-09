@@ -585,8 +585,8 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 		}
 		stz = StringListStringSplit( st,' ' ) ;
 		st = StringListStringAt( stz,1 ) ;
-		e = StringContent( st ) ;
-		if( StringPrefixMatch( e,"/",1 ) ){
+		if( StringStartsWith( st,"/" ) ){
+			e = StringContent( st ) ;
 			if( StringPrefixMatch( e,"/dev/disk/by-",13 ) ){
 				ac = zuluCryptRealPath( e ) ;
 				if( StringPrefixMatch( ac,"/dev/mapper/",12 ) ){
@@ -612,7 +612,7 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 			}else{
 				stl_1 = StringListAppend( stl_1,e ) ;
 			}
-		}else if( StringPrefixMatch( e,"UUID=",5 ) ){
+		}else if( StringStartsWith( st,"UUID=" ) ){
 			/*
 			 * check above did not find '/' character and we are in this block assuming the line uses UUID
 			 */
@@ -624,11 +624,11 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 			if( StringPrefixMatch( ac,"/dev/mapper/",12 ) ){
 				st = zuluCryptConvertIfPathIsLVM( ac ) ;
 				stl_1 = StringListAppendString_1( stl_1,&st ) ;
-			}else if( StringPrefixMatch( e,"/dev/md",7 ) ){
+			}else if( StringPrefixMatch( ac,"/dev/md",7 ) ){
 				/*
 				 * zuluCryptResolveMDPath() is defined in ../lib/process_mountinfo.c
 				 */
-				ac_1 = zuluCryptResolveMDPath( e ) ;
+				ac_1 = zuluCryptResolveMDPath( ac ) ;
 				stl_1 = StringListAppend( stl_1,ac_1 ) ;
 				StringFree( ac_1 ) ;
 			}else{
