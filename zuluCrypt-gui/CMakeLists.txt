@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
-add_definitions( -D_FILE_OFFSET_BITS=64 -Wextra -Wall -pedantic -std=c++0x -I${PROJECT_BINARY_DIR}/zuluCrypt-gui/ ) 
+add_definitions( -D_FILE_OFFSET_BITS=64 -Wextra -Wall -pedantic -std=c++0x -I${PROJECT_BINARY_DIR}/zuluCrypt-gui/ )
 
 set( UI_FILES createfile.ui
 		createvolume.ui
@@ -16,7 +16,7 @@ set( UI_FILES createfile.ui
 		createvolumedialog.ui
 		managesystemvolumes.ui
 		managedevicenames.ui
-		erasedevice.ui	
+		erasedevice.ui
 		walletconfig.ui
 		walletconfiginput.ui
 		openvolume.ui
@@ -25,8 +25,8 @@ set( UI_FILES createfile.ui
 set( MOC_FILES createfile.h
 		luksaddkey.h
 		createkeyfile.h
-		keyfiletask.h		
-		luksdeletekey.h 
+		keyfiletask.h
+		luksdeletekey.h
 		createvolume.h
 		openvolume.h
 		password_dialog.h
@@ -34,9 +34,9 @@ set( MOC_FILES createfile.h
 		task.h
 		managedevicenames.h
 		filetask.h
-		cryptoinfo.h	
+		cryptoinfo.h
 		erasedevice.h
-		erasetask.h	
+		erasetask.h
 		manageluksheader.h
 		cryptfiles.h
 		crypttask.h
@@ -46,13 +46,13 @@ set( MOC_FILES createfile.h
 		walletconfiginput.h
 		../zuluMount-gui/oneinstance.h
  )
-	
+
 set( SRC createfile.cpp
 	createvolume.cpp
 	luksdeletekey.cpp
 	openvolume.cpp
 	createkeyfile.cpp
-	keyfiletask.cpp	
+	keyfiletask.cpp
 	luksaddkey.cpp
 	main.cpp
 	password_dialog.cpp
@@ -89,7 +89,7 @@ INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
 
 add_executable( zuluCrypt-gui ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS}  )
 
-target_link_libraries( zuluCrypt-gui sharedObject zuluCryptPluginManager -lQtNetwork zuluCryptMD5 ) 
+target_link_libraries( zuluCrypt-gui sharedObject zuluCryptPluginManager -lQtNetwork zuluCryptMD5 )
 
 set_target_properties( zuluCrypt-gui PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
 
@@ -114,16 +114,16 @@ if( library_pwquality )
 else( library_pwquality )
 	TARGET_LINK_LIBRARIES( zuluCrypt-gui lxqtwallet ${QT_LIBRARIES} ${blkid} ${kwallet_library} )
 endif( library_pwquality )
-		
+
 install( TARGETS zuluCrypt-gui RUNTIME DESTINATION bin )
 
-install( FILES ${PROJECT_BINARY_DIR}/zuluCrypt.desktop 
+install( FILES ${PROJECT_BINARY_DIR}/zuluCrypt.desktop
 DESTINATION share/applications
 
-PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE 
+PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 )
 
-install (FILES zuluCrypt.png DESTINATION share/icons)
+install( FILES zuluCrypt.png DESTINATION /usr/share/icons/hicolor/48x48/apps/ )
 #install (FILES zuluCrypt.png DESTINATION share/icons/hicolor/32x32/apps)
 
 # desktop file section
