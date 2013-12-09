@@ -130,14 +130,13 @@ static stringList_t _zuluCryptAddLVMVolumes( stringList_t stl )
 	DIR * dir = opendir( "/dev/mapper/" ) ;
 
 	if( dir != NULL ){
-		st = String( "/dev/" ) ;
+		st = String( "/dev/mapper/" ) ;
 		while( ( entry = readdir( dir ) ) != NULL ){
 			if( !StringAtLeastOneMatch_1( entry->d_name,".","..","control",NULL ) ){
 				/*
 				 * zuluCryptConvertIfPathIsLVM() is defined in ../lib/status.c
 				 */
-				xt = zuluCryptConvertIfPathIsLVM( StringAppendAt( st,5,entry->d_name ) ) ;
-
+				xt = zuluCryptConvertIfPathIsLVM( StringAppendAt( st,12,entry->d_name ) ) ;
 				if( StringStartsWith( xt,"/dev/mapper/" ) ){
 					StringDelete( &xt ) ;
 				}else{
@@ -163,9 +162,7 @@ static stringList_t _zuluCryptAddMDRAIDVolumes( stringList_t stl )
 	if( dir != NULL ){
 		while( ( entry = readdir( dir ) ) != NULL ){
 			f = entry->d_name ;
-			if( StringAtLeastOneMatch_1( f,".","..","md-device-map",NULL ) ){
-				 ;
-			}else{
+			if( !StringAtLeastOneMatch_1( f,".","..","md-device-map",NULL ) ){
 				st = String( "/dev/md/" ) ;
 				e = zuluCryptRealPath( StringAppend( st,f ) ) ;
 				if( e != NULL ){
@@ -195,10 +192,6 @@ stringList_t zuluCryptPartitionList( void )
 
 	string_t st = StringGetFromVirtualFile( "/proc/partitions" ) ;
 	string_t st_1 ;
-
-	if( st == StringVoid ){
-		return StringListVoid ;
-	}
 
 	stl = StringListStringSplit( st,'\n' ) ;
 
