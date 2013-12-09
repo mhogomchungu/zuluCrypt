@@ -81,6 +81,8 @@ PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_
 )
 
 install( FILES zuluMount.png DESTINATION /usr/share/icons/hicolor/48x48/apps/ )
+install( FILES zuluMount.png DESTINATION /usr/share/pixmaps )
+
 #install ( FILES zuluMount.png DESTINATION share/icons/hicolor/32x32/apps )
 
 # desktop file section
@@ -92,7 +94,7 @@ Comment=
 Exec=${CMAKE_INSTALL_PREFIX}/bin/zuluMount-gui -d %U
 GenericName[en_US]=Encrypted volume and Partition mounter
 GenericName=Encrypted volumes and partition mounter
-Icon=${CMAKE_INSTALL_PREFIX}/share/icons/zuluMount.png
+Icon=/usr/share/icons/hicolor/48x48/apps/zuluMount.png
 MimeType=
 Name[en_US]=ZuluMount
 Name=ZuluMount

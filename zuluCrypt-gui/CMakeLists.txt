@@ -124,6 +124,7 @@ PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_
 )
 
 install( FILES zuluCrypt.png DESTINATION /usr/share/icons/hicolor/48x48/apps/ )
+install( FILES zuluCrypt.png DESTINATION /usr/share/pixmaps )
 #install (FILES zuluCrypt.png DESTINATION share/icons/hicolor/32x32/apps)
 
 # desktop file section
@@ -135,7 +136,7 @@ Comment=
 Exec=${CMAKE_INSTALL_PREFIX}/bin/zuluCrypt-gui -d %U
 GenericName[en_US]=Encrypted volumes manager
 GenericName=Encrypted volumes manager
-Icon=${CMAKE_INSTALL_PREFIX}/share/icons/zuluCrypt.png
+Icon=/usr/share/icons/hicolor/48x48/apps/zuluCrypt.png
 MimeType=
 Name[en_US]=ZuluCrypt
 Name=ZuluCrypt
