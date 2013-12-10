@@ -45,34 +45,33 @@ char * zuluCryptGetMountPointFromPath( const char * path ) ;
 
 char * zuluCryptVolumeDeviceName( const char * mapper ) ;
 
-static void zuluCryptFormatSize_1( char * buffer,int x,const char * z )
+static void convert( char * buffer,const char * s,u_int64_t y,u_int64_t z )
 {
-	buffer[ x ] = buffer[ x - 1 ] ;
-	buffer[ x - 1 ] = '.' ;
-	strcpy( buffer + x + 1,z ) ;
+	snprintf( buffer,SIZE,"%.1f %s",( double ) y / ( double ) z,s ) ;
 }
 
 void zuluCryptFormatSize( char * buffer,const char * buff )
 {
-	strcpy( buffer,buff ) ;
-
-	switch( strlen( buff ) ){
-		case 0 :
-		case 1 :
-		case 2 :
-		case 3 : strcat( buffer," B" )          	 ; break ;
-		case 4 : zuluCryptFormatSize_1( buffer,2," KB" ) ; break ;
-		case 5 : zuluCryptFormatSize_1( buffer,3," KB" ) ; break ;
-		case 6 : zuluCryptFormatSize_1( buffer,4," KB" ) ; break ;
-		case 7 : zuluCryptFormatSize_1( buffer,2," MB" ) ; break ;
-		case 8 : zuluCryptFormatSize_1( buffer,3," MB" ) ; break ;
-		case 9 : zuluCryptFormatSize_1( buffer,4," MB" ) ; break ;
-		case 10: zuluCryptFormatSize_1( buffer,2," GB" ) ; break ;
-		case 11: zuluCryptFormatSize_1( buffer,3," GB" ) ; break ;
-		case 12: zuluCryptFormatSize_1( buffer,4," GB" ) ; break ;
-		case 13: zuluCryptFormatSize_1( buffer,2," TB" ) ; break ;
-		case 14: zuluCryptFormatSize_1( buffer,3," TB" ) ; break ;
-		case 15: zuluCryptFormatSize_1( buffer,4," TB" ) ; break ;
+	u_int64_t r = StringConvertToInt( buff ) ;
+	switch( StringSize( buff ) ){
+	case 0 : case 1 : case 2 : case 3 :
+		 snprintf( buffer,SIZE,"%d B",( int )r ) ;
+		 break ;
+	case 4 : case 5 : case 6 :
+		 convert( buffer,"KB",r,1024 ) ;
+		 break ; ;
+	case 7 : case 8 : case 9 :
+		 convert( buffer,"MB",r,1024 * 1024 ) ;
+		 break ;
+	case 10: case 11 : case 12 :
+		 convert( buffer,"GB",r,1024 * 1024 * 1024 ) ;
+		 break ;
+	case 13: case 14 : case 15 :
+		 convert( buffer,"TB",r,1.0 * 1024 * 1024 * 1024 * 1024 ) ;
+		 break ;
+	default:
+		 convert( buffer,"TB",r,1.0 * 1024 * 1024 * 1024 * 1024 ) ;
+		 break ;
 	}
 }
 

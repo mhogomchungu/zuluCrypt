@@ -1196,6 +1196,22 @@ const char * StringAppendInt( string_t st,u_int64_t z )
 	return StringAppend( st,_intToString( buffer,z ) ) ;
 }
 
+u_int64_t StringConvertToInt( const char * s )
+{
+	u_int64_t r = 0 ;
+	char c ;
+	while( 1 ){
+		c = *s ;
+		s++ ;
+		if( c == '\0' ){
+			break ;
+		}else{
+			r = r * 10 + ( c - '0' ) ;
+		}
+	}
+	return r ;
+}
+
 const char * StringSubStringWithInt( string_t st,const char * str,u_int64_t z )
 {
 	char buffer[ BUFFSIZE ] = { '\0' };

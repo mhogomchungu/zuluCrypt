@@ -538,6 +538,13 @@ char * StringIntToString_1( char * x,size_t y,u_int64_t z ) ;
 string_t StringIntToString( u_int64_t ) ;
 
 /*
+ * convert a string made up of digits to a u_int64_t value
+ * eg:
+ * u_int64_t x = StringConvertToInt( "43542" ) ;
+ */
+u_int64_t StringConvertToInt( const char * ) ;
+
+/*
  * Compare a string handled by handle x to a string handled by handle y.
  * return 1 if they are equal
  * return 0 if they are not equal
