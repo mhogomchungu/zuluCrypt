@@ -123,6 +123,10 @@ void MainWindow::setUpApp()
 
 	trayMenu->addAction( autoOpenFolderOnMount ) ;
 
+	m_favorite_menu = trayMenu->addMenu( tr( "favorites" ) ) ;
+	connect( m_favorite_menu,SIGNAL( triggered( QAction * ) ),this,SLOT( favoriteClicked( QAction * ) ) ) ;
+	connect( m_favorite_menu,SIGNAL( aboutToShow() ),this,SLOT( showFavorites() ) ) ;
+
 	trayMenu->addAction( tr( "quit" ),this,SLOT( pbClose() ) ) ;
 	m_trayIcon->setContextMenu( trayMenu ) ;
 
@@ -150,6 +154,32 @@ void MainWindow::setUpApp()
 	t->start( Task::Update ) ;
 
 	this->startAutoMonitor() ;
+}
+
+void MainWindow::favoriteClicked( QAction * ac )
+{
+	Task * t = new Task() ;
+	connect( t,SIGNAL( getVolumeInfo( QStringList ) ),this,SLOT( showMoungDialog( QStringList ) ) ) ;
+	t->setDevice( ac->text() ) ;
+	t->start( Task::VolumeType ) ;
+}
+
+void MainWindow::showFavorites()
+{
+	QAction * ac ;
+	m_favorite_menu->clear() ;
+	QStringList l = utility::readFavorites() ;
+	int j = l.size() - 1 ;
+	if( !l.isEmpty() ){
+		for( int i = 0 ; i < j ; i++ ){
+			ac = new QAction( l.at( i ).split( "\t" ).first(),m_favorite_menu ) ;
+			m_favorite_menu->addAction( ac ) ;
+		}
+	}else{
+		ac = new QAction( tr( "list is empty" ),m_favorite_menu ) ;
+		ac->setEnabled( false ) ;
+		m_favorite_menu->addAction( ac ) ;
+	}
 }
 
 void MainWindow::setLocalizationLanguage()
@@ -243,7 +273,7 @@ void MainWindow::showEvent( QShowEvent * e )
 
 void MainWindow::autoMountVolumeSystemInfo( QStringList l )
 {
-	if( l.size() > 3 && l.at( 0 ).size() == strlen( "/dev/sdX" ) && l.at( 2 ) == QString( "Nil" ) ){
+	if( l.size() > 3 && l.first().size() == strlen( "/dev/sdX" ) && l.at( 2 ) == QString( "Nil" ) ){
 		/*
 		 * root device with no file system,dont show them.This will be a bug if a user just put a plain volume
 		 * or a truecrypt volume without first partitio the drive.
@@ -260,7 +290,7 @@ void MainWindow::autoMountVolumeInfo( QStringList l )
 		return ;
 	}
 
-	QString dev = l.at( 0 ) ;
+	QString dev = l.first() ;
 	QString type = l.at( 2 ) ;
 
 	if( dev.size() == strlen( "/dev/sdX" ) && type == QString( "Nil" ) ){

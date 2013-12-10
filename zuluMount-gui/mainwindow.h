@@ -81,6 +81,8 @@ private slots:
 	void autoMountToggled( bool ) ;
 	void autoOpenFolderOnMount( bool ) ;
 	void removeEntryFromTable( QString ) ;
+	void showFavorites( void ) ;
+	void favoriteClicked( QAction * ) ;
 private:
 	void setLocalizationLanguage( void ) ;
 	bool autoOpenFolderOnMount( void ) ;
@@ -106,6 +108,7 @@ private:
 	auto_mount * m_autoMountThread ;
 	monitor_mountinfo * m_mountInfo ;
 	QAction * m_autoMountAction ;
+	QMenu * m_favorite_menu ;
 	bool m_startHidden ;
 	bool m_started ;
 	bool m_autoMount ;
