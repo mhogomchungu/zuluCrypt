@@ -74,11 +74,6 @@
  *
  */
 
-/*
- * this function is defined in ../lib/status.c
- */
-void zuluCryptFormatSize( char * buffer,const char * buff ) ;
-
 static inline int _allowedDevice( const char * device )
 {
 	const char * fsType ;
@@ -443,8 +438,7 @@ stringList_t zuluCryptPartitions( int option,uid_t uid )
 void zuluCryptPrintPartitionProperties( const char * device )
 {
 	#define SIZE 64
-	char sizebuffer[ SIZE ] ;
-	char sizebuffer_1[ SIZE ] ;
+	char buffer[ SIZE ] ;
 
 	const char * e ;
 	uint64_t size ;
@@ -457,40 +451,38 @@ void zuluCryptPrintPartitionProperties( const char * device )
 	printf( "%s\t",device ) ;
 
 	if( blkid == NULL ){
-		zuluCryptSecurityDropElevatedPrivileges() ;
 		printf( "Nil\tNil\tNil\tNil\n" ) ;
-		return ;
-	}
-
-	blkid_do_probe( blkid );
-
-	size = blkid_probe_get_size( blkid ) ;
-
-	e = StringIntToString_1( sizebuffer,SIZE,size ) ;
-	/*
-	 * below function is defined in ../lib/status.c
-	 */
-	zuluCryptFormatSize( sizebuffer_1,e ) ;
-
-	printf( "%s\t",sizebuffer_1 ) ;
-
-	if( blkid_probe_lookup_value( blkid,"LABEL",&e,NULL ) == 0 ){
-		printf( "%s\t",e ) ;
 	}else{
-		printf( "Nil\t" ) ;
+		blkid_do_probe( blkid ) ;
+
+		size = blkid_probe_get_size( blkid ) ;
+
+		/*
+		 * zuluCryptFormatSize() is defined in ../lib/status.c
+		 */
+		zuluCryptFormatSize( size,buffer,SIZE ) ;
+
+		printf( "%s\t",buffer ) ;
+
+		if( blkid_probe_lookup_value( blkid,"LABEL",&e,NULL ) == 0 ){
+			printf( "%s\t",e ) ;
+		}else{
+			printf( "Nil\t" ) ;
+		}
+		if( blkid_probe_lookup_value( blkid,"TYPE",&e,NULL ) == 0 ){
+			printf( "%s\t",e ) ;
+		}else{
+			printf( "Nil\t" ) ;
+		}
+		if( blkid_probe_lookup_value( blkid,"UUID",&e,NULL ) == 0 ){
+			printf( "%s\n",e ) ;
+		}else{
+			printf( "Nil\n" ) ;
+		}
+		blkid_free_probe( blkid ) ;
 	}
-	if( blkid_probe_lookup_value( blkid,"TYPE",&e,NULL ) == 0 ){
-		printf( "%s\t",e ) ;
-	}else{
-		printf( "Nil\t" ) ;
-	}
-	if( blkid_probe_lookup_value( blkid,"UUID",&e,NULL ) == 0 ){
-		printf( "%s\n",e ) ;
-	}else{
-		printf( "Nil\n" ) ;
-	}
-	blkid_free_probe( blkid );
-	zuluCryptSecurityDropElevatedPrivileges();
+
+	zuluCryptSecurityDropElevatedPrivileges() ;
 }
 
 static void _zuluCryptPrintUnMountedPartitionProperties( stringList_t stl )

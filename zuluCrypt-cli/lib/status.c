@@ -45,32 +45,33 @@ char * zuluCryptGetMountPointFromPath( const char * path ) ;
 
 char * zuluCryptVolumeDeviceName( const char * mapper ) ;
 
-static void convert( char * buffer,const char * s,u_int64_t y,u_int64_t z )
+static void convert( char * buffer,int buffer_size,const char * s,u_int64_t y,u_int64_t z )
 {
-	snprintf( buffer,SIZE,"%.1f %s",( double ) y / ( double ) z,s ) ;
+	snprintf( buffer,buffer_size,"%.1f %s",( double ) y / ( double ) z,s ) ;
 }
 
-void zuluCryptFormatSize( char * buffer,const char * buff )
+void zuluCryptFormatSize( u_int64_t number,char * buffer,size_t buffer_size )
 {
-	u_int64_t r = StringConvertToInt( buff ) ;
-	switch( StringSize( buff ) ){
-	case 0 : case 1 : case 2 : case 3 :
-		 snprintf( buffer,SIZE,"%d B",( int )r ) ;
+	const char * z = StringIntToString_1( buffer,buffer_size,number ) ;
+	switch( StringSize( z ) ){
+	case 0 :
+	case 1 : case 2 : case 3 :
+		 snprintf( buffer,buffer_size,"%d B",( int )number ) ;
 		 break ;
 	case 4 : case 5 : case 6 :
-		 convert( buffer,"KB",r,1024 ) ;
+		 convert( buffer,buffer_size,"KB",number,1024 ) ;
 		 break ; ;
 	case 7 : case 8 : case 9 :
-		 convert( buffer,"MB",r,1024 * 1024 ) ;
+		 convert( buffer,buffer_size,"MB",number,1024 * 1024 ) ;
 		 break ;
 	case 10: case 11 : case 12 :
-		 convert( buffer,"GB",r,1024 * 1024 * 1024 ) ;
+		 convert( buffer,buffer_size,"GB",number,1024 * 1024 * 1024 ) ;
 		 break ;
 	case 13: case 14 : case 15 :
-		 convert( buffer,"TB",r,1.0 * 1024 * 1024 * 1024 * 1024 ) ;
+		 convert( buffer,buffer_size,"TB",number,1.0 * 1024 * 1024 * 1024 * 1024 ) ;
 		 break ;
 	default:
-		 convert( buffer,"TB",r,1.0 * 1024 * 1024 * 1024 * 1024 ) ;
+		 convert( buffer,buffer_size,"TB",number,1.0 * 1024 * 1024 * 1024 * 1024 ) ;
 		 break ;
 	}
 }
@@ -108,13 +109,12 @@ void zuluCryptFileSystemProperties( string_t p,const char * mapper,const char * 
 	const char * e ;
 	blkid_probe blkid ;
 	struct statvfs vfs ;
-	uint64_t total ;
-	uint64_t used ;
-	uint64_t unused ;
-	uint64_t block_size ;
+	u_int64_t total ;
+	u_int64_t used ;
+	u_int64_t unused ;
+	u_int64_t block_size ;
 	char buff[ SIZE ] ;
 	char * buffer = buff ;
-	char format[ SIZE ] ;
 	string_t q ;
 	ssize_t index ;
 	struct stat statstr ;
@@ -145,17 +145,14 @@ void zuluCryptFileSystemProperties( string_t p,const char * mapper,const char * 
 
 	used = total - unused ;
 
-	e = StringIntToString_1( buffer,SIZE,total ) ;
-	zuluCryptFormatSize( format,e ) ;
-	StringMultipleAppend( p,"\n total space:\t",format,END ) ;
+	zuluCryptFormatSize( total,buffer,SIZE ) ;
+	StringMultipleAppend( p,"\n total space:\t",buffer,END ) ;
 
-	e = StringIntToString_1( buffer,SIZE,used )  ;
-	zuluCryptFormatSize( format,e ) ;
-	StringMultipleAppend( p,"\n used space:\t",format,END ) ;
+	zuluCryptFormatSize( used,buffer,SIZE ) ;
+	StringMultipleAppend( p,"\n used space:\t",buffer,END ) ;
 
-	e = StringIntToString_1( buffer,SIZE,unused ) ;
-	zuluCryptFormatSize( format,e ) ;
-	StringMultipleAppend( p,"\n free space:\t",format,END ) ;
+	zuluCryptFormatSize( unused,buffer,SIZE ) ;
+	StringMultipleAppend( p,"\n free space:\t",buffer,END ) ;
 
 	snprintf( buff,SIZE,"%.2f%%",100 * ( ( float ) used / ( float ) total ) ) ;
 	StringMultipleAppend( p,"\n used%:   \t",buff,"\n",END ) ;

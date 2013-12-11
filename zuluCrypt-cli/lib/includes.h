@@ -253,7 +253,7 @@ char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper ) ;
 int zuluCryptCreateFileSystemInAVolume( const char * fs,const char * device_mapper ) ;
 
 /*
- * zuluCryptConvertIfPathIsLVM() is defined in status.c
+ * this function is defined in status.c
  */
 string_t zuluCryptConvertIfPathIsLVM( const char * path ) ;
 
@@ -276,5 +276,10 @@ void zuluCryptDeleteFile( const char * file ) ;
  * this function is defined in mount_volume.c
  */
 int zuluCryptFileSystemIsFUSEbased( const char * device ) ;
+
+/*
+ * this function is defined in status.c
+ */
+void zuluCryptFormatSize( u_int64_t number,char * buffer,size_t buffer_size ) ;
 
 #endif

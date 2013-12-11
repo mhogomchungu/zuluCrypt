@@ -30,8 +30,6 @@
 
 stringList_t zuluCryptPartitionList( void ) ;
 
-void zuluCryptFormatSize( char * buffer,const char * buff ) ;
-
 static const char * _mapper_path ;
 static size_t _mapper_length ;
 
@@ -53,7 +51,6 @@ void zuluMountPartitionProperties( const char * device,const char * UUID,const c
 
 	char buff[ SIZE ] ;
 	char * buffer = buff ;
-	char format[ SIZE ] ;
 	char * loop_device ;
 
 	zuluCryptSecurityGainElevatedPrivileges() ;
@@ -147,9 +144,8 @@ void zuluMountPartitionProperties( const char * device,const char * UUID,const c
 		if( blkid_device_size == -1 ){
 			printf( "\tNil\tNil\n" ) ;
 		}else{
-			g = StringIntToString_1( buffer,SIZE,blkid_device_size ) ;
-			zuluCryptFormatSize( format,g ) ;
-			printf( "\t%s\tNil\n",format ) ;
+			zuluCryptFormatSize( blkid_device_size,buffer,SIZE ) ;
+			printf( "\t%s\tNil\n",buffer ) ;
 		}
 	}else{
 		if( statvfs( m_point,&vfs ) != 0 ){
@@ -159,9 +155,8 @@ void zuluMountPartitionProperties( const char * device,const char * UUID,const c
 
 			total = block_size * vfs.f_blocks ;
 
-			g = StringIntToString_1( buffer,SIZE,total ) ;
-			zuluCryptFormatSize( format,g ) ;
-			printf( "\t%s",format ) ;
+			zuluCryptFormatSize( total,buffer,SIZE ) ;
+			printf( "\t%s",buffer ) ;
 
 			free_space = block_size * vfs.f_bavail  ;
 
