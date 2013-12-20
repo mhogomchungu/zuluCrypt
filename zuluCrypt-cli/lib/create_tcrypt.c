@@ -157,6 +157,211 @@ static string_t _create_key_file( const char * key,size_t key_len,const char * e
 	}
 }
 
+#if TCPLAY_NEW_API
+/*
+ * tcplay >= 1.2.0
+ */
+static int _create_tcrypt_volume( const char * device,const char * file_system,
+				  const char * rng,const char * key,size_t key_len,
+				  int key_source,size_t hidden_volume_size,
+				  const char * file_system_h,const char * key_h,size_t key_len_h,int key_source_h )
+{
+	string_t st = StringVoid ;
+	string_t xt = StringVoid ;
+
+	tc_api_task task ;
+
+	int r = 3 ;
+
+	const char * keyfile ;
+	const char * keyfile_h ;
+
+	if( zuluCryptPathIsNotValid( device ) ){
+		return 1 ;
+	}
+
+	task = tc_api_task_init( "create" ) ;
+
+	if( task == 0 ){
+		return 3 ;
+	}
+
+	if( StringPrefixMatch( rng,"/dev/urandom",12 ) ){
+		tc_api_task_set( task,"weak_keys_and_salt",1 ) ;
+	}
+
+	tc_api_task_set( task,"dev",device ) ;
+
+	tc_api_task_set( task,"prf_algo","SHA512" ) ;
+
+	tc_api_task_set( task,"secure_erase",0 ) ;
+
+	if( key_source == TCRYPT_PASSPHRASE ){
+
+		tc_api_task_set( task,"passphrase",key ) ;
+
+		if( hidden_volume_size > 0 ){
+
+			tc_api_task_set( task,"hidden",1 ) ;
+			tc_api_task_set( task,"hidden_size_bytes",hidden_volume_size ) ;
+
+			if( key_source_h == TCRYPT_PASSPHRASE ){
+
+				tc_api_task_set( task,"h_passphrase",key_h ) ;
+
+				r = tc_api_task_do( task ) ;
+				tc_api_task_uninit( task ) ;
+
+				if( r == TC_OK ){
+					r = _create_file_system( device,file_system,key,key_len,TCRYPT_NORMAL ) ;
+					if( r == TC_OK ){
+						r = _create_file_system( device,file_system_h,key_h,key_len_h,TCRYPT_HIDDEN ) ;
+					}else{
+						r = 3 ;
+					}
+				}else{
+					r = 3 ;
+				}
+			}else{
+				st = _create_key_file( key_h,key_len_h,"1" ) ;
+
+				if( st != StringVoid ){
+
+					keyfile_h = StringContent( st ) ;
+					tc_api_task_set( task,"h_keyfiles",keyfile_h ) ;
+
+					r = tc_api_task_do( task ) ;
+					tc_api_task_uninit( task ) ;
+					if( r == TC_OK ){
+						r = _create_file_system( device,file_system,key,key_len,TCRYPT_NORMAL ) ;
+						if( r == TC_OK ){
+							r = _create_file_system_1( device,file_system_h,keyfile_h,TCRYPT_HIDDEN ) ;
+						}else{
+							r = 3 ;
+						}
+					}else{
+						r = 3 ;
+					}
+					/*
+					 * zuluCryptDeleteFile() is defined in file_path_security.c
+					 */
+					zuluCryptDeleteFile( keyfile_h ) ;
+					StringDelete( &st ) ;
+				}else{
+					r = 3 ;
+				}
+			}
+		}else{
+			r = tc_api_task_do( task ) ;
+			tc_api_task_uninit( task ) ;
+			if( r == TC_OK ){
+				r = _create_file_system( device,file_system,key,key_len,TCRYPT_NORMAL ) ;
+			}else{
+				r = 3 ;
+			}
+		}
+	}else{
+		if( hidden_volume_size > 0 ){
+
+			tc_api_task_set( task,"hidden",1 ) ;
+			tc_api_task_set( task,"hidden_size_bytes",hidden_volume_size ) ;
+
+			if( key_source_h == TCRYPT_PASSPHRASE ){
+
+				tc_api_task_set( task,"h_passphrase",key_h ) ;
+
+				st = _create_key_file( key,key_len,"1" ) ;
+
+				if( st != StringVoid ){
+
+					keyfile = StringContent( st ) ;
+
+					tc_api_task_set( task,"keyfiles",keyfile ) ;
+
+					r = tc_api_task_do( task ) ;
+					tc_api_task_uninit( task ) ;
+
+					if( r == TC_OK ){
+						r = _create_file_system_1( device,file_system,keyfile,TCRYPT_NORMAL ) ;
+						if( r == TC_OK ){
+							r = _create_file_system( device,file_system,key_h,key_len_h,TCRYPT_HIDDEN ) ;
+						}else{
+							r = 3 ;
+						}
+					}else{
+						r = 3 ;
+					}
+
+					zuluCryptDeleteFile( keyfile ) ;
+					StringDelete( &st ) ;
+				}else{
+					r = 3 ;
+				}
+			}else{
+				st = _create_key_file( key,key_len,"1" ) ;
+				if( st != StringVoid ){
+					keyfile = StringContent( st ) ;
+					xt = _create_key_file( key_h,key_len_h,"2" ) ;
+					if( xt != StringVoid ){
+
+						keyfile_h = StringContent( xt ) ;
+
+						tc_api_task_set( task,"keyfiles",keyfile ) ;
+						tc_api_task_set( task,"h_keyfiles",keyfile_h ) ;
+
+						r = tc_api_task_do( task ) ;
+						tc_api_task_uninit( task ) ;
+
+						if( r == TC_OK ){
+							r = _create_file_system_1( device,file_system,keyfile,TCRYPT_NORMAL ) ;
+
+							if( r == TC_OK ){
+								r = _create_file_system_1( device,file_system,keyfile_h,TCRYPT_HIDDEN ) ;
+							}else{
+								r = 3 ;
+							}
+						}else{
+							r = 3 ;
+						}
+						zuluCryptDeleteFile( keyfile_h ) ;
+						StringDelete( &xt ) ;
+					}
+					zuluCryptDeleteFile( keyfile ) ;
+					StringDelete( &st ) ;
+				}else{
+					r = 3 ;
+				}
+			}
+		}else{
+			st = _create_key_file( key,key_len,"1" ) ;
+			if( st != StringVoid ){
+
+				keyfile = StringContent( st ) ;
+				tc_api_task_set( task,"keyfiles",keyfile ) ;
+
+				r = tc_api_task_do( task ) ;
+				tc_api_task_uninit( task ) ;
+
+				if( r == TC_OK ){
+					r = _create_file_system_1( device,file_system,keyfile,TCRYPT_NORMAL ) ;
+				}else{
+					r = 3 ;
+				}
+				zuluCryptDeleteFile( keyfile ) ;
+				StringDelete( &st ) ;
+			}else{
+				r = 3 ;
+			}
+		}
+	}
+
+	return r ;
+}
+#else
+
+/*
+ * tcplay >= 1.0.0 < 1.2.0
+ */
 static int _create_tcrypt_volume( const char * device,const char * file_system,
 				  const char * rng,const char * key,size_t key_len,
 				  int key_source,size_t hidden_volume_size,
@@ -371,6 +576,8 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 
 	return r ;
 }
+
+#endif
 
 int zuluCryptCreateTCrypt( const char * device,const char * file_system,const char * rng,
 			   const char * key,size_t key_len,int key_source,

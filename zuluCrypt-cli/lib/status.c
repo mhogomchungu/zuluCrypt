@@ -154,8 +154,12 @@ void zuluCryptFileSystemProperties( string_t p,const char * mapper,const char * 
 	zuluCryptFormatSize( unused,buffer,SIZE ) ;
 	StringMultipleAppend( p,"\n free space:\t",buffer,END ) ;
 
-	snprintf( buff,SIZE,"%.2f%%",100 * ( ( float ) used / ( float ) total ) ) ;
-	StringMultipleAppend( p,"\n used%:   \t",buff,"\n",END ) ;
+	if( used == total ){
+		StringAppend( p,"\n used%:   \t100%\n" ) ;
+	}else{
+		snprintf( buff,SIZE,"%.2f%%",100 * ( ( float ) used / ( float ) total ) ) ;
+		StringMultipleAppend( p,"\n used%:   \t",buff,"\n",END ) ;
+	}
 
 	buffer = zuluCryptGetUUIDFromMapper( mapper ) ;
 	StringAppend( p,buffer ) ;

@@ -162,8 +162,12 @@ void zuluMountPartitionProperties( const char * device,const char * UUID,const c
 
 			used = total - free_space ;
 
-			snprintf( buff,SIZE,"%.2f%%",100 * ( ( float ) used / ( float ) total ) ) ;
-			printf( "\t%s\n",buff ) ;
+			if( used == total ){
+				puts( "\t100%\n" ) ;
+			}else{
+				snprintf( buff,SIZE,"%.2f%%",100 * ( ( float ) used / ( float ) total ) ) ;
+				printf( "\t%s\n",buff ) ;
+			}
 		}
 	}
 
