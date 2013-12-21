@@ -522,7 +522,7 @@ int zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t 
 			zuluCryptSecurityDropElevatedPrivileges() ;
 			if( f != StringVoid ){
 				/*
-				 * The volume is encrypted and mounted by a any user,probably a different user
+				 * The volume is encrypted and mounted by any user,probably a different user
 				 * since this user condition is above
 				 */
 				zuluMountPrintDeviceProperties_1( f,uid ) ;

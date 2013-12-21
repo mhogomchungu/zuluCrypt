@@ -176,7 +176,6 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 	const char * keyfile ;
 	const char * keyfile_h ;
 
-
 	if( zuluCryptPathIsNotValid( device ) ){
 		return 1 ;
 	}
@@ -426,7 +425,7 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 					 * zuluCryptDeleteFile() is defined in file_path_security.c
 					 */
 					zuluCryptDeleteFile( keyfiles_h[ 0 ]  ) ;
-					StringDelete( & st ) ;
+					StringDelete( &st ) ;
 				}
 			}
 		}
