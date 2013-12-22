@@ -31,6 +31,10 @@
  */
 #include "truecrypt_support.h"
 
+/*
+ * TRIM support for truecrypt volume is off due to recommendation from the following wiki page:
+ * https://wiki.archlinux.org/index.php/dm-crypt_with_LUKS#Discard.2FTRIM_support_for_solid_state_disks_.28SSD.29
+ */
 #if TRUECRYPT_CRYPTSETUP
 
 static inline int zuluExit( int st,struct crypt_device * cd )
@@ -82,7 +86,7 @@ int zuluCryptVolumeIsTcrypt( const char * device,const char * key,int key_source
 static int _tcrypt_open_using_key( const char * device,const char * mapper,unsigned long m_opts,
 				   const char * key,size_t key_len,int volume_type,int system_header )
 {
-	uint32_t flags = 0 ;
+	uint32_t flags ;
 
 	struct crypt_device * cd = NULL ;
 	struct crypt_params_tcrypt params ;
@@ -105,7 +109,7 @@ static int _tcrypt_open_using_key( const char * device,const char * mapper,unsig
 			return zuluExit( 1,cd ) ;
 		}
 		if( m_opts & MS_RDONLY ){
-			flags |= CRYPT_ACTIVATE_READONLY ;
+			flags = CRYPT_ACTIVATE_READONLY ;
 		}
 		if( crypt_activate_by_volume_key( cd,mapper,NULL,0,flags ) == 0 ){
 			return zuluExit( 0,cd ) ;
@@ -122,7 +126,7 @@ static int _tcrypt_open_using_keyfile( const char * device,const char * mapper,u
 	int xt ;
 	int fd ;
 	const char * file ;
-	uint32_t flags = 0 ;
+	uint32_t flags ;
 
 	struct stat statstr ;
 
@@ -181,7 +185,7 @@ static int _tcrypt_open_using_keyfile( const char * device,const char * mapper,u
 		return zuluExit_1( 1,cd,st ) ;
 	}
 	if( m_opts & MS_RDONLY ){
-		flags |= CRYPT_ACTIVATE_READONLY;
+		flags = CRYPT_ACTIVATE_READONLY ;
 	}
 	if( crypt_activate_by_volume_key( cd,mapper,NULL,0,flags ) == 0 ){
 		return zuluExit_1( 0,cd,st ) ;
@@ -193,7 +197,7 @@ static int _tcrypt_open_using_keyfile( const char * device,const char * mapper,u
 static int _tcrypt_open_using_keyfile_1( const char * device,const char * mapper,unsigned long m_opts,
 				       const char * keyfile,int volume_type,int system_header )
 {
-	uint32_t flags = 0 ;
+	uint32_t flags ;
 
 	struct crypt_device * cd = NULL;
 	struct crypt_params_tcrypt params ;
@@ -216,7 +220,7 @@ static int _tcrypt_open_using_keyfile_1( const char * device,const char * mapper
 			return zuluExit( 1,cd ) ;
 		}
 		if( m_opts & MS_RDONLY ){
-			flags |= CRYPT_ACTIVATE_READONLY;
+			flags = CRYPT_ACTIVATE_READONLY ;
 		}
 		if( crypt_activate_by_volume_key( cd,mapper,NULL,0,flags ) == 0 ){
 			return zuluExit( 0,cd ) ;

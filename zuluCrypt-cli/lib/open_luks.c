@@ -31,7 +31,7 @@ static inline int zuluExit( int st,struct crypt_device * cd )
 static int _open_luks( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
 {
 	struct crypt_device * cd ;
-	uint32_t flags = 0 ;
+	uint32_t flags ;
 	int st ;
 
 	if( zuluCryptPathIsNotValid( device ) ){
@@ -44,9 +44,9 @@ static int _open_luks( const char * device,const char * mapper,const char * mode
 		return zuluExit( 2,cd ) ;
 	}
 	if( StringHasComponent( mode,"ro" ) ){
-		flags = 1 ;
+		flags = CRYPT_ACTIVATE_READONLY ;
 	}else{
-		flags = 0 ;
+		flags = CRYPT_ACTIVATE_ALLOW_DISCARDS ;
 	}
 
 	st = crypt_activate_by_passphrase( cd,mapper,CRYPT_ANY_SLOT,pass,pass_size,flags ) ;

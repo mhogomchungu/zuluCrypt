@@ -30,7 +30,7 @@ static inline int zuluExit( int st,struct crypt_device * cd )
 
 static int _open_plain( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
 {
-	int flags ;
+	uint32_t flags ;
 
 	struct crypt_device * cd ;
 	struct crypt_params_plain params ;
@@ -45,9 +45,9 @@ static int _open_plain( const char * device,const char * mapper,const char * mod
 		return 3 ;
 	}
 	if( StringHasComponent( mode,"ro" ) ){
-		flags = 1 ;
+		flags = CRYPT_ACTIVATE_READONLY ;
 	}else{
-		flags = 0 ;
+		flags = CRYPT_ACTIVATE_ALLOW_DISCARDS ;
 	}
 	if( crypt_init( &cd,device ) != 0 ){
 		return 2 ;
