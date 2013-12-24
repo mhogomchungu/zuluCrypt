@@ -110,6 +110,8 @@ static int _tcrypt_open_using_key( const char * device,const char * mapper,unsig
 		}
 		if( m_opts & MS_RDONLY ){
 			flags = CRYPT_ACTIVATE_READONLY ;
+		}else{
+			flags = 0 ;
 		}
 		if( crypt_activate_by_volume_key( cd,mapper,NULL,0,flags ) == 0 ){
 			return zuluExit( 0,cd ) ;
@@ -186,6 +188,8 @@ static int _tcrypt_open_using_keyfile( const char * device,const char * mapper,u
 	}
 	if( m_opts & MS_RDONLY ){
 		flags = CRYPT_ACTIVATE_READONLY ;
+	}else{
+		flags = 0 ;
 	}
 	if( crypt_activate_by_volume_key( cd,mapper,NULL,0,flags ) == 0 ){
 		return zuluExit_1( 0,cd,st ) ;
@@ -221,6 +225,8 @@ static int _tcrypt_open_using_keyfile_1( const char * device,const char * mapper
 		}
 		if( m_opts & MS_RDONLY ){
 			flags = CRYPT_ACTIVATE_READONLY ;
+		}else{
+			flags = 0 ;
 		}
 		if( crypt_activate_by_volume_key( cd,mapper,NULL,0,flags ) == 0 ){
 			return zuluExit( 0,cd ) ;
