@@ -54,7 +54,7 @@
 #include "createvolume.h"
 #include "createfile.h"
 #include "createkeyfile.h"
-#include "managedevicenames.h"
+#include "favorites.h"
 #include "cryptoinfo.h"
 #include "erasedevice.h"
 #include "manageluksheader.h"
@@ -124,6 +124,17 @@ void zuluCrypt::updateVolumeList()
 	connect( t,SIGNAL( addItemToTable( QString,QString,QString ) ),this,SLOT( addItemToTable( QString,QString,QString ) ) ) ;
 	connect( t,SIGNAL( finished( int ) ),this,SLOT( startUpdateFinished( int ) ) ) ;
 	t->start( Task::updateVolumeList ) ;
+}
+
+void zuluCrypt::updateVolumeListAction()
+{
+	QTableWidget * table = m_ui->tableWidget ;
+	if( table->isEnabled() ){
+		while( table->rowCount() > 0 ){
+			table->removeRow( 0 ) ;
+		}
+		this->updateVolumeList() ;
+	}
 }
 
 void zuluCrypt::startUpdateFinished( int st )
@@ -307,7 +318,7 @@ void zuluCrypt::setupConnections()
 	connect( this,SIGNAL( luksAddKey( QString ) ),this,SLOT( ShowAddKeyContextMenu( QString ) ) ) ;
 	connect( this,SIGNAL( luksDeleteKey( QString ) ),this,SLOT( ShowDeleteKeyContextMenu( QString ) ) ) ;
 	connect( m_ui->action_close,SIGNAL( triggered() ),this,SLOT( closeApplication() ) ) ;
-	connect( m_ui->action_minimize,SIGNAL( triggered() ),this,SLOT( minimize() ) ) ;
+	connect( m_ui->action_update_volume_list,SIGNAL( triggered() ),this,SLOT( updateVolumeListAction() ) ) ;
 	connect( m_ui->actionMinimize_to_tray,SIGNAL( triggered() ),this,SLOT( minimizeToTray() ) ) ;
 	connect( m_ui->actionClose_all_opened_volumes,SIGNAL( triggered() ),this,SLOT( closeAllVolumes() ) ) ;
 	connect( m_ui->actionBackup_header,SIGNAL( triggered() ),this,SLOT( luksHeaderBackUp() ) ) ;
@@ -433,11 +444,6 @@ void zuluCrypt::closeAll( QTableWidgetItem * item,int st )
 	}else{
 		removeRowFromTable( item->row() ) ;
 	}
-}
-
-void zuluCrypt::minimize()
-{
-	zuluCrypt::setWindowState( Qt::WindowMinimized ) ;
 }
 
 void zuluCrypt::minimizeToTray()
@@ -925,9 +931,9 @@ void zuluCrypt::ShowCreateKeyFile()
 
 void zuluCrypt::ShowFavoritesEntries()
 {
-	managedevicenames * mdn = new managedevicenames( this ) ;
-	connect( mdn,SIGNAL( HideUISignal() ),mdn,SLOT( deleteLater() ) ) ;
-	mdn->ShowUI() ;
+	favorites * f = new favorites( this ) ;
+	connect( f,SIGNAL( HideUISignal() ),f,SLOT( deleteLater() ) ) ;
+	f->ShowUI() ;
 }
 
 void zuluCrypt::ShowCreateFile()

@@ -15,7 +15,7 @@ set( UI_FILES createfile.ui
 		cryptfiles.ui
 		createvolumedialog.ui
 		managesystemvolumes.ui
-		managedevicenames.ui
+		favorites.ui
 		erasedevice.ui
 		walletconfig.ui
 		walletconfiginput.ui
@@ -32,7 +32,7 @@ set( MOC_FILES createfile.h
 		password_dialog.h
 		zulucrypt.h
 		task.h
-		managedevicenames.h
+		favorites.h
 		filetask.h
 		cryptoinfo.h
 		erasedevice.h
@@ -58,7 +58,7 @@ set( SRC createfile.cpp
 	password_dialog.cpp
 	zulucrypt.cpp
 	task.cpp
-	managedevicenames.cpp
+	favorites.cpp
 	filetask.cpp
 	cryptoinfo.cpp
 	erasedevice.cpp

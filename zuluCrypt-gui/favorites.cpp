@@ -17,8 +17,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "managedevicenames.h"
-#include "ui_managedevicenames.h"
+#include "favorites.h"
+#include "ui_favorites.h"
 #include <iostream>
 
 #include <QTableWidgetItem>
@@ -33,9 +33,9 @@
 #include "dialogmsg.h"
 #include "tablewidget.h"
 
-managedevicenames::managedevicenames( QWidget * parent ) :
+favorites::favorites( QWidget * parent ) :
 	QDialog( parent ),
-	m_ui( new Ui::managedevicenames )
+	m_ui( new Ui::favorites )
 {
 	m_ui->setupUi( this ) ;
 	this->setWindowFlags( Qt::Window | Qt::Dialog ) ;
@@ -64,7 +64,7 @@ managedevicenames::managedevicenames( QWidget * parent ) :
 	this->addAction( m_ac ) ;
 }
 
-void managedevicenames::devicePathTextChange( QString txt )
+void favorites::devicePathTextChange( QString txt )
 {
 	if( txt.isEmpty() ){
 		m_ui->lineEditMountPath->clear() ; ;
@@ -78,13 +78,13 @@ void managedevicenames::devicePathTextChange( QString txt )
 	}
 }
 
-void managedevicenames::shortcutPressed()
+void favorites::shortcutPressed()
 {
 	QTableWidgetItem * it = m_ui->tableWidget->currentItem() ;
 	itemClicked( it,false ) ;
 }
 
-void managedevicenames::deviceAddress()
+void favorites::deviceAddress()
 {
 	openvolume * op = new openvolume( this ) ;
 	connect( op,SIGNAL( clickedPartition( QString ) ),this,SLOT( PartitionEntry( QString ) ) ) ;
@@ -92,7 +92,7 @@ void managedevicenames::deviceAddress()
 	op->ShowAllPartitions() ;
 }
 
-void managedevicenames::ShowUI()
+void favorites::ShowUI()
 {
 	m_ui->tableWidget->setColumnWidth( 0,285 ) ;
 	m_ui->tableWidget->setColumnWidth( 1,285 ) ;
@@ -115,13 +115,13 @@ void managedevicenames::ShowUI()
 	this->show() ;
 }
 
-void managedevicenames::HideUI()
+void favorites::HideUI()
 {
 	this->hide() ;
 	emit HideUISignal() ;
 }
 
-void managedevicenames::addEntries( QString dev,QString m_point )
+void favorites::addEntries( QString dev,QString m_point )
 {
 	QStringList s ;
 
@@ -131,12 +131,12 @@ void managedevicenames::addEntries( QString dev,QString m_point )
 	tablewidget::addRowToTable( m_ui->tableWidget,s ) ;
 }
 
-void managedevicenames::itemClicked( QTableWidgetItem * current )
+void favorites::itemClicked( QTableWidgetItem * current )
 {
 	this->itemClicked( current,true ) ;
 }
 
-void managedevicenames::itemClicked( QTableWidgetItem * current,bool clicked )
+void favorites::itemClicked( QTableWidgetItem * current,bool clicked )
 {
 	QMenu m ;
 	m.setFont( this->font() ) ;
@@ -154,7 +154,7 @@ void managedevicenames::itemClicked( QTableWidgetItem * current,bool clicked )
 	}
 }
 
-void managedevicenames::removeEntryFromFavoriteList()
+void favorites::removeEntryFromFavoriteList()
 {
 	QTableWidget * table = m_ui->tableWidget ;
 
@@ -174,12 +174,12 @@ void managedevicenames::removeEntryFromFavoriteList()
 	table->setEnabled( true ) ;
 }
 
-void managedevicenames::cancel()
+void favorites::cancel()
 {
 	this->HideUI() ;
 }
 
-void managedevicenames::add()
+void favorites::add()
 {
 	DialogMsg msg( this ) ;
 
@@ -205,7 +205,7 @@ void managedevicenames::add()
 	m_ui->tableWidget->setEnabled( true ) ;
 }
 
-void managedevicenames::fileAddress()
+void favorites::fileAddress()
 {
 	QString Z = QFileDialog::getOpenFileName( this,tr( "path to an encrypted volume" ),QDir::homePath(),0 ) ;
 	if( Z.isEmpty() ){
@@ -215,23 +215,23 @@ void managedevicenames::fileAddress()
 	}
 }
 
-void managedevicenames::PartitionEntry( QString device )
+void favorites::PartitionEntry( QString device )
 {
 	m_ui->lineEditDeviceAddress->setText( device ) ;
 }
 
-managedevicenames::~managedevicenames()
+favorites::~favorites()
 {
 	delete m_ui ;
 }
 
-void managedevicenames::closeEvent( QCloseEvent * e )
+void favorites::closeEvent( QCloseEvent * e )
 {
 	e->ignore() ;
 	this->HideUI() ;
 }
 
-void managedevicenames::currentItemChanged( QTableWidgetItem * current, QTableWidgetItem * previous )
+void favorites::currentItemChanged( QTableWidgetItem * current, QTableWidgetItem * previous )
 {
 	tablewidget::selectTableRow( current,previous ) ;
 }

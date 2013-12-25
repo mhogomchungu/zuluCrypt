@@ -98,7 +98,7 @@
      <x>0</x>
      <y>0</y>
      <width>782</width>
-     <height>21</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuOpen">
@@ -159,9 +159,9 @@
     <property name="title">
      <string>&amp;zC</string>
     </property>
-    <addaction name="action_minimize"/>
     <addaction name="actionMinimize_to_tray"/>
     <addaction name="separator"/>
+    <addaction name="action_update_volume_list"/>
     <addaction name="actionClose_all_opened_volumes"/>
     <addaction name="separator"/>
     <addaction name="actionErase_data_on_device"/>
@@ -306,9 +306,9 @@
     <string>Ctrl+C</string>
    </property>
   </action>
-  <action name="action_minimize">
+  <action name="action_update_volume_list">
    <property name="text">
-    <string>minimize</string>
+    <string>update volume list</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+T</string>

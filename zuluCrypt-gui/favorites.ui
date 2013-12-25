@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>managedevicenames</class>
- <widget class="QDialog" name="managedevicenames">
+<class>favorites</class>
+ <widget class="QDialog" name="favorites">
   <property name="windowModality">
    <enum>Qt::ApplicationModal</enum>
   </property>

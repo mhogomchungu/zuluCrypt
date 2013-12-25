@@ -29,15 +29,15 @@ class QTableWidgetItem ;
 class QCloseEvent ;
 
 namespace Ui {
-class managedevicenames ;
+class favorites ;
 }
 
-class managedevicenames : public QDialog
+class favorites : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit managedevicenames( QWidget * parent = 0 ) ;
-	~managedevicenames() ;
+	explicit favorites( QWidget * parent = 0 ) ;
+	~favorites() ;
 signals:
 	void ShowPartitionUI( void ) ;
 	void HideUISignal( void ) ;
@@ -59,7 +59,7 @@ private slots:
 private:
 	void closeEvent( QCloseEvent * ) ;
 	void addEntries( QString,QString ) ;
-	Ui::managedevicenames * m_ui ;
+	Ui::favorites * m_ui ;
 	QAction * m_ac ;
 };
 

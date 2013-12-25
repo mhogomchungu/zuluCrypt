@@ -97,7 +97,7 @@ private slots :
 	void volumePropertyTaskFinished( QString properties ) ;
 	void closeApplication( void ) ;
 	void startUpdateFinished( int ) ;
-	void minimize( void ) ;
+	void updateVolumeListAction( void ) ;
 	void minimizeToTray( void ) ;
 	void closeAllVolumes( void ) ;
 	void closeStatus( int ) ;

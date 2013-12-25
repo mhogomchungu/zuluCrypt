@@ -20,7 +20,6 @@ SOURCES += main.cpp\
     createfile.cpp \
     createkeyfile.cpp \
     utility.cpp \
-    managedevicenames.cpp \
     partitionproperties.cpp \
     cryptoinfo.cpp \
     erasedevice.cpp \
@@ -53,7 +52,8 @@ SOURCES += main.cpp\
     crypttask.cpp \
     walletconfig.cpp \
     walletconfiginput.cpp \
-    createvolumedialog.cpp
+    createvolumedialog.cpp \
+    favorites.cpp
 
 HEADERS  += zulucrypt.h \
     password_dialog.h \
@@ -64,7 +64,6 @@ HEADERS  += zulucrypt.h \
     createfile.h \
     createkeyfile.h \
     utility.h \
-    managedevicenames.h \
     partitionproperties.h \
     cryptoinfo.h \
     erasedevice.h \
@@ -95,7 +94,8 @@ HEADERS  += zulucrypt.h \
     erasetask.h \
     crypttask.h \
     walletconfig.h \
-    walletconfiginput.h
+    walletconfiginput.h \
+    favorites.h
 
 
 FORMS    += zulucrypt.ui password.ui \
@@ -105,7 +105,6 @@ FORMS    += zulucrypt.ui password.ui \
     createvolume.ui \
     createfile.ui \
     createkeyfile.ui \
-    managedevicenames.ui \
     cryptoinfo.ui \
     erasedevice.ui \
     manageluksheader.ui \
@@ -116,7 +115,8 @@ FORMS    += zulucrypt.ui password.ui \
     lxqt_wallet/frontend/password_dialog.ui \
     lxqt_wallet/frontend/changepassworddialog.ui \
     walletconfig.ui \
-    walletconfiginput.ui
+    walletconfiginput.ui \
+    favorites.ui
 
 TRANSLATIONS = ../translations/zuluCrypt/messages.ts
 
