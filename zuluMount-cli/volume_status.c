@@ -198,7 +198,7 @@ static void _printDeviceProperties( string_t entry,void * s )
 		return ;
 	}
 
-	q = StringListContentAt( stx,0 ) ;
+	q = StringListContentAtFirstPlace( stx ) ;
 
 	if( StringPrefixMatch( q,_mapper_path,_mapper_length ) ){
 		/*
@@ -232,7 +232,7 @@ static void _printDeviceProperties( string_t entry,void * s )
 			 * zuluCryptDecodeMountEntry() is defined in ../zuluCrypt-cli/lib/mount_volume.c
 			 * it decodes space,tab,new line and backslash characters since they are written differently in "/etc/mtab"
 			 */
-			f = zuluCryptDecodeMountEntry( StringListStringAt( stx,1 ) ) ;
+			f = zuluCryptDecodeMountEntry( StringListStringAtSecondPlace( stx ) ) ;
 			zuluMountPartitionProperties( x,e,q,f ) ;
 			free( x ) ;
 			StringDelete( &st ) ;
@@ -240,8 +240,8 @@ static void _printDeviceProperties( string_t entry,void * s )
 	}else{
 		StringListRemoveString( stz,q ) ;
 
-		e = zuluCryptDecodeMountEntry( StringListStringAt( stx,0 ) ) ;
-		f = zuluCryptDecodeMountEntry( StringListStringAt( stx,1 ) ) ;
+		e = zuluCryptDecodeMountEntry( StringListStringAtFirstPlace( stx ) ) ;
+		f = zuluCryptDecodeMountEntry( StringListStringAtSecondPlace( stx ) ) ;
 
 		zuluMountPartitionProperties( e,NULL,e,f ) ;
 	}
@@ -340,7 +340,6 @@ int zuluMountprintAListOfMountedVolumes( void )
 	while( it != end ){
 		st = *it ;
 		it++ ;
-
 		if( !StringStartsWith( st,"/" ) || StringAtLeastOneStartsWith( st,"/proc","/sys","/dev ",NULL ) ){
 			continue ;
 		}
@@ -451,13 +450,15 @@ int zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t 
 			 * ZULUCRYPTlongMapperPath is set in ../zuluCrypt-cli/constants.h
 			 * zuluCryptCreateMapperName() is defined at ../zuluCrypt-cli/lib/create_mapper_name.c
 			 */
-			q = zuluCryptCreateMapperName( device_1,strrchr( device_1,'/' ) + 1,uid,ZULUCRYPTlongMapperPath ) ;
+			e = device_1 + StringLastIndexOfChar_1( device_1,'/' ) + 1 ;
+			q = zuluCryptCreateMapperName( device_1,e,uid,ZULUCRYPTlongMapperPath ) ;
 		}else{
 			/*
 			 * ZULUCRYPTlongMapperPath is set in ../zuluCrypt-cli/constants.h
 			 * zuluCryptCreateMapperName() is defined at ../zuluCrypt-cli/lib/create_mapper_name.c
 			 */
-			q = zuluCryptCreateMapperName( device,strrchr( device,'/' ) + 1,uid,ZULUCRYPTlongMapperPath ) ;
+			e = device + StringLastIndexOfChar_1( device,'/' ) + 1 ;
+			q = zuluCryptCreateMapperName( device,e,uid,ZULUCRYPTlongMapperPath ) ;
 		}
 	}else{
 		p = String( UUID ) ;
@@ -593,7 +594,7 @@ int zuluMountUnEncryptedVolumeStatus( const char * device )
 
 	zuluCryptSecurityGainElevatedPrivileges() ;
 
-	q = StringListStringAt( stl,1 ) ;
+	q = StringListStringAtSecondPlace( stl ) ;
 	/*
 	 * zuluCryptFileSystemProperties() is defined in ../zuluCrypt-cli/lib/status.c
 	 * zuluCryptDecodeMountEntry() is defined in ../zuluCrypt-cli/lib/mount_volume.c

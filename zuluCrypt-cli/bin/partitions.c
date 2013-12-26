@@ -576,7 +576,7 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 			continue ;
 		}
 		stz = StringListStringSplit( st,' ' ) ;
-		st = StringListStringAt( stz,1 ) ;
+		st = StringListStringAtSecondPlace( stz ) ;
 		if( StringStartsWith( st,"/" ) ){
 			e = StringContent( st ) ;
 			if( StringPrefixMatch( e,"/dev/disk/by-",13 ) ){

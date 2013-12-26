@@ -104,7 +104,7 @@ stringList_t StringList( const char * cstring ) ;
 stringList_t StringListString( string_t * ) ;
 
 /*
- * create a stringlist_t object with empty content
+ * create a stringList_t object with empty content
  */
 stringList_t StringListInit( void ) ;
 
@@ -163,7 +163,17 @@ stringList_t StringListStringSplit( string_t st,char splitter ) ;
  * return a string_t element at position index.
  * First element is at position 0.
  */
-string_t StringListStringAt( stringList_t stl, size_t index ) ;
+string_t StringListStringAt( stringList_t stl,size_t index ) ;
+
+static __inline__ string_t StringListStringAtFirstPlace( stringList_t stl )
+{
+	return StringListStringAt(stl,0 ) ;
+}
+
+static __inline__ string_t StringListStringAtSecondPlace( stringList_t stl )
+{
+	return StringListStringAt(stl,1 ) ;
+}
 
 /*
  *  return a pointer to a string at position index.
@@ -171,10 +181,20 @@ string_t StringListStringAt( stringList_t stl, size_t index ) ;
  */
 const char * StringListContentAt( stringList_t stl,size_t index ) ;
 
+static __inline__ const char * StringListContentAtFirstPlace( stringList_t stl )
+{
+	return StringListContentAt( stl,0 ) ;
+}
+
+static __inline__ const char * StringListContentAtSecondPlace( stringList_t stl )
+{
+	return StringListContentAt( stl,1 ) ;
+}
+
 /*
  * strcmp() a strinf at index with cstring
  */
-int StringListContentAtEqual( stringList_t stl,size_t index,const char * cstring );
+int StringListContentAtEqual( stringList_t stl,size_t index,const char * cstring ) ;
 
 /*
  * printf() string content at a given index
@@ -409,6 +429,16 @@ stringList_t StringListCopy( stringList_t stl ) ;
  * first position is at pos = 0
  */
 string_t StringListCopyStringAt( stringList_t,size_t pos ) ;
+
+static __inline__ string_t StringListCopyStringAtFirstPlace( stringList_t stl )
+{
+	return StringListCopyStringAt( stl,0 ) ;
+}
+
+static __inline__ string_t StringListCopyStringAtSecondPlace( stringList_t stl )
+{
+	return StringListCopyStringAt( stl,1 ) ;
+}
 
 /*
  * move entry at position x to position y and entry at position y to position x *

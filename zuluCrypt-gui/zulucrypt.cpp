@@ -57,7 +57,7 @@
 #include "favorites.h"
 #include "cryptoinfo.h"
 #include "erasedevice.h"
-#include "manageluksheader.h"
+#include "managevolumeheader.h"
 #include "cryptfiles.h"
 #include "dialogmsg.h"
 #include "managesystemvolumes.h"
@@ -321,8 +321,6 @@ void zuluCrypt::setupConnections()
 	connect( m_ui->action_update_volume_list,SIGNAL( triggered() ),this,SLOT( updateVolumeListAction() ) ) ;
 	connect( m_ui->actionMinimize_to_tray,SIGNAL( triggered() ),this,SLOT( minimizeToTray() ) ) ;
 	connect( m_ui->actionClose_all_opened_volumes,SIGNAL( triggered() ),this,SLOT( closeAllVolumes() ) ) ;
-	connect( m_ui->actionBackup_header,SIGNAL( triggered() ),this,SLOT( luksHeaderBackUp() ) ) ;
-	connect( m_ui->actionRestore_header,SIGNAL( triggered() ),this,SLOT( luksRestoreHeader() ) ) ;
 	connect( m_ui->actionPermission_problems,SIGNAL( triggered() ),this,SLOT( permissionExplanation() ) ) ;
 	connect( m_ui->actionEncrypt_file,SIGNAL( triggered() ),this,SLOT( encryptFile() ) ) ;
 	connect( m_ui->actionDecrypt_file,SIGNAL( triggered() ),this,SLOT( decryptFile() ) ) ;
@@ -334,6 +332,15 @@ void zuluCrypt::setupConnections()
 	connect( m_ui->actionManage_volumes_in_gnome_wallet,SIGNAL( triggered() ),this,SLOT( manageVolumesInGNOMEWallet() ) ) ;
 	connect( m_ui->actionManage_volumes_in_internal_wallet,SIGNAL( triggered() ),this,SLOT( manageVolumesInInternalWallet() ) ) ;
 
+#if TCPLAY_NEW_API
+	connect( m_ui->actionBackup_header,SIGNAL( triggered() ),this,SLOT( volumeHeaderBackUp() ) ) ;
+	m_ui->actionBackup_header->setText( tr( "tcrypt/luks header backup" ) ) ;
+	connect( m_ui->actionRestore_header,SIGNAL( triggered() ),this,SLOT( volumeRestoreHeader() ) ) ;
+	m_ui->actionRestore_header->setText( tr( "tcrypt/luks header restore" ) ) ;
+#else
+	connect( m_ui->actionBackup_header,SIGNAL( triggered() ),this,SLOT( volumeHeaderBackUp() ) ) ;
+	connect( m_ui->actionRestore_header,SIGNAL( triggered() ),this,SLOT( volumeRestoreHeader() ) ) ;
+#endif
 	m_ui->actionManage_volumes_in_gnome_wallet->setEnabled( LxQt::Wallet::backEndIsSupported( LxQt::Wallet::secretServiceBackEnd ) ) ;
 	m_ui->actionManage_volumes_in_kde_wallet->setEnabled( LxQt::Wallet::backEndIsSupported( LxQt::Wallet::kwalletBackEnd ) ) ;
 
@@ -864,28 +871,28 @@ void zuluCrypt::close()
 	t->start( Task::closeVolumeTask ) ;
 }
 
-manageluksheader * zuluCrypt::setUpManageLuksHeader()
+managevolumeheader * zuluCrypt::setUpManageVolumeHeader()
 {
-	manageluksheader * bkh = new manageluksheader( this ) ;
+	managevolumeheader * bkh = new managevolumeheader( this ) ;
 	connect( bkh,SIGNAL( HideUISignal() ),bkh,SLOT( deleteLater() ) ) ;
 	return bkh ;
 }
 
-void zuluCrypt::luksRestoreHeader()
+void zuluCrypt::volumeRestoreHeader()
 {
-	this->setUpManageLuksHeader()->restoreHeader() ;
+	this->setUpManageVolumeHeader()->restoreHeader() ;
 }
 
-void zuluCrypt::luksHeaderBackUp()
+void zuluCrypt::volumeHeaderBackUp()
 {
-	this->setUpManageLuksHeader()->backUpHeader() ;
+	this->setUpManageVolumeHeader()->backUpHeader() ;
 }
 
 void zuluCrypt::luksHeaderBackUpContextMenu()
 {
 	QTableWidgetItem * item = m_ui->tableWidget->currentItem() ;
 	QString device = m_ui->tableWidget->item( item->row(),0 )->text() ;
-	this->setUpManageLuksHeader()->backUpHeader( device ) ;
+	this->setUpManageVolumeHeader()->backUpHeader( device ) ;
 }
 
 luksaddkey * zuluCrypt::setUpluksaddkey()

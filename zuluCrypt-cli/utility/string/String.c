@@ -45,7 +45,12 @@
 #define STRING_INIT_SIZE 32
 
 struct StringType
-{	/*
+{
+	/*
+	 * pointer to the string
+	 */
+	char * string ;
+	/*
 	 *the size of the string
 	 */
 	size_t size ;
@@ -53,11 +58,6 @@ struct StringType
 	 * the size of the string buffer
 	 */
 	size_t length ;
-	/*
-	 * pointer to the string
-	 */
-	char * string ;
-
 	/*
 	 * contains info if the string is owned by stringlist
 	 */
@@ -590,6 +590,7 @@ ssize_t StringLength( string_t st )
 	}
 }
 
+#if 0
 const char * StringContent( string_t st )
 {
 	if( st == StringVoid ){
@@ -607,6 +608,7 @@ const char ** StringPointer( string_t st )
 		return ( const char ** )&st->string ;
 	}
 }
+#endif
 
 char * StringCopy_1( string_t st )
 {
@@ -829,6 +831,34 @@ const char * StringAppendAt( string_t st,size_t x,const char * s )
 	}
 
 	return c ;
+}
+
+const char * StringReplace( string_t st,const char * s )
+{
+	size_t len ;
+	char * c   ;
+
+	if( st == StringVoid || s == NULL ){
+		return NULL ;
+	}else{
+		len = strlen( s ) ;
+		if( len < st->length ){
+			c = st->string ;
+			memcpy( c,s,len + 1 ) ;
+			st->size = len ;
+			return c ;
+		}else{
+			c = __StringExpandMemory( st,st->size + len ) ;
+
+			if( c != NULL ){
+				memcpy( c,s,len + 1 ) ;
+				st->string = c ;
+				st->size = len ;
+			}
+
+			return c ;
+		}
+	}
 }
 
 const char * StringPrepend( string_t st,const char * s )

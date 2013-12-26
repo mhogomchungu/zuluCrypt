@@ -34,6 +34,12 @@
 #include "locale_path.h"
 
 /*
+ * these two defines are used in save_and_restore_volume_header.c
+ */
+#define VOLUME_HEADER_RESTORE 1
+#define VOLUME_HEADER_SAVE 0
+
+/*
  * These functions are here and not in libzuluCrypt-exe.h because they use string_t and the type is not supposed to be
  * seen in public API
  */

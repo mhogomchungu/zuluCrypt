@@ -20,8 +20,12 @@
 
 static inline const char * _mapping_name( const char * m )
 {
-	const char * e = strrchr( m,'/' ) ;
-	return e == NULL ? m : e + 1 ;
+	ssize_t s = StringLastIndexOfChar_1( m,'/' ) ;
+	if( s == -1 ){
+		return m ;
+	}else{
+		return m + s + 1 ;
+	}
 }
 
 int zuluMountCryptoMount( ARGS * args )

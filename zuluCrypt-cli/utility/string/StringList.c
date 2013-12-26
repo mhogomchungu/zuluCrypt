@@ -39,9 +39,9 @@ struct StringListType
 
 struct StringType
 {
+	char * string ;
 	size_t size ;
 	size_t length ;
-	char * string ;
 	int owned ;
 };
 

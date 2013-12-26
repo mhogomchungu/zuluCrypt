@@ -235,14 +235,14 @@ static int _checkUnmount( const char * device,uid_t uid )
 		st = StringListStringAt( stx,index ) ;
 		stl = StringListStringSplit( st,' ' ) ;
 
-		device = StringListContentAt( stl,0 ) ;
+		device = StringListContentAtFirstPlace( stl ) ;
 		/*
 		 * zuluCryptBindUnmountVolume() is defined in ../zuluCrypt-cli/bin/bind.c
 		 */
 		r = zuluCryptBindUnmountVolume( stx,device,uid ) ;
 		if( r != 3 || r != 4 ){
 
-			st = StringListStringAt( stl,1 ) ;
+			st = StringListStringAtSecondPlace( stl ) ;
 			/*
 			 * zuluCryptDecodeMountEntry() is defined in ../zuluCrypt-cli/lib/mount_volume.c
 			 */

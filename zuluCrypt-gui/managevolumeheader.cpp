@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "manageluksheader.h"
+#include "managevolumeheader.h"
 #include "utility.h"
 #include "../zuluCrypt-cli/constants.h"
 
@@ -29,15 +29,15 @@
 
 #include <QFileDialog>
 
-#include "ui_manageluksheader.h"
+#include "ui_managevolumeheader.h"
 #include "task.h"
 #include "utility.h"
 #include "openvolume.h"
 #include "dialogmsg.h"
 
-manageluksheader::manageluksheader( QWidget * parent ) :
+managevolumeheader::managevolumeheader( QWidget * parent ) :
     QDialog( parent ),
-    m_ui( new Ui::manageluksheader )
+    m_ui( new Ui::managevolumeheader )
 {
 	m_ui->setupUi( this ) ;
 	this->setFont( parent->font() ) ;
@@ -59,19 +59,19 @@ manageluksheader::manageluksheader( QWidget * parent ) :
 	m_OperationInProgress = false ;
 }
 
-void manageluksheader::HideUI()
+void managevolumeheader::HideUI()
 {
 	this->hide() ;
 	emit HideUISignal() ;
 }
 
-void manageluksheader::closeEvent( QCloseEvent * e )
+void managevolumeheader::closeEvent( QCloseEvent * e )
 {
 	e->ignore() ;
 	this->pbCancel() ;
 }
 
-void manageluksheader::ShowUI()
+void managevolumeheader::ShowUI()
 {
 	if( m_ui->lineEditDevicePath->text().isEmpty() ){
 		m_ui->lineEditDevicePath->setFocus() ;
@@ -83,36 +83,36 @@ void manageluksheader::ShowUI()
 	this->show() ;
 }
 
-void manageluksheader::restoreHeader()
+void managevolumeheader::restoreHeader()
 {
 	m_operation = QString( "restore" ) ;
-	this->setWindowTitle( tr( "restore luks header" ) ) ;
+	this->setWindowTitle( tr( "restore volume header" ) ) ;
 	m_ui->labelBackUpHeader->setText( QString( "backup path" ) ) ;
 	m_ui->pbCreate->setText( tr( "&restore" ) ) ;
 	this->ShowUI() ;
 }
 
-void manageluksheader::headerBackUp()
+void managevolumeheader::headerBackUp()
 {
 	m_operation = QString( "backup" ) ;
-	this->setWindowTitle( tr( "back up luks header" ) ) ;
+	this->setWindowTitle( tr( "back up volume header" ) ) ;
 	m_ui->labelBackUpHeader->setText( QString( "backup path" ) ) ;
 	m_ui->pbCreate->setText( tr( "&backup" ) ) ;
 	this->ShowUI() ;
 }
 
-void manageluksheader::backUpHeader()
+void managevolumeheader::backUpHeader()
 {
 	this->headerBackUp() ;
 }
 
-void manageluksheader::backUpHeader( QString device )
+void managevolumeheader::backUpHeader( QString device )
 {
 	m_ui->lineEditDevicePath->setText( device ) ;
 	this->headerBackUp() ;
 }
 
-void manageluksheader::backUpHeaderNameChange( QString name )
+void managevolumeheader::backUpHeaderNameChange( QString name )
 {
 	if( m_operation == QString( "restore" ) ){
 		return ;
@@ -136,13 +136,13 @@ void manageluksheader::backUpHeaderNameChange( QString name )
 			for(  int i = 0 ; i < j ; i++ ){
 				path += q.at( i ) +  QString( "/" ) ;
 			}
-			path += p + QString( ".luksHeaderBackUp" ) ;
+			path += p + QString( ".volumeHeaderBackUp" ) ;
 			m_ui->lineEditBackUpName->setText( path ) ;
 		}
 	}
 }
 
-void manageluksheader::pbOpenLuksHeaderBackUp()
+void managevolumeheader::pbOpenLuksHeaderBackUp()
 {
 	QString Z ;
 	QString Y ;
@@ -162,11 +162,11 @@ void manageluksheader::pbOpenLuksHeaderBackUp()
 		if( !p.isEmpty() ){
 			QString q = m_ui->lineEditBackUpName->text() ;
 			if( q.isEmpty() ){
-				Z += QString( "/" ) + p + QString( ".luksHeaderBackUp" ) ;
+				Z += QString( "/" ) + p + QString( ".volumeHeaderBackUp" ) ;
 			}else{
 				q = q.split( "/" ).last() ;
 				if( q.isEmpty() ){
-					Z += QString( "/" ) + p + QString( ".luksHeaderBackUp" ) ;
+					Z += QString( "/" ) + p + QString( ".volumeHeaderBackUp" ) ;
 				}else{
 					Z += QString( "/" ) + q ;
 				}
@@ -182,14 +182,14 @@ void manageluksheader::pbOpenLuksHeaderBackUp()
 	}
 }
 
-void manageluksheader::pbCancel()
+void managevolumeheader::pbCancel()
 {
 	if(  !m_OperationInProgress ){
 		this->HideUI() ;
 	}
 }
 
-void manageluksheader::enableAll()
+void managevolumeheader::enableAll()
 {
 	m_ui->labelBackUpHeader->setEnabled( true ) ;
 	m_ui->labelDevicePath->setEnabled( true ) ;
@@ -202,7 +202,7 @@ void manageluksheader::enableAll()
 	m_ui->pushButtonPartition->setEnabled( true ) ;
 }
 
-void manageluksheader::disableAll()
+void managevolumeheader::disableAll()
 {
 	m_ui->labelBackUpHeader->setEnabled( false ) ;
 	m_ui->labelDevicePath->setEnabled( false ) ;
@@ -215,7 +215,7 @@ void manageluksheader::disableAll()
 	m_ui->pushButtonPartition->setEnabled( false ) ;
 }
 
-void manageluksheader::pbCreate()
+void managevolumeheader::pbCreate()
 {
 	DialogMsg msg( this ) ;
 
@@ -255,7 +255,7 @@ void manageluksheader::pbCreate()
 	disableAll() ;
 }
 
-void manageluksheader::pbOpenPartition()
+void managevolumeheader::pbOpenPartition()
 {
 	openvolume * op = new openvolume( this ) ;
 	connect( op,SIGNAL( clickedPartition( QString ) ),this,SLOT( selectedPartition( QString ) ) ) ;
@@ -263,7 +263,7 @@ void manageluksheader::pbOpenPartition()
 	op->ShowNonSystemPartitions() ;
 }
 
-void manageluksheader::selectedPartition( QString p )
+void managevolumeheader::selectedPartition( QString p )
 {
 	m_ui->lineEditDevicePath->setText( p ) ;
 	if( m_ui->lineEditBackUpName->text().isEmpty() ){
@@ -273,7 +273,7 @@ void manageluksheader::selectedPartition( QString p )
 	}
 }
 
-void manageluksheader::pbOpenFile()
+void managevolumeheader::pbOpenFile()
 {
 	QString Z = QFileDialog::getOpenFileName( this,tr( "select luks container you want to backup its header" ),QDir::homePath(),0 ) ;
 	m_ui->lineEditDevicePath->setText( Z ) ;
@@ -284,7 +284,7 @@ void manageluksheader::pbOpenFile()
 	}
 }
 
-void manageluksheader::success()
+void managevolumeheader::success()
 {
 	DialogMsg msg( this ) ;
 	if( m_saveHeader ){
@@ -295,7 +295,7 @@ void manageluksheader::success()
 	return this->HideUI() ;
 }
 
-void manageluksheader::taskFinished( int st )
+void managevolumeheader::taskFinished( int st )
 {
 	m_OperationInProgress = false ;
 	DialogMsg msg( this ) ;
@@ -325,7 +325,7 @@ void manageluksheader::taskFinished( int st )
 	this->enableAll() ;
 }
 
-manageluksheader::~manageluksheader()
+managevolumeheader::~managevolumeheader()
 {
 	delete m_ui ;
 }

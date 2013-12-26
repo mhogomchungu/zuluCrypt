@@ -26,10 +26,11 @@ int zuluMountCryptoUMount( ARGS * args )
 	int mount_point_option = args->mpo    ;
 
 	const char * mapping_name ;
-	const char * e ;
 	char * path = NULL ;
 
 	int st  ;
+
+	ssize_t s ;
 
 	string_t str = StringVoid ;
 
@@ -48,12 +49,11 @@ int zuluMountCryptoUMount( ARGS * args )
 			}
 		}
 
-		e = strrchr( device,'/' ) ;
-
-		if( e == NULL ){
+		s = StringLastIndexOfChar_1( device,'/' ) ;
+		if( s == -1 ){
 			mapping_name = device ;
 		}else{
-			mapping_name = e + 1 ;
+			mapping_name = device + s + 1 ;
 		}
 	}else{
 		str = String( UUID ) ;

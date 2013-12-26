@@ -11,7 +11,7 @@ set( UI_FILES createfile.ui
 		luksaddkey.ui
 		createvolume.ui
 		cryptoinfo.ui
-		manageluksheader.ui
+		managevolumeheader.ui
 		cryptfiles.ui
 		createvolumedialog.ui
 		managesystemvolumes.ui
@@ -37,7 +37,7 @@ set( MOC_FILES createfile.h
 		cryptoinfo.h
 		erasedevice.h
 		erasetask.h
-		manageluksheader.h
+		managevolumeheader.h
 		cryptfiles.h
 		crypttask.h
 		createvolumedialog.h
@@ -63,7 +63,7 @@ set( SRC createfile.cpp
 	cryptoinfo.cpp
 	erasedevice.cpp
 	erasetask.cpp
-	manageluksheader.cpp
+	managevolumeheader.cpp
 	cryptfiles.cpp
 	crypttask.cpp
 	createvolumedialog.cpp

@@ -87,7 +87,7 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 		xt = StringListStringAt( stx,index ) ;
 		stl = StringListStringSplit( xt,' ' ) ;
 
-		xt = StringListCopyStringAt( stl,1 ) ;
+		xt = StringListCopyStringAtSecondPlace( stl ) ;
 		StringListDelete( &stl ) ;
 
 		st = StringCopy( xt ) ;

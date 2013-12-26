@@ -60,12 +60,6 @@ typedef struct struct_opts_1{
 }struct_opts;
 
 /*
- * these two defines are used in save_and_restore_luks_header.c
- */
-#define LUKS_HEADER_RESTORE 1
-#define LUKS_HEADER_SAVE 0
-
-/*
  * get command line arguments and in struct_opts structure to be used in various calls *
  */
 void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * ) ;
@@ -75,7 +69,7 @@ void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * ) ;
  *
  * the function is defined in save_and_restore_luks_header.c
  */
-int zuluCryptEXESaveAndRestoreLuksHeader( const struct_opts * opts,uid_t uid,int option  ) ;
+int zuluCryptEXESaveAndRestoreVolumeHeader( const struct_opts * opts,uid_t uid,int option  ) ;
 
 /*
  * this function is responsibe for printing information about an opened volume.

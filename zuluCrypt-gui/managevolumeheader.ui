@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>manageluksheader</class>
- <widget class="QDialog" name="manageluksheader">
+ <class>managevolumeheader</class>
+ <widget class="QDialog" name="managevolumeheader">
   <property name="windowModality">
    <enum>Qt::ApplicationModal</enum>
   </property>
@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>backup luks header</string>
+   <string>backup volume header</string>
   </property>
   <widget class="QLineEdit" name="lineEditBackUpName">
    <property name="geometry">

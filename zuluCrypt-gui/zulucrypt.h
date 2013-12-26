@@ -36,7 +36,7 @@ class openvolume ;
 class createvolume ;
 class luksdeletekey ;
 class luksaddkey ;
-class manageluksheader ;
+class managevolumeheader ;
 class cryptfiles ;
 class walletconfig ;
 
@@ -120,8 +120,8 @@ private slots :
 	void partitionClicked( QString ) ;
 	void createPartition( QString ) ;
 	void luksHeaderBackUpContextMenu( void ) ;
-	void luksHeaderBackUp( void ) ;
-	void luksRestoreHeader( void ) ;
+	void volumeHeaderBackUp( void ) ;
+	void volumeRestoreHeader( void ) ;
 	void permissionExplanation( void ) ;
 	void encryptFile( void ) ;
 	void decryptFile( void ) ;
@@ -148,7 +148,7 @@ private:
 	createvolume * setUpCreatepartition( void ) ;
 	luksdeletekey * setUpluksdeletekey( void ) ;
 	luksaddkey * setUpluksaddkey( void ) ;
-	manageluksheader * setUpManageLuksHeader( void ) ;
+	managevolumeheader * setUpManageVolumeHeader( void ) ;
 	cryptfiles * setUpCryptFiles( void ) ;
 	walletconfig * setUpWalletConfig( void ) ;
 

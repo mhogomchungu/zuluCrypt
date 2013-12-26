@@ -128,7 +128,7 @@
    </widget>
    <widget class="QMenu" name="menuConfigure">
     <property name="title">
-     <string>&amp;luks</string>
+     <string>volumes</string>
     </property>
     <addaction name="actionAddKey"/>
     <addaction name="actionDeleteKey"/>
@@ -234,7 +234,7 @@
   </action>
   <action name="actionAddKey">
    <property name="text">
-    <string>add key</string>
+    <string>luks add key</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+U</string>
@@ -242,7 +242,7 @@
   </action>
   <action name="actionDeleteKey">
    <property name="text">
-    <string>delete key</string>
+    <string>luks delete key</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+W</string>
@@ -456,6 +456,16 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionTcrypt_backup_header">
+   <property name="text">
+    <string>tcrypt backup header</string>
+   </property>
+  </action>
+  <action name="actionTcrypt_restore_header">
+   <property name="text">
+    <string>tcrypt restore header</string>
    </property>
   </action>
  </widget>

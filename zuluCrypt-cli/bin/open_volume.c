@@ -91,7 +91,7 @@ static int zuluExit( int st,const char * device,const char * m_point,stringList_
 {
 	switch( st ){
 		case 0 : _printResult( device,m_point ) ;											break ;
-		case 1 : printf( gettext( "ERROR: failed to mount ntfs file system using ntfs-3g,is ntfs-3g package installed?\n" ) ) ;		break ;
+		case 1 : printf( gettext( "ERROR: failed to mount ntfs/exfat file system using ntfs-3g,is ntfs-3g/exfat package installed?\n" ) ) 	;break ;
 		case 2 : printf( gettext( "ERROR: there seem to be an open volume accociated with given address\n" ) ) ;			break ;
 		case 3 : printf( gettext( "ERROR: no file or device exist on given path\n" ) ) ;						break ;
 		case 4 : printf( gettext( "ERROR: volume could not be opened with the presented key\n" ) ) ;					break ;

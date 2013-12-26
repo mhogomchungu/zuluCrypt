@@ -305,7 +305,7 @@ ERROR: insuffienct privilege to manage a system volume.\nnecessary privileges ca
 		zuluCryptSecurityDropElevatedPrivileges() ;
 		switch( status ){
 			case -1: return _zuluExit( 108,z,path,gettext( "ERROR: failed to mount a filesystem:invalid/unsupported mount option or unsupported file system encountered" ) ) ;
-			case 1 : return _zuluExit( 109,z,path,gettext( "ERROR: failed to mount ntfs file system using ntfs-3g,is ntfs-3g package installed?" ) ) ;
+			case 1 : return _zuluExit( 109,z,path,gettext( "ERROR: failed to mount ntfs/exfat file system using ntfs-3g,is ntfs-3g/exfat package installed?" ) ) ;
 			case 4 : return _zuluExit( 110,z,path,gettext( "ERROR: mount failed,no or unrecognized file system" ) )	;
 			case 12: return _zuluExit( 111,z,path,gettext( "ERROR: mount failed,could not get a lock on /etc/mtab~" ) ) ;
 			default: return _zuluExit( 112,z,path,gettext( "ERROR: failed to mount the partition" ) ) ;

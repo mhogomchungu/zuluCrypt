@@ -92,9 +92,7 @@ string_t zuluCryptResolveMDPath_1( const char * path )
 	if( dir != NULL ){
 		while( ( entry = readdir( dir ) ) != NULL ){
 			f = entry->d_name ;
-			if( StringAtLeastOneMatch_1( f,".","..",NULL ) ){
-				;
-			}else{
+			if( !StringAtLeastOneMatch_1( f,".","..",NULL ) ){
 				e = zuluCryptRealPath( StringAppendAt( st,8,f ) ) ;
 				if( e != NULL ){
 					r = StringsAreEqual( path,e ) ;
@@ -109,7 +107,7 @@ string_t zuluCryptResolveMDPath_1( const char * path )
 		closedir( dir ) ;
 	}
 
-	StringAppendAt( st,0,path ) ;
+	StringReplace( st,path ) ;
 	return st ;
 }
 
@@ -452,11 +450,11 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 
 		k = StringHasComponent_1( c,"-UUID-" ) ;
 		if( k != -1 && StringHasNoComponent( c,"-NAAN-" ) ) {
-			q = StringListStringAt( stx,0 ) ;
+			q = StringListStringAtFirstPlace( stx ) ;
 			/*
 			 * zuluCryptDecodeMountEntry() is defined in mount_volume.c
 			 */
-			d = zuluCryptDecodeMountEntry( StringListStringAt( stx,1 ) ) ;
+			d = zuluCryptDecodeMountEntry( StringListStringAtSecondPlace( stx ) ) ;
 
 			/*
 			 * zuluCryptGetVolumeTypeFromMapperPath() is defined in status.c
@@ -468,13 +466,13 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 			list = StringListAppendString_1( list,&z ) ;
 			StringFree( f ) ;
 		}else{
-			g = zuluCryptVolumeDeviceName( StringListContentAt( stx,0 ) ) ;
+			g = zuluCryptVolumeDeviceName( StringListContentAtFirstPlace( stx ) ) ;
 			if( g != NULL ){
-				d = zuluCryptDecodeMountEntry( StringListStringAt( stx,1 ) ) ;
+				d = zuluCryptDecodeMountEntry( StringListStringAtSecondPlace( stx ) ) ;
 				/*
 				 * zuluCryptGetVolumeTypeFromMapperPath() is defined in status.c
 				 */
-				f = zuluCryptGetVolumeTypeFromMapperPath( StringListContentAt( stx,0 ) ) ;
+				f = zuluCryptGetVolumeTypeFromMapperPath( StringListContentAtFirstPlace( stx ) ) ;
 				z = String( "" ) ;
 				StringMultipleAppend( z,g,"\t",d,"\t",f,END ) ;
 				list = StringListAppendString_1( list,&z ) ;
@@ -500,10 +498,11 @@ string_t zuluCryptGetMountEntry( const char * path )
 string_t zuluCryptGetMountEntry_1( stringList_t stl,const char * path )
 {
 	string_t st ;
-	string_t entry = StringVoid ;
-	ssize_t index ;
+	string_t xt ;
 
-	if( stl != StringListVoid ){
+	if( stl == StringListVoid ){
+		return StringVoid ;
+	}else{
 		if( StringPrefixMatch( path,"/dev/mapper/",12 ) ){
 			/*
 			* zuluCryptConvertIfPathIsLVM() is defined in status.c
@@ -523,14 +522,12 @@ string_t zuluCryptGetMountEntry_1( stringList_t stl,const char * path )
 			st = String( path ) ;
 		}
 
-		index = StringListHasStartSequence( stl,StringAppend( st," " ) ) ;
+		xt = StringListHasStartSequence_1( stl,StringAppend( st," " ) ) ;
+
 		StringDelete( &st ) ;
 
-		if( index >= 0 ){
-			entry = StringListCopyStringAt( stl,index ) ;
-		}
+		return StringCopy( xt ) ;
 	}
-	return entry ;
 }
 
 char * zuluCryptGetMountPointFromPath( const char * path )
@@ -546,7 +543,7 @@ char * zuluCryptGetMountPointFromPath( const char * path )
 		if( stl == StringListVoid ){
 			return NULL ;
 		}else{
-			st = StringListCopyStringAt( stl,1 ) ;
+			st = StringListCopyStringAtSecondPlace( stl ) ;
 			StringListDelete( &stl ) ;
 			zuluCryptDecodeMountEntry( st ) ;
 			return StringDeleteHandle( &st ) ;

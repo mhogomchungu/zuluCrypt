@@ -45,18 +45,20 @@ char * zuluCryptGetMountPointFromPath( const char * path ) ;
 
 char * zuluCryptVolumeDeviceName( const char * mapper ) ;
 
-static void convert( char * buffer,int buffer_size,const char * s,u_int64_t y,u_int64_t z )
+static void convert( char * buffer,int buffer_size,const char * s,double y,double z )
 {
-	snprintf( buffer,buffer_size,"%.1f %s",( double ) y / ( double ) z,s ) ;
+	snprintf( buffer,buffer_size,"%.1f %s",y/z,s ) ;
 }
 
-void zuluCryptFormatSize( u_int64_t number,char * buffer,size_t buffer_size )
+void zuluCryptFormatSize( u_int64_t n,char * buffer,size_t buffer_size )
 {
-	const char * z = StringIntToString_1( buffer,buffer_size,number ) ;
+	const char * z = StringIntToString_1( buffer,buffer_size,n ) ;
+	double number = ( double )n ;
+
 	switch( StringSize( z ) ){
 	case 0 :
 	case 1 : case 2 : case 3 :
-		 snprintf( buffer,buffer_size,"%d B",( int )number ) ;
+		 snprintf( buffer,buffer_size,"%d B",( int )n ) ;
 		 break ;
 	case 4 : case 5 : case 6 :
 		 convert( buffer,buffer_size,"KB",number,1024 ) ;
@@ -164,7 +166,7 @@ void zuluCryptFileSystemProperties( string_t p,const char * mapper,const char * 
 	buffer = zuluCryptGetUUIDFromMapper( mapper ) ;
 	StringAppend( p,buffer ) ;
 
-	free( buffer ) ;
+	StringFree( buffer ) ;
 
 	StringMultipleAppend( p,"\n mount point1:\t",m_point,END ) ;
 
@@ -244,10 +246,8 @@ string_t zuluCryptConvertIfPathIsLVM( const char * path )
 				StringReplaceString( q,"--","-" ) ;
 			}
 			e = StringReplaceString( q,"/dev/mapper/","/dev/" ) ;
-			if( stat( e,&st ) == 0 ){
-				;
-			}else{
-				StringAppendAt( q,0,path ) ;
+			if( stat( e,&st ) != 0 ){
+				StringReplace( q,path ) ;
 			}
 		}else{
 			StringRemoveLength( q,index,2 ) ;
@@ -259,13 +259,11 @@ string_t zuluCryptConvertIfPathIsLVM( const char * path )
 					StringReplaceString( q,"--","-" ) ;
 				}
 				e = StringReplaceString( q,"/dev/mapper/","/dev/" ) ;
-				if( stat( e,&st ) == 0 ){
-					;
-				}else{
-					StringAppendAt( q,0,path ) ;
+				if( stat( e,&st ) != 0 ){
+					StringReplace( q,path ) ;
 				}
 			}else{
-				StringAppendAt( q,0,path ) ;
+				StringReplace( q,path ) ;
 			}
 		}
 	}else{
@@ -273,16 +271,9 @@ string_t zuluCryptConvertIfPathIsLVM( const char * path )
 		if( index != -1 ){
 			StringSubChar( q,index,'/' ) ;
 			e = StringReplaceString( q,"/dev/mapper/","/dev/" ) ;
-			if( stat( e,&st ) == 0 ){
-				/*
-				 * Path appear to be an LVM path since /dev/abc/def path exists
-				 */
-				;
-			}else{
-				StringAppendAt( q,0,path ) ;
+			if( stat( e,&st ) != 0 ){
+				StringReplace( q,path ) ;
 			}
-		}else{
-			;
 		}
 	}
 
@@ -302,7 +293,7 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	int j ;
 	int k ;
 
-	struct crypt_device * cd;
+	struct crypt_device * cd ;
 	struct crypt_active_device cad ;
 
 	string_t p ;
@@ -373,7 +364,7 @@ char * zuluCryptVolumeStatus( const char * mapper )
 		path = zuluCryptLoopDeviceAddress_1( device_name ) ;
 		if( path != NULL ){
 			StringAppend( p,path ) ;
-			free( path ) ;
+			StringFree( path ) ;
 		}else{
 			StringAppend( p,"Nil" ) ;
 		}
@@ -475,8 +466,6 @@ char * zuluCryptVolumeDeviceName( const char * mapper )
 		}else{
 			address = String( e ) ;
 		}
-	}else{
-		;
 	}
 
 	crypt_free( cd ) ;

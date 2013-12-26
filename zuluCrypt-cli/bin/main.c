@@ -196,8 +196,8 @@ static int zuluCryptEXE( struct_opts * clargs,const char * mapping_name,uid_t ui
 	switch( clargs->action ){
 		case 'H' : return zuluCryptEXEHeaderMatchBackUpHeader( clargs->device,clargs->key,uid ) ;
 		case 'W' : return zuluCryptEXECheckIfTcrypt( clargs,uid ) ;
-		case 'B' : return zuluCryptEXESaveAndRestoreLuksHeader( clargs,uid,LUKS_HEADER_SAVE ) ;
-		case 'R' : return zuluCryptEXESaveAndRestoreLuksHeader( clargs,uid,LUKS_HEADER_RESTORE ) ;
+		case 'B' : return zuluCryptEXESaveAndRestoreVolumeHeader( clargs,uid,VOLUME_HEADER_SAVE ) ;
+		case 'R' : return zuluCryptEXESaveAndRestoreVolumeHeader( clargs,uid,VOLUME_HEADER_RESTORE ) ;
 		case 'J' : return zuluCryptEXEOpenPlainAsMe( clargs,mapping_name,uid ) ; /* function is defined in write_device_with_junk.c */
 		case 'X' : return zuluCryptEXEWriteDeviceWithJunk( clargs,mapping_name,uid ) ;
 		case 'w' : return zuluCryptEXECheckUUID( clargs->device ) ;
@@ -300,6 +300,7 @@ int main( int argc,char * argv[] )
 	char action ;
 	int st ;
 	char * const * env ;
+	ssize_t i ;
 
 	string_t q = StringVoid ;
 
@@ -540,8 +541,9 @@ Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The de
 					 * zuluCryptLoopDeviceAddress_1() is defined in ../zuluCrypt-cli/create_loop_device.c
 					 */
 					ac_1 = zuluCryptLoopDeviceAddress_1( dev ) ;
-					if( ( ac = strrchr( ac_1,'/' ) ) != NULL ){
-						mapping_name =  ac + 1  ;
+					i = StringLastIndexOfChar_1( ac_1,'/' ) ;
+					if( i != -1 ){
+						mapping_name =  ac_1 + i + 1  ;
 					}else{
 						mapping_name =  dev  ;
 					}
@@ -549,8 +551,9 @@ Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The de
 					st = zuluCryptEXE( &clargs,mapping_name,uid ) ;
 					StringFree( ac_1 ) ;
 				}else{
-					if( ( ac = strrchr( dev,'/' ) ) != NULL ){
-						mapping_name =  ac + 1  ;
+					i = StringLastIndexOfChar_1( dev,'/' ) ;
+					if( i != -1 ){
+						mapping_name =  dev + i + 1  ;
 					}else{
 						mapping_name =  dev  ;
 					}

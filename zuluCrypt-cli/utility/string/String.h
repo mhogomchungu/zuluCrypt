@@ -186,7 +186,16 @@ string_t StringInheritWithSize( char ** data,size_t size,size_t length ) ;
  * Returns a const pointer to a string handled by handle st.
  * The returned pointer is guaranteed to be valid only if no further operation is performed on the string.
  */
-const char * StringContent( string_t st ) ;
+static __inline__ const char * StringContent( string_t st )
+{
+	const char ** e ;
+	if( st == StringVoid ){
+		return NULL ;
+	}else{
+		e = ( const char ** )st ;
+		return *e ;
+	}
+}
 
 /*
  * This function returns a pointer to a string and is guaranteed to be valid as long as StringDelete() is
@@ -194,7 +203,14 @@ const char * StringContent( string_t st ) ;
  *
  * The underlying string can be obtained after the returned double pointer is derefenced.
  */
-const char ** StringPointer( string_t st ) ;
+static __inline__ const char ** StringPointer( string_t st )
+{
+	if( st == StringVoid ){
+		return NULL ;
+	}else{
+		return ( const char ** ) st ;
+	}
+}
 
 /*
  * printf() the string handled by handle st *
@@ -482,6 +498,12 @@ string_t StringMidString( string_t st,size_t x,size_t y ) ;
  * remain intact.
  */
 const char * StringReplaceString( string_t st,const char * x,const char * y ) ;
+
+/*
+ * replace the string managed by string_t object by string str
+ * return a pointer to the new string managed by string_t object or NULL if either of the argument is NULL
+ */
+const char * StringReplace( string_t,const char * str ) ;
 
 /*
  * starting at position p,replace all occurance of string x by string y
@@ -840,6 +862,21 @@ static __inline__ int StringHasNoComponent( const char * x,const char * y )
 		return 0 ;
 	}else{
 		return strstr( x,y ) == NULL ;
+	}
+}
+
+static __inline__ ssize_t StringLastIndexOfChar_1( const char * str,char s )
+{
+	const char * c ;
+	if( str == NULL ){
+		return -1 ;
+	}else{
+		c = strrchr( str,s ) ;
+		if( c == NULL ){
+			return -1 ;
+		}else{
+			return c - str ;
+		}
 	}
 }
 

@@ -17,8 +17,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MANAGELUKSHEADER_H
-#define MANAGELUKSHEADER_H
+#ifndef managevolumeheader_H
+#define managevolumeheader_H
 
 #include <QDialog>
 #include <QString>
@@ -27,15 +27,15 @@ class QWidget ;
 class QCloseEvent ;
 
 namespace Ui {
-    class manageluksheader;
+    class managevolumeheader;
 }
 
-class manageluksheader : public QDialog
+class managevolumeheader : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit manageluksheader( QWidget * parent = 0 ) ;
-	~manageluksheader() ;
+	explicit managevolumeheader( QWidget * parent = 0 ) ;
+	~managevolumeheader() ;
 signals:
 	void HideUISignal( void ) ;
 public slots:
@@ -59,7 +59,7 @@ private:
 	void disableAll( void ) ;
 	void enableAll( void ) ;
 	void success( void ) ;
-	Ui::manageluksheader * m_ui ;
+	Ui::managevolumeheader * m_ui ;
 	QString m_path ;
 	bool m_OperationInProgress ;
 	QString m_operation ;

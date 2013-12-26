@@ -121,7 +121,7 @@ ssize_t zuluCryptPluginManagerSendKey( void * client,const char * key,size_t len
 
 void zuluCryptPluginManagerCloseConnection( void * p )
 {
-	socket_t client = ( socket_t ) p;
+	socket_t client = ( socket_t ) p ;
 	if( p != NULL ){
 		SocketClose( &client ) ;
 	}
