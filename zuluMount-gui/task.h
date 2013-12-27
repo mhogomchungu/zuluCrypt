@@ -24,6 +24,7 @@
 #include <QRunnable>
 #include <QString>
 #include <QStringList>
+#include <QProcess>
 
 namespace LxQt{
 namespace Wallet {
@@ -74,6 +75,8 @@ signals:
 	void getVolumeInfo( QStringList ) ;
 	void done( void ) ;
 	void key( QString ) ;
+private slots:
+	void funguaMountPoint( int,QProcess::ExitStatus ) ;
 private:
 	void openMountPointTask( void ) ;
 	void checkIfSystemDevice( void ) ;
@@ -108,6 +111,7 @@ private:
 	int m_exitCode ;
 	int m_exitStatus ;
 	int m_startError ;
+	QProcess * m_process ;
 };
 
 #endif // MANAGEPARTITIONTHREAD_H

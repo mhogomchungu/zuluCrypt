@@ -247,7 +247,7 @@ void keyDialog::closeEvent( QCloseEvent * e )
 	this->pbCancel() ;
 }
 
-void keyDialog::fileManagerOpenStatus( int exitCode, int exitStatus,int startError )
+void keyDialog::fileManagerOpenStatus( int exitCode,int exitStatus,int startError )
 {
 	Q_UNUSED( startError ) ;
 	if( exitCode != 0 || exitStatus != 0 ){

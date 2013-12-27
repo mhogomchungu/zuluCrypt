@@ -186,16 +186,7 @@ string_t StringInheritWithSize( char ** data,size_t size,size_t length ) ;
  * Returns a const pointer to a string handled by handle st.
  * The returned pointer is guaranteed to be valid only if no further operation is performed on the string.
  */
-static __inline__ const char * StringContent( string_t st )
-{
-	const char ** e ;
-	if( st == StringVoid ){
-		return NULL ;
-	}else{
-		e = ( const char ** )st ;
-		return *e ;
-	}
-}
+static __inline__ const char * StringContent( string_t st ) ;
 
 /*
  * This function returns a pointer to a string and is guaranteed to be valid as long as StringDelete() is
@@ -203,14 +194,7 @@ static __inline__ const char * StringContent( string_t st )
  *
  * The underlying string can be obtained after the returned double pointer is derefenced.
  */
-static __inline__ const char ** StringPointer( string_t st )
-{
-	if( st == StringVoid ){
-		return NULL ;
-	}else{
-		return ( const char ** ) st ;
-	}
-}
+static __inline__ const char ** StringPointer( string_t st ) ;
 
 /*
  * printf() the string handled by handle st *
@@ -877,6 +861,26 @@ static __inline__ ssize_t StringLastIndexOfChar_1( const char * str,char s )
 		}else{
 			return c - str ;
 		}
+	}
+}
+
+static __inline__ const char * StringContent( string_t st )
+{
+	const char ** e ;
+	if( st == StringVoid ){
+		return NULL ;
+	}else{
+		e = ( const char ** )st ;
+		return *e ;
+	}
+}
+
+static __inline__ const char ** StringPointer( string_t st )
+{
+	if( st == StringVoid ){
+		return NULL ;
+	}else{
+		return ( const char ** ) st ;
 	}
 }
 

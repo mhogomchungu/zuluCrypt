@@ -134,16 +134,6 @@ void Task::getKeyTask()
 	}
 }
 
-void Task::openMountPointTask()
-{
-	QProcess exe ;
-	exe.start( QString( "%1 \"%2\"" ).arg( m_folderOpener ).arg( m_point ) ) ;
-	exe.waitForFinished() ;
-	m_exitCode = exe.exitCode() ;
-	m_exitStatus = exe.exitStatus() ;
-	exe.close() ;
-}
-
 void Task::checkUnmount()
 {
 	QProcess p ;
@@ -334,10 +324,35 @@ void Task::umount()
 	emit signalUnmountComplete( p.exitCode(),output_1 ) ;
 }
 
+void Task::openMountPointTask()
+{
+	m_process = new QProcess() ;
+	connect( m_process,SIGNAL( finished( int,QProcess::ExitStatus ) ),this,SLOT( funguaMountPoint( int,QProcess::ExitStatus ) ) ) ;
+	m_process->start( QString( "%1 \"%2\"" ).arg( m_folderOpener ).arg( m_point ) ) ;
+}
+
+void Task::funguaMountPoint( int exitCode,QProcess::ExitStatus exitStatus )
+{
+	m_exitCode = exitCode ;
+	m_exitStatus = int( exitStatus ) ;
+	this->deleteLater() ;
+	m_process->deleteLater() ;
+}
+
 void Task::start( Task::Action action )
 {
-	m_action = action ;
-	QThreadPool::globalInstance()->start( this ) ;
+	if( action == Task::openMountPoint ){
+		/*
+		 * We will get here when a volume is opened,with the old way,one thread will run from the thread pool to
+		 * get properties of the just mounted volume and another thread run to open the mount point path
+		 * and this could cause prolonged operation if the global thread pool only manages one thread due to thread queuing.
+		 * For this reason,we run this one different outside of thread pool to allow faster operation.
+		 */
+		this->openMountPointTask() ;
+	}else{
+		m_action = action ;
+		QThreadPool::globalInstance()->start( this ) ;
+	}
 }
 
 Task::~Task()

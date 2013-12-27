@@ -183,8 +183,6 @@ static string_t _create_custom_mount_point( const char * label,uid_t uid,string_
 	const char * q = strrchr( label,'/' ) ;
 	const char * e ;
 
-	zuluCryptSecurityGainElevatedPrivileges() ;
-
 	if( q == NULL ){
 		p = StringAppend( path,label ) ;
 	}else{
@@ -218,6 +216,9 @@ static string_t _create_custom_mount_point( const char * label,uid_t uid,string_
 			p = StringAppend( path,q + 1 ) ;
 		}
 	}
+
+	zuluCryptSecurityGainElevatedPrivileges() ;
+
 	if( mkdir( p,S_IRWXU ) == 0 ){
 		st = path ;
 		chown( p,uid,uid ) ;

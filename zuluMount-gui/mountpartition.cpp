@@ -196,7 +196,7 @@ void mountPartition::stateChanged( int i )
 	m_ui->checkBox->setEnabled( true ) ;
 }
 
-void mountPartition::fileManagerOpenStatus( int exitCode, int exitStatus,int startError )
+void mountPartition::fileManagerOpenStatus( int exitCode,int exitStatus,int startError )
 {
 	Q_UNUSED( startError ) ;
 	if( exitCode != 0 || exitStatus != 0 ){
