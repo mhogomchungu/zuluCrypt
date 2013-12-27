@@ -260,25 +260,40 @@ static string_t create_mount_point( const char * device,const char * label,uid_t
 	path = zuluCryptGetUserName( uid ) ;
 
 	#define path_does_not_exist( x ) stat( x,&st ) != 0
+	#define path_does_exist( x ) stat( x,&st ) == 0
 
 	if( path_does_not_exist( "/run" ) ){
 		mkdir( "/run/",mode ) ;
-		chown( "/run/",0,0 ) ;
+	}else{
+		chmod( "/run",st.st_mode | S_IXOTH | S_IROTH ) ;
 	}
+
+	chown( "/run",0,0 ) ;
+
 	if( path_does_not_exist( "/run/media" ) ){
 		mkdir( "/run/media",mode ) ;
-		chown( "/run/media",0,0 ) ;
+	}else{
+		chmod( "/run/media",st.st_mode | S_IXOTH | S_IROTH ) ;
 	}
+
+	chown( "/run/media",0,0 ) ;
+
 	if( path_does_not_exist( "/run/media/private" ) ){
 		mkdir( "/run/media/private",mode ) ;
-		chown( "/run/media/private",0,0 ) ;
+	}else{
+		chmod( "/run/media/private",st.st_mode | S_IXOTH | S_IROTH ) ;
 	}
+
+	chown( "/run/media/private",0,0 ) ;
 
 	m_point = StringPrepend( path,"/run/media/private/" ) ;
 
-	if( stat( m_point,&st ) != 0 ){
+	if( path_does_not_exist( m_point ) ){
 		mkdir( m_point,S_IRUSR | S_IXUSR ) ;
 		chown( m_point,uid,uid ) ;
+	}else{
+		chown( m_point,uid,uid ) ;
+		chmod( m_point,S_IRUSR | S_IXUSR ) ;
 	}
 
 	zuluCryptSecurityDropElevatedPrivileges() ;

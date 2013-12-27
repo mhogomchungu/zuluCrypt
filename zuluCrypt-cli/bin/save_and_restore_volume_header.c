@@ -87,13 +87,14 @@ static string_t create_work_directory( void )
 	 */
 	const char * temp_path = "/run/zuluCrypt/" ;
 	struct stat xt ;
+	mode_t mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ;
 
 	zuluCryptSecurityGainElevatedPrivileges() ;
 
 	#define path_does_not_exist( x ) stat( x,&xt ) != 0
 
 	if( path_does_not_exist( "/run" ) ){
-		mkdir( "/run",S_IRWXU ) ;
+		mkdir( "/run",mode ) ;
 		chown( "/run",0,0 ) ;
 	}
 	if( path_does_not_exist( temp_path ) ){

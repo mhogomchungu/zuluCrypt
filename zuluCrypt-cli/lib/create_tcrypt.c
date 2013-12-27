@@ -131,7 +131,7 @@ static string_t _create_key_file( const char * key,size_t key_len,const char * e
 	#define path_does_not_exist( x ) stat( x,&statstr ) != 0
 
 	if( path_does_not_exist( "/run" ) ){
-		mkdir( "/run",S_IRWXU ) ;
+		mkdir( "/run",S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ) ;
 		chown( "/run",0,0 ) ;
 	}
 	if( path_does_not_exist( "/run/zuluCrypt" ) ){
