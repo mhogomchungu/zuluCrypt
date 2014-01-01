@@ -208,15 +208,17 @@ void createfile::exitStatus( int status )
 		if( m_msg->isVisible() ){
 			m_msg->HideUI() ;
 		}
+		emit fileCreated( m_path ) ;
 	}else if( st == FileTask::openMapperFailed ){
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR" ),tr( "could not open cryptographic back end to generate random data" ) ) ;
+		QFile::remove( m_path ) ;
 	}else{
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR" ),tr( "could not open cryptographic back end to generate random data" ) ) ;
+		QFile::remove( m_path ) ;
 	}
 
-	emit fileCreated( m_path ) ;
 	this->HideUI() ;
 }
 

@@ -965,7 +965,9 @@ void zuluCrypt::createPartition( QString partition )
 
 void zuluCrypt::FileCreated( QString file )
 {
-	setUpCreatepartition()->ShowFile( file ) ;
+	if( utility::exists( file ) ){
+		setUpCreatepartition()->ShowFile( file ) ;
+	}
 }
 
 openvolume * zuluCrypt::setUpOpenpartition()
