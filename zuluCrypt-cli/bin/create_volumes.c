@@ -116,7 +116,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	int k ;
 
 	int truecrypt_volume = 0 ;
-	size_t hidden_volume_size = 0 ;
+	u_int64_t hidden_volume_size = 0 ;
 
 	const char * tcrypt_hidden_volume_size = opts->tcrypt_hidden_volume_size ;
 	const char * tcrypt_hidden_volume_key_file  ;
@@ -268,14 +268,14 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		}
 	}
 
-	truecrypt_volume = StringAtLeastOnePrefixMatch( type,"tcrypt","truecrypt",NULL ) ;
+	truecrypt_volume = StringAtLeastOneMatch_1( type,"tcrypt","truecrypt",NULL ) ;
 
 	if( tcrypt_hidden_volume_size != NULL ){
 
 		if( !truecrypt_volume ){
 			return zuluExit( 23,stl ) ;
 		}else{
-			hidden_volume_size = atol( tcrypt_hidden_volume_size ) ;
+			hidden_volume_size = StringConvertToInt( tcrypt_hidden_volume_size ) ;
 
 			if( tcrypt_hidden_volume_key_file != NULL ){
 				/*

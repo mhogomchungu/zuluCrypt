@@ -319,7 +319,7 @@ int zuluCryptCreateTCrypt( const char * device,      /* path a device or file to
 			   const char * key,         /* key material to use                                                           */
 			   size_t       key_len,     /* length of key                                                                 */
 			   int          key_source,  /* key material source,either pass TCRYPT_KEYFILE or TCRYPT_PASSPHRASE           */
-			   size_t       hidden_volume_size,  /* pass "0" if a volume without a hidden volume is to be created or       */
+			   u_int64_t    hidden_volume_size,  /* pass "0" if a volume without a hidden volume is to be created or       */
 							    /* a non negative number to represent the size of the hidden volume to be created */
 			   const char * file_system_h,  /* file system of the hidden volume,pass NULL if no hidden volume will be created */
 			   const char * key_h,          /* key material to use for creation of hidden volume                              */

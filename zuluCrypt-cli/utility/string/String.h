@@ -760,9 +760,7 @@ static __inline__ size_t StringSize( const char * str )
 
 static __inline__ int StringsAreEqual( const char * x,const char * y )
 {
-	if( x == NULL && y == NULL ){
-		return 1 ;
-	}else if( x == NULL || y == NULL ){
+	if( x == NULL || y == NULL ){
 		return 0 ;
 	}else{
 		return strcmp( x,y ) == 0 ;
@@ -877,11 +875,7 @@ static __inline__ const char * StringContent( string_t st )
 
 static __inline__ const char ** StringPointer( string_t st )
 {
-	if( st == StringVoid ){
-		return NULL ;
-	}else{
-		return ( const char ** ) st ;
-	}
+	return ( const char ** ) st ;
 }
 
 #ifdef __cplusplus

@@ -163,7 +163,7 @@ static string_t _create_key_file( const char * key,size_t key_len,const char * e
  */
 static int _create_tcrypt_volume( const char * device,const char * file_system,
 				  const char * rng,const char * key,size_t key_len,
-				  int key_source,size_t hidden_volume_size,
+				  int key_source,u_int64_t hidden_volume_size,
 				  const char * file_system_h,const char * key_h,size_t key_len_h,int key_source_h )
 {
 	string_t st = StringVoid ;
@@ -342,7 +342,7 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
  */
 static int _create_tcrypt_volume( const char * device,const char * file_system,
 				  const char * rng,const char * key,size_t key_len,
-				  int key_source,size_t hidden_volume_size,
+				  int key_source,u_int64_t hidden_volume_size,
 				  const char * file_system_h,const char * key_h,size_t key_len_h,int key_source_h )
 {
 	string_t st = StringVoid ;
@@ -519,7 +519,8 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 
 int zuluCryptCreateTCrypt( const char * device,const char * file_system,const char * rng,
 			   const char * key,size_t key_len,int key_source,
-			   size_t hidden_volume_size,const char * file_system_h,const char * key_h,size_t key_len_h,int key_source_h )
+			   u_int64_t hidden_volume_size,
+			   const char * file_system_h,const char * key_h,size_t key_len_h,int key_source_h )
 {
 	int fd ;
 	string_t q = StringVoid ;
@@ -548,7 +549,8 @@ int zuluCryptCreateTCrypt( const char * device,const char * file_system,const ch
 #else
 int zuluCryptCreateTCrypt( const char * device,const char * file_system,const char * rng,
 			   const char * key,size_t key_len,int key_source,
-			   size_t hidden_volume_size,const char * file_system_h,const char * key_h,size_t key_len_h,int key_source_h )
+			   u_int64_t hidden_volume_size,const char * file_system_h,
+			   const char * key_h,size_t key_len_h,int key_source_h )
 {
 	if( 0 && device && file_system && rng && key_len && key_source && key
 		&& hidden_volume_size && key_len_h && key_h && key_source_h && file_system_h ){;}
