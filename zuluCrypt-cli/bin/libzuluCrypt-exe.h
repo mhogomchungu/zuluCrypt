@@ -47,13 +47,14 @@ typedef struct struct_opts_1{
 	const char * new_key_source ;
 	const char * argv ;
 	const char * tcrypt_hidden_volume_size ;
-	const char ** tcrypt_hidden_volume_key  ;
-	const char ** tcrypt_hidden_volume_key_file ;
+	const char * tcrypt_hidden_volume_key  ;
+	const char * tcrypt_hidden_volume_key_file ;
+	const char * offset ;
 	char * const * env ;
 	char action ;
 	int partition_number ;
-	int dont_ask_confirmation ;
-	int open_no_mount ;
+	int ask_confirmation ;
+	int open_mount ;
 	int mount_point_option ;
 	int print_partition_type ;
 	int share ;

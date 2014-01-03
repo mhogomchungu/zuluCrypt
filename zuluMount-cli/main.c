@@ -39,7 +39,7 @@
 static int _mount_get_opts( int argc,char * argv[],ARGS * args )
 {
 	int c ;
-	while( ( c = getopt( argc,argv,"cEMLntASNshlPmuDd:z:e:Y:p:f:G:" ) ) != -1 ) {
+	while( ( c = getopt( argc,argv,"cEMLntASNshlPmuDd:z:e:Y:p:f:G:o:" ) ) != -1 ) {
 		switch( c ){
 			case 'M' : args->share   = 1      ; break ;
 			case 'n' : args->mpo     = 1      ; break ;
@@ -56,6 +56,7 @@ static int _mount_get_opts( int argc,char * argv[],ARGS * args )
 			case 'm' : args->action  = "-m"   ; break ;
 			case 'u' : args->action  = "-u"   ; break ;
 			case 'c' : args->action  = "-c"   ; break ;
+			case 'o' : args->offset  = optarg ; break ;
 			case 'd' : args->device  = optarg ; break ;
 			case 'z' : args->m_point = optarg ; break ;
 			case 'e' : args->m_opts  = optarg ; break ;
@@ -285,6 +286,7 @@ static int _zuluMountExe( ARGS * args )
 	const char * device = args->device ;
 	const char * action = args->action ;
 	const char * uuid   = args->uuid   ;
+	const char * offset = args->offset ;
 	size_t       uid    = args->uid    ;
 
 	if( StringsAreEqual( action,"-D" ) ){
@@ -294,14 +296,14 @@ static int _zuluMountExe( ARGS * args )
 		return zuluMountPrintDeviceProperties( device,uuid,uid ) ;
 	}
 	if( StringsAreEqual( action,"-s" ) ){
-		if( _zuluPartitionHasCryptoFs( device ) ){
+		if( offset != NULL || _zuluPartitionHasCryptoFs( device ) ){
 			return zuluMountVolumeStatus( device,uuid,uid ) ;
 		}else{
 			return zuluMountUnEncryptedVolumeStatus( device ) ;
 		}
 	}
 	if( StringsAreEqual( action,"-m" ) ){
-		if( _zuluPartitionHasCryptoFs( device ) ){
+		if( offset != NULL || _zuluPartitionHasCryptoFs( device ) ){
 			/*
 			 * zuluMountMount() is defined in crypto_mount.c
 			 */
@@ -315,7 +317,7 @@ static int _zuluMountExe( ARGS * args )
 	}
 
 	if( StringsAreEqual( action,"-u" ) ){
-		if( _zuluPartitionHasCryptoFs( device ) ){
+		if( offset != NULL || _zuluPartitionHasCryptoFs( device ) ){
 			/*
 			 * zuluMountMount() is defined in crypto_umount.c
 			 */
@@ -333,6 +335,7 @@ static int _zuluMountExe( ARGS * args )
 
 static int _mount_help()
 {
+	const char * doc6 ;
 	const char * doc5 ;
 	const char * doc4 ;
 	const char * doc3 ;
@@ -362,12 +365,16 @@ options:\n\
 -E -- print a list of mounted volumes\n" ) ;
 
 	doc5= gettext( "\
+-o -- offset in sectors on where the volume starts in the volume.The volume is assumed to be plain type with this option\n\
+      and the option must be given when -u or -s arguments are used with a volume opened with this option\n" ) ;
+
+	doc6= gettext( "\
 examples:\n\
 mount a volume  : zuluMount-cli -m -d /dev/sdc1\n\
 unmount a volume: zuluMount-cli -u -d /dev/sdc1\n\
 mount and encrypted volume with a key \"xyz\" : zuluMount-cli -m -d /dev/sdc2 -p xyz\n" ) ;
 
-      printf( "%s%s%s%s%s",doc1,doc2,doc3,doc4,doc5 ) ;
+      printf( "%s%s%s%s%s%s",doc1,doc2,doc3,doc4,doc5,doc6 ) ;
 
 	return 201 ;
 }

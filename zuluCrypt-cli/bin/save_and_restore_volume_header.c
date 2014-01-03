@@ -299,17 +299,17 @@ static int restore_truecrypt_header( const char * device,const char * temp_path 
 	return 7 ;
 }
 
-static int restore_header( const char * device,const char * path,int k,uid_t uid )
+static int restore_header( const char * device,const char * path,int ask_confirmation,uid_t uid )
 {
 	const char * temp_path ;
-
+	int k ;
 	int st = 7;
 	string_t confirm ;
 	const char * warn = gettext( "\
 Are you sure you want to replace a header on device \"%s\" with a backup copy at \"%s\"?\n\
 Type \"YES\" and press Enter to continue: " ) ;
 	if( uid ){;}
-	if( k == -1 ){
+	if( ask_confirmation ){
 		zuluCryptSecurityDropElevatedPrivileges() ;
 		printf( warn,device,path ) ;
 
@@ -387,7 +387,7 @@ int zuluCryptEXESaveAndRestoreVolumeHeader( const struct_opts * opts,uid_t uid,i
 	}
 
 	if( option == VOLUME_HEADER_RESTORE ){
-		st = restore_header( device,path,opts->dont_ask_confirmation,uid ) ;
+		st = restore_header( device,path,opts->ask_confirmation,uid ) ;
 	}else{
 		st = save_header( device,path,uid ) ;
 	}

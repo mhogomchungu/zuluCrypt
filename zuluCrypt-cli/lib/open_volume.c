@@ -127,3 +127,97 @@ int zuluCryptOpenVolume( const char * dev,const char * mapper,
 
 	return zuluExit( h,p ) ;
 }
+
+int zuluCryptOpenPlainWithOffset( const char * dev,const char * offset,const char * mapper,
+				  const char * m_point,uid_t id,unsigned long m_opts,
+				  const char * fs_opts,const char * pass,size_t pass_size )
+{
+	int h ;
+	string_t p = StringVoid ;
+	string_t q = StringVoid ;
+	int lmode ;
+	int fd ;
+	const char * mode ;
+	const char * mapper_1 ;
+	/*
+	 * zuluCryptPathIsNotValid() is defined in is_path_valid.c
+	 */
+	if( zuluCryptPathIsNotValid( dev ) ){
+		return 3 ;
+	}
+
+	/*
+	 * zuluCryptMapperPrefix() is defined in create_mapper_name.c
+	 */
+	p = String( zuluCryptMapperPrefix() ) ;
+
+	mapper_1 = StringMultipleAppend( p,"/",mapper,END ) ;
+
+	/*
+	 * zuluCryptPathIsValid() is defined in is_path_valid.c
+	 */
+	if( zuluCryptPathIsValid( mapper_1 ) ){
+		return zuluExit( 2,p ) ;
+	}
+	if( m_opts & MS_RDONLY ){
+		lmode = O_RDONLY ;
+		mode = "ro" ;
+	}else{
+		lmode = O_RDWR ;
+		mode = "rw" ;
+	}
+
+	if( StringPrefixMatch( dev,"/dev/",5 ) ){
+		/*
+		 * zuluCryptOpenPlain_1() is defined in open_plain.c
+		 */
+		h = zuluCryptOpenPlain_1( dev,offset,mapper,mode,pass,pass_size ) ;
+	}else{
+		/*
+		 * zuluCryptAttachLoopDeviceToFile() is defined in create_loop_device.c
+		 */
+		if( zuluCryptAttachLoopDeviceToFile( dev,lmode,&fd,&q ) ){
+			dev = StringContent( q ) ;
+			h = zuluCryptOpenPlain_1( dev,offset,mapper,mode,pass,pass_size ) ;
+			close( fd ) ;
+			StringDelete( &q ) ;
+		}else{
+			h = 1 ;
+		}
+	}
+
+	switch( h ){
+		case 1 : return zuluExit( 4,p ) ;
+		case 2 : return zuluExit( 8,p ) ;
+		case 3 : return zuluExit( 3,p ) ;
+	}
+
+	if( m_point != NULL ){
+		/*
+		 * zuluCryptMountVolume() is defined in mount_volume.c
+		 */
+		h = zuluCryptMountVolume( mapper_1,m_point,m_opts,fs_opts,id ) ;
+
+		if( h != 0 ){
+			/*
+			 * zuluCryptCloseMapper() is defined in close_mapper.c
+			 */
+			if( zuluCryptCloseMapper( mapper_1 ) != 0 ){
+				h = 15 ;
+			}
+		}
+	}
+
+	return zuluExit( h,p ) ;
+}
+
+int zuluCryptOpenVolume_1( const char * dev,const char * offset,const char * mapper,
+			   const char * m_point,uid_t id,unsigned long m_opts,
+			   const char * fs_opts,const char * pass,size_t pass_size )
+{
+	if( offset == NULL ){
+		return zuluCryptOpenVolume( dev,mapper,m_point,id,m_opts,fs_opts,pass,pass_size ) ;
+	}else{
+		return zuluCryptOpenPlainWithOffset( dev,offset,mapper,m_point,id,m_opts,fs_opts,pass,pass_size ) ;
+	}
+}

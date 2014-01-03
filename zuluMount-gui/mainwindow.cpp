@@ -532,6 +532,7 @@ void MainWindow::volumeProperties()
 
 	Task * t = new Task() ;
 	t->setDevice( m_ui->tableWidget->item( m_ui->tableWidget->currentRow(),0 )->text() ) ;
+	t->setType( m_ui->tableWidget->item( m_ui->tableWidget->currentRow(),2 )->text() ) ;
 	connect( t,SIGNAL( signalProperties( QString ) ),this,SLOT( volumeProperties( QString ) ) ) ;
 
 	t->start( Task::VolumeProperties ) ;

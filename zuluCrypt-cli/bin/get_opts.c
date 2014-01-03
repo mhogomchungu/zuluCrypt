@@ -25,31 +25,12 @@ void zuluCryptEXEGetOptsSetDefault( struct_opts * stopts )
 {
 	memset( stopts,'\0',sizeof( struct_opts ) ) ;
 
-	stopts->plugin_path = NULL ;
-	stopts->device = NULL ;
-	stopts->mount_point = NULL ;
-	stopts->action = '\0' ;
-	stopts->m_opts = NULL ;
-	stopts->fs_opts = NULL ;
-	stopts->key_source = NULL ;
-	stopts->key = NULL ;
 	stopts->fs = "ext4" ;
 	stopts->type = "luks" ;
 	stopts->rng = "/dev/urandom" ;
-	stopts->existing_key_source = NULL ;
-	stopts->existing_key = NULL ;
-	stopts->new_key = NULL ;
-	stopts->new_key_source = NULL ;
-	stopts->partition_number = -1 ;
-	stopts->dont_ask_confirmation = -1 ;
-	stopts->open_no_mount = -1 ;
-	stopts->argv = NULL ;
-	stopts->env  = NULL ;
-	stopts->print_partition_type = 0 ;
-	stopts->share = 0 ;
-	stopts->tcrypt_hidden_volume_size = NULL;
-	stopts->tcrypt_hidden_volume_key = NULL ;
-	stopts->tcrypt_hidden_volume_key_file = NULL ;
+
+	stopts->open_mount = 1 ;
+	stopts->ask_confirmation = 1 ;
 }
 
 void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
@@ -79,8 +60,10 @@ void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
 			case( 'i' ) : stopts->action = 'i'      ; break ;
 			case( 'b' ) : stopts->action = 'b'      ; break ;
 			case( 'P' ) : stopts->action = 'P'      ; break ;
-			case( 'O' ) : stopts->action = 'O'      ;
-			stopts->open_no_mount = 1 ; break ;
+
+			case( 'O' ) : stopts->action = 'O' ;
+			stopts->open_mount = 0 ;
+			break ;
 			case( 'T' ) : stopts->print_partition_type = 1 ;
 			break;
 			case( 'M' ) : stopts->share = 1 ;
@@ -97,7 +80,7 @@ void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
 			case( 'R' ) : stopts->action = 'R' ;
 			stopts->key_source = optarg ;
 			break ;
-			case( 'k' ) : stopts->dont_ask_confirmation = 1 ;
+			case( 'k' ) : stopts->ask_confirmation = 0 ;
 			break ;
 			/*
 			 * ZULUCRYPTallPartitions,ZULUCRYPTsystemPartitions and ZULUCRYPTnonSystemPartitions
@@ -138,11 +121,11 @@ void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
 			break ;
 			case( 'u' ) : stopts->existing_key_source = "-f" ;
 			stopts->existing_key = optarg ;
-			stopts->tcrypt_hidden_volume_key_file = &stopts->existing_key ;
+			stopts->tcrypt_hidden_volume_key_file = optarg ;
 			break ;
 			case( 'l' ) : stopts->new_key_source = "-p" ;
 			stopts->new_key = optarg ;
-			stopts->tcrypt_hidden_volume_key = &stopts->new_key ;
+			stopts->tcrypt_hidden_volume_key = optarg ;
 			break ;
 			case( 'n' ) : stopts->new_key_source = "-f" ;
 			stopts->new_key = optarg ;

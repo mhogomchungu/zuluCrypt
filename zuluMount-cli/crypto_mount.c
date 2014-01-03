@@ -18,18 +18,9 @@
  */
 #include "includes.h"
 
-static inline const char * _mapping_name( const char * m )
-{
-	ssize_t s = StringLastIndexOfChar_1( m,'/' ) ;
-	if( s == -1 ){
-		return m ;
-	}else{
-		return m + s + 1 ;
-	}
-}
-
 int zuluMountCryptoMount( ARGS * args )
 {
+	const char * offset     = args->offset     ;
 	const char * device     = args->device     ;
 	const char * UUID       = args->uuid       ;
 	const char * mode       = args->m_opts     ;
@@ -60,10 +51,10 @@ int zuluMountCryptoMount( ARGS * args )
 			if( path == NULL ){
 				return 20 ;
 			}else{
-				mapping_name = _mapping_name( path ) ;
+				mapping_name = path + StringLastIndexOfChar_1( path,'/' ) + 1 ;
 			}
 		}else{
-			mapping_name = _mapping_name( device ) ;
+			mapping_name = device + StringLastIndexOfChar_1( device,'/' ) + 1 ;
 		}
 	}else{
 		str = String( UUID ) ;
@@ -81,7 +72,6 @@ int zuluMountCryptoMount( ARGS * args )
 	}
 
 	opts.mount_point        = m_point ;
-	opts.open_no_mount      = -1 ;
 	opts.device             = device ;
 	opts.m_opts             = mode ;
 	opts.key                = key ;
@@ -90,7 +80,7 @@ int zuluMountCryptoMount( ARGS * args )
 	opts.share              = share ;
 	opts.fs_opts            = fs_opts ;
 	opts.env                = StringListStringArray( args->env ) ;
-
+	opts.offset             = offset ;
 	/*
 	 * zuluCryptEXEOpenVolume() is defined in ../zuluCrypt-cli/bin/open_volume.c
 	 */

@@ -77,7 +77,7 @@ static int zuluExit_1( const char * type,stringList_t stl )
 
 int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name,uid_t uid )
 {
-	int conf             = opts->dont_ask_confirmation ;
+	int ask_confirmation = opts->ask_confirmation ;
 	const char * device  = opts->device ;
 	const char * fs      = opts->fs ;
 	const char * type    = opts->type ;
@@ -118,20 +118,10 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	int truecrypt_volume = 0 ;
 	u_int64_t hidden_volume_size = 0 ;
 
-	const char * tcrypt_hidden_volume_size = opts->tcrypt_hidden_volume_size ;
-	const char * tcrypt_hidden_volume_key_file  ;
-	const char * tcrypt_hidden_volume_key ;
+	const char * tcrypt_hidden_volume_size     = opts->tcrypt_hidden_volume_size ;
+	const char * tcrypt_hidden_volume_key_file = opts->tcrypt_hidden_volume_key_file ;
+	const char * tcrypt_hidden_volume_key      = opts->tcrypt_hidden_volume_key ;
 
-	if( opts->tcrypt_hidden_volume_key != NULL ){
-		tcrypt_hidden_volume_key = *( opts->tcrypt_hidden_volume_key ) ;
-	}else{
-		tcrypt_hidden_volume_key = NULL ;
-	}
-	if( opts->tcrypt_hidden_volume_key_file != NULL ){
-		tcrypt_hidden_volume_key_file = *( opts->tcrypt_hidden_volume_key_file ) ;
-	}else{
-		tcrypt_hidden_volume_key_file = NULL ;
-	}
 	/*
 	 * zulucryptFileSystemIsNotSupported() is defined in ../lib/mount_fs_options.c
 	 */
@@ -206,7 +196,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	if( zuluCryptPathIsNotValid( ZULUCRYPTmkfs ) ){
 		return zuluExit( 8,stl ) ;
 	}
-	if( conf == -1 ){
+	if( ask_confirmation ){
 		printf( gettext( "\nThis operation will destroy all data in a device at: \"%s\"\n" ),device ) ;
 		printf( gettext( "Are you sure you want to proceed?\n" ) ) ;
 		printf( gettext( "Type \"YES\" and press enter if you want to process: " ) ) ;

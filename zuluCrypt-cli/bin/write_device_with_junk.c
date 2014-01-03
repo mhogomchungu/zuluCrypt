@@ -107,7 +107,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	const char * source      = opts->key_source ;
 	const char * pass        = opts->key ;
 
-	int k = opts->dont_ask_confirmation ;
+	int k = opts->ask_confirmation ;
 
 	const char * cpass = NULL ;
 
@@ -161,7 +161,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	if( n == 1 ){
 		return zuluExit( stl,14 ) ;
 	}
-	if( k == 1 ){
+	if( k == 0 ){
 		*passphrase = StringRandomString( 64 ) ;
 		cpass = StringContent( *passphrase ) ;
 		len = StringLength( *passphrase ) ;
@@ -289,7 +289,7 @@ int zuluCryptEXEWriteDeviceWithJunk( const struct_opts * opts,const char * mappi
 
 	StringMultiplePrepend( *mapper,"/",crypt_get_dir(),END ) ;
 
-	if( opts->dont_ask_confirmation == -1 ){
+	if( opts->ask_confirmation ){
 		printf( gettext( "\nWARNING, device \"%s\" will be overwritten with random data destroying all present data.\n" ),device ) ;
 		printf( gettext( "Are you sure you want to proceed? Type \"YES\" and press enter if you are sure: " ) ) ;
 

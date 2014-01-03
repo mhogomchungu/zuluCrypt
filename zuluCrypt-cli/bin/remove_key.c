@@ -87,7 +87,7 @@ static int zuluExit_1( int st,const char * device,stringList_t stl )
 
 int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 {
-	int k                    = opts->dont_ask_confirmation ;
+	int ask_confirmation     = opts->ask_confirmation ;
 	const char * device      = opts->device ;
 	const char * keyType     = opts->key_source ;
 	const char * keytoremove = opts->key ;
@@ -131,7 +131,7 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 	}
 
 	if( _zuluCryptExECheckEmptySlots( device ) == 3 ){
-		if( k != 1 ){
+		if( ask_confirmation ){
 			printf( gettext( "WARNING: there is only one key in the volume and all data in it will be lost if you continue.\n" ) ) ;
 			printf( gettext( "Do you still want to continue? Type \"YES\" if you do: " ) ) ;
 			*confirm = StringGetFromTerminal_1( 3 ) ;

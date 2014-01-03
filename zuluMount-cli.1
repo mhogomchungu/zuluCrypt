@@ -1,8 +1,8 @@
 
-.TH zuluMount-cli 1 
+.TH zuluMount-cli 1
 
 .br
-.SH NAME 
+.SH NAME
 zuluMount-cli - command line tool that manages encrypted and unencrypted volumes
 
 .SH DESCRIPTION
@@ -25,6 +25,9 @@ options:
 -u -- unmount a volume: arguments: -d volume_path
 .br
 -s -- print properties of an encrypted volume: arguments: -d volume_path
+.br
+-o -- offset in sectors on where the volume starts in the volume.The volume is assumed to be plain type with this option
+      and the option must be given when -u or -s arguments are used with a volume opened with this option
 .br
 -M -- this option will create a mount point in "/run/media/private/$USER/" and a publicly accessible "mirror" in "/run/media/public/'
 .br

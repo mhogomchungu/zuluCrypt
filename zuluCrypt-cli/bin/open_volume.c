@@ -32,7 +32,7 @@ static int _open_tcrypt( const char * device,const char * mapper_name,const char
 			 int volume_type,const char * m_point,uid_t uid,
 			 unsigned long m_flags,const char * fs_opts ) ;
 
-static int _open_volume( const char * device,const char * mapper_name,const char * key,
+static int _open_volume( const char * device,const char * offset,const char * mapper_name,const char * key,
 			 size_t key_key_len,const char * key_source,const char * key_origin,
 			 const char * m_point,uid_t uid,
 			 unsigned long m_flags,const char * fs_opts ) ;
@@ -129,7 +129,7 @@ static int zuluExit( int st,const char * device,const char * m_point,stringList_
  */
 static int zuluExit_1( int st,const struct_opts * opts,const char * device,const char * m_point,stringList_t stl )
 {
-	if( opts->open_no_mount == -1 && st != 0 ){
+	if( opts->open_mount && st != 0 ){
 		zuluCryptSecurityGainElevatedPrivileges() ;
 		rmdir( m_point ) ;
 		zuluCryptSecurityDropElevatedPrivileges() ;
@@ -140,7 +140,7 @@ static int zuluExit_1( int st,const struct_opts * opts,const char * device,const
 int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,uid_t uid )
 {
 	int share                = opts->share ;
-	int nmp                  = opts->open_no_mount ;
+	int open_mount           = opts->open_mount ;
 	const char * device      = opts->device ;
 	const char * mount_point = opts->mount_point ;
 	const char * m_opts      = opts->m_opts ;
@@ -148,7 +148,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	const char * pass        = opts->key ;
 	const char * plugin_path = opts->plugin_path ;
 	const char * fs_opts     = opts->fs_opts ;
-
+	const char * offset      = opts->offset ;
 	/*
 	 * Below is a form of memory management.All strings are collected in a stringlist object to easily delete them
 	 * when the function returns.This allows for the function to have multiple exit points without risks of leaking
@@ -217,7 +217,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		default:  return zuluExit( 6,device,mount_point,stl ) ;
 	}
 
-	if( nmp == 1 ){
+	if( open_mount == 0 ){
 		if( uid != 0 ){
 			return zuluExit( 7,device,mount_point,stl ) ;
 		}
@@ -226,7 +226,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		}
 	}
 
-	if( nmp == -1 ){
+	if( open_mount ){
 		/*
 		* zuluCryptCreateMountPoint() is defined in create_mount_point.c
 		*/
@@ -325,7 +325,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		/*
 		 * try to open a volume multiple times if mount fail
 		 */
-		st = _open_volume( device,mapper_name,key,key_len,source,pass,mount_point,uid,m_flags,fs_opts ) ;
+		st = _open_volume( device,offset,mapper_name,key,key_len,source,pass,mount_point,uid,m_flags,fs_opts ) ;
 		if( st == -1 && i < 3 ){
 			sleep( 3 ) ;
 			i++ ;
@@ -368,13 +368,13 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	return zuluExit_1( st,opts,device,mount_point,stl ) ;
 }
 
-static int _open_volume( const char * device,const char * mapper_name,const char * key,size_t key_key_len,const char * key_source,
+static int _open_volume( const char * device,const char * offset,const char * mapper_name,const char * key,size_t key_key_len,const char * key_source,
 			 const char * key_origin,const char * m_point,uid_t uid,unsigned long m_flags,const char * fs_opts )
 {
 	/*
-	 * zuluCryptOpenVolume() is defined in ../lib/open_volume.c
+	 * zuluCryptOpenVolume_1() is defined in ../lib/open_volume.c
 	 */
-	int st = zuluCryptOpenVolume( device,mapper_name,m_point,uid,m_flags,fs_opts,key,key_key_len ) ;
+	int st = zuluCryptOpenVolume_1( device,offset,mapper_name,m_point,uid,m_flags,fs_opts,key,key_key_len ) ;
 
 	if( st == 4 ){
 		/*

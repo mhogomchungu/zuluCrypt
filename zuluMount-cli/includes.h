@@ -33,6 +33,7 @@ typedef struct{
 	const char * key_source ;
 	const char * fs_opts    ;
 	const char * uuid       ;
+	const char * offset     ;
 	stringList_t env        ;
 	int          mpo        ;
 	uid_t        uid        ;

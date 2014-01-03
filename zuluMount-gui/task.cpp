@@ -225,15 +225,38 @@ void Task::volumeProperties()
 	QProcess p ;
 	QString exe ;
 
-	exe = QString( "%1 -s -d \"%2\"" ).arg( zuluMount ).arg( m_device.replace( "\"","\"\"\"" ) ) ;
+	QString device = m_device.replace( "\"","\"\"\"" ) ;
+	exe = QString( "%1 -s -d \"%2\"" ).arg( zuluMount ).arg( device ) ;
 
 	p.start( exe ) ;
-	p.waitForFinished( -1 ) ;
+	p.waitForFinished() ;
 
-	if( p.exitCode() == 0 ){
-		emit signalProperties( p.readAll() ) ;
+	QByteArray d = p.readAll() ;
+	p.close() ;
+	QStringList l = QString( d ).split( "\n" ) ;
+
+	if( l.size() > 12 ){
+		emit signalProperties( d ) ;
 	}else{
-		emit signalProperties( QString( "" ) ) ;
+		if( m_type.contains( "crypto_PLAIN\n" ) ){
+			/*
+			 * this could be a plain volume opened with an offset
+			 */
+			exe = QString( "%1 -s -o bogusNecessaryArgument -d \"%2\"" ).arg( zuluMount ).arg( device ) ;
+
+			p.start( exe ) ;
+			p.waitForFinished() ;
+			d = p.readAll() ;
+			QStringList l = QString( d ).split( "\n" ) ;
+
+			if( l.size() > 12 ){
+				emit signalProperties( d ) ;
+			}else{
+				emit signalProperties( QString( "" ) ) ;
+			}
+		}else{
+			emit signalProperties( QString( "" ) ) ;
+		}
 	}
 }
 
@@ -311,17 +334,45 @@ void Task::mount()
 void Task::umount()
 {
 	QProcess p ;
-	QString exe = QString( "%1 -u -d \"%2\"" ).arg( zuluMount ).arg( m_device.replace( "\"","\"\"\"" ) ) ;
+	QString device = m_device.replace( "\"","\"\"\"" ) ;
+	QString exe = QString( "%1 -u -d \"%2\"" ).arg( zuluMount ).arg( device ) ;
 
 	p.start( exe ) ;
-	p.waitForFinished( -1 ) ;
+	p.waitForFinished() ;
 
+	int index ;
+
+	int r = p.exitCode() ;
 	QString output_1 = QString( p.readAll() ) ;
-	int index = output_1.indexOf( QChar( ':' ) ) ;
+	index = output_1.indexOf( QChar( ':' ) ) ;
 	output_1 = output_1.mid( index + 1 ) ;
 	p.close() ;
 
-	emit signalUnmountComplete( p.exitCode(),output_1 ) ;
+	if( r == 0 ){
+		emit signalUnmountComplete( r,output_1 ) ;
+	}else{
+		if( m_type.contains( "crypto_PLAIN\n" ) ){
+			/*
+			 * we could be trying to unmount a volume with an offset
+			 */
+			p.close() ;
+			exe = QString( "%1 -o bogusNecessaryArgument -u -d \"%2\"" ).arg( zuluMount ).arg( device ) ;
+			p.start( exe ) ;
+			p.waitForFinished() ;
+			r = p.exitCode() ;
+			if( r == 0 ){
+				output_1 = QString( p.readAll() ) ;
+				index = output_1.indexOf( QChar( ':' ) ) ;
+				output_1 = output_1.mid( index + 1 ) ;
+				p.close() ;
+				emit signalUnmountComplete( r,output_1 ) ;
+			}else{
+				emit signalUnmountComplete( r,output_1 ) ;
+			}
+		}else{
+			emit signalUnmountComplete( r,output_1 ) ;
+		}
+	}
 }
 
 void Task::openMountPointTask()
