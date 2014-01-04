@@ -273,13 +273,17 @@ int zuluCryptOpenPlain( const char * device,      /* path to encrypted file or p
 			size_t passphrase_size ); /* passphrase length  					*/
 
 /*
+ * truecrypt treats passphrases differently from keyfiles.
+ *
  * Below 3 constants are used in the "key_source" source argument below.
+ *
  * TCRYPT_KEYFILE_FILE option means the "key" argument is a path to a key file,if this option is used,then
  * use "0" for "key_len" argument,the argument is not used.
  *
- * TCRYPT_KEYFILE option means the "key" argument contains contents of a key file.The "key_len" is the size of the content
+ * TCRYPT_KEYFILE option means the "key" argument is a memory buffer containing the content of a keyfile.This is useful
+ * if you want the API to treat the content of a buffer as it they are a keyfile.
  *
- * TCRYPT_PASSPHRASE option means the "key" is contains a passphrase to be used to open the volume.
+ * TCRYPT_PASSPHRASE option means the "key" argument is a pointer to a memory buffer containing the passphrase.
  *
  */
 #define TCRYPT_PASSPHRASE   0

@@ -475,7 +475,7 @@ void createvolume::pbCreateClicked()
 			default: z +=  QString( "000000" )      ; break ;
 		}
 
-		const char * arg = "%1 -c -k -d \"%2\" -z %3 -t %4 %5 \"%6\" -g %7 -e %8 -u %9" ;
+		const char * arg = "%1 -c -k -d \"%2\" -z %3 -t %4 %5 \"%6\" -g %7 -e %8 -u \"%9\"" ;
 		exe = QString( arg ).arg( a ).arg( b ).arg( c ).arg( d ).arg( e ).arg( f ).arg( g ).arg( z ).arg( y ) ;
 	}else{
 		const char * arg = "%1 -c -k -d \"%2\" -z %3 -t %4 %5 \"%6\" -g %7" ;

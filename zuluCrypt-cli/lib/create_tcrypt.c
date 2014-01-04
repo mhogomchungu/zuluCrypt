@@ -35,7 +35,7 @@
 
 #if TRUECRYPT_CREATE
 
-static int _create_file_system( const char * device,const char * fs,
+static int _create_file_system( const char * device,const char * fs,int key_source,
 				const char * key,size_t key_len,int volume_type )
 {
 	string_t m = StringVoid ;
@@ -57,7 +57,7 @@ static int _create_file_system( const char * device,const char * fs,
 	/*
 	 * zuluCryptOpenTcrypt() is defined in open_tcrypt.c
 	 */
-	if( zuluCryptOpenTcrypt( device,mapper,key,key_len,TCRYPT_PASSPHRASE,volume_type,NULL,0,0,NULL ) == 0 ){
+	if( zuluCryptOpenTcrypt( device,mapper,key,key_len,key_source,volume_type,NULL,0,0,NULL ) == 0 ){
 		/*
 		 * zuluCryptCreateFileSystemInAVolume() is defined in create_volume.c
 		 */
@@ -69,50 +69,7 @@ static int _create_file_system( const char * device,const char * fs,
 		/*
 		 * zuluCryptCloseMapper() is defined in close_mapper.c
 		 */
-		zuluCryptCloseMapper( device_mapper );
-	}else{
-		r = 3 ;
-	}
-
-	StringDelete( &m ) ;
-	return r ;
-}
-
-static int _create_file_system_1( const char * device,const char * fs,
-				const char * keyfile,int volume_type )
-{
-	string_t m = StringVoid ;
-
-	int r ;
-
-	const char * device_mapper ;
-	const char * mapper ;
-
-	size_t len ;
-
-	m = String( crypt_get_dir() ) ;
-	len = StringLength( m )   ;
-
-	StringAppend( m,"/zuluCrypt-" ) ;
-	device_mapper = StringAppendInt( m,syscall( SYS_gettid ) ) ;
-	mapper = device_mapper + len + 1 ;
-
-	/*
-	 * zuluCryptOpenTcrypt() is defined in open_tcrypt.c
-	 */
-	if( zuluCryptOpenTcrypt( device,mapper,keyfile,0,TCRYPT_KEYFILE_FILE,volume_type,NULL,0,0,NULL ) == 0 ){
-		/*
-		 * zuluCryptCreateFileSystemInAVolume() is defined in create_volume.c
-		 */
-		if( zuluCryptCreateFileSystemInAVolume( fs,device_mapper ) == 0 ){
-			r = 0 ;
-		}else{
-			r = 3 ;
-		}
-		/*
-		 * zuluCryptCloseMapper() is defined in close_mapper.c
-		 */
-		zuluCryptCloseMapper( device_mapper );
+		zuluCryptCloseMapper( device_mapper ) ;
 	}else{
 		r = 3 ;
 	}
@@ -161,6 +118,10 @@ static string_t _create_key_file( const char * key,size_t key_len,const char * e
 /*
  * tcplay >= 1.2.0
  */
+
+/*
+ * currently doesnt work
+ */
 static int _create_tcrypt_volume( const char * device,const char * file_system,
 				  const char * rng,const char * key,size_t key_len,
 				  int key_source,u_int64_t hidden_volume_size,
@@ -192,8 +153,6 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 
 	tc_api_task_set( task,"dev",device ) ;
 
-	tc_api_task_set( task,"prf_algo","SHA512" ) ;
-
 	tc_api_task_set( task,"secure_erase",0 ) ;
 
 	if( key_source == TCRYPT_PASSPHRASE ){
@@ -207,7 +166,7 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 			 * do not create a hidden volume
 			 */
 			if( tc_api_task_do( task ) == TC_OK ){
-				r = _create_file_system( device,file_system,key,key_len,TCRYPT_NORMAL ) ;
+				r = _create_file_system( device,file_system,TCRYPT_PASSPHRASE,key,key_len,TCRYPT_NORMAL ) ;
 			}
 		}else{
 			/*
@@ -223,7 +182,7 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 				tc_api_task_set( task,"h_passphrase",key_h ) ;
 
 				if( tc_api_task_do( task ) == TC_OK ){
-					if( _create_file_system( device,file_system,key,key_len,TCRYPT_NORMAL ) == 0 ){
+					if( _create_file_system( device,file_system,TCRYPT_PASSPHRASE,key,key_len,TCRYPT_NORMAL ) == 0 ){
 						r = _create_file_system( device,file_system_h,key_h,key_len_h,TCRYPT_HIDDEN ) ;
 					}
 				}
@@ -239,8 +198,8 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 					tc_api_task_set( task,"h_keyfiles",keyfile_h ) ;
 
 					if( tc_api_task_do( task ) == TC_OK ){
-						if( _create_file_system( device,file_system,key,key_len,TCRYPT_NORMAL ) == 0 ){
-							r = _create_file_system_1( device,file_system_h,keyfile_h,TCRYPT_HIDDEN ) ;
+						if( _create_file_system( device,file_system,TCRYPT_PASSPHRASE,key,key_len,TCRYPT_NORMAL ) == 0 ){
+							r = _create_file_system( device,file_system_h,TCRYPT_KEYFILE_FILE,keyfile_h,TCRYPT_HIDDEN ) ;
 						}
 					}
 					/*
@@ -267,7 +226,7 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 
 
 				if( tc_api_task_do( task ) == TC_OK ){
-					r = _create_file_system_1( device,file_system,keyfile,TCRYPT_NORMAL ) ;
+					r = _create_file_system( device,file_system,TCRYPT_KEYFILE_FILE,keyfile,TCRYPT_NORMAL ) ;
 				}
 				zuluCryptDeleteFile( keyfile ) ;
 				StringDelete( &st ) ;
@@ -294,7 +253,7 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 					tc_api_task_set( task,"keyfiles",keyfile ) ;
 
 					if( tc_api_task_do( task ) == TC_OK ){
-						if( _create_file_system_1( device,file_system,keyfile,TCRYPT_NORMAL ) == 0 ){
+						if( _create_file_system( device,file_system,TCRYPT_KEYFILE_FILE,keyfile,TCRYPT_NORMAL ) == 0 ){
 							r = _create_file_system( device,file_system,key_h,key_len_h,TCRYPT_HIDDEN ) ;
 						}
 					}
@@ -387,7 +346,7 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 			 * dont create a hidden volume
 			 */
 			if( tc_api_create_volume( &api_opts ) == TC_OK ){
-				r = _create_file_system( device,file_system,key,key_len,TCRYPT_NORMAL ) ;
+				r = _create_file_system( device,file_system,TCRYPT_PASSPHRASE,key,key_len,TCRYPT_NORMAL ) ;
 			}
 		}else{
 			/*
@@ -400,8 +359,8 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 				api_opts.tc_passphrase_hidden = key_h ;
 
 				if( tc_api_create_volume( &api_opts ) == TC_OK ){
-					if( _create_file_system( device,file_system,key,key_len,TCRYPT_NORMAL ) == 0 ){
-						r = _create_file_system( device,file_system_h,key_h,key_len_h,TCRYPT_HIDDEN ) ;
+					if( _create_file_system( device,file_system,TCRYPT_PASSPHRASE,key,key_len,TCRYPT_NORMAL ) == 0 ){
+						r = _create_file_system( device,file_system_h,TCRYPT_PASSPHRASE,key_h,key_len_h,TCRYPT_HIDDEN ) ;
 					}
 				}
 			}else{
@@ -417,8 +376,8 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 					api_opts.tc_keyfiles_hidden = keyfiles_h ;
 
 					if( tc_api_create_volume( &api_opts ) == TC_OK ){
-						if( _create_file_system( device,file_system,key,key_len,TCRYPT_NORMAL ) == 0 ){
-							r = _create_file_system_1( device,file_system_h,keyfiles_h[ 0 ],TCRYPT_HIDDEN ) ;
+						if( _create_file_system( device,file_system,TCRYPT_PASSPHRASE,key,key_len,TCRYPT_NORMAL ) == 0 ){
+							r = _create_file_system( device,file_system_h,TCRYPT_KEYFILE_FILE,keyfiles_h[ 0 ],0,TCRYPT_HIDDEN ) ;
 						}
 					}
 					/*
@@ -446,7 +405,7 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 				api_opts.tc_keyfiles = keyfiles ;
 
 				if( tc_api_create_volume( &api_opts ) == TC_OK ){
-					r = _create_file_system_1( device,file_system,keyfiles[ 0 ],TCRYPT_NORMAL ) ;
+					r = _create_file_system( device,file_system,TCRYPT_KEYFILE_FILE,keyfiles[ 0 ],0,TCRYPT_NORMAL ) ;
 				}
 
 				zuluCryptDeleteFile( keyfiles[ 0 ] ) ;
@@ -471,8 +430,8 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 					api_opts.tc_keyfiles = keyfiles ;
 
 					if( tc_api_create_volume( &api_opts ) == TC_OK ){
-						if( _create_file_system_1( device,file_system,keyfiles[ 0 ],TCRYPT_NORMAL ) == 0 ){
-							r = _create_file_system( device,file_system,key_h,key_len_h,TCRYPT_HIDDEN ) ;
+						if( _create_file_system( device,file_system,TCRYPT_KEYFILE_FILE,keyfiles[ 0 ],0,TCRYPT_NORMAL ) == 0 ){
+							r = _create_file_system( device,file_system,TCRYPT_PASSPHRASE,key_h,key_len_h,TCRYPT_HIDDEN ) ;
 						}
 					}
 
@@ -497,8 +456,8 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 						api_opts.tc_keyfiles_hidden = keyfiles_h ;
 
 						if( tc_api_create_volume( &api_opts ) == TC_OK ){
-							if( _create_file_system_1( device,file_system,keyfiles[ 0 ],TCRYPT_NORMAL ) == 0 ){
-								r = _create_file_system_1( device,file_system,keyfiles_h[ 0 ],TCRYPT_HIDDEN ) ;
+							if( _create_file_system( device,file_system,TCRYPT_KEYFILE_FILE,keyfiles[ 0 ],0,TCRYPT_NORMAL ) == 0 ){
+								r = _create_file_system( device,file_system,TCRYPT_KEYFILE_FILE,keyfiles_h[ 0 ],0,TCRYPT_HIDDEN ) ;
 							}
 						}
 						zuluCryptDeleteFile( keyfiles_h[ 0 ] ) ;

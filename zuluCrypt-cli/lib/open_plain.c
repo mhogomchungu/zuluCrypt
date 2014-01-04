@@ -63,12 +63,16 @@ static int _open_plain( const char * device,const char * offset,const char * map
 	}
 }
 
-int zuluCryptOpenPlain_1( const char * device,const char * offset,const char * mapper,const char * mode,const char * pass,size_t pass_size )
+int zuluCryptOpenPlain_1( const char * device,const char * offset,const char * mapper,
+			  const char * mode,const char * pass,size_t pass_size,int x,int y )
 {
 	int lmode ;
 	string_t st ;
 	int fd ;
 	int r ;
+
+	if( x && y ){;}
+
 	if( StringPrefixMatch( device,"/dev/",5 ) ){
 		return _open_plain( device,offset,mapper,mode,pass,pass_size ) ;
 	}else{
@@ -93,5 +97,5 @@ int zuluCryptOpenPlain_1( const char * device,const char * offset,const char * m
 
 int zuluCryptOpenPlain( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
 {
-	return zuluCryptOpenPlain_1( device,NULL,mapper,mode,pass,pass_size ) ;
+	return zuluCryptOpenPlain_1( device,NULL,mapper,mode,pass,pass_size,0,0 ) ;
 }

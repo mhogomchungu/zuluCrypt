@@ -29,7 +29,7 @@ static inline int zuluExit( int x,string_t p )
 }
 
 static inline int _open_mapper( const char * dev,const char * offset,const char * mapper,
-				const char * mode,const char * pass,size_t pass_size )
+				const char * mode,const char * pass,size_t pass_size,int x,int y )
 {
 	/*
 	 * zuluCryptOpenLuks() is defined in open_luks.c
@@ -43,16 +43,16 @@ static inline int _open_mapper( const char * dev,const char * offset,const char 
 		/*
 		 * zuluCryptOpenPlain_1() is defined in open_plain.c
 		 */
-		return zuluCryptOpenPlain_1( dev,offset,mapper,mode,pass,pass_size ) ;
+		return zuluCryptOpenPlain_1( dev,offset,mapper,mode,pass,pass_size,x,y ) ;
 	}else{
 		return st ;
 	}
 }
 
-static int _zuluCryptOpenVolume_0( int( *function )( const char *,const char *,const char *,const char *,const char *,size_t ),
+int zuluCryptOpenVolume_0( int( *function )( const char *,const char *,const char *,const char *,const char *,size_t,int,int ),
 			   const char * dev,const char * offset,const char * mapper,
 			   const char * m_point,uid_t id,unsigned long m_opts,
-			   const char * fs_opts,const char * pass,size_t pass_size )
+			   const char * fs_opts,const char * pass,size_t pass_size,int volume_type,int key_source )
 {
 	int h ;
 	string_t p = StringVoid ;
@@ -90,14 +90,14 @@ static int _zuluCryptOpenVolume_0( int( *function )( const char *,const char *,c
 	}
 
 	if( StringPrefixMatch( dev,"/dev/",5 ) ){
-		h = function( dev,offset,mapper,mode,pass,pass_size ) ;
+		h = function( dev,offset,mapper,mode,pass,pass_size,volume_type,key_source ) ;
 	}else{
 		/*
 		 * zuluCryptAttachLoopDeviceToFile() is defined in create_loop_device.c
 		 */
 		if( zuluCryptAttachLoopDeviceToFile( dev,lmode,&fd,&q ) ){
 			dev = StringContent( q ) ;
-			h = function( dev,offset,mapper,mode,pass,pass_size ) ;
+			h = function( dev,offset,mapper,mode,pass,pass_size,volume_type,key_source ) ;
 			close( fd ) ;
 			StringDelete( &q ) ;
 		}else{
@@ -135,7 +135,7 @@ int zuluCryptOpenVolume( const char * dev,const char * mapper,
 			 const char * m_point,uid_t id,unsigned long m_opts,
 			 const char * fs_opts,const char * pass,size_t pass_size )
 {
-	return _zuluCryptOpenVolume_0( _open_mapper,dev,NULL,mapper,m_point,id,m_opts,fs_opts,pass,pass_size ) ;
+	return zuluCryptOpenVolume_0( _open_mapper,dev,NULL,mapper,m_point,id,m_opts,fs_opts,pass,pass_size,0,0 ) ;
 }
 
 int zuluCryptOpenPlainWithOffset( const char * dev,const char * offset,const char * mapper,
@@ -145,5 +145,5 @@ int zuluCryptOpenPlainWithOffset( const char * dev,const char * offset,const cha
 	/*
 	 * zuluCryptOpenPlain_1() is defined in open_plain.c
 	 */
-	return _zuluCryptOpenVolume_0( zuluCryptOpenPlain_1,dev,offset,mapper,m_point,id,m_opts,fs_opts,pass,pass_size ) ;
+	return zuluCryptOpenVolume_0( zuluCryptOpenPlain_1,dev,offset,mapper,m_point,id,m_opts,fs_opts,pass,pass_size,0,0 ) ;
 }

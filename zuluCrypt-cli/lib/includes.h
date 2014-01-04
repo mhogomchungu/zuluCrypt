@@ -286,7 +286,7 @@ void zuluCryptFormatSize( u_int64_t number,char * buffer,size_t buffer_size ) ;
  * zuluCryptOpenPlain_1() is defined in open_plain.c
  */
 int zuluCryptOpenPlain_1( const char * device,const char * offset,const char * mapper,
-			  const char * mode,const char * pass,size_t pass_size ) ;
+			  const char * mode,const char * pass,size_t pass_size,int,int ) ;
 
 /*
  * zuluCryptOpenPlainWithOffset() is defined in open_volume.c
@@ -294,5 +294,13 @@ int zuluCryptOpenPlain_1( const char * device,const char * offset,const char * m
 int zuluCryptOpenPlainWithOffset( const char * dev,const char * offset,const char * mapper,
 				  const char * m_point,uid_t id,unsigned long m_opts,
 				  const char * fs_opts,const char * pass,size_t pass_size ) ;
+
+/*
+ * zuluCryptOpenVolume_0() is defined in open_volume.c
+ */
+int zuluCryptOpenVolume_0( int( *function )( const char *,const char *,const char *,const char *,const char *,size_t,int,int ),
+			   const char * dev,const char * offset,const char * mapper,
+			   const char * m_point,uid_t id,unsigned long m_opts,
+			   const char * fs_opts,const char * pass,size_t pass_size,int volume_type,int key_source ) ;
 
 #endif

@@ -280,7 +280,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 				if( StringHasComponent( tcrypt_hidden_volume_key_file,"/.zuluCrypt-socket" ) ){
 					tcrypt_source_h = TCRYPT_PASSPHRASE ;
 				}else{
-					tcrypt_source_h = TCRYPT_KEYFILE;
+					tcrypt_source_h = TCRYPT_KEYFILE ;
 				}
 			}else if( tcrypt_hidden_volume_key == NULL ){
 				printf( gettext( "Enter tcrypt hidden passphrase: " ) ) ;

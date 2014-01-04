@@ -437,11 +437,13 @@ int main( int argc,char * argv[] )
 		q = StringListAssignString( stl,String( clargs.new_key ) ) ;
 		hide( clargs.new_key ) ;
 		clargs.new_key = StringContent( q ) ;
+		clargs.tcrypt_hidden_volume_key = clargs.new_key ;
 	}
 	if( clargs.existing_key != NULL ){
 		q = StringListAssignString( stl,String( clargs.existing_key ) ) ;
 		hide( clargs.existing_key ) ;
 		clargs.existing_key = StringContent( q ) ;
+		clargs.tcrypt_hidden_volume_key_file = clargs.existing_key ;
 	}
 	if( clargs.device != NULL ){
 		q = StringListAssignString( stl,String( clargs.device ) ) ;
