@@ -283,15 +283,16 @@ int zuluCryptFileSystemIsFUSEbased( const char * device ) ;
 void zuluCryptFormatSize( u_int64_t number,char * buffer,size_t buffer_size ) ;
 
 /*
- * zuluCryptOpenVolume_1() is defined in open_volume.c
- */
-int zuluCryptOpenVolume_1( const char * dev,const char * offset,const char * mapper,
-			   const char * m_point,uid_t id,unsigned long m_opts,
-			   const char * fs_opts,const char * pass,size_t pass_size ) ;
-
-/*
  * zuluCryptOpenPlain_1() is defined in open_plain.c
  */
 int zuluCryptOpenPlain_1( const char * device,const char * offset,const char * mapper,
 			  const char * mode,const char * pass,size_t pass_size ) ;
+
+/*
+ * zuluCryptOpenPlainWithOffset() is defined in open_volume.c
+ */
+int zuluCryptOpenPlainWithOffset( const char * dev,const char * offset,const char * mapper,
+				  const char * m_point,uid_t id,unsigned long m_opts,
+				  const char * fs_opts,const char * pass,size_t pass_size ) ;
+
 #endif

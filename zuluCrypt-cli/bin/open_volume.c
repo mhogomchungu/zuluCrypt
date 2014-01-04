@@ -371,10 +371,18 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 static int _open_volume( const char * device,const char * offset,const char * mapper_name,const char * key,size_t key_key_len,const char * key_source,
 			 const char * key_origin,const char * m_point,uid_t uid,unsigned long m_flags,const char * fs_opts )
 {
-	/*
-	 * zuluCryptOpenVolume_1() is defined in ../lib/open_volume.c
-	 */
-	int st = zuluCryptOpenVolume_1( device,offset,mapper_name,m_point,uid,m_flags,fs_opts,key,key_key_len ) ;
+	int st ;
+	if( offset == NULL ){
+		/*
+		 * zuluCryptOpenVolume() is defined in ../lib/open_volume.c
+		 */
+		st = zuluCryptOpenVolume( device,mapper_name,m_point,uid,m_flags,fs_opts,key,key_key_len ) ;
+	}else{
+		/*
+		 * zuluCryptOpenPlainWithOffset() is defined in ../lib/open_volume.c
+		 */
+		st = zuluCryptOpenPlainWithOffset( device,offset,mapper_name,m_point,uid,m_flags,fs_opts,key,key_key_len ) ;
+	}
 
 	if( st == 4 ){
 		/*
