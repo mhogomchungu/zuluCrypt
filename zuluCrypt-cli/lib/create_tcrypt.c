@@ -154,11 +154,12 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 	tc_api_task_set( task,"dev",device ) ;
 
 	tc_api_task_set( task,"secure_erase",0 ) ;
-#if 0
-	k = tc_api_task_set( task,"cipher_chain","AES-256-XTS" ) ;
-#endif
+
 	tc_api_task_set( task,"prf_algo","RIPEMD160" ) ;
 
+#if 1
+	tc_api_task_set( task,"cipher_chain","AES-256-XTS" ) ;
+#endif
 	if( tc_api_init( 0 ) != TC_OK ){
 		return 3 ;
 	}else{
@@ -178,8 +179,8 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 			tc_api_task_set( task,"hidden",1 ) ;
 			tc_api_task_set( task,"hidden_size_bytes",hidden_volume_size ) ;
 			tc_api_task_set( task,"h_prf_algo","RIPEMD160" ) ;
-			#if 0
-				k = tc_api_task_set( task,"h_cipher_chain","AES-256-XTS" ) ;
+			#if 1
+				tc_api_task_set( task,"h_cipher_chain","AES-256-XTS" ) ;
 			#endif
 			if( key_source_h == TCRYPT_PASSPHRASE ){
 				pass_h = key_h ;
