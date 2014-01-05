@@ -78,42 +78,6 @@ static int _create_file_system( const char * device,const char * fs,int key_sour
 	return r ;
 }
 
-static string_t _create_key_file( const char * key,size_t key_len,const char * e )
-{
-	string_t st ;
-	struct stat statstr ;
-	const char * file ;
-	int fd ;
-
-	#define path_does_not_exist( x ) stat( x,&statstr ) != 0
-
-	if( path_does_not_exist( "/run" ) ){
-		mkdir( "/run",S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ) ;
-		chown( "/run",0,0 ) ;
-	}
-	if( path_does_not_exist( "/run/zuluCrypt" ) ){
-		mkdir( "/run/zuluCrypt",S_IRWXU ) ;
-		chown( "/run/zuluCrypt",0,0 ) ;
-	}
-
-	st = String( "/run/zuluCrypt/create_tcrypt-" ) ;
-	StringMultipleAppend( st,e,"-",END ) ;
-	file = StringAppendInt( st,syscall( SYS_gettid ) ) ;
-	fd = open( file,O_WRONLY|O_CREAT,S_IRUSR | S_IWUSR | S_IRGRP |S_IROTH ) ;
-
-	if( fd == -1 ){
-		StringDelete( &st ) ;
-		return StringVoid ;
-	}else{
-		write( fd,key,key_len ) ;
-		close( fd ) ;
-
-		chown( file,0,0 ) ;
-		chmod( file,S_IRWXU ) ;
-		return st ;
-	}
-}
-
 #if TCPLAY_NEW_API
 
 /*
@@ -141,80 +105,78 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 		return 1 ;
 	}
 
-	task = tc_api_task_init( "create" ) ;
+	if( tc_api_init( 0 ) == TC_OK ){
+		task = tc_api_task_init( "create" ) ;
+		if( task != NULL ){
 
-	if( task == 0 ){
-		return 3 ;
-	}
+			if( StringPrefixMatch( rng,"/dev/urandom",12 ) ){
+				tc_api_task_set( task,"weak_keys_and_salt",1 ) ;
+			}
 
-	if( tc_api_init( 0 ) != TC_OK ){
-		return 3 ;
-	}else{
-		if( StringPrefixMatch( rng,"/dev/urandom",12 ) ){
-			tc_api_task_set( task,"weak_keys_and_salt",1 ) ;
-		}
+			tc_api_task_set( task,"dev",device ) ;
+			tc_api_task_set( task,"secure_erase",0 ) ;
+			tc_api_task_set( task,"prf_algo","RIPEMD160" ) ;
+			tc_api_task_set( task,"cipher_chain","AES-256-XTS" ) ;
 
-		tc_api_task_set( task,"dev",device ) ;
-		tc_api_task_set( task,"secure_erase",0 ) ;
-		tc_api_task_set( task,"prf_algo","RIPEMD160" ) ;
-		tc_api_task_set( task,"cipher_chain","AES-256-XTS" ) ;
-
-		if( key_source == TCRYPT_PASSPHRASE ){
-			tc_api_task_set( task,"passphrase",key ) ;
-			pass = key ;
-		}else{
-			key_source = TCRYPT_KEYFILE_FILE ;
-			st = _create_key_file( key,key_len,"1" ) ;
-			pass = StringContent( st ) ;
-			keyfile = pass ;
-			tc_api_task_set( task,"keyfiles",keyfile ) ;
-		}
-
-		if( hidden_volume_size > 0 ){
-
-			tc_api_task_set( task,"hidden",1 ) ;
-			tc_api_task_set( task,"hidden_size_bytes",hidden_volume_size ) ;
-			tc_api_task_set( task,"h_prf_algo","RIPEMD160" ) ;
-			tc_api_task_set( task,"h_cipher_chain","AES-256-XTS" ) ;
-
-			if( key_source_h == TCRYPT_PASSPHRASE ){
-				pass_h = key_h ;
-				tc_api_task_set( task,"h_passphrase",key_h ) ;
+			if( key_source == TCRYPT_PASSPHRASE ){
+				tc_api_task_set( task,"passphrase",key ) ;
+				pass = key ;
 			}else{
-				key_source_h = TCRYPT_KEYFILE_FILE ;
-				xt = _create_key_file( key_h,key_len_h,"2" ) ;
-				pass_h = StringContent( xt ) ;
-				keyfile_h = pass_h ;
-				tc_api_task_set( task,"h_keyfiles",keyfile_h ) ;
+				key_source = TCRYPT_KEYFILE_FILE ;
+				/*
+				 * zuluCryptCreateKeyFile() is defined in open_tcrypt.c
+				 */
+				st = zuluCryptCreateKeyFile( key,key_len,"/run/zuluCrypt/create_tcrypt-1-" ) ;
+				pass = StringContent( st ) ;
+				keyfile = pass ;
+				tc_api_task_set( task,"keyfiles",keyfile ) ;
 			}
-		}
 
-		if( tc_api_task_do( task ) == TC_OK ){
-			r = _create_file_system( device,file_system,key_source,pass,key_len,TCRYPT_NORMAL ) ;
-			if( hidden_volume_size > 0 && r == 0 ){
-				r = _create_file_system( device,file_system_h,key_source_h,pass_h,key_len_h,TCRYPT_HIDDEN ) ;
+			if( hidden_volume_size > 0 ){
+
+				tc_api_task_set( task,"hidden",1 ) ;
+				tc_api_task_set( task,"hidden_size_bytes",hidden_volume_size ) ;
+				tc_api_task_set( task,"h_prf_algo","RIPEMD160" ) ;
+				tc_api_task_set( task,"h_cipher_chain","AES-256-XTS" ) ;
+
+				if( key_source_h == TCRYPT_PASSPHRASE ){
+					pass_h = key_h ;
+					tc_api_task_set( task,"h_passphrase",key_h ) ;
+				}else{
+					key_source_h = TCRYPT_KEYFILE_FILE ;
+					xt = zuluCryptCreateKeyFile( key,key_len,"/run/zuluCrypt/create_tcrypt-2-" ) ;
+					pass_h = StringContent( xt ) ;
+					keyfile_h = pass_h ;
+					tc_api_task_set( task,"h_keyfiles",keyfile_h ) ;
+				}
 			}
-		}else{
-			r = 3 ;
+
+			if( tc_api_task_do( task ) == TC_OK ){
+				r = _create_file_system( device,file_system,key_source,pass,key_len,TCRYPT_NORMAL ) ;
+				if( hidden_volume_size > 0 && r == 0 ){
+					r = _create_file_system( device,file_system_h,key_source_h,pass_h,key_len_h,TCRYPT_HIDDEN ) ;
+				}
+			}
+
+			/*
+			 * zuluCryptDeleteFile() is defined in file_path_security.c
+			 */
+			if( keyfile != NULL ){
+				zuluCryptDeleteFile( keyfile ) ;
+				StringDelete( &st ) ;
+			}
+			if( keyfile_h != NULL ){
+				zuluCryptDeleteFile( keyfile_h ) ;
+				StringDelete( &xt ) ;
+			}
+
+			tc_api_task_uninit( task ) ;
 		}
 
-		/*
-		 * zuluCryptDeleteFile() is defined in file_path_security.c
-		 */
-		if( keyfile != NULL ){
-			zuluCryptDeleteFile( keyfile ) ;
-			StringDelete( &st ) ;
-		}
-		if( keyfile_h != NULL ){
-			zuluCryptDeleteFile( keyfile_h ) ;
-			StringDelete( &xt ) ;
-		}
-
-
-		tc_api_task_uninit( task ) ;
 		tc_api_uninit() ;
-		return r ;
 	}
+
+	return r ;
 }
 
 #else
@@ -243,41 +205,42 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 		return 1 ;
 	}
 
-	memset( &api_opts,'\0',sizeof( api_opts ) ) ;
+	if( tc_api_init( 0 ) == TC_OK ){
 
-	api_opts.tc_device          = device ;
-	api_opts.tc_cipher          = "AES-256-XTS";
-	api_opts.tc_prf_hash        = "RIPEMD160"  ;
-	api_opts.tc_no_secure_erase = 1 ;
+		memset( &api_opts,'\0',sizeof( api_opts ) ) ;
 
-	if( StringPrefixMatch( rng,"/dev/urandom",12 ) ){
-		api_opts.tc_use_weak_keys = 1 ;
-	}
+		api_opts.tc_device          = device ;
+		api_opts.tc_cipher          = "AES-256-XTS";
+		api_opts.tc_prf_hash        = "RIPEMD160"  ;
+		api_opts.tc_no_secure_erase = 1 ;
 
-	if( tc_api_init( 0 ) != TC_OK ){
-		return 3 ;
-	}else{
+		if( StringPrefixMatch( rng,"/dev/urandom",12 ) ){
+			api_opts.tc_use_weak_keys = 1 ;
+		}
+
 		if( key_source == TCRYPT_PASSPHRASE ){
 			api_opts.tc_passphrase = key ;
 			pass = key ;
 		}else{
 			key_source = TCRYPT_KEYFILE_FILE ;
-			st = _create_key_file( key,key_len,"1" ) ;
+			st = zuluCryptCreateKeyFile( key,key_len,"/run/zuluCrypt/create_tcrypt-1-" ) ;
 			pass = StringContent( st ) ;
 			keyfiles[ 0 ] = pass ;
 			api_opts.tc_keyfiles = keyfiles ;
 		}
 
 		if( hidden_volume_size > 0 ){
+
 			api_opts.tc_size_hidden_in_bytes = hidden_volume_size ;
 			api_opts.tc_cipher_hidden    = "AES-256-XTS";
 			api_opts.tc_prf_hash_hidden  = "RIPEMD160"  ;
+
 			if( key_source_h == TCRYPT_PASSPHRASE ){
 				api_opts.tc_passphrase_hidden = key_h ;
 				pass_h = key_h ;
 			}else{
 				key_source_h = TCRYPT_KEYFILE_FILE ;
-				xt = _create_key_file( key_h,key_len_h,"2" ) ;
+				xt = zuluCryptCreateKeyFile( key,key_len,"/run/zuluCrypt/create_tcrypt-2-" ) ;
 				pass_h = StringContent( xt ) ;
 				keyfiles_h[ 0 ] = pass_h ;
 				api_opts.tc_keyfiles_hidden = keyfiles_h ;
@@ -289,8 +252,6 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 			if( hidden_volume_size > 0 && r == 0 ){
 				r = _create_file_system( device,file_system_h,key_source_h,pass_h,key_len_h,TCRYPT_HIDDEN ) ;
 			}
-		}else{
-			r = 3 ;
 		}
 
 		/*
@@ -306,8 +267,9 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 		}
 
 		tc_api_uninit() ;
-		return r ;
 	}
+
+	return r ;
 }
 
 #endif

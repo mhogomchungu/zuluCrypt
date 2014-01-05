@@ -43,13 +43,6 @@ static inline int zuluExit( int st,struct crypt_device * cd )
 	return st ;
 }
 
-static inline int zuluExit_1( int st,struct crypt_device * cd,string_t xt )
-{
-	crypt_free( cd ) ;
-	StringDelete( &xt ) ;
-	return st ;
-}
-
 /*
  * 1 is returned if a volume is a truecrypt volume.
  * 0 is returned if a volume is not a truecrypt volume or functionality is not supported
@@ -78,7 +71,7 @@ int zuluCryptVolumeIsTcrypt( const char * device,const char * key,int key_source
 	}
 }
 
-static string_t _create_keyfile( const char * key,size_t key_len )
+string_t zuluCryptCreateKeyFile( const char * key,size_t key_len,const char * path )
 {
 	string_t st = StringVoid ;
 	int fd ;
@@ -97,7 +90,7 @@ static string_t _create_keyfile( const char * key,size_t key_len )
 		chown( "/run/zuluCrypt",0,0 ) ;
 	}
 
-	st = String( "/run/zuluCrypt/open_tcrypt-" ) ;
+	st = String( path ) ;
 	file = StringAppendInt( st,syscall( SYS_gettid ) ) ;
 	fd = open( file,O_WRONLY | O_CREAT,S_IRUSR | S_IWUSR | S_IRGRP |S_IROTH ) ;
 
@@ -163,7 +156,7 @@ static int _open_tcrypt_0( int key_source,const char * device,const char * mappe
 	int h ;
 	const char * keyfile ;
 	if( key_source == TCRYPT_KEYFILE ){
-		st = _create_keyfile( key,key_len ) ;
+		st = zuluCryptCreateKeyFile( key,key_len,"/run/zuluCrypt/open_tcrypt-" ) ;
 		if( st != StringVoid ){
 			keyfile = StringContent( st ) ;
 			h = _open_tcrypt_volume( TCRYPT_KEYFILE,device,mapper,mode,keyfile,key_len,volume_type,header_type ) ;

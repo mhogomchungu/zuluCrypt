@@ -303,4 +303,9 @@ int zuluCryptOpenVolume_0( int( *function )( const char *,const char *,const cha
 			   const char * m_point,uid_t id,unsigned long m_opts,
 			   const char * fs_opts,const char * pass,size_t pass_size,int volume_type,int key_source ) ;
 
+/*
+ * zuluCryptCreateKeyFile() is defined in open_tcrypt.c
+ */
+string_t zuluCryptCreateKeyFile( const char * key,size_t key_len,const char * path ) ;
+
 #endif
