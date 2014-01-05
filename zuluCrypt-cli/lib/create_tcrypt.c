@@ -147,22 +147,18 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 		return 3 ;
 	}
 
-	if( StringPrefixMatch( rng,"/dev/urandom",12 ) ){
-		tc_api_task_set( task,"weak_keys_and_salt",1 ) ;
-	}
-
-	tc_api_task_set( task,"dev",device ) ;
-
-	tc_api_task_set( task,"secure_erase",0 ) ;
-
-	tc_api_task_set( task,"prf_algo","RIPEMD160" ) ;
-
-#if 1
-	tc_api_task_set( task,"cipher_chain","AES-256-XTS" ) ;
-#endif
 	if( tc_api_init( 0 ) != TC_OK ){
 		return 3 ;
 	}else{
+		if( StringPrefixMatch( rng,"/dev/urandom",12 ) ){
+			tc_api_task_set( task,"weak_keys_and_salt",1 ) ;
+		}
+
+		tc_api_task_set( task,"dev",device ) ;
+		tc_api_task_set( task,"secure_erase",0 ) ;
+		tc_api_task_set( task,"prf_algo","RIPEMD160" ) ;
+		tc_api_task_set( task,"cipher_chain","AES-256-XTS" ) ;
+
 		if( key_source == TCRYPT_PASSPHRASE ){
 			tc_api_task_set( task,"passphrase",key ) ;
 			pass = key ;
@@ -179,9 +175,8 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 			tc_api_task_set( task,"hidden",1 ) ;
 			tc_api_task_set( task,"hidden_size_bytes",hidden_volume_size ) ;
 			tc_api_task_set( task,"h_prf_algo","RIPEMD160" ) ;
-			#if 1
-				tc_api_task_set( task,"h_cipher_chain","AES-256-XTS" ) ;
-			#endif
+			tc_api_task_set( task,"h_cipher_chain","AES-256-XTS" ) ;
+
 			if( key_source_h == TCRYPT_PASSPHRASE ){
 				pass_h = key_h ;
 				tc_api_task_set( task,"h_passphrase",key_h ) ;
@@ -217,6 +212,7 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 
 
 		tc_api_task_uninit( task ) ;
+		tc_api_uninit() ;
 		return r ;
 	}
 }
