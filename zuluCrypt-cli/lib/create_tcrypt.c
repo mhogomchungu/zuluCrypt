@@ -95,6 +95,8 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 
 	int r = 3 ;
 
+	int k ;
+
 	const char * keyfile = NULL ;
 	const char * keyfile_h = NULL ;
 
@@ -144,14 +146,18 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 					tc_api_task_set( task,"h_passphrase",key_h ) ;
 				}else{
 					key_source_h = TCRYPT_KEYFILE_FILE ;
-					xt = zuluCryptCreateKeyFile( key,key_len,"/run/zuluCrypt/create_tcrypt-2-" ) ;
+					xt = zuluCryptCreateKeyFile( key_h,key_len_h,"/run/zuluCrypt/create_tcrypt-2-" ) ;
 					pass_h = StringContent( xt ) ;
 					keyfile_h = pass_h ;
 					tc_api_task_set( task,"h_keyfiles",keyfile_h ) ;
 				}
 			}
 
-			if( tc_api_task_do( task ) == TC_OK ){
+			k = tc_api_task_do( task ) ;
+
+			tc_api_task_uninit( task ) ;
+
+			if( k == TC_OK ){
 				r = _create_file_system( device,file_system,key_source,pass,key_len,TCRYPT_NORMAL ) ;
 				if( hidden_volume_size > 0 && r == 0 ){
 					r = _create_file_system( device,file_system_h,key_source_h,pass_h,key_len_h,TCRYPT_HIDDEN ) ;
@@ -169,8 +175,6 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 				zuluCryptDeleteFile( keyfile_h ) ;
 				StringDelete( &xt ) ;
 			}
-
-			tc_api_task_uninit( task ) ;
 		}
 
 		tc_api_uninit() ;
@@ -194,6 +198,8 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 	tc_api_opts api_opts ;
 
 	int r = 3 ;
+
+	int k ;
 
 	const char * keyfiles[ 2 ] = { NULL,NULL } ;
 	const char * keyfiles_h[ 2 ] = { NULL,NULL } ;
@@ -240,14 +246,18 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 				pass_h = key_h ;
 			}else{
 				key_source_h = TCRYPT_KEYFILE_FILE ;
-				xt = zuluCryptCreateKeyFile( key,key_len,"/run/zuluCrypt/create_tcrypt-2-" ) ;
+				xt = zuluCryptCreateKeyFile( key_h,key_len_h,"/run/zuluCrypt/create_tcrypt-2-" ) ;
 				pass_h = StringContent( xt ) ;
 				keyfiles_h[ 0 ] = pass_h ;
 				api_opts.tc_keyfiles_hidden = keyfiles_h ;
 			}
 		}
 
-		if( tc_api_create_volume( &api_opts ) == TC_OK ){
+		k = tc_api_create_volume( &api_opts ) ;
+
+		tc_api_uninit() ;
+		
+		if( k == TC_OK ){
 			r = _create_file_system( device,file_system,key_source,pass,key_len,TCRYPT_NORMAL ) ;
 			if( hidden_volume_size > 0 && r == 0 ){
 				r = _create_file_system( device,file_system_h,key_source_h,pass_h,key_len_h,TCRYPT_HIDDEN ) ;
@@ -265,8 +275,6 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 			zuluCryptDeleteFile( keyfiles_h[ 0 ] ) ;
 			StringDelete( &xt ) ;
 		}
-
-		tc_api_uninit() ;
 	}
 
 	return r ;
