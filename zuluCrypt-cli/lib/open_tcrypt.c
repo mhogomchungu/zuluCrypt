@@ -71,7 +71,7 @@ int zuluCryptVolumeIsTcrypt( const char * device,const char * key,int key_source
 	}
 }
 
-string_t zuluCryptCreateKeyFile( const char * key,size_t key_len,const char * path )
+string_t zuluCryptCreateKeyFile( const char * key,size_t key_len,const char * fileName )
 {
 	string_t st = StringVoid ;
 	int fd ;
@@ -90,7 +90,8 @@ string_t zuluCryptCreateKeyFile( const char * key,size_t key_len,const char * pa
 		chown( "/run/zuluCrypt",0,0 ) ;
 	}
 
-	st = String( path ) ;
+	st = StringEmpty() ;
+	StringMultipleAppend( st,"/run/zuluCrypt/",fileName,END ) ;
 	file = StringAppendInt( st,syscall( SYS_gettid ) ) ;
 	fd = open( file,O_WRONLY | O_CREAT,S_IRUSR | S_IWUSR | S_IRGRP |S_IROTH ) ;
 
@@ -156,7 +157,7 @@ static int _open_tcrypt_0( int key_source,const char * device,const char * mappe
 	int h ;
 	const char * keyfile ;
 	if( key_source == TCRYPT_KEYFILE ){
-		st = zuluCryptCreateKeyFile( key,key_len,"/run/zuluCrypt/open_tcrypt-" ) ;
+		st = zuluCryptCreateKeyFile( key,key_len,"open_tcrypt-" ) ;
 		if( st != StringVoid ){
 			keyfile = StringContent( st ) ;
 			h = _open_tcrypt_volume( TCRYPT_KEYFILE,device,mapper,mode,keyfile,key_len,volume_type,header_type ) ;

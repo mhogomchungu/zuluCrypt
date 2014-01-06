@@ -128,7 +128,7 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 				/*
 				 * zuluCryptCreateKeyFile() is defined in open_tcrypt.c
 				 */
-				st = zuluCryptCreateKeyFile( key,key_len,"/run/zuluCrypt/create_tcrypt-1-" ) ;
+				st = zuluCryptCreateKeyFile( key,key_len,"create_tcrypt-1-" ) ;
 				pass = StringContent( st ) ;
 				keyfile = pass ;
 				tc_api_task_set( task,"keyfiles",keyfile ) ;
@@ -146,7 +146,7 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 					tc_api_task_set( task,"h_passphrase",key_h ) ;
 				}else{
 					key_source_h = TCRYPT_KEYFILE_FILE ;
-					xt = zuluCryptCreateKeyFile( key_h,key_len_h,"/run/zuluCrypt/create_tcrypt-2-" ) ;
+					xt = zuluCryptCreateKeyFile( key_h,key_len_h,"create_tcrypt-2-" ) ;
 					pass_h = StringContent( xt ) ;
 					keyfile_h = pass_h ;
 					tc_api_task_set( task,"h_keyfiles",keyfile_h ) ;
@@ -229,7 +229,7 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 			pass = key ;
 		}else{
 			key_source = TCRYPT_KEYFILE_FILE ;
-			st = zuluCryptCreateKeyFile( key,key_len,"/run/zuluCrypt/create_tcrypt-1-" ) ;
+			st = zuluCryptCreateKeyFile( key,key_len,"create_tcrypt-1-" ) ;
 			pass = StringContent( st ) ;
 			keyfiles[ 0 ] = pass ;
 			api_opts.tc_keyfiles = keyfiles ;
@@ -246,7 +246,7 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 				pass_h = key_h ;
 			}else{
 				key_source_h = TCRYPT_KEYFILE_FILE ;
-				xt = zuluCryptCreateKeyFile( key_h,key_len_h,"/run/zuluCrypt/create_tcrypt-2-" ) ;
+				xt = zuluCryptCreateKeyFile( key_h,key_len_h,"create_tcrypt-2-" ) ;
 				pass_h = StringContent( xt ) ;
 				keyfiles_h[ 0 ] = pass_h ;
 				api_opts.tc_keyfiles_hidden = keyfiles_h ;
@@ -256,7 +256,7 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 		k = tc_api_create_volume( &api_opts ) ;
 
 		tc_api_uninit() ;
-		
+
 		if( k == TC_OK ){
 			r = _create_file_system( device,file_system,key_source,pass,key_len,TCRYPT_NORMAL ) ;
 			if( hidden_volume_size > 0 && r == 0 ){
