@@ -217,15 +217,6 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		default:  return zuluExit( 6,device,mount_point,stl ) ;
 	}
 
-	if( open_mount == 0 ){
-		if( uid != 0 ){
-			return zuluExit( 7,device,mount_point,stl ) ;
-		}
-		if( mount_point != NULL ){
-			return zuluExit( 8,device,mount_point,stl ) ;
-		}
-	}
-
 	if( open_mount ){
 		/*
 		* zuluCryptCreateMountPoint() is defined in create_mount_point.c
@@ -234,6 +225,13 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		mount_point = StringContent( *m_point ) ;
 		if( mount_point == NULL ){
 			return zuluExit( 9,device,mount_point,stl ) ;
+		}
+	}else{
+		if( uid != 0 ){
+			return zuluExit( 7,device,mount_point,stl ) ;
+		}
+		if( mount_point != NULL ){
+			return zuluExit( 8,device,mount_point,stl ) ;
 		}
 	}
 
