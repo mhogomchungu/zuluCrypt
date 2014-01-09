@@ -256,9 +256,12 @@ typedef struct{
 	string_t ( * getKey )( int * ) ;
 }info_t ;
 
-static inline int zuluExit_1( int r,string_t st,string_t xt )
+static inline int zuluExit_1( int r,string_t st,string_t xt,tc_api_task task )
 {
 	StringMultipleDelete( &xt,&st,NULL ) ;
+	if( task != 0 ){
+		tc_api_task_uninit( task ) ;
+	}
 	tc_api_uninit() ;
 	return r ;
 }
@@ -312,7 +315,7 @@ static string_t _get_password_0( int * r )
 static int _modify_tcrypt( const info_t * info,const struct_opts * opts,const char * temp_path,uid_t uid )
 {
 	int k = 4 ;
-	tc_api_task task ;
+	tc_api_task task = 0 ;
 
 	string_t st = StringVoid ;
 	string_t xt = StringVoid ;
@@ -334,7 +337,7 @@ static int _modify_tcrypt( const info_t * info,const struct_opts * opts,const ch
 		if( k ){
 			tc_api_task_set( task,info->key_type,StringContent( st ) ) ;
 		}else{
-			return zuluExit_1( 4,st,xt ) ;
+			return zuluExit_1( 4,st,xt,task ) ;
 		}
 	}else{
 		/*
@@ -345,14 +348,14 @@ static int _modify_tcrypt( const info_t * info,const struct_opts * opts,const ch
 		zuluCryptSecurityGainElevatedPrivileges() ;
 
 		if( st == StringVoid ){
-			return zuluExit_1( 4,st,xt ) ;
+			return zuluExit_1( 4,st,xt,task ) ;
 		}else{
 			if( StringHasComponent( opts->key,".zuluCrypt-socket" ) ){
 				tc_api_task_set( task,info->key_type,StringContent( st ) ) ;
 			}else{
 				xt = zuluCryptCreateKeyFile( StringContent( st ),StringLength( st ),"tcrypt-bk-" ) ;
 				if( xt == StringVoid ){
-					return zuluExit_1( 4,st,xt ) ;
+					return zuluExit_1( 4,st,xt,task ) ;
 				}else{
 					tc_api_task_set( task,info->key_type_1,StringContent( xt ) ) ;
 				}
@@ -381,7 +384,7 @@ static int _modify_tcrypt( const info_t * info,const struct_opts * opts,const ch
 		zuluCryptDeleteFile( StringContent( xt ) ) ;
 	}
 
-	return zuluExit_1( k,st,xt ) ;
+	return zuluExit_1( k,st,xt,task ) ;
 }
 
 static int _save_truecrypt_header( const struct_opts * opts,const char * temp_path,const char * path,uid_t uid )
