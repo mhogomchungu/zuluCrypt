@@ -279,7 +279,7 @@ char * StringDeleteHandle( string_t * st ) ;
 /*
  * Return the length of the string handled by handle st.
  */
-ssize_t StringLength( string_t st ) ;
+size_t StringLength( string_t st ) ;
 
 /*
  * Return a character at position p.First position is at "0".
@@ -466,6 +466,11 @@ void StringReset( string_t st ) ;
  * Returns a pointer to the result,NULL on error and the original string remain intact
  */
 const char * StringRemoveLeft( string_t st,size_t x ) ;
+
+/*
+ * remove all occurances numbers in the string,ie '0','1','2' etc
+ */
+const char * StringRemoveDigits( string_t ) ;
 
 /*
  * Return a sub string starting at position x and made up of y characters

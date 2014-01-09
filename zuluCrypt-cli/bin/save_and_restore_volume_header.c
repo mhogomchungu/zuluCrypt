@@ -397,24 +397,27 @@ static int _modify_tcrypt( const info_t * info,const struct_opts * opts,const ch
 
 static string_t _root_device( const char * device )
 {
-	char c ;
+	size_t e ;
+	ssize_t r ;
 	string_t st = String( device ) ;
-	if( StringAtLeastOneStartsWith( st,"/dev/sd","/dev/hd","/dev/mmc",NULL ) ){
-		while( 1 ){
-			/*
-			 * this loop will convert something like: "/dev/sdc12" to "/dev/sdc"
-			 * basically,it removes digits from the end of the string to give the root device
-			 * required by tcplay "system device argument"
-			 */
-			c = StringCharAtLast( st ) ;
-			if( c >= '0' && c <= '9' ){
-				StringRemoveRight( st,1 ) ;
-			}else{
-				break ;
-			}
+	if( StringAtLeastOneStartsWith( st,"/dev/sd","/dev/hd",NULL ) ){
+		/*
+		 * this path will convert something like: "/dev/sdc12" to "/dev/sdc"
+		 * basically,it removes digits from the end of the string to give the root device
+		 * required by tcplay "system device argument"
+		 */
+		StringRemoveDigits( st ) ;
+	}else if( StringStartsWith( st,"/dev/mmc" ) ){
+		/*
+		 * device path will be something like "/dev/mmcblk0p2" and what we want to do
+		 * is cut off the string from p to end iwth "/dev/mmcblk0"
+		 */
+		r = StringIndexOfChar( st,0,'p' ) ;
+		if( r != -1 ){
+			e = StringLength( st ) - ( size_t )r ;
+			StringRemoveRight( st,e ) ;
 		}
 	}
-
 	return st ;
 }
 

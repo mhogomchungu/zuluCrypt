@@ -521,6 +521,37 @@ const char * StringRemoveLength( string_t st,size_t x ,size_t y )
 	return st->string ;
 }
 
+const char * StringRemoveDigits( string_t st )
+{
+	char * e ;
+	char * f ;
+	int k ;
+	size_t z ;
+
+	if( st == StringVoid ){
+		return NULL ;
+	}else{
+		z = st->size ;
+		e = st->string ;
+		f = e ;
+		while( 1 ){
+			k = *e ;
+			if( k == '\0' ){
+				break ;
+			}else if( k >= '0' && k <= '9' ){
+				z-- ;
+				f++ ;
+			}else{
+				e++ ;
+				f++ ;
+			}
+			*e = *f ;
+		}
+		st->size = z ;
+		return st->string ;
+	}
+}
+
 void StringClear( string_t st )
 {
 	if( st != StringVoid ){
@@ -581,10 +612,10 @@ const char * StringCrop( string_t st,size_t x,size_t y )
 	return st->string ;
 }
 
-ssize_t StringLength( string_t st )
+size_t StringLength( string_t st )
 {
 	if( st == StringVoid ){
-		return -1 ;
+		return 0 ;
 	}else{
 		return st->size ;
 	}
