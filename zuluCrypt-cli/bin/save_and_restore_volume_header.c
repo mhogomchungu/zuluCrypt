@@ -250,6 +250,8 @@ static int _save_luks_header( const struct_opts * opts,const char * temp_path,co
 #if TCPLAY_NEW_API
 
 typedef struct{
+	const char * device ;
+	const char * sys_device ;
 	const char * key_type ;
 	const char * key_type_1 ;
 	const char * header_source ;
@@ -273,6 +275,9 @@ static string_t _get_password( int * r )
 	*r = 1 ;
 
 	printf( gettext( "Enter passphrase: " ) ) ;
+
+	printf( "\n" ) ;
+
 	/*
 	 * ZULUCRYPT_KEY_MAX_SIZE is set in ../constants.h
 	 */
@@ -363,7 +368,8 @@ static int _modify_tcrypt( const info_t * info,const struct_opts * opts,const ch
 		}
 	}
 
-	tc_api_task_set( task,"dev",opts->device ) ;
+	tc_api_task_set( task,"dev",info->device ) ;
+	tc_api_task_set( task,"sys",info->sys_device ) ;
 	tc_api_task_set( task,"hidden",( int )0 ) ;
 	tc_api_task_set( task,"hidden_size_bytes",( u_int64_t )0 ) ;
 
@@ -387,14 +393,40 @@ static int _modify_tcrypt( const info_t * info,const struct_opts * opts,const ch
 	return zuluExit_1( k,st,xt,task ) ;
 }
 
+static string_t _root_device( const char * device )
+{
+	char c ;
+	string_t st = String( device ) ;
+	if( StringAtLeastOneStartsWith( st,"/dev/sd","/dev/hd","/dev/mmc",NULL ) ){
+		while( 1 ){
+			/*
+			 * this loop will convert something like: "/dev/sdc12" to "/dev/sdc"
+			 * basically,it removes digits from the end of the string to give the root device
+			 * required by tcplay "system device argument"
+			 */
+			c = StringCharAtLast( st ) ;
+			if( c >= '0' && c <= '9' ){
+				StringRemoveRight( st,1 ) ;
+			}else{
+				break ;
+			}
+		}
+	}
+
+	return st ;
+}
+
 static int _save_truecrypt_header( const struct_opts * opts,const char * temp_path,const char * path,uid_t uid )
 {
 	int fd ;
-
+	string_t st ;
 	info_t info ;
+	int r ;
 
 	memset( &info,'\0',sizeof( info_t ) ) ;
 
+	info.device        = opts->device ;
+	info.sys_device    = NULL ;
 	info.key_type      = "passphrase" ;
 	info.key_type_1    = "keyfiles" ;
 	info.header_source = "save_header_to_file" ;
@@ -409,8 +441,21 @@ static int _save_truecrypt_header( const struct_opts * opts,const char * temp_pa
 		if( _modify_tcrypt( &info,opts,temp_path,uid ) == TC_OK ){
 			return _secure_copy_file( temp_path,path,uid ) ;
 		}else{
-			unlink( temp_path ) ;
-			return 20 ;
+			/*
+			 * an attempt to open the volume as a normal truecrypt volume failed,reattempt treating
+			 * the volume as a system volume.
+			 */
+			st = _root_device( info.device ) ;
+			info.sys_device = StringContent( st ) ;
+			if( _modify_tcrypt( &info,opts,temp_path,uid ) == TC_OK ){
+				r = _secure_copy_file( temp_path,path,uid ) ;
+			}else{
+				unlink( temp_path ) ;
+				r = 20 ;
+			}
+
+			StringDelete( &st ) ;
+			return r ;
 		}
 	}else{
 		return 7 ;
@@ -420,9 +465,12 @@ static int _save_truecrypt_header( const struct_opts * opts,const char * temp_pa
 static int _restore_truecrypt_header( const struct_opts * opts,const char * temp_path,uid_t uid )
 {
 	info_t info ;
-
+	string_t st ;
+	int r ;
 	memset( &info,'\0',sizeof( info_t ) ) ;
 
+	info.device        = opts->device ;
+	info.sys_device    = NULL ;
 	info.key_type      = "new_passphrase" ;
 	info.key_type_1    = "new_keyfiles" ;
 	info.header_source = "header_from_file" ;
@@ -431,7 +479,20 @@ static int _restore_truecrypt_header( const struct_opts * opts,const char * temp
 	if( _modify_tcrypt( &info,opts,temp_path,uid ) == TC_OK ){
 		return 1 ;
 	}else{
-		return 7 ;
+		/*
+		 * an attempt to open the volume as a normal truecrypt volume failed,reattempt treating
+		 * the volume as a system volume.
+		 */
+		st = _root_device( info.device ) ;
+		info.sys_device = StringContent( st ) ;
+		if( _modify_tcrypt( &info,opts,temp_path,uid ) == TC_OK ){
+			r = 1 ;
+		}else{
+			r = 7 ;
+		}
+
+		StringDelete( &st ) ;
+		return r ;
 	}
 }
 
