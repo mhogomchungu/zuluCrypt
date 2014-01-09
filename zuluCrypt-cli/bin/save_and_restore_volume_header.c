@@ -34,7 +34,7 @@
 
 #define SIZE 512
 
-static int zuluExit( int st )
+static int zuluExit( int st,const char * dev )
 {
 	switch( st ){
 		case 0 : printf( gettext( "SUCCESS: header saved successfully\n" ) )						; break ;
@@ -59,6 +59,8 @@ static int zuluExit( int st )
 		case 19: printf( gettext( "ERROR: insufficient memory to hold your responce\n" ) )	 			; break ;
 		case 20: printf( gettext( "ERROR: wrong password entered or volume is not a truecrypt volume\n" ) )		; break ;
 	}
+
+	StringFree( dev ) ;
 
 	if( st == 1 ){
 		return 0 ;
@@ -629,15 +631,15 @@ int zuluCryptEXESaveAndRestoreVolumeHeader( const struct_opts * opts,uid_t uid,i
 
 	if( k == 1 ){
 		if( uid != 0 || !zuluCryptUserIsAMemberOfAGroup( uid,"zulucrypt" ) ){
-			return zuluExit( 14 ) ;
+			return zuluExit( 14,dev ) ;
 		}
 	}
 
 	if( path == NULL ){
 		if( option == VOLUME_HEADER_RESTORE ){
-			return zuluExit( 12 ) ;
+			return zuluExit( 12,dev ) ;
 		}else{
-			return zuluExit( 13 ) ;
+			return zuluExit( 13,dev ) ;
 		}
 	}
 
@@ -647,9 +649,7 @@ int zuluCryptEXESaveAndRestoreVolumeHeader( const struct_opts * opts,uid_t uid,i
 		st = _save_header( opts,path,uid ) ;
 	}
 
-	StringFree( dev ) ;
-
-	return zuluExit( st ) ;
+	return zuluExit( st,dev ) ;
 }
 
 static int _files_are_equal( const char * file1,const char * file2 )
