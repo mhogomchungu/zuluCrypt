@@ -51,8 +51,12 @@ private slots:
 	void taskFinished( int ) ;
 	void pbOpenPartition( void ) ;
 	void pbOpenFile( void ) ;
+	void pbKeyFile( void ) ;
 	void selectedPartition( QString ) ;
 	void backUpHeaderNameChange( QString ) ;
+	void rbKeyToggled( bool ) ;
+	void cbTrueCryptVolume( bool ) ;
+	void enableTrueCrypt( bool ) ;
 private:
 	void headerBackUp( void ) ;
 	void closeEvent( QCloseEvent * ) ;

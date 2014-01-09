@@ -1,10 +1,10 @@
 
-.TH zuluCrypt-cli 1 
+.TH zuluCrypt-cli 1
 
 .br
-.SH NAME 
+.SH NAME
 zuluCrypt-cli - command line interface frontend to cryptsetup and tcplay
-	
+
 .SH SYNOPSIS
 meaning of symbols:
 .br
@@ -75,14 +75,14 @@ add key      : zuluCrypt-cli -a -d /dev/sdc1 -y xxx -l yyy
 get device path from mapper  : zuluCrypt-cli -P -d /dev/mapper/zuluCrypt-sdc1
 .br
 check if partition with UUID is present : zuluCrypt-cli -w -d UUID=\"d2d210b8-0b1f-419f-9172-9d509ea9af0c\"
-.br 
+.br
 
 .SH DESCRIPTION
 zuluCrypt is a front end to cryptsetup. It aims to simplify using cryptsetup volumes by creating a simple to use
 command line interface and a Qt based GUI front end to the command line.
 
 The command line program is called "zuluCrypt-cli", the Qt based GUI is called "zuluCrypt-gui".
-The cli part of the program is an suid program to allow management of the volumes without 
+The cli part of the program is an suid program to allow management of the volumes without
 setting up sudo with appropriate permissions first or requiring root's password.
 
 The GUI part of the program calls the cli part for its operations.
@@ -173,7 +173,7 @@ options that goes with above operations:
 .br
 -m         path component to be added to mount point prefix(/run/media/private/$USER or /home/$USER)
 .br
--z         file system type installed(ext2,ext3,ext4* etc)
+-z         file system type installed(ext2,ext3,ext4* etc) or  or luks/tcrypt header backup path
 .br
 -t         type of volume (plain/luks*)
 .br
@@ -181,9 +181,9 @@ options that goes with above operations:
 .br
 -h         get passphrase interactively
 .br
--p         passphrase 
+-p         passphrase
 .br
--f         path to keyfile or luks header backup
+-f         path to keyfile
 .br
 -y         passphrase already in the volume(required by -a if -u is absent and -h is also absent)
 .br

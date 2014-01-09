@@ -113,6 +113,7 @@ void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
 			case( 'Y' ) : stopts->fs_opts = optarg ;
 			break ;
 			case( 'z' ) : stopts->fs = optarg ;
+			stopts->back_up_file_path = optarg ;
 			break ;
 			case( 'g' ) : stopts->rng = optarg ;
 			break ;

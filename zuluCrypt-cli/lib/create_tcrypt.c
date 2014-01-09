@@ -105,7 +105,7 @@ static int _create_volume( const tcrypt_t * info )
 		if( task != NULL ){
 
 			tc_api_task_set( task,"dev",info->device ) ;
-			tc_api_task_set( task,"secure_erase",0 ) ;
+			tc_api_task_set( task,"secure_erase",(int)0 ) ;
 			tc_api_task_set( task,"prf_algo","RIPEMD160" ) ;
 			tc_api_task_set( task,"cipher_chain","AES-256-XTS" ) ;
 			tc_api_task_set( task,info->key_source_1,info->key ) ;
@@ -116,7 +116,7 @@ static int _create_volume( const tcrypt_t * info )
 
 			if( info->hidden_volume_size > 0 ){
 
-				tc_api_task_set( task,"hidden",1 ) ;
+				tc_api_task_set( task,"hidden",(int)1 ) ;
 				tc_api_task_set( task,"hidden_size_bytes",info->hidden_volume_size ) ;
 				tc_api_task_set( task,"h_prf_algo","RIPEMD160" ) ;
 				tc_api_task_set( task,"h_cipher_chain","AES-256-XTS" ) ;

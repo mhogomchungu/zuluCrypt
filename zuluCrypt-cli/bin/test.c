@@ -203,7 +203,7 @@ void createHeaderBackup( const char * device,const char * msg )
 	process_t p ;
 	__print( msg ) ;
 	p = Process( zuluCryptExe ) ;
-	ProcessSetArgumentList( p,"-B","-d",device,"-f",headerBackUp,ENDLIST ) ;
+	ProcessSetArgumentList( p,"-B","-d",device,"-z",headerBackUp,ENDLIST ) ;
 	ProcessStart( p ) ;
 	__ProcessGetResult( p ) ;
 }
@@ -213,7 +213,7 @@ void restoreHeaderBackup( const char * device,const char * msg )
 	process_t p ;
 	__print( msg ) ;
 	p = Process( zuluCryptExe ) ;
-	ProcessSetArgumentList( p,"-R","-k","-d",device,"-f",headerBackUp,ENDLIST ) ;
+	ProcessSetArgumentList( p,"-R","-k","-d",device,"-z",headerBackUp,ENDLIST ) ;
 	ProcessStart( p ) ;
 	__ProcessGetResult( p ) ;
 }

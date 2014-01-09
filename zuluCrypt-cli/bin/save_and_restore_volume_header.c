@@ -30,6 +30,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include "truecrypt_support_1.h"
 
 #define SIZE 512
 
@@ -56,6 +57,7 @@ static int zuluExit( int st )
 		case 17: printf( gettext( "ERROR: backup file does not appear to contain luks header\n" ) )			; break ;
 		case 18: printf( gettext( "ERROR: insufficient privilege to open device for reading\n" ) )			; break ;
 		case 19: printf( gettext( "ERROR: insufficient memory to hold your responce\n" ) )	 			; break ;
+		case 20: printf( gettext( "ERROR: wrong password entered or volume is not a truecrypt volume\n" ) )		; break ;
 	}
 
 	if( st == 1 ){
@@ -80,7 +82,7 @@ static int zuluExit( int st )
 /*
  * Below function creates a secured folder path,ie a folder path a normal user has no access to
  */
-static string_t create_work_directory( void )
+static string_t _create_work_directory( void )
 {
 	/*
 	 * ZULUCRYPTtempFolder and ZULUCRYPtmountMiniPath are set in ../constants.h
@@ -112,7 +114,7 @@ static string_t create_work_directory( void )
  * path returns a path to where a copy of the file is located and ready to be accessed securely
  * It is the responsibility of the called to zuluCryptDeleteFile(path) when done with the copy and free(path) memory when done with it
  */
-static int secure_file_path( const char ** path,const char * source )
+static int _secure_file_path( const char ** path,const char * source )
 {
 	int fd_source ;
 	int fd_temp ;
@@ -120,7 +122,7 @@ static int secure_file_path( const char ** path,const char * source )
 	size_t len ;
 	const char * temp_path ;
 
-	string_t st_path = create_work_directory() ;
+	string_t st_path = _create_work_directory() ;
 
 	StringAppend( st_path,"0-" ) ;
 	temp_path = StringAppendInt( st_path,syscall( SYS_gettid ) ) ;
@@ -169,9 +171,9 @@ static int secure_file_path( const char ** path,const char * source )
 /*
  * this function return a secured file path to be used to create a file at the path
  */
-static inline const char * secure_file_path_1( void )
+static inline const char * _secure_file_path_1( void )
 {
-	string_t st_path = create_work_directory() ;
+	string_t st_path = _create_work_directory() ;
 	StringAppend( st_path,"1-" ) ;
 	StringAppendInt( st_path,syscall( SYS_gettid ) ) ;
 	return StringDeleteHandle( &st_path ) ;
@@ -181,7 +183,7 @@ static inline const char * secure_file_path_1( void )
  * Below function copies a secured file from secured location to a user owned and managed location.
  * The source file will be deleted when the copy is done.
  */
-static inline int secure_copy_file( const char * source,const char * dest,uid_t uid )
+static inline int _secure_copy_file( const char * source,const char * dest,uid_t uid )
 {
 	int st = 4 ;
 	int fd_source ;
@@ -228,15 +230,15 @@ static inline int secure_copy_file( const char * source,const char * dest,uid_t 
 }
 
 
-static int save_luks_header( const char * device,const char * temp_path,const char * path,uid_t uid  )
+static int _save_luks_header( const struct_opts * opts,const char * temp_path,const char * path,uid_t uid  )
 {
 	struct crypt_device * cd ;
 	int st ;
-	if( crypt_init( &cd,device ) != 0 ){
+	if( crypt_init( &cd,opts->device ) != 0 ){
 		st = 3 ;
 	}else{
 		if( crypt_header_backup( cd,NULL,temp_path ) == 0 ){
-			st = secure_copy_file( temp_path,path,uid ) ;
+			st = _secure_copy_file( temp_path,path,uid ) ;
 		}else{
 			st = 4 ;
 		}
@@ -245,24 +247,218 @@ static int save_luks_header( const char * device,const char * temp_path,const ch
 	return st ;
 }
 
-static int save_truecrypt_header( const char * device,const char * temp_path,const char * path,uid_t uid )
+#if TCPLAY_NEW_API
+
+typedef struct{
+	const char * key_type ;
+	const char * key_type_1 ;
+	const char * header_source ;
+	string_t ( * getKey )( int * ) ;
+}info_t ;
+
+static inline int zuluExit_1( int r,string_t st,string_t xt )
 {
-	if( 0 && device && temp_path && path && uid ){;}
+	StringMultipleDelete( &xt,&st,NULL ) ;
+	tc_api_uninit() ;
+	return r ;
+}
+
+static string_t _get_password( int * r )
+{
+	string_t st = StringVoid ;
+
+	*r = 1 ;
+
+	printf( gettext( "Enter passphrase: " ) ) ;
+	/*
+	 * ZULUCRYPT_KEY_MAX_SIZE is set in ../constants.h
+	 */
+	StringSilentlyGetFromTerminal_1( &st,ZULUCRYPT_KEY_MAX_SIZE ) ;
+	return st ;
+}
+
+static string_t _get_password_0( int * r )
+{
+	string_t st = StringVoid ;
+	string_t xt = StringVoid ;
+
+	printf( gettext( "Enter new passphrase: " ) ) ;
+	/*
+	 * ZULUCRYPT_KEY_MAX_SIZE is set in ../constants.h
+	 */
+	StringSilentlyGetFromTerminal_1( &st,ZULUCRYPT_KEY_MAX_SIZE ) ;
+
+	printf( gettext( "\nRe enter new passphrase: " ) ) ;
+	StringSilentlyGetFromTerminal_1( &xt,ZULUCRYPT_KEY_MAX_SIZE ) ;
+
+	printf( "\n" ) ;
+
+	if( st == StringVoid && xt == StringVoid ){
+		*r = 1 ;
+		return StringVoid ;
+	}
+	if( StringEqualString( xt,st ) ){
+		StringDelete( &xt ) ;
+		*r = 1 ;
+		return st ;
+	}else{
+		printf( gettext( "ERROR: passphrases did not match" ) ) ;
+		StringMultipleDelete( &st,&xt,NULL ) ;
+		*r = 0 ;
+		return StringVoid ;
+	}
+}
+
+static int _modify_tcrypt( const info_t * info,const struct_opts * opts,const char * temp_path,uid_t uid )
+{
+	int k = 4 ;
+	tc_api_task task ;
+
+	string_t st = StringVoid ;
+	string_t xt = StringVoid ;
+
+	if( tc_api_init( 0 ) != TC_OK ){
+		return 4 ;
+	}
+
+	task = tc_api_task_init( "modify" ) ;
+	if( task == NULL ){
+		tc_api_uninit() ;
+		return 4 ;
+	}
+
+	if( StringsAreEqual( opts->key_source,"-p" ) ){
+		tc_api_task_set( task,info->key_type,opts->key ) ;
+	}else if( opts->key == NULL && StringsAreNotEqual( opts->key_source,"-f" ) ){
+		st = info->getKey( &k ) ;
+		if( k ){
+			tc_api_task_set( task,info->key_type,StringContent( st ) ) ;
+		}else{
+			return zuluExit_1( 4,st,xt ) ;
+		}
+	}else{
+		/*
+		 * function is defined at "path_access.c"
+		 */
+		zuluCryptGetPassFromFile( opts->key,uid,&st ) ;
+
+		zuluCryptSecurityGainElevatedPrivileges() ;
+
+		if( st == StringVoid ){
+			return zuluExit_1( 4,st,xt ) ;
+		}else{
+			if( StringHasComponent( opts->key,".zuluCrypt-socket" ) ){
+				tc_api_task_set( task,info->key_type,StringContent( st ) ) ;
+			}else{
+				xt = zuluCryptCreateKeyFile( StringContent( st ),StringLength( st ),"tcrypt-bk-" ) ;
+				if( xt == StringVoid ){
+					return zuluExit_1( 4,st,xt ) ;
+				}else{
+					tc_api_task_set( task,info->key_type_1,StringContent( xt ) ) ;
+				}
+			}
+		}
+	}
+
+	tc_api_task_set( task,"dev",opts->device ) ;
+	tc_api_task_set( task,"hidden",( int )0 ) ;
+	tc_api_task_set( task,"hidden_size_bytes",( u_int64_t )0 ) ;
+
+	if( StringsAreEqual( opts->rng,"/dev/urandom" ) ){
+		tc_api_task_set( task,"weak_keys_and_salt",( int )1 ) ;
+	}else{
+		tc_api_task_set( task,"weak_keys_and_salt",( int )0 ) ;
+	}
+
+	tc_api_task_set( task,info->header_source,temp_path ) ;
+
+	k = tc_api_task_do( task ) ;
+
+	/*
+	 * zuluCryptDeleteFile() is defined in ../lib/file_path_security.c
+	 */
+	if( xt != StringVoid ){
+		zuluCryptDeleteFile( StringContent( xt ) ) ;
+	}
+
+	return zuluExit_1( k,st,xt ) ;
+}
+
+static int _save_truecrypt_header( const struct_opts * opts,const char * temp_path,const char * path,uid_t uid )
+{
+	int fd ;
+
+	info_t info ;
+
+	memset( &info,'\0',sizeof( info_t ) ) ;
+
+	info.key_type      = "passphrase" ;
+	info.key_type_1    = "keyfiles" ;
+	info.header_source = "save_header_to_file" ;
+	info.getKey        = _get_password ;
+
+	/*
+	 * The current API to seem to expect a header backup file to already exist and hence we create it here.
+	 */
+	fd = open( temp_path,O_CREAT|O_WRONLY,0644 ) ;
+	if( fd != -1 ){
+		close( fd ) ;
+		if( _modify_tcrypt( &info,opts,temp_path,uid ) == TC_OK ){
+			return _secure_copy_file( temp_path,path,uid ) ;
+		}else{
+			unlink( temp_path ) ;
+			return 20 ;
+		}
+	}else{
+		return 7 ;
+	}
+}
+
+static int _restore_truecrypt_header( const struct_opts * opts,const char * temp_path,uid_t uid )
+{
+	info_t info ;
+
+	memset( &info,'\0',sizeof( info_t ) ) ;
+
+	info.key_type      = "new_passphrase" ;
+	info.key_type_1    = "new_keyfiles" ;
+	info.header_source = "header_from_file" ;
+	info.getKey        = _get_password_0 ;
+
+	if( _modify_tcrypt( &info,opts,temp_path,uid ) == TC_OK ){
+		return 1 ;
+	}else{
+		return 7 ;
+	}
+}
+
+#else
+
+static int _save_truecrypt_header( const struct_opts * opts,const char * temp_path,const char * path,uid_t uid )
+{
+	if( 0 && opts && temp_path && path && uid ){;}
 	return 7 ;
 }
 
-static int save_header( const char * device,const char * path,uid_t uid )
+static int _restore_truecrypt_header( const struct_opts * opts,const char * temp_path,uid_t uid )
+{
+	if( 0 && opts && temp_path && uid ){;}
+	return 7 ;
+}
+
+#endif
+
+static int _save_header( const struct_opts * opts,const char * path,uid_t uid )
 {
 	int st = 4 ;
-
-	const char * temp_path = secure_file_path_1() ;
+	const char * temp_path = _secure_file_path_1() ;
 
 	zuluCryptSecurityGainElevatedPrivileges() ;
 
-	if( zuluCryptVolumeIsLuks( device ) ){
-		st = save_luks_header( device,temp_path,path,uid ) ;
+	if( zuluCryptVolumeIsLuks( opts->device ) ){
+		st = _save_luks_header( opts,temp_path,path,uid ) ;
 	}else{
-		st = save_truecrypt_header( device,temp_path,path,uid ) ;
+		st = _save_truecrypt_header( opts,temp_path,path,uid ) ;
 	}
 
 	zuluCryptSecurityDropElevatedPrivileges() ;
@@ -271,11 +467,11 @@ static int save_header( const char * device,const char * path,uid_t uid )
 	return st ;
 }
 
-static int restore_luks_header( const char * device,const char * temp_path )
+static int _restore_luks_header( const struct_opts * opts,const char * temp_path )
 {
 	int st ;
 	struct crypt_device * cd  ;
-	if( crypt_init( &cd,device ) != 0 ){
+	if( crypt_init( &cd,opts->device ) != 0 ){
 		st = 7 ;
 	}else{
 		if( crypt_load( cd,NULL,NULL ) != 0 ){
@@ -293,14 +489,9 @@ static int restore_luks_header( const char * device,const char * temp_path )
 	return st ;
 }
 
-static int restore_truecrypt_header( const char * device,const char * temp_path )
+static int _restore_header( const struct_opts * opts,const char * dev,const char * path,int ask_confirmation,uid_t uid )
 {
-	if( device && temp_path ){;}
-	return 7 ;
-}
-
-static int restore_header( const char * device,const char * path,int ask_confirmation,uid_t uid )
-{
+	const char * device = opts->device ;
 	const char * temp_path ;
 	int k ;
 	int st = 7;
@@ -311,7 +502,8 @@ Type \"YES\" and press Enter to continue: " ) ;
 	if( uid ){;}
 	if( ask_confirmation ){
 		zuluCryptSecurityDropElevatedPrivileges() ;
-		printf( warn,device,path ) ;
+
+		printf( warn,dev,path ) ;
 
 		confirm = StringGetFromTerminal_1( 3 ) ;
 		if( confirm != StringVoid ){
@@ -325,16 +517,16 @@ Type \"YES\" and press Enter to continue: " ) ;
 		}
 	}
 
-	if( !secure_file_path( &temp_path,path ) ){
+	if( !_secure_file_path( &temp_path,path ) ){
 		return 7 ;
 	}
 
 	zuluCryptSecurityGainElevatedPrivileges() ;
 
 	if( zuluCryptVolumeIsLuks( device ) ){
-		st = restore_luks_header( device,temp_path ) ;
+		st = _restore_luks_header( opts,temp_path ) ;
 	}else{
-		st = restore_truecrypt_header( device,temp_path ) ;
+		st = _restore_truecrypt_header( opts,temp_path,uid ) ;
 	}
 	zuluCryptDeleteFile( temp_path ) ;
 	StringFree( temp_path ) ;
@@ -346,26 +538,25 @@ int zuluCryptEXESaveAndRestoreVolumeHeader( const struct_opts * opts,uid_t uid,i
 {
 	const char * device = opts->device ;
 
-	/*
-	 * using key_key here because i do not want to introduce a key field in the structure.
-	 */
-	const char * path = opts->key ;
+	const char * path = opts->back_up_file_path ;
 	int st ;
 	int k ;
 
-	const char * dev ;
+	const char * dev = NULL ;
+	const char * dev_1 = NULL ;
 
 	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
 		/*
 		 * zuluCryptLoopDeviceAddress_1() is defined in ../lib/create_loop_device.c
 		 */
 		dev = zuluCryptLoopDeviceAddress_1( device ) ;
+		dev_1 = dev ;
 		/*
 		 * zuluCryptPartitionIsSystemPartition() is defined in partitions.c
 		 */
 		k = zuluCryptPartitionIsSystemPartition( dev,uid ) ;
-		StringFree( dev ) ;
 	}else{
+		dev_1 = device ;
 		/*
 		 * zuluCryptPartitionIsSystemPartition() is defined in partitions.c
 		 */
@@ -387,15 +578,17 @@ int zuluCryptEXESaveAndRestoreVolumeHeader( const struct_opts * opts,uid_t uid,i
 	}
 
 	if( option == VOLUME_HEADER_RESTORE ){
-		st = restore_header( device,path,opts->ask_confirmation,uid ) ;
+		st = _restore_header( opts,dev_1,path,opts->ask_confirmation,uid ) ;
 	}else{
-		st = save_header( device,path,uid ) ;
+		st = _save_header( opts,path,uid ) ;
 	}
+
+	StringFree( dev ) ;
 
 	return zuluExit( st ) ;
 }
 
-static int files_are_equal( const char * file1,const char * file2 )
+static int _files_are_equal( const char * file1,const char * file2 )
 {
 	struct stat st1 ;
 	struct stat st2 ;
@@ -470,12 +663,12 @@ int zuluCryptHeaderMatchBackUpHeader( const char * device,const char * header_ba
 	if( device == NULL || header_backup == NULL ){
 		return 0 ;
 	}
-	secure_file_path( &header_path,header_backup ) ;
+	_secure_file_path( &header_path,header_backup ) ;
 	if( header_path == NULL ){
 		return 0 ;
 	}
 
-	device_header = secure_file_path_1() ;
+	device_header = _secure_file_path_1() ;
 	if( device_header == NULL ){
 		StringFree( header_path ) ;
 		return 0 ;
@@ -484,7 +677,7 @@ int zuluCryptHeaderMatchBackUpHeader( const char * device,const char * header_ba
 	zuluCryptSecurityGainElevatedPrivileges() ;
 
 	if( _save_tmp_header( device,device_header ) ){
-		st = files_are_equal( header_path,device_header ) ;
+		st = _files_are_equal( header_path,device_header ) ;
 	}
 
 	zuluCryptDeleteFile( header_path ) ;

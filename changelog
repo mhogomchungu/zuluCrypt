@@ -6,7 +6,7 @@ fix bug:
 ","(comma) is not a valid mount point path. the cli prevents this but the GUI just fails without informing a user why. Added a dialog to inform a user
 when they select comma as a mount point.
 
-comma as a mount point is disallowed because it sits right next to "dot" button and most people(ie. me) usually press "."(dot) key to mean "present working directory" 
+comma as a mount point is disallowed because it sits right next to "dot" button and most people(ie. me) usually press "."(dot) key to mean "present working directory"
 but will miss the key and press comma key and start wondering why things arent they way they are supposed to be.
 The comma key should have been on the other side of the keyboard!!!
 
@@ -17,17 +17,17 @@ version 3.0
 add support for creating both plain and luks based volumes in both files and partitions.
 
 version 4.0
--- host UI blocking code in a different threads to remove/minimize UI freezes 
+-- host UI blocking code in a different threads to remove/minimize UI freezes
 -- use only cryptsetup.so library to interface with cryptsetup
--- allow a user to select what random number generator to use  
+-- allow a user to select what random number generator to use
 -- add the ability to create key files
--- Font size and type are now configurable             
--- add support for favorite volumes	           		
--- warn in the UI on attempt to delete a key when there is only one key left 
--- refuse to attemp to add more keys when key slots are full.	
--- implement tray icon to minimize to tray 		
+-- Font size and type are now configurable
+-- add support for favorite volumes
+-- warn in the UI on attempt to delete a key when there is only one key left
+-- refuse to attemp to add more keys when key slots are full.
+-- implement tray icon to minimize to tray
 -- provide a complete docs in a header file on how to interface with libzuluCrypt.so
--- include partitions in /etc/crypttab in a list of system partitions. 	
+-- include partitions in /etc/crypttab in a list of system partitions.
 
 version 4.1.0
 -- minor update, fix bugs comming from mishandling of files and paths with empty spaces in them.
@@ -60,15 +60,15 @@ version 4.3.2
     This creates a problem on freshly created volumes because they always end up owned by root. This update fix the problem by setting
     permissions everytime a volume is opened in read/write mode. If a volume open with root as owner, then reopen the volume in read/write
     mode and permissions will be set properly(0700 with the owner being the user who opened the volume)
-  
-    
+
+
 version 4.3.3
 -- fix a bug that caused improper reading of key files if they were not made up of C strings.
 -- fix a bug triggered when attempting to open a plain type volume using aes-cbc-plain cypher( opening plain volume in legacy mode ).
 
 version 4.3.4
 -- fix a compilation bug on some system
--- support libmount both above and below version 2.18 
+-- support libmount both above and below version 2.18
 
 version 4.4.0
 -- lots of code added to increase security and reliability of the tool,updating strongly advised.
@@ -77,7 +77,7 @@ version 4.4.0
 -- major cli interface change, run zulucrypt-cli --help for more info.
 -- normal users can not create volumes in system partitions but root user now can. system partition is defined as a partition
    with active entry(not commented out) in /etc/fstab and /etc/crypttab.
-   
+
 version 4.5.0
 -- add support for creating backups of luks headers and restoring luks headers
 -- add support for first writing random data to partitions before creating an encryped container in them.
@@ -115,11 +115,11 @@ version 4.6.2
 -- fix bug:volumes did not close properly if mount point had a space character among others in it
 -- feature added:users who are members of "zulumount-exec" group will have their volumes opened with "exec" mount option.
    This will allow them to be able to execute commands from the mount point.The default and recommended option is not mount with "noexec" option.
--- feature added:A "-M" option is added that will create a publicly accessible "mirror" of a mount point in "/run/share" from the private 
+-- feature added:A "-M" option is added that will create a publicly accessible "mirror" of a mount point in "/run/share" from the private
    original one created in "/run/media/$USER.This option is there to allow a user to mount a volume and have it accessible from other users of the system.
--- zuluMount-gui now adds and removed from its list as devices are added and removed from the system.A right click context menu option can be set to allow 
+-- zuluMount-gui now adds and removed from its list as devices are added and removed from the system.A right click context menu option can be set to allow
    unencrypted volumes to also be automounted.
--- add a command line option to zuluMount-gui to start it up without showing the GUI 
+-- add a command line option to zuluMount-gui to start it up without showing the GUI
 
 version 4.6.3
 -- fix a build issue on some systems
@@ -138,7 +138,7 @@ version 4.6.4
 version 4.6.5
 -- add support for opening truecrypt system volumes
 -- add internatiolization support
--- zuluMount-gui is now aware of volumes that are mounted or unmounted outside of it.This gives zuluMount-gui an ability to automount 
+-- zuluMount-gui is now aware of volumes that are mounted or unmounted outside of it.This gives zuluMount-gui an ability to automount
    newly attached devices.
 -- encrypted volumes that reside in files can be opened simply by drag and drop them in zuluCrypt-gui or zuluMount-gui windows
 
@@ -148,7 +148,7 @@ version 4.6.6
 -- add a GUI window in zuluCrypt-gui to manage keys in libsecret wallet,internal wallet and kde kwallet.
 -- add an internal system that can securely store keys independently of kde kwallet and gnome libsecret.Useful to those who
    want to store keys securely but dont want gnome or kde dependencies
--- add compile time option to use mount points in user home directory instead of "/run/media/private"   
+-- add compile time option to use mount points in user home directory instead of "/run/media/private"
 -- NOTE: changes in management of wallets are not backward compatible and hence volumes will have to be readded after the update.My
    apologies for the inconvenience.
 -- drop support for updating /etc/mtab and remove libmount as a required dependency
@@ -161,3 +161,5 @@ version 4.6.7
 version 4.6.8
 -- store partition id in wallets by device hardware id on volumes that do not have UUID( non LUKS volumes )
 -- add support for exfat file system.
+-- add support for creating a backup and restoring from backup truecrypt volume headers(tcplay >=1.2.0 required)
+

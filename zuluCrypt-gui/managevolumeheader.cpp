@@ -18,6 +18,7 @@
  */
 
 #include "managevolumeheader.h"
+#include "truecrypt_support_1.h"
 #include "utility.h"
 #include "../zuluCrypt-cli/constants.h"
 
@@ -27,6 +28,7 @@
 #include <QFile>
 #include <QKeyEvent>
 
+#include <QDebug>
 #include <QFileDialog>
 
 #include "ui_managevolumeheader.h"
@@ -34,6 +36,7 @@
 #include "utility.h"
 #include "openvolume.h"
 #include "dialogmsg.h"
+#include "socketsendkey.h"
 
 managevolumeheader::managevolumeheader( QWidget * parent ) :
     QDialog( parent ),
@@ -43,7 +46,7 @@ managevolumeheader::managevolumeheader( QWidget * parent ) :
 	this->setFont( parent->font() ) ;
 	this->setFixedSize( this->size() ) ;
 
-	m_ui->pbOpenFolder->setIcon( QIcon( QString( ":/folder.png" ) ) ) ;
+	//m_ui->pbOpenFolder->setIcon( QIcon( QString( ":/folder.png" ) ) ) ;
 	m_ui->pushButtonPartition->setIcon( QIcon( QString( ":/partition.png" ) ) ) ;
 	m_ui->pushButtonFile->setIcon( QIcon( QString( ":/file.png" ) ) ) ;
 
@@ -55,8 +58,68 @@ managevolumeheader::managevolumeheader( QWidget * parent ) :
 	connect( m_ui->pushButtonFile,SIGNAL( clicked() ),this,SLOT( pbOpenFile() ) ) ;
 	connect( m_ui->pushButtonPartition,SIGNAL( clicked() ),this,SLOT( pbOpenPartition() ) ) ;
 	connect( m_ui->lineEditDevicePath,SIGNAL( textChanged( QString ) ),this,SLOT( backUpHeaderNameChange( QString ) ) ) ;
+	connect( m_ui->rbKey,SIGNAL( toggled( bool ) ),this,SLOT( rbKeyToggled( bool ) ) ) ;
+	connect( m_ui->pBKeyFile,SIGNAL( clicked() ),this,SLOT( pbKeyFile() ) ) ;
+	connect( m_ui->checkBoxVolumeIsTrueCrypt,SIGNAL( toggled( bool ) ),this,SLOT( cbTrueCryptVolume( bool ) ) ) ;
 
 	m_OperationInProgress = false ;
+
+#if TCPLAY_NEW_API
+	this->enableTrueCrypt( false ) ;
+	m_ui->checkBoxVolumeIsTrueCrypt->setChecked( false ) ;
+	m_ui->checkBoxVolumeIsTrueCrypt->setEnabled( true ) ;
+#else
+	this->enableTrueCrypt( false ) ;
+	m_ui->checkBoxVolumeIsTrueCrypt->setChecked( false ) ;
+	m_ui->checkBoxVolumeIsTrueCrypt->setEnabled( false ) ;
+#endif
+
+}
+
+void managevolumeheader::rbKeyToggled( bool toggled )
+{
+	if( toggled ){
+		m_ui->label->setText( tr( "key" ) ) ;
+		m_ui->pBKeyFile->setEnabled( false ) ;
+		if( m_operation == QString( "backup" ) ){
+			m_ui->lineEditRepeatPassWord->setEnabled( false ) ;
+			m_ui->label_2->setEnabled( false ) ;
+		}else{
+			m_ui->lineEditRepeatPassWord->setEnabled( true ) ;
+			m_ui->label_2->setEnabled( true ) ;
+		}
+	}else{
+		m_ui->label->setText( tr( "keyfile" ) ) ;
+		if( m_operation == QString( "backup" ) ){
+			m_ui->lineEditRepeatPassWord->setEnabled( false ) ;
+			m_ui->label_2->setEnabled( false ) ;
+		}else{
+			m_ui->lineEditRepeatPassWord->setEnabled( false ) ;
+			m_ui->label_2->setEnabled( false ) ;
+		}
+		m_ui->pBKeyFile->setEnabled( true ) ;
+	}
+}
+
+void managevolumeheader::cbTrueCryptVolume( bool toggled )
+{
+	this->enableTrueCrypt( toggled ) ;
+	this->backUpHeaderNameChange( m_ui->lineEditDevicePath->text() ) ;
+}
+
+void managevolumeheader::enableTrueCrypt( bool enable )
+{
+	m_ui->rbKey->setChecked( enable ) ;
+	m_ui->rbKeyFile->setEnabled( enable ) ;
+	m_ui->groupBox->setEnabled( enable ) ;
+	m_ui->label->setEnabled( enable ) ;
+	m_ui->label_2->setEnabled( enable ) ;
+	m_ui->pBKeyFile->setEnabled( enable ) ;
+	m_ui->lineEditPassWord->setEnabled( enable ) ;
+
+	if( enable ){
+		this->rbKeyToggled( true ) ;
+	}
 }
 
 void managevolumeheader::HideUI()
@@ -117,9 +180,7 @@ void managevolumeheader::backUpHeaderNameChange( QString name )
 	if( m_operation == QString( "restore" ) ){
 		return ;
 	}
-	if( m_ui->lineEditDevicePath->text().isEmpty() ){
-		;
-	}else{
+	if( !m_ui->lineEditDevicePath->text().isEmpty() ){
 		QString p = name.split( "/" ).last() ;
 
 		if( p.isEmpty() ){
@@ -136,7 +197,13 @@ void managevolumeheader::backUpHeaderNameChange( QString name )
 			for(  int i = 0 ; i < j ; i++ ){
 				path += q.at( i ) +  QString( "/" ) ;
 			}
-			path += p + QString( ".volumeHeaderBackUp" ) ;
+
+			if( m_ui->checkBoxVolumeIsTrueCrypt->isChecked() ){
+				path += p + QString( ".tcryptVolumeHeaderBackUp" ) ;
+			}else{
+				path += p + QString( ".luksVolumeHeaderBackUp" ) ;
+			}
+
 			m_ui->lineEditBackUpName->setText( path ) ;
 		}
 	}
@@ -200,6 +267,26 @@ void managevolumeheader::enableAll()
 	m_ui->pbOpenFolder->setEnabled( true ) ;
 	m_ui->pushButtonFile->setEnabled( true ) ;
 	m_ui->pushButtonPartition->setEnabled( true ) ;
+#if TCPLAY_NEW_API
+	m_ui->rbKey->setChecked( true ) ;
+	m_ui->groupBox->setEnabled( true ) ;
+	m_ui->label->setEnabled( true ) ;
+	m_ui->label_2->setEnabled( true ) ;
+	m_ui->pBKeyFile->setEnabled( true ) ;
+	if( m_ui->rbKeyFile->isChecked() ){
+		m_ui->rbKeyFile->setEnabled( false ) ;
+	}
+	m_ui->rbKeyFile->setEnabled( false ) ;
+	m_ui->checkBoxVolumeIsTrueCrypt->setEnabled( true ) ;
+#else
+	m_ui->rbKey->setChecked( false ) ;
+	m_ui->groupBox->setEnabled( false ) ;
+	m_ui->label->setEnabled( false ) ;
+	m_ui->label_2->setEnabled( false ) ;
+	m_ui->pBKeyFile->setEnabled( false ) ;
+	m_ui->rbKeyFile->setEnabled( false ) ;
+	m_ui->checkBoxVolumeIsTrueCrypt->setEnabled( false ) ;
+#endif
 }
 
 void managevolumeheader::disableAll()
@@ -213,6 +300,12 @@ void managevolumeheader::disableAll()
 	m_ui->pbOpenFolder->setEnabled( false ) ;
 	m_ui->pushButtonFile->setEnabled( false ) ;
 	m_ui->pushButtonPartition->setEnabled( false ) ;
+	m_ui->rbKey->setChecked( false ) ;
+	m_ui->groupBox->setEnabled( false ) ;
+	m_ui->label->setEnabled( false ) ;
+	m_ui->label_2->setEnabled( false ) ;
+	m_ui->pBKeyFile->setEnabled( false ) ;
+	m_ui->checkBoxVolumeIsTrueCrypt->setEnabled( false ) ;
 }
 
 void managevolumeheader::pbCreate()
@@ -222,6 +315,17 @@ void managevolumeheader::pbCreate()
 	if( m_ui->lineEditBackUpName->text().isEmpty() || m_ui->lineEditDevicePath->text().isEmpty() ){
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
 	}
+	if( m_ui->lineEditPassWord->text().isEmpty() && m_ui->rbKeyFile->isChecked() && m_ui->checkBoxVolumeIsTrueCrypt->isChecked() ){
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
+	}
+	if( m_operation == QString( "restore" ) ){
+		if( m_ui->rbKey->isChecked() && m_ui->checkBoxVolumeIsTrueCrypt->isChecked() ){
+			if( m_ui->lineEditPassWord->text() != m_ui->lineEditRepeatPassWord->text() ){
+				return msg.ShowUIOK( tr( "ERROR!" ),tr( "two passphrases do not match" ) ) ;
+			}
+		}
+	}
+
 	QString device = utility::resolvePath( m_ui->lineEditDevicePath->text() ) ;
 
 	device.replace( "\"","\"\"\"" ) ;
@@ -231,7 +335,21 @@ void managevolumeheader::pbCreate()
 	QString exe ;
 	if(  m_operation == QString( "backup" ) ){
 		m_saveHeader = 1 ;
-		exe = QString( "%1 -B -d \"%2\" -f \"%3\"" ).arg( ZULUCRYPTzuluCrypt ).arg( device ).arg( backUp ) ;
+
+		if( m_ui->checkBoxVolumeIsTrueCrypt->isChecked() ){
+			if( m_ui->rbKey->isChecked() ){
+				QString path = socketSendKey::getSocketPath() ;
+				socketSendKey * sk = new socketSendKey( this,path,m_ui->lineEditPassWord->text().toLatin1() ) ;
+				sk->sendKey() ;
+				exe = QString( "%1 -B -d \"%2\" -z \"%3\" -f %4" ).arg( ZULUCRYPTzuluCrypt ).arg( device ).arg( backUp ).arg( path ) ;
+			}else{
+				QString path = m_ui->lineEditPassWord->text() ;
+
+				exe = QString( "%1 -B -d \"%2\" -z \"%3\" -f %4" ).arg( ZULUCRYPTzuluCrypt ).arg( device ).arg( backUp ).arg( path ) ;
+			}
+		}else{
+			exe = QString( "%1 -B -d \"%2\" -z \"%3\"" ).arg( ZULUCRYPTzuluCrypt ).arg( device ).arg( backUp ) ;
+		}
 	}else{
 		m_saveHeader = 0 ;
 		QString x = m_ui->lineEditDevicePath->text() ;
@@ -242,7 +360,19 @@ void managevolumeheader::pbCreate()
 		if( msg.ShowUIYesNoDefaultNo( tr( "WARNING!" ),warn ) == QMessageBox::No ){
 			return ;
 		}
-		exe = QString( "%1 -kR -d \"%2\" -f \"%3\"" ).arg( ZULUCRYPTzuluCrypt ).arg( device ).arg( backUp ) ;
+		if( m_ui->checkBoxVolumeIsTrueCrypt->isChecked() ){
+			if( m_ui->rbKey->isChecked() ){
+				QString path = socketSendKey::getSocketPath() ;
+				socketSendKey * sk = new socketSendKey( this,path,m_ui->lineEditPassWord->text().toLatin1() ) ;
+				sk->sendKey() ;
+				exe = QString( "%1 -kR -d \"%2\" -z \"%3\" -f %4" ).arg( ZULUCRYPTzuluCrypt ).arg( device ).arg( backUp ).arg( path ) ;
+			}else{
+				QString path = m_ui->lineEditPassWord->text() ;
+				exe = QString( "%1 -kR -d \"%2\" -z \"%3\" -f \"%4\"" ).arg( ZULUCRYPTzuluCrypt ).arg( device ).arg( backUp ).arg( path ) ;
+			}
+		}else{
+			exe = QString( "%1 -kR -d \"%2\" -z \"%3\"" ).arg( ZULUCRYPTzuluCrypt ).arg( device ).arg( backUp ) ; ;
+		}
 	}
 
 	this->disableAll() ;
@@ -284,6 +414,15 @@ void managevolumeheader::pbOpenFile()
 	}
 }
 
+void managevolumeheader::pbKeyFile()
+{
+	QString Z = QFileDialog::getOpenFileName( this,tr( "" ),QDir::homePath(),0 ) ;
+
+	if( !Z.isEmpty() ){
+		m_ui->lineEditPassWord->setText( Z ) ;
+	}
+}
+
 void managevolumeheader::success()
 {
 	DialogMsg msg( this ) ;
@@ -319,8 +458,8 @@ void managevolumeheader::taskFinished( int st )
 		case 16: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not resolve path to device" ) )					; break ;
 		case 17: msg.ShowUIOK( tr( "ERROR!" ),tr( "backup file does not appear to contain luks header" ) )			; break ;
 		case 18: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open device for reading" ) )			; break ;
-		case 113: msg.ShowUIOK( tr( "ERROR!" ),tr( "device is not a luks device" ) ) 						; break ;
-		default : msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR! with status number %1 encountered" ).arg( st ) ) ;
+		case 20: msg.ShowUIOK( tr( "ERROR!" ),tr( "wrong password entered or volume is not a truecrypt volume" ) )		; break ;
+		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR! with status number %1 encountered" ).arg( st ) ) ;
 	}
 	this->enableAll() ;
 }

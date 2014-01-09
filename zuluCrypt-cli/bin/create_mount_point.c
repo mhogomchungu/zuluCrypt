@@ -35,7 +35,7 @@ static string_t _create_home_default_mount_point( const char * device,uid_t uid,
 		device = loop_path = zuluCryptLoopDeviceAddress_1( device ) ;
 	}
 
-	m_point = StringAppend( path,strrchr( device,'/' ) ) ;
+	m_point = StringMultipleAppend( path,"/",device + StringLastIndexOfChar_1( device,'/' ) + 1,NULL ) ;
 
 	if( mkdir( m_point,S_IRWXU ) == 0 ){
 		st = path ;
@@ -157,7 +157,7 @@ static string_t _create_default_mount_point( const char * device,uid_t uid,strin
 		device = loop_path = zuluCryptLoopDeviceAddress_1( device ) ;
 	}
 
-	m_point = StringAppend( path,strrchr( device,'/' ) ) ;
+	m_point = StringMultipleAppend( path,"/",device + StringLastIndexOfChar_1( device,'/' ) + 1,NULL ) ;
 
 	zuluCryptSecurityGainElevatedPrivileges() ;
 
