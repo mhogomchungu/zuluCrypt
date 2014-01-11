@@ -954,7 +954,7 @@ const char * StringAppend( string_t st,const char * s )
 	return c ;
 }
 
-int StringAtLeastOneStartsWith( string_t st,... )
+int StringStartsWithAtLeastOne( string_t st,... )
 {
 	int r = 0 ;
 	const char * entry ;

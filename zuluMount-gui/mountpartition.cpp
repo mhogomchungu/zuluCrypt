@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
+#include "deviceoffset.h"
 #include "mountpartition.h"
 #include "ui_mountpartition.h"
 #include <QDebug>
@@ -31,12 +31,14 @@
 #include <QFileDialog>
 #include <QFont>
 #include <QTableWidget>
+#include <QAction>
 
 #include "task.h"
 #include "../zuluCrypt-gui/dialogmsg.h"
 #include "../zuluCrypt-gui/userfont.h"
 #include "../zuluCrypt-gui/tablewidget.h"
 #include "../zuluCrypt-gui/utility.h"
+#include "../zuluCrypt-gui/socketsendkey.h"
 
 mountPartition::mountPartition( QWidget * parent,QTableWidget * table,const QString& folderOpener,bool autoOpenFolderOnMount ) :
 	QWidget( parent ),m_ui(new Ui::mountPartition)
@@ -68,6 +70,12 @@ mountPartition::mountPartition( QWidget * parent,QTableWidget * table,const QStr
 
 	m_ui->pbMountFolder->setVisible( false ) ;
 	m_folderOpener = folderOpener ;
+
+	QAction * ac = new QAction( this ) ;
+	QKeySequence s( Qt::CTRL + Qt::Key_F ) ;
+	ac->setShortcut( s ) ;
+	connect( ac,SIGNAL( triggered() ),this,SLOT( deviceOffSet() ) ) ;
+	this->addAction( ac ) ;
 }
 
 void mountPartition::checkBoxReadOnlyStateChanged( int state )
@@ -133,6 +141,12 @@ void mountPartition::pbMount()
 	Task * t = new Task() ;
 	t->setDevice( m_path ) ;
 
+	if( !m_deviceOffSet.isEmpty() ){
+		QString addr = socketSendKey::getSocketPath() ;
+		t->setKeySource( QString( "-f ") + addr ) ;
+		socketSendKey * s = new socketSendKey( this,addr,m_key.toLatin1() ) ;
+		s->sendKey() ;
+	}
 	if( m_ui->checkBoxMountReadOnly->isChecked() ){
 		t->setMode( QString( "ro" ) ) ;
 	}else{
@@ -140,7 +154,10 @@ void mountPartition::pbMount()
 	}
 
 	m_point = m_ui->lineEdit->text() ;
+
 	t->setMountPoint( utility::mountPath( m_point ) ) ;
+	t->setDeviceOffSet( m_deviceOffSet ) ;
+
 	connect( t,SIGNAL( signalMountComplete( int,QString ) ),this,SLOT( slotMountComplete( int,QString ) ) ) ;
 
 	t->setMakeMountPointPublic( m_ui->checkBoxShareMountPoint->isChecked() ) ;
@@ -205,6 +222,19 @@ void mountPartition::fileManagerOpenStatus( int exitCode,int exitStatus,int star
 			msg.ShowUIOK( tr( "warning" ),tr( "could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) ) ;
 		}
 	}
+}
+
+void mountPartition::deviceOffSet()
+{
+	deviceOffset * d = new deviceOffset( this ) ;
+	connect( d,SIGNAL( offSetValue( QString,QString ) ),this,SLOT( deviceOffSet( QString,QString ) ) ) ;
+	d->ShowUI() ;
+}
+
+void mountPartition::deviceOffSet( QString deviceOffSet,QString key )
+{
+	m_deviceOffSet = deviceOffSet ;
+	m_key = key ;
 }
 
 void mountPartition::slotMountComplete( int status,QString msg )

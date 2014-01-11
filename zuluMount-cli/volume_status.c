@@ -340,7 +340,7 @@ int zuluMountprintAListOfMountedVolumes( void )
 	while( it != end ){
 		st = *it ;
 		it++ ;
-		if( !StringStartsWith( st,"/" ) || StringAtLeastOneStartsWith( st,"/proc","/sys","/dev ",NULL ) ){
+		if( !StringStartsWith( st,"/" ) || StringStartsWithAtLeastOne( st,"/proc","/sys","/dev ",NULL ) ){
 			continue ;
 		}
 

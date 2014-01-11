@@ -94,6 +94,10 @@ static int _create_file_system( const char * device,const char * fs,int key_sour
 /*
  * tcplay >= 1.2.0
  */
+
+#define TRUE   ( int )1
+#define FALSE  ( int )0
+
 static int _create_volume( const tcrypt_t * info )
 {
 	int r = !TC_OK ;
@@ -105,18 +109,20 @@ static int _create_volume( const tcrypt_t * info )
 		if( task != NULL ){
 
 			tc_api_task_set( task,"dev",info->device ) ;
-			tc_api_task_set( task,"secure_erase",(int)0 ) ;
+			tc_api_task_set( task,"secure_erase",FALSE ) ;
 			tc_api_task_set( task,"prf_algo","RIPEMD160" ) ;
 			tc_api_task_set( task,"cipher_chain","AES-256-XTS" ) ;
 			tc_api_task_set( task,info->key_source_1,info->key ) ;
 
 			if( info->weak_keys_and_salt ){
-				tc_api_task_set( task,"weak_keys_and_salt",1 ) ;
+				tc_api_task_set( task,"weak_keys_and_salt",TRUE ) ;
+			}else{
+				tc_api_task_set( task,"weak_keys_and_salt",FALSE ) ;
 			}
 
 			if( info->hidden_volume_size > 0 ){
 
-				tc_api_task_set( task,"hidden",(int)1 ) ;
+				tc_api_task_set( task,"hidden",TRUE ) ;
 				tc_api_task_set( task,"hidden_size_bytes",info->hidden_volume_size ) ;
 				tc_api_task_set( task,"h_prf_algo","RIPEMD160" ) ;
 				tc_api_task_set( task,"h_cipher_chain","AES-256-XTS" ) ;

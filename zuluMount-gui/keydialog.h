@@ -72,6 +72,8 @@ private slots:
 	void walletIsOpen( bool ) ;
 	void getPassWord( QString ) ;
 	void getPassWordFromWallet( QString ) ;
+	void deviceOffSet( void ) ;
+	void deviceOffSet( QString,QString ) ;
 private:
 	void openVolume( void ) ;
 	void enableAll( void ) ;
@@ -82,6 +84,7 @@ private:
 	QString m_point ;
 	QString m_folderOpener ;
 	QString m_key ;
+	QString m_deviceOffSet ;
 	QMenu * m_menu ;
 	QTableWidget * m_table ;
 	bool m_working ;

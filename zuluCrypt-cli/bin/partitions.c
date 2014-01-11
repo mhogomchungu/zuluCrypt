@@ -246,19 +246,26 @@ static int _zuluCryptCheckSYSifDeviceIsSystem( const char * device )
 	 * UDEV_SUPPORT is set at configure time by "-DUDEVSUPPORT=true" option,the option being absent equals "-DUDEVSUPPORT=false"
 	 * To set the option, configure with "-DUDEVSUPPORT=true"
 	 */
-#if UDEVSUPPORT
+#if UDEV_SUPPORT
 	/*
 	 * udev support is enabled
 	 */
-	char c ;
-	const char * path ;
 	int r ;
 	size_t e ;
-	ssize_t r ;
+	ssize_t k ;
 	string_t xt ;
-	string_t st = String( device ) ;
+	string_t st ;
+	char dev[ PATH_MAX ] ;
 
-	if( StringAtLeastOneStartsWith( st,"/dev/sd","/dev/hd",NULL ) ){
+	const char * path = realpath( device,dev ) ;
+
+	if( path != NULL ){
+		st = String( path ) ;
+	}else{
+		st = String( device ) ;
+	}
+
+	if( StringStartsWithAtLeastOne( st,"/dev/sd","/dev/hd",NULL ) ){
 		/*
 		 * this path will convert something like: "/dev/sdc12" to "/dev/sdc"
 		 */
@@ -268,9 +275,9 @@ static int _zuluCryptCheckSYSifDeviceIsSystem( const char * device )
 		 * device path will be something like "/dev/mmcblk0p2" and what we want to do
 		 * is cut off the string from p to end iwth "/dev/mmcblk0"
 		 */
-		r = StringIndexOfChar( st,0,'p' ) ;
-		if( r != -1 ){
-			e = StringLength( st ) - ( size_t )r ;
+		k = StringIndexOfChar( st,0,'p' ) ;
+		if( k != -1 ){
+			e = StringLength( st ) - ( size_t )k ;
 			StringRemoveRight( st,e ) ;
 		}
 	}

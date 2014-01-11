@@ -64,6 +64,7 @@ public:
 	void setMakeMountPointPublic( bool ) ;
 	void setList( const QStringList& ) ;
 	void setMountPointOpener( const QString& ) ;
+	void setDeviceOffSet( const QString& ) ;
 signals:
 	void errorStatus( int exitCode,int exitStatus,int startError ) ;
 	void signalMountComplete( int,QString ) ;
@@ -104,6 +105,7 @@ private:
 	QString m_mode ;
 	QString m_type ;
 	QString m_properties ;
+	QString m_deviceOffSet ;
 	bool m_publicMount ;
 	QStringList m_list ;
 	bool m_systemDevice ;

@@ -52,6 +52,8 @@ private slots:
 	void slotMountComplete( int,QString ) ;
 	void checkBoxReadOnlyStateChanged( int ) ;
 	void fileManagerOpenStatus( int exitCode, int exitStatus,int startError ) ;
+	void deviceOffSet( void ) ;
+	void deviceOffSet( QString,QString ) ;
 private:
 	void enableAll( void ) ;
 	void disableAll( void ) ;
@@ -61,6 +63,8 @@ private:
 	QString m_label ;
 	QString m_point ;
 	QString m_folderOpener ;
+	QString m_deviceOffSet ;
+	QString m_key ;
 	QTableWidget * m_table ;
 	bool m_autoOpenFolderOnMount ;
 };

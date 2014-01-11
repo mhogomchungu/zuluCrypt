@@ -74,6 +74,11 @@ void Task::setMountPointOpener( const QString& opener )
 	m_folderOpener = opener ;
 }
 
+void Task::setDeviceOffSet( const QString& offset )
+{
+	m_deviceOffSet = offset ;
+}
+
 void Task::setWallet( LxQt::Wallet::Wallet * wallet )
 {
 	m_wallet = wallet ;
@@ -290,6 +295,8 @@ void Task::cryptoOpen()
 		exe = QString( "%1 -m -d \"%2\" -z \"%3\" -e %4 %5" ).arg( zuluMount ).arg( d ).arg( m_point ).arg( m_mode ).arg( m_keySource ) ;
 	}
 
+	qDebug() << exe ;
+
 	p.start( exe ) ;
 	p.waitForFinished( -1 ) ;
 
@@ -313,10 +320,15 @@ void Task::mount()
 		m_point = QDir::homePath() + QString( "/" ) + d.split( "/" ).last() ;
 	}
 
+	QString additionalOptions ;
+	if( !m_deviceOffSet.isEmpty() ){
+		additionalOptions = QString( " -o %1 %2" ).arg( m_deviceOffSet ).arg( m_keySource ) ;
+	}
+
 	if( m_publicMount ){
-		exe = QString( "%1 -M -m -d \"%2\" -e %3 -z \"%4\"" ).arg( zuluMount ).arg( m_device ).arg( m_mode ).arg( m_point ) ;
+		exe = QString( "%1 -M -m -d \"%2\" -e %3 -z \"%4\" %5" ).arg( zuluMount ).arg( m_device ).arg( m_mode ).arg( m_point ).arg( additionalOptions ) ;
 	}else{
-		exe = QString( "%1 -m -d \"%2\" -e %3 -z \"%4\"" ).arg( zuluMount ).arg( m_device ).arg( m_mode ).arg( m_point ) ;
+		exe = QString( "%1 -m -d \"%2\" -e %3 -z \"%4\" %5" ).arg( zuluMount ).arg( m_device ).arg( m_mode ).arg( m_point ).arg( additionalOptions ) ;
 	}
 
 	p.start( exe ) ;

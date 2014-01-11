@@ -17,6 +17,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "deviceoffset.h"
+
 #include "keydialog.h"
 #include "ui_keydialog.h"
 
@@ -92,6 +94,25 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const QString& path,
 
 	m_point = m_path.split( "/" ).last() ;
 	m_ui->lineEditMountPoint->setText( m_point ) ;
+
+	QAction * ac = new QAction( this ) ;
+	QKeySequence s( Qt::CTRL + Qt::Key_F ) ;
+	ac->setShortcut( s ) ;
+	connect( ac,SIGNAL( triggered() ),this,SLOT( deviceOffSet() ) ) ;
+	this->addAction( ac ) ;
+}
+
+void keyDialog::deviceOffSet()
+{
+	deviceOffset * d = new deviceOffset( this ) ;
+	connect( d,SIGNAL( offSetValue( QString,QString ) ),this,SLOT( deviceOffSet( QString,QString ) ) ) ;
+	d->ShowUI_1() ;
+}
+
+void keyDialog::deviceOffSet( QString deviceOffSet,QString key )
+{
+	m_deviceOffSet = QString( " -o %1" ).arg( deviceOffSet ) ;
+	Q_UNUSED( key ) ;
 }
 
 void keyDialog::cbMountReadOnlyStateChanged( int state )
@@ -422,7 +443,11 @@ void keyDialog::openVolume()
 		t->setMode( QString( "rw" ) ) ;
 	}
 
-	t->setKeySource( m ) ;
+	if( m_deviceOffSet.isEmpty() ){
+		t->setKeySource( m ) ;
+	}else{
+		t->setKeySource( m + m_deviceOffSet ) ;
+	}
 
 	m_point = m_ui->lineEditMountPoint->text() ;
 

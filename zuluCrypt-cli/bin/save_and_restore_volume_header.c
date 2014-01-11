@@ -70,15 +70,18 @@ static int zuluExit( int st,const char * dev )
 }
 
 /*
- * We do not want to pass user managed paths to cryptsetup so:
+ * This place is a bit involving and an explanation seem to be the least i can do.
  *
- * 1. When creating a luks header backup,we pass to cryptsetup a path to /dev/shm/zuluCrypt to create a header there
- *    and then copy it to user provided path.
- * 2. When restoring a luks header,we copy the backup file to /dev/shm/zuluCrypt and then we pass the copied path to
- *    zuluCrypt.
+ * We do not want cryptsetup and tcplay to access file paths a normal can modify for security
+ * reasons and hence we copy user provided files to "/run/zuluCrypt" folder and then
+ * pass these copied files to cryptsetup or tcplay.This happens when we are restoring
+ * header files.
  *
- *   A normal user will have no access to /dev/shm/zuluCrypt and will allow secure handling of user provided paths in
- *   backing up and restoring luks headers.
+ * When we are taking header backups,we let these tools create the header backups in
+ * "/run/zuluCrypt" and then we copied these created header files from "/run/zuluCrypt"
+ * to where the normal user expect them to be.
+ *
+ * normal user should zero access to "/run/zuluCrypt" path.
  */
 
 /*
@@ -112,9 +115,7 @@ static string_t _create_work_directory( void )
 }
 
 /*
- * Below function copies a file owned and managed by a user to a secured location so that can be accessed securely.
- * path returns a path to where a copy of the file is located and ready to be accessed securely
- * It is the responsibility of the called to zuluCryptDeleteFile(path) when done with the copy and free(path) memory when done with it
+ * Below function copies a file owned and managed by a user to a secured location so that it can be accessed securely.
  */
 static int _secure_file_path( const char ** path,const char * source )
 {
@@ -123,6 +124,7 @@ static int _secure_file_path( const char ** path,const char * source )
 	char buffer[ SIZE ] ;
 	size_t len ;
 	const char * temp_path ;
+	struct stat ststr ;
 
 	string_t st_path = _create_work_directory() ;
 
@@ -138,6 +140,16 @@ static int _secure_file_path( const char ** path,const char * source )
 		return 0 ;
 	}
 
+	fstat( fd_source,&ststr ) ;
+
+	if( ststr.st_size >= 3145728 ){
+		/*
+		 * headers are less than 3MB so we obvious have a wrong file
+		 */
+		StringDelete( &st_path ) ;
+		return 0 ;
+	}
+
 	zuluCryptSecurityGainElevatedPrivileges() ;
 
 	fd_temp = open( temp_path,O_WRONLY | O_CREAT,S_IRUSR | S_IWUSR | S_IRGRP |S_IROTH ) ;
@@ -146,8 +158,6 @@ static int _secure_file_path( const char ** path,const char * source )
 		StringDelete( &st_path ) ;
 		return 0 ;
 	}
-
-	zuluCryptSecurityDropElevatedPrivileges() ;
 
 	while( 1 ){
 		len = read( fd_source,buffer,SIZE ) ;
@@ -158,8 +168,6 @@ static int _secure_file_path( const char ** path,const char * source )
 			write( fd_temp,buffer,len ) ;
 		}
 	}
-
-	zuluCryptSecurityGainElevatedPrivileges() ;
 
 	close( fd_source ) ;
 	close( fd_temp ) ;
@@ -231,7 +239,6 @@ static inline int _secure_copy_file( const char * source,const char * dest,uid_t
 	return st ;
 }
 
-
 static int _save_luks_header( const struct_opts * opts,const char * temp_path,const char * path,uid_t uid  )
 {
 	struct crypt_device * cd ;
@@ -250,6 +257,9 @@ static int _save_luks_header( const struct_opts * opts,const char * temp_path,co
 }
 
 #if TCPLAY_NEW_API
+
+#define TRUE   ( int )1
+#define FALSE  ( int )0
 
 typedef struct{
 	const char * device ;
@@ -372,13 +382,13 @@ static int _modify_tcrypt( const info_t * info,const struct_opts * opts,const ch
 
 	tc_api_task_set( task,"dev",info->device ) ;
 	tc_api_task_set( task,"sys",info->sys_device ) ;
-	tc_api_task_set( task,"hidden",( int )0 ) ;
+	tc_api_task_set( task,"hidden",FALSE ) ;
 	tc_api_task_set( task,"hidden_size_bytes",( u_int64_t )0 ) ;
 
 	if( StringsAreEqual( opts->rng,"/dev/urandom" ) ){
-		tc_api_task_set( task,"weak_keys_and_salt",( int )1 ) ;
+		tc_api_task_set( task,"weak_keys_and_salt",TRUE ) ;
 	}else{
-		tc_api_task_set( task,"weak_keys_and_salt",( int )0 ) ;
+		tc_api_task_set( task,"weak_keys_and_salt",FALSE ) ;
 	}
 
 	tc_api_task_set( task,info->header_source,temp_path ) ;
@@ -400,7 +410,7 @@ static string_t _root_device( const char * device )
 	size_t e ;
 	ssize_t r ;
 	string_t st = String( device ) ;
-	if( StringAtLeastOneStartsWith( st,"/dev/sd","/dev/hd",NULL ) ){
+	if( StringStartsWithAtLeastOne( st,"/dev/sd","/dev/hd",NULL ) ){
 		/*
 		 * this path will convert something like: "/dev/sdc12" to "/dev/sdc"
 		 * basically,it removes digits from the end of the string to give the root device
@@ -560,8 +570,7 @@ static int _restore_luks_header( const struct_opts * opts,const char * temp_path
 
 static int _restore_header( const struct_opts * opts,const char * dev,const char * path,int ask_confirmation,uid_t uid )
 {
-	const char * device = opts->device ;
-	const char * temp_path ;
+	const char * temp_path = NULL ;
 	int k ;
 	int st = 7;
 	string_t confirm ;
@@ -586,21 +595,29 @@ Type \"YES\" and press Enter to continue: " ) ;
 		}
 	}
 
-	if( !_secure_file_path( &temp_path,path ) ){
+	if( _secure_file_path( &temp_path,path ) ){
+		zuluCryptSecurityGainElevatedPrivileges() ;
+
+		if( zuluCryptVolumeIsLuks( temp_path ) ){
+			/*
+			 * temp_path will point to a header back up file and it is assumed that a user
+			 * want to restore a header to a luks volume since the backup header has luks signature
+			 */
+			st = _restore_luks_header( opts,temp_path ) ;
+		}else{
+			/*
+			 * the header back up has no luks signature and hence it is assumed that a request is
+			 * made to restore a truecrypt header backup
+			 */
+			st = _restore_truecrypt_header( opts,temp_path,uid ) ;
+		}
+		zuluCryptDeleteFile( temp_path ) ;
+		StringFree( temp_path ) ;
+		zuluCryptSecurityDropElevatedPrivileges() ;
+		return st ;
+	}else{
 		return 7 ;
 	}
-
-	zuluCryptSecurityGainElevatedPrivileges() ;
-
-	if( zuluCryptVolumeIsLuks( device ) ){
-		st = _restore_luks_header( opts,temp_path ) ;
-	}else{
-		st = _restore_truecrypt_header( opts,temp_path,uid ) ;
-	}
-	zuluCryptDeleteFile( temp_path ) ;
-	StringFree( temp_path ) ;
-	zuluCryptSecurityDropElevatedPrivileges() ;
-	return st ;
 }
 
 int zuluCryptEXESaveAndRestoreVolumeHeader( const struct_opts * opts,uid_t uid,int option  )

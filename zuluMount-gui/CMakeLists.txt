@@ -5,6 +5,7 @@ add_definitions( -D_FILE_OFFSET_BITS=64 -Wextra -Wall -pedantic -std=c++0x -I${P
 set (UI_FILES 	mainwindow.ui
 		keydialog.ui
 		mountpartition.ui
+		deviceoffset.ui
 )
 
 set(MOC_FILES 	mainwindow.h
@@ -15,6 +16,7 @@ set(MOC_FILES 	mainwindow.h
 		auto_mount.h
 		auto_mount_helper.h
 		monitor_mountinfo.h
+		deviceoffset.h
  )
 
 set(SRC 	main.cpp
@@ -26,6 +28,7 @@ set(SRC 	main.cpp
 		mountpartition.cpp
 		oneinstance.cpp
 		monitor_mountinfo.cpp
+		deviceoffset.cpp
 )
 
 if( QT5 )
