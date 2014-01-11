@@ -246,12 +246,14 @@ static int _save_luks_header( const struct_opts * opts,const char * temp_path,co
 	if( crypt_init( &cd,opts->device ) != 0 ){
 		st = 3 ;
 	}else{
-		if( crypt_header_backup( cd,NULL,temp_path ) == 0 ){
+		st = crypt_header_backup( cd,NULL,temp_path ) ;
+		crypt_free( cd ) ;
+
+		if( st == 0 ){
 			st = _secure_copy_file( temp_path,path,uid ) ;
 		}else{
 			st = 4 ;
 		}
-		crypt_free( cd ) ;
 	}
 	return st ;
 }
