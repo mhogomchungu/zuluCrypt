@@ -739,6 +739,14 @@ stringList_t StringListAppend( stringList_t stl,const char * cstring )
 	}
 }
 
+stringList_t StringListAppendIfAbsent( stringList_t stl,const char * cstring )
+{
+	if( StringListContains( stl,cstring ) == -1 ){
+		StringListAppend( stl,cstring ) ;
+	}
+	return stl ;
+}
+
 ssize_t StringListContains( stringList_t stl,const char * cstring )
 {
 	size_t index  ;
@@ -977,12 +985,12 @@ size_t StringListRemoveIfStringStartsWith( stringList_t stl,const char * str )
 	return count ;
 }
 
-size_t StringListRemoveIfStringEqual_1( stringList_t stl,string_t st )
+size_t StringListRemoveIfPresent_1( stringList_t stl,string_t st )
 {
-	return StringListRemoveIfStringEqual( stl,st->string ) ;
+	return StringListRemoveIfPresent( stl,st->string ) ;
 }
 
-size_t StringListRemoveIfStringEqual( stringList_t stl,const char * str )
+size_t StringListRemoveIfPresent( stringList_t stl,const char * str )
 {
 	string_t z ;
 	string_t * it  ;

@@ -372,10 +372,8 @@ stringList_t zuluCryptPartitions( int option,uid_t uid )
 		while( it != end ){
 			device = StringContent( *it ) ;
 			it++ ;
-			if( StringListContains( system,device ) == -1 ){
-				StringListAppend( system,device ) ;
-			}
-			StringListRemoveIfStringEqual( non_system,device ) ;
+			StringListAppendIfAbsent( system,device ) ;
+			StringListRemoveIfPresent( non_system,device ) ;
 		}
 		StringListDelete( &p ) ;
 	}
@@ -391,10 +389,8 @@ stringList_t zuluCryptPartitions( int option,uid_t uid )
 		while( it != end ){
 			device = StringContent( *it ) ;
 			it++ ;
-			if( StringListContains( system,device ) == -1 ){
-				StringListAppend( system,device ) ;
-			}
-			StringListRemoveIfStringEqual( non_system,device ) ;
+			StringListAppendIfAbsent( system,device ) ;
+			StringListRemoveIfPresent( non_system,device ) ;
 		}
 		StringListDelete( &p ) ;
 	}
@@ -413,7 +409,7 @@ stringList_t zuluCryptPartitions( int option,uid_t uid )
 	 */
 	while( it != StringListEnd( non_system ) ){
 		if( _zuluCryptCheckSYSifDeviceIsSystem( StringContent( *it ) ) ){
-			StringListAppendString( system,*it ) ;
+			StringListAppendIfAbsent( system,StringContent( *it ) ) ;
 			StringListRemoveAt( non_system,it - start ) ;
 		}else{
 			it++ ;
@@ -432,9 +428,7 @@ stringList_t zuluCryptPartitions( int option,uid_t uid )
 			device = StringContent( *it ) ;
 			it++ ;
 			StringListRemoveString( system,device ) ;
-			if( StringListContains( non_system,device ) == -1 ){
-				StringListAppend( non_system,device ) ;
-			}
+			StringListAppendIfAbsent( non_system,device ) ;
 		}
 		StringListDelete( &p ) ;
 	}

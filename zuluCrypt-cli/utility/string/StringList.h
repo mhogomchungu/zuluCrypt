@@ -262,6 +262,12 @@ string_t StringListHasStartSequence_1( stringList_t stl,const char * str ) ;
 stringList_t StringListAppend( stringList_t stl,const char * cstring ) ;
 
 /*
+ * append an entry into the list if the entry is not already in the list
+ * if stl == NULL, then the function call is the same as "StringList( cstring )"
+ */
+stringList_t StringListAppendIfAbsent( stringList_t stl,const char * cstring ) ;
+
+/*
  * append an entry into the list and take ownership of it.
  * if stl == NULL, then the function call is the same as "StringList( cstring )"
  */
@@ -339,16 +345,17 @@ size_t StringListRemoveIfStringStartsWith( stringList_t stl,const char * str ) ;
 size_t StringListRemoveIfStringContains( stringList_t stl,const char * str ) ;
 
 /*
- * go through every string in the list and remove all strings has string str
- * returned value is the number of elements removed
+ * remove a string_t object from the managed list if it manages string str.
+ * this function is to be used if there maybe multiple occurances of the string.
+ * If there is atmost one entry,then StringListRemoveString() is a function to use.
  */
-size_t StringListRemoveIfStringEqual( stringList_t stl,const char * str ) ;
+size_t StringListRemoveIfPresent( stringList_t stl,const char * str ) ;
 
 /*
- * go through every string in the list and remove all strings has string_t str
- * returned value is the number of elements removed
+ * remove a string_t object from the managed list if it is found.
+ * this function is to be used if there maybe multiple occurances of the string.
  */
-size_t StringListRemoveIfStringEqual_1( stringList_t stl,string_t st ) ;
+size_t StringListRemoveIfPresent_1( stringList_t stl,string_t st ) ;
 
 /*
  * remove an entry from the list at position index and "let it free",the detached entry is now a fully fledged string_t object.

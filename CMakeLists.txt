@@ -109,6 +109,7 @@ endif()
 
 ADD_SUBDIRECTORY( zuluCrypt-cli )
 ADD_SUBDIRECTORY( zuluCrypt-gui/lxqt_wallet )
+ADD_SUBDIRECTORY( zuluSafe )
 
 if( NOT NOGUI )
 	if( PWQUALITY_FOUND )

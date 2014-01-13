@@ -450,7 +450,7 @@ static int _save_truecrypt_header( const struct_opts * opts,const char * temp_pa
 	info.getKey        = _get_password ;
 
 	/*
-	 * The current API to seem to expect a header backup file to already exist and hence we create it here.
+	 * The current API seem to expect a header backup file to already exist and hence we create it here.
 	 */
 	fd = open( temp_path,O_CREAT|O_WRONLY,0644 ) ;
 	if( fd != -1 ){
