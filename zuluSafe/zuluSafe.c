@@ -43,6 +43,7 @@
 #define _file( x ) x,strlen( x ) + 1
 
 #define StringsAreEqual( x,y ) strcmp( x,y ) == 0
+#define StringsAreNotEqual( x,y ) strcmp( x,y ) != 0
 
 static void _help( void )
 {
@@ -149,34 +150,45 @@ static int _openWallet( lxqt_wallet_t * wallet )
 	int c ;
 
 	char password[ PASSWORD_SIZE + 1 ] ;
+	char password_1[ PASSWORD_SIZE + 1 ] ;
+
 	char wallet_name[ WALLET_NAME_SIZE + 1 ] ;
 
 	printf( gettext( "enter wallet name: " ) ) ;
 	_getInputFromUser( wallet_name,WALLET_NAME_SIZE,NULL ) ;
 
-	printf( gettext( "enter wallet password: " ) ) ;
-	_getPassWordFromUser( password,PASSWORD_SIZE,&password_length ) ;
-	puts( "" ) ;
-
 	if( lxqt_wallet_exists( wallet_name,APPLICATION_NAME ) != 0 ){
-		printf( gettext( "wallet \"%s\" does not exist,do you want to create it?(y/n)\n" ),wallet_name ) ;
+		printf( gettext( "wallet \"%s\" does not exist,do you want to create it?(y/n): " ),wallet_name ) ;
 		c = getchar() ;
 		_clearKeyBoardBuffer() ;
 		if( c == 'y' ){
-			r = lxqt_wallet_create( password,password_length,wallet_name,APPLICATION_NAME ) ;
-			if( r != lxqt_wallet_no_error ){
-				puts( gettext( "failed to create wallet" ) ) ;
+			printf( gettext( "enter wallet password: " ) ) ;
+			_getPassWordFromUser( password,PASSWORD_SIZE,&password_length ) ;
+			puts( "" ) ;
+			printf( gettext( "re enter wallet password: " ) ) ;
+			_getPassWordFromUser( password_1,PASSWORD_SIZE,NULL ) ;
+			puts( "" ) ;
+			if( StringsAreNotEqual( password,password_1 ) ){
+				puts( gettext( "passwords did not match" ) ) ;
 				return 1 ;
 			}else{
-				return _open_wallet( wallet,password,password_length,wallet_name ) ;
+				r = lxqt_wallet_create( password,password_length,wallet_name,APPLICATION_NAME ) ;
+				if( r != lxqt_wallet_no_error ){
+					puts( gettext( "failed to create wallet" ) ) ;
+					return 1 ;
+				}
 			}
 		}else{
 			puts( gettext( "volume not created per user request" ) ) ;
 			return 1 ;
 		}
 	}else{
-		return _open_wallet( wallet,password,password_length,wallet_name ) ;
+		printf( gettext( "enter wallet password: " ) ) ;
+		_getPassWordFromUser( password,PASSWORD_SIZE,&password_length ) ;
+		puts( "" ) ;
 	}
+
+	return _open_wallet( wallet,password,password_length,wallet_name ) ;
 }
 
 static int _printListOfManagedFiles( lxqt_wallet_t wallet )

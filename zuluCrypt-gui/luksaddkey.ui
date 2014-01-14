@@ -108,7 +108,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>key from a key file</string>
+     <string>keyfile</string>
     </property>
    </widget>
    <widget class="QLabel" name="labelExistingPassphrase">
@@ -246,7 +246,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>key from a key file</string>
+     <string>keyfile</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButtonOpenNewKeyFile">

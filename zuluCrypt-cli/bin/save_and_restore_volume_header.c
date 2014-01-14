@@ -181,7 +181,7 @@ static int _secure_file_path( const char ** path,const char * source )
 /*
  * this function return a secured file path to be used to create a file at the path
  */
-static inline const char * _secure_file_path_1( void )
+static const char * _secure_file_path_1( void )
 {
 	string_t st_path = _create_work_directory() ;
 	StringAppend( st_path,"1-" ) ;
@@ -193,7 +193,7 @@ static inline const char * _secure_file_path_1( void )
  * Below function copies a secured file from secured location to a user owned and managed location.
  * The source file will be deleted when the copy is done.
  */
-static inline int _secure_copy_file( const char * source,const char * dest,uid_t uid )
+static int _secure_copy_file( const char * source,const char * dest,uid_t uid )
 {
 	int st = 4 ;
 	int fd_source ;
@@ -248,7 +248,6 @@ static int _save_luks_header( const struct_opts * opts,const char * temp_path,co
 	}else{
 		st = crypt_header_backup( cd,NULL,temp_path ) ;
 		crypt_free( cd ) ;
-
 		if( st == 0 ){
 			st = _secure_copy_file( temp_path,path,uid ) ;
 		}else{
@@ -435,7 +434,6 @@ static string_t _root_device( const char * device )
 
 static int _save_truecrypt_header( const struct_opts * opts,const char * temp_path,const char * path,uid_t uid )
 {
-	int fd ;
 	string_t st ;
 	info_t info ;
 	int r ;
@@ -449,33 +447,23 @@ static int _save_truecrypt_header( const struct_opts * opts,const char * temp_pa
 	info.header_source = "save_header_to_file" ;
 	info.getKey        = _get_password ;
 
-	/*
-	 * The current API seem to expect a header backup file to already exist and hence we create it here.
-	 */
-	fd = open( temp_path,O_CREAT|O_WRONLY,0644 ) ;
-	if( fd != -1 ){
-		close( fd ) ;
-		if( _modify_tcrypt( &info,opts,temp_path,uid ) == TC_OK ){
+	if( _modify_tcrypt( &info,opts,temp_path,uid ) == TC_OK ){
+		return _secure_copy_file( temp_path,path,uid ) ;
+	}else{
+		/*
+		 * an attempt to open the volume as a normal truecrypt volume failed,reattempt treating
+		 * the volume as a system volume.
+		 */
+		st = _root_device( info.device ) ;
+		info.sys_device = StringContent( st ) ;
+		r = _modify_tcrypt( &info,opts,temp_path,uid ) ;
+		StringDelete( &st ) ;
+
+		if( r == TC_OK ){
 			return _secure_copy_file( temp_path,path,uid ) ;
 		}else{
-			/*
-			 * an attempt to open the volume as a normal truecrypt volume failed,reattempt treating
-			 * the volume as a system volume.
-			 */
-			st = _root_device( info.device ) ;
-			info.sys_device = StringContent( st ) ;
-			if( _modify_tcrypt( &info,opts,temp_path,uid ) == TC_OK ){
-				r = _secure_copy_file( temp_path,path,uid ) ;
-			}else{
-				unlink( temp_path ) ;
-				r = 20 ;
-			}
-
-			StringDelete( &st ) ;
-			return r ;
+			return 20 ;
 		}
-	}else{
-		return 7 ;
 	}
 }
 
@@ -502,14 +490,14 @@ static int _restore_truecrypt_header( const struct_opts * opts,const char * temp
 		 */
 		st = _root_device( info.device ) ;
 		info.sys_device = StringContent( st ) ;
-		if( _modify_tcrypt( &info,opts,temp_path,uid ) == TC_OK ){
-			r = 1 ;
-		}else{
-			r = 7 ;
-		}
-
+		r = _modify_tcrypt( &info,opts,temp_path,uid ) ;
 		StringDelete( &st ) ;
-		return r ;
+
+		if( r == TC_OK ){
+			return 1 ;
+		}else{
+			return 7 ;
+		}
 	}
 }
 

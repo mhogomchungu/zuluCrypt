@@ -83,7 +83,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>existing key from a key file to delete</string>
+     <string>existing key from a keyfile to delete</string>
     </property>
    </widget>
   </widget>

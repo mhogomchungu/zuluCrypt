@@ -113,7 +113,7 @@ void managevolumeheader::enableTrueCrypt( bool enable )
 	m_ui->rbKeyFile->setEnabled( enable ) ;
 	m_ui->groupBox->setEnabled( enable ) ;
 	m_ui->label->setEnabled( enable ) ;
-	m_ui->label_2->setEnabled( enable ) ;
+	//m_ui->label_2->setEnabled( enable ) ;
 	m_ui->pBKeyFile->setEnabled( enable ) ;
 	m_ui->lineEditPassWord->setEnabled( enable ) ;
 

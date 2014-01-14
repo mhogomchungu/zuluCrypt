@@ -137,9 +137,9 @@
    <widget class="QRadioButton" name="rbKey">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>50</x>
       <y>0</y>
-      <width>111</width>
+      <width>101</width>
       <height>31</height>
      </rect>
     </property>
@@ -150,14 +150,14 @@
    <widget class="QRadioButton" name="rbKeyFile">
     <property name="geometry">
      <rect>
-      <x>120</x>
+      <x>160</x>
       <y>0</y>
-      <width>191</width>
+      <width>151</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>key from a key file</string>
+     <string>keyfile</string>
     </property>
    </widget>
   </widget>
