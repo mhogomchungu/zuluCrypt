@@ -28,6 +28,46 @@ static inline int zuluExit( int st,struct crypt_device * cd )
 	return st ;
 }
 
+static u_int64_t _offset( const char * offset )
+{
+	char * e ;
+	size_t s = StringSize( offset ) ;
+	char f = *( offset + s - 1 ) ;
+	u_int64_t r = 0 ;
+
+	if( !( f >= '0' && f <= '9' ) ){
+		/*
+		 * The argument ends with a non digit number,assume the argument is not in offsets but
+		 * in bytes and convert it to offsets
+		 */
+		e = StringCopy_2( offset ) ;
+		*( e + s - 1 ) = '\0' ;
+		r = StringConvertToInt( e ) ;
+		if( f == 'b' || f == 'B' ) {
+			if( r < 512 ){
+				r = 0 ;
+			}else{
+				r = r / 512 ;
+			}
+		}else if( f == 'k' || f == 'K' ){
+			r = 2 * r ;
+		}else if( f == 'm' || f == 'M' ){
+			r = 2 * 1024 * r ;
+		}else if( f == 'g' || f == 'G' ){
+			r = 2 * 1024 * 1024 * r ;
+		}else if( f == 't' || f == 'T' ){
+			r = 1.0 * 2 * 1024 * 1024 * 1024 * r ;
+		}else{
+			r = 0 ;
+		}
+		StringFree( e ) ;
+	}else{
+		r = StringConvertToInt( offset ) ;
+	}
+
+	return r ;
+}
+
 static int _open_plain( const char * device,const char * offset,const char * mapper,const char * mode,const char * pass,size_t pass_size )
 {
 	uint32_t flags ;
@@ -43,7 +83,7 @@ static int _open_plain( const char * device,const char * offset,const char * map
 		return 3 ;
 	}
 	if( offset != NULL ){
-		params.offset = StringConvertToInt( offset ) ;
+		params.offset = _offset( offset ) ;
 	}
 	if( StringHasComponent( mode,"ro" ) ){
 		flags = CRYPT_ACTIVATE_READONLY ;
