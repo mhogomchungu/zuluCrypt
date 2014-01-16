@@ -52,6 +52,7 @@ createvolume::createvolume( QWidget * parent ) :
 	m_ui->lineEditPassphrase1->setFocus() ;
 
 	m_isWindowClosable = true ;
+	m_warned = false ;
 
 	m_keyStrength = new keystrength() ;
 
@@ -434,6 +435,13 @@ void createvolume::pbCreateClicked()
 			m_volumeType = QString( "truecrypt" ) ;
 			break ;
 		default: m_volumeType = QString( "luks" ) ;
+	}
+
+	if( type == createvolume::normal_and_hidden_truecrypt ){
+		if( !m_ui->comboBoxFS->currentText().contains( "fat" ) && m_warned == false ){
+			m_warned = true ;
+			return msg.ShowUIOK( tr( "WARNING" ),tr( "It is best to create a hidden volume with fat file systems." ) ) ;
+		}
 	}
 
 	QString g ;

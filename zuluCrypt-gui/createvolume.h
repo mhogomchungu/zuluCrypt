@@ -80,6 +80,7 @@ private:
 	bool m_isWindowClosable ;
 	keystrength * m_keyStrength ;
 	QString m_volumeType ;
+	bool m_warned ;
 };
 
 #endif // CREATEPARTITION_H
