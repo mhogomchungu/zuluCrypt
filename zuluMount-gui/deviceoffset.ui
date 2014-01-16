@@ -22,20 +22,30 @@
      <height>161</height>
     </rect>
    </property>
+   <property name="toolTip">
+    <string>location could be in sectors if the entry is made up of only digits
+or in bytes if the entry ends with &quot;b&quot;
+or in kilobytes if the entry ends with &quot;k&quot;
+or in megabytes if the entry ends with &quot;m&quot;
+or in terabytes if the entry ends with &quot;t&quot;</string>
+   </property>
    <property name="title">
     <string/>
    </property>
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>0</x>
       <y>0</y>
       <width>541</width>
       <height>41</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string/>
+    </property>
     <property name="text">
-     <string>Enter an offset in sectors of where to start the device from</string>
+     <string>Enter below the offset location of the volume about to be opened.</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
@@ -57,14 +67,14 @@
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>0</x>
       <y>70</y>
-      <width>521</width>
+      <width>541</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>Enter the password below to a volume at the above offset</string>
+     <string>Enter the password below to a volume at the above offset.</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>

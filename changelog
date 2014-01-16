@@ -161,5 +161,7 @@ version 4.6.7
 version 4.6.8
 -- store partition id in wallets by device hardware id on volumes that do not have UUID( non LUKS volumes )
 -- add support for exfat file system.
--- add support for creating a backup and restoring from backup truecrypt volume headers(tcplay >=1.2.0 required)
+-- add support for creating a backup and restoring from backup truecrypt volume headers(tcplay >=2.0.0 required)
 -- add a simple CLI tool(zuluSafe-cli) that can be used to store multiple files securely in a single wallet file.
+-- add support in zuluMount for opening a plain volume at a user specified offset.This ability will allow hidden volume type
+   functionality.In one of the prompts in zuluMount-gui,press "ctrl+f" to bring up the dialog that accepts the offset.

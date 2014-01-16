@@ -92,7 +92,7 @@ static int _create_file_system( const char * device,const char * fs,int key_sour
 
 #if TCPLAY_NEW_API
 /*
- * tcplay >= 1.2.0
+ * tcplay >= 2.0.0
  */
 
 #define TRUE   ( int )1
