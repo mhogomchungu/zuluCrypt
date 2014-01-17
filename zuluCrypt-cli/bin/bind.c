@@ -29,9 +29,9 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 	stringList_t stl ;
 	string_t xt ;
 	string_t st ;
+	string_t zt ;
 	ssize_t index = -1 ;
 	const char * f ;
-	const char * e ;
 	const char * g ;
 	char * h = NULL ;
 	int r = 1 ;
@@ -65,7 +65,7 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 		 * Add a space at the end of the device name to make sure we check the full device name to avoid possible collisions
 		 * that may exist if one device is named "/home/abc" and another "/home/abcdef"
 		 */
-		index = StringListHasStartSequence( stx,StringAppend( st," " ) ) ;
+		zt = StringListHasStartSequence_1( stx,StringAppend( st," " ) ) ;
 		StringRemoveRight( st,1 ) ;
 		device = h = StringDeleteHandle( &st ) ;
 	}else{
@@ -74,20 +74,20 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 		 * that may exist if one device is named "/dev/sdc1" and another "/dev/sdc12"
 		 */
 		st = String( device ) ;
-		index = StringListHasStartSequence( stx,StringAppend( st," " ) ) ;
+		zt = StringListHasStartSequence_1( stx,StringAppend( st," " ) ) ;
 		StringDelete( &st ) ;
 	}
 
-	if( index == -1 ){
+	if( zt == StringVoid ){
 		/*
 		 * The volume does not appear to be mounted
 		 */
 		r = 1 ;
 	}else{
-		xt = StringListStringAt( stx,index ) ;
-		stl = StringListStringSplit( xt,' ' ) ;
+		stl = StringListStringSplit( zt,' ' ) ;
 
 		xt = StringListCopyStringAtSecondPlace( stl ) ;
+
 		StringListDelete( &stl ) ;
 
 		st = StringCopy( xt ) ;
@@ -114,6 +114,8 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 			k = zuluCryptMountPointPrefixMatch( g,uid,NULL ) ;
 		}
 
+		StringDelete( &st ) ;
+
 		if( k != 1 ){
 			/*
 			 * One none privileged user is attempting to unmount a bind mount from another use,disallow it
@@ -131,10 +133,10 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 			 * as explained in above comments
 			 */
 			f = StringAppend( xt," " ) ;
-			index = StringListHasSequence( stx,f ) ;
+			zt = StringListHasSequence_1( stx,f ) ;
 			f = StringRemoveRight( xt,1 ) ;
 
-			if( index == -1 ){
+			if( zt == StringVoid ){
 				/*
 				 * volume is not shared
 				 */
@@ -144,9 +146,7 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 				 * a volume is assumed to be shared if its device path in mountinfo has two mount points,one
 				 * in /run/media/private/$USER and the other in /run/media/public/
 				 */
-				e = StringListContentAt( stx,index ) ;
-
-				if( StringPrefixEqual( e,device ) ){
+				if( StringStartsWith( zt,device ) ){
 					f = zuluCryptDecodeMountEntry( xt ) ;
 					/*
 					 * good,the device associated with the shared mount is the same as that of the
@@ -174,7 +174,7 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 			}
 		}
 
-		StringMultipleDelete( &xt,&st,END ) ;
+		StringDelete( &xt ) ;
 	}
 
 	if( delete_stx ){
