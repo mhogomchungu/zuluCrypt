@@ -228,56 +228,79 @@ string_t zuluCryptConvertIfPathIsLVM( const char * path )
 	 * An assumption is made here that the path is an LVM path if "path" is in /dev/mapper/abc-def format
 	 * and there exist a path at /dev/abc/def format.
 	 *
-	 * handle double dashes as explained here: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=690246
+	 * handle double dashes as explained here: https://www.redhat.com/archives/linux-lvm/2014-January/msg00014.html
 	 */
-	string_t q = String( path ) ;
 	ssize_t index ;
-	ssize_t index_1 ;
+
+	size_t i ;
+	size_t j ;
+
 	const char * e ;
-	const char ** z = StringPointer( q ) ;
+	const char ** z ;
+
 	struct stat st ;
 
-	index = StringLastIndexOfString( q,"--" ) ;
-	if( index != -1 ){
-		index_1 = StringIndexOfString( q,index+2,"-" ) ;
-		if( index_1 != -1 ){
-			StringSubChar( q,index_1,'/' ) ;
-			while( StringHasComponent( *z,"--" ) ){
-				StringReplaceString( q,"--","-" ) ;
-			}
-			e = StringReplaceString( q,"/dev/mapper/","/dev/" ) ;
-			if( stat( e,&st ) != 0 ){
-				StringReplace( q,path ) ;
-			}
-		}else{
-			StringRemoveLength( q,index,2 ) ;
-			index_1 = StringLastIndexOfChar( q,'-' ) ;
-			if( index_1 != -1 ){
-				StringInsertChar( q,index,'-' ) ;
-				StringSubChar( q,index_1,'/' ) ;
-				while( StringHasComponent( *z,"--" ) ){
-					StringReplaceString( q,"--","-" ) ;
-				}
-				e = StringReplaceString( q,"/dev/mapper/","/dev/" ) ;
-				if( stat( e,&st ) != 0 ){
-					StringReplace( q,path ) ;
-				}
-			}else{
-				StringReplace( q,path ) ;
-			}
-		}
-	}else{
-		index = StringLastIndexOfChar( q,'-' ) ;
-		if( index != -1 ){
-			StringSubChar( q,index,'/' ) ;
-			e = StringReplaceString( q,"/dev/mapper/","/dev/" ) ;
-			if( stat( e,&st ) != 0 ){
-				StringReplace( q,path ) ;
-			}
-		}
-	}
+	char c ;
+	char d ;
 
-	return q ;
+	string_t q = String( path ) ;
+
+	index = StringIndexOfChar( q,0,'-' ) ;
+	if( index == -1 ){
+		/*
+		 * no dash character means its not an lvm volume
+		 */
+		return q ;
+	}else{
+		if( StringContains( q,"--" ) ){
+			/*
+			 * path will look like "/dev/mapper/mariusvg-my--own--lv"
+			 */
+			z = StringPointer( q ) ;
+			e = *z ;
+			j = StringLength( q ) ;
+
+			for( i = 0 ; i < j ; i++ ){
+				c = *( e + i ) ;
+				d = *( e + i + 1 ) ;
+				if( c == '-' && d != '-' ){
+					/*
+					 * found a place with a single dash,replace the dash with a slash and then
+					 * replace all occurances of double dashes to single dashes
+					 */
+					StringSubChar( q,i,'/' ) ;
+					while( StringHasComponent( *z,"--" ) ){
+						StringReplaceString( q,"--","-" ) ;
+					}
+					break ;
+				}
+			}
+			/*
+			 * path will now look like "/dev/mapper/mariusvg/my-own-lv"
+			 */
+		}else{
+			/*
+			 * no double dashes,it could be a simple LVM path
+			 */
+			StringSubChar( q,index,'/' ) ;
+		}
+
+		e = StringReplaceString( q,"/dev/mapper/","/dev/" ) ;
+
+		if( stat( e,&st ) == 0 ){
+			/*
+			 * The path appear to be an LVM path since "/dev/mapper/ABC-DEF" input path has a corresponding
+			 * "/dev/ABC/DEF" path
+			 */
+		}else{
+			/*
+			 * Not an LVM volume,replace the string to its original
+			 */
+			StringReplace( q,path ) ;
+		}
+		
+		return q ;
+	}
 }
 
 char * zuluCryptVolumeStatus( const char * mapper )
