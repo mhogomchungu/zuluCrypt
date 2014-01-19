@@ -254,7 +254,7 @@ string_t zuluCryptConvertIfPathIsLVM( const char * path )
 	}else{
 		if( StringContains( q,"--" ) ){
 			/*
-			 * path will look like "/dev/mapper/mariusvg-my--own--lv"
+			 * path may look like "/dev/mapper/mariusvg-my--own--lv"
 			 */
 			z = StringPointer( q ) ;
 			e = *z ;
@@ -298,7 +298,7 @@ string_t zuluCryptConvertIfPathIsLVM( const char * path )
 			 */
 			StringReplace( q,path ) ;
 		}
-		
+
 		return q ;
 	}
 }
