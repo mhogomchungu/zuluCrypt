@@ -242,6 +242,7 @@ string_t zuluCryptConvertIfPathIsLVM( const char * path )
 
 	char c ;
 	char d ;
+	char k ;
 
 	string_t q = String( path ) ;
 
@@ -260,10 +261,11 @@ string_t zuluCryptConvertIfPathIsLVM( const char * path )
 			e = *z ;
 			j = StringLength( q ) ;
 
-			for( i = 0 ; i < j ; i++ ){
+			for( i = 1 ; i < j ; i++ ){
 				c = *( e + i ) ;
 				d = *( e + i + 1 ) ;
-				if( c == '-' && d != '-' ){
+				k = *( e + i - 1 ) ;
+				if( k != '-' && c == '-' && d != '-' ){
 					/*
 					 * found a place with a single dash,replace the dash with a slash and then
 					 * replace all occurances of double dashes to single dashes
@@ -275,6 +277,7 @@ string_t zuluCryptConvertIfPathIsLVM( const char * path )
 					break ;
 				}
 			}
+
 			/*
 			 * path will now look like "/dev/mapper/mariusvg/my-own-lv"
 			 */
