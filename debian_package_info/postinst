@@ -1,0 +1,3 @@
+
+chmod 4755 /usr/bin/zuluCrypt-cli
+chmod 4755 /usr/bin/zuluMount-cli
