@@ -143,7 +143,7 @@ static int _create_volume( const tcrypt_t * info )
 #else
 
 /*
- * tcplay >= 1.0.0 < 1.2.0
+ * tcplay >= 1.0.0 < 2.0,0
  */
 static int _create_volume( const tcrypt_t * info )
 {

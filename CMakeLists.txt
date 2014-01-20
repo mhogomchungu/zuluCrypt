@@ -42,7 +42,7 @@ set( LIB_PLUGIN_VERSION "1.0.0" )
 file( WRITE ${PROJECT_BINARY_DIR}/version.h "
 #ifndef ZULUCRYPT_VERSION
 #define ZULUCRYPT_VERSION
-#define VERSION_STRING \"version  : ${PGR_VERSION}\\ncopyright: 2011-2013 Ink Francis,mhogomchungu@gmail.com\\nlicense  : GPLv2+\"
+#define VERSION_STRING \"version  : ${PGR_VERSION}\\ncopyright: 2011-2014 Ink Francis,mhogomchungu@gmail.com\\nlicense  : GPLv2+\"
 #endif
 \n" )
 
