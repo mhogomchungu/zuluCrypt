@@ -730,14 +730,13 @@ void MainWindow::addEntryToTable( bool b,QStringList l )
 void MainWindow::removeEntryFromTable( QString volume )
 {
 	QTableWidget * table = m_ui->tableWidget ;
-	int j = table->rowCount() ;
-	for( int i = 0 ; i < j ; i++ ){
-		if( table->item( i,0 )->text() == volume ){
-			tablewidget::deleteRowFromTable( table,i ) ;
-			break ;
-		}
-	}
 
+	int r = tablewidget::columnHasEntry( table,0,volume ) ;
+	if( r != -1 ){
+		tablewidget::deleteRowFromTable( table,r ) ;
+	}else{
+		this->pbUpdate() ;
+	}
 	this->enableAll() ;
 }
 
@@ -754,7 +753,7 @@ void MainWindow::volumeMiniProperties( QString volumeInfo )
 	this->disableAll() ;
 
 	if( volumeInfo.isEmpty() ){
-		;
+		this->pbUpdate() ;
 	}else{
 		l = volumeInfo.split( "\t" ) ;
 		if( l.size() >= 6 ){
@@ -782,8 +781,6 @@ void MainWindow::volumeMiniProperties( QString volumeInfo )
 				 * Add an entry to the list to accomodate it
 				 */
 				row = tablewidget::addEmptyRow( table ) ;
-			}else{
-				;
 			}
 
 			tablewidget::setText( table,row,0,device ) ;

@@ -230,9 +230,13 @@ void Task::volumeProperties()
 	QProcess p ;
 	QString exe ;
 
-	QString device = m_device.replace( "\"","\"\"\"" ) ;
+	QString device ;
+	if( m_device.startsWith( "UUID" ) ){
+		device = m_device ;
+	}else{
+		device = m_device.replace( "\"","\"\"\"" ) ;
+	}
 	exe = QString( "%1 -s -d \"%2\"" ).arg( zuluMount ).arg( device ) ;
-
 	p.start( exe ) ;
 	p.waitForFinished() ;
 
@@ -270,7 +274,11 @@ void Task::volumeMiniProperties()
 	QProcess p ;
 	QString exe ;
 	//sleep( 1 ) ; for UI effect
-	exe = QString( "%1 -L -d \"%2\"" ).arg( zuluMount ).arg( m_device.replace( "\"","\"\"\"" ) ) ;
+	if( m_device.startsWith( "UUID" ) ){
+		exe = QString( "%1 -L -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;
+	}else{
+		exe = QString( "%1 -L -d \"%2\"" ).arg( zuluMount ).arg( m_device.replace( "\"","\"\"\"" ) ) ;
+	}
 
 	p.start( exe ) ;
 	p.waitForFinished( -1 ) ;
@@ -294,8 +302,6 @@ void Task::cryptoOpen()
 	}else{
 		exe = QString( "%1 -m -d \"%2\" -z \"%3\" -e %4 %5" ).arg( zuluMount ).arg( d ).arg( m_point ).arg( m_mode ).arg( m_keySource ) ;
 	}
-
-	qDebug() << exe ;
 
 	p.start( exe ) ;
 	p.waitForFinished( -1 ) ;
@@ -346,8 +352,16 @@ void Task::mount()
 void Task::umount()
 {
 	QProcess p ;
-	QString device = m_device.replace( "\"","\"\"\"" ) ;
-	QString exe = QString( "%1 -u -d \"%2\"" ).arg( zuluMount ).arg( device ) ;
+	QString exe ;
+
+	QString device ;
+	if( m_device.startsWith( "UUID" ) ){
+		device = m_device ;
+	}else{
+		device = m_device.replace( "\"","\"\"\"" ) ;
+	}
+
+	exe = QString( "%1 -u -d \"%2\"" ).arg( zuluMount ).arg( device ) ;
 
 	p.start( exe ) ;
 	p.waitForFinished() ;
