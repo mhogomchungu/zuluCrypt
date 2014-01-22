@@ -106,10 +106,8 @@ void monitor_mountinfo::run()
 				volumeList.removeOne( newList.at( i ) ) ;
 			}
 
-			j = volumeList.size() ;
-			for( int i = 0 ; i < j ; i++ ){
-				const QString& device = volumeList.at( i ) ;
-
+			while( volumeList.size() > 0 ){
+				const QString& device = volumeList.first() ;
 				if( device.startsWith( QString( "/dev/" ) ) ){
 					Task * t = new Task() ;
 					t->setDevice( device );
@@ -119,6 +117,7 @@ void monitor_mountinfo::run()
 					//sleep( 1 ) ; //sleep for one second for UI effect
 					m_main->removeEntry( device ) ;
 				}
+				volumeList.removeAll( device ) ;
 			}
 
 			volumeList = newList ;

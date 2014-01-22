@@ -734,10 +734,10 @@ void MainWindow::removeEntryFromTable( QString volume )
 	int r = tablewidget::columnHasEntry( table,0,volume ) ;
 	if( r != -1 ){
 		tablewidget::deleteRowFromTable( table,r ) ;
+		this->enableAll() ;
 	}else{
 		this->pbUpdate() ;
 	}
-	this->enableAll() ;
 }
 
 void MainWindow::volumeMiniProperties( QString volumeInfo )
@@ -792,9 +792,8 @@ void MainWindow::volumeMiniProperties( QString volumeInfo )
 
 			tablewidget::selectRow( table,row ) ;
 		}
+		this->enableAll() ;
 	}
-
-	this->enableAll() ;
 }
 
 void MainWindow::pbUmount()
