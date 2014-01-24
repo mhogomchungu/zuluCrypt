@@ -1,5 +1,5 @@
 Name:           zuluCrypt
-Version: 4.6.7
+Version: 4.6.8
 Release: 0
 Summary:        Qt GUI front end to cryptsetup
 License:        GPL-2.0+
@@ -17,11 +17,11 @@ BuildRoot:      %{_topdir}/%{name}-%{version}
 
 #You may want to add dependencies for kwallet,gnome-keyring and pwquality below
 #if you want to include optional functionality they provide.
-%if 0%{?fedora} 
-BuildRequires:  cmake gcc gcc-c++ qt-devel glibc-devel libmount-devel libblkid-devel cryptsetup-luks-devel
+%if 0%{?fedora}
+BuildRequires:  cmake gcc gcc-c++ qt-devel glibc-devel libblkid-devel cryptsetup-luks-devel
 #BuildRequires:  cmake gcc gcc-c++ qt-devel gnome-keyring-devel glibc-devel libmount-devel libblkid-devel cryptsetup-luks-devel
 %else
-BuildRequires:  cmake gcc gcc-c++ libqt4-devel glibc-devel libmount-devel libblkid-devel libcryptsetup-devel
+BuildRequires:  cmake gcc gcc-c++ libqt4-devel glibc-devel libblkid-devel libcryptsetup-devel libtcplay-devel
 %endif
 
 %description
@@ -43,7 +43,7 @@ Summary:        Library for %{name}
 Group:          Productivity/Security
 
 %description -n %{libname}
-This package contains libraries that provide higher level access to cryptsetup API and provide mounting/unmounting API 
+This package contains libraries that provide higher level access to cryptsetup API and provide mounting/unmounting API
 to easy opening and closing of volumes
 
 %package -n %{zuluCrypt_plugins}
@@ -85,18 +85,20 @@ sbin/ldconfig
 rm -rf %{buildroot}
 rm -rf $RPM_BUILD_DIR/%{name}-%{version}
 
-%files 
+%files
 %defattr(0755,root,root)
 %{_bindir}/zuluMount-gui
 %{_bindir}/zuluMount-cli
 %{_bindir}/zuluCrypt-gui
 %{_bindir}/zuluCrypt-cli
+%{_bindir}/zuluSafe-cli
 %{_libdir}/zuluCrypt/zuluCrypt-testKey
 
 %{_datadir}/applications/zuluCrypt.desktop
 %{_datadir}/applications/zuluMount.desktop
 %defattr(0644,root,root)
 %{_datadir}/icons/*
+%{_datadir}/pixmaps/*
 %{_mandir}/man1/*
 %defattr(0644,root,root)
 
