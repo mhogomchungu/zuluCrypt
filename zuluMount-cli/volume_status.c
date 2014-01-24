@@ -310,40 +310,17 @@ int zuluMountPrintMountedVolumes( uid_t uid )
 	return 0 ;
 }
 
-int zuluMountprintAListOfMountedVolumes( void )
+static void  _zuluMountprintAListOfMountedVolumes( string_t st,void * s )
 {
-	/*
-	 * This function may print the same device more than once if there exists a normal mount and atleast
-	 * a single bind mount.This behavior is expected and is desired since the list given here must match
-	 * the list given with "zuluMount-cli -l". zuluMount-gui will go crazy if the two lists do not match
-	 */
-
-	/*
-	 * zuluCryptGetMountInfoList() is defined in ../zuluCrypt-cli/lib/process_mountinfo.c
-	 */
-	stringList_t stz = zuluCryptGetMountInfoList() ;
-
-	StringListIterator it  = StringListBegin( stz ) ;
-	StringListIterator end = StringListEnd( stz ) ;
-
-	string_t st ;
-	string_t q ;
-
 	const char * e ;
 	const char * f ;
-	/*
-	 * zuluCryptMapperPrefix() is defined in ../zuluCrypt-cli/lib/create_mapper_name.c
-	 * mapper_prefix will probably contain "/dev/mapper/"
-	 */
-	const char * mapper_prefix = zuluCryptMapperPrefix() ;
+	const char * mapper_prefix = ( const char * )s ;
 
-	while( it != end ){
-		st = *it ;
-		it++ ;
-		if( !StringStartsWith( st,"/" ) || StringStartsWithAtLeastOne( st,"/proc","/sys","/dev ",NULL ) ){
-			continue ;
-		}
+	string_t q ;
 
+	int r = !StringStartsWith( st,"/" ) || StringStartsWithAtLeastOne( st,"/proc","/sys","/dev ",NULL ) ;
+
+	if( r == 0 ){
 		e = StringReplaceChar_1( st,0,' ','\0' ) ;
 
 		if( StringPrefixEqual( e,mapper_prefix ) ){
@@ -404,6 +381,26 @@ int zuluMountprintAListOfMountedVolumes( void )
 			StringPrintLine( st ) ;
 		}
 	}
+}
+
+int zuluMountprintAListOfMountedVolumes( void )
+{
+	/*
+	 * This function may print the same device more than once if there exists a normal mount and atleast
+	 * a single bind mount.This behavior is expected and is desired since the list given here must match
+	 * the list given with "zuluMount-cli -l". zuluMount-gui will go crazy if the two lists do not match
+	 */
+
+	/*
+	 * zuluCryptGetMountInfoList() is defined in ../zuluCrypt-cli/lib/process_mountinfo.c
+	 */
+	stringList_t stz = zuluCryptGetMountInfoList() ;
+
+	/*
+	 * zuluCryptMapperPrefix() is defined in ../zuluCrypt-cli/lib/create_mapper_name.c
+	 * mapper_prefix will probably contain "/dev/mapper/"
+	 */
+	StringListForEach_1( stz,_zuluMountprintAListOfMountedVolumes,( void * )zuluCryptMapperPrefix() ) ;
 
 	StringListDelete( &stz ) ;
 
