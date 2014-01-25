@@ -86,8 +86,9 @@ void monitor_mountinfo::run()
 	int timeout  = -1 ;
 	int e ;
 
-	QStringList volumeList = this->updateVolumeList() ;
+	QStringList oldList = this->updateVolumeList() ;
 	QStringList newList ;
+	QStringList temp ;
 
 	while( 1 ){
 		e = poll( fds,1,timeout ) ;
@@ -97,17 +98,17 @@ void monitor_mountinfo::run()
 
 		newList = this->updateVolumeList() ;
 
-		if( volumeList.size() > newList.size() ){
+		if( oldList.size() > newList.size() ){
 			/*
 			 * unmount has just happened
 			 */
 			int j = newList.size() ;
 			for( int i = 0 ; i < j ; i++ ){
-				volumeList.removeOne( newList.at( i ) ) ;
+				oldList.removeOne( newList.at( i ) ) ;
 			}
-
-			while( volumeList.size() > 0 ){
-				const QString& device = volumeList.first() ;
+			j = oldList.size() ;
+			for( int i = 0 ; i < j ; i++ ){
+				const QString& device = oldList.at( i ) ;
 				if( device.startsWith( QString( "/dev/" ) ) ){
 					Task * t = new Task() ;
 					t->setDevice( device );
@@ -117,32 +118,28 @@ void monitor_mountinfo::run()
 					//sleep( 1 ) ; //sleep for one second for UI effect
 					m_main->removeEntry( device ) ;
 				}
-				volumeList.removeAll( device ) ;
 			}
-
-			volumeList = newList ;
-
-		}else if( volumeList.size() < newList.size() ){
+		}else if( newList.size() > oldList.size() ){
 			/*
 			 * mount has happened
 			 */
-			int j = volumeList.size() ;
+			int j = oldList.size() ;
+			temp = newList ;
 			for( int i = 0 ; i < j ; i++ ){
-				newList.removeOne( volumeList.at( i ) ) ;
+				temp.removeOne( oldList.at( i ) ) ;
 			}
 
-			j = newList.size() ;
+			j = temp.size() ;
 			for( int i = 0 ; i < j ; i++ ){
-				const QString& device = newList.at( i ) ;
+				const QString& device = temp.at( i ) ;
 				Task * t = new Task() ;
 				t->setDevice( device ) ;
 				connect( t,SIGNAL( signalProperties( QString ) ),m_babu,SLOT( volumeMiniProperties( QString ) ) ) ;
 				t->start( Task::VolumeMiniProperties ) ;
-				volumeList.append( device ) ;
 			}
-		}else{
-			;
 		}
+
+		oldList = newList ;
 	}
 }
 

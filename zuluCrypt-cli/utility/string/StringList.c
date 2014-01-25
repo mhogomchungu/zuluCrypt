@@ -741,10 +741,14 @@ stringList_t StringListAppend( stringList_t stl,const char * cstring )
 
 stringList_t StringListAppendIfAbsent( stringList_t stl,const char * cstring )
 {
-	if( StringListContains( stl,cstring ) == -1 ){
-		StringListAppend( stl,cstring ) ;
+	if( stl == StringListVoid ){
+		return StringList( cstring ) ;
+	}else{
+		if( StringListContains( stl,cstring ) == -1 ){
+			StringListAppend( stl,cstring ) ;
+		}
+		return stl ;
 	}
-	return stl ;
 }
 
 ssize_t StringListContains( stringList_t stl,const char * cstring )

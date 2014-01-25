@@ -318,91 +318,101 @@ static void  _zuluMountprintAListOfMountedVolumes( string_t st,void * s )
 
 	string_t q ;
 
-	int r = !StringStartsWith( st,"/" ) || StringStartsWithAtLeastOne( st,"/proc","/sys","/dev ",NULL ) ;
+	if( StringStartsWith( st,mapper_prefix ) ){
+		/*
+		 * we will get here is the path starts with "/dev/mapper/".
+		 * This path could be an LVM path or an encrypted mapper path
+		 */
 
-	if( r == 0 ){
-		e = StringReplaceChar_1( st,0,' ','\0' ) ;
+		/*
+		 * zuluCryptConvertIfPathIsLVM() is defined in ../zuluCrypt-cli/lib/status.c
+		 */
+		q = zuluCryptConvertIfPathIsLVM( StringContent( st ) ) ;
 
-		if( StringPrefixEqual( e,mapper_prefix ) ){
+		if( StringStartsWith( q,mapper_prefix ) ){
 			/*
-			 * zuluCryptConvertIfPathIsLVM() is defined in ../zuluCrypt-cli/lib/status.c
+			 * volume is probably an encrypted one
 			 */
-			q = zuluCryptConvertIfPathIsLVM( e ) ;
-
-			if( StringStartsWith( q,mapper_prefix ) ){
+			if( StringContains( q,"-NAAN-" ) ){
+				zuluCryptSecurityGainElevatedPrivileges() ;
 				/*
-				 * volume is probably an encrypted one
+				 * zuluCryptVolumeDeviceName() is defined in ../zuluCrypt-cli/lib/status.c
 				 */
-				if( StringContains( q,"-NAAN-" ) ){
-					zuluCryptSecurityGainElevatedPrivileges() ;
-					/*
-					 * zuluCryptVolumeDeviceName() is defined in ../zuluCrypt-cli/lib/status.c
-					 */
-					f = zuluCryptVolumeDeviceName( e ) ;
-					zuluCryptSecurityDropElevatedPrivileges() ;
-					if( f != NULL ){
-						puts( f ) ;
-						StringFree( f ) ;
-					}
-				}else if( StringContains( q,"-UUID-" ) ){
-					StringReplaceString( q,"-UUID-","-UUID=\"" ) ;
-					e = StringAppend( st,"\"" ) ;
-					e = e + StringHasComponent_1( e,"UUID=" ) ;
-					puts( e ) ;
-				}else{
-					/*
-					 * Still assuming its an encrypted volume opened and outside of zuluCrypt/zuluMount
-					 */
-					zuluCryptSecurityGainElevatedPrivileges() ;
-					f = zuluCryptVolumeDeviceName( e ) ;
-					zuluCryptSecurityDropElevatedPrivileges() ;
-					if( f != NULL ){
-						puts( f ) ;
-						StringFree( f ) ;
-					}else{
-						/*
-						 * not exactly sure what this is,just print it and let the user sort it out
-						 */
-						zuluCryptDecodeMountEntry( st ) ;
-						StringPrintLine( st ) ;
-					}
+				f = zuluCryptVolumeDeviceName( StringContent( q ) ) ;
+				zuluCryptSecurityDropElevatedPrivileges() ;
+				if( f != NULL ){
+					puts( f ) ;
+					StringFree( f ) ;
 				}
+			}else if( StringContains( q,"-UUID-" ) ){
+				StringReplaceString( q,"-UUID-","-UUID=\"" ) ;
+				e = StringAppend( q,"\"" ) ;
+				e = e + StringHasComponent_1( e,"UUID=" ) ;
+				puts( e ) ;
 			}else{
 				/*
-				 * the volume is probably an LVM volume
+				 * Still assuming its an encrypted volume opened and outside of zuluCrypt/zuluMount
 				 */
-				zuluCryptDecodeMountEntry( st ) ;
-				StringPrintLine( st ) ;
+				zuluCryptSecurityGainElevatedPrivileges() ;
+				f = zuluCryptVolumeDeviceName( StringContent( q ) ) ;
+				zuluCryptSecurityDropElevatedPrivileges() ;
+				if( f != NULL ){
+					puts( f ) ;
+					StringFree( f ) ;
+				}else{
+					/*
+					 * not exactly sure what this is,just print it and let the user sort it out
+					 */
+					zuluCryptDecodeMountEntry( q ) ;
+					StringPrintLine( q ) ;
+				}
 			}
-
-			StringDelete( &q ) ;
 		}else{
-			zuluCryptDecodeMountEntry( st ) ;
-			StringPrintLine( st ) ;
+			/*
+			 * the volume is probably an LVM volume
+			 */
+			zuluCryptDecodeMountEntry( q ) ;
+			StringPrintLine( q ) ;
 		}
+
+		StringDelete( &q ) ;
+	}else{
+		zuluCryptDecodeMountEntry( st ) ;
+		StringPrintLine( st ) ;
 	}
 }
 
 int zuluMountprintAListOfMountedVolumes( void )
 {
 	/*
-	 * This function may print the same device more than once if there exists a normal mount and atleast
-	 * a single bind mount.This behavior is expected and is desired since the list given here must match
-	 * the list given with "zuluMount-cli -l". zuluMount-gui will go crazy if the two lists do not match
-	 */
-
-	/*
 	 * zuluCryptGetMountInfoList() is defined in ../zuluCrypt-cli/lib/process_mountinfo.c
 	 */
 	stringList_t stz = zuluCryptGetMountInfoList() ;
+	stringList_t stx = StringListVoid ;
+
+	StringListIterator it  = StringListBegin( stz ) ;
+	StringListIterator end = StringListEnd( stz ) ;
+
+	string_t st ;
+
+	/*
+	 * remove duplicates caused by bind mounts and other entries we dont care about
+	 */
+	while( it != end ){
+		st = *it ;
+		it++ ;
+		if( StringStartsWith( st,"/" ) && !StringStartsWithAtLeastOne( st,"/proc","/sys","/dev ",NULL ) ){
+			stx = StringListAppendIfAbsent( stx,StringReplaceChar_1( st,0,' ','\0' ) ) ;
+		}
+	}
 
 	/*
 	 * zuluCryptMapperPrefix() is defined in ../zuluCrypt-cli/lib/create_mapper_name.c
 	 * mapper_prefix will probably contain "/dev/mapper/"
-	 */
-	StringListForEach_1( stz,_zuluMountprintAListOfMountedVolumes,( void * )zuluCryptMapperPrefix() ) ;
+	*/
+	StringListForEach_1( stx,_zuluMountprintAListOfMountedVolumes,( void * )zuluCryptMapperPrefix() ) ;
 
-	StringListDelete( &stz ) ;
+	StringListMultipleDelete( &stz,&stx,NULL ) ;
 
 	return 0 ;
 }
