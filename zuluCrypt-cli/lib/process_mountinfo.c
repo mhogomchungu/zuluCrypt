@@ -26,7 +26,6 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 	const char * file_system ;
 	const char * mount_options ;
 
-	char * dev ;
 	char * const * entry = NULL ;
 
 	size_t entry_len = 0 ;
@@ -59,11 +58,10 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 				file_system   = *( entry + index + 1 ) ;
 				mount_options = *( entry + 5 ) ;
 				/*
-				 * zuluCryptResolvePath() is defined in resolve_paths.c
+				 * zuluCryptResolvePath_1() is defined in resolve_paths.c
 				 */
-				dev = zuluCryptResolvePath( device ) ;
+				st = zuluCryptResolvePath_1( device ) ;
 
-				st = StringInherit( &dev ) ;
 				StringMultipleAppend( st," ",mount_point," ",file_system," ",mount_options,END ) ;
 
 				stx = StringListAppendString_1( stx,&st ) ;
