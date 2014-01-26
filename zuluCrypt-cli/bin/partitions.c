@@ -129,7 +129,7 @@ static stringList_t _zuluCryptAddLVMVolumes( stringList_t stl )
 		while( ( entry = readdir( dir ) ) != NULL ){
 			if( !StringAtLeastOneMatch_1( entry->d_name,".","..","control",NULL ) ){
 				/*
-				 * zuluCryptConvertIfPathIsLVM() is defined in ../lib/status.c
+				 * zuluCryptConvertIfPathIsLVM() is defined in ../lib/resolve_paths.c
 				 */
 				xt = zuluCryptConvertIfPathIsLVM( StringAppendAt( st,12,entry->d_name ) ) ;
 				if( StringStartsWith( xt,"/dev/mapper/" ) ){
@@ -543,6 +543,37 @@ int zuluCryptPrintPartitions( int option,int info,uid_t uid )
 	return 0 ;
 }
 
+static stringList_t _eval_path( string_t path,stringList_t stl_1 )
+{
+	string_t st ;
+	const char * e ;
+	char * ac ;
+	if( StringStartsWith( path,"/" ) ){
+		/*
+		 * zuluCryptResolvePath_1() is defined in resolve_paths.c
+		 */
+		st = zuluCryptResolvePath_1( StringContent( path ) ) ;
+
+		if( st != StringVoid ){
+			stl_1 = StringListAppendString_1( stl_1,&st ) ;
+		}
+	}else if( StringStartsWith( path,"UUID=" ) ){
+		/*
+		 * check above did not find '/' character and we are in this block assuming the line uses UUID
+		 */
+		e = StringRemoveString( path,"\"" ) ;
+		/*
+		 * zuluCryptEvaluateDeviceTags() is defined in path_access.c
+		 */
+		ac = zuluCryptEvaluateDeviceTags( "UUID",e + 5 ) ;
+		if( ac != NULL ){
+			stl_1 = StringListAppend( stl_1,ac ) ;
+			StringFree( ac ) ;
+		}
+	}
+	return stl_1 ;
+}
+
 /*
  * this function will parse /etc/crypttab to see if it has any entries to be used as system partition.
  *
@@ -561,11 +592,6 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 
 	string_t st  ;
 
-	char * ac ;
-	char * ac_1 ;
-
-	const char * e ;
-
 	StringListIterator it  ;
 	StringListIterator end ;
 
@@ -580,63 +606,12 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 	while( it != end ){
 		st = *it ;
 		it++ ;
-		if( StringStartsWith( st,"#" ) ){
-			continue ;
+		if( !StringStartsWith( st,"#" ) ){
+			stz = StringListStringSplit( st,' ' ) ;
+			st = StringListStringAtSecondPlace( stz ) ;
+			stl_1 = _eval_path( st,stl_1 ) ;
+			StringListDelete( &stz ) ;
 		}
-		stz = StringListStringSplit( st,' ' ) ;
-		st = StringListStringAtSecondPlace( stz ) ;
-		if( StringStartsWith( st,"/" ) ){
-			e = StringContent( st ) ;
-			if( StringPrefixMatch( e,"/dev/disk/by-",13 ) ){
-				ac = zuluCryptRealPath( e ) ;
-				if( StringPrefixMatch( ac,"/dev/mapper/",12 ) ){
-					st = zuluCryptConvertIfPathIsLVM( ac ) ;
-					stl_1 = StringListAppendString_1( stl_1,&st ) ;
-				}else{
-					stl_1 = StringListAppend( stl_1,ac ) ;
-				}
-				StringFree( ac ) ;
-			}else if( StringPrefixMatch( e,"/dev/md",7 ) ){
-				/*
-				 * zuluCryptResolveMDPath() is defined in ../lib/process_mountinfo.c
-				 */
-				ac = zuluCryptResolveMDPath( e ) ;
-				stl_1 = StringListAppend( stl_1,ac ) ;
-				StringFree( ac ) ;
-			}else if( StringPrefixMatch( e,"/dev/mapper/",12 ) ){
-				/*
-				 * zuluCryptConvertIfPathIsLVM() is defined in ../lib/status.c
-				 */
-				st = zuluCryptConvertIfPathIsLVM( e ) ;
-				stl_1 = StringListAppendString_1( stl_1,&st ) ;
-			}else{
-				stl_1 = StringListAppend( stl_1,e ) ;
-			}
-		}else if( StringStartsWith( st,"UUID=" ) ){
-			/*
-			 * check above did not find '/' character and we are in this block assuming the line uses UUID
-			 */
-			e = StringRemoveString( st,"\"" ) ;
-			/*
-			 * zuluCryptEvaluateDeviceTags() is defined in path_access.c
-			 */
-			ac = zuluCryptEvaluateDeviceTags( "UUID",e + 5 ) ;
-			if( StringPrefixMatch( ac,"/dev/mapper/",12 ) ){
-				st = zuluCryptConvertIfPathIsLVM( ac ) ;
-				stl_1 = StringListAppendString_1( stl_1,&st ) ;
-			}else if( StringPrefixMatch( ac,"/dev/md",7 ) ){
-				/*
-				 * zuluCryptResolveMDPath() is defined in ../lib/process_mountinfo.c
-				 */
-				ac_1 = zuluCryptResolveMDPath( ac ) ;
-				stl_1 = StringListAppend( stl_1,ac_1 ) ;
-				StringFree( ac_1 ) ;
-			}else{
-				stl_1 = StringListAppend( stl_1,ac ) ;
-			}
-			StringFree( ac ) ;
-		}
-		StringListDelete( &stz ) ;
 	}
 
 	StringListDelete( &stl ) ;
@@ -647,9 +622,6 @@ stringList_t zuluCryptGetPartitionFromConfigFile( const char * path )
 {
 	StringListIterator it  ;
 	StringListIterator end ;
-
-	char * ac ;
-	const char * e ;
 
 	stringList_t stl ;
 	stringList_t stl_1 = StringListVoid ;
@@ -667,44 +639,8 @@ stringList_t zuluCryptGetPartitionFromConfigFile( const char * path )
 	StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
 
 	while( it != end ){
-		st = *it ;
+		stl_1 = _eval_path( *it,stl_1 ) ;
 		it++ ;
-		if( StringStartsWith( st,"UUID=" ) ){
-			e = StringRemoveString( st,"\"" ) ;
-			/*
-			 * zuluCryptEvaluateDeviceTags() is defined in path_access.c
-			 */
-			ac = zuluCryptEvaluateDeviceTags( "UUID",e + 5 ) ;
-			stl_1 = StringListAppend( stl_1,ac ) ;
-			StringFree( ac ) ;
-		}else if( StringStartsWith( st,"/" ) ){
-			e = StringContent( st ) ;
-			if( StringPrefixMatch( e,"/dev/disk/by-",13 ) ){
-				ac = zuluCryptRealPath( e ) ;
-				if( StringPrefixMatch( ac,"/dev/mapper/",12 ) ){
-					st = zuluCryptConvertIfPathIsLVM( ac ) ;
-					stl_1 = StringListAppendString_1( stl_1,&st ) ;
-				}else{
-					stl_1 = StringListAppend( stl_1,ac ) ;
-				}
-				StringFree( ac ) ;
-			}else if( StringPrefixMatch( e,"/dev/md",7 ) ){
-				/*
-				 * zuluCryptResolveMDPath() is defined in ../lib/process_mountinfo.c
-				 */
-				ac = zuluCryptResolveMDPath( e ) ;
-				stl_1 = StringListAppend( stl_1,ac ) ;
-				StringFree( ac ) ;
-			}else if( StringPrefixMatch( e,"/dev/mapper/",12 ) ){
-				/*
-				 * zuluCryptConvertIfPathIsLVM() is defined in ../lib/status.c
-				 */
-				st = zuluCryptConvertIfPathIsLVM( e ) ;
-				stl_1 = StringListAppendString_1( stl_1,&st ) ;
-			}else{
-				stl_1 = StringListAppend( stl_1,e ) ;
-			}
-		}
 	}
 
 	StringListDelete( &stl ) ;

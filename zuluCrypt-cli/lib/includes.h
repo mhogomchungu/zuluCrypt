@@ -253,17 +253,17 @@ char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper ) ;
 int zuluCryptCreateFileSystemInAVolume( const char * fs,const char * device_mapper ) ;
 
 /*
- * this function is defined in status.c
+ * this function is defined in resolve_paths.c
  */
 string_t zuluCryptConvertIfPathIsLVM( const char * path ) ;
 
 /*
- * this function is defined in process_mountinfo.c
+ * this function is defined in resolve_paths.c
  */
 char * zuluCryptResolveMDPath( const char * path ) ;
 
 /*
- * this function is defined in process_mountinfo.c
+ * this function is defined in resolve_paths.c
  */
 string_t zuluCryptResolveMDPath_1( const char * path ) ;
 
@@ -307,5 +307,15 @@ int zuluCryptOpenVolume_0( int( *function )( const char *,const char *,const cha
  * zuluCryptCreateKeyFile() is defined in open_tcrypt.c
  */
 string_t zuluCryptCreateKeyFile( const char * key,size_t key_len,const char * fileName ) ;
+
+/*
+ * resolve path to a preffered format
+ */
+string_t zuluCryptResolvePath_1( const char * path ) ;
+
+/*
+ * resolve path to a preffered format
+ */
+char * zuluCryptResolvePath( const char * path ) ;
 
 #endif

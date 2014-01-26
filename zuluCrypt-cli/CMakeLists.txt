@@ -71,6 +71,7 @@
  lib/canonicalize/canonicalize.c
  lib/create_tcrypt.c
  lib/parse_fstab.c
+ lib/resolve_paths.c
 )
 
  add_library( Socket STATIC utility/socket/socket.c )

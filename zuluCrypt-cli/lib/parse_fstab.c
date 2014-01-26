@@ -24,65 +24,11 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-static char * _resolve_path( char * path )
-{
-	string_t st ;
-	if( StringPrefixMatch( path,"/dev/mapper/",12 ) ){
-		/*
-		 * zuluCryptConvertIfPathIsLVM() is defined in status.c
-		 */
-		st = zuluCryptConvertIfPathIsLVM( path ) ;
-	}else if( StringPrefixMatch( path,"/dev/loop",9 ) ){
-		/*
-		 * zuluCryptLoopDeviceAddress_2() is defined in create_loop_device.c
-		 */
-		st = zuluCryptLoopDeviceAddress_2( path ) ;
-	}else if( StringPrefixMatch( path,"/dev/md",7 ) ){
-		/*
-		 * zuluCryptResolveMDPath() is defined in this process_mountinfo.c
-		 */
-		st = zuluCryptResolveMDPath_1( path ) ;
-	}else{
-		st = String( path ) ;
-	}
-
-	StringFree( path ) ;
-
-	return StringDeleteHandle( &st ) ;
-}
-
-static inline char * _evaluate_tag( const char * tag,const char * entry,blkid_cache * cache )
-{
-	char * f = NULL ;
-	string_t st = String( entry ) ;
-	const char * e = StringReplaceChar_1( st,0,' ','\0' ) ;
-
-	if( e != NULL ){
-		f = blkid_evaluate_tag( tag,e,cache ) ;
-	}
-
-	StringDelete( &st ) ;
-
-	return _resolve_path( f ) ;
-}
-
-static inline char * _evaluate_tag_by_id( string_t st )
-{
-	char * f = NULL ;
-	ssize_t index = StringIndexOfChar( st,0,' ' ) ;
-	if( index >= 0 ){
-		f = zuluCryptRealPath( StringSubChar( st,index,'\0' ) ) ;
-		StringSubChar( st,index,' ' ) ;
-	}
-	return  _resolve_path( f ) ;
-}
-
 stringList_t zuluCryptGetFstabList( uid_t uid )
 {
 	string_t xt = StringGetFromFile( "/etc/fstab" ) ;
-	string_t st ;
 
-	stringList_t fstabList = StringListVoid ;
+	stringList_t stl = StringListVoid ;
 
 	StringListIterator it  ;
 	StringListIterator end ;
@@ -91,28 +37,19 @@ stringList_t zuluCryptGetFstabList( uid_t uid )
 
 	char * ac ;
 	const char * entry ;
-	const char * f ;
 
 	blkid_cache cache = NULL ;
 
-	if( xt == StringVoid ){
-		return StringListVoid ;
-	}
-
 	if( uid ){;}
 
-	fstabList = StringListStringSplit( xt,'\n' ) ;
+	stl = StringListStringSplit( xt,'\n' ) ;
 
 	StringDelete( &xt ) ;
 
-	if( fstabList == StringListVoid ){
-		return StringListVoid ;
-	}
+	StringListRemoveIfStringStartsWith( stl,"#" ) ;
 
-	StringListRemoveIfStringStartsWith( fstabList,"#" ) ;
-
-	if( StringListSize( fstabList ) < 1 ){
-		StringListDelete( &fstabList ) ;
+	if( StringListSize( stl ) < 1 ){
+		StringListDelete( &stl ) ;
 		return StringListVoid ;
 	}
 
@@ -120,99 +57,41 @@ stringList_t zuluCryptGetFstabList( uid_t uid )
 		cache = NULL ;
 	}
 
-	it  = StringListBegin( fstabList ) ;
-	end = StringListEnd( fstabList ) ;
+	StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
 
 	while( it != end  ){
 		xt = *it ;
 		it++ ;
-		entry = StringContent( xt ) ;
-		if( StringPrefixMatch( entry,"/dev/",5 ) ){
-			if( StringPrefixMatch( entry,"/dev/root",9 ) ){
+		index = StringIndexOfChar( xt,0,' ' ) ;
+		if( index != -1 ){
+			entry = StringSubChar( xt,index,'\0' ) ;
+			if( StringPrefixMatch( entry,"/dev/",5 ) ){
 				/*
-				 * zuluCryptResolveDevRoot() is defined in ./print_mounted_volumes.c
+				 * zuluCryptResolvePath() is defined in resolve_paths.c
 				 */
-				ac =  zuluCryptResolveDevRoot() ;
+				ac = zuluCryptResolvePath( entry ) ;
+				StringReplaceChar_1( xt,0,'\0',' ' ) ;
+				StringRemoveLeft( xt,index ) ;
+				StringPrepend( xt,ac ) ;
+				free( ac ) ;
+			}else if( StringAtLeastOnePrefixMatch( entry,"UUID=","uuid=",NULL ) ){
+				entry = StringRemoveString( xt,"\"" ) ;
+				ac = blkid_evaluate_tag( "UUID",entry + 5,&cache ) ;
+				StringReplaceChar_1( xt,0,'\0',' ' ) ;
 				if( ac != NULL ){
-					StringReplaceString( xt,"/dev/root",ac ) ;
-					free( ac ) ;
-				}
-			}else if( StringPrefixMatch( entry,"/dev/disk/by",12 ) ){
-				ac = _evaluate_tag_by_id( xt ) ;
-				if( ac != NULL ){
-					index = StringIndexOfChar( xt,0,' ' ) ;
-					if( index >= 0 ){
-						StringRemoveLeft( xt,index ) ;
-						StringPrepend( xt,ac ) ;
-					}
-					free( ac ) ;
-				}
-			}else if( StringPrefixMatch( entry,"/dev/mapper/",12 ) ){
-				st = StringCopy( xt ) ;
-				index = StringIndexOfChar( st,0,' ' ) ;
-				if( index != -1 ){
-					f = StringSubChar( st,index,'\0' ) ;
-					/*
-					 * zuluCryptConvertIfPathIsLVM() is defined in status.c
-					 */
-					st = zuluCryptConvertIfPathIsLVM( f ) ;
-					if( StringStartsWith( st,"/dev/mapper" ) ){
-						/*
-						 * Not an LVM path,its probably encrypted,or non existent path
-						 */
-						/*
-						 * zuluCryptVolumeDeviceName() is defined in status.c
-						 */
-						ac = zuluCryptVolumeDeviceName( f ) ;
-						StringSubChar( st,index,' ' ) ;
-						if( ac != NULL ){
-							StringRemoveLeft( xt,index ) ;
-							StringPrepend( xt,ac ) ;
-							free( ac ) ;
-						}
-					}else{
-						StringSubChar( st,index,' ' ) ;
-						StringRemoveLeft( xt,index ) ;
-						StringPrepend( xt,StringContent( st ) ) ;
-					}
-				}
-				StringDelete( &st ) ;
-			}else if( StringPrefixMatch( entry,"/dev/md",7 ) ){
-				/*
-				 * zuluCryptResolveMDPath() is defined in process_mountinfo.c
-				 */
-				index = StringIndexOfChar( xt,0,' ' ) ;
-				if( index != -1 ){
-					ac =  zuluCryptResolveMDPath( StringSubChar( xt,index,'\0' ) ) ;
-					StringSubChar( xt,index,' ' ) ;
-					if( ac != NULL ){
-						StringRemoveLeft( xt,index ) ;
-						StringPrepend( xt,ac ) ;
-						free( ac ) ;
-					}
-				}
-			}
-		}else if( StringAtLeastOnePrefixMatch( entry,"UUID=","uuid=",NULL ) ){
-			entry = StringRemoveString( xt,"\"" ) ;
-			ac = _evaluate_tag( "UUID",entry + 5,&cache ) ;
-			if( ac != NULL ){
-				index = StringIndexOfChar( xt,0,' ' ) ;
-				if( index >= 0 ){
 					StringRemoveLeft( xt,index ) ;
 					StringPrepend( xt,ac ) ;
+					free( ac ) ;
 				}
-				free( ac ) ;
-			}
-		}else if( StringAtLeastOnePrefixMatch( entry,"LABEL=","label=",NULL ) ){
-			entry = StringRemoveString( xt,"\"" ) ;
-			ac = _evaluate_tag( "LABEL",entry + 6,&cache ) ;
-			if( ac != NULL ){
-				index = StringIndexOfChar( xt,0,' ' ) ;
-				if( index >= 0 ){
+			}else if( StringAtLeastOnePrefixMatch( entry,"LABEL=","label=",NULL ) ){
+				entry = StringRemoveString( xt,"\"" ) ;
+				ac = blkid_evaluate_tag( "LABEL",entry + 6,&cache ) ;
+				StringReplaceChar_1( xt,0,'\0',' ' ) ;
+				if( ac != NULL ){
 					StringRemoveLeft( xt,index ) ;
 					StringPrepend( xt,ac ) ;
+					free( ac ) ;
 				}
-				free( ac ) ;
 			}
 		}
 	}
@@ -220,7 +99,7 @@ stringList_t zuluCryptGetFstabList( uid_t uid )
 	if( cache != NULL ){
 		blkid_put_cache( cache ) ;
 	}
-	return fstabList ;
+	return stl ;
 }
 
 string_t zuluCryptGetFstabEntry( const char * device,uid_t uid )
@@ -260,4 +139,3 @@ stringList_t zuluCryptGetFstabEntryList( const char * device,uid_t uid )
 	}
 	return stl ;
 }
-
