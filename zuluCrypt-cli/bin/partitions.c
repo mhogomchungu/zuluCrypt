@@ -230,7 +230,7 @@ int zuluCryptDeviceIsSupported( const char * device,uid_t uid )
 	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
 		return 1 ;
 	}else{
-		stl = zuluCryptPartitionList() ;
+		stl = zuluCryptPartitions( ZULUCRYPTallPartitions,uid ) ;
 		r = StringListContains( stl,device ) ;
 		StringListDelete( &stl ) ;
 		if( r >= 0 ){
@@ -309,6 +309,69 @@ static int _zuluCryptCheckSYSifDeviceIsSystem( const char * device )
 #endif
 }
 
+/*
+ * It is possible for a btrfs volume to cover multiple volumes and this routine
+ * keeps only the first one seen and removes the rest.
+ */
+static stringList_t _remove_btfs_multiple_devices( stringList_t stl )
+{
+	stringList_t stx = StringListVoid ;
+	stringList_t stz = StringListVoid ;
+
+	StringListIterator it  ;
+	StringListIterator end ;
+
+	string_t st ;
+
+	const char * e = NULL ;
+
+	blkid_probe blkid ;
+
+	StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
+
+	zuluCryptSecurityGainElevatedPrivileges() ;
+
+	while( it != end ){
+		st = *it ;
+		it++ ;
+		blkid = blkid_new_probe_from_filename( StringContent( st ) ) ;
+		if( blkid != NULL ){
+			blkid_do_probe( blkid ) ;
+			blkid_probe_lookup_value( blkid,"TYPE",&e,NULL ) ;
+			if( StringsAreEqual( e,"btrfs" ) ){
+				/*
+				 * got a btrfs volume,remember its UUID and dont add any more btfs volume
+				 * if it matches this UUID
+				 */
+				blkid_probe_lookup_value( blkid,"UUID",&e,NULL ) ;
+				if( StringListContains( stx,e ) == -1 ){
+					/*
+					 * got a btrfs volume that is not already on the list,add it
+					 */
+					stz = StringListAppendString( stz,st ) ;
+					stx = StringListAppend( stx,e ) ;
+				}
+			}else{
+				/*
+				 * not a btrfs volume
+				 */
+				stz = StringListAppendString( stz,st ) ;
+			}
+			blkid_free_probe( blkid ) ;
+		}else{
+			/*
+			 * either unformatted volume,plain volume or a tcrypt volume
+			 */
+			stz = StringListAppendString( stz,st ) ;
+		}
+	}
+
+	zuluCryptSecurityDropElevatedPrivileges() ;
+
+	StringListMultipleDelete( &stl,&stx,NULL ) ;
+	return stz ;
+}
+
 stringList_t zuluCryptPartitions( int option,uid_t uid )
 {
 	ssize_t index ;
@@ -331,7 +394,7 @@ stringList_t zuluCryptPartitions( int option,uid_t uid )
 		return StringListVoid ;
 	}
 	if( option == ZULUCRYPTallPartitions ){
-		return stl ;
+		return _remove_btfs_multiple_devices( stl ) ;
 	}
 
 	non_system = stl ;
@@ -435,10 +498,10 @@ stringList_t zuluCryptPartitions( int option,uid_t uid )
 
 	if( option == ZULUCRYPTsystemPartitions ){
 		StringListDelete( &non_system ) ;
-		return system  ;
+		return _remove_btfs_multiple_devices( system ) ;
 	}else{
 		StringListDelete( &system ) ;
-		return non_system  ;
+		return _remove_btfs_multiple_devices( non_system ) ;
 	}
 }
 

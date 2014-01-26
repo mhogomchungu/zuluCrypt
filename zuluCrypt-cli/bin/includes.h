@@ -232,4 +232,9 @@ int zuluCryptRunTest( void ) ;
  */
 int zuluCryptDeviceIsSupported( const char * device,uid_t uid ) ;
 
+/*
+ * zuluCryptPartitions() is defined in partitions.c
+ */
+stringList_t zuluCryptPartitions( int option,uid_t uid ) ;
+
 #endif

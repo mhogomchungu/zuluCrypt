@@ -269,7 +269,6 @@ int zuluMountPrintMountedVolumes( uid_t uid )
 	stringList_t stl ;
 	stringList_t stz ;
 
-	if( uid ){;}
 	/*
 	 * zuluCryptGetMountInfoList() is  defined in ../zuluCrypt-cli/lib/process_mountinfo.c
 	 */
@@ -280,9 +279,8 @@ int zuluMountPrintMountedVolumes( uid_t uid )
 	}
 	/*
 	 * zuluCryptPartitionList() is defined in ../zuluCrypt-cli/partitions.c
-	 * It returns partition list read from /proc/partitions"
 	 */
-	stz = zuluCryptPartitionList() ;
+	stz = zuluCryptPartitions( ZULUCRYPTallPartitions,uid ) ;
 
 	if( stz == StringListVoid ){
 		StringListDelete( &stl ) ;
