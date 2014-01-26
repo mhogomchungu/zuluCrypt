@@ -193,6 +193,17 @@ StringListIterator StringListEnd( stringList_t stl )
 	}
 }
 
+void StringListGetIteratorBeginAndEnd( stringList_t stl,StringListIterator * begin,StringListIterator * end )
+{
+	if( stl == StringListVoid ){
+		*begin = ( StringListIterator )StringListVoid ;
+		*end   = ( StringListIterator )StringListVoid ;
+	}else{
+		*begin = &stl->stp[ 0 ] ;
+		*end   = &stl->stp[ stl->size ] ;
+	}
+}
+
 string_t * StringListAssign( stringList_t stl )
 {
 	string_t * p ;

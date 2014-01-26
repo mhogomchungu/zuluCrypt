@@ -160,7 +160,11 @@ void zuluCryptSecuritySanitizeTheEnvironment( uid_t uid,stringList_t * stx )
 	extern char ** environ ;
 	const char ** env = ( const char ** ) environ ;
 	ssize_t index ;
+
 	stringList_t stl = StringListVoid ;
+
+	string_t st ;
+
 	StringListIterator  it ;
 	StringListIterator end ;
 
@@ -176,14 +180,15 @@ void zuluCryptSecuritySanitizeTheEnvironment( uid_t uid,stringList_t * stx )
 		env++ ;
 	}
 
-	it  = StringListBegin( stl ) ;
-	end = StringListEnd( stl ) ;
+	StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
 
-	for( ; it != end ; it++ ){
-		index = StringIndexOfChar( *it,0,'=' ) ;
+	while( it != end ){
+		st = *it ;
+		it++ ;
+		index = StringIndexOfChar( st,0,'=' ) ;
 		if( index >= 0 ){
-			unsetenv( StringSubChar( *it,index,'\0' ) ) ;
-			StringSubChar( *it,index,'=' ) ;
+			unsetenv( StringSubChar( st,index,'\0' ) ) ;
+			StringSubChar( st,index,'=' ) ;
 		}
 	}
 
@@ -218,9 +223,10 @@ void zuluCryptSecurityUnlockMemory_1( string_t st )
 
 void zuluCryptSecurityLockMemory( stringList_t stl )
 {
-	StringListIterator it  = StringListBegin( stl ) ;
-	StringListIterator end = StringListEnd( stl ) ;
+	StringListIterator it   ;
+	StringListIterator end  ;
 	string_t st ;
+	StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
 	while( it != end ){
 		st = *it ;
 		it++ ;
@@ -230,11 +236,16 @@ void zuluCryptSecurityLockMemory( stringList_t stl )
 
 void zuluCryptSecurityUnlockMemory( stringList_t stl )
 {
-	StringListIterator it  = StringListBegin( stl ) ;
-	StringListIterator end = StringListEnd( stl ) ;
+	StringListIterator it  ;
+	StringListIterator end ;
+
 	string_t st ;
+
 	void * e ;
 	size_t f ;
+
+	StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
+
 	while( it != end ){
 		st = *it ;
 		it++ ;

@@ -196,8 +196,12 @@ stringList_t zuluCryptPartitionList( void )
 		return StringListVoid ;
 	}
 
-	it  = StringListBegin( stl ) + 1 ;
-	end = StringListEnd( stl ) ;
+	StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
+
+	/*
+	 * skip the first entry
+	 */
+	it++ ;
 
 	zuluCryptSecurityGainElevatedPrivileges() ;
 	while( it != end ){
@@ -339,8 +343,7 @@ stringList_t zuluCryptPartitions( int option,uid_t uid )
 	stl = zuluCryptGetFstabList( uid ) ;
 	zuluCryptSecurityDropElevatedPrivileges() ;
 
-	it  = StringListBegin( stl ) ;
-	end = StringListEnd( stl ) ;
+	StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
 	/*
 	 * gather an initial list of system and non system partitions by comparing entries in "/etc/fstab" and "/proc/partitions"
 	 * fstab entries makes an initial list of system partitions.
@@ -367,8 +370,7 @@ stringList_t zuluCryptPartitions( int option,uid_t uid )
 	 */
 	p = zuluCryptGetPartitionFromCrypttab() ;
 	if( p != StringListVoid ){
-		it  = StringListBegin( p ) ;
-		end = StringListEnd( p ) ;
+		StringListGetIteratorBeginAndEnd( p,&it,&end ) ;
 		while( it != end ){
 			device = StringContent( *it ) ;
 			it++ ;
@@ -384,8 +386,7 @@ stringList_t zuluCryptPartitions( int option,uid_t uid )
 	 */
 	p = zuluCryptGetPartitionFromConfigFile( "/etc/zuluCrypt-system" ) ;
 	if( p != StringListVoid ){
-		it  = StringListBegin( p ) ;
-		end = StringListEnd( p ) ;
+		StringListGetIteratorBeginAndEnd( p,&it,&end ) ;
 		while( it != end ){
 			device = StringContent( *it ) ;
 			it++ ;
@@ -422,8 +423,7 @@ stringList_t zuluCryptPartitions( int option,uid_t uid )
 	 */
 	p = zuluCryptGetPartitionFromConfigFile( "/etc/zuluCrypt-nonsystem" ) ;
 	if( p != StringListVoid ){
-		it  = StringListBegin( p ) ;
-		end = StringListEnd( p ) ;
+		StringListGetIteratorBeginAndEnd( p,&it,&end ) ;
 		while( it != end ){
 			device = StringContent( *it ) ;
 			it++ ;
@@ -499,10 +499,12 @@ static void _zuluCryptPrintUnMountedPartitionProperties( stringList_t stl )
 	 */
 	stringList_t stx = zuluCryptGetMountInfoList() ;
 
-	StringListIterator it  = StringListBegin( stl )  ;
-	StringListIterator end = StringListEnd( stl ) ;
+	StringListIterator it  ;
+	StringListIterator end ;
 
 	string_t st ;
+
+	StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
 
 	while( it != end ){
 		st = *it ;
@@ -573,8 +575,7 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 
 	StringDelete( &st ) ;
 
-	it  = StringListBegin( stl ) ;
-	end = StringListEnd( stl ) ;
+	StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
 
 	while( it != end ){
 		st = *it ;
@@ -663,8 +664,7 @@ stringList_t zuluCryptGetPartitionFromConfigFile( const char * path )
 
 	StringDelete( &st ) ;
 
-	it  = StringListBegin( stl ) ;
-	end = StringListEnd( stl ) ;
+	StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
 
 	while( it != end ){
 		st = *it ;

@@ -287,27 +287,27 @@ int zuluMountPrintMountedVolumes( uid_t uid )
 	if( stz == StringListVoid ){
 		StringListDelete( &stl ) ;
 		return 1;
+	}else{
+		/*
+		 * zuluCryptMapperPrefix() is defined in ../zuluCrypt-cli/lib/create_mapper_name.c
+		 * it should return something like "/dev/mapper"
+		 */
+		_mapper_path = zuluCryptMapperPrefix() ;
+		_mapper_length = StringSize( _mapper_path ) ;
+		/*
+		 * print a list of mounted partitions
+		 */
+		StringListForEach_1( stl,_printDeviceProperties,( void * )stz ) ;
+
+		/*
+		 * print a list of unmounted partitions
+		 */
+		StringListForEachString( stz,_printUnmountedVolumes ) ;
+
+		StringListMultipleDelete( &stl,&stz,ENDDELETE ) ;
+
+		return 0 ;
 	}
-
-	/*
-	 * zuluCryptMapperPrefix() is defined in ../zuluCrypt-cli/lib/create_mapper_name.c
-	 * it should return something like "/dev/mapper"
-	 */
-	_mapper_path = zuluCryptMapperPrefix() ;
-	_mapper_length = StringSize( _mapper_path ) ;
-	/*
-	 * print a list of mounted partitions
-	 */
-	StringListForEach_1( stl,_printDeviceProperties,( void * )stz ) ;
-
-	/*
-	 * print a list of unmounted partitions
-	 */
-	StringListForEachString( stz,_printUnmountedVolumes ) ;
-
-	StringListMultipleDelete( &stl,&stz,ENDDELETE ) ;
-
-	return 0 ;
 }
 
 static void  _zuluMountprintAListOfMountedVolumes( string_t st,void * s )
@@ -390,14 +390,14 @@ int zuluMountprintAListOfMountedVolumes( void )
 	stringList_t stz = zuluCryptGetMountInfoList() ;
 	stringList_t stx = StringListVoid ;
 
-	StringListIterator it  = StringListBegin( stz ) ;
-	StringListIterator end = StringListEnd( stz ) ;
-
 	string_t st ;
 
+	StringListIterator it  ;
+	StringListIterator end ;
 	/*
 	 * remove duplicates caused by bind mounts and other entries we dont care about
 	 */
+	StringListGetIteratorBeginAndEnd( stz,&it,&end ) ;
 	while( it != end ){
 		st = *it ;
 		it++ ;
@@ -504,8 +504,7 @@ int zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t 
 			 * 1. The volume is not mounted
 			 * 2. The volume is encrypted and mounted by a different user
 			 */
-			it  = StringListBegin( stl ) ;
-			end = StringListEnd( stl ) ;
+			StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
 			zuluCryptSecurityGainElevatedPrivileges() ;
 			while( it != end ){
 				p = *it ;

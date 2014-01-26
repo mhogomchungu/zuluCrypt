@@ -63,6 +63,11 @@ StringListIterator StringListBegin( stringList_t ) ;
 StringListIterator StringListEnd( stringList_t ) ;
 
 /*
+ * set iterator begin and iterator end
+ */
+void StringListGetIteratorBeginAndEnd( stringList_t,StringListIterator * begin,StringListIterator * end ) ;
+
+/*
  * call a function with a signature void foo( string_t ) on each entry in the list
  */
 void StringListForEach( stringList_t stl,void (*)( string_t ) ) ;

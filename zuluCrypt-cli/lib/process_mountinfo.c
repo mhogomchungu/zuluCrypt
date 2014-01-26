@@ -181,28 +181,34 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 	const char * mount_point ;
 	const char * file_system ;
 	const char * mount_options ;
+
 	char * dev ;
-	int index ;
 	char * const * entry = NULL ;
+
 	size_t entry_len = 0 ;
+	int index ;
+
 	stringList_t tmp ;
 	stringList_t stx = StringListVoid;
 	stringList_t stl ;
+
 	StringListIterator it ;
 	StringListIterator end;
+
 	string_t k ;
 	string_t st = StringGetFromVirtualFile( "/proc/self/mountinfo" ) ;
 
 	stl = StringListStringSplit( st,'\n' ) ;
+
 	StringDelete( &st ) ;
-	if( stl == StringListVoid ){
-		return StringListVoid ;
-	}
-	it  = StringListBegin( stl ) ;
-	end = StringListEnd( stl )   ;
+
 	st = StringEmpty() ;
-	for( ; it != end ; it++ ){
+
+	StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
+	
+	while( it != end ){
 		tmp = StringListStringSplit( *it,' ' ) ;
+		it++ ;
 		if( !StringListContentAtEqual( tmp,3,"/" ) ){
 			StringListDelete( &tmp ) ;
 			continue ;
@@ -302,9 +308,7 @@ stringList_t zuluCryptGetMoutedListFromMounts( void )
 	string_t q = StringGetFromVirtualFile( "/proc/self/mounts" ) ;
 	stringList_t stl = StringListStringSplit( q,'\n' ) ;
 	StringDelete( &q ) ;
-	if( stl == StringListVoid ){
-		return StringListVoid ;
-	}
+
 	it  = StringListBegin( stl ) ;
 	end = StringListEnd( stl ) ;
 	for( ; it != end ;it++ ){
@@ -404,11 +408,12 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 	const char * e ;
 	const char * c ;
 	const char * d ;
+
 	char * f ;
 	char * g ;
 
-	size_t j ;
-	size_t i ;
+	StringListIterator it  ;
+	StringListIterator end ;
 
 	ssize_t k ;
 
@@ -419,16 +424,13 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 	stringList_t list = StringListVoid ;
 	stringList_t stl = zuluCryptGetMountInfoList() ;
 
-	if( stl == StringListVoid ){
-		return StringListVoid ;
-	}
-
 	if( uid ){;}
 
-	j = StringListSize( stl )  ;
+	StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
 
-	for( i = 0 ; i < j ; i++ ){
-		c = StringListContentAt( stl,i ) ;
+	while( it != end ){
+		c = StringContent( *it ) ;
+		it++ ;
 		if( !StringPrefixMatch( c,"/dev/mapper/zuluCrypt-",22 ) ){
 			/*
 			 * dont care about other volumes
@@ -444,12 +446,10 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 
 		stx = StringListSplit( c,' ' ) ;
 
-		if( stx == StringListVoid ){
-			continue ;
-		}
+		e = StringListContentAtFirstPlace( stx ) ;
 
-		k = StringHasComponent_1( c,"-UUID-" ) ;
-		if( k != -1 && StringHasNoComponent( c,"-NAAN-" ) ) {
+		k = StringHasComponent_1( e,"-UUID-" ) ;
+		if( k != -1 && StringHasNoComponent( e,"-NAAN-" ) ) {
 			q = StringListStringAtFirstPlace( stx ) ;
 			/*
 			 * zuluCryptDecodeMountEntry() is defined in mount_volume.c
@@ -466,7 +466,10 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 			list = StringListAppendString_1( list,&z ) ;
 			StringFree( f ) ;
 		}else{
-			g = zuluCryptVolumeDeviceName( StringListContentAtFirstPlace( stx ) ) ;
+			/*
+			 * zuluCryptVolumeDeviceName() is defined in status.c
+			 */
+			g = zuluCryptVolumeDeviceName( e ) ;
 			if( g != NULL ){
 				d = zuluCryptDecodeMountEntry( StringListStringAtSecondPlace( stx ) ) ;
 				/*
@@ -565,4 +568,3 @@ int zuluCryptPartitionIsMounted( const char * path )
 		return 1 ;
 	}
 }
-
