@@ -312,23 +312,14 @@ void Task::volumeMiniProperties()
 	if( p.exitCode() == 0 ){
 		QString e = p.readAll() ;
 		if( !m_device.startsWith( "UUID" ) && !m_device.startsWith( "/dev/" ) ){
-			if( e.split( "\t" ).at( 2 ) == QString( "btrfs" ) ){
+			if( this->loopDeviceIsStillPresent( m_device ) ){
 				/*
-				 * We will get here when we are dealing with btrfs volume in files and
-				 * we just do a volume refresh here because getting volume size is problematic
-				 * with loop devices.
+				 * This is a loop device opened outsize of zuluMount and the loop device
+				 * is still around after the volume is unmounted( ie autoclear is not set )
 				 */
-				emit signalProperties( QString() ) ;
+				emit signalProperties( e ) ;
 			}else{
-				if( this->loopDeviceIsStillPresent( m_device ) ){
-					/*
-					 * This is a loop device opened outsize of zuluMount and the loop device
-					 * is still around after the volume is unmounted( ie autoclear is not set )
-					 */
-					emit signalProperties( e ) ;
-				}else{
-					emit volumeRemoved( m_device ) ;
-				}
+				emit volumeRemoved( m_device ) ;
 			}
 		}else{
 			emit signalProperties( e ) ;

@@ -230,7 +230,17 @@ string_t StringListStringAtLast( stringList_t stl ) ;
  *  return an index position of an element with cstring.
  *  return -1 if there is no element in the list with the string.
  */
-ssize_t StringListContains( stringList_t stl,const char * cstring );
+ssize_t StringListContains( stringList_t stl,const char * cstring ) ;
+
+/*
+ * return 1 if the managed list has atleast one cstring entry
+ */
+static int StringListHasEntry( stringList_t stl,const char * cstring ) ;
+
+/*
+ * return 1 if the managed list has no cstring entry
+ */
+static int StringListHasNoEntry( stringList_t stl,const char * cstring ) ;
 
 /*
  * return an index position of the first string_t object in the stringList_t object with a character
@@ -450,6 +460,16 @@ static __inline__ string_t StringListCopyStringAtFirstPlace( stringList_t stl )
 static __inline__ string_t StringListCopyStringAtSecondPlace( stringList_t stl )
 {
 	return StringListCopyStringAt( stl,1 ) ;
+}
+
+static __inline__ int StringListHasEntry( stringList_t stl,const char * cstring )
+{
+	return StringListContains( stl,cstring ) != -1 ;
+}
+
+static __inline__ int StringListHasNoEntry( stringList_t stl,const char * cstring )
+{
+	return StringListContains( stl,cstring ) == -1 ;
 }
 
 /*

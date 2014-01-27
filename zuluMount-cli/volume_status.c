@@ -319,6 +319,35 @@ void zuluMountPrintDeviceProperties_1( string_t entry,uid_t uid )
 	_printDeviceProperties( entry ) ;
 }
 
+static stringList_t _convert_loop_devices( stringList_t stl )
+{
+	StringListIterator it  ;
+	StringListIterator end ;
+
+	string_t st ;
+
+	char * e ;
+
+	StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
+
+	while( it != end ){
+		st = *it ;
+		it++ ;
+		if( StringStartsWith( st,"/dev/loop" ) ){
+			/*
+			 * zuluCryptLoopDeviceAddress_1() is defined in ../zuluCrypt-cli/lib/create_loop_device.c
+			 */
+			e = zuluCryptLoopDeviceAddress_1( StringContent( st ) ) ;
+			if( e != NULL ){
+				StringReplace( st,e ) ;
+				StringFree( e ) ;
+			}
+		}
+	}
+
+	return stl ;
+}
+
 /*
  * This function takes contents of "/etc/mtab" and "/proc/partitions" and compare them.
  * It first print information about partitions with entries in "/etc/mtab" and then
@@ -360,6 +389,8 @@ int zuluMountPrintMountedVolumes( uid_t uid )
 		 */
 		_mapper_path = zuluCryptMapperPrefix() ;
 		_mapper_length = StringSize( _mapper_path ) ;
+
+		stz = _convert_loop_devices( stz ) ;
 
 		StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
 		/*
