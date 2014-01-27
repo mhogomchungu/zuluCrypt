@@ -33,6 +33,71 @@ stringList_t zuluCryptPartitionList( void ) ;
 static const char * _mapper_path ;
 static size_t _mapper_length ;
 
+static int64_t _get_volume_size( const char * device )
+{
+	stringList_t stl = StringListVoid ;
+
+	StringListIterator it  ;
+	StringListIterator end ;
+
+	string_t xt ;
+
+	const char * e = NULL ;
+
+	int64_t r = 0 ;
+
+	blkid_probe blkid = blkid_new_probe_from_filename( device ) ;
+
+	blkid_do_probe( blkid ) ;
+	blkid_probe_lookup_value( blkid,"TYPE",&e,NULL ) ;
+
+	if( !StringsAreEqual( e,"btrfs" ) ){
+		r = blkid_probe_get_size( blkid ) ;
+		blkid_free_probe( blkid ) ;
+		return r ;
+	}else{
+		/*
+		 * we got a btrfs volume,this device could be one among a bunch of devices that makes the btfs volume.
+		 * iterate through all known devices and add their sizes to this device if they are a part of the same
+		 * btrfs volume.
+		 */
+		if( blkid_probe_lookup_value( blkid,"UUID",&e,NULL ) == 0 ){
+			xt = String( e ) ;
+		}else{
+			xt = StringVoid ;
+		}
+
+		blkid_free_probe( blkid ) ;
+
+		if( xt == StringVoid ){
+			return 0 ;
+		}else{
+			/*
+			 * zuluCryptPartitionList() is defined in ../zuluCrypt-cli/bin/partitions.c
+			 */
+			stl = zuluCryptPartitionList() ;
+			zuluCryptSecurityGainElevatedPrivileges() ;
+
+			StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
+
+			while( it != end ){
+				blkid = blkid_new_probe_from_filename( StringContent( *it ) ) ;
+				it++ ;
+				blkid_do_probe( blkid ) ;
+				if( blkid_probe_lookup_value( blkid,"UUID",&e,NULL ) == 0 ){
+					if( StringEqual( xt,e ) ){
+						r += blkid_probe_get_size( blkid ) ;
+					}
+				}
+				blkid_free_probe( blkid ) ;
+			}
+			StringDelete( &xt ) ;
+			StringListDelete( &stl ) ;
+			return r ;
+		}
+	}
+}
+
 void zuluMountPartitionProperties( const char * device,const char * UUID,const char * mapper,const char * m_point )
 {
 	#define SIZE 64
@@ -47,7 +112,7 @@ void zuluMountPartitionProperties( const char * device,const char * UUID,const c
 	uint64_t used ;
 	uint64_t free_space ;
 	uint32_t block_size ;
-	int64_t blkid_device_size = 0 ;
+	int64_t volume_size = 0 ;
 
 	char buff[ SIZE ] ;
 	char * buffer = buff ;
@@ -92,8 +157,6 @@ void zuluMountPartitionProperties( const char * device,const char * UUID,const c
 
 		blkid_do_probe( blkid ) ;
 
-		blkid_device_size = ( int64_t ) blkid_probe_get_size( blkid ) ;
-
 		if( blkid_probe_lookup_value( blkid,"TYPE",&g,NULL ) == 0 ){
 			printf( "%s\t",g ) ;
 		}else{
@@ -107,6 +170,8 @@ void zuluMountPartitionProperties( const char * device,const char * UUID,const c
 		}
 
 		blkid_free_probe( blkid ) ;
+
+		volume_size = _get_volume_size( device ) ;
 	}else{
 		blkid_free_probe( blkid ) ;
 
@@ -116,8 +181,6 @@ void zuluMountPartitionProperties( const char * device,const char * UUID,const c
 			printf( "Nil\tNil" ) ;
 		}else{
 			blkid_do_probe( blkid ) ;
-
-			blkid_device_size = ( int64_t ) blkid_probe_get_size( blkid ) ;
 			/*
 			 * zuluCryptGetVolumeTypeFromMapperPath() is defined in ../zuluCrypt-cli/lib/status.c
 			 */
@@ -137,14 +200,16 @@ void zuluMountPartitionProperties( const char * device,const char * UUID,const c
 
 			blkid_free_probe( blkid ) ;
 			StringFree( e ) ;
+
+			volume_size = _get_volume_size( mapper ) ;
 		}
 	}
 
 	if( m_point == NULL ){
-		if( blkid_device_size == -1 ){
+		if( volume_size == -1 ){
 			printf( "\tNil\tNil\n" ) ;
 		}else{
-			zuluCryptFormatSize( blkid_device_size,buffer,SIZE ) ;
+			zuluCryptFormatSize( volume_size,buffer,SIZE ) ;
 			printf( "\t%s\tNil\n",buffer ) ;
 		}
 	}else{
@@ -179,7 +244,7 @@ static void _printUnmountedVolumes( const char * device )
 	zuluMountPartitionProperties( device,NULL,device,NULL ) ;
 }
 
-static void _printDeviceProperties( string_t entry,void * s )
+static void _printDeviceProperties( string_t entry )
 {
 	char * x ;
 
@@ -191,7 +256,6 @@ static void _printDeviceProperties( string_t entry,void * s )
 
 	string_t st = StringVoid ;
 
-	stringList_t stz = ( stringList_t ) s ;
 	stringList_t stx = StringListStringSplit( entry,' ' ) ;
 
 	if( stx == StringListVoid ){
@@ -227,7 +291,6 @@ static void _printDeviceProperties( string_t entry,void * s )
 				e = x ;
 			}
 
-			StringListRemoveString( stz,x ) ;
 			/*
 			 * zuluCryptDecodeMountEntry() is defined in ../zuluCrypt-cli/lib/mount_volume.c
 			 * it decodes space,tab,new line and backslash characters since they are written differently in "/etc/mtab"
@@ -238,8 +301,6 @@ static void _printDeviceProperties( string_t entry,void * s )
 			StringDelete( &st ) ;
 		}
 	}else{
-		StringListRemoveString( stz,q ) ;
-
 		e = zuluCryptDecodeMountEntry( StringListStringAtFirstPlace( stx ) ) ;
 		f = zuluCryptDecodeMountEntry( StringListStringAtSecondPlace( stx ) ) ;
 
@@ -255,7 +316,7 @@ void zuluMountPrintDeviceProperties_1( string_t entry,uid_t uid )
 	if( uid ){;}
 	_mapper_path = zuluCryptMapperPrefix() ;
 	_mapper_length = StringSize( _mapper_path ) ;
-	_printDeviceProperties( entry,( void * )StringListVoid ) ;
+	_printDeviceProperties( entry ) ;
 }
 
 /*
@@ -268,6 +329,13 @@ int zuluMountPrintMountedVolumes( uid_t uid )
 {
 	stringList_t stl ;
 	stringList_t stz ;
+
+	StringListIterator it  ;
+	StringListIterator end ;
+
+	string_t st ;
+
+	const char * e ;
 
 	/*
 	 * zuluCryptGetMountInfoList() is  defined in ../zuluCrypt-cli/lib/process_mountinfo.c
@@ -292,11 +360,21 @@ int zuluMountPrintMountedVolumes( uid_t uid )
 		 */
 		_mapper_path = zuluCryptMapperPrefix() ;
 		_mapper_length = StringSize( _mapper_path ) ;
+
+		StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
+
 		/*
 		 * print a list of mounted partitions
 		 */
-		StringListForEach_1( stl,_printDeviceProperties,( void * )stz ) ;
-
+		while( it != end ){
+			st = *it ;
+			it++ ;
+			_printDeviceProperties( st ) ;
+			e = StringContent( st ) ;
+			StringListRemoveString( stz,e ) ;
+			e = StringReplaceChar_1( st,0,' ','\0' ) ;
+			StringListRemoveString( stz,e ) ;
+		}
 		/*
 		 * print a list of unmounted partitions
 		 */

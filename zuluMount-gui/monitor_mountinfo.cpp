@@ -23,6 +23,8 @@
 #include <QStringList>
 #include <QDebug>
 #include <QProcess>
+#include <QDir>
+#include <QFile>
 
 #include<fcntl.h>
 #include <poll.h>
@@ -44,6 +46,31 @@ void monitor_mountinfo::stop()
 	}else{
 		this->threadStopped() ;
 	}
+}
+
+bool monitor_mountinfo::loopDeviceIsStillPresent( const QString& device )
+{
+	QDir d( "/sys/block" ) ;
+	QStringList l = d.entryList() ;
+	QString e ;
+	QString dev = QString( "%1\n" ).arg( device ) ;
+	QByteArray s ;
+	int j = l.size() ;
+	QFile f ;
+	for( int i = 0 ; i < j ; i++ ){
+		const QString& x = l.at( i ) ;
+		if( x.startsWith( "loop" ) ){
+			e = QString( "/sys/block/%1/loop/backing_file" ).arg( x ) ;
+			f.setFileName( e ) ;
+			f.open( QIODevice::ReadOnly ) ;
+			s = f.readAll() ;
+			f.close() ;
+			if( s == dev ){
+				return true ;
+			}
+		}
+	}
+	return false ;
 }
 
 void monitor_mountinfo::threadStopped()
@@ -115,8 +142,14 @@ void monitor_mountinfo::run()
 					connect( t,SIGNAL( signalProperties( QString ) ),m_babu,SLOT( volumeMiniProperties( QString ) ) ) ;
 					t->start( Task::VolumeMiniProperties ) ;
 				}else{
-					//sleep( 1 ) ; //sleep for one second for UI effect
-					m_main->removeEntry( device ) ;
+					if( this->loopDeviceIsStillPresent( device ) ){
+						Task * t = new Task() ;
+						t->setDevice( device );
+						connect( t,SIGNAL( signalProperties( QString ) ),m_babu,SLOT( volumeMiniProperties( QString ) ) ) ;
+						t->start( Task::VolumeMiniProperties ) ;
+					}else{
+						m_main->removeEntry( device ) ;
+					}
 				}
 			}
 		}else if( newList.size() > oldList.size() ){

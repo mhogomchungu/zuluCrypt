@@ -284,9 +284,23 @@ void Task::volumeMiniProperties()
 	p.waitForFinished( -1 ) ;
 
 	if( p.exitCode() == 0 ){
-		emit signalProperties( p.readAll() ) ;
+		QString e = p.readAll() ;
+		if( e.split( "\t" ).at( 2 ) == QString( "btrfs" ) ){
+			if( !m_device.startsWith( "UUID" ) && !m_device.startsWith( "/dev/" ) ){
+				/*
+				 * Here,we force a refresh instead of getting properties of the volume
+				 * because the volume is a btrfs image file and we get confused on calculating
+				 * the volume total size because of the number of loop devices in use.
+				 */
+				emit signalProperties( QString() ) ;
+			}else{
+				emit signalProperties( e ) ;
+			}
+		}else{
+			emit signalProperties( e ) ;
+		}
 	}else{
-		emit signalProperties( QString( "" ) ) ;
+		emit signalProperties( QString() ) ;
 	}
 }
 

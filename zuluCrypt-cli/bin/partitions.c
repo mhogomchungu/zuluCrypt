@@ -109,7 +109,7 @@ static inline int _allowedDevice( const char * device )
 			return st == 0 ;
 		}
 	}else if( sts > 3 ){
-		return StringAtLeastOnePrefixMatch( device,"hd","sd","md","mmc",NULL ) ;
+		return StringAtLeastOnePrefixMatch( device,"hd","sd","md","mmc","loop",NULL ) ;
 	}else{
 		return 0 ;
 	}
@@ -177,6 +177,8 @@ stringList_t zuluCryptPartitionList( void )
 {
 	const char * device ;
 
+	const char * e ;
+
 	ssize_t index ;
 
 	StringListIterator it ;
@@ -212,7 +214,16 @@ stringList_t zuluCryptPartitionList( void )
 			device = StringContent( st ) + index + 1 ;
 			if( _allowedDevice( device ) ){
 				st_1 = String( "/dev/" ) ;
-				StringAppend( st_1,device ) ;
+				e = StringAppend( st_1,device ) ;
+				if( StringStartsWith( st_1,"/dev/loop" ) ){
+					/*
+					 * zuluCryptLoopDeviceAddress_1() is defined in ../lib/create_loop_device.c
+					 */
+					e = zuluCryptLoopDeviceAddress_1( e ) ;
+					StringReplace( st_1,e ) ;
+					StringFree( e ) ;
+				}
+
 				stl_1 = StringListAppendString_1( stl_1,&st_1 ) ;
 			}
 		}
@@ -224,23 +235,30 @@ stringList_t zuluCryptPartitionList( void )
 
 int zuluCryptDeviceIsSupported( const char * device,uid_t uid )
 {
-	stringList_t stl ;
+	stringList_t stl = zuluCryptPartitions( ZULUCRYPTallPartitions,uid ) ;
 	int r ;
+	char * e = NULL ;
 
 	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
+		/*
+		 * zuluCryptLoopDeviceAddress_1() is defined in ../lib/create_loop_device.c
+		 */
+		e = zuluCryptLoopDeviceAddress_1( device ) ;
+		r = StringListContains( stl,e ) ;
+		StringFree( e ) ;
+	}else{
+		r = StringListContains( stl,device ) ;
+	}
+
+	StringListDelete( &stl ) ;
+
+	if( r >= 0 ){
 		return 1 ;
 	}else{
-		stl = zuluCryptPartitions( ZULUCRYPTallPartitions,uid ) ;
-		r = StringListContains( stl,device ) ;
-		StringListDelete( &stl ) ;
-		if( r >= 0 ){
-			return 1 ;
-		}else{
-			/*
-			 * zuluCryptUserIsAMemberOfAGroup() is defined in security.c
-			 */
-			return zuluCryptUserIsAMemberOfAGroup( uid,"zulucrypt" ) ;
-		}
+		/*
+		 * zuluCryptUserIsAMemberOfAGroup() is defined in security.c
+		 */
+		return zuluCryptUserIsAMemberOfAGroup( uid,"zulucrypt" ) ;
 	}
 }
 
