@@ -165,3 +165,4 @@ version 4.6.8
 -- add a simple CLI tool(zuluSafe-cli) that can be used to store multiple files securely in a single wallet file.
 -- add support in zuluMount for opening a plain volume at a user specified offset.This ability will allow hidden volume type
    functionality.In one of the prompts in zuluMount-gui,press "ctrl+f" to bring up the dialog that accepts the offset.
+-- add support for multi device btrfs volumes.

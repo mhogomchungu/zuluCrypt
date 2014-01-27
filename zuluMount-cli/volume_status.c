@@ -33,71 +33,6 @@ stringList_t zuluCryptPartitionList( void ) ;
 static const char * _mapper_path ;
 static size_t _mapper_length ;
 
-static int64_t _get_volume_size( const char * device )
-{
-	stringList_t stl = StringListVoid ;
-
-	StringListIterator it  ;
-	StringListIterator end ;
-
-	string_t xt ;
-
-	const char * e = NULL ;
-
-	int64_t r = 0 ;
-
-	blkid_probe blkid = blkid_new_probe_from_filename( device ) ;
-
-	blkid_do_probe( blkid ) ;
-	blkid_probe_lookup_value( blkid,"TYPE",&e,NULL ) ;
-
-	if( !StringsAreEqual( e,"btrfs" ) ){
-		r = blkid_probe_get_size( blkid ) ;
-		blkid_free_probe( blkid ) ;
-		return r ;
-	}else{
-		/*
-		 * we got a btrfs volume,this device could be one among a bunch of devices that makes the btfs volume.
-		 * iterate through all known devices and add their sizes to this device if they are a part of the same
-		 * btrfs volume.
-		 */
-		if( blkid_probe_lookup_value( blkid,"UUID",&e,NULL ) == 0 ){
-			xt = String( e ) ;
-		}else{
-			xt = StringVoid ;
-		}
-
-		blkid_free_probe( blkid ) ;
-
-		if( xt == StringVoid ){
-			return 0 ;
-		}else{
-			/*
-			 * zuluCryptPartitionList() is defined in ../zuluCrypt-cli/bin/partitions.c
-			 */
-			stl = zuluCryptPartitionList() ;
-			zuluCryptSecurityGainElevatedPrivileges() ;
-
-			StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
-
-			while( it != end ){
-				blkid = blkid_new_probe_from_filename( StringContent( *it ) ) ;
-				it++ ;
-				blkid_do_probe( blkid ) ;
-				if( blkid_probe_lookup_value( blkid,"UUID",&e,NULL ) == 0 ){
-					if( StringEqual( xt,e ) ){
-						r += blkid_probe_get_size( blkid ) ;
-					}
-				}
-				blkid_free_probe( blkid ) ;
-			}
-			StringDelete( &xt ) ;
-			StringListDelete( &stl ) ;
-			return r ;
-		}
-	}
-}
-
 void zuluMountPartitionProperties( const char * device,const char * UUID,const char * mapper,const char * m_point )
 {
 	#define SIZE 64
@@ -108,11 +43,11 @@ void zuluMountPartitionProperties( const char * device,const char * UUID,const c
 	blkid_probe blkid ;
 
 	struct statvfs vfs ;
-	uint64_t total ;
-	uint64_t used ;
-	uint64_t free_space ;
-	uint32_t block_size ;
-	int64_t volume_size = 0 ;
+	u_int64_t total ;
+	u_int64_t used ;
+	u_int64_t free_space ;
+	u_int32_t block_size ;
+	u_int64_t volume_size = 0 ;
 
 	char buff[ SIZE ] ;
 	char * buffer = buff ;
@@ -171,7 +106,12 @@ void zuluMountPartitionProperties( const char * device,const char * UUID,const c
 
 		blkid_free_probe( blkid ) ;
 
-		volume_size = _get_volume_size( device ) ;
+		/*
+		 * zuluCryptGetVolumeSize() is defined in ../zuluCrypt-cli/partitions.c
+		 */
+		if( m_point == NULL ){
+			volume_size = zuluCryptGetVolumeSize( device ) ;
+		}
 	}else{
 		blkid_free_probe( blkid ) ;
 
@@ -201,17 +141,15 @@ void zuluMountPartitionProperties( const char * device,const char * UUID,const c
 			blkid_free_probe( blkid ) ;
 			StringFree( e ) ;
 
-			volume_size = _get_volume_size( mapper ) ;
+			if( m_point == NULL ){
+				volume_size = zuluCryptGetVolumeSize( mapper ) ;
+			}
 		}
 	}
 
 	if( m_point == NULL ){
-		if( volume_size == -1 ){
-			printf( "\tNil\tNil\n" ) ;
-		}else{
-			zuluCryptFormatSize( volume_size,buffer,SIZE ) ;
-			printf( "\t%s\tNil\n",buffer ) ;
-		}
+		zuluCryptFormatSize( volume_size,buffer,SIZE ) ;
+		printf( "\t%s\tNil\n",buffer ) ;
 	}else{
 		if( statvfs( m_point,&vfs ) != 0 ){
 			printf( "\tNil\tNil\n" ) ;

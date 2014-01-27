@@ -521,13 +521,78 @@ stringList_t zuluCryptPartitions( int option,uid_t uid )
 	}
 }
 
+u_int64_t zuluCryptGetVolumeSize( const char * device )
+{
+	stringList_t stl = StringListVoid ;
+
+	StringListIterator it  ;
+	StringListIterator end ;
+
+	string_t xt ;
+
+	const char * e = NULL ;
+
+	u_int64_t r = 0 ;
+
+	blkid_probe blkid = blkid_new_probe_from_filename( device ) ;
+
+	blkid_do_probe( blkid ) ;
+	blkid_probe_lookup_value( blkid,"TYPE",&e,NULL ) ;
+
+	if( !StringsAreEqual( e,"btrfs" ) ){
+		r = blkid_probe_get_size( blkid ) ;
+		blkid_free_probe( blkid ) ;
+		return r ;
+	}else{
+		/*
+		 * we got a btrfs volume,this device could be one among a bunch of devices that makes the btfs volume.
+		 * iterate through all known devices and add their sizes to this device if they are a part of the same
+		 * btrfs volume.
+		 */
+		if( blkid_probe_lookup_value( blkid,"UUID",&e,NULL ) == 0 ){
+			xt = String( e ) ;
+		}else{
+			xt = StringVoid ;
+		}
+
+		blkid_free_probe( blkid ) ;
+
+		if( xt == StringVoid ){
+			return 0 ;
+		}else{
+			/*
+			 * zuluCryptPartitionList() is defined in ../zuluCrypt-cli/bin/partitions.c
+			 */
+			stl = zuluCryptPartitionList() ;
+			zuluCryptSecurityGainElevatedPrivileges() ;
+
+			StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
+
+			while( it != end ){
+				blkid = blkid_new_probe_from_filename( StringContent( *it ) ) ;
+				it++ ;
+				blkid_do_probe( blkid ) ;
+				if( blkid_probe_lookup_value( blkid,"UUID",&e,NULL ) == 0 ){
+					if( StringEqual( xt,e ) ){
+						r += blkid_probe_get_size( blkid ) ;
+					}
+				}
+				blkid_free_probe( blkid ) ;
+			}
+			StringDelete( &xt ) ;
+			StringListDelete( &stl ) ;
+			return r ;
+		}
+	}
+}
+
 void zuluCryptPrintPartitionProperties( const char * device )
 {
 	#define SIZE 64
 	char buffer[ SIZE ] ;
 
 	const char * e ;
-	uint64_t size ;
+	u_int64_t size ;
 	blkid_probe blkid ;
 
 	zuluCryptSecurityGainElevatedPrivileges() ;
@@ -547,21 +612,21 @@ void zuluCryptPrintPartitionProperties( const char * device )
 		printf( "%s\t",device ) ;
 	}
 
+	size = zuluCryptGetVolumeSize( device ) ;
+	
 	blkid = blkid_new_probe_from_filename( device ) ;
 
 	if( blkid == NULL ){
 		printf( "Nil\tNil\tNil\tNil\n" ) ;
 	}else{
-		blkid_do_probe( blkid ) ;
-
-		size = blkid_probe_get_size( blkid ) ;
-
 		/*
 		 * zuluCryptFormatSize() is defined in ../lib/status.c
 		 */
 		zuluCryptFormatSize( size,buffer,SIZE ) ;
 
 		printf( "%s\t",buffer ) ;
+
+		blkid_do_probe( blkid ) ;
 
 		if( blkid_probe_lookup_value( blkid,"LABEL",&e,NULL ) == 0 ){
 			printf( "%s\t",e ) ;

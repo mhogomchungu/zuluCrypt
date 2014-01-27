@@ -237,4 +237,9 @@ int zuluCryptDeviceIsSupported( const char * device,uid_t uid ) ;
  */
 stringList_t zuluCryptPartitions( int option,uid_t uid ) ;
 
+/*
+ * zuluCryptGetVolumeSize() is defined in partitions.c
+ */
+u_int64_t zuluCryptGetVolumeSize( const char * device ) ;
+
 #endif
