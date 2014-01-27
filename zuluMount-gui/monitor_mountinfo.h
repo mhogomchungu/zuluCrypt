@@ -41,7 +41,6 @@ private slots:
 	void threadStopped( void ) ;
 	void stop( void ) ;
 private:
-	bool loopDeviceIsStillPresent( const QString& ) ;
 	void removeEntry( QString ) ;
 	void run( void ) ;
 	QStringList updateVolumeList( void ) ;

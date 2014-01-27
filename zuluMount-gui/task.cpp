@@ -23,6 +23,7 @@
 #include <QProcess>
 #include <QThreadPool>
 #include <QDir>
+#include <QFile>
 
 #include "../zuluCrypt-gui/lxqt_wallet/frontend/lxqt_wallet.h"
 #include "../zuluCrypt-gui/utility.h"
@@ -269,6 +270,31 @@ void Task::volumeProperties()
 	}
 }
 
+bool Task::loopDeviceIsStillPresent( const QString& device )
+{
+	QDir d( "/sys/block" ) ;
+	QStringList l = d.entryList() ;
+	QString e ;
+	QString dev = QString( "%1\n" ).arg( device ) ;
+	QByteArray s ;
+	int j = l.size() ;
+	QFile f ;
+	for( int i = 0 ; i < j ; i++ ){
+		const QString& x = l.at( i ) ;
+		if( x.startsWith( "loop" ) ){
+			e = QString( "/sys/block/%1/loop/backing_file" ).arg( x ) ;
+			f.setFileName( e ) ;
+			f.open( QIODevice::ReadOnly ) ;
+			s = f.readAll() ;
+			f.close() ;
+			if( s == dev ){
+				return true ;
+			}
+		}
+	}
+	return false ;
+}
+
 void Task::volumeMiniProperties()
 {
 	QProcess p ;
@@ -285,16 +311,24 @@ void Task::volumeMiniProperties()
 
 	if( p.exitCode() == 0 ){
 		QString e = p.readAll() ;
-		if( e.split( "\t" ).at( 2 ) == QString( "btrfs" ) ){
-			if( !m_device.startsWith( "UUID" ) && !m_device.startsWith( "/dev/" ) ){
+		if( !m_device.startsWith( "UUID" ) && !m_device.startsWith( "/dev/" ) ){
+			if( e.split( "\t" ).at( 2 ) == QString( "btrfs" ) ){
 				/*
-				 * Here,we force a refresh instead of getting properties of the volume
-				 * because the volume is a btrfs image file and we get confused on calculating
-				 * the volume total size because of the number of loop devices in use.
+				 * We will get here when we are dealing with btrfs volume in files and
+				 * we just do a volume refresh here because getting volume size is problematic
+				 * with loop devices.
 				 */
 				emit signalProperties( QString() ) ;
 			}else{
-				emit signalProperties( e ) ;
+				if( this->loopDeviceIsStillPresent( m_device ) ){
+					/*
+					 * This is a loop device opened outsize of zuluMount and the loop device
+					 * is still around after the volume is unmounted( ie autoclear is not set )
+					 */
+					emit signalProperties( e ) ;
+				}else{
+					emit volumeRemoved( m_device ) ;
+				}
 			}
 		}else{
 			emit signalProperties( e ) ;

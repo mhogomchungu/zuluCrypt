@@ -220,11 +220,12 @@ stringList_t zuluCryptPartitionList( void )
 					 * zuluCryptLoopDeviceAddress_1() is defined in ../lib/create_loop_device.c
 					 */
 					e = zuluCryptLoopDeviceAddress_1( e ) ;
-					StringReplace( st_1,e ) ;
+					stl_1 = StringListAppendIfAbsent( stl_1,e ) ;
 					StringFree( e ) ;
+					StringDelete( &st_1 ) ;
+				}else{
+					stl_1 = StringListAppendString_1( stl_1,&st_1 ) ;
 				}
-
-				stl_1 = StringListAppendString_1( stl_1,&st_1 ) ;
 			}
 		}
 	}

@@ -362,7 +362,6 @@ int zuluMountPrintMountedVolumes( uid_t uid )
 		_mapper_length = StringSize( _mapper_path ) ;
 
 		StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
-
 		/*
 		 * print a list of mounted partitions
 		 */
@@ -370,17 +369,21 @@ int zuluMountPrintMountedVolumes( uid_t uid )
 			st = *it ;
 			it++ ;
 			_printDeviceProperties( st ) ;
-			e = StringContent( st ) ;
-			StringListRemoveString( stz,e ) ;
-			e = StringReplaceChar_1( st,0,' ','\0' ) ;
-			StringListRemoveString( stz,e ) ;
+			StringReplaceChar_1( st,0,' ','\0' ) ;
+			e = zuluCryptDecodeMountEntry( st ) ;
+			StringListRemoveIfPresent( stz,e ) ;
 		}
+
+		StringListGetIteratorBeginAndEnd( stz,&it,&end ) ;
 		/*
 		 * print a list of unmounted partitions
 		 */
-		StringListForEachString( stz,_printUnmountedVolumes ) ;
+		while( it != end ){
+			_printUnmountedVolumes( StringContent( *it ) ) ;
+			it++ ;
+		}
 
-		StringListMultipleDelete( &stl,&stz,ENDDELETE ) ;
+		StringListMultipleDelete( &stl,&stz,NULL ) ;
 
 		return 0 ;
 	}

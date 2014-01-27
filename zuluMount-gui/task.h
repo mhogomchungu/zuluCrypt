@@ -76,9 +76,11 @@ signals:
 	void getVolumeInfo( QStringList ) ;
 	void done( void ) ;
 	void key( QString ) ;
+	void volumeRemoved( QString ) ;
 private slots:
 	void funguaMountPoint( int,QProcess::ExitStatus ) ;
 private:
+	bool loopDeviceIsStillPresent( const QString& device ) ;
 	void openMountPointTask( void ) ;
 	void checkIfSystemDevice( void ) ;
 	void checkPermissions( void ) ;

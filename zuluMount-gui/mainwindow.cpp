@@ -326,6 +326,7 @@ void MainWindow::deviceRemoved( QString dev )
 		Task * t = new Task() ;
 		t->setDevice( dev ) ;
 		t->start( Task::checkUnMount ) ;
+		this->enableAll() ;
 	}
 }
 
