@@ -357,17 +357,20 @@ static stringList_t _remove_btfs_multiple_devices( stringList_t stl )
 			blkid_do_probe( blkid ) ;
 			blkid_probe_lookup_value( blkid,"TYPE",&e,NULL ) ;
 			if( StringsAreEqual( e,"btrfs" ) ){
-				/*
-				 * got a btrfs volume,remember its UUID and dont add any more btfs volume
-				 * if it matches this UUID
-				 */
 				blkid_probe_lookup_value( blkid,"UUID",&e,NULL ) ;
 				if( StringListContains( stx,e ) == -1 ){
 					/*
-					 * got a btrfs volume that is not already on the list,add it
+					 * we got a btrfs volume with UUID we do not know about,
+					 * This will be the only device with this btrfs UUID we support and
+					 * all device operations must happen through this device and this device only.
 					 */
 					stz = StringListAppendString( stz,st ) ;
 					stx = StringListAppend( stx,e ) ;
+				}else{
+					/*
+					 * we already know this UUID and this device is not supported.Any operation on this
+					 * device should fail.
+					 */
 				}
 			}else{
 				/*
