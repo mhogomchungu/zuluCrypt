@@ -30,9 +30,6 @@
 
 stringList_t zuluCryptPartitionList( void ) ;
 
-static const char * _mapper_path ;
-static size_t _mapper_length ;
-
 void zuluMountPartitionProperties( const char * device,const char * UUID,const char * mapper,const char * m_point )
 {
 	#define SIZE 64
@@ -182,7 +179,7 @@ static void _printUnmountedVolumes( const char * device )
 	zuluMountPartitionProperties( device,NULL,device,NULL ) ;
 }
 
-static void _printDeviceProperties( string_t entry )
+static void _printDeviceProperties( string_t entry,const char * mapper_path,size_t mapper_length )
 {
 	char * x ;
 
@@ -202,7 +199,7 @@ static void _printDeviceProperties( string_t entry )
 
 	q = StringListContentAtFirstPlace( stx ) ;
 
-	if( StringPrefixMatch( q,_mapper_path,_mapper_length ) ){
+	if( StringPrefixMatch( q,mapper_path,mapper_length ) ){
 		/*
 		 * zuluCryptSecurityGainElevatedPrivileges() and zuluCryptSecurityDropElevatedPrivileges()
 		 * are defined in ../zuluCrypt-cli/bin/security.c
@@ -251,10 +248,10 @@ static void _printDeviceProperties( string_t entry )
 
 void zuluMountPrintDeviceProperties_1( string_t entry,uid_t uid )
 {
+	const char * e = zuluCryptMapperPrefix() ;
+	size_t z = StringSize( e ) ;
 	if( uid ){;}
-	_mapper_path = zuluCryptMapperPrefix() ;
-	_mapper_length = StringSize( _mapper_path ) ;
-	_printDeviceProperties( entry ) ;
+	_printDeviceProperties( entry,e,z ) ;
 }
 
 static stringList_t _convert_loop_devices( stringList_t stl )
@@ -303,6 +300,9 @@ int zuluMountPrintMountedVolumes( uid_t uid )
 	string_t st ;
 
 	const char * e ;
+	const char * z ;
+
+	size_t l ;
 
 	/*
 	 * zuluCryptGetMountInfoList() is  defined in ../zuluCrypt-cli/lib/process_mountinfo.c
@@ -325,8 +325,8 @@ int zuluMountPrintMountedVolumes( uid_t uid )
 		 * zuluCryptMapperPrefix() is defined in ../zuluCrypt-cli/lib/create_mapper_name.c
 		 * it should return something like "/dev/mapper"
 		 */
-		_mapper_path = zuluCryptMapperPrefix() ;
-		_mapper_length = StringSize( _mapper_path ) ;
+		z = zuluCryptMapperPrefix() ;
+		l = StringSize( z ) ;
 
 		stz = _convert_loop_devices( stz ) ;
 
@@ -337,7 +337,7 @@ int zuluMountPrintMountedVolumes( uid_t uid )
 		while( it != end ){
 			st = *it ;
 			it++ ;
-			_printDeviceProperties( st ) ;
+			_printDeviceProperties( st,z,l ) ;
 			StringReplaceChar_1( st,0,' ','\0' ) ;
 			e = zuluCryptDecodeMountEntry( st ) ;
 			StringListRemoveIfPresent( stz,e ) ;

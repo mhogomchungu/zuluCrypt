@@ -297,9 +297,20 @@ bool Task::loopDeviceIsStillPresent( const QString& device )
 
 void Task::volumeMiniProperties()
 {
+	if( !m_device.startsWith( "UUID" ) && !m_device.startsWith( "/dev/" ) ){
+		if( !this->loopDeviceIsStillPresent( m_device ) ){
+			/*
+			 * we were just asked to find properties of a loop device
+			 * that no longer exists,remove it from the list in the GUI window
+			 */
+			emit volumeRemoved( m_device ) ;
+			return ;
+		}
+	}
+
 	QProcess p ;
 	QString exe ;
-	//sleep( 1 ) ; for UI effect
+
 	if( m_device.startsWith( "UUID" ) ){
 		exe = QString( "%1 -L -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;
 	}else{
@@ -310,20 +321,7 @@ void Task::volumeMiniProperties()
 	p.waitForFinished( -1 ) ;
 
 	if( p.exitCode() == 0 ){
-		QString e = p.readAll() ;
-		if( !m_device.startsWith( "UUID" ) && !m_device.startsWith( "/dev/" ) ){
-			if( this->loopDeviceIsStillPresent( m_device ) ){
-				/*
-				 * This is a loop device opened outsize of zuluMount and the loop device
-				 * is still around after the volume is unmounted( ie autoclear is not set )
-				 */
-				emit signalProperties( e ) ;
-			}else{
-				emit volumeRemoved( m_device ) ;
-			}
-		}else{
-			emit signalProperties( e ) ;
-		}
+		emit signalProperties( p.readAll() ) ;
 	}else{
 		emit signalProperties( QString() ) ;
 	}
