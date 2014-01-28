@@ -45,7 +45,7 @@ int zuluMountVolumeStatus( const char * device,const char * UUID,uid_t uid ) ;
 
 int zuluMountUnEncryptedVolumeStatus( const char * device ) ;
 
-int zuluMountPrintMountedVolumes( uid_t uid ) ;
+int zuluMountPrintVolumesProperties( uid_t uid ) ;
 
 int zuluMountprintAListOfMountedVolumes( void ) ;
 

@@ -174,11 +174,6 @@ void zuluMountPartitionProperties( const char * device,const char * UUID,const c
 	zuluCryptSecurityDropElevatedPrivileges() ;
 }
 
-static void _printUnmountedVolumes( const char * device )
-{
-	zuluMountPartitionProperties( device,NULL,device,NULL ) ;
-}
-
 static void _printDeviceProperties( string_t entry,const char * mapper_path,size_t mapper_length )
 {
 	char * x ;
@@ -283,13 +278,7 @@ static stringList_t _convert_loop_devices( stringList_t stl )
 	return stl ;
 }
 
-/*
- * This function takes contents of "/etc/mtab" and "/proc/partitions" and compare them.
- * It first print information about partitions with entries in "/etc/mtab" and then
- * the remaining entries net effect being it prints information about partitions that
- * are mounted first and then print information about partitions that are not mounted.
- */
-int zuluMountPrintMountedVolumes( uid_t uid )
+int zuluMountPrintVolumesProperties( uid_t uid )
 {
 	stringList_t stl ;
 	stringList_t stz ;
@@ -310,7 +299,7 @@ int zuluMountPrintMountedVolumes( uid_t uid )
 	stl = zuluCryptGetMountInfoList() ;
 
 	if( stl == StringListVoid ){
-		return 1;
+		return 1 ;
 	}
 	/*
 	 * zuluCryptPartitionList() is defined in ../zuluCrypt-cli/partitions.c
@@ -332,12 +321,14 @@ int zuluMountPrintMountedVolumes( uid_t uid )
 
 		StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
 		/*
-		 * print a list of mounted partitions
+		 * print a list of mounted volumes
 		 */
 		while( it != end ){
 			st = *it ;
 			it++ ;
-			_printDeviceProperties( st,z,l ) ;
+			if( StringStartsWith( st,"/" ) && !StringStartsWithAtLeastOne( st,"/proc","/sys","/dev ",NULL ) ){
+				_printDeviceProperties( st,z,l ) ;
+			}
 			StringReplaceChar_1( st,0,' ','\0' ) ;
 			e = zuluCryptDecodeMountEntry( st ) ;
 			StringListRemoveIfPresent( stz,e ) ;
@@ -345,11 +336,12 @@ int zuluMountPrintMountedVolumes( uid_t uid )
 
 		StringListGetIteratorBeginAndEnd( stz,&it,&end ) ;
 		/*
-		 * print a list of unmounted partitions
+		 * print a list of not mounted volumes
 		 */
 		while( it != end ){
-			_printUnmountedVolumes( StringContent( *it ) ) ;
+			e = StringContent( *it ) ;
 			it++ ;
+			zuluMountPartitionProperties( e,NULL,e,NULL ) ;
 		}
 
 		StringListMultipleDelete( &stl,&stz,NULL ) ;
@@ -358,11 +350,10 @@ int zuluMountPrintMountedVolumes( uid_t uid )
 	}
 }
 
-static void  _zuluMountprintAListOfMountedVolumes( string_t st,void * s )
+static void  _zuluMountprintAListOfMountedVolumes( string_t st,const char * mapper_prefix )
 {
 	const char * e ;
 	const char * f ;
-	const char * mapper_prefix = ( const char * )s ;
 
 	string_t q ;
 
@@ -371,7 +362,6 @@ static void  _zuluMountprintAListOfMountedVolumes( string_t st,void * s )
 		 * we will get here is the path starts with "/dev/mapper/".
 		 * This path could be an LVM path or an encrypted mapper path
 		 */
-
 		/*
 		 * zuluCryptConvertIfPathIsLVM() is defined in ../zuluCrypt-cli/lib/status.c
 		 */
@@ -436,32 +426,32 @@ int zuluMountprintAListOfMountedVolumes( void )
 	 * zuluCryptGetMountInfoList() is defined in ../zuluCrypt-cli/lib/process_mountinfo.c
 	 */
 	stringList_t stz = zuluCryptGetMountInfoList() ;
-	stringList_t stx = StringListVoid ;
 
 	string_t st ;
 
 	StringListIterator it  ;
 	StringListIterator end ;
-	/*
-	 * remove duplicates caused by bind mounts and other entries we dont care about
-	 */
-	StringListGetIteratorBeginAndEnd( stz,&it,&end ) ;
-	while( it != end ){
-		st = *it ;
-		it++ ;
-		if( StringStartsWith( st,"/" ) && !StringStartsWithAtLeastOne( st,"/proc","/sys","/dev ",NULL ) ){
-			stx = StringListAppendIfAbsent( stx,StringReplaceChar_1( st,0,' ','\0' ) ) ;
-		}
-	}
 
 	/*
 	 * zuluCryptMapperPrefix() is defined in ../zuluCrypt-cli/lib/create_mapper_name.c
 	 * mapper_prefix will probably contain "/dev/mapper/"
-	*/
-	StringListForEach_1( stx,_zuluMountprintAListOfMountedVolumes,( void * )zuluCryptMapperPrefix() ) ;
+	 */
+	const char * e = zuluCryptMapperPrefix() ;
+	/*
+	 * remove duplicates caused by bind mounts and other entries we dont care about
+	 */
+	StringListGetIteratorBeginAndEnd( stz,&it,&end ) ;
 
-	StringListMultipleDelete( &stz,&stx,NULL ) ;
+	while( it != end ){
+		st = *it ;
+		it++ ;
+		if( StringStartsWith( st,"/" ) && !StringStartsWithAtLeastOne( st,"/proc","/sys","/dev ",NULL ) ){
+			StringReplaceChar_1( st,0,' ','\0' ) ;
+			_zuluMountprintAListOfMountedVolumes( st,e ) ;
+		}
+	}
 
+	StringListDelete( &stz ) ;
 	return 0 ;
 }
 

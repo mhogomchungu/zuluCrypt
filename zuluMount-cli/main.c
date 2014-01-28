@@ -138,9 +138,9 @@ static int _zuluMountSystemDeviceList( uid_t uid )
 static int _zuluMountMountedList( uid_t uid )
 {
 	/*
-	 * zuluMountPrintMountedVolumes() is defined in ./print_mounted_volumes.c
+	 * zuluMountPrintVolumesProperties() is defined in volume_status.c
 	 */
-	return zuluMountPrintMountedVolumes( uid ) ;
+	return zuluMountPrintVolumesProperties( uid ) ;
 }
 
 static int _zuluPartitionHasCryptoFs( const char * device )
