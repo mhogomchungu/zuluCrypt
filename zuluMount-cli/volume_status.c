@@ -241,14 +241,6 @@ static void _printDeviceProperties( string_t entry,const char * mapper_path,size
 	StringListDelete( &stx ) ;
 }
 
-void zuluMountPrintDeviceProperties_1( string_t entry,uid_t uid )
-{
-	const char * e = zuluCryptMapperPrefix() ;
-	size_t z = StringSize( e ) ;
-	if( uid ){;}
-	_printDeviceProperties( entry,e,z ) ;
-}
-
 static stringList_t _convert_loop_devices( stringList_t stl )
 {
 	StringListIterator it  ;
@@ -276,6 +268,11 @@ static stringList_t _convert_loop_devices( stringList_t stl )
 	}
 
 	return stl ;
+}
+
+static int _normal_mounted_volume( string_t st )
+{
+	return StringStartsWith( st,"/" ) && !StringStartsWithAtLeastOne( st,"/proc","/sys","/dev ",NULL ) ;
 }
 
 int zuluMountPrintVolumesProperties( uid_t uid )
@@ -308,7 +305,7 @@ int zuluMountPrintVolumesProperties( uid_t uid )
 
 	if( stz == StringListVoid ){
 		StringListDelete( &stl ) ;
-		return 1;
+		return 1 ;
 	}else{
 		/*
 		 * zuluCryptMapperPrefix() is defined in ../zuluCrypt-cli/lib/create_mapper_name.c
@@ -326,7 +323,7 @@ int zuluMountPrintVolumesProperties( uid_t uid )
 		while( it != end ){
 			st = *it ;
 			it++ ;
-			if( StringStartsWith( st,"/" ) && !StringStartsWithAtLeastOne( st,"/proc","/sys","/dev ",NULL ) ){
+			if( _normal_mounted_volume( st ) ){
 				_printDeviceProperties( st,z,l ) ;
 			}
 			StringReplaceChar_1( st,0,' ','\0' ) ;
@@ -445,7 +442,7 @@ int zuluMountprintAListOfMountedVolumes( void )
 	while( it != end ){
 		st = *it ;
 		it++ ;
-		if( StringStartsWith( st,"/" ) && !StringStartsWithAtLeastOne( st,"/proc","/sys","/dev ",NULL ) ){
+		if( _normal_mounted_volume( st ) ){
 			StringReplaceChar_1( st,0,' ','\0' ) ;
 			_zuluMountprintAListOfMountedVolumes( st,e ) ;
 		}
@@ -471,6 +468,8 @@ int zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t 
 	 * mapper_prefix will probably contain "/dev/mapper/"
 	 */
 	const char * mapper_prefix = zuluCryptMapperPrefix() ;
+
+	size_t mapper_length = StringSize( mapper_prefix ) ;
 
 	StringListIterator it  ;
 	StringListIterator end ;
@@ -520,7 +519,7 @@ int zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t 
 		/*
 		 * mounted and encrypted volume opened by this user
 		 */
-		zuluMountPrintDeviceProperties_1( p,uid ) ;
+		_printDeviceProperties( p,mapper_prefix,mapper_length ) ;
 	}else{
 		/*
 		 * We will get if:
@@ -535,7 +534,7 @@ int zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t 
 			/*
 			 * volume is unencrypted and mounted by any user
 			 */
-			zuluMountPrintDeviceProperties_1( p,uid ) ;
+			_printDeviceProperties( p,mapper_prefix,mapper_length ) ;
 		}else{
 			/*
 			 * We will get here is:
@@ -570,7 +569,7 @@ int zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t 
 				 * The volume is encrypted and mounted by any user,probably a different user
 				 * since this user condition is above
 				 */
-				zuluMountPrintDeviceProperties_1( f,uid ) ;
+				_printDeviceProperties( f,mapper_prefix,mapper_length ) ;
 			}else{
 				/*
 				 * volume is not mounted
