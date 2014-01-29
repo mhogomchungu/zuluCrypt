@@ -423,6 +423,7 @@ int zuluMountprintAListOfMountedVolumes( void )
 	 * zuluCryptGetMountInfoList() is defined in ../zuluCrypt-cli/lib/process_mountinfo.c
 	 */
 	stringList_t stz = zuluCryptGetMountInfoList() ;
+	stringList_t stx = StringListVoid ;
 
 	string_t st ;
 
@@ -434,6 +435,7 @@ int zuluMountprintAListOfMountedVolumes( void )
 	 * mapper_prefix will probably contain "/dev/mapper/"
 	 */
 	const char * e = zuluCryptMapperPrefix() ;
+	const char * f ;
 	/*
 	 * remove duplicates caused by bind mounts and other entries we dont care about
 	 */
@@ -443,12 +445,18 @@ int zuluMountprintAListOfMountedVolumes( void )
 		st = *it ;
 		it++ ;
 		if( _normal_mounted_volume( st ) ){
-			StringReplaceChar_1( st,0,' ','\0' ) ;
-			_zuluMountprintAListOfMountedVolumes( st,e ) ;
+			f = StringReplaceChar_1( st,0,' ','\0' ) ;
+			if( StringListHasNoEntry( stx,f ) ){
+				/*
+				 * Only print one entry if there are more due to bind mounts
+				 */
+				_zuluMountprintAListOfMountedVolumes( st,e ) ;
+				stx = StringListAppend( stx,f ) ;
+			}
 		}
 	}
 
-	StringListDelete( &stz ) ;
+	StringListMultipleDelete( &stz,&stx,NULL ) ;
 	return 0 ;
 }
 
