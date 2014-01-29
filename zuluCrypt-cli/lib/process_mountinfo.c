@@ -25,6 +25,7 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 	const char * mount_point ;
 	const char * file_system ;
 	const char * mount_options ;
+	const char * root_path ;
 
 	char * const * entry = NULL ;
 
@@ -49,13 +50,14 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 	while( it != end ){
 		tmp = StringListStringSplit( *it,' ' ) ;
 		it++ ;
-		if( StringListContentAtEqual( tmp,3,"/" ) ){
-			index = StringListContains( tmp,"-" ) ;
-			if( index != -1 ){
-				entry         = StringListStringArray_1( entry,&entry_len,tmp ) ;
+		index = StringListContains( tmp,"-" ) ;
+		if( index != -1 ){
+			entry = StringListStringArray_1( entry,&entry_len,tmp ) ;
+			file_system = *( entry + index + 1 ) ;
+			root_path   = *( entry + 3 ) ;
+			if( StringsAreEqual( root_path,"/" ) || StringsAreEqual( file_system,"btrfs" ) ){
 				device        = *( entry + index + 2 ) ;
 				mount_point   = *( entry + 4 ) ;
-				file_system   = *( entry + index + 1 ) ;
 				mount_options = *( entry + 5 ) ;
 				/*
 				 * zuluCryptResolvePath_1() is defined in resolve_paths.c

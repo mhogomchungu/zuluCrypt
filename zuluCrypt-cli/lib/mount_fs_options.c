@@ -103,6 +103,12 @@ static inline int allowed_udf( stringList_t stl )
 	return _check_options( f,stl ) ;
 }
 
+static inline int allowed_btrfs( stringList_t stl )
+{
+	const char * f[] = { "subvol=","subvolid=",NULL } ;
+	return _check_options( f,stl ) ;
+}
+
 static inline int _option_contain_not_allowed( const char * fs,const char * fs_opts )
 {
 	stringList_t stl = StringListSplit( fs_opts,',' ) ;
@@ -118,6 +124,8 @@ static inline int _option_contain_not_allowed( const char * fs,const char * fs_o
 			r = allowed_udf( stl ) ;
 		}else if( StringsAreEqual( fs,"iso9660" ) ){
 			r = allowed_iso9660( stl ) ;
+		}else if( StringsAreEqual( fs,"btrfs" ) ){
+			r = allowed_btrfs( stl ) ;
 		}else{
 			r = 1 ;
 		}
