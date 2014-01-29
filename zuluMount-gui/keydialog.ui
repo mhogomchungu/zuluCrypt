@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>500</width>
+    <width>491</width>
     <height>196</height>
    </rect>
   </property>
@@ -16,7 +16,7 @@
   <widget class="QPushButton" name="pbOpen">
    <property name="geometry">
     <rect>
-     <x>160</x>
+     <x>200</x>
      <y>160</y>
      <width>91</width>
      <height>31</height>
@@ -32,7 +32,7 @@
   <widget class="QPushButton" name="pbCancel">
    <property name="geometry">
     <rect>
-     <x>250</x>
+     <x>290</x>
      <y>160</y>
      <width>91</width>
      <height>31</height>
@@ -217,6 +217,19 @@
     <string>&amp;share mount point</string>
    </property>
   </widget>
+  <widget class="QPushButton" name="pbOptions">
+   <property name="geometry">
+    <rect>
+     <x>110</x>
+     <y>160</y>
+     <width>91</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>options</string>
+   </property>
+  </widget>
  </widget>
  <tabstops>
   <tabstop>lineEditKey</tabstop>
@@ -224,10 +237,12 @@
   <tabstop>lineEditMountPoint</tabstop>
   <tabstop>pbOpenMountPoint</tabstop>
   <tabstop>checkBoxOpenReadOnly</tabstop>
+  <tabstop>checkBoxShareMountPoint</tabstop>
   <tabstop>rbKey</tabstop>
   <tabstop>rbPlugIn</tabstop>
   <tabstop>rbKeyFile</tabstop>
   <tabstop>pbkeyOption</tabstop>
+  <tabstop>pbOptions</tabstop>
   <tabstop>pbOpen</tabstop>
   <tabstop>pbCancel</tabstop>
  </tabstops>

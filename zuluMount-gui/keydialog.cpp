@@ -34,6 +34,7 @@
 #include "../zuluCrypt-gui/socketsendkey.h"
 #include "../zuluCrypt-gui/utility.h"
 #include "../zuluCrypt-gui/lxqt_wallet/frontend/lxqt_wallet.h"
+#include "mountoptions.h"
 
 #define KWALLET         "kde wallet"
 #define INTERNAL_WALLET "internal wallet"
@@ -79,6 +80,7 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const QString& path,
 
 	m_ui->checkBoxOpenReadOnly->setChecked( utility::getOpenVolumeReadOnlyOption( QString( "zuluMount-gui" ) ) ) ;
 
+	connect( m_ui->pbOptions,SIGNAL( clicked() ),this,SLOT( pbOptions() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->pbOpen,SIGNAL( clicked() ),this,SLOT( pbOpen() ) ) ;
 	connect( m_ui->pbkeyOption,SIGNAL( clicked() ),this,SLOT( pbkeyOption() ) ) ;
@@ -98,15 +100,42 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const QString& path,
 	QAction * ac = new QAction( this ) ;
 	QKeySequence s( Qt::CTRL + Qt::Key_F ) ;
 	ac->setShortcut( s ) ;
-	connect( ac,SIGNAL( triggered() ),this,SLOT( deviceOffSet() ) ) ;
+	connect( ac,SIGNAL( triggered() ),this,SLOT( showOffSetWindowOption() ) ) ;
 	this->addAction( ac ) ;
+
+	m_menu_1 = new QMenu( this ) ;
+
+	m_menu_1->addAction( tr( "set file system options" ) ) ;
+	m_menu_1->addAction( tr( "set volume offset" ) ) ;
+
+	connect( m_menu_1,SIGNAL( triggered( QAction * ) ),this,SLOT( doAction( QAction * ) ) ) ;
 }
 
-void keyDialog::deviceOffSet()
+void keyDialog::pbOptions()
+{
+	m_menu_1->exec( QCursor::pos() ) ;
+}
+
+void keyDialog::showOffSetWindowOption()
 {
 	deviceOffset * d = new deviceOffset( this ) ;
 	connect( d,SIGNAL( offSetValue( QString,QString ) ),this,SLOT( deviceOffSet( QString,QString ) ) ) ;
-	d->ShowUI_1() ;
+	d->ShowUI() ;
+}
+
+void keyDialog::showFileSystemOptionWindow()
+{
+	mountOptions * m = new mountOptions( &m_options,this ) ;
+	m->ShowUI() ;
+}
+
+void keyDialog::doAction( QAction * ac )
+{
+	if( ac->text() == tr( "set file system options" ) ){
+		this->showFileSystemOptionWindow() ;
+	}else{
+		this->showOffSetWindowOption() ;
+	}
 }
 
 void keyDialog::deviceOffSet( QString deviceOffSet,QString key )
@@ -153,6 +182,7 @@ void keyDialog::pbMountPointPath()
 
 void keyDialog::enableAll()
 {
+	m_ui->pbOptions->setEnabled( true ) ;
 	m_ui->label_2->setEnabled( true ) ;
 	m_ui->lineEditMountPoint->setEnabled( true ) ;
 	m_ui->pbOpenMountPoint->setEnabled( true ) ;
@@ -172,6 +202,7 @@ void keyDialog::enableAll()
 
 void keyDialog::disableAll()
 {
+	m_ui->pbOptions->setEnabled( false ) ;
 	m_ui->pbkeyOption->setEnabled( false ) ;
 	m_ui->label_2->setEnabled( false ) ;
 	m_ui->lineEditMountPoint->setEnabled( false ) ;
@@ -437,12 +468,19 @@ void keyDialog::openVolume()
 
 	t->setDevice( m_path ) ;
 
-	if( m_ui->checkBoxOpenReadOnly->isChecked() ){
-		t->setMode( QString( "ro" ) ) ;
+	if( m_options.isEmpty() ){
+		if( m_ui->checkBoxOpenReadOnly->isChecked() ){
+			t->setMode( QString( "ro" ) ) ;
+		}else{
+			t->setMode( QString( "rw" ) ) ;
+		}
 	}else{
-		t->setMode( QString( "rw" ) ) ;
+		if( m_ui->checkBoxOpenReadOnly->isChecked() ){
+			t->setMode( QString( "ro -Y %1" ).arg( m_options ) ) ;
+		}else{
+			t->setMode( QString( "rw -Y %1" ).arg( m_options ) ) ;
+		}
 	}
-
 	if( m_deviceOffSet.isEmpty() ){
 		t->setKeySource( m ) ;
 	}else{

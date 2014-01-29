@@ -35,7 +35,7 @@
   <widget class="QPushButton" name="pbMount">
    <property name="geometry">
     <rect>
-     <x>180</x>
+     <x>220</x>
      <y>110</y>
      <width>81</width>
      <height>31</height>
@@ -90,7 +90,7 @@
   <widget class="QPushButton" name="pbCancel">
    <property name="geometry">
     <rect>
-     <x>260</x>
+     <x>300</x>
      <y>110</y>
      <width>81</width>
      <height>31</height>
@@ -129,12 +129,27 @@
     <string>&amp;share mount point</string>
    </property>
   </widget>
+  <widget class="QPushButton" name="pbOptions">
+   <property name="geometry">
+    <rect>
+     <x>140</x>
+     <y>110</y>
+     <width>81</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>options</string>
+   </property>
+  </widget>
  </widget>
  <tabstops>
   <tabstop>lineEdit</tabstop>
   <tabstop>pbMountFolder</tabstop>
   <tabstop>checkBox</tabstop>
   <tabstop>checkBoxMountReadOnly</tabstop>
+  <tabstop>checkBoxShareMountPoint</tabstop>
+  <tabstop>pbOptions</tabstop>
   <tabstop>pbMount</tabstop>
   <tabstop>pbCancel</tabstop>
  </tabstops>

@@ -6,6 +6,7 @@ set (UI_FILES 	mainwindow.ui
 		keydialog.ui
 		mountpartition.ui
 		deviceoffset.ui
+		mountoptions.ui
 )
 
 set(MOC_FILES 	mainwindow.h
@@ -17,6 +18,7 @@ set(MOC_FILES 	mainwindow.h
 		auto_mount_helper.h
 		monitor_mountinfo.h
 		deviceoffset.h
+		mountoptions.h
  )
 
 set(SRC 	main.cpp
@@ -29,6 +31,7 @@ set(SRC 	main.cpp
 		oneinstance.cpp
 		monitor_mountinfo.cpp
 		deviceoffset.cpp
+		mountoptions.cpp
 )
 
 if( QT5 )

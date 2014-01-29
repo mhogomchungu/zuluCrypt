@@ -64,6 +64,7 @@ private slots:
 	void rbKey( bool ) ;
 	void rbKeyFile( bool ) ;
 	void pbOpen( void ) ;
+	void pbOptions( void ) ;
 	void pbCancel( void ) ;
 	void Plugin( void ) ;
 	void KeyFile( void ) ;
@@ -72,8 +73,10 @@ private slots:
 	void walletIsOpen( bool ) ;
 	void getPassWord( QString ) ;
 	void getPassWordFromWallet( QString ) ;
-	void deviceOffSet( void ) ;
 	void deviceOffSet( QString,QString ) ;
+	void doAction( QAction * ) ;
+	void showOffSetWindowOption( void ) ;
+	void showFileSystemOptionWindow( void ) ;
 private:
 	void openVolume( void ) ;
 	void enableAll( void ) ;
@@ -85,7 +88,9 @@ private:
 	QString m_folderOpener ;
 	QString m_key ;
 	QString m_deviceOffSet ;
+	QString m_options ;
 	QMenu * m_menu ;
+	QMenu * m_menu_1 ;
 	QTableWidget * m_table ;
 	bool m_working ;
 	bool m_autoOpenFolderOnMount ;

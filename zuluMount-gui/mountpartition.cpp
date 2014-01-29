@@ -32,6 +32,9 @@
 #include <QFont>
 #include <QTableWidget>
 #include <QAction>
+#include <QMenu>
+#include <QCursor>
+#include <QAction>
 
 #include "task.h"
 #include "../zuluCrypt-gui/dialogmsg.h"
@@ -39,6 +42,7 @@
 #include "../zuluCrypt-gui/tablewidget.h"
 #include "../zuluCrypt-gui/utility.h"
 #include "../zuluCrypt-gui/socketsendkey.h"
+#include "mountoptions.h"
 
 mountPartition::mountPartition( QWidget * parent,QTableWidget * table,const QString& folderOpener,bool autoOpenFolderOnMount ) :
 	QWidget( parent ),m_ui(new Ui::mountPartition)
@@ -57,7 +61,8 @@ mountPartition::mountPartition( QWidget * parent,QTableWidget * table,const QStr
 
 	m_ui->checkBoxMountReadOnly->setChecked( utility::getOpenVolumeReadOnlyOption( QString( "zuluMount-gui" ) ) ) ;
 
-	connect( m_ui->pbMount,SIGNAL( clicked() ),this,SLOT(pbMount() ) ) ;
+	connect( m_ui->pbOptions,SIGNAL( clicked() ),this,SLOT( pbOptions() ) ) ;
+	connect( m_ui->pbMount,SIGNAL( clicked() ),this,SLOT( pbMount() ) ) ;
 	connect( m_ui->pbMountFolder,SIGNAL( clicked() ),this,SLOT( pbOpenMountPath() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->checkBox,SIGNAL( stateChanged( int ) ),this,SLOT( stateChanged( int ) ) ) ;
@@ -74,8 +79,15 @@ mountPartition::mountPartition( QWidget * parent,QTableWidget * table,const QStr
 	QAction * ac = new QAction( this ) ;
 	QKeySequence s( Qt::CTRL + Qt::Key_F ) ;
 	ac->setShortcut( s ) ;
-	connect( ac,SIGNAL( triggered() ),this,SLOT( deviceOffSet() ) ) ;
+	connect( ac,SIGNAL( triggered() ),this,SLOT( showOffSetWindowOption() ) ) ;
 	this->addAction( ac ) ;
+
+	m_menu = new QMenu( this ) ;
+
+	m_menu->addAction( tr( "set file system options" ) ) ;
+	m_menu->addAction( tr( "set volume offset" ) ) ;
+
+	connect( m_menu,SIGNAL( triggered( QAction * ) ),this,SLOT( doAction( QAction * ) ) ) ;
 }
 
 void mountPartition::checkBoxReadOnlyStateChanged( int state )
@@ -103,6 +115,7 @@ void mountPartition::enableAll()
 	m_ui->pbCancel->setEnabled( true ) ;
 	m_ui->pbMount->setEnabled( true ) ;
 	m_ui->pbMountFolder->setEnabled( true ) ;
+	m_ui->pbOptions->setEnabled( true ) ;
 }
 
 void mountPartition::disableAll()
@@ -115,6 +128,7 @@ void mountPartition::disableAll()
 	m_ui->lineEdit->setEnabled( false ) ;
 	m_ui->pbCancel->setEnabled( false ) ;
 	m_ui->pbMountFolder->setEnabled( false ) ;
+	m_ui->pbOptions->setEnabled( false ) ;
 }
 
 void mountPartition::pbCancel()
@@ -147,10 +161,18 @@ void mountPartition::pbMount()
 		socketSendKey * s = new socketSendKey( this,addr,m_key.toLatin1() ) ;
 		s->sendKey() ;
 	}
-	if( m_ui->checkBoxMountReadOnly->isChecked() ){
-		t->setMode( QString( "ro" ) ) ;
+	if( m_options.isEmpty() ){
+		if( m_ui->checkBoxMountReadOnly->isChecked() ){
+			t->setMode( QString( "ro" ) ) ;
+		}else{
+			t->setMode( QString( "rw" ) ) ;
+		}
 	}else{
-		t->setMode( QString( "rw" ) ) ;
+		if( m_ui->checkBoxMountReadOnly->isChecked() ){
+			t->setMode( QString( "ro -Y %1" ).arg( m_options ) ) ;
+		}else{
+			t->setMode( QString( "rw -Y %1" ).arg( m_options ) ) ;
+		}
 	}
 
 	m_point = m_ui->lineEdit->text() ;
@@ -162,6 +184,33 @@ void mountPartition::pbMount()
 
 	t->setMakeMountPointPublic( m_ui->checkBoxShareMountPoint->isChecked() ) ;
 	t->start( Task::Mount ) ;
+}
+
+void mountPartition::showOffSetWindowOption()
+{
+	deviceOffset * d = new deviceOffset( this ) ;
+	connect( d,SIGNAL( offSetValue( QString,QString ) ),this,SLOT( deviceOffSet( QString,QString ) ) ) ;
+	d->ShowUI() ;
+}
+
+void mountPartition::showFileSystemOptionWindow()
+{
+	mountOptions * m = new mountOptions( &m_options,this ) ;
+	m->ShowUI() ;
+}
+
+void mountPartition::doAction( QAction * ac )
+{
+	if( ac->text() == tr( "set file system options" ) ){
+		this->showFileSystemOptionWindow() ;
+	}else{
+		this->showOffSetWindowOption() ;
+	}
+}
+
+void mountPartition::pbOptions()
+{
+	m_menu->exec( QCursor::pos() ) ;
 }
 
 void mountPartition::pbOpenMountPath()
@@ -222,13 +271,6 @@ void mountPartition::fileManagerOpenStatus( int exitCode,int exitStatus,int star
 			msg.ShowUIOK( tr( "warning" ),tr( "could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) ) ;
 		}
 	}
-}
-
-void mountPartition::deviceOffSet()
-{
-	deviceOffset * d = new deviceOffset( this ) ;
-	connect( d,SIGNAL( offSetValue( QString,QString ) ),this,SLOT( deviceOffSet( QString,QString ) ) ) ;
-	d->ShowUI() ;
 }
 
 void mountPartition::deviceOffSet( QString deviceOffSet,QString key )

@@ -24,7 +24,8 @@ SOURCES += main.cpp\
     auto_mount_helper.cpp \
     monitor_mountinfo.cpp \
     task.cpp \
-    deviceoffset.cpp
+    deviceoffset.cpp \
+    mountoptions.cpp
 
 HEADERS  += mainwindow.h\
     keydialog.h \
@@ -39,7 +40,8 @@ HEADERS  += mainwindow.h\
     auto_mount_helper.h \
     monitor_mountinfo.h \
     task.h \
-    deviceoffset.h
+    deviceoffset.h \
+    mountoptions.h
 
 TRANSLATIONS = ../translations/zuluMount/messages.ts
 
@@ -47,7 +49,8 @@ FORMS    += mainwindow.ui\
 	    ../zuluCrypt-gui/dialogmsg.ui \
 	    keydialog.ui \
     mountpartition.ui \
-    deviceoffset.ui
+    deviceoffset.ui \
+    mountoptions.ui
 
 RESOURCES += \
     icon.qrc

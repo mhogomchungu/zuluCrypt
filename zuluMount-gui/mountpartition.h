@@ -26,6 +26,8 @@
 
 class QTableWidget ;
 class QCloseEvent ;
+class QMenu ;
+class QAction ;
 
 namespace Ui {
 class mountPartition;
@@ -47,13 +49,16 @@ signals:
 private slots:
 	void stateChanged( int ) ;
 	void pbMount( void ) ;
+	void pbOptions( void ) ;
 	void pbCancel( void ) ;
 	void pbOpenMountPath( void ) ;
+	void showOffSetWindowOption( void ) ;
+	void showFileSystemOptionWindow( void ) ;
 	void slotMountComplete( int,QString ) ;
 	void checkBoxReadOnlyStateChanged( int ) ;
 	void fileManagerOpenStatus( int exitCode, int exitStatus,int startError ) ;
-	void deviceOffSet( void ) ;
 	void deviceOffSet( QString,QString ) ;
+	void doAction( QAction * ) ;
 private:
 	void enableAll( void ) ;
 	void disableAll( void ) ;
@@ -65,7 +70,9 @@ private:
 	QString m_folderOpener ;
 	QString m_deviceOffSet ;
 	QString m_key ;
+	QString m_options ;
 	QTableWidget * m_table ;
+	QMenu * m_menu ;
 	bool m_autoOpenFolderOnMount ;
 };
 
