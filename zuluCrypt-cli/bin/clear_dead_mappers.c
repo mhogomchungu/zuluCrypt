@@ -81,9 +81,9 @@ void zuluCryptClearDeadMappers( uid_t uid )
 	}
 
 	/*
-	 * zuluCryptGetMountInfoList()  is defined in ../lib/process_mountinfo.c
+	 * zuluCryptGetMoutedListFromMountInfo_1()  is defined in ../lib/process_mountinfo.c
 	 */
-	stl = zuluCryptGetMountInfoList() ;
+	stl = zuluCryptGetMoutedListFromMountInfo_1() ;
 	z = String( dir_path ) ;
 
 	StringAppend( z,"/" ) ;

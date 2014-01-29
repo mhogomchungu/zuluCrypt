@@ -613,7 +613,7 @@ void zuluCryptPrintPartitionProperties( const char * device )
 	}
 
 	size = zuluCryptGetVolumeSize( device ) ;
-	
+
 	blkid = blkid_new_probe_from_filename( device ) ;
 
 	if( blkid == NULL ){
@@ -652,9 +652,9 @@ void zuluCryptPrintPartitionProperties( const char * device )
 static void _zuluCryptPrintUnMountedPartitionProperties( stringList_t stl )
 {
 	/*
-	 * zuluCryptGetMountInfoList() is defined in ../lib/process_mountinfo.c
+	 * zuluCryptGetMoutedListFromMountInfo() is defined in ../lib/process_mountinfo.c
 	 */
-	stringList_t stx = zuluCryptGetMountInfoList() ;
+	stringList_t stx = zuluCryptGetMoutedListFromMountInfo() ;
 
 	StringListIterator it  ;
 	StringListIterator end ;

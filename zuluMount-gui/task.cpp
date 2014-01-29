@@ -297,6 +297,9 @@ bool Task::loopDeviceIsStillPresent( const QString& device )
 
 void Task::volumeMiniProperties()
 {
+	/*
+	 * There is some sort of a race condition here things do not always work as expected
+	 */
 	if( !m_device.startsWith( "UUID" ) && !m_device.startsWith( "/dev/" ) ){
 		if( !this->loopDeviceIsStillPresent( m_device ) ){
 			/*

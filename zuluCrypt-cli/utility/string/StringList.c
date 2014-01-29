@@ -1242,6 +1242,12 @@ stringList_t StringListCopy( stringList_t stl )
 {
 	size_t i ;
 	size_t j ;
+
+	string_t * st ;
+	string_t * xt ;
+
+	string_t st_1 ;
+
 	stringList_t stx ;
 	if( stl == StringListVoid ){
 		return StringListVoid ;
@@ -1257,10 +1263,15 @@ stringList_t StringListCopy( stringList_t stl )
 		return _StringListError() ;
 	}
 	stx->size = stl->size ;
-	for( i = 0 ; i < j ; i++){
-		stx->stp[i] = StringWithSize( stl->stp[i]->string,stl->stp[i]->size ) ;
-		if( stx->stp[i] != StringVoid ){
-			stx->stp[i]->owned = 1 ;
+	xt = stx->stp ;
+	st = stl->stp ;
+	for( i = 0 ; i < j ; i++ ){
+		st_1 = *( st + i ) ;
+		if( st_1 == StringVoid ){
+			xt[ i ] = StringVoid ;
+		}else{
+			xt[ i ] = StringWithSize( st_1->string,st_1->size ) ;
+			xt[ i ]->owned = 1 ;
 		}
 	}
 	return stx ;

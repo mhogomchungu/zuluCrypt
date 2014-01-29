@@ -91,6 +91,25 @@ char * zuluCryptLoopDeviceAddress_1( const char * device )
 	}
 }
 
+char * zuluCryptGetALoopDeviceAssociatedWithAnImageFile( const char * path )
+{
+	int i ;
+	string_t st = String( "" ) ;
+	const char * e ;
+	char * f ;
+	for( i = 0 ; i < 255 ; i++ ){
+		StringAppendAt( st,0,"/dev/loop" ) ;
+		e = StringAppendInt( st,i ) ;
+		f = zuluCryptLoopDeviceAddress_1( e ) ;
+		if( StringsAreEqual( path,f ) ){
+			return StringDeleteHandle( &st ) ;
+		}else{
+			StringFree( f ) ;
+		}
+	}
+	return NULL ;
+}
+
 char * zuluCryptGetLoopDeviceAddress( const char * device )
 {
 	char * z = NULL ;

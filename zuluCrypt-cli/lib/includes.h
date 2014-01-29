@@ -243,6 +243,11 @@ stringList_t zuluCryptGetFstabList( uid_t ) ;
 stringList_t zuluCryptGetMountInfoList( void ) ;
 
 /*
+ * this function is defined in process_mountinfo.c
+ */
+stringList_t zuluCryptGetMountInfoList_1( void ) ;
+
+/*
  * this function is defined in status.c
  */
 char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper ) ;
@@ -309,13 +314,33 @@ int zuluCryptOpenVolume_0( int( *function )( const char *,const char *,const cha
 string_t zuluCryptCreateKeyFile( const char * key,size_t key_len,const char * fileName ) ;
 
 /*
- * resolve path to a preffered format
+ * zuluCryptResolvePath_2() is defined in resolve_paths.c
+ */
+string_t zuluCryptResolvePath_2( const char * path ) ;
+
+/*
+ * zuluCryptResolvePath_1() is defined in resolve_paths.c
  */
 string_t zuluCryptResolvePath_1( const char * path ) ;
 
 /*
- * resolve path to a preffered format
+ * zuluCryptResolvePath() is defined in resolve_paths.c
  */
 char * zuluCryptResolvePath( const char * path ) ;
+
+/*
+ * zuluCryptGetMoutedListFromMountInfo_1() is defined in process_mountinfo.c
+ */
+stringList_t zuluCryptGetMoutedListFromMountInfo_1( void ) ;
+
+/*
+ * zuluCryptGetMoutedListFromMountInfo() is defined in process_mountinfo.c
+ */
+stringList_t zuluCryptGetMoutedListFromMountInfo( void ) ;
+
+/*
+ * zuluCryptGetALoopDeviceAssociatedWithAnImageFile() is defined in create_loop_device.c
+ */
+char * zuluCryptGetALoopDeviceAssociatedWithAnImageFile( const char * path ) ;
 
 #endif

@@ -238,13 +238,7 @@ char * zuluCryptResolvePath( const char * path )
 {
 	char * e ;
 	string_t st ;
-	if( StringPrefixMatch( path,"/dev/loop",9 ) ){
-		/*
-		 * zuluCryptLoopDeviceAddress() is defined in create_loop_device.c
-		 */
-		return zuluCryptLoopDeviceAddress( path ) ;
-
-	}else if( StringsAreEqual( path,"/dev/root" ) ){
+	if( StringsAreEqual( path,"/dev/root" ) ){
 
 		e = _zuluCryptResolveDevRoot() ;
 		if( e == NULL ){
@@ -281,6 +275,11 @@ char * zuluCryptResolvePath( const char * path )
 
 		return zuluCryptResolveDMPath( path ) ;
 
+	}else if( StringPrefixMatch( path,"/dev/loop",9 ) ){
+		/*
+		 * zuluCryptLoopDeviceAddress() is defined in create_loop_device.c
+		 */
+		return zuluCryptLoopDeviceAddress( path ) ;
 	}else{
 		return StringCopy_2( path ) ;
 	}
@@ -290,4 +289,13 @@ string_t zuluCryptResolvePath_1( const char * path )
 {
 	char * e = zuluCryptResolvePath( path ) ;
 	return StringInherit( &e ) ;
+}
+
+string_t zuluCryptResolvePath_2( const char * path )
+{
+	if( StringPrefixMatch( path,"/dev/loop",9 ) ){
+		return String( path ) ;
+	}else{
+		return zuluCryptResolvePath_1( path ) ;
+	}
 }

@@ -19,7 +19,7 @@
 
 #include "includes.h"
 
-stringList_t zuluCryptGetMoutedListFromMountInfo( void )
+stringList_t zuluCryptGetMoutedListFromMountInfo_0( string_t ( *function )( const char * ) )
 {
 	const char * device ;
 	const char * mount_point ;
@@ -59,10 +59,8 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 				device        = *( entry + index + 2 ) ;
 				mount_point   = *( entry + 4 ) ;
 				mount_options = *( entry + 5 ) ;
-				/*
-				 * zuluCryptResolvePath_1() is defined in resolve_paths.c
-				 */
-				st = zuluCryptResolvePath_1( device ) ;
+
+				st = function( device ) ;
 
 				StringMultipleAppend( st," ",mount_point," ",file_system," ",mount_options,END ) ;
 
@@ -77,9 +75,20 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 	return stx ;
 }
 
-stringList_t zuluCryptGetMountInfoList( void )
+stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 {
-	return zuluCryptGetMoutedListFromMountInfo() ;
+	/*
+	 * zuluCryptResolvePath_1() is defined in resolve_paths.c
+	 */
+	return zuluCryptGetMoutedListFromMountInfo_0( zuluCryptResolvePath_1 ) ;
+}
+
+stringList_t zuluCryptGetMoutedListFromMountInfo_1( void )
+{
+	/*
+	 * zuluCryptResolvePath_2() is defined in resolve_paths.c
+	 */
+	return zuluCryptGetMoutedListFromMountInfo_0( zuluCryptResolvePath_2 ) ;
 }
 
 stringList_t zuluCryptOpenedVolumesList( uid_t uid )
@@ -101,7 +110,7 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 
 	stringList_t stx ;
 	stringList_t list = StringListVoid ;
-	stringList_t stl = zuluCryptGetMountInfoList() ;
+	stringList_t stl = zuluCryptGetMoutedListFromMountInfo() ;
 
 	if( uid ){;}
 
@@ -171,7 +180,7 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 
 string_t zuluCryptGetMountEntry( const char * path )
 {
-	stringList_t stl = zuluCryptGetMountInfoList() ;
+	stringList_t stl = zuluCryptGetMoutedListFromMountInfo() ;
 	string_t st = zuluCryptGetMountEntry_1( stl,path ) ;
 	StringListDelete( &stl ) ;
 	return st ;
