@@ -33,7 +33,7 @@ stringList_t zuluCryptGetMoutedListFromMountInfo_0( string_t ( *function )( cons
 	int index ;
 
 	stringList_t tmp ;
-	stringList_t stx = StringListVoid;
+	stringList_t stx = StringListVoid ;
 	stringList_t stl ;
 
 	StringListIterator it  ;

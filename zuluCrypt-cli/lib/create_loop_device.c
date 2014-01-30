@@ -98,7 +98,7 @@ char * zuluCryptGetALoopDeviceAssociatedWithAnImageFile( const char * path )
 	const char * e ;
 	char * f ;
 	for( i = 0 ; i < 255 ; i++ ){
-		StringAppendAt( st,0,"/dev/loop" ) ;
+		StringReplace( st,"/dev/loop" ) ;
 		e = StringAppendInt( st,i ) ;
 		f = zuluCryptLoopDeviceAddress_1( e ) ;
 		if( StringsAreEqual( path,f ) ){

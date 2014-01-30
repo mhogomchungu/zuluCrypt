@@ -297,10 +297,12 @@ bool Task::loopDeviceIsStillPresent( const QString& device )
 
 void Task::volumeMiniProperties()
 {
-	/*
-	 * There is some sort of a race condition here things do not always work as expected
-	 */
 	if( !m_device.startsWith( "UUID" ) && !m_device.startsWith( "/dev/" ) ){
+		/*
+		 * There is some sort of a race condition here and things do not always work as expected
+		 * try to sleep for a second to see if it will help
+		 */
+		sleep( 1 ) ;
 		if( !this->loopDeviceIsStillPresent( m_device ) ){
 			/*
 			 * we were just asked to find properties of a loop device

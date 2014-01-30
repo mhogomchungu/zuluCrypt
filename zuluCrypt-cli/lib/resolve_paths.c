@@ -51,7 +51,6 @@ static char * _zuluCryptResolveDevRoot( void )
 	return dev ;
 }
 
-
 /*
  * raid path can be in format /dev/mdX or /dev/md/X.
  * We prefer the latter and if given the former,convert it to the latter if possible
@@ -205,7 +204,6 @@ string_t zuluCryptConvertIfPathIsLVM( const char * path )
 					break ;
 				}
 			}
-
 			/*
 			 * path will now look like "/dev/mapper/mariusvg/my-own-lv"
 			 */

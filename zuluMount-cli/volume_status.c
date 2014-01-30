@@ -317,6 +317,7 @@ int zuluMountPrintVolumesProperties( uid_t uid )
 
 	/*
 	 * zuluCryptGetMoutedListFromMountInfo() is  defined in ../zuluCrypt-cli/lib/process_mountinfo.c
+	 * run StringListPrintList( stl ) to get a list of entries being worked on
 	 */
 	stl = zuluCryptGetMoutedListFromMountInfo() ;
 
@@ -337,7 +338,6 @@ int zuluMountPrintVolumesProperties( uid_t uid )
 	/*
 	 * print a list of mounted volumes
 	 */
-
 	while( it != end ){
 		st = *it ;
 		it++ ;
