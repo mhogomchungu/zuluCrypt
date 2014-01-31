@@ -27,8 +27,8 @@
 #include <QString>
 #include <QRunnable>
 
-#define BLOCK_SIZE 1000
-#define SIZE 1000
+#define BLOCK_SIZE 1024
+#define SIZE 1024
 
 /*
  * getting random data to write to devices is much slower when obtained through

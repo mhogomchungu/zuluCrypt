@@ -19,6 +19,7 @@
 #include "utility.h"
 #include "createvolume.h"
 #include "ui_createvolume.h"
+
 #include <QMessageBox>
 #include <QFileDialog>
 #include <iostream>
@@ -36,6 +37,7 @@
 #include "dialogmsg.h"
 #include "keystrength.h"
 #include "socketsendkey.h"
+#include "filetask.h"
 
 #include <QDebug>
 #include "../zuluCrypt-cli/constants.h"
@@ -466,7 +468,6 @@ void createvolume::pbCreateClicked()
 
 		QString x = m_ui->lineEditHiddenKey->text() ;
 		QString y ;
-		QString z = m_ui->lineEditHiddenSize->text() ;
 
 		if( m_ui->rbHiddenKey->isChecked() ){
 			y = socketSendKey::getSocketPath() + QString( "-1" ) ;
@@ -476,12 +477,16 @@ void createvolume::pbCreateClicked()
 			y = x ;
 		}
 
+		quint64 r = m_ui->lineEditHiddenSize->text().toInt() ;
+
 		switch( m_ui->comboBoxHiddenSize->currentIndex() ){
-			case 0 : z +=  QString( "000000" )      ; break ;
-			case 1 : z +=  QString( "000" )         ; break ;
-			case 2 : z +=  QString( "000000000" )   ; break ;
-			default: z +=  QString( "000000" )      ; break ;
+			case 0 : r *= BLOCK_SIZE * BLOCK_SIZE            	; break ;
+			case 1 : r *= BLOCK_SIZE                     		; break ;
+			case 2 : r *= BLOCK_SIZE * BLOCK_SIZE * BLOCK_SIZE 	; break ;
+			default: r *= BLOCK_SIZE * BLOCK_SIZE              	; break ;
 		}
+
+		QString z = QString::number( r ) ;
 
 		const char * arg = "%1 -c -k -d \"%2\" -z %3 -t %4 %5 \"%6\" -g %7 -e %8 -u \"%9\"" ;
 		exe = QString( arg ).arg( a ).arg( b ).arg( c ).arg( d ).arg( e ).arg( f ).arg( g ).arg( z ).arg( y ) ;
