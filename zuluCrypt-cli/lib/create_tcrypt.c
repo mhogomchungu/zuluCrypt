@@ -94,7 +94,6 @@ static int _create_file_system( const char * device,const char * fs,int key_sour
 /*
  * tcplay >= 2.0.0
  */
-
 #define TRUE   ( int )1
 #define FALSE  ( int )0
 

@@ -35,6 +35,10 @@
 #include "udev_support.h"
 
 /*
+ * NOTE: This source file was previously named "partition.c"
+ */
+
+/*
  * This source file deals with parsing partition list from "/proc/partitions,"/etc/fstab" and "/etc/mtab".
  *
  * For security reasons,a normal user it is not allowed to create volumes in system partitions.
@@ -170,7 +174,70 @@ static stringList_t _zuluCryptAddMDRAIDVolumes( stringList_t stl )
 	return stl ;
 }
 
-stringList_t zuluCryptPartitionList( void )
+/*
+ * It is possible for a btrfs volume to cover multiple volumes and this routine
+ * keeps only the first one seen and removes the rest.
+ */
+static stringList_t _remove_btfs_multiple_devices( stringList_t stl )
+{
+	stringList_t stx = StringListVoid ;
+	stringList_t stz = StringListVoid ;
+
+	StringListIterator it  ;
+	StringListIterator end ;
+
+	string_t st ;
+
+	const char * e = NULL ;
+
+	blkid_probe blkid ;
+
+	StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
+
+	zuluCryptSecurityGainElevatedPrivileges() ;
+
+	while( it != end ){
+		st = *it ;
+		it++ ;
+		blkid = blkid_new_probe_from_filename( StringContent( st ) ) ;
+		if( blkid != NULL ){
+			blkid_do_probe( blkid ) ;
+			blkid_probe_lookup_value( blkid,"TYPE",&e,NULL ) ;
+			if( StringsAreEqual( e,"btrfs" ) ){
+				blkid_probe_lookup_value( blkid,"UUID",&e,NULL ) ;
+				if( StringListHasNoEntry( stx,e ) ){
+					/*
+					 * we got a btrfs volume with UUID we do not know about,
+					 * This will be the only device with this btrfs UUID we support and
+					 * all device operations must happen through this device and this device only.
+					 */
+					stz = StringListAppendString( stz,st ) ;
+					stx = StringListAppend( stx,e ) ;
+				}else{
+					/*
+					 * we already know this UUID and this device is not supported.Any operation on this
+					 * device should fail.
+					 */
+				}
+			}else{
+				/*
+				 * not a btrfs volume
+				 */
+				stz = StringListAppendString( stz,st ) ;
+			}
+			blkid_free_probe( blkid ) ;
+		}else{
+			stz = StringListAppendString( stz,st ) ;
+		}
+	}
+
+	zuluCryptSecurityDropElevatedPrivileges() ;
+
+	StringListMultipleDelete( &stl,&stx,NULL ) ;
+	return stz ;
+}
+
+static stringList_t _zuluCryptVolumeList_0( int resolve_loop_devices )
 {
 	const char * device ;
 
@@ -219,7 +286,11 @@ stringList_t zuluCryptPartitionList( void )
 					 */
 					e = zuluCryptLoopDeviceAddress_1( device ) ;
 					if( StringListHasNoEntry( stz,e ) ){
-						stl_1 = StringListAppend( stl_1,device ) ;
+						if( resolve_loop_devices ){
+							stl_1 = StringListAppend( stl_1,e ) ;
+						}else{
+							stl_1 = StringListAppend( stl_1,device ) ;
+						}
 						stz = StringListAppend( stz,e ) ;
 					}
 					StringFree( e ) ;
@@ -233,6 +304,16 @@ stringList_t zuluCryptPartitionList( void )
 	StringListMultipleDelete( &stl,&stz,NULL ) ;
 	StringDelete( &st_1 ) ;
 	return _zuluCryptAddLVMVolumes( _zuluCryptAddMDRAIDVolumes( stl_1 ) ) ;
+}
+
+stringList_t zuluCryptVolumeList( void )
+{
+	return _zuluCryptVolumeList_0( 0 ) ;
+}
+
+stringList_t zuluCryptGetAListOfAllVolumes( void )
+{
+	return _remove_btfs_multiple_devices( _zuluCryptVolumeList_0( 1 ) ) ;
 }
 
 int zuluCryptDeviceIsSupported( const char * device,uid_t uid )
@@ -322,77 +403,12 @@ static int _zuluCryptCheckSYSifDeviceIsSystem( const char * device )
 #endif
 }
 
-/*
- * It is possible for a btrfs volume to cover multiple volumes and this routine
- * keeps only the first one seen and removes the rest.
- */
-static stringList_t _remove_btfs_multiple_devices( stringList_t stl )
-{
-	stringList_t stx = StringListVoid ;
-	stringList_t stz = StringListVoid ;
-
-	StringListIterator it  ;
-	StringListIterator end ;
-
-	string_t st ;
-
-	const char * e = NULL ;
-
-	blkid_probe blkid ;
-
-	StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
-
-	zuluCryptSecurityGainElevatedPrivileges() ;
-
-	while( it != end ){
-		st = *it ;
-		it++ ;
-		blkid = blkid_new_probe_from_filename( StringContent( st ) ) ;
-		if( blkid != NULL ){
-			blkid_do_probe( blkid ) ;
-			blkid_probe_lookup_value( blkid,"TYPE",&e,NULL ) ;
-			if( StringsAreEqual( e,"btrfs" ) ){
-				blkid_probe_lookup_value( blkid,"UUID",&e,NULL ) ;
-				if( StringListHasNoEntry( stx,e ) ){
-					/*
-					 * we got a btrfs volume with UUID we do not know about,
-					 * This will be the only device with this btrfs UUID we support and
-					 * all device operations must happen through this device and this device only.
-					 */
-					stz = StringListAppendString( stz,st ) ;
-					stx = StringListAppend( stx,e ) ;
-				}else{
-					/*
-					 * we already know this UUID and this device is not supported.Any operation on this
-					 * device should fail.
-					 */
-				}
-			}else{
-				/*
-				 * not a btrfs volume
-				 */
-				stz = StringListAppendString( stz,st ) ;
-			}
-			blkid_free_probe( blkid ) ;
-		}else{
-			/*
-			 * either unformatted volume,plain volume or a tcrypt volume
-			 */
-			stz = StringListAppendString( stz,st ) ;
-		}
-	}
-
-	zuluCryptSecurityDropElevatedPrivileges() ;
-
-	StringListMultipleDelete( &stl,&stx,NULL ) ;
-	return stz ;
-}
-
 stringList_t zuluCryptPartitions( int option,uid_t uid )
 {
 	ssize_t index ;
 
 	const char * device ;
+	const char * e ;
 
 	stringList_t non_system = StringListVoid ;
 	stringList_t system     = StringListVoid ;
@@ -400,7 +416,7 @@ stringList_t zuluCryptPartitions( int option,uid_t uid )
 	string_t st ;
 
 	stringList_t p ;
-	stringList_t stl = zuluCryptPartitionList() ;
+	stringList_t stl = zuluCryptVolumeList() ;
 
 	StringListIterator start ;
 	StringListIterator it  ;
@@ -488,8 +504,9 @@ stringList_t zuluCryptPartitions( int option,uid_t uid )
 	 * now we consult udev if enabled and we move partition in the "non system" list to "system" list if udev think they are system
 	 */
 	while( it != StringListEnd( non_system ) ){
-		if( _zuluCryptCheckSYSifDeviceIsSystem( StringContent( *it ) ) ){
-			StringListAppendIfAbsent( system,StringContent( *it ) ) ;
+		e = StringContent( *it ) ;
+		if( _zuluCryptCheckSYSifDeviceIsSystem( e ) ){
+			StringListAppendIfAbsent( system,e ) ;
 			StringListRemoveAt( non_system,it - start ) ;
 		}else{
 			it++ ;
@@ -561,9 +578,9 @@ u_int64_t zuluCryptGetVolumeSize( const char * device )
 			return 0 ;
 		}else{
 			/*
-			 * zuluCryptPartitionList() is defined in ../zuluCrypt-cli/bin/partitions.c
+			 * zuluCryptVolumeList() is defined in this source file
 			 */
-			stl = zuluCryptPartitionList() ;
+			stl = zuluCryptVolumeList() ;
 			zuluCryptSecurityGainElevatedPrivileges() ;
 
 			StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;

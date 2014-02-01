@@ -123,7 +123,7 @@ void zuluMountPartitionProperties( const char * dev,const char * UUID,const char
 		blkid_free_probe( blkid ) ;
 
 		/*
-		 * zuluCryptGetVolumeSize() is defined in ../zuluCrypt-cli/partitions.c
+		 * zuluCryptGetVolumeSize() is defined in ../zuluCrypt-cli/volumes.c
 		 */
 		if( m_point == NULL ){
 			volume_size = zuluCryptGetVolumeSize( device ) ;
@@ -266,35 +266,6 @@ static void _printDeviceProperties( string_t entry,const char * mapper_path,size
 	StringListDelete( &stx ) ;
 }
 
-static stringList_t _convert_loop_devices( stringList_t stl )
-{
-	StringListIterator it  ;
-	StringListIterator end ;
-
-	string_t st ;
-
-	char * e ;
-
-	StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
-
-	while( it != end ){
-		st = *it ;
-		it++ ;
-		if( StringStartsWith( st,"/dev/loop" ) ){
-			/*
-			 * zuluCryptLoopDeviceAddress_1() is defined in ../zuluCrypt-cli/lib/create_loop_device.c
-			 */
-			e = zuluCryptLoopDeviceAddress_1( StringContent( st ) ) ;
-			if( e != NULL ){
-				StringReplace( st,e ) ;
-				StringFree( e ) ;
-			}
-		}
-	}
-
-	return stl ;
-}
-
 static int _normal_mounted_volume( string_t st )
 {
 	return StringStartsWith( st,"/" ) && !StringStartsWithAtLeastOne( st,"/proc","/sys","/dev ",NULL ) ;
@@ -322,11 +293,11 @@ int zuluMountPrintVolumesProperties( uid_t uid )
 	stl = zuluCryptGetMoutedListFromMountInfo() ;
 
 	/*
-	 * zuluCryptPartitionList() is defined in ../zuluCrypt-cli/partitions.c
+	 * zuluCryptGetAListOfAllPartitions() is defined in ../zuluCrypt-cli/volumes.c
 	 */
-	stz = zuluCryptPartitions( ZULUCRYPTallPartitions,uid ) ;
+	stz = zuluCryptGetAListOfAllVolumes() ;
 
-	stz = _convert_loop_devices( stz ) ;
+	if( uid ){;}
 	/*
 	 * zuluCryptMapperPrefix() is defined in ../zuluCrypt-cli/lib/create_mapper_name.c
 	 * it should return something like "/dev/mapper"

@@ -11,7 +11,7 @@
  bin/add_key.c
  bin/volume_info.c
  bin/open_volume.c
- bin/partitions.c
+ bin/volumes.c
  bin/security.c
  bin/check_invalid_key.c
  bin/create_volumes.c
@@ -32,7 +32,6 @@
  )
 
  SET( BINMount
- bin/partitions.c
  ../zuluMount-cli/volume_status.c
  ../zuluMount-cli/main.c
  ../zuluMount-cli/mount.c

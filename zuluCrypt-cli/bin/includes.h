@@ -73,7 +73,7 @@ size_t zuluCryptGetKeyFromSocket( const char * path,string_t *,uid_t uid ) ;
 string_t zuluCryptGetUserHomePath( uid_t ) ;
 
 /*
- * this function is defined in partitions.c
+ * this function is defined in volumes.c
  */
 int zuluCryptPartitionIsSystemPartition( const char * dev,uid_t uid ) ;
 
@@ -83,7 +83,7 @@ int zuluCryptPartitionIsSystemPartition( const char * dev,uid_t uid ) ;
 int zuluCryptVolumeIsNotLuks( const char * dev ) ;
 
 /*
- * this function is defined in partitions.c
+ * this function is defined in volumes.c
  */
 int zuluCryptPrintDeviceProperties( int type ) ;
 
@@ -93,7 +93,7 @@ int zuluCryptPrintDeviceProperties( int type ) ;
 int zuluCryptSecurityCheckPartitionPermissions( uid_t uid ) ;
 
 /*
- * this function is defined in partitions.c
+ * this function is defined in volumes.c
  */
 char * zuluCryptDeviceFromLabel( const char * label ) ;
 
@@ -183,17 +183,17 @@ int zuluCryptBindSharedMountPointPathTaken( string_t path ) ;
 string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * name,const char * uuid,uid_t uid,const struct_opts * opts ) ;
 
 /*
- * this function is defined in partitions.c
+ * this function is defined in volumes.c
  */
 stringList_t zuluCryptGetPartitionFromCrypttab( void ) ;
 
 /*
- * this function is defined in partitions.c
+ * this function is defined in volumes.c
  */
 stringList_t zuluCryptGetPartitionFromConfigFile( const char * path ) ;
 
 /*
- * this function is defined in partitions.c
+ * this function is defined in volumes.c
  */
 stringList_t zuluCryptPartitionList( void ) ;
 
@@ -228,18 +228,23 @@ char * zuluCryptEvaluateDeviceTags( const char * tag,const char * path ) ;
 int zuluCryptRunTest( void ) ;
 
 /*
- * zuluCryptDeviceIsSupported() is defined in partitions.c
+ * zuluCryptDeviceIsSupported() is defined in volumes.c
  */
 int zuluCryptDeviceIsSupported( const char * device,uid_t uid ) ;
 
 /*
- * zuluCryptPartitions() is defined in partitions.c
+ * zuluCryptPartitions() is defined in volumes.c
  */
 stringList_t zuluCryptPartitions( int option,uid_t uid ) ;
 
 /*
- * zuluCryptGetVolumeSize() is defined in partitions.c
+ * zuluCryptGetVolumeSize() is defined in volumes.c
  */
 u_int64_t zuluCryptGetVolumeSize( const char * device ) ;
+
+/*
+ * zuluCryptGetAListOfAllPartitions() is defined in volumes.c
+ */
+stringList_t zuluCryptGetAListOfAllVolumes( void ) ;
 
 #endif
