@@ -120,7 +120,7 @@ void keyDialog::showOffSetWindowOption()
 {
 	deviceOffset * d = new deviceOffset( this ) ;
 	connect( d,SIGNAL( offSetValue( QString,QString ) ),this,SLOT( deviceOffSet( QString,QString ) ) ) ;
-	d->ShowUI() ;
+	d->ShowUI_1() ;
 }
 
 void keyDialog::showFileSystemOptionWindow()
