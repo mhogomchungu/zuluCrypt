@@ -277,7 +277,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>keysize: 256 bits</string>
+    <string>keysize: 512 bits</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
