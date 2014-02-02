@@ -92,6 +92,8 @@ stringList_t zuluCryptGetFstabList( uid_t uid )
 					StringPrepend( xt,ac ) ;
 					free( ac ) ;
 				}
+			}else{
+				entry = StringSubChar( xt,index,' ' ) ;
 			}
 		}
 	}
