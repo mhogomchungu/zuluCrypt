@@ -43,8 +43,6 @@
 
 char * zuluCryptGetMountPointFromPath( const char * path ) ;
 
-char * zuluCryptVolumeDeviceName( const char * mapper ) ;
-
 static void convert( char * buffer,int buffer_size,const char * s,double y,double z )
 {
 	snprintf( buffer,buffer_size,"%.1f %s",y/z,s ) ;
@@ -374,46 +372,20 @@ char * zuluCryptVolumeStatus( const char * mapper )
 
 char * zuluCryptVolumeDeviceName( const char * mapper )
 {
-	struct crypt_device * cd;
-	char * path ;
-	string_t address = StringVoid ;
-	const char * e ;
-
-	e = crypt_get_dir() ;
-
-	if( !StringPrefixEqual( mapper,e ) ){
-		return NULL ;
-	}
-	if( crypt_init_by_name( &cd,mapper ) < 0 ){
-		return NULL ;
-	}
-
-	e = crypt_get_device_name( cd ) ;
-
-	if( e != NULL ){
-		if( StringPrefixMatch( e,"/dev/loop",9 ) ){
-			/*
-			 * zuluCryptLoopDeviceAddress_1() is defined in create_loop.c
-			 */
-			path = zuluCryptLoopDeviceAddress_1( e ) ;
-			if( path != NULL ){
-				address = StringInherit( &path ) ;
-			}else{
-				address = String( e ) ;
+	struct crypt_device * cd ;
+	const char * e = crypt_get_dir() ;
+	char * f = NULL ;
+	if( StringPrefixEqual( mapper,e ) ){
+		if( crypt_init_by_name( &cd,mapper ) == 0 ){
+			e = crypt_get_device_name( cd ) ;
+			if( e != NULL ){
+				/*
+				* zuluCryptResolvePath() is defined in resolve_path.c
+				*/
+				f = zuluCryptResolvePath( e ) ;
 			}
-		}else if( StringPrefixMatch( e,"/dev/mapper/",12 ) ){
-			address = zuluCryptConvertIfPathIsLVM( e ) ;
-		}else if( StringPrefixMatch( e,"/dev/md",7 ) ){
-			/*
-			 * zuluCryptResolveMDPath_1() is defined in process_mountinfo.c
-			 */
-			address = zuluCryptResolveMDPath_1( e ) ;
-		}else{
-			address = String( e ) ;
+			crypt_free( cd ) ;
 		}
 	}
-
-	crypt_free( cd ) ;
-
-	return StringDeleteHandle( &address ) ;
+	return f ;
 }
