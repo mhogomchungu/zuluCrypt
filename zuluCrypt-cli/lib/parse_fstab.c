@@ -70,14 +70,16 @@ stringList_t zuluCryptGetFstabList( uid_t uid )
 				 * zuluCryptResolvePath() is defined in resolve_paths.c
 				 */
 				ac = zuluCryptResolvePath( entry ) ;
-				StringReplaceChar_1( xt,0,'\0',' ' ) ;
-				StringRemoveLeft( xt,index ) ;
-				StringPrepend( xt,ac ) ;
-				free( ac ) ;
+				StringSubChar( xt,index,' ' ) ;
+				if( ac != NULL ){
+					StringRemoveLeft( xt,index ) ;
+					StringPrepend( xt,ac ) ;
+					free( ac ) ;
+				}
 			}else if( StringAtLeastOnePrefixMatch( entry,"UUID=","uuid=",NULL ) ){
 				entry = StringRemoveString( xt,"\"" ) ;
 				ac = blkid_evaluate_tag( "UUID",entry + 5,&cache ) ;
-				StringReplaceChar_1( xt,0,'\0',' ' ) ;
+				StringSubChar( xt,index,' ' ) ;
 				if( ac != NULL ){
 					StringRemoveLeft( xt,index ) ;
 					StringPrepend( xt,ac ) ;
@@ -86,7 +88,7 @@ stringList_t zuluCryptGetFstabList( uid_t uid )
 			}else if( StringAtLeastOnePrefixMatch( entry,"LABEL=","label=",NULL ) ){
 				entry = StringRemoveString( xt,"\"" ) ;
 				ac = blkid_evaluate_tag( "LABEL",entry + 6,&cache ) ;
-				StringReplaceChar_1( xt,0,'\0',' ' ) ;
+				StringSubChar( xt,index,' ' ) ;
 				if( ac != NULL ){
 					StringRemoveLeft( xt,index ) ;
 					StringPrepend( xt,ac ) ;
