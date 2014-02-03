@@ -355,7 +355,13 @@ static int _zuluCryptCheckSYSifDeviceIsSystem( const char * device )
 	string_t st ;
 	char dev[ PATH_MAX ] ;
 
-	const char * path = realpath( device,dev ) ;
+	const char * path ;
+
+	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
+		return 0 ;
+	}
+
+	path = realpath( device,dev ) ;
 
 	if( path != NULL ){
 		st = String( path ) ;
