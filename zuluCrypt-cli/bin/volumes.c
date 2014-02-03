@@ -357,7 +357,17 @@ static int _zuluCryptCheckSYSifDeviceIsSystem( const char * device )
 
 	const char * path ;
 
+	if( !StringPrefixMatch( device,"/dev/",5 ) ){
+		/*
+		 * udev doesnt work with path to image files so return early
+		 */
+		return 0 ;
+	}
+
 	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
+		/*
+		 * udev thinks all loop devices are system devices and we disagree and hence we return early
+		 */
 		return 0 ;
 	}
 
