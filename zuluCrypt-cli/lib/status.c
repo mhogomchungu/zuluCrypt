@@ -325,13 +325,13 @@ char * zuluCryptVolumeStatus( const char * mapper )
 		}
 		StringAppend( p,"\n loop:   \tNil" ) ;
 	}
-#if 0
+
 	z = StringIntToString_1( buffer,SIZE,crypt_get_data_offset( cd ) ) ;
 	StringMultipleAppend( p,"\n offset:\t",z," sectors",NULL ) ;
-#else
+
 	zuluCryptFormatSize( crypt_get_data_offset( cd ) * 512,buffer,SIZE ) ;
-	StringMultipleAppend( p,"\n offset:\t",buffer,NULL ) ;
-#endif
+	StringMultipleAppend( p," / ",buffer,NULL ) ;
+
 	if( cad.flags == 1 ){
 		StringAppend( p,"\n mode:   \tread only" ) ;
 	}else{

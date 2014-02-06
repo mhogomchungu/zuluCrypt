@@ -85,7 +85,6 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	const char * pass    = opts->key ;
 	const char * rng     = opts->rng ;
 
-	char * e ;
 	/*
 	 * Below is a form of memory management.All strings are collected in a stringlist object to easily delete them
 	 * when the function returns.This allows for the function to have multiple exit points without risks of leaking
@@ -110,13 +109,14 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	int tcrypt_source_h = TCRYPT_PASSPHRASE ;
 
 	int st  ;
-	struct stat xt ;
 
 	int j ;
 	int k ;
 
 	int truecrypt_volume = 0 ;
 	u_int64_t hidden_volume_size = 0 ;
+
+	u_int64_t size ;
 
 	const char * tcrypt_hidden_volume_size     = opts->tcrypt_hidden_volume_size ;
 	const char * tcrypt_hidden_volume_key_file = opts->tcrypt_hidden_volume_key_file ;
@@ -175,17 +175,16 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	if( k == 1 ){
 		return zuluExit( 6,stl ) ;
 	}
+
 	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
+		zuluCryptSecurityGainElevatedPrivileges() ;
 		/*
-		 * zuluCryptLoopDeviceAddress_1() is defined in ../lib/create_loop_device.c
+		 * zuluCryptGetVolumeSize() is defined in volumes.c
 		 */
-		e = zuluCryptLoopDeviceAddress_1( device ) ;
-		if( e != NULL ){
-			stat( e,&xt ) ;
-			free( e ) ;
-			if( xt.st_size < 3145728 ){
-				return zuluExit( 7,stl ) ;
-			}
+		size = zuluCryptGetVolumeSize( device ) ;
+		zuluCryptSecurityDropElevatedPrivileges() ;
+		if( size < 3145728 ){
+			return zuluExit( 7,stl ) ;
 		}
 	}
 
@@ -313,7 +312,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 			}
 
 			volkey_h = StringContent( *pass_3 ) ;
-			volkeysize_h = StringLength( * pass_3 ) ;
+			volkeysize_h = StringLength( *pass_3 ) ;
 		}
 	}
 

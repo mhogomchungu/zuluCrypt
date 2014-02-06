@@ -293,7 +293,7 @@ int zuluMountPrintVolumesProperties( uid_t uid )
 	stl = zuluCryptGetMoutedListFromMountInfo() ;
 
 	/*
-	 * zuluCryptGetAListOfAllPartitions() is defined in ../zuluCrypt-cli/volumes.c
+	 * zuluCryptGetAListOfAllPartitions() is defined in ../zuluCrypt-cli/bin/volumes.c
 	 */
 	stz = zuluCryptGetAListOfAllVolumes() ;
 

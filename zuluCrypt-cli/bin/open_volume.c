@@ -112,7 +112,7 @@ static int zuluExit( int st,const char * device,const char * m_point,stringList_
 		case 19: printf( gettext( "ERROR: could not get a passphrase through a local socket\n" ) );					break ;
 		case 20: printf( gettext( "ERROR: failed to mount a filesystem:invalid/unsupported mount option or unsupported file system encountered\n" ) );break ;
 		case 21: printf( gettext( "ERROR: could not create a lock on /etc/mtab\n" ) ) ;							break ;
-		default: printf( "ERROR: unrecognized error with status number %d encountered\n",st );
+		default: printf( gettext( "ERROR: unrecognized error with status number %d encountered\n" ),st ) ;
 	}
 
 	zuluCryptSecurityUnlockMemory( stl ) ;
@@ -375,39 +375,37 @@ static int _open_volume( const char * device,const char * offset,const char * ma
 		 * zuluCryptOpenVolume() is defined in ../lib/open_volume.c
 		 */
 		st = zuluCryptOpenVolume( device,mapper_name,m_point,uid,m_flags,fs_opts,key,key_key_len ) ;
+		if( st == 4 ){
+			/*
+			 * failed to open a LUKS or PLAIN volume.
+			 */
+			/*
+			 * zuluCryptVolumeIsNotLuks() is defined in ../lib/is_luks.c
+			 */
+			if( zuluCryptVolumeIsNotLuks( device ) ){
+				/*
+				 * The volume is not LUKS,its either PLAIN or TRUECRYPT,we already failed to open it as PLAIN
+				 * so it must be TRUECRYPT or the key is wrong.
+				 */
+
+				/*
+				 * try to open is a normal TRUECRYPT volume.
+				 */
+				st = _open_tcrypt( device,mapper_name,key,key_key_len,key_source,key_origin,TCRYPT_NORMAL,m_point,uid,m_flags,fs_opts ) ;
+				if( st == 4 ){
+					/*
+					 * The attempt failed,retry to open it as a hidden TRUECRYPT volume.
+					 */
+					st = _open_tcrypt( device,mapper_name,key,key_key_len,key_source,key_origin,TCRYPT_HIDDEN,m_point,uid,m_flags,fs_opts ) ;
+				}
+			}
+		}
 	}else{
 		/*
 		 * zuluCryptOpenPlainWithOffset() is defined in ../lib/open_volume.c
 		 */
 		st = zuluCryptOpenPlainWithOffset( device,offset,mapper_name,m_point,uid,m_flags,fs_opts,key,key_key_len ) ;
 	}
-
-	if( st == 4 ){
-		/*
-		 * failed to open a LUKS or PLAIN volume.
-		 */
-		/*
-		 * zuluCryptVolumeIsNotLuks() is defined in ../lib/is_luks.c
-		 */
-		if( zuluCryptVolumeIsNotLuks( device ) ){
-			/*
-			 * The volume is not LUKS,its either PLAIN or TRUECRYPT,we already failed to open it as PLAIN
-			 * so it must be TRUECRYPT or the key is wrong.
-			 */
-
-			/*
-			 * try to open is a normal TRUECRYPT volume.
-			 */
-			st = _open_tcrypt( device,mapper_name,key,key_key_len,key_source,key_origin,TCRYPT_NORMAL,m_point,uid,m_flags,fs_opts ) ;
-			if( st == 4 ){
-				/*
-				 * The attempt failed,retry to open it as a hidden TRUECRYPT volume.
-				 */
-				st = _open_tcrypt( device,mapper_name,key,key_key_len,key_source,key_origin,TCRYPT_HIDDEN,m_point,uid,m_flags,fs_opts ) ;
-			}
-		}
-	}
-
 	return st ;
 }
 
