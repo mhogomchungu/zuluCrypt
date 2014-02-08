@@ -70,6 +70,13 @@ static inline string_t set_mount_options( m_struct * mst )
 
 	int fsFamily = fs_family( mst->fs ) ;
 
+	const char * f[] = { "nouser","users","user","defaults","noauto","auto","nodev","dev",
+		"noexec","exec","nosuid","suid","bind","mandlock","move","noatime","nodiratime","remount","silent",
+		"synchronous",NULL } ;
+
+	const char ** z = f ;
+	const char * e ;
+
 	if( opt == StringVoid ){
 		opt = String( "" ) ;
 		StringAppend( opt,mst->fs_flags ) ;
@@ -126,15 +133,17 @@ static inline string_t set_mount_options( m_struct * mst )
 	}
 
 	/*
-	 * Below options are not file system options and are rejectected by mount() command and hence we are removing them.
+	 * remove mount options to leave only file system options
 	 */
-	StringRemoveString( opt,"nouser" ) ;
-	StringRemoveString( opt,"users" ) ;
-	StringRemoveString( opt,"user" ) ;
-	StringRemoveString( opt,"defaults" ) ;
-	StringRemoveString( opt,"noauto" ) ;
-	StringRemoveString( opt,"auto" ) ;
-
+	while( 1 ){
+		e = *z ;
+		z++ ;
+		if( e == NULL ){
+			break ;
+		}else{
+			StringRemoveString( opt,e ) ;
+		}
+	}
 	/*
 	 * remove below two now because we are going to add them below,reason for removing them
 	 * and readding them is because we want to make sure they are at the beginning of the string
@@ -154,6 +163,7 @@ static inline string_t set_mount_options( m_struct * mst )
 	if( StringEndsWithChar( opt,',' ) ){
 		StringRemoveRight( opt,1 ) ;
 	}
+
 	mst->opts = StringContent( opt ) ;
 	return opt;
 }
