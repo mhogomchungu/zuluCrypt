@@ -343,4 +343,8 @@ stringList_t zuluCryptGetMoutedListFromMountInfo( void ) ;
  */
 char * zuluCryptGetALoopDeviceAssociatedWithAnImageFile( const char * path ) ;
 
+/*
+ * zuluCryptGetAListOfMountedVolumes() is defined in process_mountinfo.c
+ */
+stringList_t zuluCryptGetAListOfMountedVolumes( void ) ;
 #endif

@@ -19,7 +19,8 @@
 
 #include "includes.h"
 
-stringList_t zuluCryptGetMoutedListFromMountInfo_0( string_t ( *function )( const char * ) )
+stringList_t zuluCryptGetMoutedListFromMountInfo_0(
+	string_t ( *function )( const char *,const char *,const char *,const char * ) )
 {
 	const char * device ;
 	const char * mount_point ;
@@ -56,13 +57,12 @@ stringList_t zuluCryptGetMoutedListFromMountInfo_0( string_t ( *function )( cons
 			file_system = *( entry + index + 1 ) ;
 			root_path   = *( entry + 3 ) ;
 			if( StringsAreEqual( root_path,"/" ) || StringsAreEqual( file_system,"btrfs" ) ){
+
 				device        = *( entry + index + 2 ) ;
 				mount_point   = *( entry + 4 ) ;
 				mount_options = *( entry + 5 ) ;
 
-				st = function( device ) ;
-
-				StringMultipleAppend( st," ",mount_point," ",file_system," ",mount_options,END ) ;
+				st = function( device,mount_point,file_system,mount_options ) ;
 
 				stx = StringListAppendString_1( stx,&st ) ;
 			}
@@ -75,20 +75,49 @@ stringList_t zuluCryptGetMoutedListFromMountInfo_0( string_t ( *function )( cons
 	return stx ;
 }
 
-stringList_t zuluCryptGetMoutedListFromMountInfo( void )
+static string_t _resolve_path_1( const char * device,const char * mount_point,
+				 const char * file_system ,const char * mount_options )
 {
 	/*
 	 * zuluCryptResolvePath_1() is defined in resolve_paths.c
 	 */
-	return zuluCryptGetMoutedListFromMountInfo_0( zuluCryptResolvePath_1 ) ;
+	string_t st = zuluCryptResolvePath_1( device ) ;
+	StringMultipleAppend( st," ",mount_point," ",file_system," ",mount_options,END ) ;
+	return st ;
 }
 
-stringList_t zuluCryptGetMoutedListFromMountInfo_1( void )
+static string_t _resolve_path_2( const char * device,const char * mount_point,
+				 const char * file_system ,const char * mount_options )
 {
 	/*
 	 * zuluCryptResolvePath_2() is defined in resolve_paths.c
 	 */
-	return zuluCryptGetMoutedListFromMountInfo_0( zuluCryptResolvePath_2 ) ;
+	string_t st = zuluCryptResolvePath_2( device ) ;
+	StringMultipleAppend( st," ",mount_point," ",file_system," ",mount_options,END ) ;
+	return st ;
+}
+
+static string_t _get_mounted_device_list( const char * device,const char * mount_point,
+					  const char * file_system ,const char * mount_options )
+{
+	if( 0 && mount_point && file_system && mount_options ){;}
+
+	return zuluCryptResolvePath_1( device ) ;
+}
+
+stringList_t zuluCryptGetMoutedListFromMountInfo( void )
+{
+	return zuluCryptGetMoutedListFromMountInfo_0( _resolve_path_1 ) ;
+}
+
+stringList_t zuluCryptGetMoutedListFromMountInfo_1( void )
+{
+	return zuluCryptGetMoutedListFromMountInfo_0( _resolve_path_2 ) ;
+}
+
+stringList_t zuluCryptGetAListOfMountedVolumes( void )
+{
+	return zuluCryptGetMoutedListFromMountInfo_0( _get_mounted_device_list ) ;
 }
 
 stringList_t zuluCryptOpenedVolumesList( uid_t uid )

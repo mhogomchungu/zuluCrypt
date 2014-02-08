@@ -268,7 +268,9 @@ static void _printDeviceProperties( string_t entry,const char * mapper_path,size
 
 static int _normal_mounted_volume( string_t st )
 {
-	return StringStartsWith( st,"/" ) && !StringStartsWithAtLeastOne( st,"/proc","/sys","/dev ",NULL ) ;
+	return StringStartsWith( st,"/" )
+	&& !StringEqual( st,"/dev" )
+	&& !StringStartsWithAtLeastOne( st,"/proc","/sys","/dev ",NULL ) ;
 }
 
 int zuluMountPrintVolumesProperties( uid_t uid )
@@ -407,9 +409,9 @@ static void  _zuluMountprintAListOfMountedVolumes( string_t st,const char * mapp
 int zuluMountprintAListOfMountedVolumes( void )
 {
 	/*
-	 * zuluCryptGetMoutedListFromMountInfo() is defined in ../zuluCrypt-cli/lib/process_mountinfo.c
+	 * zuluCryptGetAListOfMountedVolumes() is defined in ../zuluCrypt-cli/lib/process_mountinfo.c
 	 */
-	stringList_t stz = zuluCryptGetMoutedListFromMountInfo() ;
+	stringList_t stz = zuluCryptGetAListOfMountedVolumes() ;
 	stringList_t stx = StringListVoid ;
 
 	string_t st ;
@@ -432,7 +434,7 @@ int zuluMountprintAListOfMountedVolumes( void )
 		st = *it ;
 		it++ ;
 		if( _normal_mounted_volume( st ) ){
-			f = StringReplaceChar_1( st,0,' ','\0' ) ;
+			f = StringContent( st ) ;
 			if( StringListHasNoEntry( stx,f ) ){
 				/*
 				 * Only print one entry if there are more due to bind mounts

@@ -138,7 +138,8 @@ static inline int pluginIsGpG( const char * plugin_path )
 	return st;
 }
 
-string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * name,const char * uuid,uid_t uid,const struct_opts * opts )
+string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * name,
+						 const char * uuid,uid_t uid,const struct_opts * opts )
 {
 	process_t p ;
 	struct stat st ;
