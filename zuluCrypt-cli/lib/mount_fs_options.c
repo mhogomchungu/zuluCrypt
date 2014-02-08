@@ -19,6 +19,10 @@
 
 #include "../bin/includes.h"
 
+#include <sys/types.h>
+#include <pwd.h>
+#include <grp.h>
+
 static int _fileSystemIsSupported( const char * fs )
 {
 	string_t           st  = StringGetFromVirtualFile( "/proc/filesystems" ) ;
@@ -137,6 +141,53 @@ static inline int _option_contain_not_allowed( const char * fs,const char * fs_o
 	return r ;
 }
 
+static int _userIsAllowed_1( uid_t uid,const char * groupname )
+{
+	int st = 0 ;
+	int i = 0 ;
+	struct group * grp ;
+	struct passwd * pass ;
+
+	const char ** entry ;
+	const char * name ;
+	const char * e ;
+
+	if( groupname == NULL ){
+		st = 0 ;
+	}else if( uid == 0 ){
+		st = 1 ;
+	}else{
+		pass = getpwuid( uid ) ;
+
+		if( pass == NULL ){
+			st = 0 ;
+		}else{
+			grp = getgrnam( groupname ) ;
+
+			if( grp != NULL ){
+
+				name = ( const char * )pass->pw_name ;
+				entry = ( const char ** )grp->gr_mem ;
+
+				while( 1 ){
+					e = *( entry + i ) ;
+					i++ ;
+					if( e == NULL ){
+						break ;
+					}else{
+						if( StringsAreEqual( e,name ) ){
+							st = 1 ;
+							break ;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return st ;
+}
+
 static inline int _userIsAllowed( uid_t uid,const char * fs )
 {
 	if( fs ){;}
@@ -148,11 +199,10 @@ static inline int _userIsAllowed( uid_t uid,const char * fs )
 		return 1 ;
 	}else{
 		/*
-		 * user is not root,we are supposed to use other means to check if a user is allowed to useful
-		 * non default fs options or not.By policy,the way to do it is through unix group system but the
-		 * functionality is off for now
+		 * user is attempting to use not supported file system options.Allow them only if
+		 * they are a member of a supported group
 		 */
-		return 0 ;
+		return _userIsAllowed_1( uid,"zulumount" ) ;
 	}
 }
 
