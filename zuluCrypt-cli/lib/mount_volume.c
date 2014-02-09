@@ -113,7 +113,19 @@ static void _get_file_system_options_from_config_file( const char * device,strin
 	StringFree( f ) ;
 }
 
-static inline string_t set_mount_options( m_struct * mst )
+static const char * _remove_duplicates( string_t st )
+{
+	const char ** z = StringPointer( st ) ;
+	while( StringHasComponent( *z,",," ) ){
+		StringReplaceString( st,",,","," ) ;
+	}
+	if( StringEndsWithChar( st,',' ) ){
+		return StringRemoveRight( st,1 ) ;
+	}else{
+		return StringContent( st ) ;
+	}
+}
+static string_t set_mount_options( m_struct * mst )
 {
 	/*
 	 * zuluCryptGetMountOptionsFromFstab() is defined in parse_fstab.c
@@ -211,21 +223,12 @@ static inline string_t set_mount_options( m_struct * mst )
 		StringPrepend( opt,"rw," ) ;
 	}
 
-	while( StringIndexOfString( opt,0,",," ) >= 0 ){
-		StringReplaceString( opt,",,","," );
-	}
-	if( StringEndsWithChar( opt,',' ) ){
-		StringRemoveRight( opt,1 ) ;
-	}
-
-	mst->opts = StringContent( opt ) ;
+	mst->opts = _remove_duplicates( opt ) ;
 	return opt;
 }
 
-static void _mount_options( unsigned long flags,string_t * xt )
+static const char * _mount_options( unsigned long flags,string_t st )
 {
-	string_t st = *xt ;
-
 	if( flags & MS_NODEV ){
 		StringAppend( st,",nodev" ) ;
 	}
@@ -265,6 +268,8 @@ static void _mount_options( unsigned long flags,string_t * xt )
 	if( flags & MS_SYNCHRONOUS ){
 		StringAppend( st,",synchronous" ) ;
 	}
+
+	return _remove_duplicates( st ) ;
 }
 
 static inline int mount_FUSEfs( m_struct * mst )
@@ -275,11 +280,14 @@ static inline int mount_FUSEfs( m_struct * mst )
 	process_t p = Process( ZULUCRYPTmount ) ;
 	string_t st = set_mount_options( mst ) ;
 
-	_mount_options( mst->m_flags,&st ) ;
-	opts = StringReplaceString( st,",,","," ) ;
+	opts = _mount_options( mst->m_flags,st ) ;
 
 	if( StringsAreEqual( mst->fs,"ntfs" ) ){
-		ProcessSetArgumentList( p,"-n","-t","ntfs-3g","-o",opts,mst->device,mst->m_point,ENDLIST ) ;
+		if( StringHasAtLeastOneComponent_1( opts,"ignore_case,",",ignore_case,","ignore_case,",NULL ) ){
+			ProcessSetArgumentList( p,"-n","-t","lowntfs-3g","-o",opts,mst->device,mst->m_point,ENDLIST ) ;
+		}else{
+			ProcessSetArgumentList( p,"-n","-t","ntfs-3g","-o",opts,mst->device,mst->m_point,ENDLIST ) ;
+		}
 	}else{
 		ProcessSetArgumentList( p,"-t",mst->fs,"-o",opts,mst->device,mst->m_point,ENDLIST ) ;
 	}
