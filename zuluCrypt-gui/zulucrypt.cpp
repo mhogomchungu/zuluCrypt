@@ -424,7 +424,6 @@ void zuluCrypt::ShowManageSystemPartitions()
 	d.mkdir( "/etc/zuluCrypt" ) ;
 	f.rename( QString( "/etc/zuluCrypt-system" ),QString( "/etc/zuluCrypt/system_volumes.list" ) ) ;
 
-	d.mkdir( "/etc/zuluCrypt" ) ;
 	f.rename( QString( "/etc/zuluCrypt-nonsystem" ),QString( "/etc/zuluCrypt/nonsystem_volumes.list" ) ) ;
 
 	msv->ShowUI( QString( "/etc/zuluCrypt/system_volumes.list" ) ) ;
@@ -445,7 +444,6 @@ void zuluCrypt::ShowManageNonSystemPartitions()
 	d.mkdir( "/etc/zuluCrypt" ) ;
 	f.rename( QString( "/etc/zuluCrypt-system" ),QString( "/etc/zuluCrypt/system_volumes.list" ) ) ;
 
-	d.mkdir( "/etc/zuluCrypt" ) ;
 	f.rename( QString( "/etc/zuluCrypt-nonsystem" ),QString( "/etc/zuluCrypt/nonsystem_volumes.list" ) ) ;
 
 	msv->ShowUI( QString( "/etc/zuluCrypt/nonsystem_volumes.list" ) ) ;

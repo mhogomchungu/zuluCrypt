@@ -166,3 +166,8 @@ version 4.6.8
 -- add support in zuluMount for opening a plain volume at a user specified offset.This ability will allow hidden volume type
    functionality.In one of the prompts in zuluMount-gui,press "ctrl+f" to bring up the dialog that accepts the offset.
 -- add support for multi device btrfs volumes.
+
+version 4.6.9
+-- move config files to "/etc/zuluCrypt" from "/etc"
+-- add a config file "/etc/zuluCrypt/fs_options" where default file system mount options can be specified per UUID.
+   -format is:one entry per line,example entry: UUID="abcf" uid=500
