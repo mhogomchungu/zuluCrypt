@@ -270,6 +270,10 @@ char * zuluCryptVolumeStatus( const char * mapper )
 			StringAppend( p," is invalid.\n" ) ;
 			crypt_free( cd ) ;
 			return StringDeleteHandle( &p ) ;
+		default :
+			StringAppend( p," is invalid.\n" ) ;
+			crypt_free( cd ) ;
+			return StringDeleteHandle( &p ) ;
 	}
 
 	StringAppend( p," type:   \t" ) ;
@@ -343,10 +347,9 @@ char * zuluCryptVolumeStatus( const char * mapper )
 		k = crypt_keyslot_max( type ) ;
 		for( j = 0 ; j < k ; j++ ){
 			switch( crypt_keyslot_status( cd,j ) ){
-				case CRYPT_SLOT_INACTIVE    :     ; break ;
 				case CRYPT_SLOT_ACTIVE_LAST : i++ ; break ;
 				case CRYPT_SLOT_ACTIVE      : i++ ; break ;
-				case CRYPT_SLOT_INVALID     :     ; break ;
+				default : ;
 			}
 		}
 

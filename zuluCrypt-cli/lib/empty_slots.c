@@ -67,6 +67,7 @@ static char * _empty_slots( const char * device )
 			case CRYPT_SLOT_ACTIVE     : StringAppend( p,"1" ) ; break ;
 			case CRYPT_SLOT_INVALID    : StringAppend( p,"2" ) ; break ;
 			case CRYPT_SLOT_ACTIVE_LAST: StringAppend( p,"3" ) ; break ;
+			default : ;
 		}
 	}
 
