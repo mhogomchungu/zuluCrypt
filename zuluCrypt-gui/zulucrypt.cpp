@@ -414,14 +414,41 @@ void zuluCrypt::ShowManageSystemPartitions()
 {
 	manageSystemVolumes * msv = new manageSystemVolumes( this ) ;
 	connect( msv,SIGNAL( HideUISignal() ),msv,SLOT(deleteLater() ) ) ;
-	msv->ShowUI( QString( "/etc/zuluCrypt-system" ) ) ;
+
+	QDir d ;
+	QFile f ;
+
+	/*
+	 * move config files to /etc/zuluCrypt/
+	 */
+	d.mkdir( "/etc/zuluCrypt" ) ;
+	f.rename( QString( "/etc/zuluCrypt-system" ),QString( "/etc/zuluCrypt/system_volumes.list" ) ) ;
+
+	d.mkdir( "/etc/zuluCrypt" ) ;
+	f.rename( QString( "/etc/zuluCrypt-nonsystem" ),QString( "/etc/zuluCrypt/nonsystem_volumes.list" ) ) ;
+
+	msv->ShowUI( QString( "/etc/zuluCrypt/system_volumes.list" ) ) ;
 }
 
 void zuluCrypt::ShowManageNonSystemPartitions()
 {
 	manageSystemVolumes * msv = new manageSystemVolumes( this ) ;
 	connect( msv,SIGNAL( HideUISignal() ),msv,SLOT(deleteLater() ) ) ;
-	msv->ShowUI( QString( "/etc/zuluCrypt-nonsystem" ) ) ;
+
+	QDir d ;
+	QFile f ;
+
+	/*
+	 * move config files to /etc/zuluCrypt/
+	 */
+
+	d.mkdir( "/etc/zuluCrypt" ) ;
+	f.rename( QString( "/etc/zuluCrypt-system" ),QString( "/etc/zuluCrypt/system_volumes.list" ) ) ;
+
+	d.mkdir( "/etc/zuluCrypt" ) ;
+	f.rename( QString( "/etc/zuluCrypt-nonsystem" ),QString( "/etc/zuluCrypt/nonsystem_volumes.list" ) ) ;
+
+	msv->ShowUI( QString( "/etc/zuluCrypt/nonsystem_volumes.list" ) ) ;
 }
 
 void zuluCrypt::currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous )

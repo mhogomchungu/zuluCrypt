@@ -496,6 +496,12 @@ stringList_t zuluCryptPartitions( int option,uid_t uid )
 	 * in that list
 	 */
 	p = zuluCryptGetPartitionFromConfigFile( "/etc/zuluCrypt-system" ) ;
+	if( p == StringListVoid ){
+		/*
+		 * This is the new path since zuluCrypt 4.6.9
+		 */
+		p = zuluCryptGetPartitionFromConfigFile( "/etc/zuluCrypt/system_volumes.list" ) ;
+	}
 	if( p != StringListVoid ){
 		StringListGetIteratorBeginAndEnd( p,&it,&end ) ;
 		while( it != end ){
@@ -534,6 +540,12 @@ stringList_t zuluCryptPartitions( int option,uid_t uid )
 	 * the system list if present in that list and add them to non system list if absent in that list
 	 */
 	p = zuluCryptGetPartitionFromConfigFile( "/etc/zuluCrypt-nonsystem" ) ;
+	if( p == StringListVoid ){
+		/*
+		 * This is the new path since zuluCrypt 4.6.9
+		 */
+		p = zuluCryptGetPartitionFromConfigFile( "/etc/zuluCrypt/nonsystem_volumes.list" ) ;
+	}
 	if( p != StringListVoid ){
 		StringListGetIteratorBeginAndEnd( p,&it,&end ) ;
 		while( it != end ){
