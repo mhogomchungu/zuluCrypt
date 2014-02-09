@@ -61,6 +61,58 @@ static inline int fs_family( const char * fs )
 	}
 }
 
+static char * _get_uuid_from_device( const char * device )
+{
+	char * r = NULL ;
+	const char * e = NULL ;
+	blkid_probe blkid = blkid_new_probe_from_filename( device ) ;
+	if( blkid != NULL ){
+		blkid_do_probe( blkid ) ;
+		blkid_probe_lookup_value( blkid,"UUID",&e,NULL ) ;
+		r = StringCopy_2( e ) ;
+		blkid_free_probe( blkid ) ;
+	}
+	return r ;
+}
+
+static void _get_file_system_options_from_config_file( const char * device,string_t st )
+{
+	char * f ;
+	const char * e ;
+
+	StringListIterator it  ;
+	StringListIterator end ;
+
+	string_t xt = StringGetFromFile( "/etc/zuluCrypt/fs_options" ) ;
+
+	stringList_t stl = StringListStringSplit( xt,'\n' ) ;
+
+	stringList_t stz ;
+
+	StringDelete( &xt ) ;
+
+	f = _get_uuid_from_device( device ) ;
+
+	StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
+
+	while( it != end  ){
+		e = StringRemoveString( *it,"\"" ) ;
+		it++ ;
+		if( StringPrefixMatch( e,"UUID=",5 ) ){
+			if( StringPrefixEqual( e + 5,f ) ){
+				stz = StringListSplit( e,' ' ) ;
+				e = StringListContentAtSecondPlace( stz ) ;
+				StringMultipleAppend( st,",",e,NULL ) ;
+				StringListDelete( &stz ) ;
+				break ;
+			}
+		}
+	}
+
+	StringListDelete( &stl ) ;
+	StringFree( f ) ;
+}
+
 static inline string_t set_mount_options( m_struct * mst )
 {
 	/*
@@ -86,6 +138,8 @@ static inline string_t set_mount_options( m_struct * mst )
 		}
 		StringMultipleAppend( opt,",",mst->fs_flags,END ) ;
 	}
+
+	_get_file_system_options_from_config_file( mst->device,opt ) ;
 
 	if( fsFamily == 1 ){
 		if( !StringContains( opt,"dmask=" ) ){
