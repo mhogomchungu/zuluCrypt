@@ -1092,7 +1092,7 @@ stringList_t StringListRemoveAt( stringList_t stl, size_t index )
 		return StringListVoid ;
 	}
 	if( index >= stl->size ){
-		return StringListVoid ;
+		return stl ;
 	}
 	size = sizeof( string_t ) ;
 	if( stl->stp[index] != StringVoid ){
