@@ -421,8 +421,6 @@ static int _zuluCryptCheckSYSifDeviceIsSystem( const char * device )
 
 stringList_t zuluCryptPartitions( int option,uid_t uid )
 {
-	ssize_t index ;
-
 	const char * device ;
 	const char * e ;
 
@@ -464,12 +462,9 @@ stringList_t zuluCryptPartitions( int option,uid_t uid )
 		st = *it ;
 		it++ ;
 		if( StringStartsWith( st,"/" ) ){
-			index = StringIndexOfChar( st,0,' ' ) ;
-			if( index != -1 ){
-				device = StringSubChar( st,index,'\0' ) ;
-				system = StringListAppend( system,device ) ;
-				StringListRemoveString( non_system,device ) ;
-			}
+			device = StringReplaceChar_1( st,0,' ','\0' ) ;
+			system = StringListAppend( system,device ) ;
+			StringListRemoveString( non_system,device ) ;
 		}
 	}
 
