@@ -192,6 +192,13 @@
      <bool>true</bool>
     </property>
    </widget>
+   <zorder>rbPassphrase</zorder>
+   <zorder>rbPassphraseFromFile</zorder>
+   <zorder>lineEditPassphrase1</zorder>
+   <zorder>pbOpenKeyFile</zorder>
+   <zorder>labelPassPhrase</zorder>
+   <zorder>lineEditPassPhrase2</zorder>
+   <zorder>labelRepeatPassPhrase</zorder>
   </widget>
   <widget class="QComboBox" name="comboBoxFS">
    <property name="geometry">
@@ -351,27 +358,27 @@
    <widget class="QRadioButton" name="rbHiddenKey">
     <property name="geometry">
      <rect>
-      <x>110</x>
+      <x>150</x>
       <y>0</y>
-      <width>111</width>
+      <width>71</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>hidden key</string>
+     <string>key</string>
     </property>
    </widget>
    <widget class="QRadioButton" name="rbHiddenKeyFile">
     <property name="geometry">
      <rect>
-      <x>220</x>
+      <x>270</x>
       <y>0</y>
-      <width>211</width>
+      <width>131</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>hidden key from keyfile</string>
+     <string>keyfile </string>
     </property>
    </widget>
    <widget class="QLabel" name="label">
