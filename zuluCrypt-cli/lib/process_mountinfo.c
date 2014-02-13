@@ -125,6 +125,7 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 	const char * e ;
 	const char * c ;
 	const char * d ;
+	const char * t ;
 
 	char * f ;
 	char * g ;
@@ -137,20 +138,32 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 	string_t q ;
 	string_t z ;
 
+	string_t j ;
+
 	stringList_t stx ;
 	stringList_t list = StringListVoid ;
 	stringList_t stl = zuluCryptGetMoutedListFromMountInfo() ;
 
 	if( uid ){;}
 
+	/*
+	 * zuluCryptMapperPrefix() is defined in create_mapper_name.c
+	 */
+	j = String( zuluCryptMapperPrefix() ) ;
+	/*
+	 * t will probably contain "/dev/mapper/zuluCrypt-"
+	 */
+	t = StringAppend( j,"/zuluCrypt-" ) ;
+
 	StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
 
 	while( it != end ){
 		c = StringContent( *it ) ;
 		it++ ;
-		if( !StringPrefixMatch( c,"/dev/mapper/zuluCrypt-",22 ) ){
+		if( !StringPrefixEqual( c,t ) ){
 			/*
-			 * dont care about other volumes
+			 * we only care about zuluCrypt volumes and these volumes that we care about starts with
+			 * "/dev/mapper/zuluCrypt-"
 			 */
 			continue ;
 		}
@@ -204,6 +217,7 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 		StringListDelete( &stx ) ;
 	}
 	StringListDelete( &stl ) ;
+	StringDelete( &j ) ;
 	return list ;
 }
 
