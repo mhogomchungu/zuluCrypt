@@ -132,16 +132,15 @@ char * zuluCryptResolveDMPath( const char * path )
 		}
 		StringDelete( &st ) ;
 		closedir( dir ) ;
-		if( dev == NULL ){
-			/*
-			 * failed to resolve the path,just return original path
-			 */
-			return StringCopy_2( path ) ;
-		}else{
-			return dev ;
-		}
+	}
+
+	if( dev == NULL ){
+		/*
+		 * failed to resolve the path,just return original path
+		 */
+		return StringCopy_2( path ) ;
 	}else{
-		return NULL ;
+		return dev ;
 	}
 }
 
