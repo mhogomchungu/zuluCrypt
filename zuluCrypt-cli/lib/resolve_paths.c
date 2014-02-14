@@ -91,6 +91,13 @@ char * zuluCryptResolveMDPath( const char * path )
 	return StringDeleteHandle( &st ) ;
 }
 
+/*
+ * dm path is a path like "/dev/dm-5".
+ * These paths should not be used as they are for dm kernel infrastructure internal use only.
+ * We are just handling them because there is buggy code out there that forces them on us.
+ *
+ * When we one,we try to convert them to their appropriate paths.
+ */
 char * zuluCryptResolveDMPath( const char * path )
 {
 	char dm_path[ PATH_MAX + 1 ] ;
@@ -99,51 +106,40 @@ char * zuluCryptResolveDMPath( const char * path )
 	string_t xt ;
 	struct dirent * entry ;
 	const char * e ;
-	int index ;
+	const char * z ;
+	ssize_t index ;
 	char * dev = NULL ;
-	struct stat str ;
 	if( dir != NULL ){
 		st = String( "/dev/mapper/" ) ;
-		xt = StringVoid ;
 		while( ( entry = readdir( dir ) ) != NULL ){
 			e = entry->d_name ;
-			if( StringAtLeastOneMatch_1( e,".","..","control",NULL ) ){
-				;
-			}else{
-				index = readlink( StringAppendAt( st,12,e ),dm_path,PATH_MAX ) ;
-				if( index == -1 ){
-					continue ;
-				}else{
+			if( !StringAtLeastOneMatch_1( e,".","..","control",NULL ) ){
+				z = StringAppendAt( st,12,e ) ;
+				index = readlink( z,dm_path,PATH_MAX ) ;
+				if( index != -1 ){
 					dm_path[ index ] = '\0' ;
-				}
-				/*
-				 * path will have something like "/dev/dm-5",skip forward to only "dm-5"
-				 * dm_path will have something like "../dm-5",skip forward to only "dm-5"
-				 */
-				if( StringsAreEqual( path + 5,dm_path + 3 ) ){
-					xt = StringCopy( st ) ;
-					e = StringReplaceString( st,"/dev/mapper/","/dev/" ) ;
-					index = StringLastIndexOfChar( st,'-' ) ;
-					if( index != -1 ){
-						e = StringSubChar( st,index,'/' ) ;
-						if( stat( e,&str ) == 0 ){
-							/*
-							 * path is an LVM path
-							 */
-							dev = StringDeleteHandle( &st ) ;
-						}else{
-							dev = StringDeleteHandle( &xt ) ;
-						}
-					}else{
+					/*
+					 * path will have something like "/dev/dm-5",skip forward to only "dm-5"
+					 * dm_path will have something like "../dm-5",skip forward to only "dm-5"
+					 */
+					if( StringsAreEqual( path + 5,dm_path + 3 ) ){
+						xt = zuluCryptConvertIfPathIsLVM( z ) ;
 						dev = StringDeleteHandle( &xt ) ;
+						break ;
 					}
-					break ;
 				}
 			}
 		}
-		StringMultipleDelete( &st,&xt,NULL ) ;
+		StringDelete( &st ) ;
 		closedir( dir ) ;
-		return dev ;
+		if( dev == NULL ){
+			/*
+			 * failed to resolve the path,just return original path
+			 */
+			return StringCopy_2( path ) ;
+		}else{
+			return dev ;
+		}
 	}else{
 		return NULL ;
 	}
