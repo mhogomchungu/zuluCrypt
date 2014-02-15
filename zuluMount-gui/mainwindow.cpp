@@ -240,6 +240,7 @@ void MainWindow::startAutoMonitor()
 	connect( m_autoMountThread,SIGNAL( stopped() ),m_mountInfo,SLOT( stop() ) ) ;
 
 	connect( m_mountInfo,SIGNAL( volumeRemoved( QString ) ),this,SLOT( removeEntryFromTable( QString ) ) ) ;
+	connect( m_mountInfo,SIGNAL( update() ),this,SLOT( pbUpdate() ) ) ;
 
 	m_mountInfo->start() ;
 	m_autoMountThread->start() ;

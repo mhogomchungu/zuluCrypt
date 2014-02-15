@@ -62,27 +62,28 @@ string_t zuluCryptResolveMDPath_1( const char * path )
 	string_t st = String( f ) ;
 	struct dirent * entry ;
 	char * e ;
-	int r ;
+	int r = 0 ;
 	if( dir != NULL ){
 		while( ( entry = readdir( dir ) ) != NULL ){
 			f = entry->d_name ;
 			if( !StringAtLeastOneMatch_1( f,".","..",NULL ) ){
 				e = zuluCryptRealPath( StringAppendAt( st,8,f ) ) ;
-				if( e != NULL ){
-					r = StringsAreEqual( path,e ) ;
-					free( e ) ;
-					if( r == 1 ){
-						closedir( dir ) ;
-						return st ;
-					}
+				r = StringsAreEqual( path,e ) ;
+				StringFree( e ) ;
+				if( r == 1 ){
+					break ;
 				}
 			}
 		}
 		closedir( dir ) ;
 	}
 
-	StringReplace( st,path ) ;
-	return st ;
+	if( r == 1 ){
+		return st ;
+	}else{
+		StringReplace( st,path ) ;
+		return st ;
+	}
 }
 
 char * zuluCryptResolveMDPath( const char * path )

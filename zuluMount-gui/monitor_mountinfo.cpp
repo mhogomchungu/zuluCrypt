@@ -135,6 +135,12 @@ void monitor_mountinfo::run()
 				connect( t,SIGNAL( signalProperties( QString ) ),m_babu,SLOT( volumeMiniProperties( QString ) ) ) ;
 				t->start( Task::VolumeMiniProperties ) ;
 			}
+		}else{
+			/*
+			 * odd,mount/unmount just happened but volume count remain the same,refresh the UI
+			 * and hopefully that will sort out the problem
+			 */
+			emit update() ;
 		}
 
 		oldList = newList ;
