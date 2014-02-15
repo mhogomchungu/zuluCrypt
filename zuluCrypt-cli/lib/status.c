@@ -313,20 +313,12 @@ char * zuluCryptVolumeStatus( const char * mapper )
 			StringAppend( p,"Nil" ) ;
 		}
 	}else{
-		if( StringPrefixMatch( device_name,"/dev/mapper/",12 ) ){
-			q = zuluCryptConvertIfPathIsLVM( device_name ) ;
-			StringAppendString( p,q ) ;
-			StringDelete( &q ) ;
-		}else if( StringPrefixMatch( device_name,"/dev/md",7 ) ){
-			/*
-			 * zuluCryptResolveMDPath_1() is defined in process_mountinfo.c
-			 */
-			q = zuluCryptResolveMDPath_1( device_name ) ;
-			StringAppendString( p,q ) ;
-			StringDelete( &q ) ;
-		}else{
-			StringAppend( p,device_name ) ;
-		}
+		/*
+		 * zuluCryptResolvePath() is defined in resolve_path.c
+		 */
+		z = zuluCryptResolvePath( device_name ) ;
+		StringAppend( p,z ) ;
+		StringFree( z ) ;
 		StringAppend( p,"\n loop:   \tNil" ) ;
 	}
 
