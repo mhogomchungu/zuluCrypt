@@ -38,30 +38,15 @@ static int _zuluMountPartitionAccess( const char * device,const char * m_opts,ui
 	int users   ;
 	int system_partition ;
 	int st = 1  ;
-	/*
-	 * zuluCryptGetFstabEntryList() is defined in ../zuluCrypt-cli/lib/mount_volume.c
-	 */
 
 	string_t p ;
 
-	/*
-	 * zuluCryptGetPartitionFromConfigFile() is defined in ../zuluCrypt-cli/bin/partitions.c
-	 */
-	stringList_t stl = zuluCryptGetPartitionFromConfigFile( "/etc/zuluCrypt-nonsystem" ) ;
-
-	int r = StringListContains( stl,device ) ;
-
-	StringListDelete( &stl ) ;
-
-	if( r != -1 ){
-		/*
-		 * device is included among the list of devices that are not to be considered system,return
-		 * early with success
-		 */
-		return 0 ;
-	}
+	stringList_t stl ;
 
 	zuluCryptSecurityGainElevatedPrivileges() ;
+	/*
+	 * zuluCryptGetFstabEntryList() is defined in ../zuluCrypt-cli/lib/mount_volume.c
+	 */
 	stl = zuluCryptGetFstabEntryList( device,uid ) ;
 	zuluCryptSecurityDropElevatedPrivileges() ;
 
