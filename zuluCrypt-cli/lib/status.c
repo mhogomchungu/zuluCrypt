@@ -237,7 +237,6 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	struct crypt_active_device cad ;
 
 	string_t p ;
-	string_t q ;
 
 	if( crypt_init_by_name( &cd,mapper ) != 0 ){
 		return NULL ;
@@ -285,10 +284,7 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	}else{
 		if( StringPrefixMatch( type,"LUKS",4 ) ){
 			luks = 1 ;
-			q = String( type ) ;
-			StringReplaceString( q,"LUKS","luks" ) ;
-			StringAppendString( p,q ) ;
-			StringDelete( &q ) ;
+			StringMultipleAppend( p,"luks",type + 4,END ) ;
 		}else if( StringsAreEqual( type,"PLAIN" ) ){
 			StringAppend( p,"plain" ) ;
 		}else if( StringsAreEqual( type,"TCRYPT" ) ){
