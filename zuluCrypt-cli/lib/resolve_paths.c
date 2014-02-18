@@ -97,7 +97,7 @@ char * zuluCryptResolveMDPath( const char * path )
  * These paths should not be used as they are for dm kernel infrastructure internal use only.
  * We are just handling them because there is buggy code out there that forces them on us.
  *
- * When we one,we try to convert them to their appropriate paths.
+ * When we get one,we try to convert it to its appropriate paths.
  */
 char * zuluCryptResolveDMPath( const char * path )
 {
@@ -145,16 +145,12 @@ char * zuluCryptResolveDMPath( const char * path )
 	}
 }
 
+/*
+ * An assumption is made here that the path is an LVM path if "path" is in /dev/mapper/abc-def format
+ * and there exist a path at /dev/abc/def.
+ */
 string_t zuluCryptConvertIfPathIsLVM( const char * path )
 {
-	/*
-	 * An assumption is made here that the path is an LVM path if "path" is in /dev/mapper/abc-def format
-	 * and there exist a path at /dev/abc/def format.
-	 *
-	 * handle double dashes as explained here: https://www.redhat.com/archives/linux-lvm/2014-January/msg00014.html
-	 */
-	ssize_t index ;
-
 	size_t i ;
 	size_t j ;
 
@@ -169,63 +165,43 @@ string_t zuluCryptConvertIfPathIsLVM( const char * path )
 
 	string_t q = String( path ) ;
 
-	index = StringIndexOfChar( q,0,'-' ) ;
-	if( index == -1 ){
-		/*
-		 * no dash character means its not an lvm volume
-		 */
-		return q ;
-	}else{
-		if( StringContains( q,"--" ) ){
+	j = StringLength( q ) ;
+
+	for( i = 1 ; i < j ; i++ ){
+		c = *( path + i ) ;
+		d = *( path + i + 1 ) ;
+		k = *( path + i - 1 ) ;
+		if( k != '-' && c == '-' && d != '-' ){
 			/*
-			 * path may look like "/dev/mapper/mariusvg-my--own--lv"
+			 * found a place with a single dash,replace the dash with a slash
+			 */
+			StringSubChar( q,i,'/' ) ;
+			/*
+			 * replace double dashes if present.
+			 * more info:  https://www.redhat.com/archives/linux-lvm/2014-January/msg00014.html
 			 */
 			z = StringPointer( q ) ;
-			e = *z ;
-			j = StringLength( q ) ;
-
-			for( i = 1 ; i < j ; i++ ){
-				c = *( e + i ) ;
-				d = *( e + i + 1 ) ;
-				k = *( e + i - 1 ) ;
-				if( k != '-' && c == '-' && d != '-' ){
-					/*
-					 * found a place with a single dash,replace the dash with a slash and then
-					 * replace all occurances of double dashes to single dashes
-					 */
-					StringSubChar( q,i,'/' ) ;
-					while( StringHasComponent( *z,"--" ) ){
-						StringReplaceString( q,"--","-" ) ;
-					}
-					break ;
-				}
+			while( StringHasComponent( *z,"--" ) ){
+				StringReplaceString( q,"--","-" ) ;
 			}
-			/*
-			 * path will now look like "/dev/mapper/mariusvg/my-own-lv"
-			 */
-		}else{
-			/*
-			 * no double dashes,it could be a simple LVM path
-			 */
-			StringSubChar( q,index,'/' ) ;
+
+			e = StringReplaceString( q,"/dev/mapper/","/dev/" ) ;
+
+			if( stat( e,&st ) == 0 ){
+				/*
+				 * The path appear to be an LVM path since "/dev/mapper/ABC-DEF" input path has a corresponding
+				 * "/dev/ABC/DEF" path
+				 */
+			}else{
+				/*
+				 * Not an LVM volume,replace the string to its original
+				 */
+				StringReplace( q,path ) ;
+			}
+			break ;
 		}
-
-		e = StringReplaceString( q,"/dev/mapper/","/dev/" ) ;
-
-		if( stat( e,&st ) == 0 ){
-			/*
-			 * The path appear to be an LVM path since "/dev/mapper/ABC-DEF" input path has a corresponding
-			 * "/dev/ABC/DEF" path
-			 */
-		}else{
-			/*
-			 * Not an LVM volume,replace the string to its original
-			 */
-			StringReplace( q,path ) ;
-		}
-
-		return q ;
 	}
+	return q ;
 }
 
 char * zuluCryptResolvePath( const char * path )
