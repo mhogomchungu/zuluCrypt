@@ -171,3 +171,4 @@ version 4.6.9
 -- move config files to "/etc/zuluCrypt" from "/etc"
 -- add a config file "/etc/zuluCrypt/fs_options" where default file system mount options can be specified per UUID.
    -format is:one entry per line,example entry: UUID="abcf" uid=500
+-- fix a bug,if udev is enabled,mounted image files were always treated as system volumes.
