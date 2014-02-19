@@ -161,27 +161,15 @@ char * zuluCryptGetLoopDeviceAddress( const char * device )
 
 char * zuluCryptGetFileNameFromFileDescriptor( int fd )
 {
-	char * c = NULL ;
-	char * d ;
 	string_t xt = String( "/proc/self/fd/" ) ;
-	c = zuluCryptRealPath( StringAppendInt( xt,fd ) ) ;
+	char * c = zuluCryptRealPath( StringAppendInt( xt,fd ) ) ;
+	/*
+	 * zuluCryptResolvePath() is defined in resolve_paths.c
+	 */
+	char * e = zuluCryptResolvePath( c ) ;
 	StringDelete( &xt ) ;
-	if( StringPrefixMatch( c,"/dev/mapper/",12 ) ){
-		/*
-		 * zuluCryptConvertIfPathIsLVM() is defined in status.c
-		 */
-		xt = zuluCryptConvertIfPathIsLVM( c ) ;
-		free( c ) ;
-		c = StringDeleteHandle( &xt ) ;
-	}else if( StringPrefixMatch( c,"/dev/md",7 ) ){
-		/*
-		 * zuluCryptResolveMDPath() is defined in process_mountinfo.c
-		 */
-		d = zuluCryptResolveMDPath( c ) ;
-		free( c ) ;
-		c = d ;
-	}
-	return c ;
+	StringFree( c ) ;
+	return e ;
 }
 
 /*
@@ -191,14 +179,9 @@ char * zuluCryptGetFileNameFromFileDescriptor( int fd )
 static int _paths_are_not_sane( int fd,const char * path )
 {
 	char * c = zuluCryptGetFileNameFromFileDescriptor( fd ) ;
-	int st ;
-	if( c != NULL ){
-		st = strcmp( c,path ) ;
-		free( c ) ;
-		return st != 0 ;
-	}else{
-		return 1 ;
-	}
+	int st = StringsAreNotEqual( c,path ) ;
+	StringFree( c ) ;
+	return st ;
 }
 
 static int open_loop_device_1( string_t * loop_device )
@@ -210,7 +193,7 @@ static int open_loop_device_1( string_t * loop_device )
 	struct loop_info64 l_info ;
 	int r = 0 ;
 	for( i = 0 ; i < 255 ; i++ ){
-		StringAppendAt( st,0,"/dev/loop" ) ;
+		StringReplace( st,"/dev/loop" ) ;
 		path = StringAppendInt( st,i ) ;
 		fd = open( path,O_RDONLY ) ;
 		if( fd == -1 ){

@@ -94,32 +94,6 @@ static int _check_if_device_is_supported( int st,uid_t uid,char ** dev )
 	return st ;
 }
 
-static char * device_path( string_t st )
-{
-	/*
-	 * These conversions seem to be unnecessary,leave them for now
-	 */
-	string_t xt ;
-	char * c = NULL ;
-	if( StringStartsWith( st,"/dev/mapper/" ) ){
-		/*
-		 * zuluCryptConvertIfPathIsLVM() is defin in status.c
-		 */
-		xt = zuluCryptConvertIfPathIsLVM( StringContent( st ) ) ;
-		StringDelete( &st ) ;
-		c = StringDeleteHandle( &xt ) ;
-	}else if( StringStartsWith( st,"/dev/md" ) ){
-		/*
-		 * zuluCryptResolveMDPath() is defined in process_mountinfo.c
-		 */
-		c = zuluCryptResolveMDPath( StringContent( st ) ) ;
-		StringDelete( &st ) ;
-	}else{
-		c = StringDeleteHandle( &st ) ;
-	}
-	return c ;
-}
-
 int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_loop,char ** dev,uid_t uid )
 {
 	int st = 100 ;
@@ -172,7 +146,7 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 					 */
 					xt = zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( *fd_path,fd_loop,O_RDWR,&st_dev ) ;
 					seteuid( uid ) ;
-					*dev = device_path( st_dev ) ;
+					*dev = StringDeleteHandle( &st_dev ) ;
 				}
 			}else{
 				/*
@@ -184,7 +158,7 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 				 */
 				xt = zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( *fd_path,fd_loop,O_RDONLY,&st_dev ) ;
 				seteuid( uid ) ;
-				*dev = device_path( st_dev ) ;
+				*dev = StringDeleteHandle( &st_dev ) ;
 			}
 			if( xt != 1 ){
 				st = 100 ;
