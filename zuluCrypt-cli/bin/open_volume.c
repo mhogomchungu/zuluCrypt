@@ -170,7 +170,6 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 
 	size_t key_len = 0 ;
 	int st = 0 ;
-	int i  = 0 ;
 
 	unsigned long m_flags ;
 
@@ -319,18 +318,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 
 	zuluCryptSecurityGainElevatedPrivileges() ;
 
-	while( 1 ){
-		/*
-		 * try to open a volume multiple times if mount fail
-		 */
-		st = _open_volume( device,offset,mapper_name,key,key_len,source,pass,mount_point,uid,m_flags,fs_opts ) ;
-		if( st == -1 && i < 3 ){
-			sleep( 3 ) ;
-			i++ ;
-		}else{
-			break ;
-		}
-	}
+	st = _open_volume( device,offset,mapper_name,key,key_len,source,pass,mount_point,uid,m_flags,fs_opts ) ;
 
 	zuluCryptSecurityDropElevatedPrivileges() ;
 

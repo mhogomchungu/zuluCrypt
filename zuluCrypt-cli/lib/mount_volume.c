@@ -272,7 +272,7 @@ static const char * _mount_options( unsigned long flags,string_t st )
 	return _remove_duplicates( st ) ;
 }
 
-static inline int mount_FUSEfs( m_struct * mst )
+static int mount_FUSEfs_0( m_struct * mst )
 {
 	int status ;
 	const char * opts ;
@@ -283,7 +283,7 @@ static inline int mount_FUSEfs( m_struct * mst )
 	opts = _mount_options( mst->m_flags,st ) ;
 
 	if( StringsAreEqual( mst->fs,"ntfs" ) ){
-		if( StringHasAtLeastOneComponent_1( opts,"ignore_case,",",ignore_case,","ignore_case,",NULL ) ){
+		if( StringHasComponent( opts,"ignore_case" ) ){
 			ProcessSetArgumentList( p,"-n","-t","lowntfs-3g","-o",opts,mst->device,mst->m_point,ENDLIST ) ;
 		}else{
 			ProcessSetArgumentList( p,"-n","-t","ntfs-3g","-o",opts,mst->device,mst->m_point,ENDLIST ) ;
@@ -302,9 +302,29 @@ static inline int mount_FUSEfs( m_struct * mst )
 	return status ;
 }
 
-static inline int mount_volume( const m_struct * mst )
+static int mount_FUSEfs( m_struct * mst )
+{
+	int r = mount_FUSEfs_0( mst ) ;
+	if( r != 0 ){
+		/*
+		 * mount failed for some reason,wait for 2 second and then try again
+		 */
+		sleep( 2 ) ;
+		r = mount_FUSEfs_0( mst ) ;
+	}
+	return r ;
+}
+
+static int mount_volume( const m_struct * mst )
 {
 	int h = mount( mst->device,mst->m_point,mst->fs,mst->m_flags,mst->opts + 3 ) ;
+	if( h != 0 ){
+		/*
+		 * mount failed for some reason,wait 2 second and then try again
+		 */
+		sleep( 2 ) ;
+		h = mount( mst->device,mst->m_point,mst->fs,mst->m_flags,mst->opts + 3 ) ;
+	}
 	if( h == 0 && mst->m_flags != MS_RDONLY ){
 		chmod( mst->m_point,S_IRWXU|S_IRWXG|S_IRWXO ) ;
 	}

@@ -129,7 +129,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		return zuluExit( 1,stl ) ;
 	}
 	/*
-	 * zuluCryptPartitionIsSystemPartition() is defined in ./partitions.c
+	 * zuluCryptPartitionIsSystemPartition() is defined in ./volumess.c
 	 */
 	if( zuluCryptPartitionIsSystemPartition( device,uid ) ){
 		if( !zuluCryptUserIsAMemberOfAGroup( uid,"zulucrypt" ) ){
@@ -165,7 +165,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	j = zuluCryptCheckOpenedMapper( StringContent( *mapper ) ) ;
 
 	/*
-	 * defined in ../lib/print_mounted_volumes.c
+	 * defined in ../lib/process_mountinfo.c
 	 */
 	k = zuluCryptPartitionIsMounted( device ) ;
 
