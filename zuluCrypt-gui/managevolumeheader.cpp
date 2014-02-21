@@ -152,6 +152,7 @@ void managevolumeheader::restoreHeader()
 	this->setWindowTitle( tr( "restore volume header" ) ) ;
 	m_ui->labelBackUpHeader->setText( QString( "backup path" ) ) ;
 	m_ui->pbCreate->setText( tr( "&restore" ) ) ;
+	m_ui->checkBoxVolumeIsTrueCrypt->setText( tr( "restore a truecrypt volume header" ) ) ;
 	this->ShowUI() ;
 }
 
@@ -161,6 +162,7 @@ void managevolumeheader::headerBackUp()
 	this->setWindowTitle( tr( "back up volume header" ) ) ;
 	m_ui->labelBackUpHeader->setText( QString( "backup path" ) ) ;
 	m_ui->pbCreate->setText( tr( "&backup" ) ) ;
+	m_ui->checkBoxVolumeIsTrueCrypt->setText( tr( "backup a truecrypt volume header" ) ) ;
 	this->ShowUI() ;
 }
 
@@ -268,11 +270,13 @@ void managevolumeheader::enableAll()
 	m_ui->pushButtonFile->setEnabled( true ) ;
 	m_ui->pushButtonPartition->setEnabled( true ) ;
 #if TCPLAY_NEW_API
-	m_ui->rbKey->setChecked( true ) ;
-	m_ui->groupBox->setEnabled( true ) ;
-	m_ui->label->setEnabled( true ) ;
-	m_ui->label_2->setEnabled( true ) ;
-	m_ui->pBKeyFile->setEnabled( true ) ;
+	if( m_ui->checkBoxVolumeIsTrueCrypt->isChecked() ){
+		m_ui->rbKey->setChecked( true ) ;
+		m_ui->groupBox->setEnabled( true ) ;
+		m_ui->label->setEnabled( true ) ;
+		m_ui->label_2->setEnabled( true ) ;
+		m_ui->pBKeyFile->setEnabled( true ) ;
+	}
 	if( m_ui->rbKeyFile->isChecked() ){
 		m_ui->rbKeyFile->setEnabled( false ) ;
 	}
@@ -375,6 +379,11 @@ void managevolumeheader::pbCreate()
 		}
 	}
 
+	/*
+	 * default to this source of random data when managing a truecrypt header
+	 */
+	exe += QString( " -g /dev/random" ) ;
+
 	this->disableAll() ;
 
 	m_OperationInProgress = true ;
@@ -458,7 +467,13 @@ void managevolumeheader::taskFinished( int st )
 		case 16: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not resolve path to device" ) )					; break ;
 		case 17: msg.ShowUIOK( tr( "ERROR!" ),tr( "backup file does not appear to contain luks header" ) )			; break ;
 		case 18: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open device for reading" ) )			; break ;
-		case 20: msg.ShowUIOK( tr( "ERROR!" ),tr( "wrong password entered or volume is not a truecrypt volume" ) )		; break ;
+		case 20:{
+				if( m_ui->checkBoxVolumeIsTrueCrypt->isChecked() ){
+					msg.ShowUIOK( tr( "ERROR!" ),tr( "wrong password entered or volume is not a truecrypt volume" ) )	; break ;
+				}else{
+					msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to perform requested operation on the LUKS volume" ) )		; break ;
+				}
+			}
 		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR! with status number %1 encountered" ).arg( st ) ) ;
 	}
 	this->enableAll() ;

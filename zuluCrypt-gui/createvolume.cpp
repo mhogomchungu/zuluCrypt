@@ -442,7 +442,7 @@ void createvolume::pbCreateClicked()
 	if( type == createvolume::normal_and_hidden_truecrypt ){
 		if( !m_ui->comboBoxFS->currentText().contains( "fat" ) && m_warned == false ){
 			m_warned = true ;
-			return msg.ShowUIOK( tr( "WARNING" ),tr( "It is best to create a hidden volume with fat file systems." ) ) ;
+			return msg.ShowUIOK( tr( "WARNING" ),tr( "It is best to create a hidden volume with vfat/fat file system." ) ) ;
 		}
 	}
 
