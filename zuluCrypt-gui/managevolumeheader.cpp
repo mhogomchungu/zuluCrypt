@@ -88,6 +88,8 @@ void managevolumeheader::rbKeyToggled( bool toggled )
 			m_ui->lineEditRepeatPassWord->setEnabled( true ) ;
 			m_ui->label_2->setEnabled( true ) ;
 		}
+		m_ui->lineEditPassWord->setEchoMode( QLineEdit::Password ) ;
+		m_ui->lineEditRepeatPassWord->setEchoMode( QLineEdit::Password ) ;
 	}else{
 		m_ui->label->setText( tr( "keyfile" ) ) ;
 		if( m_operation == QString( "backup" ) ){
@@ -98,7 +100,11 @@ void managevolumeheader::rbKeyToggled( bool toggled )
 			m_ui->label_2->setEnabled( false ) ;
 		}
 		m_ui->pBKeyFile->setEnabled( true ) ;
+		m_ui->lineEditPassWord->setEchoMode( QLineEdit::Normal ) ;
+		m_ui->lineEditRepeatPassWord->setEchoMode( QLineEdit::Normal ) ;
 	}
+	m_ui->lineEditPassWord->clear() ;
+	m_ui->lineEditRepeatPassWord->clear() ;
 }
 
 void managevolumeheader::cbTrueCryptVolume( bool toggled )
@@ -272,15 +278,14 @@ void managevolumeheader::enableAll()
 #if TCPLAY_NEW_API
 	if( m_ui->checkBoxVolumeIsTrueCrypt->isChecked() ){
 		m_ui->rbKey->setChecked( true ) ;
+		m_ui->rbKeyFile->setEnabled( true ) ;
 		m_ui->groupBox->setEnabled( true ) ;
 		m_ui->label->setEnabled( true ) ;
 		m_ui->label_2->setEnabled( true ) ;
-		m_ui->pBKeyFile->setEnabled( true ) ;
+		if( m_ui->rbKeyFile->isChecked() ){
+			m_ui->pBKeyFile->setEnabled( true ) ;
+		}
 	}
-	if( m_ui->rbKeyFile->isChecked() ){
-		m_ui->rbKeyFile->setEnabled( false ) ;
-	}
-	m_ui->rbKeyFile->setEnabled( false ) ;
 	m_ui->checkBoxVolumeIsTrueCrypt->setEnabled( true ) ;
 #else
 	m_ui->rbKey->setChecked( false ) ;
@@ -391,7 +396,6 @@ void managevolumeheader::pbCreate()
 	Task * t = new Task( exe ) ;
 	connect( t,SIGNAL( finished( int ) ),this,SLOT( taskFinished( int ) ) ) ;
 	t->start() ;
-	disableAll() ;
 }
 
 void managevolumeheader::pbOpenPartition()
