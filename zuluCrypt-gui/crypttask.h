@@ -47,7 +47,8 @@ public:
 		OpenSourceFail,
 		OpenDestinationFail
 	}status;
-	explicit CryptTask( const QString& source,const QString& dest,
+	int updateProgress( int ) ;
+	CryptTask( const QString& source,const QString& dest,
 			    const QString& keySource,const QString& key,const QString& task ) ;
 	~CryptTask() ;
 signals:
@@ -61,6 +62,10 @@ public slots:
 	void terminate( void ) ;
 	void start( void ) ;
 private:
+	void oldEncryptionRoutine( void ) ;
+	void newEncryptionRoutine( void ) ;
+	void oldDecryptionRoutine( void ) ;
+	void newDecryptionRoutine( void ) ;
 	void calculateMd5( const QString& path,char * result ) ;
 	void run( void ) ;
 	CryptTask::status encrypt( void ) ;

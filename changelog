@@ -172,3 +172,6 @@ version 4.6.9
 -- add a config file "/etc/zuluCrypt/fs_options" where default file system mount options can be specified per UUID.
    -format is:one entry per line,example entry: UUID="abcf" uid=500
 -- fix a bug,if udev is enabled,mounted image files were always treated as system volumes.
+-- use libgcrypt for stand alone file encryption instead of cryptsetup.Newer stand alone encrypted files will have an extension of ".zC" to
+   distinguish them from previous ones that use ".zc".Older versions of zuluCrypt(<4.6.9) will not be able to open encrypted files that
+   end with ".zC".

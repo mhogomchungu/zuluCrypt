@@ -113,7 +113,7 @@ void cryptfiles::sourceTextChanged( QString source )
 	QString dest ;
 
 	if( m_operation == QString( "-E" ) ){
-		dest = source.split( "/" ).last() + QString( ".zc" ) ;
+		dest = source.split( "/" ).last() + QString( ".zC" ) ;
 	}else{
 		dest = source.split( "/" ).last() ;
 	}
@@ -128,7 +128,7 @@ void cryptfiles::sourceTextChanged( QString source )
 	path += dest ;
 
 	if( m_operation == QString( "-D" ) ){
-		if( path.endsWith( QString( ".zc" ) ) ){
+		if( path.endsWith( QString( ".zc" ) ) || path.endsWith( QString( ".zC" ) ) ){
 			path = path.mid( 0,path.size() - 3 ) ;
 		}
 	}
@@ -153,7 +153,7 @@ void cryptfiles::decrypt()
 	this->show() ;
 }
 
-void cryptfiles::closeEvent( QCloseEvent *e )
+void cryptfiles::closeEvent( QCloseEvent * e )
 {
 	e->ignore() ;
 	this->HideUI() ;
@@ -238,6 +238,7 @@ void cryptfiles::pbCreate()
 
 	QString keySource ;
 	if( m_ui->rbKey->isChecked() ){
+		keySource = QString( "-p" ) ;
 		if( key_1.isEmpty() ){
 			return msg.ShowUIOK( tr( "ERROR!" ),tr( "first key field is empty" ) ) ;
 		}
@@ -249,18 +250,12 @@ void cryptfiles::pbCreate()
 				return msg.ShowUIOK( tr( "ERROR!" ),tr( "keys do not match" ) ) ;
 			}
 		}
-
-		QString sockpath = socketSendKey::getSocketPath() ;
-		socketSendKey * sk = new socketSendKey( this,sockpath,key_1.toLatin1() ) ;
-		key_1 = sockpath ;
-		sk->sendKey() ;
 	}else{
+		keySource = QString( "-f" ) ;
 		if( !utility::exists( key_1 ) ){
 			return msg.ShowUIOK( tr( "ERROR!" ),tr( "invalid path to key file" ) ) ;
 		}
 	}
-
-	keySource = QString( "-f" ) ;
 
 	this->disableAll() ;
 
@@ -307,7 +302,7 @@ void cryptfiles::pbOpenFolder( void )
 	}
 	QString path ;
 	if( m_operation == QString( "-E" ) ){
-		path = Z + QString( "/" ) + m_ui->lineEditSourcePath->text().split( "/" ).last() + QString( ".zc" ) ;
+		path = Z + QString( "/" ) + m_ui->lineEditSourcePath->text().split( "/" ).last() + QString( ".zC" ) ;
 	}else{
 		path = Z + QString( "/" ) + m_ui->lineEditSourcePath->text().split( "/" ).last() ;
 		path.chop( 3 ) ;

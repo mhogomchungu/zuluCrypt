@@ -193,6 +193,25 @@ int lxqt_wallet_wallet_has_value( lxqt_wallet_t,const char * value,u_int32_t val
 lxqt_wallet_error lxqt_wallet_change_wallet_password( lxqt_wallet_t,const char * new_password,u_int32_t new_password_size ) ;
 
 /*
+ * get a file given by argument "source" and create an encrypted version of the file given by argument "destination" using
+ * a password "password" of length "password_length"
+ *
+ * function is an argument pointer to a function that takes an interger and returns an integer.The input argument will
+ * show progress in percentage.If the return value of the function is non zero,the process will terminate.
+ */
+lxqt_wallet_error lxqt_wallet_create_encrypted_file( const char * password,u_int32_t password_length,
+						     const char * source,const char * destination,int( *function )( int ) ) ;
+
+/*
+ * get an encrypted file given by argument "source" and create an un encrypted version of the file given by argument "destination" using
+ * a password "password" of length "password_length"
+ *
+ * function is an argument pointer to a function that takes an interger and returns an integer.The input argument will
+ * show progress in percentage.If the return value of the function is non zero,the process will terminate.
+ */
+lxqt_wallet_error lxqt_wallet_create_decrypted_file( const char * password,u_int32_t password_length,
+						     const char * source,const char * destination,int( *function )( int ) ) ;
+/*
  * undocumented API
  */
 char * _lxqt_wallet_get_wallet_data( lxqt_wallet_t wallet ) ;

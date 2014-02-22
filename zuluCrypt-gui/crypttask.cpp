@@ -53,9 +53,13 @@
 #include "md5/md5.h"
 #include <sys/mman.h>
 
+#include "socketsendkey.h"
 #include "utility.h"
 #include "../zuluCrypt-cli/constants.h"
 #include "../zuluCrypt-cli/bin/bash_special_chars.h"
+#include "lxqt_wallet/backend/lxqtwallet.h"
+
+static CryptTask * _cryptTask ;
 
 CryptTask::CryptTask( const QString& source,const QString& dest,
 		      const QString& keySource,const QString& key,const QString& task )
@@ -66,10 +70,21 @@ CryptTask::CryptTask( const QString& source,const QString& dest,
 	m_key = key ;
 	m_task = task ;
 	m_status = CryptTask::unset ;
+	_cryptTask = this ;
 }
 
 void CryptTask::start()
 {
+	if( m_keySource == QString( "-p" ) ){
+		if( m_dest.endsWith( QString( ".zc" ) ) || m_source.endsWith( QString( ".zc" ) ) ){
+			QString sockpath = socketSendKey::getSocketPath() ;
+			socketSendKey * sk = new socketSendKey( 0,sockpath,m_key.toLatin1() ) ;
+			sk->sendKey() ;
+			m_keySource = QString( "-f" ) ;
+			m_key = sockpath ;
+		}
+	}
+
 	QThreadPool::globalInstance()->start( this ) ;
 }
 
@@ -365,48 +380,125 @@ CryptTask::status CryptTask::closeMapper( const QString& p )
 
 void CryptTask::run()
 {
-	if( m_task == QString( "-E" ) ){
-		m_status = this->encrypt() ;
-		switch( m_status ){
-			case CryptTask::OpenSourceFail :
-			case CryptTask::OpenDestinationFail :
-				break ;
-			case CryptTask::openMapperFail :
-				QFile::remove( m_dest ) ;
-				break ;
-			case CryptTask::openMapperWriteFail :
-			case CryptTask::quit :
-				this->closeMapper( m_dest ) ;
-				QFile::remove( m_dest ) ;
-				break ;
-			case CryptTask::success :
-				m_status = this->closeMapper( m_dest ) ;
-				if( m_status == CryptTask::success ){
-					m_status = CryptTask::encryptSuccess ;
-				}else{
-					;
-				}
-				QFile::setPermissions( m_dest,QFile::ReadOwner|QFile::WriteOwner ) ;
-				break ;
-			default:
-				this->closeMapper( m_dest ) ;
-				QFile::remove( m_dest ) ;
+	if( m_task == QString( "-D" ) ){
+		if( m_source.endsWith( ".zc" ) ){
+			/*
+			 * this routine is used in zuluCrypt < 4.6.9
+			 */
+			this->oldDecryptionRoutine(); ;
+		}else{
+			this->newDecryptionRoutine() ;
 		}
 	}else{
-		m_status = this->openMapper( m_source ) ;
-		if( m_status == CryptTask::success ){
-			m_status = this->decrypt() ;
-			this->closeMapper( m_source ) ;
-			if( m_status == CryptTask::quit ){
-				QFile::remove( m_dest ) ;
-			}else if( m_status == CryptTask::md5Pass || m_status == CryptTask::md5Fail ){
-				QFile::setPermissions( m_dest,QFile::ReadOwner|QFile::WriteOwner ) ;
-			}else if( m_status == CryptTask::wrongKey ){
-				;
+		/*
+		 * old routine used in zuluCrypt < 4.6.9
+		 * this->oldDecryptionRoutine() ;
+		 */
+
+		this->newEncryptionRoutine() ;
+	}
+}
+
+void CryptTask::oldEncryptionRoutine()
+{
+	m_status = this->encrypt() ;
+	switch( m_status ){
+		case CryptTask::OpenSourceFail :
+		case CryptTask::OpenDestinationFail :
+			break ;
+		case CryptTask::openMapperFail :
+			QFile::remove( m_dest ) ;
+			break ;
+		case CryptTask::openMapperWriteFail :
+		case CryptTask::quit :
+			this->closeMapper( m_dest ) ;
+			QFile::remove( m_dest ) ;
+			break ;
+		case CryptTask::success :
+			m_status = this->closeMapper( m_dest ) ;
+			if( m_status == CryptTask::success ){
+				m_status = CryptTask::encryptSuccess ;
 			}else{
-				m_status = CryptTask::decryptSuccess ;
+				;
 			}
+			QFile::setPermissions( m_dest,QFile::ReadOwner|QFile::WriteOwner ) ;
+			break ;
+		default:
+			this->closeMapper( m_dest ) ;
+			QFile::remove( m_dest ) ;
+	}
+}
+
+void CryptTask::oldDecryptionRoutine()
+{
+	m_status = this->openMapper( m_source ) ;
+	if( m_status == CryptTask::success ){
+		m_status = this->decrypt() ;
+		this->closeMapper( m_source ) ;
+		if( m_status == CryptTask::quit ){
+			QFile::remove( m_dest ) ;
+		}else if( m_status == CryptTask::md5Pass || m_status == CryptTask::md5Fail ){
+			QFile::setPermissions( m_dest,QFile::ReadOwner|QFile::WriteOwner ) ;
+		}else if( m_status == CryptTask::wrongKey ){
+			;
+		}else{
+			m_status = CryptTask::decryptSuccess ;
 		}
+	}
+}
+
+int CryptTask::updateProgress( int e )
+{
+	emit progressUpdate( e ) ;
+	return m_status == CryptTask::quit ;
+}
+
+static int progress( int e )
+{
+	return _cryptTask->updateProgress( e ) ;
+}
+
+void CryptTask::newEncryptionRoutine()
+{
+	if( m_keySource == QString( "-f" ) ){
+		QFile f( m_key ) ;
+		f.open( QIODevice::ReadOnly ) ;
+		m_key = f.readAll() ;
+	}
+
+	lxqt_wallet_error r ;
+	r = lxqt_wallet_create_encrypted_file( m_key.toLatin1().constData(),m_key.size(),
+					       m_source.toLatin1().constData(),m_dest.toLatin1().constData(),progress ) ;
+
+	if( m_status == CryptTask::quit ){
+		QFile::remove( m_dest ) ;
+	}else if( r == lxqt_wallet_no_error ){
+		m_status = CryptTask::encryptSuccess ;
+	}else{
+		m_status = CryptTask::createFileFail ;
+	}
+}
+
+void CryptTask::newDecryptionRoutine()
+{
+	if( m_keySource == QString( "-f" ) ){
+		QFile f( m_key ) ;
+		f.open( QIODevice::ReadOnly ) ;
+		m_key = f.readAll() ;
+	}
+
+	lxqt_wallet_error r ;
+	r = lxqt_wallet_create_decrypted_file( m_key.toLatin1().constData(),m_key.size(),
+					       m_source.toLatin1().constData(),m_dest.toLatin1().constData(),progress ) ;
+
+	if( m_status == CryptTask::quit ){
+		QFile::remove( m_dest ) ;
+	}else if( r == lxqt_wallet_wrong_password ){
+		m_status = CryptTask::wrongKey ;
+	}else if( r == lxqt_wallet_no_error ){
+		m_status = CryptTask::decryptSuccess ;
+	}else{
+		m_status = CryptTask::wrongKey ;
 	}
 }
 
