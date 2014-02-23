@@ -119,10 +119,8 @@ void zuluCryptEXEHelp( void )
 
 	help9 = gettext( "\
 	-J         create a plain mapper owned by the user who run the command on a device pointed by argument -d\n\
-	-B         create a luks header backup\n\
-	-R         restore a luks header on a device from backup\n\
-	-E         encrypt a single file\n\
-	-D         decrypt a single file\n\
+	-B         create a luks or truecrypt header backup\n\
+	-R         restore a luks or truecrypt header on a device from backup\n\
 	\n\
 	options that goes with above operations:\n\
 	-G 	   module name to use to get a passphrase to open a volume\n " ) ;

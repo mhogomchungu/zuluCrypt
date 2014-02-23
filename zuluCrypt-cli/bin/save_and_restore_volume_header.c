@@ -289,8 +289,6 @@ static string_t _get_password( int * r )
 
 	printf( gettext( "Enter passphrase: " ) ) ;
 
-	printf( "\n" ) ;
-
 	/*
 	 * ZULUCRYPT_KEY_MAX_SIZE is set in ../constants.h
 	 */
@@ -311,8 +309,6 @@ static string_t _get_password_0( int * r )
 
 	printf( gettext( "\nRe enter new passphrase: " ) ) ;
 	StringSilentlyGetFromTerminal_1( &xt,ZULUCRYPT_KEY_MAX_SIZE ) ;
-
-	printf( "\n" ) ;
 
 	if( st == StringVoid && xt == StringVoid ){
 		*r = 1 ;
@@ -382,9 +378,9 @@ static int _modify_tcrypt( const info_t * info,const struct_opts * opts,const ch
 	}
 
 	tc_api_task_set( task,"dev",info->device ) ;
-	tc_api_task_set( task,"sys",info->sys_device ) ;
 	tc_api_task_set( task,"hidden",FALSE ) ;
 	tc_api_task_set( task,"hidden_size_bytes",( u_int64_t )0 ) ;
+	tc_api_task_set( task,info->header_source,temp_path ) ;
 
 	if( StringsAreEqual( opts->rng,"/dev/urandom" ) ){
 		tc_api_task_set( task,"weak_keys_and_salt",TRUE ) ;
@@ -392,9 +388,15 @@ static int _modify_tcrypt( const info_t * info,const struct_opts * opts,const ch
 		tc_api_task_set( task,"weak_keys_and_salt",FALSE ) ;
 	}
 
-	tc_api_task_set( task,info->header_source,temp_path ) ;
-
 	k = tc_api_task_do( task ) ;
+	if( k != TC_OK ){
+		tc_api_task_set( task,"sys",info->sys_device ) ;
+		k = tc_api_task_do( task ) ;
+		if( k != TC_OK ){
+			tc_api_task_set( task,"fde",TRUE ) ;
+			k = tc_api_task_do( task ) ;
+		}
+	}
 
 	/*
 	 * zuluCryptDeleteFile() is defined in ../lib/file_path_security.c
@@ -447,23 +449,21 @@ static int _save_truecrypt_header( const struct_opts * opts,const char * temp_pa
 	info.header_source = "save_header_to_file" ;
 	info.getKey        = _get_password ;
 
-	if( _modify_tcrypt( &info,opts,temp_path,uid ) == TC_OK ){
+	st = _root_device( info.device ) ;
+	info.sys_device = StringContent( st ) ;
+
+	r = _modify_tcrypt( &info,opts,temp_path,uid ) ;
+
+	StringDelete( &st ) ;
+
+	if( opts->key == NULL && StringsAreNotEqual( opts->key_source,"-f" ) ){
+		printf( "\n" ) ;
+	}
+
+	if( r == TC_OK ){
 		return _secure_copy_file( temp_path,path,uid ) ;
 	}else{
-		/*
-		 * an attempt to open the volume as a normal truecrypt volume failed,reattempt treating
-		 * the volume as a system volume.
-		 */
-		st = _root_device( info.device ) ;
-		info.sys_device = StringContent( st ) ;
-		r = _modify_tcrypt( &info,opts,temp_path,uid ) ;
-		StringDelete( &st ) ;
-
-		if( r == TC_OK ){
-			return _secure_copy_file( temp_path,path,uid ) ;
-		}else{
-			return 20 ;
-		}
+		return 20 ;
 	}
 }
 
@@ -481,23 +481,20 @@ static int _restore_truecrypt_header( const struct_opts * opts,const char * temp
 	info.header_source = "header_from_file" ;
 	info.getKey        = _get_password_0 ;
 
-	if( _modify_tcrypt( &info,opts,temp_path,uid ) == TC_OK ){
+	st = _root_device( info.device ) ;
+	info.sys_device = StringContent( st ) ;
+	r = _modify_tcrypt( &info,opts,temp_path,uid ) ;
+
+	if( opts->key == NULL && StringsAreNotEqual( opts->key_source,"-f" ) ){
+		printf( "\n" ) ;
+	}
+
+	StringDelete( &st ) ;
+
+	if( r == TC_OK ){
 		return 1 ;
 	}else{
-		/*
-		 * an attempt to open the volume as a normal truecrypt volume failed,reattempt treating
-		 * the volume as a system volume.
-		 */
-		st = _root_device( info.device ) ;
-		info.sys_device = StringContent( st ) ;
-		r = _modify_tcrypt( &info,opts,temp_path,uid ) ;
-		StringDelete( &st ) ;
-
-		if( r == TC_OK ){
-			return 1 ;
-		}else{
-			return 7 ;
-		}
+		return 7 ;
 	}
 }
 
