@@ -259,23 +259,7 @@ static int _save_luks_header( const struct_opts * opts,const char * temp_path,co
 
 #if TCPLAY_NEW_API
 
-#define TRUE   ( int )1
-#define FALSE  ( int )0
-
-typedef struct{
-	const char * device ;
-	const char * sys_device ;
-	const char * key_type ;
-	const char * key_type_1 ;
-	const char * header_source ;
-	const char * tmp_path ;
-	const char * opt ;
-	const char * key ;
-	uid_t uid ;
-	string_t ( * getKey )( int * ) ;
-}info_t ;
-
-static inline int zuluExit_1( int r,string_t st,string_t xt )
+static int zuluExit_1( int r,string_t st,string_t xt )
 {
 	StringMultipleDelete( &xt,&st,NULL ) ;
 	tc_api_uninit() ;
@@ -327,36 +311,6 @@ static string_t _get_password_0( int * r )
 	}
 }
 
-static int _do_task( const info_t * info,const struct_opts * opts )
-{
-	tc_api_task task = tc_api_task_init( "modify" ) ;
-	int r ;
-	if( task == NULL ){
-		return 4 ;
-	}else{
-		tc_api_task_set( task,"dev",info->device ) ;
-		tc_api_task_set( task,"hidden_size_bytes",( u_int64_t )0 ) ;
-		tc_api_task_set( task,info->header_source,info->tmp_path ) ;
-		tc_api_task_set( task,info->key_type,info->key ) ;
-
-		if( StringsAreEqual( info->opt,"sys" ) ){
-			tc_api_task_set( task,"sys",info->sys_device ) ;
-		}
-		if( StringsAreEqual( info->opt,"fde" ) ){
-			tc_api_task_set( task,"fde",TRUE ) ;
-		}
-		if( StringsAreEqual( opts->rng,"/dev/urandom" ) ){
-			tc_api_task_set( task,"weak_keys_and_salt",TRUE ) ;
-		}else{
-			tc_api_task_set( task,"weak_keys_and_salt",FALSE ) ;
-		}
-
-		r = tc_api_task_do( task ) ;
-		tc_api_task_uninit( task ) ;
-		return r ;
-	}
-}
-
 static int _modify_tcrypt( info_t * info,const struct_opts * opts )
 {
 	int k = 4 ;
@@ -401,21 +355,24 @@ static int _modify_tcrypt( info_t * info,const struct_opts * opts )
 		}
 	}
 
-	k = _do_task( info,opts ) ;
+	/*
+	 * zuluCryptModifyTcryptHeader() is defined in ../lib/create_tcrypt.c
+	 */
+	k = zuluCryptModifyTcryptHeader( info ) ;
 
 	if( k != TC_OK ){
 		info->opt = "sys" ;
-		k = _do_task( info,opts ) ;
+		k = zuluCryptModifyTcryptHeader( info ) ;
 		if( k != TC_OK ){
 			info->opt = "fde" ;
-			k = _do_task( info,opts ) ;
+			k = zuluCryptModifyTcryptHeader( info ) ;
 		}
 	}
 
-	/*
-	 * zuluCryptDeleteFile() is defined in ../lib/file_path_security.c
-	 */
 	if( xt != StringVoid ){
+		/*
+		 * zuluCryptDeleteFile() is defined in ../lib/file_path_security.c
+		 */
 		zuluCryptDeleteFile( StringContent( xt ) ) ;
 	}
 
@@ -451,8 +408,12 @@ static string_t _root_device( const char * device )
 static int _save_truecrypt_header( const struct_opts * opts,const char * temp_path,const char * path,uid_t uid )
 {
 	string_t st ;
-	info_t info ;
 	int r ;
+
+	/*
+	 * info_t structure is declared in ../lib/include.h
+	 */
+	info_t info ;
 
 	memset( &info,'\0',sizeof( info_t ) ) ;
 
@@ -464,6 +425,7 @@ static int _save_truecrypt_header( const struct_opts * opts,const char * temp_pa
 	info.getKey        = _get_password ;
 	info.tmp_path      = temp_path ;
 	info.uid           = uid ;
+	info.rng           = opts->rng ;
 
 	st = _root_device( info.device ) ;
 	info.sys_device = StringContent( st ) ;
@@ -484,9 +446,13 @@ static int _save_truecrypt_header( const struct_opts * opts,const char * temp_pa
 
 static int _restore_truecrypt_header( const struct_opts * opts,const char * temp_path,uid_t uid )
 {
-	info_t info ;
 	string_t st ;
 	int r ;
+	/*
+	 * info_t structure is declared in ../lib/include.h
+	 */
+	info_t info ;
+
 	memset( &info,'\0',sizeof( info_t ) ) ;
 
 	info.device        = opts->device ;
@@ -497,6 +463,7 @@ static int _restore_truecrypt_header( const struct_opts * opts,const char * temp
 	info.getKey        = _get_password_0 ;
 	info.tmp_path      = temp_path ;
 	info.uid           = uid ;
+	info.rng           = opts->rng ;
 
 	st = _root_device( info.device ) ;
 	info.sys_device = StringContent( st ) ;

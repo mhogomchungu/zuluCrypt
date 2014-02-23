@@ -97,6 +97,37 @@ static int _create_file_system( const char * device,const char * fs,int key_sour
 #define TRUE   ( int )1
 #define FALSE  ( int )0
 
+int zuluCryptModifyTcryptHeader( const info_t * info )
+{
+	tc_api_task task = tc_api_task_init( "modify" ) ;
+	int r ;
+	if( task == 0 ){
+		return !TC_OK ;
+	}else{
+		tc_api_task_set( task,"dev",info->device ) ;
+		tc_api_task_set( task,"hidden_size_bytes",( u_int64_t )0 ) ;
+		tc_api_task_set( task,info->header_source,info->tmp_path ) ;
+		tc_api_task_set( task,info->key_type,info->key ) ;
+
+		if( StringsAreEqual( info->opt,"sys" ) ){
+			tc_api_task_set( task,"sys",info->sys_device ) ;
+		}
+		if( StringsAreEqual( info->opt,"fde" ) ){
+			tc_api_task_set( task,"sys",info->sys_device ) ;
+			tc_api_task_set( task,"fde",TRUE ) ;
+		}
+		if( StringsAreEqual( info->rng,"/dev/urandom" ) ){
+			tc_api_task_set( task,"weak_keys_and_salt",TRUE ) ;
+		}else{
+			tc_api_task_set( task,"weak_keys_and_salt",FALSE ) ;
+		}
+
+		r = tc_api_task_do( task ) ;
+		tc_api_task_uninit( task ) ;
+		return r ;
+	}
+}
+
 static int _create_volume( const tcrypt_t * info )
 {
 	int r = !TC_OK ;
@@ -105,7 +136,7 @@ static int _create_volume( const tcrypt_t * info )
 
 	if( tc_api_init( 0 ) == TC_OK ){
 		task = tc_api_task_init( "create" ) ;
-		if( task != NULL ){
+		if( task != 0 ){
 
 			tc_api_task_set( task,"dev",info->device ) ;
 			tc_api_task_set( task,"secure_erase",FALSE ) ;

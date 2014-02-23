@@ -37,6 +37,20 @@ typedef struct{
 	const char * fs_flags ;
 }m_struct;
 
+typedef struct{
+	const char * device ;
+	const char * sys_device ;
+	const char * key_type ;
+	const char * key_type_1 ;
+	const char * header_source ;
+	const char * tmp_path ;
+	const char * opt ;
+	const char * key ;
+	const char * rng ;
+	uid_t uid ;
+	string_t ( *getKey )( int * ) ;
+}info_t ;
+
 /*
  * below header is created at build time,it is set by CMakeLists.txt located in the root folder
  */
@@ -347,4 +361,10 @@ char * zuluCryptGetALoopDeviceAssociatedWithAnImageFile( const char * path ) ;
  * zuluCryptGetAListOfMountedVolumes() is defined in process_mountinfo.c
  */
 stringList_t zuluCryptGetAListOfMountedVolumes( void ) ;
+
+/*
+ * zuluCryptModifyTcryptHeader() is defined in create_tcplay.c
+ */
+int zuluCryptModifyTcryptHeader( const info_t * info ) ;
+
 #endif
