@@ -268,15 +268,16 @@ typedef struct{
 	const char * key_type ;
 	const char * key_type_1 ;
 	const char * header_source ;
+	const char * tmp_path ;
+	const char * opt ;
+	const char * key ;
+	uid_t uid ;
 	string_t ( * getKey )( int * ) ;
 }info_t ;
 
-static inline int zuluExit_1( int r,string_t st,string_t xt,tc_api_task task )
+static inline int zuluExit_1( int r,string_t st,string_t xt )
 {
 	StringMultipleDelete( &xt,&st,NULL ) ;
-	if( task != 0 ){
-		tc_api_task_uninit( task ) ;
-	}
 	tc_api_uninit() ;
 	return r ;
 }
@@ -326,10 +327,39 @@ static string_t _get_password_0( int * r )
 	}
 }
 
-static int _modify_tcrypt( const info_t * info,const struct_opts * opts,const char * temp_path,uid_t uid )
+static int _do_task( const info_t * info,const struct_opts * opts )
+{
+	tc_api_task task = tc_api_task_init( "modify" ) ;
+	int r ;
+	if( task == NULL ){
+		return 4 ;
+	}else{
+		tc_api_task_set( task,"dev",info->device ) ;
+		tc_api_task_set( task,"hidden_size_bytes",( u_int64_t )0 ) ;
+		tc_api_task_set( task,info->header_source,info->tmp_path ) ;
+		tc_api_task_set( task,info->key_type,info->key ) ;
+
+		if( StringsAreEqual( info->opt,"sys" ) ){
+			tc_api_task_set( task,"sys",info->sys_device ) ;
+		}
+		if( StringsAreEqual( info->opt,"fde" ) ){
+			tc_api_task_set( task,"fde",TRUE ) ;
+		}
+		if( StringsAreEqual( opts->rng,"/dev/urandom" ) ){
+			tc_api_task_set( task,"weak_keys_and_salt",TRUE ) ;
+		}else{
+			tc_api_task_set( task,"weak_keys_and_salt",FALSE ) ;
+		}
+
+		r = tc_api_task_do( task ) ;
+		tc_api_task_uninit( task ) ;
+		return r ;
+	}
+}
+
+static int _modify_tcrypt( info_t * info,const struct_opts * opts )
 {
 	int k = 4 ;
-	tc_api_task task = 0 ;
 
 	string_t st = StringVoid ;
 	string_t xt = StringVoid ;
@@ -338,63 +368,47 @@ static int _modify_tcrypt( const info_t * info,const struct_opts * opts,const ch
 		return 4 ;
 	}
 
-	task = tc_api_task_init( "modify" ) ;
-	if( task == NULL ){
-		tc_api_uninit() ;
-		return 4 ;
-	}
-
 	if( StringsAreEqual( opts->key_source,"-p" ) ){
-		tc_api_task_set( task,info->key_type,opts->key ) ;
+		info->key = opts->key ;
 	}else if( opts->key == NULL && StringsAreNotEqual( opts->key_source,"-f" ) ){
 		st = info->getKey( &k ) ;
 		if( k ){
-			tc_api_task_set( task,info->key_type,StringContent( st ) ) ;
+			info->key = StringContent( st ) ;
 		}else{
-			return zuluExit_1( 4,st,xt,task ) ;
+			return zuluExit_1( 4,st,xt ) ;
 		}
 	}else{
 		/*
 		 * function is defined at "path_access.c"
 		 */
-		zuluCryptGetPassFromFile( opts->key,uid,&st ) ;
+		zuluCryptGetPassFromFile( opts->key,info->uid,&st ) ;
 
 		zuluCryptSecurityGainElevatedPrivileges() ;
 
 		if( st == StringVoid ){
-			return zuluExit_1( 4,st,xt,task ) ;
+			return zuluExit_1( 4,st,xt ) ;
 		}else{
 			if( StringHasComponent( opts->key,".zuluCrypt-socket" ) ){
-				tc_api_task_set( task,info->key_type,StringContent( st ) ) ;
+				info->key = StringContent( st ) ;
 			}else{
 				xt = zuluCryptCreateKeyFile( StringContent( st ),StringLength( st ),"tcrypt-bk-" ) ;
 				if( xt == StringVoid ){
-					return zuluExit_1( 4,st,xt,task ) ;
+					return zuluExit_1( 4,st,xt ) ;
 				}else{
-					tc_api_task_set( task,info->key_type_1,StringContent( xt ) ) ;
+					info->key = StringContent( xt ) ;
 				}
 			}
 		}
 	}
 
-	tc_api_task_set( task,"dev",info->device ) ;
-	tc_api_task_set( task,"hidden",FALSE ) ;
-	tc_api_task_set( task,"hidden_size_bytes",( u_int64_t )0 ) ;
-	tc_api_task_set( task,info->header_source,temp_path ) ;
+	k = _do_task( info,opts ) ;
 
-	if( StringsAreEqual( opts->rng,"/dev/urandom" ) ){
-		tc_api_task_set( task,"weak_keys_and_salt",TRUE ) ;
-	}else{
-		tc_api_task_set( task,"weak_keys_and_salt",FALSE ) ;
-	}
-
-	k = tc_api_task_do( task ) ;
 	if( k != TC_OK ){
-		tc_api_task_set( task,"sys",info->sys_device ) ;
-		k = tc_api_task_do( task ) ;
+		info->opt = "sys" ;
+		k = _do_task( info,opts ) ;
 		if( k != TC_OK ){
-			tc_api_task_set( task,"fde",TRUE ) ;
-			k = tc_api_task_do( task ) ;
+			info->opt = "fde" ;
+			k = _do_task( info,opts ) ;
 		}
 	}
 
@@ -405,7 +419,7 @@ static int _modify_tcrypt( const info_t * info,const struct_opts * opts,const ch
 		zuluCryptDeleteFile( StringContent( xt ) ) ;
 	}
 
-	return zuluExit_1( k,st,xt,task ) ;
+	return zuluExit_1( k,st,xt ) ;
 }
 
 static string_t _root_device( const char * device )
@@ -448,18 +462,19 @@ static int _save_truecrypt_header( const struct_opts * opts,const char * temp_pa
 	info.key_type_1    = "keyfiles" ;
 	info.header_source = "save_header_to_file" ;
 	info.getKey        = _get_password ;
+	info.tmp_path      = temp_path ;
+	info.uid           = uid ;
 
 	st = _root_device( info.device ) ;
 	info.sys_device = StringContent( st ) ;
 
-	r = _modify_tcrypt( &info,opts,temp_path,uid ) ;
+	r = _modify_tcrypt( &info,opts ) ;
 
 	StringDelete( &st ) ;
 
 	if( opts->key == NULL && StringsAreNotEqual( opts->key_source,"-f" ) ){
 		printf( "\n" ) ;
 	}
-
 	if( r == TC_OK ){
 		return _secure_copy_file( temp_path,path,uid ) ;
 	}else{
@@ -480,17 +495,19 @@ static int _restore_truecrypt_header( const struct_opts * opts,const char * temp
 	info.key_type_1    = "new_keyfiles" ;
 	info.header_source = "header_from_file" ;
 	info.getKey        = _get_password_0 ;
+	info.tmp_path      = temp_path ;
+	info.uid           = uid ;
 
 	st = _root_device( info.device ) ;
 	info.sys_device = StringContent( st ) ;
-	r = _modify_tcrypt( &info,opts,temp_path,uid ) ;
+
+	r = _modify_tcrypt( &info,opts ) ;
+
+	StringDelete( &st ) ;
 
 	if( opts->key == NULL && StringsAreNotEqual( opts->key_source,"-f" ) ){
 		printf( "\n" ) ;
 	}
-
-	StringDelete( &st ) ;
-
 	if( r == TC_OK ){
 		return 1 ;
 	}else{
