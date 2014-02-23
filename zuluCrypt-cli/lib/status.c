@@ -156,6 +156,8 @@ void zuluCryptFileSystemProperties( string_t p,const char * mapper,const char * 
 
 	if( used == total ){
 		StringAppend( p,"\n used%:   \t100%\n" ) ;
+	}else if( used == 0 ){
+		StringAppend( p,"\n used%:   \t0%\n" ) ;
 	}else{
 		snprintf( buff,SIZE,"%.2f%%",100 * ( ( float ) used / ( float ) total ) ) ;
 		StringMultipleAppend( p,"\n used%:   \t",buff,"\n",END ) ;
