@@ -581,9 +581,11 @@ lxqt_wallet_error lxqt_wallet_create_decrypted_file( const char * password,u_int
 
 		size = size - i ;
 
-		read( fd_src,file_buffer,FILE_BLOCK_SIZE ) ;
-		gcry_cipher_decrypt( handle,file_buffer,FILE_BLOCK_SIZE,NULL,0 ) ;
-		write( fd_dest,file_buffer,size ) ;
+		if( size > 0 ){
+			read( fd_src,file_buffer,FILE_BLOCK_SIZE ) ;
+			gcry_cipher_decrypt( handle,file_buffer,FILE_BLOCK_SIZE,NULL,0 ) ;
+			write( fd_dest,file_buffer,size ) ;
+		}
 
 		close( fd_src ) ;
 		close( fd_dest ) ;
