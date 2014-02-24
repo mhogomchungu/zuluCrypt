@@ -31,10 +31,17 @@ static inline int zuluExit( int st,struct crypt_device * cd )
 static u_int64_t _offset( const char * offset )
 {
 	char * e ;
-	size_t s = StringSize( offset ) ;
-	char f = *( offset + s - 1 ) ;
-	u_int64_t r = 0 ;
+	char f   ;
 
+	u_int64_t r = 0 ;
+	
+	size_t s = StringSize( offset ) ;
+
+	if( s == 0 ){
+		return 0 ;
+	}else{
+		f = *( offset + s - 1 ) ;
+	}
 	if( !( f >= '0' && f <= '9' ) ){
 		/*
 		 * The argument ends with a non digit number,assume the argument is not in offsets but
