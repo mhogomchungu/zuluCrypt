@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>542</width>
-    <height>93</height>
+    <height>82</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,8 +18,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>481</width>
-     <height>111</height>
+     <width>541</width>
+     <height>81</height>
     </rect>
    </property>
    <widget class="QPushButton" name="pbOpen">

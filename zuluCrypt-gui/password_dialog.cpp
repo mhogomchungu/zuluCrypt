@@ -479,6 +479,7 @@ void passwordDialog::openVolume()
 				this->sendKey( keyPath ) ;
 			}else{
 				passtype = QString( "-G" ) ;
+				keyPath  = r ;
 			}
 		}
 	}

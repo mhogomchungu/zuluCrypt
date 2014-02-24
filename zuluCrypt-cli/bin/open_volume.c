@@ -277,8 +277,17 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		if( *passphrase == StringVoid ){
 			return zuluExit_1( 12,opts,device,mount_point,stl ) ;
 		}
-		key = StringContent( *passphrase ) ;
 		key_len = StringLength( *passphrase ) ;
+		if( key_len == 0 ){
+			/*
+			 * TODO
+			 * A plugin just gave us an empty password,currently,we cant tell if its because
+			 * a user of the plugin sent an empty password or the plugin was cancelled and a user
+			 * sent no password.Look into trying to tell the two apart.
+			 */
+			;
+		}
+		key = StringContent( *passphrase ) ;
 		zuluCryptSecurityLockMemory_1( *passphrase ) ;
 	}else if( source == NULL ){
 		printf( gettext( "Enter passphrase: " ) ) ;

@@ -23,6 +23,7 @@
 MainWindow::MainWindow( QWidget * parent ) : QWidget( parent ),m_ui( new Ui::MainWindow )
 {
 	m_ui->setupUi( this ) ;
+	this->setFixedSize( this->size() ) ;
 
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
 
@@ -123,5 +124,5 @@ void MainWindow::pbKeyFile()
 MainWindow::~MainWindow()
 {
 	socketSendKey::zuluCryptPluginManagerCloseConnection( m_handle ) ;
-	delete m_ui;
+	delete m_ui ;
 }

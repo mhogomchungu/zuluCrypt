@@ -23,6 +23,7 @@
 MainWindow::MainWindow( QWidget * parent ) : QWidget( parent ),m_ui( new Ui::MainWindow )
 {
 	m_ui->setupUi( this ) ;
+	this->setFixedSize( this->size() ) ;
 
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
 
@@ -79,11 +80,6 @@ void MainWindow::done()
 void MainWindow::pbOpen()
 {
 	QByteArray key = m_ui->lineEditKey->text().toLatin1() ;
-
-	if( key.isEmpty() ){
-		DialogMsg msg( this ) ;
-		return msg.ShowUIOK( tr( "ERROR" ),tr( "key field is empty" ) ) ;
-	}
 
 	socketSendKey::zuluCryptPluginManagerSendKey( m_handle,key ) ;
 

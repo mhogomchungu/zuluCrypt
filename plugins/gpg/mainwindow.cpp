@@ -23,23 +23,23 @@
 
 MainWindow::MainWindow( QWidget * parent ) : QWidget( parent ),m_ui( new Ui::MainWindow )
 {
-	m_ui->setupUi( this );
-	this->setFixedSize( this->size() );
+	m_ui->setupUi( this ) ;
+	this->setFixedSize( this->size() ) ;
 
-	m_ui->lineEditKey->setEchoMode( QLineEdit::Password );
+	m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
 
-	this->setWindowIcon( QIcon( QString( ":/gpg.png" ) ) );
+	this->setWindowIcon( QIcon( QString( ":/gpg.png" ) ) ) ;
 	m_ui->pbKeyFile->setIcon( QIcon( QString( ":/gpg.png" ) ) );
 
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->pbOpen,SIGNAL( clicked() ),this,SLOT( pbOpen() ) ) ;
 	connect( m_ui->pbKeyFile,SIGNAL( clicked() ),this,SLOT( pbKeyFile() ) ) ;
 
-	m_ui->lineEditKey->setFocus();
+	m_ui->lineEditKey->setFocus() ;
 
 	m_working = false ;
 
-	this->setWindowTitle( QString( "gpg key module" ) );
+	this->setWindowTitle( QString( "gpg key module" ) ) ;
 
 	QAction * ac = new QAction( this ) ;
 	QList<QKeySequence> keys ;
@@ -47,7 +47,7 @@ MainWindow::MainWindow( QWidget * parent ) : QWidget( parent ),m_ui( new Ui::Mai
 	keys.append( Qt::Key_Return );
 	ac->setShortcuts( keys ) ;
 	connect( ac,SIGNAL( triggered() ),this,SLOT( defaultButton() ) ) ;
-	this->addAction( ac );
+	this->addAction( ac ) ;
 
 	m_sendKey = new socketSendKey( this ) ;
 	connect( m_sendKey,SIGNAL( keySent() ),this,SLOT( doneWritingData() ) ) ;
@@ -56,18 +56,18 @@ MainWindow::MainWindow( QWidget * parent ) : QWidget( parent ),m_ui( new Ui::Mai
 void MainWindow::defaultButton()
 {
 	if( m_ui->pbCancel->hasFocus() ){
-		this->pbCancel();
+		this->pbCancel() ;
 	}else{
-		this->pbOpen();
+		this->pbOpen() ;
 	}
 }
 
 void MainWindow::SetAddr( QString addr )
 {
 	m_addr = addr ;
-	m_sendKey->setAddr( m_addr );
+	m_sendKey->setAddr( m_addr ) ;
 	if( !m_sendKey->openConnection() ){
-		this->Exit( 1 );
+		this->Exit( 1 ) ;
 	}
 }
 
@@ -78,11 +78,11 @@ void MainWindow::gotConnected()
 void MainWindow::SetFocus()
 {
 	if( m_ui->lineEditKey->text().isEmpty() ){
-		m_ui->lineEditKey->setFocus();
+		m_ui->lineEditKey->setFocus() ;
 	}else if( m_ui->lineEditKeyFile->text().isEmpty() ){
-		m_ui->lineEditKeyFile->setFocus();
+		m_ui->lineEditKeyFile->setFocus() ;
 	}else{
-		m_ui->pbOpen->setFocus();
+		m_ui->pbOpen->setFocus() ;
 	}
 }
 
@@ -93,23 +93,23 @@ void MainWindow::pbCancel()
 		int st = msg.ShowUIYesNoDefaultNo( QString( "warning"),QString( "are you sure you want to terminate this operation prematurely?" )) ;
 
 		if( st == QMessageBox::Yes ){
-			this->enableAlll();
+			this->enableAlll() ;
 			m_working = false ;
-			emit cancel();
+			emit cancel() ;
 		}
 	}else{
-		this->Exit( 1 );
+		this->Exit( 1 ) ;
 	}
 }
 
 void MainWindow::Exit( int st )
 {
 	Q_UNUSED( st ) ;
-	this->hide();
+	this->hide() ;
 	/*
 	 * just close the connection, zuluCrypt-cli will SIGTERM us
 	 */
-	m_sendKey->closeConnection();
+	m_sendKey->closeConnection() ;
 }
 
 QString MainWindow::FindGPG()
@@ -133,7 +133,7 @@ void MainWindow::startingToreadData()
 void MainWindow::bytesRead( int bytes )
 {
 	QString msg = QString( "number of bytes read from gpg keyfile: " ) + QString::number( bytes ) ;
-	this->setWindowTitle( msg );
+	this->setWindowTitle( msg ) ;
 }
 
 void MainWindow::doneReading()
@@ -143,18 +143,18 @@ void MainWindow::doneReading()
 void MainWindow::getGPGKey( bool cancelled,QByteArray data )
 {
 	if( cancelled ){
-		return this->Exit( 1 );
+		return this->Exit( 1 ) ;
 	}
 	if( !data.isEmpty() ){
 		this->hide();
-		m_sendKey->sendKey( data );
+		m_sendKey->sendKey( data ) ;
 	}else{
 		DialogMsg msg( this ) ;
 		m_working = false ;
-		msg.ShowUIOK( tr( "ERROR" ),tr("could not decrept the gpg keyfile,wrong key?" ) );
-		this->enableAlll();
-		m_ui->lineEditKey->setFocus();
-		this->setWindowTitle( QString( "gpg key module" ) );
+		msg.ShowUIOK( tr( "ERROR" ),tr("could not decrept the gpg keyfile,wrong key?" ) ) ;
+		this->enableAlll() ;
+		m_ui->lineEditKey->setFocus() ;
+		this->setWindowTitle( QString( "gpg key module" ) ) ;
 	}
 }
 
@@ -170,13 +170,13 @@ void MainWindow::pbOpen()
 	if( !QFile::exists( path ) ){
 		return msg.ShowUIOK( tr( "ERROR" ),tr( "invalid path to gpg keyfile" ) ) ;
 	}
-	
+
 	QString exe = this->FindGPG() ;
 
 	if( exe.isEmpty() ){
 		return msg.ShowUIOK( tr( "ERROR" ),tr( "could not find \"gpg\" executable in \"/usr/local\",\"/usr/bin\" and \"/usr/sbin\"" ) ) ;
 	}
-	this->disableAll();
+	this->disableAll() ;
 	m_working = true ;
 
 	getgpgkey * gpg = new getgpgkey( exe,m_ui->lineEditKey->text(),m_ui->lineEditKeyFile->text() ) ;
@@ -184,13 +184,13 @@ void MainWindow::pbOpen()
 	connect( this,SIGNAL( cancel() ),gpg,SLOT( cancel() ) ) ;
 	connect( gpg,SIGNAL( bytesRead( int ) ),this,SLOT( bytesRead( int ) ) ) ;
 	connect( gpg,SIGNAL( doneReadingFromgpg() ),this,SLOT( doneReading() ) ) ;
-	gpg->start();
+	gpg->start() ;
 }
 
 void MainWindow::doneWritingData()
 {
 	m_working = false ;
-	this->Exit( 0 );
+	this->Exit( 0 ) ;
 }
 
 void MainWindow::pbKeyFile()
@@ -198,40 +198,40 @@ void MainWindow::pbKeyFile()
 	QString Z = QFileDialog::getOpenFileName( this,QString( "select a key file" ),QDir::homePath() ) ;
 
 	if( !Z.isEmpty() ){
-		m_ui->lineEditKeyFile->setText( Z );
+		m_ui->lineEditKeyFile->setText( Z ) ;
 	}
-	this->SetFocus();
+	this->SetFocus() ;
 }
 
 void MainWindow::closeEvent( QCloseEvent * e )
 {
-	e->ignore();
-	this->pbCancel();
+	e->ignore() ;
+	this->pbCancel() ;
 }
 
 void MainWindow::disableAll()
 {
-	m_ui->label->setEnabled( false );
-	m_ui->label_2->setEnabled( false );
-	m_ui->lineEditKey->setEnabled( false );
-	m_ui->lineEditKeyFile->setEnabled( false );
-	m_ui->pbKeyFile->setEnabled( false );
-	m_ui->pbOpen->setEnabled( false );
-	m_ui->pbCancel->setEnabled( false );
+	m_ui->label->setEnabled( false ) ;
+	m_ui->label_2->setEnabled( false ) ;
+	m_ui->lineEditKey->setEnabled( false ) ;
+	m_ui->lineEditKeyFile->setEnabled( false ) ;
+	m_ui->pbKeyFile->setEnabled( false ) ;
+	m_ui->pbOpen->setEnabled( false ) ;
+	m_ui->pbCancel->setEnabled( false ) ;
 }
 
 void MainWindow::enableAlll()
 {
-	m_ui->label->setEnabled( true );
-	m_ui->label_2->setEnabled( true );
-	m_ui->lineEditKey->setEnabled( true );
-	m_ui->lineEditKeyFile->setEnabled( true );
-	m_ui->pbKeyFile->setEnabled( true );
-	m_ui->pbOpen->setEnabled( true );
-	m_ui->pbCancel->setEnabled( true );
+	m_ui->label->setEnabled( true ) ;
+	m_ui->label_2->setEnabled( true ) ;
+	m_ui->lineEditKey->setEnabled( true ) ;
+	m_ui->lineEditKeyFile->setEnabled( true ) ;
+	m_ui->pbKeyFile->setEnabled( true ) ;
+	m_ui->pbOpen->setEnabled( true ) ;
+	m_ui->pbCancel->setEnabled( true ) ;
 }
 
 MainWindow::~MainWindow()
 {
-	delete m_ui;
+	delete m_ui ;
 }
