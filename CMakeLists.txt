@@ -78,6 +78,7 @@ endif( LIB_SUFFIX )
 set( PLUGINPATH "${LIB_PATH}/zuluCrypt" )
 
 file( WRITE ${PROJECT_BINARY_DIR}/plugin_path.h "\n#define ZULUCRYPTpluginPath      \"${PLUGINPATH}/\"\n" )
+file( APPEND ${PROJECT_BINARY_DIR}/plugin_path.h "\n#define ZULUCRYPTTestPlugin      \"${PLUGINPATH}/zuluCrypt-testKey\"\n" )
 
 if( TCPLAY_FOUND )
 	if( NOT TCPLAY_VERSION VERSION_LESS "1.0.0" )

@@ -187,22 +187,22 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		p = Process( pluginPath ) ;
 		str = ProcessArgumentStructure( p ) ;
 
-		args[0] = pluginPath ;
-		args[1] = device ;
+		*( args + 0 ) = pluginPath ;
+		*( args + 1 ) = device ;
 
 		if( uuid != NULL ){
-			args[2] = uuid ;
+			*( args + 2 ) = uuid ;
 		}else{
-			args[2] = "Nil" ;
+			*( args + 2 ) = "Nil" ;
 		}
 
-		args[3] = sockpath ;
+		*( args + 3 ) = sockpath ;
 		/*
 		 * ZULUCRYPT_CHAR_MAX_KEYSIZE is set in ../constants.h
 		 */
-		args[4] = ZULUCRYPT_CHAR_MAX_KEYSIZE ;
-		args[5] = argv ;
-		args[6] = NULL ;
+		*( args + 4 ) = ZULUCRYPT_CHAR_MAX_KEYSIZE ;
+		*( args + 5 ) = argv ;
+		*( args + 6 ) = NULL ;
 
 		str->args    = ( char * const * )args ;
 		str->env     = env ;

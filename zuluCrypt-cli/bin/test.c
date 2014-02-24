@@ -34,6 +34,7 @@
 #include "../utility/process/process.h"
 
 #include "bin_path.h"
+#include "plugin_path.h"
 
 const char * luksTestVolume   = "/tmp/zuluCrypt-luksTestVolume" ;
 const char * plainTestVolume  = "/tmp/zuluCrypt-plainTestVolume" ;
@@ -406,6 +407,7 @@ int _loop_device_module_is_not_present( void )
 int zuluCryptRunTest( void )
 {
 	uid_t uid  = getuid() ;
+	struct stat st ;
 
 	seteuid( 0 ) ;
 
@@ -446,8 +448,12 @@ int zuluCryptRunTest( void )
 	closeVolume( plainTestVolume,"closing a plain volume: " ) ;
 
 	__printLine() ;
-	openVolumeWithPlugIn( plainTestVolume,"open a plain volume using a plugin: " ) ;
-	closeVolume( plainTestVolume,"closing a plain volume: " ) ;
+	if( stat( ZULUCRYPTTestPlugin,&st ) != 0 ){
+		__print( "test plugin not found,skip plain volume opening with a plugin\n" ) ;
+	}else{
+		openVolumeWithPlugIn( plainTestVolume,"open a plain volume using a plugin: " ) ;
+		closeVolume( plainTestVolume,"closing a plain volume: " ) ;
+	}
 
 	__printLine() ;
 	openVolume( luksTestVolume,"open a luks volume with a key: ","-p" );
@@ -458,8 +464,12 @@ int zuluCryptRunTest( void )
 	closeVolume( luksTestVolume,"closing a luks volume: " ) ;
 
 	__printLine() ;
-	openVolumeWithPlugIn( luksTestVolume,"open a luks volume using a plugin: " ) ;
-	closeVolume( luksTestVolume,"closing a luks volume: " ) ;
+	if( stat( ZULUCRYPTTestPlugin,&st ) != 0 ){
+		__print( "test plugin not found,skip luks volume opening with a plugin\n" ) ;
+	}else{
+		openVolumeWithPlugIn( luksTestVolume,"open a luks volume using a plugin: " ) ;
+		closeVolume( luksTestVolume,"closing a luks volume: " ) ;
+	}
 
 	__printLine() ;
 	checkKeySlotsInUse( luksTestVolume ) ;
