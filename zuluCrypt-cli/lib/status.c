@@ -368,6 +368,7 @@ char * zuluCryptVolumeDeviceName( const char * mapper )
 	struct crypt_device * cd ;
 	const char * e = crypt_get_dir() ;
 	char * f = NULL ;
+	string_t st ;
 	if( StringPrefixEqual( mapper,e ) ){
 		if( crypt_init_by_name( &cd,mapper ) == 0 ){
 			e = crypt_get_device_name( cd ) ;
@@ -376,6 +377,14 @@ char * zuluCryptVolumeDeviceName( const char * mapper )
 				* zuluCryptResolvePath() is defined in resolve_path.c
 				*/
 				f = zuluCryptResolvePath( e ) ;
+				if( !StringPrefixMatch( f,"/dev/",5 ) ){
+					st = StringInherit( &f ) ;
+					/*
+					 * zuluCryptDecodeMountEntry() is defined in mount_volume.c
+					 */
+					zuluCryptDecodeMountEntry( st ) ;
+					f = StringDeleteHandle( &st ) ;
+				}
 			}
 			crypt_free( cd ) ;
 		}
