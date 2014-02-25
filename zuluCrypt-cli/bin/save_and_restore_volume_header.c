@@ -262,7 +262,6 @@ static int _save_luks_header( const struct_opts * opts,const char * temp_path,co
 static int zuluExit_1( int r,string_t st,string_t xt )
 {
 	StringMultipleDelete( &xt,&st,NULL ) ;
-	tc_api_uninit() ;
 	return r ;
 }
 
@@ -318,10 +317,6 @@ static int _modify_tcrypt( info_t * info,const struct_opts * opts )
 	string_t st = StringVoid ;
 	string_t xt = StringVoid ;
 
-	if( tc_api_init( 0 ) != TC_OK ){
-		return 4 ;
-	}
-
 	if( StringsAreEqual( opts->key_source,"-p" ) ){
 		info->key = opts->key ;
 	}else if( opts->key == NULL && StringsAreNotEqual( opts->key_source,"-f" ) ){
@@ -329,7 +324,7 @@ static int _modify_tcrypt( info_t * info,const struct_opts * opts )
 		if( k ){
 			info->key = StringContent( st ) ;
 		}else{
-			return zuluExit_1( 4,st,xt ) ;
+			return zuluExit_1( k,st,xt ) ;
 		}
 	}else{
 		/*
@@ -340,14 +335,14 @@ static int _modify_tcrypt( info_t * info,const struct_opts * opts )
 		zuluCryptSecurityGainElevatedPrivileges() ;
 
 		if( st == StringVoid ){
-			return zuluExit_1( 4,st,xt ) ;
+			return zuluExit_1( k,st,xt ) ;
 		}else{
 			if( StringHasComponent( opts->key,".zuluCrypt-socket" ) ){
 				info->key = StringContent( st ) ;
 			}else{
 				xt = zuluCryptCreateKeyFile( StringContent( st ),StringLength( st ),"tcrypt-bk-" ) ;
 				if( xt == StringVoid ){
-					return zuluExit_1( 4,st,xt ) ;
+					return zuluExit_1( k,st,xt ) ;
 				}else{
 					info->key = StringContent( xt ) ;
 				}
@@ -355,18 +350,20 @@ static int _modify_tcrypt( info_t * info,const struct_opts * opts )
 		}
 	}
 
-	/*
-	 * zuluCryptModifyTcryptHeader() is defined in ../lib/create_tcrypt.c
-	 */
-	k = zuluCryptModifyTcryptHeader( info ) ;
-
-	if( k != TC_OK ){
-		info->opt = "sys" ;
+	if( tc_api_init( 0 ) == TC_OK ){
+		/*
+		 * zuluCryptModifyTcryptHeader() is defined in ../lib/create_tcrypt.c
+		 */
 		k = zuluCryptModifyTcryptHeader( info ) ;
 		if( k != TC_OK ){
-			info->opt = "fde" ;
+			info->opt = "sys" ;
 			k = zuluCryptModifyTcryptHeader( info ) ;
+			if( k != TC_OK ){
+				info->opt = "fde" ;
+				k = zuluCryptModifyTcryptHeader( info ) ;
+			}
 		}
+		tc_api_uninit() ;
 	}
 
 	if( xt != StringVoid ){
