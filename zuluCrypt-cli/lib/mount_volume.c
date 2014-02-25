@@ -373,6 +373,14 @@ const char * zuluCryptDecodeMountEntry( string_t st )
 	return StringReplaceString( st,"\\011","\\t" ) ;
 }
 
+const char * zuluCryptEncodeMountEntry( string_t st )
+{
+	StringReplaceString( st,"\\","\\134" ) ;
+	StringReplaceString( st,"\n","\\012" ) ;
+	StringReplaceString( st," ","\\040" ) ;
+	return StringReplaceString( st,"\\t","\\011" ) ;
+}
+
 int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long mount_opts,const char * fs_opts,uid_t uid )
 {
 	int h ;

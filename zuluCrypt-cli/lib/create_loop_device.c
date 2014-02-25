@@ -60,7 +60,10 @@ string_t zuluCryptLoopDeviceAddress_2( const char * device )
 	}else{
 		StringRemoveRight( xt,1 ) ;
 	}
-	StringReplaceString( xt," ","\\040" ) ;
+	/*
+	 * zuluCryptEncodeMountEntry() is defined in mount_volume.c
+	 */
+	zuluCryptEncodeMountEntry( xt ) ;
 	return xt ;
 }
 

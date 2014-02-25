@@ -88,6 +88,12 @@ int zuluCryptPathIsNotValid( const char * path ) ;
  * zuluCryptDecodeMountEntry() is defined in mount_volume.c
  */
 const char * zuluCryptDecodeMountEntry( string_t ) ;
+
+/*
+ * zuluCryptDecodeMountEntry() is defined in mount_volume.c
+ */
+const char * zuluCryptEncodeMountEntry( string_t ) ;
+
 /*
  *this function is deined in ../lib/process_mountinfo.c
  */
