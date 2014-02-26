@@ -64,6 +64,8 @@ managevolumeheader::managevolumeheader( QWidget * parent ) :
 
 	m_OperationInProgress = false ;
 
+	m_trueCryptWarning = false ;
+
 #if TCPLAY_NEW_API
 	this->enableTrueCrypt( false ) ;
 	m_ui->checkBoxVolumeIsTrueCrypt->setChecked( false ) ;
@@ -79,32 +81,13 @@ managevolumeheader::managevolumeheader( QWidget * parent ) :
 void managevolumeheader::rbKeyToggled( bool toggled )
 {
 	if( toggled ){
-		m_ui->label->setText( tr( "key" ) ) ;
 		m_ui->pBKeyFile->setEnabled( false ) ;
-		if( m_operation == QString( "backup" ) ){
-			m_ui->lineEditRepeatPassWord->setEnabled( false ) ;
-			m_ui->label_2->setEnabled( false ) ;
-		}else{
-			m_ui->lineEditRepeatPassWord->setEnabled( true ) ;
-			m_ui->label_2->setEnabled( true ) ;
-		}
 		m_ui->lineEditPassWord->setEchoMode( QLineEdit::Password ) ;
-		m_ui->lineEditRepeatPassWord->setEchoMode( QLineEdit::Password ) ;
 	}else{
-		m_ui->label->setText( tr( "keyfile" ) ) ;
-		if( m_operation == QString( "backup" ) ){
-			m_ui->lineEditRepeatPassWord->setEnabled( false ) ;
-			m_ui->label_2->setEnabled( false ) ;
-		}else{
-			m_ui->lineEditRepeatPassWord->setEnabled( false ) ;
-			m_ui->label_2->setEnabled( false ) ;
-		}
 		m_ui->pBKeyFile->setEnabled( true ) ;
 		m_ui->lineEditPassWord->setEchoMode( QLineEdit::Normal ) ;
-		m_ui->lineEditRepeatPassWord->setEchoMode( QLineEdit::Normal ) ;
 	}
 	m_ui->lineEditPassWord->clear() ;
-	m_ui->lineEditRepeatPassWord->clear() ;
 }
 
 void managevolumeheader::cbTrueCryptVolume( bool toggled )
@@ -119,10 +102,15 @@ void managevolumeheader::enableTrueCrypt( bool enable )
 	m_ui->rbKeyFile->setEnabled( enable ) ;
 	m_ui->groupBox->setEnabled( enable ) ;
 	m_ui->label->setEnabled( enable ) ;
-	//m_ui->label_2->setEnabled( enable ) ;
 	m_ui->pBKeyFile->setEnabled( enable ) ;
 	m_ui->lineEditPassWord->setEnabled( enable ) ;
-
+	if( m_operation == QString( "restore" ) ){
+		if( m_trueCryptWarning == false ){
+			m_trueCryptWarning = true ;
+			DialogMsg msg( this ) ;
+			return msg.ShowUIOK( tr( "WARNING!" ),tr( "this tool currently can restore a truecrypt header only to non-system encrypted volume" ) ) ;
+		}
+	}
 	if( enable ){
 		this->rbKeyToggled( true ) ;
 	}
@@ -155,6 +143,7 @@ void managevolumeheader::ShowUI()
 void managevolumeheader::restoreHeader()
 {
 	m_operation = QString( "restore" ) ;
+	m_ui->label->setText( tr( "enter an existing key in the back up header file" ) ) ;
 	this->setWindowTitle( tr( "restore volume header" ) ) ;
 	m_ui->labelBackUpHeader->setText( QString( "backup path" ) ) ;
 	m_ui->pbCreate->setText( tr( "&restore" ) ) ;
@@ -165,6 +154,7 @@ void managevolumeheader::restoreHeader()
 void managevolumeheader::headerBackUp()
 {
 	m_operation = QString( "backup" ) ;
+	m_ui->label->setText( tr( "enter an existing key in the volume" ) ) ;
 	this->setWindowTitle( tr( "back up volume header" ) ) ;
 	m_ui->labelBackUpHeader->setText( QString( "backup path" ) ) ;
 	m_ui->pbCreate->setText( tr( "&backup" ) ) ;
@@ -281,7 +271,6 @@ void managevolumeheader::enableAll()
 		m_ui->rbKeyFile->setEnabled( true ) ;
 		m_ui->groupBox->setEnabled( true ) ;
 		m_ui->label->setEnabled( true ) ;
-		m_ui->label_2->setEnabled( true ) ;
 		if( m_ui->rbKeyFile->isChecked() ){
 			m_ui->pBKeyFile->setEnabled( true ) ;
 		}
@@ -291,7 +280,6 @@ void managevolumeheader::enableAll()
 	m_ui->rbKey->setChecked( false ) ;
 	m_ui->groupBox->setEnabled( false ) ;
 	m_ui->label->setEnabled( false ) ;
-	m_ui->label_2->setEnabled( false ) ;
 	m_ui->pBKeyFile->setEnabled( false ) ;
 	m_ui->rbKeyFile->setEnabled( false ) ;
 	m_ui->checkBoxVolumeIsTrueCrypt->setEnabled( false ) ;
@@ -312,7 +300,6 @@ void managevolumeheader::disableAll()
 	m_ui->rbKey->setChecked( false ) ;
 	m_ui->groupBox->setEnabled( false ) ;
 	m_ui->label->setEnabled( false ) ;
-	m_ui->label_2->setEnabled( false ) ;
 	m_ui->pBKeyFile->setEnabled( false ) ;
 	m_ui->checkBoxVolumeIsTrueCrypt->setEnabled( false ) ;
 }
@@ -326,13 +313,6 @@ void managevolumeheader::pbCreate()
 	}
 	if( m_ui->lineEditPassWord->text().isEmpty() && m_ui->rbKeyFile->isChecked() && m_ui->checkBoxVolumeIsTrueCrypt->isChecked() ){
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
-	}
-	if( m_operation == QString( "restore" ) ){
-		if( m_ui->rbKey->isChecked() && m_ui->checkBoxVolumeIsTrueCrypt->isChecked() ){
-			if( m_ui->lineEditPassWord->text() != m_ui->lineEditRepeatPassWord->text() ){
-				return msg.ShowUIOK( tr( "ERROR!" ),tr( "two passphrases do not match" ) ) ;
-			}
-		}
 	}
 
 	QString device = utility::resolvePath( m_ui->lineEditDevicePath->text() ) ;

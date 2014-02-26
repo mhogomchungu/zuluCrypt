@@ -68,6 +68,7 @@ private:
 	bool m_OperationInProgress ;
 	QString m_operation ;
 	int m_saveHeader ;
+	bool m_trueCryptWarning ;
 };
 
 #endif // CREATEKEYFILE_H

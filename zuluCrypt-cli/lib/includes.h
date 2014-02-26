@@ -40,13 +40,14 @@ typedef struct{
 typedef struct{
 	const char * device ;
 	const char * sys_device ;
-	const char * key_type ;
-	const char * key_type_1 ;
 	const char * header_source ;
 	const char * tmp_path ;
 	const char * opt ;
 	const char * key ;
 	const char * rng ;
+	const char * header_key ;
+	const char * header_key_source ;
+	const char * header_new_key_source ;
 	uid_t uid ;
 	string_t ( *getKey )( int * ) ;
 }info_t ;

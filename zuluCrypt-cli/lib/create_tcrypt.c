@@ -104,18 +104,34 @@ int zuluCryptModifyTcryptHeader( const info_t * info )
 	if( task == 0 ){
 		return !TC_OK ;
 	}else{
-		tc_api_task_set( task,"dev",info->device ) ;
-		tc_api_task_set( task,"hidden_size_bytes",( u_int64_t )0 ) ;
-		tc_api_task_set( task,info->header_source,info->tmp_path ) ;
-		tc_api_task_set( task,info->key_type,info->key ) ;
-
 		if( StringsAreEqual( info->opt,"sys" ) ){
-			tc_api_task_set( task,"sys",info->sys_device ) ;
-		}
-		if( StringsAreEqual( info->opt,"fde" ) ){
-			tc_api_task_set( task,"sys",info->sys_device ) ;
+			tc_api_task_set( task,"sys",info->device ) ;
+		}else if( StringsAreEqual( info->opt,"fde" ) ){
+			tc_api_task_set( task,"dev",info->sys_device ) ;
 			tc_api_task_set( task,"fde",TRUE ) ;
+		}else{
+			tc_api_task_set( task,"dev",info->device ) ;
 		}
+		tc_api_task_set( task,"hidden_size_bytes",( u_int64_t )0 ) ;
+		/*
+		 * below line may look like one of the following two lines:
+		 * tc_api_task_set( task,"header_from_file","/home/ink/tc.headerbackup" ) ;
+		 * tc_api_task_set( task,"save_header_to_file","/home/ink/tc.headerbackup" ) ;
+		 */
+		tc_api_task_set( task,info->header_source,info->tmp_path ) ;
+		/*
+		 * below line may look like one of the following two lines:
+		 * tc_api_task_set( task,"passphrase","xxx" ) ;
+		 * tc_api_task_set( task,"keyfiles","/home/ink/keyfile" ) ;
+		 */
+		tc_api_task_set( task,info->header_key_source,info->header_key ) ;
+		/*
+		 * below line may look like one of the following two lines:
+		 * tc_api_task_set( task,"new_passphrase","xxx" ) ;
+		 * tc_api_task_set( task,"new_keyfiles","/home/ink/keyfile" ) ;
+		 */
+		tc_api_task_set( task,info->header_new_key_source,info->header_key ) ;
+
 		if( StringsAreEqual( info->rng,"/dev/urandom" ) ){
 			tc_api_task_set( task,"weak_keys_and_salt",TRUE ) ;
 		}else{

@@ -271,7 +271,7 @@ static string_t _get_password( int * r )
 
 	*r = 1 ;
 
-	printf( gettext( "Enter passphrase: " ) ) ;
+	printf( gettext( "Enter passphrase in the volume: " ) ) ;
 
 	/*
 	 * ZULUCRYPT_KEY_MAX_SIZE is set in ../constants.h
@@ -283,46 +283,37 @@ static string_t _get_password( int * r )
 static string_t _get_password_0( int * r )
 {
 	string_t st = StringVoid ;
-	string_t xt = StringVoid ;
 
-	printf( gettext( "Enter new passphrase: " ) ) ;
+	*r = 1 ;
+
+	printf( gettext( "Enter passphrase in the header file: " ) ) ;
+
 	/*
 	 * ZULUCRYPT_KEY_MAX_SIZE is set in ../constants.h
 	 */
 	StringSilentlyGetFromTerminal_1( &st,ZULUCRYPT_KEY_MAX_SIZE ) ;
-
-	printf( gettext( "\nRe enter new passphrase: " ) ) ;
-	StringSilentlyGetFromTerminal_1( &xt,ZULUCRYPT_KEY_MAX_SIZE ) ;
-
-	if( st == StringVoid && xt == StringVoid ){
-		*r = 1 ;
-		return StringVoid ;
-	}
-	if( StringEqualString( xt,st ) ){
-		StringDelete( &xt ) ;
-		*r = 1 ;
-		return st ;
-	}else{
-		printf( gettext( "ERROR: passphrases did not match" ) ) ;
-		StringMultipleDelete( &st,&xt,NULL ) ;
-		*r = 0 ;
-		return StringVoid ;
-	}
+	return st ;
 }
 
 static int _modify_tcrypt( info_t * info,const struct_opts * opts )
 {
 	int k = 4 ;
+	int r ;
 
 	string_t st = StringVoid ;
 	string_t xt = StringVoid ;
 
 	if( StringsAreEqual( opts->key_source,"-p" ) ){
-		info->key = opts->key ;
+		info->header_key            = opts->key ;
+		info->header_key_source     = "passphrase" ;
+		info->header_new_key_source = "new_passphrase" ;
 	}else if( opts->key == NULL && StringsAreNotEqual( opts->key_source,"-f" ) ){
-		st = info->getKey( &k ) ;
-		if( k ){
+		st = info->getKey( &r ) ;
+		if( r ){
 			info->key = StringContent( st ) ;
+			info->header_key            = info->key ;
+			info->header_key_source     = "passphrase" ;
+			info->header_new_key_source = "new_passphrase" ;
 		}else{
 			return zuluExit_1( k,st,xt ) ;
 		}
@@ -339,12 +330,18 @@ static int _modify_tcrypt( info_t * info,const struct_opts * opts )
 		}else{
 			if( StringHasComponent( opts->key,".zuluCrypt-socket" ) ){
 				info->key = StringContent( st ) ;
+				info->header_key            = info->key ;
+				info->header_key_source     = "passphrase" ;
+				info->header_new_key_source = "new_passphrase" ;
 			}else{
 				xt = zuluCryptCreateKeyFile( StringContent( st ),StringLength( st ),"tcrypt-bk-" ) ;
 				if( xt == StringVoid ){
 					return zuluExit_1( k,st,xt ) ;
 				}else{
 					info->key = StringContent( xt ) ;
+					info->header_key            = info->key ;
+					info->header_key_source     = "keyfiles" ;
+					info->header_new_key_source = "new_keyfiles" ;
 				}
 			}
 		}
@@ -356,10 +353,10 @@ static int _modify_tcrypt( info_t * info,const struct_opts * opts )
 		 */
 		k = zuluCryptModifyTcryptHeader( info ) ;
 		if( k != TC_OK ){
-			info->opt = "sys" ;
+			info->opt = "fde" ;
 			k = zuluCryptModifyTcryptHeader( info ) ;
 			if( k != TC_OK ){
-				info->opt = "fde" ;
+				info->opt = "sys" ;
 				k = zuluCryptModifyTcryptHeader( info ) ;
 			}
 		}
@@ -416,8 +413,6 @@ static int _save_truecrypt_header( const struct_opts * opts,const char * temp_pa
 
 	info.device        = opts->device ;
 	info.sys_device    = NULL ;
-	info.key_type      = "passphrase" ;
-	info.key_type_1    = "keyfiles" ;
 	info.header_source = "save_header_to_file" ;
 	info.getKey        = _get_password ;
 	info.tmp_path      = temp_path ;
@@ -454,8 +449,6 @@ static int _restore_truecrypt_header( const struct_opts * opts,const char * temp
 
 	info.device        = opts->device ;
 	info.sys_device    = NULL ;
-	info.key_type      = "new_passphrase" ;
-	info.key_type_1    = "new_keyfiles" ;
 	info.header_source = "header_from_file" ;
 	info.getKey        = _get_password_0 ;
 	info.tmp_path      = temp_path ;
