@@ -40,6 +40,7 @@ void zuluCryptEXEHelp( void )
 	const char * help10;
 	const char * help11;
 	const char * help12;
+	const char * help13;
 
 	help1 = gettext( "\
 	usage: zuluCrypt-cli < operation > < options specific to the operation >\n\
@@ -144,10 +145,11 @@ void zuluCryptEXEHelp( void )
 	-u         path to keyfile with passphrase already in the volume(required by -a if -y is absent and -h is also absent)\n\
 		   truecrypt hidden volume passphrase from keyfile when used with -c\n\
 	-l         passphrase to be added(required by -a if -n is absent and -h is also absent)\n\
-		   truecrypt hidden volume passphrase when used with -c\n\
+		   truecrypt hidden volume passphrase when used with -c\n" ) ;
+	help13 = gettext( "\
 	-e         mode for opening volumes(ro*/rw) when used with -o/-O. path to destination file when used with -E/-D\n\
-		   truecrypt hidden volume size when used with -c\n" ) ;
+	-e         mode for managing a truecrypt header when used with -B/-R.Options can be \"fde\" for volumes that use whole disk\n\
+		   encryption,\"sys\" for a windows system volume.The volume is assumed to be a normal one when the option is not set\n" ) ;
 
-	printf( "%s%s%s%s%s%s%s%s%s%s%s%s\n",help1,help2,help3,help4,help5,help6,help7,help8,help9,help10,help11,help12 ) ;
+	printf( "%s%s%s%s%s%s%s%s%s%s%s%s%s\n",help1,help2,help3,help4,help5,help6,help7,help8,help9,help10,help11,help12,help13 ) ;
 }
-

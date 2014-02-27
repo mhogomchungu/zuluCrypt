@@ -66,6 +66,10 @@ managevolumeheader::managevolumeheader( QWidget * parent ) :
 
 	m_trueCryptWarning = false ;
 
+	m_ui->groupBox_2->setEnabled( false ) ;
+	m_ui->rbFDETrueCrypt->setEnabled( false ) ;
+	m_ui->rbNormalTrueCrypt->setEnabled( false ) ;
+	m_ui->rbSystemTrueCrypt->setEnabled( false ) ;
 #if TCPLAY_NEW_API
 	this->enableTrueCrypt( false ) ;
 	m_ui->checkBoxVolumeIsTrueCrypt->setChecked( false ) ;
@@ -98,19 +102,20 @@ void managevolumeheader::cbTrueCryptVolume( bool toggled )
 
 void managevolumeheader::enableTrueCrypt( bool enable )
 {
+	m_ui->groupBox_2->setEnabled( enable ) ;
+	m_ui->rbFDETrueCrypt->setEnabled( enable ) ;
+	m_ui->rbNormalTrueCrypt->setEnabled( enable ) ;
+	m_ui->rbSystemTrueCrypt->setEnabled( enable ) ;
 	m_ui->rbKey->setChecked( enable ) ;
 	m_ui->rbKeyFile->setEnabled( enable ) ;
 	m_ui->groupBox->setEnabled( enable ) ;
 	m_ui->label->setEnabled( enable ) ;
 	m_ui->pBKeyFile->setEnabled( enable ) ;
 	m_ui->lineEditPassWord->setEnabled( enable ) ;
-	if( m_operation == QString( "restore" ) ){
-		if( m_trueCryptWarning == false ){
-			m_trueCryptWarning = true ;
-			DialogMsg msg( this ) ;
-			return msg.ShowUIOK( tr( "WARNING!" ),tr( "this tool currently can restore a truecrypt header only to non-system encrypted volume" ) ) ;
-		}
-	}
+	m_ui->labelBackUpHeader->setEnabled( true ) ;
+	m_ui->labelDevicePath->setEnabled( true ) ;
+	m_ui->lineEditBackUpName->setEnabled( true ) ;
+	m_ui->lineEditDevicePath->setEnabled( true ) ;
 	if( enable ){
 		this->rbKeyToggled( true ) ;
 	}
@@ -267,6 +272,10 @@ void managevolumeheader::enableAll()
 	m_ui->pushButtonPartition->setEnabled( true ) ;
 #if TCPLAY_NEW_API
 	if( m_ui->checkBoxVolumeIsTrueCrypt->isChecked() ){
+		m_ui->groupBox_2->setEnabled( true ) ;
+		m_ui->rbFDETrueCrypt->setEnabled( true ) ;
+		m_ui->rbNormalTrueCrypt->setEnabled( true ) ;
+		m_ui->rbSystemTrueCrypt->setEnabled( true ) ;
 		m_ui->rbKey->setChecked( true ) ;
 		m_ui->rbKeyFile->setEnabled( true ) ;
 		m_ui->groupBox->setEnabled( true ) ;
@@ -302,6 +311,10 @@ void managevolumeheader::disableAll()
 	m_ui->label->setEnabled( false ) ;
 	m_ui->pBKeyFile->setEnabled( false ) ;
 	m_ui->checkBoxVolumeIsTrueCrypt->setEnabled( false ) ;
+	m_ui->groupBox_2->setEnabled( false ) ;
+	m_ui->rbFDETrueCrypt->setEnabled( false ) ;
+	m_ui->rbNormalTrueCrypt->setEnabled( false ) ;
+	m_ui->rbSystemTrueCrypt->setEnabled( false ) ;
 }
 
 void managevolumeheader::pbCreate()
@@ -365,9 +378,13 @@ void managevolumeheader::pbCreate()
 	}
 
 	/*
-	 * default to this source of random data when managing a truecrypt header
+	 * default to /dev/random as source of random data when managing a truecrypt header
 	 */
-	exe += QString( " -g /dev/random" ) ;
+	if( m_ui->rbFDETrueCrypt->isChecked() ){
+		exe += QString( " -g /dev/random -e fde" ) ;
+	}else if( m_ui->rbSystemTrueCrypt->isChecked() ){
+		exe += QString( " -g /dev/random -e sys" ) ;
+	}
 
 	this->disableAll() ;
 

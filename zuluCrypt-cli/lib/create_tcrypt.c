@@ -108,7 +108,8 @@ int zuluCryptModifyTcryptHeader( const info_t * info )
 		return !TC_OK ;
 	}else{
 		if( StringsAreEqual( info->opt,"sys" ) ){
-			tc_api_task_set( task,"sys",info->device ) ;
+			tc_api_task_set( task,"dev",info->device ) ;
+			tc_api_task_set( task,"sys",info->sys_device ) ;
 		}else if( StringsAreEqual( info->opt,"fde" ) ){
 			tc_api_task_set( task,"dev",info->sys_device ) ;
 			tc_api_task_set( task,"fde",TRUE ) ;
