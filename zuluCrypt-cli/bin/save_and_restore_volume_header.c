@@ -348,17 +348,48 @@ static int _modify_tcrypt( info_t * info,const struct_opts * opts )
 	}
 
 	if( tc_api_init( 0 ) == TC_OK ){
-		/*
-		 * zuluCryptModifyTcryptHeader() is defined in ../lib/create_tcrypt.c
-		 */
-		k = zuluCryptModifyTcryptHeader( info ) ;
-		if( k != TC_OK ){
-			info->opt = "fde" ;
+		if( StringsAreEqual( info->header_source,"save_header_to_file" ) ){
+			/*
+			 * we are creating a header backup
+			 */
+			/*
+			* zuluCryptModifyTcryptHeader() is defined in ../lib/create_tcrypt.c
+			*/
 			k = zuluCryptModifyTcryptHeader( info ) ;
 			if( k != TC_OK ){
-				info->opt = "sys" ;
+				/*
+				 * failed to take a volume header of a normal truecrypt volume,assume the
+				 * volume uses fde(full disk encryption) and try again
+				 */
+				info->opt = "fde" ;
 				k = zuluCryptModifyTcryptHeader( info ) ;
+				if( k != TC_OK ){
+					/*
+					 * failed to take a volume header of assuming the volumes uses fde encryption,
+					 * try again assuming the volume is a system volume
+					 */
+					info->opt = "sys" ;
+					k = zuluCryptModifyTcryptHeader( info ) ;
+				}
 			}
+		}else{
+			/*
+			 * we are restoring a header from a backup.
+			 * TODO: There are a few problems here.
+			 * 1. The volume could be a normal truecrypt volume.
+			 * 2. The volume could be an fde volume.
+			 * 3. The volume could be a system volume.
+			 *
+			 * tcplay expects different argument depending on what volume it is and
+			 * we dont know this information.We could ask the user but the explanation of the
+			 * difference btw them is something i am not clear on and and the wordy explanation
+			 * would be unplesant to have in the GUI.
+			 *
+			 * For now,just assume its a normal truecrypt volume and we do not support
+			 * fde volumes or system volumes.Drive corruption will probably happen if
+			 * a user gave us fde or system volume to restore
+			 */
+			k = zuluCryptModifyTcryptHeader( info ) ;
 		}
 		tc_api_uninit() ;
 	}

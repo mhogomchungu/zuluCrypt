@@ -97,6 +97,9 @@ static int _create_file_system( const char * device,const char * fs,int key_sour
 #define TRUE   ( int )1
 #define FALSE  ( int )0
 
+/*
+ * this function is called from ../bin/save_and_restore_volume_header.c
+ */
 int zuluCryptModifyTcryptHeader( const info_t * info )
 {
 	tc_api_task task = tc_api_task_init( "modify" ) ;
