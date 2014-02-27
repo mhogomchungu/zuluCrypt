@@ -55,7 +55,7 @@ private slots:
 	void selectedPartition( QString ) ;
 	void backUpHeaderNameChange( QString ) ;
 	void rbKeyToggled( bool ) ;
-	void cbTrueCryptVolume( bool ) ;
+	void rbTrueCryptVolume( bool ) ;
 	void enableTrueCrypt( bool ) ;
 private:
 	void headerBackUp( void ) ;

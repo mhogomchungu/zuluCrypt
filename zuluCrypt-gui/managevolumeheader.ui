@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>561</width>
-    <height>351</height>
+    <height>414</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -65,7 +65,7 @@
    <property name="geometry">
     <rect>
      <x>200</x>
-     <y>320</y>
+     <y>380</y>
      <width>81</width>
      <height>31</height>
     </rect>
@@ -84,7 +84,7 @@
    <property name="geometry">
     <rect>
      <x>280</x>
-     <y>320</y>
+     <y>380</y>
      <width>81</width>
      <height>31</height>
     </rect>
@@ -158,9 +158,9 @@
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>220</y>
+     <y>250</y>
      <width>501</width>
-     <height>101</height>
+     <height>131</height>
     </rect>
    </property>
    <property name="title">
@@ -170,7 +170,7 @@
     <property name="geometry">
      <rect>
       <x>90</x>
-      <y>60</y>
+      <y>90</y>
       <width>321</width>
       <height>31</height>
      </rect>
@@ -183,7 +183,7 @@
     <property name="geometry">
      <rect>
       <x>410</x>
-      <y>60</y>
+      <y>90</y>
       <width>31</width>
       <height>31</height>
      </rect>
@@ -195,9 +195,9 @@
    <widget class="QRadioButton" name="rbKey">
     <property name="geometry">
      <rect>
-      <x>160</x>
+      <x>90</x>
       <y>0</y>
-      <width>96</width>
+      <width>401</width>
       <height>31</height>
      </rect>
     </property>
@@ -211,9 +211,9 @@
    <widget class="QRadioButton" name="rbKeyFile">
     <property name="geometry">
      <rect>
-      <x>260</x>
-      <y>0</y>
-      <width>96</width>
+      <x>90</x>
+      <y>30</y>
+      <width>401</width>
       <height>31</height>
      </rect>
     </property>
@@ -225,7 +225,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>30</y>
+      <y>60</y>
       <width>481</width>
       <height>31</height>
      </rect>
@@ -241,24 +241,11 @@
     </property>
    </widget>
   </widget>
-  <widget class="QCheckBox" name="checkBoxVolumeIsTrueCrypt">
-   <property name="geometry">
-    <rect>
-     <x>120</x>
-     <y>70</y>
-     <width>321</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>manage a truecrypt volume</string>
-   </property>
-  </widget>
   <widget class="QGroupBox" name="groupBox_2">
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>110</y>
+     <y>140</y>
      <width>501</width>
      <height>111</height>
     </rect>
@@ -309,10 +296,77 @@
     </property>
    </widget>
   </widget>
+  <widget class="QGroupBox" name="groupBox_3">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>70</y>
+     <width>501</width>
+     <height>71</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string/>
+   </property>
+   <widget class="QRadioButton" name="rbLuksHeader">
+    <property name="geometry">
+     <rect>
+      <x>90</x>
+      <y>0</y>
+      <width>401</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>manage a luks header</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="rbTrueCryptHeader">
+    <property name="geometry">
+     <rect>
+      <x>90</x>
+      <y>30</y>
+      <width>401</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>manage a truecrypt header</string>
+    </property>
+   </widget>
+  </widget>
+  <zorder>lineEditBackUpName</zorder>
+  <zorder>labelBackUpHeader</zorder>
+  <zorder>pbOpenFolder</zorder>
+  <zorder>pbCreate</zorder>
+  <zorder>pbCancel</zorder>
+  <zorder>labelDevicePath</zorder>
+  <zorder>lineEditDevicePath</zorder>
+  <zorder>pushButtonFile</zorder>
+  <zorder>pushButtonPartition</zorder>
+  <zorder>groupBox</zorder>
+  <zorder>groupBox_2</zorder>
+  <zorder>rbNormalTrueCrypt</zorder>
+  <zorder>groupBox_3</zorder>
  </widget>
  <tabstops>
+  <tabstop>lineEditDevicePath</tabstop>
+  <tabstop>pushButtonFile</tabstop>
+  <tabstop>pushButtonPartition</tabstop>
   <tabstop>lineEditBackUpName</tabstop>
   <tabstop>pbOpenFolder</tabstop>
+  <tabstop>rbLuksHeader</tabstop>
+  <tabstop>rbTrueCryptHeader</tabstop>
+  <tabstop>rbNormalTrueCrypt</tabstop>
+  <tabstop>rbSystemTrueCrypt</tabstop>
+  <tabstop>rbFDETrueCrypt</tabstop>
+  <tabstop>rbKey</tabstop>
+  <tabstop>rbKeyFile</tabstop>
+  <tabstop>lineEditPassWord</tabstop>
+  <tabstop>pBKeyFile</tabstop>
   <tabstop>pbCreate</tabstop>
   <tabstop>pbCancel</tabstop>
  </tabstops>
