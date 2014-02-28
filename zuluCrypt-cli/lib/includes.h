@@ -39,7 +39,6 @@ typedef struct{
 
 typedef struct{
 	const char * device ;
-	const char * sys_device ;
 	const char * header_source ;
 	const char * tmp_path ;
 	const char * opt ;

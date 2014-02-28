@@ -97,63 +97,95 @@ static int _create_file_system( const char * device,const char * fs,int key_sour
 #define TRUE   ( int )1
 #define FALSE  ( int )0
 
-/*
- * this function is called from ../bin/save_and_restore_volume_header.c
- */
+static string_t _root_device( const char * device,const char ** sys_device )
+{
+	size_t e ;
+	ssize_t r ;
+	string_t st = String( device ) ;
+	if( StringStartsWithAtLeastOne( st,"/dev/sd","/dev/hd",NULL ) ){
+		/*
+		 * this path will convert something like: "/dev/sdc12" to "/dev/sdc".
+		 * basically,it removes digits from the end of the string to give the root device
+		 * required by tcplay's system volume or fde volume
+		 */
+		*sys_device = StringRemoveDigits( st ) ;
+	}else if( StringStartsWith( st,"/dev/mmc" ) ){
+		/*
+		 * device path will be something like "/dev/mmcblk0p2" and what we want to do
+		 * is cut off the string from p to end iwth "/dev/mmcblk0"
+		 */
+		r = StringIndexOfChar( st,0,'p' ) ;
+		if( r != -1 ){
+			e = StringLength( st ) - ( size_t )r ;
+			*sys_device = StringRemoveRight( st,e ) ;
+		}else{
+			*sys_device = StringContent( st ) ;
+		}
+	}else{
+		*sys_device = StringContent( st ) ;
+	}
+	return st ;
+}
+
 int zuluCryptModifyTcryptHeader( const info_t * info )
 {
-	tc_api_task task = tc_api_task_init( "modify" ) ;
-	int r ;
-	if( task == 0 ){
-		return !TC_OK ;
-	}else{
-		if( StringsAreEqual( info->opt,"sys" ) ){
-			tc_api_task_set( task,"dev",info->device ) ;
-			tc_api_task_set( task,"sys",info->sys_device ) ;
-		}else if( StringsAreEqual( info->opt,"fde" ) ){
-			tc_api_task_set( task,"dev",info->sys_device ) ;
-			tc_api_task_set( task,"fde",TRUE ) ;
-		}else{
-			tc_api_task_set( task,"dev",info->device ) ;
-		}
-		tc_api_task_set( task,"hidden_size_bytes",( u_int64_t )0 ) ;
-		/*
-		 * below line may look like one of the following two lines:
-		 * tc_api_task_set( task,"header_from_file","/home/ink/tc.headerbackup" ) ;
-		 * tc_api_task_set( task,"save_header_to_file","/home/ink/tc.headerbackup" ) ;
-		 */
-		tc_api_task_set( task,info->header_source,info->tmp_path ) ;
-		/*
-		 * below line may look like one of the following two lines:
-		 * tc_api_task_set( task,"passphrase","xxx" ) ;
-		 * tc_api_task_set( task,"keyfiles","/home/ink/keyfile" ) ;
-		 */
-		tc_api_task_set( task,info->header_key_source,info->header_key ) ;
-		/*
-		 * below line may look like one of the following two lines:
-		 * tc_api_task_set( task,"new_passphrase","xxx" ) ;
-		 * tc_api_task_set( task,"new_keyfiles","/home/ink/keyfile" ) ;
-		 */
-		tc_api_task_set( task,info->header_new_key_source,info->header_key ) ;
+	tc_api_task task ;
+	int r = !TC_OK ;
+	const char * sys_device = NULL ;
+	string_t st = StringVoid ;
+	if( tc_api_init( 0 ) == TC_OK ){
+		task = tc_api_task_init( "modify" ) ;
+		if( task != 0 ){
+			if( StringsAreEqual( info->opt,"sys" ) ){
+				tc_api_task_set( task,"dev",info->device ) ;
+				st = _root_device( info->device,&sys_device ) ;
+				tc_api_task_set( task,"sys",sys_device ) ;
+			}else if( StringsAreEqual( info->opt,"fde" ) ){
+				st = _root_device( info->device,&sys_device ) ;
+				tc_api_task_set( task,"dev",sys_device ) ;
+				tc_api_task_set( task,"fde",TRUE ) ;
+			}else{
+				tc_api_task_set( task,"dev",info->device ) ;
+			}
+			tc_api_task_set( task,"hidden_size_bytes",( u_int64_t )0 ) ;
+			/*
+			 * below line may look like one of the following two lines:
+			 * tc_api_task_set( task,"header_from_file","/home/ink/tc.headerbackup" ) ;
+			 * tc_api_task_set( task,"save_header_to_file","/home/ink/tc.headerbackup" ) ;
+			 */
+			tc_api_task_set( task,info->header_source,info->tmp_path ) ;
+			/*
+			 * below line may look like one of the following two lines:
+			 * tc_api_task_set( task,"passphrase","xxx" ) ;
+			 * tc_api_task_set( task,"keyfiles","/home/ink/keyfile" ) ;
+			 */
+			tc_api_task_set( task,info->header_key_source,info->header_key ) ;
+			/*
+			 * below line may look like one of the following two lines:
+			 * tc_api_task_set( task,"new_passphrase","xxx" ) ;
+			 * tc_api_task_set( task,"new_keyfiles","/home/ink/keyfile" ) ;
+			 */
+			tc_api_task_set( task,info->header_new_key_source,info->header_key ) ;
 
-		if( StringsAreEqual( info->rng,"/dev/urandom" ) ){
-			tc_api_task_set( task,"weak_keys_and_salt",TRUE ) ;
-		}else{
-			tc_api_task_set( task,"weak_keys_and_salt",FALSE ) ;
-		}
+			if( StringsAreEqual( info->rng,"/dev/urandom" ) ){
+				tc_api_task_set( task,"weak_keys_and_salt",TRUE ) ;
+			}else{
+				tc_api_task_set( task,"weak_keys_and_salt",FALSE ) ;
+			}
 
-		r = tc_api_task_do( task ) ;
-		tc_api_task_uninit( task ) ;
-		return r ;
+			r = tc_api_task_do( task ) ;
+			tc_api_task_uninit( task ) ;
+		}
+		tc_api_uninit() ;
 	}
+	StringDelete( &st ) ;
+	return r ;
 }
 
 static int _create_volume( const tcrypt_t * info )
 {
-	int r = !TC_OK ;
-
 	tc_api_task task ;
-
+	int r = !TC_OK ;
 	if( tc_api_init( 0 ) == TC_OK ){
 		task = tc_api_task_init( "create" ) ;
 		if( task != 0 ){

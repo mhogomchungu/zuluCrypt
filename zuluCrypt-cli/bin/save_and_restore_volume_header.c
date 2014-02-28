@@ -347,18 +347,10 @@ static int _modify_tcrypt( info_t * info,const struct_opts * opts )
 		}
 	}
 
-	if( tc_api_init( 0 ) == TC_OK ){
-		if( StringsAreEqual( opts->m_opts,"fde" ) ){
-			info->opt = "fde" ;
-			k = zuluCryptModifyTcryptHeader( info ) ;
-		}else if( StringsAreEqual( opts->m_opts,"sys" ) ){
-			info->opt = "sys" ;
-			k = zuluCryptModifyTcryptHeader( info ) ;
-		}else{
-			k = zuluCryptModifyTcryptHeader( info ) ;
-		}
-		tc_api_uninit() ;
-	}
+	/*
+	 * zuluCryptModifyTcryptHeader() is defined in ../lib/create_tcrypt.c
+	 */
+	k = zuluCryptModifyTcryptHeader( info ) ;
 
 	if( xt != StringVoid ){
 		/*
@@ -370,35 +362,8 @@ static int _modify_tcrypt( info_t * info,const struct_opts * opts )
 	return zuluExit_1( k,st,xt ) ;
 }
 
-static string_t _root_device( const char * device )
-{
-	size_t e ;
-	ssize_t r ;
-	string_t st = String( device ) ;
-	if( StringStartsWithAtLeastOne( st,"/dev/sd","/dev/hd",NULL ) ){
-		/*
-		 * this path will convert something like: "/dev/sdc12" to "/dev/sdc"
-		 * basically,it removes digits from the end of the string to give the root device
-		 * required by tcplay "system device argument"
-		 */
-		StringRemoveDigits( st ) ;
-	}else if( StringStartsWith( st,"/dev/mmc" ) ){
-		/*
-		 * device path will be something like "/dev/mmcblk0p2" and what we want to do
-		 * is cut off the string from p to end iwth "/dev/mmcblk0"
-		 */
-		r = StringIndexOfChar( st,0,'p' ) ;
-		if( r != -1 ){
-			e = StringLength( st ) - ( size_t )r ;
-			StringRemoveRight( st,e ) ;
-		}
-	}
-	return st ;
-}
-
 static int _save_truecrypt_header( const struct_opts * opts,const char * temp_path,const char * path,uid_t uid )
 {
-	string_t st ;
 	int r ;
 
 	/*
@@ -409,19 +374,14 @@ static int _save_truecrypt_header( const struct_opts * opts,const char * temp_pa
 	memset( &info,'\0',sizeof( info_t ) ) ;
 
 	info.device        = opts->device ;
-	info.sys_device    = NULL ;
 	info.header_source = "save_header_to_file" ;
 	info.getKey        = _get_password ;
 	info.tmp_path      = temp_path ;
 	info.uid           = uid ;
 	info.rng           = opts->rng ;
-
-	st = _root_device( info.device ) ;
-	info.sys_device = StringContent( st ) ;
+	info.opt           = opts->m_opts ;
 
 	r = _modify_tcrypt( &info,opts ) ;
-
-	StringDelete( &st ) ;
 
 	if( opts->key == NULL && StringsAreNotEqual( opts->key_source,"-f" ) ){
 		printf( "\n" ) ;
@@ -435,7 +395,6 @@ static int _save_truecrypt_header( const struct_opts * opts,const char * temp_pa
 
 static int _restore_truecrypt_header( const struct_opts * opts,const char * temp_path,uid_t uid )
 {
-	string_t st ;
 	int r ;
 	/*
 	 * info_t structure is declared in ../lib/include.h
@@ -445,19 +404,14 @@ static int _restore_truecrypt_header( const struct_opts * opts,const char * temp
 	memset( &info,'\0',sizeof( info_t ) ) ;
 
 	info.device        = opts->device ;
-	info.sys_device    = NULL ;
 	info.header_source = "header_from_file" ;
 	info.getKey        = _get_password_0 ;
 	info.tmp_path      = temp_path ;
 	info.uid           = uid ;
 	info.rng           = opts->rng ;
-
-	st = _root_device( info.device ) ;
-	info.sys_device = StringContent( st ) ;
+	info.opt           = opts->m_opts ;
 
 	r = _modify_tcrypt( &info,opts ) ;
-
-	StringDelete( &st ) ;
 
 	if( opts->key == NULL && StringsAreNotEqual( opts->key_source,"-f" ) ){
 		printf( "\n" ) ;
@@ -465,7 +419,7 @@ static int _restore_truecrypt_header( const struct_opts * opts,const char * temp
 	if( r == TC_OK ){
 		return 1 ;
 	}else{
-		return 7 ;
+		return 20 ;
 	}
 }
 
