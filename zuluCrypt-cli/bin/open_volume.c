@@ -112,6 +112,7 @@ static int zuluExit( int st,const char * device,const char * m_point,stringList_
 		case 19: printf( gettext( "ERROR: could not get a passphrase through a local socket\n" ) );					break ;
 		case 20: printf( gettext( "ERROR: failed to mount a filesystem:invalid/unsupported mount option or unsupported file system encountered\n" ) );break ;
 		case 21: printf( gettext( "ERROR: could not create a lock on /etc/mtab\n" ) ) ;							break ;
+		case 22: printf( gettext( "ERROR: insufficient privilege to open a system volume\n" ) ) ;					break ;
 		default: printf( gettext( "ERROR: unrecognized error with status number %d encountered\n" ),st ) ;
 	}
 
@@ -178,6 +179,14 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 
 	struct stat statstr ;
 
+	/*
+	 * zuluCryptPartitionIsSystemPartition() is defined in volumes.c
+	 */
+	if( zuluCryptPartitionIsSystemPartition( device,uid ) ){
+		if( !zuluCryptUserIsAMemberOfAGroup( uid,"zulucrypt" ) ){
+			return zuluExit( 22,device,mount_point,stl ) ; ;
+		}
+	}
 	/*
 	 * zuluCryptMountFlagsAreNotCorrect() is defined in ./mount_flags.c
 	 */

@@ -1,5 +1,5 @@
 Name:           zuluCrypt
-Version: 4.6.8
+Version: 4.6.9
 Release: 0
 Summary:        Qt GUI front end to cryptsetup
 License:        GPL-2.0+

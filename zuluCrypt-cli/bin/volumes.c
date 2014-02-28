@@ -890,7 +890,7 @@ int _zuluCryptPartitionIsSystemPartition( const char * dev,uid_t uid )
 int zuluCryptPartitionIsSystemPartition( const char * device,uid_t uid )
 {
 	char * dev ;
-	int st ;
+	int r ;
 	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
 		/*
 		 * zuluCryptLoopDeviceAddress_1() is defined in ../lib/create_loop_device.c
@@ -898,22 +898,12 @@ int zuluCryptPartitionIsSystemPartition( const char * device,uid_t uid )
 		dev = zuluCryptLoopDeviceAddress_1( device ) ;
 		if( dev == NULL ){
 			return 0 ;
-		}
-		if( _zuluCryptPartitionIsSystemPartition( dev,uid ) ){
-			st = 1 ;
-		}else if( _zuluCryptCheckSYSifDeviceIsSystem( dev ) ){
-			st = 1 ;
 		}else{
-			st = 0 ;
+			r = _zuluCryptPartitionIsSystemPartition( dev,uid ) ;
+			StringFree( dev ) ;
+			return r ;
 		}
-		StringFree( dev ) ;
-		return st ;
 	}else{
-		if( _zuluCryptPartitionIsSystemPartition( device,uid ) ){
-			return 1 ;
-		}else{
-			return _zuluCryptCheckSYSifDeviceIsSystem( device ) ;
-		}
+		return _zuluCryptPartitionIsSystemPartition( device,uid ) ;
 	}
-	return 0 ;
 }
