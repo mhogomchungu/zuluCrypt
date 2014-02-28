@@ -31,7 +31,7 @@ It does the same thing truecrypt does but without licensing problems or requirin
 This package contains the applications.
 
 %package -n %{libnamedev}
-Requires:       lib%{libname} = %{version}
+Requires:       %{libname} = %{version}
 Summary:        Development library package
 Group:          Development/Libraries/C and C++
 
@@ -47,7 +47,7 @@ This package contains libraries that provide higher level access to cryptsetup A
 to easy opening and closing of volumes
 
 %package -n %{zuluCrypt_plugins}
-Requires:       lib%{libname}
+Requires:       %{libname}
 Summary:        various zuluCrypt plugins
 
 %description -n %{zuluCrypt_plugins}
