@@ -175,3 +175,4 @@ version 4.6.9
 -- use libgcrypt for stand alone file encryption instead of cryptsetup.Newer stand alone encrypted files will have an extension of ".zC" to
    distinguish them from previous ones that use ".zc".Older versions of zuluCrypt(<4.6.9) will not be able to open encrypted files that
    end with ".zC".
+-- add an option in zuluCrypt GUI to specify a truecrypt volume type when saving or restoring a truecrypt header from a backup header file
