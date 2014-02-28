@@ -1,6 +1,6 @@
 zulucrypt (4.6.9-1) UNRELEASED; urgency=low
 
-[Mhogo Mchungu]
+  [Mhogo Mchungu]
   * New features
     - move config files to "/etc/zuluCrypt" from "/etc"
     - add a config file "/etc/zuluCrypt/fs_options" where default file system mount options can be specified per UUID.

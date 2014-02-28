@@ -754,18 +754,14 @@ int zuluCryptPrintPartitions( int option,int info,uid_t uid )
 		case 3 : stl = zuluCryptPartitions( ZULUCRYPTnonSystemPartitions,uid ) ;break ;
 	}
 
-	if( stl == StringListVoid ){
-		printf( gettext( "ERROR: unable to print requested list of partitions\n" ) ) ;
-		return 1 ;
+	if( stl != StringListVoid ){
+		switch( info ){
+			case 1 : StringListForEachString( stl,zuluCryptPrintPartitionProperties )   ; break ;
+			case 2 : _zuluCryptPrintUnMountedPartitionProperties( stl ) 	   	    ; break ;
+			default: _print_list( stl ) ;
+		}
+		StringListDelete( &stl ) ;
 	}
-
-	switch( info ){
-		case 1 : StringListForEachString( stl,zuluCryptPrintPartitionProperties )   ; break ;
-		case 2 : _zuluCryptPrintUnMountedPartitionProperties( stl ) 	   	    ; break ;
-		default: _print_list( stl ) ;
-	}
-
-	StringListDelete( &stl ) ;
 
 	return 0 ;
 }
