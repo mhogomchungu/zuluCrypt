@@ -27,6 +27,11 @@
 #include "libzuluCrypt.h"
 #include "../bin/bash_special_chars.h"
 
+/*
+ * below header is created at build time,it is set by CMakeLists.txt located in the root folder
+ */
+#include "version.h"
+
 typedef struct{
 	const char * device ;
 	const char * m_point ;
@@ -51,10 +56,46 @@ typedef struct{
 	string_t ( *getKey )( int * ) ;
 }info_t ;
 
+typedef struct{
+	const char * device ;
+	const char * offset ;
+	const char * mapper_name ;
+	const char * key ;
+	const char * m_point ;
+	const char * fs_opts ;
+	const char * m_opts ;
+	size_t       key_len ;
+	uid_t        uid ;
+	int          volume_type ;
+	int          key_source ;
+	unsigned long m_flags ;
+}open_struct_t ;
+
 /*
- * below header is created at build time,it is set by CMakeLists.txt located in the root folder
+ * zuluCryptOpenVolume_1() is defined in open_volume.c
  */
-#include "version.h"
+int zuluCryptOpenVolume_1( const open_struct_t * ) ;
+
+/*
+ * zuluCryptOpenPlain_1() is defined in open_plain.c
+ */
+int zuluCryptOpenPlain_1( const open_struct_t * ) ;
+
+/*
+ * zuluCryptOpenPlainWithOffset() is defined in open_volume.c
+ */
+int zuluCryptOpenPlainWithOffset( const open_struct_t * ) ;
+
+/*
+ * zuluCryptOpenTcrypt_1() is defined in open_tcrypt.c
+ */
+int zuluCryptOpenTcrypt_1( const open_struct_t * ) ;
+
+/*
+ * zuluCryptOpenVolume_0() is defined in open_volume.c
+ */
+int zuluCryptOpenVolume_0( int( *function )( const open_struct_t * ),const open_struct_t * ) ;
+
 
 int zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( int fd_path,int * fd_loop,int mode,string_t * loop_device ) ;
 
@@ -306,27 +347,6 @@ int zuluCryptFileSystemIsFUSEbased( const char * device ) ;
  * this function is defined in status.c
  */
 void zuluCryptFormatSize( u_int64_t number,char * buffer,size_t buffer_size ) ;
-
-/*
- * zuluCryptOpenPlain_1() is defined in open_plain.c
- */
-int zuluCryptOpenPlain_1( const char * device,const char * offset,const char * mapper,
-			  const char * mode,const char * pass,size_t pass_size,int,int ) ;
-
-/*
- * zuluCryptOpenPlainWithOffset() is defined in open_volume.c
- */
-int zuluCryptOpenPlainWithOffset( const char * dev,const char * offset,const char * mapper,
-				  const char * m_point,uid_t id,unsigned long m_opts,
-				  const char * fs_opts,const char * pass,size_t pass_size ) ;
-
-/*
- * zuluCryptOpenVolume_0() is defined in open_volume.c
- */
-int zuluCryptOpenVolume_0( int( *function )( const char *,const char *,const char *,const char *,const char *,size_t,int,int ),
-			   const char * dev,const char * offset,const char * mapper,
-			   const char * m_point,uid_t id,unsigned long m_opts,
-			   const char * fs_opts,const char * pass,size_t pass_size,int volume_type,int key_source ) ;
 
 /*
  * zuluCryptCreateKeyFile() is defined in open_tcrypt.c

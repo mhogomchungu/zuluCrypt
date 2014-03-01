@@ -281,7 +281,7 @@ int zuluCryptOpenPlain( const char * device,      /* path to encrypted file or p
  * use "0" for "key_len" argument,the argument is not used.
  *
  * TCRYPT_KEYFILE option means the "key" argument is a memory buffer containing the content of a keyfile.This is useful
- * if you want the API to treat the content of a buffer as it they are a keyfile.
+ * if you want the API to treat the content of a buffer as if they are a keyfile.
  *
  * TCRYPT_PASSPHRASE option means the "key" argument is a pointer to a memory buffer containing the passphrase.
  *

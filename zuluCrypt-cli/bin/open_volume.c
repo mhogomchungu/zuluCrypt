@@ -27,15 +27,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-static int _open_tcrypt( const char * device,const char * mapper_name,const char * key,
-			 size_t key_key_len,const char * key_source,const char * key_origin,
-			 int volume_type,const char * m_point,uid_t uid,
-			 unsigned long m_flags,const char * fs_opts ) ;
-
-static int _open_volume( const char * device,const char * offset,const char * mapper_name,const char * key,
-			 size_t key_key_len,const char * key_source,const char * key_origin,
-			 const char * m_point,uid_t uid,
-			 unsigned long m_flags,const char * fs_opts ) ;
+static int _open_volume( const open_struct_t * ) ;
 
 static char * _device_path( const char * device )
 {
@@ -174,8 +166,15 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 
 	unsigned long m_flags ;
 
+	int key_source = TCRYPT_PASSPHRASE ;
+
 	const char * uuid ;
 	char * device_path ;
+
+	/*
+	 * open_struct_t is declared in ../lib/include.h
+	 */
+	open_struct_t open_struct ;
 
 	struct stat statstr ;
 
@@ -187,17 +186,15 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 			return zuluExit( 22,device,mount_point,stl ) ; ;
 		}
 	}
+	if( m_opts == NULL ){
+		m_opts = "rw" ;
+	}
 	/*
 	 * zuluCryptMountFlagsAreNotCorrect() is defined in ./mount_flags.c
 	 */
 	if( zuluCryptMountFlagsAreNotCorrect( m_opts,uid,&m_flags ) ){
 		return zuluExit( 5,device,mount_point,stl ) ;
 	}
-
-	if( m_opts == NULL ){
-		m_opts = "rw" ;
-	}
-
 	if( StringHasComponent( m_opts,"rw" ) ){
 		/*
 		 * zuluCryptSecurityDeviceIsWritable() is defined in path_access.c
@@ -319,6 +316,9 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 			key = pass ;
 			key_len = StringSize( pass ) ;
 		}else if( StringsAreEqual( source,"-f" ) ){
+			if( StringHasNoComponent( pass,"/.zuluCrypt-socket" ) ){
+				key_source = TCRYPT_KEYFILE ;
+			}
 			/*
 			 * function is defined at "path_access.c"
 			 */
@@ -334,9 +334,24 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		}
 	}
 
+	memset( &open_struct,'\0',sizeof( open_struct_t ) ) ;
+
+	open_struct.device      = device ;
+	open_struct.offset      = offset ;
+	open_struct.mapper_name = mapper_name ;
+	open_struct.key         = key ;
+	open_struct.key_len     = key_len ;
+	open_struct.key_source  = key_source ;
+	open_struct.m_point     = mount_point ;
+	open_struct.fs_opts     = fs_opts ;
+	open_struct.key_len     = key_len ;
+	open_struct.uid         = uid ;
+	open_struct.m_opts      = m_opts ;
+	open_struct.m_flags     = m_flags ;
+
 	zuluCryptSecurityGainElevatedPrivileges() ;
 
-	st = _open_volume( device,offset,mapper_name,key,key_len,source,pass,mount_point,uid,m_flags,fs_opts ) ;
+	st = _open_volume( &open_struct ) ;
 
 	zuluCryptSecurityDropElevatedPrivileges() ;
 
@@ -372,15 +387,15 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	return zuluExit_1( st,opts,device,mount_point,stl ) ;
 }
 
-static int _open_volume( const char * device,const char * offset,const char * mapper_name,const char * key,size_t key_key_len,const char * key_source,
-			 const char * key_origin,const char * m_point,uid_t uid,unsigned long m_flags,const char * fs_opts )
+static int _open_volume( const open_struct_t * opts )
 {
 	int st ;
-	if( offset == NULL ){
+	if( opts->offset == NULL ){
 		/*
 		 * zuluCryptOpenVolume() is defined in ../lib/open_volume.c
 		 */
-		st = zuluCryptOpenVolume( device,mapper_name,m_point,uid,m_flags,fs_opts,key,key_key_len ) ;
+		st = zuluCryptOpenVolume_1( opts ) ;
+
 		if( st == 4 ){
 			/*
 			 * failed to open a LUKS or PLAIN volume.
@@ -388,7 +403,7 @@ static int _open_volume( const char * device,const char * offset,const char * ma
 			/*
 			 * zuluCryptVolumeIsNotLuks() is defined in ../lib/is_luks.c
 			 */
-			if( zuluCryptVolumeIsNotLuks( device ) ){
+			if( zuluCryptVolumeIsNotLuks( opts->device ) ){
 				/*
 				 * The volume is not LUKS,its either PLAIN or TRUECRYPT,we already failed to open it as PLAIN
 				 * so it must be TRUECRYPT or the key is wrong.
@@ -397,12 +412,12 @@ static int _open_volume( const char * device,const char * offset,const char * ma
 				/*
 				 * try to open is a normal TRUECRYPT volume.
 				 */
-				st = _open_tcrypt( device,mapper_name,key,key_key_len,key_source,key_origin,TCRYPT_NORMAL,m_point,uid,m_flags,fs_opts ) ;
-				if( st == 4 ){
-					/*
-					 * The attempt failed,retry to open it as a hidden TRUECRYPT volume.
-					 */
-					st = _open_tcrypt( device,mapper_name,key,key_key_len,key_source,key_origin,TCRYPT_HIDDEN,m_point,uid,m_flags,fs_opts ) ;
+				st = zuluCryptOpenTcrypt_1( opts ) ;
+
+				if( st == 15 || st == 0 || st == -1 ){
+					;
+				}else{
+					st = 4 ;
 				}
 			}
 		}
@@ -410,33 +425,7 @@ static int _open_volume( const char * device,const char * offset,const char * ma
 		/*
 		 * zuluCryptOpenPlainWithOffset() is defined in ../lib/open_volume.c
 		 */
-		st = zuluCryptOpenPlainWithOffset( device,offset,mapper_name,m_point,uid,m_flags,fs_opts,key,key_key_len ) ;
+		st = zuluCryptOpenPlainWithOffset( opts ) ;
 	}
-	return st ;
-}
-
-static int _open_tcrypt( const char * device,const char * mapper_name,const char * key,size_t key_key_len,const char * key_source,
-			 const char * key_origin,int volume_type,const char * m_point,uid_t uid,unsigned long m_flags,const char * fs_opts )
-{
-	int st ;
-	if( StringsAreEqual( key_source,"-f" ) ){
-		if( StringHasComponent( key_origin,"/.zuluCrypt-socket/" ) ){
-			/*
-			 * zuluCryptOpenTcrypt() is defined in ../lib/open_tcrypt.c
-			 */
-			st = zuluCryptOpenTcrypt( device,mapper_name,key,key_key_len,TCRYPT_PASSPHRASE,volume_type,m_point,uid,m_flags,fs_opts ) ;
-		}else{
-			st = zuluCryptOpenTcrypt( device,mapper_name,key,key_key_len,TCRYPT_KEYFILE,volume_type,m_point,uid,m_flags,fs_opts ) ;
-		}
-	}else{
-		st = zuluCryptOpenTcrypt( device,mapper_name,key,key_key_len,TCRYPT_PASSPHRASE,volume_type,m_point,uid,m_flags,fs_opts ) ;
-	}
-
-	if( st == 15 || st == 0 || st == -1 ){
-		;
-	}else{
-		st = 4 ;
-	}
-
 	return st ;
 }

@@ -34,7 +34,7 @@ static u_int64_t _offset( const char * offset )
 	char f   ;
 
 	u_int64_t r = 0 ;
-	
+
 	size_t s = StringSize( offset ) ;
 
 	if( s == 0 ){
@@ -75,7 +75,8 @@ static u_int64_t _offset( const char * offset )
 	return r ;
 }
 
-static int _open_plain( const char * device,const char * offset,const char * mapper,const char * mode,const char * pass,size_t pass_size )
+static int _open_plain( const char * device,const char * offset,const char * mapper,
+			int mode,const char * pass,size_t pass_size )
 {
 	uint32_t flags ;
 
@@ -92,7 +93,7 @@ static int _open_plain( const char * device,const char * offset,const char * map
 	if( offset != NULL ){
 		params.offset = _offset( offset ) ;
 	}
-	if( StringHasComponent( mode,"ro" ) ){
+	if( mode == O_RDONLY ){
 		flags = CRYPT_ACTIVATE_READONLY ;
 	}else{
 		flags = CRYPT_ACTIVATE_ALLOW_DISCARDS ;
@@ -110,29 +111,26 @@ static int _open_plain( const char * device,const char * offset,const char * map
 	}
 }
 
-int zuluCryptOpenPlain_1( const char * device,const char * offset,const char * mapper,
-			  const char * mode,const char * pass,size_t pass_size,int x,int y )
+int zuluCryptOpenPlain_1( const open_struct_t * opt )
 {
-	int lmode ;
+	int mode ;
 	string_t st ;
 	int fd ;
 	int r ;
 
-	if( x && y ){;}
-
-	if( StringPrefixMatch( device,"/dev/",5 ) ){
-		return _open_plain( device,offset,mapper,mode,pass,pass_size ) ;
+	if( StringHasComponent( opt->m_opts,"ro" ) ){
+		mode = O_RDONLY ;
 	}else{
-		if( StringHasComponent( mode,"ro" ) ){
-			lmode = O_RDONLY ;
-		}else{
-			lmode = O_RDWR ;
-		}
+		mode = O_RDWR ;
+	}
+	if( StringPrefixMatch( opt->device,"/dev/",5 ) ){
+		return _open_plain( opt->device,opt->offset,opt->mapper_name,mode,opt->key,opt->key_len ) ;
+	}else{
 		/*
 		 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop.c
 		 */
-		if( zuluCryptAttachLoopDeviceToFile( device,lmode,&fd,&st ) ){
-			r = _open_plain( device,offset,mapper,mode,pass,pass_size ) ;
+		if( zuluCryptAttachLoopDeviceToFile( opt->device,mode,&fd,&st ) ){
+			r = _open_plain( StringContent( st ),opt->offset,opt->mapper_name,mode,opt->key,opt->key_len ) ;
 			StringDelete( &st ) ;
 			close( fd ) ;
 			return r ;
@@ -142,7 +140,17 @@ int zuluCryptOpenPlain_1( const char * device,const char * offset,const char * m
 	}
 }
 
-int zuluCryptOpenPlain( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
+int zuluCryptOpenPlain( const char * device,const char * mapper,const char * mode,const char * key,size_t key_len )
 {
-	return zuluCryptOpenPlain_1( device,NULL,mapper,mode,pass,pass_size,0,0 ) ;
+	open_struct_t opt ;
+
+	memset( &opt,'\0',sizeof( open_struct_t ) ) ;
+
+	opt.device      = device ;
+	opt.mapper_name = mapper ;
+	opt.key         = key ;
+	opt.key_len     = key_len ;
+	opt.m_opts      = mode ;
+
+	return zuluCryptOpenPlain_1( &opt ) ;
 }

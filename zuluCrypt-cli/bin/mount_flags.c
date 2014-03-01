@@ -42,7 +42,7 @@ int zuluCryptMountFlagsAreNotCorrect( const char * mode,uid_t uid,unsigned long 
 		return 0 ;
 	}
 	if( StringHasComponent( mode,"ro" ) ){
-		flg |= MS_RDONLY;
+		flg |= MS_RDONLY ;
 	}
 	if( StringHasComponent( mode,"dev" ) ){
 		if( user_has_no_access ){

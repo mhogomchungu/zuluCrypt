@@ -78,7 +78,7 @@ int zuluCryptOpenLuks( const char * device,const char * mapper,const char * mode
 		 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop.c
 		 */
 		if( zuluCryptAttachLoopDeviceToFile( device,lmode,&fd,&st ) ){
-			r = _open_luks( device,mapper,mode,pass,pass_size ) ;
+			r = _open_luks( StringContent( st ),mapper,mode,pass,pass_size ) ;
 			StringDelete( &st ) ;
 			close( fd ) ;
 			return r ;
