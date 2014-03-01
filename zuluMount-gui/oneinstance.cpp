@@ -42,7 +42,7 @@ oneinstance::oneinstance( QObject * parent,const QString& socketPath,const char 
 		if( m_localSocket->waitForConnected( 10000 ) ){
 			qDebug() << tr( "There seem to be another instance running,exiting this one" ) ;
 		}else{
-			qDebug() << tr( "Previous instance seem to have crashes,trying to clean up before starting" ) ;
+			qDebug() << tr( "Previous instance seem to have crashed,trying to clean up before starting" ) ;
 
 			/*
 			 * failed to connect in 10 seconds, assuming the socketPath has a stale file
