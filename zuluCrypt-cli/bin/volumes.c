@@ -576,6 +576,9 @@ u_int64_t zuluCryptGetVolumeSize( const char * device )
 
 	blkid_probe blkid = blkid_new_probe_from_filename( device ) ;
 
+	if( blkid == NULL ){
+		return 0 ;
+	}
 	blkid_do_probe( blkid ) ;
 	blkid_probe_lookup_value( blkid,"TYPE",&e,NULL ) ;
 
@@ -611,13 +614,15 @@ u_int64_t zuluCryptGetVolumeSize( const char * device )
 			while( it != end ){
 				blkid = blkid_new_probe_from_filename( StringContent( *it ) ) ;
 				it++ ;
-				blkid_do_probe( blkid ) ;
-				if( blkid_probe_lookup_value( blkid,"UUID",&e,NULL ) == 0 ){
-					if( StringEqual( xt,e ) ){
-						r += blkid_probe_get_size( blkid ) ;
+				if( blkid != NULL ){
+					blkid_do_probe( blkid ) ;
+					if( blkid_probe_lookup_value( blkid,"UUID",&e,NULL ) == 0 ){
+						if( StringEqual( xt,e ) ){
+							r += blkid_probe_get_size( blkid ) ;
+						}
 					}
+					blkid_free_probe( blkid ) ;
 				}
-				blkid_free_probe( blkid ) ;
 			}
 			StringDelete( &xt ) ;
 			StringListDelete( &stl ) ;
