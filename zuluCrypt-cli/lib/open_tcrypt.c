@@ -245,7 +245,7 @@ int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * ke
 int zuluCryptOpenTcrypt_1( const open_struct_t * opts )
 {
 	if( 0 && opts ){;}
-	return 0 ;
+	return 1 ;
 }
 
 #endif
