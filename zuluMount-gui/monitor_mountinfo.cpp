@@ -137,10 +137,8 @@ void monitor_mountinfo::run()
 			}
 		}else{
 			/*
-			 * odd,mount/unmount just happened but volume count remain the same,refresh the UI
-			 * and hopefully that will sort out the problem
+			 * mount/unmount just happened but volume count remain the same,possible reason is because of a bind mount
 			 */
-			emit update() ;
 		}
 
 		oldList = newList ;
