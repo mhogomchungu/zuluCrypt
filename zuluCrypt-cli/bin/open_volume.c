@@ -27,7 +27,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-static int _open_volume( const open_struct_t * ) ;
+static int _open_volume( open_struct_t * ) ;
 
 static char * _device_path( const char * device )
 {
@@ -387,7 +387,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	return zuluExit_1( st,opts,device,mount_point,stl ) ;
 }
 
-static int _open_volume( const open_struct_t * opts )
+static int _open_volume( open_struct_t * opts )
 {
 	int st ;
 	if( opts->offset == NULL ){
@@ -410,9 +410,17 @@ static int _open_volume( const open_struct_t * opts )
 				 */
 
 				/*
-				 * try to open is a normal TRUECRYPT volume.
+				 * try to open the volume as a normal TRUECRYPT volume.
 				 */
+				opts->volume_type = TCRYPT_NORMAL ;
 				st = zuluCryptOpenTcrypt_1( opts ) ;
+				if( st != 0 ){
+					/*
+					 * try to open the volume as a hidden TRUECRYPT volume.
+					 */
+					opts->volume_type = TCRYPT_HIDDEN ;
+					st = zuluCryptOpenTcrypt_1( opts ) ;
+				}
 
 				if( st == 15 || st == 0 || st == -1 ){
 					;

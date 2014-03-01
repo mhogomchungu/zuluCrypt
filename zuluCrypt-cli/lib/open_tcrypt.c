@@ -107,7 +107,7 @@ string_t zuluCryptCreateKeyFile( const char * key,size_t key_len,const char * fi
 	return st ;
 }
 
-static int _open_tcrypt_volume( int volume_type,int source,const open_struct_t * opts,const char * key )
+static int _open_tcrypt_volume( const open_struct_t * opts,const char * key )
 {
 	uint32_t flags ;
 
@@ -119,14 +119,14 @@ static int _open_tcrypt_volume( int volume_type,int source,const open_struct_t *
 	}else{
 		memset( &params,'\0',sizeof( struct crypt_params_tcrypt ) ) ;
 
-		if( source == TCRYPT_PASSPHRASE ){
+		if( opts->key_source == TCRYPT_PASSPHRASE ){
 			params.passphrase       = key ;
 			params.passphrase_size  = opts->key_len ;
 		}else{
 			params.keyfiles_count = 1 ;
 			params.keyfiles       = &key ;
 		}
-		if( volume_type == TCRYPT_HIDDEN ){
+		if( opts->volume_type == TCRYPT_HIDDEN ){
 			params.flags = CRYPT_TCRYPT_LEGACY_MODES | CRYPT_TCRYPT_HIDDEN_HEADER ;
 		}else{
 			params.flags = CRYPT_TCRYPT_LEGACY_MODES ;
@@ -152,15 +152,6 @@ static int _open_tcrypt_volume( int volume_type,int source,const open_struct_t *
 	}
 }
 
-int _open_tcrypt_volume_0( int source,const open_struct_t * opts,const char * key )
-{
-	int st = _open_tcrypt_volume( TCRYPT_NORMAL,source,opts,key ) ;
-	if( st != 0 ){
-		st = _open_tcrypt_volume( TCRYPT_HIDDEN,source,opts,key ) ;
-	}
-	return st ;
-}
-
 static int _open_tcrypt( const open_struct_t * opts )
 {
 	string_t st ;
@@ -170,7 +161,7 @@ static int _open_tcrypt( const open_struct_t * opts )
 		st = zuluCryptCreateKeyFile( opts->key,opts->key_len,"open_tcrypt-" ) ;
 		if( st != StringVoid ){
 			keyfile = StringContent( st ) ;
-			h = _open_tcrypt_volume_0( TCRYPT_KEYFILE_FILE,opts,keyfile ) ;
+			h = _open_tcrypt_volume( opts,keyfile ) ;
 			/*
 			 * zuluCryptDeleteFile() is defined in open_path_security.c
 			 */
@@ -181,9 +172,9 @@ static int _open_tcrypt( const open_struct_t * opts )
 			return 1 ;
 		}
 	}else if( opts->key_source == TCRYPT_KEYFILE_FILE ){
-		return _open_tcrypt_volume_0( TCRYPT_KEYFILE_FILE,opts,opts->key ) ;
+		return _open_tcrypt_volume( opts,opts->key ) ;
 	}else{
-		return _open_tcrypt_volume_0( TCRYPT_PASSPHRASE,opts,opts->key ) ;
+		return _open_tcrypt_volume( opts,opts->key ) ;
 	}
 }
 
