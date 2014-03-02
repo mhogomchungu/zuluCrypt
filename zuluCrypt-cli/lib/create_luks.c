@@ -18,6 +18,8 @@
  */
 
 #include "includes.h"
+#include <fcntl.h>
+#include <unistd.h>
 
 #include <libcryptsetup.h>
 
@@ -27,7 +29,7 @@ static inline int zuluExit( int st,struct crypt_device * cd )
 	return st ;
 }
 
-int zuluCryptCreateLuks( const char * dev,const char * pass,size_t pass_size,const char * rng )
+static int _create_luks( const char * dev,const char * pass,size_t pass_size,const char * rng )
 {
 	struct crypt_device * cd;
 	struct crypt_params_luks1 params ;
@@ -60,5 +62,27 @@ int zuluCryptCreateLuks( const char * dev,const char * pass,size_t pass_size,con
 		return zuluExit( 3,cd ) ;
 	}else{
 		return zuluExit( 0,cd ) ;
+	}
+}
+
+int zuluCryptCreateLuks( const char * dev,const char * pass,size_t pass_size,const char * rng )
+{
+	string_t st ;
+	int fd ;
+	int r ;
+	if( StringPrefixMatch( dev,"/dev/",5 ) ){
+		return _create_luks( dev,pass,pass_size,rng ) ;
+	}else{
+		/*
+		 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop.c
+		 */
+		if( zuluCryptAttachLoopDeviceToFile( dev,O_RDWR,&fd,&st ) ){
+			r = _create_luks( StringContent( st ),pass,pass_size,rng ) ;
+			StringDelete( &st ) ;
+			close( fd ) ;
+			return r ;
+		}else{
+			return 2 ;
+		}
 	}
 }

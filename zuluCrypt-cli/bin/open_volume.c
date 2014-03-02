@@ -413,10 +413,13 @@ static int _open_volume( open_struct_t * opts )
 				 * try to open the volume as a normal TRUECRYPT volume.
 				 */
 				opts->volume_type = TCRYPT_NORMAL ;
+				/*
+				 * zuluCryptOpenTcrypt_1() is defined in ../lib/open_tcrypt.c
+				 */
 				st = zuluCryptOpenTcrypt_1( opts ) ;
 				if( st != 0 ){
 					/*
-					 * try to open the volume as a hidden TRUECRYPT volume.
+					 * retry to open the volume as a hidden TRUECRYPT volume.
 					 */
 					opts->volume_type = TCRYPT_HIDDEN ;
 					st = zuluCryptOpenTcrypt_1( opts ) ;
