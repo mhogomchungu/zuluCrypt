@@ -87,7 +87,7 @@ char * zuluCryptLoopDeviceAddress_1( const char * device )
 		ioctl( fd,LOOP_GET_STATUS64,&l_info ) ;
 		path = zuluCryptRealPath( ( char * ) l_info.lo_file_name ) ;
 		close( fd ) ;
-		return path;
+		return path ;
 	}else{
 		StringRemoveRight( xt,1 ) ;
 		return StringDeleteHandle( &xt ) ;
@@ -97,6 +97,7 @@ char * zuluCryptLoopDeviceAddress_1( const char * device )
 char * zuluCryptGetALoopDeviceAssociatedWithAnImageFile( const char * path )
 {
 	int i ;
+	int k ;
 	string_t st = String( "" ) ;
 	const char * e ;
 	char * f ;
@@ -104,12 +105,13 @@ char * zuluCryptGetALoopDeviceAssociatedWithAnImageFile( const char * path )
 		StringReplace( st,"/dev/loop" ) ;
 		e = StringAppendInt( st,i ) ;
 		f = zuluCryptLoopDeviceAddress_1( e ) ;
-		if( StringsAreEqual( path,f ) ){
+		k = StringsAreEqual( path,f ) ;
+		StringFree( f ) ;
+		if( k == 1 ){
 			return StringDeleteHandle( &st ) ;
-		}else{
-			StringFree( f ) ;
 		}
 	}
+	StringDelete( &st ) ;
 	return NULL ;
 }
 
