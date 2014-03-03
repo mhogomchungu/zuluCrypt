@@ -30,22 +30,28 @@ static inline int zuluExit( int x,string_t p )
 
 static int _open_mapper( const open_struct_t * opts )
 {
+	int r ;
 	/*
-	 * zuluCryptOpenLuks() is defined in open_luks.c
+	 * zuluCryptVolumeIsLuks() is defined in is_luks.c
 	 */
-	int st = zuluCryptOpenLuks( opts->device,opts->mapper_name,opts->m_opts,opts->key,opts->key_len ) ;
-
-	if( st == 2 ){
+	if( zuluCryptVolumeIsLuks( opts->device ) ){
 		/*
-		 * volume is not a LUKS volume,assume its a PLAIN volume
+		 * zuluCryptOpenLuks() is defined in open_luks.c
 		 */
+		r = zuluCryptOpenLuks( opts->device,opts->mapper_name,opts->m_opts,opts->key,opts->key_len ) ;
+		if( r != 0 ){
+			/*
+			 * just assumed wrong password when a volume fail to unlock
+			 */
+			r = 1 ;
+		}
+	}else{
 		/*
 		 * zuluCryptOpenPlain_1() is defined in open_plain.c
 		 */
-		return zuluCryptOpenPlain_1( opts ) ;
-	}else{
-		return st ;
+		r = zuluCryptOpenPlain_1( opts ) ;
 	}
+	return r ;
 }
 
 int zuluCryptOpenVolume_0( int( *function )( const open_struct_t * ),const open_struct_t * opts )
@@ -178,7 +184,7 @@ int zuluCryptOpenVolume_2( const open_struct_t * opts )
 		r = zuluCryptOpenPlainWithOffset( opts ) ;
 	}else{
 		r = zuluCryptOpenVolume_1( opts ) ;
-		if( r == 4 ){
+		if( r == 4 && zuluCryptVolumeIsNotLuks( opts->device ) ){
 			memcpy( &opts_1,opts,sizeof( open_struct_t ) ) ;
 			/*
 			 * try to open the volume as a normal TRUECRYPT volume.
