@@ -151,15 +151,56 @@ int zuluCryptOpenVolume( const char * dev,const char * mapper,const char * m_poi
 	return zuluCryptOpenVolume_1( &opts ) ;
 }
 
-int zuluCryptOpenVolume_1( const open_struct_t * opts )
-{
-	return zuluCryptOpenVolume_0( _open_mapper,opts ) ;
-}
-
 int zuluCryptOpenPlainWithOffset( const open_struct_t * opts )
 {
 	/*
 	 * zuluCryptOpenPlain_1() is defined in open_plain.c
 	 */
 	return zuluCryptOpenVolume_0( zuluCryptOpenPlain_1,opts ) ;
+}
+
+/*
+ * this function tries to unlock luks and plain volumes only
+ */
+int zuluCryptOpenVolume_1( const open_struct_t * opts )
+{
+	return zuluCryptOpenVolume_0( _open_mapper,opts ) ;
+}
+
+/*
+ * this function tries to unlock luks,plain and truecrypt volumes
+ */
+int zuluCryptOpenVolume_2( const open_struct_t * opts )
+{
+	int r ;
+	open_struct_t opts_1 ;
+	if( opts->offset != NULL ){
+		r = zuluCryptOpenPlainWithOffset( opts ) ;
+	}else{
+		r = zuluCryptOpenVolume_1( opts ) ;
+		if( r == 4 ){
+			memcpy( &opts_1,opts,sizeof( open_struct_t ) ) ;
+			/*
+			 * try to open the volume as a normal TRUECRYPT volume.
+			 */
+			opts_1.volume_type = TCRYPT_NORMAL ;
+			/*
+			 * zuluCryptOpenTcrypt_1() is defined in open_tcrypt.c
+			 */
+			r = zuluCryptOpenTcrypt_1( &opts_1 ) ;
+			if( r != 0 ){
+				/*
+				 * retry to open the volume as a hidden TRUECRYPT volume.
+				 */
+				opts_1.volume_type = TCRYPT_HIDDEN ;
+				r = zuluCryptOpenTcrypt_1( &opts_1 ) ;
+			}
+		}
+		if( r == 0 || r == -1 ){
+			;
+		}else{
+			r = 4 ;
+		}
+	}
+	return r ;
 }

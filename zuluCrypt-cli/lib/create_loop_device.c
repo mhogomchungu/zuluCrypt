@@ -314,15 +314,17 @@ static int _attach_loop_device_to_file( const char * path,int mode,int * loop_fd
 
 int zuluCryptAttachLoopDeviceToFile( const char * path,int mode,int * loop_fd,string_t * loop_device )
 {
-	int i = 0 ;
-	int j = 0 ;
-	while( 1 ){
+	int i ;
+	int j ;
+	/*
+	 * try to attach a loop device multiple times
+	 */
+	for( j = 0 ; j < 6 ; j++ ){
 		i = _attach_loop_device_to_file( path,mode,loop_fd,loop_device ) ;
-		if( i == 0 && j < 3 ){
-			sleep( 3 ) ;
-			j++ ;
-		}else{
+		if( i == 1 ){
 			break ;
+		}else{
+			sleep( 1 ) ;
 		}
 	}
 	return i ;
@@ -346,15 +348,17 @@ static int _attach_loop_device_to_file_using_file_descriptor( int fd_path,int * 
 
 int zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( int fd_path,int * fd_loop,int mode,string_t * loop_device )
 {
-	int i = 0 ;
-	int j = 0 ;
-	while( 1 ){
+	int i ;
+	int j ;
+	/*
+	 * try to attach a loop device multiple times
+	 */
+	for( j = 0 ; j < 6 ; j++ ){
 		i = _attach_loop_device_to_file_using_file_descriptor( fd_path,fd_loop,mode,loop_device ) ;
-		if( i == 0 && j < 3 ){
-			sleep( 3 ) ;
-			j++ ;
-		}else{
+		if( i == 1 ){
 			break ;
+		}else{
+			sleep( 1 ) ;
 		}
 	}
 	return i ;

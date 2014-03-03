@@ -77,6 +77,11 @@ typedef struct{
 int zuluCryptOpenVolume_1( const open_struct_t * ) ;
 
 /*
+ * zuluCryptOpenVolume_1() is defined in open_volume.c
+ */
+int zuluCryptOpenVolume_2( const open_struct_t * ) ;
+
+/*
  * zuluCryptOpenPlain_1() is defined in open_plain.c
  */
 int zuluCryptOpenPlain_1( const open_struct_t * ) ;

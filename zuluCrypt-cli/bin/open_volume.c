@@ -27,8 +27,6 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-static int _open_volume( open_struct_t * ) ;
-
 static char * _device_path( const char * device )
 {
 	char * path ;
@@ -351,7 +349,10 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 
 	zuluCryptSecurityGainElevatedPrivileges() ;
 
-	st = _open_volume( &open_struct ) ;
+	/*
+	 * zuluCryptOpenVolume_2() is defined in ../lib/open_volume.c
+	 */
+	st = zuluCryptOpenVolume_2( &open_struct ) ;
 
 	zuluCryptSecurityDropElevatedPrivileges() ;
 
@@ -385,58 +386,4 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	 */
 	zuluCryptCheckInvalidKey( opts->device ) ;
 	return zuluExit_1( st,opts,device,mount_point,stl ) ;
-}
-
-static int _open_volume( open_struct_t * opts )
-{
-	int st ;
-	if( opts->offset == NULL ){
-		/*
-		 * zuluCryptOpenVolume() is defined in ../lib/open_volume.c
-		 */
-		st = zuluCryptOpenVolume_1( opts ) ;
-
-		if( st == 4 ){
-			/*
-			 * failed to open a LUKS or PLAIN volume.
-			 */
-			/*
-			 * zuluCryptVolumeIsNotLuks() is defined in ../lib/is_luks.c
-			 */
-			if( zuluCryptVolumeIsNotLuks( opts->device ) ){
-				/*
-				 * The volume is not LUKS,its either PLAIN or TRUECRYPT,we already failed to open it as PLAIN
-				 * so it must be TRUECRYPT or the key is wrong.
-				 */
-
-				/*
-				 * try to open the volume as a normal TRUECRYPT volume.
-				 */
-				opts->volume_type = TCRYPT_NORMAL ;
-				/*
-				 * zuluCryptOpenTcrypt_1() is defined in ../lib/open_tcrypt.c
-				 */
-				st = zuluCryptOpenTcrypt_1( opts ) ;
-				if( st != 0 ){
-					/*
-					 * retry to open the volume as a hidden TRUECRYPT volume.
-					 */
-					opts->volume_type = TCRYPT_HIDDEN ;
-					st = zuluCryptOpenTcrypt_1( opts ) ;
-				}
-
-				if( st == 15 || st == 0 || st == -1 ){
-					;
-				}else{
-					st = 4 ;
-				}
-			}
-		}
-	}else{
-		/*
-		 * zuluCryptOpenPlainWithOffset() is defined in ../lib/open_volume.c
-		 */
-		st = zuluCryptOpenPlainWithOffset( opts ) ;
-	}
-	return st ;
 }
