@@ -195,7 +195,7 @@ void zuluMountPartitionProperties( const char * dev,const char * UUID,const char
 	zuluCryptSecurityDropElevatedPrivileges() ;
 }
 
-static void _printDeviceProperties( string_t entry,const char * mapper_path,size_t mapper_length )
+static void _print_device_properties( string_t entry,const char * mapper_path,size_t mapper_length )
 {
 	char * x ;
 
@@ -315,7 +315,7 @@ int zuluMountPrintVolumesProperties( uid_t uid )
 		st = *it ;
 		it++ ;
 		if( _normal_mounted_volume( st ) ){
-			_printDeviceProperties( st,z,l ) ;
+			_print_device_properties( st,z,l ) ;
 		}
 		zuluCryptDecodeMountEntry( st ) ;
 		StringListRemoveIfPresent_1( stz,st ) ;
@@ -517,7 +517,7 @@ int zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t 
 		/*
 		 * mounted and encrypted volume opened by this user
 		 */
-		_printDeviceProperties( p,mapper_prefix,mapper_length ) ;
+		_print_device_properties( p,mapper_prefix,mapper_length ) ;
 	}else{
 		/*
 		 * We will get if:
@@ -532,7 +532,7 @@ int zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t 
 			/*
 			 * volume is unencrypted and mounted by any user
 			 */
-			_printDeviceProperties( p,mapper_prefix,mapper_length ) ;
+			_print_device_properties( p,mapper_prefix,mapper_length ) ;
 		}else{
 			/*
 			 * We will get here is:
@@ -567,7 +567,7 @@ int zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t 
 				 * The volume is encrypted and mounted by any user,probably a different user
 				 * since this user condition is above
 				 */
-				_printDeviceProperties( f,mapper_prefix,mapper_length ) ;
+				_print_device_properties( f,mapper_prefix,mapper_length ) ;
 			}else{
 				/*
 				 * volume is not mounted
