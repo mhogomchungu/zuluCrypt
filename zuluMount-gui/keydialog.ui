@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>491</width>
-    <height>196</height>
+    <height>193</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -46,9 +46,9 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>20</y>
+     <y>120</y>
      <width>91</width>
-     <height>31</height>
+     <height>51</height>
     </rect>
    </property>
    <property name="text">
@@ -65,7 +65,7 @@
    <property name="geometry">
     <rect>
      <x>100</x>
-     <y>20</y>
+     <y>130</y>
      <width>291</width>
      <height>31</height>
     </rect>
@@ -75,7 +75,7 @@
    <property name="geometry">
     <rect>
      <x>390</x>
-     <y>80</y>
+     <y>130</y>
      <width>31</width>
      <height>31</height>
     </rect>
@@ -88,9 +88,9 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>50</y>
+     <y>10</y>
      <width>91</width>
-     <height>31</height>
+     <height>51</height>
     </rect>
    </property>
    <property name="text">
@@ -107,7 +107,7 @@
    <property name="geometry">
     <rect>
      <x>390</x>
-     <y>50</y>
+     <y>20</y>
      <width>31</width>
      <height>31</height>
     </rect>
@@ -120,30 +120,17 @@
    <property name="geometry">
     <rect>
      <x>100</x>
-     <y>50</y>
+     <y>20</y>
      <width>291</width>
      <height>31</height>
     </rect>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pbkeyFile">
-   <property name="geometry">
-    <rect>
-     <x>390</x>
-     <y>20</y>
-     <width>31</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
    </property>
   </widget>
   <widget class="QCheckBox" name="checkBoxOpenReadOnly">
    <property name="geometry">
     <rect>
      <x>110</x>
-     <y>110</y>
+     <y>50</y>
      <width>281</width>
      <height>31</height>
     </rect>
@@ -156,7 +143,7 @@
    <property name="geometry">
     <rect>
      <x>110</x>
-     <y>130</y>
+     <y>70</y>
      <width>281</width>
      <height>31</height>
     </rect>
@@ -182,7 +169,7 @@
    <property name="geometry">
     <rect>
      <x>100</x>
-     <y>80</y>
+     <y>100</y>
      <width>291</width>
      <height>31</height>
     </rect>
@@ -206,7 +193,6 @@
  </widget>
  <tabstops>
   <tabstop>lineEditKey</tabstop>
-  <tabstop>pbkeyFile</tabstop>
   <tabstop>lineEditMountPoint</tabstop>
   <tabstop>pbOpenMountPoint</tabstop>
   <tabstop>cbKeyType</tabstop>

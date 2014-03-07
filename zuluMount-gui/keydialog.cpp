@@ -67,7 +67,6 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const QString& path,
 	this->setWindowTitle( msg ) ;
 
 	m_ui->lineEditMountPoint->setText( path ) ;
-	m_ui->pbkeyFile->setVisible( false ) ;
 	m_ui->pbOpenMountPoint->setIcon( QIcon( QString( ":/folder.png" ) ) ) ;
 
 	m_menu = new QMenu( this ) ;
@@ -80,11 +79,12 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const QString& path,
 
 	m_ui->checkBoxOpenReadOnly->setChecked( utility::getOpenVolumeReadOnlyOption( QString( "zuluMount-gui" ) ) ) ;
 
+	m_ui->pbkeyOption->setEnabled( false ) ;
+
 	connect( m_ui->pbOptions,SIGNAL( clicked() ),this,SLOT( pbOptions() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->pbOpen,SIGNAL( clicked() ),this,SLOT( pbOpen() ) ) ;
 	connect( m_ui->pbkeyOption,SIGNAL( clicked() ),this,SLOT( pbkeyOption() ) ) ;
-	connect( m_ui->lineEditKey,SIGNAL( textChanged( QString ) ),this,SLOT( keyTextChanged( QString ) ) ) ;
 	connect( m_ui->pbOpenMountPoint,SIGNAL( clicked() ),this,SLOT( pbMountPointPath() ) ) ;
 	connect( m_ui->checkBoxOpenReadOnly,SIGNAL( stateChanged( int ) ),this,SLOT( cbMountReadOnlyStateChanged( int ) ) ) ;
 	connect( m_ui->cbKeyType,SIGNAL( activated( int ) ),this,SLOT( cbActicated( int ) ) ) ;
@@ -195,7 +195,6 @@ void keyDialog::disableAll()
 	m_ui->lineEditKey->setEnabled( false ) ;
 	m_ui->pbCancel->setEnabled( false ) ;
 	m_ui->pbOpen->setEnabled( false ) ;
-	m_ui->pbkeyFile->setEnabled( false ) ;
 	m_ui->label->setEnabled( false ) ;
 	m_ui->checkBoxOpenReadOnly->setEnabled( false ) ;
 	m_ui->checkBoxShareMountPoint->setEnabled( false ) ;
@@ -506,7 +505,6 @@ void keyDialog::key()
 	m_ui->pbkeyOption->setEnabled( false ) ;
 	m_ui->label->setText( tr( "key" ) ) ;
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
-	m_ui->pbkeyFile->setEnabled( false ) ;
 	m_ui->lineEditKey->clear() ;
 	m_ui->lineEditKey->setEnabled( true ) ;
 }
