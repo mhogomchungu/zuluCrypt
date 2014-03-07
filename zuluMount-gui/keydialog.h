@@ -56,13 +56,13 @@ signals:
 public slots:
 	void slotMountComplete( int,QString ) ;
 private slots:
+	void cbActicated( int ) ;
 	void pbkeyOption( void ) ;
 	void pbMountPointPath( void ) ;
 	void pbPluginEntryClicked( QAction * ) ;
-	void keyTextChanged( QString ) ;
-	void rbPlugIn( bool ) ;
-	void rbKey( bool ) ;
-	void rbKeyFile( bool ) ;
+	void plugIn( void ) ;
+	void key( void ) ;
+	void keyFile( void ) ;
 	void pbOpen( void ) ;
 	void pbOptions( void ) ;
 	void pbCancel( void ) ;
@@ -95,6 +95,7 @@ private:
 	bool m_working ;
 	bool m_autoOpenFolderOnMount ;
 	LxQt::Wallet::Wallet * m_wallet ;
+	enum{ Key = 0,keyfile = 1,plugin = 2 } ;
 };
 
 #endif // KEYDIALOG_H

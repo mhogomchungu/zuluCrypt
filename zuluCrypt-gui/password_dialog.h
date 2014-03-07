@@ -55,10 +55,10 @@ public slots:
 	void ShowUI( const QString& volumePath,const QString& mount_point ) ;
 	void clickedPartitionOption( QString ) ;
 private slots :
+	void cbActicated( int ) ;
 	void pbKeyOption( void ) ;
 	void pbPluginEntryClicked( QAction * ) ;
 	void pbPlugin( void ) ;
-	void keyTextChanged( QString ) ;
 	void buttonOpenClicked( void ) ;
 	void walletIsOpen( bool ) ;
 	void mount_point( void ) ;
@@ -94,6 +94,7 @@ private :
 	QString m_point ;
 	QString m_folderOpener ;
 	LxQt::Wallet::Wallet * m_wallet ;
+	enum{ key = 0,keyfile = 1,plugin = 2 } ;
 };
 
 #endif // PASSWORD_DIALOG_H

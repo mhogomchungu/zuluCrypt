@@ -92,14 +92,11 @@ passwordDialog::passwordDialog( QTableWidget * table,const QString& folderOpener
 	connect( m_ui->PushButtonMountPointPath,SIGNAL( clicked() ),this,SLOT( mount_point() ) ) ;
 	connect( m_ui->PushButtonVolumePath,SIGNAL( clicked() ),this,SLOT( file_path() ) ) ;
 	connect( m_ui->pushButtonPassPhraseFromFile,SIGNAL( clicked() ),this,SLOT( clickedPassPhraseFromFileButton() ) ) ;
-	connect( m_ui->radioButtonPassPhraseFromFile,SIGNAL( clicked() ),this,SLOT( passphraseFromFileOption() ) ) ;
-	connect( m_ui->radioButtonPassPhrase,SIGNAL( clicked() ),this,SLOT( passphraseOption() ) ) ;
 	connect( m_ui->OpenVolumePath,SIGNAL( textChanged( QString ) ),this,SLOT( mountPointPath( QString ) ) ) ;
 	connect( m_ui->checkBoxReadOnly,SIGNAL( stateChanged( int ) ),this,SLOT( cbStateChanged( int ) ) ) ;
-	connect( m_ui->radioButtonPlugin,SIGNAL( clicked() ),this,SLOT( pluginOption() ) ) ;
-	connect( m_ui->PassPhraseField,SIGNAL( textChanged( QString ) ),this,SLOT( keyTextChanged( QString ) ) ) ;
 	connect( m_ui->pushButtonPlugin,SIGNAL( clicked() ),this,SLOT( pbPlugin() ) ) ;
 	connect( m_ui->pbKeyOption,SIGNAL( clicked() ),this,SLOT( pbKeyOption() ) ) ;
+	connect( m_ui->cbKeyType,SIGNAL( activated( int ) ),this,SLOT( cbActicated( int ) ) ) ;
 
 	m_ui->PushButtonMountPointPath->setVisible( false ) ;
 	m_ui->pushButtonPassPhraseFromFile->setVisible( false ) ;
@@ -163,15 +160,6 @@ void passwordDialog::pbPlugin()
 	connect( m_pluginMenu,SIGNAL( triggered( QAction * ) ),this,SLOT( pbPluginEntryClicked( QAction * ) ) ) ;
 
 	m_pluginMenu->exec( QCursor::pos() ) ;
-}
-
-void passwordDialog::pbKeyOption()
-{
-	if( m_ui->radioButtonPlugin->isChecked() ){
-		this->pbPlugin() ;
-	}else{
-		this->clickedPassPhraseFromFileButton() ;
-	}
 }
 
 void passwordDialog::pbPluginEntryClicked( QAction * e )
@@ -244,14 +232,21 @@ void passwordDialog::mountPointPath( QString path )
 	}
 }
 
-void passwordDialog::keyTextChanged( QString txt )
+void passwordDialog::cbActicated( int e )
 {
-	if( m_ui->radioButtonPlugin->isChecked() ){
-		if( txt.contains( QString( "/") ) ){
-			m_ui->labelPassphrase->setText( tr( "plugin path" ) ) ;
-		}else{
-			m_ui->labelPassphrase->setText( tr( "plugin name" ) ) ;
-		}
+	switch( e ){
+		case passwordDialog::key     : return this->passphraseOption() ;
+		case passwordDialog::keyfile : return this->passphraseFromFileOption() ;
+		case passwordDialog::plugin  : return this->pluginOption() ;
+	}
+}
+
+void passwordDialog::pbKeyOption()
+{
+	if( m_ui->cbKeyType->currentIndex() == passwordDialog::plugin ){
+		this->pbPlugin() ;
+	}else{
+		this->clickedPassPhraseFromFileButton() ;
 	}
 }
 
@@ -304,9 +299,9 @@ void passwordDialog::passphraseFromFileOption()
 void passwordDialog::clickedPassPhraseFromFileButton()
 {
 	QString msg ;
-	if( m_ui->radioButtonPassPhraseFromFile->isChecked() ){
+	if( m_ui->cbKeyType->currentIndex() == passwordDialog::keyfile ){
 		msg = tr( "Select a keyfile" ) ;
-	}else if( m_ui->radioButtonPlugin->isChecked() ){
+	}else{
 		msg = tr( "Select a key module" ) ;
 	}
 
@@ -389,7 +384,7 @@ void passwordDialog::walletIsOpen( bool opened )
 void passwordDialog::buttonOpenClicked( void )
 {
 	this->disableAll() ;
-	if( m_ui->radioButtonPlugin->isChecked() ){
+	if( m_ui->cbKeyType->currentIndex() == passwordDialog::plugin ){
 		QString wallet = m_ui->PassPhraseField->text() ;
 		if( wallet == tr( KWALLET ) ){
 			m_wallet = LxQt::Wallet::getWalletBackend( LxQt::Wallet::kwalletBackEnd ) ;
@@ -453,7 +448,9 @@ void passwordDialog::openVolume()
 
 	QString keyPath ;
 
-	if( m_ui->radioButtonPassPhraseFromFile->isChecked() ){
+	int keySource = m_ui->cbKeyType->currentIndex() ;
+
+	if( keySource == passwordDialog::keyfile ){
 		if( m_key.isEmpty() ){
 			DialogMsg msg( this ) ;
 			msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
@@ -462,11 +459,11 @@ void passwordDialog::openVolume()
 			passtype = QString( "-f" ) ;
 			keyPath = utility::resolvePath( m_key ) ;
 		}
-	}else if( m_ui->radioButtonPassPhrase->isChecked() ){
+	}else if( keySource == passwordDialog::key ){
 		passtype = QString( "-f" ) ;
 		keyPath = socketSendKey::getSocketPath() ;
 		this->sendKey( keyPath ) ;
-	}else if( m_ui->radioButtonPlugin->isChecked() ){
+	}else if( keySource == passwordDialog::plugin ){
 		if( m_key.isEmpty() ){
 			DialogMsg msg( this ) ;
 			msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
@@ -513,7 +510,6 @@ void passwordDialog::disableAll()
 {
 	m_ui->pushButtonPlugin->setEnabled( false ) ;
 	m_ui->checkBoxReadOnly->setEnabled( false ) ;
-	m_ui->groupBox->setEnabled( false ) ;
 	m_ui->labelMoutPointPath->setEnabled( false ) ;
 	m_ui->labelPassphrase->setEnabled( false ) ;
 	m_ui->labelVolumePath->setEnabled( false ) ;
@@ -525,18 +521,14 @@ void passwordDialog::disableAll()
 	m_ui->PushButtonOpen->setEnabled( false ) ;
 	m_ui->pushButtonPassPhraseFromFile->setEnabled( false ) ;
 	m_ui->PushButtonVolumePath->setEnabled( false ) ;
-	m_ui->radioButtonPassPhrase->setEnabled( false ) ;
-	m_ui->radioButtonPassPhraseFromFile->setEnabled( false ) ;
-	m_ui->radioButtonPassPhrase->setEnabled( false ) ;
-	m_ui->radioButtonPlugin->setEnabled( false ) ;
 	m_ui->pbKeyOption->setEnabled( false ) ;
+	m_ui->cbKeyType->setEnabled( false ) ;
 }
 
 void passwordDialog::enableAll()
 {
 	m_ui->pushButtonPlugin->setEnabled( true ) ;
 	m_ui->checkBoxReadOnly->setEnabled( true ) ;
-	m_ui->groupBox->setEnabled( true ) ;
 	m_ui->labelMoutPointPath->setEnabled( true ) ;
 	m_ui->labelPassphrase->setEnabled( true ) ;
 	m_ui->labelVolumePath->setEnabled( true ) ;
@@ -548,17 +540,14 @@ void passwordDialog::enableAll()
 	m_ui->PushButtonOpen->setEnabled( true ) ;
 	m_ui->pushButtonPassPhraseFromFile->setEnabled( true ) ;
 	m_ui->PushButtonVolumePath->setEnabled( true ) ;
-	m_ui->radioButtonPassPhrase->setEnabled( true ) ;
-	m_ui->radioButtonPassPhraseFromFile->setEnabled( true ) ;
-	m_ui->radioButtonPassPhrase->setEnabled( true ) ;
-	m_ui->radioButtonPlugin->setEnabled( true ) ;
+	m_ui->cbKeyType->setEnabled( true ) ;
 
 	if( m_open_with_path ){
 		m_ui->OpenVolumePath->setEnabled( false ) ;
 		m_ui->PushButtonVolumePath->setEnabled( false ) ;
 	}
 
-	if( m_ui->radioButtonPassPhrase->isChecked() ){
+	if( m_ui->cbKeyType->currentIndex() == passwordDialog::key ){
 		m_ui->pushButtonPassPhraseFromFile->setEnabled( false ) ;
 		m_ui->pushButtonPlugin->setEnabled( false ) ;
 		m_ui->PassPhraseField->setEnabled( true ) ;
@@ -567,7 +556,7 @@ void passwordDialog::enableAll()
 		m_ui->PassPhraseField->setEnabled( false ) ;
 	}
 
-	if( m_ui->radioButtonPassPhraseFromFile->isChecked() ){
+	if( m_ui->cbKeyType->currentIndex() == passwordDialog::keyfile ){
 		m_ui->pushButtonPlugin->setEnabled( false ) ;
 	}
 }
@@ -655,7 +644,7 @@ Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The de
 	this->enableAll() ;
 
 	if( status == 4 ){
-		if( m_ui->radioButtonPassPhrase->isChecked() ){
+		if( m_ui->cbKeyType->currentIndex() == passwordDialog::key ){
 			m_ui->PassPhraseField->clear() ;
 			m_ui->PassPhraseField->setFocus() ;
 		}

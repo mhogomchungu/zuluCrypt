@@ -84,13 +84,10 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const QString& path,
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->pbOpen,SIGNAL( clicked() ),this,SLOT( pbOpen() ) ) ;
 	connect( m_ui->pbkeyOption,SIGNAL( clicked() ),this,SLOT( pbkeyOption() ) ) ;
-	connect( m_ui->rbKey,SIGNAL( toggled( bool ) ),this,SLOT( rbKey( bool ) ) ) ;
-	connect( m_ui->rbKeyFile,SIGNAL( toggled( bool ) ),this,SLOT( rbKeyFile( bool ) ) ) ;
-	connect( m_ui->rbPlugIn,SIGNAL( toggled( bool ) ),this,SLOT( rbPlugIn( bool ) ) ) ;
 	connect( m_ui->lineEditKey,SIGNAL( textChanged( QString ) ),this,SLOT( keyTextChanged( QString ) ) ) ;
 	connect( m_ui->pbOpenMountPoint,SIGNAL( clicked() ),this,SLOT( pbMountPointPath() ) ) ;
 	connect( m_ui->checkBoxOpenReadOnly,SIGNAL( stateChanged( int ) ),this,SLOT( cbMountReadOnlyStateChanged( int ) ) ) ;
-	m_ui->rbKey->setChecked( true ) ;
+	connect( m_ui->cbKeyType,SIGNAL( activated( int ) ),this,SLOT( cbActicated( int ) ) ) ;
 
 	m_ui->pbOpenMountPoint->setVisible( false ) ;
 
@@ -158,17 +155,6 @@ void keyDialog::cbMountReadOnlyStateChanged( int state )
 	}
 }
 
-void keyDialog::keyTextChanged( QString txt )
-{
-	if( m_ui->rbPlugIn->isChecked() ){
-		if( txt.contains( QString( "/") ) ){
-			m_ui->label->setText( tr( "plugin path" ) ) ;
-		}else{
-			m_ui->label->setText( tr( "plugin name" ) ) ;
-		}
-	}
-}
-
 void keyDialog::pbMountPointPath()
 {
 	QString msg = tr( "select a folder to create a mount point in" ) ;
@@ -189,12 +175,10 @@ void keyDialog::enableAll()
 	m_ui->pbCancel->setEnabled( true ) ;
 	m_ui->pbOpen->setEnabled( true ) ;
 	m_ui->label->setEnabled( true ) ;
-	m_ui->rbKey->setEnabled( true ) ;
-	m_ui->rbKeyFile->setEnabled( true ) ;
-	if( !m_ui->rbPlugIn->isChecked() ){
+	m_ui->cbKeyType->setEnabled( true ) ;
+	if( m_ui->cbKeyType->currentIndex() != keyDialog::plugin ){
 		m_ui->lineEditKey->setEnabled( true ) ;
 	}
-	m_ui->rbPlugIn->setEnabled( true ) ;
 	m_ui->pbkeyOption->setEnabled( true ) ;
 	m_ui->checkBoxOpenReadOnly->setEnabled( true ) ;
 	m_ui->checkBoxShareMountPoint->setEnabled( true ) ;
@@ -202,6 +186,7 @@ void keyDialog::enableAll()
 
 void keyDialog::disableAll()
 {
+	m_ui->cbKeyType->setEnabled( false ) ;
 	m_ui->pbOptions->setEnabled( false ) ;
 	m_ui->pbkeyOption->setEnabled( false ) ;
 	m_ui->label_2->setEnabled( false ) ;
@@ -212,16 +197,13 @@ void keyDialog::disableAll()
 	m_ui->pbOpen->setEnabled( false ) ;
 	m_ui->pbkeyFile->setEnabled( false ) ;
 	m_ui->label->setEnabled( false ) ;
-	m_ui->rbKey->setEnabled( false ) ;
-	m_ui->rbKeyFile->setEnabled( false ) ;
-	m_ui->rbPlugIn->setEnabled( false ) ;
 	m_ui->checkBoxOpenReadOnly->setEnabled( false ) ;
 	m_ui->checkBoxShareMountPoint->setEnabled( false ) ;
 }
 
 void keyDialog::KeyFile()
 {
-	if( m_ui->rbKeyFile->isChecked() ){
+	if( m_ui->cbKeyType->currentIndex() == keyDialog::keyfile ){
 		QString msg = tr( "select a file to be used as a keyfile" ) ;
 		QString Z = QFileDialog::getOpenFileName( this,msg,QDir::homePath() ) ;
 
@@ -233,9 +215,9 @@ void keyDialog::KeyFile()
 
 void keyDialog::pbkeyOption()
 {
-	if( m_ui->rbPlugIn->isChecked() ){
+	if( m_ui->cbKeyType->currentIndex() == keyDialog::plugin ){
 		this->Plugin() ;
-	}else if( m_ui->rbKeyFile->isChecked() ){
+	}else if( m_ui->cbKeyType->currentIndex() == keyDialog::keyfile ){
 		this->KeyFile() ;
 	}
 }
@@ -339,7 +321,6 @@ void keyDialog::slotMountComplete( int st,QString m )
 
 		msg.ShowUIOK( tr( "ERROR" ),m ) ;
 		m_ui->lineEditKey->clear() ;
-		m_ui->rbKey->setChecked( true ) ;
 		this->enableAll() ;
 		m_ui->lineEditKey->setFocus() ;
 	}
@@ -351,7 +332,7 @@ void keyDialog::getPassWordFromWallet( QString key )
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR" ),tr( "the volume does not appear to have an entry in the wallet" ) ) ;
 		this->enableAll() ;
-		if( m_ui->rbPlugIn->isChecked() || m_ui->rbKeyFile->isChecked() ){
+		if( m_ui->cbKeyType->currentIndex() != keyDialog::Key ){
 			m_ui->lineEditKey->setEnabled( false ) ;
 		}
 	}else{
@@ -386,7 +367,7 @@ void keyDialog::pbOpen()
 {
 	this->disableAll() ;
 	m_key.clear() ;
-	if( m_ui->rbPlugIn->isChecked() ){
+	if( m_ui->cbKeyType->currentIndex() == keyDialog::plugin ){
 		QString r = m_ui->lineEditKey->text() ;
 		if( r == tr( KWALLET ) ){
 			m_wallet = LxQt::Wallet::getWalletBackend( LxQt::Wallet::kwalletBackEnd ) ;
@@ -420,15 +401,17 @@ void keyDialog::pbOpen()
 
 void keyDialog::openVolume()
 {
+	int keyType = m_ui->cbKeyType->currentIndex() ;
+
 	if( m_ui->lineEditKey->text().isEmpty() ){
-		if( m_ui->rbKey->isChecked() ){
+		if( keyType == keyDialog::Key ){
 			;
-		}else if( m_ui->rbPlugIn->isChecked() ){
+		}else if( keyType == keyDialog::plugin ){
 			DialogMsg msg( this ) ;
 			msg.ShowUIOK( tr( "ERROR" ),tr( "plug in name field is empty" ) ) ;
 			m_ui->lineEditKey->setFocus() ;
 			return this->enableAll() ;
-		}else if( m_ui->rbKeyFile->isChecked() ){
+		}else if( keyType == keyDialog::keyfile ){
 			DialogMsg msg( this ) ;
 			msg.ShowUIOK( tr( "ERROR" ),tr( "keyfile field is empty" ) ) ;
 			m_ui->lineEditKey->setFocus() ;
@@ -445,14 +428,14 @@ void keyDialog::openVolume()
 	}
 
 	QString m ;
-	if( m_ui->rbKey->isChecked() ){
+	if( keyType == keyDialog::Key ){
 		QString addr = socketSendKey::getSocketPath() ;
 		m = QString( "-f ") + addr ;
 		socketSendKey * s = new socketSendKey( this,addr,m_ui->lineEditKey->text().toLatin1() ) ;
 		s->sendKey() ;
-	}else if( m_ui->rbKeyFile->isChecked() ){
+	}else if( keyType == keyDialog::keyfile ){
 		m = QString( "-f ") + m_ui->lineEditKey->text().replace( "\"","\"\"\"" ) ;
-	}else if( m_ui->rbPlugIn->isChecked() ){
+	}else if( keyType == keyDialog::plugin ){
 		if( m_key.isEmpty() ){
 			m = QString( "-G ") + m_ui->lineEditKey->text().replace( "\"","\"\"\"" ) ;
 		}else{
@@ -497,41 +480,45 @@ void keyDialog::openVolume()
 	t->start( Task::CryptoOpen ) ;
 }
 
-void keyDialog::rbPlugIn( bool opt )
+void keyDialog::cbActicated( int e )
 {
-	if( opt ){
-		m_ui->pbkeyOption->setIcon( QIcon( QString( ":/module.png" ) ) ) ;
-		m_ui->lineEditKey->setEchoMode( QLineEdit::Normal ) ;
-		m_ui->label->setText( tr( "plugin name" ) ) ;
-		m_ui->pbkeyOption->setEnabled( true ) ;
-		m_ui->lineEditKey->setEnabled( false ) ;
-		m_ui->lineEditKey->setText( INTERNAL_WALLET ) ;
+	switch( e ){
+		case keyDialog::Key     : return this->key() ;
+		case keyDialog::keyfile : return this->keyFile() ;
+		case keyDialog::plugin  : return this->plugIn() ;
 	}
 }
 
-void keyDialog::rbKey( bool opt )
+
+void keyDialog::plugIn()
 {
-	if( opt ){
-		m_ui->pbkeyOption->setIcon( QIcon( QString( ":/passphrase.png" ) ) ) ;
-		m_ui->pbkeyOption->setEnabled( false ) ;
-		m_ui->label->setText( tr( "key" ) ) ;
-		m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
-		m_ui->pbkeyFile->setEnabled( false ) ;
-		m_ui->lineEditKey->clear() ;
-		m_ui->lineEditKey->setEnabled( true ) ;
-	}
+	m_ui->pbkeyOption->setIcon( QIcon( QString( ":/module.png" ) ) ) ;
+	m_ui->lineEditKey->setEchoMode( QLineEdit::Normal ) ;
+	m_ui->label->setText( tr( "plugin name" ) ) ;
+	m_ui->pbkeyOption->setEnabled( true ) ;
+	m_ui->lineEditKey->setEnabled( false ) ;
+	m_ui->lineEditKey->setText( INTERNAL_WALLET ) ;
 }
 
-void keyDialog::rbKeyFile( bool opt )
+void keyDialog::key()
 {
-	if( opt ){
-		m_ui->pbkeyOption->setIcon( QIcon( QString( ":/keyfile.png" ) ) ) ;
-		m_ui->lineEditKey->setEchoMode( QLineEdit::Normal ) ;
-		m_ui->label->setText( tr( "keyfile path" ) ) ;
-		m_ui->pbkeyOption->setEnabled( true ) ;
-		m_ui->lineEditKey->clear() ;
-		m_ui->lineEditKey->setEnabled( false ) ;
-	}
+	m_ui->pbkeyOption->setIcon( QIcon( QString( ":/passphrase.png" ) ) ) ;
+	m_ui->pbkeyOption->setEnabled( false ) ;
+	m_ui->label->setText( tr( "key" ) ) ;
+	m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
+	m_ui->pbkeyFile->setEnabled( false ) ;
+	m_ui->lineEditKey->clear() ;
+	m_ui->lineEditKey->setEnabled( true ) ;
+}
+
+void keyDialog::keyFile()
+{
+	m_ui->pbkeyOption->setIcon( QIcon( QString( ":/keyfile.png" ) ) ) ;
+	m_ui->lineEditKey->setEchoMode( QLineEdit::Normal ) ;
+	m_ui->label->setText( tr( "keyfile path" ) ) ;
+	m_ui->pbkeyOption->setEnabled( true ) ;
+	m_ui->lineEditKey->clear() ;
+	m_ui->lineEditKey->setEnabled( false ) ;
 }
 
 void keyDialog::pbCancel()
