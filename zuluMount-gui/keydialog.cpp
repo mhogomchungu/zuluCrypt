@@ -81,6 +81,8 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const QString& path,
 
 	m_ui->pbkeyOption->setEnabled( false ) ;
 
+	m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
+	
 	connect( m_ui->pbOptions,SIGNAL( clicked() ),this,SLOT( pbOptions() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->pbOpen,SIGNAL( clicked() ),this,SLOT( pbOpen() ) ) ;
