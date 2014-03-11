@@ -138,14 +138,13 @@ static inline int pluginIsGpG( const char * plugin_path )
 	return st;
 }
 
-string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * name,
+string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * plugin,
 						 const char * uuid,uid_t uid,const struct_opts * opts )
 {
 	process_t p ;
 	struct stat st ;
 
 	const char * sockpath ;
-	const char * pluginPath ;
 	const char * argv = opts->argv ;
 	char * const * env = opts->env ;
 	const char * args[ 7 ] ;
@@ -166,15 +165,11 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	 */
 	plugin_path = String( ZULUCRYPTpluginPath ) ;
 
-	pluginPath = strrchr( name,'/' ) ;
+	plugin = plugin + StringLastIndexOfChar_1( plugin,'/' ) + 1 ;
 
-	if( pluginPath == NULL ){
-		pluginPath = StringAppend( plugin_path,name ) ;
-	}else{
-		pluginPath = StringAppend( plugin_path,pluginPath + 1 ) ;
-	}
+	plugin = StringAppend( plugin_path,plugin ) ;
 
-	if( stat( pluginPath,&st ) == 0 && S_ISREG( st.st_mode ) ) {
+	if( stat( plugin,&st ) == 0 && S_ISREG( st.st_mode ) ) {
 		path = String( pass->pw_dir ) ;
 		sockpath = StringAppend( path,"/.zuluCrypt-socket/" ) ;
 
@@ -184,10 +179,10 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 
 		sockpath = StringAppendInt( path,syscall( SYS_gettid ) ) ;
 
-		p = Process( pluginPath ) ;
+		p = Process( plugin ) ;
 		str = ProcessArgumentStructure( p ) ;
 
-		*( args + 0 ) = pluginPath ;
+		*( args + 0 ) = plugin ;
 		*( args + 1 ) = device ;
 
 		if( uuid != NULL ){
@@ -215,7 +210,7 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		 * for reasons currently unknown to me,the gpg plugin doesnt always exit,it hangs consuming massive amount of cpu circles.
 		 * we terminate it here by sending it a sigterm after it is done sending its key to make sure it exits.
 		 */
-		if( pluginIsGpG( pluginPath ) ){
+		if( pluginIsGpG( plugin ) ){
 			ProcessTerminate( p ) ;
 		}
 
