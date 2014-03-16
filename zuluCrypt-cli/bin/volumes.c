@@ -582,7 +582,7 @@ u_int64_t zuluCryptGetVolumeSize( const char * device )
 	blkid_do_probe( blkid ) ;
 	blkid_probe_lookup_value( blkid,"TYPE",&e,NULL ) ;
 
-	if( !StringsAreEqual( e,"btrfs" ) ){
+	if( StringsAreNotEqual( e,"btrfs" ) ){
 		r = blkid_probe_get_size( blkid ) ;
 		blkid_free_probe( blkid ) ;
 		return r ;
