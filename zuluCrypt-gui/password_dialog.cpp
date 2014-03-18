@@ -96,7 +96,7 @@ passwordDialog::passwordDialog( QTableWidget * table,const QString& folderOpener
 	connect( m_ui->checkBoxReadOnly,SIGNAL( stateChanged( int ) ),this,SLOT( cbStateChanged( int ) ) ) ;
 	connect( m_ui->pushButtonPlugin,SIGNAL( clicked() ),this,SLOT( pbPlugin() ) ) ;
 	connect( m_ui->pbKeyOption,SIGNAL( clicked() ),this,SLOT( pbKeyOption() ) ) ;
-	connect( m_ui->cbKeyType,SIGNAL( activated( int ) ),this,SLOT( cbActicated( int ) ) ) ;
+	connect( m_ui->cbKeyType,SIGNAL( currentIndexChanged( int ) ),this,SLOT( cbActicated( int ) ) ) ;
 
 	m_ui->PushButtonMountPointPath->setVisible( false ) ;
 	m_ui->pushButtonPassPhraseFromFile->setVisible( false ) ;

@@ -61,7 +61,7 @@ int zulucryptFileSystemIsSupported( const char * fs )
 		while( 1 ){
 			if( *e == NULL ){
 				return _fileSystemIsSupported( fs ) ;
-			}else if( strcmp( fs,*e ) == 0 ){
+			}else if( StringsAreEqual( fs,*e ) ){
 				return 1 ;
 			}else{
 				e++ ;

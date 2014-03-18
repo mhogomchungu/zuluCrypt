@@ -82,14 +82,14 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const QString& path,
 	m_ui->pbkeyOption->setEnabled( false ) ;
 
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
-	
+
 	connect( m_ui->pbOptions,SIGNAL( clicked() ),this,SLOT( pbOptions() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->pbOpen,SIGNAL( clicked() ),this,SLOT( pbOpen() ) ) ;
 	connect( m_ui->pbkeyOption,SIGNAL( clicked() ),this,SLOT( pbkeyOption() ) ) ;
 	connect( m_ui->pbOpenMountPoint,SIGNAL( clicked() ),this,SLOT( pbMountPointPath() ) ) ;
 	connect( m_ui->checkBoxOpenReadOnly,SIGNAL( stateChanged( int ) ),this,SLOT( cbMountReadOnlyStateChanged( int ) ) ) ;
-	connect( m_ui->cbKeyType,SIGNAL( activated( int ) ),this,SLOT( cbActicated( int ) ) ) ;
+	connect( m_ui->cbKeyType,SIGNAL( currentIndexChanged( int ) ),this,SLOT( cbActicated( int ) ) ) ;
 
 	m_ui->pbOpenMountPoint->setVisible( false ) ;
 
