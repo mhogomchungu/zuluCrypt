@@ -84,7 +84,7 @@ int zuluCryptCreateFileSystemInAVolume( const char * fs,const char * device_mapp
 	status = ProcessExitStatus( p ) ;
 
 	if( status ){
-		ProcessGetOutPut( p,&e,STDERROR ) ;
+		ProcessGetOutPut( p,&e,ProcessStdError ) ;
 		if( e ){
 			puts( e ) ;
 			free( e ) ;

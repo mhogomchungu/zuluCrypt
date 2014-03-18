@@ -17,11 +17,11 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "process.h"
-
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
+
+#include "process.h"
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -41,7 +41,7 @@ struct ProcessType_t{
 	int fd_0[ 2 ] ; /* this variable is used to write to child process      */
 	int fd_1[ 2 ] ; /* this variable is used to read from child's std out   */
 	int fd_2[ 2 ] ; /* this variable is used to read from child's std error */
-	int state ;
+	ProcessStatus state ;
 	int std_io ;
 	char * exe ;
 	char ** args ;
@@ -142,7 +142,7 @@ static void * __timer( void * x )
 
 	kill( p->pid,p->str.signal ) ;
 
-	p->state = CANCELLED ;
+	p->state = ProcessCancelled ;
 
 	return ( void * ) 0 ;
 }
@@ -235,7 +235,7 @@ pid_t ProcessStart( process_t p )
 	close( p->fd_1[ 1 ] ) ;
 	close( p->fd_2[ 1 ] ) ;
 
-	p->state = RUNNING ;
+	p->state = ProcessIsStillRunning ;
 
 	if( p->str.timeout != -1 ){
 		__ProcessStartTimer( p ) ;
@@ -263,7 +263,7 @@ static inline char * __bufferExpandMemory( char * buffer,size_t new_size,size_t 
 	}
 }
 
-size_t ProcessGetOutPut( process_t p,char ** data,int std_io )
+size_t ProcessGetOutPut( process_t p,char ** data,ProcessIO std_io )
 {
 	#define SIZE 64
 	#define BUFFER_SIZE 128
@@ -287,10 +287,10 @@ size_t ProcessGetOutPut( process_t p,char ** data,int std_io )
 		return 0 ;
 	}
 
-	if( std_io == STDOUT ){
-		fd = p->fd_1[ 0 ] ;
-	}else{
-		fd = p->fd_2[ 0 ] ;
+	switch( std_io ){
+		case ProcessStdOut   : fd = p->fd_1[ 0 ] ; break ;
+		case ProcessStdError : fd = p->fd_2[ 0 ] ; break ;
+		default  : return 0 ;
 	}
 
 	while( 1 ) {
@@ -325,18 +325,18 @@ size_t ProcessGetOutPut( process_t p,char ** data,int std_io )
 	return size ;
 }
 
-int ProcessState( process_t p )
+ProcessStatus ProcessState( process_t p )
 {
-	return p != ProcessVoid ? p->state : -1 ;
+	return p != ProcessVoid ? p->state : ProcessStatusUndefined ;
 }
 
-ssize_t ProcessGetOutPut_1( process_t p,char * buffer,int size,int std_io )
+ssize_t ProcessGetOutPut_1( process_t p,char * buffer,int size,ProcessIO std_io )
 {
 	if( p != ProcessVoid ){
 		switch( std_io ){
-			case STDOUT   : return read( p->fd_1[ 1 ],buffer,size ) ;
-			case STDERROR : return read( p->fd_2[ 1 ],buffer,size ) ;
-			default       : return -1 ;
+			case ProcessStdOut   : return read( p->fd_1[ 1 ],buffer,size ) ;
+			case ProcessStdError : return read( p->fd_2[ 1 ],buffer,size ) ;
+			default              : return -1 ;
 		}
 	}else{
 		return -1 ;
@@ -392,7 +392,7 @@ process_t Process( const char * path )
 	p->str.user_id = -1 ;
 	p->str.priority = 0 ;
 	p->str.signal = SIGTERM  ;
-	p->state = HAS_NOT_START ;
+	p->state = ProcessHasNotStarted ;
 	return p ;
 }
 
@@ -448,7 +448,7 @@ int ProcessTerminate( process_t p )
 		return -1;
 	}
 
-	p->state = CANCELLED ;
+	p->state = ProcessCancelled ;
 	st = kill( p->pid,SIGTERM ) ;
 	waitpid( p->pid,0,WNOHANG ) ;
 	p->wait_status = 1 ;
@@ -471,7 +471,7 @@ int ProcessKill( process_t p )
 		return -1;
 	}
 
-	p->state = CANCELLED ;
+	p->state = ProcessCancelled ;
 
 	st = kill( p->pid,SIGKILL ) ;
 	waitpid( p->pid,0,WNOHANG ) ;
@@ -489,7 +489,7 @@ int ProcessExitStatus( process_t p )
 	}
 
 	waitpid( p->pid,&status,0 ) ;
-	p->state = FINISHED ;
+	p->state = ProcessCompleted ;
 	p->wait_status = 1 ;
 
 	return WIFEXITED( status ) == 0 ? -1 : WEXITSTATUS( status ) ;

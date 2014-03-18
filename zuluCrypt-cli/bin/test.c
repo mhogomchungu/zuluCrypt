@@ -161,7 +161,7 @@ void __ProcessGetResult( process_t p )
 	char * e = NULL ;
 	int st ;
 
-	ProcessGetOutPut( p,&e,STDOUT ) ;
+	ProcessGetOutPut( p,&e,ProcessStdOut ) ;
 
 	st = ProcessExitStatus( p ) ;
 
@@ -183,7 +183,7 @@ void __ProcessGetResultANDPrint( process_t p )
 	char * e = NULL ;
 	int st ;
 
-	ProcessGetOutPut( p,&e,STDOUT ) ;
+	ProcessGetOutPut( p,&e,ProcessStdOut ) ;
 	st = ProcessExitStatus( p ) ;
 
 	ProcessDelete( &p ) ;
@@ -393,7 +393,7 @@ int _loop_device_module_is_not_present( void )
 	}
 	p = Process( lsmod ) ;
 	ProcessStart( p ) ;
-	ProcessGetOutPut( p,&output,STDOUT ) ;
+	ProcessGetOutPut( p,&output,ProcessStdOut ) ;
 	if( output ){
 		if( strstr( output,"\nloop" ) == NULL ){
 			st = 1 ;

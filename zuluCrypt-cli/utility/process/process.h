@@ -168,11 +168,15 @@ void ProcessSetEnvironmentalVariable( process_t p,char * const * env ) ;
 /*
  * get state of the process handled by handle p
  */
-#define HAS_NOT_START 1
-#define RUNNING 2
-#define FINISHED 3
-#define CANCELLED 4
-int ProcessState( process_t p ) ;
+typedef enum{
+	ProcessHasNotStarted,
+	ProcessIsStillRunning,
+	ProcessCompleted,
+	ProcessCancelled,
+	ProcessStatusUndefined
+}ProcessStatus;
+
+ProcessStatus ProcessState( process_t p ) ;
 
 /*
  * wait for "timeout" seconds and then send the forked process a signal "signal"
@@ -187,6 +191,14 @@ void ProcessSetOptionTimeout( process_t p,int timeout,int signal ) ;
 int ProcessExitStatus( process_t ) ;
 
 /*
+ * block until the forced process exits
+ */
+static inline void ProcessWaitUntilFinished( process_t p )
+{
+	ProcessExitStatus( p ) ;
+}
+
+/*
  * get contents of std out/std error from the process.
  * remember to free() the return buffer when done with it.
  *
@@ -194,14 +206,18 @@ int ProcessExitStatus( process_t ) ;
  * this function must be called after ProcessStart()
  */
 
-#define STDOUT 1
-#define STDERROR 2
-size_t ProcessGetOutPut( process_t,char ** data,int stdio ) ;
+typedef enum{
+	ProcessStdIn,
+	ProcessStdOut,
+	ProcessStdError
+}ProcessIO;
+
+size_t ProcessGetOutPut( process_t,char ** data,ProcessIO ) ;
 
 /*
  * read size number of bytes from the ourput of the forket process.
  */
-ssize_t ProcessGetOutPut_1( process_t,char * buffer,int size,int stdio ) ;
+ssize_t ProcessGetOutPut_1( process_t,char * buffer,int size,ProcessIO ) ;
 
 #ifdef __cplusplus
 }
