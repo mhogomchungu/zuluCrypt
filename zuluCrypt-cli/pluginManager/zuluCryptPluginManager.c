@@ -146,7 +146,7 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 
 	const char * sockpath ;
 	const char * argv = opts->argv ;
-	char * const * env = opts->env ;
+	const char * const * env = opts->env ;
 	const char * args[ 7 ] ;
 
 	ProcessStructure * str ;
@@ -199,7 +199,7 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		*( args + 5 ) = argv ;
 		*( args + 6 ) = NULL ;
 
-		str->args    = ( char * const * )args ;
+		str->args    = args ;
 		str->env     = env ;
 		str->user_id = uid ;
 

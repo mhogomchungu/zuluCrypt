@@ -30,7 +30,7 @@ typedef struct{
 	/*
 	 * if this variable is set,then it is expect to be in the same format the last argument of execv() expect
 	 */
-	char * const * args ;
+	const char * const * args ;
 	/*
 	 * this variable is set will cause the program to be executed will run with the identify of this user.
 	 */
@@ -38,7 +38,7 @@ typedef struct{
 	/*
 	 * If this variable is set,then it is expected to be in the format the last argument of execve() expect
 	 */
-	char * const * env ;
+	const char * const * env ;
 	/*
 	 * If this variable is set,the process will be terminate if its still running after timeout seconds
 	 * The default signal sent is sigterm
@@ -65,19 +65,7 @@ typedef struct ProcessType_t * process_t ;
 #define ENDLIST ( ( const char * ) 0 )
 
 /*
- * An example of how to use the library to call ls with arguments and get its output while closing its std error
- *
- *  process_t p = Process( "/bin/ls" ) ;
- *  ProcessSetArgumentList( p,"-l","-h",ENDLIST ) ;
- *  ProcessStart( p ) ;
- *  char * c = NULL ;
- *  ProcessGetOutPut( p,&c,STDOUT ) ;
- *  ProcessDelete( &p ) ;
- *  if( c ){
- *	  printf("%s\n",c );
- *	  free( c ) ;
- * }
- *
+ * Examples on how to use the library are at the end of this header file
  */
 
 /*
@@ -144,26 +132,20 @@ void ProcessSetOptionPriority( process_t,int priority ) ;
 int ProcessKill( process_t ) ;
 
 /*
- * the forked process is started by calling, execl.
- * this function can be used to set argument list *
+ * the forked process will be started with arguments list given by the second argument
+ * look at the example at the end of this header file for info on how to use the API
  */
-void ProcessSetArguments( process_t p,char * const argv[] ) ;
+void ProcessSetArguments( process_t p,const char * const argv[] ) ;
 
 /*
- * the forked process is started with arguments list given as const char * and the
- * last entry ust be null.
- * example:
- * process_t p = Process( "/usr/bin/du" ) ;
- * ProcessSetArgumentList( p,"-s","-c","-h",NULL ) ;
- * ProcessStart( p ) ;
- * ProcessDelete( &p ) ;
+ * look at the example at the end of this header file for info on how to use the API
  */
 void ProcessSetArgumentList( process_t p,... ) ;
 
 /*
  * set the child process to start with the given enviromental variables
  */
-void ProcessSetEnvironmentalVariable( process_t p,char * const * env ) ;
+void ProcessSetEnvironmentalVariable( process_t p,const char * const * env ) ;
 
 /*
  * get state of the process handled by handle p
@@ -191,7 +173,7 @@ void ProcessSetOptionTimeout( process_t p,int timeout,int signal ) ;
 int ProcessExitStatus( process_t ) ;
 
 /*
- * block until the forced process exits
+ * block until the forked process exits
  */
 static inline void ProcessWaitUntilFinished( process_t p )
 {
@@ -222,5 +204,111 @@ ssize_t ProcessGetOutPut_1( process_t,char * buffer,int size,ProcessIO ) ;
 #ifdef __cplusplus
 }
 #endif
+
+#endif
+
+/*
+ * Example use case of ProcessSetArgumentList API
+ */
+#if 0
+
+#include "process.h"
+#include <stdio.h>
+#include <stdlib.h>
+
+int main( void )
+{
+	process_t p = Process( "/bin/ls" ) ;
+	ProcessSetArgumentList( p,"-l",NULL ) ;
+	ProcessStart( p ) ;
+	char * c = NULL ;
+	while( 1 ){
+		ProcessGetOutPut( p,&c,ProcessStdOut ) ;
+		if( c ){
+			printf( "%s",c ) ;
+			free( c ) ;
+			c = NULL ;
+		}else{
+			break ;
+		}
+	}
+	ProcessWaitUntilFinished( p ) ;
+	ProcessDelete( &p ) ;
+	return 0 ;
+}
+
+#endif
+
+/*
+ * Example use case of ProcessSetArguments API
+ */
+#if 0
+
+#include "process.h"
+#include <stdio.h>
+#include <stdlib.h>
+
+int main( void )
+{
+	const char * argv[ 3 ] ;
+	process_t p = Process( "" ) ;
+	argv[ 0 ] = "/bin/ls" ;
+	argv[ 1 ] = "-l" ;
+	argv[ 2 ] = NULL ;
+	ProcessSetArguments( p,argv ) ;
+	ProcessStart( p ) ;
+	char * c = NULL ;
+	while( 1 ){
+		ProcessGetOutPut( p,&c,ProcessStdOut ) ;
+		if( c ){
+			printf( "%s",c ) ;
+			free( c ) ;
+			c = NULL ;
+		}else{
+			break ;
+		}
+	}
+	ProcessWaitUntilFinished( p ) ;
+	ProcessDelete( &p ) ;
+	return 0 ;
+}
+
+#endif
+
+
+/*
+ * Example use case of ProcessArgumentStructure API
+ */
+#if 0
+
+#include "process.h"
+#include <stdio.h>
+#include <stdlib.h>
+
+int main( void )
+{
+	const char * argv[ 3 ] ;
+	process_t p = Process( "" ) ;
+	argv[ 0 ] = "/bin/ls" ;
+	argv[ 1 ] = "-l" ;
+	argv[ 2 ] = NULL ;
+	ProcessStructure * str = ProcessArgumentStructure( p ) ;
+	str->args =  argv ;
+	ProcessStart( p ) ;
+	char * c = NULL ;
+	while( 1 ){
+		ProcessGetOutPut( p,&c,ProcessStdOut ) ;
+		if( c ){
+			printf( "%s",c ) ;
+			free( c ) ;
+			c = NULL ;
+		}else{
+			break ;
+		}
+	}
+	ProcessWaitUntilFinished( p ) ;
+	ProcessDelete( &p ) ;
+	return 0 ;
+}
 
 #endif

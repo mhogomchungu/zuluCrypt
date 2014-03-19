@@ -51,7 +51,7 @@ typedef struct struct_opts_1{
 	const char * tcrypt_hidden_volume_key_file ;
 	const char * back_up_file_path ;
 	const char * offset ;
-	char * const * env ;
+	const char * const * env ;
 	char action ;
 	int partition_number ;
 	int ask_confirmation ;

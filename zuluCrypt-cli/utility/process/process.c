@@ -67,7 +67,7 @@ ProcessStructure * ProcessArgumentStructure( process_t p )
 	}
 }
 
-void ProcessSetEnvironmentalVariable( process_t p,char * const * env )
+void ProcessSetEnvironmentalVariable( process_t p,const char * const * env )
 {
 	if( p != ProcessVoid ){
 		p->str.env = env ;
@@ -130,8 +130,8 @@ void ProcessSetArgumentList( process_t p,... )
 	}
 
 	va_end( list ) ;
-
-	p->str.args = p->args = args ;
+	p->args = args ;
+	p->str.args = ( const char * const * ) args ;
 }
 
 static void * __timer( void * x )
@@ -207,16 +207,18 @@ pid_t ProcessStart( process_t p )
 		}
 
 		if( p->str.args == NULL ){
+			#define _null ( void * )0
 			if( p->str.env != NULL ){
-				execle( p->exe,p->exe,( char * )NULL,p->str.env ) ;
+				execle( p->exe,p->exe,_null,p->str.env ) ;
 			}else{
-				execl( p->exe,p->exe,( char * )NULL ) ;
+				execl( p->exe,p->exe,_null ) ;
 			}
 		}else{
+			#define _cast( x ) ( char * const * )x
 			if( p->str.env != NULL ){
-				execve( p->exe,p->str.args,p->str.env ) ;
+				execve( p->str.args[ 0 ],_cast( p->str.args ),_cast( p->str.env ) ) ;
 			}else{
-				execv( p->exe,p->str.args ) ;
+				execv( p->str.args[ 0 ],_cast( p->str.args ) ) ;
 			}
 		}
 		/*
@@ -495,11 +497,11 @@ int ProcessExitStatus( process_t p )
 	return WIFEXITED( status ) == 0 ? -1 : WEXITSTATUS( status ) ;
 }
 
-void ProcessSetArguments( process_t p,char * const s[] )
+void ProcessSetArguments( process_t p,const char * const s[] )
 {
 	if( p == ProcessVoid ){
 		return ;
 	}
 
-	p->str.args = ( char * const * ) s ;
+	p->str.args = s ;
 }

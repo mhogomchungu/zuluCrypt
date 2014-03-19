@@ -886,7 +886,7 @@ string_t StringListHasStartSequence_1( stringList_t stl,const char * str )
 	return StringVoid ;
 }
 
-char * const * StringListStringArray( stringList_t stl )
+const char * const * StringListStringArray( stringList_t stl )
 {
 	size_t i ;
 	size_t j ;
@@ -896,7 +896,7 @@ char * const * StringListStringArray( stringList_t stl )
 	if( stl == StringListVoid ){
 		q = ( char ** ) malloc( sizeof( char * ) ) ;
 		if( q == NULL ){
-			return ( char * const * ) _StringListError() ;
+			return ( const char * const * ) _StringListError() ;
 		}else{
 			q[ 0 ] =  NULL ;
 		}
@@ -905,7 +905,7 @@ char * const * StringListStringArray( stringList_t stl )
 		p = stl->stp ;
 		q = ( char ** ) malloc( sizeof( char * ) * ( j + 1 ) ) ;
 		if( q == NULL ){
-			return ( char * const * ) _StringListError() ;
+			return ( const char * const * ) _StringListError() ;
 		}
 		q[ j ] = NULL ;
 		for( i = 0 ; i < j ; i++ ){
@@ -916,7 +916,7 @@ char * const * StringListStringArray( stringList_t stl )
 			}
 		}
 	}
-	return q ;
+	return ( const char * const * )q ;
 }
 
 char * const * StringListStringArray_1( char * const * buffer,size_t * size ,stringList_t stl )
