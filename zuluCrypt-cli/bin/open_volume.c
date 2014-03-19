@@ -282,6 +282,8 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 			return zuluExit_1( 12,opts,device,mount_point,stl ) ;
 		}
 		key_len = StringLength( *passphrase ) ;
+		key = StringContent( *passphrase ) ;
+		zuluCryptSecurityLockMemory_1( *passphrase ) ;
 		if( key_len == 0 ){
 			/*
 			 * TODO
@@ -290,9 +292,15 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 			 * sent no password.Look into trying to tell the two apart.
 			 */
 			;
+		}else if( key_len == 1 && key[ 0 ] == '\0' ){
+			if( StringHasComponent( plugin_path,"keydialog-qt" ) ){
+				/*
+				 * This is a work around for this plugin.
+				 * It sends a single NULL character when the user cancelled the GUI
+				 */
+				return zuluExit_1( 12,opts,device,mount_point,stl ) ;
+			}
 		}
-		key = StringContent( *passphrase ) ;
-		zuluCryptSecurityLockMemory_1( *passphrase ) ;
 	}else if( source == NULL ){
 		printf( gettext( "Enter passphrase: " ) ) ;
 		/*

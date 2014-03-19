@@ -45,7 +45,7 @@ static void __debug( process_t p )
 {
 	char * e = NULL ;
 	puts( "--------stdout------------" ) ;
-	ProcessGetOutPut( p,&e,STDOUT ) ;
+	ProcessGetOutPut( p,&e,ProcessStdOut ) ;
 	if( e ){
 		puts( e ) ;
 		fflush( stdout ) ;
@@ -53,7 +53,7 @@ static void __debug( process_t p )
 	}
 	puts( "--------stderror----------" ) ;
 	e = NULL ;
-	ProcessGetOutPut( p,&e,STDERROR ) ;
+	ProcessGetOutPut( p,&e,ProcessStdError ) ;
 	if( e ){
 		puts( e ) ;
 		fflush( stdout ) ;
