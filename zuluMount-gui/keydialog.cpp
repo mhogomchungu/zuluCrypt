@@ -294,6 +294,16 @@ void keyDialog::fileManagerOpenStatus( int exitCode,int exitStatus,int startErro
 void keyDialog::slotMountComplete( int st,QString m )
 {
 	m_working = false ;
+
+	if( st == 12 && m_ui->cbKeyType->currentIndex() == keyDialog::plugin ){
+		/*
+		 * This is a special case where a user clicked cancelled the operation
+		 */
+		if( m_ui->lineEditKey->text() == QString( "keydialog-qt" ) ){
+			return this->enableAll() ;
+		}
+	}
+
 	if( st == 0 ){
 		if( utility::mapperPathExists( m_path ) ) {
 			/*
