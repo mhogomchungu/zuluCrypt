@@ -80,7 +80,7 @@ void zuluCryptPluginManagerCloseConnection( void * handle ) ;
  * 	int len             = atoi( argv[4] ) ;
  * 	const char * arg    = argv[ 5 ] ;
  *
- * 	void * handle = zuluCryptPluginManagerStartConnection( token ) ;
+ * 	void * handle = zuluCryptPluginManagerOpenConnection( token ) ;
  *
  *	zuluCryptPluginManagerSendKey( handle,"xyz",3 ) ;
  *

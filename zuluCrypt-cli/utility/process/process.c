@@ -329,7 +329,11 @@ size_t ProcessGetOutPut( process_t p,char ** data,ProcessIO std_io )
 
 ProcessStatus ProcessState( process_t p )
 {
-	return p != ProcessVoid ? p->state : ProcessStatusUndefined ;
+	if( p != ProcessVoid ){
+		return p->state ;
+	}else{
+		return ProcessStatusUndefined ;
+	}
 }
 
 ssize_t ProcessGetOutPut_1( process_t p,char * buffer,int size,ProcessIO std_io )
@@ -347,7 +351,11 @@ ssize_t ProcessGetOutPut_1( process_t p,char * buffer,int size,ProcessIO std_io 
 
 size_t ProcessWrite( process_t p,const char * data,size_t len )
 {
-	return p != ProcessVoid ? write( p->fd_0[ 1 ],data,len ) : 0 ;
+	if( p != ProcessVoid ){
+		return write( p->fd_0[ 1 ],data,len ) ;
+	}else{
+		return 0 ;
+	}
 }
 
 void ProcessCloseStdWrite( process_t p )
@@ -363,25 +371,27 @@ process_t Process( const char * path )
 	size_t len ;
 
 	if( path == NULL ){
-		return ProcessVoid;
+		return ProcessVoid ;
 	}
 
-	len = strlen( path ) + 1 ;
+	len = strlen( path ) ;
 
-	p =  ( process_t ) malloc( sizeof( struct ProcessType_t ) ) ;
+	p = ( process_t ) malloc( sizeof( struct ProcessType_t ) ) ;
 
 	if( p == NULL ){
 		return _ProcessError() ;
 	}
 
-	p->exe = ( char * ) malloc( sizeof( char ) * len ) ;
-
-	if( p->exe == NULL ){
-		free( p ) ;
-		return _ProcessError() ;
+	if( len == 0 ){
+		p->exe = NULL ;
+	}else{
+		p->exe = ( char * ) malloc( sizeof( char ) * ( len + 1 ) ) ;
+		if( p->exe == NULL ){
+			free( p ) ;
+			return _ProcessError() ;
+		}
+		memcpy( p->exe,path,len + 1 ) ;
 	}
-
-	memcpy( p->exe,path,len ) ;
 
 	p->std_io = 0       ;
 	p->wait_status = -1 ;
@@ -393,19 +403,17 @@ process_t Process( const char * path )
 	p->str.env = NULL   ;
 	p->str.user_id = -1 ;
 	p->str.priority = 0 ;
-	p->str.signal = SIGTERM  ;
+	p->str.signal = SIGTERM ;
 	p->state = ProcessHasNotStarted ;
 	return p ;
 }
 
 void ProcessSetOptionTimeout( process_t p,int timeout,int signal )
 {
-	if( p == ProcessVoid ){
-		return ;
+	if( p != ProcessVoid ){
+		p->str.signal  = signal ;
+		p->str.timeout = timeout ;
 	}
-
-	p->str.signal  = signal ;
-	p->str.timeout = timeout ;
 }
 
 void ProcessDelete( process_t * p )
@@ -447,15 +455,14 @@ int ProcessTerminate( process_t p )
 	int st ;
 
 	if( p == ProcessVoid ){
-		return -1;
+		return -1 ;
+	}else{
+		p->state = ProcessCancelled ;
+		st = kill( p->pid,SIGTERM ) ;
+		waitpid( p->pid,0,WNOHANG ) ;
+		p->wait_status = 1 ;
+		return st ;
 	}
-
-	p->state = ProcessCancelled ;
-	st = kill( p->pid,SIGTERM ) ;
-	waitpid( p->pid,0,WNOHANG ) ;
-	p->wait_status = 1 ;
-
-	return st ;
 }
 
 void ProcessSetOptionUser( process_t p,uid_t uid )
@@ -468,18 +475,15 @@ void ProcessSetOptionUser( process_t p,uid_t uid )
 int ProcessKill( process_t p )
 {
 	int st ;
-
 	if( p == ProcessVoid ){
-		return -1;
+		return -1 ;
+	}else{
+		p->state = ProcessCancelled ;
+		st = kill( p->pid,SIGKILL ) ;
+		waitpid( p->pid,0,WNOHANG ) ;
+		p->wait_status = 1 ;
+		return st ;
 	}
-
-	p->state = ProcessCancelled ;
-
-	st = kill( p->pid,SIGKILL ) ;
-	waitpid( p->pid,0,WNOHANG ) ;
-	p->wait_status = 1 ;
-
-	return st ;
 }
 
 int ProcessExitStatus( process_t p )
@@ -487,21 +491,22 @@ int ProcessExitStatus( process_t p )
 	int status ;
 
 	if( p == ProcessVoid ){
-		return -1;
+		return -1 ;
+	}else{
+		waitpid( p->pid,&status,0 ) ;
+		p->state = ProcessCompleted ;
+		p->wait_status = 1 ;
+		if( WIFEXITED( status ) == 0 ){
+			return -1 ;
+		}else{
+			return WEXITSTATUS( status ) ;
+		}
 	}
-
-	waitpid( p->pid,&status,0 ) ;
-	p->state = ProcessCompleted ;
-	p->wait_status = 1 ;
-
-	return WIFEXITED( status ) == 0 ? -1 : WEXITSTATUS( status ) ;
 }
 
 void ProcessSetArguments( process_t p,const char * const s[] )
 {
-	if( p == ProcessVoid ){
-		return ;
+	if( p != ProcessVoid ){
+		p->str.args = s ;
 	}
-
-	p->str.args = s ;
 }

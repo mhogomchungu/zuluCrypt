@@ -179,7 +179,7 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 
 		sockpath = StringAppendInt( path,syscall( SYS_gettid ) ) ;
 
-		p = Process( plugin ) ;
+		p = Process( "" ) ;
 		str = ProcessArgumentStructure( p ) ;
 
 		*( args + 0 ) = plugin ;
