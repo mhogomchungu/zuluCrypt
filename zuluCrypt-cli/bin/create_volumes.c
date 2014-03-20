@@ -57,7 +57,7 @@ only root user or members of group zulucrypt-system can do that\n" ) ) ;						br
 		case 21: printf( gettext( "ERROR: passphrases do not match\n" ) ) ;					break  ;
 		case 22: printf( gettext( "ERROR: failed to create a volume\n" ) ) ;					break  ;
 		case 23: printf( gettext( "ERROR: wrong argument detected for tcrypt volume" ) ) ;			break  ;
-		default: printf( gettext( "ERROR: unrecognized error with status number %d encountered\n" ),st );
+		default: printf( gettext( "ERROR: unrecognized error with status number %d encountered\n" ),st ) ;
 	}
 	return st ;
 }
@@ -68,8 +68,8 @@ static int zuluExit_1( const char * type,stringList_t stl )
 
 	printf( gettext( "SUCCESS: volume created successfully\n" ) ) ;
 
-	if( StringsAreEqual( type,"luks" ) ){
-		printf( gettext( "\ncreating a backup of the luks header is strongly adviced.\n" ) ) ;
+	if( StringAtLeastOneMatch_1( type,"luks","tcrypt","truecrypt",NULL ) ){
+		printf( gettext( "\ncreating a backup of the \"%s\" volume header is strongly adviced.\n" ),type ) ;
 		printf( gettext( "Please read documentation on why this is important\n\n" ) ) ;
 	}
 	return 0 ;
@@ -326,7 +326,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		 * zuluCryptCreateTCrypt() is defined in ../lib/create_tcrypt.c
 		 */
 		st = zuluCryptCreateTCrypt( device,fs,rng,volkey,volkeysize,tcrypt_source,
-					    hidden_volume_size,fs,volkey_h,volkeysize_h,tcrypt_source_h );
+					    hidden_volume_size,fs,volkey_h,volkeysize_h,tcrypt_source_h ) ;
 	}else{
 		/*
 		 * zuluCryptCreateVolume() is defined in ../lib/create_volume.c
