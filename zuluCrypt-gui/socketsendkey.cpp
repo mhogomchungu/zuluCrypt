@@ -18,7 +18,9 @@
 
 #include "socketsendkey.h"
 #include "utility.h"
+#include "../zuluCrypt-cli/constants.h"
 
+#include <QDebug>
 #include <QObject>
 #include <QTime>
 #include <QDir>
@@ -36,11 +38,6 @@ socketSendKey::socketSendKey( QObject * parent,const QString& sockpath,const QBy
 	d.mkdir( QDir::homePath() + QString( "/.zuluCrypt-socket/" ) ) ;
 }
 
-socketSendKey::socketSendKey( QObject * parent )
-{
-	Q_UNUSED( parent ) ;
-}
-
 void socketSendKey::setAddr( const QString& addr )
 {
 	m_sockpath = addr ;
@@ -50,6 +47,8 @@ void socketSendKey::closeConnection()
 {
 	m_closeConnection = false ;
 	::zuluCryptPluginManagerCloseConnection( m_connectionHandle ) ;
+	m_connectionHandle = 0 ;
+	m_closeConnection = 0 ;
 }
 
 void socketSendKey::sendKey( const QByteArray& data )
@@ -99,7 +98,15 @@ void socketSendKey::run()
 		emit keyNotSent() ;
 	}else{
 		emit gotConnected() ;
-		::zuluCryptPluginManagerSendKey( m_connectionHandle,m_key.constData(),m_key.size() ) ;
+		size_t size = m_key.size() ;
+		/*
+		 * ZULUCRYPT_KEYFILE_MAX_SIZE is defined in ../zuluCrypt-cli/constants.h
+		 * The variable holds the maximum keyfile size
+		 */
+		if( size > ZULUCRYPT_KEYFILE_MAX_SIZE ){
+			size = ZULUCRYPT_KEYFILE_MAX_SIZE ;
+		}
+		::zuluCryptPluginManagerSendKey( m_connectionHandle,m_key.constData(),size ) ;
 		m_closeConnection = false ;
 		::zuluCryptPluginManagerCloseConnection( m_connectionHandle ) ;
 		emit keySent() ;

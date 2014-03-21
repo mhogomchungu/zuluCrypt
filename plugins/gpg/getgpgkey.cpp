@@ -22,12 +22,12 @@
 #include <sys/types.h>
 #include <signal.h>
 
-getgpgkey::getgpgkey( QString exe,QString key,QString keyFile )
+getgpgkey::getgpgkey( const QString& exe,QByteArray * key,const QString& keyFile )
 {
 	m_gpgExe = exe ;
-	m_key = key.toLatin1() ;
+	m_key = key ;
 	m_keyFile = keyFile ;
-	m_stop = false ;
+	m_cancelled = false ;
 }
 
 void getgpgkey::start()
@@ -40,10 +40,10 @@ void getgpgkey::run()
 	QProcess exe ;
 	QString arg ;
 
-	if( m_key.isEmpty() ){
-		arg = m_gpgExe + QString( " --no-tty --yes --no-mdc-warning --no-verbose -d " ) + m_keyFile ;
+	if( m_key->isEmpty() ){
+		arg = QString( "%1 --no-tty --yes --no-mdc-warning --no-verbose -d %2" ).arg( m_gpgExe ).arg( m_keyFile ) ;
 	}else{
-		arg = m_gpgExe + QString( " --no-tty --yes --no-mdc-warning --no-verbose --passphrase-fd 0 -d " ) + m_keyFile ;
+		arg = QString( "%1 --no-tty --yes --no-mdc-warning --no-verbose --passphrase-fd 0 -d  %2" ).arg( m_gpgExe ).arg( m_keyFile ) ;
 	}
 
 	exe.start( arg ) ;
@@ -52,20 +52,19 @@ void getgpgkey::run()
 
 	m_pid = exe.pid() ;
 
-	exe.write( m_key ) ;
+	exe.write( *m_key ) ;
 	exe.closeWriteChannel() ;
 	exe.waitForFinished( -1 ) ;
-	m_key = exe.readAllStandardOutput() ;
-	exe.close();
+	*m_key = exe.readAllStandardOutput() ;
 }
 
 void getgpgkey::cancel()
 {
 	kill( m_pid,SIGTERM ) ;
-	m_stop = true ;
+	m_cancelled = true ;
 }
 
 getgpgkey::~getgpgkey()
 {
-	emit key( m_stop,m_key ) ;
+	emit doneReadingFromgpg( m_cancelled ) ;
 }

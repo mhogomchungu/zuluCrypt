@@ -32,23 +32,22 @@ class getgpgkey :public QObject,public QRunnable
 {
 	Q_OBJECT
 public:
-	explicit getgpgkey( QString gpgExe,QString key,QString keyFile ) ;
+	getgpgkey( const QString& gpgExe,QByteArray * key,const QString& keyFile ) ;
 	~getgpgkey() ;
 	void start( void ) ;
 signals:
-	void key( bool,QByteArray ) ;
 	void bytesRead( int ) ;
 	void startingToReadData( void ) ;
-	void doneReadingFromgpg( void ) ;
+	void doneReadingFromgpg( bool ) ;
 public slots:
 	void cancel( void ) ;
 private:
 	void run( void ) ;
 	QString m_gpgExe ;
-	QByteArray m_key ;
+	QByteArray * m_key ;
 	QString m_keyFile ;
 	pid_t m_pid ;
-	bool m_stop ;
+	bool m_cancelled ;
 	int m_type ;
 };
 

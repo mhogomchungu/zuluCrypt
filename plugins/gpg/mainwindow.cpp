@@ -21,6 +21,9 @@
 #include "ui_mainwindow.h"
 #include <QDebug>
 
+#include <sys/types.h>
+#include <unistd.h>
+
 MainWindow::MainWindow( QWidget * parent ) : QWidget( parent ),m_ui( new Ui::MainWindow )
 {
 	m_ui->setupUi( this ) ;
@@ -49,7 +52,7 @@ MainWindow::MainWindow( QWidget * parent ) : QWidget( parent ),m_ui( new Ui::Mai
 	connect( ac,SIGNAL( triggered() ),this,SLOT( defaultButton() ) ) ;
 	this->addAction( ac ) ;
 
-	m_sendKey = new socketSendKey( this ) ;
+	m_sendKey = new socketSendKey() ;
 	connect( m_sendKey,SIGNAL( keySent() ),this,SLOT( doneWritingData() ) ) ;
 }
 
@@ -104,12 +107,11 @@ void MainWindow::pbCancel()
 
 void MainWindow::Exit( int st )
 {
-	Q_UNUSED( st ) ;
-	this->hide() ;
-	/*
-	 * just close the connection, zuluCrypt-cli will SIGTERM us
-	 */
-	m_sendKey->closeConnection() ;
+	char * e = m_key.data() ;
+
+	memset( e,'\0',m_key.size() ) ;
+
+	QCoreApplication::exit( st ) ;
 }
 
 QString MainWindow::FindGPG()
@@ -136,18 +138,14 @@ void MainWindow::bytesRead( int bytes )
 	this->setWindowTitle( msg ) ;
 }
 
-void MainWindow::doneReading()
-{
-}
-
-void MainWindow::getGPGKey( bool cancelled,QByteArray data )
+void MainWindow::doneReading( bool cancelled )
 {
 	if( cancelled ){
 		return this->Exit( 1 ) ;
 	}
-	if( !data.isEmpty() ){
-		this->hide();
-		m_sendKey->sendKey( data ) ;
+	if( !m_key.isEmpty() ){
+		this->hide() ;
+		m_sendKey->sendKey( m_key ) ;
 	}else{
 		DialogMsg msg( this ) ;
 		m_working = false ;
@@ -176,14 +174,15 @@ void MainWindow::pbOpen()
 	if( exe.isEmpty() ){
 		return msg.ShowUIOK( tr( "ERROR" ),tr( "could not find \"gpg\" executable in \"/usr/local\",\"/usr/bin\" and \"/usr/sbin\"" ) ) ;
 	}
+
 	this->disableAll() ;
 	m_working = true ;
 
-	getgpgkey * gpg = new getgpgkey( exe,m_ui->lineEditKey->text(),m_ui->lineEditKeyFile->text() ) ;
-	connect( gpg,SIGNAL( key( bool,QByteArray ) ),this,SLOT( getGPGKey( bool,QByteArray ) ) ) ;
+	m_key = m_ui->lineEditKey->text().toLatin1() ;
+	getgpgkey * gpg = new getgpgkey( exe,&m_key,m_ui->lineEditKeyFile->text() ) ;
 	connect( this,SIGNAL( cancel() ),gpg,SLOT( cancel() ) ) ;
 	connect( gpg,SIGNAL( bytesRead( int ) ),this,SLOT( bytesRead( int ) ) ) ;
-	connect( gpg,SIGNAL( doneReadingFromgpg() ),this,SLOT( doneReading() ) ) ;
+	connect( gpg,SIGNAL( doneReadingFromgpg( bool ) ),this,SLOT( doneReading( bool ) ) ) ;
 	gpg->start() ;
 }
 

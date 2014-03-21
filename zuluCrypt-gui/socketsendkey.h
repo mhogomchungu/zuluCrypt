@@ -29,8 +29,7 @@ class socketSendKey : public QThread
 {
 	Q_OBJECT
 public:
-	socketSendKey( QObject * parent,const QString& sockpath,const QByteArray& key ) ;
-	socketSendKey( QObject * parent ) ;
+	socketSendKey( QObject * parent = 0,const QString& sockpath = QString(),const QByteArray& key = QByteArray() ) ;
 	~socketSendKey() ;
 	bool openConnection( void ) ;
 	void closeConnection( void ) ;

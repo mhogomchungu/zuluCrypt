@@ -50,7 +50,7 @@ signals:
 	void cancel( void ) ;
 private slots:
 	void defaultButton( void ) ;
-	void doneReading( void ) ;
+	void doneReading( bool ) ;
 	void bytesRead( int ) ;
 	void startingToreadData( void ) ;
 	void pbOpen( void ) ;
@@ -58,20 +58,20 @@ private slots:
 	void pbKeyFile( void ) ;
 	void gotConnected( void ) ;
 	void doneWritingData( void ) ;
-	void getGPGKey( bool,QByteArray ) ;
 private:
 	void closeEvent( QCloseEvent * );
 	void disableAll( void ) ;
 	void enableAlll( void ) ;
 	QString FindGPG( void ) ;
-	void SetFocus( void );
+	void SetFocus( void ) ;
 	void Exit( int ) ;
-	Ui::MainWindow * m_ui;
+	Ui::MainWindow * m_ui ;
 	QString m_addr ;
 	QString m_keyFile ;
 	void * m_handle ;
 	bool m_working ;
 	socketSendKey * m_sendKey ;
+	QByteArray m_key ;
 };
 
 #endif // MAINWINDOW_H
