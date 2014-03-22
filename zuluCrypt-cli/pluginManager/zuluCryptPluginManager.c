@@ -127,17 +127,6 @@ void zuluCryptPluginManagerCloseConnection( void * p )
 	}
 }
 
-static inline int pluginIsGpG( const char * plugin_path )
-{
-	char * path = realpath( plugin_path,NULL ) ;
-	int st = 0 ;
-	if( path != NULL ){
-		st = StringsAreEqual( path,ZULUCRYPTpluginPath"gpg" ) ;
-		free( path ) ;
-	}
-	return st ;
-}
-
 string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * plugin,
 						 const char * uuid,uid_t uid,const struct_opts * opts )
 {
@@ -179,9 +168,6 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 
 		sockpath = StringAppendInt( path,syscall( SYS_gettid ) ) ;
 
-		p = Process( "" ) ;
-		str = ProcessArgumentStructure( p ) ;
-
 		*( args + 0 ) = plugin ;
 		*( args + 1 ) = device ;
 
@@ -199,6 +185,8 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		*( args + 5 ) = argv ;
 		*( args + 6 ) = NULL ;
 
+		p = Process( "" ) ;
+		str = ProcessArgumentStructure( p ) ;
 		str->args    = args ;
 		str->env     = env ;
 		str->user_id = uid ;
