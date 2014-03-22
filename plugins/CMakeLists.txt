@@ -7,5 +7,7 @@ endif()
 add_subdirectory( gpg )
 add_subdirectory( keykeyfile )
 add_subdirectory( keydialog-qt )
+add_subdirectory( steghide )
+
 #keyring module is handled by CMakeLists.txt in ../zuluCrypt-cli
 #add_subdirectory( keyring )

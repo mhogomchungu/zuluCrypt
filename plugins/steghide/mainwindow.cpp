@@ -42,7 +42,7 @@ MainWindow::MainWindow( QWidget * parent ) : QWidget( parent ),m_ui( new Ui::Mai
 
 	m_working = false ;
 
-	this->setWindowTitle( tr( "gpg key module" ) ) ;
+	this->setWindowTitle( tr( "steghide key module" ) ) ;
 
 	QAction * ac = new QAction( this ) ;
 	QList<QKeySequence> keys ;
@@ -114,14 +114,14 @@ void MainWindow::Exit( int st )
 	QCoreApplication::exit( st ) ;
 }
 
-QString MainWindow::FindGPG()
+QString MainWindow::steghide()
 {
-	if( QFile::exists( QString( "/usr/local/bin/gpg" ) ) ){
-		return QString( "/usr/local/bin/gpg" ) ;
-	}else if( QFile::exists( QString( "/usr/bin/gpg" ) ) ){
-		return QString( "/usr/bin/gpg" ) ;
-	}else if( QFile::exists( QString( "/usr/sbin/gpg") ) ){
-		return QString( "/usr/sbin/gpg" ) ;
+	if( QFile::exists( QString( "/usr/local/bin/steghide" ) ) ){
+		return QString( "/usr/local/bin/steghide" ) ;
+	}else if( QFile::exists( QString( "/usr/bin/steghide" ) ) ){
+		return QString( "/usr/bin/steghide" ) ;
+	}else if( QFile::exists( QString( "/usr/sbin/steghide") ) ){
+		return QString( "/usr/sbin/steghide" ) ;
 	}else{
 		QString m ;
 		return m ;
@@ -149,10 +149,10 @@ void MainWindow::doneReading( bool cancelled )
 	}else{
 		DialogMsg msg( this ) ;
 		m_working = false ;
-		msg.ShowUIOK( tr( "ERROR" ),tr("could not decrypt the gpg keyfile,wrong key?" ) ) ;
+		msg.ShowUIOK( tr( "ERROR" ),tr("could not decrypt the steghide keyfile,wrong key?" ) ) ;
 		this->enableAlll() ;
 		m_ui->lineEditKey->setFocus() ;
-		this->setWindowTitle( tr( "gpg key module" ) ) ;
+		this->setWindowTitle( tr( "steghide key module" ) ) ;
 	}
 }
 
@@ -163,27 +163,27 @@ void MainWindow::pbOpen()
 	DialogMsg msg( this ) ;
 
 	if( path.isEmpty() ){
-		return msg.ShowUIOK( tr( "ERROR" ),tr( "path to gpg keyfile is empty" ) ) ;
+		return msg.ShowUIOK( tr( "ERROR" ),tr( "path to steghide keyfile is empty" ) ) ;
 	}
 	if( !QFile::exists( path ) ){
-		return msg.ShowUIOK( tr( "ERROR" ),tr( "invalid path to gpg keyfile" ) ) ;
+		return msg.ShowUIOK( tr( "ERROR" ),tr( "invalid path to steghide keyfile" ) ) ;
 	}
 
-	QString exe = this->FindGPG() ;
+	QString exe = this->steghide() ;
 
 	if( exe.isEmpty() ){
-		return msg.ShowUIOK( tr( "ERROR" ),tr( "could not find \"gpg\" executable in \"/usr/local\",\"/usr/bin\" and \"/usr/sbin\"" ) ) ;
+		return msg.ShowUIOK( tr( "ERROR" ),tr( "could not find \"steghide\" executable in \"/usr/local\",\"/usr/bin\" and \"/usr/sbin\"" ) ) ;
 	}
 
 	this->disableAll() ;
 	m_working = true ;
 
 	m_key = m_ui->lineEditKey->text().toLatin1() ;
-	getgpgkey * gpg = new getgpgkey( exe,&m_key,m_ui->lineEditKeyFile->text() ) ;
-	connect( this,SIGNAL( cancel() ),gpg,SLOT( cancel() ) ) ;
-	connect( gpg,SIGNAL( bytesRead( int ) ),this,SLOT( bytesRead( int ) ) ) ;
-	connect( gpg,SIGNAL( doneReadingFromgpg( bool ) ),this,SLOT( doneReading( bool ) ) ) ;
-	gpg->start() ;
+	getKey * k = new getKey( exe,&m_key,m_ui->lineEditKeyFile->text() ) ;
+	connect( this,SIGNAL( cancel() ),k,SLOT( cancel() ) ) ;
+	connect( k,SIGNAL( bytesRead( int ) ),this,SLOT( bytesRead( int ) ) ) ;
+	connect( k,SIGNAL( doneReadingKey( bool ) ),this,SLOT( doneReading( bool ) ) ) ;
+	k->start() ;
 }
 
 void MainWindow::doneWritingData()
@@ -194,7 +194,7 @@ void MainWindow::doneWritingData()
 
 void MainWindow::pbKeyFile()
 {
-	QString Z = QFileDialog::getOpenFileName( this,QString( "select a key file" ),QDir::homePath() ) ;
+	QString Z = QFileDialog::getOpenFileName( this,tr( "select a key file" ),QDir::homePath() ) ;
 
 	if( !Z.isEmpty() ){
 		m_ui->lineEditKeyFile->setText( Z ) ;

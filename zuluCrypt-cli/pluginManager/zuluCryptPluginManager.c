@@ -41,7 +41,7 @@
 #define zuluCryptPluginManagerDebug 0
 
 #if zuluCryptPluginManagerDebug
-static void __debug( process_t p )
+static void _debug( process_t p )
 {
 	char * e = NULL ;
 	puts( "--------stdout------------" ) ;
@@ -59,6 +59,11 @@ static void __debug( process_t p )
 		fflush( stdout ) ;
 		free( e ) ;
 	}
+}
+#else
+static void _debug( process_t p )
+{
+	if( p ){;}
 }
 #endif
 
@@ -194,6 +199,8 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		ProcessStart( p ) ;
 
 		zuluCryptGetKeyFromSocket( sockpath,&key,uid ) ;
+
+		_debug( p ) ;
 
 		ProcessDelete( &p ) ;
 	}
