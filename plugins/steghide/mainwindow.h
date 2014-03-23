@@ -34,6 +34,7 @@
 #include "../../zuluCrypt-gui/socketsendkey.h"
 #include "../../zuluCrypt-gui/dialogmsg.h"
 #include "getKey.h"
+#include <functional>
 
 namespace Ui {
 class MainWindow ;
@@ -44,8 +45,10 @@ class MainWindow : public QWidget
 	Q_OBJECT
 public:
 	MainWindow( QWidget * parent = 0 ) ;
-	void SetAddr( QString ) ;
-	~MainWindow();
+	void setAddr( const QString& ) ;
+	void setApplicationName( const QString& ) ;
+	void setKeyRoutine( std::function<QByteArray( const QString& exe,const QString& keyFile,const QString& password )> ) ;
+	~MainWindow() ;
 signals:
 	void cancel( void ) ;
 private slots:
@@ -59,19 +62,21 @@ private slots:
 	void gotConnected( void ) ;
 	void doneWritingData( void ) ;
 private:
-	void closeEvent( QCloseEvent * );
+	void closeEvent( QCloseEvent * ) ;
 	void disableAll( void ) ;
 	void enableAlll( void ) ;
-	QString steghide( void ) ;
+	QString fullApplicationPath( void ) ;
 	void SetFocus( void ) ;
 	void Exit( int ) ;
 	Ui::MainWindow * m_ui ;
 	QString m_addr ;
 	QString m_keyFile ;
+	QString m_appName ;
 	void * m_handle ;
 	bool m_working ;
 	socketSendKey * m_sendKey ;
 	QByteArray m_key ;
+	std::function<QByteArray( const QString& exe,const QString& keyFile,const QString& password )> m_function ;
 };
 
 #endif // MAINWINDOW_H

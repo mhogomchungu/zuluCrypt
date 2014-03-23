@@ -27,12 +27,14 @@
 #include <QProcess>
 #include <QObject>
 #include <unistd.h>
+#include <functional>
 
 class getKey : public QObject,public QRunnable
 {
 	Q_OBJECT
 public:
 	getKey( const QString& exe,QByteArray * key,const QString& keyFile ) ;
+	void setKeyRoutine( std::function<QByteArray( const QString& exe,const QString& keyFile,const QString& password )> ) ;
 	~getKey() ;
 	void start( void ) ;
 signals:
@@ -49,6 +51,7 @@ private:
 	pid_t m_pid ;
 	bool m_cancelled ;
 	int m_type ;
+	std::function<QByteArray( const QString& exe,const QString& keyFile,const QString& password )> m_function ;
 };
 
 #endif // GETGPGKEY_H

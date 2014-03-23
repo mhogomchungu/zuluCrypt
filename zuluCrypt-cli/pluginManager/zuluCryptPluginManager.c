@@ -38,9 +38,7 @@
 #include "plugin_path.h"
 #include <stdio.h>
 
-#define zuluCryptPluginManagerDebug 0
-
-#if zuluCryptPluginManagerDebug
+#if 0
 static void _debug( process_t p )
 {
 	char * e = NULL ;

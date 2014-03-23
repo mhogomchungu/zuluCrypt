@@ -42,7 +42,7 @@ MainWindow::MainWindow( QWidget * parent ) : QWidget( parent ),m_ui( new Ui::Mai
 
 	m_working = false ;
 
-	this->setWindowTitle( tr( "steghide key module" ) ) ;
+	this->setWindowTitle( tr( "%1 key module" ).arg( m_appName ) ) ;
 
 	QAction * ac = new QAction( this ) ;
 	QList<QKeySequence> keys ;
@@ -65,13 +65,23 @@ void MainWindow::defaultButton()
 	}
 }
 
-void MainWindow::SetAddr( QString addr )
+void MainWindow::setAddr( const QString& addr )
 {
 	m_addr = addr ;
 	m_sendKey->setAddr( m_addr ) ;
 	if( !m_sendKey->openConnection() ){
 		this->Exit( 1 ) ;
 	}
+}
+
+void MainWindow::setApplicationName( const QString& appName )
+{
+	m_appName = appName ;
+}
+
+void MainWindow::setKeyRoutine( std::function<QByteArray( const QString& exe,const QString& keyFile,const QString& password )> function )
+{
+	m_function = function ;
 }
 
 void MainWindow::gotConnected()
@@ -114,18 +124,21 @@ void MainWindow::Exit( int st )
 	QCoreApplication::exit( st ) ;
 }
 
-QString MainWindow::steghide()
+QString MainWindow::fullApplicationPath()
 {
-	if( QFile::exists( QString( "/usr/local/bin/steghide" ) ) ){
-		return QString( "/usr/local/bin/steghide" ) ;
-	}else if( QFile::exists( QString( "/usr/bin/steghide" ) ) ){
-		return QString( "/usr/bin/steghide" ) ;
-	}else if( QFile::exists( QString( "/usr/sbin/steghide") ) ){
-		return QString( "/usr/sbin/steghide" ) ;
-	}else{
-		QString m ;
-		return m ;
+	QString exe = QString( "/usr/local/bin/" ) + m_appName ;
+	if( QFile::exists( exe ) ){
+		return exe ;
 	}
+	exe = QString( "/usr/bin/" ) + m_appName ;
+	if( QFile::exists( exe ) ){
+		return exe ;
+	}
+	exe = QString( "/usr/sbin/" ) + m_appName ;
+	if( QFile::exists( exe ) ){
+		return exe ;
+	}
+	return QString() ;
 }
 
 void MainWindow::startingToreadData()
@@ -149,10 +162,10 @@ void MainWindow::doneReading( bool cancelled )
 	}else{
 		DialogMsg msg( this ) ;
 		m_working = false ;
-		msg.ShowUIOK( tr( "ERROR" ),tr("could not decrypt the steghide keyfile,wrong key?" ) ) ;
+		msg.ShowUIOK( tr( "ERROR" ),tr("could not decrypt the %1 keyfile,wrong key?" ).arg( m_appName ) ) ;
 		this->enableAlll() ;
 		m_ui->lineEditKey->setFocus() ;
-		this->setWindowTitle( tr( "steghide key module" ) ) ;
+		this->setWindowTitle( tr( "%1 key module" ).arg( m_appName ) ) ;
 	}
 }
 
@@ -163,16 +176,16 @@ void MainWindow::pbOpen()
 	DialogMsg msg( this ) ;
 
 	if( path.isEmpty() ){
-		return msg.ShowUIOK( tr( "ERROR" ),tr( "path to steghide keyfile is empty" ) ) ;
+		return msg.ShowUIOK( tr( "ERROR" ),tr( "path to %1 keyfile is empty" ).arg( m_appName ) ) ;
 	}
 	if( !QFile::exists( path ) ){
-		return msg.ShowUIOK( tr( "ERROR" ),tr( "invalid path to steghide keyfile" ) ) ;
+		return msg.ShowUIOK( tr( "ERROR" ),tr( "invalid path to %1 keyfile" ).arg( m_appName ) ) ;
 	}
 
-	QString exe = this->steghide() ;
+	QString exe = this->fullApplicationPath() ;
 
 	if( exe.isEmpty() ){
-		return msg.ShowUIOK( tr( "ERROR" ),tr( "could not find \"steghide\" executable in \"/usr/local\",\"/usr/bin\" and \"/usr/sbin\"" ) ) ;
+		return msg.ShowUIOK( tr( "ERROR" ),tr( "could not find \"%1\" executable in \"/usr/local\",\"/usr/bin\" and \"/usr/sbin\"" ).arg( m_appName ) ) ;
 	}
 
 	this->disableAll() ;
@@ -180,6 +193,7 @@ void MainWindow::pbOpen()
 
 	m_key = m_ui->lineEditKey->text().toLatin1() ;
 	getKey * k = new getKey( exe,&m_key,m_ui->lineEditKeyFile->text() ) ;
+	k->setKeyRoutine( m_function ) ;
 	connect( this,SIGNAL( cancel() ),k,SLOT( cancel() ) ) ;
 	connect( k,SIGNAL( bytesRead( int ) ),this,SLOT( bytesRead( int ) ) ) ;
 	connect( k,SIGNAL( doneReadingKey( bool ) ),this,SLOT( doneReading( bool ) ) ) ;

@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *  Copyright (c) 2012
  *  name : mhogo mchungu
  *  email: mhogomchungu@gmail.com
@@ -19,12 +19,31 @@
 
 #include <QApplication>
 #include "mainwindow.h"
+#include <QProcess>
+#include <QByteArray>
+#include <QString>
+#include <QDebug>
 
 int main( int argc,char * argv[] )
 {
 	QApplication a( argc,argv ) ;
 	MainWindow w ;
-	w.SetAddr( QString( argv[ 3 ] ) ) ;
+	w.setAddr( QString( argv[ 3 ] ) ) ;
+	w.setApplicationName( QString( "steghide" ) ) ;
+
+	auto steghide = []( const QString& exe,const QString& keyFile,const QString& password ){
+		QProcess p ;
+		QString arg ;
+		/*
+		 * TODO: look into passing the passphrase more securely
+		 */
+		arg = QString( "%1 --extract -sf %2 -xf - -p %3" ).arg( exe ).arg( keyFile ).arg( password ) ;
+		p.start( arg ) ;
+		p.waitForFinished( -1 ) ;
+		return p.readAllStandardOutput() ;
+	};
+
+	w.setKeyRoutine( steghide ) ;
 	w.show() ;
 
 	return a.exec() ;

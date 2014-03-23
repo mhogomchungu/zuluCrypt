@@ -19,7 +19,7 @@ else()
 							include_directories(${KDE4_INCLUDES})
 							add_definitions(-I${KDE4_INCLUDE_DIR})
 
-							add_definitions( -D_FILE_OFFSET_BITS=64 -Wall -pedantic -std=c++0x -I${PROJECT_BINARY_DIR}/plugins/kwallet/ -I${PROJECT_BINARY_DIR} -I${KDEINCLUDE} )
+							add_definitions( -D_FILE_OFFSET_BITS=64 -Wall -pedantic -std=c++11 -I${PROJECT_BINARY_DIR}/plugins/kwallet/ -I${PROJECT_BINARY_DIR} -I${KDEINCLUDE} )
 
 							INCLUDE( ${QT_USE_FILE} )
 							QT4_WRAP_CPP( MOC wallet.h )

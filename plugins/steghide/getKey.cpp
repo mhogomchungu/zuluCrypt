@@ -36,27 +36,14 @@ void getKey::start()
 	QThreadPool::globalInstance()->start( this ) ;
 }
 
+void getKey::setKeyRoutine( std::function<QByteArray( const QString& exe,const QString& keyFile,const QString& password )> function )
+{
+	m_function = function ;
+}
+
 void getKey::run()
 {
-	QProcess exe ;
-	QString arg ;
-
-	/*
-	 * TODO: look into passing the passphrase more securely
-	 */
-	arg = QString( "%1 --extract -sf %2 -xf - -p %3" ).arg( m_exe ).arg( m_keyFile ).arg( QString( *m_key ) ) ;
-
-	exe.start( arg ) ;
-
-	//exe.waitForStarted() ;
-
-	//m_pid = exe.pid() ;
-
-	//exe.write( *m_key ) ;
-	//exe.write( "\n" ) ;
-	//exe.closeWriteChannel() ;
-	exe.waitForFinished( -1 ) ;
-	*m_key = exe.readAllStandardOutput() ;
+	*m_key = m_function( m_exe,m_keyFile,QString( *m_key ) ) ;
 }
 
 void getKey::cancel()
