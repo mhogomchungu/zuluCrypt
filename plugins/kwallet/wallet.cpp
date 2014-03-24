@@ -21,7 +21,7 @@
 #include <QDebug>
 #include "../../zuluCrypt-gui/utility.h"
 
-wallet::wallet( QString path,QString uuid,QString sockAddr )
+wallet::wallet( const QString& path,const QString& uuid,const QString& sockAddr )
 {
 	if( uuid == QString( "Nil" ) ){
 		m_keyID = path ;
@@ -33,49 +33,31 @@ wallet::wallet( QString path,QString uuid,QString sockAddr )
 	m_handle = socketSendKey::zuluCryptPluginManagerOpenConnection( m_sockAddr ) ;
 }
 
-QString wallet::KDELocalWallet( void )
-{
-	return KWallet::Wallet::LocalWallet() ;
-}
-
 void wallet::openWallet()
 {
 	m_wallet = Wallet::openWallet( KWallet::Wallet::LocalWallet(),0,KWallet::Wallet::Synchronous ) ;
 
 	if( m_wallet ){
 		m_wallet->setFolder( utility::applicationName() ) ;
-		this->readKwallet() ;
+		QString key ;
+		m_wallet->readPassword( m_keyID,key ) ;
+		if( key.isEmpty() && m_keyID.startsWith( QString( "UUID=" ) ) ){
+			m_wallet->readPassword( m_keyID.replace( "\"","" ),key ) ;
+		}
+		if( key.isEmpty() ){
+			QCoreApplication::exit( 1 ) ;
+		}else{
+			socketSendKey::zuluCryptPluginManagerSendKey( m_handle,key.toLatin1() ) ;
+			QCoreApplication::exit( 0 ) ;
+		}
 	}else{
 		QCoreApplication::exit( 1 ) ;
 	}
 }
 
-void wallet::SendKey()
-{
-	socketSendKey::zuluCryptPluginManagerSendKey( m_handle,m_key ) ;
-	this->Exit();
-}
-
-void wallet::readKwallet()
-{
-	QString key ;
-	m_wallet->readPassword( m_keyID,key ) ;
-	if( key.isEmpty() && m_keyID.startsWith( QString( "UUID=" ) ) ){
-		m_wallet->readPassword( m_keyID.replace( "\"","" ),key ) ;
-	}
-	m_key = key.toAscii() ;
-	this->SendKey() ;
-}
-
-void wallet::Exit( void )
-{
-	QCoreApplication::exit( 0 ) ;
-}
-
 wallet::~wallet()
 {
 	socketSendKey::zuluCryptPluginManagerCloseConnection( m_handle ) ;
-	if( m_wallet ){
-		delete m_wallet ;
-	}
+	delete m_wallet ;
+
 }
