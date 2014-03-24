@@ -273,34 +273,18 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		/*
 		 * zuluCryptPluginManagerGetKeyFromModule is defined in ../pluginManager/zuluCryptPluginManager.c
 		 */
-		*passphrase = zuluCryptPluginManagerGetKeyFromModule( device_path,plugin_path,uuid,uid,opts ) ;
+		*passphrase = zuluCryptPluginManagerGetKeyFromModule( device_path,plugin_path,uuid,uid,opts,&st ) ;
 
 		StringFree( device_path ) ;
 		StringFree( uuid ) ;
 
-		if( *passphrase == StringVoid ){
+		if( st != 0 ){
 			return zuluExit_1( 12,opts,device,mount_point,stl ) ;
 		}
+
 		key_len = StringLength( *passphrase ) ;
 		key = StringContent( *passphrase ) ;
 		zuluCryptSecurityLockMemory_1( *passphrase ) ;
-		if( key_len == 0 ){
-			/*
-			 * TODO
-			 * A plugin just gave us an empty password,currently,we cant tell if its because
-			 * a user of the plugin sent an empty password or the plugin was cancelled and a user
-			 * sent no password.Look into trying to tell the two apart.
-			 */
-			;
-		}else if( key_len == 1 && key[ 0 ] == '\0' ){
-			if( StringHasComponent( plugin_path,"keydialog-qt" ) ){
-				/*
-				 * This is a work around for this plugin.
-				 * It sends a single NULL character when the user cancelled the GUI
-				 */
-				return zuluExit_1( 12,opts,device,mount_point,stl ) ;
-			}
-		}
 	}else if( source == NULL ){
 		printf( gettext( "Enter passphrase: " ) ) ;
 		/*

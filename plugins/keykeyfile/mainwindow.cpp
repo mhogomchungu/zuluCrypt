@@ -73,7 +73,8 @@ void MainWindow::SetFocus()
 
 void MainWindow::pbCancel()
 {
-	this->done() ;
+	this->hide() ;
+	QCoreApplication::exit( 1 ) ;
 }
 
 void MainWindow::done()

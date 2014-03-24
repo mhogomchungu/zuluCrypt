@@ -131,7 +131,7 @@ void zuluCryptPluginManagerCloseConnection( void * p )
 }
 
 string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * plugin,
-						 const char * uuid,uid_t uid,const struct_opts * opts )
+						 const char * uuid,uid_t uid,const struct_opts * opts,int * r )
 {
 	process_t p ;
 	struct stat st ;
@@ -200,6 +200,8 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 
 		_debug( p ) ;
 
+		*r = ProcessExitStatus( p ) ;
+		
 		ProcessDelete( &p ) ;
 	}
 

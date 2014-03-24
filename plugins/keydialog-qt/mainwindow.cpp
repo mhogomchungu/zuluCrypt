@@ -69,13 +69,7 @@ void MainWindow::SetFocus()
 
 void MainWindow::pbCancel()
 {
-	/*
-	 * Send a single NULL character to inform the backend that we were cancelled
-	 */
-	char c = '\0' ;
-	QByteArray key( &c,1 ) ;
-	socketSendKey::zuluCryptPluginManagerSendKey( m_handle,key ) ;
-	this->done() ;
+	QCoreApplication::exit( 1 ) ;
 }
 
 void MainWindow::done()
