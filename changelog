@@ -176,3 +176,7 @@ version 4.6.9
    distinguish them from previous ones that use ".zc".Older versions of zuluCrypt(<4.6.9) will not be able to open encrypted files that
    end with ".zC".
 -- add an option in zuluCrypt GUI to specify a truecrypt volume type when saving or restoring a truecrypt header from a backup header file
+
+version 4.7.0
+-- various changes and improvements
+-- add a plugin to retrive passphrases embeded in other files using "steghide" tool.
