@@ -39,24 +39,33 @@
 #include <stdio.h>
 
 #if 0
-static void _debug( process_t p )
+static void _debug_0( process_t p,ProcessIO std_io )
 {
 	char * e = NULL ;
-	puts( "--------stdout------------" ) ;
-	ProcessGetOutPut( p,&e,ProcessStdOut ) ;
-	if( e ){
-		puts( e ) ;
-		fflush( stdout ) ;
-		free( e ) ;
+
+	if( std_io == ProcessStdOut ){
+		puts( "--------stdout------------" ) ;
+	}else{
+		puts( "--------stderror----------" ) ;
 	}
-	puts( "--------stderror----------" ) ;
-	e = NULL ;
-	ProcessGetOutPut( p,&e,ProcessStdError ) ;
-	if( e ){
-		puts( e ) ;
-		fflush( stdout ) ;
-		free( e ) ;
+
+	while( 1 ){
+		ProcessGetOutPut( p,&e,std_io ) ;
+		if( e ){
+			printf( "%s",e ) ;
+			fflush( stdout ) ;
+			free( e ) ;
+			e = NULL ;
+		}else{
+			break ;
+		}
 	}
+}
+
+static void _debug( process_t p )
+{
+	_debug_0( p,ProcessStdOut ) ;
+	_debug_0( p,ProcessStdError ) ;
 }
 #else
 static void _debug( process_t p )
@@ -201,7 +210,7 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		_debug( p ) ;
 
 		*r = ProcessExitStatus( p ) ;
-		
+
 		ProcessDelete( &p ) ;
 	}
 

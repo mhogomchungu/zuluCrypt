@@ -48,7 +48,7 @@ int main( int argc,char * argv[] )
 		p.closeWriteChannel() ;
 		p.waitForFinished( -1 ) ;
 		return p.readAllStandardOutput() ;
-	};
+	} ;
 
 	w.setKeyRoutine( gpg ) ;
 	w.show() ;
