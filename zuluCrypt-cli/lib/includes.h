@@ -69,6 +69,7 @@ typedef struct{
 	int          volume_type ;
 	int          key_source ;
 	int luks_detached_header ;
+	int tcrypt_multiple_keys ;
 	unsigned long m_flags ;
 }open_struct_t ;
 

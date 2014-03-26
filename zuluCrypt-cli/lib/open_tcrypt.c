@@ -107,9 +107,16 @@ string_t zuluCryptCreateKeyFile( const char * key,size_t key_len,const char * fi
 	return st ;
 }
 
+static void _set_multiple_keys( struct crypt_params_tcrypt * params )
+{
+	if( params ){;}
+}
+
 static int _open_tcrypt_volume( const open_struct_t * opts,const char * key )
 {
 	uint32_t flags ;
+
+	int r ;
 
 	struct crypt_device * cd = NULL;
 	struct crypt_params_tcrypt params ;
@@ -119,12 +126,25 @@ static int _open_tcrypt_volume( const open_struct_t * opts,const char * key )
 	}else{
 		memset( &params,'\0',sizeof( struct crypt_params_tcrypt ) ) ;
 
-		if( opts->key_source == TCRYPT_PASSPHRASE ){
-			params.passphrase       = key ;
-			params.passphrase_size  = opts->key_len ;
+		if( opts->tcrypt_multiple_keys ){
+			/*
+			 * TODO: set up necessary keys if a user wants to use a passphrase and one or more keyfiles
+			 * working current idea is that we will get the passphrase and contents of all keyfiles in a single
+			 * buffer with some sort of a data structure that holds everything.This routine will be responsible
+			 * for deconstructing the structure and create keyfiles in a way that the API expects them.These keyfiles
+			 * created should be deleted at the end of this routine.
+			 *
+			 * WISHLIST: It will be nice if the API could also take contents of keyfiles instead of only paths to keyfiles.
+			 */
+			_set_multiple_keys( &params ) ;
 		}else{
-			params.keyfiles_count = 1 ;
-			params.keyfiles       = &key ;
+			if( opts->key_source == TCRYPT_PASSPHRASE ){
+				params.passphrase       = key ;
+				params.passphrase_size  = opts->key_len ;
+			}else{
+				params.keyfiles_count = 1 ;
+				params.keyfiles       = &key ;
+			}
 		}
 		if( opts->volume_type == TCRYPT_HIDDEN ){
 			params.flags = CRYPT_TCRYPT_LEGACY_MODES | CRYPT_TCRYPT_HIDDEN_HEADER ;
@@ -144,7 +164,15 @@ static int _open_tcrypt_volume( const open_struct_t * opts,const char * key )
 		}else{
 			flags = 0 ;
 		}
-		if( crypt_activate_by_volume_key( cd,opts->mapper_name,NULL,0,flags ) == 0 ){
+
+		r = crypt_activate_by_volume_key( cd,opts->mapper_name,NULL,0,flags ) ;
+
+		if( opts->tcrypt_multiple_keys ){
+			/*
+			 * TODO: If keyfiles were created,they should be deleted here.
+			 */
+		}
+		if( r == 0 ){
 			return zuluExit( 0,cd ) ;
 		}else{
 			return zuluExit( 1,cd ) ;
