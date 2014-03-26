@@ -23,6 +23,7 @@
 #include <QByteArray>
 #include <QString>
 #include <QFile>
+#include <QObject>
 
 int main( int argc,char * argv[] )
 {
@@ -31,8 +32,8 @@ int main( int argc,char * argv[] )
 	MainWindow w ;
 
 	w.setAddr( QString( argv[ 3 ] ) ) ;
-	w.setkeyLabel( QString( "key" ) ) ;
-	w.setkeyFileLabel( QString( "luks header" ) ) ;
+	w.setkeyLabel( QObject::tr( " enter luks key below" ) ) ;
+	w.setkeyFileLabel( QObject::tr( "enter luks header path below" ) ) ;
 
 	auto e = []( const QString& exe,const QString& keyFile,const QString& password ){
 		Q_UNUSED( exe ) ;

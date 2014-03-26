@@ -22,17 +22,18 @@
 #include <QProcess>
 #include <QByteArray>
 #include <QString>
+#include <QObject>
 
 int main( int argc,char * argv[] )
 {
 	QApplication a( argc,argv ) ;
 
 	MainWindow w ;
-	
+
 	w.setAddr( QString( argv[ 3 ] ) ) ;
 	w.setApplicationName( QString( "gpg" ) ) ;
-	w.setkeyLabel( QString( "gpg key" ) ) ;
-	w.setkeyFileLabel( QString( "gpg keyfile" ) ) ;
+	w.setkeyLabel( QObject::tr( "enter gpg key below" ) ) ;
+	w.setkeyFileLabel( QObject::tr( "enter gpg keyfile below" ) ) ;
 
 	auto gpg = []( const QString& exe,const QString& keyFile,const QString& password ){
 

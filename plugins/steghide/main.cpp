@@ -23,17 +23,18 @@
 #include <QByteArray>
 #include <QString>
 #include <QDebug>
+#include <QObject>
 
 int main( int argc,char * argv[] )
 {
 	QApplication a( argc,argv ) ;
 
 	MainWindow w ;
-	
+
 	w.setAddr( QString( argv[ 3 ] ) ) ;
 	w.setApplicationName( QString( "steghide" ) ) ;
-	w.setkeyLabel( QString( "steghide key" ) ) ;
-	w.setkeyFileLabel( QString( "steghide keyfile" ) ) ;
+	w.setkeyLabel( QObject::tr( "enter steghide key below" ) ) ;
+	w.setkeyFileLabel( QObject::tr( "enter path to steghide keyfile below" ) ) ;
 
 	auto steghide = []( const QString& exe,const QString& keyFile,const QString& password ){
 		QProcess p ;

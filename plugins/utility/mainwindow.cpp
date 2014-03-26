@@ -56,6 +56,13 @@ MainWindow::MainWindow( QWidget * parent ) : QWidget( parent ),m_ui( new Ui::Mai
 	connect( m_sendKey,SIGNAL( keySent() ),this,SLOT( doneWritingData() ) ) ;
 }
 
+void MainWindow::setButtonIcon( const QString& icon )
+{
+	QString x( ":/" + icon ) ;
+	this->setWindowIcon( QIcon( x ) ) ;
+	m_ui->pbKeyFile->setIcon( QIcon( x ) ) ;
+}
+
 void MainWindow::defaultButton()
 {
 	if( m_ui->pbCancel->hasFocus() ){

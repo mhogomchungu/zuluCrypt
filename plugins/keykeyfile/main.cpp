@@ -18,13 +18,31 @@
  */
 
 #include <QApplication>
-#include "mainwindow.h"
+#include "../utility/mainwindow.h"
+#include <QDebug>
+#include <QByteArray>
+#include <QString>
+#include <QFile>
+#include <QObject>
 
 int main( int argc,char * argv[] )
 {
 	QApplication a( argc,argv ) ;
+
 	MainWindow w ;
-	w.SetAddr( QString( argv[ 3 ] ) ) ;
+
+	w.setAddr( QString( argv[ 3 ] ) ) ;
+	w.setkeyLabel( QObject::tr( "enter key below" ) ) ;
+	w.setkeyFileLabel( QObject::tr( "enter path to keyfile below" ) ) ;
+	w.setButtonIcon( QString( "keyfile" ) ) ;
+	
+	auto e = []( const QString& exe,const QString& keyFile,const QString& password ){
+		QFile f( keyFile ) ;
+		f.open( QIODevice::ReadOnly ) ;
+		return password.toLatin1() + f.readAll() ;
+	} ;
+
+	w.setKeyRoutine( e ) ;
 	w.show() ;
 
 	return a.exec() ;

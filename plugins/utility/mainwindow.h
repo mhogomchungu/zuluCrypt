@@ -49,6 +49,7 @@ public:
 	void setApplicationName( const QString& ) ;
 	void setkeyLabel( const QString& ) ;
 	void setkeyFileLabel( const QString& ) ;
+	void setButtonIcon( const QString& ) ;
 	void setKeyRoutine( std::function<QByteArray( const QString& exe,const QString& keyFile,const QString& password )> ) ;
 	~MainWindow() ;
 signals:

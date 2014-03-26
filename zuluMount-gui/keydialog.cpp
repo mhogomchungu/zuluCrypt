@@ -297,11 +297,9 @@ void keyDialog::slotMountComplete( int st,QString m )
 
 	if( st == 12 && m_ui->cbKeyType->currentIndex() == keyDialog::plugin ){
 		/*
-		 * This is a special case where a user clicked cancelled the operation
+		 * A user cancelled the plugin
 		 */
-		if( m_ui->lineEditKey->text() == QString( "keydialog-qt" ) ){
-			return this->enableAll() ;
-		}
+		return this->enableAll() ;
 	}
 
 	if( st == 0 ){
