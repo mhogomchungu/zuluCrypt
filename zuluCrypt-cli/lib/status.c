@@ -209,11 +209,7 @@ char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper )
 		 * it is a LUKS volume opened with a detached header.We dont know what volume we got
 		 * but assume its a LUKS volume.
 		 */
-		#if 0
-		r = StringCopy_2( nil ) ;
-		#else
 		r = StringCopy_2( "crypto_LUKS" ) ;
-		#endif
 	}else{
 		if( StringHasComponent( type,"LUKS" ) ){
 			r = StringCopy_2( "crypto_LUKS" ) ;
@@ -291,11 +287,10 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	type = crypt_get_type( cd ) ;
 
 	if( type == NULL ){
-		#if 0
-		StringAppend( p,"Nil" ) ;
-		#else
-		StringAppend( p,"luks" ) ;
-		#endif
+		/*
+		 * failed to get type,assume the volume is luks
+		 */
+		StringAppend( p,"luks1" ) ;
 	}else{
 		if( StringPrefixMatch( type,"LUKS",4 ) ){
 			luks = 1 ;
@@ -309,7 +304,21 @@ char * zuluCryptVolumeStatus( const char * mapper )
 		}
 	}
 
-	StringMultipleAppend( p,"\n cipher:\t",crypt_get_cipher( cd ),"-",crypt_get_cipher_mode( cd ),END ) ;
+	z = crypt_get_cipher( cd ) ;
+
+	if( z != NULL ){
+		StringMultipleAppend( p,"\n cipher:\t",z,"-",END ) ;
+	}else{
+		StringAppend( p,"\n cipher:\tNil-" ) ;
+	}
+
+	z = crypt_get_cipher_mode( cd ) ;
+
+	if( z != NULL ){
+		StringAppend( p,z ) ;
+	}else{
+		StringAppend( p,"Nil" ) ;
+	}
 
 	z = StringIntToString_1( buffer,SIZE,8 * crypt_get_volume_key_size( cd ) ) ;
 	StringMultipleAppend( p,"\n keysize:\t",z," bits\n device:\t",END ) ;
