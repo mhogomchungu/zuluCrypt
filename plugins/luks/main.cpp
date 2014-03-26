@@ -19,7 +19,7 @@
 
 #include <QApplication>
 #include "../utility/mainwindow.h"
-#include <QProcess>
+#include <QDebug>
 #include <QByteArray>
 #include <QString>
 #include <QFile>
@@ -29,16 +29,31 @@ int main( int argc,char * argv[] )
 	QApplication a( argc,argv ) ;
 
 	MainWindow w ;
-	
+
 	w.setAddr( QString( argv[ 3 ] ) ) ;
 	w.setkeyLabel( QString( "key" ) ) ;
 	w.setkeyFileLabel( QString( "luks header" ) ) ;
 
 	auto e = []( const QString& exe,const QString& keyFile,const QString& password ){
 		Q_UNUSED( exe ) ;
+		/*
+		 * we are sending a 4 component structure.
+		 * first  component at offset 0 is a u_int32_t structure holding the size of the passphrase
+		 * Second component at offset 4 is a u_int32_t structure holding the size of the contents of luks header
+		 * third  component at offset 8 is the passphrase to unlock the LUKS volume.
+		 * last   component is at offset that marks the end of the third component.Where this offset will be depends on the length of the passphrase
+		 */
+		const char * e ;
+		quint32 s ;
+		s = password.size() ;
+		e = reinterpret_cast< const char * >( &s ) ;
+		QByteArray passLen( e,sizeof( quint32 ) ) ;
 		QFile f( keyFile ) ;
+		s = f.size() ;
+		e = reinterpret_cast< const char * >( &s ) ;
+		QByteArray FileSize( e,sizeof( quint32 ) ) ;
 		f.open( QIODevice::ReadOnly ) ;
-		return password.toLatin1() + '\0' + f.readAll() ;
+		return passLen + FileSize + password.toLatin1() + f.readAll() ;
 	} ;
 
 	w.setKeyRoutine( e ) ;

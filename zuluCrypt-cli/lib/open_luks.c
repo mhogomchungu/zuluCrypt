@@ -109,9 +109,6 @@ static int _open_luks_1( const char * device,const open_struct_t * opts )
 {
 	size_t key_len ;
 
-	size_t s = opts->key_len ;
-	size_t k = 0 ;
-
 	string_t st ;
 
 	struct crypt_device * cd ;
@@ -119,43 +116,33 @@ static int _open_luks_1( const char * device,const open_struct_t * opts )
 
 	int r ;
 
-	/*
-	 * key variable is expected to hold a structure = "luks passphrase'\0'content_of_header_file"
-	 */
-	const char * key = opts->key ;
-	const char * header_file ;
-	const char * header_file_contents ;
+	const char * key ;
+	const char * luks_header_file ;
+	const char * luks_header_file_contents ;
 
-	size_t header_file_size ;
+	size_t luks_header_file_size ;
 
-	if( s > 3145728 ){
+	if( opts->key_len > 3145728 ){
 		/*
 		 * a 3MB structure is a structure that is simply above expectations.
 		 */
 		return 1 ;
 	}
 
-	while( 1 ){
-		key_len = k ;
-		k++ ;
-		if( key_len == s ){
-			/*
-			 * didnt find the NULL character,structure is malformed
-			 */
-			return 1 ;
-		}
-		if( *( key + key_len ) == '\0' ){
-			/*
-			 * found the NULL character and hence the cut point btw key and header file
-			 */
-			break ;
-		}
-	}
+	/*
+	 * key variable is expected to hold a structure made up of 4 components.
+	 * first  component at offset 0 is a u_int32_t structure holding the size of the passphrase
+	 * Second component at offset 4 is a u_int32_t structure holding the size of the contents of luks header
+	 * third  component at offset 8 is the passphrase to unlock the LUKS volume.
+	 * last   component is at offset that marks the end of the third component.Where this offset will be depends on the length of the passphrase
+	 */
+	memcpy( &key_len,opts->key,sizeof( u_int32_t ) ) ;
+	key = opts->key + sizeof( u_int32_t ) + sizeof( u_int32_t ) ;
 
-	header_file_contents = key + key_len + 1 ;
-	header_file_size     = opts->key_len - ( key_len + 1 ) ;
+	memcpy( &luks_header_file_size,opts->key + sizeof( u_int32_t ),sizeof( u_int32_t ) ) ;
+	luks_header_file_contents = opts->key + sizeof( u_int32_t ) + sizeof( u_int32_t ) + key_len  ;
 
-	if( header_file_size < 1048576 ){
+	if( luks_header_file_size < 1048576 ){
 		/*
 		 * luks header backup can not be less than 1MB
 		 */
@@ -164,10 +151,10 @@ static int _open_luks_1( const char * device,const open_struct_t * opts )
 	/*
 	 * zuluCryptCreateKeyFile() is defined in open_tcrypt.c
 	 */
-	st = zuluCryptCreateKeyFile( header_file_contents,header_file_size,"luks_header_file-" ) ;
-	header_file = StringContent( st ) ;
+	st = zuluCryptCreateKeyFile( luks_header_file_contents,luks_header_file_size,"luks_header_file-" ) ;
+	luks_header_file = StringContent( st ) ;
 
-	if( crypt_init( &cd,header_file ) != 0 ){
+	if( crypt_init( &cd,luks_header_file ) != 0 ){
 		return zuluExit_1( 1,cd,st ) ;
 	}
 	if( crypt_load( cd,NULL,NULL ) != 0 ){
