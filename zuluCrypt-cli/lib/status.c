@@ -43,20 +43,19 @@
 
 char * zuluCryptGetMountPointFromPath( const char * path ) ;
 
-static void convert( char * buffer,int buffer_size,const char * s,double y,double z )
+static void convert( char * buffer,int buffer_size,const char * s,u_int64_t y,u_int64_t z )
 {
-	snprintf( buffer,buffer_size,"%.1f %s",y/z,s ) ;
+	snprintf( buffer,buffer_size,"%.1f %s",( double )y/z,s ) ;
 }
 
-void zuluCryptFormatSize( u_int64_t n,char * buffer,size_t buffer_size )
+void zuluCryptFormatSize( u_int64_t number,char * buffer,size_t buffer_size )
 {
-	const char * z = StringIntToString_1( buffer,buffer_size,n ) ;
-	double number = ( double )n ;
+	const char * z = StringIntToString_1( buffer,buffer_size,number ) ;
 
 	switch( StringSize( z ) ){
 	case 0 :
 	case 1 : case 2 : case 3 :
-		 snprintf( buffer,buffer_size,"%d B",( int )n ) ;
+		 snprintf( buffer,buffer_size,"%d B",( int )number ) ;
 		 break ;
 	case 4 : case 5 : case 6 :
 		 convert( buffer,buffer_size,"KB",number,1024 ) ;
@@ -68,10 +67,10 @@ void zuluCryptFormatSize( u_int64_t n,char * buffer,size_t buffer_size )
 		 convert( buffer,buffer_size,"GB",number,1024 * 1024 * 1024 ) ;
 		 break ;
 	case 13: case 14 : case 15 :
-		 convert( buffer,buffer_size,"TB",number,1.0 * 1024 * 1024 * 1024 * 1024 ) ;
+		 convert( buffer,buffer_size,"TB",number,1024.0 * 1024 * 1024 * 1024 ) ;
 		 break ;
 	default:
-		 convert( buffer,buffer_size,"TB",number,1.0 * 1024 * 1024 * 1024 * 1024 ) ;
+		 convert( buffer,buffer_size,"TB",number,1024.0 * 1024 * 1024 * 1024 ) ;
 		 break ;
 	}
 }
@@ -189,7 +188,7 @@ void zuluCryptFileSystemProperties( string_t p,const char * mapper,const char * 
 
 char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper )
 {
-	struct crypt_device * cd;
+	struct crypt_device * cd ;
 	const char * type ;
 	char * r ;
 	const char * nil = "Nil" ;
@@ -205,7 +204,16 @@ char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper )
 	type = crypt_get_type( cd ) ;
 
 	if( type == NULL ){
+		/*
+		 * failed to get volume type,the only scenario i know of that will bring us here is if
+		 * it is a LUKS volume opened with a detached header.We dont know what volume we got
+		 * but assume its a LUKS volume.
+		 */
+		#if 0
 		r = StringCopy_2( nil ) ;
+		#else
+		r = StringCopy_2( "crypto_LUKS" ) ;
+		#endif
 	}else{
 		if( StringHasComponent( type,"LUKS" ) ){
 			r = StringCopy_2( "crypto_LUKS" ) ;
@@ -220,6 +228,12 @@ char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper )
 
 	crypt_free( cd ) ;
 	return r ;
+}
+
+static char * zuluExit( string_t st,struct crypt_device * cd )
+{
+	crypt_free( cd ) ;
+	return StringDeleteHandle( &st ) ;
 }
 
 char * zuluCryptVolumeStatus( const char * mapper )
@@ -238,20 +252,18 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	struct crypt_device * cd ;
 	struct crypt_active_device cad ;
 
-	string_t p ;
+	string_t p = StringVoid ;
 
 	if( crypt_init_by_name( &cd,mapper ) != 0 ){
 		return NULL ;
 	}
 	if( crypt_get_active_device( NULL,mapper,&cad ) != 0 ){
-		crypt_free( cd ) ;
-		return NULL ;
+		return zuluExit( p,cd ) ;
 	}
 
 	device_name = crypt_get_device_name( cd ) ;
 	if( device_name == NULL ){
-		crypt_free( cd ) ;
-		return NULL ;
+		return zuluExit( p,cd ) ;
 	}
 
 	p = String( mapper ) ;
@@ -259,22 +271,19 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	switch( crypt_status( cd,mapper ) ){
 		case CRYPT_INACTIVE :
 			StringAppend( p," is inactive.\n" ) ;
-			crypt_free( cd ) ;
-			return StringDeleteHandle( &p ) ;
+			return zuluExit( p,cd ) ;
+		case CRYPT_INVALID  :
+			StringAppend( p," is invalid.\n" ) ;
+			return zuluExit( p,cd ) ;
 		case CRYPT_ACTIVE   :
 			StringAppend( p," is active.\n" ) ;
 			break ;
 		case CRYPT_BUSY     :
 			StringAppend( p," is active and is in use.\n" ) ;
 			break ;
-		case CRYPT_INVALID  :
-			StringAppend( p," is invalid.\n" ) ;
-			crypt_free( cd ) ;
-			return StringDeleteHandle( &p ) ;
 		default :
 			StringAppend( p," is invalid.\n" ) ;
-			crypt_free( cd ) ;
-			return StringDeleteHandle( &p ) ;
+			return zuluExit( p,cd ) ;
 	}
 
 	StringAppend( p," type:   \t" ) ;
@@ -282,7 +291,11 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	type = crypt_get_type( cd ) ;
 
 	if( type == NULL ){
+		#if 0
 		StringAppend( p,"Nil" ) ;
+		#else
+		StringAppend( p,"luks" ) ;
+		#endif
 	}else{
 		if( StringPrefixMatch( type,"LUKS",4 ) ){
 			luks = 1 ;
@@ -315,9 +328,8 @@ char * zuluCryptVolumeStatus( const char * mapper )
 		 * zuluCryptResolvePath() is defined in resolve_path.c
 		 */
 		z = zuluCryptResolvePath( device_name ) ;
-		StringAppend( p,z ) ;
+		StringMultipleAppend( p,z,"\n loop:   \tNil",END ) ;
 		StringFree( z ) ;
-		StringAppend( p,"\n loop:   \tNil" ) ;
 	}
 
 	z = StringIntToString_1( buffer,SIZE,crypt_get_data_offset( cd ) ) ;
@@ -359,8 +371,7 @@ char * zuluCryptVolumeStatus( const char * mapper )
 		free( path ) ;
 	}
 
-	crypt_free( cd ) ;
-	return StringDeleteHandle( &p ) ;
+	return zuluExit( p,cd ) ;
 }
 
 char * zuluCryptVolumeDeviceName( const char * mapper )

@@ -339,6 +339,9 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	open_struct.m_opts      = m_opts ;
 	open_struct.m_flags     = m_flags ;
 
+	plugin_path = plugin_path + StringLastIndexOfChar_1( plugin_path,'/' ) + 1 ;
+	open_struct.luks_detached_header = StringsAreEqual( plugin_path,"luks" ) ;
+
 	zuluCryptSecurityGainElevatedPrivileges() ;
 
 	/*

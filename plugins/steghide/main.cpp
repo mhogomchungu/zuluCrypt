@@ -18,7 +18,7 @@
  */
 
 #include <QApplication>
-#include "mainwindow.h"
+#include "../utility/mainwindow.h"
 #include <QProcess>
 #include <QByteArray>
 #include <QString>
@@ -27,9 +27,13 @@
 int main( int argc,char * argv[] )
 {
 	QApplication a( argc,argv ) ;
+
 	MainWindow w ;
+	
 	w.setAddr( QString( argv[ 3 ] ) ) ;
 	w.setApplicationName( QString( "steghide" ) ) ;
+	w.setkeyLabel( QString( "steghide key" ) ) ;
+	w.setkeyFileLabel( QString( "steghide keyfile" ) ) ;
 
 	auto steghide = []( const QString& exe,const QString& keyFile,const QString& password ){
 		QProcess p ;

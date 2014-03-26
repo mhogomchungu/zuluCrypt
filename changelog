@@ -179,4 +179,5 @@ version 4.6.9
 
 version 4.7.0
 -- various changes and improvements
--- add a plugin to retrive passphrases embeded in other files using "steghide" tool.
+-- add a plugin named "steghide" that retrives passphrases embeded in other files using "steghide" tool.
+-- add a plugin named "luks" that allows opening a LUKS volume using a backup/detached header

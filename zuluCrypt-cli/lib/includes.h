@@ -68,6 +68,7 @@ typedef struct{
 	uid_t        uid ;
 	int          volume_type ;
 	int          key_source ;
+	int luks_detached_header ;
 	unsigned long m_flags ;
 }open_struct_t ;
 
@@ -85,6 +86,11 @@ int zuluCryptOpenVolume_2( const open_struct_t * ) ;
  * zuluCryptOpenPlain_1() is defined in open_plain.c
  */
 int zuluCryptOpenPlain_1( const open_struct_t * ) ;
+
+/*
+ * zuluCryptOpenPlain_1() is defined in open_plain.c
+ */
+int zuluCryptOpenLuks_1( const open_struct_t * ) ;
 
 /*
  * zuluCryptOpenPlainWithOffset() is defined in open_volume.c

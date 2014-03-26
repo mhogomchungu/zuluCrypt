@@ -79,6 +79,16 @@ void MainWindow::setApplicationName( const QString& appName )
 	m_appName = appName ;
 }
 
+void MainWindow::setkeyLabel( const QString& keyLabel )
+{
+	m_ui->label_2->setText( keyLabel ) ;
+}
+
+void MainWindow::setkeyFileLabel( const QString& keyFileLabel )
+{
+	m_ui->label->setText( keyFileLabel ) ;
+}
+
 void MainWindow::setKeyRoutine( std::function<QByteArray( const QString& exe,const QString& keyFile,const QString& password )> function )
 {
 	m_function = function ;
@@ -182,10 +192,13 @@ void MainWindow::pbOpen()
 		return msg.ShowUIOK( tr( "ERROR" ),tr( "invalid path to %1 keyfile" ).arg( m_appName ) ) ;
 	}
 
-	QString exe = this->fullApplicationPath() ;
+	QString exe ;
+	if( !m_appName.isEmpty() ){
+		exe = this->fullApplicationPath() ;
 
-	if( exe.isEmpty() ){
-		return msg.ShowUIOK( tr( "ERROR" ),tr( "could not find \"%1\" executable in \"/usr/local\",\"/usr/bin\" and \"/usr/sbin\"" ).arg( m_appName ) ) ;
+		if( exe.isEmpty() ){
+			return msg.ShowUIOK( tr( "ERROR" ),tr( "could not find \"%1\" executable in \"/usr/local\",\"/usr/bin\" and \"/usr/sbin\"" ).arg( m_appName ) ) ;
+		}
 	}
 
 	this->disableAll() ;

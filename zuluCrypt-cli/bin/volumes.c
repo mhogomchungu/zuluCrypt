@@ -353,7 +353,7 @@ static int _zuluCryptCheckSYSifDeviceIsSystem( const char * device )
 	ssize_t k ;
 	string_t xt ;
 	string_t st ;
-	char dev[ PATH_MAX ] ;
+	char dev[ PATH_MAX + 1 ] ;
 
 	const char * path ;
 
