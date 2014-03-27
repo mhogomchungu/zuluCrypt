@@ -122,15 +122,14 @@ static int _open_luks_1( const char * device,const open_struct_t * opts )
 
 	size_t luks_header_file_size ;
 
-	if( opts->key_len > 3145728 ){
+	if( opts->key_len < 1048576 + 8 ){
 		/*
-		 * a 3MB structure is a structure that is simply above expectations.
+		 * the structure is expected to be atleast 1MB + 8 bytes
 		 */
 		return 1 ;
 	}
-
 	/*
-	 * key variable is expected to hold a structure made up of 4 components.
+	 * opts->key variable is expected to hold a structure made up of 4 components.
 	 * first  component at offset 0 is a u_int32_t structure holding the size of the passphrase
 	 * Second component at offset 4 is a u_int32_t structure holding the size of the contents of luks header
 	 * third  component at offset 8 is the passphrase to unlock the LUKS volume.
@@ -139,12 +138,20 @@ static int _open_luks_1( const char * device,const open_struct_t * opts )
 	memcpy( &key_len,opts->key,sizeof( u_int32_t ) ) ;
 	key = opts->key + sizeof( u_int32_t ) + sizeof( u_int32_t ) ;
 
+	if( key_len > 8192000 ){
+		/*
+		 * passphrase is expected to be less than 8MB
+		 */
+		return 1 ;
+	}
+
 	memcpy( &luks_header_file_size,opts->key + sizeof( u_int32_t ),sizeof( u_int32_t ) ) ;
 	luks_header_file_contents = opts->key + sizeof( u_int32_t ) + sizeof( u_int32_t ) + key_len  ;
 
-	if( luks_header_file_size < 1048576 ){
+	if( luks_header_file_size < 1048576 || luks_header_file_size > 3145728 ){
 		/*
-		 * luks header backup can not be less than 1MB
+		 * luks header backup or detached header is expected to be greater than 1MB but less than 2MB,we check
+		 * against 3MB to be generous.
 		 */
 		return 1 ;
 	}
