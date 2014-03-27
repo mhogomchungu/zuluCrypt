@@ -44,7 +44,7 @@ static inline int zuluExit_1( int r,struct crypt_device * cd,string_t st )
 	return r ;
 }
 
-static int _open_luks( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
+static int _open_luks( const char * device,const open_struct_t * opts )
 {
 	struct crypt_device * cd ;
 	uint32_t flags ;
@@ -59,13 +59,13 @@ static int _open_luks( const char * device,const char * mapper,const char * mode
 	if( crypt_load( cd,NULL,NULL ) != 0 ){
 		return zuluExit( 2,cd ) ;
 	}
-	if( StringHasComponent( mode,"ro" ) ){
+	if( StringHasComponent( opts->m_opts,"ro" ) ){
 		flags = CRYPT_ACTIVATE_READONLY ;
 	}else{
 		flags = CRYPT_ACTIVATE_ALLOW_DISCARDS ;
 	}
 
-	st = crypt_activate_by_passphrase( cd,mapper,CRYPT_ANY_SLOT,pass,pass_size,flags ) ;
+	st = crypt_activate_by_passphrase( cd,opts->mapper_name,CRYPT_ANY_SLOT,opts->key,opts->key_len,flags ) ;
 
 	if( st >= 0 ){
 		return zuluExit( 0,cd ) ;
@@ -76,35 +76,10 @@ static int _open_luks( const char * device,const char * mapper,const char * mode
 	}
 }
 
-int zuluCryptOpenLuks( const char * device,const char * mapper,const char * mode,const char * pass,size_t pass_size )
-{
-	int lmode ;
-	string_t st ;
-	int fd ;
-	int r ;
-	if( StringPrefixMatch( device,"/dev/",5 ) ){
-		return _open_luks( device,mapper,mode,pass,pass_size ) ;
-	}else{
-		if( StringHasComponent( mode,"ro" ) ){
-			lmode = O_RDONLY ;
-		}else{
-			lmode = O_RDWR ;
-		}
-		/*
-		 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop.c
-		 */
-		if( zuluCryptAttachLoopDeviceToFile( device,lmode,&fd,&st ) ){
-			r = _open_luks( StringContent( st ),mapper,mode,pass,pass_size ) ;
-			StringDelete( &st ) ;
-			close( fd ) ;
-			return r ;
-		}else{
-			return 2 ;
-		}
-	}
-}
-
 #if LUKS_EXTERNAL_HEADER
+/*
+ * This functionality is enabled in with cryptsetup >= 1.4.0
+ */
 static int _open_luks_1( const char * device,const open_struct_t * opts )
 {
 	size_t key_len ;
@@ -185,14 +160,23 @@ static int _open_luks_1( const char * device,const open_struct_t * opts )
 	}
 }
 
-int zuluCryptOpenLuks_1( const open_struct_t * opts )
+#else
+static int _open_luks_1( const char * device,const open_struct_t * opts )
+{
+	if( 0 && device && opts ){;}
+	return 1 ;
+}
+#endif
+
+static int _open_luks_0( int( *function )( const char *,const open_struct_t * ),const open_struct_t * opts )
 {
 	int lmode ;
 	string_t st ;
 	int fd ;
 	int r ;
+
 	if( StringPrefixMatch( opts->device,"/dev/",5 ) ){
-		return _open_luks_1( opts->device,opts ) ;
+		return function( opts->device,opts ) ;
 	}else{
 		if( StringHasComponent( opts->m_opts,"ro" ) ){
 			lmode = O_RDONLY ;
@@ -203,20 +187,34 @@ int zuluCryptOpenLuks_1( const open_struct_t * opts )
 		 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop.c
 		 */
 		if( zuluCryptAttachLoopDeviceToFile( opts->device,lmode,&fd,&st ) ){
-			r = _open_luks_1( StringContent( st ),opts ) ;
+			r = function( StringContent( st ),opts ) ;
 			StringDelete( &st ) ;
 			close( fd ) ;
 			return r ;
 		}else{
-			return 1 ;
+			return 2 ;
 		}
 	}
 }
 
-#else
 int zuluCryptOpenLuks_1( const open_struct_t * opts )
 {
-	if( opts ){;}
-	return 1 ;
+	return _open_luks_0( _open_luks_1,opts ) ;
 }
-#endif
+
+int zuluCryptOpenLuks( const char * device,const char * mapper,
+		       const char * mode,const char * key,size_t key_len )
+{
+	open_struct_t opts ;
+
+	memset( &opts,'\0',sizeof( open_struct_t ) ) ;
+
+	opts.device      = device ;
+	opts.mapper_name = mapper ;
+	opts.m_opts      = mode   ;
+	opts.key         = key    ;
+	opts.key_len     = key_len;
+
+	return _open_luks_0( _open_luks,&opts ) ;
+}
+
