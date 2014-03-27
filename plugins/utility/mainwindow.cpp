@@ -190,6 +190,8 @@ void MainWindow::pbOpen()
 {
 	QString path = m_ui->lineEditKeyFile->text() ;
 
+	path.replace( "file://","" ) ;
+
 	DialogMsg msg( this ) ;
 
 	if( path.isEmpty() ){
@@ -212,7 +214,7 @@ void MainWindow::pbOpen()
 	m_working = true ;
 
 	m_key = m_ui->lineEditKey->text().toLatin1() ;
-	getKey * k = new getKey( exe,&m_key,m_ui->lineEditKeyFile->text() ) ;
+	getKey * k = new getKey( exe,&m_key,path ) ;
 	k->setKeyRoutine( m_function ) ;
 	connect( this,SIGNAL( cancel() ),k,SLOT( cancel() ) ) ;
 	connect( k,SIGNAL( bytesRead( int ) ),this,SLOT( bytesRead( int ) ) ) ;
