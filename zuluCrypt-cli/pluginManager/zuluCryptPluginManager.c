@@ -212,6 +212,8 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		*r = ProcessExitStatus( p ) ;
 
 		ProcessDelete( &p ) ;
+	}else{
+		*r = 1 ;
 	}
 
 	StringMultipleDelete( &plugin_path,&path,END ) ;

@@ -45,12 +45,15 @@ class MainWindow : public QWidget
 	Q_OBJECT
 public:
 	MainWindow( QWidget * parent = 0 ) ;
-	void setAddr( const QString& ) ;
+	void setToken( const QString& ) ;
 	void setApplicationName( const QString& ) ;
 	void setkeyLabel( const QString& ) ;
 	void setkeyFileLabel( const QString& ) ;
 	void setButtonIcon( const QString& ) ;
-	void setKeyRoutine( std::function<QByteArray( const QString& exe,const QString& keyFile,const QString& password )> ) ;
+	void setRequireKey( bool k = true ) ;
+	void setRequireKeyFile( bool k = true ) ;
+	void Show( void ) ;
+	void setKeyFunction( std::function<QByteArray( const QString& exe,const QString& keyFile,const QString& password )> ) ;
 	~MainWindow() ;
 signals:
 	void cancel( void ) ;
@@ -77,6 +80,8 @@ private:
 	QString m_appName ;
 	void * m_handle ;
 	bool m_working ;
+	bool m_requireKey ;
+	bool m_requireKeyFile ;
 	socketSendKey * m_sendKey ;
 	QByteArray m_key ;
 	std::function<QByteArray( const QString& exe,const QString& keyFile,const QString& password )> m_function ;

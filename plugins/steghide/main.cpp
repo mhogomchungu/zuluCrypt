@@ -31,10 +31,10 @@ int main( int argc,char * argv[] )
 
 	MainWindow w ;
 
-	w.setAddr( QString( argv[ 3 ] ) ) ;
+	w.setToken( QString( argv[ 3 ] ) ) ;
 	w.setApplicationName( QString( "steghide" ) ) ;
 	w.setkeyLabel( QObject::tr( "enter steghide key below" ) ) ;
-	w.setkeyFileLabel( QObject::tr( "enter path to steghide keyfile below" ) ) ;
+	w.setkeyFileLabel( QObject::tr( "enter a path to a steghide keyfile below" ) ) ;
 
 	auto steghide = []( const QString& exe,const QString& keyFile,const QString& password ){
 		QProcess p ;
@@ -47,8 +47,8 @@ int main( int argc,char * argv[] )
 		return p.readAllStandardOutput() ;
 	} ;
 
-	w.setKeyRoutine( steghide ) ;
-	w.show() ;
+	w.setKeyFunction( steghide ) ;
+	w.Show() ;
 
 	return a.exec() ;
 }

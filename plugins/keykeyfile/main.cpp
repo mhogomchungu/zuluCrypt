@@ -31,19 +31,20 @@ int main( int argc,char * argv[] )
 
 	MainWindow w ;
 
-	w.setAddr( QString( argv[ 3 ] ) ) ;
+	w.setToken( QString( argv[ 3 ] ) ) ;
 	w.setkeyLabel( QObject::tr( "enter key below" ) ) ;
-	w.setkeyFileLabel( QObject::tr( "enter path to keyfile below" ) ) ;
+	w.setkeyFileLabel( QObject::tr( "enter a path to a keyfile below" ) ) ;
 	w.setButtonIcon( QString( "keyfile" ) ) ;
-	
+
 	auto e = []( const QString& exe,const QString& keyFile,const QString& password ){
+		Q_UNUSED( exe ) ;
 		QFile f( keyFile ) ;
 		f.open( QIODevice::ReadOnly ) ;
 		return password.toLatin1() + f.readAll() ;
 	} ;
 
-	w.setKeyRoutine( e ) ;
-	w.show() ;
+	w.setKeyFunction( e ) ;
+	w.Show() ;
 
 	return a.exec() ;
 }

@@ -30,10 +30,10 @@ int main( int argc,char * argv[] )
 
 	MainWindow w ;
 
-	w.setAddr( QString( argv[ 3 ] ) ) ;
+	w.setToken( QString( argv[ 3 ] ) ) ;
 	w.setApplicationName( QString( "gpg" ) ) ;
 	w.setkeyLabel( QObject::tr( "enter gpg key below" ) ) ;
-	w.setkeyFileLabel( QObject::tr( "enter gpg keyfile below" ) ) ;
+	w.setkeyFileLabel( QObject::tr( "enter a path to a gpg keyfile below" ) ) ;
 
 	auto gpg = []( const QString& exe,const QString& keyFile,const QString& password ){
 
@@ -56,8 +56,8 @@ int main( int argc,char * argv[] )
 		return p.readAllStandardOutput() ;
 	} ;
 
-	w.setKeyRoutine( gpg ) ;
-	w.show() ;
+	w.setKeyFunction( gpg ) ;
+	w.Show() ;
 
 	return a.exec() ;
 }

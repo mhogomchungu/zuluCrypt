@@ -42,7 +42,8 @@ MainWindow::MainWindow( QWidget * parent ) : QWidget( parent ),m_ui( new Ui::Mai
 
 	m_working = false ;
 
-	this->setWindowTitle( tr( "%1 key module" ).arg( m_appName ) ) ;
+	m_requireKey = false ;
+	m_requireKeyFile = true ;
 
 	QAction * ac = new QAction( this ) ;
 	QList<QKeySequence> keys ;
@@ -56,11 +57,27 @@ MainWindow::MainWindow( QWidget * parent ) : QWidget( parent ),m_ui( new Ui::Mai
 	connect( m_sendKey,SIGNAL( keySent() ),this,SLOT( doneWritingData() ) ) ;
 }
 
+void MainWindow::Show()
+{
+	this->setWindowTitle( tr( "%1 key module" ).arg( m_appName ) ) ;
+	this->show() ;
+}
+
 void MainWindow::setButtonIcon( const QString& icon )
 {
 	QString x( ":/" + icon ) ;
 	this->setWindowIcon( QIcon( x ) ) ;
 	m_ui->pbKeyFile->setIcon( QIcon( x ) ) ;
+}
+
+void MainWindow::setRequireKey( bool k )
+{
+	m_requireKey = k ;
+}
+
+void MainWindow::setRequireKeyFile( bool k )
+{
+	m_requireKeyFile = k ;
 }
 
 void MainWindow::defaultButton()
@@ -72,9 +89,9 @@ void MainWindow::defaultButton()
 	}
 }
 
-void MainWindow::setAddr( const QString& addr )
+void MainWindow::setToken( const QString& token )
 {
-	m_addr = addr ;
+	m_addr = token ;
 	m_sendKey->setAddr( m_addr ) ;
 	if( !m_sendKey->openConnection() ){
 		this->Exit( 1 ) ;
@@ -96,7 +113,7 @@ void MainWindow::setkeyFileLabel( const QString& keyFileLabel )
 	m_ui->label->setText( keyFileLabel ) ;
 }
 
-void MainWindow::setKeyRoutine( std::function<QByteArray( const QString& exe,const QString& keyFile,const QString& password )> function )
+void MainWindow::setKeyFunction( std::function<QByteArray( const QString& exe,const QString& keyFile,const QString& password )> function )
 {
 	m_function = function ;
 }
@@ -188,17 +205,26 @@ void MainWindow::doneReading( bool cancelled )
 
 void MainWindow::pbOpen()
 {
+	DialogMsg msg( this ) ;
+
+	m_key = m_ui->lineEditKey->text().toLatin1() ;
+	if( m_requireKey ){
+		if( m_key.isEmpty() ){
+			return msg.ShowUIOK( tr( "ERROR" ),tr( "key field is empty" ) ) ;
+		}
+	}
+
 	QString path = m_ui->lineEditKeyFile->text() ;
 
 	path.replace( "file://","" ) ;
 
-	DialogMsg msg( this ) ;
-
-	if( path.isEmpty() ){
-		return msg.ShowUIOK( tr( "ERROR" ),tr( "path to %1 keyfile is empty" ).arg( m_appName ) ) ;
-	}
-	if( !QFile::exists( path ) ){
-		return msg.ShowUIOK( tr( "ERROR" ),tr( "invalid path to %1 keyfile" ).arg( m_appName ) ) ;
+	if( m_requireKeyFile ){
+		if( path.isEmpty() ){
+			return msg.ShowUIOK( tr( "ERROR" ),tr( "path to %1 keyfile is empty" ).arg( m_appName ) ) ;
+		}
+		if( !QFile::exists( path ) ){
+			return msg.ShowUIOK( tr( "ERROR" ),tr( "invalid path to %1 keyfile" ).arg( m_appName ) ) ;
+		}
 	}
 
 	QString exe ;
@@ -213,7 +239,6 @@ void MainWindow::pbOpen()
 	this->disableAll() ;
 	m_working = true ;
 
-	m_key = m_ui->lineEditKey->text().toLatin1() ;
 	getKey * k = new getKey( exe,&m_key,path ) ;
 	k->setKeyRoutine( m_function ) ;
 	connect( this,SIGNAL( cancel() ),k,SLOT( cancel() ) ) ;

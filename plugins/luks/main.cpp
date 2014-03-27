@@ -31,9 +31,9 @@ int main( int argc,char * argv[] )
 
 	MainWindow w ;
 
-	w.setAddr( QString( argv[ 3 ] ) ) ;
+	w.setToken( QString( argv[ 3 ] ) ) ;
 	w.setkeyLabel( QObject::tr( " enter luks key below" ) ) ;
-	w.setkeyFileLabel( QObject::tr( "enter luks header path below" ) ) ;
+	w.setkeyFileLabel( QObject::tr( "enter a path to a luks header below" ) ) ;
 
 	auto e = []( const QString& exe,const QString& keyFile,const QString& password ){
 		Q_UNUSED( exe ) ;
@@ -57,8 +57,8 @@ int main( int argc,char * argv[] )
 		return passLen + FileSize + password.toLatin1() + f.readAll() ;
 	} ;
 
-	w.setKeyRoutine( e ) ;
-	w.show() ;
+	w.setKeyFunction( e ) ;
+	w.Show() ;
 
 	return a.exec() ;
 }
