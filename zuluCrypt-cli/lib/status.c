@@ -240,7 +240,6 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	const char * type ;
 	const char * device_name ;
 	char * path ;
-	int luks = 0 ;
 	int i ;
 	int j ;
 	int k ;
@@ -293,7 +292,6 @@ char * zuluCryptVolumeStatus( const char * mapper )
 		StringAppend( p,"luks1" ) ;
 	}else{
 		if( StringPrefixMatch( type,"LUKS",4 ) ){
-			luks = 1 ;
 			StringMultipleAppend( p,"luks",type + 4,END ) ;
 		}else if( StringsAreEqual( type,"PLAIN" ) ){
 			StringAppend( p,"plain" ) ;
@@ -353,9 +351,9 @@ char * zuluCryptVolumeStatus( const char * mapper )
 		StringAppend( p,"\n mode:   \tread and write" ) ;
 	}
 
-	if( luks == 1 ){
+	k = crypt_keyslot_max( type ) ;
+	if( k > 0 ){
 		i = 0 ;
-		k = crypt_keyslot_max( type ) ;
 		for( j = 0 ; j < k ; j++ ){
 			switch( crypt_keyslot_status( cd,j ) ){
 				case CRYPT_SLOT_ACTIVE_LAST : i++ ; break ;
