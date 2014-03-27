@@ -614,11 +614,9 @@ void passwordDialog::taskFinished( int status,QString output )
 
 	if( status == 12 && m_ui->cbKeyType->currentIndex() == passwordDialog::plugin ){
 		/*
-		 * This is a special case where a user clicked cancelled the operation
+		 * A user cancelled the plugin
 		 */
-		if( m_ui->PassPhraseField->text() == QString( "keydialog-qt" ) ){
-			return this->enableAll() ;
-		}
+		return this->enableAll() ;
 	}
 
 	DialogMsg msg( this ) ;
