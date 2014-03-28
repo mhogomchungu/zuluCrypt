@@ -42,9 +42,9 @@ static int _open_mapper( const open_struct_t * opts )
 	}
 	if( zuluCryptVolumeIsLuks( opts->device ) ){
 		/*
-		 * zuluCryptOpenLuks() is defined in open_luks.c
+		 * zuluCryptOpenLuks_2() is defined in open_luks.c
 		 */
-		r = zuluCryptOpenLuks( opts->device,opts->mapper_name,opts->m_opts,opts->key,opts->key_len ) ;
+		r = zuluCryptOpenLuks_2( opts ) ;
 		if( r != 0 ){
 			/*
 			 * just assumed wrong password when a volume fail to unlock

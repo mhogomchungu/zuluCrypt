@@ -175,12 +175,12 @@ void createvolume::closeEvent( QCloseEvent * e )
 
 void createvolume::ShowPartition( QString volume )
 {
-	ShowUI( tr( "path to device" ),volume ) ;
+	this->ShowUI( tr( "path to device" ),volume ) ;
 }
 
 void createvolume::ShowFile( QString volume )
 {
-	ShowUI( tr( "path to file" ),volume ) ;
+	this->ShowUI( tr( "path to file" ),volume ) ;
 }
 
 void createvolume::eraseDataPartition()

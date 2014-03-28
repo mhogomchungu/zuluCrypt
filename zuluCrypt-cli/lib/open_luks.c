@@ -78,7 +78,7 @@ static int _open_luks( const char * device,const open_struct_t * opts )
 
 #if LUKS_EXTERNAL_HEADER
 /*
- * This functionality is enabled in with cryptsetup >= 1.4.0
+ * This functionality is enabled with cryptsetup >= 1.4.0
  */
 static int _open_luks_1( const char * device,const open_struct_t * opts )
 {
@@ -197,11 +197,6 @@ static int _open_luks_0( int( *function )( const char *,const open_struct_t * ),
 	}
 }
 
-int zuluCryptOpenLuks_1( const open_struct_t * opts )
-{
-	return _open_luks_0( _open_luks_1,opts ) ;
-}
-
 int zuluCryptOpenLuks( const char * device,const char * mapper,
 		       const char * mode,const char * key,size_t key_len )
 {
@@ -215,6 +210,15 @@ int zuluCryptOpenLuks( const char * device,const char * mapper,
 	opts.key         = key    ;
 	opts.key_len     = key_len;
 
-	return _open_luks_0( _open_luks,&opts ) ;
+	return zuluCryptOpenLuks_2( &opts ) ;
 }
 
+int zuluCryptOpenLuks_1( const open_struct_t * opts )
+{
+	return _open_luks_0( _open_luks_1,opts ) ;
+}
+
+int zuluCryptOpenLuks_2( const open_struct_t * opts )
+{
+	return _open_luks_0( _open_luks,opts ) ;
+}

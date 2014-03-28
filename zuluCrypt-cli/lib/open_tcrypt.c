@@ -230,6 +230,7 @@ int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * ke
 	}else{
 		opts.m_opts = "rw" ;
 	}
+	
 	return zuluCryptOpenTcrypt_1( &opts ) ;
 }
 
