@@ -86,7 +86,7 @@ static int _open_luks_1( const char * device,const open_struct_t * opts )
 
 	string_t st ;
 
-	struct crypt_device * cd ;
+	struct crypt_device * cd = NULL ;
 	uint32_t flags ;
 
 	int r ;
