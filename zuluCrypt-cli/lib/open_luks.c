@@ -82,7 +82,7 @@ static int _open_luks( const char * device,const open_struct_t * opts )
  */
 static int _open_luks_1( const char * device,const open_struct_t * opts )
 {
-	size_t key_len ;
+	u_int32_t key_len ;
 
 	string_t st ;
 
@@ -95,7 +95,7 @@ static int _open_luks_1( const char * device,const open_struct_t * opts )
 	const char * luks_header_file ;
 	const char * luks_header_file_contents ;
 
-	size_t luks_header_file_size ;
+	u_int32_t luks_header_file_size ;
 
 	if( opts->key_len < 1048576 + 8 ){
 		/*

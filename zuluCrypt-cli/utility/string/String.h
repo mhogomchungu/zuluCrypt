@@ -774,9 +774,7 @@ static __inline__ int StringsAreEqual( const char * x,const char * y )
 
 static __inline__ int StringsAreNotEqual( const char * x,const char * y )
 {
-	if( x == NULL && y == NULL ){
-		return 0 ;
-	}else if( x == NULL || y == NULL ){
+	if( x == NULL || y == NULL ){
 		return 1 ;
 	}else{
 		return strcmp( x,y ) != 0 ;

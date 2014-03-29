@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>gpg key module</string>
+   <string>key module</string>
   </property>
   <widget class="QWidget" name="centralWidget" native="true">
    <property name="geometry">
@@ -83,7 +83,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>gpg keyfile</string>
+     <string>keyfile</string>
     </property>
     <property name="textFormat">
      <enum>Qt::AutoText</enum>
@@ -108,7 +108,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>gpg key</string>
+     <string>key</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>

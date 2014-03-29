@@ -2,7 +2,7 @@
  <!DOCTYPE RCC>
  <RCC version="1.0">
 	 <qresource>
-		 <file>gpg.png</file>
+		 <file>default.png</file>
 		 <file>keyfile.png</file>
 	 </qresource>
  </RCC>
