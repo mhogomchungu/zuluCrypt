@@ -141,6 +141,12 @@ static int _open_tcrypt_volume( const open_struct_t * opts,const char * key )
 			if( opts->key_source == TCRYPT_PASSPHRASE ){
 				params.passphrase       = key ;
 				params.passphrase_size  = opts->key_len ;
+				if( params.passphrase_size > 64 ){
+					/*
+					 * truecrypt passphrase is limited to 64 characters
+					 */
+					params.passphrase_size = 64 ;
+				}
 			}else{
 				params.keyfiles_count = 1 ;
 				params.keyfiles       = &key ;
@@ -230,7 +236,7 @@ int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * ke
 	}else{
 		opts.m_opts = "rw" ;
 	}
-	
+
 	return zuluCryptOpenTcrypt_1( &opts ) ;
 }
 
