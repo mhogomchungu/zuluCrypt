@@ -47,6 +47,7 @@ stringList_t zuluCryptGetFstabList( uid_t uid )
 	StringDelete( &xt ) ;
 
 	StringListRemoveIfStringStartsWith( stl,"#" ) ;
+	StringListRemoveIfStringStartsWith( stl,"//" ) ;
 
 	if( StringListSize( stl ) < 1 ){
 		StringListDelete( &stl ) ;
