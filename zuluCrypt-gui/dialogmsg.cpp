@@ -85,13 +85,13 @@ void DialogMsg::ShowPermissionProblem( const QString& device )
 	QString msg = tr( "\
 By default,volumes are mounted with \"noexec\" option and hence its not possible to run \n\
 programs or scripts from them.To do so,create a group called \"zulumount-exec\" and \
-add yourself to the group and volumes will start to be mounted with \"exec\" option and ability to run\
+add yourself to the group and volumes will start to be mounted with \"exec\" option and ability to run \
 programs or scripts from the volume will be enabled.\n\
 \n\
 \"system volumes\" are volumes that either udev has identify them as such if udev is enabled \
-or have an entry in \"/etc/fstab\",\"/etc/crypttab\" or \"/etc/zuluCrypt/nonsystem_volumes.list\".\n\
+or have an entry in \"/etc/fstab\",\"/etc/crypttab\" or \"/etc/zuluCrypt/system_volumes.list\".\n\
 \n\
-If you prefer for a device not to be considered a system device,start the tool\n\n\
+If you prefer for a volume not to be considered a system volume,start the tool\n\n\
 from root account and then go to \"menu->options->manage non system partitions\"\n\n\
 and add the volume to the list and the volume will stop being considered as \"system\".\n\n\
 Alternatively,you can add yourself to group \"zulucrypt\" and all restrictions will be gone" ) ;
