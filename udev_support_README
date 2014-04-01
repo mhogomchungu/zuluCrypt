@@ -3,7 +3,7 @@
 udev is a runtime dependency but it is configured at build time to remove a necessity to
 manage yet another configuration option.
 
-udev support is off by default because udev has a bad habit of identifying some clearly 
+udev support is off by default because udev has a bad habit of identifying some clearly
 external volumes as internal[1].
 
 [1]https://wiki.archlinux.org/index.php/udev#Mark_internal_SATA_ports_as_eSATA
@@ -12,13 +12,15 @@ If udev support is off,volumes with entries only in /etc/fstab and /etc/crypttab
 considered as system volumes.Section 6 of the FAQ has more information on additional
 ways to make volumes be considered as system.
 
-if udev support is on,udev will be consulted before a volume is considered system and its
-decision will be the final one.Section 7 of the FAQ has more information on how to remove
+if udev support is on,udev will be consulted before a decision is being when if a volume
+is to be considered system or not.Section 7 of the FAQ has more information on how to remove
 a volume of a list of system volumes.
 
-I recommend enabling udev support if you are packaging for distribution or if you dont use
-/etc/fstab or /etc/crypttab as a central place to manage volumes.
+I recommend disabling udev support if you are building zuluCrypt for your own use and you have all your
+internal volumes mentioned either in fstab or crypttab.
 
+I recommend enabling udev support if you are packaging for distribution or if you dont use
+/etc/fstab or /etc/crypttab as a central place to manage system volumes.
 
 To build with udev support add "-DUDEVSUPPORT=true" to cmake option list.
 

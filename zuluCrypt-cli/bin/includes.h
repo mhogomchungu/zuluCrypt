@@ -57,6 +57,11 @@ extern uid_t global_variable_user_uid ;
 string_t zuluCryptCreateMapperName( const char * device,const char * mapping_name,uid_t uid,int ) ;
 
 /*
+ * this function is defined in volumes.c
+ */
+int zuluCryptVolumeIsInSystemVolumeList( const char * device ) ;
+
+/*
  * this function is defined in module_system.c
  * It gets a passphrase from a .so file as a plugin.
  */

@@ -561,6 +561,14 @@ stringList_t zuluCryptPartitions( int option,uid_t uid )
 	}
 }
 
+int zuluCryptVolumeIsInSystemVolumeList( const char * device )
+{
+	stringList_t p = zuluCryptGetPartitionFromConfigFile( "/etc/zuluCrypt/system_volumes.list" ) ;
+	int r = StringListHasEntry( p,device ) ;
+	StringListDelete( &p ) ;
+	return r ;
+}
+
 u_int64_t zuluCryptGetVolumeSize( const char * device )
 {
 	stringList_t stl = StringListVoid ;

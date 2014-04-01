@@ -18,17 +18,17 @@ The package is made up of two components,the command line "pure C" based backend
 After you have above packages installed,run these 5 command to build and install.
 The last command depends on your distribution,go with the one recommended by disto.
 
-1.0 mkdir build 
+1.0 mkdir build
 
 2.0 cd build
 
 To build only the backends,run the following command
-3.1 cmake -DCMAKE_INSTALL_PREFIX=/usr/ -DNOGUI=yes -DCMAKE_BUILD_TYPE=MINSIZEREL . ..
+3.1 cmake -DCMAKE_INSTALL_PREFIX=/usr/ -DNOGUI=yes -DCMAKE_BUILD_TYPE=RELEASE . ..
 
 To build the backends as well as front ends,run the following command
-3.2 cmake -DCMAKE_INSTALL_PREFIX=/usr/ -DCMAKE_BUILD_TYPE=MINSIZEREL . ..
+3.2 cmake -DCMAKE_INSTALL_PREFIX=/usr/ -DCMAKE_BUILD_TYPE=RELEASE . ..
 
-3.3 
+3.3
 To build frontends without KDE(kwallet) support, add "-DNOKDE=true". eg cmake -DCMAKE_INSTALL_PREFIX=/usr/ -DNOKDE=true -DCMAKE_BUILD_TYPE=RELEASE . ..
 
 3.4

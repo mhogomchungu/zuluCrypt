@@ -177,9 +177,13 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	struct stat statstr ;
 
 	/*
-	 * zuluCryptPartitionIsSystemPartition() is defined in volumes.c
+	 * zuluCryptVolumeIsInSystemVolumeList() is defined in volumes.c
 	 */
-	if( zuluCryptPartitionIsSystemPartition( device,uid ) ){
+	if( zuluCryptVolumeIsInSystemVolumeList( device ) ){
+		/*
+		 * check permissions only if volume is explicity mentioned as system.
+		 * This is an exception to avoid some udev bad behaviors on udev enabled build
+		 */
 		if( !zuluCryptUserIsAMemberOfAGroup( uid,"zulucrypt" ) ){
 			return zuluExit( 22,device,mount_point,stl ) ; ;
 		}
