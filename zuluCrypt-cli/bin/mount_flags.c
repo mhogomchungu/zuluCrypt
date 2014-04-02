@@ -23,19 +23,24 @@
 #include <string.h>
 #include "includes.h"
 
-int zuluCryptMountFlagsAreNotCorrect( const char * mode,uid_t uid,unsigned long * flags )
-{
-	unsigned long flg = 0 ;
+#define MOUNT_WITH_NOEXEC_BY_DEFAULT 0
 
-	int user_has_no_access ;
+static int _user_has_no_access( uid_t uid )
+{
 	if( uid == 0 ){
-		user_has_no_access = 0 ;
+		return 0 ;
 	}else{
 		/*
 		 * zuluCryptUserIsAMemberOfAGroup() is defined in security.c
 		 */
-		user_has_no_access = !zuluCryptUserIsAMemberOfAGroup( uid,"zulumount" ) ;
+		return !zuluCryptUserIsAMemberOfAGroup( uid,"zulumount" ) ;
 	}
+}
+
+int zuluCryptMountFlagsAreNotCorrect( const char * mode,uid_t uid,unsigned long * flags )
+{
+	unsigned long flg = 0 ;
+
 	if( mode == NULL ){
 		flg |= MS_NODEV | MS_NOSUID | MS_NOEXEC | MS_RELATIME ;
 		*flags = flg ;
@@ -45,12 +50,13 @@ int zuluCryptMountFlagsAreNotCorrect( const char * mode,uid_t uid,unsigned long 
 		flg |= MS_RDONLY ;
 	}
 	if( StringHasComponent( mode,"dev" ) ){
-		if( user_has_no_access ){
+		if( _user_has_no_access( uid ) ){
 			return 1 ;
 		}
 	}else{
 		flg |= MS_NODEV ;
 	}
+#if MOUNT_WITH_NOEXEC_BY_DEFAULT
 	if( zuluCryptUserIsAMemberOfAGroup( uid,"zulumount-exec" ) ){
 		/*
 		 * user is a member of a group,mount volume with exec option by default
@@ -63,46 +69,54 @@ int zuluCryptMountFlagsAreNotCorrect( const char * mode,uid_t uid,unsigned long 
 		}
 	}else{
 		if( StringHasComponent( mode,"exec" ) ){
-			if( user_has_no_access ){
+			if( _user_has_no_access( uid ) ){
 				return 1 ;
 			}
 		}else{
 			flg |= MS_NOEXEC ;
 		}
 	}
+#else
+	if( StringHasComponent( mode,"noexec" ) ){
+		/*
+		* user with access wish to mount a volume without it
+		*/
+		flg |= MS_NOEXEC ;
+	}
+#endif
 	if( StringHasComponent( mode,"suid" ) ){
-		if( user_has_no_access ){
+		if( _user_has_no_access( uid ) ){
 			return 1 ;
 		}
 	}else{
 		flg |= MS_NOSUID ;
 	}
 	if( StringHasComponent( mode,"bind" ) ){
-		if( user_has_no_access ){
+		if( _user_has_no_access( uid ) ){
 			return 1 ;
 		}
 		flg |= MS_BIND ;
 	}
 	if( StringHasComponent( mode,"mandlock" ) ){
-		if( user_has_no_access ){
+		if( _user_has_no_access( uid ) ){
 			return 1 ;
 		}
 		flg |= MS_MANDLOCK ;
 	}
 	if( StringHasComponent( mode,"move" ) ){
-		if( user_has_no_access ){
+		if( _user_has_no_access( uid ) ){
 			return 1 ;
 		}
 		flg |= MS_MOVE ;
 	}
 	if( StringHasComponent( mode,"noatime" ) ){
-		if( user_has_no_access ){
+		if( _user_has_no_access( uid ) ){
 			return 1 ;
 		}
 		flg |= MS_NOATIME ;
 	}
 	if( StringHasComponent( mode,"strictatime" ) ){
-		if( user_has_no_access ){
+		if( _user_has_no_access( uid ) ){
 			return 1 ;
 		}
 		flg |= MS_STRICTATIME ;
@@ -129,32 +143,32 @@ int zuluCryptMountFlagsAreNotCorrect( const char * mode,uid_t uid,unsigned long 
 	 */
 	if( StringHasComponent( mode,"relatime" ) ){
 
-		if( user_has_no_access ){
+		if( _user_has_no_access( uid ) ){
 			return 1 ;
 		}
 		flg |= MS_RELATIME ;
 	}
 #endif
 	if( StringHasComponent( mode,"nodiratime" ) ){
-		if( user_has_no_access ){
+		if( _user_has_no_access( uid ) ){
 			return 1 ;
 		}
 		flg |= MS_NODIRATIME ;
 	}
 	if( StringHasComponent( mode,"remount" ) ){
-		if( user_has_no_access ){
+		if( _user_has_no_access( uid ) ){
 			return 1 ;
 		}
 		flg |= MS_REMOUNT ;
 	}
 	if( StringHasComponent( mode,"silent" ) ){
-		if( user_has_no_access ){
+		if( _user_has_no_access( uid ) ){
 			return 1 ;
 		}
 		flg |= MS_SILENT ;
 	}
 	if( StringHasComponent( mode,"synchronous" ) ){
-		if( user_has_no_access ){
+		if( _user_has_no_access( uid ) ){
 			return 1 ;
 		}
 		flg |= MS_SYNCHRONOUS ;
