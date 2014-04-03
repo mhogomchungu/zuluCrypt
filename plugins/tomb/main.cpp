@@ -52,36 +52,35 @@ int main( int argc,char * argv[] )
 		p.start( arg ) ;
 		p.waitForFinished( -1 ) ;
 		QByteArray key = p.readAllStandardOutput() ;
+		p.close() ;
 		if( key.isEmpty() ){
 			return key ;
+		}else{
+			key = "\n-----BEGIN PGP MESSAGE-----\n\n" + key + "-----END PGP MESSAGE-----\n" ;
+
+			QString temp_path = QString( "%1/%2/.tomb-%3" ).arg( QDir::homePath() ).arg( "/.zuluCrypt/" ).arg( QString::number( getpid() ) ) ;
+
+			QFile temp_file( temp_path ) ;
+
+			temp_file.open( QIODevice::WriteOnly ) ;
+			temp_file.write( key ) ;
+			temp_file.close() ;
+			/*
+			 * gpg() is defined in ../gpg/gpg.h
+			 */
+			key = gpg( QString(),temp_path,password ) ;
+
+			temp_file.setFileName( temp_path ) ;
+			temp_file.open( QIODevice::WriteOnly ) ;
+			uchar * m = temp_file.map( 0,temp_file.size() ) ;
+			if( m ){
+				memset( m,'\0',temp_file.size() ) ;
+				temp_file.unmap( m ) ;
+			}
+			temp_file.close() ;
+			temp_file.remove() ;
+			return key ;
 		}
-
-		p.close() ;
-
-		key = "\n-----BEGIN PGP MESSAGE-----\n\n" + key + "-----END PGP MESSAGE-----\n" ;
-
-		QString temp_path = QString( "%1/%2/.tomb-%3" ).arg( QDir::homePath() ).arg( "/.zuluCrypt/" ).arg( QString::number( getpid() ) ) ;
-
-		QFile temp_file( temp_path ) ;
-		temp_file.open( QIODevice::WriteOnly ) ;
-		temp_file.write( key ) ;
-		temp_file.close() ;
-		/*
-		 * gpg() is defined in ../gpg/gpg.h
-		 */
-		key = gpg( QString(),temp_path,password ) ;
-
-		temp_file.setFileName( temp_path ) ;
-		temp_file.open( QIODevice::WriteOnly ) ;
-		uchar * m = temp_file.map( 0,temp_file.size() ) ;
-		if( m ){
-			memset( m,'\0',temp_file.size() ) ;
-			temp_file.unmap( m ) ;
-		}
-
-		temp_file.close() ;
-		temp_file.remove() ;
-		return key ;
 	} ;
 
 	w.setKeyFunction( steghide ) ;
