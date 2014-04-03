@@ -58,8 +58,17 @@ int main( int argc,char * argv[] )
 		}else{
 			key = "\n-----BEGIN PGP MESSAGE-----\n\n" + key + "-----END PGP MESSAGE-----\n" ;
 
-			QString temp_path = QString( "%1/%2/.tomb-%3" ).arg( QDir::homePath() ).arg( "/.zuluCrypt/" ).arg( QString::number( getpid() ) ) ;
+			QString temp_path = QString( "%1/%2/" ).arg( QDir::homePath() ).arg( "/.zuluCrypt/" ) ;
 
+			QDir d ;
+			d.mkpath( temp_path ) ;
+
+			temp_path += QString( ".tomb-%1" ).arg( QString::number( getpid() ) ) ;
+			/*
+			 * temp_path will have something like "/home/ink/.zuluCrypt/.tomb-3452"
+			 * this will be a path to a temporary file we will pass to gpg since gpg expects a keyfile path
+			 * TODO: look into skipping creating a temporary file and do everything in memory
+			 */
 			QFile temp_file( temp_path ) ;
 
 			temp_file.open( QIODevice::WriteOnly ) ;
