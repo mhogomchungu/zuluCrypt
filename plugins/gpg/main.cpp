@@ -19,10 +19,8 @@
 
 #include <QApplication>
 #include "../utility/mainwindow.h"
-#include <QProcess>
-#include <QByteArray>
-#include <QString>
-#include <QObject>
+
+#include "gpg.h"
 
 int main( int argc,char * argv[] )
 {
@@ -34,27 +32,6 @@ int main( int argc,char * argv[] )
 	w.setApplicationName( QString( "gpg" ) ) ;
 	w.setkeyLabel( QObject::tr( "enter gpg key below" ) ) ;
 	w.setkeyFileLabel( QObject::tr( "enter a path to a gpg keyfile below" ) ) ;
-
-	auto gpg = []( const QString& exe,const QString& keyFile,const QString& password ){
-
-		QString arg ;
-		if( password.isEmpty() ){
-			arg = QString( "%1 --no-tty --yes --no-mdc-warning --no-verbose -d %2" ).arg( exe ).arg( keyFile ) ;
-		}else{
-			arg = QString( "%1 --no-tty --yes --no-mdc-warning --no-verbose --passphrase-fd 0 -d  %2" ).arg( exe ).arg( keyFile ) ;
-		}
-
-		QProcess p ;
-
-		p.start( arg ) ;
-
-		p.waitForStarted() ;
-
-		p.write( password.toLatin1() ) ;
-		p.closeWriteChannel() ;
-		p.waitForFinished( -1 ) ;
-		return p.readAllStandardOutput() ;
-	} ;
 
 	w.setKeyFunction( gpg ) ;
 	w.Show() ;

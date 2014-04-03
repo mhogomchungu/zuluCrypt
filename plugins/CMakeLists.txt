@@ -9,6 +9,7 @@ add_subdirectory( keykeyfile )
 add_subdirectory( keydialog-qt )
 add_subdirectory( steghide )
 add_subdirectory( luks )
+add_subdirectory( tomb )
 
 #keyring module is handled by CMakeLists.txt in ../zuluCrypt-cli
 #add_subdirectory( keyring )
