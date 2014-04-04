@@ -35,7 +35,7 @@ int main( int argc,char * argv[] )
 	w.setkeyLabel( QObject::tr( " enter luks key below" ) ) ;
 	w.setkeyFileLabel( QObject::tr( "enter a path to a luks header below" ) ) ;
 
-	auto e = []( const QString& exe,const QString& keyFile,const QString& password ){
+	auto e = []( const QVector<QString>& exe,const QString& keyFile,const QString& password ){
 		Q_UNUSED( exe ) ;
 		/*
 		 * we are sending a 4 component structure.

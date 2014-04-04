@@ -28,6 +28,7 @@
 #include <QByteArray>
 #include <QFileDialog>
 #include <QFile>
+#include <QVector>
 #include <QDir>
 #include <QProcess>
 #include <QCloseEvent>
@@ -53,7 +54,9 @@ public:
 	void setRequireKey( bool k = true ) ;
 	void setRequireKeyFile( bool k = true ) ;
 	void Show( void ) ;
-	void setKeyFunction( std::function<QByteArray( const QString& exe,const QString& keyFile,const QString& password )> ) ;
+	void setExe( const QVector<QString>& exe ) ;
+	void setKeyFunction( std::function<QByteArray( const QVector<QString>& exe,const QString& keyFile,const QString& password )> ) ;
+	void setfindExeFunction( std::function<const QString&( QVector<QString>& )> ) ;
 	~MainWindow() ;
 signals:
 	void cancel( void ) ;
@@ -71,7 +74,6 @@ private:
 	void closeEvent( QCloseEvent * ) ;
 	void disableAll( void ) ;
 	void enableAlll( void ) ;
-	QString fullApplicationPath( void ) ;
 	void SetFocus( void ) ;
 	void Exit( int ) ;
 	Ui::MainWindow * m_ui ;
@@ -84,7 +86,9 @@ private:
 	bool m_requireKeyFile ;
 	socketSendKey * m_sendKey ;
 	QByteArray m_key ;
-	std::function<QByteArray( const QString& exe,const QString& keyFile,const QString& password )> m_function ;
+	QVector<QString> m_exe ;
+	std::function<QByteArray( const QVector<QString>& exe,const QString& keyFile,const QString& password )> m_function ;
+	std::function<const QString&( QVector<QString>& )> m_findExecutable ;
 };
 
 #endif // MAINWINDOW_H

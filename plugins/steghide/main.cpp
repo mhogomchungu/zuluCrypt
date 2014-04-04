@@ -36,17 +36,21 @@ int main( int argc,char * argv[] )
 	w.setkeyLabel( QObject::tr( "enter steghide key below" ) ) ;
 	w.setkeyFileLabel( QObject::tr( "enter a path to a steghide keyfile below" ) ) ;
 
-	auto steghide = []( const QString& exe,const QString& keyFile,const QString& password ){
-		QProcess p ;
+	auto steghide = []( const QVector<QString>& exe,const QString& keyFile,const QString& password ){
 		/*
 		 * TODO: look into passing the passphrase more securely
 		 */
-		QString arg = QString( "%1 --extract -sf %2 -xf - -p %3" ).arg( exe ).arg( keyFile ).arg( password ) ;
+		QString arg = QString( "%1 --extract -sf %2 -xf - -p %3" ).arg( exe.first() ).arg( keyFile ).arg( password ) ;
+		QProcess p ;
 		p.start( arg ) ;
 		p.waitForFinished( -1 ) ;
 		return p.readAllStandardOutput() ;
 	} ;
 
+	QVector<QString> exe ;
+	exe.append( QString( "steghide" ) ) ;
+	
+	w.setExe( exe ) ;
 	w.setKeyFunction( steghide ) ;
 	w.Show() ;
 

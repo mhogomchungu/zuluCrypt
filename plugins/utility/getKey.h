@@ -24,6 +24,7 @@
 #include <QRunnable>
 #include <QByteArray>
 #include <QString>
+#include <QVector>
 #include <QProcess>
 #include <QObject>
 #include <unistd.h>
@@ -33,8 +34,8 @@ class getKey : public QObject,public QRunnable
 {
 	Q_OBJECT
 public:
-	getKey( const QString& exe,QByteArray * key,const QString& keyFile ) ;
-	void setKeyRoutine( std::function<QByteArray( const QString& exe,const QString& keyFile,const QString& password )> ) ;
+	getKey( const QVector<QString>&,QByteArray * key,const QString& keyFile ) ;
+	void setKeyRoutine( std::function<QByteArray( const QVector<QString>&,const QString& keyFile,const QString& password )> ) ;
 	~getKey() ;
 	void start( void ) ;
 signals:
@@ -45,13 +46,13 @@ public slots:
 	void cancel( void ) ;
 private:
 	void run( void ) ;
-	QString m_exe ;
+	QVector<QString> m_exe ;
 	QByteArray * m_key ;
 	QString m_keyFile ;
 	pid_t m_pid ;
 	bool m_cancelled ;
 	int m_type ;
-	std::function<QByteArray( const QString& exe,const QString& keyFile,const QString& password )> m_function ;
+	std::function<QByteArray( const QVector<QString>&,const QString& keyFile,const QString& password )> m_function ;
 };
 
 #endif // GETGPGKEY_H

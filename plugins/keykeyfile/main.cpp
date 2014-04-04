@@ -36,7 +36,7 @@ int main( int argc,char * argv[] )
 	w.setkeyFileLabel( QObject::tr( "enter a path to a keyfile below" ) ) ;
 	w.setButtonIcon( QString( "keyfile" ) ) ;
 
-	auto e = []( const QString& exe,const QString& keyFile,const QString& password ){
+	auto e = []( const QVector<QString>& exe,const QString& keyFile,const QString& password ){
 		Q_UNUSED( exe ) ;
 		QFile f( keyFile ) ;
 		f.open( QIODevice::ReadOnly ) ;

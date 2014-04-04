@@ -23,7 +23,7 @@
 #include <signal.h>
 #include <QDebug>
 
-getKey::getKey( const QString& exe,QByteArray * key,const QString& keyFile )
+getKey::getKey( const QVector<QString>& exe,QByteArray * key,const QString& keyFile )
 {
 	m_exe = exe ;
 	m_key = key ;
@@ -36,7 +36,8 @@ void getKey::start()
 	QThreadPool::globalInstance()->start( this ) ;
 }
 
-void getKey::setKeyRoutine( std::function<QByteArray( const QString& exe,const QString& keyFile,const QString& password )> function )
+void getKey::setKeyRoutine( std::function<QByteArray( const QVector<QString>&,
+						      const QString& keyFile,const QString& password )> function )
 {
 	m_function = function ;
 }

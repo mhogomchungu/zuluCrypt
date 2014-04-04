@@ -33,7 +33,12 @@ int main( int argc,char * argv[] )
 	w.setkeyLabel( QObject::tr( "enter gpg key below" ) ) ;
 	w.setkeyFileLabel( QObject::tr( "enter a path to a gpg keyfile below" ) ) ;
 
+	QVector<QString> exe ;
+	exe.append( QString( "gpg" ) ) ;
+
+	w.setExe( exe ) ;
 	w.setKeyFunction( gpg ) ;
+
 	w.Show() ;
 
 	return a.exec() ;

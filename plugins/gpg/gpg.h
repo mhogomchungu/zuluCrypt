@@ -24,29 +24,13 @@
 #include <QObject>
 #include <QFile>
 
-auto gpg = []( const QString& e,const QString& keyFile,const QString& password ){
-
-	QString exe ;
-	if( e.isEmpty() ){
-		exe = QString( "/usr/local/bin/gpg" ) ;
-		if( !QFile::exists( exe ) ){
-			exe = QString( "/usr/bin/gpg" ) ;
-			if( !QFile::exists( exe ) ){
-				/*
-				 * failed to find gpg binary,return with a misleading error for now
-				 */
-				return QByteArray() ;
-			}
-		}
-	}else{
-		exe = e ;
-	}
+auto gpg = []( const QVector<QString>& exe,const QString& keyFile,const QString& password ){
 
 	QString arg ;
 	if( password.isEmpty() ){
-		arg = QString( "%1 --no-tty --yes --no-mdc-warning --no-verbose -d %2" ).arg( exe ).arg( keyFile ) ;
+		arg = QString( "%1 --no-tty --yes --no-mdc-warning --no-verbose -d %2" ).arg( exe.first() ).arg( keyFile ) ;
 	}else{
-		arg = QString( "%1 --no-tty --yes --no-mdc-warning --no-verbose --passphrase-fd 0 -d  %2" ).arg( exe ).arg( keyFile ) ;
+		arg = QString( "%1 --no-tty --yes --no-mdc-warning --no-verbose --passphrase-fd 0 -d  %2" ).arg( exe.first() ).arg( keyFile ) ;
 	}
 
 	QProcess p ;

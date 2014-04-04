@@ -24,7 +24,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-MainWindow::MainWindow( QWidget * parent ) : QWidget( parent ),m_ui( new Ui::MainWindow )
+MainWindow::MainWindow( QWidget * parent ) : QWidget( parent ),m_ui( new Ui::MainWindow ),m_findExecutable( 0 )
 {
 	m_ui->setupUi( this ) ;
 	this->setFixedSize( this->size() ) ;
@@ -113,7 +113,8 @@ void MainWindow::setkeyFileLabel( const QString& keyFileLabel )
 	m_ui->label->setText( keyFileLabel ) ;
 }
 
-void MainWindow::setKeyFunction( std::function<QByteArray( const QString& exe,const QString& keyFile,const QString& password )> function )
+void MainWindow::setKeyFunction( std::function<QByteArray( const QVector<QString>& exe,
+							   const QString& keyFile,const QString& password )> function )
 {
 	m_function = function ;
 }
@@ -137,7 +138,8 @@ void MainWindow::pbCancel()
 {
 	if( m_working ){
 		DialogMsg msg( this ) ;
-		int st = msg.ShowUIYesNoDefaultNo( tr( "warning"),tr( "are you sure you want to terminate this operation prematurely?" )) ;
+		int st = msg.ShowUIYesNoDefaultNo( tr( "warning"),
+						   tr( "are you sure you want to terminate this operation prematurely?" ) ) ;
 
 		if( st == QMessageBox::Yes ){
 			this->enableAlll() ;
@@ -158,21 +160,14 @@ void MainWindow::Exit( int st )
 	QCoreApplication::exit( st ) ;
 }
 
-QString MainWindow::fullApplicationPath()
+void MainWindow::setfindExeFunction( std::function<const QString&( QVector<QString>& )> f )
 {
-	QString exe = QString( "/usr/local/bin/" ) + m_appName ;
-	if( QFile::exists( exe ) ){
-		return exe ;
-	}
-	exe = QString( "/usr/bin/" ) + m_appName ;
-	if( QFile::exists( exe ) ){
-		return exe ;
-	}
-	exe = QString( "/usr/sbin/" ) + m_appName ;
-	if( QFile::exists( exe ) ){
-		return exe ;
-	}
-	return QString() ;
+	m_findExecutable = f ;
+}
+
+void MainWindow::setExe( const QVector<QString>& exe )
+{
+	m_exe = exe ;
 }
 
 void MainWindow::startingToreadData()
@@ -227,13 +222,44 @@ void MainWindow::pbOpen()
 		}
 	}
 
-	QString exe ;
-	if( !m_appName.isEmpty() ){
-		exe = this->fullApplicationPath() ;
+	if( m_findExecutable == 0 ){
+		m_findExecutable = []( QVector<QString>& exe ){
+			if( exe.isEmpty() ){
+				return QString() ;
+			}
 
-		if( exe.isEmpty() ){
-			return msg.ShowUIOK( tr( "ERROR" ),tr( "could not find \"%1\" executable in \"/usr/local\",\"/usr/bin\" and \"/usr/sbin\"" ).arg( m_appName ) ) ;
-		}
+			QString e ;
+
+			for( auto& it : exe ){
+				auto _not_found = [&]( const char * path ){
+					e = path + it ;
+					bool r = QFile::exists( e ) ;
+					if( r ){
+						it = e ;
+					}
+					return r == false ;
+				} ;
+
+				if( _not_found( "/usr/local/bin/" ) ){
+					if( _not_found( "/usr/bin/" ) ){
+						if( _not_found( "/usr/sbin/" ) ){
+							return it ;
+						}
+					}
+				}
+			}
+			return QString() ;
+		} ;
+	}
+
+	/*
+	 * pass in a copy since we modify it in place wrong strings show up on the GUI on error
+	 */
+	QVector<QString> exe = m_exe ;
+	QString e = m_findExecutable( exe ) ;
+	if( !e.isEmpty() ){
+		return msg.ShowUIOK( tr( "ERROR" ),
+				     tr( "could not find \"%1\" executable in \"/usr/local\",\"/usr/bin\" and \"/usr/sbin\"" ).arg( e ) ) ;
 	}
 
 	this->disableAll() ;
