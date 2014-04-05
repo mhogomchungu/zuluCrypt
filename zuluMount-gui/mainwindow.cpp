@@ -70,9 +70,9 @@ void MainWindow::setUpApp()
 	m_ui->tableWidget->setColumnWidth( 0,220 ) ;
 	m_ui->tableWidget->setColumnWidth( 1,320 ) ;
 	m_ui->tableWidget->setColumnWidth( 2,115 ) ;
-	m_ui->tableWidget->hideColumn( 3 ) ;
 	m_ui->tableWidget->setColumnWidth( 4,87 ) ;
 	m_ui->tableWidget->setColumnWidth( 5,87 ) ;
+	m_ui->tableWidget->hideColumn( 3 ) ;
 
 #if QT_VERSION < QT_VERSION_CHECK( 5,0,0 )
 	m_ui->tableWidget->verticalHeader()->setResizeMode( QHeaderView::ResizeToContents ) ;

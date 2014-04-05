@@ -1,3 +1,13 @@
+zulucrypt (4.7.0-1) UNRELEASED; urgency=low
+  [Mhogo Mchungu]
+  * New Features
+    - various changes and improvements
+    - add a plugin named "steghide" that retrives passphrases embeded in other files using "steghide" tool.
+    - add a plugin named "luks" that allows opening a LUKS volume using a backup/detached header.
+    - add a plugin named "tomb" that allows opening of LUKS volumes from tomb project using keys securely stored in image files.
+
+ -- Mhogo Mchungu <mhogomchungu@gmail.com>  Thu, 1 May 2014 16:38:48 +0000
+
 zulucrypt (4.6.9-1) UNRELEASED; urgency=low
 
   [Mhogo Mchungu]
