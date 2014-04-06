@@ -1,5 +1,5 @@
 Name:           zuluCrypt
-Version: 4.6.9
+Version: 4.7.0
 Release: 0
 Summary:        Qt GUI front end to cryptsetup
 License:        GPL-2.0+
@@ -26,7 +26,7 @@ BuildRequires:  cmake gcc gcc-c++ libqt4-devel glibc-devel libblkid-devel libcry
 
 %description
 zuluCrypt is a front end to cryptsetup.
-It makes it easier to use cryptsetup by providing a Qt based GUI and a simpler to use cli front end to cryptsetup.
+It makes it easier to use cryptsetup by providing a Qt based GUI and a simpler to use cli front end to cryptsetup and tcplay.
 It does the same thing truecrypt does but without licensing problems or requiring a user to setup sudo for it or presenting root's password.
 This package contains the applications.
 
@@ -112,6 +112,9 @@ rm -rf $RPM_BUILD_DIR/%{name}-%{version}
 %{_libdir}/zuluCrypt/keyring
 %{_libdir}/zuluCrypt/keykeyfile
 %{_libdir}/zuluCrypt/kwallet
+%{_libdir}/zuluCrypt/luks
+%{_libdir}/zuluCrypt/steghide
+%{_libdir}/zuluCrypt/tomb
 
 %files -n %{libname}
 %defattr(0755,root,root)
@@ -134,7 +137,8 @@ rm -rf $RPM_BUILD_DIR/%{name}-%{version}
 %{_libdir}/pkgconfig/libzuluCrypt.pc
 
 %changelog
-
+* Thu May 1 2014 mhogomchungu@gmail.com
+ - update to version 4.7.0
 * Fri Jul 19 2013 mhogomchungu@gmail.com
  - update to version 4.6.5
 * Sun Jun  2 2013 mhogomchungu@gmail.com
