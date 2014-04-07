@@ -86,8 +86,8 @@ void DialogMsg::ShowPermissionProblem( const QString& device )
 \"system volumes\" are volumes that either udev has identify them as such if udev is enabled \
 or have an entry in \"/etc/fstab\",\"/etc/crypttab\" or \"/etc/zuluCrypt/system_volumes.list\".\n\
 \n\
-If you prefer for a volume not to be considered a system volume,start the tool\n\n\
-from root account and then go to \"menu->options->manage non system partitions\"\n\n\
+If you prefer for a volume not to be considered a system volume,start the tool\
+from root account and then go to \"menu->options->manage non system partitions\" \
 and add the volume to the list and the volume will stop being considered as \"system\".\n\n\
 Alternatively,you can add yourself to group \"zulucrypt\" and \"zulumount\" and all restrictions will go away." ) ;
 
