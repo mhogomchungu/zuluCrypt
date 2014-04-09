@@ -44,7 +44,7 @@ int main( int argc,char * argv[] )
 	w.setkeyLabel( QObject::tr( "enter tomb/steghide key below" ) ) ;
 	w.setkeyFileLabel( QObject::tr( "enter a path to a tomb/steghide keyfile below" ) ) ;
 
-	auto steghide = []( const QVector<QString>& exe,const QString& keyFile,const QString& password ){
+	auto tomb = []( const QVector<QString>& exe,const QString& keyFile,const QString& password ){
 		/*
 		 * TODO: look into passing the passphrase more securely
 		 */
@@ -96,7 +96,7 @@ int main( int argc,char * argv[] )
 		}
 	} ;
 
-	w.setKeyFunction( steghide ) ;
+	w.setKeyFunction( tomb ) ;
 
 	QVector<QString> exe ;
 	exe.append( "steghide" ) ;
