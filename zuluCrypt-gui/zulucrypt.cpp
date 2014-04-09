@@ -72,14 +72,17 @@ zuluCrypt::zuluCrypt( QWidget * parent ) :QMainWindow( parent ),m_trayIcon( 0 )
 {
 	this->setLocalizationLanguage() ;
 	m_ui = new Ui::zuluCrypt ;
-	m_folderOpener = QString( "xdg-open" ) ;
-	processArgumentList() ;
+
+	QStringList l = QCoreApplication::arguments() ;
+
+	m_device       = utility::cmdArgumentValue( l,"-d" ) ;
+	m_folderOpener = utility::cmdArgumentValue( l,"-m","xdg-open" ) ;
 }
 
 void zuluCrypt::setLocalizationLanguage()
 {
 	QTranslator * translator = new QTranslator( this ) ;
-	QString program = QString( "zuluCrypt-gui" ) ;
+	QString program  = QString( "zuluCrypt-gui" ) ;
 	QString lang     = utility::localizationLanguage( program ) ;
 	QString langPath = utility::localizationLanguagePath( program ) ;
 
@@ -150,31 +153,10 @@ void zuluCrypt::startUpdateFinished( int st )
 
 void zuluCrypt::processArgumentList()
 {
-	QStringList argv = QCoreApplication::arguments() ;
-
-	int last_spot = argv.size() - 1 ;
-	int index = argv.indexOf( "-m" ) ;
-
-	if( index != -1 ){
-		if( index < last_spot ){
-			m_folderOpener = argv.at( index + 1 ) ;
-		}
-	}
-
-	index = argv.indexOf( "-d" ) ;
-
-	m_device = QString( "" ) ;
-
-	if( index != -1 ){
-		if( index < last_spot ){
-			m_device = argv.at( index + 1 ) ;
-		}
-	}
 }
 
 void zuluCrypt::openVolumeFromArgumentList()
 {
-
 }
 
 void zuluCrypt::initKeyCombo()
@@ -263,17 +245,20 @@ void zuluCrypt::initTray()
 
 void zuluCrypt::setupUIElements()
 {
-	m_trayIcon = new QSystemTrayIcon( this ) ;
-	m_trayIcon->setIcon( QIcon( QString( ":/zuluCrypt.png" ) ) ) ;
-
-	QMenu * trayMenu = new QMenu( this ) ;
-	trayMenu->addAction( tr( "quit" ),this,SLOT( closeApplication() ) ) ;
-	m_trayIcon->setContextMenu( trayMenu ) ;
-
 	m_ui->setupUi( this ) ;
 
 	this->setFixedSize( this->size() ) ;
 	this->setWindowIcon( QIcon( QString( ":/zuluCrypt.png" ) ) ) ;
+
+	m_trayIcon = new QSystemTrayIcon( this ) ;
+	m_trayIcon->setIcon( QIcon( QString( ":/zuluCrypt.png" ) ) ) ;
+
+	QMenu * trayMenu = new QMenu( this ) ;
+
+	trayMenu->addAction( tr( "show the interface" ),this,SLOT( raiseWindow() ) ) ;
+	trayMenu->addAction( tr( "quit" ),this,SLOT( closeApplication() ) ) ;
+
+	m_trayIcon->setContextMenu( trayMenu ) ;
 
 	m_ui->tableWidget->setColumnWidth( 0,298 ) ;
 	m_ui->tableWidget->setColumnWidth( 1,336 ) ;

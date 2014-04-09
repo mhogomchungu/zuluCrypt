@@ -421,6 +421,22 @@ QString utility::resolvePath( const QString& path )
 	}
 }
 
+QString utility::cmdArgumentValue( const QStringList& l,const QString& arg,const QString& defaulT )
+{
+	int j = l.size() ;
+	for( int i = 0 ; i < j ; i++ ){
+		if( l.at( i ) == arg ){
+			if( i + 1 < j ){
+				return l.at( i + 1 ) ;
+			}else{
+				return defaulT ;
+			}
+		}
+	}
+
+	return defaulT ;
+}
+
 QStringList utility::luksEmptySlots( const QString& volumePath )
 {
 	QStringList list ;

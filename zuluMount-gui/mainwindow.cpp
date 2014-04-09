@@ -123,6 +123,12 @@ void MainWindow::setUpApp()
 
 	trayMenu->addAction( autoOpenFolderOnMount ) ;
 
+	QAction * ac = new QAction( this ) ;
+	ac->setText( tr( "show the interface" ) ) ;
+	connect( ac,SIGNAL( triggered() ),this,SLOT( raiseWindow() ) ) ;
+
+	trayMenu->addAction( ac ) ;
+
 	m_favorite_menu = trayMenu->addMenu( tr( "favorites" ) ) ;
 	connect( m_favorite_menu,SIGNAL( triggered( QAction * ) ),this,SLOT( favoriteClicked( QAction * ) ) ) ;
 	connect( m_favorite_menu,SIGNAL( aboutToShow() ),this,SLOT( showFavorites() ) ) ;
@@ -373,18 +379,11 @@ void MainWindow::itemEntered( QTableWidgetItem * item )
 
 void MainWindow::processArgumentList()
 {
-	int c ;
-	m_startHidden = false ;
-	m_device = QString( "" ) ;
-	m_folderOpener = QString( "xdg-open" ) ;
+	QStringList l = QCoreApplication::arguments() ;
 
-	while( ( c = getopt( m_argc,m_argv,"ed:m:" ) ) != -1 ) {
-		switch( c ){
-			case 'e' : m_startHidden  = true               ; break ;
-			case 'd' : m_device       = QString( optarg )  ; break ;
-			case 'm' : m_folderOpener = QString( optarg )  ; break ;
-		}
-	}
+	m_startHidden  = l.contains( "-e" ) ;
+	m_device       = utility::cmdArgumentValue( l,"-d" ) ;
+	m_folderOpener = utility::cmdArgumentValue( l,"-m","xdg-open" ) ;
 }
 
 void MainWindow::raiseWindow()

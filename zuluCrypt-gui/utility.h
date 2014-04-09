@@ -28,6 +28,7 @@ class QByteArray ;
 class utility
 {
 public:
+	static QString cmdArgumentValue( const QStringList&,const QString& arg,const QString& defaulT = QString() ) ;
 	static QStringList luksEmptySlots( const QString& volumePath ) ;
 	static void addToFavorite( const QString& dev,const QString& m_point ) ;
 	static QStringList readFavorites( void ) ;
