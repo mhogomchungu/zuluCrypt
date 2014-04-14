@@ -214,7 +214,6 @@ socket_t SocketNetWithOptions( const char * address,int port,int type,int protoc
 
 	struct addrinfo * info ;
 	struct addrinfo hint ;
-	struct sockaddr_in * addr_in ;
 	struct sockaddr_in * e ;
 
 	memset( &hint,'\0',sizeof( hint ) ) ;
@@ -226,9 +225,8 @@ socket_t SocketNetWithOptions( const char * address,int port,int type,int protoc
 	if( getaddrinfo( address,NULL,&hint,&info) == 0 ){
 		s = Socket( AF_INET,type,protocol ) ;
 		if( s != SocketVoid ){
-			addr_in = ( struct sockaddr_in * ) info->ai_addr ;
 			e = s->socket ;
-			memcpy( &e->sin_addr,&addr_in->sin_addr,sizeof( struct in_addr ) ) ;
+			memcpy( e,info->ai_addr,info->ai_addrlen ) ;
 			e->sin_port = htons( port ) ;
 		}
 
@@ -251,8 +249,6 @@ socket_t SocketNetWithOptions6( const char * address,int port,int type,int proto
 	struct addrinfo * info ;
 	struct sockaddr_in6 * e ;
 
-	char buffer[ INET6_ADDRSTRLEN ] ;
-
 	memset( &hint,'\0',sizeof( struct addrinfo ) ) ;
 
 	hint.ai_family = AF_INET6 ;
@@ -263,8 +259,7 @@ socket_t SocketNetWithOptions6( const char * address,int port,int type,int proto
 		s = Socket( AF_INET6,type,protocol ) ;
 		if( s != SocketVoid ){
 			e = s->socket ;
-			inet_ntop( AF_INET6,address,buffer,INET6_ADDRSTRLEN ) ;
-			inet_pton( AF_INET6,buffer,&e->sin6_addr ) ;
+			memcpy( e,info->ai_addr,info->ai_addrlen ) ;
 			e->sin6_port = htons( port ) ;
 		}
 
