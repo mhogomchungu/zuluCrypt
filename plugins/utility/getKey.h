@@ -30,29 +30,32 @@
 #include <unistd.h>
 #include <functional>
 
+typedef std::function<QByteArray( const QVector<QString>&,const QString& keyFile,const QString& password )> function_t ;
+
 class getKey : public QObject,public QRunnable
 {
 	Q_OBJECT
 public:
-	getKey( const QVector<QString>&,QByteArray * key,const QString& keyFile ) ;
-	void setKeyRoutine( std::function<QByteArray( const QVector<QString>&,const QString& keyFile,const QString& password )> ) ;
+	typedef enum{
+		cancelled,
+		complete,
+		wrongKey
+	}status ;
+	static void cancel( const QString& token ) ;
+	getKey( const QString& token ) ;
+	void setOptions( const QVector<QString>&,const QString& key,const QString& keyFile,function_t function ) ;
 	~getKey() ;
 	void start( void ) ;
 signals:
-	void bytesRead( int ) ;
-	void startingToReadData( void ) ;
-	void doneReadingKey( bool ) ;
-public slots:
-	void cancel( void ) ;
+	void done( int ) ;
 private:
 	void run( void ) ;
 	QVector<QString> m_exe ;
-	QByteArray * m_key ;
+	QString m_key ;
 	QString m_keyFile ;
-	pid_t m_pid ;
-	bool m_cancelled ;
-	int m_type ;
-	std::function<QByteArray( const QVector<QString>&,const QString& keyFile,const QString& password )> m_function ;
+	QString m_token ;
+	int m_status ;
+	function_t m_function ;
 };
 
 #endif // GETGPGKEY_H

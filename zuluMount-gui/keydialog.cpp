@@ -31,7 +31,6 @@
 #include "task.h"
 #include "../zuluCrypt-cli/constants.h"
 #include "plugin_path.h"
-#include "../zuluCrypt-gui/socketsendkey.h"
 #include "../zuluCrypt-gui/utility.h"
 #include "../zuluCrypt-gui/lxqt_wallet/frontend/lxqt_wallet.h"
 #include "mountoptions.h"
@@ -438,20 +437,25 @@ void keyDialog::openVolume()
 
 	QString m ;
 	if( keyType == keyDialog::Key ){
-		QString addr = socketSendKey::getSocketPath() ;
+		QString addr = utility::keyPath() ;
 		m = QString( "-f ") + addr ;
-		socketSendKey * s = new socketSendKey( this,addr,m_ui->lineEditKey->text().toLatin1() ) ;
-		s->sendKey() ;
+		Task * t = new Task() ;
+		t->setKey( m_ui->lineEditKey->text() ) ;
+		t->setKeyPath( addr ) ;
+		t->start( Task::sendKey ) ;
+
 	}else if( keyType == keyDialog::keyfile ){
 		m = QString( "-f ") + m_ui->lineEditKey->text().replace( "\"","\"\"\"" ) ;
 	}else if( keyType == keyDialog::plugin ){
 		if( m_key.isEmpty() ){
 			m = QString( "-G ") + m_ui->lineEditKey->text().replace( "\"","\"\"\"" ) ;
 		}else{
-			QString addr = socketSendKey::getSocketPath() ;
+			QString addr = utility::keyPath() ;
 			m = QString( "-f ") + addr ;
-			socketSendKey * s = new socketSendKey( this,addr,m_key.toLatin1() ) ;
-			s->sendKey() ;
+			Task * t = new Task() ;
+			t->setKey( m_key ) ;
+			t->setKeyPath( addr ) ;
+			t->start( Task::sendKey ) ;
 		}
 	}
 

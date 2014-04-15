@@ -37,7 +37,6 @@
 #include "openvolume.h"
 #include "crypttask.h"
 #include "dialogmsg.h"
-#include "socketsendkey.h"
 
 cryptfiles::cryptfiles( QWidget * parent ) :QDialog( parent ),m_ui( new Ui::cryptfiles )
 {

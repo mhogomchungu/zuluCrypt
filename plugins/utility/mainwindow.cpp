@@ -52,9 +52,6 @@ MainWindow::MainWindow( QWidget * parent ) : QWidget( parent ),m_ui( new Ui::Mai
 	ac->setShortcuts( keys ) ;
 	connect( ac,SIGNAL( triggered() ),this,SLOT( defaultButton() ) ) ;
 	this->addAction( ac ) ;
-
-	m_sendKey = new socketSendKey() ;
-	connect( m_sendKey,SIGNAL( keySent() ),this,SLOT( doneWritingData() ) ) ;
 }
 
 void MainWindow::Show()
@@ -91,11 +88,7 @@ void MainWindow::defaultButton()
 
 void MainWindow::setToken( const QString& token )
 {
-	m_addr = token ;
-	m_sendKey->setAddr( m_addr ) ;
-	if( !m_sendKey->openConnection() ){
-		this->Exit( 1 ) ;
-	}
+	m_token = token ;
 }
 
 void MainWindow::setApplicationName( const QString& appName )
@@ -113,14 +106,9 @@ void MainWindow::setkeyFileLabel( const QString& keyFileLabel )
 	m_ui->label->setText( keyFileLabel ) ;
 }
 
-void MainWindow::setKeyFunction( std::function<QByteArray( const QVector<QString>& exe,
-							   const QString& keyFile,const QString& password )> function )
+void MainWindow::setKeyFunction( function_t function )
 {
 	m_function = function ;
-}
-
-void MainWindow::gotConnected()
-{
 }
 
 void MainWindow::SetFocus()
@@ -144,11 +132,18 @@ void MainWindow::pbCancel()
 		if( st == QMessageBox::Yes ){
 			this->enableAlll() ;
 			m_working = false ;
-			emit cancel() ;
+			this->cancelled() ;
 		}
 	}else{
+		this->cancelled() ;
 		this->Exit( 1 ) ;
 	}
+}
+
+void MainWindow::cancelled()
+{
+	getKey::cancel( m_token ) ;
+	this->Exit( 1 ) ;
 }
 
 void MainWindow::Exit( int st )
@@ -170,34 +165,6 @@ void MainWindow::setExe( const QVector<QString>& exe )
 	m_exe = exe ;
 }
 
-void MainWindow::startingToreadData()
-{
-}
-
-void MainWindow::bytesRead( int bytes )
-{
-	QString msg = tr( "number of bytes read from gpg keyfile: " ) + QString::number( bytes ) ;
-	this->setWindowTitle( msg ) ;
-}
-
-void MainWindow::doneReading( bool cancelled )
-{
-	if( cancelled ){
-		return this->Exit( 1 ) ;
-	}
-	if( !m_key.isEmpty() ){
-		this->hide() ;
-		m_sendKey->sendKey( m_key ) ;
-	}else{
-		DialogMsg msg( this ) ;
-		m_working = false ;
-		msg.ShowUIOK( tr( "ERROR" ),tr("could not decrypt the %1 keyfile,wrong key?" ).arg( m_appName ) ) ;
-		this->enableAlll() ;
-		m_ui->lineEditKey->setFocus() ;
-		this->setWindowTitle( tr( "%1 key module" ).arg( m_appName ) ) ;
-	}
-}
-
 void MainWindow::pbOpen()
 {
 	DialogMsg msg( this ) ;
@@ -209,15 +176,15 @@ void MainWindow::pbOpen()
 		}
 	}
 
-	QString path = m_ui->lineEditKeyFile->text() ;
+	m_path = m_ui->lineEditKeyFile->text() ;
 
-	path.replace( "file://","" ) ;
+	m_path.replace( "file://","" ) ;
 
 	if( m_requireKeyFile ){
-		if( path.isEmpty() ){
+		if( m_path.isEmpty() ){
 			return msg.ShowUIOK( tr( "ERROR" ),tr( "path to %1 keyfile is empty" ).arg( m_appName ) ) ;
 		}
-		if( !QFile::exists( path ) ){
+		if( !QFile::exists( m_path ) ){
 			return msg.ShowUIOK( tr( "ERROR" ),tr( "invalid path to %1 keyfile" ).arg( m_appName ) ) ;
 		}
 	}
@@ -262,21 +229,42 @@ void MainWindow::pbOpen()
 				     tr( "could not find \"%1\" executable in \"/usr/local\",\"/usr/bin\" and \"/usr/sbin\"" ).arg( e ) ) ;
 	}
 
+	m_exe_1 = exe ;
 	this->disableAll() ;
 	m_working = true ;
 
-	getKey * k = new getKey( exe,&m_key,path ) ;
-	k->setKeyRoutine( m_function ) ;
-	connect( this,SIGNAL( cancel() ),k,SLOT( cancel() ) ) ;
-	connect( k,SIGNAL( bytesRead( int ) ),this,SLOT( bytesRead( int ) ) ) ;
-	connect( k,SIGNAL( doneReadingKey( bool ) ),this,SLOT( doneReading( bool ) ) ) ;
-	k->start() ;
+	this->key() ;
 }
 
-void MainWindow::doneWritingData()
+void MainWindow::key()
 {
-	m_working = false ;
-	this->Exit( 0 ) ;
+	getKey * g = new getKey( m_token ) ;
+	connect( g,SIGNAL( done( int ) ),this,SLOT( done( int ) ) ) ;
+	g->setOptions( m_exe_1,m_key,m_path,m_function ) ;
+	g->start() ;
+}
+
+void MainWindow::done( int status )
+{
+	getKey::status s = getKey::status( status ) ;
+
+	if( s == getKey::cancelled ){
+		this->Exit( 1 ) ;
+	}else if( s == getKey::complete ){
+		this->Exit( 0 ) ;
+	}else if( s == getKey::wrongKey ){
+		DialogMsg msg( this ) ;
+		m_working = false ;
+		msg.ShowUIOK( tr( "ERROR" ),tr("could not decrypt the %1 keyfile,wrong key?" ).arg( m_appName ) ) ;
+		this->enableAlll() ;
+		m_ui->lineEditKey->setFocus() ;
+		this->setWindowTitle( tr( "%1 key module" ).arg( m_appName ) ) ;
+	}else{
+		/*
+		 * we cant get here
+		 */
+	}
+
 }
 
 void MainWindow::pbKeyFile()

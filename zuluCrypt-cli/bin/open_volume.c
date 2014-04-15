@@ -282,7 +282,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		StringFree( device_path ) ;
 		StringFree( uuid ) ;
 
-		if( st != 0 ){
+		if( st != 0 || *passphrase == StringVoid ){
 			return zuluExit_1( 12,opts,device,mount_point,stl ) ;
 		}
 

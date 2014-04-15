@@ -20,6 +20,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include "../../zuluCrypt-cli/pluginManager/libzuluCryptPluginManager.h"
+
 MainWindow::MainWindow( QWidget * parent ) : QWidget( parent ),m_ui( new Ui::MainWindow )
 {
 	m_ui->setupUi( this ) ;
@@ -52,10 +54,10 @@ void MainWindow::defaultButton()
 	}
 }
 
-void MainWindow::SetAddr( QString addr )
+void MainWindow::setToken( const QString& token )
 {
-	m_addr = addr ;
-	m_handle = socketSendKey::zuluCryptPluginManagerOpenConnection( m_addr ) ;
+	m_token = token ;
+	m_handle = zuluCryptPluginManagerOpenConnection( m_token.toLatin1().constData() ) ;
 }
 
 void MainWindow::SetFocus()
@@ -67,8 +69,15 @@ void MainWindow::SetFocus()
 	}
 }
 
+void MainWindow::closeEvent( QCloseEvent * e )
+{
+	e->ignore() ;
+	this->pbCancel() ;
+}
+
 void MainWindow::pbCancel()
 {
+	m_handle = zuluCryptPluginManagerOpenConnection( m_token.toLatin1().constData() ) ;
 	QCoreApplication::exit( 1 ) ;
 }
 
@@ -81,13 +90,13 @@ void MainWindow::pbOpen()
 {
 	QByteArray key = m_ui->lineEditKey->text().toLatin1() ;
 
-	socketSendKey::zuluCryptPluginManagerSendKey( m_handle,key ) ;
+	zuluCryptPluginManagerSendKey( m_handle,key.constData(),key.size() ) ;
 
 	this->done() ;
 }
 
 MainWindow::~MainWindow()
 {
-	socketSendKey::zuluCryptPluginManagerCloseConnection( m_handle ) ;
+	zuluCryptPluginManagerCloseConnection( m_handle ) ;
 	delete m_ui ;
 }

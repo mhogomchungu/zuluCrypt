@@ -36,7 +36,6 @@
 #include "utility.h"
 #include "openvolume.h"
 #include "dialogmsg.h"
-#include "socketsendkey.h"
 
 managevolumeheader::managevolumeheader( QWidget * parent ) :
     QDialog( parent ),
@@ -340,9 +339,11 @@ void managevolumeheader::pbCreate()
 
 		if( m_ui->rbTrueCryptHeader->isChecked() ){
 			if( m_ui->rbKey->isChecked() ){
-				QString path = socketSendKey::getSocketPath() ;
-				socketSendKey * sk = new socketSendKey( this,path,m_ui->lineEditPassWord->text().toLatin1() ) ;
-				sk->sendKey() ;
+				QString path = utility::keyPath() ;
+
+				Task * t = new Task( path,m_ui->lineEditPassWord->text().toLatin1() ) ;
+				t->start( Task::sendKey ) ;
+
 				exe = QString( "%1 -B -d \"%2\" -z \"%3\" -f %4" ).arg( ZULUCRYPTzuluCrypt ).arg( device ).arg( backUp ).arg( path ) ;
 			}else{
 				QString path = m_ui->lineEditPassWord->text() ;
@@ -364,9 +365,9 @@ void managevolumeheader::pbCreate()
 		}
 		if( m_ui->rbTrueCryptHeader->isChecked() ){
 			if( m_ui->rbKey->isChecked() ){
-				QString path = socketSendKey::getSocketPath() ;
-				socketSendKey * sk = new socketSendKey( this,path,m_ui->lineEditPassWord->text().toLatin1() ) ;
-				sk->sendKey() ;
+				QString path = utility::keyPath() ;
+				Task * t = new Task( path,m_ui->lineEditPassWord->text().toLatin1() ) ;
+				t->start( Task::sendKey ) ;
 				exe = QString( "%1 -kR -d \"%2\" -z \"%3\" -f %4" ).arg( ZULUCRYPTzuluCrypt ).arg( device ).arg( backUp ).arg( path ) ;
 			}else{
 				QString path = m_ui->lineEditPassWord->text() ;

@@ -53,8 +53,8 @@
 #include "md5/md5.h"
 #include <sys/mman.h>
 
-#include "socketsendkey.h"
 #include "utility.h"
+#include "task.h"
 #include "../zuluCrypt-cli/constants.h"
 #include "../zuluCrypt-cli/bin/bash_special_chars.h"
 #include "lxqt_wallet/backend/lxqtwallet.h"
@@ -77,9 +77,11 @@ void CryptTask::start()
 {
 	if( m_keySource == QString( "-p" ) ){
 		if( m_dest.endsWith( QString( ".zc" ) ) || m_source.endsWith( QString( ".zc" ) ) ){
-			QString sockpath = socketSendKey::getSocketPath() ;
-			socketSendKey * sk = new socketSendKey( 0,sockpath,m_key.toLatin1() ) ;
-			sk->sendKey() ;
+			QString sockpath = utility::keyPath() ;
+
+			Task * t = new Task( sockpath,m_key ) ;
+			t->start( Task::sendKey ) ;
+
 			m_keySource = QString( "-f" ) ;
 			m_key = sockpath ;
 		}

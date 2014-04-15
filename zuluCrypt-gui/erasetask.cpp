@@ -29,7 +29,6 @@
 #include "utility.h"
 #include "../zuluCrypt-cli/constants.h"
 #include "filetask.h"
-#include "socketsendkey.h"
 
 #include <blkid/blkid.h>
 #include <string.h>

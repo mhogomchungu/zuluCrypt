@@ -41,7 +41,6 @@
 #include "../zuluCrypt-gui/userfont.h"
 #include "../zuluCrypt-gui/tablewidget.h"
 #include "../zuluCrypt-gui/utility.h"
-#include "../zuluCrypt-gui/socketsendkey.h"
 #include "mountoptions.h"
 
 mountPartition::mountPartition( QWidget * parent,QTableWidget * table,const QString& folderOpener,bool autoOpenFolderOnMount ) :
@@ -156,10 +155,12 @@ void mountPartition::pbMount()
 	t->setDevice( m_path ) ;
 
 	if( !m_deviceOffSet.isEmpty() ){
-		QString addr = socketSendKey::getSocketPath() ;
+		QString addr = utility::keyPath() ;
+		Task * t = new Task() ;
 		t->setKeySource( QString( "-f ") + addr ) ;
-		socketSendKey * s = new socketSendKey( this,addr,m_key.toLatin1() ) ;
-		s->sendKey() ;
+		t->setKey( m_key ) ;
+		t->setKeyPath( addr ) ;
+		t->start( Task::sendKey ) ;
 	}
 	if( m_options.isEmpty() ){
 		if( m_ui->checkBoxMountReadOnly->isChecked() ){

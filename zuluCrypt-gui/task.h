@@ -55,7 +55,8 @@ public:
 		deleteKey,
 		getAllKeys,
 		getKey,
-		LUKSSlotUsage
+		LUKSSlotUsage,
+		sendKey
 	}action ;
 
 	explicit Task( const QString& exe ) ;
@@ -90,6 +91,7 @@ private:
 	void getAllKeysTask( void ) ;
 	void getKeyTask( void ) ;
 	void LUKSSlotUsageTask( void ) ;
+	void keySend( void ) ;
 	QString m_exe ;
 	QString m_output ;
 	int m_status ;

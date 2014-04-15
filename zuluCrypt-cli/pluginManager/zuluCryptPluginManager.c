@@ -87,7 +87,7 @@ size_t zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid
 			chown( sockpath,uid,uid ) ;
 			chmod( sockpath,S_IRWXU | S_IRWXG | S_IRWXO ) ;
 			if( SocketListen( server ) ){
-				client = SocketAcceptWithTimeOut( server,10 ) ;
+				client = SocketAccept( server ) ;
 				if( client ){
 					/*
 					 * ZULUCRYPT_INT_MAX_KEYSIZE is set in ../constants.h

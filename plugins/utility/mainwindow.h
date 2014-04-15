@@ -32,7 +32,6 @@
 #include <QDir>
 #include <QProcess>
 #include <QCloseEvent>
-#include "../../zuluCrypt-gui/socketsendkey.h"
 #include "../../zuluCrypt-gui/dialogmsg.h"
 #include "getKey.h"
 #include <functional>
@@ -58,36 +57,32 @@ public:
 	void setKeyFunction( std::function<QByteArray( const QVector<QString>& exe,const QString& keyFile,const QString& password )> ) ;
 	void setfindExeFunction( std::function<const QString&( QVector<QString>& )> ) ;
 	~MainWindow() ;
-signals:
-	void cancel( void ) ;
 private slots:
+	void done( int ) ;
 	void defaultButton( void ) ;
-	void doneReading( bool ) ;
-	void bytesRead( int ) ;
-	void startingToreadData( void ) ;
 	void pbOpen( void ) ;
 	void pbCancel( void ) ;
 	void pbKeyFile( void ) ;
-	void gotConnected( void ) ;
-	void doneWritingData( void ) ;
 private:
 	void closeEvent( QCloseEvent * ) ;
 	void disableAll( void ) ;
 	void enableAlll( void ) ;
 	void SetFocus( void ) ;
 	void Exit( int ) ;
+	void cancelled( void ) ;
+	void key( void ) ;
 	Ui::MainWindow * m_ui ;
-	QString m_addr ;
+	QString m_token ;
 	QString m_keyFile ;
+	QString m_path ;
 	QString m_appName ;
-	void * m_handle ;
 	bool m_working ;
 	bool m_requireKey ;
 	bool m_requireKeyFile ;
-	socketSendKey * m_sendKey ;
 	QByteArray m_key ;
 	QVector<QString> m_exe ;
-	std::function<QByteArray( const QVector<QString>& exe,const QString& keyFile,const QString& password )> m_function ;
+	QVector<QString> m_exe_1 ;
+	function_t m_function ;
 	std::function<const QString&( QVector<QString>& )> m_findExecutable ;
 };
 

@@ -60,6 +60,8 @@ public:
 	static bool pathIsReadable( const QString& ) ;
 	static bool setOpenVolumeReadOnly( QWidget * parent,bool check,const QString& app ) ;
 	static bool getOpenVolumeReadOnlyOption( const QString& app ) ;
+	static QString keyPath( void ) ;
+	static void sendKey( const QString& keyPath,const QString& key ) ;
 };
 
 #endif // MISCFUNCTIONS_H

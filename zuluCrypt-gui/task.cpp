@@ -44,13 +44,14 @@ Task::Task( QTableWidget * table ) : m_table( table )
 {
 }
 
-Task::Task( const QString& path,const QString& mpoint )
+Task::Task( const QString& x,const QString& y )
 {
-	m_path = path ;
+	m_key = y ;
+	m_path = x ;
 	m_path.replace( "\"","\"\"\"" ) ;
-	m_mpoint = mpoint ;
+	m_mpoint = y ;
 	m_mpoint.replace( "\"","\"\"\"" ) ;
-	m_folderOpener = path ;
+	m_folderOpener = x ;
 }
 
 Task::Task( LxQt::Wallet::Wallet * wallet,const QString& volumeID,const QString& key,const QString& comment ):
@@ -71,7 +72,9 @@ Task::Task( LxQt::Wallet::Wallet * wallet,QVector<LxQt::Wallet::walletKeyValues>
 void Task::start( Task::action action )
 {
 	m_action = action ;
-	QThreadPool::globalInstance()->start( this ) ;
+	QThreadPool * thread = QThreadPool::globalInstance() ;
+	thread->setMaxThreadCount( 10 ) ;
+	thread->start( this ) ;
 }
 
 void Task::openMountPointTask()
@@ -257,6 +260,11 @@ void Task::LUKSSlotUsageTask()
 	emit finished( utility::luksEmptySlots( m_path ) ) ;
 }
 
+void Task::keySend()
+{
+	utility::sendKey( m_path,m_key ) ;
+}
+
 void Task::run()
 {
 	switch( m_action ){
@@ -272,6 +280,7 @@ void Task::run()
 		case Task::getAllKeys           : return this->getAllKeysTask() ;
 		case Task::getKey               : return this->getKeyTask() ;
 		case Task::LUKSSlotUsage        : return this->LUKSSlotUsageTask() ;
+		case Task::sendKey              : return this->keySend() ;
 	}
 }
 

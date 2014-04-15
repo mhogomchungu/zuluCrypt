@@ -23,12 +23,19 @@
 #include <signal.h>
 #include <QDebug>
 
-getKey::getKey( const QVector<QString>& exe,QByteArray * key,const QString& keyFile )
+#include "../../zuluCrypt-cli/pluginManager/libzuluCryptPluginManager.h"
+
+getKey::getKey( const QString& token )
 {
+	m_token = token ;
+}
+
+void getKey::setOptions( const QVector<QString>& exe,const QString& key,const QString& keyFile,function_t function )
+{
+	m_function = function ;
 	m_exe = exe ;
 	m_key = key ;
 	m_keyFile = keyFile ;
-	m_cancelled = false ;
 }
 
 void getKey::start()
@@ -36,24 +43,36 @@ void getKey::start()
 	QThreadPool::globalInstance()->start( this ) ;
 }
 
-void getKey::setKeyRoutine( std::function<QByteArray( const QVector<QString>&,
-						      const QString& keyFile,const QString& password )> function )
-{
-	m_function = function ;
-}
-
 void getKey::run()
 {
-	*m_key = m_function( m_exe,m_keyFile,QString( *m_key ) ) ;
+	QByteArray key = m_function( m_exe,m_keyFile,m_key ) ;
+
+	if( key.isEmpty() ){
+		m_status = getKey::wrongKey ;
+	}else{
+		void * handle = zuluCryptPluginManagerOpenConnection( m_token.toLatin1().constData() ) ;
+
+		if( handle ){
+
+			zuluCryptPluginManagerSendKey( handle,key.constData(),key.size() ) ;
+			zuluCryptPluginManagerCloseConnection( handle ) ;
+
+			m_status = getKey::complete ;
+		}else{
+			m_status = getKey::wrongKey ;
+		}
+	}
 }
 
-void getKey::cancel()
+void getKey::cancel( const QString& token )
 {
-	kill( m_pid,SIGTERM ) ;
-	m_cancelled = true ;
+	void * handle = zuluCryptPluginManagerOpenConnection( token.toLatin1().constData() ) ;
+	if( handle ){
+		zuluCryptPluginManagerCloseConnection( handle ) ;
+	}
 }
 
 getKey::~getKey()
 {
-	emit doneReadingKey( m_cancelled ) ;
+	emit done( int( m_status ) ) ;
 }

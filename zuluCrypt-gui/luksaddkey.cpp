@@ -41,7 +41,6 @@
 #include "task.h"
 #include "dialogmsg.h"
 #include "keystrength.h"
-#include "socketsendkey.h"
 
 luksaddkey::luksaddkey( QWidget * parent ) :
 	QDialog( parent )
@@ -270,10 +269,10 @@ void luksaddkey::pbAdd( void )
 		existingPassType = QString( "-u" ) ;
 	}else{
 		existingPassType = QString( "-u" ) ;
-		ExistingKey = socketSendKey::getSocketPath() + QString( "-existingKey" ) ;
+		ExistingKey = utility::keyPath() + QString( "-existingKey" ) ;
 
-		socketSendKey * s = new socketSendKey( this,ExistingKey,m_ui->textEditExistingPassphrase->text().toLatin1() ) ;
-		s->sendKey() ;
+		Task * t = new Task( ExistingKey,m_ui->textEditExistingPassphrase->text() ) ;
+		t->start( Task::sendKey ) ;
 	}
 
 	QString newPassType ;
@@ -283,10 +282,10 @@ void luksaddkey::pbAdd( void )
 	}else{
 		newPassType = QString( "-n" ) ;
 
-		NewKey = socketSendKey::getSocketPath() + QString( "-newKey" ) ;
+		NewKey = utility::keyPath() + QString( "-newKey" ) ;
 
-		socketSendKey * s = new socketSendKey( this,NewKey,m_ui->textEditPassphraseToAdd->text().toLatin1() ) ;
-		s->sendKey() ;
+		Task * t = new Task( NewKey,m_ui->textEditPassphraseToAdd->text() ) ;
+		t->start( Task::sendKey ) ;
 	}
 
 	QString a = QString( ZULUCRYPTzuluCrypt ) ;

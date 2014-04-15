@@ -38,7 +38,6 @@
 #include "ui_luksdeletekey.h"
 #include "task.h"
 #include "dialogmsg.h"
-#include "socketsendkey.h"
 
 luksdeletekey::luksdeletekey( QWidget * parent ) :
 	QDialog( parent ),
@@ -200,9 +199,9 @@ void luksdeletekey::deleteKey( QStringList l )
 	if( m_ui->rbPassphraseFromFile->isChecked() ){
 		keypath = utility::resolvePath( m_ui->lineEditPassphrase->text() ) ;
 	}else{
-		keypath = socketSendKey::getSocketPath() ;
-		socketSendKey * s = new socketSendKey( this,keypath,m_ui->lineEditPassphrase->text().toLatin1() ) ;
-		s->sendKey() ;
+		keypath = utility::keyPath() ;
+		Task * t = new Task( keypath,m_ui->lineEditPassphrase->text() ) ;
+		t->start( Task::sendKey ) ;
 	}
 
 	QString exe = QString( "%1 -k -r -d \"%2\" -f \"%3\"" ).arg( QString( ZULUCRYPTzuluCrypt ) ).arg( m_volumePath ).arg( keypath ) ;

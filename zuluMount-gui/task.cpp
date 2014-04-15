@@ -54,6 +54,16 @@ void Task::setKeySource( const QString& key )
 	m_keySource = key ;
 }
 
+void Task::setKey( const QString& key )
+{
+	m_key = key ;
+}
+
+void Task::setKeyPath( const QString& path )
+{
+	m_path = path ;
+}
+
 void Task::setMountPoint( const QString& m )
 {
 	m_point = m ;
@@ -115,7 +125,13 @@ void Task::run()
 		case Task::checkUnMount        : return this->checkUnmount() ;
 		case Task::openMountPoint      : return this->openMountPointTask() ;
 		case Task::getKey              : return this->getKeyTask() ;
+		case Task::sendKey             : return this->keySend() ;
 	}
+}
+
+void Task::keySend()
+{
+	utility::sendKey( m_path,m_key ) ;
 }
 
 void Task::getKeyTask()
@@ -445,33 +461,19 @@ void Task::umount()
 
 void Task::openMountPointTask()
 {
-	m_process = new QProcess() ;
-	connect( m_process,SIGNAL( finished( int,QProcess::ExitStatus ) ),this,SLOT( funguaMountPoint( int,QProcess::ExitStatus ) ) ) ;
-	m_process->start( QString( "%1 \"%2\"" ).arg( m_folderOpener ).arg( m_point ) ) ;
-}
-
-void Task::funguaMountPoint( int exitCode,QProcess::ExitStatus exitStatus )
-{
-	m_exitCode = exitCode ;
-	m_exitStatus = int( exitStatus ) ;
-	this->deleteLater() ;
-	m_process->deleteLater() ;
+	QProcess exe ;
+	exe.start( QString( "%1 \"%2\"" ).arg( m_folderOpener ).arg( m_point ) ) ;
+	exe.waitForFinished() ;
+	m_exitCode   = exe.exitCode() ;
+	m_exitStatus = exe.exitStatus() ;
 }
 
 void Task::start( Task::Action action )
 {
-	if( action == Task::openMountPoint ){
-		/*
-		 * We will get here when a volume is opened,with the old way,one thread will run from the thread pool to
-		 * get properties of the just mounted volume and another thread run to open the mount point path
-		 * and this could cause prolonged operation if the global thread pool only manages one thread due to thread queuing.
-		 * For this reason,we run this one different outside of thread pool to allow faster operation.
-		 */
-		this->openMountPointTask() ;
-	}else{
-		m_action = action ;
-		QThreadPool::globalInstance()->start( this ) ;
-	}
+	m_action = action ;
+	QThreadPool * t = QThreadPool::globalInstance() ;
+	t->setMaxThreadCount( 10 ) ;
+	t->start( this ) ;
 }
 
 Task::~Task()

@@ -52,6 +52,8 @@
 #include "storage_manager.h"
 #include "dialogmsg.h"
 
+#include "../zuluCrypt-cli/pluginManager/libzuluCryptPluginManager.h"
+
 QString utility::cryptMapperPath()
 {
 	//return QString( crypt_get_dir() )
@@ -309,6 +311,35 @@ bool utility::getOpenVolumeReadOnlyOption( const QString& app )
 
 	f.close() ;
 	return st == 1 ;
+}
+
+QString utility::keyPath()
+{
+	QFile f( "/dev/urandom" ) ;
+	f.open( QIODevice::ReadOnly ) ;
+	QByteArray data = f.read( 64 ) ;
+	QString a = QDir::homePath() ;
+	QString b = utility::hashPath( data ).mid( 1 ) ;
+	return QString( "%1/.zuluCrypt-socket/%2" ).arg( a ).arg( b ) ;
+}
+
+void utility::sendKey( const QString& path,const QString& key )
+{
+	void * handle = ::zuluCryptPluginManagerOpenConnection( path.toLatin1().constData() ) ;
+
+	if( handle ){
+		size_t size = key.size() ;
+		/*
+		 * ZULUCRYPT_KEYFILE_MAX_SIZE is defined in ../zuluCrypt-cli/constants.h
+		 * The variable holds the maximum keyfile size
+		 */
+		if( size > ZULUCRYPT_KEYFILE_MAX_SIZE ){
+			size = ZULUCRYPT_KEYFILE_MAX_SIZE ;
+		}
+
+		::zuluCryptPluginManagerSendKey( handle,key.toLatin1().constData(),size ) ;
+		::zuluCryptPluginManagerCloseConnection( handle ) ;
+	}
 }
 
 void utility::debug( const QString& s )

@@ -47,7 +47,6 @@
 #include "plugin_path.h"
 #include "tablewidget.h"
 #include "../zuluCrypt-cli/constants.h"
-#include "socketsendkey.h"
 
 #include "utility.h"
 
@@ -461,7 +460,7 @@ void passwordDialog::openVolume()
 		}
 	}else if( keySource == passwordDialog::key ){
 		passtype = QString( "-f" ) ;
-		keyPath = socketSendKey::getSocketPath() ;
+		keyPath = utility::keyPath() ;
 		this->sendKey( keyPath ) ;
 	}else if( keySource == passwordDialog::plugin ){
 		if( m_key.isEmpty() ){
@@ -472,7 +471,7 @@ void passwordDialog::openVolume()
 			QString r = m_ui->PassPhraseField->text() ;
 			if( r == tr( KWALLET ) || r == tr( INTERNAL_WALLET ) || r == tr( GNOME_WALLET ) ){
 				passtype = QString( "-f" ) ;
-				keyPath = socketSendKey::getSocketPath() ;
+				keyPath = utility::keyPath() ;
 				this->sendKey( keyPath ) ;
 			}else{
 				passtype = QString( "-G" ) ;
@@ -502,8 +501,8 @@ void passwordDialog::openVolume()
 
 void passwordDialog::sendKey( const QString& sockpath )
 {
-	socketSendKey * sk = new socketSendKey( this,sockpath,m_key.toLatin1() ) ;
-	sk->sendKey() ;
+	Task * t = new Task( sockpath,m_key ) ;
+	t->start( Task::sendKey ) ;
 }
 
 void passwordDialog::disableAll()

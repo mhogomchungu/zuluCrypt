@@ -28,8 +28,8 @@
 #include <QFile>
 #include <QDir>
 #include <QAction>
+#include <QCloseEvent>
 
-#include "../../zuluCrypt-gui/socketsendkey.h"
 #include "../../zuluCrypt-gui/dialogmsg.h"
 
 namespace Ui {
@@ -41,7 +41,7 @@ class MainWindow : public QWidget
 	Q_OBJECT
 public:
 	MainWindow( QWidget * parent = 0 ) ;
-	void SetAddr( QString ) ;
+	void setToken( const QString& ) ;
 	~MainWindow();
 private slots:
 	void defaultButton( void ) ;
@@ -49,9 +49,10 @@ private slots:
 	void pbCancel( void ) ;
 	void done( void ) ;
 private:
+	void closeEvent( QCloseEvent * ) ;
 	void SetFocus( void );
 	Ui::MainWindow * m_ui;
-	QString m_addr ;
+	QString m_token ;
 	void * m_handle ;
 };
 

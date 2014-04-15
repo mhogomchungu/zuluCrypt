@@ -24,7 +24,6 @@
 #include <QRunnable>
 #include <QString>
 #include <QStringList>
-#include <QProcess>
 
 namespace LxQt{
 namespace Wallet {
@@ -51,7 +50,8 @@ public:
 		checkUnMount,
 		VolumeType,
 		openMountPoint,
-		getKey
+		getKey,
+		sendKey
 	};
 	void start( Task::Action ) ;
 	void setWallet( LxQt::Wallet::Wallet * ) ;
@@ -60,6 +60,8 @@ public:
 	void setDevice( const QString& ) ;
 	void setType( const QString& ) ;
 	void setKeySource( const QString& ) ;
+	void setKey( const QString& ) ;
+	void setKeyPath( const QString& ) ;
 	void setMountPoint( const QString& ) ;
 	void setMakeMountPointPublic( bool ) ;
 	void setList( const QStringList& ) ;
@@ -77,8 +79,6 @@ signals:
 	void done( void ) ;
 	void key( QString ) ;
 	void volumeRemoved( QString ) ;
-private slots:
-	void funguaMountPoint( int,QProcess::ExitStatus ) ;
 private:
 	bool loopDeviceIsStillPresent( const QString& device ) ;
 	void openMountPointTask( void ) ;
@@ -97,12 +97,14 @@ private:
 	void getVolumeSystemType( void ) ;
 	void checkUnmount( void ) ;
 	void getKeyTask( void ) ;
+	void keySend( void ) ;
 	LxQt::Wallet::Wallet * m_wallet ;
 	Task::Action m_action ;
 	QString m_volumeID ;
 	QString m_key ;
 	QString m_device ;
 	QString m_point ;
+	QString m_path ;
 	QString m_keySource ;
 	QString m_mode ;
 	QString m_type ;
@@ -115,7 +117,6 @@ private:
 	int m_exitCode ;
 	int m_exitStatus ;
 	int m_startError ;
-	QProcess * m_process ;
 };
 
 #endif // MANAGEPARTITIONTHREAD_H
