@@ -44,17 +44,21 @@ int main( int argc,char * argv[] )
 		 * third  component at offset 8 is the passphrase to unlock the LUKS volume.
 		 * last   component is at offset that marks the end of the third component.Where this offset will be depends on the length of the passphrase
 		 */
-		const char * e ;
-		quint32 s ;
-		s = password.size() ;
-		e = reinterpret_cast< const char * >( &s ) ;
-		QByteArray passLen( e,sizeof( quint32 ) ) ;
-		QFile f( keyFile ) ;
-		s = f.size() ;
-		e = reinterpret_cast< const char * >( &s ) ;
-		QByteArray FileSize( e,sizeof( quint32 ) ) ;
-		f.open( QIODevice::ReadOnly ) ;
-		return passLen + FileSize + password.toLatin1() + f.readAll() ;
+
+		auto intToByteArray = []( quint32 s ){
+
+			const char * e = reinterpret_cast< const char * >( &s ) ;
+			return QByteArray( e,sizeof( quint32 ) ) ;
+		} ;
+
+		QFile keyfile( keyFile ) ;
+
+		QByteArray keyFileSize  = intToByteArray( keyfile.size() ) ;
+		QByteArray passWordSize = intToByteArray( password.size() ) ;
+
+		keyfile.open( QIODevice::ReadOnly ) ;
+
+		return passWordSize + keyFileSize + password.toLatin1() + keyfile.readAll() ;
 	} ;
 
 	w.setKeyFunction( e ) ;
