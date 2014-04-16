@@ -222,14 +222,13 @@ void MainWindow::pbOpen()
 	/*
 	 * pass in a copy since we modify it in place wrong strings show up on the GUI on error
 	 */
-	QVector<QString> exe = m_exe ;
-	QString e = m_findExecutable( exe ) ;
+	m_exe_1 = m_exe ;
+	QString e = m_findExecutable( m_exe_1 ) ;
 	if( !e.isEmpty() ){
 		return msg.ShowUIOK( tr( "ERROR" ),
 				     tr( "could not find \"%1\" executable in \"/usr/local\",\"/usr/bin\" and \"/usr/sbin\"" ).arg( e ) ) ;
 	}
 
-	m_exe_1 = exe ;
 	this->disableAll() ;
 	m_working = true ;
 

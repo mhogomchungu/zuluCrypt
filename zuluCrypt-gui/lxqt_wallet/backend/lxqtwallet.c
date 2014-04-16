@@ -321,7 +321,7 @@ lxqt_wallet_error lxqt_wallet_create( const char * password,u_int32_t password_l
 }
 
 lxqt_wallet_error lxqt_wallet_create_encrypted_file( const char * password,u_int32_t password_length,
-						     const char * source,const char * destination,int(*function)( int ) )
+						     const char * source,const char * destination,int(*function)( int,void * ),void * v )
 {
 	gcry_error_t r ;
 	int fd_dest ;
@@ -388,6 +388,7 @@ lxqt_wallet_error lxqt_wallet_create_encrypted_file( const char * password,u_int
 		i = 0 ;
 		j = 0 ;
 		l = 0 ;
+		
 		while( 1 ){
 			k = read( fd_src,file_buffer,FILE_BLOCK_SIZE ) ;
 			if( k == 0 ){
@@ -401,17 +402,15 @@ lxqt_wallet_error lxqt_wallet_create_encrypted_file( const char * password,u_int
 			i += FILE_BLOCK_SIZE ;
 			j = ( i * 100 / size ) ;
 			if( j > l ){
-				if( function ){
-					if( function( j ) ){
-						break ;
-					}
+				if( function( j,v ) ){
+					break ;
 				}
 				l = j ;
 			}
 		}
-		if( function ){
-			function( 100 ) ;
-		}
+
+		function( 100,v ) ;
+
 		close( fd_dest ) ;
 		close( fd_src ) ;
 		return  _exit_create( lxqt_wallet_no_error,handle ) ;
@@ -501,7 +500,7 @@ static lxqt_wallet_error _lxqt_wallet_open_0( gcry_cipher_hd_t * h,struct lxqt_w
 }
 
 lxqt_wallet_error lxqt_wallet_create_decrypted_file( const char * password,u_int32_t password_length,
-						     const char * source,const char * destination,int( *function )( int ) )
+						     const char * source,const char * destination,int( *function )( int,void * ),void * v )
 {
 	gcry_error_t r ;
 
@@ -576,10 +575,8 @@ lxqt_wallet_error lxqt_wallet_create_decrypted_file( const char * password,u_int
 			i += FILE_BLOCK_SIZE ;
 			j = ( i * 100 / size ) ;
 			if( j > l ){
-				if( function ){
-					if( function( j ) ){
-						break ;
-					}
+				if( function( j,v ) ){
+					break ;
 				}
 				l = j ;
 			}
@@ -595,9 +592,9 @@ lxqt_wallet_error lxqt_wallet_create_decrypted_file( const char * password,u_int
 
 		close( fd_src ) ;
 		close( fd_dest ) ;
-		if( function ){
-			function( 100 ) ;
-		}
+
+		function( 100,v ) ;
+
 		return _exit_open( lxqt_wallet_no_error,w,handle,-1 ) ;
 	}else{
 		close( fd_src ) ;

@@ -59,8 +59,6 @@
 #include "../zuluCrypt-cli/bin/bash_special_chars.h"
 #include "lxqt_wallet/backend/lxqtwallet.h"
 
-static CryptTask * _cryptTask ;
-
 CryptTask::CryptTask( const QString& source,const QString& dest,
 		      const QString& keySource,const QString& key,const QString& task )
 {
@@ -70,7 +68,6 @@ CryptTask::CryptTask( const QString& source,const QString& dest,
 	m_key = key ;
 	m_task = task ;
 	m_status = CryptTask::unset ;
-	_cryptTask = this ;
 }
 
 void CryptTask::start()
@@ -455,9 +452,10 @@ int CryptTask::updateProgress( int e )
 	return m_status == CryptTask::quit ;
 }
 
-static int progress( int e )
+static int progress( int e,void * f )
 {
-	return _cryptTask->updateProgress( e ) ;
+	CryptTask * t = reinterpret_cast< CryptTask * >( f ) ;
+	return t->updateProgress( e ) ;
 }
 
 void CryptTask::newEncryptionRoutine()
@@ -469,8 +467,10 @@ void CryptTask::newEncryptionRoutine()
 	}
 
 	lxqt_wallet_error r ;
+	void * f = reinterpret_cast< void * >( this ) ;
 	r = lxqt_wallet_create_encrypted_file( m_key.toLatin1().constData(),m_key.size(),
-					       m_source.toLatin1().constData(),m_dest.toLatin1().constData(),progress ) ;
+					       m_source.toLatin1().constData(),
+					       m_dest.toLatin1().constData(),progress,f ) ;
 
 	if( m_status == CryptTask::quit ){
 		QFile::remove( m_dest ) ;
@@ -490,8 +490,10 @@ void CryptTask::newDecryptionRoutine()
 	}
 
 	lxqt_wallet_error r ;
+	void * f = reinterpret_cast< void * >( this ) ;
 	r = lxqt_wallet_create_decrypted_file( m_key.toLatin1().constData(),m_key.size(),
-					       m_source.toLatin1().constData(),m_dest.toLatin1().constData(),progress ) ;
+					       m_source.toLatin1().constData(),
+					       m_dest.toLatin1().constData(),progress,f ) ;
 
 	if( m_status == CryptTask::quit ){
 		QFile::remove( m_dest ) ;
