@@ -93,7 +93,7 @@ static int zuluExit( int st,const char * device,const char * m_point,stringList_
 		case 10: printf( gettext( "ERROR: shared mount point path aleady taken\n" ) ) ;							break ;
 		case 11: printf( gettext( "ERROR: there seem to be an opened mapper associated with the device\n" ) ) ;				break ;
 		case 12: printf( gettext( "ERROR: could not get a passphrase from the module\n" ) ) ;						break ;
-		case 13: printf( gettext( "ERROR: could not get passphrase in sikey_lent mode\n" ) ); 						break ;
+		case 13: printf( gettext( "ERROR: could not get passphrase in silent mode\n" ) ); 						break ;
 		case 14: printf( gettext( "ERROR: insufficient memory to hold passphrase\n" ) ) ;						break ;
 		case 15: printf( gettext( "ERROR: one or more required argument(s) for this operation is missing\n" ) ) ;			break ;
 		case 16: printf( gettext( "ERROR: invalid path to key file\n" ) ) ;								break ;

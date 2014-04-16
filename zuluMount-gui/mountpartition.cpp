@@ -153,14 +153,15 @@ void mountPartition::pbMount()
 
 	Task * t = new Task() ;
 	t->setDevice( m_path ) ;
+	
+	QString addr = utility::keyPath() ;
+	t->setKeySource( QString( "-f ") + addr ) ;
 
 	if( !m_deviceOffSet.isEmpty() ){
-		QString addr = utility::keyPath() ;
-		Task * t = new Task() ;
-		t->setKeySource( QString( "-f ") + addr ) ;
-		t->setKey( m_key ) ;
-		t->setKeyPath( addr ) ;
-		t->start( Task::sendKey ) ;
+		Task * e = new Task() ;
+		e->setKey( m_key ) ;
+		e->setKeyPath( addr ) ;
+		e->start( Task::sendKey ) ;
 	}
 	if( m_options.isEmpty() ){
 		if( m_ui->checkBoxMountReadOnly->isChecked() ){
