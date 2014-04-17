@@ -175,16 +175,16 @@ void MainWindow::showFavorites()
 	QAction * ac ;
 	m_favorite_menu->clear() ;
 	QStringList l = utility::readFavorites() ;
-	int j = l.size() - 1 ;
-	if( !l.isEmpty() ){
-		for( int i = 0 ; i < j ; i++ ){
-			ac = new QAction( l.at( i ).split( "\t" ).first(),m_favorite_menu ) ;
-			m_favorite_menu->addAction( ac ) ;
-		}
-	}else{
+	if( l.isEmpty() ){
 		ac = new QAction( tr( "list is empty" ),m_favorite_menu ) ;
 		ac->setEnabled( false ) ;
 		m_favorite_menu->addAction( ac ) ;
+	}else{
+		l.removeLast() ;
+		for( const auto& it : l ){
+			ac = new QAction( it.split( "\t" ).first(),m_favorite_menu ) ;
+			m_favorite_menu->addAction( ac ) ;
+		}
 	}
 }
 
@@ -634,10 +634,9 @@ void MainWindow::dropEvent( QDropEvent * e )
 {
 	const QMimeData * m = e->mimeData() ;
 	QList<QUrl> l = m->urls() ;
-	int j = l.size() ;
 
-	for( int i = 0 ; i < j ; i++ ){
-		m_device = l.at( i ).path() ;
+	for( const auto& it : l ){
+		m_device = it.path() ;
 		if( utility::pathPointsToAFile( m_device ) ){
 			Task * t = new Task() ;
 			connect( t,SIGNAL( getVolumeInfo( QStringList ) ),
@@ -845,8 +844,6 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 
 	QStringList entries ;
 
-	int j = list.size() - 1 ;
-
 	QFont f = this->font() ;
 
 	f.setItalic( !f.italic() ) ;
@@ -858,8 +855,8 @@ void MainWindow::slotMountedList( QStringList list,QStringList sys )
 	QString y ;
 
 	int index ;
-	for( int i = 0 ; i < j ; i++ ){
-		entries = list.at( i ).split( '\t' ) ;
+	for( const auto& it : list ){
+		entries = it.split( '\t' ) ;
 		if( entries.size() < 6 ){
 			continue ;
 		}

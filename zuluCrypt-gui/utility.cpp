@@ -157,10 +157,9 @@ QString utility::localizationLanguage( const QString& program )
 		QStringList dirList = dir.entryList() ;
 		dirList.removeOne( QString( "." ) ) ;
 		dirList.removeOne( QString( ".." ) ) ;
-		int j = values.size() ;
 
-		for( int i = 0 ; i < j ; i++ ){
-			s = values.at( i ) ;
+		for( const auto& it : values ){
+			s = it ;
 			index = s.indexOf( "." ) ;
 			if( index != -1 ){
 				s.truncate( index ) ;
@@ -182,9 +181,9 @@ QString utility::localizationLanguage( const QString& program )
 		QStringList dirList = dir.entryList() ;
 		dirList.removeOne( QString( "." ) ) ;
 		dirList.removeOne( QString( ".." ) ) ;
-		int j = values.size() ;
-		for( int i = 0 ; i < j ; i++ ){
-			s = values.at( i ) ;
+
+		for( const auto& it : values){
+			s = it ;
 			index = s.indexOf( "." ) ;
 			if( index != -1 ){
 				s.truncate( index ) ;
@@ -290,17 +289,13 @@ bool utility::getOpenVolumeReadOnlyOption( const QString& app )
 	QString home = QDir::homePath() + QString( "/.zuluCrypt/" ) ;
 	QDir d( home ) ;
 
-	if( d.exists() ){
-		;
-	}else{
+	if( !d.exists() ){
 		d.mkdir( home ) ;
 	}
 
 	QFile f( home + app + QString( "-openMode" ) ) ;
 
-	if( f.exists() ){
-		;
-	}else{
+	if( !f.exists() ){
 		f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
 		f.write( "0" ) ;
 		f.close() ;
@@ -384,10 +379,8 @@ QString utility::mapperPath( const QString& r )
 
 	QString z = QString( BASH_SPECIAL_CHARS ) ;
 
-	int g = z.size() ;
-
-	for( int i = 0 ; i < g ; i++ ){
-		path.replace( z.at( i ),QChar( '_' ) ) ;
+	for( const auto& it : z ){
+		path.replace( it,QChar( '_' ) ) ;
 	}
 	return path ;
 }
@@ -480,14 +473,13 @@ QStringList utility::luksEmptySlots( const QString& volumePath )
 	QByteArray s = N.readAll() ;
 	N.close() ;
 	int i = 0 ;
-	int z = s.size() ;
-	for( int j = 0 ; j < z ; j++ ){
-		if( s.at( j ) == '1' || s.at( j ) == '3' ){
+	for( const auto& it : s ){
+		if( it == '1' || it == '3' ){
 			i++ ;
 		}
 	}
-	list << QString::number( i ) ;
-	list << QString::number( z - 1 ) ;
+	list.append( QString::number( i ) ) ;
+	list.append( QString::number( s.size() - 1 ) ) ;
 	return list ;
 }
 
@@ -551,9 +543,8 @@ QString utility::getVolumeID( const QString& id )
 		l.removeOne( QString( "." ) ) ;
 		l.removeOne( QString( ".." ) ) ;
 		QDir r ;
-		int j = l.size() ;
-		for( int i = 0 ; i < j ; i++ ){
-			const QString& e = l.at( i ) ;
+		for( const auto& it : l ){
+			const QString& e = it ;
 			if( !e.startsWith( "dm" ) ){
 				r.setPath( QString( "/dev/disk/by-id/%1" ).arg( e ) ) ;
 				if( r.canonicalPath() == id ){

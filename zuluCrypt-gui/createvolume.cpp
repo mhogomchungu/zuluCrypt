@@ -139,28 +139,28 @@ void createvolume::findInstalledFs()
 void createvolume::volumeType( int s )
 {
 	switch( createvolume::createVolumeType( s ) ){
-		case createvolume::luks :
-			m_volumeType = QString( "luks" )   ;
-			m_ui->comboBoxRNG->setEnabled( true ) ;
-			m_ui->groupBox->setEnabled( false ) ;
-			break ;
-		case createvolume::plain :
-			m_volumeType = QString( "plain" )  ;
-			m_ui->comboBoxRNG->setEnabled( false ) ;
-			m_ui->groupBox->setEnabled( false ) ;
-			break ;
-		case createvolume::normal_truecrypt :
-			m_volumeType = QString( "tcrypt" ) ;
-			m_ui->comboBoxRNG->setEnabled( true ) ;
-			m_ui->groupBox->setEnabled( false ) ;
-			break ;
-		case createvolume::normal_and_hidden_truecrypt :
-			m_volumeType = QString( "tcrypt" ) ;
-			m_ui->comboBoxRNG->setEnabled( true ) ;
-			m_ui->groupBox->setEnabled( true ) ;
-			m_ui->rbHiddenKey->setChecked( true ) ;
-			this->rbHiddenPassphraseClicked() ;
-			break ;
+	case createvolume::luks :
+		m_volumeType = QString( "luks" )   ;
+		m_ui->comboBoxRNG->setEnabled( true ) ;
+		m_ui->groupBox->setEnabled( false ) ;
+		break ;
+	case createvolume::plain :
+		m_volumeType = QString( "plain" )  ;
+		m_ui->comboBoxRNG->setEnabled( false ) ;
+		m_ui->groupBox->setEnabled( false ) ;
+		break ;
+	case createvolume::normal_truecrypt :
+		m_volumeType = QString( "tcrypt" ) ;
+		m_ui->comboBoxRNG->setEnabled( true ) ;
+		m_ui->groupBox->setEnabled( false ) ;
+		break ;
+	case createvolume::normal_and_hidden_truecrypt :
+		m_volumeType = QString( "tcrypt" ) ;
+		m_ui->comboBoxRNG->setEnabled( true ) ;
+		m_ui->groupBox->setEnabled( true ) ;
+		m_ui->rbHiddenKey->setChecked( true ) ;
+		this->rbHiddenPassphraseClicked() ;
+		break ;
 	}
 }
 
@@ -426,17 +426,17 @@ void createvolume::pbCreateClicked()
 
 	createvolume::createVolumeType type = createvolume::createVolumeType( m_ui->comboBoxVolumeType->currentIndex() ) ;
 	switch( type ){
-		case createvolume::luks :
-			m_volumeType = QString( "luks" ) ;
-			break ;
-		case createvolume::plain :
-			m_volumeType = QString( "plain" ) ;
-			break ;
-		case createvolume::normal_truecrypt :
-		case createvolume::normal_and_hidden_truecrypt :
-			m_volumeType = QString( "truecrypt" ) ;
-			break ;
-		default: m_volumeType = QString( "luks" ) ;
+	case createvolume::luks :
+		m_volumeType = QString( "luks" ) ;
+		break ;
+	case createvolume::plain :
+		m_volumeType = QString( "plain" ) ;
+		break ;
+	case createvolume::normal_truecrypt :
+	case createvolume::normal_and_hidden_truecrypt :
+		m_volumeType = QString( "truecrypt" ) ;
+		break ;
+	default: m_volumeType = QString( "luks" ) ;
 	}
 
 	if( type == createvolume::normal_and_hidden_truecrypt ){

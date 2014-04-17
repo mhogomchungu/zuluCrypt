@@ -106,46 +106,37 @@ void walletconfig::add( QString volumeID,QString comment,QString key )
 	t->start( Task::addKey ) ;
 }
 
-const QByteArray& walletconfig::getAccInfo( const QString& acc )
-{
-	int j = m_keys.size() ;
-
-	for( int i = 0 ; i < j ; i++ ){
-		if( m_keys.at( i ).getKey() == acc ){
-			return m_keys.at( i ).getValue() ;
-		}
-	}
-
-	/*
-	 * we are not supposed to get here
-	 */
-	return m_bogusEntry ;
-}
-
 void walletconfig::TaskFinished()
 {
-	Task::action r = Task::action( m_action ) ;
+	auto _addEntry = [&](){
 
-	QStringList entry ;
-
-	if( r == Task::addKey ){
-
+		QStringList entry ;
 		entry.append( m_volumeID ) ;
 		entry.append( m_comment ) ;
-		entry.append( tr( "<redacted>" ) ) ;
 
 		tablewidget::addRowToTable( m_ui->tableWidget,entry ) ;
+	} ;
 
-	}else if( r == Task::deleteKey ){
+	auto _deleteEntry = [&](){
 
 		tablewidget::deleteRowFromTable( m_ui->tableWidget,m_row ) ;
+	} ;
 
-	}else if( r == Task::getAllKeys ){
-		QTableWidget * table = m_ui->tableWidget ;
+	auto _showEntries = [&](){
 
-		if( m_keys.empty() ){
-			;
-		}else{
+		auto _getEntry = [&]( const QString& acc ){
+			for( const auto& it : m_keys ){
+				if( it.getKey() == acc ){
+					return it.getValue() ;
+				}
+			}
+			/*
+			 * we are not supposed to get here
+			 */
+			return m_bogusEntry ;
+		} ;
+
+		if( !m_keys.empty() ){
 			/*
 			 * each volume gets two entries in wallet:
 			 * First one in the form of  : entry         -> entry password
@@ -157,24 +148,26 @@ void walletconfig::TaskFinished()
 			 */
 
 			QStringList s ;
-			int j = m_keys.size() ;
-			for( int i = 0 ; i < j ; i++ ){
-				const QString& acc = m_keys.at( i ).getKey() ;
-				if( acc.endsWith( COMMENT ) ){
-					;
-				}else{
+			QTableWidget * table = m_ui->tableWidget ;
+
+			for( const auto& it : m_keys ){
+				const QString& acc = it.getKey() ;
+				if( !acc.endsWith( COMMENT ) ){
 					s.clear() ;
 					s.append( acc ) ;
-					s.append( this->getAccInfo( acc + QString( COMMENT ) ) ) ;
-					s.append( tr( "<redacted>" ) ) ;
+					s.append( _getEntry( acc + QString( COMMENT ) ) ) ;
 					tablewidget::addRowToTable( table,s ) ;
 				}
 			}
 		}
-	}else{
-		/*
-		 * we dont get here
-		 */
+
+	} ;
+
+	switch(	Task::action( m_action ) ){
+		case Task::addKey    : _addEntry()    ; break ;
+		case Task::deleteKey : _deleteEntry() ; break ;
+		case Task::getAllKeys: _showEntries() ; break ;
+		default : ;
 	}
 
 	this->enableAll() ;

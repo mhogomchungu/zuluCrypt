@@ -96,10 +96,10 @@ void Task::updateVolumeListTask()
 
 	if( m_status == 0 ){
 		QStringList l = QString( p.readAll() ).split( "\n" ) ;
-		int j = l.size() - 1 ;
+		l.removeLast() ;
 		QStringList entry ;
-		for( int i = 0 ; i < j ; i++ ){
-			entry = l.at( i ).split( "\t" ) ;
+		for( const auto& it : l ){
+			entry = it.split( "\t" ) ;
 			if( entry.size() >= 3 ){
 				emit addItemToTable( entry.at( 0 ),entry.at( 1 ),entry.at( 2 ) ) ;
 			}
@@ -136,19 +136,19 @@ void Task::runCloseAllVolumeTask()
 		QTableWidgetItem ** it = tableItems.data() ;
 
 		for( int i = 0 ; i < volumeCount ; i++ ){
-			it[ i ] = m_table->item( i,0 ) ;
+			*( it + i ) = m_table->item( i,0 ) ;
 		}
 
 		QProcess p ;
 		QString exe ;
 		QString device ;
 
-		for( int i = 0 ; i < volumeCount ; i++ ){
-			device = it[ i ]->text().replace( "\"","\"\"\"" ) ;
+		for( const auto& it : tableItems ){
+			device = it->text().replace( "\"","\"\"\"" ) ;
 			exe = QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( device ) ;
 			p.start( exe ) ;
 			p.waitForFinished() ;
-			emit taskResult( it[ i ],p.exitCode() ) ;
+			emit taskResult( it,p.exitCode() ) ;
 			p.close() ;
 			sleep( 1 ) ; // for ui effect
 		}
@@ -193,14 +193,13 @@ void Task::runVolumeTask()
 	p.waitForFinished() ;
 
 	QStringList l = QString( p.readAllStandardOutput() ).split( "\n" ) ;
-
+	l.removeLast() ;
 	p.close() ;
-	int j = l.size() - 1 ;
 
 	QStringList list ;
 	QString entry ;
-	for( int i = 0 ; i < j ; i++ ){
-		list = l.at( i ).split( "\t" ) ;
+	for( const auto& it : l ){
+		list = it.split( "\t" ) ;
 		entry = list.at( 3 ) ;
 		/*
 		 * MDRAID partitions have "linux_raid_member" as their file system
@@ -208,9 +207,7 @@ void Task::runVolumeTask()
 		 *
 		 * we are not showing these partitions since we dont support them
 		 */
-		if( entry.contains( QString( "member" ) ) ){
-			;
-		}else{
+		if( !entry.contains( QString( "member" ) ) ){
 			emit partitionProperties( list ) ;
 		}
 	}

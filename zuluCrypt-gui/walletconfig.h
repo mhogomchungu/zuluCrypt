@@ -58,7 +58,6 @@ private slots:
 private:
 	void enableAll( void ) ;
 	void disableAll( void ) ;
-	const QByteArray& getAccInfo( const QString& acc ) ;
 	Ui::walletconfig * m_ui ;
 	void closeEvent( QCloseEvent * ) ;
 	LxQt::Wallet::Wallet * m_wallet ;

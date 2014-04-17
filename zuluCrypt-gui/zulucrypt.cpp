@@ -490,10 +490,9 @@ void zuluCrypt::dropEvent( QDropEvent * e )
 {
 	const QMimeData * m = e->mimeData() ;
 	QList<QUrl> l = m->urls() ;
-	int j = l.size() ;
 
-	for( int i = 0 ; i < j ; i++ ){
-		m_device = l.at( i ).path() ;
+	for( const auto& it : l ){
+		m_device = it.path() ;
 		if( utility::pathPointsToAFile( m_device ) ){
 			QString y = m_device.split( "/" ).last() ;
 			this->ShowPasswordDialog( m_device,y ) ;
@@ -711,8 +710,9 @@ void zuluCrypt::readFavorites()
 	m_ui->menuFavorites->clear() ;
 	QStringList l = utility::readFavorites() ;
 	if( !l.isEmpty() ){
-		for( int i = 0 ; i < l.size() - 1 ; i++ ){
-			ac = new QAction( l.at( i ),m_ui->menuFavorites ) ;
+		l.removeLast() ;
+		for( const auto& it : l ){
+			ac = new QAction( it,m_ui->menuFavorites ) ;
 			m_ui->menuFavorites->addAction( ac ) ;
 		}
 	}else{
@@ -1046,10 +1046,6 @@ void zuluCrypt::decryptFile()
 
 zuluCrypt::~zuluCrypt()
 {
-	if( m_ui ){
-		delete m_ui ;
-	}
-	if( m_trayIcon ){
-		delete m_trayIcon ;
-	}
+	delete m_ui ;
+	delete m_trayIcon ;
 }

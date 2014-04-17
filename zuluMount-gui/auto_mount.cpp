@@ -76,21 +76,6 @@ void auto_mount::threadStopped()
 	m_threadIsRunning = false ;
 }
 
-bool auto_mount::ignoreDevice( const char * device )
-{
-	/*
-	 * dont care about these devices.
-	 * /dev/sgX seem to be created when a usb device is plugged in
-	 * /dev/dm-X are dm devices we dont care about since we will be dealing with them differently
-	 */
-	return stringPrefixMatch( device,"sg",2 )      ||
-	       stringPrefixMatch( device,"dm-",3 )     ||
-	       stringHasComponent( device,"dev/tmp" )  ||
-	       stringHasComponent( device,"dev-tmp" )  ||
-	       stringHasComponent( device,".tmp.md." ) ||
-	       stringHasComponent( device,"md/md-device-map" ) ;
-}
-
 void auto_mount::run()
 {
 	/*
@@ -128,6 +113,22 @@ void auto_mount::run()
 	int data_read ;
 	int baseSize = sizeof( struct inotify_event ) ;
 
+	auto _allowed_device = []( const char * device ){
+		/*
+		 * dont care about these devices.
+		 * /dev/sgX seem to be created when a usb device is plugged in
+		 * /dev/dm-X are dm devices we dont care about since we will be dealing with them differently
+		 */
+		bool s = stringPrefixMatch( device,"sg",2 )    ||
+		       stringPrefixMatch( device,"dm-",3 )     ||
+		       stringHasComponent( device,"dev/tmp" )  ||
+		       stringHasComponent( device,"dev-tmp" )  ||
+		       stringHasComponent( device,".tmp.md." ) ||
+		       stringHasComponent( device,"md/md-device-map" ) ;
+
+		return s == false ;
+	} ;
+
 	#define BUFF_SIZE 4096
 	char buffer[ BUFF_SIZE ];
 
@@ -150,9 +151,7 @@ void auto_mount::run()
 				continue ;
 			}
 
-			if( this->ignoreDevice( device ) ){
-				;
-			}else{
+			if( _allowed_device( device ) ){
 				if( pevent->wd == dev && pevent->mask & IN_CREATE ){
 					/*
 					 * /dev/md path seem to be deleted when the last entry in it is removed and

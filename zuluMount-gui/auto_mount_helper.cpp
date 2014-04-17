@@ -52,10 +52,9 @@ bool auto_mount_helper::deviceIsSystem( const QString& device )
 		QString s = QString( p.readAll() ) ;
 		p.close() ;
 		QStringList l = s.split( "\n" ) ;
-		int j = l.size() ;
 
-		for( int i = 0 ; i < j ; i++ ){
-			if( l.at( i ) == device ){
+		for( const auto& it : l ){
+			if( it == device ){
 				return true ;
 			}
 		}
@@ -158,14 +157,12 @@ QString auto_mount_helper::mdRaidPath( const QString& dev )
 
 	if( d.exists() ){
 		QStringList l = d.entryList() ;
-		int j = l.size() ;
 		QString e ;
-		for( int i = 0 ; i < j ; i++ ){
-			e = l.at( i ) ;
-			if( e == QString( "." ) || e == QString( ".." ) || e.contains( QString( "/dev/.tmp" ) ) ){
+		for( const auto& it : l ){
+			if( it == QString( "." ) || it == QString( ".." ) || it.contains( QString( "/dev/.tmp" ) ) ){
 				continue ;
 			}
-			dev_1 = QString( "/dev/md/" ) + e ;
+			dev_1 = QString( "/dev/md/" ) + it ;
 			f.setPath( dev_1 ) ;
 			if( f.canonicalPath() == dev ){
 				return dev_1 ;

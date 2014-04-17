@@ -42,10 +42,8 @@ private slots:
 	void threadStopped( void ) ;
 	void stop( void ) ;
 private:
-	void removeEntry( QString ) ;
+	void removeEntry( const QString& ) ;
 	void run( void ) ;
-	QStringList updateVolumeList( void ) ;
-	void updateAndCompareVolumeList( void ) ;
 	QThread * m_baba ;
 	QThread * m_mtoto ;
 	QObject * m_babu ;

@@ -348,38 +348,38 @@ void cryptfiles::taskFinished( int st )
 	CryptTask::status status = CryptTask::status( st ) ;
 
 	switch( status ){
-		case CryptTask::encryptSuccess        : msg.ShowUIOK( tr( "SUCCESS" ),tr( "encrypted file created successfully" ) )     ;
-			 return this->HideUI() ;
-		case CryptTask::md5Pass               :
-		case CryptTask::decryptSuccess        : msg.ShowUIOK( tr( "SUCCESS" ),tr( "decrypted file created successfully" ) )	;
-			 return this->HideUI() ;
-		case CryptTask::openKeyFileReadFail   : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open keyfile for reading" ) )	;
-			 break ;
-		case CryptTask::openMapperFail : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open encryption routines" ) )	;
-			break ;
-		case CryptTask::destinationFileExists : msg.ShowUIOK( tr( "ERROR!" ),tr( "file or folder already exist at destination address" ) )    ;
-			break ;
-		case CryptTask::OpenDestinationFail   :
-		case CryptTask::createFileFail        : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to create destination file" ) )      ;
-			break ;
-		case CryptTask::wrongKey              : msg.ShowUIOK( tr( "ERROR!" ),tr( "presented key did not match the encryption key" ) )         ;
-			break ;
-		case CryptTask::quit                  : msg.ShowUIOK( tr( "INFO!" ),tr( "operation terminated per user request" ) )                   ;
-			return this->HideUI() ;
-		case CryptTask::OpenSourceFail        : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open source file for reading" ) ) ;
-			break ;
-		case CryptTask::md5Fail               : msg.ShowUIOK( tr( "WARNING"),tr( "decrypted file created successfully but md5 checksum failed,file maybe corrupted" ) ) ;
-			return this->HideUI() ;
-		case CryptTask::openMapperReadFail    : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open reading encryption routines" ) )	;
-			break ;
-		case CryptTask::openMapperWriteFail   : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open writing encryption routines" ) )	;
-			break ;
-		case CryptTask::closeMapperFail       : msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to close encryption routine" ) )		;
-			break ;
-		case CryptTask::unset                 :
-		case CryptTask::success               :
-		case CryptTask::QProcessFail          :
-			break ;
+	case CryptTask::encryptSuccess        : msg.ShowUIOK( tr( "SUCCESS" ),tr( "encrypted file created successfully" ) )     ;
+		 return this->HideUI() ;
+	case CryptTask::md5Pass               :
+	case CryptTask::decryptSuccess        : msg.ShowUIOK( tr( "SUCCESS" ),tr( "decrypted file created successfully" ) )	;
+		 return this->HideUI() ;
+	case CryptTask::openKeyFileReadFail   : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open keyfile for reading" ) )	;
+		 break ;
+	case CryptTask::openMapperFail : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open encryption routines" ) )	;
+		break ;
+	case CryptTask::destinationFileExists : msg.ShowUIOK( tr( "ERROR!" ),tr( "file or folder already exist at destination address" ) )    ;
+		break ;
+	case CryptTask::OpenDestinationFail   :
+	case CryptTask::createFileFail        : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to create destination file" ) )      ;
+		break ;
+	case CryptTask::wrongKey              : msg.ShowUIOK( tr( "ERROR!" ),tr( "presented key did not match the encryption key" ) )         ;
+		break ;
+	case CryptTask::quit                  : msg.ShowUIOK( tr( "INFO!" ),tr( "operation terminated per user request" ) )                   ;
+		return this->HideUI() ;
+	case CryptTask::OpenSourceFail        : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open source file for reading" ) ) ;
+		break ;
+	case CryptTask::md5Fail               : msg.ShowUIOK( tr( "WARNING"),tr( "decrypted file created successfully but md5 checksum failed,file maybe corrupted" ) ) ;
+		return this->HideUI() ;
+	case CryptTask::openMapperReadFail    : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open reading encryption routines" ) )	;
+		break ;
+	case CryptTask::openMapperWriteFail   : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open writing encryption routines" ) )	;
+		break ;
+	case CryptTask::closeMapperFail       : msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to close encryption routine" ) )		;
+		break ;
+	case CryptTask::unset                 :
+	case CryptTask::success               :
+	case CryptTask::QProcessFail          :
+		break ;
 	}
 
 	this->enableAll() ;

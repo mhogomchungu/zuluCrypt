@@ -264,21 +264,21 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	p = String( mapper ) ;
 
 	switch( crypt_status( cd,mapper ) ){
-		case CRYPT_INACTIVE :
-			StringAppend( p," is inactive.\n" ) ;
-			return zuluExit( p,cd ) ;
-		case CRYPT_INVALID  :
-			StringAppend( p," is invalid.\n" ) ;
-			return zuluExit( p,cd ) ;
-		case CRYPT_ACTIVE   :
-			StringAppend( p," is active.\n" ) ;
-			break ;
-		case CRYPT_BUSY     :
-			StringAppend( p," is active and is in use.\n" ) ;
-			break ;
-		default :
-			StringAppend( p," is invalid.\n" ) ;
-			return zuluExit( p,cd ) ;
+	case CRYPT_INACTIVE :
+		StringAppend( p," is inactive.\n" ) ;
+		return zuluExit( p,cd ) ;
+	case CRYPT_INVALID  :
+		StringAppend( p," is invalid.\n" ) ;
+		return zuluExit( p,cd ) ;
+	case CRYPT_ACTIVE   :
+		StringAppend( p," is active.\n" ) ;
+		break ;
+	case CRYPT_BUSY     :
+		StringAppend( p," is active and is in use.\n" ) ;
+		break ;
+	default :
+		StringAppend( p," is invalid.\n" ) ;
+		return zuluExit( p,cd ) ;
 	}
 
 	StringAppend( p," type:   \t" ) ;

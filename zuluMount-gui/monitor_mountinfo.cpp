@@ -54,7 +54,7 @@ void monitor_mountinfo::threadStopped()
 	m_threadIsRunning = false ;
 }
 
-void monitor_mountinfo::removeEntry( QString device )
+void monitor_mountinfo::removeEntry( const QString& device )
 {
 	emit volumeRemoved( device ) ;
 }
@@ -83,36 +83,43 @@ void monitor_mountinfo::run()
 		m_threadIsRunning = true ;
 	}
 
-	fds[ 0 ].fd = f;
-	fds[ 0 ].events = POLLPRI;
-	int timeout  = -1 ;
+	fds[ 0 ].fd = f ;
+	fds[ 0 ].events = POLLPRI ;
 	int e ;
 
-	QStringList oldList = this->updateVolumeList() ;
+	auto _updateVolumeList = [](){
+
+		QProcess p ;
+		QString exe = QString( "%1 -E" ).arg( zuluMount ) ;
+		p.start( exe ) ;
+		p.waitForFinished( -1 ) ;
+		QStringList l = QString( p.readAll() ).split( "\n" ) ;
+		l.removeLast() ;
+		return l ;
+	} ;
+
+	QStringList oldList = _updateVolumeList() ;
 	QStringList newList ;
 	QStringList temp ;
 
 	while( 1 ){
-		e = poll( fds,1,timeout ) ;
+		e = poll( fds,1,-1 ) ;
 		if( e == -1 ){
 			continue ;
 		}
 
-		newList = this->updateVolumeList() ;
+		newList = _updateVolumeList() ;
 
 		if( oldList.size() > newList.size() ){
 			/*
 			 * unmount has just happened
 			 */
-			int j = newList.size() ;
-			for( int i = 0 ; i < j ; i++ ){
-				oldList.removeOne( newList.at( i ) ) ;
+			for( const auto& it : newList ){
+				oldList.removeOne( it ) ;
 			}
-			j = oldList.size() ;
-			for( int i = 0 ; i < j ; i++ ){
-				const QString& device = oldList.at( i ) ;
+			for( const auto& it : oldList ){
 				Task * t = new Task() ;
-				t->setDevice( device );
+				t->setDevice( it ) ;
 				connect( t,SIGNAL( signalProperties( QString ) ),m_babu,SLOT( volumeMiniProperties( QString ) ) ) ;
 				connect( t,SIGNAL( volumeRemoved( QString ) ),m_babu,SLOT( deviceRemoved( QString ) ) ) ;
 				t->start( Task::VolumeMiniProperties ) ;
@@ -121,17 +128,14 @@ void monitor_mountinfo::run()
 			/*
 			 * mount has happened
 			 */
-			int j = oldList.size() ;
 			temp = newList ;
-			for( int i = 0 ; i < j ; i++ ){
-				temp.removeOne( oldList.at( i ) ) ;
+			for( const auto& it : oldList ){
+				temp.removeOne( it ) ;
 			}
 
-			j = temp.size() ;
-			for( int i = 0 ; i < j ; i++ ){
-				const QString& device = temp.at( i ) ;
+			for( const auto& it : temp ){
 				Task * t = new Task() ;
-				t->setDevice( device ) ;
+				t->setDevice( it ) ;
 				connect( t,SIGNAL( signalProperties( QString ) ),m_babu,SLOT( volumeMiniProperties( QString ) ) ) ;
 				t->start( Task::VolumeMiniProperties ) ;
 			}
@@ -143,19 +147,4 @@ void monitor_mountinfo::run()
 
 		oldList = newList ;
 	}
-}
-
-QStringList monitor_mountinfo::updateVolumeList()
-{
-	QProcess p ;
-	QString exe = QString( "%1 -E" ).arg( zuluMount ) ;
-	p.start( exe );
-	p.waitForFinished( -1 ) ;
-
-	return QString( p.readAll() ).split( "\n" ) ;
-}
-
-void monitor_mountinfo::updateAndCompareVolumeList()
-{
-
 }

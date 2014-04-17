@@ -46,7 +46,6 @@ public:
 		VolumeMiniProperties,
 		OpenPath,
 		CheckPermissions,
-		systemdevice,
 		checkUnMount,
 		VolumeType,
 		openMountPoint,
@@ -82,7 +81,6 @@ signals:
 private:
 	bool loopDeviceIsStillPresent( const QString& device ) ;
 	void openMountPointTask( void ) ;
-	void checkIfSystemDevice( void ) ;
 	void checkPermissions( void ) ;
 	void openPathInFileManager( void ) ;
 	void volumeMiniProperties( void ) ;

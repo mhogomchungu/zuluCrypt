@@ -402,29 +402,27 @@ void CryptTask::oldEncryptionRoutine()
 {
 	m_status = this->encrypt() ;
 	switch( m_status ){
-		case CryptTask::OpenSourceFail :
-		case CryptTask::OpenDestinationFail :
-			break ;
-		case CryptTask::openMapperFail :
-			QFile::remove( m_dest ) ;
-			break ;
-		case CryptTask::openMapperWriteFail :
-		case CryptTask::quit :
-			this->closeMapper( m_dest ) ;
-			QFile::remove( m_dest ) ;
-			break ;
-		case CryptTask::success :
-			m_status = this->closeMapper( m_dest ) ;
-			if( m_status == CryptTask::success ){
-				m_status = CryptTask::encryptSuccess ;
-			}else{
-				;
-			}
-			QFile::setPermissions( m_dest,QFile::ReadOwner|QFile::WriteOwner ) ;
-			break ;
-		default:
-			this->closeMapper( m_dest ) ;
-			QFile::remove( m_dest ) ;
+	case CryptTask::OpenSourceFail :
+	case CryptTask::OpenDestinationFail :
+		break ;
+	case CryptTask::openMapperFail :
+		QFile::remove( m_dest ) ;
+		break ;
+	case CryptTask::openMapperWriteFail :
+	case CryptTask::quit :
+		this->closeMapper( m_dest ) ;
+		QFile::remove( m_dest ) ;
+		break ;
+	case CryptTask::success :
+		m_status = this->closeMapper( m_dest ) ;
+		if( m_status == CryptTask::success ){
+			m_status = CryptTask::encryptSuccess ;
+		}
+		QFile::setPermissions( m_dest,QFile::ReadOwner|QFile::WriteOwner ) ;
+		break ;
+	default:
+		this->closeMapper( m_dest ) ;
+		QFile::remove( m_dest ) ;
 	}
 }
 

@@ -39,7 +39,6 @@ signals:
 	void deviceFromDevMapper( QString ) ;
 private slots:
 	void threadStopped( void ) ;
-	bool ignoreDevice( const char * device ) ;
 private:
 	void run() ;
 	int m_fdDir ;

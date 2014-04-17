@@ -121,7 +121,6 @@ void Task::run()
 		case Task::OpenPath            : return this->openPathInFileManager() ;
 		case Task::CheckPermissions    : return this->checkPermissions() ;
 		case Task::VolumeType          : return this->getVolumeType() ;
-		case Task::systemdevice        : return this->checkIfSystemDevice() ;
 		case Task::checkUnMount        : return this->checkUnmount() ;
 		case Task::openMountPoint      : return this->openMountPointTask() ;
 		case Task::getKey              : return this->getKeyTask() ;
@@ -164,28 +163,26 @@ void Task::checkUnmount()
 	p.waitForFinished() ;
 }
 
-void Task::checkIfSystemDevice( void )
-{
-	QProcess p ;
-	QString exe = QString( "%1 -S" ).arg( zuluMount ) ;
-	p.start( exe ) ;
-	p.waitForFinished() ;
-	QString s = QString( p.readAll() ) ;
-	p.close() ;
-	QStringList l = s.split( "\n" ) ;
-	int j = l.size() ;
-	m_systemDevice = false ;
-	for( int i = 0 ; i < j ; i++ ){
-		if( l.at( i ) == m_device ){
-			m_systemDevice = true ;
-			break ;
-		}
-	}
-}
-
 void Task::getVolumeType()
 {
-	this->checkIfSystemDevice() ;
+	auto _systemDevice = []( const QString& device ){
+		QProcess p ;
+		QString exe = QString( "%1 -S" ).arg( zuluMount ) ;
+		p.start( exe ) ;
+		p.waitForFinished() ;
+		QString s = QString( p.readAll() ) ;
+		p.close() ;
+		QStringList l = s.split( "\n" ) ;
+		l.removeLast() ;
+
+		for( const auto& it : l ){
+			if( it == device ){
+				return true ;
+			}
+		}
+
+		return false ;
+	} ;
 
 	QProcess p ;
 	QString exe = QString( "%1 -L -d \"%2\"" ).arg( zuluMount ).arg( m_device.replace( "\"","\"\"\"" ) ) ;
@@ -197,7 +194,7 @@ void Task::getVolumeType()
 	if( p.exitCode() == 0 ){
 		l =  m.split( "\t" ) ;
 		if( l.size() >= 4 ){
-			if( m_systemDevice ){
+			if( _systemDevice( m_device ) ){
 				emit getVolumeSystemInfo( l ) ;
 			}else{
 				emit getVolumeInfo( l ) ;
@@ -293,12 +290,10 @@ bool Task::loopDeviceIsStillPresent( const QString& device )
 	QString e ;
 	QString dev = QString( "%1\n" ).arg( device ) ;
 	QByteArray s ;
-	int j = l.size() ;
 	QFile f ;
-	for( int i = 0 ; i < j ; i++ ){
-		const QString& x = l.at( i ) ;
-		if( x.startsWith( "loop" ) ){
-			e = QString( "/sys/block/%1/loop/backing_file" ).arg( x ) ;
+	for( const auto& it: l ){
+		if( it.startsWith( "loop" ) ){
+			e = QString( "/sys/block/%1/loop/backing_file" ).arg( it ) ;
 			f.setFileName( e ) ;
 			f.open( QIODevice::ReadOnly ) ;
 			s = f.readAll() ;
