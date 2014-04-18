@@ -21,7 +21,6 @@ SOURCES += main.cpp\
     oneinstance.cpp \
     ../zuluCrypt-gui/utility.cpp \
     auto_mount.cpp \
-    auto_mount_helper.cpp \
     monitor_mountinfo.cpp \
     task.cpp \
     deviceoffset.cpp \
@@ -37,7 +36,6 @@ HEADERS  += mainwindow.h\
     oneinstance.h \
     ../zuluCrypt-gui/utility.h \
     auto_mount.h \
-    auto_mount_helper.h \
     monitor_mountinfo.h \
     task.h \
     deviceoffset.h \

@@ -29,6 +29,7 @@
 #include "../zuluCrypt-gui/utility.h"
 #include "bin_path.h"
 #include <unistd.h>
+#include <sys/inotify.h>
 
 Task::Task()
 {
@@ -90,6 +91,16 @@ void Task::setDeviceOffSet( const QString& offset )
 	m_deviceOffSet = offset ;
 }
 
+void Task::setDeviceType( Task::device_t d )
+{
+	m_Device = d ;
+}
+
+void Task::setMask( u_int32_t mask )
+{
+	m_mask = mask ;
+}
+
 void Task::setWallet( LxQt::Wallet::Wallet * wallet )
 {
 	m_wallet = wallet ;
@@ -125,6 +136,7 @@ void Task::run()
 		case Task::openMountPoint      : return this->openMountPointTask() ;
 		case Task::getKey              : return this->getKeyTask() ;
 		case Task::sendKey             : return this->keySend() ;
+		case Task::deviceProperty      : return this->deviceProperties() ;
 	}
 }
 
@@ -165,7 +177,12 @@ void Task::checkUnmount()
 
 void Task::getVolumeType()
 {
-	auto _systemDevice = []( const QString& device ){
+	this->getVolumeType( m_device ) ;
+}
+
+void Task::getVolumeType( const QString& device )
+{
+	auto _systemDevice = []( const QString& dev ){
 		QProcess p ;
 		QString exe = QString( "%1 -S" ).arg( zuluMount ) ;
 		p.start( exe ) ;
@@ -176,7 +193,7 @@ void Task::getVolumeType()
 		l.removeLast() ;
 
 		for( const auto& it : l ){
-			if( it == device ){
+			if( it == dev ){
 				return true ;
 			}
 		}
@@ -184,8 +201,9 @@ void Task::getVolumeType()
 		return false ;
 	} ;
 
+	QString d = device ;
 	QProcess p ;
-	QString exe = QString( "%1 -L -d \"%2\"" ).arg( zuluMount ).arg( m_device.replace( "\"","\"\"\"" ) ) ;
+	QString exe = QString( "%1 -L -d \"%2\"" ).arg( zuluMount ).arg( d.replace( "\"","\"\"\"" ) ) ;
 	p.start( exe ) ;
 	p.waitForFinished() ;
 
@@ -194,15 +212,12 @@ void Task::getVolumeType()
 	if( p.exitCode() == 0 ){
 		l =  m.split( "\t" ) ;
 		if( l.size() >= 4 ){
-			if( _systemDevice( m_device ) ){
+			if( _systemDevice( d ) ){
 				emit getVolumeSystemInfo( l ) ;
 			}else{
 				emit getVolumeInfo( l ) ;
 			}
 		}
-	}else{
-		emit getVolumeSystemInfo( l ) ;
-		emit getVolumeInfo( l ) ;
 	}
 }
 
@@ -283,38 +298,37 @@ void Task::volumeProperties()
 	}
 }
 
-bool Task::loopDeviceIsStillPresent( const QString& device )
-{
-	QDir d( "/sys/block" ) ;
-	QStringList l = d.entryList() ;
-	QString e ;
-	QString dev = QString( "%1\n" ).arg( device ) ;
-	QByteArray s ;
-	QFile f ;
-	for( const auto& it: l ){
-		if( it.startsWith( "loop" ) ){
-			e = QString( "/sys/block/%1/loop/backing_file" ).arg( it ) ;
-			f.setFileName( e ) ;
-			f.open( QIODevice::ReadOnly ) ;
-			s = f.readAll() ;
-			f.close() ;
-			if( s == dev ){
-				return true ;
-			}
-		}
-	}
-	return false ;
-}
-
 void Task::volumeMiniProperties()
 {
+	auto _loopDeviceIsGone =[]( const QString& device ){
+		QDir d( "/sys/block" ) ;
+		QStringList l = d.entryList() ;
+		QString e ;
+		QString dev = QString( "%1\n" ).arg( device ) ;
+		QByteArray s ;
+		QFile f ;
+		for( const auto& it: l ){
+			if( it.startsWith( "loop" ) ){
+				e = QString( "/sys/block/%1/loop/backing_file" ).arg( it ) ;
+				f.setFileName( e ) ;
+				f.open( QIODevice::ReadOnly ) ;
+				s = f.readAll() ;
+				f.close() ;
+				if( s == dev ){
+					return false ;
+				}
+			}
+		}
+		return true ;
+	} ;
+
 	if( !m_device.startsWith( "UUID" ) && !m_device.startsWith( "/dev/" ) ){
 		/*
 		 * There is some sort of a race condition here and things do not always work as expected
 		 * try to sleep for a second to see if it will help
 		 */
 		sleep( 1 ) ;
-		if( !this->loopDeviceIsStillPresent( m_device ) ){
+		if( _loopDeviceIsGone( m_device ) ){
 			/*
 			 * we were just asked to find properties of a loop device
 			 * that no longer exists,remove it from the list in the GUI window
@@ -469,6 +483,103 @@ void Task::start( Task::Action action )
 	QThreadPool * t = QThreadPool::globalInstance() ;
 	t->setMaxThreadCount( 10 ) ;
 	t->start( this ) ;
+}
+
+void Task::deviceProperties()
+{
+	auto _mdRaidDevice = [&]( const QString& device ){
+
+		auto _mdRaidPath = []( const QString& dev ){
+			QString dev_1 ;
+			QDir d( "/dev/md/" ) ;
+			QDir f ;
+
+			/*
+			* wait for a while because things dont always happen as expected if we check too soon.
+			*/
+			sleep( 4 ) ;
+
+			if( d.exists() ){
+				QStringList l = d.entryList() ;
+				QString e ;
+				for( const auto& it : l ){
+					dev_1 = QString( "/dev/md/" ) + it ;
+					f.setPath( dev_1 ) ;
+					if( f.canonicalPath() == dev ){
+						return dev_1 ;
+					}
+				}
+			}
+			return dev ;
+		} ;
+
+		if( m_mask & IN_CREATE ){
+			this->getVolumeType( _mdRaidPath( device ) ) ;
+		}else{
+			emit deviceRemoved( _mdRaidPath( device ) ) ;
+		}
+	} ;
+
+	auto _dmDevice = [&]( const QString& device_1 )
+	{
+		auto _deviceMatchLVMFormat = []( const QString& device )
+		{
+			/*
+			 * LVM paths have two formats,"/dev/mapper/abc-def" and "/dev/abc/def/".
+			 * The pass in argument is in the form of "/dev/abc/def" and the path is assumed to be
+			 * an LVM path if a corresponding "/dev/mapper/abc-def" path is found
+			 *
+			 * We are just doing a simple test below and return true is the path is simply in "/dev/abc/def"
+			 * format by counting the number of "/"
+			 */
+			QStringList l = device.split( "/" ) ;
+			return l.size() == 4 ;
+		} ;
+
+		QString device = device_1 ;
+
+		int index1 = device.lastIndexOf( "-" ) ;
+
+		if( index1 == -1 ){
+			return ;
+		}
+
+		device.replace( index1,1,QString( "/" ) ) ;
+
+		if( _deviceMatchLVMFormat( device ) ){
+			if( m_mask & IN_CREATE ) {
+				this->getVolumeType( device ) ;
+			}else{
+				emit deviceRemoved( device ) ;
+			}
+		}
+	} ;
+
+	auto _normalDevice = [&]( const QString& device ){
+
+		auto _allowed_device = []( const QString& device ){
+
+			return	device.startsWith( "/dev/sd" )  ||
+				device.startsWith( "/dev/hd" )  ||
+				device.startsWith( "/dev/mmc" ) ;
+		} ;
+
+		if( _allowed_device( device ) ){
+			if( m_mask & IN_CREATE ) {
+				this->getVolumeType( device ) ;
+			}else{
+				emit deviceRemoved( device ) ;
+			}
+		}
+	} ;
+
+	QString device = QString( "/dev/%1" ).arg( m_device ) ;
+
+	switch( m_Device ){
+		case Task::device    : _normalDevice( device ) ; break ;
+		case Task::md_device : _mdRaidDevice( device ) ; break ;
+		case Task::dm_device : _dmDevice( device )     ; break ;
+	}
 }
 
 Task::~Task()

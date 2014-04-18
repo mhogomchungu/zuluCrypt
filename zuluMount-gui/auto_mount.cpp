@@ -37,15 +37,11 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include "auto_mount_helper.h"
+#include "task.h"
 /*
 http://linux.die.net/man/7/inotify
 http://darkeside.blogspot.com/2007/12/linux-inotify-example.html
  */
-
-#define stringPrefixMatch( x,y,z ) strncmp( x,y,z ) == 0
-#define stringEqual( x,y ) strcmp( x,y ) == 0
-#define stringHasComponent( x,y ) strstr( x,y ) != 0
 
 auto_mount::auto_mount( QObject * parent )
 {
@@ -96,9 +92,9 @@ void auto_mount::run()
 		m_threadIsRunning = true ;
 	}
 
-	int dev    = inotify_add_watch( m_fdDir,"/dev",IN_CREATE|IN_DELETE ) ;
-	int mapper = inotify_add_watch( m_fdDir,"/dev/mapper",IN_CREATE|IN_DELETE ) ;
-	int md = -1 ;
+	int dev = inotify_add_watch( m_fdDir,"/dev",IN_CREATE|IN_DELETE ) ;
+	int dm  = inotify_add_watch( m_fdDir,"/dev/mapper",IN_CREATE|IN_DELETE ) ;
+	int md  = -1 ;
 
 	QDir d( QString( "/dev/dm" ) ) ;
 	if( d.exists() ){
@@ -114,23 +110,36 @@ void auto_mount::run()
 	int baseSize = sizeof( struct inotify_event ) ;
 
 	auto _allowed_device = []( const char * device ){
+
+		auto _startsWith = []( const char * x,const char * y,size_t z ){
+			return strncmp( x,y,z ) == 0 ;
+		} ;
+
+		auto _contains = []( const char * x,const char * y ){
+			return strstr( x,y ) != 0 ;
+		} ;
+
 		/*
 		 * dont care about these devices.
 		 * /dev/sgX seem to be created when a usb device is plugged in
 		 * /dev/dm-X are dm devices we dont care about since we will be dealing with them differently
 		 */
-		bool s = stringPrefixMatch( device,"sg",2 )    ||
-		       stringPrefixMatch( device,"dm-",3 )     ||
-		       stringHasComponent( device,"dev/tmp" )  ||
-		       stringHasComponent( device,"dev-tmp" )  ||
-		       stringHasComponent( device,".tmp.md." ) ||
-		       stringHasComponent( device,"md/md-device-map" ) ;
+		bool s = _startsWith( device,"sg",2 )   ||
+			 _startsWith( device,"dm-",3 )  ||
+			 _contains( device,"dev/tmp" )  ||
+			 _contains( device,"dev-tmp" )  ||
+			 _contains( device,".tmp.md." ) ||
+			 _contains( device,"md/md-device-map" ) ;
 
 		return s == false ;
 	} ;
 
 	#define BUFF_SIZE 4096
-	char buffer[ BUFF_SIZE ];
+	char buffer[ BUFF_SIZE ] ;
+
+	auto _stringsAreEqual = []( const char * x,const char * y ){
+		return strcmp( x,y ) == 0 ;
+	} ;
 
 	while( 1 ){
 
@@ -158,30 +167,39 @@ void auto_mount::run()
 					 * created before the first entry is added.To account for this,monitor for the
 					 * folder created to start monitoring its contents if it get created after we have started
 					 */
-					if( stringEqual( "md",device ) ){
+					if( _stringsAreEqual( "md",device ) ){
 						md = inotify_add_watch( m_fdDir,"/dev/md",IN_DELETE ) ;
 						continue ;
 					}
 				}
 
 				if( pevent->wd == dev && pevent->mask & IN_DELETE ){
-					if( stringEqual( "md",device ) ){
+					if( _stringsAreEqual( "md",device ) ){
 						inotify_rm_watch( md,dev ) ;
 						continue ;
 					}
 				}
 
-				m_thread_helper = new auto_mount_helper( m_babu ) ;
+				Task * t = new Task() ;
+
+				connect( t,SIGNAL( getVolumeSystemInfo( QStringList ) ),
+					 m_babu,SLOT( autoMountVolumeSystemInfo( QStringList ) ) ) ;
+				connect( t,SIGNAL( getVolumeInfo( QStringList ) ),m_babu,
+					 SLOT( autoMountVolumeInfo( QStringList ) ) ) ;
+				connect( t,SIGNAL( deviceRemoved( QString ) ),m_babu,
+					 SLOT( deviceRemoved( QString ) ) ) ;
 
 				if( pevent->wd == dev ){
-					m_thread_helper->start( device,auto_mount_helper::dev,pevent->mask ) ;
-				}else if( pevent->wd == mapper ){
-					m_thread_helper->start( device,auto_mount_helper::dev_mapper,pevent->mask ) ;
-				}else if( pevent->wd == md ){
-					m_thread_helper->start( device,auto_mount_helper::dev_md,pevent->mask ) ;
+					t->setDeviceType( Task::device ) ;
+				}else if( pevent->wd == dm ){
+					t->setDeviceType( Task::dm_device ) ;
 				}else{
-					;
+					t->setDeviceType( Task::md_device ) ;
 				}
+
+				t->setDevice( device ) ;
+				t->setMask( pevent->mask ) ;
+				t->start( Task::deviceProperty ) ;
 			}
 		}
 	}

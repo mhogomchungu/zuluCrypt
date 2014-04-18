@@ -23,7 +23,6 @@
 
 class QObject ;
 class auto_mount ;
-class auto_mount_helper ;
 
 class auto_mount : public QThread
 {
@@ -42,7 +41,6 @@ private slots:
 private:
 	void run() ;
 	int m_fdDir ;
-	auto_mount_helper * m_thread_helper ;
 	QThread * m_baba ;
 	QThread * m_mtoto ;
 	QObject * m_babu ;

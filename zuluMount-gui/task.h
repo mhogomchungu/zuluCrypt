@@ -50,8 +50,16 @@ public:
 		VolumeType,
 		openMountPoint,
 		getKey,
-		sendKey
-	};
+		sendKey,
+		deviceProperty
+	} ;
+
+	typedef enum{
+		device,
+		dm_device,
+		md_device,
+	}device_t ;
+
 	void start( Task::Action ) ;
 	void setWallet( LxQt::Wallet::Wallet * ) ;
 	void setVolumeID( const QString& ) ;
@@ -66,6 +74,8 @@ public:
 	void setList( const QStringList& ) ;
 	void setMountPointOpener( const QString& ) ;
 	void setDeviceOffSet( const QString& ) ;
+	void setDeviceType( device_t ) ;
+	void setMask( u_int32_t ) ;
 signals:
 	void errorStatus( int exitCode,int exitStatus,int startError ) ;
 	void signalMountComplete( int,QString ) ;
@@ -78,8 +88,8 @@ signals:
 	void done( void ) ;
 	void key( QString ) ;
 	void volumeRemoved( QString ) ;
+	void deviceRemoved( QString ) ;
 private:
-	bool loopDeviceIsStillPresent( const QString& device ) ;
 	void openMountPointTask( void ) ;
 	void checkPermissions( void ) ;
 	void openPathInFileManager( void ) ;
@@ -92,10 +102,12 @@ private:
 	void mount( void ) ;
 	void umount( void ) ;
 	void getVolumeType( void ) ;
+	void getVolumeType( const QString& ) ;
 	void getVolumeSystemType( void ) ;
 	void checkUnmount( void ) ;
 	void getKeyTask( void ) ;
 	void keySend( void ) ;
+	void deviceProperties( void ) ;
 	LxQt::Wallet::Wallet * m_wallet ;
 	Task::Action m_action ;
 	QString m_volumeID ;
@@ -115,6 +127,8 @@ private:
 	int m_exitCode ;
 	int m_exitStatus ;
 	int m_startError ;
+	device_t m_Device ;
+	u_int32_t m_mask ;
 };
 
 #endif // MANAGEPARTITIONTHREAD_H

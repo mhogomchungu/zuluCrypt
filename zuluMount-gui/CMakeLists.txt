@@ -15,7 +15,6 @@ set(MOC_FILES 	mainwindow.h
 		mountpartition.h
 		oneinstance.h
 		auto_mount.h
-		auto_mount_helper.h
 		monitor_mountinfo.h
 		deviceoffset.h
 		mountoptions.h
@@ -23,7 +22,6 @@ set(MOC_FILES 	mainwindow.h
 
 set(SRC 	main.cpp
 		auto_mount.cpp
-		auto_mount_helper.cpp
 		mainwindow.cpp
 		keydialog.cpp
 		task.cpp
