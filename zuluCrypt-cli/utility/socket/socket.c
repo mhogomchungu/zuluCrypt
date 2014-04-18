@@ -198,7 +198,6 @@ socket_t SocketLocalWithOptions( const char * address,int type,int protocol )
 	if( s != SocketVoid ){
 		e = s->socket ;
 		strncpy( e->sun_path,address,l ) ;
-		*( e->sun_path + l - 1 ) = '\0' ;
 	}
 	return s ;
 }
@@ -347,6 +346,8 @@ int SocketBind( socket_t s )
 	struct sockaddr * e ;
 	struct sockaddr_un * f ;
 
+	char buffer[ sizeof( f->sun_path ) + 1 ] ;
+
 	if( s == SocketVoid ){
 		return 0 ;
 	}
@@ -356,7 +357,9 @@ int SocketBind( socket_t s )
 	if( s->domain == AF_UNIX ){
 		s->socket_server = 1 ;
 		f = s->socket ;
-		unlink( f->sun_path ) ;
+		strncpy( buffer,f->sun_path,sizeof( f->sun_path ) ) ;
+		*( buffer + sizeof( f->sun_path ) ) = '\0' ;
+		unlink( buffer ) ;
 		return bind( s->fd,e,s->size ) == 0 ;
 	}else if( s->domain == AF_INET ){
 		return bind( s->fd,e,s->size ) == 0 ;
@@ -814,17 +817,9 @@ ssize_t SocketGetData_1( socket_t s,char ** e,size_t len )
 
 ssize_t SocketSendData( socket_t s,const char * buffer,size_t len )
 {
-	size_t sent = 0 ;
-	size_t remain = len ;
-
 	if( s == SocketVoid || buffer == NULL || len == 0 ){
 		return -1 ;
 	}else{
-		do{
-			sent = sent + write( s->fd,buffer + sent,remain ) ;
-			remain = remain - sent ;
-		}while( sent != len ) ;
-
-		return sent ;
+		return write( s->fd,buffer,len ) ;
 	}
 }
