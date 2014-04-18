@@ -49,6 +49,7 @@ public slots:
 	void raiseWindow( void ) ;
 	void raiseWindow( QString ) ;
 private slots:
+	void startGUI( void ) ;
 	void volumeMiniProperties( QString ) ;
 	void showMoungDialog( QStringList ) ;
 	void autoMountVolumeSystemInfo( QStringList ) ;
@@ -76,7 +77,6 @@ private slots:
 	void itemEntered( QTableWidgetItem * ) ;
 	void deviceRemoved( QString ) ;
 	void addEntryToTable( bool,QStringList ) ;
-	void started( void ) ;
 	void quitApplication( void ) ;
 	void autoMountToggled( bool ) ;
 	void autoOpenFolderOnMount( bool ) ;
@@ -90,7 +90,6 @@ private:
 	void dropEvent( QDropEvent * ) ;
 	void showContextMenu( QTableWidgetItem *,bool ) ;
 	void startAutoMonitor( void ) ;
-	void showEvent( QShowEvent * ) ;
 	bool autoMount( void ) ;
 	Ui::MainWindow * m_ui ;
 
@@ -110,7 +109,6 @@ private:
 	QAction * m_autoMountAction ;
 	QMenu * m_favorite_menu ;
 	bool m_startHidden ;
-	bool m_started ;
 	bool m_autoMount ;
 	QString m_sharedFolderPath ;
 	bool m_autoOpenFolderOnMount ;

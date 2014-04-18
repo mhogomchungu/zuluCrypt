@@ -52,7 +52,7 @@
 #include "task.h"
 
 MainWindow::MainWindow( int argc,char * argv[],QWidget * parent ) :QWidget( parent ),
-	m_autoMountThread( 0 ),m_autoMountAction( 0 ),m_started( false )
+	m_autoMountThread( 0 ),m_autoMountAction( 0 )
 {
 	m_argc = argc ;
 	m_argv = argv ;
@@ -155,7 +155,6 @@ void MainWindow::setUpApp()
 	connect( t,SIGNAL( signalMountedList( QStringList,QStringList ) ),
 		 this,SLOT( slotMountedList( QStringList,QStringList ) ) ) ;
 	connect( t,SIGNAL( done() ),this,SLOT( openVolumeFromArgumentList() ) ) ;
-	connect( t,SIGNAL( done() ),this,SLOT( started() ) ) ;
 
 	t->start( Task::Update ) ;
 
@@ -263,19 +262,6 @@ void MainWindow::pbClose()
 void MainWindow::quitApplication()
 {
 	QCoreApplication::quit() ;
-}
-
-void MainWindow::started( void )
-{
-	m_started = true ;
-}
-
-void MainWindow::showEvent( QShowEvent * e )
-{
-	if( m_startHidden && !m_started ){
-		e->ignore() ;
-		this->hide() ;
-	}
 }
 
 void MainWindow::autoMountVolumeSystemInfo( QStringList l )
@@ -386,6 +372,13 @@ void MainWindow::processArgumentList()
 	m_folderOpener = utility::cmdArgumentValue( l,"-m","xdg-open" ) ;
 }
 
+void MainWindow::startGUI()
+{
+	if( !m_startHidden ){
+		this->raiseWindow() ;
+	}
+}
+
 void MainWindow::raiseWindow()
 {
 	this->setVisible( true ) ;
@@ -407,7 +400,7 @@ void MainWindow::raiseWindow( QString device )
 void MainWindow::start()
 {
 	QString sockpath = QString( "zuluMount-gui.socket" ) ;
-	oneinstance * instance = new oneinstance( this,sockpath,"raiseWindow",m_device ) ;
+	oneinstance * instance = new oneinstance( this,sockpath,"startGUI",m_device ) ;
 	if( !instance->instanceExist() ){
 		connect( instance,SIGNAL( raise() ),this,SLOT( raiseWindow() ) ) ;
 		connect( instance,SIGNAL( raiseWithDevice( QString ) ),this,SLOT( raiseWindow( QString ) ) ) ;
