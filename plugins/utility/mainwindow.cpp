@@ -136,7 +136,6 @@ void MainWindow::pbCancel()
 		}
 	}else{
 		this->cancelled() ;
-		this->Exit( 1 ) ;
 	}
 }
 
@@ -257,7 +256,6 @@ void MainWindow::done( int status )
 		msg.ShowUIOK( tr( "ERROR" ),tr("could not decrypt the %1 keyfile,wrong key?" ).arg( m_appName ) ) ;
 		this->enableAlll() ;
 		m_ui->lineEditKey->setFocus() ;
-		this->setWindowTitle( tr( "%1 key module" ).arg( m_appName ) ) ;
 	}else{
 		/*
 		 * we cant get here

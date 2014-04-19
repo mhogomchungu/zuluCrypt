@@ -180,25 +180,31 @@ void auto_mount::run()
 					}
 				}
 
+				Task::device_t d ;
+
+				if( pevent->wd == dev ){
+					d = Task::device ;
+				}else if( pevent->wd == dm ){
+					d = Task::dm_device ;
+				}else if( pevent->wd == md ){
+					d = Task::md_device ;
+				}else{
+					continue ;
+				}
+
 				Task * t = new Task() ;
 
 				connect( t,SIGNAL( getVolumeSystemInfo( QStringList ) ),
 					 m_babu,SLOT( autoMountVolumeSystemInfo( QStringList ) ) ) ;
-				connect( t,SIGNAL( getVolumeInfo( QStringList ) ),m_babu,
-					 SLOT( autoMountVolumeInfo( QStringList ) ) ) ;
-				connect( t,SIGNAL( deviceRemoved( QString ) ),m_babu,
-					 SLOT( deviceRemoved( QString ) ) ) ;
+				connect( t,SIGNAL( getVolumeInfo( QStringList ) ),
+					 m_babu,SLOT( autoMountVolumeInfo( QStringList ) ) ) ;
+				connect( t,SIGNAL( deviceRemoved( QString ) ),
+					 m_babu,SLOT( deviceRemoved( QString ) ) ) ;
 
-				if( pevent->wd == dev ){
-					t->setDeviceType( Task::device ) ;
-				}else if( pevent->wd == dm ){
-					t->setDeviceType( Task::dm_device ) ;
-				}else{
-					t->setDeviceType( Task::md_device ) ;
-				}
-
+				t->setDeviceType( d ) ;
 				t->setDevice( device ) ;
 				t->setMask( pevent->mask ) ;
+
 				t->start( Task::deviceProperty ) ;
 			}
 		}

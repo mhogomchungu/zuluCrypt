@@ -132,7 +132,6 @@ void monitor_mountinfo::run()
 			for( const auto& it : oldList ){
 				temp.removeOne( it ) ;
 			}
-
 			for( const auto& it : temp ){
 				Task * t = new Task() ;
 				t->setDevice( it ) ;
