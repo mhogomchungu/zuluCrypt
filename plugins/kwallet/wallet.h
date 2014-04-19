@@ -30,8 +30,6 @@
 #include <QByteArray>
 #include "wallet.h"
 
-#include "../../zuluCrypt-gui/socketsendkey.h"
-
 using namespace KWallet ;
 
 class wallet : public QObject

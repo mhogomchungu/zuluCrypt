@@ -10,6 +10,11 @@ else()
 		find_library( LIBQTGUI_ libQtGui.so )
 		find_library( LIBKDEUI_ libkdeui.so )
 		find_library( LIBKDECORE_ libkdecore.so )
+
+		if( NOT LIBKWALLETBACKEND_ )
+			find_library( LIBKWALLETBACKEND_ libkwalletbackend.so.4 )
+		endif()
+
 		if( LIBKWALLETBACKEND_ )
 			if( LIBQTCORE_ )
 				if( LIBQTGUI_ )

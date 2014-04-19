@@ -21,6 +21,8 @@
 #include <QDebug>
 #include "../../zuluCrypt-gui/utility.h"
 
+#include "../../zuluCrypt-cli/pluginManager/libzuluCryptPluginManager.h"
+
 wallet::wallet( const QString& path,const QString& uuid,const QString& sockAddr )
 {
 	if( uuid == QString( "Nil" ) ){
@@ -30,7 +32,7 @@ wallet::wallet( const QString& path,const QString& uuid,const QString& sockAddr 
 	}
 
 	m_sockAddr = sockAddr ;
-	m_handle = socketSendKey::zuluCryptPluginManagerOpenConnection( m_sockAddr ) ;
+	m_handle = ::zuluCryptPluginManagerOpenConnection( m_sockAddr.toLatin1().constData() ) ;
 }
 
 void wallet::openWallet()
@@ -47,7 +49,7 @@ void wallet::openWallet()
 		if( key.isEmpty() ){
 			QCoreApplication::exit( 1 ) ;
 		}else{
-			socketSendKey::zuluCryptPluginManagerSendKey( m_handle,key.toLatin1() ) ;
+			::zuluCryptPluginManagerSendKey( m_handle,key.toLatin1().constData(),key.size() ) ;
 			QCoreApplication::exit( 0 ) ;
 		}
 	}else{
@@ -57,7 +59,7 @@ void wallet::openWallet()
 
 wallet::~wallet()
 {
-	socketSendKey::zuluCryptPluginManagerCloseConnection( m_handle ) ;
+	::zuluCryptPluginManagerCloseConnection( m_handle ) ;
 	delete m_wallet ;
 
 }
