@@ -111,15 +111,6 @@ void Task::setVolumeID( const QString& id )
 	m_volumeID = id ;
 }
 
-void Task::openPathInFileManager()
-{
-	QProcess p ;
-	QString exe = QString( "xdg-open ") + m_point ;
-	p.start( exe ) ;
-	p.waitForFinished() ;
-	p.close() ;
-}
-
 void Task::run()
 {
 	switch( m_action ){
@@ -129,7 +120,6 @@ void Task::run()
 		case Task::CryptoOpen          : return this->cryptoOpen() ;
 		case Task::VolumeProperties    : return this->volumeProperties() ;
 		case Task::VolumeMiniProperties: return this->volumeMiniProperties() ;
-		case Task::OpenPath            : return this->openPathInFileManager() ;
 		case Task::CheckPermissions    : return this->checkPermissions() ;
 		case Task::VolumeType          : return this->getVolumeType() ;
 		case Task::checkUnMount        : return this->checkUnmount() ;
@@ -520,16 +510,17 @@ void Task::deviceProperties()
 		}
 	} ;
 
-	auto _dmDevice = [&]( const QString& device_1 )
-	{
-		auto _deviceMatchLVMFormat = []( const QString& device )
-		{
+	auto _dmDevice = [&]( const QString& device_1 ){
+
+		auto _deviceMatchLVMFormat = []( const QString& device ){
 			/*
 			 * LVM paths have two formats,"/dev/mapper/abc-def" and "/dev/abc/def/".
 			 * The pass in argument is in the form of "/dev/abc/def" and the path is assumed to be
 			 * an LVM path if a corresponding "/dev/mapper/abc-def" path is found
 			 *
-			 * We are just doing a simple test below and return true is the path is simply in "/dev/abc/def"
+			 */
+			/*
+			 * We are just being lazy here and do a simple test below and return true if the path is simply in "/dev/abc/def"
 			 * format by counting the number of "/"
 			 */
 			QStringList l = device.split( "/" ) ;
@@ -540,17 +531,16 @@ void Task::deviceProperties()
 
 		int index1 = device.lastIndexOf( "-" ) ;
 
-		if( index1 == -1 ){
-			return ;
-		}
+		if( index1 != -1 ){
 
-		device.replace( index1,1,QString( "/" ) ) ;
+			device.replace( index1,1,QString( "/" ) ) ;
 
-		if( _deviceMatchLVMFormat( device ) ){
-			if( m_mask & IN_CREATE ) {
-				this->getVolumeType( device ) ;
-			}else{
-				emit deviceRemoved( device ) ;
+			if( _deviceMatchLVMFormat( device ) ){
+				if( m_mask & IN_CREATE ) {
+					this->getVolumeType( device ) ;
+				}else{
+					emit deviceRemoved( device ) ;
+				}
 			}
 		}
 	} ;

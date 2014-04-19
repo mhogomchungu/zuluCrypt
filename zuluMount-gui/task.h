@@ -44,7 +44,6 @@ public:
 		CryptoOpen,
 		VolumeProperties,
 		VolumeMiniProperties,
-		OpenPath,
 		CheckPermissions,
 		checkUnMount,
 		VolumeType,
@@ -92,7 +91,6 @@ signals:
 private:
 	void openMountPointTask( void ) ;
 	void checkPermissions( void ) ;
-	void openPathInFileManager( void ) ;
 	void volumeMiniProperties( void ) ;
 	void volumeProperties( void ) ;
 	void cryptoMount( QString ) ;
