@@ -85,6 +85,7 @@ static int _open_luks_1( const char * device,const open_struct_t * opts )
 	u_int32_t key_len ;
 	u_int32_t flags ;
 	u_int32_t luks_header_file_size ;
+	u_int32_t buffer_size ;
 
 	string_t st ;
 
@@ -96,9 +97,14 @@ static int _open_luks_1( const char * device,const open_struct_t * opts )
 	const char * luks_header_file ;
 	const char * luks_header_file_contents ;
 
-	if( opts->key_len < 1048576 + 8 ){
+	buffer_size = opts->key_len ;
+
+	if( buffer_size < 1048576 + 8 || buffer_size > 8192000 ){
 		/*
 		 * the structure is expected to be atleast 1MB + 8 bytes
+		 */
+		/*
+		 * cryptsetup has an 8MB limit somewhere i cant remember
 		 */
 		return 1 ;
 	}
@@ -112,16 +118,15 @@ static int _open_luks_1( const char * device,const open_struct_t * opts )
 	memcpy( &key_len,opts->key,sizeof( u_int32_t ) ) ;
 	key = opts->key + sizeof( u_int32_t ) + sizeof( u_int32_t ) ;
 
-	if( key_len > 8192000 ){
-		/*
-		 * passphrase is expected to be less than 8MB
-		 */
-		return 1 ;
-	}
-
 	memcpy( &luks_header_file_size,opts->key + sizeof( u_int32_t ),sizeof( u_int32_t ) ) ;
 	luks_header_file_contents = opts->key + sizeof( u_int32_t ) + sizeof( u_int32_t ) + key_len  ;
 
+	if( key_len + luks_header_file_size + sizeof( u_int32_t ) + sizeof( u_int32_t ) != buffer_size ){
+		/*
+		 * malformed structure detected
+		 */
+		return 1 ;
+	}
 	if( luks_header_file_size < 1048576 || luks_header_file_size > 3145728 ){
 		/*
 		 * luks header backup or detached header is expected to be greater than 1MB but less than 2MB,we check
