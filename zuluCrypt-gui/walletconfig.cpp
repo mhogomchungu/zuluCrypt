@@ -75,9 +75,14 @@ void walletconfig::itemClicked( QTableWidgetItem * item )
 	if( r == QMessageBox::Yes ){
 		m_action = int( Task::deleteKey ) ;
 
-		Task * t = new Task( m_wallet,volumeID ) ;
+		auto _deleteKey = [&](){
+			m_wallet->deleteKey( m_volumeID ) ;
+			m_wallet->deleteKey( m_volumeID + COMMENT ) ;
+		} ;
+
+		Task * t = new Task() ;
 		connect( t,SIGNAL( finished() ),this,SLOT( TaskFinished() ) ) ;
-		t->start( Task::deleteKey ) ;
+		t->start( Task::deleteKey,_deleteKey ) ;
 	}else{
 		this->enableAll() ;
 		m_ui->tableWidget->setFocus() ;
@@ -98,12 +103,18 @@ void walletconfig::add( QString volumeID,QString comment,QString key )
 {
 	m_comment  = comment ;
 	m_volumeID = volumeID ;
+	m_key      = key ;
 
 	m_action = int( Task::addKey ) ;
 
-	Task * t = new Task( m_wallet,m_volumeID,key,m_comment ) ;
+	auto _addKey = [&](){
+		m_wallet->addKey( m_volumeID,m_key.toLatin1() ) ;
+		m_wallet->addKey( m_volumeID + COMMENT,m_comment.toLatin1() ) ;
+	} ;
+
+	Task * t = new Task() ;
 	connect( t,SIGNAL( finished() ),this,SLOT( TaskFinished() ) ) ;
-	t->start( Task::addKey ) ;
+	t->start( Task::addKey,_addKey ) ;
 }
 
 void walletconfig::TaskFinished()
@@ -206,9 +217,13 @@ void walletconfig::walletIsOpen( bool opened )
 	if( opened ){
 		m_action = int( Task::getAllKeys ) ;
 
-		Task * t = new Task( m_wallet,&m_keys ) ;
+		auto _getKeys = [&](){
+			m_keys = m_wallet->readAllKeyValues() ;
+		} ;
+
+		Task * t = new Task() ;
 		connect( t,SIGNAL( finished() ),this,SLOT( TaskFinished() ) ) ;
-		t->start( Task::getAllKeys ) ;
+		t->start( Task::getAllKeys,_getKeys ) ;
 	}else{
 		emit couldNotOpenWallet() ;
 		this->HideUI() ;

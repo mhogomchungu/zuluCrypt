@@ -101,14 +101,9 @@ void Task::setMask( u_int32_t mask )
 	m_mask = mask ;
 }
 
-void Task::setWallet( LxQt::Wallet::Wallet * wallet )
+void Task::setFunction( std::function< void() > function )
 {
-	m_wallet = wallet ;
-}
-
-void Task::setVolumeID( const QString& id )
-{
-	m_volumeID = id ;
+	m_function = function ;
 }
 
 void Task::run()
@@ -137,24 +132,7 @@ void Task::keySend()
 
 void Task::getKeyTask()
 {
-	m_key.clear() ;
-
-	if( m_volumeID.startsWith( QString( "UUID=" ) ) ){
-		m_key = m_wallet->readValue( m_volumeID ) ;
-		if( m_key.isEmpty() ){
-			m_key = m_wallet->readValue( m_volumeID.replace( "\"","" ) ) ;
-		}
-	}else{
-		QString uuid = utility::getUUIDFromPath( m_volumeID ) ;
-		if( uuid.isEmpty() ){
-			m_key = m_wallet->readValue( utility::getVolumeID( m_volumeID ) ) ;
-		}else{
-			m_key = m_wallet->readValue( uuid ) ;
-			if( m_key.isEmpty() ){
-				m_key = m_wallet->readValue( m_volumeID ) ;
-			}
-		}
-	}
+	m_function() ;
 }
 
 void Task::checkUnmount()
@@ -576,5 +554,4 @@ Task::~Task()
 {
 	emit done() ;
 	emit errorStatus( m_exitCode,m_exitStatus,m_startError ) ;
-	emit key( m_key ) ;
 }

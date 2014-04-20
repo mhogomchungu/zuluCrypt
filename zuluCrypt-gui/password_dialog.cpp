@@ -353,14 +353,13 @@ void passwordDialog::getPassWord( QString password )
 	_internalPassWord = password ;
 }
 
-void passwordDialog::getPassWordFromWallet( QString key )
+void passwordDialog::getPassWord()
 {
-	if( key.isEmpty() ){
+	if( m_key.isEmpty() ){
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR" ),tr( "the volume does not appear to have an entry in the wallet" ) ) ;
 		this->enableAll() ;
 	}else{
-		m_key = key ;
 		this->openVolume() ;
 	}
 
@@ -370,9 +369,14 @@ void passwordDialog::getPassWordFromWallet( QString key )
 void passwordDialog::walletIsOpen( bool opened )
 {
 	if( opened ){
-		Task * t = new Task( m_wallet,m_ui->OpenVolumePath->text() ) ;
-		connect( t,SIGNAL( finished( QString ) ),this,SLOT( getPassWordFromWallet( QString ) ) ) ;
-		t->start( Task::getKey ) ;
+
+		auto _getKey = [&](){
+			m_key = utility::getKeyFromWallet( m_wallet,m_ui->OpenVolumePath->text() ) ;
+		} ;
+
+		Task * t = new Task() ;
+		connect( t,SIGNAL( finished() ),this,SLOT( getPassWord() ) ) ;
+		t->start( Task::getKey,_getKey ) ;
 	}else{
 		_internalPassWord.clear() ;
 		this->enableAll() ;

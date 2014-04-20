@@ -54,23 +54,9 @@ Task::Task( const QString& x,const QString& y )
 	m_folderOpener = x ;
 }
 
-Task::Task( LxQt::Wallet::Wallet * wallet,const QString& volumeID,const QString& key,const QString& comment ):
-	m_wallet( wallet ),m_volumeID( volumeID ),m_key( key ),m_comment( comment )
+void Task::start( Task::action action,function_t function )
 {
-}
-
-Task::Task( LxQt::Wallet::Wallet * wallet,const QString& volumeID ):
-	m_wallet( wallet ),m_volumeID( volumeID )
-{
-}
-
-Task::Task( LxQt::Wallet::Wallet * wallet,QVector<LxQt::Wallet::walletKeyValues> * keys ):
-	m_wallet( wallet ),m_keys( keys )
-{
-}
-
-void Task::start( Task::action action )
-{
+	m_function = function ;
 	m_action = action ;
 	QThreadPool * thread = QThreadPool::globalInstance() ;
 	thread->setMaxThreadCount( 10 ) ;
@@ -215,41 +201,22 @@ void Task::runVolumeTask()
 
 void Task::addKeyTask()
 {
-	m_wallet->addKey( m_volumeID,m_key.toLatin1() ) ;
-	m_wallet->addKey( m_volumeID + COMMENT,m_comment.toLatin1() ) ;
+	m_function() ;
 }
 
 void Task::deleteKeyTask()
 {
-	m_wallet->deleteKey( m_volumeID ) ;
-	m_wallet->deleteKey( m_volumeID + COMMENT ) ;
+	m_function() ;
 }
 
 void Task::getAllKeysTask()
 {
-	*m_keys = m_wallet->readAllKeyValues() ;
+	m_function() ;
 }
 
 void Task::getKeyTask()
 {
-	m_key.clear() ;
-
-	if( m_volumeID.startsWith( QString( "UUID=" ) ) ){
-		m_key = m_wallet->readValue( m_volumeID ) ;
-		if( m_key.isEmpty() ){
-			m_key = m_wallet->readValue( m_volumeID.replace( "\"","" ) ) ;
-		}
-	}else{
-		QString uuid = utility::getUUIDFromPath( m_volumeID ) ;
-		if( uuid.isEmpty() ){
-			m_key = m_wallet->readValue( utility::getVolumeID( m_volumeID ) ) ;
-		}else{
-			m_key = m_wallet->readValue( uuid ) ;
-			if( m_key.isEmpty() ){
-				m_key = m_wallet->readValue( m_volumeID ) ;
-			}
-		}
-	}
+	m_function() ;
 }
 
 void Task::LUKSSlotUsageTask()

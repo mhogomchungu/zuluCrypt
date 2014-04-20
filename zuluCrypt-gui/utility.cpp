@@ -52,6 +52,8 @@
 #include "storage_manager.h"
 #include "dialogmsg.h"
 
+#include "lxqt_wallet/frontend/lxqt_wallet.h"
+
 #include "../zuluCrypt-cli/pluginManager/libzuluCryptPluginManager.h"
 
 QString utility::cryptMapperPath()
@@ -335,6 +337,26 @@ void utility::sendKey( const QString& path,const QString& key )
 		::zuluCryptPluginManagerSendKey( handle,key.toLatin1().constData(),size ) ;
 		::zuluCryptPluginManagerCloseConnection( handle ) ;
 	}
+}
+
+QString utility::getKeyFromWallet( LxQt::Wallet::Wallet * wallet,const QString& volumeID )
+{
+	QByteArray key ;
+	if( volumeID.startsWith( QString( "UUID=" ) ) ){
+		key = wallet->readValue( volumeID ) ;
+	}else{
+		QString uuid = utility::getUUIDFromPath( volumeID ) ;
+		if( uuid.isEmpty() ){
+			key = wallet->readValue( utility::getVolumeID( volumeID ) ) ;
+		}else{
+			key = wallet->readValue( uuid ) ;
+			if( key.isEmpty() ){
+				key = wallet->readValue( volumeID ) ;
+			}
+		}
+	}
+
+	return key ;
 }
 
 void utility::debug( const QString& s )

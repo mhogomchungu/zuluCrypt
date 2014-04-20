@@ -334,9 +334,9 @@ void keyDialog::slotMountComplete( int st,QString m )
 	}
 }
 
-void keyDialog::getPassWordFromWallet( QString key )
+void keyDialog::getPassWord()
 {
-	if( key.isEmpty() ){
+	if( m_key.isEmpty() ){
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR" ),tr( "the volume does not appear to have an entry in the wallet" ) ) ;
 		this->enableAll() ;
@@ -344,7 +344,6 @@ void keyDialog::getPassWordFromWallet( QString key )
 			m_ui->lineEditKey->setEnabled( false ) ;
 		}
 	}else{
-		m_key = key ;
 		this->openVolume() ;
 	}
 
@@ -354,10 +353,14 @@ void keyDialog::getPassWordFromWallet( QString key )
 void keyDialog::walletIsOpen( bool opened )
 {
 	if( opened ){
+
+		auto _getKey = [&](){
+			m_key = utility::getKeyFromWallet( m_wallet,m_path ) ;
+		} ;
+
 		Task * t = new Task() ;
-		t->setWallet( m_wallet ) ;
-		t->setVolumeID( m_path ) ;
-		connect( t,SIGNAL( key( QString ) ),this,SLOT( getPassWordFromWallet( QString ) ) ) ;
+		connect( t,SIGNAL( done() ),this,SLOT( getPassWord() ) ) ;
+		t->setFunction( _getKey ) ;
 		t->start( Task::getKey ) ;
 	}else{
 		_internalPassWord.clear() ;

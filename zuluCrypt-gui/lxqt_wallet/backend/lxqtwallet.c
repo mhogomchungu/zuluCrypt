@@ -388,7 +388,7 @@ lxqt_wallet_error lxqt_wallet_create_encrypted_file( const char * password,u_int
 		i = 0 ;
 		j = 0 ;
 		l = 0 ;
-		
+
 		while( 1 ){
 			k = read( fd_src,file_buffer,FILE_BLOCK_SIZE ) ;
 			if( k == 0 ){

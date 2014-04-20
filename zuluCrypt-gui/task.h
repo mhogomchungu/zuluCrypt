@@ -26,6 +26,8 @@
 #include <QString>
 #include <QStringList>
 
+#include <functional>
+
 #include "lxqt_wallet/frontend/lxqt_wallet.h"
 
 #define COMMENT "-zuluCrypt_Comment_ID"
@@ -38,6 +40,8 @@ class Wallet ;
 
 class QTableWidget ;
 class QTableWidgetItem ;
+
+typedef std::function< void( void ) > function_t ;
 
 class Task : public QObject,public QRunnable
 {
@@ -61,13 +65,10 @@ public:
 
 	explicit Task( const QString& exe ) ;
 	Task( const QString&,const QString& ) ;
-	Task( LxQt::Wallet::Wallet *,QVector<LxQt::Wallet::walletKeyValues> * ) ;
-	Task( LxQt::Wallet::Wallet *,const QString& volumeID ) ;
-	Task( LxQt::Wallet::Wallet *,const QString& volumeID,const QString& key,const QString& comment ) ;
 	explicit Task( QTableWidget * ) ;
 	Task() ;
 	~Task() ;
-	void start( Task::action = Task::exeTask ) ;
+	void start( Task::action = Task::exeTask,std::function< void( void ) > function = 0 ) ;
 signals:
 	void partitionProperties( QStringList ) ;
 	void addItemToTable( QString,QString,QString ) ;
@@ -102,11 +103,9 @@ private:
 	QString m_volumeProperties ;
 	QString m_folderOpener ;
 	QString m_partitionType ;
-	LxQt::Wallet::Wallet * m_wallet ;
-	QVector<LxQt::Wallet::walletKeyValues> * m_keys ;
-	QString m_volumeID ;
 	QString m_key ;
-	QString m_comment ;
+	function_t m_function ;
+
 	int m_exitCode ;
 	int m_exitStatus ;
 	int m_startError ;

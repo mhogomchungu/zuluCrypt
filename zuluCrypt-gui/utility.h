@@ -23,6 +23,12 @@
 #include <QString>
 #include <QStringList>
 
+namespace LxQt{
+namespace Wallet {
+class Wallet ;
+}
+}
+
 class QByteArray ;
 
 class utility
@@ -62,6 +68,7 @@ public:
 	static bool getOpenVolumeReadOnlyOption( const QString& app ) ;
 	static QString keyPath( void ) ;
 	static void sendKey( const QString& keyPath,const QString& key ) ;
+	static QString getKeyFromWallet( LxQt::Wallet::Wallet *,const QString& volumeID ) ;
 };
 
 #endif // MISCFUNCTIONS_H

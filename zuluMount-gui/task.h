@@ -31,6 +31,8 @@ class Wallet ;
 }
 }
 
+typedef std::function< void( void ) > function_t ;
+
 class Task : public QObject,public QRunnable
 {
 	Q_OBJECT
@@ -60,8 +62,6 @@ public:
 	}device_t ;
 
 	void start( Task::Action ) ;
-	void setWallet( LxQt::Wallet::Wallet * ) ;
-	void setVolumeID( const QString& ) ;
 	void setMode( const QString& ) ;
 	void setDevice( const QString& ) ;
 	void setType( const QString& ) ;
@@ -75,6 +75,7 @@ public:
 	void setDeviceOffSet( const QString& ) ;
 	void setDeviceType( device_t ) ;
 	void setMask( u_int32_t ) ;
+	void setFunction( std::function< void( void ) > ) ;
 signals:
 	void errorStatus( int exitCode,int exitStatus,int startError ) ;
 	void signalMountComplete( int,QString ) ;
@@ -127,6 +128,7 @@ private:
 	int m_startError ;
 	device_t m_Device ;
 	u_int32_t m_mask ;
+	function_t m_function ;
 };
 
 #endif // MANAGEPARTITIONTHREAD_H
