@@ -316,9 +316,22 @@ int zuluMountPrintVolumesProperties( uid_t uid )
 		it++ ;
 		if( _normal_mounted_volume( st ) ){
 			_print_device_properties( st,z,l ) ;
+			if( StringStartsWith( st,"UUID=" ) ){
+				e = StringRemoveString( st,"\"" ) ;
+				/*
+				 * zuluCryptEvaluateDeviceTags() ../zuluCrypt-cli/bin/path_access.c
+				 */
+				e = zuluCryptEvaluateDeviceTags( "UUID",e + 5 ) ;
+				StringListRemoveIfPresent( stz,e ) ;
+				StringFree( e ) ;
+			}else{
+				zuluCryptDecodeMountEntry( st ) ;
+				StringListRemoveIfPresent_1( stz,st ) ;
+			}
+		}else{
+			zuluCryptDecodeMountEntry( st ) ;
+			StringListRemoveIfPresent_1( stz,st ) ;
 		}
-		zuluCryptDecodeMountEntry( st ) ;
-		StringListRemoveIfPresent_1( stz,st ) ;
 	}
 
 	StringListGetIteratorBeginAndEnd( stz,&it,&end ) ;
