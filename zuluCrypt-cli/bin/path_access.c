@@ -150,10 +150,22 @@ int zuluCryptGetPassFromFile( const char * path,uid_t uid,string_t * st )
 char * zuluCryptEvaluateDeviceTags( const char * tag,const char * path )
 {
 	char * result = NULL ;
+	char * r ;
+
 	zuluCryptSecurityGainElevatedPrivileges() ;
 	result = blkid_evaluate_tag( tag,path,NULL ) ;
 	zuluCryptSecurityDropElevatedPrivileges() ;
-	return result ;
+
+	if( StringPrefixMatch( result,"/dev/loop",9 ) ){
+		/*
+		 * zuluCryptLoopDeviceAddress_1() is defined in ../zuluCrypt-cli/create_loop_device.c
+		 */
+		r = zuluCryptLoopDeviceAddress_1( result ) ;
+		StringFree( result ) ;
+		return r ;
+	}else{
+		return result ;
+	}
 }
 
 char * zuluCryptUUIDFromPath( const char * device )
