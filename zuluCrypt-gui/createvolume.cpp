@@ -374,11 +374,13 @@ void createvolume::pbCreateClicked()
 	QString passphrase_1 = m_ui->lineEditPassphrase1->text() ;
 	QString passphrase_2 = m_ui->lineEditPassPhrase2->text() ;
 
+	createvolume::createVolumeType type = createvolume::createVolumeType( m_ui->comboBoxVolumeType->currentIndex() ) ;
+
 	if( volumePath.isEmpty() ){
 		return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "volume path field is empty" ) ) ;
 	}
 
-	if( m_ui->comboBoxVolumeType->currentIndex() == createvolume::normal_and_hidden_truecrypt ){
+	if( type == createvolume::normal_and_hidden_truecrypt ){
 
 		QString x = m_ui->lineEditHiddenSize->text() ;
 
@@ -402,6 +404,11 @@ void createvolume::pbCreateClicked()
 				return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
 			}
 		}
+		if( !m_ui->comboBoxFS->currentText().contains( "fat" ) && m_warned == false ){
+			m_warned = true ;
+			return msg.ShowUIOK( tr( "WARNING" ),tr( "It is best to create a hidden volume with vfat/fat file system." ) ) ;
+		}
+
 	}
 
 	QString source ;
@@ -419,12 +426,11 @@ void createvolume::pbCreateClicked()
 			source = QString( "-f" ) ;
 			passphrase_1 = utility::keyPath() + QString( "-2" ) ;
 
-			Task * t = new Task( passphrase_1,m_ui->lineEditPassphrase1->text().toLatin1() ) ;
+			Task * t = new Task( passphrase_1,m_ui->lineEditPassphrase1->text() ) ;
 			t->start( Task::sendKey ) ;
 		}
 	}
 
-	createvolume::createVolumeType type = createvolume::createVolumeType( m_ui->comboBoxVolumeType->currentIndex() ) ;
 	switch( type ){
 	case createvolume::luks :
 		m_volumeType = QString( "luks" ) ;
@@ -437,13 +443,6 @@ void createvolume::pbCreateClicked()
 		m_volumeType = QString( "truecrypt" ) ;
 		break ;
 	default: m_volumeType = QString( "luks" ) ;
-	}
-
-	if( type == createvolume::normal_and_hidden_truecrypt ){
-		if( !m_ui->comboBoxFS->currentText().contains( "fat" ) && m_warned == false ){
-			m_warned = true ;
-			return msg.ShowUIOK( tr( "WARNING" ),tr( "It is best to create a hidden volume with vfat/fat file system." ) ) ;
-		}
 	}
 
 	QString g ;
@@ -472,7 +471,7 @@ void createvolume::pbCreateClicked()
 		if( m_ui->rbHiddenKey->isChecked() ){
 
 			y = utility::keyPath() + QString( "-1" ) ;
-			Task * t = new Task( y,x.toLatin1() ) ;
+			Task * t = new Task( y,x ) ;
 			t->start( Task::sendKey ) ;
 		}else{
 			y = x ;

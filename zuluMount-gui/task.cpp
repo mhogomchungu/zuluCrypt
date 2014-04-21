@@ -333,9 +333,11 @@ void Task::cryptoOpen()
 	QString d = m_device.replace( "\"","\"\"\"" ) ;
 
 	if( m_publicMount ){
-		exe = QString( "%1 -M -m -d \"%2\" -z \"%3\" -e %4 %5" ).arg( zuluMount ).arg( d ).arg( m_point ).arg( m_mode ).arg( m_keySource ) ;
+		const char * arg = "%1 -M -m -d \"%2\" -z \"%3\" -e %4 %5" ;
+		exe = QString( arg ).arg( zuluMount ).arg( d ).arg( m_point ).arg( m_mode ).arg( m_keySource ) ;
 	}else{
-		exe = QString( "%1 -m -d \"%2\" -z \"%3\" -e %4 %5" ).arg( zuluMount ).arg( d ).arg( m_point ).arg( m_mode ).arg( m_keySource ) ;
+		const char * arg = "%1 -m -d \"%2\" -z \"%3\" -e %4 %5" ;
+		exe = QString( arg ).arg( zuluMount ).arg( d ).arg( m_point ).arg( m_mode ).arg( m_keySource ) ;
 	}
 
 	p.start( exe ) ;
@@ -367,9 +369,11 @@ void Task::mount()
 	}
 
 	if( m_publicMount ){
-		exe = QString( "%1 -M -m -d \"%2\" -e %3 -z \"%4\" %5" ).arg( zuluMount ).arg( m_device ).arg( m_mode ).arg( m_point ).arg( additionalOptions ) ;
+		const char * arg = "%1 -M -m -d \"%2\" -e %3 -z \"%4\" %5" ;
+		exe = QString( arg ).arg( zuluMount ).arg( m_device ).arg( m_mode ).arg( m_point ).arg( additionalOptions ) ;
 	}else{
-		exe = QString( "%1 -m -d \"%2\" -e %3 -z \"%4\" %5" ).arg( zuluMount ).arg( m_device ).arg( m_mode ).arg( m_point ).arg( additionalOptions ) ;
+		const char * arg = "%1 -m -d \"%2\" -e %3 -z \"%4\" %5" ;
+		exe = QString( arg ).arg( zuluMount ).arg( m_device ).arg( m_mode ).arg( m_point ).arg( additionalOptions ) ;
 	}
 
 	p.start( exe ) ;
@@ -498,7 +502,8 @@ void Task::deviceProperties()
 			 *
 			 */
 			/*
-			 * We are just being lazy here and do a simple test below and return true if the path is simply in "/dev/abc/def"
+			 * We are just being lazy here and do a simple test below and return true
+			 * if the path is simply in "/dev/abc/def"
 			 * format by counting the number of "/"
 			 */
 			QStringList l = device.split( "/" ) ;
