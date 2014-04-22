@@ -54,12 +54,15 @@ bool LxQt::Wallet::kwallet::addKey( const QString& key,const QByteArray& value )
 	return true ;
 }
 
-void LxQt::Wallet::kwallet::open( const QString& walletName,const QString& applicationName,const QString& password )
+void LxQt::Wallet::kwallet::open( const QString& walletName,const QString& applicationName,
+				  const QString& password,const QString& displayApplicationName )
 {
 	m_walletName        = walletName ;
 	m_applicationName   = applicationName ;
 	m_password          = password ;
 
+	Q_UNUSED( displayApplicationName ) ;
+	
 	m_kwallet = KWallet::Wallet::openWallet( m_walletName,0,KWallet::Wallet::Asynchronous ) ;
 
 	connect( m_kwallet,SIGNAL( walletOpened( bool ) ),this,SLOT( walletOpened( bool ) ) ) ;

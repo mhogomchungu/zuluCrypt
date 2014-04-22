@@ -186,7 +186,8 @@ public:
 	 *
 	 * Calling this open() method without a password will generate a GUI prompt for a password
 	 */
-	virtual void open( const QString& walletName,const QString& applicationName = QString(),const QString& password = QString() ) = 0 ;
+	virtual void open( const QString& walletName,const QString& applicationName = QString(),
+			   const QString& password = QString(),const QString& displayApplicationName = QString() ) = 0 ;
 
 	/*
 	 * This method is used as a mean of communication between the backend and the user of the library.see open() method documentation above

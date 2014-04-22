@@ -392,7 +392,7 @@ void keyDialog::pbOpen()
 				m_wallet->setInterfaceObject( this ) ;
 				QObject * obj = m_wallet->qObject() ;
 				connect( obj,SIGNAL( getPassWord( QString ) ),this,SLOT( getPassWord( QString ) ) ) ;
-				m_wallet->open( walletName,appName,_internalPassWord ) ;
+				m_wallet->open( walletName,appName,_internalPassWord,"zuluMount" ) ;
 			}else{
 				DialogMsg msg( this ) ;
 				msg.ShowUIOK( tr( "ERROR!" ),tr( "internal wallet is not configured" ) ) ;

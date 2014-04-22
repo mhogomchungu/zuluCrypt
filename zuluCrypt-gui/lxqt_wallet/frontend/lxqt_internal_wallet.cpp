@@ -92,7 +92,7 @@ void LxQt::Wallet::internalWallet::taskResult_1( bool opened )
 			connect( p,SIGNAL( password( QString ) ),this,SLOT( openWallet( QString ) ) ) ;
 			connect( this,SIGNAL( passwordIsCorrect( bool ) ),p,SLOT( passwordIsCorrect( bool ) ) ) ;
 			connect( p,SIGNAL( cancelled() ),this,SLOT( cancelled() ) ) ;
-			p->ShowUI( m_walletName,m_applicationName ) ;
+			p->ShowUI( m_walletName,m_displayApplicationName ) ;
 		}else{
 			this->cancelled() ;
 		}
@@ -114,11 +114,18 @@ void LxQt::Wallet::internalWallet::password( QString password,bool create )
 	}
 }
 
-void LxQt::Wallet::internalWallet::open( const QString& walletName,const QString& applicationName,const QString& password )
+void LxQt::Wallet::internalWallet::open( const QString& walletName,const QString& applicationName,
+					 const QString& password,const QString& displayApplicationName )
 {
-	m_walletName        = walletName ;
-	m_applicationName   = applicationName ;
-	m_password          = password ;
+	m_walletName      = walletName ;
+	m_applicationName = applicationName ;
+	m_password        = password ;
+
+	if( displayApplicationName.isEmpty() ){
+		m_displayApplicationName = m_applicationName ;
+	}else{
+		m_displayApplicationName = displayApplicationName ;
+	}
 
 	if( m_applicationName.isEmpty() ){
 		m_applicationName = m_walletName ;
@@ -142,7 +149,7 @@ void LxQt::Wallet::internalWallet::open( const QString& walletName,const QString
 			this->openWallet( m_password ) ;
 		}
 	}else{
-		LxQt::Wallet::changePassWordDialog * c = new LxQt::Wallet::changePassWordDialog( this,m_walletName,m_applicationName ) ;
+		LxQt::Wallet::changePassWordDialog * c = new LxQt::Wallet::changePassWordDialog( this,m_walletName,m_displayApplicationName ) ;
 		if( c ){
 			connect( c,SIGNAL( password( QString,bool ) ),this,SLOT( password( QString,bool ) ) ) ;
 			c->ShowUI_1() ;

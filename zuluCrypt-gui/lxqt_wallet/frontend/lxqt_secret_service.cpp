@@ -80,13 +80,16 @@ bool LxQt::Wallet::secretService::addKey( const QString& key,const QByteArray& v
 	}
 }
 
-void LxQt::Wallet::secretService::open( const QString& walletName,const QString& applicationName,const QString& password )
+void LxQt::Wallet::secretService::open( const QString& walletName,const QString& applicationName,
+					const QString& password,const QString& displayApplicationName )
 {
 	/*
 	 * this backend does not use this variable
 	 */
 	m_password  = password ;
 
+	Q_UNUSED( displayApplicationName ) ;
+	
 	if( applicationName.isEmpty() ){
 
 		m_byteArrayWalletName      = walletName.toLatin1() ;
