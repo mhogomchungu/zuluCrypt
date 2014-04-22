@@ -121,16 +121,16 @@ void LxQt::Wallet::internalWallet::open( const QString& walletName,const QString
 	m_applicationName = applicationName ;
 	m_password        = password ;
 
+	if( m_applicationName.isEmpty() ){
+		m_applicationName = m_walletName ;
+	}
+
 	if( displayApplicationName.isEmpty() ){
 		m_displayApplicationName = m_applicationName ;
 	}else{
 		m_displayApplicationName = displayApplicationName ;
 	}
-
-	if( m_applicationName.isEmpty() ){
-		m_applicationName = m_walletName ;
-	}
-
+	
 	if( LxQt::Wallet::walletExists( LxQt::Wallet::internalBackEnd,m_walletName,m_applicationName ) ){
 		if( m_password.isEmpty() ){
 			/*
