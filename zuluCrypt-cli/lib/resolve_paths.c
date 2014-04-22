@@ -269,3 +269,15 @@ string_t zuluCryptResolvePath_2( const char * path )
 		return zuluCryptResolvePath_1( path ) ;
 	}
 }
+
+char * zuluCryptResolvePath_3( const char * path )
+{
+	if( StringPrefixMatch( path,"/dev/loop",9 ) ){
+		/*
+		 * zuluCryptLoopDeviceAddress_1() is defined in create_loop_device.c
+		 */
+		return zuluCryptLoopDeviceAddress_1( path ) ;
+	}else{
+		return zuluCryptResolvePath( path ) ;
+	}
+}

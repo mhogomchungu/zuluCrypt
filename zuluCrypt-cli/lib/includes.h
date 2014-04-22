@@ -256,6 +256,11 @@ char * zuluCryptDeviceFromUUID( const char * uuid ) ;
 char * zuluCryptDeviceFromLabel( const char * label ) ;
 
 /*
+ * this function is defined in blkid_evaluate_tag.c
+ */
+char * zuluCryptUUIDFromPath_1( const char * device ) ;
+
+/*
  * this function is defined in volume_types.c
  */
 int zuluCryptGetVolumeType( const char * device,const char * pass,size_t pass_size ) ;
@@ -379,6 +384,11 @@ string_t zuluCryptResolvePath_2( const char * path ) ;
  * zuluCryptResolvePath_1() is defined in resolve_paths.c
  */
 string_t zuluCryptResolvePath_1( const char * path ) ;
+
+/*
+ * zuluCryptResolvePath_3() is defined in resolve_paths.c
+ */
+char * zuluCryptResolvePath_3( const char * path ) ;
 
 /*
  * zuluCryptResolvePath() is defined in resolve_paths.c

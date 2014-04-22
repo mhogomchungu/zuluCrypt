@@ -289,9 +289,6 @@ static int _zuluMountExe( ARGS * args )
 	const char * offset = args->offset ;
 	size_t       uid    = args->uid    ;
 
-	if( StringsAreEqual( action,"-D" ) ){
-		return _zuluMountPrintVolumeDeviceName( device ) ;
-	}
 	if( StringsAreEqual( action,"-L" ) ){
 		return zuluMountPrintDeviceProperties( device,uuid,uid ) ;
 	}
@@ -571,6 +568,9 @@ int main( int argc,char * argv[] )
 	}
 	if( args.device == NULL ){
 		return _zuluExit_2( 213,stl,stx,gettext( "ERROR: device argument missing" ) ) ;
+	}
+	if( StringsAreEqual( args.action,"-D" ) ){
+		return _zuluMountPrintVolumeDeviceName( args.device ) ;
 	}
 	if( args.m_opts == NULL ){
 		args.m_opts = "rw" ;

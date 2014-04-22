@@ -20,12 +20,45 @@
 #include "includes.h"
 #include <blkid/blkid.h>
 
+static char * _resolve_path( char * path )
+{
+	char * e ;
+	if( path == NULL ){
+		return NULL ;
+	}else{
+		/*
+		 * zuluCryptResolvePath_3() is defined in resolve_path.c
+		 */
+		e = zuluCryptResolvePath_3( path ) ;
+		StringFree( path ) ;
+		return e ;
+	}
+}
+
 char * zuluCryptDeviceFromUUID( const char * uuid )
 {
-	return blkid_evaluate_tag( "UUID",uuid,NULL) ;
+	return _resolve_path( blkid_evaluate_tag( "UUID",uuid,NULL) ) ;
 }
+
 
 char * zuluCryptDeviceFromLabel( const char * label )
 {
-	return blkid_evaluate_tag( "LABEL",label,NULL ) ;
+	return _resolve_path( blkid_evaluate_tag( "LABEL",label,NULL ) ) ;
+}
+
+char * zuluCryptUUIDFromPath_1( const char * device )
+{
+	const char * c = NULL ;
+	char * r = NULL ;
+
+	blkid_probe blkid = blkid_new_probe_from_filename( device ) ;
+
+	if( blkid != NULL ){
+		blkid_do_probe( blkid );
+		blkid_probe_lookup_value( blkid,"UUID",&c,NULL ) ;
+		r = StringCopy_2( c ) ;
+		blkid_free_probe( blkid );
+	}
+
+	return r ;
 }

@@ -24,7 +24,6 @@
 #include "includes.h"
 #include <errno.h>
 #include <unistd.h>
-#include <blkid/blkid.h>
 
 static int has_device_access( const char * path,int c )
 {
@@ -149,42 +148,36 @@ int zuluCryptGetPassFromFile( const char * path,uid_t uid,string_t * st )
 
 char * zuluCryptEvaluateDeviceTags( const char * tag,const char * path )
 {
-	char * result = NULL ;
 	char * r ;
 
 	zuluCryptSecurityGainElevatedPrivileges() ;
-	result = blkid_evaluate_tag( tag,path,NULL ) ;
+
+	/*
+	 * zuluCryptDeviceFromUUID()  is defined in ../lib/blkid_evaluate_tag.c
+	 * zuluCryptDeviceFromLabel() is defined in ../lib/blkid_evaluate_tag.c
+	 */
+	if( StringsAreEqual( tag,"UUID" ) ){
+		r = zuluCryptDeviceFromUUID( path ) ;
+	}else{
+		r = zuluCryptDeviceFromLabel( path ) ;
+	}
+
 	zuluCryptSecurityDropElevatedPrivileges() ;
 
-	if( StringPrefixMatch( result,"/dev/loop",9 ) ){
-		/*
-		 * zuluCryptLoopDeviceAddress_1() is defined in ../zuluCrypt-cli/create_loop_device.c
-		 */
-		r = zuluCryptLoopDeviceAddress_1( result ) ;
-		StringFree( result ) ;
-		return r ;
-	}else{
-		return result ;
-	}
+	return r ;
 }
 
 char * zuluCryptUUIDFromPath( const char * device )
 {
-	blkid_probe blkid ;
-	const char * c = NULL ;
-	string_t st = StringVoid ;
+	char * c ;
 
 	zuluCryptSecurityGainElevatedPrivileges() ;
 
-	blkid = blkid_new_probe_from_filename( device ) ;
-
-	if( blkid != NULL ){
-		blkid_do_probe( blkid );
-		blkid_probe_lookup_value( blkid,"UUID",&c,NULL ) ;
-		st = String( c ) ;
-		blkid_free_probe( blkid );
-	}
+	/*
+	 * zuluCryptUUIDFromPath_1() is defined in ../lib/blkid_evaluate_tag.c
+	 */
+	c = zuluCryptUUIDFromPath_1( device ) ;
 
 	zuluCryptSecurityDropElevatedPrivileges() ;
-	return StringDeleteHandle( &st ) ;
+	return c ;
 }
