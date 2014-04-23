@@ -104,6 +104,17 @@ static inline char * __StringExpandMemory( string_t st,size_t new_size )
 	}
 }
 
+void StringGetIteratorBeginAndEnd( string_t st,StringIterator * begin,StringIterator * end )
+{
+	if( st == StringVoid ){
+		*begin = NULL ;
+		*end   = NULL ;
+	}else{
+		*begin = st->string ;
+		*end   = st->string + st->size ;
+	}
+}
+
 int StringLock( string_t st )
 {
 	if( st != StringVoid ){

@@ -53,6 +53,13 @@ typedef struct StringType * string_t ;
  */
 #define StringVoid ( ( string_t ) 0 )
 
+typedef char * StringIterator ;
+
+/*
+ * Get stl style iterator on the managed string
+ */
+void StringGetIteratorBeginAndEnd( string_t,StringIterator * begin,StringIterator * end ) ;
+
 /*
  * initialize a handle with a C string
  */

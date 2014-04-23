@@ -148,37 +148,44 @@ char * zuluCryptResolveDMPath( const char * path )
 /*
  * An assumption is made here that the path is an LVM path if "path" is in /dev/mapper/abc-def format
  * and there exist a path at /dev/abc/def.
+ *
+ * Info in lvm path structures can be found here: https://www.redhat.com/archives/linux-lvm/2014-January/msg00014.html
  */
 string_t zuluCryptConvertIfPathIsLVM( const char * path )
 {
-	size_t i ;
-	size_t j ;
-
 	const char * e ;
 	const char ** z ;
 
 	struct stat st ;
 
-	char c ;
-	char d ;
-	char k ;
+	char * c ;
+	char * d ;
+	char * k ;
+
+	StringIterator it  ;
+	StringIterator end ;
 
 	string_t q = String( path ) ;
 
-	j = StringLength( q ) ;
+	StringGetIteratorBeginAndEnd( q,&it,&end ) ;
 
-	for( i = 1 ; i < j ; i++ ){
-		c = *( path + i ) ;
-		d = *( path + i + 1 ) ;
-		k = *( path + i - 1 ) ;
-		if( k != '-' && c == '-' && d != '-' ){
+	/*
+	 * jumpt to the third character
+	 */
+	it = it + 3 ;
+
+	while( it < end ){
+		d = it ;
+		it++ ;
+		c = d - 1 ;
+		k = d - 2 ;
+		if( *k != '-' && *c == '-' && *d != '-' ){
 			/*
 			 * found a place with a single dash,replace the dash with a slash
 			 */
-			StringSubChar( q,i,'/' ) ;
+			*c = '/' ;
 			/*
 			 * replace double dashes if present.
-			 * more info:  https://www.redhat.com/archives/linux-lvm/2014-January/msg00014.html
 			 */
 			z = StringPointer( q ) ;
 			while( StringHasComponent( *z,"--" ) ){
@@ -201,6 +208,7 @@ string_t zuluCryptConvertIfPathIsLVM( const char * path )
 			break ;
 		}
 	}
+
 	return q ;
 }
 
