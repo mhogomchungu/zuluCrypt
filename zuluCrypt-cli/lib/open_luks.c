@@ -44,7 +44,7 @@ static inline int zuluExit_1( int r,struct crypt_device * cd,string_t st )
 	return r ;
 }
 
-static int _open_luks( const char * device,const open_struct_t * opts )
+static int _open_luks_2( const char * device,const open_struct_t * opts )
 {
 	struct crypt_device * cd ;
 	uint32_t flags ;
@@ -224,5 +224,5 @@ int zuluCryptOpenLuks_1( const open_struct_t * opts )
 
 int zuluCryptOpenLuks_2( const open_struct_t * opts )
 {
-	return _open_luks_0( _open_luks,opts ) ;
+	return _open_luks_0( _open_luks_2,opts ) ;
 }

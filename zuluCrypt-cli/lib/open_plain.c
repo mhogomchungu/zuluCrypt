@@ -75,8 +75,7 @@ static u_int64_t _offset( const char * offset )
 	return r ;
 }
 
-static int _open_plain( const char * device,const char * offset,const char * mapper,
-			int mode,const char * pass,size_t pass_size )
+static int _open_plain( const char * device,const open_struct_t * opt )
 {
 	uint32_t flags ;
 
@@ -90,21 +89,21 @@ static int _open_plain( const char * device,const char * offset,const char * map
 	if( zuluCryptPathIsNotValid( device ) ){
 		return 3 ;
 	}
-	if( offset != NULL ){
-		params.offset = _offset( offset ) ;
+	if( crypt_init( &cd,device ) != 0 ){
+		return 2 ;
 	}
-	if( mode == O_RDONLY ){
+
+	params.offset = _offset( opt->offset ) ;
+
+	if( StringHasComponent( opt->m_opts,"ro" ) ){
 		flags = CRYPT_ACTIVATE_READONLY ;
 	}else{
 		flags = CRYPT_ACTIVATE_ALLOW_DISCARDS ;
 	}
-	if( crypt_init( &cd,device ) != 0 ){
-		return 2 ;
-	}
 	if( crypt_format( cd,CRYPT_PLAIN,"aes","cbc-essiv:sha256",NULL,NULL,32,&params ) != 0 ){
 		return zuluExit( 2,cd ) ;
 	}
-	if( crypt_activate_by_passphrase( cd,mapper,CRYPT_ANY_SLOT,pass,pass_size,flags ) < 0 ){
+	if( crypt_activate_by_passphrase( cd,opt->mapper_name,CRYPT_ANY_SLOT,opt->key,opt->key_len,flags ) < 0 ){
 		return zuluExit( 2,cd ) ;
 	}else{
 		return zuluExit( 0,cd ) ;
@@ -118,19 +117,19 @@ int zuluCryptOpenPlain_1( const open_struct_t * opt )
 	int fd ;
 	int r ;
 
-	if( StringHasComponent( opt->m_opts,"ro" ) ){
-		mode = O_RDONLY ;
-	}else{
-		mode = O_RDWR ;
-	}
 	if( StringPrefixMatch( opt->device,"/dev/",5 ) ){
-		return _open_plain( opt->device,opt->offset,opt->mapper_name,mode,opt->key,opt->key_len ) ;
+		return _open_plain( opt->device,opt ) ;
 	}else{
+		if( StringHasComponent( opt->m_opts,"ro" ) ){
+			mode = O_RDONLY ;
+		}else{
+			mode = O_RDWR ;
+		}
 		/*
 		 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop.c
 		 */
 		if( zuluCryptAttachLoopDeviceToFile( opt->device,mode,&fd,&st ) ){
-			r = _open_plain( StringContent( st ),opt->offset,opt->mapper_name,mode,opt->key,opt->key_len ) ;
+			r = _open_plain( StringContent( st ),opt ) ;
 			StringDelete( &st ) ;
 			close( fd ) ;
 			return r ;

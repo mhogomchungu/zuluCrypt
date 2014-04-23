@@ -28,54 +28,18 @@ static inline int zuluExit( int x,string_t p )
 	return x ;
 }
 
-static int _open_mapper( const open_struct_t * opts )
-{
-	int r ;
-	/*
-	 * zuluCryptVolumeIsLuks() is defined in is_luks.c
-	 */
-	if( opts->luks_detached_header ){
-		/*
-		 * zuluCryptOpenLuks() is defined in open_luks.c
-		 */
-		return zuluCryptOpenLuks_1( opts ) ;
-	}
-	if( zuluCryptVolumeIsLuks( opts->device ) ){
-		/*
-		 * zuluCryptOpenLuks_2() is defined in open_luks.c
-		 */
-		r = zuluCryptOpenLuks_2( opts ) ;
-		if( r != 0 ){
-			/*
-			 * just assumed wrong password when a volume fail to unlock
-			 */
-			r = 1 ;
-		}
-	}else{
-		/*
-		 * zuluCryptOpenPlain_1() is defined in open_plain.c
-		 */
-		r = zuluCryptOpenPlain_1( opts ) ;
-	}
-	return r ;
-}
-
-int zuluCryptOpenVolume_0( int( *function )( const open_struct_t * ),const open_struct_t * opts_1 )
+int zuluCryptOpenVolume_0( int( *function )( const open_struct_t * ),const open_struct_t * opts )
 {
 	int h ;
-	string_t p = StringVoid ;
-	string_t q = StringVoid ;
-	int mode ;
-	int fd ;
-	const char * mapper ;
-	open_struct_t opts ;
 
-	memcpy( &opts,opts_1,sizeof( open_struct_t ) ) ;
+	string_t p ;
+
+	const char * mapper ;
 
 	/*
 	 * zuluCryptPathIsNotValid() is defined in is_path_valid.c
 	 */
-	if( zuluCryptPathIsNotValid( opts.device ) ){
+	if( zuluCryptPathIsNotValid( opts->device ) ){
 		return 3 ;
 	}
 	/*
@@ -83,7 +47,7 @@ int zuluCryptOpenVolume_0( int( *function )( const open_struct_t * ),const open_
 	 */
 	p = String( zuluCryptMapperPrefix() ) ;
 
-	mapper = StringMultipleAppend( p,"/",opts.mapper_name,END ) ;
+	mapper = StringMultipleAppend( p,"/",opts->mapper_name,END ) ;
 
 	/*
 	 * zuluCryptPathIsValid() is defined in is_path_valid.c
@@ -91,26 +55,8 @@ int zuluCryptOpenVolume_0( int( *function )( const open_struct_t * ),const open_
 	if( zuluCryptPathIsValid( mapper ) ){
 		return zuluExit( 2,p ) ;
 	}
-	if( StringPrefixMatch( opts.device,"/dev/",5 ) ){
-		h = function( &opts ) ;
-	}else{
-		if( opts.m_flags & MS_RDONLY ){
-			mode = O_RDONLY ;
-		}else{
-			mode = O_RDWR ;
-		}
-		/*
-		 * zuluCryptAttachLoopDeviceToFile() is defined in create_loop_device.c
-		 */
-		if( zuluCryptAttachLoopDeviceToFile( opts.device,mode,&fd,&q ) ){
-			opts.device = StringContent( q ) ;
-			h = function( &opts ) ;
-			close( fd ) ;
-			StringDelete( &q ) ;
-		}else{
-			h = 1 ;
-		}
-	}
+
+	h = function( opts ) ;
 
 	switch( h ){
 		case 1 : return zuluExit( 4,p ) ;
@@ -118,11 +64,11 @@ int zuluCryptOpenVolume_0( int( *function )( const open_struct_t * ),const open_
 		case 3 : return zuluExit( 3,p ) ;
 	}
 
-	if( opts.m_point != NULL ){
+	if( opts->m_point != NULL ){
 		/*
 		 * zuluCryptMountVolume() is defined in mount_volume.c
 		 */
-		h = zuluCryptMountVolume( mapper,opts.m_point,opts.m_flags,opts.fs_opts,opts.uid ) ;
+		h = zuluCryptMountVolume( mapper,opts->m_point,opts->m_flags,opts->fs_opts,opts->uid ) ;
 
 		if( h != 0 ){
 			/*
@@ -162,12 +108,36 @@ int zuluCryptOpenVolume( const char * dev,const char * mapper,const char * m_poi
 	return zuluCryptOpenVolume_1( &opts ) ;
 }
 
-int zuluCryptOpenPlainWithOffset( const open_struct_t * opts )
+static int _open_mapper( const open_struct_t * opts )
 {
+	int r ;
 	/*
-	 * zuluCryptOpenPlain_1() is defined in open_plain.c
+	 * zuluCryptVolumeIsLuks() is defined in is_luks.c
 	 */
-	return zuluCryptOpenVolume_0( zuluCryptOpenPlain_1,opts ) ;
+	if( opts->luks_detached_header ){
+		/*
+		 * zuluCryptOpenLuks() is defined in open_luks.c
+		 */
+		r = zuluCryptOpenLuks_1( opts ) ;
+	}else if( zuluCryptVolumeIsLuks( opts->device ) ){
+		/*
+		 * zuluCryptOpenLuks_2() is defined in open_luks.c
+		 */
+		r = zuluCryptOpenLuks_2( opts ) ;
+		if( r != 0 ){
+			/*
+			 * just assumed wrong password when a volume fail to unlock
+			 */
+			r = 1 ;
+		}
+	}else{
+		/*
+		 * zuluCryptOpenPlain_1() is defined in open_plain.c
+		 */
+		r = zuluCryptOpenPlain_1( opts ) ;
+	}
+
+	return r ;
 }
 
 /*
@@ -186,9 +156,13 @@ int zuluCryptOpenVolume_2( const open_struct_t * opts )
 	int r ;
 	open_struct_t opts_1 ;
 	if( opts->offset != NULL ){
-		r = zuluCryptOpenPlainWithOffset( opts ) ;
+		/*
+		 * zuluCryptOpenPlain_1() is defined in open_plain.c
+		 */
+		r = zuluCryptOpenVolume_0( zuluCryptOpenPlain_1,opts ) ;
 	}else{
 		r = zuluCryptOpenVolume_1( opts ) ;
+
 		if( r == 4 && zuluCryptVolumeIsNotLuks( opts->device ) ){
 			memcpy( &opts_1,opts,sizeof( open_struct_t ) ) ;
 			/*

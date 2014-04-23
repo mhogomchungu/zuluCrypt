@@ -99,11 +99,6 @@ int zuluCryptOpenLuks_1( const open_struct_t * ) ;
 int zuluCryptOpenLuks_2( const open_struct_t * ) ;
 
 /*
- * zuluCryptOpenPlainWithOffset() is defined in open_volume.c
- */
-int zuluCryptOpenPlainWithOffset( const open_struct_t * ) ;
-
-/*
  * zuluCryptOpenTcrypt_1() is defined in open_tcrypt.c
  */
 int zuluCryptOpenTcrypt_1( const open_struct_t * ) ;

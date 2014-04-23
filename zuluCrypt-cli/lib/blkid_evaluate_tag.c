@@ -54,10 +54,10 @@ char * zuluCryptUUIDFromPath_1( const char * device )
 	blkid_probe blkid = blkid_new_probe_from_filename( device ) ;
 
 	if( blkid != NULL ){
-		blkid_do_probe( blkid );
+		blkid_do_probe( blkid ) ;
 		blkid_probe_lookup_value( blkid,"UUID",&c,NULL ) ;
 		r = StringCopy_2( c ) ;
-		blkid_free_probe( blkid );
+		blkid_free_probe( blkid ) ;
 	}
 
 	return r ;

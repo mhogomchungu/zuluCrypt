@@ -112,7 +112,7 @@ static void _set_multiple_keys( struct crypt_params_tcrypt * params )
 	if( params ){;}
 }
 
-static int _open_tcrypt_volume( const open_struct_t * opts,const char * key )
+static int _open_tcrypt_volume( const char * device,const open_struct_t * opts,const char * key )
 {
 	uint32_t flags ;
 
@@ -121,7 +121,7 @@ static int _open_tcrypt_volume( const open_struct_t * opts,const char * key )
 	struct crypt_device * cd = NULL;
 	struct crypt_params_tcrypt params ;
 
-	if( crypt_init( &cd,opts->device ) < 0 ){
+	if( crypt_init( &cd,device ) < 0 ){
 		return 1 ;
 	}else{
 		memset( &params,'\0',sizeof( struct crypt_params_tcrypt ) ) ;
@@ -186,7 +186,7 @@ static int _open_tcrypt_volume( const open_struct_t * opts,const char * key )
 	}
 }
 
-static int _open_tcrypt( const open_struct_t * opts )
+static int _open_tcrypt( const char * device,const open_struct_t * opts )
 {
 	string_t st ;
 	int h ;
@@ -195,7 +195,7 @@ static int _open_tcrypt( const open_struct_t * opts )
 		st = zuluCryptCreateKeyFile( opts->key,opts->key_len,"open_tcrypt-" ) ;
 		if( st != StringVoid ){
 			keyfile = StringContent( st ) ;
-			h = _open_tcrypt_volume( opts,keyfile ) ;
+			h = _open_tcrypt_volume( device,opts,keyfile ) ;
 			/*
 			 * zuluCryptDeleteFile() is defined in open_path_security.c
 			 */
@@ -206,9 +206,38 @@ static int _open_tcrypt( const open_struct_t * opts )
 			return 1 ;
 		}
 	}else if( opts->key_source == TCRYPT_KEYFILE_FILE ){
-		return _open_tcrypt_volume( opts,opts->key ) ;
+		return _open_tcrypt_volume( device,opts,opts->key ) ;
 	}else{
-		return _open_tcrypt_volume( opts,opts->key ) ;
+		return _open_tcrypt_volume( device,opts,opts->key ) ;
+	}
+}
+
+static int _open_tcrypt_0( const open_struct_t * opt )
+{
+	int mode ;
+	string_t st ;
+	int fd ;
+	int r ;
+
+	if( StringPrefixMatch( opt->device,"/dev/",5 ) ){
+		return _open_tcrypt( opt->device,opt ) ;
+	}else{
+		if( StringHasComponent( opt->m_opts,"ro" ) ){
+			mode = O_RDONLY ;
+		}else{
+			mode = O_RDWR ;
+		}
+		/*
+		 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop.c
+		 */
+		if( zuluCryptAttachLoopDeviceToFile( opt->device,mode,&fd,&st ) ){
+			r = _open_tcrypt( StringContent( st ),opt ) ;
+			StringDelete( &st ) ;
+			close( fd ) ;
+			return r ;
+		}else{
+			return 1 ;
+		}
 	}
 }
 
@@ -245,7 +274,7 @@ int zuluCryptOpenTcrypt_1( const open_struct_t * opts )
 	/*
 	 * zuluCryptOpenVolume_0() is defined in open_volume.c
 	 */
-	return zuluCryptOpenVolume_0( _open_tcrypt,opts ) ;
+	return zuluCryptOpenVolume_0( _open_tcrypt_0,opts ) ;
 }
 
 #else
