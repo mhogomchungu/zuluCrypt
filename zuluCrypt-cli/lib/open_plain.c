@@ -110,6 +110,7 @@ static int _open_plain( const char * device,const open_struct_t * opt )
 	}
 }
 
+
 int zuluCryptOpenPlain_1( const open_struct_t * opt )
 {
 	int mode ;

@@ -38,8 +38,6 @@ stringList_t zuluCryptGetFstabList( uid_t uid )
 	char * ac ;
 	const char * entry ;
 
-	blkid_cache cache = NULL ;
-
 	if( uid ){;}
 
 	stl = StringListStringSplit( xt,'\n' ) ;
@@ -52,10 +50,6 @@ stringList_t zuluCryptGetFstabList( uid_t uid )
 	if( StringListSize( stl ) < 1 ){
 		StringListDelete( &stl ) ;
 		return StringListVoid ;
-	}
-
-	if( blkid_get_cache( &cache,NULL ) != 0 ){
-		cache = NULL ;
 	}
 
 	StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
@@ -79,7 +73,10 @@ stringList_t zuluCryptGetFstabList( uid_t uid )
 				}
 			}else if( StringAtLeastOnePrefixMatch( entry,"UUID=","uuid=",NULL ) ){
 				entry = StringRemoveString( xt,"\"" ) ;
-				ac = blkid_evaluate_tag( "UUID",entry + 5,&cache ) ;
+				/*
+				 * zuluCryptDeviceFromUUID() is defined in blkid_evaluate_tag.c
+				 */
+				ac = zuluCryptDeviceFromUUID( entry + 5 ) ;
 				StringSubChar( xt,index,' ' ) ;
 				if( ac != NULL ){
 					StringRemoveLeft( xt,index ) ;
@@ -88,7 +85,10 @@ stringList_t zuluCryptGetFstabList( uid_t uid )
 				}
 			}else if( StringAtLeastOnePrefixMatch( entry,"LABEL=","label=",NULL ) ){
 				entry = StringRemoveString( xt,"\"" ) ;
-				ac = blkid_evaluate_tag( "LABEL",entry + 6,&cache ) ;
+				/*
+				 * zuluCryptDeviceFromLabel() is defined in blkid_evaluate_tag.c
+				 */
+				ac = zuluCryptDeviceFromLabel( entry + 6 ) ;
 				StringSubChar( xt,index,' ' ) ;
 				if( ac != NULL ){
 					StringRemoveLeft( xt,index ) ;
@@ -101,9 +101,6 @@ stringList_t zuluCryptGetFstabList( uid_t uid )
 		}
 	}
 
-	if( cache != NULL ){
-		blkid_put_cache( cache ) ;
-	}
 	return stl ;
 }
 
