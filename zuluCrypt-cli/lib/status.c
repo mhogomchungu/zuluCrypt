@@ -193,7 +193,7 @@ char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper )
 	char * r ;
 	const char * nil = "Nil" ;
 
-	if( !StringPrefixEqual( mapper,crypt_get_dir() ) ){
+	if( StringPrefixNotEqual( mapper,crypt_get_dir() ) ){
 		return StringCopy_2( nil ) ;
 	}
 
@@ -386,22 +386,14 @@ char * zuluCryptVolumeDeviceName( const char * mapper )
 	struct crypt_device * cd ;
 	const char * e = crypt_get_dir() ;
 	char * f = NULL ;
-	string_t st ;
+
 	if( StringPrefixEqual( mapper,e ) && crypt_init_by_name( &cd,mapper ) == 0 ){
 		e = crypt_get_device_name( cd ) ;
 		if( e != NULL ){
 			/*
-			* zuluCryptResolvePath() is defined in resolve_path.c
+			 * zuluCryptResolvePath_3() is defined in resolve_path.c
 			*/
-			f = zuluCryptResolvePath( e ) ;
-			if( !StringPrefixEqual( f,"/dev/" ) ){
-				st = StringInherit( &f ) ;
-				/*
-				 * zuluCryptDecodeMountEntry() is defined in mount_volume.c
-				 */
-				zuluCryptDecodeMountEntry( st ) ;
-				f = StringDeleteHandle( &st ) ;
-			}
+			f = zuluCryptResolvePath_3( e ) ;
 		}
 		crypt_free( cd ) ;
 	}

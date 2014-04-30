@@ -357,7 +357,7 @@ static int _zuluCryptCheckSYSifDeviceIsSystem( const char * device )
 
 	const char * path ;
 
-	if( !StringPrefixEqual( device,"/dev/" ) ){
+	if( StringPrefixNotEqual( device,"/dev/" ) ){
 		/*
 		 * udev doesnt work with path to image files so return early
 		 */
