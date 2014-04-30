@@ -487,7 +487,7 @@ int main( int argc,char * argv[] )
 		st = _print_uuid_from_path( device ) ;
 		return zuluExit( st,stl,stx,env,NULL ) ;
 	}
-	if( StringPrefixMatch( device,"UUID=",5 ) ){
+	if( StringPrefixEqual( device,"UUID=" ) ){
 
 		q = String( device ) ;
 		StringRemoveString( q,"\"" ) ;

@@ -224,7 +224,7 @@ char * zuluCryptResolvePath( const char * path )
 		}else{
 			return e ;
 		}
-	}else if( StringPrefixMatch( path,"/dev/disk/by-",13 ) ){
+	}else if( StringPrefixEqual( path,"/dev/disk/by-" ) ){
 		/*
 		 * zuluCryptRealPath() is defined in real_path.c
 		 */
@@ -232,7 +232,7 @@ char * zuluCryptResolvePath( const char * path )
 		if( e == NULL ){
 			return StringCopy_2( path ) ;
 		}else{
-			if( StringPrefixMatch( e,"/dev/mapper/",12 ) ){
+			if( StringPrefixEqual( e,"/dev/mapper/" ) ){
 				st = zuluCryptConvertIfPathIsLVM( e ) ;
 				StringFree( e ) ;
 				return StringDeleteHandle( &st ) ;
@@ -240,20 +240,20 @@ char * zuluCryptResolvePath( const char * path )
 				return e ;
 			}
 		}
-	}else if( StringPrefixMatch( path,"/dev/mapper/",12 ) ){
+	}else if( StringPrefixEqual( path,"/dev/mapper/" ) ){
 
 		st = zuluCryptConvertIfPathIsLVM( path ) ;
 		return StringDeleteHandle( &st ) ;
 
-	}else if( StringPrefixMatch( path,"/dev/md",7 ) ){
+	}else if( StringPrefixEqual( path,"/dev/md" ) ){
 
 		return zuluCryptResolveMDPath( path ) ;
 
-	}else if( StringPrefixMatch( path,"/dev/dm-",8 ) ){
+	}else if( StringPrefixEqual( path,"/dev/dm-" ) ){
 
 		return zuluCryptResolveDMPath( path ) ;
 
-	}else if( StringPrefixMatch( path,"/dev/loop",9 ) ){
+	}else if( StringPrefixEqual( path,"/dev/loop" ) ){
 		/*
 		 * zuluCryptLoopDeviceAddress() is defined in create_loop_device.c
 		 */
@@ -271,7 +271,7 @@ string_t zuluCryptResolvePath_1( const char * path )
 
 string_t zuluCryptResolvePath_2( const char * path )
 {
-	if( StringPrefixMatch( path,"/dev/loop",9 ) ){
+	if( StringPrefixEqual( path,"/dev/loop" ) ){
 		return String( path ) ;
 	}else{
 		return zuluCryptResolvePath_1( path ) ;
@@ -280,7 +280,7 @@ string_t zuluCryptResolvePath_2( const char * path )
 
 char * zuluCryptResolvePath_3( const char * path )
 {
-	if( StringPrefixMatch( path,"/dev/loop",9 ) ){
+	if( StringPrefixEqual( path,"/dev/loop" ) ){
 		/*
 		 * zuluCryptLoopDeviceAddress_1() is defined in create_loop_device.c
 		 */

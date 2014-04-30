@@ -261,7 +261,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	mapper_name = StringContent( *m_name ) ;
 
 	*mapper_path = String( zuluCryptMapperPrefix() ) ;
-	e = StringMultipleAppend( *mapper_path,"/",mapper_name,END ) ;
+	e = StringMultipleAppend( *mapper_path,"/",mapper_name,NULL ) ;
 
 	if( stat( e,&statstr ) == 0 ){
 		return zuluExit_1( 11,opts,device,mount_point,stl ) ;
@@ -344,7 +344,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	open_struct.m_flags     = m_flags ;
 
 	plugin_path = plugin_path + StringLastIndexOfChar_1( plugin_path,'/' ) + 1 ;
-	open_struct.luks_detached_header = StringsAreEqual( plugin_path,"luks" ) ;
+	open_struct.luks_detached_header = StringHasComponent( plugin_path,"luks" ) ;
 
 	zuluCryptSecurityGainElevatedPrivileges() ;
 

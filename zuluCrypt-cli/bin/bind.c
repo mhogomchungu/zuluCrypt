@@ -56,7 +56,7 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 		delete_stx = 1 ;
 	}
 
-	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
+	if( StringPrefixEqual( device,"/dev/loop" ) ){
 		/*
 		 * zuluCryptLoopDeviceAddress_2() is defined in ../lib/create_loop_device.c
 		 */

@@ -79,7 +79,7 @@ char * zuluCryptEmptySlots( const char * device )
 	string_t st ;
 	int fd ;
 	char * r ;
-	if( StringPrefixMatch( device,"/dev/",5 ) ){
+	if( StringPrefixEqual( device,"/dev/" ) ){
 		return _empty_slots( device ) ;
 	}else{
 		/*

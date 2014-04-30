@@ -543,7 +543,7 @@ int zuluCryptEXESaveAndRestoreVolumeHeader( const struct_opts * opts,uid_t uid,i
 	const char * dev = NULL ;
 	const char * dev_1 = NULL ;
 
-	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
+	if( StringPrefixEqual( device,"/dev/loop" ) ){
 		/*
 		 * zuluCryptLoopDeviceAddress_1() is defined in ../lib/create_loop_device.c
 		 */

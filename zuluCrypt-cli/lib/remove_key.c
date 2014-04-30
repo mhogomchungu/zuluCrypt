@@ -61,7 +61,7 @@ int zuluCryptRemoveKey( const char * device ,const char * pass,size_t pass_size 
 	int fd ;
 	int r ;
 
-	if( StringPrefixMatch( device,"/dev/",5 ) ){
+	if( StringPrefixEqual( device,"/dev/" ) ){
 		return _remove_key( device,pass,pass_size ) ;
 	}else{
 		/*

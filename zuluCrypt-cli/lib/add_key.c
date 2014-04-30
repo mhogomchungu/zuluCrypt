@@ -53,7 +53,7 @@ int zuluCryptAddKey( const char * device,const char * existingkey,size_t existin
 	string_t st ;
 	int fd ;
 	int r ;
-	if( StringPrefixMatch( device,"/dev/",5 ) ){
+	if( StringPrefixEqual( device,"/dev/" ) ){
 		return _add_key( device,existingkey,existingkey_size,newkey,newkey_size ) ;
 	}else{
 		/*

@@ -179,7 +179,7 @@ static int _open_luks_0( int( *function )( const char *,const open_struct_t * ),
 	int fd ;
 	int r ;
 
-	if( StringPrefixMatch( opts->device,"/dev/",5 ) ){
+	if( StringPrefixEqual( opts->device,"/dev/" ) ){
 		return function( opts->device,opts ) ;
 	}else{
 		if( StringHasComponent( opts->m_opts,"ro" ) ){

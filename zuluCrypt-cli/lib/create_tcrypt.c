@@ -362,7 +362,7 @@ int zuluCryptCreateTCrypt( const char * device,const char * file_system,const ch
 	int fd ;
 	string_t q = StringVoid ;
 	int r ;
-	if( StringPrefixMatch( device,"/dev/",5 ) ){
+	if( StringPrefixEqual( device,"/dev/" ) ){
 		r = _create_tcrypt_volume( device,file_system,rng,key,key_len,key_source,
 					   hidden_volume_size,file_system_h,key_h,key_len_h,key_source_h ) ;
 	}else{

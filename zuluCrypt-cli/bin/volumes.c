@@ -85,7 +85,7 @@ static inline int _allowedDevice( const char * device )
 	blkid_probe blkid ;
 	int sts ;
 
-	if( StringPrefixMatch( device,"/dev/sr",7 ) ){
+	if( StringPrefixEqual( device,"/dev/sr" ) ){
 		/*
 		 * device is probably a cdrom or dvdrom,allow them
 		 */
@@ -279,7 +279,7 @@ static stringList_t _zuluCryptVolumeList_0( int resolve_loop_devices )
 			e = StringContent( st ) + index + 1 ;
 			device = StringAppendAt( st_1,5,e ) ;
 			if( _allowedDevice( device ) ){
-				if( StringPrefixMatch( device,"/dev/loop",9 ) ){
+				if( StringPrefixEqual( device,"/dev/loop" ) ){
 					/*
 					 * Here we only keep one loop device if the volume file has
 					 * more than one loop device
@@ -321,7 +321,7 @@ int zuluCryptDeviceIsSupported( const char * device,uid_t uid )
 	stringList_t stl ;
 	int r ;
 
-	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
+	if( StringPrefixEqual( device,"/dev/loop" ) ){
 		return 1 ;
 	}else{
 		stl = zuluCryptPartitions( ZULUCRYPTallPartitions,uid ) ;
@@ -357,14 +357,14 @@ static int _zuluCryptCheckSYSifDeviceIsSystem( const char * device )
 
 	const char * path ;
 
-	if( !StringPrefixMatch( device,"/dev/",5 ) ){
+	if( !StringPrefixEqual( device,"/dev/" ) ){
 		/*
 		 * udev doesnt work with path to image files so return early
 		 */
 		return 0 ;
 	}
 
-	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
+	if( StringPrefixEqual( device,"/dev/loop" ) ){
 		/*
 		 * udev thinks all loop devices are system devices and we disagree and hence we return early
 		 */
@@ -740,7 +740,7 @@ static void _print_list( stringList_t stl )
 	while( it != end ){
 		e = StringContent( *it ) ;
 		it++ ;
-		if( StringPrefixMatch( e,"/dev/loop",9 ) ){
+		if( StringPrefixEqual( e,"/dev/loop" ) ){
 			/*
 			 * zuluCryptLoopDeviceAddress_1() is defined in ../lib/create_loop_device.c
 			 */
@@ -900,7 +900,7 @@ int zuluCryptPartitionIsSystemPartition( const char * device,uid_t uid )
 {
 	char * dev ;
 	int r ;
-	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
+	if( StringPrefixEqual( device,"/dev/loop" ) ){
 		/*
 		 * zuluCryptLoopDeviceAddress_1() is defined in ../lib/create_loop_device.c
 		 */

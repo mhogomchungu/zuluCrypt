@@ -166,7 +166,7 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 				*fd_path = -1 ;
 			}else{
 				dev_1 = zuluCryptGetFileNameFromFileDescriptor( *fd_path ) ;
-				if( StringPrefixMatch( dev_1,"/dev/shm/",9 ) ){
+				if( StringPrefixEqual( dev_1,"/dev/shm/" ) ){
 					st =1 ;
 					close( *fd_path ) ;
 					*fd_path = -1 ;
@@ -189,9 +189,9 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 					 * device is in "/dev/" but not in "/dev/shm"
 					 */
 					*dev = zuluCryptGetFileNameFromFileDescriptor( *fd_path ) ;
-					if( StringPrefixMatch( *dev,"/dev/shm/",9 ) ){
+					if( StringPrefixEqual( *dev,"/dev/shm/" ) ){
 						st = 1 ;
-					}else if( StringPrefixMatch( *dev,"/dev/",5 ) ){
+					}else if( StringPrefixEqual( *dev,"/dev/" ) ){
 						st = 0 ;
 					}
 				}
@@ -223,12 +223,12 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 			*dev = zuluCryptGetFileNameFromFileDescriptor( *fd_path ) ;
 
 			if( S_ISBLK( stat_st.st_mode ) ){
-				if( StringPrefixMatch( *dev,"/dev/shm/",9 ) ){
+				if( StringPrefixEqual( *dev,"/dev/shm/" ) ){
 					/*
 					* we do not support this path
 					*/
 					st = 1 ;
-				}else if( StringPrefixMatch( *dev,"/dev/",5 ) ){
+				}else if( StringPrefixEqual( *dev,"/dev/" ) ){
 					/*
 					* got a block device,accept it
 					*/

@@ -60,11 +60,11 @@ static int path_is_accessible( const char * path,uid_t uid,int action )
 
 	if( uid ){;}
 
-	if( StringPrefixMatch( path,"/dev/shm/",9 ) ){
+	if( StringPrefixEqual( path,"/dev/shm/" ) ){
 		return 4 ;
 	}
-	if( StringPrefixMatch( path,"/dev/",5 ) ){
-		if( StringPrefixMatch( path,"/dev/loop",9 ) ){
+	if( StringPrefixEqual( path,"/dev/" ) ){
+		if( StringPrefixEqual( path,"/dev/loop" ) ){
 			/*
 			 * zuluCryptLoopDeviceAddress_1() is defined in ../zuluCrypt-cli/create_loop_device.c
 			 */

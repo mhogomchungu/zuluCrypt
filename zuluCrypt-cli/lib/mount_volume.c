@@ -428,7 +428,7 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 	mst.fs = StringContent( fs ) ;
 	opts = set_mount_options( &mst ) ;
 
-	if( !StringPrefixMatch( path,"/dev/",5 ) ){
+	if( !StringPrefixEqual( path,"/dev/" ) ){
 		/*
 		 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop_device.c
 		 */

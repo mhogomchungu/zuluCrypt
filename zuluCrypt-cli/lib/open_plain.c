@@ -118,7 +118,7 @@ int zuluCryptOpenPlain_1( const open_struct_t * opt )
 	int fd ;
 	int r ;
 
-	if( StringPrefixMatch( opt->device,"/dev/",5 ) ){
+	if( StringPrefixEqual( opt->device,"/dev/" ) ){
 		return _open_plain( opt->device,opt ) ;
 	}else{
 		if( StringHasComponent( opt->m_opts,"ro" ) ){

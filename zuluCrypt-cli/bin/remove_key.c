@@ -203,4 +203,3 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 	zuluCryptCheckInvalidKey( opts->device ) ;
 	return status ;
 }
-

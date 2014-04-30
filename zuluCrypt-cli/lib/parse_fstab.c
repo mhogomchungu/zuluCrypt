@@ -60,7 +60,7 @@ stringList_t zuluCryptGetFstabList( uid_t uid )
 		index = StringIndexOfChar( xt,0,' ' ) ;
 		if( index != -1 ){
 			entry = StringSubChar( xt,index,'\0' ) ;
-			if( StringPrefixMatch( entry,"/dev/",5 ) ){
+			if( StringPrefixEqual( entry,"/dev/" ) ){
 				/*
 				 * zuluCryptResolvePath() is defined in resolve_paths.c
 				 */

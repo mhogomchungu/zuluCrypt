@@ -176,7 +176,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		return zuluExit( 6,stl ) ;
 	}
 
-	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
+	if( StringPrefixEqual( device,"/dev/loop" ) ){
 		zuluCryptSecurityGainElevatedPrivileges() ;
 		/*
 		 * zuluCryptGetVolumeSize() is defined in volumes.c

@@ -121,7 +121,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 
 	const char * cmapper ;
 
-	if( StringPrefixMatch( device,"/dev/loop",9 ) ){
+	if( StringPrefixEqual( device,"/dev/loop" ) ){
 		/*
 		 * zuluCryptLoopDeviceAddress() is defined in ../lib/create_loop_device.c
 		 */

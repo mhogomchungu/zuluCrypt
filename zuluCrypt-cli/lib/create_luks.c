@@ -70,7 +70,7 @@ int zuluCryptCreateLuks( const char * dev,const char * pass,size_t pass_size,con
 	string_t st ;
 	int fd ;
 	int r ;
-	if( StringPrefixMatch( dev,"/dev/",5 ) ){
+	if( StringPrefixEqual( dev,"/dev/" ) ){
 		return _create_luks( dev,pass,pass_size,rng ) ;
 	}else{
 		/*
