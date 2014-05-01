@@ -35,41 +35,6 @@
  * TRIM support for truecrypt volume is off due to recommendation from the following wiki page:
  * https://wiki.archlinux.org/index.php/dm-crypt_with_LUKS#Discard.2FTRIM_support_for_solid_state_disks_.28SSD.29
  */
-#if TRUECRYPT_CRYPTSETUP
-
-static inline int zuluExit( int st,struct crypt_device * cd )
-{
-	crypt_free( cd ) ;
-	return st ;
-}
-
-/*
- * 1 is returned if a volume is a truecrypt volume.
- * 0 is returned if a volume is not a truecrypt volume or functionality is not supported
- */
-int zuluCryptVolumeIsTcrypt( const char * device,const char * key,int key_source )
-{
-	struct crypt_device * cd = NULL;
-	struct crypt_params_tcrypt params ;
-
-	memset( &params,'\0',sizeof( struct crypt_params_tcrypt ) ) ;
-
-	if( key_source ){;}
-
-	if( crypt_init( &cd,device ) < 0 ){
-		return 0 ;
-	}else{
-		params.passphrase      = key ;
-		params.passphrase_size = StringSize( key );
-		params.flags           = CRYPT_TCRYPT_LEGACY_MODES ;
-
-		if( crypt_load( cd,CRYPT_TCRYPT,&params ) == 0 ){
-			return zuluExit( 1,cd ) ;
-		}else{
-			return zuluExit( 0,cd ) ;
-		}
-	}
-}
 
 string_t zuluCryptCreateKeyFile( const char * key,size_t key_len,const char * fileName )
 {
@@ -105,6 +70,42 @@ string_t zuluCryptCreateKeyFile( const char * key,size_t key_len,const char * fi
 	}
 
 	return st ;
+}
+
+#if TRUECRYPT_CRYPTSETUP
+
+static inline int zuluExit( int st,struct crypt_device * cd )
+{
+	crypt_free( cd ) ;
+	return st ;
+}
+
+/*
+ * 1 is returned if a volume is a truecrypt volume.
+ * 0 is returned if a volume is not a truecrypt volume or functionality is not supported
+ */
+int zuluCryptVolumeIsTcrypt( const char * device,const char * key,int key_source )
+{
+	struct crypt_device * cd = NULL;
+	struct crypt_params_tcrypt params ;
+
+	memset( &params,'\0',sizeof( struct crypt_params_tcrypt ) ) ;
+
+	if( key_source ){;}
+
+	if( crypt_init( &cd,device ) < 0 ){
+		return 0 ;
+	}else{
+		params.passphrase      = key ;
+		params.passphrase_size = StringSize( key );
+		params.flags           = CRYPT_TCRYPT_LEGACY_MODES ;
+
+		if( crypt_load( cd,CRYPT_TCRYPT,&params ) == 0 ){
+			return zuluExit( 1,cd ) ;
+		}else{
+			return zuluExit( 0,cd ) ;
+		}
+	}
 }
 
 static void _set_multiple_keys( struct crypt_params_tcrypt * params )
