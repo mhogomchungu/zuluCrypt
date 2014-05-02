@@ -29,7 +29,6 @@ class FileHandle
 {
 public:
 	int operator()( int fd ) ;
-	int operator()( const char * path ) ;
 	~FileHandle() ;
 private:
 	int m_fd = -1 ;

@@ -31,7 +31,6 @@
 #include <sys/inotify.h>
 
 #include <unistd.h>
-#include<fcntl.h>
 
 FileHandle Task::getFileHandle()
 {
@@ -43,12 +42,6 @@ int FileHandle::operator()( int fd )
 {
 	m_fd = fd ;
 	return fd ;
-}
-
-int FileHandle::operator()( const char * path )
-{
-	m_fd = open( path,O_RDONLY ) ;
-	return m_fd ;
 }
 
 FileHandle::~FileHandle()
