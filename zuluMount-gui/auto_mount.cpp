@@ -52,9 +52,6 @@ auto_mount::auto_mount( QObject * parent )
 
 auto_mount::~auto_mount()
 {
-	if( m_fdDir != -1 ){
-		close( m_fdDir ) ;
-	}
 }
 
 void auto_mount::stop()
@@ -83,8 +80,11 @@ void auto_mount::run()
 	connect( m_mtoto,SIGNAL( terminated() ),m_mtoto,SLOT( deleteLater() ) ) ;
 	connect( m_mtoto,SIGNAL( terminated() ),this,SLOT( deleteLater() ) ) ;
 
-	m_fdDir = inotify_init() ;
-	if( m_fdDir == -1 ){
+	FileHandle manage_fd = Task::getFileHandle() ;
+
+	int fd = manage_fd( inotify_init() ) ;
+
+	if( fd == -1 ){
 		qDebug() << "inotify_init() failed to start,automounting is turned off" ;
 		m_threadIsRunning = false ;
 		return ;
@@ -92,13 +92,13 @@ void auto_mount::run()
 		m_threadIsRunning = true ;
 	}
 
-	int dev = inotify_add_watch( m_fdDir,"/dev",IN_CREATE|IN_DELETE ) ;
-	int dm  = inotify_add_watch( m_fdDir,"/dev/mapper",IN_CREATE|IN_DELETE ) ;
+	int dev = inotify_add_watch( fd,"/dev",IN_CREATE|IN_DELETE ) ;
+	int dm  = inotify_add_watch( fd,"/dev/mapper",IN_CREATE|IN_DELETE ) ;
 	int md  = -1 ;
 
 	QDir d( QString( "/dev/dm" ) ) ;
 	if( d.exists() ){
-		md = inotify_add_watch( m_fdDir,"/dev/md",IN_DELETE ) ;
+		md = inotify_add_watch( fd,"/dev/md",IN_DELETE ) ;
 	}
 
 	const struct inotify_event * pevent ;
@@ -106,6 +106,7 @@ void auto_mount::run()
 
 	const char * f ;
 	const char * z ;
+
 	int data_read ;
 	int baseSize = sizeof( struct inotify_event ) ;
 
@@ -134,7 +135,7 @@ void auto_mount::run()
 		return s == false ;
 	} ;
 
-	#define BUFF_SIZE 4096
+	constexpr int BUFF_SIZE = 4096 ;
 	char buffer[ BUFF_SIZE ] ;
 
 	auto _stringsAreEqual = []( const char * x,const char * y ){
@@ -143,7 +144,7 @@ void auto_mount::run()
 
 	while( 1 ){
 
-		data_read = read( m_fdDir,buffer,BUFF_SIZE ) ;
+		data_read = read( fd,buffer,BUFF_SIZE ) ;
 
 		z = buffer + data_read ;
 		f = buffer ;
@@ -168,7 +169,7 @@ void auto_mount::run()
 					 * folder created to start monitoring its contents if it get created after we have started
 					 */
 					if( _stringsAreEqual( "md",device ) ){
-						md = inotify_add_watch( m_fdDir,"/dev/md",IN_DELETE ) ;
+						md = inotify_add_watch( fd,"/dev/md",IN_DELETE ) ;
 						continue ;
 					}
 				}

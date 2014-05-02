@@ -40,7 +40,6 @@ private slots:
 	void threadStopped( void ) ;
 private:
 	void run() ;
-	int m_fdDir ;
 	QThread * m_baba ;
 	QThread * m_mtoto ;
 	QObject * m_babu ;

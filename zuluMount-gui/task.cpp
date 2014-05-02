@@ -28,8 +28,35 @@
 #include "../zuluCrypt-gui/lxqt_wallet/frontend/lxqt_wallet.h"
 #include "../zuluCrypt-gui/utility.h"
 #include "bin_path.h"
-#include <unistd.h>
 #include <sys/inotify.h>
+
+#include <unistd.h>
+#include<fcntl.h>
+
+FileHandle Task::getFileHandle()
+{
+	FileHandle f ;
+	return f ;
+}
+
+int FileHandle::operator()( int fd )
+{
+	m_fd = fd ;
+	return fd ;
+}
+
+int FileHandle::operator()( const char * path )
+{
+	m_fd = open( path,O_RDONLY ) ;
+	return m_fd ;
+}
+
+FileHandle::~FileHandle()
+{
+	if( m_fd != -1 ){
+		close( m_fd ) ;
+	}
+}
 
 Task::Task()
 {

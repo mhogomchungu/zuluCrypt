@@ -26,7 +26,6 @@
 #include <QDir>
 #include <QFile>
 
-#include<fcntl.h>
 #include <poll.h>
 
 #include "bin_path.h"
@@ -74,16 +73,18 @@ void monitor_mountinfo::run()
 
 	struct pollfd fds[ 1 ] ;
 
-	int f = open( "/proc/self/mountinfo",O_RDONLY ) ;
+	FileHandle manage_fd = Task::getFileHandle() ;
 
-	if( f == -1 ){
+	int fd = manage_fd( "/proc/self/mountinfo" ) ;
+
+	if( fd == -1 ){
 		m_threadIsRunning = false ;
 		return ;
 	}else{
 		m_threadIsRunning = true ;
 	}
 
-	fds[ 0 ].fd = f ;
+	fds[ 0 ].fd = fd ;
 	fds[ 0 ].events = POLLPRI ;
 	int e ;
 
