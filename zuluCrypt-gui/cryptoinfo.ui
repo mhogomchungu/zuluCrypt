@@ -19,9 +19,9 @@
   <widget class="QPushButton" name="pbOK">
    <property name="geometry">
     <rect>
-     <x>200</x>
+     <x>190</x>
      <y>320</y>
-     <width>91</width>
+     <width>101</width>
      <height>31</height>
     </rect>
    </property>
