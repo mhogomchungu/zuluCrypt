@@ -24,6 +24,7 @@
 #include <QRunnable>
 #include <QString>
 #include <QStringList>
+#include <functional>
 
 class FileHandle
 {
