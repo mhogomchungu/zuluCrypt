@@ -182,3 +182,6 @@ version 4.7.0
 -- add a plugin named "steghide" that retrives passphrases embeded in other files using "steghide" tool.
 -- add a plugin named "luks" that allows opening a LUKS volume using a backup/detached header.
 -- add a plugin named "tomb" that allows opening of LUKS volumes from tomb project using keys securely stored in image files.
+
+version 4.7.1
+-- fix a build issue in gcc 4.9
