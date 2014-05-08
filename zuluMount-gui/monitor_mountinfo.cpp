@@ -76,7 +76,7 @@ void monitor_mountinfo::run()
 
 	const char * path = "/proc/self/mountinfo" ;
 
-	FileHandle manage_fd = Task::getFileHandle() ;
+	Task::FileHandle manage_fd ;
 
 	int fd = manage_fd( open( path,O_RDONLY ) ) ;
 

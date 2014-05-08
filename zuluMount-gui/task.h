@@ -26,15 +26,6 @@
 #include <QStringList>
 #include <functional>
 
-class FileHandle
-{
-public:
-	int operator()( int fd ) ;
-	~FileHandle() ;
-private:
-	int m_fd = -1 ;
-};
-
 namespace LxQt{
 namespace Wallet {
 class Wallet ;
@@ -47,7 +38,15 @@ class Task : public QObject,public QRunnable
 {
 	Q_OBJECT
 public:
-	static FileHandle getFileHandle( void ) ;
+	class FileHandle
+	{
+	public:
+		int operator()( int fd ) ;
+		~FileHandle() ;
+	private:
+		int m_fd = -1 ;
+	};
+
 	Task() ;
 	~Task() ;
 	enum Action{

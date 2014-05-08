@@ -32,19 +32,13 @@
 
 #include <unistd.h>
 
-FileHandle Task::getFileHandle()
-{
-	FileHandle f ;
-	return f ;
-}
-
-int FileHandle::operator()( int fd )
+int Task::FileHandle::operator()( int fd )
 {
 	m_fd = fd ;
 	return fd ;
 }
 
-FileHandle::~FileHandle()
+Task::FileHandle::~FileHandle()
 {
 	if( m_fd != -1 ){
 		close( m_fd ) ;

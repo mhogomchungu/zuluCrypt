@@ -80,7 +80,7 @@ void auto_mount::run()
 	connect( m_mtoto,SIGNAL( terminated() ),m_mtoto,SLOT( deleteLater() ) ) ;
 	connect( m_mtoto,SIGNAL( terminated() ),this,SLOT( deleteLater() ) ) ;
 
-	FileHandle manage_fd = Task::getFileHandle() ;
+	Task::FileHandle manage_fd ;
 
 	int fd = manage_fd( inotify_init() ) ;
 
