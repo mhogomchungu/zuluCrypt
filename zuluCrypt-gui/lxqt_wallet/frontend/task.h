@@ -37,12 +37,14 @@
 #include <QString>
 #include <QStringList>
 
+#include <functional>
+
 #include "../backend/lxqtwallet.h"
 
 namespace LxQt{
-	
+
 namespace Wallet{
-	
+
 class Task : public QObject,public QRunnable
 {
 	Q_OBJECT
@@ -54,7 +56,7 @@ public:
 	}action ;
 	Task( lxqt_wallet_t * wallet,const QString& password,const QString& walletName,const QString& applicationName ) ;
 	Task( const QString& password,const QString& walletName,const QString& applicationName ) ;
-	Task( int (*)( const void * ),const void * ) ;
+	Task( std::function< bool( void ) > ) ;
 	void start( LxQt::Wallet::Task::action ) ;
 signals:
 	void walletOpened( bool ) ;
@@ -67,8 +69,7 @@ private:
 	QString m_walletName ;
 	QString m_applicationName ;
 	LxQt::Wallet::Task::action m_action ;
-	const void * m_schema ;
-	int ( * m_function )( const void * ) ;
+	std::function< bool( void ) > m_function ;
 };
 
 }

@@ -48,18 +48,14 @@ void * lxqt_secret_service_create_schema( const char * schemaName,const char * t
 
 LxQt::Wallet::secretService::secretService()
 {
-	m_schema   = 0 ;
-	m_schema_1 = 0 ;
+	m_schema   = nullptr ;
+	m_schema_1 = nullptr ;
 }
 
 LxQt::Wallet::secretService::~secretService()
 {
-	if( m_schema ){
-		free( m_schema ) ;
-	}
-	if( m_schema_1 ){
-		free( m_schema_1 ) ;
-	}
+	free( m_schema ) ;
+	free( m_schema_1 ) ;
 }
 
 void LxQt::Wallet::secretService::setImage( const QString& image )
@@ -89,7 +85,7 @@ void LxQt::Wallet::secretService::open( const QString& walletName,const QString&
 	m_password  = password ;
 
 	Q_UNUSED( displayApplicationName ) ;
-	
+
 	if( applicationName.isEmpty() ){
 
 		m_byteArrayWalletName      = walletName.toLatin1() ;
@@ -114,7 +110,11 @@ void LxQt::Wallet::secretService::open( const QString& walletName,const QString&
 
 	connect( this,SIGNAL( walletIsOpen( bool ) ),m_interfaceObject,SLOT( walletIsOpen( bool ) ) ) ;
 
-	LxQt::Wallet::Task * t = new LxQt::Wallet::Task( lxqt_secret_service_wallet_is_open,m_schema ) ;
+	auto e = [&](){
+		return lxqt_secret_service_wallet_is_open( m_schema ) ;
+	} ;
+
+	LxQt::Wallet::Task * t = new LxQt::Wallet::Task( e ) ;
 
 	if( t ){
 		connect( t,SIGNAL( walletOpened( bool ) ),this,SLOT( walletOpened( bool ) ) ) ;
@@ -148,9 +148,8 @@ QVector<LxQt::Wallet::walletKeyValues> LxQt::Wallet::secretService::readAllKeyVa
 {
 	QVector<LxQt::Wallet::walletKeyValues> p ;
 	QStringList l = this->readAllKeys() ;
-	int k = l.size() ;
-	for( int i = 0 ; i < k ; i++ ){
-		LxQt::Wallet::walletKeyValues q( l.at( i ),this->readValue( l.at( i ) ) ) ;
+	for( const auto& it : l ){
+		LxQt::Wallet::walletKeyValues q( it,this->readValue( it ) ) ;
 		p.append( q ) ;
 	}
 	return p ;
@@ -162,10 +161,12 @@ QStringList LxQt::Wallet::secretService::readAllKeys( void )
 		int count ;
 		QStringList l ;
 		char ** c = lxqt_secret_get_all_keys( m_schema,m_schema_1,&count ) ;
+		char * e ;
 		if( c ){
 			for( int i = 0 ; i < count ; i++ ){
-				l.append( QString( c[ i ] ) ) ;
-				free( c[ i ] ) ;
+				e = *( c + i ) ;
+				l.append( e ) ;
+				free( e ) ;
 			}
 			free( c ) ;
 		}
@@ -178,9 +179,7 @@ QStringList LxQt::Wallet::secretService::readAllKeys( void )
 void LxQt::Wallet::secretService::deleteKey( const QString& key )
 {
 	if( m_schema && m_schema_1 ){
-		if( key.isEmpty() ){
-			;
-		}else{
+		if( !key.isEmpty() ){
 			lxqt_secret_service_clear_sync( key.toLatin1().constData(),m_schema,m_schema_1 ) ;
 		}
 	}

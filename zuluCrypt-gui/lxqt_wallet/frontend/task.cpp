@@ -45,10 +45,9 @@ LxQt::Wallet::Task::Task( const QString& password,const QString& walletName,cons
 	m_applicationName = applicationName ;
 }
 
-LxQt::Wallet::Task::Task( int (*f)( const void * ),const void * schema )
+LxQt::Wallet::Task::Task( std::function< bool( void ) > function )
 {
-	m_schema   = schema ;
-	m_function = f ;
+	m_function = function ;
 }
 
 void LxQt::Wallet::Task::start( LxQt::Wallet::Task::action action )
@@ -64,7 +63,7 @@ void LxQt::Wallet::Task::run()
 						     m_walletName.toLatin1().constData(),m_applicationName.toLatin1().constData() ) ;
 		emit walletOpened( r == lxqt_wallet_no_error ) ;
 	}else if( m_action == LxQt::Wallet::Task::openSecretService ){
-		emit walletOpened( m_function( m_schema ) ) ;
+		emit walletOpened( m_function() ) ;
 	}else if( m_action == LxQt::Wallet::Task::createVolume ) {
 
 		lxqt_wallet_error r = lxqt_wallet_create( m_password.toLatin1().constData(),m_password.size(),
