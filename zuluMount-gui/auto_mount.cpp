@@ -25,7 +25,6 @@
 #include <QThread>
 #include <QProcess>
 #include <QStringList>
-#include <QDir>
 
 #include "bin_path.h"
 
@@ -37,15 +36,16 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#include "../zuluCrypt-gui/utility.h"
 #include "task.h"
+
 /*
-http://linux.die.net/man/7/inotify
-http://darkeside.blogspot.com/2007/12/linux-inotify-example.html
+ * http://linux.die.net/man/7/inotify
  */
 
 auto_mount::auto_mount( QObject * parent )
 {
-	m_baba = static_cast< QThread * >( this ) ;
+	m_baba = this ;
 	m_main = this ;
 	m_babu = parent ;
 }
@@ -71,14 +71,9 @@ void auto_mount::threadStopped()
 
 void auto_mount::run()
 {
-	/*
-	 * Not exactly sure what i am doing here but this kind of thing seem to be necessary to prevent
-	 * an occassional crash on exit with an error that reads something like "object deleted while thread is still running"
-	 */
-	m_mtoto = static_cast< QThread * >( this ) ;
+	m_mtoto = this ;
 	connect( m_mtoto,SIGNAL( terminated() ),m_main,SLOT( threadStopped() ) ) ;
 	connect( m_mtoto,SIGNAL( terminated() ),m_mtoto,SLOT( deleteLater() ) ) ;
-	connect( m_mtoto,SIGNAL( terminated() ),this,SLOT( deleteLater() ) ) ;
 
 	Task::FileHandle manage_fd ;
 
@@ -96,8 +91,7 @@ void auto_mount::run()
 	int dm  = inotify_add_watch( fd,"/dev/mapper",IN_CREATE|IN_DELETE ) ;
 	int md  = -1 ;
 
-	QDir d( QString( "/dev/dm" ) ) ;
-	if( d.exists() ){
+	if( utility::pathExists( "/dev/dm" ) ){
 		md = inotify_add_watch( fd,"/dev/md",IN_DELETE ) ;
 	}
 
@@ -107,8 +101,9 @@ void auto_mount::run()
 	const char * f ;
 	const char * z ;
 
-	int data_read ;
-	int baseSize = sizeof( struct inotify_event ) ;
+	ssize_t data_read ;
+
+	constexpr size_t base = sizeof( struct inotify_event ) ;
 
 	auto _allowed_device = []( const char * device ){
 
@@ -154,10 +149,10 @@ void auto_mount::run()
 			pevent = reinterpret_cast< const struct inotify_event * >( f ) ;
 
 			if( pevent ){
-				device = f + baseSize ;
-				f = f + baseSize + pevent->len ;
+				device = f + base ;
+				f = f + base + pevent->len ;
 			}else{
-				f = f + baseSize ;
+				f = f + base ;
 				continue ;
 			}
 
@@ -166,7 +161,7 @@ void auto_mount::run()
 					/*
 					 * /dev/md path seem to be deleted when the last entry in it is removed and
 					 * created before the first entry is added.To account for this,monitor for the
-					 * folder created to start monitoring its contents if it get created after we have started
+					 * folder creation to start monitoring its contents if it get created after we have started
 					 */
 					if( _stringsAreEqual( "md",device ) ){
 						md = inotify_add_watch( fd,"/dev/md",IN_DELETE ) ;
@@ -181,7 +176,7 @@ void auto_mount::run()
 					}
 				}
 
-				Task::device_t d ;
+				Task::deviceType d ;
 
 				if( pevent->wd == dev ){
 					d = Task::device ;

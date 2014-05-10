@@ -971,7 +971,7 @@ void zuluCrypt::createPartition( QString partition )
 
 void zuluCrypt::FileCreated( QString file )
 {
-	if( utility::exists( file ) ){
+	if( utility::pathExists( file ) ){
 		setUpCreatepartition()->ShowFile( file ) ;
 	}
 }

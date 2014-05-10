@@ -70,11 +70,11 @@ public:
 		deviceAdded
 	} ;
 
-	typedef enum{
+	enum deviceType{
 		device,
 		dm_device,
 		md_device,
-	}device_t ;
+	} ;
 
 	void start( Task::Action ) ;
 	void setMode( const QString& ) ;
@@ -88,7 +88,7 @@ public:
 	void setList( const QStringList& ) ;
 	void setMountPointOpener( const QString& ) ;
 	void setDeviceOffSet( const QString& ) ;
-	void setDeviceType( device_t ) ;
+	void setDeviceType( Task::deviceType ) ;
 	void setDeviceAction( Task::deviceAction ) ;
 	void setFunction( std::function< void( void ) > ) ;
 signals:
@@ -125,6 +125,7 @@ private:
 	LxQt::Wallet::Wallet * m_wallet ;
 	Task::Action m_action ;
 	Task::deviceAction m_deviceAction ;
+	Task::deviceType m_Device ;
 	QString m_volumeID ;
 	QString m_key ;
 	QString m_device ;
@@ -142,7 +143,6 @@ private:
 	int m_exitCode ;
 	int m_exitStatus ;
 	int m_startError ;
-	device_t m_Device ;
 	function_t m_function ;
 };
 

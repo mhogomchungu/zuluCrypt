@@ -104,7 +104,7 @@ void Task::setDeviceOffSet( const QString& offset )
 	m_deviceOffSet = offset ;
 }
 
-void Task::setDeviceType( Task::device_t d )
+void Task::setDeviceType( Task::deviceType d )
 {
 	m_Device = d ;
 }

@@ -41,7 +41,7 @@ public:
 	static void addToFavorite( const QString& dev,const QString& m_point ) ;
 	static QStringList readFavorites( void ) ;
 	static void removeFavoriteEntry( const QString& ) ;
-	static bool exists( const QString& ) ;
+	static bool pathExists( const QString& ) ;
 	static bool canCreateFile( const QString& ) ;
 	static QString resolvePath( const QString& ) ;
 	static QString hashPath( const QByteArray& ) ;

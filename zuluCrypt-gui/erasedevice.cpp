@@ -139,7 +139,7 @@ void erasedevice::pbStart()
 	}
 	path = utility::resolvePath( path ) ;
 
-	if( !utility::exists( path ) ){
+	if( !utility::pathExists( path ) ){
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "invalid path to device" ) ) ;
 	}
 	if( m_option == 0 ){

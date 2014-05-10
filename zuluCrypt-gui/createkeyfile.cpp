@@ -146,7 +146,7 @@ void createkeyfile::pbCreate()
 	if( path.isEmpty() ){
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "folder path to where the key will be created is empty" ) ) ;
 	}
-	if( utility::exists( path ) ){
+	if( utility::pathExists( path ) ){
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "file with the same name and at the destination folder already exist" ) ) ;
 	}
 	if( !utility::canCreateFile( path ) ){

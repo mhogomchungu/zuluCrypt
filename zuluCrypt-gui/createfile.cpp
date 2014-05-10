@@ -171,7 +171,7 @@ void createfile::pbCreate()
 
 	m_path = filePath ;
 
-	if( utility::exists( m_path ) ){
+	if( utility::pathExists( m_path ) ){
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "file with the same name and at the destination folder already exist" ) ) ;
 	}
 	if( !utility::canCreateFile( m_path ) ){

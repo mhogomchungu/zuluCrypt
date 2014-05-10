@@ -388,7 +388,7 @@ void utility::debug( int s )
 
 bool utility::mapperPathExists( const QString& path )
 {
-	return utility::exists( utility::mapperPath( path ) ) ;
+	return utility::pathExists( utility::mapperPath( path ) ) ;
 }
 
 QString utility::mountPath( const QString& path )
@@ -442,7 +442,7 @@ QString utility::hashPath( const QByteArray& p )
 	return QString( "-" ) + QString::number( hash ) ;
 }
 
-bool utility::exists( const QString& path )
+bool utility::pathExists( const QString& path )
 {
 	struct stat st ;
 	return stat( path.toLatin1().data(),&st ) == 0 ;

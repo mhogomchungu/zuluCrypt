@@ -35,8 +35,12 @@
 monitor_mountinfo::monitor_mountinfo( QObject * parent ) : QThread( parent )
 {
 	m_babu = parent ;
-	m_baba = static_cast< QThread * >( this ) ;
+	m_baba = this ;
 	m_main = this ;
+}
+
+monitor_mountinfo::~monitor_mountinfo()
+{
 }
 
 void monitor_mountinfo::stop()
@@ -54,21 +58,11 @@ void monitor_mountinfo::threadStopped()
 	m_threadIsRunning = false ;
 }
 
-void monitor_mountinfo::removeEntry( const QString& device )
-{
-	emit volumeRemoved( device ) ;
-}
-
 void monitor_mountinfo::run()
 {
-	/*
-	 * Not exactly sure what i am doing here but this kind of thing seem to be necessary to prevent
-	 * an occassional crash on exit with an error that reads something like "object deleted while thread is still running"
-	 */
-	m_mtoto = static_cast< QThread * >( this ) ;
+	m_mtoto = this ;
 	connect( m_mtoto,SIGNAL( terminated() ),m_main,SLOT( threadStopped() ) ) ;
 	connect( m_mtoto,SIGNAL( terminated() ),m_mtoto,SLOT( deleteLater() ) ) ;
-	connect( m_mtoto,SIGNAL( terminated() ),this,SLOT( deleteLater() ) ) ;
 
 	m_threadIsRunning = true ;
 

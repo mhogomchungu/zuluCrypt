@@ -249,7 +249,7 @@ CryptTask::status CryptTask::encrypt()
 
 CryptTask::status CryptTask::decrypt()
 {
-	if( utility::exists( m_dest ) ){
+	if( utility::pathExists( m_dest ) ){
 		return CryptTask::destinationFileExists ;
 	}
 	QFile fd_1( m_mapperPath ) ;
