@@ -28,7 +28,6 @@
 #include "../zuluCrypt-gui/lxqt_wallet/frontend/lxqt_wallet.h"
 #include "../zuluCrypt-gui/utility.h"
 #include "bin_path.h"
-#include <sys/inotify.h>
 
 #include <unistd.h>
 
@@ -110,9 +109,9 @@ void Task::setDeviceType( Task::device_t d )
 	m_Device = d ;
 }
 
-void Task::setMask( u_int32_t mask )
+void Task::setDeviceAction( Task::deviceAction d )
 {
-	m_mask = mask ;
+	m_deviceAction = d ;
 }
 
 void Task::setFunction( std::function< void() > function )
@@ -473,6 +472,10 @@ void Task::start( Task::Action action )
 
 void Task::deviceProperties()
 {
+	auto _deviceAdded = [&](){
+		return m_deviceAction == Task::deviceAdded ;
+	} ;
+
 	auto _mdRaidDevice = [&]( const QString& device ){
 
 		auto _mdRaidPath = []( const QString& dev ){
@@ -499,7 +502,7 @@ void Task::deviceProperties()
 			return dev ;
 		} ;
 
-		if( m_mask & IN_CREATE ){
+		if( _deviceAdded() ){
 			this->getVolumeType( _mdRaidPath( device ) ) ;
 		}else{
 			emit deviceRemoved( _mdRaidPath( device ) ) ;
@@ -533,7 +536,7 @@ void Task::deviceProperties()
 			device.replace( index1,1,QString( "/" ) ) ;
 
 			if( _deviceMatchLVMFormat( device ) ){
-				if( m_mask & IN_CREATE ) {
+				if( _deviceAdded() ) {
 					this->getVolumeType( device ) ;
 				}else{
 					emit deviceRemoved( device ) ;
@@ -552,7 +555,7 @@ void Task::deviceProperties()
 		} ;
 
 		if( _allowed_device( device ) ){
-			if( m_mask & IN_CREATE ) {
+			if( _deviceAdded() ) {
 				this->getVolumeType( device ) ;
 			}else{
 				emit deviceRemoved( device ) ;

@@ -193,6 +193,16 @@ void auto_mount::run()
 					continue ;
 				}
 
+				Task::deviceAction a ;
+
+				if( pevent->mask == IN_DELETE ){
+					a = Task::deviceDeleted ;
+				}else if( pevent->mask == IN_CREATE ){
+					a = Task::deviceAdded ;
+				}else{
+					continue ;
+				}
+
 				Task * t = new Task() ;
 
 				connect( t,SIGNAL( getVolumeSystemInfo( QStringList ) ),
@@ -203,8 +213,8 @@ void auto_mount::run()
 					 m_babu,SLOT( deviceRemoved( QString ) ) ) ;
 
 				t->setDeviceType( d ) ;
+				t->setDeviceAction( a ) ;
 				t->setDevice( device ) ;
-				t->setMask( pevent->mask ) ;
 
 				t->start( Task::deviceProperty ) ;
 			}

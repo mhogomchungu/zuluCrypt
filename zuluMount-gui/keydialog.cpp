@@ -463,7 +463,6 @@ void keyDialog::openVolume()
 	}
 
 	Task * t = new Task() ;
-	connect( t,SIGNAL( signalMountComplete( int,QString ) ),this,SLOT( slotMountComplete( int,QString ) ) ) ;
 
 	t->setDevice( m_path ) ;
 
@@ -493,6 +492,7 @@ void keyDialog::openVolume()
 
 	m_working = true ;
 
+	connect( t,SIGNAL( signalMountComplete( int,QString ) ),this,SLOT( slotMountComplete( int,QString ) ) ) ;
 	t->start( Task::CryptoOpen ) ;
 }
 
