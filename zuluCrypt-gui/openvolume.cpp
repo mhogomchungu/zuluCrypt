@@ -85,6 +85,18 @@ openvolume::openvolume( QWidget * parent ) :
 	//m_ui->pbUUID->setVisible( false ) ;
 	m_showEncryptedOnly = false ;
 	m_showLuksOnly = false ;
+
+	this->installEventFilter( this ) ;
+}
+
+bool openvolume::eventFilter( QObject * watched,QEvent * event )
+{
+	if( utility::eventFilter( this,watched,event ) ){
+		this->HideUI() ;
+		return true ;
+	}else{
+		return false ;
+	}
 }
 
 void openvolume::showEncryptedOnly()

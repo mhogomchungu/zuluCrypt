@@ -63,6 +63,7 @@ private:
 	void enableAll( void ) ;
 	void disableAll( void ) ;
 	void closeEvent( QCloseEvent * ) ;
+	bool eventFilter( QObject * watched,QEvent * event ) ;
 	Ui::mountPartition * m_ui;
 	QString m_path ;
 	QString m_label ;

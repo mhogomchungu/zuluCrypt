@@ -23,8 +23,6 @@
 #include <QDialog>
 #include <QString>
 #include <QMenu>
-#include <QEvent>
-#include <QKeyEvent>
 
 class QCloseEvent ;
 class QAction ;

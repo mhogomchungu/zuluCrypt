@@ -58,6 +58,18 @@ luksdeletekey::luksdeletekey( QWidget * parent ) :
 	connect( m_ui->pushButtonOpenKeyFile,SIGNAL( clicked() ),this,SLOT( pbOpenKeyFile() ) ) ;
 	connect( m_ui->pushButtonOpenVolume,SIGNAL( clicked() ),this,SLOT( pbOpenVolume() ) ) ;
 	connect( m_ui->pushButtonOpenPartition,SIGNAL( clicked() ),this,SLOT( pbOpenPartition() ) ) ;
+
+	this->installEventFilter( this ) ;
+}
+
+bool luksdeletekey::eventFilter( QObject * watched,QEvent * event )
+{
+	if( utility::eventFilter( this,watched,event ) ){
+		this->HideUI() ;
+		return true ;
+	}else{
+		return false ;
+	}
 }
 
 void luksdeletekey::closeEvent( QCloseEvent * e )

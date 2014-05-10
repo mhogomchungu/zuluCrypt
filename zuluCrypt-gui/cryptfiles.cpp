@@ -70,6 +70,18 @@ cryptfiles::cryptfiles( QWidget * parent ) :QDialog( parent ),m_ui( new Ui::cryp
 	m_ui->lineEditPass_2->setEchoMode( QLineEdit::Password ) ;
 
 	m_ui->lineEditSourcePath->setFocus() ;
+
+	this->installEventFilter( this ) ;
+}
+
+bool cryptfiles::eventFilter( QObject * watched,QEvent * event )
+{
+	if( utility::eventFilter( this,watched,event ) ){
+		this->HideUI() ;
+		return true ;
+	}else{
+		return false ;
+	}
 }
 
 void cryptfiles::rbKeyChecked()

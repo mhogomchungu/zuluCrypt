@@ -62,6 +62,18 @@ favorites::favorites( QWidget * parent ) :
 	m_ac->setShortcuts( keys ) ;
 	connect( m_ac,SIGNAL( triggered() ),this,SLOT( shortcutPressed() ) ) ;
 	this->addAction( m_ac ) ;
+
+	this->installEventFilter( this ) ;
+}
+
+bool favorites::eventFilter( QObject * watched,QEvent * event )
+{
+	if( utility::eventFilter( this,watched,event ) ){
+		this->HideUI() ;
+		return true ;
+	}else{
+		return false ;
+	}
 }
 
 void favorites::devicePathTextChange( QString txt )

@@ -22,6 +22,7 @@
 
 #include <QDialog>
 #include <QString>
+#include "utility.h"
 
 class QWidget ;
 class QCloseEvent ;
@@ -60,6 +61,7 @@ private:
 	void HideUI( void ) ;
 	void headerBackUp( void ) ;
 	void closeEvent( QCloseEvent * ) ;
+	bool eventFilter( QObject * watched,QEvent * event ) ;
 	void disableAll( void ) ;
 	void enableAll( void ) ;
 	Ui::cryptfiles * m_ui ;

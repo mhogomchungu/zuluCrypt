@@ -23,6 +23,8 @@
 #include <QDialog>
 #include <QString>
 
+#include "utility.h"
+
 class QWidget ;
 
 namespace Ui {
@@ -57,6 +59,7 @@ private:
 	void disableAll( void ) ;
 	void enableAll( void ) ;
 	void closeEvent( QCloseEvent * ) ;
+	bool eventFilter( QObject * watched,QEvent * event ) ;
 	Ui::luksdeletekey * m_ui ;
 	QString m_volumePath ;
 	bool m_isWindowClosable ;

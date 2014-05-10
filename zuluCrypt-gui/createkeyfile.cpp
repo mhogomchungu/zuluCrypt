@@ -50,6 +50,18 @@ createkeyfile::createkeyfile( QWidget * parent ) :
 	connect( m_ui->pbOpenFolder,SIGNAL( clicked() ),this,SLOT( pbOpenFolder() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->lineEditFileName,SIGNAL( textChanged( QString ) ),this,SLOT( keyTextChange( QString ) ) ) ;
+
+	this->installEventFilter( this ) ;
+}
+
+bool createkeyfile::eventFilter( QObject * watched,QEvent * event )
+{
+	if( utility::eventFilter( this,watched,event ) ){
+		this->HideUI() ;
+		return true ;
+	}else{
+		return false ;
+	}
 }
 
 void createkeyfile::keyTextChange( QString txt )

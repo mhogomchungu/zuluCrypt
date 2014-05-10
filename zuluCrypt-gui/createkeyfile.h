@@ -23,6 +23,8 @@
 #include <QDialog>
 #include <QString>
 
+#include "utility.h"
+
 class QWidget ;
 class keyFileTask ;
 class QCloseEvent ;
@@ -51,6 +53,7 @@ private slots:
 	void keyTextChange( QString ) ;
 private:
 	void closeEvent( QCloseEvent * ) ;
+	bool eventFilter( QObject * watched,QEvent * event ) ;
 	void disableAll( void ) ;
 	void enableAll( void ) ;
 	Ui::createkeyfile * m_ui;

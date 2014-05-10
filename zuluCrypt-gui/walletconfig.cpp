@@ -53,6 +53,18 @@ walletconfig::walletconfig( QWidget * parent ) : QDialog( parent ),m_ui( new Ui:
 		 this,SLOT(currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ) ) ;
 	connect( m_ui->tableWidget,SIGNAL( itemClicked( QTableWidgetItem * ) ),
 		 this,SLOT( itemClicked( QTableWidgetItem * ) ) ) ;
+
+	this->installEventFilter( this ) ;
+}
+
+bool walletconfig::eventFilter( QObject * watched,QEvent * event )
+{
+	if( utility::eventFilter( this,watched,event ) ){
+		this->HideUI() ;
+		return true ;
+	}else{
+		return false ;
+	}
 }
 
 void walletconfig::currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous )

@@ -45,6 +45,7 @@ private slots:
 private:
 	Ui::deviceOffset * m_ui ;
 	void closeEvent( QCloseEvent * ) ;
+	bool eventFilter( QObject * watched,QEvent * event ) ;
 };
 
 #endif // DEVICEOFFSET_H

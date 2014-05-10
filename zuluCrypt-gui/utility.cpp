@@ -44,6 +44,9 @@
 #include <unistd.h>
 #include <pwd.h>
 
+#include <QEvent>
+#include <QKeyEvent>
+
 #include "../zuluCrypt-cli/constants.h"
 #include "../zuluCrypt-cli/bin/bash_special_chars.h"
 #include "version.h"
@@ -357,6 +360,20 @@ QString utility::getKeyFromWallet( LxQt::Wallet::Wallet * wallet,const QString& 
 	}
 
 	return key ;
+}
+
+bool utility::eventFilter( QObject * gui,QObject * watched,QEvent * event )
+{
+	if( watched == gui ){
+		if( event->type() == QEvent::KeyPress ){
+			QKeyEvent * keyEvent = static_cast< QKeyEvent* >( event ) ;
+			if( keyEvent->key() == Qt::Key_Escape ){
+				return true ;
+			}
+		}
+	}
+
+	return false ;
 }
 
 void utility::debug( const QString& s )

@@ -100,6 +100,18 @@ passwordDialog::passwordDialog( QTableWidget * table,const QString& folderOpener
 	m_ui->PushButtonMountPointPath->setVisible( false ) ;
 	m_ui->pushButtonPassPhraseFromFile->setVisible( false ) ;
 	m_ui->pushButtonPlugin->setVisible( false ) ;
+
+	this->installEventFilter( this ) ;
+}
+
+bool passwordDialog::eventFilter( QObject * watched,QEvent * event )
+{
+	if( utility::eventFilter( this,watched,event ) ){
+		this->HideUI() ;
+		return true ;
+	}else{
+		return false ;
+	}
 }
 
 void passwordDialog::pbPlugin()

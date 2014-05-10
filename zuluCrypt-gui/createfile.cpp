@@ -53,6 +53,18 @@ createfile::createfile( QWidget * parent) :QDialog( parent ),m_ui( new Ui::creat
 	connect( m_ui->pbOpenFolder,SIGNAL( clicked() ),this,SLOT(pbOpenFolder() ) ) ;
 	connect( m_ui->pbCreate,SIGNAL( clicked() ),this,SLOT( pbCreate() ) ) ;
 	connect( m_ui->lineEditFileName,SIGNAL( textChanged( QString ) ),this,SLOT(fileTextChange( QString ) ) ) ;
+
+	this->installEventFilter( this ) ;
+}
+
+bool createfile::eventFilter( QObject * watched,QEvent * event )
+{
+	if( utility::eventFilter( this,watched,event ) ){
+		this->pbCancel() ;
+		return true ;
+	}else{
+		return false ;
+	}
 }
 
 void createfile::fileTextChange( QString txt )

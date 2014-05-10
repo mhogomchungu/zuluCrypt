@@ -22,6 +22,8 @@
 
 #include <QDialog>
 
+#include "utility.h"
+
 class DialogMsg ;
 class QPushButton ;
 class FileTask ;
@@ -58,6 +60,7 @@ private:
 	void enableAll( void ) ;
 	void disableAll( void ) ;
 	void closeEvent( QCloseEvent * ) ;
+	bool eventFilter( QObject * watched,QEvent * event ) ;
 	Ui::createfile * m_ui ;
 	qulonglong m_fileSize ;
 	QString m_path ;

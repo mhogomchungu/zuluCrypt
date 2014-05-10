@@ -24,6 +24,8 @@
 #include<QStringList>
 #include<QDialog>
 
+#include "utility.h"
+
 class QWidget ;
 class QCloseEvent ;
 class QAction ;
@@ -62,6 +64,7 @@ private slots:
 	void partitionProperties( QStringList ) ;
 private:
 	void closeEvent( QCloseEvent * ) ;
+	bool eventFilter( QObject * watched,QEvent * event ) ;
 	Ui::openvolume * m_ui ;
 	QAction * m_action ;
 	int m_option ;

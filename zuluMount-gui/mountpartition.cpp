@@ -87,6 +87,18 @@ mountPartition::mountPartition( QWidget * parent,QTableWidget * table,const QStr
 	m_menu->addAction( tr( "set volume offset" ) ) ;
 
 	connect( m_menu,SIGNAL( triggered( QAction * ) ),this,SLOT( doAction( QAction * ) ) ) ;
+
+	this->installEventFilter( this ) ;
+}
+
+bool mountPartition::eventFilter( QObject * watched,QEvent * event )
+{
+	if( utility::eventFilter( this,watched,event ) ){
+		this->HideUI() ;
+		return true ;
+	}else{
+		return false ;
+	}
 }
 
 void mountPartition::checkBoxReadOnlyStateChanged( int state )
@@ -133,7 +145,6 @@ void mountPartition::disableAll()
 void mountPartition::pbCancel()
 {
 	this->HideUI() ;
-	emit cancel() ;
 }
 
 void mountPartition::pbMount()
@@ -153,7 +164,7 @@ void mountPartition::pbMount()
 
 	Task * t = new Task() ;
 	t->setDevice( m_path ) ;
-	
+
 	QString addr = utility::keyPath() ;
 	t->setKeySource( QString( "-f ") + addr ) ;
 
@@ -305,6 +316,7 @@ void mountPartition::slotMountComplete( int status,QString msg )
 void mountPartition::HideUI()
 {
 	this->hide() ;
+	emit cancel() ;
 	this->deleteLater() ;
 }
 

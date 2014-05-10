@@ -36,7 +36,7 @@
 #include "dialogmsg.h"
 #include "tablewidget.h"
 
-manageSystemVolumes::manageSystemVolumes( QWidget * parent ) :QDialog(parent)
+manageSystemVolumes::manageSystemVolumes( QWidget * parent ) : QDialog( parent )
 {
 	m_ui = new Ui::manageSystemVolumes() ;
 	m_ui->setupUi( this ) ;
@@ -60,6 +60,18 @@ manageSystemVolumes::manageSystemVolumes( QWidget * parent ) :QDialog(parent)
 	m_ac->setShortcuts( keys ) ;
 	connect( m_ac,SIGNAL( triggered() ),this,SLOT( defaultButton() ) ) ;
 	this->addAction( m_ac ) ;
+
+	this->installEventFilter( this ) ;
+}
+
+bool manageSystemVolumes::eventFilter( QObject * watched,QEvent * event )
+{
+	if( utility::eventFilter( this,watched,event ) ){
+		this->HideUI() ;
+		return true ;
+	}else{
+		return false ;
+	}
 }
 
 void manageSystemVolumes::defaultButton()

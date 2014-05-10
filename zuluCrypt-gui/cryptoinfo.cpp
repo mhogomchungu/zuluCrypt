@@ -30,6 +30,18 @@ cryptoinfo::cryptoinfo( QWidget * parent ) :
 	this->setWindowFlags( Qt::Window | Qt::Dialog ) ;
 	this->setFont( parent->font() ) ;
 	connect( m_ui->pbOK,SIGNAL( clicked() ),this,SLOT( pbOK() ) ) ;
+
+	this->installEventFilter( this ) ;
+}
+
+bool cryptoinfo::eventFilter( QObject * watched,QEvent * event )
+{
+	if( utility::eventFilter( this,watched,event ) ){
+		this->HideUI() ;
+		return true ;
+	}else{
+		return false ;
+	}
 }
 
 void cryptoinfo::closeEvent( QCloseEvent * e )

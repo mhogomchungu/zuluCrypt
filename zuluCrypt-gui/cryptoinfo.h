@@ -22,6 +22,8 @@
 
 #include <QWidget>
 
+#include "utility.h"
+
 class QCloseEvent ;
 
 namespace Ui {
@@ -40,6 +42,7 @@ private slots:
 	void pbOK( void ) ;
 private:
 	void closeEvent( QCloseEvent * ) ;
+	bool eventFilter( QObject * watched,QEvent * event ) ;
 	void HideUI( void ) ;
 	Ui::cryptoinfo * m_ui ;
 };

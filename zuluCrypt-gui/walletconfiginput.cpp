@@ -48,6 +48,18 @@ walletconfiginput::walletconfiginput( QWidget * parent ) : QDialog( parent ),m_u
 
 	m_ui->pushButtonImageFile->setIcon( QIcon( QString( ":/file.png" ) ) ) ;
 	m_ui->pushButtonVolume->setIcon( QIcon( QString( ":/partition.png" ) ) ) ;
+
+	this->installEventFilter( this ) ;
+}
+
+bool walletconfiginput::eventFilter( QObject * watched,QEvent * event )
+{
+	if( utility::eventFilter( this,watched,event ) ){
+		this->HideUI() ;
+		return true ;
+	}else{
+		return false ;
+	}
 }
 
 walletconfiginput::~walletconfiginput()

@@ -23,6 +23,8 @@
 #include <QDialog>
 #include <QString>
 
+#include "utility.h"
+
 class keystrength ;
 class QCloseEvent ;
 
@@ -74,6 +76,7 @@ private:
 	void enableAll( void ) ;
 	void disableAll( void ) ;
 	void closeEvent( QCloseEvent * ) ;
+	bool eventFilter( QObject * watched,QEvent * event ) ;
 	void ShowUI( const QString&,const QString& ) ;
 	bool m_created ;
 	Ui::createvolume * m_ui ;

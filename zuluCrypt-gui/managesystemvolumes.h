@@ -23,6 +23,8 @@
 #include <QDialog>
 #include <QString>
 
+#include "utility.h"
+
 class QCloseEvent ;
 class QAction ;
 class QTableWidgetItem ;
@@ -61,6 +63,7 @@ private:
 	void addItemsToTable( QStringList ) ;
 	void addItemsToTable( QString ) ;
 	void closeEvent( QCloseEvent * ) ;
+	bool eventFilter( QObject * watched,QEvent * event ) ;
 	Ui::manageSystemVolumes * m_ui ;
 	QString m_path ;
 	QAction * m_ac ;

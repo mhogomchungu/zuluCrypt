@@ -53,6 +53,18 @@ erasedevice::erasedevice( QWidget * parent ) :
 
 	m_task = NULL ;
 	m_ui->lineEdit->setFocus() ;
+
+	this->installEventFilter( this ) ;
+}
+
+bool erasedevice::eventFilter( QObject * watched,QEvent * event )
+{
+	if( utility::eventFilter( this,watched,event ) ){
+		this->HideUI() ;
+		return true ;
+	}else{
+		return false ;
+	}
 }
 
 void erasedevice::ShowUI()

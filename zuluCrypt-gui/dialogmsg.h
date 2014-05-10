@@ -57,6 +57,7 @@ private:
 	void ShowUI( const QString& title,const QString& msg ) ;
 	void setDimentions( const QString& msg ) ;
 	void closeEvent( QCloseEvent * ) ;
+	bool eventFilter( QObject * watched,QEvent * event ) ;
 	Ui::DialogMsg * m_ui ;
 	int m_status ;
 };

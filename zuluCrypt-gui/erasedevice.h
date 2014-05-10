@@ -55,6 +55,7 @@ private slots:
 private:
 	void run( void ) ;
 	void closeEvent( QCloseEvent * ) ;
+	bool eventFilter( QObject * watched,QEvent * event ) ;
 	Ui::erasedevice * m_ui ;
 	EraseTask * m_task  ;
 	bool m_cancelClicked ;

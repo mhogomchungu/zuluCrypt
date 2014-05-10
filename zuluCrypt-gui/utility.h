@@ -22,6 +22,7 @@
 
 #include <QString>
 #include <QStringList>
+#include <QEvent>
 
 namespace LxQt{
 namespace Wallet {
@@ -30,6 +31,7 @@ class Wallet ;
 }
 
 class QByteArray ;
+class QEvent ;
 
 class utility
 {
@@ -69,6 +71,7 @@ public:
 	static QString keyPath( void ) ;
 	static void sendKey( const QString& keyPath,const QString& key ) ;
 	static QString getKeyFromWallet( LxQt::Wallet::Wallet *,const QString& volumeID ) ;
+	static bool eventFilter( QObject * gui,QObject * watched,QEvent * event ) ;
 };
 
 #endif // MISCFUNCTIONS_H

@@ -82,6 +82,18 @@ luksaddkey::luksaddkey( QWidget * parent ) :
 	m_ui->pushButtonOpenFile->setIcon( QIcon( QString( ":/file.png" ) ) ) ;
 
 	m_keystrength = new keystrength() ;
+
+	this->installEventFilter( this ) ;
+}
+
+bool luksaddkey::eventFilter( QObject * watched,QEvent * event )
+{
+	if( utility::eventFilter( this,watched,event ) ){
+		this->HideUI() ;
+		return true ;
+	}else{
+		return false ;
+	}
 }
 
 void luksaddkey::keyChanged( QString key )

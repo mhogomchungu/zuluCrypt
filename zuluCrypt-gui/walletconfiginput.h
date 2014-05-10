@@ -23,6 +23,8 @@
 #include <QDialog>
 #include <QString>
 
+#include "utility.h"
+
 class QCloseEvent ;
 
 namespace Ui {
@@ -51,6 +53,7 @@ private:
 	void focus( void ) ;
 	Ui::walletconfiginput * m_ui ;
 	void closeEvent( QCloseEvent * ) ;
+	bool eventFilter( QObject * watched,QEvent * event ) ;
 };
 
 #endif // KWALLETCONFIGINPUT_H

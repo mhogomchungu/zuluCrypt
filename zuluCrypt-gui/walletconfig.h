@@ -23,7 +23,9 @@
 #include <QDialog>
 #include <QString>
 #include <QMap>
+
 #include "lxqt_wallet/frontend/lxqt_wallet.h"
+#include "utility.h"
 
 class QCloseEvent ;
 class QWidget ;
@@ -60,6 +62,8 @@ private:
 	void disableAll( void ) ;
 	Ui::walletconfig * m_ui ;
 	void closeEvent( QCloseEvent * ) ;
+	bool eventFilter( QObject * watched,QEvent * event ) ;
+
 	LxQt::Wallet::Wallet * m_wallet ;
 	int m_action ;
 	QVector<LxQt::Wallet::walletKeyValues> m_keys ;

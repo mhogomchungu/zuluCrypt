@@ -20,6 +20,7 @@
 
 #include "deviceoffset.h"
 #include "ui_deviceoffset.h"
+#include "../zuluCrypt-gui/utility.h"
 
 deviceOffset::deviceOffset( QWidget * parent ) :QDialog( parent ),m_ui( new Ui::deviceOffset )
 {
@@ -29,6 +30,18 @@ deviceOffset::deviceOffset( QWidget * parent ) :QDialog( parent ),m_ui( new Ui::
 	this->setFixedSize( this->size() ) ;
 	this->setWindowFlags( Qt::Window | Qt::Dialog ) ;
 	this->setFont( parent->font() ) ;
+
+	this->installEventFilter( this ) ;
+}
+
+bool deviceOffset::eventFilter( QObject * watched,QEvent * event )
+{
+	if( utility::eventFilter( this,watched,event ) ){
+		this->closeUI() ;
+		return true ;
+	}else{
+		return false ;
+	}
 }
 
 void deviceOffset::ShowUI()

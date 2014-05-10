@@ -36,7 +36,20 @@ DialogMsg::DialogMsg( QWidget * parent ) :
 	connect( m_ui->pbNo,SIGNAL( clicked() ),this,SLOT( pbNo() ) ) ;
 	connect( m_ui->pbYes,SIGNAL( clicked() ),this,SLOT( pbYes() ) ) ;
 	connect( m_ui->pbOk,SIGNAL( clicked() ),this,SLOT( pbOK() ) ) ;
+
+	this->installEventFilter( this ) ;
 }
+
+bool DialogMsg::eventFilter( QObject * watched,QEvent * event )
+{
+	if( utility::eventFilter( this,watched,event ) ){
+		this->HideUI() ;
+		return true ;
+	}else{
+		return false ;
+	}
+}
+
 
 void DialogMsg::pbNo()
 {

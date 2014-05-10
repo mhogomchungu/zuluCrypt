@@ -113,17 +113,12 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const QString& path,
 
 bool keyDialog::eventFilter( QObject * watched,QEvent * event )
 {
-	if( watched == this ){
-		if( event->type() == QEvent::KeyPress ){
-			QKeyEvent * keyEvent = static_cast< QKeyEvent* >( event ) ;
-			if( keyEvent->key() == Qt::Key_Escape ){
-				this->pbCancel() ;
-				return true ;
-			}
-		}
+	if( utility::eventFilter( this,watched,event ) ){
+		this->pbCancel() ;
+		return true ;
+	}else{
+		return false ;
 	}
-
-	return false ;
 }
 
 void keyDialog::pbOptions()

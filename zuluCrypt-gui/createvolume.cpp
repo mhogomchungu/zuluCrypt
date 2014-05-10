@@ -71,6 +71,8 @@ createvolume::createvolume( QWidget * parent ) :
 
 	m_ui->groupBox->setEnabled( false ) ;
 
+	this->installEventFilter( this ) ;
+
 #if TRUECRYPT_CREATE
 	m_ui->comboBoxVolumeType->addItem( tr( "normal truecrypt" ) ) ;
 	m_ui->comboBoxVolumeType->addItem( tr( "normal+hidden truecrypt" ) ) ;
@@ -89,6 +91,16 @@ void createvolume::keyChanged( QString key )
 		}
 	}else{
 		this->setWindowTitle( tr( "create a new volume" ) ) ;
+	}
+}
+
+bool createvolume::eventFilter( QObject * watched,QEvent * event )
+{
+	if( utility::eventFilter( this,watched,event ) ){
+		this->HideUI() ;
+		return true ;
+	}else{
+		return false ;
 	}
 }
 

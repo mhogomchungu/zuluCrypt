@@ -58,6 +58,7 @@ private slots:
 	void devicePathTextChange( QString ) ;
 private:
 	void closeEvent( QCloseEvent * ) ;
+	bool eventFilter( QObject * watched,QEvent * event ) ;
 	void addEntries( QString,QString ) ;
 	Ui::favorites * m_ui ;
 	QAction * m_ac ;

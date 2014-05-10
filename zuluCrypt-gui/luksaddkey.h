@@ -24,6 +24,8 @@
 #include <QString>
 #include <QStringList>
 
+#include "utility.h"
+
 namespace Ui {
 class luksaddkey ;
 }
@@ -66,6 +68,7 @@ private:
 	void disableAll( void ) ;
 	void enableAll( void ) ;
 	void closeEvent( QCloseEvent * ) ;
+	bool eventFilter( QObject * watched,QEvent * event ) ;
 	Ui::luksaddkey * m_ui ;
 	QString m_volumePath ;
 	bool m_isWindowClosable ;

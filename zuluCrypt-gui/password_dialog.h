@@ -23,6 +23,8 @@
 #include <QDialog>
 #include <QString>
 
+#include "utility.h"
+
 namespace Ui {
 class PasswordDialog ;
 }
@@ -82,6 +84,7 @@ private :
 	void disableAll( void ) ;
 	void enableAll( void ) ;
 	void closeEvent( QCloseEvent * ) ;
+	bool eventFilter( QObject * watched,QEvent * event ) ;
 	void success( const QString& ) ;
 	Ui::PasswordDialog * m_ui ;
 	bool m_isWindowClosable ;

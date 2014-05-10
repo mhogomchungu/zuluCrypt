@@ -67,6 +67,8 @@ managevolumeheader::managevolumeheader( QWidget * parent ) :
 
 	this->enableTrueCrypt( false ) ;
 
+	this->installEventFilter( this ) ;
+
 	m_ui->groupBox_2->setEnabled( false ) ;
 	m_ui->rbFDETrueCrypt->setEnabled( false ) ;
 	m_ui->rbNormalTrueCrypt->setEnabled( false ) ;
@@ -76,7 +78,16 @@ managevolumeheader::managevolumeheader( QWidget * parent ) :
 #else
 	m_ui->rbTrueCryptHeader->setEnabled( false ) ;
 #endif
+}
 
+bool managevolumeheader::eventFilter( QObject * watched,QEvent * event )
+{
+	if( utility::eventFilter( this,watched,event ) ){
+		this->HideUI() ;
+		return true ;
+	}else{
+		return false ;
+	}
 }
 
 void managevolumeheader::rbKeyToggled( bool toggled )
