@@ -23,6 +23,8 @@
 #include <QDialog>
 #include <QString>
 #include <QMenu>
+#include <QEvent>
+#include <QKeyEvent>
 
 class QCloseEvent ;
 class QAction ;
@@ -82,6 +84,7 @@ private:
 	void enableAll( void ) ;
 	void disableAll( void ) ;
 	void closeEvent( QCloseEvent * ) ;
+	bool eventFilter( QObject * watched,QEvent * event ) ;
 	Ui::keyDialog * m_ui ;
 	QString m_path ;
 	QString m_point ;

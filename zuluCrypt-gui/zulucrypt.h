@@ -143,6 +143,7 @@ private:
 	void updateVolumeList( void ) ;
 	void dragEnterEvent( QDragEnterEvent * ) ;
 	void dropEvent( QDropEvent * ) ;
+	
 	passwordDialog * setUpPasswordDialog( void ) ;
 	openvolume * setUpOpenpartition( void ) ;
 	createvolume * setUpCreatepartition( void ) ;

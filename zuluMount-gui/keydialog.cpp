@@ -107,6 +107,23 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const QString& path,
 	m_menu_1->addAction( tr( "set volume offset" ) ) ;
 
 	connect( m_menu_1,SIGNAL( triggered( QAction * ) ),this,SLOT( doAction( QAction * ) ) ) ;
+
+	this->installEventFilter( this ) ;
+}
+
+bool keyDialog::eventFilter( QObject * watched,QEvent * event )
+{
+	if( watched == this ){
+		if( event->type() == QEvent::KeyPress ){
+			QKeyEvent * keyEvent = static_cast< QKeyEvent* >( event ) ;
+			if( keyEvent->key() == Qt::Key_Escape ){
+				this->pbCancel() ;
+				return true ;
+			}
+		}
+	}
+
+	return false ;
 }
 
 void keyDialog::pbOptions()
