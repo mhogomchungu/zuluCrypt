@@ -72,6 +72,7 @@ void auto_mount::threadStopped()
 void auto_mount::run()
 {
 	m_mtoto = this ;
+	
 	connect( m_mtoto,SIGNAL( terminated() ),m_main,SLOT( threadStopped() ) ) ;
 	connect( m_mtoto,SIGNAL( terminated() ),m_mtoto,SLOT( deleteLater() ) ) ;
 

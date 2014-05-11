@@ -27,7 +27,7 @@
 #include <QFile>
 
 #include <poll.h>
-#include<fcntl.h>
+#include <fcntl.h>
 
 #include "bin_path.h"
 #include "task.h"
@@ -61,6 +61,7 @@ void monitor_mountinfo::threadStopped()
 void monitor_mountinfo::run()
 {
 	m_mtoto = this ;
+
 	connect( m_mtoto,SIGNAL( terminated() ),m_main,SLOT( threadStopped() ) ) ;
 	connect( m_mtoto,SIGNAL( terminated() ),m_mtoto,SLOT( deleteLater() ) ) ;
 
