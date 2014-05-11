@@ -82,7 +82,7 @@ void Task::updateVolumeListTask()
 
 	if( m_status == 0 ){
 		QStringList l = QString( p.readAll() ).split( "\n" ) ;
-		l.removeLast() ;
+		l.removeOne( "" ) ;
 		QStringList entry ;
 		for( const auto& it : l ){
 			entry = it.split( "\t" ) ;
@@ -179,7 +179,7 @@ void Task::runVolumeTask()
 	p.waitForFinished() ;
 
 	QStringList l = QString( p.readAllStandardOutput() ).split( "\n" ) ;
-	l.removeLast() ;
+	l.removeOne( "" ) ;
 	p.close() ;
 
 	QStringList list ;

@@ -64,15 +64,9 @@ void monitor_mountinfo::run()
 	connect( m_mtoto,SIGNAL( terminated() ),m_main,SLOT( threadStopped() ) ) ;
 	connect( m_mtoto,SIGNAL( terminated() ),m_mtoto,SLOT( deleteLater() ) ) ;
 
-	m_threadIsRunning = true ;
-
-	struct pollfd fds[ 1 ] ;
-
-	const char * path = "/proc/self/mountinfo" ;
-
 	Task::FileHandle manage_fd ;
 
-	int fd = manage_fd( open( path,O_RDONLY ) ) ;
+	int fd = manage_fd( open( "/proc/self/mountinfo",O_RDONLY ) ) ;
 
 	if( fd == -1 ){
 		m_threadIsRunning = false ;
@@ -81,9 +75,15 @@ void monitor_mountinfo::run()
 		m_threadIsRunning = true ;
 	}
 
-	fds[ 0 ].fd = fd ;
-	fds[ 0 ].events = POLLPRI ;
-	int e ;
+	struct pollfd monitor ;
+
+	monitor.fd     = fd ;
+	monitor.events = POLLPRI ;
+
+	auto _loop = [&](){
+		poll( &monitor,1,-1 ) ;
+		return 1 ;
+	} ;
 
 	auto _updateVolumeList = [](){
 
@@ -92,7 +92,7 @@ void monitor_mountinfo::run()
 		p.start( exe ) ;
 		p.waitForFinished( -1 ) ;
 		QStringList l = QString( p.readAll() ).split( "\n" ) ;
-		l.removeLast() ;
+		l.removeOne( "" ) ;
 		return l ;
 	} ;
 
@@ -100,11 +100,7 @@ void monitor_mountinfo::run()
 	QStringList newList ;
 	QStringList temp ;
 
-	while( 1 ){
-		e = poll( fds,1,-1 ) ;
-		if( e == -1 ){
-			continue ;
-		}
+	while( _loop() ){
 
 		newList = _updateVolumeList() ;
 
@@ -118,8 +114,10 @@ void monitor_mountinfo::run()
 			for( const auto& it : oldList ){
 				Task * t = new Task() ;
 				t->setDevice( it ) ;
-				connect( t,SIGNAL( signalProperties( QString ) ),m_babu,SLOT( volumeMiniProperties( QString ) ) ) ;
-				connect( t,SIGNAL( volumeRemoved( QString ) ),m_babu,SLOT( deviceRemoved( QString ) ) ) ;
+				connect( t,SIGNAL( signalProperties( QString ) ),
+					 m_babu,SLOT( volumeMiniProperties( QString ) ) ) ;
+				connect( t,SIGNAL( volumeRemoved( QString ) ),
+					 m_babu,SLOT( deviceRemoved( QString ) ) ) ;
 				t->start( Task::VolumeMiniProperties ) ;
 			}
 		}else if( newList.size() > oldList.size() ){
@@ -133,7 +131,8 @@ void monitor_mountinfo::run()
 			for( const auto& it : temp ){
 				Task * t = new Task() ;
 				t->setDevice( it ) ;
-				connect( t,SIGNAL( signalProperties( QString ) ),m_babu,SLOT( volumeMiniProperties( QString ) ) ) ;
+				connect( t,SIGNAL( signalProperties( QString ) ),
+					 m_babu,SLOT( volumeMiniProperties( QString ) ) ) ;
 				t->start( Task::VolumeMiniProperties ) ;
 			}
 		}else{

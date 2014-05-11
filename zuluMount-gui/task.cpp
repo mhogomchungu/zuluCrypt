@@ -171,8 +171,7 @@ void Task::getVolumeType( const QString& device )
 		QString s = QString( p.readAll() ) ;
 		p.close() ;
 		QStringList l = s.split( "\n" ) ;
-		l.removeLast() ;
-
+		l.removeOne( "" ) ;
 		for( const auto& it : l ){
 			if( it == dev ){
 				return true ;
