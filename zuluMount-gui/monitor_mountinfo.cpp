@@ -87,7 +87,6 @@ void monitor_mountinfo::run()
 	} ;
 
 	auto _updateVolumeList = [](){
-
 		QProcess p ;
 		QString exe = QString( "%1 -E" ).arg( zuluMount ) ;
 		p.start( exe ) ;
@@ -97,9 +96,26 @@ void monitor_mountinfo::run()
 		return l ;
 	} ;
 
+	auto _unmountProperty = [&]( const QString& volume ){
+		Task * t = new Task() ;
+		t->setDevice( volume ) ;
+		connect( t,SIGNAL( signalProperties( QString ) ),
+			 m_babu,SLOT( volumeMiniProperties( QString ) ) ) ;
+		connect( t,SIGNAL( volumeRemoved( QString ) ),
+			 m_babu,SLOT( deviceRemoved( QString ) ) ) ;
+		t->start( Task::VolumeMiniProperties ) ;
+	} ;
+
+	auto _mountProperty = [&]( const QString& volume ){
+		Task * t = new Task() ;
+		t->setDevice( volume ) ;
+		connect( t,SIGNAL( signalProperties( QString ) ),
+			 m_babu,SLOT( volumeMiniProperties( QString ) ) ) ;
+		t->start( Task::VolumeMiniProperties ) ;
+	} ;
+
 	QStringList oldList = _updateVolumeList() ;
 	QStringList newList ;
-	QStringList temp ;
 
 	while( _loop() ){
 
@@ -109,36 +125,24 @@ void monitor_mountinfo::run()
 			/*
 			 * unmount has just happened
 			 */
-			for( const auto& it : newList ){
-				oldList.removeOne( it ) ;
-			}
 			for( const auto& it : oldList ){
-				Task * t = new Task() ;
-				t->setDevice( it ) ;
-				connect( t,SIGNAL( signalProperties( QString ) ),
-					 m_babu,SLOT( volumeMiniProperties( QString ) ) ) ;
-				connect( t,SIGNAL( volumeRemoved( QString ) ),
-					 m_babu,SLOT( deviceRemoved( QString ) ) ) ;
-				t->start( Task::VolumeMiniProperties ) ;
+				if( !newList.contains( it ) ){
+					_unmountProperty( it ) ;
+				}
 			}
 		}else if( newList.size() > oldList.size() ){
 			/*
 			 * mount has happened
 			 */
-			temp = newList ;
-			for( const auto& it : oldList ){
-				temp.removeOne( it ) ;
-			}
-			for( const auto& it : temp ){
-				Task * t = new Task() ;
-				t->setDevice( it ) ;
-				connect( t,SIGNAL( signalProperties( QString ) ),
-					 m_babu,SLOT( volumeMiniProperties( QString ) ) ) ;
-				t->start( Task::VolumeMiniProperties ) ;
+			for( const auto& it : newList ){
+				if( !oldList.contains( it ) ){
+					_mountProperty( it ) ;
+				}
 			}
 		}else{
 			/*
-			 * mount/unmount just happened but volume count remain the same,possible reason is because of a bind mount
+			 * mount/unmount just happened but volume count remain the same,
+			 * possible reason is because of a bind mount
 			 */
 		}
 
