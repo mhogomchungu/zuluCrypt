@@ -119,6 +119,17 @@ void Task::setFunction( std::function< void() > function )
 	m_function = function ;
 }
 
+QStringList Task::updateVolumeList()
+{
+	QProcess p ;
+	QString exe = QString( "%1 -E" ).arg( zuluMount ) ;
+	p.start( exe ) ;
+	p.waitForFinished( -1 ) ;
+	QStringList l = QString( p.readAll() ).split( "\n" ) ;
+	l.removeOne( "" ) ;
+	return l ;
+}
+
 void Task::run()
 {
 	switch( m_action ){

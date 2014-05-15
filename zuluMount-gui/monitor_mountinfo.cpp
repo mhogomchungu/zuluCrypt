@@ -22,14 +22,10 @@
 #include <QString>
 #include <QStringList>
 #include <QDebug>
-#include <QProcess>
-#include <QDir>
-#include <QFile>
 
 #include <poll.h>
 #include <fcntl.h>
 
-#include "bin_path.h"
 #include "task.h"
 
 monitor_mountinfo::monitor_mountinfo( QObject * parent ) : QThread( parent )
@@ -86,16 +82,6 @@ void monitor_mountinfo::run()
 		return 1 ;
 	} ;
 
-	auto _updateVolumeList = [](){
-		QProcess p ;
-		QString exe = QString( "%1 -E" ).arg( zuluMount ) ;
-		p.start( exe ) ;
-		p.waitForFinished( -1 ) ;
-		QStringList l = QString( p.readAll() ).split( "\n" ) ;
-		l.removeOne( "" ) ;
-		return l ;
-	} ;
-
 	auto _unmountProperty = [&]( const QString& volume ){
 		Task * t = new Task() ;
 		t->setDevice( volume ) ;
@@ -114,12 +100,12 @@ void monitor_mountinfo::run()
 		t->start( Task::VolumeMiniProperties ) ;
 	} ;
 
-	QStringList oldList = _updateVolumeList() ;
+	QStringList oldList = Task::updateVolumeList() ;
 	QStringList newList ;
 
 	while( _loop() ){
 
-		newList = _updateVolumeList() ;
+		newList = Task::updateVolumeList() ;
 
 		if( oldList.size() > newList.size() ){
 			/*

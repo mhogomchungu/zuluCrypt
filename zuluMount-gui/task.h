@@ -76,6 +76,7 @@ public:
 		md_device,
 	} ;
 
+	static QStringList updateVolumeList( void ) ;
 	void start( Task::Action ) ;
 	void setMode( const QString& ) ;
 	void setDevice( const QString& ) ;
