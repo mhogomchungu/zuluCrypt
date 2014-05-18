@@ -51,6 +51,23 @@
 #include "../zuluCrypt-gui/utility.h"
 #include "task.h"
 
+template< typename T >
+class Object_raii
+{
+public:
+	explicit Object_raii( T t ) : m_Object( t )
+	{
+	}
+	~Object_raii()
+	{
+		delete m_Object ;
+	}
+private:
+	T m_Object ;
+};
+
+#define Object_raii( x ) Object_raii< decltype( x ) > Object_raii_x( x ) ; Q_UNUSED( Object_raii_x )
+
 MainWindow::MainWindow( int argc,char * argv[],QWidget * parent ) :QWidget( parent ),
 	m_autoMountThread( 0 ),m_autoMountAction( 0 )
 {
@@ -152,8 +169,8 @@ void MainWindow::setUpApp()
 
 	this->disableAll() ;
 
-	connect( t,SIGNAL( signalMountedList( QStringList,QStringList ) ),
-		 this,SLOT( slotMountedList( QStringList,QStringList ) ) ) ;
+	connect( t,SIGNAL( signalMountedList( QVector< volumeEntryProperties > * ) ),
+		 this,SLOT( slotMountedList( QVector< volumeEntryProperties > * ) ) ) ;
 	connect( t,SIGNAL( done() ),this,SLOT( openVolumeFromArgumentList() ) ) ;
 
 	t->start( Task::Update ) ;
@@ -266,43 +283,30 @@ void MainWindow::quitApplication()
 
 void MainWindow::autoMountVolumeSystemInfo( QStringList l )
 {
-	if( l.size() > 3 && l.first().size() == strlen( "/dev/sdX" ) && l.at( 2 ) == QString( "Nil" ) ){
-		/*
-		 * root device with no file system,dont show them.This will be a bug if a user just put a plain volume
-		 * or a truecrypt volume without first partitio the drive.
-		 */
-		return ;
-	}
+	volumeEntryProperties e( l ) ;
 
-	this->addEntryToTable( true,l ) ;
+	if( e.entryisValid() ){
+		this->addEntryToTable( true,l ) ;
+	}
 }
 
 void MainWindow::autoMountVolumeInfo( QStringList l )
 {
-	if( l.at( 4 ) == QString( "1.0 KB" ) ){
-		return ;
-	}
+	volumeEntryProperties e( l ) ;
 
-	QString dev = l.first() ;
-	QString type = l.at( 2 ) ;
-
-	if( dev.size() == strlen( "/dev/sdX" ) && type == QString( "Nil" ) ){
-		/*
-		 * root device with no file system,dont show them.This will be a bug if a user just put a plain volume
-		 * or a truecrypt volume without first partitio the drive.
-		 */
-		return ;
-	}
-	if( type.startsWith( QString( "crypto" ) ) || type == QString( "Nil" ) ){
-		this->addEntryToTable( false,l ) ;
-	}else{
-		if( m_autoMount ){
-			mountPartition * mp = new mountPartition( this,m_ui->tableWidget,m_folderOpener,m_autoOpenFolderOnMount ) ;
-			connect( mp,SIGNAL( autoMountComplete() ),mp,SLOT( deleteLater() ) ) ;
-			connect( mp,SIGNAL( autoMountComplete() ),this,SLOT( enableAll() ) ) ;
-			mp->AutoMount( l ) ;
-		}else{
+	if( e.entryisValid() ){
+		if( e.encryptedVolume() ){
 			this->addEntryToTable( false,l ) ;
+		}else{
+			if( m_autoMount ){
+				mountPartition * mp = new mountPartition( this,m_ui->tableWidget,
+									  m_folderOpener,m_autoOpenFolderOnMount ) ;
+				connect( mp,SIGNAL( autoMountComplete() ),mp,SLOT( deleteLater() ) ) ;
+				connect( mp,SIGNAL( autoMountComplete() ),this,SLOT( enableAll() ) ) ;
+				mp->AutoMount( l ) ;
+			}else{
+				this->addEntryToTable( false,l ) ;
+			}
 		}
 	}
 }
@@ -735,58 +739,38 @@ void MainWindow::removeEntryFromTable( QString volume )
 
 void MainWindow::volumeMiniProperties( QString volumeInfo )
 {
-	QStringList l ;
-	QString device ;
-	QString fileSystem ;
-	QString total ;
-	QString perc ;
-	QString label ;
-	QString mountPointPath ;
-
 	this->disableAll() ;
 
 	if( volumeInfo.isEmpty() ){
 		this->pbUpdate() ;
 	}else{
-		l = volumeInfo.split( "\t" ) ;
-		if( l.size() >= 6 ){
-			device = l.at( 0 ) ;
-			mountPointPath = l.at( 1 ) ;
-			fileSystem = l.at( 2 ) ;
-
-			int index = fileSystem.indexOf( QString( "/" ) ) ;
-
-			if( index != -1 ){
-				fileSystem = fileSystem.replace( QString( "/" ),QString( "\n(" ) ) + QString( ")" ) ;
-			}
-
-			label = l.at( 3 ) ;
-			total = l.at( 4 ) ;
-			perc = l.at( 5 ) ;
-			perc.remove( QChar( '\n' ) ) ;
-
-			QTableWidget * table = m_ui->tableWidget ;
-
-			int row = tablewidget::columnHasEntry( table,0,device ) ;
-			if( row == -1 ){
-				/*
-				 * volume has no entry in the list probably because its a volume based on a file.
-				 * Add an entry to the list to accomodate it
-				 */
-				row = tablewidget::addEmptyRow( table ) ;
-			}
-
-			tablewidget::setText( table,row,0,device ) ;
-			tablewidget::setText( table,row,1,mountPointPath ) ;
-			tablewidget::setText( table,row,2,fileSystem ) ;
-			tablewidget::setText( table,row,3,label ) ;
-			tablewidget::setText( table,row,4,total ) ;
-			tablewidget::setText( table,row,5,perc ) ;
-
-			tablewidget::selectRow( table,row ) ;
-		}
+		volumeEntryProperties entry( volumeInfo.split( "\t" ) ) ;
+		this->updateList( entry ) ;
 		this->enableAll() ;
 	}
+}
+
+void MainWindow::updateList( const volumeEntryProperties& entry )
+{
+	QTableWidget * table = m_ui->tableWidget ;
+
+	int row = tablewidget::columnHasEntry( table,0,entry.volumeName() ) ;
+	if( row == -1 ){
+		/*
+		 * volume has no entry in the list probably because its a volume based on a file.
+		 * Add an entry to the list to accomodate it
+		 */
+		row = tablewidget::addEmptyRow( table ) ;
+	}
+
+	tablewidget::setText( table,row,0,entry.volumeName() ) ;
+	tablewidget::setText( table,row,1,entry.mountPoint() ) ;
+	tablewidget::setText( table,row,2,entry.fileSystem() ) ;
+	tablewidget::setText( table,row,3,entry.label() ) ;
+	tablewidget::setText( table,row,4,entry.volumeSize() ) ;
+	tablewidget::setText( table,row,5,entry.spaceUsedPercentage() ) ;
+
+	tablewidget::selectRow( table,row ) ;
 }
 
 void MainWindow::pbUmount()
@@ -812,98 +796,105 @@ void MainWindow::pbUpdate()
 {
 	this->disableAll() ;
 
-	while( m_ui->tableWidget->rowCount() ){
-		m_ui->tableWidget->removeRow( 0 ) ;
-	}
-
 	m_ui->tableWidget->setEnabled( false ) ;
 
 	Task * t = new Task() ;
-	connect( t,SIGNAL( signalMountedList( QStringList,QStringList ) ),this,SLOT( slotMountedList( QStringList,QStringList ) ) ) ;
+	connect( t,SIGNAL( signalMountedList( QVector< volumeEntryProperties > * ) ),
+		 this,SLOT( slotUpdateMountedList( QVector< volumeEntryProperties > * ) ) ) ;
 	t->start( Task::Update ) ;
 }
 
-void MainWindow::slotMountedList( QStringList list,QStringList sys )
+void MainWindow::errorReadingList()
 {
-	if( list.isEmpty() || sys.isEmpty() ){
-		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "ERROR" ),
-			      tr( "reading partition properties took longer than expected and operation was terminated,click refresh to try again" ) ) ;
-		this->enableAll() ;
-		return ;
+	DialogMsg msg( this ) ;
+	msg.ShowUIOK( tr( "ERROR" ),
+		      tr( "reading partition properties took longer than expected and operation was terminated,click refresh to try again" ) ) ;
+	this->enableAll() ;
+}
+
+void MainWindow::slotUpdateMountedList( QVector< volumeEntryProperties > * entries )
+{
+	Object_raii( entries ) ;
+
+	if( entries->isEmpty() ){
+		return this->errorReadingList() ;
 	}
 
 	QTableWidget * table = m_ui->tableWidget ;
 
-	QStringList entries ;
+	for( const auto& it : *entries ){
+
+		if( it.entryisValid() ){
+			this->updateList( it ) ;
+		}else{
+			tablewidget::deleteRowFromTable( table,it.volumeName() ) ;
+		}
+	}
+
+	/*
+	 * Below routine removes an entry on the table if it is found not to be
+	 * present on the the list of volumes we just received.This is necessary
+	 * for example to remove no longer valid options like a removed cdrom
+	 */
+	QStringList l = tablewidget::tableEntries( table ) ;
+
+	int j = entries->size() ;
+
+	auto _hasNoEntry = [&]( const QString& volume ){
+		for( int i = 0 ; i < j ; i++ ){
+			if( entries->at( i ).volumeName() == volume ){
+				return false ;
+			}
+		}
+
+		return true ;
+	} ;
+
+	for( const auto& it : l ){
+		if( _hasNoEntry( it ) ){
+			tablewidget::deleteRowFromTable( table,it ) ;
+		}
+	}
+
+	tablewidget::selectLastRow( table ) ;
+
+	this->enableAll() ;
+}
+
+void MainWindow::slotMountedList( QVector< volumeEntryProperties > * entries )
+{
+	Object_raii( entries ) ;
+
+	if( entries->isEmpty() ){
+		return this->errorReadingList() ;
+	}
+
+	QTableWidget * table = m_ui->tableWidget ;
 
 	QFont f = this->font() ;
 
 	f.setItalic( !f.italic() ) ;
 	f.setBold( !f.bold() ) ;
 
-	QString opt ;
-	QString fs ;
-	QString x = QString( "/run/media/private/" ) + utility::userName() ;
-	QString y ;
+	QStringList l ;
 
-	int index ;
-	for( const auto& it : list ){
-		entries = it.split( '\t' ) ;
-		if( entries.size() < 6 ){
-			continue ;
-		}
-		if( entries.at( 0 ) == QString( "/dev/md/md-device-map" ) ){
-			/*
-			 * dont display this path as it is some sort of an accounting text file
-			 * in some distributions
-			 */
-			continue ;
-		}
+	for( const auto& it : *entries ){
 
-		fs =  entries.at( 2 ) ;
+		if( it.entryisValid() ){
 
-		/*
-		 * MDRAID partitions have "linux_raid_member" as their file system
-		 * LVM partitions have "LVM2_member" as their file system
-		 *
-		 * we are not showing these partitions since we dont support them
-		 */
-		if( fs == QString( "swap" ) || fs.contains( QString( "member" ) ) ){
-			continue ;
-		}
+			l.clear() ;
+			l.append( it.volumeName() ) ;
+			l.append( it.mountPoint() ) ;
+			l.append( it.fileSystem() ) ;
+			l.append( it.label() ) ;
+			l.append( it.volumeSize() ) ;
+			l.append( it.spaceUsedPercentage() ) ;
 
-		index = fs.indexOf( QString( "/" ) ) ;
-		if( index != -1 ){
-			fs = fs.replace( QString( "/" ),QString( "\n(" ) ) + QString( ")" ) ;
-			entries.replace( 2,fs ) ;
-		}
-
-		y = entries.at( 1 ) ;
-
-		if( y.startsWith( QString( "/run/media/private/" ) ) ){
-			if( !y.startsWith( x ) ){
-				/*
-				 * dont show volumes mounted by other users
-				 */
-				//continue ;
+			if( it.isSystem() ){
+				tablewidget::addRowToTable( table,l,f ) ;
+			}else{
+				tablewidget::addRowToTable( table,l ) ;
 			}
-		}
-
-		if( y.startsWith( QString( "/run/media/public/" ) ) ){
-			/*
-			 * dont show mirror mounts
-			 */
-			continue ;
-		}
-		opt = entries.at( 4 ) ;
-		if( opt == QString( "Nil" ) || opt == QString( "1.0 KB" ) ){
-			continue ;
-		}
-		if( sys.contains( entries.at( 0 ) ) ){
-			tablewidget::addRowToTable( table,entries,f ) ;
-		}else{
-			tablewidget::addRowToTable( table,entries ) ;
 		}
 	}
 

@@ -125,8 +125,7 @@ QStringList Task::updateVolumeList()
 	QString exe = QString( "%1 -E" ).arg( zuluMount ) ;
 	p.start( exe ) ;
 	p.waitForFinished( -1 ) ;
-	QStringList l = QString( p.readAll() ).split( "\n" ) ;
-	l.removeOne( "" ) ;
+	QStringList l = QString( p.readAll() ).split( "\n",QString::SkipEmptyParts ) ;
 	return l ;
 }
 
@@ -181,8 +180,7 @@ void Task::getVolumeType( const QString& device )
 		p.waitForFinished() ;
 		QString s = QString( p.readAll() ) ;
 		p.close() ;
-		QStringList l = s.split( "\n" ) ;
-		l.removeOne( "" ) ;
+		QStringList l = s.split( "\n",QString::SkipEmptyParts ) ;
 		for( const auto& it : l ){
 			if( it == dev ){
 				return true ;
@@ -201,7 +199,7 @@ void Task::getVolumeType( const QString& device )
 	QString m = p.readAll() ;
 	QStringList l ;
 	if( p.exitCode() == 0 ){
-		l =  m.split( "\t" ) ;
+		l =  m.split( "\t",QString::SkipEmptyParts ) ;
 		if( l.size() >= 4 ){
 			if( _systemDevice( d ) ){
 				emit getVolumeSystemInfo( l ) ;
@@ -229,20 +227,31 @@ void Task::partitionList()
 	QStringList k ;
 	QStringList j ;
 
+	QVector< volumeEntryProperties > * entries = new QVector< volumeEntryProperties > ;
+
 	p.start( QString( "%1 -l" ).arg( zuluMount ) ) ;
 
 	if( p.waitForFinished( 10000 ) ){
-		k = QString( p.readAll() ).split( '\n' ) ;
+		k = QString( p.readAll() ).split( '\n',QString::SkipEmptyParts ) ;
 		q.start( QString( "%1 -S" ).arg( zuluMount ) ) ;
 		if( q.waitForFinished( 10000 ) ){
-			j = QString( q.readAll() ).split( '\n' ) ;
+
+			j = QString( q.readAll() ).split( '\n',QString::SkipEmptyParts ) ;
+
+			for( const auto& it : k ){
+				if( it.startsWith( "/dev/md/md-device-map" ) ){
+					continue ;
+				}
+				if( it.contains( "\tswap\t") || it.contains( "member\t" ) ){
+					continue ;
+				}
+				volumeEntryProperties v( it.split( "\t",QString::SkipEmptyParts ) ) ;
+				v.setisSystem( j.contains( v.volumeName() ) ) ;
+				entries->append( v ) ;
+			}
 		}
-		q.close() ;
 	}
-
-	p.close() ;
-
-	emit signalMountedList( k,j ) ;
+	emit signalMountedList( entries ) ;
 }
 
 void Task::volumeProperties()
@@ -262,7 +271,7 @@ void Task::volumeProperties()
 
 	QByteArray d = p.readAll() ;
 	p.close() ;
-	QStringList l = QString( d ).split( "\n" ) ;
+	QStringList l = QString( d ).split( "\n",QString::SkipEmptyParts ) ;
 
 	if( l.size() > 12 ){
 		emit signalProperties( d ) ;
@@ -276,7 +285,7 @@ void Task::volumeProperties()
 			p.start( exe ) ;
 			p.waitForFinished() ;
 			d = p.readAll() ;
-			QStringList l = QString( d ).split( "\n" ) ;
+			QStringList l = QString( d ).split( "\n",QString::SkipEmptyParts ) ;
 
 			if( l.size() > 12 ){
 				emit signalProperties( d ) ;

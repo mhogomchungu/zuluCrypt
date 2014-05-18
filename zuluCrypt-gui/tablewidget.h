@@ -21,6 +21,7 @@
 #define TABLEWIDGET_H
 
 #include <QString>
+#include <QStringList>
 #include <QFont>
 
 class QTableWidget ;
@@ -33,8 +34,11 @@ public:
 	static void addRowToTable( QTableWidget *,const QStringList& ) ;
 	static void addRowToTable( QTableWidget *,const QStringList&,const QFont& ) ;
 	static void deleteRowFromTable( QTableWidget *,int row ) ;
+	static void deleteRowFromTable( QTableWidget *,const QString&,int column = 0 ) ;
 	static void selectRow( QTableWidget *,int row ) ;
+	static void selectLastRow( QTableWidget * ) ;
 	static void setText( QTableWidget *,int row,int col,const QString& text ) ;
+	static QStringList tableEntries( QTableWidget * table,int column = 0  ) ;
 	static int addEmptyRow( QTableWidget * ) ;
 	static int  columnHasEntry( QTableWidget *,int,const QString& ) ;
 };

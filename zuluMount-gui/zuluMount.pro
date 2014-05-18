@@ -24,7 +24,8 @@ SOURCES += main.cpp\
     monitor_mountinfo.cpp \
     task.cpp \
     deviceoffset.cpp \
-    mountoptions.cpp
+    mountoptions.cpp \
+    volumeentryproperties.cpp
 
 HEADERS  += mainwindow.h\
     keydialog.h \
@@ -39,7 +40,8 @@ HEADERS  += mainwindow.h\
     monitor_mountinfo.h \
     task.h \
     deviceoffset.h \
-    mountoptions.h
+    mountoptions.h \
+    volumeentryproperties.h
 
 TRANSLATIONS = ../translations/zuluMount/messages.ts
 

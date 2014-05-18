@@ -149,9 +149,27 @@ void tablewidget::deleteRowFromTable( QTableWidget * table,int row )
 	table->setFocus() ;
 }
 
+void tablewidget::deleteRowFromTable( QTableWidget * table,const QString& value,int column )
+{
+	int j = table->rowCount() ;
+	for( int row = 0 ; row < j ; row++ ){
+		if( table->item( row,column )->text() == value ){
+			tablewidget::deleteRowFromTable( table,row ) ;
+		}
+	}
+}
+
 void tablewidget::selectRow( QTableWidget * table,int row )
 {
 	table->setCurrentCell( row,table->columnCount() - 1 ) ;
+}
+
+void tablewidget::selectLastRow( QTableWidget * table )
+{
+	int row = table->rowCount() - 1 ;
+	if( row >= 0 ){
+		table->setCurrentCell( row,table->columnCount() - 1 ) ;
+	}
 }
 
 void tablewidget::setText( QTableWidget * table,int row,int col,const QString& text )
@@ -163,4 +181,17 @@ void tablewidget::setText( QTableWidget * table,int row,int col,const QString& t
 	item->setTextAlignment( Qt::AlignCenter ) ;
 	item->setFont( f ) ;
 	table->setItem( row,col,item ) ;
+}
+
+QStringList tablewidget::tableEntries( QTableWidget * table,int column )
+{
+	QStringList l ;
+	int col = table->columnCount() ;
+	if( column < col ){
+		int j = table->rowCount() ;
+		for( int row = 0 ; row < j ; row++ ){
+			l.append( table->item( row,column )->text() ) ;
+		}
+	}
+	return l ;
 }

@@ -25,6 +25,9 @@
 #include <QString>
 #include <QStringList>
 #include <functional>
+#include <QVector>
+
+#include "volumeentryproperties.h"
 
 namespace LxQt{
 namespace Wallet {
@@ -96,7 +99,7 @@ signals:
 	void errorStatus( int exitCode,int exitStatus,int startError ) ;
 	void signalMountComplete( int,QString ) ;
 	void signalUnmountComplete( int,QString ) ;
-	void signalMountedList( QStringList,QStringList ) ;
+	void signalMountedList( QVector< volumeEntryProperties > * ) ;
 	void signalProperties( QString ) ;
 	void checkPermissions( int ) ;
 	void getVolumeSystemInfo( QStringList ) ;

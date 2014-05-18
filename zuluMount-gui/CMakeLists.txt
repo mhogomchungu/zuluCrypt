@@ -30,6 +30,7 @@ set(SRC 	main.cpp
 		monitor_mountinfo.cpp
 		deviceoffset.cpp
 		mountoptions.cpp
+		volumeentryproperties.cpp
 )
 
 if( QT5 )

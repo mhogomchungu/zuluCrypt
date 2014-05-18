@@ -24,6 +24,9 @@
 #include <QString>
 #include <QStringList>
 #include <QSystemTrayIcon>
+#include <QVector>
+
+#include "volumeentryproperties.h"
 
 class QCloseEvent ;
 class QAction ;
@@ -42,7 +45,6 @@ public:
 	explicit MainWindow( int argc,char * argv[],QWidget * parent = 0 ) ;
 	~MainWindow() ;
 	void start( void ) ;
-	//static void volumeMiniProperties( QTableWidget *,QString,QString ) ;
 signals:
 	void result( int,QString ) ;
 public slots:
@@ -65,7 +67,8 @@ private slots:
 	void pbUmount( void ) ;
 	void pbClose( void ) ;
 	void slotUnmountComplete( int,QString ) ;
-	void slotMountedList( QStringList,QStringList ) ;
+	void slotMountedList( QVector< volumeEntryProperties > * ) ;
+	void slotUpdateMountedList( QVector< volumeEntryProperties > * ) ;
 	void slotTrayClicked( QSystemTrayIcon::ActivationReason ) ;
 	void slotCurrentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ;
 	void enableAll( void ) ;
@@ -91,6 +94,9 @@ private:
 	void showContextMenu( QTableWidgetItem *,bool ) ;
 	void startAutoMonitor( void ) ;
 	bool autoMount( void ) ;
+	void errorReadingList( void ) ;
+	void updateList( const volumeEntryProperties& ) ;
+
 	Ui::MainWindow * m_ui ;
 
 	QString m_action ;
