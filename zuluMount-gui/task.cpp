@@ -125,8 +125,7 @@ QStringList Task::updateVolumeList()
 	QString exe = QString( "%1 -E" ).arg( zuluMount ) ;
 	p.start( exe ) ;
 	p.waitForFinished( -1 ) ;
-	QStringList l = QString( p.readAll() ).split( "\n",QString::SkipEmptyParts ) ;
-	return l ;
+	return utility::split( p.readAll() ) ;
 }
 
 void Task::run()
@@ -180,7 +179,7 @@ void Task::getVolumeType( const QString& device )
 		p.waitForFinished() ;
 		QString s = QString( p.readAll() ) ;
 		p.close() ;
-		QStringList l = s.split( "\n",QString::SkipEmptyParts ) ;
+		QStringList l = utility::split( s ) ;
 		for( const auto& it : l ){
 			if( it == dev ){
 				return true ;
@@ -199,7 +198,7 @@ void Task::getVolumeType( const QString& device )
 	QString m = p.readAll() ;
 	QStringList l ;
 	if( p.exitCode() == 0 ){
-		l =  m.split( "\t",QString::SkipEmptyParts ) ;
+		l = utility::split( m,'\t' ) ;
 		if( l.size() >= 4 ){
 			if( _systemDevice( d ) ){
 				emit getVolumeSystemInfo( l ) ;
@@ -221,42 +220,52 @@ void Task::checkPermissions()
 
 void Task::partitionList()
 {
-	QProcess p ;
-	QProcess q ;
+	typedef struct
+	{
+		bool finished ;
+		QStringList data ;
+	}result ;
 
-	QStringList k ;
-	QStringList j ;
+	auto _run = []( const QString& exe ){
+		result r ;
+		QProcess p ;
+		p.start( exe ) ;
+		r.finished = p.waitForFinished( 10000 ) ;
+		if( r.finished ){
+			r.data = utility::split( p.readAll() ) ;
+		}
+		return r ;
+	} ;
 
 	QVector< volumeEntryProperties > * entries = new QVector< volumeEntryProperties > ;
 
-	p.start( QString( "%1 -l" ).arg( zuluMount ) ) ;
+	result all = _run( QString( "%1 -l" ).arg( zuluMount ) ) ;
 
-	if( p.waitForFinished( 10000 ) ){
-		k = QString( p.readAll() ).split( '\n',QString::SkipEmptyParts ) ;
-		q.start( QString( "%1 -S" ).arg( zuluMount ) ) ;
-		if( q.waitForFinished( 10000 ) ){
+	if( all.finished ){
 
-			j = QString( q.readAll() ).split( '\n',QString::SkipEmptyParts ) ;
+		result system = _run( QString( "%1 -S" ).arg( zuluMount ) ) ;
 
-			for( const auto& it : k ){
+		if( system.finished ){
+
+			for( const auto& it : all.data ){
 				if( it.startsWith( "/dev/md/md-device-map" ) ){
 					continue ;
 				}
 				if( it.contains( "\tswap\t") || it.contains( "member\t" ) ){
 					continue ;
 				}
-				volumeEntryProperties v( it.split( "\t",QString::SkipEmptyParts ) ) ;
-				v.setisSystem( j.contains( v.volumeName() ) ) ;
+				volumeEntryProperties v( utility::split( it,'\t' ) ) ;
+				v.setisSystem( system.data.contains( v.volumeName() ) ) ;
 				entries->append( v ) ;
 			}
 		}
 	}
+	
 	emit signalMountedList( entries ) ;
 }
 
 void Task::volumeProperties()
 {
-	QProcess p ;
 	QString exe ;
 
 	QString device ;
@@ -265,16 +274,24 @@ void Task::volumeProperties()
 	}else{
 		device = m_device.replace( "\"","\"\"\"" ) ;
 	}
+
 	exe = QString( "%1 -s -d \"%2\"" ).arg( zuluMount ).arg( device ) ;
-	p.start( exe ) ;
-	p.waitForFinished() ;
 
-	QByteArray d = p.readAll() ;
-	p.close() ;
-	QStringList l = QString( d ).split( "\n",QString::SkipEmptyParts ) ;
+	auto _run = []( const QString& exe ){
+		QProcess p ;
+		p.start( exe ) ;
+		p.waitForFinished() ;
+		return p.readAll() ;
+	} ;
 
-	if( l.size() > 12 ){
-		emit signalProperties( d ) ;
+	auto _ok = []( const QByteArray& e ){
+		return	utility::split( e ).size() > 12 ;
+	} ;
+
+	QByteArray e = _run( exe ) ;
+
+	if( _ok( e ) ){
+		emit signalProperties( e ) ;
 	}else{
 		if( m_type.contains( "crypto_PLAIN\n" ) ){
 			/*
@@ -282,18 +299,14 @@ void Task::volumeProperties()
 			 */
 			exe = QString( "%1 -s -o bogusNecessaryArgument -d \"%2\"" ).arg( zuluMount ).arg( device ) ;
 
-			p.start( exe ) ;
-			p.waitForFinished() ;
-			d = p.readAll() ;
-			QStringList l = QString( d ).split( "\n",QString::SkipEmptyParts ) ;
-
-			if( l.size() > 12 ){
-				emit signalProperties( d ) ;
+			e = _run( exe ) ;
+			if( _ok( e ) ){
+				emit signalProperties( e ) ;
 			}else{
-				emit signalProperties( QString( "" ) ) ;
+				emit signalProperties( "" ) ;
 			}
 		}else{
-			emit signalProperties( QString( "" ) ) ;
+			emit signalProperties( "" ) ;
 		}
 	}
 }
@@ -392,7 +405,7 @@ void Task::mount()
 	QString d = m_device.replace( "\"","\"\"\"" ) ;
 
 	if( m_point.isEmpty() ){
-		m_point = QDir::homePath() + QString( "/" ) + d.split( "/" ).last() ;
+		m_point = QDir::homePath() + QString( "/" ) + utility::split( d ).last() ;
 	}
 
 	QString additionalOptions ;
@@ -542,8 +555,7 @@ void Task::deviceProperties()
 			 * if the path is simply in "/dev/abc/def"
 			 * format by counting the number of "/"
 			 */
-			QStringList l = device.split( "/" ) ;
-			return l.size() == 4 ;
+			return utility::split( device ).size() == 4 ;
 		} ;
 
 		QString device = device_1 ;

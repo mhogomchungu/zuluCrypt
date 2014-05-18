@@ -81,11 +81,10 @@ void Task::updateVolumeListTask()
 	m_status = p.exitCode() ;
 
 	if( m_status == 0 ){
-		QStringList l = QString( p.readAll() ).split( "\n" ) ;
-		l.removeOne( "" ) ;
+		QStringList l = utility::split( p.readAll() ) ;
 		QStringList entry ;
 		for( const auto& it : l ){
-			entry = it.split( "\t" ) ;
+			entry = utility::split( it,'\t' ) ;
 			if( entry.size() >= 3 ){
 				emit addItemToTable( entry.at( 0 ),entry.at( 1 ),entry.at( 2 ) ) ;
 			}
@@ -178,23 +177,23 @@ void Task::runVolumeTask()
 
 	p.waitForFinished() ;
 
-	QStringList l = QString( p.readAllStandardOutput() ).split( "\n" ) ;
-	l.removeOne( "" ) ;
-	p.close() ;
+	QStringList l = utility::split( p.readAllStandardOutput() ) ;
 
 	QStringList list ;
 	QString entry ;
 	for( const auto& it : l ){
-		list = it.split( "\t" ) ;
-		entry = list.at( 3 ) ;
-		/*
-		 * MDRAID partitions have "linux_raid_member" as their file system
-		 * LVM partitions have "LVM2_member" as their file system
-		 *
-		 * we are not showing these partitions since we dont support them
-		 */
-		if( !entry.contains( QString( "member" ) ) ){
-			emit partitionProperties( list ) ;
+		list = utility::split( it,'\t' ) ;
+		if( list.size() >= 4 ){
+			entry = list.at( 3 ) ;
+			/*
+			 * MDRAID partitions have "linux_raid_member" as their file system
+			 * LVM partitions have "LVM2_member" as their file system
+			 *
+			 * we are not showing these partitions since we dont support them
+			 */
+			if( !entry.contains( "member" ) ){
+				emit partitionProperties( list ) ;
+			}
 		}
 	}
 }

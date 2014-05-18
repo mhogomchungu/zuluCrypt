@@ -72,6 +72,8 @@ public:
 	static void sendKey( const QString& keyPath,const QString& key ) ;
 	static QString getKeyFromWallet( LxQt::Wallet::Wallet *,const QString& volumeID ) ;
 	static bool eventFilter( QObject * gui,QObject * watched,QEvent * event ) ;
+	static QStringList split( const QString&,char token = '\n' ) ;
+	static QStringList split( const QByteArray&,char token = '\n' ) ;
 };
 
 #endif // MISCFUNCTIONS_H

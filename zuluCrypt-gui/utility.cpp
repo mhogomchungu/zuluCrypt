@@ -376,6 +376,17 @@ bool utility::eventFilter( QObject * gui,QObject * watched,QEvent * event )
 	return false ;
 }
 
+QStringList utility::split( const QString& str,char token )
+{
+	return str.split( token,QString::SkipEmptyParts ) ;
+}
+
+QStringList utility::split(const QByteArray& str,char token )
+{
+	QString s = str ;
+	return s.split( token,QString::SkipEmptyParts ) ;
+}
+
 void utility::debug( const QString& s )
 {
 	std::cout << s.toStdString() << std::endl ;

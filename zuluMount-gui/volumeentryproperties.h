@@ -78,7 +78,6 @@ public:
 private:
 	void setValues( const QStringList& l )
 	{
-		m_isSystem = false ;
 		if( l.size() >= 6 ){
 			m_volume      = l.at( 0 ) ;
 			m_mountPoint  = l.at( 1 ) ;
@@ -101,7 +100,7 @@ private:
 	QString m_label ;
 	QString m_volumeSize ;
 	QString m_usedSpacePercentage ;
-	bool    m_isSystem ;
+	bool    m_isSystem = true ;
 };
 
 #endif // VOLUMEENTRYPROPERTIES_H
