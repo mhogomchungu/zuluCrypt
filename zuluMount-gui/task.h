@@ -116,7 +116,7 @@ private:
 	void cryptoMount( QString ) ;
 	void cryptoOpen( void ) ;
 	void run( void ) ;
-	void partitionList( void ) ;
+	void VolumeList( void ) ;
 	void mount( void ) ;
 	void umount( void ) ;
 	void getVolumeType( void ) ;

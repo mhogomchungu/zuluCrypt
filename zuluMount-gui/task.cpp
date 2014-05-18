@@ -131,7 +131,7 @@ QStringList Task::updateVolumeList()
 void Task::run()
 {
 	switch( m_action ){
-		case Task::Update              : return this->partitionList() ;
+		case Task::Update              : return this->VolumeList() ;
 		case Task::Mount               : return this->mount() ;
 		case Task::Unmount             : return this->umount() ;
 		case Task::CryptoOpen          : return this->cryptoOpen() ;
@@ -196,9 +196,8 @@ void Task::getVolumeType( const QString& device )
 	p.waitForFinished() ;
 
 	QString m = p.readAll() ;
-	QStringList l ;
-	if( p.exitCode() == 0 ){
-		l = utility::split( m,'\t' ) ;
+	if( p.exitCode() == 0 ) {
+		QStringList l = utility::split( m,'\t' ) ;
 		if( l.size() >= 4 ){
 			if( _systemDevice( d ) ){
 				emit getVolumeSystemInfo( l ) ;
@@ -218,7 +217,7 @@ void Task::checkPermissions()
 	p.close() ;
 }
 
-void Task::partitionList()
+void Task::VolumeList()
 {
 	typedef struct
 	{
@@ -237,7 +236,17 @@ void Task::partitionList()
 		return r ;
 	} ;
 
-	QVector< volumeEntryProperties > * entries = new QVector< volumeEntryProperties > ;
+	auto _validEntry = []( const QString& e ){
+		if( e.startsWith( "/dev/md/md-device-map" ) ){
+			return false ;
+		}
+		if( e.contains( "\tswap\t") || e.contains( "member\t" ) ){
+			return false ;
+		}
+		return true ;
+	} ;
+
+	auto entries = new QVector< volumeEntryProperties > ;
 
 	result all = _run( QString( "%1 -l" ).arg( zuluMount ) ) ;
 
@@ -248,27 +257,30 @@ void Task::partitionList()
 		if( system.finished ){
 
 			for( const auto& it : all.data ){
-				if( it.startsWith( "/dev/md/md-device-map" ) ){
-					continue ;
+
+				if( _validEntry( it ) ){
+					volumeEntryProperties v( utility::split( it,'\t' ) ) ;
+					v.setisSystem( system.data.contains( v.volumeName() ) ) ;
+					entries->append( v ) ;
 				}
-				if( it.contains( "\tswap\t") || it.contains( "member\t" ) ){
-					continue ;
-				}
-				volumeEntryProperties v( utility::split( it,'\t' ) ) ;
-				v.setisSystem( system.data.contains( v.volumeName() ) ) ;
-				entries->append( v ) ;
 			}
 		}
 	}
-	
+
 	emit signalMountedList( entries ) ;
 }
 
 void Task::volumeProperties()
 {
-	QString exe ;
+	typedef struct
+	{
+		bool ok ;
+		QString data ;
+	}result ;
 
+	QString exe ;
 	QString device ;
+
 	if( m_device.startsWith( "UUID" ) ){
 		device = m_device ;
 	}else{
@@ -278,20 +290,19 @@ void Task::volumeProperties()
 	exe = QString( "%1 -s -d \"%2\"" ).arg( zuluMount ).arg( device ) ;
 
 	auto _run = []( const QString& exe ){
+		result r ;
 		QProcess p ;
 		p.start( exe ) ;
 		p.waitForFinished() ;
-		return p.readAll() ;
+		r.data = p.readAll() ;
+		r.ok = utility::split( r.data ).size() > 12 ;
+		return r ;
 	} ;
 
-	auto _ok = []( const QByteArray& e ){
-		return	utility::split( e ).size() > 12 ;
-	} ;
+	result r = _run( exe ) ;
 
-	QByteArray e = _run( exe ) ;
-
-	if( _ok( e ) ){
-		emit signalProperties( e ) ;
+	if( r.ok ){
+		emit signalProperties( r.data ) ;
 	}else{
 		if( m_type.contains( "crypto_PLAIN\n" ) ){
 			/*
@@ -299,9 +310,9 @@ void Task::volumeProperties()
 			 */
 			exe = QString( "%1 -s -o bogusNecessaryArgument -d \"%2\"" ).arg( zuluMount ).arg( device ) ;
 
-			e = _run( exe ) ;
-			if( _ok( e ) ){
-				emit signalProperties( e ) ;
+			r = _run( exe ) ;
+			if( r.ok ){
+				emit signalProperties( r.data ) ;
 			}else{
 				emit signalProperties( "" ) ;
 			}
