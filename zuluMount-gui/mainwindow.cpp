@@ -838,11 +838,9 @@ void MainWindow::slotUpdateMountedList( QVector< volumeEntryProperties > * entri
 	 */
 	QStringList l = tablewidget::tableEntries( table ) ;
 
-	int j = entries->size() ;
-
 	auto _hasNoEntry = [&]( const QString& volume ){
-		for( int i = 0 ; i < j ; i++ ){
-			if( entries->at( i ).volumeName() == volume ){
+		for( const auto& it : *entries ){
+			if( it.volumeName() == volume ){
 				return false ;
 			}
 		}
