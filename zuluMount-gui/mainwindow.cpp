@@ -286,6 +286,10 @@ void MainWindow::autoMountVolume( volumeEntryProperties * entry )
 {
 	Object_raii( entry ) ;
 
+	if( !entry ){
+		return ;
+	}
+
 	QStringList l = entry->entryList() ;
 	if( entry->entryisValid() ){
 		if( entry->encryptedVolume() ){
@@ -831,7 +835,7 @@ void MainWindow::slotUpdateMountedList( QVector< volumeEntryProperties > * entri
 {
 	Object_raii( entries ) ;
 
-	if( entries->isEmpty() ){
+	if( !entries || entries->isEmpty() ){
 		this->errorReadingList() ;
 	}else{
 		for( const auto& it : *entries ){
@@ -882,7 +886,7 @@ void MainWindow::slotMountedList( QVector< volumeEntryProperties > * entries )
 {
 	Object_raii( entries ) ;
 
-	if( entries->isEmpty() ){
+	if( !entries || entries->isEmpty() ){
 		return this->errorReadingList() ;
 	}
 

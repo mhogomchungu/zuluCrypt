@@ -194,10 +194,11 @@ void Task::getVolumeProperties( const QString& device )
 	p.waitForFinished() ;
 
 	if( p.exitCode() == 0 ) {
-
 		auto entry = new volumeEntryProperties( utility::split( p.readAll(),'\t' ) ) ;
 		entry->setisSystem( this->isSystemVolume( device ) ) ;
 		emit volumeMiniProperties( entry ) ;
+	}else{
+		emit volumeMiniProperties( nullptr ) ;
 	}
 }
 
