@@ -175,7 +175,8 @@ void tablewidget::deleteTableRow( QTableWidget * table,const QString& value,int 
 	int j = table->rowCount() ;
 	for( int row = 0 ; row < j ; row++ ){
 		if( table->item( row,column )->text() == value ){
-			tablewidget::deleteRowFromTable( table,row ) ;
+			table->removeRow( row ) ;
+			break ;
 		}
 	}
 }

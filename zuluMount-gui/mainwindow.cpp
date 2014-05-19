@@ -307,10 +307,10 @@ void MainWindow::autoMountVolume( volumeEntryProperties * entry )
 	}
 }
 
-void MainWindow::deviceRemoved( QString dev )
+void MainWindow::volumeRemoved( QString volume )
 {
 	QTableWidget * table = m_ui->tableWidget ;
-	int row = tablewidget::columnHasEntry( table,dev ) ;
+	int row = tablewidget::columnHasEntry( table,volume ) ;
 	if( row != -1 ){
 		tablewidget::deleteRowFromTable( table,row ) ;
 		/*
@@ -318,9 +318,19 @@ void MainWindow::deviceRemoved( QString dev )
 		* and try to do so for them
 		*/
 		Task * t = new Task() ;
-		t->setDevice( dev ) ;
+		t->setDevice( volume ) ;
 		t->start( Task::checkUnMount ) ;
 		this->enableAll() ;
+	}
+}
+
+void MainWindow::removeVolume( QString volume )
+{
+	if( volume.isEmpty() ){
+		tablewidget::selectLastRow( m_ui->tableWidget ) ;
+		this->enableAll() ;
+	}else{
+		tablewidget::deleteTableRow( m_ui->tableWidget,volume ) ;
 	}
 }
 
@@ -813,10 +823,6 @@ void MainWindow::pbUpdate()
 
 	m_ui->tableWidget->setEnabled( false ) ;
 
-	QTableWidget * table = m_ui->tableWidget ;
-	while( table->rowCount() > 0 ){
-		table->removeRow( 0 ) ;
-	}
 	Task * t = new Task() ;
 	connect( t,SIGNAL( signalMountedList( QVector< volumeEntryProperties > * ) ),
 		 this,SLOT( slotUpdateMountedList( QVector< volumeEntryProperties > * ) ) ) ;
@@ -845,18 +851,14 @@ void MainWindow::slotUpdateMountedList( QVector< volumeEntryProperties > * entri
 			}
 		}
 
-		tablewidget::selectLastRow( m_ui->tableWidget ) ;
-		this->enableAll() ;
+		this->removeDisappearedEntries( entries ) ;
 	}
 }
 
-void MainWindow::nnggrrr( QVector< volumeEntryProperties > * entries )
+void MainWindow::removeDisappearedEntries( QVector< volumeEntryProperties > * entries )
 {
 	/*
-	 * broken and not used
-	 */
-	/*
-	 * Below routine removes an entry on the table if it is found not to be
+	 * Below routine removes an entries from the table if they are found not to be
 	 * present on the the list of volumes we just received.This is necessary
 	 * for example to remove no longer valid options like a removed cdrom
 	 */
@@ -875,11 +877,17 @@ void MainWindow::nnggrrr( QVector< volumeEntryProperties > * entries )
 		return true ;
 	} ;
 
+	QStringList z ;
 	for( const auto& it : l ){
 		if( _hasNoEntry( it ) ){
-			tablewidget::deleteTableRow( table,it ) ;
+			z.append( it ) ;
 		}
 	}
+
+	Task * t = new Task() ;
+	t->setRemoveList( z ) ;
+	connect( t,SIGNAL( removeVolume( QString ) ),this,SLOT( removeVolume( QString ) ) ) ;
+	t->start( Task::removeList ) ;
 }
 
 void MainWindow::slotMountedList( QVector< volumeEntryProperties > * entries )

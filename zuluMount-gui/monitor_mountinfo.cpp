@@ -88,7 +88,7 @@ void monitor_mountinfo::run()
 		connect( t,SIGNAL( volumeMiniProperties( volumeEntryProperties * ) ),
 			 m_babu,SLOT( volumeMiniProperties( volumeEntryProperties * ) ) ) ;
 		connect( t,SIGNAL( volumeRemoved( QString ) ),
-			 m_babu,SLOT( deviceRemoved( QString ) ) ) ;
+			 m_babu,SLOT( volumeRemoved( QString ) ) ) ;
 		t->start( Task::VolumeMiniProperties ) ;
 	} ;
 

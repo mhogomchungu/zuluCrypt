@@ -77,7 +77,8 @@ private slots:
 	void processArgumentList( void ) ;
 	void openVolumeFromArgumentList( void ) ;
 	void itemEntered( QTableWidgetItem * ) ;
-	void deviceRemoved( QString ) ;
+	void volumeRemoved( QString ) ;
+	void removeVolume( QString ) ;
 	void addEntryToTable( bool,const QStringList& ) ;
 	void quitApplication( void ) ;
 	void autoMountToggled( bool ) ;
@@ -90,7 +91,7 @@ private:
 	void setLocalizationLanguage( void ) ;
 	bool autoOpenFolderOnMount( void ) ;
 	void dragEnterEvent( QDragEnterEvent * ) ;
-	void nnggrrr( QVector< volumeEntryProperties > * entries ) ;
+	void removeDisappearedEntries( QVector< volumeEntryProperties > * entries ) ;
 	void dropEvent( QDropEvent * ) ;
 	void showContextMenu( QTableWidgetItem *,bool ) ;
 	void startAutoMonitor( void ) ;

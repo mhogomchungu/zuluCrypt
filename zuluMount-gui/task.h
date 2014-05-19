@@ -65,7 +65,8 @@ public:
 		openMountPoint,
 		getKey,
 		sendKey,
-		deviceProperty
+		deviceProperty,
+		removeList
 	} ;
 
 	enum deviceAction{
@@ -95,6 +96,7 @@ public:
 	void setDeviceType( Task::deviceType ) ;
 	void setDeviceAction( Task::deviceAction ) ;
 	void setFunction( std::function< void( void ) > ) ;
+	void setRemoveList( const QStringList& ) ;
 signals:
 	void errorStatus( int exitCode,int exitStatus,int startError ) ;
 	void signalMountComplete( int,QString ) ;
@@ -106,7 +108,7 @@ signals:
 	void done( void ) ;
 	void key( QString ) ;
 	void volumeRemoved( QString ) ;
-	void deviceRemoved( QString ) ;
+	void removeVolume( QString ) ;
 private:
 	void openMountPointTask( void ) ;
 	void checkPermissions( void ) ;
@@ -125,6 +127,7 @@ private:
 	void getKeyTask( void ) ;
 	void keySend( void ) ;
 	void deviceProperties( void ) ;
+	void removeVolumeList( void ) ;
 	bool isSystemVolume( const QString& ) ;
 	LxQt::Wallet::Wallet * m_wallet ;
 	Task::Action m_action ;
@@ -140,6 +143,7 @@ private:
 	QString m_type ;
 	QString m_properties ;
 	QString m_deviceOffSet ;
+	QStringList m_removeList ;
 	bool m_publicMount ;
 	QStringList m_list ;
 	bool m_systemDevice ;

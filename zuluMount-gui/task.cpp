@@ -119,6 +119,11 @@ void Task::setFunction( std::function< void() > function )
 	m_function = function ;
 }
 
+void Task::setRemoveList( const QStringList& l )
+{
+	m_removeList = l ;
+}
+
 QStringList Task::updateVolumeList()
 {
 	QProcess p ;
@@ -144,6 +149,7 @@ void Task::run()
 		case Task::getKey              : return this->getKeyTask() ;
 		case Task::sendKey             : return this->keySend() ;
 		case Task::deviceProperty      : return this->deviceProperties() ;
+		case Task::removeList          : return this->removeVolumeList() ;
 	}
 }
 
@@ -537,7 +543,7 @@ void Task::deviceProperties()
 		if( _deviceAdded() ){
 			this->getVolumeProperties( _mdRaidPath( device ) ) ;
 		}else{
-			emit deviceRemoved( _mdRaidPath( device ) ) ;
+			emit volumeRemoved( _mdRaidPath( device ) ) ;
 		}
 	} ;
 
@@ -582,7 +588,7 @@ void Task::deviceProperties()
 			if( _deviceAdded() ) {
 				this->getVolumeProperties( z ) ;
 			}else{
-				emit deviceRemoved( z ) ;
+				emit volumeRemoved( z ) ;
 			}
 		}
 	} ;
@@ -600,7 +606,7 @@ void Task::deviceProperties()
 			if( _deviceAdded() ) {
 				this->getVolumeProperties( device ) ;
 			}else{
-				emit deviceRemoved( device ) ;
+				emit volumeRemoved( device ) ;
 			}
 		}
 	} ;
@@ -612,6 +618,16 @@ void Task::deviceProperties()
 		case Task::md_device : _mdRaidDevice( device ) ; break ;
 		case Task::dm_device : _dmDevice( device )     ; break ;
 	}
+}
+
+void Task::removeVolumeList()
+{
+	for( const auto& it : m_removeList ){
+		emit removeVolume( it ) ;
+		sleep( 1 ) ;
+	}
+
+	emit removeVolume( "" ) ;
 }
 
 Task::~Task()

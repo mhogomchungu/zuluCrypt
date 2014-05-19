@@ -124,17 +124,16 @@ void Task::runCloseAllVolumeTask()
 			*( it + i ) = m_table->item( i,0 ) ;
 		}
 
-		QProcess p ;
-		QString exe ;
-		QString device ;
-
-		for( const auto& it : tableItems ){
-			device = it->text().replace( "\"","\"\"\"" ) ;
-			exe = QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( device ) ;
-			p.start( exe ) ;
+		auto _run = [&]( QTableWidgetItem * e ){
+			QProcess p ;
+			QString device = e->text().replace( "\"","\"\"\"" ) ;
+			p.start( QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( device ) ) ;
 			p.waitForFinished() ;
-			emit taskResult( it,p.exitCode() ) ;
-			p.close() ;
+			emit taskResult( e,p.exitCode() ) ;
+		} ;
+
+		for( QTableWidgetItem * it : tableItems ){
+			_run( it ) ;
 			sleep( 1 ) ; // for ui effect
 		}
 	}

@@ -203,8 +203,8 @@ void auto_mount::run()
 
 				connect( t,SIGNAL( volumeMiniProperties( volumeEntryProperties * ) ),
 					 m_babu,SLOT( autoMountVolume( volumeEntryProperties * ) ) ) ;
-				connect( t,SIGNAL( deviceRemoved( QString ) ),
-					 m_babu,SLOT( deviceRemoved( QString ) ) ) ;
+				connect( t,SIGNAL( volumeRemoved( QString ) ),
+					 m_babu,SLOT( volumeRemoved( QString ) ) ) ;
 
 				t->setDeviceType( d ) ;
 				t->setDeviceAction( a ) ;
