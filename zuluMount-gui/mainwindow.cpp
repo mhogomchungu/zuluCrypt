@@ -884,10 +884,14 @@ void MainWindow::removeDisappearedEntries( QVector< volumeEntryProperties > * en
 		}
 	}
 
-	Task * t = new Task() ;
-	t->setRemoveList( z ) ;
-	connect( t,SIGNAL( removeVolume( QString ) ),this,SLOT( removeVolume( QString ) ) ) ;
-	t->start( Task::removeList ) ;
+	if( z.isEmpty() ){
+		this->removeVolume( "" ) ;
+	}else{
+		Task * t = new Task() ;
+		t->setRemoveList( z ) ;
+		connect( t,SIGNAL( removeVolume( QString ) ),this,SLOT( removeVolume( QString ) ) ) ;
+		t->start( Task::removeList ) ;
+	}
 }
 
 void MainWindow::slotMountedList( QVector< volumeEntryProperties > * entries )
