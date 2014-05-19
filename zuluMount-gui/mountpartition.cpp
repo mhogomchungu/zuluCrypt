@@ -144,6 +144,7 @@ void mountPartition::disableAll()
 
 void mountPartition::pbCancel()
 {
+	emit cancel() ;
 	this->HideUI() ;
 }
 
@@ -316,7 +317,6 @@ void mountPartition::slotMountComplete( int status,QString msg )
 void mountPartition::HideUI()
 {
 	this->hide() ;
-	emit cancel() ;
 	this->deleteLater() ;
 }
 

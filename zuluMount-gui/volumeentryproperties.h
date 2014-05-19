@@ -75,6 +75,17 @@ public:
 	{
 		return m_fileSystem.startsWith( "crypto" ) || m_fileSystem == "Nil" ;
 	}
+	QStringList entryList()
+	{
+		QStringList l ;
+		l.append( m_volume ) ;
+		l.append( m_mountPoint ) ;
+		l.append( m_fileSystem ) ;
+		l.append( m_label ) ;
+		l.append( m_volumeSize ) ;
+		l.append( m_usedSpacePercentage ) ;
+		return l ;
+	}
 private:
 	void setValues( const QStringList& l )
 	{

@@ -181,7 +181,8 @@ void MainWindow::setUpApp()
 void MainWindow::favoriteClicked( QAction * ac )
 {
 	Task * t = new Task() ;
-	connect( t,SIGNAL( getVolumeInfo( QStringList ) ),this,SLOT( showMoungDialog( QStringList ) ) ) ;
+	connect( t,SIGNAL( volumeMiniProperties( volumeEntryProperties * ) ),
+		 this,SLOT( showMoungDialog( volumeEntryProperties * ) ) ) ;
 	t->setDevice( ac->text() ) ;
 	t->start( Task::VolumeType ) ;
 }
@@ -281,28 +282,19 @@ void MainWindow::quitApplication()
 	QCoreApplication::quit() ;
 }
 
-void MainWindow::autoMountVolumeSystemInfo( QStringList l )
+void MainWindow::autoMountVolume( volumeEntryProperties * entry )
 {
-	volumeEntryProperties e( l ) ;
+	Object_raii( entry ) ;
 
-	if( e.entryisValid() ){
-		this->addEntryToTable( true,l ) ;
-	}
-}
-
-void MainWindow::autoMountVolumeInfo( QStringList l )
-{
-	volumeEntryProperties e( l ) ;
-
-	if( e.entryisValid() ){
-		if( e.encryptedVolume() ){
-			this->addEntryToTable( false,l ) ;
+	QStringList l = entry->entryList() ;
+	if( entry->entryisValid() ){
+		if( entry->encryptedVolume() ){
+			this->addEntryToTable( true,l ) ;
 		}else{
 			if( m_autoMount ){
 				mountPartition * mp = new mountPartition( this,m_ui->tableWidget,
 									  m_folderOpener,m_autoOpenFolderOnMount ) ;
 				connect( mp,SIGNAL( autoMountComplete() ),mp,SLOT( deleteLater() ) ) ;
-				connect( mp,SIGNAL( autoMountComplete() ),this,SLOT( enableAll() ) ) ;
 				mp->AutoMount( l ) ;
 			}else{
 				this->addEntryToTable( false,l ) ;
@@ -313,9 +305,10 @@ void MainWindow::autoMountVolumeInfo( QStringList l )
 
 void MainWindow::deviceRemoved( QString dev )
 {
-	int row = tablewidget::columnHasEntry( m_ui->tableWidget,0,dev ) ;
+	QTableWidget * table = m_ui->tableWidget ;
+	int row = tablewidget::columnHasEntry( table,dev ) ;
 	if( row != -1 ){
-		tablewidget::deleteRowFromTable( m_ui->tableWidget,row ) ;
+		tablewidget::deleteRowFromTable( table,row ) ;
 		/*
 		* see if a user just removed the device without properly closing it/unmounting it
 		* and try to do so for them
@@ -636,25 +629,26 @@ void MainWindow::dropEvent( QDropEvent * e )
 		m_device = it.path() ;
 		if( utility::pathPointsToAFile( m_device ) ){
 			Task * t = new Task() ;
-			connect( t,SIGNAL( getVolumeInfo( QStringList ) ),
-				 this,SLOT( showMoungDialog( QStringList ) ) ) ;
+			connect( t,SIGNAL( volumeMiniProperties( volumeEntryProperties * ) ),
+				 this,SLOT( showMoungDialog( volumeEntryProperties * ) ) ) ;
 			t->setDevice( m_device ) ;
 			t->start( Task::VolumeType ) ;
 		}
 	}
 }
 
-void MainWindow::mount( QString type,QString device,QString label )
+void MainWindow::mount( const volumeEntryProperties& entry )
 {
 	this->disableAll() ;
-	if( type.startsWith( QString( "crypto" ) ) || type == QString( "Nil" ) ){
-		keyDialog * kd = new keyDialog( this,m_ui->tableWidget,device,type,m_folderOpener,m_autoOpenFolderOnMount ) ;
+	if( entry.encryptedVolume() ){
+		keyDialog * kd = new keyDialog( this,m_ui->tableWidget,entry.volumeName(),
+						entry.fileSystem(),m_folderOpener,m_autoOpenFolderOnMount ) ;
 		connect( kd,SIGNAL( cancel() ),this,SLOT( enableAll() ) ) ;
 		kd->ShowUI() ;
 	}else{
 		mountPartition * mp = new mountPartition( this,m_ui->tableWidget,m_folderOpener,m_autoOpenFolderOnMount ) ;
 		connect( mp,SIGNAL( cancel() ),this,SLOT( enableAll() ) ) ;
-		mp->ShowUI( device,label ) ;
+		mp->ShowUI( entry.volumeName(),entry.label() ) ;
 	}
 }
 
@@ -662,7 +656,8 @@ void MainWindow::openVolumeFromArgumentList()
 {
 	if( !m_device.isEmpty() ){
 		Task * t = new Task() ;
-		connect( t,SIGNAL( getVolumeInfo( QStringList ) ),this,SLOT( showMoungDialog( QStringList ) ) ) ;
+		connect( t,SIGNAL( volumeMiniProperties( volumeEntryProperties * ) ),
+			 this,SLOT( showMoungDialog( volumeEntryProperties * ) ) ) ;
 		t->setDevice( m_device ) ;
 		t->start( Task::VolumeType ) ;
 	}
@@ -672,16 +667,26 @@ void MainWindow::slotMount()
 {
 	QTableWidget * table = m_ui->tableWidget ;
 	int row = table->currentRow() ;
-	QString device = table->item( row,0 )->text() ;
-	QString type   = table->item( row,2 )->text() ;
-	QString label  = table->item( row,3 )->text() ;
-	this->mount( type,device,label ) ;
+
+	QStringList l ;
+	l.append( table->item( row,0 )->text() ) ;
+	l.append( table->item( row,1 )->text() ) ;
+	l.append( table->item( row,2 )->text() ) ;
+	l.append( table->item( row,3 )->text() ) ;
+	l.append( table->item( row,4 )->text() ) ;
+	l.append( table->item( row,5 )->text() ) ;
+
+	volumeEntryProperties entry( l ) ;
+
+	this->mount( entry ) ;
 }
 
-void MainWindow::showMoungDialog( QStringList l )
+void MainWindow::showMoungDialog( volumeEntryProperties * entry )
 {
-	if( l.size() >= 4  ){
-		this->mount( l.at( 2 ),l.at( 0 ),l.at( 3 ) ) ;
+	Object_raii( entry ) ;
+
+	if( entry ){
+		this->mount( *entry ) ;
 	}else{
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR" ),
@@ -700,25 +705,25 @@ void MainWindow::pbMount()
 	}else{
 		m_device = path ;
 		Task * t = new Task() ;
-		connect( t,SIGNAL( getVolumeInfo( QStringList ) ),this,SLOT( showMoungDialog( QStringList ) ) ) ;
+		connect( t,SIGNAL( volumeMiniProperties( volumeEntryProperties * ) ),
+			 this,SLOT( showMoungDialog( volumeEntryProperties * ) ) ) ;
 		t->setDevice( m_device ) ;
 		t->start( Task::VolumeType ) ;
 	}
 }
 
-void MainWindow::addEntryToTable( bool b,QStringList l )
+QFont MainWindow::getSystemVolumeFont()
 {
 	QFont f = this->font() ;
-
 	f.setItalic( !f.italic() ) ;
 	f.setBold( !f.bold() ) ;
+	return f ;
+}
 
-	QString x = l.at( 5 ) ;
-	x = x.remove( QChar( '\n' ) ) ;
-	l.replace( 5,x ) ;
-
-	if( b ){
-		tablewidget::addRowToTable( m_ui->tableWidget,l,f ) ;
+void MainWindow::addEntryToTable( bool systemVolume,const QStringList& l )
+{
+	if( systemVolume ){
+		tablewidget::addRowToTable( m_ui->tableWidget,l,this->getSystemVolumeFont() ) ;
 	}else{
 		tablewidget::addRowToTable( m_ui->tableWidget,l ) ;
 	}
@@ -728,7 +733,7 @@ void MainWindow::removeEntryFromTable( QString volume )
 {
 	QTableWidget * table = m_ui->tableWidget ;
 
-	int r = tablewidget::columnHasEntry( table,0,volume ) ;
+	int r = tablewidget::columnHasEntry( table,volume ) ;
 	if( r != -1 ){
 		tablewidget::deleteRowFromTable( table,r ) ;
 		this->enableAll() ;
@@ -737,16 +742,17 @@ void MainWindow::removeEntryFromTable( QString volume )
 	}
 }
 
-void MainWindow::volumeMiniProperties( QString volumeInfo )
+void MainWindow::volumeMiniProperties( volumeEntryProperties * volumeInfo )
 {
+	Object_raii( volumeInfo ) ;
+
 	this->disableAll() ;
 
-	if( volumeInfo.isEmpty() ){
-		this->pbUpdate() ;
-	}else{
-		volumeEntryProperties entry( volumeInfo.split( "\t" ) ) ;
-		this->updateList( entry ) ;
+	if( volumeInfo ){
+		this->updateList( *volumeInfo ) ;
 		this->enableAll() ;
+	}else{
+		this->pbUpdate() ;
 	}
 }
 
@@ -754,7 +760,7 @@ void MainWindow::updateList( const volumeEntryProperties& entry )
 {
 	QTableWidget * table = m_ui->tableWidget ;
 
-	int row = tablewidget::columnHasEntry( table,0,entry.volumeName() ) ;
+	int row = tablewidget::columnHasEntry( table,entry.volumeName() ) ;
 	if( row == -1 ){
 		/*
 		 * volume has no entry in the list probably because its a volume based on a file.
@@ -770,6 +776,11 @@ void MainWindow::updateList( const volumeEntryProperties& entry )
 	tablewidget::setText( table,row,4,entry.volumeSize() ) ;
 	tablewidget::setText( table,row,5,entry.spaceUsedPercentage() ) ;
 
+	if( entry.isSystem() ){
+		tablewidget::setRowFont( table,row,this->getSystemVolumeFont() ) ;
+	}else{
+		tablewidget::setRowFont( table,row,this->font() ) ;
+	}
 	tablewidget::selectRow( table,row ) ;
 }
 
@@ -798,6 +809,10 @@ void MainWindow::pbUpdate()
 
 	m_ui->tableWidget->setEnabled( false ) ;
 
+	QTableWidget * table = m_ui->tableWidget ;
+	while( table->rowCount() > 0 ){
+		table->removeRow( 0 ) ;
+	}
 	Task * t = new Task() ;
 	connect( t,SIGNAL( signalMountedList( QVector< volumeEntryProperties > * ) ),
 		 this,SLOT( slotUpdateMountedList( QVector< volumeEntryProperties > * ) ) ) ;
@@ -817,25 +832,33 @@ void MainWindow::slotUpdateMountedList( QVector< volumeEntryProperties > * entri
 	Object_raii( entries ) ;
 
 	if( entries->isEmpty() ){
-		return this->errorReadingList() ;
-	}
+		this->errorReadingList() ;
+	}else{
+		for( const auto& it : *entries ){
 
-	QTableWidget * table = m_ui->tableWidget ;
-
-	for( const auto& it : *entries ){
-
-		if( it.entryisValid() ){
-			this->updateList( it ) ;
-		}else{
-			tablewidget::deleteRowFromTable( table,it.volumeName() ) ;
+			if( it.entryisValid() ){
+				this->updateList( it ) ;
+			}
 		}
-	}
 
+		tablewidget::selectLastRow( m_ui->tableWidget ) ;
+		this->enableAll() ;
+	}
+}
+
+void MainWindow::nnggrrr( QVector< volumeEntryProperties > * entries )
+{
+	/*
+	 * broken and not used
+	 */
 	/*
 	 * Below routine removes an entry on the table if it is found not to be
 	 * present on the the list of volumes we just received.This is necessary
 	 * for example to remove no longer valid options like a removed cdrom
 	 */
+
+	QTableWidget * table = m_ui->tableWidget ;
+
 	QStringList l = tablewidget::tableEntries( table ) ;
 
 	auto _hasNoEntry = [&]( const QString& volume ){
@@ -850,13 +873,9 @@ void MainWindow::slotUpdateMountedList( QVector< volumeEntryProperties > * entri
 
 	for( const auto& it : l ){
 		if( _hasNoEntry( it ) ){
-			tablewidget::deleteRowFromTable( table,it ) ;
+			tablewidget::deleteTableRow( table,it ) ;
 		}
 	}
-
-	tablewidget::selectLastRow( table ) ;
-
-	this->enableAll() ;
 }
 
 void MainWindow::slotMountedList( QVector< volumeEntryProperties > * entries )

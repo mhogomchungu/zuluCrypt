@@ -85,8 +85,8 @@ void monitor_mountinfo::run()
 	auto _unmountProperty = [&]( const QString& volume ){
 		Task * t = new Task() ;
 		t->setDevice( volume ) ;
-		connect( t,SIGNAL( signalProperties( QString ) ),
-			 m_babu,SLOT( volumeMiniProperties( QString ) ) ) ;
+		connect( t,SIGNAL( volumeMiniProperties( volumeEntryProperties * ) ),
+			 m_babu,SLOT( volumeMiniProperties( volumeEntryProperties * ) ) ) ;
 		connect( t,SIGNAL( volumeRemoved( QString ) ),
 			 m_babu,SLOT( deviceRemoved( QString ) ) ) ;
 		t->start( Task::VolumeMiniProperties ) ;
@@ -95,8 +95,8 @@ void monitor_mountinfo::run()
 	auto _mountProperty = [&]( const QString& volume ){
 		Task * t = new Task() ;
 		t->setDevice( volume ) ;
-		connect( t,SIGNAL( signalProperties( QString ) ),
-			 m_babu,SLOT( volumeMiniProperties( QString ) ) ) ;
+		connect( t,SIGNAL( volumeMiniProperties( volumeEntryProperties * ) ),
+			 m_babu,SLOT( volumeMiniProperties( volumeEntryProperties * ) ) ) ;
 		t->start( Task::VolumeMiniProperties ) ;
 	} ;
 

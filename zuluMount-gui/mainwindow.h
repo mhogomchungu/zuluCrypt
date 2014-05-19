@@ -52,11 +52,10 @@ public slots:
 	void raiseWindow( QString ) ;
 private slots:
 	void startGUI( void ) ;
-	void volumeMiniProperties( QString ) ;
-	void showMoungDialog( QStringList ) ;
-	void autoMountVolumeSystemInfo( QStringList ) ;
-	void autoMountVolumeInfo( QStringList ) ;
-	void mount( QString,QString,QString ) ;
+	void volumeMiniProperties( volumeEntryProperties * ) ;
+	void showMoungDialog( volumeEntryProperties * ) ;
+	void autoMountVolume( volumeEntryProperties * ) ;
+	void mount( const volumeEntryProperties& ) ;
 	void defaultButton( void ) ;
 	void volumeProperties( QString ) ;
 	void volumeProperties( void ) ;
@@ -79,7 +78,7 @@ private slots:
 	void openVolumeFromArgumentList( void ) ;
 	void itemEntered( QTableWidgetItem * ) ;
 	void deviceRemoved( QString ) ;
-	void addEntryToTable( bool,QStringList ) ;
+	void addEntryToTable( bool,const QStringList& ) ;
 	void quitApplication( void ) ;
 	void autoMountToggled( bool ) ;
 	void autoOpenFolderOnMount( bool ) ;
@@ -87,9 +86,11 @@ private slots:
 	void showFavorites( void ) ;
 	void favoriteClicked( QAction * ) ;
 private:
+	QFont getSystemVolumeFont( void ) ;
 	void setLocalizationLanguage( void ) ;
 	bool autoOpenFolderOnMount( void ) ;
 	void dragEnterEvent( QDragEnterEvent * ) ;
+	void nnggrrr( QVector< volumeEntryProperties > * entries ) ;
 	void dropEvent( QDropEvent * ) ;
 	void showContextMenu( QTableWidgetItem *,bool ) ;
 	void startAutoMonitor( void ) ;

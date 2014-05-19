@@ -33,14 +33,16 @@ public:
 	static void selectTableRow( QTableWidgetItem * current,QTableWidgetItem * previous ) ;
 	static void addRowToTable( QTableWidget *,const QStringList& ) ;
 	static void addRowToTable( QTableWidget *,const QStringList&,const QFont& ) ;
+	static void setRowFont( QTableWidget *,int row,const QFont& ) ;
 	static void deleteRowFromTable( QTableWidget *,int row ) ;
 	static void deleteRowFromTable( QTableWidget *,const QString&,int column = 0 ) ;
+	static void deleteTableRow( QTableWidget *,const QString&,int column = 0 ) ;
 	static void selectRow( QTableWidget *,int row ) ;
 	static void selectLastRow( QTableWidget * ) ;
 	static void setText( QTableWidget *,int row,int col,const QString& text ) ;
-	static QStringList tableEntries( QTableWidget * table,int column = 0  ) ;
 	static int addEmptyRow( QTableWidget * ) ;
-	static int  columnHasEntry( QTableWidget *,int,const QString& ) ;
+	static int columnHasEntry( QTableWidget *,const QString&,int column = 0 ) ;
+	static QStringList tableEntries( QTableWidget * table,int column = 0  ) ;
 };
 
 #endif // TABLEWIDGET_H

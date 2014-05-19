@@ -75,7 +75,7 @@ int tablewidget::addEmptyRow( QTableWidget * table )
 	return row ;
 }
 
-int tablewidget::columnHasEntry( QTableWidget * table,int column,const QString& entry )
+int tablewidget::columnHasEntry( QTableWidget * table,const QString& entry,int column )
 {
 	int rows = table->rowCount() ;
 	for( int i = 0 ; i < rows ; i++ ){
@@ -139,12 +139,23 @@ void tablewidget::addRowToTable( QTableWidget * table,const QStringList& list,co
 	table->setCurrentCell( row,j - 1 ) ;
 }
 
+void tablewidget::setRowFont( QTableWidget * table ,int row,const QFont& font )
+{
+	if( row < table->rowCount() ){
+		int j = table->columnCount() ;
+		for( int i = 0 ; i < j ; i++ ){
+			table->item( row,i )->setFont( font ) ;
+		}
+	}
+}
 
 void tablewidget::deleteRowFromTable( QTableWidget * table,int row )
 {
-	table->removeRow( row ) ;
-	if( table->rowCount() > 0 ){
-		table->setCurrentCell( table->rowCount() - 1,table->columnCount() - 1 ) ;
+	if( row < table->rowCount() ){
+		table->removeRow( row ) ;
+		if( table->rowCount() > 0 ){
+			table->setCurrentCell( table->rowCount() - 1,table->columnCount() - 1 ) ;
+		}
 	}
 	table->setFocus() ;
 }
@@ -159,9 +170,21 @@ void tablewidget::deleteRowFromTable( QTableWidget * table,const QString& value,
 	}
 }
 
+void tablewidget::deleteTableRow( QTableWidget * table,const QString& value,int column )
+{
+	int j = table->rowCount() ;
+	for( int row = 0 ; row < j ; row++ ){
+		if( table->item( row,column )->text() == value ){
+			tablewidget::deleteRowFromTable( table,row ) ;
+		}
+	}
+}
+
 void tablewidget::selectRow( QTableWidget * table,int row )
 {
-	table->setCurrentCell( row,table->columnCount() - 1 ) ;
+	if( row < table->rowCount() ){
+		table->setCurrentCell( row,table->columnCount() - 1 ) ;
+	}
 }
 
 void tablewidget::selectLastRow( QTableWidget * table )
@@ -170,6 +193,7 @@ void tablewidget::selectLastRow( QTableWidget * table )
 	if( row >= 0 ){
 		table->setCurrentCell( row,table->columnCount() - 1 ) ;
 	}
+	table->setFocus() ;
 }
 
 void tablewidget::setText( QTableWidget * table,int row,int col,const QString& text )

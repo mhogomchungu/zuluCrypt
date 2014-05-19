@@ -138,7 +138,7 @@ void Task::run()
 		case Task::VolumeProperties    : return this->volumeProperties() ;
 		case Task::VolumeMiniProperties: return this->volumeMiniProperties() ;
 		case Task::CheckPermissions    : return this->checkPermissions() ;
-		case Task::VolumeType          : return this->getVolumeType() ;
+		case Task::VolumeType          : return this->getVolumeProperties() ;
 		case Task::checkUnMount        : return this->checkUnmount() ;
 		case Task::openMountPoint      : return this->openMountPointTask() ;
 		case Task::getKey              : return this->getKeyTask() ;
@@ -165,46 +165,39 @@ void Task::checkUnmount()
 	p.waitForFinished() ;
 }
 
-void Task::getVolumeType()
+void Task::getVolumeProperties()
 {
-	this->getVolumeType( m_device ) ;
+	this->getVolumeProperties( m_device ) ;
 }
 
-void Task::getVolumeType( const QString& device )
+bool Task::isSystemVolume( const QString& e )
 {
-	auto _systemDevice = []( const QString& dev ){
-		QProcess p ;
-		QString exe = QString( "%1 -S" ).arg( zuluMount ) ;
-		p.start( exe ) ;
-		p.waitForFinished() ;
-		QString s = QString( p.readAll() ) ;
-		p.close() ;
-		QStringList l = utility::split( s ) ;
-		for( const auto& it : l ){
-			if( it == dev ){
-				return true ;
-			}
+	QProcess p ;
+	QString exe = QString( "%1 -S" ).arg( zuluMount ) ;
+	p.start( exe ) ;
+	p.waitForFinished() ;
+	QStringList l = utility::split( p.readAll() ) ;
+	for( const auto& it : l ){
+		if( it == e ){
+			return true ;
 		}
+	}
+	return false ;
+}
 
-		return false ;
-	} ;
-
+void Task::getVolumeProperties( const QString& device )
+{
 	QString d = device ;
 	QProcess p ;
 	QString exe = QString( "%1 -L -d \"%2\"" ).arg( zuluMount ).arg( d.replace( "\"","\"\"\"" ) ) ;
 	p.start( exe ) ;
 	p.waitForFinished() ;
 
-	QString m = p.readAll() ;
 	if( p.exitCode() == 0 ) {
-		QStringList l = utility::split( m,'\t' ) ;
-		if( l.size() >= 4 ){
-			if( _systemDevice( d ) ){
-				emit getVolumeSystemInfo( l ) ;
-			}else{
-				emit getVolumeInfo( l ) ;
-			}
-		}
+
+		auto entry = new volumeEntryProperties( utility::split( p.readAll(),'\t' ) ) ;
+		entry->setisSystem( this->isSystemVolume( device ) ) ;
+		emit volumeMiniProperties( entry ) ;
 	}
 }
 
@@ -375,9 +368,11 @@ void Task::volumeMiniProperties()
 	p.waitForFinished( -1 ) ;
 
 	if( p.exitCode() == 0 ){
-		emit signalProperties( p.readAll() ) ;
+		auto entry = new volumeEntryProperties( utility::split( p.readAll(),'\t' ) ) ;
+		entry->setisSystem( this->isSystemVolume( m_device ) ) ;
+		emit volumeMiniProperties( entry ) ;
 	}else{
-		emit signalProperties( QString() ) ;
+		emit volumeMiniProperties( nullptr ) ;
 	}
 }
 
@@ -416,7 +411,7 @@ void Task::mount()
 	QString d = m_device.replace( "\"","\"\"\"" ) ;
 
 	if( m_point.isEmpty() ){
-		m_point = QDir::homePath() + QString( "/" ) + utility::split( d ).last() ;
+		m_point = QDir::homePath() + QString( "/" ) + utility::split( d,'/' ).last() ;
 	}
 
 	QString additionalOptions ;
@@ -546,43 +541,54 @@ void Task::deviceProperties()
 		} ;
 
 		if( _deviceAdded() ){
-			this->getVolumeType( _mdRaidPath( device ) ) ;
+			this->getVolumeProperties( _mdRaidPath( device ) ) ;
 		}else{
 			emit deviceRemoved( _mdRaidPath( device ) ) ;
 		}
 	} ;
 
-	auto _dmDevice = [&]( const QString& device_1 ){
+	auto _dmDevice = [&]( const QString& device ){
 
-		auto _deviceMatchLVMFormat = []( const QString& device ){
-			/*
-			 * LVM paths have two formats,"/dev/mapper/abc-def" and "/dev/abc/def/".
-			 * The pass in argument is in the form of "/dev/abc/def" and the path is assumed to be
-			 * an LVM path if a corresponding "/dev/mapper/abc-def" path is found
-			 *
-			 */
-			/*
-			 * We are just being lazy here and do a simple test below and return true
-			 * if the path is simply in "/dev/abc/def"
-			 * format by counting the number of "/"
-			 */
-			return utility::split( device ).size() == 4 ;
+		auto _convertLVM = []( const QString& volume ){
+
+			QByteArray e = volume.toLatin1() ;
+
+			char * begin = e.data() ;
+			char * end = begin + e.size() ;
+
+			char * it = begin + 3 ;
+
+			char * k ;
+			char * c ;
+			char * d ;
+
+			QString z ;
+
+			while( it < end ){
+
+				k = it - 2 ;
+				c = it - 1 ;
+				d = it ;
+				it++ ;
+
+				if( *k != '-' && *c == '-' && *d != '-' ){
+					*c = '/' ;
+					z = e ;
+					while( z.contains( "--" ) ){
+						z = z.replace( "--","-" ) ;
+					}
+				}
+			}
+
+			return z ;
 		} ;
 
-		QString device = device_1 ;
-
-		int index1 = device.lastIndexOf( "-" ) ;
-
-		if( index1 != -1 ){
-
-			device.replace( index1,1,QString( "/" ) ) ;
-
-			if( _deviceMatchLVMFormat( device ) ){
-				if( _deviceAdded() ) {
-					this->getVolumeType( device ) ;
-				}else{
-					emit deviceRemoved( device ) ;
-				}
+		QString z = _convertLVM( device ) ;
+		if( !z.isEmpty() ){
+			if( _deviceAdded() ) {
+				this->getVolumeProperties( z ) ;
+			}else{
+				emit deviceRemoved( z ) ;
 			}
 		}
 	} ;
@@ -598,7 +604,7 @@ void Task::deviceProperties()
 
 		if( _allowed_device( device ) ){
 			if( _deviceAdded() ) {
-				this->getVolumeType( device ) ;
+				this->getVolumeProperties( device ) ;
 			}else{
 				emit deviceRemoved( device ) ;
 			}

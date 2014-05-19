@@ -100,10 +100,9 @@ signals:
 	void signalMountComplete( int,QString ) ;
 	void signalUnmountComplete( int,QString ) ;
 	void signalMountedList( QVector< volumeEntryProperties > * ) ;
+	void volumeMiniProperties( volumeEntryProperties * ) ;
 	void signalProperties( QString ) ;
 	void checkPermissions( int ) ;
-	void getVolumeSystemInfo( QStringList ) ;
-	void getVolumeInfo( QStringList ) ;
 	void done( void ) ;
 	void key( QString ) ;
 	void volumeRemoved( QString ) ;
@@ -119,13 +118,14 @@ private:
 	void VolumeList( void ) ;
 	void mount( void ) ;
 	void umount( void ) ;
-	void getVolumeType( void ) ;
-	void getVolumeType( const QString& ) ;
+	void getVolumeProperties( void ) ;
+	void getVolumeProperties( const QString& ) ;
 	void getVolumeSystemType( void ) ;
 	void checkUnmount( void ) ;
 	void getKeyTask( void ) ;
 	void keySend( void ) ;
 	void deviceProperties( void ) ;
+	bool isSystemVolume( const QString& ) ;
 	LxQt::Wallet::Wallet * m_wallet ;
 	Task::Action m_action ;
 	Task::deviceAction m_deviceAction ;

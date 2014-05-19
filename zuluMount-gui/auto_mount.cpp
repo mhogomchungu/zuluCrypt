@@ -72,7 +72,7 @@ void auto_mount::threadStopped()
 void auto_mount::run()
 {
 	m_mtoto = this ;
-	
+
 	connect( m_mtoto,SIGNAL( terminated() ),m_main,SLOT( threadStopped() ) ) ;
 	connect( m_mtoto,SIGNAL( terminated() ),m_mtoto,SLOT( deleteLater() ) ) ;
 
@@ -201,10 +201,8 @@ void auto_mount::run()
 
 				Task * t = new Task() ;
 
-				connect( t,SIGNAL( getVolumeSystemInfo( QStringList ) ),
-					 m_babu,SLOT( autoMountVolumeSystemInfo( QStringList ) ) ) ;
-				connect( t,SIGNAL( getVolumeInfo( QStringList ) ),
-					 m_babu,SLOT( autoMountVolumeInfo( QStringList ) ) ) ;
+				connect( t,SIGNAL( volumeMiniProperties( volumeEntryProperties * ) ),
+					 m_babu,SLOT( autoMountVolume( volumeEntryProperties * ) ) ) ;
 				connect( t,SIGNAL( deviceRemoved( QString ) ),
 					 m_babu,SLOT( deviceRemoved( QString ) ) ) ;
 
