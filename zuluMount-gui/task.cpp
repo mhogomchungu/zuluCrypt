@@ -240,7 +240,7 @@ void Task::VolumeList()
 		if( e.startsWith( "/dev/md/md-device-map" ) ){
 			return false ;
 		}
-		if( e.contains( "\tswap\t") || e.contains( "member\t" ) ){
+		if( e.contains( "\tswap\t") || e.contains( "member\t" ) || e.contains( "\t/run/media/public" ) ){
 			return false ;
 		}
 		return true ;
