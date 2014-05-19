@@ -442,54 +442,47 @@ void Task::mount()
 
 void Task::umount()
 {
-	QProcess p ;
-	QString exe ;
+	typedef struct
+	{
+		int code ;
+		QString data ;
+	}result ;
 
-	QString device ;
-	if( m_device.startsWith( "UUID" ) ){
-		device = m_device ;
-	}else{
-		device = m_device.replace( "\"","\"\"\"" ) ;
-	}
+	auto _run = []( const QString& exe ){
+		QProcess p ;
+		p.start( exe ) ;
+		p.waitForFinished() ;
+		result r ;
+		r.code = p.exitCode() ;
+		QString output_1 = QString( p.readAll() ) ;
+		int index = output_1.indexOf( QChar( ':' ) ) ;
+		r.data = output_1 = output_1.mid( index + 1 ) ;
+		return r ;
+	} ;
 
-	exe = QString( "%1 -u -d \"%2\"" ).arg( zuluMount ).arg( device ) ;
+	auto _volume = []( const QString& e ){
+		if( e.startsWith( "UUID" ) ){
+			return e ;
+		}else{
+			QString r = e ;
+			return r.replace( "\"","\"\"\"" ) ;
+		}
+	} ;
 
-	p.start( exe ) ;
-	p.waitForFinished() ;
+	QString device = _volume( m_device ) ;
 
-	int index ;
+	result r = _run( QString( "%1 -u -d \"%2\"" ).arg( zuluMount ).arg( device ) ) ;
 
-	int r = p.exitCode() ;
-	QString output_1 = QString( p.readAll() ) ;
-	index = output_1.indexOf( QChar( ':' ) ) ;
-	output_1 = output_1.mid( index + 1 ) ;
-	p.close() ;
-
-	if( r == 0 ){
-		emit signalUnmountComplete( r,output_1 ) ;
-	}else{
+	if( r.code != 0 ){
 		if( m_type.contains( "crypto_PLAIN\n" ) ){
 			/*
 			 * we could be trying to unmount a volume with an offset
 			 */
-			p.close() ;
-			exe = QString( "%1 -o bogusNecessaryArgument -u -d \"%2\"" ).arg( zuluMount ).arg( device ) ;
-			p.start( exe ) ;
-			p.waitForFinished() ;
-			r = p.exitCode() ;
-			if( r == 0 ){
-				output_1 = QString( p.readAll() ) ;
-				index = output_1.indexOf( QChar( ':' ) ) ;
-				output_1 = output_1.mid( index + 1 ) ;
-				p.close() ;
-				emit signalUnmountComplete( r,output_1 ) ;
-			}else{
-				emit signalUnmountComplete( r,output_1 ) ;
-			}
-		}else{
-			emit signalUnmountComplete( r,output_1 ) ;
+			r = _run( QString( "%1 -o bogusNecessaryArgument -u -d \"%2\"" ).arg( zuluMount ).arg( device ) ) ;
 		}
 	}
+
+	emit signalUnmountComplete( r.code,r.data ) ;
 }
 
 void Task::openMountPointTask()
