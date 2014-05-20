@@ -869,9 +869,8 @@ void MainWindow::removeDisappearedEntries( const QVector< volumeEntryProperties 
 
 	auto _hasNoEntry = [&]( const QString& volume ){
 		for( const auto& it : entries ){
-			const QString& e = it.volumeName() ;
-			if( e == volume ){
-				if( e.startsWith( "/dev/sr" ) && it.fileSystem() == "Nil" ){
+			if( it.volumeName() == volume ){
+				if( it.volumeSize() == "Nil" ){
 					return true ;
 				}else{
 					return false ;

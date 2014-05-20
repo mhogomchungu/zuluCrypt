@@ -623,8 +623,8 @@ void Task::deviceProperties()
 void Task::removeVolumeList()
 {
 	for( const auto& it : m_removeList ){
-		emit removeVolume( it ) ;
 		sleep( 1 ) ;
+		emit removeVolume( it ) ;
 	}
 
 	emit removeVolume( "" ) ;
