@@ -75,7 +75,7 @@ public:
 	{
 		return m_fileSystem.startsWith( "crypto" ) || m_fileSystem == "Nil" ;
 	}
-	QStringList entryList()
+	QStringList entryList() const
 	{
 		QStringList l ;
 		l.append( m_volume ) ;

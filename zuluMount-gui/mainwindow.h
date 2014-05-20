@@ -91,7 +91,7 @@ private:
 	void setLocalizationLanguage( void ) ;
 	bool autoOpenFolderOnMount( void ) ;
 	void dragEnterEvent( QDragEnterEvent * ) ;
-	void removeDisappearedEntries( QVector< volumeEntryProperties > * entries ) ;
+	void removeDisappearedEntries( const QVector< volumeEntryProperties >& ) ;
 	void dropEvent( QDropEvent * ) ;
 	void showContextMenu( QTableWidgetItem *,bool ) ;
 	void startAutoMonitor( void ) ;

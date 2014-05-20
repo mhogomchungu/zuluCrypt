@@ -851,11 +851,11 @@ void MainWindow::slotUpdateMountedList( QVector< volumeEntryProperties > * entri
 			}
 		}
 
-		this->removeDisappearedEntries( entries ) ;
+		this->removeDisappearedEntries( *entries ) ;
 	}
 }
 
-void MainWindow::removeDisappearedEntries( QVector< volumeEntryProperties > * entries )
+void MainWindow::removeDisappearedEntries( const QVector< volumeEntryProperties >& entries )
 {
 	/*
 	 * Below routine removes an entries from the table if they are found not to be
@@ -868,9 +868,14 @@ void MainWindow::removeDisappearedEntries( QVector< volumeEntryProperties > * en
 	QStringList l = tablewidget::tableEntries( table ) ;
 
 	auto _hasNoEntry = [&]( const QString& volume ){
-		for( const auto& it : *entries ){
-			if( it.volumeName() == volume ){
-				return false ;
+		for( const auto& it : entries ){
+			const QString& e = it.volumeName() ;
+			if( e == volume ){
+				if( e.startsWith( "/dev/sr" ) && it.fileSystem() == "Nil" ){
+					return true ;
+				}else{
+					return false ;
+				}
 			}
 		}
 
@@ -904,29 +909,14 @@ void MainWindow::slotMountedList( QVector< volumeEntryProperties > * entries )
 
 	QTableWidget * table = m_ui->tableWidget ;
 
-	QFont f = this->font() ;
-
-	f.setItalic( !f.italic() ) ;
-	f.setBold( !f.bold() ) ;
-
-	QStringList l ;
-
 	for( const auto& it : *entries ){
 
 		if( it.entryisValid() ){
 
-			l.clear() ;
-			l.append( it.volumeName() ) ;
-			l.append( it.mountPoint() ) ;
-			l.append( it.fileSystem() ) ;
-			l.append( it.label() ) ;
-			l.append( it.volumeSize() ) ;
-			l.append( it.spaceUsedPercentage() ) ;
-
 			if( it.isSystem() ){
-				tablewidget::addRowToTable( table,l,f ) ;
+				tablewidget::addRowToTable( table,it.entryList(),this->getSystemVolumeFont() ) ;
 			}else{
-				tablewidget::addRowToTable( table,l ) ;
+				tablewidget::addRowToTable( table,it.entryList() ) ;
 			}
 		}
 	}
