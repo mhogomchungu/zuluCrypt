@@ -267,7 +267,7 @@ void Task::VolumeList()
 		}
 	}
 
-	emit signalMountedList( entries ) ;
+	emit volumeList( entries ) ;
 }
 
 void Task::volumeProperties()

@@ -66,8 +66,7 @@ private slots:
 	void pbUmount( void ) ;
 	void pbClose( void ) ;
 	void slotUnmountComplete( int,QString ) ;
-	void slotMountedList( QVector< volumeEntryProperties > * ) ;
-	void slotUpdateMountedList( QVector< volumeEntryProperties > * ) ;
+	void volumeList( QVector< volumeEntryProperties > * ) ;
 	void slotTrayClicked( QSystemTrayIcon::ActivationReason ) ;
 	void slotCurrentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ;
 	void enableAll( void ) ;

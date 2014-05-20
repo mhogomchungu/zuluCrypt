@@ -101,7 +101,7 @@ signals:
 	void errorStatus( int exitCode,int exitStatus,int startError ) ;
 	void signalMountComplete( int,QString ) ;
 	void signalUnmountComplete( int,QString ) ;
-	void signalMountedList( QVector< volumeEntryProperties > * ) ;
+	void volumeList( QVector< volumeEntryProperties > * ) ;
 	void volumeMiniProperties( volumeEntryProperties * ) ;
 	void signalProperties( QString ) ;
 	void checkPermissions( int ) ;

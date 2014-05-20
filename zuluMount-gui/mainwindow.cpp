@@ -169,8 +169,9 @@ void MainWindow::setUpApp()
 
 	this->disableAll() ;
 
-	connect( t,SIGNAL( signalMountedList( QVector< volumeEntryProperties > * ) ),
-		 this,SLOT( slotMountedList( QVector< volumeEntryProperties > * ) ) ) ;
+	connect( t,SIGNAL( volumeList( QVector< volumeEntryProperties > * ) ),
+		 this,SLOT( volumeList( QVector< volumeEntryProperties > * ) ) ) ;
+
 	connect( t,SIGNAL( done() ),this,SLOT( openVolumeFromArgumentList() ) ) ;
 
 	t->start( Task::Update ) ;
@@ -824,8 +825,8 @@ void MainWindow::pbUpdate()
 	m_ui->tableWidget->setEnabled( false ) ;
 
 	Task * t = new Task() ;
-	connect( t,SIGNAL( signalMountedList( QVector< volumeEntryProperties > * ) ),
-		 this,SLOT( slotUpdateMountedList( QVector< volumeEntryProperties > * ) ) ) ;
+	connect( t,SIGNAL( volumeList( QVector< volumeEntryProperties > * ) ),
+		 this,SLOT( volumeList( QVector< volumeEntryProperties > * ) ) ) ;
 	t->start( Task::Update ) ;
 }
 
@@ -837,7 +838,7 @@ void MainWindow::errorReadingList()
 	this->enableAll() ;
 }
 
-void MainWindow::slotUpdateMountedList( QVector< volumeEntryProperties > * entries )
+void MainWindow::volumeList( QVector< volumeEntryProperties > * entries )
 {
 	Object_raii( entries ) ;
 
@@ -896,31 +897,6 @@ void MainWindow::removeDisappearedEntries( const QVector< volumeEntryProperties 
 		connect( t,SIGNAL( removeVolume( QString ) ),this,SLOT( removeVolume( QString ) ) ) ;
 		t->start( Task::removeList ) ;
 	}
-}
-
-void MainWindow::slotMountedList( QVector< volumeEntryProperties > * entries )
-{
-	Object_raii( entries ) ;
-
-	if( !entries || entries->isEmpty() ){
-		return this->errorReadingList() ;
-	}
-
-	QTableWidget * table = m_ui->tableWidget ;
-
-	for( const auto& it : *entries ){
-
-		if( it.entryisValid() ){
-
-			if( it.isSystem() ){
-				tablewidget::addRowToTable( table,it.entryList(),this->getSystemVolumeFont() ) ;
-			}else{
-				tablewidget::addRowToTable( table,it.entryList() ) ;
-			}
-		}
-	}
-
-	this->enableAll() ;
 }
 
 void MainWindow::slotUnmountComplete( int status,QString msg )
