@@ -143,21 +143,21 @@ void auto_mount::run()
 		}
 	} ;
 
-	auto _device_action = [&]( const char * device,const struct inotify_event * event ){
+	auto _device_action = [&]( const struct inotify_event * event ){
 		if( event->wd == dev && event->mask & IN_CREATE ){
 			/*
 			 * /dev/md path seem to be deleted when the last entry in it is removed and
 			 * created before the first entry is added.To account for this,monitor for the
 			 * folder creation to start monitoring its contents if it get created after we have started
 			 */
-			if( _stringsAreEqual( "md",device ) ){
+			if( _stringsAreEqual( "md",event->name ) ){
 				md = inotify_add_watch( fd,"/dev/md",IN_DELETE ) ;
 				return false ;
 			}
 		}
 
 		if( event->wd == dev && event->mask & IN_DELETE ){
-			if( _stringsAreEqual( "md",device ) ){
+			if( _stringsAreEqual( "md",event->name ) ){
 				inotify_rm_watch( md,dev ) ;
 				return false ;
 			}
@@ -166,9 +166,43 @@ void auto_mount::run()
 		return true ;
 	} ;
 
-	auto _mount = [&]( const char * device,const struct inotify_event * event ){
+	const char * currentEvent ;
+	const char * lastEvent ;
 
-		if( _device_action( device,event ) && _allowed_device( device ) ){
+	constexpr int BUFF_SIZE = 4096 ;
+	char buffer[ BUFF_SIZE ] ;
+
+	auto _hasEvent = [&](){
+		return currentEvent < lastEvent ;
+	} ;
+
+	auto _getEvent = [&](){
+
+		auto event = reinterpret_cast< const struct inotify_event * >( currentEvent ) ;
+
+		if( event ){
+			currentEvent += sizeof( struct inotify_event ) + event->len ;
+		}else{
+			currentEvent += sizeof( struct inotify_event ) ;
+		}
+
+		return event ;
+	} ;
+
+	auto _readEvents = [&](){
+
+		auto r = read( fd,buffer,BUFF_SIZE ) ;
+		lastEvent = buffer + r ;
+		currentEvent = buffer ;
+		return true ;
+	} ;
+
+	auto _processEvent = [&]( const struct inotify_event * event ){
+
+		if( !event ){
+			return ;
+		}
+		if( _device_action( event ) && _allowed_device( event->name ) ){
 
 			Task * t = new Task() ;
 
@@ -179,41 +213,18 @@ void auto_mount::run()
 
 			t->setDeviceType( _deviceType( event ) ) ;
 			t->setDeviceAction( _deviceAction( event ) ) ;
-			t->setDevice( device ) ;
+			t->setDevice( event->name ) ;
 
 			t->start( Task::deviceProperty ) ;
 		}
+
 	} ;
 
-	constexpr size_t header_size = sizeof( struct inotify_event ) ;
+	while( _readEvents() ){
 
-	const struct inotify_event * event ;
+		while( _hasEvent() ){
 
-	const char * f ;
-	const char * z ;
-
-	ssize_t r ;
-
-	constexpr int BUFF_SIZE = 4096 ;
-	char buffer[ BUFF_SIZE ] ;
-
-	while( true ){
-
-		r = read( fd,buffer,BUFF_SIZE ) ;
-
-		z = buffer + r ;
-		f = buffer ;
-
-		while( f < z ){
-
-			event = reinterpret_cast< const struct inotify_event * >( f ) ;
-
-			if( event ){
-				_mount( f + header_size,event ) ;
-				f = f + header_size + event->len ;
-			}else{
-				f = f + header_size ;
-			}
+			_processEvent( _getEvent() ) ;
 		}
 	}
 }
