@@ -100,28 +100,40 @@ void monitor_mountinfo::run()
 		t->start( Task::VolumeMiniProperties ) ;
 	} ;
 
-	QStringList oldList = Task::updateVolumeList() ;
-	QStringList newList ;
+	QStringList oldMountList = Task::updateVolumeList() ;
+	QStringList newMountList ;
+
+	auto _volumeWasUnMounted = [&](){
+		return oldMountList.size() > newMountList.size() ;
+	} ;
+
+	auto _volumeWasMounted = [&](){
+		return oldMountList.size() < newMountList.size() ;
+	} ;
+
+	auto _unmountedVolume = [&]( const QString& e ){
+		return !newMountList.contains( e ) ;
+	} ;
+
+	auto _mountedVolume = [&]( const QString& e ){
+		return !oldMountList.contains( e ) ;
+	} ;
 
 	while( _loop() ){
 
-		newList = Task::updateVolumeList() ;
+		newMountList = Task::updateVolumeList() ;
 
-		if( oldList.size() > newList.size() ){
-			/*
-			 * unmount has just happened
-			 */
-			for( const auto& it : oldList ){
-				if( !newList.contains( it ) ){
+		if( _volumeWasUnMounted() ){
+
+			for( const auto& it : oldMountList ){
+				if( _unmountedVolume( it ) ){
 					_unmountProperty( it ) ;
 				}
 			}
-		}else if( newList.size() > oldList.size() ){
-			/*
-			 * mount has happened
-			 */
-			for( const auto& it : newList ){
-				if( !oldList.contains( it ) ){
+		}else if( _volumeWasMounted() ){
+
+			for( const auto& it : newMountList ){
+				if( _mountedVolume( it ) ){
 					_mountProperty( it ) ;
 				}
 			}
@@ -132,6 +144,6 @@ void monitor_mountinfo::run()
 			 */
 		}
 
-		oldList = newList ;
+		oldMountList = newMountList ;
 	}
 }
