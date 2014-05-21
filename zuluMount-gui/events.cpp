@@ -17,7 +17,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "auto_mount.h"
 #include <QDebug>
 
 #include <QString>
@@ -38,40 +37,48 @@
 
 #include "../zuluCrypt-gui/utility.h"
 #include "task.h"
+#include "events.h"
 
 /*
  * http://linux.die.net/man/7/inotify
  */
 
-auto_mount::auto_mount( QObject * parent )
+events::events( QObject * parent )
 {
 	m_baba = this ;
 	m_main = this ;
 	m_babu = parent ;
 }
 
-auto_mount::~auto_mount()
+events::~events()
 {
 }
 
-void auto_mount::stop()
+void events::stop()
 {
-	if( m_threadIsRunning ){
+	if( m_running ){
 		m_mtoto->terminate() ;
 	}else{
 		this->threadStopped() ;
 	}
 }
 
-void auto_mount::threadStopped()
+void events::threadStopped()
 {
 	emit stopped() ;
-	m_threadIsRunning = false ;
+	m_running = false ;
 }
 
-void auto_mount::run()
+void events::failedToStart()
 {
-	m_mtoto = this ;
+	qDebug() << "inotify_init() failed to start,automounting is turned off" ;
+	m_running = false ;
+}
+
+void events::run()
+{
+	m_running = true ;
+	m_mtoto   = this ;
 
 	connect( m_mtoto,SIGNAL( terminated() ),m_main,SLOT( threadStopped() ) ) ;
 	connect( m_mtoto,SIGNAL( terminated() ),m_mtoto,SLOT( deleteLater() ) ) ;
@@ -81,11 +88,7 @@ void auto_mount::run()
 	int fd = manage_fd( inotify_init() ) ;
 
 	if( fd == -1 ){
-		qDebug() << "inotify_init() failed to start,automounting is turned off" ;
-		m_threadIsRunning = false ;
-		return ;
-	}else{
-		m_threadIsRunning = true ;
+		return this->failedToStart() ;
 	}
 
 	int dev = inotify_add_watch( fd,"/dev",IN_CREATE|IN_DELETE ) ;
@@ -98,8 +101,8 @@ void auto_mount::run()
 
 	auto _allowed_device = []( const char * device ){
 
-		auto _startsWith = []( const char * x,const char * y,size_t z ){
-			return strncmp( x,y,z ) == 0 ;
+		auto _startsWith = []( const char * x,const char * y ){
+			return strncmp( x,y,strlen( y ) ) == 0 ;
 		} ;
 
 		auto _contains = []( const char * x,const char * y ){
@@ -111,18 +114,14 @@ void auto_mount::run()
 		 * /dev/sgX seem to be created when a usb device is plugged in
 		 * /dev/dm-X are dm devices we dont care about since we will be dealing with them differently
 		 */
-		bool s = _startsWith( device,"sg",2 )   ||
-			 _startsWith( device,"dm-",3 )  ||
+		bool s = _startsWith( device,"sg" )     ||
+			 _startsWith( device,"dm-" )    ||
 			 _contains( device,"dev/tmp" )  ||
 			 _contains( device,"dev-tmp" )  ||
 			 _contains( device,".tmp.md." ) ||
 			 _contains( device,"md/md-device-map" ) ;
 
 		return s == false ;
-	} ;
-
-	auto _stringsAreEqual = []( const char * x,const char * y ){
-		return strcmp( x,y ) == 0 ;
 	} ;
 
 	auto _deviceType = [&]( const struct inotify_event * event ){
@@ -144,6 +143,11 @@ void auto_mount::run()
 	} ;
 
 	auto _device_action = [&]( const struct inotify_event * event ){
+
+		auto _stringsAreEqual = []( const char * x,const char * y ){
+			return strcmp( x,y ) == 0 ;
+		} ;
+
 		if( event->wd == dev && event->mask & IN_CREATE ){
 			/*
 			 * /dev/md path seem to be deleted when the last entry in it is removed and
@@ -219,7 +223,6 @@ void auto_mount::run()
 
 			t->start( Task::deviceProperty ) ;
 		}
-
 	} ;
 
 	while( _readEvents() ){

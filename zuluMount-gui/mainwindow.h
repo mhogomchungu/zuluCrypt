@@ -31,7 +31,7 @@
 class QCloseEvent ;
 class QAction ;
 class QTableWidgetItem ;
-class auto_mount ;
+class events ;
 class monitor_mountinfo ;
 
 namespace Ui {
@@ -111,7 +111,7 @@ private:
 	void setUpShortCuts( void ) ;
 	void setUpApp( void ) ;
 	QSystemTrayIcon * m_trayIcon ;
-	auto_mount * m_autoMountThread ;
+	events * m_autoMountThread ;
 	monitor_mountinfo * m_mountInfo ;
 	QAction * m_autoMountAction ;
 	QMenu * m_favorite_menu ;

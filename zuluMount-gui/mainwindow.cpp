@@ -46,7 +46,7 @@
 #include "../zuluCrypt-gui/tablewidget.h"
 #include "mountpartition.h"
 #include "oneinstance.h"
-#include "auto_mount.h"
+#include "events.h"
 #include "monitor_mountinfo.h"
 #include "../zuluCrypt-gui/utility.h"
 #include "task.h"
@@ -251,7 +251,7 @@ bool MainWindow::autoOpenFolderOnMount( void )
 void MainWindow::startAutoMonitor()
 {
 	m_mountInfo = new monitor_mountinfo( this ) ;
-	m_autoMountThread = new auto_mount( this ) ;
+	m_autoMountThread = new events( this ) ;
 
 	/*
 	 * perform an ordely shut down when the application terminates to prevent an occassional crash with

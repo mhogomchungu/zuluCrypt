@@ -20,7 +20,7 @@ SOURCES += main.cpp\
     ../zuluCrypt-gui/socketsendkey.cpp \
     oneinstance.cpp \
     ../zuluCrypt-gui/utility.cpp \
-    auto_mount.cpp \
+    events.cpp \
     monitor_mountinfo.cpp \
     task.cpp \
     deviceoffset.cpp \
@@ -36,7 +36,7 @@ HEADERS  += mainwindow.h\
     ../zuluCrypt-gui/socketsendkey.h \
     oneinstance.h \
     ../zuluCrypt-gui/utility.h \
-    auto_mount.h \
+    events.h \
     monitor_mountinfo.h \
     task.h \
     deviceoffset.h \

@@ -22,14 +22,14 @@
 #include <QThread>
 
 class QObject ;
-class auto_mount ;
+class events ;
 
-class auto_mount : public QThread
+class events : public QThread
 {
 	Q_OBJECT
 public:
-	explicit auto_mount( QObject * parent = 0 ) ;
-	~auto_mount() ;
+	explicit events( QObject * parent = 0 ) ;
+	~events() ;
 	void stop( void ) ;
 signals:
 	void stopped( void ) ;
@@ -40,11 +40,12 @@ private slots:
 	void threadStopped( void ) ;
 private:
 	void run() ;
+	void failedToStart( void ) ;
 	QThread * m_baba ;
 	QThread * m_mtoto ;
 	QObject * m_babu ;
-	auto_mount * m_main ;
-	bool m_threadIsRunning ;
+	events  * m_main ;
+	bool m_running ;
 };
 
 #endif // AUTO_MOUNT_H

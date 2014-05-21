@@ -14,14 +14,14 @@ set(MOC_FILES 	mainwindow.h
 		task.h
 		mountpartition.h
 		oneinstance.h
-		auto_mount.h
+		events.h
 		monitor_mountinfo.h
 		deviceoffset.h
 		mountoptions.h
  )
 
 set(SRC 	main.cpp
-		auto_mount.cpp
+		events.cpp
 		mainwindow.cpp
 		keydialog.cpp
 		task.cpp
