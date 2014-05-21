@@ -192,19 +192,21 @@ void auto_mount::run()
 	auto _readEvents = [&](){
 
 		auto r = read( fd,buffer,BUFF_SIZE ) ;
-		lastEvent = buffer + r ;
+		lastEvent    = buffer + r ;
 		currentEvent = buffer ;
 		return true ;
 	} ;
 
-	auto _processEvent = [&]( const struct inotify_event * event ){
+	auto _processEvent = [&](){
+
+		auto event = _getEvent() ;
 
 		if( !event ){
 			return ;
 		}
 		if( _device_action( event ) && _allowed_device( event->name ) ){
 
-			Task * t = new Task() ;
+			auto t = new Task() ;
 
 			connect( t,SIGNAL( volumeMiniProperties( volumeEntryProperties * ) ),
 				 m_babu,SLOT( autoMountVolume( volumeEntryProperties * ) ) ) ;
@@ -224,7 +226,7 @@ void auto_mount::run()
 
 		while( _hasEvent() ){
 
-			_processEvent( _getEvent() ) ;
+			_processEvent() ;
 		}
 	}
 }
