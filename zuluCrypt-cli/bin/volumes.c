@@ -192,7 +192,7 @@ static stringList_t _remove_btfs_multiple_devices( stringList_t stl )
 
 	blkid_probe blkid ;
 
-	StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
+	StringListGetIterators( stl,&it,&end ) ;
 
 	zuluCryptSecurityGainElevatedPrivileges() ;
 
@@ -263,7 +263,7 @@ static stringList_t _zuluCryptVolumeList_0( int resolve_loop_devices )
 		return StringListVoid ;
 	}
 
-	StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
+	StringListGetIterators( stl,&it,&end ) ;
 
 	/*
 	 * skip the first entry
@@ -452,7 +452,7 @@ stringList_t zuluCryptPartitions( int option,uid_t uid )
 	stl = zuluCryptGetFstabList( uid ) ;
 	zuluCryptSecurityDropElevatedPrivileges() ;
 
-	StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
+	StringListGetIterators( stl,&it,&end ) ;
 	/*
 	 * gather an initial list of system and non system partitions by comparing entries in "/etc/fstab" and "/proc/partitions"
 	 * fstab entries makes an initial list of system partitions.
@@ -476,7 +476,7 @@ stringList_t zuluCryptPartitions( int option,uid_t uid )
 	 */
 	p = zuluCryptGetPartitionFromCrypttab() ;
 	if( p != StringListVoid ){
-		StringListGetIteratorBeginAndEnd( p,&it,&end ) ;
+		StringListGetIterators( p,&it,&end ) ;
 		while( it != end ){
 			device = StringContent( *it ) ;
 			it++ ;
@@ -498,7 +498,7 @@ stringList_t zuluCryptPartitions( int option,uid_t uid )
 		p = zuluCryptGetPartitionFromConfigFile( "/etc/zuluCrypt/system_volumes.list" ) ;
 	}
 	if( p != StringListVoid ){
-		StringListGetIteratorBeginAndEnd( p,&it,&end ) ;
+		StringListGetIterators( p,&it,&end ) ;
 		while( it != end ){
 			device = StringContent( *it ) ;
 			it++ ;
@@ -542,7 +542,7 @@ stringList_t zuluCryptPartitions( int option,uid_t uid )
 		p = zuluCryptGetPartitionFromConfigFile( "/etc/zuluCrypt/nonsystem_volumes.list" ) ;
 	}
 	if( p != StringListVoid ){
-		StringListGetIteratorBeginAndEnd( p,&it,&end ) ;
+		StringListGetIterators( p,&it,&end ) ;
 		while( it != end ){
 			device = StringContent( *it ) ;
 			it++ ;
@@ -617,7 +617,7 @@ u_int64_t zuluCryptGetVolumeSize( const char * device )
 			stl = zuluCryptVolumeList() ;
 			zuluCryptSecurityGainElevatedPrivileges() ;
 
-			StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
+			StringListGetIterators( stl,&it,&end ) ;
 
 			while( it != end ){
 				blkid = blkid_new_probe_from_filename( StringContent( *it ) ) ;
@@ -714,7 +714,7 @@ static void _zuluCryptPrintUnMountedPartitionProperties( stringList_t stl )
 
 	string_t st ;
 
-	StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
+	StringListGetIterators( stl,&it,&end ) ;
 
 	while( it != end ){
 		st = *it ;
@@ -735,7 +735,7 @@ static void _print_list( stringList_t stl )
 	StringListIterator it  ;
 	StringListIterator end ;
 
-	StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
+	StringListGetIterators( stl,&it,&end ) ;
 
 	while( it != end ){
 		e = StringContent( *it ) ;
@@ -837,7 +837,7 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 
 	StringDelete( &st ) ;
 
-	StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
+	StringListGetIterators( stl,&it,&end ) ;
 
 	while( it != end ){
 		st = *it ;
@@ -872,7 +872,7 @@ stringList_t zuluCryptGetPartitionFromConfigFile( const char * path )
 
 	StringDelete( &st ) ;
 
-	StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
+	StringListGetIterators( stl,&it,&end ) ;
 
 	while( it != end ){
 		stl_1 = _eval_path( *it,stl_1 ) ;

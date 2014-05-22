@@ -104,7 +104,7 @@ static inline char * __StringExpandMemory( string_t st,size_t new_size )
 	}
 }
 
-void StringGetIteratorBeginAndEnd( string_t st,StringIterator * begin,StringIterator * end )
+void StringGetIterators( string_t st,StringIterator * begin,StringIterator * end )
 {
 	if( st == StringVoid ){
 		*begin = NULL ;
@@ -497,8 +497,8 @@ ssize_t StringIndexOfChar( string_t st,size_t p,char s )
 {
 	char * c ;
 	char d[ 2 ] ;
-	d[ 1 ] = '\0' ;
-	d[ 0 ] = s ;
+	*( d + 1 ) = '\0' ;
+	*( d + 0 ) = s ;
 
 	if( st == StringVoid ){
 		return -1 ;
@@ -693,7 +693,7 @@ char * StringCopy_3( string_t st,size_t l )
 		if( c == NULL ){
 			return ( char * ) _StringError() ;
 		}else{
-			c[ 0 ] = '\0' ;
+			*c = '\0' ;
 			return c ;
 		}
 	}else{
@@ -845,9 +845,8 @@ const char * StringSubString( string_t st, size_t x,const char * s )
 
 const char * StringInsertChar( string_t st,size_t x,char s )
 {
-	char c[2] ;
-	c[0] = s ;
-	c[1] = '\0' ;
+	char c[ 2 ] = { '\0' } ;
+	*c = s ;
 	return StringInsertString( st,x,c ) ;
 }
 
@@ -935,9 +934,8 @@ const char * StringPrependString( string_t st,string_t xt )
 
 const char * StringPrependChar( string_t st,char c )
 {
-	char s[ 2 ] ;
-	s[ 1 ] = '\0' ;
-	s[ 0 ] = c ;
+	char s[ 2 ] = { '\0' } ;
+	*s = c ;
 	return StringPrepend( st,s ) ;
 }
 

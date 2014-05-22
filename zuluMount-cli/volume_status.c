@@ -307,7 +307,7 @@ int zuluMountPrintVolumesProperties( uid_t uid )
 	z = zuluCryptMapperPrefix() ;
 	l = StringSize( z ) ;
 
-	StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
+	StringListGetIterators( stl,&it,&end ) ;
 	/*
 	 * print a list of mounted volumes
 	 */
@@ -334,7 +334,7 @@ int zuluMountPrintVolumesProperties( uid_t uid )
 		}
 	}
 
-	StringListGetIteratorBeginAndEnd( stz,&it,&end ) ;
+	StringListGetIterators( stz,&it,&end ) ;
 	/*
 	 * print a list of not mounted volumes
 	 */
@@ -441,7 +441,7 @@ int zuluMountprintAListOfMountedVolumes( void )
 	/*
 	 * remove duplicates caused by bind mounts and other entries we dont care about
 	 */
-	StringListGetIteratorBeginAndEnd( stz,&it,&end ) ;
+	StringListGetIterators( stz,&it,&end ) ;
 
 	while( it != end ){
 		st = *it ;
@@ -552,7 +552,7 @@ int zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t 
 			 * 1. The volume is not mounted
 			 * 2. The volume is encrypted and mounted by a different user
 			 */
-			StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
+			StringListGetIterators( stl,&it,&end ) ;
 			zuluCryptSecurityGainElevatedPrivileges() ;
 			while( it != end ){
 				p = *it ;

@@ -94,8 +94,8 @@ char * zuluCryptResolveMDPath( const char * path )
 
 /*
  * dm path is a path like "/dev/dm-5".
- * These paths should not be used as they are for dm kernel infrastructure internal use only.
- * We are just handling them because there is buggy code out there that forces them on us.
+ * There is usually a soft link in "/dev/mapper" that points to them and this
+ * routine converts the "/dev/dm-x" path to its equivalent in "/dev/mapper"
  *
  * When we get one,we try to convert it to its appropriate paths.
  */
@@ -167,11 +167,8 @@ string_t zuluCryptConvertIfPathIsLVM( const char * path )
 
 	string_t q = String( path ) ;
 
-	StringGetIteratorBeginAndEnd( q,&it,&end ) ;
+	StringGetIterators( q,&it,&end ) ;
 
-	/*
-	 * jumpt to the third character
-	 */
 	it = it + 3 ;
 
 	while( it < end ){

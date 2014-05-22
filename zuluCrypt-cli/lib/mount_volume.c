@@ -93,7 +93,7 @@ static void _get_file_system_options_from_config_file( const char * device,strin
 
 	f = _get_uuid_from_device( device ) ;
 
-	StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
+	StringListGetIterators( stl,&it,&end ) ;
 
 	while( it != end  ){
 		e = StringRemoveString( *it,"\"" ) ;

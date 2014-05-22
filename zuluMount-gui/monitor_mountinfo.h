@@ -48,7 +48,7 @@ private:
 	QThread * m_mtoto ;
 	QObject * m_babu ;
 	monitor_mountinfo * m_main ;
-	bool m_threadIsRunning ;
+	bool m_running ;
 };
 
 #endif // MONITOR_MOUNTINFO_H

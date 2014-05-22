@@ -46,7 +46,7 @@ stringList_t zuluCryptGetMoutedListFromMountInfo_0(
 
 	StringDelete( &st ) ;
 
-	StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
+	StringListGetIterators( stl,&it,&end ) ;
 
 	while( it != end ){
 		tmp = StringListStringSplit( *it,' ' ) ;
@@ -155,7 +155,7 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 	 */
 	t = StringAppend( j,"/zuluCrypt-" ) ;
 
-	StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
+	StringListGetIterators( stl,&it,&end ) ;
 
 	while( it != end ){
 		c = StringContent( *it ) ;

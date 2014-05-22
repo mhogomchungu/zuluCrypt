@@ -28,7 +28,7 @@
 
 #include "task.h"
 
-monitor_mountinfo::monitor_mountinfo( QObject * parent ) : QThread( parent )
+monitor_mountinfo::monitor_mountinfo( QObject * parent ) : QThread( parent ),m_running( false )
 {
 	m_babu = parent ;
 	m_baba = this ;
@@ -41,7 +41,7 @@ monitor_mountinfo::~monitor_mountinfo()
 
 void monitor_mountinfo::stop()
 {
-	if( m_threadIsRunning ){
+	if( m_running ){
 		m_mtoto->terminate() ;
 	}else{
 		this->threadStopped() ;
@@ -51,7 +51,7 @@ void monitor_mountinfo::stop()
 void monitor_mountinfo::threadStopped()
 {
 	emit stopped();
-	m_threadIsRunning = false ;
+	m_running = false ;
 }
 
 void monitor_mountinfo::run()
@@ -66,10 +66,9 @@ void monitor_mountinfo::run()
 	int fd = manage_fd( open( "/proc/self/mountinfo",O_RDONLY ) ) ;
 
 	if( fd == -1 ){
-		m_threadIsRunning = false ;
 		return ;
 	}else{
-		m_threadIsRunning = true ;
+		m_running = true ;
 	}
 
 	struct pollfd monitor ;

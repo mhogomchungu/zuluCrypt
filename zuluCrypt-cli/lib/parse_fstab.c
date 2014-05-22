@@ -52,7 +52,7 @@ stringList_t zuluCryptGetFstabList( uid_t uid )
 		return StringListVoid ;
 	}
 
-	StringListGetIteratorBeginAndEnd( stl,&it,&end ) ;
+	StringListGetIterators( stl,&it,&end ) ;
 
 	while( it != end  ){
 		xt = *it ;

@@ -58,7 +58,7 @@ typedef char * StringIterator ;
 /*
  * Get stl style iterator on the managed string
  */
-void StringGetIteratorBeginAndEnd( string_t,StringIterator * begin,StringIterator * end ) ;
+void StringGetIterators( string_t,StringIterator * begin,StringIterator * end ) ;
 
 /*
  * initialize a handle with a C string

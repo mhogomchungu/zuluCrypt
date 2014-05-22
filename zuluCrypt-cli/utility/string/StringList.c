@@ -65,12 +65,15 @@ void StringListForEach( stringList_t stl,void (*fct)( string_t ) )
 	size_t i ;
 	size_t j ;
 	string_t * q ;
+	string_t p ;
+
 	if( stl != StringListVoid ){
 		j = stl->size ;
 		q = stl->stp ;
 		for( i = 0 ; i < j ; i++ ){
-			if( q[ i ] != StringVoid ){
-				fct( q[ i ] ) ;
+			p = *( q + i ) ;
+			if( p != StringVoid ){
+				fct( p ) ;
 			}
 		}
 	}
@@ -81,12 +84,15 @@ void StringListForEach_1( stringList_t stl,void (*fct)( string_t,void * ),void *
 	size_t i ;
 	size_t j ;
 	string_t * q ;
+	string_t p ;
+
 	if( stl != StringListVoid ){
 		j = stl->size ;
 		q = stl->stp ;
 		for( i = 0 ; i < j ; i++ ){
-			if( q[ i ] != StringVoid ){
-				fct( q[ i ],arg ) ;
+			p = *( q + i ) ;
+			if( p != StringVoid ){
+				fct( p,arg ) ;
 			}
 		}
 	}
@@ -97,12 +103,15 @@ void StringListForEachString( stringList_t stl,void (*fct)( const char * ) )
 	size_t i ;
 	size_t j ;
 	string_t * q ;
+	string_t p ;
+
 	if( stl != StringListVoid ){
 		j = stl->size ;
 		q = stl->stp ;
 		for( i = 0 ; i < j ; i++ ){
-			if( q[ i ] != StringVoid ){
-				fct( q[ i ]->string ) ;
+			p = *( q + i ) ;
+			if( p != StringVoid ){
+				fct( p->string ) ;
 			}
 		}
 	}
@@ -113,12 +122,15 @@ void StringListForEachString_1( stringList_t stl,void (*fct)( const char *,void 
 	size_t i ;
 	size_t j ;
 	string_t * q ;
+	string_t p ;
+
 	if( stl != StringListVoid ){
 		j = stl->size ;
 		q = stl->stp ;
 		for( i = 0 ; i < j ; i++ ){
-			if( q[ i ] != StringVoid ){
-				fct( q[ i ]->string,arg ) ;
+			p = *( q + i ) ;
+			if( p!= StringVoid ){
+				fct( p->string,arg ) ;
 			}
 		}
 	}
@@ -180,7 +192,7 @@ StringListIterator StringListBegin( stringList_t stl )
 	if( stl == StringListVoid ){
 		return ( StringListIterator )StringListVoid ;
 	}else{
-		return &stl->stp[ 0 ] ;
+		return stl->stp ;
 	}
 }
 
@@ -189,18 +201,18 @@ StringListIterator StringListEnd( stringList_t stl )
 	if( stl == StringListVoid ){
 		return ( StringListIterator )StringListVoid ;
 	}else{
-		return &stl->stp[ stl->size ] ;
+		return stl->stp + stl->size ;
 	}
 }
 
-void StringListGetIteratorBeginAndEnd( stringList_t stl,StringListIterator * begin,StringListIterator * end )
+void StringListGetIterators( stringList_t stl,StringListIterator * begin,StringListIterator * end )
 {
 	if( stl == StringListVoid ){
-		*begin = ( StringListIterator )StringListVoid ;
-		*end   = ( StringListIterator )StringListVoid ;
+		*begin = NULL ;
+		*end   = NULL ;
 	}else{
-		*begin = &stl->stp[ 0 ] ;
-		*end   = &stl->stp[ stl->size ] ;
+		*begin = stl->stp;
+		*end   = stl->stp + stl->size ;
 	}
 }
 
@@ -892,6 +904,7 @@ const char * const * StringListStringArray( stringList_t stl )
 	size_t j ;
 	char ** q ;
 	string_t * p ;
+	string_t z ;
 
 	if( stl == StringListVoid ){
 		q = ( char ** ) malloc( sizeof( char * ) ) ;
@@ -907,12 +920,13 @@ const char * const * StringListStringArray( stringList_t stl )
 		if( q == NULL ){
 			return ( const char * const * ) _StringListError() ;
 		}
-		q[ j ] = NULL ;
+		*( q + j ) = NULL ;
 		for( i = 0 ; i < j ; i++ ){
-			if( p[ i ] != StringVoid ){
-				q[ i ] = p[ i ]->string ;
+			z = *( p + i ) ;
+			if( z != StringVoid ){
+				*( q + i ) = z->string ;
 			}else{
-				q[ i ] = NULL ;
+				*( q + i ) = NULL ;
 			}
 		}
 	}
@@ -924,6 +938,8 @@ char * const * StringListStringArray_1( char * const * buffer,size_t * size ,str
 	size_t i ;
 	size_t j ;
 	string_t * p ;
+	string_t z ;
+
 	char ** e = ( char ** )buffer ;
 
 	if( stl == StringListVoid ){
@@ -943,15 +959,16 @@ char * const * StringListStringArray_1( char * const * buffer,size_t * size ,str
 				*size = 0 ;
 			}else{
 				*size = j ;
-				e[ j ] = NULL ;
+				*( e + j ) = NULL ;
 			}
 		}
 
 		for( i = 0 ; i < j ; i++ ){
-			if( p[ i ] != StringVoid ){
-				e[ i ] = p[ i ]->string ;
+			z = *( p + i ) ;
+			if( z != StringVoid ){
+				*( e + i ) = z->string ;
 			}else{
-				e[ i ] = NULL ;
+				*( e + i ) = NULL ;
 			}
 		}
 	}
@@ -1332,6 +1349,7 @@ void StringListPrintList( stringList_t stl )
 	size_t i ;
 	size_t j ;
 	string_t * p ;
+	string_t q ;
 
 	if( stl == StringListVoid ){
 		return ;
@@ -1341,8 +1359,9 @@ void StringListPrintList( stringList_t stl )
 	p = stl->stp ;
 
 	for( i = 0 ; i < j ; i++ ){
-		if( p[ i ] != StringVoid ){
-			printf("%s\n",p[ i ]->string ) ;
+		q = *( p + i ) ;
+		if( q != StringVoid ){
+			printf("%s\n",q->string ) ;
 		}
 	}
 }
