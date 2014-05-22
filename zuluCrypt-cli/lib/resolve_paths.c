@@ -96,8 +96,6 @@ char * zuluCryptResolveMDPath( const char * path )
  * dm path is a path like "/dev/dm-5".
  * There is usually a soft link in "/dev/mapper" that points to them and this
  * routine converts the "/dev/dm-x" path to its equivalent in "/dev/mapper"
- *
- * When we get one,we try to convert it to its appropriate paths.
  */
 char * zuluCryptResolveDMPath( const char * path )
 {
@@ -114,20 +112,18 @@ char * zuluCryptResolveDMPath( const char * path )
 		st = String( "/dev/mapper/" ) ;
 		while( ( entry = readdir( dir ) ) != NULL ){
 			e = entry->d_name ;
-			if( !StringAtLeastOneMatch_1( e,".","..","control",NULL ) ){
-				z = StringAppendAt( st,12,e ) ;
-				index = readlink( z,dm_path,PATH_MAX ) ;
-				if( index != -1 ){
-					dm_path[ index ] = '\0' ;
-					/*
-					 * path will have something like "/dev/dm-5",skip forward to only "dm-5"
-					 * dm_path will have something like "../dm-5",skip forward to only "dm-5"
-					 */
-					if( StringsAreEqual( path + 5,dm_path + 3 ) ){
-						xt = zuluCryptConvertIfPathIsLVM( z ) ;
-						dev = StringDeleteHandle( &xt ) ;
-						break ;
-					}
+			z = StringAppendAt( st,12,e ) ;
+			index = readlink( z,dm_path,PATH_MAX ) ;
+			if( index != -1 ){
+				dm_path[ index ] = '\0' ;
+				/*
+				 * path will have something like "/dev/dm-5",skip forward to only "dm-5"
+				 * dm_path will have something like "../dm-5",skip forward to only "dm-5"
+				 */
+				if( StringsAreEqual( path + 5,dm_path + 3 ) ){
+					xt = zuluCryptConvertIfPathIsLVM( z ) ;
+					dev = StringDeleteHandle( &xt ) ;
+					break ;
 				}
 			}
 		}
