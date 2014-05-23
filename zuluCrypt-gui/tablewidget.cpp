@@ -139,6 +139,29 @@ void tablewidget::addRowToTable( QTableWidget * table,const QStringList& list,co
 	table->setCurrentCell( row,j - 1 ) ;
 }
 
+void tablewidget::updateRowInTable( QTableWidget * table,const QStringList& list,int row,const QFont& font )
+{
+	QTableWidgetItem * item ;
+
+	int j = list.size() ;
+
+	if( j != table->columnCount() ){
+		qDebug() << "ERROR: table column count is NOT the same as QStringList size ";
+		return ;
+	}
+
+	if( row < table->rowCount() ){
+		for( int i = 0 ; i < j ; i++ ){
+			item = table->item( row,i ) ;
+			item->setText( list.at( i ) ) ;
+			item->setTextAlignment( Qt::AlignCenter ) ;
+			item->setFont( font ) ;
+		}
+
+		table->setCurrentCell( row,j - 1 ) ;
+	}
+}
+
 void tablewidget::setRowFont( QTableWidget * table ,int row,const QFont& font )
 {
 	if( row < table->rowCount() ){
@@ -208,7 +231,7 @@ void tablewidget::setText( QTableWidget * table,int row,int col,const QString& t
 	table->setItem( row,col,item ) ;
 }
 
-QStringList tablewidget::tableEntries( QTableWidget * table,int column )
+QStringList tablewidget::tableColumnEntries( QTableWidget * table,int column )
 {
 	QStringList l ;
 	int col = table->columnCount() ;
@@ -216,6 +239,19 @@ QStringList tablewidget::tableEntries( QTableWidget * table,int column )
 		int j = table->rowCount() ;
 		for( int row = 0 ; row < j ; row++ ){
 			l.append( table->item( row,column )->text() ) ;
+		}
+	}
+	return l ;
+}
+
+QStringList tablewidget::tableRowEntries( QTableWidget * table,int row )
+{
+	QStringList l ;
+	int r = table->rowCount() ;
+	if( row < r ){
+		int j = table->columnCount() ;
+		for( int c = 0 ; c < j ; c++ ){
+			l.append( table->item( row,c )->text() ) ;
 		}
 	}
 	return l ;

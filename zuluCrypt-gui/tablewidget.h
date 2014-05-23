@@ -33,6 +33,7 @@ public:
 	static void selectTableRow( QTableWidgetItem * current,QTableWidgetItem * previous ) ;
 	static void addRowToTable( QTableWidget *,const QStringList& ) ;
 	static void addRowToTable( QTableWidget *,const QStringList&,const QFont& ) ;
+	static void updateRowInTable( QTableWidget *,const QStringList&,int row,const QFont& ) ;
 	static void setRowFont( QTableWidget *,int row,const QFont& ) ;
 	static void deleteRowFromTable( QTableWidget *,int row ) ;
 	static void deleteRowFromTable( QTableWidget *,const QString&,int column = 0 ) ;
@@ -42,7 +43,8 @@ public:
 	static void setText( QTableWidget *,int row,int col,const QString& text ) ;
 	static int addEmptyRow( QTableWidget * ) ;
 	static int columnHasEntry( QTableWidget *,const QString&,int column = 0 ) ;
-	static QStringList tableEntries( QTableWidget * table,int column = 0  ) ;
+	static QStringList tableColumnEntries( QTableWidget * table,int column = 0 ) ;
+	static QStringList tableRowEntries( QTableWidget * table,int row = 0 ) ;
 };
 
 #endif // TABLEWIDGET_H

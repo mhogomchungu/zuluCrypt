@@ -291,8 +291,8 @@ void MainWindow::autoMountVolume( volumeEntryProperties * entry )
 		return ;
 	}
 
-	QStringList l = entry->entryList() ;
 	if( entry->entryisValid() ){
+		QStringList l = entry->entryList() ;
 		if( entry->encryptedVolume() ){
 			this->addEntryToTable( true,l ) ;
 		}else{
@@ -683,15 +683,7 @@ void MainWindow::slotMount()
 	QTableWidget * table = m_ui->tableWidget ;
 	int row = table->currentRow() ;
 
-	QStringList l ;
-	l.append( table->item( row,0 )->text() ) ;
-	l.append( table->item( row,1 )->text() ) ;
-	l.append( table->item( row,2 )->text() ) ;
-	l.append( table->item( row,3 )->text() ) ;
-	l.append( table->item( row,4 )->text() ) ;
-	l.append( table->item( row,5 )->text() ) ;
-
-	volumeEntryProperties entry( l ) ;
+	volumeEntryProperties entry( tablewidget::tableRowEntries( table,row ) ) ;
 
 	this->mount( entry ) ;
 }
@@ -777,24 +769,12 @@ void MainWindow::updateList( const volumeEntryProperties& entry )
 
 	int row = tablewidget::columnHasEntry( table,entry.volumeName() ) ;
 	if( row == -1 ){
-		/*
-		 * volume has no entry in the list probably because its a volume based on a file.
-		 * Add an entry to the list to accomodate it
-		 */
 		row = tablewidget::addEmptyRow( table ) ;
 	}
-
-	tablewidget::setText( table,row,0,entry.volumeName() ) ;
-	tablewidget::setText( table,row,1,entry.mountPoint() ) ;
-	tablewidget::setText( table,row,2,entry.fileSystem() ) ;
-	tablewidget::setText( table,row,3,entry.label() ) ;
-	tablewidget::setText( table,row,4,entry.volumeSize() ) ;
-	tablewidget::setText( table,row,5,entry.spaceUsedPercentage() ) ;
-
 	if( entry.isSystem() ){
-		tablewidget::setRowFont( table,row,this->getSystemVolumeFont() ) ;
+		tablewidget::updateRowInTable( table,entry.entryList(),row,this->getSystemVolumeFont() ) ;
 	}else{
-		tablewidget::setRowFont( table,row,this->font() ) ;
+		tablewidget::updateRowInTable( table,entry.entryList(),row,this->font() ) ;
 	}
 	tablewidget::selectRow( table,row ) ;
 }
@@ -866,7 +846,7 @@ void MainWindow::removeDisappearedEntries( const QVector< volumeEntryProperties 
 
 	QTableWidget * table = m_ui->tableWidget ;
 
-	QStringList l = tablewidget::tableEntries( table ) ;
+	QStringList l = tablewidget::tableColumnEntries( table,0 ) ;
 
 	auto _hasNoEntry = [&]( const QString& volume ){
 		for( const auto& it : entries ){
