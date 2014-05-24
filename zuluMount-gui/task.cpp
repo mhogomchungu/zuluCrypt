@@ -20,7 +20,6 @@
 #include "task.h"
 #include <QDebug>
 
-#include <QProcess>
 #include <QThreadPool>
 #include <QDir>
 #include <QFile>
@@ -30,6 +29,16 @@
 #include "bin_path.h"
 
 #include <unistd.h>
+
+static QString _device( const QString& device )
+{
+	if( device.startsWith( "UUID" ) ){
+		return device ;
+	}else{
+		QString d = device ;
+		return d.replace( "\"","\"\"\"" ) ;
+	}
+}
 
 int Task::FileHandle::operator()( int fd )
 {
@@ -126,11 +135,7 @@ void Task::setRemoveList( const QStringList& l )
 
 QStringList Task::updateVolumeList()
 {
-	QProcess p ;
-	QString exe = QString( "%1 -E" ).arg( zuluMount ) ;
-	p.start( exe ) ;
-	p.waitForFinished( -1 ) ;
-	return utility::split( p.readAll() ) ;
+	 return utility::Task( QString( "%1 -E" ).arg( zuluMount ) ).splitOutput( '\n' ) ;
 }
 
 void Task::run()
@@ -165,10 +170,7 @@ void Task::getKeyTask()
 
 void Task::checkUnmount()
 {
-	QProcess p ;
-	QString exe = QString( "%1 -c -d \"%2\"" ).arg( zuluMount ).arg( m_device.replace( "\"","\"\"\"" ) ) ;
-	p.start( exe ) ;
-	p.waitForFinished() ;
+	utility::Task( QString( "%1 -c -d \"%2\"" ).arg( zuluMount ).arg( m_device.replace( "\"","\"\"\"" ) ) ) ;
 }
 
 void Task::getVolumeProperties()
@@ -178,11 +180,7 @@ void Task::getVolumeProperties()
 
 bool Task::isSystemVolume( const QString& e )
 {
-	QProcess p ;
-	QString exe = QString( "%1 -S" ).arg( zuluMount ) ;
-	p.start( exe ) ;
-	p.waitForFinished() ;
-	QStringList l = utility::split( p.readAll() ) ;
+	auto l = utility::Task( QString( "%1 -S" ).arg( zuluMount ) ).splitOutput( '\n' ) ;
 	for( const auto& it : l ){
 		if( it == e ){
 			return true ;
@@ -191,16 +189,13 @@ bool Task::isSystemVolume( const QString& e )
 	return false ;
 }
 
-void Task::getVolumeProperties( const QString& device )
+void Task::getVolumeProperties( const QString& e )
 {
-	QString d = device ;
-	QProcess p ;
-	QString exe = QString( "%1 -L -d \"%2\"" ).arg( zuluMount ).arg( d.replace( "\"","\"\"\"" ) ) ;
-	p.start( exe ) ;
-	p.waitForFinished() ;
+	QString device = _device( e ) ;
 
-	if( p.exitCode() == 0 ) {
-		auto entry = new volumeEntryProperties( utility::split( p.readAll(),'\t' ) ) ;
+	auto r = utility::Task( QString( "%1 -L -d \"%2\"" ).arg( zuluMount ).arg( device ) ) ;
+	if( r.success() ) {
+		auto entry = new volumeEntryProperties( r.splitOutput( '\t' ) ) ;
 		entry->setisSystem( this->isSystemVolume( device ) ) ;
 		emit volumeMiniProperties( entry ) ;
 	}else{
@@ -210,32 +205,12 @@ void Task::getVolumeProperties( const QString& device )
 
 void Task::checkPermissions()
 {
-	QProcess p ;
-	p.start( QString( ZULUCRYPTzuluCrypt ) + QString( " -C" ) ) ;
-	p.waitForFinished() ;
-	emit checkPermissions( p.exitCode() ) ;
-	p.close() ;
+	auto r = utility::Task( QString( ZULUCRYPTzuluCrypt ) + QString( " -C" ) ) ;
+	emit checkPermissions( r.exitCode() ) ;
 }
 
 void Task::VolumeList()
 {
-	typedef struct
-	{
-		bool finished ;
-		QStringList data ;
-	}result ;
-
-	auto _run = []( const QString& exe ){
-		result r ;
-		QProcess p ;
-		p.start( exe ) ;
-		r.finished = p.waitForFinished( 10000 ) ;
-		if( r.finished ){
-			r.data = utility::split( p.readAll() ) ;
-		}
-		return r ;
-	} ;
-
 	auto _validEntry = []( const QString& e ){
 		if( e.startsWith( "/dev/md/md-device-map" ) ){
 			return false ;
@@ -248,19 +223,22 @@ void Task::VolumeList()
 
 	auto entries = new QVector< volumeEntryProperties > ;
 
-	result all = _run( QString( "%1 -l" ).arg( zuluMount ) ) ;
+	auto all = utility::Task( QString( "%1 -l" ).arg( zuluMount ),10000 ) ;
 
-	if( all.finished ){
+	if( all.finished() ){
 
-		result system = _run( QString( "%1 -S" ).arg( zuluMount ) ) ;
+		auto system = utility::Task( QString( "%1 -S" ).arg( zuluMount ),10000 ) ;
 
-		if( system.finished ){
+		if( system.finished() ){
 
-			for( const auto& it : all.data ){
+			auto a = all.splitOutput( '\n' ) ;
+			auto s = system.splitOutput( '\n' ) ;
+
+			for( const auto& it : a ){
 
 				if( _validEntry( it ) ){
 					volumeEntryProperties v( utility::split( it,'\t' ) ) ;
-					v.setisSystem( system.data.contains( v.volumeName() ) ) ;
+					v.setisSystem( s.contains( v.volumeName() ) ) ;
 					entries->append( v ) ;
 				}
 			}
@@ -272,47 +250,20 @@ void Task::VolumeList()
 
 void Task::volumeProperties()
 {
-	typedef struct
-	{
-		bool ok ;
-		QString data ;
-	}result ;
+	QString device = _device( m_device ) ;
 
-	QString exe ;
-	QString device ;
+	auto r = utility::Task( QString( "%1 -s -d \"%2\"" ).arg( zuluMount ).arg( device ) ) ;
 
-	if( m_device.startsWith( "UUID" ) ){
-		device = m_device ;
-	}else{
-		device = m_device.replace( "\"","\"\"\"" ) ;
-	}
-
-	exe = QString( "%1 -s -d \"%2\"" ).arg( zuluMount ).arg( device ) ;
-
-	auto _run = []( const QString& exe ){
-		result r ;
-		QProcess p ;
-		p.start( exe ) ;
-		p.waitForFinished() ;
-		r.data = p.readAll() ;
-		r.ok = utility::split( r.data ).size() > 12 ;
-		return r ;
-	} ;
-
-	result r = _run( exe ) ;
-
-	if( r.ok ){
-		emit signalProperties( r.data ) ;
+	if( r.ok() ){
+		emit signalProperties( r.output() ) ;
 	}else{
 		if( m_type.contains( "crypto_PLAIN\n" ) ){
 			/*
 			 * this could be a plain volume opened with an offset
 			 */
-			exe = QString( "%1 -s -o bogusNecessaryArgument -d \"%2\"" ).arg( zuluMount ).arg( device ) ;
-
-			r = _run( exe ) ;
-			if( r.ok ){
-				emit signalProperties( r.data ) ;
+			r = utility::Task( QString( "%1 -s -o bogusNecessaryArgument -d \"%2\"" ).arg( zuluMount ).arg( device ) ) ;
+			if( r.ok() ){
+				emit signalProperties( r.output() ) ;
 			}else{
 				emit signalProperties( "" ) ;
 			}
@@ -324,6 +275,8 @@ void Task::volumeProperties()
 
 void Task::volumeMiniProperties()
 {
+	QString device = m_device ;
+
 	auto _loopDeviceIsGone =[]( const QString& device ){
 		QDir d( "/sys/block" ) ;
 		QStringList l = d.entryList() ;
@@ -346,37 +299,28 @@ void Task::volumeMiniProperties()
 		return true ;
 	} ;
 
-	if( !m_device.startsWith( "UUID" ) && !m_device.startsWith( "/dev/" ) ){
+	if( !device.startsWith( "UUID" ) && !device.startsWith( "/dev/" ) ){
 		/*
 		 * There is some sort of a race condition here and things do not always work as expected
 		 * try to sleep for a second to see if it will help
 		 */
 		sleep( 1 ) ;
-		if( _loopDeviceIsGone( m_device ) ){
+		if( _loopDeviceIsGone( device ) ){
 			/*
 			 * we were just asked to find properties of a loop device
 			 * that no longer exists,remove it from the list in the GUI window
 			 */
-			emit volumeRemoved( m_device ) ;
+			emit volumeRemoved( device ) ;
 			return ;
 		}
 	}
 
-	QProcess p ;
-	QString exe ;
+	auto r = utility::Task( QString( "%1 -L -d \"%2\"" ).arg( zuluMount ).arg( device ) ) ;
 
-	if( m_device.startsWith( "UUID" ) ){
-		exe = QString( "%1 -L -d \"%2\"" ).arg( zuluMount ).arg( m_device ) ;
-	}else{
-		exe = QString( "%1 -L -d \"%2\"" ).arg( zuluMount ).arg( m_device.replace( "\"","\"\"\"" ) ) ;
-	}
+	if( r.success() ){
 
-	p.start( exe ) ;
-	p.waitForFinished( -1 ) ;
-
-	if( p.exitCode() == 0 ){
-		auto entry = new volumeEntryProperties( utility::split( p.readAll(),'\t' ) ) ;
-		entry->setisSystem( this->isSystemVolume( m_device ) ) ;
+		auto entry = new volumeEntryProperties( r.splitOutput( '\t' ) ) ;
+		entry->setisSystem( this->isSystemVolume( device ) ) ;
 		emit volumeMiniProperties( entry ) ;
 	}else{
 		emit volumeMiniProperties( nullptr ) ;
@@ -385,40 +329,34 @@ void Task::volumeMiniProperties()
 
 void Task::cryptoOpen()
 {
-	QProcess p ;
 	QString exe ;
-
-	QString d = m_device.replace( "\"","\"\"\"" ) ;
 
 	if( m_publicMount ){
 		const char * arg = "%1 -M -m -d \"%2\" -z \"%3\" -e %4 %5" ;
-		exe = QString( arg ).arg( zuluMount ).arg( d ).arg( m_point ).arg( m_mode ).arg( m_keySource ) ;
+		exe = QString( arg ).arg( zuluMount ).arg( _device( m_device ) ).arg( m_point ).arg( m_mode ).arg( m_keySource ) ;
 	}else{
 		const char * arg = "%1 -m -d \"%2\" -z \"%3\" -e %4 %5" ;
-		exe = QString( arg ).arg( zuluMount ).arg( d ).arg( m_point ).arg( m_mode ).arg( m_keySource ) ;
+		exe = QString( arg ).arg( zuluMount ).arg( _device( m_device ) ).arg( m_point ).arg( m_mode ).arg( m_keySource ) ;
 	}
 
-	p.start( exe ) ;
-	p.waitForFinished( -1 ) ;
+	auto r = utility::Task( exe ) ;
 
-	QString output = QString( p.readAll() ) ;
+	QString output = r.output() ;
 	int index = output.indexOf( QChar( ':') ) ;
 	if( index != -1 ){
 		output = output.mid( index + 1 ) ;
 	}
-	emit signalMountComplete( p.exitCode(),output ) ;
-	p.close() ;
+	emit signalMountComplete( r.exitCode(),output ) ;
 }
 
 void Task::mount()
 {
-	QProcess p ;
+	QString device = _device( m_device ) ;
+
 	QString exe ;
 
-	QString d = m_device.replace( "\"","\"\"\"" ) ;
-
 	if( m_point.isEmpty() ){
-		m_point = QDir::homePath() + QString( "/" ) + utility::split( d,'/' ).last() ;
+		m_point = QDir::homePath() + QString( "/" ) + utility::split( device,'/' ).last() ;
 	}
 
 	QString additionalOptions ;
@@ -428,22 +366,21 @@ void Task::mount()
 
 	if( m_publicMount ){
 		const char * arg = "%1 -M -m -d \"%2\" -e %3 -z \"%4\" %5" ;
-		exe = QString( arg ).arg( zuluMount ).arg( m_device ).arg( m_mode ).arg( m_point ).arg( additionalOptions ) ;
+		exe = QString( arg ).arg( zuluMount ).arg( device ).arg( m_mode ).arg( m_point ).arg( additionalOptions ) ;
 	}else{
 		const char * arg = "%1 -m -d \"%2\" -e %3 -z \"%4\" %5" ;
-		exe = QString( arg ).arg( zuluMount ).arg( m_device ).arg( m_mode ).arg( m_point ).arg( additionalOptions ) ;
+		exe = QString( arg ).arg( zuluMount ).arg( device ).arg( m_mode ).arg( m_point ).arg( additionalOptions ) ;
 	}
 
-	p.start( exe ) ;
-	p.waitForFinished( -1 ) ;
+	auto r = utility::Task( exe ) ;
 
-	QString output = QString( p.readAll() ) ;
+	QString output = r.output() ;
+
 	int index = output.indexOf( QChar( ':') ) ;
 	if( index != -1 ){
 		output = output.mid( index + 1 ) ;
 	}
-	emit signalMountComplete( p.exitCode(),output ) ;
-	p.close() ;
+	emit signalMountComplete( r.exitCode(),output ) ;
 }
 
 void Task::umount()
@@ -454,28 +391,18 @@ void Task::umount()
 		QString data ;
 	}result ;
 
-	auto _run = []( const QString& exe ){
-		QProcess p ;
-		p.start( exe ) ;
-		p.waitForFinished() ;
+	auto _run = [&]( const QString& exe ){
+
+		auto e = utility::Task( exe ) ;
 		result r ;
-		r.code = p.exitCode() ;
-		QString output_1 = QString( p.readAll() ) ;
-		int index = output_1.indexOf( QChar( ':' ) ) ;
-		r.data = output_1 = output_1.mid( index + 1 ) ;
+		r.code = e.exitCode() ;
+		QString output = e.output() ;
+		int index = output.indexOf( QChar( ':' ) ) ;
+		r.data = output.mid( index + 1 ) ;
 		return r ;
 	} ;
 
-	auto _volume = []( const QString& e ){
-		if( e.startsWith( "UUID" ) ){
-			return e ;
-		}else{
-			QString r = e ;
-			return r.replace( "\"","\"\"\"" ) ;
-		}
-	} ;
-
-	QString device = _volume( m_device ) ;
+	QString device = _device( m_device ) ;
 
 	result r = _run( QString( "%1 -u -d \"%2\"" ).arg( zuluMount ).arg( device ) ) ;
 
@@ -493,11 +420,9 @@ void Task::umount()
 
 void Task::openMountPointTask()
 {
-	QProcess exe ;
-	exe.start( QString( "%1 \"%2\"" ).arg( m_folderOpener ).arg( m_point ) ) ;
-	exe.waitForFinished() ;
-	m_exitCode   = exe.exitCode() ;
-	m_exitStatus = exe.exitStatus() ;
+	auto r = utility::Task( QString( "%1 \"%2\"" ).arg( m_folderOpener ).arg( m_point ) ) ;
+	m_exitCode   = r.exitCode() ;
+	m_exitStatus = r.exitStatus() ;
 }
 
 void Task::start( Task::Action action )
@@ -510,9 +435,7 @@ void Task::start( Task::Action action )
 
 void Task::deviceProperties()
 {
-	auto _deviceAdded = [&](){
-		return m_deviceAction == Task::deviceAdded ;
-	} ;
+	bool deviceAdded = m_deviceAction == Task::deviceAdded ;
 
 	auto _mdRaidDevice = [&]( const QString& device ){
 
@@ -540,7 +463,7 @@ void Task::deviceProperties()
 			return dev ;
 		} ;
 
-		if( _deviceAdded() ){
+		if( deviceAdded ){
 			this->getVolumeProperties( _mdRaidPath( device ) ) ;
 		}else{
 			emit volumeRemoved( _mdRaidPath( device ) ) ;
@@ -585,7 +508,7 @@ void Task::deviceProperties()
 
 		QString z = _convertLVM( device ) ;
 		if( !z.isEmpty() ){
-			if( _deviceAdded() ) {
+			if( deviceAdded ) {
 				this->getVolumeProperties( z ) ;
 			}else{
 				emit volumeRemoved( z ) ;
@@ -603,7 +526,7 @@ void Task::deviceProperties()
 		} ;
 
 		if( _allowed_device( device ) ){
-			if( _deviceAdded() ) {
+			if( deviceAdded ) {
 				this->getVolumeProperties( device ) ;
 			}else{
 				emit volumeRemoved( device ) ;

@@ -46,18 +46,18 @@ Task::Task( QTableWidget * table ) : m_table( table )
 
 Task::Task( const QString& x,const QString& y )
 {
-	m_key = y ;
+	m_key  = y ;
 	m_path = x ;
-	m_path.replace( "\"","\"\"\"" ) ;
-	m_mpoint = y ;
-	m_mpoint.replace( "\"","\"\"\"" ) ;
 	m_folderOpener = x ;
+	m_mpoint = y ;
+	m_path.replace( "\"","\"\"\"" ) ;
+	m_mpoint.replace( "\"","\"\"\"" ) ;
 }
 
 void Task::start( Task::action action,function_t function )
 {
 	m_function = function ;
-	m_action = action ;
+	m_action   = action ;
 	QThreadPool * thread = QThreadPool::globalInstance() ;
 	thread->setMaxThreadCount( 10 ) ;
 	thread->start( this ) ;
@@ -65,23 +65,16 @@ void Task::start( Task::action action,function_t function )
 
 void Task::openMountPointTask()
 {
-	QProcess exe ;
-	exe.start( QString( "%1 \"%2\"" ).arg( m_folderOpener ).arg( m_mpoint ) ) ;
-	exe.waitForFinished() ;
-	m_exitCode = exe.exitCode() ;
-	m_exitStatus = exe.exitStatus() ;
-	exe.close() ;
+	auto r       = utility::Task( QString( "%1 \"%2\"" ).arg( m_folderOpener ).arg( m_mpoint ) ) ;
+	m_exitCode   = r.exitCode() ;
+	m_exitStatus = r.exitStatus() ;
 }
 
 void Task::updateVolumeListTask()
 {
-	QProcess p ;
-	p.start( QString( ZULUCRYPTzuluCrypt ) + QString( " -L" ) ) ;
-	p.waitForFinished() ;
-	m_status = p.exitCode() ;
-
-	if( m_status == 0 ){
-		QStringList l = utility::split( p.readAll() ) ;
+	auto r = utility::Task( QString( ZULUCRYPTzuluCrypt ) + QString( " -L" ) ) ;
+	if( r.success() ){
+		QStringList l = r.splitOutput( '\n' ) ;
 		QStringList entry ;
 		for( const auto& it : l ){
 			entry = utility::split( it,'\t' ) ;
@@ -90,19 +83,13 @@ void Task::updateVolumeListTask()
 			}
 		}
 	}
-
-	p.close() ;
 }
 
 void Task::runExeTask()
 {
-	QProcess p ;
-	p.start( m_exe ) ;
-	p.waitForFinished( -1 ) ;
-	m_status = p.exitCode() ;
-	m_output = QString( p.readAllStandardOutput() ) ;
-	p.close() ;
-
+	auto r   = utility::Task( m_exe ) ;
+	m_status = r.exitCode() ;
+	m_output = r.output() ;
 	if( m_action == Task::closeVolumeTask ){
 		sleep( 1 ) ; // for UI effect
 	}
@@ -116,24 +103,18 @@ void Task::runCloseAllVolumeTask()
 	int volumeCount = m_table->rowCount() ;
 
 	if( volumeCount > 0 ){
-		QVector< QTableWidgetItem * > tableItems( volumeCount ) ;
 
+		QVector< QTableWidgetItem * > tableItems( volumeCount ) ;
 		QTableWidgetItem ** it = tableItems.data() ;
 
 		for( int i = 0 ; i < volumeCount ; i++ ){
 			*( it + i ) = m_table->item( i,0 ) ;
 		}
 
-		auto _run = [&]( QTableWidgetItem * e ){
-			QProcess p ;
-			QString device = e->text().replace( "\"","\"\"\"" ) ;
-			p.start( QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( device ) ) ;
-			p.waitForFinished() ;
-			emit taskResult( e,p.exitCode() ) ;
-		} ;
-
 		for( QTableWidgetItem * it : tableItems ){
-			_run( it ) ;
+			QString device = it->text().replace( "\"","\"\"\"" ) ;
+			auto r = utility::Task( QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( device ) ) ;
+			emit taskResult( it,r.exitCode() ) ;
 			sleep( 1 ) ; // for ui effect
 		}
 	}
@@ -143,27 +124,17 @@ void Task::runCloseAllVolumeTask()
 
 void Task::runVolumePropertiesTask()
 {
-	QString z = QString( "%1 -s -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( m_path ) ;
-
-	QProcess p ;
-	p.start( z ) ;
-	p.waitForFinished() ;
-	int st = p.exitCode() ;
-	QByteArray data = p.readAllStandardOutput() ;
-
-	p.close() ;
-
-	if( st != 0 ){
-		m_volumeProperties = QString( "" ) ;
-	}else{
+	auto r = utility::Task( QString( "%1 -s -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( m_path ) ) ;
+	QByteArray data = r.output() ;
+	if( r.success() ){
 		m_volumeProperties = QString( " " ) + QString( data.mid( data.indexOf( '\n' ) + 2 ) ) ;
+	}else{
+		m_volumeProperties = QString( "" ) ;
 	}
 }
 
 void Task::runVolumeTask()
 {
-	QProcess p ;
-
 	/*
 	  Root user can create encrypted volumes in all partitions including system partitions.
 	  Show all partitions, not only non system.
@@ -172,14 +143,11 @@ void Task::runVolumeTask()
 		m_partitionType = QString( " -A" ) ;
 	}
 
-	p.start( QString( ZULUCRYPTzuluCrypt ) + m_partitionType + QString( " -Z" ) ) ;
-
-	p.waitForFinished() ;
-
-	QStringList l = utility::split( p.readAllStandardOutput() ) ;
-
+	QString exe   = QString( ZULUCRYPTzuluCrypt ) + m_partitionType + QString( " -Z" ) ;
+	QStringList l = utility::Task( exe ).splitOutput( '\n' ) ;
 	QStringList list ;
 	QString entry ;
+
 	for( const auto& it : l ){
 		list = utility::split( it,'\t' ) ;
 		if( list.size() >= 4 ){

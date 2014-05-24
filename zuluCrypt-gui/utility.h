@@ -23,6 +23,7 @@
 #include <QString>
 #include <QStringList>
 #include <QEvent>
+#include <QProcess>
 
 namespace LxQt{
 namespace Wallet {
@@ -36,6 +37,52 @@ class QEvent ;
 class utility
 {
 public:
+	class Task
+	{
+	public :
+		Task( const QString& exe,int waitTime = -1 )
+		{
+			QProcess p ;
+			p.start( exe ) ;
+			m_finished   = p.waitForFinished( waitTime ) ;
+			m_exitCode   = p.exitCode() ;
+			m_exitStatus = p.exitStatus() ;
+			m_data       = p.readAll() ;
+		}
+		QStringList splitOutput( char token )
+		{
+			return utility::split( m_data,token ) ;
+		}
+		QByteArray output()
+		{
+			return m_data ;
+		}
+		int exitCode()
+		{
+			return m_exitCode ;
+		}
+		int exitStatus()
+		{
+			return m_exitStatus ;
+		}
+		bool success()
+		{
+			return m_exitCode == 0 ;
+		}
+		bool finished()
+		{
+			return m_finished ;
+		}
+		bool ok()
+		{
+			return this->splitOutput( '\n' ).size() > 12 ;
+		}
+	private:
+		QByteArray m_data ;
+		int m_exitCode ;
+		int m_exitStatus ;
+		bool m_finished ;
+	};
 	static QString cmdArgumentValue( const QStringList&,const QString& arg,const QString& defaulT = QString() ) ;
 	static QStringList luksEmptySlots( const QString& volumePath ) ;
 	static void addToFavorite( const QString& dev,const QString& m_point ) ;
