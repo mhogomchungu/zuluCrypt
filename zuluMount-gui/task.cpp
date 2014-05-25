@@ -180,13 +180,7 @@ void Task::getVolumeProperties()
 
 bool Task::isSystemVolume( const QString& e )
 {
-	auto l = utility::Task( QString( "%1 -S" ).arg( zuluMount ) ).splitOutput( '\n' ) ;
-	for( const auto& it : l ){
-		if( it == e ){
-			return true ;
-		}
-	}
-	return false ;
+	return utility::Task( QString( "%1 -S" ).arg( zuluMount ) ).splitOutput( '\n' ).contains( e ) ;
 }
 
 void Task::getVolumeProperties( const QString& e )
@@ -284,7 +278,7 @@ void Task::volumeMiniProperties()
 		QString dev = QString( "%1\n" ).arg( device ) ;
 		QByteArray s ;
 		QFile f ;
-		for( const auto& it: l ){
+		for( const auto& it : l ){
 			if( it.startsWith( "loop" ) ){
 				e = QString( "/sys/block/%1/loop/backing_file" ).arg( it ) ;
 				f.setFileName( e ) ;
@@ -318,7 +312,6 @@ void Task::volumeMiniProperties()
 	auto r = utility::Task( QString( "%1 -L -d \"%2\"" ).arg( zuluMount ).arg( device ) ) ;
 
 	if( r.success() ){
-
 		auto entry = new volumeEntryProperties( r.splitOutput( '\t' ) ) ;
 		entry->setisSystem( this->isSystemVolume( device ) ) ;
 		emit volumeMiniProperties( entry ) ;
