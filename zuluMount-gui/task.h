@@ -66,7 +66,8 @@ public:
 		getKey,
 		sendKey,
 		deviceProperty,
-		removeList
+		removeList,
+		unmountAll
 	} ;
 
 	enum deviceAction{
@@ -129,6 +130,7 @@ private:
 	void deviceProperties( void ) ;
 	void removeVolumeList( void ) ;
 	bool isSystemVolume( const QString& ) ;
+	void unMountAllVolumes( void ) ;
 	LxQt::Wallet::Wallet * m_wallet ;
 	Task::Action m_action ;
 	Task::deviceAction m_deviceAction ;

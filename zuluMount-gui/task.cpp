@@ -155,6 +155,7 @@ void Task::run()
 		case Task::sendKey             : return this->keySend() ;
 		case Task::deviceProperty      : return this->deviceProperties() ;
 		case Task::removeList          : return this->removeVolumeList() ;
+		case Task::unmountAll          : return this->unMountAllVolumes() ;
 	}
 }
 
@@ -181,6 +182,20 @@ void Task::getVolumeProperties()
 bool Task::isSystemVolume( const QString& e )
 {
 	return utility::Task( QString( "%1 -S" ).arg( zuluMount ) ).splitOutput( '\n' ).contains( e ) ;
+}
+
+void Task::unMountAllVolumes()
+{
+	if( m_removeList.isEmpty() ){
+		sleep( 1 ) ;
+	}else{
+		for( const auto& it : m_removeList ){
+			m_device = it ;
+			this->umount() ;
+			sleep( 1 ) ;
+		}
+		sleep( 2 ) ;
+	}
 }
 
 void Task::getVolumeProperties( const QString& e )

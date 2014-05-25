@@ -73,6 +73,7 @@ MainWindow::MainWindow( int argc,char * argv[],QWidget * parent ) :QWidget( pare
 {
 	m_argc = argc ;
 	m_argv = argv ;
+	m_removeAllVolumes = false ;
 	this->processArgumentList() ;
 }
 
@@ -143,6 +144,12 @@ void MainWindow::setUpApp()
 	QAction * ac = new QAction( this ) ;
 	ac->setText( tr( "show the interface" ) ) ;
 	connect( ac,SIGNAL( triggered() ),this,SLOT( raiseWindow() ) ) ;
+
+	trayMenu->addAction( ac ) ;
+
+	ac = new QAction( this ) ;
+	ac->setText( tr( "unmount all" ) ) ;
+	connect( ac,SIGNAL( triggered() ),this,SLOT( unMountAll() ) ) ;
 
 	trayMenu->addAction( ac ) ;
 
@@ -798,6 +805,36 @@ void MainWindow::pbUmount()
 	t->start( Task::Unmount ) ;
 }
 
+void MainWindow::unMountAll()
+{
+	this->disableAll() ;
+
+	QTableWidget * table = m_ui->tableWidget ;
+
+	QStringList x = tablewidget::tableColumnEntries( table,1 ) ;
+	QStringList y = tablewidget::tableColumnEntries( table,0 ) ;
+	QStringList z ;
+
+	QString a = utility::userName() ;
+	QString b = QString( "/run/media/private/%1/" ).arg( a ) ;
+	QString c = QString( "/home/%1/" ).arg( a ) ;
+
+	int k = x.size() ;
+
+	for( int i = 0 ; i < k ; i++ ){
+		const QString& e = x.at( i ) ;
+		if( e.startsWith( a ) || e.startsWith( b ) ){
+			z.append( y.at( i ) ) ;
+		}
+	}
+
+	m_removeAllVolumes = true ;
+	Task * t = new Task() ;
+	t->setRemoveList( z ) ;
+	connect( t,SIGNAL( done() ),this,SLOT( enableAll_1() ) ) ;
+	t->start( Task::unmountAll ) ;
+}
+
 void MainWindow::pbUpdate()
 {
 	this->disableAll() ;
@@ -903,11 +940,20 @@ void MainWindow::disableAll()
 
 void MainWindow::enableAll()
 {
+	if( m_removeAllVolumes ){
+		return ;
+	}
 	m_ui->pbclose->setEnabled( true ) ;
 	m_ui->pbupdate->setEnabled( true ) ;
 	m_ui->tableWidget->setEnabled( true ) ;
 	m_ui->pbmount->setEnabled( true ) ;
 	m_ui->tableWidget->setFocus() ;
+}
+
+void MainWindow::enableAll_1()
+{
+	m_removeAllVolumes = false ;
+	this->enableAll() ;
 }
 
 #define zuluMOUNT_AUTOPATH "/.zuluCrypt/zuluMount-gui.autoMountPartitions"

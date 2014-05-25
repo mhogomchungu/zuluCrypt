@@ -63,6 +63,7 @@ private slots:
 	void pbUpdate( void ) ;
 	void pbMount( void ) ;
 	void slotMount( void ) ;
+	void unMountAll( void ) ;
 	void pbUmount( void ) ;
 	void pbClose( void ) ;
 	void slotUnmountComplete( int,QString ) ;
@@ -70,6 +71,7 @@ private slots:
 	void slotTrayClicked( QSystemTrayIcon::ActivationReason ) ;
 	void slotCurrentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ;
 	void enableAll( void ) ;
+	void enableAll_1( void ) ;
 	void slotOpenFolder( void ) ;
 	void slotOpenSharedFolder( void ) ;
 	void fileManagerOpenStatus( int exitCode, int exitStatus,int startError ) ;
@@ -119,6 +121,7 @@ private:
 	bool m_autoMount ;
 	QString m_sharedFolderPath ;
 	bool m_autoOpenFolderOnMount ;
+	bool m_removeAllVolumes ;
 };
 
 #endif // MAINWINDOW_H
