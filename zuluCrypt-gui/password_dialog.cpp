@@ -365,7 +365,7 @@ void passwordDialog::getPassWord( QString password )
 	_internalPassWord = password ;
 }
 
-void passwordDialog::getPassWord()
+void passwordDialog::taskFinished()
 {
 	if( m_key.isEmpty() ){
 		DialogMsg msg( this ) ;
@@ -386,9 +386,7 @@ void passwordDialog::walletIsOpen( bool opened )
 			m_key = utility::getKeyFromWallet( m_wallet,m_ui->OpenVolumePath->text() ) ;
 		} ;
 
-		Task * t = new Task() ;
-		connect( t,SIGNAL( finished() ),this,SLOT( getPassWord() ) ) ;
-		t->start( Task::getKey,_getKey ) ;
+		Task::task( this,_getKey ) ;
 	}else{
 		_internalPassWord.clear() ;
 		this->enableAll() ;

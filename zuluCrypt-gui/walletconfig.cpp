@@ -85,16 +85,15 @@ void walletconfig::itemClicked( QTableWidgetItem * item )
 	int r = msg.ShowUIYesNo( tr( "warning" ),tr( "are you sure you want to delete a volume with an id of \"%1\"?" ).arg( volumeID ) ) ;
 
 	if( r == QMessageBox::Yes ){
-		m_action = int( Task::deleteKey ) ;
+
+		m_action = walletconfig::deleteKey ;
 
 		auto _deleteKey = [&](){
 			m_wallet->deleteKey( m_volumeID ) ;
 			m_wallet->deleteKey( m_volumeID + COMMENT ) ;
 		} ;
 
-		Task * t = new Task() ;
-		connect( t,SIGNAL( finished() ),this,SLOT( TaskFinished() ) ) ;
-		t->start( Task::deleteKey,_deleteKey ) ;
+		Task::task( this,_deleteKey ) ;
 	}else{
 		this->enableAll() ;
 		m_ui->tableWidget->setFocus() ;
@@ -117,19 +116,17 @@ void walletconfig::add( QString volumeID,QString comment,QString key )
 	m_volumeID = volumeID ;
 	m_key      = key ;
 
-	m_action = int( Task::addKey ) ;
+	m_action = walletconfig::addKey ;
 
 	auto _addKey = [&](){
 		m_wallet->addKey( m_volumeID,m_key.toLatin1() ) ;
 		m_wallet->addKey( m_volumeID + COMMENT,m_comment.toLatin1() ) ;
 	} ;
 
-	Task * t = new Task() ;
-	connect( t,SIGNAL( finished() ),this,SLOT( TaskFinished() ) ) ;
-	t->start( Task::addKey,_addKey ) ;
+	Task::task( this,_addKey ) ;
 }
 
-void walletconfig::TaskFinished()
+void walletconfig::taskFinished()
 {
 	auto _addEntry = [&](){
 
@@ -153,10 +150,8 @@ void walletconfig::TaskFinished()
 					return it.getValue() ;
 				}
 			}
-			/*
-			 * we are not supposed to get here
-			 */
-			return m_bogusEntry ;
+			static QByteArray ShouldNotGetHere ;
+			return ShouldNotGetHere ;
 		} ;
 
 		if( !m_keys.empty() ){
@@ -183,13 +178,12 @@ void walletconfig::TaskFinished()
 				}
 			}
 		}
-
 	} ;
 
-	switch(	Task::action( m_action ) ){
-		case Task::addKey    : _addEntry()    ; break ;
-		case Task::deleteKey : _deleteEntry() ; break ;
-		case Task::getAllKeys: _showEntries() ; break ;
+	switch(	m_action ){
+		case walletconfig::addKey    : _addEntry()    ; break ;
+		case walletconfig::deleteKey : _deleteEntry() ; break ;
+		case walletconfig::getAllKeys: _showEntries() ; break ;
 		default : ;
 	}
 
@@ -227,15 +221,14 @@ void walletconfig::ShowUI( LxQt::Wallet::walletBackEnd backEnd )
 void walletconfig::walletIsOpen( bool opened )
 {
 	if( opened ){
-		m_action = int( Task::getAllKeys ) ;
+
+		m_action = walletconfig::getAllKeys ;
 
 		auto _getKeys = [&](){
 			m_keys = m_wallet->readAllKeyValues() ;
 		} ;
 
-		Task * t = new Task() ;
-		connect( t,SIGNAL( finished() ),this,SLOT( TaskFinished() ) ) ;
-		t->start( Task::getAllKeys,_getKeys ) ;
+		Task::task( this,_getKeys ) ;
 	}else{
 		emit couldNotOpenWallet() ;
 		this->HideUI() ;

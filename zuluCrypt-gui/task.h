@@ -47,7 +47,15 @@ class Task : public QObject,public QRunnable
 {
 	Q_OBJECT
 public:
-	typedef enum{
+	/*
+	 * object argument is expected to point to a QObject object
+	 * that has a slot named as the third argument of the function.
+	 * The slot will be called when the function given by the second
+	 * argument returns.
+	 */
+	static void task( QObject * object,function_t,const char * slotName = "taskFinished" ) ;
+
+	enum action{
 		exeTask,
 		closeAllVolumeTask,
 		closeVolumeTask,
@@ -55,20 +63,17 @@ public:
 		updateVolumeList,
 		openMountPoint,
 		volumeTask,
-		addKey,
-		deleteKey,
-		getAllKeys,
-		getKey,
 		LUKSSlotUsage,
-		sendKey
-	}action ;
-
+		sendKey,
+		runTask
+	};
 	explicit Task( const QString& exe ) ;
 	Task( const QString&,const QString& ) ;
 	explicit Task( QTableWidget * ) ;
 	Task() ;
+	Task( QObject * object,const char * slotName ) ;
 	~Task() ;
-	void start( Task::action = Task::exeTask,std::function< void( void ) > function = 0 ) ;
+	void start( Task::action = Task::exeTask,function_t function = [](){} ) ;
 signals:
 	void partitionProperties( QStringList ) ;
 	void addItemToTable( QString,QString,QString ) ;
@@ -83,14 +88,11 @@ private:
 	void openMountPointTask( void ) ;
 	void updateVolumeListTask( void ) ;
 	void run( void ) ;
+	void taskRun( void ) ;
 	void runExeTask( void ) ;
 	void runCloseAllVolumeTask( void ) ;
 	void runVolumePropertiesTask( void ) ;
 	void runVolumeTask( void ) ;
-	void addKeyTask( void ) ;
-	void deleteKeyTask( void ) ;
-	void getAllKeysTask( void ) ;
-	void getKeyTask( void ) ;
 	void LUKSSlotUsageTask( void ) ;
 	void keySend( void ) ;
 	QString m_exe ;
@@ -109,6 +111,8 @@ private:
 	int m_exitCode ;
 	int m_exitStatus ;
 	int m_startError ;
+	QObject * m_qObject ;
+	const char * m_slotName ;
 };
 
 #endif // RUNINTHREAD_H

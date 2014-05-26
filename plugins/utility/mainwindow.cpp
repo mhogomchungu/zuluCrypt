@@ -24,7 +24,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-MainWindow::MainWindow( QWidget * parent ) : QWidget( parent ),m_ui( new Ui::MainWindow ),m_findExecutable( 0 )
+MainWindow::MainWindow( QWidget * parent ) : QWidget( parent ),m_ui( new Ui::MainWindow )
 {
 	m_ui->setupUi( this ) ;
 	this->setFixedSize( this->size() ) ;
@@ -52,6 +52,34 @@ MainWindow::MainWindow( QWidget * parent ) : QWidget( parent ),m_ui( new Ui::Mai
 	ac->setShortcuts( keys ) ;
 	connect( ac,SIGNAL( triggered() ),this,SLOT( defaultButton() ) ) ;
 	this->addAction( ac ) ;
+
+	m_findExecutable = []( QVector<QString>& exe ){
+		if( exe.isEmpty() ){
+			return QString() ;
+		}
+
+		QString e ;
+
+		for( auto& it : exe ){
+			auto _not_found = [&]( const char * path ){
+				e = path + it ;
+				bool r = QFile::exists( e ) ;
+				if( r ){
+					it = e ;
+				}
+				return r == false ;
+			} ;
+
+			if( _not_found( "/usr/local/bin/" ) ){
+				if( _not_found( "/usr/bin/" ) ){
+					if( _not_found( "/usr/sbin/" ) ){
+						return it ;
+					}
+				}
+			}
+		}
+		return QString() ;
+	} ;
 }
 
 void MainWindow::Show()
@@ -186,36 +214,6 @@ void MainWindow::pbOpen()
 		if( !QFile::exists( m_path ) ){
 			return msg.ShowUIOK( tr( "ERROR" ),tr( "invalid path to %1 keyfile" ).arg( m_appName ) ) ;
 		}
-	}
-
-	if( m_findExecutable == 0 ){
-		m_findExecutable = []( QVector<QString>& exe ){
-			if( exe.isEmpty() ){
-				return QString() ;
-			}
-
-			QString e ;
-
-			for( auto& it : exe ){
-				auto _not_found = [&]( const char * path ){
-					e = path + it ;
-					bool r = QFile::exists( e ) ;
-					if( r ){
-						it = e ;
-					}
-					return r == false ;
-				} ;
-
-				if( _not_found( "/usr/local/bin/" ) ){
-					if( _not_found( "/usr/bin/" ) ){
-						if( _not_found( "/usr/sbin/" ) ){
-							return it ;
-						}
-					}
-				}
-			}
-			return QString() ;
-		} ;
 	}
 
 	/*

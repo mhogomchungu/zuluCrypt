@@ -24,6 +24,7 @@
 #include <QTableWidgetItem>
 #include <QTableWidget>
 #include <QVector>
+#include <QMetaObject>
 
 #include <unistd.h>
 
@@ -36,7 +37,14 @@ Task::Task()
 {
 }
 
-Task::Task( const QString& exe ) : m_exe( exe ),m_status( -1 ),m_path( exe ),m_partitionType( exe )
+Task::Task( QObject * object ,const char * slotName ) : m_qObject( object ),
+	m_slotName( slotName )
+{
+
+}
+
+Task::Task( const QString& exe ) : m_exe( exe ),
+	m_status( -1 ),m_path( exe ),m_partitionType( exe )
 {
 }
 
@@ -165,26 +173,6 @@ void Task::runVolumeTask()
 	}
 }
 
-void Task::addKeyTask()
-{
-	m_function() ;
-}
-
-void Task::deleteKeyTask()
-{
-	m_function() ;
-}
-
-void Task::getAllKeysTask()
-{
-	m_function() ;
-}
-
-void Task::getKeyTask()
-{
-	m_function() ;
-}
-
 void Task::LUKSSlotUsageTask()
 {
 	emit finished( utility::luksEmptySlots( m_path ) ) ;
@@ -205,13 +193,16 @@ void Task::run()
 		case Task::updateVolumeList     : return this->updateVolumeListTask() ;
 		case Task::openMountPoint       : return this->openMountPointTask() ;
 		case Task::volumeTask           : return this->runVolumeTask() ;
-		case Task::addKey               : return this->addKeyTask() ;
-		case Task::deleteKey            : return this->deleteKeyTask() ;
-		case Task::getAllKeys           : return this->getAllKeysTask() ;
-		case Task::getKey               : return this->getKeyTask() ;
 		case Task::LUKSSlotUsage        : return this->LUKSSlotUsageTask() ;
 		case Task::sendKey              : return this->keySend() ;
+		case Task::runTask              : return this->taskRun() ;
 	}
+}
+
+void Task::taskRun()
+{
+	m_function() ;
+	QMetaObject::invokeMethod( m_qObject,m_slotName,Qt::QueuedConnection ) ;
 }
 
 Task::~Task()
@@ -219,10 +210,12 @@ Task::~Task()
 	emit finished() ;
 	emit finished( m_status ) ;
 	emit finished( m_status,m_output ) ;
-	if( m_action == Task::getKey ){
-		emit finished( m_key ) ;
-	}else if( m_action == Task::volumePropertiesTask ){
-		emit finished( m_volumeProperties ) ;
-	}
+	emit finished( m_volumeProperties ) ;
 	emit errorStatus( m_exitCode,m_exitStatus,m_startError ) ;
+}
+
+void Task::task( QObject * object,function_t f,const char * slotName )
+{
+	Task * t = new Task( object,slotName ) ;
+	t->start( Task::runTask,f ) ;
 }

@@ -56,8 +56,11 @@ private slots:
 	void cancel( void ) ;
 	void pbAdd( void ) ;
 	void walletIsOpen( bool ) ;
-	void TaskFinished( void ) ;
+	void taskFinished( void ) ;
 private:
+	enum action{
+		deleteKey,addKey,getAllKeys
+	};
 	void enableAll( void ) ;
 	void disableAll( void ) ;
 	Ui::walletconfig * m_ui ;
@@ -65,10 +68,9 @@ private:
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 
 	LxQt::Wallet::Wallet * m_wallet ;
-	int m_action ;
 	QVector<LxQt::Wallet::walletKeyValues> m_keys ;
 	int m_row ;
-	QByteArray m_bogusEntry ;
+	walletconfig::action m_action ;
 	QString m_volumeID ;
 	QString m_comment ;
 	QString m_key ;

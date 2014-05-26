@@ -75,7 +75,7 @@ private slots :
 	void cbStateChanged( int ) ;
 	void fileManagerOpenStatus( int exitCode,int exitStatus,int startError ) ;
 	void getPassWord( QString ) ;
-	void getPassWord( void ) ;
+	void taskFinished( void ) ;
 private :
 	void openVolume( void ) ;
 	QString getUUIDFromPath( const QString& ) ;
