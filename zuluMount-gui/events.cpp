@@ -144,16 +144,18 @@ void events::run()
 
 	auto _device_action = [&]( const struct inotify_event * event ){
 
+		/*
+		 * /dev/md/ folder seem to be deleted when the last entry in it is removed and
+		 * created before the first entry is added.To account for this,monitor for the
+		 * folder creation to start monitoring its contents.
+		 */
+
 		auto _stringsAreEqual = []( const char * x,const char * y ){
 			return strcmp( x,y ) == 0 ;
 		} ;
 
 		if( event->wd == dev && event->mask & IN_CREATE ){
-			/*
-			 * /dev/md path seem to be deleted when the last entry in it is removed and
-			 * created before the first entry is added.To account for this,monitor for the
-			 * folder creation to start monitoring its contents if it get created after we have started
-			 */
+
 			if( _stringsAreEqual( "md",event->name ) ){
 				md = inotify_add_watch( fd,"/dev/md",IN_DELETE ) ;
 				return false ;
@@ -193,7 +195,7 @@ void events::run()
 		return event ;
 	} ;
 
-	auto _readEvents = [&](){
+	auto _events = [&](){
 
 		auto r = read( fd,buffer,BUFF_SIZE ) ;
 		lastEvent    = buffer + r ;
@@ -225,7 +227,7 @@ void events::run()
 		}
 	} ;
 
-	while( _readEvents() ){
+	while( _events() ){
 
 		while( _hasEvent() ){
 

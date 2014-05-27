@@ -578,7 +578,7 @@ int zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t 
 			if( f != StringVoid ){
 				/*
 				 * The volume is encrypted and mounted by any user,probably a different user
-				 * since this user condition is above
+				 * since volumes mounted by this user are already checked.
 				 */
 				_print_device_properties( f,mapper_prefix,mapper_length ) ;
 			}else{
