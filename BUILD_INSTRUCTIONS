@@ -12,6 +12,9 @@ This tool depends on the following packages installed to build, their precise na
 9. libgcrypt-devel
 10.libsecret-devel( optional dependency to store keys in gnome's libsecret )
 11.kde-devel( optional dependency to store keys in kde's kwallet )
+12.pkg-config
+13.libdevmapper-devel
+14.uuid-devel
 
 The package is made up of two components,the command line "pure C" based backend components and GUI Qt/C++ based front end components.
 

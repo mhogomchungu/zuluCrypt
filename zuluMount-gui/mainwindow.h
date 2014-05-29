@@ -47,6 +47,7 @@ public:
 	void start( void ) ;
 signals:
 	void result( int,QString ) ;
+	void unlistVolume( QString ) ;
 public slots:
 	void raiseWindow( void ) ;
 	void raiseWindow( QString ) ;

@@ -53,6 +53,34 @@ Task::FileHandle::~FileHandle()
 	}
 }
 
+class runnable : public QRunnable
+{
+public:
+	explicit runnable( function_t f )
+	{
+		m_function = f ;
+		QThreadPool * t = QThreadPool::globalInstance() ;
+		t->setMaxThreadCount( 10 ) ;
+		t->start( this ) ;
+	}
+private:
+	void run( void )
+	{
+		m_function() ;
+	}
+	function_t m_function ;
+};
+
+void Task::exec( function_t f )
+{
+	new runnable( f ) ;
+}
+
+void Task::wait( int s )
+{
+	sleep( s ) ;
+}
+
 Task::Task()
 {
 }
@@ -154,7 +182,6 @@ void Task::run()
 		case Task::getKey              : return this->getKeyTask() ;
 		case Task::sendKey             : return this->keySend() ;
 		case Task::deviceProperty      : return this->deviceProperties() ;
-		case Task::removeList          : return this->removeVolumeList() ;
 		case Task::unmountAll          : return this->unMountAllVolumes() ;
 	}
 }
@@ -549,16 +576,6 @@ void Task::deviceProperties()
 		case Task::md_device : _mdRaidDevice( device ) ; break ;
 		case Task::dm_device : _dmDevice( device )     ; break ;
 	}
-}
-
-void Task::removeVolumeList()
-{
-	for( const auto& it : m_removeList ){
-		sleep( 1 ) ;
-		emit removeVolume( it ) ;
-	}
-
-	emit removeVolume( "" ) ;
 }
 
 Task::~Task()

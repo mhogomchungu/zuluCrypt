@@ -50,8 +50,12 @@ public:
 		int m_fd = -1 ;
 	};
 
+	static void exec( function_t ) ;
+	static void wait( int ) ;
+
 	Task() ;
 	~Task() ;
+	
 	enum Action{
 		Update,
 		Mount,
@@ -66,7 +70,6 @@ public:
 		getKey,
 		sendKey,
 		deviceProperty,
-		removeList,
 		unmountAll
 	} ;
 
@@ -128,7 +131,6 @@ private:
 	void getKeyTask( void ) ;
 	void keySend( void ) ;
 	void deviceProperties( void ) ;
-	void removeVolumeList( void ) ;
 	bool isSystemVolume( const QString& ) ;
 	void unMountAllVolumes( void ) ;
 	LxQt::Wallet::Wallet * m_wallet ;

@@ -886,6 +886,7 @@ void MainWindow::removeDisappearedEntries( const QVector< volumeEntryProperties 
 	QStringList l = tablewidget::tableColumnEntries( table,0 ) ;
 
 	auto _hasNoEntry = [&]( const QString& volume ){
+		
 		for( const auto& it : entries ){
 			if( it.volumeName() == volume ){
 				if( it.volumeSize() == "Nil" ){
@@ -909,10 +910,20 @@ void MainWindow::removeDisappearedEntries( const QVector< volumeEntryProperties 
 	if( z.isEmpty() ){
 		this->removeVolume( "" ) ;
 	}else{
-		Task * t = new Task() ;
-		t->setRemoveList( z ) ;
-		connect( t,SIGNAL( removeVolume( QString ) ),this,SLOT( removeVolume( QString ) ) ) ;
-		t->start( Task::removeList ) ;
+		connect( this,SIGNAL( unlistVolume( QString ) ),
+			 this,SLOT( removeVolume( QString ) ) ) ;
+
+		auto _unlistVolume = [ &,z ](){
+
+			for( const auto& it : z ){
+				Task::wait( 1 ) ;
+				emit unlistVolume( it ) ;
+			}
+
+			emit unlistVolume( "" ) ;
+		} ;
+
+		Task::exec( _unlistVolume ) ;
 	}
 }
 

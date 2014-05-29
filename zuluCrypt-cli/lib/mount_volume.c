@@ -125,6 +125,7 @@ static const char * _remove_duplicates( string_t st )
 		return StringContent( st ) ;
 	}
 }
+
 static string_t set_mount_options( m_struct * mst )
 {
 	/*
@@ -328,7 +329,7 @@ static int mount_volume( const m_struct * mst )
 	if( h == 0 && mst->m_flags != MS_RDONLY ){
 		chmod( mst->m_point,S_IRWXU|S_IRWXG|S_IRWXO ) ;
 	}
-	return h;
+	return h ;
 }
 
 int zuluCryptFileSystemIsFUSEbased( const char * device )
@@ -410,7 +411,7 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 		return zuluExit( 4,fd,opts,fs,loop ) ;
 	}
 
-	if( StringEqual( fs,"crypto_LUKS" ) ){
+	if( StringStartsWith( fs,"crypto" ) ){
 		/*
 		 * we cant mount an encrypted volume, exiting
 		 */
