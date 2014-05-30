@@ -573,16 +573,19 @@ QString utility::getUUIDFromPath( const QString& dev )
 	QString device = dev ;
 	device = device.replace( QString( "\"" ),QString( "\"\"\"" ) ) ;
 	QString exe = QString( "%1 -U -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( device ) ;
-	QProcess p ;
-	p.start( exe ) ;
-	p.waitForFinished() ;
-	QString uuid ;
-	if( p.exitCode() == 0 ){
-		uuid = QString( p.readAll() ) ;
-		uuid.remove( QString( "\n" ) ) ;
+
+	auto r = utility::Task( exe ) ;
+	if( r.success() ){
+		QString uuid = r.output() ;
+		uuid.remove( "\n" ) ;
+		if( uuid == "UUID=\"\"" ){
+			return QString() ;
+		}else{
+			return uuid ;
+		}
+	}else{
+		return QString() ;
 	}
-	p.close() ;
-	return uuid ;
 }
 
 QString utility::getVolumeID( const QString& id )
