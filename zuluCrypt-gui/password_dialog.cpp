@@ -136,7 +136,6 @@ void passwordDialog::pbPlugin()
 		if( LxQt::Wallet::backEndIsSupported( LxQt::Wallet::kwalletBackEnd ) ){
 			list.insert( 1,tr( KWALLET ) ) ;
 		}
-
 		if( LxQt::Wallet::backEndIsSupported( LxQt::Wallet::secretServiceBackEnd ) ){
 			list.insert( 2,tr( GNOME_WALLET ) ) ;
 		}
@@ -304,7 +303,7 @@ void passwordDialog::passphraseFromFileOption()
 	m_ui->pbKeyOption->setIcon( QIcon( QString( ":/keyfile.png" ) ) ) ;
 	m_ui->pushButtonPlugin->setEnabled( true ) ;
 	m_ui->pbKeyOption->setEnabled( true ) ;
-	m_ui->PassPhraseField->setEnabled( false ) ;
+	m_ui->PassPhraseField->setEnabled( true ) ;
 }
 
 void passwordDialog::clickedPassPhraseFromFileButton()
@@ -470,7 +469,7 @@ void passwordDialog::openVolume()
 			return this->enableAll() ;
 		}else{
 			passtype = QString( "-f" ) ;
-			keyPath = utility::resolvePath( m_key ) ;
+			keyPath = utility::resolvePath( m_key ).replace( "\"","\"\"\"" ) ;
 		}
 	}else if( keySource == passwordDialog::key ){
 		passtype = QString( "-f" ) ;

@@ -13,6 +13,9 @@
     <height>302</height>
    </rect>
   </property>
+  <property name="acceptDrops">
+   <bool>true</bool>
+  </property>
   <property name="windowTitle">
    <string>add a key to a luks volume</string>
   </property>

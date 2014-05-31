@@ -430,6 +430,7 @@ void createvolume::pbCreateClicked()
 			return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
 		}else{
 			source = QString( "-f" ) ;
+			passphrase_1 = utility::resolvePath( passphrase_1 ).replace( "\"","\"\"\"" ) ;
 		}
 	}else{
 		if( passphrase_1 != passphrase_2 ){
@@ -486,7 +487,7 @@ void createvolume::pbCreateClicked()
 			Task * t = new Task( y,x ) ;
 			t->start( Task::sendKey ) ;
 		}else{
-			y = x ;
+			y = utility::resolvePath( x ).replace( "\"","\"\"\"" ) ;
 		}
 
 		quint64 r = m_ui->lineEditHiddenSize->text().toInt() ;

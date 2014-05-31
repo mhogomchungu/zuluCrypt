@@ -13,6 +13,9 @@
     <height>395</height>
    </rect>
   </property>
+  <property name="acceptDrops">
+   <bool>true</bool>
+  </property>
   <property name="windowTitle">
    <string>create a new volume</string>
   </property>
@@ -192,13 +195,6 @@
      <bool>true</bool>
     </property>
    </widget>
-   <zorder>rbPassphrase</zorder>
-   <zorder>rbPassphraseFromFile</zorder>
-   <zorder>lineEditPassphrase1</zorder>
-   <zorder>pbOpenKeyFile</zorder>
-   <zorder>labelPassPhrase</zorder>
-   <zorder>lineEditPassPhrase2</zorder>
-   <zorder>labelRepeatPassPhrase</zorder>
   </widget>
   <widget class="QComboBox" name="comboBoxFS">
    <property name="geometry">

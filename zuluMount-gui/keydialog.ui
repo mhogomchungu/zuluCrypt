@@ -10,6 +10,9 @@
     <height>193</height>
    </rect>
   </property>
+  <property name="acceptDrops">
+   <bool>true</bool>
+  </property>
   <property name="windowTitle">
    <string>unlock and mount a luks volume</string>
   </property>

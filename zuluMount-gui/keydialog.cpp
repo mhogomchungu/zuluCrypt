@@ -460,7 +460,8 @@ void keyDialog::openVolume()
 		t->start( Task::sendKey ) ;
 
 	}else if( keyType == keyDialog::keyfile ){
-		m = QString( "-f ") + m_ui->lineEditKey->text().replace( "\"","\"\"\"" ) ;
+		QString e = m_ui->lineEditKey->text().replace( "\"","\"\"\"" ) ;
+		m = QString( "-f ") + utility::resolvePath( e ) ;
 	}else if( keyType == keyDialog::plugin ){
 		if( m_key.isEmpty() ){
 			m = QString( "-G ") + m_ui->lineEditKey->text().replace( "\"","\"\"\"" ) ;
@@ -545,7 +546,7 @@ void keyDialog::keyFile()
 	m_ui->label->setText( tr( "keyfile path" ) ) ;
 	m_ui->pbkeyOption->setEnabled( true ) ;
 	m_ui->lineEditKey->clear() ;
-	m_ui->lineEditKey->setEnabled( false ) ;
+	m_ui->lineEditKey->setEnabled( true ) ;
 }
 
 void keyDialog::pbCancel()

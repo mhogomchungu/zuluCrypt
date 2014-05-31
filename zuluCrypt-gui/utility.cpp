@@ -477,13 +477,15 @@ bool utility::canCreateFile( const QString& path )
 QString utility::resolvePath( const QString& path )
 {
 	if( path.size() == 1 && path.at( 0 ) == QChar( '~' ) ){
-		return QDir::homePath() + QString( "/" ) ;
-	}else if( path.mid( 0,2 ) == QString( "~/" ) ){
-		return QDir::homePath() + QString( "/" ) + path.mid( 2 ) ;
-	}else if( path.mid( 0,5 ) == QString( "UUID=") ){
+		return QDir::homePath() + "/" ;
+	}else if( path.startsWith( "~/" ) ){
+		return QDir::homePath() + "/" + path.mid( 2 ) ;
+	}else if( path.startsWith( "UUID=") ){
 		return path ;
-	}else if( path.startsWith( QString( "/dev/") ) ){
+	}else if( path.startsWith( "/dev/" ) ){
 		return path ;
+	}else if( path.startsWith( "file://" ) ){
+		return path.mid( 7 ) ;
 	}else{
 		QDir r( path ) ;
 		QString rp = r.canonicalPath() ;

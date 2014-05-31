@@ -188,7 +188,7 @@ void luksdeletekey::deleteKey( QStringList l )
 	if( l.isEmpty() ){
 		msg.ShowUIOK( tr( "ERROR!" ),tr( "volume is not a luks volume" ) ) ;
 		return this->enableAll() ;
-	}else if( l.at( 0 ) == QString( "1" ) ){
+	}else if( l.first() == "1" ){
 		QString s = tr( "There is only one last key in the volume." ) ;
 		s = s + tr( "\nDeleting it will make the volume unopenable and lost forever." ) ;
 		s = s + tr( "\nAre you sure you want to delete this key?" ) ;
@@ -209,7 +209,7 @@ void luksdeletekey::deleteKey( QStringList l )
 	QString keypath ;
 
 	if( m_ui->rbPassphraseFromFile->isChecked() ){
-		keypath = utility::resolvePath( m_ui->lineEditPassphrase->text() ) ;
+		keypath = utility::resolvePath( m_ui->lineEditPassphrase->text() ).replace( "\"","\"\"\"" ) ;
 	}else{
 		keypath = utility::keyPath() ;
 		Task * t = new Task( keypath,m_ui->lineEditPassphrase->text() ) ;

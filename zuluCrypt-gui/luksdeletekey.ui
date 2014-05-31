@@ -13,6 +13,9 @@
     <height>163</height>
    </rect>
   </property>
+  <property name="acceptDrops">
+   <bool>true</bool>
+  </property>
   <property name="windowTitle">
    <string>remove a key from a volume</string>
   </property>
