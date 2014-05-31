@@ -39,7 +39,7 @@
 static int _mount_get_opts( int argc,char * argv[],ARGS * args )
 {
 	int c ;
-	while( ( c = getopt( argc,argv,"cEMLntASNshlPmuDd:z:e:Y:p:f:G:o:" ) ) != -1 ) {
+	while( ( c = getopt( argc,argv,"cEMLntASNshlPmuDd:z:e:Y:p:f:G:o:F:" ) ) != -1 ) {
 		switch( c ){
 			case 'M' : args->share   = 1      ; break ;
 			case 'n' : args->mpo     = 1      ; break ;
@@ -67,6 +67,7 @@ static int _mount_get_opts( int argc,char * argv[],ARGS * args )
 				   args->key_source = "-f"; break ;
 			case 'G' : args->key     = optarg ;
 				   args->key_source = "-G"; break ;
+			case 'F' : args->tcrypt_multiple_keyfiles = optarg ; break ;
 			default  : return -1 ;
 		}
 	}
@@ -364,7 +365,8 @@ options:\n\
 
 	doc5= gettext( "\
 -o -- offset in sectors on where the volume starts in the volume.The volume is assumed to be plain type with this option\n\
-      and the option must be given when -u or -s arguments are used with a volume opened with this option\n" ) ;
+      and the option must be given when -u or -s arguments are used with a volume opened with this option\n\
+-F -- path to truecrypt multiple keyfiles.Keyfiles are separated by \":\" character\n\n" ) ;
 
 	doc6= gettext( "\
 examples:\n\

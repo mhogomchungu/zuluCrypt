@@ -108,12 +108,7 @@ int zuluCryptVolumeIsTcrypt( const char * device,const char * key,int key_source
 	}
 }
 
-static void _set_multiple_keys( struct crypt_params_tcrypt * params )
-{
-	if( params ){;}
-}
-
-static int _open_tcrypt_volume( const char * device,const open_struct_t * opts,const char * key )
+static int _open_tcrypt_volume( const char * device,const open_struct_t * opts )
 {
 	uint32_t flags ;
 
@@ -127,31 +122,17 @@ static int _open_tcrypt_volume( const char * device,const open_struct_t * opts,c
 	}else{
 		memset( &params,'\0',sizeof( struct crypt_params_tcrypt ) ) ;
 
-		if( opts->tcrypt_multiple_keys ){
+		params.keyfiles_count   = opts->tcrypt_keyfiles_count ;
+		params.keyfiles         = ( const char ** ) opts->tcrypt_keyfiles ;
+
+		params.passphrase       = opts->key ;
+		params.passphrase_size  = opts->key_len ;
+
+		if( params.passphrase_size > 64 ){
 			/*
-			 * TODO: set up necessary keys if a user wants to use a passphrase and one or more keyfiles
-			 * working current idea is that we will get the passphrase and contents of all keyfiles in a single
-			 * buffer with some sort of a data structure that holds everything.This routine will be responsible
-			 * for deconstructing the structure and create keyfiles in a way that the API expects them.These keyfiles
-			 * created should be deleted at the end of this routine.
-			 *
-			 * WISHLIST: It will be nice if the API could also take contents of keyfiles instead of only paths to keyfiles.
+			 * truecrypt passphrase is limited to 64 characters
 			 */
-			_set_multiple_keys( &params ) ;
-		}else{
-			if( opts->key_source == TCRYPT_PASSPHRASE ){
-				params.passphrase       = key ;
-				params.passphrase_size  = opts->key_len ;
-				if( params.passphrase_size > 64 ){
-					/*
-					 * truecrypt passphrase is limited to 64 characters
-					 */
-					params.passphrase_size = 64 ;
-				}
-			}else{
-				params.keyfiles_count = 1 ;
-				params.keyfiles       = &key ;
-			}
+			params.passphrase_size = 64 ;
 		}
 		if( opts->volume_type == TCRYPT_HIDDEN ){
 			params.flags = CRYPT_TCRYPT_LEGACY_MODES | CRYPT_TCRYPT_HIDDEN_HEADER ;
@@ -174,42 +155,11 @@ static int _open_tcrypt_volume( const char * device,const open_struct_t * opts,c
 
 		r = crypt_activate_by_volume_key( cd,opts->mapper_name,NULL,0,flags ) ;
 
-		if( opts->tcrypt_multiple_keys ){
-			/*
-			 * TODO: If keyfiles were created,they should be deleted here.
-			 */
-		}
 		if( r == 0 ){
 			return zuluExit( 0,cd ) ;
 		}else{
 			return zuluExit( 1,cd ) ;
 		}
-	}
-}
-
-static int _open_tcrypt( const char * device,const open_struct_t * opts )
-{
-	string_t st ;
-	int h ;
-	const char * keyfile ;
-	if( opts->key_source == TCRYPT_KEYFILE ){
-		st = zuluCryptCreateKeyFile( opts->key,opts->key_len,"open_tcrypt-" ) ;
-		if( st != StringVoid ){
-			keyfile = StringContent( st ) ;
-			h = _open_tcrypt_volume( device,opts,keyfile ) ;
-			/*
-			 * zuluCryptDeleteFile() is defined in open_path_security.c
-			 */
-			zuluCryptDeleteFile( keyfile ) ;
-			StringDelete( &st ) ;
-			return h ;
-		}else{
-			return 1 ;
-		}
-	}else if( opts->key_source == TCRYPT_KEYFILE_FILE ){
-		return _open_tcrypt_volume( device,opts,opts->key ) ;
-	}else{
-		return _open_tcrypt_volume( device,opts,opts->key ) ;
 	}
 }
 
@@ -221,7 +171,7 @@ static int _open_tcrypt_0( const open_struct_t * opt )
 	int r ;
 
 	if( StringPrefixEqual( opt->device,"/dev/" ) ){
-		return _open_tcrypt( opt->device,opt ) ;
+		return _open_tcrypt_volume( opt->device,opt ) ;
 	}else{
 		if( StringHasComponent( opt->m_opts,"ro" ) ){
 			mode = O_RDONLY ;
@@ -232,7 +182,7 @@ static int _open_tcrypt_0( const open_struct_t * opt )
 		 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop.c
 		 */
 		if( zuluCryptAttachLoopDeviceToFile( opt->device,mode,&fd,&st ) ){
-			r = _open_tcrypt( StringContent( st ),opt ) ;
+			r = _open_tcrypt_volume( StringContent( st ),opt ) ;
 			StringDelete( &st ) ;
 			close( fd ) ;
 			return r ;
@@ -247,19 +197,19 @@ int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * ke
 			 uid_t uid,unsigned long m_flags,const char * fs_opts )
 {
 	open_struct_t opts ;
+	string_t st ;
+	int r ;
+	const char * keyfile ;
 
 	memset( &opts,'\0',sizeof( open_struct_t ) ) ;
 
 	opts.device      = device ;
 	opts.mapper_name = mapper ;
-	opts.key         = key ;
-	opts.key_len     = key_len ;
 	opts.volume_type = volume_type ;
 	opts.m_point     = m_point ;
 	opts.uid         = uid ;
 	opts.m_flags     = m_flags ;
 	opts.fs_opts     = fs_opts ;
-	opts.key_source  = key_source ;
 
 	if( m_flags & MS_RDONLY ){
 		opts.m_opts = "ro" ;
@@ -267,7 +217,37 @@ int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * ke
 		opts.m_opts = "rw" ;
 	}
 
-	return zuluCryptOpenTcrypt_1( &opts ) ;
+	if( key_source == TCRYPT_KEYFILE ){
+		st = zuluCryptCreateKeyFile( key,key_len,"open_tcrypt-" ) ;
+		if( st != StringVoid ){
+
+			keyfile = StringContent( st ) ;
+
+			opts.tcrypt_keyfiles_count = 1 ;
+			opts.tcrypt_keyfiles       = ( const char * const * )&keyfile ;
+
+			r = zuluCryptOpenTcrypt_1( &opts ) ;
+			/*
+			 * zuluCryptDeleteFile() is defined in open_path_security.c
+			 */
+			zuluCryptDeleteFile( keyfile ) ;
+			StringDelete( &st ) ;
+		}else{
+			r = 1 ;
+		}
+	}else if( key_source == TCRYPT_KEYFILE_FILE ){
+
+		opts.tcrypt_keyfiles_count = 1 ;
+		opts.tcrypt_keyfiles       = ( const char * const * )&key ;
+
+		r = zuluCryptOpenTcrypt_1( &opts ) ;
+	}else{
+		opts.key_len = key_len ;
+		opts.key     = key ;
+		r = zuluCryptOpenTcrypt_1( &opts ) ;
+	}
+
+	return r ;
 }
 
 int zuluCryptOpenTcrypt_1( const open_struct_t * opts )

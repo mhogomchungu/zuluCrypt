@@ -31,6 +31,7 @@ int zuluMountCryptoMount( ARGS * args )
 	const char * fs_opts    = args->fs_opts    ;
 	int mount_point_option  = args->mpo        ;
 	int share               = args->share      ;
+	const char * tcrypt_files = args->tcrypt_multiple_keyfiles ;
 	int st ;
 	/*
 	 * the struct is declared in ../zuluCrypt-cli/bin/libzuluCrypt-exe.h
@@ -81,6 +82,8 @@ int zuluMountCryptoMount( ARGS * args )
 	opts.fs_opts            = fs_opts ;
 	opts.env                = StringListStringArray( args->env ) ;
 	opts.offset             = offset ;
+	opts.tcrypt_multiple_keyfiles = tcrypt_files ;
+	
 	/*
 	 * zuluCryptEXEOpenVolume() is defined in ../zuluCrypt-cli/bin/open_volume.c
 	 */

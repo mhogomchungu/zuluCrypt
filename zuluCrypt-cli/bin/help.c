@@ -116,7 +116,8 @@ void zuluCryptEXEHelp( void )
 	help8 = gettext( "\
 	-M         create a publicly accessible \"mirror\" of the mount point in \"/run/media/public/\" from the original\n\
 		   created in \"/run/media/private/$USER/\"\n\
-	-a         add a key to luks volume\n" ) ;
+	-a         add a key to luks volume\n\
+	-F         path to truecrypt multiple keyfiles.Keyfiles are separated by \":\" character\n" ) ;
 
 	help9 = gettext( "\
 	-J         create a plain mapper owned by the user who run the command on a device pointed by argument -d\n\
