@@ -51,9 +51,9 @@ stringList_t zuluCryptCreateKeyFiles( const char * list,char splitter )
 		e = StringContent( *it ) ;
 		it++ ;
 
-		if( max_keyfiles == 255 ){
+		if( max_keyfiles == 16 ){
 			/*
-			 * we shouldnt handle more than 256 different keyfiles
+			 * lets cap keyfiles to 16
 			 */
 			break ;
 		}else{
@@ -62,9 +62,9 @@ stringList_t zuluCryptCreateKeyFiles( const char * list,char splitter )
 
 		zuluCryptSecurityDropElevatedPrivileges() ;
 		/*
-		 * we arbitrarily limit the maximum size of a keyfile to 4096 bytes
+		 * we arbitrarily limit the maximum size of a keyfile to one megabyte
 		 */
-		if( StringGetFromFile_3( &xt,e,0,4096 ) == 0 ){
+		if( StringGetFromFile_3( &xt,e,0,1048576 ) == 0 ){
 
 			zuluCryptSecurityGainElevatedPrivileges() ;
 			/*
@@ -92,6 +92,8 @@ void zuluCryptDeleteKeyFiles( stringList_t stl )
 
 	StringListGetIterators( stl,&it,&end ) ;
 
+	zuluCryptSecurityGainElevatedPrivileges() ;
+
 	while( it != end ){
 		/*
 		 * zuluCryptDeleteFile() is defined in ../lib/file_path_security.c
@@ -99,6 +101,8 @@ void zuluCryptDeleteKeyFiles( stringList_t stl )
 		zuluCryptDeleteFile( StringContent( *it ) ) ;
 		it++ ;
 	}
+
+	zuluCryptSecurityDropElevatedPrivileges() ;
 }
 
 static char * _device_path( const char * device )
@@ -200,6 +204,20 @@ static int zuluExit_1( int st,const struct_opts * opts,const char * device,const
 		zuluCryptSecurityDropElevatedPrivileges() ;
 	}
 	return zuluExit( st,device,m_point,stl ) ;
+}
+
+static int _open_volume( const open_struct_t * volume )
+{
+	int r ;
+	zuluCryptSecurityGainElevatedPrivileges() ;
+	/*
+	 * zuluCryptOpenVolume_2() is defined in ../lib/open_volume.c
+	 */
+	r = zuluCryptOpenVolume_2( volume ) ;
+
+	zuluCryptSecurityDropElevatedPrivileges() ;
+
+	return r ;
 }
 
 int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,uid_t uid )
@@ -407,21 +425,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		}
 	}
 
-	if( tcrypt_keyfiles ){
-		/*
-		 * Here, we take a list of keyfiles supplied by the user and then copy them to a safe
-		 * location at "/run/zuluCrypt" and then we pass these safe copies to cryptsetup.
-		 *
-		 * The idea is not to let cryptsetup, a privileged process handle user managed files.
-		 */
-		stz = zuluCryptCreateKeyFiles( tcrypt_keyfiles,':' ) ;
-	}
-
 	memset( &volume,'\0',sizeof( open_struct_t ) ) ;
-
-	if( tcrypt_keyfile ){
-		volume.key_source = TCRYPT_KEYFILE ;
-	}
 
 	if( key != NULL ){
 		volume.key     = key ;
@@ -429,11 +433,6 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	}else{
 		volume.key     = "" ;
 		volume.key_len = 0 ;
-	}
-
-	if( stz != StringListVoid ){
-		volume.tcrypt_keyfiles_count = StringListSize( stz ) ;
-		volume.tcrypt_keyfiles       = ( const char ** )StringListStringArray( stz ) ;
 	}
 
 	volume.device      = device ;
@@ -446,18 +445,34 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	volume.m_flags     = m_flags ;
 
 	plugin_path = plugin_path + StringLastIndexOfChar_1( plugin_path,'/' ) + 1 ;
+
 	volume.luks_detached_header = StringHasComponent( plugin_path,"luks" ) ;
 
-	zuluCryptSecurityGainElevatedPrivileges() ;
+	if( tcrypt_keyfile ){
+		volume.key_source = TCRYPT_KEYFILE ;
+	}
 
-	/*
-	 * zuluCryptOpenVolume_2() is defined in ../lib/open_volume.c
-	 */
-	st = zuluCryptOpenVolume_2( &volume ) ;
+	if( tcrypt_keyfiles ){
+		/*
+		 * Here, we take a list of keyfiles supplied by the user and then copy them to a safe
+		 * location at "/run/zuluCrypt" and then we pass these safe copies to cryptsetup.
+		 *
+		 * The idea is not to let cryptsetup, a privileged process handle user managed files.
+		 */
+		stz = zuluCryptCreateKeyFiles( tcrypt_keyfiles,':' ) ;
 
-	zuluCryptDeleteKeyFiles( stz ) ;
+		volume.tcrypt_keyfiles_count = StringListSize( stz ) ;
+		volume.tcrypt_keyfiles       = ( const char ** )StringListStringArray( stz ) ;
 
-	zuluCryptSecurityDropElevatedPrivileges() ;
+		st = _open_volume( &volume ) ;
+
+		zuluCryptDeleteKeyFiles( stz ) ;
+
+		StringFree( volume.tcrypt_keyfiles ) ;
+		StringListDelete( &stz ) ;
+	}else{
+		st = _open_volume( &volume ) ;
+	}
 
 	/*
 	 * below two return values comes from ../lib/mount_volume.c
@@ -483,9 +498,6 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		 */
 		zuluCryptBindMountVolume( device,*m_point,m_flags ) ;
 	}
-
-	StringFree( volume.tcrypt_keyfiles ) ;
-	StringListDelete( &stz ) ;
 
 	/*
 	 * zuluCryptCheckInvalidKey() is defined in check_invalid_key.c
