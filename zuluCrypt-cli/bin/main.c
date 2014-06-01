@@ -450,7 +450,11 @@ int main( int argc,char * argv[] )
 		hide( clargs.device ) ;
 		clargs.device = StringContent( q ) ;
 	}
-
+	if( clargs.tcrypt_multiple_keyfiles != NULL ){
+		q = StringListAssignString( stl,String( clargs.tcrypt_multiple_keyfiles ) ) ;
+		hide( clargs.tcrypt_multiple_keyfiles ) ;
+		clargs.tcrypt_multiple_keyfiles = StringContent( q ) ;
+	}
 	zuluCryptSecurityLockMemory( stl ) ;
 
 	action = clargs.action ;

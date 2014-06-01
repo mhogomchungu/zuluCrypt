@@ -541,6 +541,12 @@ int main( int argc,char * argv[] )
 		strncpy( ( char * ) args.key,"x",StringLength( *k ) ) ;
 		args.key = StringContent( *k ) ;
 	}
+	if( args.tcrypt_multiple_keyfiles != NULL ){
+		k = StringListAssign( stl ) ;
+		*k = String( args.tcrypt_multiple_keyfiles ) ;
+		strncpy( ( char * ) args.tcrypt_multiple_keyfiles,"x",StringLength( *k ) ) ;
+		args.tcrypt_multiple_keyfiles = StringContent( *k ) ;
+	}
 
 	zuluCryptSecurityLockMemory( stl ) ;
 

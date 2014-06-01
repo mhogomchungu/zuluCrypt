@@ -232,8 +232,6 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 
 	stringList_t stz = StringListVoid ;
 
-	string_t zt ;
-
 	const char * key = NULL ;
 	const char * mapper_name ;
 	const char * e ;
