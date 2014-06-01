@@ -125,8 +125,8 @@ static int _open_tcrypt_volume( const char * device,const open_struct_t * opts )
 		params.keyfiles_count   = opts->tcrypt_keyfiles_count ;
 		params.keyfiles         = opts->tcrypt_keyfiles ;
 
-		params.passphrase       = opts->key_1 ;
-		params.passphrase_size  = opts->key_len_1 ;
+		params.passphrase       = opts->key ;
+		params.passphrase_size  = opts->key_len ;
 
 		if( params.passphrase_size > 64 ){
 			/*
@@ -242,8 +242,8 @@ int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * ke
 
 		r = zuluCryptOpenTcrypt_1( &opts ) ;
 	}else{
-		opts.key_len_1 = key_len ;
-		opts.key_1     = key ;
+		opts.key_len = key_len ;
+		opts.key     = key ;
 		r = zuluCryptOpenTcrypt_1( &opts ) ;
 	}
 

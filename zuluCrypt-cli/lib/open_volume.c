@@ -148,6 +148,24 @@ int zuluCryptOpenVolume_1( const open_struct_t * opts )
 	return zuluCryptOpenVolume_0( _open_mapper,opts ) ;
 }
 
+static int _open_tcrypt( open_struct_t * opts )
+{
+	int r ;
+	opts->volume_type = TCRYPT_NORMAL ;
+	/*
+	 * zuluCryptOpenTcrypt_1() is defined in open_tcrypt.c
+	 */
+	r = zuluCryptOpenTcrypt_1( opts ) ;
+	if( r != 0 ){
+		/*
+		 * retry to open the volume as a hidden TRUECRYPT volume.
+		 */
+		opts->volume_type = TCRYPT_HIDDEN ;
+		r = zuluCryptOpenTcrypt_1( opts ) ;
+	}
+	return r ;
+}
+
 /*
  * this function tries to unlock luks,plain and truecrypt volumes
  */
@@ -155,6 +173,9 @@ int zuluCryptOpenVolume_2( const open_struct_t * opts )
 {
 	int r ;
 	open_struct_t opts_1 ;
+	string_t zt = StringVoid ;
+	const char * keyfile ;
+
 	if( opts->offset != NULL ){
 		/*
 		 * zuluCryptOpenPlain_1() is defined in open_plain.c
@@ -168,17 +189,30 @@ int zuluCryptOpenVolume_2( const open_struct_t * opts )
 			/*
 			 * try to open the volume as a normal TRUECRYPT volume.
 			 */
-			opts_1.volume_type = TCRYPT_NORMAL ;
-			/*
-			 * zuluCryptOpenTcrypt_1() is defined in open_tcrypt.c
-			 */
-			r = zuluCryptOpenTcrypt_1( &opts_1 ) ;
-			if( r != 0 ){
+			if( opts_1.key_source == TCRYPT_KEYFILE ){
 				/*
-				 * retry to open the volume as a hidden TRUECRYPT volume.
+				 * zuluCryptCreateKeyFile() is defined in open_tcrypt.c
 				 */
-				opts_1.volume_type = TCRYPT_HIDDEN ;
-				r = zuluCryptOpenTcrypt_1( &opts_1 ) ;
+				zt = zuluCryptCreateKeyFile( opts_1.key,opts_1.key_len,"keyfile" ) ;
+
+				if( zt != StringVoid ){
+					keyfile = StringContent( zt ) ;
+					opts_1.tcrypt_keyfiles_count = 1 ;
+					opts_1.tcrypt_keyfiles       = &keyfile ;
+					opts_1.key = "" ;
+					opts_1.key_len = 0 ;
+
+					r = _open_tcrypt( &opts_1 ) ;
+					/*
+					 * zuluCryptDeleteFile() is defined in file_path_security.c
+					 */
+					zuluCryptDeleteFile( keyfile ) ;
+					StringDelete( &zt ) ;
+				}else{
+					r = -1 ;
+				}
+			}else{
+				r = _open_tcrypt( &opts_1 ) ;
 			}
 		}
 		if( r == 0 || r == -1 ){
