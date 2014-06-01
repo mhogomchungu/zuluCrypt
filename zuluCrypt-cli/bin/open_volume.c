@@ -51,7 +51,7 @@ stringList_t zuluCryptCreateKeyFiles( const char * list,char splitter )
 		e = StringContent( *it ) ;
 		it++ ;
 
-		if( max_keyfiles == 16 ){
+		if( max_keyfiles == 15 ){
 			/*
 			 * lets cap keyfiles to 16
 			 */
