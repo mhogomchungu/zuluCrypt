@@ -157,9 +157,6 @@ static int _open_tcrypt( open_struct_t * opts )
 	 */
 	r = zuluCryptOpenTcrypt_1( opts ) ;
 	if( r != 0 ){
-		/*
-		 * retry to open the volume as a hidden TRUECRYPT volume.
-		 */
 		opts->volume_type = TCRYPT_HIDDEN ;
 		r = zuluCryptOpenTcrypt_1( opts ) ;
 	}
@@ -185,10 +182,9 @@ int zuluCryptOpenVolume_2( const open_struct_t * opts )
 		r = zuluCryptOpenVolume_1( opts ) ;
 
 		if( r == 4 && zuluCryptVolumeIsNotLuks( opts->device ) ){
+
 			memcpy( &opts_1,opts,sizeof( open_struct_t ) ) ;
-			/*
-			 * try to open the volume as a normal TRUECRYPT volume.
-			 */
+
 			if( opts_1.key_source == TCRYPT_KEYFILE ){
 				/*
 				 * zuluCryptCreateKeyFile() is defined in open_tcrypt.c
