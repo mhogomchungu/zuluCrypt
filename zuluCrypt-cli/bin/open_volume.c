@@ -51,7 +51,7 @@ stringList_t zuluCryptCreateKeyFiles( const char * list,char splitter )
 		e = StringContent( *it ) ;
 		it++ ;
 
-		if( max_keyfiles == 256 ){
+		if( max_keyfiles == 255 ){
 			/*
 			 * we shouldnt handle more than 256 different keyfiles
 			 */
@@ -62,9 +62,9 @@ stringList_t zuluCryptCreateKeyFiles( const char * list,char splitter )
 
 		zuluCryptSecurityDropElevatedPrivileges() ;
 		/*
-		 * we arbitrarily limit the maximum size of a keyfile to 1024 bytes
+		 * we arbitrarily limit the maximum size of a keyfile to 4096 bytes
 		 */
-		if( StringGetFromFile_3( &xt,e,0,1024 ) == 0 ){
+		if( StringGetFromFile_3( &xt,e,0,4096 ) == 0 ){
 
 			zuluCryptSecurityGainElevatedPrivileges() ;
 			/*
@@ -444,7 +444,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 
 	if( stz != StringListVoid ){
 		volume.tcrypt_keyfiles_count = StringListSize( stz ) ;
-		volume.tcrypt_keyfiles       = StringListStringArray( stz ) ;
+		volume.tcrypt_keyfiles       = ( const char ** )StringListStringArray( stz ) ;
 	}
 
 	volume.device      = device ;

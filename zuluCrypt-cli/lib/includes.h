@@ -72,7 +72,7 @@ typedef struct{
 	int          key_source ;
 	int luks_detached_header ;
 	int tcrypt_keyfiles_count ;
-	const char * const * tcrypt_keyfiles ;
+	const char ** tcrypt_keyfiles ;
 	unsigned long m_flags ;
 }open_struct_t ;
 

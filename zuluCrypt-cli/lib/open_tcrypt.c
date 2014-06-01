@@ -123,7 +123,7 @@ static int _open_tcrypt_volume( const char * device,const open_struct_t * opts )
 		memset( &params,'\0',sizeof( struct crypt_params_tcrypt ) ) ;
 
 		params.keyfiles_count   = opts->tcrypt_keyfiles_count ;
-		params.keyfiles         = ( const char ** ) opts->tcrypt_keyfiles ;
+		params.keyfiles         = opts->tcrypt_keyfiles ;
 
 		params.passphrase       = opts->key_1 ;
 		params.passphrase_size  = opts->key_len_1 ;
@@ -224,7 +224,7 @@ int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * ke
 			keyfile = StringContent( st ) ;
 
 			opts.tcrypt_keyfiles_count = 1 ;
-			opts.tcrypt_keyfiles       = ( const char * const * )&keyfile ;
+			opts.tcrypt_keyfiles       = &keyfile ;
 
 			r = zuluCryptOpenTcrypt_1( &opts ) ;
 			/*
@@ -238,12 +238,12 @@ int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * ke
 	}else if( key_source == TCRYPT_KEYFILE_FILE ){
 
 		opts.tcrypt_keyfiles_count = 1 ;
-		opts.tcrypt_keyfiles       = ( const char * const * )&key ;
+		opts.tcrypt_keyfiles       = &key ;
 
 		r = zuluCryptOpenTcrypt_1( &opts ) ;
 	}else{
-		opts.key_len = key_len ;
-		opts.key     = key ;
+		opts.key_len_1 = key_len ;
+		opts.key_1     = key ;
 		r = zuluCryptOpenTcrypt_1( &opts ) ;
 	}
 
