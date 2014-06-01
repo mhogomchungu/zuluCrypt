@@ -419,9 +419,19 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	memset( &volume,'\0',sizeof( open_struct_t ) ) ;
 
 	if( tcrypt_keyfile ){
-		zuluCryptSecurityGainElevatedPrivileges() ;
-		zt = zuluCryptCreateKeyFile( key,key_len,"keyfile" ) ;
-		stz = StringListAppendString_1( stz,&zt ) ;
+		if( key != NULL ){
+			volume.key_1     = "" ;
+			volume.key_len_1 = 0 ;
+			zuluCryptSecurityGainElevatedPrivileges() ;
+			zt = zuluCryptCreateKeyFile( key,key_len,"keyfile" ) ;
+			stz = StringListAppendString_1( stz,&zt ) ;
+		}else{
+			volume.key_1     = "" ;
+			volume.key_len_1 = 0 ;
+		}
+	}else{
+		volume.key_1     = key ;
+		volume.key_len_1 = key_len ;
 	}
 
 	if( key != NULL ){

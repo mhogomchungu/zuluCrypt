@@ -125,8 +125,8 @@ static int _open_tcrypt_volume( const char * device,const open_struct_t * opts )
 		params.keyfiles_count   = opts->tcrypt_keyfiles_count ;
 		params.keyfiles         = ( const char ** ) opts->tcrypt_keyfiles ;
 
-		params.passphrase       = opts->key ;
-		params.passphrase_size  = opts->key_len ;
+		params.passphrase       = opts->key_1 ;
+		params.passphrase_size  = opts->key_len_1 ;
 
 		if( params.passphrase_size > 64 ){
 			/*

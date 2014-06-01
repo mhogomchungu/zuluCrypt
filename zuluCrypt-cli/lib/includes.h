@@ -61,10 +61,12 @@ typedef struct{
 	const char * offset ;
 	const char * mapper_name ;
 	const char * key ;
+	const char * key_1 ;
 	const char * m_point ;
 	const char * fs_opts ;
 	const char * m_opts ;
 	size_t       key_len ;
+	size_t       key_len_1 ;
 	uid_t        uid ;
 	int          volume_type ;
 	int          key_source ;
