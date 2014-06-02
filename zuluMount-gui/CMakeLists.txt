@@ -1,12 +1,13 @@
 cmake_minimum_required(VERSION 2.6)
 
-add_definitions( -D_FILE_OFFSET_BITS=64 -Wextra -Wall -pedantic -std=c++0x -I${PROJECT_BINARY_DIR}/zuluMount-gui/ -I${PROJECT_BINARY_DIR})
+add_definitions( -D_FILE_OFFSET_BITS=64 -Wextra -Wall -pedantic -std=c++11 -I${PROJECT_BINARY_DIR}/zuluMount-gui/ -I${PROJECT_BINARY_DIR})
 
 set (UI_FILES 	mainwindow.ui
 		keydialog.ui
 		mountpartition.ui
 		deviceoffset.ui
 		mountoptions.ui
+		../zuluCrypt-gui/tcrypt.ui
 )
 
 set(MOC_FILES 	mainwindow.h
@@ -18,6 +19,7 @@ set(MOC_FILES 	mainwindow.h
 		monitor_mountinfo.h
 		deviceoffset.h
 		mountoptions.h
+		../zuluCrypt-gui/tcrypt.h
  )
 
 set(SRC 	main.cpp
@@ -31,6 +33,8 @@ set(SRC 	main.cpp
 		deviceoffset.cpp
 		mountoptions.cpp
 		volumeentryproperties.cpp
+		../zuluCrypt-gui/tcrypt.cpp
+
 )
 
 if( QT5 )

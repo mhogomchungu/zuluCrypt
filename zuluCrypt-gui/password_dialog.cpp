@@ -41,6 +41,7 @@
 
 #include "ui_password.h"
 #include "openvolume.h"
+#include "tcrypt.h"
 #include "task.h"
 #include "utility.h"
 #include "dialogmsg.h"
@@ -174,9 +175,40 @@ void passwordDialog::pbPlugin()
 
 void passwordDialog::pbPluginEntryClicked( QAction * e )
 {
-	if( e->text() != tr( "cancel" ) ){
-		m_ui->PassPhraseField->setText( e->text() ) ;
+	QString text = e->text() ;
+	if( text != tr( "cancel" ) ){
+		m_ui->PassPhraseField->setText( text ) ;
 	}
+}
+
+void passwordDialog::tcryptCancelled( void )
+{
+	m_key.clear() ;
+	m_keyFiles.clear() ;
+	m_ui->cbKeyType->setCurrentIndex( passwordDialog::key ) ;
+	m_ui->PassPhraseField->setText( "" ) ;
+	this->enableAll() ;
+}
+
+void passwordDialog::tcryptGui()
+{
+	this->disableAll() ;
+	m_ui->PassPhraseField->setText( "TrueCrypt keys" ) ;
+
+	tcrypt * t = new tcrypt( this ) ;
+	connect( t,SIGNAL( Keys( QString,QString ) ),this,SLOT( keys( QString,QString ) ) ) ;
+	connect( t,SIGNAL( cancelled() ),this,SLOT( tcryptCancelled() ) ) ;
+
+	t->ShowUI() ;
+}
+
+void passwordDialog::keys( QString key,QString keyFiles )
+{
+	m_key = key ;
+	m_keyFiles = keyFiles ;
+	this->openVolume() ;
+	m_ui->cbKeyType->setCurrentIndex( passwordDialog::key ) ;
+	m_ui->PassPhraseField->setText( "" ) ;
 }
 
 void passwordDialog::cbStateChanged( int state )
@@ -248,6 +280,7 @@ void passwordDialog::cbActicated( int e )
 		case passwordDialog::key     : return this->passphraseOption() ;
 		case passwordDialog::keyfile : return this->passphraseFromFileOption() ;
 		case passwordDialog::plugin  : return this->pluginOption() ;
+		case passwordDialog::tcryptKeys : return this->tcryptGui() ;
 	}
 }
 
@@ -491,6 +524,12 @@ void passwordDialog::openVolume()
 				keyPath  = r ;
 			}
 		}
+	}else if( keySource == passwordDialog::tcryptKeys ){
+		passtype = QString( "-f" ) ;
+		keyPath = utility::keyPath() ;
+		this->sendKey( keyPath ) ;
+	}else{
+		qDebug() << "Error: uncaught condition" ;
 	}
 
 	QString a = QString( ZULUCRYPTzuluCrypt ) ;
@@ -502,7 +541,13 @@ void passwordDialog::openVolume()
 	QString e = passtype ;
 	QString f = keyPath ;
 
-	QString exe = QString( "%1 -o -d \"%2\" -m \"%3\" -e %4 %5 \"%6\"" ).arg( a ).arg( b ).arg( c ).arg( d ).arg( e ).arg( f ) ;
+	QString exe ;
+
+	if( m_keyFiles.isEmpty() ){
+		exe = QString( "%1 -o -d \"%2\" -m \"%3\" -e %4 %5 \"%6\"" ).arg( a ).arg( b ).arg( c ).arg( d ).arg( e ).arg( f ) ;
+	}else{
+		exe = QString( "%1 -o -d \"%2\" -m \"%3\" -e %4 %5 \"%6\" -F \"%7\"" ).arg( a ).arg( b ).arg( c ).arg( d ).arg( e ).arg( f ).arg( m_keyFiles ) ;
+	}
 
 	this->disableAll() ;
 

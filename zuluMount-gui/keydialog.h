@@ -77,7 +77,10 @@ private slots:
 	void doAction( QAction * ) ;
 	void showOffSetWindowOption( void ) ;
 	void showFileSystemOptionWindow( void ) ;
-private:
+	void keys( QString key,QString keyFiles ) ;
+	void tcryptCancelled( void ) ;
+private :
+	void tcryptGui( void ) ;
 	void openVolume( void ) ;
 	void enableAll( void ) ;
 	void disableAll( void ) ;
@@ -88,6 +91,7 @@ private:
 	QString m_point ;
 	QString m_folderOpener ;
 	QString m_key ;
+	QString m_keyFiles ;
 	QString m_deviceOffSet ;
 	QString m_options ;
 	QMenu * m_menu ;
@@ -96,7 +100,7 @@ private:
 	bool m_working ;
 	bool m_autoOpenFolderOnMount ;
 	LxQt::Wallet::Wallet * m_wallet ;
-	enum{ Key = 0,keyfile = 1,plugin = 2 } ;
+	enum{ Key = 0,keyfile = 1,plugin = 2,tcryptKeys = 3 } ;
 };
 
 #endif // KEYDIALOG_H

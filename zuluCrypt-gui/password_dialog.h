@@ -76,7 +76,10 @@ private slots :
 	void fileManagerOpenStatus( int exitCode,int exitStatus,int startError ) ;
 	void getPassWord( QString ) ;
 	void taskFinished( void ) ;
+	void keys( QString key,QString keyFiles ) ;
+	void tcryptCancelled( void ) ;
 private :
+	void tcryptGui( void ) ;
 	void openVolume( void ) ;
 	QString getUUIDFromPath( const QString& ) ;
 	void sendKey( const QString& sockpath ) ;
@@ -93,11 +96,12 @@ private :
 	QMenu * m_pluginMenu ;
 	QWidget * m_parent ;
 	QString m_key ;
+	QString m_keyFiles ;
 	QString m_device ;
 	QString m_point ;
 	QString m_folderOpener ;
 	LxQt::Wallet::Wallet * m_wallet ;
-	enum{ key = 0,keyfile = 1,plugin = 2 } ;
+	enum{ key = 0,keyfile = 1,plugin = 2,tcryptKeys = 3 } ;
 };
 
 #endif // PASSWORD_DIALOG_H

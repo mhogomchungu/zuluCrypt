@@ -26,6 +26,7 @@
 #include <QFileDialog>
 #include <QDir>
 #include <QTableWidget>
+#include <QDebug>
 
 #include "../zuluCrypt-gui/dialogmsg.h"
 #include "task.h"
@@ -34,6 +35,7 @@
 #include "../zuluCrypt-gui/utility.h"
 #include "../zuluCrypt-gui/lxqt_wallet/frontend/lxqt_wallet.h"
 #include "mountoptions.h"
+#include "../zuluCrypt-gui/tcrypt.h"
 
 #define KWALLET         "kde wallet"
 #define INTERNAL_WALLET "internal wallet"
@@ -119,6 +121,37 @@ bool keyDialog::eventFilter( QObject * watched,QEvent * event )
 	}else{
 		return false ;
 	}
+}
+
+void keyDialog::tcryptCancelled( void )
+{
+	m_key.clear() ;
+	m_keyFiles.clear() ;
+	m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
+	m_ui->lineEditKey->setText( "" ) ;
+	this->enableAll() ;
+}
+
+void keyDialog::tcryptGui()
+{
+	this->disableAll() ;
+	m_ui->lineEditKey->setText( "TrueCrypt keys" ) ;
+
+	tcrypt * t = new tcrypt( this ) ;
+	connect( t,SIGNAL( Keys( QString,QString ) ),this,SLOT( keys( QString,QString ) ) ) ;
+	connect( t,SIGNAL( cancelled() ),this,SLOT( tcryptCancelled() ) ) ;
+
+	t->ShowUI() ;
+}
+
+void keyDialog::keys( QString key,QString keyFiles )
+{
+	m_key = key ;
+	m_keyFiles = keyFiles ;
+	this->openVolume() ;
+	m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
+	m_ui->lineEditKey->setText( "" ) ;
+	m_ui->lineEditKey->setEnabled( false ) ;
 }
 
 void keyDialog::pbOptions()
@@ -473,10 +506,20 @@ void keyDialog::openVolume()
 			t->setKeyPath( addr ) ;
 			t->start( Task::sendKey ) ;
 		}
+	}else if( keyType == keyDialog::tcryptKeys ){
+		QString addr = utility::keyPath() ;
+		m = QString( "-f ") + addr ;
+		Task * t = new Task() ;
+		t->setKey( m_key ) ;
+		t->setKeyPath( addr ) ;
+		t->start( Task::sendKey ) ;
+	}else{
+		qDebug() << "ERROR: uncaught condition" ;
 	}
 
 	Task * t = new Task() ;
 
+	t->setKeyFilesList( m_keyFiles ) ;
 	t->setDevice( m_path ) ;
 
 	if( m_options.isEmpty() ){
@@ -515,6 +558,7 @@ void keyDialog::cbActicated( int e )
 		case keyDialog::Key     : return this->key() ;
 		case keyDialog::keyfile : return this->keyFile() ;
 		case keyDialog::plugin  : return this->plugIn() ;
+		case keyDialog::tcryptKeys : return this->tcryptGui() ;
 	}
 }
 

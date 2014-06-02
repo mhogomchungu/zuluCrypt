@@ -20,9 +20,12 @@ set( UI_FILES createfile.ui
 		walletconfig.ui
 		walletconfiginput.ui
 		openvolume.ui
+		tcrypt.ui
 )
 
-set( MOC_FILES createfile.h
+set( MOC_FILES
+		tcrypt.h
+		createfile.h
 		luksaddkey.h
 		createkeyfile.h
 		keyfiletask.h
@@ -47,7 +50,9 @@ set( MOC_FILES createfile.h
 		../zuluMount-gui/oneinstance.h
  )
 
-set( SRC createfile.cpp
+set( SRC
+	tcrypt.cpp
+	createfile.cpp
 	createvolume.cpp
 	luksdeletekey.cpp
 	openvolume.cpp

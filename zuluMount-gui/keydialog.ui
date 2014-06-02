@@ -192,6 +192,11 @@
      <string>plugin</string>
     </property>
    </item>
+   <item>
+    <property name="text">
+     <string>TrueCrypt keys</string>
+    </property>
+   </item>
   </widget>
  </widget>
  <tabstops>

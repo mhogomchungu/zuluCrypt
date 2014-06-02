@@ -55,7 +55,7 @@ public:
 
 	Task() ;
 	~Task() ;
-	
+
 	enum Action{
 		Update,
 		Mount,
@@ -101,6 +101,7 @@ public:
 	void setDeviceAction( Task::deviceAction ) ;
 	void setFunction( std::function< void( void ) > ) ;
 	void setRemoveList( const QStringList& ) ;
+	void setKeyFilesList( const QString& ) ;
 signals:
 	void errorStatus( int exitCode,int exitStatus,int startError ) ;
 	void signalMountComplete( int,QString ) ;
@@ -147,6 +148,7 @@ private:
 	QString m_type ;
 	QString m_properties ;
 	QString m_deviceOffSet ;
+	QString m_keyFilesList ;
 	QStringList m_removeList ;
 	bool m_publicMount ;
 	QStringList m_list ;

@@ -53,7 +53,8 @@ SOURCES += main.cpp\
     walletconfiginput.cpp \
     createvolumedialog.cpp \
     favorites.cpp \
-    managevolumeheader.cpp
+    managevolumeheader.cpp \
+    tcrypt.cpp
 
 HEADERS  += zulucrypt.h \
     password_dialog.h \
@@ -95,7 +96,8 @@ HEADERS  += zulucrypt.h \
     walletconfig.h \
     walletconfiginput.h \
     favorites.h \
-    managevolumeheader.h
+    managevolumeheader.h \
+    tcrypt.h
 
 
 FORMS    += zulucrypt.ui password.ui \
@@ -116,7 +118,8 @@ FORMS    += zulucrypt.ui password.ui \
     walletconfig.ui \
     walletconfiginput.ui \
     favorites.ui \
-    managevolumeheader.ui
+    managevolumeheader.ui \
+    tcrypt.ui
 
 TRANSLATIONS = ../translations/zuluCrypt/messages.ts
 

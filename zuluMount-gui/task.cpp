@@ -161,6 +161,11 @@ void Task::setRemoveList( const QStringList& l )
 	m_removeList = l ;
 }
 
+void Task::setKeyFilesList( const QString& list )
+{
+	m_keyFilesList = list ;
+}
+
 QStringList Task::updateVolumeList()
 {
 	 return utility::Task( QString( "%1 -E" ).arg( zuluMount ) ).splitOutput( '\n' ) ;
@@ -367,11 +372,21 @@ void Task::cryptoOpen()
 	QString exe ;
 
 	if( m_publicMount ){
-		const char * arg = "%1 -M -m -d \"%2\" -z \"%3\" -e %4 %5" ;
-		exe = QString( arg ).arg( zuluMount ).arg( _device( m_device ) ).arg( m_point ).arg( m_mode ).arg( m_keySource ) ;
+		if( m_keyFilesList.isEmpty() ){
+			const char * arg = "%1 -M -m -d \"%2\" -z \"%3\" -e %4 %5" ;
+			exe = QString( arg ).arg( zuluMount ).arg( _device( m_device ) ).arg( m_point ).arg( m_mode ).arg( m_keySource ) ;
+		}else{
+			const char * arg = "%1 -M -m -d \"%2\" -z \"%3\" -e %4 %5 -F \"%6\"" ;
+			exe = QString( arg ).arg( zuluMount ).arg( _device( m_device ) ).arg( m_point ).arg( m_mode ).arg( m_keySource ).arg( m_keyFilesList ) ;
+		}
 	}else{
-		const char * arg = "%1 -m -d \"%2\" -z \"%3\" -e %4 %5" ;
-		exe = QString( arg ).arg( zuluMount ).arg( _device( m_device ) ).arg( m_point ).arg( m_mode ).arg( m_keySource ) ;
+		if( m_keyFilesList.isEmpty() ){
+			const char * arg = "%1 -m -d \"%2\" -z \"%3\" -e %4 %5" ;
+			exe = QString( arg ).arg( zuluMount ).arg( _device( m_device ) ).arg( m_point ).arg( m_mode ).arg( m_keySource ) ;
+		}else{
+			const char * arg = "%1 -m -d \"%2\" -z \"%3\" -e %4 %5 -F \"%6\"" ;
+			exe = QString( arg ).arg( zuluMount ).arg( _device( m_device ) ).arg( m_point ).arg( m_mode ).arg( m_keySource ).arg( m_keyFilesList ) ;
+		}
 	}
 
 	auto r = utility::Task( exe ) ;
