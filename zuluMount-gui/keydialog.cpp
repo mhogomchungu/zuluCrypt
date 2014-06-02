@@ -135,7 +135,7 @@ void keyDialog::tcryptCancelled( void )
 void keyDialog::tcryptGui()
 {
 	this->disableAll() ;
-	m_ui->lineEditKey->setText( "TrueCrypt keys" ) ;
+	m_ui->lineEditKey->setText( "" ) ;
 
 	tcrypt * t = new tcrypt( this ) ;
 	connect( t,SIGNAL( Keys( QString,QString ) ),this,SLOT( keys( QString,QString ) ) ) ;

@@ -193,7 +193,7 @@ void passwordDialog::tcryptCancelled( void )
 void passwordDialog::tcryptGui()
 {
 	this->disableAll() ;
-	m_ui->PassPhraseField->setText( "TrueCrypt keys" ) ;
+	m_ui->PassPhraseField->setText( "" ) ;
 
 	tcrypt * t = new tcrypt( this ) ;
 	connect( t,SIGNAL( Keys( QString,QString ) ),this,SLOT( keys( QString,QString ) ) ) ;
