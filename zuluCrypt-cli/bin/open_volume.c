@@ -250,6 +250,8 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 
 	stringList_t stz = StringListVoid ;
 
+	string_t hack ;
+
 	const char * key = NULL ;
 	const char * mapper_name ;
 	const char * e ;
@@ -459,7 +461,13 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		 *
 		 * The idea is not to let cryptsetup, a privileged process handle user managed files.
 		 */
-		stz = zuluCryptCreateKeyFiles( tcrypt_keyfiles,':' ) ;
+		hack = String( tcrypt_keyfiles ) ;
+
+		tcrypt_keyfiles = StringReplaceString( hack,"\\011","\t" ) ;
+
+		stz = zuluCryptCreateKeyFiles( tcrypt_keyfiles,'\t' ) ;
+
+		StringDelete( &hack ) ;
 
 		volume.tcrypt_keyfiles_count = StringListSize( stz ) ;
 		volume.tcrypt_keyfiles       = ( const char ** )StringListStringArray( stz ) ;
