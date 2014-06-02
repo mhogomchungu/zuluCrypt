@@ -32,6 +32,8 @@
 tcrypt::tcrypt( QWidget * parent) : QDialog( parent ),m_ui( new Ui::tcrypt )
 {
 	m_ui->setupUi( this ) ;
+	this->setFixedSize( this->size() ) ;
+	
 	connect( m_ui->pbSend,SIGNAL( clicked() ),this,SLOT( pbSend() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->pbAddKeyFile,SIGNAL( clicked() ),this,SLOT( pbAddKeyFIle() ) ) ;
