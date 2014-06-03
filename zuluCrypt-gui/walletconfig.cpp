@@ -93,7 +93,7 @@ void walletconfig::itemClicked( QTableWidgetItem * item )
 			m_wallet->deleteKey( m_volumeID + COMMENT ) ;
 		} ;
 
-		Task::task( this,_deleteKey ) ;
+		Task::exec( this,_deleteKey ) ;
 	}else{
 		this->enableAll() ;
 		m_ui->tableWidget->setFocus() ;
@@ -123,7 +123,7 @@ void walletconfig::add( QString volumeID,QString comment,QString key )
 		m_wallet->addKey( m_volumeID + COMMENT,m_comment.toLatin1() ) ;
 	} ;
 
-	Task::task( this,_addKey ) ;
+	Task::exec( this,_addKey ) ;
 }
 
 void walletconfig::taskFinished()
@@ -228,7 +228,7 @@ void walletconfig::walletIsOpen( bool opened )
 			m_keys = m_wallet->readAllKeyValues() ;
 		} ;
 
-		Task::task( this,_getKeys ) ;
+		Task::exec( this,_getKeys ) ;
 	}else{
 		emit couldNotOpenWallet() ;
 		this->HideUI() ;

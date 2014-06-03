@@ -418,7 +418,7 @@ void passwordDialog::walletIsOpen( bool opened )
 			m_key = utility::getKeyFromWallet( m_wallet,m_ui->OpenVolumePath->text() ) ;
 		} ;
 
-		Task::task( this,_getKey ) ;
+		Task::exec( this,_getKey ) ;
 	}else{
 		_internalPassWord.clear() ;
 		this->enableAll() ;

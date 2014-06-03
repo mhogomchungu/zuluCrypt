@@ -214,7 +214,7 @@ Task::~Task()
 	emit errorStatus( m_exitCode,m_exitStatus,m_startError ) ;
 }
 
-void Task::task( QObject * object,function_t f,const char * slotName )
+void Task::exec( QObject * object,function_t f,const char * slotName )
 {
 	Task * t = new Task( object,slotName ) ;
 	t->start( Task::runTask,f ) ;
