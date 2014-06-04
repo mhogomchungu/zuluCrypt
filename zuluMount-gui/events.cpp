@@ -34,6 +34,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <functional>
 
 #include "../zuluCrypt-gui/utility.h"
 #include "task.h"
@@ -178,24 +179,7 @@ void events::run()
 	constexpr int BUFF_SIZE = 4096 ;
 	char buffer[ BUFF_SIZE ] ;
 
-	auto _hasEvent = [&](){
-		return currentEvent < lastEvent ;
-	} ;
-
-	auto _getEvent = [&](){
-
-		auto event = reinterpret_cast< const struct inotify_event * >( currentEvent ) ;
-
-		if( event ){
-			currentEvent += sizeof( struct inotify_event ) + event->len ;
-		}else{
-			currentEvent += sizeof( struct inotify_event ) ;
-		}
-
-		return event ;
-	} ;
-
-	auto _events = [&](){
+	auto _eventsReceived = [&](){
 
 		auto r = read( fd,buffer,BUFF_SIZE ) ;
 		lastEvent    = buffer + r ;
@@ -203,13 +187,8 @@ void events::run()
 		return true ;
 	} ;
 
-	auto _processEvent = [&](){
+	auto _processEvent = [&]( const struct inotify_event * event ){
 
-		auto event = _getEvent() ;
-
-		if( !event ){
-			return ;
-		}
 		if( _device_action( event ) && _allowed_device( event->name ) ){
 
 			auto t = new Task() ;
@@ -227,11 +206,27 @@ void events::run()
 		}
 	} ;
 
-	while( _events() ){
+	typedef std::function< void( const char *,const char * ) > function_type ;
 
-		while( _hasEvent() ){
+	function_type _processEvents = [&]( const char * e,const char * l ){
 
-			_processEvent() ;
+		if( e < l ){
+
+			auto event = reinterpret_cast< const struct inotify_event * >( e ) ;
+
+			if( event ){
+				_processEvent( event ) ;
+				e += event->len + sizeof( struct inotify_event ) ;
+			}else{
+				e += sizeof( struct inotify_event ) ;
+			}
+
+			_processEvents( e,l ) ;
 		}
+	} ;
+
+	while( _eventsReceived() ){
+
+		_processEvents( currentEvent,lastEvent ) ;
 	}
 }
