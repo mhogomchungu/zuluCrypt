@@ -357,6 +357,11 @@ string_t zuluCryptResolveMDPath_1( const char * path ) ;
 void zuluCryptDeleteFile( const char * file ) ;
 
 /*
+ * this function is defined in file_path_security.c
+ */
+void zuluCryptDeleteFile_1( string_t file ) ;
+
+/*
  * this function is defined in mount_volume.c
  */
 int zuluCryptFileSystemIsFUSEbased( const char * device ) ;
@@ -370,6 +375,11 @@ void zuluCryptFormatSize( u_int64_t number,char * buffer,size_t buffer_size ) ;
  * zuluCryptCreateKeyFile() is defined in open_tcrypt.c
  */
 string_t zuluCryptCreateKeyFile( const char * key,size_t key_len,const char * fileName ) ;
+
+/*
+ * zuluCryptCreateKeyFile_1() is defined in open_tcrypt.c
+ */
+string_t zuluCryptCreateKeyFile_1( string_t key,const char * fileName ) ;
 
 /*
  * zuluCryptResolvePath_2() is defined in resolve_paths.c

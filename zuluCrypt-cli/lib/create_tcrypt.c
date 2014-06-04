@@ -340,14 +340,14 @@ static int _create_tcrypt_volume( const char * device,const char * file_system,
 	}
 
 	/*
-	 * zuluCryptDeleteFile() is defined in file_path_security.c
+	 * zuluCryptDeleteFile_1() is defined in file_path_security.c
 	 */
 	if( st != StringVoid ){
-		zuluCryptDeleteFile( StringContent( st ) ) ;
+		zuluCryptDeleteFile_1( st ) ;
 		StringDelete( &st ) ;
 	}
 	if( xt != StringVoid ){
-		zuluCryptDeleteFile( StringContent( xt ) ) ;
+		zuluCryptDeleteFile_1( xt ) ;
 		StringDelete( &xt ) ;
 	}
 

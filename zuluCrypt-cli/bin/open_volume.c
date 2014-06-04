@@ -67,11 +67,12 @@ stringList_t zuluCryptCreateKeyFiles( const char * list,char splitter )
 		if( StringGetFromFile_3( &xt,e,0,1048576 ) == 0 ){
 
 			zuluCryptSecurityGainElevatedPrivileges() ;
-			/*
-			 * zuluCryptCreateKeyFile() is defined in ../lib/open_tcrypt.c
-			 */
+
 			e = StringIntToString_1( buffer,32,max_keyfiles ) ;
-			zt = zuluCryptCreateKeyFile( StringContent( xt ),StringLength( xt ),e ) ;
+			/*
+			 * zuluCryptCreateKeyFile_1() is defined in ../lib/open_tcrypt.c
+			 */
+			zt = zuluCryptCreateKeyFile_1( xt,e ) ;
 
 			StringDelete( &xt ) ;
 
@@ -96,9 +97,9 @@ void zuluCryptDeleteKeyFiles( stringList_t stl )
 
 	while( it != end ){
 		/*
-		 * zuluCryptDeleteFile() is defined in ../lib/file_path_security.c
+		 * zuluCryptDeleteFile_1() is defined in ../lib/file_path_security.c
 		 */
-		zuluCryptDeleteFile( StringContent( *it ) ) ;
+		zuluCryptDeleteFile_1( *it ) ;
 		it++ ;
 	}
 

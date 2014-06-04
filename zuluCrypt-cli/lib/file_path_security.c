@@ -68,6 +68,11 @@ void zuluCryptDeleteFile( const char * file )
 	}
 }
 
+void zuluCryptDeleteFile_1( string_t st )
+{
+	zuluCryptDeleteFile( StringContent( st ) ) ;
+}
+
 static int _check_if_device_is_supported( int st,uid_t uid,char ** dev )
 {
 	string_t fs ;

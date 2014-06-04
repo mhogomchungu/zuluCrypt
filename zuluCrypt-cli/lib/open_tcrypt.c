@@ -72,6 +72,11 @@ string_t zuluCryptCreateKeyFile( const char * key,size_t key_len,const char * fi
 	return st ;
 }
 
+string_t zuluCryptCreateKeyFile_1( string_t st,const char * fileName )
+{
+	return zuluCryptCreateKeyFile( StringContent( st ),StringLength( st ),fileName ) ;
+}
+
 #if TRUECRYPT_CRYPTSETUP
 
 static inline int zuluExit( int st,struct crypt_device * cd )
