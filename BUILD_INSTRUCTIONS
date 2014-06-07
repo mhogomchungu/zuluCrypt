@@ -3,7 +3,7 @@
 This tool depends on the following packages installed to build, their precise name may differ in your distro.
 1.
 2. libblkid-devel
-3. Qt-devel( required if building GUI components )
+3. libqt4-devel( required if building GUI components )
 4. gcc
 5. gcc-c++
 6. cryptsetup-devel
@@ -13,7 +13,7 @@ This tool depends on the following packages installed to build, their precise na
 10.libsecret-devel( optional dependency to store keys in gnome's libsecret )
 11.kde-devel( optional dependency to store keys in kde's kwallet )
 12.pkg-config
-13.libdevmapper-devel
+13.libdevmapper-devel aka device-mapper-devel.
 14.uuid-devel
 
 The package is made up of two components,the command line "pure C" based backend components and GUI Qt/C++ based front end components.
