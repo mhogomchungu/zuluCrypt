@@ -3,7 +3,7 @@ zulucrypt (4.7.2-1) UNRELEASED; urgency=low
   * New Features
      - add an ability to open a TrueCrypt volume using a combination of a passphrases and one or more keyfiles
 
-  -- Mhogo Mchungu <mhogomchungu@gmail.com>  Sat, 7 Jun 2014 16:38:48 +0000
+ -- Mhogo Mchungu <mhogomchungu@gmail.com>  Sat, 7 Jun 2014 16:38:48 +0000
 
 zulucrypt (4.7.1-1) UNRELEASED; urgency=low
   [Mhogo Mchungu]
