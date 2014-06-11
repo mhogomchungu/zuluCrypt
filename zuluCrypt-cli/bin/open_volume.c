@@ -29,9 +29,14 @@
 
 stringList_t zuluCryptCreateKeyFiles( const char * list,char splitter )
 {
-	char buffer[ 32 ] ;
-	int max_keyfiles = 0 ;
+	#define buffer_size 32
+	char buffer[ buffer_size ] ;
 	const char * e ;
+	/*
+	 * TrueCrypt has a maximum keyfile number of 255,we cap the number at 16.
+	 */
+	const int max_keyfiles = 16 ;
+	int keyfile = 0 ;
 
 	stringList_t stx = StringListVoid ;
 	stringList_t stz = StringListVoid ;
@@ -51,24 +56,21 @@ stringList_t zuluCryptCreateKeyFiles( const char * list,char splitter )
 		e = StringContent( *it ) ;
 		it++ ;
 
-		if( max_keyfiles == 15 ){
-			/*
-			 * lets cap keyfiles to 16
-			 */
+		if( keyfile == max_keyfiles ){
 			break ;
 		}else{
-			max_keyfiles++ ;
+			keyfile++ ;
 		}
 
 		zuluCryptSecurityDropElevatedPrivileges() ;
 		/*
-		 * we arbitrarily limit the maximum size of a keyfile to one megabyte
+		 * TrueCrypt only uses the first 1MB of keyfile.
 		 */
 		if( StringGetFromFile_3( &xt,e,0,1048576 ) == 0 ){
 
 			zuluCryptSecurityGainElevatedPrivileges() ;
 
-			e = StringIntToString_1( buffer,32,max_keyfiles ) ;
+			e = StringIntToString_1( buffer,buffer_size,keyfile ) ;
 			/*
 			 * zuluCryptCreateKeyFile_1() is defined in ../lib/open_tcrypt.c
 			 */
