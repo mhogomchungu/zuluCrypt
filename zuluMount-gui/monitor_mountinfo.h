@@ -35,10 +35,6 @@ public:
 	~monitor_mountinfo() ;
 signals:
 	void stopped( void ) ;
-	void threadFinished( void ) ;
-	void volumeChanged( QStringList ) ;
-	void volumeRemoved( QString ) ;
-	void update( void ) ;
 private slots:
 	void threadStopped( void ) ;
 	void stop( void ) ;

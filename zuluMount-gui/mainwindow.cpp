@@ -270,9 +270,6 @@ void MainWindow::startAutoMonitor()
 	connect( m_mountInfo,SIGNAL( stopped() ),this,SLOT( quitApplication() ) ) ;
 	connect( m_autoMountThread,SIGNAL( stopped() ),m_mountInfo,SLOT( stop() ) ) ;
 
-	connect( m_mountInfo,SIGNAL( volumeRemoved( QString ) ),this,SLOT( removeEntryFromTable( QString ) ) ) ;
-	connect( m_mountInfo,SIGNAL( update() ),this,SLOT( pbUpdate() ) ) ;
-
 	m_mountInfo->start() ;
 	m_autoMountThread->start() ;
 }
@@ -886,7 +883,7 @@ void MainWindow::removeDisappearedEntries( const QVector< volumeEntryProperties 
 	QStringList l = tablewidget::tableColumnEntries( table,0 ) ;
 
 	auto _hasNoEntry = [&]( const QString& volume ){
-		
+
 		for( const auto& it : entries ){
 			if( it.volumeName() == volume ){
 				if( it.volumeSize() == "Nil" ){

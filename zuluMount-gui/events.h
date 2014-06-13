@@ -33,9 +33,6 @@ public:
 	void stop( void ) ;
 signals:
 	void stopped( void ) ;
-	void threadFinished( void ) ;
-	void deviceFromDev( QString ) ;
-	void deviceFromDevMapper( QString ) ;
 private slots:
 	void threadStopped( void ) ;
 private:
