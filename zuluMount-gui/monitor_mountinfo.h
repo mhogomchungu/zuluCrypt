@@ -44,6 +44,7 @@ private slots:
 	void stop( void ) ;
 private:
 	void run( void ) ;
+	void failedToStart( void ) ;
 	QThread * m_baba ;
 	QThread * m_mtoto ;
 	QObject * m_babu ;

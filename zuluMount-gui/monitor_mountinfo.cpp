@@ -28,7 +28,7 @@
 
 #include "task.h"
 
-monitor_mountinfo::monitor_mountinfo( QObject * parent ) : QThread( parent ),m_running( false )
+monitor_mountinfo::monitor_mountinfo( QObject * parent ) : QThread( parent )
 {
 	m_babu = parent ;
 	m_baba = this ;
@@ -54,6 +54,12 @@ void monitor_mountinfo::threadStopped()
 	m_running = false ;
 }
 
+void monitor_mountinfo::failedToStart()
+{
+	qDebug() << "failed to monitor /proc/self/mountinfo" ;
+	m_running = false ;
+}
+
 void monitor_mountinfo::run()
 {
 	m_mtoto = this ;
@@ -66,7 +72,7 @@ void monitor_mountinfo::run()
 	int fd = manage_fd( open( "/proc/self/mountinfo",O_RDONLY ) ) ;
 
 	if( fd == -1 ){
-		return ;
+		return this->failedToStart() ;
 	}else{
 		m_running = true ;
 	}
