@@ -112,6 +112,8 @@ void MainWindow::setUpApp()
 	connect( m_ui->pbclose,SIGNAL( clicked() ),this,SLOT( pbClose() ) ) ;
 	connect( m_ui->tableWidget,SIGNAL( itemClicked( QTableWidgetItem * ) ),this,SLOT( itemClicked( QTableWidgetItem * ) ) ) ;
 
+	connect( this,SIGNAL( unlistVolume( QString ) ),this,SLOT( removeVolume( QString ) ) ) ;
+
 	this->setUpShortCuts() ;
 
 	this->setUpFont() ;
@@ -907,9 +909,6 @@ void MainWindow::removeDisappearedEntries( const QVector< volumeEntryProperties 
 	if( z.isEmpty() ){
 		this->removeVolume( "" ) ;
 	}else{
-		connect( this,SIGNAL( unlistVolume( QString ) ),
-			 this,SLOT( removeVolume( QString ) ) ) ;
-
 		auto _unlistVolume = [ &,z ](){
 
 			for( const auto& it : z ){
