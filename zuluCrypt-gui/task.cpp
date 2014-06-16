@@ -56,7 +56,6 @@ Task::Task( const QString& x,const QString& y )
 {
 	m_key  = y ;
 	m_path = x ;
-	m_folderOpener = x ;
 	m_mpoint = y ;
 	m_path.replace( "\"","\"\"\"" ) ;
 	m_mpoint.replace( "\"","\"\"\"" ) ;
@@ -69,13 +68,6 @@ void Task::start( Task::action action,function_t function )
 	QThreadPool * thread = QThreadPool::globalInstance() ;
 	thread->setMaxThreadCount( 10 ) ;
 	thread->start( this ) ;
-}
-
-void Task::openMountPointTask()
-{
-	auto r       = utility::Task( QString( "%1 \"%2\"" ).arg( m_folderOpener ).arg( m_mpoint ) ) ;
-	m_exitCode   = r.exitCode() ;
-	m_exitStatus = r.exitStatus() ;
 }
 
 void Task::updateVolumeListTask()
@@ -191,7 +183,6 @@ void Task::run()
 		case Task::closeAllVolumeTask   : return this->runCloseAllVolumeTask() ;
 		case Task::volumePropertiesTask : return this->runVolumePropertiesTask() ;
 		case Task::updateVolumeList     : return this->updateVolumeListTask() ;
-		case Task::openMountPoint       : return this->openMountPointTask() ;
 		case Task::volumeTask           : return this->runVolumeTask() ;
 		case Task::LUKSSlotUsage        : return this->LUKSSlotUsageTask() ;
 		case Task::sendKey              : return this->keySend() ;
@@ -202,7 +193,9 @@ void Task::run()
 void Task::taskRun()
 {
 	m_function() ;
-	QMetaObject::invokeMethod( m_qObject,m_slotName,Qt::QueuedConnection ) ;
+	if( m_qObject && m_slotName ){
+		QMetaObject::invokeMethod( m_qObject,m_slotName,Qt::QueuedConnection ) ;
+	}
 }
 
 Task::~Task()
@@ -211,11 +204,15 @@ Task::~Task()
 	emit finished( m_status ) ;
 	emit finished( m_status,m_output ) ;
 	emit finished( m_volumeProperties ) ;
-	emit errorStatus( m_exitCode,m_exitStatus,m_startError ) ;
 }
 
 void Task::exec( QObject * object,function_t f,const char * slotName )
 {
 	Task * t = new Task( object,slotName ) ;
 	t->start( Task::runTask,f ) ;
+}
+
+void Task::exec( function_t f )
+{
+	Task::exec( nullptr,f,nullptr ) ;
 }

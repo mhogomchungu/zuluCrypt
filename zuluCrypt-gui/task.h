@@ -54,6 +54,7 @@ public:
 	 * argument returns.
 	 */
 	static void exec( QObject * object,function_t,const char * slotName = "taskFinished" ) ;
+	static void exec( function_t ) ;
 
 	enum action{
 		exeTask,
@@ -61,7 +62,6 @@ public:
 		closeVolumeTask,
 		volumePropertiesTask,
 		updateVolumeList,
-		openMountPoint,
 		volumeTask,
 		LUKSSlotUsage,
 		sendKey,
@@ -83,7 +83,6 @@ signals:
 	void finished( int ) ;
 	void finished( int,QString ) ;
 	void taskResult( QTableWidgetItem *,int ) ;
-	void errorStatus( int exitCode,int exitStatus,int startError ) ;
 private:
 	void openMountPointTask( void ) ;
 	void updateVolumeListTask( void ) ;
@@ -103,14 +102,9 @@ private:
 	QString m_path ;
 	QString m_mpoint ;
 	QString m_volumeProperties ;
-	QString m_folderOpener ;
 	QString m_partitionType ;
 	QString m_key ;
 	function_t m_function ;
-
-	int m_exitCode ;
-	int m_exitStatus ;
-	int m_startError ;
 	QObject * m_qObject ;
 	const char * m_slotName ;
 };

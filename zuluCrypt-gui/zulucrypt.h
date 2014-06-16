@@ -129,7 +129,7 @@ private slots :
 	void setDefaultWallet( void ) ;
 	void failedToOpenWallet( void ) ;
 	void openFolder( void ) ;
-	void fileManagerOpenStatus( int exitCode,int exitStatus,int startError ) ;
+	void fileManagerOpenStatus( void ) ;
 	void openVolumeFromArgumentList( void ) ;
 	void itemEntered( QTableWidgetItem * ) ;
 	void manageVolumesInInternalWallet( void ) ;
@@ -143,7 +143,7 @@ private:
 	void updateVolumeList( void ) ;
 	void dragEnterEvent( QDragEnterEvent * ) ;
 	void dropEvent( QDropEvent * ) ;
-	
+
 	passwordDialog * setUpPasswordDialog( void ) ;
 	openvolume * setUpOpenpartition( void ) ;
 	createvolume * setUpCreatepartition( void ) ;
@@ -170,6 +170,8 @@ private:
 	QSystemTrayIcon * m_trayIcon ;
 	QString m_folderOpener ;
 	QString m_device ;
+	int m_exitCode ;
+	int m_exitStatus ;
 	LxQt::Wallet::Wallet * m_wallet ;
 };
 

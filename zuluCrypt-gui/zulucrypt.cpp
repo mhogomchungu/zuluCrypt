@@ -736,10 +736,9 @@ void zuluCrypt::menuKeyPressed()
 	itemClicked( it,false ) ;
 }
 
-void zuluCrypt::fileManagerOpenStatus( int exitCode,int exitStatus,int startError )
+void zuluCrypt::fileManagerOpenStatus()
 {
-	Q_UNUSED( startError ) ;
-	if( exitCode != 0 || exitStatus != 0 ){
+	if( m_exitCode != 0 || m_exitStatus != 0 ){
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "warning" ),tr( "could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) ) ;
 	}
@@ -750,9 +749,14 @@ void zuluCrypt::openFolder()
 	QTableWidgetItem * item = m_ui->tableWidget->currentItem() ;
 	QString path = m_ui->tableWidget->item( item->row(),1 )->text() ;
 
-	Task * t = new Task( m_folderOpener,path ) ;
-	connect( t,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
-	t->start( Task::openMountPoint ) ;
+	auto _a = [ this,path ](){
+
+		auto r = utility::Task( QString( "%1 \"%2\"" ).arg( m_folderOpener ).arg( path ) ) ;
+		m_exitCode   = r.exitCode() ;
+		m_exitStatus = r.exitStatus() ;
+	} ;
+
+	Task::exec( this,_a,"fileManagerOpenStatus" ) ;
 }
 
 void zuluCrypt::itemClicked( QTableWidgetItem * it )

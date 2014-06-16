@@ -463,6 +463,67 @@ void passwordDialog::buttonOpenClicked( void )
 	}
 }
 
+void passwordDialog::sendKey( const QString& sockpath )
+{
+	Task * t = new Task( sockpath,m_key ) ;
+	t->start( Task::sendKey ) ;
+}
+
+void passwordDialog::disableAll()
+{
+	m_ui->pushButtonPlugin->setEnabled( false ) ;
+	m_ui->checkBoxReadOnly->setEnabled( false ) ;
+	m_ui->labelMoutPointPath->setEnabled( false ) ;
+	m_ui->labelPassphrase->setEnabled( false ) ;
+	m_ui->labelVolumePath->setEnabled( false ) ;
+	m_ui->MountPointPath->setEnabled( false ) ;
+	m_ui->OpenVolumePath->setEnabled( false ) ;
+	m_ui->PassPhraseField->setEnabled( false ) ;
+	m_ui->PushButtonCancel->setEnabled( false ) ;
+	m_ui->PushButtonMountPointPath->setEnabled( false ) ;
+	m_ui->PushButtonOpen->setEnabled( false ) ;
+	m_ui->pushButtonPassPhraseFromFile->setEnabled( false ) ;
+	m_ui->PushButtonVolumePath->setEnabled( false ) ;
+	m_ui->pbKeyOption->setEnabled( false ) ;
+	m_ui->cbKeyType->setEnabled( false ) ;
+}
+
+void passwordDialog::enableAll()
+{
+	m_ui->pushButtonPlugin->setEnabled( true ) ;
+	m_ui->checkBoxReadOnly->setEnabled( true ) ;
+	m_ui->labelMoutPointPath->setEnabled( true ) ;
+	m_ui->labelPassphrase->setEnabled( true ) ;
+	m_ui->labelVolumePath->setEnabled( true ) ;
+	m_ui->MountPointPath->setEnabled( true ) ;
+	m_ui->OpenVolumePath->setEnabled( true ) ;
+	m_ui->PassPhraseField->setEnabled( true ) ;
+	m_ui->PushButtonCancel->setEnabled( true ) ;
+	m_ui->PushButtonMountPointPath->setEnabled( true ) ;
+	m_ui->PushButtonOpen->setEnabled( true ) ;
+	m_ui->pushButtonPassPhraseFromFile->setEnabled( true ) ;
+	m_ui->PushButtonVolumePath->setEnabled( true ) ;
+	m_ui->cbKeyType->setEnabled( true ) ;
+
+	if( m_open_with_path ){
+		m_ui->OpenVolumePath->setEnabled( false ) ;
+		m_ui->PushButtonVolumePath->setEnabled( false ) ;
+	}
+
+	if( m_ui->cbKeyType->currentIndex() == passwordDialog::key ){
+		m_ui->pushButtonPassPhraseFromFile->setEnabled( false ) ;
+		m_ui->pushButtonPlugin->setEnabled( false ) ;
+		m_ui->PassPhraseField->setEnabled( true ) ;
+	}else{
+		m_ui->pbKeyOption->setEnabled( true ) ;
+		m_ui->PassPhraseField->setEnabled( false ) ;
+	}
+
+	if( m_ui->cbKeyType->currentIndex() == passwordDialog::keyfile ){
+		m_ui->pushButtonPlugin->setEnabled( false ) ;
+	}
+}
+
 void passwordDialog::openVolume()
 {
 	m_device = utility::resolvePath( m_ui->OpenVolumePath->text() ) ;
@@ -551,89 +612,53 @@ void passwordDialog::openVolume()
 
 	this->disableAll() ;
 
-	Task * t = new Task( exe ) ;
-	connect( t,SIGNAL( finished( int,QString ) ),this,SLOT( taskFinished( int,QString ) ) ) ;
-	m_isWindowClosable = false ;
-	t->start() ;
+	auto _a = [ this,exe ](){
+
+		auto r = utility::Task( exe ) ;
+
+		m_taskStatus = r.exitCode() ;
+
+		if( r.success() ){
+
+			m_taskOutput = r.output() ;
+		}
+	} ;
+
+	Task::exec( this,_a,"taskComplete" ) ;
 }
 
-void passwordDialog::sendKey( const QString& sockpath )
-{
-	Task * t = new Task( sockpath,m_key ) ;
-	t->start( Task::sendKey ) ;
-}
-
-void passwordDialog::disableAll()
-{
-	m_ui->pushButtonPlugin->setEnabled( false ) ;
-	m_ui->checkBoxReadOnly->setEnabled( false ) ;
-	m_ui->labelMoutPointPath->setEnabled( false ) ;
-	m_ui->labelPassphrase->setEnabled( false ) ;
-	m_ui->labelVolumePath->setEnabled( false ) ;
-	m_ui->MountPointPath->setEnabled( false ) ;
-	m_ui->OpenVolumePath->setEnabled( false ) ;
-	m_ui->PassPhraseField->setEnabled( false ) ;
-	m_ui->PushButtonCancel->setEnabled( false ) ;
-	m_ui->PushButtonMountPointPath->setEnabled( false ) ;
-	m_ui->PushButtonOpen->setEnabled( false ) ;
-	m_ui->pushButtonPassPhraseFromFile->setEnabled( false ) ;
-	m_ui->PushButtonVolumePath->setEnabled( false ) ;
-	m_ui->pbKeyOption->setEnabled( false ) ;
-	m_ui->cbKeyType->setEnabled( false ) ;
-}
-
-void passwordDialog::enableAll()
-{
-	m_ui->pushButtonPlugin->setEnabled( true ) ;
-	m_ui->checkBoxReadOnly->setEnabled( true ) ;
-	m_ui->labelMoutPointPath->setEnabled( true ) ;
-	m_ui->labelPassphrase->setEnabled( true ) ;
-	m_ui->labelVolumePath->setEnabled( true ) ;
-	m_ui->MountPointPath->setEnabled( true ) ;
-	m_ui->OpenVolumePath->setEnabled( true ) ;
-	m_ui->PassPhraseField->setEnabled( true ) ;
-	m_ui->PushButtonCancel->setEnabled( true ) ;
-	m_ui->PushButtonMountPointPath->setEnabled( true ) ;
-	m_ui->PushButtonOpen->setEnabled( true ) ;
-	m_ui->pushButtonPassPhraseFromFile->setEnabled( true ) ;
-	m_ui->PushButtonVolumePath->setEnabled( true ) ;
-	m_ui->cbKeyType->setEnabled( true ) ;
-
-	if( m_open_with_path ){
-		m_ui->OpenVolumePath->setEnabled( false ) ;
-		m_ui->PushButtonVolumePath->setEnabled( false ) ;
-	}
-
-	if( m_ui->cbKeyType->currentIndex() == passwordDialog::key ){
-		m_ui->pushButtonPassPhraseFromFile->setEnabled( false ) ;
-		m_ui->pushButtonPlugin->setEnabled( false ) ;
-		m_ui->PassPhraseField->setEnabled( true ) ;
-	}else{
-		m_ui->pbKeyOption->setEnabled( true ) ;
-		m_ui->PassPhraseField->setEnabled( false ) ;
-	}
-
-	if( m_ui->cbKeyType->currentIndex() == passwordDialog::keyfile ){
-		m_ui->pushButtonPlugin->setEnabled( false ) ;
-	}
-}
-
-void passwordDialog::fileManagerOpenStatus( int exitCode,int exitStatus,int startError )
-{
-	Q_UNUSED( startError ) ;
-	if( exitCode != 0 || exitStatus != 0 ){
-		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "warning" ),tr( "could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) ) ;
-	}
-}
-
-void passwordDialog::success( const QString& output )
+void passwordDialog::success()
 {
 	if( utility::mapperPathExists( m_device ) ){
-		this->complete( output ) ;
-		Task * t = new Task( m_folderOpener,utility::mountPath( m_point ) ) ;
-		connect( t,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
-		t->start( Task::openMountPoint ) ;
+
+		QStringList list ;
+
+		list.append( utility::resolvePath( m_ui->OpenVolumePath->text() ) ) ;
+
+		QString m = utility::mountPath( m_point ) ;
+
+		list.append( m ) ;
+
+		if( m_taskOutput.contains( "luks" ) ){
+			list.append( "luks" ) ;
+		}else if( m_taskOutput.contains( "plain" ) ){
+			list.append( "plain" ) ;
+		}else if( m_taskOutput.contains( "tcrypt" ) ){
+			list.append( "tcrypt" ) ;
+		}else{
+			list.append( "Nil" ) ;
+		}
+
+		tablewidget::addRowToTable( m_table,list ) ;
+
+		auto _a = [ &,m ](){
+
+			utility::Task( QString( "%1 \"%2\"" ).arg( m_folderOpener ).arg( m ) ) ;
+		} ;
+
+		Task::exec( _a ) ;
+
+		this->HideUI() ;
 	}else{
 		/*
 		 * we arrive here if zuluCrypt-cli reports a volume was opened but it was not.
@@ -645,31 +670,11 @@ void passwordDialog::success( const QString& output )
 	}
 }
 
-void passwordDialog::complete( QString output )
-{
-	QStringList list ;
-	list.append( utility::resolvePath( m_ui->OpenVolumePath->text() ) ) ;
-	list.append( utility::mountPath( m_point ) ) ;
-
-	if( output.contains( QString( "luks" ) ) ){
-		list.append( QString( "luks" ) ) ;
-	}else if( output.contains( QString( "plain" ) ) ){
-		list.append( QString( "plain" ) ) ;
-	}else if( output.contains( QString( "tcrypt" ) ) ){
-		list.append( QString( "tcrypt" ) ) ;
-	}else{
-		list.append( QString( "Nil" ) ) ;
-	}
-	tablewidget::addRowToTable( m_table,list ) ;
-
-	this->HideUI() ;
-}
-
-void passwordDialog::taskFinished( int status,QString output )
+void passwordDialog::taskComplete()
 {
 	m_isWindowClosable = true ;
 
-	if( status == 12 && m_ui->cbKeyType->currentIndex() == passwordDialog::plugin ){
+	if( m_taskStatus == 12 && m_ui->cbKeyType->currentIndex() == passwordDialog::plugin ){
 		/*
 		 * A user cancelled the plugin
 		 */
@@ -677,8 +682,8 @@ void passwordDialog::taskFinished( int status,QString output )
 	}
 
 	DialogMsg msg( this ) ;
-	switch ( status ){
-		case 0 : return success( output ) ;
+	switch ( m_taskStatus ){
+		case 0 : return this->success() ;
 		case 1 : msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to mount ntfs/exfat file system using ntfs-3g,is ntfs-3g/exfat package installed?" ) ) ; break ;
 		case 2 : msg.ShowUIOK( tr( "ERROR!" ),tr( "there seem to be an open volume accociated with given address" ) ) ;				break ;
 		case 3 : msg.ShowUIOK( tr( "ERROR!" ),tr( "no file or device exist on given path" ) ) ; 						break ;
@@ -703,12 +708,12 @@ void passwordDialog::taskFinished( int status,QString output )
 		case 22: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open a system volume.\n\nConsult menu->help->permission for more informaion\n" ) ) ;					break ;
 		case 113:msg.ShowUIOK( tr( "ERROR!" ),tr( "a non supported device encountered,device is missing or permission denied\n\
 Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The device has LVM or MDRAID signature" ) ) ;					break ;
-		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR with status number %1 encountered" ).arg( status ) ) ;
+		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR with status number %1 encountered" ).arg( m_taskStatus ) ) ;
 	}
 
 	this->enableAll() ;
 
-	if( status == 4 ){
+	if( m_taskStatus == 4 ){
 		if( m_ui->cbKeyType->currentIndex() == passwordDialog::key ){
 			m_ui->PassPhraseField->clear() ;
 			m_ui->PassPhraseField->setFocus() ;
@@ -721,4 +726,3 @@ passwordDialog::~passwordDialog()
 	m_pluginMenu->deleteLater() ;
 	delete m_ui ;
 }
-
