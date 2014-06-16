@@ -330,6 +330,7 @@ int zuluMountPrintVolumesProperties( uid_t uid )
 			}
 		}else{
 			zuluCryptDecodeMountEntry( st ) ;
+			StringReplaceChar_1( st,0,' ','\0' ) ;
 			StringListRemoveIfPresent_1( stz,st ) ;
 		}
 	}
