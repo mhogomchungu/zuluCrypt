@@ -612,7 +612,7 @@ void passwordDialog::openVolume()
 
 	this->disableAll() ;
 
-	auto _a = [ this,exe ](){
+	auto _a = [ &,exe ](){
 
 		auto r = utility::Task( exe ) ;
 
