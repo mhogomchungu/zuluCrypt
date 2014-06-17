@@ -206,7 +206,7 @@ Task::~Task()
 	emit finished( m_volumeProperties ) ;
 }
 
-void Task::exec( QObject * object,function_t f,const char * slotName )
+void Task::exec( QObject * object,const char * slotName,function_t f )
 {
 	Task * t = new Task( object,slotName ) ;
 	t->start( Task::runTask,f ) ;
@@ -214,5 +214,5 @@ void Task::exec( QObject * object,function_t f,const char * slotName )
 
 void Task::exec( function_t f )
 {
-	Task::exec( nullptr,f,nullptr ) ;
+	Task::exec( nullptr,nullptr,f ) ;
 }

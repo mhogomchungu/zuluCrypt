@@ -749,14 +749,14 @@ void zuluCrypt::openFolder()
 	QTableWidgetItem * item = m_ui->tableWidget->currentItem() ;
 	QString path = m_ui->tableWidget->item( item->row(),1 )->text() ;
 
-	auto _a = [ this,path ](){
+	auto _a = [ &,path ](){
 
 		auto r = utility::Task( QString( "%1 \"%2\"" ).arg( m_folderOpener ).arg( path ) ) ;
 		m_exitCode   = r.exitCode() ;
 		m_exitStatus = r.exitStatus() ;
 	} ;
 
-	Task::exec( this,_a,"fileManagerOpenStatus" ) ;
+	Task::exec( this,"fileManagerOpenStatus",_a ) ;
 }
 
 void zuluCrypt::itemClicked( QTableWidgetItem * it )

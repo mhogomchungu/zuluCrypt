@@ -53,7 +53,7 @@ public:
 	 * The slot will be called when the function given by the second
 	 * argument returns.
 	 */
-	static void exec( QObject * object,function_t,const char * slotName = "taskFinished" ) ;
+	static void exec( QObject * object,const char * slotName,function_t ) ;
 	static void exec( function_t ) ;
 
 	enum action{

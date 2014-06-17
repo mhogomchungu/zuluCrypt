@@ -418,7 +418,7 @@ void passwordDialog::walletIsOpen( bool opened )
 			m_key = utility::getKeyFromWallet( m_wallet,m_ui->OpenVolumePath->text() ) ;
 		} ;
 
-		Task::exec( this,_getKey ) ;
+		Task::exec( this,"taskFinished",_getKey ) ;
 	}else{
 		_internalPassWord.clear() ;
 		this->enableAll() ;
@@ -605,9 +605,11 @@ void passwordDialog::openVolume()
 	QString exe ;
 
 	if( m_keyFiles.isEmpty() ){
-		exe = QString( "%1 -o -d \"%2\" -m \"%3\" -e %4 %5 \"%6\"" ).arg( a ).arg( b ).arg( c ).arg( d ).arg( e ).arg( f ) ;
+		const char * z = "%1 -o -d \"%2\" -m \"%3\" -e %4 %5 \"%6\"" ;
+		exe = QString( z ).arg( a ).arg( b ).arg( c ).arg( d ).arg( e ).arg( f ) ;
 	}else{
-		exe = QString( "%1 -o -d \"%2\" -m \"%3\" -e %4 %5 \"%6\" -F \"%7\"" ).arg( a ).arg( b ).arg( c ).arg( d ).arg( e ).arg( f ).arg( m_keyFiles ) ;
+		const char * z = "%1 -o -d \"%2\" -m \"%3\" -e %4 %5 \"%6\" -F \"%7\"" ;
+		exe = QString( z ).arg( a ).arg( b ).arg( c ).arg( d ).arg( e ).arg( f ).arg( m_keyFiles ) ;
 	}
 
 	this->disableAll() ;
@@ -624,7 +626,7 @@ void passwordDialog::openVolume()
 		}
 	} ;
 
-	Task::exec( this,_a,"taskComplete" ) ;
+	Task::exec( this,"taskComplete",_a ) ;
 }
 
 void passwordDialog::success()
