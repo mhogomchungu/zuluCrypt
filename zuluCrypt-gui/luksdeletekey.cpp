@@ -181,14 +181,14 @@ void luksdeletekey::pbOpenPartition()
 	op->ShowAllPartitions() ;
 }
 
-void luksdeletekey::deleteKey( QStringList l )
+void luksdeletekey::deleteKey()
 {
 	DialogMsg msg( this ) ;
 
-	if( l.isEmpty() ){
+	if( m_notLuksVolume ){
 		msg.ShowUIOK( tr( "ERROR!" ),tr( "volume is not a luks volume" ) ) ;
 		return this->enableAll() ;
-	}else if( l.first() == "1" ){
+	}else if( m_keyNumber == 1 ){
 		QString s = tr( "There is only one last key in the volume." ) ;
 		s = s + tr( "\nDeleting it will make the volume unopenable and lost forever." ) ;
 		s = s + tr( "\nAre you sure you want to delete this key?" ) ;
@@ -203,9 +203,6 @@ void luksdeletekey::deleteKey( QStringList l )
 		}
 	}
 
-	m_keyNumber = l.at( 0 ).toInt() ;
-	m_totalKeys = l.at( 1 ) ;
-
 	QString keypath ;
 
 	if( m_ui->rbPassphraseFromFile->isChecked() ){
@@ -216,13 +213,18 @@ void luksdeletekey::deleteKey( QStringList l )
 		t->start( Task::sendKey ) ;
 	}
 
-	QString exe = QString( "%1 -k -r -d \"%2\" -f \"%3\"" ).arg( QString( ZULUCRYPTzuluCrypt ) ).arg( m_volumePath ).arg( keypath ) ;
+	const char * r = "%1 -k -r -d \"%2\" -f \"%3\"" ;
+	QString exe = QString( r ).arg( ZULUCRYPTzuluCrypt ).arg( m_volumePath ).arg( keypath ) ;
 
 	m_isWindowClosable = false ;
 
-	Task * t = new Task( exe ) ;
-	connect( t,SIGNAL( finished( int ) ),this,SLOT( taskFinished( int ) ) ) ;
-	t->start() ;
+	auto _a = [ &,exe ](){
+
+		auto r = utility::Task( exe ) ;
+		m_taskResult= r.exitCode() ;
+	} ;
+
+	Task::exec( this,"taskFinished",_a ) ;
 }
 
 void luksdeletekey::pbDelete()
@@ -238,19 +240,29 @@ void luksdeletekey::pbDelete()
 
 		m_volumePath.replace( "\"","\"\"\"" ) ;
 
-		Task * t = new Task( m_volumePath ) ;
-		connect( t,SIGNAL( finished( QStringList ) ),this,SLOT( deleteKey( QStringList ) ) ) ;
-		t->start( Task::LUKSSlotUsage ) ;
+		auto _a = [&](){
+
+			QStringList l = utility::luksEmptySlots( m_volumePath ) ;
+			if( l.isEmpty() ){
+				m_notLuksVolume = true ;
+			}else{
+				m_notLuksVolume = false ;
+				m_keyNumber = l.first().toInt() ;
+				m_totalKeys = l.at( 1 ) ;
+			}
+		} ;
+
+		Task::exec( this,"deleteKey",_a ) ;
 	}
 }
 
-void luksdeletekey::taskFinished( int status )
+void luksdeletekey::taskFinished()
 {
 	DialogMsg msg( this ) ;
 	m_isWindowClosable = true ;
 	QStringList l ;
 	QString success;
-	switch(  status ){
+	switch(  m_taskResult ){
 		case 0 :
 			success = tr( "key removed successfully.\n%1 / %2 slots are now in use" ).arg( QString::number( --m_keyNumber ) ).arg( m_totalKeys ) ;
 			msg.ShowUIOK( tr( "SUCCESS!" ),success ) ;
@@ -264,18 +276,18 @@ only root user or members of group zulucrypt-system can do that" ) ) ;										
 		case 7 : msg.ShowUIOK( tr( "ERROR!" ),tr( "operation terminated per user request" ) ) ;							break ;
 		case 8 : msg.ShowUIOK( tr( "ERROR!" ),tr( "can not get passphrase in silent mode" ) ) ;							break ;
 		case 9 : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient memory to hold passphrase" ) ) ;						break ;
-		case 10: msg.ShowUIOK( tr( "ERROR!" ),tr( "one or more required argument(s) for this operation is missing" ) ) ;				break ;
-		case 11: msg.ShowUIOK( tr( "ERROR!" ),tr( "keyfile does not exist" ) ) ;									break;
+		case 10: msg.ShowUIOK( tr( "ERROR!" ),tr( "one or more required argument(s) for this operation is missing" ) ) ;			break ;
+		case 11: msg.ShowUIOK( tr( "ERROR!" ),tr( "keyfile does not exist" ) ) ;								break;
 		case 12: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get enough memory to open the key file") ) ;					break ;
 		case 13: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open key file for reading" ) ) ;					break ;
 		case 14: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get a key from a socket" ) ) ;							break ;
 		case 110:msg.ShowUIOK( tr( "ERROR!" ),tr( "can not find a partition that match presented UUID" ) ) ;					break ;
-		default :msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR! with status number %1 encountered" ).arg( status ) ) ;
+		default :msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR! with status number %1 encountered" ).arg( m_taskResult ) ) ;
 	}
 
 	this->enableAll() ;
 
-	if( status == 2 ){
+	if( m_taskResult == 2 ){
 		m_ui->lineEditPassphrase->clear() ;
 		m_ui->lineEditPassphrase->setFocus() ;
 	}

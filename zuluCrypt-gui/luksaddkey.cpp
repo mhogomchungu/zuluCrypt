@@ -308,24 +308,42 @@ void luksaddkey::pbAdd( void )
 	QString e = newPassType ;
 	QString f = NewKey ;
 
-	QString exe = QString( "%1 -a -d \"%2\" %3 \"%4\" %5 \"%6\"" ).arg( a ).arg( b ).arg( c ).arg( d ).arg( e ).arg( f ) ;
+	const char * q = "%1 -a -d \"%2\" %3 \"%4\" %5 \"%6\"" ;
+	QString exe = QString( q ).arg( a ).arg( b ).arg( c ).arg( d ).arg( e ).arg( f ) ;
 
 	m_isWindowClosable = false ;
 
 	this->disableAll() ;
 
-	Task * t = new Task( exe ) ;
-	connect( t,SIGNAL( finished( int ) ),this,SLOT( taskFinished( int ) ) ) ;
-	t->start() ;
+	auto _a = [ &,exe ](){
+
+		auto r = utility::Task( exe ) ;
+
+		m_taskResult = r.exitCode() ;
+
+		if( r.success() ){
+
+			QStringList l = utility::luksEmptySlots( m_volumePath ) ;
+
+			if( !l.isEmpty() ){
+
+				m_keyNumber = l.first() ;
+				m_totalKeys = l.at( 1 ) ;
+			}
+		}
+	} ;
+
+	Task::exec( this,"taskFinished",_a ) ;
 }
 
-void luksaddkey::keyAdded( QStringList x )
+void luksaddkey::keyAdded()
 {
 	QString success ;
-	if( x.isEmpty() ){
+	if( m_keyNumber.isEmpty() ){
 		success = tr( "key added successfully." ) ;
 	}else{
-		success = tr( "key added successfully.\n%1 / %2 slots are now in use" ).arg( x.at( 0 ) ).arg( x.at( 1 ) ) ;
+		QString x = tr( "key added successfully.\n%1 / %2 slots are now in use" ) ;
+		success = x.arg( m_keyNumber ).arg( m_totalKeys ) ;
 	}
 
 	DialogMsg msg( this ) ;
@@ -334,18 +352,11 @@ void luksaddkey::keyAdded( QStringList x )
 	this->HideUI() ;
 }
 
-void luksaddkey::keyAdded()
-{
-	Task * t = new Task( m_volumePath ) ;
-	connect( t,SIGNAL( finished( QStringList ) ),this,SLOT( keyAdded( QStringList ) ) ) ;
-	t->start( Task::LUKSSlotUsage ) ;
-}
-
-void luksaddkey::taskFinished( int status )
+void luksaddkey::taskFinished()
 {
 	m_isWindowClosable = true ;
 	DialogMsg msg( this ) ;
-	switch( status ){
+	switch( m_taskResult ){
 		case 0  : return this->keyAdded() ;
 		case 1  : msg.ShowUIOK( tr( "ERROR!" ),tr( "presented key does not match any key in the volume" ) ) ;		      	break ;
 		case 2  : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open luks volume" ) ) ;					     	break ;
@@ -364,7 +375,7 @@ void luksaddkey::taskFinished( int status )
 		case 15 : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get elevated privilege,check binary permissions" ) ) ;		break ;
 		case 110: msg.ShowUIOK( tr( "ERROR!" ),tr( "can not find a partition that match presented UUID" ) ) ;			break ;
 		case 113: msg.ShowUIOK( tr( "ERROR!" ),tr( "device is not a luks device" ) ) ;						break ;
-		default : msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR! with status number %1 encountered" ).arg( status ) ) ;
+		default : msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR! with status number %1 encountered" ).arg( m_taskResult ) ) ;
 	}
 
 	this->enableAll() ;

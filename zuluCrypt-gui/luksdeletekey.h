@@ -53,8 +53,8 @@ private slots:
 	void rbPassphraseFromFile( void ) ;
 	void pbOpenKeyFile( void ) ;
 	void pbOpenVolume( void ) ;
-	void taskFinished( int ) ;
-	void deleteKey( QStringList ) ;
+	void taskFinished( void ) ;
+	void deleteKey( void ) ;
 private:
 	void disableAll( void ) ;
 	void enableAll( void ) ;
@@ -63,7 +63,9 @@ private:
 	Ui::luksdeletekey * m_ui ;
 	QString m_volumePath ;
 	bool m_isWindowClosable ;
+	bool m_notLuksVolume ;
 	int m_keyNumber ;
+	int m_taskResult ;
 	QString m_totalKeys ;
 };
 

@@ -60,11 +60,10 @@ private slots:
 	void rbNewPassphraseFromFile( void ) ;
 	void pbAdd( void ) ;
 	void pbCancel( void ) ;
-	void taskFinished( int ) ;
+	void taskFinished( void ) ;
 	void setFieldFocus( void ) ;
-	void keyAdded( QStringList ) ;
-private:
 	void keyAdded( void ) ;
+private:
 	void disableAll( void ) ;
 	void enableAll( void ) ;
 	void closeEvent( QCloseEvent * ) ;
@@ -74,7 +73,10 @@ private:
 	bool m_isWindowClosable ;
 	keystrength * m_keystrength ;
 	int m_keyCount ;
+	int taskResult ;
+	int m_taskResult ;
 	QString m_totalKeys ;
+	QString m_keyNumber ;
 };
 
 #endif // luksaddkeySUI_H

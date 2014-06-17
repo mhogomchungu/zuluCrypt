@@ -63,7 +63,6 @@ public:
 		volumePropertiesTask,
 		updateVolumeList,
 		volumeTask,
-		LUKSSlotUsage,
 		sendKey,
 		runTask
 	};

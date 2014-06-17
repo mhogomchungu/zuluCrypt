@@ -165,11 +165,6 @@ void Task::runVolumeTask()
 	}
 }
 
-void Task::LUKSSlotUsageTask()
-{
-	emit finished( utility::luksEmptySlots( m_path ) ) ;
-}
-
 void Task::keySend()
 {
 	utility::sendKey( m_path,m_key ) ;
@@ -184,7 +179,6 @@ void Task::run()
 		case Task::volumePropertiesTask : return this->runVolumePropertiesTask() ;
 		case Task::updateVolumeList     : return this->updateVolumeListTask() ;
 		case Task::volumeTask           : return this->runVolumeTask() ;
-		case Task::LUKSSlotUsage        : return this->LUKSSlotUsageTask() ;
 		case Task::sendKey              : return this->keySend() ;
 		case Task::runTask              : return this->taskRun() ;
 	}
