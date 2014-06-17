@@ -651,7 +651,7 @@ void passwordDialog::success()
 
 		tablewidget::addRowToTable( m_table,list ) ;
 
-		auto _a = [ &,m ](){
+		auto _a = [ = ](){
 
 			utility::Task( QString( "%1 \"%2\"" ).arg( m_folderOpener ).arg( m ) ) ;
 		} ;
