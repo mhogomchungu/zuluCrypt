@@ -181,6 +181,36 @@ void luksdeletekey::pbOpenPartition()
 	op->ShowAllPartitions() ;
 }
 
+void luksdeletekey::pbDelete()
+{
+	DialogMsg msg( this ) ;
+
+	m_volumePath = utility::resolvePath( m_ui->lineEditVolumePath->text() ) ;
+
+	if( m_volumePath.isEmpty() ){
+		msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
+	}else{
+		this->disableAll() ;
+
+		m_volumePath.replace( "\"","\"\"\"" ) ;
+
+		auto _a = [&](){
+
+			QStringList l = utility::luksEmptySlots( m_volumePath ) ;
+			
+			if( l.isEmpty() ){
+				m_notLuksVolume = true ;
+			}else{
+				m_notLuksVolume = false ;
+				m_keyNumber = l.first().toInt() ;
+				m_totalKeys = l.at( 1 ) ;
+			}
+		} ;
+
+		Task::exec( this,"deleteKey",_a ) ;
+	}
+}
+
 void luksdeletekey::deleteKey()
 {
 	DialogMsg msg( this ) ;
@@ -220,40 +250,10 @@ void luksdeletekey::deleteKey()
 
 	auto _a = [ &,exe ](){
 
-		auto r = utility::Task( exe ) ;
-		m_taskResult= r.exitCode() ;
+		m_taskResult = utility::Task( exe ).exitCode() ;
 	} ;
 
 	Task::exec( this,"taskFinished",_a ) ;
-}
-
-void luksdeletekey::pbDelete()
-{
-	DialogMsg msg( this ) ;
-
-	m_volumePath = utility::resolvePath( m_ui->lineEditVolumePath->text() ) ;
-
-	if( m_volumePath.isEmpty() ){
-		msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
-	}else{
-		this->disableAll() ;
-
-		m_volumePath.replace( "\"","\"\"\"" ) ;
-
-		auto _a = [&](){
-
-			QStringList l = utility::luksEmptySlots( m_volumePath ) ;
-			if( l.isEmpty() ){
-				m_notLuksVolume = true ;
-			}else{
-				m_notLuksVolume = false ;
-				m_keyNumber = l.first().toInt() ;
-				m_totalKeys = l.at( 1 ) ;
-			}
-		} ;
-
-		Task::exec( this,"deleteKey",_a ) ;
-	}
 }
 
 void luksdeletekey::taskFinished()
