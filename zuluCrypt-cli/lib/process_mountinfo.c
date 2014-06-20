@@ -51,10 +51,11 @@ stringList_t zuluCryptGetMoutedListFromMountInfo_0(
 	while( it != end ){
 
 		tmp = StringListStringSplit( *it,' ' ) ;
+
 		it++ ;
 
 		index = StringListContains( tmp,"-" ) ;
-		
+
 		if( index != -1 ){
 
 			entry = StringListStringArray_1( entry,&entry_len,tmp ) ;
@@ -68,18 +69,19 @@ stringList_t zuluCryptGetMoutedListFromMountInfo_0(
 				mount_point   = *( entry + 4 ) ;
 				mount_options = *( entry + 5 ) ;
 
-				if( !StringAtLeastOnePrefixMatch( mount_point,"/var/run/media/public","/var/run/media/private",NULL ) ){
+				if( StringAtLeastOnePrefixMatch( mount_point,"/var/run/media/public","/var/run/media/private",NULL ) ){
 					/*
-					 * skipping volumes with these mount points because they are double mount points that exists
-					 * in some distributions and we dont expect them
+					 * skipping volumes with these mount points because they are double mount points produced in
+					 * certain distributions and we dont expect them.
 					 */
+				}else{
 					st = function( device,mount_point,file_system,mount_options ) ;
-
 					stx = StringListAppendString_1( stx,&st ) ;
 				}
 
 			}
 		}
+		
 		StringListDelete( &tmp ) ;
 	}
 
