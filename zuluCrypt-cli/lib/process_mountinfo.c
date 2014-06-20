@@ -62,7 +62,13 @@ stringList_t zuluCryptGetMoutedListFromMountInfo_0(
 				mount_point   = *( entry + 4 ) ;
 				mount_options = *( entry + 5 ) ;
 
-				st = function( device,mount_point,file_system,mount_options ) ;
+				if( !StringAtLeastOnePrefixMatch( mount_point,"/var/run/media/public","/var/run/media/private",NULL ) ){
+					/*
+					 * skipping volumes with these mount points because they are double mount points that exists
+					 * in some distributions and we dont expect them
+					 */
+					st = function( device,mount_point,file_system,mount_options ) ;
+				}
 
 				stx = StringListAppendString_1( stx,&st ) ;
 			}
