@@ -49,13 +49,19 @@ stringList_t zuluCryptGetMoutedListFromMountInfo_0(
 	StringListGetIterators( stl,&it,&end ) ;
 
 	while( it != end ){
+
 		tmp = StringListStringSplit( *it,' ' ) ;
 		it++ ;
+
 		index = StringListContains( tmp,"-" ) ;
+		
 		if( index != -1 ){
+
 			entry = StringListStringArray_1( entry,&entry_len,tmp ) ;
+
 			file_system = *( entry + index + 1 ) ;
 			root_path   = *( entry + 3 ) ;
+
 			if( StringsAreEqual( root_path,"/" ) || StringsAreEqual( file_system,"btrfs" ) ){
 
 				device        = *( entry + index + 2 ) ;
@@ -68,9 +74,10 @@ stringList_t zuluCryptGetMoutedListFromMountInfo_0(
 					 * in some distributions and we dont expect them
 					 */
 					st = function( device,mount_point,file_system,mount_options ) ;
+
+					stx = StringListAppendString_1( stx,&st ) ;
 				}
 
-				stx = StringListAppendString_1( stx,&st ) ;
 			}
 		}
 		StringListDelete( &tmp ) ;
