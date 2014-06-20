@@ -308,34 +308,6 @@ stringList_t StringListInit( void )
 	return stl ;
 }
 
-stringList_t StringListString( string_t * st )
-{
-	stringList_t stl ;
-
-	if( !st ){
-		return StringListVoid ;
-	}
-
-	stl = ( stringList_t ) malloc( sizeof( struct StringListType ) ) ;
-
-	if( stl == NULL ){
-		return _StringListError() ;
-	}
-	stl->stp = ( string_t * ) malloc( sizeof( string_t ) * INIT_SIZE ) ;
-	if( stl->stp == NULL ){
-		free( stl ) ;
-		return _StringListError() ;
-	}
-	stl->stp[0] = *st ;
-	if( stl->stp[0] != StringVoid ){
-		stl->stp[0]->owned = 1 ;
-	}
-	*st = StringVoid ;
-	stl->size = 1 ;
-	stl->length = INIT_SIZE ;
-	return stl ;
-}
-
 stringList_t StringListWithSize( char ** c, size_t s,size_t t )
 {
 	stringList_t stl ;
@@ -611,34 +583,23 @@ stringList_t StringListInsertAt( stringList_t stl,const char * cstring,size_t in
 	}
 }
 
-stringList_t StringListAppendString_1( stringList_t stl,string_t * st )
-{
-	if( stl == StringListVoid ){
-		return StringListString( st ) ;
-	}else{
-		return StringListStringInsertAt( stl,st,stl->size ) ;
-	}
-}
-
-stringList_t StringListStringInsertAt( stringList_t stl,string_t * st,size_t index )
+static int _StringListStringInsertAt( stringList_t stl,string_t * st,size_t index )
 {
 	string_t * p ;
 	size_t size = sizeof( string_t ) ;
 
 	if( stl == StringListVoid ){
-		return stl ;
+		return 0 ;
 	}
 	if( index > stl->size ){
-		return stl ;
-	}
-	if( st == NULL ){
-		return stl ;
+		return 0 ;
 	}
 
 	p = __ExpandMemory( stl ) ;
 
 	if( !p ){
-		return _StringListError() ;
+		_StringListError() ;
+		return 0 ;
 	}
 
 	stl->stp = p ;
@@ -648,7 +609,75 @@ stringList_t StringListStringInsertAt( stringList_t stl,string_t * st,size_t ind
 		stl->stp[index]->owned = 1 ;
 	}
 	stl->size = stl->size + 1 ;
-	*st = StringVoid ;
+	return 1 ;
+}
+
+static int _StringListString( string_t * st,stringList_t * r )
+{
+	stringList_t stl ;
+
+	stl = ( stringList_t ) malloc( sizeof( struct StringListType ) ) ;
+
+	if( stl == NULL ){
+		_StringListError() ;
+		return 0 ;
+	}
+	stl->stp = ( string_t * ) malloc( sizeof( string_t ) * INIT_SIZE ) ;
+	if( stl->stp == NULL ){
+		free( stl ) ;
+		_StringListError() ;
+		return 0 ;
+	}
+	if( *st != StringVoid ){
+		stl->stp[ 0 ] = *st ;
+		stl->stp[ 0 ]->owned = 1 ;
+	}else{
+		stl->stp[ 0 ] = StringVoid ;
+	}
+
+	stl->size = 1 ;
+	stl->length = INIT_SIZE ;
+
+	*r = stl ;
+	return 1 ;
+}
+
+stringList_t StringListString( string_t * st )
+{
+	stringList_t stl = StringListVoid ;
+
+	if( st && *st ){
+		if( _StringListString( st,&stl ) ){
+			*st = StringVoid ;
+		}
+	}
+	return stl ;
+}
+
+stringList_t StringListAppendString_1( stringList_t stl,string_t * st )
+{
+	if( st && *st ){
+		if( stl == StringListVoid ){
+			if( _StringListString( st,&stl ) ){
+				*st = StringVoid ;
+			}
+		}else{
+			if( _StringListStringInsertAt( stl,st,stl->size ) ){
+				*st = StringVoid ;
+			}
+		}
+	}
+
+	return stl ;
+}
+
+stringList_t StringListStringInsertAt( stringList_t stl,string_t * st,size_t index )
+{
+	if( st && *st ){
+		if( _StringListStringInsertAt( stl,st,index ) ){
+			*st = StringVoid ;
+		}
+	}
 	return stl ;
 }
 

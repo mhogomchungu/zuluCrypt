@@ -334,7 +334,10 @@ static int _modify_tcrypt( info_t * info,const struct_opts * opts )
 				info->header_key_source     = "passphrase" ;
 				info->header_new_key_source = "new_passphrase" ;
 			}else{
-				xt = zuluCryptCreateKeyFile( StringContent( st ),StringLength( st ),"tcrypt-bk-" ) ;
+				/*
+				 * zuluCryptCreateKeyFile_1 is defined in ../lib/open_tcrypt.c
+				 */
+				xt = zuluCryptCreateKeyFile_1( st,"tcrypt-bk-" ) ;
 				if( xt == StringVoid ){
 					return zuluExit_1( k,st,xt ) ;
 				}else{
@@ -354,9 +357,9 @@ static int _modify_tcrypt( info_t * info,const struct_opts * opts )
 
 	if( xt != StringVoid ){
 		/*
-		 * zuluCryptDeleteFile() is defined in ../lib/file_path_security.c
+		 * zuluCryptDeleteFile_1() is defined in ../lib/file_path_security.c
 		 */
-		zuluCryptDeleteFile( StringContent( xt ) ) ;
+		zuluCryptDeleteFile_1( xt ) ;
 	}
 
 	return zuluExit_1( k,st,xt ) ;

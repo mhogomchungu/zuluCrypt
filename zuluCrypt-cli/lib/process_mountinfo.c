@@ -60,28 +60,32 @@ stringList_t zuluCryptGetMoutedListFromMountInfo_0(
 
 			entry = StringListStringArray_1( entry,&entry_len,tmp ) ;
 
-			file_system = *( entry + index + 1 ) ;
-			root_path   = *( entry + 3 ) ;
+			mount_point = *( entry + 4 ) ;
 
-			if( StringsAreEqual( root_path,"/" ) || StringsAreEqual( file_system,"btrfs" ) ){
+			if( StringAtLeastOnePrefixMatch( mount_point,"/var/run/media/public","/var/run/media/private",NULL ) ){
+				/*
+				 * skipping volumes with these mount points because they are double mount points produced in
+				 * certain distributions and we dont expect them.
+				 */
+			}else{
+				file_system = *( entry + index + 1 ) ;
+				root_path   = *( entry + 3 ) ;
 
-				device        = *( entry + index + 2 ) ;
-				mount_point   = *( entry + 4 ) ;
-				mount_options = *( entry + 5 ) ;
+				if( StringsAreEqual( root_path,"/" ) || StringsAreEqual( file_system,"btrfs" ) ){
 
-				if( StringAtLeastOnePrefixMatch( mount_point,"/var/run/media/public","/var/run/media/private",NULL ) ){
-					/*
-					 * skipping volumes with these mount points because they are double mount points produced in
-					 * certain distributions and we dont expect them.
-					 */
-				}else{
+					device        = *( entry + index + 2 ) ;
+					mount_options = *( entry + 5 ) ;
+
 					st = function( device,mount_point,file_system,mount_options ) ;
 					stx = StringListAppendString_1( stx,&st ) ;
+				}else{
+					/*
+					 * dont care about bind mounts
+					 */
 				}
-
 			}
 		}
-		
+
 		StringListDelete( &tmp ) ;
 	}
 
