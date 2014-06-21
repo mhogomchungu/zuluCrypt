@@ -9,9 +9,6 @@ INCLUDE(FindPkgConfig)
 #
 set(BUILD_SHARED "false")
 
-SET(QT_USE_QTCORE TRUE)
-SET(QT_USE_QTGUI TRUE)
-
 set(LIBRARY_VERSION "2.0.0")
 
 add_definitions(-I${PROJECT_BINARY_DIR}/frontend)
@@ -33,6 +30,9 @@ if(QT5)
 	add_definitions(${Qt5Widgets_DEFINITIONS})
 else()
 	find_package(Qt4 REQUIRED)
+
+	SET(QT_USE_QTCORE TRUE)
+	SET(QT_USE_QTGUI TRUE)
 
 	add_definitions(-I${Qt4_INCLUDE_DIR})
 	add_definitions(-I${QT_HEADERS_DIR})
@@ -266,7 +266,7 @@ endif()
 
 set_target_properties(lxqtwallet PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIC -pedantic ")
 set_target_properties(lxqtwallet PROPERTIES SOVERSION "${LIBRARY_VERSION}")
-TARGET_LINK_LIBRARIES(lxqtwallet "${link_libraries}" lxqtwallet-backend -lQtCore -lQtGui)
+TARGET_LINK_LIBRARIES(lxqtwallet "${link_libraries}" lxqtwallet-backend)
 
 if(LIB_SUFFIX)
 	set(LIB_PATH "${CMAKE_INSTALL_PREFIX}/${LIB_SUFFIX}")
