@@ -28,6 +28,7 @@
 #include <QDebug>
 #include <QTableWidgetItem>
 #include <QFileDialog>
+#include <QMimeData>
 
 tcrypt::tcrypt( QWidget * parent) : QDialog( parent ),m_ui( new Ui::tcrypt )
 {
