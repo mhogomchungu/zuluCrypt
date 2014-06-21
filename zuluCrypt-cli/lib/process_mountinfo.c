@@ -288,10 +288,6 @@ char * zuluCryptGetMountPointFromPath( const char * path )
 			return StringDeleteHandle( &st ) ;
 		}
 	}
-	/*
-	 * shouldnt get here
-	 */
-	return NULL ;
 }
 
 int zuluCryptPartitionIsMounted( const char * path )

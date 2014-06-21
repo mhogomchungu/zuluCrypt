@@ -56,6 +56,11 @@
 #define GNOME_WALLET    "gnome wallet"
 
 /*
+ * this header is created at config time
+ */
+#include "truecrypt_support.h"
+
+/*
  * this ugly global variable is defined in zulucrypt.cpp to prevent multiple prompts when opening multiple volumes
  */
 static QString _internalPassWord ;
@@ -103,6 +108,10 @@ passwordDialog::passwordDialog( QTableWidget * table,const QString& folderOpener
 	m_ui->pushButtonPlugin->setVisible( false ) ;
 
 	this->installEventFilter( this ) ;
+
+#if TRUECRYPT_CRYPTSETUP
+	m_ui->cbKeyType->addItem( tr( "TrueCrypt keys" ) ) ;
+#endif
 }
 
 bool passwordDialog::eventFilter( QObject * watched,QEvent * event )
