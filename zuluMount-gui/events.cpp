@@ -40,6 +40,7 @@
 #include "task.h"
 #include "events.h"
 
+#include <sys/select.h>
 /*
  * http://linux.die.net/man/7/inotify
  */
@@ -179,12 +180,32 @@ void events::run()
 	constexpr int BUFF_SIZE = 4096 ;
 	char buffer[ BUFF_SIZE ] ;
 
+	fd_set rfds ;
+	struct timeval tv ;
+	int retval ;
+	ssize_t r ;
+
+	FD_ZERO( &rfds ) ;
+
+	int select_fd = fd + 1 ;
+
 	auto _eventsReceived = [&](){
 
-		auto r = read( fd,buffer,BUFF_SIZE ) ;
-		lastEvent    = buffer + r ;
-		currentEvent = buffer ;
-		return true ;
+		tv.tv_sec  = 3 ;
+		tv.tv_usec = 0 ;
+
+		FD_SET( fd,&rfds ) ;
+
+		retval = select( select_fd,&rfds,NULL,NULL,&tv ) ;
+
+		if( retval > 0 ){
+			r = read( fd,buffer,BUFF_SIZE ) ;
+			lastEvent    = buffer + r ;
+			currentEvent = buffer ;
+			return true ;
+		}else{
+			return false ;
+		}
 	} ;
 
 	auto _processEvent = [&]( const struct inotify_event * event ){
@@ -225,8 +246,11 @@ void events::run()
 		}
 	} ;
 
-	while( _eventsReceived() ){
+	while( true ){
 
-		_processEvents( currentEvent,lastEvent ) ;
+		if( _eventsReceived() ){
+
+			_processEvents( currentEvent,lastEvent ) ;
+		}
 	}
 }

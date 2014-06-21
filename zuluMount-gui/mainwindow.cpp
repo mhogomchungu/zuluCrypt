@@ -69,7 +69,7 @@ private:
 #define Object_raii( x ) Object_raii< decltype( x ) > Object_raii_x( x ) ; Q_UNUSED( Object_raii_x )
 
 MainWindow::MainWindow( int argc,char * argv[],QWidget * parent ) :QWidget( parent ),
-	m_autoMountThread( 0 ),m_autoMountAction( 0 )
+	m_events( 0 ),m_autoMountAction( 0 )
 {
 	m_argc = argc ;
 	m_argv = argv ;
@@ -260,7 +260,7 @@ bool MainWindow::autoOpenFolderOnMount( void )
 void MainWindow::startAutoMonitor()
 {
 	m_mountInfo = new monitor_mountinfo( this ) ;
-	m_autoMountThread = new events( this ) ;
+	m_events = new events( this ) ;
 
 	/*
 	 * perform an ordely shut down when the application terminates to prevent an occassional crash with
@@ -270,10 +270,10 @@ void MainWindow::startAutoMonitor()
 	 * close the application
 	 */
 	connect( m_mountInfo,SIGNAL( stopped() ),this,SLOT( quitApplication() ) ) ;
-	connect( m_autoMountThread,SIGNAL( stopped() ),m_mountInfo,SLOT( stop() ) ) ;
+	connect( m_events,SIGNAL( stopped() ),m_mountInfo,SLOT( stop() ) ) ;
 
 	m_mountInfo->start() ;
-	m_autoMountThread->start() ;
+	m_events->start() ;
 }
 
 /*
@@ -281,7 +281,7 @@ void MainWindow::startAutoMonitor()
  */
 void MainWindow::pbClose()
 {
-	m_autoMountThread->stop() ;
+	m_events->stop() ;
 }
 
 void MainWindow::quitApplication()

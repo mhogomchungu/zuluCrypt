@@ -114,7 +114,7 @@ private:
 	void setUpShortCuts( void ) ;
 	void setUpApp( void ) ;
 	QSystemTrayIcon * m_trayIcon ;
-	events * m_autoMountThread ;
+	events * m_events ;
 	monitor_mountinfo * m_mountInfo ;
 	QAction * m_autoMountAction ;
 	QMenu * m_favorite_menu ;
