@@ -181,7 +181,6 @@ void events::run()
 	char buffer[ BUFF_SIZE ] ;
 
 	fd_set rfds ;
-	struct timeval tv ;
 	int retval ;
 	ssize_t r ;
 
@@ -196,12 +195,9 @@ void events::run()
 		 * be able to get out of a blocked read() on certain Qt versions.
 		 */
 
-		tv.tv_sec  = 3 ;
-		tv.tv_usec = 0 ;
-
 		FD_SET( fd,&rfds ) ;
 
-		retval = select( select_fd,&rfds,NULL,NULL,&tv ) ;
+		retval = select( select_fd,&rfds,nullptr,nullptr,nullptr ) ;
 
 		if( retval > 0 ){
 			r = read( fd,buffer,BUFF_SIZE ) ;
