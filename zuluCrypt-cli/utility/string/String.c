@@ -729,6 +729,15 @@ int StringStartsWith( string_t st,const char * s )
 	}
 }
 
+int StringStartsWith_1( string_t st,string_t xt )
+{
+	if( st == StringVoid || xt == StringVoid ){
+		return 0 ;
+	}else{
+		return strncmp( st->string,xt->string,xt->size ) == 0 ;
+	}
+}
+
 int StringEndsWithChar( string_t st,char s )
 {
 	if( st == StringVoid ){

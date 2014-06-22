@@ -80,39 +80,13 @@
 
 static inline int _allowedDevice( const char * device )
 {
-	const char * fsType ;
-	int st ;
-	blkid_probe blkid ;
-	int sts ;
-
 	if( StringPrefixEqual( device,"/dev/sr" ) ){
 		/*
 		 * device is probably a cdrom or dvdrom,allow them
 		 */
 		return 1 ;
-	}
-
-	sts = StringSize( device ) ;
-
-	if( sts == 8 ){
-		/*
-		 * we will get here with a device with an address of "/dev/XYZ".
-		 * This device is either not partitioned or is a root address of a partitioned device
-		 * Support it only if it has a recognizable file system.
-		 */
-		blkid = blkid_new_probe_from_filename( device ) ;
-		if( blkid == NULL ){
-			return 0 ;
-		}else{
-			blkid_do_probe( blkid ) ;
-			st = blkid_probe_lookup_value( blkid,"TYPE",&fsType,NULL ) ;
-			blkid_free_probe( blkid ) ;
-			return st == 0 ;
-		}
-	}else if( sts > 8 ){
-		return StringAtLeastOnePrefixMatch( device,"/dev/hd","/dev/sd","/dev/md","/dev/mmc","/dev/loop",NULL ) ;
 	}else{
-		return 0 ;
+		return StringAtLeastOnePrefixMatch( device,"/dev/hd","/dev/sd","/dev/md","/dev/mmc","/dev/loop",NULL ) ;
 	}
 }
 
@@ -237,6 +211,47 @@ static stringList_t _remove_btfs_multiple_devices( stringList_t stl )
 	return stz ;
 }
 
+/*
+ * This routine keep the root path of a device only if the device has no partitions.
+ *
+ * most times,a device will have a root address of something like "/dev/sdc" and partition addresses of
+ * something like "/dev/sdc1","/dev/sdc4". In these devices, we drop the root device address because
+ * it contains nothing useful to us.
+ *
+ * once in a while,we will get a partitionless device that has a file system on the root path like
+ * TrueCrypt system volumes and with these devices,we keep the root path because it contains stuff
+ * we care about
+ */
+static stringList_t _remove_root_devices( stringList_t stl )
+{
+	StringListIterator xt ;
+	StringListIterator it ;
+	StringListIterator end ;
+
+	string_t st ;
+
+	StringListGetIterators( stl,&it,&end ) ;
+
+	xt = it ;
+
+	while( it != end ){
+
+		st = *it ;
+		it++ ;
+
+		if( StringLength( st ) == 8 ){
+			if( it != end ){
+				if( StringStartsWith_1( *it,st ) ){
+					StringListRemoveAt( stl,it - xt - 1 ) ;
+					end-- ;
+				}
+			}
+		}
+	}
+
+	return stl ;
+}
+
 static stringList_t _zuluCryptVolumeList_0( int resolve_loop_devices )
 {
 	const char * device ;
@@ -303,7 +318,7 @@ static stringList_t _zuluCryptVolumeList_0( int resolve_loop_devices )
 	zuluCryptSecurityDropElevatedPrivileges() ;
 	StringListMultipleDelete( &stl,&stz,NULL ) ;
 	StringDelete( &st_1 ) ;
-	return _zuluCryptAddLVMVolumes( _zuluCryptAddMDRAIDVolumes( stl_1 ) ) ;
+	return _zuluCryptAddLVMVolumes( _zuluCryptAddMDRAIDVolumes( _remove_root_devices( stl_1 ) ) ) ;
 }
 
 stringList_t zuluCryptVolumeList( void )

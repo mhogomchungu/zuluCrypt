@@ -375,6 +375,13 @@ int StringEndsWith( string_t st,const char * s ) ;
 int StringStartsWith( string_t st,const char * s ) ;
 
 /*
+ * check to see if the string handled by handle st starts with a string handled by handle xt
+ * return 1 if it does
+ * return 0 if it doesnt
+ */
+int StringStartsWith_1( string_t st,string_t xt ) ;
+
+/*
  * check to see the string_t object starts with atleast one of the arbitrary number of cstrings
  * return 1 if it does
  * return 0 if it does not
