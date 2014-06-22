@@ -191,6 +191,11 @@ void events::run()
 
 	auto _eventsReceived = [&](){
 
+		/*
+		 * we are blocking on select() and not on read() because QThread->terminate() does not seem to
+		 * be able to get out of a blocked read() on certain Qt versions.
+		 */
+
 		tv.tv_sec  = 3 ;
 		tv.tv_usec = 0 ;
 
@@ -227,9 +232,7 @@ void events::run()
 		}
 	} ;
 
-	typedef std::function< void( const char *,const char * ) > function_type ;
-
-	function_type _processEvents = [&]( const char * e,const char * l ){
+	std::function< void( const char *,const char * ) > _processEvents = [&]( const char * e,const char * l ){
 
 		if( e < l ){
 

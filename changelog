@@ -188,3 +188,6 @@ version 4.7.1
 
 version 4.7.2
 -- add support for opening TrueCrypt volumes using a passphrase together with one or more keyfiles.
+
+version 4.7.3
+-- fix issues with Qt5
