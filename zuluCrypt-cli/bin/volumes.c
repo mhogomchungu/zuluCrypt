@@ -239,10 +239,14 @@ static stringList_t _remove_root_devices( stringList_t stl )
 		st = *it ;
 		it++ ;
 
+		/*
+		 * 8 comes from a length of something like "/dev/sdc"
+		 */
 		if( StringLength( st ) == 8 ){
 			if( it != end ){
 				if( StringStartsWith_1( *it,st ) ){
 					StringListRemoveAt( stl,it - xt - 1 ) ;
+					it-- ;
 					end-- ;
 				}
 			}
