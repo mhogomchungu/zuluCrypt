@@ -78,18 +78,6 @@
  *
  */
 
-static inline int _allowedDevice( const char * device )
-{
-	if( StringPrefixEqual( device,"/dev/sr" ) ){
-		/*
-		 * device is probably a cdrom or dvdrom,allow them
-		 */
-		return 1 ;
-	}else{
-		return StringAtLeastOnePrefixMatch( device,"/dev/hd","/dev/sd","/dev/md","/dev/mmc","/dev/loop",NULL ) ;
-	}
-}
-
 static stringList_t _zuluCryptAddLVMVolumes( stringList_t stl )
 {
 	struct dirent * entry ;
@@ -256,6 +244,11 @@ static stringList_t _remove_root_devices( stringList_t stl )
 	return stl ;
 }
 
+static int _supported_device( const char * device )
+{
+	return StringAtLeastOnePrefixMatch( device,"/dev/sd","/dev/hd","/dev/loop","/dev/sr","/dev/md","/dev/mmc",NULL ) ;
+}
+
 static stringList_t _zuluCryptVolumeList_0( int resolve_loop_devices )
 {
 	const char * device ;
@@ -290,21 +283,32 @@ static stringList_t _zuluCryptVolumeList_0( int resolve_loop_devices )
 	it++ ;
 
 	zuluCryptSecurityGainElevatedPrivileges() ;
+
 	while( it != end ){
+
 		st = *it ;
 		it++ ;
+
 		index = StringLastIndexOfChar( st,' ' ) ;
+
 		if( index != -1 ){
+
 			e = StringContent( st ) + index + 1 ;
 			device = StringAppendAt( st_1,5,e ) ;
-			if( _allowedDevice( device ) ){
+
+			if( _supported_device( device ) ){
+
 				if( StringPrefixEqual( device,"/dev/loop" ) ){
 					/*
-					 * Here we only keep one loop device if the volume file has
-					 * more than one loop device
+					 * zuluCryptLoopDeviceAddress_1() id defined in ../lib/create_loop_device.c
 					 */
 					e = zuluCryptLoopDeviceAddress_1( device ) ;
+
 					if( StringListHasNoEntry( stz,e ) ){
+						/*
+						 * Here we only keep one loop device if the volume file has
+						 * more than one loop device
+						 */
 						if( resolve_loop_devices ){
 							stl_1 = StringListAppend( stl_1,e ) ;
 						}else{
