@@ -427,7 +427,7 @@ void passwordDialog::walletIsOpen( bool opened )
 			m_key = utility::getKeyFromWallet( m_wallet,m_ui->OpenVolumePath->text() ) ;
 		} ;
 
-		Task::exec( this,"taskFinished",_getKey ) ;
+		utility::exec( this,"taskFinished",_getKey ) ;
 	}else{
 		_internalPassWord.clear() ;
 		this->enableAll() ;
@@ -635,7 +635,7 @@ void passwordDialog::openVolume()
 		}
 	} ;
 
-	Task::exec( this,"taskComplete",_a ) ;
+	utility::exec( this,"taskComplete",_a ) ;
 }
 
 void passwordDialog::success()
@@ -667,7 +667,7 @@ void passwordDialog::success()
 			utility::Task( QString( "%1 \"%2\"" ).arg( m_folderOpener ).arg( m ) ) ;
 		} ;
 
-		Task::exec( _a ) ;
+		utility::exec( _a ) ;
 
 		this->HideUI() ;
 	}else{

@@ -77,6 +77,8 @@ zuluCrypt::zuluCrypt( QWidget * parent ) :QMainWindow( parent ),m_trayIcon( 0 )
 
 	m_device       = utility::cmdArgumentValue( l,"-d" ) ;
 	m_folderOpener = utility::cmdArgumentValue( l,"-m","xdg-open" ) ;
+
+	utility::Task::initTask() ;
 }
 
 void zuluCrypt::setLocalizationLanguage()
@@ -756,7 +758,7 @@ void zuluCrypt::openFolder()
 		m_exitStatus = r.exitStatus() ;
 	} ;
 
-	Task::exec( this,"fileManagerOpenStatus",_a ) ;
+	utility::exec( this,"fileManagerOpenStatus",_a ) ;
 }
 
 void zuluCrypt::itemClicked( QTableWidgetItem * it )

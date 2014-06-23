@@ -24,6 +24,13 @@
 #include <QStringList>
 #include <QEvent>
 #include <QProcess>
+#include <QThreadPool>
+#include <QRunnable>
+#include <QMetaObject>
+
+#include <functional>
+
+#include <unistd.h>
 
 namespace LxQt{
 namespace Wallet {
@@ -34,12 +41,51 @@ class Wallet ;
 class QByteArray ;
 class QEvent ;
 
+typedef std::function< void( void ) > function_t ;
+
+class runnable : public QRunnable
+{
+public:
+	runnable( QObject * object,const char * slot,function_t f ):
+		m_function( f ),m_qObject( object ),m_slot( slot )
+	{
+		QThreadPool::globalInstance()->start( this ) ;
+	}
+private:
+	void run( void )
+	{
+		m_function() ;
+		if( m_qObject && m_slot ){
+			QMetaObject::invokeMethod( m_qObject,m_slot ) ;
+		}
+	}
+	function_t m_function ;
+	QObject * m_qObject ;
+	const char * m_slot ;
+};
+
 class utility
 {
 public:
+	static void exec( function_t f )
+	{
+		new runnable( nullptr,nullptr,f ) ;
+	}
+	static void exec( QObject * object,const char * slot,function_t f )
+	{
+		new runnable( object,slot,f ) ;
+	}
 	class Task
 	{
 	public :
+		static void wait( int s )
+		{
+			sleep( s ) ;
+		}
+		static void initTask( void )
+		{
+			QThreadPool::globalInstance()->setMaxThreadCount( 10 ) ;
+		}
 		Task( const QString& exe,int waitTime = -1 )
 		{
 			QProcess p ;
@@ -83,6 +129,7 @@ public:
 		int m_exitStatus ;
 		bool m_finished ;
 	};
+
 	static QString cmdArgumentValue( const QStringList&,const QString& arg,const QString& defaulT = QString() ) ;
 	static QStringList luksEmptySlots( const QString& volumePath ) ;
 	static void addToFavorite( const QString& dev,const QString& m_point ) ;

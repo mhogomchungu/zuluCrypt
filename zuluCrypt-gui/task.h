@@ -41,21 +41,10 @@ class Wallet ;
 class QTableWidget ;
 class QTableWidgetItem ;
 
-typedef std::function< void( void ) > function_t ;
-
 class Task : public QObject,public QRunnable
 {
 	Q_OBJECT
 public:
-	/*
-	 * object argument is expected to point to a QObject object
-	 * that has a slot named as the third argument of the function.
-	 * The slot will be called when the function given by the second
-	 * argument returns.
-	 */
-	static void exec( QObject * object,const char * slotName,function_t ) ;
-	static void exec( function_t ) ;
-
 	enum action{
 		exeTask,
 		closeAllVolumeTask,
@@ -63,8 +52,7 @@ public:
 		volumePropertiesTask,
 		updateVolumeList,
 		volumeTask,
-		sendKey,
-		runTask
+		sendKey
 	};
 	explicit Task( const QString& exe ) ;
 	Task( const QString&,const QString& ) ;
@@ -72,7 +60,7 @@ public:
 	Task() ;
 	Task( QObject * object,const char * slotName ) ;
 	~Task() ;
-	void start( Task::action = Task::exeTask,function_t function = [](){} ) ;
+	void start( Task::action = Task::exeTask ) ;
 signals:
 	void partitionProperties( QStringList ) ;
 	void addItemToTable( QString,QString,QString ) ;
@@ -86,7 +74,6 @@ private:
 	void openMountPointTask( void ) ;
 	void updateVolumeListTask( void ) ;
 	void run( void ) ;
-	void taskRun( void ) ;
 	void runExeTask( void ) ;
 	void runCloseAllVolumeTask( void ) ;
 	void runVolumePropertiesTask( void ) ;
@@ -103,9 +90,6 @@ private:
 	QString m_volumeProperties ;
 	QString m_partitionType ;
 	QString m_key ;
-	function_t m_function ;
-	QObject * m_qObject ;
-	const char * m_slotName ;
 };
 
 #endif // RUNINTHREAD_H

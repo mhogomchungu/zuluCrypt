@@ -75,7 +75,7 @@ private slots:
 	void enableAll_1( void ) ;
 	void slotOpenFolder( void ) ;
 	void slotOpenSharedFolder( void ) ;
-	void fileManagerOpenStatus( int exitCode, int exitStatus,int startError ) ;
+	void fileManagerOpenStatus( void ) ;
 	void processArgumentList( void ) ;
 	void openVolumeFromArgumentList( void ) ;
 	void itemEntered( QTableWidgetItem * ) ;
@@ -88,7 +88,9 @@ private slots:
 	void removeEntryFromTable( QString ) ;
 	void showFavorites( void ) ;
 	void favoriteClicked( QAction * ) ;
+	void openMountPointPath( QString ) ;
 private:
+	void openMountPoint( const QString& ) ;
 	QFont getSystemVolumeFont( void ) ;
 	void setLocalizationLanguage( void ) ;
 	bool autoOpenFolderOnMount( void ) ;
@@ -123,6 +125,8 @@ private:
 	QString m_sharedFolderPath ;
 	bool m_autoOpenFolderOnMount ;
 	bool m_removeAllVolumes ;
+	int m_exitStatus ;
+	int m_exitCode ;
 };
 
 #endif // MAINWINDOW_H

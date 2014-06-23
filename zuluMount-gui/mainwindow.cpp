@@ -75,6 +75,8 @@ MainWindow::MainWindow( int argc,char * argv[],QWidget * parent ) :QWidget( pare
 	m_argv = argv ;
 	m_removeAllVolumes = false ;
 	this->processArgumentList() ;
+
+	utility::Task::initTask() ;
 }
 
 void MainWindow::setUpApp()
@@ -303,9 +305,9 @@ void MainWindow::autoMountVolume( volumeEntryProperties * entry )
 			this->addEntryToTable( true,l ) ;
 		}else{
 			if( m_autoMount ){
-				mountPartition * mp = new mountPartition( this,m_ui->tableWidget,
-									  m_folderOpener,m_autoOpenFolderOnMount ) ;
-				connect( mp,SIGNAL( autoMountComplete() ),mp,SLOT( deleteLater() ) ) ;
+				mountPartition * mp = new mountPartition( this,m_ui->tableWidget ) ;
+				connect( mp,SIGNAL( openMountPoint( QString ) ),
+					 this,SLOT( openMountPointPath( QString ) ) ) ;
 				mp->AutoMount( l ) ;
 			}else{
 				this->addEntryToTable( false,l ) ;
@@ -507,11 +509,10 @@ void MainWindow::defaultButton()
 	}
 }
 
-void MainWindow::fileManagerOpenStatus( int exitCode, int exitStatus,int startError )
+void MainWindow::fileManagerOpenStatus()
 {
 	QString x = tr( "could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) ;
-	Q_UNUSED( startError ) ;
-	if( exitCode != 0 || exitStatus != 0 ){
+	if( m_exitCode != 0 || m_exitStatus != 0 ){
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "warning" ),x ) ;
 	}
@@ -519,11 +520,7 @@ void MainWindow::fileManagerOpenStatus( int exitCode, int exitStatus,int startEr
 
 void MainWindow::slotOpenSharedFolder()
 {
-	Task * t = new Task() ;
-	t->setMountPoint( m_sharedFolderPath ) ;
-	t->setMountPointOpener( m_folderOpener ) ;
-	connect( t,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
-	t->start( Task::openMountPoint ) ;
+	this->openMountPoint( m_sharedFolderPath ) ;
 }
 
 void MainWindow::slotOpenFolder()
@@ -531,11 +528,29 @@ void MainWindow::slotOpenFolder()
 	QTableWidgetItem * item = m_ui->tableWidget->currentItem() ;
 	QString path = m_ui->tableWidget->item( item->row(),1 )->text() ;
 
-	Task * t = new Task() ;
-	t->setMountPoint( path ) ;
-	t->setMountPointOpener( m_folderOpener ) ;
-	connect( t,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
-	t->start( Task::openMountPoint ) ;
+	this->openMountPoint( path ) ;
+}
+
+void MainWindow::openMountPoint( const QString& m_point )
+{
+	QString m = m_point ;
+	m.replace( "\"","\"\"\"" ) ;
+
+	auto _a = [ &,m ](){
+
+		auto r = utility::Task( QString( "%1 \"%2\"" ).arg( m_folderOpener ).arg( m ) ) ;
+		m_exitCode   = r.exitCode() ;
+		m_exitStatus = r.exitStatus() ;
+	} ;
+
+	utility::exec( this,"fileManagerOpenStatus",_a ) ;
+}
+
+void MainWindow::openMountPointPath( QString m )
+{
+	if( m_autoOpenFolderOnMount ){
+		this->openMountPoint( m ) ;
+	}
 }
 
 void MainWindow::volumeProperties()
@@ -663,12 +678,14 @@ void MainWindow::mount( const volumeEntryProperties& entry )
 	this->disableAll() ;
 	if( entry.encryptedVolume() ){
 		keyDialog * kd = new keyDialog( this,m_ui->tableWidget,entry.volumeName(),
-						entry.fileSystem(),m_folderOpener,m_autoOpenFolderOnMount ) ;
+						entry.fileSystem() ) ;
 		connect( kd,SIGNAL( cancel() ),this,SLOT( enableAll() ) ) ;
+		connect( kd,SIGNAL( openMountPoint( QString ) ),this,SLOT( openMountPointPath( QString ) ) ) ;
 		kd->ShowUI() ;
 	}else{
-		mountPartition * mp = new mountPartition( this,m_ui->tableWidget,m_folderOpener,m_autoOpenFolderOnMount ) ;
+		mountPartition * mp = new mountPartition( this,m_ui->tableWidget ) ;
 		connect( mp,SIGNAL( cancel() ),this,SLOT( enableAll() ) ) ;
+		connect( mp,SIGNAL( openMountPoint( QString ) ),this,SLOT( openMountPointPath( QString ) ) ) ;
 		mp->ShowUI( entry.volumeName(),entry.label() ) ;
 	}
 }
@@ -912,14 +929,14 @@ void MainWindow::removeDisappearedEntries( const QVector< volumeEntryProperties 
 		auto _unlistVolume = [ &,z ](){
 
 			for( const auto& it : z ){
-				Task::wait( 1 ) ;
+				utility::Task::wait( 1 ) ;
 				emit unlistVolume( it ) ;
 			}
 
 			emit unlistVolume( "" ) ;
 		} ;
 
-		Task::exec( _unlistVolume ) ;
+		utility::exec( _unlistVolume ) ;
 	}
 }
 

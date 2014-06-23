@@ -197,7 +197,7 @@ void luksdeletekey::pbDelete()
 		auto _a = [&](){
 
 			QStringList l = utility::luksEmptySlots( m_volumePath ) ;
-			
+
 			if( l.isEmpty() ){
 				m_notLuksVolume = true ;
 			}else{
@@ -207,7 +207,7 @@ void luksdeletekey::pbDelete()
 			}
 		} ;
 
-		Task::exec( this,"deleteKey",_a ) ;
+		utility::exec( this,"deleteKey",_a ) ;
 	}
 }
 
@@ -253,7 +253,7 @@ void luksdeletekey::deleteKey()
 		m_taskResult = utility::Task( exe ).exitCode() ;
 	} ;
 
-	Task::exec( this,"taskFinished",_a ) ;
+	utility::exec( this,"taskFinished",_a ) ;
 }
 
 void luksdeletekey::taskFinished()

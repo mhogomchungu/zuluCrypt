@@ -35,8 +35,6 @@ class Wallet ;
 }
 }
 
-typedef std::function< void( void ) > function_t ;
-
 class Task : public QObject,public QRunnable
 {
 	Q_OBJECT
@@ -49,9 +47,6 @@ public:
 	private:
 		int m_fd = -1 ;
 	};
-
-	static void exec( function_t ) ;
-	static void wait( int ) ;
 
 	Task() ;
 	~Task() ;
@@ -66,8 +61,6 @@ public:
 		CheckPermissions,
 		checkUnMount,
 		VolumeType,
-		openMountPoint,
-		getKey,
 		sendKey,
 		deviceProperty,
 		unmountAll
@@ -95,11 +88,9 @@ public:
 	void setMountPoint( const QString& ) ;
 	void setMakeMountPointPublic( bool ) ;
 	void setList( const QStringList& ) ;
-	void setMountPointOpener( const QString& ) ;
 	void setDeviceOffSet( const QString& ) ;
 	void setDeviceType( Task::deviceType ) ;
 	void setDeviceAction( Task::deviceAction ) ;
-	void setFunction( std::function< void( void ) > ) ;
 	void setRemoveList( const QStringList& ) ;
 	void setKeyFilesList( const QString& ) ;
 signals:
@@ -129,7 +120,6 @@ private:
 	void getVolumeProperties( const QString& ) ;
 	void getVolumeSystemType( void ) ;
 	void checkUnmount( void ) ;
-	void getKeyTask( void ) ;
 	void keySend( void ) ;
 	void deviceProperties( void ) ;
 	bool isSystemVolume( const QString& ) ;
@@ -153,11 +143,6 @@ private:
 	bool m_publicMount ;
 	QStringList m_list ;
 	bool m_systemDevice ;
-	QString m_folderOpener ;
-	int m_exitCode ;
-	int m_exitStatus ;
-	int m_startError ;
-	function_t m_function ;
 };
 
 #endif // MANAGEPARTITIONTHREAD_H

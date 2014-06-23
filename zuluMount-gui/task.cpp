@@ -20,6 +20,7 @@
 #include "task.h"
 #include <QDebug>
 
+#include <QMetaMethod>
 #include <QThreadPool>
 #include <QDir>
 #include <QFile>
@@ -51,34 +52,6 @@ Task::FileHandle::~FileHandle()
 	if( m_fd != -1 ){
 		close( m_fd ) ;
 	}
-}
-
-class runnable : public QRunnable
-{
-public:
-	explicit runnable( function_t f )
-	{
-		m_function = f ;
-		QThreadPool * t = QThreadPool::globalInstance() ;
-		t->setMaxThreadCount( 10 ) ;
-		t->start( this ) ;
-	}
-private:
-	void run( void )
-	{
-		m_function() ;
-	}
-	function_t m_function ;
-};
-
-void Task::exec( function_t f )
-{
-	new runnable( f ) ;
-}
-
-void Task::wait( int s )
-{
-	sleep( s ) ;
 }
 
 Task::Task()
@@ -131,11 +104,6 @@ void Task::setList( const QStringList& l )
 	m_list = l ;
 }
 
-void Task::setMountPointOpener( const QString& opener )
-{
-	m_folderOpener = opener ;
-}
-
 void Task::setDeviceOffSet( const QString& offset )
 {
 	m_deviceOffSet = offset ;
@@ -149,11 +117,6 @@ void Task::setDeviceType( Task::deviceType d )
 void Task::setDeviceAction( Task::deviceAction d )
 {
 	m_deviceAction = d ;
-}
-
-void Task::setFunction( std::function< void() > function )
-{
-	m_function = function ;
 }
 
 void Task::setRemoveList( const QStringList& l )
@@ -183,8 +146,6 @@ void Task::run()
 		case Task::CheckPermissions    : return this->checkPermissions() ;
 		case Task::VolumeType          : return this->getVolumeProperties() ;
 		case Task::checkUnMount        : return this->checkUnmount() ;
-		case Task::openMountPoint      : return this->openMountPointTask() ;
-		case Task::getKey              : return this->getKeyTask() ;
 		case Task::sendKey             : return this->keySend() ;
 		case Task::deviceProperty      : return this->deviceProperties() ;
 		case Task::unmountAll          : return this->unMountAllVolumes() ;
@@ -194,11 +155,6 @@ void Task::run()
 void Task::keySend()
 {
 	utility::sendKey( m_path,m_key ) ;
-}
-
-void Task::getKeyTask()
-{
-	m_function() ;
 }
 
 void Task::checkUnmount()
@@ -468,19 +424,10 @@ void Task::umount()
 	emit signalUnmountComplete( r.code,r.data ) ;
 }
 
-void Task::openMountPointTask()
-{
-	auto r = utility::Task( QString( "%1 \"%2\"" ).arg( m_folderOpener ).arg( m_point ) ) ;
-	m_exitCode   = r.exitCode() ;
-	m_exitStatus = r.exitStatus() ;
-}
-
 void Task::start( Task::Action action )
 {
 	m_action = action ;
-	QThreadPool * t = QThreadPool::globalInstance() ;
-	t->setMaxThreadCount( 10 ) ;
-	t->start( this ) ;
+	QThreadPool::globalInstance()->start( this ) ;
 }
 
 void Task::deviceProperties()
@@ -596,5 +543,4 @@ void Task::deviceProperties()
 Task::~Task()
 {
 	emit done() ;
-	emit errorStatus( m_exitCode,m_exitStatus,m_startError ) ;
 }

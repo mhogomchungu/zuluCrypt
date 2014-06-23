@@ -45,7 +45,7 @@ class keyDialog : public QDialog
 {
 	Q_OBJECT
 public:
-	keyDialog( QWidget * parent,QTableWidget *,const QString& path,const QString& type,const QString& folderOpener,bool b = true ) ;
+	keyDialog( QWidget * parent,QTableWidget *,const QString& path,const QString& type ) ;
 	~keyDialog() ;
 	void ShowUI( void ) ;
 	void HideUI( void ) ;
@@ -53,6 +53,7 @@ signals:
 	void mounted( QString ) ;
 	void cryptoOpen( QString ) ;
 	void cancel( void ) ;
+	void openMountPoint( QString ) ;
 public slots:
 	void slotMountComplete( int,QString ) ;
 private slots:
@@ -69,7 +70,6 @@ private slots:
 	void Plugin( void ) ;
 	void KeyFile( void ) ;
 	void cbMountReadOnlyStateChanged( int ) ;
-	void fileManagerOpenStatus( int exitCode, int exitStatus,int startError ) ;
 	void walletIsOpen( bool ) ;
 	void getPassWord( QString ) ;
 	void getPassWord( void ) ;
@@ -89,7 +89,6 @@ private :
 	Ui::keyDialog * m_ui ;
 	QString m_path ;
 	QString m_point ;
-	QString m_folderOpener ;
 	QString m_key ;
 	QString m_keyFiles ;
 	QString m_deviceOffSet ;
@@ -98,7 +97,6 @@ private :
 	QMenu * m_menu_1 ;
 	QTableWidget * m_table ;
 	bool m_working ;
-	bool m_autoOpenFolderOnMount ;
 	LxQt::Wallet::Wallet * m_wallet ;
 	enum{ Key = 0,keyfile = 1,plugin = 2,tcryptKeys = 3 } ;
 };

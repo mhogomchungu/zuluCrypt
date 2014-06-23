@@ -37,15 +37,14 @@ class mountPartition : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit mountPartition( QWidget * parent = 0,QTableWidget * table = 0,const QString& folderOpener = QString(),bool b = true ) ;
+	explicit mountPartition( QWidget * parent = 0,QTableWidget * table = 0 ) ;
 	void ShowUI( QString path,QString label ) ;
 	void HideUI( void ) ;
 	void AutoMount( QStringList entry ) ;
 	~mountPartition() ;
 signals:
-	void mounted( QString ) ;
-	void autoMountComplete( void ) ;
 	void cancel( void ) ;
+	void openMountPoint( QString ) ;
 private slots:
 	void stateChanged( int ) ;
 	void pbMount( void ) ;
@@ -56,7 +55,6 @@ private slots:
 	void showFileSystemOptionWindow( void ) ;
 	void slotMountComplete( int,QString ) ;
 	void checkBoxReadOnlyStateChanged( int ) ;
-	void fileManagerOpenStatus( int exitCode, int exitStatus,int startError ) ;
 	void deviceOffSet( QString,QString ) ;
 	void doAction( QAction * ) ;
 private:
@@ -68,13 +66,11 @@ private:
 	QString m_path ;
 	QString m_label ;
 	QString m_point ;
-	QString m_folderOpener ;
 	QString m_deviceOffSet ;
 	QString m_key ;
 	QString m_options ;
 	QTableWidget * m_table ;
 	QMenu * m_menu ;
-	bool m_autoOpenFolderOnMount ;
 };
 
 #endif // MOUNTPARTITION_H

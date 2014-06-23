@@ -37,12 +37,6 @@ Task::Task()
 {
 }
 
-Task::Task( QObject * object ,const char * slotName ) : m_qObject( object ),
-	m_slotName( slotName )
-{
-
-}
-
 Task::Task( const QString& exe ) : m_exe( exe ),
 	m_status( -1 ),m_path( exe ),m_partitionType( exe )
 {
@@ -61,13 +55,10 @@ Task::Task( const QString& x,const QString& y )
 	m_mpoint.replace( "\"","\"\"\"" ) ;
 }
 
-void Task::start( Task::action action,function_t function )
+void Task::start( Task::action action )
 {
-	m_function = function ;
-	m_action   = action ;
-	QThreadPool * thread = QThreadPool::globalInstance() ;
-	thread->setMaxThreadCount( 10 ) ;
-	thread->start( this ) ;
+	m_action = action ;
+	QThreadPool::globalInstance()->start( this ) ;
 }
 
 void Task::updateVolumeListTask()
@@ -180,15 +171,6 @@ void Task::run()
 		case Task::updateVolumeList     : return this->updateVolumeListTask() ;
 		case Task::volumeTask           : return this->runVolumeTask() ;
 		case Task::sendKey              : return this->keySend() ;
-		case Task::runTask              : return this->taskRun() ;
-	}
-}
-
-void Task::taskRun()
-{
-	m_function() ;
-	if( m_qObject && m_slotName ){
-		QMetaObject::invokeMethod( m_qObject,m_slotName,Qt::QueuedConnection ) ;
 	}
 }
 
@@ -198,15 +180,4 @@ Task::~Task()
 	emit finished( m_status ) ;
 	emit finished( m_status,m_output ) ;
 	emit finished( m_volumeProperties ) ;
-}
-
-void Task::exec( QObject * object,const char * slotName,function_t f )
-{
-	Task * t = new Task( object,slotName ) ;
-	t->start( Task::runTask,f ) ;
-}
-
-void Task::exec( function_t f )
-{
-	Task::exec( nullptr,nullptr,f ) ;
 }

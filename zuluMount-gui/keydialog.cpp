@@ -46,18 +46,14 @@
  */
 static QString _internalPassWord ;
 
-keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const QString& path,
-		      const QString& type,const QString& folderOpener,bool autoOpenFolderOnMount ) :
-	QDialog( parent ),m_ui(new Ui::keyDialog)
+keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const QString& path,const QString& type ) :
+	QDialog( parent ),m_ui( new Ui::keyDialog )
 {
 	m_ui->setupUi( this ) ;
 	m_ui->checkBoxShareMountPoint->setToolTip( utility::shareMountPointToolTip() ) ;
 	m_table = table ;
 	m_path = path ;
 	m_working = false ;
-	m_folderOpener = folderOpener ;
-
-	m_autoOpenFolderOnMount = autoOpenFolderOnMount ;
 
 	QString msg ;
 	if( type == QString( "crypto_LUKS" ) ){
@@ -326,15 +322,6 @@ void keyDialog::closeEvent( QCloseEvent * e )
 	this->pbCancel() ;
 }
 
-void keyDialog::fileManagerOpenStatus( int exitCode,int exitStatus,int startError )
-{
-	Q_UNUSED( startError ) ;
-	if( exitCode != 0 || exitStatus != 0 ){
-		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "warning" ),tr( "could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) ) ;
-	}
-}
-
 void keyDialog::slotMountComplete( int st,QString m )
 {
 	m_working = false ;
@@ -351,13 +338,7 @@ void keyDialog::slotMountComplete( int st,QString m )
 			/*
 			 * The volume is reported as opened and it actually is
 			 */
-			if( m_autoOpenFolderOnMount ){
-				Task * t = new Task() ;
-				t->setMountPoint( utility::mountPath( m_point ) ) ;
-				t->setMountPointOpener( m_folderOpener ) ;
-				connect( t,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
-				t->start( Task::openMountPoint ) ;
-			}
+			emit openMountPoint( utility::mountPath( m_point ) ) ;
 		}else{
 			/*
 			 * The volume is reported as opened but it isnt,possible reason is a backe end crash
@@ -403,10 +384,7 @@ void keyDialog::walletIsOpen( bool opened )
 			m_key = utility::getKeyFromWallet( m_wallet,m_path ) ;
 		} ;
 
-		Task * t = new Task() ;
-		connect( t,SIGNAL( done() ),this,SLOT( getPassWord() ) ) ;
-		t->setFunction( _getKey ) ;
-		t->start( Task::getKey ) ;
+		utility::exec( this,"getPassWord",_getKey ) ;
 	}else{
 		_internalPassWord.clear() ;
 		this->enableAll() ;

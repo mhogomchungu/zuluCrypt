@@ -43,8 +43,7 @@
 #include "../zuluCrypt-gui/utility.h"
 #include "mountoptions.h"
 
-mountPartition::mountPartition( QWidget * parent,QTableWidget * table,const QString& folderOpener,bool autoOpenFolderOnMount ) :
-	QWidget( parent ),m_ui(new Ui::mountPartition)
+mountPartition::mountPartition( QWidget * parent,QTableWidget * table ) : QWidget( parent ),m_ui( new Ui::mountPartition )
 {
 	m_ui->setupUi( this ) ;
 	m_ui->checkBoxShareMountPoint->setToolTip( utility::shareMountPointToolTip() ) ;
@@ -53,8 +52,6 @@ mountPartition::mountPartition( QWidget * parent,QTableWidget * table,const QStr
 	this->setFixedSize( this->size() ) ;
 	this->setWindowFlags( Qt::Window | Qt::Dialog ) ;
 	this->setFont( parent->font() ) ;
-
-	m_autoOpenFolderOnMount = autoOpenFolderOnMount ;
 
 	m_ui->pbMount->setFocus() ;
 
@@ -73,7 +70,6 @@ mountPartition::mountPartition( QWidget * parent,QTableWidget * table,const QStr
 	this->setFont( F.getFont() ) ;
 
 	m_ui->pbMountFolder->setVisible( false ) ;
-	m_folderOpener = folderOpener ;
 
 	QAction * ac = new QAction( this ) ;
 	QKeySequence s( Qt::CTRL + Qt::Key_F ) ;
@@ -157,6 +153,8 @@ void mountPartition::pbMount()
 			DialogMsg msg( this ) ;
 			msg.ShowUIOK( tr( "ERROR" ),tr( "\"/\" character is not allowed in the mount name field" ) ) ;
 			m_ui->lineEdit->setFocus() ;
+		}else{
+			this->deleteLater() ;
 		}
 		return ;
 	}
@@ -276,17 +274,6 @@ void mountPartition::stateChanged( int i )
 	m_ui->checkBox->setEnabled( true ) ;
 }
 
-void mountPartition::fileManagerOpenStatus( int exitCode,int exitStatus,int startError )
-{
-	Q_UNUSED( startError ) ;
-	if( exitCode != 0 || exitStatus != 0 ){
-		if( this->isVisible() ){
-			DialogMsg msg( this ) ;
-			msg.ShowUIOK( tr( "warning" ),tr( "could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) ) ;
-		}
-	}
-}
-
 void mountPartition::deviceOffSet( QString deviceOffSet,QString key )
 {
 	m_deviceOffSet = deviceOffSet ;
@@ -300,16 +287,11 @@ void mountPartition::slotMountComplete( int status,QString msg )
 			DialogMsg m( this ) ;
 			m.ShowUIOK( tr( "ERROR" ),msg ) ;
 			this->enableAll() ;
+		}else{
+			this->deleteLater() ;
 		}
 	}else{
-		if( m_autoOpenFolderOnMount ){
-			Task * t = new Task() ;
-			t->setMountPoint( utility::mountPath( m_point ) ) ;
-			t->setMountPointOpener( m_folderOpener ) ;
-			connect( t,SIGNAL( errorStatus( int,int,int ) ),this,SLOT( fileManagerOpenStatus( int,int,int ) ) ) ;
-			t->start( Task::openMountPoint ) ;
-		}
-		emit autoMountComplete() ;
+		emit openMountPoint( utility::mountPath( m_point ) ) ;
 		this->HideUI() ;
 	}
 }

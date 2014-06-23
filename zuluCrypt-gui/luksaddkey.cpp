@@ -333,7 +333,7 @@ void luksaddkey::pbAdd( void )
 		}
 	} ;
 
-	Task::exec( this,"taskFinished",_a ) ;
+	utility::exec( this,"taskFinished",_a ) ;
 }
 
 void luksaddkey::keyAdded()
