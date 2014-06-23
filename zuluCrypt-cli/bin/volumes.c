@@ -537,19 +537,20 @@ stringList_t zuluCryptPartitions( int option,uid_t uid )
 	 * "non_system" contains non system devices gathered from /proc/partitions minus system partitions.
 	 */
 
-	it = StringListBegin( non_system ) ;
+	StringListGetIterators( non_system,&it,&end ) ;
 	start = it ;
 
 	/*
 	 * now we consult udev if enabled and we move partition in the "non system" list to "system" list if udev think they are system
 	 */
-	while( it != StringListEnd( non_system ) ){
+	while( it != end ){
 		e = StringContent( *it ) ;
+		it++ ;
 		if( _zuluCryptCheckSYSifDeviceIsSystem( e ) ){
 			StringListAppendIfAbsent( system,e ) ;
-			StringListRemoveAt( non_system,it - start ) ;
-		}else{
-			it++ ;
+			StringListRemoveAt( non_system,it - start - 1 ) ;
+			it  = it - 1 ;
+			end = end - 1 ;
 		}
 	}
 
