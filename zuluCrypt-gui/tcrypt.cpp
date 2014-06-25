@@ -17,6 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "dialogmsg.h"
 #include "tcrypt.h"
 #include "ui_tcrypt.h"
 
@@ -110,17 +111,18 @@ void tcrypt::pbSend()
 	QStringList l = tablewidget::tableColumnEntries( m_ui->tableWidget ) ;
 
 	if( l.isEmpty() ){
-		return ;
-	}
+		DialogMsg msg( this ) ;
+		msg.ShowUIOK( tr( "ERROR" ),tr( "at least one keyfile is required" ) ) ;
+	}else{
+		QString keyFiles = l.first() ;
+		l.removeFirst() ;
 
-	QString keyFiles = l.first() ;
-	l.removeFirst() ;
-
-	for( const auto& it : l ){
-		keyFiles += "\t" + it ;
+		for( const auto& it : l ){
+			keyFiles += "\t" + it ;
+		}
+		emit Keys( m_ui->lineEdit->text(),keyFiles ) ;
+		this->HideUI() ;
 	}
-	emit Keys( m_ui->lineEdit->text(),keyFiles ) ;
-	this->HideUI() ;
 }
 
 void tcrypt::pbCancel()

@@ -179,7 +179,7 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 	while( it != end ){
 		c = StringContent( *it ) ;
 		it++ ;
-		if( !StringPrefixEqual( c,t ) ){
+		if( StringPrefixNotEqual( c,t ) ){
 			/*
 			 * we only care about zuluCrypt volumes and these volumes that we care about starts with
 			 * "/dev/mapper/zuluCrypt-"

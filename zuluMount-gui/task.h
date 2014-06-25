@@ -94,7 +94,6 @@ public:
 	void setRemoveList( const QStringList& ) ;
 	void setKeyFilesList( const QString& ) ;
 signals:
-	void errorStatus( int exitCode,int exitStatus,int startError ) ;
 	void signalMountComplete( int,QString ) ;
 	void signalUnmountComplete( int,QString ) ;
 	void volumeList( QVector< volumeEntryProperties > * ) ;
@@ -102,7 +101,6 @@ signals:
 	void signalProperties( QString ) ;
 	void checkPermissions( int ) ;
 	void done( void ) ;
-	void key( QString ) ;
 	void volumeRemoved( QString ) ;
 	void removeVolume( QString ) ;
 private:
