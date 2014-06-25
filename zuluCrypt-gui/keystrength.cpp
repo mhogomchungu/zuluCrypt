@@ -27,11 +27,9 @@
 
 #if BUILD_PWQUALITY
 
-#define PWQUALITY_CAST( x ) reinterpret_cast< pwquality_settings_t * >( x )
-
 keystrength::keystrength()
 {
-	m_handle = PWQUALITY_CAST( pwquality_default_settings() ) ;
+	m_handle = reinterpret_cast< void * >( pwquality_default_settings() ) ;
 }
 
 bool keystrength::canCheckQuality()
@@ -41,12 +39,13 @@ bool keystrength::canCheckQuality()
 
 int keystrength::quality( const QString& key )
 {
-	return pwquality_check( PWQUALITY_CAST( m_handle ),key.toLatin1().constData(),NULL,NULL,NULL ) ;
+	auto h = reinterpret_cast< pwquality_settings_t * >( m_handle ) ;
+	return pwquality_check( h,key.toLatin1().constData(),nullptr,nullptr,nullptr ) ;
 }
 
 keystrength::~keystrength()
 {
-	pwquality_free_settings( PWQUALITY_CAST( m_handle ) ) ;
+	pwquality_free_settings( reinterpret_cast< pwquality_settings_t * >( m_handle ) ) ;
 }
 
 #else
