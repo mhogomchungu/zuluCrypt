@@ -281,7 +281,7 @@ void MainWindow::autoMountVolume( volumeEntryProperties * entry )
 {
 	Object_raii( entry ) ;
 
-	if( entry && !entry->volumeName().isEmpty() ){
+	if( entry && entry->notEmpty() ){
 		if( entry->entryisValid() ){
 			QStringList l = entry->entryList() ;
 			if( entry->encryptedVolume() ){
@@ -786,7 +786,7 @@ void MainWindow::volumeMiniProperties( volumeEntryProperties * volumeInfo )
 
 void MainWindow::updateList( const volumeEntryProperties& entry )
 {
-	if( !entry.volumeName().isEmpty() ){
+	if( entry.notEmpty() ){
 
 		QTableWidget * table = m_ui->tableWidget ;
 

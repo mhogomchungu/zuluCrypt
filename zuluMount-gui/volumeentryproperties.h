@@ -61,6 +61,14 @@ public:
 	{
 		m_isSystem = t ;
 	}
+	bool Empty() const
+	{
+		return m_volume.isEmpty() ;
+	}
+	bool notEmpty() const
+	{
+		return !m_volume.isEmpty() ;
+	}
 	bool entryisValid() const
 	{
 		if( m_volumeSize == "1.0 KB" || m_volumeSize == "Nil" ){
