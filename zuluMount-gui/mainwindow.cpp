@@ -844,7 +844,7 @@ void MainWindow::unMountAll()
 	QString b = QString( "/run/media/private/%1/" ).arg( a ) ;
 	QString c = QString( "/home/%1/" ).arg( a ) ;
 
-	int k = table->columnCount() ;
+	int k = x.size() ;
 
 	for( int i = 0 ; i < k ; i++ ){
 		const QString& e = x.at( i ) ;
