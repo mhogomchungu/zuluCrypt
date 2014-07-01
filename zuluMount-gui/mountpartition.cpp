@@ -186,7 +186,7 @@ void mountPartition::pbMount()
 		exe += " -m -d \"" + volume + "\"" ;
 	}
 
-	exe += " -z " + utility::mountPath( m_point ) ;
+	exe += " -z " + utility::mountPath( m_ui->lineEdit->text() ) ;
 
 	if( !m_deviceOffSet.isEmpty() ){
 		exe += " -o " + m_deviceOffSet ;

@@ -498,7 +498,7 @@ void keyDialog::openVolume()
 		exe += "  e rw" ;
 	}
 
-	QString mountPoint = m_point ;
+	QString mountPoint = m_ui->lineEditMountPoint->text() ;
 	mountPoint.replace( "\"","\"\"\"" ) ;
 
 	exe += " -z \"" + mountPoint + "\"" ;
