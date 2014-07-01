@@ -196,29 +196,26 @@ void luksdeletekey::pbDelete()
 
 		auto _a = [&](){
 
-			QStringList l = utility::luksEmptySlots( m_volumePath ) ;
-
-			if( l.isEmpty() ){
-				m_notLuksVolume = true ;
-			}else{
-				m_notLuksVolume = false ;
-				m_keyNumber = l.first().toInt() ;
-				m_totalKeys = l.at( 1 ) ;
-			}
+			return utility::luksEmptySlots( m_volumePath ) ;
 		} ;
 
-		utility::exec( this,"deleteKey",_a ) ;
+		auto _b = [&]( const QStringList& l ){
+
+			this->deleteKey( l ) ;
+		} ;
+
+		Task::run< QStringList >( _a ).then( _b ) ;
 	}
 }
 
-void luksdeletekey::deleteKey()
+void luksdeletekey::deleteKey( const QStringList& l )
 {
 	DialogMsg msg( this ) ;
 
-	if( m_notLuksVolume ){
+	if( l.isEmpty() ){
 		msg.ShowUIOK( tr( "ERROR!" ),tr( "volume is not a luks volume" ) ) ;
 		return this->enableAll() ;
-	}else if( m_keyNumber == 1 ){
+	}else if( l.first().toInt() == 1 ){
 		QString s = tr( "There is only one last key in the volume." ) ;
 		s = s + tr( "\nDeleting it will make the volume unopenable and lost forever." ) ;
 		s = s + tr( "\nAre you sure you want to delete this key?" ) ;
@@ -233,14 +230,23 @@ void luksdeletekey::deleteKey()
 		}
 	}
 
+	m_keyNumber = l.first().toInt() - 1 ;
+	m_totalKeys = l.at( 1 ) ;
+
 	QString keypath ;
 
 	if( m_ui->rbPassphraseFromFile->isChecked() ){
 		keypath = utility::resolvePath( m_ui->lineEditPassphrase->text() ).replace( "\"","\"\"\"" ) ;
 	}else{
 		keypath = utility::keyPath() ;
-		Task * t = new Task( keypath,m_ui->lineEditPassphrase->text() ) ;
-		t->start( Task::sendKey ) ;
+		QString key = m_ui->lineEditPassphrase->text() ;
+
+		auto _z = [ = ](){
+
+			utility::sendKey( keypath,key ) ;
+		} ;
+
+		Task::exec( _z ) ;
 	}
 
 	const char * r = "%1 -k -r -d \"%2\" -f \"%3\"" ;
@@ -248,23 +254,27 @@ void luksdeletekey::deleteKey()
 
 	m_isWindowClosable = false ;
 
-	auto _a = [ &,exe ](){
+	auto _a = [ exe ](){
 
-		m_taskResult = utility::Task( exe ).exitCode() ;
+		return utility::Task( exe ).exitCode() ;
 	} ;
 
-	utility::exec( this,"taskFinished",_a ) ;
+	auto _b = [&]( const int& r ){
+
+		this->taskFinished( r ) ;
+	} ;
+
+	Task::run< int >( _a ).then( _b ) ;
 }
 
-void luksdeletekey::taskFinished()
+void luksdeletekey::taskFinished( int r )
 {
 	DialogMsg msg( this ) ;
 	m_isWindowClosable = true ;
-	QStringList l ;
 	QString success;
-	switch(  m_taskResult ){
+	switch(  r ){
 		case 0 :
-			success = tr( "key removed successfully.\n%1 / %2 slots are now in use" ).arg( QString::number( --m_keyNumber ) ).arg( m_totalKeys ) ;
+			success = tr( "key removed successfully.\n%1 / %2 slots are now in use" ).arg( QString::number( m_keyNumber ) ).arg( m_totalKeys ) ;
 			msg.ShowUIOK( tr( "SUCCESS!" ),success ) ;
 			return this->HideUI() ;
 		case 2 : msg.ShowUIOK( tr( "ERROR!" ),tr( "there is no key in the volume that match the presented key" ) ) ;				break ;
@@ -282,12 +292,12 @@ only root user or members of group zulucrypt-system can do that" ) ) ;										
 		case 13: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open key file for reading" ) ) ;					break ;
 		case 14: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get a key from a socket" ) ) ;							break ;
 		case 110:msg.ShowUIOK( tr( "ERROR!" ),tr( "can not find a partition that match presented UUID" ) ) ;					break ;
-		default :msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR! with status number %1 encountered" ).arg( m_taskResult ) ) ;
+		default :msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR! with status number %1 encountered" ).arg( r ) ) ;
 	}
 
 	this->enableAll() ;
 
-	if( m_taskResult == 2 ){
+	if( r == 2 ){
 		m_ui->lineEditPassphrase->clear() ;
 		m_ui->lineEditPassphrase->setFocus() ;
 	}

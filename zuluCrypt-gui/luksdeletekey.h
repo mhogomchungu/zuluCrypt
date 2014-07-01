@@ -22,6 +22,7 @@
 
 #include <QDialog>
 #include <QString>
+#include <QStringList>
 
 #include "utility.h"
 
@@ -53,8 +54,8 @@ private slots:
 	void rbPassphraseFromFile( void ) ;
 	void pbOpenKeyFile( void ) ;
 	void pbOpenVolume( void ) ;
-	void taskFinished( void ) ;
-	void deleteKey( void ) ;
+	void taskFinished( int ) ;
+	void deleteKey( const QStringList& ) ;
 private:
 	void disableAll( void ) ;
 	void enableAll( void ) ;
@@ -63,9 +64,7 @@ private:
 	Ui::luksdeletekey * m_ui ;
 	QString m_volumePath ;
 	bool m_isWindowClosable ;
-	bool m_notLuksVolume ;
 	int m_keyNumber ;
-	int m_taskResult ;
 	QString m_totalKeys ;
 };
 

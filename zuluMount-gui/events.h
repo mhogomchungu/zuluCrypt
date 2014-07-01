@@ -23,6 +23,7 @@
 
 class QObject ;
 class events ;
+class volumeEntryProperties ;
 
 class events : public QThread
 {
@@ -33,6 +34,8 @@ public:
 	void stop( void ) ;
 signals:
 	void stopped( void ) ;
+	void volumeRemoved( QString ) ;
+	void volumeMiniProperties( volumeEntryProperties * ) ;
 private slots:
 	void threadStopped( void ) ;
 private:

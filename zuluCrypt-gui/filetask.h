@@ -25,7 +25,7 @@
 
 #include <QObject>
 #include <QString>
-#include <QRunnable>
+#include <QThread>
 
 #define BLOCK_SIZE 1024
 #define SIZE 1024
@@ -40,7 +40,7 @@
  */
 #define RANDOM_SOURCE 2
 
-class FileTask : public QObject,public QRunnable
+class FileTask : public QThread
 {
 	Q_OBJECT
 public :
@@ -52,7 +52,6 @@ public :
 		openFileFailed
 	}status;
 	FileTask( const QString& destination,qulonglong size ) ;
-	void start( void ) ;
 	~FileTask() ;
 signals:
 	void exitStatus( int ) ;

@@ -283,8 +283,14 @@ void luksaddkey::pbAdd( void )
 		existingPassType = QString( "-u" ) ;
 		ExistingKey = utility::keyPath() + QString( "-existingKey" ) ;
 
-		Task * t = new Task( ExistingKey,m_ui->textEditExistingPassphrase->text() ) ;
-		t->start( Task::sendKey ) ;
+		QString k = m_ui->textEditExistingPassphrase->text() ;
+
+		auto _a = [ = ](){
+
+			utility::sendKey( ExistingKey,k ) ;
+		} ;
+
+		Task::exec( _a ) ;
 	}
 
 	QString newPassType ;
@@ -296,17 +302,23 @@ void luksaddkey::pbAdd( void )
 
 		NewKey = utility::keyPath() + QString( "-newKey" ) ;
 
-		Task * t = new Task( NewKey,m_ui->textEditPassphraseToAdd->text() ) ;
-		t->start( Task::sendKey ) ;
+		QString k = m_ui->textEditPassphraseToAdd->text() ;
+
+		auto _a = [ = ](){
+
+			utility::sendKey( NewKey,k ) ;
+		} ;
+
+		Task::exec( _a ) ;
 	}
 
-	QString a = QString( ZULUCRYPTzuluCrypt ) ;
+	const QString& a = QString( ZULUCRYPTzuluCrypt ) ;
 	QString b = m_volumePath ;
 	b.replace( "\"","\"\"\"" ) ;
-	QString c = existingPassType ;
-	QString d = ExistingKey ;
-	QString e = newPassType ;
-	QString f = NewKey ;
+	const QString& c = existingPassType ;
+	const QString& d = ExistingKey ;
+	const QString& e = newPassType ;
+	const QString& f = NewKey ;
 
 	const char * q = "%1 -a -d \"%2\" %3 \"%4\" %5 \"%6\"" ;
 	QString exe = QString( q ).arg( a ).arg( b ).arg( c ).arg( d ).arg( e ).arg( f ) ;
@@ -315,48 +327,53 @@ void luksaddkey::pbAdd( void )
 
 	this->disableAll() ;
 
-	auto _a = [ &,exe ](){
+	auto _a = [ exe ](){
 
-		auto r = utility::Task( exe ) ;
-
-		m_taskResult = r.exitCode() ;
-
-		if( r.success() ){
-
-			QStringList l = utility::luksEmptySlots( m_volumePath ) ;
-
-			if( !l.isEmpty() ){
-
-				m_keyNumber = l.first() ;
-				m_totalKeys = l.at( 1 ) ;
-			}
-		}
+		return utility::Task( exe ).exitCode() ;
 	} ;
 
-	utility::exec( this,"taskFinished",_a ) ;
+	auto _b = [&]( const int& r ){
+
+		this->taskFinished( r ) ;
+	} ;
+
+	Task::run< int >( _a ).then( _b ) ;
 }
 
 void luksaddkey::keyAdded()
 {
-	QString success ;
-	if( m_keyNumber.isEmpty() ){
-		success = tr( "key added successfully." ) ;
-	}else{
-		QString x = tr( "key added successfully.\n%1 / %2 slots are now in use" ) ;
-		success = x.arg( m_keyNumber ).arg( m_totalKeys ) ;
-	}
+	auto _a = [&](){
 
-	DialogMsg msg( this ) ;
-	msg.ShowUIOK( tr( "SUCCESS!" ),success ) ;
+		return utility::luksEmptySlots( m_volumePath ) ;
+	} ;
 
-	this->HideUI() ;
+	auto _b = [&]( const QStringList& l ){
+
+		QString success ;
+
+		if( l.isEmpty() ){
+
+			success = tr( "key added successfully." ) ;
+		}else{
+
+			QString x = tr( "key added successfully.\n%1 / %2 slots are now in use" ) ;
+			success = x.arg( l.first() ).arg( l.at( 1 ) ) ;
+
+			DialogMsg msg( this ) ;
+			msg.ShowUIOK( tr( "SUCCESS!" ),success ) ;
+
+			this->HideUI() ;
+		}
+	} ;
+
+	Task::run< QStringList >( _a ).then( _b ) ;
 }
 
-void luksaddkey::taskFinished()
+void luksaddkey::taskFinished( int r )
 {
 	m_isWindowClosable = true ;
 	DialogMsg msg( this ) ;
-	switch( m_taskResult ){
+	switch( r ){
 		case 0  : return this->keyAdded() ;
 		case 1  : msg.ShowUIOK( tr( "ERROR!" ),tr( "presented key does not match any key in the volume" ) ) ;		      	break ;
 		case 2  : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open luks volume" ) ) ;					     	break ;
@@ -375,7 +392,7 @@ void luksaddkey::taskFinished()
 		case 15 : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get elevated privilege,check binary permissions" ) ) ;		break ;
 		case 110: msg.ShowUIOK( tr( "ERROR!" ),tr( "can not find a partition that match presented UUID" ) ) ;			break ;
 		case 113: msg.ShowUIOK( tr( "ERROR!" ),tr( "device is not a luks device" ) ) ;						break ;
-		default : msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR! with status number %1 encountered" ).arg( m_taskResult ) ) ;
+		default : msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR! with status number %1 encountered" ).arg( r ) ) ;
 	}
 
 	this->enableAll() ;

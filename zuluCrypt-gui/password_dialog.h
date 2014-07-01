@@ -72,8 +72,7 @@ private slots :
 	void mountPointPath( QString ) ;
 	void cbStateChanged( int ) ;
 	void getPassWord( QString ) ;
-	void taskFinished( void ) ;
-	void taskComplete( void ) ;
+	void taskComplete( const QString&,int ) ;
 	void keys( QString key,QString keyFiles ) ;
 	void tcryptCancelled( void ) ;
 private :
@@ -86,7 +85,7 @@ private :
 	void enableAll( void ) ;
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
-	void success( void ) ;
+	void success( const QString& ) ;
 	void failed( void ) ;
 	Ui::PasswordDialog * m_ui ;
 	bool m_isWindowClosable ;
@@ -99,8 +98,6 @@ private :
 	QString m_device ;
 	QString m_point ;
 	QString m_folderOpener ;
-	QString m_taskOutput ;
-	int m_taskStatus ;
 
 	LxQt::Wallet::Wallet * m_wallet ;
 	enum{ key = 0,keyfile = 1,plugin = 2,tcryptKeys = 3 } ;

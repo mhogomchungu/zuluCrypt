@@ -350,10 +350,16 @@ void managevolumeheader::pbCreate()
 
 		if( m_ui->rbTrueCryptHeader->isChecked() ){
 			if( m_ui->rbKey->isChecked() ){
-				QString path = utility::keyPath() ;
 
-				Task * t = new Task( path,m_ui->lineEditPassWord->text().toLatin1() ) ;
-				t->start( Task::sendKey ) ;
+				QString path = utility::keyPath() ;
+				QString key  = m_ui->lineEditPassWord->text() ;
+
+				auto _a = [ = ](){
+
+					utility::sendKey( path,key ) ;
+				} ;
+
+				Task::exec( _a ) ;
 
 				exe = QString( "%1 -B -d \"%2\" -z \"%3\" -f %4" ).arg( ZULUCRYPTzuluCrypt ).arg( device ).arg( backUp ).arg( path ) ;
 			}else{
@@ -376,9 +382,17 @@ void managevolumeheader::pbCreate()
 		}
 		if( m_ui->rbTrueCryptHeader->isChecked() ){
 			if( m_ui->rbKey->isChecked() ){
+
 				QString path = utility::keyPath() ;
-				Task * t = new Task( path,m_ui->lineEditPassWord->text().toLatin1() ) ;
-				t->start( Task::sendKey ) ;
+				QString key  = m_ui->lineEditPassWord->text() ;
+
+				auto _a = [ = ](){
+
+					utility::sendKey( path,key ) ;
+				} ;
+
+				Task::exec( _a ) ;
+
 				exe = QString( "%1 -kR -d \"%2\" -z \"%3\" -f %4" ).arg( ZULUCRYPTzuluCrypt ).arg( device ).arg( backUp ).arg( path ) ;
 			}else{
 				QString path = m_ui->lineEditPassWord->text() ;
@@ -402,9 +416,17 @@ void managevolumeheader::pbCreate()
 
 	m_OperationInProgress = true ;
 
-	Task * t = new Task( exe ) ;
-	connect( t,SIGNAL( finished( int ) ),this,SLOT( taskFinished( int ) ) ) ;
-	t->start() ;
+	auto _a = [ exe ](){
+
+		return utility::Task( exe ).exitCode() ;
+	} ;
+
+	auto _b = [&]( const int& r ){
+
+		this->taskFinished( r ) ;
+	} ;
+
+	Task::run< int >( _a ).then( _b ) ;
 }
 
 void managevolumeheader::pbOpenPartition()

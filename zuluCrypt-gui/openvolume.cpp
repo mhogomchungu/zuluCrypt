@@ -188,33 +188,67 @@ void openvolume::partitionList( QString title,QString type )
 		m_ui->tableWidget->removeRow( 0 ) ;
 	}
 
-	Task * t = new Task( type ) ;
-	connect( t,SIGNAL( finished() ),this,SLOT( partitionpropertiesThreadFinished() ) ) ;
-	connect( t,SIGNAL( partitionProperties( QStringList ) ),this,SLOT( partitionProperties( QStringList ) ) ) ;
-	t->start( Task::volumeTask ) ;
-
 	m_ui->tableWidget->setEnabled( false ) ;
 	this->show() ;
+
+	auto _a = [ type ](){
+
+		QString volumeType = type ;
+		/*
+		 * Root user can create encrypted volumes in all partitions including system partitions.
+		 * Show all partitions, not only non system.
+		 *
+		 */
+		if( volumeType == " -N" && utility::userIsRoot() ){
+			volumeType = QString( " -A" ) ;
+		}
+
+		QString exe   = QString( "1% %2 -Z" ).arg( ZULUCRYPTzuluCrypt ).arg( volumeType ) ;
+
+		return utility::Task( exe ).splitOutput( '\n' ) ;
+	} ;
+
+	auto _b = [&]( const QStringList& l ){
+
+		this->partitionpropertiesThreadFinished() ;
+		this->partitionProperties( l ) ;
+	} ;
+
+	Task::run< QStringList >( _a ).then( _b ) ;
 }
 
-void openvolume::partitionProperties( QStringList entry )
+void openvolume::partitionProperties( const QStringList& l )
 {
-	QString size = entry.at(1) ;
-	if( size == QString( "1.0 KB" ) || size == QString( "Nil" ) ){
-		return ;
-	}
-	if( m_showEncryptedOnly ){
-		QString e = entry.at( 3 ) ;
-		if( e.contains( QString( "crypto" ) ) || e.contains( QString( "Nil" ) ) ){
-			tablewidget::addRowToTable( m_ui->tableWidget,entry ) ;
+	QStringList z ;
+
+	for( const auto& it : l ){
+
+		z = utility::split( it,'\t' ) ;
+
+		if( z.size() >= 4 ){
+
+			const QString& fs = z.at( 3 ) ;
+
+			if( !fs.contains( "member" ) ){
+
+				const QString& size = z.at( 1 ) ;
+
+				if( size == "1.0 KB" || size == "Nil" ){
+					continue ;
+				}
+				if( m_showEncryptedOnly ){
+					if( fs.startsWith( "crypto" ) || fs.contains( "Nil" ) ){
+						tablewidget::addRowToTable( m_ui->tableWidget,z ) ;
+					}
+				}else if( m_showLuksOnly ){
+					if( fs.startsWith( "crypto" ) ){
+						tablewidget::addRowToTable( m_ui->tableWidget,z ) ;
+					}
+				}else{
+					tablewidget::addRowToTable( m_ui->tableWidget,z ) ;
+				}
+			}
 		}
-	}else if( m_showLuksOnly ){
-		QString e = entry.at( 3 ) ;
-		if( e.contains( QString( "crypto" ) ) ){
-			tablewidget::addRowToTable( m_ui->tableWidget,entry ) ;
-		}
-	}else{
-		tablewidget::addRowToTable( m_ui->tableWidget,entry ) ;
 	}
 }
 

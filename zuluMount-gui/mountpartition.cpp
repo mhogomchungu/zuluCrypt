@@ -36,7 +36,9 @@
 #include <QCursor>
 #include <QAction>
 
-#include "task.h"
+#include "zulumounttask.h"
+#include "bin_path.h"
+#include "../zuluCrypt-gui/task.h"
 #include "../zuluCrypt-gui/dialogmsg.h"
 #include "../zuluCrypt-gui/userfont.h"
 #include "../zuluCrypt-gui/tablewidget.h"
@@ -161,41 +163,71 @@ void mountPartition::pbMount()
 
 	this->disableAll() ;
 
-	Task * t = new Task() ;
-	t->setDevice( m_path ) ;
-
 	QString addr = utility::keyPath() ;
-	t->setKeySource( QString( "-f ") + addr ) ;
 
 	if( !m_deviceOffSet.isEmpty() ){
-		Task * e = new Task() ;
-		e->setKey( m_key ) ;
-		e->setKeyPath( addr ) ;
-		e->start( Task::sendKey ) ;
+
+		auto _a = [ = ](){
+
+			utility::sendKey( addr,m_key ) ;
+		} ;
+
+		Task::exec( _a ) ;
 	}
-	if( m_options.isEmpty() ){
-		if( m_ui->checkBoxMountReadOnly->isChecked() ){
-			t->setMode( QString( "ro" ) ) ;
-		}else{
-			t->setMode( QString( "rw" ) ) ;
-		}
+
+	QString exe = zuluMountPath ;
+
+	QString volume = m_path ;
+	volume.replace( "\"","\"\"\"" ) ;
+
+	if( m_ui->checkBoxShareMountPoint->isChecked() ){
+		exe += " -M -m -d \"" + volume + "\"" ;
 	}else{
-		if( m_ui->checkBoxMountReadOnly->isChecked() ){
-			t->setMode( QString( "ro -Y %1" ).arg( m_options ) ) ;
-		}else{
-			t->setMode( QString( "rw -Y %1" ).arg( m_options ) ) ;
-		}
+		exe += " -m -d \"" + volume + "\"" ;
 	}
 
-	m_point = m_ui->lineEdit->text() ;
+	exe += " -z " + utility::mountPath( m_point ) ;
 
-	t->setMountPoint( utility::mountPath( m_point ) ) ;
-	t->setDeviceOffSet( m_deviceOffSet ) ;
+	if( !m_deviceOffSet.isEmpty() ){
+		exe += " -o " + m_deviceOffSet ;
+	}
 
-	connect( t,SIGNAL( signalMountComplete( int,QString ) ),this,SLOT( slotMountComplete( int,QString ) ) ) ;
+	if( m_ui->checkBoxMountReadOnly->isChecked() ){
+		exe += " -e -ro" ;
+	}else{
+		exe += " -e -rw" ;
+	}
 
-	t->setMakeMountPointPublic( m_ui->checkBoxShareMountPoint->isChecked() ) ;
-	t->start( Task::Mount ) ;
+	if( !m_options.isEmpty() ){
+		exe += " -Y " + m_options ;
+	}
+
+	exe += " -f " + addr ;
+
+	auto _a = [ exe ](){
+
+		auto r = utility::Task( exe ) ;
+
+		zuluMountTaskResult s ;
+
+		QString output = r.output() ;
+		int index = output.indexOf( QChar( ':') ) ;
+		if( index != -1 ){
+			s.outPut = output.mid( index + 1 ) ;
+		}
+
+		s.exitCode = r.exitCode() ;
+		s.outPut   = r.output() ;
+
+		return s ;
+	} ;
+
+	auto _b = [&]( const zuluMountTaskResult& r ){
+
+		this->slotMountComplete( r.exitCode,r.outPut ) ;
+	} ;
+
+	Task::run< zuluMountTaskResult >( _a ).then( _b ) ;
 }
 
 void mountPartition::showOffSetWindowOption()
@@ -312,5 +344,3 @@ mountPartition::~mountPartition()
 {
 	delete m_ui ;
 }
-
-

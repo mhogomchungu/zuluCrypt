@@ -29,16 +29,13 @@ FileTask::FileTask( const QString& file,qulonglong size )
 	m_status = FileTask::unset ;
 	m_file = file ;
 	m_size = size ;
+
+	connect( this,SIGNAL( finished() ),this,SLOT( deleteLater() ) ) ;
 }
 
 void FileTask::cancelOperation()
 {
 	m_status = FileTask::cancelled ;
-}
-
-void FileTask::start()
-{
-	QThreadPool::globalInstance()->start( this ) ;
 }
 
 FileTask::status FileTask::createContainerFile( void )

@@ -65,6 +65,12 @@
  */
 static QString _internalPassWord ;
 
+struct taskResult
+{
+	int exitCode ;
+	QString outPut ;
+};
+
 passwordDialog::passwordDialog( QTableWidget * table,const QString& folderOpener,QWidget * parent ) : QDialog( parent )
 {
 	m_ui = new Ui::PasswordDialog() ;
@@ -406,28 +412,32 @@ void passwordDialog::getPassWord( QString password )
 	_internalPassWord = password ;
 }
 
-void passwordDialog::taskFinished()
-{
-	if( m_key.isEmpty() ){
-		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "ERROR" ),tr( "the volume does not appear to have an entry in the wallet" ) ) ;
-		this->enableAll() ;
-	}else{
-		this->openVolume() ;
-	}
-
-	m_wallet->deleteLater() ;
-}
-
 void passwordDialog::walletIsOpen( bool opened )
 {
 	if( opened ){
 
-		auto _getKey = [&](){
-			m_key = utility::getKeyFromWallet( m_wallet,m_ui->OpenVolumePath->text() ) ;
+		QString key = m_ui->OpenVolumePath->text() ;
+
+		auto _a = [ &,key ](){
+
+			return utility::getKeyFromWallet( m_wallet,key ) ;
 		} ;
 
-		utility::exec( this,"taskFinished",_getKey ) ;
+		auto _b = [&]( const QString& key ){
+
+			if( key.isEmpty() ){
+				DialogMsg msg( this ) ;
+				msg.ShowUIOK( tr( "ERROR" ),tr( "the volume does not appear to have an entry in the wallet" ) ) ;
+				this->enableAll() ;
+			}else{
+				m_key = key ;
+				this->openVolume() ;
+			}
+
+			m_wallet->deleteLater() ;
+		} ;
+
+		Task::run< QString >( _a ).then( _b ) ;
 	}else{
 		_internalPassWord.clear() ;
 		this->enableAll() ;
@@ -474,8 +484,12 @@ void passwordDialog::buttonOpenClicked( void )
 
 void passwordDialog::sendKey( const QString& sockpath )
 {
-	Task * t = new Task( sockpath,m_key ) ;
-	t->start( Task::sendKey ) ;
+	auto _a = [ &,sockpath ](){
+
+		utility::sendKey( sockpath,m_key ) ;
+	} ;
+
+	Task::exec( _a ) ;
 }
 
 void passwordDialog::disableAll()
@@ -607,9 +621,9 @@ void passwordDialog::openVolume()
 	b.replace( "\"","\"\"\"" ) ;
 	QString c = m_point ;
 	c.replace( "\"","\"\"\"" ) ;
-	QString d = mode ;
-	QString e = passtype ;
-	QString f = keyPath ;
+	const QString& d = mode ;
+	const QString& e = passtype ;
+	const QString& f = keyPath ;
 
 	QString exe ;
 
@@ -623,22 +637,24 @@ void passwordDialog::openVolume()
 
 	this->disableAll() ;
 
-	auto _a = [ &,exe ](){
+	auto _a = [ exe ](){
 
+		taskResult t ;
 		auto r = utility::Task( exe ) ;
-
-		m_taskStatus = r.exitCode() ;
-
-		if( r.success() ){
-
-			m_taskOutput = r.output() ;
-		}
+		t.exitCode = r.exitCode() ;
+		t.outPut   = r.output() ;
+		return t ;
 	} ;
 
-	utility::exec( this,"taskComplete",_a ) ;
+	auto _b = [&]( const taskResult& r ){
+
+		this->taskComplete( r.outPut,r.exitCode ) ;
+	} ;
+
+	Task::run< taskResult >( _a ).then( _b ) ;
 }
 
-void passwordDialog::success()
+void passwordDialog::success( const QString& taskOutput )
 {
 	if( utility::mapperPathExists( m_device ) ){
 
@@ -650,11 +666,11 @@ void passwordDialog::success()
 
 		list.append( m ) ;
 
-		if( m_taskOutput.contains( "luks" ) ){
+		if( taskOutput.contains( "luks" ) ){
 			list.append( "luks" ) ;
-		}else if( m_taskOutput.contains( "plain" ) ){
+		}else if( taskOutput.contains( "plain" ) ){
 			list.append( "plain" ) ;
-		}else if( m_taskOutput.contains( "tcrypt" ) ){
+		}else if( taskOutput.contains( "tcrypt" ) ){
 			list.append( "tcrypt" ) ;
 		}else{
 			list.append( "Nil" ) ;
@@ -667,7 +683,7 @@ void passwordDialog::success()
 			utility::Task( QString( "%1 \"%2\"" ).arg( m_folderOpener ).arg( m ) ) ;
 		} ;
 
-		utility::exec( _a ) ;
+		Task::exec( _a ) ;
 
 		this->HideUI() ;
 	}else{
@@ -681,11 +697,11 @@ void passwordDialog::success()
 	}
 }
 
-void passwordDialog::taskComplete()
+void passwordDialog::taskComplete( const QString& outPut,int exitCode )
 {
 	m_isWindowClosable = true ;
 
-	if( m_taskStatus == 12 && m_ui->cbKeyType->currentIndex() == passwordDialog::plugin ){
+	if( exitCode == 12 && m_ui->cbKeyType->currentIndex() == passwordDialog::plugin ){
 		/*
 		 * A user cancelled the plugin
 		 */
@@ -693,8 +709,8 @@ void passwordDialog::taskComplete()
 	}
 
 	DialogMsg msg( this ) ;
-	switch ( m_taskStatus ){
-		case 0 : return this->success() ;
+	switch ( exitCode ){
+		case 0 : return this->success( outPut ) ;
 		case 1 : msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to mount ntfs/exfat file system using ntfs-3g,is ntfs-3g/exfat package installed?" ) ) ; break ;
 		case 2 : msg.ShowUIOK( tr( "ERROR!" ),tr( "there seem to be an open volume accociated with given address" ) ) ;				break ;
 		case 3 : msg.ShowUIOK( tr( "ERROR!" ),tr( "no file or device exist on given path" ) ) ; 						break ;
@@ -719,12 +735,12 @@ void passwordDialog::taskComplete()
 		case 22: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open a system volume.\n\nConsult menu->help->permission for more informaion\n" ) ) ;					break ;
 		case 113:msg.ShowUIOK( tr( "ERROR!" ),tr( "a non supported device encountered,device is missing or permission denied\n\
 Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The device has LVM or MDRAID signature" ) ) ;					break ;
-		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR with status number %1 encountered" ).arg( m_taskStatus ) ) ;
+		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR with status number %1 encountered" ).arg( exitCode ) ) ;
 	}
 
 	this->enableAll() ;
 
-	if( m_taskStatus == 4 ){
+	if( exitCode == 4 ){
 		if( m_ui->cbKeyType->currentIndex() == passwordDialog::key ){
 			m_ui->PassPhraseField->clear() ;
 			m_ui->PassPhraseField->setFocus() ;

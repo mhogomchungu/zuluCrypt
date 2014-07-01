@@ -24,6 +24,7 @@
 #include <QThread>
 #include <QProcess>
 #include <QStringList>
+#include <QDebug>
 
 #include "bin_path.h"
 
@@ -37,13 +38,17 @@
 #include <functional>
 
 #include "../zuluCrypt-gui/utility.h"
-#include "task.h"
+#include "../zuluCrypt-gui/task.h"
 #include "events.h"
-
+#include "zulumounttask.h"
 #include <sys/select.h>
 /*
  * http://linux.die.net/man/7/inotify
  */
+
+#define _startsWith( x,y ) strncmp( x,y,strlen( y ) ) == 0
+#define _contains( x,y ) strstr( x,y ) != 0
+#define _stringsAreEqual( x,y ) strcmp( x,y ) == 0
 
 events::events( QObject * parent )
 {
@@ -85,7 +90,12 @@ void events::run()
 	connect( m_mtoto,SIGNAL( finished() ),m_main,SLOT( threadStopped() ) ) ;
 	connect( m_mtoto,SIGNAL( finished() ),m_mtoto,SLOT( deleteLater() ) ) ;
 
-	Task::FileHandle manage_fd ;
+	connect( this,SIGNAL( volumeMiniProperties( volumeEntryProperties * ) ),
+		 m_babu,SLOT( volumeMiniProperties( volumeEntryProperties * ) ) ) ;
+	connect( this,SIGNAL( volumeRemoved( QString ) ),
+		 m_babu,SLOT( volumeRemoved( QString ) ) ) ;
+
+	utility::FileHandle manage_fd ;
 
 	int fd = manage_fd( inotify_init() ) ;
 
@@ -103,14 +113,6 @@ void events::run()
 
 	auto _allowed_device = []( const char * device ){
 
-		auto _startsWith = []( const char * x,const char * y ){
-			return strncmp( x,y,strlen( y ) ) == 0 ;
-		} ;
-
-		auto _contains = []( const char * x,const char * y ){
-			return strstr( x,y ) != 0 ;
-		} ;
-
 		/*
 		 * dont care about these devices.
 		 * /dev/sgX seem to be created when a usb device is plugged in
@@ -126,24 +128,6 @@ void events::run()
 		return s == false ;
 	} ;
 
-	auto _deviceType = [&]( const struct inotify_event * event ){
-		if( event->wd == dm ){
-			return Task::dm_device ;
-		}else if( event->wd == md ){
-			return Task::md_device ;
-		}else{
-			return Task::device ;
-		}
-	} ;
-
-	auto _deviceAction = []( const struct inotify_event * event ){
-		if( event->mask == IN_DELETE ){
-			return Task::deviceDeleted ;
-		}else{
-			return Task::deviceAdded ;
-		}
-	} ;
-
 	auto _device_action = [&]( const struct inotify_event * event ){
 
 		/*
@@ -151,10 +135,6 @@ void events::run()
 		 * created before the first entry is added.To account for this,monitor for the
 		 * folder creation to start monitoring its contents.
 		 */
-
-		auto _stringsAreEqual = []( const char * x,const char * y ){
-			return strcmp( x,y ) == 0 ;
-		} ;
 
 		if( event->wd == dev && event->mask & IN_CREATE ){
 
@@ -213,43 +193,67 @@ void events::run()
 
 		if( _device_action( event ) && _allowed_device( event->name ) ){
 
-			auto t = new Task() ;
+			zuluMount::deviceProperties devProperties ;
 
-			connect( t,SIGNAL( volumeMiniProperties( volumeEntryProperties * ) ),
-				 m_babu,SLOT( autoMountVolume( volumeEntryProperties * ) ) ) ;
-			connect( t,SIGNAL( volumeRemoved( QString ) ),
-				 m_babu,SLOT( volumeRemoved( QString ) ) ) ;
+			devProperties.volumeName = event->name ;
+			devProperties.added      = event->mask == IN_CREATE ;
 
-			t->setDeviceType( _deviceType( event ) ) ;
-			t->setDeviceAction( _deviceAction( event ) ) ;
-			t->setDevice( event->name ) ;
-
-			t->start( Task::deviceProperty ) ;
-		}
-	} ;
-
-	std::function< void( const char *,const char * ) > _processEvents = [&]( const char * e,const char * l ){
-
-		if( e < l ){
-
-			auto event = reinterpret_cast< const struct inotify_event * >( e ) ;
-
-			if( event ){
-				_processEvent( event ) ;
-				e += event->len + sizeof( struct inotify_event ) ;
+			if( event->wd == dm ){
+				devProperties.deviceType = zuluMount::dm_device ;
+			}else if( event->wd == md ){
+				devProperties.deviceType = zuluMount::md_device ;
 			}else{
-				e += sizeof( struct inotify_event ) ;
+				devProperties.deviceType = zuluMount::device ;
 			}
 
-			_processEvents( e,l ) ;
+			auto _a = [ = ](){
+
+				volumeMiniPropertiesResult r = zuluMount::Task::deviceProperties( devProperties ) ;
+
+				if( !r.volumeName.isEmpty() ){
+
+					if( r.volumeRemoved ){
+
+						emit volumeRemoved( r.volumeName ) ;
+					}else{
+						if( r.entry ){
+							if( r.entry->volumeName().isEmpty() ){
+								/*
+								 * working with naked pointers because
+								 * i have yet to figure out how to send
+								 * custom objects through the signal-slot system
+								 */
+								delete r.entry ;
+							}else{
+								emit volumeMiniProperties( r.entry ) ;
+							}
+						}
+					}
+				}
+			} ;
+
+			Task::exec( _a ) ;
 		}
 	} ;
+
+	#define _cast( x ) reinterpret_cast< const struct inotify_event * >( currentEvent )
+	#define _eventSize sizeof( struct inotify_event )
 
 	while( true ){
 
 		if( _eventsReceived() ){
 
-			_processEvents( currentEvent,lastEvent ) ;
+			while( currentEvent < lastEvent ){
+
+				auto event = _cast( currentEvent ) ;
+
+				if( event ){
+					_processEvent( event ) ;
+					currentEvent += _eventSize + event->len ;
+				}else{
+					currentEvent += _eventSize ;
+				}
+			}
 		}
 	}
 }

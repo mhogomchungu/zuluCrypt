@@ -12,7 +12,6 @@ set (UI_FILES 	mainwindow.ui
 
 set(MOC_FILES 	mainwindow.h
 		keydialog.h
-		task.h
 		mountpartition.h
 		oneinstance.h
 		events.h
@@ -26,7 +25,8 @@ set(SRC 	main.cpp
 		events.cpp
 		mainwindow.cpp
 		keydialog.cpp
-		task.cpp
+		../zuluCrypt-gui/task.cpp
+		zulumounttask.cpp
 		mountpartition.cpp
 		oneinstance.cpp
 		monitor_mountinfo.cpp

@@ -68,23 +68,8 @@ CryptTask::CryptTask( const QString& source,const QString& dest,
 	m_key = key ;
 	m_task = task ;
 	m_status = CryptTask::unset ;
-}
 
-void CryptTask::start()
-{
-	if( m_keySource == QString( "-p" ) ){
-		if( m_dest.endsWith( QString( ".zc" ) ) || m_source.endsWith( QString( ".zc" ) ) ){
-			QString sockpath = utility::keyPath() ;
-
-			Task * t = new Task( sockpath,m_key ) ;
-			t->start( Task::sendKey ) ;
-
-			m_keySource = QString( "-f" ) ;
-			m_key = sockpath ;
-		}
-	}
-
-	QThreadPool::globalInstance()->start( this ) ;
+	connect( this,SIGNAL( finished() ),this,SLOT( deleteLater() ) ) ;
 }
 
 void CryptTask::terminate()
@@ -94,6 +79,21 @@ void CryptTask::terminate()
 
 void CryptTask::run()
 {
+	if( m_keySource == QString( "-p" ) ){
+		if( m_dest.endsWith( QString( ".zc" ) ) || m_source.endsWith( QString( ".zc" ) ) ){
+			QString sockpath = utility::keyPath() ;
+
+			auto _a = [ = ](){
+
+				utility::sendKey( sockpath,m_key ) ;
+			} ;
+
+			Task::exec( _a ) ;
+
+			m_keySource = QString( "-f" ) ;
+			m_key = sockpath ;
+		}
+	}
 	if( m_task == QString( "-D" ) ){
 		if( m_source.endsWith( ".zc" ) ){
 			/*

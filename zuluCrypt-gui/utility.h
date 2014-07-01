@@ -41,50 +41,58 @@ class Wallet ;
 class QByteArray ;
 class QEvent ;
 
-typedef std::function< void( void ) > function_t ;
-
-class runnable : public QRunnable
+namespace utility
 {
-public:
-	runnable( QObject * object,const char * slot,function_t f ):
-		m_function( f ),m_qObject( object ),m_slot( slot )
-	{
-		QThreadPool::globalInstance()->start( this ) ;
-	}
-private:
-	void run( void )
-	{
-		m_function() ;
-		if( m_qObject && m_slot ){
-			QMetaObject::invokeMethod( m_qObject,m_slot ) ;
-		}
-	}
-	function_t m_function ;
-	QObject * m_qObject ;
-	const char * m_slot ;
-};
+	QString cmdArgumentValue( const QStringList&,const QString& arg,
+				  const QString& defaulT = QString() ) ;
 
-class utility
+	QStringList luksEmptySlots( const QString& volumePath ) ;
+	void addToFavorite( const QString& dev,const QString& m_point ) ;
+	QStringList readFavorites( void ) ;
+	void removeFavoriteEntry( const QString& ) ;
+	bool pathExists( const QString& ) ;
+	bool canCreateFile( const QString& ) ;
+	QString resolvePath( const QString& ) ;
+	QString hashPath( const QByteArray& ) ;
+	QString cryptMapperPath( void ) ;
+	void debug( const QString& ) ;
+	void debug( int ) ;
+	QString mapperPath( const QString& ) ;
+	QString getUUIDFromPath( const QString& ) ;
+	QString getVolumeID( const QString& ) ;
+	bool userIsRoot( void ) ;
+	bool mapperPathExists( const QString& path ) ;
+	QString mountPath( const QString& ) ;
+	QString userName( void ) ;
+	void help( const QString& app ) ;
+	QString shareMountPointToolTip( void ) ;
+	QString shareMountPointToolTip( const QString& ) ;
+	QString sharedMountPointPath( const QString& ) ;
+	bool pathPointsToAFile( const QString& ) ;
+	QString localizationLanguage( const QString& ) ;
+	QString localizationLanguagePath( const QString& ) ;
+	void setLocalizationLanguage( const QString&,const QString& ) ;
+	QString walletName( void ) ;
+	QString applicationName( void ) ;
+	bool pathIsReadable( const QString& ) ;
+	bool setOpenVolumeReadOnly( QWidget * parent,bool check,const QString& app ) ;
+	bool getOpenVolumeReadOnlyOption( const QString& app ) ;
+	QString keyPath( void ) ;
+	void sendKey( const QString& keyPath,const QString& key ) ;
+	QString getKeyFromWallet( LxQt::Wallet::Wallet *,const QString& volumeID ) ;
+	bool eventFilter( QObject * gui,QObject * watched,QEvent * event ) ;
+	QStringList split( const QString&,char token = '\n' ) ;
+	QStringList split( const QByteArray&,char token = '\n' ) ;
+}
+
+namespace utility
 {
-public:
-	static void exec( function_t f )
-	{
-		new runnable( nullptr,nullptr,f ) ;
-	}
-	static void exec( QObject * object,const char * slot,function_t f )
-	{
-		new runnable( object,slot,f ) ;
-	}
 	class Task
 	{
 	public :
 		static void wait( int s )
 		{
 			sleep( s ) ;
-		}
-		static void initTask( void )
-		{
-			QThreadPool::globalInstance()->setMaxThreadCount( 10 ) ;
 		}
 		Task( const QString& exe,int waitTime = -1 )
 		{
@@ -95,31 +103,31 @@ public:
 			m_exitStatus = p.exitStatus() ;
 			m_data       = p.readAll() ;
 		}
-		QStringList splitOutput( char token )
+		QStringList splitOutput( char token ) const
 		{
 			return utility::split( m_data,token ) ;
 		}
-		QByteArray output()
+		const QByteArray& output() const
 		{
 			return m_data ;
 		}
-		int exitCode()
+		int exitCode() const
 		{
 			return m_exitCode ;
 		}
-		int exitStatus()
+		int exitStatus() const
 		{
 			return m_exitStatus ;
 		}
-		bool success()
+		bool success() const
 		{
 			return m_exitCode == 0 ;
 		}
-		bool finished()
+		bool finished() const
 		{
 			return m_finished ;
 		}
-		bool ok()
+		bool ok() const
 		{
 			return this->splitOutput( '\n' ).size() > 12 ;
 		}
@@ -129,45 +137,28 @@ public:
 		int m_exitStatus ;
 		bool m_finished ;
 	};
+}
 
-	static QString cmdArgumentValue( const QStringList&,const QString& arg,const QString& defaulT = QString() ) ;
-	static QStringList luksEmptySlots( const QString& volumePath ) ;
-	static void addToFavorite( const QString& dev,const QString& m_point ) ;
-	static QStringList readFavorites( void ) ;
-	static void removeFavoriteEntry( const QString& ) ;
-	static bool pathExists( const QString& ) ;
-	static bool canCreateFile( const QString& ) ;
-	static QString resolvePath( const QString& ) ;
-	static QString hashPath( const QByteArray& ) ;
-	static QString cryptMapperPath( void ) ;
-	static void debug( const QString& ) ;
-	static void debug( int ) ;
-	static QString mapperPath( const QString& ) ;
-	static QString getUUIDFromPath( const QString& ) ;
-	static QString getVolumeID( const QString& ) ;
-	static bool userIsRoot( void ) ;
-	static bool mapperPathExists( const QString& path ) ;
-	static QString mountPath( const QString& ) ;
-	static QString userName( void ) ;
-	static void help( const QString& app ) ;
-	static QString shareMountPointToolTip( void ) ;
-	static QString shareMountPointToolTip( const QString& ) ;
-	static QString sharedMountPointPath( const QString& ) ;
-	static bool pathPointsToAFile( const QString& ) ;
-	static QString localizationLanguage( const QString& ) ;
-	static QString localizationLanguagePath( const QString& ) ;
-	static void setLocalizationLanguage( const QString&,const QString& ) ;
-	static QString walletName( void ) ;
-	static QString applicationName( void ) ;
-	static bool pathIsReadable( const QString& ) ;
-	static bool setOpenVolumeReadOnly( QWidget * parent,bool check,const QString& app ) ;
-	static bool getOpenVolumeReadOnlyOption( const QString& app ) ;
-	static QString keyPath( void ) ;
-	static void sendKey( const QString& keyPath,const QString& key ) ;
-	static QString getKeyFromWallet( LxQt::Wallet::Wallet *,const QString& volumeID ) ;
-	static bool eventFilter( QObject * gui,QObject * watched,QEvent * event ) ;
-	static QStringList split( const QString&,char token = '\n' ) ;
-	static QStringList split( const QByteArray&,char token = '\n' ) ;
+namespace utility
+{
+class FileHandle
+{
+public:
+	int operator()( int fd )
+	{
+		m_fd = fd ;
+		return fd ;
+	}
+	~FileHandle()
+	{
+		if( m_fd != -1 )
+		{
+			close( m_fd ) ;
+		}
+	}
+private:
+	int m_fd = -1 ;
 };
 
+}
 #endif // MISCFUNCTIONS_H

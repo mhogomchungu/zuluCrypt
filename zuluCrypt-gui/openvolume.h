@@ -61,7 +61,7 @@ private slots:
 	void EnterKeyPressed( void ) ;
 	void currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous ) ;
 	void partitionpropertiesThreadFinished( void ) ;
-	void partitionProperties( QStringList ) ;
+	void partitionProperties( const QStringList& ) ;
 private:
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;

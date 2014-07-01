@@ -77,8 +77,6 @@ zuluCrypt::zuluCrypt( QWidget * parent ) :QMainWindow( parent ),m_trayIcon( 0 )
 
 	m_device       = utility::cmdArgumentValue( l,"-d" ) ;
 	m_folderOpener = utility::cmdArgumentValue( l,"-m","xdg-open" ) ;
-
-	utility::Task::initTask() ;
 }
 
 void zuluCrypt::setLocalizationLanguage()
@@ -125,10 +123,54 @@ void zuluCrypt::setUpApp()
 void zuluCrypt::updateVolumeList()
 {
 	m_ui->tableWidget->setEnabled( false ) ;
-	Task * t = new Task() ;
-	connect( t,SIGNAL( addItemToTable( QString,QString,QString ) ),this,SLOT( addItemToTable( QString,QString,QString ) ) ) ;
-	connect( t,SIGNAL( finished( int ) ),this,SLOT( startUpdateFinished( int ) ) ) ;
-	t->start( Task::updateVolumeList ) ;
+
+	auto _a = [](){
+
+		auto r = utility::Task( QString( "%1 -L" ).arg( ZULUCRYPTzuluCrypt ) ) ;
+
+		if( r.success() ){
+			return QString( r.output() ) ;
+		}else{
+			return QString() ;
+		}
+	} ;
+
+	auto _b = [&]( const QString& r ){
+
+		if( !r.isEmpty() ){
+
+			QStringList l = r.split( '\n',QString::SkipEmptyParts ) ;
+			QStringList z ;
+
+			for( const auto& it : l ){
+
+				z = utility::split( it,'\t' ) ;
+				if( z.size() >= 3 ){
+
+					const QString& fs = z.at( 2 ) ;
+
+					if( fs == "crypto_LUKS" ){
+						z.replace( 2,"luks" ) ;
+					}else if( fs == "crypto_PLAIN" ){
+						z.replace( 2,"plain" ) ;
+					}else if( fs == "crypto_TCRYPT" ){
+						z.replace( 2,"tcrypt" ) ;
+					}
+					tablewidget::addRowToTable( m_ui->tableWidget,z ) ;
+				}
+			}
+		}
+
+		m_ui->tableWidget->setEnabled( true ) ;
+		m_ui->tableWidget->setFocus() ;
+
+		if( !m_device.isEmpty() ){
+			QString y = m_device.split( "/" ).last() ;
+			this->ShowPasswordDialog( m_device,y ) ;
+		}
+	} ;
+
+	Task::run< QString >( _a ).then( _b ) ;
 }
 
 void zuluCrypt::updateVolumeListAction()
@@ -139,17 +181,6 @@ void zuluCrypt::updateVolumeListAction()
 			table->removeRow( 0 ) ;
 		}
 		this->updateVolumeList() ;
-	}
-}
-
-void zuluCrypt::startUpdateFinished( int st )
-{
-	Q_UNUSED( st ) ;
-	m_ui->tableWidget->setEnabled( true ) ;
-	m_ui->tableWidget->setFocus() ;
-	if( !m_device.isEmpty() ){
-		QString y = m_device.split( "/" ).last() ;
-		this->ShowPasswordDialog( m_device,y ) ;
 	}
 }
 
@@ -319,6 +350,8 @@ void zuluCrypt::setupConnections()
 	connect( m_ui->actionManage_volumes_in_gnome_wallet,SIGNAL( triggered() ),this,SLOT( manageVolumesInGNOMEWallet() ) ) ;
 	connect( m_ui->actionManage_volumes_in_internal_wallet,SIGNAL( triggered() ),this,SLOT( manageVolumesInInternalWallet() ) ) ;
 
+	connect( this,SIGNAL( closeVolume( QTableWidgetItem *,int ) ),this,SLOT( closeAll( QTableWidgetItem *,int ) ) ) ;
+
 	m_ui->actionRestore_header->setText( tr( "restore volume header" ) ) ;
 	m_ui->actionBackup_header->setText( tr( "backup volume header" ) ) ;
 
@@ -447,17 +480,48 @@ void zuluCrypt::currentItemChanged( QTableWidgetItem * current,QTableWidgetItem 
 
 void zuluCrypt::closeAllVolumes()
 {
-	Task * t = new Task( m_ui->tableWidget ) ;
-	connect( t,SIGNAL( taskResult( QTableWidgetItem *,int ) ),this,SLOT( closeAll( QTableWidgetItem *,int ) ) ) ;
-	t->start( Task::closeAllVolumeTask ) ;
+	m_ui->tableWidget->setEnabled( false ) ;
+
+	auto _a = [&](){
+
+		utility::Task::wait( 1 ) ; // for ui effect
+
+		QTableWidget * table = m_ui->tableWidget ;
+
+		int volumeCount = table->rowCount() ;
+
+		if( volumeCount > 0 ){
+
+			QVector< QTableWidgetItem * > tableItems( volumeCount ) ;
+			QTableWidgetItem ** it = tableItems.data() ;
+
+			for( int i = 0 ; i < volumeCount ; i++ ){
+				*( it + i ) = table->item( i,0 ) ;
+			}
+
+			for( QTableWidgetItem * it : tableItems ){
+				QString device = it->text().replace( "\"","\"\"\"" ) ;
+				auto r = utility::Task( QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( device ) ) ;
+				emit closeVolume( it,r.exitCode() ) ;
+				utility::Task::wait( 1 ) ; ; // for ui effect
+			}
+		}
+	} ;
+
+	auto _b = [&](){
+
+		m_ui->tableWidget->setEnabled( true ) ;
+	} ;
+
+	Task::run( _a ).then( _b ) ;
 }
 
 void zuluCrypt::closeAll( QTableWidgetItem * item,int st )
 {
 	if( st ){
-		closeStatusErrorMessage( st ) ;
+		this->closeStatusErrorMessage( st ) ;
 	}else{
-		removeRowFromTable( item->row() ) ;
+		this->removeRowFromTable( item->row() ) ;
 	}
 }
 
@@ -648,25 +712,6 @@ For more information, please read the FAQ at: http://code.google.com/p/cryptsetu
 	m.ShowUIInfo( tr( "important information on luks header" ),msg ) ;
 }
 
-void zuluCrypt::addItemToTable( QString device,QString m_point,QString type )
-{
-	QStringList s ;
-
-	QString dev = device ;
-	dev.replace( "\"","\"\"\"" ) ;
-
-	s.append( device ) ;
-	s.append( m_point ) ;
-	if( type == QString( "crypto_LUKS" ) ){
-		s.append( QString( "luks" ) ) ;
-	}else if( type == QString( "crypto_PLAIN" ) ){
-		s.append( QString( "plain" ) ) ;
-	}else if( type == QString( "crypto_TCRYPT" ) ){
-		s.append( QString( "tcrypt" ) ) ;
-	}
-	tablewidget::addRowToTable( m_ui->tableWidget,s ) ;
-}
-
 void zuluCrypt::removeRowFromTable( int x )
 {
 	tablewidget::deleteRowFromTable( m_ui->tableWidget,x ) ;
@@ -678,22 +723,30 @@ void zuluCrypt::volume_property()
 
 	QTableWidgetItem * item = m_ui->tableWidget->currentItem() ;
 	QString x = m_ui->tableWidget->item( item->row(),0 )->text() ;
-	QString y = m_ui->tableWidget->item( item->row(),1 )->text() ;
 
-	Task * t = new Task( x,y ) ;
-	connect( t,SIGNAL( finished( QString ) ),this,SLOT( volumePropertyTaskFinished( QString ) ) ) ;
-	t->start( Task::volumePropertiesTask ) ;
-}
+	auto _a = [ x ](){
 
-void zuluCrypt::volumePropertyTaskFinished( QString properties )
-{
-	DialogMsg msg( this ) ;
-	if( properties.isEmpty() ){
-		msg.ShowUIOK( tr( "ERROR!"),tr( "volume is not open or was opened by a different user" ) ) ;
-	}else{
-		msg.ShowUIVolumeProperties( tr( "volume properties" ),properties ) ;
-	}
-	m_ui->tableWidget->setEnabled( true ) ;
+		auto r = utility::Task( QString( "%1 -s -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( x ) ) ;
+		QByteArray data = r.output() ;
+		if( r.success() ){
+			return QString( " %1" ).arg( QString( data.mid( data.indexOf( '\n' ) + 2 ) ) ) ;
+		}else{
+			return QString() ;
+		}
+	} ;
+
+	auto _b = [&]( const QString& r ){
+
+		DialogMsg msg( this ) ;
+		if( r.isEmpty() ){
+			msg.ShowUIOK( tr( "ERROR!"),tr( "volume is not open or was opened by a different user" ) ) ;
+		}else{
+			msg.ShowUIVolumeProperties( tr( "volume properties" ),r ) ;
+		}
+		m_ui->tableWidget->setEnabled( true ) ;
+	} ;
+
+	Task::run< QString >( _a ).then( _b ) ;
 }
 
 void zuluCrypt::favAboutToHide()
@@ -738,14 +791,6 @@ void zuluCrypt::menuKeyPressed()
 	itemClicked( it,false ) ;
 }
 
-void zuluCrypt::fileManagerOpenStatus()
-{
-	if( m_exitCode != 0 || m_exitStatus != 0 ){
-		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "warning" ),tr( "could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) ) ;
-	}
-}
-
 void zuluCrypt::openFolder()
 {
 	QTableWidgetItem * item = m_ui->tableWidget->currentItem() ;
@@ -754,11 +799,18 @@ void zuluCrypt::openFolder()
 	auto _a = [ &,path ](){
 
 		auto r = utility::Task( QString( "%1 \"%2\"" ).arg( m_folderOpener ).arg( path ) ) ;
-		m_exitCode   = r.exitCode() ;
-		m_exitStatus = r.exitStatus() ;
+		return r.exitCode() != 0 || r.exitStatus() != 0 ;
 	} ;
 
-	utility::exec( this,"fileManagerOpenStatus",_a ) ;
+	auto _b = [&]( const bool& r ){
+
+		if( r ){
+			DialogMsg msg( this ) ;
+			msg.ShowUIOK( tr( "warning" ),tr( "could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) ) ;
+		}
+	} ;
+
+	Task::run< bool >( _a ).then( _b ) ;
 }
 
 void zuluCrypt::itemClicked( QTableWidgetItem * it )
@@ -874,13 +926,26 @@ void zuluCrypt::closeStatusErrorMessage( int st )
 void zuluCrypt::close()
 {
 	QTableWidgetItem * item = m_ui->tableWidget->currentItem() ;
-	QString vol = m_ui->tableWidget->item( item->row(),0 )->text().replace( "\"","\"\"\"" ) ;
-	QString exe = QString( ZULUCRYPTzuluCrypt ) + QString( " -q -d " ) + QString( "\"" ) + vol + QString( "\"" ) ;
+
+	QString path = m_ui->tableWidget->item( item->row(),0 )->text().replace( "\"","\"\"\"" ) ;
+
+	QString exe = QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( path ) ;
+
 	m_ui->tableWidget->setEnabled( false ) ;
 
-	Task * t = new Task( exe ) ;
-	connect( t,SIGNAL( finished( int ) ),this,SLOT( closeStatus( int ) ) ) ;
-	t->start( Task::closeVolumeTask ) ;
+	auto _a = [ exe ](){
+
+		utility::Task::wait( 1 ) ; //for UI effect
+		return utility::Task( exe ).exitCode() ;
+	} ;
+
+	auto _b = [&]( const int& r ){
+
+		this->closeStatus( r ) ;
+		m_ui->tableWidget->setEnabled( true ) ;
+	} ;
+
+	Task::run< int >( _a ).then( _b ) ;
 }
 
 managevolumeheader * zuluCrypt::setUpManageVolumeHeader()

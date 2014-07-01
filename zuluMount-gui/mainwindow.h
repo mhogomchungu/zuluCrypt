@@ -54,11 +54,11 @@ public slots:
 private slots:
 	void startGUI( void ) ;
 	void volumeMiniProperties( volumeEntryProperties * ) ;
-	void showMoungDialog( volumeEntryProperties * ) ;
+	void showMoungDialog( const volumeEntryProperties& ) ;
+	void showMoungDialog( const QString& ) ;
 	void autoMountVolume( volumeEntryProperties * ) ;
 	void mount( const volumeEntryProperties& ) ;
 	void defaultButton( void ) ;
-	void volumeProperties( QString ) ;
 	void volumeProperties( void ) ;
 	void itemClicked( QTableWidgetItem * ) ;
 	void pbUpdate( void ) ;
@@ -67,15 +67,12 @@ private slots:
 	void unMountAll( void ) ;
 	void pbUmount( void ) ;
 	void pbClose( void ) ;
-	void slotUnmountComplete( int,QString ) ;
-	void volumeList( QVector< volumeEntryProperties > * ) ;
 	void slotTrayClicked( QSystemTrayIcon::ActivationReason ) ;
 	void slotCurrentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ;
 	void enableAll( void ) ;
 	void enableAll_1( void ) ;
 	void slotOpenFolder( void ) ;
 	void slotOpenSharedFolder( void ) ;
-	void fileManagerOpenStatus( void ) ;
 	void processArgumentList( void ) ;
 	void openVolumeFromArgumentList( void ) ;
 	void itemEntered( QTableWidgetItem * ) ;
@@ -100,12 +97,9 @@ private:
 	void showContextMenu( QTableWidgetItem *,bool ) ;
 	void startAutoMonitor( void ) ;
 	bool autoMount( void ) ;
-	void errorReadingList( void ) ;
 	void updateList( const volumeEntryProperties& ) ;
 
 	Ui::MainWindow * m_ui ;
-
-	QString m_action ;
 	QString m_device ;
 	QString m_folderOpener ;
 	int m_argc ;
@@ -125,8 +119,6 @@ private:
 	QString m_sharedFolderPath ;
 	bool m_autoOpenFolderOnMount ;
 	bool m_removeAllVolumes ;
-	int m_exitStatus ;
-	int m_exitCode ;
 };
 
 #endif // MAINWINDOW_H

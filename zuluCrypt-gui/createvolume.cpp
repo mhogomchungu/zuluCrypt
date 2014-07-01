@@ -439,8 +439,14 @@ void createvolume::pbCreateClicked()
 			source = QString( "-f" ) ;
 			passphrase_1 = utility::keyPath() + QString( "-2" ) ;
 
-			Task * t = new Task( passphrase_1,m_ui->lineEditPassphrase1->text() ) ;
-			t->start( Task::sendKey ) ;
+			QString key = m_ui->lineEditPassphrase1->text() ;
+
+			auto _a = [ = ](){
+
+				utility::sendKey( passphrase_1,key ) ;
+			} ;
+
+			Task::exec( _a ) ;
 		}
 	}
 
@@ -484,8 +490,13 @@ void createvolume::pbCreateClicked()
 		if( m_ui->rbHiddenKey->isChecked() ){
 
 			y = utility::keyPath() + QString( "-1" ) ;
-			Task * t = new Task( y,x ) ;
-			t->start( Task::sendKey ) ;
+
+			auto _a = [ = ](){
+
+				utility::sendKey( y,x ) ;
+			} ;
+
+			Task::exec( _a ) ;
 		}else{
 			y = utility::resolvePath( x ).replace( "\"","\"\"\"" ) ;
 		}
@@ -510,10 +521,19 @@ void createvolume::pbCreateClicked()
 
 	m_isWindowClosable = false ;
 
-	Task * t = new Task( exe ) ;
-	connect( t,SIGNAL( finished( int ) ),this,SLOT( taskFinished( int ) ) ) ;
 	this->disableAll() ;
-	t->start() ;
+
+	auto _a = [ exe ](){
+
+		return utility::Task( exe ).exitCode() ;
+	} ;
+
+	auto _b = [&]( const int& r ){
+
+		this->taskFinished( r ) ;
+	} ;
+
+	Task::run< int >( _a ).then( _b ) ;
 }
 
 void createvolume::taskFinished( int st )

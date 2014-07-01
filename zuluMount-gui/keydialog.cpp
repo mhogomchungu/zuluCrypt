@@ -28,14 +28,18 @@
 #include <QTableWidget>
 #include <QDebug>
 
+#include "bin_path.h"
 #include "../zuluCrypt-gui/dialogmsg.h"
-#include "task.h"
+#include "../zuluCrypt-gui/task.h"
 #include "../zuluCrypt-cli/constants.h"
 #include "plugin_path.h"
 #include "../zuluCrypt-gui/utility.h"
 #include "../zuluCrypt-gui/lxqt_wallet/frontend/lxqt_wallet.h"
 #include "mountoptions.h"
 #include "../zuluCrypt-gui/tcrypt.h"
+#include "zulumounttask.h"
+#include "../zuluCrypt-gui/task.h"
+#include "zulumounttask.h"
 
 #define KWALLET         "kde wallet"
 #define INTERNAL_WALLET "internal wallet"
@@ -322,69 +326,33 @@ void keyDialog::closeEvent( QCloseEvent * e )
 	this->pbCancel() ;
 }
 
-void keyDialog::slotMountComplete( int st,QString m )
-{
-	m_working = false ;
-
-	if( st == 12 && m_ui->cbKeyType->currentIndex() == keyDialog::plugin ){
-		/*
-		 * A user cancelled the plugin
-		 */
-		return this->enableAll() ;
-	}
-
-	if( st == 0 ){
-		if( utility::mapperPathExists( m_path ) ) {
-			/*
-			 * The volume is reported as opened and it actually is
-			 */
-			emit openMountPoint( utility::mountPath( m_point ) ) ;
-		}else{
-			/*
-			 * The volume is reported as opened but it isnt,possible reason is a backe end crash
-			 */
-
-			DialogMsg m( this ) ;
-
-			m.ShowUIOK( tr( "ERROR" ),tr( "An error has occured and the volume could not be opened" ) ) ;
-			emit cancel() ;
-		}
-		this->HideUI() ;
-	}else{
-		DialogMsg msg( this ) ;
-
-		msg.ShowUIOK( tr( "ERROR" ),m ) ;
-		m_ui->lineEditKey->clear() ;
-		this->enableAll() ;
-		m_ui->lineEditKey->setFocus() ;
-	}
-}
-
-void keyDialog::getPassWord()
-{
-	if( m_key.isEmpty() ){
-		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "ERROR" ),tr( "the volume does not appear to have an entry in the wallet" ) ) ;
-		this->enableAll() ;
-		if( m_ui->cbKeyType->currentIndex() != keyDialog::Key ){
-			m_ui->lineEditKey->setEnabled( false ) ;
-		}
-	}else{
-		this->openVolume() ;
-	}
-
-	m_wallet->deleteLater() ;
-}
-
 void keyDialog::walletIsOpen( bool opened )
 {
 	if( opened ){
 
-		auto _getKey = [&](){
-			m_key = utility::getKeyFromWallet( m_wallet,m_path ) ;
+		auto _a = [&](){
+
+			return utility::getKeyFromWallet( m_wallet,m_path ) ;
 		} ;
 
-		utility::exec( this,"getPassWord",_getKey ) ;
+		auto _b = [&]( const QString& key ){
+
+			if( key.isEmpty() ){
+				DialogMsg msg( this ) ;
+				msg.ShowUIOK( tr( "ERROR" ),tr( "the volume does not appear to have an entry in the wallet" ) ) ;
+				this->enableAll() ;
+				if( m_ui->cbKeyType->currentIndex() != keyDialog::Key ){
+					m_ui->lineEditKey->setEnabled( false ) ;
+				}
+			}else{
+				m_key = key ;
+				this->openVolume() ;
+			}
+
+			m_wallet->deleteLater() ;
+		} ;
+
+		Task::run< QString >( _a ).then( _b ) ;
 	}else{
 		_internalPassWord.clear() ;
 		this->enableAll() ;
@@ -463,73 +431,153 @@ void keyDialog::openVolume()
 
 	QString m ;
 	if( keyType == keyDialog::Key ){
+
 		QString addr = utility::keyPath() ;
-		m = QString( "-f ") + addr ;
-		Task * t = new Task() ;
-		t->setKey( m_ui->lineEditKey->text() ) ;
-		t->setKeyPath( addr ) ;
-		t->start( Task::sendKey ) ;
+		m = QString( "-f %1" ).arg( addr ) ;
+
+		QString key = m_ui->lineEditKey->text() ;
+
+		auto _a = [ = ](){
+
+			utility::sendKey( addr,key ) ;
+		} ;
+
+		Task::exec( _a ) ;
 
 	}else if( keyType == keyDialog::keyfile ){
+
 		QString e = m_ui->lineEditKey->text().replace( "\"","\"\"\"" ) ;
 		m = QString( "-f ") + utility::resolvePath( e ) ;
+
 	}else if( keyType == keyDialog::plugin ){
+
 		if( m_key.isEmpty() ){
+
 			m = QString( "-G ") + m_ui->lineEditKey->text().replace( "\"","\"\"\"" ) ;
 		}else{
+
 			QString addr = utility::keyPath() ;
-			m = QString( "-f ") + addr ;
-			Task * t = new Task() ;
-			t->setKey( m_key ) ;
-			t->setKeyPath( addr ) ;
-			t->start( Task::sendKey ) ;
+			m = QString( "-f %1" ).arg( addr ) ;
+
+			auto _a = [ = ](){
+
+				utility::sendKey( addr,m_key ) ;
+			} ;
+
+			Task::exec( _a ) ;
 		}
 	}else if( keyType == keyDialog::tcryptKeys ){
+
 		QString addr = utility::keyPath() ;
-		m = QString( "-f ") + addr ;
-		Task * t = new Task() ;
-		t->setKey( m_key ) ;
-		t->setKeyPath( addr ) ;
-		t->start( Task::sendKey ) ;
+		m = QString( "-f %1 " ).arg( addr ) ;
+
+		auto _a = [ = ](){
+
+			utility::sendKey( addr,m_key ) ;
+		} ;
+
+		Task::exec( _a ) ;
 	}else{
 		qDebug() << "ERROR: uncaught condition" ;
 	}
 
-	Task * t = new Task() ;
+	QString volume = m_path ;
+	volume.replace( "\"","\"\"\"" ) ;
 
-	t->setKeyFilesList( m_keyFiles ) ;
-	t->setDevice( m_path ) ;
+	QString exe = zuluMountPath ;
 
-	if( m_options.isEmpty() ){
-		if( m_ui->checkBoxOpenReadOnly->isChecked() ){
-			t->setMode( QString( "ro" ) ) ;
-		}else{
-			t->setMode( QString( "rw" ) ) ;
-		}
+	if( m_ui->checkBoxShareMountPoint->isChecked() ){
+		exe += " -M -m -d \"" + volume + "\"" ;
 	}else{
-		if( m_ui->checkBoxOpenReadOnly->isChecked() ){
-			t->setMode( QString( "ro -Y %1" ).arg( m_options ) ) ;
-		}else{
-			t->setMode( QString( "rw -Y %1" ).arg( m_options ) ) ;
-		}
-	}
-	if( m_deviceOffSet.isEmpty() ){
-		t->setKeySource( m ) ;
-	}else{
-		t->setKeySource( m + m_deviceOffSet ) ;
+		exe += " -m -d \"" + volume + "\"" ;
 	}
 
-	m_point = m_ui->lineEditMountPoint->text() ;
+	if( m_ui->checkBoxOpenReadOnly->isChecked() ){
+		exe += " -e ro" ;
+	}else{
+		exe += "  e rw" ;
+	}
 
-	t->setMountPoint( m_point ) ;
-	t->setMakeMountPointPublic( m_ui->checkBoxShareMountPoint->isChecked() ) ;
+	QString mountPoint = m_point ;
+	mountPoint.replace( "\"","\"\"\"" ) ;
 
-	m_working = true ;
+	exe += " -z \"" + mountPoint + "\"" ;
 
-	connect( t,SIGNAL( signalMountComplete( int,QString ) ),this,SLOT( slotMountComplete( int,QString ) ) ) ;
-	t->start( Task::CryptoOpen ) ;
+	if( !m_options.isEmpty() ){
+
+		exe += " -Y " + m_options ;
+	}
+
+	if( !m_deviceOffSet.isEmpty() ){
+
+		exe += " -o " + m_deviceOffSet ;
+	}
+
+	exe += " " + m ;
+
+	auto _a = [ exe ](){
+
+		auto r = utility::Task( exe ) ;
+
+		zuluMountTaskResult s ;
+
+		QString output = r.output() ;
+		int index = output.indexOf( QChar( ':' ) ) ;
+		if( index != -1 ){
+			s.outPut = output.mid( index + 1 ) ;
+		}
+
+		s.exitCode = r.exitCode() ;
+		s.outPut   = r.output() ;
+
+		return s ;
+	} ;
+
+	auto _b = [&]( const zuluMountTaskResult& r ){
+
+		this->slotMountComplete( r.exitCode,r.outPut ) ;
+	} ;
+
+	Task::run< zuluMountTaskResult >( _a ).then( _b ) ;
 }
 
+void keyDialog::slotMountComplete( int st,QString m )
+{
+	m_working = false ;
+
+	if( st == 12 && m_ui->cbKeyType->currentIndex() == keyDialog::plugin ){
+		/*
+		 * A user cancelled the plugin
+		 */
+		return this->enableAll() ;
+	}
+
+	if( st == 0 ){
+		if( utility::mapperPathExists( m_path ) ) {
+			/*
+			 * The volume is reported as opened and it actually is
+			 */
+			emit openMountPoint( utility::mountPath( m_point ) ) ;
+		}else{
+			/*
+			 * The volume is reported as opened but it isnt,possible reason is a backe end crash
+			 */
+
+			DialogMsg m( this ) ;
+
+			m.ShowUIOK( tr( "ERROR" ),tr( "An error has occured and the volume could not be opened" ) ) ;
+			emit cancel() ;
+		}
+		this->HideUI() ;
+	}else{
+		DialogMsg msg( this ) ;
+
+		msg.ShowUIOK( tr( "ERROR" ),m ) ;
+		m_ui->lineEditKey->clear() ;
+		this->enableAll() ;
+		m_ui->lineEditKey->setFocus() ;
+	}
+}
 void keyDialog::cbActicated( int e )
 {
 	switch( e ){
@@ -539,7 +587,6 @@ void keyDialog::cbActicated( int e )
 		case keyDialog::tcryptKeys : return this->tcryptGui() ;
 	}
 }
-
 
 void keyDialog::plugIn()
 {

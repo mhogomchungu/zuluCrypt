@@ -72,7 +72,6 @@ private slots:
 	void cbMountReadOnlyStateChanged( int ) ;
 	void walletIsOpen( bool ) ;
 	void getPassWord( QString ) ;
-	void getPassWord( void ) ;
 	void deviceOffSet( QString,QString ) ;
 	void doAction( QAction * ) ;
 	void showOffSetWindowOption( void ) ;

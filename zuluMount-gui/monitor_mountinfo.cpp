@@ -26,7 +26,10 @@
 #include <poll.h>
 #include <fcntl.h>
 
-#include "task.h"
+#include "../zuluCrypt-gui/task.h"
+#include "zulumounttask.h"
+#include "../zuluCrypt-gui/utility.h"
+#include "bin_path.h"
 
 monitor_mountinfo::monitor_mountinfo( QObject * parent ) : QThread( parent )
 {
@@ -67,7 +70,12 @@ void monitor_mountinfo::run()
 	connect( m_mtoto,SIGNAL( finished() ),m_main,SLOT( threadStopped() ) ) ;
 	connect( m_mtoto,SIGNAL( finished() ),m_mtoto,SLOT( deleteLater() ) ) ;
 
-	Task::FileHandle manage_fd ;
+	connect( this,SIGNAL( volumeMiniProperties( volumeEntryProperties * ) ),
+		 m_babu,SLOT( volumeMiniProperties( volumeEntryProperties * ) ) ) ;
+	connect( this,SIGNAL( volumeRemoved( QString ) ),
+		 m_babu,SLOT( volumeRemoved( QString ) ) ) ;
+
+	utility::FileHandle manage_fd ;
 
 	int fd = manage_fd( open( "/proc/self/mountinfo",O_RDONLY ) ) ;
 
@@ -88,24 +96,37 @@ void monitor_mountinfo::run()
 	} ;
 
 	auto _unmountProperty = [&]( const QString& volume ){
-		Task * t = new Task() ;
-		t->setDevice( volume ) ;
-		connect( t,SIGNAL( volumeMiniProperties( volumeEntryProperties * ) ),
-			 m_babu,SLOT( volumeMiniProperties( volumeEntryProperties * ) ) ) ;
-		connect( t,SIGNAL( volumeRemoved( QString ) ),
-			 m_babu,SLOT( volumeRemoved( QString ) ) ) ;
-		t->start( Task::VolumeMiniProperties ) ;
+
+		auto _a = [ &,volume ](){
+
+			volumeMiniPropertiesResult r = zuluMount::Task::volumeMiniProperties( volume ) ;
+
+			if( r.volumeRemoved ){
+				emit volumeRemoved( r.volumeName ) ;
+			}else{
+				emit volumeMiniProperties( r.entry ) ;
+			}
+		} ;
+
+		Task::exec( _a ) ;
 	} ;
 
 	auto _mountProperty = [&]( const QString& volume ){
-		Task * t = new Task() ;
-		t->setDevice( volume ) ;
-		connect( t,SIGNAL( volumeMiniProperties( volumeEntryProperties * ) ),
-			 m_babu,SLOT( volumeMiniProperties( volumeEntryProperties * ) ) ) ;
-		t->start( Task::VolumeMiniProperties ) ;
+
+		auto _a = [ &,volume ](){
+
+			volumeMiniPropertiesResult r = zuluMount::Task::volumeMiniProperties( volume ) ;
+			emit volumeMiniProperties( r.entry ) ;
+		} ;
+
+		Task::exec( _a ) ;
 	} ;
 
-	QStringList oldMountList = Task::updateVolumeList() ;
+	auto _updateVolumeList = [](){
+		return utility::Task( QString( "%1 -E" ).arg( zuluMountPath ) ).splitOutput( '\n' ) ; ;
+	} ;
+
+	QStringList oldMountList = _updateVolumeList() ;
 	QStringList newMountList ;
 
 	auto _volumeWasUnMounted = [&](){
@@ -126,7 +147,7 @@ void monitor_mountinfo::run()
 
 	while( _loop() ){
 
-		newMountList = Task::updateVolumeList() ;
+		newMountList = _updateVolumeList() ;
 
 		if( _volumeWasUnMounted() ){
 

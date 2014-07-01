@@ -34,7 +34,6 @@ set( MOC_FILES
 		openvolume.h
 		password_dialog.h
 		zulucrypt.h
-		task.h
 		favorites.h
 		filetask.h
 		cryptoinfo.h

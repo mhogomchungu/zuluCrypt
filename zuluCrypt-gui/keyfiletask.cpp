@@ -35,6 +35,8 @@ keyFileTask::keyFileTask( const QString& path,int rng )
 	m_path = path ;
 	m_rng = rng ;
 	m_status = keyFileTask::unset ;
+
+	connect( this,SIGNAL( finished() ),this,SLOT( deleteLater() ) ) ;
 }
 
 void keyFileTask::run()
@@ -56,14 +58,12 @@ void keyFileTask::run()
 		}while( data < 32 || data > 126 ) ;
 		write( m_qfwrite,&data,1 ) ;
 	}
-	this->deleteLater() ;
 }
 
 void keyFileTask::cancelOperation()
 {
 	m_status = keyFileTask::cancelled ;
 	this->terminate() ;
-	this->deleteLater() ;
 }
 
 keyFileTask::~keyFileTask()

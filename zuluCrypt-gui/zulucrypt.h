@@ -67,6 +67,7 @@ public slots:
 	void raiseWindow( void ) ;
 	void raiseWindow( QString ) ;
 signals:
+	void closeVolume( QTableWidgetItem *,int ) ;
 	void showManageFavorites( void ) ;
 	void favClickedVolume( QString volume_path,QString mount_point_path ) ;
 	void SignalShowNonSystemPartitions( void ) ;
@@ -93,10 +94,7 @@ private slots :
 	void favAboutToHide( void ) ;
 	void trayClicked( QSystemTrayIcon::ActivationReason  ) ;
 	void trayProperty( void ) ;
-	void addItemToTable( QString pathToVolume,QString pathToMountPoint,QString volumeType ) ;
-	void volumePropertyTaskFinished( QString properties ) ;
 	void closeApplication( void ) ;
-	void startUpdateFinished( int ) ;
 	void updateVolumeListAction( void ) ;
 	void minimizeToTray( void ) ;
 	void closeAllVolumes( void ) ;
@@ -129,7 +127,6 @@ private slots :
 	void setDefaultWallet( void ) ;
 	void failedToOpenWallet( void ) ;
 	void openFolder( void ) ;
-	void fileManagerOpenStatus( void ) ;
 	void openVolumeFromArgumentList( void ) ;
 	void itemEntered( QTableWidgetItem * ) ;
 	void manageVolumesInInternalWallet( void ) ;
@@ -170,8 +167,6 @@ private:
 	QSystemTrayIcon * m_trayIcon ;
 	QString m_folderOpener ;
 	QString m_device ;
-	int m_exitCode ;
-	int m_exitStatus ;
 	LxQt::Wallet::Wallet * m_wallet ;
 };
 

@@ -20,10 +20,10 @@
 #define CryptTask_H
 
 #include <QObject>
-#include <QRunnable>
+#include <QThread>
 #include <QString>
 
-class CryptTask : public QObject,public QRunnable
+class CryptTask : public QThread
 {
 	Q_OBJECT
 public:
@@ -60,7 +60,6 @@ signals:
 	void disableCancel( void ) ;
 public slots:
 	void terminate( void ) ;
-	void start( void ) ;
 private:
 	void oldEncryptionRoutine( void ) ;
 	void newEncryptionRoutine( void ) ;

@@ -26,6 +26,7 @@
 #include <QStringList>
 
 class QObject ;
+class volumeEntryProperties ;
 
 class monitor_mountinfo : public QThread
 {
@@ -35,6 +36,8 @@ public:
 	~monitor_mountinfo() ;
 signals:
 	void stopped( void ) ;
+	void volumeRemoved( QString ) ;
+	void volumeMiniProperties( volumeEntryProperties * ) ;
 private slots:
 	void threadStopped( void ) ;
 	void stop( void ) ;

@@ -35,6 +35,8 @@
 #include <QFileDialog>
 #include <QMessageBox>
 
+#define COMMENT "-zuluCrypt_Comment_ID"
+
 walletconfig::walletconfig( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::walletconfig )
 {
 	m_ui->setupUi( this ) ;
@@ -86,14 +88,20 @@ void walletconfig::itemClicked( QTableWidgetItem * item )
 
 	if( r == QMessageBox::Yes ){
 
-		m_action = walletconfig::deleteKey ;
+		auto _a = [&](){
 
-		auto _deleteKey = [&](){
 			m_wallet->deleteKey( m_volumeID ) ;
 			m_wallet->deleteKey( m_volumeID + COMMENT ) ;
 		} ;
 
-		utility::exec( this,"taskFinished",_deleteKey ) ;
+		auto _b = [&](){
+
+			tablewidget::deleteRowFromTable( m_ui->tableWidget,m_row ) ;
+			this->enableAll() ;
+			m_ui->tableWidget->setFocus() ;
+		} ;
+
+		Task::run( _a ).then( _b ) ;
 	}else{
 		this->enableAll() ;
 		m_ui->tableWidget->setFocus() ;
@@ -116,79 +124,25 @@ void walletconfig::add( QString volumeID,QString comment,QString key )
 	m_volumeID = volumeID ;
 	m_key      = key ;
 
-	m_action = walletconfig::addKey ;
+	auto _a = [&](){
 
-	auto _addKey = [&](){
 		m_wallet->addKey( m_volumeID,m_key.toLatin1() ) ;
 		m_wallet->addKey( m_volumeID + COMMENT,m_comment.toLatin1() ) ;
 	} ;
 
-	utility::exec( this,"taskFinished",_addKey ) ;
-}
-
-void walletconfig::taskFinished()
-{
-	auto _addEntry = [&](){
+	auto _b = [&](){
 
 		QStringList entry ;
 		entry.append( m_volumeID ) ;
 		entry.append( m_comment ) ;
 
 		tablewidget::addRowToTable( m_ui->tableWidget,entry ) ;
+
+		this->enableAll() ;
+		m_ui->tableWidget->setFocus() ;
 	} ;
 
-	auto _deleteEntry = [&](){
-
-		tablewidget::deleteRowFromTable( m_ui->tableWidget,m_row ) ;
-	} ;
-
-	auto _showEntries = [&](){
-
-		auto _getEntry = [&]( const QString& acc ){
-			for( const auto& it : m_keys ){
-				if( it.getKey() == acc ){
-					return it.getValue() ;
-				}
-			}
-			static QByteArray ShouldNotGetHere ;
-			return ShouldNotGetHere ;
-		} ;
-
-		if( !m_keys.empty() ){
-			/*
-			 * each volume gets two entries in wallet:
-			 * First one in the form of  : entry         -> entry password
-			 * Second one in the form of : entry-COMMENT -> comment
-			 *
-			 * This allows to store a a volume volume,a comment about the volume and the passphrase.
-			 *
-			 * COMMENT is defined in task.h
-			 */
-
-			QStringList s ;
-			QTableWidget * table = m_ui->tableWidget ;
-
-			for( const auto& it : m_keys ){
-				const QString& acc = it.getKey() ;
-				if( !acc.endsWith( COMMENT ) ){
-					s.clear() ;
-					s.append( acc ) ;
-					s.append( _getEntry( acc + QString( COMMENT ) ) ) ;
-					tablewidget::addRowToTable( table,s ) ;
-				}
-			}
-		}
-	} ;
-
-	switch(	m_action ){
-		case walletconfig::addKey    : _addEntry()    ; break ;
-		case walletconfig::deleteKey : _deleteEntry() ; break ;
-		case walletconfig::getAllKeys: _showEntries() ; break ;
-		default : ;
-	}
-
-	this->enableAll() ;
-	m_ui->tableWidget->setFocus() ;
+	Task::run( _a ).then( _b ) ;
 }
 
 void walletconfig::cancel()
@@ -220,15 +174,58 @@ void walletconfig::ShowUI( LxQt::Wallet::walletBackEnd backEnd )
 
 void walletconfig::walletIsOpen( bool opened )
 {
+	typedef QVector<LxQt::Wallet::walletKeyValues> walletKeys ;
+
 	if( opened ){
 
-		m_action = walletconfig::getAllKeys ;
+		auto _a = [&](){
 
-		auto _getKeys = [&](){
-			m_keys = m_wallet->readAllKeyValues() ;
+			return m_wallet->readAllKeyValues() ;
 		} ;
 
-		utility::exec( this,"taskFinished",_getKeys ) ;
+		auto _b = [&]( const walletKeys& keys ){
+
+			if( !keys.empty() ){
+
+				auto _getEntry = [&]( const QString& acc ){
+					for( const auto& it : keys ){
+						if( it.getKey() == acc ){
+							return it.getValue() ;
+						}
+					}
+					static QByteArray ShouldNotGetHere ;
+					return ShouldNotGetHere ;
+				} ;
+
+				/*
+				 * each volume gets two entries in wallet:
+				 * First one in the form of  : entry         -> entry password
+				 * Second one in the form of : entry-COMMENT -> comment
+				 *
+				 * This allows to store a a volume volume,a comment about the volume and the passphrase.
+				 *
+				 * COMMENT is defined in task.h
+				 */
+
+				QStringList s ;
+				QTableWidget * table = m_ui->tableWidget ;
+
+				for( const auto& it : keys ){
+					const QString& acc = it.getKey() ;
+					if( !acc.endsWith( COMMENT ) ){
+						s.clear() ;
+						s.append( acc ) ;
+						s.append( _getEntry( acc + QString( COMMENT ) ) ) ;
+						tablewidget::addRowToTable( table,s ) ;
+					}
+				}
+			} ;
+
+			this->enableAll() ;
+			m_ui->tableWidget->setFocus() ;
+		} ;
+
+		Task::run< walletKeys >( _a ).then( _b ) ;
 	}else{
 		emit couldNotOpenWallet() ;
 		this->HideUI() ;
