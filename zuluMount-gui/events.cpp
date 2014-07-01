@@ -91,7 +91,7 @@ void events::run()
 	connect( m_mtoto,SIGNAL( finished() ),m_mtoto,SLOT( deleteLater() ) ) ;
 
 	connect( this,SIGNAL( volumeMiniProperties( volumeEntryProperties * ) ),
-		 m_babu,SLOT( volumeMiniProperties( volumeEntryProperties * ) ) ) ;
+		 m_babu,SLOT( autoMountVolume( volumeEntryProperties * ) ) ) ;
 	connect( this,SIGNAL( volumeRemoved( QString ) ),
 		 m_babu,SLOT( volumeRemoved( QString ) ) ) ;
 
@@ -189,6 +189,30 @@ void events::run()
 		}
 	} ;
 
+	auto _volumeResult = [&]( const volumeMiniPropertiesResult& r ){
+
+		if( !r.volumeName.isEmpty() ){
+
+			if( r.volumeRemoved ){
+
+				emit volumeRemoved( r.volumeName ) ;
+			}else{
+				if( r.entry ){
+					if( r.entry->volumeName().isEmpty() ){
+						/*
+						 * working with naked pointers because
+						 * i have yet to figure out how to send
+						 * custom objects through the signal-slot system
+						 */
+						delete r.entry ;
+					}else{
+						emit volumeMiniProperties( r.entry ) ;
+					}
+				}
+			}
+		}
+	} ;
+
 	auto _processEvent = [&]( const struct inotify_event * event ){
 
 		if( _device_action( event ) && _allowed_device( event->name ) ){
@@ -208,28 +232,9 @@ void events::run()
 
 			auto _a = [ = ](){
 
-				volumeMiniPropertiesResult r = zuluMount::Task::deviceProperties( devProperties ) ;
+				auto r = zuluMount::Task::deviceProperties( devProperties ) ;
 
-				if( !r.volumeName.isEmpty() ){
-
-					if( r.volumeRemoved ){
-
-						emit volumeRemoved( r.volumeName ) ;
-					}else{
-						if( r.entry ){
-							if( r.entry->volumeName().isEmpty() ){
-								/*
-								 * working with naked pointers because
-								 * i have yet to figure out how to send
-								 * custom objects through the signal-slot system
-								 */
-								delete r.entry ;
-							}else{
-								emit volumeMiniProperties( r.entry ) ;
-							}
-						}
-					}
-				}
+				_volumeResult( r ) ;
 			} ;
 
 			Task::exec( _a ) ;
