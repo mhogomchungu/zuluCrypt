@@ -189,30 +189,6 @@ void events::run()
 		}
 	} ;
 
-	auto _volumeResult = [&]( const volumeMiniPropertiesResult& r ){
-
-		if( !r.volumeName.isEmpty() ){
-
-			if( r.volumeRemoved ){
-
-				emit volumeRemoved( r.volumeName ) ;
-			}else{
-				if( r.entry ){
-					if( r.entry->volumeName().isEmpty() ){
-						/*
-						 * working with naked pointers because
-						 * i have yet to figure out how to send
-						 * custom objects through the signal-slot system
-						 */
-						delete r.entry ;
-					}else{
-						emit volumeMiniProperties( r.entry ) ;
-					}
-				}
-			}
-		}
-	} ;
-
 	auto _processEvent = [&]( const struct inotify_event * event ){
 
 		if( _device_action( event ) && _allowed_device( event->name ) ){
@@ -234,7 +210,11 @@ void events::run()
 
 				auto r = zuluMount::Task::deviceProperties( devProperties ) ;
 
-				_volumeResult( r ) ;
+				if( r.volumeRemoved ){
+					emit volumeRemoved( r.volumeName ) ;
+				}else{
+					emit volumeMiniProperties( r.entry ) ;
+				}
 			} ;
 
 			Task::exec( _a ) ;
