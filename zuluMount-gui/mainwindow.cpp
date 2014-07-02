@@ -702,7 +702,7 @@ void MainWindow::slotMount()
 
 void MainWindow::showMoungDialog( const volumeEntryProperties& v )
 {
-	if( v.volumeName().isEmpty() ){
+	if( v.Empty() ){
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR" ),
 			      tr( "permission to access the volume was denied\nor\nthe volume is not supported\n(LVM/MDRAID signatures found)" ) ) ;

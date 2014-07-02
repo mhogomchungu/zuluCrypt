@@ -99,7 +99,7 @@ void monitor_mountinfo::run()
 
 		auto _a = [ &,volume ](){
 
-			volumeMiniPropertiesResult r = zuluMount::Task::volumeMiniProperties( volume ) ;
+			auto r = zuluMount::Task::volumeMiniProperties( volume ) ;
 
 			if( r.volumeRemoved ){
 				emit volumeRemoved( r.volumeName ) ;
@@ -115,7 +115,7 @@ void monitor_mountinfo::run()
 
 		auto _a = [ &,volume ](){
 
-			volumeMiniPropertiesResult r = zuluMount::Task::volumeMiniProperties( volume ) ;
+			auto r = zuluMount::Task::volumeMiniProperties( volume ) ;
 			emit volumeMiniProperties( r.entry ) ;
 		} ;
 
