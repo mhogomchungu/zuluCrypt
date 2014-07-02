@@ -40,6 +40,11 @@ static bool _volumeIsSystemVolume( const QString& e )
 	return utility::Task( QString( "%1 -S" ).arg( zuluMountPath ) ).splitOutput( '\n' ).contains( e ) ;
 }
 
+QStringList zuluMount::Task::mountedVolumeList( void )
+{
+	return utility::Task( QString( "%1 -E" ).arg( zuluMountPath ) ).splitOutput( '\n' ) ;
+}
+
 volumeEntryProperties zuluMount::Task::getVolumeProperties( const QString& e )
 {
 	QString device = _device( e ) ;

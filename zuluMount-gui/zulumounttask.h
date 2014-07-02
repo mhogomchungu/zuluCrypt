@@ -24,6 +24,7 @@
 
 #include <QVector>
 #include <QString>
+#include <QStringList>
 
 struct zuluMountTaskResult
 {
@@ -63,6 +64,7 @@ namespace zuluMount
 		void checkUnMount( const QString& ) ;
 		volumeMiniPropertiesResult volumeMiniProperties( const QString& volume ) ;
 		volumeMiniPropertiesResult deviceProperties( const zuluMount::deviceProperties& ) ;
+		QStringList mountedVolumeList( void ) ;
 	}
 }
 

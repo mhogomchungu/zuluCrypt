@@ -26,10 +26,9 @@
 #include <poll.h>
 #include <fcntl.h>
 
+#include "../zuluCrypt-gui/utility.h"
 #include "../zuluCrypt-gui/task.h"
 #include "zulumounttask.h"
-#include "../zuluCrypt-gui/utility.h"
-#include "bin_path.h"
 
 monitor_mountinfo::monitor_mountinfo( QObject * parent ) : QThread( parent )
 {
@@ -122,11 +121,7 @@ void monitor_mountinfo::run()
 		Task::exec( _a ) ;
 	} ;
 
-	auto _updateVolumeList = [](){
-		return utility::Task( QString( "%1 -E" ).arg( zuluMountPath ) ).splitOutput( '\n' ) ; ;
-	} ;
-
-	QStringList oldMountList = _updateVolumeList() ;
+	QStringList oldMountList = zuluMount::Task::mountedVolumeList() ;
 	QStringList newMountList ;
 
 	auto _volumeWasUnMounted = [&](){
@@ -147,7 +142,7 @@ void monitor_mountinfo::run()
 
 	while( _loop() ){
 
-		newMountList = _updateVolumeList() ;
+		newMountList = zuluMount::Task::mountedVolumeList() ;
 
 		if( _volumeWasUnMounted() ){
 
