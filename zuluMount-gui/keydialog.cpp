@@ -513,6 +513,10 @@ void keyDialog::openVolume()
 		exe += " -o " + m_deviceOffSet ;
 	}
 
+	if( !m_keyFiles.isEmpty() ){
+		exe += " -F " + m_keyFiles ;
+	}
+
 	exe += " " + m ;
 
 	auto _a = [ exe ](){
