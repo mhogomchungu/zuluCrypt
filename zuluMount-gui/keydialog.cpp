@@ -531,7 +531,7 @@ void keyDialog::openVolume()
 
 		QString output = r.output() ;
 		int index = output.indexOf( QChar( ':' ) ) ;
-		
+
 		if( index != -1 ){
 			s.outPut = output.mid( index + 1 ) ;
 		}
@@ -546,35 +546,38 @@ void keyDialog::openVolume()
 
 		m_working = false ;
 
-		if( s.exitCode == 12 && m_ui->cbKeyType->currentIndex() == keyDialog::plugin ){
-			/*
-			 * A user cancelled the plugin
-			 */
-			this->enableAll() ;
-		}else{
+		if( s.passed ){
 
-			if( s.exitCode == 0 ){
-
-				if( utility::mapperPathExists( m_path ) ) {
-					/*
-					 * The volume is reported as opened and it actually is
-					 */
-					emit openMountPoint( utility::mountPath( m_point ) ) ;
-				}else{
-					/*
-					 * The volume is reported as opened but it isnt,possible reason is a backe end crash
-					 */
-
-					DialogMsg msg( this ) ;
-
-					msg.ShowUIOK( tr( "ERROR" ),tr( "An error has occured and the volume could not be opened" ) ) ;
-					emit cancel() ;
-				}
-				this->HideUI() ;
+			if( utility::mapperPathExists( m_path ) ) {
+				/*
+				 * The volume is reported as opened and it actually is
+				 */
+				emit openMountPoint( utility::mountPath( m_point ) ) ;
 			}else{
+				/*
+				 * The volume is reported as opened but it isnt,possible reason is a backe end crash
+				 */
+
 				DialogMsg msg( this ) ;
 
-				msg.ShowUIOK( tr( "ERROR" ),s.outPut ) ;
+				msg.ShowUIOK( tr( "ERROR" ),tr( "An error has occured and the volume could not be opened" ) ) ;
+				emit cancel() ;
+			}
+			this->HideUI() ;
+		}else{
+			if( s.exitCode == 12 && m_ui->cbKeyType->currentIndex() == keyDialog::plugin ){
+				/*
+				 * A user cancelled the plugin
+				 */
+				this->enableAll() ;
+			}else{
+
+				QString z = s.outPut ;
+				z.replace( "ERROR: ","" ) ;
+
+				DialogMsg msg( this ) ;
+
+				msg.ShowUIOK( tr( "ERROR" ),z ) ;
 				m_ui->lineEditKey->clear() ;
 				this->enableAll() ;
 				m_ui->lineEditKey->setFocus() ;

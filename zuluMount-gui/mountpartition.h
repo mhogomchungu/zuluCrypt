@@ -53,7 +53,6 @@ private slots:
 	void pbOpenMountPath( void ) ;
 	void showOffSetWindowOption( void ) ;
 	void showFileSystemOptionWindow( void ) ;
-	void slotMountComplete( int,QString ) ;
 	void checkBoxReadOnlyStateChanged( int ) ;
 	void deviceOffSet( QString,QString ) ;
 	void doAction( QAction * ) ;

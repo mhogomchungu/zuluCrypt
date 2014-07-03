@@ -224,7 +224,24 @@ void mountPartition::pbMount()
 
 	auto _b = [&]( const zuluMountTaskResult& r ){
 
-		this->slotMountComplete( r.exitCode,r.outPut ) ;
+		if( r.passed ){
+
+			emit openMountPoint( utility::mountPath( m_point ) ) ;
+			this->HideUI() ;
+
+		}else{
+			if( this->isVisible() ){
+
+				QString z = r.outPut ;
+				z.replace( "ERROR: ","" ) ;
+
+				DialogMsg m( this ) ;
+				m.ShowUIOK( tr( "ERROR" ),z ) ;
+				this->enableAll() ;
+			}else{
+				this->deleteLater() ;
+			}
+		}
 	} ;
 
 	Task::run< zuluMountTaskResult >( _a ).then( _b ) ;
@@ -310,22 +327,6 @@ void mountPartition::deviceOffSet( QString deviceOffSet,QString key )
 {
 	m_deviceOffSet = deviceOffSet ;
 	m_key = key ;
-}
-
-void mountPartition::slotMountComplete( int status,QString msg )
-{
-	if( status ){
-		if( this->isVisible() ){
-			DialogMsg m( this ) ;
-			m.ShowUIOK( tr( "ERROR" ),msg ) ;
-			this->enableAll() ;
-		}else{
-			this->deleteLater() ;
-		}
-	}else{
-		emit openMountPoint( utility::mountPath( m_point ) ) ;
-		this->HideUI() ;
-	}
 }
 
 void mountPartition::HideUI()
