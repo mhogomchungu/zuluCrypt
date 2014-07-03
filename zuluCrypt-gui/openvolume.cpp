@@ -37,6 +37,7 @@
 #include "tablewidget.h"
 
 #include <unistd.h>
+#include <QDebug>
 
 #define ALL_PARTITIONS 1
 #define NON_SYSTEM_PARTITIONS 3
@@ -197,13 +198,12 @@ void openvolume::partitionList( QString title,QString type )
 		/*
 		 * Root user can create encrypted volumes in all partitions including system partitions.
 		 * Show all partitions, not only non system.
-		 *
 		 */
 		if( volumeType == " -N" && utility::userIsRoot() ){
 			volumeType = QString( " -A" ) ;
 		}
 
-		QString exe   = QString( "1% %2 -Z" ).arg( ZULUCRYPTzuluCrypt ).arg( volumeType ) ;
+		QString exe   = QString( "%1 %2 -Z" ).arg( ZULUCRYPTzuluCrypt ).arg( volumeType ) ;
 
 		return utility::Task( exe ).splitOutput( '\n' ) ;
 	} ;
