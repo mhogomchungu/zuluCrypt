@@ -54,8 +54,6 @@ signals:
 	void cryptoOpen( QString ) ;
 	void cancel( void ) ;
 	void openMountPoint( QString ) ;
-public slots:
-	void slotMountComplete( int,QString ) ;
 private slots:
 	void cbActicated( int ) ;
 	void pbkeyOption( void ) ;

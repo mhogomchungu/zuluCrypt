@@ -632,6 +632,7 @@ void passwordDialog::openVolume()
 		exe = QString( z ).arg( a ).arg( b ).arg( c ).arg( d ).arg( e ).arg( f ) ;
 	}else{
 		const char * z = "%1 -o -d \"%2\" -m \"%3\" -e %4 %5 \"%6\" -F \"%7\"" ;
+		m_keyFiles.replace( "\"","\"\"\"" ) ;
 		exe = QString( z ).arg( a ).arg( b ).arg( c ).arg( d ).arg( e ).arg( f ).arg( m_keyFiles ) ;
 	}
 
