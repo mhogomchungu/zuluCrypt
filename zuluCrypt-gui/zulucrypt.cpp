@@ -139,7 +139,7 @@ void zuluCrypt::updateVolumeList()
 
 		if( !r.isEmpty() ){
 
-			QStringList l = r.split( '\n',QString::SkipEmptyParts ) ;
+			QStringList l = utility::split( r,'\n' ) ;
 			QStringList z ;
 
 			for( const auto& it : l ){
