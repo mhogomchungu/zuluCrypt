@@ -546,7 +546,7 @@ void keyDialog::openVolume()
 
 		m_working = false ;
 
-		if( s.passed ){
+		if( s.exitCode == 0 ){
 
 			if( utility::mapperPathExists( m_path ) ) {
 				/*

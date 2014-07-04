@@ -73,8 +73,6 @@ private slots:
 	void enableAll_1( void ) ;
 	void slotOpenFolder( void ) ;
 	void slotOpenSharedFolder( void ) ;
-	void processArgumentList( void ) ;
-	void openVolumeFromArgumentList( void ) ;
 	void itemEntered( QTableWidgetItem * ) ;
 	void volumeRemoved( QString ) ;
 	void removeVolume( QString ) ;
@@ -87,6 +85,7 @@ private slots:
 	void favoriteClicked( QAction * ) ;
 	void openMountPointPath( QString ) ;
 private:
+	void updateVolumeList( const QVector< volumeEntryProperties >& ) ;
 	void openMountPoint( const QString& ) ;
 	QFont getSystemVolumeFont( void ) ;
 	void setLocalizationLanguage( void ) ;
@@ -100,7 +99,6 @@ private:
 	void updateList( const volumeEntryProperties& ) ;
 
 	Ui::MainWindow * m_ui ;
-	QString m_device ;
 	QString m_folderOpener ;
 	int m_argc ;
 	char ** m_argv ;
@@ -108,7 +106,7 @@ private:
 	void closeEvent( QCloseEvent * e ) ;
 	void setUpFont( void ) ;
 	void setUpShortCuts( void ) ;
-	void setUpApp( void ) ;
+	void setUpApp( const QString& ) ;
 	QSystemTrayIcon * m_trayIcon ;
 	events * m_events ;
 	monitor_mountinfo * m_mountInfo ;

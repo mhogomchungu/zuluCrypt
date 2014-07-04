@@ -21,7 +21,7 @@
 #include "oneinstance.h"
 #include <QDebug>
 
-oneinstance::oneinstance( QObject * parent,const QString& socketPath,const char * methodName,QString device )
+oneinstance::oneinstance( QObject * parent,const QString& socketPath,const char * methodName,const QString& device )
 {
 	m_device = device ;
 	this->setParent( parent ) ;

@@ -75,10 +75,9 @@ MainWindow::MainWindow( int argc,char * argv[],QWidget * parent ) :QWidget( pare
 	m_argc = argc ;
 	m_argv = argv ;
 	m_removeAllVolumes = false ;
-	this->processArgumentList() ;
 }
 
-void MainWindow::setUpApp()
+void MainWindow::setUpApp( const QString& volume )
 {
 	this->setLocalizationLanguage() ;
 	m_ui = new Ui::MainWindow ;
@@ -175,9 +174,27 @@ void MainWindow::setUpApp()
 		dir.mkdir( dirPath ) ;
 	}
 
-	this->pbUpdate() ;
+	this->disableAll() ;
 
 	this->startAutoMonitor() ;
+
+	auto _a = [](){
+
+		return zuluMount::Task::updateVolumeList() ;
+	} ;
+
+	auto _b = [ &,volume ]( const QVector< volumeEntryProperties >& r ){
+
+		this->updateVolumeList( r ) ;
+
+		if( volume.isEmpty() ) {
+			this->enableAll() ;
+		}else{
+			this->showMoungDialog( volume ) ;
+		}
+	} ;
+
+	Task::run< QVector< volumeEntryProperties > >( _a ).then( _b ) ;
 }
 
 void MainWindow::favoriteClicked( QAction * ac )
@@ -373,15 +390,6 @@ void MainWindow::itemEntered( QTableWidgetItem * item )
 	item->setToolTip( z ) ;
 }
 
-void MainWindow::processArgumentList()
-{
-	QStringList l = QCoreApplication::arguments() ;
-
-	m_startHidden  = l.contains( "-e" ) ;
-	m_device       = utility::cmdArgumentValue( l,"-d" ) ;
-	m_folderOpener = utility::cmdArgumentValue( l,"-m","xdg-open" ) ;
-}
-
 void MainWindow::startGUI()
 {
 	if( !m_startHidden ){
@@ -397,24 +405,30 @@ void MainWindow::raiseWindow()
 	this->setWindowState( Qt::WindowActive ) ;
 }
 
-void MainWindow::raiseWindow( QString device )
+void MainWindow::raiseWindow( QString volume )
 {
 	this->setVisible( true ) ;
 	this->raise() ;
 	this->show() ;
 	this->setWindowState( Qt::WindowActive ) ;
-	m_device = device ;
-	this->openVolumeFromArgumentList() ;
+	this->showMoungDialog( volume ) ;
 }
 
 void MainWindow::start()
 {
+	QStringList l = QCoreApplication::arguments() ;
+
+	m_startHidden  = l.contains( "-e" ) ;
+	m_folderOpener = utility::cmdArgumentValue( l,"-m","xdg-open" ) ;
+
+	QString volume = utility::cmdArgumentValue( l,"-d" ) ;
+
 	QString sockpath = QString( "zuluMount-gui.socket" ) ;
-	oneinstance * instance = new oneinstance( this,sockpath,"startGUI",m_device ) ;
+	oneinstance * instance = new oneinstance( this,sockpath,"startGUI",volume ) ;
 	if( !instance->instanceExist() ){
 		connect( instance,SIGNAL( raise() ),this,SLOT( raiseWindow() ) ) ;
 		connect( instance,SIGNAL( raiseWithDevice( QString ) ),this,SLOT( raiseWindow( QString ) ) ) ;
-		this->setUpApp() ;
+		this->setUpApp( volume ) ;
 	}
 }
 
@@ -682,14 +696,6 @@ void MainWindow::mount( const volumeEntryProperties& entry )
 	}
 }
 
-void MainWindow::openVolumeFromArgumentList()
-{
-	if( !m_device.isEmpty() ){
-
-		this->showMoungDialog( m_device ) ;
-	}
-}
-
 void MainWindow::slotMount()
 {
 	QTableWidget * table = m_ui->tableWidget ;
@@ -714,17 +720,20 @@ void MainWindow::showMoungDialog( const volumeEntryProperties& v )
 
 void MainWindow::showMoungDialog( const QString& volume )
 {
-	auto _a = [ volume ](){
+	if( !volume.isEmpty() ){
 
-		return zuluMount::Task::getVolumeProperties( volume ) ;
-	} ;
+		auto _a = [ volume ](){
 
-	auto _b = [&]( const volumeEntryProperties& v ){
+			return zuluMount::Task::getVolumeProperties( volume ) ;
+		} ;
 
-		this->showMoungDialog( v ) ;
-	} ;
+		auto _b = [&]( const volumeEntryProperties& v ){
 
-	Task::run< volumeEntryProperties >( _a ).then( _b ) ;
+			this->showMoungDialog( v ) ;
+		} ;
+
+		Task::run< volumeEntryProperties >( _a ).then( _b ) ;
+	}
 }
 
 void MainWindow::pbMount()
@@ -892,24 +901,29 @@ void MainWindow::pbUpdate()
 
 	auto _b = [&]( const QVector< volumeEntryProperties >& r ){
 
-		if( r.isEmpty() ){
-			DialogMsg msg( this ) ;
-			msg.ShowUIOK( tr( "ERROR" ),
-				      tr( "reading partition properties took longer than expected and operation was terminated,click refresh to try again" ) ) ;
-			this->enableAll() ;
-		}else{
-			for( const auto& it : r ){
+		this->updateVolumeList( r ) ;
 
-				if( it.entryisValid() ){
-					this->updateList( it ) ;
-				}
-			}
-
-			this->removeDisappearedEntries( r ) ;
-		}
+		this->removeDisappearedEntries( r ) ;
 	} ;
 
 	Task::run< QVector< volumeEntryProperties > >( _a ).then( _b ) ;
+}
+
+void MainWindow::updateVolumeList( const QVector< volumeEntryProperties >& r )
+{
+	if( r.isEmpty() ){
+		DialogMsg msg( this ) ;
+		msg.ShowUIOK( tr( "ERROR" ),
+			      tr( "reading partition properties took longer than expected and operation was terminated,click refresh to try again" ) ) ;
+			      this->enableAll() ;
+	}else{
+		for( const auto& it : r ){
+
+			if( it.entryisValid() ){
+				this->updateList( it ) ;
+			}
+		}
+	}
 }
 
 void MainWindow::removeDisappearedEntries( const QVector< volumeEntryProperties >& entries )

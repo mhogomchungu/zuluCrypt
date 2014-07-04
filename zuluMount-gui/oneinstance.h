@@ -36,7 +36,7 @@ class oneinstance : public QObject
 {
 	Q_OBJECT
 public:
-	explicit oneinstance( QObject * parent,const QString& socketPath,const char *,QString ) ;
+	explicit oneinstance( QObject * parent,const QString& socketPath,const char *,const QString& ) ;
 	~oneinstance() ;
 	bool instanceExist( void ) ;
 	void setDevice( QString ) ;
