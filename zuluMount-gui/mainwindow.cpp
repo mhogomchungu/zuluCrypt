@@ -298,20 +298,20 @@ void MainWindow::autoMountVolume( volumeEntryProperties * entry )
 {
 	Object_raii( entry ) ;
 
-	if( entry && entry->notEmpty() ){
-		if( entry->entryisValid() ){
-			QStringList l = entry->entryList() ;
-			if( entry->encryptedVolume() ){
-				this->addEntryToTable( true,l ) ;
+	if( entry && entry->entryisValid() ){
+
+		QStringList l = entry->entryList() ;
+
+		if( entry->encryptedVolume() ){
+			this->addEntryToTable( true,l ) ;
+		}else{
+			if( m_autoMount ){
+				mountPartition * mp = new mountPartition( this,m_ui->tableWidget ) ;
+				connect( mp,SIGNAL( openMountPoint( QString ) ),
+					 this,SLOT( openMountPointPath( QString ) ) ) ;
+				mp->AutoMount( l ) ;
 			}else{
-				if( m_autoMount ){
-					mountPartition * mp = new mountPartition( this,m_ui->tableWidget ) ;
-					connect( mp,SIGNAL( openMountPoint( QString ) ),
-						 this,SLOT( openMountPointPath( QString ) ) ) ;
-					mp->AutoMount( l ) ;
-				}else{
-					this->addEntryToTable( false,l ) ;
-				}
+				this->addEntryToTable( false,l ) ;
 			}
 		}
 	}
@@ -537,7 +537,7 @@ void MainWindow::openMountPoint( const QString& m_point )
 		return r.exitCode() != 0 || r.exitStatus() != 0 ;
 	} ;
 
-	auto _b = [&]( const bool& failed ){
+	auto _b = [&]( bool failed ){
 
 		QString x = tr( "could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) ;
 		if( failed ){

@@ -71,6 +71,9 @@ public:
 	}
 	bool entryisValid() const
 	{
+		if( m_volume.isEmpty() ){
+			return false ;
+		}
 		if( m_volumeSize == "1.0 KB" || m_volumeSize == "Nil" ){
 			return false ;
 		}
