@@ -87,6 +87,25 @@ namespace utility
 
 namespace utility
 {
+	class FileHandle
+	{
+	public:
+		int operator()( int fd )
+		{
+			m_fd = fd ;
+			return fd ;
+		}
+		~FileHandle()
+		{
+			if( m_fd != -1 )
+			{
+				close( m_fd ) ;
+			}
+		}
+	private:
+		int m_fd = -1 ;
+	};
+	
 	class Task
 	{
 	public :
@@ -139,26 +158,4 @@ namespace utility
 	};
 }
 
-namespace utility
-{
-class FileHandle
-{
-public:
-	int operator()( int fd )
-	{
-		m_fd = fd ;
-		return fd ;
-	}
-	~FileHandle()
-	{
-		if( m_fd != -1 )
-		{
-			close( m_fd ) ;
-		}
-	}
-private:
-	int m_fd = -1 ;
-};
-
-}
 #endif // MISCFUNCTIONS_H

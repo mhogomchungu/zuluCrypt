@@ -1,78 +1,216 @@
 /*
- * copyright: 2013
- * name : mhogo mchungu
- * email: mhogomchungu@gmail.com
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
+ *  Copyright (c) 2014
+ *  name : mhogo mchungu
+ *  email: mhogomchungu@gmail.com
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 2 of the License, or
+ *  (at your option) any later version.
  *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE
- * COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY OR CONSEQUENTIAL DAMAGES (INCLUDING,
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
- * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
- * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef TASK_H
 #define TASK_H
 
-#include <QRunnable>
-#include <QThreadPool>
-#include <QObject>
-#include <QString>
-#include <QStringList>
-
 #include <functional>
-
-#include "../backend/lxqtwallet.h"
+#include <QThread>
 
 namespace LxQt{
 
 namespace Wallet{
 
-class Task : public QObject,public QRunnable
+template< typename T >
+class continuation
 {
-	Q_OBJECT
 public:
-	typedef enum{
-		openInternal,
-		openSecretService,
-		createVolume
-	}action ;
-	Task( lxqt_wallet_t * wallet,const QString& password,const QString& walletName,const QString& applicationName ) ;
-	Task( const QString& password,const QString& walletName,const QString& applicationName ) ;
-	Task( std::function< bool( void ) > ) ;
-	void start( LxQt::Wallet::Task::action ) ;
-signals:
-	void walletOpened( bool ) ;
-	void taskResult( bool ) ;
-	void openWallet( QString ) ;
+	explicit continuation( std::function< void( void ) > function ) :
+		m_function( []( const T& t ){ Q_UNUSED( t ) ; } ),m_start( function )
+	{
+	}
+	void then( std::function< void( const T& ) > function )
+	{
+		m_function = function ;
+		m_start() ;
+	}
+	void start()
+	{
+		m_start() ;
+	}
+	void run( const T& arg )
+	{
+		m_function( arg ) ;
+	}
 private:
-	void run( void ) ;
-	lxqt_wallet_t * m_wallet ;
-	QString m_password ;
-	QString m_walletName ;
-	QString m_applicationName ;
-	LxQt::Wallet::Task::action m_action ;
-	std::function< bool( void ) > m_function ;
+	std::function< void( const T& ) > m_function ;
+	std::function< void( void ) > m_start ;
 };
 
+template< typename T >
+class thread : public QThread
+{
+public:
+	thread( std::function< T ( void ) > function ) :
+		m_function( function ),
+		m_continuation( [&](){ this->start() ; } )
+	{
+		connect( this,SIGNAL( finished() ),this,SLOT( deleteLater() ) ) ;
+	}
+	continuation<T>& taskContinuation( void )
+	{
+		return m_continuation ;
+	}
+private:
+	~thread()
+	{
+		m_continuation.run( m_cargo ) ;
+	}
+	void run( void )
+	{
+		m_cargo =  m_function() ;
+	}
+	std::function< T ( void ) > m_function ;
+	continuation<T> m_continuation ;
+	T m_cargo ;
+};
+
+class continuation_1
+{
+public:
+	explicit continuation_1( std::function< void( void ) > function ) :
+		m_function( [](){} ),m_start( function )
+	{
+	}
+	void then( std::function< void( void ) > function )
+	{
+		m_function = function ;
+		m_start() ;
+	}
+	void start()
+	{
+		m_start() ;
+	}
+	void run()
+	{
+		m_function() ;
+	}
+private:
+	std::function< void( void ) > m_function ;
+	std::function< void( void ) > m_start ;
+};
+
+class thread_1 : public QThread
+{
+public:
+	thread_1( std::function< void ( void ) > function ) :
+		m_function( function ),
+		m_continuation( [&](){ this->start() ; } )
+	{
+		connect( this,SIGNAL( finished() ),this,SLOT( deleteLater() ) ) ;
+	}
+	continuation_1& taskContinuation( void )
+	{
+		return m_continuation ;
+	}
+private:
+	~thread_1()
+	{
+		m_continuation.run() ;
+	}
+	void run( void )
+	{
+		m_function() ;
+	}
+	std::function< void ( void ) > m_function ;
+	continuation_1 m_continuation ;
+};
+
+namespace Task
+{
+	/*
+	 * This API runs two tasks,the first one will be run in a different thread and
+	 * the second one will be run on the original thread after the completion of the
+	 * first one.
+	 *
+	 * See example at the end of this header file for a sample use case
+	 */
+	template< typename T >
+	continuation<T>& run( std::function< T ( void ) > function )
+	{
+		auto t = new thread<T>( function ) ;
+		return t->taskContinuation() ;
+	}
+
+	continuation_1& run( std::function< void( void ) > function ) ;
+
+	void exec( std::function< void( void ) > function ) ;
 }
 
 }
+
+}
+
+#if 0
+
+/*
+ * templated version that passes a return value of one function to another function
+ */
+auto _a = [](){
+	/*
+	 * task _a does what task _a does here.
+	 *
+	 * This function body will run on a different thread
+	 */
+	return 0 ;
+}
+
+auto _b = []( const int& r ){
+	/*
+	 * task _b does what task _b does here.
+	 *
+	 * r is a const reference to a value returned by _a
+	 *
+	 * This function body will run on the original thread
+	 */
+}
+
+Task::run<int>( _a ).then( _b ) ;
+
+/*
+ * Non templated version that does not pass around return value
+ */
+auto _a = [](){
+	/*
+	 * task _a does what task _a does here.
+	 *
+	 * This function body will run on a different thread
+	 */
+}
+
+auto _b = [](){
+	/*
+	 * task _b does what task _b does here.
+	 *
+	 * r is a const reference to a value returned by _a
+	 *
+	 * This function body will run on the original thread
+	 */
+}
+
+Task::run( _a ).then( _b ) ;
+
+/*
+ * if no continuation
+ */
+Task::exec( _a ) ;
+
+#endif
+
 #endif // TASK_H

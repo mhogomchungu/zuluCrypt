@@ -84,10 +84,9 @@ signals:
 private slots:
 	bool openWallet( QString ) ;
 	void cancelled( void ) ;
-	void taskResult( bool ) ;
-	void taskResult_1( bool ) ;
 	void password( QString,bool ) ;
 private:
+	void taskResult( bool ) ;
 	bool openWallet( void ) ;
 	lxqt_wallet_t m_wallet ;
 	QString m_walletName ;

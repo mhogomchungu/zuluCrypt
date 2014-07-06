@@ -1,77 +1,38 @@
 /*
- * copyright: 2013
- * name : mhogo mchungu
- * email: mhogomchungu@gmail.com
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
+ *  Copyright (c) 2014
+ *  name : mhogo mchungu
+ *  email: mhogomchungu@gmail.com
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 2 of the License, or
+ *  (at your option) any later version.
  *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE
- * COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY OR CONSEQUENTIAL DAMAGES (INCLUDING,
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
- * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
- * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "task.h"
+namespace LxQt{
 
-LxQt::Wallet::Task::Task( lxqt_wallet_t * wallet,const QString& password,const QString& walletName,const QString& applicationName )
+namespace Wallet{
+
+void Task::exec( std::function< void( void ) > function )
 {
-	m_wallet          = wallet ;
-	m_password        = password ;
-	m_walletName      = walletName ;
-	m_applicationName = applicationName ;
+	Task::run( function ).start() ;
 }
 
-LxQt::Wallet::Task::Task( const QString& password,const QString& walletName,const QString& applicationName )
+continuation_1& Task::run( std::function< void( void ) > function )
 {
-	m_password        = password ;
-	m_walletName      = walletName ;
-	m_applicationName = applicationName ;
+	auto t = new thread_1( function ) ;
+	return t->taskContinuation() ;
 }
 
-LxQt::Wallet::Task::Task( std::function< bool( void ) > function )
-{
-	m_function = function ;
 }
 
-void LxQt::Wallet::Task::start( LxQt::Wallet::Task::action action )
-{
-	m_action = action ;
-	QThreadPool::globalInstance()->start( this ) ;
-}
-
-void LxQt::Wallet::Task::run()
-{
-	if( m_action == LxQt::Wallet::Task::openInternal ){
-		lxqt_wallet_error r = lxqt_wallet_open( m_wallet,m_password.toLatin1().constData(),m_password.size(),
-						     m_walletName.toLatin1().constData(),m_applicationName.toLatin1().constData() ) ;
-		emit walletOpened( r == lxqt_wallet_no_error ) ;
-	}else if( m_action == LxQt::Wallet::Task::openSecretService ){
-		emit walletOpened( m_function() ) ;
-	}else if( m_action == LxQt::Wallet::Task::createVolume ) {
-
-		lxqt_wallet_error r = lxqt_wallet_create( m_password.toLatin1().constData(),m_password.size(),
-				    m_walletName.toLatin1().constData(),m_applicationName.toLatin1().constData() ) ;
-		if( r != lxqt_wallet_no_error ){
-			emit taskResult( false ) ;
-		}else{
-			emit openWallet( m_password ) ;
-		}
-	}
 }
