@@ -110,7 +110,7 @@ void LxQt::Wallet::secretService::open( const QString& walletName,const QString&
 
 	connect( this,SIGNAL( walletIsOpen( bool ) ),m_interfaceObject,SLOT( walletIsOpen( bool ) ) ) ;
 
-	auto _a = [](){
+	auto _a = [&](){
 
 		return lxqt_secret_service_wallet_is_open( m_schema ) ;
 	} ;
