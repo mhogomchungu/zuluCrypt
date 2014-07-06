@@ -484,7 +484,7 @@ void passwordDialog::buttonOpenClicked( void )
 
 void passwordDialog::sendKey( const QString& sockpath )
 {
-	auto _a = [ &,sockpath ](){
+	auto _a = [ = ](){
 
 		utility::sendKey( sockpath,m_key ) ;
 	} ;
