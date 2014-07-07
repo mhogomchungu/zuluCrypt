@@ -25,7 +25,6 @@ set(SRC 	main.cpp
 		events.cpp
 		mainwindow.cpp
 		keydialog.cpp
-		../zuluCrypt-gui/task.cpp
 		zulumounttask.cpp
 		mountpartition.cpp
 		oneinstance.cpp

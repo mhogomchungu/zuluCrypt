@@ -61,7 +61,6 @@ set( SRC
 	main.cpp
 	password_dialog.cpp
 	zulucrypt.cpp
-	task.cpp
 	favorites.cpp
 	filetask.cpp
 	cryptoinfo.cpp
