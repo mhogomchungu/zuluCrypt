@@ -35,6 +35,8 @@ class QCloseEvent ;
 class QTableWidget ;
 class QMenu ;
 
+struct taskResult ;
+
 namespace LxQt {
 namespace Wallet {
 class Wallet ;
@@ -72,7 +74,7 @@ private slots :
 	void mountPointPath( QString ) ;
 	void cbStateChanged( int ) ;
 	void getPassWord( QString ) ;
-	void taskComplete( const QString&,int ) ;
+	void taskComplete( const taskResult& ) ;
 	void keys( QString key,QString keyFiles ) ;
 	void tcryptCancelled( void ) ;
 private :
@@ -85,7 +87,7 @@ private :
 	void enableAll( void ) ;
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
-	void success( const QString& ) ;
+	void success( const taskResult& ) ;
 	void failed( void ) ;
 	Ui::PasswordDialog * m_ui ;
 	bool m_isWindowClosable ;
