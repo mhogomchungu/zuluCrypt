@@ -105,7 +105,7 @@ namespace utility
 	private:
 		int m_fd = -1 ;
 	};
-	
+
 	class Task
 	{
 	public :

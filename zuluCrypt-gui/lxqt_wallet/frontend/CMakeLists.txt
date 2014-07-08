@@ -153,10 +153,10 @@ set(MOC_FILES_1 changepassworddialog.h lxqt_internal_wallet.h password_dialog.h 
 set(MOC_FILES_2 changepassworddialog.h lxqt_internal_wallet.h password_dialog.h lxqt_kwallet.h lxqt_secret_service.h task.h)
 set(MOC_FILES_3 changepassworddialog.h lxqt_internal_wallet.h password_dialog.h lxqt_secret_service.h task.h)
 
-set(SRC 	changepassworddialog.cpp password_dialog.cpp lxqt_internal_wallet.cpp lxqt_wallet.cpp task.cpp)
-set(SRC_1 	changepassworddialog.cpp password_dialog.cpp lxqt_internal_wallet.cpp lxqt_wallet.cpp task.cpp lxqt_kwallet.cpp)
-set(SRC_2 	changepassworddialog.cpp password_dialog.cpp lxqt_internal_wallet.cpp lxqt_wallet.cpp task.cpp lxqt_kwallet.cpp lxqt_secret_service.cpp)
-set(SRC_3 	changepassworddialog.cpp password_dialog.cpp lxqt_internal_wallet.cpp lxqt_wallet.cpp task.cpp lxqt_secret_service.cpp)
+set(SRC 	changepassworddialog.cpp password_dialog.cpp lxqt_internal_wallet.cpp lxqt_wallet.cpp)
+set(SRC_1 	changepassworddialog.cpp password_dialog.cpp lxqt_internal_wallet.cpp lxqt_wallet.cpp lxqt_kwallet.cpp)
+set(SRC_2 	changepassworddialog.cpp password_dialog.cpp lxqt_internal_wallet.cpp lxqt_wallet.cpp lxqt_kwallet.cpp lxqt_secret_service.cpp)
+set(SRC_3 	changepassworddialog.cpp password_dialog.cpp lxqt_internal_wallet.cpp lxqt_wallet.cpp lxqt_secret_service.cpp)
 
 if(BUILD_SHARED)
 	set( LIBRARY_TYPE "SHARED")

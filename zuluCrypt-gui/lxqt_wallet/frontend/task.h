@@ -170,9 +170,16 @@ namespace Task
 		return t->taskContinuation() ;
 	}
 
-	continuation_1& run( std::function< void( void ) > function ) ;
+	static inline continuation_1& run( std::function< void( void ) > function )
+	{
+		auto t = new ThreadHelper_1( function ) ;
+		return t->taskContinuation() ;
+	}
 
-	void exec( std::function< void( void ) > function ) ;
+	static inline void exec( std::function< void( void ) > function )
+	{
+		Task::run( function ).start() ;
+	}
 }
 
 }

@@ -33,12 +33,13 @@
 #include <QProcess>
 #include <QCloseEvent>
 #include "../../zuluCrypt-gui/dialogmsg.h"
-#include "getKey.h"
 #include <functional>
 
 namespace Ui {
 class MainWindow ;
 }
+
+typedef std::function<QByteArray( const QVector<QString>&,const QString& keyFile,const QString& password )> function_t ;
 
 class MainWindow : public QWidget
 {
@@ -58,7 +59,6 @@ public:
 	void setfindExeFunction( std::function<const QString&( QVector<QString>& )> ) ;
 	~MainWindow() ;
 private slots:
-	void done( int ) ;
 	void defaultButton( void ) ;
 	void pbOpen( void ) ;
 	void pbCancel( void ) ;
@@ -70,20 +70,16 @@ private:
 	void SetFocus( void ) ;
 	void Exit( int ) ;
 	void cancelled( void ) ;
-	void key( void ) ;
 	Ui::MainWindow * m_ui ;
-	QString m_token ;
-	QString m_keyFile ;
-	QString m_path ;
 	QString m_appName ;
 	bool m_working ;
 	bool m_requireKey ;
 	bool m_requireKeyFile ;
-	QByteArray m_key ;
 	QVector<QString> m_exe ;
 	QVector<QString> m_exe_1 ;
 	function_t m_function ;
 	std::function<const QString&( QVector<QString>& )> m_findExecutable ;
+	void * m_handle ;
 };
 
 #endif // MAINWINDOW_H

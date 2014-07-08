@@ -24,7 +24,13 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-MainWindow::MainWindow( QWidget * parent ) : QWidget( parent ),m_ui( new Ui::MainWindow )
+#include "../../zuluCrypt-cli/pluginManager/libzuluCryptPluginManager.h"
+
+#include "../../zuluCrypt-gui/lxqt_wallet/frontend/task.h"
+
+namespace Task = LxQt::Wallet::Task ;
+
+MainWindow::MainWindow( QWidget * parent ) : QWidget( parent ),m_ui( new Ui::MainWindow ),m_handle( nullptr )
 {
 	m_ui->setupUi( this ) ;
 	this->setFixedSize( this->size() ) ;
@@ -54,6 +60,7 @@ MainWindow::MainWindow( QWidget * parent ) : QWidget( parent ),m_ui( new Ui::Mai
 	this->addAction( ac ) ;
 
 	m_findExecutable = []( QVector<QString>& exe ){
+
 		if( exe.isEmpty() ){
 			return QString() ;
 		}
@@ -116,7 +123,7 @@ void MainWindow::defaultButton()
 
 void MainWindow::setToken( const QString& token )
 {
-	m_token = token ;
+	m_handle = zuluCryptPluginManagerOpenConnection( token.toLatin1().constData() ) ;
 }
 
 void MainWindow::setApplicationName( const QString& appName )
@@ -169,16 +176,11 @@ void MainWindow::pbCancel()
 
 void MainWindow::cancelled()
 {
-	getKey::cancel( m_token ) ;
 	this->Exit( 1 ) ;
 }
 
 void MainWindow::Exit( int st )
 {
-	char * e = m_key.data() ;
-
-	memset( e,'\0',m_key.size() ) ;
-
 	QCoreApplication::exit( st ) ;
 }
 
@@ -196,22 +198,22 @@ void MainWindow::pbOpen()
 {
 	DialogMsg msg( this ) ;
 
-	m_key = m_ui->lineEditKey->text().toLatin1() ;
+	QString key = m_ui->lineEditKey->text().toLatin1() ;
 	if( m_requireKey ){
-		if( m_key.isEmpty() ){
+		if( key.isEmpty() ){
 			return msg.ShowUIOK( tr( "ERROR" ),tr( "key field is empty" ) ) ;
 		}
 	}
 
-	m_path = m_ui->lineEditKeyFile->text() ;
+	QString keyFile = m_ui->lineEditKeyFile->text() ;
 
-	m_path.replace( "file://","" ) ;
+	keyFile.replace( "file://","" ) ;
 
 	if( m_requireKeyFile ){
-		if( m_path.isEmpty() ){
+		if( keyFile.isEmpty() ){
 			return msg.ShowUIOK( tr( "ERROR" ),tr( "path to %1 keyfile is empty" ).arg( m_appName ) ) ;
 		}
-		if( !QFile::exists( m_path ) ){
+		if( !QFile::exists( keyFile ) ){
 			return msg.ShowUIOK( tr( "ERROR" ),tr( "invalid path to %1 keyfile" ).arg( m_appName ) ) ;
 		}
 	}
@@ -229,37 +231,36 @@ void MainWindow::pbOpen()
 	this->disableAll() ;
 	m_working = true ;
 
-	this->key() ;
-}
+	Task::run< bool >( [ &,keyFile,key ](){
 
-void MainWindow::key()
-{
-	getKey * g = new getKey( m_token ) ;
-	connect( g,SIGNAL( done( int ) ),this,SLOT( done( int ) ) ) ;
-	g->setOptions( m_exe_1,m_key,m_path,m_function ) ;
-	g->start() ;
-}
+		QByteArray s = m_function( m_exe_1,keyFile,key ) ;
 
-void MainWindow::done( int status )
-{
-	getKey::status s = getKey::status( status ) ;
+		if( s.isEmpty() ){
 
-	if( s == getKey::cancelled ){
-		this->Exit( 1 ) ;
-	}else if( s == getKey::complete ){
-		this->Exit( 0 ) ;
-	}else if( s == getKey::wrongKey ){
-		DialogMsg msg( this ) ;
-		m_working = false ;
-		msg.ShowUIOK( tr( "ERROR" ),tr("could not decrypt the %1 keyfile,wrong key?" ).arg( m_appName ) ) ;
-		this->enableAlll() ;
-		m_ui->lineEditKey->setFocus() ;
-	}else{
-		/*
-		 * we cant get here
-		 */
-	}
+			return false ;
+		}else{
+			if( m_handle ){
 
+				zuluCryptPluginManagerSendKey( m_handle,s.constData(),s.size() ) ;
+
+				return true ;
+			}else{
+				return false ;
+			}
+		}
+
+	} ).then( [ this ]( bool passed ){
+
+		if( passed ){
+			this->Exit( 0 ) ;
+		}else{
+			DialogMsg msg( this ) ;
+			m_working = false ;
+			msg.ShowUIOK( tr( "ERROR" ),tr("could not decrypt the %1 keyfile,wrong key?" ).arg( m_appName ) ) ;
+			this->enableAlll() ;
+			m_ui->lineEditKey->setFocus() ;
+		}
+	} ) ;
 }
 
 void MainWindow::pbKeyFile()
@@ -302,5 +303,6 @@ void MainWindow::enableAlll()
 
 MainWindow::~MainWindow()
 {
+	zuluCryptPluginManagerCloseConnection( m_handle ) ;
 	delete m_ui ;
 }
