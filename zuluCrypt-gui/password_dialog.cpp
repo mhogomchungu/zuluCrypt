@@ -639,12 +639,25 @@ void passwordDialog::openVolume()
 
 	this->disableAll() ;
 
-	auto _a = [ exe ](){
+	QString m_p = utility::mountPath( m_point ) ;
+
+	auto _a = [ = ](){
 
 		taskResult t ;
 		auto r = utility::Task( exe ) ;
 		t.exitCode = r.exitCode() ;
 		t.outPut   = r.output() ;
+
+		if( t.exitCode == 0 ){
+
+			auto _c = [ = ](){
+
+				utility::Task( QString( "%1 \"%2\"" ).arg( m_folderOpener ).arg( m_p ) ) ;
+			} ;
+
+			Task::exec( _c ) ;
+		}
+
 		return t ;
 	} ;
 
@@ -679,13 +692,6 @@ void passwordDialog::success( const taskResult& r )
 		}
 
 		tablewidget::addRowToTable( m_table,list ) ;
-
-		auto _a = [ = ](){
-
-			utility::Task( QString( "%1 \"%2\"" ).arg( m_folderOpener ).arg( m_p ) ) ;
-		} ;
-
-		Task::exec( _a ) ;
 
 		this->HideUI() ;
 	}else{
