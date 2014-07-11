@@ -794,8 +794,11 @@ void zuluCrypt::menuKeyPressed()
 void zuluCrypt::openFolder()
 {
 	QTableWidgetItem * item = m_ui->tableWidget->currentItem() ;
-	QString path = m_ui->tableWidget->item( item->row(),1 )->text() ;
+	this->openFolder( m_ui->tableWidget->item( item->row(),1 )->text() ) ;
+}
 
+void zuluCrypt::openFolder( QString path )
+{
 	auto _a = [ &,path ](){
 
 		auto r = utility::Task( QString( "%1 \"%2\"" ).arg( m_folderOpener ).arg( path ) ) ;
@@ -1071,8 +1074,9 @@ void zuluCrypt::ShowOpenPartition()
 
 passwordDialog * zuluCrypt::setUpPasswordDialog()
 {
-	passwordDialog * pd = new passwordDialog( m_ui->tableWidget,m_folderOpener,this ) ;
+	passwordDialog * pd = new passwordDialog( m_ui->tableWidget,this ) ;
 	connect( pd,SIGNAL( HideUISignal() ),pd,SLOT( deleteLater() ) ) ;
+	connect( pd,SIGNAL( openFolder( QString ) ),this,SLOT( openFolder( QString ) ) ) ;
 	return pd ;
 }
 

@@ -72,7 +72,7 @@ struct taskResult
 	QByteArray outPut ;
 };
 
-passwordDialog::passwordDialog( QTableWidget * table,const QString& folderOpener,QWidget * parent ) : QDialog( parent )
+passwordDialog::passwordDialog( QTableWidget * table,QWidget * parent ) : QDialog( parent )
 {
 	m_ui = new Ui::PasswordDialog() ;
 	m_ui->setupUi( this ) ;
@@ -91,8 +91,6 @@ passwordDialog::passwordDialog( QTableWidget * table,const QString& folderOpener
 	m_open_with_path = false ;
 
 	m_table = table ;
-
-	m_folderOpener = folderOpener ;
 
 	m_pluginMenu = new QMenu( this ) ;
 	m_pluginMenu->setFont( this->font() ) ;
@@ -639,25 +637,12 @@ void passwordDialog::openVolume()
 
 	this->disableAll() ;
 
-	QString m_p = utility::mountPath( m_point ) ;
-
-	auto _a = [ = ](){
+	auto _a = [ exe ](){
 
 		taskResult t ;
 		auto r = utility::Task( exe ) ;
 		t.exitCode = r.exitCode() ;
 		t.outPut   = r.output() ;
-
-		if( t.exitCode == 0 ){
-
-			auto _c = [ = ](){
-
-				utility::Task( QString( "%1 \"%2\"" ).arg( m_folderOpener ).arg( m_p ) ) ;
-			} ;
-
-			Task::exec( _c ) ;
-		}
-
 		return t ;
 	} ;
 
@@ -678,6 +663,8 @@ void passwordDialog::success( const taskResult& r )
 		list.append( utility::resolvePath( m_ui->OpenVolumePath->text() ) ) ;
 
 		QString m_p = utility::mountPath( m_point ) ;
+
+		emit openFolder( m_p ) ;
 
 		list.append( m_p ) ;
 

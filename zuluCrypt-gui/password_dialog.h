@@ -47,12 +47,12 @@ class passwordDialog :  public QDialog
 {
 	Q_OBJECT
 public:
-	passwordDialog( QTableWidget * table,const QString& folderOpener,QWidget * parent = 0 ) ;
+	passwordDialog( QTableWidget * table,QWidget * parent = 0 ) ;
 	virtual ~passwordDialog() ;
 signals :
 	void addItemToTable( QString,QString,QString ) ;
 	void HideUISignal( void ) ;
-	void volumeOpened( QString,QString,passwordDialog * ) ;
+	void openFolder( QString ) ;
 public slots:
 	void HideUI( void ) ;
 	void ShowUI( void ) ;
@@ -99,7 +99,6 @@ private :
 	QString m_keyFiles ;
 	QString m_device ;
 	QString m_point ;
-	QString m_folderOpener ;
 
 	LxQt::Wallet::Wallet * m_wallet ;
 	enum{ key = 0,keyfile = 1,plugin = 2,tcryptKeys = 3 } ;
