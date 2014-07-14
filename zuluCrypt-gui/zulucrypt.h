@@ -138,7 +138,7 @@ private slots :
 	void walletIsOpen( bool ) ;
 	void optionMenuAboutToShow( void ) ;
 private:
-	void updateVolumeList( void ) ;
+	void updateVolumeList( const QString& volume = QString() ) ;
 	void dragEnterEvent( QDragEnterEvent * ) ;
 	void dropEvent( QDropEvent * ) ;
 
@@ -160,14 +160,13 @@ private:
 	void initFont( void ) ;
 	void initKeyCombo( void ) ;
 	void closeStatusErrorMessage( int ) ;
-	void setUpApp( void ) ;
+	void setUpApp( const QString& ) ;
 	void setFolderOpener( void ) ;
 	void processArgumentList( void ) ;
 
 	Ui::zuluCrypt * m_ui ;
 	QSystemTrayIcon * m_trayIcon ;
 	QString m_folderOpener ;
-	QString m_device ;
 	LxQt::Wallet::Wallet * m_wallet ;
 };
 

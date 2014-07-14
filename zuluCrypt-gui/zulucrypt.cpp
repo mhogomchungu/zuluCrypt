@@ -72,11 +72,6 @@ zuluCrypt::zuluCrypt( QWidget * parent ) :QMainWindow( parent ),m_trayIcon( 0 )
 {
 	this->setLocalizationLanguage() ;
 	m_ui = new Ui::zuluCrypt ;
-
-	QStringList l = QCoreApplication::arguments() ;
-
-	m_device       = utility::cmdArgumentValue( l,"-d" ) ;
-	m_folderOpener = utility::cmdArgumentValue( l,"-m","xdg-open" ) ;
 }
 
 void zuluCrypt::setLocalizationLanguage()
@@ -110,17 +105,17 @@ void zuluCrypt::setFolderOpener()
 	}
 }
 
-void zuluCrypt::setUpApp()
+void zuluCrypt::setUpApp( const QString& volume )
 {
 	this->setupUIElements() ;
 	this->setupConnections() ;
 	this->initFont() ;
 	this->initKeyCombo() ;
 	this->initTray() ;
-	this->updateVolumeList() ;
+	this->updateVolumeList( volume ) ;
 }
 
-void zuluCrypt::updateVolumeList()
+void zuluCrypt::updateVolumeList( const QString& volume )
 {
 	m_ui->tableWidget->setEnabled( false ) ;
 
@@ -135,7 +130,7 @@ void zuluCrypt::updateVolumeList()
 		}
 	} ;
 
-	auto _b = [&]( const QString& r ){
+	auto _b = [ &,volume ]( const QString& r ){
 
 		if( !r.isEmpty() ){
 
@@ -164,10 +159,9 @@ void zuluCrypt::updateVolumeList()
 		m_ui->tableWidget->setEnabled( true ) ;
 		m_ui->tableWidget->setFocus() ;
 
-		if( !m_device.isEmpty() ){
-			QString y = m_device.split( "/" ).last() ;
-			this->ShowPasswordDialog( m_device,y ) ;
-			m_device.clear() ;
+		if( !volume.isEmpty() ){
+			QString y = volume.split( "/" ).last() ;
+			this->ShowPasswordDialog( volume,y ) ;
 		}
 	} ;
 
@@ -238,13 +232,18 @@ void zuluCrypt::start()
 	 * runs.
 	 */
 
+	QStringList l = QCoreApplication::arguments() ;
+
+	QString e      = utility::cmdArgumentValue( l,"-d" ) ;
+	m_folderOpener = utility::cmdArgumentValue( l,"-m","xdg-open" ) ;
+
 	QString sockpath = QString( "zuluCrypt-gui.socket" ) ;
-	oneinstance * instance = new oneinstance( this,sockpath,"raiseWindow",m_device ) ;
+	oneinstance * instance = new oneinstance( this,sockpath,"raiseWindow",e ) ;
 	connect( instance,SIGNAL( raise() ),this,SLOT( raiseWindow() ) ) ;
 	connect( instance,SIGNAL( raiseWithDevice( QString ) ),this,SLOT( raiseWindow( QString ) ) ) ;
 
 	if( !instance->instanceExist() ){
-		this->setUpApp() ;
+		this->setUpApp( e ) ;
 	}
 }
 
@@ -559,7 +558,7 @@ void zuluCrypt::dropEvent( QDropEvent * e )
 	QList<QUrl> l = m->urls() ;
 
 	for( const auto& it : l ){
-		
+
 		const QString& e = it.path() ;
 		if( utility::pathPointsToAFile( e ) ){
 
