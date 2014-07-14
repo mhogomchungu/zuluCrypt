@@ -22,138 +22,139 @@
 
 #include <functional>
 #include <QThread>
+#include <QDebug>
 
 namespace LxQt{
 
 namespace Wallet{
 
-class Thread : public QThread
-{
-	Q_OBJECT
-public:
-	Thread()
-	{
-		connect( this,SIGNAL( finished() ),this,SLOT( deleteLater() ) ) ;
-	}
-protected:
-	virtual ~Thread()
-	{
-	}
-private:
-	virtual void run( void )
-	{
-	}
-};
-
-template< typename T >
-class continuation
-{
-public:
-	continuation() : m_function( []( const T& t ){ Q_UNUSED( t ) ; } )
-	{
-	}
-	void setStartFunction( std::function< void( void ) > function )
-	{
-		m_start = function ;
-	}
-	void then( std::function< void( const T& ) > function )
-	{
-		m_function = function ;
-		m_start() ;
-	}
-	void start()
-	{
-		m_start() ;
-	}
-	void run( const T& arg )
-	{
-		m_function( arg ) ;
-	}
-private:
-	std::function< void( const T& ) > m_function ;
-	std::function< void( void ) > m_start ;
-};
-
-template< typename T >
-class ThreadHelper : public Thread
-{
-public:
-	ThreadHelper( std::function< T ( void ) > function ) :m_function( function )
-	{
-	}
-	continuation<T>& taskContinuation( void )
-	{
-		m_continuation.setStartFunction( [&](){ this->start() ; } ) ;
-		return m_continuation ;
-	}
-private:
-	~ThreadHelper()
-	{
-		m_continuation.run( m_cargo ) ;
-	}
-	void run( void )
-	{
-		m_cargo =  m_function() ;
-	}
-	std::function< T ( void ) > m_function ;
-	continuation<T> m_continuation ;
-	T m_cargo ;
-};
-
-class continuation_1
-{
-public:
-	explicit continuation_1() : m_function( [](){} )
-	{
-	}
-	void setStartFunction( std::function< void( void ) > function )
-	{
-		m_start = function ;
-	}
-	void then( std::function< void( void ) > function )
-	{
-		m_function = function ;
-		m_start() ;
-	}
-	void start()
-	{
-		m_start() ;
-	}
-	void run()
-	{
-		m_function() ;
-	}
-private:
-	std::function< void( void ) > m_function ;
-	std::function< void( void ) > m_start ;
-};
-
-class ThreadHelper_1 : public Thread
-{
-public:
-	ThreadHelper_1( std::function< void ( void ) > function ) : m_function( function )
-	{
-	}
-	continuation_1& taskContinuation( void )
-	{
-		m_continuation.setStartFunction( [&](){ this->start() ; } ) ;
-		return m_continuation ;
-	}
-private:
-	~ThreadHelper_1()
-	{
-		m_continuation.run() ;
-	}
-	void run( void )
-	{
-		m_function() ;
-	}
-	std::function< void ( void ) > m_function ;
-	continuation_1 m_continuation ;
-};
-
 namespace Task
 {
+	class Thread : public QThread
+	{
+		Q_OBJECT
+	public:
+		Thread()
+		{
+			connect( this,SIGNAL( finished() ),this,SLOT( deleteLater() ) ) ;
+		}
+	protected:
+		virtual ~Thread()
+		{
+		}
+	private:
+		virtual void run( void )
+		{
+		}
+	};
+
+	template< typename T >
+	class future
+	{
+	public:
+		future() : m_function( []( const T& t ){ Q_UNUSED( t ) ; } )
+		{
+		}
+		void setStartFunction( std::function< void( void ) > function )
+		{
+			m_start = function ;
+		}
+		void then( std::function< void( const T& ) > function )
+		{
+			m_function = function ;
+			m_start() ;
+		}
+		void start()
+		{
+			m_start() ;
+		}
+		void run( const T& arg )
+		{
+			m_function( arg ) ;
+		}
+	private:
+		std::function< void( const T& ) > m_function ;
+		std::function< void( void ) > m_start ;
+	};
+
+	template< typename T >
+	class ThreadHelper : public Thread
+	{
+	public:
+		ThreadHelper( std::function< T ( void ) > function ) :m_function( function )
+		{
+		}
+		future<T>& taskContinuation( void )
+		{
+			m_future.setStartFunction( [&](){ this->start() ; } ) ;
+			return m_future ;
+		}
+	private:
+		~ThreadHelper()
+		{
+			m_future.run( m_cargo ) ;
+		}
+		void run( void )
+		{
+			m_cargo =  m_function() ;
+		}
+		std::function< T ( void ) > m_function ;
+		future<T> m_future ;
+		T m_cargo ;
+	};
+
+	class future_1
+	{
+	public:
+		future_1() : m_function( [](){} )
+		{
+		}
+		void setStartFunction( std::function< void( void ) > function )
+		{
+			m_start = function ;
+		}
+		void then( std::function< void( void ) > function )
+		{
+			m_function = function ;
+			m_start() ;
+		}
+		void start()
+		{
+			m_start() ;
+		}
+		void run()
+		{
+			m_function() ;
+		}
+	private:
+		std::function< void( void ) > m_function ;
+		std::function< void( void ) > m_start ;
+	};
+
+	class ThreadHelper_1 : public Thread
+	{
+	public:
+		ThreadHelper_1( std::function< void ( void ) > function ) : m_function( function )
+		{
+		}
+		future_1& taskContinuation( void )
+		{
+			m_future.setStartFunction( [&](){ this->start() ; } ) ;
+			return m_future ;
+		}
+	private:
+		~ThreadHelper_1()
+		{
+			m_future.run() ;
+		}
+		void run( void )
+		{
+			m_function() ;
+		}
+		std::function< void ( void ) > m_function ;
+		future_1 m_future ;
+	};
+
 	/*
 	 * This API runs two tasks,the first one will be run in a different thread and
 	 * the second one will be run on the original thread after the completion of the
@@ -162,13 +163,13 @@ namespace Task
 	 * See example at the end of this header file for a sample use case
 	 */
 	template< typename T >
-	continuation<T>& run( std::function< T ( void ) > function )
+	future<T>& run( std::function< T ( void ) > function )
 	{
 		auto t = new ThreadHelper<T>( function ) ;
 		return t->taskContinuation() ;
 	}
 
-	static inline continuation_1& run( std::function< void( void ) > function )
+	static inline future_1& run( std::function< void( void ) > function )
 	{
 		auto t = new ThreadHelper_1( function ) ;
 		return t->taskContinuation() ;
@@ -234,7 +235,7 @@ auto _b = [](){
 Task::run( _a ).then( _b ) ;
 
 /*
- * if no continuation
+ * if no future
  */
 Task::exec( _a ) ;
 

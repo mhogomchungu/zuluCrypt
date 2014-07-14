@@ -21,6 +21,7 @@
 #define ZULUMOUNTTASK_H
 
 #include "volumeentryproperties.h"
+#include "../zuluCrypt-gui/task.h"
 
 #include <QVector>
 #include <QString>
@@ -33,39 +34,39 @@ struct zuluMountTaskResult
 	QString outPut ;
 };
 
-struct volumeMiniPropertiesResult
+struct volumeMiniPropertiesTaskResult
 {
 	QString volumeName ;
 	bool volumeRemoved ;
 	volumeEntryProperties * entry ;
 };
 
-namespace zuluMount
+namespace zuluMountTask
 {
 	typedef enum
 	{
 		device,dm_device,md_device
 	}deviceTypes;
 
-	struct deviceProperties
+	struct event
 	{
 		deviceTypes deviceType ;
 		bool added ;
 		QString volumeName ;
 	};
 
-	namespace Task
-	{
-		volumeEntryProperties getVolumeProperties( const QString& e ) ;
-		QString volumeProperties( const QString& volume,const QString& volumeType ) ;
-		zuluMountTaskResult unmountVolume( const QString& volumePath,const QString& volumeType ) ;
-		zuluMountTaskResult cryptoOpen( void ) ;
-		QVector< volumeEntryProperties > updateVolumeList( void ) ;
-		void checkUnMount( const QString& ) ;
-		volumeMiniPropertiesResult volumeMiniProperties( const QString& volume ) ;
-		volumeMiniPropertiesResult deviceProperties( const zuluMount::deviceProperties& ) ;
-		QStringList mountedVolumeList( void ) ;
-	}
+	Task::future< QString >& volumeProperties( const QString& volume,const QString& volumeType ) ;
+	Task::future< QVector< volumeEntryProperties > >& updateVolumeList( void ) ;
+	Task::future< volumeEntryProperties >& getVolumeProperties( const QString& e ) ;
+	Task::future< zuluMountTaskResult >& unmountVolume( const QString& volumePath,const QString& volumeType ) ;
+
+	zuluMountTaskResult volumeUnmount( const QString& volumePath,const QString& volumeType ) ;
+
+	zuluMountTaskResult cryptoOpen( void ) ;
+	void checkUnMount( const QString& ) ;
+	volumeMiniPropertiesTaskResult volumeMiniProperties( const QString& volume ) ;
+	volumeMiniPropertiesTaskResult deviceProperties( const zuluMountTask::event& ) ;
+	QStringList mountedVolumeList( void ) ;
 }
 
 #endif // ZULUMOUNTTASK_H

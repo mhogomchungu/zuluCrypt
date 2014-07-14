@@ -193,31 +193,29 @@ void events::run()
 
 		if( _device_action( event ) && _allowed_device( event->name ) ){
 
-			zuluMount::deviceProperties devProperties ;
+			zuluMountTask::event e ;
 
-			devProperties.volumeName = event->name ;
-			devProperties.added      = event->mask == IN_CREATE ;
+			e.volumeName = event->name ;
+			e.added      = event->mask == IN_CREATE ;
 
 			if( event->wd == dm ){
-				devProperties.deviceType = zuluMount::dm_device ;
+				e.deviceType = zuluMountTask::dm_device ;
 			}else if( event->wd == md ){
-				devProperties.deviceType = zuluMount::md_device ;
+				e.deviceType = zuluMountTask::md_device ;
 			}else{
-				devProperties.deviceType = zuluMount::device ;
+				e.deviceType = zuluMountTask::device ;
 			}
 
-			auto _a = [ = ](){
+			Task::exec( [ this,e ](){
 
-				auto r = zuluMount::Task::deviceProperties( devProperties ) ;
+				auto r = zuluMountTask::deviceProperties( e ) ;
 
 				if( r.volumeRemoved ){
 					emit volumeRemoved( r.volumeName ) ;
 				}else{
 					emit volumeMiniProperties( r.entry ) ;
 				}
-			} ;
-
-			Task::exec( _a ) ;
+			} ) ;
 		}
 	} ;
 

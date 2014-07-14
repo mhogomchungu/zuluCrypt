@@ -40,17 +40,18 @@ static bool _volumeIsSystemVolume( const QString& e )
 	return utility::Task( QString( "%1 -S" ).arg( zuluMountPath ) ).splitOutput( '\n' ).contains( e ) ;
 }
 
-QStringList zuluMount::Task::mountedVolumeList( void )
+QStringList zuluMountTask::mountedVolumeList( void )
 {
 	return utility::Task( QString( "%1 -E" ).arg( zuluMountPath ) ).splitOutput( '\n' ) ;
 }
 
-volumeEntryProperties zuluMount::Task::getVolumeProperties( const QString& e )
+volumeEntryProperties _getVolumeProperties( const QString& e )
 {
 	QString device = _device( e ) ;
 	volumeEntryProperties v ;
 
 	auto r = utility::Task( QString( "%1 -L -d \"%2\"" ).arg( zuluMountPath ).arg( device ) ) ;
+
 	if( r.success() ) {
 		volumeEntryProperties v( r.splitOutput( '\t' ) ) ;
 		v.setisSystem( _volumeIsSystemVolume( device ) ) ;
@@ -60,36 +61,47 @@ volumeEntryProperties zuluMount::Task::getVolumeProperties( const QString& e )
 	}
 }
 
-QString zuluMount::Task::volumeProperties( const QString& v,const QString& volumeType )
+Task::future< volumeEntryProperties >& zuluMountTask::getVolumeProperties( const QString& e )
 {
-	if( v.isEmpty() ){
-		return QString() ;
-	}
+	return Task::run< volumeEntryProperties >( [ e ](){
 
-	QString volume = _device( v ) ;
+		return _getVolumeProperties( e ) ;
+	} ) ;
+}
 
-	auto r = utility::Task( QString( "%1 -s -d \"%2\"" ).arg( zuluMountPath ).arg( volume ) ) ;
+Task::future< QString >& zuluMountTask::volumeProperties( const QString& v,const QString& volumeType )
+{
+	return Task::run< QString >( [ = ](){
 
-	if( r.ok() ){
-		return r.output() ;
-	}else{
-		if( volumeType.contains( "crypto_PLAIN\n" ) ){
-			/*
-			 * this could be a plain volume opened with an offset
-			 */
-			r = utility::Task( QString( "%1 -s -o bogusNecessaryArgument -d \"%2\"" ).arg( zuluMountPath ).arg( volume ) ) ;
-			if( r.ok() ){
-				return r.output() ;
+		if( v.isEmpty() ){
+			return QString() ;
+		}
+
+		QString volume = _device( v ) ;
+
+		auto r = utility::Task( QString( "%1 -s -d \"%2\"" ).arg( zuluMountPath ).arg( volume ) ) ;
+
+		if( r.ok() ){
+			return QString( r.output() ) ;
+		}else{
+			if( volumeType.contains( "crypto_PLAIN\n" ) ){
+				/*
+				* this could be a plain volume opened with an offset
+				*/
+				r = utility::Task( QString( "%1 -s -o bogusNecessaryArgument -d \"%2\"" ).arg( zuluMountPath ).arg( volume ) ) ;
+				if( r.ok() ){
+					return QString( r.output() ) ;
+				}else{
+					return QString() ;
+				}
 			}else{
 				return QString() ;
 			}
-		}else{
-			return QString() ;
 		}
-	}
+	} ) ;
 }
 
-zuluMountTaskResult zuluMount::Task::unmountVolume( const QString& volumePath,const QString& volumeType )
+zuluMountTaskResult zuluMountTask::volumeUnmount( const QString& volumePath,const QString& volumeType )
 {
 	auto _run = [&]( const QString& exe ){
 
@@ -120,51 +132,62 @@ zuluMountTaskResult zuluMount::Task::unmountVolume( const QString& volumePath,co
 	return r ;
 }
 
-QVector< volumeEntryProperties > zuluMount::Task::updateVolumeList()
+Task::future< zuluMountTaskResult >& zuluMountTask::unmountVolume( const QString& volumePath,const QString& volumeType )
 {
-	auto _validEntry = []( const QString& e ){
-		if( e.startsWith( "/dev/md/md-device-map" ) ){
-			return false ;
-		}
-		if( e.contains( "\tswap\t") || e.contains( "member\t" ) || e.contains( "\t/run/media/public" ) ){
-			return false ;
-		}
-		return true ;
-	} ;
+	return Task::run< zuluMountTaskResult >( [ = ](){
 
-	QVector< volumeEntryProperties > list ;
+		return zuluMountTask::volumeUnmount( volumePath,volumeType ) ;
+	} ) ;
+}
 
-	auto all = utility::Task( QString( "%1 -l" ).arg( zuluMountPath ),10000 ) ;
+Task::future< QVector< volumeEntryProperties > >& zuluMountTask::updateVolumeList()
+{
+	return Task::run< QVector< volumeEntryProperties > >( [](){
 
-	if( all.finished() ){
+		auto _validEntry = []( const QString& e ){
+			if( e.startsWith( "/dev/md/md-device-map" ) ){
+				return false ;
+			}
+			if( e.contains( "\tswap\t") || e.contains( "member\t" ) || e.contains( "\t/run/media/public" ) ){
+				return false ;
+			}
+			return true ;
+		} ;
 
-		auto system = utility::Task( QString( "%1 -S" ).arg( zuluMountPath ),10000 ) ;
+		QVector< volumeEntryProperties > list ;
 
-		if( system.finished() ){
+		auto all = utility::Task( QString( "%1 -l" ).arg( zuluMountPath ),10000 ) ;
 
-			auto a = all.splitOutput( '\n' ) ;
-			auto s = system.splitOutput( '\n' ) ;
+		if( all.finished() ){
 
-			for( const auto& it : a ){
+			auto system = utility::Task( QString( "%1 -S" ).arg( zuluMountPath ),10000 ) ;
 
-				if( _validEntry( it ) ){
-					volumeEntryProperties v( utility::split( it,'\t' ) ) ;
-					v.setisSystem( s.contains( v.volumeName() ) ) ;
-					list.append( v ) ;
+			if( system.finished() ){
+
+				auto a = all.splitOutput( '\n' ) ;
+				auto s = system.splitOutput( '\n' ) ;
+
+				for( const auto& it : a ){
+
+					if( _validEntry( it ) ){
+						volumeEntryProperties v( utility::split( it,'\t' ) ) ;
+						v.setisSystem( s.contains( v.volumeName() ) ) ;
+						list.append( v ) ;
+					}
 				}
 			}
 		}
-	}
 
-	return list ;
+		return list ;
+	} ) ;
 }
 
-void zuluMount::Task::checkUnMount( const QString& volume )
+void zuluMountTask::checkUnMount( const QString& volume )
 {
 	utility::Task( QString( "%1 -c -d \"%2\"" ).arg( zuluMountPath ).arg( _device( volume ) ) ) ;
 }
 
-volumeMiniPropertiesResult zuluMount::Task::volumeMiniProperties( const QString& volume )
+volumeMiniPropertiesTaskResult zuluMountTask::volumeMiniProperties( const QString& volume )
 {
 	auto _loopDeviceIsGone =[]( const QString& device ){
 		QDir d( "/sys/block" ) ;
@@ -188,7 +211,7 @@ volumeMiniPropertiesResult zuluMount::Task::volumeMiniProperties( const QString&
 		return true ;
 	} ;
 
-	volumeMiniPropertiesResult s = { volume,false,nullptr } ;
+	volumeMiniPropertiesTaskResult s = { volume,false,nullptr } ;
 
 	if( !volume.startsWith( "UUID" ) && !volume.startsWith( "/dev/" ) ){
 		/*
@@ -216,7 +239,7 @@ volumeMiniPropertiesResult zuluMount::Task::volumeMiniProperties( const QString&
 	return s ;
 }
 
-volumeMiniPropertiesResult zuluMount::Task::deviceProperties( const zuluMount::deviceProperties& deviceProperty )
+volumeMiniPropertiesTaskResult zuluMountTask::deviceProperties( const zuluMountTask::event& deviceProperty )
 {
 	auto _mdRaidDevice = [&]( const QString& device ){
 
@@ -246,11 +269,11 @@ volumeMiniPropertiesResult zuluMount::Task::deviceProperties( const zuluMount::d
 
 		QString d = _mdRaidPath( device ) ;
 
-		volumeMiniPropertiesResult s = { d,false,nullptr } ;
+		volumeMiniPropertiesTaskResult s = { d,false,nullptr } ;
 
 		if( deviceProperty.added ){
 			s.entry = new volumeEntryProperties ;
-			*s.entry = zuluMount::Task::getVolumeProperties( d ) ;
+			*s.entry = _getVolumeProperties( d ) ;
 		}else{
 			s.volumeRemoved = true ;
 		}
@@ -298,11 +321,11 @@ volumeMiniPropertiesResult zuluMount::Task::deviceProperties( const zuluMount::d
 
 		QString d = _convertLVM( device ) ;
 
-		volumeMiniPropertiesResult s = { d,false,nullptr } ;
+		volumeMiniPropertiesTaskResult s = { d,false,nullptr } ;
 
 		if( deviceProperty.added ){
 			s.entry = new volumeEntryProperties ;
-			*s.entry = zuluMount::Task::getVolumeProperties( d ) ;
+			*s.entry = _getVolumeProperties( d ) ;
 		}else{
 			s.volumeRemoved = true ;
 		}
@@ -319,14 +342,14 @@ volumeMiniPropertiesResult zuluMount::Task::deviceProperties( const zuluMount::d
 				device.startsWith( "/dev/mmc" ) ;
 		} ;
 
-		volumeMiniPropertiesResult s = { "",false,nullptr } ;
+		volumeMiniPropertiesTaskResult s = { "",false,nullptr } ;
 
 		if( _allowed_device( device ) ){
 
 			s.volumeName = device ;
 			if( deviceProperty.added ){
 				s.entry = new volumeEntryProperties ;
-				*s.entry = zuluMount::Task::getVolumeProperties( device ) ;
+				*s.entry = _getVolumeProperties( device ) ;
 			}else{
 				s.volumeRemoved = true ;
 			}
@@ -336,16 +359,16 @@ volumeMiniPropertiesResult zuluMount::Task::deviceProperties( const zuluMount::d
 	} ;
 
 	auto _shouldNotGetHere = [](){
-		volumeMiniPropertiesResult s = { "",false,nullptr } ;
+		volumeMiniPropertiesTaskResult s = { "",false,nullptr } ;
 		return s ;
 	} ;
 
 	QString device = QString( "/dev/%1" ).arg( deviceProperty.volumeName ) ;
 
 	switch( deviceProperty.deviceType ){
-		case zuluMount::device    : return _normalDevice( device ) ;
-		case zuluMount::md_device : return _mdRaidDevice( device ) ;
-		case zuluMount::dm_device : return _dmDevice( device )     ;
-		default                   : return _shouldNotGetHere() ;
+		case zuluMountTask::device    : return _normalDevice( device ) ;
+		case zuluMountTask::md_device : return _mdRaidDevice( device ) ;
+		case zuluMountTask::dm_device : return _dmDevice( device )     ;
+		default                       : return _shouldNotGetHere() ;
 	}
 }

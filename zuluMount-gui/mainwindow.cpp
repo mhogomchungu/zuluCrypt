@@ -178,23 +178,18 @@ void MainWindow::setUpApp( const QString& volume )
 
 	this->startAutoMonitor() ;
 
-	auto _a = [](){
+	auto& r = zuluMountTask::updateVolumeList() ;
 
-		return zuluMount::Task::updateVolumeList() ;
-	} ;
+	r.then( [ &,volume ]( const QVector< volumeEntryProperties >& e ){
 
-	auto _b = [ &,volume ]( const QVector< volumeEntryProperties >& r ){
-
-		this->updateVolumeList( r ) ;
+		this->updateVolumeList( e ) ;
 
 		if( volume.isEmpty() ) {
 			this->enableAll() ;
 		}else{
 			this->showMoungDialog( volume ) ;
 		}
-	} ;
-
-	Task::run< QVector< volumeEntryProperties > >( _a ).then( _b ) ;
+	} ) ;
 }
 
 void MainWindow::favoriteClicked( QAction * ac )
@@ -330,7 +325,7 @@ void MainWindow::volumeRemoved( QString volume )
 			*/
 			auto _a = [ = ](){
 
-				zuluMount::Task::checkUnMount( volume ) ;
+				zuluMountTask::checkUnMount( volume ) ;
 			} ;
 
 			Task::exec( _a ) ;
@@ -531,27 +526,26 @@ void MainWindow::openMountPoint( const QString& m_point )
 	QString m = m_point ;
 	m.replace( "\"","\"\"\"" ) ;
 
-	auto _a = [ &,m ](){
+	Task::run< bool >( [ &,m ](){
 
 		auto r = utility::Task( QString( "%1 \"%2\"" ).arg( m_folderOpener ).arg( m ) ) ;
 		return r.exitCode() != 0 || r.exitStatus() != 0 ;
-	} ;
 
-	auto _b = [&]( bool failed ){
+	} ).then( [ this ]( bool failed ){
 
-		QString x = tr( "could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) ;
 		if( failed ){
+
+			QString x = tr( "could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) ;
 			DialogMsg msg( this ) ;
 			msg.ShowUIOK( tr( "warning" ),x ) ;
 		}
-	} ;
-
-	Task::run< bool >( _a ).then( _b ) ;
+	} ) ;
 }
 
 void MainWindow::openMountPointPath( QString m )
 {
 	if( m_autoOpenFolderOnMount ){
+
 		this->openMountPoint( m ) ;
 	}
 }
@@ -563,12 +557,9 @@ void MainWindow::volumeProperties()
 	QString volume     = m_ui->tableWidget->item( m_ui->tableWidget->currentRow(),0 )->text() ;
 	QString volumeType = m_ui->tableWidget->item( m_ui->tableWidget->currentRow(),2 )->text() ;
 
-	auto _a = [ = ](){
+	auto& e = zuluMountTask::volumeProperties( volume,volumeType ) ;
 
-		return zuluMount::Task::volumeProperties( volume,volumeType ) ;
-	} ;
-
-	auto _b = [&]( const QString& r ){
+	e.then( [ this ]( const QString& r ){
 
 		DialogMsg msg( this ) ;
 
@@ -586,9 +577,7 @@ void MainWindow::volumeProperties()
 		}
 
 		this->enableAll() ;
-	} ;
-
-	Task::run< QString >( _a ).then( _b ) ;
+	} ) ;
 }
 
 void MainWindow::setUpShortCuts()
@@ -645,7 +634,9 @@ void MainWindow::closeEvent( QCloseEvent * e )
 void MainWindow::slotTrayClicked( QSystemTrayIcon::ActivationReason e )
 {
 	if( e == QSystemTrayIcon::Trigger ){
+
 		if( this->isVisible() ){
+
 			this->hide() ;
 		}else{
 			this->show() ;
@@ -683,6 +674,7 @@ void MainWindow::mount( const volumeEntryProperties& entry )
 {
 	this->disableAll() ;
 	if( entry.encryptedVolume() ){
+
 		keyDialog * kd = new keyDialog( this,m_ui->tableWidget,entry.volumeName(),
 						entry.fileSystem() ) ;
 		connect( kd,SIGNAL( cancel() ),this,SLOT( enableAll() ) ) ;
@@ -709,6 +701,7 @@ void MainWindow::slotMount()
 void MainWindow::showMoungDialog( const volumeEntryProperties& v )
 {
 	if( v.Empty() ){
+
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR" ),
 			      tr( "permission to access the volume was denied\nor\nthe volume is not supported\n(LVM/MDRAID signatures found)" ) ) ;
@@ -722,17 +715,12 @@ void MainWindow::showMoungDialog( const QString& volume )
 {
 	if( !volume.isEmpty() ){
 
-		auto _a = [ volume ](){
+		auto& r = zuluMountTask::getVolumeProperties( volume ) ;
 
-			return zuluMount::Task::getVolumeProperties( volume ) ;
-		} ;
-
-		auto _b = [&]( const volumeEntryProperties& v ){
+		r.then( [ this ]( const volumeEntryProperties& v ){
 
 			this->showMoungDialog( v ) ;
-		} ;
-
-		Task::run< volumeEntryProperties >( _a ).then( _b ) ;
+		} ) ;
 	}
 }
 
@@ -821,21 +809,16 @@ void MainWindow::pbUmount()
 	QString path = m_ui->tableWidget->item( row,0 )->text() ;
 	QString type = m_ui->tableWidget->item( row,2 )->text() ;
 
-	auto _a = [ = ](){
+	auto& e = zuluMountTask::unmountVolume( path,type ) ;
 
-		return zuluMount::Task::unmountVolume( path,type ) ;
-	} ;
-
-	auto _b = [&]( const zuluMountTaskResult& r ){
+	e.then( [ this ]( const zuluMountTaskResult& r ){
 
 		if( !r.passed ){
 			DialogMsg m( this ) ;
 			m.ShowUIOK( tr( "ERROR" ),r.outPut ) ;
 			this->enableAll() ;
 		}
-	} ;
-
-	Task::run< zuluMountTaskResult >( _a ).then( _b ) ;
+	} ) ;
 }
 
 void MainWindow::unMountAll()
@@ -867,51 +850,44 @@ void MainWindow::unMountAll()
 
 	m_removeAllVolumes = true ;
 
-	auto _a = [ = ](){
+	Task::run( [ = ](){
 
 		if( p.isEmpty() ){
+
 			utility::Task::wait( 1 ) ;
 		}else{
 			int r = p.size() ;
 			for( int i = 0 ; i < r ; i++ ){
 
-				zuluMount::Task::unmountVolume( p.at( i ),q.at( i ) ) ;
+				zuluMountTask::volumeUnmount( p.at( i ),q.at( i ) ) ;
 				utility::Task::wait( 1 ) ;
 			}
 			utility::Task::wait( 2 ) ;
 		}
-	} ;
-
-	auto _b = [&](){
+	} ).then( [ this ](){
 
 		this->enableAll_1() ;
-	} ;
-
-	Task::run( _a ).then( _b ) ;
+	} ) ;
 }
 
 void MainWindow::pbUpdate()
 {
 	this->disableAll() ;
 
-	auto _a = [](){
+	auto& r = zuluMountTask::updateVolumeList() ;
 
-		return zuluMount::Task::updateVolumeList() ;
-	} ;
+	r.then( [ this ]( const QVector< volumeEntryProperties >& e ){
 
-	auto _b = [&]( const QVector< volumeEntryProperties >& r ){
+		this->updateVolumeList( e ) ;
 
-		this->updateVolumeList( r ) ;
-
-		this->removeDisappearedEntries( r ) ;
-	} ;
-
-	Task::run< QVector< volumeEntryProperties > >( _a ).then( _b ) ;
+		this->removeDisappearedEntries( e ) ;
+	} ) ;
 }
 
 void MainWindow::updateVolumeList( const QVector< volumeEntryProperties >& r )
 {
 	if( r.isEmpty() ){
+
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR" ),
 			      tr( "reading partition properties took longer than expected and operation was terminated,click refresh to try again" ) ) ;
@@ -963,7 +939,7 @@ void MainWindow::removeDisappearedEntries( const QVector< volumeEntryProperties 
 	if( z.isEmpty() ){
 		this->removeVolume( "" ) ;
 	}else{
-		auto _unlistVolume = [ &,z ](){
+		Task::exec( [ &,z ](){
 
 			for( const auto& it : z ){
 				utility::Task::wait( 1 ) ;
@@ -971,9 +947,7 @@ void MainWindow::removeDisappearedEntries( const QVector< volumeEntryProperties 
 			}
 
 			emit unlistVolume( "" ) ;
-		} ;
-
-		Task::exec( _unlistVolume ) ;
+		} ) ;
 	}
 }
 

@@ -96,32 +96,28 @@ void monitor_mountinfo::run()
 
 	auto _unmountProperty = [&]( const QString& volume ){
 
-		auto _a = [ &,volume ](){
+		Task::exec( [ &,volume ](){
 
-			auto r = zuluMount::Task::volumeMiniProperties( volume ) ;
+			auto r = zuluMountTask::volumeMiniProperties( volume ) ;
 
 			if( r.volumeRemoved ){
 				emit volumeRemoved( r.volumeName ) ;
 			}else{
 				emit volumeMiniProperties( r.entry ) ;
 			}
-		} ;
-
-		Task::exec( _a ) ;
+		} ) ;
 	} ;
 
 	auto _mountProperty = [&]( const QString& volume ){
 
-		auto _a = [ &,volume ](){
+		Task::exec(  [ &,volume ](){
 
-			auto r = zuluMount::Task::volumeMiniProperties( volume ) ;
+			auto r = zuluMountTask::volumeMiniProperties( volume ) ;
 			emit volumeMiniProperties( r.entry ) ;
-		} ;
-
-		Task::exec( _a ) ;
+		} ) ;
 	} ;
 
-	QStringList oldMountList = zuluMount::Task::mountedVolumeList() ;
+	QStringList oldMountList = zuluMountTask::mountedVolumeList() ;
 	QStringList newMountList ;
 
 	auto _volumeWasUnMounted = [&](){
@@ -142,7 +138,7 @@ void monitor_mountinfo::run()
 
 	while( _loop() ){
 
-		newMountList = zuluMount::Task::mountedVolumeList() ;
+		newMountList = zuluMountTask::mountedVolumeList() ;
 
 		if( _volumeWasUnMounted() ){
 
