@@ -250,7 +250,7 @@ void luksdeletekey::deleteKey( const QStringList& l )
 	}
 
 	const char * r = "%1 -k -r -d \"%2\" -f \"%3\"" ;
-	QString exe = QString( r ).arg( ZULUCRYPTzuluCrypt ).arg( m_volumePath ).arg( keypath ) ;
+	QString exe = QString( r ).arg( ZULUCRYPTzuluCrypt,m_volumePath,keypath ) ;
 
 	m_isWindowClosable = false ;
 

@@ -320,8 +320,7 @@ void luksaddkey::pbAdd( void )
 	const QString& e = newPassType ;
 	const QString& f = NewKey ;
 
-	const char * q = "%1 -a -d \"%2\" %3 \"%4\" %5 \"%6\"" ;
-	QString exe = QString( q ).arg( a ).arg( b ).arg( c ).arg( d ).arg( e ).arg( f ) ;
+	QString exe = QString( "%1 -a -d \"%2\" %3 \"%4\" %5 \"%6\"" ).arg( a,b,c,d,e,f ) ;
 
 	m_isWindowClosable = false ;
 

@@ -167,6 +167,7 @@ void zuluCrypt::updateVolumeList()
 		if( !m_device.isEmpty() ){
 			QString y = m_device.split( "/" ).last() ;
 			this->ShowPasswordDialog( m_device,y ) ;
+			m_device.clear() ;
 		}
 	} ;
 
@@ -558,10 +559,11 @@ void zuluCrypt::dropEvent( QDropEvent * e )
 	QList<QUrl> l = m->urls() ;
 
 	for( const auto& it : l ){
-		m_device = it.path() ;
-		if( utility::pathPointsToAFile( m_device ) ){
-			QString y = m_device.split( "/" ).last() ;
-			this->ShowPasswordDialog( m_device,y ) ;
+		
+		const QString& e = it.path() ;
+		if( utility::pathPointsToAFile( e ) ){
+
+			this->ShowPasswordDialog( e,e.split( "/" ).last() ) ;
 		}
 	}
 }

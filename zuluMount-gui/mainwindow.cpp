@@ -379,7 +379,7 @@ void MainWindow::itemEntered( QTableWidgetItem * item )
 		if( y.isEmpty() ){
 			z += tr( "LABEL=\"%1\"" ).arg( x ) ;
 		}else{
-			z += tr( "LABEL=\"%1\"\n%2" ).arg( x ).arg( y ) ;
+			z += tr( "LABEL=\"%1\"\n%2" ).arg( x,y ) ;
 		}
 	}
 	item->setToolTip( z ) ;
@@ -528,7 +528,7 @@ void MainWindow::openMountPoint( const QString& m_point )
 
 	Task::run< bool >( [ &,m ](){
 
-		auto r = utility::Task( QString( "%1 \"%2\"" ).arg( m_folderOpener ).arg( m ) ) ;
+		auto r = utility::Task( QString( "%1 \"%2\"" ).arg( m_folderOpener, m ) ) ;
 		return r.exitCode() != 0 || r.exitStatus() != 0 ;
 
 	} ).then( [ this ]( bool failed ){

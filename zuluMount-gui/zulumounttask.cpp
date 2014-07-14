@@ -79,7 +79,7 @@ Task::future< QString >& zuluMountTask::volumeProperties( const QString& v,const
 
 		QString volume = _device( v ) ;
 
-		auto r = utility::Task( QString( "%1 -s -d \"%2\"" ).arg( zuluMountPath ).arg( volume ) ) ;
+		auto r = utility::Task( QString( "%1 -s -d \"%2\"" ).arg( zuluMountPath,volume ) ) ;
 
 		if( r.ok() ){
 			return QString( r.output() ) ;
@@ -88,7 +88,7 @@ Task::future< QString >& zuluMountTask::volumeProperties( const QString& v,const
 				/*
 				* this could be a plain volume opened with an offset
 				*/
-				r = utility::Task( QString( "%1 -s -o bogusNecessaryArgument -d \"%2\"" ).arg( zuluMountPath ).arg( volume ) ) ;
+				r = utility::Task( QString( "%1 -s -o bogusNecessaryArgument -d \"%2\"" ).arg( zuluMountPath,volume ) ) ;
 				if( r.ok() ){
 					return QString( r.output() ) ;
 				}else{
@@ -103,7 +103,7 @@ Task::future< QString >& zuluMountTask::volumeProperties( const QString& v,const
 
 zuluMountTaskResult zuluMountTask::volumeUnmount( const QString& volumePath,const QString& volumeType )
 {
-	auto _run = [&]( const QString& exe ){
+	auto _run = []( const QString& exe ){
 
 		zuluMountTaskResult r ;
 
@@ -118,14 +118,14 @@ zuluMountTaskResult zuluMountTask::volumeUnmount( const QString& volumePath,cons
 
 	QString volume = _device( volumePath ) ;
 
-	auto r = _run( QString( "%1 -u -d \"%2\"" ).arg( zuluMountPath ).arg( volume ) ) ;
+	auto r = _run( QString( "%1 -u -d \"%2\"" ).arg( zuluMountPath,volume ) ) ;
 
 	if( !r.passed ){
 		if( volumeType.contains( "crypto_PLAIN\n" ) ){
 			/*
 			 * we could be trying to unmount a volume with an offset
 			 */
-			r = _run( QString( "%1 -o bogusNecessaryArgument -u -d \"%2\"" ).arg( zuluMountPath ).arg( volume ) ) ;
+			r = _run( QString( "%1 -o bogusNecessaryArgument -u -d \"%2\"" ).arg( zuluMountPath,volume ) ) ;
 		}
 	}
 
@@ -229,7 +229,7 @@ volumeMiniPropertiesTaskResult zuluMountTask::volumeMiniProperties( const QStrin
 		}
 	}
 
-	auto r = utility::Task( QString( "%1 -L -d \"%2\"" ).arg( zuluMountPath ).arg( volume ) ) ;
+	auto r = utility::Task( QString( "%1 -L -d \"%2\"" ).arg( zuluMountPath,volume ) ) ;
 
 	if( r.success() ){
 		s.entry = new volumeEntryProperties( r.splitOutput( '\t' ) ) ;

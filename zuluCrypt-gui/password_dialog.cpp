@@ -567,9 +567,9 @@ void passwordDialog::openVolume()
 	QString mode ;
 
 	if( m_ui->checkBoxReadOnly->isChecked() ){
-		mode = QString( "ro" ) ;
+		mode =" ro" ;
 	}else{
-		mode = QString( "rw" ) ;
+		mode = "rw" ;
 	}
 
 	QString passtype ;
@@ -584,11 +584,11 @@ void passwordDialog::openVolume()
 			msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
 			return this->enableAll() ;
 		}else{
-			passtype = QString( "-f" ) ;
+			passtype = "-f" ;
 			keyPath = utility::resolvePath( m_key ).replace( "\"","\"\"\"" ) ;
 		}
 	}else if( keySource == passwordDialog::key ){
-		passtype = QString( "-f" ) ;
+		passtype = "-f" ;
 		keyPath = utility::keyPath() ;
 		this->sendKey( keyPath ) ;
 	}else if( keySource == passwordDialog::plugin ){
@@ -599,16 +599,16 @@ void passwordDialog::openVolume()
 		}else{
 			QString r = m_ui->PassPhraseField->text() ;
 			if( r == tr( KWALLET ) || r == tr( INTERNAL_WALLET ) || r == tr( GNOME_WALLET ) ){
-				passtype = QString( "-f" ) ;
+				passtype = "-f" ;
 				keyPath = utility::keyPath() ;
 				this->sendKey( keyPath ) ;
 			}else{
-				passtype = QString( "-G" ) ;
+				passtype = "-G" ;
 				keyPath  = r ;
 			}
 		}
 	}else if( keySource == passwordDialog::tcryptKeys ){
-		passtype = QString( "-f" ) ;
+		passtype = "-f" ;
 		keyPath = utility::keyPath() ;
 		this->sendKey( keyPath ) ;
 	}else{
@@ -627,12 +627,10 @@ void passwordDialog::openVolume()
 	QString exe ;
 
 	if( m_keyFiles.isEmpty() ){
-		const char * z = "%1 -o -d \"%2\" -m \"%3\" -e %4 %5 \"%6\"" ;
-		exe = QString( z ).arg( a ).arg( b ).arg( c ).arg( d ).arg( e ).arg( f ) ;
+		exe = QString( "%1 -o -d \"%2\" -m \"%3\" -e %4 %5 \"%6\"" ).arg( a,b,c,d,e,f ) ;
 	}else{
-		const char * z = "%1 -o -d \"%2\" -m \"%3\" -e %4 %5 \"%6\" -F \"%7\"" ;
 		m_keyFiles.replace( "\"","\"\"\"" ) ;
-		exe = QString( z ).arg( a ).arg( b ).arg( c ).arg( d ).arg( e ).arg( f ).arg( m_keyFiles ) ;
+		exe = QString( "%1 -o -d \"%2\" -m \"%3\" -e %4 %5 \"%6\" -F \"%7\"" ).arg( a,b,c,d,e,f,m_keyFiles ) ;
 	}
 
 	this->disableAll() ;
