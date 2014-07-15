@@ -48,7 +48,6 @@ QStringList zuluMountTask::mountedVolumeList( void )
 volumeEntryProperties _getVolumeProperties( const QString& e )
 {
 	QString device = _device( e ) ;
-	volumeEntryProperties v ;
 
 	auto r = utility::Task( QString( "%1 -L -d \"%2\"" ).arg( zuluMountPath ).arg( device ) ) ;
 
