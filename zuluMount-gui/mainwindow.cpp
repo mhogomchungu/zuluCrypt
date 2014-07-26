@@ -557,27 +557,24 @@ void MainWindow::volumeProperties()
 	QString volume     = m_ui->tableWidget->item( m_ui->tableWidget->currentRow(),0 )->text() ;
 	QString volumeType = m_ui->tableWidget->item( m_ui->tableWidget->currentRow(),2 )->text() ;
 
-	auto& e = zuluMountTask::volumeProperties( volume,volumeType ) ;
+	QString r = Task::await<QString>( zuluMountTask::volumeProperties( volume,volumeType ) ) ;
 
-	e.then( [ this ]( const QString& r ){
+	DialogMsg msg( this ) ;
 
-		DialogMsg msg( this ) ;
-
-		if( r.isEmpty() ){
+	if( r.isEmpty() ){
+		msg.ShowUIOK( tr( "ERROR" ),
+			      tr( "could not get volume properties.\nvolume is not open or was opened by a different user" ) ) ;
+	}else{
+		int i = r.indexOf( "\n" ) ;
+		if( i != -1 ){
+			msg.ShowUIVolumeProperties( tr( "volume properties" ),r.mid( i + 1 ) ) ;
+		}else{
 			msg.ShowUIOK( tr( "ERROR" ),
 				      tr( "could not get volume properties.\nvolume is not open or was opened by a different user" ) ) ;
-		}else{
-			int i = r.indexOf( "\n" ) ;
-			if( i != -1 ){
-				msg.ShowUIVolumeProperties( tr( "volume properties" ),r.mid( i + 1 ) ) ;
-			}else{
-				msg.ShowUIOK( tr( "ERROR" ),
-					      tr( "could not get volume properties.\nvolume is not open or was opened by a different user" ) ) ;
-			}
 		}
+	}
 
-		this->enableAll() ;
-	} ) ;
+	this->enableAll() ;
 }
 
 void MainWindow::setUpShortCuts()

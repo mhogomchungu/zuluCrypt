@@ -49,7 +49,7 @@ volumeEntryProperties _getVolumeProperties( const QString& e )
 {
 	QString device = _device( e ) ;
 
-	auto r = utility::Task( QString( "%1 -L -d \"%2\"" ).arg( zuluMountPath ).arg( device ) ) ;
+	auto r = utility::Task( QString( "%1 -L -d \"%2\"" ).arg( zuluMountPath,device ) ) ;
 
 	if( r.success() ) {
 		volumeEntryProperties v( r.splitOutput( '\t' ) ) ;
