@@ -79,22 +79,17 @@ void CryptTask::terminate()
 
 void CryptTask::run()
 {
-	if( m_keySource == QString( "-p" ) ){
-		if( m_dest.endsWith( QString( ".zc" ) ) || m_source.endsWith( QString( ".zc" ) ) ){
+	if( m_keySource == "-p" ){
+		if( m_dest.endsWith( ".zc" ) || m_source.endsWith( ".zc" ) ){
 			QString sockpath = utility::keyPath() ;
 
-			auto _a = [ = ](){
+			utility::keySend( sockpath,m_key ) ;
 
-				utility::sendKey( sockpath,m_key ) ;
-			} ;
-
-			Task::exec( _a ) ;
-
-			m_keySource = QString( "-f" ) ;
+			m_keySource = "-f" ;
 			m_key = sockpath ;
 		}
 	}
-	if( m_task == QString( "-D" ) ){
+	if( m_task == "-D" ){
 		if( m_source.endsWith( ".zc" ) ){
 			/*
 			 * this routine is used in zuluCrypt < 4.6.9
@@ -121,7 +116,7 @@ int CryptTask::updateProgress( int e )
 
 void CryptTask::newEncryptionRoutine()
 {
-	if( m_keySource == QString( "-f" ) ){
+	if( m_keySource == "-f" ){
 		QFile f( m_key ) ;
 		f.open( QIODevice::ReadOnly ) ;
 		m_key = f.readAll() ;
@@ -149,7 +144,7 @@ void CryptTask::newEncryptionRoutine()
 
 void CryptTask::newDecryptionRoutine()
 {
-	if( m_keySource == QString( "-f" ) ){
+	if( m_keySource == "-f" ){
 		QFile f( m_key ) ;
 		f.open( QIODevice::ReadOnly ) ;
 		m_key = f.readAll() ;
@@ -434,7 +429,7 @@ CryptTask::status CryptTask::openMapper( const QString& p )
 	path.replace( "\"","\"\"\"" ) ;
 	m_key.replace( "\"","\"\"\"" ) ;
 
-	QString e = QString( "%1 -J %3 \"%4\" -d \"%5\"" ).arg( ZULUCRYPTzuluCrypt ).arg( m_keySource ).arg( m_key ).arg( path ) ;
+	QString e = QString( "%1 -J %3 \"%4\" -d \"%5\"" ).arg( ZULUCRYPTzuluCrypt,m_keySource,m_key,path ) ;
 	QProcess exe ;
 
 	exe.start( e ) ;
@@ -453,7 +448,7 @@ CryptTask::status CryptTask::closeMapper( const QString& p )
 {
 	QString path = p ;
 	path.replace( "\"","\"\"\"" ) ;
-	QString e = QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( path ) ;
+	QString e = QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,path ) ;
 	QProcess exe ;
 	exe.start( e ) ;
 	exe.waitForFinished() ;

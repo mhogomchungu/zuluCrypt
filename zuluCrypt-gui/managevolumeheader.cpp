@@ -187,7 +187,7 @@ void managevolumeheader::backUpHeader( QString device )
 
 void managevolumeheader::backUpHeaderNameChange( QString name )
 {
-	if( m_operation == QString( "restore" ) ){
+	if( m_operation == "restore" ){
 		return ;
 	}
 	if( !m_ui->lineEditDevicePath->text().isEmpty() ){
@@ -209,9 +209,9 @@ void managevolumeheader::backUpHeaderNameChange( QString name )
 			}
 
 			if( m_ui->rbTrueCryptHeader->isChecked() ){
-				path += p + QString( ".tcryptVolumeHeaderBackUp" ) ;
+				path += p + ".tcryptVolumeHeaderBackUp" ;
 			}else{
-				path += p + QString( ".luksVolumeHeaderBackUp" ) ;
+				path += p + ".luksVolumeHeaderBackUp" ;
 			}
 
 			m_ui->lineEditBackUpName->setText( path ) ;
@@ -223,7 +223,7 @@ void managevolumeheader::pbOpenLuksHeaderBackUp()
 {
 	QString Z ;
 	QString Y ;
-	if( m_operation == QString( "restore" ) ){
+	if( m_operation == "restore" ){
 		Z = QFileDialog::getOpenFileName( this,tr( "select a file with a luks backup header" ),QDir::homePath(),0 ) ;
 		if( Z.isEmpty() ){
 			return ;
@@ -354,21 +354,16 @@ void managevolumeheader::pbCreate()
 				QString path = utility::keyPath() ;
 				QString key  = m_ui->lineEditPassWord->text() ;
 
-				auto _a = [ = ](){
+				utility::keySend( path,key ) ;
 
-					utility::sendKey( path,key ) ;
-				} ;
-
-				Task::exec( _a ) ;
-
-				exe = QString( "%1 -B -d \"%2\" -z \"%3\" -f %4" ).arg( ZULUCRYPTzuluCrypt ).arg( device ).arg( backUp ).arg( path ) ;
+				exe = QString( "%1 -B -d \"%2\" -z \"%3\" -f %4" ).arg( ZULUCRYPTzuluCrypt,device,backUp,path ) ;
 			}else{
 				QString path = m_ui->lineEditPassWord->text() ;
 
-				exe = QString( "%1 -B -d \"%2\" -z \"%3\" -f %4" ).arg( ZULUCRYPTzuluCrypt ).arg( device ).arg( backUp ).arg( path ) ;
+				exe = QString( "%1 -B -d \"%2\" -z \"%3\" -f %4" ).arg( ZULUCRYPTzuluCrypt,device,backUp,path ) ;
 			}
 		}else{
-			exe = QString( "%1 -B -d \"%2\" -z \"%3\"" ).arg( ZULUCRYPTzuluCrypt ).arg( device ).arg( backUp ) ;
+			exe = QString( "%1 -B -d \"%2\" -z \"%3\"" ).arg( ZULUCRYPTzuluCrypt,device,backUp ) ;
 		}
 	}else{
 		m_saveHeader = 0 ;
@@ -386,20 +381,15 @@ void managevolumeheader::pbCreate()
 				QString path = utility::keyPath() ;
 				QString key  = m_ui->lineEditPassWord->text() ;
 
-				auto _a = [ = ](){
+				utility::keySend( path,key ) ;
 
-					utility::sendKey( path,key ) ;
-				} ;
-
-				Task::exec( _a ) ;
-
-				exe = QString( "%1 -kR -d \"%2\" -z \"%3\" -f %4" ).arg( ZULUCRYPTzuluCrypt ).arg( device ).arg( backUp ).arg( path ) ;
+				exe = QString( "%1 -kR -d \"%2\" -z \"%3\" -f %4" ).arg( ZULUCRYPTzuluCrypt,device,backUp,path ) ;
 			}else{
 				QString path = m_ui->lineEditPassWord->text() ;
-				exe = QString( "%1 -kR -d \"%2\" -z \"%3\" -f \"%4\"" ).arg( ZULUCRYPTzuluCrypt ).arg( device ).arg( backUp ).arg( path ) ;
+				exe = QString( "%1 -kR -d \"%2\" -z \"%3\" -f \"%4\"" ).arg( ZULUCRYPTzuluCrypt,device,backUp,path ) ;
 			}
 		}else{
-			exe = QString( "%1 -kR -d \"%2\" -z \"%3\"" ).arg( ZULUCRYPTzuluCrypt ).arg( device ).arg( backUp ) ; ;
+			exe = QString( "%1 -kR -d \"%2\" -z \"%3\"" ).arg( ZULUCRYPTzuluCrypt,device,backUp ) ;
 		}
 	}
 
@@ -416,22 +406,12 @@ void managevolumeheader::pbCreate()
 
 	m_OperationInProgress = true ;
 
-	auto _a = [ exe ](){
-
-		return utility::Task( exe ).exitCode() ;
-	} ;
-
-	auto _b = [&]( const int& r ){
-
-		this->taskFinished( r ) ;
-	} ;
-
-	Task::run< int >( _a ).then( _b ) ;
+	this->taskFinished( Task::await<int>( utility::exec( exe ) ) ) ;
 }
 
 void managevolumeheader::pbOpenPartition()
 {
-	openvolume * op = new openvolume( this ) ;
+	auto op = new openvolume( this ) ;
 	connect( op,SIGNAL( clickedPartition( QString ) ),this,SLOT( selectedPartition( QString ) ) ) ;
 	connect( op,SIGNAL( HideUISignal() ),op,SLOT( deleteLater() ) ) ;
 	op->ShowNonSystemPartitions() ;

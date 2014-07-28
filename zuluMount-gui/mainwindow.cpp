@@ -323,12 +323,8 @@ void MainWindow::volumeRemoved( QString volume )
 			* see if a user just removed the device without properly closing it/unmounting it
 			* and try to do so for them
 			*/
-			auto _a = [ = ](){
 
-				zuluMountTask::checkUnMount( volume ) ;
-			} ;
-
-			Task::exec( _a ) ;
+			Task::exec( [ volume ](){ zuluMountTask::checkUnMount( volume ) ; } ) ;
 
 			this->enableAll() ;
 		}

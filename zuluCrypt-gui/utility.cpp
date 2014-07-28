@@ -59,6 +59,63 @@
 
 #include "../zuluCrypt-cli/pluginManager/libzuluCryptPluginManager.h"
 
+void utility::keySend( const QString& path,const QString& key )
+{
+	::Task::exec( [ path,key ](){
+
+		auto handle = ::zuluCryptPluginManagerOpenConnection( path.toLatin1().constData() ) ;
+
+		if( handle ){
+			size_t size = key.size() ;
+			/*
+			 * ZULUCRYPT_KEYFILE_MAX_SIZE is defined in ../zuluCrypt-cli/constants.h
+			 * The variable holds the maximum keyfile size
+			 */
+			if( size > ZULUCRYPT_KEYFILE_MAX_SIZE ){
+				size = ZULUCRYPT_KEYFILE_MAX_SIZE ;
+			}
+
+			::zuluCryptPluginManagerSendKey( handle,key.toLatin1().constData(),size ) ;
+			::zuluCryptPluginManagerCloseConnection( handle ) ;
+		}
+	} ) ;
+}
+
+::Task::future<int>& utility::exec( const QString& exe )
+{
+	return ::Task::run<int>( [ exe ](){ return utility::Task( exe ).exitCode() ; } ) ;
+}
+
+
+::Task::future<QStringList>& utility::luksEmptySlots( const QString& volumePath )
+{
+	return ::Task::run<QStringList>( [ volumePath ](){
+
+		QProcess p ;
+		QString exe = QString( "%1 -b -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,volumePath ) ;
+
+		p.start( exe ) ;
+		p.waitForFinished() ;
+
+		QStringList l ;
+
+		if( p.exitCode() != 0 ){
+			return l ;
+		}else{
+			QByteArray s = p.readAll() ;
+			int i = 0 ;
+			for( const auto& it : s ){
+				if( it == '1' || it == '3' ){
+					i++ ;
+				}
+			}
+			l.append( QString::number( i ) ) ;
+			l.append( QString::number( s.size() - 1 ) ) ;
+			return l ;
+		}
+	} ) ;
+}
+
 QString utility::cryptMapperPath()
 {
 	//return QString( crypt_get_dir() )
@@ -323,25 +380,6 @@ QString utility::keyPath()
 	return QString( "%1/.zuluCrypt-socket/%2" ).arg( a ).arg( b ) ;
 }
 
-void utility::sendKey( const QString& path,const QString& key )
-{
-	void * handle = ::zuluCryptPluginManagerOpenConnection( path.toLatin1().constData() ) ;
-
-	if( handle ){
-		size_t size = key.size() ;
-		/*
-		 * ZULUCRYPT_KEYFILE_MAX_SIZE is defined in ../zuluCrypt-cli/constants.h
-		 * The variable holds the maximum keyfile size
-		 */
-		if( size > ZULUCRYPT_KEYFILE_MAX_SIZE ){
-			size = ZULUCRYPT_KEYFILE_MAX_SIZE ;
-		}
-
-		::zuluCryptPluginManagerSendKey( handle,key.toLatin1().constData(),size ) ;
-		::zuluCryptPluginManagerCloseConnection( handle ) ;
-	}
-}
-
 QString utility::getKeyFromWallet( LxQt::Wallet::Wallet * wallet,const QString& volumeID )
 {
 	QByteArray key ;
@@ -511,28 +549,6 @@ QString utility::cmdArgumentValue( const QStringList& l,const QString& arg,const
 	}
 
 	return defaulT ;
-}
-
-QStringList utility::luksEmptySlots( const QString& volumePath )
-{
-	QStringList list ;
-	QProcess N ;
-	N.start( QString( ZULUCRYPTzuluCrypt ) + QString( " -b -d \"" ) + volumePath + QString( "\"" ) ) ;
-	N.waitForFinished() ;
-	if( N.exitCode() != 0 ){
-		return list ;
-	}
-	QByteArray s = N.readAll() ;
-	N.close() ;
-	int i = 0 ;
-	for( const auto& it : s ){
-		if( it == '1' || it == '3' ){
-			i++ ;
-		}
-	}
-	list.append( QString::number( i ) ) ;
-	list.append( QString::number( s.size() - 1 ) ) ;
-	return list ;
 }
 
 void utility::addToFavorite( const QString& dev,const QString& m_point )

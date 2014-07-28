@@ -33,7 +33,7 @@
 #include <QCloseEvent>
 #include <QMessageBox>
 
-createfile::createfile( QWidget * parent) :QDialog( parent ),m_ui( new Ui::createfile )
+createfile::createfile( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::createfile )
 {
 	m_ui->setupUi( this ) ;
 	this->setFixedSize( this->size() ) ;

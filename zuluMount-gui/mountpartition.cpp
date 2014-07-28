@@ -167,12 +167,7 @@ void mountPartition::pbMount()
 
 	if( !m_deviceOffSet.isEmpty() ){
 
-		auto _a = [ = ](){
-
-			utility::sendKey( addr,m_key ) ;
-		} ;
-
-		Task::exec( _a ) ;
+		utility::keySend( addr,m_key ) ;
 	}
 
 	QString exe = zuluMountPath ;
@@ -204,7 +199,7 @@ void mountPartition::pbMount()
 
 	exe += " -f " + addr ;
 
-	auto _a = [ exe ](){
+	auto s = Task::await<zuluMountTaskResult>( [ & ](){
 
 		auto r = utility::Task( exe ) ;
 
@@ -220,31 +215,26 @@ void mountPartition::pbMount()
 		s.outPut   = r.output() ;
 
 		return s ;
-	} ;
+	} ) ;
 
-	auto _b = [&]( const zuluMountTaskResult& r ){
+	if( s.passed ){
 
-		if( r.passed ){
+		emit openMountPoint( utility::mountPath( m_point ) ) ;
+		this->HideUI() ;
 
-			emit openMountPoint( utility::mountPath( m_point ) ) ;
-			this->HideUI() ;
+	}else{
+		if( this->isVisible() ){
 
+			QString z = s.outPut ;
+			z.replace( "ERROR: ","" ) ;
+
+			DialogMsg m( this ) ;
+			m.ShowUIOK( tr( "ERROR" ),z ) ;
+			this->enableAll() ;
 		}else{
-			if( this->isVisible() ){
-
-				QString z = r.outPut ;
-				z.replace( "ERROR: ","" ) ;
-
-				DialogMsg m( this ) ;
-				m.ShowUIOK( tr( "ERROR" ),z ) ;
-				this->enableAll() ;
-			}else{
-				this->deleteLater() ;
-			}
+			this->deleteLater() ;
 		}
-	} ;
-
-	Task::run< zuluMountTaskResult >( _a ).then( _b ) ;
+	}
 }
 
 void mountPartition::showOffSetWindowOption()

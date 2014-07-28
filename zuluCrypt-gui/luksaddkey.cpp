@@ -285,12 +285,7 @@ void luksaddkey::pbAdd( void )
 
 		QString k = m_ui->textEditExistingPassphrase->text() ;
 
-		auto _a = [ = ](){
-
-			utility::sendKey( ExistingKey,k ) ;
-		} ;
-
-		Task::exec( _a ) ;
+		utility::keySend( ExistingKey,k ) ;
 	}
 
 	QString newPassType ;
@@ -304,12 +299,7 @@ void luksaddkey::pbAdd( void )
 
 		QString k = m_ui->textEditPassphraseToAdd->text() ;
 
-		auto _a = [ = ](){
-
-			utility::sendKey( NewKey,k ) ;
-		} ;
-
-		Task::exec( _a ) ;
+		utility::keySend( NewKey,k ) ;
 	}
 
 	const QString& a = QString( ZULUCRYPTzuluCrypt ) ;
@@ -326,46 +316,27 @@ void luksaddkey::pbAdd( void )
 
 	this->disableAll() ;
 
-	auto _a = [ exe ](){
-
-		return utility::Task( exe ).exitCode() ;
-	} ;
-
-	auto _b = [&]( const int& r ){
-
-		this->taskFinished( r ) ;
-	} ;
-
-	Task::run< int >( _a ).then( _b ) ;
+	this->taskFinished( Task::await<int>( utility::exec( exe ) ) ) ;
 }
 
 void luksaddkey::keyAdded()
 {
-	auto _a = [&](){
+	auto l = Task::await<QStringList>( utility::luksEmptySlots( m_volumePath ) ) ;
 
-		return utility::luksEmptySlots( m_volumePath ) ;
-	} ;
+	QString success ;
 
-	auto _b = [&]( const QStringList& l ){
+	if( l.isEmpty() ){
 
-		QString success ;
+		success = tr( "key added successfully." ) ;
+	}else{
+		QString x = tr( "key added successfully.\n%1 / %2 slots are now in use" ) ;
+		success = x.arg( l.first() ).arg( l.at( 1 ) ) ;
+	}
 
-		if( l.isEmpty() ){
+	DialogMsg msg( this ) ;
+	msg.ShowUIOK( tr( "SUCCESS!" ),success ) ;
 
-			success = tr( "key added successfully." ) ;
-		}else{
-
-			QString x = tr( "key added successfully.\n%1 / %2 slots are now in use" ) ;
-			success = x.arg( l.first() ).arg( l.at( 1 ) ) ;
-
-			DialogMsg msg( this ) ;
-			msg.ShowUIOK( tr( "SUCCESS!" ),success ) ;
-
-			this->HideUI() ;
-		}
-	} ;
-
-	Task::run< QStringList >( _a ).then( _b ) ;
+	this->HideUI() ;
 }
 
 void luksaddkey::taskFinished( int r )

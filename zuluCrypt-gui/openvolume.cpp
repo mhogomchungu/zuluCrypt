@@ -192,7 +192,7 @@ void openvolume::partitionList( QString title,QString type )
 	m_ui->tableWidget->setEnabled( false ) ;
 	this->show() ;
 
-	auto _a = [ type ](){
+	QStringList l = Task::await<QStringList>( [ type ](){
 
 		QString volumeType = type ;
 		/*
@@ -200,21 +200,18 @@ void openvolume::partitionList( QString title,QString type )
 		 * Show all partitions, not only non system.
 		 */
 		if( volumeType == " -N" && utility::userIsRoot() ){
-			volumeType = QString( " -A" ) ;
+			volumeType = " -A" ;
 		}
 
-		QString exe   = QString( "%1 %2 -Z" ).arg( ZULUCRYPTzuluCrypt ).arg( volumeType ) ;
+		QString exe = QString( "%1 %2 -Z" ).arg( ZULUCRYPTzuluCrypt,volumeType ) ;
 
 		return utility::Task( exe ).splitOutput( '\n' ) ;
-	} ;
+	} ) ;
 
-	auto _b = [&]( const QStringList& l ){
+	m_ui->tableWidget->setEnabled( true ) ;
+	m_ui->tableWidget->setFocus() ;
 
-		this->partitionpropertiesThreadFinished() ;
-		this->partitionProperties( l ) ;
-	} ;
-
-	Task::run< QStringList >( _a ).then( _b ) ;
+	this->partitionProperties( l ) ;
 }
 
 void openvolume::partitionProperties( const QStringList& l )
@@ -250,12 +247,6 @@ void openvolume::partitionProperties( const QStringList& l )
 			}
 		}
 	}
-}
-
-void openvolume::partitionpropertiesThreadFinished()
-{
-	m_ui->tableWidget->setEnabled( true ) ;
-	m_ui->tableWidget->setFocus() ;
 }
 
 void openvolume::HideUI()

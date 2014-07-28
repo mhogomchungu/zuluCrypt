@@ -417,26 +417,17 @@ void passwordDialog::walletIsOpen( bool opened )
 
 		QString key = m_ui->OpenVolumePath->text() ;
 
-		auto _a = [ &,key ](){
+		m_key = Task::await<QString>( [ & ](){ return utility::getKeyFromWallet( m_wallet,key ) ; } ) ;
 
-			return utility::getKeyFromWallet( m_wallet,key ) ;
-		} ;
+		if( m_key.isEmpty() ){
+			DialogMsg msg( this ) ;
+			msg.ShowUIOK( tr( "ERROR" ),tr( "the volume does not appear to have an entry in the wallet" ) ) ;
+			this->enableAll() ;
+		}else{
+			this->openVolume() ;
+		}
 
-		auto _b = [&]( const QString& key ){
-
-			if( key.isEmpty() ){
-				DialogMsg msg( this ) ;
-				msg.ShowUIOK( tr( "ERROR" ),tr( "the volume does not appear to have an entry in the wallet" ) ) ;
-				this->enableAll() ;
-			}else{
-				m_key = key ;
-				this->openVolume() ;
-			}
-
-			m_wallet->deleteLater() ;
-		} ;
-
-		Task::run< QString >( _a ).then( _b ) ;
+		m_wallet->deleteLater() ;
 	}else{
 		_internalPassWord.clear() ;
 		this->enableAll() ;
@@ -483,12 +474,7 @@ void passwordDialog::buttonOpenClicked( void )
 
 void passwordDialog::sendKey( const QString& sockpath )
 {
-	auto _a = [ = ](){
-
-		utility::sendKey( sockpath,m_key ) ;
-	} ;
-
-	Task::exec( _a ) ;
+	utility::keySend( sockpath,m_key ) ;
 }
 
 void passwordDialog::disableAll()
@@ -635,21 +621,18 @@ void passwordDialog::openVolume()
 
 	this->disableAll() ;
 
-	auto _a = [ exe ](){
+	Task::run< taskResult >( [ exe ](){
 
 		taskResult t ;
 		auto r = utility::Task( exe ) ;
 		t.exitCode = r.exitCode() ;
 		t.outPut   = r.output() ;
 		return t ;
-	} ;
 
-	auto _b = [&]( const taskResult& r ){
+	} ).then( [ this ]( const taskResult& r ){
 
 		this->taskComplete( r ) ;
-	} ;
-
-	Task::run< taskResult >( _a ).then( _b ) ;
+	} ) ;
 }
 
 void passwordDialog::success( const taskResult& r )
@@ -661,8 +644,6 @@ void passwordDialog::success( const taskResult& r )
 		list.append( utility::resolvePath( m_ui->OpenVolumePath->text() ) ) ;
 
 		QString m_p = utility::mountPath( m_point ) ;
-
-		emit openFolder( m_p ) ;
 
 		list.append( m_p ) ;
 
@@ -677,6 +658,8 @@ void passwordDialog::success( const taskResult& r )
 		}
 
 		tablewidget::addRowToTable( m_table,list ) ;
+
+		emit openFolder( m_p ) ;
 
 		this->HideUI() ;
 	}else{

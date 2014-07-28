@@ -60,7 +60,6 @@ private slots:
 	void pbCancel( void ) ;
 	void EnterKeyPressed( void ) ;
 	void currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous ) ;
-	void partitionpropertiesThreadFinished( void ) ;
 	void partitionProperties( const QStringList& ) ;
 private:
 	void closeEvent( QCloseEvent * ) ;

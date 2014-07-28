@@ -32,6 +32,8 @@
 
 #include <unistd.h>
 
+#include "task.h"
+
 namespace LxQt{
 namespace Wallet {
 class Wallet ;
@@ -46,7 +48,6 @@ namespace utility
 	QString cmdArgumentValue( const QStringList&,const QString& arg,
 				  const QString& defaulT = QString() ) ;
 
-	QStringList luksEmptySlots( const QString& volumePath ) ;
 	void addToFavorite( const QString& dev,const QString& m_point ) ;
 	QStringList readFavorites( void ) ;
 	void removeFavoriteEntry( const QString& ) ;
@@ -78,11 +79,14 @@ namespace utility
 	bool setOpenVolumeReadOnly( QWidget * parent,bool check,const QString& app ) ;
 	bool getOpenVolumeReadOnlyOption( const QString& app ) ;
 	QString keyPath( void ) ;
-	void sendKey( const QString& keyPath,const QString& key ) ;
+	void keySend( const QString& keyPath,const QString& key ) ;
 	QString getKeyFromWallet( LxQt::Wallet::Wallet *,const QString& volumeID ) ;
 	bool eventFilter( QObject * gui,QObject * watched,QEvent * event ) ;
 	QStringList split( const QString&,char token = '\n' ) ;
 	QStringList split( const QByteArray&,char token = '\n' ) ;
+
+	::Task::future< int >& exec( const QString& ) ;
+	::Task::future< QStringList >& luksEmptySlots( const QString& volumePath ) ;
 }
 
 namespace utility

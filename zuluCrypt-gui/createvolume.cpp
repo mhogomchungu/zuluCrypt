@@ -420,7 +420,6 @@ void createvolume::pbCreateClicked()
 			m_warned = true ;
 			return msg.ShowUIOK( tr( "WARNING" ),tr( "It is best to create a hidden volume with vfat/fat file system." ) ) ;
 		}
-
 	}
 
 	QString source ;
@@ -429,47 +428,42 @@ void createvolume::pbCreateClicked()
 		if( passphrase_1.isEmpty() ){
 			return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
 		}else{
-			source = QString( "-f" ) ;
+			source = "-f" ;
 			passphrase_1 = utility::resolvePath( passphrase_1 ).replace( "\"","\"\"\"" ) ;
 		}
 	}else{
 		if( passphrase_1 != passphrase_2 ){
 			return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "passphrases do not match" ) ) ;
 		}else{
-			source = QString( "-f" ) ;
-			passphrase_1 = utility::keyPath() + QString( "-2" ) ;
+			source = "-f" ;
+			passphrase_1 = utility::keyPath() + "-2" ;
 
 			QString key = m_ui->lineEditPassphrase1->text() ;
 
-			auto _a = [ = ](){
-
-				utility::sendKey( passphrase_1,key ) ;
-			} ;
-
-			Task::exec( _a ) ;
+			utility::keySend( passphrase_1,key ) ;
 		}
 	}
 
 	switch( type ){
 	case createvolume::luks :
-		m_volumeType = QString( "luks" ) ;
+		m_volumeType = "luks" ;
 		break ;
 	case createvolume::plain :
-		m_volumeType = QString( "plain" ) ;
+		m_volumeType = "plain" ;
 		break ;
 	case createvolume::normal_truecrypt :
 	case createvolume::normal_and_hidden_truecrypt :
-		m_volumeType = QString( "truecrypt" ) ;
+		m_volumeType = "truecrypt" ;
 		break ;
-	default: m_volumeType = QString( "luks" ) ;
+	default: m_volumeType = "luks" ;
 	}
 
 	QString g ;
 
 	switch( m_ui->comboBoxFS->currentIndex() ){
-		case 0 : g = QString( "/dev/urandom" ) ; break ;
-		case 1 : g = QString( "/dev/random" )  ; break ;
-		default: g = QString( "/dev/urandom" ) ;
+		case 0 : g = "/dev/urandom" ; break ;
+		case 1 : g = "/dev/random"  ; break ;
+		default: g = "/dev/urandom" ;
 	}
 
 	volumePath.replace( "\"","\"\"\"" ) ;
@@ -489,14 +483,8 @@ void createvolume::pbCreateClicked()
 
 		if( m_ui->rbHiddenKey->isChecked() ){
 
-			y = utility::keyPath() + QString( "-1" ) ;
-
-			auto _a = [ = ](){
-
-				utility::sendKey( y,x ) ;
-			} ;
-
-			Task::exec( _a ) ;
+			y = utility::keyPath() + "-1" ;
+			utility::keySend( y,x ) ;
 		}else{
 			y = utility::resolvePath( x ).replace( "\"","\"\"\"" ) ;
 		}
@@ -513,27 +501,17 @@ void createvolume::pbCreateClicked()
 		QString z = QString::number( r ) ;
 
 		const char * arg = "%1 -c -k -d \"%2\" -z %3 -t %4 %5 \"%6\" -g %7 -e %8 -u \"%9\"" ;
-		exe = QString( arg ).arg( a ).arg( b ).arg( c ).arg( d ).arg( e ).arg( f ).arg( g ).arg( z ).arg( y ) ;
+		exe = QString( arg ).arg( a,b,c,d,e,f,g,z,y ) ;
 	}else{
 		const char * arg = "%1 -c -k -d \"%2\" -z %3 -t %4 %5 \"%6\" -g %7" ;
-		exe = QString( arg ).arg( a ).arg( b ).arg( c ).arg( d ).arg( e ).arg( f ).arg( g ) ;
+		exe = QString( arg ).arg( a,b,c,d,e,f,g ) ;
 	}
 
 	m_isWindowClosable = false ;
 
 	this->disableAll() ;
 
-	auto _a = [ exe ](){
-
-		return utility::Task( exe ).exitCode() ;
-	} ;
-
-	auto _b = [&]( const int& r ){
-
-		this->taskFinished( r ) ;
-	} ;
-
-	Task::run< int >( _a ).then( _b ) ;
+	this->taskFinished( Task::await<int>( utility::exec( exe ) ) ) ;
 }
 
 void createvolume::taskFinished( int st )

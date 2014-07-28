@@ -174,7 +174,7 @@ void luksdeletekey::pbCancel()
 
 void luksdeletekey::pbOpenPartition()
 {
-	openvolume * op = new openvolume( this ) ;
+	auto op = new openvolume( this ) ;
 	op->showLuksOnly() ;
 	connect( op,SIGNAL( clickedPartition( QString ) ),this,SLOT( ShowUI( QString ) ) ) ;
 	connect( op,SIGNAL( HideUISignal() ),op,SLOT( deleteLater() ) ) ;
@@ -194,17 +194,9 @@ void luksdeletekey::pbDelete()
 
 		m_volumePath.replace( "\"","\"\"\"" ) ;
 
-		auto _a = [&](){
+		auto l = Task::await<QStringList>( utility::luksEmptySlots( m_volumePath ) ) ;
 
-			return utility::luksEmptySlots( m_volumePath ) ;
-		} ;
-
-		auto _b = [&]( const QStringList& l ){
-
-			this->deleteKey( l ) ;
-		} ;
-
-		Task::run< QStringList >( _a ).then( _b ) ;
+		this->deleteKey( l ) ;
 	}
 }
 
@@ -241,12 +233,7 @@ void luksdeletekey::deleteKey( const QStringList& l )
 		keypath = utility::keyPath() ;
 		QString key = m_ui->lineEditPassphrase->text() ;
 
-		auto _z = [ = ](){
-
-			utility::sendKey( keypath,key ) ;
-		} ;
-
-		Task::exec( _z ) ;
+		utility::keySend( keypath,key ) ;
 	}
 
 	const char * r = "%1 -k -r -d \"%2\" -f \"%3\"" ;
@@ -254,17 +241,7 @@ void luksdeletekey::deleteKey( const QStringList& l )
 
 	m_isWindowClosable = false ;
 
-	auto _a = [ exe ](){
-
-		return utility::Task( exe ).exitCode() ;
-	} ;
-
-	auto _b = [&]( const int& r ){
-
-		this->taskFinished( r ) ;
-	} ;
-
-	Task::run< int >( _a ).then( _b ) ;
+	this->taskFinished( Task::await<int>( utility::exec( exe ) ) ) ;
 }
 
 void luksdeletekey::taskFinished( int r )

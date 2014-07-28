@@ -220,9 +220,7 @@ void favorites::add()
 void favorites::fileAddress()
 {
 	QString Z = QFileDialog::getOpenFileName( this,tr( "path to an encrypted volume" ),QDir::homePath(),0 ) ;
-	if( Z.isEmpty() ){
-		;
-	}else{
+	if( !Z.isEmpty() ){
 		m_ui->lineEditDeviceAddress->setText( Z ) ;
 	}
 }

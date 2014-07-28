@@ -54,7 +54,6 @@ LxQt::Wallet::changePassWordDialog::changePassWordDialog( QWidget * parent,const
 	this->installEventFilter( this ) ;
 }
 
-
 bool LxQt::Wallet::changePassWordDialog::eventFilter( QObject * watched,QEvent * event )
 {
 	if( watched == this ){

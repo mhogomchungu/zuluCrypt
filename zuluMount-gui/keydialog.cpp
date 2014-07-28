@@ -437,12 +437,7 @@ void keyDialog::openVolume()
 
 		QString key = m_ui->lineEditKey->text() ;
 
-		auto _a = [ = ](){
-
-			utility::sendKey( addr,key ) ;
-		} ;
-
-		Task::exec( _a ) ;
+		utility::keySend( addr,key ) ;
 
 	}else if( keyType == keyDialog::keyfile ){
 
@@ -459,24 +454,14 @@ void keyDialog::openVolume()
 			QString addr = utility::keyPath() ;
 			m = QString( "-f %1" ).arg( addr ) ;
 
-			auto _a = [ = ](){
-
-				utility::sendKey( addr,m_key ) ;
-			} ;
-
-			Task::exec( _a ) ;
+			utility::keySend( addr,m_key ) ;
 		}
 	}else if( keyType == keyDialog::tcryptKeys ){
 
 		QString addr = utility::keyPath() ;
 		m = QString( "-f %1 " ).arg( addr ) ;
 
-		auto _a = [ = ](){
-
-			utility::sendKey( addr,m_key ) ;
-		} ;
-
-		Task::exec( _a ) ;
+		utility::keySend( addr,m_key ) ;
 	}else{
 		qDebug() << "ERROR: uncaught condition" ;
 	}
@@ -523,7 +508,7 @@ void keyDialog::openVolume()
 
 	m_working = true ;
 
-	auto _a = [ exe ](){
+	auto s = Task::await<zuluMountTaskResult>( [ & ](){
 
 		auto r = utility::Task( exe ) ;
 
@@ -540,52 +525,47 @@ void keyDialog::openVolume()
 		s.outPut   = r.output() ;
 
 		return s ;
-	} ;
+	} ) ;
 
-	auto _b = [&]( const zuluMountTaskResult& s ){
+	m_working = false ;
 
-		m_working = false ;
+	if( s.exitCode == 0 ){
 
-		if( s.exitCode == 0 ){
-
-			if( utility::mapperPathExists( m_path ) ) {
-				/*
-				 * The volume is reported as opened and it actually is
-				 */
-				emit openMountPoint( utility::mountPath( m_point ) ) ;
-			}else{
-				/*
-				 * The volume is reported as opened but it isnt,possible reason is a backe end crash
-				 */
-
-				DialogMsg msg( this ) ;
-
-				msg.ShowUIOK( tr( "ERROR" ),tr( "An error has occured and the volume could not be opened" ) ) ;
-				emit cancel() ;
-			}
-			this->HideUI() ;
+		if( utility::mapperPathExists( m_path ) ) {
+			/*
+			 * The volume is reported as opened and it actually is
+			 */
+			emit openMountPoint( utility::mountPath( m_point ) ) ;
 		}else{
-			if( s.exitCode == 12 && m_ui->cbKeyType->currentIndex() == keyDialog::plugin ){
-				/*
-				 * A user cancelled the plugin
-				 */
-				this->enableAll() ;
-			}else{
+			/*
+			 * The volume is reported as opened but it isnt,possible reason is a backe end crash
+			 */
 
-				QString z = s.outPut ;
-				z.replace( "ERROR: ","" ) ;
+			DialogMsg msg( this ) ;
 
-				DialogMsg msg( this ) ;
-
-				msg.ShowUIOK( tr( "ERROR" ),z ) ;
-				m_ui->lineEditKey->clear() ;
-				this->enableAll() ;
-				m_ui->lineEditKey->setFocus() ;
-			}
+			msg.ShowUIOK( tr( "ERROR" ),tr( "An error has occured and the volume could not be opened" ) ) ;
+			emit cancel() ;
 		}
-	} ;
+		this->HideUI() ;
+	}else{
+		if( s.exitCode == 12 && m_ui->cbKeyType->currentIndex() == keyDialog::plugin ){
+			/*
+			 * A user cancelled the plugin
+			 */
+			this->enableAll() ;
+		}else{
 
-	Task::run< zuluMountTaskResult >( _a ).then( _b ) ;
+			QString z = s.outPut ;
+			z.replace( "ERROR: ","" ) ;
+
+			DialogMsg msg( this ) ;
+
+			msg.ShowUIOK( tr( "ERROR" ),z ) ;
+			m_ui->lineEditKey->clear() ;
+			this->enableAll() ;
+			m_ui->lineEditKey->setFocus() ;
+		}
+	}
 }
 
 void keyDialog::cbActicated( int e )
