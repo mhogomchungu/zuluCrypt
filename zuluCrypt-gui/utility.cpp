@@ -86,7 +86,6 @@ void utility::keySend( const QString& path,const QString& key )
 	return ::Task::run<int>( [ exe ](){ return utility::Task( exe ).exitCode() ; } ) ;
 }
 
-
 ::Task::future<QStringList>& utility::luksEmptySlots( const QString& volumePath )
 {
 	return ::Task::run<QStringList>( [ volumePath ](){

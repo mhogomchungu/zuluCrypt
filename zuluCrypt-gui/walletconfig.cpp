@@ -88,20 +88,17 @@ void walletconfig::itemClicked( QTableWidgetItem * item )
 
 	if( r == QMessageBox::Yes ){
 
-		auto _a = [&](){
+		Task::run( [ this ](){
 
 			m_wallet->deleteKey( m_volumeID ) ;
 			m_wallet->deleteKey( m_volumeID + COMMENT ) ;
-		} ;
 
-		auto _b = [&](){
+		} ).then( [ this ](){
 
 			tablewidget::deleteRowFromTable( m_ui->tableWidget,m_row ) ;
 			this->enableAll() ;
 			m_ui->tableWidget->setFocus() ;
-		} ;
-
-		Task::run( _a ).then( _b ) ;
+		} ) ;
 	}else{
 		this->enableAll() ;
 		m_ui->tableWidget->setFocus() ;
@@ -124,13 +121,12 @@ void walletconfig::add( QString volumeID,QString comment,QString key )
 	m_volumeID = volumeID ;
 	m_key      = key ;
 
-	auto _a = [&](){
+	Task::run( [ this ](){
 
 		m_wallet->addKey( m_volumeID,m_key.toLatin1() ) ;
 		m_wallet->addKey( m_volumeID + COMMENT,m_comment.toLatin1() ) ;
-	} ;
 
-	auto _b = [&](){
+	} ).then( [ this ](){
 
 		QStringList entry ;
 		entry.append( m_volumeID ) ;
@@ -140,9 +136,7 @@ void walletconfig::add( QString volumeID,QString comment,QString key )
 
 		this->enableAll() ;
 		m_ui->tableWidget->setFocus() ;
-	} ;
-
-	Task::run( _a ).then( _b ) ;
+	} ) ;
 }
 
 void walletconfig::cancel()
@@ -178,12 +172,11 @@ void walletconfig::walletIsOpen( bool opened )
 
 	if( opened ){
 
-		auto _a = [&](){
+		Task::run<walletKeys>( [ this ](){
 
 			return m_wallet->readAllKeyValues() ;
-		} ;
 
-		auto _b = [&]( const walletKeys& keys ){
+		} ).then( [ this ]( const walletKeys& keys ){
 
 			if( !keys.empty() ){
 
@@ -223,9 +216,7 @@ void walletconfig::walletIsOpen( bool opened )
 
 			this->enableAll() ;
 			m_ui->tableWidget->setFocus() ;
-		} ;
-
-		Task::run< walletKeys >( _a ).then( _b ) ;
+		} ) ;
 	}else{
 		emit couldNotOpenWallet() ;
 		this->HideUI() ;

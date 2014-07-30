@@ -212,7 +212,6 @@ void luksaddkey::rbExistingPassphraseFromFile( void )
 	m_ui->textEditExistingPassphrase->clear() ;
 	m_ui->pushButtonOpenExistingKeyFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) ) ;
 	m_ui->textEditExistingPassphrase->setFocus() ;
-
 }
 
 void luksaddkey::rbNewPassphrase( void )
@@ -316,12 +315,12 @@ void luksaddkey::pbAdd( void )
 
 	this->disableAll() ;
 
-	this->taskFinished( Task::await<int>( utility::exec( exe ) ) ) ;
+	this->taskFinished( utility::exec( exe ).await() ) ;
 }
 
 void luksaddkey::keyAdded()
 {
-	auto l = Task::await<QStringList>( utility::luksEmptySlots( m_volumePath ) ) ;
+	auto l = utility::luksEmptySlots( m_volumePath ).await() ;
 
 	QString success ;
 

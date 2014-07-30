@@ -406,7 +406,7 @@ void managevolumeheader::pbCreate()
 
 	m_OperationInProgress = true ;
 
-	this->taskFinished( Task::await<int>( utility::exec( exe ) ) ) ;
+	this->taskFinished( utility::exec( exe ).await() ) ;
 }
 
 void managevolumeheader::pbOpenPartition()

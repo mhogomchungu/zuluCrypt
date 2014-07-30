@@ -330,12 +330,11 @@ void keyDialog::walletIsOpen( bool opened )
 {
 	if( opened ){
 
-		auto _a = [&](){
+		Task::run<QString>( [ this ](){
 
 			return utility::getKeyFromWallet( m_wallet,m_path ) ;
-		} ;
 
-		auto _b = [&]( const QString& key ){
+		} ).then( [ this ]( const QString& key ){
 
 			if( key.isEmpty() ){
 				DialogMsg msg( this ) ;
@@ -350,9 +349,7 @@ void keyDialog::walletIsOpen( bool opened )
 			}
 
 			m_wallet->deleteLater() ;
-		} ;
-
-		Task::run< QString >( _a ).then( _b ) ;
+		} ) ;
 	}else{
 		_internalPassWord.clear() ;
 		this->enableAll() ;
