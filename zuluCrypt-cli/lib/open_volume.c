@@ -47,7 +47,7 @@ int zuluCryptOpenVolume_0( int( *function )( const open_struct_t * ),const open_
 	 */
 	p = String( zuluCryptMapperPrefix() ) ;
 
-	mapper = StringMultipleAppend( p,"/",opts->mapper_name,END ) ;
+	mapper = StringMultipleAppend( p,"/",opts->mapper_name,NULL ) ;
 
 	/*
 	 * zuluCryptPathIsValid() is defined in is_path_valid.c

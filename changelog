@@ -190,4 +190,6 @@ version 4.7.2
 -- add support for opening TrueCrypt volumes using a passphrase together with one or more keyfiles.
 
 version 4.7.3
--- fix issues with Qt5
+-- fix issues with Qt5 build
+-- show devices even when they have neither partitions nor recognizable file systems.This is useful for TrueCrypt system volumes or
+   normal TrueCrypt volumes that are not in partitions.

@@ -101,7 +101,7 @@ static string_t _resolve_path_1( const char * device,const char * mount_point,
 	 * zuluCryptResolvePath_1() is defined in resolve_paths.c
 	 */
 	string_t st = zuluCryptResolvePath_1( device ) ;
-	StringMultipleAppend( st," ",mount_point," ",file_system," ",mount_options,END ) ;
+	StringMultipleAppend( st," ",mount_point," ",file_system," ",mount_options,NULL ) ;
 	return st ;
 }
 
@@ -112,7 +112,7 @@ static string_t _resolve_path_2( const char * device,const char * mount_point,
 	 * zuluCryptResolvePath_2() is defined in resolve_paths.c
 	 */
 	string_t st = zuluCryptResolvePath_2( device ) ;
-	StringMultipleAppend( st," ",mount_point," ",file_system," ",mount_options,END ) ;
+	StringMultipleAppend( st," ",mount_point," ",file_system," ",mount_options,NULL ) ;
 	return st ;
 }
 
@@ -210,8 +210,8 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 			 */
 			f = zuluCryptGetVolumeTypeFromMapperPath( StringContent( q ) ) ;
 			e = StringSubChar( q,StringLastIndexOfChar( q,'-' ),'\0' ) + k + 6 ;
-			z = String( "" ) ;
-			StringMultipleAppend( z,"UUID=\"",e,"\"\t",d,"\t",f,END ) ;
+			z = StringEmpty() ;
+			StringMultipleAppend( z,"UUID=\"",e,"\"\t",d,"\t",f,NULL ) ;
 			list = StringListAppendString_1( list,&z ) ;
 			StringFree( f ) ;
 		}else{
@@ -225,8 +225,8 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 				 * zuluCryptGetVolumeTypeFromMapperPath() is defined in status.c
 				 */
 				f = zuluCryptGetVolumeTypeFromMapperPath( StringListContentAtFirstPlace( stx ) ) ;
-				z = String( "" ) ;
-				StringMultipleAppend( z,g,"\t",d,"\t",f,END ) ;
+				z = StringEmpty() ;
+				StringMultipleAppend( z,g,"\t",d,"\t",f,NULL ) ;
 				list = StringListAppendString_1( list,&z ) ;
 				StringFree( f ) ;
 				StringFree( g ) ;

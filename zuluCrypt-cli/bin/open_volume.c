@@ -498,7 +498,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		st = 3 ;
 	}
 
-	device = StringMultiplePrepend( *mapper,"/",zuluCryptMapperPrefix(),END ) ;
+	device = StringMultiplePrepend( *mapper,"/",zuluCryptMapperPrefix(),NULL ) ;
 
 	if( st == 0 && share ){
 		/*

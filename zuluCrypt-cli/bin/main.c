@@ -415,7 +415,7 @@ int main( int argc,char * argv[] )
 
 	if( argc > 0 ){
 		while( *argv ){
-			StringMultipleAppend( q,*argv," ",END ) ;
+			StringMultipleAppend( q,*argv," ",NULL ) ;
 			argv++ ;
 		}
 		StringSubChar( q,StringLength( q ) - 1,'\0' ) ;

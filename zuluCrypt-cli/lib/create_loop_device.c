@@ -47,7 +47,7 @@ string_t zuluCryptLoopDeviceAddress_2( const char * device )
 	char * path ;
 	struct loop_info64 l_info ;
 	string_t st = String( "" ) ;
-	const char * e = StringMultipleAppend( st,"/sys/block/",device + 5,"/loop/backing_file",END ) ;
+	const char * e = StringMultipleAppend( st,"/sys/block/",device + 5,"/loop/backing_file",NULL ) ;
 	string_t xt = StringGetFromVirtualFile( e ) ;
 	StringDelete( &st ) ;
 	if( xt == StringVoid ){
@@ -79,7 +79,7 @@ char * zuluCryptLoopDeviceAddress_1( const char * device )
 	char * path ;
 	struct loop_info64 l_info ;
 	string_t st = String( "/sys/block/" ) ;
-	string_t xt = StringGetFromVirtualFile( StringMultipleAppend( st,device + 5,"/loop/backing_file",END ) ) ;
+	string_t xt = StringGetFromVirtualFile( StringMultipleAppend( st,device + 5,"/loop/backing_file",NULL ) ) ;
 	StringDelete( &st ) ;
 	if( xt == StringVoid ){
 		memset( &l_info,'\0',sizeof( struct loop_info64 ) ) ;

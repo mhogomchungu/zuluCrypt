@@ -41,13 +41,6 @@ void StringExitOnMemoryExaustion( void (*)( void ) ) ;
 typedef struct StringType * string_t ;
 
 /*
- * use this variable to terminate variadic functions
- * we dont use NULL here because NULL is defined simply as 0 and things break in C++
- */
-#define ENDDELETE ( ( string_t * ) 0 )
-#define END ( ( const char * ) 0 )
-
-/*
  * create a custom type to represent a string_t pointing to NULL while hiding the pointer nature of string_t
  * string_t is an opaque handle and NULL assignment "gives unnecessary info" about its nature.
  */

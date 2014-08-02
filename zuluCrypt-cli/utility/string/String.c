@@ -188,7 +188,7 @@ void StringMultipleDelete( string_t * xt,... )
 
 	while( 1 ){
 		entry = va_arg( list,string_t * ) ;
-		if( entry == ENDDELETE ){
+		if( entry == NULL ){
 			break ;
 		}
 		st = *entry ;
@@ -266,7 +266,7 @@ string_t StringCopy( string_t st )
 
 string_t StringEmpty()
 {
-	string_t st = ( string_t ) malloc ( sizeof( struct StringType ) ) ;
+	string_t st = ( string_t ) malloc( sizeof( struct StringType ) ) ;
 	if( st == NULL ){
 		return _StringError() ;
 	}else{
@@ -1003,7 +1003,7 @@ const char * StringMultipleAppend( string_t st,... )
 
 	while( 1 ){
 		entry = va_arg( list,const char * ) ;
-		if( entry == END ){
+		if( entry == NULL ){
 			break ;
 		}
 		StringAppend( st,entry ) ;
@@ -1039,7 +1039,7 @@ const char * StringMultiplePrepend( string_t st,... )
 
 	while( 1 ){
 		entry = va_arg( list,const char * ) ;
-		if( entry == END ){
+		if( entry == NULL ){
 			break ;
 		}
 		StringPrepend( st,entry ) ;

@@ -60,10 +60,10 @@ string_t zuluCryptCreateMapperName( const char * device,const char * mapping_nam
 	StringAppendInt( p,uid ) ;
 
 	if( StringPrefixMatch( mapping_name,"UUID-",5 ) ){
-		StringMultipleAppend( p,"-",mapping_name,"-",END ) ;
+		StringMultipleAppend( p,"-",mapping_name,"-",NULL ) ;
 		z = StringJenkinsOneAtATimeHash( mapping_name ) ;
 	}else{
-		StringMultipleAppend( p,"-NAAN-",mapping_name,"-",END ) ;
+		StringMultipleAppend( p,"-NAAN-",mapping_name,"-",NULL ) ;
 		if( StringPrefixMatch( device,"/dev/loop",9 ) ){
 			/*
 			* zuluCryptLoopDeviceAddress_1() is defined in ./create_loop_device.c

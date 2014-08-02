@@ -41,7 +41,7 @@
 
 static inline int zuluExit( int st,int fd,string_t x,string_t y,string_t z )
 {
-	StringMultipleDelete( &x,&y,&z,END ) ;
+	StringMultipleDelete( &x,&y,&z,NULL ) ;
 	if( fd != -1 ){
 		close( fd ) ;
 	}
@@ -149,7 +149,7 @@ static string_t set_mount_options( m_struct * mst )
 		if( StringContains( opt,"ro" ) ){
 			mst->m_flags |= MS_RDONLY ;
 		}
-		StringMultipleAppend( opt,",",mst->fs_flags,END ) ;
+		StringMultipleAppend( opt,",",mst->fs_flags,NULL ) ;
 	}
 
 	_get_file_system_options_from_config_file( mst->device,opt ) ;
@@ -285,12 +285,12 @@ static int mount_FUSEfs_0( m_struct * mst )
 
 	if( StringsAreEqual( mst->fs,"ntfs" ) ){
 		if( StringHasComponent( opts,"ignore_case" ) ){
-			ProcessSetArgumentList( p,"-n","-t","lowntfs-3g","-o",opts,mst->device,mst->m_point,ENDLIST ) ;
+			ProcessSetArgumentList( p,"-n","-t","lowntfs-3g","-o",opts,mst->device,mst->m_point,NULL ) ;
 		}else{
-			ProcessSetArgumentList( p,"-n","-t","ntfs-3g","-o",opts,mst->device,mst->m_point,ENDLIST ) ;
+			ProcessSetArgumentList( p,"-n","-t","ntfs-3g","-o",opts,mst->device,mst->m_point,NULL ) ;
 		}
 	}else{
-		ProcessSetArgumentList( p,"-t",mst->fs,"-o",opts,mst->device,mst->m_point,ENDLIST ) ;
+		ProcessSetArgumentList( p,"-t",mst->fs,"-o",opts,mst->device,mst->m_point,NULL ) ;
 	}
 
 	ProcessStart( p ) ;

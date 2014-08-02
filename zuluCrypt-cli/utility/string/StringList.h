@@ -34,13 +34,6 @@ extern "C" {
  */
 typedef struct StringListType * stringList_t ;
 
-
-/*
- * use this variable to terminate variadic functions
- * we dont use NULL here because NULL is defined simply as 0 and things break in C++
- */
-#define ENDLIST ( ( const char * ) 0 )
-#define ENDLISTDELETE ( ( stringList_t * ) 0 )
 /*
  * create a custom type to represent a stringList_t pointing to NULL while hiding the pointer nature of stringList_t
  * string_t is an opaque handle and NULL assignment "gives unnecessary info" about its nature.

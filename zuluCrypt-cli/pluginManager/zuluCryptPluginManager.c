@@ -216,7 +216,7 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		*r = 1 ;
 	}
 
-	StringMultipleDelete( &plugin_path,&path,END ) ;
+	StringMultipleDelete( &plugin_path,&path,NULL ) ;
 
 	return key ;
 }

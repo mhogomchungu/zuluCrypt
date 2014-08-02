@@ -56,7 +56,7 @@ string_t zuluCryptCreateKeyFile( const char * key,size_t key_len,const char * fi
 	}
 
 	st = StringEmpty() ;
-	StringMultipleAppend( st,"/run/zuluCrypt/",fileName,END ) ;
+	StringMultipleAppend( st,"/run/zuluCrypt/",fileName,NULL ) ;
 	file = StringAppendInt( st,syscall( SYS_gettid ) ) ;
 	fd = open( file,O_WRONLY | O_CREAT,S_IRUSR | S_IWUSR | S_IRGRP |S_IROTH ) ;
 

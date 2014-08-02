@@ -91,7 +91,7 @@ static string_t crypt_mapper( const char * path,const char * key,u_int64_t key_l
 	if( zuluCryptOpenPlain( mpath,StringContent( p ),"rw",key,key_len ) != 0 ){
 		StringDelete( &p ) ;
 	}else{
-		StringMultiplePrepend( p,"/",crypt_get_dir(),END ) ;
+		StringMultiplePrepend( p,"/",crypt_get_dir(),NULL ) ;
 	}
 
 	free( mpath ) ;
@@ -303,7 +303,7 @@ int zuluCryptEncryptFile( const char * source,const char * dest,const char * key
 
 	zuluCryptCloseMapper( mapper ) ;
 
-	StringMultipleDelete( &q,&p,END ) ;
+	StringMultipleDelete( &q,&p,NULL ) ;
 
 	return 0 ;
 }
