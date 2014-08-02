@@ -100,7 +100,6 @@ void cryptfiles::rbKeyChecked()
 		m_ui->labelKey2->setEnabled( true ) ;
 		m_ui->lineEditPass_2->setEnabled( true ) ;
 	}
-
 }
 
 void cryptfiles::rbKeyFileChecked()
@@ -115,7 +114,6 @@ void cryptfiles::rbKeyFileChecked()
 	m_ui->lineEditPass_2->clear() ;
 	m_ui->lineEditPass_1->setEchoMode( QLineEdit::Normal ) ;
 	m_ui->lineEditPass_1->setFocus() ;
-
 }
 
 void cryptfiles::sourceTextChanged( QString source )
@@ -144,7 +142,6 @@ void cryptfiles::sourceTextChanged( QString source )
 	}
 
 	m_ui->lineEditDestinationPath->setText( path ) ;
-
 }
 
 void cryptfiles::encrypt()

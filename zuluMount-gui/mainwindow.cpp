@@ -524,7 +524,7 @@ void MainWindow::openMountPoint( const QString& m_point )
 
 	Task::run< bool >( [ &,m ](){
 
-		auto r = utility::Task( QString( "%1 \"%2\"" ).arg( m_folderOpener, m ) ) ;
+		auto r = utility::Task( QString( "%1 \"%2\"" ).arg( m_folderOpener,m ) ) ;
 		return r.exitCode() != 0 || r.exitStatus() != 0 ;
 
 	} ).then( [ this ]( bool failed ){

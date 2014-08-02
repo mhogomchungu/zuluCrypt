@@ -194,7 +194,7 @@ void luksdeletekey::pbDelete()
 
 		m_volumePath.replace( "\"","\"\"\"" ) ;
 
-		auto l = utility::luksEmptySlots( m_volumePath ).await() ;
+		auto l = Task::await<QStringList>( utility::luksEmptySlots( m_volumePath ) ) ;
 
 		this->deleteKey( l ) ;
 	}
@@ -241,7 +241,7 @@ void luksdeletekey::deleteKey( const QStringList& l )
 
 	m_isWindowClosable = false ;
 
-	this->taskFinished( utility::exec( exe ).await() ) ;
+	this->taskFinished( Task::await<int>( utility::exec( exe ) ) ) ;
 }
 
 void luksdeletekey::taskFinished( int r )

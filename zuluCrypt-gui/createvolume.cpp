@@ -511,7 +511,7 @@ void createvolume::pbCreateClicked()
 
 	this->disableAll() ;
 
-	this->taskFinished( utility::exec( exe ).await() ) ;
+	this->taskFinished( Task::await<int>( utility::exec( exe ) ) ) ;
 }
 
 void createvolume::taskFinished( int st )

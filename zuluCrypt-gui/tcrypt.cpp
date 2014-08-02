@@ -120,6 +120,12 @@ void tcrypt::pbSend()
 		for( const auto& it : l ){
 			keyFiles += "\t" + it ;
 		}
+
+		/*
+		 * we call hide() because the GUI doesnt seem to hide when called later on in HideUI()
+		 */
+		this->hide() ;
+
 		emit Keys( m_ui->lineEdit->text(),keyFiles ) ;
 		this->HideUI() ;
 	}
