@@ -95,32 +95,6 @@
    <property name="title">
     <string/>
    </property>
-   <widget class="QRadioButton" name="rbPassphrase">
-    <property name="geometry">
-     <rect>
-      <x>140</x>
-      <y>0</y>
-      <width>81</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>key</string>
-    </property>
-   </widget>
-   <widget class="QRadioButton" name="rbPassphraseFromFile">
-    <property name="geometry">
-     <rect>
-      <x>270</x>
-      <y>0</y>
-      <width>131</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>keyfile</string>
-    </property>
-   </widget>
    <widget class="QLineEdit" name="lineEditPassphrase1">
     <property name="geometry">
      <rect>
@@ -194,6 +168,26 @@
     <property name="wordWrap">
      <bool>true</bool>
     </property>
+   </widget>
+   <widget class="QComboBox" name="cbNormalVolume">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>0</y>
+      <width>301</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>key</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>keyfile</string>
+     </property>
+    </item>
    </widget>
   </widget>
   <widget class="QComboBox" name="comboBoxFS">
@@ -351,32 +345,6 @@
      <string/>
     </property>
    </widget>
-   <widget class="QRadioButton" name="rbHiddenKey">
-    <property name="geometry">
-     <rect>
-      <x>150</x>
-      <y>0</y>
-      <width>71</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>key</string>
-    </property>
-   </widget>
-   <widget class="QRadioButton" name="rbHiddenKeyFile">
-    <property name="geometry">
-     <rect>
-      <x>270</x>
-      <y>0</y>
-      <width>131</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>keyfile </string>
-    </property>
-   </widget>
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
@@ -431,6 +399,26 @@
      </property>
     </item>
    </widget>
+   <widget class="QComboBox" name="cbHiddenVolume">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>0</y>
+      <width>301</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>key</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>keyfile</string>
+     </property>
+    </item>
+   </widget>
   </widget>
   <widget class="QLabel" name="labelrng">
    <property name="geometry">
@@ -470,14 +458,10 @@
  </widget>
  <tabstops>
   <tabstop>lineEditVolumePath</tabstop>
-  <tabstop>rbPassphrase</tabstop>
-  <tabstop>rbPassphraseFromFile</tabstop>
   <tabstop>lineEditPassphrase1</tabstop>
   <tabstop>pbOpenKeyFile</tabstop>
   <tabstop>lineEditPassPhrase2</tabstop>
   <tabstop>comboBoxVolumeType</tabstop>
-  <tabstop>rbHiddenKey</tabstop>
-  <tabstop>rbHiddenKeyFile</tabstop>
   <tabstop>lineEditHiddenKey</tabstop>
   <tabstop>pbHiddenKeyFile</tabstop>
   <tabstop>lineEditHiddenKey1</tabstop>

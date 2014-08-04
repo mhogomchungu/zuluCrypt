@@ -54,17 +54,14 @@ cryptfiles::cryptfiles( QWidget * parent ) :QDialog( parent ),m_ui( new Ui::cryp
 	connect( m_ui->pbCreate,SIGNAL( clicked() ),this,SLOT( pbCreate() ) ) ;
 	connect( m_ui->pushButtonFile,SIGNAL( clicked() ),this,SLOT( pbOpenFile() ) ) ;
 	connect( m_ui->pbOpenFolder,SIGNAL( clicked() ),this,SLOT( pbOpenFolder() ) ) ;
-	connect( m_ui->rbKey,SIGNAL( clicked() ),this,SLOT( rbKeyChecked() ) ) ;
-	connect( m_ui->rbKeyFile,SIGNAL( clicked() ),this,SLOT( rbKeyFileChecked() ) ) ;
+	connect( m_ui->comboBox,SIGNAL( activated( int ) ),this,SLOT( cbChanged( int ) ) ) ;
 	connect( m_ui->lineEditSourcePath,SIGNAL( textChanged( QString ) ),this,SLOT( sourceTextChanged( QString ) ) ) ;
 	connect( m_ui->pushButtonKeyFile,SIGNAL( clicked() ),this,SLOT( pbKeyFile() ) ) ;
 	connect( m_ui->pushButtonCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 
-	this->rbKeyChecked() ;
+	this->cbChanged( 0 ) ;
 
 	m_OperationInProgress = false ;
-
-	m_ui->rbKey->setChecked( true ) ;
 
 	m_ui->lineEditDestinationPath->setText( QDir::homePath() + QString( "/" ) ) ;
 	m_ui->lineEditPass_2->setEchoMode( QLineEdit::Password ) ;
@@ -82,38 +79,6 @@ bool cryptfiles::eventFilter( QObject * watched,QEvent * event )
 	}else{
 		return false ;
 	}
-}
-
-void cryptfiles::rbKeyChecked()
-{
-	m_ui->lineEditPass_1->setToolTip( tr( "enter a key" ) ) ;
-	m_ui->pushButtonKeyFile->setIcon( QIcon( QString( ":/passphrase.png" ) ) ) ;
-	m_ui->pushButtonKeyFile->setEnabled( false ) ;
-	m_ui->lineEditPass_1->clear() ;
-	m_ui->lineEditPass_2->clear() ;
-	m_ui->lineEditPass_1->setEchoMode( QLineEdit::Password ) ;
-	m_ui->lineEditPass_1->setFocus() ;
-	m_ui->labelKey->setText( tr( "key" ) ) ;
-	m_ui->labelKey2->setText( tr( "repeat key" ) ) ;
-
-	if( m_operation == QString( "-E" ) ){
-		m_ui->labelKey2->setEnabled( true ) ;
-		m_ui->lineEditPass_2->setEnabled( true ) ;
-	}
-}
-
-void cryptfiles::rbKeyFileChecked()
-{
-	m_ui->lineEditPass_1->setToolTip( tr( "enter a path to a keyfile location" ) ) ;
-	m_ui->labelKey->setText( tr( "keyfile path" ) ) ;
-	m_ui->pushButtonKeyFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) ) ;
-	m_ui->lineEditPass_2->setEnabled( false ) ;
-	m_ui->pushButtonKeyFile->setEnabled( true ) ;
-	m_ui->labelKey2->setEnabled( false ) ;
-	m_ui->lineEditPass_1->clear() ;
-	m_ui->lineEditPass_2->clear() ;
-	m_ui->lineEditPass_1->setEchoMode( QLineEdit::Normal ) ;
-	m_ui->lineEditPass_1->setFocus() ;
 }
 
 void cryptfiles::sourceTextChanged( QString source )
@@ -199,8 +164,7 @@ void cryptfiles::enableAll()
 	m_ui->pbOpenFolder->setEnabled( true ) ;
 	m_ui->pushButtonFile->setEnabled( true ) ;
 	m_ui->pushButtonCancel->setEnabled( true ) ;
-	m_ui->rbKey->setEnabled( true ) ;
-	m_ui->rbKeyFile->setEnabled( true ) ;
+	m_ui->comboBox->setEnabled( true ) ;
 	m_ui->labelProgressBar->setEnabled( true ) ;
 }
 
@@ -217,8 +181,7 @@ void cryptfiles::disableAll()
 	m_ui->pbCreate->setEnabled( false ) ;
 	m_ui->pbOpenFolder->setEnabled( false ) ;
 	m_ui->pushButtonFile->setEnabled( false ) ;
-	m_ui->rbKey->setEnabled( false ) ;
-	m_ui->rbKeyFile->setEnabled( false ) ;
+	m_ui->comboBox->setEnabled( false ) ;
 	m_ui->labelProgressBar->setEnabled( false ) ;
 	m_ui->pushButtonCancel->setEnabled( false ) ;
 }
@@ -244,12 +207,12 @@ void cryptfiles::pbCreate()
 	QString key_2 = m_ui->lineEditPass_2->text() ;
 
 	QString keySource ;
-	if( m_ui->rbKey->isChecked() ){
-		keySource = QString( "-p" ) ;
+	if( m_ui->comboBox->currentIndex() == 0 ){
+		keySource = "-p" ;
 		if( key_1.isEmpty() ){
 			return msg.ShowUIOK( tr( "ERROR!" ),tr( "first key field is empty" ) ) ;
 		}
-		if( m_operation == QString( "-E" ) ){
+		if( m_operation == "-E" ){
 			if( key_2.isEmpty() ){
 				return msg.ShowUIOK( tr( "ERROR!" ),tr( "second key field is empty" ) ) ;
 			}
@@ -258,7 +221,7 @@ void cryptfiles::pbCreate()
 			}
 		}
 	}else{
-		keySource = QString( "-f" ) ;
+		keySource = "-f" ;
 		if( !utility::pathExists( key_1 ) ){
 			return msg.ShowUIOK( tr( "ERROR!" ),tr( "invalid path to key file" ) ) ;
 		}
@@ -320,6 +283,39 @@ void cryptfiles::pbOpenFolder( void )
 		m_ui->lineEditSourcePath->setFocus() ;
 	}else{
 		m_ui->pbCreate->setFocus() ;
+	}
+}
+
+void cryptfiles::cbChanged( int r )
+{
+	if( r == 0 ){
+
+		m_ui->lineEditPass_1->setToolTip( tr( "enter a key" ) ) ;
+		m_ui->pushButtonKeyFile->setIcon( QIcon( QString( ":/passphrase.png" ) ) ) ;
+		m_ui->pushButtonKeyFile->setEnabled( false ) ;
+		m_ui->lineEditPass_1->clear() ;
+		m_ui->lineEditPass_2->clear() ;
+		m_ui->lineEditPass_1->setEchoMode( QLineEdit::Password ) ;
+		m_ui->lineEditPass_1->setFocus() ;
+		m_ui->labelKey->setText( tr( "key" ) ) ;
+		m_ui->labelKey2->setText( tr( "repeat key" ) ) ;
+
+		if( m_operation == QString( "-E" ) ){
+			m_ui->labelKey2->setEnabled( true ) ;
+			m_ui->lineEditPass_2->setEnabled( true ) ;
+		}
+	}else{
+
+		m_ui->lineEditPass_1->setToolTip( tr( "enter a path to a keyfile location" ) ) ;
+		m_ui->labelKey->setText( tr( "keyfile path" ) ) ;
+		m_ui->pushButtonKeyFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) ) ;
+		m_ui->lineEditPass_2->setEnabled( false ) ;
+		m_ui->pushButtonKeyFile->setEnabled( true ) ;
+		m_ui->labelKey2->setEnabled( false ) ;
+		m_ui->lineEditPass_1->clear() ;
+		m_ui->lineEditPass_2->clear() ;
+		m_ui->lineEditPass_1->setEchoMode( QLineEdit::Normal ) ;
+		m_ui->lineEditPass_1->setFocus() ;
 	}
 }
 

@@ -51,8 +51,7 @@ private slots:
 	void pbOpenFile( void ) ;
 	void pbKeyFile( void ) ;
 	void pbOpenFolder( void ) ;
-	void rbKeyChecked( void ) ;
-	void rbKeyFileChecked( void ) ;
+	void cbChanged( int ) ;
 	void sourceTextChanged( QString ) ;
 	void taskFinished( int ) ;
 	void progressBarUpdate( int ) ;

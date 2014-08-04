@@ -134,31 +134,25 @@
    <property name="title">
     <string/>
    </property>
-   <widget class="QRadioButton" name="rbKey">
+   <widget class="QComboBox" name="comboBox">
     <property name="geometry">
      <rect>
-      <x>50</x>
+      <x>0</x>
       <y>0</y>
-      <width>101</width>
+      <width>311</width>
       <height>31</height>
      </rect>
     </property>
-    <property name="text">
-     <string>key</string>
-    </property>
-   </widget>
-   <widget class="QRadioButton" name="rbKeyFile">
-    <property name="geometry">
-     <rect>
-      <x>160</x>
-      <y>0</y>
-      <width>151</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>keyfile</string>
-    </property>
+    <item>
+     <property name="text">
+      <string>key</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>keyfile</string>
+     </property>
+    </item>
    </widget>
   </widget>
   <widget class="QLineEdit" name="lineEditPass_1">
@@ -283,8 +277,6 @@
   <tabstop>pushButtonFile</tabstop>
   <tabstop>lineEditDestinationPath</tabstop>
   <tabstop>pbOpenFolder</tabstop>
-  <tabstop>rbKey</tabstop>
-  <tabstop>rbKeyFile</tabstop>
   <tabstop>lineEditPass_1</tabstop>
   <tabstop>pushButtonKeyFile</tabstop>
   <tabstop>lineEditPass_2</tabstop>

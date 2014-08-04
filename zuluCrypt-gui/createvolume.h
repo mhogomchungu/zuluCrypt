@@ -61,10 +61,8 @@ private slots:
 	void keyChanged( QString ) ;
 	void pbCreateClicked( void ) ;
 	void pbCancelClicked( void ) ;
-	void rbPassphraseClicked( void ) ;
-	void rbPasssphraseFromFileClicked( void ) ;
-	void rbHiddenPassphraseClicked( void ) ;
-	void rbHiddenPasssphraseFromFileClicked( void ) ;
+	void cbNormalVolume( int ) ;
+	void cbHiddenVolume( int ) ;
 	void pbOpenKeyFile( void ) ;
 	void pbOpenHiddenKeyFile( void ) ;
 	void taskFinished( int ) ;

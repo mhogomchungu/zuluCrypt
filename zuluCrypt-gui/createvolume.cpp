@@ -60,10 +60,8 @@ createvolume::createvolume( QWidget * parent ) :
 	connect( m_ui->pbOpenKeyFile,SIGNAL( clicked() ),this,SLOT( pbOpenKeyFile() ) ) ;
 	connect( m_ui->pbCreate,SIGNAL( clicked() ),this,SLOT( pbCreateClicked() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancelClicked() ) ) ;
-	connect( m_ui->rbPassphrase,SIGNAL( clicked() ),this,SLOT( rbPassphraseClicked() ) ) ;
-	connect( m_ui->rbPassphraseFromFile,SIGNAL( clicked() ),this,SLOT( rbPasssphraseFromFileClicked() ) ) ;
-	connect( m_ui->rbHiddenKey,SIGNAL( clicked() ),this,SLOT( rbHiddenPassphraseClicked() ) ) ;
-	connect( m_ui->rbHiddenKeyFile,SIGNAL( clicked() ),this,SLOT( rbHiddenPasssphraseFromFileClicked() ) ) ;
+	connect( m_ui->cbNormalVolume,SIGNAL( activated( int ) ),this,SLOT( cbNormalVolume( int ) ) ) ;
+	connect( m_ui->cbHiddenVolume,SIGNAL( activated( int ) ),this,SLOT( cbHiddenVolume( int ) ) ) ;
 	connect( m_ui->comboBoxVolumeType,SIGNAL( currentIndexChanged( int ) ),this,SLOT( volumeType( int ) ) ) ;
 	connect( m_ui->lineEditPassphrase1,SIGNAL( textChanged( QString ) ),this,SLOT( keyChanged( QString ) ) ) ;
 	connect( m_ui->lineEditHiddenKey,SIGNAL( textChanged( QString ) ),this,SLOT( keyChanged( QString ) ) ) ;
@@ -82,7 +80,7 @@ createvolume::createvolume( QWidget * parent ) :
 
 void createvolume::keyChanged( QString key )
 {
-	if( m_ui->rbPassphrase->isChecked() && m_keyStrength->canCheckQuality() ){
+	if( m_ui->cbNormalVolume->currentIndex() == 0 && m_keyStrength->canCheckQuality() ){
 		int st = m_keyStrength->quality( key ) ;
 		if( st < 0 ){
 			this->setWindowTitle( tr( "passphrase quality: 0/100" ) ) ;
@@ -152,26 +150,26 @@ void createvolume::volumeType( int s )
 {
 	switch( createvolume::createVolumeType( s ) ){
 	case createvolume::luks :
-		m_volumeType = QString( "luks" )   ;
+		m_volumeType = "luks" ;
 		m_ui->comboBoxRNG->setEnabled( true ) ;
 		m_ui->groupBox->setEnabled( false ) ;
 		break ;
 	case createvolume::plain :
-		m_volumeType = QString( "plain" )  ;
+		m_volumeType = "plain"  ;
 		m_ui->comboBoxRNG->setEnabled( false ) ;
 		m_ui->groupBox->setEnabled( false ) ;
 		break ;
 	case createvolume::normal_truecrypt :
-		m_volumeType = QString( "tcrypt" ) ;
+		m_volumeType = "tcrypt" ;
 		m_ui->comboBoxRNG->setEnabled( true ) ;
 		m_ui->groupBox->setEnabled( false ) ;
 		break ;
 	case createvolume::normal_and_hidden_truecrypt :
-		m_volumeType = QString( "tcrypt" ) ;
+		m_volumeType = "tcrypt" ;
 		m_ui->comboBoxRNG->setEnabled( true ) ;
 		m_ui->groupBox->setEnabled( true ) ;
-		m_ui->rbHiddenKey->setChecked( true ) ;
-		this->rbHiddenPassphraseClicked() ;
+		m_ui->cbHiddenVolume->setCurrentIndex( 0 ) ;
+		this->cbHiddenVolume( 0 ) ;
 		break ;
 	}
 }
@@ -223,10 +221,9 @@ void createvolume::ShowUI( const QString& l,const QString& v )
 	this->enableAll() ;
 	m_ui->labelVolumePath->setText( l ) ;
 	m_ui->lineEditVolumePath->setText( v ) ;
-	m_ui->rbPassphrase->setChecked( true ) ;
 	m_ui->pbOpenKeyFile->setEnabled( false ) ;
 	m_ui->lineEditVolumePath->setEnabled( false ) ;
-	this->rbPassphraseClicked() ;
+	this->cbNormalVolume( 0 ) ;
 	m_ui->lineEditPassphrase1->setFocus() ;
 	m_ui->comboBoxFS->setCurrentIndex( 0 ) ;
 	m_ui->comboBoxRNG->setCurrentIndex( 0 ) ;
@@ -264,6 +261,59 @@ void createvolume::pbCancelClicked()
 	this->HideUI() ;
 }
 
+void createvolume::cbNormalVolume( int r )
+{
+	if( r == 0 ){
+
+		m_ui->pbOpenKeyFile->setEnabled( false ) ;
+		m_ui->lineEditPassPhrase2->setEnabled( true ) ;
+		m_ui->lineEditPassphrase1->clear() ;
+		m_ui->lineEditPassPhrase2->clear() ;
+		m_ui->lineEditPassphrase1->setEchoMode( QLineEdit::Password ) ;
+		m_ui->lineEditPassPhrase2->setEchoMode( QLineEdit::Password ) ;
+		m_ui->labelPassPhrase->setText( tr( "key" ) ) ;
+		m_ui->labelRepeatPassPhrase->setEnabled( true ) ;
+		m_ui->pbOpenKeyFile->setIcon( QIcon( QString( ":/passphrase.png" ) ) ) ;
+		this->setWindowTitle( tr( "create a new volume" ) ) ;
+	}else{
+		m_ui->pbOpenKeyFile->setEnabled( true ) ;
+		m_ui->lineEditPassphrase1->clear() ;
+		m_ui->lineEditPassPhrase2->clear() ;
+		m_ui->lineEditPassphrase1->setEchoMode( QLineEdit::Normal ) ;
+		m_ui->lineEditPassPhrase2->setEnabled( false ) ;
+		m_ui->labelPassPhrase->setText( tr( "keyfile" ) ) ;
+		m_ui->labelRepeatPassPhrase->setEnabled( false ) ;
+		m_ui->pbOpenKeyFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) ) ;
+		this->setWindowTitle( tr( "create a new volume" ) ) ;
+	}
+}
+
+void createvolume::cbHiddenVolume( int r )
+{
+	if( r == 0 ){
+
+		m_ui->pbHiddenKeyFile->setEnabled( false ) ;
+		m_ui->lineEditHiddenKey1->setEnabled( true ) ;
+		m_ui->lineEditHiddenKey->setEnabled( true ) ;
+		m_ui->lineEditHiddenKey->clear() ;
+		m_ui->lineEditHiddenKey1->clear() ;
+		m_ui->lineEditHiddenKey->setEchoMode( QLineEdit::Password ) ;
+		m_ui->lineEditHiddenKey1->setEchoMode( QLineEdit::Password ) ;
+		m_ui->labelHidden->setText( tr( "key" ) ) ;
+		m_ui->pbHiddenKeyFile->setIcon( QIcon( QString( ":/passphrase.png" ) ) ) ;
+		this->setWindowTitle( tr( "create a new volume" ) ) ;
+	}else{
+		m_ui->pbHiddenKeyFile->setEnabled( true ) ;
+		m_ui->lineEditHiddenKey->clear() ;
+		m_ui->lineEditHiddenKey1->clear() ;
+		m_ui->lineEditHiddenKey->setEchoMode( QLineEdit::Normal ) ;
+		m_ui->lineEditHiddenKey1->setEnabled( false ) ;
+		m_ui->labelHidden->setText( tr( "keyfile" ) ) ;
+		m_ui->pbHiddenKeyFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) ) ;
+		this->setWindowTitle( tr( "create a new volume" ) ) ;
+	}
+}
+
 void createvolume::HideUI()
 {
 	this->hide() ;
@@ -276,7 +326,7 @@ void createvolume::enableAll()
 	m_ui->labelVolumePath->setEnabled( true ) ;
 	m_ui->labelRepeatPassPhrase->setEnabled( true ) ;
 	m_ui->lineEditPassphrase1->setEnabled( true ) ;
-	if( m_ui->rbPassphrase->isChecked() ){
+	if( m_ui->cbNormalVolume->currentIndex() == 0 ){
 		m_ui->lineEditPassPhrase2->setEnabled( true ) ;
 	}
 	//m_ui->lineEditVolumePath->setEnabled( true ) ;
@@ -291,9 +341,7 @@ void createvolume::enableAll()
 	if( m_ui->comboBoxVolumeType->currentIndex() != createvolume::plain ){
 		m_ui->comboBoxRNG->setEnabled( true ) ;
 	}
-	m_ui->rbPassphrase->setEnabled( true ) ;
-	m_ui->rbPassphraseFromFile->setEnabled( true ) ;
-
+	m_ui->cbNormalVolume->setEnabled( true ) ;
 #if TRUECRYPT_CREATE
 	if( m_ui->comboBoxVolumeType->currentIndex() == createvolume::normal_and_hidden_truecrypt ){
 		m_ui->groupBox->setEnabled( true ) ;
@@ -318,64 +366,10 @@ void createvolume::disableAll()
 	m_ui->comboBoxFS->setEnabled( false ) ;
 	m_ui->comboBoxVolumeType->setEnabled( false ) ;
 	m_ui->comboBoxRNG->setEnabled( false ) ;
-	m_ui->rbPassphrase->setEnabled( false ) ;
-	m_ui->rbPassphraseFromFile->setEnabled( false ) ;
+	m_ui->cbNormalVolume->setEnabled( false ) ;
 #if TRUECRYPT_CREATE
 	m_ui->groupBox->setEnabled( false ) ;
 #endif
-}
-
-void createvolume::rbPassphraseClicked()
-{
-	m_ui->pbOpenKeyFile->setEnabled( false ) ;
-	m_ui->lineEditPassPhrase2->setEnabled( true ) ;
-	m_ui->lineEditPassphrase1->clear() ;
-	m_ui->lineEditPassPhrase2->clear() ;
-	m_ui->lineEditPassphrase1->setEchoMode( QLineEdit::Password ) ;
-	m_ui->lineEditPassPhrase2->setEchoMode( QLineEdit::Password ) ;
-	m_ui->labelPassPhrase->setText( tr( "key" ) ) ;
-	m_ui->labelRepeatPassPhrase->setEnabled( true ) ;
-	m_ui->pbOpenKeyFile->setIcon( QIcon( QString( ":/passphrase.png" ) ) ) ;
-	this->setWindowTitle( tr( "create a new volume" ) ) ;
-}
-
-void createvolume::rbPasssphraseFromFileClicked()
-{
-	m_ui->pbOpenKeyFile->setEnabled( true ) ;
-	m_ui->lineEditPassphrase1->clear() ;
-	m_ui->lineEditPassPhrase2->clear() ;
-	m_ui->lineEditPassphrase1->setEchoMode( QLineEdit::Normal ) ;
-	m_ui->lineEditPassPhrase2->setEnabled( false ) ;
-	m_ui->labelPassPhrase->setText( tr( "keyfile" ) ) ;
-	m_ui->labelRepeatPassPhrase->setEnabled( false ) ;
-	m_ui->pbOpenKeyFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) ) ;
-	this->setWindowTitle( tr( "create a new volume" ) ) ;
-}
-
-void createvolume::rbHiddenPassphraseClicked()
-{
-	m_ui->pbHiddenKeyFile->setEnabled( false ) ;
-	m_ui->lineEditHiddenKey1->setEnabled( true ) ;
-	m_ui->lineEditHiddenKey->setEnabled( true ) ;
-	m_ui->lineEditHiddenKey->clear() ;
-	m_ui->lineEditHiddenKey1->clear() ;
-	m_ui->lineEditHiddenKey->setEchoMode( QLineEdit::Password ) ;
-	m_ui->lineEditHiddenKey1->setEchoMode( QLineEdit::Password ) ;
-	m_ui->labelHidden->setText( tr( "key" ) ) ;
-	m_ui->pbHiddenKeyFile->setIcon( QIcon( QString( ":/passphrase.png" ) ) ) ;
-	this->setWindowTitle( tr( "create a new volume" ) ) ;
-}
-
-void createvolume::rbHiddenPasssphraseFromFileClicked()
-{
-	m_ui->pbHiddenKeyFile->setEnabled( true ) ;
-	m_ui->lineEditHiddenKey->clear() ;
-	m_ui->lineEditHiddenKey1->clear() ;
-	m_ui->lineEditHiddenKey->setEchoMode( QLineEdit::Normal ) ;
-	m_ui->lineEditHiddenKey1->setEnabled( false ) ;
-	m_ui->labelHidden->setText( tr( "keyfile" ) ) ;
-	m_ui->pbHiddenKeyFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) ) ;
-	this->setWindowTitle( tr( "create a new volume" ) ) ;
 }
 
 void createvolume::pbCreateClicked()
@@ -407,7 +401,7 @@ void createvolume::pbCreateClicked()
 			return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "illegal character detected in the hidden volume size field" ) ) ;
 		}
 
-		if( m_ui->rbHiddenKey->isChecked() ){
+		if( m_ui->cbHiddenVolume->currentIndex() == 0 ){
 			if( m_ui->lineEditHiddenKey->text() != m_ui->lineEditHiddenKey1->text() ){
 				return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "hidden passphrases do not match" ) ) ;
 			}
@@ -424,7 +418,7 @@ void createvolume::pbCreateClicked()
 
 	QString source ;
 
-	if ( m_ui->rbPassphraseFromFile->isChecked() ){
+	if ( m_ui->cbNormalVolume->currentText() == tr( "keyfile" ) ){
 		if( passphrase_1.isEmpty() ){
 			return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
 		}else{
@@ -481,7 +475,7 @@ void createvolume::pbCreateClicked()
 		QString x = m_ui->lineEditHiddenKey->text() ;
 		QString y ;
 
-		if( m_ui->rbHiddenKey->isChecked() ){
+		if( m_ui->cbHiddenVolume->currentIndex() == 0 ){
 
 			y = utility::keyPath() + "-1" ;
 			utility::keySend( y,x ) ;

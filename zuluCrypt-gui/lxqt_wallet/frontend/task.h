@@ -1,30 +1,47 @@
 /*
+ * copyright: 2014
+ * name : mhogo mchungu
+ * email: mhogomchungu@gmail.com
  *
- *  Copyright (c) 2014
- *  name : mhogo mchungu
- *  email: mhogomchungu@gmail.com
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 2 of the License, or
- *  (at your option) any later version.
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in
+ *    the documentation and/or other materials provided with the
+ *    distribution.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE
+ * COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+ * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
  */
 
-#ifndef TASK_H
-#define TASK_H
+#ifndef __TASK_H_INCLUDED__
+#define __TASK_H_INCLUDED__
 
 #include <utility>
 #include <future>
 #include <functional>
 #include <QThread>
 #include <QEventLoop>
+
+/*
+ *
+ * Examples on how to use the library are at the end of this file.
+ *
+ */
 
 namespace LxQt{
 
@@ -54,18 +71,18 @@ namespace Task
 	class future
 	{
 	public:
-		future() : m_function( []( const T& t ){ Q_UNUSED( t ) ; } )
+		future() : m_function( []( T t ){ Q_UNUSED( t ) ; } )
 		{
 		}
 		void setActions( std::function< void( void ) > start,
 				 std::function< void( void ) > cancel,
-				 std::function< T( void ) > get )
+				 std::function< T ( void ) > get )
 		{
 			m_start  = std::move( start ) ;
 			m_cancel = std::move( cancel ) ;
 			m_get    = std::move( get ) ;
 		}
-		void then( std::function< void( const T& ) > function )
+		void then( std::function< void( T ) > function )
 		{
 			m_function = std::move( function ) ;
 			m_start() ;
@@ -80,7 +97,7 @@ namespace Task
 
 			T q ;
 
-			m_function = [ & ]( T r ){  q = std::move( r ) ; p.exit() ; } ;
+			m_function = [ & ]( T r ){ q = std::move( r ) ; p.exit() ; } ;
 
 			m_start() ;
 
@@ -96,12 +113,12 @@ namespace Task
 		{
 			m_cancel() ;
 		}
-		void run( const T& arg )
+		void run( T r )
 		{
-			m_function( arg ) ;
+			m_function( std::move( r ) ) ;
 		}
 	private:
-		std::function< void( const T& ) > m_function ;
+		std::function< void( T ) > m_function ;
 		std::function< void( void ) > m_start ;
 		std::function< void( void ) > m_cancel ;
 		std::function< T ( void ) > m_get ;
@@ -124,7 +141,7 @@ namespace Task
 	private:
 		~ThreadHelper()
 		{
-			m_future.run( m_cargo ) ;
+			m_future.run( std::move( m_cargo ) ) ;
 		}
 		void run( void )
 		{
@@ -281,6 +298,9 @@ namespace Task
 #if 0
 
 /*
+ * Examples on how to use the library
+ */
+/*
  * templated version that passes a return value of one function to another function
  */
 auto _a = [](){
@@ -292,8 +312,9 @@ auto _a = [](){
 	return 0 ;
 }
 
-auto _b = []( const int& r ){
+auto _b = []( int r ){
 	/*
+	 *
 	 * task _b does what task _b does here.
 	 *
 	 * r is a const reference to a value returned by _a
@@ -339,7 +360,7 @@ Task::run( _c ).then( _d ) ;
 Task::exec( _c ) ;
 
 /*
- * Task::await() is used to "block" the calling thread until the function returns.
+ * Task::await() is used to "block" without "hanging" the calling thread until the function returns.
  *
  * Its use case is to do sync programming without hanging the calling thread.
  *
@@ -369,4 +390,4 @@ int r = Task::run<int>( _a ).await() ;
 
 #endif
 
-#endif // TASK_H
+#endif //__TASK_H_INCLUDED__
