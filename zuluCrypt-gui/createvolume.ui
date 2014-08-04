@@ -458,12 +458,14 @@
  </widget>
  <tabstops>
   <tabstop>lineEditVolumePath</tabstop>
-  <tabstop>lineEditPassphrase1</tabstop>
+  <tabstop>cbNormalVolume</tabstop>
   <tabstop>pbOpenKeyFile</tabstop>
+  <tabstop>lineEditPassphrase1</tabstop>
   <tabstop>lineEditPassPhrase2</tabstop>
   <tabstop>comboBoxVolumeType</tabstop>
-  <tabstop>lineEditHiddenKey</tabstop>
+  <tabstop>cbHiddenVolume</tabstop>
   <tabstop>pbHiddenKeyFile</tabstop>
+  <tabstop>lineEditHiddenKey</tabstop>
   <tabstop>lineEditHiddenKey1</tabstop>
   <tabstop>lineEditHiddenSize</tabstop>
   <tabstop>comboBoxHiddenSize</tabstop>

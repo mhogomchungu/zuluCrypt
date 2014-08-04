@@ -277,8 +277,9 @@
   <tabstop>pushButtonFile</tabstop>
   <tabstop>lineEditDestinationPath</tabstop>
   <tabstop>pbOpenFolder</tabstop>
-  <tabstop>lineEditPass_1</tabstop>
+  <tabstop>comboBox</tabstop>
   <tabstop>pushButtonKeyFile</tabstop>
+  <tabstop>lineEditPass_1</tabstop>
   <tabstop>lineEditPass_2</tabstop>
   <tabstop>pbCreate</tabstop>
   <tabstop>pushButtonCancel</tabstop>
