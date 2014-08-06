@@ -27,11 +27,11 @@
 typedef struct{
 	const char * device ;
 	const char * existing_key ;
-	int 	     existing_key_size ;
-	int          existing_key_is_keyfile ;
+	size_t 	     existing_key_size ;
+	size_t       existing_key_is_keyfile ;
 	const char * new_key ;
-	int 	     new_key_size ;
-	int          new_key_is_keyfile ;
+	size_t 	     new_key_size ;
+	size_t       new_key_is_keyfile ;
 }tcrypt_opts ;
 
 /*
@@ -97,6 +97,9 @@ static int _replace_truecrypt_key( const tcrypt_opts * opts )
 
 	info.device = opts->device ;
 
+	/*
+	 * zuluCryptCreateKeyFile() is defined in ../lib/open_tcrypt.c
+	 */
 	if( opts->existing_key_is_keyfile ){
 
 		info.header_key_source = "keyfiles" ;
@@ -126,7 +129,7 @@ static int _replace_truecrypt_key( const tcrypt_opts * opts )
 	r = zuluCryptModifyTcryptHeader( &info ) ;
 
 	/*
-	 * zuluCryptDeleteFile_1() is defined in ../file_path_security.c
+	 * zuluCryptDeleteFile_1() is defined in ../lib/file_path_security.c
 	 */
 	if( st != StringVoid ){
 		zuluCryptDeleteFile_1( st ) ;
@@ -308,7 +311,7 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 			len1 = StringLength( *ek ) ;
 
 			if( StringHasNoComponent( existingKey,"/.zuluCrypt-socket" ) ){
-				tcrypt.existing_key_is_keyfile= 1 ;
+				tcrypt.existing_key_is_keyfile = 1 ;
 			}
 		}
 		if( StringsAreEqual( keyType2,"-f" ) ){

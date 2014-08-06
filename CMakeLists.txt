@@ -33,7 +33,7 @@ pkg_check_modules( BLKID blkid )
 pkg_check_modules( PWQUALITY pwquality )
 pkg_check_modules( TCPLAY tcplay )
 
-set( PGR_VERSION "4.7.2" )
+set( PGR_VERSION "4.7.3" )
 set( LIB_VERSION "1.2.0" )
 set( LIB_PLUGIN_VERSION "1.0.0" )
 
