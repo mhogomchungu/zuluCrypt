@@ -243,15 +243,18 @@ void luksaddkey::rbNewPassphraseFromFile()
 void luksaddkey::pbAdd( void )
 {
 	DialogMsg msg( this ) ;
-	m_volumePath = utility::resolvePath( m_ui->textEditPathToVolume->text() ) ;
 	QString ExistingKey = m_ui->textEditExistingPassphrase->text() ;
 
 	QString NewKey = m_ui->textEditPassphraseToAdd->text() ;
 	QString NewKey_1 = m_ui->lineEditReEnterPassphrase->text() ;
 
+	m_volumePath = m_ui->textEditPathToVolume->text() ;
+
 	if( m_volumePath.isEmpty() ){
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
 	}
+
+	m_volumePath = utility::resolvePath( m_volumePath ) ;
 
 	if( m_ui->radioButtonPassphraseInVolumeFromFile->isChecked() ){
 		if( ExistingKey.isEmpty() ){

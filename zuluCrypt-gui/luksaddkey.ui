@@ -17,7 +17,7 @@
    <bool>true</bool>
   </property>
   <property name="windowTitle">
-   <string>add a key to a luks volume</string>
+   <string>add a key to a volume</string>
   </property>
   <property name="modal">
    <bool>true</bool>

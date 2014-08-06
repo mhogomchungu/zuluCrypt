@@ -1,7 +1,8 @@
 zulucrypt (4.7.3-1) UNRELEASED; urgency=low
   [Mhogo Mchungu]
   * New Features
-     - fix build issues on Qt5
+     - fix build issues on Qt5.
+     - add an ability to change TrueCrypt volume key.
      - show devices even when they have neither partitions nor recognizable file systems.This is useful for TrueCrypt system volumes or
        normal TrueCrypt volumes that are not in partitions.
 

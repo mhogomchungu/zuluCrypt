@@ -350,6 +350,8 @@ static int _modify_tcrypt( info_t * info,const struct_opts * opts )
 		}
 	}
 
+	info->header_new_key = info->header_key ;
+
 	/*
 	 * zuluCryptModifyTcryptHeader() is defined in ../lib/create_tcrypt.c
 	 */

@@ -18,10 +18,21 @@
  */
 
 #include "includes.h"
+#include "../lib/includes.h"
 #include <locale.h>
 #include <stdio.h>
 #include <libintl.h>
 #include <sys/stat.h>
+
+typedef struct{
+	const char * device ;
+	const char * existing_key ;
+	int 	     existing_key_size ;
+	int          existing_key_is_keyfile ;
+	const char * new_key ;
+	int 	     new_key_size ;
+	int          new_key_is_keyfile ;
+}tcrypt_opts ;
 
 /*
  * Its not possible to add more keys to a volume with no empty slots or to a non luks volume
@@ -30,35 +41,107 @@
  */
 static int _zuluCryptCheckEmptySlots( const char * device )
 {
-	int status = 0 ;
-	char * c  ;
-	char * d  ;
+	int r = 0 ;
+	char * c ;
+	char * d ;
 
 	zuluCryptSecurityGainElevatedPrivileges() ;
+
 	/*
-	 * zuluCryptEmptySlots() is defined in ../lib/empty_slots.c
+	 * zuluCryptVolumeIsLuks() is defined in ../lib/is_luks.c
 	 */
-	c = zuluCryptEmptySlots( device ) ;
+	if( zuluCryptVolumeIsLuks( device ) ){
+
+		/*
+		 * zuluCryptEmptySlots() is defined in ../lib/empty_slots.c
+		 */
+		c = zuluCryptEmptySlots( device ) ;
+
+		if( c == NULL ){
+			/*
+			 * we shouldnt get here
+			 */
+			r = 1 ;
+		}else{
+			d = c - 1 ;
+			while( *++d ){
+				if( *d == '0' ){
+					r = 2 ;
+					break ;
+				}
+			}
+			free( c ) ;
+		}
+	}else{
+		/*
+		 * volume is not a LUKS volume,assuming its a TrueCrypt volume
+		 */
+		r = 2 ;
+	}
 
 	zuluCryptSecurityDropElevatedPrivileges() ;
 
-	if( c == NULL ){
-		/*
-		 * we got here because the volume is either not luks based or the path is invalid
-		 */
-		status = 1 ;
+	return r ;
+}
+
+static int _replace_truecrypt_key( const tcrypt_opts * opts )
+{
+	info_t info ;
+
+	string_t st = StringVoid ;
+	string_t xt = StringVoid ;
+
+	int r ;
+
+	memset( &info,'\0',sizeof( info_t ) ) ;
+
+	info.device = opts->device ;
+
+	if( opts->existing_key_is_keyfile ){
+
+		info.header_key_source = "keyfiles" ;
+		st = zuluCryptCreateKeyFile( opts->existing_key,opts->existing_key_size,"add-tcrypt-1" ) ;
+		info.header_key = StringContent( st ) ;
 	}else{
-		d = c - 1 ;
-		while( *++d ){
-			if( *d == '0' ){
-				status = 2 ;
-				break ;
-			}
-		}
-		free( c ) ;
+		info.header_key_source = "passphrase" ;
+		info.header_key = opts->existing_key ;
 	}
 
-	return status ;
+	if( opts->new_key_is_keyfile ){
+
+		info.header_new_key_source = "new_keyfiles" ;
+		st = zuluCryptCreateKeyFile( opts->new_key,opts->new_key_size,"add-tcrypt-2" ) ;
+		info.header_new_key = StringContent( st ) ;
+	}else{
+
+		info.header_new_key_source = "new_passphrase" ;
+		info.header_new_key = opts->new_key ;
+	}
+
+	info.rng = "/dev/urandom" ;
+
+	/*
+	 * zuluCryptModifyTcryptHeader() is defined in ../lib/create_tcrypt.c
+	 */
+	r = zuluCryptModifyTcryptHeader( &info ) ;
+
+	/*
+	 * zuluCryptDeleteFile_1() is defined in ../file_path_security.c
+	 */
+	if( st != StringVoid ){
+		zuluCryptDeleteFile_1( st ) ;
+		StringDelete( &st ) ;
+	}
+	if( xt != StringVoid ){
+		zuluCryptDeleteFile_1( xt ) ;
+		StringDelete( &xt ) ;
+	}
+
+	if( r == 0 ){
+		return 0 ;
+	}else{
+		return 1 ;
+	}
 }
 
 static int zuluExit( int st,stringList_t stl )
@@ -90,13 +173,6 @@ only root user or members of group \"zulucrypt\" can do that\n" ) ) ;							brea
 		default : printf( gettext( "ERROR: unrecognized error with status number %d encountered\n" ),st ) ;
 	}
 
-	return st ;
-}
-
-static int zuluExit_1( int st,const char * device,stringList_t stl )
-{
-	printf( gettext( "ERROR: device \"%s\" is not a luks device\n" ),device ) ;
-	StringListClearDelete( &stl ) ;
 	return st ;
 }
 
@@ -162,6 +238,10 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 
 	int status = 0 ;
 
+	tcrypt_opts tcrypt ;
+
+	memset( &tcrypt,'\0',sizeof( tcrypt_opts ) ) ;
+
 	/*
 	 * zuluCryptPartitionIsSystemPartition() is defined in ./partitions.c
 	 */
@@ -189,22 +269,10 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 		default:  return zuluExit( 5,stl ) ;
 	}
 
-	zuluCryptSecurityGainElevatedPrivileges() ;
-
-	/*
-	 * zuluCryptVolumeIsNotLuks() is defined in ../lib/is_luks.c
-	 */
-	status = zuluCryptVolumeIsNotLuks( device ) ;
-
-	zuluCryptSecurityDropElevatedPrivileges() ;
-
-	if( status ){
-		return zuluExit_1( 3,device,stl ) ;
-	}
-
 	switch( _zuluCryptCheckEmptySlots( device ) ){
 		case 0 : return zuluExit( 6,stl ) ;
-		case 1 : return zuluExit( 2,stl )  ;
+		case 1 : return zuluExit( 2,stl ) ;
+		case 2 : /* no complains,continue */ ;
 	}
 
 	if( keyType1 == NULL && keyType2 == NULL ){
@@ -235,8 +303,13 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 				case 2 : return zuluExit( 13,stl ) ;
 				case 5 : return zuluExit( 14,stl ) ;
 			}
+
 			key1 = StringContent( *ek ) ;
 			len1 = StringLength( *ek ) ;
+
+			if( StringHasNoComponent( existingKey,"/.zuluCrypt-socket" ) ){
+				tcrypt.existing_key_is_keyfile= 1 ;
+			}
 		}
 		if( StringsAreEqual( keyType2,"-f" ) ){
 			/*
@@ -248,8 +321,13 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 				case 2 : return zuluExit( 13,stl ) ;
 				case 5 : return zuluExit( 14,stl ) ;
 			}
+
 			key2 = StringContent( *nk ) ;
 			len2 = StringLength( *nk ) ;
+
+			if( StringHasNoComponent( newKey,"/.zuluCrypt-socket" ) ){
+				tcrypt.new_key_is_keyfile = 1 ;
+			}
 		}
 		if( StringsAreEqual( keyType1,"-f" ) && StringsAreEqual( keyType2,"-f" ) ){
 			;
@@ -272,16 +350,29 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 	zuluCryptSecurityLockMemory( stl ) ;
 
 	zuluCryptSecurityGainElevatedPrivileges() ;
+
 	/*
-	 * zuluCryptAddKey() is defined in ../lib/add_key.c
+	 * zuluCryptOpenLuks() is defined in ../lib/open_luks.c
 	 */
-	status = zuluCryptAddKey( device,key1,len1,key2,len2 ) ;
+	if( zuluCryptVolumeIsLuks( device ) ){
+
+		/*
+		* zuluCryptAddKey() is defined in ../lib/add_key.c
+		*/
+		status = zuluCryptAddKey( device,key1,len1,key2,len2 ) ;
+	}else{
+		tcrypt.device = device ;
+
+		tcrypt.existing_key      = key1 ;
+		tcrypt.existing_key_size = len1 ;
+
+		tcrypt.new_key           = key2 ;
+		tcrypt.new_key_size      = len2 ;
+
+		status = _replace_truecrypt_key( &tcrypt ) ;
+	}
 
 	zuluCryptSecurityDropElevatedPrivileges() ;
 
-	/*
-	 * this function is defined in check_invalid_key.c
-	 */
-	zuluCryptCheckInvalidKey( device ) ;
 	return zuluExit( status,stl ) ;
 }

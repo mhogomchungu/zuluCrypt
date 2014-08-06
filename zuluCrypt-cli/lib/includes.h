@@ -51,6 +51,7 @@ typedef struct{
 	const char * rng ;
 	const char * header_key ;
 	const char * header_key_source ;
+	const char * header_new_key ;
 	const char * header_new_key_source ;
 	uid_t uid ;
 	string_t ( *getKey )( int * ) ;

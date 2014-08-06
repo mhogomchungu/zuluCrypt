@@ -133,6 +133,10 @@ int zuluCryptModifyTcryptHeader( const info_t * info )
 	int r = !TC_OK ;
 	const char * sys_device = NULL ;
 	string_t st = StringVoid ;
+
+	if( info->device == NULL ){
+		return r ;
+	}
 	if( tc_api_init( 0 ) == TC_OK ){
 		task = tc_api_task_init( "modify" ) ;
 		if( task != 0 ){
@@ -147,25 +151,35 @@ int zuluCryptModifyTcryptHeader( const info_t * info )
 			}else{
 				tc_api_task_set( task,"dev",info->device ) ;
 			}
+
 			tc_api_task_set( task,"hidden_size_bytes",( u_int64_t )0 ) ;
-			/*
-			 * below line may look like one of the following two lines:
-			 * tc_api_task_set( task,"header_from_file","/home/ink/tc.headerbackup" ) ;
-			 * tc_api_task_set( task,"save_header_to_file","/home/ink/tc.headerbackup" ) ;
-			 */
-			tc_api_task_set( task,info->header_source,info->tmp_path ) ;
-			/*
-			 * below line may look like one of the following two lines:
-			 * tc_api_task_set( task,"passphrase","xxx" ) ;
-			 * tc_api_task_set( task,"keyfiles","/home/ink/keyfile" ) ;
-			 */
-			tc_api_task_set( task,info->header_key_source,info->header_key ) ;
-			/*
-			 * below line may look like one of the following two lines:
-			 * tc_api_task_set( task,"new_passphrase","xxx" ) ;
-			 * tc_api_task_set( task,"new_keyfiles","/home/ink/keyfile" ) ;
-			 */
-			tc_api_task_set( task,info->header_new_key_source,info->header_key ) ;
+
+			if( info->header_source && info->tmp_path ){
+				/*
+				* below line may look like one of the following two lines:
+				* tc_api_task_set( task,"header_from_file","/home/ink/tc.headerbackup" ) ;
+				* tc_api_task_set( task,"save_header_to_file","/home/ink/tc.headerbackup" ) ;
+				*/
+				tc_api_task_set( task,info->header_source,info->tmp_path ) ;
+			}
+
+			if( info->header_key_source && info->header_key ){
+				/*
+				* below line may look like one of the following two lines:
+				* tc_api_task_set( task,"passphrase","xxx" ) ;
+				* tc_api_task_set( task,"keyfiles","/home/ink/keyfile" ) ;
+				*/
+				tc_api_task_set( task,info->header_key_source,info->header_key ) ;
+			}
+
+			if( info->header_new_key_source && info->header_new_key ){
+				/*
+				* below line may look like one of the following two lines:
+				* tc_api_task_set( task,"new_passphrase","xxx" ) ;
+				* tc_api_task_set( task,"new_keyfiles","/home/ink/keyfile" ) ;
+				*/
+				tc_api_task_set( task,info->header_new_key_source,info->header_new_key ) ;
+			}
 
 			if( StringsAreEqual( info->rng,"/dev/urandom" ) ){
 				tc_api_task_set( task,"weak_keys_and_salt",TRUE ) ;
