@@ -632,6 +632,15 @@ size_t StringLength( string_t st )
 	}
 }
 
+int StringLengthMatch( string_t st,size_t s )
+{
+	if( st == StringVoid ){
+		return 0 ;
+	}else{
+		return st->size == s ;
+	}
+}
+
 #if 0
 const char * StringContent( string_t st )
 {

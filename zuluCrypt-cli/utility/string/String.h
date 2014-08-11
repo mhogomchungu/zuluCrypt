@@ -282,6 +282,12 @@ char * StringDeleteHandle( string_t * st ) ;
 size_t StringLength( string_t st ) ;
 
 /*
+ * Return 1 if the the length of the string managed by st equals s.
+ * Return 0 otherwise.
+ */
+int StringLengthMatch( string_t st,size_t s ) ;
+
+/*
  * Return a character at position p.First position is at "0".
  *
  * NOTE: it is your responsibility to make sure p is within range
