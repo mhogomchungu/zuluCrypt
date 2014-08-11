@@ -139,12 +139,8 @@ void utility::help( const QString& app )
 	QString helpMsg = QObject::tr( "\n\
 options:\n\
 	-d   path to where a volume to be auto unlocked/mounted is located\n\
-	-m   tool to use to open a default file manager(default tool is xdg-open)\n" ) ;
-
-	if( app == QString( "zuluMount" ) ){
-		  helpMsg += QObject::tr( "\
+	-m   tool to use to open a default file manager(default tool is xdg-open)\n\
 	-e   start the application without showing the GUI\n" ) ;
-	}
 
 	QByteArray s = helpMsg.toLatin1() ;
 
