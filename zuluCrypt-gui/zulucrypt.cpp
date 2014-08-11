@@ -203,10 +203,14 @@ void zuluCrypt::initFont()
 
 void zuluCrypt::raiseWindow()
 {
-	this->setVisible( true ) ;
-	this->show() ; ;
-	this->raise() ;
-	this->setWindowState( Qt::WindowActive ) ;
+	if( m_startHidden ){
+		m_trayIcon->setVisible( true ) ;
+	}else{
+		this->setVisible( true ) ;
+		this->show() ; ;
+		this->raise() ;
+		this->setWindowState( Qt::WindowActive ) ;
+	}
 }
 
 void zuluCrypt::raiseWindow( QString device )
@@ -233,6 +237,7 @@ void zuluCrypt::start()
 
 	QString e      = utility::cmdArgumentValue( l,"-d" ) ;
 	m_folderOpener = utility::cmdArgumentValue( l,"-m","xdg-open" ) ;
+	m_startHidden  = l.contains( "-e" ) ;
 
 	QString sockpath = QString( "zuluCrypt-gui.socket" ) ;
 	oneinstance * instance = new oneinstance( this,sockpath,"raiseWindow",e ) ;

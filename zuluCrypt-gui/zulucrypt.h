@@ -163,10 +163,10 @@ private:
 	void setUpApp( const QString& ) ;
 	void setFolderOpener( void ) ;
 	void processArgumentList( void ) ;
-
 	Ui::zuluCrypt * m_ui ;
 	QSystemTrayIcon * m_trayIcon ;
 	QString m_folderOpener ;
+	bool m_startHidden ;
 	LxQt::Wallet::Wallet * m_wallet ;
 };
 
