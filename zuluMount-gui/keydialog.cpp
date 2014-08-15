@@ -58,6 +58,7 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const QString& path,
 	m_table = table ;
 	m_path = path ;
 	m_working = false ;
+	m_wallet  = nullptr ;
 
 	QString msg ;
 	if( type == QString( "crypto_LUKS" ) ){
@@ -330,30 +331,21 @@ void keyDialog::walletIsOpen( bool opened )
 {
 	if( opened ){
 
-		Task::run<QString>( [ this ](){
+		m_key = Task::await<QString>( utility::getKeyFromWallet( m_wallet,m_path ) ) ;
 
-			return utility::getKeyFromWallet( m_wallet,m_path ) ;
-
-		} ).then( [ this ]( const QString& key ){
-
-			if( key.isEmpty() ){
-				DialogMsg msg( this ) ;
-				msg.ShowUIOK( tr( "ERROR" ),tr( "the volume does not appear to have an entry in the wallet" ) ) ;
-				this->enableAll() ;
-				if( m_ui->cbKeyType->currentIndex() != keyDialog::Key ){
-					m_ui->lineEditKey->setEnabled( false ) ;
-				}
-			}else{
-				m_key = key ;
-				this->openVolume() ;
+		if( m_key.isEmpty() ){
+			DialogMsg msg( this ) ;
+			msg.ShowUIOK( tr( "ERROR" ),tr( "the volume does not appear to have an entry in the wallet" ) ) ;
+			this->enableAll() ;
+			if( m_ui->cbKeyType->currentIndex() != keyDialog::Key ){
+				m_ui->lineEditKey->setEnabled( false ) ;
 			}
-
-			m_wallet->deleteLater() ;
-		} ) ;
+		}else{
+			this->openVolume() ;
+		}
 	}else{
 		_internalPassWord.clear() ;
 		this->enableAll() ;
-		m_wallet->deleteLater() ;
 	}
 }
 
@@ -511,13 +503,6 @@ void keyDialog::openVolume()
 
 		zuluMountTaskResult s ;
 
-		QString output = r.output() ;
-		int index = output.indexOf( QChar( ':' ) ) ;
-
-		if( index != -1 ){
-			s.outPut = output.mid( index + 1 ) ;
-		}
-
 		s.exitCode = r.exitCode() ;
 		s.outPut   = r.output() ;
 
@@ -627,5 +612,8 @@ void keyDialog::HideUI()
 keyDialog::~keyDialog()
 {
 	m_menu->deleteLater() ;
+	if( m_wallet ){
+		m_wallet->deleteLater() ;
+	}
 	delete m_ui ;
 }

@@ -79,6 +79,8 @@ passwordDialog::passwordDialog( QTableWidget * table,QWidget * parent ) : QDialo
 
 	m_parent = parent ;
 
+	m_wallet = nullptr ;
+
 	this->setFixedSize( this->size() ) ;
 	this->setWindowFlags( Qt::Window | Qt::Dialog ) ;
 	this->setFont( parent->font() ) ;
@@ -417,7 +419,7 @@ void passwordDialog::walletIsOpen( bool opened )
 
 		QString key = m_ui->OpenVolumePath->text() ;
 
-		m_key = Task::await<QString>( [ & ](){ return utility::getKeyFromWallet( m_wallet,key ) ; } ) ;
+		m_key = Task::await<QString>( utility::getKeyFromWallet( m_wallet,key ) ) ;
 
 		if( m_key.isEmpty() ){
 			DialogMsg msg( this ) ;
@@ -426,12 +428,9 @@ void passwordDialog::walletIsOpen( bool opened )
 		}else{
 			this->openVolume() ;
 		}
-
-		m_wallet->deleteLater() ;
 	}else{
 		_internalPassWord.clear() ;
 		this->enableAll() ;
-		m_wallet->deleteLater() ;
 	}
 }
 
@@ -727,5 +726,8 @@ Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The de
 passwordDialog::~passwordDialog()
 {
 	m_pluginMenu->deleteLater() ;
+	if( m_wallet ){
+		m_wallet->deleteLater() ;
+	}
 	delete m_ui ;
 }

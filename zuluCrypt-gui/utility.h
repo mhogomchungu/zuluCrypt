@@ -59,7 +59,6 @@ namespace utility
 	void debug( const QString& ) ;
 	void debug( int ) ;
 	QString mapperPath( const QString& ) ;
-	QString getUUIDFromPath( const QString& ) ;
 	QString getVolumeID( const QString& ) ;
 	bool userIsRoot( void ) ;
 	bool mapperPathExists( const QString& path ) ;
@@ -80,13 +79,14 @@ namespace utility
 	bool getOpenVolumeReadOnlyOption( const QString& app ) ;
 	QString keyPath( void ) ;
 	void keySend( const QString& keyPath,const QString& key ) ;
-	QString getKeyFromWallet( LxQt::Wallet::Wallet *,const QString& volumeID ) ;
 	bool eventFilter( QObject * gui,QObject * watched,QEvent * event ) ;
 	QStringList split( const QString&,char token = '\n' ) ;
 	QStringList split( const QByteArray&,char token = '\n' ) ;
 
 	::Task::future< int >& exec( const QString& ) ;
 	::Task::future< QStringList >& luksEmptySlots( const QString& volumePath ) ;
+	::Task::future< QString >& getKeyFromWallet( LxQt::Wallet::Wallet *,const QString& volumeID ) ;
+	::Task::future< QString >& getUUIDFromPath( const QString& ) ;
 }
 
 namespace utility

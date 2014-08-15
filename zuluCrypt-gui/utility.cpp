@@ -115,6 +115,56 @@ void utility::keySend( const QString& path,const QString& key )
 	} ) ;
 }
 
+::Task::future<QString>& utility::getKeyFromWallet( LxQt::Wallet::Wallet * wallet,const QString& volumeID )
+{
+	return ::Task::run<QString>( [ wallet,volumeID ](){
+
+		QByteArray key ;
+
+		if( volumeID.startsWith( QString( "UUID=" ) ) ){
+			key = wallet->readValue( volumeID ) ;
+		}else{
+			QString uuid = utility::getUUIDFromPath( volumeID ).get() ;
+			if( uuid.isEmpty() ){
+				key = wallet->readValue( utility::getVolumeID( volumeID ) ) ;
+			}else{
+				key = wallet->readValue( uuid ) ;
+				if( key.isEmpty() ){
+					key = wallet->readValue( volumeID ) ;
+				}
+			}
+		}
+
+		return key ;
+	} ) ;
+}
+
+::Task::future<QString>& utility::getUUIDFromPath( const QString& dev )
+{
+	return ::Task::run<QString>( [ dev ](){
+
+		QString device = dev ;
+		device = device.replace( QString( "\"" ),QString( "\"\"\"" ) ) ;
+		QString exe = QString( "%1 -U -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( device ) ;
+
+		auto r = utility::Task( exe ) ;
+
+		if( r.success() ){
+
+			QString uuid = r.output() ;
+			uuid.remove( "\n" ) ;
+			
+			if( uuid == "UUID=\"\"" ){
+				return QString() ;
+			}else{
+				return uuid ;
+			}
+		}else{
+			return QString() ;
+		}
+	} ) ;
+}
+
 QString utility::cryptMapperPath()
 {
 	//return QString( crypt_get_dir() )
@@ -128,12 +178,13 @@ bool utility::userIsRoot()
 
 QString utility::userName()
 {
-	struct passwd * pass = getpwuid( getuid() ) ;
-	return QString( pass->pw_name ) ;
+	return QString( getpwuid( getuid() )->pw_name ) ;
 }
 
 void utility::help( const QString& app )
 {
+	Q_UNUSED( app ) ;
+
 	std::cout << VERSION_STRING << std::endl ;
 
 	QString helpMsg = QObject::tr( "\n\
@@ -375,26 +426,6 @@ QString utility::keyPath()
 	return QString( "%1/.zuluCrypt-socket/%2" ).arg( a ).arg( b ) ;
 }
 
-QString utility::getKeyFromWallet( LxQt::Wallet::Wallet * wallet,const QString& volumeID )
-{
-	QByteArray key ;
-	if( volumeID.startsWith( QString( "UUID=" ) ) ){
-		key = wallet->readValue( volumeID ) ;
-	}else{
-		QString uuid = utility::getUUIDFromPath( volumeID ) ;
-		if( uuid.isEmpty() ){
-			key = wallet->readValue( utility::getVolumeID( volumeID ) ) ;
-		}else{
-			key = wallet->readValue( uuid ) ;
-			if( key.isEmpty() ){
-				key = wallet->readValue( volumeID ) ;
-			}
-		}
-	}
-
-	return key ;
-}
-
 bool utility::eventFilter( QObject * gui,QObject * watched,QEvent * event )
 {
 	if( watched == gui ){
@@ -579,26 +610,6 @@ void utility::removeFavoriteEntry( const QString& entry )
 	f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
 	f.write( c ) ;
 	f.close() ;
-}
-
-QString utility::getUUIDFromPath( const QString& dev )
-{
-	QString device = dev ;
-	device = device.replace( QString( "\"" ),QString( "\"\"\"" ) ) ;
-	QString exe = QString( "%1 -U -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( device ) ;
-
-	auto r = utility::Task( exe ) ;
-	if( r.success() ){
-		QString uuid = r.output() ;
-		uuid.remove( "\n" ) ;
-		if( uuid == "UUID=\"\"" ){
-			return QString() ;
-		}else{
-			return uuid ;
-		}
-	}else{
-		return QString() ;
-	}
 }
 
 QString utility::getVolumeID( const QString& id )

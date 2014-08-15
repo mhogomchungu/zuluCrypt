@@ -205,12 +205,6 @@ void mountPartition::pbMount()
 
 		zuluMountTaskResult s ;
 
-		QString output = r.output() ;
-		int index = output.indexOf( QChar( ':') ) ;
-		if( index != -1 ){
-			s.outPut = output.mid( index + 1 ) ;
-		}
-
 		s.exitCode = r.exitCode() ;
 		s.outPut   = r.output() ;
 
