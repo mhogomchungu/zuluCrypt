@@ -117,6 +117,14 @@ namespace utility
 		{
 			sleep( s ) ;
 		}
+		static void waitForOneSecond( void )
+		{
+			sleep( 1 ) ;
+		}
+		static void waitForTwoSeconds( void )
+		{
+			sleep( 2 ) ;
+		}
 		Task( const QString& exe,int waitTime = -1 )
 		{
 			QProcess p ;

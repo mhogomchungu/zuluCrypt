@@ -217,7 +217,7 @@ volumeMiniPropertiesTaskResult zuluMountTask::volumeMiniProperties( const QStrin
 		 * There is some sort of a race condition here and things do not always work as expected
 		 * try to sleep for a second to see if it will help
 		 */
-		utility::Task::wait( 1 ) ;
+		utility::Task::waitForOneSecond() ;
 		if( _loopDeviceIsGone( volume ) ){
 			/*
 			 * we were just asked to find properties of a loop device

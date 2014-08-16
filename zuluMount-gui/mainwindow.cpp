@@ -843,24 +843,24 @@ void MainWindow::unMountAll()
 
 	m_removeAllVolumes = true ;
 
-	Task::run( [ = ](){
+	Task::await( [ & ](){
 
 		if( p.isEmpty() ){
 
-			utility::Task::wait( 1 ) ;
+			utility::Task::waitForOneSecond() ;
 		}else{
 			int r = p.size() ;
+
 			for( int i = 0 ; i < r ; i++ ){
 
 				zuluMountTask::volumeUnmount( p.at( i ),q.at( i ) ) ;
-				utility::Task::wait( 1 ) ;
+				utility::Task::waitForOneSecond() ;
 			}
-			utility::Task::wait( 2 ) ;
+			utility::Task::waitForTwoSeconds() ;
 		}
-	} ).then( [ this ](){
-
-		this->enableAll_1() ;
 	} ) ;
+
+	this->enableAll_1() ;
 }
 
 void MainWindow::pbUpdate()
@@ -903,6 +903,10 @@ void MainWindow::removeDisappearedEntries( const QVector< volumeEntryProperties 
 	 * for example to remove no longer valid options like a removed cdrom
 	 */
 
+	if( entries.isEmpty() ){
+		return ;
+	}
+
 	QTableWidget * table = m_ui->tableWidget ;
 
 	QStringList l = tablewidget::tableColumnEntries( table,0 ) ;
@@ -930,16 +934,16 @@ void MainWindow::removeDisappearedEntries( const QVector< volumeEntryProperties 
 	}
 
 	if( z.isEmpty() ){
-		this->removeVolume( "" ) ;
+		this->removeVolume( QString() ) ;
 	}else{
 		Task::exec( [ &,z ](){
 
 			for( const auto& it : z ){
-				utility::Task::wait( 1 ) ;
+				utility::Task::waitForOneSecond() ;
 				emit unlistVolume( it ) ;
 			}
 
-			emit unlistVolume( "" ) ;
+			emit unlistVolume( QString() ) ;
 		} ) ;
 	}
 }
