@@ -192,6 +192,8 @@ utility::wallet utility::getKeyFromWallet( LxQt::Wallet::walletBackEnd storage,c
 
 			auto e = LxQt::Wallet::getWalletBackend( LxQt::Wallet::internalBackEnd ) ;
 
+			e->setImage( ":/zuluCrypt.png" ) ;
+
 			w.opened = e->await_open( walletName,appName,pwd ) ;
 
 			if( w.opened ){

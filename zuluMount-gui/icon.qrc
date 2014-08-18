@@ -2,10 +2,11 @@
  <!DOCTYPE RCC>
  <RCC version="1.0">
 	 <qresource>
+		 <file>zuluCrypt.png</file>
 		 <file>zuluMount.png</file>
-		 <file>passphrase.png</file>		 
+		 <file>passphrase.png</file>
 		 <file>keyfile.png</file>
 		 <file>module.png</file>
-		 <file>folder.png</file>		 
+		 <file>folder.png</file>
 	 </qresource>
  </RCC>
