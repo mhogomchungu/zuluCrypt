@@ -58,7 +58,6 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const QString& path,
 	m_table = table ;
 	m_path = path ;
 	m_working = false ;
-	m_wallet  = nullptr ;
 
 	QString msg ;
 	if( type == QString( "crypto_LUKS" ) ){
@@ -327,63 +326,59 @@ void keyDialog::closeEvent( QCloseEvent * e )
 	this->pbCancel() ;
 }
 
-void keyDialog::walletIsOpen( bool opened )
-{
-	if( opened ){
-
-		m_key = Task::await<QString>( utility::getKeyFromWallet( m_wallet,m_path ) ) ;
-
-		if( m_key.isEmpty() ){
-			DialogMsg msg( this ) ;
-			msg.ShowUIOK( tr( "ERROR" ),tr( "the volume does not appear to have an entry in the wallet" ) ) ;
-			this->enableAll() ;
-			if( m_ui->cbKeyType->currentIndex() != keyDialog::Key ){
-				m_ui->lineEditKey->setEnabled( false ) ;
-			}
-		}else{
-			this->openVolume() ;
-		}
-	}else{
-		_internalPassWord.clear() ;
-		this->enableAll() ;
-	}
-}
-
-void keyDialog::getPassWord( QString password )
-{
-	_internalPassWord = password ;
-}
-
 void keyDialog::pbOpen()
 {
 	this->disableAll() ;
-	m_key.clear() ;
+
 	if( m_ui->cbKeyType->currentIndex() == keyDialog::plugin ){
-		QString r = m_ui->lineEditKey->text() ;
-		if( r == tr( KWALLET ) ){
-			m_wallet = LxQt::Wallet::getWalletBackend( LxQt::Wallet::kwalletBackEnd ) ;
-			m_wallet->setInterfaceObject( this ) ;
-			m_wallet->open( m_wallet->localDefaultWalletName(),utility::applicationName() ) ;
-		}else if( r == tr( INTERNAL_WALLET ) ){
-			QString walletName = utility::walletName() ;
-			QString appName    = utility::applicationName() ;
-			if( LxQt::Wallet::walletExists( LxQt::Wallet::internalBackEnd,walletName,appName ) ){
-				m_wallet = LxQt::Wallet::getWalletBackend( LxQt::Wallet::internalBackEnd ) ;
-				m_wallet->setInterfaceObject( this ) ;
-				QObject * obj = m_wallet->qObject() ;
-				connect( obj,SIGNAL( getPassWord( QString ) ),this,SLOT( getPassWord( QString ) ) ) ;
-				m_wallet->open( walletName,appName,_internalPassWord,"zuluMount" ) ;
-			}else{
+
+		utility::wallet w ;
+
+		QString wallet = m_ui->lineEditKey->text() ;
+
+		if( wallet == tr( KWALLET ) ){
+
+			w = utility::getKeyFromWallet( LxQt::Wallet::kwalletBackEnd,m_path ) ;
+
+		}else if( wallet == tr( INTERNAL_WALLET ) ){
+
+			w = utility::getKeyFromWallet( LxQt::Wallet::internalBackEnd,m_path,_internalPassWord ) ;
+
+			if( w.notConfigured ){
+
 				DialogMsg msg( this ) ;
 				msg.ShowUIOK( tr( "ERROR!" ),tr( "internal wallet is not configured" ) ) ;
-				this->enableAll() ;
+				return this->enableAll() ;
+			}else{
+				_internalPassWord = w.password ;
 			}
-		}else if( r == tr( GNOME_WALLET ) ){
-			m_wallet = LxQt::Wallet::getWalletBackend( LxQt::Wallet::secretServiceBackEnd ) ;
-			m_wallet->setInterfaceObject( this ) ;
-			m_wallet->open( utility::walletName(),utility::applicationName() ) ;
+
+		}else if( wallet == tr( GNOME_WALLET ) ){
+
+			w = utility::getKeyFromWallet( LxQt::Wallet::secretServiceBackEnd,m_path ) ;
 		}else{
-			this->openVolume() ;
+			/*
+			 * shouldnt get here
+			 */
+			return this->enableAll() ;
+		}
+
+		if( w.opened ){
+
+			if( w.key.isEmpty() ){
+				DialogMsg msg( this ) ;
+				msg.ShowUIOK( tr( "ERROR" ),tr( "the volume does not appear to have an entry in the wallet" ) ) ;
+				this->enableAll() ;
+				if( m_ui->cbKeyType->currentIndex() != keyDialog::Key ){
+					m_ui->lineEditKey->setEnabled( false ) ;
+				}
+			}else{
+				m_key = w.key ;
+				this->openVolume() ;
+			}
+		}else{
+			_internalPassWord.clear() ;
+			this->enableAll() ;
 		}
 	}else{
 		this->openVolume() ;
@@ -612,8 +607,5 @@ void keyDialog::HideUI()
 keyDialog::~keyDialog()
 {
 	m_menu->deleteLater() ;
-	if( m_wallet ){
-		m_wallet->deleteLater() ;
-	}
 	delete m_ui ;
 }

@@ -33,18 +33,23 @@
 #include <unistd.h>
 
 #include "task.h"
-
-namespace LxQt{
-namespace Wallet {
-class Wallet ;
-}
-}
+#include "lxqt_wallet/frontend/lxqt_wallet.h"
 
 class QByteArray ;
 class QEvent ;
 
 namespace utility
 {
+	struct wallet
+	{
+		bool opened ;
+		bool notConfigured ;
+		QString key ;
+		QString password ;
+	};
+
+	wallet getKeyFromWallet( LxQt::Wallet::walletBackEnd,const QString& keyID,const QString& pwd = QString() ) ;
+
 	QString cmdArgumentValue( const QStringList&,const QString& arg,
 				  const QString& defaulT = QString() ) ;
 
@@ -85,8 +90,8 @@ namespace utility
 
 	::Task::future< int >& exec( const QString& ) ;
 	::Task::future< QStringList >& luksEmptySlots( const QString& volumePath ) ;
-	::Task::future< QString >& getKeyFromWallet( LxQt::Wallet::Wallet *,const QString& volumeID ) ;
 	::Task::future< QString >& getUUIDFromPath( const QString& ) ;
+	::Task::future<QString>& getKeyFromWallet( LxQt::Wallet::Wallet * wallet,const QString& volumeID ) ;
 }
 
 namespace utility

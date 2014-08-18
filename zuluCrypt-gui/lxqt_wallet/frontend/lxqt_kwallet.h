@@ -54,6 +54,8 @@ public:
 	bool addKey( const QString& key,const QByteArray& value ) ;
 	void open( const QString& walletName,const QString& applicationName,
 		   const QString& password = QString(),const QString& displayApplicationName = QString() ) ;
+	bool await_open( const QString& walletName,const QString& applicationName,
+			 const QString& password = QString(),const QString& displayApplicationName = QString() ) ;
 	QByteArray readValue( const QString& key ) ;
 	QVector<LxQt::Wallet::walletKeyValues> readAllKeyValues( void ) ;
 	QStringList readAllKeys( void ) ;

@@ -37,12 +37,6 @@ class QMenu ;
 
 struct taskResult ;
 
-namespace LxQt {
-namespace Wallet {
-class Wallet ;
-}
-}
-
 class passwordDialog :  public QDialog
 {
 	Q_OBJECT
@@ -64,7 +58,6 @@ private slots :
 	void pbPluginEntryClicked( QAction * ) ;
 	void pbPlugin( void ) ;
 	void buttonOpenClicked( void ) ;
-	void walletIsOpen( bool ) ;
 	void mount_point( void ) ;
 	void clickedPassPhraseFromFileButton( void ) ;
 	void passphraseFromFileOption( void ) ;
@@ -73,7 +66,6 @@ private slots :
 	void file_path( void  ) ;
 	void mountPointPath( QString ) ;
 	void cbStateChanged( int ) ;
-	void getPassWord( QString ) ;
 	void taskComplete( const taskResult& ) ;
 	void keys( QString key,QString keyFiles ) ;
 	void tcryptCancelled( void ) ;
@@ -100,7 +92,6 @@ private :
 	QString m_device ;
 	QString m_point ;
 
-	LxQt::Wallet::Wallet * m_wallet ;
 	enum{ key = 0,keyfile = 1,plugin = 2,tcryptKeys = 3 } ;
 };
 

@@ -30,6 +30,7 @@
 
 #include "lxqt_internal_wallet.h"
 
+
 LxQt::Wallet::internalWallet::internalWallet() : m_wallet( 0 )
 {
 }
@@ -76,13 +77,23 @@ bool LxQt::Wallet::internalWallet::openWallet( QString password )
 
 void LxQt::Wallet::internalWallet::cancelled()
 {
+	m_opened = false ;
+
+	m_loop.exit() ;
+
 	emit walletIsOpen( false ) ;
 }
 
 void LxQt::Wallet::internalWallet::taskResult( bool opened )
 {
 	emit passwordIsCorrect( opened ) ;
+
 	if( opened ){
+
+		m_opened = true ;
+		
+		m_loop.exit() ;
+
 		emit getPassWord( m_password ) ;
 		emit walletIsOpen( opened ) ;
 	}
@@ -114,6 +125,16 @@ void LxQt::Wallet::internalWallet::password( QString password,bool create )
 
 		LxQt::Wallet::Task::run< bool >( _a ).then( _b ) ;
 	}
+}
+
+bool LxQt::Wallet::internalWallet::await_open( const QString& walletName,const QString& applicationName,
+					       const QString& password,const QString& displayApplicationName )
+{
+	this->open( walletName,applicationName,password,displayApplicationName ) ;
+
+	m_loop.exec() ;
+
+	return m_opened ;
 }
 
 void LxQt::Wallet::internalWallet::open( const QString& walletName,const QString& applicationName,
@@ -279,6 +300,7 @@ void LxQt::Wallet::internalWallet::setInterfaceObject( QWidget * interfaceObject
 
 QObject * LxQt::Wallet::internalWallet::qObject()
 {
+	this->setObjectName( m_password ) ;
 	return static_cast< QObject *>( this ) ;
 }
 

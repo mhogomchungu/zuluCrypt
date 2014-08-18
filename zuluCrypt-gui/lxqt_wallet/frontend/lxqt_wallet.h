@@ -189,6 +189,9 @@ public:
 	virtual void open( const QString& walletName,const QString& applicationName = QString(),
 			   const QString& password = QString(),const QString& displayApplicationName = QString() ) = 0 ;
 
+	virtual bool await_open( const QString& walletName,const QString& applicationName = QString(),
+			   const QString& password = QString(),const QString& displayApplicationName = QString() ) = 0 ;
+
 	/*
 	 * This method is used as a mean of communication between the backend and the user of the library.see open() method documentation above
 	 * for a use case of this API

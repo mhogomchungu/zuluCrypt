@@ -29,12 +29,6 @@ class QAction ;
 class QTableWidgetItem ;
 class QTableWidget ;
 
-namespace LxQt{
-namespace Wallet {
-class Wallet ;
-}
-}
-
 #include "mainwindow.h"
 
 namespace Ui {
@@ -68,8 +62,6 @@ private slots:
 	void Plugin( void ) ;
 	void KeyFile( void ) ;
 	void cbMountReadOnlyStateChanged( int ) ;
-	void walletIsOpen( bool ) ;
-	void getPassWord( QString ) ;
 	void deviceOffSet( QString,QString ) ;
 	void doAction( QAction * ) ;
 	void showOffSetWindowOption( void ) ;
@@ -94,7 +86,6 @@ private :
 	QMenu * m_menu_1 ;
 	QTableWidget * m_table ;
 	bool m_working ;
-	LxQt::Wallet::Wallet * m_wallet ;
 	enum{ Key = 0,keyfile = 1,plugin = 2,tcryptKeys = 3 } ;
 };
 

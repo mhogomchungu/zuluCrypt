@@ -76,6 +76,16 @@ bool LxQt::Wallet::secretService::addKey( const QString& key,const QByteArray& v
 	}
 }
 
+bool LxQt::Wallet::secretService::await_open( const QString& walletName,const QString& applicationName,
+					      const QString& password,const QString& displayApplicationName )
+{
+	this->open( walletName,applicationName,password,displayApplicationName ) ;
+
+	m_loop.exec() ;
+
+	return m_opened ;
+}
+
 void LxQt::Wallet::secretService::open( const QString& walletName,const QString& applicationName,
 					const QString& password,const QString& displayApplicationName )
 {
@@ -108,8 +118,6 @@ void LxQt::Wallet::secretService::open( const QString& walletName,const QString&
 	m_schema   = lxqt_secret_service_create_schema( m_byteArraySchemaName.constData(),"string" ) ;
 	m_schema_1 = lxqt_secret_service_create_schema( m_byteArraySchemaName.constData(),"integer" ) ;
 
-	connect( this,SIGNAL( walletIsOpen( bool ) ),m_interfaceObject,SLOT( walletIsOpen( bool ) ) ) ;
-
 	auto _a = [&](){
 
 		return lxqt_secret_service_wallet_is_open( m_schema ) ;
@@ -125,6 +133,8 @@ void LxQt::Wallet::secretService::open( const QString& walletName,const QString&
 
 void LxQt::Wallet::secretService::walletOpened( bool opened )
 {
+	m_opened = opened ;
+	m_loop.exit() ;
 	emit walletIsOpen( opened ) ;
 }
 
@@ -215,6 +225,7 @@ bool LxQt::Wallet::secretService::walletIsOpened( void )
 void LxQt::Wallet::secretService::setInterfaceObject( QWidget * interfaceObject )
 {
 	m_interfaceObject = interfaceObject ;
+	connect( this,SIGNAL( walletIsOpen( bool ) ),m_interfaceObject,SLOT( walletIsOpen( bool ) ) ) ;
 }
 
 QObject * LxQt::Wallet::secretService::qObject( void )

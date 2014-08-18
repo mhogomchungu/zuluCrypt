@@ -153,7 +153,7 @@ void utility::keySend( const QString& path,const QString& key )
 
 			QString uuid = r.output() ;
 			uuid.remove( "\n" ) ;
-			
+
 			if( uuid == "UUID=\"\"" ){
 				return QString() ;
 			}else{
@@ -163,6 +163,70 @@ void utility::keySend( const QString& path,const QString& key )
 			return QString() ;
 		}
 	} ) ;
+}
+
+utility::wallet utility::getKeyFromWallet( LxQt::Wallet::walletBackEnd storage,const QString& keyID,const QString& pwd )
+{
+	utility::wallet w{ false,false,"","" } ;
+
+	if( storage == LxQt::Wallet::kwalletBackEnd ){
+
+		auto e = LxQt::Wallet::getWalletBackend( LxQt::Wallet::kwalletBackEnd ) ;
+
+		w.opened = e->await_open( "default",utility::applicationName() ) ;
+
+		if( w.opened ){
+			w.key = utility::getKeyFromWallet( e,keyID ).await() ;
+		}
+
+		e->deleteLater() ;
+
+		return w ;
+
+	}else if( storage == LxQt::Wallet::internalBackEnd ){
+
+		QString walletName = utility::walletName() ;
+		QString appName    = utility::applicationName() ;
+
+		if( LxQt::Wallet::walletExists( LxQt::Wallet::internalBackEnd,walletName,appName ) ){
+
+			auto e = LxQt::Wallet::getWalletBackend( LxQt::Wallet::internalBackEnd ) ;
+
+			w.opened = e->await_open( walletName,appName,pwd ) ;
+
+			if( w.opened ){
+				w.key = utility::getKeyFromWallet( e,keyID ).await() ;
+				w.password = e->qObject()->objectName() ;
+				w.notConfigured = false ;
+			}
+
+			e->deleteLater() ;
+
+			return w ;
+		}else{
+			w.notConfigured = true ;
+			return w ;
+		}
+
+	}else if( storage == LxQt::Wallet::secretServiceBackEnd ){
+
+		auto e = LxQt::Wallet::getWalletBackend( LxQt::Wallet::secretServiceBackEnd ) ;
+
+		w.opened = e->await_open( utility::walletName(),utility::applicationName() ) ;
+
+		if( w.opened ){
+			w.key = utility::getKeyFromWallet( e,keyID ).await() ;
+		}
+
+		e->deleteLater() ;
+
+		return w ;
+	}else{
+		/*
+		 * shouldnt get here
+		 */
+		return w ;
+	}
 }
 
 QString utility::cryptMapperPath()
