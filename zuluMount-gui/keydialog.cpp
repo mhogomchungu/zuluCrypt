@@ -357,10 +357,7 @@ void keyDialog::pbOpen()
 
 			w = utility::getKeyFromWallet( LxQt::Wallet::secretServiceBackEnd,m_path ) ;
 		}else{
-			/*
-			 * shouldnt get here
-			 */
-			return this->enableAll() ;
+			return this->openVolume() ;
 		}
 
 		if( w.opened ){

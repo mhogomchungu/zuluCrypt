@@ -439,10 +439,8 @@ void passwordDialog::buttonOpenClicked( void )
 
 			w = utility::getKeyFromWallet( LxQt::Wallet::secretServiceBackEnd,keyID ) ;
 		}else{
-			/*
-			 * shouldnt get here
-			 */
-			return this->enableAll() ;
+			m_key = m_ui->PassPhraseField->text() ;
+			return this->openVolume() ;
 		}
 
 		if( w.opened ){
