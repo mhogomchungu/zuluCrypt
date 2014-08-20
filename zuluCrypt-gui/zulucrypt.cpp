@@ -486,7 +486,7 @@ void zuluCrypt::closeAllVolumes()
 
 	Task::run( [ this ](){
 
-		utility::Task::wait( 1 ) ; // for ui effect
+		utility::Task::waitForOneSecond() ; // for ui effect
 
 		QTableWidget * table = m_ui->tableWidget ;
 
@@ -505,7 +505,7 @@ void zuluCrypt::closeAllVolumes()
 				QString device = it->text().replace( "\"","\"\"\"" ) ;
 				auto r = utility::Task( QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( device ) ) ;
 				emit closeVolume( it,r.exitCode() ) ;
-				utility::Task::wait( 1 ) ; ; // for ui effect
+				utility::Task::waitForOneSecond() ; ; // for ui effect
 			}
 		}
 
@@ -823,11 +823,11 @@ void zuluCrypt::itemClicked( QTableWidgetItem * item,bool clicked )
 
 	m.addSeparator() ;
 
-	connect( m.addAction( tr( "open folder" ) ) ,SIGNAL( triggered() ),this,SLOT( openFolder() ) ) ;
+	connect( m.addAction( tr( "properties" ) ) ,SIGNAL( triggered() ),this,SLOT( volume_property() ) ) ;
 
 	m.addSeparator() ;
 
-	connect( m.addAction( tr( "properties" ) ) ,SIGNAL( triggered() ),this,SLOT( volume_property() ) ) ;
+	connect( m.addAction( tr( "open folder" ) ) ,SIGNAL( triggered() ),this,SLOT( openFolder() ) ) ;
 
 	m.addSeparator() ;
 
@@ -932,7 +932,7 @@ void zuluCrypt::close()
 
 	Task::run<int>( [ exe ](){
 
-		utility::Task::wait( 1 ) ; //for UI effect
+		utility::Task::waitForOneSecond() ; //for UI effect
 		return utility::Task( exe ).exitCode() ;
 
 	} ).then( [ this ]( const int& r ){
