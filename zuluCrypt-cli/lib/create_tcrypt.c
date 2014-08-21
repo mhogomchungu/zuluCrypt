@@ -291,6 +291,12 @@ static int _create_volume( const tcrypt_t * info )
 	return r ;
 }
 
+int zuluCryptModifyTcryptHeader( const info_t * info )
+{
+	if( info ){;}
+	return !TC_OK ;
+}
+
 #endif
 
 static int _create_tcrypt_volume( const char * device,const char * file_system,
@@ -398,6 +404,13 @@ int zuluCryptCreateTCrypt( const char * device,const char * file_system,const ch
 }
 
 #else
+
+int zuluCryptModifyTcryptHeader( const info_t * info )
+{
+	if( info ){;}
+	return 1 ;
+}
+
 /*
  * tcplay < 1.0.0 or tcplay not found
  */
