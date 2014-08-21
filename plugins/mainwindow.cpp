@@ -24,9 +24,9 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "../../zuluCrypt-cli/pluginManager/libzuluCryptPluginManager.h"
+#include "../zuluCrypt-cli/pluginManager/libzuluCryptPluginManager.h"
 
-#include "../../zuluCrypt-gui/lxqt_wallet/frontend/task.h"
+#include "../zuluCrypt-gui/lxqt_wallet/frontend/task.h"
 
 namespace Task = LxQt::Wallet::Task ;
 
@@ -37,7 +37,7 @@ MainWindow::MainWindow( QWidget * parent ) : QWidget( parent ),m_ui( new Ui::Mai
 
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
 
-	this->setWindowIcon( QIcon( QString( ":/default.png" ) ) ) ;
+	this->setWindowIcon( QIcon( ":/default.png" ) ) ;
 	//m_ui->pbKeyFile->setIcon( QIcon( QString( ":/default.png" ) ) );
 
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
@@ -53,8 +53,8 @@ MainWindow::MainWindow( QWidget * parent ) : QWidget( parent ),m_ui( new Ui::Mai
 
 	QAction * ac = new QAction( this ) ;
 	QList<QKeySequence> keys ;
-	keys.append( Qt::Key_Enter );
-	keys.append( Qt::Key_Return );
+	keys.append( Qt::Key_Enter ) ;
+	keys.append( Qt::Key_Return ) ;
 	ac->setShortcuts( keys ) ;
 	connect( ac,SIGNAL( triggered() ),this,SLOT( defaultButton() ) ) ;
 	this->addAction( ac ) ;

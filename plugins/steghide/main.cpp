@@ -18,7 +18,7 @@
  */
 
 #include <QApplication>
-#include "../utility/mainwindow.h"
+#include "../mainwindow.h"
 #include <QProcess>
 #include <QByteArray>
 #include <QString>
@@ -49,7 +49,7 @@ int main( int argc,char * argv[] )
 
 	QVector<QString> exe ;
 	exe.append( QString( "steghide" ) ) ;
-	
+
 	w.setExe( exe ) ;
 	w.setKeyFunction( steghide ) ;
 	w.Show() ;

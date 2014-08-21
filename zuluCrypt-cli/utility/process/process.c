@@ -120,7 +120,7 @@ void ProcessSetArgumentList( process_t p,... )
 			args = e ;
 		}
 
-		if( entry == ENDLIST ){
+		if( entry == NULL ){
 			args[ index ] = NULL ;
 			break ;
 		}else{

@@ -89,7 +89,7 @@ static int _zuluExit_2( int st,stringList_t z,stringList_t q,const char * msg )
 {
 	zuluCryptSecurityUnlockMemory( z ) ;
 
-	StringListMultipleDelete( &q,&z,ENDLIST ) ;
+	StringListMultipleDelete( &q,&z,NULL ) ;
 
 	if( msg != NULL ){
 		printf( "%s\n",msg ) ;

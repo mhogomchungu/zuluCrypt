@@ -32,7 +32,7 @@
 #include <QDir>
 #include <QProcess>
 #include <QCloseEvent>
-#include "../../zuluCrypt-gui/dialogmsg.h"
+#include "../zuluCrypt-gui/dialogmsg.h"
 #include <functional>
 
 namespace Ui {

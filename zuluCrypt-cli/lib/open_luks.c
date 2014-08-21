@@ -37,9 +37,9 @@ static inline int zuluExit_1( int r,struct crypt_device * cd,string_t st )
 {
 	crypt_free( cd ) ;
 	/*
-	 * zuluCryptDeleteFile() is defined in open_path_security.c
+	 * zuluCryptDeleteFile_1() is defined in open_path_security.c
 	 */
-	zuluCryptDeleteFile( StringContent( st ) ) ;
+	zuluCryptDeleteFile_1( st ) ;
 	StringDelete( &st ) ;
 	return r ;
 }
@@ -93,6 +93,8 @@ static int _open_luks_1( const char * device,const open_struct_t * opts )
 
 	int r ;
 
+	const size_t e = sizeof( u_int32_t ) ;
+
 	const char * key ;
 	const char * luks_header_file ;
 	const char * luks_header_file_contents ;
@@ -115,13 +117,14 @@ static int _open_luks_1( const char * device,const open_struct_t * opts )
 	 * third  component at offset 8 is the passphrase to unlock the LUKS volume.
 	 * last   component is at offset that marks the end of the third component.Where this offset will be depends on the length of the passphrase
 	 */
-	memcpy( &key_len,opts->key,sizeof( u_int32_t ) ) ;
-	key = opts->key + sizeof( u_int32_t ) + sizeof( u_int32_t ) ;
 
-	memcpy( &luks_header_file_size,opts->key + sizeof( u_int32_t ),sizeof( u_int32_t ) ) ;
-	luks_header_file_contents = opts->key + sizeof( u_int32_t ) + sizeof( u_int32_t ) + key_len  ;
+	memcpy( &key_len,opts->key,e ) ;
+	key = opts->key + e + e ;
 
-	if( key_len + luks_header_file_size + sizeof( u_int32_t ) + sizeof( u_int32_t ) != buffer_size ){
+	memcpy( &luks_header_file_size,opts->key + e,e ) ;
+	luks_header_file_contents = opts->key + e + e + key_len  ;
+
+	if( key_len + luks_header_file_size + e + e != buffer_size ){
 		/*
 		 * malformed structure detected
 		 */

@@ -59,12 +59,6 @@ typedef struct ProcessType_t * process_t ;
 #define ProcessVoid ( ( process_t ) 0 )
 
 /*
- * use this variable to terminate variadic functions
- * we dont use NULL here because NULL is defined simply as 0 and things break in C++
- */
-#define ENDLIST ( ( const char * ) 0 )
-
-/*
  * Examples on how to use the library are at the end of this header file
  */
 

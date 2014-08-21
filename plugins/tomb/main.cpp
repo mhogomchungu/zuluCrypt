@@ -18,7 +18,7 @@
  */
 
 #include <QApplication>
-#include "../utility/mainwindow.h"
+#include "../mainwindow.h"
 #include <QProcess>
 #include <QByteArray>
 #include <QString>

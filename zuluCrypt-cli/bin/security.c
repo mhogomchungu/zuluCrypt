@@ -47,7 +47,7 @@ static int create_group( const char * groupname )
 	int st = 1 ;
 	zuluCryptSecurityGainElevatedPrivileges() ;
 	p = Process( ZULUCRYPTgroupadd ) ;
-	ProcessSetArgumentList( p,"-f",groupname,ENDLIST ) ;
+	ProcessSetArgumentList( p,"-f",groupname,NULL ) ;
 	ProcessStart( p ) ;
 	st = ProcessExitStatus( p ) ;
 	ProcessDelete( &p ) ;

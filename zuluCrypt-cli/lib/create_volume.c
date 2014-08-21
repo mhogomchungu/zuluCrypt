@@ -49,26 +49,26 @@ int zuluCryptCreateFileSystemInAVolume( const char * fs,const char * device_mapp
 
 	if( StringAtLeastOneMatch_1( fs,"ext2","ext3","ext4",NULL ) ){
 
-		ProcessSetArgumentList( p,"-t",fs,"-m","1",device_mapper,ENDLIST ) ;
+		ProcessSetArgumentList( p,"-t",fs,"-m","1",device_mapper,NULL ) ;
 
 	}else if( StringsAreEqual( fs,"reiserfs" ) ){
 
-		ProcessSetArgumentList( p,"-t",fs,"-f","-f","-q",device_mapper,ENDLIST ) ;
+		ProcessSetArgumentList( p,"-t",fs,"-f","-f","-q",device_mapper,NULL ) ;
 
 	}else if( StringsAreEqual( fs,"jfs" ) ){
 
-		ProcessSetArgumentList( p,"-t",fs,"-q",device_mapper,ENDLIST ) ;
+		ProcessSetArgumentList( p,"-t",fs,"-q",device_mapper,NULL ) ;
 
 	}else if( StringsAreEqual( fs,"ntfs" ) ){
 
-		ProcessSetArgumentList( p,"-t",fs,"-f",device_mapper,ENDLIST ) ;
+		ProcessSetArgumentList( p,"-t",fs,"-f",device_mapper,NULL ) ;
 
 	}else if( StringsAreEqual( fs,"xfs" ) ){
 
-		ProcessSetArgumentList( p,"-t",fs,"-f",device_mapper,ENDLIST ) ;
+		ProcessSetArgumentList( p,"-t",fs,"-f",device_mapper,NULL ) ;
 
 	}else{
-		ProcessSetArgumentList( p,"-t",fs,device_mapper,ENDLIST ) ;
+		ProcessSetArgumentList( p,"-t",fs,device_mapper,NULL ) ;
 
 		/*
 		 * unhandled fs are processed here.They are given 60 seconds to accomplish their task

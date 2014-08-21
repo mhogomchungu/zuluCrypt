@@ -60,7 +60,7 @@ static inline int _unmount_volume_1( const char * m_dir )
 	 */
 	for( i = 0 ; i < 5 ; i++ ){
 		p = Process( ZULUCRYPTumount ) ;
-		ProcessSetArgumentList( p,m_dir,ENDLIST ) ;
+		ProcessSetArgumentList( p,m_dir,NULL ) ;
 		ProcessStart( p ) ;
 		h = ProcessExitStatus( p ) ;
 		ProcessDelete( &p ) ;

@@ -204,7 +204,7 @@ void createHeaderBackup( const char * device,const char * msg )
 	process_t p ;
 	__print( msg ) ;
 	p = Process( zuluCryptExe ) ;
-	ProcessSetArgumentList( p,"-B","-d",device,"-z",headerBackUp,ENDLIST ) ;
+	ProcessSetArgumentList( p,"-B","-d",device,"-z",headerBackUp,NULL ) ;
 	ProcessStart( p ) ;
 	__ProcessGetResult( p ) ;
 }
@@ -214,7 +214,7 @@ void restoreHeaderBackup( const char * device,const char * msg )
 	process_t p ;
 	__print( msg ) ;
 	p = Process( zuluCryptExe ) ;
-	ProcessSetArgumentList( p,"-R","-k","-d",device,"-z",headerBackUp,ENDLIST ) ;
+	ProcessSetArgumentList( p,"-R","-k","-d",device,"-z",headerBackUp,NULL ) ;
 	ProcessStart( p ) ;
 	__ProcessGetResult( p ) ;
 }
@@ -225,9 +225,9 @@ void createVolume( const char * device,const char * msg,const char * keysource,c
 	__print( msg ) ;
 	p = Process( zuluCryptExe ) ;
 	if( strcmp( keysource,"-p" ) == 0 ){
-		ProcessSetArgumentList( p,"-c","-k","-d",device,"-t",type,keysource,key,ENDLIST ) ;
+		ProcessSetArgumentList( p,"-c","-k","-d",device,"-t",type,keysource,key,NULL ) ;
 	}else{
-		ProcessSetArgumentList( p,"-c","-k","-d",device,"-t",type,keysource,keyfile,ENDLIST ) ;
+		ProcessSetArgumentList( p,"-c","-k","-d",device,"-t",type,keysource,keyfile,NULL ) ;
 	}
 	ProcessStart( p ) ;
 	__ProcessGetResult( p ) ;
@@ -238,7 +238,7 @@ void closeVolume( const char * device,const char * msg )
 	process_t p ;
 	__print( msg ) ;
 	p = Process( zuluCryptExe ) ;
-	ProcessSetArgumentList( p,"-q","-d",device,ENDLIST ) ;
+	ProcessSetArgumentList( p,"-q","-d",device,NULL ) ;
 	ProcessStart( p ) ;
 	__ProcessGetResult( p ) ;
 }
@@ -249,9 +249,9 @@ void openVolume( const char * device,const char * msg,const char * keysource )
 	__print( msg ) ;
 	p = Process( zuluCryptExe ) ;
 	if( strcmp( keysource,"-p" ) == 0 ){
-		ProcessSetArgumentList( p,"-o","-d",device,"-m",mount_point,keysource,key,ENDLIST ) ;
+		ProcessSetArgumentList( p,"-o","-d",device,"-m",mount_point,keysource,key,NULL ) ;
 	}else{
-		ProcessSetArgumentList( p,"-o","-d",device,"-m",mount_point,keysource,keyfile,ENDLIST ) ;
+		ProcessSetArgumentList( p,"-o","-d",device,"-m",mount_point,keysource,keyfile,NULL ) ;
 	}
 	ProcessStart( p ) ;
 	__ProcessGetResult( p ) ;
@@ -262,7 +262,7 @@ void checkKeySlotsInUse( const char * device )
 	process_t p ;
 	__print( "check key slots in use: " ) ;
 	p = Process( zuluCryptExe ) ;
-	ProcessSetArgumentList( p,"-b","-d",device,ENDLIST ) ;
+	ProcessSetArgumentList( p,"-b","-d",device,NULL ) ;
 	ProcessStart( p ) ;
 	__ProcessGetResultANDPrint( p ) ;
 }
@@ -275,7 +275,7 @@ void addKeysToLuks( const char * device )
 
 	p = Process( zuluCryptExe ) ;
 
-	ProcessSetArgumentList( p,"-a","-d",device,"-y",key,"-l",key1,ENDLIST ) ;
+	ProcessSetArgumentList( p,"-a","-d",device,"-y",key,"-l",key1,NULL ) ;
 	ProcessStart( p ) ;
 	__ProcessGetResult( p ) ;
 
@@ -283,7 +283,7 @@ void addKeysToLuks( const char * device )
 
 	p = Process( zuluCryptExe ) ;
 
-	ProcessSetArgumentList( p,"-a","-d",device,"-u",keyfile,"-n",keyfile1,ENDLIST ) ;
+	ProcessSetArgumentList( p,"-a","-d",device,"-u",keyfile,"-n",keyfile1,NULL ) ;
 	ProcessStart( p ) ;
 	__ProcessGetResult( p ) ;
 
@@ -291,7 +291,7 @@ void addKeysToLuks( const char * device )
 
 	p = Process( zuluCryptExe ) ;
 
-	ProcessSetArgumentList( p,"-a","-d",device,"-y",key,"-n",keyfile,ENDLIST ) ;
+	ProcessSetArgumentList( p,"-a","-d",device,"-y",key,"-n",keyfile,NULL ) ;
 	ProcessStart( p ) ;
 	__ProcessGetResult( p ) ;
 
@@ -299,7 +299,7 @@ void addKeysToLuks( const char * device )
 
 	p = Process( zuluCryptExe ) ;
 
-	ProcessSetArgumentList( p,"-a","-d",device,"-u",keyfile1,"-l",key1,ENDLIST ) ;
+	ProcessSetArgumentList( p,"-a","-d",device,"-u",keyfile1,"-l",key1,NULL ) ;
 	ProcessStart( p ) ;
 	__ProcessGetResult( p ) ;
 }
@@ -309,13 +309,13 @@ void removeKeysFromLuksVolume( const char * device )
 	process_t p ;
 	__print( "remove a key from a luks volume using a key: " ) ;
 	p = Process( zuluCryptExe ) ;
-	ProcessSetArgumentList( p,"-r","-d",device,"-p",key,ENDLIST ) ;
+	ProcessSetArgumentList( p,"-r","-d",device,"-p",key,NULL ) ;
 	ProcessStart( p ) ;
 	__ProcessGetResult( p ) ;
 
 	__print( "remove a key from a luks volume using a keyfile: " ) ;
 	p = Process( zuluCryptExe ) ;
-	ProcessSetArgumentList( p,"-r","-d",device,"-f",keyfile,ENDLIST ) ;
+	ProcessSetArgumentList( p,"-r","-d",device,"-f",keyfile,NULL ) ;
 	ProcessStart( p ) ;
 	__ProcessGetResult( p ) ;
 }
@@ -362,7 +362,7 @@ void openVolumeWithPlugIn( const char * device,const char * msg )
 	process_t p ;
 	__print( msg ) ;
 	p = Process( zuluCryptExe ) ;
-	ProcessSetArgumentList( p,"-o","-d",device,"-m",mount_point,"-G",pluginPath,ENDLIST ) ;
+	ProcessSetArgumentList( p,"-o","-d",device,"-m",mount_point,"-G",pluginPath,NULL ) ;
 	ProcessStart( p ) ;
 	__ProcessGetResult( p ) ;
 }
@@ -371,7 +371,7 @@ void checkIfDeviceIsLuks( const char * device )
 {
 	int st ;
 	process_t p = Process( zuluCryptExe ) ;
-	ProcessSetArgumentList( p,"-i","-d",device,ENDLIST ) ;
+	ProcessSetArgumentList( p,"-i","-d",device,NULL ) ;
 	ProcessStart( p ) ;
 	st = ProcessExitStatus( p ) ;
 	ProcessDelete( &p ) ;
