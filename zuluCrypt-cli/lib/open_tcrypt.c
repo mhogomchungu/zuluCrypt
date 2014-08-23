@@ -44,6 +44,10 @@ string_t zuluCryptCreateKeyFile( const char * key,size_t key_len,const char * fi
 
 	struct stat statstr ;
 
+	if( key == NULL || key_len == 0 || fileName == NULL ){
+		return StringVoid ;
+	}
+	
 	#define path_does_not_exist( x ) stat( x,&statstr ) != 0
 
 	if( path_does_not_exist( "/run" ) ){

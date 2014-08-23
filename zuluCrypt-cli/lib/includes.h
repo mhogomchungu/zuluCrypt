@@ -75,6 +75,27 @@ typedef struct{
 	unsigned long m_flags ;
 }open_struct_t ;
 
+typedef struct{
+	const char * device ;
+	const char * passphrase ;
+	size_t       passphrase_size ;
+	const char ** keyfiles ;
+	size_t        keyfiles_number ;
+	const char * passphrase_h ;
+	size_t       passphrase_h_size ;
+	const char ** keyfiles_h ;
+	size_t        keyfiles_h_number ;
+	int          weak_keys_and_salt ;
+	u_int64_t    hidden_volume_size ;
+	const char * fs ;
+	const char * fs_h ;
+}create_tcrypt_t ;
+
+/*
+ * zuluCryptCreateTCryptVolume() is defined in create_tcrypt.c
+ */
+int zuluCryptCreateTCryptVolume( const create_tcrypt_t * ) ;
+
 /*
  * zuluCryptOpenVolume_1() is defined in open_volume.c
  */

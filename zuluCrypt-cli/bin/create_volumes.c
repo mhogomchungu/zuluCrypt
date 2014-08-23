@@ -100,6 +100,9 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	string_t * pass_3  = &stringArray[ 4 ] ;
 	string_t * pass_4  = &stringArray[ 5 ] ;
 
+	string_t p = StringVoid ;
+	string_t q = StringVoid ;
+
 	const char * volkey ;
 	size_t       volkeysize ;
 	const char * volkey_h = NULL ;
@@ -117,6 +120,11 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	u_int64_t hidden_volume_size = 0 ;
 
 	u_int64_t size ;
+
+	create_tcrypt_t tcrypt ;
+
+	const char * keyFile ;
+	const char * keyFile_1 ;
 
 	const char * tcrypt_hidden_volume_size     = opts->tcrypt_hidden_volume_size ;
 	const char * tcrypt_hidden_volume_key_file = opts->tcrypt_hidden_volume_key_file ;
@@ -209,6 +217,9 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 			}
 		}
 	}
+
+	truecrypt_volume = StringAtLeastOneMatch_1( type,"tcrypt","truecrypt",NULL ) ;
+
 	if( key_source == NULL ){
 		printf( gettext( "Enter passphrase: " ) ) ;
 		/*
@@ -256,8 +267,6 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 			return zuluExit( 18,stl ) ;
 		}
 	}
-
-	truecrypt_volume = StringAtLeastOneMatch_1( type,"tcrypt","truecrypt",NULL ) ;
 
 	if( tcrypt_hidden_volume_size != NULL ){
 
@@ -322,11 +331,64 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	zuluCryptSecurityGainElevatedPrivileges() ;
 
 	if( truecrypt_volume ){
+
+		memset( &tcrypt,'\0',sizeof( create_tcrypt_t ) ) ;
+
+		tcrypt.device             = device ;
+		tcrypt.fs                 = fs ;
+		tcrypt.fs_h               = fs ;
+		tcrypt.weak_keys_and_salt = StringsAreEqual( rng,"/dev/urandom" ) ;
+		tcrypt.hidden_volume_size = hidden_volume_size ;
+
+		if( tcrypt_source == TCRYPT_KEYFILE ){
+			/*
+			 * zuluCryptCreateKeyFile() is defined in ../lib/open_tcrypt.c
+			 */
+			p = zuluCryptCreateKeyFile( volkey,volkeysize,"create-key-" ) ;
+
+			keyFile = StringContent( p ) ;
+			tcrypt.keyfiles = &keyFile ;
+
+			tcrypt.keyfiles_number = 1 ;
+
+			tcrypt.passphrase       = "" ;
+			tcrypt.passphrase_size  = 0 ;
+		}else{
+			tcrypt.passphrase       = volkey ;
+			tcrypt.passphrase_size  = volkeysize ;
+		}
+
+		if( tcrypt.hidden_volume_size > 0 ){
+
+			if( tcrypt_source_h == TCRYPT_KEYFILE ){
+
+				q = zuluCryptCreateKeyFile( volkey_h,volkeysize_h,"create-key_h-" ) ;
+				keyFile_1 = StringContent( q ) ;
+
+				tcrypt.keyfiles_h = &keyFile_1 ;
+				tcrypt.keyfiles_h_number = 1 ;
+
+				tcrypt.passphrase_h      = "" ;
+				tcrypt.passphrase_h_size = 0 ;
+			}else{
+				tcrypt.passphrase_h      = volkey_h ;
+				tcrypt.passphrase_h_size = volkeysize_h ;
+			}
+		}
+
 		/*
-		 * zuluCryptCreateTCrypt() is defined in ../lib/create_tcrypt.c
+		 * zuluCryptCreateTCryptVolume() is defined in ../lib/create_tcrypt.c
 		 */
-		st = zuluCryptCreateTCrypt( device,fs,rng,volkey,volkeysize,tcrypt_source,
-					    hidden_volume_size,fs,volkey_h,volkeysize_h,tcrypt_source_h ) ;
+		st = zuluCryptCreateTCryptVolume( &tcrypt ) ;
+
+		/*
+		 * zuluCryptDeleteFile_1() is defined in ../lib/file_path_security.c
+		 */
+		zuluCryptDeleteFile_1( p ) ;
+		zuluCryptDeleteFile_1( q ) ;
+
+		StringDelete( &p ) ;
+		StringDelete( &q ) ;
 	}else{
 		/*
 		 * zuluCryptCreateVolume() is defined in ../lib/create_volume.c
