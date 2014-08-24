@@ -91,7 +91,7 @@ static int _create_file_system( const create_tcrypt_t * e )
 		zuluCryptCloseMapper( device_mapper ) ;
 	}
 
-	if( r == 0 && e-> hidden_volume_size > 0 ){
+	if( r == 0 && e->hidden_volume_size > 0 ){
 
 		opts.volume_type = TCRYPT_HIDDEN ;
 

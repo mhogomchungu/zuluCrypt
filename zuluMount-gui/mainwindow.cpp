@@ -39,6 +39,8 @@
 #include <QTranslator>
 #include <QMimeData>
 
+#include <utility>
+
 #include <unistd.h>
 #include "keydialog.h"
 #include "../zuluCrypt-gui/dialogmsg.h"
@@ -121,7 +123,7 @@ void MainWindow::setUpApp( const QString& volume )
 	m_trayIcon = new QSystemTrayIcon( this ) ;
 	m_trayIcon->setIcon( QIcon( QString( ":/zuluMount.png" ) ) ) ;
 
-	QMenu * trayMenu = new QMenu( this ) ;
+	auto trayMenu = new QMenu( this ) ;
 
 	m_autoMountAction = new QAction( this ) ;
 	m_autoMount = this->autoMount() ;
@@ -134,7 +136,7 @@ void MainWindow::setUpApp( const QString& volume )
 
 	trayMenu->addAction( m_autoMountAction ) ;
 
-	QAction * autoOpenFolderOnMount = new QAction( this ) ;
+	auto autoOpenFolderOnMount = new QAction( this ) ;
 	autoOpenFolderOnMount->setCheckable( true ) ;
 	m_autoOpenFolderOnMount = this->autoOpenFolderOnMount() ;
 	autoOpenFolderOnMount->setChecked( m_autoOpenFolderOnMount ) ;
@@ -143,7 +145,7 @@ void MainWindow::setUpApp( const QString& volume )
 
 	trayMenu->addAction( autoOpenFolderOnMount ) ;
 
-	QAction * ac = new QAction( this ) ;
+	auto ac = new QAction( this ) ;
 	ac->setText( tr( "show the interface" ) ) ;
 	connect( ac,SIGNAL( triggered() ),this,SLOT( raiseWindow() ) ) ;
 
@@ -178,18 +180,13 @@ void MainWindow::setUpApp( const QString& volume )
 
 	this->startAutoMonitor() ;
 
-	auto& r = zuluMountTask::updateVolumeList() ;
+	this->updateVolumeList( zuluMountTask::updateVolumeList().await() ) ;
 
-	r.then( [ &,volume ]( const QVector< volumeEntryProperties >& e ){
-
-		this->updateVolumeList( e ) ;
-
-		if( volume.isEmpty() ) {
-			this->enableAll() ;
-		}else{
-			this->showMoungDialog( volume ) ;
-		}
-	} ) ;
+	if( volume.isEmpty() ) {
+		this->enableAll() ;
+	}else{
+		this->showMoungDialog( volume ) ;
+	}
 }
 
 void MainWindow::favoriteClicked( QAction * ac )
@@ -199,17 +196,17 @@ void MainWindow::favoriteClicked( QAction * ac )
 
 void MainWindow::showFavorites()
 {
-	QAction * ac ;
 	m_favorite_menu->clear() ;
 	QStringList l = utility::readFavorites() ;
+
 	if( l.isEmpty() ){
-		ac = new QAction( tr( "list is empty" ),m_favorite_menu ) ;
+		auto ac = new QAction( tr( "list is empty" ),m_favorite_menu ) ;
 		ac->setEnabled( false ) ;
 		m_favorite_menu->addAction( ac ) ;
 	}else{
 		l.removeLast() ;
 		for( const auto& it : l ){
-			ac = new QAction( it.split( "\t" ).first(),m_favorite_menu ) ;
+			auto ac = new QAction( it.split( "\t" ).first(),m_favorite_menu ) ;
 			m_favorite_menu->addAction( ac ) ;
 		}
 	}
@@ -217,7 +214,7 @@ void MainWindow::showFavorites()
 
 void MainWindow::setLocalizationLanguage()
 {
-	QTranslator * translator = new QTranslator( this ) ;
+	auto translator  = new QTranslator( this ) ;
 	QString pgr      = QString( "zuluMount-gui" ) ;
 	QString lang     = utility::localizationLanguage( pgr ) ;
 	QString langPath = utility::localizationLanguagePath( pgr ) ;
@@ -225,6 +222,7 @@ void MainWindow::setLocalizationLanguage()
 	QByteArray r = lang.toLatin1() ;
 
 	QByteArray e( "en_US" ) ;
+
 	if( e == r ){
 		/*
 		 * english_US language,its the default and hence dont load anything
@@ -298,10 +296,11 @@ void MainWindow::autoMountVolume( volumeEntryProperties * entry )
 		QStringList l = entry->entryList() ;
 
 		if( entry->encryptedVolume() ){
+
 			this->addEntryToTable( true,l ) ;
 		}else{
 			if( m_autoMount ){
-				mountPartition * mp = new mountPartition( this,m_ui->tableWidget ) ;
+				auto mp = new mountPartition( this,m_ui->tableWidget ) ;
 				connect( mp,SIGNAL( openMountPoint( QString ) ),
 					 this,SLOT( openMountPointPath( QString ) ) ) ;
 				mp->AutoMount( l ) ;
@@ -315,8 +314,11 @@ void MainWindow::autoMountVolume( volumeEntryProperties * entry )
 void MainWindow::volumeRemoved( QString volume )
 {
 	if( !volume.isEmpty() ){
-		QTableWidget * table = m_ui->tableWidget ;
+
+		auto table = m_ui->tableWidget ;
+
 		int row = tablewidget::columnHasEntry( table,volume ) ;
+
 		if( row != -1 ){
 			tablewidget::deleteRowFromTable( table,row ) ;
 			/*
@@ -334,6 +336,7 @@ void MainWindow::volumeRemoved( QString volume )
 void MainWindow::removeVolume( QString volume )
 {
 	if( volume.isEmpty() ){
+
 		tablewidget::selectLastRow( m_ui->tableWidget ) ;
 		this->enableAll() ;
 	}else{
@@ -344,19 +347,19 @@ void MainWindow::removeVolume( QString volume )
 void MainWindow::itemEntered( QTableWidgetItem * item )
 {
 	int row = item->row() ;
-	QTableWidget * table = item->tableWidget() ;
+	auto table = item->tableWidget() ;
 	QString m_point = table->item( row,1 )->text() ;
 
 	QString x = table->item( row,3 )->text() ;
 	QString z ;
 	QString y ;
 
-	if( m_point == QString( "/" ) ){
+	if( m_point == "/" ){
 		/*
 		 * we dont check if root path is publicly shared because the path it will produce (/run/media/shared/)
 		 * will always return true,a solution is to examine /proc/self/mountinfo and thats work for another day
 		 */
-		if( x == QString( "Nil" ) ){
+		if( x == "Nil" ){
 			x.clear() ;
 		}
 		z += tr( "LABEL=\"%1\"" ).arg( x ) ;
@@ -368,7 +371,7 @@ void MainWindow::itemEntered( QTableWidgetItem * item )
 		x.clear() ;
 		z += tr( "LABEL=\"%1\"" ).arg( x ) ;
 	}else{
-		if( x == QString( "Nil" ) ){
+		if( x == "Nil" ){
 			x.clear() ;
 		}
 		y = utility::shareMountPointToolTip( m_point ) ;
@@ -415,7 +418,7 @@ void MainWindow::start()
 	QString volume = utility::cmdArgumentValue( l,"-d" ) ;
 
 	QString sockpath = QString( "zuluMount-gui.socket" ) ;
-	oneinstance * instance = new oneinstance( this,sockpath,"startGUI",volume ) ;
+	auto instance = new oneinstance( this,sockpath,"startGUI",volume ) ;
 	if( !instance->instanceExist() ){
 		connect( instance,SIGNAL( raise() ),this,SLOT( raiseWindow() ) ) ;
 		connect( instance,SIGNAL( raiseWithDevice( QString ) ),this,SLOT( raiseWindow( QString ) ) ) ;
@@ -432,7 +435,7 @@ void MainWindow::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 	QString mt = m_ui->tableWidget->item( item->row(),1 )->text() ;
 	QString type = m_ui->tableWidget->item( item->row(),2 )->text() ;
 
-	if( mt == QString( "Nil" ) ){
+	if( mt == "Nil" ){
 		connect( m.addAction( tr( "mount" ) ),SIGNAL( triggered() ),this,SLOT( slotMount() ) ) ;
 	}else{
 		QString mp = QString( "/run/media/private/%1/" ).arg( utility::userName() ) ;
@@ -511,7 +514,7 @@ void MainWindow::slotOpenSharedFolder()
 
 void MainWindow::slotOpenFolder()
 {
-	QTableWidgetItem * item = m_ui->tableWidget->currentItem() ;
+	auto item = m_ui->tableWidget->currentItem() ;
 	QString path = m_ui->tableWidget->item( item->row(),1 )->text() ;
 
 	this->openMountPoint( path ) ;
@@ -522,20 +525,18 @@ void MainWindow::openMountPoint( const QString& m_point )
 	QString m = m_point ;
 	m.replace( "\"","\"\"\"" ) ;
 
-	Task::run< bool >( [ &,m ](){
+	bool failed = Task::await< bool >( [ this,m ](){
 
 		auto r = utility::Task( QString( "%1 \"%2\"" ).arg( m_folderOpener,m ) ) ;
 		return r.exitCode() != 0 || r.exitStatus() != 0 ;
-
-	} ).then( [ this ]( bool failed ){
-
-		if( failed ){
-
-			QString x = tr( "could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) ;
-			DialogMsg msg( this ) ;
-			msg.ShowUIOK( tr( "warning" ),x ) ;
-		}
 	} ) ;
+
+	if( failed ){
+
+		QString x = tr( "could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) ;
+		DialogMsg msg( this ) ;
+		msg.ShowUIOK( tr( "warning" ),x ) ;
+	}
 }
 
 void MainWindow::openMountPointPath( QString m )
@@ -575,7 +576,7 @@ void MainWindow::volumeProperties()
 
 void MainWindow::setUpShortCuts()
 {
-	QAction * ac = new QAction( this ) ;
+	auto ac = new QAction( this ) ;
 	QList<QKeySequence> keys ;
 	keys.append( Qt::Key_Enter ) ;
 	keys.append( Qt::Key_Return ) ;
@@ -583,7 +584,7 @@ void MainWindow::setUpShortCuts()
 	connect( ac,SIGNAL( triggered() ),this,SLOT( defaultButton() ) ) ;
 	this->addAction( ac ) ;
 
-	QAction * qa = new QAction( this ) ;
+	auto qa = new QAction( this ) ;
 	QList<QKeySequence> z ;
 	z.append( Qt::Key_M ) ;
 	qa->setShortcuts( z ) ;
@@ -649,8 +650,7 @@ void MainWindow::dragEnterEvent( QDragEnterEvent * e )
 
 void MainWindow::dropEvent( QDropEvent * e )
 {
-	const QMimeData * m = e->mimeData() ;
-	QList<QUrl> l = m->urls() ;
+	auto l = e->mimeData()->urls() ;
 
 	for( const auto& it : l ){
 
@@ -666,15 +666,16 @@ void MainWindow::dropEvent( QDropEvent * e )
 void MainWindow::mount( const volumeEntryProperties& entry )
 {
 	this->disableAll() ;
+
 	if( entry.encryptedVolume() ){
 
-		keyDialog * kd = new keyDialog( this,m_ui->tableWidget,entry.volumeName(),
+		auto kd = new keyDialog( this,m_ui->tableWidget,entry.volumeName(),
 						entry.fileSystem() ) ;
 		connect( kd,SIGNAL( cancel() ),this,SLOT( enableAll() ) ) ;
 		connect( kd,SIGNAL( openMountPoint( QString ) ),this,SLOT( openMountPointPath( QString ) ) ) ;
 		kd->ShowUI() ;
 	}else{
-		mountPartition * mp = new mountPartition( this,m_ui->tableWidget ) ;
+		auto mp = new mountPartition( this,m_ui->tableWidget ) ;
 		connect( mp,SIGNAL( cancel() ),this,SLOT( enableAll() ) ) ;
 		connect( mp,SIGNAL( openMountPoint( QString ) ),this,SLOT( openMountPointPath( QString ) ) ) ;
 		mp->ShowUI( entry.volumeName(),entry.label() ) ;
@@ -683,7 +684,7 @@ void MainWindow::mount( const volumeEntryProperties& entry )
 
 void MainWindow::slotMount()
 {
-	QTableWidget * table = m_ui->tableWidget ;
+	auto table = m_ui->tableWidget ;
 	int row = table->currentRow() ;
 
 	volumeEntryProperties entry( tablewidget::tableRowEntries( table,row ) ) ;
@@ -708,12 +709,7 @@ void MainWindow::showMoungDialog( const QString& volume )
 {
 	if( !volume.isEmpty() ){
 
-		auto& r = zuluMountTask::getVolumeProperties( volume ) ;
-
-		r.then( [ this ]( const volumeEntryProperties& v ){
-
-			this->showMoungDialog( v ) ;
-		} ) ;
+		this->showMoungDialog( zuluMountTask::getVolumeProperties( volume ).await() ) ;
 	}
 }
 
@@ -724,6 +720,7 @@ void MainWindow::pbMount()
 	QString path = QFileDialog::getOpenFileName( this,tr( "select an image file to mount" ),QDir::homePath() ) ;
 
 	if( path.isEmpty() ){
+
 		this->enableAll() ;
 	}else{
 		this->showMoungDialog( path ) ;
@@ -749,9 +746,10 @@ void MainWindow::addEntryToTable( bool systemVolume,const QStringList& l )
 
 void MainWindow::removeEntryFromTable( QString volume )
 {
-	QTableWidget * table = m_ui->tableWidget ;
+	auto table = m_ui->tableWidget ;
 
 	int r = tablewidget::columnHasEntry( table,volume ) ;
+
 	if( r != -1 ){
 		tablewidget::deleteRowFromTable( table,r ) ;
 		this->enableAll() ;
@@ -778,7 +776,7 @@ void MainWindow::updateList( const volumeEntryProperties& entry )
 {
 	if( entry.notEmpty() ){
 
-		QTableWidget * table = m_ui->tableWidget ;
+		auto table = m_ui->tableWidget ;
 
 		int row = tablewidget::columnHasEntry( table,entry.volumeName() ) ;
 		if( row == -1 ){
@@ -802,23 +800,21 @@ void MainWindow::pbUmount()
 	QString path = m_ui->tableWidget->item( row,0 )->text() ;
 	QString type = m_ui->tableWidget->item( row,2 )->text() ;
 
-	auto& e = zuluMountTask::unmountVolume( path,type ) ;
+	auto r = zuluMountTask::unmountVolume( path,type ).await() ;
 
-	e.then( [ this ]( const zuluMountTaskResult& r ){
+	if( r.passed == false ){
 
-		if( !r.passed ){
-			DialogMsg m( this ) ;
-			m.ShowUIOK( tr( "ERROR" ),r.outPut ) ;
-			this->enableAll() ;
-		}
-	} ) ;
+		DialogMsg m( this ) ;
+		m.ShowUIOK( tr( "ERROR" ),r.outPut ) ;
+		this->enableAll() ;
+	}
 }
 
 void MainWindow::unMountAll()
 {
 	this->disableAll() ;
 
-	QTableWidget * table = m_ui->tableWidget ;
+	auto table = m_ui->tableWidget ;
 
 	QStringList x = tablewidget::tableColumnEntries( table,1 ) ;
 	QStringList y = tablewidget::tableColumnEntries( table,0 ) ;
@@ -867,14 +863,11 @@ void MainWindow::pbUpdate()
 {
 	this->disableAll() ;
 
-	auto& r = zuluMountTask::updateVolumeList() ;
+	auto r = zuluMountTask::updateVolumeList().await() ;
 
-	r.then( [ this ]( const QVector< volumeEntryProperties >& e ){
+	this->updateVolumeList( r ) ;
 
-		this->updateVolumeList( e ) ;
-
-		this->removeDisappearedEntries( e ) ;
-	} ) ;
+	this->removeDisappearedEntries( r ) ;
 }
 
 void MainWindow::updateVolumeList( const QVector< volumeEntryProperties >& r )
@@ -907,7 +900,7 @@ void MainWindow::removeDisappearedEntries( const QVector< volumeEntryProperties 
 		return ;
 	}
 
-	QTableWidget * table = m_ui->tableWidget ;
+	auto table = m_ui->tableWidget ;
 
 	QStringList l = tablewidget::tableColumnEntries( table,0 ) ;
 
@@ -934,6 +927,7 @@ void MainWindow::removeDisappearedEntries( const QVector< volumeEntryProperties 
 	}
 
 	if( z.isEmpty() ){
+
 		this->removeVolume( QString() ) ;
 	}else{
 		Task::exec( [ &,z ](){
