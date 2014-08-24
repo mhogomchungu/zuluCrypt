@@ -204,7 +204,7 @@ if( NOT UDEVSUPPORT STREQUAL "true" )
 endif( NOT UDEVSUPPORT STREQUAL "true" )
 
 if( NOT BUILD_TCPLAY )
-	message( STATUS "tcplay package not found or found version is too old(found version is less than 1.0.0)." )
+	message( STATUS "tcplay package not found or found version is too old(found version is less than 2.0.0)." )
 	message( STATUS "You wont be able to create truecrypt compatible encrypted containers" )
 	message( STATUS "tcplay project is hosted at: https://github.com/bwalex/tc-play\n" )
 endif( NOT BUILD_TCPLAY )

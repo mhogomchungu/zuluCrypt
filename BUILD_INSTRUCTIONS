@@ -1,7 +1,7 @@
 
 
 This tool depends on the following packages installed to build, their precise name may differ in your distro.
-1.
+1. libpwquality-devel( optional dependency used to check the quality of passwords when creating volumes )
 2. libblkid-devel
 3. libqt4-devel( required if building GUI components )
 4. gcc
@@ -16,7 +16,26 @@ This tool depends on the following packages installed to build, their precise na
 13.libdevmapper-devel aka device-mapper-devel.
 14.uuid-devel
 
-The package is made up of two components,the command line "pure C" based backend components and GUI Qt/C++ based front end components.
+The precise names of the above packages in debian are:
+1. libpwquality-dev( optional dependency used to check the quality of passwords when creating volumes )
+2. libblkid-dev
+3. libqt4-dev( optional dependency used when building GUI components )
+4. gcc
+5. g++
+6. libcryptsetup-dev
+7. cmake
+8. libtcplay-dev ( optional dependency used to create TrueCrypt volumes and change TrueCrypt volume keys )
+9. libgcrypt11-dev
+10.libsecret-1-dev( optional dependency used to store and retrieve volume keys using gnome's libsecret )
+11.not sure of the package name( optional dependency used to store and retrieve volume keys using kde's kwallet )
+12.pkg-config
+13.libdevmapper-dev
+14.uuid-dev
+15.libudev-dev
+16.chrpath
+17.bzip2
+
+The project is made up of two components,the command line "pure C" based backend components and GUI Qt/C++ based front end components.
 
 After you have above packages installed,run these 5 command to build and install.
 The last command depends on your distribution,go with the one recommended by disto.
