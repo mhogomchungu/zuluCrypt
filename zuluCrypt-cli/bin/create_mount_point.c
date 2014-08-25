@@ -23,11 +23,45 @@
 #include <unistd.h>
 #include "mount_prefix_path.h"
 
-static string_t _create_home_default_mount_point( const char * device,uid_t uid,string_t path )
+static string_t _create_path( uid_t uid,string_t path,int need_privileges )
 {
 	string_t st = StringVoid ;
+
+	const char * m_point = StringContent( path ) ;
+
+	if( m_point == NULL ){
+
+		return st ;
+	}else{
+		if( need_privileges ){
+
+			zuluCryptSecurityGainElevatedPrivileges() ;
+
+			if( mkdir( m_point,S_IRWXU ) == 0 ){
+				st = path ;
+				chown( m_point,uid,uid ) ;
+			}else{
+				StringDelete( &path ) ;
+			}
+
+			zuluCryptSecurityDropElevatedPrivileges() ;
+		}else{
+			if( mkdir( m_point,S_IRWXU ) == 0 ){
+				st = path ;
+				chown( m_point,uid,uid ) ;
+			}else{
+				StringDelete( &path ) ;
+			}
+		}
+
+		return st ;
+	}
+}
+
+static string_t _create_mount_point_1( const char * device,uid_t uid,string_t path,int need_privileges )
+{
+	string_t st ;
 	char * loop_path = NULL ;
-	const char * m_point ;
 
 	if( StringPrefixEqual( device,"/dev/loop" ) ){
 		/*
@@ -36,30 +70,34 @@ static string_t _create_home_default_mount_point( const char * device,uid_t uid,
 		device = loop_path = zuluCryptLoopDeviceAddress_1( device ) ;
 	}
 
-	m_point = StringMultipleAppend( path,"/",device + StringLastIndexOfChar_1( device,'/' ) + 1,NULL ) ;
+	StringMultipleAppend( path,"/",device + StringLastIndexOfChar_1( device,'/' ) + 1,NULL ) ;
 
-	if( mkdir( m_point,S_IRWXU ) == 0 ){
-		st = path ;
-		chown( m_point,uid,uid ) ;
-	}else{
-		StringDelete( &path ) ;
-	}
+	st = _create_path( uid,path,need_privileges ) ;
 
 	StringFree( loop_path ) ;
 
 	return st ;
 }
 
-static string_t _create_home_custom_mount_point( const char * label,uid_t uid,string_t path )
+static string_t _create_home_default_mount_point( const char * device,uid_t uid,string_t path )
 {
-	string_t st = StringVoid ;
+	return _create_mount_point_1( device,uid,path,0 ) ;
+}
 
-	const char * p = StringAppend( path,"/" ) ;
+static string_t _create_default_mount_point( const char * device,uid_t uid,string_t path )
+{
+	return _create_mount_point_1( device,uid,path,1 ) ;
+}
+
+static string_t _create_mount_point_0( const char * label,uid_t uid,string_t path,int need_privileges )
+{
 	const char * q = strrchr( label,'/' ) ;
 	const char * e ;
 
+	StringAppend( path,"/" ) ;
+
 	if( q == NULL ){
-		p = StringAppend( path,label ) ;
+		StringAppend( path,label ) ;
 	}else{
 		if( *( q + 1 ) == '\0' ){
 			/*
@@ -72,34 +110,37 @@ static string_t _create_home_custom_mount_point( const char * label,uid_t uid,st
 				 * -m option was given with a single "/".
 				 */
 				StringDelete( &path ) ;
-				return st ;
+				return StringVoid ;
 			}
 			while( 1 ){
 				if( e == label ){
 					StringAppend( path,e + 1 ) ;
-					p = StringRemoveRight( path,1 ) ;
+					StringRemoveRight( path,1 ) ;
 					break ;
 				}else if( *e == '/' ){
 					StringAppend( path,e + 1 ) ;
-					p = StringRemoveRight( path,1 ) ;
+					StringRemoveRight( path,1 ) ;
 					break ;
 				}else{
 					e-- ;
 				}
 			}
 		}else{
-			p = StringAppend( path,q + 1 ) ;
+			StringAppend( path,q + 1 ) ;
 		}
 	}
 
-	if( mkdir( p,S_IRWXU ) == 0 ){
-		st = path ;
-		chown( p,uid,uid ) ;
-	}else{
-		StringDelete( &path ) ;
-	}
+	return _create_path( uid,path,need_privileges ) ;
+}
 
-	return st ;
+static string_t _create_home_custom_mount_point( const char * label,uid_t uid,string_t path )
+{
+	return _create_mount_point_0( label,uid,path,0 ) ;
+}
+
+static string_t _create_custom_mount_point( const char * label,uid_t uid,string_t path )
+{
+	return _create_mount_point_0( label,uid,path,1 ) ;
 }
 
 static string_t create_home_mount_point( const char * device,const char * label,uid_t uid )
@@ -118,7 +159,7 @@ static string_t create_home_mount_point( const char * device,const char * label,
 	}
 }
 
-static int home_mount_point_prefix_match( const char * m_path,uid_t uid,string_t * m_point )
+static int mount_point_prefix_match_0( const char * m_path,uid_t uid,string_t * m_point,int home_prefix )
 {
 	int st ;
 	/*
@@ -130,10 +171,15 @@ static int home_mount_point_prefix_match( const char * m_path,uid_t uid,string_t
 	 */
 	const char * str ;
 
-	if( uid == 0 ){
-		str = StringPrepend( uname,"/" ) ;
+	if( home_prefix ){
+
+		if( uid == 0 ){
+			str = StringPrepend( uname,"/" ) ;
+		}else{
+			str = StringPrepend( uname,"/home/" ) ;
+		}
 	}else{
-		str = StringPrepend( uname,"/home/" ) ;
+		str = StringPrepend( uname,"/run/media/private/" ) ;
 	}
 
 	st = StringPrefixEqual( m_path,str ) ;
@@ -143,112 +189,18 @@ static int home_mount_point_prefix_match( const char * m_path,uid_t uid,string_t
 	}else{
 		StringDelete( &uname ) ;
 	}
-	return st ;
-}
-
-static string_t _create_default_mount_point( const char * device,uid_t uid,string_t path )
-{
-	string_t st = StringVoid ;
-	char * loop_path = NULL ;
-	const char * m_point ;
-
-	if( StringPrefixEqual( device,"/dev/loop" ) ){
-		/*
-		 * zuluCryptLoopDeviceAddress_1() is defined in ../lib/create_loop_device.c
-		 */
-		device = loop_path = zuluCryptLoopDeviceAddress_1( device ) ;
-	}
-
-	m_point = StringMultipleAppend( path,"/",device + StringLastIndexOfChar_1( device,'/' ) + 1,NULL ) ;
-
-	zuluCryptSecurityGainElevatedPrivileges() ;
-
-	if( mkdir( m_point,S_IRWXU ) == 0 ){
-		st = path ;
-		chown( m_point,uid,uid ) ;
-	}else{
-		StringDelete( &path ) ;
-	}
-
-	zuluCryptSecurityDropElevatedPrivileges() ;
-
-	StringFree( loop_path ) ;
 
 	return st ;
 }
 
-static string_t _create_custom_mount_point( const char * label,uid_t uid,string_t path )
+static int home_mount_point_prefix_match( const char * m_path,uid_t uid,string_t * m_point )
 {
-	string_t st = StringVoid ;
-
-	const char * p = StringAppend( path,"/" ) ;
-	const char * q = strrchr( label,'/' ) ;
-	const char * e ;
-
-	if( q == NULL ){
-		p = StringAppend( path,label ) ;
-	}else{
-		if( *( q + 1 ) == '\0' ){
-			/*
-			 * -m option was given with a path that ends with "/",backtrack until you find the second "/"
-			 * from the right and use it as the last "/".
-			 */
-			e = q - 1 ;
-			if( e < label ){
-				/*
-				 * -m option was given with a single "/".
-				 */
-				StringDelete( &path ) ;
-				return st ;
-			}
-			while( 1 ){
-				if( e == label ){
-					StringAppend( path,e + 1 ) ;
-					p = StringRemoveRight( path,1 ) ;
-					break ;
-				}else if( *e == '/' ){
-					StringAppend( path,e + 1 ) ;
-					p = StringRemoveRight( path,1 ) ;
-					break ;
-				}else{
-					e-- ;
-				}
-			}
-		}else{
-			p = StringAppend( path,q + 1 ) ;
-		}
-	}
-
-	zuluCryptSecurityGainElevatedPrivileges() ;
-
-	if( mkdir( p,S_IRWXU ) == 0 ){
-		st = path ;
-		chown( p,uid,uid ) ;
-	}else{
-		StringDelete( &path ) ;
-	}
-
-	zuluCryptSecurityDropElevatedPrivileges() ;
-
-	return st ;
+	return mount_point_prefix_match_0( m_path,uid,m_point,1 ) ;
 }
 
 static int mount_point_prefix_match( const char * m_path,uid_t uid,string_t * m_point )
 {
-	/*
-	 * zuluCryptGetUserName() is defined in ../lib/user_home_path.c
-	 */
-	string_t uname = zuluCryptGetUserName( uid ) ;
-
-	const char * str = StringPrepend( uname,"/run/media/private/" ) ;
-
-	int st = StringPrefixEqual( m_path,str ) ;
-	if( m_point ){
-		*m_point = uname ;
-	}else{
-		StringDelete( &uname ) ;
-	}
-	return st ;
+	return mount_point_prefix_match_0( m_path,uid,m_point,0 ) ;
 }
 
 static string_t create_mount_point( const char * device,const char * label,uid_t uid )
@@ -310,11 +262,7 @@ static string_t create_mount_point( const char * device,const char * label,uid_t
 
 static int home_mount_prefix( void )
 {
-	#if USE_HOME_PATH_AS_MOUNT_PREFIX
-		return 1 ;
-	#else
-		return 0 ;
-	#endif
+	return USE_HOME_PATH_AS_MOUNT_PREFIX ;
 }
 
 string_t zuluCryptCreateMountPoint( const char * device,const char * label,const char * m_opts,uid_t uid )

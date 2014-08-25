@@ -94,7 +94,8 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const QString& path,
 
 	m_ui->pbOpenMountPoint->setVisible( false ) ;
 
-	m_point = m_path.split( "/" ).last() ;
+	m_point = utility::mountPathPostFix( m_path.split( "/" ).last() ) ;
+
 	m_ui->lineEditMountPoint->setText( m_point ) ;
 
 	QAction * ac = new QAction( this ) ;

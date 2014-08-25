@@ -273,10 +273,10 @@ void mountPartition::ShowUI( QString path,QString label )
 {
 	m_path = path ;
 	m_label = label ;
-	m_point = m_path.split( QString( "/" ) ).last() ;
+	m_point = utility::mountPathPostFix( m_path.split( "/" ).last() ) ;
 	m_ui->lineEdit->setText( m_point ) ;
 
-	if( label == QString( "Nil" ) ){
+	if( label == "Nil" ){
 		m_ui->checkBox->setEnabled( false ) ;
 	}
 	this->show() ;
@@ -286,10 +286,10 @@ void mountPartition::AutoMount( QStringList entry )
 {
 	m_path = entry.at( 0 ) ;
 	QString label = entry.at( 3 ) ;
-	if( label != QString( "Nil" ) ) {
-		m_point = label ;
+	if( label != "Nil" ) {
+		m_point = utility::mountPathPostFix( label );
 	}else{
-		m_point = m_path.split( QString( "/" ) ).last() ;
+		m_point = utility::mountPathPostFix( m_path.split( "/" ).last() );
 	}
 	m_ui->lineEdit->setText( m_point ) ;
 	this->pbMount() ;

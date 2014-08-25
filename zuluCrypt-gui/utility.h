@@ -27,7 +27,7 @@
 #include <QThreadPool>
 #include <QRunnable>
 #include <QMetaObject>
-
+#include <QDebug>
 #include <functional>
 
 #include <unistd.h>
@@ -48,6 +48,11 @@ namespace utility
 		QString password ;
 	};
 
+	template< typename T > void debug( T t )
+	{
+		qDebug() << t ;
+	}
+
 	wallet getKeyFromWallet( LxQt::Wallet::walletBackEnd,const QString& keyID,const QString& pwd = QString() ) ;
 
 	QString cmdArgumentValue( const QStringList&,const QString& arg,
@@ -61,13 +66,12 @@ namespace utility
 	QString resolvePath( const QString& ) ;
 	QString hashPath( const QByteArray& ) ;
 	QString cryptMapperPath( void ) ;
-	void debug( const QString& ) ;
-	void debug( int ) ;
 	QString mapperPath( const QString& ) ;
 	QString getVolumeID( const QString& ) ;
 	bool userIsRoot( void ) ;
 	bool mapperPathExists( const QString& path ) ;
 	QString mountPath( const QString& ) ;
+	QString mountPathPostFix( const QString& ) ;
 	QString userName( void ) ;
 	void help( const QString& app ) ;
 	QString shareMountPointToolTip( void ) ;

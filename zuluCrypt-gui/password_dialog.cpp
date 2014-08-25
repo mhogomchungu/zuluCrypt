@@ -247,9 +247,10 @@ void passwordDialog::closeEvent( QCloseEvent * e )
 
 void passwordDialog::ShowUI( const QString& volumePath,const QString& mount_point )
 {
-	m_point = mount_point.split( QString( "/" ) ).last() ;
-	if( m_point.isEmpty() ){
-		m_point = volumePath.split( QString( "/" ) ).last() ;
+	if( mount_point.isEmpty() ){
+		m_point = utility::mountPathPostFix( volumePath.split( "/" ).last() ) ;
+	}else {
+		m_point = utility::mountPathPostFix( mount_point.split( "/" ).last() ) ;
 	}
 
 	m_open_with_path = true ;

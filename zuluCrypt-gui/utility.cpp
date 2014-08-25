@@ -517,16 +517,6 @@ QStringList utility::split(const QByteArray& str,char token )
 	return s.split( token,QString::SkipEmptyParts ) ;
 }
 
-void utility::debug( const QString& s )
-{
-	std::cout << s.toStdString() << std::endl ;
-}
-
-void utility::debug( int s )
-{
-	std::cout << s << std::endl ;
-}
-
 bool utility::mapperPathExists( const QString& path )
 {
 	return utility::pathExists( utility::mapperPath( path ) ) ;
@@ -534,13 +524,44 @@ bool utility::mapperPathExists( const QString& path )
 
 QString utility::mountPath( const QString& path )
 {
-	struct passwd * pass = getpwuid( getuid() ) ;
+	auto pass = getpwuid( getuid() ) ;
 
 #if USE_HOME_PATH_AS_MOUNT_PREFIX
 	return QString( "%1/%2" ).arg( QString( pass->pw_dir ) ).arg( path ) ;
 #else
-	return QString( "/run/media/private/%1/%2" ).arg( QString( pass->pw_dir ).split( "/" ).last() ).arg( path ) ;
+	return QString( "/run/media/private/%1/%2" ).arg( QString( pass->pw_dir ).split( "/" ).last(),path ) ;
 #endif
+}
+
+QString utility::mountPathPostFix( const QString& path )
+{
+	if( path.isEmpty() ){
+
+		return path ;
+	}else{
+		auto _path_not_found = []( const QString& e ){ return !utility::pathExists( e ) ; } ;
+
+		QString e = utility::mountPath( path ) ;
+
+		if( _path_not_found( e ) ){
+
+			return path ;
+		}else{
+			QString z ;
+
+			for( int i = 1 ; i < 1000 ; i++ ){
+
+				z = QString::number( i ) ;
+
+				if( _path_not_found( QString( "%1_%2" ).arg( e,z ) ) ){
+
+					return QString( "%1_%2" ).arg( path,z ) ;
+				}
+			}
+
+			return path ;
+		}
+	}
 }
 
 QString utility::mapperPath( const QString& r )

@@ -554,7 +554,7 @@ void MainWindow::volumeProperties()
 	QString volume     = m_ui->tableWidget->item( m_ui->tableWidget->currentRow(),0 )->text() ;
 	QString volumeType = m_ui->tableWidget->item( m_ui->tableWidget->currentRow(),2 )->text() ;
 
-	QString r = Task::await<QString>( zuluMountTask::volumeProperties( volume,volumeType ) ) ;
+	QString r = zuluMountTask::volumeProperties( volume,volumeType ).await() ;
 
 	DialogMsg msg( this ) ;
 
@@ -669,15 +669,18 @@ void MainWindow::mount( const volumeEntryProperties& entry )
 
 	if( entry.encryptedVolume() ){
 
-		auto kd = new keyDialog( this,m_ui->tableWidget,entry.volumeName(),
-						entry.fileSystem() ) ;
+		auto kd = new keyDialog( this,m_ui->tableWidget,entry.volumeName(),entry.fileSystem() ) ;
+
 		connect( kd,SIGNAL( cancel() ),this,SLOT( enableAll() ) ) ;
 		connect( kd,SIGNAL( openMountPoint( QString ) ),this,SLOT( openMountPointPath( QString ) ) ) ;
+
 		kd->ShowUI() ;
 	}else{
 		auto mp = new mountPartition( this,m_ui->tableWidget ) ;
+
 		connect( mp,SIGNAL( cancel() ),this,SLOT( enableAll() ) ) ;
 		connect( mp,SIGNAL( openMountPoint( QString ) ),this,SLOT( openMountPointPath( QString ) ) ) ;
+
 		mp->ShowUI( entry.volumeName(),entry.label() ) ;
 	}
 }
@@ -824,14 +827,13 @@ void MainWindow::unMountAll()
 	QStringList q ;
 
 	QString a = utility::userName() ;
-	QString b = QString( "/run/media/private/%1/" ).arg( a ) ;
-	QString c = QString( "/home/%1/" ).arg( a ) ;
+	QString b = utility::mountPath( QString() ) ;
 
 	int k = x.size() ;
 
 	for( int i = 0 ; i < k ; i++ ){
 		const QString& e = x.at( i ) ;
-		if( e.startsWith( a ) || e.startsWith( b ) ){
+		if( e.startsWith( b ) ){
 			p.append( y.at( i ) ) ;
 			q.append( z.at( i ) ) ;
 		}
