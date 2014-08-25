@@ -145,12 +145,10 @@ static string_t _create_custom_mount_point( const char * label,uid_t uid,string_
 
 static string_t create_home_mount_point( const char * device,const char * label,uid_t uid )
 {
-	string_t path = zuluCryptGetUserName( uid ) ;
-	if( uid == 0 ){
-		StringPrepend( path,"/" ) ;
-	}else{
-		StringPrepend( path,"/home/" ) ;
-	}
+	/*
+	 * zuluCryptGetUserHomePath() is defined in ../lib/user_home_path.c
+	 */
+	string_t path = zuluCryptGetUserHomePath( uid ) ;
 
 	if( label == NULL ){
 		return _create_home_default_mount_point( device,uid,path ) ;
