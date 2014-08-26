@@ -173,7 +173,8 @@ static int mount_point_prefix_match_0( const char * m_path,uid_t uid,string_t * 
 		str = StringContent( uname ) ;
 	}else{
 		uname = zuluCryptGetUserName( uid ) ;
-		str = StringPrepend( uname,"/run/media/private/" ) ;
+		StringPrepend( uname,"/run/media/private/" ) ;
+		str = StringAppendChar( uname,'/' ) ;
 	}
 
 	st = StringPrefixEqual( m_path,str ) ;
@@ -247,6 +248,8 @@ static string_t create_mount_point( const char * device,const char * label,uid_t
 
 	zuluCryptSecurityDropElevatedPrivileges() ;
 
+	StringAppendChar( path,'/' ) ;
+	
 	if( label == NULL ){
 		return _create_default_mount_point( device,uid,path ) ;
 	}else{
