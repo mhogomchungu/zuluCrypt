@@ -70,7 +70,7 @@ static string_t _create_mount_point_1( const char * device,uid_t uid,string_t pa
 		device = loop_path = zuluCryptLoopDeviceAddress_1( device ) ;
 	}
 
-	StringMultipleAppend( path,"/",device + StringLastIndexOfChar_1( device,'/' ) + 1,NULL ) ;
+	StringMultipleAppend( path,device + StringLastIndexOfChar_1( device,'/' ) + 1,NULL ) ;
 
 	st = _create_path( uid,path,need_privileges ) ;
 
@@ -93,8 +93,6 @@ static string_t _create_mount_point_0( const char * label,uid_t uid,string_t pat
 {
 	const char * q = strrchr( label,'/' ) ;
 	const char * e ;
-
-	StringAppend( path,"/" ) ;
 
 	if( q == NULL ){
 		StringAppend( path,label ) ;
@@ -163,7 +161,7 @@ static int mount_point_prefix_match_0( const char * m_path,uid_t uid,string_t * 
 	/*
 	 * zuluCryptGetUserName() is defined in ../lib/user_home_path.c
 	 */
-	string_t uname = zuluCryptGetUserName( uid ) ;
+	string_t uname ;
 	/*
 	 * below constant are set in ../constants.h
 	 */
@@ -171,12 +169,10 @@ static int mount_point_prefix_match_0( const char * m_path,uid_t uid,string_t * 
 
 	if( home_prefix ){
 
-		if( uid == 0 ){
-			str = StringPrepend( uname,"/" ) ;
-		}else{
-			str = StringPrepend( uname,"/home/" ) ;
-		}
+		uname = zuluCryptGetUserHomePath( uid ) ;
+		str = StringContent( uname ) ;
 	}else{
+		uname = zuluCryptGetUserName( uid ) ;
 		str = StringPrepend( uname,"/run/media/private/" ) ;
 	}
 
