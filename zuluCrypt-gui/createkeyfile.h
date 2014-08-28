@@ -49,15 +49,15 @@ private slots:
 	void pbCancel( void ) ;
 	void pbCreate( void ) ;
 	void pbOpenFolder( void ) ;
-	void taskStatus( int ) ;
 	void keyTextChange( QString ) ;
 private:
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 	void disableAll( void ) ;
 	void enableAll( void ) ;
-	Ui::createkeyfile * m_ui;
-	keyFileTask * m_task ;
+	Ui::createkeyfile * m_ui ;
+	bool m_running ;
+	bool m_stop ;
 };
 
 #endif // CREATEKEYFILE_H

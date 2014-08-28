@@ -28,7 +28,6 @@ set( MOC_FILES
 		createfile.h
 		luksaddkey.h
 		createkeyfile.h
-		keyfiletask.h
 		luksdeletekey.h
 		createvolume.h
 		openvolume.h
@@ -56,7 +55,6 @@ set( SRC
 	luksdeletekey.cpp
 	openvolume.cpp
 	createkeyfile.cpp
-	keyfiletask.cpp
 	luksaddkey.cpp
 	main.cpp
 	password_dialog.cpp

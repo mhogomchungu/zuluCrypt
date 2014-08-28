@@ -33,8 +33,12 @@
 
 #include "filetask.h"
 #include "utility.h"
-#include "keyfiletask.h"
 #include "dialogmsg.h"
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 createkeyfile::createkeyfile( QWidget * parent ) :
     QDialog( parent ),
@@ -42,8 +46,6 @@ createkeyfile::createkeyfile( QWidget * parent ) :
 {
 	m_ui->setupUi( this ) ;
 	this->setFont( parent->font() ) ;
-
-	m_task = NULL ;
 
 	m_ui->pbOpenFolder->setIcon( QIcon( QString( ":/folder.png" ) ) ) ;
 	connect( m_ui->pbCreate,SIGNAL( clicked() ),this,SLOT( pbCreate() ) ) ;
@@ -102,10 +104,10 @@ void createkeyfile::ShowUI()
 
 void createkeyfile::pbCancel()
 {
-	if( m_task == NULL ){
-		HideUI() ;
+	if( m_running ){
+		m_stop = true ;
 	}else{
-		m_task->cancelOperation() ;
+		this->HideUI() ;
 	}
 }
 
@@ -157,21 +159,64 @@ void createkeyfile::pbCreate()
 
 	this->disableAll() ;
 
-	m_task = new keyFileTask( path,m_ui->comboBoxRNG->currentIndex() ) ;
-	connect( m_task,SIGNAL( exitStatus( int ) ),this,SLOT( taskStatus( int ) ) ) ;
-	m_task->start() ;
-}
+	int rng = m_ui->comboBoxRNG->currentIndex() ;
 
-void createkeyfile::taskStatus( int st )
-{
-	DialogMsg msg( this ) ;
+	m_stop = false ;
+	m_running = true ;
 
-	m_task = NULL ;
-	switch( keyFileTask::status( st )  ){
-	case keyFileTask::cancelled : msg.ShowUIOK( tr( "WARNING!" ),tr( "process interrupted,key not fully generated" ) ) ;
-		return this->enableAll() ;
-	case keyFileTask::unset     : msg.ShowUIOK( tr( "SUCCESS!" ),tr( "key file successfully created" ) ) ;
-		return this->HideUI() ;
+	Task::await( [ & ](){
+
+		char data ;
+		int r ;
+		int e ;
+
+		if( rng == 0 ){
+			r = ::open( "/dev/urandom",O_RDONLY ) ;
+		}else{
+			r = ::open( "/dev/random",O_RDONLY ) ;
+		}
+
+		if( r == -1 ){
+			m_stop = true ;
+			return ;
+		}
+
+		QByteArray z = path.toLatin1() ;
+		const char * p = z.constData() ;
+
+		e = ::open( p,O_WRONLY|O_CREAT,S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH ) ;
+
+		if( e == -1 ){
+			::close( r ) ;
+			m_stop = true ;
+			return ;
+		}
+
+		for( int i = 0 ; i < 64 ; i++ ){
+
+			if( m_stop ){
+				break ;
+			}else{
+				do{
+					::read( r,&data,1 ) ;
+				}while( data < 32 || data > 126 ) ;
+
+				::write( e,&data,1 ) ;
+			}
+		}
+
+		::close( e ) ;
+		::close( r ) ;
+	} ) ;
+
+	m_running = false ;
+
+	if( m_stop ){
+		msg.ShowUIOK( tr( "WARNING!" ),tr( "process interrupted,key not fully generated" ) ) ;
+		this->enableAll() ;
+	}else{
+		msg.ShowUIOK( tr( "SUCCESS!" ),tr( "key file successfully created" ) ) ;
+		this->HideUI() ;
 	}
 }
 
