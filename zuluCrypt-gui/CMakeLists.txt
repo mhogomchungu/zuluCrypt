@@ -37,7 +37,6 @@ set( MOC_FILES
 		filetask.h
 		cryptoinfo.h
 		erasedevice.h
-		erasetask.h
 		managevolumeheader.h
 		cryptfiles.h
 		crypttask.h
@@ -63,7 +62,6 @@ set( SRC
 	filetask.cpp
 	cryptoinfo.cpp
 	erasedevice.cpp
-	erasetask.cpp
 	managevolumeheader.cpp
 	cryptfiles.cpp
 	crypttask.cpp

@@ -28,9 +28,9 @@ endif()
 add_library( sharedObject STATIC ${MOC} ${SRC} ${UI_FILES} )
 
 if( BUILDKWALLET )
-	target_link_libraries( sharedObject lxqtwallet ${kwallet_library} )
+	target_link_libraries( sharedObject lxqtwallet ${kwallet_library} -lblkid )
 else()
-	target_link_libraries( sharedObject lxqtwallet )
+	target_link_libraries( sharedObject lxqtwallet -lblkid )
 endif()
 
 set_target_properties( sharedObject PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -pedantic" )

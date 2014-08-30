@@ -42,6 +42,8 @@ public:
 signals:
 	void HideUISignal( void ) ;
 	void complete( QString ) ;
+	void sendProgress( int ) ;
+
 private slots:
 	void enableAll( void ) ;
 	void disableAll( void ) ;
@@ -51,15 +53,14 @@ private slots:
 	void pbPartition( void ) ;
 	void setProgress( int ) ;
 	void setPath( QString ) ;
-	void threadExitStatus( int ) ;
+	void taskResult( int ) ;
 private:
-	void run( void ) ;
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 	Ui::erasedevice * m_ui ;
-	EraseTask * m_task  ;
-	bool m_cancelClicked ;
 	int m_option ;
+	bool m_exit ;
+	bool m_running ;
 };
 
 #endif // ERASEDEVICE_H

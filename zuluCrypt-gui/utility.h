@@ -92,6 +92,11 @@ namespace utility
 	QStringList split( const QString&,char token = '\n' ) ;
 	QStringList split( const QByteArray&,char token = '\n' ) ;
 
+	quint64 volumeSize( const QString& ) ;
+	int openVolume( const QString& ) ;
+	bool writeToVolume( int fd,const char * buffer,unsigned int bufferSize ) ;
+	void closeVolume( int fd ) ;
+
 	::Task::future< int >& exec( const QString& ) ;
 	::Task::future< QStringList >& luksEmptySlots( const QString& volumePath ) ;
 	::Task::future< QString >& getUUIDFromPath( const QString& ) ;

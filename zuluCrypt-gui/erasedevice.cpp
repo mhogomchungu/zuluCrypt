@@ -24,9 +24,9 @@
 #include <QMessageBox>
 
 #include "utility.h"
-#include "erasetask.h"
 #include "openvolume.h"
 #include "dialogmsg.h"
+#include "../zuluCrypt-cli/constants.h"
 
 erasedevice::erasedevice( QWidget * parent ) :
 	QDialog( parent ),
@@ -48,10 +48,11 @@ erasedevice::erasedevice( QWidget * parent ) :
 	connect( m_ui->pushButtonStart,SIGNAL( clicked() ),this,SLOT( pbStart() ) ) ;
 	connect( m_ui->pushButtonCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 
+	connect( this,SIGNAL( sendProgress( int ) ),this,SLOT( setProgress( int ) ) ) ;
+
 	m_ui->pushButtonFile->setIcon( QIcon( QString( ":/file.png" ) ) ) ;
 	m_ui->pushButtonPartition->setIcon( QIcon( QString( ":/partition.png" ) ) ) ;
 
-	m_task = NULL ;
 	m_ui->lineEdit->setFocus() ;
 
 	this->installEventFilter( this ) ;
@@ -91,11 +92,9 @@ void erasedevice::ShowUI( const QString& path )
 	this->pbStart() ;
 }
 
-void erasedevice::threadExitStatus( int st )
+void erasedevice::taskResult( int st )
 {
 	this->setWindowTitle( tr( "write random data over existing data" ) ) ;
-
-	m_task = NULL ;
 
 	DialogMsg msg( this ) ;
 
@@ -137,6 +136,7 @@ void erasedevice::pbStart()
 	if( path.isEmpty() ){
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "device path field is empty" ) ) ;
 	}
+
 	path = utility::resolvePath( path ) ;
 
 	if( !utility::pathExists( path ) ){
@@ -151,19 +151,74 @@ Are you really sure you want to write random data to \"%1\" effectively destroyi
 		}
 	}
 
+	this->setWindowTitle( tr( "writing random data over existing data" ) ) ;
+
 	this->disableAll() ;
 
 	path.replace( "\"","\"\"\"" ) ;
 
-	m_cancelClicked = false ;
+	m_exit = false ;
+	m_running = true ;
 
-	m_task = new EraseTask( path ) ;
-	connect( m_task,SIGNAL( progress( int ) ),this,SLOT( setProgress( int ) ) ) ;
-	connect( m_task,SIGNAL( exitStatus( int ) ),this,SLOT( threadExitStatus( int ) ) ) ;
+	int r = Task::await<int>( [ & ](){
 
-	this->setWindowTitle( tr( "writing random data over existing data" ) ) ;
+		int r = utility::Task( QString( "%1 -k -J -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,path ) ).exitCode() ;
 
-	m_task->start() ;
+		if( r != 0 ){
+			return r ;
+		}else{
+			const int bufferSize = 1024 ;
+
+			quint64 size_written = 0 ;
+
+			QString volumeMapperPath = utility::mapperPath( path ) ;
+
+			quint64 size = utility::volumeSize( volumeMapperPath ) ;
+
+			char buffer[ bufferSize ] ;
+
+			int fd = utility::openVolume( volumeMapperPath ) ;
+
+			if( fd == -1 ){
+
+				utility::Task( QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,path ) ) ;
+				return 1 ;
+			}else{
+				int i = 0 ;
+				int j = 0 ;
+
+				while( utility::writeToVolume( fd,buffer,bufferSize ) ){
+
+					if( m_exit ){
+
+						utility::closeVolume( fd ) ;
+						utility::Task( QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,path ) ) ;
+
+						return 5 ;
+					}else{
+						size_written += bufferSize ;
+
+						i = int( ( size_written * 100 / size ) ) ;
+
+						if( i > j ){
+							emit sendProgress( i ) ;
+							j = i ;
+						}
+					}
+				}
+			}
+
+			utility::closeVolume( fd ) ;
+
+			utility::Task( QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,path ) ) ;
+
+			return 0 ;
+		}
+	} ) ;
+
+	m_running = false ;
+
+	this->taskResult( r ) ;
 }
 
 void erasedevice::enableAll()
@@ -195,12 +250,10 @@ void erasedevice::setProgress( int st )
 
 void erasedevice::pbCancel()
 {
-	m_cancelClicked = true ;
-
-	if( m_task == NULL ){
-		this->HideUI() ;
+	if( m_running ){
+		m_exit = true ;
 	}else{
-		m_task->cancel() ;
+		this->HideUI() ;
 	}
 }
 

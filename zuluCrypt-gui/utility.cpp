@@ -55,6 +55,12 @@
 #include "storage_manager.h"
 #include "dialogmsg.h"
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <blkid/blkid.h>
+
 #include "lxqt_wallet/frontend/lxqt_wallet.h"
 
 #include "../zuluCrypt-cli/pluginManager/libzuluCryptPluginManager.h"
@@ -720,4 +726,38 @@ QString utility::getVolumeID( const QString& id )
 	}else{
 		return id ;
 	}
+}
+
+quint64 utility::volumeSize( const QString& e )
+{
+	quint64 r = 0 ;
+
+	int f = open( e.toLatin1().constData(),O_RDONLY ) ;
+
+	if( f != -1 ){
+		r = quint64( blkid_get_dev_size( f ) ) ;
+		close( f ) ;
+	}
+
+	return r ;
+}
+
+int utility::openVolume( const QString& e )
+{
+	return open( e.toLatin1().constData(),O_RDWR ) ;
+}
+
+void utility::closeVolume( int fd )
+{
+	for( int i = 0 ; i < 5 ; i++ ){
+
+		if( close( fd ) == 0 ){
+			break ;
+		}
+	}
+}
+
+bool utility::writeToVolume( int fd,const char * buffer,unsigned int bufferSize )
+{
+	return write( fd,buffer,bufferSize ) != -1 ;
 }
