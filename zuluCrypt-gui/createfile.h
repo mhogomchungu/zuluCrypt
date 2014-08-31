@@ -41,10 +41,9 @@ public:
 	explicit createfile( QWidget * parent = 0 ) ;
 	~createfile();
 signals :
-	void fileCreated( QString ) ;
-	void cancelOperation( void ) ;
 	void HideUISignal( void ) ;
-
+	void sendProgress( int ) ;
+	void fileCreated( QString ) ;
 public slots:
 	void HideUI( void ) ;
 	void showUI( void ) ;
@@ -52,9 +51,7 @@ public slots:
 	void pbCancel( void ) ;
 	void pbCreate( void ) ;
 private slots:
-	void exitStatus( int ) ;
-	void doneCreatingFile( void ) ;
-	void progress( int ) ;
+	void setProgress( int ) ;
 	void fileTextChange( QString ) ;
 private:
 	void enableAll( void ) ;
@@ -62,13 +59,8 @@ private:
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 	Ui::createfile * m_ui ;
-	qulonglong m_fileSize ;
-	QString m_path ;
-	FileTask * m_task ;
-	QPushButton * m_yes ;
-	QPushButton * m_no ;
-
-	DialogMsg * m_msg ;
+	bool m_exit ;
+	bool m_running ;
 };
 
 #endif // CREATEFILE_H

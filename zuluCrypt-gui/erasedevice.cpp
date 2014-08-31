@@ -105,7 +105,7 @@ void erasedevice::taskResult( int st )
 		case 2: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not resolve device path" ) )					;break ;
 		case 3: msg.ShowUIOK( tr( "ERROR!" ),tr( "random data successfully written" ) )					;break ;
 		//case 4: msg.ShowUIOK( tr( "ERROR!" ),tr( "user chose not to proceed" ) )					;break ;
-		case 5: msg.ShowUIOK( tr( "ERROR!" ),tr( "operation terminated per user choicer" ) )				;break ;
+		case 5: msg.ShowUIOK( tr( "ERROR!" ),tr( "operation terminated per user choice" ) )				;break ;
 		case 6: msg.ShowUIOK( tr( "ERROR!" ),tr( "can not write on a device with opened mapper" ) )			;break ;
 		case 7: msg.ShowUIOK( tr( "ERROR!" ),tr( "policy prevents non root user opening mapper on system partition" ) ) ;break;
 		case 8: msg.ShowPermissionProblem( QString( "writing" ),m_ui->lineEdit->text() )				;break ;
@@ -160,61 +160,7 @@ Are you really sure you want to write random data to \"%1\" effectively destroyi
 	m_exit = false ;
 	m_running = true ;
 
-	int r = Task::await<int>( [ & ](){
-
-		int r = utility::Task( QString( "%1 -k -J -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,path ) ).exitCode() ;
-
-		if( r != 0 ){
-			return r ;
-		}else{
-			const int bufferSize = 1024 ;
-
-			quint64 size_written = 0 ;
-
-			QString volumeMapperPath = utility::mapperPath( path ) ;
-
-			quint64 size = utility::volumeSize( volumeMapperPath ) ;
-
-			char buffer[ bufferSize ] ;
-
-			int fd = utility::openVolume( volumeMapperPath ) ;
-
-			if( fd == -1 ){
-
-				utility::Task( QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,path ) ) ;
-				return 1 ;
-			}else{
-				int i = 0 ;
-				int j = 0 ;
-
-				while( utility::writeToVolume( fd,buffer,bufferSize ) ){
-
-					if( m_exit ){
-
-						utility::closeVolume( fd ) ;
-						utility::Task( QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,path ) ) ;
-
-						return 5 ;
-					}else{
-						size_written += bufferSize ;
-
-						i = int( ( size_written * 100 / size ) ) ;
-
-						if( i > j ){
-							emit sendProgress( i ) ;
-							j = i ;
-						}
-					}
-				}
-			}
-
-			utility::closeVolume( fd ) ;
-
-			utility::Task( QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,path ) ) ;
-
-			return 0 ;
-		}
-	} ) ;
+	int r = utility::clearVolume( path,&m_exit,[ this ]( int i ){ emit sendProgress( i ) ; } ).await() ;
 
 	m_running = false ;
 

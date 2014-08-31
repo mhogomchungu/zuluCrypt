@@ -21,7 +21,6 @@
 #include "createfile.h"
 #include "utility.h"
 #include "../zuluCrypt-cli/constants.h"
-#include "filetask.h"
 
 #include "dialogmsg.h"
 
@@ -39,22 +38,22 @@ createfile::createfile( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::cre
 	this->setFixedSize( this->size() ) ;
 	this->setFont( parent->font() ) ;
 
-	m_msg = new DialogMsg( this ) ;
-
 	m_ui->progressBar->setMinimum( 0 ) ;
 	m_ui->progressBar->setMaximum( 100 ) ;
 	m_ui->progressBar->setValue( 0 ) ;
 
 	m_ui->pbOpenFolder->setIcon( QIcon( QString( ":/folder.png" ) ) ) ;
 
-	m_task = NULL ;
-
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) )  ;
 	connect( m_ui->pbOpenFolder,SIGNAL( clicked() ),this,SLOT(pbOpenFolder() ) ) ;
 	connect( m_ui->pbCreate,SIGNAL( clicked() ),this,SLOT( pbCreate() ) ) ;
 	connect( m_ui->lineEditFileName,SIGNAL( textChanged( QString ) ),this,SLOT(fileTextChange( QString ) ) ) ;
 
+	connect( this,SIGNAL( sendProgress( int ) ),this,SLOT( setProgress( int ) ) ) ;
+
 	this->installEventFilter( this ) ;
+
+	this->setWindowTitle( tr( "create a container file" ) ) ;
 }
 
 bool createfile::eventFilter( QObject * watched,QEvent * event )
@@ -89,9 +88,6 @@ void createfile::fileTextChange( QString txt )
 void createfile::closeEvent( QCloseEvent * e )
 {
 	e->ignore() ;
-	if( m_task != NULL ){
-		return ;
-	}
 	this->pbCancel() ;
 }
 
@@ -131,15 +127,6 @@ void createfile::showUI()
 	m_ui->lineEditFileSize->clear() ;
 	m_ui->progressBar->setValue( 0 ) ;
 	m_ui->lineEditFileName->setFocus() ;
-
-	/*
-	 * RANDOM_SOURCE is defined at createfilethread.h
-	 */
-	if( RANDOM_SOURCE == 0 ){
-		this->setWindowTitle( tr( "1/2 create a container file" ) ) ;
-	}else{
-		this->setWindowTitle( tr( "create a container file" ) ) ;
-	}
 	this->show() ;
 }
 
@@ -169,80 +156,81 @@ void createfile::pbCreate()
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Illegal character in the file size field.Only digits are allowed" ) ) ;
 	}
 
-	m_path = filePath ;
-
-	if( utility::pathExists( m_path ) ){
+	if( utility::pathExists( filePath ) ){
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "file with the same name and at the destination folder already exist" ) ) ;
 	}
-	if( !utility::canCreateFile( m_path ) ){
+	if( !utility::canCreateFile( filePath ) ){
 		msg.ShowUIOK( tr( "ERROR!" ),tr( "you dont seem to have writing access to the destination folder" ) ) ;
 		m_ui->lineEditFilePath->setFocus() ;
 		return ;
 	}
 
-	/*
-	 * BLOCK_SIZE is defined in createfilethread.h
-	 */
+	qulonglong size = 0 ;
+
 	switch( m_ui ->comboBox->currentIndex() ){
-	case 0 :m_fileSize = fileSize.toULongLong() * BLOCK_SIZE ;
+	case 0 :size = fileSize.toULongLong() * 1024 ;
 		break ;
-	case 1 :m_fileSize = fileSize.toULongLong() * BLOCK_SIZE * BLOCK_SIZE ;
+	case 1 :size = fileSize.toULongLong() * 1024 * 1024 ;
 		break ;
-	case 2 :m_fileSize = fileSize.toULongLong() * BLOCK_SIZE * BLOCK_SIZE  * BLOCK_SIZE ;
+	case 2 :size = fileSize.toULongLong() * 1024 * 1024  * 1024 ;
 		break ;
 	}
 
-	if( m_fileSize < 3145728 ){
+	if( size < 3145728 ){
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "container file must be bigger than 3MB" ) ) ;
 	}
 
 	this->disableAll() ;
 
-	m_task = new FileTask( m_path,m_fileSize ) ;
+	QFile file( filePath ) ;
 
-	connect( m_task,SIGNAL( doneCreatingFile() ),this,SLOT( doneCreatingFile() ) ) ;
-	connect( m_task,SIGNAL( progress( int ) ),this,SLOT( progress( int ) ) ) ;
-	connect( this,SIGNAL( cancelOperation()),m_task,SLOT( cancelOperation() ) ) ;
-	connect( m_task,SIGNAL( exitStatus( int ) ),this,SLOT( exitStatus( int ) ) ) ;
-
-	m_task->start() ;
-}
-
-void createfile::exitStatus( int status )
-{
-	m_task = NULL ;
-
-	FileTask::status st = FileTask::status( status ) ;
-	if( st == FileTask::cancelled ){
-		QFile::remove( m_path ) ;
-		return HideUI() ;
-	}else if( st == FileTask::success ){
-		if( m_msg->isVisible() ){
-			m_msg->HideUI() ;
-		}
-		emit fileCreated( m_path ) ;
-	}else if( st == FileTask::openMapperFailed ){
-		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "ERROR" ),tr( "could not open cryptographic back end to generate random data" ) ) ;
-		QFile::remove( m_path ) ;
-	}else{
-		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "ERROR" ),tr( "could not open cryptographic back end to generate random data" ) ) ;
-		QFile::remove( m_path ) ;
+	if( !file.open( QIODevice::WriteOnly ) ){
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to create volume file" ) ) ;
 	}
+
+	emit sendProgress( 0 ) ;
+
+	if( !file.resize( size ) ){
+		QFile::remove( filePath ) ;
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to create volume file" ) ) ;
+	}
+
+	file.close() ;
+
+	m_exit = false ;
+	m_running = true ;
+
+	int r = utility::clearVolume( filePath,&m_exit,[ this ]( int i ){ emit sendProgress( i ) ; } ).await() ;
+
+	if( r == 5 ){
+		msg.ShowUIOK( tr( "ERROR!" ),tr( "operation terminated per user choice" ) ) ;
+		QFile::remove( filePath ) ;
+	}else if( r == 0 ){
+		emit fileCreated( filePath ) ;
+	}else{
+		msg.ShowUIOK( tr( "ERROR" ),tr( "could not open cryptographic back end to generate random data" ) ) ;
+		QFile::remove( filePath ) ;
+	}
+
+	m_running = false ;
 
 	this->HideUI() ;
 }
 
 void createfile::pbCancel()
 {
-	if( m_task == NULL ){
-		return this->HideUI() ;
-	}
-	QString x = tr( "terminating file creation process" ) ;
-	QString y = tr( "are you sure you want to stop file creation process?" ) ;
-	if( m_msg->ShowUIYesNoDefaultNo( x,y ) == QMessageBox::Yes ){
-		emit cancelOperation() ;
+	if( m_running ){
+
+		QString x = tr( "terminating file creation process" ) ;
+		QString y = tr( "are you sure you want to stop file creation process?" ) ;
+
+		DialogMsg msg( this ) ;
+
+		if( msg.ShowUIYesNoDefaultNo( x,y ) == QMessageBox::Yes ){
+			m_exit = true ;
+		}
+	}else{
+		this->HideUI() ;
 	}
 }
 
@@ -252,15 +240,9 @@ void createfile::HideUI()
 	this->hide() ;
 }
 
-void createfile::progress( int p )
+void createfile::setProgress( int p )
 {
 	m_ui->progressBar->setValue( p ) ;
-}
-
-void createfile::doneCreatingFile()
-{
-	m_ui->progressBar->setValue( 0 ) ;
-	this->setWindowTitle( tr( "2/2 write random data to a container file" ) ) ;
 }
 
 void createfile::pbOpenFolder()

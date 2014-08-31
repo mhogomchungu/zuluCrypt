@@ -31,7 +31,6 @@
 
 #include <QFile>
 
-#include "filetask.h"
 #include "utility.h"
 #include "dialogmsg.h"
 

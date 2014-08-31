@@ -36,7 +36,6 @@
 #include "createvolumedialog.h"
 #include "dialogmsg.h"
 #include "keystrength.h"
-#include "filetask.h"
 
 #include <QDebug>
 #include "../zuluCrypt-cli/constants.h"
@@ -486,10 +485,10 @@ void createvolume::pbCreateClicked()
 		quint64 r = m_ui->lineEditHiddenSize->text().toInt() ;
 
 		switch( m_ui->comboBoxHiddenSize->currentIndex() ){
-			case 0 : r *= BLOCK_SIZE * BLOCK_SIZE            	; break ;
-			case 1 : r *= BLOCK_SIZE                     		; break ;
-			case 2 : r *= BLOCK_SIZE * BLOCK_SIZE * BLOCK_SIZE 	; break ;
-			default: r *= BLOCK_SIZE * BLOCK_SIZE              	; break ;
+			case 0 : r *= 1024 * 1024         ; break ;
+			case 1 : r *= 1024                ; break ;
+			case 2 : r *= 1024 * 1024 * 1024  ; break ;
+			default: r *= 1024 * 1024         ; break ;
 		}
 
 		QString z = QString::number( r ) ;

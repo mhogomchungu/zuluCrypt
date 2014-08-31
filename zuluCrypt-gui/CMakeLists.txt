@@ -34,7 +34,6 @@ set( MOC_FILES
 		password_dialog.h
 		zulucrypt.h
 		favorites.h
-		filetask.h
 		cryptoinfo.h
 		erasedevice.h
 		managevolumeheader.h
@@ -59,7 +58,6 @@ set( SRC
 	password_dialog.cpp
 	zulucrypt.cpp
 	favorites.cpp
-	filetask.cpp
 	cryptoinfo.cpp
 	erasedevice.cpp
 	managevolumeheader.cpp

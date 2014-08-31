@@ -237,6 +237,101 @@ utility::wallet utility::getKeyFromWallet( LxQt::Wallet::walletBackEnd storage,c
 	}
 }
 
+static quint64 _volumeSize( const QString& e )
+{
+	quint64 r = 0 ;
+
+	int f = open( e.toLatin1().constData(),O_RDONLY ) ;
+
+	if( f != -1 ){
+		r = quint64( blkid_get_dev_size( f ) ) ;
+		close( f ) ;
+	}
+
+	return r ;
+}
+
+static int _openVolume( const QString& e )
+{
+	return open( e.toLatin1().constData(),O_RDWR ) ;
+}
+
+static void _closeVolume( int fd )
+{
+	for( int i = 0 ; i < 5 ; i++ ){
+
+		if( close( fd ) == 0 ){
+			break ;
+		}
+	}
+}
+
+static bool _writeToVolume( int fd,const char * buffer,unsigned int bufferSize )
+{
+	return write( fd,buffer,bufferSize ) != -1 ;
+}
+
+::Task::future< int >& utility::clearVolume( const QString& volumePath,bool * exit,std::function< void( int ) > function )
+{
+	return ::Task::run<int>( [ = ](){
+
+		int r = utility::Task( QString( "%1 -k -J -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,volumePath ) ).exitCode() ;
+
+		if( r != 0 ){
+			return r ;
+		}else{
+			const int bufferSize = 1024 ;
+
+			quint64 size_written = 0 ;
+
+			QString volumeMapperPath = utility::mapperPath( volumePath ) ;
+
+			quint64 size = _volumeSize( volumeMapperPath ) ;
+
+			char buffer[ bufferSize ] ;
+
+			int fd = _openVolume( volumeMapperPath ) ;
+
+			if( fd == -1 ){
+
+				utility::Task( QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,volumePath ) ) ;
+				return 1 ;
+			}else{
+				int i = 0 ;
+				int j = 0 ;
+
+				while( _writeToVolume( fd,buffer,bufferSize ) ){
+
+					if( *exit ){
+
+						_closeVolume( fd ) ;
+						utility::Task( QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,volumePath ) ) ;
+						/*
+						 * erasedevice::taskResult() has info on why we return 5 here.
+						 */
+						return 5 ;
+					}else{
+						size_written += bufferSize ;
+
+						i = int( ( size_written * 100 / size ) ) ;
+
+						if( i > j ){
+							function( i ) ;
+							j = i ;
+						}
+					}
+				}
+			}
+
+			_closeVolume( fd ) ;
+
+			utility::Task( QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,volumePath ) ) ;
+
+			return 0 ;
+		}
+	} ) ;
+}
+
 QString utility::cryptMapperPath()
 {
 	//return QString( crypt_get_dir() )
@@ -726,38 +821,4 @@ QString utility::getVolumeID( const QString& id )
 	}else{
 		return id ;
 	}
-}
-
-quint64 utility::volumeSize( const QString& e )
-{
-	quint64 r = 0 ;
-
-	int f = open( e.toLatin1().constData(),O_RDONLY ) ;
-
-	if( f != -1 ){
-		r = quint64( blkid_get_dev_size( f ) ) ;
-		close( f ) ;
-	}
-
-	return r ;
-}
-
-int utility::openVolume( const QString& e )
-{
-	return open( e.toLatin1().constData(),O_RDWR ) ;
-}
-
-void utility::closeVolume( int fd )
-{
-	for( int i = 0 ; i < 5 ; i++ ){
-
-		if( close( fd ) == 0 ){
-			break ;
-		}
-	}
-}
-
-bool utility::writeToVolume( int fd,const char * buffer,unsigned int bufferSize )
-{
-	return write( fd,buffer,bufferSize ) != -1 ;
 }
