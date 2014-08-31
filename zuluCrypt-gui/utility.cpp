@@ -258,10 +258,12 @@ static int _openVolume( const QString& e )
 
 static void _closeVolume( int fd )
 {
-	for( int i = 0 ; i < 5 ; i++ ){
+	if( fd != -1 ){
+		for( int i = 0 ; i < 5 ; i++ ){
 
-		if( close( fd ) == 0 ){
-			break ;
+			if( close( fd ) == 0 ){
+				break ;
+			}
 		}
 	}
 }
@@ -270,6 +272,12 @@ static bool _writeToVolume( int fd,const char * buffer,unsigned int bufferSize )
 {
 	return write( fd,buffer,bufferSize ) != -1 ;
 }
+
+struct _raii
+{
+	std::function< void( void ) > cmd ;
+	~_raii(){ this->cmd() ; }
+};
 
 ::Task::future< int >& utility::clearVolume( const QString& volumePath,bool * exit,std::function< void( int ) > function )
 {
@@ -280,32 +288,35 @@ static bool _writeToVolume( int fd,const char * buffer,unsigned int bufferSize )
 		if( r != 0 ){
 			return r ;
 		}else{
-			const int bufferSize = 1024 ;
-
-			quint64 size_written = 0 ;
-
 			QString volumeMapperPath = utility::mapperPath( volumePath ) ;
-
-			quint64 size = _volumeSize( volumeMapperPath ) ;
-
-			char buffer[ bufferSize ] ;
 
 			int fd = _openVolume( volumeMapperPath ) ;
 
+			_raii raii ;
+
+			raii.cmd = [ fd,volumePath ](){
+
+				_closeVolume( fd ) ;
+				utility::Task( QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,volumePath ) ) ;
+			} ;
+
 			if( fd == -1 ){
 
-				utility::Task( QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,volumePath ) ) ;
 				return 1 ;
 			}else{
 				int i = 0 ;
 				int j = 0 ;
 
+				const int bufferSize = 1024 ;
+
+				char buffer[ bufferSize ] ;
+
+				quint64 size         = _volumeSize( volumeMapperPath ) ;
+				quint64 size_written = 0 ;
+
 				while( _writeToVolume( fd,buffer,bufferSize ) ){
 
 					if( *exit ){
-
-						_closeVolume( fd ) ;
-						utility::Task( QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,volumePath ) ) ;
 						/*
 						 * erasedevice::taskResult() has info on why we return 5 here.
 						 */
@@ -322,10 +333,6 @@ static bool _writeToVolume( int fd,const char * buffer,unsigned int bufferSize )
 					}
 				}
 			}
-
-			_closeVolume( fd ) ;
-
-			utility::Task( QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,volumePath ) ) ;
 
 			return 0 ;
 		}
