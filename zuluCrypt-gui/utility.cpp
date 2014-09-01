@@ -171,6 +171,19 @@ void utility::keySend( const QString& path,const QString& key )
 	} ) ;
 }
 
+::Task::future<bool>& utility::openMountPoint( const QString& path,const QString& opener )
+{
+	return ::Task::run<bool>( [ = ](){
+
+		QString e = path ;
+		e.replace( "\"","\"\"\"" ) ;
+
+		auto r = utility::Task( QString( "%1 \"%2\"" ).arg( opener ).arg( e ) ) ;
+
+		return r.exitCode() != 0 || r.exitStatus() != 0 ;
+	} ) ;
+}
+
 utility::wallet utility::getKeyFromWallet( LxQt::Wallet::walletBackEnd storage,const QString& keyID,const QString& pwd )
 {
 	utility::wallet w{ false,false,"","" } ;

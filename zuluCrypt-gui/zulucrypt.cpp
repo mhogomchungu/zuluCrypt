@@ -800,20 +800,14 @@ void zuluCrypt::openFolder()
 
 void zuluCrypt::openFolder( QString path )
 {
-	path.replace( "\"","\"\"\"" ) ;
+	utility::openMountPoint( path,m_folderOpener ).then( [ this ]( bool failed ){
 
-	bool failed = Task::await<bool>( [ & ](){
+		if( failed ){
 
-		auto r = utility::Task( QString( "%1 \"%2\"" ).arg( m_folderOpener ).arg( path ) ) ;
-		return r.exitCode() != 0 || r.exitStatus() != 0 ;
-
+			DialogMsg msg( this ) ;
+			msg.ShowUIOK( tr( "warning" ),tr( "could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) ) ;
+		}
 	} ) ;
-
-	if( failed ){
-
-		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "warning" ),tr( "could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) ) ;
-	}
 }
 
 void zuluCrypt::itemClicked( QTableWidgetItem * it )

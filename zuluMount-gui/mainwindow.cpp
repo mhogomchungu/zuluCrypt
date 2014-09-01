@@ -522,21 +522,14 @@ void MainWindow::slotOpenFolder()
 
 void MainWindow::openMountPoint( const QString& m_point )
 {
-	QString m = m_point ;
-	m.replace( "\"","\"\"\"" ) ;
+	utility::openMountPoint( m_point,m_folderOpener ).then( [ this ]( bool failed ){
 
-	bool failed = Task::await< bool >( [ & ](){
-
-		auto r = utility::Task( QString( "%1 \"%2\"" ).arg( m_folderOpener,m ) ) ;
-		return r.exitCode() != 0 || r.exitStatus() != 0 ;
+		if( failed ){
+			QString x = tr( "could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) ;
+			DialogMsg msg( this ) ;
+			msg.ShowUIOK( tr( "warning" ),x ) ;
+		}
 	} ) ;
-
-	if( failed ){
-
-		QString x = tr( "could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) ;
-		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "warning" ),x ) ;
-	}
 }
 
 void MainWindow::openMountPointPath( QString m )
