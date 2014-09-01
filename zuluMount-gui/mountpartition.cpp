@@ -163,13 +163,6 @@ void mountPartition::pbMount()
 
 	this->disableAll() ;
 
-	QString addr = utility::keyPath() ;
-
-	if( !m_deviceOffSet.isEmpty() ){
-
-		utility::keySend( addr,m_key ) ;
-	}
-
 	QString exe = zuluMountPath ;
 
 	QString volume = m_path ;
@@ -181,10 +174,16 @@ void mountPartition::pbMount()
 		exe += " -m -d \"" + volume + "\"" ;
 	}
 
-	exe += " -z " + utility::mountPath( m_ui->lineEdit->text() ) ;
+	QString m = m_ui->lineEdit->text().replace( "\"","\"\"\"" ) ;
+
+	exe += " -z \"" + m + "\"";
 
 	if( !m_deviceOffSet.isEmpty() ){
-		exe += " -o " + m_deviceOffSet ;
+
+		QString addr = utility::keyPath() ;
+		utility::keySend( addr,m_key ) ;
+
+		exe += " -o " + m_deviceOffSet + " -f " + addr ;
 	}
 
 	if( m_ui->checkBoxMountReadOnly->isChecked() ){
@@ -196,8 +195,6 @@ void mountPartition::pbMount()
 	if( !m_options.isEmpty() ){
 		exe += " -Y " + m_options ;
 	}
-
-	exe += " -f " + addr ;
 
 	auto s = Task::await<zuluMountTaskResult>( [ & ](){
 

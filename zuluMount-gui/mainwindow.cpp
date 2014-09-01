@@ -525,7 +525,7 @@ void MainWindow::openMountPoint( const QString& m_point )
 	QString m = m_point ;
 	m.replace( "\"","\"\"\"" ) ;
 
-	bool failed = Task::await< bool >( [ this,m ](){
+	bool failed = Task::await< bool >( [ & ](){
 
 		auto r = utility::Task( QString( "%1 \"%2\"" ).arg( m_folderOpener,m ) ) ;
 		return r.exitCode() != 0 || r.exitStatus() != 0 ;
@@ -879,7 +879,8 @@ void MainWindow::updateVolumeList( const QVector< volumeEntryProperties >& r )
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR" ),
 			      tr( "reading partition properties took longer than expected and operation was terminated,click refresh to try again" ) ) ;
-			      this->enableAll() ;
+
+		this->enableAll() ;
 	}else{
 		for( const auto& it : r ){
 
