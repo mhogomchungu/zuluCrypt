@@ -155,8 +155,6 @@ Are you really sure you want to write random data to \"%1\" effectively destroyi
 
 	this->disableAll() ;
 
-	path.replace( "\"","\"\"\"" ) ;
-
 	m_exit = false ;
 	m_running = true ;
 

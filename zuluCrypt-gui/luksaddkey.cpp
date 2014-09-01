@@ -323,6 +323,8 @@ void luksaddkey::pbAdd( void )
 
 void luksaddkey::keyAdded()
 {
+	m_volumePath.replace( "\"","\"\"\"" ) ;
+
 	auto l = Task::await<QStringList>( utility::luksEmptySlots( m_volumePath ) ) ;
 
 	QString success ;

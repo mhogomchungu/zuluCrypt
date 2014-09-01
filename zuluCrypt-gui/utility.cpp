@@ -279,16 +279,20 @@ struct _raii
 	~_raii(){ this->cmd() ; }
 };
 
-::Task::future< int >& utility::clearVolume( const QString& volumePath,bool * exit,std::function< void( int ) > function )
+::Task::future< int >& utility::clearVolume( const QString& volume,bool * exit,std::function< void( int ) > function )
 {
 	return ::Task::run<int>( [ = ](){
+
+		QString volumePath = volume ;
+
+		volumePath.replace( "\"","\"\"\"" ) ;
 
 		int r = utility::Task( QString( "%1 -k -J -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,volumePath ) ).exitCode() ;
 
 		if( r != 0 ){
 			return r ;
 		}else{
-			QString volumeMapperPath = utility::mapperPath( volumePath ) ;
+			QString volumeMapperPath = utility::mapperPath( volume ) ;
 
 			int fd = _openVolume( volumeMapperPath ) ;
 

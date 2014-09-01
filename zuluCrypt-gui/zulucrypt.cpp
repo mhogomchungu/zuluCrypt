@@ -724,11 +724,15 @@ void zuluCrypt::volume_property()
 	QTableWidgetItem * item = m_ui->tableWidget->currentItem() ;
 	QString x = m_ui->tableWidget->item( item->row(),0 )->text() ;
 
+	x.replace( "\"","\"\"\"" ) ;
+
 	Task::run<QString>( [ x ](){
 
 		auto r = utility::Task( QString( "%1 -s -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( x ) ) ;
-		QByteArray data = r.output() ;
+
 		if( r.success() ){
+
+			QByteArray data = r.output() ;
 			return QString( " %1" ).arg( QString( data.mid( data.indexOf( '\n' ) + 2 ) ) ) ;
 		}else{
 			return QString() ;
