@@ -199,44 +199,64 @@ static stringList_t _remove_btfs_multiple_devices( stringList_t stl )
 	return stz ;
 }
 
+static int _not_removed( stringList_t stl,StringListIterator it,StringListIterator * end )
+{
+	string_t st = *it ;
+	string_t xt ;
+
+	if( StringLengthMatch( st,8 ) && StringStartsWithAtLeastOne( st,"/dev/hd","/dev/sd",NULL ) ){
+		/*
+		 * we have a partition,lets continue
+		 */
+		if( it + 1 != *end ){
+
+			/*
+			 * we are not at the end of the list,ie,there is atleast one more entry
+			 */
+
+			xt = *( it + 1 ) ;
+
+			if( StringStartsWith_1( xt,st ) ){
+				/*
+				 * xt will contain something like "/dev/sdc3"
+				 * st will contain something like "/dev/sdc"
+				 *
+				 * This device is partitioned and hence we remove the "/dev/sdc" entry
+				 * from the list since we dont care about it.
+				 */
+				StringListRemoveAt_1( stl,it,end ) ;
+				return 0 ;
+			}
+		}
+	}
+
+	return 1 ;
+}
+
 /*
- * This routine keep the root path of a device only if the device has no partitions.
+ * This routine will remove root addresses of a device if the device is found to contain partitions
+ * and will leave the root path if the device is found to not contains partitions.
  *
- * most times,a device will have a root address of something like "/dev/sdc" and partition addresses of
- * something like "/dev/sdc1","/dev/sdc4". In these devices, we drop the root device address because
- * it contains nothing useful to us.
+ * Example:
+ * A device with only "/dev/sdc" path will be left alone.
+ * A device with "/dev/sdc" path together with "/dev/sdc1","/dev/sdc2","/dev/sdcN" will cause the
+ * "/dev/sdc" path to be dropped.
  *
- * once in a while,we will get a partitionless device that has a file system on the root path like
- * TrueCrypt system volumes and with these devices,we keep the root path because it contains stuff
- * we care about
+ * The rationale is that there is nothing useful in the root path if it has partitions beacuse all
+ * useful contents are in partitions.A device with no partitions probably means the useful content is
+ * on the root path
  */
 static stringList_t _remove_root_devices( stringList_t stl )
 {
-	StringListIterator xt ;
 	StringListIterator it ;
 	StringListIterator end ;
 
-	string_t st ;
-
 	StringListGetIterators( stl,&it,&end ) ;
-
-	xt = it ;
 
 	while( it != end ){
 
-		st = *it ;
-		it++ ;
-
-		/*
-		 * 8 comes from a length of something like "/dev/sdc"
-		 */
-		if( StringLengthMatch( st,8 ) && StringStartsWithAtLeastOne( st,"/dev/hd","/dev/sd",NULL ) ){
-
-			if( it != end && StringStartsWith_1( *it,st ) ){
-				StringListRemoveAt( stl,it - xt - 1 ) ;
-				it  = it - 1 ;
-				end = end - 1 ;
-			}
+		if( _not_removed( stl,it,&end ) ){
+			it++ ;
 		}
 	}
 
@@ -454,7 +474,6 @@ stringList_t zuluCryptPartitions( int option,uid_t uid )
 	stringList_t p ;
 	stringList_t stl = zuluCryptVolumeList() ;
 
-	StringListIterator start ;
 	StringListIterator it  ;
 	StringListIterator end ;
 
@@ -537,19 +556,17 @@ stringList_t zuluCryptPartitions( int option,uid_t uid )
 	 */
 
 	StringListGetIterators( non_system,&it,&end ) ;
-	start = it ;
 
 	/*
 	 * now we consult udev if enabled and we move partition in the "non system" list to "system" list if udev think they are system
 	 */
 	while( it != end ){
 		e = StringContent( *it ) ;
-		it++ ;
 		if( _zuluCryptCheckSYSifDeviceIsSystem( e ) ){
 			StringListAppendIfAbsent( system,e ) ;
-			StringListRemoveAt( non_system,it - start - 1 ) ;
-			it  = it - 1 ;
-			end = end - 1 ;
+			StringListRemoveAt_1( non_system,it,&end ) ;
+		}else{
+			it++ ;
 		}
 	}
 

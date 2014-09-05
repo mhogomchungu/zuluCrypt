@@ -1150,6 +1150,12 @@ stringList_t StringListRemoveAt( stringList_t stl, size_t index )
 	return stl ;
 }
 
+void StringListRemoveAt_1( stringList_t stl,StringListIterator at,StringListIterator * end )
+{
+	StringListRemoveAt( stl,at - stl->stp ) ;
+	*end = *end - 1 ;
+}
+
 string_t StringListDetachAt( stringList_t stl, size_t index )
 {
 	string_t st;

@@ -341,6 +341,13 @@ stringList_t StringListInsertAtSize( stringList_t stl,const char * cstring,size_
 stringList_t StringListRemoveAt( stringList_t stl, size_t index ) ;
 
 /*
+ * Remove a string "at" iterator is pointing to,the end iterator will be adjusted to reflect
+ * the removed item
+ * NOTE:arguments are not checked for validity
+ */
+void StringListRemoveAt_1( stringList_t stl,StringListIterator at,StringListIterator * end ) ;
+
+/*
  * go through every string in the list and remove all strings that starts with str
  * returned value is the number of elements removed
  */
