@@ -893,7 +893,7 @@ void MainWindow::removeDisappearedEntries( const QVector< volumeEntryProperties 
 	 */
 
 	if( entries.isEmpty() ){
-		return ;
+		return this->enableAll() ;
 	}
 
 	auto table = m_ui->tableWidget ;

@@ -6,7 +6,7 @@ zulucrypt (4.7.3-1) UNRELEASED; urgency=low
      - show devices even when they have neither partitions nor recognizable file systems.This is useful for TrueCrypt system volumes or
        normal TrueCrypt volumes that are not in partitions.
 
- -- Mhogo Mchungu <mhogomchungu@gmail.com>  release data - currently unknown
+ -- Mhogo Mchungu <mhogomchungu@gmail.com>  Wed, 1 Oct 2014 16:38:48 +0000
 
 zulucrypt (4.7.2-1) UNRELEASED; urgency=low
   [Mhogo Mchungu]

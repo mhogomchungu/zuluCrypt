@@ -110,10 +110,9 @@ void monitor_mountinfo::run()
 
 	auto _mountProperty = [&]( const QString& volume ){
 
-		Task::exec(  [ &,volume ](){
+		Task::exec( [ &,volume ](){
 
-			auto r = zuluMountTask::volumeMiniProperties( volume ) ;
-			emit volumeMiniProperties( r.entry ) ;
+			emit volumeMiniProperties( zuluMountTask::volumeMiniProperties( volume ).entry ) ;
 		} ) ;
 	} ;
 
