@@ -99,10 +99,10 @@ static int _create_luks( const char * dev,const char * pass,size_t pass_size,con
 		return 1 ;
 	}
 	if( StringsAreEqual( opts,"" ) ){
-		opts = "/dev/urandom.aes.xts-plain64.256.sha1" ;
+		stl = StringListSplit( "/dev/urandom.aes.xts-plain64.256.sha1",'.' ) ;
+	}else{
+		stl = StringListSplit( opts,'.' ) ;
 	}
-
-	stl = StringListSplit( opts,'.' ) ;
 
 	options = StringListStringArray_1( options,&options_count,stl ) ;
 
