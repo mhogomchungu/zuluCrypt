@@ -177,7 +177,12 @@ options that goes with above operations:
 .br
 -t         type of volume (plain/luks*)
 .br
--g         random number generator (/dev/random or /dev/urandom*)
+-g         options to be used when creating a volume.
+.br
+           default for luks are:   "/dev/urandom.aes.xts-plain64.256.sha1"
+.br
+           default for tcrypt are: "/dev/urandom.aes.xts-plain64.256.ripemd160"
+           possible combination for tcrypt: "/dev/urandom.serpent:twofish:aes.xts-plain64.256.whirlpool"
 .br
 -h         get passphrase interactively
 .br

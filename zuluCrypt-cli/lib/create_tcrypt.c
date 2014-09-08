@@ -157,7 +157,7 @@ static string_t _root_device( const char * device,const char ** sys_device )
 	return st ;
 }
 
-int zuluCryptModifyTcryptHeader( const info_t * info )
+static int _modify_tcrypt_header( const char * device,const info_t * info )
 {
 	tc_api_task task ;
 	int r = !TC_OK ;
@@ -171,15 +171,15 @@ int zuluCryptModifyTcryptHeader( const info_t * info )
 		task = tc_api_task_init( "modify" ) ;
 		if( task != 0 ){
 			if( StringsAreEqual( info->opt,"sys" ) ){
-				tc_api_task_set( task,"dev",info->device ) ;
-				st = _root_device( info->device,&sys_device ) ;
+				tc_api_task_set( task,"dev",device ) ;
+				st = _root_device( device,&sys_device ) ;
 				tc_api_task_set( task,"sys",sys_device ) ;
 			}else if( StringsAreEqual( info->opt,"fde" ) ){
-				st = _root_device( info->device,&sys_device ) ;
+				st = _root_device( device,&sys_device ) ;
 				tc_api_task_set( task,"dev",sys_device ) ;
 				tc_api_task_set( task,"fde",TRUE ) ;
 			}else{
-				tc_api_task_set( task,"dev",info->device ) ;
+				tc_api_task_set( task,"dev",device ) ;
 			}
 
 			tc_api_task_set( task,"hidden_size_bytes",( u_int64_t )0 ) ;
@@ -223,6 +223,32 @@ int zuluCryptModifyTcryptHeader( const info_t * info )
 		tc_api_uninit() ;
 	}
 	StringDelete( &st ) ;
+	return r ;
+}
+
+int zuluCryptModifyTcryptHeader( const info_t * e )
+{
+	int fd ;
+	string_t q = StringVoid ;
+	int r ;
+
+	if( StringPrefixEqual( e->device,"/dev/" ) ){
+
+		r = _modify_tcrypt_header( e->device,e ) ;
+	}else{
+		/*
+		 * zuluCryptAttachLoopDeviceToFile() is defined in create_loop_device.c
+		 */
+		if( zuluCryptAttachLoopDeviceToFile( e->device,O_RDWR,&fd,&q ) ){
+
+			r = _modify_tcrypt_header( StringContent( q ),e ) ;
+			StringDelete( &q ) ;
+			close( fd ) ;
+		}else{
+			r = 3 ;
+		}
+	}
+
 	return r ;
 }
 
@@ -308,7 +334,7 @@ static int _zuluExit( int r,char * const * options,stringList_t stl )
  *
  * key size field and cipher mode field are currently not in use
  */
-int zuluCryptCreateTCryptVolume( const create_tcrypt_t * e )
+static int _create_tcrypt_volume( const char * device,const create_tcrypt_t * e )
 {
 	tc_api_task task ;
 	int r = !TC_OK ;
@@ -323,7 +349,14 @@ int zuluCryptCreateTCryptVolume( const create_tcrypt_t * e )
 	char * const * options = NULL ;
 	size_t options_count = 0 ;
 
-	stringList_t stl = StringListSplit( e->encryption_options,'.' ) ;
+	stringList_t stl ;
+
+	if( StringsAreEqual( e->encryption_options,"" ) ){
+
+		stl = StringListSplit( "/dev/urandom.aes.xts-plain64.256.ripemd160",'.' ) ;
+	}else{
+		stl = StringListSplit( e->encryption_options,'.' ) ;
+	}
 
 	options = StringListStringArray_1( options,&options_count,stl ) ;
 
@@ -352,14 +385,11 @@ int zuluCryptCreateTCryptVolume( const create_tcrypt_t * e )
 
 		if( task != 0 ){
 
-			tc_api_task_set( task,"dev",e->device ) ;
+			tc_api_task_set( task,"dev",device ) ;
 			tc_api_task_set( task,"secure_erase",FALSE ) ;
 			tc_api_task_set( task,"prf_algo",hash ) ;
 			tc_api_task_set( task,"cipher_chain",cipher_chain ) ;
-
-			if( StringsAreNotEqual( e->passphrase,"" ) ){
-				tc_api_task_set( task,"passphrase",e->passphrase ) ;
-			}
+			tc_api_task_set( task,"passphrase",e->passphrase ) ;
 
 			z = e->keyfiles ;
 			k = e->keyfiles_number ;
@@ -379,10 +409,7 @@ int zuluCryptCreateTCryptVolume( const create_tcrypt_t * e )
 				tc_api_task_set( task,"hidden_size_bytes",e->hidden_volume_size ) ;
 				tc_api_task_set( task,"h_prf_algo",hash ) ;
 				tc_api_task_set( task,"h_cipher_chain",cipher_chain ) ;
-
-				if( StringsAreNotEqual( e->passphrase_h,"" ) ){
-					tc_api_task_set( task,"h_passphrase",e->passphrase_h ) ;
-				}
+				tc_api_task_set( task,"h_passphrase",e->passphrase_h ) ;
 
 				z = e->keyfiles_h ;
 				k = e->keyfiles_h_number ;
@@ -407,13 +434,37 @@ int zuluCryptCreateTCryptVolume( const create_tcrypt_t * e )
 	return _zuluExit( r,options,stl ) ;
 }
 
+int zuluCryptCreateTCryptVolume( const create_tcrypt_t * e )
+{
+	int fd ;
+	string_t q = StringVoid ;
+	int r ;
+
+	if( StringPrefixEqual( e->device,"/dev/" ) ){
+
+		r = _create_tcrypt_volume( e->device,e ) ;
+	}else{
+		/*
+		 * zuluCryptAttachLoopDeviceToFile() is defined in create_loop_device.c
+		 */
+		if( zuluCryptAttachLoopDeviceToFile( e->device,O_RDWR,&fd,&q ) ){
+
+			r = _create_tcrypt_volume( StringContent( q ),e ) ;
+			StringDelete( &q ) ;
+			close( fd ) ;
+		}else{
+			r = 3 ;
+		}
+	}
+
+	return r ;
+}
+
 int zuluCryptCreateTCrypt( const char * device,const char * file_system,const char * rng,
 			   const char * key,size_t key_len,int key_source,
 			   u_int64_t hidden_volume_size,
 			   const char * file_system_h,const char * key_h,size_t key_len_h,int key_source_h )
 {
-	int fd ;
-	string_t q = StringVoid ;
 	string_t st = StringVoid ;
 	string_t xt = StringVoid ;
 
@@ -453,22 +504,7 @@ int zuluCryptCreateTCrypt( const char * device,const char * file_system,const ch
 		}
 	}
 
-	if( StringPrefixEqual( device,"/dev/" ) ){
-
-		r = zuluCryptCreateTCryptVolume( &tcrypt ) ;
-	}else{
-		/*
-		 * zuluCryptAttachLoopDeviceToFile() is defined in create_loop_device.c
-		 */
-		if( zuluCryptAttachLoopDeviceToFile( device,O_RDWR,&fd,&q ) ){
-
-			tcrypt.device = StringContent( q ) ;
-			r = zuluCryptCreateTCryptVolume( &tcrypt ) ;
-			StringDelete( &q ) ;
-		}else{
-			r = 3 ;
-		}
-	}
+	r = zuluCryptCreateTCryptVolume( &tcrypt ) ;
 
 	/*
 	 * zuluCryptDeleteFile_1() is defined in file_path_security.c

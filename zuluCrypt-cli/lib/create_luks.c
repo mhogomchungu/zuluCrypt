@@ -38,7 +38,7 @@ static int _not_supported_argument_encountered( char * const * options )
 	const char * e = *( options + 1 ) ;
 
 	/*
-	 * supported modes are: aes,serpent and twofish
+	 * supported algorithms are: aes,serpent and twofish
 	 */
 	if( StringAtLeastOneMatch_1( e,"aes","serpent","twofish",NULL ) ){
 
@@ -92,11 +92,14 @@ static int _create_luks( const char * dev,const char * pass,size_t pass_size,con
 
 	stringList_t stl ;
 
-	if( zuluCryptPathIsNotValid( dev ) )
+	if( zuluCryptPathIsNotValid( dev ) ){
 		return 4 ;
-
+	}
 	if( crypt_init( &cd,dev ) != 0 ){
 		return 1 ;
+	}
+	if( StringsAreEqual( opts,"" ) ){
+		opts = "/dev/urandom.aes.xts-plain64.256.sha1" ;
 	}
 
 	stl = StringListSplit( opts,'.' ) ;
@@ -145,19 +148,19 @@ static int _create_luks( const char * dev,const char * pass,size_t pass_size,con
 	}
 }
 
-int zuluCryptCreateLuks( const char * dev,const char * pass,size_t pass_size,const char * rng )
+int zuluCryptCreateLuks( const char * dev,const char * pass,size_t pass_size,const char * opts )
 {
 	string_t st ;
 	int fd ;
 	int r ;
 	if( StringPrefixEqual( dev,"/dev/" ) ){
-		return _create_luks( dev,pass,pass_size,rng ) ;
+		return _create_luks( dev,pass,pass_size,opts ) ;
 	}else{
 		/*
 		 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop.c
 		 */
 		if( zuluCryptAttachLoopDeviceToFile( dev,O_RDWR,&fd,&st ) ){
-			r = _create_luks( StringContent( st ),pass,pass_size,rng ) ;
+			r = _create_luks( StringContent( st ),pass,pass_size,opts ) ;
 			StringDelete( &st ) ;
 			close( fd ) ;
 			return r ;

@@ -356,7 +356,7 @@ void MainWindow::itemEntered( QTableWidgetItem * item )
 
 	if( m_point == "/" ){
 		/*
-		 * we dont check if root path is publicly shared because the path it will produce (/run/media/shared/)
+		 * we dont check if root path is publicly shared because the path it will produce (/run/media/public/)
 		 * will always return true,a solution is to examine /proc/self/mountinfo and thats work for another day
 		 */
 		if( x == "Nil" ){

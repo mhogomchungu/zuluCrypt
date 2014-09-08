@@ -168,6 +168,17 @@ char * zuluCryptVolumeStatus( const char * mapper );  /* mapper is the full addr
  * 	2 - ERROR: wrong argument. (probably mistyped fs or rng arguments)
  * 	3 - ERROR: could not create the volume
  *
+ *  opts argument is not used for PLAIN volumes,
+ *  for LUKS volumes,the argument is a string with the format of "rng.algorithm.cipher mode,key size in bits.hash"
+ *  possible combinations are:
+ *  rng can either be: "/dev/random" or "/dev/urandom"
+ *  algorithm can be either" "aes" or "serpent" or "twofish"
+ *  cipher mode can be either" "xts-plain64" or "cbc-essiv:sha256"
+ *  key size can be either" "256" or "512"
+ *  hash can be either: "sha1" or "sha256" or "sha512" or "ripemd160" or "whirlpool"
+ *
+ *  The default string to set is: "/dev/urandom.aes.xts-plain64.256.sha1"
+ *
  * NOTE: This function expected mkfs executable to be present and its full path to be /sbin/mkfs
  */
 int zuluCryptCreateVolume( const char * device,    /* path to a file or partition					*/
@@ -175,7 +186,7 @@ int zuluCryptCreateVolume( const char * device,    /* path to a file or partitio
 			   const char * type,      /* type of volume to create( luks or plain )				*/
 			   const char * passphrase,/* passphrase to use to create the volume				*/
 			   size_t passphrase_size, /* passphrase size							*/
-			   const char * rng);      /* random number generator to use ( /dev/random or /dev/urandom )	*/
+			   const char * opts );    /* volume creation options						*/
 						   /*mrequired when creating luks volume, just pick one if you		*/
 						   /* creating a plain device, it will be ignored		        */
 
@@ -316,10 +327,21 @@ int zuluCryptOpenTcrypt( const char * device,     /* path to an encrypted file o
  * return values:
  * 0 - success
  * 3 - ERROR: could not create a volume,possible reason: truecrypt support is not available in the library
+ *
+ *  opts argument is expected to be in format of: "rng.algorithm.cipher mode,key size in bits.hash"
+ *
+ *  possible combinations are:
+ *  rng can either be: "/dev/random" or "/dev/urandom"
+ *  algorithm can be either" "aes" or "serpent" or "twofish" or "twofish:aes" or "aes:serpent" or "serpent:twofish" or "aes:twofish:serpent" or "serpent:twofish:aes"
+ *  only cipher supported is: "xts-plain64"
+ *  only key size supported: "256"
+ *  hash can be either: "sha512" or "ripemd160" or "whirlpool"
+ *
+ *  The default string to set is: "/dev/urandom.aes.xts-plain64.256.ripemd160"
  */
 int zuluCryptCreateTCrypt( const char * device,      /* path a device or file to put an encrypted volume                              */
 			   const char * file_system, /* file system to use in the volume                                              */
-			   const char * rng,         /* random number generator to use,either /dev/urandom or /dev/random             */
+			   const char * opts,        /* volume creation options						              */
 			   const char * key,         /* key material to use                                                           */
 			   size_t       key_len,     /* length of key                                                                 */
 			   int          key_source,  /* key material source,either pass TCRYPT_KEYFILE or TCRYPT_PASSPHRASE           */

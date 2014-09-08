@@ -133,7 +133,7 @@ void zuluCryptEXEHelp( void )
 	-m         path component to be added to mount point prefix(/run/media/private/$USER)\n\
 	-z         file system type installed(ext2,ext3,ext4* etc)\n\
 	-t         type of volume (plain/luks*)\n\
-	-g         random number generator (/dev/random or /dev/urandom*)\n\
+	-g         options to use when creating a volume,see man page for more info\n\
 	-h         get passphrase interactively\n\
 	-p         passphrase \n" ) ;
 
