@@ -419,48 +419,13 @@
      </property>
     </item>
    </widget>
-   <widget class="QLabel" name="labelfs">
-    <property name="geometry">
-     <rect>
-      <x>100</x>
-      <y>120</y>
-      <width>151</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>file system</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
-   <widget class="QLabel" name="labelrng">
-    <property name="geometry">
-     <rect>
-      <x>250</x>
-      <y>120</y>
-      <width>151</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="toolTip">
-     <string>random number generator</string>
-    </property>
-    <property name="text">
-     <string>rng</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
   </widget>
   <widget class="QComboBox" name="comboBoxOptions">
    <property name="geometry">
     <rect>
      <x>90</x>
      <y>180</y>
-     <width>391</width>
+     <width>381</width>
      <height>31</height>
     </rect>
    </property>
@@ -487,6 +452,41 @@
     <bool>true</bool>
    </property>
   </widget>
+  <widget class="QLabel" name="labelfs">
+   <property name="geometry">
+    <rect>
+     <x>130</x>
+     <y>330</y>
+     <width>151</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>file system</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelrng">
+   <property name="geometry">
+    <rect>
+     <x>280</x>
+     <y>330</y>
+     <width>151</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>random number generator</string>
+   </property>
+   <property name="text">
+    <string>rng</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
  </widget>
  <tabstops>
   <tabstop>lineEditVolumePath</tabstop>
@@ -495,6 +495,7 @@
   <tabstop>lineEditPassphrase1</tabstop>
   <tabstop>lineEditPassPhrase2</tabstop>
   <tabstop>comboBoxVolumeType</tabstop>
+  <tabstop>comboBoxOptions</tabstop>
   <tabstop>cbHiddenVolume</tabstop>
   <tabstop>pbHiddenKeyFile</tabstop>
   <tabstop>lineEditHiddenKey</tabstop>
