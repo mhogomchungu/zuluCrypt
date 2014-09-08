@@ -204,6 +204,9 @@ static int _not_removed( stringList_t stl,StringListIterator it,StringListIterat
 	string_t st = *it ;
 	string_t xt ;
 
+	/*
+	 * 8 comes from a length of something like "/dev/sdc"
+	 */
 	if( StringLengthMatch( st,8 ) && StringStartsWithAtLeastOne( st,"/dev/hd","/dev/sd",NULL ) ){
 		/*
 		 * we have a partition,lets continue

@@ -117,8 +117,8 @@ static int _create_volume( const char * dev,const char * fs,const char * type,co
 	mapper = device_mapper + len + 1 ;
 
 	if( StringsAreEqual( type,"luks" ) ){
-		if( StringsAreNotEqual( rng,"/dev/random" ) ){
-			if( StringsAreNotEqual( rng,"/dev/urandom" ) ){
+		if( StringPrefixEqual( rng,"/dev/random" ) ){
+			if( StringPrefixEqual( rng,"/dev/urandom" ) ){
 				return zuluExit( 2,m ) ;
 			}
 		}

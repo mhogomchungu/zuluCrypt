@@ -5,6 +5,7 @@ zulucrypt (4.7.3-1) UNRELEASED; urgency=low
      - add an ability to change TrueCrypt volume key.
      - show devices even when they have neither partitions nor recognizable file systems.This is useful for TrueCrypt system volumes or
        normal TrueCrypt volumes that are not in partitions.
+     - add ability to create volumes with different crypto options.
 
  -- Mhogo Mchungu <mhogomchungu@gmail.com>  Wed, 1 Oct 2014 16:38:48 +0000
 

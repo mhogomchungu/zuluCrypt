@@ -226,6 +226,88 @@ int zuluCryptModifyTcryptHeader( const info_t * info )
 	return r ;
 }
 
+static const char * _set_cipher_chain( char * const * q )
+{
+	const char * r = NULL ;
+	const char * e = *q ;
+
+	if( StringsAreEqual( e,"aes" ) ){
+
+		r = "AES-256-XTS" ;
+
+	}else if( StringsAreEqual( e,"twofish" ) ){
+
+		r = "TWOFISH-256-XTS" ;
+
+	}else if( StringsAreEqual( e,"serpent" ) ){
+
+		r = "SERPENT-256-XTS" ;
+
+	}else if( StringsAreEqual( e,"twofish:aes" ) ){
+
+		r = "TWOFISH-256-XTS,AES-256-XTS" ;
+
+	}else if( StringsAreEqual( e,"aes:serpent" ) ){
+
+		r = "AES-256-XTS,SERPENT-256-XTS" ;
+
+	}else if( StringsAreEqual( e,"serpent:twofish" ) ){
+
+		r = "SERPENT-256-XTS,TWOFISH-256-XTS" ;
+
+	}else if( StringsAreEqual( e,"aes:twofish:serpent" ) ){
+
+		r = "AES-256-XTS,TWOFISH-256-XTS,SERPENT-256-XTS" ;
+
+	}else if( StringsAreEqual( e,"serpent:twofish:aes" ) ){
+
+		r =  "SERPENT-256-XTS,TWOFISH-256-XTS,AES-256-XTS" ;
+	}
+
+	return r ;
+}
+
+static const char * _set_hash( char * const * q )
+{
+	const char * r = NULL ;
+	const char * e = *q ;
+
+	if( StringsAreEqual( e,"ripemd160" ) ){
+
+		r = "RIPEMD160" ;
+
+	}else if( StringsAreEqual( e,"whirlpool" ) ){
+
+		r = "whirlpool" ;
+
+	}else if( StringsAreEqual( e,"sha512" ) ){
+
+		r = "SHA512" ;
+	}
+
+	return r ;
+}
+
+static int _zuluExit( int r,char * const * options,stringList_t stl )
+{
+	StringFree( options ) ;
+	StringListDelete( &stl ) ;
+	return r ;
+}
+
+/*
+ * e->encryption_options will contain a structure in the following format:
+ * rng.algorithm.cipher mode.key size in bits.hash function
+ *
+ * different components of the structure are separated by "." character
+ * multiple algorithms are separated by ":" character.
+ *
+ * example structures:
+ * /dev/urandom.aes.xts-plain64.256.ripemd160
+ * /dev/urandom.aes:twofish:serpent.xts-plain64.256.ripemd160
+ *
+ * key size field and cipher mode field are currently not in use
+ */
 int zuluCryptCreateTCryptVolume( const create_tcrypt_t * e )
 {
 	tc_api_task task ;
@@ -234,14 +316,46 @@ int zuluCryptCreateTCryptVolume( const create_tcrypt_t * e )
 	size_t k ;
 	const char ** z ;
 
+	const char * cipher_chain ;
+	const char * hash ;
+	const char * rng ;
+
+	char * const * options = NULL ;
+	size_t options_count = 0 ;
+
+	stringList_t stl = StringListSplit( e->encryption_options,'.' ) ;
+
+	options = StringListStringArray_1( options,&options_count,stl ) ;
+
+	if( options_count == 1 ){
+
+		cipher_chain = "AES-256-XTS" ;
+		hash         = "RIPEMD160" ;
+		rng          = *( options + 0 ) ;
+
+	}else if( options_count == 5 ){
+
+		cipher_chain = _set_cipher_chain( options + 1 ) ;
+		hash         = _set_hash( options + 4 ) ;
+		rng          = *( options + 0 ) ;
+
+		if( cipher_chain == NULL || hash == NULL ){
+			return _zuluExit( !TC_OK,options,stl ) ;
+		}
+	}else{
+		return _zuluExit( !TC_OK,options,stl ) ;
+	}
+
 	if( tc_api_init( 0 ) == TC_OK ){
+
 		task = tc_api_task_init( "create" ) ;
+
 		if( task != 0 ){
 
 			tc_api_task_set( task,"dev",e->device ) ;
 			tc_api_task_set( task,"secure_erase",FALSE ) ;
-			tc_api_task_set( task,"prf_algo","RIPEMD160" ) ;
-			tc_api_task_set( task,"cipher_chain","AES-256-XTS" ) ;
+			tc_api_task_set( task,"prf_algo",hash ) ;
+			tc_api_task_set( task,"cipher_chain",cipher_chain ) ;
 
 			if( StringsAreNotEqual( e->passphrase,"" ) ){
 				tc_api_task_set( task,"passphrase",e->passphrase ) ;
@@ -254,7 +368,7 @@ int zuluCryptCreateTCryptVolume( const create_tcrypt_t * e )
 				tc_api_task_set( task,"keyfiles",*( z + i ) ) ;
 			}
 
-			if( e->weak_keys_and_salt ){
+			if( StringsAreEqual( rng,"/dev/urandom" ) ){
 				tc_api_task_set( task,"weak_keys_and_salt",TRUE ) ;
 			}else{
 				tc_api_task_set( task,"weak_keys_and_salt",FALSE ) ;
@@ -263,8 +377,8 @@ int zuluCryptCreateTCryptVolume( const create_tcrypt_t * e )
 			if( e->hidden_volume_size > 0 ){
 
 				tc_api_task_set( task,"hidden_size_bytes",e->hidden_volume_size ) ;
-				tc_api_task_set( task,"h_prf_algo","RIPEMD160" ) ;
-				tc_api_task_set( task,"h_cipher_chain","AES-256-XTS" ) ;
+				tc_api_task_set( task,"h_prf_algo",hash ) ;
+				tc_api_task_set( task,"h_cipher_chain",cipher_chain ) ;
 
 				if( StringsAreNotEqual( e->passphrase_h,"" ) ){
 					tc_api_task_set( task,"h_passphrase",e->passphrase_h ) ;
@@ -290,7 +404,7 @@ int zuluCryptCreateTCryptVolume( const create_tcrypt_t * e )
 		tc_api_uninit() ;
 	}
 
-	return r ;
+	return _zuluExit( r,options,stl ) ;
 }
 
 int zuluCryptCreateTCrypt( const char * device,const char * file_system,const char * rng,
@@ -314,7 +428,7 @@ int zuluCryptCreateTCrypt( const char * device,const char * file_system,const ch
 	tcrypt.fs = file_system ;
 	tcrypt.fs_h = file_system_h ;
 	tcrypt.hidden_volume_size = hidden_volume_size ;
-	tcrypt.weak_keys_and_salt = StringsAreEqual( rng,"/dev/urandom" ) ;
+	tcrypt.encryption_options = rng ;
 
 	if( key_source == TCRYPT_PASSPHRASE ){
 		tcrypt.passphrase = key ;

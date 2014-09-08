@@ -85,7 +85,7 @@ typedef struct{
 	size_t       passphrase_h_size ;
 	const char ** keyfiles_h ;
 	size_t        keyfiles_h_number ;
-	int          weak_keys_and_salt ;
+	const char *  encryption_options ;
 	u_int64_t    hidden_volume_size ;
 	const char * fs ;
 	const char * fs_h ;

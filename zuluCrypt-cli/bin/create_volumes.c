@@ -337,7 +337,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		tcrypt.device             = device ;
 		tcrypt.fs                 = fs ;
 		tcrypt.fs_h               = fs ;
-		tcrypt.weak_keys_and_salt = StringsAreEqual( rng,"/dev/urandom" ) ;
+		tcrypt.encryption_options = rng ;
 		tcrypt.hidden_volume_size = hidden_volume_size ;
 
 		if( tcrypt_source == TCRYPT_KEYFILE ){

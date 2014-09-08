@@ -65,10 +65,22 @@ createvolume::createvolume( QWidget * parent ) :
 	connect( m_ui->lineEditPassphrase1,SIGNAL( textChanged( QString ) ),this,SLOT( keyChanged( QString ) ) ) ;
 	connect( m_ui->lineEditHiddenKey,SIGNAL( textChanged( QString ) ),this,SLOT( keyChanged( QString ) ) ) ;
 	connect( m_ui->pbHiddenKeyFile,SIGNAL( clicked() ),this,SLOT( pbOpenHiddenKeyFile() ) ) ;
+	connect( m_ui->comboBoxVolumeType,SIGNAL( activated( int ) ),this,SLOT( setOptions( int ) ) ) ;
 
 	m_ui->groupBox->setEnabled( false ) ;
 
+	this->setOptions( 1 ) ;
+
 	this->installEventFilter( this ) ;
+
+	m_ui->labelvolumeOptions->setVisible( false ) ;
+
+	QString a = tr( "options are separated by a \".\" character.\n\n" ) ;
+	QString b = tr( "multiple algorithms are separated by \":\" character.\n\n" ) ;
+	QString c = tr( "options are in a format of \"algorithm.cipher mode.key size in bits.hash\"\n\n") ;
+	QString d = tr( "default option is the first entry on the list" ) ;
+
+	m_ui->comboBoxOptions->setToolTip( a + b + c + d ) ;
 
 #if TRUECRYPT_CREATE
 	m_ui->comboBoxVolumeType->addItem( tr( "normal truecrypt" ) ) ;
@@ -215,6 +227,85 @@ void createvolume::dialogResult( int result )
 	}
 }
 
+void createvolume::setOptions( int e )
+{
+	auto options = m_ui->comboBoxOptions ;
+
+	options->clear() ;
+
+	if( e == 0 ){
+		options->addItem( "aes.cbc-essiv:256.256.ripemd160" ) ;
+	}else if( e == 1 ){
+		options->addItem( "aes.xts-plain64.256.sha1" ) ;
+		options->addItem( "aes.xts-plain64.256.sha256" ) ;
+		options->addItem( "aes.xts-plain64.256.sha512" ) ;
+		options->addItem( "aes.xts-plain64.256.ripemd160" ) ;
+		options->addItem( "aes.xts-plain64.256.whirlpool" ) ;
+
+		options->addItem( "aes.xts-plain64.512.sha1" ) ;
+		options->addItem( "aes.xts-plain64.512.sha256" ) ;
+		options->addItem( "aes.xts-plain64.512.sha512" ) ;
+		options->addItem( "aes.xts-plain64.512.ripemd160" ) ;
+		options->addItem( "aes.xts-plain64.512.whirlpool" ) ;
+
+		options->addItem( "serpent.xts-plain64.256.sha1" ) ;
+		options->addItem( "serpent.xts-plain64.256.sha256" ) ;
+		options->addItem( "serpent.xts-plain64.256.sha512" ) ;
+		options->addItem( "serpent.xts-plain64.256.ripemd160" ) ;
+		options->addItem( "serpent.xts-plain64.256.whirlpool" ) ;
+
+		options->addItem( "serpent.xts-plain64.512.sha1" ) ;
+		options->addItem( "serpent.xts-plain64.512.sha256" ) ;
+		options->addItem( "serpent.xts-plain64.512.sha512" ) ;
+		options->addItem( "serpent.xts-plain64.512.ripemd160" ) ;
+		options->addItem( "serpent.xts-plain64.512.whirlpool" ) ;
+
+		options->addItem( "twofish.xts-plain64.256.sha1" ) ;
+		options->addItem( "twofish.xts-plain64.256.sha256" ) ;
+		options->addItem( "twofish.xts-plain64.256.sha512" ) ;
+		options->addItem( "twofish.xts-plain64.256.ripemd160" ) ;
+		options->addItem( "twofish.xts-plain64.256.whirlpool" ) ;
+
+		options->addItem( "twofish.xts-plain64.512.sha1" ) ;
+		options->addItem( "twofish.xts-plain64.512.sha256" ) ;
+		options->addItem( "twofish.xts-plain64.512.sha512" ) ;
+		options->addItem( "twofish.xts-plain64.512.ripemd160" ) ;
+		options->addItem( "twofish.xts-plain64.512.whirlpool" ) ;
+	}else{
+		options->addItem( "aes.xts-plain64.256.ripemd160" ) ;
+		options->addItem( "aes.xts-plain64.256.sha512" ) ;
+		options->addItem( "aes.xts-plain64.256.whirlpool" ) ;
+
+		options->addItem( "serpent.xts-plain64.256.ripemd160" ) ;
+		options->addItem( "serpent.xts-plain64.256.sha512" ) ;
+		options->addItem( "serpent.xts-plain64.256.whirlpool" ) ;
+
+		options->addItem( "twofish.xts-plain64.256.ripemd160" ) ;
+		options->addItem( "twofish.xts-plain64.256.sha512" ) ;
+		options->addItem( "twofish.xts-plain64.256.whirlpool" ) ;
+
+		options->addItem( "twofish:aes.xts-plain64.256.ripemd160" ) ;
+		options->addItem( "twofish:aes.xts-plain64.256.sha512" ) ;
+		options->addItem( "twofish:aes.xts-plain64.256.whirlpool" ) ;
+
+		options->addItem( "aes:serpent.xts-plain64.256.ripemd160" ) ;
+		options->addItem( "aes:serpent.xts-plain64.256.sha512" ) ;
+		options->addItem( "aes:serpent.xts-plain64.256.whirlpool" ) ;
+
+		options->addItem( "serpent:twofish.xts-plain64.256.ripemd160" ) ;
+		options->addItem( "serpent:twofish.xts-plain64.256.sha512" ) ;
+		options->addItem( "serpent:twofish.xts-plain64.256.whirlpool" ) ;
+
+		options->addItem( "aes:twofish:serpent.xts-plain64.256.ripemd160" ) ;
+		options->addItem( "aes:twofish:serpent.xts-plain64.256.sha512" ) ;
+		options->addItem( "aes:twofish:serpent.xts-plain64.256.whirlpool" ) ;
+
+		options->addItem( "serpent:twofish:aes.xts-plain64.256.ripemd160" ) ;
+		options->addItem( "serpent:twofish:aes.xts-plain64.256.sha512" ) ;
+		options->addItem( "serpent:twofish:aes.xts-plain64.256.whirlpool" ) ;
+	}
+}
+
 void createvolume::ShowUI( const QString& l,const QString& v )
 {
 	this->enableAll() ;
@@ -341,6 +432,9 @@ void createvolume::enableAll()
 		m_ui->comboBoxRNG->setEnabled( true ) ;
 	}
 	m_ui->cbNormalVolume->setEnabled( true ) ;
+	m_ui->labelvolumeOptions->setEnabled( true ) ;
+	m_ui->comboBoxOptions->setEnabled( true ) ;
+
 #if TRUECRYPT_CREATE
 	if( m_ui->comboBoxVolumeType->currentIndex() == createvolume::normal_and_hidden_truecrypt ){
 		m_ui->groupBox->setEnabled( true ) ;
@@ -366,6 +460,9 @@ void createvolume::disableAll()
 	m_ui->comboBoxVolumeType->setEnabled( false ) ;
 	m_ui->comboBoxRNG->setEnabled( false ) ;
 	m_ui->cbNormalVolume->setEnabled( false ) ;
+	m_ui->labelvolumeOptions->setEnabled( false ) ;
+	m_ui->comboBoxOptions->setEnabled( false ) ;
+
 #if TRUECRYPT_CREATE
 	m_ui->groupBox->setEnabled( false ) ;
 #endif
@@ -458,6 +555,8 @@ void createvolume::pbCreateClicked()
 		case 1 : g = "/dev/random"  ; break ;
 		default: g = "/dev/urandom" ;
 	}
+
+	g += "." + m_ui->comboBoxOptions->currentText() ;
 
 	volumePath.replace( "\"","\"\"\"" ) ;
 

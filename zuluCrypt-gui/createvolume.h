@@ -68,6 +68,7 @@ private slots:
 	void taskFinished( int ) ;
 	void volumeType( int ) ;
 	void dialogResult( int ) ;
+	void setOptions( int ) ;
 private:
 	void eraseDataPartition( void ) ;
 	void findInstalledFs( void ) ;
