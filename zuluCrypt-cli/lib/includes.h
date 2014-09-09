@@ -27,6 +27,10 @@
 #include "libzuluCrypt.h"
 #include "../bin/bash_special_chars.h"
 
+#include <gcrypt.h>
+
+#include "support_whirlpool.h"
+
 /*
  * below header is created at build time,it is set by CMakeLists.txt located in the root folder
  */
@@ -90,6 +94,17 @@ typedef struct{
 	const char * fs ;
 	const char * fs_h ;
 }create_tcrypt_t ;
+
+/*
+ * we only support whirlpool with cryptsetup >= 1.6.4 and libgcrypt >= 1.6.1
+ *
+ * read section 8.3  of cryptsetup FAQ for more info.
+ */
+
+static inline int zuluCryptWhirlpoolIsSupported()
+{
+	return GCRYPT_VERSION_NUMBER >= 0x010601 && SUPPORT_WHIRLPOOL ;
+}
 
 /*
  * zuluCryptCreateTCryptVolume() is defined in create_tcrypt.c

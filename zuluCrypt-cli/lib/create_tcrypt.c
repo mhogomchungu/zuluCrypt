@@ -304,7 +304,13 @@ static const char * _set_hash( char * const * q )
 
 	}else if( StringsAreEqual( e,"whirlpool" ) ){
 
-		r = "whirlpool" ;
+		/*
+		 * zuluCryptWhirlpoolIsSupported() is defined in include.h
+		 */
+		if( zuluCryptWhirlpoolIsSupported() ){
+
+			r = "whirlpool" ;
+		}
 
 	}else if( StringsAreEqual( e,"sha512" ) ){
 
@@ -476,7 +482,7 @@ int zuluCryptCreateTCrypt( const char * device,const char * file_system,const ch
 	create_tcrypt_t tcrypt ;
 
 	memset( &tcrypt,'\0',sizeof( create_tcrypt_t ) ) ;
-	
+
 	tcrypt.device = device ;
 	tcrypt.fs = file_system ;
 	tcrypt.fs_h = file_system_h ;
