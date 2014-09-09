@@ -91,6 +91,7 @@ namespace utility
 	bool eventFilter( QObject * gui,QObject * watched,QEvent * event ) ;
 	QStringList split( const QString&,char token = '\n' ) ;
 	QStringList split( const QByteArray&,char token = '\n' ) ;
+	bool userHasGoodVersionOfWhirlpool( void ) ;
 
 	::Task::future< int >& clearVolume( const QString& volumePath,bool * exit,std::function< void( int ) > ) ;
 	::Task::future< int >& exec( const QString& ) ;

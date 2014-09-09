@@ -186,6 +186,12 @@ if( CRYPTSETUP_VERSION VERSION_GREATER "1.5.1" )
 	message( STATUS "version of cryptsetup is atleast 1.6.0,support for opening of truecrypt compatible containers is enabled" )
 endif( CRYPTSETUP_VERSION VERSION_GREATER "1.5.1" )
 
+if( CRYPTSETUP_VERSION VERSION_GREATER "1.6.3" )
+	file( WRITE ${PROJECT_BINARY_DIR}/support_whirlpool.h "\n#define SUPPORT_WHIRLPOOL 1\n" )
+else()
+	file( WRITE ${PROJECT_BINARY_DIR}/support_whirlpool.h "\n#define SUPPORT_WHIRLPOOL 0\n" )
+endif()
+
 message ( STATUS "---------------------------------------------------------------------------" )
 message ( STATUS "---------------------------------------------------------------------------" )
 message ( STATUS "optional functionality that will NOT be build" )

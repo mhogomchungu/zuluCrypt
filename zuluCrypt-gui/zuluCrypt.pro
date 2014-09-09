@@ -145,4 +145,4 @@ OTHER_FILES += \
     lxqt_wallet/frontend/CMakeLists.txt \
     lxqt_wallet/frontend/secret_service/CMakeLists.txt
 
-INCLUDEPATH +=/home/ink/build /home/local/KDE4/include /usr/include /usr/include/glib-2.0/ /usr/lib/glib-2.0/include/ /usr/include/libsecret-1 /usr/include/libsecret-1/libsecret
+INCLUDEPATH +=/home/ink/projects/build/zuluCrypt /usr/include /usr/include/glib-2.0/ /usr/lib/glib-2.0/include/ /usr/include/libsecret-1 /usr/include/libsecret-1/libsecret

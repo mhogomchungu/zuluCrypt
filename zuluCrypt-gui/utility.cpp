@@ -54,12 +54,15 @@
 #include "mount_prefix_path.h"
 #include "storage_manager.h"
 #include "dialogmsg.h"
+#include "support_whirlpool.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <blkid/blkid.h>
+
+#include <gcrypt.h>
 
 #include "lxqt_wallet/frontend/lxqt_wallet.h"
 
@@ -845,4 +848,9 @@ QString utility::getVolumeID( const QString& id )
 	}else{
 		return id ;
 	}
+}
+
+bool utility::userHasGoodVersionOfWhirlpool()
+{
+	return GCRYPT_VERSION_NUMBER >= 0x010601 && SUPPORT_WHIRLPOOL ;
 }

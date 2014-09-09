@@ -233,76 +233,80 @@ void createvolume::setOptions( int e )
 
 	options->clear() ;
 
+	/*
+	 * constructed structure format is: algorithm.cipher mode.key size in bits.hash function.
+	 * examples structures :
+	 *  "aes.cbc-essiv:256.256.ripemd160"
+	 *  "aes.xts-plain64.256.sha1"
+	 *  "serpent:twofish:aes.xts-plain64.256.sha1"
+	 */
+
+	/*
+	 * we only support whirlpool if the user has libgcrypt >= 1.6.1 and cryptsetup >= 1.6.4
+	 * read section 8.3 of the following link for more info:
+	 * https://code.google.com/p/cryptsetup/wiki/FrequentlyAskedQuestions
+	 *
+	 */
+	bool supportWhirlpool = utility::userHasGoodVersionOfWhirlpool() ;
+
 	if( e == 0 ){
+
+		/*
+		 * crypto options for plain dm-crypt volumes
+		 */
 		options->addItem( "aes.cbc-essiv:256.256.ripemd160" ) ;
+
 	}else if( e == 1 ){
-		options->addItem( "aes.xts-plain64.256.sha1" ) ;
-		options->addItem( "aes.xts-plain64.256.sha256" ) ;
-		options->addItem( "aes.xts-plain64.256.sha512" ) ;
-		options->addItem( "aes.xts-plain64.256.ripemd160" ) ;
-		options->addItem( "aes.xts-plain64.256.whirlpool" ) ;
 
-		options->addItem( "aes.xts-plain64.512.sha1" ) ;
-		options->addItem( "aes.xts-plain64.512.sha256" ) ;
-		options->addItem( "aes.xts-plain64.512.sha512" ) ;
-		options->addItem( "aes.xts-plain64.512.ripemd160" ) ;
-		options->addItem( "aes.xts-plain64.512.whirlpool" ) ;
+		/*
+		 * cryto options for LUKS volumes.
+		 */
+		auto _add_option = [ & ]( const QString& algo ){
 
-		options->addItem( "serpent.xts-plain64.256.sha1" ) ;
-		options->addItem( "serpent.xts-plain64.256.sha256" ) ;
-		options->addItem( "serpent.xts-plain64.256.sha512" ) ;
-		options->addItem( "serpent.xts-plain64.256.ripemd160" ) ;
-		options->addItem( "serpent.xts-plain64.256.whirlpool" ) ;
+			options->addItem( algo + ".xts-plain64.256.sha1" ) ;
+			options->addItem( algo + ".xts-plain64.256.sha256" ) ;
+			options->addItem( algo + ".xts-plain64.256.sha512" ) ;
+			options->addItem( algo + ".xts-plain64.256.ripemd160" ) ;
 
-		options->addItem( "serpent.xts-plain64.512.sha1" ) ;
-		options->addItem( "serpent.xts-plain64.512.sha256" ) ;
-		options->addItem( "serpent.xts-plain64.512.sha512" ) ;
-		options->addItem( "serpent.xts-plain64.512.ripemd160" ) ;
-		options->addItem( "serpent.xts-plain64.512.whirlpool" ) ;
+			if( supportWhirlpool ){
+				options->addItem( algo + ".xts-plain64.256.whirlpool" ) ;
+			}
 
-		options->addItem( "twofish.xts-plain64.256.sha1" ) ;
-		options->addItem( "twofish.xts-plain64.256.sha256" ) ;
-		options->addItem( "twofish.xts-plain64.256.sha512" ) ;
-		options->addItem( "twofish.xts-plain64.256.ripemd160" ) ;
-		options->addItem( "twofish.xts-plain64.256.whirlpool" ) ;
+			options->addItem( algo + ".xts-plain64.512.sha1" ) ;
+			options->addItem( algo + ".xts-plain64.512.sha256" ) ;
+			options->addItem( algo + ".xts-plain64.512.sha512" ) ;
+			options->addItem( algo + ".xts-plain64.512.ripemd160" ) ;
 
-		options->addItem( "twofish.xts-plain64.512.sha1" ) ;
-		options->addItem( "twofish.xts-plain64.512.sha256" ) ;
-		options->addItem( "twofish.xts-plain64.512.sha512" ) ;
-		options->addItem( "twofish.xts-plain64.512.ripemd160" ) ;
-		options->addItem( "twofish.xts-plain64.512.whirlpool" ) ;
+			if( supportWhirlpool ){
+				options->addItem( algo + ".xts-plain64.256.whirlpool" ) ;
+			}
+		} ;
+
+		_add_option( "aes" ) ;
+		_add_option( "serpent" ) ;
+		_add_option( "twofish" ) ;
 	}else{
-		options->addItem( "aes.xts-plain64.256.ripemd160" ) ;
-		options->addItem( "aes.xts-plain64.256.sha512" ) ;
-		options->addItem( "aes.xts-plain64.256.whirlpool" ) ;
+		/*
+		 * crypto options for TrueCrypt volumes
+		 */
+		auto _add_option = [ & ]( const QString& algo ){
 
-		options->addItem( "serpent.xts-plain64.256.ripemd160" ) ;
-		options->addItem( "serpent.xts-plain64.256.sha512" ) ;
-		options->addItem( "serpent.xts-plain64.256.whirlpool" ) ;
+			options->addItem( algo + ".xts-plain64.256.ripemd160" ) ;
+			options->addItem( algo + ".xts-plain64.256.sha512" ) ;
 
-		options->addItem( "twofish.xts-plain64.256.ripemd160" ) ;
-		options->addItem( "twofish.xts-plain64.256.sha512" ) ;
-		options->addItem( "twofish.xts-plain64.256.whirlpool" ) ;
+			if( supportWhirlpool ){
+				options->addItem( algo + ".xts-plain64.256.whirlpool" ) ;
+			}
+		} ;
 
-		options->addItem( "twofish:aes.xts-plain64.256.ripemd160" ) ;
-		options->addItem( "twofish:aes.xts-plain64.256.sha512" ) ;
-		options->addItem( "twofish:aes.xts-plain64.256.whirlpool" ) ;
-
-		options->addItem( "aes:serpent.xts-plain64.256.ripemd160" ) ;
-		options->addItem( "aes:serpent.xts-plain64.256.sha512" ) ;
-		options->addItem( "aes:serpent.xts-plain64.256.whirlpool" ) ;
-
-		options->addItem( "serpent:twofish.xts-plain64.256.ripemd160" ) ;
-		options->addItem( "serpent:twofish.xts-plain64.256.sha512" ) ;
-		options->addItem( "serpent:twofish.xts-plain64.256.whirlpool" ) ;
-
-		options->addItem( "aes:twofish:serpent.xts-plain64.256.ripemd160" ) ;
-		options->addItem( "aes:twofish:serpent.xts-plain64.256.sha512" ) ;
-		options->addItem( "aes:twofish:serpent.xts-plain64.256.whirlpool" ) ;
-
-		options->addItem( "serpent:twofish:aes.xts-plain64.256.ripemd160" ) ;
-		options->addItem( "serpent:twofish:aes.xts-plain64.256.sha512" ) ;
-		options->addItem( "serpent:twofish:aes.xts-plain64.256.whirlpool" ) ;
+		_add_option( "aes" ) ;
+		_add_option( "serpent" ) ;
+		_add_option( "twofish" ) ;
+		_add_option( "aes:serpent" ) ;
+		_add_option( "twofish:aes" ) ;
+		_add_option( "serpent:twofish" ) ;
+		_add_option( "aes:twofish:serpent" ) ;
+		_add_option( "serpent:twofish:aes" ) ;
 	}
 }
 

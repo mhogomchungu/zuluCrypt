@@ -23,6 +23,10 @@
 
 #include <libcryptsetup.h>
 
+#include <gcrypt.h>
+
+#include "support_whirlpool.h"
+
 static int zuluExit( int st,struct crypt_device * cd,stringList_t stl,char * const * options )
 {
 	StringFree( options ) ;
@@ -31,6 +35,17 @@ static int zuluExit( int st,struct crypt_device * cd,stringList_t stl,char * con
 		crypt_free( cd ) ;
 	}
 	return st ;
+}
+
+/*
+ * we only support whirlpool with cryptsetup >= 1.6.4 and libgcrypt >= 1.6.1
+ *
+ * read section 8.3  of cryptsetup FAQ for more info.
+ */
+
+static int _whirlpool_is_supported()
+{
+	return GCRYPT_VERSION_NUMBER >= 0x010601 && SUPPORT_WHIRLPOOL ;
 }
 
 static int _not_supported_argument_encountered( char * const * options )
@@ -61,7 +76,15 @@ static int _not_supported_argument_encountered( char * const * options )
 				 * supported hashes are: sha1,sha256,sha512,ripemd160 and whirlpool
 				 */
 
-				if( StringAtLeastOneMatch_1( e,"sha1","sha256","sha512","ripemd160","whirlpool",NULL ) ){
+				if( StringsAreEqual( e,"whirlpool" ) ){
+
+					if( _whirlpool_is_supported() ){
+						return 0 ;
+					}else{
+						return 1 ;
+					}
+				}
+				if( StringAtLeastOneMatch_1( e,"sha1","sha256","sha512","ripemd160",NULL ) ){
 
 					return 0 ;
 				}
