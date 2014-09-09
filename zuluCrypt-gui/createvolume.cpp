@@ -278,7 +278,7 @@ void createvolume::setOptions( int e )
 			options->addItem( algo + ".xts-plain64.512.ripemd160" ) ;
 
 			if( supportWhirlpool ){
-				options->addItem( algo + ".xts-plain64.256.whirlpool" ) ;
+				options->addItem( algo + ".xts-plain64.512.whirlpool" ) ;
 			}
 		} ;
 
