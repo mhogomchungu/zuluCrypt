@@ -364,7 +364,7 @@ static int _create_tcrypt_volume( const char * device,const create_tcrypt_t * e 
 		stl = StringListSplit( e->encryption_options,'.' ) ;
 	}
 
-	options = StringListStringArray_1( options,&options_count,stl ) ;
+	StringListStringArray_1( &options,&options_count,stl ) ;
 
 	if( options_count == 1 ){
 

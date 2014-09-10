@@ -114,7 +114,7 @@ static int _create_luks( const char * dev,const char * pass,size_t pass_size,con
 		stl = StringListSplit( opts,'.' ) ;
 	}
 
-	options = StringListStringArray_1( options,&options_count,stl ) ;
+	StringListStringArray_1( &options,&options_count,stl ) ;
 
 	if( options_count == 1 ){
 

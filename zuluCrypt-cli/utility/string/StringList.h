@@ -396,13 +396,15 @@ const char * const * StringListStringArray( stringList_t ) ;
  * multiple times.
  * second argument will hold the size of the buffer without counting the NULL terminator
  * The two first arguments must be initilized to example values
+ * NOTE: remember to free() the first argument but DONOT free its content.
  * Example usage
  * char * const * buffer = NULL ;
  * size_t buffer_size = 0 ;
  * stringList_t stl = StringList( "abc" ) ;
- * buffer = StringListStringArray_1( buffer,&buffer_size,stl ) ;
+ * StringListStringArray_1( &buffer,&buffer_size,stl ) ;
+ * puts( buffer[0] ) ;
  */
-char * const * StringListStringArray_1( char * const *,size_t *,stringList_t ) ;
+void StringListStringArray_1( char * const **,size_t *,stringList_t ) ;
 
 /*
  * remember to clean after yourself

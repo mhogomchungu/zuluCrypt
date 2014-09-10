@@ -58,7 +58,7 @@ stringList_t zuluCryptGetMoutedListFromMountInfo_0(
 
 		if( index != -1 ){
 
-			entry = StringListStringArray_1( entry,&entry_len,tmp ) ;
+			StringListStringArray_1( &entry,&entry_len,tmp ) ;
 
 			mount_point = *( entry + 4 ) ;
 
