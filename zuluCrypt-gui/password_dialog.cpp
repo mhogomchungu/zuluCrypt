@@ -279,14 +279,7 @@ void passwordDialog::ShowUI()
 
 void passwordDialog::mountPointPath( QString path )
 {
-	QString p = m_ui->MountPointPath->text() ;
-
-	int x = path.lastIndexOf( QString( "/" ) ) ;
-	if( x == -1 ){
-		m_ui->MountPointPath->setText( path ) ;
-	}else{
-		m_ui->MountPointPath->setText( path.mid( x + 1 ) ) ;
-	}
+	m_ui->MountPointPath->setText( utility::mountPathPostFix( path.split( "/" ).last() ) ) ;
 }
 
 void passwordDialog::cbActicated( int e )
@@ -397,7 +390,7 @@ void passwordDialog::file_path( void )
 	QString Z = QFileDialog::getOpenFileName( this,tr( "Select encrypted volume" ),QDir::homePath(),0 ) ;
 	m_ui->OpenVolumePath->setText( Z ) ;
 	if( !Z.isEmpty() ){
-		m_ui->MountPointPath->setText( Z.split( QString( "/" ) ).last() ) ;
+		m_ui->MountPointPath->setText( utility::mountPathPostFix( Z.split( QString( "/" ) ).last() ) ) ;
 	}
 }
 
