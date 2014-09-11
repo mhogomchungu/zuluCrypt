@@ -103,7 +103,11 @@ typedef struct{
 
 static inline int zuluCryptWhirlpoolIsSupported()
 {
+#ifdef GCRYPT_VERSION_NUMBER
 	return GCRYPT_VERSION_NUMBER >= 0x010601 && SUPPORT_WHIRLPOOL ;
+#else
+	return SUPPORT_WHIRLPOOL ;
+#endif
 }
 
 /*
