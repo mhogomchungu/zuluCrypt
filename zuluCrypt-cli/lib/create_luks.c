@@ -100,6 +100,8 @@ static int _create_luks( const char * dev,const char * pass,size_t pass_size,con
 	char * const * options = NULL ;
 	size_t options_count = 0 ;
 
+	u_int64_t iterations = 0 ;
+
 	stringList_t stl ;
 
 	if( zuluCryptPathIsNotValid( dev ) ){
@@ -120,7 +122,7 @@ static int _create_luks( const char * dev,const char * pass,size_t pass_size,con
 
 		rng = *( options + 0 ) ;
 
-	}else if( options_count == 5 ){
+	}else if( options_count >= 5 ){
 
 		if( _not_supported_argument_encountered( options ) ){
 
@@ -131,6 +133,10 @@ static int _create_luks( const char * dev,const char * pass,size_t pass_size,con
 			cipher  = *( options + 2 ) ;
 			keySize = ( size_t ) StringConvertToInt( *( options + 3 ) ) / 8 ;
 			hash    = *( options + 4 ) ;
+
+			if( options_count == 6 ){
+				iterations = StringConvertToInt( *( options + 5 ) )  ;
+			}
 		}
 	}else{
 		return zuluExit( 1,cd,stl,options ) ;
@@ -145,6 +151,10 @@ static int _create_luks( const char * dev,const char * pass,size_t pass_size,con
 		crypt_set_rng_type( cd,CRYPT_RNG_RANDOM ) ;
 	}else{
 		crypt_set_rng_type( cd,CRYPT_RNG_URANDOM ) ;
+	}
+
+	if( iterations != 0 ){
+		crypt_set_iteration_time( cd,iterations ) ;
 	}
 
 	if( crypt_format( cd,CRYPT_LUKS1,algo,cipher,NULL,NULL,keySize,&params ) != 0 ){
