@@ -69,6 +69,8 @@ CryptTask::CryptTask( const QString& source,const QString& dest,
 	m_task = task ;
 	m_status = CryptTask::unset ;
 
+	this->setUpCallbacks() ;
+
 	connect( this,SIGNAL( finished() ),this,SLOT( deleteLater() ) ) ;
 }
 
@@ -108,10 +110,22 @@ void CryptTask::run()
 	}
 }
 
-int CryptTask::updateProgress( int e )
+static int _progress( int e,void * f )
 {
-	emit progressUpdate( e ) ;
-	return m_status == CryptTask::quit ;
+	auto c = reinterpret_cast< updateCallbacks * >( f ) ;
+	return c->update( e ) ;
+}
+
+void CryptTask::setUpCallbacks()
+{
+	m_callbacks.update = [ this ]( int e ){
+		emit progressUpdate( e ) ;
+		return m_status == CryptTask::quit ;
+	} ;
+
+	m_callbacks.progress = _progress ;
+
+	m_callbacks.thisObject = reinterpret_cast< void * >( &m_callbacks ) ;
 }
 
 void CryptTask::newEncryptionRoutine()
@@ -122,16 +136,8 @@ void CryptTask::newEncryptionRoutine()
 		m_key = f.readAll() ;
 	}
 
-	auto f = reinterpret_cast< void * >( this ) ;
-
-	auto _progress = []( int e,void * f ){
-		auto t = reinterpret_cast< CryptTask * >( f ) ;
-		return t->updateProgress( e ) ;
-	} ;
-
-	auto r = lxqt_wallet_create_encrypted_file( m_key.toLatin1().constData(),m_key.size(),
-						    m_source.toLatin1().constData(),
-						    m_dest.toLatin1().constData(),_progress,f ) ;
+	auto r = lxqt_wallet_create_encrypted_file( m_key.toLatin1().constData(),m_key.size(),m_source.toLatin1().constData(),
+						    m_dest.toLatin1().constData(),m_callbacks.progress,m_callbacks.thisObject ) ;
 
 	if( m_status == CryptTask::quit ){
 		QFile::remove( m_dest ) ;
@@ -150,16 +156,8 @@ void CryptTask::newDecryptionRoutine()
 		m_key = f.readAll() ;
 	}
 
-	auto f = reinterpret_cast< void * >( this ) ;
-
-	auto _progress = []( int e,void * f ){
-		auto t = reinterpret_cast< CryptTask * >( f ) ;
-		return t->updateProgress( e ) ;
-	} ;
-
-	auto r = lxqt_wallet_create_decrypted_file( m_key.toLatin1().constData(),m_key.size(),
-						    m_source.toLatin1().constData(),
-						    m_dest.toLatin1().constData(),_progress,f ) ;
+	auto r = lxqt_wallet_create_decrypted_file( m_key.toLatin1().constData(),m_key.size(),m_source.toLatin1().constData(),
+						    m_dest.toLatin1().constData(),m_callbacks.progress,m_callbacks.thisObject ) ;
 
 	if( m_status == CryptTask::quit ){
 		QFile::remove( m_dest ) ;

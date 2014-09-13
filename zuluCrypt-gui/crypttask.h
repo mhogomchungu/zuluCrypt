@@ -22,6 +22,14 @@
 #include <QObject>
 #include <QThread>
 #include <QString>
+#include <functional>
+
+struct updateCallbacks
+{
+	int( *progress )( int e,void * f ) ;
+	std::function< int( int ) > update ;
+	void * thisObject ;
+};
 
 class CryptTask : public QThread
 {
@@ -47,7 +55,6 @@ public:
 		OpenSourceFail,
 		OpenDestinationFail
 	}status;
-	int updateProgress( int ) ;
 	CryptTask( const QString& source,const QString& dest,
 			    const QString& keySource,const QString& key,const QString& task ) ;
 	~CryptTask() ;
@@ -61,6 +68,7 @@ signals:
 public slots:
 	void terminate( void ) ;
 private:
+	void setUpCallbacks( void ) ;
 	void oldEncryptionRoutine( void ) ;
 	void newEncryptionRoutine( void ) ;
 	void oldDecryptionRoutine( void ) ;
@@ -78,6 +86,7 @@ private:
 	QString m_task ;
 	QString m_mapperPath ;
 	CryptTask::status m_status ;
+	updateCallbacks m_callbacks ;
 };
 
 #endif // CryptTask_H
