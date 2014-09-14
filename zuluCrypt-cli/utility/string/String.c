@@ -329,6 +329,27 @@ string_t String( const char * cstring )
 	}
 }
 
+string_t String_1( const char * cstring,... )
+{
+	string_t st = String( cstring ) ;
+
+	const char * entry ;
+	va_list list ;
+	va_start( list,cstring ) ;
+
+	while( 1 ){
+		entry = va_arg( list,const char * ) ;
+		if( entry == NULL ){
+			break ;
+		}
+		StringAppend( st,entry ) ;
+	}
+
+	va_end( list ) ;
+
+	return st ;
+}
+
 void StringReadToBuffer( string_t st,char * buffer,size_t size )
 {
 	if( buffer != NULL ){

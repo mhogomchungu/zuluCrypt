@@ -75,6 +75,45 @@ static char * _get_uuid_from_device( const char * device )
 	return r ;
 }
 
+/*
+ * custom options per file system
+ */
+static void _get_file_system_options_from_config_file_1( const char * fs,string_t st )
+{
+	const char * e ;
+
+	StringListIterator it  ;
+	StringListIterator end ;
+
+	string_t zt ;
+	string_t xt = StringGetFromFile( "/etc/zuluCrypt/generic_fs_options" ) ;
+
+	stringList_t stl = StringListStringSplit( xt,'\n' ) ;
+
+	stringList_t stz ;
+
+	StringDelete( &xt ) ;
+
+	StringListGetIterators( stl,&it,&end ) ;
+
+	while( it != end  ){
+		zt = *it ;
+		it++ ;
+		if( StringStartsWith( zt,fs ) ){
+			stz = StringListStringSplit( zt,' ' ) ;
+			e = StringListContentAtSecondPlace( stz ) ;
+			StringMultipleAppend( st,",",e,NULL ) ;
+			StringListDelete( &stz ) ;
+			break ;
+		}
+	}
+
+	StringListDelete( &stl ) ;
+}
+
+/*
+ * custom options per volume set through file system's UUID
+ */
 static void _get_file_system_options_from_config_file( const char * device,string_t st )
 {
 	char * f ;
@@ -151,6 +190,8 @@ static string_t set_mount_options( m_struct * mst )
 		}
 		StringMultipleAppend( opt,",",mst->fs_flags,NULL ) ;
 	}
+
+	_get_file_system_options_from_config_file_1( mst->fs,opt ) ;
 
 	_get_file_system_options_from_config_file( mst->device,opt ) ;
 

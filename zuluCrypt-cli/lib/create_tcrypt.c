@@ -113,11 +113,13 @@ static int _create_file_system( const create_tcrypt_t * e )
 			}else{
 				r = 3 ;
 			}
+
+			/*
+			 * zuluCryptCloseMapper() is defined in close_mapper.c
+			 */
+			zuluCryptCloseMapper( device_mapper ) ;
 		}
-		/*
-		 * zuluCryptCloseMapper() is defined in close_mapper.c
-		 */
-		zuluCryptCloseMapper( device_mapper ) ;
+
 	}
 
 	StringDelete( &m ) ;

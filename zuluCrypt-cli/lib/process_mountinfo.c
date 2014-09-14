@@ -210,8 +210,7 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 			 */
 			f = zuluCryptGetVolumeTypeFromMapperPath( StringContent( q ) ) ;
 			e = StringSubChar( q,StringLastIndexOfChar( q,'-' ),'\0' ) + k + 6 ;
-			z = StringEmpty() ;
-			StringMultipleAppend( z,"UUID=\"",e,"\"\t",d,"\t",f,NULL ) ;
+			z = String_1( "UUID=\"",e,"\"\t",d,"\t",f,NULL ) ;
 			list = StringListAppendString_1( list,&z ) ;
 			StringFree( f ) ;
 		}else{
@@ -225,8 +224,7 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 				 * zuluCryptGetVolumeTypeFromMapperPath() is defined in status.c
 				 */
 				f = zuluCryptGetVolumeTypeFromMapperPath( StringListContentAtFirstPlace( stx ) ) ;
-				z = StringEmpty() ;
-				StringMultipleAppend( z,g,"\t",d,"\t",f,NULL ) ;
+				z = String_1( g,"\t",d,"\t",f,NULL ) ;
 				list = StringListAppendString_1( list,&z ) ;
 				StringFree( f ) ;
 				StringFree( g ) ;

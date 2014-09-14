@@ -53,22 +53,25 @@ string_t zuluCryptCreateMapperName( const char * device,const char * mapping_nam
 		/*
 		 * zuluCryptMapperPrefix() is defined in include.h
 		 */
-		p = String( zuluCryptMapperPrefix() ) ;
-		StringAppend( p,"/zuluCrypt-" ) ;
+		p = String_1( zuluCryptMapperPrefix(),"/zuluCrypt-",NULL ) ;
 	}
 
 	StringAppendInt( p,uid ) ;
 
 	if( StringPrefixEqual( mapping_name,"UUID-" ) ){
+
 		StringMultipleAppend( p,"-",mapping_name,"-",NULL ) ;
 		z = StringJenkinsOneAtATimeHash( mapping_name ) ;
 	}else{
 		StringMultipleAppend( p,"-NAAN-",mapping_name,"-",NULL ) ;
+
 		if( StringPrefixEqual( device,"/dev/loop" ) ){
+
 			/*
 			* zuluCryptLoopDeviceAddress_1() is defined in ./create_loop_device.c
 			*/
 			e = zuluCryptLoopDeviceAddress_1( device ) ;
+
 			if( e != NULL ){
 				z = StringJenkinsOneAtATimeHash( e ) ;
 				free( e ) ;

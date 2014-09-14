@@ -59,6 +59,11 @@ void StringGetIterators( string_t,StringIterator * begin,StringIterator * end ) 
 string_t String( const char * cstring ) ;
 
 /*
+ * initialize a handle with multiple C strings concatenated together.
+ */
+string_t String_1( const char * cstring,... ) __attribute__ ( ( sentinel ) ) ;
+
+/*
  * initialize a handle with an empty C string
  */
 string_t StringEmpty( void ) ;
