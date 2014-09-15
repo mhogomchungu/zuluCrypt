@@ -201,8 +201,10 @@ int main( int argc,char * argv[] )
 			buffer = NULL ;
 			/*
 			 * read network data client sent.
+			 * set a limit to how much data we should get,sizeof( zuluKey_t ) * 4 is just an
+			 * arbitrary larger number
 			 */
-			n = SocketGetData( c,&buffer ) ;
+			n = SocketGetData_1( c,&buffer,sizeof( zuluKey_t ) * 4 ) ;
 
 			if( buffer ){
 
