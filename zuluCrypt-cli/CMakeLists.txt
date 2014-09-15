@@ -3,7 +3,7 @@
  file(WRITE  ${PROJECT_BINARY_DIR}/bin_path.h "\n#define ZULUCRYPTzuluCrypt      \"${CMAKE_INSTALL_PREFIX}/bin/zuluCrypt-cli\"\n")
  file(APPEND ${PROJECT_BINARY_DIR}/bin_path.h "\n#define zuluMountPath	         \"${CMAKE_INSTALL_PREFIX}/bin/zuluMount-cli\"\n")
  file(APPEND ${PROJECT_BINARY_DIR}/bin_path.h "\n#define ZULUCRYPTplugInPath     \"${CMAKE_INSTALL_PREFIX}/zuluCrypt/zuluCrypt-testKey\"\n")
- 
+
  add_definitions( -I${PROJECT_BINARY_DIR} )
 
  SET( BIN
@@ -142,6 +142,12 @@
 
  set_target_properties( zuluCrypt-cli PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
  set_target_properties( zuluMount-cli PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
+
+
+  #zuluCryptKeyServer not used
+ add_executable( zuluCryptKeyServer ../plugins/network_key/server.c ../zuluCrypt-gui/lxqt_wallet/backend/lxqtwallet.c )
+ set_target_properties( zuluCryptKeyServer PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread -pedantic " )
+ TARGET_LINK_LIBRARIES( zuluCryptKeyServer crypt_buffer )
 
  if( NOT NOSECRETSUPPORT )
 

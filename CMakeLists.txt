@@ -105,6 +105,11 @@ else()
 	file( WRITE  ${PROJECT_BINARY_DIR}/mount_prefix_path.h "\n#define USE_HOME_PATH_AS_MOUNT_PREFIX 0\n" )
 endif()
 
+add_library( crypt_buffer STATIC plugins/network_key/crypt_buffer.c zuluCrypt-cli/utility/socket/socket.c )
+set_target_properties( crypt_buffer PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIC -pthread  -pedantic " )
+TARGET_LINK_LIBRARIES( crypt_buffer -lgcrypt )
+
+
 ADD_SUBDIRECTORY( zuluCrypt-cli )
 ADD_SUBDIRECTORY( zuluCrypt-gui/lxqt_wallet )
 ADD_SUBDIRECTORY( zuluSafe )

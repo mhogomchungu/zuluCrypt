@@ -577,6 +577,20 @@ void SocketClose( socket_t * p )
 	}
 }
 
+void SocketCloseWriteChannel( socket_t s )
+{
+	if( s != NULL ){
+		shutdown( s->fd,SHUT_WR ) ;
+	}
+}
+
+void SocketCloseReadChannel( socket_t s )
+{
+	if( s != NULL ){
+		shutdown( s->fd,SHUT_RD ) ;
+	}
+}
+
 static inline int _SocketConnect( socket_t s )
 {
 	return connect( s->fd,s->socket,s->size ) == 0 ;

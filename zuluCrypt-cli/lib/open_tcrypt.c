@@ -47,7 +47,7 @@ string_t zuluCryptCreateKeyFile( const char * key,size_t key_len,const char * fi
 	if( key == NULL || key_len == 0 || fileName == NULL ){
 		return StringVoid ;
 	}
-	
+
 	#define path_does_not_exist( x ) stat( x,&statstr ) != 0
 
 	if( path_does_not_exist( "/run" ) ){
@@ -59,8 +59,7 @@ string_t zuluCryptCreateKeyFile( const char * key,size_t key_len,const char * fi
 		chown( "/run/zuluCrypt",0,0 ) ;
 	}
 
-	st = StringEmpty() ;
-	StringMultipleAppend( st,"/run/zuluCrypt/",fileName,NULL ) ;
+	st = String_1( "/run/zuluCrypt/",fileName,NULL ) ;
 	file = StringAppendInt( st,syscall( SYS_gettid ) ) ;
 	fd = open( file,O_WRONLY | O_CREAT,S_IRUSR | S_IWUSR | S_IRGRP |S_IROTH ) ;
 

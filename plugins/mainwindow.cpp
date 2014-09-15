@@ -194,6 +194,13 @@ void MainWindow::setExe( const QVector<QString>& exe )
 	m_exe = exe ;
 }
 
+void MainWindow::setKeyFileAsKey( void )
+{
+	m_keyfileAsKey = true ;
+	m_ui->lineEditKeyFile->setEchoMode( QLineEdit::Password ) ;
+	m_ui->pbKeyFile->setVisible( false ) ;
+}
+
 void MainWindow::pbOpen()
 {
 	DialogMsg msg( this ) ;
@@ -210,11 +217,15 @@ void MainWindow::pbOpen()
 	keyFile.replace( "file://","" ) ;
 
 	if( m_requireKeyFile ){
-		if( keyFile.isEmpty() ){
-			return msg.ShowUIOK( tr( "ERROR" ),tr( "path to %1 keyfile is empty" ).arg( m_appName ) ) ;
-		}
-		if( !QFile::exists( keyFile ) ){
-			return msg.ShowUIOK( tr( "ERROR" ),tr( "invalid path to %1 keyfile" ).arg( m_appName ) ) ;
+		if( m_keyfileAsKey ){
+			;
+		}else{
+			if( keyFile.isEmpty() ){
+				return msg.ShowUIOK( tr( "ERROR" ),tr( "path to %1 keyfile is empty" ).arg( m_appName ) ) ;
+			}
+			if( !QFile::exists( keyFile ) ){
+				return msg.ShowUIOK( tr( "ERROR" ),tr( "invalid path to %1 keyfile" ).arg( m_appName ) ) ;
+			}
 		}
 	}
 
@@ -256,7 +267,7 @@ void MainWindow::pbOpen()
 		}else{
 			DialogMsg msg( this ) ;
 			m_working = false ;
-			msg.ShowUIOK( tr( "ERROR" ),tr("could not decrypt the %1 keyfile,wrong key?" ).arg( m_appName ) ) ;
+			msg.ShowUIOK( tr( "ERROR" ),tr("could not decrypt the %1,wrong key?" ).arg( m_appName ) ) ;
 			this->enableAlll() ;
 			m_ui->lineEditKey->setFocus() ;
 		}

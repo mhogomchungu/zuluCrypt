@@ -1,0 +1,21 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Comment[en_US]=
+Comment=
+Exec=/usr/bin/zuluCryptKeyServer ink
+GenericName[en_US]=Encrypted volumes key manager
+GenericName=Encrypted volumes manager
+Icon=zuluCrypt.png
+MimeType=
+Name[en_US]=ZuluCrypt Key Server
+Name=ZuluCrypt
+NoDisplay=false
+Path=
+StartupNotify=true
+Terminal=false
+Type=Application
+X-DBUS-ServiceName=
+X-DBUS-StartupType=
+X-KDE-SubstituteUID=false
+X-KDE-Username=
+Categories=Security;Utility;Qt;X-MandrivaLinux-System-FileTools;

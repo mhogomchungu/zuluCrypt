@@ -226,6 +226,16 @@ int SocketIsBlocking( socket_t ) ;
 void SocketClose( socket_t * ) ;
 
 /*
+ * close the write channel on the socket
+ */
+void SocketCloseWriteChannel( socket_t ) ;
+
+/*
+ * close the read channel on the socket
+ */
+void SocketCloseReadChannel( socket_t ) ;
+
+/*
  * set the maximum number of connections to accept.
  * This function must be called before SocketListen() to change the default from 1.
  */

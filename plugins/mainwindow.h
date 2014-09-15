@@ -53,6 +53,7 @@ public:
 	void setButtonIcon( const QString& ) ;
 	void setRequireKey( bool k = true ) ;
 	void setRequireKeyFile( bool k = true ) ;
+	void setKeyFileAsKey( void ) ;
 	void Show( void ) ;
 	void setExe( const QVector<QString>& exe ) ;
 	void setKeyFunction( std::function<QByteArray( const QVector<QString>& exe,const QString& keyFile,const QString& password )> ) ;
@@ -75,6 +76,7 @@ private:
 	bool m_working ;
 	bool m_requireKey ;
 	bool m_requireKeyFile ;
+	bool m_keyfileAsKey = false ;
 	QVector<QString> m_exe ;
 	QVector<QString> m_exe_1 ;
 	function_t m_function ;
