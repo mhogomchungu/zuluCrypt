@@ -94,8 +94,7 @@ char * zuluCryptGetUUIDFromMapper( const char * mapper )
 			if( id == NULL ){
 				uuid = String( e ) ;
 			}else{
-				uuid = String( "" ) ;
-				StringMultipleAppend( uuid," UUID:   \t\"",id,"\"",NULL ) ;
+				uuid = String_1( " UUID:   \t\"",id,"\"",NULL ) ;
 			}
 		}
 		crypt_free( cd ) ;
