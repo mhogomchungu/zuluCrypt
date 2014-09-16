@@ -208,7 +208,7 @@ int main( int argc,char * argv[] )
 
 	MainWindow w ;
 
-	w.setToken( QString( argv[ 3 ] ) ) ;
+	w.setToken( *( argv + 3 ) ) ;
 	w.setApplicationName( "network key" ) ;
 	w.setkeyLabel( QObject::tr( "enter zuluCrypt wallet key below" ) ) ;
 	w.setkeyFileLabel( QObject::tr( "enter network key below" ) ) ;
@@ -223,8 +223,10 @@ int main( int argc,char * argv[] )
 		QByteArray k = password.toLatin1() ;
 		QByteArray n = network_key.toLatin1() ;
 
+		QByteArray z = QString( "UUID=\"%1\"" ).arg( QString( *( argv + 2 ) ) ).toLatin1()  ;
+
 		e.path            = *( argv + 1 ) ;
-		e.uuid            = *( argv + 2 ) ;
+		e.uuid            = z.constData() ;
 		e.wallet_key      = k.constData() ;
 		e.encryption_key  = n.constData() ;
 
