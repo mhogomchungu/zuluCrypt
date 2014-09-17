@@ -59,7 +59,7 @@ void zuluCryptFormatSize( u_int64_t number,char * buffer,size_t buffer_size )
 		 break ;
 	case 4 : case 5 : case 6 :
 		 convert( buffer,buffer_size,"KB",number,1024 ) ;
-		 break ; ;
+		 break ;
 	case 7 : case 8 : case 9 :
 		 convert( buffer,buffer_size,"MB",number,1024 * 1024 ) ;
 		 break ;

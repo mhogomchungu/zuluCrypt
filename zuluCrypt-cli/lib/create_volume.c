@@ -97,52 +97,48 @@ int zuluCryptCreateFileSystemInAVolume( const char * fs,const char * device_mapp
 
 static int _create_volume( const char * dev,const char * fs,const char * type,const char * pass,size_t pass_size,const char * rng )
 {
-	size_t len ;
-	int status ;
-
-	string_t m = StringVoid ;
-
-	const char * device_mapper ;
+	int r ;
+	
 	const char * mapper ;
 
-	if ( zuluCryptPathIsNotValid( dev ) ){
-		return 1 ;
-	}
-
-	m = String( crypt_get_dir() ) ;
-	len = StringLength( m )   ;
-
-	StringAppend( m,"/zuluCrypt-" ) ;
-	device_mapper = StringAppendInt( m,syscall( SYS_gettid ) ) ;
-	mapper = device_mapper + len + 1 ;
+	string_t m = String( "/zuluCrypt-create-volume-" ) ;
+	mapper = StringAppendInt( m,syscall( SYS_gettid ) ) + 1 ;
 
 	if( StringsAreEqual( type,"luks" ) ){
-		if( StringPrefixEqual( rng,"/dev/random" ) ){
-			if( StringPrefixEqual( rng,"/dev/urandom" ) ){
-				return zuluExit( 2,m ) ;
+
+		if( StringAtLeastOnePrefixMatch( rng,"/dev/random","/dev/urandom",NULL ) ){
+
+			if( zuluCryptCreateLuks( dev,pass,pass_size,rng ) != 0 ){
+
+				return zuluExit( 3,m ) ;
 			}
+			if( zuluCryptOpenLuks( dev,mapper,"rw",pass,pass_size ) != 0 ){
+
+				return zuluExit( 3,m ) ;
+			}
+		}else{
+			return zuluExit( 2,m ) ;
 		}
-		if( zuluCryptCreateLuks( dev,pass,pass_size,rng ) != 0 ){
-			return zuluExit( 3,m ) ;
-		}
-		if( zuluCryptOpenLuks( dev,mapper,"rw",pass,pass_size ) != 0 ){
-			return zuluExit( 3,m ) ;
-		}
+
 	}else if( StringsAreEqual( type,"plain") ){
+
 		if( zuluCryptOpenPlain( dev,mapper,"rw",pass,pass_size ) != 0 ){
+
 			return zuluExit( 3,m ) ;
 		}
 	}else{
 		return zuluExit( 2,m ) ;
 	}
 
-	status = zuluCryptCreateFileSystemInAVolume( fs,device_mapper ) ;
+	mapper = StringPrepend( m,crypt_get_dir() ) ;
+
+	r = zuluCryptCreateFileSystemInAVolume( fs,mapper ) ;
 	/*
 	 * zuluCryptCloseMapper() is defined in close_mapper.c
 	 */
-	zuluCryptCloseMapper( device_mapper );
+	zuluCryptCloseMapper( mapper ) ;
 
-	if( status == 0 ){
+	if( r == 0 ){
 		return zuluExit( 0,m ) ;
 	}else{
 		return zuluExit( 3,m ) ;
