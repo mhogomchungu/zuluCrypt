@@ -195,6 +195,13 @@ ssize_t SocketGetData( socket_t,char ** buffer ) ;
 ssize_t SocketGetData_2( socket_t,char * buffer,size_t len ) ;
 
 /*
+ * this function behaves like SocketGetData_2 but it takes an additional argument
+ * of time in seconds for how long the function should wait for data and it returns
+ * -1 if timer expired
+ */
+ssize_t SocketGetData_3( socket_t,char * buffer,size_t len,int timeout ) ;
+
+/*
  * send data to a socket,
  * return number of bytes sent or -1 on error
  */

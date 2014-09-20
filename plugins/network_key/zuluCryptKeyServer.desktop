@@ -2,7 +2,7 @@
 [Desktop Entry]
 Comment[en_US]=
 Comment=
-Exec=/usr/bin/zuluCryptKeyServer ink
+Exec=/usr/bin/zuluCryptKeyServer ink 127.0.0.1 40000
 GenericName[en_US]=Encrypted volumes key manager
 GenericName=Encrypted volumes manager
 Icon=zuluCrypt.png

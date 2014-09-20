@@ -134,8 +134,6 @@ int main( int argc,char * argv[] )
 	crypt_buffer_result r ;
 	ssize_t n ;
 
-	char * buffer = NULL ;
-
 	char * encryption_key ;
 	size_t encryption_key_length ;
 
@@ -145,9 +143,9 @@ int main( int argc,char * argv[] )
 
 	char * e ;
 
-	/*
-	 * start a server at IP address 127.0.0.1 on port 2000
-	 */
+	#define buffer_size sizeof( zuluKey_t ) * 2
+	char buffer[ buffer_size ] ;
+
 	socket_t s ;
 
 	if( argc < 2 ){
@@ -187,26 +185,15 @@ int main( int argc,char * argv[] )
 		return 1 ;
 	}
 
-	/*
-	 * start decryption engine
-	 */
 	if( crypt_buffer_init( &ctx,encryption_key,encryption_key_length ) ){
 
 		while( 1 ){
-			/*
-			 * accept client's connection
-			 */
+
 			c = SocketAccept( s ) ;
 
-			buffer = NULL ;
-			/*
-			 * read network data client sent.
-			 * set a limit to how much data we should get,sizeof( zuluKey_t ) * 4 is just an
-			 * arbitrary larger number
-			 */
-			n = SocketGetData_1( c,&buffer,sizeof( zuluKey_t ) * 4 ) ;
+			n = SocketGetData_3( c,buffer,buffer_size,4 ) ;
 
-			if( buffer ){
+			if( n != -1 ){
 
 				if( crypt_buffer_decrypt( ctx,buffer,n,&r ) ){
 
@@ -214,25 +201,18 @@ int main( int argc,char * argv[] )
 				}else{
 					_debug( "failed to decrypt data" ) ;
 				}
-
-				/*
-				 * free received data
-				 */
-				free( buffer ) ;
+			}else{
+				_debug( "network timed out" ) ;
 			}
 
 			SocketClose( &c ) ;
 		}
 
-		/*
-		 * shutdown decryption engine.
-		 */
 		crypt_buffer_uninit( &ctx ) ;
+	}else{
+		_debug( "failed to initialize encryption routine" ) ;
 	}
 
-	/*
-	 * close used sockets
-	 */
 	SocketClose( &s ) ;
 
 	memset( encryption_key,'\0',encryption_key_length ) ;

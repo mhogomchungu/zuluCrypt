@@ -23,6 +23,7 @@
 #include <QByteArray>
 #include <QString>
 #include <QFile>
+#include <QDir>
 #include <QObject>
 
 #include "network_key.h"
@@ -69,9 +70,7 @@ static result_t _network_key_get_key( const arguments_t * e )
 	key.key_0_length = strlen( e->path ) + 1 ;
 
 	if( key.key_0_length > sizeof( key.key_0 ) ){
-		/*
-		 * try to prevent buffer overflow
-		 */
+
 		_debug( "error: key length buffer overflow" ) ;
 		return result ;
 	}else{
@@ -81,9 +80,7 @@ static result_t _network_key_get_key( const arguments_t * e )
 	key.key_1_length = strlen( e->uuid ) + 1 ;
 
 	if( key.key_1_length > sizeof( key.key_1 ) ){
-		/*
-		 * try to prevent buffer overflow
-		 */
+
 		_debug( "error: key length buffer overflow" ) ;
 		return result ;
 	}else{
@@ -93,9 +90,7 @@ static result_t _network_key_get_key( const arguments_t * e )
 	key.wallet_key_length = strlen( wallet_key ) ;
 
 	if( key.wallet_key_length > sizeof( key.wallet_key ) ){
-		/*
-		 * try to prevent buffer overflow
-		 */
+
 		_debug( "error: wallet key length buffer overflow" ) ;
 		return result ;
 	}else{
@@ -105,9 +100,7 @@ static result_t _network_key_get_key( const arguments_t * e )
 	n = strlen( wallet_name ) ;
 
 	if( n > sizeof( key.wallet_name ) ){
-		/*
-		 * try to prevent buffer overflow
-		 */
+
 		_debug( "error: buffer overflow" ) ;
 		return result ;
 	}else{
@@ -119,9 +112,6 @@ static result_t _network_key_get_key( const arguments_t * e )
 
 		_debug( "client connecting ..." ) ;
 
-		/*
-		 * connecting to a server on port 2000 at IP address 127.0.0.1 (localhost)
-		 */
 		s = SocketNet( e->network_address,e->port_number ) ;
 
 		if( SocketConnect( &s ) ){
@@ -130,9 +120,7 @@ static result_t _network_key_get_key( const arguments_t * e )
 			break ;
 		}else{
 			if( k == 10 ){
-				/*
-				 * failed to connect to the server.
-				 */
+
 				_debug( "failed to connect to server" ) ;
 				return result ;
 			}else{
@@ -142,19 +130,10 @@ static result_t _network_key_get_key( const arguments_t * e )
 		}
 	}
 
-	/*
-	 * start encryption engine.
-	 */
 	if( crypt_buffer_init( &ctx,encryption_key,encryption_key_key_length ) ){
 
-		/*
-		 * encrypt message to send over the network
-		 */
 		if( crypt_buffer_encrypt( ctx,_cast( &key ),sizeof( zuluKey_t ),&r ) ){
 
-			/*
-			 * send encrypted message
-			 */
 			SocketSendData( s,_cast( r.buffer ),r.length ) ;
 
 			SocketCloseWriteChannel( s ) ;
@@ -188,16 +167,11 @@ static result_t _network_key_get_key( const arguments_t * e )
 				free( buffer ) ;
 			}
 		}
-		/*
-		 * close encryption engine and clean up its resources.
-		 */
-		crypt_buffer_uninit( &ctx ) ;
 
-		/*
-		 * close the socket and clean up its resources.
-		 */
-		SocketClose( &s ) ;
+		crypt_buffer_uninit( &ctx ) ;
 	}
+
+	SocketClose( &s ) ;
 
 	return result ;
 }
@@ -229,14 +203,26 @@ int main( int argc,char * argv[] )
 		e.uuid            = z.constData() ;
 		e.wallet_key      = k.constData() ;
 		e.encryption_key  = n.constData() ;
-
-		/*
-		 * TODO:: get these default values from a config file
-		 */
 		e.network_address = NETWORK_ADDRESS ;
 		e.port_number     = PORT_NUMBER ;
 
-		result_t r = _network_key_get_key( &e ) ;
+		QFile file( QDir::homePath() + "/.zuluCrypt/network_key" ) ;
+
+		QByteArray networkAddress ;
+
+		if( file.open( QIODevice::ReadOnly ) ){
+
+			QStringList l = QString( file.readAll() ).split( "\n" ) ;
+
+			if( l.size() >= 2 ){
+
+				networkAddress    = l.first().toLatin1() ;
+				e.network_address = networkAddress.constData() ;
+				e.port_number     = l.at( 1 ).toInt() ;
+			}
+		}
+
+		auto r = _network_key_get_key( &e ) ;
 
 		if( r.got_key ){
 

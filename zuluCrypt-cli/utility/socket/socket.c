@@ -516,7 +516,7 @@ int SocketIsBlocking( socket_t s )
 #define READ  1
 #define WRITE 0
 
-static inline int _SocketTimeOut( socket_t s,time_t time,int mode )
+static inline int _SocketNotTimedOut( socket_t s,time_t time,int mode )
 {
 	int fd = s->fd ;
 	fd_set fdset ;
@@ -542,7 +542,11 @@ static inline int _SocketTimeOut( socket_t s,time_t time,int mode )
 
 socket_t SocketAcceptWithTimeOut( socket_t s,time_t time )
 {
-	return _SocketTimeOut( s,time,READ ) ? SocketAccept( s ) : SocketVoid ;
+	if( _SocketNotTimedOut( s,time,READ ) ){
+		return SocketAccept( s ) ;
+	}else{
+		return SocketVoid ;
+	}
 }
 
 static inline void _SocketClose( socket_t * p )
@@ -667,6 +671,15 @@ ssize_t SocketGetData_2( socket_t s,char * buffer,size_t len )
 			buffer[ e ] = '\0' ;
 		}
 		return e ;
+	}
+}
+
+ssize_t SocketGetData_3( socket_t s,char * buffer,size_t len,int timeout )
+{
+	if( _SocketNotTimedOut( s,( time_t )timeout,READ ) ){
+		return SocketGetData_2( s,buffer,len ) ;
+	}else{
+		return -1 ;
 	}
 }
 

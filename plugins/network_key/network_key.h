@@ -81,6 +81,3 @@ typedef struct{
 
 const char * NETWORK_ADDRESS = "127.0.0.1" ;
 int PORT_NUMBER = 40000 ;
-
-result_t network_key_get_key( const arguments_t * e ) ;
-
