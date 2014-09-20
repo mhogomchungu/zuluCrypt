@@ -136,8 +136,6 @@ static result_t _network_key_get_key( const arguments_t * e )
 
 			SocketSendData( s,_cast( r.buffer ),r.length ) ;
 
-			SocketCloseWriteChannel( s ) ;
-
 			buffer = nullptr ;
 
 			n = SocketGetData( s,&buffer ) ;

@@ -30,6 +30,8 @@
 
 #include "network_key.h"
 
+#include <signal.h>
+
 #define DEBUG 1
 
 static void _debug( const char * msg )
@@ -79,25 +81,17 @@ static zuluValue_t _get_key_from_wallet( const zuluKey_t * key )
 
 				if( key_value.key_value_size <= sizeof( value.value ) ){
 
-					/*
-					 * Try not to over flow our buffer.
-					 */
 					value.key_found    = 1 ;
 					value.value_length = key_value.key_value_size ;
 					memcpy( value.value,key_value.key_value,key_value.key_value_size ) ;
 				}
-			}else{
-				if( lxqt_wallet_read_key_value( w,key->key_1,key->key_1_length,&key_value ) ){
+			}else if( lxqt_wallet_read_key_value( w,key->key_1,key->key_1_length,&key_value ) ){
 
-					if( key_value.key_value_size <= sizeof( value.value ) ){
+				if( key_value.key_value_size <= sizeof( value.value ) ){
 
-						/*
-						 * Try not to over flow our buffer.
-						 */
-						value.key_found    = 1 ;
-						value.value_length = key_value.key_value_size ;
-						memcpy( value.value,key_value.key_value,key_value.key_value_size ) ;
-					}
+					value.key_found    = 1 ;
+					value.value_length = key_value.key_value_size ;
+					memcpy( value.value,key_value.key_value,key_value.key_value_size ) ;
 				}
 			}
 
@@ -127,6 +121,32 @@ static void _process_request( socket_t s,crypt_buffer_ctx ctx,const crypt_buffer
 	}
 }
 
+typedef struct{
+	socket_t s ;
+	char * buffer ;
+	size_t buffer_length ;
+}exit_struct ;
+
+static exit_struct _clean_on_exit ;
+
+static int _exitServer( const char * msg )
+{
+	_debug( msg ) ;
+
+	SocketClose( &_clean_on_exit.s ) ;
+
+	memset( _clean_on_exit.buffer,'\0',_clean_on_exit.buffer_length ) ;
+	free( _clean_on_exit.buffer ) ;
+
+	return 1 ;
+}
+
+static void _closeServer( int sig )
+{
+	_exitServer( "got TERM signal,terminating" ) ;
+	exit( 1 ) ;
+}
+
 int main( int argc,char * argv[] )
 {
 	crypt_buffer_ctx ctx ;
@@ -148,6 +168,8 @@ int main( int argc,char * argv[] )
 
 	socket_t s ;
 
+	struct sigaction sa ;
+
 	if( argc < 2 ){
 
 		puts( "error: invalid number of arguments" ) ;
@@ -157,6 +179,10 @@ int main( int argc,char * argv[] )
 		network_address = *( argv + 2 ) ;
 		network_port    = atoi( *( argv + 3 ) ) ;
 	}
+
+	memset( &sa,'\0',sizeof( struct sigaction ) ) ;
+	sa.sa_handler = _closeServer ;
+	sigaction( SIGTERM,&sa,NULL ) ;
 
 	e = *( argv + 1 ) ;
 
@@ -169,20 +195,20 @@ int main( int argc,char * argv[] )
 
 	s = SocketNet( network_address,network_port ) ;
 
+	_clean_on_exit.s             = s ;
+	_clean_on_exit.buffer        = encryption_key ;
+	_clean_on_exit.buffer_length = encryption_key_length ;
+
 	_debug( "server started" ) ;
 
 	if( !SocketBind( s ) ){
 
-		_debug( "socket bind failed" ) ;
-		SocketClose( &s ) ;
-		return 1 ;
+		return _exitServer( "socket bind failed" ) ;
 	}
 
 	if( !SocketListen( s ) ){
 
-		_debug( "socket listen failed" ) ;
-		SocketClose( &s ) ;
-		return 1 ;
+		return _exitServer( "socket listen failed" ) ;
 	}
 
 	if( crypt_buffer_init( &ctx,encryption_key,encryption_key_length ) ){
@@ -212,11 +238,6 @@ int main( int argc,char * argv[] )
 	}else{
 		_debug( "failed to initialize encryption routine" ) ;
 	}
-
-	SocketClose( &s ) ;
-
-	memset( encryption_key,'\0',encryption_key_length ) ;
-	free( e ) ;
 
 	return 0 ;
 }
