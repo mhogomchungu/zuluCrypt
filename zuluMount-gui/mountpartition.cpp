@@ -196,19 +196,9 @@ void mountPartition::pbMount()
 		exe += " -Y " + m_options ;
 	}
 
-	auto s = Task::await<zuluMountTaskResult>( [ & ](){
+	auto s = utility::Task::run( exe ).await() ;
 
-		auto r = utility::Task( exe ) ;
-
-		zuluMountTaskResult s ;
-
-		s.exitCode = r.exitCode() ;
-		s.outPut   = r.output() ;
-
-		return s ;
-	} ) ;
-
-	if( s.passed ){
+	if( s.success() ){
 
 		emit openMountPoint( utility::mountPath( m_point ) ) ;
 		this->HideUI() ;
@@ -216,7 +206,7 @@ void mountPartition::pbMount()
 	}else{
 		if( this->isVisible() ){
 
-			QString z = s.outPut ;
+			QString z = s.output() ;
 			z.replace( "ERROR: ","" ) ;
 
 			DialogMsg m( this ) ;

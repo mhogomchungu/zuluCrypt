@@ -490,21 +490,11 @@ void keyDialog::openVolume()
 
 	m_working = true ;
 
-	auto s = Task::await<zuluMountTaskResult>( [ & ](){
-
-		auto r = utility::Task( exe ) ;
-
-		zuluMountTaskResult s ;
-
-		s.exitCode = r.exitCode() ;
-		s.outPut   = r.output() ;
-
-		return s ;
-	} ) ;
+	auto s = utility::Task::run( exe ).await() ;
 
 	m_working = false ;
 
-	if( s.exitCode == 0 ){
+	if( s.success() ){
 
 		if( utility::mapperPathExists( m_path ) ) {
 			/*
@@ -523,14 +513,14 @@ void keyDialog::openVolume()
 		}
 		this->HideUI() ;
 	}else{
-		if( s.exitCode == 12 && m_ui->cbKeyType->currentIndex() == keyDialog::plugin ){
+		if( s.exitCode() == 12 && m_ui->cbKeyType->currentIndex() == keyDialog::plugin ){
 			/*
 			 * A user cancelled the plugin
 			 */
 			this->enableAll() ;
 		}else{
 
-			QString z = s.outPut ;
+			QString z = s.output() ;
 			z.replace( "ERROR: ","" ) ;
 
 			DialogMsg msg( this ) ;

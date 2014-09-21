@@ -125,6 +125,10 @@ namespace utility
 	class Task
 	{
 	public :
+		static ::Task::future< utility::Task >& run( const QString& exe )
+		{
+			return ::Task::run< utility::Task >( [ exe ](){ return utility::Task( exe ) ; } ) ;
+		}
 		static void wait( int s )
 		{
 			sleep( s ) ;
@@ -136,6 +140,9 @@ namespace utility
 		static void waitForTwoSeconds( void )
 		{
 			sleep( 2 ) ;
+		}
+		Task()
+		{
 		}
 		Task( const QString& exe,int waitTime = -1 )
 		{
