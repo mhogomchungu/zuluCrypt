@@ -40,6 +40,7 @@ public:
 	~cryptfiles() ;
 signals:
 	void HideUISignal( void ) ;
+	void progressUpdate( int ) ;
 public slots:
 	void encrypt( void ) ;
 	void decrypt( void ) ;
@@ -57,6 +58,8 @@ private slots:
 	void progressBarUpdate( int ) ;
 	void titleUpdate( QString ) ;
 private:
+	void cryptFile( const char *,const char *,const char *,unsigned long,bool ) ;
+	void cryptFileDeprecatedFunctionality( void ) ;
 	void HideUI( void ) ;
 	void headerBackUp( void ) ;
 	void closeEvent( QCloseEvent * ) ;

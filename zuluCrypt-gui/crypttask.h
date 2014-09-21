@@ -24,13 +24,6 @@
 #include <QString>
 #include <functional>
 
-struct updateCallbacks
-{
-	int( *progress )( int e,void * f ) ;
-	std::function< int( int ) > update ;
-	void * thisObject ;
-};
-
 class CryptTask : public QThread
 {
 	Q_OBJECT
@@ -68,11 +61,8 @@ signals:
 public slots:
 	void terminate( void ) ;
 private:
-	void setUpCallbacks( void ) ;
 	void oldEncryptionRoutine( void ) ;
-	void newEncryptionRoutine( void ) ;
 	void oldDecryptionRoutine( void ) ;
-	void newDecryptionRoutine( void ) ;
 	void calculateMd5( const QString& path,char * result ) ;
 	void run( void ) ;
 	CryptTask::status encrypt( void ) ;
@@ -86,7 +76,6 @@ private:
 	QString m_task ;
 	QString m_mapperPath ;
 	CryptTask::status m_status ;
-	updateCallbacks m_callbacks ;
 };
 
 #endif // CryptTask_H

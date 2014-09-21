@@ -69,8 +69,6 @@ CryptTask::CryptTask( const QString& source,const QString& dest,
 	m_task = task ;
 	m_status = CryptTask::unset ;
 
-	this->setUpCallbacks() ;
-
 	connect( this,SIGNAL( finished() ),this,SLOT( deleteLater() ) ) ;
 }
 
@@ -82,97 +80,16 @@ void CryptTask::terminate()
 void CryptTask::run()
 {
 	if( m_keySource == "-p" ){
-		if( m_dest.endsWith( ".zc" ) || m_source.endsWith( ".zc" ) ){
-			QString sockpath = utility::keyPath() ;
+		QString sockpath = utility::keyPath() ;
 
-			utility::keySend( sockpath,m_key ) ;
+		utility::keySend( sockpath,m_key ) ;
 
-			m_keySource = "-f" ;
-			m_key = sockpath ;
-		}
+		m_keySource = "-f" ;
+		m_key = sockpath ;
 	}
-	if( m_task == "-D" ){
-		if( m_source.endsWith( ".zc" ) ){
-			/*
-			 * this routine is used in zuluCrypt < 4.6.9
-			 */
-			this->oldDecryptionRoutine(); ;
-		}else{
-			this->newDecryptionRoutine() ;
-		}
-	}else{
-		/*
-		 * old routine used in zuluCrypt < 4.6.9
-		 * this->oldDecryptionRoutine() ;
-		 */
 
-		this->newEncryptionRoutine() ;
-	}
+	this->oldDecryptionRoutine() ;
 }
-
-static int _progress( int e,void * f )
-{
-	auto c = reinterpret_cast< updateCallbacks * >( f ) ;
-	return c->update( e ) ;
-}
-
-void CryptTask::setUpCallbacks()
-{
-	m_callbacks.update = [ this ]( int e ){
-		emit progressUpdate( e ) ;
-		return m_status == CryptTask::quit ;
-	} ;
-
-	m_callbacks.progress = _progress ;
-
-	m_callbacks.thisObject = reinterpret_cast< void * >( &m_callbacks ) ;
-}
-
-void CryptTask::newEncryptionRoutine()
-{
-	if( m_keySource == "-f" ){
-		QFile f( m_key ) ;
-		f.open( QIODevice::ReadOnly ) ;
-		m_key = f.readAll() ;
-	}
-
-	auto r = lxqt_wallet_create_encrypted_file( m_key.toLatin1().constData(),m_key.size(),m_source.toLatin1().constData(),
-						    m_dest.toLatin1().constData(),m_callbacks.progress,m_callbacks.thisObject ) ;
-
-	if( m_status == CryptTask::quit ){
-		QFile::remove( m_dest ) ;
-	}else if( r == lxqt_wallet_no_error ){
-		m_status = CryptTask::encryptSuccess ;
-	}else{
-		m_status = CryptTask::createFileFail ;
-	}
-}
-
-void CryptTask::newDecryptionRoutine()
-{
-	if( m_keySource == "-f" ){
-		QFile f( m_key ) ;
-		f.open( QIODevice::ReadOnly ) ;
-		m_key = f.readAll() ;
-	}
-
-	auto r = lxqt_wallet_create_decrypted_file( m_key.toLatin1().constData(),m_key.size(),m_source.toLatin1().constData(),
-						    m_dest.toLatin1().constData(),m_callbacks.progress,m_callbacks.thisObject ) ;
-
-	if( m_status == CryptTask::quit ){
-		QFile::remove( m_dest ) ;
-	}else if( r == lxqt_wallet_wrong_password ){
-		m_status = CryptTask::wrongKey ;
-	}else if( r == lxqt_wallet_no_error ){
-		m_status = CryptTask::decryptSuccess ;
-	}else{
-		m_status = CryptTask::wrongKey ;
-	}
-}
-
-/*
- * below code is deprecated in favor of the above code
- */
 
 void CryptTask::calculateMd5( const QString& path,char * result )
 {

@@ -28,15 +28,18 @@
 #include <QFile>
 #include <QKeyEvent>
 
-#include <QThreadPool>
 #include <QFileDialog>
 #include <QDir>
+
+#include <functional>
+#include <utility>
 
 #include "ui_cryptfiles.h"
 #include "utility.h"
 #include "openvolume.h"
 #include "crypttask.h"
 #include "dialogmsg.h"
+#include "lxqt_wallet/backend/lxqtwallet.h"
 
 cryptfiles::cryptfiles( QWidget * parent ) :QDialog( parent ),m_ui( new Ui::cryptfiles )
 {
@@ -58,6 +61,8 @@ cryptfiles::cryptfiles( QWidget * parent ) :QDialog( parent ),m_ui( new Ui::cryp
 	connect( m_ui->lineEditSourcePath,SIGNAL( textChanged( QString ) ),this,SLOT( sourceTextChanged( QString ) ) ) ;
 	connect( m_ui->pushButtonKeyFile,SIGNAL( clicked() ),this,SLOT( pbKeyFile() ) ) ;
 	connect( m_ui->pushButtonCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
+
+	connect( this,SIGNAL( progressUpdate( int ) ),this,SLOT( progressBarUpdate( int ) ) ) ;
 
 	this->cbChanged( 0 ) ;
 
@@ -229,9 +234,93 @@ void cryptfiles::pbCreate()
 
 	this->disableAll() ;
 
-	m_OperationInProgress = true ;
+	if( m_operation == "-D" && source.endsWith( ".zc" ) ){
+		/*
+		 * deprecated code path used to decrypt volumes created with zuluCrypt < 4.6.9
+		 */
+		m_task = new CryptTask( source,dest,keySource,key_1,m_operation ) ;
+		this->cryptFileDeprecatedFunctionality() ;
+	}else{
+		#define _constPtr toLatin1().constData()
 
-	m_task = new CryptTask( source,dest,keySource,key_1,m_operation ) ;
+		bool e = m_operation == "-E" ;
+
+		if( keySource == "-f" ){
+
+			QFile f( key_1 ) ;
+			f.open( QIODevice::ReadOnly ) ;
+			auto r = f.readAll() ;
+
+			this->cryptFile( source._constPtr,dest._constPtr,r.constData(),r.size(),e ) ;
+		}else{
+			this->cryptFile( source._constPtr,dest._constPtr,key_1._constPtr,key_1.size(),e ) ;
+		}
+	}
+}
+
+void cryptfiles::cryptFile( const char * s,const char * d,const char * key,unsigned long l,bool encrypt )
+{
+	struct _progress
+	{
+		_progress( std::function< int( int ) > function )
+		{
+			update = std::move( function ) ;
+		}
+
+		std::function< int( int ) > update ;
+	} ;
+
+	_progress progress( [ this ]( int e ){ emit progressUpdate( e ) ; return 0 ; } ) ;
+
+	auto f = reinterpret_cast< void * >( &progress ) ;
+
+	auto _update = []( int e,void * f )
+	{
+		auto r = reinterpret_cast< _progress * >( f ) ;
+		return r->update( e ) ;
+	} ;
+
+	auto r = Task::await< lxqt_wallet_error >( [ & ]{
+
+		auto r = u_int32_t( l ) ;
+
+		if( encrypt ){
+
+			return lxqt_wallet_create_encrypted_file( key,r,s,d,_update,f ) ;
+		}else{
+			return lxqt_wallet_create_decrypted_file( key,r,s,d,_update,f ) ;
+		}
+	} ) ;
+
+	if( r == lxqt_wallet_wrong_password ){
+
+		this->taskFinished( CryptTask::wrongKey ) ;
+
+	}else if( r == lxqt_wallet_no_error ){
+
+		if( m_ui->progressBar->value() == 100 ){
+
+			if( encrypt ){
+
+				this->taskFinished( CryptTask::encryptSuccess ) ;
+			}else{
+				this->taskFinished( CryptTask::decryptSuccess ) ;
+			}
+		}else{
+			this->taskFinished( CryptTask::quit ) ;
+		}
+	}else{
+		/*
+		 * we shouldnt get here and we return a bogus return value for lack of better
+		 * alternative
+		 */
+		this->taskFinished( CryptTask::openMapperReadFail ) ;
+	}
+}
+
+void cryptfiles::cryptFileDeprecatedFunctionality()
+{
+	m_OperationInProgress = true ;
 
 	connect( m_task,SIGNAL( complete( int ) ),this,SLOT( taskFinished( int ) ) ) ;
 	connect( m_task,SIGNAL( progressUpdate( int ) ),this,SLOT( progressBarUpdate( int ) ) ) ;
