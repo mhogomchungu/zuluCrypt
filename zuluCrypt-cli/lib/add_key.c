@@ -1,7 +1,7 @@
 /*
  *
  *  Copyright (c) 2011
- *  name : mhogo mchungu
+ *  name : Francis Banyikwa
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ static inline int zuluExit( int st,struct crypt_device * cd )
 
 static int _add_key( const char * device,const char * existingkey,size_t existingkey_size,const char * newkey,size_t newkey_size )
 {
-	struct crypt_device * cd;
+	struct crypt_device * cd ;
 
 	if( zuluCryptVolumeIsNotLuks( device ) ){
 		return 3 ;
