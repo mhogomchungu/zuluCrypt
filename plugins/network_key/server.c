@@ -122,6 +122,7 @@ static void _process_request( socket_t s,crypt_buffer_ctx ctx,const crypt_buffer
 }
 
 typedef struct{
+	crypt_buffer_ctx ctx ;
 	socket_t s ;
 	char * buffer ;
 	size_t buffer_length ;
@@ -132,6 +133,8 @@ static exit_struct _clean_on_exit ;
 static int _exitServer( const char * msg )
 {
 	_debug( msg ) ;
+
+	crypt_buffer_uninit( &_clean_on_exit.ctx ) ;
 
 	SocketClose( &_clean_on_exit.s ) ;
 
@@ -213,6 +216,8 @@ int main( int argc,char * argv[] )
 
 	if( crypt_buffer_init( &ctx,encryption_key,encryption_key_length ) ){
 
+		_clean_on_exit.ctx = ctx ;
+
 		while( 1 ){
 
 			c = SocketAccept( s ) ;
@@ -234,7 +239,6 @@ int main( int argc,char * argv[] )
 			SocketClose( &c ) ;
 		}
 
-		crypt_buffer_uninit( &ctx ) ;
 	}else{
 		_debug( "failed to initialize encryption routine" ) ;
 	}
