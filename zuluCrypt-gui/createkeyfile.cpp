@@ -166,8 +166,12 @@ void createkeyfile::pbCreate()
 	Task::await( [ & ](){
 
 		char data ;
-		int r ;
-		int e ;
+
+		int r = -1 ;
+		int e = -1 ;
+
+		utility::fileDescriptorRAII raii( &r,&e ) ;
+		Q_UNUSED( raii ) ;
 
 		if( rng == 0 ){
 			r = ::open( "/dev/urandom",O_RDONLY ) ;
@@ -177,35 +181,27 @@ void createkeyfile::pbCreate()
 
 		if( r == -1 ){
 			m_stop = true ;
-			return ;
-		}
+		}else{
+			#define opts O_WRONLY|O_CREAT,S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH
+			e = ::open( path.toLatin1().constData(),opts ) ;
 
-		QByteArray z = path.toLatin1() ;
-		const char * p = z.constData() ;
-
-		e = ::open( p,O_WRONLY|O_CREAT,S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH ) ;
-
-		if( e == -1 ){
-			::close( r ) ;
-			m_stop = true ;
-			return ;
-		}
-
-		for( int i = 0 ; i < 64 ; i++ ){
-
-			if( m_stop ){
-				break ;
+			if( e == -1 ){
+				m_stop = true ;
 			}else{
-				do{
-					::read( r,&data,1 ) ;
-				}while( data < 32 || data > 126 ) ;
+				for( int i = 0 ; i < 64 ; i++ ){
 
-				::write( e,&data,1 ) ;
+					if( m_stop ){
+						break ;
+					}else{
+						do{
+							::read( r,&data,1 ) ;
+						}while( data < 32 || data > 126 ) ;
+
+						::write( e,&data,1 ) ;
+					}
+				}
 			}
 		}
-
-		::close( e ) ;
-		::close( r ) ;
 	} ) ;
 
 	m_running = false ;

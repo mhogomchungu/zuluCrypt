@@ -74,9 +74,10 @@ void monitor_mountinfo::run()
 	connect( this,SIGNAL( volumeRemoved( QString ) ),
 		 m_babu,SLOT( volumeRemoved( QString ) ) ) ;
 
-	utility::FileHandle manage_fd ;
+	int fd = open( "/proc/self/mountinfo",O_RDONLY ) ;
 
-	int fd = manage_fd( open( "/proc/self/mountinfo",O_RDONLY ) ) ;
+	utility::fileDescriptorRAII raii( &fd ) ;
+	Q_UNUSED( raii ) ;
 
 	if( fd == -1 ){
 		return this->failedToStart() ;

@@ -103,23 +103,33 @@ namespace utility
 
 namespace utility
 {
-	class FileHandle
+	class fileDescriptorRAII
 	{
 	public:
-		int operator()( int fd )
+		template< typename... All >
+		fileDescriptorRAII( All... r )
 		{
-			m_fd = fd ;
-			return fd ;
+			this->add( r... ) ;
 		}
-		~FileHandle()
+		~fileDescriptorRAII()
 		{
-			if( m_fd != -1 )
-			{
-				close( m_fd ) ;
+			for( int * e : m_descriptors ){
+				if( *e != -1 ){
+					::close( *e ) ;
+				}
 			}
 		}
 	private:
-		int m_fd = -1 ;
+		void add()
+		{
+		}
+		template< typename First,typename... Rest >
+		void add( First f,Rest... r )
+		{
+			m_descriptors.append( f ) ;
+			this->add( r... ) ;
+		}
+		QVector< int * > m_descriptors ;
 	};
 
 	class Task
