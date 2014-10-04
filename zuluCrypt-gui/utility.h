@@ -103,19 +103,21 @@ namespace utility
 
 namespace utility
 {
+	template< typename... All >
 	class fileDescriptorRAII
 	{
 	public:
-		template< typename... All >
 		fileDescriptorRAII( All... r )
 		{
 			this->add( r... ) ;
 		}
 		~fileDescriptorRAII()
 		{
-			for( int * e : m_descriptors ){
-				if( *e != -1 ){
-					::close( *e ) ;
+			int e ;
+			for( int i = 0 ; i < m_count ; i++ ){
+				e = **( m_descriptors + i ) ;
+				if( e != -1 ){
+					::close( e ) ;
 				}
 			}
 		}
@@ -126,12 +128,21 @@ namespace utility
 		template< typename First,typename... Rest >
 		void add( First f,Rest... r )
 		{
-			m_descriptors.append( f ) ;
+			*( m_descriptors + m_count ) = f ;
+			m_count++ ;
 			this->add( r... ) ;
 		}
-		QVector< int * > m_descriptors ;
+		int m_count = 0 ;
+		int * m_descriptors[ sizeof...( All ) ] ;
 	};
 
+}
+
+#define utility_fd_raii_2( x,y ) utility::fileDescriptorRAII< int*,int* > raii_x_y( x,y ) ; Q_UNUSED( raii_x_y )
+#define utility_fd_raii_1( x )   utility::fileDescriptorRAII< int* > raii_x( x ) ; Q_UNUSED( raii_x )
+
+namespace utility
+{
 	class Task
 	{
 	public :

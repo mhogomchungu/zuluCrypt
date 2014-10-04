@@ -170,8 +170,7 @@ void createkeyfile::pbCreate()
 		int r = -1 ;
 		int e = -1 ;
 
-		utility::fileDescriptorRAII raii( &r,&e ) ;
-		Q_UNUSED( raii ) ;
+		utility_fd_raii_2( &r,&e ) ;
 
 		if( rng == 0 ){
 			r = ::open( "/dev/urandom",O_RDONLY ) ;

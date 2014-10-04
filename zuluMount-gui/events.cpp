@@ -97,8 +97,7 @@ void events::run()
 
 	int fd = inotify_init() ;
 
-	utility::fileDescriptorRAII raii( &fd ) ;
-	Q_UNUSED( raii ) ;
+	utility_fd_raii_1( &fd ) ;
 
 	if( fd == -1 ){
 		return this->failedToStart() ;

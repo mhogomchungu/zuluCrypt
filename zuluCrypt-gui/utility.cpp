@@ -99,18 +99,13 @@ void utility::keySend( const QString& path,const QString& key )
 {
 	return ::Task::run<QStringList>( [ volumePath ](){
 
-		QProcess p ;
-		QString exe = QString( "%1 -b -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,volumePath ) ;
-
-		p.start( exe ) ;
-		p.waitForFinished() ;
+		auto r = utility::Task( QString( "%1 -b -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,volumePath ) ) ;
 
 		QStringList l ;
 
-		if( p.exitCode() != 0 ){
-			return l ;
-		}else{
-			QByteArray s = p.readAll() ;
+		if( r.success() ){
+
+			const QByteArray& s = r.output() ;
 			int i = 0 ;
 			for( const auto& it : s ){
 				if( it == '1' || it == '3' ){
@@ -119,8 +114,9 @@ void utility::keySend( const QString& path,const QString& key )
 			}
 			l.append( QString::number( i ) ) ;
 			l.append( QString::number( s.size() - 1 ) ) ;
-			return l ;
 		}
+
+		return l ;
 	} ) ;
 }
 
@@ -176,7 +172,7 @@ void utility::keySend( const QString& path,const QString& key )
 
 ::Task::future<bool>& utility::openMountPoint( const QString& path,const QString& opener )
 {
-	return ::Task::run<bool>( [ = ](){
+	return ::Task::run<bool>( [ path,opener ](){
 
 		QString e = path ;
 		e.replace( "\"","\"\"\"" ) ;
@@ -289,15 +285,15 @@ static bool _writeToVolume( int fd,const char * buffer,unsigned int bufferSize )
 	return write( fd,buffer,bufferSize ) != -1 ;
 }
 
-struct _raii
-{
-	std::function< void( void ) > cmd ;
-	~_raii(){ this->cmd() ; }
-};
-
 ::Task::future< int >& utility::clearVolume( const QString& volume,bool * exit,std::function< void( int ) > function )
 {
-	return ::Task::run<int>( [ = ](){
+	return ::Task::run<int>( [ volume,exit,function ](){
+
+		struct _raii
+		{
+			std::function< void( void ) > cmd ;
+			~_raii(){ this->cmd() ; }
+		};
 
 		QString volumePath = volume ;
 
