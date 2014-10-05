@@ -355,7 +355,7 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 	zuluCryptSecurityGainElevatedPrivileges() ;
 
 	/*
-	 * zuluCryptOpenLuks() is defined in ../lib/open_luks.c
+	 * zuluCryptVolumeIsLuks() is defined in ../lib/is_luks.c
 	 */
 	if( zuluCryptVolumeIsLuks( device ) ){
 
