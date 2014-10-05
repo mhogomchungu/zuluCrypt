@@ -155,41 +155,48 @@ void events::run()
 	} ;
 
 	const char * currentEvent ;
-	const char * lastEvent ;
+	const char * end ;
 
 	constexpr int BUFF_SIZE = 4096 ;
 	char buffer[ BUFF_SIZE ] ;
 
 	fd_set rfds ;
-	int retval ;
-	ssize_t r ;
 
 	FD_ZERO( &rfds ) ;
 
 	int select_fd = fd + 1 ;
 
-	auto _eventsReceived = [&](){
+	auto _eventsReceived = [ & ](){
 
 		/*
 		 * we are blocking on select() and not on read() because QThread->terminate() does not seem to
 		 * be able to get out of a blocked read() on certain Qt versions.
 		 */
 
-		FD_SET( fd,&rfds ) ;
+		auto _gotEvents = [ & ](){
 
-		retval = select( select_fd,&rfds,nullptr,nullptr,nullptr ) ;
+			FD_SET( fd,&rfds ) ;
 
-		if( retval > 0 ){
-			r = read( fd,buffer,BUFF_SIZE ) ;
-			lastEvent    = buffer + r ;
-			currentEvent = buffer ;
-			return true ;
-		}else{
-			return false ;
+			return select( select_fd,&rfds,nullptr,nullptr,nullptr ) > 0 ;
+		} ;
+
+		if( _gotEvents() ){
+
+			auto s = read( fd,buffer,BUFF_SIZE ) ;
+
+			if( s > 0 ){
+
+				end          = buffer + s ;
+				currentEvent = buffer ;
+				
+				return true ;
+			}
 		}
+
+		return false ;
 	} ;
 
-	auto _processEvent = [&]( const struct inotify_event * event ){
+	auto _processEvent = [ & ]( const struct inotify_event * event ){
 
 		if( _device_action( event ) && _allowed_device( event->name ) ){
 
@@ -226,7 +233,7 @@ void events::run()
 
 		if( _eventsReceived() ){
 
-			while( currentEvent < lastEvent ){
+			while( currentEvent < end ){
 
 				auto event = _cast( currentEvent ) ;
 
