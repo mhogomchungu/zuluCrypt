@@ -326,7 +326,7 @@ the volume is not supported
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="384"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="380"/>
         <source>
 options:
 	-d   path to where a volume to be auto unlocked/mounted is located
@@ -336,18 +336,18 @@ options:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="549"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="545"/>
         <source>setting this option will cause the volume to open in read only mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="562"/>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="573"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="558"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="569"/>
         <source>info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="397"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="393"/>
         <source>if the option is checked,a primary private mount point will be created in &quot;/run/media/private/$USER/&quot;
 and a secondary publicly accessible &quot;mirror&quot; mount point will be created in &quot;/run/media/public/&quot;</source>
         <translation type="unfinished"></translation>
@@ -405,7 +405,7 @@ or in terabytes if the entry ends with &quot;t&quot;</source>
     <message>
         <location filename="../../zuluMount-gui/keydialog.ui" line="58"/>
         <location filename="../../zuluMount-gui/keydialog.ui" line="182"/>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="570"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="560"/>
         <source>key</source>
         <translation type="unfinished"></translation>
     </message>
@@ -455,7 +455,7 @@ or in terabytes if the entry ends with &quot;t&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="560"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="550"/>
         <source>plugin name</source>
         <translation type="unfinished"></translation>
     </message>
@@ -491,13 +491,13 @@ or in terabytes if the entry ends with &quot;t&quot;</source>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="395"/>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="400"/>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="409"/>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="521"/>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="538"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="511"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="528"/>
         <source>ERROR</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="521"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="511"/>
         <source>An error has occured and the volume could not be opened</source>
         <translation type="unfinished"></translation>
     </message>
@@ -532,7 +532,7 @@ or in terabytes if the entry ends with &quot;t&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="580"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="570"/>
         <source>keyfile path</source>
         <translation type="unfinished"></translation>
     </message>
@@ -604,7 +604,7 @@ or in terabytes if the entry ends with &quot;t&quot;</source>
     </message>
     <message>
         <location filename="../../zuluMount-gui/mountpartition.cpp" line="84"/>
-        <location filename="../../zuluMount-gui/mountpartition.cpp" line="246"/>
+        <location filename="../../zuluMount-gui/mountpartition.cpp" line="236"/>
         <source>set file system options</source>
         <translation type="unfinished"></translation>
     </message>
@@ -615,7 +615,7 @@ or in terabytes if the entry ends with &quot;t&quot;</source>
     </message>
     <message>
         <location filename="../../zuluMount-gui/mountpartition.cpp" line="156"/>
-        <location filename="../../zuluMount-gui/mountpartition.cpp" line="223"/>
+        <location filename="../../zuluMount-gui/mountpartition.cpp" line="213"/>
         <source>ERROR</source>
         <translation type="unfinished"></translation>
     </message>
@@ -625,7 +625,7 @@ or in terabytes if the entry ends with &quot;t&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mountpartition.cpp" line="260"/>
+        <location filename="../../zuluMount-gui/mountpartition.cpp" line="250"/>
         <source>Select Path to mount point folder</source>
         <translation type="unfinished"></translation>
     </message>

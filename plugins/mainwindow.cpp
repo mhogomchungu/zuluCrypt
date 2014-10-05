@@ -91,7 +91,12 @@ MainWindow::MainWindow( QWidget * parent ) : QWidget( parent ),m_ui( new Ui::Mai
 
 void MainWindow::Show()
 {
-	this->setWindowTitle( tr( "%1 key module" ).arg( m_appName ) ) ;
+	if( m_appName.endsWith( " key" ) ){
+		this->setWindowTitle( tr( "%1 module" ).arg( m_appName ) ) ;
+	}else{
+		this->setWindowTitle( tr( "%1 key module" ).arg( m_appName ) ) ;
+	}
+
 	this->show() ;
 }
 
@@ -267,7 +272,13 @@ void MainWindow::pbOpen()
 		}else{
 			DialogMsg msg( this ) ;
 			m_working = false ;
-			msg.ShowUIOK( tr( "ERROR" ),tr("could not decrypt the %1,wrong key?" ).arg( m_appName ) ) ;
+
+			if( m_appName.endsWith( " key" ) ){
+				msg.ShowUIOK( tr( "ERROR" ),tr("could not decrypt the %1,wrong key?" ).arg( m_appName ) ) ;
+			}else{
+				msg.ShowUIOK( tr( "ERROR" ),tr("could not decrypt the %1 key,wrong key?" ).arg( m_appName ) ) ;
+			}
+
 			this->enableAlll() ;
 			m_ui->lineEditKey->setFocus() ;
 		}

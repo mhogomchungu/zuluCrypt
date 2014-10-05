@@ -132,8 +132,11 @@ static int _create_file_system( const create_tcrypt_t * e )
 static string_t _root_device( const char * device,const char ** sys_device )
 {
 	size_t e ;
+
 	ssize_t r ;
+
 	string_t st = String( device ) ;
+
 	if( StringStartsWithAtLeastOne( st,"/dev/sd","/dev/hd",NULL ) ){
 		/*
 		 * this path will convert something like: "/dev/sdc12" to "/dev/sdc".
@@ -162,22 +165,32 @@ static string_t _root_device( const char * device,const char ** sys_device )
 static int _modify_tcrypt_header( const char * device,const info_t * info )
 {
 	tc_api_task task ;
+
 	int r = !TC_OK ;
+
 	const char * sys_device = NULL ;
+
 	string_t st = StringVoid ;
 
 	if( info->device == NULL ){
 		return r ;
 	}
 	if( tc_api_init( 0 ) == TC_OK ){
+
 		task = tc_api_task_init( "modify" ) ;
+
 		if( task != 0 ){
+
 			if( StringsAreEqual( info->opt,"sys" ) ){
+
 				tc_api_task_set( task,"dev",device ) ;
 				st = _root_device( device,&sys_device ) ;
 				tc_api_task_set( task,"sys",sys_device ) ;
+
 			}else if( StringsAreEqual( info->opt,"fde" ) ){
+
 				st = _root_device( device,&sys_device ) ;
+
 				tc_api_task_set( task,"dev",sys_device ) ;
 				tc_api_task_set( task,"fde",TRUE ) ;
 			}else{
@@ -220,6 +233,7 @@ static int _modify_tcrypt_header( const char * device,const info_t * info )
 			}
 
 			r = tc_api_task_do( task ) ;
+			
 			tc_api_task_uninit( task ) ;
 		}
 		tc_api_uninit() ;
