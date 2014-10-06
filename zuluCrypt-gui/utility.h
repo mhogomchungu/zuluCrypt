@@ -28,7 +28,9 @@
 #include <QRunnable>
 #include <QMetaObject>
 #include <QDebug>
+
 #include <functional>
+#include <utility>
 
 #include <unistd.h>
 
@@ -103,22 +105,23 @@ namespace utility
 
 namespace utility
 {
-	template< typename... All >
-	class fileDescriptorRAII
+	template< typename T,int size >
+	class manageResourse
 	{
 	public:
-		fileDescriptorRAII( All... r )
+		template< typename... All >
+		manageResourse( All... r )
 		{
 			this->add( r... ) ;
 		}
-		~fileDescriptorRAII()
+		void setCleaner( std::function< void( T ) > function )
 		{
-			int e ;
+			m_release = std::move( function ) ;
+		}
+		~manageResourse()
+		{
 			for( int i = 0 ; i < m_count ; i++ ){
-				e = **( m_descriptors + i ) ;
-				if( e != -1 ){
-					::close( e ) ;
-				}
+				m_release( *( m_descriptors + i ) ) ;
 			}
 		}
 	private:
@@ -133,13 +136,24 @@ namespace utility
 			this->add( r... ) ;
 		}
 		int m_count = 0 ;
-		int * m_descriptors[ sizeof...( All ) ] ;
+		T m_descriptors[ size ] ;
+		std::function< void( T ) > m_release = []( T t ){ Q_UNUSED( t ) ; } ;
 	};
 
+	auto closeFileDescriptor = []( int * r )
+	{
+		int k = *r ;
+		if( k != -1 ){
+			::close( k ) ;
+		}
+	} ;
 }
 
-#define utility_fd_raii_2( x,y ) utility::fileDescriptorRAII< int*,int* > raii_x_y( x,y ) ; Q_UNUSED( raii_x_y )
-#define utility_fd_raii_1( x )   utility::fileDescriptorRAII< int* > raii_x( x ) ; Q_UNUSED( raii_x )
+#define utility_fd_raii_2( x,y ) utility::manageResourse< int *,2 > raii_x_y( x,y ) ;\
+raii_x_y.setCleaner( utility::closeFileDescriptor )
+
+#define utility_fd_raii_1( x ) utility::manageResourse< int *,1 > raii_x( x ) ;\
+raii_x.setCleaner( utility::closeFileDescriptor )
 
 namespace utility
 {
