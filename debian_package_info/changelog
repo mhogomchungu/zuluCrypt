@@ -1,3 +1,10 @@
+zulucrypt (4.7.4-1) UNRELEASED; urgency=low
+  [Mhogo Mchungu]
+  * New Features
+     - fix a bug that hanged zuluMount-gui on failed attempt at unlocking a plain dm-crypt volume at a none zero offset.
+
+ -- Mhogo Mchungu <mhogomchungu@gmail.com>  Mon, 6 Oct 2014 16:38:48 +0000
+
 zulucrypt (4.7.3-1) UNRELEASED; urgency=low
   [Mhogo Mchungu]
   * New Features

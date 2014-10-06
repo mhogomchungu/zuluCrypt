@@ -1,5 +1,5 @@
 Name:           zuluCrypt
-Version: 4.7.3
+Version: 4.7.4
 Release: 0
 Summary:        Qt GUI front end to cryptsetup
 License:        GPL-2.0+
@@ -111,7 +111,7 @@ rm -rf $RPM_BUILD_DIR/%{name}-%{version}
 %{_libdir}/zuluCrypt/keydialog-qt
 %{_libdir}/zuluCrypt/keyring
 %{_libdir}/zuluCrypt/keykeyfile
-%{_libdir}/zuluCrypt/kwallet
+# %{_libdir}/zuluCrypt/kwallet
 %{_libdir}/zuluCrypt/luks
 %{_libdir}/zuluCrypt/steghide
 %{_libdir}/zuluCrypt/tomb
