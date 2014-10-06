@@ -195,3 +195,7 @@ version 4.7.3
    normal TrueCrypt volumes that are not in partitions.
 -- add an ability to change TrueCrypt volume key.
 -- add ability to create volumes with different crypto options
+
+version 4.7.4
+-- fix a bug that hanged zuluMount-gui on failed attempt at unlocking a plain dm-crypt volume at a none zero offset.a plain dm-crypt volume at
+   a none zero offset can be used as a hidden volume ala TrueCrypt hidden volume feature.No protetcion of hidden volume though.
