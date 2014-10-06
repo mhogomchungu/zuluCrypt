@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
 
 if( NOT NOKDE )
-	add_subdirectory( kwallet )
+	#add_subdirectory( kwallet )
 endif()
 
 add_subdirectory( keydialog-qt )
