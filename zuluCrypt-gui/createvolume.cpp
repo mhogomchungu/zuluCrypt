@@ -35,7 +35,6 @@
 #include "erasedevice.h"
 #include "createvolumedialog.h"
 #include "dialogmsg.h"
-#include "keystrength.h"
 
 #include <QDebug>
 #include "../zuluCrypt-cli/constants.h"
@@ -54,16 +53,14 @@ createvolume::createvolume( QWidget * parent ) :
 	m_isWindowClosable = true ;
 	m_warned = false ;
 
-	m_keyStrength = new keystrength() ;
-
 	connect( m_ui->pbOpenKeyFile,SIGNAL( clicked() ),this,SLOT( pbOpenKeyFile() ) ) ;
 	connect( m_ui->pbCreate,SIGNAL( clicked() ),this,SLOT( pbCreateClicked() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancelClicked() ) ) ;
 	connect( m_ui->cbNormalVolume,SIGNAL( activated( int ) ),this,SLOT( cbNormalVolume( int ) ) ) ;
 	connect( m_ui->cbHiddenVolume,SIGNAL( activated( int ) ),this,SLOT( cbHiddenVolume( int ) ) ) ;
 	connect( m_ui->comboBoxVolumeType,SIGNAL( currentIndexChanged( int ) ),this,SLOT( volumeType( int ) ) ) ;
-	connect( m_ui->lineEditPassphrase1,SIGNAL( textChanged( QString ) ),this,SLOT( keyChanged( QString ) ) ) ;
-	connect( m_ui->lineEditHiddenKey,SIGNAL( textChanged( QString ) ),this,SLOT( keyChanged( QString ) ) ) ;
+	connect( m_ui->lineEditPassphrase1,SIGNAL( textChanged( QString ) ),this,SLOT( keyChanged_0( QString ) ) ) ;
+	connect( m_ui->lineEditHiddenKey,SIGNAL( textChanged( QString ) ),this,SLOT( keyChanged_1( QString ) ) ) ;
 	connect( m_ui->pbHiddenKeyFile,SIGNAL( clicked() ),this,SLOT( pbOpenHiddenKeyFile() ) ) ;
 	connect( m_ui->comboBoxVolumeType,SIGNAL( activated( int ) ),this,SLOT( setOptions( int ) ) ) ;
 
@@ -89,10 +86,36 @@ createvolume::createvolume( QWidget * parent ) :
 	m_ui->comboBoxVolumeType->setCurrentIndex( int( createvolume::luks ) ) ;
 }
 
-void createvolume::keyChanged( QString key )
+void createvolume::keyChanged_0( QString key )
 {
-	if( m_ui->cbNormalVolume->currentIndex() == 0 && m_keyStrength->canCheckQuality() ){
-		int st = m_keyStrength->quality( key ) ;
+	if( m_keyStrength.canCheckQuality() ){
+
+		if( m_ui->cbNormalVolume->currentIndex() == 0 ){
+
+			return this->keyChanged( true,key ) ;
+		}
+	}
+
+	this->keyChanged( false,QString() ) ;
+}
+
+void createvolume::keyChanged_1( QString key )
+{
+	if( m_keyStrength.canCheckQuality() ){
+
+		if( m_ui->cbHiddenVolume->currentIndex() == 0 ){
+
+			return this->keyChanged( true,key ) ;
+		}
+	}
+
+	this->keyChanged( false,QString() ) ;
+}
+
+void createvolume::keyChanged( bool check,const QString& key )
+{
+	if( check ){
+		int st = m_keyStrength.quality( key ) ;
 		if( st < 0 ){
 			this->setWindowTitle( tr( "passphrase quality: 0/100" ) ) ;
 		}else{
@@ -654,6 +677,5 @@ only root user or members of group zulucrypt-system can do that" ) ) ;									b
 
 createvolume::~createvolume()
 {
-	delete m_keyStrength ;
 	delete m_ui ;
 }

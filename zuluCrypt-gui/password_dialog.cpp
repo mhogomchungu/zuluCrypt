@@ -66,12 +66,6 @@
  */
 static QString _internalPassWord ;
 
-struct taskResult
-{
-	int exitCode ;
-	QByteArray outPut ;
-};
-
 passwordDialog::passwordDialog( QTableWidget * table,QWidget * parent ) : QDialog( parent )
 {
 	m_ui = new Ui::PasswordDialog() ;
@@ -606,21 +600,16 @@ void passwordDialog::openVolume()
 
 	this->disableAll() ;
 
-	Task::run< taskResult >( [ exe ](){
+	auto r = utility::Task::run( exe ).await() ;
 
-		taskResult t ;
-		auto r = utility::Task( exe ) ;
-		t.exitCode = r.exitCode() ;
-		t.outPut   = r.output() ;
-		return t ;
-
-	} ).then( [ this ]( const taskResult& r ){
-
-		this->taskComplete( r ) ;
-	} ) ;
+	if( r.success() ){
+		this->success( r.output() ) ;
+	}else{
+		this->failed( r.exitCode() ) ;
+	}
 }
 
-void passwordDialog::success( const taskResult& r )
+void passwordDialog::success( const QByteArray& r )
 {
 	if( utility::mapperPathExists( m_device ) ){
 
@@ -632,11 +621,11 @@ void passwordDialog::success( const taskResult& r )
 
 		list.append( m_p ) ;
 
-		if( r.outPut.contains( "luks" ) ){
+		if( r.contains( "luks" ) ){
 			list.append( "luks" ) ;
-		}else if( r.outPut.contains( "plain" ) ){
+		}else if( r.contains( "plain" ) ){
 			list.append( "plain" ) ;
-		}else if( r.outPut.contains( "tcrypt" ) ){
+		}else if( r.contains( "tcrypt" ) ){
 			list.append( "tcrypt" ) ;
 		}else{
 			list.append( "Nil" ) ;
@@ -658,11 +647,11 @@ void passwordDialog::success( const taskResult& r )
 	}
 }
 
-void passwordDialog::taskComplete( const taskResult& r )
+void passwordDialog::failed( int r )
 {
 	m_isWindowClosable = true ;
 
-	if( r.exitCode == 12 && m_ui->cbKeyType->currentIndex() == passwordDialog::plugin ){
+	if( r == 12 && m_ui->cbKeyType->currentIndex() == passwordDialog::plugin ){
 		/*
 		 * A user cancelled the plugin
 		 */
@@ -670,8 +659,8 @@ void passwordDialog::taskComplete( const taskResult& r )
 	}
 
 	DialogMsg msg( this ) ;
-	switch ( r.exitCode ){
-		case 0 : return this->success( r ) ;
+	switch ( r ){
+		case 0 : ;
 		case 1 : msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to mount ntfs/exfat file system using ntfs-3g,is ntfs-3g/exfat package installed?" ) ) ; break ;
 		case 2 : msg.ShowUIOK( tr( "ERROR!" ),tr( "there seem to be an open volume accociated with given address" ) ) ;				break ;
 		case 3 : msg.ShowUIOK( tr( "ERROR!" ),tr( "no file or device exist on given path" ) ) ; 						break ;
@@ -696,12 +685,12 @@ void passwordDialog::taskComplete( const taskResult& r )
 		case 22: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open a system volume.\n\nConsult menu->help->permission for more informaion\n" ) ) ;					break ;
 		case 113:msg.ShowUIOK( tr( "ERROR!" ),tr( "a non supported device encountered,device is missing or permission denied\n\
 Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The device has LVM or MDRAID signature" ) ) ;					break ;
-		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR with status number %1 encountered" ).arg( r.exitCode ) ) ;
+		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR with status number %1 encountered" ).arg( r ) ) ;
 	}
 
 	this->enableAll() ;
 
-	if( r.exitCode == 4 ){
+	if( r == 4 ){
 		if( m_ui->cbKeyType->currentIndex() == passwordDialog::key ){
 			m_ui->PassPhraseField->clear() ;
 			m_ui->PassPhraseField->setFocus() ;

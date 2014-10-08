@@ -22,17 +22,11 @@
 
 #include "volumeentryproperties.h"
 #include "../zuluCrypt-gui/task.h"
+#include "../zuluCrypt-gui/utility.h"
 
 #include <QVector>
 #include <QString>
 #include <QStringList>
-
-struct zuluMountTaskResult
-{
-	bool passed ;
-	int exitCode ;
-	QString outPut ;
-};
 
 struct volumeMiniPropertiesTaskResult
 {
@@ -58,11 +52,10 @@ namespace zuluMountTask
 	Task::future< QString >& volumeProperties( const QString& volume,const QString& volumeType ) ;
 	Task::future< QVector< volumeEntryProperties > >& updateVolumeList( void ) ;
 	Task::future< volumeEntryProperties >& getVolumeProperties( const QString& e ) ;
-	Task::future< zuluMountTaskResult >& unmountVolume( const QString& volumePath,const QString& volumeType ) ;
+	Task::future< utility::Task >& unmountVolume( const QString& volumePath,const QString& volumeType ) ;
 
-	zuluMountTaskResult volumeUnmount( const QString& volumePath,const QString& volumeType ) ;
+	utility::Task volumeUnmount( const QString& volumePath,const QString& volumeType ) ;
 
-	zuluMountTaskResult cryptoOpen( void ) ;
 	void checkUnMount( const QString& ) ;
 	volumeMiniPropertiesTaskResult volumeMiniProperties( const QString& volume ) ;
 	volumeMiniPropertiesTaskResult deviceProperties( const zuluMountTask::event& ) ;

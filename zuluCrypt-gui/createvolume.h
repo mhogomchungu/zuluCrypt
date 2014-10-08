@@ -25,13 +25,14 @@
 
 #include "utility.h"
 
-class keystrength ;
 class QCloseEvent ;
 
 /*
  * this header is created at config time
  */
 #include "truecrypt_support_1.h"
+
+#include "keystrength.h"
 
 namespace Ui {
     class createvolume;
@@ -58,7 +59,8 @@ public slots:
 	void ShowFile( QString volume ) ;
 	void HideUI( void ) ;
 private slots:
-	void keyChanged( QString ) ;
+	void keyChanged_0( QString ) ;
+	void keyChanged_1( QString ) ;
 	void pbCreateClicked( void ) ;
 	void pbCancelClicked( void ) ;
 	void cbNormalVolume( int ) ;
@@ -70,6 +72,7 @@ private slots:
 	void dialogResult( int ) ;
 	void setOptions( int ) ;
 private:
+	void keyChanged( bool,const QString& ) ;
 	void eraseDataPartition( void ) ;
 	void findInstalledFs( void ) ;
 	void enableAll( void ) ;
@@ -80,7 +83,7 @@ private:
 	bool m_created ;
 	Ui::createvolume * m_ui ;
 	bool m_isWindowClosable ;
-	keystrength * m_keyStrength ;
+	keystrength m_keyStrength ;
 	QString m_volumeType ;
 	bool m_warned ;
 };

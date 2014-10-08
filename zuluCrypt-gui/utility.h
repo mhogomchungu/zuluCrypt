@@ -192,6 +192,10 @@ namespace utility
 		{
 			return utility::split( m_data,token ) ;
 		}
+		void output( const QByteArray& r )
+		{
+			m_data = r ;
+		}
 		const QByteArray& output() const
 		{
 			return m_data ;
@@ -207,6 +211,10 @@ namespace utility
 		bool success() const
 		{
 			return m_exitCode == 0 ;
+		}
+		bool failed() const
+		{
+			return m_exitCode != 0 ;
 		}
 		bool finished() const
 		{

@@ -19,7 +19,6 @@
 
 #include "bin_path.h"
 #include "zulumounttask.h"
-#include "../zuluCrypt-gui/utility.h"
 
 #include <QDir>
 #include <QString>
@@ -62,10 +61,7 @@ volumeEntryProperties _getVolumeProperties( const QString& e )
 
 Task::future< volumeEntryProperties >& zuluMountTask::getVolumeProperties( const QString& e )
 {
-	return Task::run< volumeEntryProperties >( [ e ](){
-
-		return _getVolumeProperties( e ) ;
-	} ) ;
+	return Task::run< volumeEntryProperties >( [ e ](){ return _getVolumeProperties( e ) ; } ) ;
 }
 
 Task::future< QString >& zuluMountTask::volumeProperties( const QString& v,const QString& volumeType )
@@ -100,26 +96,24 @@ Task::future< QString >& zuluMountTask::volumeProperties( const QString& v,const
 	} ) ;
 }
 
-zuluMountTaskResult zuluMountTask::volumeUnmount( const QString& volumePath,const QString& volumeType )
+utility::Task zuluMountTask::volumeUnmount( const QString& volumePath,const QString& volumeType )
 {
 	auto _run = []( const QString& exe ){
 
-		zuluMountTaskResult r ;
-
 		auto e = utility::Task( exe ) ;
 
-		r.passed = e.exitCode() == 0 ;
 		QString output = e.output() ;
 		int index = output.indexOf( QChar( ':' ) ) ;
-		r.outPut = output.mid( index + 1 ) ;
-		return r ;
+		e.output( output.mid( index + 1 ).toLatin1() ) ;
+
+		return e ;
 	} ;
 
 	QString volume = _device( volumePath ) ;
 
 	auto r = _run( QString( "%1 -u -d \"%2\"" ).arg( zuluMountPath,volume ) ) ;
 
-	if( !r.passed ){
+	if( r.failed() ){
 		if( volumeType.contains( "crypto_PLAIN\n" ) ){
 			/*
 			 * we could be trying to unmount a volume with an offset
@@ -131,12 +125,9 @@ zuluMountTaskResult zuluMountTask::volumeUnmount( const QString& volumePath,cons
 	return r ;
 }
 
-Task::future< zuluMountTaskResult >& zuluMountTask::unmountVolume( const QString& volumePath,const QString& volumeType )
+Task::future< utility::Task >& zuluMountTask::unmountVolume( const QString& volumePath,const QString& volumeType )
 {
-	return Task::run< zuluMountTaskResult >( [ = ](){
-
-		return zuluMountTask::volumeUnmount( volumePath,volumeType ) ;
-	} ) ;
+	return Task::run< utility::Task >( [ = ](){ return zuluMountTask::volumeUnmount( volumePath,volumeType ) ; } ) ;
 }
 
 Task::future< QVector< volumeEntryProperties > >& zuluMountTask::updateVolumeList()

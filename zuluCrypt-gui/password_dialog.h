@@ -22,6 +22,7 @@
 
 #include <QDialog>
 #include <QString>
+#include <QByteArray>
 
 #include "utility.h"
 
@@ -34,8 +35,6 @@ class QAction ;
 class QCloseEvent ;
 class QTableWidget ;
 class QMenu ;
-
-struct taskResult ;
 
 class passwordDialog :  public QDialog
 {
@@ -66,7 +65,6 @@ private slots :
 	void file_path( void  ) ;
 	void mountPointPath( QString ) ;
 	void cbStateChanged( int ) ;
-	void taskComplete( const taskResult& ) ;
 	void keys( QString key,QString keyFiles ) ;
 	void tcryptCancelled( void ) ;
 private :
@@ -79,7 +77,8 @@ private :
 	void enableAll( void ) ;
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
-	void success( const taskResult& ) ;
+	void success( const QByteArray& ) ;
+	void failed( int ) ;
 	void failed( void ) ;
 	Ui::PasswordDialog * m_ui ;
 	bool m_isWindowClosable ;

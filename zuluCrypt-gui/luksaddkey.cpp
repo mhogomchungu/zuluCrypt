@@ -40,7 +40,6 @@
 #include "openvolume.h"
 #include "task.h"
 #include "dialogmsg.h"
-#include "keystrength.h"
 
 luksaddkey::luksaddkey( QWidget * parent ) :
 	QDialog( parent )
@@ -81,8 +80,6 @@ luksaddkey::luksaddkey( QWidget * parent ) :
 	m_ui->pushButtonOpenPartition->setIcon( QIcon( QString( ":/partition.png" ) ) ) ;
 	m_ui->pushButtonOpenFile->setIcon( QIcon( QString( ":/file.png" ) ) ) ;
 
-	m_keystrength = new keystrength() ;
-
 	this->installEventFilter( this ) ;
 }
 
@@ -98,15 +95,16 @@ bool luksaddkey::eventFilter( QObject * watched,QEvent * event )
 
 void luksaddkey::keyChanged( QString key )
 {
-	if( m_ui->radioButtonNewPassphrase->isChecked() && m_keystrength->canCheckQuality() ){
-		int st = m_keystrength->quality( key ) ;
+	bool checkQuality = m_ui->radioButtonNewPassphrase->isChecked() && m_keystrength.canCheckQuality() ;
+	if( checkQuality ){
+		int st = m_keystrength.quality( key ) ;
 		if( st < 0 ){
 			this->setWindowTitle( tr( "passphrase quality: 0/100" ) ) ;
 		}else{
 			this->setWindowTitle( tr( "passphrase quality: %1/100" ).arg( QString::number( st ) ) ) ;
 		}
 	}else{
-		this->setWindowTitle( tr( "add a key to a luks volume" ) ) ;
+		this->setWindowTitle( tr( "add a key to a volume" ) ) ;
 	}
 }
 
@@ -438,6 +436,5 @@ void luksaddkey::pbCancel( void )
 
 luksaddkey::~luksaddkey()
 {
-	delete m_keystrength ;
 	delete m_ui ;
 }

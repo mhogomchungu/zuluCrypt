@@ -798,10 +798,10 @@ void MainWindow::pbUmount()
 
 	auto r = zuluMountTask::unmountVolume( path,type ).await() ;
 
-	if( r.passed == false ){
+	if( r.failed() ){
 
 		DialogMsg m( this ) ;
-		m.ShowUIOK( tr( "ERROR" ),r.outPut ) ;
+		m.ShowUIOK( tr( "ERROR" ),r.output() ) ;
 		this->enableAll() ;
 	}
 }

@@ -25,6 +25,7 @@
 #include <QStringList>
 
 #include "utility.h"
+#include "keystrength.h"
 
 namespace Ui {
 class luksaddkey ;
@@ -71,7 +72,7 @@ private:
 	Ui::luksaddkey * m_ui ;
 	QString m_volumePath ;
 	bool m_isWindowClosable ;
-	keystrength * m_keystrength ;
+	keystrength m_keystrength ;
 };
 
 #endif // luksaddkeySUI_H
