@@ -28,6 +28,7 @@
 #include <QRunnable>
 #include <QMetaObject>
 #include <QDebug>
+#include <QWidget>
 
 #include <functional>
 #include <utility>
@@ -94,6 +95,7 @@ namespace utility
 	QStringList split( const QString&,char token = '\n' ) ;
 	QStringList split( const QByteArray&,char token = '\n' ) ;
 	bool userHasGoodVersionOfWhirlpool( void ) ;
+	void licenseInfo( QWidget * ) ;
 
 	::Task::future< int >& clearVolume( const QString& volumePath,bool * exit,std::function< void( int ) > ) ;
 	::Task::future< int >& exec( const QString& ) ;

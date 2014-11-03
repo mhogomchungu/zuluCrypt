@@ -84,6 +84,7 @@ private slots:
 	void showFavorites( void ) ;
 	void favoriteClicked( QAction * ) ;
 	void openMountPointPath( QString ) ;
+	void licenseInfo( void ) ;
 private:
 	void updateVolumeList( const QVector< volumeEntryProperties >& ) ;
 	void openMountPoint( const QString& ) ;

@@ -161,6 +161,11 @@ void MainWindow::setUpApp( const QString& volume )
 	connect( m_favorite_menu,SIGNAL( triggered( QAction * ) ),this,SLOT( favoriteClicked( QAction * ) ) ) ;
 	connect( m_favorite_menu,SIGNAL( aboutToShow() ),this,SLOT( showFavorites() ) ) ;
 
+	ac = new QAction( this ) ;
+	ac->setText( tr( "about" ) ) ;
+	connect( ac,SIGNAL( triggered() ),this,SLOT( licenseInfo() ) ) ;
+	trayMenu->addAction( ac ) ;
+
 	trayMenu->addAction( tr( "quit" ),this,SLOT( pbClose() ) ) ;
 	m_trayIcon->setContextMenu( trayMenu ) ;
 
@@ -187,6 +192,11 @@ void MainWindow::setUpApp( const QString& volume )
 	}else{
 		this->showMoungDialog( volume ) ;
 	}
+}
+
+void MainWindow::licenseInfo()
+{
+	utility::licenseInfo( this ) ;
 }
 
 void MainWindow::favoriteClicked( QAction * ac )
