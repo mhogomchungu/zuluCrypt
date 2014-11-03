@@ -23,6 +23,7 @@
 #include <QDir>
 #include <QString>
 #include <QDebug>
+#include <QFile>
 
 static QString _device( const QString& device )
 {
@@ -134,12 +135,31 @@ Task::future< QVector< volumeEntryProperties > >& zuluMountTask::updateVolumeLis
 {
 	return Task::run< QVector< volumeEntryProperties > >( [](){
 
-		auto _validEntry = []( const QString& e ){
+		QStringList l ;
+
+		QFile f( QDir::homePath() + "/.zuluCrypt/zuluMount-gui-excludeVolumes" ) ;
+
+		if( f.open( QIODevice::ReadOnly ) ){
+
+			l = QString( f.readAll() ).split( '\n' ) ;
+		}
+
+		auto _validEntry = [ & ]( const QString& e ){
+
 			if( e.startsWith( "/dev/md/md-device-map" ) ){
 				return false ;
 			}
 			if( e.contains( "\tswap\t") || e.contains( "member\t" ) || e.contains( "\t/run/media/public" ) ){
 				return false ;
+			}
+			if( !l.isEmpty() ){
+
+				for( const auto& it : l ){
+
+					if( e.startsWith( it + '\t' ) ){
+						return false ;
+					}
+				}
 			}
 			return true ;
 		} ;
