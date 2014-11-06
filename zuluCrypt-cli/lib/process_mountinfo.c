@@ -19,15 +19,39 @@
 
 #include "includes.h"
 
-stringList_t zuluCryptGetMoutedListFromMountInfo_0(
-	string_t ( *function )( const char *,const char *,const char *,const char * ) )
-{
+typedef struct{
 	const char * device ;
-	const char * mount_point ;
-	const char * file_system ;
-	const char * mount_options ;
-	const char * root_path ;
+	const char * mountPoint ;
+	const char * fileSystem ;
+	const char * mountOptions ;
+	const char * rootPath ;
+}vInfo ;
 
+static int _valid_entry( const vInfo * e )
+{
+	if( StringAtLeastOnePrefixMatch( e->mountPoint,"/var/run/media/public",
+					    "/var/run/media/private",NULL ) ){
+		/*
+		 * some distributions auto generate these extra mount points and we
+		 * ignore them as they confuse us.
+		 */
+		return 0 ;
+	}
+	
+	if( StringsAreEqual( e->rootPath,"/" ) || StringsAreEqual( e->fileSystem,"btrfs" ) ){
+		/*
+		 * we only take bind mount points on btrfs only.
+		 */
+		return 1 ;
+	}
+	
+	return 0 ;
+}
+
+static stringList_t _volumeList( string_t ( *function )( const vInfo * ) )
+{
+	vInfo volumeInfo ;
+	
 	char * const * entry = NULL ;
 
 	size_t entry_len = 0 ;
@@ -59,30 +83,17 @@ stringList_t zuluCryptGetMoutedListFromMountInfo_0(
 		if( index != -1 ){
 
 			StringListStringArray_1( &entry,&entry_len,tmp ) ;
-
-			mount_point = *( entry + 4 ) ;
-
-			if( StringAtLeastOnePrefixMatch( mount_point,"/var/run/media/public","/var/run/media/private",NULL ) ){
-				/*
-				 * skipping volumes with these mount points because they are double mount points produced in
-				 * certain distributions and we dont expect them.
-				 */
-			}else{
-				file_system = *( entry + index + 1 ) ;
-				root_path   = *( entry + 3 ) ;
-
-				if( StringsAreEqual( root_path,"/" ) || StringsAreEqual( file_system,"btrfs" ) ){
-
-					device        = *( entry + index + 2 ) ;
-					mount_options = *( entry + 5 ) ;
-
-					st = function( device,mount_point,file_system,mount_options ) ;
-					stx = StringListAppendString_1( stx,&st ) ;
-				}else{
-					/*
-					 * dont care about bind mounts
-					 */
-				}
+			
+			volumeInfo.device       = *( entry + index + 2 ) ;
+			volumeInfo.mountPoint   = *( entry + 4 ) ;
+			volumeInfo.fileSystem   = *( entry + index + 1 ) ;
+			volumeInfo.mountOptions = *( entry + 5 ) ;
+			volumeInfo.rootPath     = *( entry + 3 ) ;
+			
+			if( _valid_entry( &volumeInfo ) ){
+				
+				st = function( &volumeInfo ) ;
+				stx = StringListAppendString_1( stx,&st ) ;				
 			}
 		}
 
@@ -94,49 +105,44 @@ stringList_t zuluCryptGetMoutedListFromMountInfo_0(
 	return stx ;
 }
 
-static string_t _resolve_path_1( const char * device,const char * mount_point,
-				 const char * file_system ,const char * mount_options )
+static string_t _resolve_path_1( const vInfo * e )
 {
 	/*
 	 * zuluCryptResolvePath_1() is defined in resolve_paths.c
 	 */
-	string_t st = zuluCryptResolvePath_1( device ) ;
-	StringMultipleAppend( st," ",mount_point," ",file_system," ",mount_options,NULL ) ;
+	string_t st = zuluCryptResolvePath_1( e->device ) ;
+	StringMultipleAppend( st," ",e->mountPoint," ",e->fileSystem," ",e->mountOptions,NULL ) ;
 	return st ;
 }
 
-static string_t _resolve_path_2( const char * device,const char * mount_point,
-				 const char * file_system ,const char * mount_options )
+static string_t _resolve_path_2( const vInfo * e )
 {
 	/*
 	 * zuluCryptResolvePath_2() is defined in resolve_paths.c
 	 */
-	string_t st = zuluCryptResolvePath_2( device ) ;
-	StringMultipleAppend( st," ",mount_point," ",file_system," ",mount_options,NULL ) ;
+	string_t st = zuluCryptResolvePath_2( e->device ) ;
+	StringMultipleAppend( st," ",e->mountPoint," ",e->fileSystem," ",e->mountOptions,NULL ) ;
 	return st ;
 }
 
-static string_t _get_mounted_device_list( const char * device,const char * mount_point,
-					  const char * file_system ,const char * mount_options )
+static string_t _get_mounted_device_list( const vInfo * e )
 {
-	if( 0 && mount_point && file_system && mount_options ){;}
-
-	return zuluCryptResolvePath_1( device ) ;
+	return zuluCryptResolvePath_1( e->device ) ;
 }
 
 stringList_t zuluCryptGetMoutedListFromMountInfo( void )
 {
-	return zuluCryptGetMoutedListFromMountInfo_0( _resolve_path_1 ) ;
+	return _volumeList( _resolve_path_1 ) ;
 }
 
 stringList_t zuluCryptGetMoutedListFromMountInfo_1( void )
 {
-	return zuluCryptGetMoutedListFromMountInfo_0( _resolve_path_2 ) ;
+	return _volumeList( _resolve_path_2 ) ;
 }
 
 stringList_t zuluCryptGetAListOfMountedVolumes( void )
 {
-	return zuluCryptGetMoutedListFromMountInfo_0( _get_mounted_device_list ) ;
+	return _volumeList( _get_mounted_device_list ) ;
 }
 
 stringList_t zuluCryptOpenedVolumesList( uid_t uid )
