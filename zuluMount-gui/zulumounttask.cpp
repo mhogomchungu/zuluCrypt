@@ -282,8 +282,7 @@ volumeMiniPropertiesTaskResult zuluMountTask::deviceProperties( const zuluMountT
 		volumeMiniPropertiesTaskResult s = { d,false,nullptr } ;
 
 		if( deviceProperty.added ){
-			s.entry = new volumeEntryProperties ;
-			*s.entry = _getVolumeProperties( d ) ;
+			s.entry = new volumeEntryProperties( _getVolumeProperties( d ) ) ;
 		}else{
 			s.volumeRemoved = true ;
 		}
@@ -334,8 +333,7 @@ volumeMiniPropertiesTaskResult zuluMountTask::deviceProperties( const zuluMountT
 		volumeMiniPropertiesTaskResult s = { d,false,nullptr } ;
 
 		if( deviceProperty.added ){
-			s.entry = new volumeEntryProperties ;
-			*s.entry = _getVolumeProperties( d ) ;
+			s.entry = new volumeEntryProperties( _getVolumeProperties( d ) ) ;
 		}else{
 			s.volumeRemoved = true ;
 		}
@@ -358,8 +356,7 @@ volumeMiniPropertiesTaskResult zuluMountTask::deviceProperties( const zuluMountT
 
 			s.volumeName = device ;
 			if( deviceProperty.added ){
-				s.entry = new volumeEntryProperties ;
-				*s.entry = _getVolumeProperties( device ) ;
+				s.entry = new volumeEntryProperties( _getVolumeProperties( device ) ) ;
 			}else{
 				s.volumeRemoved = true ;
 			}
