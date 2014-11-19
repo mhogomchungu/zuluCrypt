@@ -54,6 +54,8 @@ createfile::createfile( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::cre
 	this->installEventFilter( this ) ;
 
 	this->setWindowTitle( tr( "create a container file" ) ) ;
+	
+	m_running = false ;
 }
 
 bool createfile::eventFilter( QObject * watched,QEvent * event )
