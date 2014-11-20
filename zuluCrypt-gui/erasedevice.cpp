@@ -22,6 +22,7 @@
 #include <QCloseEvent>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QDateTime>
 
 #include "utility.h"
 #include "openvolume.h"
@@ -157,8 +158,43 @@ Are you really sure you want to write random data to \"%1\" effectively destroyi
 
 	m_exit = false ;
 	m_running = true ;
+#if 0
+	/*
+	 * It would have been nice to have progress report on how much longer to wait for the operation
+	 * to complete but tests have shown that the fluctuations between writes is too great and
+	 * estimated time remaining jumps around too much to be useful.More investigation is needed.
+	 */
+	QDateTime time ;
 
-	int r = utility::clearVolume( path,&m_exit,[ this ]( int i ){ emit sendProgress( i ) ; } ).await() ;
+	qint64 previousTime = time.currentMSecsSinceEpoch() ;
+
+	qint64 averageTime = 0 ;
+
+	auto _update = [ & ]( int i ){
+
+		qint64 currentTime = time.currentMSecsSinceEpoch() ;
+
+		qint64 timeDifference = currentTime - previousTime ;
+
+		previousTime = currentTime ;
+
+		qint64 timeRemaining = ( 100 - i ) * timeDifference ;
+
+		if( i == 1 ){
+			averageTime = timeRemaining ;
+		}else{
+			averageTime = ( averageTime + timeRemaining ) / 2 ;
+		}
+
+		qDebug() << timeRemaining / ( 1000 ) << ":" << averageTime   / ( 1000 ) ;
+
+		emit sendProgress( i ) ;
+	} ;
+#else
+	auto _update = [ & ]( int i ){ emit sendProgress( i ) ;	} ;
+#endif
+	
+	int r = utility::clearVolume( path,&m_exit,_update ).await() ;
 
 	m_running = false ;
 
