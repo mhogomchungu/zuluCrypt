@@ -200,9 +200,8 @@ void mountPartition::pbMount()
 
 	if( s.success() ){
 
-		emit openMountPoint( utility::mountPath( m_point ) ) ;
+		emit openMountPoint( utility::mountPath( m_ui->lineEdit->text() ) ) ;
 		this->HideUI() ;
-
 	}else{
 		if( this->isVisible() ){
 
@@ -274,9 +273,9 @@ void mountPartition::AutoMount( QStringList entry )
 	m_path = entry.at( 0 ) ;
 	QString label = entry.at( 3 ) ;
 	if( label != "Nil" ) {
-		m_point = utility::mountPathPostFix( label );
+		m_point = utility::mountPathPostFix( label ) ;
 	}else{
-		m_point = utility::mountPathPostFix( m_path.split( "/" ).last() );
+		m_point = utility::mountPathPostFix( m_path.split( "/" ).last() ) ;
 	}
 	m_ui->lineEdit->setText( m_point ) ;
 	this->pbMount() ;
@@ -286,11 +285,16 @@ void mountPartition::stateChanged( int i )
 {
 	Q_UNUSED( i ) ;
 	m_ui->checkBox->setEnabled( false ) ;
+
+	QString e ;
+
 	if( m_ui->checkBox->isChecked() ){
-		m_ui->lineEdit->setText( m_label ) ;
+		e = utility::mountPathPostFix( m_label ) ;
 	}else{
-		m_ui->lineEdit->setText( m_path.split( QString( "/" ) ).last() ) ;
+		e = utility::mountPathPostFix( m_path.split( "/" ).last() ) ;
 	}
+
+	m_ui->lineEdit->setText( e ) ;
 	m_ui->checkBox->setEnabled( true ) ;
 }
 
