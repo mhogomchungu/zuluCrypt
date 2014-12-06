@@ -131,18 +131,63 @@ Task::future< utility::Task >& zuluMountTask::unmountVolume( const QString& volu
 	return Task::run< utility::Task >( [ = ](){ return zuluMountTask::volumeUnmount( volumePath,volumeType ) ; } ) ;
 }
 
+static QString _excludeVolumePath()
+{
+	return QDir::homePath() + "/.zuluCrypt/zuluMount-gui-excludeVolumes" ;
+}
+
+void zuluMountTask::addVolumeToHiddenVolumeList( const QString& e )
+{
+	QFile f( _excludeVolumePath() ) ;
+
+	if( f.open( QIODevice::WriteOnly | QIODevice::Append ) ){
+
+		f.write( e.toLatin1() + "\n" ) ;
+	}
+}
+
+QStringList zuluMountTask::hiddenVolumeList()
+{
+	QFile f( _excludeVolumePath() ) ;
+
+	if( f.open( QIODevice::ReadOnly ) ){
+
+		return QString( f.readAll() ).split( '\n',QString::SkipEmptyParts ) ;
+	}else{
+		return QStringList() ;
+	}
+}
+
+void zuluMountTask::removeVolumeFromHiddenVolumeList( const QString& e )
+{
+	QFile f( _excludeVolumePath() ) ;
+
+	if( f.open( QIODevice::ReadOnly ) ){
+
+		auto l = QString( f.readAll() ).split( '\n',QString::SkipEmptyParts ) ;
+
+		l.removeAll( e ) ;
+
+		f.close() ;
+
+		if( f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ){
+
+			if( !l.isEmpty() ){
+
+				for( const auto& it : l ){
+
+					f.write( it.toLatin1() + "\n" ) ;
+				}
+			}
+		}
+	}
+}
+
 Task::future< QVector< volumeEntryProperties > >& zuluMountTask::updateVolumeList()
 {
 	return Task::run< QVector< volumeEntryProperties > >( [](){
 
-		QStringList l ;
-
-		QFile f( QDir::homePath() + "/.zuluCrypt/zuluMount-gui-excludeVolumes" ) ;
-
-		if( f.open( QIODevice::ReadOnly ) ){
-
-			l = QString( f.readAll() ).split( '\n' ) ;
-		}
+		QStringList l = zuluMountTask::hiddenVolumeList() ;
 
 		auto _validEntry = [ & ]( const QString& e ){
 

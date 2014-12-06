@@ -60,6 +60,10 @@ namespace zuluMountTask
 	volumeMiniPropertiesTaskResult volumeMiniProperties( const QString& volume ) ;
 	volumeMiniPropertiesTaskResult deviceProperties( const zuluMountTask::event& ) ;
 	QStringList mountedVolumeList( void ) ;
+
+	QStringList hiddenVolumeList( void ) ;
+	void addVolumeToHiddenVolumeList( const QString& ) ;
+	void removeVolumeFromHiddenVolumeList( const QString& ) ;
 }
 
 #endif // ZULUMOUNTTASK_H

@@ -872,5 +872,5 @@ You should have received a copy of the GNU General Public License\n\
 along with this program.  If not, see <http://www.gnu.org/licenses/>." ).arg( VERSION_STRING ) ;
 
 	DialogMsg m( parent ) ;
-	m.ShowUIInfo( parent->tr( "about zuluCrypt" ),license ) ;
+	m.ShowUIInfo( QObject::tr( "about zuluCrypt" ),license ) ;
 }
