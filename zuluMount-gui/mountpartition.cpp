@@ -255,14 +255,14 @@ void mountPartition::pbOpenMountPath()
 	}
 }
 
-void mountPartition::ShowUI( QString path,QString label )
+void mountPartition::ShowUI( const volumeEntryProperties& e )
 {
-	m_path = path ;
-	m_label = label ;
+	m_path  = e.volumeName() ;
+	m_label = e.label() ;
 	m_point = utility::mountPathPostFix( m_path.split( "/" ).last() ) ;
 	m_ui->lineEdit->setText( m_point ) ;
 
-	if( label == "Nil" ){
+	if( m_label == "Nil" ){
 		m_ui->checkBox->setEnabled( false ) ;
 	}
 	this->show() ;

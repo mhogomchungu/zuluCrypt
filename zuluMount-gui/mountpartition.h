@@ -24,6 +24,8 @@
 #include <QWidget>
 #include <QString>
 
+#include "volumeentryproperties.h"
+
 class QTableWidget ;
 class QCloseEvent ;
 class QMenu ;
@@ -38,7 +40,7 @@ class mountPartition : public QWidget
 	Q_OBJECT
 public:
 	explicit mountPartition( QWidget * parent = 0,QTableWidget * table = 0 ) ;
-	void ShowUI( QString path,QString label ) ;
+	void ShowUI( const volumeEntryProperties& ) ;
 	void HideUI( void ) ;
 	void AutoMount( QStringList entry ) ;
 	~mountPartition() ;

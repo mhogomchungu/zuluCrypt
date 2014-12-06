@@ -50,24 +50,24 @@
  */
 static QString _internalPassWord ;
 
-keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const QString& path,const QString& type ) :
+keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryProperties& e ) :
 	QDialog( parent ),m_ui( new Ui::keyDialog )
 {
 	m_ui->setupUi( this ) ;
 	m_ui->checkBoxShareMountPoint->setToolTip( utility::shareMountPointToolTip() ) ;
 	m_table = table ;
-	m_path = path ;
+	m_path = e.volumeName() ;
 	m_working = false ;
 
 	QString msg ;
-	if( type == QString( "crypto_LUKS" ) ){
+	if( e.fileSystem() == "crypto_LUKS" ){
 		msg = tr( "unlock and mount a luks volume in \"%1\"").arg( m_path ) ;
 	}else{
 		msg = tr( "unlock and mount an encrypted volume in \"%1\"").arg( m_path ) ;
 	}
 	this->setWindowTitle( msg ) ;
 
-	m_ui->lineEditMountPoint->setText( path ) ;
+	m_ui->lineEditMountPoint->setText( m_path ) ;
 	m_ui->pbOpenMountPoint->setIcon( QIcon( QString( ":/folder.png" ) ) ) ;
 
 	m_menu = new QMenu( this ) ;

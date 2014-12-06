@@ -30,6 +30,7 @@ class QTableWidgetItem ;
 class QTableWidget ;
 
 #include "mainwindow.h"
+#include "volumeentryproperties.h"
 
 namespace Ui {
 class keyDialog;
@@ -39,7 +40,7 @@ class keyDialog : public QDialog
 {
 	Q_OBJECT
 public:
-	keyDialog( QWidget * parent,QTableWidget *,const QString& path,const QString& type ) ;
+	keyDialog( QWidget * parent,QTableWidget *,const volumeEntryProperties& ) ;
 	~keyDialog() ;
 	void ShowUI( void ) ;
 	void HideUI( void ) ;

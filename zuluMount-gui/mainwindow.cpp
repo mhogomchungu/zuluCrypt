@@ -730,7 +730,7 @@ void MainWindow::mount( const volumeEntryProperties& entry )
 
 	if( entry.encryptedVolume() ){
 
-		auto kd = new keyDialog( this,m_ui->tableWidget,entry.volumeName(),entry.fileSystem() ) ;
+		auto kd = new keyDialog( this,m_ui->tableWidget,entry ) ;
 
 		connect( kd,SIGNAL( cancel() ),this,SLOT( enableAll() ) ) ;
 		connect( kd,SIGNAL( openMountPoint( QString ) ),this,SLOT( openMountPointPath( QString ) ) ) ;
@@ -742,7 +742,7 @@ void MainWindow::mount( const volumeEntryProperties& entry )
 		connect( mp,SIGNAL( cancel() ),this,SLOT( enableAll() ) ) ;
 		connect( mp,SIGNAL( openMountPoint( QString ) ),this,SLOT( openMountPointPath( QString ) ) ) ;
 
-		mp->ShowUI( entry.volumeName(),entry.label() ) ;
+		mp->ShowUI( entry ) ;
 	}
 }
 
