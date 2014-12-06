@@ -932,19 +932,25 @@ void MainWindow::removeDisappearedEntries( const QVector< volumeEntryProperties 
 		}
 	}
 
+	auto _done = [ this ](){
+
+		tablewidget::selectLastRow( m_ui->tableWidget ) ;
+		this->enableAll() ;
+	} ;
+
 	if( z.isEmpty() ){
 
-		this->removeVolume( QString() ) ;
+		_done() ;
 	}else{
-		Task::exec( [ &,z ](){
+		for( const auto& e : z ){
 
-			for( const auto& it : z ){
-				utility::Task::waitForOneSecond() ;
-				emit unlistVolume( it ) ;
-			}
+			tablewidget::selectRow( table,e ) ;
+			utility::Task::suspendForOneSecond() ;
+			tablewidget::deleteTableRow( table,e ) ;
+		}
 
-			emit unlistVolume( QString() ) ;
-		} ) ;
+		utility::Task::suspendForOneSecond() ;
+		_done() ;
 	}
 }
 

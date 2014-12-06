@@ -29,6 +29,8 @@
 #include <QMetaObject>
 #include <QDebug>
 #include <QWidget>
+#include <QEventLoop>
+#include <QTimer>
 
 #include <functional>
 #include <utility>
@@ -177,6 +179,18 @@ namespace utility
 		static void waitForTwoSeconds( void )
 		{
 			sleep( 2 ) ;
+		}
+		static void suspendForOneSecond( void )
+		{
+			QTimer t ;
+
+			QEventLoop l ;
+
+			QObject::connect( &t,SIGNAL( timeout() ),&l,SLOT( quit() ) ) ;
+
+			t.start( 1000 ) ;
+
+			l.exec() ;
 		}
 		Task()
 		{

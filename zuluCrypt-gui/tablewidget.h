@@ -39,6 +39,7 @@ public:
 	static void deleteRowFromTable( QTableWidget *,const QString&,int column = 0 ) ;
 	static void deleteTableRow( QTableWidget *,const QString&,int column = 0 ) ;
 	static void selectRow( QTableWidget *,int row ) ;
+	static void selectRow( QTableWidget *,const QString& ) ;
 	static void selectLastRow( QTableWidget * ) ;
 	static void setText( QTableWidget *,int row,int col,const QString& text ) ;
 	static int addEmptyRow( QTableWidget * ) ;

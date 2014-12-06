@@ -77,6 +77,9 @@ int tablewidget::addEmptyRow( QTableWidget * table )
 
 int tablewidget::columnHasEntry( QTableWidget * table,const QString& entry,int column )
 {
+	if( column < 0 || column >= table->columnCount() ){
+		return -1 ;
+	}
 	int rows = table->rowCount() ;
 	for( int i = 0 ; i < rows ; i++ ){
 		if( table->item( i,column )->text() == entry ){
@@ -206,9 +209,14 @@ void tablewidget::deleteTableRow( QTableWidget * table,const QString& value,int 
 
 void tablewidget::selectRow( QTableWidget * table,int row )
 {
-	if( row < table->rowCount() ){
+	if( row >= 0 && row < table->rowCount() ){
 		table->setCurrentCell( row,table->columnCount() - 1 ) ;
 	}
+}
+
+void tablewidget::selectRow( QTableWidget * table,const QString& e )
+{
+	tablewidget::selectRow( table,tablewidget::columnHasEntry( table,e ) ) ;
 }
 
 void tablewidget::selectLastRow( QTableWidget * table )
