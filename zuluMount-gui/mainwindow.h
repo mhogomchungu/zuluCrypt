@@ -52,9 +52,10 @@ public slots:
 	void raiseWindow( void ) ;
 	void raiseWindow( QString ) ;
 private slots:
+	void showVisibleVolumeList( void ) ;
 	void showHiddenVolumeList( void ) ;
 	void removeVolumeFromHiddenVolumeList( QAction * ) ;
-	void hideEntryFromView( void ) ;
+	void removeVolumeFromVisibleVolumeList( QAction * ) ;
 	void startGUI( void ) ;
 	void volumeMiniProperties( volumeEntryProperties * ) ;
 	void showMoungDialog( const volumeEntryProperties& ) ;
@@ -117,6 +118,8 @@ private:
 	QAction * m_autoMountAction ;
 	QMenu * m_favorite_menu ;
 	QMenu * m_hidden_volume_menu ;
+	QMenu * m_not_hidden_volume_menu ;
+
 	bool m_startHidden ;
 	bool m_autoMount ;
 	QString m_sharedFolderPath ;

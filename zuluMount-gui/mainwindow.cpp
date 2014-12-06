@@ -162,6 +162,10 @@ void MainWindow::setUpApp( const QString& volume )
 	connect( m_favorite_menu,SIGNAL( triggered( QAction * ) ),this,SLOT( favoriteClicked( QAction * ) ) ) ;
 	connect( m_favorite_menu,SIGNAL( aboutToShow() ),this,SLOT( showFavorites() ) ) ;
 
+	m_not_hidden_volume_menu = trayMenu->addMenu( tr( "hide volume from view" ) ) ;
+	connect( m_not_hidden_volume_menu,SIGNAL( triggered( QAction * ) ),this,SLOT( removeVolumeFromVisibleVolumeList( QAction * ) ) ) ;
+	connect( m_not_hidden_volume_menu,SIGNAL( aboutToShow() ),this,SLOT( showVisibleVolumeList() ) ) ;
+
 	m_hidden_volume_menu = trayMenu->addMenu( tr( "unhide volume from view" ) ) ;
 	connect( m_hidden_volume_menu,SIGNAL( triggered( QAction * ) ),this,SLOT( removeVolumeFromHiddenVolumeList( QAction * ) ) ) ;
 	connect( m_hidden_volume_menu,SIGNAL( aboutToShow() ),this,SLOT( showHiddenVolumeList() ) ) ;
@@ -234,6 +238,43 @@ void MainWindow::showHiddenVolumeList()
 			m_hidden_volume_menu->addAction( ac ) ;
 		}
 	}
+}
+
+void MainWindow::showVisibleVolumeList()
+{
+	m_not_hidden_volume_menu->clear() ;
+
+	QStringList l = tablewidget::tableColumnEntries( m_ui->tableWidget ) ;
+
+	if( l.isEmpty() ){
+
+		auto ac = new QAction( tr( "list is empty" ),m_not_hidden_volume_menu ) ;
+		ac->setEnabled( false ) ;
+		m_not_hidden_volume_menu->addAction( ac ) ;
+	}else{
+		for( const auto& it : l ){
+			auto ac = new QAction( it,m_not_hidden_volume_menu ) ;
+			m_not_hidden_volume_menu->addAction( ac ) ;
+		}
+	}
+}
+
+void MainWindow::removeVolumeFromVisibleVolumeList( QAction * ac )
+{
+	auto e = ac->text() ;
+	auto table = m_ui->tableWidget ;
+
+	zuluMountTask::addVolumeToHiddenVolumeList( e ) ;
+
+	this->disableAll() ;
+
+	tablewidget::selectRow( table,e ) ;
+	utility::Task::suspendForOneSecond() ;
+	tablewidget::deleteTableRow( table,e ) ;
+
+	tablewidget::selectLastRow( table ) ;
+
+	this->enableAll() ;
 }
 
 void MainWindow::favoriteClicked( QAction * ac )
@@ -473,25 +514,6 @@ void MainWindow::start()
 	}
 }
 
-void MainWindow::hideEntryFromView()
-{
-	auto table = m_ui->tableWidget ;
-	auto r = table->currentItem()->row() ;
-	auto e = table->item( r,0 )->text() ;
-
-	zuluMountTask::addVolumeToHiddenVolumeList( e ) ;
-
-	this->disableAll() ;
-
-	tablewidget::selectRow( table,e ) ;
-	utility::Task::suspendForOneSecond() ;
-	tablewidget::deleteTableRow( table,e ) ;
-
-	tablewidget::selectLastRow( table ) ;
-
-	this->enableAll() ;
-}
-
 void MainWindow::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 {
 	QMenu m ;
@@ -499,12 +521,9 @@ void MainWindow::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 	m.setFont( this->font() ) ;
 
 	QString mt = m_ui->tableWidget->item( item->row(),1 )->text() ;
-	QString type = m_ui->tableWidget->item( item->row(),2 )->text() ;
 
 	if( mt == "Nil" ){
 		connect( m.addAction( tr( "mount" ) ),SIGNAL( triggered() ),this,SLOT( slotMount() ) ) ;
-		m.addSeparator() ;
-		connect( m.addAction( tr( "hide volume from view" ) ),SIGNAL( triggered() ),this,SLOT( hideEntryFromView() ) ) ;
 	}else{
 		QString mp = QString( "/run/media/private/%1/" ).arg( utility::userName() ) ;
 		QString mp_1 = QString( "/home/%1/" ).arg( utility::userName() ) ;
