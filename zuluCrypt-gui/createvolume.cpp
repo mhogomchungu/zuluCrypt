@@ -608,7 +608,7 @@ void createvolume::pbCreateClicked()
 			y = utility::resolvePath( x ).replace( "\"","\"\"\"" ) ;
 		}
 
-		quint64 r = m_ui->lineEditHiddenSize->text().toInt() ;
+		quint64 r = m_ui->lineEditHiddenSize->text().toULongLong() ;
 
 		switch( m_ui->comboBoxHiddenSize->currentIndex() ){
 			case 0 : r *= 1024 * 1024         ; break ;
@@ -630,7 +630,7 @@ void createvolume::pbCreateClicked()
 
 	this->disableAll() ;
 
-	this->taskFinished( Task::await<int>( utility::exec( exe ) ) ) ;
+	this->taskFinished( utility::exec( exe ).await() ) ;
 }
 
 void createvolume::taskFinished( int st )

@@ -234,9 +234,6 @@ void MainWindow::pbOpen()
 		}
 	}
 
-	/*
-	 * pass in a copy since we modify it in place wrong strings show up on the GUI on error
-	 */
 	m_exe_1 = m_exe ;
 	QString e = m_findExecutable( m_exe_1 ) ;
 	if( !e.isEmpty() ){

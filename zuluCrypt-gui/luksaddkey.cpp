@@ -316,14 +316,14 @@ void luksaddkey::pbAdd( void )
 
 	this->disableAll() ;
 
-	this->taskFinished( Task::await<int>( utility::exec( exe ) ) ) ;
+	this->taskFinished( utility::exec( exe ).await() ) ;
 }
 
 void luksaddkey::keyAdded()
 {
 	m_volumePath.replace( "\"","\"\"\"" ) ;
 
-	auto l = Task::await<QStringList>( utility::luksEmptySlots( m_volumePath ) ) ;
+	auto l = utility::luksEmptySlots( m_volumePath ).await() ;
 
 	QString success ;
 
