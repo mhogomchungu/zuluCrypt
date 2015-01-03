@@ -173,9 +173,9 @@ if( NOT NOGUI )
 	ADD_SUBDIRECTORY( plugins )
 	ADD_SUBDIRECTORY( zuluMount-gui )
 
-	file( WRITE ${PROJECT_BINARY_DIR}/locale_path.h "\n#define TRANSLATION_PATH \"${CMAKE_INSTALL_PREFIX}/share/zuluCrypt/translations/\"\n")
-
 endif( NOT NOGUI )
+
+file( WRITE ${PROJECT_BINARY_DIR}/locale_path.h "\n#define TRANSLATION_PATH \"${CMAKE_INSTALL_PREFIX}/share/zuluCrypt/translations/\"\n")
 
 message ( STATUS "---------------------------------------------------------------------------" )
 message ( STATUS "optional functionality that will be build" )
