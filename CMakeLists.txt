@@ -143,7 +143,7 @@ if( NOT NOGUI )
 
 		add_definitions( ${Qt5Widgets_DEFINITIONS} )
 	else()
-		find_package( Qt4 REQUIRED )
+		find_package( Qt4 REQUIRED QtCore QtGui QtNetwork )
 
 		add_definitions( -I${Qt4_INCLUDE_DIR} )
 		add_definitions( -I${QT_HEADERS_DIR} )
