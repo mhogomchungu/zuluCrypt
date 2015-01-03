@@ -16,7 +16,18 @@ COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake )
 
 add_definitions( -I${PROJECT_BINARY_DIR}/zuluCrypt-gui/lxqt_wallet/frontend )
 
+INCLUDE(CMakeDependentOption)
 INCLUDE(FindPkgConfig)
+
+# options
+option(NOGUI "Don't build the GUI" OFF)
+cmake_dependent_option(WITH_PWQUALITY "Build with pwquality support" ON
+	"NOT NOGUI" OFF)
+option(WITH_TCPLAY "Build with tcplay support" ON)
+option(NOGNOME "Build without gnome support" OFF)
+cmake_dependent_option(NOKDE "Build without kde support" OFF
+	"NOT NOGUI" ON)
+option(UDEVSUPPORT "Build without udev support" ON)
 
 if( NOT NOGNOME )
 	pkg_check_modules( LIBSECRET libsecret-1 )
@@ -30,8 +41,12 @@ endif( NOKDE )
 
 pkg_check_modules( CRYPTSETUP libcryptsetup )
 pkg_check_modules( BLKID blkid )
-pkg_check_modules( PWQUALITY pwquality )
-pkg_check_modules( TCPLAY tcplay )
+if ( WITH_PWQUALITY )
+	pkg_check_modules( PWQUALITY pwquality )
+endif ( WITH_PWQUALITY )
+if ( WITH_TCPLAY )
+	pkg_check_modules( TCPLAY tcplay )
+endif ( WITH_TCPLAY )
 
 set( PGR_VERSION "4.7.4" )
 set( LIB_VERSION "1.2.0" )
@@ -81,7 +96,7 @@ set( PLUGINPATH "${LIB_PATH}/zuluCrypt" )
 file( WRITE ${PROJECT_BINARY_DIR}/plugin_path.h "\n#define ZULUCRYPTpluginPath      \"${PLUGINPATH}/\"\n" )
 file( APPEND ${PROJECT_BINARY_DIR}/plugin_path.h "\n#define ZULUCRYPTTestPlugin      \"${PLUGINPATH}/zuluCrypt-testKey\"\n" )
 
-if( TCPLAY_FOUND )
+if( WITH_TCPLAY AND TCPLAY_FOUND )
 
 	if( NOT TCPLAY_VERSION VERSION_LESS "2.0.0" )
 		set( BUILD_TCPLAY "true" )
@@ -95,9 +110,9 @@ if( TCPLAY_FOUND )
 		file( APPEND ${PROJECT_BINARY_DIR}/truecrypt_support_1.h "\n#define TCPLAY_NEW_API 0\n" )
 		file( WRITE ${PROJECT_BINARY_DIR}/truecrypt_support_1.h "\n#define TRUECRYPT_CREATE 0\n" )
 	endif()
-else( TCPLAY_FOUND )
+else( WITH_TCPLAY AND TCPLAY_FOUND )
 	file( WRITE ${PROJECT_BINARY_DIR}/truecrypt_support_1.h "\n#define TRUECRYPT_CREATE 0\n" )
-endif( TCPLAY_FOUND )
+endif( WITH_TCPLAY AND TCPLAY_FOUND )
 
 if( HOMEMOUNTPREFIX )
 	file( WRITE  ${PROJECT_BINARY_DIR}/mount_prefix_path.h "\n#define USE_HOME_PATH_AS_MOUNT_PREFIX 1\n" )
@@ -115,7 +130,7 @@ ADD_SUBDIRECTORY( zuluCrypt-gui/lxqt_wallet )
 ADD_SUBDIRECTORY( zuluSafe )
 
 if( NOT NOGUI )
-	if( PWQUALITY_FOUND )
+	if( WITH_PWQUALITY AND PWQUALITY_FOUND )
 		find_file ( header_pwquality pwquality.h PATHS ${PWQUALITY_INCLUDE_DIRS} )
 		find_library ( library_pwquality libpwquality.so )
 		set( BUILDPWQUALITY "true" )
@@ -129,9 +144,9 @@ if( NOT NOGUI )
 		else( library_pwquality )
 			file( WRITE ${PROJECT_BINARY_DIR}/can_build_pwquality.h "#define BUILD_PWQUALITY 0\n" )
 		endif( library_pwquality )
-	else( PWQUALITY_FOUND )
+	else( WITH_PWQUALITY AND PWQUALITY_FOUND )
 		file( WRITE ${PROJECT_BINARY_DIR}/can_build_pwquality.h "#define BUILD_PWQUALITY 0\n" )
-	endif( PWQUALITY_FOUND )
+	endif( WITH_PWQUALITY AND PWQUALITY_FOUND )
 
 	if( QT5 )
 		find_package( Qt5Widgets REQUIRED )
@@ -143,7 +158,7 @@ if( NOT NOGUI )
 
 		add_definitions( ${Qt5Widgets_DEFINITIONS} )
 	else()
-		find_package( Qt4 REQUIRED )
+		find_package( Qt4 REQUIRED QtCore QtGui QtNetwork )
 
 		add_definitions( -I${Qt4_INCLUDE_DIR} )
 		add_definitions( -I${QT_HEADERS_DIR} )
@@ -158,9 +173,9 @@ if( NOT NOGUI )
 	ADD_SUBDIRECTORY( plugins )
 	ADD_SUBDIRECTORY( zuluMount-gui )
 
-	file( WRITE ${PROJECT_BINARY_DIR}/locale_path.h "\n#define TRANSLATION_PATH \"${CMAKE_INSTALL_PREFIX}/share/zuluCrypt/translations/\"\n")
-
 endif( NOT NOGUI )
+
+file( WRITE ${PROJECT_BINARY_DIR}/locale_path.h "\n#define TRANSLATION_PATH \"${CMAKE_INSTALL_PREFIX}/share/zuluCrypt/translations/\"\n")
 
 message ( STATUS "---------------------------------------------------------------------------" )
 message ( STATUS "optional functionality that will be build" )
@@ -173,9 +188,9 @@ if( BUILDPWQUALITY )
 	message( STATUS "pwquality library support to give passphrase strength measure" )
 endif( BUILDPWQUALITY )
 
-if( UDEVSUPPORT STREQUAL "true" )
+if( UDEVSUPPORT )
 	message( STATUS "udev support will be enabled" )
-endif( UDEVSUPPORT STREQUAL "true" )
+endif( UDEVSUPPORT )
 
 if( BUILD_TCPLAY )
 	message( STATUS "tcplay adds the ability to create truecrypt compatible encrypted containers" )
@@ -210,9 +225,9 @@ if( NOT BUILDPWQUALITY )
 	message( STATUS "sources can be found at: https://fedorahosted.org/libpwquality/\n" )
 endif( NOT BUILDPWQUALITY )
 
-if( NOT UDEVSUPPORT STREQUAL "true" )
+if( NOT UDEVSUPPORT )
 	message( STATUS "udev support\n" )
-endif( NOT UDEVSUPPORT STREQUAL "true" )
+endif( NOT UDEVSUPPORT )
 
 if( NOT BUILD_TCPLAY )
 	message( STATUS "tcplay package not found or found version is too old(found version is less than 2.0.0)." )
@@ -258,14 +273,14 @@ else( CRYPTSETUP_VERSION VERSION_GREATER "1.4.0" )
 	file( WRITE ${PROJECT_BINARY_DIR}/truecrypt_support.h "\n#define LUKS_EXTERNAL_HEADER 0\n" )
 endif( CRYPTSETUP_VERSION VERSION_GREATER "1.4.0" )
 
-if( UDEVSUPPORT STREQUAL "true" )
+if( UDEVSUPPORT )
 
 	file( WRITE ${PROJECT_BINARY_DIR}/udev_support.h "\n#define UDEV_SUPPORT 1\n")
 
 	message ( STATUS "udev will be consulted when deciding if a volume is system or not." )
 	message ( STATUS "please read \"udev_support\" file for more information about udev support and associated problems.\n\n" )
 
-else( UDEVSUPPORT STREQUAL "true" )
+else( UDEVSUPPORT )
 
 	file( WRITE ${PROJECT_BINARY_DIR}/udev_support.h "\n#define UDEV_SUPPORT 0\n")
 
@@ -273,7 +288,7 @@ else( UDEVSUPPORT STREQUAL "true" )
 	message ( STATUS "please read \"udev_support\" file for more information about udev support and how to enable it." )
 	message ( STATUS "It is probably a good idea to enable it if you are creating a package for distribution.\n\n" )
 
-endif( UDEVSUPPORT STREQUAL "true" )
+endif( UDEVSUPPORT )
 
 install ( FILES zuluCrypt-cli.1 DESTINATION share/man/man1 )
 install ( FILES zuluCrypt-gui.1 DESTINATION share/man/man1 )

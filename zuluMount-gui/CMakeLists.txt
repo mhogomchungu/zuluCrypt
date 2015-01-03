@@ -52,7 +52,7 @@ if( QT5 )
 
 	add_executable( zuluMount-gui ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
 
-	TARGET_LINK_LIBRARIES( zuluMount-gui sharedObject lxqtwallet  ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${blkid} zuluCryptPluginManager -lQt5Network )
+	TARGET_LINK_LIBRARIES( zuluMount-gui sharedObject lxqtwallet  ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${blkid} zuluCryptPluginManager )
 
 	set_target_properties( zuluMount-gui PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
 else()
@@ -73,7 +73,7 @@ else()
 
 	add_executable( zuluMount-gui ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
 
-	TARGET_LINK_LIBRARIES( zuluMount-gui sharedObject lxqtwallet ${QT_LIBRARIES} ${blkid} zuluCryptPluginManager -lQtNetwork )
+	TARGET_LINK_LIBRARIES( zuluMount-gui sharedObject lxqtwallet ${QT_LIBRARIES} ${blkid} zuluCryptPluginManager )
 
 	set_target_properties( zuluMount-gui PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
 endif()
